@@ -2353,8 +2353,8 @@ address,size,status,category,name,src_file
 0x001ee2f0,188,todo,unknown,func_001ee2f0,
 0x001ee3ac,76,todo,unknown,func_001ee3ac,
 0x001ee3f8,428,todo,camp,camp_func_001ee3f8,
-0x001ee5a4,548,todo,camp,camp_func_001ee5a4,
-0x001ee7c8,384,todo,camp,camp_func_001ee7c8,
+0x001ee5a4,548,non_matching,ui,StatusDown_PopulateSkillList,src/ui/status_down.cpp
+0x001ee7c8,384,non_matching,ui,StatusDown_PopulateItemList,src/ui/status_down.cpp
 0x001ee948,52,todo,script_vm,script_vm_func_001ee948,
 0x001ee97c,32,todo,camp,camp_func_001ee97c,
 0x001ee99c,1284,todo,camp,camp_func_001ee99c,
@@ -2386,8 +2386,8 @@ address,size,status,category,name,src_file
 0x001f5e38,116,todo,unknown,func_001f5e38,
 0x001f5eac,260,todo,camp,camp_func_001f5eac,
 0x001f5fb0,300,todo,camp,camp_func_001f5fb0,
-0x001f60dc,152,todo,camp,camp_func_001f60dc,
-0x001f6174,48,todo,unknown,func_001f6174,
+0x001f60dc,152,non_matching,ui,StatusDown_SkillSortByCostAsc,src/ui/status_down.cpp
+0x001f6174,48,non_matching,ui,StatusDown_SkillSortByNameAsc,src/ui/status_down.cpp
 0x001f61a4,96,todo,unknown,func_001f61a4,
 0x001f6204,384,todo,script_vm,script_vm_func_001f6204,
 0x001f6384,84,todo,engine,engine_func_001f6384,
@@ -2539,9 +2539,9 @@ address,size,status,category,name,src_file
 0x00206874,424,todo,camp,camp_func_00206874,
 0x00206a1c,292,todo,ui,ui_func_00206a1c,
 0x00206b40,168,todo,script_vm,script_vm_func_00206b40,
-0x00206be8,80,todo,camp,camp_func_00206be8,
-0x00206c38,132,todo,camp,camp_func_00206c38,
-0x00206cbc,124,todo,camp,camp_func_00206cbc,
+0x00206be8,80,non_matching,ui,StatusDown_SkillSortByIdAsc,src/ui/status_down.cpp
+0x00206c38,132,non_matching,ui,StatusDown_ItemSortByTypeAsc,src/ui/status_down.cpp
+0x00206cbc,124,non_matching,ui,StatusDown_ItemSortByIdAsc,src/ui/status_down.cpp
 0x00206d38,84,todo,engine,engine_func_00206d38,
 0x00206d8c,64,todo,engine,engine_func_00206d8c,
 0x00206dcc,100,todo,engine,engine_func_00206dcc,
@@ -4047,7 +4047,7 @@ address,size,status,category,name,src_file
 0x0026adcc,592,todo,camp,camp_func_0026adcc,
 0x0026b01c,176,non_matching,ui,StatusDown_PopFirstSubIdA,src/ui/status_down.cpp
 0x0026b0cc,4,todo,unknown,func_0026b0cc,
-0x0026b0d0,1636,todo,camp,camp_func_0026b0d0,
+0x0026b0d0,1636,non_matching,ui,StatusDown_SetupTouchRegions,src/ui/status_down.cpp
 0x0026b734,152,todo,ui,ui_func_0026b734,
 0x0026b7cc,32,todo,ui,ui_func_0026b7cc,
 0x0026b7ec,36,todo,ui,ui_func_0026b7ec,
@@ -4731,7 +4731,7 @@ address,size,status,category,name,src_file
 0x0029a400,24,todo,engine,engine_func_0029a400,
 0x0029a418,236,todo,unknown,func_0029a418,
 0x0029a504,28,todo,unknown,func_0029a504,
-0x0029a520,1696,todo,ui,ui_func_0029a520,
+0x0029a520,1696,non_matching,ui,StatusDown_DrawPartySlotRow,src/ui/status_down.cpp
 0x0029abc0,176,todo,battle,battle_func_0029abc0,
 0x0029ac70,296,todo,battle,battle_func_0029ac70,
 0x0029ad98,88,todo,ui,ui_func_0029ad98,
@@ -6048,7 +6048,7 @@ address,size,status,category,name,src_file
 0x002dc6c4,116,todo,unknown,func_002dc6c4,
 0x002dc738,264,todo,camp,camp_func_002dc738,
 0x002dc840,300,todo,camp,camp_func_002dc840,
-0x002dc96c,152,todo,camp,camp_func_002dc96c,
+0x002dc96c,152,non_matching,ui,StatusDown_SkillSortByCostDesc,src/ui/status_down.cpp
 0x002dca04,60,todo,unknown,func_002dca04,
 0x002dca40,88,todo,camp,camp_func_002dca40,
 0x002dca98,96,todo,unknown,func_002dca98,
@@ -6223,9 +6223,9 @@ address,size,status,category,name,src_file
 0x002e43f0,68,todo,ui,ui_func_002e43f0,
 0x002e4434,56,todo,camp,camp_func_002e4434,
 0x002e446c,200,todo,battle,battle_func_002e446c,
-0x002e4534,80,todo,camp,camp_func_002e4534,
-0x002e4584,132,todo,camp,camp_func_002e4584,
-0x002e4608,124,todo,camp,camp_func_002e4608,
+0x002e4534,80,non_matching,ui,StatusDown_SkillSortByIdDesc,src/ui/status_down.cpp
+0x002e4584,132,non_matching,ui,StatusDown_ItemSortByTypeDesc,src/ui/status_down.cpp
+0x002e4608,124,non_matching,ui,StatusDown_ItemSortByIdDesc,src/ui/status_down.cpp
 0x002e4684,76,todo,unknown,func_002e4684,
 0x002e46d0,84,todo,engine,engine_func_002e46d0,
 0x002e4724,64,todo,engine,engine_func_002e4724,
@@ -6890,7 +6890,7 @@ address,size,status,category,name,src_file
 0x00311328,20,todo,script_vm,script_vm_func_00311328,
 0x0031133c,20,todo,battle,battle_func_0031133c,
 0x00311350,324,todo,ui,ui_func_00311350,
-0x00311494,356,todo,camp,camp_func_00311494,
+0x00311494,356,non_matching,ui,StatusDown_OpenCategorySelect,src/ui/status_down.cpp
 0x003115f8,32,todo,script_vm,script_vm_func_003115f8,
 0x00311618,276,todo,script_vm,script_vm_func_00311618,
 0x0031172c,1308,todo,script_vm,script_vm_func_0031172c,
@@ -7341,8 +7341,8 @@ address,size,status,category,name,src_file
 0x0032b72c,1256,todo,ui,ui_func_0032b72c,
 0x0032bc14,404,todo,engine,engine_func_0032bc14,
 0x0032bda8,140,todo,engine,engine_func_0032bda8,
-0x0032be34,1672,todo,camp,camp_func_0032be34,
-0x0032c4bc,372,todo,camp,camp_func_0032c4bc,
+0x0032be34,1672,non_matching,ui,StatusDown_DrawSkillList,src/ui/status_down.cpp
+0x0032c4bc,372,non_matching,ui,StatusDown_SortItemList,src/ui/status_down.cpp
 0x0032c630,672,todo,script_vm,script_vm_func_0032c630,
 0x0032c8d0,124,todo,script_vm,script_vm_func_0032c8d0,
 0x0032c94c,444,todo,engine,engine_func_0032c94c,
