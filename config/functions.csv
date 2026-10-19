@@ -2210,8 +2210,8 @@ address,size,status,category,name,src_file
 0x001dd9f4,68,todo,script_vm,script_vm_func_001dd9f4,
 0x001dda38,124,todo,engine,engine_func_001dda38,
 0x001ddab4,68,non_matching,ui,StatusDown_OpenDefaultView,src/ui/status_down.cpp
-0x001ddaf8,36,todo,unknown,func_001ddaf8,
-0x001ddb1c,36,todo,ui,ui_func_001ddb1c,
+0x001ddaf8,36,non_matching,ui,Status_GetField1E64,src/ui/status.cpp
+0x001ddb1c,36,non_matching,ui,Status_IsState8,src/ui/status.cpp
 0x001ddb40,400,todo,script_vm,script_vm_func_001ddb40,
 0x001ddcd0,1384,todo,camp,camp_func_001ddcd0,
 0x001de238,5020,todo,camp,Unite_func_001de238,
@@ -2514,7 +2514,7 @@ address,size,status,category,name,src_file
 0x00203198,288,todo,unknown,func_00203198,
 0x002032b8,68,todo,unknown,func_002032b8,
 0x002032fc,60,todo,script_vm,script_vm_func_002032fc,
-0x00203338,24,todo,camp,camp_func_00203338,
+0x00203338,24,non_matching,ui,Status_SetActiveDemonId,src/ui/status.cpp
 0x00203350,348,todo,camp,UIFade_func_00203350,
 0x002034ac,48,todo,camp,camp_func_002034ac,
 0x002034dc,120,todo,camp,camp_func_002034dc,
@@ -3072,8 +3072,8 @@ address,size,status,category,name,src_file
 0x0022e58c,136,todo,camp,camp_func_0022e58c,
 0x0022e614,36,todo,engine,engine_func_0022e614,
 0x0022e638,92,todo,shop,shop_func_0022e638,
-0x0022e694,32,todo,shop,shop_func_0022e694,
-0x0022e6b4,24,todo,shop,shop_func_0022e6b4,
+0x0022e694,32,non_matching,ui,Status_SetFlag1E65,src/ui/status.cpp
+0x0022e6b4,24,non_matching,ui,Status_IsActive,src/ui/status.cpp
 0x0022e6cc,248,todo,shop,shop_func_0022e6cc,
 0x0022e7c4,24,todo,unknown,func_0022e7c4,
 0x0022e7dc,248,todo,shop,shop_func_0022e7dc,
@@ -4038,7 +4038,7 @@ address,size,status,category,name,src_file
 0x0026a96c,144,todo,camp,camp_func_0026a96c,
 0x0026a9fc,196,todo,camp,camp_func_0026a9fc,
 0x0026aac0,256,todo,camp,camp_func_0026aac0,
-0x0026abc0,32,todo,unknown,func_0026abc0,
+0x0026abc0,32,non_matching,ui,Status_SetMode1E71,src/ui/status.cpp
 0x0026abe0,84,non_matching,ui,StatusDown_SetSubIdsA,src/ui/status_down.cpp
 0x0026ac34,172,todo,script_vm,script_vm_func_0026ac34,
 0x0026ace0,112,todo,camp,camp_func_0026ace0,
@@ -4051,7 +4051,7 @@ address,size,status,category,name,src_file
 0x0026b734,152,todo,ui,ui_func_0026b734,
 0x0026b7cc,32,todo,ui,ui_func_0026b7cc,
 0x0026b7ec,36,todo,ui,ui_func_0026b7ec,
-0x0026b810,32,todo,ui,ui_func_0026b810,
+0x0026b810,32,non_matching,ui,Status_SetMode1EB9,src/ui/status.cpp
 0x0026b830,20,todo,ui,ui_func_0026b830,
 0x0026b844,16,todo,ui,ui_func_0026b844,
 0x0026b854,16,todo,ui,ui_func_0026b854,
@@ -4066,7 +4066,7 @@ address,size,status,category,name,src_file
 0x0026c480,592,todo,script_vm,script_vm_func_0026c480,
 0x0026c6d0,280,todo,script_vm,script_vm_func_0026c6d0,
 0x0026c7e8,192,todo,camp,camp_func_0026c7e8,
-0x0026c8a8,24,todo,camp,camp_func_0026c8a8,
+0x0026c8a8,24,non_matching,ui,Status_GetFlag1E63,src/ui/status.cpp
 0x0026c8c0,188,todo,script_vm,script_vm_func_0026c8c0,
 0x0026c97c,108,todo,script_vm,script_vm_func_0026c97c,
 0x0026c9e8,36,todo,script_vm,script_vm_func_0026c9e8,
@@ -4083,7 +4083,7 @@ address,size,status,category,name,src_file
 0x0026d64c,452,todo,camp,camp_func_0026d64c,
 0x0026d810,176,todo,camp,camp_func_0026d810,
 0x0026d8c0,28,non_matching,ui,StatusDown_SetVisibility,src/ui/status_down.cpp
-0x0026d8dc,52,todo,script_vm,script_vm_func_0026d8dc,
+0x0026d8dc,52,non_matching,ui,Status_ResetAffinityView,src/ui/status.cpp
 0x0026d910,1088,todo,camp,camp_func_0026d910,
 0x0026dd50,24,todo,script_vm,script_vm_func_0026dd50,
 0x0026dd68,92,todo,script_vm,script_vm_func_0026dd68,
@@ -4392,7 +4392,7 @@ address,size,status,category,name,src_file
 0x00288310,112,todo,unknown,func_00288310,
 0x00288380,60,todo,camp,camp_func_00288380,
 0x002883bc,76,todo,camp,camp_func_002883bc,
-0x00288408,28,todo,camp,camp_func_00288408,
+0x00288408,28,non_matching,ui,Status_GetSubMenuState,src/ui/status.cpp
 0x00288424,432,todo,engine,engine_func_00288424,
 0x002885d4,300,todo,ui,ui_func_002885d4,
 0x00288700,24,todo,camp,camp_func_00288700,
@@ -4411,7 +4411,7 @@ address,size,status,category,name,src_file
 0x00289010,52,todo,unknown,func_00289010,
 0x00289044,140,todo,camp,camp_func_00289044,
 0x002890d0,136,todo,camp,camp_func_002890d0,
-0x00289158,112,todo,ui,ui_func_00289158,
+0x00289158,112,non_matching,ui,Status_Destroy,src/ui/status.cpp
 0x002891c8,24,todo,ui,ui_func_002891c8,
 0x002891e0,192,todo,engine,engine_func_002891e0,
 0x002892a0,32,todo,unknown,func_002892a0,
@@ -4461,7 +4461,7 @@ address,size,status,category,name,src_file
 0x0028c214,56,todo,camp,camp_func_0028c214,
 0x0028c24c,68,todo,camp,camp_func_0028c24c,
 0x0028c290,24,todo,camp,camp_func_0028c290,
-0x0028c2a8,1448,todo,unite,Status_func_0028c2a8,
+0x0028c2a8,1448,non_matching,ui,Status_Init,src/ui/status.cpp
 0x0028c850,24,todo,camp,camp_func_0028c850,
 0x0028c868,24,todo,camp,camp_func_0028c868,
 0x0028c880,40,todo,engine,engine_func_0028c880,
@@ -4599,9 +4599,9 @@ address,size,status,category,name,src_file
 0x00293d04,40,todo,ui,ui_func_00293d04,
 0x00293d2c,36,non_matching,ui,StatusDown_IsNotTransitioning,src/ui/status_down.cpp
 0x00293d50,20,non_matching,ui,StatusDown_GetActiveMode,src/ui/status_down.cpp
-0x00293d64,204,todo,ui,ui_func_00293d64,
+0x00293d64,204,non_matching,ui,Status_HandleLRPrompt,src/ui/status.cpp
 0x00293e30,28,non_matching,ui,StatusDown_GetStatusMode,src/ui/status_down.cpp
-0x00293e4c,520,todo,ui,ui_func_00293e4c,
+0x00293e4c,520,non_matching,ui,Status_UpdateAffinityTable,src/ui/status.cpp
 0x00294054,88,todo,ui,ui_func_00294054,
 0x002940ac,112,todo,ui,ui_func_002940ac,
 0x0029411c,88,todo,ui,ui_func_0029411c,
@@ -4617,7 +4617,7 @@ address,size,status,category,name,src_file
 0x00294a64,52,todo,engine,engine_func_00294a64,
 0x00294a98,64,todo,ui,ui_func_00294a98,
 0x00294ad8,1336,todo,ui,ui_func_00294ad8,
-0x00295010,172,todo,ui,ui_func_00295010,
+0x00295010,172,non_matching,ui,Status_GetCalculatedScale,src/ui/status.cpp
 0x002950bc,332,todo,camp,camp_func_002950bc,
 0x00295208,124,todo,ui,ui_func_00295208,
 0x00295284,124,todo,ui,ui_func_00295284,
@@ -4736,10 +4736,10 @@ address,size,status,category,name,src_file
 0x0029ac70,296,todo,battle,battle_func_0029ac70,
 0x0029ad98,88,todo,ui,ui_func_0029ad98,
 0x0029adf0,320,non_matching,ui,StatusDown_DrawLRPrompts,src/ui/status_down.cpp
-0x0029af30,28,todo,camp,camp_func_0029af30,
-0x0029af4c,20,todo,camp,camp_func_0029af4c,
+0x0029af30,28,non_matching,ui,Status_GetMainMenuId,src/ui/status.cpp
+0x0029af4c,20,non_matching,ui,Status_GetSelectedActorPtr,src/ui/status.cpp
 0x0029af60,384,todo,script_vm,script_vm_func_0029af60,
-0x0029b0e0,28,todo,camp,camp_func_0029b0e0,
+0x0029b0e0,28,non_matching,ui,Status_GetSubState,src/ui/status.cpp
 0x0029b0fc,144,todo,ui,ui_func_0029b0fc,
 0x0029b18c,388,todo,camp,camp_func_0029b18c,
 0x0029b310,188,todo,camp,camp_func_0029b310,
