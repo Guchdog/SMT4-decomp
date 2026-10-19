@@ -22,7 +22,9 @@ struct StatusWork {
     u8 pad_12ed[0x12FC - 0x12ED];       // +0x12ED..+0x12FC
     u16 field_12fc;                     // +0x12FC
     u16 field_12fe;                     // +0x12FE
-    u8 unk_1300[0x1E63 - 0x1300];       // +0x1300: Actor pointer buffer & affinity layout
+    u8 unk_1300[0x1E61 - 0x1300];       // +0x1300: Actor pointer buffer & affinity layout
+    u8 flag_1e61;                       // +0x1E61: Upper screen draw enable flag
+    u8 unk_1e62;                        // +0x1E62
     s8 flag_1e63;                       // +0x1E63: Status flag (queried by 0x0026c8a8)
     s8 field_1e64;                      // +0x1E64: Queried by 0x001ddaf8
     u8 flag_1e65;                       // +0x1E65: Set by 0x0022e694
@@ -41,6 +43,7 @@ struct StatusWork {
 
 static_assert(offsetof(StatusWork, calc_task) == 0x0000);
 static_assert(offsetof(StatusWork, sub_state_ec) == 0x12EC);
+static_assert(offsetof(StatusWork, flag_1e61) == 0x1E61);
 static_assert(offsetof(StatusWork, flag_1e63) == 0x1E63);
 static_assert(offsetof(StatusWork, field_1e64) == 0x1E64);
 static_assert(offsetof(StatusWork, flag_1e65) == 0x1E65);

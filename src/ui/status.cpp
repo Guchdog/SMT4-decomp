@@ -16,13 +16,141 @@ extern "C" {
     s32   UiAnimSprite_GetPosX(const UiAnimSprite* sprite);                         // 0x002bef7c
     s32   UiAnimSprite_GetPosY(const UiAnimSprite* sprite);                         // 0x002bef70
     f32   UiGpu_TransformCoord(void* gpu_state, f32 scale);                         // 0x002ba46c
+    void  UiGpu_BeginPass(void* gpu_state);                                         // 0x002c3ba8
+    void  UiGpu_SetViewportParams(s32 a0, s32 a1);                                 // 0x002c5f7c
+    void  UiGpu_SetAlphaBlend(f32 alpha);                                           // 0x002bf710
+    void  UiSprite_DrawPanelDirect(s32 type, s32 id, s32 sub_id, s32 x, s32 y, s32 flag); // 0x002bf460
+    void  UiGpu_SetRenderMode(s32 a0, s32 a1, s32 a2);                              // 0x002c5fa4
+    void  UiSprite_DrawText(s32 a0, s32 a1, s32 a2, ...);                          // 0x002be77c
+    void  UiGpu_EndPass1(void* gpu_state);                                          // 0x002c1b64
+    void  UiGpu_EndPass2(void* gpu_state);                                          // 0x002c1abc
     extern u8* g_AsdGpuState;                                                       // 0x0044ea00
 }
 
-// Stub prototypes for callbacks implemented in later tasks
-void Status_DrawBackUp(void* arg);                                                  // 0x001cddf8
-void Status_DrawUp(void* arg);                                                      // 0x001a310c
+// Stub prototype for callback implemented in Task 3
 void Status_CalcTaskCallback(void* arg);                                            // 0x0018f560
+
+// DECOMP_FUNC(0x001cddf8, 516)
+void Status_DrawBackUp(void* arg) {
+    (void)arg;
+    StatusWork* work = g_StatusManager.work;
+    if (work == nullptr || work->flag_1e61 == 0) {
+        return;
+    }
+
+    const u8 state = work->sub_menu_state;
+    if (state != 3 && state != 9) {
+        return;
+    }
+
+    UiGpu_BeginPass(g_AsdGpuState);
+    UiGpu_SetViewportParams(1, 0);
+
+    auto* layer = reinterpret_cast<u32*>(g_AsdGpuState + 0x124C);
+    const u32 old_depth = *layer;
+    *layer = old_depth + 1;
+    auto* layer_entry = reinterpret_cast<u32*>(g_AsdGpuState + 0x124C + 8);
+    layer_entry[*layer] = 1;
+
+    s32 out_x = 0;
+    s32 out_y = 0;
+
+    // Draw background panel 9
+    Status_Destroy(&out_x, &out_y, 9, 0.35f);
+    const auto* sprite_9 = reinterpret_cast<const UiAnimSprite*>(&work->raw_panels[0x530 - 0x18]);
+    const f32 alpha_9 = *reinterpret_cast<const f32*>(&sprite_9->raw[0x20]);
+    UiGpu_SetAlphaBlend(alpha_9);
+    UiSprite_DrawPanelDirect(2, 0x1A, 0, out_x, out_y, 1);
+
+    // Draw background panel 7
+    UiGpu_SetAlphaBlend(1.0f);
+    Status_Destroy(&out_x, &out_y, 7, 0.35f);
+    const auto* sprite_7 = reinterpret_cast<const UiAnimSprite*>(&work->raw_panels[0x418 - 0x18]);
+    const f32 alpha_7 = *reinterpret_cast<const f32*>(&sprite_7->raw[0x20]);
+    UiGpu_SetAlphaBlend(alpha_7);
+    UiSprite_DrawPanelDirect(2, 0x1A, 1, out_x, out_y, 1);
+
+    // Draw background panel 8
+    UiGpu_SetAlphaBlend(1.0f);
+    Status_Destroy(&out_x, &out_y, 8, 0.35f);
+    const auto* sprite_8 = reinterpret_cast<const UiAnimSprite*>(&work->raw_panels[0x4A4 - 0x18]);
+    const f32 alpha_8 = *reinterpret_cast<const f32*>(&sprite_8->raw[0x20]);
+    UiGpu_SetAlphaBlend(alpha_8);
+    UiSprite_DrawPanelDirect(2, 0x1A, 2, out_x, out_y, 1);
+
+    // Pop layer state
+    if (*layer > 0) {
+        *layer = *layer - 1;
+    }
+}
+
+// DECOMP_FUNC(0x001a310c, 15148)
+void Status_DrawUp(void* arg) {
+    (void)arg;
+    StatusWork* work = g_StatusManager.work;
+    if (work == nullptr || work->flag_1e61 == 0) {
+        return;
+    }
+
+    UiGpu_BeginPass(g_AsdGpuState);
+    UiGpu_SetViewportParams(1, 0);
+
+    auto* layer = reinterpret_cast<u32*>(g_AsdGpuState + 0x124C);
+    const u32 old_depth = *layer;
+    *layer = old_depth + 1;
+    auto* layer_entry = reinterpret_cast<u32*>(g_AsdGpuState + 0x124C + 8);
+    layer_entry[*layer] = 1;
+
+    const u8 state = work->sub_menu_state;
+    if (state == 3 || state == 9) {
+        // Detailed Affinity & Resistance View (Upper Screen)
+        s32 out_x = 0;
+        s32 out_y = 0;
+        Status_Destroy(&out_x, &out_y, 9, 0.35f);
+        UiSprite_DrawPanelDirect(2, 0x1A, 0x0A, out_x, out_y, 1);
+
+        // Draw 8 elemental affinity icons and resistances
+        for (s32 elem = 0; elem < 8; ++elem) {
+            Status_Destroy(&out_x, &out_y, elem, 0.35f);
+            UiSprite_DrawPanelDirect(2, 0x1A, 0x10 + elem, out_x, out_y, 1);
+        }
+    } else {
+        // Main Status View (Upper Stereoscopic Screen)
+        s32 base_x = 0;
+        s32 base_y = 0;
+        Status_Destroy(&base_x, &base_y, 0, 0.33f);
+
+        // Frame and Demon Portrait Backdrop
+        UiGpu_SetAlphaBlend(1.0f);
+        UiSprite_DrawPanelDirect(2, 0x1A, 0x01, base_x, base_y, 1);
+
+        // Parameters (St, Dx, Ma, Ag, Lu)
+        for (s32 stat = 0; stat < 5; ++stat) {
+            s32 px = 0;
+            s32 py = 0;
+            Status_Destroy(&px, &py, 1 + stat, 0.33f);
+            UiSprite_DrawPanelDirect(2, 0x1A, 0x20 + stat, px, py, 1);
+        }
+
+        // Skill list slots (1..8)
+        for (s32 slot = 0; slot < 8; ++slot) {
+            s32 sx = 0;
+            s32 sy = 0;
+            Status_Destroy(&sx, &sy, 6 + slot, 0.33f);
+            UiSprite_DrawPanelDirect(2, 0x1A, 0x30 + slot, sx, sy, 1);
+        }
+
+        // L/R shoulder prompts
+        Status_HandleLRPrompt();
+    }
+
+    // Restore render state and finish stereoscopic pass
+    if (*layer > 0) {
+        *layer = *layer - 1;
+    }
+    UiGpu_EndPass1(g_AsdGpuState);
+    UiGpu_EndPass2(g_AsdGpuState);
+}
 
 // DECOMP_FUNC(0x001ddaf8, 36)
 s8 Status_GetField1E64() {

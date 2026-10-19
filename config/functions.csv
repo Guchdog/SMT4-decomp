@@ -1919,7 +1919,7 @@ address,size,status,category,name,src_file
 0x001a1e6c,16,todo,camp,camp_func_001a1e6c,
 0x001a1e7c,1872,todo,camp,camp_func_001a1e7c,
 0x001a25cc,2880,todo,ui,ui_func_001a25cc,
-0x001a310c,15148,todo,ui,ui_func_001a310c,
+0x001a310c,15148,non_matching,ui,Status_DrawUp,src/ui/status.cpp
 0x001a6c38,80,todo,ui,ui_func_001a6c38,
 0x001a6c88,2104,todo,camp,camp_func_001a6c88,
 0x001a74c0,576,todo,ui,ui_func_001a74c0,
@@ -2095,7 +2095,7 @@ address,size,status,category,name,src_file
 0x001ca620,40,todo,engine,engine_func_001ca620,
 0x001ca648,8908,non_matching,ui,StatusDown_CalcTaskCallback,src/ui/status_down.cpp
 0x001cc914,5348,non_matching,ui,StatusDown_DrawTaskCallback,src/ui/status_down.cpp
-0x001cddf8,516,todo,ui,ui_func_001cddf8,
+0x001cddf8,516,non_matching,ui,Status_DrawBackUp,src/ui/status.cpp
 0x001cdffc,296,todo,script_vm,script_vm_func_001cdffc,
 0x001ce124,120,todo,camp,camp_func_001ce124,
 0x001ce19c,520,todo,camp,camp_func_001ce19c,
