@@ -1,0 +1,33 @@
+{
+  "title": "Shin Megami Tensei IV",
+  "product_code": "CTR-P-AMXE",
+  "app_title": "sdds4",
+  "title_id": "00040000000E5C00",
+  "version": "v0.1.0",
+  "region": "US",
+  "segments": {
+    "text": {
+      "vaddr": "0x00100000",
+      "size": "0x002FE624",
+      "aligned_size": "0x002FF000",
+      "file_offset": "0x00000000"
+    },
+    "rodata": {
+      "vaddr": "0x003FF000",
+      "size": "0x0002BB78",
+      "aligned_size": "0x0002C000",
+      "file_offset": "0x002FF000"
+    },
+    "data": {
+      "vaddr": "0x0042B000",
+      "size": "0x0004B644",
+      "aligned_size": "0x0004C000",
+      "file_offset": "0x0032B000"
+    },
+    "bss": {
+      "vaddr": "0x00477000",
+      "size": "0x000797F0"
+    }
+  },
+  "code_bin_size": 3633152
+}
