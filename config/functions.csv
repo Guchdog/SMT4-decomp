@@ -1804,7 +1804,7 @@ address,size,status,category,name,src_file
 0x0018bf54,132,todo,ui,ui_func_0018bf54,
 0x0018bfd8,20,todo,unknown,func_0018bfd8,
 0x0018bfec,12684,todo,script_vm,script_vm_func_0018bfec,
-0x0018f178,988,todo,ui,ui_func_0018f178,
+0x0018f178,988,non_matching,ui,RunWin_DrawDownAndCalc,src/ui/window.cpp
 0x0018f554,12,todo,unknown,func_0018f554,
 0x0018f560,4912,non_matching,ui,Status_CalcTaskCallback,src/ui/status.cpp
 0x00190890,288,todo,ui,ui_func_00190890,
@@ -2506,7 +2506,7 @@ address,size,status,category,name,src_file
 0x00201998,1720,todo,script_vm,script_vm_func_00201998,
 0x00202050,160,todo,engine,engine_func_00202050,
 0x002020f0,1772,todo,engine,engine_func_002020f0,
-0x002027dc,372,todo,ui,RunWin_func_002027dc,
+0x002027dc,372,non_matching,ui,RunWin_Init,src/ui/window.cpp
 0x00202950,1256,todo,ui,saveLoadUI_func_00202950,
 0x00202e38,288,todo,ui,ui_func_00202e38,
 0x00202f58,288,todo,unknown,func_00202f58,

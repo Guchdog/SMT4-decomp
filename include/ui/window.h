@@ -150,4 +150,36 @@ void PlaceWin_ShowMessage(const char* msg);                                     
 void PlaceWin_Init();                                                               // 0x002639f4
 void PlaceWin_Calc(void* arg);                                                      // 0x00263bb4
 
+/**
+ * Running / Escape Prompt Window workspace (0xE4 bytes).
+ * Original Atlus source path: `c:\SMT4\XRD686\sdds4\program\font\SearchWin\RunWin.cpp`
+ * Global pointer: `g_RunWinWork` at `0x0043E158`.
+ */
+struct RunWinWork {
+    void* calc_task;                    // +0x00: "RunWin Calc" task handle
+    void* draw_down;                    // +0x04: "RunWin DrawDown" task handle (prio 0xE9)
+    u32 state;                          // +0x08: State (0: inactive, 1: enter, 2: run, 3: exit)
+    u32 timer;                          // +0x0C: Timer
+    u32 unk_10;                         // +0x10
+    u8 visible;                         // +0x14: Display visibility
+    u8 pad_15[3];                       // +0x15
+    UiSpriteGroup sprite_group;         // +0x18: Sprite table group (0x20 bytes)
+    UiAnimSprite panel_sprite;          // +0x38: Anim sprite (0x8C bytes)
+    u8 unk_c4[0xE4 - 0xC4];             // +0xC4..+0xE4
+};
+
+static_assert(offsetof(RunWinWork, calc_task) == 0x00);
+static_assert(offsetof(RunWinWork, draw_down) == 0x04);
+static_assert(offsetof(RunWinWork, state) == 0x08);
+static_assert(offsetof(RunWinWork, visible) == 0x14);
+static_assert(offsetof(RunWinWork, sprite_group) == 0x18);
+static_assert(offsetof(RunWinWork, panel_sprite) == 0x38);
+static_assert(sizeof(RunWinWork) == 0xE4);
+
+extern RunWinWork* g_RunWinWork;        // 0x0043E158
+
+// RunWin API functions
+void RunWin_Init();                                                                 // 0x002027dc
+void RunWin_DrawDownAndCalc(void* arg);                                             // 0x0018f178
+
 } // namespace smt4::ui

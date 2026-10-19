@@ -557,4 +557,79 @@ void PlaceWin_Calc(void* arg) {
     }
 }
 
+// ============================================================================
+// RunWin: Running / Escape Prompt Window (c:\SMT4\XRD686\sdds4\program\font\SearchWin\RunWin.cpp)
+// ============================================================================
+
+RunWinWork* g_RunWinWork = nullptr; // 0x0043E158
+static const u8 g_RunWinSpriteTable[0x20] = {0};
+
+// DECOMP_FUNC(0x002027dc, 372)
+void RunWin_Init() {
+    RunWinWork* work = g_RunWinWork;
+    if (work == nullptr) {
+        work = reinterpret_cast<RunWinWork*>(AsdMem_Alloc(sizeof(RunWinWork), 0x100));
+        g_RunWinWork = work;
+    }
+
+    AsdMem_Zero(work, sizeof(RunWinWork));
+
+    work->calc_task = AsdTask_CreateCalc("RunWin Calc", 1, 0, 0,
+                                         RunWin_DrawDownAndCalc, 0, 0);
+    work->draw_down = AsdTask_CreateDraw("RunWin DrawDown", 0xE9, 0, 0,
+                                         RunWin_DrawDownAndCalc, 0, 0, work->calc_task);
+
+    UiSpriteGroup_Init(&work->sprite_group);
+    UiSpriteGroup_BindTable(&work->sprite_group,
+                            g_RunWinSpriteTable - 0x24, 0x24,
+                            0, g_RunWinSpriteTable - 0x24, 0x24,
+                            0, 0, g_RunWinSpriteTable, 0x70);
+
+    UiAnimSprite_SetupEx(&work->panel_sprite, 0x0E, 0x87, 0, &work->sprite_group, 1, 1.0f);
+    UiAnimSprite_SetAnim(&work->panel_sprite, 0, 0);
+}
+
+// DECOMP_FUNC(0x0018f178, 988)
+void RunWin_DrawDownAndCalc(void* arg) {
+    (void)arg;
+    RunWinWork* work = g_RunWinWork;
+    if (work == nullptr || work->state == 0 || !work->visible) {
+        return;
+    }
+
+    // State machine logic (RunWin_Calc callback slice)
+    switch (work->state) {
+        case 1: // Entering run state
+            if (work->timer > 0) {
+                work->timer--;
+            } else {
+                work->state = 2;
+            }
+            break;
+        case 2: // Running
+            break;
+        case 3: // Exiting run state
+            work->state = 0;
+            break;
+        default:
+            break;
+    }
+
+    // Bottom screen HUD draw pass
+    UiGpu_BeginPass(g_AsdGpuState);
+    UiGpu_SetViewportParams(0, 0); // Bottom screen pass
+
+    auto* layer = reinterpret_cast<u32*>(g_AsdGpuState + 0x124C);
+    const u32 old_depth = *layer;
+    *layer = old_depth + 1;
+    auto* layer_entry = reinterpret_cast<u32*>(g_AsdGpuState + 0x124C + 8);
+    layer_entry[*layer] = 1;
+
+    UiSprite_DrawPanelDirect(2, 0x0E, 0x05, 160, 200, 1);
+
+    if (*layer > 0) {
+        *layer = *layer - 1;
+    }
+}
+
 } // namespace smt4::ui
