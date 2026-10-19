@@ -7,8 +7,11 @@ Resolves function call targets, PC-relative literal pool loads, and .rodata stri
 import argparse
 import csv
 import struct
+import sys
 from pathlib import Path
 import capstone
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from tools.analyze_code import TEXT_VADDR, vaddr_to_offset
 
 
@@ -46,8 +49,9 @@ def disassemble_function(
     num_words = size // 4
     words = struct.unpack_from(f"<{num_words}I", chunk, 0)
 
-    # First pass: locate literal pool slots referenced inside this function
+    # First pass: locate literal pool slots and inline ADR strings referenced inside this function
     literal_addrs: dict[int, int] = {}
+    inline_str_addrs: dict[int, tuple[str, int]] = {}  # lit_addr -> (text, aligned_byte_len)
     ldr_targets: dict[int, int] = {}
     for i, w in enumerate(words):
         insn_addr = addr + (i << 2)
@@ -60,6 +64,21 @@ def disassemble_function(
             if addr <= lit_addr < addr + size and ((lit_addr - addr) & 3) == 0:
                 lit_idx = (lit_addr - addr) >> 2
                 literal_addrs[lit_addr] = words[lit_idx]
+        elif cond != 0xF and (w & 0x0FEF0000) == 0x028F0000:
+            rot = ((w >> 8) & 0xF) * 2
+            imm8 = w & 0xFF
+            imm = ((imm8 >> rot) | (imm8 << (32 - rot))) & 0xFFFFFFFF if rot else imm8
+            lit_addr = insn_addr + 8 + imm
+            if addr <= lit_addr < addr + size and ((lit_addr - addr) & 3) == 0:
+                rel_off = lit_addr - addr
+                s_bytes = chunk[rel_off : rel_off + 128].split(b"\x00", 1)[0]
+                if len(s_bytes) >= 3 and all(0x20 <= b <= 0x7E for b in s_bytes):
+                    aligned_len = (len(s_bytes) + 1 + 3) & ~3
+                    inline_str_addrs[lit_addr] = (
+                        s_bytes.decode("ascii", "ignore"),
+                        aligned_len,
+                    )
+                    ldr_targets[insn_addr] = lit_addr
 
     cs = capstone.Cs(capstone.CS_ARCH_ARM, capstone.CS_MODE_ARM)
     fname = func_names.get(addr, f"func_{addr:08x}")
@@ -80,9 +99,16 @@ def disassemble_function(
             return func_names[val]
         return f"0x{val:08x}"
 
+    data_starts = set(literal_addrs.keys()) | set(inline_str_addrs.keys())
     pos = 0
     while pos < size:
         cur_addr = addr + pos
+        if cur_addr in inline_str_addrs:
+            s_text, aligned_len = inline_str_addrs[cur_addr]
+            lines.append(f'0x{cur_addr:08x}:  .asciz "{s_text}"')
+            lines.append("             .balign 4")
+            pos += aligned_len
+            continue
         if cur_addr in literal_addrs:
             val = literal_addrs[cur_addr]
             comment = f" @ -> {format_sym(val)}" if (val in symbols or val in func_names) else ""
@@ -90,9 +116,9 @@ def disassemble_function(
             pos += 4
             continue
 
-        # Disassemble contiguous instruction span up to next literal pool entry
+        # Disassemble contiguous instruction span up to next literal pool / inline string entry
         next_lit = min(
-            (la for la in literal_addrs if la > cur_addr),
+            (la for la in data_starts if la > cur_addr),
             default=addr + size,
         )
         span_bytes = chunk[pos : next_lit - addr]
@@ -102,7 +128,9 @@ def disassemble_function(
             comment = ""
             if insn.address in ldr_targets:
                 lit_addr = ldr_targets[insn.address]
-                if addr <= lit_addr < addr + size:
+                if lit_addr in inline_str_addrs:
+                    comment = f' @ &"{inline_str_addrs[lit_addr][0]}" (0x{lit_addr:08x})'
+                elif addr <= lit_addr < addr + size:
                     val = literal_addrs.get(lit_addr)
                     if val is not None:
                         comment = f" @ =0x{val:08x} ({format_sym(val)})"

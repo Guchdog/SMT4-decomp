@@ -276,6 +276,27 @@ def analyze_binary(
                 literal_loads[idx] = words[lit_idx]
             continue
 
+        # PC-relative ADR: ADD Rd, PC, #imm (encoding: cond != 0xF, (word & 0x0FEF0000) == 0x028F0000)
+        if cond != 0xF and (word & 0x0FEF0000) == 0x028F0000:
+            rot = ((word >> 8) & 0xF) * 2
+            imm8 = word & 0xFF
+            imm = ((imm8 >> rot) | (imm8 << (32 - rot))) & 0xFFFFFFFF if rot else imm8
+            t_off = (idx << 2) + 8 + imm
+            if 0 <= t_off < TEXT_SIZE - 4 and (t_off & 3) == 0:
+                s_bytes = code_bytes[t_off : t_off + 128].split(b"\x00", 1)[0]
+                if len(s_bytes) >= 3 and all(0x20 <= b <= 0x7E for b in s_bytes):
+                    s_text = s_bytes.decode("ascii", "ignore").strip()
+                    t_vaddr = TEXT_VADDR + t_off
+                    span_words = (len(s_bytes) + 1 + 3) >> 2
+                    for w_off in range(span_words):
+                        if (t_off >> 2) + w_off < num_words:
+                            literal_pool_indices.add((t_off >> 2) + w_off)
+                    if t_vaddr not in strings and len(s_text) >= 3:
+                        clean_ident = re.sub(r"[^a-zA-Z0-9_]+", "_", s_text)[:28].strip("_")
+                        strings[t_vaddr] = ("text", f"s_{clean_ident}_{t_vaddr:08x}", s_text[:96])
+                    literal_loads[idx] = t_vaddr
+            continue
+
         # BL / BLX imm
         if (cond != 0xF and ((word >> 24) & 0xF) == 0xB) or (
             cond == 0xF and ((word >> 25) & 0x7) == 0x5
@@ -290,13 +311,26 @@ def analyze_binary(
 
     func_starts: set[int] = set(bl_targets) - literal_pool_indices
     func_starts.add(0)
+    func_starts.add((0x00100048 - TEXT_VADDR) >> 2)  # end of __init_bss
+
+    def is_terminator(w_idx: int) -> bool:
+        if w_idx < 0 or w_idx in literal_pool_indices:
+            return True
+        pw = words[w_idx]
+        return (
+            pw == 0xE12FFF1E  # bx lr
+            or (pw & 0x0FFF8000) == 0x08BD8000  # pop {..., pc}
+            or (pw & 0xFF000000) == 0xEA000000  # unconditional b
+            or (pw & 0x0FFFFFF0) == 0x012FFF10  # bx reg
+            or (pw & 0x0FBF0FFF) == 0x010F0000  # mrs / end padding
+        )
 
     for idx, word in enumerate(words):
         if idx in literal_pool_indices or idx in func_starts:
             continue
         cond = (word >> 28) & 0xF
-        if cond == 0xE:
-            if (word & 0x0FFF4000) == 0x092D4000 or word == 0xE52DE004:
+        if cond == 0xE and ((word & 0x0FFF4000) == 0x092D4000 or word == 0xE52DE004):
+            if is_terminator(idx - 1):
                 func_starts.add(idx)
 
     # Check function pointers in .rodata and .data (vtables, callback tables)
@@ -305,13 +339,9 @@ def analyze_binary(
         for ptr in sec_words:
             if TEXT_VADDR <= ptr < TEXT_END and (ptr & 3) == 0:
                 t_idx = (ptr - TEXT_VADDR) >> 2
-                if t_idx not in literal_pool_indices:
+                if t_idx not in literal_pool_indices and t_idx > 0:
                     w = words[t_idx]
-                    if (w >> 28) == 0xE and (
-                        (w & 0x0FFF4000) == 0x092D4000
-                        or (w & 0x0E000000)
-                        in (0x02000000, 0x04000000, 0x08000000, 0x0A000000)
-                    ):
+                    if is_terminator(t_idx - 1) and (w >> 28) == 0xE:
                         func_starts.add(t_idx)
 
     sorted_starts = sorted(func_starts)

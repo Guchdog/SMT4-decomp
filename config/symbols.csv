@@ -1,4 +1,1302 @@
 address,section,type,name,string_preview
+0x001017b4,text,asciz,s_nwgfx_DefaultShader_bcsdr_001017b4,nwgfx_DefaultShader.bcsdr
+0x001017ec,text,asciz,s_tex_sdds4TopDir_dat_001017ec,tex/sdds4TopDir.dat
+0x00101804,text,asciz,s_BeforeDraw1L_00101804,BeforeDraw1L
+0x00101818,text,asciz,s_Draw1SetTargetProc_00101818,Draw1SetTargetProc
+0x00101830,text,asciz,s_Draw1ModelLDone_00101830,Draw1ModelLDone
+0x00101c14,text,asciz,s_Draw1CashS1_00101c14,Draw1CashS1
+0x00101c24,text,asciz,s_Draw1EplL_00101c24,Draw1EplL
+0x00101c34,text,asciz,s_DrawULCD2DBegin_00101c34,DrawULCD2DBegin
+0x00101c48,text,asciz,s_Draw1CashE1_00101c48,Draw1CashE1
+0x00101c5c,text,asciz,s_Draw1CashE2_00101c5c,Draw1CashE2
+0x00101c6c,text,asciz,s_BeforeDraw1R_00101c6c,BeforeDraw1R
+0x00101c80,text,asciz,s_Draw1ModelR_00101c80,Draw1ModelR
+0x00101c90,text,asciz,s_Draw1Proc1_00101c90,Draw1Proc1
+0x00101ca0,text,asciz,s_Draw1EplR_00101ca0,Draw1EplR
+0x00101cb0,text,asciz,s_Draw1Proc2_00101cb0,Draw1Proc2
+0x00101cc0,text,asciz,s_DrawU2DBegin_NCL_00101cc0,DrawU2DBegin_NCL
+0x00101cd8,text,asciz,s_DrawU2DBegin_NCR_00101cd8,DrawU2DBegin_NCR
+0x00101cec,text,asciz,s_DrawU2DBegin_TLL_00101cec,DrawU2DBegin_TLL
+0x00101d00,text,asciz,s_DrawU2DBegin_TLR_00101d00,DrawU2DBegin_TLR
+0x00101d18,text,asciz,s_Draw2SetTargetProc_00101d18,Draw2SetTargetProc
+0x00101d30,text,asciz,s_DrawDLCD2DBegin_00101d30,DrawDLCD2DBegin
+0x00101d48,text,asciz,s_Draw2Proc_00101d48,Draw2Proc
+0x00101d58,text,asciz,s_DrawUFadeProc_00101d58,DrawUFadeProc
+0x00101d6c,text,asciz,s_DrawDFadeProc_00101d6c,DrawDFadeProc
+0x001025f8,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_001025f8,c:\SMT4\XRD686\AsdSDK\Source\Sys\File\AsdFile.cpp
+0x00102988,text,asciz,s_MESS_D_00102988,MESS_D
+0x00102a5c,text,asciz,s_c_SMT4_XRD686_sdds4_program_00102a5c,c:\SMT4\XRD686\sdds4\program\camp\IfTouch.cpp
+0x00102a94,text,asciz,s_TOUCH_CALC_00102a94,TOUCH CALC
+0x00102c04,text,asciz,s_font_rodin_6_6_bcfnt_00102c04,font/rodin_6_6.bcfnt
+0x00102c1c,text,asciz,s_font_gmaru_9_9_bcfnt_00102c1c,font/gmaru_9_9.bcfnt
+0x00102c34,text,asciz,s_font_rodin_12_12_bcfnt_00102c34,font/rodin_12_12.bcfnt
+0x00102c4c,text,asciz,s_font_rodin_14_14_bcfnt_00102c4c,font/rodin_14_14.bcfnt
+0x00102c64,text,asciz,s_font_rodin_16_16_bcfnt_00102c64,font/rodin_16_16.bcfnt
+0x00102c7c,text,asciz,s_font_demo_font_bcfnt_00102c7c,font/demo_font.bcfnt
+0x00102d88,text,asciz,s_c_SMT4_XRD686_sdds4_program_00102d88,c:\SMT4\XRD686\sdds4\program\gamedata\GameData.cpp
+0x00102ee0,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_00102ee0,c:\SMT4\XRD686\AsdSDK\Source\Sys\Kernel\AsdProcess.cpp
+0x001035cc,text,asciz,s_rom_001035cc,rom:
+0x00103b20,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_00103b20,c:\SMT4\XRD686\AsdSDK\Source\Net\Ngc\AsdNgc.cpp
+0x001040f4,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_001040f4,c:\SMT4\XRD686\AsdSDK\Source\Gfx\Model\AsdModelProcess.cpp
+0x00104138,text,asciz,s_AsdModelCalcProc_00104138,AsdModelCalcProc
+0x00104154,text,asciz,s_AsdModelDrawUpProc_00104154,AsdModelDrawUpProc
+0x00104170,text,asciz,s_AsdModelDrawDwProc_00104170,AsdModelDrawDwProc
+0x00104344,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_00104344,c:\SMT4\XRD686\AsdSDK\Source\Gfx\Prim\AsdPrim.cpp
+0x00104738,text,asciz,s_c_SMT4_XRD686_sdds4_program_00104738,c:\SMT4\XRD686\sdds4\program\frame_tex\FrameTex.cpp
+0x00104788,text,asciz,s_HDRCL_00104788,HDRCL
+0x00104794,text,asciz,s_HDRCR_00104794,HDRCR
+0x001047a0,text,asciz,s_HDRDL_001047a0,HDRDL
+0x001047ac,text,asciz,s_HDRDR_001047ac,HDRDR
+0x001047b8,text,asciz,s_ZanCL_001047b8,ZanCL
+0x001047c4,text,asciz,s_ZanCR_001047c4,ZanCR
+0x001047d0,text,asciz,s_ZanDL_001047d0,ZanDL
+0x001047dc,text,asciz,s_ZanDR_001047dc,ZanDR
+0x001047e8,text,asciz,s_CAMPCL_001047e8,CAMPCL
+0x001047f4,text,asciz,s_CAMPCR_001047f4,CAMPCR
+0x00104800,text,asciz,s_CAMPDL_00104800,CAMPDL
+0x0010480c,text,asciz,s_CAMPDR_0010480c,CAMPDR
+0x00104818,text,asciz,s_ENCEFFCL_00104818,ENCEFFCL
+0x00104828,text,asciz,s_ENCEFFCR_00104828,ENCEFFCR
+0x00104838,text,asciz,s_ENCEFFDL_00104838,ENCEFFDL
+0x00104848,text,asciz,s_ENCEFFDR_00104848,ENCEFFDR
+0x00104930,text,asciz,s_XFADECL_00104930,XFADECL
+0x0010493c,text,asciz,s_XFADECR_0010493c,XFADECR
+0x00104948,text,asciz,s_XFADEDL_00104948,XFADEDL
+0x00104954,text,asciz,s_XFADEDR_00104954,XFADEDR
+0x00104d08,text,asciz,s_ShadowModel_bcmdl_00104d08,ShadowModel.bcmdl
+0x00104d1c,text,asciz,s_ShadowModel_00104d1c,ShadowModel
+0x00104d30,text,asciz,s_nwgfx_ShadowShader_bcsdr_00104d30,nwgfx_ShadowShader.bcsdr
+0x00104d54,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_00104d54,c:\SMT4\XRD686\AsdSDK\Source\Gfx\Model\AsdModel.cpp
+0x00105d94,text,asciz,s_CamManagerProc_00105d94,CamManagerProc
+0x001060e4,text,asciz,s_C_SMT4_XRD686_sdds4data_snd_001060e4,C:/SMT4/XRD686/sdds4data/snd/sdds4.bcsar
+0x00106110,text,asciz,s_rom_snd_sdds4_bcsar_00106110,rom:/snd/sdds4.bcsar
+0x00106698,text,asciz,s_snd_voice_pan_tbl_00106698,snd/voice_pan.tbl
+0x00106bac,text,asciz,s_world_00106bac,world
+0x00106bb8,text,asciz,s_uMaterialColor_00106bb8,uMaterialColor
+0x00109684,text,asciz,s_AsdSequence_00109684,AsdSequence
+0x00109a2c,text,asciz,s_rom_00109a2c,rom:
+0x00109a3c,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_00109a3c,c:\SMT4\XRD686\AsdSDK\Source\Snd\AsdSoundSystem.cpp
+0x0010a5dc,text,asciz,s_SJIS_0010a5dc,SJIS
+0x0010a5ec,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_0010a5ec,c:\SMT4\XRD686\AsdSDK\Source\Gfx\Font\AsdFont.cpp
+0x0010a8c8,text,asciz,s_c_SMT4_XRD686_sdds4_program_0010a8c8,c:\SMT4\XRD686\sdds4\program\font\ComWin\ComWin.cpp
+0x0010a900,text,asciz,s_ComWin_Calc_0010a900,ComWin Calc
+0x0010a910,text,asciz,s_ComWin_DrawUpLeft_0010a910,ComWin DrawUpLeft
+0x0010a924,text,asciz,s_ComWin_DrawUpRight_0010a924,ComWin DrawUpRight
+0x0010b12c,text,asciz,s_c_SMT4_XRD686_sdds4_program_0010b12c,c:\SMT4\XRD686\sdds4\program\font\InfoWin\InfoWin.cpp
+0x0010b168,text,asciz,s_InfoWin_Calc_0010b168,InfoWin Calc
+0x0010b17c,text,asciz,s_InfoWin_DrawUpLeft_0010b17c,InfoWin DrawUpLeft
+0x0010b190,text,asciz,s_InfoWin_DrawUpRight_0010b190,InfoWin DrawUpRight
+0x0010b48c,text,asciz,s_c_SMT4_XRD686_sdds4_program_0010b48c,c:\SMT4\XRD686\sdds4\program\font\GuestWin\GuestWin.cpp
+0x0010b4c8,text,asciz,s_GuestWin_Calc_0010b4c8,GuestWin Calc
+0x0010b4dc,text,asciz,s_GuestWin_DrawUpLeft_0010b4dc,GuestWin DrawUpLeft
+0x0010b4f0,text,asciz,s_GuestWin_DrawUpRight_0010b4f0,GuestWin DrawUpRight
+0x0010b9f0,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_0010b9f0,c:\SMT4\XRD686\AsdSDK\Source\Snd\AsdSoundSystem.cpp
+0x0010c778,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_0010c778,c:\SMT4\XRD686\AsdSDK\Source\Snd\AsdSoundSystem.cpp
+0x0010d5d4,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_0010d5d4,c:\SMT4\XRD686\AsdSDK\Source\Snd\AsdSoundSystem.cpp
+0x0010dc64,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_0010dc64,c:\SMT4\XRD686\AsdSDK\Source\Gfx\Model\AsdMdlManager.cpp
+0x0010dcb0,text,asciz,s_AsdMdlManCalcProc_0010dcb0,AsdMdlManCalcProc
+0x0010df20,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_0010df20,c:\SMT4\XRD686\AsdSDK\Source\Sys\Gx\AsdGxCommandList.cpp
+0x0010f724,text,asciz,s_rom_0010f724,rom:
+0x00111294,text,asciz,s_1738159478_00111294,1738159478
+0x001112a4,text,asciz,s_Aoc_Error_Handling_CALC_001112a4,Aoc Error Handling CALC
+0x001142fc,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_001142fc,c:\SMT4\XRD686\AsdSDK\Source\Sys\File\AsdFile.cpp
+0x00116834,text,asciz,s_08x_00116834,%08x
+0x0011683c,text,asciz,s_x_08x_0011683c,x%08x
+0x00116848,text,asciz,s_4fMB_00116848,%.4fMB
+0x00116850,text,asciz,s_08d_00116850,%08d
+0x00116858,text,asciz,s_A_x_08x_00116858,A x%08x
+0x00116860,text,asciz,s_S_x_08x_00116860,S x%08x
+0x00118134,text,asciz,s_c_SMT4_XRD686_sdds4_program_00118134,c:\SMT4\XRD686\sdds4\program\title\titleDbgBg.cpp
+0x00118170,text,asciz,s_s_s_00118170,%s %s
+0x00118180,text,asciz,s_TBG_C_00118180,TBG C
+0x0011818c,text,asciz,s_TBG_U_0011818c,TBG U
+0x00118674,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_00118674,c:\SMT4\XRD686\AsdSDK\Source\Sys\Kernel\AsdProcess.cpp
+0x001187dc,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_001187dc,c:\SMT4\XRD686\AsdSDK\Source\Gfx\Model\AsdScene.cpp
+0x00118df4,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_00118df4,c:\SMT4\XRD686\AsdSDK\Source\Gfx\Model\AsdScene.cpp
+0x0011b480,text,asciz,s_aPosition_0011b480,aPosition
+0x0011b48c,text,asciz,s_aColor_0011b48c,aColor
+0x0011b494,text,asciz,s_aTexCoord_0011b494,aTexCoord
+0x00121e8c,text,asciz,s_c_SMT4_XRD686_sdds4_program_00121e8c,c:\SMT4\XRD686\sdds4\program\addon\sys\aocThread.cpp
+0x001453c8,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_001453c8,c:\SMT4\XRD686\AsdSDK\Source\Gfx\Model\AsdModel.cpp
+0x0014cd28,text,asciz,s_cmp_0014cd28,.cmp
+0x0014cd30,text,asciz,s_stex_0014cd30,.stex
+0x0014cd3c,text,asciz,s_STEX_0014cd3c,STEX
+0x0014ec50,text,asciz,s_shadow_0014ec50,shadow
+0x0014ef4c,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_0014ef4c,c:\SMT4\XRD686\AsdSDK\Source\Gfx\Model\AsdModel.cpp
+0x00151d58,text,asciz,s_STEX_00151d58,STEX
+0x0015cd6c,text,asciz,s_c_SMT4_XRD686_sdds4_program_0015cd6c,c:\SMT4\XRD686\sdds4\program\addon\sys\aocFileLoad.cpp
+0x0017fa20,text,asciz,s_c_SMT4_XRD686_sdds4_program_0017fa20,c:\SMT4\XRD686\sdds4\program\test\motouchiTest.cpp
+0x0017fd38,text,asciz,s_c_SMT4_XRD686_sdds4_program_0017fd38,c:\SMT4\XRD686\sdds4\program\mobiclip_ctrl\MobiclipCtrl.cpp
+0x001803e8,text,asciz,s_camp_jakyou_bcenv_001803e8,camp/jakyou.bcenv
+0x00184c0c,text,asciz,s_camp_jakyou_all_bam_00184c0c,camp/jakyou_all.bam
+0x0018630c,text,asciz,s_camp_jakyou_all_mido_bam_0018630c,camp/jakyou_all_mido.bam
+0x00188940,text,asciz,s_player_pl_dammy_bam_00188940,player/pl_dammy.bam
+0x0018addc,text,asciz,s_c_SMT4_XRD686_sdds4_program_0018addc,c:\SMT4\XRD686\sdds4\program\map\mapIf.cpp
+0x0018ae1c,text,asciz,s_MAPIF_C_0018ae1c,MAPIF C
+0x0018ae28,text,asciz,s_MAPIF_U_0018ae28,MAPIF U
+0x0018ae34,text,asciz,s_MAP_FADE_0018ae34,MAP FADE
+0x0018ae44,text,asciz,s_MIF3DL_0018ae44,MIF3DL
+0x0018b820,text,asciz,s_c_SMT4_XRD686_sdds4_program_0018b820,c:\SMT4\XRD686\sdds4\program\camp\Config\Config.cpp
+0x0018b854,text,asciz,s_camp_config_bf_0018b854,camp/config.bf
+0x0018b864,text,asciz,s_camp_config_mbm_0018b864,camp/config.mbm
+0x0018dc60,text,asciz,s_battle_DevilMsg_s_mbm_0018dc60,battle/DevilMsg/%s.mbm
+0x0018fc9c,text,asciz,s_status_status_bcenv_0018fc9c,status/status.bcenv
+0x00191f30,text,asciz,s_c_SMT4_XRD686_sdds4_program_00191f30,c:\SMT4\XRD686\sdds4\program\saveLoadUI\saveLoadUI.cpp
+0x00191f74,text,asciz,s_BOOT_C_00191f74,BOOT C
+0x00192490,text,asciz,s_map_all_filter_bin_00192490,/map/all/filter.bin
+0x00192744,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_00192744,c:\SMT4\XRD686\AsdSDK\Source\Gfx\Model\AsdModel.cpp
+0x00194938,text,asciz,s_npc_room_n_03d_n_03d_mbm_00194938,npc_room/n%03d/n%03d.mbm
+0x00194954,text,asciz,s_npc_room_n_03d_n_03d_bf_00194954,npc_room/n%03d/n%03d.bf
+0x00195004,text,asciz,s_c_SMT4_XRD686_sdds4_program_00195004,c:\SMT4\XRD686\sdds4\program\camp\PlayLog\PlayLog.cpp
+0x00195bc0,text,asciz,s_event_e899_e899_mbm_00195bc0,event/e899/e899.mbm
+0x00195bd4,text,asciz,s_event_e899_e899_bf_00195bd4,event/e899/e899.bf
+0x0019a3d8,text,asciz,s_battle_BattleUI_mbm_0019a3d8,battle/BattleUI.mbm
+0x0019d898,text,asciz,s_c_SMT4_XRD686_sdds4_program_0019d898,c:\SMT4\XRD686\sdds4\program\battle\btlAction.cpp
+0x0019dae4,text,asciz,s_map_all_action_up_bam_0019dae4,map/all/action_up.bam
+0x0019dd90,text,asciz,s_map_unit_u006_bam_0019dd90,map/unit/u006.bam
+0x0019f6cc,text,asciz,s_event_e_03d_e_03d_bf_0019f6cc,event/e%03d/e%03d.bf
+0x0019f6e4,text,asciz,s_event_e_03d_e_03d_mbm_0019f6e4,event/e%03d/e%03d.mbm
+0x0019fe10,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_0019fe10,c:\SMT4\XRD686\AsdSDK\Source\Gfx\Tex\AsdTexTMX.cpp
+0x001a0734,text,asciz,s_c_SMT4_XRD686_sdds4_program_001a0734,c:\SMT4\XRD686\sdds4\program\cec\CecProcess.cpp
+0x001a42d0,text,asciz,s__001a42d0,???
+0x001a47a0,text,asciz,s_s_d_001a47a0,%s%d
+0x001a4f00,text,asciz,s_s_d_001a4f00,%s%d
+0x001a6328,text,asciz,s_s_d_001a6328,%s%d
+0x001a8510,text,asciz,s_c_SMT4_XRD686_sdds4_program_001a8510,c:\SMT4\XRD686\sdds4\program\battle\btlUI.cpp
+0x001a854c,text,asciz,s_btlUI_Calc_001a854c,btlUI Calc
+0x001a855c,text,asciz,s_btlUI_DrawUpLeft_001a855c,btlUI DrawUpLeft
+0x001a8570,text,asciz,s_btlUI_DrawUpRight_001a8570,btlUI DrawUpRight
+0x001a8588,text,asciz,s_btlUI_DrawDown_001a8588,btlUI DrawDown
+0x001a859c,text,asciz,s_btlUI_DrawNumber_001a859c,btlUI DrawNumber
+0x001a87d0,text,asciz,s_map_all_mapsys_scr_bf_001a87d0,map/all/mapsys_scr.bf
+0x001a87ec,text,asciz,s_map_all_mapsys_mes_mbm_001a87ec,map/all/mapsys_mes.mbm
+0x001a8804,text,asciz,s_map_all_damage_bam_001a8804,map/all/damage.bam
+0x001a8818,text,asciz,s_player_arms_arm00_bam_001a8818,player_arms/arm00.bam
+0x001a8830,text,asciz,s_player_arms_arm01_bam_001a8830,player_arms/arm01.bam
+0x001a8848,text,asciz,s_player_arms_arm02_bam_001a8848,player_arms/arm02.bam
+0x001a8860,text,asciz,s_player_arms_arm03_bam_001a8860,player_arms/arm03.bam
+0x001a8878,text,asciz,s_map_all_pl_ring_in_bam_001a8878,map/all/pl_ring_in.bam
+0x001a8890,text,asciz,s_map_all_pl_ring_out_bam_001a8890,map/all/pl_ring_out.bam
+0x001a88a8,text,asciz,s_map_all_area_next_bam_001a88a8,map/all/area_next.bam
+0x001a88c0,text,asciz,s_map_all_ar_hit_bam_001a88c0,map/all/ar_hit.bam
+0x001a88d4,text,asciz,s_map_unit_u001_bam_001a88d4,map/unit/u001.bam
+0x001a88e8,text,asciz,s_map_unit_u002_bam_001a88e8,map/unit/u002.bam
+0x001a88fc,text,asciz,s_map_unit_u004_bam_001a88fc,map/unit/u004.bam
+0x001a8910,text,asciz,s_map_unit_u005_bam_001a8910,map/unit/u005.bam
+0x001a8afc,text,asciz,s_c_SMT4_XRD686_sdds4_program_001a8afc,c:\SMT4\XRD686\sdds4\program\map\mapEnemy.cpp
+0x001a8b3c,text,asciz,s_MENEMY_001a8b3c,MENEMY
+0x001a8fc4,text,asciz,s_map_m_03d_m_03d_fast_bam_001a8fc4,map/m%03d/m%03d_fast.bam
+0x001a8fe4,text,asciz,s_map_all_m099_fast_bam_001a8fe4,map/all/m099_fast.bam
+0x001a988c,text,asciz,s_c_SMT4_XRD686_sdds4_program_001a988c,c:\SMT4\XRD686\sdds4\program\quest_center\qcMain.cpp
+0x001a98d8,text,asciz,s_QuestCenterMainProc_001a98d8,QuestCenterMainProc
+0x001a98f0,text,asciz,s_QuestCenterDrawUp_L_001a98f0,QuestCenterDrawUp L
+0x001a990c,text,asciz,s_QuestCenterDrawDown_001a990c,QuestCenterDrawDown
+0x001ac904,text,asciz,s_map_mr02_mr02__02d_bam_001ac904,map/mr02/mr02_%02d.bam
+0x001accbc,text,asciz,s_map_mr01_mr01__02d_bam_001accbc,map/mr01/mr01_%02d.bam
+0x001b0c24,text,asciz,s_c_SMT4_XRD686_sdds4_program_001b0c24,c:\SMT4\XRD686\sdds4\program\addon\aocMain.cpp
+0x001b0c60,text,asciz,s_AOCMainProc_001b0c60,AOCMainProc
+0x001b0c70,text,asciz,s_AOCDrawUp_L_001b0c70,AOCDrawUp L
+0x001b0c7c,text,asciz,s_AOCDrawUp_R_001b0c7c,AOCDrawUp R
+0x001b0c8c,text,asciz,s_AOCDrawDown_001b0c8c,AOCDrawDown
+0x001b0f3c,text,asciz,s_c_SMT4_XRD686_sdds4_program_001b0f3c,c:\SMT4\XRD686\sdds4\program\battle\btlMain.cpp
+0x001b0f84,text,asciz,s_BTLMAIN_C_001b0f84,BTLMAIN C
+0x001b0f94,text,asciz,s_BTLMAIN_U_001b0f94,BTLMAIN U
+0x001b0fa4,text,asciz,s_BTLMAIN_D_001b0fa4,BTLMAIN D
+0x001b0fb4,text,asciz,s_BTLFADE_UL_001b0fb4,BTLFADE UL
+0x001b0fc0,text,asciz,s_BTLFADE_UR_001b0fc0,BTLFADE UR
+0x001b0fd0,text,asciz,s_BTLFADE_D_001b0fd0,BTLFADE D
+0x001b1dec,text,asciz,s_7s_d_001b1dec,%-7s:%-d
+0x001b2120,text,asciz,s_7s_X_001b2120,%-7s:%-X
+0x001b212c,text,asciz,s_7s_4_1f_001b212c,%-7s:%-4.1f
+0x001b2138,text,asciz,s_7s_001b2138,%7s:
+0x001b2140,text,asciz,s_d_001b2140,%-d
+0x001b214c,text,asciz,s_7s_OPQ_001b214c,%-7s:OPQ
+0x001b2158,text,asciz,s_7s_SEMI_001b2158,%-7s:SEMI
+0x001b2164,text,asciz,s_7s_ADD_001b2164,%-7s:ADD
+0x001b2170,text,asciz,s_7s_SUB_1_001b2170,%-7s:SUB_1
+0x001b217c,text,asciz,s_7s_SUB_2_001b217c,%-7s:SUB_2
+0x001b2188,text,asciz,s_7s_NEG_1_001b2188,%-7s:NEG_1
+0x001b2194,text,asciz,s_7s_NEG_2_001b2194,%-7s:NEG_2
+0x001b21a0,text,asciz,s_7s_001b21a0,%-7s:---
+0x001b24b8,text,asciz,s_7s_s_001b24b8,%-7s:%-s
+0x001b24c8,text,asciz,s_OFF_001b24c8,OFF
+0x001b24cc,text,asciz,s_CYLNDR_001b24cc,CYLNDR
+0x001b24d4,text,asciz,s_SPHERE_001b24d4,SPHERE
+0x001b24dc,text,asciz,s_CNVRGE_001b24dc,CNVRGE
+0x001b24e4,text,asciz,s_SPREAD_001b24e4,SPREAD
+0x001b24f8,text,asciz,s_Source_Gfx_Effect_effMenu_h_001b24f8,../Source/Gfx/Effect/effMenu.h
+0x001b2520,text,asciz,s_s_001b2520,%-s
+0x001b2528,text,asciz,s_12s_001b2528,%-12s
+0x001b2530,text,asciz,s_12s_001b2530,%-12s>>
+0x001b2538,text,asciz,s_7s_FIX_001b2538,%-7s:FIX
+0x001b282c,text,asciz,s_7s_RANDOM_001b282c,%-7s:RANDOM
+0x001b2838,text,asciz,s_7s_ALIGN_001b2838,%-7s:ALIGN
+0x001b2844,text,asciz,s_CENTER_001b2844,CENTER
+0x001b284c,text,asciz,s_FREE_001b284c,FREE
+0x001b2854,text,asciz,s_7s_3_2f_001b2854,%-7s:%-3.2f
+0x001b2860,text,asciz,s_7s_1_3f_001b2860,%-7s:%-1.3f
+0x001b286c,text,asciz,s_7s_3D_001b286c,%-7s:3D
+0x001b2874,text,asciz,s_7s_2D_001b2874,%-7s:2D
+0x001b287c,text,asciz,s_7s_ON_001b287c,%-7s:ON
+0x001b2884,text,asciz,s_7s_PARTY_001b2884,%-7s:PARTY
+0x001b2890,text,asciz,s_7s_EFFECT_001b2890,%-7s:EFFECT
+0x001b289c,text,asciz,s_7s_SOUND_001b289c,%-7s:SOUND
+0x001b28a8,text,asciz,s_7s_001b28a8,%-7s:---
+0x001b28b4,text,asciz,s_7s_BSE_001b28b4,%-7s:BSE
+0x001b28c0,text,asciz,s_7s_COMSE_001b28c0,%-7s:COMSE
+0x001b28cc,text,asciz,s_7s_MOTSE_001b28cc,%-7s:MOTSE
+0x001b28d8,text,asciz,s_7s_PLAYER_001b28d8,%-7s:PLAYER
+0x001b2bc0,text,asciz,s_7s_ENEMY_001b2bc0,%-7s:ENEMY
+0x001b2bcc,text,asciz,s_7s_d_001b2bcc,%-7s:%-d %%
+0x001b2bd8,text,asciz,s_7s_NON_001b2bd8,%-7s:NON
+0x001b2be4,text,asciz,s_7s_KIZETU_001b2be4,%-7s:KIZETU
+0x001b2bf0,text,asciz,s_7s_NUSATU_001b2bf0,%-7s:NUSATU
+0x001b2bfc,text,asciz,s_7s_DOUYOU_001b2bfc,%-7s:DOUYOU
+0x001b2c08,text,asciz,s_7s_PANIC_001b2c08,%-7s:PANIC
+0x001b2c14,text,asciz,s_7s_KYOUHU_001b2c14,%-7s:KYOUHU
+0x001b2c20,text,asciz,s_7s_YKKUSO_001b2c20,%-7s:YKKUSO
+0x001b2c2c,text,asciz,s_7s_HYKETU_001b2c2c,%-7s:HYKETU
+0x001b2c38,text,asciz,s_7s_SHOCK_001b2c38,%-7s:SHOCK
+0x001b2c44,text,asciz,s_7s_POISON_001b2c44,%-7s:POISON
+0x001b2c50,text,asciz,s_7s_O_LIMT_001b2c50,%-7s:O_LIMT
+0x001b2c5c,text,asciz,s_7s_O_HEAT_001b2c5c,%-7s:O_HEAT
+0x001b2c68,text,asciz,s_7s_BOMB_001b2c68,%-7s:BOMB
+0x001b2c74,text,asciz,s_7s_DEAD_001b2c74,%-7s:DEAD
+0x001b2c80,text,asciz,s_7s_001b2c80,%-7s:????
+0x001b2c8c,text,asciz,s_7s_WAIT_X_001b2c8c,%-7s:WAIT   %X
+0x001b2edc,text,asciz,s_7s_MOVE_X_001b2edc,%-7s:MOVE   %X
+0x001b2eec,text,asciz,s_7s_DAMAGE_X_001b2eec,%-7s:DAMAGE %X
+0x001b2efc,text,asciz,s_7s_BADST_X_001b2efc,%-7s:BADST  %X
+0x001b2f0c,text,asciz,s_7s_ATTACK_X_001b2f0c,%-7s:ATTACK %X
+0x001b2f1c,text,asciz,s_7s_ATKCB2_X_001b2f1c,%-7s:ATKCB2 %X
+0x001b2f2c,text,asciz,s_7s_ATKCB3_X_001b2f2c,%-7s:ATKCB3 %X
+0x001b2f3c,text,asciz,s_7s_MAGIC_X_001b2f3c,%-7s:MAGIC  %X
+0x001b2f4c,text,asciz,s_7s_DOWN_X_001b2f4c,%-7s:DOWN   %X
+0x001b2f5c,text,asciz,s_7s_DWNWIT_X_001b2f5c,%-7s:DWNWIT %X
+0x001b2f6c,text,asciz,s_7s_DWNRET_X_001b2f6c,%-7s:DWNRET %X
+0x001b2f7c,text,asciz,s_7s_SLIP_X_001b2f7c,%-7s:SLIP   %X
+0x001b2f8c,text,asciz,s_7s_PCREDY_X_001b2f8c,%-7s:PCREDY %X
+0x001b2f9c,text,asciz,s_7s_PCWAIT_X_001b2f9c,%-7s:PCWAIT %X
+0x001b2fac,text,asciz,s_7s_PCACT_X_001b2fac,%-7s:PCACT  %X
+0x001b2fbc,text,asciz,s_7s_PEWAIT_X_001b2fbc,%-7s:PEWAIT %X
+0x001b2fcc,text,asciz,s_7s_PRSNAL_X_001b2fcc,%-7s:PRSNAL %X
+0x001b32c0,text,asciz,s_7s_DYING_X_001b32c0,%-7s:DYING  %X
+0x001b32d0,text,asciz,s_7s_DEAD_X_001b32d0,%-7s:DEAD   %X
+0x001b32e0,text,asciz,s_7s_REVIVL_X_001b32e0,%-7s:REVIVL %X
+0x001b32f0,text,asciz,s_7s_WIN_X_001b32f0,%-7s:WIN    %X
+0x001b3300,text,asciz,s_7s_ITEM_X_001b3300,%-7s:ITEM   %X
+0x001b3310,text,asciz,s_7s_AVOID_X_001b3310,%-7s:AVOID  %X
+0x001b3320,text,asciz,s_7s_MIX_S_X_001b3320,%-7s:MIX S  %X
+0x001b3330,text,asciz,s_7s_MIX_A_X_001b3330,%-7s:MIX A %X
+0x001b3340,text,asciz,s_7s_MIX_R_X_001b3340,%-7s:MIX R  %X
+0x001b3350,text,asciz,s_7s_DEF_X_001b3350,%-7s:DEF  %X
+0x001b3360,text,asciz,s_7s_CPROT_X_001b3360,%-7s:CPROT %X
+0x001b3370,text,asciz,s_7s_ERROR_001b3370,%-7s:ERROR
+0x001b337c,text,asciz,s_7s_STOP_001b337c,%-7s:STOP
+0x001b3388,text,asciz,s_7s_WAIT_001b3388,%-7s:WAIT
+0x001b3394,text,asciz,s_7s_LOOP_001b3394,%-7s:LOOP
+0x001b33a0,text,asciz,s_7s_RAND_001b33a0,%-7s:RAND
+0x001b33ac,text,asciz,s_7s_TURN_001b33ac,%-7s:TURN
+0x001b36d8,text,asciz,s_7s_MODEL_001b36d8,%-7s:MODEL
+0x001b36e4,text,asciz,s_7s_BOTTOM_001b36e4,%-7s:BOTTOM
+0x001b36f0,text,asciz,s_7s_MIDDLE_001b36f0,%-7s:MIDDLE
+0x001b36fc,text,asciz,s_7s_PEAK_001b36fc,%-7s:PEAK
+0x001b3708,text,asciz,s_7s_TOP_001b3708,%-7s:TOP
+0x001b3714,text,asciz,s_7s_GROUND_001b3714,%-7s:GROUND
+0x001b3720,text,asciz,s_7s_FRONT_001b3720,%-7s:FRONT
+0x001b372c,text,asciz,s_7s_R45_001b372c,%-7s:R45
+0x001b3738,text,asciz,s_7s_R90_001b3738,%-7s:R90
+0x001b3744,text,asciz,s_7s_R135_001b3744,%-7s:R135
+0x001b3750,text,asciz,s_7s_BACK_001b3750,%-7s:BACK
+0x001b375c,text,asciz,s_7s_L135_001b375c,%-7s:L135
+0x001b3768,text,asciz,s_7s_L90_001b3768,%-7s:L90
+0x001b3774,text,asciz,s_7s_L45_001b3774,%-7s:L45
+0x001b3780,text,asciz,s_7s_CENTER_001b3780,%-7s:CENTER
+0x001b378c,text,asciz,s_7s_CAMERA_001b378c,%-7s:CAMERA
+0x001b3798,text,asciz,s_7s_CAMERA_Y_001b3798,%-7s:CAMERA_Y
+0x001b37a8,text,asciz,s_7s_OFF_001b37a8,%-7s:OFF
+0x001b37b4,text,asciz,s_7s_INVOKE_001b37b4,%-7s:INVOKE
+0x001b37c0,text,asciz,s_7s_IPARTY_001b37c0,%-7s:IPARTY
+0x001b37cc,text,asciz,s_7s_TPARTY_001b37cc,%-7s:TPARTY
+0x001b3a4c,text,asciz,s_7s_WORLD_001b3a4c,%-7s:WORLD
+0x001b3a58,text,asciz,s_7s_LKG_A_001b3a58,%-7s:LKG_A
+0x001b3a64,text,asciz,s_7s_LKG_B_001b3a64,%-7s:LKG_B
+0x001b3a70,text,asciz,s_7s_IGNORE_001b3a70,%-7s:IGNORE
+0x001b3a7c,text,asciz,s_7s_001b3a7c,%-7s:------
+0x001b3a88,text,asciz,s_7s_ROUNDP_001b3a88,%-7s:ROUNDP
+0x001b3a94,text,asciz,s_7s_ALL_001b3a94,%-7s:ALL
+0x001b3aa0,text,asciz,s_7s_EPARTY_001b3aa0,%-7s:EPARTY
+0x001b3aac,text,asciz,s_7s_TARGET_001b3aac,%-7s:TARGET
+0x001b3ab8,text,asciz,s_7s_ADD_001b3ab8,%-7s:ADD
+0x001b3ac4,text,asciz,s_7s_CHANGE_001b3ac4,%-7s:CHANGE
+0x001b3ad0,text,asciz,s_7s_HEMISPHERE_001b3ad0,%-7s:HEMISPHERE
+0x001b3ae0,text,asciz,s_7s_AMBIENT_001b3ae0,%-7s:AMBIENT
+0x001b3af0,text,asciz,s_7s_FRAGMENT_001b3af0,%-7s:FRAGMENT
+0x001b3b00,text,asciz,s_7s_VERTEX_001b3b00,%-7s:VERTEX
+0x001b3b0c,text,asciz,s_7s_001b3b0c,%-7s:----
+0x001b3b18,text,asciz,s_7s_NORMAL_001b3b18,%-7s:NORMAL
+0x001b3b24,text,asciz,s_7s_WARP_001b3b24,%-7s:WARP
+0x001b3bd0,text,asciz,s_c_SMT4_XRD686_sdds4_program_001b3bd0,c:\SMT4\XRD686\sdds4\program\kernel\jyoucyu.cpp
+0x001b3c0c,text,asciz,s_JYOUCYU_C_001b3c0c,JYOUCYU C
+0x001b3c1c,text,asciz,s_JYOUCYU_D_001b3c1c,JYOUCYU D
+0x001b43f4,text,asciz,s_map_all_action_cave_bam_001b43f4,map/all/action_cave.bam
+0x001b456c,text,asciz,s_c_SMT4_XRD686_sdds4_program_001b456c,c:\SMT4\XRD686\sdds4\program\map\mapMain.cpp
+0x001b45b0,text,asciz,s_MAP_C_001b45b0,MAP C
+0x001b45c0,text,asciz,s_MAP_U_001b45c0,MAP U
+0x001b6fb8,text,asciz,s_c_SMT4_XRD686_sdds4_program_001b6fb8,c:\SMT4\XRD686\sdds4\program\battle\btlMain.cpp
+0x001b78c8,text,asciz,s_tex_d_001b78c8,tex = %d
+0x001b78dc,text,asciz,s_bustUp_depth_f_001b78dc,bustUp depth = %f
+0x001b78f4,text,asciz,s_win_depth_f_001b78f4,win depth = %f
+0x001b8e68,text,asciz,s_map_m_03d_m_03d_bf_001b8e68,map/m%03d/m%03d.bf
+0x001b8e7c,text,asciz,s_map_m_03d_m_03d_mbm_001b8e7c,map/m%03d/m%03d.mbm
+0x001b94dc,text,asciz,s_e014_01_001b94dc,e014_01
+0x001b94e4,text,asciz,s_scr_boss_warning_001b94e4,scr_boss_warning
+0x001b94f8,text,asciz,s_scr_randmaze_get_item_001b94f8,scr_randmaze_get_item
+0x001b9d70,text,asciz,s_scr_keekaimap_indoor_001b9d70,scr_keekaimap_indoor
+0x001ba554,text,asciz,s_scr_boss_indoor_001ba554,scr_boss_indoor
+0x001ba564,text,asciz,s_scr_fuusa_0_001ba564,scr_fuusa_0
+0x001ba570,text,asciz,s_scr_fuusa_1_001ba570,scr_fuusa_1
+0x001ba8fc,text,asciz,s_scr_sq_mq_hajiki_001ba8fc,scr_sq_mq_hajiki
+0x001bb1f4,text,asciz,s_scr_randmaze_notinn_001bb1f4,scr_randmaze_notinn
+0x001bb208,text,asciz,s_scr_fuusa_2_001bb208,scr_fuusa_2
+0x001bb794,text,asciz,s_scr_estma_off_001bb794,scr_estma_off
+0x001bc4a4,text,asciz,s_scr_takara_over_001bc4a4,scr_takara_over
+0x001bc984,text,asciz,s_e113_01_001bc984,e113_01
+0x001bc994,text,asciz,s_e898_01_001bc994,e898_01
+0x001bdf78,text,asciz,s_e528_02_001bdf78,e528_02
+0x001bdf80,text,asciz,s_scr_sbq_hunt_clear_001bdf80,scr_sbq_hunt_clear
+0x001be66c,text,asciz,s_scr_sbq_sysbtl_001be66c,scr_sbq_sysbtl
+0x001be67c,text,asciz,s_battle_Result_bf_001be67c,battle/Result.bf
+0x001be690,text,asciz,s_battle_ResultMsg_mbm_001be690,battle/ResultMsg.mbm
+0x001be6a8,text,asciz,s_ProcCharonRequestFirst_001be6a8,ProcCharonRequestFirst
+0x001be6c0,text,asciz,s_event_e_03d_e_03d_bf_001be6c0,event/e%03d/e%03d.bf
+0x001be6d8,text,asciz,s_event_e_03d_e_03d_mbm_001be6d8,event/e%03d/e%03d.mbm
+0x001beed0,text,asciz,s_e522_01_001beed0,e522_01
+0x001beedc,text,asciz,s_e523_05_001beedc,e523_05
+0x001c02f8,text,asciz,s_e001_01_001c02f8,e001_01
+0x001ca15c,text,asciz,s_c_SMT4_XRD686_sdds4_program_001ca15c,c:\SMT4\XRD686\sdds4\program\saveLoadUI\saveLoadUI.cpp
+0x001cc90c,text,asciz,s_s_s_001cc90c,%s  %s
+0x001d1b4c,text,asciz,s_battle_battle_map_BTLSTAGEFO_001d1b4c,battle/battle_map/BTLSTAGEFOG.TBL
+0x001d2518,text,asciz,s_btlAuto_Calc_001d2518,btlAuto Calc
+0x001d25c8,text,asciz,s_btlHelp_Calc_001d25c8,btlHelp Calc
+0x001d25dc,text,asciz,s_c_SMT4_XRD686_sdds4_program_001d25dc,c:\SMT4\XRD686\sdds4\program\battle\btlHelp.cpp
+0x001d26f4,text,asciz,s_c_SMT4_XRD686_sdds4_program_001d26f4,c:\SMT4\XRD686\sdds4\program\battle\btlTalk.cpp
+0x001d2730,text,asciz,s_btlTalk_Calc_001d2730,btlTalk Calc
+0x001d2960,text,asciz,s_btlUnit_Calc_001d2960,btlUnit Calc
+0x001d2974,text,asciz,s_btlUnit_DrawUp_001d2974,btlUnit DrawUp
+0x001d2998,text,asciz,s_c_SMT4_XRD686_sdds4_program_001d2998,c:\SMT4\XRD686\sdds4\program\battle\btlUnit.cpp
+0x001d2d78,text,asciz,s_c_SMT4_XRD686_sdds4_program_001d2d78,c:\SMT4\XRD686\sdds4\program\map\lmapMain.cpp
+0x001d2df4,text,asciz,s_LMAP_C_001d2df4,LMAP C
+0x001d2e04,text,asciz,s_LMAP_U_001d2e04,LMAP U
+0x001d3a08,text,asciz,s_c_SMT4_XRD686_sdds4_program_001d3a08,c:\SMT4\XRD686\sdds4\program\ones_room\onesRoom.cpp
+0x001d3a40,text,asciz,s_ones_room_onesRoom_bf_001d3a40,ones_room/onesRoom.bf
+0x001d3a58,text,asciz,s_ones_room_onesRoom_mbm_001d3a58,ones_room/onesRoom.mbm
+0x001d3a78,text,asciz,s_onesRoom_C_001d3a78,onesRoom C
+0x001d46f8,text,asciz,s_map_L_03d_e_03d_bcenv_001d46f8,map/L%03d/e%03d.bcenv
+0x001d4710,text,asciz,s_map_L_03d_L_03d_div_bcmdl_001d4710,map/L%03d/L%03d_div.bcmdl
+0x001d472c,text,asciz,s_map_L_03d_L_03d__02d_bcanim_001d472c,map/L%03d/L%03d_%02d.bcanim
+0x001d4748,text,asciz,s_map_L_03d_l_03d_bf_001d4748,map/L%03d/l%03d.bf
+0x001d475c,text,asciz,s_map_L_03d_l_03d_mbm_001d475c,map/L%03d/l%03d.mbm
+0x001d4770,text,asciz,s_map_all_lmap_pc_bcres_001d4770,map/all/lmap_pc.bcres
+0x001d4788,text,asciz,s_map_all_lmap_hune_bcres_001d4788,map/all/lmap_hune.bcres
+0x001d4f44,text,asciz,s_scr_randmaze_get_item2_001d4f44,scr_randmaze_get_item2
+0x001d5270,text,asciz,s_scr_fuusa_0_001d5270,scr_fuusa_0
+0x001d527c,text,asciz,s_scr_fuusa_1_001d527c,scr_fuusa_1
+0x001d57f4,text,asciz,s_scr_sq_mq_hajiki_001d57f4,scr_sq_mq_hajiki
+0x001d5808,text,asciz,s_scr_randmaze_notinn_001d5808,scr_randmaze_notinn
+0x001d581c,text,asciz,s_scr_fuusa_2_001d581c,scr_fuusa_2
+0x001d5d08,text,asciz,s_scr_estma_off_001d5d08,scr_estma_off
+0x001d6eb0,text,asciz,s_scr_sbq_hunt_clear_001d6eb0,scr_sbq_hunt_clear
+0x001d72d0,text,asciz,s_scr_sbq_sysbtl_001d72d0,scr_sbq_sysbtl
+0x001d72e0,text,asciz,s_battle_Result_bf_001d72e0,battle/Result.bf
+0x001d72f4,text,asciz,s_battle_ResultMsg_mbm_001d72f4,battle/ResultMsg.mbm
+0x001d730c,text,asciz,s_ProcCharonRequestFirst_001d730c,ProcCharonRequestFirst
+0x001d7324,text,asciz,s_event_e_03d_e_03d_bf_001d7324,event/e%03d/e%03d.bf
+0x001d733c,text,asciz,s_event_e_03d_e_03d_mbm_001d733c,event/e%03d/e%03d.mbm
+0x001d787c,text,asciz,s_scr_takara_over_001d787c,scr_takara_over
+0x001d918c,text,asciz,s_e001_01_001d918c,e001_01
+0x001d98b4,text,asciz,s_e_03d__02d_001d98b4,e%03d_%02d
+0x001d9c90,text,asciz,s_terminal_terminal2_bam_001d9c90,terminal/terminal2.bam
+0x001d9ca8,text,asciz,s_terminal_terminal_bccam_001d9ca8,terminal/terminal.bccam
+0x001d9cc0,text,asciz,s_terminal_terminal02_bccam_001d9cc0,terminal/terminal02.bccam
+0x001d9cdc,text,asciz,s_terminal_terminal03_bccam_001d9cdc,terminal/terminal03.bccam
+0x001d9cf8,text,asciz,s_terminal_terminal_bcenv_001d9cf8,terminal/terminal.bcenv
+0x001d9d10,text,asciz,s_effect_editor_FLASH01_EPL_001d9d10,effect_editor/FLASH01.EPL
+0x001d9d2c,text,asciz,s_effect_editor_FLASH02_EPL_001d9d2c,effect_editor/FLASH02.EPL
+0x001d9d48,text,asciz,s_effect_editor_FLASH03_EPL_001d9d48,effect_editor/FLASH03.EPL
+0x001d9d64,text,asciz,s_effect_editor_FLASH04_EPL_001d9d64,effect_editor/FLASH04.EPL
+0x001da170,text,asciz,s_terminal_terminal_bam_001da170,terminal/terminal.bam
+0x001da19c,text,asciz,s_terminal_tmnl_scr_bf_001da19c,terminal/tmnl_scr.bf
+0x001da1b4,text,asciz,s_terminal_mes_data_mbm_001da1b4,terminal/mes_data.mbm
+0x001da1cc,text,asciz,s_terminal_tmnldata_tbb_001da1cc,terminal/tmnldata.tbb
+0x001db1e8,text,asciz,s_c_SMT4_XRD686_sdds4_program_001db1e8,c:\SMT4\XRD686\sdds4\program\Terminal\tmnlMain.cpp
+0x001db234,text,asciz,s_TMNL_C_001db234,TMNL C
+0x001db240,text,asciz,s_TMNL_UD_001db240,TMNL UD
+0x001db250,text,asciz,s_TMNL_DD_001db250,TMNL DD
+0x001db40c,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_001db40c,c:\SMT4\XRD686\AsdSDK\Source\Net\Cec\AsdCec.cpp
+0x001dd4d0,text,asciz,s_rom_moflex_001dd4d0,rom:/moflex
+0x001dd4e0,text,asciz,s_rom_moflex_s_001dd4e0,rom:/moflex/%s
+0x001ded90,text,asciz,s_c_SMT4_XRD686_sdds4_program_001ded90,c:\SMT4\XRD686\sdds4\program\camp\Unite\Unite.cpp
+0x001e1260,text,asciz,s_c_SMT4_XRD686_sdds4_program_001e1260,c:\SMT4\XRD686\sdds4\program\clear_save\clearSave.cpp
+0x001e129c,text,asciz,s_clear_save_clearSave_bf_001e129c,clear_save/clearSave.bf
+0x001e12b4,text,asciz,s_clear_save_clearSave_mbm_001e12b4,clear_save/clearSave.mbm
+0x001e12d8,text,asciz,s_clearSave_C_001e12d8,clearSave C
+0x001e12e8,text,asciz,s_clearSave_L_001e12e8,clearSave L
+0x001e12f4,text,asciz,s_clearSave_R_001e12f4,clearSave R
+0x001e1eb8,text,asciz,s_EVENT_CALC_001e1eb8,EVENT CALC
+0x001e1ec8,text,asciz,s_EVENT_VIEW_CALC_001e1ec8,EVENT VIEW CALC
+0x001e1ee0,text,asciz,s_EVENT_VIEW_UDRAW_001e1ee0,EVENT VIEW UDRAW
+0x001e1efc,text,asciz,s_EVENT_VIEW_DDRAW_001e1efc,EVENT VIEW DDRAW
+0x001e20c0,text,asciz,s_btlDebug_Calc_001e20c0,btlDebug Calc
+0x001e20d4,text,asciz,s_btlDebug_DrawUp_001e20d4,btlDebug DrawUp
+0x001e20e8,text,asciz,s_btlDebug_DrawDown_001e20e8,btlDebug DrawDown
+0x001e2100,text,asciz,s_c_SMT4_XRD686_sdds4_program_001e2100,c:\SMT4\XRD686\sdds4\program\battle\btlDebug.cpp
+0x001e2208,text,asciz,s_btlEvent_Calc_001e2208,btlEvent Calc
+0x001e221c,text,asciz,s_c_SMT4_XRD686_sdds4_program_001e221c,c:\SMT4\XRD686\sdds4\program\battle\btlEvent.cpp
+0x001e2334,text,asciz,s_btlStage_Calc_001e2334,btlStage Calc
+0x001e2348,text,asciz,s_c_SMT4_XRD686_sdds4_program_001e2348,c:\SMT4\XRD686\sdds4\program\battle\btlStage.cpp
+0x001e3850,text,asciz,s_character_npc_npc__02d_bam_001e3850,character/npc/npc_%02d.bam
+0x001e4154,text,asciz,s_Light_Player1_001e4154,Light_Player1
+0x001e4164,text,asciz,s_Light_Player2_001e4164,Light_Player2
+0x001e4174,text,asciz,s_Light_Player3_001e4174,Light_Player3
+0x001e53c8,text,asciz,s_event_e_03d_e_03d_bf_001e53c8,event/e%03d/e%03d.bf
+0x001e53e0,text,asciz,s_event_e_03d_e_03d_mbm_001e53e0,event/e%03d/e%03d.mbm
+0x001e589c,text,asciz,s_event_e071_e071_bf_001e589c,event/e071/e071.bf
+0x001e58b0,text,asciz,s_event_e071_e071_mbm_001e58b0,event/e071/e071.mbm
+0x001e58c4,text,asciz,s_e071_01_001e58c4,e071_01
+0x001e5c48,text,asciz,s_map_all_ibutu_scr_bf_001e5c48,map/all/ibutu_scr.bf
+0x001e5c60,text,asciz,s_map_all_ibutu_mes_mbm_001e5c60,map/all/ibutu_mes.mbm
+0x001e9ec8,text,asciz,s_title_title_top_bccam_001e9ec8,title/title_top.bccam
+0x001e9ee0,text,asciz,s_title_title_top1_bam_001e9ee0,title/title_top1.bam
+0x001e9ef8,text,asciz,s_title_title_top2_bam_001e9ef8,title/title_top2.bam
+0x001e9f10,text,asciz,s_title_title_top_bcenv_001e9f10,title/title_top.bcenv
+0x001ea700,text,asciz,s_e001_01_001ea700,e001_01
+0x001ea8b8,text,asciz,s_c_SMT4_XRD686_sdds4_program_001ea8b8,c:\SMT4\XRD686\sdds4\program\sound\soundTest.cpp
+0x001ea8f8,text,asciz,s_ST_C_001ea8f8,ST C
+0x001ea908,text,asciz,s_ST_D_001ea908,ST D
+0x001eb1b4,text,asciz,s_c_SMT4_XRD686_sdds4_program_001eb1b4,c:\SMT4\XRD686\sdds4\program\title\titleMain.cpp
+0x001eb1f8,text,asciz,s_TITLE_C_001eb1f8,TITLE C
+0x001eb204,text,asciz,s_TITLE_UDrawLeft_001eb204,TITLE UDrawLeft
+0x001eb218,text,asciz,s_TITLE_UDrawRight_001eb218,TITLE UDrawRight
+0x001eb230,text,asciz,s_TITLE_D_001eb230,TITLE D
+0x001eb360,text,asciz,s_StartMenu_001eb360,StartMenu
+0x001eb488,text,asciz,s_StartMenu_001eb488,StartMenu
+0x001ebb98,text,asciz,s_02d_001ebb98,%02d
+0x001ec860,text,asciz,s_camp_CecItemTable_tbl_001ec860,camp/CecItemTable.tbl
+0x001ec878,text,asciz,s_camp_CecUnionTable_tbl_001ec878,camp/CecUnionTable.tbl
+0x001ec890,text,asciz,s_camp_CecMain_scr_bf_001ec890,camp/CecMain_scr.bf
+0x001ec8a4,text,asciz,s_camp_CecMain_msg_mbm_001ec8a4,camp/CecMain_msg.mbm
+0x001eed8c,text,asciz,s_camp_jakyou_union2_ac_bam_001eed8c,camp/jakyou_union2_ac.bam
+0x001eeda8,text,asciz,s_camp_jakyou_union2_ac_bccam_001eeda8,camp/jakyou_union2_ac.bccam
+0x001eedc4,text,asciz,s_camp_jakyou_union2_bam_001eedc4,camp/jakyou_union2.bam
+0x001eeddc,text,asciz,s_camp_jakyou_union2_bccam_001eeddc,camp/jakyou_union2.bccam
+0x001eedf8,text,asciz,s_tx_devil1_001eedf8,tx_devil1
+0x001eee04,text,asciz,s_camp_jakyou_union3_bam_001eee04,camp/jakyou_union3.bam
+0x001eee1c,text,asciz,s_camp_jakyou_union3_bccam_001eee1c,camp/jakyou_union3.bccam
+0x001eee38,text,asciz,s_camp_jakyou_union4_bam_001eee38,camp/jakyou_union4.bam
+0x001eee50,text,asciz,s_camp_jakyou_union4_bccam_001eee50,camp/jakyou_union4.bccam
+0x001eee6c,text,asciz,s_battle_DevilLvUp_bf_001eee6c,battle/DevilLvUp.bf
+0x001eee80,text,asciz,s_battle_DevilMsg_s_mbm_001eee80,battle/DevilMsg/%s.mbm
+0x001f3330,text,asciz,s_c_SMT4_XRD686_sdds4_program_001f3330,c:\SMT4\XRD686\sdds4\program\camp\Unite\Unite.cpp
+0x001f336c,text,asciz,s_Unite_Calc_001f336c,Unite Calc
+0x001f337c,text,asciz,s_Unite_DDraw_001f337c,Unite DDraw
+0x001f3570,text,asciz,s_unite_unite_mbm_001f3570,unite/unite.mbm
+0x001f3580,text,asciz,s_unite_unite_bf_001f3580,unite/unite.bf
+0x001f35ac,text,asciz,s_camp_jakyou_all_bccam_001f35ac,camp/jakyou_all.bccam
+0x001f35c8,text,asciz,s_camp_jakyou_all_bam_001f35c8,camp/jakyou_all.bam
+0x001f35e0,text,asciz,s_camp_jakyou_all_mido_bam_001f35e0,camp/jakyou_all_mido.bam
+0x001f4010,text,asciz,s__001f4010,---
+0x001f4be8,text,asciz,s_battle_Legion_LegionMsg_mbm_001f4be8,battle/Legion/LegionMsg.mbm
+0x001f4c08,text,asciz,s_battle_Legion_LegionMsgTable_001f4c08,battle/Legion/LegionMsgTable.tbb
+0x001f4c2c,text,asciz,s_battle_Legion_LegionScr_bf_001f4c2c,battle/Legion/LegionScr.bf
+0x001f4c48,text,asciz,s_battle_Common_common_mbm_001f4c48,battle/Common/common.mbm
+0x001f4c64,text,asciz,s_battle_talk_TalkSystem_mbm_001f4c64,battle/talk/TalkSystem.mbm
+0x001f4c80,text,asciz,s_battle_talk_TalkBaseData_tbb_001f4c80,battle/talk/TalkBaseData.tbb
+0x001f4ca0,text,asciz,s_battle_Systematic_tbb_001f4ca0,battle/Systematic.tbb
+0x001f4cb8,text,asciz,s_event_quest_SubQuestGuest_mb_001f4cb8,event/quest/SubQuestGuest.mbm
+0x001f4cd8,text,asciz,s_battle_BossDeadTable_tbb_001f4cd8,battle/BossDeadTable.tbb
+0x001f6a78,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_001f6a78,c:\SMT4\XRD686\AsdSDK\Source\Gfx\Effect\effGeomEngine.cpp
+0x001f7e0c,text,asciz,s_btlAction_Calc_001f7e0c,btlAction Calc
+0x001f7eb0,text,asciz,s_btlCamera_Calc_001f7eb0,btlCamera Calc
+0x001f7ec8,text,asciz,s_c_SMT4_XRD686_sdds4_program_001f7ec8,c:\SMT4\XRD686\sdds4\program\battle\btlCamera.cpp
+0x001f8044,text,asciz,s_btlEditor_Calc_001f8044,btlEditor Calc
+0x001f8058,text,asciz,s_btlEditor_DrawUp_001f8058,btlEditor DrawUp
+0x001f806c,text,asciz,s_c_SMT4_XRD686_sdds4_program_001f806c,c:\SMT4\XRD686\sdds4\program\battle\btlEditor.cpp
+0x001f8188,text,asciz,s_btlEffect_Calc_001f8188,btlEffect Calc
+0x001f819c,text,asciz,s_Filter_DrawUp_001f819c,Filter DrawUp
+0x001f81b0,text,asciz,s_c_SMT4_XRD686_sdds4_program_001f81b0,c:\SMT4\XRD686\sdds4\program\battle\btlEffect.cpp
+0x001f8298,text,asciz,s_btlResult_Calc_001f8298,btlResult Calc
+0x001fa5c4,text,asciz,s_effect_editor_s_EPL_001fa5c4,effect_editor/%s.EPL
+0x001fa73c,text,asciz,s_map_all_action_manhole_bam_001fa73c,map/all/action_manhole.bam
+0x001fc3c8,text,asciz,s_c_SMT4_XRD686_sdds4_program_001fc3c8,c:\SMT4\XRD686\sdds4\program\mikado\mikadoMain.cpp
+0x001fc408,text,asciz,s_MikadoMainProc_001fc408,MikadoMainProc
+0x001fc41c,text,asciz,s_MikadoDrawDown_001fc41c,MikadoDrawDown
+0x001fe54c,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_001fe54c,c:\SMT4\XRD686\AsdSDK\Source\Gfx\Model\AsdModel.cpp
+0x001fee70,text,asciz,s_s_001fee70,_%s
+0x001fee74,text,asciz,s_FALSE_001fee74,_FALSE
+0x001fee7c,text,asciz,s_TRUE_001fee7c,TRUE
+0x001fee84,text,asciz,s_FALSE_001fee84,FALSE
+0x001fee8c,text,asciz,s_0x_08X_001fee8c,0x%08X
+0x001fee94,text,asciz,s_8d_001fee94,%8d
+0x001fee9c,text,asciz,s_4_2f_001fee9c,%4.2f
+0x001feea8,text,asciz,s_FALSE_001feea8,FALSE
+0x001feeb0,text,asciz,s_TRUE_001feeb0,TRUE
+0x001feeb8,text,asciz,s_0x_08X_001feeb8,0x%08X
+0x001ffe2c,text,asciz,s_c_SMT4_XRD686_sdds4_program_001ffe2c,c:\SMT4\XRD686\sdds4\program\camp\CampCec\CampCec.cpp
+0x001ffe68,text,asciz,s_CampCec_Calc_001ffe68,CampCec Calc
+0x001ffe7c,text,asciz,s_CampCec_DrawUpLeft_001ffe7c,CampCec DrawUpLeft
+0x001ffe90,text,asciz,s_CampCec_DrawUpRight_001ffe90,CampCec DrawUpRight
+0x001ffedc,text,asciz,s_camp_CecMain_scr_bf_001ffedc,camp/CecMain_scr.bf
+0x001ffef0,text,asciz,s_camp_CecMain_msg_mbm_001ffef0,camp/CecMain_msg.mbm
+0x002028ec,text,asciz,s_c_SMT4_XRD686_sdds4_program_002028ec,c:\SMT4\XRD686\sdds4\program\font\SearchWin\RunWin.cpp
+0x00202928,text,asciz,s_RunWin_Calc_00202928,RunWin Calc
+0x00202938,text,asciz,s_RunWin_DrawDown_00202938,RunWin DrawDown
+0x00202d24,text,asciz,s_c_SMT4_XRD686_sdds4_program_00202d24,c:\SMT4\XRD686\sdds4\program\saveLoadUI\saveLoadUI.cpp
+0x00202d64,text,asciz,s_SAVELOAD_UI_C_00202d64,SAVELOAD_UI C
+0x00202d78,text,asciz,s_SAVELOAD_UI_UD_00202d78,SAVELOAD_UI UD
+0x00202d88,text,asciz,s_SAVELOAD_UI_UDD_00202d88,SAVELOAD_UI UDD
+0x00202d9c,text,asciz,s_SAVELOAD_UI_D_00202d9c,SAVELOAD_UI D
+0x00202db4,text,asciz,s_saveLoadUI_saveloadUI_bf_00202db4,saveLoadUI/saveloadUI.bf
+0x00202dd0,text,asciz,s_saveLoadUI_saveloadUI_mbm_00202dd0,saveLoadUI/saveloadUI.mbm
+0x00202dec,text,asciz,s_player_pl_dammy_bam_00202dec,player/pl_dammy.bam
+0x00203440,text,asciz,s_c_SMT4_XRD686_sdds4_program_00203440,c:\SMT4\XRD686\sdds4\program\camp\UIFade\UIFade.cpp
+0x00203478,text,asciz,s_UIFade_Calc_00203478,UIFade Calc
+0x00203488,text,asciz,s_UIFade_DrawLeft_00203488,UIFade DrawLeft
+0x00203498,text,asciz,s_UIFade_DrawRight_00203498,UIFade DrawRight
+0x0020501c,text,asciz,s__0020501c,---
+0x002060e4,text,asciz,s_battle_battle_map_MapAccesso_002060e4,battle/battle_map/MapAccessory.tbb
+0x00207f34,text,asciz,s_btlEncount_Calc_00207f34,btlEncount Calc
+0x00207f48,text,asciz,s_c_SMT4_XRD686_sdds4_program_00207f48,c:\SMT4\XRD686\sdds4\program\battle\btlEncount.cpp
+0x00208328,text,asciz,s_map_sky_sky__02d_bam_00208328,map/sky/sky_%02d.bam
+0x00208340,text,asciz,s_map_m_03d_m_03d__02d_bam_00208340,map/m%03d/m%03d_%02d.bam
+0x00208cd4,text,asciz,s_test_kemuri_tmx_00208cd4,test/kemuri.tmx
+0x0020d768,text,asciz,s_map_all_lmap_fast_bam_0020d768,map/all/lmap_fast.bam
+0x002104b0,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_002104b0,c:\SMT4\XRD686\AsdSDK\Source\Sys\Save\AsdSaveCommon.cpp
+0x00210578,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_00210578,c:\SMT4\XRD686\AsdSDK\Source\Sys\Save\AsdSaveCommon.cpp
+0x002161d4,text,asciz,s__002161d4,???
+0x00216878,text,asciz,s__00216878,???
+0x00217518,text,asciz,s_battle_DevilMsg_s_mbm_00217518,battle/DevilMsg/%s.mbm
+0x00219d28,text,asciz,s_effect_editor_ep_00219d28,effect_editor/ep/
+0x00219d3c,text,asciz,s_EP_00219d3c,.EP
+0x00219d40,text,asciz,s_s_s_00219d40,%s%s
+0x0021adf4,text,asciz,s_c_SMT4_XRD686_sdds4_program_0021adf4,c:\SMT4\XRD686\sdds4\program\battle\btlAIScript.cpp
+0x0021ae34,text,asciz,s_btlAIScript_Calc_0021ae34,btlAIScript Calc
+0x0021af68,text,asciz,s_btlGameOver_Calc_0021af68,btlGameOver Calc
+0x0021af80,text,asciz,s_btlGameOver_DrawUpLeft_0021af80,btlGameOver DrawUpLeft
+0x0021af98,text,asciz,s_btlGameOver_DrawUpRight_0021af98,btlGameOver DrawUpRight
+0x0021afb4,text,asciz,s_c_SMT4_XRD686_sdds4_program_0021afb4,c:\SMT4\XRD686\sdds4\program\battle\btlGameOver.cpp
+0x0021dda4,text,asciz,s_POLY_0021dda4,POLY
+0x0021e650,text,asciz,s_map_obj_obj__02d_bam_0021e650,map/obj/obj_%02d.bam
+0x00220fd4,text,asciz,s_c_SMT4_XRD686_sdds4_program_00220fd4,c:\SMT4\XRD686\sdds4\program\map\collision.cpp
+0x002219b8,text,asciz,s_c_SMT4_XRD686_sdds4_program_002219b8,c:\SMT4\XRD686\sdds4\program\battle\Effect\EffectProcess.cpp
+0x00221a24,text,asciz,s_EffectProc_00221a24,EffectProc
+0x00221a34,text,asciz,s_EffectDrawDown2D_00221a34,EffectDrawDown2D
+0x00221a4c,text,asciz,s_EffectDrawUp3D_00221a4c,EffectDrawUp3D
+0x00222998,text,asciz,s_c_SMT4_XRD686_sdds4_program_00222998,c:\SMT4\XRD686\sdds4\program\npc_room\NpcRoomDebug.cpp
+0x002229d4,text,asciz,s_NpcRoomDebug_Calc_002229d4,NpcRoomDebug Calc
+0x002229ec,text,asciz,s_NpcRoomDebug_UDraw_002229ec,NpcRoomDebug UDraw
+0x002239c4,text,asciz,s_c_SMT4_XRD686_sdds4_program_002239c4,c:\SMT4\XRD686\sdds4\program\gamedata\SaveLoad_Thread.cpp
+0x00223b4c,text,asciz,s_c_SMT4_XRD686_sdds4_program_00223b4c,c:\SMT4\XRD686\sdds4\program\status\StatusBustUp.cpp
+0x00224b9c,text,asciz,s_c_SMT4_XRD686_sdds4_program_00224b9c,c:\SMT4\XRD686\sdds4\program\addon\aocBootProcess.cpp
+0x00224be0,text,asciz,s_aocBoot_CALC_00224be0,aocBoot CALC
+0x00226be8,text,asciz,s_c_SMT4_XRD686_sdds4_program_00226be8,c:\SMT4\XRD686\sdds4\program\battle\btlActionReflect.cpp
+0x0022779c,text,asciz,s_Attack_0022779c,Attack
+0x002277a4,text,asciz,s_Shoot_002277a4,Shoot
+0x002277b0,text,asciz,s_Return_002277b0,Return
+0x002277b8,text,asciz,s_Summon_002277b8,Summon
+0x002277c0,text,asciz,s_Run_002277c0,Run
+0x0022a738,text,asciz,s_c_SMT4_XRD686_sdds4_program_0022a738,c:\SMT4\XRD686\sdds4\program\battle\btlHelp.cpp
+0x0022d5c0,text,asciz,s_8u_0022d5c0,%8u
+0x0022dc38,text,asciz,s_2d_0022dc38,%2d
+0x0022e994,text,asciz,s_shop_select_0022e994,shop_select
+0x0022e9a0,text,asciz,s_s_s_br_0022e9a0,%s%s<br>
+0x0022f334,text,asciz,s_4d_0022f334,%4d
+0x0022f338,text,asciz,s_8d_0022f338,%8d
+0x0022f340,text,asciz,s_2d_0022f340,%2d
+0x0022f9b8,text,asciz,s_8d_0022f9b8,%8d
+0x0022f9c0,text,asciz,s_2d_0022f9c0,%2d
+0x00233fd4,text,asciz,s_Aoc_loading_CALC_00233fd4,Aoc loading CALC
+0x00233ff0,text,asciz,s_Aoc_loading_DOWN_00233ff0,Aoc loading DOWN
+0x0023456c,text,asciz,s_NA_NAME__s__s_0023456c,NA_NAME_%s_%s
+0x0023457c,text,asciz,s_NA_SORT_NAME__s__s_0023457c,NA_SORT_NAME_%s_%s
+0x00234590,text,asciz,s_NA_DESCRIPTION_SHORT__s__s_00234590,NA_DESCRIPTION_SHORT_%s_%s
+0x002345ac,text,asciz,s_NA_DESCRIPTION_LONG__s__s_002345ac,NA_DESCRIPTION_LONG_%s_%s
+0x002345c8,text,asciz,s_NA_DISCLAIMER__s__s_002345c8,NA_DISCLAIMER_%s_%s
+0x002345dc,text,asciz,s_NA_ICON_INDEX__s__s_002345dc,NA_ICON_INDEX_%s_%s
+0x00234d14,text,asciz,s_c_SMT4_XRD686_sdds4_program_00234d14,c:\SMT4\XRD686\sdds4\program\addon\sys\aocTexCtrl.cpp
+0x00235398,text,asciz,s_s_bam_00235398,%s.bam
+0x002353a0,text,asciz,s_s_bccam_002353a0,%s.bccam
+0x002353ac,text,asciz,s_s_bcenv_002353ac,%s.bcenv
+0x002353bc,text,asciz,s_Dum_002353bc,Dum_
+0x002353c4,text,asciz,s_mikado_yaji_bam_002353c4,mikado/yaji.bam
+0x002353d4,text,asciz,s_mikado_point_bam_002353d4,mikado/point.bam
+0x0024056c,text,asciz,s_rom_s_0024056c,rom:/%s
+0x002405d8,text,asciz,s_battle_pos_arrange_00__04d_e_002405d8,battle/pos_arrange/00_%04d.earg
+0x002405f8,text,asciz,s_battle_pos_arrange_01__04d_e_002405f8,battle/pos_arrange/01_%04d.earg
+0x00242354,text,asciz,s_GENERAL_d_00242354,GENERAL %d
+0x002427d8,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_002427d8,c:\SMT4\XRD686\AsdSDK\Source\Gfx\EffectEditor\EffectEditor.cpp
+0x00242818,text,asciz,s_14s_00242818,%-14s
+0x00242ecc,text,asciz,s_Source_Gfx_Effect_effMenu_h_00242ecc,../Source/Gfx/Effect/effMenu.h
+0x002430f8,text,asciz,s_0_15d_002430f8,0%15d
+0x00243210,text,asciz,s_Source_Gfx_Effect_effMenu_h_00243210,../Source/Gfx/Effect/effMenu.h
+0x00243454,text,asciz,s_Source_Gfx_Effect_effMenu_h_00243454,../Source/Gfx/Effect/effMenu.h
+0x00243ccc,text,asciz,s_Source_Gfx_Effect_effMenu_h_00243ccc,../Source/Gfx/Effect/effMenu.h
+0x00243e70,text,asciz,s_0_14d_00243e70,0%14d
+0x00244ab8,text,asciz,s_Source_Gfx_Effect_effMenu_h_00244ab8,../Source/Gfx/Effect/effMenu.h
+0x00244ef4,text,asciz,s_0_15d_00244ef4,0%15d
+0x00247d1c,text,asciz,s_c_SMT4_XRD686_sdds4_program_00247d1c,c:\SMT4\XRD686\sdds4\program\gamedata\SaveLoad_Thread.cpp
+0x00248304,text,asciz,s_map_all_action_down_bam_00248304,map/all/action_down.bam
+0x002494d4,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_002494d4,c:\SMT4\XRD686\AsdSDK\Source\Gfx\Effect\effP2A.cpp
+0x002496f8,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_002496f8,c:\SMT4\XRD686\AsdSDK\Source\Gfx\Effect\effTLP.cpp
+0x00249f78,text,asciz,s_c_SMT4_XRD686_sdds4_program_00249f78,c:\SMT4\XRD686\sdds4\program\battle\Effect\Shake.c
+0x0024a3a8,text,asciz,s_c_SMT4_XRD686_sdds4_program_0024a3a8,c:\SMT4\XRD686\sdds4\program\battle\Effect\EftLoadFile.c
+0x0024a790,text,asciz,s_35_0024a790,_35
+0x0024a794,text,asciz,s_53_0024a794,_53
+0x0024fcc4,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_0024fcc4,c:\SMT4\XRD686\AsdSDK\Source\Gfx\Effect\effPolygonTrack.cpp
+0x002503ec,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_002503ec,c:\SMT4\XRD686\AsdSDK\Source\Gfx\Effect\effMenu.cpp
+0x00250a84,text,asciz,s_event_quest_QuestSys_mbm_00250a84,event/quest/QuestSys.mbm
+0x00256868,text,asciz,s_map_all_sym_03d_bam_00256868,map/all/sym%03d.bam
+0x002572a8,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_002572a8,c:\SMT4\XRD686\AsdSDK\Source\Gfx\Effect\effP2A.cpp
+0x00258fd4,text,asciz,s_c_SMT4_XRD686_sdds4_program_00258fd4,c:\SMT4\XRD686\sdds4\program\status\StatusCamera.cpp
+0x002596f0,text,asciz,s_c_SMT4_XRD686_sdds4_program_002596f0,c:\SMT4\XRD686\sdds4\program\event\eventCommand.cpp
+0x0025972c,text,asciz,s_EventMessUnderFade_Proc_0025972c,EventMessUnderFade_Proc
+0x00259748,text,asciz,s_EventMessUnderFade_Draw_00259748,EventMessUnderFade_Draw
+0x00259fe0,text,asciz,s_s_00259fe0,_%s
+0x00259fe4,text,asciz,s_FALSE_00259fe4,_FALSE
+0x00259fec,text,asciz,s_0x_08X_00259fec,0x%08X
+0x00259ff4,text,asciz,s_8d_00259ff4,_%8d
+0x00259ffc,text,asciz,s_4_2f_00259ffc,_%4.2f
+0x0025d888,text,asciz,s_Attack_0025d888,Attack
+0x0025d890,text,asciz,s_Shoot_0025d890,Shoot
+0x0025e714,text,asciz,s_Attack_0025e714,Attack
+0x0025e71c,text,asciz,s_Shoot_0025e71c,Shoot
+0x00262af4,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_00262af4,c:\SMT4\XRD686\AsdSDK\Source\Sys\Mem\AsdMemory.cpp
+0x00263b30,text,asciz,s_c_SMT4_XRD686_sdds4_program_00263b30,c:\SMT4\XRD686\sdds4\program\font\PlaceWin\PlaceWin.cpp
+0x00263b6c,text,asciz,s_PlaceWin_Calc_00263b6c,PlaceWin Calc
+0x00263b80,text,asciz,s_PlaceWin_DrawUpLeft_00263b80,PlaceWin DrawUpLeft
+0x00263b94,text,asciz,s_PlaceWin_DrawUpRight_00263b94,PlaceWin DrawUpRight
+0x00265230,text,asciz,s_scr_lmap1st_00265230,scr_lmap1st
+0x00269554,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_00269554,c:\SMT4\XRD686\AsdSDK\Source\Gfx\Effect\effBehavior.cpp
+0x00269db4,text,asciz,s_c_SMT4_XRD686_sdds4_program_00269db4,c:\SMT4\XRD686\sdds4\program\bible\bibleMain.cpp
+0x00269df4,text,asciz,s_BibleMainProc_00269df4,BibleMainProc
+0x00269e08,text,asciz,s_BibleDrawUp_00269e08,BibleDrawUp
+0x00269e18,text,asciz,s_BibleDrawDown_00269e18,BibleDrawDown
+0x0026a42c,text,asciz,s_c_SMT4_XRD686_sdds4_program_0026a42c,c:\SMT4\XRD686\sdds4\program\camp\UIQuest\UIQuest.cpp
+0x0026a468,text,asciz,s_UIQuest_Calc_0026a468,UIQuest Calc
+0x0026a47c,text,asciz,s_UIQuest_UDrawLeft_0026a47c,UIQuest UDrawLeft
+0x0026a490,text,asciz,s_UIQuest_UDrawRight_0026a490,UIQuest UDrawRight
+0x0026a4a8,text,asciz,s_UIQuest_DDraw_0026a4a8,UIQuest DDraw
+0x0026a4b8,text,asciz,s_event_quest_QuestSys_mbm_0026a4b8,event/quest/QuestSys.mbm
+0x0026a4d4,text,asciz,s_event_quest_QuestScr_bf_0026a4d4,event/quest/QuestScr.bf
+0x0026b954,text,asciz,s_c_SMT4_XRD686_sdds4_program_0026b954,c:\SMT4\XRD686\sdds4\program\gamedata\SaveLoadProcess.cpp
+0x0026b99c,text,asciz,s_Load_0026b99c,Load
+0x0026c888,text,asciz,s_camp_jakyou_all_mido_bam_0026c888,camp/jakyou_all_mido.bam
+0x0026e23c,text,asciz,s_c_SMT4_XRD686_sdds4_program_0026e23c,c:\SMT4\XRD686\sdds4\program\npc_room\NpcRoom.cpp
+0x0026e274,text,asciz,s_NpcRoom_Calc_0026e274,NpcRoom Calc
+0x0026e288,text,asciz,s_NpcRoom_UDrawLeft_0026e288,NpcRoom UDrawLeft
+0x0026e29c,text,asciz,s_NpcRoom_UDrawRight_0026e29c,NpcRoom UDrawRight
+0x0026e2b4,text,asciz,s_NpcRoom_DDraw_0026e2b4,NpcRoom DDraw
+0x0026e570,text,asciz,s_npc_room_npcMsg_mbm_0026e570,npc_room/npcMsg.mbm
+0x0026e584,text,asciz,s_npc_room_npc_bf_0026e584,npc_room/npc.bf
+0x00273a44,text,asciz,s_event_quest_QuestScr_bf_00273a44,event/quest/QuestScr.bf
+0x00273a5c,text,asciz,s_event_quest_QuestSys_mbm_00273a5c,event/quest/QuestSys.mbm
+0x00273da8,text,asciz,s_event_e_03d_e_03d_bf_00273da8,event/e%03d/e%03d.bf
+0x00273dc0,text,asciz,s_event_e_03d_e_03d_mbm_00273dc0,event/e%03d/e%03d.mbm
+0x00273ddc,text,asciz,s_e_03d__02d_00273ddc,e%03d_%02d
+0x00277f94,text,asciz,s_KANBAN_00277f94,KANBAN
+0x0027b840,text,asciz,s_map_L_03d_a_03d__02d_col_0027b840,map/L%03d/a%03d_%02d.col
+0x0027b85c,text,asciz,s_map_m_03d_a_03d__02d_col_0027b85c,map/m%03d/a%03d_%02d.col
+0x0027b878,text,asciz,s_map_L000_a000_col_0027b878,map/L000/a000.col
+0x0027b890,text,asciz,s_c_SMT4_XRD686_sdds4_program_0027b890,c:\SMT4\XRD686\sdds4\program\map\collision.cpp
+0x0027c3d4,text,asciz,s_POLY_0027c3d4,POLY
+0x0027c3e0,text,asciz,s_BOX_0027c3e0,BOX
+0x0027cc14,text,asciz,s_map_unit_u024_bam_0027cc14,map/unit/u024.bam
+0x0027cc28,text,asciz,s_map_unit_u003_bam_0027cc28,map/unit/u003.bam
+0x0027cc3c,text,asciz,s_map_unit_u007_bam_0027cc3c,map/unit/u007.bam
+0x0027cc50,text,asciz,s_map_unit_u008_bam_0027cc50,map/unit/u008.bam
+0x0027cc64,text,asciz,s_map_unit_u009_bam_0027cc64,map/unit/u009.bam
+0x0027d320,text,asciz,s_map_unit_u_03d_bam_0027d320,map/unit/u%03d.bam
+0x0027d7ec,text,asciz,s_map_L_03d_SKY_03d_TBL_0027d7ec,/map/L%03d/SKY%03d.TBL
+0x0027d804,text,asciz,s_map_m_03d_SKY_03d_TBL_0027d804,/map/m%03d/SKY%03d.TBL
+0x0027f020,text,asciz,s_c_SMT4_XRD686_sdds4_program_0027f020,c:\SMT4\XRD686\sdds4\program\map\mapDepart.cpp
+0x0027f060,text,asciz,s_DEPART_C_0027f060,DEPART C
+0x0027f074,text,asciz,s_SEARCH3D_0027f074,SEARCH3D
+0x0027f088,text,asciz,s_SEARCH2D_0027f088,SEARCH2D
+0x00280f04,text,asciz,s_c_SMT4_XRD686_sdds4_program_00280f04,c:\SMT4\XRD686\sdds4\program\frame_tex\FrameTex.cpp
+0x00282b84,text,asciz,s_Dead_12_00282b84,Dead_12
+0x00282b8c,text,asciz,s_Dead_13_00282b8c,Dead_13
+0x00284a84,text,asciz,s_d_d_00284a84,%d-%d
+0x00284fa0,text,asciz,s_START_00284fa0,START
+0x00284fa8,text,asciz,s_PREV_00284fa8,PREV
+0x0028530c,text,asciz,s_PEVE_0028530c,PEVE
+0x00285328,text,asciz,s_GOAL_00285328,GOAL
+0x00285330,text,asciz,s_NEXT_00285330,NEXT
+0x00285494,text,asciz,s_NEVE_00285494,NEVE
+0x002863c4,text,asciz,s_c_SMT4_XRD686_sdds4_program_002863c4,c:\SMT4\XRD686\sdds4\program\sys\Task\Task.c
+0x00287028,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_00287028,c:\SMT4\XRD686\AsdSDK\Source\Gfx\Text\AsdText.cpp
+0x00289e6c,text,asciz,s_c_SMT4_XRD686_sdds4_program_00289e6c,c:\SMT4\XRD686\sdds4\program\camp\CommonBg\CommonBg.cpp
+0x00289eac,text,asciz,s_COMBG_CALC_00289eac,COMBG CALC
+0x00289ebc,text,asciz,s_COMBG_DDRAW_00289ebc,COMBG DDRAW
+0x00289ed0,text,asciz,s_COMBG_DDRAW_FADE_00289ed0,COMBG DDRAW FADE
+0x0028aa0c,text,asciz,s_c_SMT4_XRD686_sdds4_program_0028aa0c,c:\SMT4\XRD686\sdds4\program\camp\Camp.cpp
+0x0028aa40,text,asciz,s_TMD_CALC_0028aa40,TMD CALC
+0x0028aa50,text,asciz,s_Camp_DrawUpLeft_0028aa50,Camp DrawUpLeft
+0x0028aa60,text,asciz,s_Camp_DrawUpRight_0028aa60,Camp DrawUpRight
+0x0028aa78,text,asciz,s_TMD_DDRAW_0028aa78,TMD DDRAW
+0x0028be08,text,asciz,s_c_SMT4_XRD686_sdds4_program_0028be08,c:\SMT4\XRD686\sdds4\program\camp\PartyPanel\PartyPanel.cpp
+0x0028be4c,text,asciz,s_TMD_CALC_0028be4c,TMD CALC
+0x0028be5c,text,asciz,s_TMD_DDRAW_0028be5c,TMD DDRAW
+0x0028be68,text,asciz,s_camp_partypanel_mbm_0028be68,camp/partypanel.mbm
+0x0028be7c,text,asciz,s_camp_partypanel_bf_0028be7c,camp/partypanel.bf
+0x0028c698,text,asciz,s_c_SMT4_XRD686_sdds4_program_0028c698,c:\SMT4\XRD686\sdds4\program\status\Status.cpp
+0x0028c6cc,text,asciz,s_Status_Calc_0028c6cc,Status Calc
+0x0028c6dc,text,asciz,s_Status_DrawBackUpLeft_0028c6dc,Status DrawBackUpLeft
+0x0028c6f4,text,asciz,s_Status_DrawBackUpRight_0028c6f4,Status DrawBackUpRight
+0x0028c710,text,asciz,s_Status_DrawUpLeft_0028c710,Status DrawUpLeft
+0x0028c724,text,asciz,s_Status_DrawUpRight_0028c724,Status DrawUpRight
+0x0028cb68,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_0028cb68,c:\SMT4\XRD686\AsdSDK\Source\Gfx\Effect\AsdEffectTexture.cpp
+0x0028cbc8,text,asciz,s_STEX_0028cbc8,STEX
+0x0028dbd4,text,asciz,s_c_SMT4_XRD686_sdds4_program_0028dbd4,c:\SMT4\XRD686\sdds4\program\camp\ButtonHelp\ButtonHelp.cpp
+0x0028dc18,text,asciz,s_ButtonHelp_CALC_0028dc18,ButtonHelp CALC
+0x0028dc2c,text,asciz,s_ButtonHelp_DDRAW_0028dc2c,ButtonHelp DDRAW
+0x0028dcc4,text,asciz,s_camp_camp_mbm_0028dcc4,camp/camp.mbm
+0x0028dcd4,text,asciz,s_camp_camp_bf_0028dcd4,camp/camp.bf
+0x0029023c,text,asciz,s_event_quest_quest_03d_mbm_0029023c,event/quest/quest%03d.mbm
+0x002947f4,text,asciz,s_player_pl_02d__03dhd_d_bam_002947f4,player/pl%02d_%03dhd%d.bam
+0x00294810,text,asciz,s_player_pl_02d__03dbd0_bam_00294810,player/pl%02d_%03dbd0.bam
+0x0029482c,text,asciz,s_player_pl_02d__03dlg_d_bam_0029482c,player/pl%02d_%03dlg%d.bam
+0x00294a10,text,asciz,s_player_pl_02d__03dhd_d_bam_00294a10,player/pl%02d_%03dhd%d.bam
+0x00294a2c,text,asciz,s_player_pl_02d__03dbd0_bam_00294a2c,player/pl%02d_%03dbd0.bam
+0x00294a48,text,asciz,s_player_pl_02d__03dlg_d_bam_00294a48,player/pl%02d_%03dlg%d.bam
+0x00294a84,text,asciz,s_player_pl01_00_bam_00294a84,player/pl01_00.bam
+0x00294e6c,text,asciz,s_Light_Player1_00294e6c,Light_Player1
+0x00294e9c,text,asciz,s_Light_Player2_00294e9c,Light_Player2
+0x00294ec0,text,asciz,s_Light_Player3_00294ec0,Light_Player3
+0x00295b10,text,asciz,s_c_SMT4_XRD686_sdds4_program_00295b10,c:\SMT4\XRD686\sdds4\program\battle\Talk\btlTalkBustUp.cpp
+0x00295b58,text,asciz,s_TMD_CALC_00295b58,TMD CALC
+0x00295b68,text,asciz,s_TalkBustUp_DrawLeft_00295b68,TalkBustUp DrawLeft
+0x00295b7c,text,asciz,s_TalkBustUp_DrawRight_00295b7c,TalkBustUp DrawRight
+0x00296ec0,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_00296ec0,c:\SMT4\XRD686\AsdSDK\Source\Gfx\Text\AsdText.cpp
+0x00297630,text,asciz,s_c_SMT4_XRD686_sdds4_program_00297630,c:\SMT4\XRD686\sdds4\program\script\scrScriptProcess.cpp
+0x0029abb4,text,asciz,s__0029abb4,---
+0x0029b800,text,asciz,s_c_SMT4_XRD686_sdds4_program_0029b800,c:\SMT4\XRD686\sdds4\program\camp\Unite\Unite.cpp
+0x0029e860,text,asciz,s_c_SMT4_XRD686_sdds4_program_0029e860,c:\SMT4\XRD686\sdds4\program\camp\SortMenu\SortMenu.cpp
+0x0029e89c,text,asciz,s_SORT_CALC_0029e89c,SORT CALC
+0x0029e8ac,text,asciz,s_SORT_DDRAW_0029e8ac,SORT DDRAW
+0x002a47e8,text,asciz,s_c_SMT4_XRD686_sdds4_program_002a47e8,c:\SMT4\XRD686\sdds4\program\addon\sys\aocTexCtrl.cpp
+0x002a63e0,text,asciz,s_cmp_002a63e0,.cmp
+0x002a63e8,text,asciz,s_stex_002a63e8,.stex
+0x002a6594,text,asciz,s_cmp_002a6594,.cmp
+0x002a659c,text,asciz,s_stex_002a659c,.stex
+0x002a7284,text,asciz,s_s_s_002a7284,%s/%s
+0x002a98b4,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_002a98b4,c:\SMT4\XRD686\AsdSDK\Source\Gfx\Model\AsdModel.cpp
+0x002a9fb0,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_002a9fb0,c:\SMT4\XRD686\AsdSDK\Source\Gfx\Model\AsdModel.cpp
+0x002ae7dc,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_002ae7dc,c:\SMT4\XRD686\AsdSDK\Source\Sys\File\AsdLoadFile.cpp
+0x002b05d4,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_002b05d4,c:\SMT4\XRD686\AsdSDK\Source\Sys\File\AsdFile.cpp
+0x002b060c,text,asciz,s_rom_s_002b060c,rom:/%s
+0x002b2b30,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_002b2b30,c:\SMT4\XRD686\AsdSDK\Source\Gfx\Model\AsdMdlManager.cpp
+0x002b2c88,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_002b2c88,c:\SMT4\XRD686\AsdSDK\Source\Gfx\Model\AsdModel.cpp
+0x002b96d8,text,asciz,s_cmp_002b96d8,.cmp
+0x002b96e0,text,asciz,s_stex_002b96e0,.stex
+0x002b96e8,text,asciz,s_STEX_002b96e8,STEX
+0x002bd90c,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_002bd90c,c:\SMT4\XRD686\AsdSDK\Source\Gfx\Tex\AsdTexture.cpp
+0x002bda70,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_002bda70,c:\SMT4\XRD686\AsdSDK\Source\Gfx\Text\AsdText.cpp
+0x002bff78,text,asciz,s_snd_voice_002bff78,snd/voice/
+0x002bff84,text,asciz,s_06d_002bff84,%06d
+0x002bff8c,text,asciz,s_s_bcwav_002bff8c,%s.bcwav
+0x002c1ef4,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_002c1ef4,c:\SMT4\XRD686\AsdSDK\Source\Snd\AsdSoundSystem.cpp
+0x002c3468,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_002c3468,c:\SMT4\XRD686\AsdSDK\Source\Sys\Gx\AsdGxRenderSystem.cpp
+0x002c4aa0,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_002c4aa0,c:\SMT4\XRD686\AsdSDK\Source\Gfx\Font\AsdFont.cpp
+0x002c4db8,text,asciz,s_c_SMT4_XRD686_sdds4_program_002c4db8,c:\SMT4\XRD686\sdds4\program\font\message.cpp
+0x002c4dfc,text,asciz,s_MESS_C_002c4dfc,MESS_C
+0x002c4e08,text,asciz,s_MESS_U_LEFT_002c4e08,MESS_U LEFT
+0x002c4e14,text,asciz,s_MESS_U_RIGHT_002c4e14,MESS_U RIGHT
+0x002c5070,text,asciz,s_tgd_002c5070,tgd
+0x002c5074,text,asciz,s_GroupTable_002c5074,GroupTable
+0x002c5080,text,asciz,s_s_s_s_s_002c5080,%s%s%s.%s
+0x002c5d70,text,asciz,s_ttd_002c5d70,ttd
+0x002c5d74,text,asciz,s_s_s_s_002c5d74,%s%s.%s
+0x002c5d88,text,asciz,s_s_s_002c5d88,%s%s/
+0x002c5dd0,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_002c5dd0,c:\SMT4\XRD686\AsdSDK\Source\Sys\Gx\AsdGxCommandList.cpp
+0x002c6880,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_002c6880,c:\SMT4\XRD686\AsdSDK\Source\Sys\Mem\AsdMemory.cpp
+0x002c7b40,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_002c7b40,c:\SMT4\XRD686\AsdSDK\Source\Gfx\Effect\effPolygonRing.cpp
+0x002cae28,text,asciz,s_c_SMT4_XRD686_sdds4_program_002cae28,c:\SMT4\XRD686\sdds4\program\StaffRoll\StaffRollMain.cpp
+0x002caeac,text,asciz,s_STAFFROLL_C_002caeac,STAFFROLL C
+0x002caebc,text,asciz,s_STAFFROLL_U_002caebc,STAFFROLL U
+0x002caec8,text,asciz,s_STAFFROLL_UR_002caec8,STAFFROLL UR
+0x002caedc,text,asciz,s_STAFFROLL_DD_002caedc,STAFFROLL DD
+0x002cf234,text,asciz,s_c_SMT4_XRD686_sdds4_program_002cf234,c:\SMT4\XRD686\sdds4\program\event\2dEvent\SmokeFade.cpp
+0x002cf274,text,asciz,s_SmokeFade_Calc_002cf274,SmokeFade Calc
+0x002cf288,text,asciz,s_SmokeFade_DrawUpLeft_002cf288,SmokeFade DrawUpLeft
+0x002cf2a0,text,asciz,s_SmokeFade_DrawUpRight_002cf2a0,SmokeFade DrawUpRight
+0x002cf2c0,text,asciz,s_event_smoke_fade_tbl_002cf2c0,event/smoke_fade.tbl
+0x002d1d6c,text,asciz,s_map_sky_sky__02d_bam_002d1d6c,map/sky/sky_%02d.bam
+0x002d1d84,text,asciz,s_map_m_03d_m_03d__02d_bam_002d1d84,map/m%03d/m%03d_%02d.bam
+0x002d2e30,text,asciz,s_e_03d__02d_002d2e30,e%03d_%02d
+0x002d5400,text,asciz,s_Light_Player2_002d5400,Light_Player2
+0x002d5420,text,asciz,s_Light_Player3_002d5420,Light_Player3
+0x002d5c78,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_002d5c78,c:\SMT4\XRD686\AsdSDK\Source\Sys\Gx\AsdGxRenderSystem.cpp
+0x002d6b60,text,asciz,s_c_SMT4_XRD686_sdds4_program_002d6b60,c:\SMT4\XRD686\sdds4\program\camp\CampCec\CampCecEdit.cpp
+0x002d6ba0,text,asciz,s_CampCecEdit_Calc_002d6ba0,CampCecEdit Calc
+0x002d6bb8,text,asciz,s_CampCecEdit_DrawUpLeft_b_002d6bb8,CampCecEdit DrawUpLeft_b
+0x002d6bd4,text,asciz,s_CampCecEdit_DrawUpRight_b_002d6bd4,CampCecEdit DrawUpRight_b
+0x002d6bf4,text,asciz,s_CampCecEdit_DrawUpLeft_002d6bf4,CampCecEdit DrawUpLeft
+0x002d6c0c,text,asciz,s_CampCecEdit_DrawUpRight_002d6c0c,CampCecEdit DrawUpRight
+0x002d6c28,text,asciz,s_CampCecEdit_DrawDown_002d6c28,CampCecEdit DrawDown
+0x002d6c64,text,asciz,s_camp_CecEdit_scr_bf_002d6c64,camp/CecEdit_scr.bf
+0x002d6c78,text,asciz,s_camp_CecEdit_msg_mbm_002d6c78,camp/CecEdit_msg.mbm
+0x002d6c90,text,asciz,s_camp_CecEdit_one_msg_mbm_002d6c90,camp/CecEdit_one_msg.mbm
+0x002d73e0,text,asciz,s_status_status_bcenv_002d73e0,status/status.bcenv
+0x002d7704,text,asciz,s_c_SMT4_XRD686_sdds4_program_002d7704,c:\SMT4\XRD686\sdds4\program\camp\CampCec\CampCecView.cpp
+0x002d7744,text,asciz,s_CampCecView_Calc_002d7744,CampCecView Calc
+0x002d775c,text,asciz,s_CampCecView_DrawUpLeft_b_002d775c,CampCecView DrawUpLeft_b
+0x002d7778,text,asciz,s_CampCecView_DrawUpRight_b_002d7778,CampCecView DrawUpRight_b
+0x002d7798,text,asciz,s_CampCecView_DrawUpLeft_002d7798,CampCecView DrawUpLeft
+0x002d77b0,text,asciz,s_CampCecView_DrawUpRight_002d77b0,CampCecView DrawUpRight
+0x002d77cc,text,asciz,s_CampCecView_DrawDown_002d77cc,CampCecView DrawDown
+0x002d77e4,text,asciz,s_camp_CecEdit_one_msg_mbm_002d77e4,camp/CecEdit_one_msg.mbm
+0x002d7c78,text,asciz,s_c_SMT4_XRD686_sdds4_program_002d7c78,c:\SMT4\XRD686\sdds4\program\camp\CommonBg\CommonBg.cpp
+0x002d7cfc,text,asciz,s_COMBG_EVE_CALC_002d7cfc,COMBG EVE CALC
+0x002d7d10,text,asciz,s_COMBG_DDRAW_002d7d10,COMBG DDRAW
+0x002d8ec4,text,asciz,s_sdds4game_d_sav_002d8ec4,sdds4game%d.sav
+0x002d8f94,text,asciz,s_sdds4game_d_sav_002d8f94,sdds4game%d.sav
+0x002d95b4,text,asciz,s_c_SMT4_XRD686_sdds4_program_002d95b4,c:\SMT4\XRD686\sdds4\program\status\StatusDown.cpp
+0x002d95ec,text,asciz,s_TMD_CALC_002d95ec,TMD CALC
+0x002d95fc,text,asciz,s_TMD_DDRAW_002d95fc,TMD DDRAW
+0x002da0c0,text,asciz,s__002da0c0,???
+0x002dab40,text,asciz,s__002dab40,???
+0x002db884,text,asciz,s_d_d_002db884,%d-%d
+0x002de368,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_002de368,c:\SMT4\XRD686\AsdSDK\Source\Gfx\Effect\effMenu.cpp
+0x002df560,text,asciz,s_map_m_03d_cam_03d__02d_bccam_002df560,map/m%03d/cam%03d_%02d.bccam
+0x002e0310,text,asciz,s_map_unit_u002_bam_002e0310,map/unit/u002.bam
+0x002e26e0,text,asciz,s_GauntletApp_CALC_002e26e0,GauntletApp CALC
+0x002e26f8,text,asciz,s_GauntletApp_DDRAW_002e26f8,GauntletApp DDRAW
+0x002e2724,text,asciz,s_camp_gauntletApp_mbm_002e2724,camp/gauntletApp.mbm
+0x002e273c,text,asciz,s_camp_gauntletApp_bf_002e273c,camp/gauntletApp.bf
+0x002e3258,text,asciz,s_c_SMT4_XRD686_sdds4_program_002e3258,c:\SMT4\XRD686\sdds4\program\camp\Unite\UniteEffect.cpp
+0x002e3294,text,asciz,s_TMD_CALC_002e3294,TMD CALC
+0x002e32a4,text,asciz,s_TMD_DDRAW_002e32a4,TMD DDRAW
+0x002e7044,text,asciz,s_effect_editor_002e7044,effect_editor/
+0x002e7054,text,asciz,s_EPL_002e7054,.EPL
+0x002e7060,text,asciz,s_s_s_002e7060,%s%s
+0x002e7084,text,asciz,s_s_s_002e7084,%s%s
+0x002e7e5c,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_002e7e5c,c:\SMT4\XRD686\AsdSDK\Source\Gfx\Effect\effParticle.cpp
+0x002e8448,text,asciz,s_c_SMT4_XRD686_sdds4_program_002e8448,c:\SMT4\XRD686\sdds4\program\battle\btlTargetSelect.cpp
+0x002e849c,text,asciz,s_btlTargetSelect_Calc_002e849c,btlTargetSelect Calc
+0x002e84b8,text,asciz,s_btlTargetSelect_DrawUpL_002e84b8,btlTargetSelect DrawUpL
+0x002e84d0,text,asciz,s_btlTargetSelect_DrawUpR_002e84d0,btlTargetSelect DrawUpR
+0x002eb8f4,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_002eb8f4,c:\SMT4\XRD686\AsdSDK\Source\Net\Cec\AsdCec.cpp
+0x002eba64,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_002eba64,c:\SMT4\XRD686\AsdSDK\Source\Net\Cec\AsdCec.cpp
+0x002ebecc,text,asciz,s_c_SMT4_XRD686_sdds4_program_002ebecc,c:\SMT4\XRD686\sdds4\program\event\bustupEvent\BustupEffect.cpp
+0x002ebf18,text,asciz,s_EVE_BustupShake_002ebf18,EVE_BustupShake
+0x002ecdd0,text,asciz,s_camp_CecMainDevilTalk_scr_bf_002ecdd0,camp/CecMainDevilTalk_scr.bf
+0x002ecdf0,text,asciz,s_camp_CecDevilMsg_s_mbm_002ecdf0,camp/CecDevilMsg/%s.mbm
+0x002ee4b0,text,asciz,s_effEditorCalc_002ee4b0,effEditorCalc
+0x002ee4c8,text,asciz,s_effEditor2DULCD_002ee4c8,effEditor2DULCD
+0x002ee4dc,text,asciz,s_effEditor3DL_002ee4dc,effEditor3DL
+0x002ee4f0,text,asciz,s_effEditor3DR_002ee4f0,effEditor3DR
+0x002ee504,text,asciz,s_effEditor2DDLCD_002ee504,effEditor2DDLCD
+0x002ee67c,text,asciz,s_battle_effect_tex_002ee67c,battle/effect/tex/
+0x002ee690,text,asciz,s_s_s_tga_002ee690,%s%s.tga
+0x002ee948,text,asciz,s_c_SMT4_XRD686_sdds4_program_002ee948,c:\SMT4\XRD686\sdds4\program\event\2dEvent\2dEventTex.cpp
+0x002ee98c,text,asciz,s_EVE_2dTex_002ee98c,EVE_2dTex
+0x002ee99c,text,asciz,s_EVE_2dTexDraw_002ee99c,EVE_2dTexDraw
+0x002efb10,text,asciz,s_c_SMT4_XRD686_sdds4_program_002efb10,c:\SMT4\XRD686\sdds4\program\gamedata\SaveLoadProcess.cpp
+0x002efcd8,text,asciz,s_c_SMT4_XRD686_sdds4_program_002efcd8,c:\SMT4\XRD686\sdds4\program\gamedata\SaveLoadProcess.cpp
+0x002f1f9c,text,asciz,s_Analyze_002f1f9c,Analyze
+0x002f1fac,text,asciz,s_Attack_002f1fac,Attack
+0x002f1fb4,text,asciz,s_Shoot_002f1fb4,Shoot
+0x002f2e28,text,asciz,s_s_s_002f2e28,%s%s
+0x002f3514,text,asciz,s_btlActionReflect_Calc_002f3514,btlActionReflect Calc
+0x002f3530,text,asciz,s_c_SMT4_XRD686_sdds4_program_002f3530,c:\SMT4\XRD686\sdds4\program\battle\btlActionReflect.cpp
+0x002f42f8,text,asciz,s_map_m022_m022_blk_02d_bam_002f42f8,map/m022/m022_blk%02d.bam
+0x002f4e44,text,asciz,s_c_SMT4_XRD686_sdds4_program_002f4e44,c:\SMT4\XRD686\sdds4\program\title\titleConfig.cpp
+0x002f4e84,text,asciz,s_TITLE_CONFIG_MAIN_002f4e84,TITLE_CONFIG_MAIN
+0x002f4e9c,text,asciz,s_TITLE_CONFIG_D_002f4e9c,TITLE_CONFIG D
+0x002f4eb4,text,asciz,s_camp_config_bf_002f4eb4,camp/config.bf
+0x002f4ec4,text,asciz,s_camp_config_mbm_002f4ec4,camp/config.mbm
+0x002f5cfc,text,asciz,s_c_SMT4_XRD686_sdds4_program_002f5cfc,c:\SMT4\XRD686\sdds4\program\camp\CampCec\CampCecSetting.cpp
+0x002f5d40,text,asciz,s_CampCecSetting_Calc_002f5d40,CampCecSetting Calc
+0x002f5d58,text,asciz,s_CampCecSetting_DrawUpLeft_002f5d58,CampCecSetting DrawUpLeft
+0x002f5d74,text,asciz,s_CampCecSetting_DrawUpRight_002f5d74,CampCecSetting DrawUpRight
+0x002f5d90,text,asciz,s_camp_CecSetting_scr_bf_002f5d90,camp/CecSetting_scr.bf
+0x002f5da8,text,asciz,s_camp_CecSetting_msg_mbm_002f5da8,camp/CecSetting_msg.mbm
+0x002f5f1c,text,asciz,s_battle_effect_EV__03d_eft_002f5f1c,battle/effect/EV_%03d.eft
+0x002f6470,text,asciz,s_c_SMT4_XRD686_sdds4_program_002f6470,c:\SMT4\XRD686\sdds4\program\event\3dEvent\3dEventOpening.cpp
+0x002f64d4,text,asciz,s_3dEventOpening_Calc_002f64d4,3dEventOpening Calc
+0x002f6990,text,asciz,s_c_SMT4_XRD686_sdds4_program_002f6990,c:\SMT4\XRD686\sdds4\program\result\WhisperEffect.cpp
+0x002f69ec,text,asciz,s_WhisperEffect_CALC_002f69ec,WhisperEffect CALC
+0x002f6a04,text,asciz,s_WhisperEffect_DrawUpLeft_002f6a04,WhisperEffect DrawUpLeft
+0x002f6a20,text,asciz,s_WhisperEffect_DrawUpRight_002f6a20,WhisperEffect DrawUpRight
+0x002f889c,text,asciz,s_Source_Gfx_Effect_effMenu_h_002f889c,../Source/Gfx/Effect/effMenu.h
+0x002fb794,text,asciz,s_shadow_002fb794,shadow
+0x002fc1ec,text,asciz,s_effect_tex_be__04d_stex_002fc1ec,effect/tex/be_%04d.stex
+0x002fc520,text,asciz,s_BustupCutAnim_002fc520,BustupCutAnim
+0x002fc534,text,asciz,s_BustupCutAnimDraw_002fc534,BustupCutAnimDraw
+0x002fc548,text,asciz,s_event_BustUpEvent_s_bccam_002fc548,event/BustUpEvent/%s.bccam
+0x002fc564,text,asciz,s_event_BustUpEvent_s_bam_002fc564,event/BustUpEvent/%s.bam
+0x002fd3fc,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_002fd3fc,c:\SMT4\XRD686\AsdSDK\Source\Gfx\EffectEditor\EffectEditor.cpp
+0x002fd44c,text,asciz,s_10s_3d_002fd44c,%-10s%3d
+0x002fd458,text,asciz,s_11s_3d_002fd458,%-11s%3d
+0x002fd464,text,asciz,s_10s_3d_002fd464,%-10s*%3d
+0x002fd47c,text,asciz,s_9s_3d_002fd47c,%-9s*%3d
+0x002fd490,text,asciz,s_POSETURE_002fd490,POSETURE
+0x002fd980,text,asciz,s_STOP_002fd980,STOP
+0x002fd988,text,asciz,s_SLOW_002fd988,SLOW
+0x002fd99c,text,asciz,s_ALL_d_NOW_d_002fd99c,ALL:%d NOW:%d
+0x002fd9ac,text,asciz,s_RL_BUTTON_RELEASE_KEYWAIT_002fd9ac,RL BUTTON RELEASE KEYWAIT
+0x002fdd2c,text,asciz,s_s_TMX_002fdd2c,%s(TMX)
+0x002fdd34,text,asciz,s_s_P2A_002fdd34,%s(P2A)
+0x002fdd3c,text,asciz,s_s_PB_002fdd3c,%s(PB)
+0x002fdd48,text,asciz,s_s_EP_002fdd48,%s(EP)
+0x002fdd50,text,asciz,s_s_EPL_002fdd50,%s(EPL)
+0x002fdd58,text,asciz,s_s_TLP_002fdd58,%s(TLP)
+0x002fdf6c,text,asciz,s_c_SMT4_XRD686_sdds4_program_002fdf6c,c:\SMT4\XRD686\sdds4\program\battle\Effect\EffectSave.c
+0x002feb3c,text,asciz,s_s_br_002feb3c,%s<br>
+0x00309e20,text,asciz,s_c_SMT4_XRD686_sdds4_program_00309e20,c:\SMT4\XRD686\sdds4\program\camp\CampCec\CampCecDraw.cpp
+0x0030a22c,text,asciz,s_c_SMT4_XRD686_sdds4_program_0030a22c,c:\SMT4\XRD686\sdds4\program\event\3dEvent\3dEventTex.cpp
+0x0030a668,text,asciz,s_c_SMT4_XRD686_sdds4_program_0030a668,c:\SMT4\XRD686\sdds4\program\event\2dEvent\EventEffect.cpp
+0x0030a6a8,text,asciz,s_BlinkFade_Calc_0030a6a8,BlinkFade Calc
+0x0030a6bc,text,asciz,s_BlinkFade_DrawUpLeft_0030a6bc,BlinkFade DrawUpLeft
+0x0030a6d4,text,asciz,s_BlinkFade_DrawUpRight_0030a6d4,BlinkFade DrawUpRight
+0x0030edf8,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_0030edf8,c:\SMT4\XRD686\AsdSDK\Source\Gfx\Effect\effMenu.cpp
+0x0030ef54,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_0030ef54,c:\SMT4\XRD686\AsdSDK\Source\Gfx\Effect\effPolygonFlash.cpp
+0x0030f1a4,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_0030f1a4,c:\SMT4\XRD686\AsdSDK\Source\Gfx\Effect\effPolygonRing.cpp
+0x00310404,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_00310404,c:\SMT4\XRD686\AsdSDK\Source\Gfx\Camera\AsdCamera.cpp
+0x00310b1c,text,asciz,s_dami_00310b1c,dami
+0x003137bc,text,asciz,s_EPL_003137bc,.EPL
+0x003154c0,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_003154c0,c:\SMT4\XRD686\AsdSDK\Source\Gfx\Effect\effPolygonFlash.cpp
+0x003156a4,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_003156a4,c:\SMT4\XRD686\AsdSDK\Source\Gfx\Effect\effPolygonRing.cpp
+0x00315884,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_00315884,c:\SMT4\XRD686\AsdSDK\Source\Gfx\Effect\effPolygonRing.cpp
+0x00315c80,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_00315c80,c:\SMT4\XRD686\AsdSDK\Source\Gfx\Effect\effPolygonThunder.cpp
+0x00317cbc,text,asciz,s_battle_effect_tex_00317cbc,battle/effect/tex/
+0x00317cd0,text,asciz,s_s_s_tga_00317cd0,%s%s.tga
+0x00317e58,text,asciz,s_c_SMT4_XRD686_sdds4_program_00317e58,c:\SMT4\XRD686\sdds4\program\event\3dEvent\3dEventTex.cpp
+0x00318934,text,asciz,s_c_SMT4_XRD686_sdds4_program_00318934,c:\SMT4\XRD686\sdds4\program\battle\Talk\btlTalkCommand.cpp
+0x0031ba84,text,asciz,s_c_SMT4_XRD686_sdds4_program_0031ba84,c:\SMT4\XRD686\sdds4\program\camp\CampCec\CampCecDraw.cpp
+0x0031bca4,text,asciz,s_c_SMT4_XRD686_sdds4_program_0031bca4,c:\SMT4\XRD686\sdds4\program\battle\Effect\EffectSave.c
+0x0031c094,text,asciz,s_c_SMT4_XRD686_sdds4_program_0031c094,c:\SMT4\XRD686\sdds4\program\event\eventCommand.cpp
+0x0031d2e8,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_0031d2e8,c:\SMT4\XRD686\AsdSDK\Source\Gfx\Effect\effPolygonFlash.cpp
+0x0031e008,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_0031e008,c:\SMT4\XRD686\AsdSDK\Source\Gfx\Model\AsdModel.cpp
+0x0031fa54,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_0031fa54,c:\SMT4\XRD686\AsdSDK\Source\Gfx\Effect\effPolygonFlash.cpp
+0x00321a10,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_00321a10,c:\SMT4\XRD686\AsdSDK\Source\Gfx\Effect\effPolygonThunder.cpp
+0x00322274,text,asciz,s_UP_DOWN_HEIGHT_00322274,UP   & DOWN : HEIGHT
+0x0032228c,text,asciz,s_LEFT_RIGHT_DIR_0032228c,LEFT & RIGHT: DIR
+0x003222a0,text,asciz,s_R1_L1_ROLL_003222a0,R1   & L1   : ROLL
+0x003222dc,text,asciz,s_Source_Gfx_Effect_effMenu_h_003222dc,../Source/Gfx/Effect/effMenu.h
+0x00322664,text,asciz,s_H_2d_D_2d_R_2d_00322664,"H:%2d,D:%2d,R:%2d"
+0x00322c58,text,asciz,s_Source_Gfx_Effect_effMenu_h_00322c58,../Source/Gfx/Effect/effMenu.h
+0x00322e9c,text,asciz,s_c_SMT4_XRD686_sdds4_program_00322e9c,c:\SMT4\XRD686\sdds4\program\gamedata\SaveLoadProcess.cpp
+0x00322ee4,text,asciz,s_Boot_00322ee4,Boot
+0x00322ef0,text,asciz,s_Boot_UpDraw_00322ef0,Boot UpDraw
+0x00322efc,text,asciz,s_Boot_UpDraw_R_00322efc,Boot UpDraw_R
+0x00322fec,text,asciz,s_c_SMT4_XRD686_sdds4_program_00322fec,c:\SMT4\XRD686\sdds4\program\gamedata\SaveLoadProcess.cpp
+0x00323034,text,asciz,s_Save_00323034,Save
+0x00323b3c,text,asciz,s_effect_editor_ep_00323b3c,effect_editor/ep/
+0x003248e8,text,asciz,s_effect_editor_003248e8,effect_editor/
+0x00324cfc,text,asciz,s_battle_effect_tex_00324cfc,battle/effect/tex/
+0x00324d10,text,asciz,s_s_s_tga_00324d10,%s%s.tga
+0x003274b4,text,asciz,s_UP_DOWN_HEIGHT_003274b4,UP   & DOWN : HEIGHT
+0x003274cc,text,asciz,s_LEFT_RIGHT_DIR_003274cc,LEFT & RIGHT: DIR
+0x003274e0,text,asciz,s_R1_L1_RADIUS_003274e0,R1   & L1   : RADIUS
+0x00327a48,text,asciz,s_FILTER_00327a48,FILTER
+0x003280b8,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_003280b8,c:\SMT4\XRD686\AsdSDK\Source\Gfx\Effect\effPolygonThunder.cpp
+0x003287c0,text,asciz,s_ASD_LIGHT_003287c0,ASD LIGHT
+0x003287e0,text,asciz,s_PARTICLE_003287e0,PARTICLE
+0x0032891c,text,asciz,s_effect_editor_ep_0032891c,effect_editor/ep/
+0x00328cd8,text,asciz,s_effect_editor_00328cd8,effect_editor/
+0x00328ea4,text,asciz,s_POLY_TEX_00328ea4,POLY TEX
+0x00328f34,text,asciz,s_POLY_RING_00328f34,POLY RING
+0x00328f54,text,asciz,s_POLY_WIND_00328f54,POLY WIND
+0x00329000,text,asciz,s_battle_effect_tex_00329000,battle/effect/tex/
+0x00329014,text,asciz,s_s_s_tga_00329014,%s%s.tga
+0x00329144,text,asciz,s_POLY_FLASH_00329144,POLY FLASH
+0x00329164,text,asciz,s_POLY_TRACK_00329164,POLY TRACK
+0x00329184,text,asciz,s_POLY_TRACK_S_00329184,POLY TRACK S
+0x003291a4,text,asciz,s_effect_editor_mat_003291a4,effect_editor/mat/
+0x003291c4,text,asciz,s_effect_editor_ep_003291c4,effect_editor/ep/
+0x0032926c,text,asciz,s_OBJ_PARTICLE_0032926c,OBJ PARTICLE
+0x00329290,text,asciz,s_POLY_THUNDER_00329290,POLY THUNDER
+0x003292b8,text,asciz,s_effect_editor_003292b8,effect_editor/
+0x003292d8,text,asciz,s_effect_editor_mat_003292d8,effect_editor/mat/
+0x003292f8,text,asciz,s_effect_editor_mat_003292f8,effect_editor/mat/
+0x00329380,text,asciz,s_POLY_TEX2_00329380,POLY TEX2
+0x003293a8,text,asciz,s_effect_editor_mat_003293a8,effect_editor/mat/
+0x003293cc,text,asciz,s_effect_editor_mat_003293cc,effect_editor/mat/
+0x003293f0,text,asciz,s_effect_editor_mat_003293f0,effect_editor/mat/
+0x0032a288,text,asciz,s_camp_jakyou_union2_ac_loop_b_0032a288,camp/jakyou_union2_ac_loop.bam
+0x0032a2a8,text,asciz,s_camp_jakyou_union2_ac_loop_b_0032a2a8,camp/jakyou_union2_ac_loop.bccam
+0x0032a2cc,text,asciz,s_camp_jakyou_union2_loop_bam_0032a2cc,camp/jakyou_union2_loop.bam
+0x0032a2e8,text,asciz,s_camp_jakyou_union2_loop_bcca_0032a2e8,camp/jakyou_union2_loop.bccam
+0x0032a308,text,asciz,s_camp_jakyou_union3_loop_bam_0032a308,camp/jakyou_union3_loop.bam
+0x0032a324,text,asciz,s_camp_jakyou_union3_loop_bcca_0032a324,camp/jakyou_union3_loop.bccam
+0x0032a344,text,asciz,s_camp_jakyou_union4_loop_bam_0032a344,camp/jakyou_union4_loop.bam
+0x0032a360,text,asciz,s_camp_jakyou_union4_loop_bcca_0032a360,camp/jakyou_union4_loop.bccam
+0x0032aa20,text,asciz,s_tx_devil2_0032aa20,tx_devil2
+0x0032aa2c,text,asciz,s_tx_devil3_0032aa2c,tx_devil3
+0x0032aa38,text,asciz,s_tx_devil4_0032aa38,tx_devil4
+0x00331bb0,text,asciz,s__00331bb0,???
+0x003393f4,text,asciz,s_Dummy_pl_003393f4,Dummy_pl
+0x003398f0,text,asciz,s_Dummy_mas_003398f0,Dummy_mas
+0x0033bd84,text,asciz,s_c_SMT4_XRD686_sdds4_program_0033bd84,c:\SMT4\XRD686\sdds4\program\gamedata\nkm\NkmGrowEvent.cpp
+0x0033e2c0,text,asciz,s_battle_devil_s_bcmdl_0033e2c0,battle/devil/%s.bcmdl
+0x0033ee14,text,asciz,s_c_SMT4_XRD686_sdds4_program_0033ee14,c:\SMT4\XRD686\sdds4\program\battle\EnemyDraw\EnemyDraw.cpp
+0x0033f95c,text,asciz,s_c_SMT4_XRD686_sdds4_program_0033f95c,c:\SMT4\XRD686\sdds4\program\gamedata\event\EventSaveData.cpp
+0x00340520,text,asciz,s_battle_battle_map_00340520,battle/battle_map/
+0x00340534,text,asciz,s_se_03d__02d_bcenv_00340534,%se%03d_%02d.bcenv
+0x00340548,text,asciz,s_sb_03d__02d_bam_00340548,%sb%03d_%02d.bam
+0x00340560,text,asciz,s_s_s_bam_00340560,%s%s.bam
+0x00341c40,text,asciz,s_s_bam_00341c40,%s.bam
+0x00343f14,text,asciz,s_bam_00343f14,.bam
+0x00344030,text,asciz,s_player_pl_02d__03dhd_d_bam_00344030,player/pl%02d_%03dhd%d.bam
+0x0034404c,text,asciz,s_player_pl_02d__03dbd0_bam_0034404c,player/pl%02d_%03dbd0.bam
+0x00344068,text,asciz,s_player_pl_02d__03dlg_d_bam_00344068,player/pl%02d_%03dlg%d.bam
+0x00346d7c,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_00346d7c,c:\SMT4\XRD686\AsdSDK\Source\Sys\Mem\AsdMemory.cpp
+0x00347144,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_00347144,c:\SMT4\XRD686\AsdSDK\Source\Gfx\Prim\AsdPrimRenderData.cpp
+0x003488f0,text,asciz,s_c_SMT4_XRD686_sdds4_program_003488f0,c:\SMT4\XRD686\sdds4\program\battle\Filter\FilterXPoly.cpp
+0x00348a60,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_00348a60,c:\SMT4\XRD686\AsdSDK\Source\Sys\Mem\AsdMemory.cpp
+0x00349f0c,text,asciz,s_Position_00349f0c,Position
+0x00349f1c,text,asciz,s_Color_00349f1c,Color
+0x00349f24,text,asciz,s_aTexCoord_00349f24,aTexCoord
+0x0034b420,text,asciz,s_c_SMT4_XRD686_AsdSDK_Source_0034b420,c:\SMT4\XRD686\AsdSDK\Source\Sys\Mem\AsdMemory.cpp
+0x0034cc94,text,asciz,s_battle_dead_effect_dead_effe_0034cc94,battle/dead_effect/dead_effect%d.bcmdl
+0x0035187c,text,asciz,s_c_SMT4_XRD686_sdds4_program_0035187c,c:\SMT4\XRD686\sdds4\program\mobiclip_ctrl\helper_S4Player.cpp
+0x00352884,text,asciz,s_Prices_00352884,Prices
+0x0035288c,text,asciz,s_Ratings_0035288c,Ratings
+0x00352894,text,asciz,s_NewSince_00352894,NewSince
+0x003528a0,text,asciz,s_TitleVersion_003528a0,TitleVersion
+0x003528b0,text,asciz,s_sys_ItemCode_003528b0,sys.ItemCode
+0x00352b1c,text,asciz,s_icons_u_icn_00352b1c,/icons/%u.icn
+0x00352d78,text,asciz,s_MetaDataContentHeader_bin_00352d78,/MetaDataContentHeader.bin
+0x00353030,text,asciz,s_Prices_00353030,Prices
+0x00353038,text,asciz,s_Ratings_00353038,Ratings
+0x00353040,text,asciz,s_NewSince_00353040,NewSince
+0x0035304c,text,asciz,s_TitleVersion_0035304c,TitleVersion
+0x0035305c,text,asciz,s_sys_ItemCode_0035305c,sys.ItemCode
+0x00353314,text,asciz,s_RELEASED_00353314,RELEASED
+0x00353320,text,asciz,s_PricingSelection_00353320,PricingSelection
+0x00353334,text,asciz,s_string_00353334,string
+0x00353340,text,asciz,s_PURCHASABLE_00353340,PURCHASABLE
+0x003537e0,text,asciz,s_016llx_003537e0,%016llx
+0x00354a30,text,asciz,s_sys_ECardTypeCode_00354a30,sys.ECardTypeCode
+0x00354bdc,text,asciz,s_sys_ECardStatus_00354bdc,sys.ECardStatus
+0x00354c0c,text,asciz,s_sys_ECardCurrency_00354c0c,sys.ECardCurrency
+0x00381a60,text,asciz,s_c_SMT4_XRD686_sdds4_program_00381a60,c:\SMT4\XRD686\sdds4\program\quest_center\qcUtility.cpp
+0x00381f38,text,asciz,s_quest_center_common_qc_commo_00381f38,quest_center/common/qc_common.bf
+0x00381f5c,text,asciz,s_quest_center_common_qc_commo_00381f5c,quest_center/common/qc_common.mbm
+0x00382008,text,asciz,s_qc_confirm_00382008,qc_confirm
+0x003821b4,text,asciz,s_qc_HealingYN_003821b4,qc_HealingYN
+0x003821c4,text,asciz,s_qc_HealingNoMoney_003821c4,qc_HealingNoMoney
+0x003821d8,text,asciz,s_qc_Healing_003821d8,qc_Healing
+0x00382870,text,asciz,s_qc_DeliveryStart_00382870,qc_DeliveryStart
+0x00382884,text,asciz,s_qc_DeliveryNG_00382884,qc_DeliveryNG
+0x00382894,text,asciz,s_qc_DeliveryItem_00382894,qc_DeliveryItem
+0x003828a4,text,asciz,s_qc_QuestClear_003828a4,qc_QuestClear
+0x00383748,text,asciz,s_hunter_company_npc_d__d_00383748,hunter_company_npc%d_%d
+0x00383760,text,asciz,s_hunter_company_npc_d__d_add1_00383760,hunter_company_npc%d_%d_add1
+0x00384628,text,asciz,s_s_npc_d_bam_00384628,%s_npc%d.bam
+0x00384638,text,asciz,s_s_npc_d_add1_bam_00384638,%s_npc%d_add1.bam
+0x00384650,text,asciz,s_s_bam_00384650,%s.bam
+0x00384658,text,asciz,s_s_bcenv_00384658,%s.bcenv
+0x00384668,text,asciz,s_quest_center_center_center_0_00384668,quest_center/center/center%02d.bf
+0x0038468c,text,asciz,s_quest_center_center_center_0_0038468c,quest_center/center/center%02d.mbm
+0x00384a04,text,asciz,s_dummy_npc_d_00384a04,dummy_npc%d
+0x00384aac,text,asciz,s_qc_sysque_add_00384aac,qc_sysque_add
+0x00384abc,text,asciz,s_qc_start_00384abc,qc_start
+0x00384bd4,text,asciz,s_dummy_npc_d_00384bd4,dummy_npc%d
+0x00384ce0,text,asciz,s_qc_end_00384ce0,qc_end
+0x00385188,text,asciz,s_qc_NpcSelect_00385188,qc_NpcSelect
+0x00385444,text,asciz,s_quest_center_npc_n_03d_n_03d_00385444,quest_center/npc/n%03d/n%03d.bf
+0x00385464,text,asciz,s_quest_center_npc_n_03d_n_03d_00385464,quest_center/npc/n%03d/n%03d.mbm
+0x00385a64,text,asciz,s_qc_N_Route_00385a64,qc_N_Route
+0x00385a70,text,asciz,s_qc_LookBoard_00385a70,qc_LookBoard
+0x00385a80,text,asciz,s_qc_L_Tokyo_00385a80,qc_L_Tokyo
+0x00385a8c,text,asciz,s_qc_C_Tokyo_00385a8c,qc_C_Tokyo
+0x00385aa8,text,asciz,s_qc_N_RouteReAct_00385aa8,qc_N_RouteReAct
+0x00385c7c,text,asciz,s_qc_RankOut_Hunter_00385c7c,qc_RankOut_Hunter
+0x00385c90,text,asciz,s_qc_RankOut_KBar_00385c90,qc_RankOut_KBar
+0x00385ca0,text,asciz,s_qc_GetQuest_00385ca0,qc_GetQuest
+0x00385cac,text,asciz,s_qc_NoneQuest_00385cac,qc_NoneQuest
+0x0038b438,text,asciz,s_c_SMT4_XRD686_sdds4_program_0038b438,c:\SMT4\XRD686\sdds4\program\addon\aocApplication.cpp
+0x0038b5c8,text,asciz,s_c_SMT4_XRD686_sdds4_program_0038b5c8,c:\SMT4\XRD686\sdds4\program\addon\aocApplication.cpp
+0x0038ba78,text,asciz,s_aoc_base_bin_0038ba78,aoc_base.bin
+0x0038ba88,text,asciz,s_s_s_0038ba88,%s/%s
+0x0038bc4c,text,asciz,s_s_s_0038bc4c,%s/%s
+0x0038c208,text,asciz,s_c_SMT4_XRD686_sdds4_program_0038c208,c:\SMT4\XRD686\sdds4\program\addon\sys\aocIcon.cpp
+0x0038d204,text,asciz,s_SET_SALE_INDEX_0038d204,SET_SALE_INDEX
+0x0038d218,text,asciz,s_SET_SALE_NEW_0038d218,SET_SALE_NEW
+0x0038d228,text,asciz,s_SET_SALE_PRICE_0038d228,SET_SALE_PRICE
+0x0038d238,text,asciz,s_SET_SALE_ECARD_0038d238,SET_SALE_ECARD
+0x0038d248,text,asciz,s_SET_SALE_CHANGE_0038d248,SET_SALE_CHANGE
+0x0038d258,text,asciz,s_ascending_0038d258,ascending
+0x0038d264,text,asciz,s_integer_0038d264,integer
+0x0038e290,text,asciz,s_SET_SALE_INDEX_0038e290,SET_SALE_INDEX
+0x0038e2a4,text,asciz,s_SET_SALE_NEW_0038e2a4,SET_SALE_NEW
+0x0038e2b4,text,asciz,s_SET_SALE_PRICE_0038e2b4,SET_SALE_PRICE
+0x0038e2c4,text,asciz,s_SET_SALE_ECARD_0038e2c4,SET_SALE_ECARD
+0x0038e2d4,text,asciz,s_SET_SALE_CHANGE_0038e2d4,SET_SALE_CHANGE
+0x00390224,text,asciz,s_aoc_ExeDelete_00390224,aoc_ExeDelete
+0x00390240,text,asciz,s_aoc_Deleted_00390240,aoc_Deleted
+0x003903b0,text,asciz,s_Please_select_content_to_pur_003903b0,Please select content to purchase.
+0x00390b34,text,asciz,s_aoc_IsPurchase_00390b34,aoc_IsPurchase
+0x00390b44,text,asciz,s_aoc_IsReDownload_00390b44,aoc_IsReDownload
+0x00390b58,text,asciz,s_aoc_IsDelete_00390b58,aoc_IsDelete
+0x00390b68,text,asciz,s_aoc_IsEnd_00390b68,aoc_IsEnd
+0x00390b74,text,asciz,s_aoc_IsCardInput_00390b74,aoc_IsCardInput
+0x00390b84,text,asciz,s_ls_00390b84,%ls
+0x0039102c,text,asciz,s_ls_0039102c,%ls
+0x00391044,text,asciz,s_ls_s_ls_00391044,%ls%s%ls
+0x00391e84,text,asciz,s_ls_00391e84,%ls
+0x00391ea4,text,asciz,s_ls_s_ls_00391ea4,%ls%s%ls
+0x00391eb4,text,asciz,s_s_s_00391eb4,%s%s
+0x003922d8,text,asciz,s_aoc_IsConnect_003922d8,aoc_IsConnect
+0x00392abc,text,asciz,s_aoc_IsEnd_00392abc,aoc_IsEnd
+0x003939c4,text,asciz,s_c_SMT4_XRD686_sdds4_program_003939c4,c:\SMT4\XRD686\sdds4\program\addon\sys\aocTexCtrl.cpp
+0x00394330,text,asciz,s_STEX_00394330,STEX
+0x00394c40,text,asciz,s_s_eft_00394c40,%s.eft
+0x00396800,text,asciz,s_e_03d__02d_00396800,e%03d_%02d
+0x003970f0,text,asciz,s_map_all_lmap_ene_bcres_003970f0,map/all/lmap_ene.bcres
+0x00397108,text,asciz,s_map_all_lmap_boss_bcres_00397108,map/all/lmap_boss.bcres
+0x00398a24,text,asciz,s_name_name_mbm_00398a24,name/name.mbm
+0x00398a34,text,asciz,s_name_name_bf_00398a34,name/name.bf
+0x003a0d6c,text,asciz,s_shop_itembuy_003a0d6c,shop_itembuy
+0x003a0d7c,text,asciz,s_shop_selloff_003a0d7c,shop_selloff
+0x003a1408,text,asciz,s_2d_003a1408,%2d
+0x003a27dc,text,asciz,s_8d_003a27dc,%8d
+0x003a2a54,text,asciz,s_3d_003a2a54,%3d
+0x003a3180,text,asciz,s_shop_Kantei1_003a3180,shop_Kantei1
+0x003a3194,text,asciz,s_shop_Kantei2_003a3194,shop_Kantei2
+0x003a3520,text,asciz,s_shop_exit_003a3520,shop_exit
+0x003a352c,text,asciz,s_battle_Result_bf_003a352c,battle/Result.bf
+0x003a3540,text,asciz,s_battle_ResultMsg_mbm_003a3540,battle/ResultMsg.mbm
+0x003a3558,text,asciz,s_ProcCharonRequestSecond_003a3558,ProcCharonRequestSecond
+0x003a3998,text,asciz,s_shop_in2_003a3998,shop_in2
+0x003a39a4,text,asciz,s_shop_in_sale_003a39a4,shop_in_sale
+0x003a39b4,text,asciz,s_shop_in_003a39b4,shop_in
+0x003a56dc,text,asciz,s_shop_BuyConfirm_003a56dc,shop_BuyConfirm
+0x003a56ec,text,asciz,s_shop_SellConfirm_003a56ec,shop_SellConfirm
+0x003a5700,text,asciz,s_shop_itembuy_003a5700,shop_itembuy
+0x003a5710,text,asciz,s_shop_Decide_003a5710,shop_Decide
+0x003a5960,text,asciz,s_shop_IsEquip_003a5960,shop_IsEquip
+0x003a5970,text,asciz,s_shop_selloff_003a5970,shop_selloff
+0x003a6040,text,asciz,s_shop_in2_003a6040,shop_in2
+0x003a7ce8,text,asciz,s_c_SMT4_XRD686_sdds4_program_003a7ce8,c:\SMT4\XRD686\sdds4\program\bible\bibleDevil.cpp
+0x003a7d28,text,asciz,s_BIBLE_DEVIL_CALC_003a7d28,BIBLE DEVIL CALC
+0x003a7d40,text,asciz,s_BIBLE_DEVIL_UP_003a7d40,BIBLE DEVIL UP
+0x003a7d54,text,asciz,s_BIBLE_DEVIL_DOWN_003a7d54,BIBLE DEVIL DOWN
+0x003a9520,text,asciz,s_c_SMT4_XRD686_sdds4_program_003a9520,c:\SMT4\XRD686\sdds4\program\bible\bibleAnalyze.cpp
+0x003a9560,text,asciz,s_BIBLE_ANALYZE_CALC_003a9560,BIBLE ANALYZE CALC
+0x003a9578,text,asciz,s_BIBLE_ANALYZE_UP_003a9578,BIBLE ANALYZE UP
+0x003a9590,text,asciz,s_BIBLE_ANALYZE_DOWN_003a9590,BIBLE ANALYZE DOWN
+0x003a9ac0,text,asciz,s_s_s_003a9ac0,%s%s
+0x003aa250,text,asciz,s_4d_003aa250,%4d
+0x003aa698,text,asciz,s_2d_003aa698,%2d
+0x003aa6a0,text,asciz,s_8d_003aa6a0,%8d
+0x003ab920,text,asciz,s_c_SMT4_XRD686_sdds4_program_003ab920,c:\SMT4\XRD686\sdds4\program\bible\bibleLegionSkill.cpp
+0x003ab964,text,asciz,s_BIBLE_LEGIONSKILL_CALC_003ab964,BIBLE LEGIONSKILL CALC
+0x003ab980,text,asciz,s_BIBLE_LEGIONSKILL_UP_003ab980,BIBLE LEGIONSKILL UP
+0x003ab99c,text,asciz,s_BIBLE_LEGIONSKILL_DOWN_003ab99c,BIBLE LEGIONSKILL DOWN
+0x003abb48,text,asciz,s_bible_bible_bf_003abb48,bible/bible.bf
+0x003abb58,text,asciz,s_bible_bible_mbm_003abb58,bible/bible.mbm
+0x003abf9c,text,asciz,s_8d_003abf9c,%8d
+0x003ad4f4,text,asciz,s_c_SMT4_XRD686_sdds4_program_003ad4f4,c:\SMT4\XRD686\sdds4\program\bible\bibleLegionDraw.cpp
+0x003ad53c,text,asciz,s_LegionDrawUp_CALC_003ad53c,LegionDrawUp CALC
+0x003ad6d8,text,asciz,s_bible_bible_bf_003ad6d8,bible/bible.bf
+0x003ad6e8,text,asciz,s_bible_bible_mbm_003ad6e8,bible/bible.mbm
+0x003ae4b4,text,asciz,s_The_enemy_strikes_first_003ae4b4,The enemy strikes first!
+0x003b4a40,text,asciz,s_d_003b4a40,*%d
+0x003b9024,text,asciz,s_scr_sbq_sysbtl_003b9024,scr_sbq_sysbtl
+0x003b9034,text,asciz,s_battle_Result_bf_003b9034,battle/Result.bf
+0x003b9048,text,asciz,s_battle_ResultMsg_mbm_003b9048,battle/ResultMsg.mbm
+0x003b9060,text,asciz,s_ProcCharonRequestFirst_003b9060,ProcCharonRequestFirst
+0x003b9440,text,asciz,s_mikado_akyura_park_gate_003b9440,mikado/akyura_park_gate
+0x003b97bc,text,asciz,s_e001_01_003b97bc,e001_01
+0x003b9a10,text,asciz,s_mikado_s_003b9a10,mikado/%s
+0x003b9a1c,text,asciz,s_mikado_s_bam_003b9a1c,mikado/%s.bam
+0x003b9c74,text,asciz,s_event_e_03d_e_03d_bf_003b9c74,event/e%03d/e%03d.bf
+0x003b9c8c,text,asciz,s_event_e_03d_e_03d_mbm_003b9c8c,event/e%03d/e%03d.mbm
+0x003bb2ac,text,asciz,s_mikado_s_003bb2ac,mikado/%s
+0x003bb2b8,text,asciz,s_mikado_s_bam_003bb2b8,mikado/%s.bam
+0x003bc0f8,text,asciz,s_cec_icon_CecIcon48_ctpk_003bc0f8,cec_icon/CecIcon48.ctpk
+0x003bc110,text,asciz,s_cec_icon_CecIcon40_ctpk_003bc110,cec_icon/CecIcon40.ctpk
+0x003c3fa0,text,asciz,s_btl_Flag_Menu_003c3fa0,btl Flag Menu
+0x003c429c,text,asciz,s_btl_Unit_Menu_003c429c,btl Unit Menu
+0x003c4bc8,text,asciz,s_btl_Stage_Menu_003c4bc8,btl Stage Menu
+0x003c558c,text,asciz,s_btl_Debug_Menu_003c558c,btl Debug Menu
+0x003c58ec,text,asciz,s_TalkCtrl_Menu_003c58ec,TalkCtrl Menu
+0x003c6008,text,asciz,s_Attack_Camera_Menu_003c6008,Attack Camera Menu
+0x003ca114,text,asciz,s_c_SMT4_XRD686_sdds4_program_003ca114,c:\SMT4\XRD686\sdds4\program\gamedata\unite\UniteCtrl.cpp
+0x003df2d4,text,asciz,s_NewSince_003df2d4,NewSince
+0x003df534,text,asciz,s_sys_ItemCode_003df534,sys.ItemCode
+0x003df9e4,text,asciz,s_NewSince_003df9e4,NewSince
+0x003dfbd4,text,asciz,s_sys_ItemCode_003dfbd4,sys.ItemCode
+0x003f08a8,text,asciz,s_battle_NKMBaseTable_tbb_003f08a8,battle/NKMBaseTable.tbb
+0x003f08c0,text,asciz,s_battle_NKMSortIndex_tbb_003f08c0,battle/NKMSortIndex.tbb
+0x003f08d8,text,asciz,s_battle_EncountData_tbb_003f08d8,battle/EncountData.tbb
+0x003f08f0,text,asciz,s_battle_EventEncountData_tbb_003f08f0,battle/EventEncountData.tbb
+0x003f090c,text,asciz,s_battle_SkillData_tbb_003f090c,battle/SkillData.tbb
+0x003f0924,text,asciz,s_unite_UniteTable_tbb_003f0924,unite/UniteTable.tbb
+0x003f093c,text,asciz,s_unite_InheritTable_tbb_003f093c,unite/InheritTable.tbb
+0x003f0954,text,asciz,s_battle_Skill2EffectData_bin_003f0954,battle/Skill2EffectData.bin
+0x003f0970,text,asciz,s_item_ItemTable_tbb_003f0970,item/ItemTable.tbb
+0x003f0984,text,asciz,s_battle_PlayerGrow_tbb_003f0984,battle/PlayerGrow.tbb
+0x003f099c,text,asciz,s_battle_GuestParamData_tbb_003f099c,battle/GuestParamData.tbb
+0x003f09b8,text,asciz,s_item_GauntletAppTable_tbb_003f09b8,item/GauntletAppTable.tbb
+0x003f09d4,text,asciz,s_battle_DevilDNA_tbb_003f09d4,battle/DevilDNA.tbb
+0x003f09e8,text,asciz,s_item_GauntletAppHelpMessage_003f09e8,item/GauntletAppHelpMessage.tbb
+0x003f0a08,text,asciz,s_camp_ButtonHelpTable_tbb_003f0a08,camp/ButtonHelpTable.tbb
+0x003f0a24,text,asciz,s_item_ItemHelpMess_mbm_003f0a24,item/ItemHelpMess.mbm
+0x003f0a3c,text,asciz,s_item_ItemHelpMess_tbb_003f0a3c,item/ItemHelpMess.tbb
+0x003f0a54,text,asciz,s_battle_SkillHelpMess_tbb_003f0a54,battle/SkillHelpMess.tbb
+0x003f0a70,text,asciz,s_battle_SkillHelpMess_mbm_003f0a70,battle/SkillHelpMess.mbm
+0x003f0a8c,text,asciz,s_battle_SkillInfoMess_mbm_003f0a8c,battle/SkillInfoMess.mbm
+0x003f0aa8,text,asciz,s_battle_GrowEventTable_tbb_003f0aa8,battle/GrowEventTable.tbb
+0x003f0ac4,text,asciz,s_camp_CampComTable_tbb_003f0ac4,camp/CampComTable.tbb
+0x003f0adc,text,asciz,s_battle_UI_BattleComTable_tbb_003f0adc,battle/UI/BattleComTable.tbb
+0x003f0afc,text,asciz,s_shop_ShopTable_tbb_003f0afc,shop/ShopTable.tbb
+0x003f0b10,text,asciz,s_shop_ShopSale_tbb_003f0b10,shop/ShopSale.tbb
+0x003f0b24,text,asciz,s_event_NpcData_tbb_003f0b24,event/NpcData.tbb
+0x003f0b38,text,asciz,s_event_BgData_tbb_003f0b38,event/BgData.tbb
+0x003f0b4c,text,asciz,s_event_quest_QuestData_tbb_003f0b4c,event/quest/QuestData.tbb
+0x003f0b68,text,asciz,s_event_quest_SubQuestData_tbb_003f0b68,event/quest/SubQuestData.tbb
+0x003f0b88,text,asciz,s_event_quest_MultiQuestData_t_003f0b88,event/quest/MultiQuestData.tbb
+0x003f0ba8,text,asciz,s_event_quest_QuestSys_mbm_003f0ba8,event/quest/QuestSys.mbm
+0x003f0bc4,text,asciz,s_unite_UniteTbl_bin_003f0bc4,unite/UniteTbl.bin
+0x003f0bd8,text,asciz,s_map_all_TakaraTable_tbb_003f0bd8,map/all/TakaraTable.tbb
+0x003f0bf0,text,asciz,s_map_all_SearchPointTable_tbb_003f0bf0,map/all/SearchPointTable.tbb
+0x003f0c10,text,asciz,s_bible_BibleCalcTable_tbb_003f0c10,bible/BibleCalcTable.tbb
+0x003f0c2c,text,asciz,s_map_all_MapHaichiTable_tbb_003f0c2c,map/all/MapHaichiTable.tbb
+0x003f0ee0,text,asciz,s_unite_SearchTable_tbb_003f0ee0,unite/SearchTable.tbb
+0x003f0ef8,text,asciz,s_battle_ResultMsgFileName_tbb_003f0ef8,battle/ResultMsgFileName.tbb
+0x003f0f18,text,asciz,s_quest_center_common_RankingT_003f0f18,quest_center/common/RankingTable.tbb
+0x003f0f40,text,asciz,s_quest_center_common_NpcHaich_003f0f40,quest_center/common/NpcHaichiTable.tbb
+0x003f0f68,text,asciz,s_quest_center_common_QcName_t_003f0f68,quest_center/common/QcName.tbb
+0x003f0f88,text,asciz,s_map_all_MapEnemyTable_tbb_003f0f88,map/all/MapEnemyTable.tbb
+0x003f0fa4,text,asciz,s_map_all_MapNpcTable_tbb_003f0fa4,map/all/MapNpcTable.tbb
+0x003f0fbc,text,asciz,s_map_all_MapNaviTable_tbb_003f0fbc,map/all/MapNaviTable.tbb
+0x003f0fd8,text,asciz,s_map_all_MapYukaTable_tbb_003f0fd8,map/all/MapYukaTable.tbb
+0x003f0ff4,text,asciz,s_map_all_MapObjTable_tbb_003f0ff4,map/all/MapObjTable.tbb
+0x003f100c,text,asciz,s_map_all_MapSystemTable_tbb_003f100c,map/all/MapSystemTable.tbb
+0x003f1028,text,asciz,s_map_all_ms_kekai_Table_tbb_003f1028,map/all/ms_kekai_Table.tbb
+0x003f1044,text,asciz,s_map_all_ms_search_Table_tbb_003f1044,map/all/ms_search_Table.tbb
+0x003f1060,text,asciz,s_map_all_ms_takara_Table_tbb_003f1060,map/all/ms_takara_Table.tbb
+0x003f107c,text,asciz,s_map_all_ms_k_enemy_Table_tbb_003f107c,map/all/ms_k_enemy_Table.tbb
+0x003f109c,text,asciz,s_mikado_MikadoTable_tbb_003f109c,mikado/MikadoTable.tbb
+0x003f10b4,text,asciz,s_event_quest_QuestUITable_tbb_003f10b4,event/quest/QuestUITable.tbb
+0x003f10d4,text,asciz,s_npc_room_NpcRoomTable_tbb_003f10d4,npc_room/NpcRoomTable.tbb
+0x003f10f0,text,asciz,s_camp_ConfigTable_tbb_003f10f0,camp/ConfigTable.tbb
+0x003f1108,text,asciz,s_camp_PlayLogTable_tbb_003f1108,camp/PlayLogTable.tbb
+0x003f1120,text,asciz,s_camp_SortMenuTable_tbb_003f1120,camp/SortMenuTable.tbb
+0x003f1138,text,asciz,s_camp_PartyPanelHelp_tbb_003f1138,camp/PartyPanelHelp.tbb
+0x003f1150,text,asciz,s_title_TitleTable_tbb_003f1150,title/TitleTable.tbb
+0x003f1168,text,asciz,s_battle_devil_DeadEffectOffse_003f1168,battle/devil/DeadEffectOffset.tbb
+0x003f118c,text,asciz,s_clear_save_clearSave_tbb_003f118c,clear_save/clearSave.tbb
+0x003f11a8,text,asciz,s_saveLoadUI_SaveLoadUITable_t_003f11a8,saveLoadUI/SaveLoadUITable.tbb
+0x003f11c8,text,asciz,s_battle_btlGuestVoceTable_tbb_003f11c8,battle/btlGuestVoceTable.tbb
+0x003f11e8,text,asciz,s_battle_devilVoceTable_tbb_003f11e8,battle/devilVoceTable.tbb
+0x003f1204,text,asciz,s_status_profile_mbm_003f1204,status/profile.mbm
+0x003f1218,text,asciz,s_addon_aoc_msg_mbm_003f1218,addon/aoc_msg.mbm
+0x003f122c,text,asciz,s_addon_aoc_error_msg_mbm2_003f122c,addon/aoc_error_msg.mbm2
 0x003ff03f,rodata,asciz,s_s_Terminal,?%s Terminal
 0x003ff040,rodata,asciz,s_s_Terminal_003ff040,%s Terminal
 0x003ff148,rodata,asciz,s_addon_aoc_scr_bf,addon/aoc_scr.bf
