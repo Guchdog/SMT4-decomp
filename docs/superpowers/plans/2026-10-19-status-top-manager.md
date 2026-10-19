@@ -74,8 +74,8 @@
 - Produces: `Status_CalcTaskCallback` (`0x0018f560`, 4,912 B), `Status_GetActiveDemonId`, `Status_SetDemon`
 - Consumes: `Sound_PlaySE`, `UiAnimSprite_UpdateCalc`
 
-- [ ] **Step 1: Update progress test expectations (RED)**
-- [ ] **Step 2: Run test to verify it fails**
-- [ ] **Step 3: Implement `Status_CalcTaskCallback` and state handlers in `src/ui/status.cpp`**
-- [ ] **Step 4: Update `config/functions.csv` and run test to verify it passes (GREEN)**
-- [ ] **Step 5: Commit and push**
+- [x] **Step 1: Update progress test expectations (RED)**
+- [x] **Step 2: Run test to verify it fails**
+- [x] **Step 3: Implement `Status_CalcTaskCallback` and state handlers in `src/ui/status.cpp`**
+- [x] **Step 4: Update `config/functions.csv` and run test to verify it passes (GREEN)**
+- [x] **Step 5: Commit and push**

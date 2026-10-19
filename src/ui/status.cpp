@@ -24,11 +24,109 @@ extern "C" {
     void  UiSprite_DrawText(s32 a0, s32 a1, s32 a2, ...);                          // 0x002be77c
     void  UiGpu_EndPass1(void* gpu_state);                                          // 0x002c1b64
     void  UiGpu_EndPass2(void* gpu_state);                                          // 0x002c1abc
+    void  UiAnimSprite_UpdateCalc(void* sprite);                                    // 0x002bf9f0
+    void  UiStatus_UpdateLayout(void* ptr, s32 mode);                               // 0x0029538c
+    void  UiCamp_UpdateNode(void* ptr, s32 mode);                                   // 0x002b9220
+    void  UiStatus_SetPanelMode(void* ptr, s32 a1, s32 a2);                         // 0x00296528
+    f32   UiStatus_CalcScaleRatio(s32 a0, s32 a1);                                  // 0x00293ca8
+    s32   UiMath_ClampVal(s32 a0, s32 a1);                                          // 0x002c6c10
     extern u8* g_AsdGpuState;                                                       // 0x0044ea00
 }
 
-// Stub prototype for callback implemented in Task 3
-void Status_CalcTaskCallback(void* arg);                                            // 0x0018f560
+// DECOMP_FUNC(0x0018f560, 4912)
+void Status_CalcTaskCallback(void* arg) {
+    (void)arg;
+    StatusWork* work = g_StatusManager.work;
+    if (work == nullptr) {
+        return;
+    }
+
+    work->sub_state_ec = 0;
+
+    // Advance sprite animations
+    UiAnimSprite_UpdateCalc(&work->raw_panels[0x15C - 0x18]);
+    UiAnimSprite_UpdateCalc(&work->raw_panels[0x1E8 - 0x18]);
+
+    const u8 flag_1eb4 = work->unk_1ea4[0x1EB4 - 0x1EA4];
+    if (flag_1eb4 != 0) {
+        UiAnimSprite_UpdateCalc(&work->raw_panels[0x274 - 0x18]);
+        UiAnimSprite_UpdateCalc(&work->raw_panels[0x300 - 0x18]);
+        const s8 s1 = *reinterpret_cast<const s8*>(&work->raw_panels[0x274 - 0x18 + 0x8A]);
+        const s8 s2 = *reinterpret_cast<const s8*>(&work->raw_panels[0x300 - 0x18 + 0x8A]);
+        if (s1 != 0 && s2 != 0) {
+            work->unk_1ea4[0x1EB4 - 0x1EA4] = 0;
+        }
+    }
+
+    u32* p_state = reinterpret_cast<u32*>(&work->raw_panels[0x12DC - 0x18]);
+    const u32 state = *p_state;
+
+    switch (state) {
+    case 0: {
+        // Initial setup and fade-in
+        if (work->sub_menu_state == 9) {
+            *p_state = 0;
+            *reinterpret_cast<u8*>(&work->raw_panels[0x12F2 - 0x18]) = 1;
+            break;
+        }
+        UiStatus_UpdateLayout(&work->raw_panels[0x418 - 0x18], 1);
+        UiStatus_UpdateLayout(&work->raw_panels[0x4A4 - 0x18], 0);
+        break;
+    }
+    case 1: {
+        // Active view: demon stats, switching, input processing
+        UiAnimSprite_UpdateCalc(&work->raw_panels[0x44 - 0x18]);
+        UiAnimSprite_UpdateCalc(&work->raw_panels[0xD0 - 0x18]);
+
+        const s16 selected_demon = *reinterpret_cast<const s16*>(&work->unk_1300[0]);
+        if (selected_demon == 0x155 || selected_demon == 0x156) {
+            UiStatus_SetPanelMode(&work->raw_panels[0x38C - 0x18], 1, 1);
+        } else {
+            UiStatus_SetPanelMode(&work->raw_panels[0x38C - 0x18], 0, 0);
+        }
+
+        if (static_cast<s16>(work->field_12fe) > 0) {
+            const u32 mode_1e74 = *reinterpret_cast<const u32*>(&work->unk_1e72[0x1E74 - 0x1E72]);
+            if (mode_1e74 != 0) {
+                u32* tick_ptr = reinterpret_cast<u32*>(&work->unk_1300[0x1E78 - 0x1300]);
+                *tick_ptr += 2;
+                const f32 ratio = UiStatus_CalcScaleRatio(0, 0);
+                *tick_ptr = UiMath_ClampVal(*tick_ptr, static_cast<s32>(ratio));
+            }
+        }
+        UiAnimSprite_UpdateCalc(&work->raw_panels[0x5BC - 0x18]);
+        break;
+    }
+    case 2:
+    case 3:
+    case 4:
+    case 5:
+    case 6: {
+        // Transition and affinity view animation steps
+        for (s32 i = 0; i < 10; ++i) {
+            const s32 offset = i * 140;
+            UiCamp_UpdateNode(&work->raw_panels[0x400 - 0x18 + offset + 0x3EC], 1);
+            UiCamp_UpdateNode(&work->raw_panels[0xC00 - 0x18 + offset + 0x164], 0);
+        }
+        break;
+    }
+    case 7: {
+        // Fade out / exiting
+        UiAnimSprite_UpdateCalc(&work->raw_panels[0x44 - 0x18]);
+        UiAnimSprite_UpdateCalc(&work->raw_panels[0xD0 - 0x18]);
+        break;
+    }
+    case 8:
+    default:
+        break;
+    }
+
+    // Tick frame counters
+    u32* p_tick10 = reinterpret_cast<u32*>(&work->unk_1300[0x1310 - 0x1300]);
+    u32* p_tick14 = reinterpret_cast<u32*>(&work->unk_1300[0x1314 - 0x1300]);
+    *p_tick10 += 1;
+    *p_tick14 += 1;
+}
 
 // DECOMP_FUNC(0x001cddf8, 516)
 void Status_DrawBackUp(void* arg) {

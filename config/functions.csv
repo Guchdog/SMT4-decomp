@@ -1806,7 +1806,7 @@ address,size,status,category,name,src_file
 0x0018bfec,12684,todo,script_vm,script_vm_func_0018bfec,
 0x0018f178,988,todo,ui,ui_func_0018f178,
 0x0018f554,12,todo,unknown,func_0018f554,
-0x0018f560,4912,todo,ui,ui_func_0018f560,
+0x0018f560,4912,non_matching,ui,Status_CalcTaskCallback,src/ui/status.cpp
 0x00190890,288,todo,ui,ui_func_00190890,
 0x001909b0,920,todo,camp,camp_func_001909b0,
 0x00190d48,2536,todo,ui,ui_func_00190d48,

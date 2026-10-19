@@ -4,15 +4,15 @@
 
 | Metric | Decompiled | Total | Remaining | Percentage |
 |--------|-----------:|------:|----------:|-----------:|
-| **Code Size (Bytes)** | 50,756 B | 3,139,108 B | 3,088,352 B | **1.6169%** |
-| **Functions** | 90 | 10,349 | 10,259 | **0.8696%** |
+| **Code Size (Bytes)** | 55,668 B | 3,139,108 B | 3,083,440 B | **1.7734%** |
+| **Functions** | 91 | 10,349 | 10,258 | **0.8793%** |
 
 ## Subsystem Breakdown
 
 | Subsystem | Decompiled Funcs | Total Funcs | Decompiled Bytes | Total Bytes | Subsystem % |
 |-----------|-----------------:|------------:|-----------------:|------------:|------------:|
 | `engine` | 0 | 2,368 | 0 B | 735,468 B | 0.000% |
-| `ui` | 88 | 1,242 | 50,684 B | 675,556 B | 7.503% |
+| `ui` | 89 | 1,242 | 55,596 B | 675,556 B | 8.230% |
 | `unknown` | 0 | 3,823 | 0 B | 654,480 B | 0.000% |
 | `script_vm` | 0 | 1,203 | 0 B | 459,392 B | 0.000% |
 | `camp` | 0 | 919 | 0 B | 331,168 B | 0.000% |
@@ -30,6 +30,7 @@
 | `0x00100024` | 36 | `crt` | `non_matching` | `__init_bss` | [`src/crt/start.cpp`](src/crt/start.cpp) |
 | `0x0010299c` | 260 | `ui` | `non_matching` | `IfTouch_Init` | [`src/ui/tbb_loader.cpp`](src/ui/tbb_loader.cpp) |
 | `0x00187014` | 5176 | `ui` | `non_matching` | `StatusDown_DrawPartyAndSubViews` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
+| `0x0018f560` | 4912 | `ui` | `non_matching` | `Status_CalcTaskCallback` | [`src/ui/status.cpp`](src/ui/status.cpp) |
 | `0x001a310c` | 15148 | `ui` | `non_matching` | `Status_DrawUp` | [`src/ui/status.cpp`](src/ui/status.cpp) |
 | `0x001ca648` | 8908 | `ui` | `non_matching` | `StatusDown_CalcTaskCallback` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x001cc914` | 5348 | `ui` | `non_matching` | `StatusDown_DrawTaskCallback` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
