@@ -84,4 +84,33 @@ void InfoWin_Dismiss();                                                         
 void InfoWin_DrawUp(void* arg);                                                     // 0x0011ae10
 void InfoWin_Calc(void* arg);                                                       // 0x0011b128
 
+/**
+ * Guest Demonica Partner Prompt Window workspace (0xBC bytes).
+ * Original Atlus source path: `c:\SMT4\XRD686\sdds4\program\font\GuestWin\GuestWin.cpp`
+ * Global pointer: `g_GuestWinWork` at `0x0043E110`.
+ */
+struct GuestWinWork {
+    void* calc_task;                    // +0x00: "GuestWin Calc" task handle (0x0011b128)
+    void* draw_up_left;                 // +0x04: "GuestWin DrawUpLeft" task handle (0x0011a9b4, prio 0x81)
+    void* draw_up_right;                // +0x08: "GuestWin DrawUpRight" task handle (0x0011a9b4, prio 0xDF)
+    u32 state;                          // +0x0C: Active state
+    UiSpriteGroup sprite_group;         // +0x10: Sprite table group (0x20 bytes)
+    UiAnimSprite panel_sprite;          // +0x30: Anim sprite (0x8C bytes)
+};
+
+static_assert(offsetof(GuestWinWork, calc_task) == 0x00);
+static_assert(offsetof(GuestWinWork, draw_up_left) == 0x04);
+static_assert(offsetof(GuestWinWork, draw_up_right) == 0x08);
+static_assert(offsetof(GuestWinWork, sprite_group) == 0x10);
+static_assert(offsetof(GuestWinWork, panel_sprite) == 0x30);
+static_assert(sizeof(GuestWinWork) == 0xBC);
+
+extern GuestWinWork* g_GuestWinWork;    // 0x0043E110
+
+// GuestWin API functions
+bool GuestWin_IsActive();                                                           // 0x0010b340
+void GuestWin_Init();                                                               // 0x0010b350
+void GuestWin_HandlePrompt();                                                       // 0x0010b510
+void GuestWin_DrawUp(void* arg);                                                    // 0x0011a9b4
+
 } // namespace smt4::ui

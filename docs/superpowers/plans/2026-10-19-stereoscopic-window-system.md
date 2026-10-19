@@ -101,14 +101,14 @@ Total for ComWin: 3,740 bytes across 8 functions.
 - `GuestWin_HandlePrompt`: `0x0010b510` (104 B)
 - `GuestWin_DrawUp`: `0x0011a9b4` (1,116 B)
 
-- [ ] **Step 1: Update progress test expectations (RED)**
-  - Update `tests/test_progress.py` to expect 111 functions and 63,872 bytes (Crossing 2.0% of executable!).
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 1: Update progress test expectations (RED)**
+  - Update `tests/test_progress.py` to expect 112 functions and 63,504 bytes (Crossing 2.0% of executable!).
+- [x] **Step 2: Run test to verify it fails**
   - Run `python -m unittest discover -s tests -v`.
-- [ ] **Step 3: Define `GuestWinWork` in `include/ui/window.h` and implement GuestWin functions in `src/ui/window.cpp`**
-- [ ] **Step 4: Update `config/functions.csv` and run test to verify it passes (GREEN)**
+- [x] **Step 3: Define `GuestWinWork` in `include/ui/window.h` and implement GuestWin functions in `src/ui/window.cpp`**
+- [x] **Step 4: Update `config/functions.csv` and run test to verify it passes (GREEN)**
   - Register GuestWin functions in `config/functions.csv`.
   - Run `python tools/progress.py --write` and `python -m unittest discover -s tests -v`.
-- [ ] **Step 5: Commit and push**
+- [x] **Step 5: Commit and push**
   - Commit: `feat(ui): implement GuestWin partner demonica prompt (+1,684 B, 2% milestone reached)`.
   - Push to `origin/main`.

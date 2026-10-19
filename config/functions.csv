@@ -197,9 +197,9 @@ address,size,status,category,name,src_file
 0x0010b1b4,172,non_matching,ui,InfoWin_ShowMessage,src/ui/window.cpp
 0x0010b260,192,non_matching,ui,InfoWin_UpdateTimer,src/ui/window.cpp
 0x0010b320,32,non_matching,ui,InfoWin_Dismiss,src/ui/window.cpp
-0x0010b340,16,todo,ui,ui_func_0010b340,
-0x0010b350,448,todo,ui,GuestWin_func_0010b350,
-0x0010b510,104,todo,engine,engine_func_0010b510,
+0x0010b340,16,non_matching,ui,GuestWin_IsActive,src/ui/window.cpp
+0x0010b350,448,non_matching,ui,GuestWin_Init,src/ui/window.cpp
+0x0010b510,104,non_matching,engine,GuestWin_HandlePrompt,src/ui/window.cpp
 0x0010b578,604,todo,engine,engine_func_0010b578,
 0x0010b7d4,16,todo,unknown,func_0010b7d4,
 0x0010b7e4,16,todo,unknown,func_0010b7e4,
@@ -391,7 +391,7 @@ address,size,status,category,name,src_file
 0x0011a244,168,todo,unknown,func_0011a244,
 0x0011a2ec,104,todo,engine,engine_func_0011a2ec,
 0x0011a354,1632,non_matching,ui,ComWin_DrawUp,src/ui/window.cpp
-0x0011a9b4,1116,todo,ui,ui_func_0011a9b4,
+0x0011a9b4,1116,non_matching,ui,GuestWin_DrawUp,src/ui/window.cpp
 0x0011ae10,792,non_matching,ui,InfoWin_DrawUp,src/ui/window.cpp
 0x0011b128,588,non_matching,ui,InfoWin_Calc,src/ui/window.cpp
 0x0011b374,20,todo,script_vm,script_vm_func_0011b374,

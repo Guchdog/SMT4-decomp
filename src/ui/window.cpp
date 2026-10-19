@@ -39,6 +39,8 @@ extern "C" {
     extern u8* g_AsdGpuState;                                                       // 0x0044ea00
     extern u8  g_ComWinSpriteTable[];                                               // 0x004038F0
     extern u8  g_InfoWinSpriteTable[];                                              // 0x00403AA8
+    extern u8  g_GuestWinSpriteTable[];                                             // 0x00403A38
+    void* UiEngine_GetContext();                                                    // 0x002c2b1c
 }
 
 // Forward declaration for task callback
@@ -320,6 +322,106 @@ void InfoWin_Calc(void* arg) {
         return;
     }
     InfoWin_UpdateTimer();
+}
+
+GuestWinWork* g_GuestWinWork = nullptr; // 0x0043E110
+
+void GuestWin_Calc(void* arg);                                                      // 0x0011b128
+
+// DECOMP_FUNC(0x0010b340, 16)
+bool GuestWin_IsActive() {
+    return g_GuestWinWork != nullptr && g_GuestWinWork->state != 0;
+}
+
+// DECOMP_FUNC(0x0010b350, 448)
+void GuestWin_Init() {
+    GuestWinWork* work = g_GuestWinWork;
+    if (work == nullptr) {
+        work = static_cast<GuestWinWork*>(
+            AsdMem_Alloc(0x100, 0xF5, 0, sizeof(GuestWinWork), 1));
+        g_GuestWinWork = work;
+    }
+
+    AsdMem_Zero(work, sizeof(GuestWinWork));
+
+    work->calc_task = AsdTask_CreateCalc("GuestWin Calc", 1, 0, 0,
+                                         GuestWin_Calc, 0, 0);
+    work->draw_up_left = AsdTask_CreateDraw("GuestWin DrawUpLeft", 0x81, 0, 0,
+                                            GuestWin_DrawUp, 0, 0, work->calc_task);
+    work->draw_up_right = AsdTask_CreateDraw("GuestWin DrawUpRight", 0xDF, 0, 0,
+                                             GuestWin_DrawUp, 0, 0, work->calc_task);
+
+    UiSpriteGroup_Init(&work->sprite_group);
+    UiSpriteGroup_BindTable(&work->sprite_group,
+                            g_GuestWinSpriteTable - 0x18, 0x18,
+                            0, g_GuestWinSpriteTable - 0x18, 0x18,
+                            0, 0, g_GuestWinSpriteTable, 0x70);
+
+    UiAnimSprite_SetupEx(&work->panel_sprite, 0x0E, 0x87, 0, &work->sprite_group, 1, 1.0f);
+    UiAnimSprite_SetAnim(&work->panel_sprite, 0, 0);
+}
+
+// DECOMP_FUNC(0x0010b510, 104)
+void GuestWin_HandlePrompt() {
+    auto* ctx = reinterpret_cast<u8*>(UiEngine_GetContext());
+    if (ctx == nullptr) {
+        return;
+    }
+
+    auto* timer_block = reinterpret_cast<s16*>(ctx + 0xF28);
+    auto* flag_block = ctx + 0xF20;
+
+    for (s32 i = 0; i < 16; ++i) {
+        u8 flags = flag_block[i * 0x14];
+        if ((flags & 7) == 7 && !(flags & 8)) {
+            s16 timer = timer_block[i * (0x14 / 2)];
+            if (timer > 0) {
+                timer--;
+                timer_block[i * (0x14 / 2)] = timer;
+            }
+            if (timer == 0) {
+                flag_block[i * 0x14] |= 8;
+            }
+        }
+    }
+}
+
+// DECOMP_FUNC(0x0011a9b4, 1116)
+void GuestWin_DrawUp(void* arg) {
+    (void)arg;
+    GuestWinWork* work = g_GuestWinWork;
+    if (work == nullptr || work->draw_up_right == nullptr || work->state == 0) {
+        return;
+    }
+
+    UiGpu_BeginPass(g_AsdGpuState);
+    UiGpu_SetViewportParams(1, 0);
+
+    auto* layer = reinterpret_cast<u32*>(g_AsdGpuState + 0x124C);
+    const u32 old_depth = *layer;
+    *layer = old_depth + 1;
+    auto* layer_entry = reinterpret_cast<u32*>(g_AsdGpuState + 0x124C + 8);
+    layer_entry[*layer] = 1;
+
+    // Stereoscopic parallax shift (0.35f scale)
+    const f32 shift = UiGpu_TransformCoord(g_AsdGpuState, 0.35f);
+    const s32 base_x = static_cast<s32>(shift);
+
+    const f32 alpha = *reinterpret_cast<const f32*>(&work->panel_sprite.raw[0x20]);
+    UiGpu_SetAlphaBlend(alpha);
+
+    // Draw partner prompt banner backdrop & Demonica prompt icon
+    UiSprite_DrawPanelDirect(2, 0x0E, 0x03, base_x, 0, 1);
+    UiSprite_DrawPanelDirect(2, 0x0E, 0x04, base_x, 0, 1);
+
+    if (*layer > 0) {
+        *layer = *layer - 1;
+    }
+}
+
+void GuestWin_Calc(void* arg) {
+    (void)arg;
+    GuestWin_HandlePrompt();
 }
 
 } // namespace smt4::ui
