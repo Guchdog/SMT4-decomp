@@ -73,16 +73,16 @@ Total for ComWin: 3,740 bytes across 8 functions.
 - `InfoWin_DrawUp`: `0x0011ae10` (792 B)
 - `InfoWin_Calc`: `0x0011b128` (588 B) [Shared / adjacent calc dispatcher]
 
-- [ ] **Step 1: Update progress test expectations (RED)**
-  - Update `tests/test_progress.py` to expect 107 functions and 62,188 bytes.
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 1: Update progress test expectations (RED)**
+  - Update `tests/test_progress.py` to expect 108 functions and 61,820 bytes.
+- [x] **Step 2: Run test to verify it fails**
   - Run `python -m unittest discover -s tests -v`.
-- [ ] **Step 3: Define `InfoWinWork` in `include/ui/window.h` and implement InfoWin functions in `src/ui/window.cpp`**
-- [ ] **Step 4: Update `config/functions.csv` and run test to verify it passes (GREEN)**
+- [x] **Step 3: Define `InfoWinWork` in `include/ui/window.h` and implement InfoWin functions in `src/ui/window.cpp`**
+- [x] **Step 4: Update `config/functions.csv` and run test to verify it passes (GREEN)**
   - Register InfoWin functions in `config/functions.csv`.
   - Run `python tools/progress.py --write` and `python -m unittest discover -s tests -v`.
-- [ ] **Step 5: Commit and push**
-  - Commit: `feat(ui): implement InfoWin alert & notification window (+2,780 B)`.
+- [x] **Step 5: Commit and push**
+  - Commit: `feat(ui): implement InfoWin alert & notification window (+2,412 B)`.
   - Push to `origin/main`.
 
 ---

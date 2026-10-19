@@ -4,16 +4,16 @@
 
 | Metric | Decompiled | Total | Remaining | Percentage |
 |--------|-----------:|------:|----------:|-----------:|
-| **Code Size (Bytes)** | 59,408 B | 3,139,108 B | 3,079,700 B | **1.8925%** |
-| **Functions** | 100 | 10,349 | 10,249 | **0.9663%** |
+| **Code Size (Bytes)** | 61,820 B | 3,139,108 B | 3,077,288 B | **1.9693%** |
+| **Functions** | 108 | 10,349 | 10,241 | **1.0436%** |
 
 ## Subsystem Breakdown
 
 | Subsystem | Decompiled Funcs | Total Funcs | Decompiled Bytes | Total Bytes | Subsystem % |
 |-----------|-----------------:|------------:|-----------------:|------------:|------------:|
 | `engine` | 2 | 2,368 | 120 B | 735,468 B | 0.016% |
-| `ui` | 93 | 1,242 | 59,100 B | 675,556 B | 8.748% |
-| `unknown` | 2 | 3,823 | 72 B | 654,480 B | 0.011% |
+| `ui` | 100 | 1,242 | 61,452 B | 675,556 B | 9.097% |
+| `unknown` | 3 | 3,823 | 132 B | 654,480 B | 0.020% |
 | `script_vm` | 0 | 1,203 | 0 B | 459,392 B | 0.000% |
 | `camp` | 0 | 919 | 0 B | 331,168 B | 0.000% |
 | `battle` | 1 | 566 | 44 B | 220,356 B | 0.020% |
@@ -37,7 +37,15 @@
 | `0x0010ae9c` | 44 | `battle` | `non_matching` | `ComWin_CheckFlag` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x0010aec8` | 12 | `unknown` | `non_matching` | `ComWin_GetResult` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x0010aed4` | 100 | `engine` | `non_matching` | `ComWin_Reset` | [`src/ui/window.cpp`](src/ui/window.cpp) |
+| `0x0010af38` | 16 | `ui` | `non_matching` | `InfoWin_IsActive` | [`src/ui/window.cpp`](src/ui/window.cpp) |
+| `0x0010af48` | 60 | `unknown` | `non_matching` | `InfoWin_SetState` | [`src/ui/window.cpp`](src/ui/window.cpp) |
+| `0x0010af84` | 560 | `ui` | `non_matching` | `InfoWin_Init` | [`src/ui/window.cpp`](src/ui/window.cpp) |
+| `0x0010b1b4` | 172 | `ui` | `non_matching` | `InfoWin_ShowMessage` | [`src/ui/window.cpp`](src/ui/window.cpp) |
+| `0x0010b260` | 192 | `ui` | `non_matching` | `InfoWin_UpdateTimer` | [`src/ui/window.cpp`](src/ui/window.cpp) |
+| `0x0010b320` | 32 | `ui` | `non_matching` | `InfoWin_Dismiss` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x0011a354` | 1632 | `ui` | `non_matching` | `ComWin_DrawUp` | [`src/ui/window.cpp`](src/ui/window.cpp) |
+| `0x0011ae10` | 792 | `ui` | `non_matching` | `InfoWin_DrawUp` | [`src/ui/window.cpp`](src/ui/window.cpp) |
+| `0x0011b128` | 588 | `ui` | `non_matching` | `InfoWin_Calc` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x00187014` | 5176 | `ui` | `non_matching` | `StatusDown_DrawPartyAndSubViews` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x0018f560` | 4912 | `ui` | `non_matching` | `Status_CalcTaskCallback` | [`src/ui/status.cpp`](src/ui/status.cpp) |
 | `0x001a310c` | 15148 | `ui` | `non_matching` | `Status_DrawUp` | [`src/ui/status.cpp`](src/ui/status.cpp) |

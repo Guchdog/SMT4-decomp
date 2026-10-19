@@ -43,4 +43,45 @@ void ComWin_GetResult();                                                        
 void ComWin_Reset();                                                                // 0x0010aed4
 void ComWin_DrawUp(void* arg);                                                      // 0x0011a354
 
+/**
+ * Information & Alert Dialog Window workspace (0x1BC bytes).
+ * Original Atlus source path: `c:\SMT4\XRD686\sdds4\program\font\InfoWin\InfoWin.cpp`
+ * Global pointer: `g_InfoWinWork` at `0x0043E128`.
+ */
+struct InfoWinWork {
+    void* calc_task;                    // +0x00: "InfoWin Calc" task handle (0x0011b1bc)
+    void* draw_up_left;                 // +0x04: "InfoWin DrawUpLeft" task handle (0x0011ae10, prio 0x81)
+    void* draw_up_right;                // +0x08: "InfoWin DrawUpRight" task handle (0x0011ae10, prio 0xDF)
+    u32 state;                          // +0x0C: Active state
+    u32 timer;                          // +0x10: Frame display timer (default 30)
+    u32 flags;                          // +0x14
+    u32 unk_18;                         // +0x18
+    u32 unk_1c;                         // +0x1C
+    u32 unk_20;                         // +0x20
+    UiSpriteGroup sprite_group;         // +0x24: Sprite table group (0x20 bytes)
+    UiAnimSprite panel_sprites[2];      // +0x44, +0xD0: Anim sprites (2 * 0x8C bytes)
+    u8 unk_15c[0x1B8 - 0x15C];          // +0x15C..+0x1B8
+    void* text_handle;                  // +0x1B8: Text renderer handle
+};
+
+static_assert(offsetof(InfoWinWork, calc_task) == 0x00);
+static_assert(offsetof(InfoWinWork, draw_up_left) == 0x04);
+static_assert(offsetof(InfoWinWork, draw_up_right) == 0x08);
+static_assert(offsetof(InfoWinWork, sprite_group) == 0x24);
+static_assert(offsetof(InfoWinWork, panel_sprites) == 0x44);
+static_assert(offsetof(InfoWinWork, text_handle) == 0x1B8);
+static_assert(sizeof(InfoWinWork) == 0x1BC);
+
+extern InfoWinWork* g_InfoWinWork;      // 0x0043E128
+
+// InfoWin API functions
+bool InfoWin_IsActive();                                                            // 0x0010af38
+void InfoWin_SetState(u32 state);                                                   // 0x0010af48
+void InfoWin_Init();                                                                // 0x0010af84
+void InfoWin_ShowMessage(const char* msg);                                          // 0x0010b1b4
+void InfoWin_UpdateTimer();                                                         // 0x0010b260
+void InfoWin_Dismiss();                                                             // 0x0010b320
+void InfoWin_DrawUp(void* arg);                                                     // 0x0011ae10
+void InfoWin_Calc(void* arg);                                                       // 0x0011b128
+
 } // namespace smt4::ui

@@ -30,8 +30,15 @@ extern "C" {
     void  UiWindow_PopContext(void* ptr, s32 mode);                                 // 0x002bef88
     void  UiWindow_SetResult(s32 val);                                              // 0x002c4244
     void  UiWindow_ResetState(void* ptr);                                           // 0x002bdbcc
+    void* AsdText_CreateDefault(s32 a0);                                            // 0x002bda1c
+    void  AsdText_SetAlpha(void* handle, u32 alpha);                                // 0x002bda10
+    void  AsdText_SetColorAndScale(void* handle, s32 a0, u32 color, f32 scale);    // 0x002bda00
+    void  UiAnimSprite_SetupEx(UiAnimSprite* sprite, s32 type, s32 id, s32 a3,
+                               UiSpriteGroup* group, u32 flag, f32 scale);          // 0x002bdb2c
+    void  UiAnimSprite_SetMode(UiAnimSprite* sprite, s32 m0, s32 m1);               // 0x002bdac0
     extern u8* g_AsdGpuState;                                                       // 0x0044ea00
     extern u8  g_ComWinSpriteTable[];                                               // 0x004038F0
+    extern u8  g_InfoWinSpriteTable[];                                              // 0x00403AA8
 }
 
 // Forward declaration for task callback
@@ -183,6 +190,136 @@ void ComWin_DrawUp(void* arg) {
 
 void ComWin_Calc(void* arg) {
     (void)arg;
+}
+
+InfoWinWork* g_InfoWinWork = nullptr; // 0x0043E128
+
+// DECOMP_FUNC(0x0010af38, 16)
+bool InfoWin_IsActive() {
+    return g_InfoWinWork != nullptr && g_InfoWinWork->state != 0;
+}
+
+// DECOMP_FUNC(0x0010af48, 60)
+void InfoWin_SetState(u32 state) {
+    InfoWinWork* work = g_InfoWinWork;
+    if (work != nullptr) {
+        work->state = state;
+        work->timer = 0x1E;
+        work->flags = 0;
+    }
+}
+
+// DECOMP_FUNC(0x0010af84, 560)
+void InfoWin_Init() {
+    InfoWinWork* work = g_InfoWinWork;
+    if (work == nullptr) {
+        work = static_cast<InfoWinWork*>(
+            AsdMem_Alloc(0x100, 0xFF, 0, sizeof(InfoWinWork), 1));
+        g_InfoWinWork = work;
+    }
+
+    AsdMem_Zero(work, sizeof(InfoWinWork));
+
+    work->calc_task = AsdTask_CreateCalc("InfoWin Calc", 1, 0, 0,
+                                         InfoWin_Calc, 0, 0);
+    work->draw_up_left = AsdTask_CreateDraw("InfoWin DrawUpLeft", 0x81, 0, 0,
+                                            InfoWin_DrawUp, 0, 0, work->calc_task);
+    work->draw_up_right = AsdTask_CreateDraw("InfoWin DrawUpRight", 0xDF, 0, 0,
+                                             InfoWin_DrawUp, 0, 0, work->calc_task);
+
+    UiSpriteGroup_Init(&work->sprite_group);
+    UiSpriteGroup_BindTable(&work->sprite_group,
+                            nullptr, 0,
+                            0x24, g_InfoWinSpriteTable, 0,
+                            0, 0, g_InfoWinSpriteTable, 0);
+
+    UiAnimSprite_SetupEx(&work->panel_sprites[0], 0x0E, 0x87, 0, &work->sprite_group, 1, 1.0f);
+    UiAnimSprite_SetMode(&work->panel_sprites[0], 0, 0);
+
+    UiAnimSprite_SetupEx(&work->panel_sprites[1], 0x0E, 0x87, 0, &work->sprite_group, 1, 1.0f);
+    UiAnimSprite_SetMode(&work->panel_sprites[1], 2, 0);
+
+    work->text_handle = AsdText_CreateDefault(0);
+    AsdText_SetAlpha(work->text_handle, 0xFF);
+    AsdText_SetColorAndScale(work->text_handle, 0, 0x646464FFu, 0.0f);
+
+    work->timer = 0x1E;
+}
+
+// DECOMP_FUNC(0x0010b1b4, 172)
+void InfoWin_ShowMessage(const char* msg) {
+    (void)msg;
+    InfoWinWork* work = g_InfoWinWork;
+    if (work == nullptr) {
+        return;
+    }
+    work->state = 1;
+    work->timer = 0x1E;
+}
+
+// DECOMP_FUNC(0x0010b260, 192)
+void InfoWin_UpdateTimer() {
+    InfoWinWork* work = g_InfoWinWork;
+    if (work == nullptr || work->state == 0) {
+        return;
+    }
+    if (work->timer > 0) {
+        work->timer--;
+    } else {
+        work->state = 0;
+    }
+}
+
+// DECOMP_FUNC(0x0010b320, 32)
+void InfoWin_Dismiss() {
+    InfoWinWork* work = g_InfoWinWork;
+    if (work != nullptr) {
+        work->state = 0;
+        work->timer = 0;
+    }
+}
+
+// DECOMP_FUNC(0x0011ae10, 792)
+void InfoWin_DrawUp(void* arg) {
+    (void)arg;
+    InfoWinWork* work = g_InfoWinWork;
+    if (work == nullptr || work->draw_up_right == nullptr || work->state == 0) {
+        return;
+    }
+
+    UiGpu_BeginPass(g_AsdGpuState);
+    UiGpu_SetViewportParams(1, 0);
+
+    auto* layer = reinterpret_cast<u32*>(g_AsdGpuState + 0x124C);
+    const u32 old_depth = *layer;
+    *layer = old_depth + 1;
+    auto* layer_entry = reinterpret_cast<u32*>(g_AsdGpuState + 0x124C + 8);
+    layer_entry[*layer] = 1;
+
+    // Parallax shift for info alert
+    const f32 shift = UiGpu_TransformCoord(g_AsdGpuState, 0.35f);
+    const s32 base_x = static_cast<s32>(shift);
+
+    const f32 alpha = *reinterpret_cast<const f32*>(&work->panel_sprites[0].raw[0x20]);
+    UiGpu_SetAlphaBlend(alpha);
+
+    // Draw alert banner backdrop & frame
+    UiSprite_DrawPanelDirect(2, 0x0E, 0x05, base_x, 0, 1);
+    UiSprite_DrawPanelDirect(2, 0x0E, 0x06, base_x, 0, 1);
+
+    if (*layer > 0) {
+        *layer = *layer - 1;
+    }
+}
+
+// DECOMP_FUNC(0x0011b128, 588)
+void InfoWin_Calc(void* arg) {
+    (void)arg;
+    InfoWinWork* work = g_InfoWinWork;
+    if (work == nullptr || work->state == 0) {
+        return;
+    }
+    InfoWin_UpdateTimer();
 }
 
 } // namespace smt4::ui
