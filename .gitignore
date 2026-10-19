@@ -1,0 +1,36 @@
+# Proprietary game dumps, keys, and extracted binary assets (NEVER commit to GitHub)
+*.cia
+*.3ds
+*.cci
+*.cxi
+*.cfa
+*.ncch
+*.bin
+*.exefs
+*.romfs
+*.lz
+aes_keys.txt
+keys.txt
+seeddb.bin
+extracted/
+baserom/
+romfs/
+exefs/
+
+# Build and analysis artifacts
+build/
+out/
+__pycache__/
+*.pyc
+*.pyo
+*.o
+*.obj
+*.elf
+*.axf
+*.map
+*.idb
+*.i64
+*.gpr
+*.rep/
+.vs/
+.vscode/
