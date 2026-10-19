@@ -424,4 +424,137 @@ void GuestWin_Calc(void* arg) {
     GuestWin_HandlePrompt();
 }
 
+// ============================================================================
+// PlaceWin: Location & Area Banner HUD Window (c:\SMT4\XRD686\sdds4\program\font\PlaceWin\PlaceWin.cpp)
+// ============================================================================
+
+PlaceWinWork* g_PlaceWinWork = nullptr; // 0x0043E140
+static const u8 g_PlaceWinSpriteTable[0x20] = {0};
+
+// DECOMP_FUNC(0x0026385c, 64)
+void PlaceWin_SetPos(f32 x, f32 y, f32 z, f32 w) {
+    PlaceWinWork* work = g_PlaceWinWork;
+    if (work == nullptr) {
+        return;
+    }
+    f32* pos = reinterpret_cast<f32*>(&work->panel_sprite.raw[0x84]);
+    pos[0] = x;
+    pos[1] = y;
+    pos[2] = z;
+    pos[3] = w;
+}
+
+// DECOMP_FUNC(0x0026389c, 64)
+void PlaceWin_SetScale(s32 idx, s32 layer, f32 sx, f32 sy, f32 sz, f32 sw) {
+    PlaceWinWork* work = g_PlaceWinWork;
+    if (work == nullptr || idx < 0) {
+        return;
+    }
+    (void)layer;
+    f32* scale = reinterpret_cast<f32*>(&work->panel_sprite.raw[0x98]);
+    scale[0] = sx;
+    scale[1] = sy;
+    scale[2] = sz;
+    scale[3] = sw;
+}
+
+// DECOMP_FUNC(0x002638dc, 32)
+void PlaceWin_Dismiss() {
+    PlaceWinWork* work = g_PlaceWinWork;
+    if (work != nullptr) {
+        work->state = 3;
+        UiAnimSprite_SetAnim(&work->panel_sprite, 1, 0);
+    }
+}
+
+// DECOMP_FUNC(0x002638fc, 20)
+void PlaceWin_SetVisible(u8 visible) {
+    PlaceWinWork* work = g_PlaceWinWork;
+    if (work != nullptr) {
+        work->flags = visible;
+    }
+}
+
+// DECOMP_FUNC(0x00263910, 60)
+bool PlaceWin_CheckState() {
+    PlaceWinWork* work = g_PlaceWinWork;
+    if (work == nullptr || work->state == 0) {
+        return false;
+    }
+    return work->state != 3;
+}
+
+// DECOMP_FUNC(0x0026394c, 44)
+bool PlaceWin_IsActive() {
+    PlaceWinWork* work = g_PlaceWinWork;
+    if (work == nullptr) {
+        return false;
+    }
+    return work->state != 0;
+}
+
+// DECOMP_FUNC(0x00263978, 124)
+void PlaceWin_ShowMessage(const char* msg) {
+    PlaceWinWork* work = g_PlaceWinWork;
+    if (work == nullptr || msg == nullptr) {
+        return;
+    }
+    work->state = 1;
+    work->flags = 1;
+    UiAnimSprite_SetAnim(&work->panel_sprite, 0, 0);
+    for (s32 i = 0; i < 127 && msg[i] != '\0'; ++i) {
+        work->message[i] = msg[i];
+        work->message[i + 1] = '\0';
+    }
+}
+
+// DECOMP_FUNC(0x002639f4, 448)
+void PlaceWin_Init() {
+    PlaceWinWork* work = g_PlaceWinWork;
+    if (work == nullptr) {
+        work = reinterpret_cast<PlaceWinWork*>(AsdMem_Alloc(sizeof(PlaceWinWork), 0x100));
+        g_PlaceWinWork = work;
+    }
+
+    AsdMem_Zero(work, sizeof(PlaceWinWork));
+
+    work->calc_task = AsdTask_CreateCalc("PlaceWin Calc", 1, 0, 0,
+                                         PlaceWin_Calc, 0, 0);
+    work->draw_up_left = AsdTask_CreateDraw("PlaceWin DrawUpLeft", 0x81, 0, 0,
+                                            nullptr, 0, 0, work->calc_task);
+    work->draw_up_right = AsdTask_CreateDraw("PlaceWin DrawUpRight", 0xDF, 0, 0,
+                                             nullptr, 0, 0, work->calc_task);
+
+    UiSpriteGroup_Init(&work->sprite_group);
+    UiSpriteGroup_BindTable(&work->sprite_group,
+                            g_PlaceWinSpriteTable - 0x18, 0x18,
+                            0, g_PlaceWinSpriteTable - 0x18, 0x18,
+                            0, 0, g_PlaceWinSpriteTable, 0x70);
+
+    UiAnimSprite_SetupEx(&work->panel_sprite, 0x0E, 0x87, 0, &work->sprite_group, 1, 1.0f);
+    UiAnimSprite_SetAnim(&work->panel_sprite, 0, 0);
+}
+
+// DECOMP_FUNC(0x00263bb4, 660)
+void PlaceWin_Calc(void* arg) {
+    (void)arg;
+    PlaceWinWork* work = g_PlaceWinWork;
+    if (work == nullptr || work->state == 0) {
+        return;
+    }
+
+    switch (work->state) {
+        case 1: // Appearing / Slide-in
+            work->state = 2;
+            break;
+        case 2: // Displaying area banner
+            break;
+        case 3: // Fade-out / Dismiss
+            work->state = 0;
+            break;
+        default:
+            break;
+    }
+}
+
 } // namespace smt4::ui

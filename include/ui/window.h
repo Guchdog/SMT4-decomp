@@ -113,4 +113,41 @@ void GuestWin_Init();                                                           
 void GuestWin_HandlePrompt();                                                       // 0x0010b510
 void GuestWin_DrawUp(void* arg);                                                    // 0x0011a9b4
 
+/**
+ * Location / Area Banner Dialog Window workspace (0x140 bytes).
+ * Original Atlus source path: `c:\SMT4\XRD686\sdds4\program\font\PlaceWin\PlaceWin.cpp`
+ * Global pointer: `g_PlaceWinWork` at `0x0043E140`.
+ */
+struct PlaceWinWork {
+    void* calc_task;                    // +0x00: "PlaceWin Calc" task handle
+    void* draw_up_left;                 // +0x04: "PlaceWin DrawUpLeft" task handle (prio 0x81)
+    u32 state;                          // +0x08: State (0: inactive, 1: showing, 2: hold, 3: dismiss)
+    void* draw_up_right;                // +0x0C: "PlaceWin DrawUpRight" task handle (prio 0xDF)
+    u32 flags;                          // +0x10: Display flags
+    UiSpriteGroup sprite_group;         // +0x14: Sprite table group (0x20 bytes)
+    UiAnimSprite panel_sprite;          // +0x34: Anim sprite (0x8C bytes)
+    char message[128];                  // +0xC0: Area name string buffer (0x80 bytes)
+};
+
+static_assert(offsetof(PlaceWinWork, calc_task) == 0x00);
+static_assert(offsetof(PlaceWinWork, draw_up_left) == 0x04);
+static_assert(offsetof(PlaceWinWork, state) == 0x08);
+static_assert(offsetof(PlaceWinWork, sprite_group) == 0x14);
+static_assert(offsetof(PlaceWinWork, panel_sprite) == 0x34);
+static_assert(offsetof(PlaceWinWork, message) == 0xC0);
+static_assert(sizeof(PlaceWinWork) == 0x140);
+
+extern PlaceWinWork* g_PlaceWinWork;    // 0x0043E140
+
+// PlaceWin API functions
+void PlaceWin_SetPos(f32 x, f32 y, f32 z, f32 w);                                   // 0x0026385c
+void PlaceWin_SetScale(s32 idx, s32 layer, f32 sx, f32 sy, f32 sz, f32 sw);         // 0x0026389c
+void PlaceWin_Dismiss();                                                             // 0x002638dc
+void PlaceWin_SetVisible(u8 visible);                                               // 0x002638fc
+bool PlaceWin_CheckState();                                                         // 0x00263910
+bool PlaceWin_IsActive();                                                           // 0x0026394c
+void PlaceWin_ShowMessage(const char* msg);                                         // 0x00263978
+void PlaceWin_Init();                                                               // 0x002639f4
+void PlaceWin_Calc(void* arg);                                                      // 0x00263bb4
+
 } // namespace smt4::ui
