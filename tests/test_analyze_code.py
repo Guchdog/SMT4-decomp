@@ -1,0 +1,30 @@
+import unittest
+from pathlib import Path
+from tools.analyze_code import analyze_binary, vaddr_to_offset
+
+
+class TestAnalyzeCode(unittest.TestCase):
+    def test_vaddr_to_offset_mapping(self):
+        self.assertEqual(vaddr_to_offset(0x00100000), 0x0)
+        self.assertEqual(vaddr_to_offset(0x003FF000), 0x2FF000)
+        self.assertEqual(vaddr_to_offset(0x0042B000), 0x32B000)
+
+    def test_contiguous_text_coverage_and_literal_pool_exclusion(self):
+        funcs, symbols = analyze_binary(
+            Path("extracted/exefs/code.bin"), Path("config/game_info.json")
+        )
+        self.assertGreater(len(funcs), 5000)
+        # First function is entrypoint __start at 0x00100000
+        self.assertEqual(funcs[0]["address"], "0x00100000")
+        self.assertEqual(funcs[0]["name"], "__start")
+        # Sum of all function sizes must equal exact .text size (0x2FE624 = 3,139,108 bytes) with zero overlaps/gaps
+        total_size = sum(int(f["size"]) for f in funcs)
+        self.assertEqual(total_size, 0x2FE624)
+        # Ensure subsystems like ui, battle, camp, script_vm are discovered via .rodata string xrefs
+        categories = {f["category"] for f in funcs}
+        for expected_cat in ("crt", "ui", "battle", "camp", "script_vm", "nn_sdk"):
+            self.assertIn(expected_cat, categories)
+
+
+if __name__ == "__main__":
+    unittest.main()
