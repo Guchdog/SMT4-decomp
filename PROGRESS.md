@@ -4,18 +4,18 @@
 
 | Metric | Decompiled | Total | Remaining | Percentage |
 |--------|-----------:|------:|----------:|-----------:|
-| **Code Size (Bytes)** | 12,808 B | 3,139,108 B | 3,126,300 B | **0.4080%** |
-| **Functions** | 67 | 10,349 | 10,282 | **0.6474%** |
+| **Code Size (Bytes)** | 32,240 B | 3,139,108 B | 3,106,868 B | **1.0270%** |
+| **Functions** | 70 | 10,349 | 10,279 | **0.6764%** |
 
 ## Subsystem Breakdown
 
 | Subsystem | Decompiled Funcs | Total Funcs | Decompiled Bytes | Total Bytes | Subsystem % |
 |-----------|-----------------:|------------:|-----------------:|------------:|------------:|
 | `engine` | 0 | 2,368 | 0 B | 735,468 B | 0.000% |
-| `ui` | 65 | 1,229 | 12,736 B | 664,872 B | 1.916% |
+| `ui` | 68 | 1,230 | 32,168 B | 673,780 B | 4.774% |
 | `unknown` | 0 | 3,825 | 0 B | 654,548 B | 0.000% |
 | `script_vm` | 0 | 1,204 | 0 B | 459,444 B | 0.000% |
-| `camp` | 0 | 926 | 0 B | 340,228 B | 0.000% |
+| `camp` | 0 | 925 | 0 B | 331,320 B | 0.000% |
 | `battle` | 0 | 566 | 0 B | 220,356 B | 0.000% |
 | `shop` | 0 | 110 | 0 B | 36,576 B | 0.000% |
 | `crt` | 2 | 26 | 72 B | 9,484 B | 0.759% |
@@ -29,6 +29,9 @@
 | `0x00100000` | 36 | `crt` | `non_matching` | `__start` | [`src/crt/start.cpp`](src/crt/start.cpp) |
 | `0x00100024` | 36 | `crt` | `non_matching` | `__init_bss` | [`src/crt/start.cpp`](src/crt/start.cpp) |
 | `0x0010299c` | 260 | `ui` | `non_matching` | `IfTouch_Init` | [`src/ui/tbb_loader.cpp`](src/ui/tbb_loader.cpp) |
+| `0x00187014` | 5176 | `ui` | `non_matching` | `StatusDown_DrawPartyAndSubViews` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
+| `0x001ca648` | 8908 | `ui` | `non_matching` | `StatusDown_CalcTaskCallback` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
+| `0x001cc914` | 5348 | `ui` | `non_matching` | `StatusDown_DrawTaskCallback` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x001ddab4` | 68 | `ui` | `non_matching` | `StatusDown_OpenDefaultView` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x001ee5a4` | 548 | `ui` | `non_matching` | `StatusDown_PopulateSkillList` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x001ee7c8` | 384 | `ui` | `non_matching` | `StatusDown_PopulateItemList` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |

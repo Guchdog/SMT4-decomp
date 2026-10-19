@@ -1781,7 +1781,7 @@ address,size,status,category,name,src_file
 0x0017fdb4,232,todo,engine,engine_func_0017fdb4,
 0x0017fe9c,27308,todo,camp,camp_func_0017fe9c,
 0x00186948,1740,todo,ui,ui_func_00186948,
-0x00187014,5176,todo,ui,ui_func_00187014,
+0x00187014,5176,non_matching,ui,StatusDown_DrawPartyAndSubViews,src/ui/status_down.cpp
 0x0018844c,4016,todo,engine,engine_func_0018844c,
 0x001893fc,1832,todo,camp,camp_func_001893fc,
 0x00189b24,1248,todo,script_vm,script_vm_func_00189b24,
@@ -2093,8 +2093,8 @@ address,size,status,category,name,src_file
 0x001c897c,7048,todo,ui,saveLoadUI_func_001c897c,
 0x001ca504,284,todo,unknown,func_001ca504,
 0x001ca620,40,todo,engine,engine_func_001ca620,
-0x001ca648,8908,todo,camp,camp_func_001ca648,
-0x001cc914,5348,todo,ui,ui_func_001cc914,
+0x001ca648,8908,non_matching,ui,StatusDown_CalcTaskCallback,src/ui/status_down.cpp
+0x001cc914,5348,non_matching,ui,StatusDown_DrawTaskCallback,src/ui/status_down.cpp
 0x001cddf8,516,todo,ui,ui_func_001cddf8,
 0x001cdffc,296,todo,script_vm,script_vm_func_001cdffc,
 0x001ce124,120,todo,camp,camp_func_001ce124,

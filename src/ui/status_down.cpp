@@ -98,8 +98,10 @@ extern "C" {
     void  UiListCursor_ResetScroll(UiListCursor* cursor, s32 pos);                  // 0x0020fe24
 
     void  StatusDown_FillHalfwords(s16* dst, u32 count, s32 value);                 // 0x002c4450
-    void  StatusDown_CalcTaskCallback(void* arg);                                   // 0x001ca648
-    void  StatusDown_DrawTaskCallback(void* arg);                                   // 0x001cc914
+    s32   UiTouch_GetRegionTouchState(s16 handle);                                  // 0x0029d8fc
+    s32   UiCursor_HandleInput(UiListCursor* cursor);                               // 0x0029e3bc
+    bool  UiAnimSprite_UpdateCalc(UiAnimSprite* sprite, s32 mode);                  // 0x002b9220
+    void  UiAnimSprite_StepAnimation(UiAnimSprite* sprite);                         // 0x002bf9f0
 
     s16   UiTouch_RegisterRegion(u32 group_id, u32 node_id);                        // 0x002b88c4
     s16   UiTouch_RegisterRectRegion(s32 x, s32 y, s32 w, s32 h);                   // 0x0029e2f4
@@ -1472,6 +1474,308 @@ void StatusDown_SortItemList() {
         const bool desc = (sort_cfg[0x16] >> 7) != 0;
         qsort_arm(work->item_entries, work->item_count, sizeof(StatusDownListEntry),
                   desc ? ItemSort_ByNameDesc : ItemSort_ByNameAsc);
+    }
+}
+
+// DECOMP_FUNC(0x00187014, 5176)
+void StatusDown_DrawPartyAndSubViews(s32 x_offset, s32 y_offset) {
+    StatusDownWork* work = g_StatusDownWork;
+    if (work == nullptr) {
+        return;
+    }
+
+    const s32 selected_row = UiListCursor_GetSelectedRow(&work->list_cursor_main);
+    bool mask_names = false;
+    const s32 main_menu_id = Camp_GetMainMenuId();
+    if (main_menu_id == 0xD) {
+        mask_names = true;
+    } else if (main_menu_id == 6) {
+        const u16* actor_ptr = Camp_GetSelectedActorPtr();
+        if (actor_ptr != nullptr && !Camp_IsActorPlayer(*actor_ptr)) {
+            mask_names = true;
+        }
+    }
+
+    UiSprite_DrawPanel(2, 0x1A, 4, x_offset, y_offset, 0xB3);
+    UiSprite_DrawPanel(2, 0x1A, 6, x_offset, y_offset, 0xB5);
+    StatusDown_DrawLRPrompts(x_offset, y_offset);
+
+    for (s32 i = 0; i < 8; ++i) {
+        const u16 demon_id = work->party_ids[i];
+        const u32 node_id = static_cast<u32>(0x414 + i);
+        if (demon_id != 0) {
+            s32 highlight = 0;
+            if (work->new_party_flags[i] != 0) {
+                highlight = 1;
+            }
+            StatusDown_DrawPartySlotRow(x_offset, y_offset, demon_id, node_id, 1.0f, 0, 1, highlight);
+        } else {
+            StatusDown_DrawPartySlotRow(x_offset, y_offset, 0, node_id, 1.0f, 0, 1, 0);
+        }
+    }
+
+    if (work->has_sub_ids_a != 0) {
+        for (s32 i = 0; i < 8; ++i) {
+            const u16 sub_id = work->sub_ids_a[i];
+            if (sub_id != 0) {
+                const u32 node_id = static_cast<u32>(0x434 + i);
+                StatusDown_DrawPartySlotRow(x_offset, y_offset, sub_id, node_id, 1.0f, 1, 0, 0);
+            }
+        }
+    }
+}
+
+// DECOMP_FUNC(0x001ca648, 8908)
+void StatusDown_CalcTaskCallback(void* arg) {
+    StatusDownWork* work = g_StatusDownWork;
+    if (work == nullptr) {
+        return;
+    }
+
+    work->field_2388 = 0;
+    UiCursor_HandleInput(&work->list_cursor_main);
+    work->status_mode = 0;
+
+    work->touch_drag_state[0] = UiTouch_GetRegionTouchState(work->scroll_up_touch_handle);
+    work->touch_drag_state[1] = UiTouch_GetRegionTouchState(work->scroll_down_touch_handle);
+    work->touch_drag_state[2] = UiTouch_GetRegionTouchState(work->btn_touch_handle);
+    work->lr_state_left = UiTouch_GetRegionTouchState(work->l_btn_touch_handle);
+    work->lr_state_right = UiTouch_GetRegionTouchState(work->r_btn_touch_handle);
+
+    work->touch_hold_state = -1;
+    for (s32 i = 0; i < 36; ++i) {
+        const s16 handle = work->slot_touch_handles[i];
+        if (handle >= 0) {
+            const s32 tstate = UiTouch_GetRegionTouchState(handle);
+            if (tstate == 1 || tstate == 2) {
+                work->touch_hold_state = i;
+                break;
+            }
+        }
+    }
+
+    if (!Camp_CanShowLRPrompts()) {
+        work->lr_state_left = 0;
+        work->lr_state_right = 0;
+    }
+
+    const u32 state = work->state;
+    switch (state) {
+        case 0:
+            break;
+        case 1: {
+            const bool anim_done = UiAnimSprite_UpdateCalc(&work->panel_sprites[0], 0);
+            if (anim_done) {
+                work->state_timer = 0;
+                work->prev_state = work->state;
+                work->state = work->sub_state;
+                StatusDown_SetupTouchRegions();
+                work->needs_refresh = 1;
+            }
+            break;
+        }
+        case 2: {
+            UiAnimSprite_StepAnimation(&work->panel_sprites[0]);
+            const bool anim_done = UiAnimSprite_UpdateCalc(&work->panel_sprites[0], 1);
+            if (anim_done) {
+                work->state_timer = 0;
+                work->prev_state = work->state;
+                work->state = work->sub_state;
+                StatusDown_SetupTouchRegions();
+                work->needs_refresh = 1;
+            }
+            break;
+        }
+        case 3: {
+            if (work->touch_hold_state >= 0) {
+                UiListCursor_SetSelectedRow(&work->list_cursor_main, work->touch_hold_state);
+                work->needs_refresh = 1;
+            }
+            if (work->request_close_flag != 0) {
+                StatusDown_Close();
+            }
+            break;
+        }
+        case 4: {
+            if (work->touch_hold_state >= 0) {
+                UiListCursor_SetSelectedRow(&work->list_cursor_main, work->touch_hold_state);
+                work->needs_refresh = 1;
+            }
+            if (work->request_close_flag != 0) {
+                StatusDown_Close();
+            }
+            break;
+        }
+        case 6: {
+            if (work->touch_hold_state >= 0) {
+                UiListCursor_SetSelectedRow(&work->list_cursor_main, work->touch_hold_state);
+                work->needs_refresh = 1;
+            }
+            break;
+        }
+        case 11: {
+            if (work->touch_hold_state >= 0) {
+                UiListCursor_SetSelectedRow(&work->list_cursor_main, work->touch_hold_state);
+                work->needs_refresh = 1;
+            }
+            break;
+        }
+        case 14: {
+            break;
+        }
+        case 16: {
+            if (work->touch_hold_state >= 0) {
+                UiListCursor_SetSelectedRow(&work->list_cursor_main, work->touch_hold_state);
+                work->needs_refresh = 1;
+            }
+            break;
+        }
+        case 17:
+        case 18: {
+            UiCursor_HandleInput(&work->skill_cursor);
+            if (work->touch_hold_state >= 0) {
+                UiListCursor_SetSelectedRow(&work->skill_cursor, work->touch_hold_state);
+                work->needs_refresh = 1;
+            }
+            break;
+        }
+        case 19:
+        case 20: {
+            UiCursor_HandleInput(&work->item_cursor);
+            if (work->touch_hold_state >= 0) {
+                const s32 sel_row = work->touch_hold_state / 4;
+                const s32 sel_col = work->touch_hold_state % 4;
+                UiListCursor_SetSelectedRow(&work->item_cursor, sel_row);
+                UiListCursor_SetSelectedCol(&work->item_cursor, sel_col);
+                work->needs_refresh = 1;
+            }
+            break;
+        }
+        case 22:
+        case 23:
+        case 25:
+        case 26: {
+            UiCursor_HandleInput(&work->category_cursor);
+            if (work->touch_hold_state >= 0) {
+                UiListCursor_SetSelectedRow(&work->category_cursor, work->touch_hold_state);
+                work->needs_refresh = 1;
+            }
+            break;
+        }
+        default:
+            break;
+    }
+
+    ++work->state_timer;
+}
+
+// DECOMP_FUNC(0x001cc914, 5348)
+void StatusDown_DrawTaskCallback(void* arg) {
+    StatusDownWork* work = g_StatusDownWork;
+    if (work == nullptr || work->visibility_flag == 0) {
+        return;
+    }
+
+    const s32 base_x = UiAnimSprite_GetPosX(&work->panel_sprites[0]);
+    const s32 base_y = UiAnimSprite_GetPosY(&work->panel_sprites[0]);
+
+    s32 state = work->state;
+    if (state == 1) {
+        state = work->sub_state;
+    } else if (state == 2) {
+        state = work->prev_state;
+    }
+
+    if (state < 3 || state >= 28) {
+        return;
+    }
+
+    if (state >= 3 && state <= 15) {
+        StatusDown_DrawPartyAndSubViews(base_x, base_y);
+    } else if (state == 16) {
+        UiSprite_DrawPanel(2, 0x1A, 0x0C, base_x, base_y, 0xB3);
+        UiSprite_DrawNode(2, 0x1A, 0x51E, base_x, base_y, 0xB5);
+        UiSprite_DrawNode(2, 0x1A, 0x52C, base_x, base_y, 0xB5);
+        StatusDown_DrawLRPrompts(base_x, base_y);
+
+        for (s32 i = 0; i < 7; ++i) {
+            const u16 demon_id = work->party_ids[i];
+            const u32 node_id = static_cast<u32>(0x466 + i);
+            if (demon_id != 0) {
+                StatusDown_DrawPartySlotRow(base_x, base_y, demon_id, node_id, 1.0f, 0, 0, 0);
+            }
+        }
+    } else if (state == 17 || state == 18) {
+        StatusDown_DrawSkillList(base_x, base_y);
+    } else if (state == 19 || state == 20) {
+        UiListCursor* cursor = &work->item_cursor;
+        const s32 scroll_row = UiListCursor_GetScrollOffset(cursor);
+
+        UiSprite_DrawPanel(2, 0x1A, 0x10, base_x, base_y, 0xB3);
+        UiSprite_DrawPanel(2, 0x1A, 0x12, base_x, base_y, 0xB5);
+        StatusDown_DrawLRPrompts(base_x, base_y);
+
+        for (s32 row = 0; row < 9; ++row) {
+            for (s32 col = 0; col < 4; ++col) {
+                const s32 idx = col + ((scroll_row + row) << 2);
+                if (idx >= work->item_count) {
+                    break;
+                }
+                const StatusDownListEntry& entry = work->item_entries[idx];
+                if (entry.id == 0 || entry.value == 0) {
+                    continue;
+                }
+                const u32 node_id = static_cast<u32>(0x4AE + col + (row << 2));
+                const UiLayoutNode* node = UiLayout_GetNode(0x1A, node_id);
+                if (node != nullptr) {
+                    UiSkill_DrawItemIconAndCount(entry.id, base_x + node->x, base_y + node->y, 0xB5, entry.value);
+                }
+            }
+        }
+
+        if (UiListCursor_GetRowCount(cursor) <= 0) {
+            UiSprite_DrawPanel(2, 0x1A, 0x1B, base_x, base_y, 0xDD);
+        }
+
+        UiScrollBar_Draw(cursor, base_x, base_y, 0x1A,
+                         0x405, 0x406, 0x403, 0x400,
+                         0x403, 0x403, 0x403, work->btn_touch_handle,
+                         work->scroll_up_touch_handle, work->scroll_down_touch_handle,
+                         0xC4, 0);
+    } else if (state == 21) {
+        UiSprite_DrawPanel(2, 0x1A, 0x14, base_x, base_y, 0xB3);
+        UiSprite_DrawPanel(2, 0x1A, 0x16, base_x, base_y, 0xB5);
+        StatusDown_DrawLRPrompts(base_x, base_y);
+    } else if (state >= 22 && state <= 27) {
+        UiListCursor* cursor = &work->category_cursor;
+        const s32 scroll_row = UiListCursor_GetScrollOffset(cursor);
+
+        UiSprite_DrawPanel(2, 0x1A, 0x18, base_x, base_y, 0xB3);
+        UiSprite_DrawPanel(2, 0x1A, 0x1A, base_x, base_y, 0xB5);
+        StatusDown_DrawLRPrompts(base_x, base_y);
+
+        const s32 visible_limit = Category_GetVisibleRowLimit();
+        for (s32 row = 0; row < visible_limit; ++row) {
+            const s32 idx = scroll_row + row;
+            if (idx >= 8) {
+                break;
+            }
+            const u16 cat_id = work->category_ids[idx];
+            if (cat_id == 0) {
+                continue;
+            }
+            const u32 node_id = static_cast<u32>(0x414 + row);
+            const UiLayoutNode* node = UiLayout_GetNode(0x1A, node_id);
+            if (node != nullptr) {
+                UiSprite_DrawNode(2, 0x1A, node_id, base_x + node->x, base_y + node->y, 0xC4);
+            }
+        }
+
+        UiScrollBar_Draw(cursor, base_x, base_y, 0x1A,
+                         0x405, 0x406, 0x403, 0x400,
+                         0x403, 0x403, 0x403, work->btn_touch_handle,
+                         work->scroll_up_touch_handle, work->scroll_down_touch_handle,
+                         0xC4, 0);
     }
 }
 

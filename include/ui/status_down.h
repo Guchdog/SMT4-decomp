@@ -206,6 +206,9 @@ s32  StatusDown_ItemSortByTypeAsc(const void* a, const void* b);                
 s32  StatusDown_ItemSortByTypeDesc(const void* a, const void* b);                   // 0x002e4584
 
 // UI drawing & help bar
+void StatusDown_CalcTaskCallback(void* arg);                                        // 0x001ca648
+void StatusDown_DrawTaskCallback(void* arg);                                        // 0x001cc914
+void StatusDown_DrawPartyAndSubViews(s32 x_offset, s32 y_offset);                   // 0x00187014
 void StatusDown_DrawLRPrompts(s32 x_offset, s32 y_offset);                          // 0x0029adf0
 void StatusDown_DrawPartySlotRow(s32 x_offset, s32 y_offset, s32 demon_id,
                                  u32 node_id, f32 scale, s32 is_stock_row,
