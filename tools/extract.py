@@ -326,6 +326,18 @@ class CIAExtractor:
         return count
 
 
+def verify_extracted_code(code_path: Path, game_info_path: Path) -> bool:
+    code_path = Path(code_path)
+    game_info = json.loads(Path(game_info_path).read_text(encoding="utf-8"))
+    if not code_path.exists():
+        return False
+    data = code_path.read_bytes()
+    if len(data) != game_info["code_bin_size"]:
+        return False
+    actual_sha = hashlib.sha256(data).hexdigest()
+    return actual_sha.lower() == game_info["code_sha256"].lower()
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Extract SMT4 CIA for decompilation")
     parser.add_argument("--cia", type=Path, default=None, help="Path to CIA file")
@@ -334,6 +346,17 @@ def main() -> None:
     )
     parser.add_argument(
         "--out", type=Path, default=Path("extracted"), help="Output directory"
+    )
+    parser.add_argument(
+        "--info",
+        type=Path,
+        default=Path("config/game_info.json"),
+        help="Path to game_info.json",
+    )
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="Verify extracted code.bin size and SHA-256 against config/game_info.json",
     )
     parser.add_argument(
         "--romfs-dirs",
@@ -351,6 +374,13 @@ def main() -> None:
         "--all", action="store_true", help="Extract all 20,126 RomFS files"
     )
     args = parser.parse_args()
+
+    if args.check:
+        ok = verify_extracted_code(args.out / "exefs" / "code.bin", args.info)
+        if not ok:
+            raise SystemExit("Verification FAILED: code.bin does not match game_info.json")
+        print("Verification OK: extracted/exefs/code.bin matches expected SHA-256.")
+        return
 
     cia_path = args.cia or next(Path(".").glob("*.cia"))
     extractor = CIAExtractor(cia_path, args.keys)

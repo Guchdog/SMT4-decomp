@@ -9,7 +9,7 @@ Decompilation and reverse-engineering project for **Shin Megami Tensei IV** (Nin
 ## Live Decompilation Progress
 
 - **`.text` Bytes Decompiled:** `572 / 3,139,108 bytes` (**0.0182%**)
-- **Functions Decompiled:** `8 / 10,122 functions` (**0.0790%**)
+- **Functions Decompiled:** `8 / 10,349 functions` (**0.0773%**)
 - See [`PROGRESS.md`](PROGRESS.md) for the full subsystem breakdown (`ui`, `camp`, `battle`, `script_vm`, `shop`, `unite`, `engine`, `nn_sdk`, `crt`) and verified function list.
 
 ---
@@ -52,7 +52,7 @@ python tools/progress.py --write
 ## Project Structure
 
 - [`config/game_info.json`](config/game_info.json) — Memory map and binary metadata for `CTR-P-AMXE`.
-- [`config/functions.csv`](config/functions.csv) — Master ledger of all 10,122 functions covering 100% of `.text` (`3,139,108` bytes).
+- [`config/functions.csv`](config/functions.csv) — Master ledger of all 10,349 functions covering 100% of `.text` (`3,139,108` bytes).
 - [`config/symbols.csv`](config/symbols.csv) — String and data symbols recovered from `.rodata`, `.data`, and `.text` literal pools.
 - [`include/`](include/) & [`src/`](src/) — Decompiled C++20 source code and engine/UI headers.
 - [`docs/architecture.md`](docs/architecture.md) — Documentation of the `XRD686` / `AsdSDK` engine, dual-screen LCD pipelines, and `TBCR`/`TBL1` UI table formats.

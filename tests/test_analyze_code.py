@@ -25,6 +25,15 @@ class TestAnalyzeCode(unittest.TestCase):
         for expected_cat in ("crt", "ui", "battle", "camp", "script_vm", "nn_sdk"):
             self.assertIn(expected_cat, categories)
 
+    def test_vldr_float_pools_and_thumb_crt_not_misidentified_as_bl(self):
+        funcs, _ = analyze_binary(
+            Path("extracted/exefs/code.bin"), Path("config/game_info.json"), write_csv=False
+        )
+        addrs = {int(f["address"], 16) for f in funcs}
+        # Bogus functions caused by VLDR float constants (0x4b000000) and Thumb pairs (0x00100fa8) must not exist
+        for bogus_addr in (0x00282750, 0x00282918, 0x002885A8, 0x002919D0, 0x003EB4C8, 0x0011C548):
+            self.assertNotIn(bogus_addr, addrs, f"Bogus float/Thumb target 0x{bogus_addr:08x} in functions")
+
 
 if __name__ == "__main__":
     unittest.main()

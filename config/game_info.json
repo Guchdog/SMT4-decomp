@@ -29,5 +29,6 @@
       "size": "0x000797F0"
     }
   },
-  "code_bin_size": 3633152
+  "code_bin_size": 3633152,
+  "code_sha256": "1f98884fe997af22e032a14c51a46c872b05b0e079a0f29e307b0e059cfaa558"
 }

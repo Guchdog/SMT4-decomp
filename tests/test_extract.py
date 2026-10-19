@@ -30,6 +30,14 @@ class TestExtract(unittest.TestCase):
         tbb = Path("extracted/romfs/saveLoadUI/SaveLoadUITable.tbb").read_bytes()
         self.assertEqual(tbb[:4], b"TBCR")
 
+    def test_verify_code_sha256_check(self):
+        from tools.extract import verify_extracted_code
+        self.assertTrue(
+            verify_extracted_code(
+                Path("extracted/exefs/code.bin"), Path("config/game_info.json")
+            )
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

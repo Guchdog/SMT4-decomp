@@ -258,14 +258,22 @@ def analyze_binary(
     bl_targets: set[int] = {0}
     call_edges: list[tuple[int, int]] = []
 
+    thumb_crt_start_idx = (0x00100048 - TEXT_VADDR) >> 2
+    thumb_crt_end_idx = (0x00101300 - TEXT_VADDR) >> 2
+
+    # Pass 1A: Identify all PC-relative literal pool entries (LDR, VLDR float/double, ADR inline strings)
     for idx, word in enumerate(words):
+        if thumb_crt_start_idx <= idx < thumb_crt_end_idx:
+            continue
         if idx in literal_pool_indices:
             continue
 
         cond = (word >> 28) & 0xF
+        if cond == 0xF:
+            continue
 
         # PC-relative LDR: LDR Rd, [PC, #+-imm12]
-        if cond != 0xF and (word & 0x0F7F0000) == 0x051F0000:
+        if (word & 0x0F7F0000) == 0x051F0000:
             up = (word >> 23) & 1
             imm12 = word & 0xFFF
             pc_idx = idx + 2
@@ -276,8 +284,21 @@ def analyze_binary(
                 literal_loads[idx] = words[lit_idx]
             continue
 
-        # PC-relative ADR: ADD Rd, PC, #imm (encoding: cond != 0xF, (word & 0x0FEF0000) == 0x028F0000)
-        if cond != 0xF and (word & 0x0FEF0000) == 0x028F0000:
+        # PC-relative VFP VLDR: VLDR Sn/Dn, [PC, #+-imm8*4]
+        if (word & 0x0F3F0E00) == 0x0D1F0A00:
+            up = (word >> 23) & 1
+            imm8 = word & 0xFF
+            offset_words = imm8 if up else -imm8
+            lit_idx = idx + 2 + offset_words
+            if 0 <= lit_idx < num_words:
+                literal_pool_indices.add(lit_idx)
+                # Double precision (coproc 11) occupies 2 words
+                if (word & 0x00000100) != 0 and (lit_idx + 1) < num_words:
+                    literal_pool_indices.add(lit_idx + 1)
+            continue
+
+        # PC-relative ADR: ADD Rd, PC, #imm (encoding: (word & 0x0FEF0000) == 0x028F0000)
+        if (word & 0x0FEF0000) == 0x028F0000:
             rot = ((word >> 8) & 0xF) * 2
             imm8 = word & 0xFF
             imm = ((imm8 >> rot) | (imm8 << (32 - rot))) & 0xFFFFFFFF if rot else imm8
@@ -297,7 +318,14 @@ def analyze_binary(
                     literal_loads[idx] = t_vaddr
             continue
 
-        # BL / BLX imm
+    # Pass 1B: Scan non-literal-pool ARM instructions for BL / BLX call targets
+    for idx, word in enumerate(words):
+        if thumb_crt_start_idx <= idx < thumb_crt_end_idx:
+            continue
+        if idx in literal_pool_indices:
+            continue
+
+        cond = (word >> 28) & 0xF
         if (cond != 0xF and ((word >> 24) & 0xF) == 0xB) or (
             cond == 0xF and ((word >> 25) & 0x7) == 0x5
         ):
@@ -305,7 +333,7 @@ def analyze_binary(
             if imm24 & 0x800000:
                 imm24 -= 0x1000000
             target_idx = idx + 2 + imm24
-            if 0 <= target_idx < num_words:
+            if 0 <= target_idx < num_words and target_idx not in literal_pool_indices:
                 bl_targets.add(target_idx)
                 call_edges.append((idx, target_idx))
 

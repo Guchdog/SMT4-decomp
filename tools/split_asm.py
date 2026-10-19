@@ -43,7 +43,10 @@ def disassemble_function(
     size: int,
     symbols: dict[int, tuple[str, str] | str],
     func_names: dict[int, str],
+    thumb: bool | None = None,
 ) -> str:
+    if thumb is None:
+        thumb = 0x00100048 <= addr < 0x00101300
     offset = vaddr_to_offset(addr)
     chunk = code_bytes[offset : offset + size]
     num_words = size // 4
@@ -53,37 +56,50 @@ def disassemble_function(
     literal_addrs: dict[int, int] = {}
     inline_str_addrs: dict[int, tuple[str, int]] = {}  # lit_addr -> (text, aligned_byte_len)
     ldr_targets: dict[int, int] = {}
-    for i, w in enumerate(words):
-        insn_addr = addr + (i << 2)
-        cond = (w >> 28) & 0xF
-        if cond != 0xF and (w & 0x0F7F0000) == 0x051F0000:
-            up = (w >> 23) & 1
-            imm12 = w & 0xFFF
-            lit_addr = (insn_addr + 8 + imm12) if up else (insn_addr + 8 - imm12)
-            ldr_targets[insn_addr] = lit_addr
-            if addr <= lit_addr < addr + size and ((lit_addr - addr) & 3) == 0:
-                lit_idx = (lit_addr - addr) >> 2
-                literal_addrs[lit_addr] = words[lit_idx]
-        elif cond != 0xF and (w & 0x0FEF0000) == 0x028F0000:
-            rot = ((w >> 8) & 0xF) * 2
-            imm8 = w & 0xFF
-            imm = ((imm8 >> rot) | (imm8 << (32 - rot))) & 0xFFFFFFFF if rot else imm8
-            lit_addr = insn_addr + 8 + imm
-            if addr <= lit_addr < addr + size and ((lit_addr - addr) & 3) == 0:
-                rel_off = lit_addr - addr
-                s_bytes = chunk[rel_off : rel_off + 128].split(b"\x00", 1)[0]
-                if len(s_bytes) >= 3 and all(0x20 <= b <= 0x7E for b in s_bytes):
-                    aligned_len = (len(s_bytes) + 1 + 3) & ~3
-                    inline_str_addrs[lit_addr] = (
-                        s_bytes.decode("ascii", "ignore"),
-                        aligned_len,
-                    )
+    if not thumb:
+        for i, w in enumerate(words):
+            insn_addr = addr + (i << 2)
+            cond = (w >> 28) & 0xF
+            if cond != 0xF and (w & 0x0F7F0000) == 0x051F0000:
+                up = (w >> 23) & 1
+                imm12 = w & 0xFFF
+                lit_addr = (insn_addr + 8 + imm12) if up else (insn_addr + 8 - imm12)
+                ldr_targets[insn_addr] = lit_addr
+                if addr <= lit_addr < addr + size and ((lit_addr - addr) & 3) == 0:
+                    lit_idx = (lit_addr - addr) >> 2
+                    literal_addrs[lit_addr] = words[lit_idx]
+            elif cond != 0xF and (w & 0x0F3F0E00) == 0x0D1F0A00:
+                up = (w >> 23) & 1
+                imm8 = (w & 0xFF) << 2
+                lit_addr = (insn_addr + 8 + imm8) if up else (insn_addr + 8 - imm8)
+                if addr <= lit_addr < addr + size and ((lit_addr - addr) & 3) == 0:
+                    lit_idx = (lit_addr - addr) >> 2
+                    literal_addrs[lit_addr] = words[lit_idx]
                     ldr_targets[insn_addr] = lit_addr
+            elif cond != 0xF and (w & 0x0FEF0000) == 0x028F0000:
+                rot = ((w >> 8) & 0xF) * 2
+                imm8 = w & 0xFF
+                imm = ((imm8 >> rot) | (imm8 << (32 - rot))) & 0xFFFFFFFF if rot else imm8
+                lit_addr = insn_addr + 8 + imm
+                if addr <= lit_addr < addr + size and ((lit_addr - addr) & 3) == 0:
+                    rel_off = lit_addr - addr
+                    s_bytes = chunk[rel_off : rel_off + 128].split(b"\x00", 1)[0]
+                    if len(s_bytes) >= 3 and all(0x20 <= b <= 0x7E for b in s_bytes):
+                        aligned_len = (len(s_bytes) + 1 + 3) & ~3
+                        inline_str_addrs[lit_addr] = (
+                            s_bytes.decode("ascii", "ignore"),
+                            aligned_len,
+                        )
+                        ldr_targets[insn_addr] = lit_addr
 
-    cs = capstone.Cs(capstone.CS_ARCH_ARM, capstone.CS_MODE_ARM)
+    cs = capstone.Cs(
+        capstone.CS_ARCH_ARM,
+        capstone.CS_MODE_THUMB if thumb else capstone.CS_MODE_ARM,
+    )
     fname = func_names.get(addr, f"func_{addr:08x}")
     lines = [
         f".section .text",
+        ".thumb" if thumb else ".arm",
         f".global {fname}",
         f".type {fname}, %function",
         f"{fname}:",

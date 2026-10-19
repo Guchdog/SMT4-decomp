@@ -25,6 +25,14 @@ class TestDecompTools(unittest.TestCase):
         self.assertEqual(bf_info["magic"], "FLW0")
         self.assertGreater(bf_info["section_count"], 0)
 
+    def test_disassemble_thumb_function(self):
+        code_bytes = Path("extracted/exefs/code.bin").read_bytes()
+        asm_text = disassemble_function(
+            code_bytes, 0x00100048, 0x2C, {}, {0x00100048: "crt_thumb_00100048"}, thumb=True
+        )
+        self.assertIn(".thumb", asm_text)
+        self.assertIn("push", asm_text)
+
 
 if __name__ == "__main__":
     unittest.main()
