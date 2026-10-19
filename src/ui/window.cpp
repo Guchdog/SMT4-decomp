@@ -632,4 +632,102 @@ void RunWin_DrawDownAndCalc(void* arg) {
     }
 }
 
+// ============================================================================
+// SearchWin: Demonica Radar & Relic Search Window (c:\SMT4\XRD686\sdds4\program\font\SearchWin\SearchWin.cpp)
+// ============================================================================
+
+SearchWinWork* g_SearchWinWork = nullptr; // 0x0043E170
+static const u8 g_SearchWinSpriteTable[0x20] = {0};
+
+// DECOMP_FUNC(0x002cecd8, 52)
+bool SearchWin_IsActive() {
+    SearchWinWork* work = g_SearchWinWork;
+    if (work == nullptr) {
+        return false;
+    }
+    return work->state != 0;
+}
+
+// DECOMP_FUNC(0x002ced0c, 28)
+void SearchWin_Dismiss() {
+    SearchWinWork* work = g_SearchWinWork;
+    if (work != nullptr) {
+        work->state = 3;
+    }
+}
+
+// DECOMP_FUNC(0x002ced28, 348)
+void SearchWin_Init() {
+    SearchWinWork* work = g_SearchWinWork;
+    if (work == nullptr) {
+        work = reinterpret_cast<SearchWinWork*>(AsdMem_Alloc(sizeof(SearchWinWork), 0x100));
+        g_SearchWinWork = work;
+    }
+
+    AsdMem_Zero(work, sizeof(SearchWinWork));
+
+    work->calc_task = AsdTask_CreateCalc("SearchWin Calc", 1, 0, 0,
+                                         SearchWin_DrawUpAndCalc, 0, 0);
+    work->draw_up_left = AsdTask_CreateDraw("SearchWin DrawUpLeft", 0x81, 0, 0,
+                                            SearchWin_DrawUpAndCalc, 0, 0, work->calc_task);
+    work->draw_up_right = AsdTask_CreateDraw("SearchWin DrawUpRight", 0xDF, 0, 0,
+                                             SearchWin_DrawUpAndCalc, 0, 0, work->calc_task);
+
+    UiSpriteGroup_Init(&work->sprite_group);
+    UiSpriteGroup_BindTable(&work->sprite_group,
+                            g_SearchWinSpriteTable - 0x24, 0x24,
+                            0, g_SearchWinSpriteTable - 0x24, 0x24,
+                            0, 0, g_SearchWinSpriteTable, 0x70);
+
+    UiAnimSprite_SetupEx(&work->panel_sprite, 0x0E, 0x87, 0, &work->sprite_group, 1, 1.0f);
+    UiAnimSprite_SetAnim(&work->panel_sprite, 0, 0);
+}
+
+// DECOMP_FUNC(0x001accd4, 1104)
+void SearchWin_DrawUpAndCalc(void* arg) {
+    (void)arg;
+    SearchWinWork* work = g_SearchWinWork;
+    if (work == nullptr || work->state == 0 || !work->visible) {
+        return;
+    }
+
+    // State machine logic (SearchWin_Calc slice)
+    switch (work->state) {
+        case 1: // Scanning radar sweep
+            if (work->timer > 0) {
+                work->timer--;
+            } else {
+                work->state = 2;
+            }
+            break;
+        case 2: // Target locked / prompt active
+            break;
+        case 3: // Fade out
+            work->state = 0;
+            break;
+        default:
+            break;
+    }
+
+    // Upper stereoscopic pass (3D radar prompt)
+    UiGpu_BeginPass(g_AsdGpuState);
+    UiGpu_SetViewportParams(1, 0);
+
+    auto* layer = reinterpret_cast<u32*>(g_AsdGpuState + 0x124C);
+    const u32 old_depth = *layer;
+    *layer = old_depth + 1;
+    auto* layer_entry = reinterpret_cast<u32*>(g_AsdGpuState + 0x124C + 8);
+    layer_entry[*layer] = 1;
+
+    // Stereoscopic parallax shift (0.45f scale for radar reticle)
+    const f32 shift = UiGpu_TransformCoord(g_AsdGpuState, 0.45f);
+    const s32 base_x = static_cast<s32>(shift);
+
+    UiSprite_DrawPanelDirect(2, 0x0E, 0x06, 200 + base_x, 120, 1);
+
+    if (*layer > 0) {
+        *layer = *layer - 1;
+    }
+}
+
 } // namespace smt4::ui

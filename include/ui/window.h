@@ -182,4 +182,39 @@ extern RunWinWork* g_RunWinWork;        // 0x0043E158
 void RunWin_Init();                                                                 // 0x002027dc
 void RunWin_DrawDownAndCalc(void* arg);                                             // 0x0018f178
 
+/**
+ * Demonica Radar & Relic Search Window workspace (0xE4 bytes).
+ * Original Atlus source path: `c:\SMT4\XRD686\sdds4\program\font\SearchWin\SearchWin.cpp`
+ * Global pointer: `g_SearchWinWork` at `0x0043E170`.
+ */
+struct SearchWinWork {
+    void* calc_task;                    // +0x00: "SearchWin Calc" task handle
+    void* draw_up_left;                 // +0x04: "SearchWin DrawUpLeft" task handle (prio 0x81)
+    u32 state;                          // +0x08: State (0: inactive, 1: scanning, 2: lock, 3: dismiss)
+    void* draw_up_right;                // +0x0C: "SearchWin DrawUpRight" task handle (prio 0xDF)
+    u32 timer;                          // +0x10: Display frame timer
+    u8 visible;                         // +0x14: Display visibility
+    u8 pad_15[3];                       // +0x15
+    UiSpriteGroup sprite_group;         // +0x18: Sprite table group (0x20 bytes)
+    UiAnimSprite panel_sprite;          // +0x38: Anim sprite (0x8C bytes)
+    u8 unk_c4[0xE4 - 0xC4];             // +0xC4..+0xE4
+};
+
+static_assert(offsetof(SearchWinWork, calc_task) == 0x00);
+static_assert(offsetof(SearchWinWork, draw_up_left) == 0x04);
+static_assert(offsetof(SearchWinWork, state) == 0x08);
+static_assert(offsetof(SearchWinWork, draw_up_right) == 0x0C);
+static_assert(offsetof(SearchWinWork, visible) == 0x14);
+static_assert(offsetof(SearchWinWork, sprite_group) == 0x18);
+static_assert(offsetof(SearchWinWork, panel_sprite) == 0x38);
+static_assert(sizeof(SearchWinWork) == 0xE4);
+
+extern SearchWinWork* g_SearchWinWork;  // 0x0043E170
+
+// SearchWin API functions
+bool SearchWin_IsActive();                                                          // 0x002cecd8
+void SearchWin_Dismiss();                                                           // 0x002ced0c
+void SearchWin_Init();                                                              // 0x002ced28
+void SearchWin_DrawUpAndCalc(void* arg);                                            // 0x001accd4
+
 } // namespace smt4::ui

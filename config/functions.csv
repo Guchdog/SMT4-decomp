@@ -1982,7 +1982,7 @@ address,size,status,category,name,src_file
 0x001ab900,296,todo,script_vm,script_vm_func_001ab900,
 0x001aba28,108,todo,script_vm,script_vm_func_001aba28,
 0x001aba94,4672,todo,engine,engine_func_001aba94,
-0x001accd4,1104,todo,ui,ui_func_001accd4,
+0x001accd4,1104,non_matching,ui,SearchWin_DrawUpAndCalc,src/ui/window.cpp
 0x001ad124,60,todo,battle,battle_func_001ad124,
 0x001ad160,60,todo,battle,battle_func_001ad160,
 0x001ad19c,60,todo,battle,battle_func_001ad19c,
@@ -5840,9 +5840,9 @@ address,size,status,category,name,src_file
 0x002ce434,2152,todo,engine,engine_func_002ce434,
 0x002cec9c,12,todo,script_vm,script_vm_func_002cec9c,
 0x002ceca8,48,todo,battle,battle_func_002ceca8,
-0x002cecd8,52,todo,ui,ui_func_002cecd8,
-0x002ced0c,28,todo,ui,ui_func_002ced0c,
-0x002ced28,348,todo,ui,SearchWin_func_002ced28,
+0x002cecd8,52,non_matching,ui,SearchWin_IsActive,src/ui/window.cpp
+0x002ced0c,28,non_matching,ui,SearchWin_Dismiss,src/ui/window.cpp
+0x002ced28,348,non_matching,ui,SearchWin_Init,src/ui/window.cpp
 0x002cee84,256,todo,camp,camp_func_002cee84,
 0x002cef84,232,todo,engine,engine_func_002cef84,
 0x002cf06c,8,todo,unknown,func_002cf06c,

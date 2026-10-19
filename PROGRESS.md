@@ -4,15 +4,15 @@
 
 | Metric | Decompiled | Total | Remaining | Percentage |
 |--------|-----------:|------:|----------:|-----------:|
-| **Code Size (Bytes)** | 66,380 B | 3,139,108 B | 3,072,728 B | **2.1146%** |
-| **Functions** | 123 | 10,349 | 10,226 | **1.1885%** |
+| **Code Size (Bytes)** | 67,912 B | 3,139,108 B | 3,071,196 B | **2.1634%** |
+| **Functions** | 127 | 10,349 | 10,222 | **1.2272%** |
 
 ## Subsystem Breakdown
 
 | Subsystem | Decompiled Funcs | Total Funcs | Decompiled Bytes | Total Bytes | Subsystem % |
 |-----------|-----------------:|------------:|-----------------:|------------:|------------:|
 | `engine` | 3 | 2,368 | 224 B | 735,468 B | 0.030% |
-| `ui` | 114 | 1,242 | 65,908 B | 675,556 B | 9.756% |
+| `ui` | 118 | 1,242 | 67,440 B | 675,556 B | 9.983% |
 | `unknown` | 3 | 3,823 | 132 B | 654,480 B | 0.020% |
 | `script_vm` | 0 | 1,203 | 0 B | 459,392 B | 0.000% |
 | `camp` | 0 | 919 | 0 B | 331,168 B | 0.000% |
@@ -54,6 +54,7 @@
 | `0x0018f178` | 988 | `ui` | `non_matching` | `RunWin_DrawDownAndCalc` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x0018f560` | 4912 | `ui` | `non_matching` | `Status_CalcTaskCallback` | [`src/ui/status.cpp`](src/ui/status.cpp) |
 | `0x001a310c` | 15148 | `ui` | `non_matching` | `Status_DrawUp` | [`src/ui/status.cpp`](src/ui/status.cpp) |
+| `0x001accd4` | 1104 | `ui` | `non_matching` | `SearchWin_DrawUpAndCalc` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x001ca648` | 8908 | `ui` | `non_matching` | `StatusDown_CalcTaskCallback` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x001cc914` | 5348 | `ui` | `non_matching` | `StatusDown_DrawTaskCallback` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x001cddf8` | 516 | `ui` | `non_matching` | `Status_DrawBackUp` | [`src/ui/status.cpp`](src/ui/status.cpp) |
@@ -120,6 +121,9 @@
 | `0x002c0e84` | 24 | `ui` | `non_matching` | `Tbb_GetDefaultTable18Payload` | [`src/ui/tbb_loader.cpp`](src/ui/tbb_loader.cpp) |
 | `0x002c0e9c` | 40 | `ui` | `non_matching` | `Tbb_GetPayloadData` | [`src/ui/tbb_loader.cpp`](src/ui/tbb_loader.cpp) |
 | `0x002c0ec4` | 28 | `ui` | `non_matching` | `Tbb_GetGlobalSubTable` | [`src/ui/tbb_loader.cpp`](src/ui/tbb_loader.cpp) |
+| `0x002cecd8` | 52 | `ui` | `non_matching` | `SearchWin_IsActive` | [`src/ui/window.cpp`](src/ui/window.cpp) |
+| `0x002ced0c` | 28 | `ui` | `non_matching` | `SearchWin_Dismiss` | [`src/ui/window.cpp`](src/ui/window.cpp) |
+| `0x002ced28` | 348 | `ui` | `non_matching` | `SearchWin_Init` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x002cf4e0` | 352 | `ui` | `non_matching` | `StatusDown_UpdateHelpMessage` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x002d931c` | 764 | `ui` | `non_matching` | `StatusDown_Init` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x002d9618` | 36 | `ui` | `non_matching` | `StatusDown_EnterState3_Alt` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
