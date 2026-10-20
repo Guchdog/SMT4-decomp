@@ -63,7 +63,7 @@
 - `Config_func_0018b660`: `0x0018b660` (536 B)
 - `titleMain_func_001eb02c`: `0x001eb02c` (524 B)
 
-- [ ] **Step 1: Update progress test expectations (RED)**
+- [x] **Step 1: Update progress test expectations (RED)**
 
 ```python
 self.assertEqual(stats["decompiled_functions"], 279)
@@ -74,16 +74,16 @@ self.assertEqual(stats["total_explored_functions"], 318)
 self.assertEqual(stats["total_explored_bytes"], 540712)
 ```
 
-- [ ] **Step 2: Run the suite to verify it fails**
+- [x] **Step 2: Run the suite to verify it fails**
 
 Run: `python -m unittest discover -s tests -v`
 Expected: FAIL with `279 != 270`.
 
-- [ ] **Step 3: Disassemble and implement**
+- [x] **Step 3: Disassemble and implement**
 
 Use `python tools/split_asm.py --addr <address>` for every function. Preserve CEC state transitions, editor row/cursor arithmetic, title menu flow, and config/play-log persistence. Cite every non-obvious offset.
 
-- [ ] **Step 4: Update the ledger and verify GREEN**
+- [x] **Step 4: Update the ledger and verify GREEN**
 
 Set `src_file=src/camp/camp_cec.cpp` for the four CEC rows and `src_file=src/camp/title_flow.cpp` for the five title rows, status `non_matching`. Run:
 
@@ -94,7 +94,7 @@ python -m unittest discover -s tests -v
 
 Expected: 279 / 292,472 B, 39 / 248,240 B, 318 / 540,712 B; all tests PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```powershell
 git commit -m "feat(camp): decompile CampCec UI and title/config flow (+6,896 B, 17.23% explored)"
@@ -122,7 +122,7 @@ git commit -m "feat(camp): decompile CampCec UI and title/config flow (+6,896 B,
 - `btlEditor_func_001f7f00`: `0x001f7f00` (432 B)
 - `btlGameOver_func_0021ae48`: `0x0021ae48` (428 B)
 
-- [ ] **Step 1: Update progress test expectations (RED)**
+- [x] **Step 1: Update progress test expectations (RED)**
 
 ```python
 self.assertEqual(stats["decompiled_functions"], 289)
@@ -133,19 +133,19 @@ self.assertEqual(stats["total_explored_functions"], 328)
 self.assertEqual(stats["total_explored_bytes"], 550436)
 ```
 
-- [ ] **Step 2: Run the suite to verify it fails**
+- [x] **Step 2: Run the suite to verify it fails**
 
 Expected: FAIL with `289 != 279`.
 
-- [ ] **Step 3: Disassemble and implement**
+- [x] **Step 3: Disassemble and implement**
 
 Preserve enemy model/motion draw loops, effect file chunk loading, filter passes, talk command menu flow, game-over state, and debug/editor hooks. `EnemyDraw_func_0033eadc` and `EftLoadFile_func_00249fac` must retain their loops and error paths.
 
-- [ ] **Step 4: Update the ledger and verify GREEN**
+- [x] **Step 4: Update the ledger and verify GREEN**
 
 Set `status=non_matching`, `src_file=src/battle/battle_extras.cpp`; expected 289 / 302,196 B, 328 / 550,436 B.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```powershell
 git commit -m "feat(battle): decompile enemy draw, effect loading and battle extras (+9,724 B, 17.54% explored)"
@@ -171,7 +171,7 @@ git commit -m "feat(battle): decompile enemy draw, effect loading and battle ext
 - `EventEffect_func_0030a4fc`: `0x0030a4fc` (504 B)
 - `clearSave_func_001e1118`: `0x001e1118` (488 B)
 
-- [ ] **Step 1: Update progress test expectations (RED)**
+- [x] **Step 1: Update progress test expectations (RED)**
 
 ```python
 self.assertEqual(stats["decompiled_functions"], 297)
@@ -182,19 +182,19 @@ self.assertEqual(stats["total_explored_functions"], 336)
 self.assertEqual(stats["total_explored_bytes"], 557524)
 ```
 
-- [ ] **Step 2: Run the suite to verify it fails**
+- [x] **Step 2: Run the suite to verify it fails**
 
 Expected: FAIL with `297 != 289`.
 
-- [ ] **Step 3: Disassemble and implement**
+- [x] **Step 3: Disassemble and implement**
 
 Preserve NPC room setup, quest list filtering, QC/script task dispatch, event command arguments, and clear-save state.
 
-- [ ] **Step 4: Update the ledger and verify GREEN**
+- [x] **Step 4: Update the ledger and verify GREEN**
 
 Set `status=non_matching`, `src_file=src/script/script_extras.cpp`; expected 297 / 309,284 B, 336 / 557,524 B.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```powershell
 git commit -m "feat(script): decompile NPC room, quest UI and script process extras (+7,088 B, 17.76% explored)"
@@ -221,7 +221,7 @@ git commit -m "feat(script): decompile NPC room, quest UI and script process ext
 - `mapMain_func_001b4410`: `0x001b4410` (440 B)
 - `naviMain_func_00291cac`: `0x00291cac` (412 B)
 
-- [ ] **Step 1: Update progress test expectations (RED)**
+- [x] **Step 1: Update progress test expectations (RED)**
 
 ```python
 self.assertEqual(stats["decompiled_functions"], 306)
@@ -232,19 +232,19 @@ self.assertEqual(stats["total_explored_functions"], 345)
 self.assertEqual(stats["total_explored_bytes"], 562520)
 ```
 
-- [ ] **Step 2: Run the suite to verify it fails**
+- [x] **Step 2: Run the suite to verify it fails**
 
 Expected: FAIL with `306 != 297`.
 
-- [ ] **Step 3: Disassemble and implement**
+- [x] **Step 3: Disassemble and implement**
 
 Preserve map transition state, enemy spawn/despawn, event opening, EPL lookup, and navi callback wiring.
 
-- [ ] **Step 4: Update the ledger and verify GREEN**
+- [x] **Step 4: Update the ledger and verify GREEN**
 
 Set `status=non_matching`, `src_file=src/engine/map_runtime.cpp`; expected 306 / 314,280 B, 345 / 562,520 B.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```powershell
 git commit -m "feat(engine): decompile map runtime and navigation hooks (+4,996 B, 17.92% explored)"
@@ -267,7 +267,7 @@ git commit -m "feat(engine): decompile map runtime and navigation hooks (+4,996 
 - `bibleLegionDraw_func_003ad300`: `0x003ad300` (596 B)
 - `bibleLegionSkill_func_003ab770`: `0x003ab770` (592 B)
 
-- [ ] **Step 1: Update progress test expectations (RED)**
+- [x] **Step 1: Update progress test expectations (RED)**
 
 ```python
 self.assertEqual(stats["decompiled_functions"], 311)
@@ -278,19 +278,19 @@ self.assertEqual(stats["total_explored_functions"], 350)
 self.assertEqual(stats["total_explored_bytes"], 565932)
 ```
 
-- [ ] **Step 2: Run the suite to verify it fails**
+- [x] **Step 2: Run the suite to verify it fails**
 
 Expected: FAIL with `311 != 306`.
 
-- [ ] **Step 3: Disassemble and implement**
+- [x] **Step 3: Disassemble and implement**
 
 Preserve demon fusion result/selection state, compendium entry draw/skill rows, and UniteCtrl state transitions.
 
-- [ ] **Step 4: Update the ledger and verify GREEN**
+- [x] **Step 4: Update the ledger and verify GREEN**
 
 Set `status=non_matching`, `src_file=src/camp/unite_extras.cpp`; expected 311 / 317,692 B, 350 / 565,932 B (18.0288%); all tests PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```powershell
 git commit -m "feat(camp): decompile unite and bible extras (+3,412 B, 18.0% milestone reached at 18.0288%)"
