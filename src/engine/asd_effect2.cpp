@@ -116,14 +116,14 @@ constexpr u32 kEffectPool = 0x10000;
 constexpr u32 kEffectAlign = 0x100;
 
 // 0x004737F8+0x10..+0x1C: the four words copied by the geometry 0x80000 path
-// (0x0026927C..0x00269294).  The listing reads +0x10/+0x14/+0x18 into
-// geometry +0x40/+0x44/+0x48 and +0x1C into geometry +0x4C.
+// (0x0026927C..0x00269294).  The binary holds 3F800000,0,0,3F800000 at
+// 0x00473808..0x00473814, i.e. (1.0f, 0.0f, 0.0f, 1.0f).
 const EffGeometryOverride g_EffGeometryOverride = {
     {},
-    0.0f,
-    1.0f,
     1.0f,
     0.0f,
+    0.0f,
+    1.0f,
 };
 
 // 0x00472560: four bytes read by the track colour loop (0x0024fbbc..0x0024fc98).
@@ -172,11 +172,10 @@ s32 GeometryPointCount(u16 count)
     return (product >> 17) - (product >> 31);
 }
 
-// Point ratio used by all three thunder bodies.  `i < x` ramps up, the
-// [x,y] plateau is 1.0, and the tail ramps down.  The 0x0031596C body divides
-// by `points - x` (0x00315b10..0x00315b24) while 0x0032170C and 0x00327D90
-// divide by `points - y` (0x0032189c..0x003218b0, 0x00327f48..0x00327f5c).
-f32 ThunderRatio(s32 i, s32 x, s32 y, s32 points, bool divide_by_x)
+// Point ratio used by 0x0031596C and 0x0032170C.  `i < x` ramps up, the
+// [x,y] plateau is 1.0, and the tail divides by `points - y` (0x00315B00..
+// 0x00315B24 and 0x0032189C..0x003218B0).
+f32 ThunderRatio(s32 i, s32 x, s32 y, s32 points)
 {
     if (i < x)
         return static_cast<f32>(static_cast<u32>(i)) / static_cast<f32>(x);
@@ -184,9 +183,24 @@ f32 ThunderRatio(s32 i, s32 x, s32 y, s32 points, bool divide_by_x)
     if (i <= y)
         return 1.0f;
 
-    const s32 divisor = divide_by_x ? x : y;
     return static_cast<f32>(static_cast<u32>(points - i)) /
-           static_cast<f32>(static_cast<u32>(points - divisor));
+           static_cast<f32>(static_cast<u32>(points - y));
+}
+
+// 0x00327D90's ratio differs in two ways: the tail numerator is
+// `points - i - 1` (0x00327F48..0x00327F54), and the whole computation is
+// gated to i == 0 or odd i (0x00327F08..0x00327F14).  Even i > 0 reuses the
+// previous ratio held in s16.
+f32 ThunderRatio327(s32 i, s32 x, s32 y, s32 points)
+{
+    if (i < x)
+        return static_cast<f32>(static_cast<u32>(i)) / static_cast<f32>(x);
+
+    if (i <= y)
+        return 1.0f;
+
+    return static_cast<f32>(static_cast<u32>(points - i - 1)) /
+           static_cast<f32>(static_cast<u32>(points - y));
 }
 
 } // namespace
@@ -755,11 +769,11 @@ void* effPolygonThunder_func_0031596c(EffPolygonThunder* object)
         u8* vertex = geometry->render->vertices_38; // 0x00315AB8..0x00315AC0
 
         for (s32 i = 0; i < points; ++i) {     // 0x00315AD0..0x00315C28
-            // 0x00315A80 stores the converted scale_y at +0x1C and scale_x
-            // at +0x20; the first threshold is therefore scale_y and the
-            // tail divides by points - scale_y (0x00315B10..0x00315B24).
+            // 0x00315A80 stores scale_y at +0x1C and scale_x at +0x20;
+            // 0x00315ADC ramps against scale_x and 0x00315B00 plateaus
+            // against scale_y, with the tail using points - scale_y.
             const f32 ratio =
-                ThunderRatio(i, y, x, points, true);
+                ThunderRatio(i, x, y, points);
             WriteThunderVertex(vertex, color0, color1, color2, ratio);
             vertex += 0x14;                    // 0x00315C20
         }
@@ -811,7 +825,7 @@ void* effPolygonThunder_func_0032170c(EffPolygonThunder* object)
 
         for (s32 i = 0; i < points; ++i) {     // 0x0032185C..0x003219B4
             const f32 ratio =
-                ThunderRatio(i, x, y, points, false); // divides by points-y
+                ThunderRatio(i, x, y, points);   // divides by points-y
             WriteThunderVertex(vertex, color0, color1, color2, ratio);
             vertex += 0x14;                    // 0x003219AC
         }
@@ -866,9 +880,13 @@ void* effPolygonThunder_func_00327d90(EffPolygonThunder* object)
         const s32 points = GeometryPointCount(geometry->count);
         u8* vertex = geometry->render->vertices_38; // 0x00327EE4..0x00327EEC
 
+        // s16 starts at 0 (0x00327E20) and is only recomputed for i == 0 or
+        // odd i; the even i > 0 check at 0x00327F08..0x00327F14 branches
+        // straight to the vertex writes.
+        f32 ratio = 0.0f;
         for (s32 i = 0; i < points; ++i) {     // 0x00327EFC..0x00328068
-            const f32 ratio =
-                ThunderRatio(i, x, y, points, false); // divides by points-y
+            if (i == 0 || (i & 1) != 0)
+                ratio = ThunderRatio327(i, x, y, points);
             WriteThunderVertex(vertex, color0, color1, color2, ratio);
             vertex += 0x14;                    // 0x00328060
         }
@@ -1130,7 +1148,10 @@ EffGeometry* effGeometry_func_002691f0(const EffGeometrySource* source)
     const u32 count = record->count_0c;        // `ldr r7,[r0,#0xc]!`
     const u32 innerCount = record->count_14;    // `ldr sb,[r0,#8]`
 
-    // 0x002692FC..0x0026931C: render-data pool and initializer.
+    // 0x002692FC..0x0026931C: render-data pool and initializer.  The listing
+    // also loads r1 = source before the call (0x00269304), but the callee
+    // overwrites r1 at 0x002C2404, so the canonical one-argument declaration
+    // is used and that dead register argument is intentionally not modelled.
     void* pool = AsdMemory_func_002c23f8(0x7E8);
     EffGeometryRender* render = pool != nullptr
         ? static_cast<EffGeometryRender*>(engine_func_00269644(pool))
@@ -1157,11 +1178,12 @@ EffGeometry* effGeometry_func_002691f0(const EffGeometrySource* source)
         render->indices[0] = record->indices[0];
     }
 
-    // 0x00269388..0x002693E8: copy at the current index and at 2+2*i, then
-    // advance i by two until it reaches the index count.
+    // 0x00269388..0x002693E8: copy elements i and 1+i, then advance i by two
+    // until it reaches the index count.  The listing's `add r1,r2,r0,lsl #1`
+    // with r2=2 is a byte offset into the u16 array, hence element 1+i.
     u32 i = indexCount & 1;                     // `and r0,r0,#1`, 0x00269368
     while (indexCount > i) {
-        const u32 second = 2 + i * 2;           // `add r1,r2,r0,lsl #1`
+        const u32 second = 1 + i;               // 2 + i*2 bytes
         render->indices[i] = record->indices[i];
         i += 2;
         render->indices[second] = record->indices[second];
