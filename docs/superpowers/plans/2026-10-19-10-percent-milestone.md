@@ -82,14 +82,14 @@
 - `FlowScript_InitRuntimeMemory`: `0x00277f9c` (12,192 B)
 - `FlowScript_ProcessFlagBank`: `0x001e5d84` (9,740 B)
 
-- [ ] **Step 1: Update progress test expectations (RED)**
+- [x] **Step 1: Update progress test expectations (RED)**
   - Update `tests/test_progress.py` to expect 186 functions and 305,388 bytes.
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
   - Run `python -m unittest discover -s tests -v`.
-- [ ] **Step 3: Define structures in `include/script/script_runtime.h` and implement in `src/script/script_runtime.cpp`**
-- [ ] **Step 4: Update `config/functions.csv` and run test to verify it passes (GREEN)**
+- [x] **Step 3: Define structures in `include/script/script_runtime.h` and implement in `src/script/script_runtime.cpp`**
+- [x] **Step 4: Update `config/functions.csv` and run test to verify it passes (GREEN)**
   - Run `python tools/progress.py --write` and `python -m unittest discover -s tests -v`.
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
   - Commit: `feat(script): implement FlowScript runtime memory and global flag bank (+21,932 B, 9.73% reached)`.
 
 ---

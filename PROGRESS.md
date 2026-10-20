@@ -4,8 +4,8 @@
 
 | Metric | Decompiled | Total | Remaining | Percentage |
 |--------|-----------:|------:|----------:|-----------:|
-| **Code Size (Bytes)** | 283,456 B | 3,139,108 B | 2,855,652 B | **9.0298%** |
-| **Functions** | 184 | 10,349 | 10,165 | **1.7779%** |
+| **Code Size (Bytes)** | 305,388 B | 3,139,108 B | 2,833,720 B | **9.7285%** |
+| **Functions** | 186 | 10,349 | 10,163 | **1.7973%** |
 
 ## Subsystem Breakdown
 
@@ -14,7 +14,7 @@
 | `engine` | 3 | 2,363 | 224 B | 726,520 B | 0.031% |
 | `ui` | 133 | 1,238 | 93,388 B | 682,348 B | 13.686% |
 | `unknown` | 3 | 3,823 | 132 B | 654,480 B | 0.020% |
-| `script_vm` | 4 | 1,201 | 76,256 B | 446,288 B | 17.087% |
+| `script_vm` | 6 | 1,201 | 98,188 B | 446,288 B | 22.001% |
 | `camp` | 13 | 918 | 70,404 B | 326,396 B | 21.570% |
 | `battle` | 20 | 575 | 37,860 B | 236,932 B | 15.979% |
 | `shop` | 4 | 111 | 3,820 B | 39,976 B | 9.556% |
@@ -88,6 +88,7 @@
 | `0x001de238` | 5020 | `camp` | `non_matching` | `Unite_DrawAndCalc` | [`src/camp/unite.cpp`](src/camp/unite.cpp) |
 | `0x001e4990` | 340 | `battle` | `non_matching` | `btlMain_DrawUp` | [`src/battle/btl_main.cpp`](src/battle/btl_main.cpp) |
 | `0x001e4ae4` | 360 | `battle` | `non_matching` | `btlUI_DrawDown` | [`src/battle/btl_ui.cpp`](src/battle/btl_ui.cpp) |
+| `0x001e5d84` | 9740 | `script_vm` | `non_matching` | `FlowScript_ProcessFlagBank` | [`src/script/script_runtime.cpp`](src/script/script_runtime.cpp) |
 | `0x001ee5a4` | 548 | `ui` | `non_matching` | `StatusDown_PopulateSkillList` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x001ee7c8` | 384 | `ui` | `non_matching` | `StatusDown_PopulateItemList` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x001f2f58` | 1704 | `camp` | `non_matching` | `Unite_Setup` | [`src/camp/unite.cpp`](src/camp/unite.cpp) |
@@ -130,6 +131,7 @@
 | `0x0026c8a8` | 24 | `ui` | `non_matching` | `Status_GetFlag1E63` | [`src/ui/status.cpp`](src/ui/status.cpp) |
 | `0x0026d8c0` | 28 | `ui` | `non_matching` | `StatusDown_SetVisibility` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x0026d8dc` | 52 | `ui` | `non_matching` | `Status_ResetAffinityView` | [`src/ui/status.cpp`](src/ui/status.cpp) |
+| `0x00277f9c` | 12192 | `script_vm` | `non_matching` | `FlowScript_InitRuntimeMemory` | [`src/script/script_runtime.cpp`](src/script/script_runtime.cpp) |
 | `0x00288408` | 28 | `ui` | `non_matching` | `Status_GetSubMenuState` | [`src/ui/status.cpp`](src/ui/status.cpp) |
 | `0x00288718` | 92 | `ui` | `non_matching` | `StatusDown_CanOpenSubScreen` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x00289158` | 112 | `ui` | `non_matching` | `Status_Destroy` | [`src/ui/status.cpp`](src/ui/status.cpp) |

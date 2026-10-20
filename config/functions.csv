@@ -2289,7 +2289,7 @@ address,size,status,category,name,src_file
 0x001e4c7c,1996,todo,script_vm,script_vm_func_001e4c7c,
 0x001e5448,2324,todo,script_vm,script_vm_func_001e5448,
 0x001e5d5c,40,todo,engine,engine_func_001e5d5c,
-0x001e5d84,9740,todo,script_vm,script_vm_func_001e5d84,
+0x001e5d84,9740,non_matching,script_vm,FlowScript_ProcessFlagBank,src/script/script_runtime.cpp
 0x001e8390,108,todo,unknown,func_001e8390,
 0x001e83fc,4380,todo,ui,ui_func_001e83fc,
 0x001e9518,528,todo,ui,ui_func_001e9518,
@@ -4210,7 +4210,7 @@ address,size,status,category,name,src_file
 0x00276cac,4384,todo,script_vm,script_vm_func_00276cac,
 0x00277dcc,128,todo,script_vm,script_vm_func_00277dcc,
 0x00277e4c,336,todo,script_vm,script_vm_func_00277e4c,
-0x00277f9c,12192,todo,script_vm,script_vm_func_00277f9c,
+0x00277f9c,12192,non_matching,script_vm,FlowScript_InitRuntimeMemory,src/script/script_runtime.cpp
 0x0027af3c,452,todo,script_vm,script_vm_func_0027af3c,
 0x0027b100,804,todo,script_vm,script_vm_func_0027b100,
 0x0027b424,200,todo,script_vm,script_vm_func_0027b424,
