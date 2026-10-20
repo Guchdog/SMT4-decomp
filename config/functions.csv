@@ -350,7 +350,7 @@ address,size,status,category,name,src_file
 0x00113318,1008,todo,ui,ui_func_00113318,
 0x00113708,1616,todo,ui,ui_func_00113708,
 0x00113d58,1564,todo,engine,AsdFile_func_00113d58,
-0x00114374,6144,todo,camp,camp_func_00114374,
+0x00114374,6144,non_matching,camp,Camp_DemonicaArchiveLoad,src/camp/camp_archive.cpp
 0x00115b74,92,todo,unknown,func_00115b74,
 0x00115bd0,3224,todo,ui,ui_func_00115bd0,
 0x00116868,236,todo,ui,ui_func_00116868,
@@ -6004,7 +6004,7 @@ address,size,status,category,name,src_file
 0x002d9618,36,non_matching,ui,StatusDown_EnterState3_Alt,src/ui/status_down.cpp
 0x002d963c,24,todo,camp,camp_func_002d963c,
 0x002d9654,24,todo,camp,camp_func_002d9654,
-0x002d966c,5336,todo,camp,camp_func_002d966c,
+0x002d966c,5336,non_matching,camp,Camp_ItemInventorySort,src/camp/camp_inventory.cpp
 0x002dab44,428,todo,camp,camp_func_002dab44,
 0x002dacf0,12,todo,unknown,func_002dacf0,
 0x002dacfc,64,todo,ui,ui_func_002dacfc,
@@ -7229,7 +7229,7 @@ address,size,status,category,name,src_file
 0x003253d8,56,todo,ui,ui_func_003253d8,
 0x00325410,52,todo,engine,engine_func_00325410,
 0x00325444,52,todo,engine,engine_func_00325444,
-0x00325478,5072,todo,ui,ui_func_00325478,
+0x00325478,5072,non_matching,ui,Ui_DemonicaAppStore,src/camp/app_store.cpp
 0x00326848,820,todo,unknown,func_00326848,
 0x00326b7c,80,todo,engine,engine_func_00326b7c,
 0x00326bcc,568,todo,engine,engine_func_00326bcc,
@@ -7357,7 +7357,7 @@ address,size,status,category,name,src_file
 0x003311b4,472,todo,ui,ui_func_003311b4,
 0x0033138c,836,todo,camp,camp_func_0033138c,
 0x003316d0,2608,todo,ui,ui_func_003316d0,
-0x00332100,5968,todo,camp,camp_func_00332100,
+0x00332100,5968,non_matching,camp,Camp_WhisperSkillTransfer,src/camp/whisper_event.cpp
 0x00333850,100,todo,engine,engine_func_00333850,
 0x003338b4,72,todo,script_vm,script_vm_func_003338b4,
 0x003338fc,20,todo,engine,engine_func_003338fc,
@@ -9476,7 +9476,7 @@ address,size,status,category,name,src_file
 0x003b3560,4,todo,unknown,func_003b3560,
 0x003b3564,68,todo,unknown,func_003b3564,
 0x003b35a8,5656,todo,ui,ui_func_003b35a8,
-0x003b4bc0,5520,todo,ui,ui_func_003b4bc0,
+0x003b4bc0,5520,non_matching,ui,Ui_DemonCompendiumSearch,src/camp/compendium_search.cpp
 0x003b6150,1652,todo,ui,ui_func_003b6150,
 0x003b67c4,1208,todo,ui,ui_func_003b67c4,
 0x003b6c7c,840,todo,ui,ui_func_003b6c7c,
