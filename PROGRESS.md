@@ -4,8 +4,8 @@
 
 | Metric | Decompiled | Total | Remaining | Percentage |
 |--------|-----------:|------:|----------:|-----------:|
-| **Code Size (Bytes)** | 161,196 B | 3,139,108 B | 2,977,912 B | **5.1351%** |
-| **Functions** | 177 | 10,349 | 10,172 | **1.7103%** |
+| **Code Size (Bytes)** | 214,540 B | 3,139,108 B | 2,924,568 B | **6.8344%** |
+| **Functions** | 179 | 10,349 | 10,170 | **1.7296%** |
 
 ## Subsystem Breakdown
 
@@ -14,7 +14,7 @@
 | `engine` | 3 | 2,363 | 224 B | 726,520 B | 0.031% |
 | `ui` | 133 | 1,238 | 93,388 B | 682,348 B | 13.686% |
 | `unknown` | 3 | 3,823 | 132 B | 654,480 B | 0.020% |
-| `script_vm` | 2 | 1,201 | 22,912 B | 446,288 B | 5.134% |
+| `script_vm` | 4 | 1,201 | 76,256 B | 446,288 B | 17.087% |
 | `camp` | 10 | 918 | 17,576 B | 326,396 B | 5.385% |
 | `battle` | 18 | 575 | 21,772 B | 236,932 B | 9.189% |
 | `shop` | 4 | 111 | 3,820 B | 39,976 B | 9.556% |
@@ -64,6 +64,8 @@
 | `0x001b55f0` | 5288 | `battle` | `non_matching` | `btlMain_Calc` | [`src/battle/btl_main.cpp`](src/battle/btl_main.cpp) |
 | `0x001b6a98` | 1824 | `battle` | `non_matching` | `btlMain_Setup` | [`src/battle/btl_main.cpp`](src/battle/btl_main.cpp) |
 | `0x001b71e0` | 3224 | `battle` | `non_matching` | `btlUI_DrawUp` | [`src/battle/btl_ui.cpp`](src/battle/btl_ui.cpp) |
+| `0x001b7e78` | 34684 | `script_vm` | `non_matching` | `FlowScript_DispatchNativeCommands` | [`src/script/script_exec.cpp`](src/script/script_exec.cpp) |
+| `0x001c3ed4` | 18660 | `script_vm` | `non_matching` | `FlowScript_EvalStateControl` | [`src/script/script_exec.cpp`](src/script/script_exec.cpp) |
 | `0x001c87d8` | 420 | `ui` | `non_matching` | `Result_DrawDown` | [`src/ui/result.cpp`](src/ui/result.cpp) |
 | `0x001c897c` | 7048 | `ui` | `non_matching` | `saveLoadUI_DrawMain` | [`src/ui/save_load.cpp`](src/ui/save_load.cpp) |
 | `0x001ca648` | 8908 | `ui` | `non_matching` | `StatusDown_CalcTaskCallback` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |

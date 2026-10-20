@@ -2050,7 +2050,7 @@ address,size,status,category,name,src_file
 0x001b6a98,1824,non_matching,battle,btlMain_Setup,src/battle/btl_main.cpp
 0x001b71b8,40,todo,ui,ui_func_001b71b8,
 0x001b71e0,3224,non_matching,battle,btlUI_DrawUp,src/battle/btl_ui.cpp
-0x001b7e78,34684,todo,script_vm,script_vm_func_001b7e78,
+0x001b7e78,34684,non_matching,script_vm,FlowScript_DispatchNativeCommands,src/script/script_exec.cpp
 0x001c05f4,28,todo,engine,engine_func_001c05f4,
 0x001c0610,476,todo,unknown,func_001c0610,
 0x001c07ec,104,todo,unknown,func_001c07ec,
@@ -2087,7 +2087,7 @@ address,size,status,category,name,src_file
 0x001c35d8,1996,todo,script_vm,script_vm_func_001c35d8,
 0x001c3da4,64,todo,script_vm,script_vm_func_001c3da4,
 0x001c3de4,240,todo,script_vm,script_vm_func_001c3de4,
-0x001c3ed4,18660,todo,script_vm,script_vm_func_001c3ed4,
+0x001c3ed4,18660,non_matching,script_vm,FlowScript_EvalStateControl,src/script/script_exec.cpp
 0x001c87b8,32,todo,unknown,func_001c87b8,
 0x001c87d8,420,non_matching,ui,Result_DrawDown,src/ui/result.cpp
 0x001c897c,7048,non_matching,ui,saveLoadUI_DrawMain,src/ui/save_load.cpp

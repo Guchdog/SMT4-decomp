@@ -8,8 +8,8 @@ Decompilation and reverse-engineering project for **Shin Megami Tensei IV** (Nin
 
 ## Live Decompilation Progress
 
-- **`.text` Bytes Decompiled:** `161,196 / 3,139,108 bytes` (**5.1351%**)
-- **Functions Decompiled:** `177 / 10,349 functions` (**1.7103%**)
+- **`.text` Bytes Decompiled:** `214,540 / 3,139,108 bytes` (**6.8344%**)
+- **Functions Decompiled:** `179 / 10,349 functions` (**1.7296%**)
 - See [`PROGRESS.md`](PROGRESS.md) for the full subsystem breakdown (`ui`, `camp`, `battle`, `script_vm`, `shop`, `unite`, `engine`, `nn_sdk`, `crt`) and verified function list.
 
 ---
