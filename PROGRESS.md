@@ -4,11 +4,11 @@
 
 | Category | Functions | Code Size (Bytes) | Progress % | Status Description |
 |----------|----------:|------------------:|-----------:|--------------------|
-| **Decompiled (Reconstructed)** | 336 | 333,696 B | **10.6303%** | Substantial C++ logic reverse-engineered |
+| **Decompiled (Reconstructed)** | 339 | 348,564 B | **11.1039%** | Substantial C++ logic reverse-engineered |
 | **Scaffolded (Stubs & Interfaces)** | 39 | 248,240 B | 7.9080% | Headers, structs, and function skeletons |
 | **Matching (Byte-for-Byte)** | 0 | 0 B | 0.0000% | 100% compiled machine code match |
-| **Total Architecture Explored** | 375 | 581,936 B | **18.5383%** | Total identified & mapped into `src/` |
-| **Remaining (Todo)** | 9,974 | 2,557,172 B | 81.4617% | Unmapped functions in `.text` |
+| **Total Architecture Explored** | 378 | 596,804 B | **19.0119%** | Total identified & mapped into `src/` |
+| **Remaining (Todo)** | 9,971 | 2,542,304 B | 80.9881% | Unmapped functions in `.text` |
 | **Total `.text` Segment** | 10,349 | 3,139,108 B | 100.0000% | `0x00100000`–`0x003FE624` |
 
 ## Subsystem Breakdown
@@ -16,7 +16,7 @@
 | Subsystem | Decompiled Funcs | Decompiled Bytes | Stub Funcs | Stub Bytes | Total Funcs | Total Bytes | Decompiled % | Explored % |
 |-----------|-----------------:|-----------------:|-----------:|-----------:|------------:|------------:|-------------:|-----------:|
 | `engine` | 121 | 67,816 B | 2 | 22,760 B | 2,363 | 726,520 B | 9.33% | 12.47% |
-| `ui` | 144 | 102,788 B | 14 | 96,248 B | 1,238 | 682,348 B | 15.06% | 29.17% |
+| `ui` | 147 | 117,656 B | 14 | 96,248 B | 1,238 | 682,348 B | 17.24% | 31.35% |
 | `unknown` | 3 | 132 B | 0 | 0 B | 3,823 | 654,480 B | 0.02% | 0.02% |
 | `script_vm` | 12 | 104,244 B | 3 | 22,836 B | 1,201 | 446,288 B | 23.36% | 28.47% |
 | `camp` | 20 | 25,980 B | 6 | 70,276 B | 918 | 326,396 B | 7.96% | 29.49% |
@@ -96,6 +96,7 @@
 | `0x00192594` | 484 | `engine` | `non_matching` | `AsdModel_func_00192594` | [`src/engine/asd_model.cpp`](src/engine/asd_model.cpp) |
 | `0x00194dbc` | 648 | `camp` | `non_matching` | `PlayLog_func_00194dbc` | [`src/camp/title_flow.cpp`](src/camp/title_flow.cpp) |
 | `0x001955bc` | 5812 | `script_vm` | `stub` | `FlowScript_EventVmExecute` | [`src/script/script_vm.cpp`](src/script/script_vm.cpp) |
+| `0x00197d2c` | 4432 | `ui` | `non_matching` | `ui_func_00197d2c` | [`src/ui/ui_runtime.cpp`](src/ui/ui_runtime.cpp) |
 | `0x0019a3ec` | 12900 | `camp` | `stub` | `Camp_DrawStereoViews` | [`src/camp/camp_main.cpp`](src/camp/camp_main.cpp) |
 | `0x0019e034` | 4772 | `battle` | `stub` | `btlUI_Calc` | [`src/battle/btl_ui.cpp`](src/battle/btl_ui.cpp) |
 | `0x0019fb58` | 756 | `engine` | `non_matching` | `AsdTexTMX_func_0019fb58` | [`src/engine/asd_texture.cpp`](src/engine/asd_texture.cpp) |
@@ -148,6 +149,7 @@
 | `0x001ee5a4` | 548 | `ui` | `non_matching` | `StatusDown_PopulateSkillList` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x001ee7c8` | 384 | `ui` | `non_matching` | `StatusDown_PopulateItemList` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x001eeea0` | 5556 | `ui` | `stub` | `Ui_MikadoCastleScene` | [`src/ui/mikado_ui.cpp`](src/ui/mikado_ui.cpp) |
+| `0x001f0454` | 5764 | `ui` | `non_matching` | `ui_func_001f0454` | [`src/ui/ui_runtime.cpp`](src/ui/ui_runtime.cpp) |
 | `0x001f2f58` | 1704 | `camp` | `non_matching` | `Unite_Setup` | [`src/camp/unite.cpp`](src/camp/unite.cpp) |
 | `0x001f60dc` | 152 | `ui` | `non_matching` | `StatusDown_SkillSortByCostAsc` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x001f6174` | 48 | `ui` | `non_matching` | `StatusDown_SkillSortByNameAsc` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
@@ -214,6 +216,7 @@
 | `0x00263978` | 124 | `ui` | `non_matching` | `PlaceWin_ShowMessage` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x002639f4` | 448 | `ui` | `non_matching` | `PlaceWin_Init` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x00263bb4` | 660 | `ui` | `non_matching` | `PlaceWin_Calc` | [`src/ui/window.cpp`](src/ui/window.cpp) |
+| `0x00267fb0` | 4672 | `ui` | `non_matching` | `ui_func_00267fb0` | [`src/ui/ui_runtime.cpp`](src/ui/ui_runtime.cpp) |
 | `0x002691f0` | 532 | `engine` | `non_matching` | `effGeometry_func_002691f0` | [`src/engine/asd_effect2.cpp`](src/engine/asd_effect2.cpp) |
 | `0x00269404` | 400 | `engine` | `non_matching` | `effBehavior_func_00269404` | [`src/engine/asd_render_ui.cpp`](src/engine/asd_render_ui.cpp) |
 | `0x00269cc8` | 352 | `unite` | `non_matching` | `bibleMain_Init` | [`src/camp/bible.cpp`](src/camp/bible.cpp) |

@@ -1860,7 +1860,7 @@ address,size,status,category,name,src_file
 0x00196ee0,372,todo,camp,camp_func_00196ee0,
 0x00197054,1880,todo,camp,camp_func_00197054,
 0x001977ac,1408,todo,ui,ui_func_001977ac,
-0x00197d2c,4432,todo,ui,ui_func_00197d2c,
+0x00197d2c,4432,non_matching,ui,ui_func_00197d2c,src/ui/ui_runtime.cpp
 0x00198e7c,160,todo,script_vm,script_vm_func_00198e7c,
 0x00198f1c,176,todo,script_vm,script_vm_func_00198f1c,
 0x00198fcc,848,todo,camp,camp_func_00198fcc,
@@ -2359,7 +2359,7 @@ address,size,status,category,name,src_file
 0x001ee97c,32,todo,camp,camp_func_001ee97c,
 0x001ee99c,1284,todo,camp,camp_func_001ee99c,
 0x001eeea0,5556,stub,ui,Ui_MikadoCastleScene,src/ui/mikado_ui.cpp
-0x001f0454,5764,todo,ui,ui_func_001f0454,
+0x001f0454,5764,non_matching,ui,ui_func_001f0454,src/ui/ui_runtime.cpp
 0x001f1ad8,1264,todo,camp,camp_func_001f1ad8,
 0x001f1fc8,3960,todo,ui,ui_func_001f1fc8,
 0x001f2f40,24,todo,camp,camp_func_001f2f40,
@@ -4006,7 +4006,7 @@ address,size,status,category,name,src_file
 0x002673e8,56,todo,engine,engine_func_002673e8,
 0x00267420,2888,todo,battle,battle_func_00267420,
 0x00267f68,72,todo,battle,battle_func_00267f68,
-0x00267fb0,4672,todo,ui,ui_func_00267fb0,
+0x00267fb0,4672,non_matching,ui,ui_func_00267fb0,src/ui/ui_runtime.cpp
 0x002691f0,532,non_matching,engine,effGeometry_func_002691f0,src/engine/asd_effect2.cpp
 0x00269404,400,non_matching,engine,effBehavior_func_00269404,src/engine/asd_render_ui.cpp
 0x00269594,8,todo,engine,engine_func_00269594,
