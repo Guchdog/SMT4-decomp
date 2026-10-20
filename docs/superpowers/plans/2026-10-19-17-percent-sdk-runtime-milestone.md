@@ -62,7 +62,7 @@
 - `AsdSaveCommon_func_0021041c`: `0x0021041c` (204 B)
 - `AsdSaveCommon_func_002104e8`: `0x002104e8` (268 B)
 
-- [ ] **Step 1: Update progress test expectations (RED)**
+- [x] **Step 1: Update progress test expectations (RED)**
 
 ```python
 self.assertEqual(stats["decompiled_functions"], 214)
@@ -73,16 +73,16 @@ self.assertEqual(stats["total_explored_functions"], 253)
 self.assertEqual(stats["total_explored_bytes"], 507440)
 ```
 
-- [ ] **Step 2: Run the suite to verify it fails**
+- [x] **Step 2: Run the suite to verify it fails**
 
 Run: `python -m unittest discover -s tests -v`
 Expected: FAIL with `214 != 200`.
 
-- [ ] **Step 3: Disassemble and implement**
+- [x] **Step 3: Disassemble and implement**
 
 Run `python tools/split_asm.py --addr <address>` for each function. Reconstruct file-open/read/write paths, allocator bookkeeping, and save-common state. Preserve every observed call target and error branch.
 
-- [ ] **Step 4: Update the ledger and verify GREEN**
+- [x] **Step 4: Update the ledger and verify GREEN**
 
 Set `status=non_matching` and `src_file=src/engine/asd_file.cpp` for the 14 rows; run:
 
@@ -93,7 +93,7 @@ python -m unittest discover -s tests -v
 
 Expected: 214 / 259,200 B, 39 / 248,240 B, 253 / 507,440 B; all tests PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```powershell
 git add include/engine/asd_file.h src/engine/asd_file.cpp config/functions.csv tests/test_progress.py PROGRESS.md README.md
@@ -121,7 +121,7 @@ git commit -m "feat(engine): decompile AsdFile, AsdMemory and AsdSaveCommon (+5,
 - `AsdSoundSystem_func_002c1df4`: `0x002c1df4` (308 B)
 - `soundTest_func_001ea808`: `0x001ea808` (264 B)
 
-- [ ] **Step 1: Update progress test expectations (RED)**
+- [x] **Step 1: Update progress test expectations (RED)**
 
 ```python
 self.assertEqual(stats["decompiled_functions"], 223)
@@ -132,19 +132,19 @@ self.assertEqual(stats["total_explored_functions"], 262)
 self.assertEqual(stats["total_explored_bytes"], 511028)
 ```
 
-- [ ] **Step 2: Run the suite to verify it fails**
+- [x] **Step 2: Run the suite to verify it fails**
 
 Expected: FAIL with `223 != 214`.
 
-- [ ] **Step 3: Disassemble and implement**
+- [x] **Step 3: Disassemble and implement**
 
 Preserve DSP/audio command registers, channel handles, volume/pan arithmetic, and stream-state transitions. Document every handle offset in the header.
 
-- [ ] **Step 4: Update the ledger and verify GREEN**
+- [x] **Step 4: Update the ledger and verify GREEN**
 
 Set `status=non_matching` and `src_file=src/engine/asd_sound.cpp`; run `python tools/progress.py --write` and the suite. Expected: 223 / 262,788 B, 262 / 511,028 B.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```powershell
 git commit -m "feat(engine): decompile AsdSoundSystem and sound effects (+3,588 B, 16.28% explored)"
@@ -173,7 +173,7 @@ git commit -m "feat(engine): decompile AsdSoundSystem and sound effects (+3,588 
 - `AsdSequence_func_002c59b8`: `0x002c59b8` (180 B)
 - `Task_func_002861f8`: `0x002861f8` (508 B)
 
-- [ ] **Step 1: Update progress test expectations (RED)**
+- [x] **Step 1: Update progress test expectations (RED)**
 
 ```python
 self.assertEqual(stats["decompiled_functions"], 234)
@@ -184,19 +184,19 @@ self.assertEqual(stats["total_explored_functions"], 273)
 self.assertEqual(stats["total_explored_bytes"], 515384)
 ```
 
-- [ ] **Step 2: Run the suite to verify it fails**
+- [x] **Step 2: Run the suite to verify it fails**
 
 Expected: FAIL with `234 != 223`.
 
-- [ ] **Step 3: Disassemble and implement**
+- [x] **Step 3: Disassemble and implement**
 
 Preserve camera matrix/euler updates, scene node traversal, process state transitions, and task spawn arguments. Cite the effective offsets for any pre-indexed load.
 
-- [ ] **Step 4: Update the ledger and verify GREEN**
+- [x] **Step 4: Update the ledger and verify GREEN**
 
 Set `status=non_matching` and `src_file=src/engine/asd_scene.cpp`; expected 234 / 267,144 B, 273 / 515,384 B.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```powershell
 git commit -m "feat(engine): decompile AsdCamera, AsdScene and task processing (+4,356 B, 16.42% explored)"
@@ -222,7 +222,7 @@ git commit -m "feat(engine): decompile AsdCamera, AsdScene and task processing (
 - `SmokeFade_func_002cf0a0`: `0x002cf0a0` (568 B)
 - `EffectEditor_func_0024246c`: `0x0024246c` (1,272 B)
 
-- [ ] **Step 1: Update progress test expectations (RED)**
+- [x] **Step 1: Update progress test expectations (RED)**
 
 ```python
 self.assertEqual(stats["decompiled_functions"], 242)
@@ -233,19 +233,19 @@ self.assertEqual(stats["total_explored_functions"], 281)
 self.assertEqual(stats["total_explored_bytes"], 520760)
 ```
 
-- [ ] **Step 2: Run the suite to verify it fails**
+- [x] **Step 2: Run the suite to verify it fails**
 
 Expected: FAIL with `242 != 234`.
 
-- [ ] **Step 3: Disassemble and implement**
+- [x] **Step 3: Disassemble and implement**
 
 Preserve texture-frame selection, 2D NPC sprite transforms, fade alpha interpolation, and editor scene hooks.
 
-- [ ] **Step 4: Update the ledger and verify GREEN**
+- [x] **Step 4: Update the ledger and verify GREEN**
 
 Set `status=non_matching` and `src_file=src/engine/asd_frame.cpp`; expected 242 / 272,520 B, 281 / 520,760 B.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```powershell
 git commit -m "feat(engine): decompile frame textures, Npc2d and SmokeFade (+5,376 B, 16.59% explored)"
@@ -282,7 +282,7 @@ git commit -m "feat(engine): decompile frame textures, Npc2d and SmokeFade (+5,3
 - `aocTexCtrl_func_003936e8`: `0x003936e8` (336 B)
 - `aocTexCtrl_func_00393838`: `0x00393838` (456 B)
 
-- [ ] **Step 1: Update progress test expectations (RED)**
+- [x] **Step 1: Update progress test expectations (RED)**
 
 ```python
 self.assertEqual(stats["decompiled_functions"], 257)
@@ -293,19 +293,19 @@ self.assertEqual(stats["total_explored_functions"], 296)
 self.assertEqual(stats["total_explored_bytes"], 528528)
 ```
 
-- [ ] **Step 2: Run the suite to verify it fails**
+- [x] **Step 2: Run the suite to verify it fails**
 
 Expected: FAIL with `257 != 242`.
 
-- [ ] **Step 3: Disassemble and implement**
+- [x] **Step 3: Disassemble and implement**
 
 Preserve Mobiclip frame/audio ring-buffer state, `S4FsReader` file callbacks, AOC mount/load handles, and texture-control state. `aocFileLoad_func_0015c728` (2,220 B) must retain its chunk loop and error paths.
 
-- [ ] **Step 4: Update the ledger and verify GREEN**
+- [x] **Step 4: Update the ledger and verify GREEN**
 
 Set `src_file=src/nn/mobiclip.cpp` for the five nn rows and `src_file=src/engine/aoc.cpp` for the ten engine rows; expected 257 / 280,288 B, 296 / 528,528 B.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```powershell
 git commit -m "feat(engine): decompile Mobiclip playback and AOC runtime (+7,768 B, 16.84% explored)"
@@ -336,7 +336,7 @@ git commit -m "feat(engine): decompile Mobiclip playback and AOC runtime (+7,768
 - `effParts_func_001d2460`: `0x001d2460` (104 B)
 - `effParts_func_001e1970`: `0x001e1970` (576 B)
 
-- [ ] **Step 1: Update progress test expectations (RED)**
+- [x] **Step 1: Update progress test expectations (RED)**
 
 ```python
 self.assertEqual(stats["decompiled_functions"], 270)
@@ -347,19 +347,19 @@ self.assertEqual(stats["total_explored_functions"], 309)
 self.assertEqual(stats["total_explored_bytes"], 533816)
 ```
 
-- [ ] **Step 2: Run the suite to verify it fails**
+- [x] **Step 2: Run the suite to verify it fails**
 
 Expected: FAIL with `270 != 257`.
 
-- [ ] **Step 3: Disassemble and implement**
+- [x] **Step 3: Disassemble and implement**
 
 Preserve particle pool indexing, P2A/TLP animation curves, emitter lifetimes, and render-state toggles. `effParts_func_002a51dc` (1,808 B) must retain its observed loops and branches.
 
-- [ ] **Step 4: Update the ledger and verify GREEN**
+- [x] **Step 4: Update the ledger and verify GREEN**
 
 Set `status=non_matching` and `src_file=src/engine/asd_effect.cpp`; expected 270 / 285,576 B, 309 / 533,816 B (17.0053%); all tests PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```powershell
 git commit -m "feat(engine): decompile particle and effect primitives (+5,288 B, 17.0% milestone reached at 17.0053%)"
