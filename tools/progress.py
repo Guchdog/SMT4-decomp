@@ -2,19 +2,75 @@
 """
 Byte-Accurate Decompilation Progress Verifier and Markdown Report Generator
 for Shin Megami Tensei IV (CTR-P-AMXE).
+
+Differentiates between:
+- 'matching': Byte-for-byte identical compiled machine code.
+- 'non_matching': Authentically decompiled C++ logic (reconstructed from assembly).
+- 'stub': Subsystem scaffolding, headers, and function skeletons awaiting reversal.
+- 'todo': Undecompiled / unexplored functions in .text.
 """
 
 import argparse
 import csv
+import re
 from collections import defaultdict
 from pathlib import Path
 
-VALID_STATUSES = {"todo", "wip", "non_matching", "matching"}
-DECOMPILED_STATUSES = {"wip", "non_matching", "matching"}
+VALID_STATUSES = {"todo", "stub", "wip", "non_matching", "matching"}
+DECOMPILED_STATUSES = {"non_matching", "matching"}
+STUB_STATUSES = {"stub", "wip"}
+CLAIMED_STATUSES = DECOMPILED_STATUSES | STUB_STATUSES
 
 
 class VerificationError(Exception):
-    """Raised when a function claimed as decompiled in functions.csv fails source verification."""
+    """Raised when a function claimed as decompiled or scaffolded fails verification."""
+
+
+def extract_function_body(src_text: str, addr: str) -> str | None:
+    """Extracts the C++ function body following DECOMP_FUNC(addr, size)."""
+    lower_text = src_text.lower()
+    marker = f"decomp_func({addr.lower()}"
+    idx = lower_text.find(marker)
+    if idx == -1:
+        return None
+    open_brace = src_text.find("{", idx)
+    if open_brace == -1:
+        return None
+    brace_depth = 1
+    i = open_brace + 1
+    while i < len(src_text) and brace_depth > 0:
+        if src_text[i] == "{":
+            brace_depth += 1
+        elif src_text[i] == "}":
+            brace_depth -= 1
+        i += 1
+    return src_text[open_brace + 1 : i - 1]
+
+
+def is_stub_body(body: str, size: int) -> bool:
+    """Detects whether a function body is an empty or trivial skeleton stub."""
+    clean_lines = []
+    for line in body.splitlines():
+        line = line.strip()
+        if not line or line.startswith("//") or line.startswith("/*") or line.startswith("*"):
+            continue
+        if line.startswith("(void)") or line in {"return;", "return 0;", "return nullptr;", "{", "}"}:
+            continue
+        clean_lines.append(line)
+
+    # Completely empty or only (void) args
+    if len(clean_lines) == 0:
+        return True
+    # Small single-line placeholder for non-trivial binary functions
+    if size > 128 and len(clean_lines) <= 1:
+        return True
+    # Massive binary functions with only tiny dummy stub statements
+    if size > 2000 and len(clean_lines) <= 5:
+        return True
+    if size > 10000 and len(clean_lines) <= 15:
+        return True
+
+    return False
 
 
 def compute_progress(functions_csv: Path, repo_root: Path) -> dict:
@@ -25,6 +81,8 @@ def compute_progress(functions_csv: Path, repo_root: Path) -> dict:
     total_bytes = 0
     decomp_funcs = 0
     decomp_bytes = 0
+    stub_funcs = 0
+    stub_bytes = 0
     matching_funcs = 0
     matching_bytes = 0
 
@@ -34,9 +92,11 @@ def compute_progress(functions_csv: Path, repo_root: Path) -> dict:
             "total_bytes": 0,
             "decomp_funcs": 0,
             "decomp_bytes": 0,
+            "stub_funcs": 0,
+            "stub_bytes": 0,
         }
     )
-    decompiled_list: list[dict] = []
+    claimed_list: list[dict] = []
     src_cache: dict[Path, str] = {}
 
     with open(functions_csv, "r", encoding="utf-8", newline="") as f:
@@ -56,7 +116,7 @@ def compute_progress(functions_csv: Path, repo_root: Path) -> dict:
             by_category[cat]["total_funcs"] += 1
             by_category[cat]["total_bytes"] += size
 
-            if status in DECOMPILED_STATUSES:
+            if status in CLAIMED_STATUSES:
                 if not src_rel:
                     raise VerificationError(
                         f"Function {name} ({addr}) has status '{status}' but no src_file"
@@ -74,26 +134,55 @@ def compute_progress(functions_csv: Path, repo_root: Path) -> dict:
                         f"Function {name} ({addr}) not found with DECOMP_FUNC({addr}, ...) in '{src_rel}'"
                     )
 
-                decomp_funcs += 1
-                decomp_bytes += size
-                by_category[cat]["decomp_funcs"] += 1
-                by_category[cat]["decomp_bytes"] += size
-                if status == "matching":
-                    matching_funcs += 1
-                    matching_bytes += size
-                decompiled_list.append(row)
+                body = extract_function_body(src_text, addr)
+                if body is None:
+                    raise VerificationError(
+                        f"Could not parse function body for {name} ({addr}) in '{src_rel}'"
+                    )
+
+                # Strict verification: prevent empty stubs from being marked as decompiled
+                if status in DECOMPILED_STATUSES:
+                    if is_stub_body(body, size):
+                        raise VerificationError(
+                            f"Function {name} ({addr}) is marked '{status}' but contains only a stub/placeholder body. "
+                            f"Must be marked 'stub'."
+                        )
+                    decomp_funcs += 1
+                    decomp_bytes += size
+                    by_category[cat]["decomp_funcs"] += 1
+                    by_category[cat]["decomp_bytes"] += size
+                    if status == "matching":
+                        matching_funcs += 1
+                        matching_bytes += size
+                else:
+                    # status in STUB_STATUSES ('stub', 'wip')
+                    stub_funcs += 1
+                    stub_bytes += size
+                    by_category[cat]["stub_funcs"] += 1
+                    by_category[cat]["stub_bytes"] += size
+
+                claimed_list.append(row)
+
+    total_explored_funcs = decomp_funcs + stub_funcs
+    total_explored_bytes = decomp_bytes + stub_bytes
 
     return {
         "total_functions": total_funcs,
         "total_bytes": total_bytes,
         "decompiled_functions": decomp_funcs,
         "decompiled_bytes": decomp_bytes,
+        "stub_functions": stub_funcs,
+        "stub_bytes": stub_bytes,
         "matching_functions": matching_funcs,
         "matching_bytes": matching_bytes,
-        "byte_percentage": (decomp_bytes / total_bytes * 100.0) if total_bytes else 0.0,
-        "func_percentage": (decomp_funcs / total_funcs * 100.0) if total_funcs else 0.0,
+        "total_explored_functions": total_explored_funcs,
+        "total_explored_bytes": total_explored_bytes,
+        "decomp_byte_percentage": (decomp_bytes / total_bytes * 100.0) if total_bytes else 0.0,
+        "decomp_func_percentage": (decomp_funcs / total_funcs * 100.0) if total_funcs else 0.0,
+        "stub_byte_percentage": (stub_bytes / total_bytes * 100.0) if total_bytes else 0.0,
+        "explored_byte_percentage": (total_explored_bytes / total_bytes * 100.0) if total_bytes else 0.0,
         "categories": dict(by_category),
-        "decompiled_list": decompiled_list,
+        "claimed_list": claimed_list,
     }
 
 
@@ -101,17 +190,21 @@ def render_progress_md(stats: dict) -> str:
     lines = [
         "# Shin Megami Tensei IV (`CTR-P-AMXE`) Decompilation Progress",
         "",
-        "## Overall `.text` Progress",
+        "## Overall `.text` Progress Summary",
         "",
-        "| Metric | Decompiled | Total | Remaining | Percentage |",
-        "|--------|-----------:|------:|----------:|-----------:|",
-        f"| **Code Size (Bytes)** | {stats['decompiled_bytes']:,} B | {stats['total_bytes']:,} B | {stats['total_bytes'] - stats['decompiled_bytes']:,} B | **{stats['byte_percentage']:.4f}%** |",
-        f"| **Functions** | {stats['decompiled_functions']:,} | {stats['total_functions']:,} | {stats['total_functions'] - stats['decompiled_functions']:,} | **{stats['func_percentage']:.4f}%** |",
+        "| Category | Functions | Code Size (Bytes) | Progress % | Status Description |",
+        "|----------|----------:|------------------:|-----------:|--------------------|",
+        f"| **Decompiled (Reconstructed)** | {stats['decompiled_functions']:,} | {stats['decompiled_bytes']:,} B | **{stats['decomp_byte_percentage']:.4f}%** | Substantial C++ logic reverse-engineered |",
+        f"| **Scaffolded (Stubs & Interfaces)** | {stats['stub_functions']:,} | {stats['stub_bytes']:,} B | {stats['stub_byte_percentage']:.4f}% | Headers, structs, and function skeletons |",
+        f"| **Matching (Byte-for-Byte)** | {stats['matching_functions']:,} | {stats['matching_bytes']:,} B | {(stats['matching_bytes'] / stats['total_bytes'] * 100.0):.4f}% | 100% compiled machine code match |",
+        f"| **Total Architecture Explored** | {stats['total_explored_functions']:,} | {stats['total_explored_bytes']:,} B | **{stats['explored_byte_percentage']:.4f}%** | Total identified & mapped into `src/` |",
+        f"| **Remaining (Todo)** | {stats['total_functions'] - stats['total_explored_functions']:,} | {stats['total_bytes'] - stats['total_explored_bytes']:,} B | {((stats['total_bytes'] - stats['total_explored_bytes']) / stats['total_bytes'] * 100.0):.4f}% | Unmapped functions in `.text` |",
+        f"| **Total `.text` Segment** | {stats['total_functions']:,} | {stats['total_bytes']:,} B | 100.0000% | `0x00100000`–`0x003FE624` |",
         "",
         "## Subsystem Breakdown",
         "",
-        "| Subsystem | Decompiled Funcs | Total Funcs | Decompiled Bytes | Total Bytes | Subsystem % |",
-        "|-----------|-----------------:|------------:|-----------------:|------------:|------------:|",
+        "| Subsystem | Decompiled Funcs | Decompiled Bytes | Stub Funcs | Stub Bytes | Total Funcs | Total Bytes | Decompiled % | Explored % |",
+        "|-----------|-----------------:|-----------------:|-----------:|-----------:|------------:|------------:|-------------:|-----------:|",
     ]
 
     sorted_cats = sorted(
@@ -120,25 +213,22 @@ def render_progress_md(stats: dict) -> str:
         reverse=True,
     )
     for cat, cinfo in sorted_cats:
-        pct = (
-            (cinfo["decomp_bytes"] / cinfo["total_bytes"] * 100.0)
-            if cinfo["total_bytes"]
-            else 0.0
-        )
+        decomp_pct = (cinfo["decomp_bytes"] / cinfo["total_bytes"] * 100.0) if cinfo["total_bytes"] else 0.0
+        explored_pct = ((cinfo["decomp_bytes"] + cinfo["stub_bytes"]) / cinfo["total_bytes"] * 100.0) if cinfo["total_bytes"] else 0.0
         lines.append(
-            f"| `{cat}` | {cinfo['decomp_funcs']:,} | {cinfo['total_funcs']:,} | {cinfo['decomp_bytes']:,} B | {cinfo['total_bytes']:,} B | {pct:.3f}% |"
+            f"| `{cat}` | {cinfo['decomp_funcs']:,} | {cinfo['decomp_bytes']:,} B | {cinfo['stub_funcs']:,} | {cinfo['stub_bytes']:,} B | {cinfo['total_funcs']:,} | {cinfo['total_bytes']:,} B | {decomp_pct:.2f}% | {explored_pct:.2f}% |"
         )
 
     lines.extend(
         [
             "",
-            "## Decompiled Functions Ledger",
+            "## Explored Functions Ledger",
             "",
             "| Address | Size (Bytes) | Category | Status | Symbol Name | Source File |",
             "|---------|-------------:|----------|--------|-------------|-------------|",
         ]
     )
-    for row in stats["decompiled_list"]:
+    for row in stats["claimed_list"]:
         lines.append(
             f"| `{row['address']}` | {row['size']} | `{row['category']}` | `{row['status']}` | `{row['name']}` | [`{row['src_file']}`]({row['src_file']}) |"
         )
@@ -157,9 +247,10 @@ Decompilation and reverse-engineering project for **Shin Megami Tensei IV** (Nin
 
 ## Live Decompilation Progress
 
-- **`.text` Bytes Decompiled:** `{stats['decompiled_bytes']:,} / {stats['total_bytes']:,} bytes` (**{stats['byte_percentage']:.4f}%**)
-- **Functions Decompiled:** `{stats['decompiled_functions']:,} / {stats['total_functions']:,} functions` (**{stats['func_percentage']:.4f}%**)
-- See [`PROGRESS.md`](PROGRESS.md) for the full subsystem breakdown (`ui`, `camp`, `battle`, `script_vm`, `shop`, `unite`, `engine`, `nn_sdk`, `crt`) and verified function list.
+- **Authentically Decompiled Code:** `{stats['decompiled_bytes']:,} / {stats['total_bytes']:,} bytes` (**{stats['decomp_byte_percentage']:.4f}%**) across `{stats['decompiled_functions']:,}` functions
+- **Scaffolded Architecture (Stubs & Interfaces):** `{stats['stub_bytes']:,} / {stats['total_bytes']:,} bytes` (**{stats['stub_byte_percentage']:.4f}%**) across `{stats['stub_functions']:,}` functions
+- **Total Codebase Explored:** `{stats['total_explored_bytes']:,} / {stats['total_bytes']:,} bytes` (**{stats['explored_byte_percentage']:.4f}%**) across `{stats['total_explored_functions']:,}` functions
+- See [`PROGRESS.md`](PROGRESS.md) for the full subsystem breakdown (`ui`, `camp`, `battle`, `script_vm`, `shop`, `unite`, `engine`, `nn_sdk`, `crt`) and verified function ledger.
 
 ---
 
@@ -218,8 +309,10 @@ def main() -> None:
 
     stats = compute_progress(args.functions, args.root)
     print(
-        f"Verified {stats['decompiled_functions']:,} / {stats['total_functions']:,} functions "
-        f"({stats['decompiled_bytes']:,} / {stats['total_bytes']:,} bytes, {stats['byte_percentage']:.4f}%)"
+        f"Verified {stats['decompiled_functions']:,} / {stats['total_functions']:,} decompiled functions "
+        f"({stats['decompiled_bytes']:,} / {stats['total_bytes']:,} bytes, {stats['decomp_byte_percentage']:.4f}%)\n"
+        f"Verified {stats['stub_functions']:,} scaffolded stubs ({stats['stub_bytes']:,} bytes, {stats['stub_byte_percentage']:.4f}%)\n"
+        f"Total Architecture Explored: {stats['total_explored_functions']:,} functions ({stats['total_explored_bytes']:,} bytes, {stats['explored_byte_percentage']:.4f}%)"
     )
     if args.write:
         (args.root / "PROGRESS.md").write_text(render_progress_md(stats), encoding="utf-8")
