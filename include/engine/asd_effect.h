@@ -321,6 +321,11 @@ static_assert(sizeof(EffTLPObject) == 0x28);
 // ---------------------------------------------------------------------------
 
 // effParts.cpp
+//
+// The five routines below are also called from AsdModel / AsdFrame through the
+// EffParts_* / AsdPart_* spelling.  Those spellings are inline adapters over
+// the canonical ledger entry points so that each address still has exactly one
+// externally visible declaration.
 EffPartsSource*   effParts_func_002a51dc(EffPartsSource* source);
 EffPartsSource*   effParts_func_002490e0(EffPartsSource* source);
 void              effParts_func_0024972c(EffPartsParticle* part, const void* data,
@@ -340,5 +345,49 @@ EffP2AAnim*       effP2A_func_00249324(const void* file);
 
 // effTLP.cpp
 EffTLPObject*     effTLP_func_00249588(const void* resource);
+
+// ---------------------------------------------------------------------------
+// Call-site adapters (one external symbol per address)
+// ---------------------------------------------------------------------------
+
+// 0x002A51DC: open a part container from a loaded effParts file.
+static inline void* EffParts_Create(const void* entry)
+{
+    return effParts_func_002a51dc(
+        reinterpret_cast<EffPartsSource*>(const_cast<void*>(entry)));
+}
+
+// 0x0024FE64: wrap a live particle element as a part.
+static inline void* AsdPart_Wrap(void* element)
+{
+    return effParts_func_0024fe64(
+        static_cast<EffPartsParticle*>(element));
+}
+
+// 0x001D2460: create the parts manager.
+static inline void* AsdPartsManager_Create()
+{
+    return effParts_func_001d2460();
+}
+
+// 0x00192168: create one owner record from a type id.
+static inline void* EffParts_CreateById(u32 id)
+{
+    return effParts_func_00192168(id);
+}
+
+// 0x0024972C: install the primary variable-size buffer.
+static inline void EffParts_SetData(void* part, const void* data, u32 size, u32 key)
+{
+    effParts_func_0024972c(static_cast<EffPartsParticle*>(part), data,
+                           static_cast<s32>(size), static_cast<u16>(key));
+}
+
+// 0x0025CC14: install the secondary variable-size buffer.
+static inline void EffParts_SetValue(void* part, const void* data, u32 size, u32 key)
+{
+    effParts_func_0025cc14(static_cast<EffPartsParticle*>(part), data,
+                           static_cast<s32>(size), static_cast<u16>(key));
+}
 
 } // namespace smt4::engine

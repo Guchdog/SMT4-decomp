@@ -44,29 +44,40 @@ extern "C" {
     void  nn_sdk_func_003f5e08(void* fn0, void* fn1);                        // 0x003f5e08
     void  nn_sdk_func_003f6c40(void* fn0, void* fn1);                        // 0x003f6c40
 
-    // Mobiclip display / audio bring-up
+    // Mobiclip display / audio bring-up.  The mixer/stream entry points are
+    // declared once in engine/asd_symbols.h.
     void  nn_sdk_func_00351b7c();                                           // 0x00351b7c
     void  AsdSound_InitDsp();                                               // 0x0011bd78
-    void  AsdSound_OpenDefault();                                           // 0x0011be44
-    void  AsdSound_InitOutput();                                            // 0x0011cb3c
     u32   nn_sdk_func_0035a52c(void* data, u32 size, u32 a2, u32 a3);        // 0x0035a52c
     s32   AsdEvent_Signal(u32 event);                                       // inline `svc #0x18` (0x0034e1f8)
 }
 
 namespace smt4::nn {
 
-// Opaque arena objects whose addresses are the only observed facts.  They are
-// passed to AsdMemBlock_Init, which writes the block list in place.
-extern u8 g_MobiclipArena0;             // 0x004c3828
-extern u8 g_MobiclipArena1;             // 0x004c3880
-extern u8 g_MobiclipArena2;             // 0x004c39e0
-extern u8 g_MobiclipArena3;             // 0x004c38d8
-extern u8 g_MobiclipArena4;             // 0x004c3930
-extern u8 g_MobiclipArena5;             // 0x004c3988
+MobiclipProcessGlobal g_MobiclipProcess{};              // 0x0044d048
 
-extern u8 g_MobiclipControlFlag;        // 0x0044d020: `strb r0,[r1]` (0x0017fccc)
-extern u8 g_MobiclipLock;               // 0x004c40f8: r0 of 0x002c3b00 (0x0034e708)
-extern u8 g_MobiclipAudioBuffer[];      // 0x004c3a38: r0 of the tail call (0x0017fd2c)
+// The shipped pointer table at 0x0044d060 is .data; only its address and the
+// per-index load are observed, so the reconstruction keeps a null anchor.
+const char* g_MobiclipMovieNames[1] = {nullptr};
+
+S4FsReaderGlobal g_S4FsReader{};                        // 0x0044d130
+S4AudioDevice g_S4AudioDevice{};                        // 0x0044d0f8
+u8 g_S4AudioThread[0x08]{};                             // 0x0044d128
+S4PlayerGlobal g_S4Player{};                            // 0x0044d158
+
+// Opaque arena objects whose addresses are the only observed facts.  They are
+// passed to AsdMemBlock_Init, which writes the block list in place; 0x18 bytes
+// covers the observed header.
+alignas(8) u8 g_MobiclipArena0[0x18]{};                 // 0x004c3828
+alignas(8) u8 g_MobiclipArena1[0x18]{};                 // 0x004c3880
+alignas(8) u8 g_MobiclipArena2[0x18]{};                 // 0x004c39e0
+alignas(8) u8 g_MobiclipArena3[0x18]{};                 // 0x004c38d8
+alignas(8) u8 g_MobiclipArena4[0x18]{};                 // 0x004c3930
+alignas(8) u8 g_MobiclipArena5[0x18]{};                 // 0x004c3988
+
+u8 g_MobiclipControlFlag = 0;                           // 0x0044d020: `strb r0,[r1]` (0x0017fccc)
+alignas(8) u8 g_MobiclipLock[0x0C]{};                   // 0x004c40f8: r0 of 0x002c3b00 (0x0034e708)
+alignas(8) u8 g_MobiclipAudioBuffer[0x18]{};            // 0x004c3a38: r0 of the tail call (0x0017fd2c)
 
 namespace {
 
@@ -110,32 +121,32 @@ void MobiclipCtrl_func_0017fb6c()
 {
     // 0x0017fb70..0x0017fba8: 0x240000 bytes from the 0x10000 arena.
     void* buffer = AsdMem_AllocAlign(0x10000, 0x100, 0, 0x240000, 1);
-    AsdMemBlock_Init(&g_MobiclipArena0, static_cast<u32>(reinterpret_cast<std::uintptr_t>(buffer)),
+    AsdMemBlock_Init(g_MobiclipArena0, static_cast<u32>(reinterpret_cast<std::uintptr_t>(buffer)),
                      0x240000, 0x100);  // 0x0017fba8
 
     // 0x0017fbac..0x0017fbe0: 0x80000 bytes.
     buffer = AsdMem_AllocAlign(0x10000, 0x100, 0, 0x80000, 1);
-    AsdMemBlock_Init(&g_MobiclipArena1, static_cast<u32>(reinterpret_cast<std::uintptr_t>(buffer)),
+    AsdMemBlock_Init(g_MobiclipArena1, static_cast<u32>(reinterpret_cast<std::uintptr_t>(buffer)),
                      0x80000, 0x100);   // 0x0017fbe0
 
     // 0x0017fbe4..0x0017fc18: 0x400000 bytes.
     buffer = AsdMem_AllocAlign(0x10000, 0x100, 0, 0x400000, 1);
-    AsdMemBlock_Init(&g_MobiclipArena2, static_cast<u32>(reinterpret_cast<std::uintptr_t>(buffer)),
+    AsdMemBlock_Init(g_MobiclipArena2, static_cast<u32>(reinterpret_cast<std::uintptr_t>(buffer)),
                      0x400000, 0x100);  // 0x0017fc18
 
     // 0x0017fc1c..0x0017fc50: 0x100000 bytes, alignment 0.
     buffer = AsdMem_AllocAlign(0x10000, 0x100, 0, 0x100000, 1);
-    AsdMemBlock_Init(&g_MobiclipArena3, static_cast<u32>(reinterpret_cast<std::uintptr_t>(buffer)),
+    AsdMemBlock_Init(g_MobiclipArena3, static_cast<u32>(reinterpret_cast<std::uintptr_t>(buffer)),
                      0x100000, 0);      // 0x0017fc50
 
     // 0x0017fc54..0x0017fc88: 0x8000 bytes, alignment 0.
     buffer = AsdMem_AllocAlign(0x10000, 0x100, 0, 0x8000, 1);
-    AsdMemBlock_Init(&g_MobiclipArena4, static_cast<u32>(reinterpret_cast<std::uintptr_t>(buffer)),
+    AsdMemBlock_Init(g_MobiclipArena4, static_cast<u32>(reinterpret_cast<std::uintptr_t>(buffer)),
                      0x8000, 0);        // 0x0017fc88
 
     // 0x0017fc8c..0x0017fcc0: 0x90000 bytes, alignment 0.
     buffer = AsdMem_AllocAlign(0x10000, 0x100, 0, 0x90000, 1);
-    AsdMemBlock_Init(&g_MobiclipArena5, static_cast<u32>(reinterpret_cast<std::uintptr_t>(buffer)),
+    AsdMemBlock_Init(g_MobiclipArena5, static_cast<u32>(reinterpret_cast<std::uintptr_t>(buffer)),
                      0x90000, 0);       // 0x0017fcc0
 
     // 0x0017fcc4..0x0017fccc: clear the one-byte playback gate.
@@ -358,10 +369,10 @@ u32 helper_S4AudioDevice_func_0034e64c(void* device, u32 count,
     if (data != nullptr && size != 0) {
         nn_sdk_func_0035a52c(data, size, 0xff, 0xff);    // 0x0034e684
     } else {
-        AsdSound_OpenDefault();                          // 0x0034e690
+        AsdSound_InitMixer();                            // 0x0034e690
     }
 
-    AsdSound_InitOutput();                               // 0x0034e698
+    AsdSound_InitStream();                               // 0x0034e698
     AsdSound_SetMasterVolume(1.0f);                            // 0x0034e69c/0x0034e6a4
 
     if (g_S4AudioDevice.device != nullptr) {
@@ -388,7 +399,7 @@ u32 helper_S4AudioDevice_func_0034e64c(void* device, u32 count,
     g_S4AudioDevice.field_18 = 0;                        // 0x0034e700
     g_S4AudioDevice.field_1c = 0;                        // 0x0034e704
 
-    AsdMemBlock_InitLock(&g_MobiclipLock);               // 0x0034e70c
+    AsdMemBlock_InitLock(g_MobiclipLock);               // 0x0034e70c
 
     // 0x0034e710..0x0034e738: 0x1000-byte work area and 0x18-byte heap header.
     g_S4AudioDevice.heap_buffer = AsdWork_Alloc(0x100, 0x100, 0, 0x1000, 0x1000, 1);

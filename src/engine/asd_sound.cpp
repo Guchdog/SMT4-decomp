@@ -14,8 +14,6 @@ extern "C" {
     void* AsdMem_Alloc(u32 a0, u32 a1, u32 a2, u32 size, u32 flag);         // 0x002c4b84
     void* AsdMem_AllocAlign(u32 a0, u32 a1, u32 a2, u32 size, u32 flag);    // 0x002c54f0
     void* AsdWork_Alloc2(u32 a0, u32 a1, u32 a2, u32 size, u32 a4, u32 flag);// 0x002bf798
-    void  AsdLock_Acquire(void* lock);                                      // 0x002c3aa8
-    void  AsdLock_Release(void* lock);                                      // 0x002c3a24
 
     // soundEffect
     u32   AsdSoundEffect_Configure(void* unit, const void* config);         // 0x00110c60
@@ -27,7 +25,6 @@ extern "C" {
     u32   AsdSound_Dispatch(u32 mode, void* unit);                          // 0x00120ce4
 
     // AsdSoundSystem
-    s32   AsdMem_Compare(const void* a, const void* b, u32 size);           // 0x002c1a48 (Thumb memcmp)
     u32   AsdSound_HasState(const void* state);                             // 0x002bf85c
     void  AsdSound_Shutdown();                                              // 0x001176e0
     u32   AsdSound_OpenArchive(void* system, const char* path);             // 0x00121744
@@ -47,8 +44,6 @@ extern "C" {
                                   void* block, u32 block_size, void* buffer,
                                   u32 buffer_size);                         // 0x0012105c
     s32   AsdSound_InitDsp();                                               // 0x0011bd78
-    s32   AsdSound_InitMixer();                                             // 0x0011be44
-    s32   AsdSound_InitStream();                                            // 0x0011cb3c
     void  AsdSound_SetPhase(s32 phase);                                     // 0x0012a664
     void  AsdSound_RequestMode(u32 mode);                                   // 0x0011cc34
     u32   AsdSound_CreateEngine(const smt4::engine::AsdSoundInitConfig* config); // 0x00120d44
@@ -79,11 +74,6 @@ extern "C" {
     u32   AsdData_GetCount(const void* data);                               // 0x00128f44
     u32   AsdData_GetEntry(const void* data, s32 index);                    // 0x00128f58
 
-    // soundTest
-    void* AsdUi_Create(const char* kind, std::uintptr_t name, u32 a2, u32 a3,
-                       u32 cb0, u32 cb1, void* obj);                        // 0x002c5978
-    void* AsdUi_CreateLabel(const char* name, u32 id, u32 a1, u32 a2,
-                            u32 p0, u32 p1, void* p2, u32 p3);               // 0x002c4c00
 }
 
 namespace smt4::engine {
@@ -343,7 +333,7 @@ void* AsdSoundSystem_func_0010b974()
 void* AsdSoundSystem_func_0010c078(void* data, u32 size, u32 extra)
 {
     // 0x0010c098: the whole construction runs under the 0x004E315C lock.
-    AsdLock_Acquire(&g_AsdSoundLock);
+    AsdMemLock_Acquire(&g_AsdSoundLock);
 
     // 0x0010c0c0: AsdMem_Alloc(0x100, 0x100, 0, 0x98, 1) (zero-filled).
     AsdSoundStreamObject* object =
@@ -388,7 +378,7 @@ void* AsdSoundSystem_func_0010c078(void* data, u32 size, u32 extra)
                          reinterpret_cast<u8*>(object) + 0x08,
                          reinterpret_cast<u8*>(object) + 0x20, 0);
 
-    AsdLock_Release(&g_AsdSoundLock);                                   // 0x0010c1c8
+    AsdMemLock_Release(&g_AsdSoundLock);                                   // 0x0010c1c8
 
     return object;                                                      // 0x0010c1d0
 }

@@ -209,8 +209,9 @@ struct AsdMemoryHeap {
     u8  block_pool[0x58];               // +0x088: `add r4,r0,#0x88` (0x001037ac)
     AsdMemoryLock lock;                 // +0x0E0: `add r4,r0,#0xe0` (0x001037e4)
     u32 region2_start;                  // +0x0EC: `str r0,[r1,#0xec]` (0x00103864)
-    u32 region2_size;                   // +0x0F0: `stm r1,{r0,r2}` (0x00103880)
-    u8  pad_f4[0x04];                   // +0x0F4..+0x0F8
+    u32 region2_size;                   // +0x0F0: `stm r1,{r0,r2}` first word (0x00103880)
+    u32 region2_start_dup;              // +0x0F4: second word of `stm r1,{r0,r2}`
+                                        //        with r2 = region2_start (0x00103870-0x00103880)
     u32 region3_start;                  // +0x0F8: `str r0,[r1,#0xf8]` (0x00103890)
     u32 region3_size;                   // +0x0FC: `strd r0,r1,[ip,#0xfc]` (0x001038a8)
     u32 field_100;                      // +0x100: second word of that `strd` (0x001038a8)
@@ -221,6 +222,7 @@ static_assert(offsetof(AsdMemoryHeap, block_pool) == 0x088);
 static_assert(offsetof(AsdMemoryHeap, lock) == 0x0E0);
 static_assert(offsetof(AsdMemoryHeap, region2_start) == 0x0EC);
 static_assert(offsetof(AsdMemoryHeap, region2_size) == 0x0F0);
+static_assert(offsetof(AsdMemoryHeap, region2_start_dup) == 0x0F4);
 static_assert(offsetof(AsdMemoryHeap, region3_start) == 0x0F8);
 static_assert(offsetof(AsdMemoryHeap, region3_size) == 0x0FC);
 static_assert(offsetof(AsdMemoryHeap, field_100) == 0x100);

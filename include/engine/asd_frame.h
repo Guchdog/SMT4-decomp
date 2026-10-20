@@ -235,6 +235,8 @@ struct EffectEditorSlot {
     u32 field_0c;                       // +0x0C: `ldr r1,[r4,#0xc]` (0x00242700)
     u32 field_10;                       // +0x10: `ldr r1,[r4,#0x10]` (0x00242710)
     u32 field_14;                       // +0x14: `ldr r1,[r4,#0x14]` (0x00242718)
+    u8  pad_18[0x04];                   // +0x18..+0x1C: unobserved fourth word,
+                                        //        present only to reach the 0x1C stride
 };
 static_assert(offsetof(EffectEditorSlot, owner) == 0x04);
 static_assert(offsetof(EffectEditorSlot, element) == 0x08);

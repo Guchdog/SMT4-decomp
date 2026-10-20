@@ -10,7 +10,20 @@ namespace smt4::engine {
 
 AsdCameraManager g_AsdCameraManager{};      // 0x0044EA58
 AsdCameraDefaults g_AsdCameraDefaults{};    // 0x004D4924
-AsdSceneGlobals g_AsdScene{};               // 0x00464C00
+
+// 0x00464C00 is not a zero-filled slot in the shipped image: the listing
+// loads `slot = 0x004DAEA0` (`ldr r0,[r8]` at 0x0010E6B8) and
+// `fogs = 0x00464C18` (`ldr r0,[sb,#4]` at 0x0010BE1C).  The slot storage
+// itself is zero in .bss.
+namespace {
+AsdSceneSlot g_AsdSceneSlotStorage{};       // 0x004DAEA0 (.bss)
+AsdSceneFog* g_AsdSceneFogStorage[2]{};     // 0x00464C18 (.data)
+}
+AsdSceneGlobals g_AsdScene{
+    &g_AsdSceneSlotStorage,
+    g_AsdSceneFogStorage,
+};                                          // 0x00464C00 (.data)
+
 AsdProcessPool g_AsdProcessPool{};          // 0x004E3CF4
 AsdSequenceState g_AsdSequence{};           // 0x004E3F4C
 
@@ -65,10 +78,6 @@ extern "C" {
 
     // Kernel helpers
     void* AsdGxCommandList_Create();                                        // 0x002c5d90
-
-    // Widget factory (AsdSequence.cpp / soundTest)
-    void* AsdUi_Create(const char* kind, std::uintptr_t name, u32 a2, u32 a3,
-                       u32 cb0, u32 cb1, void* obj);                         // 0x002c5978
 }
 
 namespace {
@@ -278,7 +287,8 @@ AsdCameraAnim* AsdCamera_func_00310124(AsdCameraScene* scene) {
                 // 0x0031035C-0x00310384: param_a/param_b (track+0x44/+0x48),
                 // argument track+0x50, third float 0.0, then shift the track's
                 // current value into previous and store the returned value.
-                AsdCameraTrack* live = anim->track;
+                AsdCameraTrack* live =
+                    static_cast<AsdCameraTrack*>(anim->track);
                 const f32 value = live->evaluate(live->evaluate_arg,
                                                  live->param_a, live->param_b,
                                                  0.0f);
@@ -292,11 +302,13 @@ AsdCameraAnim* AsdCamera_func_00310124(AsdCameraScene* scene) {
                     // +0x1C, index 0, written only when count and rows are > 0.
                     u8* grid = *reinterpret_cast<u8**>(
                         reinterpret_cast<u8*>(anim->object_44E820) + 0x28);
-                    const u32 count =
-                        (*reinterpret_cast<u32*>(grid + 0x10) -
-                         *reinterpret_cast<u32*>(grid + 0x0C)) >> 2;
+                    // 0x003103B4: `sub r1,r1,r0` then `asr r1,r1,#2` -- the
+                    // difference is signed, so the shift is arithmetic.
+                    const s32 count =
+                        (static_cast<s32>(*reinterpret_cast<u32*>(grid + 0x10)) -
+                         static_cast<s32>(*reinterpret_cast<u32*>(grid + 0x0C))) >> 2;
                     const s32 rows = *reinterpret_cast<s32*>(grid + 0x28);
-                    if (static_cast<s32>(count) > 0 && rows > 0) {
+                    if (count > 0 && rows > 0) {
                         void** cells = *reinterpret_cast<void***>(grid + 0x1C);
                         cells[0] = live;
                     }
@@ -348,7 +360,7 @@ void AsdScene_func_0010bd34() {
         data->field_c0 = 1.0f;
 
         // 0x0010BDEC: `ldr r1,[r0,#0xc8]!` -- effective offset data+0xC8.
-        AsdSceneFogParams* params = static_cast<AsdSceneFogParams*>(
+        AsdSceneFogParams* params = reinterpret_cast<AsdSceneFogParams*>(
             AsdRelPtr(reinterpret_cast<u8*>(data), 0xC8));
         fog->params = params;                               // 0x0010BDFC
 

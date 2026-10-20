@@ -1,4 +1,5 @@
 #include "engine/asd_model.h"
+#include "engine/asd_effect.h"
 #include "engine/asd_symbols.h"
 
 namespace smt4::engine {
@@ -40,10 +41,8 @@ extern "C" {
     void  AsdRes_Register(void* out, void* a1, void* a2);                  // 0x001208b8
     void* AsdRes_Bind(void* obj, void* a1, void* a2);                      // 0x002c2cf0
     u32   AsdRes_BuildKey(void* out);                                      // 0x002c2be8
-    int   AsdTag_Compare(const void* a, const void* b, u32 len);           // 0x002c1a48
 
     // Effect parts / animation
-    void* EffParts_Create(const void* entry);                              // 0x002a51dc
     void* AsdAnim_CreateController(void* model);                           // 0x00151470
     void* AsdAnim_BindController(void* data, void* first, s32 max);        // 0x0014ef80
     void* AsdAnim_CreateTrack(void* resource, void* ctx);                  // 0x002a6108
@@ -70,7 +69,6 @@ extern "C" {
     void  AsdList_Init();                                                  // 0x0010bb08
 
     // EffectEditor UI plumbing
-    void* AsdPartsManager_Create();                                        // 0x001d2460
     u32   AsdParts_Count(void* parts);                                     // 0x00246a74
     void* AsdParts_Get(void* parts, u32 index);                            // 0x00246a4c
     void* AsdParts_Current();                                              // 0x002469c0
@@ -84,7 +82,6 @@ extern "C" {
     void  AsdUiObject_Update(void* obj);                                   // 0x0024df5c
     void  AsdPart_Close(void* part, s32 mode);                             // 0x00262bd4
     void  AsdPart_Release(void* part, s32 mode);                           // 0x00262c1c
-    void* AsdPart_Wrap(void* element);                                     // 0x0024fe64
     void  AsdPart_Play(void* part);                                        // 0x00281e20
     void  AsdPart_Update(void* part);                                      // 0x002c7938
     int   AsdPart_Update2(void* part);                                     // 0x002f30c0
@@ -234,7 +231,7 @@ int Ui_PressedB(u32 id) {
 // `outer_index`-th chunk, or nullptr when a tag check fails.
 const u8* AsdFindEplEntry(const void* atbc, s32 outer_index, s32* out_chunk_count) {
     const u8* chunk = reinterpret_cast<const u8*>(atbc);
-    if (AsdTag_Compare(chunk, "ATBC", 4) != 0) {
+    if (AsdMem_Compare(chunk, "ATBC", 4) != 0) {
         return nullptr;
     }
     s32 count = *reinterpret_cast<const s32*>(chunk + 8);
@@ -246,7 +243,7 @@ const u8* AsdFindEplEntry(const void* atbc, s32 outer_index, s32* out_chunk_coun
 
     s32 walk = 0;
     for (;;) {
-        if (AsdTag_Compare(chunk, "EPLSIGN", 7) != 0) {
+        if (AsdMem_Compare(chunk, "EPLSIGN", 7) != 0) {
             return nullptr;
         }
         u8 header[0x10];
@@ -438,7 +435,7 @@ void AsdModel_func_0010495c() {
 // DECOMP_FUNC(0x0014515c, 688)
 void AsdModel_func_0014515c(AsdModel* model, const void* atbc) {
     s32 chunk_count = 0;
-    if (atbc != nullptr && AsdTag_Compare(atbc, "ATBC", 4) == 0) {
+    if (atbc != nullptr && AsdMem_Compare(atbc, "ATBC", 4) == 0) {
         chunk_count = *reinterpret_cast<const s32*>(reinterpret_cast<const u8*>(atbc) + 8);
     }
 
@@ -1245,7 +1242,7 @@ AsdAnimTable* AsdModel_func_002b2b78(void* data, void* owner) {
     void* signature = nullptr;
     void* owner_copy = nullptr;
 
-    if (AsdTag_Compare(data, "ATBC", 4) != 0) {
+    if (AsdMem_Compare(data, "ATBC", 4) != 0) {
         signature = data;
     } else {
         u32 offset = *reinterpret_cast<u32*>(bytes + 0x14);
@@ -1253,7 +1250,7 @@ AsdAnimTable* AsdModel_func_002b2b78(void* data, void* owner) {
             offset = *reinterpret_cast<u32*>(bytes + 0x10);
         }
         u8* chunk = bytes + offset;
-        if (AsdTag_Compare(chunk, "MDLSIGN", 7) == 0) {
+        if (AsdMem_Compare(chunk, "MDLSIGN", 7) == 0) {
             owner_copy = *reinterpret_cast<void**>(chunk + 8);
             signature = chunk + 0x80;
         } else {
@@ -1264,7 +1261,7 @@ AsdAnimTable* AsdModel_func_002b2b78(void* data, void* owner) {
     table->signature = signature;
 
     void* atbc_chunk = nullptr;
-    if (AsdTag_Compare(data, "ATBC", 4) == 0) {
+    if (AsdMem_Compare(data, "ATBC", 4) == 0) {
         atbc_chunk = bytes + *reinterpret_cast<u32*>(bytes + 0x0C);
     }
     table->chunk = atbc_chunk;

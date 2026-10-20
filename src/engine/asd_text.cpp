@@ -37,13 +37,6 @@ extern "C" {
     smt4::ui::AsdListBoxItem* AsdListBox_FindItem(void* handle, u32 id);    // 0x00254ff0
     void  AsdListBox_Relayout(void* handle);                                // 0x00259d88
     void  AsdListBox_AdvanceCounter(void* field);                           // 0x002d567c
-    // 0x002c5978.  r0 is the widget kind/label; r1 carries the row name in
-    // AsdListBox_func_00263408 and the numeric id 2 in message_func_002c4c2c,
-    // hence the pointer-sized integer slot.
-    void* AsdUi_Create(const char* kind, std::uintptr_t name, u32 a2, u32 a3,
-                       u32 cb0, u32 cb1, void* obj);                        // 0x002c5978
-    void* AsdUi_CreateLabel(const char* name, u32 id, u32 a1, u32 a2,
-                            u32 p0, u32 p1, void* p2, u32 p3);               // 0x002c4c00
     int   AsdUi_IsRegistered(void* handle);                                 // 0x002bf41c
     void  AsdText_ResetGlobals();                                           // 0x002bc2c4
     void  AsdScriptText_SetChannels(void* obj, u32 a1, u32 a2, f32 value);  // 0x002bda00

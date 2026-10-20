@@ -75,9 +75,16 @@ extern "C" {
     void  UiTMSpr_func_0014f1cc(void* sprite, void* buffer);                // 0x0014f1cc
 }
 
+// 0x00433158: the slot is shared with the camp/NPC row path (see
+// engine/asd_symbols.h); aocFileLoad reads it as its path root, so the
+// canonical name is g_CampMessageBundle and `g_AocPathRoot` was a duplicate.
+extern "C" void* g_CampMessageBundle = nullptr;
+
 namespace smt4::engine {
 
-extern void* g_AocPathRoot;             // 0x00433158: `ldr r1,[r0]` (0x0015c830)
+AocMain* g_AocMain = nullptr;                   // 0x00433048
+AocBootProcessGlobal g_AocBootProcess{};        // 0x00432FE0
+AocAppletState* g_AocAppletState = nullptr;     // 0x00432FC8
 
 namespace {
 
@@ -120,8 +127,10 @@ void AocFile_Close(void* file)
             AsdFile_NotifyClose();                       // 0x0015c958/0x0015c988
         }
         AsdFile_ReleaseHandle(reinterpret_cast<void*>(handle & ~1u)); // 0x0015c964
+        // 0x0015C944 / 0x0015C96C: the clearing store is inside the branch;
+        // an empty handle leaves the word untouched.
+        *static_cast<u32*>(file) = 0;
     }
-    *static_cast<u32*>(file) = 0;
 }
 
 } // namespace
@@ -202,7 +211,7 @@ void aocFileLoad_func_0015c728(AocLoadContext* context, AocFileLoadJob* job)
         }
 
         // 0x0015C828..0x0015C860: build the path object for job->path.
-        AocPath_Build(&built, g_AocPathRoot, job->path);
+        AocPath_Build(&built, g_CampMessageBundle, job->path);
         path_object = built;
 
         // 0x0015C84C..0x0015C860: status >= 0x64 means "not ready".
@@ -298,7 +307,7 @@ void aocFileLoad_func_0015c728(AocLoadContext* context, AocFileLoadJob* job)
 
         // 0x0015CBFC..0x0015CC2C: resolve the final path object; non-zero
         // status means success, zero means the load failed.
-        AocPath_BuildLocal(&built, g_AocPathRoot);
+        AocPath_BuildLocal(&built, g_CampMessageBundle);
         path_object = built;
         if (Result_IsReady(&path_object) == 0) {
             goto success;
@@ -324,7 +333,7 @@ void aocFileLoad_func_0015c728(AocLoadContext* context, AocFileLoadJob* job)
 cleanup_result:
     // 0x0015CC58..0x0015CCD0
     AsdSound_GetTableEntry(0);
-    AocPath_BuildLocal(&built, g_AocPathRoot);           // 0x0015CC6C
+    AocPath_BuildLocal(&built, g_CampMessageBundle);           // 0x0015CC6C
     g_AocAppletState->flags_754 =
         (g_AocAppletState->flags_754 & ~0x10000u) | 0x10u; // 0x0015CC7C..0x0015CC84
 

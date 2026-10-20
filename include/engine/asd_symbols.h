@@ -1,4 +1,5 @@
 #pragma once
+#include <cstdint>
 #include "types.h"
 
 /**
@@ -38,6 +39,21 @@ extern "C" {
                              void (*calc_cb)(void*), u32 a5, u32 a6,
                              void* parent);
 
+    // 0x002C3AA8 (56 B) / 0x002C3A24 (32 B): AsdMemory heap lock
+    // acquisition/release.  AsdFile and AsdSound both reach these routines;
+    // the AsdMemLock_* spelling is canonical.
+    void  AsdMemLock_Acquire(void* lock);
+    void  AsdMemLock_Release(void* lock);
+
+    // 0x002C1A48 (116 B): Thumb memcmp shared by AsdModel (tag checks) and
+    // AsdSound (path prefix checks).
+    s32   AsdMem_Compare(const void* a, const void* b, u32 size);
+
+    // 0x0011BE44 (120 B) / 0x0011CB3C (184 B): mixer and stream bring-up used
+    // by AsdSoundSystem and the Mobiclip audio helper.
+    s32   AsdSound_InitMixer();
+    s32   AsdSound_InitStream();
+
     // 0x002C4460 (320 B): links `child` into the child list of `parent`
     // (AsdProcess pool at 0x004E3CF4).  AsdText reaches the same routine for
     // widget attachment, so the declaration lives here for both TUs.
@@ -75,6 +91,32 @@ extern "C" {
 
     // 0x00433158: camp / NPC row-bundle pointer.  The listing loads the value
     // stored here (`ldr r0,[r5]`, 0x002FE088) before calling the row helpers,
-    // so the slot itself is a non-const pointer.
+    // so the slot itself is a non-const pointer.  aocFileLoad reads the same
+    // slot as its path root (0x0015C830), so this is the one canonical name
+    // for the address; `g_AocPathRoot` was a duplicate alias.
     extern void* g_CampMessageBundle;
+}
+
+// 0x002C5978 / 0x002C4C00 are the AsdProcess task factories declared above.
+// The AsdFrame / AsdScene / AsdSound / AsdText TUs historically called them
+// through the AsdUi_* spelling (the widget-like name is the shipped source's
+// vocabulary); these global adapters keep that call shape without introducing
+// a second declaration for either address.
+static inline void* AsdUi_Create(const char* kind, std::uintptr_t name, u32 a2,
+                          u32 a3, u32 cb0, u32 cb1, void* obj)
+{
+    return AsdTask_CreateCalc(
+        kind, static_cast<u32>(name), a2, a3,
+        reinterpret_cast<void (*)(void*)>(static_cast<std::uintptr_t>(cb0)),
+        cb1, static_cast<u32>(reinterpret_cast<std::uintptr_t>(obj)));
+}
+
+static inline void* AsdUi_CreateLabel(const char* name, u32 id, u32 a1, u32 a2,
+                               u32 p0, u32 p1, void* p2, u32 p3)
+{
+    return AsdTask_CreateDraw(
+        name, id, a1, a2,
+        reinterpret_cast<void (*)(void*)>(static_cast<std::uintptr_t>(p0)),
+        p1, static_cast<u32>(reinterpret_cast<std::uintptr_t>(p2)),
+        reinterpret_cast<void*>(static_cast<std::uintptr_t>(p3)));
 }

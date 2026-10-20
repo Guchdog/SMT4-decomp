@@ -1,4 +1,5 @@
 #include "engine/asd_frame.h"
+#include "engine/asd_effect.h"
 #include "engine/asd_symbols.h"
 #include "ui/tbb_table.h"
 #include <cstdint>
@@ -11,13 +12,38 @@ namespace smt4::engine {
 
 FrameTexScene* g_FrameTex = nullptr;            // 0x0043E278
 SmokeFadeScene* g_SmokeFade = nullptr;          // 0x0043DF28
-SmokeFadeTexture g_SmokeFadeTextures[2]{};      // 0x0043DF40
+
+// 0x0043DF40 (.data) is a two-entry table of {group 0x2D, row 4} and
+// {group 0x2D, row 5}; the +0x08/+0x09 load flags start clear.
+SmokeFadeTexture g_SmokeFadeTextures[2] = {
+    {0x2D, 4, 0, 0},
+    {0x2D, 5, 0, 0},
+};
 
 // 0x0044F858 and 0x0044F8C8 are two instances of the same AsdUi-style
 // widget; `EffectEditor_func_0024246c` fills the second one and stores its
 // address into the object at slot->owner + 0x34 (0x002427B0).
-EffectEditorWidget g_EffectEditorCursor{};      // 0x0044F858
-EffectEditorWidget g_EffectEditorList{};        // 0x0044F8C8
+//
+// Their .data images are not zero: the cursor widget carries the raw owner
+// 0x00425A1E and both share the five-entry menu at 0x00463D28.
+EffectEditorWidget g_EffectEditorCursor{
+    reinterpret_cast<void*>(static_cast<std::uintptr_t>(0x00425A1E)),
+    8,                                              // +0x04
+    8,                                              // +0x08
+    0,                                              // +0x0C mode
+    0,                                              // +0x10 flags
+    reinterpret_cast<void*>(static_cast<std::uintptr_t>(0x00463D28)),
+    5,                                              // +0x18 menu_count
+};                                                  // 0x0044F858
+EffectEditorWidget g_EffectEditorList{
+    nullptr,                                        // +0x00 owner
+    8,                                              // +0x04
+    8,                                              // +0x08
+    0,                                              // +0x0C mode
+    0,                                              // +0x10 flags
+    reinterpret_cast<void*>(static_cast<std::uintptr_t>(0x00463D28)),
+    5,                                              // +0x18 menu_count
+};                                                  // 0x0044F8C8
 
 // ---------------------------------------------------------------------------
 // Observed call targets (addresses are the branch targets in code.bin)
@@ -43,12 +69,6 @@ extern "C" {
                          u32 a3, u32 a4, u32 a5, u32 a6, u32 a7, u32 a8,
                          u32 a9, u32 a10);                                 // 0x002c32f8
 
-    // AsdUi widget factory (shared names with src/engine/asd_text.cpp)
-    void* AsdUi_Create(const char* kind, std::uintptr_t name, u32 a2, u32 a3,
-                       u32 cb0, u32 cb1, void* obj);                       // 0x002c5978
-    void* AsdUi_CreateLabel(const char* name, u32 id, u32 a1, u32 a2,
-                            u32 p0, u32 p1, void* p2, u32 p3);             // 0x002c4c00
-
     // 2D NPC tables / script hooks
     bool  Flag_CheckEventBit(u32 flag_id);                                 // 0x002c0ba8
     void* AsdTable_FindBattleRow(u32 id);                                  // 0x002b087c
@@ -72,18 +92,13 @@ extern "C" {
     void  UiInput_Reset(u32 id);                                           // 0x0024df94
     void  UiText_Format(char* dst, const char* fmt, ...);                  // 0x002be7fc
     u32   AsdParts_Count(void* parts);                                     // 0x00246a74
-    void* AsdPart_Wrap(void* element);                                     // 0x0024fe64
     void  AsdPart_Update3(void* part);                                     // 0x00250440
     void  AsdPart_Close(void* part, s32 mode);                             // 0x00262bd4
     void  AsdPart_Release(void* part, s32 mode);                           // 0x00262c1c
     void* EffParts_WrapElement(void* parts, void* element);                // 0x002c79c8
     void* EffParts_LoadElement(void* element);                             // 0x0019da14
     void* AsdRes_ResolveOffset(void* record);                              // 0x0024c60c
-    void* EffParts_CreateById(u32 id);                                     // 0x00192168
-    void  EffParts_SetData(void* part, const void* src, u32 size, u32 key); // 0x0024972c
     void  EffParts_SetRow(void* part, const void* row, u32 key);           // 0x001e192c
-    void  EffParts_SetValue(void* part, const void* value, u32 size,
-                            u32 key);                                      // 0x0025cc14
     void  AsdDrawDesc_Init(void* desc);                                    // 0x002a3ff8
 }
 

@@ -20,8 +20,6 @@ extern "C" {
     void* AsdMemBlock_Alloc(void* heap, u32 size, s32 align,
                             u32 a3, u32 a4, u32 a5);                        // 0x002c3a44
     void* AsdMemBlock_Release(void* heap, void* block, u32 size);           // 0x0011bf0c
-    void  AsdMemLock_Acquire(void* lock);                                   // 0x002c3aa8
-    void  AsdMemLock_Release(void* lock);                                   // 0x002c3a24
 
     // GPU heap / VRAM bank helpers
     u32   AsdGpu_HeapStart();                                               // 0x002c3b98
@@ -741,6 +739,9 @@ void AsdMemory_func_0010376c()
     g_AsdMemory.heap->region2_start = AsdGpu_BankStart(0x20000);
     g_AsdMemory.heap->region2_size =
         AsdGpu_BankEnd(0x20000) - g_AsdMemory.heap->region2_start;
+    // 0x00103870-0x00103880: `add r1,r1,#0xf0; stm r1,{r0,r2}` stores the
+    // size at +0xF0 and the region start again at +0xF4.
+    g_AsdMemory.heap->region2_start_dup = g_AsdMemory.heap->region2_start;
     g_AsdMemory.heap->region3_start = AsdGpu_BankStart(0x30000);
     g_AsdMemory.heap->region3_size =
         AsdGpu_BankEnd(0x30000) - g_AsdMemory.heap->region3_start;
