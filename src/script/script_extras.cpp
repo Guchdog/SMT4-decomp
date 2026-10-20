@@ -254,11 +254,14 @@ void NpcRoom_func_0026df40(u32 room_id) {
             }
             const s32 pairs = (remaining - 1) >> 1;
             for (s32 pair = 0; pair < pairs; ++pair) {
-                if (work->entries[i + index]->group_type == type) {
+                // `r6 = i + ip` is only the base: the two comparisons load
+                // entries[r6+1] (`[r8,#0x2c]`) and entries[r6+2]
+                // (`[r8,#0x30]`) at 0x0026E3A4/0x0026E3D4.
+                if (work->entries[i + index + 1]->group_type == type) {
                     record->entries[slot++] =
                         static_cast<u16>(i + index + 1);
                 }
-                if (work->entries[i + index + 1]->group_type == type) {
+                if (work->entries[i + index + 2]->group_type == type) {
                     record->entries[slot++] =
                         static_cast<u16>(i + index + 2);
                 }
@@ -475,21 +478,26 @@ u32 qcUtility_func_003816e4(void* state, u32 block, void* context,
     // selection slots start at +0x10 and are all set to -2.
     u8* const block_base = static_cast<u8*>(state) +
                            static_cast<std::uintptr_t>(block) * 0x50;
-    QcUtilityBlock* const header =
-        reinterpret_cast<QcUtilityBlock*>(block_base);
     s32* const slots = reinterpret_cast<s32*>(block_base + 0x10);
     for (s32 i = 0; i < 20; ++i) {
         slots[i] = -2;
     }
 
+    // 0x00381734 and 0x00381818 reload r0 from [sp,#0xc] (parameter 0), so
+    // the category and target index come from the state header, not the
+    // per-block slot window.
+    const u8 category = static_cast<const u8*>(state)[0];
+    const u16 target_index =
+        *reinterpret_cast<const u16*>(static_cast<const u8*>(state) + 0x0C);
+
     // 0x00381734..0x00381770: row count and the 8-byte output array.
     const s32 row_count =
-        static_cast<s32>(QcTable_GetRowCount(context, header->category));
+        static_cast<s32>(QcTable_GetRowCount(context, category));
     QcListEntry* out = static_cast<QcListEntry*>(
         AsdMem_AllocAlign(0x100, 0x100, 0,
                           static_cast<u32>(row_count) * sizeof(QcListEntry),
                           1));
-    const u8* rows = QcTable_GetRows(context, header->category, 0);
+    const u8* rows = QcTable_GetRows(context, category, 0);
 
     // 0x00381778..0x00381814: filter rows with a non-zero quantity byte and
     // an unset (or satisfied) event flag, then accumulate the quantities.
@@ -514,9 +522,9 @@ u32 qcUtility_func_003816e4(void* state, u32 block, void* context,
 
     // 0x00381818..0x0038186C: if the block names a target row, pin it into
     // slot 0 and remove its quantity from the pool.
-    if (header->target_index != 0 && count > 0) {
+    if (target_index != 0 && count > 0) {
         for (s32 i = 0; i < count; ++i) {
-            if (out[i].value == header->target_index) {
+            if (out[i].value == target_index) {
                 slots[0] = out[i].index;
                 total -= static_cast<s32>(out[i].quantity);
                 out[i].quantity = 0;
@@ -665,7 +673,9 @@ ScrScriptProcess* scrScriptProcess_func_002972f8(void* script, void* msg) {
         const ScrScriptDescriptor* desc =
             reinterpret_cast<const ScrScriptDescriptor*>(commands + i * 0x10);
         if (desc->type >= 5) {
-            continue;
+            // `ldrlo pc,[pc,fp,lsl #2]` falls through to `b 0x297610`,
+            // the epilogue that returns the still-zero r4.
+            return nullptr;
         }
         switch (desc->type) {
             case 0: name_offset = desc->offset; break;      // 0x0029737C
@@ -830,12 +840,12 @@ void qcMain_func_001a969c(const u32* args, u32 mode) {
     work->calc_task = AsdTask_CreateCalc("QuestCenterMainProc", 2, 0, 0,
                                          TaskCallback(0x001A9970),
                                          0x001FE0B4, TaskUserData(work));
-    AsdTask_CreateDraw("QuestCenterDrawUp L", 0x6F, 1, 0,
-                       TaskCallback(0x001FE134), 0,
-                       TaskUserData(work), work->calc_task);
-    work->draw_up = AsdTask_CreateDraw("QuestCenterDrawUp L", 0x7D, 1, 0,
-                                       TaskCallback(0x001D9510), 0,
+    work->draw_up = AsdTask_CreateDraw("QuestCenterDrawUp L", 0x6F, 1, 0,
+                                       TaskCallback(0x001FE134), 0,
                                        TaskUserData(work), work->calc_task);
+    AsdTask_CreateDraw("QuestCenterDrawUp L", 0x7D, 1, 0,
+                       TaskCallback(0x001D9510), 0,
+                       TaskUserData(work), work->calc_task);
     AsdTask_CreateDraw("QuestCenterDrawUp L", 0xDB, 1, 0,
                        TaskCallback(0x001D9510), 0,
                        TaskUserData(work), work->calc_task);
@@ -931,11 +941,9 @@ void EventEffect_func_0030a4fc() {
     work->calc_task = AsdTask_CreateCalc("BlinkFade Calc", 1, 0, 0,
                                          TaskCallback(0x00222428), 0, 0);
     AsdTask_CreateDraw("BlinkFade DrawUpLeft", 0x81, 0, 0,
-                       TaskCallback(0x002221F0), 0,
-                       TaskUserData(work), work->calc_task);
+                       TaskCallback(0x002221F0), 0, 0, work->calc_task);
     AsdTask_CreateDraw("BlinkFade DrawUpRight", 0xDF, 0, 0,
-                       TaskCallback(0x002221F0), 0,
-                       TaskUserData(work), work->calc_task);
+                       TaskCallback(0x002221F0), 0, 0, work->calc_task);
 
     // 0x0030A5D8..0x0030A5F4: state fields.
     work->field_10 = 0;

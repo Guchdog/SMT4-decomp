@@ -187,19 +187,21 @@ static_assert(offsetof(QcListEntry, quantity) == 0x04);
 static_assert(sizeof(QcListEntry) == 0x08);
 
 /**
- * Header of one qcUtility category block.  The block stride is 0x50
- * (`add r1,r0,r0,lsl #2` / `add r1,r0,r1,lsl #4`) and the 20 selection slots
- * start at +0x10 (filled with -2 by 0x00381718..0x00381730).
+ * qcUtility state header (parameter 0).  `category` and `target_index` are
+ * read directly from it (`ldrb r1,[r0]`, 0x00381738; `ldrh r1,[r0,#0xc]`,
+ * 0x0038181C).  Each budget block owns 20 selection slots at
+ * `state + block*0x50 + 0x10` (`add r1,r0,r0,lsl #2` /
+ * `add r1,r0,r1,lsl #4`, filled with -2 by 0x00381718..0x00381730).
  */
-struct QcUtilityBlock {
+struct QcUtilityState {
     u8  category;                       // +0x00: `ldrb r1,[r0]` (0x00381738)
     u8  pad_01[0x0B];                   // +0x01..+0x0C
     u16 target_index;                   // +0x0C: `ldrh r1,[r0,#0xc]` (0x0038181C)
     u8  pad_0e[0x02];                   // +0x0E..+0x10
 };
-static_assert(offsetof(QcUtilityBlock, category) == 0x00);
-static_assert(offsetof(QcUtilityBlock, target_index) == 0x0C);
-static_assert(sizeof(QcUtilityBlock) == 0x10);
+static_assert(offsetof(QcUtilityState, category) == 0x00);
+static_assert(offsetof(QcUtilityState, target_index) == 0x0C);
+static_assert(sizeof(QcUtilityState) == 0x10);
 
 // ---------------------------------------------------------------------------
 // scrScriptProcess.cpp (0x002972F8)
