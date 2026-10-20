@@ -37,14 +37,14 @@
 - `Map_Field3DManager`: `0x00208ce8` (16,796 B)
 - `Engine_TextureStreamer`: `0x00386184` (5,964 B)
 
-- [ ] **Step 1: Update progress test expectations (RED)**
+- [x] **Step 1: Update progress test expectations (RED)**
   - Update `tests/test_progress.py` to expect 189 functions and 339,152 bytes.
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
   - Run `python -m unittest discover -s tests -v`.
-- [ ] **Step 3: Define structures in `include/engine/map_field.h` and implement in `src/engine/map_field.cpp`**
-- [ ] **Step 4: Update `config/functions.csv` and run test to verify it passes (GREEN)**
+- [x] **Step 3: Define structures in `include/engine/map_field.h` and implement in `src/engine/map_field.cpp`**
+- [x] **Step 4: Update `config/functions.csv` and run test to verify it passes (GREEN)**
   - Run `python tools/progress.py --write` and `python -m unittest discover -s tests -v`.
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
   - Commit: `feat(engine): implement 3D field actor environment and texture streamer (+22,760 B, 10.80% reached)`.
 
 ---
@@ -63,14 +63,14 @@
 - `Ui_BattleMessageWindow`: `0x003f34f8` (7,984 B)
 - `Ui_BattleActionEffectOverlay`: `0x003ec954` (6,616 B)
 
-- [ ] **Step 1: Update progress test expectations (RED)**
+- [x] **Step 1: Update progress test expectations (RED)**
   - Update `tests/test_progress.py` to expect 193 functions and 373,788 bytes.
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
   - Run `python -m unittest discover -s tests -v`.
-- [ ] **Step 3: Define structures in `include/ui/battle_hud.h` and implement in `src/ui/battle_hud.cpp`**
-- [ ] **Step 4: Update `config/functions.csv` and run test to verify it passes (GREEN)**
+- [x] **Step 3: Define structures in `include/ui/battle_hud.h` and implement in `src/ui/battle_hud.cpp`**
+- [x] **Step 4: Update `config/functions.csv` and run test to verify it passes (GREEN)**
   - Run `python tools/progress.py --write` and `python -m unittest discover -s tests -v`.
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
   - Commit: `feat(battle): implement battle command menu, encounter loader and combat HUD (+34,636 B, 11.91% reached)`.
 
 ---
@@ -89,14 +89,14 @@
 - `Btl_StatusEffectCalc`: `0x0021c598` (5,420 B)
 - `Btl_DemonNegotiationCalc`: `0x003c6714` (4,724 B)
 
-- [ ] **Step 1: Update progress test expectations (RED)**
+- [x] **Step 1: Update progress test expectations (RED)**
   - Update `tests/test_progress.py` to expect 195 functions and 383,932 bytes.
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
   - Run `python -m unittest discover -s tests -v`.
-- [ ] **Step 3: Define structures in `include/battle/battle_ailment.h`, `include/battle/battle_scout.h` and implement in `src/battle/battle_ailment.cpp`, `src/battle/battle_scout.cpp`**
-- [ ] **Step 4: Update `config/functions.csv` and run test to verify it passes (GREEN)**
+- [x] **Step 3: Define structures in `include/battle/battle_ailment.h`, `include/battle/battle_scout.h` and implement in `src/battle/battle_ailment.cpp`, `src/battle/battle_scout.cpp`**
+- [x] **Step 4: Update `config/functions.csv` and run test to verify it passes (GREEN)**
   - Run `python tools/progress.py --write` and `python -m unittest discover -s tests -v`.
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
   - Commit: `feat(battle): implement status ailment calculator and demon negotiation engine (+10,144 B, 12.23% reached)`.
 
 ---
@@ -115,14 +115,14 @@
 - `FlowScript_BranchCondition`: `0x001fc644` (4,876 B)
 - `FlowScript_MessageWindowHook`: `0x00307978` (4,832 B)
 
-- [ ] **Step 1: Update progress test expectations (RED)**
+- [x] **Step 1: Update progress test expectations (RED)**
   - Update `tests/test_progress.py` to expect 199 functions and 407,768 bytes.
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
   - Run `python -m unittest discover -s tests -v`.
-- [ ] **Step 3: Define structures in `include/script/script_vm.h` and implement in `src/script/script_vm.cpp`**
-- [ ] **Step 4: Update `config/functions.csv` and run test to verify it passes (GREEN)**
+- [x] **Step 3: Define structures in `include/script/script_vm.h` and implement in `src/script/script_vm.cpp`**
+- [x] **Step 4: Update `config/functions.csv` and run test to verify it passes (GREEN)**
   - Run `python tools/progress.py --write` and `python -m unittest discover -s tests -v`.
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
   - Commit: `feat(script): implement FlowScript VM opcode evaluator and event engine (+23,836 B, 12.99% reached)`.
 
 ---
@@ -150,14 +150,14 @@
 - `Ui_DemonicaAppStore`: `0x00325478` (5,072 B)
 - `Ui_DemonCompendiumSearch`: `0x003b4bc0` (5,520 B)
 
-- [ ] **Step 1: Update progress test expectations (RED)**
+- [x] **Step 1: Update progress test expectations (RED)**
   - Update `tests/test_progress.py` to expect 204 functions and 435,808 bytes.
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
   - Run `python -m unittest discover -s tests -v`.
-- [ ] **Step 3: Define structures in headers and implement in source files**
-- [ ] **Step 4: Update `config/functions.csv` and run test to verify it passes (GREEN)**
+- [x] **Step 3: Define structures in headers and implement in source files**
+- [x] **Step 4: Update `config/functions.csv` and run test to verify it passes (GREEN)**
   - Run `python tools/progress.py --write` and `python -m unittest discover -s tests -v`.
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
   - Commit: `feat(camp): implement Demonica archive loader, whisper events, item inventory, and Burroughs app store (+28,040 B, 13.88% reached)`.
 
 ---
@@ -191,12 +191,12 @@
 - `Ui_MikadoCastleScene`: `0x001eeea0` (5,556 B)
 - `Ui_StatusScreenSkills`: `0x001ce98c` (5,444 B)
 
-- [ ] **Step 1: Update progress test expectations (RED)**
+- [x] **Step 1: Update progress test expectations (RED)**
   - Update `tests/test_progress.py` to expect 211 functions and 479,584 bytes (reaching **15.2777%**, surpassing the **15.0% milestone**!).
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
   - Run `python -m unittest discover -s tests -v`.
-- [ ] **Step 3: Define structures in headers and implement in source files**
-- [ ] **Step 4: Update `config/functions.csv` and run test to verify it passes (GREEN)**
+- [x] **Step 3: Define structures in headers and implement in source files**
+- [x] **Step 4: Update `config/functions.csv` and run test to verify it passes (GREEN)**
   - Run `python tools/progress.py --write` and `python -m unittest discover -s tests -v`.
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
   - Commit: `feat(ui): implement Terminal 3D portal, Mikado Castle, Quest Board, Shop Catalog and Debug HUD (+43,776 B, 15.0% milestone reached at 15.28%)`.
