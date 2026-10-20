@@ -3053,7 +3053,7 @@ address,size,status,category,name,src_file
 0x0022ccec,76,todo,unknown,func_0022ccec,
 0x0022cd38,1540,todo,shop,shop_func_0022cd38,
 0x0022d33c,652,todo,camp,camp_func_0022d33c,
-0x0022d5c8,892,todo,unite,unite_func_0022d5c8,
+0x0022d5c8,892,non_matching,unite,unite_func_0022d5c8,src/camp/unite_extras.cpp
 0x0022d944,80,todo,shop,shop_func_0022d944,
 0x0022d994,456,todo,ui,ui_func_0022d994,
 0x0022db5c,228,todo,ui,ui_func_0022db5c,
@@ -9257,7 +9257,7 @@ address,size,status,category,name,src_file
 0x003a774c,392,todo,camp,camp_func_003a774c,
 0x003a78d4,380,todo,script_vm,script_vm_func_003a78d4,
 0x003a7a50,136,todo,shop,shop_func_003a7a50,
-0x003a7ad8,668,todo,unite,bibleDevil_func_003a7ad8,
+0x003a7ad8,668,non_matching,unite,bibleDevil_func_003a7ad8,src/camp/unite_extras.cpp
 0x003a7d74,144,todo,ui,ui_func_003a7d74,
 0x003a7e04,512,todo,script_vm,script_vm_func_003a7e04,
 0x003a8004,200,todo,camp,camp_func_003a8004,
@@ -9324,7 +9324,7 @@ address,size,status,category,name,src_file
 0x003ab348,544,todo,shop,shop_func_003ab348,
 0x003ab568,144,todo,shop,shop_func_003ab568,
 0x003ab5f8,376,todo,shop,shop_func_003ab5f8,
-0x003ab770,592,todo,unite,bibleLegionSkill_func_003ab770,
+0x003ab770,592,non_matching,unite,bibleLegionSkill_func_003ab770,src/camp/unite_extras.cpp
 0x003ab9c0,40,todo,script_vm,script_vm_func_003ab9c0,
 0x003ab9e8,124,todo,ui,ui_func_003ab9e8,
 0x003aba64,260,todo,unite,unite_func_003aba64,
@@ -9372,7 +9372,7 @@ address,size,status,category,name,src_file
 0x003ad230,36,todo,unknown,func_003ad230,
 0x003ad254,92,todo,unknown,func_003ad254,
 0x003ad2b0,80,todo,camp,camp_func_003ad2b0,
-0x003ad300,596,todo,unite,bibleLegionDraw_func_003ad300,
+0x003ad300,596,non_matching,unite,bibleLegionDraw_func_003ad300,src/camp/unite_extras.cpp
 0x003ad554,92,todo,ui,ui_func_003ad554,
 0x003ad5b0,76,todo,battle,battle_func_003ad5b0,
 0x003ad5fc,252,todo,unite,unite_func_003ad5fc,
@@ -9708,7 +9708,7 @@ address,size,status,category,name,src_file
 0x003c9b70,188,todo,camp,camp_func_003c9b70,
 0x003c9c2c,400,todo,camp,camp_func_003c9c2c,
 0x003c9dbc,256,todo,camp,camp_func_003c9dbc,
-0x003c9ebc,664,todo,unite,UniteCtrl_func_003c9ebc,
+0x003c9ebc,664,non_matching,unite,UniteCtrl_func_003c9ebc,src/camp/unite_extras.cpp
 0x003ca154,48,todo,engine,engine_func_003ca154,
 0x003ca184,980,todo,battle,battle_func_003ca184,
 0x003ca558,388,todo,battle,battle_func_003ca558,
