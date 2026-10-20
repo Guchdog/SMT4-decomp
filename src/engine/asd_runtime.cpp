@@ -39,7 +39,10 @@ extern "C" {
     // 0x0028550C (84 B): map-script notification.  The two float arguments
     // arrive on the stack (`vldmia r4,{s0,s1}` at 0x0028551C); both call sites
     // pass zero.
-    void  script_vm_func_0028550c(u32 mode, u32 a1, u32 a2, f32 a3, f32 a4);
+    // The two trailing words are consumed by `add r4,sp,#0x10;
+    // vldmia r4,{s0,s1}` (0x0028551C), so they are raw stack words that the
+    // callee reinterprets as floats.  Both call sites pass zero.
+    void  script_vm_func_0028550c(u32 mode, u32 a1, u32 a2, u32 w0, u32 w1);
 
     // 0x002854EC (32 B): stores `flag != 0` into engine+0x1C.
     void  script_vm_func_002854ec(u32 flag);
@@ -610,7 +613,7 @@ void engine_func_001aba94() {
         // map script.  The two stack words at [sp]/[sp+4] are zero.
         *reinterpret_cast<s32*>(g_MapRuntimeState + 8) = layout->field_04;
         script_vm_func_0028550c(
-            static_cast<u32>(layout->field_04 & 0xFF), 0, 0, 0.0f, 0.0f);
+            static_cast<u32>(layout->field_04 & 0xFF), 0, 0, 0u, 0u);
 
         goto reset_wall_types;                  // 0x001ABC78
     }
@@ -711,9 +714,10 @@ void engine_func_001aba94() {
             accepted = 0;
         }
 
-        // 0x001AC0BC..0x001AC0C8: an empty frontier finishes the walk.
+        // 0x001AC0BC..0x001AC0C8: an empty frontier branches to the finish
+        // stage at 0x001AC150 (not directly to the wall-type reset).
         if (work->cell_count == 0) {
-            break;
+            goto finish_maze;
         }
 
         // 0x001AC0CC..0x001AC114: pop one frontier cell at random.
@@ -745,6 +749,126 @@ void engine_func_001aba94() {
         // retry flag is set; the flag is only cleared by the shared tail.
         continue;
     } while (retry != 0);
+
+finish_maze:
+    // ------------------------------------------------------------------
+    // 0x001AC150..0x001AC474: close the random maze.
+    // ------------------------------------------------------------------
+    {
+        // 0x001AC150..0x001AC1B0: every untouched cell becomes a wall and
+        // every direction byte is cleared.
+        for (s32 row = 0; row < engine->height; ++row) {
+            for (s32 col = 0; col < engine->width; ++col) {
+                MazeCell* const cell = MazeCellAt(engine, row, col);
+                cell->direction = 0;                 // 0x001AC18C
+                if (cell->state == 0) {
+                    cell->state = 1;                 // 0x001AC194
+                }
+            }
+        }
+
+        // 0x001AC1B4..0x001AC1C8: no marker until the goal pass selects one.
+        engine->field_dd5 = 0;
+        engine->field_dd6 = 0;
+        engine->field_dd7 = 0;
+
+        const s32 point_count = work->path_count;
+        if (point_count >= 2) {
+            // 0x001AC1E8..0x001AC240: Manhattan distance from point 0 for
+            // every later dead end.
+            const s32 origin_x = work->points[0].x;
+            const s32 origin_y = work->points[0].y;
+            for (s32 i = 1; i < point_count; ++i) {
+                s32 dx = origin_x - work->points[i].x;
+                s32 dy = origin_y - work->points[i].y;
+                if (dx < 0) {
+                    dx = -dx;
+                }
+                if (dy < 0) {
+                    dy = -dy;
+                }
+                work->points[i].distance = dx + dy;  // 0x001AC23C
+            }
+
+            // 0x001AC244..0x001AC2D0: sort points 1.. by distance (the
+            // listing's nested swap loop).
+            for (s32 i = 1; i < point_count - 1; ++i) {
+                for (s32 j = i + 1; j < point_count; ++j) {
+                    if (work->points[i].distance >
+                        work->points[j].distance) {
+                        const MazePoint tmp = work->points[i];
+                        work->points[i] = work->points[j];
+                        work->points[j] = tmp;
+                    }
+                }
+            }
+
+            // 0x001AC2D4..0x001AC318: pick the goal from the far half.
+            s32 goal_index;
+            const s32 half = point_count / 2;
+            if (half >= 2) {
+                const s32 pick = static_cast<s32>(
+                    Random_Range(static_cast<u32>(half - 1)));
+                goal_index = point_count - pick - 1;
+                if (work->points[goal_index].distance < 5) {
+                    goal_index = point_count - 1;
+                }
+            } else {
+                goal_index = point_count - 1;
+            }
+
+            // 0x001AC318..0x001AC358: start = point 0, goal = selected point.
+            const s32 goal_x = work->points[goal_index].x;
+            const s32 goal_y = work->points[goal_index].y;
+            engine->start_x = static_cast<s8>(origin_x);
+            engine->start_y = static_cast<s8>(origin_y);
+            engine->goal_x = static_cast<u8>(goal_x);
+            engine->goal_y = static_cast<u8>(goal_y);
+            MazeCellAt(engine, origin_y, origin_x)->field_02 = 1;
+            MazeCellAt(engine, goal_y, goal_x)->field_03 = 1;
+
+            // 0x001AC35C..0x001AC474: pick a third point (neither start nor
+            // goal) and publish the marker cell / effect id.
+            if (point_count >= 3) {
+                const s32 pick = static_cast<s32>(
+                    Random_Range(static_cast<u32>(point_count - 3)));
+                s32 seen = 0;
+                for (s32 i = 0; i < point_count; ++i) {
+                    if (work->points[i].x == origin_x &&
+                        work->points[i].y == origin_y) {
+                        continue;
+                    }
+                    if (work->points[i].x == goal_x &&
+                        work->points[i].y == goal_y) {
+                        continue;
+                    }
+                    if (seen != pick) {
+                        ++seen;
+                        continue;
+                    }
+
+                    engine->field_dd5 = 1;           // 0x001AC3D8
+                    engine->field_dd6 =
+                        static_cast<s8>(work->points[i].x);
+                    engine->field_dd7 =
+                        static_cast<s8>(work->points[i].y);
+
+                    // 0x001AC3EC..0x001AC470
+                    if (Flag_CheckEventBit(0x648)) {
+                        engine->field_db0 = static_cast<u16>(
+                            Random_Range(4) + 0x1C2);
+                    } else if (Flag_CheckEventBit(0x6D2)) {
+                        engine->field_db0 = static_cast<u16>(
+                            Random_Range(3) + 0x1C2);
+                    } else {
+                        engine->field_db0 = static_cast<u16>(
+                            Random_Range(2) + 0x1C2);
+                    }
+                    break;
+                }
+            }
+        }
+    }
 
 reset_wall_types:
     // 0x001AC474..0x001AC4F4: classify every interior corridor cell from its
@@ -781,9 +905,6 @@ place_models:
             for (s32 row = 1; row < engine->height - 1; ++row) {
                 for (s32 col = 1; col < engine->width - 1; ++col) {
                     const MazeCell* const cell = MazeCellAt(engine, row, col);
-                    if (cell->field_06 != 1) {
-                        continue;               // 0x001AC550
-                    }
                     if ((cell->wall_kind >> 4) == type) {
                         ++count;                // 0x001AC738
                     }
@@ -845,14 +966,14 @@ place_models:
         work->type_count[2] = best_kind2;
         work->type_count[3] = best_kind3;
         work->type_count[4] = best_kind4;
-        work->depth = 2;
+        work->type_count[5] = 2;                 // 0x001AC80C
         if (engine->carved > 0) {
-            work->depth = engine->carved + 2;
+            work->type_count[5] = engine->carved + 2;  // 0x001AC838
         }
 
         // 0x001AC83C..0x001AC99C: one model per non-empty kind.
         char path[0x80];
-        for (s32 type = 0; type < 5; ++type) {
+        for (s32 type = 0; type < 6; ++type) {
             if (work->type_count[type] <= 0) {
                 continue;
             }
@@ -1762,10 +1883,10 @@ void engine_func_002e4b10(UiPartUpdateOwner* owner) {
             }
         } else {
             if (source->field_28 <= 0.0f) {
-                owner->time += source->field_24;
+                owner->time += static_cast<f32>(source->field_24);
             } else {
                 const f32 random = engine_func_0024ba44(0);
-                owner->time += source->field_24 *
+                owner->time += static_cast<f32>(source->field_24) *
                                (random * (1.1f - source->field_28));
             }
             frame = static_cast<s32>(std::fabs(owner->time));
@@ -1861,8 +1982,10 @@ void engine_func_002e4b10(UiPartUpdateOwner* owner) {
             f32 saved_quad[4] = {
                 rs.vector[0], rs.vector[1], rs.vector[2], rs.vector[3],
             };
-            for (s32 i = 0; i < 4; ++i) {
-                rs.color[i] = rs.scratch[i];
+            // 0x002E52C8..0x002E5330: the working vector is the scratch quad
+            // (p0); the subtract operand is the color quad (p3).
+            for (s32 i = 0; i < 3; ++i) {
+                rs.vector[i] = rs.scratch[i];
             }
             f32 delta[3] = {
                 rs.vector[0] - rs.color[0],
@@ -1893,7 +2016,9 @@ void engine_func_002e4b10(UiPartUpdateOwner* owner) {
             const f32 spin = engine_func_0024ba44(0) *
                              static_cast<f32>(source->field_e0) *
                              (1.0f - 0.5f) * 2.0f * 0.00390625f;
-            func_002486ec(rs.vector);
+            // 0x002E548C: the callee receives the sp+0x50 quad, which is the
+            // interpolated quad saved before the delta operation.
+            func_002486ec(saved_quad);
 
             // 0x002E5498..0x002E54D0: radial scale from source+0xCC/+0xD0.
             const f32 random2 = engine_func_0024ba44(0);
@@ -1959,6 +2084,15 @@ void engine_func_002e4b10(UiPartUpdateOwner* owner) {
                 }
             }
 
+            // 0x002E5760..0x002E5768: clear the progress, seed the instance
+            // vector from the source control point, then let 0x002E57F4 copy
+            // that vector into the shared [sp+0x88] buffer.
+            part->progress = 0.0f;
+            instance->vector[0] = p0[0];
+            instance->vector[1] = p0[1];
+            instance->vector[2] = p0[2];
+            instance->vector[3] = stack_1c;
+
             // 0x002E57F4..0x002E5810: the spawn instance starts at life 0.
             instance->life = 0;
             std::memcpy(saved, instance->vector, sizeof(saved));
@@ -1990,7 +2124,7 @@ void engine_func_002e4b10(UiPartUpdateOwner* owner) {
                 for (s32 i = 0; i < 3; ++i) {
                     rs.vector[i] = point[i];
                 }
-                rs.vector[3] = 0.5f;
+                rs.vector[3] = 1.1f;
                 for (s32 i = 0; i < 4; ++i) {
                     rs.vector[i] -= rs.color[i];
                 }
@@ -2072,7 +2206,7 @@ void engine_func_002e4b10(UiPartUpdateOwner* owner) {
         rs.vector[0] = point[0];
         rs.vector[1] = point[1];
         rs.vector[2] = point[2];
-        rs.vector[3] = 0.5f;
+        rs.vector[3] = 1.1f;
 
         if (b != 0.0f) {
             // 0x002E4E0C..0x002E4EC0: the listing copies the source triple
@@ -2106,7 +2240,7 @@ void engine_func_002e4b10(UiPartUpdateOwner* owner) {
             rs.vector[0] = point[0];
             rs.vector[1] = point[1];
             rs.vector[2] = point[2];
-            rs.vector[3] = 0.5f;
+            rs.vector[3] = 1.1f;
             for (s32 i = 0; i < 4; ++i) {
                 rs.vector[i] -= rs.color[i];
             }
@@ -2176,12 +2310,12 @@ void engine_func_00304164(TrailOwner* owner) {
 
     // 0x00304210..0x00304260: three cross-section widths derived from
     // config+0x7C/+0x80.
-    const f32 width0 = config->field_80 + config->field_7c;
-    const f32 width1 = width0 + config->field_7c;
-    const f32 width2 = width1 + config->field_80;
-    (void)width0;
-    (void)width1;
-    (void)width2;
+    const f32 stack_width0 = config->field_80 + config->field_7c;
+    const f32 stack_width1 = stack_width0 + config->field_7c;
+    const f32 stack_width2 = stack_width1 + config->field_80;
+    (void)stack_width0;
+    (void)stack_width1;
+    (void)stack_width2;
 
     // 0x00304260..0x0030427C: buffer time accumulator.  The old value is the
     // sample time used by the spawn phase.
@@ -2298,57 +2432,197 @@ void engine_func_00304164(TrailOwner* owner) {
         rs.vector[3] = 0.0f;
         func_0024603c();                            // 0x0030443C
         Normalize3(rs.vector);
-        rs.scratch[0] = rs.vector[0];
-        rs.scratch[1] = rs.vector[1];
-        rs.scratch[2] = rs.vector[2];
-        rs.scratch[3] = rs.vector[3];
-        rs.color[0] = camera[0];
-        rs.color[1] = camera[1];
-        rs.color[2] = camera[2];
-        rs.color[3] = camera[3];
 
-        // 0x0030445C..0x00304544: build the five cross-section points.
+        // 0x00304440..0x003044AC: save the normalized quad (sp+0xC0) and
+        // build the tangent quad (g+0x100) as direction - entry vector.
+        f32 quat[4] = {
+            rs.vector[0], rs.vector[1], rs.vector[2], rs.vector[3],
+        };
+        const f32 dir[3] = {quat[0], quat[1], quat[2]};
+        f32 tangent_dir[3] = {
+            dir[0] - entry->vector[0],
+            dir[1] - entry->vector[1],
+            dir[2] - entry->vector[2],
+        };
+        Normalize3(tangent_dir);                    // 0x003044DC..0x00304520
+        rs.scratch[0] = tangent_dir[0];             // g+0x120
+        rs.scratch[1] = tangent_dir[1];
+        rs.scratch[2] = tangent_dir[2];
+        rs.scratch[3] = 0.0f;
+        rs.color[0] = dir[0];                       // g+0x110
+        rs.color[1] = dir[1];
+        rs.color[2] = dir[2];
+        rs.color[3] = quat[3];
+
+        // 0x00304594..0x003045C8: cross product tangent x direction.
+        f32 cross[3] = {
+            tangent_dir[1] * dir[2] - tangent_dir[2] * dir[1],
+            tangent_dir[2] * dir[0] - tangent_dir[0] * dir[2],
+            tangent_dir[0] * dir[1] - tangent_dir[1] * dir[0],
+        };
+        Normalize3(cross);                          // 0x003045F8..0x0030466C
+        f32 cross_quat[4] = {cross[0], cross[1], cross[2], 0.0f};
+        rs.scratch[0] = cross[0];                   // g+0x120 = cross
+        rs.scratch[1] = cross[1];
+        rs.scratch[2] = cross[2];
+        rs.scratch[3] = 0.0f;
+        rs.color[0] = cross[0];                     // g+0x110 = cross
+        rs.color[1] = cross[1];
+        rs.color[2] = cross[2];
+        rs.color[3] = quat[3];
+
+        // 0x00304688..0x0030468C: the first basis vector is scaled by
+        // config+0x80 + config+0x7C and parked in g_TrailScratchB.
+        const f32 width0 = config->field_80 + config->field_7c;
+        const f32 width1 = config->field_7c;
+        g_TrailScratchB[0] = cross[0] * width0;
+        g_TrailScratchB[1] = cross[1] * width0;
+        g_TrailScratchB[2] = cross[2] * width0;
+        g_TrailScratchB[3] = 0.0f;
+
+        // 0x0030445C..0x00304544: five cross-section points.  The listing
+        // fills +0x00 = +cross*w0, +0x0C = +dir*w1, +0x18 = 0,
+        // +0x24 = -dir*w1 and +0x30 = -cross*w0.
         TrailFrame* const frame = entry->frame;      // 0x003042B4
         TrailTrack* const track =
             static_cast<TrailTrack*>(frame->track);  // 0x003042C4
         f32* const points = track->points;           // r8
+        points[0] = g_TrailScratchB[0];
+        points[1] = g_TrailScratchB[1];
+        points[2] = g_TrailScratchB[2];
+        points[12] = -g_TrailScratchB[0];            // +0x30
+        points[13] = -g_TrailScratchB[1];
+        points[14] = -g_TrailScratchB[2];
+        points[3] = dir[0] * width1;                 // +0x0C
+        points[4] = dir[1] * width1;
+        points[5] = dir[2] * width1;
+        points[9] = -dir[0] * width1;                // +0x24
+        points[10] = -dir[1] * width1;
+        points[11] = -dir[2] * width1;
+        points[6] = 0.0f;                            // +0x18
+        points[7] = 0.0f;
+        points[8] = 0.0f;
+
+        // 0x003047F0..0x00304808: translation = direction with offset_c on Y.
+        const f32 translate[3] = {
+            dir[0], dir[1] + entry->offset_c, dir[2],
+        };
         for (s32 k = 0; k < 5; ++k) {
-            f32* const p = points + k * 3;
-            const f32 w = static_cast<f32>(k - 2) * 0.25f * radial;
-            p[0] = rs.color[0] + rs.scratch[0] * w;
-            p[1] = rs.color[1] + rs.scratch[1] * w;
-            p[2] = rs.color[2] + rs.scratch[2] * w;
+            points[k * 3 + 0] += translate[0];
+            points[k * 3 + 1] += translate[1];
+            points[k * 3 + 2] += translate[2];
         }
+        entry->vector[0] = dir[0];                   // 0x003048CC
+        entry->vector[1] = dir[1];
+        entry->vector[2] = dir[2];
 
         // 0x003048BC: the first 0x3C block is the live cross-section; the
-        // history records follow it.
-        const s32 segments = static_cast<s32>(frame->count) / 3;
+        // history records follow it.  `segments` is frame->count / 5
+        // (0x003042B8..0x003042D8: smulbb 0x6667, asr 17).
+        const s32 segments = static_cast<s32>(frame->count) / 5;
+        f32 offsets[5] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f};   // sp+0xA0
+        f32 accum[5] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f};     // sp+0x08
         if (segments > 1) {
             u8* history = reinterpret_cast<u8*>(points) + 0x3C;
-            f32 accumulated = 0.0f;
-            for (s32 seg = 1; seg < segments; ++seg, history += 0x3C) {
-                const f32 jitter = engine_func_0024ba44(0);
-                // 0x003048F8..0x003048FC: (0.25 + rand*0.75) * config+0xBC.
-                accumulated += (0.25f + jitter * 0.75f) * 0.34906587f;
-                // 0x003049D8 / 0x00304A74: the two orientation stages rebuild
-                // the matrix from the current basis, and 0x00304C0C converts
-                // the tangent to the per-sample step (pi/128).
-                func_002486ec(rs.vector);
-                func_002486ec(rs.vector);
-                const f32 sample_step =
-                    func_00361074(tangent) * 0.024543693f;   // pi/128
-                (void)sample_step;
-                const f32 twist =
-                    entry->angle_a + static_cast<f32>(seg) * angle_step;
-                const f32 cs = ui_func_002b740c(twist * 40.743665f);
-                const f32 sn = ui_func_002b73a4(twist * 40.743665f);
+            f32 radial_base = 0.34906587f;           // sp+0xBC
+            f32 phase_accum = phase;                 // s17
+            f32 section_radial = radial;             // sp+0xF4
+            f32 spread_b = 0.0f;                     // sp+0xF8
+            const f32 ring_prev = ring0;             // s28
+            const f32 initial_twist = tangent;       // s29
+            f32 previous_length = 0.0f;
 
+            for (s32 seg = 1; seg < segments; ++seg, history += 0x3C) {
+                // 0x003048F0..0x0030490C
+                const f32 jitter_random = engine_func_0024ba44(0);
+                const f32 jitter =
+                    (0.25f + jitter_random * 0.75f) * radial_base;
+
+                // 0x00304910: third engine_func_0024B990 tick.
+                if ((engine_func_0024b990(0) & 1) != 0) {
+                    radial_base = -radial_base;
+                }
+
+                // 0x0030492C..0x00304998
+                phase_accum += angle_step;
+                if (phase_accum >= 3.14159265f) {
+                    config->radius = -config->radius;
+                    phase_accum -= 3.14159265f;
+                    const f32 random_a = engine_func_0024ba44(0);
+                    section_radial =
+                        -(config->radius * (0.05f + random_a * 0.95f));
+                    const f32 random_b = engine_func_0024ba44(0);
+                    spread_b = (0.3f + random_b * 0.7f) * -0.0872665f;
+                }
+
+                // 0x0030499C..0x003049C8: second 0x002460B4 call.
+                const f32 ring =
+                    ui_func_002b740c(phase_accum * 40.743665f) *
+                    section_radial;
+                const f32 slope = ring - ring_prev;
+                const f32 twist =
+                    func_002460b4(slope / std::sqrt(slope * slope +
+                                                    span * span)) + jitter;
+
+                // 0x003049D0..0x00304A6C: first orientation matrix from the
+                // saved quaternion, then a matrix multiply of direction2.
+                func_002486ec(quat);
+                for (s32 i = 0; i < 3; ++i) {
+                    rs.vector[i] = tangent_dir[i];
+                    rs.scratch[i] = cross_quat[i];
+                }
+                rs.vector[3] = 0.0f;
+                rs.scratch[3] = 0.0f;
+                Transform4(rs.matrix, rs.vector, rs.vector);
+
+                // 0x00304A74..0x00304AFC: second orientation matrix from the
+                // cross-section quad (sp+0x50).
+                func_002486ec(cross_quat);
+                Transform4(rs.matrix, rs.vector, rs.vector);
+
+                // 0x00304B00..0x00304BA4: final direction multiply.
+                for (s32 i = 0; i < 3; ++i) {
+                    rs.color[i] = dir[i];
+                }
+                rs.color[3] = 0.0f;
+                Transform4(rs.matrix, rs.color, rs.color);
+
+                // 0x00304BA4..0x00304C10: normalize the delta between the
+                // transformed direction and the cross-section direction,
+                // then convert its length to the per-sample step.
+                f32 sample_delta[3] = {
+                    rs.color[0] - rs.scratch[0],
+                    rs.color[1] - rs.scratch[1],
+                    rs.color[2] - rs.scratch[2],
+                };
+                Normalize3(sample_delta);
+                const f32 length = std::sqrt(
+                    rs.color[0] * rs.color[0] +
+                    rs.color[1] * rs.color[1] +
+                    rs.color[2] * rs.color[2]);
+                const f32 sample_step =
+                    func_00361074(length) * 0.024543693f;    // pi/128
+                previous_length = length;
+                (void)previous_length;
+
+                // 0x00304C14..0x00304D74: five transformed history points.
                 TrailSample* const sample =
                     reinterpret_cast<TrailSample*>(history);
-                sample->position[0] = points[0] + rs.scratch[0] * accumulated;
-                sample->position[1] = points[1] + rs.scratch[1] * accumulated;
-                sample->position[2] = points[2] + rs.scratch[2] * accumulated;
-                sample->w = cs * sn * radial;
+                for (s32 k = 0; k < 5; ++k) {
+                    const f32 step = accum[k] * sample_step;
+                    const f32 scale = offsets[k] + step + length;
+                    offsets[k] = step;
+
+                    sample->points[k][0] = points[k * 3 + 0] +
+                                           rs.scratch[0] * scale;
+                    sample->points[k][1] = points[k * 3 + 1] +
+                                           rs.scratch[1] * scale;
+                    sample->points[k][2] = points[k * 3 + 2] +
+                                           rs.scratch[2] * scale;
+                    accum[k] = step;
+                    (void)initial_twist;
+                    (void)twist;
+                }
             }
         }
 

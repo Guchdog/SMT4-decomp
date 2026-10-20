@@ -179,12 +179,12 @@ struct MazeGenWork {
     s32 path_count;                     // +0x24C: `str r0,[fp,#0x24c]`
     u8  ready;                          // +0x250: `strb r0,[sb,#0x250]`
     u8  pad_251[0x03];                  // +0x251..+0x254
-    s32 type_count[5];                  // +0x254..+0x268: maximum cell count
-                                        //   per wall type over eight angles
-    s32 depth;                          // +0x268: `str r1,[sb,#0x268]`
-    u32 model[5];                       // +0x26C..+0x280: model handles
-    u8  pad_280[0x04];                  // +0x280..+0x284
-    void* instances[5][0x40];           // +0x284: type stride 0x100
+    s32 type_count[6];                  // +0x254..+0x26C: maximum cell count
+                                        //   per wall type over eight angles;
+                                        //   slot 5 is set to 2 (or carved+2)
+                                        //   at 0x001AC80C..0x001AC838
+    u32 model[6];                       // +0x26C..+0x284: model handles
+    void* instances[6][0x40];           // +0x284: type stride 0x100
                                         //   (`add r6,sb,r7,lsl #8`, 0x001AC8A8)
 };
 static_assert(offsetof(MazeGenWork, points) == 0x100);
@@ -195,7 +195,6 @@ static_assert(offsetof(MazeGenWork, direction) == 0x248);
 static_assert(offsetof(MazeGenWork, path_count) == 0x24C);
 static_assert(offsetof(MazeGenWork, ready) == 0x250);
 static_assert(offsetof(MazeGenWork, type_count) == 0x254);
-static_assert(offsetof(MazeGenWork, depth) == 0x268);
 static_assert(offsetof(MazeGenWork, model) == 0x26C);
 static_assert(offsetof(MazeGenWork, instances) == 0x284);
 
@@ -251,7 +250,8 @@ struct UiPartSource {
     u8  pad_00[0x10];                   // +0x00..+0x10
     f32 orientation[4];                 // +0x10..+0x20
     u32 field_20;                       // +0x20: `ldr r2,[r6,#0x20]`
-    f32 field_24;                       // +0x24: `vldr s1,[r6,#0x24]`
+    u32 field_24;                       // +0x24: `ldr s1,[r6,#0x24]` then
+                                        //   `vcvt.f32.u32` (0x002E4C24/48)
     f32 field_28;                       // +0x28: `vldr s0,[r6,#0x28]`
     u8  pad_2c[0x40];                   // +0x2C..+0x6C
     f32 field_6c;                       // +0x6C: `vldr s1,[r6,#0x6c]`
@@ -433,16 +433,12 @@ static_assert(offsetof(TrailEntry, angle_a) == 0x1C);
 static_assert(offsetof(TrailEntry, offset_c) == 0x2C);
 static_assert(sizeof(TrailEntry) == 0x30);
 
-/** One 0x3C-byte history sample written by engine_func_00304164. */
+/** One 0x3C-byte history record: five transformed cross-section points.
+ *  The segment loop stores three floats per point at r6=r4+k*12
+ *  (0x00304D5C..0x00304D6C), i.e. 5*12 bytes per record. */
 struct TrailSample {
-    f32 position[3];                    // +0x00..+0x0C
-    f32 w;                              // +0x0C: `vstr s3,[r1,#0xc]`
-    s32 index;                          // +0x10: `str ip,[r0,#0x10]!`
-                                        //   with ip=-1 (0x00304B5C)
-    u8  pad_14[0x28];                   // +0x14..+0x3C
+    f32 points[5][3];                   // +0x00..+0x3C
 };
-static_assert(offsetof(TrailSample, position) == 0x00);
-static_assert(offsetof(TrailSample, index) == 0x10);
 static_assert(sizeof(TrailSample) == 0x3C);
 
 /** Owner of the trail builder (argument object). */
