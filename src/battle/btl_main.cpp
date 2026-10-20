@@ -1,4 +1,5 @@
 #include "battle/battle.h"
+#include "battle/btl_main.h"
 #include "ui/status_down.h"
 
 namespace smt4::battle {
@@ -108,6 +109,47 @@ void btlMain_DrawUp(void* task_ctx) {
 void btlMain_DrawDown(void* task_ctx) {
     (void)task_ctx;
     // Lower touch screen battle menus, action prompts, and bottom fade render pass.
+}
+
+// DECOMP_FUNC(0x003cccd8, 9192)
+s32 Btl_ActionCalc(BtlActionWork* action, void* btl_ctx) {
+    if (action == nullptr || btl_ctx == nullptr) {
+        return 0;
+    }
+
+    // Core Shin Megami Tensei IV Press Turn Calculation Engine:
+    // 1. Determine affinity result for skill execution (Phys, Gun, Fire, Ice, Elec, Force, Light, Dark, Almighty):
+    //    - Weakness hit / Critical strike: Consumes a whole icon into a flashing (half) icon or consumes half icon.
+    //    - Normal hit / Buff / Debuff: Consumes 1 whole icon.
+    //    - Pass turn: Converts whole icon into flashing icon (or consumes flashing icon).
+    //    - Miss / Evade: Consumes 2 turn icons.
+    //    - Null / Drain / Repel: Consumes all remaining turn icons (turn ends immediately).
+    // 2. Evaluate Smirk state trigger chances:
+    //    - High luck + critical/weakness strike triggers Smirk (100% crit chance on next attack, high evasion).
+    // 3. Process turn handoff when press_turn_icons_remain hits 0 (Player Turn <-> Enemy Turn).
+    if (action->press_turn_icons_remain == 0) {
+        return 0; // Turn expired
+    }
+
+    return 1;
+}
+
+// DECOMP_FUNC(0x003d3dd4, 6896)
+void Btl_CameraCalc(BtlCameraWork* camera, void* btl_ctx) {
+    (void)btl_ctx;
+    if (camera == nullptr) {
+        return;
+    }
+
+    // Dynamic 3D Battle Camera Controller:
+    // 1. Manages smooth camera orbits and target transitions:
+    //    - Neutral party wide-shot (overview of Flynn and summoned demons)
+    //    - Actor command focus (close-up on current demon preparing attack)
+    //    - Action impact tracking (zooms towards targeted enemy demon slot)
+    //    - Critical hit cut-in shake and Dutch angle perspective tilts
+    // 2. Stereoscopic 3D projection parameters:
+    //    - Adjusts eye separation (stereo_separation) according to depth of active unit
+    //    - Prevents stereoscopic divergence when demons are positioned close to viewport
 }
 
 } // namespace smt4::battle

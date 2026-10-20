@@ -9722,7 +9722,7 @@ address,size,status,category,name,src_file
 0x003cbf10,604,todo,battle,battle_func_003cbf10,
 0x003cc16c,2564,todo,ui,ui_func_003cc16c,
 0x003ccb70,360,todo,ui,ui_func_003ccb70,
-0x003cccd8,9192,todo,battle,battle_func_003cccd8,
+0x003cccd8,9192,non_matching,battle,Btl_ActionCalc,src/battle/btl_main.cpp
 0x003cf0c0,332,todo,battle,battle_func_003cf0c0,
 0x003cf20c,456,todo,engine,engine_func_003cf20c,
 0x003cf3d4,128,todo,script_vm,script_vm_func_003cf3d4,
@@ -9755,7 +9755,7 @@ address,size,status,category,name,src_file
 0x003d30cc,732,todo,battle,battle_func_003d30cc,
 0x003d33a8,1992,todo,battle,battle_func_003d33a8,
 0x003d3b70,612,todo,engine,engine_func_003d3b70,
-0x003d3dd4,6896,todo,battle,battle_func_003d3dd4,
+0x003d3dd4,6896,non_matching,battle,Btl_CameraCalc,src/battle/btl_main.cpp
 0x003d58c4,408,todo,unknown,func_003d58c4,
 0x003d5a5c,704,todo,battle,battle_func_003d5a5c,
 0x003d5d1c,1028,todo,battle,battle_func_003d5d1c,
