@@ -1813,7 +1813,7 @@ address,size,status,category,name,src_file
 0x00191730,1076,todo,battle,battle_func_00191730,
 0x00191b64,400,todo,script_vm,script_vm_func_00191b64,
 0x00191cf4,440,todo,camp,camp_func_00191cf4,
-0x00191eac,208,todo,ui,saveLoadUI_func_00191eac,
+0x00191eac,208,non_matching,ui,saveLoadUI_Init,src/ui/save_load.cpp
 0x00191f7c,192,todo,battle,battle_func_00191f7c,
 0x0019203c,32,todo,engine,engine_func_0019203c,
 0x0019205c,268,todo,camp,camp_func_0019205c,
@@ -2090,7 +2090,7 @@ address,size,status,category,name,src_file
 0x001c3ed4,18660,todo,script_vm,script_vm_func_001c3ed4,
 0x001c87b8,32,todo,unknown,func_001c87b8,
 0x001c87d8,420,todo,script_vm,script_vm_func_001c87d8,
-0x001c897c,7048,todo,ui,saveLoadUI_func_001c897c,
+0x001c897c,7048,non_matching,ui,saveLoadUI_DrawMain,src/ui/save_load.cpp
 0x001ca504,284,todo,unknown,func_001ca504,
 0x001ca620,40,todo,engine,engine_func_001ca620,
 0x001ca648,8908,non_matching,ui,StatusDown_CalcTaskCallback,src/ui/status_down.cpp
@@ -2507,7 +2507,7 @@ address,size,status,category,name,src_file
 0x00202050,160,todo,engine,engine_func_00202050,
 0x002020f0,1772,todo,engine,engine_func_002020f0,
 0x002027dc,372,non_matching,ui,RunWin_Init,src/ui/window.cpp
-0x00202950,1256,todo,ui,saveLoadUI_func_00202950,
+0x00202950,1256,non_matching,ui,saveLoadUI_Calc,src/ui/save_load.cpp
 0x00202e38,288,todo,ui,ui_func_00202e38,
 0x00202f58,288,todo,unknown,func_00202f58,
 0x00203078,288,todo,unknown,func_00203078,
@@ -4056,7 +4056,7 @@ address,size,status,category,name,src_file
 0x0026b844,16,todo,ui,ui_func_0026b844,
 0x0026b854,16,todo,ui,ui_func_0026b854,
 0x0026b864,16,todo,ui,ui_func_0026b864,
-0x0026b874,304,todo,ui,SaveLoadProcess_func_0026b874,
+0x0026b874,304,non_matching,ui,SaveLoadProcess_Init,src/ui/save_load.cpp
 0x0026b9a4,72,todo,ui,ui_func_0026b9a4,
 0x0026b9ec,64,todo,ui,ui_func_0026b9ec,
 0x0026ba2c,508,todo,camp,camp_func_0026ba2c,
@@ -6343,8 +6343,8 @@ address,size,status,category,name,src_file
 0x002ef814,16,todo,script_vm,script_vm_func_002ef814,
 0x002ef824,108,todo,unknown,func_002ef824,
 0x002ef890,284,todo,camp,camp_func_002ef890,
-0x002ef9ac,420,todo,ui,SaveLoadProcess_func_002ef9ac,
-0x002efb50,456,todo,ui,SaveLoadProcess_func_002efb50,
+0x002ef9ac,420,non_matching,ui,SaveLoadProcess_Step,src/ui/save_load.cpp
+0x002efb50,456,non_matching,ui,SaveLoadProcess_Write,src/ui/save_load.cpp
 0x002efd18,200,todo,engine,engine_func_002efd18,
 0x002efde0,44,non_matching,ui,StatusDown_GetPartyMaxIndex,src/ui/status_down.cpp
 0x002efe0c,32,non_matching,ui,StatusDown_IsNotState4,src/ui/status_down.cpp
@@ -7157,8 +7157,8 @@ address,size,status,category,name,src_file
 0x00322ce0,16,todo,engine,engine_func_00322ce0,
 0x00322cf0,76,todo,engine,engine_func_00322cf0,
 0x00322d3c,52,todo,engine,engine_func_00322d3c,
-0x00322d70,412,todo,ui,SaveLoadProcess_func_00322d70,
-0x00322f0c,304,todo,ui,SaveLoadProcess_func_00322f0c,
+0x00322d70,412,non_matching,ui,SaveLoadProcess_Read,src/ui/save_load.cpp
+0x00322f0c,304,non_matching,ui,SaveLoadProcess_Close,src/ui/save_load.cpp
 0x0032303c,40,non_matching,ui,StatusDown_GetSelectedPartyIndex,src/ui/status_down.cpp
 0x00323064,112,todo,battle,battle_func_00323064,
 0x003230d4,132,todo,battle,battle_func_003230d4,
