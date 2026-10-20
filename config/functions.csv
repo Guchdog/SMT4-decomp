@@ -2777,7 +2777,7 @@ address,size,status,category,name,src_file
 0x0021bb08,508,todo,script_vm,script_vm_func_0021bb08,
 0x0021bd04,160,todo,script_vm,script_vm_func_0021bd04,
 0x0021bda4,2036,todo,script_vm,script_vm_func_0021bda4,
-0x0021c598,5420,todo,battle,battle_func_0021c598,
+0x0021c598,5420,non_matching,battle,Btl_StatusEffectCalc,src/battle/battle_ailment.cpp
 0x0021dac4,744,todo,engine,engine_func_0021dac4,
 0x0021ddac,112,todo,script_vm,script_vm_func_0021ddac,
 0x0021de1c,164,todo,script_vm,script_vm_func_0021de1c,
@@ -9665,7 +9665,7 @@ address,size,status,category,name,src_file
 0x003c60d8,332,todo,ui,ui_func_003c60d8,
 0x003c6224,940,todo,battle,battle_func_003c6224,
 0x003c65d0,324,todo,battle,battle_func_003c65d0,
-0x003c6714,4724,todo,battle,battle_func_003c6714,
+0x003c6714,4724,non_matching,battle,Btl_DemonNegotiationCalc,src/battle/battle_scout.cpp
 0x003c7988,268,todo,battle,battle_func_003c7988,
 0x003c7a94,1048,todo,script_vm,script_vm_func_003c7a94,
 0x003c7eac,108,todo,script_vm,script_vm_func_003c7eac,
