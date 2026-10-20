@@ -1788,7 +1788,7 @@ address,size,status,category,name,src_file
 0x0018a004,732,todo,battle,battle_func_0018a004,
 0x0018a2e0,2204,todo,camp,camp_func_0018a2e0,
 0x0018ab7c,44,todo,engine,engine_func_0018ab7c,
-0x0018aba8,696,todo,engine,mapIf_func_0018aba8,
+0x0018aba8,696,non_matching,engine,mapIf_func_0018aba8,src/engine/map_runtime.cpp
 0x0018ae60,248,todo,engine,engine_func_0018ae60,
 0x0018af58,20,todo,engine,engine_func_0018af58,
 0x0018af6c,568,todo,ui,ui_func_0018af6c,
@@ -1938,7 +1938,7 @@ address,size,status,category,name,src_file
 0x001a83c8,488,non_matching,battle,btlUI_Init,src/battle/btl_ui.cpp
 0x001a85b0,140,todo,script_vm,script_vm_func_001a85b0,
 0x001a863c,744,todo,engine,engine_func_001a863c,
-0x001a8924,552,todo,engine,mapEnemy_func_001a8924,
+0x001a8924,552,non_matching,engine,mapEnemy_func_001a8924,src/engine/map_runtime.cpp
 0x001a8b4c,24,todo,script_vm,script_vm_func_001a8b4c,
 0x001a8b64,140,todo,engine,engine_func_001a8b64,
 0x001a8bf0,636,todo,script_vm,script_vm_func_001a8bf0,
@@ -2034,7 +2034,7 @@ address,size,status,category,name,src_file
 0x001b427c,112,todo,script_vm,script_vm_func_001b427c,
 0x001b42ec,136,todo,unknown,func_001b42ec,
 0x001b4374,156,todo,engine,engine_func_001b4374,
-0x001b4410,440,todo,engine,mapMain_func_001b4410,
+0x001b4410,440,non_matching,engine,mapMain_func_001b4410,src/engine/map_runtime.cpp
 0x001b45c8,24,todo,unknown,func_001b45c8,
 0x001b45e0,132,todo,script_vm,script_vm_func_001b45e0,
 0x001b4664,440,todo,engine,engine_func_001b4664,
@@ -2130,7 +2130,7 @@ address,size,status,category,name,src_file
 0x001d2744,644,non_matching,battle,btlUnit_Init,src/battle/btl_ui.cpp
 0x001d29c8,240,non_matching,battle,btlUnit_CheckPartyActive,src/battle/btl_ui.cpp
 0x001d2ab8,92,todo,engine,engine_func_001d2ab8,
-0x001d2b14,760,todo,engine,lmapMain_func_001d2b14,
+0x001d2b14,760,non_matching,engine,lmapMain_func_001d2b14,src/engine/map_runtime.cpp
 0x001d2e0c,24,todo,unknown,func_001d2e0c,
 0x001d2e24,40,todo,script_vm,script_vm_func_001d2e24,
 0x001d2e4c,208,todo,script_vm,script_vm_func_001d2e4c,
@@ -2424,7 +2424,7 @@ address,size,status,category,name,src_file
 0x001f9c3c,644,todo,unknown,func_001f9c3c,
 0x001f9ec0,1332,todo,battle,battle_func_001f9ec0,
 0x001fa3f4,20,todo,battle,battle_func_001fa3f4,
-0x001fa408,468,todo,engine,mapEpl_func_001fa408,
+0x001fa408,468,non_matching,engine,mapEpl_func_001fa408,src/engine/map_runtime.cpp
 0x001fa5dc,56,todo,script_vm,script_vm_func_001fa5dc,
 0x001fa614,120,todo,script_vm,script_vm_func_001fa614,
 0x001fa68c,48,todo,script_vm,script_vm_func_001fa68c,
@@ -4278,7 +4278,7 @@ address,size,status,category,name,src_file
 0x0027eda0,88,todo,camp,camp_func_0027eda0,
 0x0027edf8,24,todo,camp,camp_func_0027edf8,
 0x0027ee10,92,todo,script_vm,script_vm_func_0027ee10,
-0x0027ee6c,552,todo,engine,mapDepart_func_0027ee6c,
+0x0027ee6c,552,non_matching,engine,mapDepart_func_0027ee6c,src/engine/map_runtime.cpp
 0x0027f094,120,todo,engine,engine_func_0027f094,
 0x0027f10c,48,todo,script_vm,script_vm_func_0027f10c,
 0x0027f13c,20,todo,script_vm,script_vm_func_0027f13c,
@@ -4562,7 +4562,7 @@ address,size,status,category,name,src_file
 0x00291b04,228,todo,script_vm,script_vm_func_00291b04,
 0x00291be8,84,todo,script_vm,script_vm_func_00291be8,
 0x00291c3c,112,todo,script_vm,script_vm_func_00291c3c,
-0x00291cac,412,todo,engine,naviMain_func_00291cac,
+0x00291cac,412,non_matching,engine,naviMain_func_00291cac,src/engine/map_runtime.cpp
 0x00291e48,124,todo,camp,camp_func_00291e48,
 0x00291ec4,520,todo,script_vm,script_vm_func_00291ec4,
 0x002920cc,24,todo,script_vm,script_vm_func_002920cc,
@@ -6490,7 +6490,7 @@ address,size,status,category,name,src_file
 0x002f61a4,32,todo,unknown,func_002f61a4,
 0x002f61c4,208,todo,camp,camp_func_002f61c4,
 0x002f6294,60,todo,engine,engine_func_002f6294,
-0x002f62d0,552,todo,engine,3dEventOpening_func_002f62d0,
+0x002f62d0,552,non_matching,engine,3dEventOpening_func_002f62d0,src/engine/map_runtime.cpp
 0x002f64f8,44,todo,camp,camp_func_002f64f8,
 0x002f6524,44,non_matching,ui,StatusDown_IsState7,src/ui/status_down.cpp
 0x002f6550,132,non_matching,ui,StatusDown_Destroy,src/ui/status_down.cpp
@@ -7493,7 +7493,7 @@ address,size,status,category,name,src_file
 0x0033b9d4,152,todo,script_vm,script_vm_func_0033b9d4,
 0x0033ba6c,188,todo,script_vm,script_vm_func_0033ba6c,
 0x0033bb28,108,todo,script_vm,script_vm_func_0033bb28,
-0x0033bb94,564,todo,engine,NkmGrowEvent_func_0033bb94,
+0x0033bb94,564,non_matching,engine,NkmGrowEvent_func_0033bb94,src/engine/map_runtime.cpp
 0x0033bdc8,684,todo,script_vm,script_vm_func_0033bdc8,
 0x0033c074,80,todo,script_vm,script_vm_func_0033c074,
 0x0033c0c4,560,todo,script_vm,script_vm_func_0033c0c4,
