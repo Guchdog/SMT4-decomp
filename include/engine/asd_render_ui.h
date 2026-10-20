@@ -564,13 +564,16 @@ static_assert(sizeof(Npc2dEvent) == 0x98);       // `mov r3,#0x98` (0x00327658)
  */
 struct Filter4PolySource {
     u8 pad_00[0x1C];
-    u32 count;                      // +0x1C: `ldr r0,[r0,#0x1c]` (0x0034ba50)
-    u8 pad_20[0x14];
+    u32 count;                      // +0x1C: `ldr r2,[r7,#0x1c]` (0x0034b9c8)
+    u8 pad_20[0x0C];
+    u32 field_2c;                   // +0x2C: `ldr r0,[r0,#0x2c]` (0x0034ba18)
+    u8 pad_30[0x04];
     u32 field_34;                   // +0x34: `ldm r7,{r1,r2,r3}` (0x0034ba9c)
     u32 field_38;
     u32 field_3c;
 };
 static_assert(offsetof(Filter4PolySource, count) == 0x1C);
+static_assert(offsetof(Filter4PolySource, field_2c) == 0x2C);
 static_assert(offsetof(Filter4PolySource, field_34) == 0x34);
 static_assert(sizeof(Filter4PolySource) == 0x40);
 

@@ -138,7 +138,7 @@ void* ResolveRelativeWord(const void* base, u32 offset)
  *
  * 0x002D5AB4..0x002D5B40 (descriptor 0), 0x002D5C28..0x002D5D00 (descriptor 1)
  * and 0x002BC5AC..0x002BC630 (layer pair) contain the same six-way compare:
- * 0x81A5 -> 2 bytes/px, 0x8995 -> 4 bytes/px, 0x8E07 -> 2 bytes/px,
+ * 0x81A5 -> 2 bytes/px, 0x88F0 -> 4 bytes/px, 0x8D62 -> 2 bytes/px,
  * 0x8056 -> 2 bytes/px, 0x8057 -> 2 bytes/px, 0x8058 -> 4 bytes/px.  Only
  * 0x8058 also sets the secondary word to 2 (r3/fp/sb = 2).
  */
@@ -156,11 +156,11 @@ AsdGxFormatInfo AsdGxClassify(u32 code, u32 pixels)
     case 0x81A5:                                   // 0x002D5AE0
         info.stride = pixels * 2;
         break;
-    case 0x8995:                                   // 0x002D5B24
+    case 0x88F0:                                   // 0x002D5B18 (code - 0x81A5 - 0x74B)
         info.code = 3;
         info.stride = pixels * 4;
         break;
-    case 0x8E07:                                   // 0x002D5B34
+    case 0x8D62:                                   // 0x002D5B2C (code - 0x88F0 - 0x472)
         info.code = 3;
         info.stride = pixels * 2;
         break;
@@ -187,8 +187,11 @@ AsdGxFormatInfo AsdGxClassify(u32 code, u32 pixels)
  * Format/parameter switch at 0x002D5A18..0x002D5AB4.
  *
  * 0x6752 and 0x1908 select the 0x8058/0x8056/0x8057 trio through the parameter;
- * 0x1907 and 0x6754 select 0x8D62 for parameter 0x8363; 0x190A, 0x6703, 0x6758
+ * 0x1907 and 0x6754 select 0x8D62 for parameter 0x8363; 0x190A, 0x6700, 0x6758
  * and 0x6759 all select 0x8056.  Every other pair leaves r0 at zero.
+ *
+ * 0x6700 is `0x1907 + 0x4DF9` because 0x002D5A50 subtracts from the
+ * `r8 - 0x1907` value, not from the 0x190A value.
  */
 u32 AsdGxFormatCode(u32 format, u32 param)
 {
@@ -201,7 +204,7 @@ u32 AsdGxFormatCode(u32 format, u32 param)
     if (format == 0x1907 || format == 0x6754) {
         return param == 0x8363 ? 0x8D62 : 0;       // 0x002D5AA8
     }
-    if (format == 0x190A || format == 0x6703 || format == 0x6758 ||
+    if (format == 0x190A || format == 0x6700 || format == 0x6758 ||
         format == 0x6759) {
         return 0x8056;                             // 0x002D5A5C / 0x002D5AB0
     }
@@ -634,8 +637,10 @@ u32 AsdMdlManager_func_002b2928(AsdMdlManagerWork* manager)
         *reinterpret_cast<void**>(static_cast<u8*>(scene) + 4); // 0x002B2940
     if (scene_data == nullptr)
         return 0;
+    // `ldr r0,[r7,#8]` -> scene; `ldr r1,[r0,#4]` is only null-checked; the
+    // model count is read from scene+0x28 (`ldr r0,[r0,#0x28]`, 0x002B294C).
     const s32 model_count = *reinterpret_cast<const s32*>(
-        static_cast<const u8*>(scene_data) + 0x28);           // 0x002B294C
+        static_cast<const u8*>(scene) + 0x28);
     if (model_count <= 0)
         return 0;
 
@@ -769,8 +774,9 @@ void Npc2d_func_00327634(u32 id)
         AsdRow_LoadNow(0x32, 0);                              // 0x003277E4
     }
 
-    // 0x00327764..0x00327788: calc task with user words 0x001DFB60 /
-    // 0x002DB8C4.
+    // 0x00327764..0x00327788: +0x18 = 0.3 and the calc task with user words
+    // 0x001DFB60 / 0x002DB8C4.
+    work->field_18 = 0.3f;                                    // 0x0032776C..0x00327774
     AsdTask_CreateCalc("EVE_2dTex", 2, 0, 0,
                        TaskCallback(0x001DFB60), 0x002DB8C4,
                        TaskUserData(work));
@@ -831,16 +837,19 @@ Filter4Poly* Filter4Poly_func_0034b920(Filter4PolySource* source,
     battle_func_0023b5f8(filter, flags, source->count);       // 0x0034B9D4
 
     filter->vertices = AsdMem_AllocAlign(0x100, 0x100, 0, 0x50, 1); // 0x0034B9FC
+    // The block count is the word at source+0x2C (0x0034BA14..0x0034BA30),
+    // not the +0x1C word handed to 0x0023B5F8 at 0x0034B9C8.
     filter->blocks = AsdMem_AllocAlign(
-        0x100, 0x100, 0, source->count * 0x50, 1);            // 0x0034BA30
+        0x100, 0x100, 0, source->field_2c * 0x50, 1);         // 0x0034BA30
 
     battle_func_0034bad0(filter);                             // 0x0034BA3C
 
     using Slot4 = void (*)(void*);
     reinterpret_cast<Slot4>(filter->vtable[4])(filter);       // 0x0034BA4C
 
-    for (u32 i = 0; i < source->count; ++i) {                 // 0x0034BA50..0x0034BA90
-        void* const block = static_cast<u8*>(filter->blocks) + i * 0x50;
+    for (s32 i = 0; i < static_cast<s32>(source->field_2c); ++i) { // 0x0034BA50..0x0034BA90
+        void* const block =
+            static_cast<u8*>(filter->blocks) + static_cast<u32>(i) * 0x50;
         const f32* const matrix = battle_func_002a7f04();     // 0x0034BA70
         Filter_Submit(block, matrix);                         // 0x0034BA7C
     }
@@ -1026,7 +1035,7 @@ void WhisperEffect_func_002f6734(u32 id)
  *
  * The camera block is the same 0x508 projection used by 3dEventOpening.cpp:
  * SetClipRange(30, 1), LookAt(eye, target, up) and SetPerspective(30, 1,
- * 10000, 1/3) run twice (0x002FC348..0x002FC360 and 0x002FC490..0x002FC4D8).
+ * 10000, 1.6666666) run twice (0x002FC348..0x002FC360 and 0x002FC490..0x002FC4D8).
  * Names come from the 0x1C-entry table at 0x0043DFD8; the first camera's model
  * part is released from index `[[[[model+4]+8]+8]+0x10] - 1` downwards
  * (0x002FC44C..0x002FC480).
@@ -1057,7 +1066,7 @@ void* BustupCutAnim_func_002fc260()
     work->perspective[0] = 30.0f;                             // 0x002FC320
     work->perspective[1] = 1.0f;
     work->perspective[2] = 10000.0f;                          // 0x002FC310
-    work->perspective[3] = 0.33333334f;                       // 0x002FC344
+    work->perspective[3] = 1.6666666f;                        // 0x002FC344 (0x3FD55555)
     work->field_540 = 0;                                      // 0x002FC30C
 
     AsdCamera_SetClipRange(&work->projection, 30.0f, 1.0f);   // 0x002FC348
@@ -1129,20 +1138,21 @@ void* BustupCutAnim_func_002fc260()
 
 /**
  * Creates the bustup texture loader when event bit 0x522 is clear (or when the
- * NPC row has no index-1 entry).
+ * NPC row has an index-1 entry).
  *
- * The mode argument selects the row-key block at 0x0030ACD0..0x0030ACE8.  The
- * `r5` byte carried into +0x7C/+0x30 is zero on the mode != 0 path
- * (0x0030ACC0) but remains the low byte of `id` on the mode == 0 path; the
- * scene-busy exit skips the +0x7C store but still writes +0x30.
+ * The mode argument selects the row-key block at 0x0030ACD0..0x0030ACE8.  Both
+ * paths reach `mov r5,#0` at 0x0030ACC0, so the byte stored at +0x7C/+0x30 is
+ * always zero; the scene-busy exit skips the +0x7C store but still writes +0x30.
  *
  * DECOMP_FUNC(0x0030ac20, 412)
  */
 void BustupTex_func_0030ac20(u32 id, u32 mode)
 {
-    if (Flag_CheckEventBit(0x522)) {                          // 0x0030AC34..0x0030AC3C
-        if (AsdTable_GetRowEntry(AsdTable_FindNpcRow(id), 1) != nullptr)
-            return;                                           // 0x0030AC50..0x0030AC54
+    // 0x0030AC34..0x0030AC54: when the event bit is set, a null index-1 row
+    // entry returns immediately (`cmp r0,#0; beq 0x30ad8c`).
+    if (Flag_CheckEventBit(0x522)) {
+        if (AsdTable_GetRowEntry(AsdTable_FindNpcRow(id), 1) == nullptr)
+            return;
     }
 
     BustupTexWork* const work = static_cast<BustupTexWork*>(
@@ -1154,11 +1164,11 @@ void BustupTex_func_0030ac20(u32 id, u32 mode)
     work->field_18 = -1;                                      // 0x0030AC9C
     work->row = AsdTable_FindNpcRow(id);                      // 0x0030ACA0..0x0030ACAC
 
-    // r5 carries the byte stored at +0x7C/+0x30 (see the body comment).
-    u8 pending = static_cast<u8>(id);
+    // Both mode paths pass through `mov r5,#0` at 0x0030ACC0, so the byte
+    // stored at +0x7C/+0x30 is always zero.
+    const u8 pending = 0;
 
     if (mode != 0) {
-        pending = 0;                                          // 0x0030ACC0
         if (AsdScene_LoadMode() != 0) {                       // 0x0030ACB8..0x0030ACC8
             work->field_7c = 1;
             goto finish;
