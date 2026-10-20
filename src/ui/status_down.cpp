@@ -142,7 +142,6 @@ extern "C" {
     s32   ItemSort_ByNameDesc(const void*, const void*);                            // 0x002dca98
 
     extern const u8 g_StatusDownSpriteTable[];                                      // 0x00407d58
-    extern const void* g_CampMessageBundle;                                         // 0x00433158
     extern u8* g_AsdGpuState;                                                       // 0x0044ea00
 }
 

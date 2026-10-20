@@ -48,4 +48,14 @@ extern "C" {
     // 0x002C3B48 (64 B): zero-fill of a whole number of words.  Reached from
     // AsdModel (work-buffer clear) and AsdFile/AsdMemory (heap windows).
     void  AsdWork_Zero(void* ptr, u32 size);
+
+    // 0x0024DFA4 (184 B): resets `object` (r0 is consumed: `movs r5,r0` at
+    // 0x0024DFA8, null check at 0x0024DFB0) and returns it.  Reached from
+    // AsdModel (0x002FD520) and EffectEditor (0x00242588).
+    void* AsdUiObject_CreateAndReset(void* object);
+
+    // 0x00433158: camp / NPC row-bundle pointer.  The listing loads the value
+    // stored here (`ldr r0,[r5]`, 0x002FE088) before calling the row helpers,
+    // so the slot itself is a non-const pointer.
+    extern void* g_CampMessageBundle;
 }

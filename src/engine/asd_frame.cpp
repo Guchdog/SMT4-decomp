@@ -67,7 +67,6 @@ extern "C" {
     void  ScriptVm_LoadTable(const char* name, void* out, u32 value);      // 0x00297704
 
     // EffectEditor plumbing (shared names with src/engine/asd_model.cpp)
-    void* AsdUiObject_CreateAndReset(void* object);                        // 0x0024dfa4
     void  AsdUiObject_Update(void* object);                                // 0x0024df5c
     int   UiInput_Trigger2(u32 id);                                        // 0x002bffbc
     void  UiInput_Reset(u32 id);                                           // 0x0024df94
@@ -86,9 +85,6 @@ extern "C" {
     void  EffParts_SetValue(void* part, const void* value, u32 size,
                             u32 key);                                      // 0x0025cc14
     void  AsdDrawDesc_Init(void* desc);                                    // 0x002a3ff8
-
-    // Table bundle shared with the camp/status TUs.
-    extern void* g_CampMessageBundle;                                      // 0x00433158
 }
 
 namespace {

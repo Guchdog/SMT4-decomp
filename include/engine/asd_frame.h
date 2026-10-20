@@ -110,7 +110,8 @@ struct Npc2dSprite {
     f32 field_28;                       // +0x28: 0.25 (0x0025242C) / 0.0 (0x002FE004)
     u8  pad_2c[0x04];                   // +0x2C..+0x30
     u8  field_30;                       // +0x30: `strb r0,[r4,#0x30]` (0x00252440)
-    u8  pad_31[0x0B];                   // +0x31..+0x3C
+    u8  pad_31[0x07];                   // +0x31..+0x38
+    u32 field_38;                       // +0x38: `str r0,[r4,#0x38]` (0x002524C8 / 0x002861A4 / 0x0031BEC0)
     u32 field_3c;                       // +0x3C: table key 2/3 (0x002FE020 / 0x0031BE78)
     u32 field_40;                       // +0x40: row key (0x002FE05C / 0x0031BE94)
     s32 field_44;                       // +0x44: `mvn r0,#0` = -1 (0x0031BE5C)
@@ -129,6 +130,7 @@ static_assert(offsetof(Npc2dSprite, field_18) == 0x18);
 static_assert(offsetof(Npc2dSprite, field_1c) == 0x1C);
 static_assert(offsetof(Npc2dSprite, field_20) == 0x20);
 static_assert(offsetof(Npc2dSprite, field_30) == 0x30);
+static_assert(offsetof(Npc2dSprite, field_38) == 0x38);
 static_assert(offsetof(Npc2dSprite, field_3c) == 0x3C);
 static_assert(offsetof(Npc2dSprite, field_44) == 0x44);
 static_assert(offsetof(Npc2dSprite, field_48) == 0x48);

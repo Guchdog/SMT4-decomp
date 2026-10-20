@@ -81,7 +81,6 @@ extern "C" {
     void  UiText_Draw(u32 a0, u32 a1, u32 a2, const char* fmt, ...);       // 0x0024df14
     void  UiText_Format(char* buf, const char* fmt, ...);                  // 0x002be7fc
     void* AsdWork_Alloc(u32 a0, u32 a1, u32 a2, u32 size, u32 a4, u32 a5); // 0x002c34a4
-    void* AsdUiObject_CreateAndReset();                                    // 0x0024dfa4
     void  AsdUiObject_Update(void* obj);                                   // 0x0024df5c
     void  AsdPart_Close(void* part, s32 mode);                             // 0x00262bd4
     void  AsdPart_Release(void* part, s32 mode);                           // 0x00262c1c
@@ -1848,7 +1847,7 @@ void* EffectEditor_func_002fcd20() {
 
     void* current = ed.menu_current;
     if (ed.speed_mode == 0) {
-        current = AsdUiObject_CreateAndReset();
+        current = AsdUiObject_CreateAndReset(ed.menu_current);
         ed.menu_current = current;
     }
     if (current == reinterpret_cast<void*>(kEditorMenuPose)) {
