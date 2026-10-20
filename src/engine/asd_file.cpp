@@ -13,10 +13,6 @@ extern "C" {
     void* AsdMem_AllocAlign(u32 a0, u32 a1, u32 a2, u32 size, u32 flag);     // 0x002c54f0
     void  AsdMem_Free(void* ptr);                                           // 0x002c4360
 
-    // 0x002bd610 swaps r0/r1 and tail-calls memcpy 0x002c5ff4, so its first
-    // argument is the source and its second the destination.
-    void  AsdMem_CopyFrom(const void* src, void* dst, u32 size);            // 0x002bd610
-
     // Ordered block tree (key = node->start) and heap block allocator.
     void  AsdMemBlockTree_Insert(void* tree, void* node);                   // 0x002c38d4
     void  AsdMemBlock_Init(void* heap, u32 start, u32 size, u32 align);     // 0x002c3b1c
@@ -453,11 +449,11 @@ void AsdFile_func_00113d58()
                 }
                 *out = 0;                               // 0x00113f30
 
-                // 0x00113f3c..0x00113f4c: clear the handle words again.
-                file->field_0c = 0;
-                file->field_10 = 0;
-                file->field_04 = 0;
-                file->field_08 = 0;
+                // 0x00113f3c..0x00113f48: clear the handle words again.
+                file->field_10 = 0;                     // 0x00113f3c
+                file->field_14 = 0;                     // 0x00113f40
+                file->field_08 = 0;                     // 0x00113f44
+                file->field_0c = 0;                     // 0x00113f48
 
                 // 0x00113f4c: AsdFile_Open(&file->field_04, wide_path, 1).
                 const s32 open_result = AsdFile_Open(open_desc.handle_slot,

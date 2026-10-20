@@ -30,4 +30,13 @@ extern "C" {
 
     // 0x002BCF58 (116 B): aligned fast path reached from memcpy 0x002C5FF4.
     void  AsdMem_CopyLarge(void* dst, const void* src, u32 size);
+
+    // 0x002BD610 (16 B): swaps r0/r1 and tail-calls memcpy 0x002C5FF4, so the
+    // first argument is the source and the second the destination.
+    // Used by AsdModel (EPLSIGN header reads) and AsdSaveCommon (record split).
+    void  AsdMem_CopyFrom(const void* src, void* dst, u32 size);
+
+    // 0x002C3B48 (64 B): zero-fill of a whole number of words.  Reached from
+    // AsdModel (work-buffer clear) and AsdFile/AsdMemory (heap windows).
+    void  AsdWork_Zero(void* ptr, u32 size);
 }

@@ -41,7 +41,6 @@ extern "C" {
     void* AsdRes_Bind(void* obj, void* a1, void* a2);                      // 0x002c2cf0
     u32   AsdRes_BuildKey(void* out);                                      // 0x002c2be8
     int   AsdTag_Compare(const void* a, const void* b, u32 len);           // 0x002c1a48
-    void  AsdRaw_ReadHeader(const void* src, void* dst, u32 size);         // 0x002bd610
 
     // Effect parts / animation
     void* EffParts_Create(const void* entry);                              // 0x002a51dc
@@ -82,7 +81,6 @@ extern "C" {
     void  UiText_Draw(u32 a0, u32 a1, u32 a2, const char* fmt, ...);       // 0x0024df14
     void  UiText_Format(char* buf, const char* fmt, ...);                  // 0x002be7fc
     void* AsdWork_Alloc(u32 a0, u32 a1, u32 a2, u32 size, u32 a4, u32 a5); // 0x002c34a4
-    void  AsdWork_Zero(void* ptr, u32 size);                               // 0x002c3b48
     void* AsdUiObject_CreateAndReset();                                    // 0x0024dfa4
     void  AsdUiObject_Update(void* obj);                                   // 0x0024df5c
     void  AsdPart_Close(void* part, s32 mode);                             // 0x00262bd4
@@ -253,7 +251,7 @@ const u8* AsdFindEplEntry(const void* atbc, s32 outer_index, s32* out_chunk_coun
             return nullptr;
         }
         u8 header[0x10];
-        AsdRaw_ReadHeader(chunk, header, 0x10);
+        AsdMem_CopyFrom(chunk, header, 0x10);
         const u8* entry = chunk + 0x10;
         if (outer_index == walk) {
             return entry;
