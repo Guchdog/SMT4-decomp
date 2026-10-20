@@ -1799,7 +1799,7 @@ address,size,status,category,name,src_file
 0x0018b354,36,todo,unknown,func_0018b354,
 0x0018b378,36,todo,unknown,func_0018b378,
 0x0018b39c,708,todo,camp,camp_func_0018b39c,
-0x0018b660,536,todo,camp,Config_func_0018b660,
+0x0018b660,536,non_matching,camp,Config_func_0018b660,src/camp/title_flow.cpp
 0x0018b878,1756,todo,script_vm,script_vm_func_0018b878,
 0x0018bf54,132,todo,ui,ui_func_0018bf54,
 0x0018bfd8,20,todo,unknown,func_0018bfd8,
@@ -1850,7 +1850,7 @@ address,size,status,category,name,src_file
 0x00193e2c,832,todo,unknown,func_00193e2c,
 0x0019416c,2204,todo,script_vm,script_vm_func_0019416c,
 0x00194a08,948,todo,camp,camp_func_00194a08,
-0x00194dbc,648,todo,camp,PlayLog_func_00194dbc,
+0x00194dbc,648,non_matching,camp,PlayLog_func_00194dbc,src/camp/title_flow.cpp
 0x00195044,868,todo,camp,camp_func_00195044,
 0x001953a8,96,todo,engine,engine_func_001953a8,
 0x00195408,28,todo,script_vm,script_vm_func_00195408,
@@ -2154,7 +2154,7 @@ address,size,status,category,name,src_file
 0x001d3d40,22520,non_matching,script_vm,FlowScript_ExecuteOpcode,src/script/script_vm.cpp
 0x001d9538,908,stub,shop,shopMain_Proc,src/shop/shop.cpp
 0x001d98c4,5880,stub,ui,Ui_TerminalSceneRender,src/ui/terminal_ui.cpp
-0x001dafbc,668,todo,camp,tmnlMain_func_001dafbc,
+0x001dafbc,668,non_matching,camp,tmnlMain_func_001dafbc,src/camp/title_flow.cpp
 0x001db258,52,todo,battle,battle_func_001db258,
 0x001db28c,180,todo,ui,ui_func_001db28c,
 0x001db340,256,todo,engine,AsdCec_func_001db340,
@@ -2299,7 +2299,7 @@ address,size,status,category,name,src_file
 0x001ea808,264,non_matching,engine,soundTest_func_001ea808,src/engine/asd_sound.cpp
 0x001ea910,24,todo,unknown,func_001ea910,
 0x001ea928,1796,todo,script_vm,script_vm_func_001ea928,
-0x001eb02c,524,todo,camp,titleMain_func_001eb02c,
+0x001eb02c,524,non_matching,camp,titleMain_func_001eb02c,src/camp/title_flow.cpp
 0x001eb238,24,todo,unknown,func_001eb238,
 0x001eb250,92,todo,battle,battle_func_001eb250,
 0x001eb2ac,156,todo,script_vm,script_vm_func_001eb2ac,
@@ -2466,7 +2466,7 @@ address,size,status,category,name,src_file
 0x001ffa08,160,todo,engine,engine_func_001ffa08,
 0x001ffaa8,52,todo,engine,engine_func_001ffaa8,
 0x001ffadc,24,todo,camp,camp_func_001ffadc,
-0x001ffaf4,1068,todo,camp,CampCec_func_001ffaf4,
+0x001ffaf4,1068,non_matching,camp,CampCec_func_001ffaf4,src/camp/camp_cec.cpp
 0x001fff20,324,todo,script_vm,script_vm_func_001fff20,
 0x00200064,916,todo,camp,camp_func_00200064,
 0x002003f8,24,todo,camp,camp_func_002003f8,
@@ -5953,11 +5953,11 @@ address,size,status,category,name,src_file
 0x002d65e8,20,todo,nn_sdk,nn_sdk_func_002d65e8,
 0x002d65fc,160,todo,camp,camp_func_002d65fc,
 0x002d669c,240,todo,camp,camp_func_002d669c,
-0x002d678c,1356,todo,camp,CampCecEdit_func_002d678c,
+0x002d678c,1356,non_matching,camp,CampCecEdit_func_002d678c,src/camp/camp_cec.cpp
 0x002d6cd8,1516,todo,script_vm,script_vm_func_002d6cd8,
 0x002d72c4,304,todo,ui,ui_func_002d72c4,
 0x002d73f4,28,todo,camp,camp_func_002d73f4,
-0x002d7410,1012,todo,camp,CampCecView_func_002d7410,
+0x002d7410,1012,non_matching,camp,CampCecView_func_002d7410,src/camp/camp_cec.cpp
 0x002d7804,40,todo,camp,camp_func_002d7804,
 0x002d782c,144,todo,unknown,func_002d782c,
 0x002d78bc,544,todo,script_vm,script_vm_func_002d78bc,
@@ -6453,7 +6453,7 @@ address,size,status,category,name,src_file
 0x002f4a2c,120,todo,engine,engine_func_002f4a2c,
 0x002f4aa4,76,stub,battle,btlTargetSelect_DrawUp,src/battle/btl_target_select.cpp
 0x002f4af0,432,todo,script_vm,script_vm_func_002f4af0,
-0x002f4ca0,572,todo,camp,titleConfig_func_002f4ca0,
+0x002f4ca0,572,non_matching,camp,titleConfig_func_002f4ca0,src/camp/title_flow.cpp
 0x002f4edc,224,todo,script_vm,script_vm_func_002f4edc,
 0x002f4fbc,72,todo,camp,camp_func_002f4fbc,
 0x002f5004,28,todo,engine,engine_func_002f5004,
@@ -6471,7 +6471,7 @@ address,size,status,category,name,src_file
 0x002f59c8,356,todo,ui,BustupTex_func_002f59c8,
 0x002f5b2c,44,todo,unknown,func_002f5b2c,
 0x002f5b58,104,todo,engine,engine_func_002f5b58,
-0x002f5bc0,512,todo,camp,CampCecSetting_func_002f5bc0,
+0x002f5bc0,512,non_matching,camp,CampCecSetting_func_002f5bc0,src/camp/camp_cec.cpp
 0x002f5dc0,96,todo,engine,engine_func_002f5dc0,
 0x002f5e20,72,todo,battle,battle_func_002f5e20,
 0x002f5e68,56,todo,camp,camp_func_002f5e68,
