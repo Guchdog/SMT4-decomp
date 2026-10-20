@@ -4,17 +4,17 @@
 
 | Metric | Decompiled | Total | Remaining | Percentage |
 |--------|-----------:|------:|----------:|-----------:|
-| **Code Size (Bytes)** | 120,412 B | 3,139,108 B | 3,018,696 B | **3.8359%** |
-| **Functions** | 165 | 10,349 | 10,184 | **1.5944%** |
+| **Code Size (Bytes)** | 121,212 B | 3,139,108 B | 3,017,896 B | **3.8614%** |
+| **Functions** | 167 | 10,349 | 10,182 | **1.6137%** |
 
 ## Subsystem Breakdown
 
 | Subsystem | Decompiled Funcs | Total Funcs | Decompiled Bytes | Total Bytes | Subsystem % |
 |-----------|-----------------:|------------:|-----------------:|------------:|------------:|
 | `engine` | 3 | 2,363 | 224 B | 726,520 B | 0.031% |
-| `ui` | 128 | 1,238 | 78,576 B | 670,400 B | 11.721% |
+| `ui` | 129 | 1,238 | 78,984 B | 670,400 B | 11.782% |
 | `unknown` | 3 | 3,823 | 132 B | 654,480 B | 0.020% |
-| `script_vm` | 0 | 1,203 | 0 B | 459,392 B | 0.000% |
+| `script_vm` | 1 | 1,203 | 392 B | 459,392 B | 0.085% |
 | `camp` | 10 | 918 | 17,576 B | 326,396 B | 5.385% |
 | `battle` | 15 | 573 | 20,012 B | 235,776 B | 8.488% |
 | `shop` | 4 | 111 | 3,820 B | 39,976 B | 9.556% |
@@ -70,6 +70,8 @@
 | `0x001d2610` | 308 | `battle` | `non_matching` | `btlTalk_Init` | [`src/battle/btl_ui.cpp`](src/battle/btl_ui.cpp) |
 | `0x001d2744` | 644 | `battle` | `non_matching` | `btlUnit_Init` | [`src/battle/btl_ui.cpp`](src/battle/btl_ui.cpp) |
 | `0x001d29c8` | 240 | `battle` | `non_matching` | `btlUnit_CheckPartyActive` | [`src/battle/btl_ui.cpp`](src/battle/btl_ui.cpp) |
+| `0x001d374c` | 408 | `ui` | `non_matching` | `nameMain_Init` | [`src/script/script_vm.cpp`](src/script/script_vm.cpp) |
+| `0x001d38fc` | 392 | `script_vm` | `non_matching` | `onesRoom_Init` | [`src/script/script_vm.cpp`](src/script/script_vm.cpp) |
 | `0x001d3b10` | 364 | `shop` | `non_matching` | `shopMain_Init` | [`src/shop/shop.cpp`](src/shop/shop.cpp) |
 | `0x001d9538` | 908 | `shop` | `non_matching` | `shopMain_Proc` | [`src/shop/shop.cpp`](src/shop/shop.cpp) |
 | `0x001ddab4` | 68 | `ui` | `non_matching` | `StatusDown_OpenDefaultView` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |

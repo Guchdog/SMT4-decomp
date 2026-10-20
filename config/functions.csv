@@ -2140,9 +2140,9 @@ address,size,status,category,name,src_file
 0x001d3598,56,todo,script_vm,script_vm_func_001d3598,
 0x001d35d0,332,todo,script_vm,script_vm_func_001d35d0,
 0x001d371c,48,todo,script_vm,script_vm_func_001d371c,
-0x001d374c,408,todo,ui,nameMain_func_001d374c,
+0x001d374c,408,non_matching,ui,nameMain_Init,src/script/script_vm.cpp
 0x001d38e4,24,todo,unknown,func_001d38e4,
-0x001d38fc,392,todo,script_vm,onesRoom_func_001d38fc,
+0x001d38fc,392,non_matching,script_vm,onesRoom_Init,src/script/script_vm.cpp
 0x001d3a84,24,todo,unknown,func_001d3a84,
 0x001d3a9c,32,todo,unknown,func_001d3a9c,
 0x001d3abc,84,todo,engine,engine_func_001d3abc,
