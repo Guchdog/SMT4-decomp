@@ -60,7 +60,7 @@
 - `effGeometry_func_002691f0`: `0x002691f0` (532 B)
 - `effGeomEngine_func_001f68b0`: `0x001f68b0` (532 B)
 
-- [ ] **Step 1: Update progress test expectations (RED)**
+- [x] **Step 1: Update progress test expectations (RED)**
 
 ```python
 self.assertEqual(stats["decompiled_functions"], 324)
@@ -71,16 +71,16 @@ self.assertEqual(stats["total_explored_functions"], 363)
 self.assertEqual(stats["total_explored_bytes"], 574372)
 ```
 
-- [ ] **Step 2: Run the suite to verify it fails**
+- [x] **Step 2: Run the suite to verify it fails**
 
 Run: `python -m unittest discover -s tests -v`
 Expected: FAIL with `324 != 311`.
 
-- [ ] **Step 3: Disassemble and implement**
+- [x] **Step 3: Disassemble and implement**
 
 Use `python tools/split_asm.py --addr <address>` for every function. Preserve particle pool indexing, polygon vertex generation, clone/free ownership, and geometry uploads. Cite every non-obvious offset.
 
-- [ ] **Step 4: Update the ledger and verify GREEN**
+- [x] **Step 4: Update the ledger and verify GREEN**
 
 Set `status=non_matching`, `src_file=src/engine/asd_effect2.cpp`. Run:
 
@@ -91,7 +91,7 @@ python -m unittest discover -s tests -v
 
 Expected: 324 / 326,132 B, 39 / 248,240 B, 363 / 574,372 B; all tests PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```powershell
 git commit -m "feat(engine): decompile particle and polygon effects part 2 (+8,440 B, 18.29% explored)"
@@ -121,7 +121,7 @@ git commit -m "feat(engine): decompile particle and polygon effects part 2 (+8,4
 - `Filter4Poly_func_0034b920`: `0x0034b920` (432 B)
 - `effBehavior_func_00269404`: `0x00269404` (400 B)
 
-- [ ] **Step 1: Update progress test expectations (RED)**
+- [x] **Step 1: Update progress test expectations (RED)**
 
 ```python
 self.assertEqual(stats["decompiled_functions"], 336)
@@ -132,19 +132,19 @@ self.assertEqual(stats["total_explored_functions"], 375)
 self.assertEqual(stats["total_explored_bytes"], 581936)
 ```
 
-- [ ] **Step 2: Run the suite to verify it fails**
+- [x] **Step 2: Run the suite to verify it fails**
 
 Expected: FAIL with `336 != 324`.
 
-- [ ] **Step 3: Disassemble and implement**
+- [x] **Step 3: Disassemble and implement**
 
 Preserve render-system state, staff-roll scroll, event texture binding, bustup animation, model-manager refcounts, filter passes, and behavior ticks.
 
-- [ ] **Step 4: Update the ledger and verify GREEN**
+- [x] **Step 4: Update the ledger and verify GREEN**
 
 Set `status=non_matching`, `src_file=src/engine/asd_render_ui.cpp`; expected 336 / 333,696 B, 375 / 581,936 B.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```powershell
 git commit -m "feat(render): decompile render system, event textures and bustups (+7,564 B, 18.53% explored)"
@@ -165,7 +165,7 @@ git commit -m "feat(render): decompile render system, event textures and bustups
 - `ui_func_00267fb0`: `0x00267fb0` (4,672 B)
 - `ui_func_00197d2c`: `0x00197d2c` (4,432 B)
 
-- [ ] **Step 1: Update progress test expectations (RED)**
+- [x] **Step 1: Update progress test expectations (RED)**
 
 ```python
 self.assertEqual(stats["decompiled_functions"], 339)
@@ -176,19 +176,19 @@ self.assertEqual(stats["total_explored_functions"], 378)
 self.assertEqual(stats["total_explored_bytes"], 596804)
 ```
 
-- [ ] **Step 2: Run the suite to verify it fails**
+- [x] **Step 2: Run the suite to verify it fails**
 
 Expected: FAIL with `339 != 336`.
 
-- [ ] **Step 3: Disassemble and implement**
+- [x] **Step 3: Disassemble and implement**
 
 These are large UI routines. Use the disassembly's literals (resource ids, `0x0044ea00` GPU state, layout calls) to identify their roles; keep the ledger names and document the recovered role. Preserve the full call/branch structure.
 
-- [ ] **Step 4: Update the ledger and verify GREEN**
+- [x] **Step 4: Update the ledger and verify GREEN**
 
 Set `status=non_matching`, `src_file=src/ui/ui_runtime.cpp`; expected 339 / 348,564 B, 378 / 596,804 B (19.0119%); all tests PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```powershell
 git commit -m "feat(ui): decompile three large runtime UI routines (+14,868 B, 19.0% milestone reached at 19.0119%)"
