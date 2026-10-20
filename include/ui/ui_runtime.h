@@ -68,7 +68,8 @@ struct UiPartRenderContext {
     void* field_00;                 // +0x00
     u32 color;                      // +0x04: `ldr r0,[r0,#4]` (0x00267FC8)
     u32 field_08;                   // +0x08
-    u32 kind;                       // +0x0C: jump-table index (0x00268034)
+    u16 kind;                       // +0x0C: jump-table index (0x00268034)
+    u16 pad_0e;                     // +0x0E
     u8  pad_10[0x14];               // +0x10..+0x24
     f32 alpha;                      // +0x24: `vldr s0,[r4,#0x24]` (0x0021ACD0)
     void* field_28;                 // +0x28

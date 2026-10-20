@@ -41,10 +41,6 @@ extern "C" {
     s32   UiListCursor_CountPartySlots(const UiListCursor* cursor);             // 0x0029cb94
     s32   UiList_CountActiveRows(const void* list);                             // 0x0029d8e4
 
-    void  UiFont_DrawFormattedEx(u32 screen, s32 x, s32 y, s32 align,
-                                 s32 color, u32 size, const char* fmt,
-                                 s32 value);                                    // 0x002be16c
-
     s32   UiArray_ContainsU16(const u16* values, s32 count, u16 value);         // 0x0029d080
     s32   UiTouch_GetRegionTouchState(s16 handle);                              // 0x0029d8fc
     void  UiScissor_SetRect(s32 x, s32 y, s32 w, s32 h, s32 enable);            // 0x0029a418
@@ -114,12 +110,14 @@ extern "C" {
 // 0x00267FB0 helpers
 // ---------------------------------------------------------------------------
 
-/** 0x001F1780 / 0x001F183C / 0x001F1854 and 0x001985A4..0x00198644 update
- *  the GPU state slot at `g_AsdGpuState + 0x12AC`: the low word is the ring
- *  cursor, the value is stored at +8+index*4 and the +0x1C callback runs when
- *  the slot changes or +0x18 is set. */
-void GpuModeSlotSet(u32 value) {
-    u8* slot = g_AsdGpuState + 0x1000 + 0x2AC;
+/** The UI render-mode ring lives at `g_AsdGpuState + 0x1000 + slot_offset`:
+ *  the quest preview and the fusion row use 0x2AC (0x001985A4 / 0x001F1020),
+ *  while the fusion selected-detail scissor path uses 0x30C (0x001F1784 /
+ *  0x001F1840).  The low word is the ring cursor, the value is stored at
+ *  +8+index*4 and the +0x1C callback runs when the slot changes or +0x18 is
+ *  set. */
+void GpuModeSlotSet(u32 slot_offset, u32 value) {
+    u8* slot = g_AsdGpuState + 0x1000 + slot_offset;
     const u32 index = *reinterpret_cast<u32*>(slot);
     u32* entry = reinterpret_cast<u32*>(slot + 8 + index * 4);
     const u32 old = *entry;
@@ -158,6 +156,11 @@ void UnpackColor(u32 color, f32 out[4]) {
     out[1] = static_cast<f32>((color >> 16) & 0xFF) * k;
     out[2] = static_cast<f32>((color >> 8) & 0xFF) * k;
     out[3] = static_cast<f32>(color & 0xFF) * k;
+}
+
+u32 ByteSwap32(u32 value) {
+    return ((value >> 24) & 0xFF) | ((value >> 8) & 0xFF00) |
+           ((value << 8) & 0xFF0000) | ((value << 24) & 0xFF000000);
 }
 
 u32 PackColor(const f32 in[4]) {
@@ -235,7 +238,7 @@ void FinishPartDraw(UiPartRenderContext* ctx, s32 visible, bool copy_back) {
     if (visible == 0) {
         return;
     }
-    u32 color = ctx->color;
+    const u32 color = ByteSwap32(ctx->color);            // 0x0026855C..0x002685A8
     u8* sprite = static_cast<u8*>(ctx->sprite);
     u8* resource = *reinterpret_cast<u8**>(sprite + 0x0C);
 
@@ -273,9 +276,6 @@ void AllocPartCursors(u32 handle, UiBufferCursor& pos, UiBufferCursor& color,
 // DECOMP_FUNC(0x00267fb0, 4672)
 void ui_func_00267fb0(UiPartRenderContext* ctx, f32 scale) {
     UiPartSet* parts = ctx->parts;                       // 0x00267FC4
-    if (parts->count == 0 || parts->field_10 == 0) {     // 0x00268020..0x00268030
-        return;
-    }
 
     // Input colour -> float quad.  The store lands at 0x004EA81C + 0x100,
     // which is exactly 0x004EA91C (`vstmia r0,{s16,s17,s18,s19}`, 0x0026801C).
@@ -283,6 +283,10 @@ void ui_func_00267fb0(UiPartRenderContext* ctx, f32 scale) {
     UnpackColor(ctx->color, tint);
     for (s32 i = 0; i < 4; ++i) {
         g_UiPartRenderState.vector[i] = tint[i];
+    }
+
+    if (parts->count == 0 || parts->field_10 == 0) {     // 0x00268020..0x00268030
+        return;
     }
 
     switch (ctx->kind) {                                 // 0x00268034..0x00268040
@@ -479,7 +483,8 @@ void ui_func_00267fb0(UiPartRenderContext* ctx, f32 scale) {
             }
             // Tail (0x00268E54) stores the count and colour on the resource.
             if (visible != 0) {
-                *reinterpret_cast<u32*>(resource + 0x64) = ctx->color;
+                *reinterpret_cast<u32*>(resource + 0x64) =
+                    ByteSwap32(ctx->color);              // 0x00268E5C..0x00268EA8
                 *reinterpret_cast<u32*>(resource + 0x60) =
                     static_cast<u32>(visible);
                 u16 id = *reinterpret_cast<u16*>(ctx->parts->handle + 0x54);
@@ -568,7 +573,8 @@ void ui_func_00267fb0(UiPartRenderContext* ctx, f32 scale) {
         if (visible == 0) {
             return;
         }
-        *reinterpret_cast<u32*>(resource + 0x64) = ctx->color;
+        *reinterpret_cast<u32*>(resource + 0x64) =
+            ByteSwap32(ctx->color);                      // 0x00268E5C..0x00268EA8
         *reinterpret_cast<u32*>(resource + 0x60) = static_cast<u32>(visible);
         u16 id = *reinterpret_cast<u16*>(ctx->parts->handle + 0x54);
         UiPart_PackUV(id);
@@ -662,11 +668,15 @@ struct QuestRewardEntry {
     u16 field_00;
     u16 field_02;
     u16 item_id;                    // +0x04: `ldrh r0,[sp,#0xc]` (0x00198A20)
-    u16 field_06;
-    u8  has_name;                   // +0x08? see has_name_offset below
-    u8  pad_09[0x17];
+    u8  has_name;                   // +0x06: `ldrb r0,[sp,#0xe]` (0x00198A18)
+    u8  pad_07;
+    u32 field_08;                   // +0x08: `ldr r1,[sp,#0x10]` (0x001989F8)
+    u8  pad_0c[0x14];
 };
 static_assert(offsetof(QuestRewardEntry, item_id) == 0x04);
+static_assert(offsetof(QuestRewardEntry, has_name) == 0x06);
+static_assert(offsetof(QuestRewardEntry, field_08) == 0x08);
+static_assert(sizeof(QuestRewardEntry) == 0x20);
 
 constexpr const char* kQuestSeparator = "\x81\x7C \x81\x7C \x81\x7C";
 constexpr const char* kQuestDash      = "\x81\x7C\x81\x7C\x81\x7C";
@@ -841,14 +851,15 @@ void ui_func_00197d2c() {
                     static_cast<f32>(y0 + node->y),
                     1.8f, 0.0f, 1.0f);                      // 0x3EE66666
 
-    // 0x001981B0..0x00198438: main quest panel.
-    const s32 preview_offset = static_cast<s32>(
-        UiGpu_TransformCoord(g_AsdGpuState, 0.325f));
-    s32 panel_x = x0 + preview_offset;
+    // 0x001981B0..0x00198438: main quest panel.  s21 (0.32) supplies the
+    // shared lower-list offset; the 0.325 call belongs to the empty path.
+    const s32 lower_offset = static_cast<s32>(
+        UiGpu_TransformCoord(g_AsdGpuState, 0.32f));    // 0x3EA3D70A
+    s32 panel_x = x0 + lower_offset;
     s32 panel_y = y0;
     if (screen_state == 0x17 || screen_state == 0x18 ||
         screen_state == 0x19) {                             // 0x001983E0
-        panel_x = x0 + preview_offset +
+        panel_x = x0 + lower_offset +
                   UiAnimSprite_GetPosX(&work->sprite_494);
         panel_y = y0 + UiAnimSprite_GetPosY(&work->sprite_494);
         if (screen_state == 0x18) {                         // 0x00198404
@@ -875,11 +886,11 @@ draw_quest_preview:
     // 0x0019857C..0x00198678: 3D preview with two render-mode overrides.
     UiSprite_SetGlobalAlpha(*reinterpret_cast<const f32*>(
         reinterpret_cast<const u8*>(work) + 0x520 + 0x20)); // 0x00198580
-    GpuModeSlotSet(static_cast<u32>(reinterpret_cast<std::uintptr_t>(
-        UiGpu_SetRenderMode(6, 1, 0))));                    // 0x002c5fa4
+    GpuModeSlotSet(0x2AC, static_cast<u32>(
+        reinterpret_cast<std::uintptr_t>(UiGpu_SetRenderMode(6, 1, 0))));                    // 0x002c5fa4
     UiSprite_DrawNode(2, 0x29, 0x60, panel_x, panel_y, 0x68); // 0x001985F8
-    GpuModeSlotSet(static_cast<u32>(reinterpret_cast<std::uintptr_t>(
-        UiGpu_SetRenderMode(6, 1, 0))));
+    GpuModeSlotSet(0x2AC, static_cast<u32>(
+        reinterpret_cast<std::uintptr_t>(UiGpu_SetRenderMode(6, 7, 0)))); // 0x00198604
     UiSprite_SetGlobalAlpha(1.0f);                           // 0x0019864C
     UiSprite_DrawNode(2, 0x29, 0x24, panel_x, panel_y, 0x6A); // 0x0019866C
 
@@ -890,7 +901,7 @@ after_quest_preview:
         if (Quest_GetTrackedId() == quest_id) {             // 0x001986D0
             if (screen_state == 0x0C) {                     // 0x001986E4
                 Quest_DrawRewardRow(reinterpret_cast<u8*>(work) + 0x264,
-                                    static_cast<f32>(preview_offset)); // 0x00198728
+                                    static_cast<f32>(desc_offset)); // 0x00198728
             } else {
                 UiSprite_DrawNode(2, 0x29, 0x2A, panel_x, panel_y, 0x68);
             }
@@ -903,7 +914,7 @@ after_quest_preview:
 
     // 0x00198784..0x001989A0: reward rows.
     if (work->field_5d0 > 0) {
-        const s32 base_x = x0 + preview_offset;
+        const s32 base_x = x0 + desc_offset;        // sl = 0.315 offset
         for (s32 i = 0; i < work->field_5d0; ++i) {
             if (work->field_5c8 == i) {                     // 0x0019879C
                 continue;
@@ -919,7 +930,7 @@ after_quest_preview:
                             reinterpret_cast<const u8*>(row) + 7) & 0x40) != 0) {
                 UiSprite_DrawNode(2, 0x29, 0x42, base_x + node->x,
                                   y0 + node->y, 0x6A);      // 0x00198894
-            } else if (i != 1) {
+            } else {
                 UiSprite_DrawNode(2, 0x29, 0x43, base_x + node->x,
                                   y0 + node->y, 0x6A);      // 0x001988CC
             }
@@ -928,8 +939,8 @@ after_quest_preview:
 
     if (work->field_5c8 == 0) {                             // 0x00198810
         node = UiLayout_GetNode(0x29, 0x34);                // 0x001988E4
-        const s32 list_x = x0 + preview_offset + node->x;
-        const s32 list_y = y0 + node->y;
+        const s32 list_x = x0 + lower_offset + node->x;
+        const s32 list_y = lower_offset + node->y;
         for (s32 i = 0; i < 7; ++i) {
             UiAnimSprite_DrawAt(work->handle_5d4,
                                 list_x, list_y + i * 0x11,
@@ -947,54 +958,47 @@ after_quest_preview:
                     reinterpret_cast<const u8*>(row) + 7) & 0x40) != 0) {
         // 0x001989B8..0x00198C18: six reward detail rows.
         s32 drawn_rows = 0;
+        bool extra_line = true;                             // [sp+0x138]
         for (s32 i = 0; i < 6; ++i) {
             QuestRewardEntry reward{};
             if (Quest_GetRewardEntry(quest_id, i, &reward)) { // 0x001989D8
                 node = UiLayout_GetNode(0x29, 0x34);        // 0x001989F0
-                char line[0x80];
-                char value[0x80];
-                const u16 line_id = *reinterpret_cast<const u16*>(
+                char reward_text[0x80];
+                char value_text[0x80];
+                Quest_FormatReward(reward_text, static_cast<u16>(reward.field_08)); // 0x001989F8..0x00198A00
+                const u32 reward_value = *reinterpret_cast<const u32*>(
                     reinterpret_cast<const u8*>(row) + 0x170 + i * 8);
-                Quest_FormatReward(line, line_id);          // 0x00198A14
-                Quest_FormatReward(value, reward.item_id);  // 0x00198A28
+                Quest_FormatReward(value_text, static_cast<u16>(reward_value)); // 0x00198A0C..0x00198A14
                 UiFont_FormatString(
-                    text, kQuestRewardFmt, line,
+                    text, kQuestRewardFmt,
                     (*reinterpret_cast<const u8*>(
                          reinterpret_cast<const u8*>(&reward) + 6) != 0)
                         ? Quest_GetRewardItemName(reward.item_id)
                         : Item_GetShortNameString(reward.item_id),
-                    value);                             // 0x00198A48
+                    reward_text, value_text);            // 0x00198A38..0x00198A48
+                if (reward.field_08 < reward_value) {       // 0x00198A7C..0x00198AA0
+                    extra_line = false;
+                }
                 UiFont_DrawText(3, 0x320202FFu, text,
-                                static_cast<f32>(x0 + preview_offset +
-                                                 node->x + i * 0x11),
-                                static_cast<f32>(y0 + node->y),
+                                static_cast<f32>(x0 + lower_offset + node->x),
+                                static_cast<f32>(lower_offset + node->y + i * 0x11),
                                 0.58f, 0.0f, 1.0f);     // 0x3F147AE1
                 ++drawn_rows;
             }
         }
-        // 0x00198AEC..0x00198C18: additional requirement line.  The flag at
-        // sp+0x138 starts set and is cleared by the IsNew/IsExpired pair.
-        bool extra_line = true;
+        // 0x00198AEC..0x00198B1C: completed, non-expired quests clear the
+        // extra-line flag.
         if (*reinterpret_cast<const u8*>(reinterpret_cast<const u8*>(row) + 6) == 0 &&
-            Quest_IsNew(quest_id) && !Quest_IsExpired(quest_id)) {
-            extra_line = false;
-        }
-        if (extra_line &&
-            *reinterpret_cast<const u8*>(reinterpret_cast<const u8*>(row) + 6) == 0 &&
             Quest_IsCompleted(quest_id) && !Quest_IsExpired(quest_id)) {
-            node = UiLayout_GetNode(0x29, 0x34);            // 0x00198B40
-            UiFont_DrawText(3, 0x320202FFu, text,
-                            static_cast<f32>(x0 + preview_offset + node->x +
-                                             drawn_rows * 0x11 + 0x11),
-                            static_cast<f32>(y0 + node->y),
-                            0.58f, 0.0f, 1.0f);         // 0x00198C14
+            extra_line = false;
         }
         // 0x00198B20..0x00198C14: one TBB row rendered below the reward
         // list.  The row index is 7 for value 1, 8 otherwise and 9 when the
-        // quest is flagged new or +0x19C is zero (0x00198B58..0x00198CCC).
+        // quest is completed or +0x19C is zero (0x00198B58..0x00198CCC).
         if (*reinterpret_cast<const u8*>(reinterpret_cast<const u8*>(row) + 6) == 0 &&
             extra_line) {
             s32 row_index;
+            node = UiLayout_GetNode(0x29, 0x34);      // 0x00198B38..0x00198B40
             if (Quest_IsCompleted(quest_id)) {
                 row_index = 9;
             } else {
@@ -1012,15 +1016,14 @@ after_quest_preview:
                 const u8* entry = reinterpret_cast<const u8*>(payload) +
                                   static_cast<u32>(row_index) * 0x4A;
                 if (entry + 1 != nullptr) {
-                    node = UiLayout_GetNode(0x29, 0x34);      // 0x00198B3C
                     UiFont_FormatString(text, "%s",
                                         reinterpret_cast<const char*>(entry + 1));
                     UiFont_DrawText(3, 0x320202FFu, text,
-                                    static_cast<f32>(x0 + preview_offset +
-                                                     node->x +
+                                    static_cast<f32>(x0 + lower_offset +
+                                                     node->x),
+                                    static_cast<f32>(lower_offset + node->y +
                                                      drawn_rows * 0x11 + 0x11),
-                                    static_cast<f32>(y0 + node->y),
-                                    0.58f, 0.0f, 1.0f);       // 0x00198C14
+                                    0.58f, 0.0f, 1.0f);       // 0x00198BCC
                 }
             }
         }
@@ -1028,10 +1031,10 @@ after_quest_preview:
         // 0x00198C18..0x00198C98: two hint panels.
         node = UiLayout_GetNode(0x29, 0x49);                // 0x00198C38
         UiSprite_DrawNode(2, 0x29, 0x44,
-                          x0 + preview_offset + node->x,
+                          x0 + lower_offset + node->x,
                           y0 + node->y, 0x6F);              // 0x00198C6C
         UiSprite_DrawNode(2, 0x29, 0x46,
-                          x0 + preview_offset + node->x,
+                          x0 + lower_offset + node->x,
                           y0 + node->y, 0x74);              // 0x00198C98
     } else if (work->field_5c8 == 2 ||
                (work->field_5c8 == 1 &&
@@ -1039,8 +1042,8 @@ after_quest_preview:
                      reinterpret_cast<const u8*>(row) + 7) & 0x40) == 0)) {
         // 0x00198CDC..0x00198D28: second seven-line list.
         node = UiLayout_GetNode(0x29, 0x34);                // 0x00198CEC
-        const s32 list_x = x0 + preview_offset + node->x;
-        const s32 list_y = y0 + node->y;
+        const s32 list_x = x0 + lower_offset + node->x;
+        const s32 list_y = lower_offset + node->y;
         for (s32 i = 0; i < 7; ++i) {
             UiAnimSprite_DrawAt(work->handle_5dc,
                                 list_x, list_y + i * 0x11,
@@ -1051,10 +1054,10 @@ after_quest_preview:
         } else {
             node = UiLayout_GetNode(0x29, 0x49);
             UiSprite_DrawNode(2, 0x29, 0x44,
-                              x0 + preview_offset + node->x,
+                              x0 + lower_offset + node->x,
                               y0 + node->y, 0x6F);          // 0x00198D8C
             UiSprite_DrawNode(2, 0x29, 0x47,
-                              x0 + preview_offset + node->x,
+                              x0 + lower_offset + node->x,
                               y0 + node->y, 0x74);          // 0x00198DB8
         }
     }
@@ -1112,7 +1115,6 @@ void ui_func_001f0454(s32 x, s32 y, s32 mode, s32 flag, s32 has_target,
     }
 
     const s32 slide_offset = (work->field_3fc / 4) % 3;     // 0x001F062C..0x001F0658
-    f32 fade = 1.0f;                                        // s17 = s16 (0x001F09AC)
     bool fade_latched = false;                              // [sp+0x690]
 
     // 0x001F046C..0x001F0568: fixed frame panels.
@@ -1122,7 +1124,7 @@ void ui_func_001f0454(s32 x, s32 y, s32 mode, s32 flag, s32 has_target,
     UiSprite_DrawNode(2, 0x24, 0x165, x, y, 0x6F);
     UiSprite_DrawNode(2, 0x24, 0x166, x, y, 0x6A);
     UiSprite_DrawNode(2, 0x24, 0x167, x, y, 0x6F);
-    UiSprite_DrawNode(2, 0x24, 0x168, x, y, 0x6A);
+    UiSprite_DrawNode(2, 0x24, 0x16A, x, y, 0x6A);   // 0x001F0524
     UiSprite_DrawNode(2, 0x24, 0x16B, x, y, 0x6F);
     UiSprite_DrawNode(2, 0x24, 0x16C, x, y, 0x74);
 
@@ -1211,9 +1213,10 @@ void ui_func_001f0454(s32 x, s32 y, s32 mode, s32 flag, s32 has_target,
     UiListCursor* cursor = &work->cursor_9204;
 
     // 0x001F09AC..0x001F10E0: eight list rows.
-    s32 row_x = x;
-    s32 row_y = y;
     for (s32 i = 0; i < 8; ++i) {
+        s32 row_x = x;                                      // 0x001F09B8
+        s32 row_y = y;                                      // 0x001F09B4
+        f32 fade = 1.0f;                                    // 0x001F09AC
         node = UiLayout_GetNode(0x24, 0x17D + i);
         if (i >= slot_count) {
             UiSprite_DrawNode(2, 0x24, 0x229, row_x + node->x, row_y + node->y, 0x65);
@@ -1344,12 +1347,12 @@ void ui_func_001f0454(s32 x, s32 y, s32 mode, s32 flag, s32 has_target,
                 if (work->rows_9010[i] == work->rows_9020[sel]) {
                     UiSprite_SetGlobalAlpha(*reinterpret_cast<const f32*>(
                         reinterpret_cast<const u8*>(work) + 0x36C + 0x20));
-                    GpuModeSlotSet(static_cast<u32>(
+                    GpuModeSlotSet(0x2AC, static_cast<u32>(
                         reinterpret_cast<std::uintptr_t>(
                             UiGpu_SetRenderMode(6, 1, 0)))); // 0x001F101C
                     UiSprite_DrawNode(2, 0x24, 0x173,
                                       row_x + node->x, row_y + node->y, 0x65);
-                    GpuModeSlotSet(static_cast<u32>(
+                    GpuModeSlotSet(0x2AC, static_cast<u32>(
                         reinterpret_cast<std::uintptr_t>(
                             UiGpu_SetRenderMode(6, 7, 0)))); // 0x001F1094
                 }
@@ -1393,7 +1396,7 @@ void ui_func_001f0454(s32 x, s32 y, s32 mode, s32 flag, s32 has_target,
         node = UiLayout_GetNode(0x24, 0x197);
         UiSprite_DrawNode(2, 0x24, 0x16F, x + node->x, y + node->y, 0x65);
         UiSprite_DrawNode(2, 0x24, 0x170, x + node->x, y + node->y, 0x65);
-        UiSprite_DrawNode(2, 0x24, 0x16B, x + node->x, y + node->y, 0x65);
+        UiSprite_DrawNode(2, 0x24, 0x171, x + node->x, y + node->y, 0x65); // 0x001F11C4
         const Npc2dLayoutNode* money_node =
             UiLayout_GetNode(0x24, 0x178);                  // 0x001F11E4
         UiFont_FormatString(text, "%s", kFusionMoney);
@@ -1412,9 +1415,12 @@ void ui_func_001f0454(s32 x, s32 y, s32 mode, s32 flag, s32 has_target,
         node = UiLayout_GetNode(0x24, 0x185 + i);           // 0x001F13C4
         UiSprite_DrawNode(2, 0x24, 0x16F, x + node->x, y + node->y, 0x65);
         UiSprite_DrawNode(2, 0x24, 0x170, x + node->x, y + node->y, 0x65);
-        UiSprite_DrawNode(2, 0x24, 0x176, x + node->x, y + node->y, 0x6F);
+        UiSprite_DrawNode(2, 0x24, 0x171, x + node->x, y + node->y, 0x65);
 
         if (UiList_CountActiveRows(party_list) > i) {       // 0x001F1450
+            UiSprite_DrawNode(2, 0x24, 0x174, x + node->x, y + node->y, 0x6A);
+            UiSprite_DrawNode(2, 0x24, 0x175, x + node->x, y + node->y, 0x6A);
+            UiSprite_DrawNode(2, 0x24, 0x176, x + node->x, y + node->y, 0x6F);
             const u16 entry = work->rows_9020[lower_scroll + i];
             const u32 color =
                 UiArray_ContainsU16(work->rows_9010, 8, entry) != 0
@@ -1470,14 +1476,19 @@ void ui_func_001f0454(s32 x, s32 y, s32 mode, s32 flag, s32 has_target,
         const Npc2dLayoutNode* panel_node =
             UiLayout_GetNode(0x24, 0x19C);                  // 0x001F1768
         const s16* rect = reinterpret_cast<const s16*>(panel_node->extra);
-        GpuModeSlotSet(3);                                  // 0x001F1780
+        GpuModeSlotSet(0x30C, 3);                                  // 0x001F1780
         const Npc2dLayoutNode* detail_node =
             UiLayout_GetNode(0x24, 0x1A7 +
                              UiListCursor_GetSelectedRow(cursor));
         UiScissor_SetRect(x + detail_node->x + panel_node->x,
                           y + detail_node->y + panel_node->y,
                           rect[0], rect[1], 1);             // 0x001F17EC
-        GpuModeSlotSet(0);                                  // 0x001F183C
+        const s32 panel19e_x = x + UiAnimSprite_GetPosX(&work->sprite_0b0) +
+                               panel_node->x;            // 0x001F17F8..0x001F181C
+        const s32 panel19e_y = y + UiAnimSprite_GetPosY(&work->sprite_0b0) +
+                               panel_node->y;
+        UiSprite_DrawNode(2, 0x24, 0x19E, panel19e_x, panel19e_y, 0x83); // 0x001F1830
+        GpuModeSlotSet(0x30C, 0);                                  // 0x001F183C
 
         node = panel_node;                                  // r7 := node 0x19C
         UiSprite_DrawNode(2, 0x24, 0x19F, x + node->x, y + node->y, 0x83);
@@ -1513,8 +1524,8 @@ void ui_func_001f0454(s32 x, s32 y, s32 mode, s32 flag, s32 has_target,
     // workspace heights at +0x476/+0x472/+0x474, prio 0x97 and the trailing 0.
     UiScrollBar_Draw(cursor, x, y, 0x24,
                      0x2A, 0x2B, 0x2C, 0x26, 0x28, 0x27, 0x29,
-                     work->field_476, work->field_472, 0x97,
-                     work->field_474, 0);
+                     work->field_476, work->field_472, work->field_474,
+                     0x97, 0);
     (void)slide_dir;
 }
 
