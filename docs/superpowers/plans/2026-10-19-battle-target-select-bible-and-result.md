@@ -38,14 +38,14 @@
 - `btlTargetSelect_Calc`: `0x002e06bc` (1,080 B)
 - `btlTargetSelect_DrawUp`: `0x002f4aa4` (76 B)
 
-- [ ] **Step 1: Update progress test expectations (RED)**
+- [x] **Step 1: Update progress test expectations (RED)**
   - Update `tests/test_progress.py` to expect 171 functions and 145,492 bytes.
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
   - Run `python -m unittest discover -s tests -v`.
-- [ ] **Step 3: Define `BtlTargetSelectWork` in `include/battle/target_select.h` and implement in `src/battle/btl_target_select.cpp`**
-- [ ] **Step 4: Update `config/functions.csv` and run test to verify it passes (GREEN)**
+- [x] **Step 3: Define `BtlTargetSelectWork` in `include/battle/target_select.h` and implement in `src/battle/btl_target_select.cpp`**
+- [x] **Step 4: Update `config/functions.csv` and run test to verify it passes (GREEN)**
   - Run `python tools/progress.py --write` and `python -m unittest discover -s tests -v`.
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
   - Commit: `feat(battle): implement btlTargetSelect target reticle and cursor system (+1,760 B)`.
 
 ---
@@ -62,14 +62,14 @@
 - `bibleMain_Init`: `0x00269cc8` (352 B)
 - `bibleAnalyze_Init`: `0x003a9200` (948 B)
 
-- [ ] **Step 1: Update progress test expectations (RED)**
+- [x] **Step 1: Update progress test expectations (RED)**
   - Update `tests/test_progress.py` to expect 173 functions and 146,792 bytes.
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
   - Run `python -m unittest discover -s tests -v`.
-- [ ] **Step 3: Define `BibleMainWork` in `include/camp/bible.h` and implement in `src/camp/bible.cpp`**
-- [ ] **Step 4: Update `config/functions.csv` and run test to verify it passes (GREEN)**
+- [x] **Step 3: Define `BibleMainWork` in `include/camp/bible.h` and implement in `src/camp/bible.cpp`**
+- [x] **Step 4: Update `config/functions.csv` and run test to verify it passes (GREEN)**
   - Run `python tools/progress.py --write` and `python -m unittest discover -s tests -v`.
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
   - Commit: `feat(camp): implement bibleMain demon compendium and bibleAnalyze inspection (+1,300 B)`.
 
 ---
@@ -88,12 +88,12 @@
 - `Result_DrawUp`: `0x001a15b0` (932 B)
 - `Result_DrawDown`: `0x001c87d8` (420 B)
 
-- [ ] **Step 1: Update progress test expectations (RED)**
+- [x] **Step 1: Update progress test expectations (RED)**
   - Update `tests/test_progress.py` to expect 177 functions and 161,196 bytes (crossing the **5.0% decompilation milestone**!).
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
   - Run `python -m unittest discover -s tests -v`.
-- [ ] **Step 3: Define `ResultWork` in `include/ui/result.h` and implement in `src/ui/result.cpp`**
-- [ ] **Step 4: Update `config/functions.csv` and run test to verify it passes (GREEN)**
+- [x] **Step 3: Define `ResultWork` in `include/ui/result.h` and implement in `src/ui/result.cpp`**
+- [x] **Step 4: Update `config/functions.csv` and run test to verify it passes (GREEN)**
   - Run `python tools/progress.py --write` and `python -m unittest discover -s tests -v`.
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
   - Commit: `feat(ui): implement Result post-combat rewards, level-up logic, and dual-screen HUD (+14,404 B, 5.0% milestone reached)`.
