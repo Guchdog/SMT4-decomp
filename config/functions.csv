@@ -75,7 +75,7 @@ address,size,status,category,name,src_file
 0x00104274,24,todo,engine,engine_func_00104274,
 0x0010428c,12,todo,unknown,func_0010428c,
 0x00104298,48,todo,unknown,func_00104298,
-0x001042c8,176,todo,engine,AsdPrim_func_001042c8,
+0x001042c8,176,non_matching,engine,AsdPrim_func_001042c8,src/engine/asd_texture.cpp
 0x00104378,1508,todo,camp,FrameTex_func_00104378,
 0x0010495c,1108,non_matching,engine,AsdModel_func_0010495c,src/engine/asd_model.cpp
 0x00104db0,28,todo,unknown,func_00104db0,
@@ -1029,7 +1029,7 @@ address,size,status,category,name,src_file
 0x00144ea0,12,todo,unknown,func_00144ea0,
 0x00144eac,236,todo,ui,ui_func_00144eac,
 0x00144f98,36,todo,engine,engine_func_00144f98,
-0x00144fbc,416,todo,ui,AsdTMSpr_func_00144fbc,
+0x00144fbc,416,non_matching,ui,AsdTMSpr_func_00144fbc,src/engine/asd_texture.cpp
 0x0014515c,688,non_matching,engine,AsdModel_func_0014515c,src/engine/asd_model.cpp
 0x0014540c,480,todo,engine,engine_func_0014540c,
 0x001455ec,212,todo,engine,engine_func_001455ec,
@@ -1888,7 +1888,7 @@ address,size,status,category,name,src_file
 0x0019f2d8,1732,todo,script_vm,script_vm_func_0019f2d8,
 0x0019f99c,432,todo,engine,engine_func_0019f99c,
 0x0019fb4c,12,todo,engine,engine_func_0019fb4c,
-0x0019fb58,756,todo,engine,AsdTexTMX_func_0019fb58,
+0x0019fb58,756,non_matching,engine,AsdTexTMX_func_0019fb58,src/engine/asd_texture.cpp
 0x0019fe4c,64,todo,unknown,func_0019fe4c,
 0x0019fe8c,32,todo,camp,camp_func_0019fe8c,
 0x0019feac,368,todo,ui,ui_func_0019feac,
@@ -3824,7 +3824,7 @@ address,size,status,category,name,src_file
 0x00257bf0,148,todo,camp,camp_func_00257bf0,
 0x00257c84,476,todo,camp,camp_func_00257c84,
 0x00257e60,12,todo,engine,engine_func_00257e60,
-0x00257e6c,436,todo,engine,AsdTexTGA_func_00257e6c,
+0x00257e6c,436,non_matching,engine,AsdTexTGA_func_00257e6c,src/engine/asd_texture.cpp
 0x00258020,32,todo,script_vm,script_vm_func_00258020,
 0x00258040,52,todo,script_vm,script_vm_func_00258040,
 0x00258074,52,todo,script_vm,script_vm_func_00258074,
@@ -5469,8 +5469,8 @@ address,size,status,category,name,src_file
 0x002bd620,16,todo,unknown,func_002bd620,
 0x002bd630,88,todo,engine,engine_func_002bd630,
 0x002bd688,168,todo,engine,engine_func_002bd688,
-0x002bd730,528,todo,engine,AsdTexture_func_002bd730,
-0x002bd940,172,todo,engine,AsdTexture_func_002bd940,
+0x002bd730,528,non_matching,engine,AsdTexture_func_002bd730,src/engine/asd_texture.cpp
+0x002bd940,172,non_matching,engine,AsdTexture_func_002bd940,src/engine/asd_texture.cpp
 0x002bd9ec,20,todo,script_vm,script_vm_func_002bd9ec,
 0x002bda00,16,todo,ui,ui_func_002bda00,
 0x002bda10,12,todo,script_vm,script_vm_func_002bda10,
@@ -5589,7 +5589,7 @@ address,size,status,category,name,src_file
 0x002c20a8,360,todo,engine,engine_func_002c20a8,
 0x002c2210,468,todo,engine,engine_func_002c2210,
 0x002c23e4,20,todo,engine,engine_func_002c23e4,
-0x002c23f8,56,todo,engine,AsdMemory_func_002c23f8,
+0x002c23f8,56,non_matching,engine,AsdMemory_func_002c23f8,src/engine/asd_texture.cpp
 0x002c2430,180,todo,engine,engine_func_002c2430,
 0x002c24e4,120,todo,engine,engine_func_002c24e4,
 0x002c255c,148,todo,unknown,func_002c255c,
@@ -5667,7 +5667,7 @@ address,size,status,category,name,src_file
 0x002c4bf0,16,todo,ui,ui_func_002c4bf0,
 0x002c4c00,44,todo,camp,camp_func_002c4c00,
 0x002c4c2c,508,non_matching,ui,message_func_002c4c2c,src/engine/asd_text.cpp
-0x002c4e28,620,todo,engine,AsdTMTexTable_func_002c4e28,
+0x002c4e28,620,non_matching,engine,AsdTMTexTable_func_002c4e28,src/engine/asd_texture.cpp
 0x002c5094,60,todo,battle,battle_func_002c5094,
 0x002c50d0,184,todo,engine,engine_func_002c50d0,
 0x002c5188,8,todo,ui,ui_func_002c5188,
@@ -5704,7 +5704,7 @@ address,size,status,category,name,src_file
 0x002c5a6c,48,todo,script_vm,script_vm_func_002c5a6c,
 0x002c5a9c,28,todo,engine,engine_func_002c5a9c,
 0x002c5ab8,76,todo,engine,engine_func_002c5ab8,
-0x002c5b04,652,todo,engine,AsdTMTexTable_func_002c5b04,
+0x002c5b04,652,non_matching,engine,AsdTMTexTable_func_002c5b04,src/engine/asd_texture.cpp
 0x002c5d90,128,todo,engine,AsdGxCommandList_func_002c5d90,
 0x002c5e10,16,todo,script_vm,script_vm_func_002c5e10,
 0x002c5e20,12,todo,script_vm,script_vm_func_002c5e20,
@@ -7625,7 +7625,7 @@ address,size,status,category,name,src_file
 0x00345194,7068,non_matching,ui,Ui_MemoryArenaAllocate,src/ui/ui_memory.cpp
 0x00346d30,8,todo,unknown,func_00346d30,
 0x00346d38,120,todo,engine,AsdMemory_func_00346d38,
-0x00346db0,992,todo,engine,AsdPrimRenderData_func_00346db0,
+0x00346db0,992,non_matching,engine,AsdPrimRenderData_func_00346db0,src/engine/asd_texture.cpp
 0x00347190,496,todo,engine,engine_func_00347190,
 0x00347380,124,todo,engine,engine_func_00347380,
 0x003473fc,180,todo,unknown,func_003473fc,
