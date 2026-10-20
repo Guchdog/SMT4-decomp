@@ -89,7 +89,7 @@ void ComWin_Init() {
     UiSpriteGroup_Init(&work->sprite_group);
     UiSpriteGroup_BindTable(&work->sprite_group,
                             0, 0,
-                            SpriteTableWord(g_ComWinSpriteTable - 0x30), 0x30,
+                            SpriteTableWord(g_ComWinSpriteTable - 0x60), 0x30,
                             SpriteTableWord(g_ComWinSpriteTable - 0x30),
                             0x30, 0, 0,
                             SpriteTableWord(g_ComWinSpriteTable), 0x118);

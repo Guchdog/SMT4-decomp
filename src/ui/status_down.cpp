@@ -122,7 +122,8 @@ extern "C" {
     void  Sound_PlaySE(s32 se_id);                                                  // 0x002b8b78
     const void* Msg_GetCommonArchive(u32 archive_id);                               // 0x002b49d8
     const void* Msg_GetEntryFromBundle(const void* bundle, s32 msg_index);          // 0x00389294
-    const ItemTableEntry* Item_GetTableEntry(u16 item_id);                          // 0x002b9364
+    // 0x002B9364 is declared canonically as Battle_GetTalkEntry in
+    // engine/asd_symbols.h.
     const SkillTableEntry* Skill_GetTableEntry(u16 skill_id);                       // 0x00257744
     s32   Skill_CalcNormalizedCost(s16 raw_cost);                                   // 0x00257678
     const char* Skill_GetNameString(u16 skill_id);                                  // 0x0026ad50
@@ -170,7 +171,7 @@ void StatusDown_PopulateSkillList(const u8* skill_bitfield) {
     AsdMem_Zero(work->skill_entries, sizeof(work->skill_entries));
 
     for (u16 i = 0; i < 0x500; ++i) {
-        const ItemTableEntry* entry = Item_GetTableEntry(i);
+        const ItemTableEntry* entry = static_cast<const ItemTableEntry*>(Battle_GetTalkEntry(i));
         if (entry == nullptr) {
             continue;
         }
@@ -221,7 +222,7 @@ void StatusDown_PopulateItemList(const u8* item_counts) {
     AsdMem_Zero(work->item_entries, sizeof(work->item_entries));
 
     for (u16 i = 0; i < 0x500; ++i) {
-        const ItemTableEntry* entry = Item_GetTableEntry(i);
+        const ItemTableEntry* entry = static_cast<const ItemTableEntry*>(Battle_GetTalkEntry(i));
         if (entry == nullptr || (entry->flags & 1) == 0) {
             continue;
         }
@@ -265,8 +266,8 @@ s32 StatusDown_SkillSortByCostAsc(const void* a, const void* b) {
 
     const SkillTableEntry* sk_a = Skill_GetTableEntry(lhs->value);
     const SkillTableEntry* sk_b = Skill_GetTableEntry(rhs->value);
-    Item_GetTableEntry(lhs->id);
-    Item_GetTableEntry(rhs->id);
+    static_cast<const ItemTableEntry*>(Battle_GetTalkEntry(lhs->id));
+    static_cast<const ItemTableEntry*>(Battle_GetTalkEntry(rhs->id));
 
     const s32 cost_a = Skill_CalcNormalizedCost(sk_a->cost_raw);
     const s32 cost_b = Skill_CalcNormalizedCost(sk_b->cost_raw);
@@ -274,8 +275,8 @@ s32 StatusDown_SkillSortByCostAsc(const void* a, const void* b) {
         return cost_a - cost_b;
     }
 
-    const ItemTableEntry* it_a = Item_GetTableEntry(lhs->id);
-    const ItemTableEntry* it_b = Item_GetTableEntry(rhs->id);
+    const ItemTableEntry* it_a = static_cast<const ItemTableEntry*>(Battle_GetTalkEntry(lhs->id));
+    const ItemTableEntry* it_b = static_cast<const ItemTableEntry*>(Battle_GetTalkEntry(rhs->id));
     if (it_a->category != it_b->category) {
         return static_cast<s32>(it_a->category) - static_cast<s32>(it_b->category);
     }
@@ -300,8 +301,8 @@ s32 StatusDown_SkillSortByIdAsc(const void* a, const void* b) {
     const auto* lhs = static_cast<const StatusDownListEntry*>(a);
     const auto* rhs = static_cast<const StatusDownListEntry*>(b);
 
-    const ItemTableEntry* it_a = Item_GetTableEntry(lhs->id);
-    const ItemTableEntry* it_b = Item_GetTableEntry(rhs->id);
+    const ItemTableEntry* it_a = static_cast<const ItemTableEntry*>(Battle_GetTalkEntry(lhs->id));
+    const ItemTableEntry* it_b = static_cast<const ItemTableEntry*>(Battle_GetTalkEntry(rhs->id));
     if (it_a->category != it_b->category) {
         return static_cast<s32>(it_a->category) - static_cast<s32>(it_b->category);
     }
@@ -326,8 +327,8 @@ s32 StatusDown_ItemSortByTypeAsc(const void* a, const void* b) {
         return static_cast<s32>(lhs->value) - static_cast<s32>(rhs->value);
     }
 
-    const ItemTableEntry* it_a = Item_GetTableEntry(lhs->id);
-    const ItemTableEntry* it_b = Item_GetTableEntry(rhs->id);
+    const ItemTableEntry* it_a = static_cast<const ItemTableEntry*>(Battle_GetTalkEntry(lhs->id));
+    const ItemTableEntry* it_b = static_cast<const ItemTableEntry*>(Battle_GetTalkEntry(rhs->id));
     if (it_a->category != it_b->category) {
         return static_cast<s32>(it_a->category) - static_cast<s32>(it_b->category);
     }
@@ -349,8 +350,8 @@ s32 StatusDown_ItemSortByIdAsc(const void* a, const void* b) {
         return -1;
     }
 
-    const ItemTableEntry* it_a = Item_GetTableEntry(lhs->id);
-    const ItemTableEntry* it_b = Item_GetTableEntry(rhs->id);
+    const ItemTableEntry* it_a = static_cast<const ItemTableEntry*>(Battle_GetTalkEntry(lhs->id));
+    const ItemTableEntry* it_b = static_cast<const ItemTableEntry*>(Battle_GetTalkEntry(rhs->id));
     if (it_a->category != it_b->category) {
         return static_cast<s32>(it_a->category) - static_cast<s32>(it_b->category);
     }
@@ -983,8 +984,8 @@ s32 StatusDown_SkillSortByCostDesc(const void* a, const void* b) {
 
     const SkillTableEntry* sk_a = Skill_GetTableEntry(lhs->value);
     const SkillTableEntry* sk_b = Skill_GetTableEntry(rhs->value);
-    Item_GetTableEntry(lhs->id);
-    Item_GetTableEntry(rhs->id);
+    static_cast<const ItemTableEntry*>(Battle_GetTalkEntry(lhs->id));
+    static_cast<const ItemTableEntry*>(Battle_GetTalkEntry(rhs->id));
 
     const s32 cost_b = Skill_CalcNormalizedCost(sk_b->cost_raw);
     const s32 cost_a = Skill_CalcNormalizedCost(sk_a->cost_raw);
@@ -992,8 +993,8 @@ s32 StatusDown_SkillSortByCostDesc(const void* a, const void* b) {
         return cost_b - cost_a;
     }
 
-    const ItemTableEntry* it_a = Item_GetTableEntry(lhs->id);
-    const ItemTableEntry* it_b = Item_GetTableEntry(rhs->id);
+    const ItemTableEntry* it_a = static_cast<const ItemTableEntry*>(Battle_GetTalkEntry(lhs->id));
+    const ItemTableEntry* it_b = static_cast<const ItemTableEntry*>(Battle_GetTalkEntry(rhs->id));
     if (it_b->category != it_a->category) {
         return static_cast<s32>(it_b->category) - static_cast<s32>(it_a->category);
     }
@@ -1043,8 +1044,8 @@ s32 StatusDown_SkillSortByIdDesc(const void* a, const void* b) {
     const auto* lhs = static_cast<const StatusDownListEntry*>(a);
     const auto* rhs = static_cast<const StatusDownListEntry*>(b);
 
-    const ItemTableEntry* it_a = Item_GetTableEntry(lhs->id);
-    const ItemTableEntry* it_b = Item_GetTableEntry(rhs->id);
+    const ItemTableEntry* it_a = static_cast<const ItemTableEntry*>(Battle_GetTalkEntry(lhs->id));
+    const ItemTableEntry* it_b = static_cast<const ItemTableEntry*>(Battle_GetTalkEntry(rhs->id));
     if (it_b->category != it_a->category) {
         return static_cast<s32>(it_b->category) - static_cast<s32>(it_a->category);
     }
@@ -1069,8 +1070,8 @@ s32 StatusDown_ItemSortByTypeDesc(const void* a, const void* b) {
         return static_cast<s32>(rhs->value) - static_cast<s32>(lhs->value);
     }
 
-    const ItemTableEntry* it_a = Item_GetTableEntry(lhs->id);
-    const ItemTableEntry* it_b = Item_GetTableEntry(rhs->id);
+    const ItemTableEntry* it_a = static_cast<const ItemTableEntry*>(Battle_GetTalkEntry(lhs->id));
+    const ItemTableEntry* it_b = static_cast<const ItemTableEntry*>(Battle_GetTalkEntry(rhs->id));
     if (it_b->category != it_a->category) {
         return static_cast<s32>(it_b->category) - static_cast<s32>(it_a->category);
     }
@@ -1092,8 +1093,8 @@ s32 StatusDown_ItemSortByIdDesc(const void* a, const void* b) {
         return -1;
     }
 
-    const ItemTableEntry* it_a = Item_GetTableEntry(lhs->id);
-    const ItemTableEntry* it_b = Item_GetTableEntry(rhs->id);
+    const ItemTableEntry* it_a = static_cast<const ItemTableEntry*>(Battle_GetTalkEntry(lhs->id));
+    const ItemTableEntry* it_b = static_cast<const ItemTableEntry*>(Battle_GetTalkEntry(rhs->id));
     if (it_b->category != it_a->category) {
         return static_cast<s32>(it_b->category) - static_cast<s32>(it_a->category);
     }

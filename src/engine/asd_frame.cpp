@@ -63,11 +63,8 @@ extern "C" {
     void* AsdGxRenderSystem_func_002c336c(u32 kind);                       // 0x002c336c
     u32   AsdGpu_Address(const void* ptr);                                 // 0x002bc300
 
-    // AsdText layout descriptor helpers (shared with src/engine/asd_text.cpp)
-    void  AsdLayout_Zero(void* block);                                     // 0x002c3344
-    void  AsdLayout_Init(smt4::ui::AsdLayoutRect* rect, u32 a1, u32 a2,
-                         u32 a3, u32 a4, u32 a5, u32 a6, u32 a7, u32 a8,
-                         u32 a9, u32 a10);                                 // 0x002c32f8
+    // The 0x002C3344 / 0x002C32F8 layout helpers are declared canonically as
+    // UiSpriteGroup_Init / UiSpriteGroup_BindTable in engine/asd_symbols.h.
 
     // 2D NPC tables / script hooks
     bool  Flag_CheckEventBit(u32 flag_id);                                 // 0x002c0ba8
@@ -228,11 +225,11 @@ void FrameTex_func_00104378()
     scene->field_14 = 0;                                    // 0x00104400
     scene->field_18 = 0;                                    // 0x00104404
     scene->field_1c = 0;                                    // 0x0010440C
-    AsdLayout_Zero(&scene->header);                         // 0x00104410
+    UiSpriteGroup_Init(&scene->header);                     // 0x00104410
 
     // 0x00104414-0x0010444C: the descriptor constants are passed in r1/r3 and
     // on the stack (see the parameter mapping in include/engine/asd_text.h).
-    AsdLayout_Init(&scene->header,
+    UiSpriteGroup_BindTable(&scene->header,
                    0x0040420C, 0x18, 0x00404224,
                    0x0C, 0x00404230, 0x0C, 0, 0, 0x0040423C, 0x70);
 

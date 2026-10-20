@@ -43,10 +43,8 @@ extern "C" {
     void  AsdScriptText_SetColor(void* obj, u32 color);                     // 0x002bda10
     void* AsdScriptText_Create(u32 index);                                  // 0x002bda1c
     void  AsdScriptText_SetPlacement(void* obj, u32 a1, u32 a2, f32 value); // 0x001182c0
-    void  AsdLayout_Zero(void* block);                                      // 0x002c3344
-    void  AsdLayout_Init(smt4::ui::AsdLayoutRect* rect, u32 a1, u32 a2,
-                         u32 a3, u32 a4, u32 a5, u32 a6, u32 a7, u32 a8,
-                         u32 a9, u32 a10);                                  // 0x002c32f8
+    // The 0x002C3344 / 0x002C32F8 layout helpers are declared canonically as
+    // UiSpriteGroup_Init / UiSpriteGroup_BindTable in engine/asd_symbols.h.
     void  AsdLayout_Setup(void* block, s32 a1, s32 a2);                     // 0x00296f18
     void  AsdLayout_SetupSlots(void* block, u8 a1, u8 a2, u8 a3, u8 a4);    // 0x00296ef8
 }
@@ -532,8 +530,8 @@ void* message_func_002c4c2c()
     AsdUi_CreateLabel("MESS_U RIGHT", 0xDF, 0, 0, 0x00116954, 0, msg,
                       (u32)(std::uintptr_t)msg->ui);
 
-    AsdLayout_Zero(&msg->layout);
-    AsdLayout_Init(&msg->layout,
+    UiSpriteGroup_Init(&msg->layout);
+    UiSpriteGroup_BindTable(&msg->layout,
                    0x00403D8C, 0x78, 0x00403E04, 0x48,
                    0x00403E4C, 0x54, 0, 0,
                    0x00403EA0, 0x310);

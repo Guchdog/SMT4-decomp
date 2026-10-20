@@ -130,7 +130,6 @@ extern "C" {
     void Talk_CommitChoice(s32 value);                                      // 0x0028DF54
     s32  Talk_CheckVisible(s32 value);                                      // 0x00297004
     void Talk_SelectUnit(u16 id);                                           // 0x002BD25C
-    s32  Talk_ChooseIndex(u16 count);                                       // 0x002C0BCC
 
     // btlDebug menu helpers.
     void* AsdList_Create(void* task, u32 prio, u32 a2, u32 a3);             // 0x0025C7C4
@@ -1128,8 +1127,8 @@ s32 btlTalkCommand_func_00318770() {
     if (candidate_count == 0) {
         result = -1;                                    // 0x003188FC
     } else {
-        const s32 index = Talk_ChooseIndex(
-            static_cast<u16>(candidate_count - 1));     // 0x0031890C
+        const s32 index = static_cast<s16>(Random_Range(
+            static_cast<u16>(candidate_count - 1)));    // 0x0031890C
         result = static_cast<s16>(candidates[index]);   // 0x00318918
     }
     Talk_CommitChoice(result);                          // 0x0031891C
