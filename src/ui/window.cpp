@@ -21,7 +21,7 @@ extern "C" {
                              UiSpriteGroup* group, u32 flag, f32 scale);            // 0x002bf0a8
     void  UiAnimSprite_SetAnim(UiAnimSprite* sprite, s32 anim, s32 frame);          // 0x002bf030
     void  UiGpu_BeginPass(void* gpu_state);                                         // 0x002c3ba8
-    void  UiGpu_SetViewportParams(s32 a0, s32 a1);                                 // 0x002c5f7c
+    void* UiGpu_SetViewportParams(s32 a0, s32 a1);                                 // 0x002c5f7c
     void  UiGpu_SetAlphaBlend(f32 alpha);                                           // 0x002bf710
     f32   UiGpu_TransformCoord(void* gpu_state, f32 scale);                         // 0x002ba46c
     void  UiSprite_DrawPanelDirect(s32 type, s32 id, s32 sub_id, s32 x, s32 y, s32 flag); // 0x002bf460

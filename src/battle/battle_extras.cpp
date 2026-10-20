@@ -1,4 +1,5 @@
 #include "battle/battle_extras.h"
+#include "engine/asd_frame.h"
 #include "engine/asd_symbols.h"
 #include "engine/asd_texture.h"
 
@@ -14,7 +15,6 @@ BtlTalkBustUpWork* g_BtlTalkBustUpWork = nullptr;        // 0x00434210
 BtlDebugState g_BtlDebugState = {};                      // 0x00434388
 BtlEditorState* g_BtlEditorState = nullptr;              // 0x00435CE8
 BtlGameOverState* g_BtlGameOverState = nullptr;          // 0x00435D60
-TitleDbgBgWork* g_TitleDbgBgWork = nullptr;              // 0x0043E278
 
 // 0x00476634: low bit gates the one-time identity fill at 0x0033EF30.
 u32 g_EnemyDrawFlags = 0;
@@ -22,7 +22,8 @@ u32 g_EnemyDrawFlags = 0;
 u32 g_FilterXPolyFlags = 0;
 
 // 0x004EFD6C: matrix rebuilt by 0x0033EF68..0x0033EF98 when the flag above is
-// clear.  The stores write 1.0 on the diagonal and 0.0 everywhere else.
+// clear.  Only twelve floats (+0x00..+0x2C) are stored by the listing; the
+// +0x30..+0x3C tail is left untouched.
 f32 g_EnemyDrawMatrix[16] = {
     1.0f, 0.0f, 0.0f, 0.0f,
     0.0f, 1.0f, 0.0f, 0.0f,
@@ -74,7 +75,6 @@ extern "C" {
     void Matrix_Multiply(void* dst, const void* rhs);                       // 0x002A5078
     void Matrix_AddTranslation(void* matrix, const f32* a, const f32* b);   // 0x0015F6D4
     void Matrix_TransformPoint(const void* matrix, const f32* in, f32* out); // 0x002AD6D8
-    void* AsdPrim_Create(u32 type, u32 a1, u32 a2);                         // 0x002C5FA4
 
     // Effect file loading / attachment.
     s32  AsdString_Compare(const char* a, const char* b);                   // 0x002AA7F4
@@ -90,7 +90,6 @@ extern "C" {
     // titleDbgBg helpers.
     void Title_UpdateTextureSize(void* texture, void* size_slot);           // 0x002BFC88
     f32  Camp_GetAspectScale(f32 a, f32 b);                                 // 0x002B9CF8
-    void* UiGpu_GetViewport(u32 mode);                                      // 0x002C5F7C
     void Ui_DrawModel(void* gpu_state, void* model);                        // 0x002C1D3C
     void Title_DrawQuad(void* object, void* a, void* b,
                         f32 s0, f32 s1, f32 s2, f32 s3,
@@ -195,12 +194,13 @@ void EnemyDraw_func_0033eadc(EnemyDrawWork* work) {
     const u32 count = header->count;                    // 0x0033EBB8
 
     // 0x0033EBBC..0x0033EC48: the even/odd unrolled loop sums
-    // `index_array[2 + entry[i].index]` over every entry, then adds the final
-    // entry separately for odd counts.
+    // `*(u16*)(base + 2 + index*4)` over every entry, then adds the final
+    // entry separately for odd counts.  In u16 units that is element
+    // `1 + index*2`.
     u32 record_count = 0;
     const u16* index_array = work->index_array;
     for (u32 i = 0; i < count; ++i) {
-        record_count += index_array[2 + work->entries[i].index * 4];
+        record_count += index_array[1 + work->entries[i].index * 2];
     }
 
     // 0x0033EC48..0x0033ECA8: 0x58-byte render records and 12-byte counters.
@@ -218,12 +218,15 @@ void EnemyDraw_func_0033eadc(EnemyDrawWork* work) {
     for (u32 i = 0; i < count; ++i) {
         EnemyDrawEntry* entry = &work->entries[i];
         const u32 unit_index = entry->index;
-        const u32 sub_count = index_array[2 + unit_index * 4];
+        const u32 sub_count = index_array[1 + unit_index * 2];
         EnemyDrawUnit* unit = &work->units[unit_index];
         EnemyDrawCounter* counter = &work->counters[i];
 
         counter->field_00 = entry->field_04;            // 0x0033ED58
-        counter->field_04 = 0;                          // 0x0033ED74
+        // 0x0033ED3C/0x0033ED74: [sp+0x9C] is the running render-record
+        // index; it is copied into the counter's +0x04 slot before the inner
+        // loop and incremented at 0x0033F324..0x0033F330.
+        counter->field_04 = static_cast<u16>(record_index);
         counter->field_06 = 0;                          // 0x0033ED94
         counter->field_08 = 0;                          // 0x0033EDA8
 
@@ -253,10 +256,10 @@ void EnemyDraw_func_0033eadc(EnemyDrawWork* work) {
             const f32 denom_w = static_cast<f32>(size->width);
             const f32 denom_h = static_cast<f32>(size->height);
 
-            f32 u0 = unit->x / denom_w;
-            f32 v0 = unit->y / denom_h;
-            f32 u1 = (unit->x + unit->width) / denom_w;
-            f32 v1 = (unit->y + unit->height) / denom_h;
+            f32 u0 = unit->uv_x / denom_w;
+            f32 v0 = unit->uv_y / denom_h;
+            f32 u1 = (unit->uv_x + unit->uv_width) / denom_w;
+            f32 v1 = (unit->uv_y + unit->uv_height) / denom_h;
             if ((unit->flags_27 & 1) != 0) {            // 0x0033EEFC
                 const f32 tmp = u0; u0 = u1; u1 = tmp;
             }
@@ -269,7 +272,7 @@ void EnemyDraw_func_0033eadc(EnemyDrawWork* work) {
                 static_cast<f32>(unit->field_23) * alpha_bias;   // 0x0033EF3C
 
             // 0x0033EF30..0x0033EF98: one-time identity image for the
-            // battle draw matrix (0x004EFD6C).
+            // battle draw matrix (0x004EFD6C).  The stores stop at +0x2C.
             if ((g_EnemyDrawFlags & 1) == 0) {
                 if (Gpu_CheckDrawFlag(&g_EnemyDrawFlags) != 0) {
                     g_EnemyDrawMatrix[0] = 1.0f;
@@ -284,10 +287,6 @@ void EnemyDraw_func_0033eadc(EnemyDrawWork* work) {
                     g_EnemyDrawMatrix[9] = 0.0f;
                     g_EnemyDrawMatrix[10] = 1.0f;
                     g_EnemyDrawMatrix[11] = 0.0f;
-                    g_EnemyDrawMatrix[12] = 0.0f;
-                    g_EnemyDrawMatrix[13] = 0.0f;
-                    g_EnemyDrawMatrix[14] = 0.0f;
-                    g_EnemyDrawMatrix[15] = 1.0f;
                 }
             }
 
@@ -375,8 +374,8 @@ void EnemyDraw_func_0033eadc(EnemyDrawWork* work) {
             render->matrix[2] = u1;                             // +0x38
             render->matrix[3] = u1;                             // +0x3C
             render->matrix[4] = v0;                             // +0x40
-            render->matrix[5] = v0;                             // +0x44
-            render->matrix[6] = v1;                             // +0x48
+            render->matrix[5] = v1;                             // +0x44
+            render->matrix[6] = v0;                             // +0x48
             render->matrix[7] = v1;                             // +0x4C (0x0033F260)
             render->alpha = static_cast<f32>(unit->field_22) *
                             0.0099999998f;                       // 0x3C23D70A
@@ -386,16 +385,16 @@ void EnemyDraw_func_0033eadc(EnemyDrawWork* work) {
             // texture/vertex layout for the same draw record.
             switch (unit->mode_26) {
             case 0:
-                render->primitive = AsdPrim_Create(6, 7, 0);
+                render->primitive = UiGpu_SetRenderMode(6, 7, 0);
                 break;
             case 1:
-                render->primitive = AsdPrim_Create(6, 1, 0);
+                render->primitive = UiGpu_SetRenderMode(6, 1, 0);
                 break;
             case 2:
-                render->primitive = AsdPrim_Create(6, 1, 2);
+                render->primitive = UiGpu_SetRenderMode(6, 1, 2);
                 break;
             case 3:
-                render->primitive = AsdPrim_Create(5, 0, 1);
+                render->primitive = UiGpu_SetRenderMode(5, 0, 1);
                 break;
             default:
                 break;
@@ -473,11 +472,16 @@ s32 EftLoadFile_func_00249fac(s32 effect_id, const u8* path) {
                 EftRecord* dst = reinterpret_cast<EftRecord*>(
                     work + i * sizeof(EftRecord));
                 AsdMem_Copy(dst->transform, src, 0x20);
-                AsdMem_Copy(dst->pad_020, src + 0x20, 0x134);   // 0x0024A110
-                AsdMem_Copy(dst->pad_154, src + 0x154, 0xB0);   // 0x0024A120
+                AsdMem_CopyLarge(dst->pad_020, src + 0x20, 0x134);   // 0x0024A110
+                AsdMem_CopyLarge(dst->pad_154, src + 0x154, 0xB0);   // 0x0024A120
                 dst->flag_344 = src[0x224];                     // 0x0024A130
                 reinterpret_cast<u8*>(dst)[0x151] = 0;          // 0x0024A138
-                AsdMem_Copy(dst->anim, src + 0x204, 0x20);      // 0x0024A140
+                // 0x0024A140: `vldmia r1` / `vstmia r1` copies the eight
+                // floats directly (no memcpy call).
+                const f32* anim_src = reinterpret_cast<const f32*>(src + 0x204);
+                for (u32 k = 0; k < 8; ++k) {
+                    dst->anim[k] = anim_src[k];
+                }
                 dst->field_224 = 0;                             // 0x0024A14C
                 dst->field_228 = 0;                             // 0x0024A150
             }
@@ -490,12 +494,17 @@ s32 EftLoadFile_func_00249fac(s32 effect_id, const u8* path) {
             }
         }
     } else if (has_names == 0) {
-        // 0x0024A1D0..0x0024A258: fill the four 0x20-byte name buffers with
+        // 0x0024A1D0..0x0024A258: only the three name blocks at sp+0x20,
+        // sp+0x50 and sp+0x78 (scratch1..3) are initialised; each gets
         // 0xFF at +0x00..+0x02 and zero elsewhere.
-        for (u32 i = 0; i < 4; ++i) {
-            u8* dst = reinterpret_cast<u8*>(scratch0) + i * 0x20;
+        u8* blocks[3] = {
+            reinterpret_cast<u8*>(scratch1),
+            reinterpret_cast<u8*>(scratch2),
+            reinterpret_cast<u8*>(scratch3),
+        };
+        for (u32 i = 0; i < 3; ++i) {
             for (u32 k = 0; k < 3; ++k) {
-                dst[k] = 0xFF;
+                blocks[i][k] = 0xFF;
             }
         }
     }
@@ -536,10 +545,12 @@ s32 EftLoadFile_func_00249fac(s32 effect_id, const u8* path) {
             }
         }
         if (version == '1' && sub_version <= '6') {
-            scratch0[0] = 0;                            // 0x0024A348
-            scratch1[0] = 0;                            // 0x0024A34C
-            scratch2[0] = 0;                            // 0x0024A350
-            scratch3[0] = 0;                            // 0x0024A354
+            // 0x0024A348..0x0024A354 clears the first byte of each 8-byte
+            // entry in the sp+0x98 name block (scratch0 +0/8/0x10/0x18).
+            scratch0[0] = 0;
+            scratch0[8] = 0;
+            scratch0[0x10] = 0;
+            scratch0[0x18] = 0;
         }
     }
 
@@ -558,10 +569,13 @@ s32 EftLoadFile_func_00249fac(s32 effect_id, const u8* path) {
             if (len < 3) {
                 continue;
             }
-            u8* suffix = sub + 0x201;
+            // 0x0024A3E4: r5 = sub + len; the suffix pointer is therefore
+            // sub + 0x201 + len, i.e. the final three characters of the
+            // 0x204-based name.
+            u8* suffix = sub + 0x201 + len;
             if (AsdString_Compare(reinterpret_cast<const char*>(suffix), "_35") == 0 ||
                 AsdString_Compare(reinterpret_cast<const char*>(suffix), "_53") == 0) {
-                sub[0x201] = 0;                         // 0x0024A424
+                *suffix = 0;                            // 0x0024A424
             }
         }
     }
@@ -587,7 +601,7 @@ s32 EftLoadFile_func_00249fac(s32 effect_id, const u8* path) {
     // 0x0024A4A8..0x0024A4E8: 0x140-byte item array copied from header+0x9C.
     EftItem* items = static_cast<EftItem*>(
         AsdMem_Alloc(0x100, 0x100, 0, 0x140, 1));
-    AsdMem_Copy(items, reinterpret_cast<const u8*>(header) + 0x9C,
+    AsdMem_CopyLarge(items, reinterpret_cast<const u8*>(header) + 0x9C,
                 header->item_count * sizeof(EftItem));
 
     if (convert_items != 0) {
@@ -611,8 +625,10 @@ s32 EftLoadFile_func_00249fac(s32 effect_id, const u8* path) {
                     }
                     *color = static_cast<u8>(value);
                 }
+                // 0x0024A560..0x0024A56C: r5 = 3*j and the byte address is
+                // record + 0x1A0 + r5*8, i.e. a 0x18 stride for this array.
                 u32* wide = reinterpret_cast<u32*>(
-                    record + 0x1A0 + j * 0x44);
+                    record + 0x1A0 + j * 0x18);
                 if (*wide != 0) {
                     s32 value;
                     if (*wide >= 0x1F) {
@@ -634,11 +650,20 @@ s32 EftLoadFile_func_00249fac(s32 effect_id, const u8* path) {
             }
         }
 
-        // 0x0024A5FC..0x0024A718: same colour conversion for the four name
-        // buffers' +0x03 bytes.
+        // 0x0024A5FC..0x0024A718: four name blocks, each walked as four
+        // 8-byte entries; the converted byte is entry +0x03.
+        u8* name_blocks[4] = {
+            reinterpret_cast<u8*>(scratch0),
+            reinterpret_cast<u8*>(scratch1),
+            reinterpret_cast<u8*>(scratch2),
+            reinterpret_cast<u8*>(scratch3),
+        };
         for (u32 i = 0; i < 4; ++i) {
-            u8* name = reinterpret_cast<u8*>(scratch0) + i * 0x20;
-            if (name[3] != 0) {
+            for (u32 k = 0; k < 4; ++k) {
+                u8* name = name_blocks[i] + k * 8;
+                if (name[3] == 0) {
+                    continue;
+                }
                 s32 value;
                 if (name[3] >= 0x1F) {
                     value = 0xFF;                       // 0x0024A624 `movge`
@@ -668,7 +693,9 @@ s32 EftLoadFile_func_00249fac(s32 effect_id, const u8* path) {
     // 0x0024A774..0x0024A7E8: hand the pieces to the effect manager.
     Eft_AttachRecords(effect_id, work, header->effect_count);
     Eft_AttachItems(effect_id, items, header->item_count);
-    Eft_AttachHeader(effect_id, reinterpret_cast<const u8*>(header) + 4);
+    // 0x0024A7B0: r1 = r8 + 0xC, i.e. path + 0x14 == header + 0xC.
+    Eft_AttachHeader(effect_id,
+                     reinterpret_cast<const u8*>(header) + 0x0C);
     Eft_SetNameA(effect_id, name0);
     Eft_SetNameB(effect_id, name1);
     Eft_SetNameC(effect_id, name2);
@@ -682,6 +709,43 @@ s32 EftLoadFile_func_00249fac(s32 effect_id, const u8* path) {
 // ---------------------------------------------------------------------------
 // titleDbgBg.cpp
 // ---------------------------------------------------------------------------
+
+// Documented view over the existing `g_FrameTex` singleton (0x0043E278).
+// titleDbgBg reaches the fields below through the same pointer loaded from
+// 0x0043E278 (`ldr r0,[pc,...]` / `ldr r4,[r0]`, 0x00117CB0..0x00117CCC).
+// The +0x13DC slot lies past the 0xFEC-byte FrameTexScene reconstructed in
+// engine/asd_frame.cpp, so it is modelled here without introducing a second
+// global for the address.
+struct TitleDbgBgView {
+    u8  pad_0000[0xEE4];
+    u8  field_ee4;                      // +0x0EE4: `ldrb r0,[r4,#0xee4]` (0x00117D90)
+    u8  pad_ee5[3];
+    f32 field_ee8;                      // +0x0EE8: `vldr s0,[ip,#0x2e8]` (0x00117F9C)
+    f32 field_eec;                      // +0x0EEC: `vldr s3,[ip,#0x2ec]` (0x00117F94)
+    f32 field_ef0;                      // +0x0EF0: `vldr s6,[ip,#0x2f0]` (0x00117F8C)
+    f32 field_ef4;                      // +0x0EF4: `vldr s9,[ip,#0x2f4]` (0x00117F84)
+    f32 field_ef8;                      // +0x0EF8: `vldr s1,[ip,#0x2f8]` (0x00117F98)
+    f32 field_efc;                      // +0x0EFC: `vldr s4,[ip,#0x2fc]` (0x00117F90)
+    f32 field_f00;                      // +0x0F00: `vldr s7,[ip,#0x300]` (0x00117F88)
+    f32 field_f04;                      // +0x0F04: `vldr s10,[ip,#0x304]` (0x00117F80)
+    u8  pad_f08[8];
+    void* field_f10;                    // +0x0F10: `ldr r3,[r4,#0xf10]` (0x00117F5C)
+    f32 field_f14;                      // +0x0F14: `vldr s2,[ip,#0x314]` (0x00117F60)
+    s32 field_f18;                      // +0x0F18: `ldr r0,[r4,#0xf18]` (0x00117E50)
+    u8  field_f1c;                      // +0x0F1C: `ldrb r0,[r4,#0xf1c]` (0x00117DC4)
+    u8  pad_f1d[3];
+    engine::AsdTexture* overlay_textures[2]; // +0x0F20/+0x0F24
+    u8  pad_f28[0xB4];
+    engine::AsdTexture* field_fdc;      // +0x0FDC: `ldr r6,[r4,#0xfdc]` (0x00117D94)
+    u8  pad_fe0[0x3FC];                 // +0x0FE0..+0x13DC
+    engine::AsdTexture* field_13dc;     // +0x13DC: `ldr r2,[r5]` (0x00117CF8)
+};
+static_assert(offsetof(TitleDbgBgView, field_ee4) == 0xEE4);
+static_assert(offsetof(TitleDbgBgView, field_f10) == 0xF10);
+static_assert(offsetof(TitleDbgBgView, field_f18) == 0xF18);
+static_assert(offsetof(TitleDbgBgView, overlay_textures) == 0xF20);
+static_assert(offsetof(TitleDbgBgView, field_fdc) == 0xFDC);
+static_assert(offsetof(TitleDbgBgView, field_13dc) == 0x13DC);
 
 static void AsdGpuList_Push(u8* gpu, u32 table_offset, void* task) {
     u32* header = reinterpret_cast<u32*>(gpu + table_offset);
@@ -722,7 +786,7 @@ static void AsdGpuList_Pop(u8* gpu, u32 table_offset) {
 
 // DECOMP_FUNC(0x00117ca4, 1292)
 void titleDbgBg_func_00117ca4(s32 mode) {
-    TitleDbgBgWork* work = g_TitleDbgBgWork;
+    TitleDbgBgView* work = reinterpret_cast<TitleDbgBgView*>(engine::g_FrameTex);
     // 0x00117CD0 tests the flags left by the address add at 0x00117CC8.  The
     // add cannot produce zero for a live scene pointer, so the two arms are
     // reconstructed as the mode-selected A/B texture pair they write.
@@ -734,8 +798,10 @@ void titleDbgBg_func_00117ca4(s32 mode) {
         work->field_fdc->width = texture->width;        // 0x00117CF0
         work->field_fdc->height = texture->height;      // 0x00117D00
         Title_UpdateTextureSize(texture, work->field_13dc); // 0x00117D0C
-        texture->width >>= 1;                           // 0x00117D1C `asr`
-        texture->height >>= 1;                          // 0x00117D2C `asr`
+        // 0x00117D10..0x00117D2C reloads `[r5]` (work+0x13DC) and halves
+        // that texture, not the 0xF20/0xF24 overlay.
+        work->field_13dc->width >>= 1;
+        work->field_13dc->height >>= 1;
     }
 
     engine::AsdTexture* const target = work->field_fdc;
@@ -755,19 +821,19 @@ void titleDbgBg_func_00117ca4(s32 mode) {
     target->field_3c = enabled;                         // 0x00117DE8
     target->field_40 = enabled;                         // 0x00117DEC
 
-    void* viewport = UiGpu_GetViewport(1);              // 0x00117E0C
+    void* viewport = UiGpu_SetViewportParams(1, 0);     // 0x00117E0C
     AsdGpuList_Push(g_AsdGpuState, 0x124C, viewport);    // 0x00117E10
 
     void* primitive = nullptr;
     switch (work->field_f18) {                          // 0x00117E50
     case 0:
-        primitive = AsdPrim_Create(6, 7, 0);            // 0x00117E80
+        primitive = UiGpu_SetRenderMode(6, 7, 0);            // 0x00117E80
         break;
     case 1:
-        primitive = AsdPrim_Create(6, 1, 0);            // 0x00117EC0
+        primitive = UiGpu_SetRenderMode(6, 1, 0);            // 0x00117EC0
         break;
     case 2:
-        primitive = AsdPrim_Create(6, 1, 2);            // 0x00117F00
+        primitive = UiGpu_SetRenderMode(6, 1, 2);            // 0x00117F00
         break;
     default:
         break;
@@ -787,7 +853,7 @@ void titleDbgBg_func_00117ca4(s32 mode) {
                    0.0f, 0.0f, 0.0f, inv_h);           // 0x00117FA8
 
     if (work->field_f18 != 0) {
-        void* pop_primitive = AsdPrim_Create(6, 7, 0);  // 0x00117FC8
+        void* pop_primitive = UiGpu_SetRenderMode(6, 7, 0);  // 0x00117FC8
         AsdGpuList_Push(g_AsdGpuState, 0x12AC, pop_primitive);
     }
     AsdGpuList_Pop(g_AsdGpuState, 0x124C);               // 0x00118000
@@ -831,7 +897,6 @@ void FilterXPoly_func_00348548(FilterXPolyWork* self, void* source, s32 arg) {
     f32 s11 = 0.0f;
     f32 s12 = 0.0f;
     f32 s13 = 0.0f;
-    f32 s14 = 0.0f;
 
     const f32 uv_scale = self->data->field_04;          // 0x00348718
     f32 angle = step;
@@ -841,25 +906,24 @@ void FilterXPoly_func_00348548(FilterXPolyWork* self, void* source, s32 arg) {
         angle -= 65536.0f;
     }
     const u32 index = static_cast<u32>(angle) & 0xFF;
-    const FilterTrigRow& row_a = g_FilterTrigTable[0];
-    const FilterTrigRow& row_b = g_FilterTrigTable[(negative ? 1u : 0u)];
+    const FilterTrigRow& row0 = g_FilterTrigTable[0];
     const FilterTrigRow& row_c = g_FilterTrigTable[index];
 
-    s5 = 0.0f - row_a.z;                                // s4 = 0, s6 = row_a.z
-    s10 = row_b.x - row_a.x;                            // 0x003486A4
-    s14 = 0.0f - row_a.y;                               // 0x003486B0
-
-    const f32 s4v = row_a.y - row_b.y;                  // 0x003486B0 `vsub s4`
-    s2 = row_a.x + s5 * row_a.w;                        // 0x003486BC
+    // 0x0034868C..0x003486E0.  s4 (and therefore s5) is zero, both lookup
+    // rows are table[0], and s10 = angle - float(u16(angle)).
+    s10 = angle - static_cast<f32>(static_cast<u16>(angle));
+    s5 = 0.0f;                                          // s4 - float(u16(s4))
+    s2 = row0.x;                                        // row.x + s5*row.z
+    s3v = row0.y;                                       // row.y + s5*row.w
+    s0 = row0.x;                                        // row.x + s4*row.z
+    s1 = row0.y;                                        // row.y + s4*row.w
     s8 = row_c.x + s10 * row_c.z;                       // 0x003486D0
-    s3v = row_a.y + s5 * row_a.w;                       // 0x003486D4
-    s0 = row_b.x + s4v * row_b.z;                       // 0x003486D8
     s7 = row_c.y + s10 * row_c.w;                       // 0x003486DC
-    s1 = row_b.y + s4v * row_b.w;                       // 0x003486E0
+    if (negative) {                                     // 0x003486F4 `vnegne s8`
+        s8 = -s8;
+    }
 
-    // 0x00348730..0x0034873C: quaternion-style cross products.  The three
-    // `vnegne` instructions at 0x003486E4/0x003486F0/0x003486F8 test zero
-    // registers (r3/ip/r2) and therefore never negate on this path.
+    // 0x00348730..0x0034873C: quaternion-style cross products.
     s5 = s3v * s7;
     s6 = s2 * s7;
     s10 = s3v * s1;
@@ -963,13 +1027,15 @@ void* EffectProcess_func_002217d8(u8 mode) {
     const f32 up[3] = {0.0f, 1.0f, 0.0f};               // [sp+0x10..0x18]
     Effect_SetVectors(work, &work->field_508, &work->field_514,
                       up);                              // 0x002218C4
-    Effect_SetDrawParams(work, 1, work->field_520, 0.1f, 102400.0f,
-                         0.33333334f);                  // 0x3FD55555 (0x002218E0)
+    Effect_SetDrawParams(work, 1, work->field_520, 0.1f, 25600.0f,
+                         0.33333334f);                  // 0x46C80000 / 0x3FD55555
 
     // 0x002218E4..0x0022190C: "EffectProc" calculation task.
+    // 0x002218E4..0x00221908: stack word [0] = 0x0017FAE4 (5th argument,
+    // callback), [4] = 0x001DC8C8 (6th), [8] = work (7th).
     work->task = AsdTask_CreateCalc("EffectProc", 2, 0, 0,
-                                    TaskCallback(0x001DC8C8),
-                                    0x0017FAE4, TaskUserData(work));
+                                    TaskCallback(0x0017FAE4),
+                                    0x001DC8C8, TaskUserData(work));
 
     // 0x00221910..0x002219A4: 2D-only or 3D+2D draw tasks.
     if (work->mode != 0) {
@@ -1019,30 +1085,34 @@ s32 btlTalkCommand_func_00318770() {
         AsdMem_Alloc(0x100, 0x100, 0, 0x962, 1));
     u32 candidate_count = 0;
 
-    u8 talk_max = reinterpret_cast<const u8*>(ScriptVm_GetTalkState())[0x76];
-    const u8 unit_limit = reinterpret_cast<const u8*>(unit)[0x02];
-    if (talk_max > unit_limit) {
-        // 0x00318820..0x00318858: visible range is at least the unit limit.
-        talk_max = reinterpret_cast<const u8*>(ScriptVm_GetTalkState())[0x76];
-        s32 low = static_cast<s32>(talk_max);
-        const s32 half = low / 2;
-        const s32 margin = (half < 10) ? 10 : half;
-        s32 threshold = static_cast<s16>(low - margin);
-        if (Talk_CheckVisible(threshold) <= 0) {
-            Talk_CommitChoice(-1);                      // 0x00318858
-            AsdMem_Free(candidates);                    // 0x00318920
-            return 1;
-        }
+    // 0x0031880C..0x00318844: the `bhi` at 0x0031881C only skips a redundant
+    // reload of the same ScriptVm byte; the threshold block itself is always
+    // executed.  r6 = talk_max - max(10, talk_max/2).
+    const u8 talk_max = reinterpret_cast<const u8*>(
+        ScriptVm_GetTalkState())[0x76];
+    s32 lower = static_cast<s32>(talk_max);
+    const s32 half = lower / 2;
+    const s32 margin = (half < 10) ? 10 : half;
+    lower = static_cast<s16>(lower - margin);
+    if (Talk_CheckVisible(lower) <= 0) {                // 0x00318848
+        Talk_CommitChoice(-1);                          // 0x0031885C
+        AsdMem_Free(candidates);                        // 0x00318920
+        return 1;
+    }
+    // 0x00318880: clamp the scan's lower bound to 1.
+    if (lower <= 0) {
+        lower = 1;
     }
 
-    // 0x00318888..0x003188F4: scan ids 1..0x4B0 for visible talk entries.
+    // 0x00318888..0x003188F4: scan ids 1..0x4B0; the record's field_03 is
+    // compared against r6 (lower) and r7 (talk_max), not the unit limit.
     for (u32 id = 1; id <= 0x4B0; ++id) {
         const u16 narrow = static_cast<u16>(id);
         BtlTalkUnitRecord* row =
             static_cast<BtlTalkUnitRecord*>(Battle_GetTalkEntry(narrow));
         BtlTalkUnitRecord* unit_row =
             static_cast<BtlTalkUnitRecord*>(Battle_GetTalkUnit(narrow));
-        if (row->field_03 >= unit_limit &&
+        if (row->field_03 >= lower &&
             talk_max >= row->field_03 &&
             (unit_row->flags & 0x0400) != 0 &&
             Talk_CheckUnit(row->id) == 0) {
@@ -1083,11 +1153,13 @@ void btlDebug_func_001e1f4c(BtlDebugWork* work, void* arg) {
                        TaskCallback(0x0021EBE0), 0, TaskUserData(work),
                        work->calc_task);                // 0x001E1FF4
 
-    // 0x001E1FF8..0x001E2038: 0xE5C-byte debug menu state.
-    void* menu_state = AsdMem_Alloc(0x100, 0x100, 0, 0xE5C, 1);
+    // 0x001E2008..0x001E2038: r3 = 0x20, so the allocation is 0x20 bytes
+    // (0xE5C is the source-line immediate).  +0x00 = 0, +0x04 = arg; the
+    // global only receives +0x08 (pointer) and +0x02 (zero).
+    void* menu_state = AsdMem_Alloc(0x100, 0x100, 0, 0x20, 1);
+    *reinterpret_cast<u32*>(menu_state) = 0;            // 0x001E2034
+    *reinterpret_cast<void**>(static_cast<u8*>(menu_state) + 4) = arg; // 0x001E2030
     g_BtlDebugState.work = menu_state;                  // 0x001E202C
-    g_BtlDebugState.arg = arg;                          // 0x001E2030
-    g_BtlDebugState.field_00 = 0;                       // 0x001E2034
     g_BtlDebugState.field_02 = 0;                       // 0x001E2038
 
     if (arg == nullptr) {

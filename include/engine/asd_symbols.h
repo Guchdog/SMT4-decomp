@@ -27,6 +27,12 @@ extern "C" {
     // 0x002C583C (16 B): global table slot lookup (`ldr r0,[table+index*4]`).
     void* AsdSound_GetTableEntry(u32 index);
 
+    // 0x002C5F7C / 0x002C5FA4: GPU viewport selection and primitive/render
+    // mode selection.  These are the canonical spellings used by the UI TUs;
+    // the battle title/enemy-draw paths reach the same routines.
+    void* UiGpu_SetViewportParams(s32 a0, s32 a1);
+    void* UiGpu_SetRenderMode(s32 a0, s32 a1, s32 a2);
+
     // 0x002BCE38 (12 B): master-volume update; the value arrives in s0.
     void AsdSound_SetMasterVolume(f32 volume);
 

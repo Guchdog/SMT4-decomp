@@ -17,10 +17,10 @@ extern "C" {
     s32   UiAnimSprite_GetPosY(const UiAnimSprite* sprite);                         // 0x002bef70
     f32   UiGpu_TransformCoord(void* gpu_state, f32 scale);                         // 0x002ba46c
     void  UiGpu_BeginPass(void* gpu_state);                                         // 0x002c3ba8
-    void  UiGpu_SetViewportParams(s32 a0, s32 a1);                                 // 0x002c5f7c
+    void* UiGpu_SetViewportParams(s32 a0, s32 a1);                                 // 0x002c5f7c
     void  UiGpu_SetAlphaBlend(f32 alpha);                                           // 0x002bf710
     void  UiSprite_DrawPanelDirect(s32 type, s32 id, s32 sub_id, s32 x, s32 y, s32 flag); // 0x002bf460
-    void  UiGpu_SetRenderMode(s32 a0, s32 a1, s32 a2);                              // 0x002c5fa4
+    void* UiGpu_SetRenderMode(s32 a0, s32 a1, s32 a2);                              // 0x002c5fa4
     void  UiSprite_DrawText(s32 a0, s32 a1, s32 a2, ...);                          // 0x002be77c
     void  UiGpu_EndPass1(void* gpu_state);                                          // 0x002c1b64
     void  UiGpu_EndPass2(void* gpu_state);                                          // 0x002c1abc

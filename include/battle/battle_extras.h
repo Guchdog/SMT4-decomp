@@ -45,11 +45,14 @@ static_assert(sizeof(EnemyDrawEntry) == 0x18);
 
 /** One 0x28-byte model/motion record in the array at `EnemyDrawWork::+0x18`. */
 struct EnemyDrawUnit {
-    u8  pad_00[0x10];                   // +0x00..+0x10
-    f32 x;                              // +0x10: `vldr s0,[r6,#0x10]` (0x0033eeb0)
-    f32 y;                              // +0x14: `vldr s3,[r6,#0x14]` (0x0033eec0)
-    f32 width;                          // +0x18: `vldmia r0,{s1,s2}` with r0=r6+0x18
-    f32 height;                         // +0x1C: second word of 0x0033eeb8
+    f32 x;                              // +0x00: `vldr s0,[r6]` (0x0033f078)
+    f32 y;                              // +0x04: `vldr s3,[r6,#4]` (0x0033f084)
+    f32 width;                          // +0x08: `vldr s4,[r6,#8]` (0x0033f080)
+    f32 height;                         // +0x0C: `vldr s3,[r6,#0xc]` (0x0033f070)
+    f32 uv_x;                           // +0x10: `vldr s0,[r6,#0x10]` (0x0033eeb0)
+    f32 uv_y;                           // +0x14: `vldr s3,[r6,#0x14]` (0x0033eec0)
+    f32 uv_width;                       // +0x18: `vldmia r0,{s1,s2}` with r0=r6+0x18
+    f32 uv_height;                      // +0x1C: second word of 0x0033eeb8
     u16 field_20;                       // +0x20: `ldrh r0,[r6,#0x20]` (0x0033efac)
     u8  field_22;                       // +0x22: `ldrb r1,[r6,#0x22]` (0x0033f280)
     u8  field_23;                       // +0x23: `ldrb r0,[r6,#0x23]` (0x0033ef20)
@@ -58,7 +61,8 @@ struct EnemyDrawUnit {
     u8  mode_26;                        // +0x26: `ldrb r0,[r6,#0x26]` (0x0033f294)
     u8  flags_27;                       // +0x27: `ldrb r0,[r6,#0x27]` (0x0033eec4)
 };
-static_assert(offsetof(EnemyDrawUnit, x) == 0x10);
+static_assert(offsetof(EnemyDrawUnit, width) == 0x08);
+static_assert(offsetof(EnemyDrawUnit, uv_x) == 0x10);
 static_assert(offsetof(EnemyDrawUnit, field_20) == 0x20);
 static_assert(offsetof(EnemyDrawUnit, model_index) == 0x24);
 static_assert(offsetof(EnemyDrawUnit, flags_27) == 0x27);
@@ -210,46 +214,10 @@ s32 EftLoadFile_func_00249fac(s32 effect_id, const u8* path);
 //   c:\SMT4\XRD686\sdds4\program\title\titleDbgBg.cpp
 // ---------------------------------------------------------------------------
 
-/**
- * Title debug-background scene.  The listing reaches +0x13DC through r5
- * (`add r5,r5,#0x3dc` after `add r5,r0,#0xc00`, 0x00117CC0/0x00117CC8), so
- * this reconstruction keeps a scene-local type rather than reusing the
- * 0xFEC-byte FrameTexScene from engine/asd_frame.h.
- */
-struct TitleDbgBgWork {
-    u8  pad_0000[0xEE4];
-    u8  field_ee4;                      // +0x0EE4: `ldrb r0,[r4,#0xee4]` (0x00117D90)
-    u8  pad_ee5[3];
-    f32 field_ee8;                      // +0x0EE8: `vldr s0,[ip,#0x2e8]` (0x00117F9C)
-    f32 field_eec;                      // +0x0EEC: `vldr s3,[ip,#0x2ec]` (0x00117F94)
-    f32 field_ef0;                      // +0x0EF0: `vldr s6,[ip,#0x2f0]` (0x00117F8C)
-    f32 field_ef4;                      // +0x0EF4: `vldr s9,[ip,#0x2f4]` (0x00117F84)
-    f32 field_ef8;                      // +0x0EF8: `vldr s1,[ip,#0x2f8]` (0x00117F98)
-    f32 field_efc;                      // +0x0EFC: `vldr s4,[ip,#0x2fc]` (0x00117F90)
-    f32 field_f00;                      // +0x0F00: `vldr s7,[ip,#0x300]` (0x00117F88)
-    f32 field_f04;                      // +0x0F04: `vldr s10,[ip,#0x304]` (0x00117F80)
-    u8  pad_f08[8];
-    void* field_f10;                    // +0x0F10: `ldr r3,[r4,#0xf10]` (0x00117F5C)
-    f32 field_f14;                      // +0x0F14: `vldr s2,[ip,#0x314]` (0x00117F60)
-    s32 field_f18;                      // +0x0F18: `ldr r0,[r4,#0xf18]` (0x00117E50)
-    u8  field_f1c;                      // +0x0F1C: `ldrb r0,[r4,#0xf1c]` (0x00117DC4)
-    u8  pad_f1d[3];
-    engine::AsdTexture* overlay_textures[2]; // +0x0F20/+0x0F24
-    u8  pad_f28[0xB4];
-    engine::AsdTexture* field_fdc;      // +0x0FDC: `ldr r6,[r4,#0xfdc]` (0x00117D94)
-    u8  pad_fe0[0x3FC];                 // +0x0FE0..+0x13DC
-    engine::AsdTexture* field_13dc;     // +0x13DC: `ldr r2,[r5]` (0x00117CF8)
-};
-static_assert(offsetof(TitleDbgBgWork, field_ee4) == 0xEE4);
-static_assert(offsetof(TitleDbgBgWork, field_ee8) == 0xEE8);
-static_assert(offsetof(TitleDbgBgWork, field_f10) == 0xF10);
-static_assert(offsetof(TitleDbgBgWork, field_f18) == 0xF18);
-static_assert(offsetof(TitleDbgBgWork, field_f1c) == 0xF1C);
-static_assert(offsetof(TitleDbgBgWork, overlay_textures) == 0xF20);
-static_assert(offsetof(TitleDbgBgWork, field_fdc) == 0xFDC);
-static_assert(offsetof(TitleDbgBgWork, field_13dc) == 0x13DC);
-
-extern TitleDbgBgWork* g_TitleDbgBgWork;     // 0x0043E278
+// titleDbgBg operates on the existing `engine::g_FrameTex` singleton at
+// 0x0043E278.  The title-specific fields (0xEE4..0x13DC) are a documented
+// overlay declared in src/battle/battle_extras.cpp; no second global is
+// introduced for the same address.
 
 void titleDbgBg_func_00117ca4(s32 mode);
 
@@ -391,10 +359,10 @@ static_assert(sizeof(BtlDebugWork) == 0x44AC);
 
 /** Debug-menu state at 0x00434388 (`str r0,[r2,#8]`, 0x001E202C). */
 struct BtlDebugState {
-    u32 field_00;                       // +0x00 = 0 (0x001E2034)
+    u8  pad_00[2];
     u16 field_02;                       // +0x02 = 0 (0x001E2038)
-    void* arg;                          // +0x04 = init argument (0x001E2030)
-    void* work;                         // +0x08 = allocated 0xE5C block (0x001E202C)
+    u8  pad_04[4];
+    void* work;                         // +0x08 = allocated 0x20 block (0x001E202C)
 };
 
 extern BtlDebugState g_BtlDebugState;   // 0x00434388
