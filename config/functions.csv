@@ -4448,9 +4448,9 @@ address,size,status,category,name,src_file
 0x0028a494,236,todo,engine,engine_func_0028a494,
 0x0028a580,80,todo,camp,camp_func_0028a580,
 0x0028a5d0,184,todo,camp,camp_func_0028a5d0,
-0x0028a688,1284,todo,camp,Camp_func_0028a688,
-0x0028ab8c,3796,todo,camp,camp_func_0028ab8c,
-0x0028ba60,1608,todo,camp,PartyPanel_func_0028ba60,
+0x0028a688,1284,non_matching,camp,Camp_Init,src/camp/camp.cpp
+0x0028ab8c,3796,non_matching,camp,Camp_Calc,src/camp/camp.cpp
+0x0028ba60,1608,non_matching,camp,PartyPanel_DrawAndCalc,src/camp/camp.cpp
 0x0028c0a8,16,todo,camp,camp_func_0028c0a8,
 0x0028c0b8,52,todo,camp,camp_func_0028c0b8,
 0x0028c0ec,56,todo,camp,camp_func_0028c0ec,
@@ -6155,7 +6155,7 @@ address,size,status,category,name,src_file
 0x002e22b4,104,todo,battle,battle_func_002e22b4,
 0x002e231c,48,todo,engine,engine_func_002e231c,
 0x002e234c,264,todo,unknown,func_002e234c,
-0x002e2454,764,todo,camp,GauntletAppMenu_func_002e2454,
+0x002e2454,764,non_matching,camp,GauntletAppMenu_Init,src/camp/camp.cpp
 0x002e2750,184,todo,ui,ui_func_002e2750,
 0x002e2808,72,todo,engine,engine_func_002e2808,
 0x002e2850,76,todo,engine,engine_func_002e2850,
