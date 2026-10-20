@@ -1,5 +1,6 @@
 #include "engine/asd_effect2.h"
 #include "engine/asd_effect.h"
+#include "engine/asd_render_ui.h"
 #include "engine/asd_symbols.h"
 
 #include <cstring>
@@ -31,8 +32,8 @@ extern "C" {
     // 0x0024C5EC: the same resolver over the +0x20/+0x28 pair.
     void* AsdRes_ResolveRelative(void* record);                            // 0x0024c5ec
 
-    // Effect behavior factory and reference helpers.
-    void* effBehavior_func_00269404(u32 id, u32 count, void* data);        // 0x00269404
+    // Effect behavior factory and reference helpers.  0x00269404 is declared
+    // canonically in engine/asd_render_ui.h (the ledger spelling lives there).
     void  engine_func_00269594(void* behavior);                            // 0x00269594
     void  engine_func_00269758(void* object);                              // 0x00269758
     void  ui_func_002c0a6c(void* object);                                  // 0x002c0a6c

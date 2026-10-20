@@ -4008,7 +4008,7 @@ address,size,status,category,name,src_file
 0x00267f68,72,todo,battle,battle_func_00267f68,
 0x00267fb0,4672,todo,ui,ui_func_00267fb0,
 0x002691f0,532,non_matching,engine,effGeometry_func_002691f0,src/engine/asd_effect2.cpp
-0x00269404,400,todo,engine,effBehavior_func_00269404,
+0x00269404,400,non_matching,engine,effBehavior_func_00269404,src/engine/asd_render_ui.cpp
 0x00269594,8,todo,engine,engine_func_00269594,
 0x0026959c,120,todo,unknown,func_0026959c,
 0x00269614,48,todo,engine,engine_func_00269614,
@@ -5194,7 +5194,7 @@ address,size,status,category,name,src_file
 0x002b2808,12,todo,script_vm,script_vm_func_002b2808,
 0x002b2814,120,todo,engine,AsdList_func_002b2814,
 0x002b288c,156,todo,engine,engine_func_002b288c,
-0x002b2928,592,todo,engine,AsdMdlManager_func_002b2928,
+0x002b2928,592,non_matching,engine,AsdMdlManager_func_002b2928,src/engine/asd_render_ui.cpp
 0x002b2b78,340,non_matching,engine,AsdModel_func_002b2b78,src/engine/asd_model.cpp
 0x002b2ccc,32,todo,engine,engine_func_002b2ccc,
 0x002b2cec,84,todo,ui,ui_func_002b2cec,
@@ -5432,7 +5432,7 @@ address,size,status,category,name,src_file
 0x002bc300,4,todo,engine,engine_func_002bc300,
 0x002bc304,196,todo,unknown,func_002bc304,
 0x002bc3c8,424,todo,battle,battle_func_002bc3c8,
-0x002bc570,468,todo,engine,AsdGxRenderSystem_func_002bc570,
+0x002bc570,468,non_matching,engine,AsdGxRenderSystem_func_002bc570,src/engine/asd_render_ui.cpp
 0x002bc744,228,todo,engine,engine_func_002bc744,
 0x002bc828,416,todo,engine,engine_func_002bc828,
 0x002bc9c8,16,todo,unknown,func_002bc9c8,
@@ -5778,7 +5778,7 @@ address,size,status,category,name,src_file
 0x002ca6f4,180,todo,script_vm,script_vm_func_002ca6f4,
 0x002ca7a8,968,todo,ui,ui_func_002ca7a8,
 0x002cab70,92,todo,camp,camp_func_002cab70,
-0x002cabcc,800,todo,engine,StaffRollMain_func_002cabcc,
+0x002cabcc,800,non_matching,engine,StaffRollMain_func_002cabcc,src/engine/asd_render_ui.cpp
 0x002caeec,4,todo,unknown,func_002caeec,
 0x002caef0,224,todo,engine,engine_func_002caef0,
 0x002cafd0,1932,todo,ui,ui_func_002cafd0,
@@ -5941,7 +5941,7 @@ address,size,status,category,name,src_file
 0x002d5780,136,todo,script_vm,script_vm_func_002d5780,
 0x002d5808,76,todo,engine,engine_func_002d5808,
 0x002d5854,264,todo,ui,ui_func_002d5854,
-0x002d595c,1144,todo,engine,AsdGxRenderSystem_func_002d595c,
+0x002d595c,1144,non_matching,engine,AsdGxRenderSystem_func_002d595c,src/engine/asd_render_ui.cpp
 0x002d5dd4,332,todo,engine,engine_func_002d5dd4,
 0x002d5f20,268,todo,engine,engine_func_002d5f20,
 0x002d602c,1280,todo,engine,engine_func_002d602c,
@@ -6325,7 +6325,7 @@ address,size,status,category,name,src_file
 0x002ed5d0,3584,todo,ui,ui_func_002ed5d0,
 0x002ee3d0,324,todo,engine,engine_func_002ee3d0,
 0x002ee514,396,todo,engine,engine_func_002ee514,
-0x002ee6a0,784,todo,engine,2dEventTex_func_002ee6a0,
+0x002ee6a0,784,non_matching,engine,2dEventTex_func_002ee6a0,src/engine/asd_render_ui.cpp
 0x002ee9b0,24,todo,ui,ui_func_002ee9b0,
 0x002ee9c8,48,todo,battle,battle_func_002ee9c8,
 0x002ee9f8,52,todo,ui,ui_func_002ee9f8,
@@ -6498,7 +6498,7 @@ address,size,status,category,name,src_file
 0x002f6620,200,non_matching,ui,StatusDown_SelectLastPartySlotAndEnterState11,src/ui/status_down.cpp
 0x002f66e8,36,non_matching,ui,StatusDown_EnterState3,src/ui/status_down.cpp
 0x002f670c,40,todo,engine,engine_func_002f670c,
-0x002f6734,776,todo,ui,WhisperEffect_func_002f6734,
+0x002f6734,776,non_matching,ui,WhisperEffect_func_002f6734,src/engine/asd_render_ui.cpp
 0x002f6a3c,132,todo,ui,ui_func_002f6a3c,
 0x002f6ac0,296,todo,engine,engine_func_002f6ac0,
 0x002f6be8,220,todo,ui,ui_func_002f6be8,
@@ -6590,7 +6590,7 @@ address,size,status,category,name,src_file
 0x002fc120,76,todo,ui,ui_func_002fc120,
 0x002fc16c,168,todo,engine,engine_func_002fc16c,
 0x002fc214,76,todo,engine,engine_func_002fc214,
-0x002fc260,800,todo,ui,BustupCutAnim_func_002fc260,
+0x002fc260,800,non_matching,ui,BustupCutAnim_func_002fc260,src/engine/asd_render_ui.cpp
 0x002fc580,424,todo,ui,ui_func_002fc580,
 0x002fc728,316,todo,camp,camp_func_002fc728,
 0x002fc864,368,todo,camp,camp_func_002fc864,
@@ -6744,7 +6744,7 @@ address,size,status,category,name,src_file
 0x00309f94,72,todo,camp,camp_func_00309f94,
 0x00309fdc,192,todo,engine,engine_func_00309fdc,
 0x0030a09c,28,todo,unknown,func_0030a09c,
-0x0030a0b8,468,todo,engine,3dEventTex_func_0030a0b8,
+0x0030a0b8,468,non_matching,engine,3dEventTex_func_0030a0b8,src/engine/asd_render_ui.cpp
 0x0030a28c,328,todo,engine,3dEventEffect_func_0030a28c,
 0x0030a3d4,84,todo,engine,engine_func_0030a3d4,
 0x0030a428,112,todo,engine,engine_func_0030a428,
@@ -6770,7 +6770,7 @@ address,size,status,category,name,src_file
 0x0030ab34,60,non_matching,ui,StatusDown_EnterState6,src/ui/status_down.cpp
 0x0030ab70,36,todo,camp,camp_func_0030ab70,
 0x0030ab94,140,todo,camp,camp_func_0030ab94,
-0x0030ac20,412,todo,ui,BustupTex_func_0030ac20,
+0x0030ac20,412,non_matching,ui,BustupTex_func_0030ac20,src/engine/asd_render_ui.cpp
 0x0030adbc,44,todo,engine,engine_func_0030adbc,
 0x0030ade8,68,todo,camp,camp_func_0030ade8,
 0x0030ae2c,132,todo,battle,battle_func_0030ae2c,
@@ -7243,7 +7243,7 @@ address,size,status,category,name,src_file
 0x003271b0,32,todo,unknown,func_003271b0,
 0x003271d0,1060,todo,ui,ui_func_003271d0,
 0x003275f4,64,todo,script_vm,script_vm_func_003275f4,
-0x00327634,488,todo,engine,Npc2d_func_00327634,
+0x00327634,488,non_matching,engine,Npc2d_func_00327634,src/engine/asd_render_ui.cpp
 0x0032781c,112,todo,battle,battle_func_0032781c,
 0x0032788c,196,todo,engine,engine_func_0032788c,
 0x00327950,228,todo,ui,ui_func_00327950,
@@ -7696,7 +7696,7 @@ address,size,status,category,name,src_file
 0x0034b3dc,120,non_matching,engine,AsdMemory_func_0034b3dc,src/engine/asd_file.cpp
 0x0034b454,840,todo,ui,ui_func_0034b454,
 0x0034b79c,388,todo,ui,ui_func_0034b79c,
-0x0034b920,432,todo,battle,Filter4Poly_func_0034b920,
+0x0034b920,432,non_matching,battle,Filter4Poly_func_0034b920,src/engine/asd_render_ui.cpp
 0x0034bad0,140,todo,battle,battle_func_0034bad0,
 0x0034bb5c,444,todo,ui,ui_func_0034bb5c,
 0x0034bd18,136,todo,engine,engine_func_0034bd18,
