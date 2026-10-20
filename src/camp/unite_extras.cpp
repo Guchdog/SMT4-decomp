@@ -203,9 +203,9 @@ void unite_func_0022d5c8(UniteExtrasWork* work) {
                 camp_func_002b9364(record->demon_id);                     // 0x0022D828
             UnitePickEntry entry{};                                       // sp+0x10
             camp_func_0022e310(&entry, row->id, 1);                       // 0x0022D83C
-            entry.field_18 = camp_func_0029d100(
+            entry.field_08 = camp_func_0029d100(
                 row->id, work->sort_mode, 0,
-                work->completion >= 0x64 ? 1u : 0u, 0);                   // 0x0022D864
+                work->completion >= 0x64 ? 1u : 0u, 0);                   // 0x0022D864..0x0022D868
             unite_func_0022e2ec(list, &entry);                            // 0x0022D874
         }
 
@@ -248,9 +248,9 @@ void unite_func_0022d5c8(UniteExtrasWork* work) {
             }
             UnitePickEntry entry{};                                       // sp+0x10
             camp_func_0022e310(&entry, row->id, 0);                       // 0x0022D668
-            entry.field_18 = camp_func_0029d100(
+            entry.field_08 = camp_func_0029d100(
                 row->id, work->sort_mode, 0,
-                work->completion >= 0x64 ? 1u : 0u, 0);                   // 0x0022D690
+                work->completion >= 0x64 ? 1u : 0u, 0);                   // 0x0022D690..0x0022D694
             unite_func_0022e2ec(list, &entry);                            // 0x0022D6A0
         }
 

@@ -9,8 +9,9 @@ namespace smt4::camp {
  *
  * Filled on the stack by 0x0022E310 (`camp_func_0022e310`) and copied into a
  * `UnitePickList` slot by 0x0022E2EC (`unite_func_0022e2ec`, `vstmia` of eight
- * words at list+count*0x20+4).  The +0x18 word is the 0x0029D100 result; the
- * +0x1C word is the 0x002BD25C lookup result (0x0022E358).
+ * words at list+count*0x20+4).  The caller stores the 0x0029D100 result at
+ * entry+0x08 (`str r0,[sp,#0x18]`, entry = sp+0x10); entry+0x1C is the
+ * 0x002BD25C lookup result (0x0022E358).  +0x18 is never written.
  */
 struct UnitePickEntry {
     u16 demon_id;                       // +0x00: row id / 0x0029D100 first argument
@@ -19,7 +20,7 @@ struct UnitePickEntry {
     u8 field_04;                        // +0x04: row +0x05
     u8 pad_05;                          // +0x05: not written by 0x0022E310
     u16 field_06;                       // +0x06: inherited-skill counter (mode != 0)
-    u8 pad_08[4];                       // +0x08..+0x0C
+    u32 field_08;                       // +0x08: 0x0029D100 result (str r0,[sp,#0x18])
     u8 field_0c;                        // +0x0C: row2 +0x48
     u8 field_0d;                        // +0x0D: row2 +0x48 (second lookup)
     u16 field_0e;                       // +0x0E: row2 +0x0E
@@ -27,14 +28,15 @@ struct UnitePickEntry {
     u16 field_12;                       // +0x12: row2 +0x10
     u16 field_14;                       // +0x14: row2 +0x10 (second lookup)
     u8 pad_16[2];                       // +0x16..+0x18
-    u32 field_18;                       // +0x18: camp_func_0029d100 result (0x0022D694)
+    u8 pad_18[4];                       // +0x18: dead; no observed write
     u32 field_1c;                       // +0x1C: script_vm_func_002bd25c result (0x0022E358)
 };
 
 static_assert(offsetof(UnitePickEntry, demon_id) == 0x00);
 static_assert(offsetof(UnitePickEntry, field_06) == 0x06);
+static_assert(offsetof(UnitePickEntry, field_08) == 0x08);
 static_assert(offsetof(UnitePickEntry, field_0c) == 0x0C);
-static_assert(offsetof(UnitePickEntry, field_18) == 0x18);
+static_assert(offsetof(UnitePickEntry, pad_18) == 0x18);
 static_assert(offsetof(UnitePickEntry, field_1c) == 0x1C);
 static_assert(sizeof(UnitePickEntry) == 0x20);
 
