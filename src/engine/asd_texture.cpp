@@ -151,7 +151,7 @@ void* AsdTexture_func_002bd940(u32 kind)
 }
 
 // DECOMP_FUNC(0x002bd730, 528)
-u32 AsdTexture_func_002bd730(AsdTexture* texture)
+void AsdTexture_func_002bd730(AsdTexture* texture)
 {
     AsdGpu_Lock(texture);                   // 0x002bd738
 
@@ -159,18 +159,20 @@ u32 AsdTexture_func_002bd730(AsdTexture* texture)
     u32 heap_start = AsdGpu_HeapStart();    // 0x002bd740
     u32 heap_size = AsdGpu_HeapSize();      // 0x002bd748
 
-    // 0x002bd74c..0x002bd758: start <= address < start + size.
+    // 0x002bd74c..0x002bd758: start <= address < start + size.  The failure
+    // exit at 0x002bd908 simply pops; it leaves r0 holding the last compared
+    // value (heap end, heap size or the masked bank), which no caller uses.
     if (address < heap_start || address >= heap_start + heap_size)
-        return 0;
+        return;
 
     // 0x002bd75c: 128-byte alignment of the source pointer.
     if ((address & 0x7Fu) != 0)
-        return 0;
+        return;
 
     // 0x002bd764..0x002bd778: both ends must stay in the same 0x02000000 bank.
     if ((address & 0xFE000000u) !=
         ((address + texture->data_size) & 0xFE000000u))
-        return 0;
+        return;
 
     u32 format_code = 0;
     f32 bytes_per_texel =
@@ -189,7 +191,7 @@ u32 AsdTexture_func_002bd730(AsdTexture* texture)
             texture->gpu_address = AsdGpu_Address(texture->data);
             AsdGpu_Lock(reinterpret_cast<void*>(
                 static_cast<std::uintptr_t>(texture->gpu_address)));
-            return texture->gpu_address;
+            return;
         }
 
         texture->converted = nullptr;       // 0x002bd7dc
@@ -206,14 +208,14 @@ u32 AsdTexture_func_002bd730(AsdTexture* texture)
         texture->gpu_address = AsdGpu_Address(texture->converted);
         AsdGpu_Lock(reinterpret_cast<void*>(
             static_cast<std::uintptr_t>(texture->gpu_address)));
-        return texture->gpu_address;
+        return;
     }
 
     if (texture->kind == 0x10000) {
         texture->gpu_address = AsdGpu_Address(texture->data);
         AsdGpu_Lock(reinterpret_cast<void*>(
             static_cast<std::uintptr_t>(texture->gpu_address)));
-        return texture->gpu_address;
+        return;
     }
 
     texture->converted = nullptr;           // 0x002bd860
@@ -229,7 +231,6 @@ u32 AsdTexture_func_002bd730(AsdTexture* texture)
     texture->gpu_address = AsdGpu_Address(texture->converted);
     AsdGpu_Lock(reinterpret_cast<void*>(
         static_cast<std::uintptr_t>(texture->gpu_address)));
-    return texture->gpu_address;
 }
 
 // ---------------------------------------------------------------------------
@@ -267,11 +268,14 @@ void AsdTexTMX_func_0019fb58(AsdTexture* texture, const AsdTMXHeader* tmx,
         const u8* texels = palette + palette_entry_size * 16u;
 
         for (u32 y = 0; y < height; ++y) {
-            const u8* row = texels + (height - y - 1u) * width;
+            const u32 row_base = (height - y - 1u) * width;
             u32* out = pixels + y * width;
 
             for (u32 x = 0; x < width; ++x) {
-                u8 packed = row[x >> 1];
+                // 0x0019FC20 computes `(row_base + x)` and 0x0019FC30 reads
+                // `ldrb [fp, r2, asr #1]`: the nibble stream is continuous
+                // across rows, which matters for odd widths.
+                u8 packed = texels[(row_base + x) >> 1];
                 u32 index = (x & 1u) != 0 ? (packed >> 4) : (packed & 0x0Fu);
                 u32 color = reinterpret_cast<const u32*>(palette)[index];
                 u32 alpha = color >> 24;
@@ -353,7 +357,17 @@ void AsdTexTGA_func_00257e6c(AsdTexture* texture, const AsdTGAHeader* tga,
     texture->kind = texture_kind;           // +0x08 from r3
     texture->format = 0xDE1;                // +0x04
 
-    const u8* chunk = reinterpret_cast<const u8*>(tga) + tga->chunk_offset;
+    // 0x00257ED0: unaligned `ldr r0,[r6,#0x10]` with r6 = data + 0x12, i.e. a
+    // little-endian word at +0x22.  Assembled byte-wise because a u32 member
+    // would be aligned to +0x24 by the ABI.
+    const u8* header_bytes = reinterpret_cast<const u8*>(tga);
+    const u32 chunk_offset =
+        static_cast<u32>(header_bytes[0x22]) |
+        (static_cast<u32>(header_bytes[0x23]) << 8) |
+        (static_cast<u32>(header_bytes[0x24]) << 16) |
+        (static_cast<u32>(header_bytes[0x25]) << 24);
+
+    const u8* chunk = header_bytes + chunk_offset;
 
     for (;;) {
         // 0x00257EF8: `nw4c_txd` carries the raw pixel payload.
@@ -376,10 +390,14 @@ void AsdTexTGA_func_00257e6c(AsdTexture* texture, const AsdTGAHeader* tga,
             // stack buffer and compares only the first eight bytes.
             AsdMem_Copy(name, chunk + 0x0C, size - 0x0Cu);
 
+            // 0x00409540: the binary compares eight bytes against
+            // "Etc1\0\0\0\0", not the five-byte literal alone.
+            static const u8 kEtc1Name[8] = { 'E', 't', 'c', '1', 0, 0, 0, 0 };
+
             if (AsdMem_Compare(name, "Etc1_a4", 8) == 0) {
                 texture->param = 0x1401;        // +0x20, 0x00257F9C
                 texture->format2 = 0x675B;      // +0x1C, 0x00257FA0
-            } else if (AsdMem_Compare(name, "Etc1", 8) == 0) {
+            } else if (AsdMem_Compare(name, kEtc1Name, 8) == 0) {
                 texture->format2 = 0x675A;      // +0x1C, 0x00257FC4
                 texture->param = 0x1401;        // +0x20
             }

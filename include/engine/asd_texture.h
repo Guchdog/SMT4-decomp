@@ -118,20 +118,22 @@ static_assert(sizeof(AsdTMXHeader) == 0x40);
  * NW4C TGA container header.
  *
  * The 16-byte signature is checked at +0x12 (0x00257e80) and the first child
- * block offset is read from +0x22 (0x00257ed0, base `data + 0x12` plus 0x10).
+ * block offset is read from the *unaligned* +0x22 (0x00257ed0,
+ * `ldr r0,[r6,#0x10]` with r6 = data + 0x12).  A u32 member would be placed
+ * at +0x24 by the ABI, so the offset is assembled byte-wise in
+ * `AsdTexTGA_func_00257e6c` instead.
  */
 struct AsdTGAHeader {
     u8   pad_00[0x0C];                  // +0x00..+0x0C
     u16  width;                         // +0x0C: `ldrb r2,[r5,#0xc]` (0x00257ea8)
     u16  height;                        // +0x0E: `ldrb r0,[r5,#0xe]` (0x00257ea4)
     u8   pad_10[0x02];                  // +0x10..+0x12
-    char signature[0x10];               // +0x12: compared with "NW4C_Tga Ver1.0" (0x00257e80)
-    u32  chunk_offset;                  // +0x22: `ldr r0,[r6,#0x10]`, r6=data+0x12 (0x00257ed0)
+    char signature[0x10];               // +0x12..+0x22: compared with "NW4C_Tga Ver1.0"
 };
 static_assert(offsetof(AsdTGAHeader, width) == 0x0C);
 static_assert(offsetof(AsdTGAHeader, height) == 0x0E);
 static_assert(offsetof(AsdTGAHeader, signature) == 0x12);
-static_assert(offsetof(AsdTGAHeader, chunk_offset) == 0x22);
+static_assert(sizeof(AsdTGAHeader) == 0x22);
 
 /** Child block of a NW4C TGA container (`nw4c_txd` / `nw4c_tfm` / `nw4c_end`). */
 struct AsdTGABlock {
@@ -341,7 +343,7 @@ void  AsdTexTMX_func_0019fb58(AsdTexture* texture, const AsdTMXHeader* tmx,
                               u32 unused, u32 texture_kind);                // 0x0019fb58, 756 B
 void  AsdTexTGA_func_00257e6c(AsdTexture* texture, const AsdTGAHeader* tga,
                               const void* unused, u32 texture_kind);        // 0x00257e6c, 436 B
-u32   AsdTexture_func_002bd730(AsdTexture* texture);                        // 0x002bd730, 528 B
+void  AsdTexture_func_002bd730(AsdTexture* texture);                        // 0x002bd730, 528 B
 void* AsdTexture_func_002bd940(u32 kind);                                   // 0x002bd940, 172 B
 void* AsdTMTexTable_func_002c4e28(u32 group_id);                            // 0x002c4e28, 620 B
 void* AsdTMTexTable_func_002c5b04(u32 group_id, u32 flags);                 // 0x002c5b04, 652 B
