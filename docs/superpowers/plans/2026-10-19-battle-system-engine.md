@@ -43,14 +43,14 @@
 - `btlUnit_Init`: `0x001d2744` (644 B)
 - `btlUnit_CheckPartyActive`: `0x001d29c8` (240 B)
 
-- [ ] **Step 1: Update progress test expectations (RED)**
+- [x] **Step 1: Update progress test expectations (RED)**
   - Update `tests/test_progress.py` to expect 151 functions and 98,048 bytes.
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
   - Run `python -m unittest discover -s tests -v`.
-- [ ] **Step 3: Define structs in `include/battle/battle.h` and implement helpers in `src/battle/btl_ui.cpp`**
-- [ ] **Step 4: Update `config/functions.csv` and run test to verify it passes (GREEN)**
+- [x] **Step 3: Define structs in `include/battle/battle.h` and implement helpers in `src/battle/btl_ui.cpp`**
+- [x] **Step 4: Update `config/functions.csv` and run test to verify it passes (GREEN)**
   - Run `python tools/progress.py --write` and `python -m unittest discover -s tests -v`.
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
   - Commit: `feat(battle): implement btlHelp, btlTalk, and btlUnit combat modal helpers (+1,424 B)`.
 
 ---
@@ -70,14 +70,14 @@
 - `btlUI_DrawDown`: `0x001e4ae4` (360 B)
 - `btlUI_DrawNumber`: `0x0020f35c` (296 B)
 
-- [ ] **Step 1: Update progress test expectations (RED)**
+- [x] **Step 1: Update progress test expectations (RED)**
   - Update `tests/test_progress.py` to expect 156 functions and 107,188 bytes.
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
   - Run `python -m unittest discover -s tests -v`.
-- [ ] **Step 3: Define `BtlUIWork` in `include/battle/battle.h` and implement in `src/battle/btl_ui.cpp`**
-- [ ] **Step 4: Update `config/functions.csv` and run test to verify it passes (GREEN)**
+- [x] **Step 3: Define `BtlUIWork` in `include/battle/battle.h` and implement in `src/battle/btl_ui.cpp`**
+- [x] **Step 4: Update `config/functions.csv` and run test to verify it passes (GREEN)**
   - Run `python tools/progress.py --write` and `python -m unittest discover -s tests -v`.
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
   - Commit: `feat(battle): implement btlUI core HUD, gauges, and dual-screen render passes (+9,140 B)`.
 
 ---
@@ -97,12 +97,12 @@
 - `btlMain_DrawUp`: `0x001e4990` (340 B)
 - `btlMain_DrawDown`: `0x0020eee8` (1,140 B)
 
-- [ ] **Step 1: Update progress test expectations (RED)**
+- [x] **Step 1: Update progress test expectations (RED)**
   - Update `tests/test_progress.py` to expect 161 functions and 116,592 bytes (advancing to **3.71% milestone**).
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
   - Run `python -m unittest discover -s tests -v`.
-- [ ] **Step 3: Define `BtlMainWork` in `include/battle/battle.h` and implement in `src/battle/btl_main.cpp`**
-- [ ] **Step 4: Update `config/functions.csv` and run test to verify it passes (GREEN)**
+- [x] **Step 3: Define `BtlMainWork` in `include/battle/battle.h` and implement in `src/battle/btl_main.cpp`**
+- [x] **Step 4: Update `config/functions.csv` and run test to verify it passes (GREEN)**
   - Run `python tools/progress.py --write` and `python -m unittest discover -s tests -v`.
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
   - Commit: `feat(battle): implement btlMain state machine, arena setup, and dual-screen renderer (+9,404 B, 3.7% milestone reached)`.
