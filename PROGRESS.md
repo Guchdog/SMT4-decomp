@@ -4,8 +4,8 @@
 
 | Metric | Decompiled | Total | Remaining | Percentage |
 |--------|-----------:|------:|----------:|-----------:|
-| **Code Size (Bytes)** | 145,492 B | 3,139,108 B | 2,993,616 B | **4.6348%** |
-| **Functions** | 171 | 10,349 | 10,178 | **1.6523%** |
+| **Code Size (Bytes)** | 146,792 B | 3,139,108 B | 2,992,316 B | **4.6762%** |
+| **Functions** | 173 | 10,349 | 10,176 | **1.6717%** |
 
 ## Subsystem Breakdown
 
@@ -20,7 +20,7 @@
 | `shop` | 4 | 111 | 3,820 B | 39,976 B | 9.556% |
 | `crt` | 2 | 26 | 72 B | 9,484 B | 0.759% |
 | `nn_sdk` | 0 | 64 | 0 B | 8,852 B | 0.000% |
-| `unite` | 0 | 30 | 0 B | 7,832 B | 0.000% |
+| `unite` | 2 | 30 | 1,300 B | 7,832 B | 16.599% |
 
 ## Decompiled Functions Ledger
 
@@ -113,6 +113,7 @@
 | `0x00263978` | 124 | `ui` | `non_matching` | `PlaceWin_ShowMessage` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x002639f4` | 448 | `ui` | `non_matching` | `PlaceWin_Init` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x00263bb4` | 660 | `ui` | `non_matching` | `PlaceWin_Calc` | [`src/ui/window.cpp`](src/ui/window.cpp) |
+| `0x00269cc8` | 352 | `unite` | `non_matching` | `bibleMain_Init` | [`src/camp/bible.cpp`](src/camp/bible.cpp) |
 | `0x0026abc0` | 32 | `ui` | `non_matching` | `Status_SetMode1E71` | [`src/ui/status.cpp`](src/ui/status.cpp) |
 | `0x0026abe0` | 84 | `ui` | `non_matching` | `StatusDown_SetSubIdsA` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x0026b01c` | 176 | `ui` | `non_matching` | `StatusDown_PopFirstSubIdA` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
@@ -197,3 +198,4 @@
 | `0x0032303c` | 40 | `ui` | `non_matching` | `StatusDown_GetSelectedPartyIndex` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x0032be34` | 1672 | `ui` | `non_matching` | `StatusDown_DrawSkillList` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x0032c4bc` | 372 | `ui` | `non_matching` | `StatusDown_SortItemList` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
+| `0x003a9200` | 948 | `unite` | `non_matching` | `bibleAnalyze_Init` | [`src/camp/bible.cpp`](src/camp/bible.cpp) |

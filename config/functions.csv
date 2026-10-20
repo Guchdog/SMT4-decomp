@@ -4018,7 +4018,7 @@ address,size,status,category,name,src_file
 0x00269768,396,todo,unknown,func_00269768,
 0x002698f4,964,todo,unknown,func_002698f4,
 0x00269cb8,16,todo,ui,ui_func_00269cb8,
-0x00269cc8,352,todo,unite,bibleMain_func_00269cc8,
+0x00269cc8,352,non_matching,unite,bibleMain_Init,src/camp/bible.cpp
 0x00269e28,12,todo,camp,camp_func_00269e28,
 0x00269e34,32,todo,script_vm,script_vm_func_00269e34,
 0x00269e54,140,todo,unknown,func_00269e54,
@@ -9284,7 +9284,7 @@ address,size,status,category,name,src_file
 0x003a8ee8,228,todo,unknown,func_003a8ee8,
 0x003a8fcc,288,todo,shop,shop_func_003a8fcc,
 0x003a90ec,276,todo,shop,shop_func_003a90ec,
-0x003a9200,948,todo,unite,bibleAnalyze_func_003a9200,
+0x003a9200,948,non_matching,unite,bibleAnalyze_Init,src/camp/bible.cpp
 0x003a95b4,144,todo,ui,ui_func_003a95b4,
 0x003a9644,28,todo,unknown,func_003a9644,
 0x003a9660,520,todo,shop,shop_func_003a9660,
