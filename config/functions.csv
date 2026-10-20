@@ -3920,7 +3920,7 @@ address,size,status,category,name,src_file
 0x0025f09c,1180,todo,ui,ui_func_0025f09c,
 0x0025f538,436,todo,ui,ui_func_0025f538,
 0x0025f6ec,516,todo,ui,ui_func_0025f6ec,
-0x0025f8f0,11004,todo,ui,ui_func_0025f8f0,
+0x0025f8f0,11004,non_matching,ui,Ui_MiniMapRender,src/ui/minimap.cpp
 0x002623ec,68,todo,battle,battle_func_002623ec,
 0x00262430,24,todo,unknown,func_00262430,
 0x00262448,80,todo,script_vm,script_vm_func_00262448,

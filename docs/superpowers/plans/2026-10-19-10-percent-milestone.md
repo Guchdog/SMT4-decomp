@@ -105,12 +105,12 @@
 **Functions:**
 - `Ui_MiniMapRender`: `0x0025f8f0` (11,004 B)
 
-- [ ] **Step 1: Update progress test expectations (RED)**
+- [x] **Step 1: Update progress test expectations (RED)**
   - Update `tests/test_progress.py` to expect 187 functions and 316,392 bytes (crossing the **10.0% decompilation milestone** to 10.0790%!).
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
   - Run `python -m unittest discover -s tests -v`.
-- [ ] **Step 3: Define structures in `include/ui/minimap.h` and implement in `src/ui/minimap.cpp`**
-- [ ] **Step 4: Update `config/functions.csv` and run test to verify it passes (GREEN)**
+- [x] **Step 3: Define structures in `include/ui/minimap.h` and implement in `src/ui/minimap.cpp`**
+- [x] **Step 4: Update `config/functions.csv` and run test to verify it passes (GREEN)**
   - Run `python tools/progress.py --write` and `python -m unittest discover -s tests -v`.
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
   - Commit: `feat(ui): implement touchscreen minimap radar and 2D projection pipeline (+11,004 B, 10.0% milestone reached at 10.08%)`.

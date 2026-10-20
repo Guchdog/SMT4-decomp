@@ -4,15 +4,15 @@
 
 | Metric | Decompiled | Total | Remaining | Percentage |
 |--------|-----------:|------:|----------:|-----------:|
-| **Code Size (Bytes)** | 305,388 B | 3,139,108 B | 2,833,720 B | **9.7285%** |
-| **Functions** | 186 | 10,349 | 10,163 | **1.7973%** |
+| **Code Size (Bytes)** | 316,392 B | 3,139,108 B | 2,822,716 B | **10.0790%** |
+| **Functions** | 187 | 10,349 | 10,162 | **1.8069%** |
 
 ## Subsystem Breakdown
 
 | Subsystem | Decompiled Funcs | Total Funcs | Decompiled Bytes | Total Bytes | Subsystem % |
 |-----------|-----------------:|------------:|-----------------:|------------:|------------:|
 | `engine` | 3 | 2,363 | 224 B | 726,520 B | 0.031% |
-| `ui` | 133 | 1,238 | 93,388 B | 682,348 B | 13.686% |
+| `ui` | 134 | 1,238 | 104,392 B | 682,348 B | 15.299% |
 | `unknown` | 3 | 3,823 | 132 B | 654,480 B | 0.020% |
 | `script_vm` | 6 | 1,201 | 98,188 B | 446,288 B | 22.001% |
 | `camp` | 13 | 918 | 70,404 B | 326,396 B | 21.570% |
@@ -112,6 +112,7 @@
 | `0x0022e694` | 32 | `ui` | `non_matching` | `Status_SetFlag1E65` | [`src/ui/status.cpp`](src/ui/status.cpp) |
 | `0x0022e6b4` | 24 | `ui` | `non_matching` | `Status_IsActive` | [`src/ui/status.cpp`](src/ui/status.cpp) |
 | `0x00258e38` | 480 | `ui` | `non_matching` | `StatusCamera_Init` | [`src/ui/status.cpp`](src/ui/status.cpp) |
+| `0x0025f8f0` | 11004 | `ui` | `non_matching` | `Ui_MiniMapRender` | [`src/ui/minimap.cpp`](src/ui/minimap.cpp) |
 | `0x0026385c` | 64 | `ui` | `non_matching` | `PlaceWin_SetPos` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x0026389c` | 64 | `ui` | `non_matching` | `PlaceWin_SetScale` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x002638dc` | 32 | `ui` | `non_matching` | `PlaceWin_Dismiss` | [`src/ui/window.cpp`](src/ui/window.cpp) |
