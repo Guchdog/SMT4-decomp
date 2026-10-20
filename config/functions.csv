@@ -1950,7 +1950,7 @@ address,size,status,category,name,src_file
 0x001a94fc,188,todo,ui,ui_func_001a94fc,
 0x001a95b8,60,todo,unknown,func_001a95b8,
 0x001a95f4,168,todo,script_vm,script_vm_func_001a95f4,
-0x001a969c,644,todo,script_vm,qcMain_func_001a969c,
+0x001a969c,644,non_matching,script_vm,qcMain_func_001a969c,src/script/script_extras.cpp
 0x001a9920,40,todo,engine,engine_func_001a9920,
 0x001a9948,40,todo,engine,engine_func_001a9948,
 0x001a9970,1096,todo,engine,engine_func_001a9970,
@@ -2230,7 +2230,7 @@ address,size,status,category,name,src_file
 0x001e0618,1732,todo,ui,ui_func_001e0618,
 0x001e0cdc,804,todo,script_vm,script_vm_func_001e0cdc,
 0x001e1000,280,todo,camp,camp_func_001e1000,
-0x001e1118,488,todo,script_vm,clearSave_func_001e1118,
+0x001e1118,488,non_matching,script_vm,clearSave_func_001e1118,src/script/script_extras.cpp
 0x001e1300,24,todo,unknown,func_001e1300,
 0x001e1318,296,todo,ui,ui_func_001e1318,
 0x001e1440,428,todo,camp,camp_func_001e1440,
@@ -3846,7 +3846,7 @@ address,size,status,category,name,src_file
 0x002594f0,32,todo,script_vm,script_vm_func_002594f0,
 0x00259510,52,todo,engine,engine_func_00259510,
 0x00259544,24,todo,script_vm,script_vm_func_00259544,
-0x0025955c,516,todo,engine,eventCommand_func_0025955c,
+0x0025955c,516,non_matching,engine,eventCommand_func_0025955c,src/script/script_extras.cpp
 0x00259760,108,todo,engine,engine_func_00259760,
 0x002597cc,40,todo,camp,camp_func_002597cc,
 0x002597f4,36,todo,camp,camp_func_002597f4,
@@ -4027,7 +4027,7 @@ address,size,status,category,name,src_file
 0x00269f34,124,todo,camp,camp_func_00269f34,
 0x00269fb0,84,todo,camp,camp_func_00269fb0,
 0x0026a004,40,todo,camp,camp_func_0026a004,
-0x0026a02c,1412,todo,script_vm,UIQuest_func_0026a02c,
+0x0026a02c,1412,non_matching,script_vm,UIQuest_func_0026a02c,src/script/script_extras.cpp
 0x0026a5b0,68,todo,camp,camp_func_0026a5b0,
 0x0026a5f4,56,todo,camp,camp_func_0026a5f4,
 0x0026a62c,408,todo,camp,camp_func_0026a62c,
@@ -4088,7 +4088,7 @@ address,size,status,category,name,src_file
 0x0026dd50,24,todo,script_vm,script_vm_func_0026dd50,
 0x0026dd68,92,todo,script_vm,script_vm_func_0026dd68,
 0x0026ddc4,380,todo,script_vm,script_vm_func_0026ddc4,
-0x0026df40,1620,todo,script_vm,NpcRoom_func_0026df40,
+0x0026df40,1620,non_matching,script_vm,NpcRoom_func_0026df40,src/script/script_extras.cpp
 0x0026e594,252,todo,ui,ui_func_0026e594,
 0x0026e690,460,todo,camp,camp_func_0026e690,
 0x0026e85c,48,todo,camp,camp_func_0026e85c,
@@ -4673,7 +4673,7 @@ address,size,status,category,name,src_file
 0x002971e4,160,todo,script_vm,script_vm_func_002971e4,
 0x00297284,100,todo,camp,camp_func_00297284,
 0x002972e8,16,todo,ui,ui_func_002972e8,
-0x002972f8,892,todo,script_vm,scrScriptProcess_func_002972f8,
+0x002972f8,892,non_matching,script_vm,scrScriptProcess_func_002972f8,src/script/script_extras.cpp
 0x00297674,20,todo,script_vm,script_vm_func_00297674,
 0x00297688,28,todo,camp,camp_func_00297688,
 0x002976a4,8,todo,camp,camp_func_002976a4,
@@ -6749,7 +6749,7 @@ address,size,status,category,name,src_file
 0x0030a3d4,84,todo,engine,engine_func_0030a3d4,
 0x0030a428,112,todo,engine,engine_func_0030a428,
 0x0030a498,100,todo,ui,ui_func_0030a498,
-0x0030a4fc,504,todo,engine,EventEffect_func_0030a4fc,
+0x0030a4fc,504,non_matching,engine,EventEffect_func_0030a4fc,src/script/script_extras.cpp
 0x0030a6f4,292,todo,unknown,func_0030a6f4,
 0x0030a818,12,todo,camp,camp_func_0030a818,
 0x0030a824,68,todo,engine,engine_func_0030a824,
@@ -8842,7 +8842,7 @@ address,size,status,category,name,src_file
 0x0038146c,48,todo,unknown,func_0038146c,
 0x0038149c,516,todo,unknown,func_0038149c,
 0x003816a0,68,todo,engine,engine_func_003816a0,
-0x003816e4,1012,todo,engine,qcUtility_func_003816e4,
+0x003816e4,1012,non_matching,engine,qcUtility_func_003816e4,src/script/script_extras.cpp
 0x00381ad8,76,todo,unknown,func_00381ad8,
 0x00381b24,68,todo,engine,engine_func_00381b24,
 0x00381b68,96,todo,engine,engine_func_00381b68,
