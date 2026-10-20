@@ -65,7 +65,8 @@ struct AsdTexture {
     u32 ref_count;                      // +0x00: `ldr r0,[r4]`/`str r0,[r4]` (0x002bd9d0)
     u32 format;                         // +0x04: 0xDE1 (0x002bd9c4 / 0x00257ec8)
     u32 kind;                           // +0x08: 0x10000 in 0x002bd9bc; 0x20000/0x30000 in 0x002bd7d0
-    u8  pad_0c[0x08];                   // +0x0C..+0x14
+    u8  pad_0c[0x04];                   // +0x0C..+0x10
+    u32 field_10;                       // +0x10: `str r6,[r4,#0x10]` with r6=0 (0x00280d8c)
     u32 width;                          // +0x14: `str r1,[r4,#0x14]` (0x00257ec4)
     u32 height;                         // +0x18: `str r0,[r4,#0x18]` (0x00257ec0)
     u32 format2;                        // +0x1C: 0x6752/0x675B/0x675A (0x0019fdf0 / 0x00257fc4)
@@ -83,6 +84,7 @@ struct AsdTexture {
 static_assert(offsetof(AsdTexture, ref_count) == 0x00);
 static_assert(offsetof(AsdTexture, format) == 0x04);
 static_assert(offsetof(AsdTexture, kind) == 0x08);
+static_assert(offsetof(AsdTexture, field_10) == 0x10);
 static_assert(offsetof(AsdTexture, width) == 0x14);
 static_assert(offsetof(AsdTexture, height) == 0x18);
 static_assert(offsetof(AsdTexture, format2) == 0x1C);

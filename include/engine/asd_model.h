@@ -283,12 +283,24 @@ struct EffectEditorState {
     s32 list_offset;                    // +0x0C: `str r1,[r7,#0xc]` (0x002fcdf8)
     void* selected_part;                // +0x10: `str r0,[r8,#0x10]` (0x002fd840)
     void* parts;                        // +0x14: `str r0,[r7,#0x14]` (0x002fcd68)
-    u8  pad_18[0x08];                   // +0x18..+0x20
+    void* active_element;               // +0x18: `str r6,[r7,#0x18]` (0x00242770)
+    void* element;                      // +0x1C: `str r0,[r7,#0x1c]` (0x0024273c)
     void* work_part;                    // +0x20: `str r0,[r8,#0x20]` (0x002fd7b8)
-    u8  pad_24[0x10];                   // +0x24..+0x34
+    void* part_track;                   // +0x24: `str r0,[r7,#0x24]` (0x002426ec)
+    u8  pad_28[0x0C];                   // +0x28..+0x34
     void* menu_current;                 // +0x34: `str r0,[r8,#0x34]` (0x002fd524)
-    void* menu_pending;                 // +0x38: `stmne r1,{r0,r4}` (0x002fd5d8)
-    u8  pad_3c[0x44];                   // +0x3C..+0x80
+    void* menu_pending;                 // +0x38: `stmne r1,{r0,r4}` (0x002fd5d8); entry pointer
+                                        //       `str r0,[r7,#0x38]` (0x00242778)
+    u8  pad_3c[0x10];                   // +0x3C..+0x4C
+    u32 field_4c;                       // +0x4C: `str sl,[r7,#0x4c]` (0x002426c0)
+    u32 field_50;                       // +0x50: `str sl,[r7,#0x50]` (0x002426c8)
+    u32 field_54;                       // +0x54: `stm r2,{r1,sl}` with r1=1 (0x002426cc)
+    u32 field_58;                       // +0x58: same store, r5/sl = 0 (0x002426cc)
+    u32 field_5c;                       // +0x5C: untouched here
+    u32 field_60;                       // +0x60: `str sl,[r7,#0x60]` (0x002426d4)
+    u32 field_64;                       // +0x64: `str sl,[r7,#0x64]` (0x002426d8)
+    u32 field_68;                       // +0x68: `str sl,[r7,#0x68]` (0x002426dc)
+    u8  pad_6c[0x14];                   // +0x6C..+0x80
     s32 timer;                          // +0x80: `str r0,[r8,#0x80]` (0x002fd954)
 };
 static_assert(offsetof(EffectEditorState, frame_counter) == 0x01);
@@ -296,8 +308,15 @@ static_assert(offsetof(EffectEditorState, speed_mode) == 0x09);
 static_assert(offsetof(EffectEditorState, list_offset) == 0x0C);
 static_assert(offsetof(EffectEditorState, selected_part) == 0x10);
 static_assert(offsetof(EffectEditorState, parts) == 0x14);
+static_assert(offsetof(EffectEditorState, active_element) == 0x18);
+static_assert(offsetof(EffectEditorState, element) == 0x1C);
 static_assert(offsetof(EffectEditorState, work_part) == 0x20);
+static_assert(offsetof(EffectEditorState, part_track) == 0x24);
 static_assert(offsetof(EffectEditorState, menu_current) == 0x34);
+static_assert(offsetof(EffectEditorState, menu_pending) == 0x38);
+static_assert(offsetof(EffectEditorState, field_4c) == 0x4C);
+static_assert(offsetof(EffectEditorState, field_54) == 0x54);
+static_assert(offsetof(EffectEditorState, field_68) == 0x68);
 static_assert(offsetof(EffectEditorState, timer) == 0x80);
 
 /**
@@ -305,14 +324,23 @@ static_assert(offsetof(EffectEditorState, timer) == 0x80);
  * `+0x0C` mode, `+0x10` flags word, `+0x14` work-buffer base and `+0x18`
  * menu-entry count.  These two stores are made with r7 == 0x0044F858
  * (0x002fd4e4 / 0x002fd4e8), not with the g_EffectEditor base.
+ *
+ * The same layout is instantiated a second time at 0x0044F8C8, whose first
+ * three words are filled by `EffectEditor_func_0024246c` (0x0024254C /
+ * 0x00242554 / 0x00242578) and whose `+0x0C` is the menu cursor.
  */
 struct EffectEditorWidget {
-    u8  pad_00[0x0C];                   // +0x00..+0x0C
+    void* owner;                        // +0x00: `str r1,[r0]` (0x00242578)
+    u32 field_04;                       // +0x04: `str r2,[r0,#4]` (0x0024254c)
+    u32 field_08;                       // +0x08: `str r1,[r0,#8]` (0x00242554)
     u32 mode;                           // +0x0C: `ldr r0,[r4,#0xc]` (0x002fcd94)
     u32 flags;                          // +0x10: `bic r0,r0,#1` (0x002fcd50)
     void* menu;                         // +0x14: `str r5,[r7,#0x14]` (0x002fd4e8)
     u32 menu_count;                     // +0x18: `str r0,[r7,#0x18]` (0x002fd4e4)
 };
+static_assert(offsetof(EffectEditorWidget, owner) == 0x00);
+static_assert(offsetof(EffectEditorWidget, field_04) == 0x04);
+static_assert(offsetof(EffectEditorWidget, field_08) == 0x08);
 static_assert(offsetof(EffectEditorWidget, mode) == 0x0C);
 static_assert(offsetof(EffectEditorWidget, flags) == 0x10);
 static_assert(offsetof(EffectEditorWidget, menu) == 0x14);
