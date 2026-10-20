@@ -19,6 +19,15 @@ void* AsdMemory_func_002c23f8(u32 size);
 } // namespace smt4::engine
 
 extern "C" {
+    // 0x002C4460 (320 B): links `child` into the child list of `parent`
+    // (AsdProcess pool at 0x004E3CF4).  AsdText reaches the same routine for
+    // widget attachment, so the declaration lives here for both TUs.
+    void AsdProc_Attach(void* parent, void* child);
+
+    // 0x002C4450 (16 B): broadcasts the low byte of `value` and tail-calls
+    // the byte fill at 0x002C3B4C; `size` is therefore a byte count.
+    void AsdMem_FillBytes(void* dst, u32 size, u32 value);
+
     // 0x00262B60 (108 B): strncpy(dst, src, size); returns dst.
     char* AsdString_Copy(char* dst, const char* src, u32 size);
 

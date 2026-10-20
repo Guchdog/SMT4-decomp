@@ -45,7 +45,6 @@ extern "C" {
     void* AsdUi_CreateLabel(const char* name, u32 id, u32 a1, u32 a2,
                             u32 p0, u32 p1, void* p2, u32 p3);               // 0x002c4c00
     int   AsdUi_IsRegistered(void* handle);                                 // 0x002bf41c
-    void  AsdUi_Attach(void* handle, void* object);                         // 0x002c4460
     void  AsdText_ResetGlobals();                                           // 0x002bc2c4
     void  AsdScriptText_SetChannels(void* obj, u32 a1, u32 a2, f32 value);  // 0x002bda00
     void  AsdScriptText_SetColor(void* obj, u32 color);                     // 0x002bda10
@@ -685,7 +684,7 @@ void* AsdListBox_func_00263408(void* handle, const char* name, s32 width,
                                  0, 0, 0x001FE590, 0x001FF3A8, widget);
 
     if (AsdUi_IsRegistered(handle) != 0)
-        AsdUi_Attach(handle, created);
+        AsdProc_Attach(handle, created);
 
     widget->field_38 = widget->field_38 | 4;
     widget->field_3c = (u8)flag;

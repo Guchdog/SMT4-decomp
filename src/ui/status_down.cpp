@@ -1,4 +1,5 @@
 #include "ui/status_down.h"
+#include "engine/asd_symbols.h"
 #include <cstring>
 
 namespace smt4::ui {
@@ -97,7 +98,6 @@ extern "C" {
     void  UiListCursor_SetSelectedCol(UiListCursor* cursor, s32 col);               // 0x0029eb58
     void  UiListCursor_ResetScroll(UiListCursor* cursor, s32 pos);                  // 0x0020fe24
 
-    void  StatusDown_FillHalfwords(s16* dst, u32 count, s32 value);                 // 0x002c4450
     s32   UiTouch_GetRegionTouchState(s16 handle);                                  // 0x0029d8fc
     s32   UiCursor_HandleInput(UiListCursor* cursor);                               // 0x0029e3bc
     bool  UiAnimSprite_UpdateCalc(UiAnimSprite* sprite, s32 mode);                  // 0x002b9220
@@ -454,7 +454,7 @@ void StatusDown_SetupTouchRegions() {
         UiTouch_UnregisterLastRegion();
     }
     work->registered_touch_count = 0;
-    StatusDown_FillHalfwords(work->slot_touch_handles, 0x29, -1);
+    AsdMem_FillBytes(work->slot_touch_handles, 0x29, -1);
 
     switch (work->state) {
         case 3: {
@@ -635,7 +635,7 @@ void StatusDown_SetDisplayMode(s32 mode) {
         UiTouch_UnregisterLastRegion();
     }
     w->registered_touch_count = 0;
-    StatusDown_FillHalfwords(w->slot_touch_handles, 0x29, -1);
+    AsdMem_FillBytes(w->slot_touch_handles, 0x29, -1);
 
     StatusDownWork* w2 = g_StatusDownWork;
     w2->state_timer = 0;
@@ -850,7 +850,7 @@ void StatusDown_Close() {
         UiTouch_UnregisterLastRegion();
     }
     w->registered_touch_count = 0;
-    StatusDown_FillHalfwords(w->slot_touch_handles, 0x29, -1);
+    AsdMem_FillBytes(w->slot_touch_handles, 0x29, -1);
 }
 
 // DECOMP_FUNC(0x0029c6c4, 24)
@@ -955,7 +955,7 @@ void StatusDown_Init() {
     AsdText_SetAlpha(w->text_handle, 0xFF);
     AsdText_SetColorAndScale(w->text_handle, 0, 0x646464FFu, 0.0f);
 
-    StatusDown_FillHalfwords(w->slot_touch_handles, 0x29, -1);
+    AsdMem_FillBytes(w->slot_touch_handles, 0x29, -1);
     w->visibility_flag = 1;
 }
 
@@ -1165,7 +1165,7 @@ void StatusDown_Destroy() {
         UiTouch_UnregisterLastRegion();
     }
     work->registered_touch_count = 0;
-    StatusDown_FillHalfwords(work->slot_touch_handles, 0x29, -1);
+    AsdMem_FillBytes(work->slot_touch_handles, 0x29, -1);
 
     AsdText_DestroyHandle(work->text_handle);
     AsdTask_DestroyPair(work->calc_task, 0);
@@ -1202,7 +1202,7 @@ void StatusDown_SelectLastPartySlotAndEnterState11(s32 result_val, u32 arg1) {
         UiTouch_UnregisterLastRegion();
     }
     w->registered_touch_count = 0;
-    StatusDown_FillHalfwords(w->slot_touch_handles, 0x29, -1);
+    AsdMem_FillBytes(w->slot_touch_handles, 0x29, -1);
 
     StatusDownWork* w2 = g_StatusDownWork;
     w2->state_timer = 0;

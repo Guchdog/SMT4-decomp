@@ -30,7 +30,6 @@ extern "C" {
     void* AsdMem_Alloc(u32 a0, u32 a1, u32 a2, u32 size, u32 flag);         // 0x002c4b84
     void* AsdMem_AllocAlign(u32 a0, u32 a1, u32 a2, u32 size, u32 flag);    // 0x002c54f0
     void  AsdMem_Copy(void* dst, const void* src, u32 size);                // 0x002c5ff4
-    void  AsdMem_FillBytes(void* dst, u32 size, u32 value);                 // 0x002c4450
 
     // Resource database (AsdFile / AsdMemory)
     void* AsdRes_Create(void* desc, void* a1, void* a2, void* a3);          // 0x002c3188
@@ -65,10 +64,6 @@ extern "C" {
                                    void* context);                          // 0x0012b3b0
 
     // Kernel helpers
-    // 0x002C4460 is the process-link routine reached from AsdText as
-    // `AsdUi_Attach(void*, void*)`; AsdProcess.cpp calls it with the two
-    // packed process handles.
-    void  AsdProcess_Attach(u32 parent, u32 child);                         // 0x002c4460
     void* AsdGxCommandList_Create();                                        // 0x002c5d90
 
     // Widget factory (AsdSequence.cpp / soundTest)
@@ -228,7 +223,7 @@ AsdCameraAnim* AsdCamera_func_00310124(AsdCameraScene* scene) {
         // Type-id checks against 0x0044E858 (0x00310208-0x00310238) and
         // 0x0044E820 (0x0031023C-0x00310274).
         anim->object_44E858 = AsdTypeMatch(created, 0x0044E858);
-        anim->object_44E820 = AsdTypeMatch(created, 0x0044E820);
+        anim->object_44E820 = AsdTypeMatch(anim->object_44E858, 0x0044E820);
 
         // 0x00310284 `ldr sb,[r8,#0x268]` has no null test: a failed
         // 0x0044E820 cast faults on the original hardware as well.
@@ -609,8 +604,10 @@ void* AsdProcess_func_00102e80(u32 count) {
 // 0x00118488 -- create and link one process node.
 //
 // Arguments follow the AAPCS layout observed at 0x001184A0-0x001184AC:
-//   r0 = name, r1 = bucket, [sp+0]=u16 field_34, [sp+4]=u16 field_36,
-//   [sp+8..0x14] = four floats, [sp+0x1c] = parent handle (r6 at 0x001184A4).
+//   r0 = name, r1 = bucket, r2 = field_34, r3 = field_36,
+//   [sp+0..0xC] = four floats, [sp+0x10] = parent handle (r6 at 0x001184A4).
+// The two halfwords reach +0x34/+0x36 through the saved r2/r3 image at
+// 0x00118598 (`add r3,sp,#0x1c; ldm r3,{r0,r2}`).
 // Allocation: 0xA4 bytes (0x001184BC).
 //
 // Unique id: 0x00118530-0x00118580 increments `next_id`, wraps to 1 at
@@ -663,7 +660,11 @@ u32 AsdProcess_func_00118488(const char* name, u32 bucket, u16 field_34,
 
         bool used = false;
         for (s32 slot = 0; slot < g_AsdProcessPool.bucket_count && !used; ++slot) {
-            for (AsdProcessNode* item = g_AsdProcessPool.buckets[slot];
+            // 0x00118554 `ldr r0,[lr,sl,lsl #3]` -- buckets are 8 bytes
+            // (head, tail), matching the count*8 allocation at 0x00102EB4.
+            u8* bucket_base = reinterpret_cast<u8*>(g_AsdProcessPool.buckets) +
+                              static_cast<u32>(slot) * 8u;
+            for (AsdProcessNode* item = *reinterpret_cast<AsdProcessNode**>(bucket_base);
                  item != nullptr; item = item->next) {
                 if (item->id == candidate) {                 // 0x00118564
                     used = true;
@@ -725,7 +726,9 @@ u32 AsdProcess_func_00118488(const char* name, u32 bucket, u16 field_34,
     }
 
     if (parent != 0) {
-        AsdProcess_Attach(parent, node->handle);             // 0x0011864C
+        AsdProc_Attach(
+            reinterpret_cast<void*>(static_cast<std::uintptr_t>(parent)),
+            reinterpret_cast<void*>(static_cast<std::uintptr_t>(node->handle))); // 0x0011864C
     }
     return node->handle;                                     // 0x00118650
 }
@@ -746,7 +749,7 @@ u32 AsdProcess_func_00118488(const char* name, u32 bucket, u16 field_34,
 
 // DECOMP_FUNC(0x002c59b8, 180)
 void AsdSequence_func_002c59b8(u32 index, const void* data, u32 size) {
-    AsdSequenceEntry* entry = &g_AsdSequence.table[index * 3u];
+    AsdSequenceEntry* entry = &g_AsdSequence.table[index];
     if (entry->selector == 0) {                              // 0x002C59D4
         return;
     }
@@ -781,9 +784,12 @@ void AsdSequence_func_002c59b8(u32 index, const void* data, u32 size) {
 // ---------------------------------------------------------------------------
 // 0x002861F8 -- allocate and priority-insert one task.
 //
-// Stack arguments (0x00286214-0x00286228): [sp+0]=float arg3, [sp+4]=payload
-// size (r6), [sp+8]=type (r5), [sp+0xc]=priority (r7), [sp+0x10]=payload-init
-// flag (r8).  Allocation is `payload_size + 0x34` (0x00286228/0x00286250).
+// Arguments: arg0..arg2 in r0..r2, arg3 in r3 (re-read as a float at
+// `vldr s0,[sp,#0x20]`, the saved r3 slot), then caller stack words
+// [sp+0]=arg4, [sp+4]=payload size (r6), [sp+8]=type (r5),
+// [sp+0xC]=priority (r7), [sp+0x10]=payload-init flag (r8)
+// (0x00286214-0x00286228).  Allocation is `payload_size + 0x34`
+// (0x00286228/0x00286250).
 // The list heads live at `0x004C5830 + type*0x10` (0x00286230).
 // Insert order is ascending priority and stable for equal priorities:
 // before head when head->priority > new (0x002862CC), after tail when
