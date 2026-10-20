@@ -180,7 +180,7 @@ static_assert(offsetof(UniteExtrasWork, field_a5b2) == 0x0A5B2);
 static_assert(sizeof(UniteExtrasWork) == 0xA5B4);
 
 /**
- * 0x94-byte demon table row returned by camp_func_002b9364.
+ * 0x94-byte demon table row returned by Battle_GetTalkEntry.
  * Only the fields read by these five functions are named.
  */
 struct UniteBibleRow {
@@ -204,7 +204,7 @@ static_assert(sizeof(UniteBibleRow) == 0x94);
  */
 struct UniteGamedataRecord {
     u8 raw_00[0x46];                    // +0x0000..+0x0046
-    u16 demon_id;                       // +0x0046: camp_func_002b9364 key
+    u16 demon_id;                       // +0x0046: Battle_GetTalkEntry key
     u8 raw_48[0x604 - 0x48];            // +0x0048..+0x0604
 };
 

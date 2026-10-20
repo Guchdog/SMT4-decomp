@@ -33,6 +33,31 @@ extern "C" {
     void* UiGpu_SetViewportParams(s32 a0, s32 a1);
     void* UiGpu_SetRenderMode(s32 a0, s32 a1, s32 a2);
 
+    // 0x002C3344 / 0x002C32F8: UI sprite-group layout helpers.  These are the
+    // canonical spellings; camp_func_002c3344 / camp_func_002c32f8 were the
+    // duplicate names used by unite_extras.cpp for the same addresses.
+    void UiSpriteGroup_Init(void* group);
+    // r0 = group; the remaining ten arguments are the r1/r2/r3 words plus the
+    // seven stack words at [sp]..[sp+0x18].  0x002C32F8 copies them verbatim
+    // (the `vldr s0..s2` at 0x002C330C is a 12-byte word copy, not a float
+    // parameter group), so pointer arguments are passed as their address words.
+    void UiSpriteGroup_BindTable(void* group, u32 a1, u32 a2, u32 a3,
+                                 u32 a4, u32 a5, u32 a6, u32 a7, u32 a8,
+                                 u32 a9, u32 a10);
+
+    // 0x002B9364: 0x94-byte table-row lookup.  Canonical spelling; the camp
+    // TUs previously reached it as camp_func_002b9364.
+    void* Battle_GetTalkEntry(u32 id);
+
+    // 0x002C0BCC: LCG draw over [0, range].  Canonical spelling; the camp TUs
+    // previously reached it as engine_func_002c0bcc.
+    u32 Random_Range(u32 range_plus_one);
+
+    // 0x002976AC: lazily resolves one 0x0049382C resource-table slot.
+    // Canonical spelling; script_extras.cpp previously called it
+    // CampRes_LoadEntry.
+    u32 Tbb_EnsureSlotLoaded(u32 slot_id);
+
     // 0x002BCE38 (12 B): master-volume update; the value arrives in s0.
     void AsdSound_SetMasterVolume(f32 volume);
 

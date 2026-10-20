@@ -1,7 +1,14 @@
 #include "ui/window.h"
+#include "engine/asd_symbols.h"
 #include <cstring>
 
 namespace smt4::ui {
+
+// 0x002C32F8 copies its ten trailing arguments verbatim; table pointers are
+// passed as their 32-bit address words.
+static inline u32 SpriteTableWord(const void* pointer) {
+    return static_cast<u32>(reinterpret_cast<std::uintptr_t>(pointer));
+}
 
 ComWinWork* g_ComWinWork = nullptr; // 0x0043E0F8
 
@@ -13,10 +20,8 @@ extern "C" {
                              void (*cb)(void*), u32 a5, u32 a6);                    // 0x002c5978
     void* AsdTask_CreateDraw(const char* name, u32 prio, u32 a2, u32 a3,
                              void (*cb)(void*), u32 a5, u32 a6, void* parent);      // 0x002c4c00
-    void  UiSpriteGroup_Init(UiSpriteGroup* group);                                 // 0x002c3344
-    void  UiSpriteGroup_BindTable(UiSpriteGroup* group, const void* t0, u32 s0,
-                                  u32 s1, const void* t1, u32 s2,
-                                  u32 a6, u32 a7, const void* t2, u32 s3);          // 0x002c32f8
+    // UiSpriteGroup_Init / UiSpriteGroup_BindTable are declared canonically in
+    // engine/asd_symbols.h (0x002C3344 / 0x002C32F8).
     void  UiAnimSprite_Setup(UiAnimSprite* sprite, s32 type, s32 id,
                              UiSpriteGroup* group, u32 flag, f32 scale);            // 0x002bf0a8
     void  UiAnimSprite_SetAnim(UiAnimSprite* sprite, s32 anim, s32 frame);          // 0x002bf030
@@ -83,9 +88,11 @@ void ComWin_Init() {
 
     UiSpriteGroup_Init(&work->sprite_group);
     UiSpriteGroup_BindTable(&work->sprite_group,
-                            g_ComWinSpriteTable - 0x60, 0x30,
-                            0, g_ComWinSpriteTable - 0x30, 0x30,
-                            0, 0, g_ComWinSpriteTable, 0x118);
+                            0, 0,
+                            SpriteTableWord(g_ComWinSpriteTable - 0x30), 0x30,
+                            SpriteTableWord(g_ComWinSpriteTable - 0x30),
+                            0x30, 0, 0,
+                            SpriteTableWord(g_ComWinSpriteTable), 0x118);
 
     UiAnimSprite_Setup(&work->panel_sprites[0], 0x0E, -1, &work->sprite_group, 1, 1.0f);
     UiAnimSprite_SetAnim(&work->panel_sprites[0], 0, 0);
@@ -231,9 +238,8 @@ void InfoWin_Init() {
 
     UiSpriteGroup_Init(&work->sprite_group);
     UiSpriteGroup_BindTable(&work->sprite_group,
-                            nullptr, 0,
-                            0x24, g_InfoWinSpriteTable, 0,
-                            0, 0, g_InfoWinSpriteTable, 0);
+                            SpriteTableWord(g_InfoWinSpriteTable), 0x24,
+                            0, 0, 0, 0, 0, 0, 0, 0);
 
     UiAnimSprite_SetupEx(&work->panel_sprites[0], 0x0E, 0x87, 0, &work->sprite_group, 1, 1.0f);
     UiAnimSprite_SetMode(&work->panel_sprites[0], 0, 0);
@@ -353,9 +359,10 @@ void GuestWin_Init() {
 
     UiSpriteGroup_Init(&work->sprite_group);
     UiSpriteGroup_BindTable(&work->sprite_group,
-                            g_GuestWinSpriteTable - 0x18, 0x18,
-                            0, g_GuestWinSpriteTable - 0x18, 0x18,
-                            0, 0, g_GuestWinSpriteTable, 0x70);
+                            SpriteTableWord(g_GuestWinSpriteTable - 0x30), 0x18,
+                            SpriteTableWord(g_GuestWinSpriteTable - 0x18), 0x18,
+                            0, 0, 0, 0,
+                            SpriteTableWord(g_GuestWinSpriteTable), 0x70);
 
     UiAnimSprite_SetupEx(&work->panel_sprite, 0x0E, 0x87, 0, &work->sprite_group, 1, 1.0f);
     UiAnimSprite_SetAnim(&work->panel_sprite, 0, 0);
@@ -512,7 +519,8 @@ void PlaceWin_ShowMessage(const char* msg) {
 void PlaceWin_Init() {
     PlaceWinWork* work = g_PlaceWinWork;
     if (work == nullptr) {
-        work = reinterpret_cast<PlaceWinWork*>(AsdMem_Alloc(sizeof(PlaceWinWork), 0x100));
+        work = static_cast<PlaceWinWork*>(
+            AsdMem_Alloc(0x100, 0x100, 0, sizeof(PlaceWinWork), 1));
         g_PlaceWinWork = work;
     }
 
@@ -527,9 +535,10 @@ void PlaceWin_Init() {
 
     UiSpriteGroup_Init(&work->sprite_group);
     UiSpriteGroup_BindTable(&work->sprite_group,
-                            g_PlaceWinSpriteTable - 0x18, 0x18,
-                            0, g_PlaceWinSpriteTable - 0x18, 0x18,
-                            0, 0, g_PlaceWinSpriteTable, 0x70);
+                            SpriteTableWord(g_PlaceWinSpriteTable - 0x30), 0x18,
+                            SpriteTableWord(g_PlaceWinSpriteTable - 0x18), 0x18,
+                            0, 0, 0, 0,
+                            SpriteTableWord(g_PlaceWinSpriteTable), 0x70);
 
     UiAnimSprite_SetupEx(&work->panel_sprite, 0x0E, 0x87, 0, &work->sprite_group, 1, 1.0f);
     UiAnimSprite_SetAnim(&work->panel_sprite, 0, 0);
@@ -568,7 +577,8 @@ static const u8 g_RunWinSpriteTable[0x20] = {0};
 void RunWin_Init() {
     RunWinWork* work = g_RunWinWork;
     if (work == nullptr) {
-        work = reinterpret_cast<RunWinWork*>(AsdMem_Alloc(sizeof(RunWinWork), 0x100));
+        work = static_cast<RunWinWork*>(
+            AsdMem_Alloc(0x100, 0x100, 0, sizeof(RunWinWork), 1));
         g_RunWinWork = work;
     }
 
@@ -581,9 +591,10 @@ void RunWin_Init() {
 
     UiSpriteGroup_Init(&work->sprite_group);
     UiSpriteGroup_BindTable(&work->sprite_group,
-                            g_RunWinSpriteTable - 0x24, 0x24,
-                            0, g_RunWinSpriteTable - 0x24, 0x24,
-                            0, 0, g_RunWinSpriteTable, 0x70);
+                            SpriteTableWord(g_RunWinSpriteTable - 0x48), 0x24,
+                            SpriteTableWord(g_RunWinSpriteTable - 0x24), 0x24,
+                            0, 0, 0, 0,
+                            SpriteTableWord(g_RunWinSpriteTable), 0x70);
 
     UiAnimSprite_SetupEx(&work->panel_sprite, 0x0E, 0x87, 0, &work->sprite_group, 1, 1.0f);
     UiAnimSprite_SetAnim(&work->panel_sprite, 0, 0);
@@ -660,7 +671,8 @@ void SearchWin_Dismiss() {
 void SearchWin_Init() {
     SearchWinWork* work = g_SearchWinWork;
     if (work == nullptr) {
-        work = reinterpret_cast<SearchWinWork*>(AsdMem_Alloc(sizeof(SearchWinWork), 0x100));
+        work = static_cast<SearchWinWork*>(
+            AsdMem_Alloc(0x100, 0x100, 0, sizeof(SearchWinWork), 1));
         g_SearchWinWork = work;
     }
 
@@ -675,9 +687,10 @@ void SearchWin_Init() {
 
     UiSpriteGroup_Init(&work->sprite_group);
     UiSpriteGroup_BindTable(&work->sprite_group,
-                            g_SearchWinSpriteTable - 0x24, 0x24,
-                            0, g_SearchWinSpriteTable - 0x24, 0x24,
-                            0, 0, g_SearchWinSpriteTable, 0x70);
+                            SpriteTableWord(g_SearchWinSpriteTable - 0x48), 0x24,
+                            SpriteTableWord(g_SearchWinSpriteTable - 0x24), 0x24,
+                            0, 0, 0, 0,
+                            SpriteTableWord(g_SearchWinSpriteTable), 0x70);
 
     UiAnimSprite_SetupEx(&work->panel_sprite, 0x0E, 0x87, 0, &work->sprite_group, 1, 1.0f);
     UiAnimSprite_SetAnim(&work->panel_sprite, 0, 0);

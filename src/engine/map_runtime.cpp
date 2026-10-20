@@ -11,6 +11,9 @@ namespace smt4::engine {
 // ---------------------------------------------------------------------------
 
 LmapMainWork* g_LmapMainWork = nullptr;                 // 0x00447060 (BSS)
+// 0x00447E88: the map-scene view singleton is produced by the map-scene
+// loader outside this milestone.  lmapMain (0x001D2B14) assumes that external
+// producer has already populated this slot before it runs.
 MapSceneView* g_MapSceneView = nullptr;                 // 0x00447E88 (BSS slot)
 MapIfWork* g_MapIfWork = nullptr;                       // 0x00447A78 (BSS)
 MapEnemyWork* g_MapEnemyWork = nullptr;                 // 0x00447600 (BSS)
@@ -87,16 +90,11 @@ extern "C" {
     s32   engine_func_002fb3b8();
     void* engine_func_002c9ba4(u32 index);
 
-    // 0x002B9364 (140 B): 0x94-byte table row lookup by u16 id.  The battle and
-    // UI TUs spell the same address Battle_GetTalkEntry / Item_GetTableEntry;
-    // the demon-growth path reads the same byte +3 flags.
-    void* Battle_GetTalkEntry(u32 id);
+    // 0x002B9364 (Battle_GetTalkEntry) and 0x002C0BCC (Random_Range) are
+    // declared canonically in engine/asd_symbols.h.
 
     // 0x0029EC14 (88 B): 4-byte table row lookup by u16 id.
     void* camp_func_0029ec14(u32 id);
-
-    // 0x002C0BCC (56 B): LCG draw, uniformly distributed over [0, range].
-    u32   Random_Range(u32 range);
 
     // 0x002B7F0A: qsort(base, count, size, compar); the 0x0032B570 comparator
     // lives inside func_0032b4ac and returns `b[0] - a[0]` for u16 elements.
@@ -182,6 +180,8 @@ void lmapMain_func_001d2b14() {
 
     // 0x001D2BC0..0x001D2C04: nine floats at +0x1C and two ranges at +0x4C,
     // plus the pair at +0x15C.  s0/s1/s2 are -554.0f/0.01f/-4780.0f.
+    // Precondition: g_MapSceneView was populated by the external map-scene
+    // loader before this constructor runs (no producer is reconstructed here).
     g_MapSceneView->field_01c = -554.0f;                // 0x001D2BD4
     g_MapSceneView->field_020 = 0.01f;
     g_MapSceneView->field_024 = -4780.0f;
@@ -640,13 +640,14 @@ void mapDepart_func_0027ee6c(const MapDepartRequest* request) {
 // 3dEventOpening.cpp (0x002F62D0), 552 B
 // ---------------------------------------------------------------------------
 //
-// The ledger spells this entry point `3dEventOpening_func_002f62d0`; a C++
-// identifier cannot begin with a digit, so the exact spelling is pinned in the
-// literal that follows the marker and the definition uses the legal spelling.
+// The ledger spells this entry point `3dEventOpening_func_002f62d0`.  A C++
+// identifier cannot begin with a digit, so the legal definition below carries
+// the exact ledger spelling in a deprecated attribute used purely as a
+// spelling pin (nothing calls it, so no diagnostic is emitted).  The
+// DECOMP_FUNC marker applies to the definition it immediately precedes.
 
 // DECOMP_FUNC(0x002f62d0, 552)
-static constexpr char k_3dEventOpeningSymbol[] =
-    "3dEventOpening_func_002f62d0(0x002F62D0, 552 B)";
+[[deprecated("3dEventOpening_func_002f62d0(0x002F62D0) ledger spelling pin")]]
 void* EventOpening3d_func_002f62d0() {
     if (g_EventOpeningWork == nullptr) {                // 0x002F62D8..0x002F62E4
         EventOpeningWork* const work = static_cast<EventOpeningWork*>(

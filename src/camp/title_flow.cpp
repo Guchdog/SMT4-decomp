@@ -25,13 +25,10 @@ extern "C" {
     // Resource request / script tables
     void  AsdRes_Request(u32 key, u32 sub);                                 // 0x002A6214
     void  ScriptVm_LoadTable(const char* name, void* out, u32 value);       // 0x00297704
-    u32   Tbb_EnsureSlotLoaded(u32 slot_id);                                // 0x002976AC
 
-    // AsdText / sprites / cursor widgets
-    void  UiSpriteGroup_Init(void* group);                                  // 0x002C3344
-    void  UiSpriteGroup_BindTable(void* group, const void* t0, u32 s0,
-                                  u32 s1, const void* t1, u32 s2,
-                                  u32 a6, u32 a7, const void* t2, u32 s3);  // 0x002C32F8
+    // AsdText / sprites / cursor widgets.  Tbb_EnsureSlotLoaded,
+    // UiSpriteGroup_Init and UiSpriteGroup_BindTable are declared canonically
+    // in engine/asd_symbols.h.
     void  UiAnimSprite_Setup(ui::UiAnimSprite* sprite, u32 res_group_id,
                              s32 idx, void* sprite_group, u32 panel_id,
                              f32 scale);                                    // 0x002BDB2C
@@ -93,8 +90,8 @@ void PlayLog_func_00194dbc(void* arg) {
     Tbb_EnsureSlotLoaded(0x37);                             // 0x002976AC
     UiSpriteGroup_Init(&work->sprite_group);                // 0x002C3344
     UiSpriteGroup_BindTable(&work->sprite_group,
-                            reinterpret_cast<const void*>(kPlayLogSpriteTable),
-                            0x18, 0, nullptr, 0, 0, 0, nullptr, 0);
+                            static_cast<u32>(kPlayLogSpriteTable),
+                            0x18, 0, 0, 0, 0, 0, 0, 0, 0);
 
     // 0x00194E78..0x00194EC0: five 0x8C-byte animation sprites.  The record
     // stride is 140 (`rsb r0,r4,r4,lsl #3` then `add r0,r0,r0,lsl #2`,
@@ -196,8 +193,8 @@ void titleConfig_func_002f4ca0(void* arg) {
     UiSpriteGroup_Init(&work->sprite_group);                // 0x002C3344
     UiSpriteGroup_BindTable(
         &work->sprite_group,
-        reinterpret_cast<const void*>(kTitleConfigSpriteTable),
-        0x18, 0, nullptr, 0, 0, 0, nullptr, 0);
+        static_cast<u32>(kTitleConfigSpriteTable),
+        0x18, 0, 0, 0, 0, 0, 0, 0, 0);
     UiAnimSprite_Setup(&work->sprite, 0x2F, 0, &work->sprite_group, 0xC9, 1.0f);
     UiAnimSprite_SetAnim(&work->sprite, 0, 0);
 

@@ -37,13 +37,8 @@ extern "C" {
     void  AsdMem_Zero(void* ptr, u32 size);                                // 0x002C4B30
     void  AsdMem_Free(void* ptr);                                          // 0x002C4360
 
-    // 0x002C32F8 / 0x002C3344: 32-byte layout descriptor helpers.  The
-    // eleven-argument shape is the one used by battle_extras.cpp; the last
-    // seven words are the r1/r2/r3 + stack words observed at the call site.
-    void UiSpriteGroup_Init(void* group);                                  // 0x002C3344
-    void UiSpriteGroup_BindTable(void* group, u32 a1, u32 a2, u32 a3,
-                                 u32 a4, u32 a5, u32 a6, u32 a7, u32 a8,
-                                 u32 a9, u32 a10);                         // 0x002C32F8
+    // 0x002C32F8 / 0x002C3344 are declared canonically in
+    // engine/asd_symbols.h.
 
     // 0x002BDB2C (sprite,type,id,group,flag,scale) and its 0x002BF0A8
     // variant with an explicit mode word before the group pointer.
@@ -56,9 +51,8 @@ extern "C" {
     void UiAnimSprite_SetText(void* sprite, s32 a1, s32 a2);               // 0x00296154
     void UiAnimSprite_SetPos(void* sprite, s32 x, s32 y);                  // 0x002B2808
 
-    // 0x002976AC: lazily resolves one 0x0049382C resource-table slot; returns
-    // 1 when the slot is resident (or already marked unresolvable).
-    u32  CampRes_LoadEntry(u32 id);
+    // 0x002976AC is declared canonically as Tbb_EnsureSlotLoaded in
+    // engine/asd_symbols.h.
 
     // 0x002C5E2C: 16-byte resource loader wrapper; the callers use the return
     // value as the 32-bit .bf/.mbm handle.
@@ -96,7 +90,6 @@ extern "C" {
     u16   QcProgress_Get16();                                             // 0x00343C9C
     u16   QcProgress_Get18();                                             // 0x00343E00
     u16   QcProgress_Get1a();                                             // 0x00343C8C
-    u32   Random_Range(u32 range_plus_one);                               // 0x002C0BCC
     void  QcMain_SetTab(s32 value, s32 mode);                             // 0x00343D94
     void  QcMain_SetFlag(u32 flag, u32 value, u32 mode);                  // 0x002899C4
     void  ClearSave_SetFade(u32 index, u32 value);                        // 0x00282E6C
@@ -144,8 +137,8 @@ void NpcRoom_func_0026df40(u32 room_id) {
                        TaskCallback(0x001DD7E0), 0, 0, parent);
 
     // 0x0026E02C..0x0026E040: resource slots 0x35 and 0x1A.
-    CampRes_LoadEntry(0x35);
-    CampRes_LoadEntry(0x1A);
+    Tbb_EnsureSlotLoaded(0x35);
+    Tbb_EnsureSlotLoaded(0x1A);
 
     work->room_id = id;                                     // `strh r6,[sl]`
     work->current = nullptr;                                // `str fp,[r7,#0x24]`
@@ -372,7 +365,7 @@ void UIQuest_func_0026a02c() {
     // the quest list reset.
     engine::AsdTMTexTable_func_002c4e28(0x29);
     AsdRow_LoadNow(0x29, 0);
-    CampRes_LoadEntry(0x34);
+    Tbb_EnsureSlotLoaded(0x34);
     QuestUi_Reset();
 
     // 0x0026A188..0x0026A264: two sweeps over quest ids 0..0x18F.  The
@@ -404,10 +397,9 @@ void UIQuest_func_0026a02c() {
     // 0x0026A268..0x0026A2AC: 0x20-byte layout descriptor at +0x14.  The
     // eleven arguments map to (r1,r2,r3,stack0..stack6) of 0x002C32F8.
     UiSpriteGroup_Init(&work->layout);                      // 0x002C3344
-    UiSpriteGroup_BindTable(&work->layout,
-                            0x00402E54, 0x3C, 0x00402E90,
-                            0x60, 0x00402EF0, 0x3C, 0, 0,
-                            0x00402F2C, 0x214);             // 0x002C32F8
+    UiSpriteGroup_BindTable(
+        &work->layout, 0x00402E54u, 0x3C, 0x00402E90u, 0x60,
+        0x00402EF0u, 0x3C, 0, 0, 0x00402F2Cu, 0x214);   // 0x002C32F8
 
     // 0x0026A2B0..0x0026A334: sprites 0..2 (type 0x29, flag 0xC9).
     UiAnimSprite_Setup(UiQuest_Sprite(work, 0), 0x29, 0, &work->layout,
@@ -986,7 +978,7 @@ void clearSave_func_001e1118(u32 arg) {
 
     // 0x001E116C..0x001E1180: resource 0x3C, common background, button help
     // and the shared script reset.
-    CampRes_LoadEntry(0x3C);
+    Tbb_EnsureSlotLoaded(0x3C);
     CommonBg_func_00289b4c();
     camp::ButtonHelp_Init();
     ScriptVm_func_00289ae8();

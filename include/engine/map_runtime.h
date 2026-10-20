@@ -680,7 +680,7 @@ static_assert(sizeof(NkmGrowState) == 0x04);
 
 /**
  * One 0x94-byte row of global TBB table 0 / sub-table 0, selected by
- * `camp_func_002b9364` (`mov r3,#0x94`, 0x002B938C).
+ * `Battle_GetTalkEntry` (`mov r3,#0x94`, 0x002B938C).
  *
  * The eight party member ids sit at +0x3C..+0x4C (`ldrh r0,[r0,#0x3c]` with
  * `add r0,r6,r4,lsl #1`) and the eight associated level words at +0x4E..+0x6E

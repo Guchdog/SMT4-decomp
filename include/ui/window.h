@@ -6,6 +6,17 @@
 namespace smt4::ui {
 
 /**
+ * 0x20-byte sprite-layout descriptor zeroed by 0x002C3344
+ * (`UiSpriteGroup_Init`) and filled by 0x002C32F8
+ * (`UiSpriteGroup_BindTable`).  It is embedded by the ComWin/InfoWin/GuestWin/
+ * PlaceWin/RunWin/SearchWin workspaces below.
+ */
+struct UiSpriteGroup {
+    u8 raw[0x20];
+};
+static_assert(sizeof(UiSpriteGroup) == 0x20);
+
+/**
  * Common Message Dialog Window workspace (0x188 bytes).
  * Original Atlus source path: `c:\SMT4\XRD686\sdds4\program\font\ComWin\ComWin.cpp`
  * Global pointer: `g_ComWinWork` at `0x0043E0F8`.

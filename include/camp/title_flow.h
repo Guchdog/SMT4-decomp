@@ -68,8 +68,8 @@ struct TitleConfigWork {
     u16 field_16;                       // +0x016
     u16 field_18;                       // +0x018
     u16 field_1a;                       // +0x01A = 0 (`strh r5`, 0x002F4DC0)
-    u32 field_1c;                       // +0x01C = -1 (0x002F4DC4, fills 8 bytes)
-    u32 field_20;                       // +0x020 = -1
+    s32 field_1c;                       // +0x01C = -1 (0xFF byte fill, 0x002F4DC4)
+    s32 field_20;                       // +0x020 = -1
     u16 field_24;                       // +0x024 = 0 (`strh r5`, 0x002F4DD4)
     u16 pad_26;
     u32 field_28;                       // +0x028 = map(config[0]) (0x002F4E0C)

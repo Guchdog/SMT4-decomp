@@ -4,6 +4,12 @@
 
 namespace smt4::ui {
 
+// 0x002C32F8 copies its ten trailing arguments verbatim; table pointers are
+// passed as their 32-bit address words.
+static inline u32 SpriteTableWord(const void* pointer) {
+    return static_cast<u32>(reinterpret_cast<std::uintptr_t>(pointer));
+}
+
 StatusDownWork* g_StatusDownWork = nullptr; // 0x0044E190
 
 struct ItemTableEntry {
@@ -56,10 +62,8 @@ extern "C" {
     s32   AsdText_GetLineCount(void* text_handle);                                  // 0x002b787c
     void  AsdText_DestroyHandle(void* text_handle);                                 // 0x002a7b50
 
-    void  UiSpriteGroup_Init(void* group);                                          // 0x002c3344
-    void  UiSpriteGroup_BindTable(void* group, const void* t0, u32 s0,
-                                  u32 s1, const void* t1, u32 s2,
-                                  u32 a6, u32 a7, const void* t2, u32 s3);          // 0x002c32f8
+    // UiSpriteGroup_Init / UiSpriteGroup_BindTable are declared canonically in
+    // engine/asd_symbols.h (0x002C3344 / 0x002C32F8).
 
     void  UiAnimSprite_Setup(UiAnimSprite* sprite, u32 res_group_id, s32 idx,
                              void* sprite_group, u32 flag, f32 scale);              // 0x002bdb2c
@@ -922,9 +926,11 @@ void StatusDown_Init() {
     StatusDownWork* w = g_StatusDownWork;
     UiSpriteGroup_Init(&w->sprite_group);
     UiSpriteGroup_BindTable(&w->sprite_group,
-                            g_StatusDownSpriteTable - 0xA8, 0x48,
-                            0x48, g_StatusDownSpriteTable - 0x18, 0x18,
-                            0, 0, g_StatusDownSpriteTable, 0x134);
+                            SpriteTableWord(g_StatusDownSpriteTable - 0xA8), 0x48,
+                            SpriteTableWord(g_StatusDownSpriteTable - 0x60), 0x48,
+                            SpriteTableWord(g_StatusDownSpriteTable - 0x18),
+                            0x18, 0, 0,
+                            SpriteTableWord(g_StatusDownSpriteTable), 0x134);
 
     UiAnimSprite_Setup(&w->panel_sprites[0], 0x1A, 0x3E8, &w->sprite_group, 1, 1.0f);
     UiAnimSprite_SetAnim(&w->panel_sprites[0], 0, 0);

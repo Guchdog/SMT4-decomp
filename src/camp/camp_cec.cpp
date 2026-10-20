@@ -2,8 +2,8 @@
 #include "engine/asd_symbols.h"
 
 namespace smt4::ui {
-// Shared ComWin/RunWin constructor (src/ui/window.cpp); ui/window.h cannot be
-// included because its UiSpriteGroup member type has no declaration yet.
+// Shared ComWin/RunWin constructor (src/ui/window.cpp); declared directly
+// rather than pulling in the whole window header.
 void RunWin_Init();                                                     // 0x002027DC
 } // namespace smt4::ui
 
@@ -260,10 +260,11 @@ void CampCec_func_001ffaf4(void* arg) {
     AsdTask_CreateDraw("CampCec DrawUpRight", 0xDB, 0, 0, CampCec_DrawUp, 0, 0,
                        work->calc_task);
 
-    // 0x001FFBB8..0x001FFBD0: two -1/0 pairs at +0xC24 and +0xD30, plus the
-    // lone -1 at +0xD2C (`stm r2,{r1,r6}`, r1 = -1, r6 = 0).
-    work->field_c24 = -1;
-    work->field_c28 = 0;
+    // 0x001FFBB8..0x001FFBD0: the first pair is at work + 0xC00 + 0x124 =
+    // +0xD24 (not +0xC24); the second pair is at +0xD30, with the lone -1 at
+    // +0xD2C (`stm r2,{r1,r6}`, r1 = -1, r6 = 0).
+    work->field_d24 = -1;
+    work->state_d28 = 0;
     work->field_d2c = -1;
     work->field_d30 = -1;
     work->field_d34 = 0;

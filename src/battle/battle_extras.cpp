@@ -3,6 +3,8 @@
 #include "engine/asd_symbols.h"
 #include "engine/asd_texture.h"
 
+#include <algorithm>
+
 namespace smt4::battle {
 
 // ---------------------------------------------------------------------------
@@ -67,14 +69,19 @@ extern "C" {
     s32  ScriptVm_IsTalkActive();                                           // 0x002B89D4
     s32  Camp_IsMenuActive();                                               // 0x002B89A0
 
-    // Matrix helpers used by both EnemyDraw and titleDbgBg.
+    // Matrix helpers used by both EnemyDraw and titleDbgBg.  The argument order
+    // is the register order observed at each branch target:
+    //   Translate: r2 = matrix, r1 = vec, r0 = out
+    //   Multiply:  r1/r2 = operands, r0 = out
+    //   AddTranslation: r0 = out, r1 = vec, r2 = matrix
+    //   TransformPoint: r0 = out, r1 = matrix, r2 = in
     s32  Gpu_CheckDrawFlag(const void* flag);                               // 0x002C00D4
     void Battle_LoadMatrix(void* dst, const void* src);                     // 0x002C00B4
-    void Matrix_Translate(void* matrix, const f32* vec);                    // 0x0023E4E4
+    void Matrix_Translate(f32* out, const f32* vec, const f32* matrix);     // 0x0023E4E4
     void Matrix_FromEuler(void* dst, u32 mode, f32 x, f32 y, f32 z);        // 0x00292C7C
-    void Matrix_Multiply(void* dst, const void* rhs);                       // 0x002A5078
-    void Matrix_AddTranslation(void* matrix, const f32* a, const f32* b);   // 0x0015F6D4
-    void Matrix_TransformPoint(const void* matrix, const f32* in, f32* out); // 0x002AD6D8
+    void Matrix_Multiply(f32* out, const void* a, const void* b);           // 0x002A5078
+    void Matrix_AddTranslation(f32* out, const f32* vec, const f32* matrix); // 0x0015F6D4
+    void Matrix_TransformPoint(f32* out, const void* matrix, const f32* in); // 0x002AD6D8
 
     // Effect file loading / attachment.
     s32  AsdString_Compare(const char* a, const char* b);                   // 0x002AA7F4
@@ -91,7 +98,7 @@ extern "C" {
     void Title_UpdateTextureSize(void* texture, void* size_slot);           // 0x002BFC88
     f32  Camp_GetAspectScale(f32 a, f32 b);                                 // 0x002B9CF8
     void Ui_DrawModel(void* gpu_state, void* model);                        // 0x002C1D3C
-    void Title_DrawQuad(void* object, void* a, void* b,
+    void Title_DrawQuad(void* object, void* a, void* b, void* c,
                         f32 s0, f32 s1, f32 s2, f32 s3,
                         f32 s4, f32 s5, f32 s6, f32 s7,
                         f32 s8, f32 s9, f32 s10, f32 s11,
@@ -118,7 +125,6 @@ extern "C" {
     // btlTalkCommand helpers.
     u16  Talk_GetSelectedIndex();                                           // 0x00296F60
     void* Battle_GetTalkUnit(u32 id);                                       // 0x002B087C
-    void* Battle_GetTalkEntry(u32 id);                                      // 0x002B9364
     void* ScriptVm_GetTalkState();                                          // 0x002B66EC
     s32  Talk_CheckUnit(u32 id);                                            // 0x0024EC64
     void Talk_CommitChoice(s32 value);                                      // 0x0028DF54
@@ -142,12 +148,8 @@ extern "C" {
     // btlGameOver helpers.
     u32  Save_GetGameOverStateIndex();                                      // 0x002C0B94
 
-    // Shared UI sprite/layout helpers (same addresses as the UI TUs).
-    void UiSpriteGroup_Init(void* group);                                   // 0x002C3344
-    void UiSpriteGroup_BindTable(void* group, const void* a1, u32 a2,
-                                 const void* a3, u32 a4, const void* a5,
-                                 u32 a6, u32 a7, u32 a8, const void* a9,
-                                 u32 a10);                                  // 0x002C32F8
+    // UiSpriteGroup_Init / UiSpriteGroup_BindTable are declared canonically in
+    // engine/asd_symbols.h (0x002C3344 / 0x002C32F8).
 }
 
 static inline void (*TaskCallback(u32 address))(void*) {
@@ -300,19 +302,19 @@ void EnemyDraw_func_0033eadc(EnemyDrawWork* work) {
                 offset[0] = 0.5f * unit->width - unit->x;
                 offset[1] = 0.5f * unit->height - unit->y;
                 offset[2] = 0.0f;
-                Matrix_Translate(matrix, offset);           // 0x0033EFEC
+                Matrix_Translate(matrix, offset, matrix);   // 0x0033EFEC
 
                 const f32 angle =
                     static_cast<f32>(unit->field_20) * 256.0f *
                     0.0027777778f;                          // 0x3B360B61
                 f32 rotation[16];
                 Matrix_FromEuler(rotation, 1, 0.0f, 0.0f, angle);
-                Matrix_Multiply(matrix, rotation);          // 0x0033F02C
+                Matrix_Multiply(matrix, rotation, matrix);  // 0x0033F02C
 
                 offset[0] = -offset[0];
                 offset[1] = -offset[1];
                 offset[2] = -offset[2];
-                Matrix_Translate(matrix, offset);           // 0x0033F05C
+                Matrix_Translate(matrix, offset, matrix);   // 0x0033F05C
             }
 
             // 0x0033F060..0x0033F148: sprite-facing billboard pass.
@@ -321,22 +323,22 @@ void EnemyDraw_func_0033eadc(EnemyDrawWork* work) {
                 offset[0] = 0.5f * unit->width - unit->x;
                 offset[1] = -(unit->y + unit->height);
                 offset[2] = 0.0f;
-                Matrix_Translate(matrix, offset);           // 0x0033F0A4
+                Matrix_Translate(matrix, offset, matrix);   // 0x0033F0A4
 
                 f32 rotation[16];
                 Matrix_FromEuler(rotation, 1, 64.0f, 0.0f, 0.0f); // 0x0033F0B4
-                Matrix_Multiply(matrix, rotation);          // 0x0033F0CC
+                Matrix_Multiply(matrix, rotation, matrix);  // 0x0033F0CC
 
                 f32 view[3] = {1.0f, 1.0f, g_EnemyDrawGlobal.field_04};
-                Matrix_AddTranslation(matrix, view, view + 1); // 0x0033F0F0
+                Matrix_AddTranslation(matrix, view, matrix); // 0x0033F0F0
 
                 f32 forward[3] = {0.0f, 0.0f, unit->height * 0.5f};
-                Matrix_Translate(matrix, forward);          // 0x0033F118
+                Matrix_Translate(matrix, forward, matrix); // 0x0033F118
 
                 offset[0] = -offset[0];
                 offset[1] = -offset[1];
                 offset[2] = -offset[2];
-                Matrix_Translate(matrix, offset);           // 0x0033F148
+                Matrix_Translate(matrix, offset, matrix);   // 0x0033F148
             }
 
             // 0x0033F14C..0x0033F1F8: four corners, transformed and biased by
@@ -354,7 +356,7 @@ void EnemyDraw_func_0033eadc(EnemyDrawWork* work) {
 
             for (u32 k = 0; k < 4; ++k) {
                 f32* vertex = corners[k];
-                Matrix_TransformPoint(matrix, vertex, vertex);   // 0x0033F1A4
+                Matrix_TransformPoint(vertex, matrix, vertex);   // 0x0033F1A4
                 vertex[0] += entry->offset_x;                   // 0x0033F1B4
                 vertex[1] += entry->offset_y;                   // 0x0033F1CC
                 vertex[0] -= base_x;                            // 0x0033F1D4
@@ -379,7 +381,6 @@ void EnemyDraw_func_0033eadc(EnemyDrawWork* work) {
             render->matrix[7] = v1;                             // +0x4C (0x0033F260)
             render->alpha = static_cast<f32>(unit->field_22) *
                             0.0099999998f;                       // 0x3C23D70A
-            render->primitive = nullptr;
 
             // 0x0033F294..0x0033F320: primitive mode selects a different
             // texture/vertex layout for the same draw record.
@@ -627,7 +628,7 @@ s32 EftLoadFile_func_00249fac(s32 effect_id, const u8* path) {
                 }
                 // 0x0024A560..0x0024A56C: r5 = 3*j and the byte address is
                 // record + 0x1A0 + r5*8, i.e. a 0x18 stride for this array.
-                u32* wide = reinterpret_cast<u32*>(
+                s32* wide = reinterpret_cast<s32*>(
                     record + 0x1A0 + j * 0x18);
                 if (*wide != 0) {
                     s32 value;
@@ -640,7 +641,9 @@ s32 EftLoadFile_func_00249fac(s32 effect_id, const u8* path) {
                             value = 0xFF;
                         }
                     }
-                    *wide = static_cast<u32>(value);
+                    // 0x0024A5A8 masks the result before the 32-bit store.
+                    *wide = static_cast<s32>(
+                        static_cast<u32>(value) & 0xFFu);
                 }
             }
             for (u32 k = 0; k < 3; ++k) {
@@ -665,7 +668,7 @@ s32 EftLoadFile_func_00249fac(s32 effect_id, const u8* path) {
                     continue;
                 }
                 s32 value;
-                if (name[3] >= 0x1F) {
+                if (static_cast<s32>(name[3]) >= 0x1F) {
                     value = 0xFF;                       // 0x0024A624 `movge`
                 } else {
                     value = static_cast<s32>(
@@ -713,9 +716,8 @@ s32 EftLoadFile_func_00249fac(s32 effect_id, const u8* path) {
 // Documented view over the existing `g_FrameTex` singleton (0x0043E278).
 // titleDbgBg reaches the fields below through the same pointer loaded from
 // 0x0043E278 (`ldr r0,[pc,...]` / `ldr r4,[r0]`, 0x00117CB0..0x00117CCC).
-// The +0x13DC slot lies past the 0xFEC-byte FrameTexScene reconstructed in
-// engine/asd_frame.cpp, so it is modelled here without introducing a second
-// global for the address.
+// The buffer pointer is `work + 0xC00 + 0x3DC` (0x00117CC0..0x00117CC4),
+// i.e. +0xFDC, which is the existing FrameTexScene field modelled below.
 struct TitleDbgBgView {
     u8  pad_0000[0xEE4];
     u8  field_ee4;                      // +0x0EE4: `ldrb r0,[r4,#0xee4]` (0x00117D90)
@@ -737,15 +739,12 @@ struct TitleDbgBgView {
     engine::AsdTexture* overlay_textures[2]; // +0x0F20/+0x0F24
     u8  pad_f28[0xB4];
     engine::AsdTexture* field_fdc;      // +0x0FDC: `ldr r6,[r4,#0xfdc]` (0x00117D94)
-    u8  pad_fe0[0x3FC];                 // +0x0FE0..+0x13DC
-    engine::AsdTexture* field_13dc;     // +0x13DC: `ldr r2,[r5]` (0x00117CF8)
 };
 static_assert(offsetof(TitleDbgBgView, field_ee4) == 0xEE4);
 static_assert(offsetof(TitleDbgBgView, field_f10) == 0xF10);
 static_assert(offsetof(TitleDbgBgView, field_f18) == 0xF18);
 static_assert(offsetof(TitleDbgBgView, overlay_textures) == 0xF20);
 static_assert(offsetof(TitleDbgBgView, field_fdc) == 0xFDC);
-static_assert(offsetof(TitleDbgBgView, field_13dc) == 0x13DC);
 
 static void AsdGpuList_Push(u8* gpu, u32 table_offset, void* task) {
     u32* header = reinterpret_cast<u32*>(gpu + table_offset);
@@ -797,11 +796,11 @@ void titleDbgBg_func_00117ca4(s32 mode) {
         texture->height = 0x200;                        // 0x00117CE0
         work->field_fdc->width = texture->width;        // 0x00117CF0
         work->field_fdc->height = texture->height;      // 0x00117D00
-        Title_UpdateTextureSize(texture, work->field_13dc); // 0x00117D0C
-        // 0x00117D10..0x00117D2C reloads `[r5]` (work+0x13DC) and halves
-        // that texture, not the 0xF20/0xF24 overlay.
-        work->field_13dc->width >>= 1;
-        work->field_13dc->height >>= 1;
+        Title_UpdateTextureSize(texture, work->field_fdc); // 0x00117D0C
+        // 0x00117D10..0x00117D2C reloads `[r5]`, where r5 is
+        // work + 0xC00 + 0x3DC = work + 0xFDC, and halves that texture.
+        work->field_fdc->width >>= 1;
+        work->field_fdc->height >>= 1;
     }
 
     engine::AsdTexture* const target = work->field_fdc;
@@ -812,10 +811,10 @@ void titleDbgBg_func_00117ca4(s32 mode) {
     }
 
     const f32 ratio = Camp_GetAspectScale(2.0f, 1.0f);  // 0x00117DB8
-    const f32 inv_w = (height_scale / ratio) /
-                      static_cast<f32>(target->width);  // 0x00117E08
-    const f32 inv_h = (width_scale / ratio) /
-                      static_cast<f32>(target->height); // 0x00117E04
+    const f32 inv_w = (width_scale / ratio) /
+                      static_cast<f32>(target->width);  // 0x00117E04
+    const f32 inv_h = (height_scale / ratio) /
+                      static_cast<f32>(target->height); // 0x00117E08
 
     const u32 enabled = (work->field_f1c != 0) ? 1 : 0; // 0x00117DD0
     target->field_3c = enabled;                         // 0x00117DE8
@@ -845,11 +844,12 @@ void titleDbgBg_func_00117ca4(s32 mode) {
     Ui_DrawModel(g_AsdGpuState, target);                // 0x00117F40
 
     Title_DrawQuad(work->field_f10, work->field_f10, work->field_f10,
+                   work->field_f10,
                    work->field_ee8, work->field_ef8, work->field_f14,
                    work->field_eec, work->field_efc, work->field_f14,
                    work->field_ef0, work->field_f00, work->field_f14,
                    work->field_ef4, work->field_f04, work->field_f14,
-                   inv_w, inv_w, inv_w, inv_h,
+                   inv_w, 0.0f, inv_w, inv_h,
                    0.0f, 0.0f, 0.0f, inv_h);           // 0x00117FA8
 
     if (work->field_f18 != 0) {
@@ -1085,12 +1085,14 @@ s32 btlTalkCommand_func_00318770() {
         AsdMem_Alloc(0x100, 0x100, 0, 0x962, 1));
     u32 candidate_count = 0;
 
-    // 0x0031880C..0x00318844: the `bhi` at 0x0031881C only skips a redundant
-    // reload of the same ScriptVm byte; the threshold block itself is always
-    // executed.  r6 = talk_max - max(10, talk_max/2).
+    // 0x0031880C..0x00318844: r7 starts as unit->field_02 and is replaced by
+    // the ScriptVm +0x76 byte only when talk_max <= unit->field_02, so the
+    // threshold base is min(talk_max, unit->field_02).  r6 =
+    // base - max(10, base/2).
     const u8 talk_max = reinterpret_cast<const u8*>(
         ScriptVm_GetTalkState())[0x76];
-    s32 lower = static_cast<s32>(talk_max);
+    const s32 base = std::min<s32>(talk_max, unit->field_02);
+    s32 lower = base;
     const s32 half = lower / 2;
     const s32 margin = (half < 10) ? 10 : half;
     lower = static_cast<s16>(lower - margin);
@@ -1105,7 +1107,8 @@ s32 btlTalkCommand_func_00318770() {
     }
 
     // 0x00318888..0x003188F4: scan ids 1..0x4B0; the record's field_03 is
-    // compared against r6 (lower) and r7 (talk_max), not the unit limit.
+    // compared against r6 (lower) and r7 (the threshold base), not the unit
+    // limit.
     for (u32 id = 1; id <= 0x4B0; ++id) {
         const u16 narrow = static_cast<u16>(id);
         BtlTalkUnitRecord* row =
@@ -1113,7 +1116,7 @@ s32 btlTalkCommand_func_00318770() {
         BtlTalkUnitRecord* unit_row =
             static_cast<BtlTalkUnitRecord*>(Battle_GetTalkUnit(narrow));
         if (row->field_03 >= lower &&
-            talk_max >= row->field_03 &&
+            base >= row->field_03 &&
             (unit_row->flags & 0x0400) != 0 &&
             Talk_CheckUnit(row->id) == 0) {
             Talk_SelectUnit(row->id);                   // 0x003188D4
@@ -1221,15 +1224,8 @@ void btlTalkBustUp_func_002959c4() {
     // 0x00295AB4..0x00295AFC: sprite group and five sprite-table slices.
     UiSpriteGroup_Init(work);
     UiSpriteGroup_BindTable(
-        work,
-        reinterpret_cast<const void*>(static_cast<std::uintptr_t>(0x003FF884)),
-        0x60,
-        reinterpret_cast<const void*>(static_cast<std::uintptr_t>(0x003FF8E4)),
-        0x144,
-        reinterpret_cast<const void*>(static_cast<std::uintptr_t>(0x003FFA28)),
-        0x90, 0, 0,
-        reinterpret_cast<const void*>(static_cast<std::uintptr_t>(0x003FFAB8)),
-        0x9BC);
+        work, 0x003FF884u, 0x60, 0x003FF8E4u, 0x144,
+        0x003FFA28u, 0x90, 0, 0, 0x003FFAB8u, 0x9BC);
 }
 
 // ---------------------------------------------------------------------------

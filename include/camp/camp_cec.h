@@ -122,13 +122,12 @@ struct CecWork {
     u32 field_40;                       // +0x040 (not written here)
     u32 field_44;                       // +0x044 = 0x00220EAC (0x001FFC44)
     u8  pad_048[0xBDC];                 // +0x048..+0xC24
-    s32 field_c24;                      // +0xC24 = -1 (`stm r2,{r1,r6}`, 0x001FFBC4)
-    u32 field_c28;                      // +0xC28 = 0
-    u8  pad_c2c[0xC8];                  // +0xC2C..+0xCF4
+    u8  pad_c24[0xD0];                  // +0xC24..+0xCF4 (not written here)
     u32 script_bf;                      // +0xCF4: "camp/CecMain_scr.bf" (0x001FFC7C)
     u32 msg_mbm;                        // +0xCF8: "camp/CecMain_msg.mbm" (0x001FFC90)
-    u8  pad_cfc[0x2C];                  // +0xCFC..+0xD28
-    u32 state_d28;                      // +0xD28 = 0x0D (0x001FFCA8)
+    u8  pad_cfc[0x28];                  // +0xCFC..+0xD24
+    s32 field_d24;                      // +0xD24 = -1 (`stm r2,{r1,r6}`, 0x001FFBC4)
+    u32 state_d28;                      // +0xD28 = 0, later 0x0D (0x001FFCA8)
     s32 field_d2c;                      // +0xD2C = -1 (0x001FFBCC)
     s32 field_d30;                      // +0xD30 = -1 (0x001FFBD0)
     u32 field_d34;                      // +0xD34 = 0
@@ -147,7 +146,8 @@ struct CecWork {
     void* thread_buffer;                // +0xD78: AsdWork_Alloc(...,0x1000,...) (0x001FFD64)
 };
 static_assert(offsetof(CecWork, handlers) == 0x008);
-static_assert(offsetof(CecWork, field_c24) == 0xC24);
+static_assert(offsetof(CecWork, script_bf) == 0xCF4);
+static_assert(offsetof(CecWork, field_d24) == 0xD24);
 static_assert(offsetof(CecWork, state_d28) == 0xD28);
 static_assert(offsetof(CecWork, mode) == 0xD5C);
 static_assert(offsetof(CecWork, heap) == 0xD6C);

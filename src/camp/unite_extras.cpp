@@ -2,7 +2,6 @@
 #include "engine/asd_symbols.h"
 #include "ui/tbb_table.h"
 
-#include <bit>
 #include <cstdint>
 
 namespace smt4::camp {
@@ -42,9 +41,8 @@ extern "C" {
     void* AsdMem_Alloc(u32 a0, u32 a1, u32 a2, u32 size, u32 flag);        // 0x002C4B84
     void  AsdMem_Zero(void* ptr, u32 size);                                // 0x002C4B30
 
-    // 0x002B9364 (140 B): 0x94-byte table row lookup by u16 id.  The battle
-    // and UI TUs spell the same address Battle_GetTalkEntry/Item_GetTableEntry.
-    const UniteBibleRow* camp_func_002b9364(u32 id);
+    // 0x002B9364 is declared canonically as Battle_GetTalkEntry in
+    // engine/asd_symbols.h.
 
     // 0x0029ED08 (60 B): compendium-owned predicate for a demon id.
     u32   camp_func_0029ed08(u32 demon_id);
@@ -115,13 +113,8 @@ extern "C" {
     // 0x002333BC (24 B): base constructor (vtable 0x004221E4, u16 +4 = 0).
     void  unite_func_002333bc(void* object);
 
-    // 0x002C3344 (40 B): zero 0x20 bytes.
-    void  camp_func_002c3344(void* block);
-
-    // 0x002C32F8 (76 B): text block init.  The 5th..11th arguments are the
-    // stack words at 0x003AD45C: 0x18, 0.0f, 0, 0.0f, 0, 0x00402450, 0x70.
-    void  camp_func_002c32f8(void* object, u32 a1, u32 a2, u32 a3, u32 a4,
-                             f32 f4, u32 a6, f32 f6, u32 a8, f32 f8, u32 a10);
+    // 0x002C3344 / 0x002C32F8 are declared canonically as UiSpriteGroup_Init
+    // and UiSpriteGroup_BindTable in engine/asd_symbols.h.
 
     // 0x002BDB2C (152 B): reset + initialise one 0x8C-byte sprite node.
     void  camp_func_002bdb2c(void* sprite, u32 a1, u32 a2, void* a3, f32 scale,
@@ -130,8 +123,8 @@ extern "C" {
     // 0x002AF854 (64 B): attach a table row to a sprite node.
     void  battle_func_002af854(void* sprite, u32 a1, u32 a2);
 
-    // 0x002C0BCC (56 B): LCG draw over [0, range].
-    u32   engine_func_002c0bcc(u32 range);
+    // 0x002C0BCC is declared canonically as Random_Range in
+    // engine/asd_symbols.h.
 
     // 0x002C615C (556 B): unsigned division (r0 / r1); second argument is the
     // divisor loaded from the list capacity at 0x0022E250.
@@ -200,7 +193,8 @@ void unite_func_0022d5c8(UniteExtrasWork* work) {
                 continue;                                                 // 0x0022D820
             }
             const UniteBibleRow* row =
-                camp_func_002b9364(record->demon_id);                     // 0x0022D828
+                static_cast<const UniteBibleRow*>(
+                    Battle_GetTalkEntry(record->demon_id));              // 0x0022D828
             UnitePickEntry entry{};                                       // sp+0x10
             camp_func_0022e310(&entry, row->id, 1);                       // 0x0022D83C
             entry.field_08 = camp_func_0029d100(
@@ -216,7 +210,8 @@ void unite_func_0022d5c8(UniteExtrasWork* work) {
         s32 available = 0;                                                // r7
         s32 total = 0;                                                    // r6
         for (u32 i = 0; i < 0x4FF; ++i) {                                 // 0x0022D8D4 blt
-            const UniteBibleRow* row = camp_func_002b9364(static_cast<u16>(i + 1));         // 0x0022D8DC
+            const UniteBibleRow* row = static_cast<const UniteBibleRow*>(
+                Battle_GetTalkEntry(static_cast<u16>(i + 1)));        // 0x0022D8DC
             if (row == nullptr) {
                 continue;                                                 // 0x0022D8E8
             }
@@ -235,7 +230,8 @@ void unite_func_0022d5c8(UniteExtrasWork* work) {
         unite_func_0022e490(list);                                        // 0x0022D610
         u32 available = 0;                                                // r7
         for (u32 i = 0; i < 0x4FF; ++i) {                                 // r8 = 0x4FF, bgt
-            const UniteBibleRow* row = camp_func_002b9364(static_cast<u16>(i + 1));         // 0x0022D628
+            const UniteBibleRow* row = static_cast<const UniteBibleRow*>(
+                Battle_GetTalkEntry(static_cast<u16>(i + 1)));        // 0x0022D628
             if (row == nullptr) {
                 continue;                                                 // 0x0022D634
             }
@@ -277,6 +273,8 @@ void unite_func_0022d5c8(UniteExtrasWork* work) {
             }
             unite_func_0022e290(list, sort_mode);                         // 0x0022D720
         }
+        unite_func_002338c4(At(work, 0x20), 0xA,
+                            static_cast<s16>(list->count), 0, 1, 1);      // 0x0022D740
         work->result_field_02d = 1;                                       // 0x0022D750
         work->completion = static_cast<s8>(unite_func_0022e244(list));    // 0x0022D75C
         AsdSound_GetTableEntry(0);                                        // 0x0022D764
@@ -472,11 +470,11 @@ void bibleLegionDraw_func_003ad300() {
         work->field_274 = 0.0f;                                           // 0x003AD3A0 (s17)
         work->field_27c = 1.0f;                                           // 0x003AD3A4 (s16)
         work->field_284 = 0;                                              // 0x003AD3AC
-        work->field_288 = static_cast<u16>(engine_func_002c0bcc(0xC8) + 0x64); // 0x003AD3B8
+        work->field_288 = static_cast<u16>(Random_Range(0xC8) + 0x64);    // 0x003AD3B8
         work->field_278 = 0.0f;                                           // 0x003AD3C4 (s17)
         work->field_280 = -3.0f;                                          // 0x003AD3C8 (0xC0400000)
         work->field_286 = 0;                                              // 0x003AD3D0
-        work->field_28a = static_cast<u16>(engine_func_002c0bcc(0xC8) + 0x64); // 0x003AD3DC
+        work->field_28a = static_cast<u16>(Random_Range(0xC8) + 0x64);    // 0x003AD3DC
         work->field_28c = 0;                                              // 0x003AD3C0
         work->field_28d = 0;                                              // 0x003AD3E8
         AsdMem_Zero(work->block_290, 0x1E0);                              // 0x003AD3EC
@@ -486,11 +484,10 @@ void bibleLegionDraw_func_003ad300() {
     work->calc_task = AsdTask_CreateCalc(
         "LegionDrawUp CALC", 2, 0, 0,
         TaskCallback(0x003ac6a0), 0, 0);                                  // 0x003AD410
-    camp_func_002c3344(At(work, 0x20));                                   // 0x003AD41C
-    camp_func_002c32f8(
-        At(work, 0x20), 0x00402414, 0x24, 0x00402438,
-        0x18, 0.0f, 0, 0.0f, 0,
-        std::bit_cast<f32>(0x00402450u), 0x70);                           // 0x003AD454
+    UiSpriteGroup_Init(At(work, 0x20));                                   // 0x003AD41C
+    UiSpriteGroup_BindTable(
+        At(work, 0x20), 0x00402414u, 0x24, 0x00402438u, 0x18,
+        0, 0, 0, 0, 0x00402450u, 0x70);                                   // 0x003AD454
 
     for (u32 i = 0; i < 2; ++i) {                                         // 0x003AD4C8
         u8* node = At(work, i * 0x8C);                                    // `add r5,r6,r0,lsl #2`
@@ -523,7 +520,8 @@ void UniteCtrl_func_003c9ebc(UniteCtrlRoster* roster) {
 
     // Count available rows per race byte (row+0x02, 0..0x37).
     for (u32 i = 0; i < row_count; ++i) {                                 // 0x003C9F58/0x003C9F9C
-        const UniteBibleRow* row = camp_func_002b9364(static_cast<u16>(i));
+        const UniteBibleRow* row = static_cast<const UniteBibleRow*>(
+            Battle_GetTalkEntry(static_cast<u16>(i)));
         u32 race = row->race;
         if (race >= 0x38) {
             continue;                                                     // 0x003C9F74
@@ -549,7 +547,8 @@ void UniteCtrl_func_003c9ebc(UniteCtrlRoster* roster) {
     if (row_count != 0) {                                                 // 0x003C9FF4
         u32 i = 0;
         do {
-            const UniteBibleRow* row = camp_func_002b9364(static_cast<u16>(i));
+            const UniteBibleRow* row = static_cast<const UniteBibleRow*>(
+                Battle_GetTalkEntry(static_cast<u16>(i)));
             u32 race = row->race;
             if (race < 0x38 && (row->flags & 1) != 0) {                   // 0x003C9F? (0x003CA014..0x3CA024)
                 u8 index = local_counts[race];                            // 0x003CA02C
