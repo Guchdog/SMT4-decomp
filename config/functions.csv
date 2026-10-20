@@ -2151,7 +2151,7 @@ address,size,status,category,name,src_file
 0x001d3ca4,52,todo,ui,ui_func_001d3ca4,
 0x001d3cd8,52,todo,ui,ui_func_001d3cd8,
 0x001d3d0c,52,todo,ui,ui_func_001d3d0c,
-0x001d3d40,22520,todo,script_vm,script_vm_func_001d3d40,
+0x001d3d40,22520,non_matching,script_vm,FlowScript_ExecuteOpcode,src/script/script_vm.cpp
 0x001d9538,908,non_matching,shop,shopMain_Proc,src/shop/shop.cpp
 0x001d98c4,5880,todo,ui,ui_func_001d98c4,
 0x001dafbc,668,todo,camp,tmnlMain_func_001dafbc,
