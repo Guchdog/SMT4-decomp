@@ -34,9 +34,12 @@ extern "C" {
     u32   AsdSound_OpenArchive(void* system, const char* path);             // 0x00121744
     u32   AsdSound_GetBlockSize(const void* container);                     // 0x00132a20 (0x2001 tag)
     u32   AsdSound_GetStreamBlockSize(const void* container);               // 0x00132aa0 (0x2000 tag)
-    u32   AsdSound_GetDataSize(const void* container);                      // 0x00121f20
-    u32   AsdSound_GetContainerSize(const void* container);                 // 0x00121f40
-    u32   AsdSound_GetSampleBytes(const void* container);                   // 0x00122094
+    // 0x00121F20 / 0x00121F40 / 0x00122094 ignore r0 and derive the size from
+    // r1, so the owner pointer is the meaningful argument (r0 still carries the
+    // container at every call site).
+    u32   AsdSound_GetDataSize(const void* container, const void* owner);    // 0x00121f20
+    u32   AsdSound_GetContainerSize(const void* container, const void* owner);// 0x00121f40
+    u32   AsdSound_GetSampleBytes(const void* container, const void* owner); // 0x00122094
     u32   AsdSound_LoadData(void* system, const void* data, u32 size);      // 0x001215ec
     u32   AsdSound_LoadDataPersistent(void* system, const void* data, u32 size); // 0x00121694
     u32   AsdSound_ParseContainer(void* container, void* owner, void* buffer,
@@ -194,10 +197,11 @@ u32 AsdSoundSystem_func_00109690(const char* archive, u32 enable, u32 size)
     // 0x001096b8: strcpy(system + 0x47C, archive).
     AsdString_Strcpy(system.path, archive);
 
-    // 0x001096c8: memcmp(system + 0x47C, "rom:", 4).  A non-rom path marks the
-    // system as "raw path" through +0x11CC.
+    // 0x001096c8: memcmp(system + 0x47C, "rom:", 4).  A non-rom path sets the
+    // raw-path flag at +0x121C (0x001096D0 loads the literal 0x0000121C and
+    // 0x001096D8 stores the byte at `system + 0x121C`).
     if (AsdMem_Compare(system.path, "rom:", 4) != 0) {                  // 0x001096cc
-        system.field_11cc = 1;                                          // 0x001096d8
+        system.field_121c = 1;                                          // 0x001096d8 (system+0x121C)
     }
 
     // 0x001096dc: if the manager already holds state, tear it down first.
@@ -215,20 +219,20 @@ u32 AsdSoundSystem_func_00109690(const char* archive, u32 enable, u32 size)
 
     // Second container (+0x244): size keys the 0x46C buffer, then the data is
     // parsed into the container.
-    block_size = AsdSound_GetDataSize(system.container_c);              // 0x00109744
+    block_size = AsdSound_GetDataSize(system.container_c, &system);      // 0x00109744 (r1=&system)
     buffer = AsdMem_AllocAlign(0x10000, 0x100, 0, block_size, 1);       // 0x0010976c
     system.field_46c = buffer;                                          // 0x00109774
     AsdSound_ParseContainer(system.container_c, &system, buffer, block_size); // 0x00109784
 
     // Third container (+0x184): 0x470 gets a 0x20-extra work block.
-    u32 block_size3 = AsdSound_GetContainerSize(system.container_b);    // 0x00109790
+    u32 block_size3 = AsdSound_GetContainerSize(system.container_b, &system); // 0x00109790 (r1=&system)
     buffer = AsdWork_Alloc2(0x10000, 0x100, 0, block_size3, 0x20, 1);   // 0x001097c0
     system.field_470 = buffer;                                          // 0x001097c8
 
     // 0x001097c4: an explicit size argument wins, otherwise the container's
     // sample byte count is used for the second block.
     if (size == 0) {                                                    // 0x001097c4
-        size = AsdSound_GetSampleBytes(system.container_b);             // 0x001097d8
+        size = AsdSound_GetSampleBytes(system.container_b, &system);    // 0x001097d8 (r1=&system)
     }
 
     void* buffer4 = AsdWork_Alloc2(0x10000, 0x100, 0, size, 0x20, 1);   // 0x00109804
@@ -458,7 +462,11 @@ u32 AsdSoundSystem_func_0010c5d4(u32 index, u32 size)
                 AsdSoundVoice_Stop(active.field_20[j], 0);              // 0x0010c724
             }
         }
-        if (active.field_3b != 0) {                                     // 0x0010c734
+        // 0x0010c734: the stream byte is read first, then the published slot's
+        // level byte is forced to 0x40 (r8) before the conditional stop.
+        const u8 streaming = active.field_3b;
+        active.field_38 = 0x40;                                         // 0x0010c738
+        if (streaming != 0) {
             AsdSoundSlot_Stop(&active, active.field_34);                // 0x0010c74c
         }
 
