@@ -536,10 +536,9 @@ void AsdModel_func_0014ec68(AsdModel* model, s32 index) {
 void AsdModel_ReloadEffectParts(AsdModel* model, const void* atbc, s32 filter) {
     model->effect_part_count = 0;
 
-    s32 chunk_count = 0;
-    if (atbc != nullptr && AsdTag_Compare(atbc, "ATBC", 4) == 0) {
-        chunk_count = *reinterpret_cast<const s32*>(reinterpret_cast<const u8*>(atbc) + 8);
-    }
+    // 0x0014ecfc / 0x0014edc4: the outer walk length is the count cached on the
+    // model (+0x94), not the header count read inside AsdFindEplEntry.
+    s32 chunk_count = model->atbc_chunk_count;
 
     s32 key_count = 0;
     for (s32 i = 0; i < chunk_count; ++i) {
@@ -1960,7 +1959,7 @@ after_rebuild:
         if (ed.speed_mode == 0) {
             AsdPart_Play(ed.selected_part);
         } else if (ed.speed_mode == 1) {
-            if (Ui_PressedB(1) == 0) {
+            if (Ui_PressedB(1) != 0) {
                 AsdPart_Play(ed.selected_part);
             }
         } else if (ed.speed_mode == 2) {
@@ -1985,8 +1984,10 @@ after_rebuild:
                 AsdPart_Stop(ed.work_part);
             } else if (ed.speed_mode == 2) {
                 if (ed.frame_counter != 0) {
-                    ++ed.frame_counter;
-                    if ((ed.frame_counter & 8u) != 0) {
+                    u8 previous = ed.frame_counter;
+                    u8 next = static_cast<u8>(previous + 1u);
+                    ed.frame_counter = next;
+                    if ((previous & 8u) != 0) {
                         ed.frame_counter = 0;
                     }
                 } else {
@@ -2045,7 +2046,7 @@ after_rebuild:
                 u8* array = *reinterpret_cast<u8**>(found + 0x14);
                 for (u32 i = 0; i < count; ++i) {
                     if (array[4 + i * 0x18] == 0x1A &&
-                        *reinterpret_cast<u32*>(array + i * 0x18) == 0xC7F12000u) {
+                        *reinterpret_cast<u32*>(array + 0x14 + i * 0x18) == 0xC7F12000u) {
                         *reinterpret_cast<u32*>(array + 0x10 + i * 0x18) = static_cast<u32>(marker);
                         u8* second = *reinterpret_cast<u8**>(found + 0x14);
                         *reinterpret_cast<u32*>(second + 0x0C + i * 0x18) = static_cast<u32>(marker);
@@ -2056,7 +2057,7 @@ after_rebuild:
     }
 
     // 0x002fdb8c: draw the element type label for the current part.
-    if (ed.work_part == nullptr && AsdParts_Count(ed.parts) > list_index) {
+    if (ed.selected_part == nullptr && AsdParts_Count(ed.parts) > list_index) {
         u8* part = reinterpret_cast<u8*>(AsdParts_Get(ed.parts, list_index));
         u8* current_part = reinterpret_cast<u8*>(AsdParts_Current());
         u8* element = *reinterpret_cast<u8**>(part + 0x90);

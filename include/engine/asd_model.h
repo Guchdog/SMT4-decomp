@@ -285,8 +285,7 @@ struct EffectEditorState {
     s32 list_offset;                    // +0x0C: `str r1,[r7,#0xc]` (0x002fcdf8)
     void* selected_part;                // +0x10: `str r0,[r8,#0x10]` (0x002fd840)
     void* parts;                        // +0x14: `str r0,[r7,#0x14]` (0x002fcd68)
-    s32 menu_count;                     // +0x18: `str r0,[r7,#0x18]` (0x002fd4e4)
-    u8  pad_1c[0x04];                   // +0x1C..+0x20
+    u8  pad_18[0x08];                   // +0x18..+0x20
     void* work_part;                    // +0x20: `str r0,[r8,#0x20]` (0x002fd7b8)
     u8  pad_24[0x10];                   // +0x24..+0x34
     void* menu_current;                 // +0x34: `str r0,[r8,#0x34]` (0x002fd524)
@@ -299,22 +298,27 @@ static_assert(offsetof(EffectEditorState, speed_mode) == 0x09);
 static_assert(offsetof(EffectEditorState, list_offset) == 0x0C);
 static_assert(offsetof(EffectEditorState, selected_part) == 0x10);
 static_assert(offsetof(EffectEditorState, parts) == 0x14);
-static_assert(offsetof(EffectEditorState, menu_count) == 0x18);
 static_assert(offsetof(EffectEditorState, work_part) == 0x20);
 static_assert(offsetof(EffectEditorState, menu_current) == 0x34);
 static_assert(offsetof(EffectEditorState, timer) == 0x80);
 
 /**
  * Foreground editor widget at 0x0044F858 (`AsdUi`-style object).
- * Only `+0x0C` (mode) and `+0x10` (flags word) are touched.
+ * `+0x0C` mode, `+0x10` flags word, `+0x14` work-buffer base and `+0x18`
+ * menu-entry count.  These two stores are made with r7 == 0x0044F858
+ * (0x002fd4e4 / 0x002fd4e8), not with the g_EffectEditor base.
  */
 struct EffectEditorWidget {
     u8  pad_00[0x0C];                   // +0x00..+0x0C
     u32 mode;                           // +0x0C: `ldr r0,[r4,#0xc]` (0x002fcd94)
     u32 flags;                          // +0x10: `bic r0,r0,#1` (0x002fcd50)
+    void* menu;                         // +0x14: `str r5,[r7,#0x14]` (0x002fd4e8)
+    u32 menu_count;                     // +0x18: `str r0,[r7,#0x18]` (0x002fd4e4)
 };
 static_assert(offsetof(EffectEditorWidget, mode) == 0x0C);
 static_assert(offsetof(EffectEditorWidget, flags) == 0x10);
+static_assert(offsetof(EffectEditorWidget, menu) == 0x14);
+static_assert(offsetof(EffectEditorWidget, menu_count) == 0x18);
 
 extern EffectEditorState g_EffectEditor;    // 0x0044EA80
 
