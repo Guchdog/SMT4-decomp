@@ -60,7 +60,7 @@
 
 **Reconnaissance anchors:** `AsdModel_func_0010495c` loads `"ShadowModel.bcmdl"` and resolves the `"ShadowModel"` node; `AsdModel_func_0014515c` validates the `"ATBC"` magic before reading animation-table counts. Record every other discovered literal/string in the header comment for its function.
 
-- [ ] **Step 1: Update progress test expectations (RED)**
+- [x] **Step 1: Update progress test expectations (RED)**
 
 In `tests/test_progress.py::test_real_repo_progress_matches_text_size`, change the expected values to:
 
@@ -73,12 +73,12 @@ self.assertEqual(stats["total_explored_functions"], 221)
 self.assertEqual(stats["total_explored_bytes"], 492860)
 ```
 
-- [ ] **Step 2: Run the suite to verify it fails**
+- [x] **Step 2: Run the suite to verify it fails**
 
 Run: `python -m unittest discover -s tests -v`
 Expected: FAIL with `182 != 172` in `test_real_repo_progress_matches_text_size`.
 
-- [ ] **Step 3: Disassemble every function and implement the header/source**
+- [x] **Step 3: Disassemble every function and implement the header/source**
 
 For each of the ten functions run:
 
@@ -88,7 +88,7 @@ python tools/split_asm.py --addr 0x0010495c
 
 Reconstruct the body from the ARM listing. Keep the ledger symbol name for the C++ symbol; add a comment naming the original Atlus module and the literal strings resolved by the listing. Define only structs/offsets proven by `LDR/STR [reg, #imm]` accesses. `EffectEditor_func_002fcd20` is the authoring/editor entry point; its body must preserve every observed branch and call rather than collapsing to a summary.
 
-- [ ] **Step 4: Update the ledger and verify GREEN**
+- [x] **Step 4: Update the ledger and verify GREEN**
 
 In `config/functions.csv`, set `status` to `non_matching` and `src_file` to `src/engine/asd_model.cpp` for each of the ten addresses. Then run:
 
@@ -99,7 +99,7 @@ python -m unittest discover -s tests -v
 
 Expected: `Verified 182 / 10,349 decompiled functions (244,620 / 3,139,108 bytes, 7.7931%)` and all tests PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```powershell
 git add include/engine/asd_model.h src/engine/asd_model.cpp config/functions.csv tests/test_progress.py PROGRESS.md README.md
@@ -130,7 +130,7 @@ git commit -m "feat(engine): decompile AsdModel loaders and EffectEditor (+13,27
 - `AsdText_func_00286c5c`: `0x00286c5c` (1,596 B, `engine`)
 - `AsdText_func_00296de0`: `0x00296de0` (280 B, `engine`)
 
-- [ ] **Step 1: Update progress test expectations (RED)**
+- [x] **Step 1: Update progress test expectations (RED)**
 
 Change the expected values to:
 
@@ -143,16 +143,16 @@ self.assertEqual(stats["total_explored_functions"], 229)
 self.assertEqual(stats["total_explored_bytes"], 497500)
 ```
 
-- [ ] **Step 2: Run the suite to verify it fails**
+- [x] **Step 2: Run the suite to verify it fails**
 
 Run: `python -m unittest discover -s tests -v`
 Expected: FAIL with `190 != 182` in `test_real_repo_progress_matches_text_size`.
 
-- [ ] **Step 3: Disassemble and implement**
+- [x] **Step 3: Disassemble and implement**
 
 Run `python tools/split_asm.py --addr <address>` for each of the eight functions. Reconstruct measurement/layout loops exactly, including the `AsdListBox` cursor geometry arithmetic and the `AsdText` message-source handling. Preserve magic strings and table lookups verbatim.
 
-- [ ] **Step 4: Update the ledger and verify GREEN**
+- [x] **Step 4: Update the ledger and verify GREEN**
 
 Set `status=non_matching` and `src_file=src/engine/asd_text.cpp` for all eight rows, then run:
 
@@ -163,7 +163,7 @@ python -m unittest discover -s tests -v
 
 Expected: `Verified 190 / 10,349 decompiled functions (249,260 / 3,139,108 bytes, 7.9408%)` and all tests PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```powershell
 git add include/engine/asd_text.h src/engine/asd_text.cpp config/functions.csv tests/test_progress.py PROGRESS.md README.md
@@ -196,7 +196,7 @@ git commit -m "feat(engine): decompile AsdText, AsdFont and AsdListBox layout (+
 - `AsdPrimRenderData_func_00346db0`: `0x00346db0` (992 B)
 - `AsdMemory_func_002c23f8`: `0x002c23f8` (56 B)
 
-- [ ] **Step 1: Update progress test expectations (RED)**
+- [x] **Step 1: Update progress test expectations (RED)**
 
 Change the expected values to:
 
@@ -209,16 +209,16 @@ self.assertEqual(stats["total_explored_functions"], 239)
 self.assertEqual(stats["total_explored_bytes"], 502304)
 ```
 
-- [ ] **Step 2: Run the suite to verify it fails**
+- [x] **Step 2: Run the suite to verify it fails**
 
 Run: `python -m unittest discover -s tests -v`
 Expected: FAIL with `200 != 190` in `test_real_repo_progress_matches_text_size`.
 
-- [ ] **Step 3: Disassemble and implement**
+- [x] **Step 3: Disassemble and implement**
 
 Run `python tools/split_asm.py --addr <address>` for each function. Preserve format magic checks (`TMX`, `TGA`, texture-table strides), VRAM/stride arithmetic, and the exact `AsdMemory_func_002c23f8` alignment expression. `AsdPrimRenderData_func_00346db0` must retain its vertex/index upload sequence rather than a summary comment.
 
-- [ ] **Step 4: Update the ledger and verify GREEN**
+- [x] **Step 4: Update the ledger and verify GREEN**
 
 Set `status=non_matching` and `src_file=src/engine/asd_texture.cpp` for all ten rows, then run:
 
@@ -229,7 +229,7 @@ python -m unittest discover -s tests -v
 
 Expected: `Verified 200 / 10,349 decompiled functions (254,064 / 3,139,108 bytes, 8.0935%)` and `Total Architecture Explored: 239 functions (502,304 bytes, 16.0015%)`; all tests PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```powershell
 git add include/engine/asd_texture.h src/engine/asd_texture.cpp config/functions.csv tests/test_progress.py PROGRESS.md README.md
