@@ -2011,7 +2011,7 @@ address,size,status,category,name,src_file
 0x001b0ae8,24,todo,ui,ui_func_001b0ae8,
 0x001b0b00,408,todo,engine,aocMain_func_001b0b00,
 0x001b0c98,24,todo,unknown,func_001b0c98,
-0x001b0cb0,812,todo,battle,btlMain_func_001b0cb0,
+0x001b0cb0,812,non_matching,battle,btlMain_Init,src/battle/btl_main.cpp
 0x001b0fdc,4,todo,unknown,func_001b0fdc,
 0x001b0fe0,1476,todo,engine,engine_func_001b0fe0,
 0x001b15a4,380,todo,camp,camp_func_001b15a4,
@@ -2046,8 +2046,8 @@ address,size,status,category,name,src_file
 0x001b4bbc,1176,todo,camp,camp_func_001b4bbc,
 0x001b5054,836,todo,script_vm,script_vm_func_001b5054,
 0x001b5398,600,todo,script_vm,script_vm_func_001b5398,
-0x001b55f0,5288,todo,engine,engine_func_001b55f0,
-0x001b6a98,1824,todo,battle,btlMain_func_001b6a98,
+0x001b55f0,5288,non_matching,battle,btlMain_Calc,src/battle/btl_main.cpp
+0x001b6a98,1824,non_matching,battle,btlMain_Setup,src/battle/btl_main.cpp
 0x001b71b8,40,todo,ui,ui_func_001b71b8,
 0x001b71e0,3224,non_matching,battle,btlUI_DrawUp,src/battle/btl_ui.cpp
 0x001b7e78,34684,todo,script_vm,script_vm_func_001b7e78,
@@ -2283,7 +2283,7 @@ address,size,status,category,name,src_file
 0x001e47dc,332,todo,ui,ui_func_001e47dc,
 0x001e4928,52,todo,ui,ui_func_001e4928,
 0x001e495c,52,todo,ui,ui_func_001e495c,
-0x001e4990,340,todo,ui,ui_func_001e4990,
+0x001e4990,340,non_matching,battle,btlMain_DrawUp,src/battle/btl_main.cpp
 0x001e4ae4,360,non_matching,battle,btlUI_DrawDown,src/battle/btl_ui.cpp
 0x001e4c4c,48,todo,ui,ui_func_001e4c4c,
 0x001e4c7c,1996,todo,script_vm,script_vm_func_001e4c7c,
@@ -2616,7 +2616,7 @@ address,size,status,category,name,src_file
 0x0020eca8,264,todo,ui,ui_func_0020eca8,
 0x0020edb0,132,todo,ui,ui_func_0020edb0,
 0x0020ee34,180,todo,engine,engine_func_0020ee34,
-0x0020eee8,1140,todo,engine,engine_func_0020eee8,
+0x0020eee8,1140,non_matching,battle,btlMain_DrawDown,src/battle/btl_main.cpp
 0x0020f35c,296,non_matching,battle,btlUI_DrawNumber,src/battle/btl_ui.cpp
 0x0020f484,224,todo,battle,battle_func_0020f484,
 0x0020f564,2088,todo,battle,battle_func_0020f564,
