@@ -25,7 +25,7 @@ address,size,status,category,name,src_file
 0x001023c0,32,todo,crt,crt_func_001023c0,
 0x001023e0,88,todo,crt,crt_func_001023e0,
 0x00102438,212,todo,crt,crt_func_00102438,
-0x0010250c,296,todo,engine,AsdFile_func_0010250c,
+0x0010250c,296,non_matching,engine,AsdFile_func_0010250c,src/engine/asd_file.cpp
 0x00102634,68,todo,engine,engine_func_00102634,
 0x00102678,76,todo,engine,engine_func_00102678,
 0x001026c4,96,todo,ui,ui_func_001026c4,
@@ -48,7 +48,7 @@ address,size,status,category,name,src_file
 0x00103744,16,todo,unknown,func_00103744,
 0x00103754,12,todo,unknown,func_00103754,
 0x00103760,12,todo,unknown,func_00103760,
-0x0010376c,820,todo,engine,AsdMemory_func_0010376c,
+0x0010376c,820,non_matching,engine,AsdMemory_func_0010376c,src/engine/asd_file.cpp
 0x00103aa0,256,todo,engine,AsdNgc_func_00103aa0,
 0x00103ba0,104,todo,engine,engine_func_00103ba0,
 0x00103c08,24,todo,unknown,func_00103c08,
@@ -222,7 +222,7 @@ address,size,status,category,name,src_file
 0x0010c534,160,todo,engine,engine_func_0010c534,
 0x0010c5d4,480,todo,engine,AsdSoundSystem_func_0010c5d4,
 0x0010c7b4,2236,todo,engine,engine_func_0010c7b4,
-0x0010d070,272,todo,engine,AsdFile_func_0010d070,
+0x0010d070,272,non_matching,engine,AsdFile_func_0010d070,src/engine/asd_file.cpp
 0x0010d180,40,todo,battle,battle_func_0010d180,
 0x0010d1a8,124,todo,engine,engine_func_0010d1a8,
 0x0010d224,16,todo,unknown,func_0010d224,
@@ -349,7 +349,7 @@ address,size,status,category,name,src_file
 0x00113208,272,todo,ui,ui_func_00113208,
 0x00113318,1008,todo,ui,ui_func_00113318,
 0x00113708,1616,todo,ui,ui_func_00113708,
-0x00113d58,1564,todo,engine,AsdFile_func_00113d58,
+0x00113d58,1564,non_matching,engine,AsdFile_func_00113d58,src/engine/asd_file.cpp
 0x00114374,6144,stub,camp,Camp_DemonicaArchiveLoad,src/camp/camp_archive.cpp
 0x00115b74,92,todo,unknown,func_00115b74,
 0x00115bd0,3224,todo,ui,ui_func_00115bd0,
@@ -1021,7 +1021,7 @@ address,size,status,category,name,src_file
 0x001448b4,76,todo,unknown,func_001448b4,
 0x00144900,24,todo,unknown,func_00144900,
 0x00144918,96,todo,unknown,func_00144918,
-0x00144978,320,todo,engine,AsdMemory_func_00144978,
+0x00144978,320,non_matching,engine,AsdMemory_func_00144978,src/engine/asd_file.cpp
 0x00144ab8,456,todo,engine,engine_func_00144ab8,
 0x00144c80,96,todo,engine,engine_func_00144c80,
 0x00144ce0,384,todo,engine,engine_func_00144ce0,
@@ -2637,8 +2637,8 @@ address,size,status,category,name,src_file
 0x00210188,240,todo,engine,engine_func_00210188,
 0x00210278,236,todo,script_vm,script_vm_func_00210278,
 0x00210364,184,todo,engine,engine_func_00210364,
-0x0021041c,204,todo,engine,AsdSaveCommon_func_0021041c,
-0x002104e8,268,todo,engine,AsdSaveCommon_func_002104e8,
+0x0021041c,204,non_matching,engine,AsdSaveCommon_func_0021041c,src/engine/asd_file.cpp
+0x002104e8,268,non_matching,engine,AsdSaveCommon_func_002104e8,src/engine/asd_file.cpp
 0x002105f4,12,todo,script_vm,script_vm_func_002105f4,
 0x00210600,64,todo,engine,engine_func_00210600,
 0x00210640,280,todo,engine,engine_func_00210640,
@@ -3933,7 +3933,7 @@ address,size,status,category,name,src_file
 0x00262a04,64,todo,camp,camp_func_00262a04,
 0x00262a44,16,todo,unknown,func_00262a44,
 0x00262a54,108,todo,script_vm,script_vm_func_00262a54,
-0x00262ac0,104,todo,engine,AsdMemory_func_00262ac0,
+0x00262ac0,104,non_matching,engine,AsdMemory_func_00262ac0,src/engine/asd_file.cpp
 0x00262b28,24,todo,engine,engine_func_00262b28,
 0x00262b40,32,todo,battle,battle_func_00262b40,
 0x00262b60,108,todo,ui,ui_func_00262b60,
@@ -5135,7 +5135,7 @@ address,size,status,category,name,src_file
 0x002ae650,20,todo,shop,shop_func_002ae650,
 0x002ae664,76,todo,unknown,func_002ae664,
 0x002ae6b0,24,todo,engine,engine_func_002ae6b0,
-0x002ae6c8,336,todo,engine,AsdLoadFile_func_002ae6c8,
+0x002ae6c8,336,non_matching,engine,AsdLoadFile_func_002ae6c8,src/engine/asd_file.cpp
 0x002ae818,92,todo,camp,camp_func_002ae818,
 0x002ae874,436,todo,camp,camp_func_002ae874,
 0x002aea28,56,todo,camp,camp_func_002aea28,
@@ -5170,7 +5170,7 @@ address,size,status,category,name,src_file
 0x002b03b8,80,todo,unknown,func_002b03b8,
 0x002b0408,16,todo,engine,engine_func_002b0408,
 0x002b0418,28,todo,engine,engine_func_002b0418,
-0x002b0434,480,todo,engine,AsdFile_func_002b0434,
+0x002b0434,480,non_matching,engine,AsdFile_func_002b0434,src/engine/asd_file.cpp
 0x002b0614,140,todo,engine,engine_func_002b0614,
 0x002b06a0,232,todo,unknown,func_002b06a0,
 0x002b0788,156,todo,ui,ui_func_002b0788,
@@ -5719,7 +5719,7 @@ address,size,status,category,name,src_file
 0x002c60ec,112,todo,engine,engine_func_002c60ec,
 0x002c615c,556,todo,ui,ui_func_002c615c,
 0x002c6388,1220,todo,engine,engine_func_002c6388,
-0x002c684c,112,todo,engine,AsdMemory_func_002c684c,
+0x002c684c,112,non_matching,engine,AsdMemory_func_002c684c,src/engine/asd_file.cpp
 0x002c68bc,824,todo,unknown,func_002c68bc,
 0x002c6bf4,12,todo,unknown,func_002c6bf4,
 0x002c6c00,16,todo,script_vm,script_vm_func_002c6c00,
@@ -7624,7 +7624,7 @@ address,size,status,category,name,src_file
 0x00345164,48,todo,unknown,func_00345164,
 0x00345194,7068,non_matching,ui,Ui_MemoryArenaAllocate,src/ui/ui_memory.cpp
 0x00346d30,8,todo,unknown,func_00346d30,
-0x00346d38,120,todo,engine,AsdMemory_func_00346d38,
+0x00346d38,120,non_matching,engine,AsdMemory_func_00346d38,src/engine/asd_file.cpp
 0x00346db0,992,non_matching,engine,AsdPrimRenderData_func_00346db0,src/engine/asd_texture.cpp
 0x00347190,496,todo,engine,engine_func_00347190,
 0x00347380,124,todo,engine,engine_func_00347380,
@@ -7645,7 +7645,7 @@ address,size,status,category,name,src_file
 0x00348950,152,todo,engine,engine_func_00348950,
 0x003489e8,44,todo,unknown,func_003489e8,
 0x00348a14,8,todo,unknown,func_00348a14,
-0x00348a1c,120,todo,engine,AsdMemory_func_00348a1c,
+0x00348a1c,120,non_matching,engine,AsdMemory_func_00348a1c,src/engine/asd_file.cpp
 0x00348a94,24,todo,unknown,func_00348a94,
 0x00348aac,4,todo,unknown,func_00348aac,
 0x00348ab0,16,todo,unknown,func_00348ab0,
@@ -7693,7 +7693,7 @@ address,size,status,category,name,src_file
 0x0034b3bc,4,todo,unknown,func_0034b3bc,
 0x0034b3c0,20,todo,unknown,func_0034b3c0,
 0x0034b3d4,8,todo,unknown,func_0034b3d4,
-0x0034b3dc,120,todo,engine,AsdMemory_func_0034b3dc,
+0x0034b3dc,120,non_matching,engine,AsdMemory_func_0034b3dc,src/engine/asd_file.cpp
 0x0034b454,840,todo,ui,ui_func_0034b454,
 0x0034b79c,388,todo,ui,ui_func_0034b79c,
 0x0034b920,432,todo,battle,Filter4Poly_func_0034b920,
