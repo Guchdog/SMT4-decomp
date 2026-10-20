@@ -1817,7 +1817,7 @@ address,size,status,category,name,src_file
 0x00191f7c,192,todo,battle,battle_func_00191f7c,
 0x0019203c,32,todo,engine,engine_func_0019203c,
 0x0019205c,268,todo,camp,camp_func_0019205c,
-0x00192168,124,todo,engine,effParts_func_00192168,
+0x00192168,124,non_matching,engine,effParts_func_00192168,src/engine/asd_effect.cpp
 0x001921e4,20,todo,unknown,func_001921e4,
 0x001921f8,160,todo,engine,engine_func_001921f8,
 0x00192298,136,todo,engine,mapEpl_func_00192298,
@@ -2123,7 +2123,7 @@ address,size,status,category,name,src_file
 0x001d2320,48,todo,unknown,func_001d2320,
 0x001d2350,260,todo,engine,engine_func_001d2350,
 0x001d2454,12,todo,unknown,func_001d2454,
-0x001d2460,104,todo,engine,effParts_func_001d2460,
+0x001d2460,104,non_matching,engine,effParts_func_001d2460,src/engine/asd_effect.cpp
 0x001d24c8,96,todo,script_vm,script_vm_func_001d24c8,
 0x001d2528,232,non_matching,battle,btlHelp_Init,src/battle/btl_ui.cpp
 0x001d2610,308,non_matching,battle,btlTalk_Init,src/battle/btl_ui.cpp
@@ -2246,7 +2246,7 @@ address,size,status,category,name,src_file
 0x001e18ec,20,todo,unknown,func_001e18ec,
 0x001e1900,44,todo,engine,engine_func_001e1900,
 0x001e192c,68,todo,engine,engine_func_001e192c,
-0x001e1970,576,todo,engine,effParts_func_001e1970,
+0x001e1970,576,non_matching,engine,effParts_func_001e1970,src/engine/asd_effect.cpp
 0x001e1bb0,364,todo,ui,ui_func_001e1bb0,
 0x001e1d1c,500,todo,engine,engine_func_001e1d1c,
 0x001e1f10,60,todo,battle,battle_func_001e1f10,
@@ -3572,11 +3572,11 @@ address,size,status,category,name,src_file
 0x00248f6c,56,todo,engine,engine_func_00248f6c,
 0x00248fa4,88,todo,script_vm,script_vm_func_00248fa4,
 0x00248ffc,228,todo,camp,camp_func_00248ffc,
-0x002490e0,580,todo,engine,effParts_func_002490e0,
-0x00249324,484,todo,engine,effP2A_func_00249324,
+0x002490e0,580,non_matching,engine,effParts_func_002490e0,src/engine/asd_effect.cpp
+0x00249324,484,non_matching,engine,effP2A_func_00249324,src/engine/asd_effect.cpp
 0x00249508,128,todo,engine,engine_func_00249508,
-0x00249588,420,todo,engine,effTLP_func_00249588,
-0x0024972c,164,todo,engine,effParts_func_0024972c,
+0x00249588,420,non_matching,engine,effTLP_func_00249588,src/engine/asd_effect.cpp
+0x0024972c,164,non_matching,engine,effParts_func_0024972c,src/engine/asd_effect.cpp
 0x002497d0,84,todo,ui,ui_func_002497d0,
 0x00249824,300,todo,ui,ui_func_00249824,
 0x00249950,244,todo,battle,battle_func_00249950,
@@ -3684,8 +3684,8 @@ address,size,status,category,name,src_file
 0x0024faa4,20,todo,unknown,func_0024faa4,
 0x0024fab8,600,todo,engine,effPolygonTrack_func_0024fab8,
 0x0024fd10,148,todo,engine,engine_func_0024fd10,
-0x0024fda4,192,todo,engine,effParts_func_0024fda4,
-0x0024fe64,196,todo,engine,effParts_func_0024fe64,
+0x0024fda4,192,non_matching,engine,effParts_func_0024fda4,src/engine/asd_effect.cpp
+0x0024fe64,196,non_matching,engine,effParts_func_0024fe64,src/engine/asd_effect.cpp
 0x0024ff28,148,todo,unknown,func_0024ff28,
 0x0024ffbc,332,todo,unknown,func_0024ffbc,
 0x00250108,480,todo,unknown,func_00250108,
@@ -3905,9 +3905,9 @@ address,size,status,category,name,src_file
 0x0025c7c4,20,todo,battle,battle_func_0025c7c4,
 0x0025c7d8,176,todo,engine,engine_func_0025c7d8,
 0x0025c888,544,todo,engine,engine_func_0025c888,
-0x0025caa8,128,todo,engine,effParts_func_0025caa8,
+0x0025caa8,128,non_matching,engine,effParts_func_0025caa8,src/engine/asd_effect.cpp
 0x0025cb28,236,todo,ui,ui_func_0025cb28,
-0x0025cc14,164,todo,engine,effParts_func_0025cc14,
+0x0025cc14,164,non_matching,engine,effParts_func_0025cc14,src/engine/asd_effect.cpp
 0x0025ccb8,64,todo,ui,ui_func_0025ccb8,
 0x0025ccf8,256,todo,camp,camp_func_0025ccf8,
 0x0025cdf8,68,todo,camp,camp_func_0025cdf8,
@@ -4467,7 +4467,7 @@ address,size,status,category,name,src_file
 0x0028c880,40,todo,engine,engine_func_0028c880,
 0x0028c8a8,40,todo,engine,engine_func_0028c8a8,
 0x0028c8d0,80,todo,script_vm,script_vm_func_0028c8d0,
-0x0028c920,348,todo,engine,effParts_func_0028c920,
+0x0028c920,348,non_matching,engine,effParts_func_0028c920,src/engine/asd_effect.cpp
 0x0028ca7c,64,todo,engine,engine_func_0028ca7c,
 0x0028cabc,236,todo,engine,AsdEffectTexture_func_0028cabc,
 0x0028cba8,40,todo,engine,engine_func_0028cba8,
@@ -4958,7 +4958,7 @@ address,size,status,category,name,src_file
 0x002a5058,32,todo,ui,ui_func_002a5058,
 0x002a5078,228,todo,battle,battle_func_002a5078,
 0x002a515c,128,todo,engine,engine_func_002a515c,
-0x002a51dc,1808,todo,engine,effParts_func_002a51dc,
+0x002a51dc,1808,non_matching,engine,effParts_func_002a51dc,src/engine/asd_effect.cpp
 0x002a58ec,68,todo,engine,engine_func_002a58ec,
 0x002a5930,280,todo,script_vm,script_vm_func_002a5930,
 0x002a5a48,12,todo,ui,ui_func_002a5a48,
