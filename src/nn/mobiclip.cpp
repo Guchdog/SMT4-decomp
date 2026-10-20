@@ -57,8 +57,11 @@ namespace smt4::nn {
 MobiclipProcessGlobal g_MobiclipProcess{};              // 0x0044d048
 
 // The shipped pointer table at 0x0044d060 is .data; only its address and the
-// per-index load are observed, so the reconstruction keeps a null anchor.
-const char* g_MobiclipMovieNames[1] = {nullptr};
+// per-index load (`ldr r3,[r0,r5,lsl #2]`, 0x002ef75c) are observed.  The
+// index checks that follow compare against 0x18/0x19, and 0x10/0x0d/0x0b are
+// handled as special cases, so the table must have at least 0x1a slots.  The
+// contents of every slot are unproven; they stay null until extracted.
+const char* g_MobiclipMovieNames[0x1A] = {};
 
 S4FsReaderGlobal g_S4FsReader{};                        // 0x0044d130
 S4AudioDevice g_S4AudioDevice{};                        // 0x0044d0f8
@@ -66,14 +69,17 @@ u8 g_S4AudioThread[0x08]{};                             // 0x0044d128
 S4PlayerGlobal g_S4Player{};                            // 0x0044d158
 
 // Opaque arena objects whose addresses are the only observed facts.  They are
-// passed to AsdMemBlock_Init, which writes the block list in place; 0x18 bytes
-// covers the observed header.
-alignas(8) u8 g_MobiclipArena0[0x18]{};                 // 0x004c3828
-alignas(8) u8 g_MobiclipArena1[0x18]{};                 // 0x004c3880
-alignas(8) u8 g_MobiclipArena2[0x18]{};                 // 0x004c39e0
-alignas(8) u8 g_MobiclipArena3[0x18]{};                 // 0x004c38d8
-alignas(8) u8 g_MobiclipArena4[0x18]{};                 // 0x004c3930
-alignas(8) u8 g_MobiclipArena5[0x18]{};                 // 0x004c3988
+// passed to AsdMemBlock_Init (0x002c3b1c), which writes the block list in place:
+// `add r0,r0,#0x18; bl ...; str r0,[r4,#0x54]` at 0x002c3b28-0x002c3b3c stores
+// a pointer at +0x54..+0x57, so each object is 0x58 bytes.  The shipped
+// addresses are exactly 0x58 apart (0x004c3828, 0x004c3880, 0x004c38d8,
+// 0x004c3930, 0x004c3988, 0x004c39e0).
+alignas(8) u8 g_MobiclipArena0[0x58]{};                 // 0x004c3828
+alignas(8) u8 g_MobiclipArena1[0x58]{};                 // 0x004c3880
+alignas(8) u8 g_MobiclipArena2[0x58]{};                 // 0x004c39e0
+alignas(8) u8 g_MobiclipArena3[0x58]{};                 // 0x004c38d8
+alignas(8) u8 g_MobiclipArena4[0x58]{};                 // 0x004c3930
+alignas(8) u8 g_MobiclipArena5[0x58]{};                 // 0x004c3988
 
 u8 g_MobiclipControlFlag = 0;                           // 0x0044d020: `strb r0,[r1]` (0x0017fccc)
 alignas(8) u8 g_MobiclipLock[0x0C]{};                   // 0x004c40f8: r0 of 0x002c3b00 (0x0034e708)
