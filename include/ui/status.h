@@ -92,4 +92,35 @@ u8   Status_GetMainMenuId();                                                    
 const u16* Status_GetSelectedActorPtr();                                            // 0x0029af4c
 s8   Status_GetSubState();                                                          // 0x0029b0e0
 
+/**
+ * Character / Demon BustUp Renderer Workspace.
+ * Original Atlus source path: `c:\SMT4\XRD686\sdds4\program\status\StatusBustUp.cpp`
+ * Global manager: `g_StatusBustUpManager` at `0x0044E158`.
+ */
+struct StatusBustUpManager {
+    s8 ref_count;                       // +0x00
+    u8 pad_01[3];                       // +0x01..+0x04
+    void* buffer1;                      // +0x04
+    void* buffer2;                      // +0x08
+};
+
+extern StatusBustUpManager g_StatusBustUpManager; // 0x0044E158
+
+void StatusBustUp_Init();                                                           // 0x00223a90
+
+/**
+ * Upper Screen Stereoscopic Camera Workspace (0x53C bytes).
+ * Original Atlus source path: `c:\SMT4\XRD686\sdds4\program\status\StatusCamera.cpp`
+ * Global pointer: `g_StatusCamera` at `0x0044E178`.
+ */
+struct StatusCameraWork {
+    u8 raw[0x53C];
+};
+
+static_assert(sizeof(StatusCameraWork) == 0x53C);
+
+extern StatusCameraWork* g_StatusCamera;                                            // 0x0044E178
+
+void StatusCamera_Init(const f32* pos, const f32* target, const f32* up, f32 fov, f32 aspect, f32 near_z, f32 far_z, f32 scale); // 0x00258e38
+
 } // namespace smt4::ui

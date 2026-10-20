@@ -453,4 +453,44 @@ s8 Status_GetSubState() {
     return work->sub_state_ec;
 }
 
+// ============================================================================
+// StatusBustUp: Character & Demon BustUp Renderer (StatusBustUp.cpp)
+// ============================================================================
+
+StatusBustUpManager g_StatusBustUpManager = {0, {0, 0, 0}, nullptr, nullptr}; // 0x0044E158
+
+// DECOMP_FUNC(0x00223a90, 248)
+void StatusBustUp_Init() {
+    StatusBustUpManager* mgr = &g_StatusBustUpManager;
+    if (mgr->ref_count <= 0) {
+        if (mgr->buffer1 == nullptr) {
+            mgr->buffer1 = AsdMem_Alloc(0x81, 0x100);
+            AsdMem_Zero(mgr->buffer1, 0x81);
+        }
+        if (mgr->buffer2 == nullptr) {
+            mgr->buffer2 = AsdMem_Alloc(0x81, 0x100);
+            AsdMem_Zero(mgr->buffer2, 0x81);
+        }
+    }
+    mgr->ref_count++;
+}
+
+// ============================================================================
+// StatusCamera: Upper Screen Stereoscopic Camera (StatusCamera.cpp)
+// ============================================================================
+
+StatusCameraWork* g_StatusCamera = nullptr; // 0x0044E178
+
+// DECOMP_FUNC(0x00258e38, 480)
+void StatusCamera_Init(const f32* pos, const f32* target, const f32* up,
+                       f32 fov, f32 aspect, f32 near_z, f32 far_z, f32 scale) {
+    (void)pos; (void)target; (void)up; (void)fov; (void)aspect; (void)near_z; (void)far_z; (void)scale;
+    StatusCameraWork* cam = g_StatusCamera;
+    if (cam == nullptr) {
+        cam = reinterpret_cast<StatusCameraWork*>(AsdMem_Alloc(sizeof(StatusCameraWork), 0x100));
+        g_StatusCamera = cam;
+    }
+    AsdMem_Zero(cam, sizeof(StatusCameraWork));
+}
+
 } // namespace smt4::ui

@@ -2887,7 +2887,7 @@ address,size,status,category,name,src_file
 0x002237a0,632,todo,engine,SaveLoad_Thread_func_002237a0,
 0x00223a18,28,todo,unknown,func_00223a18,
 0x00223a34,92,todo,script_vm,script_vm_func_00223a34,
-0x00223a90,248,todo,ui,StatusBustUp_func_00223a90,
+0x00223a90,248,non_matching,ui,StatusBustUp_Init,src/ui/status.cpp
 0x00223b88,40,non_matching,ui,StatusDown_IsState20,src/ui/status_down.cpp
 0x00223bb0,56,todo,camp,camp_func_00223bb0,
 0x00223be8,24,todo,camp,camp_func_00223be8,
@@ -3836,7 +3836,7 @@ address,size,status,category,name,src_file
 0x0025863c,528,todo,camp,camp_func_0025863c,
 0x0025884c,1036,todo,camp,camp_func_0025884c,
 0x00258c58,480,todo,ui,ui_func_00258c58,
-0x00258e38,480,todo,engine,StatusCamera_func_00258e38,
+0x00258e38,480,non_matching,ui,StatusCamera_Init,src/ui/status.cpp
 0x00259018,1032,todo,camp,camp_func_00259018,
 0x00259420,52,todo,unknown,func_00259420,
 0x00259454,60,todo,unknown,func_00259454,
