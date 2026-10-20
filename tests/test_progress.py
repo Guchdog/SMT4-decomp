@@ -85,6 +85,7 @@ class TestProgress(unittest.TestCase):
             src_dir = root / "src" / "test"
             src_dir.mkdir(parents=True, exist_ok=True)
             (src_dir / "removed.cpp").write_text(
+                "// First was removed here\n"
                 "// DECOMP_FUNC(0x00100000, 64)\n"
                 "// DECOMP_FUNC(0x00100040, 64)\n"
                 "void Second() {\n"
@@ -99,7 +100,7 @@ class TestProgress(unittest.TestCase):
                 "0x00100000,64,non_matching,test,First,src/test/removed.cpp\n",
                 encoding="utf-8",
             )
-            with self.assertRaises(VerificationError):
+            with self.assertRaisesRegex(VerificationError, "Could not parse function body"):
                 compute_progress(csv_path, root)
 
     def test_rejects_marker_size_mismatch(self):
