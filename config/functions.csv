@@ -2584,7 +2584,7 @@ address,size,status,category,name,src_file
 0x00208b44,20,todo,script_vm,script_vm_func_00208b44,
 0x00208b58,208,todo,script_vm,script_vm_func_00208b58,
 0x00208c28,192,todo,engine,engine_func_00208c28,
-0x00208ce8,16796,todo,engine,engine_func_00208ce8,
+0x00208ce8,16796,non_matching,engine,Map_Field3DManager,src/engine/map_field.cpp
 0x0020ce84,36,todo,script_vm,script_vm_func_0020ce84,
 0x0020cea8,44,todo,script_vm,script_vm_func_0020cea8,
 0x0020ced4,44,todo,script_vm,script_vm_func_0020ced4,
@@ -8894,7 +8894,7 @@ address,size,status,category,name,src_file
 0x00385f98,212,todo,camp,camp_func_00385f98,
 0x0038606c,216,todo,camp,camp_func_0038606c,
 0x00386144,64,todo,script_vm,script_vm_func_00386144,
-0x00386184,5964,todo,engine,engine_func_00386184,
+0x00386184,5964,non_matching,engine,Engine_TextureStreamer,src/engine/map_field.cpp
 0x003878d0,208,todo,camp,camp_func_003878d0,
 0x003879a0,208,todo,camp,camp_func_003879a0,
 0x00387a70,212,todo,camp,camp_func_00387a70,
