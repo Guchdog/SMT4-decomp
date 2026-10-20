@@ -6113,7 +6113,7 @@ address,size,status,category,name,src_file
 0x002e05bc,28,todo,unknown,func_002e05bc,
 0x002e05d8,104,todo,engine,engine_func_002e05d8,
 0x002e0640,124,todo,engine,engine_func_002e0640,
-0x002e06bc,1080,todo,ui,ui_func_002e06bc,
+0x002e06bc,1080,non_matching,battle,btlTargetSelect_Calc,src/battle/btl_target_select.cpp
 0x002e0af4,92,todo,camp,camp_func_002e0af4,
 0x002e0b50,260,todo,ui,ui_func_002e0b50,
 0x002e0c54,108,todo,ui,ui_func_002e0c54,
@@ -6266,7 +6266,7 @@ address,size,status,category,name,src_file
 0x002e825c,28,todo,unknown,func_002e825c,
 0x002e8278,12,todo,unknown,func_002e8278,
 0x002e8284,16,todo,unknown,func_002e8284,
-0x002e8294,604,todo,battle,btlTargetSelect_func_002e8294,
+0x002e8294,604,non_matching,battle,btlTargetSelect_Init,src/battle/btl_target_select.cpp
 0x002e84f0,32,todo,engine,engine_func_002e84f0,
 0x002e8510,72,todo,engine,engine_func_002e8510,
 0x002e8558,532,todo,script_vm,script_vm_func_002e8558,
@@ -6451,7 +6451,7 @@ address,size,status,category,name,src_file
 0x002f49a4,36,todo,script_vm,script_vm_func_002f49a4,
 0x002f49c8,100,todo,engine,engine_func_002f49c8,
 0x002f4a2c,120,todo,engine,engine_func_002f4a2c,
-0x002f4aa4,76,todo,ui,ui_func_002f4aa4,
+0x002f4aa4,76,non_matching,battle,btlTargetSelect_DrawUp,src/battle/btl_target_select.cpp
 0x002f4af0,432,todo,script_vm,script_vm_func_002f4af0,
 0x002f4ca0,572,todo,camp,titleConfig_func_002f4ca0,
 0x002f4edc,224,todo,script_vm,script_vm_func_002f4edc,

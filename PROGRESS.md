@@ -4,19 +4,19 @@
 
 | Metric | Decompiled | Total | Remaining | Percentage |
 |--------|-----------:|------:|----------:|-----------:|
-| **Code Size (Bytes)** | 143,732 B | 3,139,108 B | 2,995,376 B | **4.5788%** |
-| **Functions** | 168 | 10,349 | 10,181 | **1.6233%** |
+| **Code Size (Bytes)** | 145,492 B | 3,139,108 B | 2,993,616 B | **4.6348%** |
+| **Functions** | 171 | 10,349 | 10,178 | **1.6523%** |
 
 ## Subsystem Breakdown
 
 | Subsystem | Decompiled Funcs | Total Funcs | Decompiled Bytes | Total Bytes | Subsystem % |
 |-----------|-----------------:|------------:|-----------------:|------------:|------------:|
 | `engine` | 3 | 2,363 | 224 B | 726,520 B | 0.031% |
-| `ui` | 129 | 1,238 | 78,984 B | 670,400 B | 11.782% |
+| `ui` | 129 | 1,236 | 78,984 B | 669,244 B | 11.802% |
 | `unknown` | 3 | 3,823 | 132 B | 654,480 B | 0.020% |
 | `script_vm` | 2 | 1,203 | 22,912 B | 459,392 B | 4.987% |
 | `camp` | 10 | 918 | 17,576 B | 326,396 B | 5.385% |
-| `battle` | 15 | 573 | 20,012 B | 235,776 B | 8.488% |
+| `battle` | 18 | 575 | 21,772 B | 236,932 B | 9.189% |
 | `shop` | 4 | 111 | 3,820 B | 39,976 B | 9.556% |
 | `crt` | 2 | 26 | 72 B | 9,484 B | 0.759% |
 | `nn_sdk` | 0 | 64 | 0 B | 8,852 B | 0.000% |
@@ -163,12 +163,14 @@
 | `0x002d931c` | 764 | `ui` | `non_matching` | `StatusDown_Init` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x002d9618` | 36 | `ui` | `non_matching` | `StatusDown_EnterState3_Alt` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x002dc96c` | 152 | `ui` | `non_matching` | `StatusDown_SkillSortByCostDesc` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
+| `0x002e06bc` | 1080 | `battle` | `non_matching` | `btlTargetSelect_Calc` | [`src/battle/btl_target_select.cpp`](src/battle/btl_target_select.cpp) |
 | `0x002e2454` | 764 | `camp` | `non_matching` | `GauntletAppMenu_Init` | [`src/camp/camp.cpp`](src/camp/camp.cpp) |
 | `0x002e2f44` | 408 | `ui` | `non_matching` | `StatusDown_UpdatePartySlotsAndDiff` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x002e315c` | 344 | `camp` | `non_matching` | `UniteEffect_Init` | [`src/camp/unite.cpp`](src/camp/unite.cpp) |
 | `0x002e4534` | 80 | `ui` | `non_matching` | `StatusDown_SkillSortByIdDesc` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x002e4584` | 132 | `ui` | `non_matching` | `StatusDown_ItemSortByTypeDesc` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x002e4608` | 124 | `ui` | `non_matching` | `StatusDown_ItemSortByIdDesc` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
+| `0x002e8294` | 604 | `battle` | `non_matching` | `btlTargetSelect_Init` | [`src/battle/btl_target_select.cpp`](src/battle/btl_target_select.cpp) |
 | `0x002ef9ac` | 420 | `ui` | `non_matching` | `SaveLoadProcess_Step` | [`src/ui/save_load.cpp`](src/ui/save_load.cpp) |
 | `0x002efb50` | 456 | `ui` | `non_matching` | `SaveLoadProcess_Write` | [`src/ui/save_load.cpp`](src/ui/save_load.cpp) |
 | `0x002efde0` | 44 | `ui` | `non_matching` | `StatusDown_GetPartyMaxIndex` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
@@ -177,6 +179,7 @@
 | `0x002efe48` | 68 | `ui` | `non_matching` | `StatusDown_SetSubIdsB` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x002efe8c` | 24 | `ui` | `non_matching` | `StatusDown_SetFlag411` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x002efea4` | 36 | `ui` | `non_matching` | `StatusDown_EnterState4` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
+| `0x002f4aa4` | 76 | `battle` | `non_matching` | `btlTargetSelect_DrawUp` | [`src/battle/btl_target_select.cpp`](src/battle/btl_target_select.cpp) |
 | `0x002f6524` | 44 | `ui` | `non_matching` | `StatusDown_IsState7` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x002f6550` | 132 | `ui` | `non_matching` | `StatusDown_Destroy` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x002f65d4` | 76 | `ui` | `non_matching` | `StatusDown_IsCursorAtLastPartySlot` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
