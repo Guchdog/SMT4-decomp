@@ -360,7 +360,7 @@ address,size,status,category,name,src_file
 0x00117504,476,todo,engine,engine_func_00117504,
 0x001176e0,656,todo,engine,engine_func_001176e0,
 0x00117970,820,todo,battle,battle_func_00117970,
-0x00117ca4,1292,todo,battle,titleDbgBg_func_00117ca4,
+0x00117ca4,1292,non_matching,battle,titleDbgBg_func_00117ca4,src/battle/battle_extras.cpp
 0x001181b0,68,todo,engine,engine_func_001181b0,
 0x001181f4,204,todo,engine,engine_func_001181f4,
 0x001182c0,28,todo,ui,ui_func_001182c0,
@@ -2250,7 +2250,7 @@ address,size,status,category,name,src_file
 0x001e1bb0,364,todo,ui,ui_func_001e1bb0,
 0x001e1d1c,500,todo,engine,engine_func_001e1d1c,
 0x001e1f10,60,todo,battle,battle_func_001e1f10,
-0x001e1f4c,504,todo,battle,btlDebug_func_001e1f4c,
+0x001e1f4c,504,non_matching,battle,btlDebug_func_001e1f4c,src/battle/battle_extras.cpp
 0x001e2144,276,todo,battle,btlEvent_func_001e2144,
 0x001e2258,300,todo,battle,btlStage_func_001e2258,
 0x001e2384,472,todo,script_vm,script_vm_func_001e2384,
@@ -2411,7 +2411,7 @@ address,size,status,category,name,src_file
 0x001f7bc8,216,todo,script_vm,script_vm_func_001f7bc8,
 0x001f7ca0,380,todo,script_vm,script_vm_func_001f7ca0,
 0x001f7e1c,228,todo,battle,btlCamera_func_001f7e1c,
-0x001f7f00,432,todo,battle,btlEditor_func_001f7f00,
+0x001f7f00,432,non_matching,battle,btlEditor_func_001f7f00,src/battle/battle_extras.cpp
 0x001f80b0,316,todo,battle,btlEffect_func_001f80b0,
 0x001f81ec,192,todo,script_vm,script_vm_func_001f81ec,
 0x001f82ac,1156,todo,script_vm,script_vm_func_001f82ac,
@@ -2770,7 +2770,7 @@ address,size,status,category,name,src_file
 0x0021ac44,208,todo,unknown,func_0021ac44,
 0x0021ad14,48,todo,unknown,func_0021ad14,
 0x0021ad44,260,todo,battle,btlAIScript_func_0021ad44,
-0x0021ae48,428,todo,battle,btlGameOver_func_0021ae48,
+0x0021ae48,428,non_matching,battle,btlGameOver_func_0021ae48,src/battle/battle_extras.cpp
 0x0021aff4,508,todo,engine,engine_func_0021aff4,
 0x0021b1f0,2056,todo,script_vm,script_vm_func_0021b1f0,
 0x0021b9f8,272,todo,script_vm,script_vm_func_0021b9f8,
@@ -2843,7 +2843,7 @@ address,size,status,category,name,src_file
 0x00221660,24,todo,unknown,func_00221660,
 0x00221678,72,todo,unknown,func_00221678,
 0x002216c0,280,todo,engine,engine_func_002216c0,
-0x002217d8,648,todo,battle,EffectProcess_func_002217d8,
+0x002217d8,648,non_matching,battle,EffectProcess_func_002217d8,src/battle/battle_extras.cpp
 0x00221a60,24,todo,unknown,func_00221a60,
 0x00221a78,56,todo,unknown,func_00221a78,
 0x00221ab0,104,todo,battle,battle_func_00221ab0,
@@ -3589,7 +3589,7 @@ address,size,status,category,name,src_file
 0x00249da4,376,todo,ui,ui_func_00249da4,
 0x00249f1c,24,todo,ui,ui_func_00249f1c,
 0x00249f34,120,todo,battle,Shake_func_00249f34,
-0x00249fac,2144,todo,battle,EftLoadFile_func_00249fac,
+0x00249fac,2144,non_matching,battle,EftLoadFile_func_00249fac,src/battle/battle_extras.cpp
 0x0024a80c,344,todo,engine,engine_func_0024a80c,
 0x0024a964,112,todo,engine,engine_func_0024a964,
 0x0024a9d4,36,todo,unknown,func_0024a9d4,
@@ -4636,7 +4636,7 @@ address,size,status,category,name,src_file
 0x002958bc,36,todo,script_vm,script_vm_func_002958bc,
 0x002958e0,36,todo,script_vm,script_vm_func_002958e0,
 0x00295904,192,todo,script_vm,script_vm_func_00295904,
-0x002959c4,472,todo,ui,btlTalkBustUp_func_002959c4,
+0x002959c4,472,non_matching,ui,btlTalkBustUp_func_002959c4,src/battle/battle_extras.cpp
 0x00295b9c,288,todo,script_vm,script_vm_func_00295b9c,
 0x00295cbc,8,todo,script_vm,script_vm_func_00295cbc,
 0x00295cc4,388,todo,battle,battle_func_00295cc4,
@@ -7008,7 +7008,7 @@ address,size,status,category,name,src_file
 0x00318700,44,todo,battle,battle_func_00318700,
 0x0031872c,32,todo,engine,engine_func_0031872c,
 0x0031874c,36,todo,battle,battle_func_0031874c,
-0x00318770,516,todo,battle,btlTalkCommand_func_00318770,
+0x00318770,516,non_matching,battle,btlTalkCommand_func_00318770,src/battle/battle_extras.cpp
 0x00318974,36,todo,battle,battle_func_00318974,
 0x00318998,44,todo,battle,battle_func_00318998,
 0x003189c4,36,todo,engine,engine_func_003189c4,
@@ -7520,7 +7520,7 @@ address,size,status,category,name,src_file
 0x0033e338,92,todo,unknown,func_0033e338,
 0x0033e394,1636,todo,ui,ui_func_0033e394,
 0x0033e9f8,228,todo,ui,ui_func_0033e9f8,
-0x0033eadc,2256,todo,battle,EnemyDraw_func_0033eadc,
+0x0033eadc,2256,non_matching,battle,EnemyDraw_func_0033eadc,src/battle/battle_extras.cpp
 0x0033f3ac,180,todo,engine,engine_func_0033f3ac,
 0x0033f460,140,todo,engine,engine_func_0033f460,
 0x0033f4ec,232,todo,ui,ui_func_0033f4ec,
@@ -7641,7 +7641,7 @@ address,size,status,category,name,src_file
 0x00347d74,1044,todo,ui,ui_func_00347d74,
 0x00348188,712,todo,unknown,func_00348188,
 0x00348450,248,todo,engine,engine_func_00348450,
-0x00348548,1032,todo,battle,FilterXPoly_func_00348548,
+0x00348548,1032,non_matching,battle,FilterXPoly_func_00348548,src/battle/battle_extras.cpp
 0x00348950,152,todo,engine,engine_func_00348950,
 0x003489e8,44,todo,unknown,func_003489e8,
 0x00348a14,8,todo,unknown,func_00348a14,
