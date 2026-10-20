@@ -1803,7 +1803,7 @@ address,size,status,category,name,src_file
 0x0018b878,1756,todo,script_vm,script_vm_func_0018b878,
 0x0018bf54,132,todo,ui,ui_func_0018bf54,
 0x0018bfd8,20,todo,unknown,func_0018bfd8,
-0x0018bfec,12684,todo,script_vm,script_vm_func_0018bfec,
+0x0018bfec,12684,non_matching,ui,Result_Calc,src/ui/result.cpp
 0x0018f178,988,non_matching,ui,RunWin_DrawDownAndCalc,src/ui/window.cpp
 0x0018f554,12,todo,unknown,func_0018f554,
 0x0018f560,4912,non_matching,ui,Status_CalcTaskCallback,src/ui/status.cpp
@@ -1913,7 +1913,7 @@ address,size,status,category,name,src_file
 0x001a1558,36,todo,script_vm,script_vm_func_001a1558,
 0x001a157c,36,todo,camp,camp_func_001a157c,
 0x001a15a0,16,todo,script_vm,script_vm_func_001a15a0,
-0x001a15b0,932,todo,ui,ui_func_001a15b0,
+0x001a15b0,932,non_matching,ui,Result_DrawUp,src/ui/result.cpp
 0x001a1954,676,todo,ui,ui_func_001a1954,
 0x001a1bf8,628,todo,script_vm,script_vm_func_001a1bf8,
 0x001a1e6c,16,todo,camp,camp_func_001a1e6c,
@@ -2089,7 +2089,7 @@ address,size,status,category,name,src_file
 0x001c3de4,240,todo,script_vm,script_vm_func_001c3de4,
 0x001c3ed4,18660,todo,script_vm,script_vm_func_001c3ed4,
 0x001c87b8,32,todo,unknown,func_001c87b8,
-0x001c87d8,420,todo,script_vm,script_vm_func_001c87d8,
+0x001c87d8,420,non_matching,ui,Result_DrawDown,src/ui/result.cpp
 0x001c897c,7048,non_matching,ui,saveLoadUI_DrawMain,src/ui/save_load.cpp
 0x001ca504,284,todo,unknown,func_001ca504,
 0x001ca620,40,todo,engine,engine_func_001ca620,
@@ -4748,7 +4748,7 @@ address,size,status,category,name,src_file
 0x0029bb8c,144,todo,ui,ui_func_0029bb8c,
 0x0029bc1c,20,todo,camp,camp_func_0029bc1c,
 0x0029bc30,8,todo,script_vm,script_vm_func_0029bc30,
-0x0029bc38,368,todo,ui,Result_func_0029bc38,
+0x0029bc38,368,non_matching,ui,Result_Init,src/ui/result.cpp
 0x0029bda8,12,todo,ui,ui_func_0029bda8,
 0x0029bdb4,40,todo,ui,ui_func_0029bdb4,
 0x0029bddc,140,todo,engine,engine_func_0029bddc,

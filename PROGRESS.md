@@ -4,17 +4,17 @@
 
 | Metric | Decompiled | Total | Remaining | Percentage |
 |--------|-----------:|------:|----------:|-----------:|
-| **Code Size (Bytes)** | 146,792 B | 3,139,108 B | 2,992,316 B | **4.6762%** |
-| **Functions** | 173 | 10,349 | 10,176 | **1.6717%** |
+| **Code Size (Bytes)** | 161,196 B | 3,139,108 B | 2,977,912 B | **5.1351%** |
+| **Functions** | 177 | 10,349 | 10,172 | **1.7103%** |
 
 ## Subsystem Breakdown
 
 | Subsystem | Decompiled Funcs | Total Funcs | Decompiled Bytes | Total Bytes | Subsystem % |
 |-----------|-----------------:|------------:|-----------------:|------------:|------------:|
 | `engine` | 3 | 2,363 | 224 B | 726,520 B | 0.031% |
-| `ui` | 129 | 1,236 | 78,984 B | 669,244 B | 11.802% |
+| `ui` | 133 | 1,238 | 93,388 B | 682,348 B | 13.686% |
 | `unknown` | 3 | 3,823 | 132 B | 654,480 B | 0.020% |
-| `script_vm` | 2 | 1,203 | 22,912 B | 459,392 B | 4.987% |
+| `script_vm` | 2 | 1,201 | 22,912 B | 446,288 B | 5.134% |
 | `camp` | 10 | 918 | 17,576 B | 326,396 B | 5.385% |
 | `battle` | 18 | 575 | 21,772 B | 236,932 B | 9.189% |
 | `shop` | 4 | 111 | 3,820 B | 39,976 B | 9.556% |
@@ -51,10 +51,12 @@
 | `0x0011ae10` | 792 | `ui` | `non_matching` | `InfoWin_DrawUp` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x0011b128` | 588 | `ui` | `non_matching` | `InfoWin_Calc` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x00187014` | 5176 | `ui` | `non_matching` | `StatusDown_DrawPartyAndSubViews` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
+| `0x0018bfec` | 12684 | `ui` | `non_matching` | `Result_Calc` | [`src/ui/result.cpp`](src/ui/result.cpp) |
 | `0x0018f178` | 988 | `ui` | `non_matching` | `RunWin_DrawDownAndCalc` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x0018f560` | 4912 | `ui` | `non_matching` | `Status_CalcTaskCallback` | [`src/ui/status.cpp`](src/ui/status.cpp) |
 | `0x00191eac` | 208 | `ui` | `non_matching` | `saveLoadUI_Init` | [`src/ui/save_load.cpp`](src/ui/save_load.cpp) |
 | `0x0019e034` | 4772 | `battle` | `non_matching` | `btlUI_Calc` | [`src/battle/btl_ui.cpp`](src/battle/btl_ui.cpp) |
+| `0x001a15b0` | 932 | `ui` | `non_matching` | `Result_DrawUp` | [`src/ui/result.cpp`](src/ui/result.cpp) |
 | `0x001a310c` | 15148 | `ui` | `non_matching` | `Status_DrawUp` | [`src/ui/status.cpp`](src/ui/status.cpp) |
 | `0x001a83c8` | 488 | `battle` | `non_matching` | `btlUI_Init` | [`src/battle/btl_ui.cpp`](src/battle/btl_ui.cpp) |
 | `0x001accd4` | 1104 | `ui` | `non_matching` | `SearchWin_DrawUpAndCalc` | [`src/ui/window.cpp`](src/ui/window.cpp) |
@@ -62,6 +64,7 @@
 | `0x001b55f0` | 5288 | `battle` | `non_matching` | `btlMain_Calc` | [`src/battle/btl_main.cpp`](src/battle/btl_main.cpp) |
 | `0x001b6a98` | 1824 | `battle` | `non_matching` | `btlMain_Setup` | [`src/battle/btl_main.cpp`](src/battle/btl_main.cpp) |
 | `0x001b71e0` | 3224 | `battle` | `non_matching` | `btlUI_DrawUp` | [`src/battle/btl_ui.cpp`](src/battle/btl_ui.cpp) |
+| `0x001c87d8` | 420 | `ui` | `non_matching` | `Result_DrawDown` | [`src/ui/result.cpp`](src/ui/result.cpp) |
 | `0x001c897c` | 7048 | `ui` | `non_matching` | `saveLoadUI_DrawMain` | [`src/ui/save_load.cpp`](src/ui/save_load.cpp) |
 | `0x001ca648` | 8908 | `ui` | `non_matching` | `StatusDown_CalcTaskCallback` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x001cc914` | 5348 | `ui` | `non_matching` | `StatusDown_DrawTaskCallback` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
@@ -147,6 +150,7 @@
 | `0x0029af4c` | 20 | `ui` | `non_matching` | `Status_GetSelectedActorPtr` | [`src/ui/status.cpp`](src/ui/status.cpp) |
 | `0x0029b0e0` | 28 | `ui` | `non_matching` | `Status_GetSubState` | [`src/ui/status.cpp`](src/ui/status.cpp) |
 | `0x0029b3cc` | 1676 | `camp` | `non_matching` | `Unite_Init` | [`src/camp/unite.cpp`](src/camp/unite.cpp) |
+| `0x0029bc38` | 368 | `ui` | `non_matching` | `Result_Init` | [`src/ui/result.cpp`](src/ui/result.cpp) |
 | `0x0029bfec` | 152 | `ui` | `non_matching` | `StatusDown_Close` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x0029c6c4` | 24 | `ui` | `non_matching` | `StatusDown_SetFlag412` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x0029c70c` | 32 | `ui` | `non_matching` | `StatusDown_IsNotState1` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
