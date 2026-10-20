@@ -2125,10 +2125,10 @@ address,size,status,category,name,src_file
 0x001d2454,12,todo,unknown,func_001d2454,
 0x001d2460,104,todo,engine,effParts_func_001d2460,
 0x001d24c8,96,todo,script_vm,script_vm_func_001d24c8,
-0x001d2528,232,todo,battle,btlHelp_func_001d2528,
-0x001d2610,308,todo,battle,btlTalk_func_001d2610,
-0x001d2744,644,todo,battle,btlUnit_func_001d2744,
-0x001d29c8,240,todo,battle,battle_func_001d29c8,
+0x001d2528,232,non_matching,battle,btlHelp_Init,src/battle/btl_ui.cpp
+0x001d2610,308,non_matching,battle,btlTalk_Init,src/battle/btl_ui.cpp
+0x001d2744,644,non_matching,battle,btlUnit_Init,src/battle/btl_ui.cpp
+0x001d29c8,240,non_matching,battle,btlUnit_CheckPartyActive,src/battle/btl_ui.cpp
 0x001d2ab8,92,todo,engine,engine_func_001d2ab8,
 0x001d2b14,760,todo,engine,lmapMain_func_001d2b14,
 0x001d2e0c,24,todo,unknown,func_001d2e0c,

@@ -4,8 +4,8 @@
 
 | Metric | Decompiled | Total | Remaining | Percentage |
 |--------|-----------:|------:|----------:|-----------:|
-| **Code Size (Bytes)** | 96,624 B | 3,139,108 B | 3,042,484 B | **3.0781%** |
-| **Functions** | 147 | 10,349 | 10,202 | **1.4204%** |
+| **Code Size (Bytes)** | 98,048 B | 3,139,108 B | 3,041,060 B | **3.1234%** |
+| **Functions** | 151 | 10,349 | 10,198 | **1.4591%** |
 
 ## Subsystem Breakdown
 
@@ -16,7 +16,7 @@
 | `unknown` | 3 | 3,823 | 132 B | 654,480 B | 0.020% |
 | `script_vm` | 0 | 1,203 | 0 B | 459,392 B | 0.000% |
 | `camp` | 10 | 919 | 17,576 B | 331,168 B | 5.307% |
-| `battle` | 1 | 566 | 44 B | 220,356 B | 0.020% |
+| `battle` | 5 | 566 | 1,468 B | 220,356 B | 0.666% |
 | `shop` | 0 | 108 | 0 B | 36,520 B | 0.000% |
 | `crt` | 2 | 26 | 72 B | 9,484 B | 0.759% |
 | `nn_sdk` | 0 | 64 | 0 B | 8,852 B | 0.000% |
@@ -60,6 +60,10 @@
 | `0x001ca648` | 8908 | `ui` | `non_matching` | `StatusDown_CalcTaskCallback` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x001cc914` | 5348 | `ui` | `non_matching` | `StatusDown_DrawTaskCallback` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x001cddf8` | 516 | `ui` | `non_matching` | `Status_DrawBackUp` | [`src/ui/status.cpp`](src/ui/status.cpp) |
+| `0x001d2528` | 232 | `battle` | `non_matching` | `btlHelp_Init` | [`src/battle/btl_ui.cpp`](src/battle/btl_ui.cpp) |
+| `0x001d2610` | 308 | `battle` | `non_matching` | `btlTalk_Init` | [`src/battle/btl_ui.cpp`](src/battle/btl_ui.cpp) |
+| `0x001d2744` | 644 | `battle` | `non_matching` | `btlUnit_Init` | [`src/battle/btl_ui.cpp`](src/battle/btl_ui.cpp) |
+| `0x001d29c8` | 240 | `battle` | `non_matching` | `btlUnit_CheckPartyActive` | [`src/battle/btl_ui.cpp`](src/battle/btl_ui.cpp) |
 | `0x001ddab4` | 68 | `ui` | `non_matching` | `StatusDown_OpenDefaultView` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x001ddaf8` | 36 | `ui` | `non_matching` | `Status_GetField1E64` | [`src/ui/status.cpp`](src/ui/status.cpp) |
 | `0x001ddb1c` | 36 | `ui` | `non_matching` | `Status_IsState8` | [`src/ui/status.cpp`](src/ui/status.cpp) |
