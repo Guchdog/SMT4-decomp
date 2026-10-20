@@ -4490,7 +4490,7 @@ address,size,status,category,name,src_file
 0x0028d838,24,todo,camp,camp_func_0028d838,
 0x0028d850,184,todo,ui,ui_func_0028d850,
 0x0028d908,108,todo,script_vm,script_vm_func_0028d908,
-0x0028d974,736,todo,camp,ButtonHelp_func_0028d974,
+0x0028d974,736,non_matching,camp,ButtonHelp_Init,src/camp/unite.cpp
 0x0028dc54,144,todo,camp,camp_func_0028dc54,
 0x0028dce4,360,todo,battle,battle_func_0028dce4,
 0x0028de4c,56,todo,battle,battle_func_0028de4c,
@@ -4810,7 +4810,7 @@ address,size,status,category,name,src_file
 0x0029e468,36,todo,camp,camp_func_0029e468,
 0x0029e48c,316,todo,camp,camp_func_0029e48c,
 0x0029e5c8,116,todo,engine,engine_func_0029e5c8,
-0x0029e63c,644,todo,camp,SortMenu_func_0029e63c,
+0x0029e63c,644,non_matching,camp,SortMenu_Init,src/camp/unite.cpp
 0x0029e8c0,40,todo,camp,camp_func_0029e8c0,
 0x0029e8e8,168,todo,camp,camp_func_0029e8e8,
 0x0029e990,132,todo,camp,camp_func_0029e990,
