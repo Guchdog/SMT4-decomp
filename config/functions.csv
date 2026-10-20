@@ -2021,7 +2021,7 @@ address,size,status,category,name,src_file
 0x001b1944,312,todo,engine,engine_func_001b1944,
 0x001b1a7c,12,todo,unknown,func_001b1a7c,
 0x001b1a88,8,todo,ui,ui_func_001b1a88,
-0x001b1a90,8352,todo,ui,ui_func_001b1a90,
+0x001b1a90,8352,non_matching,ui,Ui_DebugStatsRender,src/ui/debug_hud.cpp
 0x001b3b30,248,todo,engine,jyoucyu_func_001b3b30,
 0x001b3c28,64,todo,unknown,func_001b3c28,
 0x001b3c68,56,todo,script_vm,script_vm_func_001b3c68,
@@ -2100,7 +2100,7 @@ address,size,status,category,name,src_file
 0x001ce124,120,todo,camp,camp_func_001ce124,
 0x001ce19c,520,todo,camp,camp_func_001ce19c,
 0x001ce3a4,1512,todo,engine,engine_func_001ce3a4,
-0x001ce98c,5444,todo,ui,ui_func_001ce98c,
+0x001ce98c,5444,non_matching,ui,Ui_StatusScreenSkills,src/ui/status_skills.cpp
 0x001cfed0,552,todo,camp,camp_func_001cfed0,
 0x001d00f8,684,todo,camp,camp_func_001d00f8,
 0x001d03a4,684,todo,ui,ui_func_001d03a4,
@@ -2153,7 +2153,7 @@ address,size,status,category,name,src_file
 0x001d3d0c,52,todo,ui,ui_func_001d3d0c,
 0x001d3d40,22520,non_matching,script_vm,FlowScript_ExecuteOpcode,src/script/script_vm.cpp
 0x001d9538,908,non_matching,shop,shopMain_Proc,src/shop/shop.cpp
-0x001d98c4,5880,todo,ui,ui_func_001d98c4,
+0x001d98c4,5880,non_matching,ui,Ui_TerminalSceneRender,src/ui/terminal_ui.cpp
 0x001dafbc,668,todo,camp,tmnlMain_func_001dafbc,
 0x001db258,52,todo,battle,battle_func_001db258,
 0x001db28c,180,todo,ui,ui_func_001db28c,
@@ -2358,7 +2358,7 @@ address,size,status,category,name,src_file
 0x001ee948,52,todo,script_vm,script_vm_func_001ee948,
 0x001ee97c,32,todo,camp,camp_func_001ee97c,
 0x001ee99c,1284,todo,camp,camp_func_001ee99c,
-0x001eeea0,5556,todo,ui,ui_func_001eeea0,
+0x001eeea0,5556,non_matching,ui,Ui_MikadoCastleScene,src/ui/mikado_ui.cpp
 0x001f0454,5764,todo,ui,ui_func_001f0454,
 0x001f1ad8,1264,todo,camp,camp_func_001f1ad8,
 0x001f1fc8,3960,todo,ui,ui_func_001f1fc8,
@@ -2689,7 +2689,7 @@ address,size,status,category,name,src_file
 0x002122e0,64,todo,ui,ui_func_002122e0,
 0x00212320,116,todo,ui,ui_func_00212320,
 0x00212394,168,todo,ui,ui_func_00212394,
-0x0021243c,5820,todo,ui,ui_func_0021243c,
+0x0021243c,5820,non_matching,ui,Ui_QuestCenterListRender,src/ui/quest_ui.cpp
 0x00213af8,44,todo,camp,camp_func_00213af8,
 0x00213b24,2188,todo,ui,ui_func_00213b24,
 0x002143b0,28,todo,engine,engine_func_002143b0,
@@ -7622,7 +7622,7 @@ address,size,status,category,name,src_file
 0x00344830,1788,todo,ui,ui_func_00344830,
 0x00344f2c,568,todo,ui,ui_func_00344f2c,
 0x00345164,48,todo,unknown,func_00345164,
-0x00345194,7068,todo,ui,ui_func_00345194,
+0x00345194,7068,non_matching,ui,Ui_MemoryArenaAllocate,src/ui/ui_memory.cpp
 0x00346d30,8,todo,unknown,func_00346d30,
 0x00346d38,120,todo,engine,AsdMemory_func_00346d38,
 0x00346db0,992,todo,engine,AsdPrimRenderData_func_00346db0,
@@ -9475,7 +9475,7 @@ address,size,status,category,name,src_file
 0x003b3524,60,todo,unknown,func_003b3524,
 0x003b3560,4,todo,unknown,func_003b3560,
 0x003b3564,68,todo,unknown,func_003b3564,
-0x003b35a8,5656,todo,ui,ui_func_003b35a8,
+0x003b35a8,5656,non_matching,ui,Ui_ShopInventoryCatalog,src/shop/shop_catalog.cpp
 0x003b4bc0,5520,non_matching,ui,Ui_DemonCompendiumSearch,src/camp/compendium_search.cpp
 0x003b6150,1652,todo,ui,ui_func_003b6150,
 0x003b67c4,1208,todo,ui,ui_func_003b67c4,
