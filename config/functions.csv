@@ -2214,7 +2214,7 @@ address,size,status,category,name,src_file
 0x001ddb1c,36,non_matching,ui,Status_IsState8,src/ui/status.cpp
 0x001ddb40,400,todo,script_vm,script_vm_func_001ddb40,
 0x001ddcd0,1384,todo,camp,camp_func_001ddcd0,
-0x001de238,5020,todo,camp,Unite_func_001de238,
+0x001de238,5020,non_matching,camp,Unite_DrawAndCalc,src/camp/unite.cpp
 0x001df5d4,180,todo,camp,camp_func_001df5d4,
 0x001df688,328,todo,unknown,func_001df688,
 0x001df7d0,780,todo,camp,camp_func_001df7d0,
@@ -2363,7 +2363,7 @@ address,size,status,category,name,src_file
 0x001f1ad8,1264,todo,camp,camp_func_001f1ad8,
 0x001f1fc8,3960,todo,ui,ui_func_001f1fc8,
 0x001f2f40,24,todo,camp,camp_func_001f2f40,
-0x001f2f58,1704,todo,camp,Unite_func_001f2f58,
+0x001f2f58,1704,non_matching,camp,Unite_Setup,src/camp/unite.cpp
 0x001f3600,88,todo,unknown,func_001f3600,
 0x001f3658,536,todo,ui,ui_func_001f3658,
 0x001f3870,1956,todo,camp,camp_func_001f3870,
@@ -4743,7 +4743,7 @@ address,size,status,category,name,src_file
 0x0029b0fc,144,todo,ui,ui_func_0029b0fc,
 0x0029b18c,388,todo,camp,camp_func_0029b18c,
 0x0029b310,188,todo,camp,camp_func_0029b310,
-0x0029b3cc,1676,todo,camp,Unite_func_0029b3cc,
+0x0029b3cc,1676,non_matching,camp,Unite_Init,src/camp/unite.cpp
 0x0029ba58,308,todo,camp,camp_func_0029ba58,
 0x0029bb8c,144,todo,ui,ui_func_0029bb8c,
 0x0029bc1c,20,todo,camp,camp_func_0029bc1c,
@@ -6171,7 +6171,7 @@ address,size,status,category,name,src_file
 0x002e30dc,60,todo,camp,camp_func_002e30dc,
 0x002e3118,36,todo,unknown,func_002e3118,
 0x002e313c,32,todo,script_vm,script_vm_func_002e313c,
-0x002e315c,344,todo,camp,UniteEffect_func_002e315c,
+0x002e315c,344,non_matching,camp,UniteEffect_Init,src/camp/unite.cpp
 0x002e32b4,20,todo,camp,camp_func_002e32b4,
 0x002e32c8,60,todo,unite,unite_func_002e32c8,
 0x002e3304,124,todo,camp,camp_func_002e3304,
