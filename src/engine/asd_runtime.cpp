@@ -1961,7 +1961,12 @@ void engine_func_002e4b10(UiPartUpdateOwner* owner) {
                 }
             }
 
-            // 0x002E5228..0x002E524C: restore the scratch triple.
+            // 0x002E5228..0x002E524C: the first-interpolated quad is saved
+            // (sp+0x98 / s21 / s25 / s20) before the scratch restore and the
+            // second interpolation.
+            f32 saved_quad[4] = {
+                rs.vector[0], rs.vector[1], rs.vector[2], rs.vector[3],
+            };
             for (s32 i = 0; i < 4; ++i) {
                 rs.vector[i] = rs.scratch[i];
             }
@@ -1976,21 +1981,22 @@ void engine_func_002e4b10(UiPartUpdateOwner* owner) {
                 }
             }
 
-            // 0x002E52C0..0x002E5348: save the interpolated quad, replace
-            // +0x110 with the scratch quad and normalize the delta held in
-            // +0x100.
-            f32 saved_quad[4] = {
+            // 0x002E52C0..0x002E5348: the second-interpolated quad is held in
+            // sp+0x30/s31/sp+0x60/s29; the working vector then becomes the
+            // scratch quad (p0) and subtracts the color quad (p3), including
+            // the W component.
+            f32 second_quad[4] = {
                 rs.vector[0], rs.vector[1], rs.vector[2], rs.vector[3],
             };
-            // 0x002E52C8..0x002E5330: the working vector is the scratch quad
-            // (p0); the subtract operand is the color quad (p3).
-            for (s32 i = 0; i < 3; ++i) {
+            (void)second_quad;
+            for (s32 i = 0; i < 4; ++i) {
                 rs.vector[i] = rs.scratch[i];
             }
-            f32 delta[3] = {
+            f32 delta[4] = {
                 rs.vector[0] - rs.color[0],
                 rs.vector[1] - rs.color[1],
                 rs.vector[2] - rs.color[2],
+                rs.vector[3] - rs.color[3],
             };
             Normalize3(delta);                  // 0x002E5348..0x002E5390
             for (s32 i = 0; i < 3; ++i) {
@@ -2016,9 +2022,9 @@ void engine_func_002e4b10(UiPartUpdateOwner* owner) {
             const f32 spin = engine_func_0024ba44(0) *
                              static_cast<f32>(source->field_e0) *
                              (1.0f - 0.5f) * 2.0f * 0.00390625f;
-            // 0x002E548C: the callee receives the sp+0x50 quad, which is the
-            // interpolated quad saved before the delta operation.
-            func_002486ec(saved_quad);
+            // 0x002E548C: the callee receives sp+0x50, which holds the
+            // normalized delta quad.
+            func_002486ec(delta);
 
             // 0x002E5498..0x002E54D0: radial scale from source+0xCC/+0xD0.
             const f32 random2 = engine_func_0024ba44(0);
@@ -2124,7 +2130,9 @@ void engine_func_002e4b10(UiPartUpdateOwner* owner) {
                 for (s32 i = 0; i < 3; ++i) {
                     rs.vector[i] = point[i];
                 }
-                rs.vector[3] = 1.1f;
+                // 0x002E58EC / 0x002E59A4 store s21, the Y component saved
+                // from the first-interpolated quad at 0x002E523C.
+                rs.vector[3] = saved_quad[1];
                 for (s32 i = 0; i < 4; ++i) {
                     rs.vector[i] -= rs.color[i];
                 }
@@ -2449,40 +2457,58 @@ void engine_func_00304164(TrailOwner* owner) {
         rs.scratch[1] = tangent_dir[1];
         rs.scratch[2] = tangent_dir[2];
         rs.scratch[3] = 0.0f;
-        rs.color[0] = dir[0];                       // g+0x110
-        rs.color[1] = dir[1];
-        rs.color[2] = dir[2];
-        rs.color[3] = quat[3];
-
-        // 0x00304594..0x003045C8: cross product tangent x direction.
+        // 0x00304594..0x003045C8: first cross product, tangent x direction.
         f32 cross[3] = {
             tangent_dir[1] * dir[2] - tangent_dir[2] * dir[1],
             tangent_dir[2] * dir[0] - tangent_dir[0] * dir[2],
             tangent_dir[0] * dir[1] - tangent_dir[1] * dir[0],
         };
-        Normalize3(cross);                          // 0x003045F8..0x0030466C
-        f32 cross_quat[4] = {cross[0], cross[1], cross[2], 0.0f};
-        rs.scratch[0] = cross[0];                   // g+0x120 = cross
-        rs.scratch[1] = cross[1];
-        rs.scratch[2] = cross[2];
-        rs.scratch[3] = 0.0f;
-        rs.color[0] = cross[0];                     // g+0x110 = cross
-        rs.color[1] = cross[1];
-        rs.color[2] = cross[2];
-        rs.color[3] = quat[3];
+        Normalize3(cross);
+        // 0x003045D0..0x003045D8: this normalized tangent cross is parked at
+        // sp+0x50 and later consumed by the second 0x002486EC call.
+        f32 saved_cross_quad[4] = {cross[0], cross[1], cross[2], 0.0f};
 
-        // 0x00304688..0x0030468C: the first basis vector is scaled by
+        // 0x003045DC..0x003045E4: the camera quad is copied into +0x110.
+        rs.color[0] = camera[0];
+        rs.color[1] = camera[1];
+        rs.color[2] = camera[2];
+        rs.color[3] = camera[3];
+
+        // 0x003045E8..0x003045F4: the normalized tangent becomes +0x100.
+        for (s32 i = 0; i < 3; ++i) {
+            rs.vector[i] = tangent_dir[i];
+        }
+        rs.vector[3] = 0.0f;
+
+        // 0x003045F8..0x0030466C: second cross, (tangent x direction) x camera,
+        // normalized.  This is the basis used for the ribbon.
+        f32 basis[3] = {
+            tangent_dir[1] * camera[2] - tangent_dir[2] * camera[1],
+            tangent_dir[2] * camera[0] - tangent_dir[0] * camera[2],
+            tangent_dir[0] * camera[1] - tangent_dir[1] * camera[0],
+        };
+        Normalize3(basis);
+
+        // 0x00304670..0x00304684: mirror the basis into +0x120 and +0x110.
+        for (s32 i = 0; i < 3; ++i) {
+            rs.scratch[i] = basis[i];
+            rs.color[i] = basis[i];
+        }
+        rs.scratch[3] = 0.0f;
+        rs.color[3] = 0.0f;
+
+        // 0x00304688..0x0030468C: the basis vector is scaled by
         // config+0x80 + config+0x7C and parked in g_TrailScratchB.
         const f32 width0 = config->field_80 + config->field_7c;
         const f32 width1 = config->field_7c;
-        g_TrailScratchB[0] = cross[0] * width0;
-        g_TrailScratchB[1] = cross[1] * width0;
-        g_TrailScratchB[2] = cross[2] * width0;
+        g_TrailScratchB[0] = basis[0] * width0;
+        g_TrailScratchB[1] = basis[1] * width0;
+        g_TrailScratchB[2] = basis[2] * width0;
         g_TrailScratchB[3] = 0.0f;
 
         // 0x0030445C..0x00304544: five cross-section points.  The listing
-        // fills +0x00 = +cross*w0, +0x0C = +dir*w1, +0x18 = 0,
-        // +0x24 = -dir*w1 and +0x30 = -cross*w0.
+        // fills +0x00 = +basis*w0, +0x0C = +basis*w1, +0x18 = 0,
+        // +0x24 = -basis*w1 and +0x30 = -basis*w0.
         TrailFrame* const frame = entry->frame;      // 0x003042B4
         TrailTrack* const track =
             static_cast<TrailTrack*>(frame->track);  // 0x003042C4
@@ -2493,12 +2519,14 @@ void engine_func_00304164(TrailOwner* owner) {
         points[12] = -g_TrailScratchB[0];            // +0x30
         points[13] = -g_TrailScratchB[1];
         points[14] = -g_TrailScratchB[2];
-        points[3] = dir[0] * width1;                 // +0x0C
-        points[4] = dir[1] * width1;
-        points[5] = dir[2] * width1;
-        points[9] = -dir[0] * width1;                // +0x24
-        points[10] = -dir[1] * width1;
-        points[11] = -dir[2] * width1;
+        // 0x0030472C..0x00304780: the same second-cross basis is scaled by
+        // config+0x7C and stored at +0x0C / +0x24.
+        points[3] = basis[0] * width1;               // +0x0C
+        points[4] = basis[1] * width1;
+        points[5] = basis[2] * width1;
+        points[9] = -basis[0] * width1;              // +0x24
+        points[10] = -basis[1] * width1;
+        points[11] = -basis[2] * width1;
         points[6] = 0.0f;                            // +0x18
         points[7] = 0.0f;
         points[8] = 0.0f;
@@ -2569,15 +2597,13 @@ void engine_func_00304164(TrailOwner* owner) {
                 func_002486ec(quat);
                 for (s32 i = 0; i < 3; ++i) {
                     rs.vector[i] = tangent_dir[i];
-                    rs.scratch[i] = cross_quat[i];
                 }
                 rs.vector[3] = 0.0f;
-                rs.scratch[3] = 0.0f;
                 Transform4(rs.matrix, rs.vector, rs.vector);
 
                 // 0x00304A74..0x00304AFC: second orientation matrix from the
                 // cross-section quad (sp+0x50).
-                func_002486ec(cross_quat);
+                func_002486ec(saved_cross_quad);
                 Transform4(rs.matrix, rs.vector, rs.vector);
 
                 // 0x00304B00..0x00304BA4: final direction multiply.
@@ -2600,8 +2626,12 @@ void engine_func_00304164(TrailOwner* owner) {
                     rs.color[0] * rs.color[0] +
                     rs.color[1] * rs.color[1] +
                     rs.color[2] * rs.color[2]);
+                // 0x00304BA4/0x00304BC4: s6 = twist - initial_twist,
+                // s0 = s6 * [0x304CF8] (0x3F000000); 0x00304C10 then scales
+                // the acos result by pi/128.
+                const f32 twist_delta = (twist - initial_twist) * 0.5f;
                 const f32 sample_step =
-                    func_00361074(length) * 0.024543693f;    // pi/128
+                    func_00361074(twist_delta) * 0.024543693f;  // pi/128
                 previous_length = length;
                 (void)previous_length;
 
