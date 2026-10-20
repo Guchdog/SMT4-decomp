@@ -39,7 +39,10 @@ extern "C" {
     smt4::ui::AsdListBoxItem* AsdListBox_FindItem(void* handle, u32 id);    // 0x00254ff0
     void  AsdListBox_Relayout(void* handle);                                // 0x00259d88
     void  AsdListBox_AdvanceCounter(void* field);                           // 0x002d567c
-    void* AsdUi_Create(const char* name, u32 a1, u32 a2, const char* kind,
+    // 0x002c5978.  r0 is the widget kind/label; r1 carries the row name in
+    // AsdListBox_func_00263408 and the numeric id 2 in message_func_002c4c2c,
+    // hence the pointer-sized integer slot.
+    void* AsdUi_Create(const char* kind, std::uintptr_t name, u32 a2, u32 a3,
                        u32 cb0, u32 cb1, void* obj);                        // 0x002c5978
     void* AsdUi_CreateLabel(const char* name, u32 id, u32 a1, u32 a2,
                             u32 p0, u32 p1, void* p2, u32 p3);               // 0x002c4c00
@@ -679,8 +682,8 @@ void* AsdListBox_func_00263408(void* handle, const char* name, s32 width,
     if (widget == nullptr)
         return nullptr;
 
-    void* created = AsdUi_Create(name, 0, 0, "AsdListBox",
-                                 0x001FE590, 0x001FF3A8, widget);
+    void* created = AsdUi_Create("AsdListBox", (std::uintptr_t)name,
+                                 0, 0, 0x001FE590, 0x001FF3A8, widget);
 
     if (AsdUi_IsRegistered(handle) != 0)
         AsdUi_Attach(handle, created);
