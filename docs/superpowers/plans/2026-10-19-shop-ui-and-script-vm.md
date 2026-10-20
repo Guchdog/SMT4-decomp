@@ -37,14 +37,14 @@
 - `shopMain_DrawUp`: `0x001fdf4c` (1,132 B)
 - `shopMain_DrawDown`: `0x0021ee14` (1,416 B)
 
-- [ ] **Step 1: Update progress test expectations (RED)**
+- [x] **Step 1: Update progress test expectations (RED)**
   - Update `tests/test_progress.py` to expect 165 functions and 120,412 bytes.
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
   - Run `python -m unittest discover -s tests -v`.
-- [ ] **Step 3: Define `ShopMainWork` in `include/shop/shop.h` and implement in `src/shop/shop.cpp`**
-- [ ] **Step 4: Update `config/functions.csv` and run test to verify it passes (GREEN)**
+- [x] **Step 3: Define `ShopMainWork` in `include/shop/shop.h` and implement in `src/shop/shop.cpp`**
+- [x] **Step 4: Update `config/functions.csv` and run test to verify it passes (GREEN)**
   - Run `python tools/progress.py --write` and `python -m unittest discover -s tests -v`.
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
   - Commit: `feat(shop): implement shopMain buying/selling engine and dual-screen renderers (+3,820 B)`.
 
 ---
@@ -61,14 +61,14 @@
 - `nameMain_Init`: `0x001d374c` (408 B)
 - `onesRoom_Init`: `0x001d38fc` (392 B)
 
-- [ ] **Step 1: Update progress test expectations (RED)**
+- [x] **Step 1: Update progress test expectations (RED)**
   - Update `tests/test_progress.py` to expect 167 functions and 121,212 bytes.
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
   - Run `python -m unittest discover -s tests -v`.
-- [ ] **Step 3: Define structs in `include/script/flowscript.h` and implement in `src/script/script_vm.cpp`**
-- [ ] **Step 4: Update `config/functions.csv` and run test to verify it passes (GREEN)**
+- [x] **Step 3: Define structs in `include/script/flowscript.h` and implement in `src/script/script_vm.cpp`**
+- [x] **Step 4: Update `config/functions.csv` and run test to verify it passes (GREEN)**
   - Run `python tools/progress.py --write` and `python -m unittest discover -s tests -v`.
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
   - Commit: `feat(ui): implement nameMain character naming modal and onesRoom barracks (+800 B)`.
 
 ---
@@ -84,12 +84,12 @@
 **Functions:**
 - `FlowScript_ExecuteOpcode`: `0x001d3d40` (22,520 B)
 
-- [ ] **Step 1: Update progress test expectations (RED)**
+- [x] **Step 1: Update progress test expectations (RED)**
   - Update `tests/test_progress.py` to expect 168 functions and 143,732 bytes (crossing **4.5% milestone**).
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
   - Run `python -m unittest discover -s tests -v`.
-- [ ] **Step 3: Implement `FlowScript_ExecuteOpcode` with 99-case branch table in `src/script/script_vm.cpp`**
-- [ ] **Step 4: Update `config/functions.csv` and run test to verify it passes (GREEN)**
+- [x] **Step 3: Implement `FlowScript_ExecuteOpcode` with 99-case branch table in `src/script/script_vm.cpp`**
+- [x] **Step 4: Update `config/functions.csv` and run test to verify it passes (GREEN)**
   - Run `python tools/progress.py --write` and `python -m unittest discover -s tests -v`.
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
   - Commit: `feat(script): implement FlowScript bytecode VM 99-opcode dispatch engine (+22,520 B, 4.5% milestone reached)`.
