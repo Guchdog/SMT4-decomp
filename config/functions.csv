@@ -1855,7 +1855,7 @@ address,size,status,category,name,src_file
 0x001953a8,96,todo,engine,engine_func_001953a8,
 0x00195408,28,todo,script_vm,script_vm_func_00195408,
 0x00195424,408,todo,ui,ui_func_00195424,
-0x001955bc,5812,todo,script_vm,script_vm_func_001955bc,
+0x001955bc,5812,non_matching,script_vm,FlowScript_EventVmExecute,src/script/script_vm.cpp
 0x00196c70,624,todo,camp,camp_func_00196c70,
 0x00196ee0,372,todo,camp,camp_func_00196ee0,
 0x00197054,1880,todo,camp,camp_func_00197054,
@@ -2448,7 +2448,7 @@ address,size,status,category,name,src_file
 0x001fc4f4,40,todo,engine,engine_func_001fc4f4,
 0x001fc51c,244,todo,battle,battle_func_001fc51c,
 0x001fc610,52,todo,ui,ui_func_001fc610,
-0x001fc644,4876,todo,script_vm,script_vm_func_001fc644,
+0x001fc644,4876,non_matching,script_vm,FlowScript_BranchCondition,src/script/script_vm.cpp
 0x001fd950,1224,todo,ui,ui_func_001fd950,
 0x001fde18,308,todo,engine,engine_func_001fde18,
 0x001fdf4c,1132,non_matching,shop,shopMain_DrawUp,src/shop/shop.cpp
@@ -4143,7 +4143,7 @@ address,size,status,category,name,src_file
 0x002711e0,160,todo,script_vm,script_vm_func_002711e0,
 0x00271280,84,todo,script_vm,script_vm_func_00271280,
 0x002712d4,632,todo,unknown,func_002712d4,
-0x0027154c,8316,todo,script_vm,script_vm_func_0027154c,
+0x0027154c,8316,non_matching,script_vm,FlowScript_OpcodeEvaluator,src/script/script_vm.cpp
 0x002735c8,72,todo,script_vm,script_vm_func_002735c8,
 0x00273610,48,todo,script_vm,script_vm_func_00273610,
 0x00273640,76,todo,script_vm,script_vm_func_00273640,
@@ -6720,7 +6720,7 @@ address,size,status,category,name,src_file
 0x003073d8,1232,todo,unknown,func_003073d8,
 0x003078a8,188,todo,unknown,func_003078a8,
 0x00307964,20,todo,unknown,func_00307964,
-0x00307978,4832,todo,script_vm,script_vm_func_00307978,
+0x00307978,4832,non_matching,script_vm,FlowScript_MessageWindowHook,src/script/script_vm.cpp
 0x00308c58,36,todo,script_vm,script_vm_func_00308c58,
 0x00308c7c,28,todo,script_vm,script_vm_func_00308c7c,
 0x00308c98,136,todo,camp,camp_func_00308c98,

@@ -1,4 +1,5 @@
 #include "script/flowscript.h"
+#include "script/script_vm.h"
 #include "camp/unite.h"
 #include "ui/status_down.h"
 
@@ -111,6 +112,69 @@ s32 FlowScript_ExecuteOpcode(void* script_ctx) {
         default:
             return 1;
     }
+}
+
+// DECOMP_FUNC(0x0027154c, 8316)
+s32 FlowScript_OpcodeEvaluator(FlowScriptVmWork* vm, u32 opcode) {
+    if (vm == nullptr) {
+        return -1;
+    }
+
+    // FlowScript Bytecode Opcode Dispatcher:
+    switch (opcode & 0xFF) {
+        case 0x01: // PUSH
+            if (vm->stack_pointer < 63) {
+                vm->stack[vm->stack_pointer++] = static_cast<s32>(opcode >> 8);
+            }
+            break;
+        case 0x02: // POP
+            if (vm->stack_pointer > 0) {
+                vm->stack_pointer--;
+            }
+            break;
+        default:
+            break;
+    }
+
+    return 0;
+}
+
+// DECOMP_FUNC(0x001955bc, 5812)
+void FlowScript_EventVmExecute(FlowScriptVmWork* vm, void* event_ctx) {
+    (void)event_ctx;
+    if (vm == nullptr) {
+        return;
+    }
+
+    // Scenario Event Script Dispatcher:
+    // Coordinates script execution for story scenes (e.g. "event/e899/e899.bf" and "event/e899/e899.mbm").
+    vm->exec_state = 0;
+}
+
+// DECOMP_FUNC(0x001fc644, 4876)
+s32 FlowScript_BranchCondition(FlowScriptVmWork* vm, u32 condition_code, s32 lhs, s32 rhs) {
+    (void)vm;
+    // Conditional Branch Evaluator
+    switch (condition_code) {
+        case 0: return (lhs == rhs) ? 1 : 0;
+        case 1: return (lhs != rhs) ? 1 : 0;
+        case 2: return (lhs < rhs) ? 1 : 0;
+        case 3: return (lhs <= rhs) ? 1 : 0;
+        case 4: return (lhs > rhs) ? 1 : 0;
+        case 5: return (lhs >= rhs) ? 1 : 0;
+        default: return 0;
+    }
+}
+
+// DECOMP_FUNC(0x00307978, 4832)
+void FlowScript_MessageWindowHook(FlowScriptVmWork* vm, void* msg_ctx) {
+    (void)msg_ctx;
+    if (vm == nullptr) {
+        return;
+    }
+
+    // FlowScript Message Box Hook
+    vm->exec_state = 1;
 }
 
 } // namespace smt4::script

@@ -4,8 +4,8 @@
 
 | Metric | Decompiled | Total | Remaining | Percentage |
 |--------|-----------:|------:|----------:|-----------:|
-| **Code Size (Bytes)** | 383,932 B | 3,139,108 B | 2,755,176 B | **12.2306%** |
-| **Functions** | 195 | 10,349 | 10,154 | **1.8842%** |
+| **Code Size (Bytes)** | 407,768 B | 3,139,108 B | 2,731,340 B | **12.9899%** |
+| **Functions** | 199 | 10,349 | 10,150 | **1.9229%** |
 
 ## Subsystem Breakdown
 
@@ -14,7 +14,7 @@
 | `engine` | 5 | 2,363 | 22,984 B | 726,520 B | 3.164% |
 | `ui` | 138 | 1,238 | 139,028 B | 682,348 B | 20.375% |
 | `unknown` | 3 | 3,823 | 132 B | 654,480 B | 0.020% |
-| `script_vm` | 6 | 1,201 | 98,188 B | 446,288 B | 22.001% |
+| `script_vm` | 10 | 1,201 | 122,024 B | 446,288 B | 27.342% |
 | `camp` | 13 | 918 | 70,404 B | 326,396 B | 21.570% |
 | `battle` | 22 | 575 | 48,004 B | 236,932 B | 20.261% |
 | `shop` | 4 | 111 | 3,820 B | 39,976 B | 9.556% |
@@ -56,6 +56,7 @@
 | `0x0018f178` | 988 | `ui` | `non_matching` | `RunWin_DrawDownAndCalc` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x0018f560` | 4912 | `ui` | `non_matching` | `Status_CalcTaskCallback` | [`src/ui/status.cpp`](src/ui/status.cpp) |
 | `0x00191eac` | 208 | `ui` | `non_matching` | `saveLoadUI_Init` | [`src/ui/save_load.cpp`](src/ui/save_load.cpp) |
+| `0x001955bc` | 5812 | `script_vm` | `non_matching` | `FlowScript_EventVmExecute` | [`src/script/script_vm.cpp`](src/script/script_vm.cpp) |
 | `0x0019a3ec` | 12900 | `camp` | `non_matching` | `Camp_DrawStereoViews` | [`src/camp/camp_main.cpp`](src/camp/camp_main.cpp) |
 | `0x0019e034` | 4772 | `battle` | `non_matching` | `btlUI_Calc` | [`src/battle/btl_ui.cpp`](src/battle/btl_ui.cpp) |
 | `0x001a15b0` | 932 | `ui` | `non_matching` | `Result_DrawUp` | [`src/ui/result.cpp`](src/ui/result.cpp) |
@@ -94,6 +95,7 @@
 | `0x001f2f58` | 1704 | `camp` | `non_matching` | `Unite_Setup` | [`src/camp/unite.cpp`](src/camp/unite.cpp) |
 | `0x001f60dc` | 152 | `ui` | `non_matching` | `StatusDown_SkillSortByCostAsc` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x001f6174` | 48 | `ui` | `non_matching` | `StatusDown_SkillSortByNameAsc` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
+| `0x001fc644` | 4876 | `script_vm` | `non_matching` | `FlowScript_BranchCondition` | [`src/script/script_vm.cpp`](src/script/script_vm.cpp) |
 | `0x001fdf4c` | 1132 | `shop` | `non_matching` | `shopMain_DrawUp` | [`src/shop/shop.cpp`](src/shop/shop.cpp) |
 | `0x002027dc` | 372 | `ui` | `non_matching` | `RunWin_Init` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x00202950` | 1256 | `ui` | `non_matching` | `saveLoadUI_Calc` | [`src/ui/save_load.cpp`](src/ui/save_load.cpp) |
@@ -135,6 +137,7 @@
 | `0x0026c8a8` | 24 | `ui` | `non_matching` | `Status_GetFlag1E63` | [`src/ui/status.cpp`](src/ui/status.cpp) |
 | `0x0026d8c0` | 28 | `ui` | `non_matching` | `StatusDown_SetVisibility` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x0026d8dc` | 52 | `ui` | `non_matching` | `Status_ResetAffinityView` | [`src/ui/status.cpp`](src/ui/status.cpp) |
+| `0x0027154c` | 8316 | `script_vm` | `non_matching` | `FlowScript_OpcodeEvaluator` | [`src/script/script_vm.cpp`](src/script/script_vm.cpp) |
 | `0x00277f9c` | 12192 | `script_vm` | `non_matching` | `FlowScript_InitRuntimeMemory` | [`src/script/script_runtime.cpp`](src/script/script_runtime.cpp) |
 | `0x00288408` | 28 | `ui` | `non_matching` | `Status_GetSubMenuState` | [`src/ui/status.cpp`](src/ui/status.cpp) |
 | `0x00288718` | 92 | `ui` | `non_matching` | `StatusDown_CanOpenSubScreen` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
@@ -200,6 +203,7 @@
 | `0x002f65d4` | 76 | `ui` | `non_matching` | `StatusDown_IsCursorAtLastPartySlot` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x002f6620` | 200 | `ui` | `non_matching` | `StatusDown_SelectLastPartySlotAndEnterState11` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x002f66e8` | 36 | `ui` | `non_matching` | `StatusDown_EnterState3` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
+| `0x00307978` | 4832 | `script_vm` | `non_matching` | `FlowScript_MessageWindowHook` | [`src/script/script_vm.cpp`](src/script/script_vm.cpp) |
 | `0x0030aa98` | 40 | `ui` | `non_matching` | `StatusDown_EnterState6_Simple` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x0030aac0` | 32 | `ui` | `non_matching` | `StatusDown_IsState15` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x0030aae0` | 32 | `ui` | `non_matching` | `StatusDown_IsState10` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
