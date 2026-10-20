@@ -55,10 +55,6 @@ extern "C" {
     // Input / audio / UI boot helpers
     u32   UiInput_TestFlag(u32 id);                                         // 0x00263778 (falls into 0x00263784)
     void  UiInput_SetFlag(u32 id, u32 value);                               // 0x00263734 (falls into 0x0026373C)
-    u32   Flag_CheckEventBit(u32 flag_id);                                  // 0x002C0BA8
-    void  Sound_SetBgmSequence(u32 id);                                     // 0x001A7F30
-    void  Sound_RequestBgm(u32 id, u32 volume, u32 frames);                 // 0x002A0640
-    void  RunWin_OpenDefault();                                             // 0x0032FEF4
     void  Camp_SetFadeColor(u32 screen, u32 rgba);                          // 0x0029F10C
     void  UiConfig_FillPair(void* dst, u32 byte_value);                     // 0x0027EDF8
     void  UiConfig_CopyPair(void* dst, const void* src);                    // 0x002ADB40

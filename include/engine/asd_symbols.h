@@ -89,6 +89,21 @@ extern "C" {
     // AsdModel (0x002FD520) and EffectEditor (0x00242588).
     void* AsdUiObject_CreateAndReset(void* object);
 
+    // 0x002C0BA8 (12 B): event-flag query, returning the 0/1 bit result.  The
+    // CampCec, title and status TUs all reach this routine.
+    bool  Flag_CheckEventBit(u32 flag_id);
+
+    // 0x001A7F30 (116 B) / 0x002A0640 (56 B): BGM sequence helpers shared by
+    // the CampCec boot path and the title/play-log flows.  0x002A0640 only
+    // forwards when sound-table slot 1 is still empty.
+    void  Sound_SetSequenceState(u32 mode);
+    void  Sound_RequestBgm(u32 id, u32 volume, u32 frames);
+
+    // 0x0032FEF4 (88 B): resets the 0x0043E158 RunWin panel (formats its title
+    // at +0xC4, sets +0x14/+0x08 and requests 0x010001FD).  Reached from the
+    // CampCec main-menu boot path.
+    void  RunWin_OpenDefault();
+
     // 0x00433158: camp / NPC row-bundle pointer.  The listing loads the value
     // stored here (`ldr r0,[r5]`, 0x002FE088) before calling the row helpers,
     // so the slot itself is a non-const pointer.  aocFileLoad reads the same

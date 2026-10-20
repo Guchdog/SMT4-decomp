@@ -73,9 +73,6 @@ extern "C" {
     u32   CampCec_IsModeZero();                                             // 0x0035A1A0
     void  CampCec_SetupInput(u32 enable);                                   // 0x00257BF0
     void  Status_InitEnvironment(void* env);                                // 0x002D72C4
-    void  Sound_SetSequenceState(u32 mode);                                 // 0x001A7F30
-    void  Sound_RequestBgmIfIdle(u32 id, u32 volume, u32 frames);           // 0x002A0640
-    void  CampCec_ResetUiFlags();                                           // 0x0032FEF4
     void  UiInput_SetMode(u32 mode);                                        // 0x0026B7EC
     void  UiInput_SetModeB(u32 mode);                                       // 0x002594CC
     void  CampCec_ThreadEntry(void* arg);                                   // 0x001EC5F4
@@ -318,9 +315,9 @@ void CampCec_func_001ffaf4(void* arg) {
     CampCec_SetupInput(0);                                  // 0x00257BF0
     Status_InitEnvironment(reinterpret_cast<u8*>(g_CecWork) + 0xA0); // 0x002D72C4
     Sound_SetSequenceState(0);                              // 0x001A7F30
-    Sound_RequestBgmIfIdle(0x01000062, 0, 0x3C);            // 0x002A0640
+    Sound_RequestBgm(0x01000062, 0, 0x3C);            // 0x002A0640
     ui::RunWin_Init();                                      // 0x002027DC
-    CampCec_ResetUiFlags();                                 // 0x0032FEF4
+    RunWin_OpenDefault();                                 // 0x0032FEF4
     UiInput_SetMode(2);                                     // 0x0026B7EC
     UiInput_SetModeB(2);                                    // 0x002594CC
     work->flag_d65 = 0;
