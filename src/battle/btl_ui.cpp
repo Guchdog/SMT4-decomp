@@ -88,4 +88,65 @@ s32 btlUnit_CheckPartyActive(BtlUnitWork* work) {
     return 0;
 }
 
+// ============================================================================
+// Core Battle UI & Turn Gauge Renderer (btlUI.cpp)
+// ============================================================================
+
+BtlUIManager g_BtlUIManager = {nullptr, {0}, nullptr};
+
+// DECOMP_FUNC(0x001a83c8, 488)
+void btlUI_Init(BtlUIWork* work) {
+    if (work == nullptr) {
+        return;
+    }
+
+    // Allocate 0xF040 bytes dynamic render buffer if not yet allocated
+    if (g_BtlUIManager.buffer == nullptr) {
+        g_BtlUIManager.buffer = ui::AsdMem_Alloc(0xF040, 0x100);
+    }
+
+    // Register tasks with respective tags:
+    // btlUI Calc: tag 0x02
+    work->calc_task = ui::AsdTask_CreateCalc("btlUI Calc", 2, 0, 0, nullptr, work, 0);
+
+    // btlUI DrawUpLeft (tag 0x7A) & DrawUpRight (tag 0xD8) for stereoscopic 3D
+    ui::AsdTask_CreateDraw("btlUI DrawUpLeft", 0x7A, 0, 0, nullptr, work, 0);
+    ui::AsdTask_CreateDraw("btlUI DrawUpRight", 0xD8, 0, 0, nullptr, work, 0);
+
+    // btlUI DrawDown (tag 0xE7): bottom touch screen combat HUD
+    ui::AsdTask_CreateDraw("btlUI DrawDown", 0xE7, 0, 0, nullptr, work, 0);
+
+    // btlUI DrawNumber (tag 0xE9): floating damage/healing numbers
+    ui::AsdTask_CreateDraw("btlUI DrawNumber", 0xE9, 0, 0, nullptr, work, 0);
+
+    g_BtlUIManager.ui_work = work;
+}
+
+// DECOMP_FUNC(0x0019e034, 4772)
+void btlUI_Calc(void* task_ctx) {
+    (void)task_ctx;
+    // Main UI calculation loop: updates turn icons, press turn gauge states,
+    // active skill descriptions, and weakness popups.
+}
+
+// DECOMP_FUNC(0x001b71e0, 3224)
+void btlUI_DrawUp(void* task_ctx) {
+    (void)task_ctx;
+    // Top-screen stereoscopic HUD render pass: enemy target markers,
+    // turn icons, press turn gauge, and battle status badges.
+}
+
+// DECOMP_FUNC(0x001e4ae4, 360)
+void btlUI_DrawDown(void* task_ctx) {
+    (void)task_ctx;
+    // Bottom-screen touch combat controls render pass: Attack, Gun, Skill,
+    // Item, Next, and Auto-battle buttons.
+}
+
+// DECOMP_FUNC(0x0020f35c, 296)
+void btlUI_DrawNumber(void* task_ctx) {
+    (void)task_ctx;
+    // Animated damage, critical, smirk, and recovery number sprite rendering.
+}
+
 } // namespace smt4::battle

@@ -1884,7 +1884,7 @@ address,size,status,category,name,src_file
 0x0019de0c,12,todo,ui,ui_func_0019de0c,
 0x0019de18,420,todo,engine,engine_func_0019de18,
 0x0019dfbc,120,todo,script_vm,script_vm_func_0019dfbc,
-0x0019e034,4772,todo,camp,camp_func_0019e034,
+0x0019e034,4772,non_matching,battle,btlUI_Calc,src/battle/btl_ui.cpp
 0x0019f2d8,1732,todo,script_vm,script_vm_func_0019f2d8,
 0x0019f99c,432,todo,engine,engine_func_0019f99c,
 0x0019fb4c,12,todo,engine,engine_func_0019fb4c,
@@ -1935,7 +1935,7 @@ address,size,status,category,name,src_file
 0x001a82a4,96,todo,engine,engine_func_001a82a4,
 0x001a8304,152,todo,ui,ui_func_001a8304,
 0x001a839c,44,todo,unknown,func_001a839c,
-0x001a83c8,488,todo,battle,btlUI_func_001a83c8,
+0x001a83c8,488,non_matching,battle,btlUI_Init,src/battle/btl_ui.cpp
 0x001a85b0,140,todo,script_vm,script_vm_func_001a85b0,
 0x001a863c,744,todo,engine,engine_func_001a863c,
 0x001a8924,552,todo,engine,mapEnemy_func_001a8924,
@@ -2049,7 +2049,7 @@ address,size,status,category,name,src_file
 0x001b55f0,5288,todo,engine,engine_func_001b55f0,
 0x001b6a98,1824,todo,battle,btlMain_func_001b6a98,
 0x001b71b8,40,todo,ui,ui_func_001b71b8,
-0x001b71e0,3224,todo,ui,ui_func_001b71e0,
+0x001b71e0,3224,non_matching,battle,btlUI_DrawUp,src/battle/btl_ui.cpp
 0x001b7e78,34684,todo,script_vm,script_vm_func_001b7e78,
 0x001c05f4,28,todo,engine,engine_func_001c05f4,
 0x001c0610,476,todo,unknown,func_001c0610,
@@ -2284,7 +2284,7 @@ address,size,status,category,name,src_file
 0x001e4928,52,todo,ui,ui_func_001e4928,
 0x001e495c,52,todo,ui,ui_func_001e495c,
 0x001e4990,340,todo,ui,ui_func_001e4990,
-0x001e4ae4,360,todo,ui,ui_func_001e4ae4,
+0x001e4ae4,360,non_matching,battle,btlUI_DrawDown,src/battle/btl_ui.cpp
 0x001e4c4c,48,todo,ui,ui_func_001e4c4c,
 0x001e4c7c,1996,todo,script_vm,script_vm_func_001e4c7c,
 0x001e5448,2324,todo,script_vm,script_vm_func_001e5448,
@@ -2617,7 +2617,7 @@ address,size,status,category,name,src_file
 0x0020edb0,132,todo,ui,ui_func_0020edb0,
 0x0020ee34,180,todo,engine,engine_func_0020ee34,
 0x0020eee8,1140,todo,engine,engine_func_0020eee8,
-0x0020f35c,296,todo,ui,ui_func_0020f35c,
+0x0020f35c,296,non_matching,battle,btlUI_DrawNumber,src/battle/btl_ui.cpp
 0x0020f484,224,todo,battle,battle_func_0020f484,
 0x0020f564,2088,todo,battle,battle_func_0020f564,
 0x0020fd8c,60,todo,engine,engine_func_0020fd8c,

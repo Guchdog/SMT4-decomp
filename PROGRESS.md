@@ -4,19 +4,19 @@
 
 | Metric | Decompiled | Total | Remaining | Percentage |
 |--------|-----------:|------:|----------:|-----------:|
-| **Code Size (Bytes)** | 98,048 B | 3,139,108 B | 3,041,060 B | **3.1234%** |
-| **Functions** | 151 | 10,349 | 10,198 | **1.4591%** |
+| **Code Size (Bytes)** | 107,188 B | 3,139,108 B | 3,031,920 B | **3.4146%** |
+| **Functions** | 156 | 10,349 | 10,193 | **1.5074%** |
 
 ## Subsystem Breakdown
 
 | Subsystem | Decompiled Funcs | Total Funcs | Decompiled Bytes | Total Bytes | Subsystem % |
 |-----------|-----------------:|------------:|-----------------:|------------:|------------:|
 | `engine` | 3 | 2,367 | 224 B | 734,988 B | 0.030% |
-| `ui` | 128 | 1,243 | 78,576 B | 676,036 B | 11.623% |
+| `ui` | 128 | 1,240 | 78,576 B | 672,156 B | 11.690% |
 | `unknown` | 3 | 3,823 | 132 B | 654,480 B | 0.020% |
 | `script_vm` | 0 | 1,203 | 0 B | 459,392 B | 0.000% |
-| `camp` | 10 | 919 | 17,576 B | 331,168 B | 5.307% |
-| `battle` | 5 | 566 | 1,468 B | 220,356 B | 0.666% |
+| `camp` | 10 | 918 | 17,576 B | 326,396 B | 5.385% |
+| `battle` | 10 | 570 | 10,608 B | 229,008 B | 4.632% |
 | `shop` | 0 | 108 | 0 B | 36,520 B | 0.000% |
 | `crt` | 2 | 26 | 72 B | 9,484 B | 0.759% |
 | `nn_sdk` | 0 | 64 | 0 B | 8,852 B | 0.000% |
@@ -54,8 +54,11 @@
 | `0x0018f178` | 988 | `ui` | `non_matching` | `RunWin_DrawDownAndCalc` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x0018f560` | 4912 | `ui` | `non_matching` | `Status_CalcTaskCallback` | [`src/ui/status.cpp`](src/ui/status.cpp) |
 | `0x00191eac` | 208 | `ui` | `non_matching` | `saveLoadUI_Init` | [`src/ui/save_load.cpp`](src/ui/save_load.cpp) |
+| `0x0019e034` | 4772 | `battle` | `non_matching` | `btlUI_Calc` | [`src/battle/btl_ui.cpp`](src/battle/btl_ui.cpp) |
 | `0x001a310c` | 15148 | `ui` | `non_matching` | `Status_DrawUp` | [`src/ui/status.cpp`](src/ui/status.cpp) |
+| `0x001a83c8` | 488 | `battle` | `non_matching` | `btlUI_Init` | [`src/battle/btl_ui.cpp`](src/battle/btl_ui.cpp) |
 | `0x001accd4` | 1104 | `ui` | `non_matching` | `SearchWin_DrawUpAndCalc` | [`src/ui/window.cpp`](src/ui/window.cpp) |
+| `0x001b71e0` | 3224 | `battle` | `non_matching` | `btlUI_DrawUp` | [`src/battle/btl_ui.cpp`](src/battle/btl_ui.cpp) |
 | `0x001c897c` | 7048 | `ui` | `non_matching` | `saveLoadUI_DrawMain` | [`src/ui/save_load.cpp`](src/ui/save_load.cpp) |
 | `0x001ca648` | 8908 | `ui` | `non_matching` | `StatusDown_CalcTaskCallback` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x001cc914` | 5348 | `ui` | `non_matching` | `StatusDown_DrawTaskCallback` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
@@ -68,6 +71,7 @@
 | `0x001ddaf8` | 36 | `ui` | `non_matching` | `Status_GetField1E64` | [`src/ui/status.cpp`](src/ui/status.cpp) |
 | `0x001ddb1c` | 36 | `ui` | `non_matching` | `Status_IsState8` | [`src/ui/status.cpp`](src/ui/status.cpp) |
 | `0x001de238` | 5020 | `camp` | `non_matching` | `Unite_DrawAndCalc` | [`src/camp/unite.cpp`](src/camp/unite.cpp) |
+| `0x001e4ae4` | 360 | `battle` | `non_matching` | `btlUI_DrawDown` | [`src/battle/btl_ui.cpp`](src/battle/btl_ui.cpp) |
 | `0x001ee5a4` | 548 | `ui` | `non_matching` | `StatusDown_PopulateSkillList` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x001ee7c8` | 384 | `ui` | `non_matching` | `StatusDown_PopulateItemList` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x001f2f58` | 1704 | `camp` | `non_matching` | `Unite_Setup` | [`src/camp/unite.cpp`](src/camp/unite.cpp) |
@@ -79,6 +83,7 @@
 | `0x00206be8` | 80 | `ui` | `non_matching` | `StatusDown_SkillSortByIdAsc` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x00206c38` | 132 | `ui` | `non_matching` | `StatusDown_ItemSortByTypeAsc` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x00206cbc` | 124 | `ui` | `non_matching` | `StatusDown_ItemSortByIdAsc` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
+| `0x0020f35c` | 296 | `battle` | `non_matching` | `btlUI_DrawNumber` | [`src/battle/btl_ui.cpp`](src/battle/btl_ui.cpp) |
 | `0x00215990` | 180 | `ui` | `non_matching` | `StatusDown_SetPartyPrompt` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x00215a44` | 28 | `ui` | `non_matching` | `StatusDown_SetActiveSoundId` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x00215a68` | 248 | `ui` | `non_matching` | `StatusDown_SetPartySlots` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
