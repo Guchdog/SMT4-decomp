@@ -4,15 +4,15 @@
 
 | Metric | Decompiled | Total | Remaining | Percentage |
 |--------|-----------:|------:|----------:|-----------:|
-| **Code Size (Bytes)** | 339,152 B | 3,139,108 B | 2,799,956 B | **10.8041%** |
-| **Functions** | 189 | 10,349 | 10,160 | **1.8263%** |
+| **Code Size (Bytes)** | 373,788 B | 3,139,108 B | 2,765,320 B | **11.9075%** |
+| **Functions** | 193 | 10,349 | 10,156 | **1.8649%** |
 
 ## Subsystem Breakdown
 
 | Subsystem | Decompiled Funcs | Total Funcs | Decompiled Bytes | Total Bytes | Subsystem % |
 |-----------|-----------------:|------------:|-----------------:|------------:|------------:|
 | `engine` | 5 | 2,363 | 22,984 B | 726,520 B | 3.164% |
-| `ui` | 134 | 1,238 | 104,392 B | 682,348 B | 15.299% |
+| `ui` | 138 | 1,238 | 139,028 B | 682,348 B | 20.375% |
 | `unknown` | 3 | 3,823 | 132 B | 654,480 B | 0.020% |
 | `script_vm` | 6 | 1,201 | 98,188 B | 446,288 B | 22.001% |
 | `camp` | 13 | 918 | 70,404 B | 326,396 B | 21.570% |
@@ -113,6 +113,7 @@
 | `0x0022e694` | 32 | `ui` | `non_matching` | `Status_SetFlag1E65` | [`src/ui/status.cpp`](src/ui/status.cpp) |
 | `0x0022e6b4` | 24 | `ui` | `non_matching` | `Status_IsActive` | [`src/ui/status.cpp`](src/ui/status.cpp) |
 | `0x00258e38` | 480 | `ui` | `non_matching` | `StatusCamera_Init` | [`src/ui/status.cpp`](src/ui/status.cpp) |
+| `0x0025d3fc` | 7328 | `ui` | `non_matching` | `Ui_BattleCommandMenu` | [`src/ui/battle_hud.cpp`](src/ui/battle_hud.cpp) |
 | `0x0025f8f0` | 11004 | `ui` | `non_matching` | `Ui_MiniMapRender` | [`src/ui/minimap.cpp`](src/ui/minimap.cpp) |
 | `0x0026385c` | 64 | `ui` | `non_matching` | `PlaceWin_SetPos` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x0026389c` | 64 | `ui` | `non_matching` | `PlaceWin_SetScale` | [`src/ui/window.cpp`](src/ui/window.cpp) |
@@ -215,3 +216,6 @@
 | `0x003a9200` | 948 | `unite` | `non_matching` | `bibleAnalyze_Init` | [`src/camp/bible.cpp`](src/camp/bible.cpp) |
 | `0x003cccd8` | 9192 | `battle` | `non_matching` | `Btl_ActionCalc` | [`src/battle/btl_main.cpp`](src/battle/btl_main.cpp) |
 | `0x003d3dd4` | 6896 | `battle` | `non_matching` | `Btl_CameraCalc` | [`src/battle/btl_main.cpp`](src/battle/btl_main.cpp) |
+| `0x003ec954` | 6616 | `ui` | `non_matching` | `Ui_BattleActionEffectOverlay` | [`src/ui/battle_hud.cpp`](src/ui/battle_hud.cpp) |
+| `0x003efa10` | 12708 | `ui` | `non_matching` | `Ui_NkmBaseTableLoad` | [`src/ui/battle_hud.cpp`](src/ui/battle_hud.cpp) |
+| `0x003f34f8` | 7984 | `ui` | `non_matching` | `Ui_BattleMessageWindow` | [`src/ui/battle_hud.cpp`](src/ui/battle_hud.cpp) |

@@ -3916,7 +3916,7 @@ address,size,status,category,name,src_file
 0x0025ce8c,56,todo,script_vm,script_vm_func_0025ce8c,
 0x0025cec4,32,todo,script_vm,script_vm_func_0025cec4,
 0x0025cee4,1304,todo,ui,ui_func_0025cee4,
-0x0025d3fc,7328,todo,ui,ui_func_0025d3fc,
+0x0025d3fc,7328,non_matching,ui,Ui_BattleCommandMenu,src/ui/battle_hud.cpp
 0x0025f09c,1180,todo,ui,ui_func_0025f09c,
 0x0025f538,436,todo,ui,ui_func_0025f538,
 0x0025f6ec,516,todo,ui,ui_func_0025f6ec,
@@ -10205,15 +10205,15 @@ address,size,status,category,name,src_file
 0x003eb334,448,todo,unknown,func_003eb334,
 0x003eb4f4,3724,todo,ui,ui_func_003eb4f4,
 0x003ec380,1492,todo,ui,ui_func_003ec380,
-0x003ec954,6616,todo,ui,ui_func_003ec954,
+0x003ec954,6616,non_matching,ui,Ui_BattleActionEffectOverlay,src/ui/battle_hud.cpp
 0x003ee32c,108,todo,camp,camp_func_003ee32c,
 0x003ee398,2128,todo,engine,engine_func_003ee398,
 0x003eebe8,2084,todo,engine,engine_func_003eebe8,
 0x003ef40c,1540,todo,battle,battle_func_003ef40c,
-0x003efa10,12708,todo,ui,ui_func_003efa10,
+0x003efa10,12708,non_matching,ui,Ui_NkmBaseTableLoad,src/ui/battle_hud.cpp
 0x003f2bb4,1572,todo,ui,ui_func_003f2bb4,
 0x003f31d8,800,todo,unknown,func_003f31d8,
-0x003f34f8,7984,todo,ui,ui_func_003f34f8,
+0x003f34f8,7984,non_matching,ui,Ui_BattleMessageWindow,src/ui/battle_hud.cpp
 0x003f5428,1368,todo,unknown,func_003f5428,
 0x003f5980,112,todo,unknown,func_003f5980,
 0x003f59f0,24,todo,unknown,func_003f59f0,
