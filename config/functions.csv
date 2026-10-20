@@ -2146,13 +2146,13 @@ address,size,status,category,name,src_file
 0x001d3a84,24,todo,unknown,func_001d3a84,
 0x001d3a9c,32,todo,unknown,func_001d3a9c,
 0x001d3abc,84,todo,engine,engine_func_001d3abc,
-0x001d3b10,364,todo,shop,shopMain_func_001d3b10,
+0x001d3b10,364,non_matching,shop,shopMain_Init,src/shop/shop.cpp
 0x001d3c7c,40,todo,engine,engine_func_001d3c7c,
 0x001d3ca4,52,todo,ui,ui_func_001d3ca4,
 0x001d3cd8,52,todo,ui,ui_func_001d3cd8,
 0x001d3d0c,52,todo,ui,ui_func_001d3d0c,
 0x001d3d40,22520,todo,script_vm,script_vm_func_001d3d40,
-0x001d9538,908,todo,engine,engine_func_001d9538,
+0x001d9538,908,non_matching,shop,shopMain_Proc,src/shop/shop.cpp
 0x001d98c4,5880,todo,ui,ui_func_001d98c4,
 0x001dafbc,668,todo,camp,tmnlMain_func_001dafbc,
 0x001db258,52,todo,battle,battle_func_001db258,
@@ -2451,7 +2451,7 @@ address,size,status,category,name,src_file
 0x001fc644,4876,todo,script_vm,script_vm_func_001fc644,
 0x001fd950,1224,todo,ui,ui_func_001fd950,
 0x001fde18,308,todo,engine,engine_func_001fde18,
-0x001fdf4c,1132,todo,engine,engine_func_001fdf4c,
+0x001fdf4c,1132,non_matching,shop,shopMain_DrawUp,src/shop/shop.cpp
 0x001fe3b8,24,todo,script_vm,script_vm_func_001fe3b8,
 0x001fe3d0,68,todo,unknown,func_001fe3d0,
 0x001fe414,92,todo,engine,engine_func_001fe414,
@@ -2802,7 +2802,7 @@ address,size,status,category,name,src_file
 0x0021ec00,172,todo,engine,engine_func_0021ec00,
 0x0021ecac,320,todo,engine,engine_func_0021ecac,
 0x0021edec,40,todo,engine,engine_func_0021edec,
-0x0021ee14,1416,todo,ui,ui_func_0021ee14,
+0x0021ee14,1416,non_matching,shop,shopMain_DrawDown,src/shop/shop.cpp
 0x0021f39c,92,todo,camp,camp_func_0021f39c,
 0x0021f3f8,24,todo,script_vm,script_vm_func_0021f3f8,
 0x0021f410,44,todo,engine,engine_func_0021f410,
