@@ -4,8 +4,8 @@
 
 | Metric | Decompiled | Total | Remaining | Percentage |
 |--------|-----------:|------:|----------:|-----------:|
-| **Code Size (Bytes)** | 214,540 B | 3,139,108 B | 2,924,568 B | **6.8344%** |
-| **Functions** | 179 | 10,349 | 10,170 | **1.7296%** |
+| **Code Size (Bytes)** | 254,748 B | 3,139,108 B | 2,884,360 B | **8.1153%** |
+| **Functions** | 181 | 10,349 | 10,168 | **1.7490%** |
 
 ## Subsystem Breakdown
 
@@ -15,7 +15,7 @@
 | `ui` | 133 | 1,238 | 93,388 B | 682,348 B | 13.686% |
 | `unknown` | 3 | 3,823 | 132 B | 654,480 B | 0.020% |
 | `script_vm` | 4 | 1,201 | 76,256 B | 446,288 B | 17.087% |
-| `camp` | 10 | 918 | 17,576 B | 326,396 B | 5.385% |
+| `camp` | 12 | 918 | 57,784 B | 326,396 B | 17.704% |
 | `battle` | 18 | 575 | 21,772 B | 236,932 B | 9.189% |
 | `shop` | 4 | 111 | 3,820 B | 39,976 B | 9.556% |
 | `crt` | 2 | 26 | 72 B | 9,484 B | 0.759% |
@@ -50,11 +50,13 @@
 | `0x0011a9b4` | 1116 | `ui` | `non_matching` | `GuestWin_DrawUp` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x0011ae10` | 792 | `ui` | `non_matching` | `InfoWin_DrawUp` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x0011b128` | 588 | `ui` | `non_matching` | `InfoWin_Calc` | [`src/ui/window.cpp`](src/ui/window.cpp) |
+| `0x0017fe9c` | 27308 | `camp` | `non_matching` | `Camp_MainProc` | [`src/camp/camp_main.cpp`](src/camp/camp_main.cpp) |
 | `0x00187014` | 5176 | `ui` | `non_matching` | `StatusDown_DrawPartyAndSubViews` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x0018bfec` | 12684 | `ui` | `non_matching` | `Result_Calc` | [`src/ui/result.cpp`](src/ui/result.cpp) |
 | `0x0018f178` | 988 | `ui` | `non_matching` | `RunWin_DrawDownAndCalc` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x0018f560` | 4912 | `ui` | `non_matching` | `Status_CalcTaskCallback` | [`src/ui/status.cpp`](src/ui/status.cpp) |
 | `0x00191eac` | 208 | `ui` | `non_matching` | `saveLoadUI_Init` | [`src/ui/save_load.cpp`](src/ui/save_load.cpp) |
+| `0x0019a3ec` | 12900 | `camp` | `non_matching` | `Camp_DrawStereoViews` | [`src/camp/camp_main.cpp`](src/camp/camp_main.cpp) |
 | `0x0019e034` | 4772 | `battle` | `non_matching` | `btlUI_Calc` | [`src/battle/btl_ui.cpp`](src/battle/btl_ui.cpp) |
 | `0x001a15b0` | 932 | `ui` | `non_matching` | `Result_DrawUp` | [`src/ui/result.cpp`](src/ui/result.cpp) |
 | `0x001a310c` | 15148 | `ui` | `non_matching` | `Status_DrawUp` | [`src/ui/status.cpp`](src/ui/status.cpp) |

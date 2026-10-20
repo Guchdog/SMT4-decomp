@@ -33,14 +33,14 @@
 - `FlowScript_DispatchNativeCommands`: `0x001b7e78` (34,684 B)
 - `FlowScript_EvalStateControl`: `0x001c3ed4` (18,660 B)
 
-- [ ] **Step 1: Update progress test expectations (RED)**
+- [x] **Step 1: Update progress test expectations (RED)**
   - Update `tests/test_progress.py` to expect 179 functions and 214,540 bytes.
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
   - Run `python -m unittest discover -s tests -v`.
-- [ ] **Step 3: Define `FlowScriptExecContext` in `include/script/script_exec.h` and implement in `src/script/script_exec.cpp`**
-- [ ] **Step 4: Update `config/functions.csv` and run test to verify it passes (GREEN)**
+- [x] **Step 3: Define `FlowScriptExecContext` in `include/script/script_exec.h` and implement in `src/script/script_exec.cpp`**
+- [x] **Step 4: Update `config/functions.csv` and run test to verify it passes (GREEN)**
   - Run `python tools/progress.py --write` and `python -m unittest discover -s tests -v`.
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
   - Commit: `feat(script): implement FlowScript native command dispatcher and state control (+53,344 B, 6.83% reached)`.
 
 ---
@@ -57,12 +57,12 @@
 - `Camp_MainProc`: `0x0017fe9c` (27,308 B)
 - `Camp_DrawStereoViews`: `0x0019a3ec` (12,900 B)
 
-- [ ] **Step 1: Update progress test expectations (RED)**
+- [x] **Step 1: Update progress test expectations (RED)**
   - Update `tests/test_progress.py` to expect 181 functions and 254,748 bytes (crossing the **7.5% decompilation milestone** to 8.11%!).
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
   - Run `python -m unittest discover -s tests -v`.
-- [ ] **Step 3: Define `CampMainContext` in `include/camp/camp_main.h` and implement in `src/camp/camp_main.cpp`**
-- [ ] **Step 4: Update `config/functions.csv` and run test to verify it passes (GREEN)**
+- [x] **Step 3: Define `CampMainContext` in `include/camp/camp_main.h` and implement in `src/camp/camp_main.cpp`**
+- [x] **Step 4: Update `config/functions.csv` and run test to verify it passes (GREEN)**
   - Run `python tools/progress.py --write` and `python -m unittest discover -s tests -v`.
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
   - Commit: `feat(camp): implement Demonica Camp menu core processor and stereoscopic views (+40,208 B, 7.5% milestone reached at 8.11%)`.

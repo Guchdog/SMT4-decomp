@@ -1779,7 +1779,7 @@ address,size,status,category,name,src_file
 0x0017fae4,136,todo,engine,engine_func_0017fae4,
 0x0017fb6c,584,todo,nn_sdk,MobiclipCtrl_func_0017fb6c,
 0x0017fdb4,232,todo,engine,engine_func_0017fdb4,
-0x0017fe9c,27308,todo,camp,camp_func_0017fe9c,
+0x0017fe9c,27308,non_matching,camp,Camp_MainProc,src/camp/camp_main.cpp
 0x00186948,1740,todo,ui,ui_func_00186948,
 0x00187014,5176,non_matching,ui,StatusDown_DrawPartyAndSubViews,src/ui/status_down.cpp
 0x0018844c,4016,todo,engine,engine_func_0018844c,
@@ -1868,7 +1868,7 @@ address,size,status,category,name,src_file
 0x00199700,848,todo,camp,camp_func_00199700,
 0x00199a50,68,todo,unknown,func_00199a50,
 0x00199a94,2392,todo,battle,battle_func_00199a94,
-0x0019a3ec,12900,todo,camp,camp_func_0019a3ec,
+0x0019a3ec,12900,non_matching,camp,Camp_DrawStereoViews,src/camp/camp_main.cpp
 0x0019d650,508,todo,battle,battle_func_0019d650,
 0x0019d84c,132,todo,battle,btlAction_func_0019d84c,
 0x0019d8d0,260,todo,ui,ui_func_0019d8d0,
