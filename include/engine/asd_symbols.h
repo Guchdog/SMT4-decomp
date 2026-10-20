@@ -19,6 +19,25 @@ void* AsdMemory_func_002c23f8(u32 size);
 } // namespace smt4::engine
 
 extern "C" {
+    // 0x002BCE48 (8 B): tail-calls 0x002AD8A8 with 0.  Shared by the file,
+    // sound and Mobiclip paths as a "close/yield" notification.
+    void AsdFile_NotifyClose();
+
+    // 0x002C583C (16 B): global table slot lookup (`ldr r0,[table+index*4]`).
+    void* AsdSound_GetTableEntry(u32 index);
+
+    // 0x002BCE38 (12 B): master-volume update; the value arrives in s0.
+    void AsdSound_SetMasterVolume(f32 volume);
+
+    // 0x002C5978 (48 B) / 0x002C4C00 (44 B): AsdProcess task factories.
+    // The final three/four arguments are the stack words observed at every
+    // call site: calculation callback, draw callback and user context.
+    void* AsdTask_CreateCalc(const char* name, u32 prio, u32 a2, u32 a3,
+                             void (*calc_cb)(void*), u32 a5, u32 a6);
+    void* AsdTask_CreateDraw(const char* name, u32 prio, u32 a2, u32 a3,
+                             void (*calc_cb)(void*), u32 a5, u32 a6,
+                             void* parent);
+
     // 0x002C4460 (320 B): links `child` into the child list of `parent`
     // (AsdProcess pool at 0x004E3CF4).  AsdText reaches the same routine for
     // widget attachment, so the declaration lives here for both TUs.

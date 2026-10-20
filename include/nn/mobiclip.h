@@ -170,7 +170,9 @@ struct S4Player {
     u32 source;                         // +0x014: `str ip,[r4,#0x14]` (0x003516e0)
     void* data;                         // +0x018: `str r2,[r4,#0x18]` (0x003516d4)
     u32 field_1c;                       // +0x01C: `str r6,[r4,#0x1c]` (0x00351750)
-    u8  sync[0x110];                    // +0x020: 0x002C541C / 0x002C4244 operate here
+    u8  sync[0x08];                     // +0x020: 0x002C541C / 0x002C4244 operate here
+    u8  thread[0x08];                   // +0x028: `add r0,r4,#0x28` to 0x002BCE50 (0x00351800)
+    u8  pad_30[0x100];                  // +0x030..+0x130
     u32 field_130;                      // +0x130: `str ip,[r4,#0x130]` (0x00351744)
     u32 field_134;                      // +0x134: `str ip,[r4,#0x134]` (0x00351748)
     u32 field_138;                      // +0x138: not touched by this function
@@ -210,6 +212,7 @@ static_assert(offsetof(S4Player, flag_10) == 0x010);
 static_assert(offsetof(S4Player, source) == 0x014);
 static_assert(offsetof(S4Player, data) == 0x018);
 static_assert(offsetof(S4Player, sync) == 0x020);
+static_assert(offsetof(S4Player, thread) == 0x028);
 static_assert(offsetof(S4Player, field_130) == 0x130);
 static_assert(offsetof(S4Player, field_140) == 0x140);
 static_assert(offsetof(S4Player, field_144) == 0x144);

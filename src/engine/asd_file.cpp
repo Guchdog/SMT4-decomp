@@ -62,7 +62,6 @@ extern "C" {
                            void* context, u32 stack_size, u32 priority,
                            s32 processor);                                  // 0x002bce50
     s32   AsdFile_Open(void* out, const u16* path, u32 flags);              // 0x002bb8e4
-    void  AsdFile_NotifyClose();                                            // 0x002bce48
     void  AsdFile_ReleaseHandle(void* handle);                              // 0x002b93f0
 
     // Request helpers

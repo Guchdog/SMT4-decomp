@@ -13,7 +13,6 @@ extern "C" {
     void  AsdMem_Free(void* ptr);                                           // 0x002c4360
     void* AsdWork_Alloc(u32 a0, u32 a1, u32 a2, u32 size, u32 a4, u32 flag); // 0x002c34a4
     void* AsdWork_Alloc2(u32 a0, u32 a1, u32 a2, u32 size, u32 a4, u32 flag);// 0x002bf798
-    void* AsdMemory_func_002c23f8(u32 size);                                // 0x002c23f8
     void* AsdMem_AllocFlags(u32 size, u32 flags);                           // 0x002b76e8
 
     // nn result objects.  0x002BAD80 stores the code and resolves the module
@@ -27,8 +26,6 @@ extern "C" {
     // Application helpers
     u32   AocApplet_Check98(void* applet);                                  // 0x002ad46c
     u32   AocApplet_IsFlag10000(void* applet);                              // 0x002a17d4
-    void* AocTable_Get(u32 index);                                          // 0x002c583c
-    void  AocThread_Exit();                                                 // 0x002bce48
 
     // Path construction / dispatch
     void* AocPath_Build(void* out, void* path_root, const char* name);      // 0x0015db38
@@ -59,20 +56,17 @@ extern "C" {
     u32   MbrToWc(u16* out, const char* s, u32 n, void* state);             // 0x002c6388
 
     // AOC tasks / mount helpers
-    void* AsdNode_Create(const char* name, u32 a1, u32 a2, u32 a3,
-                         void* cb0, void* cb1, void* context);              // 0x002c5978
-    void* AsdNode_CreateChild(const char* name, u32 a1, u32 a2, u32 a3,
-                              void* cb0, void* cb1, void* context,
-                              void* parent);                                // 0x002c4c00
     void  AocMode_Set(u32 mode, u32 value);                                 // 0x00282e6c
     void  AocBoot_InitCalc(void* calc);                                     // 0x002baacc
     u32   AocContent_GetSize(u32* out_size, u32 id, u32 index,
                              u32 a3, u32 a4, u32 a5);                       // 0x00355304
     void  AocTexture_Destroy(void* handle);                                 // 0x0035311c
-    void* AocTexture_Create(void* source, void* buffer, u32 size);          // 0x003530f8
+    void* AocTexture_Create(void* object, void* source,
+                            void* buffer, u32 size);                        // 0x003530f8
     void  Aoc_ReleaseGlobal();                                              // 0x002b2520
     void  AocArchive_Destroy(void* handle);                                 // 0x0023a350
-    void* AocArchive_Create(void* source, void* buffer, u32 size);          // 0x00352950
+    void* AocArchive_Create(void* object, void* source,
+                            void* buffer, u32 size);                        // 0x00352950
 
     // TMSprite upload helpers
     u32   UiTMSpr_func_0014f3fc(void* sprite);                              // 0x0014f3fc
@@ -123,7 +117,7 @@ void AocFile_Close(void* file)
     u32 handle = *static_cast<u32*>(file);
     if ((handle & ~1u) != 0) {
         if ((handle & 1u) != 0) {
-            AsdThread_Exit();                       // 0x0015c958/0x0015c988
+            AsdFile_NotifyClose();                       // 0x0015c958/0x0015c988
         }
         AsdFile_ReleaseHandle(reinterpret_cast<void*>(handle & ~1u)); // 0x0015c964
     }
@@ -151,6 +145,7 @@ void aocFileLoad_func_0015c728(AocLoadContext* context, AocFileLoadJob* job)
     file.handle = 0;
 
     AocPathObject built{};
+    bool did_reinit = false;
 
     if (job->state == 1) {
         // 0x0015CDB4..0x0015CE54: asynchronous / deferred phase.
@@ -328,7 +323,7 @@ void aocFileLoad_func_0015c728(AocLoadContext* context, AocFileLoadJob* job)
 
 cleanup_result:
     // 0x0015CC58..0x0015CCD0
-    AocTable_Get(0);
+    AsdSound_GetTableEntry(0);
     AocPath_BuildLocal(&built, g_AocPathRoot);           // 0x0015CC6C
     g_AocAppletState->flags_754 =
         (g_AocAppletState->flags_754 & ~0x10000u) | 0x10u; // 0x0015CC7C..0x0015CC84
@@ -344,12 +339,11 @@ cleanup_result:
     if (Result_Value(&result) != 0xC9413891u) {          // 0x0015CCBC
         goto retry_dispatch;
     }
-    AocTable_Get(0);                                     // 0x0015CCC8
+    AsdSound_GetTableEntry(0);                                     // 0x0015CCC8
     return;
 
 retry_dispatch:
     // 0x0015CE58..0x0015CED4
-    bool did_reinit = false;
     if (AocApplet_Check98(&g_AocAppletState->field_98) != 0) {
         g_AocAppletState->flags_754 &= ~0x10000u;        // 0x0015CE78
     } else if (path_object.status != 0xC8) {
@@ -360,7 +354,7 @@ retry_dispatch:
 
 retry_reinit:
     // 0x0015CE90..0x0015CED4
-    AocTable_Get(0);
+    AsdSound_GetTableEntry(0);
     path_object.status = 0xC8;
     job->state = 1;
     {
@@ -381,7 +375,7 @@ retry_commit:
             path_object.status = 0x64;
             job->state = 1;
         } else if (!did_reinit) {
-            AocTable_Get(0);
+            AsdSound_GetTableEntry(0);
         }
     }
 
@@ -399,13 +393,13 @@ retry_commit:
             }
         }
         if (static_cast<s32>(Result_Value(&file.handle)) < 0) {
-            AocThread_Exit();                            // 0x0015CF98 / 0x0015CFC8
+            AsdFile_NotifyClose();                       // 0x0015CF98 / 0x0015CFC8
         }
         return;
     }
 
     // 0x0015CF68..0x0015CF84
-    AocTable_Get(0);
+    AsdSound_GetTableEntry(0);
     path_object.status = 0x64;
     job->state = 1;
     Result_Value(&file.handle);
@@ -438,7 +432,7 @@ success:
 // ---------------------------------------------------------------------------
 
 // DECOMP_FUNC(0x001b0b00, 408)
-AocMain* aocMain_func_001b0b00(u32 mode)
+void* aocMain_func_001b0b00(u32 mode)
 {
     // 0x001B0B0C..0x001B0B50: allocate and clear the 0x20-byte state.
     AocMain* state = static_cast<AocMain*>(AsdMem_Alloc(0x100, 0x100, 0, 0x20, 1));
@@ -456,24 +450,29 @@ AocMain* aocMain_func_001b0b00(u32 mode)
     }
 
     // 0x001B0B78..0x001B0BA0: "AOCMainProc" node with three stack arguments.
-    state->main_task = AsdNode_Create("AOCMainProc", 2, 0, 0,
-                                      reinterpret_cast<void*>(0x0020eb80),
-                                      reinterpret_cast<void*>(0x001b4ee8),
-                                      state);
+    // The listing pushes [sp]=0x001B4EE8 and [sp+4]=0x0020EB80.
+    state->main_task = AsdTask_CreateCalc("AOCMainProc", 2, 0, 0,
+                                      reinterpret_cast<void (*)(void*)>(0x001b4ee8),
+                                      0x0020eb80u,
+                                      static_cast<u32>(reinterpret_cast<std::uintptr_t>(state)));
 
     // 0x001B0BA0..0x001B0BC4: top-left and top-right draw tasks.
-    AsdNode_CreateChild("AOCDrawUp L", 0x7d, 1, 0,
-                        reinterpret_cast<void*>(0x001e4618), nullptr,
-                        state, state->main_task);
-    AsdNode_CreateChild("AOCDrawUp R", 0xdb, 1, 0,
-                        reinterpret_cast<void*>(0x001e4618), nullptr,
-                        state, state->main_task);
+    AsdTask_CreateDraw("AOCDrawUp L", 0x7d, 1, 0,
+                       reinterpret_cast<void (*)(void*)>(0x001e4618), 0,
+                       static_cast<u32>(reinterpret_cast<std::uintptr_t>(state)),
+                       state->main_task);
+    AsdTask_CreateDraw("AOCDrawUp R", 0xdb, 1, 0,
+                       reinterpret_cast<void (*)(void*)>(0x001e4618), 0,
+                       static_cast<u32>(reinterpret_cast<std::uintptr_t>(state)),
+                       state->main_task);
 
-    // 0x001B0BF0..0x001B0C18: bottom draw task, this one is retained.
-    state->draw_task = AsdNode_CreateChild("AOCDrawDown", 0xe7, 1, 0,
-                                           reinterpret_cast<void*>(0x0020ebc8), nullptr,
-                                           state, state->main_task);
-    return state;
+    // 0x001B0BF0..0x001B0C18: bottom draw task, this one is retained and is
+    // the return value (`r0` at 0x001B0C18..0x001B0C20).
+    state->draw_task = AsdTask_CreateDraw("AOCDrawDown", 0xe7, 1, 0,
+                                          reinterpret_cast<void (*)(void*)>(0x0020ebc8), 0,
+                                          static_cast<u32>(reinterpret_cast<std::uintptr_t>(state)),
+                                          state->main_task);
+    return state->draw_task;
 }
 
 // ---------------------------------------------------------------------------
@@ -481,7 +480,7 @@ AocMain* aocMain_func_001b0b00(u32 mode)
 // ---------------------------------------------------------------------------
 
 // DECOMP_FUNC(0x00224ae0, 276)
-AocBootProcess* aocBootProcess_func_00224ae0()
+void* aocBootProcess_func_00224ae0()
 {
     // 0x00224AE8..0x00224AF4: one-time 0x5F4-byte state.
     if (g_AocBootProcess.process == nullptr) {
@@ -498,14 +497,14 @@ AocBootProcess* aocBootProcess_func_00224ae0()
 
     // 0x00224B40..0x00224B70: "aocBoot CALC" node.  The listing's stack
     // arguments are [sp]=0x001B4BBC and [sp+4]=0x0020EB58.
-    process->task = AsdNode_Create("aocBoot CALC", 2, 0, 0,
-                                   reinterpret_cast<void*>(0x001b4bbc),
-                                   reinterpret_cast<void*>(0x0020eb58),
-                                   nullptr);
+    process->task = AsdTask_CreateCalc("aocBoot CALC", 2, 0, 0,
+                                   reinterpret_cast<void (*)(void*)>(0x001b4bbc),
+                                   0x0020eb58u, 0);
 
-    // 0x00224B74..0x00224B84: clear the low GPU bits.
+    // 0x00224B74..0x00224B84: clear the low GPU bits.  The listing returns
+    // `*(g_AocBootProcess.process)`, i.e. the task pointer.
     g_AocAppletState->flags_754 &= ~0x70u;
-    return process;
+    return process->task;
 }
 
 // ---------------------------------------------------------------------------
@@ -533,14 +532,16 @@ void aocApplication_func_0038b384(AocApplication* app)
     AsdWork_Zero(app->texture_buffer, 0x20000);
 
     if (app->texture_buffer == nullptr) {
-        AsdThread_Exit();                                // 0x0038B434
+        AsdFile_NotifyClose();                                // 0x0038B434
         return;
     }
 
-    // 0x0038B404..0x0038B428: create the texture object.
+    // 0x0038B404..0x0038B428: create the texture object.  The listing keeps
+    // the new 0x10 object in r0 and passes it as the first argument.
     void* texture = AsdMemory_func_002c23f8(0x10);
     if (texture != nullptr) {
-        texture = AocTexture_Create(app->source_handle, app->texture_buffer, 0x20000);
+        texture = AocTexture_Create(texture, app->source_handle,
+                                    app->texture_buffer, 0x20000);
     }
     app->texture_handle = texture;                       // 0x0038B428
 }
@@ -566,14 +567,16 @@ void aocApplication_func_0038b510(AocApplication* app)
     AsdWork_Zero(app->archive_buffer, 0x20000);
 
     if (app->archive_buffer == nullptr) {
-        AsdThread_Exit();                                // 0x0038B5C0
+        AsdFile_NotifyClose();                                // 0x0038B5C0
         return;
     }
 
-    // 0x0038B590..0x0038B5B4: create the archive object.
+    // 0x0038B590..0x0038B5B4: create the archive object with the new 0x10
+    // object as the first argument.
     void* archive = AsdMemory_func_002c23f8(0x10);
     if (archive != nullptr) {
-        archive = AocArchive_Create(app->source_handle, app->archive_buffer, 0x20000);
+        archive = AocArchive_Create(archive, app->source_handle,
+                                    app->archive_buffer, 0x20000);
     }
     app->archive_handle = archive;                       // 0x0038B5B4
 }
@@ -595,7 +598,7 @@ void aocFileContent_func_0038bd00(AocFileContentState* state,
     // 0x0038BD2C..0x0038BD44: reset the status and the four-word object at
     // state+4 (0x002BB09C writes its magic/zero head).
     state->status = 0;
-    AocFile_Pair_Init(&state->result[0]);                // 0x0038BD38
+    AsdFile_Pair_Init(&state->result[0]);                // 0x0038BD38
     state->field_0c = 0;                                 // 0x0038BD3C
     state->field_10 = 0;                                 // 0x0038BD44
 
@@ -612,7 +615,7 @@ void aocFileContent_func_0038bd00(AocFileContentState* state,
     Result_Construct(&size_status, size_result);         // 0x0038BD80
     if (static_cast<s32>(Result_Value(&size_status)) < 0) {
         // 0x0038BD9C..0x0038BDF8: failure path.
-        AocTable_Get(0);
+        AsdSound_GetTableEntry(0);
         state->result[0] = size_status.words[0];
         state->result[1] = size_status.words[1];
         state->status = 0x64;
@@ -737,8 +740,9 @@ u32 aocTexCtrl_func_003936e8(AocTexCtrl* ctrl)
         }
     }
 
-    // 0x0039375C..0x0039379C: second array; each entry is 8 bytes and grows
-    // into the 0x14-byte table and the stream data base.
+    // 0x0039375C..0x0039379C: second array; each record is 0x10 bytes
+    // (`str ip,[r1,#8]!` then `add r1,r1,#8`) and grows into the 0x14-byte
+    // table and the stream data base.
     if (header->stream_count > 0) {
         u8* stream = stream_base;
         for (s32 i = 0; i < header->stream_count; ++i) {
@@ -746,7 +750,7 @@ u32 aocTexCtrl_func_003936e8(AocTexCtrl* ctrl)
             *reinterpret_cast<u8**>(stream) = entry_base + (index * 5) * 4;
             u32 offset = *reinterpret_cast<u32*>(stream + 8);
             *reinterpret_cast<u8**>(stream + 8) = stream_data + offset;
-            stream += 8;
+            stream += 0x10;
         }
     }
 

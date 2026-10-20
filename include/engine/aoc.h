@@ -179,11 +179,13 @@ static_assert(offsetof(AocAppletState, flags_754) == 0x754);
 
 extern AocAppletState* g_AocAppletState;        // 0x00432FC8: `ldr r0,[r0]` (0x0015c7ec)
 
-// 0x001B0B00 (408 B): create the AOC main/draw tasks.
-AocMain* aocMain_func_001b0b00(u32 mode);
+// 0x001B0B00 (408 B): create the AOC main/draw tasks; returns the retained
+// `AOCDrawDown` child (`r0` at 0x001B0C18).
+void* aocMain_func_001b0b00(u32 mode);
 
-// 0x00224AE0 (276 B): create the boot-time AOC calculation task.
-AocBootProcess* aocBootProcess_func_00224ae0();
+// 0x00224AE0 (276 B): create the boot-time AOC calculation task; returns the
+// task pointer loaded from `g_AocBootProcess.process` (0x00224B88).
+void* aocBootProcess_func_00224ae0();
 
 // ---------------------------------------------------------------------------
 // aocApplication (0x0038B384 / 0x0038B510)

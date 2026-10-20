@@ -27,7 +27,6 @@ extern "C" {
     u32   AsdSound_Dispatch(u32 mode, void* unit);                          // 0x00120ce4
 
     // AsdSoundSystem
-    void* AsdSound_GetTableEntry(u32 index);                                // 0x002c583c
     s32   AsdMem_Compare(const void* a, const void* b, u32 size);           // 0x002c1a48 (Thumb memcmp)
     u32   AsdSound_HasState(const void* state);                             // 0x002bf85c
     void  AsdSound_Shutdown();                                              // 0x001176e0
@@ -50,8 +49,6 @@ extern "C" {
     s32   AsdSound_InitDsp();                                               // 0x0011bd78
     s32   AsdSound_InitMixer();                                             // 0x0011be44
     s32   AsdSound_InitStream();                                            // 0x0011cb3c
-    void  AsdSound_Abort();                                                 // 0x002bce48
-    void  AsdSound_SetMasterVolume(f32 volume);                             // 0x002bce38
     void  AsdSound_SetPhase(s32 phase);                                     // 0x0012a664
     void  AsdSound_RequestMode(u32 mode);                                   // 0x0011cc34
     u32   AsdSound_CreateEngine(const smt4::engine::AsdSoundInitConfig* config); // 0x00120d44
@@ -486,13 +483,13 @@ void AsdSoundSystem_func_0010d40c(s32 duration)
     // 0x0010d418, 0x0010d424, 0x0010d430: each initialiser returns a negative
     // error code, which is handed to the abort path (0x002bce48).
     if (AsdSound_InitDsp() < 0) {                                       // 0x0010d41c
-        AsdSound_Abort();
+        AsdFile_NotifyClose();
     }
     if (AsdSound_InitMixer() < 0) {                                     // 0x0010d428
-        AsdSound_Abort();
+        AsdFile_NotifyClose();
     }
     if (AsdSound_InitStream() < 0) {                                    // 0x0010d434
-        AsdSound_Abort();
+        AsdFile_NotifyClose();
     }
 
     AsdSound_SetMasterVolume(1.0f);                                     // 0x3F800000 (0x0010d43c)

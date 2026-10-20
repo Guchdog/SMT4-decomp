@@ -16,7 +16,6 @@ extern "C" {
     void  AsdMemBlock_Init(void* heap, u32 start, u32 size, u32 align);     // 0x002c3b1c
     void  AsdMemBlock_InitLock(void* lock);                                 // 0x002c3b00
     void  AsdHeap_Init(void* heap, void* buffer, u32 size);                 // 0x002bcf34
-    void* AsdMemory_func_002c23f8(u32 size);                                // 0x002c23f8
     void* AsdMem_AllocFlags(u32 size, u32 flags);                           // 0x002b76e8
 
     // Kernel helpers
@@ -30,12 +29,7 @@ extern "C" {
     void  AsdSync_Reset(void* sync);                                        // 0x002c4244
     void  AsdDecoder_Reset(void* decoder);                                  // 0x0034ef48
 
-    // Scene-node factories
-    void* AsdNode_Create(const char* name, u32 a1, u32 a2, u32 a3,
-                         void* cb0, void* cb1, void* context);              // 0x002c5978
-    void* AsdNode_CreateChild(const char* name, u32 a1, u32 a2, u32 a3,
-                              void* cb0, void* cb1, void* context,
-                              void* parent);                                // 0x002c4c00
+    // Scene-node state check (the factories live in engine/asd_symbols.h).
     u32   AsdNode_HasState();                                               // 0x0025b978
 
     // String / format helpers
@@ -55,7 +49,6 @@ extern "C" {
     void  AsdSound_InitDsp();                                               // 0x0011bd78
     void  AsdSound_OpenDefault();                                           // 0x0011be44
     void  AsdSound_InitOutput();                                            // 0x0011cb3c
-    void  AsdSound_SetVolume(f32 volume);                                   // 0x002bce38
     u32   nn_sdk_func_0035a52c(void* data, u32 size, u32 a2, u32 a3);        // 0x0035a52c
     s32   AsdEvent_Signal(u32 event);                                       // inline `svc #0x18` (0x0034e1f8)
 }
@@ -185,21 +178,26 @@ MobiclipMoveNode* MobiclipCtrlProcess_func_002ef664(s32 movie_index, u8 flag)
     AsdMem_Zero(process, 0x74);                          // 0x002ef6ac
 
     // 0x002ef6b0..0x002ef6d8: "Move" node, two callbacks plus the process.
-    process->move = static_cast<MobiclipMoveNode*>(AsdNode_Create(
+    // The listing pushes [sp]=0x001DD178 and [sp+4]=0x002FEA58.
+    process->move = static_cast<MobiclipMoveNode*>(AsdTask_CreateCalc(
         "Move", 2, 0, 0,
-        reinterpret_cast<void*>(0x002fea58),
-        reinterpret_cast<void*>(0x001dd178),
-        process));
+        reinterpret_cast<void (*)(void*)>(0x001dd178),
+        0x002fea58u,
+        static_cast<u32>(reinterpret_cast<std::uintptr_t>(process))));
 
     // 0x002ef6e8..0x002ef708: "Move NCL" child, strings at 0x00404f1c.
-    process->move_ncl = static_cast<MobiclipMoveNode*>(AsdNode_CreateChild(
+    process->move_ncl = static_cast<MobiclipMoveNode*>(AsdTask_CreateDraw(
         "Move NCL", 0x7a, 0, 0,
-        reinterpret_cast<void*>(0x002016cc), nullptr, process, process->move));
+        reinterpret_cast<void (*)(void*)>(0x002016cc), 0,
+        static_cast<u32>(reinterpret_cast<std::uintptr_t>(process)),
+        process->move));
 
     // 0x002ef71c..0x002ef734: "Move NCR" child, strings at 0x00404f10.
-    process->move_ncr = static_cast<MobiclipMoveNode*>(AsdNode_CreateChild(
+    process->move_ncr = static_cast<MobiclipMoveNode*>(AsdTask_CreateDraw(
         "Move NCR", 0xd8, 0, 0,
-        reinterpret_cast<void*>(0x002016cc), nullptr, process, process->move));
+        reinterpret_cast<void (*)(void*)>(0x002016cc), 0,
+        static_cast<u32>(reinterpret_cast<std::uintptr_t>(process)),
+        process->move));
 
     // 0x002ef738..0x002ef748: a non-zero global check forces state 9.
     if (AsdNode_HasState() != 0) {
@@ -304,7 +302,7 @@ u32 helper_S4FsReader_func_0034e028(S4FsReader* reader, void* file, void* sink)
 
     // 0x0034e118..0x0034e140: 0x1000-byte work area from the 0x10000 arena.
     g_S4FsReader.work_buffer = AsdWork_Alloc(0x100, 0x100, 0, 0x1000, 0x1000, 1);
-    g_S4FsReader.heap = AsdMemory_func_002c23f8(0x18);   // 0x0034e154
+    g_S4FsReader.heap = smt4::engine::AsdMemory_func_002c23f8(0x18);   // 0x0034e154
     if (g_S4FsReader.heap != nullptr) {
         // 0x0034e164..0x0034e174
         *static_cast<u32*>(g_S4FsReader.heap) = 0;
@@ -364,7 +362,7 @@ u32 helper_S4AudioDevice_func_0034e64c(void* device, u32 count,
     }
 
     AsdSound_InitOutput();                               // 0x0034e698
-    AsdSound_SetVolume(1.0f);                            // 0x0034e69c/0x0034e6a4
+    AsdSound_SetMasterVolume(1.0f);                            // 0x0034e69c/0x0034e6a4
 
     if (g_S4AudioDevice.device != nullptr) {
         return 0;                                        // 0x0034e6b4
@@ -394,7 +392,7 @@ u32 helper_S4AudioDevice_func_0034e64c(void* device, u32 count,
 
     // 0x0034e710..0x0034e738: 0x1000-byte work area and 0x18-byte heap header.
     g_S4AudioDevice.heap_buffer = AsdWork_Alloc(0x100, 0x100, 0, 0x1000, 0x1000, 1);
-    g_S4AudioDevice.heap = AsdMemory_func_002c23f8(0x18); // 0x0034e748
+    g_S4AudioDevice.heap = smt4::engine::AsdMemory_func_002c23f8(0x18); // 0x0034e748
     if (g_S4AudioDevice.heap != nullptr) {
         // 0x0034e758..0x0034e768
         *static_cast<u32*>(g_S4AudioDevice.heap) = 0;
@@ -488,7 +486,7 @@ u32 helper_S4Player_func_003516a8(S4Player* player, u32 source, void* data,
 
     // 0x0035179c..0x003517b8: 0x2000-byte work area.
     g_S4Player.work_buffer = AsdWork_Alloc(0x100, 0x100, 0, 0x2000, 0x1000, 1);
-    g_S4Player.heap = AsdMemory_func_002c23f8(0x18);     // 0x003517cc
+    g_S4Player.heap = smt4::engine::AsdMemory_func_002c23f8(0x18);     // 0x003517cc
     if (g_S4Player.heap != nullptr) {
         // 0x003517d8..0x003517e8
         *static_cast<u32*>(g_S4Player.heap) = 0;
