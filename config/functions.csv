@@ -2399,7 +2399,7 @@ address,size,status,category,name,src_file
 0x001f66fc,8,todo,unknown,func_001f66fc,
 0x001f6704,420,todo,ui,ui_func_001f6704,
 0x001f68a8,8,todo,unknown,func_001f68a8,
-0x001f68b0,532,todo,engine,effGeomEngine_func_001f68b0,
+0x001f68b0,532,non_matching,engine,effGeomEngine_func_001f68b0,src/engine/asd_effect2.cpp
 0x001f6ac4,1484,todo,ui,ui_func_001f6ac4,
 0x001f7090,116,todo,engine,engine_func_001f7090,
 0x001f7104,216,todo,engine,engine_func_001f7104,
@@ -3682,7 +3682,7 @@ address,size,status,category,name,src_file
 0x0024f9e8,172,todo,engine,engine_func_0024f9e8,
 0x0024fa94,16,todo,unknown,func_0024fa94,
 0x0024faa4,20,todo,unknown,func_0024faa4,
-0x0024fab8,600,todo,engine,effPolygonTrack_func_0024fab8,
+0x0024fab8,600,non_matching,engine,effPolygonTrack_func_0024fab8,src/engine/asd_effect2.cpp
 0x0024fd10,148,todo,engine,engine_func_0024fd10,
 0x0024fda4,192,non_matching,engine,effParts_func_0024fda4,src/engine/asd_effect.cpp
 0x0024fe64,196,non_matching,engine,effParts_func_0024fe64,src/engine/asd_effect.cpp
@@ -4007,7 +4007,7 @@ address,size,status,category,name,src_file
 0x00267420,2888,todo,battle,battle_func_00267420,
 0x00267f68,72,todo,battle,battle_func_00267f68,
 0x00267fb0,4672,todo,ui,ui_func_00267fb0,
-0x002691f0,532,todo,engine,effGeometry_func_002691f0,
+0x002691f0,532,non_matching,engine,effGeometry_func_002691f0,src/engine/asd_effect2.cpp
 0x00269404,400,todo,engine,effBehavior_func_00269404,
 0x00269594,8,todo,engine,engine_func_00269594,
 0x0026959c,120,todo,unknown,func_0026959c,
@@ -6070,7 +6070,7 @@ address,size,status,category,name,src_file
 0x002de39c,20,todo,unknown,func_002de39c,
 0x002de3b0,40,todo,engine,engine_func_002de3b0,
 0x002de3d8,68,todo,unknown,func_002de3d8,
-0x002de41c,1204,todo,engine,effParticle_func_002de41c,
+0x002de41c,1204,non_matching,engine,effParticle_func_002de41c,src/engine/asd_effect2.cpp
 0x002de8d0,44,todo,engine,engine_func_002de8d0,
 0x002de8fc,60,todo,unknown,func_002de8fc,
 0x002de938,8,todo,unknown,func_002de938,
@@ -6255,7 +6255,7 @@ address,size,status,category,name,src_file
 0x002e70c0,320,todo,engine,engine_func_002e70c0,
 0x002e7200,2372,todo,engine,engine_func_002e7200,
 0x002e7b44,236,todo,engine,effParticle_func_002e7b44,
-0x002e7c30,612,todo,engine,effParticle_func_002e7c30,
+0x002e7c30,612,non_matching,engine,effParticle_func_002e7c30,src/engine/asd_effect2.cpp
 0x002e7e94,604,todo,engine,engine_func_002e7e94,
 0x002e80f0,8,todo,unknown,func_002e80f0,
 0x002e80f8,28,todo,unknown,func_002e80f8,
@@ -6834,7 +6834,7 @@ address,size,status,category,name,src_file
 0x0030ee5c,108,todo,engine,engine_func_0030ee5c,
 0x0030eec8,204,todo,engine,effPolygonFlash_func_0030eec8,
 0x0030ef94,28,todo,unknown,func_0030ef94,
-0x0030efb0,572,todo,engine,effPolygonRing_func_0030efb0,
+0x0030efb0,572,non_matching,engine,effPolygonRing_func_0030efb0,src/engine/asd_effect2.cpp
 0x0030f1ec,72,todo,engine,engine_func_0030f1ec,
 0x0030f234,16,todo,unknown,func_0030f234,
 0x0030f244,348,todo,engine,engine_func_0030f244,
@@ -6944,7 +6944,7 @@ address,size,status,category,name,src_file
 0x00313768,92,todo,ui,ui_func_00313768,
 0x003137c4,196,todo,engine,effObjectParticle_func_003137c4,
 0x00313888,128,todo,engine,engine_func_00313888,
-0x00313908,412,todo,engine,effObjectParticle_func_00313908,
+0x00313908,412,non_matching,engine,effObjectParticle_func_00313908,src/engine/asd_effect2.cpp
 0x00313aa4,8,todo,unknown,func_00313aa4,
 0x00313aac,2692,todo,engine,engine_func_00313aac,
 0x00314530,272,todo,unknown,func_00314530,
@@ -6955,14 +6955,14 @@ address,size,status,category,name,src_file
 0x003153fc,64,todo,unknown,func_003153fc,
 0x0031543c,196,todo,engine,effPolygonFlash_func_0031543c,
 0x00315500,28,todo,unknown,func_00315500,
-0x0031551c,456,todo,engine,effPolygonRing_func_0031551c,
+0x0031551c,456,non_matching,engine,effPolygonRing_func_0031551c,src/engine/asd_effect2.cpp
 0x003156e4,28,todo,unknown,func_003156e4,
-0x00315700,452,todo,engine,effPolygonRing_func_00315700,
+0x00315700,452,non_matching,engine,effPolygonRing_func_00315700,src/engine/asd_effect2.cpp
 0x003158c4,28,todo,unknown,func_003158c4,
 0x003158e0,96,todo,unknown,func_003158e0,
 0x00315940,32,todo,engine,engine_func_00315940,
 0x00315960,12,todo,unknown,func_00315960,
-0x0031596c,864,todo,engine,effPolygonThunder_func_0031596c,
+0x0031596c,864,non_matching,engine,effPolygonThunder_func_0031596c,src/engine/asd_effect2.cpp
 0x00315ccc,68,todo,unknown,func_00315ccc,
 0x00315d10,2284,todo,engine,engine_func_00315d10,
 0x003165fc,156,todo,engine,effPolygonWind_func_003165fc,
@@ -7139,7 +7139,7 @@ address,size,status,category,name,src_file
 0x00321550,64,todo,unknown,func_00321550,
 0x00321590,352,todo,engine,effPolygonFlash_func_00321590,
 0x003216f0,28,todo,unknown,func_003216f0,
-0x0032170c,852,todo,engine,effPolygonThunder_func_0032170c,
+0x0032170c,852,non_matching,engine,effPolygonThunder_func_0032170c,src/engine/asd_effect2.cpp
 0x00321a60,68,todo,unknown,func_00321a60,
 0x00321aa4,44,todo,camp,camp_func_00321aa4,
 0x00321ad0,168,todo,camp,camp_func_00321ad0,
@@ -7197,7 +7197,7 @@ address,size,status,category,name,src_file
 0x003241f8,288,todo,ui,ui_func_003241f8,
 0x00324318,28,todo,battle,battle_func_00324318,
 0x00324334,136,todo,engine,engine_func_00324334,
-0x003243bc,464,todo,engine,effPolygonFlash_func_003243bc,
+0x003243bc,464,non_matching,engine,effPolygonFlash_func_003243bc,src/engine/asd_effect2.cpp
 0x0032458c,28,todo,unknown,func_0032458c,
 0x003245a8,348,todo,engine,effPolygonFlash_func_003245a8,
 0x00324704,28,todo,unknown,func_00324704,
@@ -7256,7 +7256,7 @@ address,size,status,category,name,src_file
 0x00327bd0,76,todo,battle,battle_func_00327bd0,
 0x00327c1c,264,todo,ui,ui_func_00327c1c,
 0x00327d24,108,todo,ui,ui_func_00327d24,
-0x00327d90,888,todo,engine,effPolygonThunder_func_00327d90,
+0x00327d90,888,non_matching,engine,effPolygonThunder_func_00327d90,src/engine/asd_effect2.cpp
 0x00328108,68,todo,unknown,func_00328108,
 0x0032814c,592,todo,engine,engine_func_0032814c,
 0x0032839c,164,todo,camp,camp_func_0032839c,

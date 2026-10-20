@@ -4,18 +4,18 @@
 
 | Category | Functions | Code Size (Bytes) | Progress % | Status Description |
 |----------|----------:|------------------:|-----------:|--------------------|
-| **Decompiled (Reconstructed)** | 311 | 317,692 B | **10.1205%** | Substantial C++ logic reverse-engineered |
+| **Decompiled (Reconstructed)** | 324 | 326,132 B | **10.3893%** | Substantial C++ logic reverse-engineered |
 | **Scaffolded (Stubs & Interfaces)** | 39 | 248,240 B | 7.9080% | Headers, structs, and function skeletons |
 | **Matching (Byte-for-Byte)** | 0 | 0 B | 0.0000% | 100% compiled machine code match |
-| **Total Architecture Explored** | 350 | 565,932 B | **18.0284%** | Total identified & mapped into `src/` |
-| **Remaining (Todo)** | 9,999 | 2,573,176 B | 81.9716% | Unmapped functions in `.text` |
+| **Total Architecture Explored** | 363 | 574,372 B | **18.2973%** | Total identified & mapped into `src/` |
+| **Remaining (Todo)** | 9,986 | 2,564,736 B | 81.7027% | Unmapped functions in `.text` |
 | **Total `.text` Segment** | 10,349 | 3,139,108 B | 100.0000% | `0x00100000`–`0x003FE624` |
 
 ## Subsystem Breakdown
 
 | Subsystem | Decompiled Funcs | Decompiled Bytes | Stub Funcs | Stub Bytes | Total Funcs | Total Bytes | Decompiled % | Explored % |
 |-----------|-----------------:|-----------------:|-----------:|-----------:|------------:|------------:|-------------:|-----------:|
-| `engine` | 100 | 54,232 B | 2 | 22,760 B | 2,363 | 726,520 B | 7.46% | 10.60% |
+| `engine` | 113 | 62,672 B | 2 | 22,760 B | 2,363 | 726,520 B | 8.63% | 11.76% |
 | `ui` | 141 | 100,800 B | 14 | 96,248 B | 1,238 | 682,348 B | 14.77% | 28.88% |
 | `unknown` | 3 | 132 B | 0 | 0 B | 3,823 | 654,480 B | 0.02% | 0.02% |
 | `script_vm` | 12 | 104,244 B | 3 | 22,836 B | 1,201 | 446,288 B | 23.36% | 28.47% |
@@ -151,6 +151,7 @@
 | `0x001f2f58` | 1704 | `camp` | `non_matching` | `Unite_Setup` | [`src/camp/unite.cpp`](src/camp/unite.cpp) |
 | `0x001f60dc` | 152 | `ui` | `non_matching` | `StatusDown_SkillSortByCostAsc` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x001f6174` | 48 | `ui` | `non_matching` | `StatusDown_SkillSortByNameAsc` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
+| `0x001f68b0` | 532 | `engine` | `non_matching` | `effGeomEngine_func_001f68b0` | [`src/engine/asd_effect2.cpp`](src/engine/asd_effect2.cpp) |
 | `0x001f7f00` | 432 | `battle` | `non_matching` | `btlEditor_func_001f7f00` | [`src/battle/battle_extras.cpp`](src/battle/battle_extras.cpp) |
 | `0x001fa408` | 468 | `engine` | `non_matching` | `mapEpl_func_001fa408` | [`src/engine/map_runtime.cpp`](src/engine/map_runtime.cpp) |
 | `0x001fc644` | 4876 | `script_vm` | `non_matching` | `FlowScript_BranchCondition` | [`src/script/script_vm.cpp`](src/script/script_vm.cpp) |
@@ -190,6 +191,7 @@
 | `0x00249588` | 420 | `engine` | `non_matching` | `effTLP_func_00249588` | [`src/engine/asd_effect.cpp`](src/engine/asd_effect.cpp) |
 | `0x0024972c` | 164 | `engine` | `non_matching` | `effParts_func_0024972c` | [`src/engine/asd_effect.cpp`](src/engine/asd_effect.cpp) |
 | `0x00249fac` | 2144 | `battle` | `non_matching` | `EftLoadFile_func_00249fac` | [`src/battle/battle_extras.cpp`](src/battle/battle_extras.cpp) |
+| `0x0024fab8` | 600 | `engine` | `non_matching` | `effPolygonTrack_func_0024fab8` | [`src/engine/asd_effect2.cpp`](src/engine/asd_effect2.cpp) |
 | `0x0024fda4` | 192 | `engine` | `non_matching` | `effParts_func_0024fda4` | [`src/engine/asd_effect.cpp`](src/engine/asd_effect.cpp) |
 | `0x0024fe64` | 196 | `engine` | `non_matching` | `effParts_func_0024fe64` | [`src/engine/asd_effect.cpp`](src/engine/asd_effect.cpp) |
 | `0x002523d0` | 336 | `engine` | `non_matching` | `Npc2d_func_002523d0` | [`src/engine/asd_frame.cpp`](src/engine/asd_frame.cpp) |
@@ -212,6 +214,7 @@
 | `0x00263978` | 124 | `ui` | `non_matching` | `PlaceWin_ShowMessage` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x002639f4` | 448 | `ui` | `non_matching` | `PlaceWin_Init` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x00263bb4` | 660 | `ui` | `non_matching` | `PlaceWin_Calc` | [`src/ui/window.cpp`](src/ui/window.cpp) |
+| `0x002691f0` | 532 | `engine` | `non_matching` | `effGeometry_func_002691f0` | [`src/engine/asd_effect2.cpp`](src/engine/asd_effect2.cpp) |
 | `0x00269cc8` | 352 | `unite` | `non_matching` | `bibleMain_Init` | [`src/camp/bible.cpp`](src/camp/bible.cpp) |
 | `0x0026a02c` | 1412 | `script_vm` | `non_matching` | `UIQuest_func_0026a02c` | [`src/script/script_extras.cpp`](src/script/script_extras.cpp) |
 | `0x0026abc0` | 32 | `ui` | `non_matching` | `Status_SetMode1E71` | [`src/ui/status.cpp`](src/ui/status.cpp) |
@@ -300,6 +303,7 @@
 | `0x002d9618` | 36 | `ui` | `non_matching` | `StatusDown_EnterState3_Alt` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x002d966c` | 5336 | `camp` | `stub` | `Camp_ItemInventorySort` | [`src/camp/camp_inventory.cpp`](src/camp/camp_inventory.cpp) |
 | `0x002dc96c` | 152 | `ui` | `non_matching` | `StatusDown_SkillSortByCostDesc` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
+| `0x002de41c` | 1204 | `engine` | `non_matching` | `effParticle_func_002de41c` | [`src/engine/asd_effect2.cpp`](src/engine/asd_effect2.cpp) |
 | `0x002e06bc` | 1080 | `battle` | `stub` | `btlTargetSelect_Calc` | [`src/battle/btl_target_select.cpp`](src/battle/btl_target_select.cpp) |
 | `0x002e2454` | 764 | `camp` | `non_matching` | `GauntletAppMenu_Init` | [`src/camp/camp.cpp`](src/camp/camp.cpp) |
 | `0x002e2f44` | 408 | `ui` | `non_matching` | `StatusDown_UpdatePartySlotsAndDiff` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
@@ -307,6 +311,7 @@
 | `0x002e4534` | 80 | `ui` | `non_matching` | `StatusDown_SkillSortByIdDesc` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x002e4584` | 132 | `ui` | `non_matching` | `StatusDown_ItemSortByTypeDesc` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x002e4608` | 124 | `ui` | `non_matching` | `StatusDown_ItemSortByIdDesc` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
+| `0x002e7c30` | 612 | `engine` | `non_matching` | `effParticle_func_002e7c30` | [`src/engine/asd_effect2.cpp`](src/engine/asd_effect2.cpp) |
 | `0x002e8294` | 604 | `battle` | `non_matching` | `btlTargetSelect_Init` | [`src/battle/btl_target_select.cpp`](src/battle/btl_target_select.cpp) |
 | `0x002ef664` | 432 | `nn_sdk` | `non_matching` | `MobiclipCtrlProcess_func_002ef664` | [`src/nn/mobiclip.cpp`](src/nn/mobiclip.cpp) |
 | `0x002ef9ac` | 420 | `ui` | `non_matching` | `SaveLoadProcess_Step` | [`src/ui/save_load.cpp`](src/ui/save_load.cpp) |
@@ -335,16 +340,24 @@
 | `0x0030aae0` | 32 | `ui` | `non_matching` | `StatusDown_IsState10` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x0030ab00` | 52 | `ui` | `non_matching` | `StatusDown_EnterState14` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x0030ab34` | 60 | `ui` | `non_matching` | `StatusDown_EnterState6` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
+| `0x0030efb0` | 572 | `engine` | `non_matching` | `effPolygonRing_func_0030efb0` | [`src/engine/asd_effect2.cpp`](src/engine/asd_effect2.cpp) |
 | `0x00310124` | 804 | `engine` | `non_matching` | `AsdCamera_func_00310124` | [`src/engine/asd_scene.cpp`](src/engine/asd_scene.cpp) |
 | `0x00311494` | 356 | `ui` | `non_matching` | `StatusDown_OpenCategorySelect` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
+| `0x00313908` | 412 | `engine` | `non_matching` | `effObjectParticle_func_00313908` | [`src/engine/asd_effect2.cpp`](src/engine/asd_effect2.cpp) |
+| `0x0031551c` | 456 | `engine` | `non_matching` | `effPolygonRing_func_0031551c` | [`src/engine/asd_effect2.cpp`](src/engine/asd_effect2.cpp) |
+| `0x00315700` | 452 | `engine` | `non_matching` | `effPolygonRing_func_00315700` | [`src/engine/asd_effect2.cpp`](src/engine/asd_effect2.cpp) |
+| `0x0031596c` | 864 | `engine` | `non_matching` | `effPolygonThunder_func_0031596c` | [`src/engine/asd_effect2.cpp`](src/engine/asd_effect2.cpp) |
 | `0x00317f80` | 36 | `ui` | `non_matching` | `StatusDown_RequestClose` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x00318770` | 516 | `battle` | `non_matching` | `btlTalkCommand_func_00318770` | [`src/battle/battle_extras.cpp`](src/battle/battle_extras.cpp) |
 | `0x0031bdd0` | 508 | `engine` | `non_matching` | `Npc2d_func_0031bdd0` | [`src/engine/asd_frame.cpp`](src/engine/asd_frame.cpp) |
 | `0x0031dc4c` | 2028 | `engine` | `non_matching` | `AsdModel_func_0031dc4c` | [`src/engine/asd_model.cpp`](src/engine/asd_model.cpp) |
+| `0x0032170c` | 852 | `engine` | `non_matching` | `effPolygonThunder_func_0032170c` | [`src/engine/asd_effect2.cpp`](src/engine/asd_effect2.cpp) |
 | `0x00322d70` | 412 | `ui` | `non_matching` | `SaveLoadProcess_Read` | [`src/ui/save_load.cpp`](src/ui/save_load.cpp) |
 | `0x00322f0c` | 304 | `ui` | `non_matching` | `SaveLoadProcess_Close` | [`src/ui/save_load.cpp`](src/ui/save_load.cpp) |
 | `0x0032303c` | 40 | `ui` | `non_matching` | `StatusDown_GetSelectedPartyIndex` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
+| `0x003243bc` | 464 | `engine` | `non_matching` | `effPolygonFlash_func_003243bc` | [`src/engine/asd_effect2.cpp`](src/engine/asd_effect2.cpp) |
 | `0x00325478` | 5072 | `ui` | `non_matching` | `Ui_DemonicaAppStore` | [`src/camp/app_store.cpp`](src/camp/app_store.cpp) |
+| `0x00327d90` | 888 | `engine` | `non_matching` | `effPolygonThunder_func_00327d90` | [`src/engine/asd_effect2.cpp`](src/engine/asd_effect2.cpp) |
 | `0x0032be34` | 1672 | `ui` | `non_matching` | `StatusDown_DrawSkillList` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x0032c4bc` | 372 | `ui` | `non_matching` | `StatusDown_SortItemList` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x0032cb08` | 12620 | `camp` | `stub` | `Camp_SubModeProcess` | [`src/camp/camp_party.cpp`](src/camp/camp_party.cpp) |
