@@ -4,8 +4,8 @@
 
 | Metric | Decompiled | Total | Remaining | Percentage |
 |--------|-----------:|------:|----------:|-----------:|
-| **Code Size (Bytes)** | 270,836 B | 3,139,108 B | 2,868,272 B | **8.6278%** |
-| **Functions** | 183 | 10,349 | 10,166 | **1.7683%** |
+| **Code Size (Bytes)** | 283,456 B | 3,139,108 B | 2,855,652 B | **9.0298%** |
+| **Functions** | 184 | 10,349 | 10,165 | **1.7779%** |
 
 ## Subsystem Breakdown
 
@@ -15,7 +15,7 @@
 | `ui` | 133 | 1,238 | 93,388 B | 682,348 B | 13.686% |
 | `unknown` | 3 | 3,823 | 132 B | 654,480 B | 0.020% |
 | `script_vm` | 4 | 1,201 | 76,256 B | 446,288 B | 17.087% |
-| `camp` | 12 | 918 | 57,784 B | 326,396 B | 17.704% |
+| `camp` | 13 | 918 | 70,404 B | 326,396 B | 21.570% |
 | `battle` | 20 | 575 | 37,860 B | 236,932 B | 15.979% |
 | `shop` | 4 | 111 | 3,820 B | 39,976 B | 9.556% |
 | `crt` | 2 | 26 | 72 B | 9,484 B | 0.759% |
@@ -206,6 +206,7 @@
 | `0x0032303c` | 40 | `ui` | `non_matching` | `StatusDown_GetSelectedPartyIndex` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x0032be34` | 1672 | `ui` | `non_matching` | `StatusDown_DrawSkillList` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x0032c4bc` | 372 | `ui` | `non_matching` | `StatusDown_SortItemList` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
+| `0x0032cb08` | 12620 | `camp` | `non_matching` | `Camp_SubModeProcess` | [`src/camp/camp_party.cpp`](src/camp/camp_party.cpp) |
 | `0x003a9200` | 948 | `unite` | `non_matching` | `bibleAnalyze_Init` | [`src/camp/bible.cpp`](src/camp/bible.cpp) |
 | `0x003cccd8` | 9192 | `battle` | `non_matching` | `Btl_ActionCalc` | [`src/battle/btl_main.cpp`](src/battle/btl_main.cpp) |
 | `0x003d3dd4` | 6896 | `battle` | `non_matching` | `Btl_CameraCalc` | [`src/battle/btl_main.cpp`](src/battle/btl_main.cpp) |

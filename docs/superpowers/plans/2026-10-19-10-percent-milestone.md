@@ -58,14 +58,14 @@
 **Functions:**
 - `Camp_SubModeProcess`: `0x0032cb08` (12,620 B)
 
-- [ ] **Step 1: Update progress test expectations (RED)**
+- [x] **Step 1: Update progress test expectations (RED)**
   - Update `tests/test_progress.py` to expect 184 functions and 283,456 bytes.
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
   - Run `python -m unittest discover -s tests -v`.
-- [ ] **Step 3: Define structures in `include/camp/camp_party.h` and implement in `src/camp/camp_party.cpp`**
-- [ ] **Step 4: Update `config/functions.csv` and run test to verify it passes (GREEN)**
+- [x] **Step 3: Define structures in `include/camp/camp_party.h` and implement in `src/camp/camp_party.cpp`**
+- [x] **Step 4: Update `config/functions.csv` and run test to verify it passes (GREEN)**
   - Run `python tools/progress.py --write` and `python -m unittest discover -s tests -v`.
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
   - Commit: `feat(camp): implement Demonica sub-mode and demon party stock manager (+12,620 B, 9.03% reached)`.
 
 ---

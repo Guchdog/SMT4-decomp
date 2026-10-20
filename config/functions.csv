@@ -7346,7 +7346,7 @@ address,size,status,category,name,src_file
 0x0032c630,672,todo,script_vm,script_vm_func_0032c630,
 0x0032c8d0,124,todo,script_vm,script_vm_func_0032c8d0,
 0x0032c94c,444,todo,engine,engine_func_0032c94c,
-0x0032cb08,12620,todo,camp,camp_func_0032cb08,
+0x0032cb08,12620,non_matching,camp,Camp_SubModeProcess,src/camp/camp_party.cpp
 0x0032fc54,672,todo,unknown,func_0032fc54,
 0x0032fef4,88,todo,camp,camp_func_0032fef4,
 0x0032ff4c,92,todo,unknown,func_0032ff4c,
