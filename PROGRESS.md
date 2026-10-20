@@ -4,18 +4,18 @@
 
 | Category | Functions | Code Size (Bytes) | Progress % | Status Description |
 |----------|----------:|------------------:|-----------:|--------------------|
-| **Decompiled (Reconstructed)** | 223 | 262,788 B | **8.3714%** | Substantial C++ logic reverse-engineered |
+| **Decompiled (Reconstructed)** | 234 | 267,144 B | **8.5102%** | Substantial C++ logic reverse-engineered |
 | **Scaffolded (Stubs & Interfaces)** | 39 | 248,240 B | 7.9080% | Headers, structs, and function skeletons |
 | **Matching (Byte-for-Byte)** | 0 | 0 B | 0.0000% | 100% compiled machine code match |
-| **Total Architecture Explored** | 262 | 511,028 B | **16.2794%** | Total identified & mapped into `src/` |
-| **Remaining (Todo)** | 10,087 | 2,628,080 B | 83.7206% | Unmapped functions in `.text` |
+| **Total Architecture Explored** | 273 | 515,384 B | **16.4182%** | Total identified & mapped into `src/` |
+| **Remaining (Todo)** | 10,076 | 2,623,724 B | 83.5818% | Unmapped functions in `.text` |
 | **Total `.text` Segment** | 10,349 | 3,139,108 B | 100.0000% | `0x00100000`–`0x003FE624` |
 
 ## Subsystem Breakdown
 
 | Subsystem | Decompiled Funcs | Decompiled Bytes | Stub Funcs | Stub Bytes | Total Funcs | Total Bytes | Decompiled % | Explored % |
 |-----------|-----------------:|-----------------:|-----------:|-----------:|------------:|------------:|-------------:|-----------:|
-| `engine` | 47 | 28,488 B | 2 | 22,760 B | 2,363 | 726,520 B | 3.92% | 7.05% |
+| `engine` | 58 | 32,844 B | 2 | 22,760 B | 2,363 | 726,520 B | 4.52% | 7.65% |
 | `ui` | 140 | 100,328 B | 14 | 96,248 B | 1,238 | 682,348 B | 14.70% | 28.81% |
 | `unknown` | 3 | 132 B | 0 | 0 B | 3,823 | 654,480 B | 0.02% | 0.02% |
 | `script_vm` | 7 | 99,188 B | 3 | 22,836 B | 1,201 | 446,288 B | 22.23% | 27.34% |
@@ -34,10 +34,12 @@
 | `0x00100024` | 36 | `crt` | `non_matching` | `__init_bss` | [`src/crt/start.cpp`](src/crt/start.cpp) |
 | `0x0010250c` | 296 | `engine` | `non_matching` | `AsdFile_func_0010250c` | [`src/engine/asd_file.cpp`](src/engine/asd_file.cpp) |
 | `0x0010299c` | 260 | `ui` | `non_matching` | `IfTouch_Init` | [`src/ui/tbb_loader.cpp`](src/ui/tbb_loader.cpp) |
+| `0x00102e80` | 152 | `engine` | `non_matching` | `AsdProcess_func_00102e80` | [`src/engine/asd_scene.cpp`](src/engine/asd_scene.cpp) |
 | `0x0010368c` | 184 | `engine` | `non_matching` | `soundEffect_func_0010368c` | [`src/engine/asd_sound.cpp`](src/engine/asd_sound.cpp) |
 | `0x0010376c` | 820 | `engine` | `non_matching` | `AsdMemory_func_0010376c` | [`src/engine/asd_file.cpp`](src/engine/asd_file.cpp) |
 | `0x001042c8` | 176 | `engine` | `non_matching` | `AsdPrim_func_001042c8` | [`src/engine/asd_texture.cpp`](src/engine/asd_texture.cpp) |
 | `0x0010495c` | 1108 | `engine` | `non_matching` | `AsdModel_func_0010495c` | [`src/engine/asd_model.cpp`](src/engine/asd_model.cpp) |
+| `0x00105c50` | 340 | `engine` | `non_matching` | `AsdCamera_func_00105c50` | [`src/engine/asd_scene.cpp`](src/engine/asd_scene.cpp) |
 | `0x00109524` | 240 | `engine` | `non_matching` | `soundEffect_func_00109524` | [`src/engine/asd_sound.cpp`](src/engine/asd_sound.cpp) |
 | `0x00109690` | 1040 | `engine` | `non_matching` | `AsdSoundSystem_func_00109690` | [`src/engine/asd_sound.cpp`](src/engine/asd_sound.cpp) |
 | `0x0010a588` | 152 | `ui` | `non_matching` | `AsdFont_func_0010a588` | [`src/engine/asd_text.cpp`](src/engine/asd_text.cpp) |
@@ -59,12 +61,17 @@
 | `0x0010b350` | 448 | `ui` | `non_matching` | `GuestWin_Init` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x0010b510` | 104 | `engine` | `non_matching` | `GuestWin_HandlePrompt` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x0010b974` | 176 | `engine` | `non_matching` | `AsdSoundSystem_func_0010b974` | [`src/engine/asd_sound.cpp`](src/engine/asd_sound.cpp) |
+| `0x0010bd34` | 300 | `engine` | `non_matching` | `AsdScene_func_0010bd34` | [`src/engine/asd_scene.cpp`](src/engine/asd_scene.cpp) |
 | `0x0010c078` | 380 | `engine` | `non_matching` | `AsdSoundSystem_func_0010c078` | [`src/engine/asd_sound.cpp`](src/engine/asd_sound.cpp) |
 | `0x0010c5d4` | 480 | `engine` | `non_matching` | `AsdSoundSystem_func_0010c5d4` | [`src/engine/asd_sound.cpp`](src/engine/asd_sound.cpp) |
 | `0x0010d070` | 272 | `engine` | `non_matching` | `AsdFile_func_0010d070` | [`src/engine/asd_file.cpp`](src/engine/asd_file.cpp) |
 | `0x0010d40c` | 516 | `engine` | `non_matching` | `AsdSoundSystem_func_0010d40c` | [`src/engine/asd_sound.cpp`](src/engine/asd_sound.cpp) |
+| `0x0010e5f0` | 476 | `engine` | `non_matching` | `AsdScene_func_0010e5f0` | [`src/engine/asd_scene.cpp`](src/engine/asd_scene.cpp) |
 | `0x00113d58` | 1564 | `engine` | `non_matching` | `AsdFile_func_00113d58` | [`src/engine/asd_file.cpp`](src/engine/asd_file.cpp) |
 | `0x00114374` | 6144 | `camp` | `stub` | `Camp_DemonicaArchiveLoad` | [`src/camp/camp_archive.cpp`](src/camp/camp_archive.cpp) |
+| `0x00118488` | 556 | `engine` | `non_matching` | `AsdProcess_func_00118488` | [`src/engine/asd_scene.cpp`](src/engine/asd_scene.cpp) |
+| `0x001186b4` | 388 | `engine` | `non_matching` | `AsdScene_func_001186b4` | [`src/engine/asd_scene.cpp`](src/engine/asd_scene.cpp) |
+| `0x00118c7c` | 448 | `engine` | `non_matching` | `AsdScene_func_00118c7c` | [`src/engine/asd_scene.cpp`](src/engine/asd_scene.cpp) |
 | `0x0011a354` | 1632 | `ui` | `non_matching` | `ComWin_DrawUp` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x0011a9b4` | 1116 | `ui` | `non_matching` | `GuestWin_DrawUp` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x0011ae10` | 792 | `ui` | `non_matching` | `InfoWin_DrawUp` | [`src/ui/window.cpp`](src/ui/window.cpp) |
@@ -178,6 +185,7 @@
 | `0x0026d8dc` | 52 | `ui` | `non_matching` | `Status_ResetAffinityView` | [`src/ui/status.cpp`](src/ui/status.cpp) |
 | `0x0027154c` | 8316 | `script_vm` | `non_matching` | `FlowScript_OpcodeEvaluator` | [`src/script/script_vm.cpp`](src/script/script_vm.cpp) |
 | `0x00277f9c` | 12192 | `script_vm` | `stub` | `FlowScript_InitRuntimeMemory` | [`src/script/script_runtime.cpp`](src/script/script_runtime.cpp) |
+| `0x002861f8` | 508 | `engine` | `non_matching` | `Task_func_002861f8` | [`src/engine/asd_scene.cpp`](src/engine/asd_scene.cpp) |
 | `0x00286c5c` | 1596 | `engine` | `non_matching` | `AsdText_func_00286c5c` | [`src/engine/asd_text.cpp`](src/engine/asd_text.cpp) |
 | `0x00288408` | 28 | `ui` | `non_matching` | `Status_GetSubMenuState` | [`src/ui/status.cpp`](src/ui/status.cpp) |
 | `0x00288718` | 92 | `ui` | `non_matching` | `StatusDown_CanOpenSubScreen` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
@@ -227,8 +235,10 @@
 | `0x002c4710` | 1004 | `ui` | `non_matching` | `AsdFont_func_002c4710` | [`src/engine/asd_text.cpp`](src/engine/asd_text.cpp) |
 | `0x002c4c2c` | 508 | `ui` | `non_matching` | `message_func_002c4c2c` | [`src/engine/asd_text.cpp`](src/engine/asd_text.cpp) |
 | `0x002c4e28` | 620 | `engine` | `non_matching` | `AsdTMTexTable_func_002c4e28` | [`src/engine/asd_texture.cpp`](src/engine/asd_texture.cpp) |
+| `0x002c59b8` | 180 | `engine` | `non_matching` | `AsdSequence_func_002c59b8` | [`src/engine/asd_scene.cpp`](src/engine/asd_scene.cpp) |
 | `0x002c5b04` | 652 | `engine` | `non_matching` | `AsdTMTexTable_func_002c5b04` | [`src/engine/asd_texture.cpp`](src/engine/asd_texture.cpp) |
 | `0x002c684c` | 112 | `engine` | `non_matching` | `AsdMemory_func_002c684c` | [`src/engine/asd_file.cpp`](src/engine/asd_file.cpp) |
+| `0x002cb788` | 204 | `engine` | `non_matching` | `AsdScene_func_002cb788` | [`src/engine/asd_scene.cpp`](src/engine/asd_scene.cpp) |
 | `0x002cecd8` | 52 | `ui` | `non_matching` | `SearchWin_IsActive` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x002ced0c` | 28 | `ui` | `non_matching` | `SearchWin_Dismiss` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x002ced28` | 348 | `ui` | `non_matching` | `SearchWin_Init` | [`src/ui/window.cpp`](src/ui/window.cpp) |
@@ -266,6 +276,7 @@
 | `0x0030aae0` | 32 | `ui` | `non_matching` | `StatusDown_IsState10` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x0030ab00` | 52 | `ui` | `non_matching` | `StatusDown_EnterState14` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x0030ab34` | 60 | `ui` | `non_matching` | `StatusDown_EnterState6` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
+| `0x00310124` | 804 | `engine` | `non_matching` | `AsdCamera_func_00310124` | [`src/engine/asd_scene.cpp`](src/engine/asd_scene.cpp) |
 | `0x00311494` | 356 | `ui` | `non_matching` | `StatusDown_OpenCategorySelect` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x00317f80` | 36 | `ui` | `non_matching` | `StatusDown_RequestClose` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x0031dc4c` | 2028 | `engine` | `non_matching` | `AsdModel_func_0031dc4c` | [`src/engine/asd_model.cpp`](src/engine/asd_model.cpp) |
