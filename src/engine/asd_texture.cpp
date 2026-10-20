@@ -1,4 +1,5 @@
 #include "engine/asd_texture.h"
+#include "engine/asd_symbols.h"
 #include <cstdint>
 
 // ---------------------------------------------------------------------------
@@ -19,11 +20,9 @@ extern "C" {
 
     // String / file helpers
     void  UiText_Format(char* dst, const char* fmt, ...);                   // 0x002be7fc
-    char* AsdString_Copy(char* dst, const char* src);                       // 0x002bf86c
     char* AsdString_Char(const char* s, int c);                             // 0x0010024c (Thumb)
     int   AsdMem_Compare(const void* a, const void* b, u32 len);            // 0x002b45f8
     void  AsdMem_Copy(void* dst, const void* src, u32 size);                // 0x002c5ff4
-    void  AsdMem_CopyLarge(void* dst, const void* src, u32 size);           // 0x002bcf58
     void* AsdRes_Load(const char* name, u32* out_size, u32 flags);          // 0x002c32f0
 
     // AsdSDK heap-limit / GPU address helpers
@@ -387,8 +386,13 @@ void AsdTexTGA_func_00257e6c(AsdTexture* texture, const AsdTGAHeader* tga,
             u8 name[8] = {};
 
             // The binary copies the whole tfm payload into an eight-byte
-            // stack buffer and compares only the first eight bytes.
-            AsdMem_Copy(name, chunk + 0x0C, size - 0x0Cu);
+            // stack buffer and compares only the first eight bytes.  Clamp
+            // the copy to the buffer instead of reproducing that overflow;
+            // only those first eight bytes affect the result.
+            u32 copy_size = size > 0x0Cu ? size - 0x0Cu : 0u;
+            if (copy_size > sizeof(name))
+                copy_size = sizeof(name);
+            AsdMem_Copy(name, chunk + 0x0C, copy_size);
 
             // 0x00409540: the binary compares eight bytes against
             // "Etc1\0\0\0\0", not the five-byte literal alone.
@@ -433,9 +437,9 @@ void* AsdTMTexTable_func_002c4e28(u32 group_id)
     char path[0x80];
     char filename[0x100];
 
-    AsdString_Copy(path, g_AsdTMTexTable.paths->root);       // 0x002c4e70
+    AsdString_Strcpy(path, g_AsdTMTexTable.paths->root);       // 0x002c4e70
     AsdTMTex_NormalizeSlashes(path);
-    AsdString_Copy(g_AsdTMTexTable.paths->root, path);       // 0x002c4eb0
+    AsdString_Strcpy(g_AsdTMTexTable.paths->root, path);       // 0x002c4eb0
 
     // 0x002c4ecc: "%s%s%s.%s" with root, group name, "GroupTable", "tgd".
     UiText_Format(filename, "%s%s%s.%s",
@@ -506,9 +510,9 @@ void* AsdTMTexTable_func_002c5b04(u32 group_id, u32 flags)
     char path[0x80];
     char filename[0x100];
 
-    AsdString_Copy(path, g_AsdTMTexTable.paths->root);       // 0x002c5b38
+    AsdString_Strcpy(path, g_AsdTMTexTable.paths->root);       // 0x002c5b38
     AsdTMTex_NormalizeSlashes(path);
-    AsdString_Copy(g_AsdTMTexTable.paths->root, path);       // 0x002c5b78
+    AsdString_Strcpy(g_AsdTMTexTable.paths->root, path);       // 0x002c5b78
 
     // 0x002c5b94: "%s%s.%s" with root, group name, "ttd".
     UiText_Format(filename, "%s%s.%s",
@@ -577,9 +581,9 @@ void* AsdTMTexTable_func_002c5b04(u32 group_id, u32 flags)
     // 0x002c5cf8..0x002c5d54: normalise the sub-directory and append the
     // file-relative name from `file + 4`.
     char* base = g_AsdTMTexTable.paths->base;
-    AsdString_Copy(path, base);
+    AsdString_Strcpy(path, base);
     AsdTMTex_NormalizeSlashes(path);
-    AsdString_Copy(base, path);
+    AsdString_Strcpy(base, path);
     UiText_Format(table->path, "%s%s/", base,
                   reinterpret_cast<const char*>(file) + 4);
 
@@ -594,11 +598,11 @@ void* AsdTMTexTable_func_002c5b04(u32 group_id, u32 flags)
 // DECOMP_FUNC(0x00346db0, 992)
 void AsdPrimRenderData_func_00346db0(AsdPrimRenderData* data)
 {
-    // [sp+0x18], [sp+0x10] and [sp+0x08]: each is a zero word followed by
-    // { 0, 1, 0xFF, 0xFF }.
-    AsdPrimUploadDesc attr_18 = { 0u, { 0, 1, 0xFF, 0xFF } };
-    AsdPrimUploadDesc attr_10 = { 0u, { 0, 1, 0xFF, 0xFF } };
-    AsdPrimUploadDesc attr_08 = { 0u, { 0, 1, 0xFF, 0xFF } };
+    // [sp+0x18], [sp+0x10] and [sp+0x08]: each descriptor starts with the
+    // four bytes { 0, 1, 0xFF, 0xFF } and carries a zero word at +0x04.
+    AsdPrimUploadDesc attr_18 = { { 0, 1, 0xFF, 0xFF }, 0u };
+    AsdPrimUploadDesc attr_10 = { { 0, 1, 0xFF, 0xFF }, 0u };
+    AsdPrimUploadDesc attr_08 = { { 0, 1, 0xFF, 0xFF }, 0u };
 
     const u32 flags = data->flags;
 

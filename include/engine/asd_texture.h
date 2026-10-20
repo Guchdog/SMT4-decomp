@@ -1,6 +1,7 @@
 #pragma once
 #include <cstddef>
 #include "types.h"
+#include "engine/asd_symbols.h"
 
 /**
  * Atlus AsdSDK texture / texture-table / primitive plumbing.
@@ -285,12 +286,19 @@ static_assert(sizeof(AsdTMTexTable) == 0x2C);
 // AsdPrimRenderData (0x00346DB0)
 // ---------------------------------------------------------------------------
 
-/** Eight-byte attribute descriptor passed to 0x0023BB2C by 0x00346DB0. */
+/**
+ * Eight-byte attribute descriptor passed to 0x0023BB2C by 0x00346DB0.
+ *
+ * The bytes `{0,1,0xFF,0xFF}` occupy the first four bytes of each descriptor
+ * (`strb` at +0x18..+0x1B, +0x10..+0x13 and +0x08..+0x0B) and the zero word
+ * is stored at +0x04 (`str [sp,#0x1c]` / `#0x14` / `#0x0c`).
+ */
 struct AsdPrimUploadDesc {
-    u32 field_00;                       // +0x00: zeroed (0x00346dc4 etc.)
-    u8  rgba[4];                        // +0x04: {0,1,0xFF,0xFF} (0x00346dc8..0x00346dfc)
+    u8  rgba[4];                        // +0x00: {0,1,0xFF,0xFF} (0x00346dc8..0x00346dfc)
+    u32 field_04;                       // +0x04: zeroed (0x00346dc4 etc.)
 };
-static_assert(offsetof(AsdPrimUploadDesc, rgba) == 0x04);
+static_assert(offsetof(AsdPrimUploadDesc, rgba) == 0x00);
+static_assert(offsetof(AsdPrimUploadDesc, field_04) == 0x04);
 static_assert(sizeof(AsdPrimUploadDesc) == 0x08);
 
 /**
@@ -348,7 +356,6 @@ void* AsdTexture_func_002bd940(u32 kind);                                   // 0
 void* AsdTMTexTable_func_002c4e28(u32 group_id);                            // 0x002c4e28, 620 B
 void* AsdTMTexTable_func_002c5b04(u32 group_id, u32 flags);                 // 0x002c5b04, 652 B
 void  AsdPrimRenderData_func_00346db0(AsdPrimRenderData* data);             // 0x00346db0, 992 B
-void* AsdMemory_func_002c23f8(u32 size);                                    // 0x002c23f8,  56 B
 
 } // namespace smt4::engine
 

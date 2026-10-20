@@ -1,4 +1,5 @@
 #include "engine/asd_text.h"
+#include "engine/asd_symbols.h"
 
 // ---------------------------------------------------------------------------
 // Observed call targets (addresses are the branch targets in code.bin)
@@ -11,9 +12,6 @@ extern "C" {
     void* AsdMem_AllocAlign(u32 a0, u32 a1, u32 a2, u32 size, u32 flag);    // 0x002c54f0
     void  AsdMem_Zero(void* ptr, u32 size);                                 // 0x002c4b30
     void  AsdMem_Free(void* ptr);                                           // 0x002c4360
-    void* AsdMemory_func_002c23f8(u32 size);                                // 0x002c23f8
-    u32   AsdString_Length(const char* s);                                  // 0x002c3290
-    char* AsdString_Copy(char* dst, const char* src, u32 size);             // 0x00262b60
     void  AsdRef_Dec(void* object);                                         // 0x002c0a6c
     void* AsdRef_Get(void* handle);                                         // 0x002c0ac8
 
@@ -475,9 +473,10 @@ void AsdText_func_00296de0(AsdText* text, s32 font_id, s32 mode,
     // (`add r3,sp,#0x38`) as the conversion state.  Three of the four observed
     // callers reserve only two stack words (the fourth leaves a word there
     // that this function never reads), so the slot is callee scratch for a
-    // local 8-byte conversion state rather than a parameter.  The state is
-    // left uninitialised exactly as in the binary.
-    u32 conv_state[2];
+    // local 8-byte conversion state rather than a parameter.  The binary does
+    // not initialise it; zeroing the local gives the same caller-visible
+    // behaviour without relying on an indeterminate read.
+    u32 conv_state[2] = {};
     (void)AsdString_Length(utf8);               // 0x00296e30, result unused
     AsdText_ConvertName(buffer, 0x1000, utf8, conv_state);
 

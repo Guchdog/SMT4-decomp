@@ -30,14 +30,12 @@ struct AsdModelData {
     u8  pad_7c[0x64];                   // +0x007C..+0x00E0
     u32 subnode_list_rel;               // +0x00E0: `ldr r1,[r0,#0xe0]!` (0x002a9eac)
     u8  pad_e4[0x40];                   // +0x00E4..+0x0124
-    s32 field_124;                      // +0x0124: `ldr r1,[r6,#0x124]` (0x002a9820)
-    u8  pad_128[0x04];                  // +0x0128..+0x012C
-    s32 field_12c;                      // +0x012C: `ldr r3,[r6,#0x12c]` (0x002a9a14)
-    u8  pad_130[0x18];                  // +0x0130..+0x0148
+    u8  pad_124[0x24];                  // +0x0124..+0x0148 (no proven field)
     void* field_148;                    // +0x0148: `ldr r7,[r6,#0x148]` (0x002a9768)
-    u8  pad_14c[0x04];                  // +0x014C..+0x0150
+    s32 field_14c;                      // +0x014C: effective `ldr r1,[r6,#0x124]` after `ldr r0,[r6,#0x28]!` (0x002a9820)
     void* field_150;                    // +0x0150: `ldr r7,[r6,#0x150]` (0x002a995c)
-    u8  pad_154[0xd4];                  // +0x0154..+0x0228
+    s32 field_154;                      // +0x0154: effective `ldr r3,[r6,#0x12c]` after `ldr r0,[r6,#0x28]!` (0x002a9a14)
+    u8  pad_158[0xd0];                  // +0x0158..+0x0228
     u32 field_228;                      // +0x0228: `ldr r1,[r0,#0x228]` (0x002a9608)
     s32 field_22c;                      // +0x022C: `ldr r0,[r0,#0x22c]` (0x002a963c)
     u8  pad_230;                        // +0x0230
@@ -49,10 +47,10 @@ static_assert(offsetof(AsdModelData, mesh_count) == 0x64);
 static_assert(offsetof(AsdModelData, controller_count) == 0x6C);
 static_assert(offsetof(AsdModelData, draw_count) == 0x74);
 static_assert(offsetof(AsdModelData, subnode_list_rel) == 0xE0);
-static_assert(offsetof(AsdModelData, field_124) == 0x124);
-static_assert(offsetof(AsdModelData, field_12c) == 0x12C);
 static_assert(offsetof(AsdModelData, field_148) == 0x148);
+static_assert(offsetof(AsdModelData, field_14c) == 0x14C);
 static_assert(offsetof(AsdModelData, field_150) == 0x150);
+static_assert(offsetof(AsdModelData, field_154) == 0x154);
 static_assert(offsetof(AsdModelData, field_228) == 0x228);
 static_assert(offsetof(AsdModelData, field_22c) == 0x22C);
 static_assert(offsetof(AsdModelData, field_231) == 0x231);

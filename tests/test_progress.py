@@ -78,6 +78,53 @@ class TestProgress(unittest.TestCase):
             self.assertEqual(stats["decompiled_functions"], 0)
             self.assertEqual(stats["decompiled_bytes"], 0)
 
+    def test_rejects_marker_left_behind_when_first_body_removed(self):
+        """A leftover marker must not parse the following function's body."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            src_dir = root / "src" / "test"
+            src_dir.mkdir(parents=True, exist_ok=True)
+            (src_dir / "removed.cpp").write_text(
+                "// DECOMP_FUNC(0x00100000, 64)\n"
+                "// DECOMP_FUNC(0x00100040, 64)\n"
+                "void Second() {\n"
+                "    int value = 1;\n"
+                "    (void)value;\n"
+                "}\n",
+                encoding="utf-8",
+            )
+            csv_path = root / "functions.csv"
+            csv_path.write_text(
+                "address,size,status,category,name,src_file\n"
+                "0x00100000,64,non_matching,test,First,src/test/removed.cpp\n",
+                encoding="utf-8",
+            )
+            with self.assertRaises(VerificationError):
+                compute_progress(csv_path, root)
+
+    def test_rejects_marker_size_mismatch(self):
+        """The DECOMP_FUNC size must match config/functions.csv."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            src_dir = root / "src" / "test"
+            src_dir.mkdir(parents=True, exist_ok=True)
+            (src_dir / "size.cpp").write_text(
+                "// DECOMP_FUNC(0x00100000, 72)\n"
+                "void First() {\n"
+                "    int value = 1;\n"
+                "    (void)value;\n"
+                "}\n",
+                encoding="utf-8",
+            )
+            csv_path = root / "functions.csv"
+            csv_path.write_text(
+                "address,size,status,category,name,src_file\n"
+                "0x00100000,64,non_matching,test,First,src/test/size.cpp\n",
+                encoding="utf-8",
+            )
+            with self.assertRaises(VerificationError):
+                compute_progress(csv_path, root)
+
     def test_real_repo_progress_matches_text_size(self):
         stats = compute_progress(Path("config/functions.csv"), Path("."))
         self.assertEqual(stats["total_bytes"], 0x2FE624)

@@ -1,4 +1,5 @@
 #include "engine/asd_model.h"
+#include "engine/asd_symbols.h"
 
 namespace smt4::engine {
 
@@ -32,7 +33,6 @@ extern "C" {
 
     // Resource / name database
     void* AsdRes_Load(const char* name, u32 a1, u32 a2);                   // 0x002c32f0
-    u32   AsdRes_Hash(const char* name);                                   // 0x002c3290
     void* AsdRes_Find(void* out, const char* name, u32 hash);              // 0x002c31e8
     void* AsdRes_Create(void* desc, void* a1, void* a2, void* a3);         // 0x002c3188
     void* AsdRes_GetContext();                                             // 0x002c31bc
@@ -81,7 +81,6 @@ extern "C" {
     void  UiInput_Reset(u32 id);                                           // 0x0024df94
     void  UiText_Draw(u32 a0, u32 a1, u32 a2, const char* fmt, ...);       // 0x0024df14
     void  UiText_Format(char* buf, const char* fmt, ...);                  // 0x002be7fc
-    void  UiDraw_Bind(void* a0, void* a1, u32 size);                       // 0x002bcf58
     void* AsdWork_Alloc(u32 a0, u32 a1, u32 a2, u32 size, u32 a4, u32 a5); // 0x002c34a4
     void  AsdWork_Zero(void* ptr, u32 size);                               // 0x002c3b48
     void* AsdUiObject_CreateAndReset();                                    // 0x0024dfa4
@@ -290,7 +289,7 @@ void AsdModel_func_0010495c() {
     void* node = AsdRelPtr(resource, 0x20);
 
     if (node != nullptr) {
-        void* found = AsdRes_Find(&node, "ShadowModel", AsdRes_Hash("ShadowModel"));
+        void* found = AsdRes_Find(&node, "ShadowModel", AsdString_Length("ShadowModel"));
         if (found != nullptr) {
             u8* base = reinterpret_cast<u8*>(found);
             u32 rel = *reinterpret_cast<u32*>(base + 0x0C);
@@ -869,7 +868,7 @@ AsdModel* AsdModel_func_002a94e8(AsdModel* model) {
                         using BindFn = void (*)(void*, void*);
                         reinterpret_cast<BindFn>(track_vtable[3])(track, list_obj);
                         if (data->field_148 != nullptr) {
-                            AsdGridStore(data, data->field_124, track);
+                            AsdGridStore(data, data->field_14c, track);
                         }
                     }
                     controller = track;
@@ -929,7 +928,7 @@ AsdModel* AsdModel_func_002a94e8(AsdModel* model) {
                         using BindFn = void (*)(void*, void*);
                         reinterpret_cast<BindFn>(track_vtable[3])(track, list_obj);
                         if (data->field_150 != nullptr) {
-                            AsdGridStore(data, data->field_12c, track);
+                            AsdGridStore(data, data->field_154, track);
                         }
                     }
                     controller = track;
@@ -1027,24 +1026,31 @@ void AsdModel_func_002a9acc(AsdModelView* view, AsdModel* model,
             u8* sub = *reinterpret_cast<u8**>(reinterpret_cast<u8*>(source) + 0x2C);
             void* device = AsdRes_GetDevice();
 
-            struct CreateDesc {
-                const char* name;       // +0x00
-                u8  flag_04;            // +0x04
-                u8  flag_05;            // +0x05
-                u8  pad_06[0x02];
-                u32 field_08;           // +0x08
-                u32 field_0c;           // +0x0C
-                u32 field_10;           // +0x10
-                u32 field_14;           // +0x14
-                u32 field_18;           // +0x18
-                void* field_1c;         // +0x1C
+            // 0x002a9c98..0x002a9ce4: the source path writes `1,1` at +0/+1,
+            // `4` at +4, `8` at +8, `1` at +0xC, then zeros at
+            // +0x10/+0x14/+0x18 and `*(sub+0x220)` at +0x1C.  `name` is
+            // passed separately in r2, so the descriptor has no name field.
+            struct SourceCreateDesc {
+                u8  flag_00;            // +0x00: 1
+                u8  flag_01;            // +0x01: 1
+                u8  pad_02[0x02];       // +0x02..+0x04
+                u32 field_04;           // +0x04: 4
+                u32 field_08;           // +0x08: 8
+                u32 field_0c;           // +0x0C: 1
+                u32 field_10;           // +0x10: 0
+                u32 field_14;           // +0x14: 0
+                u32 field_18;           // +0x18: 0
+                void* field_1c;         // +0x1C: *(sub+0x220)
             } desc{};
-            desc.name = reinterpret_cast<const char*>(name);
-            desc.flag_04 = 1;
-            desc.flag_05 = 1;
-            desc.field_08 = 4;
-            desc.field_0c = 8;
-            desc.field_10 = 1;
+            static_assert(offsetof(SourceCreateDesc, field_04) == 0x04);
+            static_assert(offsetof(SourceCreateDesc, field_1c) == 0x1C);
+            static_assert(sizeof(SourceCreateDesc) == 0x20);
+            desc.flag_00 = 1;
+            desc.flag_01 = 1;
+            desc.field_04 = 4;
+            desc.field_08 = 8;
+            desc.field_0c = 1;
+            desc.field_10 = 0;
             desc.field_14 = 0;
             desc.field_18 = 0;
             desc.field_1c = *reinterpret_cast<void**>(sub + 0x220);
@@ -1128,7 +1134,7 @@ void AsdModel_func_002a9acc(AsdModelView* view, AsdModel* model,
 
             for (s32 j = 0; j < 3; ++j) {
                 const char* target = g_AsdNodeNames[j];
-                u32 hash = AsdRes_Hash(target);
+                u32 hash = AsdString_Length(target);
                 if (AsdName_Equal(reinterpret_cast<const char*>(names), target,
                                   hash) != 0) {
                     continue;
@@ -1139,7 +1145,7 @@ void AsdModel_func_002a9acc(AsdModelView* view, AsdModel* model,
                 s32 index = -1;
                 if (base != nullptr && target != nullptr) {
                     void* lookup_base = base;
-                    u32 found_hash = AsdRes_Hash(target);
+                    u32 found_hash = AsdString_Length(target);
                     u8* found = reinterpret_cast<u8*>(
                         AsdRes_Find(&lookup_base, target, found_hash));
                     if (found != nullptr) {
@@ -1377,13 +1383,13 @@ AsdModelNodeSet* AsdModel_func_0031dc4c(AsdModelView* view) {
         for (s32 i = 0; i < mesh_count; ++i) {
             u8* first = reinterpret_cast<u8*>(set->mesh_handles[i]);
             u8* sub = AsdRelPtr(first, 8);
-            u32 hash = AsdRes_Hash(reinterpret_cast<const char*>(sub));
+            u32 hash = AsdString_Length(reinterpret_cast<const char*>(sub));
 
             void* match = nullptr;
             for (s32 j = 0; j < static_cast<s32>(node_count); ++j) {
                 u8* node = reinterpret_cast<u8*>(set->node_handles[j]);
                 u8* names = AsdRelPtr(node, 0x0C);
-                if (AsdRes_Hash(reinterpret_cast<const char*>(names)) != hash) {
+                if (AsdString_Length(reinterpret_cast<const char*>(names)) != hash) {
                     continue;
                 }
                 if (AsdName_Equal(reinterpret_cast<const char*>(names),
@@ -1446,7 +1452,11 @@ AsdModelNodeSet* AsdModel_func_0031dc4c(AsdModelView* view) {
 
                 if (*reinterpret_cast<void**>(node + 0x228) != nullptr) {
                     u8* grid = *reinterpret_cast<u8**>(node + 0x28);
-                    u32 index = *reinterpret_cast<u32*>(node + 0x204);
+                    // 0x0031e2e8: `ldr r1,[r6,#0x28]!` writes r6 back, so the
+                    // following `ldr r2,[r6,#0x204]` (0x0031e2ec) addresses
+                    // node + 0x22C, not +0x204.
+                    u32 index = static_cast<u32>(
+                        reinterpret_cast<AsdModelData*>(node)->field_22c);
                     s32 rows = *reinterpret_cast<s32*>(grid + 0x28);
                     u32 count = (*reinterpret_cast<u32*>(grid + 0x10) -
                                  *reinterpret_cast<u32*>(grid + 0x0C)) >> 2;
@@ -1481,13 +1491,13 @@ AsdModelNodeSet* AsdModel_func_0031dc4c(AsdModelView* view) {
         for (s32 i = 0; i < draw_count; ++i) {
             u8* first = reinterpret_cast<u8*>(set->draw_handles[i]);
             u8* sub = AsdRelPtr(first, 8);
-            u32 hash = AsdRes_Hash(reinterpret_cast<const char*>(sub));
+            u32 hash = AsdString_Length(reinterpret_cast<const char*>(sub));
 
             void* match = nullptr;
             for (s32 j = 0; j < static_cast<s32>(node_count); ++j) {
                 u8* node = reinterpret_cast<u8*>(set->node_handles[j]);
                 u8* names = AsdRelPtr(node, 0x0C);
-                if (AsdRes_Hash(reinterpret_cast<const char*>(names)) != hash) {
+                if (AsdString_Length(reinterpret_cast<const char*>(names)) != hash) {
                     continue;
                 }
                 if (AsdName_Equal(reinterpret_cast<const char*>(names),
@@ -1532,7 +1542,11 @@ AsdModelNodeSet* AsdModel_func_0031dc4c(AsdModelView* view) {
                             reinterpret_cast<BindFn>(track_vtable[3])(track, list_obj);
                             if (*reinterpret_cast<void**>(node + 0x148) != nullptr) {
                                 u8* grid = *reinterpret_cast<u8**>(node + 0x28);
-                                u32 index = *reinterpret_cast<u32*>(node + 0x124);
+                                // 0x0031e3dc: the `ldr r1,[r6,#0x28]!`
+                                // writeback makes the following `#0x124`
+                                // (0x0031e3e0) address node + 0x14C.
+                                u32 index = static_cast<u32>(
+                                    reinterpret_cast<AsdModelData*>(node)->field_14c);
                                 s32 rows = *reinterpret_cast<s32*>(grid + 0x28);
                                 u32 count = (*reinterpret_cast<u32*>(grid + 0x10) -
                                              *reinterpret_cast<u32*>(grid + 0x0C)) >> 2;
@@ -1670,7 +1684,7 @@ void* EffectEditor_func_002fcd20() {
     AsdWork_Zero(work, work_size);
 
     u8* text = work + slot_count * 0x18;
-    UiDraw_Bind(reinterpret_cast<void*>(kEditorDrawDesc), ed.parts, 0x80);
+    AsdMem_CopyLarge(reinterpret_cast<void*>(kEditorDrawDesc), ed.parts, 0x80);
 
     for (u32 i = 0; i < draw_count; ++i) {
         EffectEditorPart* part = reinterpret_cast<EffectEditorPart*>(
@@ -1885,7 +1899,7 @@ void* EffectEditor_func_002fcd20() {
         *reinterpret_cast<u32*>(widget + 0x0C) = 0;
     }
 
-    UiDraw_Bind(ed.parts, reinterpret_cast<void*>(kEditorDrawDesc), 0x80);
+    AsdMem_CopyLarge(ed.parts, reinterpret_cast<void*>(kEditorDrawDesc), 0x80);
 
     if (UiInput_Trigger2(0x19) != 0) {
         ed.speed_mode = ed.speed_mode == 1 ? 0 : 1;
@@ -1924,7 +1938,7 @@ void* EffectEditor_func_002fcd20() {
             }
             u8* part = reinterpret_cast<u8*>(AsdParts_Get(ed.parts, list_index));
             ed.work_part = AsdPart_Wrap(*reinterpret_cast<void**>(part + 0x90));
-            UiDraw_Bind(reinterpret_cast<void*>(kEditorDrawDescAlt), part, 0x80);
+            AsdMem_CopyLarge(reinterpret_cast<void*>(kEditorDrawDescAlt), part, 0x80);
         }
         ed.flag_06 = 0;
     } else {

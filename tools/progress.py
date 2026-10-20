@@ -26,25 +26,69 @@ class VerificationError(Exception):
     """Raised when a function claimed as decompiled or scaffolded fails verification."""
 
 
-def extract_function_body(src_text: str, addr: str) -> str | None:
-    """Extracts the C++ function body following DECOMP_FUNC(addr, size)."""
-    lower_text = src_text.lower()
-    marker = f"decomp_func({addr.lower()}"
-    idx = lower_text.find(marker)
-    if idx == -1:
+def _mask_comments(text: str) -> str:
+    """Replace comment characters with spaces while preserving length/offsets."""
+    def mask_block(match: re.Match[str]) -> str:
+        return "".join("\n" if ch == "\n" else " " for ch in match.group(0))
+
+    text = re.sub(r"/\*.*?\*/", mask_block, text, flags=re.DOTALL)
+    return re.sub(r"//[^\n]*", lambda m: " " * len(m.group(0)), text)
+
+
+def extract_function_body(
+    src_text: str,
+    addr: str,
+    definition_name: str | None = None,
+    expected_size: int | None = None,
+) -> str | None:
+    """Extracts the C++ function body following DECOMP_FUNC(addr, size).
+
+    The marker must declare the ledger size and, when ``definition_name`` is
+    supplied, must be followed by that function's definition before the next
+    opening brace.  This prevents a marker whose body was deleted from
+    silently parsing the body of the function that follows it.
+    """
+    marker_re = re.compile(
+        rf"DECOMP_FUNC\(\s*{re.escape(addr)}\s*,\s*(\d+)\s*\)",
+        re.IGNORECASE,
+    )
+    match = marker_re.search(src_text)
+    if match is None:
         return None
-    open_brace = src_text.find("{", idx)
-    if open_brace == -1:
+
+    marker_size = int(match.group(1))
+    if expected_size is not None and marker_size != expected_size:
+        raise VerificationError(
+            f"DECOMP_FUNC marker for {addr} declares {marker_size} bytes, "
+            f"expected {expected_size} from config/functions.csv"
+        )
+
+    # Mask comments after the marker so braces inside them cannot be mistaken
+    # for the body delimiter.
+    suffix = src_text[match.end():]
+    masked_suffix = _mask_comments(suffix)
+    open_rel = masked_suffix.find("{")
+    if open_rel == -1:
         return None
+
+    if definition_name is not None:
+        header = masked_suffix[:open_rel]
+        if not re.search(rf"\b{re.escape(definition_name)}\s*\(", header):
+            return None
+
+    open_brace = match.end() + open_rel
+    masked_body = _mask_comments(src_text[open_brace + 1:])
     brace_depth = 1
-    i = open_brace + 1
-    while i < len(src_text) and brace_depth > 0:
-        if src_text[i] == "{":
+    i = 0
+    while i < len(masked_body) and brace_depth > 0:
+        if masked_body[i] == "{":
             brace_depth += 1
-        elif src_text[i] == "}":
+        elif masked_body[i] == "}":
             brace_depth -= 1
         i += 1
-    return src_text[open_brace + 1 : i - 1]
+    if brace_depth != 0:
+        return None
+    return src_text[open_brace + 1 : open_brace + i]
 
 
 def is_stub_body(body: str, size: int) -> bool:
@@ -134,7 +178,7 @@ def compute_progress(functions_csv: Path, repo_root: Path) -> dict:
                         f"Function {name} ({addr}) not found with DECOMP_FUNC({addr}, ...) in '{src_rel}'"
                     )
 
-                body = extract_function_body(src_text, addr)
+                body = extract_function_body(src_text, addr, name, size)
                 if body is None:
                     raise VerificationError(
                         f"Could not parse function body for {name} ({addr}) in '{src_rel}'"
