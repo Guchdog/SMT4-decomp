@@ -1782,7 +1782,7 @@ address,size,status,category,name,src_file
 0x0017fe9c,27308,stub,camp,Camp_MainProc,src/camp/camp_main.cpp
 0x00186948,1740,todo,ui,ui_func_00186948,
 0x00187014,5176,non_matching,ui,StatusDown_DrawPartyAndSubViews,src/ui/status_down.cpp
-0x0018844c,4016,todo,engine,engine_func_0018844c,
+0x0018844c,4016,non_matching,engine,engine_func_0018844c,src/engine/asd_runtime.cpp
 0x001893fc,1832,todo,camp,camp_func_001893fc,
 0x00189b24,1248,todo,script_vm,script_vm_func_00189b24,
 0x0018a004,732,todo,battle,battle_func_0018a004,
@@ -1981,7 +1981,7 @@ address,size,status,category,name,src_file
 0x001ab8d8,40,todo,script_vm,script_vm_func_001ab8d8,
 0x001ab900,296,todo,script_vm,script_vm_func_001ab900,
 0x001aba28,108,todo,script_vm,script_vm_func_001aba28,
-0x001aba94,4672,todo,engine,engine_func_001aba94,
+0x001aba94,4672,non_matching,engine,engine_func_001aba94,src/engine/asd_runtime.cpp
 0x001accd4,1104,non_matching,ui,SearchWin_DrawUpAndCalc,src/ui/window.cpp
 0x001ad124,60,todo,battle,battle_func_001ad124,
 0x001ad160,60,todo,battle,battle_func_001ad160,
@@ -6242,7 +6242,7 @@ address,size,status,category,name,src_file
 0x002e4a38,132,todo,unknown,func_002e4a38,
 0x002e4abc,80,todo,camp,camp_func_002e4abc,
 0x002e4b0c,4,todo,unknown,func_002e4b0c,
-0x002e4b10,4116,todo,engine,engine_func_002e4b10,
+0x002e4b10,4116,non_matching,engine,engine_func_002e4b10,src/engine/asd_runtime.cpp
 0x002e5b24,128,todo,unknown,func_002e5b24,
 0x002e5ba4,116,todo,unknown,func_002e5ba4,
 0x002e5c18,2340,todo,engine,engine_func_002e5c18,
@@ -6704,7 +6704,7 @@ address,size,status,category,name,src_file
 0x00304144,8,todo,unknown,func_00304144,
 0x0030414c,8,todo,unknown,func_0030414c,
 0x00304154,16,todo,unknown,func_00304154,
-0x00304164,3684,todo,engine,engine_func_00304164,
+0x00304164,3684,non_matching,engine,engine_func_00304164,src/engine/asd_runtime.cpp
 0x00304fc8,808,todo,unknown,func_00304fc8,
 0x003052f0,212,todo,engine,engine_func_003052f0,
 0x003053c4,1500,todo,engine,engine_func_003053c4,
