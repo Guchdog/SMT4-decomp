@@ -49,7 +49,7 @@
 - `func_00177370`: `0x00177370` (7,456 B)
 - `func_0017d970`: `0x0017d970` (7,348 B)
 
-- [ ] **Step 1: Update progress test expectations (RED)**
+- [x] **Step 1: Update progress test expectations (RED)**
 
 ```python
 self.assertEqual(stats["decompiled_functions"], 358)
@@ -60,16 +60,16 @@ self.assertEqual(stats["total_explored_functions"], 397)
 self.assertEqual(stats["total_explored_bytes"], 684048)
 ```
 
-- [ ] **Step 2: Run the suite to verify it fails**
+- [x] **Step 2: Run the suite to verify it fails**
 
 Run: `python -m unittest discover -s tests -v`
 Expected: FAIL with `358 != 355`.
 
-- [ ] **Step 3: Disassemble and implement**
+- [x] **Step 3: Disassemble and implement**
 
 Use `python tools/split_asm.py --addr <address>`. The three routines share `0x7F7F7F7F` masks and repeated channel-pack blocks; recover the common conversion core and the per-format differences. Keep the ledger names (lowercase `func_*` is legal) and document the recovered roles. Preserve every observed branch and store.
 
-- [ ] **Step 4: Update the ledger and verify GREEN**
+- [x] **Step 4: Update the ledger and verify GREEN**
 
 Set `status=non_matching`, `src_file=src/engine/tex_convert.cpp`. Run:
 
@@ -80,7 +80,7 @@ python -m unittest discover -s tests -v
 
 Expected: 358 / 435,808 B, 39 / 248,240 B, 397 / 684,048 B; all tests PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```powershell
 git commit -m "feat(engine): decompile three texture conversion routines (+22,260 B, 21.79% explored)"
@@ -99,7 +99,7 @@ git commit -m "feat(engine): decompile three texture conversion routines (+22,26
 **Functions:**
 - `func_0011d9fc`: `0x0011d9fc` (6,920 B)
 
-- [ ] **Step 1: Update progress test expectations (RED)**
+- [x] **Step 1: Update progress test expectations (RED)**
 
 ```python
 self.assertEqual(stats["decompiled_functions"], 359)
@@ -110,19 +110,19 @@ self.assertEqual(stats["total_explored_functions"], 398)
 self.assertEqual(stats["total_explored_bytes"], 690968)
 ```
 
-- [ ] **Step 2: Run the suite to verify it fails**
+- [x] **Step 2: Run the suite to verify it fails**
 
 Expected: FAIL with `359 != 358`.
 
-- [ ] **Step 3: Disassemble and implement**
+- [x] **Step 3: Disassemble and implement**
 
 Recover the routine's role from its call graph/literals (`0x00420d30` table reference). Preserve resource-table traversal, task ownership, and all observed calls.
 
-- [ ] **Step 4: Update the ledger and verify GREEN**
+- [x] **Step 4: Update the ledger and verify GREEN**
 
 Set `status=non_matching`, `src_file=src/engine/event_runtime.cpp`; expected 359 / 442,728 B, 398 / 690,968 B (22.0116%); all tests PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```powershell
 git commit -m "feat(engine): decompile event/resource runtime (+6,920 B, 22.0% milestone reached at 22.0116%)"
