@@ -17,6 +17,9 @@ static BattleGridState* const gp_BattleGridState =
 static const u32* const gp_ScreenMode =
     reinterpret_cast<const u32*>(0x0049F91C);
 
+static void* const* const gp_BattleCamera =
+    reinterpret_cast<void* const*>(0x00447E88);
+
 // Helper for sine/cosine lookup table interpolation (modulo 65536.0f)
 static void LookupTrig(f32 angle_deg, f32& out_sin, f32& out_cos) {
     f32 ang = angle_deg * (256.0f / 360.0f);
@@ -464,7 +467,7 @@ void battle_func_001fb520() {
 
     if (overlay_flag != 0) {
         if (grid->flag_30 != 0) {
-            s32 r = static_cast<s32>(grid->param_14 + 0xFF + grid->param_14);
+            s32 r = static_cast<s32>(grid->param_14 + 0xFF + grid->param_28);
             if (r < 0) r = 0;
             if (r > 0xFF) r = 0xFF;
             u32 color = static_cast<u32>(r) | 0xFFFFFF00u;
@@ -605,11 +608,11 @@ void battle_func_001aac60(smt4::battle::BattleUnitSprite* unit) {
         script_vm_func_002b71f8(matrix, matrix, cam_mat);
     }
 
-    if (unit->extra && (unit->extra->field_04[0] != 0.0f || unit->extra->field_04[1] != 0.0f)) {
+    if (unit->extra && unit->extra->anim_sub) {
         f32 anim_mat[16];
         f32 anim_vec[3] = {
-            unit->extra->field_04[0] * 0.03125f,
-            unit->extra->field_04[1] * -0.03125f,
+            unit->extra->anim_sub->anim[0] * 0.03125f,
+            unit->extra->anim_sub->anim[1] * -0.03125f,
             0.0f
         };
         func_00286700(anim_mat, anim_vec);
@@ -789,12 +792,6 @@ void battle_func_0020dc34() {
     if (alpha < 0) alpha = 0;
     u32 packed_color = 0xFFFFFF00u | static_cast<u8>(alpha);
 
-    f32 rot_mat[12] = {
-        1.0f, 0.0f, 0.0f, 0.0f,
-        0.0f, 1.0f, 0.0f, 0.0f,
-        0.0f, 0.0f, 1.0f, 0.0f
-    };
-
     f32 base_corners[4][3] = {
         { -scale_val, -scale_val, 0.0f },
         {  scale_val, -scale_val, 0.0f },
@@ -803,6 +800,16 @@ void battle_func_0020dc34() {
     };
 
     if (screen_mode >= 100) {
+        f32 s = 0.0f;
+        f32 c = 1.0f;
+        smt4::battle::LookupTrig(state->rot_y, s, c);
+
+        f32 rot_mat[12] = {
+             c,    0.0f,  s,    0.0f,
+             0.0f, 1.0f,  0.0f, 0.0f,
+            -s,    0.0f,  c,    0.0f
+        };
+
         const f32 step_scale = 4.0f;
         const f32 base_step = 50.0f;
 
@@ -810,16 +817,30 @@ void battle_func_0020dc34() {
             f32 step = base_step + static_cast<f32>(state->timer * i) * step_scale;
             f32 trans[4][3];
 
-            for (s32 c = 0; c < 4; ++c) {
-                battle_func_002ad6d8(trans[c], rot_mat, base_corners[c]);
-                trans[c][0] += state->offset[0];
-                trans[c][1] += state->offset[1] + step;
-                trans[c][2] += state->offset[2];
+            for (s32 c_idx = 0; c_idx < 4; ++c_idx) {
+                battle_func_002ad6d8(trans[c_idx], rot_mat, base_corners[c_idx]);
+                trans[c_idx][0] += state->offset[0];
+                trans[c_idx][1] += state->offset[1] + step;
+                trans[c_idx][2] += state->offset[2];
             }
 
             func_002ba520(packed_color, packed_color, packed_color, packed_color);
         }
     } else {
+        const u8* cam = smt4::battle::gp_BattleCamera ? static_cast<const u8*>(*smt4::battle::gp_BattleCamera) : nullptr;
+        f32 cam_yaw = cam ? *reinterpret_cast<const f32*>(cam + 0x4C) : 0.0f;
+        const f32* cam_pos = cam ? reinterpret_cast<const f32*>(cam + 0x1C) : state->offset;
+
+        f32 s = 0.0f;
+        f32 c = 1.0f;
+        smt4::battle::LookupTrig(cam_yaw, s, c);
+
+        f32 rot_mat[12] = {
+             c,    0.0f,  s,    0.0f,
+             0.0f, 1.0f,  0.0f, 0.0f,
+            -s,    0.0f,  c,    0.0f
+        };
+
         const f32 step_scale = 1.5f;
         const f32 base_step = 6.0f;
 
@@ -827,11 +848,11 @@ void battle_func_0020dc34() {
             f32 step = base_step + static_cast<f32>(state->timer * i) * step_scale;
             f32 trans[4][3];
 
-            for (s32 c = 0; c < 4; ++c) {
-                battle_func_002ad6d8(trans[c], rot_mat, base_corners[c]);
-                trans[c][0] += state->offset[0];
-                trans[c][1] += state->offset[1] + step;
-                trans[c][2] += state->offset[2];
+            for (s32 c_idx = 0; c_idx < 4; ++c_idx) {
+                battle_func_002ad6d8(trans[c_idx], rot_mat, base_corners[c_idx]);
+                trans[c_idx][0] += cam_pos[0];
+                trans[c_idx][1] += cam_pos[1] + step;
+                trans[c_idx][2] += cam_pos[2];
             }
 
             func_002ba520(packed_color, packed_color, packed_color, packed_color);

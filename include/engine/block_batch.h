@@ -34,6 +34,7 @@ static_assert(offsetof(BattleUnitBillboard, id) == 0x38);
  *   +0x40: 32-bit mode selection (`ldr r0,[r4,#0x40]`)
  *   +0x44: 32-bit timer / frame counter (`ldr r6,[r4,#0x44]`)
  *   +0x48: 3-float base offset (`vldr s1,[r4,#0x48]`)
+ *   +0x54: 1-float yaw rotation angle (`vldr s2,[r4,#0x54]`)
  */
 struct BattleEffectState {
     u8  pad_00[0x3C];
@@ -42,11 +43,13 @@ struct BattleEffectState {
     s32 mode;                           // +0x40: `ldr r0,[r4,#0x40]` (0x0020dd00)
     s32 timer;                          // +0x44: `ldr r6,[r4,#0x44]` (0x0020dd60)
     f32 offset[3];                      // +0x48: `vldr s1,[r4,#0x48]` (0x0020e23c)
+    f32 rot_y;                          // +0x54: `vldr s2,[r4,#0x54]` (0x0020de54)
 };
 static_assert(offsetof(BattleEffectState, active) == 0x3C);
 static_assert(offsetof(BattleEffectState, mode) == 0x40);
 static_assert(offsetof(BattleEffectState, timer) == 0x44);
 static_assert(offsetof(BattleEffectState, offset) == 0x48);
+static_assert(offsetof(BattleEffectState, rot_y) == 0x54);
 
 /**
  * 0x001FB520: Screen distortion/transition grid state at 0x00448C58.
@@ -86,14 +89,20 @@ static_assert(offsetof(BattleGridState, param_28) == 0x28);
 static_assert(offsetof(BattleGridState, flag_30) == 0x30);
 static_assert(offsetof(BattleGridState, mode_3c) == 0x3C);
 
+/** Nested animation sub-object pointed to through BattleDrawUnitExtra::+0x04. */
+struct BattleDrawUnitAnimSub {
+    f32 anim[2];                        // +0x00: `vldr s1,[r0]` (0x001aaf44), `vldr s0,[r0,#4]` (0x001aaf4c)
+};
+static_assert(offsetof(BattleDrawUnitAnimSub, anim) == 0x00);
+
 /** Additional nested state pointed to through BattleUnitSprite::+0x354. */
 struct BattleDrawUnitExtra {
-    u8  pad_00[4];
-    f32 field_04[2];                    // +0x04: `vldr s1,[r0]` (0x001aaf44)
-    u8  pad_0c[8];
-    f32 scale_factor;                   // +0x14: `vldr s1,[r0,#0x14]` (0x001ab310)
+    u8                     pad_00[4];
+    BattleDrawUnitAnimSub* anim_sub;            // +0x04: `ldr r0,[r0,#4]` (0x001aaf38)
+    u8                     pad_08[0x0C];
+    f32                    scale_factor;        // +0x14: `vldr s1,[r0,#0x14]` (0x001ab310)
 };
-static_assert(offsetof(BattleDrawUnitExtra, field_04) == 0x04);
+static_assert(offsetof(BattleDrawUnitExtra, anim_sub) == 0x04);
 static_assert(offsetof(BattleDrawUnitExtra, scale_factor) == 0x14);
 
 /** 0x18-byte quad vertex used in BattleUnitSprite. */
