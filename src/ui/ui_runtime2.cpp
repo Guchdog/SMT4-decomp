@@ -15,6 +15,12 @@ using engine::Npc2dLayoutNode;
 
 namespace {
 
+// Canonical 0x002BF6D0 declaration returns `const void*`; this TU reads the
+// offset-compatible Npc2dLayoutNode view (x +0x08, y +0x0A, payload +0x0C).
+inline const Npc2dLayoutNode* LayoutNode(u32 group, u32 node) {
+    return static_cast<const Npc2dLayoutNode*>(UiLayout_GetNode(group, node));
+}
+
 // ---------------------------------------------------------------------------
 // Shared ABI declarations.  Spellings match the canonical declarations used by
 // the other UI TUs (ui_runtime.cpp / ui_scene_extras.cpp / status_down.cpp);
@@ -24,7 +30,6 @@ namespace {
 extern "C" {
     extern u8* g_AsdGpuState;                                                   // 0x0044EA00
 
-    const Npc2dLayoutNode* UiLayout_GetNode(u32 group, u32 node);               // 0x002BF6D0
     void  UiSprite_DrawNode(u32 screen, u32 group, u32 node,
                             s32 x, s32 y, s32 prio);                            // 0x002BF460
     void  UiSprite_DrawPanel(u32 screen, u32 group, u32 panel,
@@ -75,7 +80,9 @@ extern "C" {
     void* Camp_GetMainWork();                                                   // 0x00262A44
     s32   Fusion_GetPossibleCount();                                            // 0x0029E080
     const char* Item_GetShortNameString(u16 item_id);                           // 0x002BD258
-    const char* Item_GetDescriptionString(u16 item_id);                         // 0x002BD020
+    // 0x002BD020 reads its second argument into r4 at 0x002BD024; both
+    // 0x001F255C and 0x001F2C3C set r1 = 0.
+    const char* Item_GetDescriptionString(u16 item_id, s32 mode);                // 0x002BD020
     s32   Compendium_IsRegistered(u16 demon_id);                                // 0x0029ED08
 
     // 0x001E989C helpers.
@@ -261,14 +268,14 @@ void ui_func_00214964() {
             // 0x00214CD4: empty page.  No GPU ring is pushed on this path.
             // The anchor is the page's own node (`add r1,sl,#0x51`, 0x00214CD4).
             const Npc2dLayoutNode* anchor =
-                UiLayout_GetNode(0x36, 0x51 + static_cast<u32>(slot));
+                LayoutNode(0x36, 0x51 + static_cast<u32>(slot));
             UiSprite_SetGlobalAlpha(scale);
             UiSprite_DrawPanel(2, 0x36,
                                (g_SaveLoadUIManager.selected == static_cast<u32>(slot)) ? 5 : 4,
                                pos_x, anchor->y, 2);
 
             UiSprite_SetGlobalAlpha(1.0F);                              // 0x00214D1C
-            const Npc2dLayoutNode* name_node = UiLayout_GetNode(0x36, 0x2F);
+            const Npc2dLayoutNode* name_node = LayoutNode(0x36, 0x2F);
             const Tbl1Header* sub_table = Tbb_GetGlobalSubTable(0x3D, 0);
             const u8* payload = static_cast<const u8*>(Tbb_GetPayloadData(sub_table));
             const char* name =
@@ -290,7 +297,7 @@ void ui_func_00214964() {
         UiSprite_ResetBlend();
 
         const Npc2dLayoutNode* anchor =
-            UiLayout_GetNode(0x36, 0x51 + static_cast<u32>(slot));
+            LayoutNode(0x36, 0x51 + static_cast<u32>(slot));
         UiSprite_SetGlobalAlpha(scale);
 
         // 0x00214AF4..0x00214B04: panel 3 for the selected page, 2 otherwise.
@@ -299,7 +306,7 @@ void ui_func_00214964() {
                            pos_x, anchor->y, 2);
 
         // 0x00214B08..0x00214B58: slot name anchored at layout node 0x2F.
-        const Npc2dLayoutNode* field_node = UiLayout_GetNode(0x36, 0x2F);
+        const Npc2dLayoutNode* field_node = LayoutNode(0x36, 0x2F);
         UiFont_DrawText(4, 0xFFFFFFFF, page.text,
                         static_cast<f32>(pos_x + field_node->x),
                         static_cast<f32>(anchor->y + field_node->y),
@@ -310,10 +317,10 @@ void ui_func_00214964() {
         const u32 digit = page.digit_4C;
         const u32 units = digit % 10;
         const u32 tens = (digit - units) / 10;
-        const Npc2dLayoutNode* units_node = UiLayout_GetNode(0x36, 0x39);
+        const Npc2dLayoutNode* units_node = LayoutNode(0x36, 0x39);
         UiSprite_DrawNode(2, 0x0D, 0xBB8 + units,
                           pos_x + units_node->x, anchor->y + units_node->y, 2);
-        const Npc2dLayoutNode* tens_node = UiLayout_GetNode(0x36, 0x3A);
+        const Npc2dLayoutNode* tens_node = LayoutNode(0x36, 0x3A);
         UiSprite_DrawNode(2, 0x0D, 0xBB8 + tens,
                           pos_x + tens_node->x, anchor->y + tens_node->y, 2);
 
@@ -335,7 +342,7 @@ void ui_func_00214964() {
         }
 
         // 0x00214DE4..0x00214EB0: optional clamp/frame field at node 0x2A.
-        const Npc2dLayoutNode* field_2a = UiLayout_GetNode(0x36, 0x2A);
+        const Npc2dLayoutNode* field_2a = LayoutNode(0x36, 0x2A);
         if (page.clamp_58 != 0 && work->active_34C[slot] != 0) {
             u32 value = page.clamp_58;
             if (value - 200 < 100) {
@@ -356,7 +363,7 @@ void ui_func_00214964() {
         // (0x250AAC), then formatted through 0x00215394 and centred in the
         // node 0x23 rectangle (strlen * 9 / 2, 0x00214FF0..0x00215004).
         if (work->active_34C[slot] != 0) {
-            const Npc2dLayoutNode* clock_node = UiLayout_GetNode(0x36, 0x23);
+            const Npc2dLayoutNode* clock_node = LayoutNode(0x36, 0x23);
             const u32 timer = page.timer_50;
             const u32 hours = timer / 3600;
             // 0x00214F18..0x00214F20: `mul hours,-225; add timer,hours<<4`
@@ -396,8 +403,8 @@ void ui_func_00214964() {
         if (work->active_34C[slot] != 0) {
             // 0x0021507C: the node 0x10 lookup is not consumed by the listing;
             // the loop is anchored on the page node (r5) instead.
-            (void)UiLayout_GetNode(0x36, 0x10);
-            const Npc2dLayoutNode* icon_node = UiLayout_GetNode(0x36, 0x18);
+            (void)LayoutNode(0x36, 0x10);
+            const Npc2dLayoutNode* icon_node = LayoutNode(0x36, 0x18);
             for (s32 i = 0; i < 4; ++i) {
                 UiSprite_DrawNode(2, 0x36, static_cast<u32>(i + 0x12),
                                   pos_x, anchor->y, 0x0B);
@@ -412,7 +419,7 @@ void ui_func_00214964() {
                 if (page.icon_5C[i] == 0) {
                     continue;
                 }
-                const Npc2dLayoutNode* node = UiLayout_GetNode(0x36, static_cast<u32>(i + 0x19));
+                const Npc2dLayoutNode* node = LayoutNode(0x36, static_cast<u32>(i + 0x19));
                 UiSprite_DrawNode(2, 0x36, 0x16,
                                   pos_x + node->x, anchor->y + node->y, 0x0B);
                 UiSkill_DrawItemIconAndCount(static_cast<s16>(page.icon_5C[i]),
@@ -437,22 +444,22 @@ void ui_func_00214964() {
                     rem_1000 - count_hundreds * 100 - count_tens * 10;
 
                 if (count_thousands != 0) {
-                    const Npc2dLayoutNode* node = UiLayout_GetNode(0x36, 0x72);
+                    const Npc2dLayoutNode* node = LayoutNode(0x36, 0x72);
                     UiSprite_DrawNode(2, 0x0D, 0xBB8 + count_thousands,
                                       pos_x + node->x, anchor->y + node->y, 2);
                 }
                 if ((count_hundreds | count_thousands) != 0) {
-                    const Npc2dLayoutNode* node = UiLayout_GetNode(0x36, 0x71);
+                    const Npc2dLayoutNode* node = LayoutNode(0x36, 0x71);
                     UiSprite_DrawNode(2, 0x0D, 0xBB8 + count_hundreds,
                                       pos_x + node->x, anchor->y + node->y, 2);
                 }
                 if ((count_tens | count_hundreds | count_thousands) != 0) {
-                    const Npc2dLayoutNode* node = UiLayout_GetNode(0x36, 0x70);
+                    const Npc2dLayoutNode* node = LayoutNode(0x36, 0x70);
                     UiSprite_DrawNode(2, 0x0D, 0xBB8 + count_tens,
                                       pos_x + node->x, anchor->y + node->y, 2);
                 }
                 if ((count_units | count_tens | count_hundreds | count_thousands) != 0) {
-                    const Npc2dLayoutNode* node = UiLayout_GetNode(0x36, 0x6F);
+                    const Npc2dLayoutNode* node = LayoutNode(0x36, 0x6F);
                     UiSprite_DrawNode(2, 0x0D, 0xBB8 + count_units,
                                       pos_x + node->x, anchor->y + node->y, 2);
                 }
@@ -471,7 +478,7 @@ void ui_func_00214964() {
     // 0x00215478..0x002155A0: selected-page summary panel on the 0x2AC ring.
     if (work->flag_070 != 0 && work->flag_071 == 0 && work->flag_354 != 0) {
         const Npc2dLayoutNode* node =
-            UiLayout_GetNode(0x36, 0x51 + g_SaveLoadUIManager.selected);
+            LayoutNode(0x36, 0x51 + g_SaveLoadUIManager.selected);
         const u32 mode = static_cast<u32>(reinterpret_cast<std::uintptr_t>(
             UiGpu_SetRenderMode(6, 1, 0)));
         RingPush(0x2AC, mode);
@@ -506,14 +513,14 @@ void ui_func_00214964() {
 
             // 0x00215744: the layout lookup result is not consumed; the panel
             // id is work->panel_050 and the draw is anchored at (0, 0).
-            UiLayout_GetNode(0x36, work->panel_050);
+            LayoutNode(0x36, work->panel_050);
             UiSprite_DrawPanel(2, 0x36, work->panel_050, 0, 0, 0xD3);
 
             // 0x00215770..0x002158B8: nine digit anchors 0x62..0x6A, each with
             // node 0x5F, cached as (x,y) floats in a 9-entry stack array.
             f32 digit_pos[9][2];
             for (s32 i = 0; i < 9; ++i) {
-                const Npc2dLayoutNode* node = UiLayout_GetNode(0x36, static_cast<u32>(i + 0x62));
+                const Npc2dLayoutNode* node = LayoutNode(0x36, static_cast<u32>(i + 0x62));
                 digit_pos[i][0] = static_cast<f32>(node->x);
                 digit_pos[i][1] = static_cast<f32>(node->y);
                 UiSprite_DrawNode(2, 0x36, 0x5F, node->x, node->y, 0xD3);
@@ -575,7 +582,7 @@ void ui_func_001f1fc8(s32 x, s32 y, s32 selected, s32 column, s16 touch_handle) 
     UiSprite_DrawNode(2, 0x24, 0x4A, x, y, 0xC9);
 
     // 0x001F20DC..0x001F2138: header text at node 0x49.
-    const Npc2dLayoutNode* header = UiLayout_GetNode(0x24, 0x49);
+    const Npc2dLayoutNode* header = LayoutNode(0x24, 0x49);
     char text[0x40];
     UiFont_FormatString(text, kFusionPossible);
     UiFont_DrawText(2, 0xFFFFFFFF, text,
@@ -585,7 +592,7 @@ void ui_func_001f1fc8(s32 x, s32 y, s32 selected, s32 column, s16 touch_handle) 
 
     // 0x001F213C..0x001F2180: possible-fusion count at node 0x4C, mode 1,
     // width 2, priority 0xC9.
-    const Npc2dLayoutNode* count_node = UiLayout_GetNode(0x24, 0x4C);
+    const Npc2dLayoutNode* count_node = LayoutNode(0x24, 0x4C);
     UiFont_DrawFormatted(0, count_node->x + x, count_node->y + y, 1, 2, 0xC9,
                          "%d", Fusion_GetPossibleCount());
 
@@ -601,7 +608,9 @@ void ui_func_001f1fc8(s32 x, s32 y, s32 selected, s32 column, s16 touch_handle) 
             continue;
         }
 
-        const Npc2dLayoutNode* row_node = UiLayout_GetNode(0x24, 0x73);
+        // 0x001F21A4: `add r1,r7,#0x73` -> node id 0x73 + row.
+        const Npc2dLayoutNode* row_node =
+            LayoutNode(0x24, 0x73u + static_cast<u32>(row));
         UiSprite_DrawNode(2, 0x24, 0x63, x + row_node->x, y + row_node->y, 0xC9);
         UiSprite_DrawNode(2, 0x24, 0x64, x + row_node->x, y + row_node->y, 0xC9);
 
@@ -612,7 +621,7 @@ void ui_func_001f1fc8(s32 x, s32 y, s32 selected, s32 column, s16 touch_handle) 
         const u32 high = *reinterpret_cast<const u32*>(record + 4);
         if ((high & 0x0001FFFC) == 0) {
             // 0x001F26BC..0x001F26B8: centred "no candidates" text.
-            const Npc2dLayoutNode* empty_node = UiLayout_GetNode(0x24, 0x72);
+            const Npc2dLayoutNode* empty_node = LayoutNode(0x24, 0x72);
             char empty_text[0x40];
             UiFont_FormatString(empty_text, kNoCandidates);
             const s32 measured = UiText_MeasureWidth(empty_text, 2);
@@ -637,7 +646,7 @@ void ui_func_001f1fc8(s32 x, s32 y, s32 selected, s32 column, s16 touch_handle) 
 
         // 0x001F228C..0x001F2308: icon id from the low half of the record
         // (bit 15 cleared), at node 0x6A.
-        const Npc2dLayoutNode* icon_node = UiLayout_GetNode(0x24, 0x6A);
+        const Npc2dLayoutNode* icon_node = LayoutNode(0x24, 0x6A);
         const s32 icon_x = x + row_node->x + icon_node->x;
         const s32 icon_y = y + row_node->y + icon_node->y;
         UiSkill_DrawItemIconAndCount(
@@ -646,7 +655,7 @@ void ui_func_001f1fc8(s32 x, s32 y, s32 selected, s32 column, s16 touch_handle) 
                                  icon_x, icon_y, 0xCE);
 
         // 0x001F230C..0x001F2388: bits 15..30 of the low word at node 0x6B.
-        const Npc2dLayoutNode* icon_node_b = UiLayout_GetNode(0x24, 0x6B);
+        const Npc2dLayoutNode* icon_node_b = LayoutNode(0x24, 0x6B);
         const s32 icon_b_x = x + row_node->x + icon_node_b->x;
         const s32 icon_b_y = y + row_node->y + icon_node_b->y;
         const u32 icon_b = (low << 2) >> 17;
@@ -656,7 +665,7 @@ void ui_func_001f1fc8(s32 x, s32 y, s32 selected, s32 column, s16 touch_handle) 
                                  icon_b_x, icon_b_y, 0xCE);
 
         // 0x001F238C..0x001F2410: the entry id itself at node 0x6C.
-        const Npc2dLayoutNode* icon_node_c = UiLayout_GetNode(0x24, 0x6C);
+        const Npc2dLayoutNode* icon_node_c = LayoutNode(0x24, 0x6C);
         const s32 icon_c_x = x + row_node->x + icon_node_c->x;
         const s32 icon_c_y = y + row_node->y + icon_node_c->y;
         UiSkill_DrawItemIconAndCount(static_cast<s16>(entry_id),
@@ -671,7 +680,7 @@ void ui_func_001f1fc8(s32 x, s32 y, s32 selected, s32 column, s16 touch_handle) 
         UiSprite_DrawNode(2, 0x24, 0x68, x + row_node->x, y + row_node->y, 0xC9);
         UiSprite_DrawNode(2, 0x24, 0x69, x + row_node->x, y + row_node->y, 0xC9);
 
-        const Npc2dLayoutNode* name_node = UiLayout_GetNode(0x24, 0x6E);
+        const Npc2dLayoutNode* name_node = LayoutNode(0x24, 0x6E);
         const char* short_name = Item_GetShortNameString(entry->id);
         UiFont_FormatString(text, "%s", short_name);
         UiFont_DrawText(2, 0xFF, text,
@@ -681,8 +690,8 @@ void ui_func_001f1fc8(s32 x, s32 y, s32 selected, s32 column, s16 touch_handle) 
 
         // 0x001F254C..0x001F25E8: description text centred on node 0x6F and
         // tinted 0x7A4C00FF; the 0xFF colour split follows at 0x002BE4DC.
-        const Npc2dLayoutNode* desc_node = UiLayout_GetNode(0x24, 0x6F);
-        const char* description = Item_GetDescriptionString(entry->id);
+        const Npc2dLayoutNode* desc_node = LayoutNode(0x24, 0x6F);
+        const char* description = Item_GetDescriptionString(entry->id, 0);
         UiFont_FormatString(text, "%s", description);
         const s32 desc_measured = UiText_MeasureWidth(text, 2);
         const s16* desc_rect = reinterpret_cast<const s16*>(desc_node->extra);
@@ -696,7 +705,7 @@ void ui_func_001f1fc8(s32 x, s32 y, s32 selected, s32 column, s16 touch_handle) 
 
         // 0x001F25EC..0x001F2650: the entry's +0x03 byte as "%d" at node
         // 0x71, width 2, priority 0xCE.
-        const Npc2dLayoutNode* count_row = UiLayout_GetNode(0x24, 0x71);
+        const Npc2dLayoutNode* count_row = LayoutNode(0x24, 0x71);
         UiFont_DrawFormatted(0,
                              row_node->x + count_row->x + x,
                              row_node->y + count_row->y + y,
@@ -705,7 +714,7 @@ void ui_func_001f1fc8(s32 x, s32 y, s32 selected, s32 column, s16 touch_handle) 
 
         // 0x001F2654..0x001F26B8: unregistered entries get the 0x6D marker.
         if (Compendium_IsRegistered(entry->id) == 0) {
-            const Npc2dLayoutNode* marker = UiLayout_GetNode(0x24, 0x6D);
+            const Npc2dLayoutNode* marker = LayoutNode(0x24, 0x6D);
             UiSprite_DrawPanel(2, 0x24, 8,
                                x + row_node->x + marker->x,
                                y + row_node->y + marker->y, 0xD3);
@@ -726,7 +735,7 @@ void ui_func_001f1fc8(s32 x, s32 y, s32 selected, s32 column, s16 touch_handle) 
     camp::UniteBibleRow* entry =
         static_cast<camp::UniteBibleRow*>(Battle_GetTalkEntry(entry_id));
 
-    const Npc2dLayoutNode* detail_node = UiLayout_GetNode(0x24, selected + 0x87);
+    const Npc2dLayoutNode* detail_node = LayoutNode(0x24, selected + 0x87);
     UiSprite_SetGlobalAlpha(*reinterpret_cast<const f32*>(work_bytes + 0x44)); // 0x001F279C
     UiSprite_DrawNode(2, 0x24, 0x76, x + detail_node->x, y + detail_node->y, 0xC9);
     UiSprite_DrawNode(2, 0x24, 0x77, x + detail_node->x, y + detail_node->y, 0xC9);
@@ -747,7 +756,7 @@ void ui_func_001f1fc8(s32 x, s32 y, s32 selected, s32 column, s16 touch_handle) 
 
     // 0x001F2918..0x001F29B0: node 0x7A scissor (0x30C render-mode ring set
     // to 3), then the animated sprite at work+0xB0 drawn at node 0x7C.
-    const Npc2dLayoutNode* scissor_node = UiLayout_GetNode(0x24, 0x7A);
+    const Npc2dLayoutNode* scissor_node = LayoutNode(0x24, 0x7A);
     RingSet(0x30C, 3);
     const s16* scissor_rect =
         reinterpret_cast<const s16*>(scissor_node->extra);
@@ -770,7 +779,7 @@ void ui_func_001f1fc8(s32 x, s32 y, s32 selected, s32 column, s16 touch_handle) 
 
     // 0x001F2A30..0x001F2B28: three icon rows 0x7F/0x80/0x81.  The item icons
     // use priority 0xC9 and the description icons 0xE2.
-    const Npc2dLayoutNode* row_7f = UiLayout_GetNode(0x24, 0x7F);
+    const Npc2dLayoutNode* row_7f = LayoutNode(0x24, 0x7F);
     UiSkill_DrawItemIconAndCount(static_cast<s16>(low & 0x7FFF),
                                  x + detail_node->x + row_7f->x,
                                  y + detail_node->y + row_7f->y, 0xC9, 1);
@@ -778,7 +787,7 @@ void ui_func_001f1fc8(s32 x, s32 y, s32 selected, s32 column, s16 touch_handle) 
                              x + detail_node->x + row_7f->x,
                              y + detail_node->y + row_7f->y, 0xE2);
 
-    const Npc2dLayoutNode* row_80 = UiLayout_GetNode(0x24, 0x80);
+    const Npc2dLayoutNode* row_80 = LayoutNode(0x24, 0x80);
     const u32 icon_b = (low << 2) >> 17;
     UiSkill_DrawItemIconAndCount(static_cast<s16>(icon_b),
                                  x + detail_node->x + row_80->x,
@@ -787,7 +796,7 @@ void ui_func_001f1fc8(s32 x, s32 y, s32 selected, s32 column, s16 touch_handle) 
                              x + detail_node->x + row_80->x,
                              y + detail_node->y + row_80->y, 0xE2);
 
-    const Npc2dLayoutNode* row_81 = UiLayout_GetNode(0x24, 0x81);
+    const Npc2dLayoutNode* row_81 = LayoutNode(0x24, 0x81);
     UiSkill_DrawItemIconAndCount(static_cast<s16>(entry_id),
                                  x + detail_node->x + row_81->x,
                                  y + detail_node->y + row_81->y, 0xC9, 0);
@@ -797,7 +806,7 @@ void ui_func_001f1fc8(s32 x, s32 y, s32 selected, s32 column, s16 touch_handle) 
 
     // 0x001F2B2C..0x001F2C28: name at node 0x83 and centred description at
     // node 0x84.
-    const Npc2dLayoutNode* name_node = UiLayout_GetNode(0x24, 0x83);
+    const Npc2dLayoutNode* name_node = LayoutNode(0x24, 0x83);
     const char* short_name = Item_GetShortNameString(entry->id);
     UiFont_FormatString(text, "%s", short_name);
     UiFont_DrawText(3, 0xFFFFFFFF, text,
@@ -805,8 +814,8 @@ void ui_func_001f1fc8(s32 x, s32 y, s32 selected, s32 column, s16 touch_handle) 
                     static_cast<f32>(y + detail_node->y + name_node->y),
                     0.2F, 0.0F, 1.0F);
 
-    const Npc2dLayoutNode* desc_node = UiLayout_GetNode(0x24, 0x84);
-    const char* description = Item_GetDescriptionString(entry->id);
+    const Npc2dLayoutNode* desc_node = LayoutNode(0x24, 0x84);
+    const char* description = Item_GetDescriptionString(entry->id, 0);
     UiFont_FormatString(text, "%s", description);
     const s32 measured = UiText_MeasureWidth(text, 3);
     const s16* desc_rect = reinterpret_cast<const s16*>(desc_node->extra);
@@ -818,7 +827,7 @@ void ui_func_001f1fc8(s32 x, s32 y, s32 selected, s32 column, s16 touch_handle) 
     UiFont_DrawText(3, 0xFFFFFFFF, text, desc_x, desc_y, 0.2F, 0.0F, 1.0F);
 
     // 0x001F2CC8..0x001F2D14: entry +0x03 as "%d" at node 0x86.
-    const Npc2dLayoutNode* detail_count_node = UiLayout_GetNode(0x24, 0x86);
+    const Npc2dLayoutNode* detail_count_node = LayoutNode(0x24, 0x86);
     UiFont_DrawFormatted(0,
                          x + detail_node->x + detail_count_node->x,
                          y + detail_node->y + detail_count_node->y,
@@ -826,7 +835,7 @@ void ui_func_001f1fc8(s32 x, s32 y, s32 selected, s32 column, s16 touch_handle) 
 
     // 0x001F2D18..0x001F2D4C: unregistered entries get the 0x82 marker.
     if (Compendium_IsRegistered(entry->id) == 0) {
-        const Npc2dLayoutNode* marker = UiLayout_GetNode(0x24, 0x82);
+        const Npc2dLayoutNode* marker = LayoutNode(0x24, 0x82);
         UiSprite_DrawPanel(2, 0x24, 8,
                            x + detail_node->x + marker->x,
                            y + detail_node->y + marker->y, 0xD3);
@@ -837,11 +846,11 @@ void ui_func_001f1fc8(s32 x, s32 y, s32 selected, s32 column, s16 touch_handle) 
     // falls through to 0x001F2DFC with r7 still holding node 0x86.
     const Npc2dLayoutNode* tab = detail_count_node;
     if (column == 0) {
-        tab = UiLayout_GetNode(0x24, 0x81);
+        tab = LayoutNode(0x24, 0x81);
     } else if (column == 1) {
-        tab = UiLayout_GetNode(0x24, 0x7F);
+        tab = LayoutNode(0x24, 0x7F);
     } else if (column == 2) {
-        tab = UiLayout_GetNode(0x24, 0x80);
+        tab = LayoutNode(0x24, 0x80);
     }
 
     // 0x001F2DFC..0x001F2E48: 0x2AC ring set to the render mode 6/1/0.
@@ -918,16 +927,16 @@ void ui_func_001e989c(void*) {
         // 0x001E98F8..0x001E9A30: cache the title layout.
         Tbb_EnsureSlotLoaded(0x3A);
         Title_LoadLayout();
-        const Npc2dLayoutNode* node = UiLayout_GetNode(0x11, 0x12);
+        const Npc2dLayoutNode* node = LayoutNode(0x11, 0x12);
         work->field_40[0] = static_cast<f32>(node->x);
         work->field_40[1] = static_cast<f32>(node->y);
-        node = UiLayout_GetNode(0x11, 0x13);
+        node = LayoutNode(0x11, 0x13);
         work->field_40[2] = static_cast<f32>(node->x);
         work->field_40[3] = static_cast<f32>(node->y);
-        node = UiLayout_GetNode(0x11, 0x16);
+        node = LayoutNode(0x11, 0x16);
         work->field_40[4] = static_cast<f32>(node->x);
         work->field_40[5] = static_cast<f32>(node->y);
-        node = UiLayout_GetNode(0x11, 0x17);
+        node = LayoutNode(0x11, 0x17);
         work->field_40[6] = static_cast<f32>(node->x);
         work->field_40[7] = static_cast<f32>(node->y);
         Title_ResetFadeState();
@@ -1445,9 +1454,18 @@ inline u32 AsBits(f32 value) {
     std::memcpy(&bits, &value, sizeof(bits));
     return bits;
 }
+/** ARM register-controlled LSR: a count of 32..255 produces zero (the
+ *  listing's `inv_shift` is 0x20 when `shift == 0`).  C++ shifts by 32 are
+ *  undefined, so special-case it. */
+inline u32 ShiftRightVariable(u32 value, u32 amount) {
+    return amount >= 32u ? 0u : (value >> amount);
+}
 
 } // namespace
 
+// Ledger row 0x003EB4F4 covers 3,724 bytes.  The live log2 algorithm is only
+// 0x003EB4F4..0x003EB61C (this function); 0x003EB63C..0x003EC37C below is a
+// dead CRT static-initialiser tail, retained only to cover the ledger span.
 // DECOMP_FUNC(0x003eb4f4, 3724)
 f32 ui_func_003eb4f4(u32* out_integer, u32 value_bits) {
     // 0x003EB4FC..0x003EB50C: 0xFF000000 <= (bits << 1) writes -1 and returns.
@@ -1469,9 +1487,10 @@ f32 ui_func_003eb4f4(u32* out_integer, u32 value_bits) {
     const u32 t2 = table[2];
     const u32 t3 = table[3];
 
-    const u32 word_a = (t0 << shift) | (t1 >> inv_shift);               // 0x003EB55C
-    const u32 word_b = (t1 << shift) | (t2 >> inv_shift);               // 0x003EB568
-    const u32 word_c = (t2 << shift) | (t3 >> inv_shift);               // 0x003EB560..0x003EB564
+    // shift is 0..31, so inv_shift is 1..32; the >> by 32 case must yield 0.
+    const u32 word_a = (t0 << shift) | ShiftRightVariable(t1, inv_shift); // 0x003EB55C
+    const u32 word_b = (t1 << shift) | ShiftRightVariable(t2, inv_shift); // 0x003EB568
+    const u32 word_c = (t2 << shift) | ShiftRightVariable(t3, inv_shift); // 0x003EB560..0x003EB564
 
     // 0x003EB56C..0x003EB58C: three unsigned 64-bit products, accumulated
     // with the same carry chain as the listing.
@@ -1519,11 +1538,14 @@ f32 ui_func_003eb4f4(u32* out_integer, u32 value_bits) {
 }
 
 // ---------------------------------------------------------------------------
-// 0x003EB63C..0x003EC37C: static-initialiser block contained in the ledger
-// span of 0x003EB4F4.  These are compiler-generated TEARDOWN/registration
-// routines for statics owned by other translation units; they write absolute
-// addresses, so they are reproduced as absolute stores rather than by
-// redeclaring the owners.
+// SOURCE/LEDGER NOTE (important):
+// The ledger row for 0x003EB4F4 covers 3,724 bytes, but only
+// 0x003EB4F4..0x003EB61C is the live fixed-point log2 routine above.  The
+// remaining bytes, 0x003EB63C..0x003EC37C, are dead CRT static-initialiser /
+// teardown thunks for statics owned by other translation units.  They are
+// reconstructed below as observed absolute stores so the ledger span stays
+// accounted for; they are NOT live gameplay logic and should not be read as
+// such.  Keep this note with the block when re-baselining the ledger.
 // ---------------------------------------------------------------------------
 
 namespace {

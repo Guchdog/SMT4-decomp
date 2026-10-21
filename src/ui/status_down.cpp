@@ -86,8 +86,9 @@ extern "C" {
                                s32 prio, const char* fmt, s32 val);                 // 0x002be16c
     void  UiSkill_DrawItemIconAndCount(s32 item_id, s32 x, s32 y, s32 prio, s32 a4);// 0x002b6a98
     void  UiSkill_DrawSkillCostAndInfo(u16 skill_id, s32 x, s32 y, s32 prio);       // 0x002e1e60
+    // 5th/6th arguments are the integer draw-bars gate and row offset.
     void  UiParty_DrawDemonBars(s16 demon_id, s32 x, s32 y, s32 prio,
-                                f32 scale, s32 a5);                                 // 0x002b6f74
+                                s32 draw_bars, s32 a5);                             // 0x002b6f74
     void  UiScrollBar_Draw(UiListCursor* cursor, s32 x, s32 y, u32 group_id,
                            s32 up_h, s32 down_h, u32 a6, u32 a7,
                            u32 a8, u32 a9, u32 a10, s32 btn_h,
@@ -110,8 +111,6 @@ extern "C" {
     s16   UiTouch_RegisterRegion(u32 group_id, u32 node_id);                        // 0x002b88c4
     s16   UiTouch_RegisterRectRegion(s32 x, s32 y, s32 w, s32 h);                   // 0x0029e2f4
     void  UiTouch_UnregisterLastRegion();                                           // 0x002b9008
-    const UiLayoutNode* UiLayout_GetNode(u32 group_id, u32 node_id);                // 0x002bf6d0
-
     s32   Camp_GetTransitionDir();                                                  // 0x0029e2b0
     void  Camp_SetFadeColor(u32 screen, u32 rgba);                                  // 0x0029f10c
     s32   Camp_GetSubMenuState();                                                   // 0x00288408
@@ -148,6 +147,12 @@ extern "C" {
 
     extern const u8 g_StatusDownSpriteTable[];                                      // 0x00407d58
     extern u8* g_AsdGpuState;                                                       // 0x0044ea00
+}
+
+// Canonical 0x002BF6D0 returns `const void*`; offset-compatible view used by
+// this TU (x +0x08, y +0x0A, rect pointer +0x0C).
+static inline const UiLayoutNode* LayoutNode(u32 group_id, u32 node_id) {
+    return static_cast<const UiLayoutNode*>(UiLayout_GetNode(group_id, node_id));
 }
 
 // DECOMP_FUNC(0x001ddab4, 68)
@@ -497,8 +502,8 @@ void StatusDown_SetupTouchRegions() {
                 work->slot_touch_handles[i] = UiTouch_RegisterRegion(0x1A, static_cast<u32>(0x414 + i));
                 ++work->registered_touch_count;
             }
-            const UiLayoutNode* node_btn = UiLayout_GetNode(0x1A, 0x4F1);
-            const UiLayoutNode* node_bg = UiLayout_GetNode(0x1A, 0x41F);
+            const UiLayoutNode* node_btn = LayoutNode(0x1A, 0x4F1);
+            const UiLayoutNode* node_bg = LayoutNode(0x1A, 0x41F);
             const s16 h = UiTouch_RegisterRectRegion(node_btn->x, node_btn->y,
                                                      node_bg->rect->w, node_btn->rect->h);
             work->slot_touch_handles[work->registered_touch_count] = h;
@@ -705,7 +710,7 @@ void StatusDown_DrawPartySlotRow(s32 x_offset, s32 y_offset, s32 demon_id,
                                  u32 node_id, f32 scale, s32 is_stock_row,
                                  s32 is_empty_mode, s32 highlight_mode) {
     StatusDownWork* work = g_StatusDownWork;
-    const UiLayoutNode* row_node = UiLayout_GetNode(0x1A, node_id);
+    const UiLayoutNode* row_node = LayoutNode(0x1A, node_id);
     const s32 selected_row = UiListCursor_GetSelectedRow(&work->list_cursor_main);
 
     const f32 pulse_alpha = *reinterpret_cast<const f32*>(&work->panel_sprites[1].raw[0x20]);
@@ -723,7 +728,7 @@ void StatusDown_DrawPartySlotRow(s32 x_offset, s32 y_offset, s32 demon_id,
     }
     UiSprite_DrawNode(2, 0x1A, cursor_frame_node, x_offset + row_node->x, y_offset + row_node->y, 0xC4);
 
-    const UiLayoutNode* clip_node = UiLayout_GetNode(0x1A, 0x420);
+    const UiLayoutNode* clip_node = LayoutNode(0x1A, 0x420);
     UiScissor_SetRect(x_offset + row_node->x + clip_node->x,
                       y_offset + row_node->y + clip_node->y,
                       clip_node->rect->w, clip_node->rect->h, 1);
@@ -751,7 +756,7 @@ void StatusDown_DrawPartySlotRow(s32 x_offset, s32 y_offset, s32 demon_id,
         }
     }
 
-    const UiLayoutNode* name_node = UiLayout_GetNode(0x1A, 0x42B);
+    const UiLayoutNode* name_node = LayoutNode(0x1A, 0x42B);
     char name_buf[64]{};
     UiFont_FormatString(name_buf, "%s", "");
     UiFont_DrawText(3, text_color, name_buf,
@@ -761,11 +766,14 @@ void StatusDown_DrawPartySlotRow(s32 x_offset, s32 y_offset, s32 demon_id,
 
     if (is_empty_mode == 0 || demon_id != 0) {
         UiSprite_DrawNode(2, 0x1A, 0x425, x_offset + row_node->x, y_offset + row_node->y, 0xC4);
-        const UiLayoutNode* bar_node = UiLayout_GetNode(0x1A, 0x42A);
+        const UiLayoutNode* bar_node = LayoutNode(0x1A, 0x42A);
+        // The listing stores the caller's float word (1.0f at every call site)
+        // directly into the callee's integer gate slot (0x0029A908); convert
+        // the reconstructed float parameter to the gate value.
         UiParty_DrawDemonBars(static_cast<s16>(demon_id),
                               x_offset + row_node->x + bar_node->x,
                               y_offset + row_node->y + bar_node->y,
-                              0xC9, scale, 0);
+                              0xC9, static_cast<s32>(scale), 0);
     }
 
     if (is_stock_row != 0) {
@@ -774,7 +782,7 @@ void StatusDown_DrawPartySlotRow(s32 x_offset, s32 y_offset, s32 demon_id,
 
     if (is_empty_mode != 0) {
         UiSprite_DrawNode(2, 0x1A, 0x522, x_offset + row_node->x, y_offset + row_node->y, 0xC4);
-        const UiLayoutNode* lv_node = UiLayout_GetNode(0x1A, 0x52A);
+        const UiLayoutNode* lv_node = LayoutNode(0x1A, 0x52A);
         if (demon_id != 0) {
             const s32 lv = Party_GetDemonLevel(demon_id);
             UiFont_DrawFormatted(0, x_offset + row_node->x + lv_node->x,
@@ -803,7 +811,7 @@ void StatusDown_DrawPartySlotRow(s32 x_offset, s32 y_offset, s32 demon_id,
         order_num = Party_GetDemonActiveIndex(demon_id);
     }
 
-    const UiLayoutNode* ord_node = UiLayout_GetNode(0x1A, 0x429);
+    const UiLayoutNode* ord_node = LayoutNode(0x1A, 0x429);
     UiFont_DrawFormatted(0, x_offset + row_node->x + ord_node->x,
                          y_offset + row_node->y + ord_node->y,
                          1, 4, 0xC9, "%d", order_num);
@@ -1364,8 +1372,8 @@ void StatusDown_DrawSkillList(s32 x_offset, s32 y_offset) {
             continue;
         }
 
-        const UiLayoutNode* row_node = UiLayout_GetNode(0x1A, static_cast<u32>(0x44C + row));
-        const UiLayoutNode* name_node = UiLayout_GetNode(0x1A, 0x44B);
+        const UiLayoutNode* row_node = LayoutNode(0x1A, static_cast<u32>(0x44C + row));
+        const UiLayoutNode* name_node = LayoutNode(0x1A, 0x44B);
 
         if (hide_names) {
             char buf[64]{};
@@ -1384,14 +1392,14 @@ void StatusDown_DrawSkillList(s32 x_offset, s32 y_offset) {
             }
         }
 
-        const UiLayoutNode* icon_node = UiLayout_GetNode(0x1A, 0x449);
+        const UiLayoutNode* icon_node = LayoutNode(0x1A, 0x449);
         const s32 item_id_arg = hide_names ? 0 : static_cast<s16>(entry.id);
         UiSkill_DrawItemIconAndCount(item_id_arg,
                                      x_offset + row_node->x + icon_node->x,
                                      y_offset + row_node->y + icon_node->y,
                                      0xB5, 0);
 
-        const UiLayoutNode* cost_node = UiLayout_GetNode(0x1A, 0x44A);
+        const UiLayoutNode* cost_node = LayoutNode(0x1A, 0x44A);
         UiSkill_DrawSkillCostAndInfo(entry.value,
                                      x_offset + row_node->x + cost_node->x,
                                      y_offset + row_node->y + cost_node->y,
@@ -1401,7 +1409,7 @@ void StatusDown_DrawSkillList(s32 x_offset, s32 y_offset) {
     if (work->state == 17) {
         const StatusDownListEntry& sel_entry = work->skill_entries[scroll_offset + selected_row];
         if (sel_entry.value != 0) {
-            const UiLayoutNode* sel_node = UiLayout_GetNode(0x1A, static_cast<u32>(0x42C + selected_row));
+            const UiLayoutNode* sel_node = LayoutNode(0x1A, static_cast<u32>(0x42C + selected_row));
             const f32 pulse_alpha = *reinterpret_cast<const f32*>(&work->panel_sprites[1].raw[0x20]);
             UiSprite_SetGlobalAlpha(pulse_alpha);
             UiSprite_DrawPanel(2, 0x1A, 8, x_offset + sel_node->x, y_offset + sel_node->y, 0xBF);
@@ -1418,7 +1426,7 @@ void StatusDown_DrawSkillList(s32 x_offset, s32 y_offset) {
             UiSprite_DrawNode(2, 0x1A, cursor_frame_node, x_offset + sel_node->x, y_offset + sel_node->y, 0xC4);
             UiSprite_DrawNode(2, 0x1A, 0x457, x_offset + sel_node->x, y_offset + sel_node->y, 0xC4);
 
-            const UiLayoutNode* clip_node = UiLayout_GetNode(0x1A, 0x420);
+            const UiLayoutNode* clip_node = LayoutNode(0x1A, 0x420);
             UiScissor_SetRect(x_offset + sel_node->x + clip_node->x,
                               y_offset + sel_node->y + clip_node->y,
                               clip_node->rect->w, clip_node->rect->h, 1);
@@ -1429,14 +1437,14 @@ void StatusDown_DrawSkillList(s32 x_offset, s32 y_offset) {
                               x_offset + anim_x + sel_node->x,
                               y_offset + anim_y + sel_node->y, 0xC9);
 
-            const UiLayoutNode* icon_node = UiLayout_GetNode(0x1A, 0x458);
+            const UiLayoutNode* icon_node = LayoutNode(0x1A, 0x458);
             const s32 item_id_arg = hide_names ? 0 : static_cast<s16>(sel_entry.id);
             UiSkill_DrawItemIconAndCount(item_id_arg,
                                          x_offset + sel_node->x + icon_node->x,
                                          y_offset + sel_node->y + icon_node->y,
                                          0xC9, 0);
 
-            const UiLayoutNode* cost_node = UiLayout_GetNode(0x1A, 0x459);
+            const UiLayoutNode* cost_node = LayoutNode(0x1A, 0x459);
             UiSkill_DrawSkillCostAndInfo(sel_entry.value,
                                          x_offset + sel_node->x + cost_node->x,
                                          y_offset + sel_node->y + cost_node->y,
@@ -1732,7 +1740,7 @@ void StatusDown_DrawTaskCallback(void* arg) {
                     continue;
                 }
                 const u32 node_id = static_cast<u32>(0x4AE + col + (row << 2));
-                const UiLayoutNode* node = UiLayout_GetNode(0x1A, node_id);
+                const UiLayoutNode* node = LayoutNode(0x1A, node_id);
                 if (node != nullptr) {
                     UiSkill_DrawItemIconAndCount(entry.id, base_x + node->x, base_y + node->y, 0xB5, entry.value);
                 }
@@ -1771,7 +1779,7 @@ void StatusDown_DrawTaskCallback(void* arg) {
                 continue;
             }
             const u32 node_id = static_cast<u32>(0x414 + row);
-            const UiLayoutNode* node = UiLayout_GetNode(0x1A, node_id);
+            const UiLayoutNode* node = LayoutNode(0x1A, node_id);
             if (node != nullptr) {
                 UiSprite_DrawNode(2, 0x1A, node_id, base_x + node->x, base_y + node->y, 0xC4);
             }

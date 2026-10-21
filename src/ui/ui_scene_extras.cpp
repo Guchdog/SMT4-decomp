@@ -12,12 +12,42 @@ TalkOverlayFlags g_TalkOverlayFlags{};                 // 0x0049FB1C (BSS)
 EffMenuScene g_EffMenuScene{};                         // 0x004D8F40 (BSS)
 EffMenuScroll g_EffMenuScroll{};                       // 0x004D9290 (BSS)
 EffMenuAnimConfig g_EffMenuAnimConfig{};               // 0x004D92B4 (BSS)
-AsdUiObject g_EffMenuObjectA{};                        // 0x0044FCA8 (BSS)
-AsdUiObject g_EffMenuObjectB{};                        // 0x0044F970 (BSS)
-ResultAnimConfig g_ResultAnim{};                       // 0x004342C8 (BSS)
+// 0x0044FCA8 (.data image): only +0x10/+0x14 are non-zero.
+AsdUiObject g_EffMenuObjectA = {
+    {},                                                 // pad_00
+    0,                                                  // field_0c
+    0x14u,                                              // flags_10 (0x0044FCA8+0x10)
+    reinterpret_cast<u32*>(0x0044F9A8u),                // table_14 (0x0044FCA8+0x14)
+    {},                                                 // pad_18
+    nullptr,                                            // user_1c
+    {},                                                 // pad_20
+    nullptr,                                            // child_34
+};
+// 0x0044F970 (.data image): table_14 differs, flags_10 is zero.
+AsdUiObject g_EffMenuObjectB = {
+    {},                                                 // pad_00
+    0,                                                  // field_0c
+    0u,                                                 // flags_10
+    reinterpret_cast<u32*>(0x00463EF0u),                // table_14
+    {},                                                 // pad_18
+    nullptr,                                            // user_1c
+    {},                                                 // pad_20
+    nullptr,                                            // child_34
+};
+// 0x004342C8 (.data), observed words:
+//   +00 0, +04 0x3E19999A (0.15f), +08 0x3DCCCCCD (0.1f), +0C 5,
+//   +10 0, +14 0.0f, +18 -1, +1C 5, +20 -1, +24 5.
+ResultAnimConfig g_ResultAnim = {
+    0u, 0.15f, 0.1f, 5, 0, 0.0f, -1, 5, -1, 5,
+};
 f32 g_ResultOrigin[3] = {0.0f, 0.0f, 0.0f};            // 0x00493530 (.data)
-TalkAnimRow* g_TalkAnimRows = nullptr;                 // 0x00447E58 (.data pointer)
-UiColorEntry g_UiColorTable[256] = {};                 // 0x00407FC0 (.rodata palette)
+TalkAnimRow* g_TalkAnimRows =                           // 0x00447E58 (.data)
+    reinterpret_cast<TalkAnimRow*>(0x004BB7B0u);        // observed pointer
+// 0x00407FC0: 4096-byte .rodata palette transcribed byte-for-byte from
+// code.bin (256 rows of four floats; row 0 starts { 0, 1, ... }).
+UiColorEntry g_UiColorTable[256] = {
+#include "ui_color_table.inc"
+};
 
 namespace {
 // Aliases to the owners of the shared addresses.  Keeping one definition per
@@ -39,6 +69,13 @@ inline EffMenuWork& EffMenuState() {
 inline f32* QuadTableBase() {
     return reinterpret_cast<f32*>(&engine::g_MapIfProjectionTables);
 }
+// 0x004B6FC0: fourth block of the projection area written by the detail-ring
+// loop (`sl = fp + 0xC60`, 0x001E9260).  sb = 0x004B5D30, fp = 0x004B6360,
+// r8 = 0x004B6990; the output block is sb + 0x1290.
+inline f32* DetailRingOutputBase() {
+    constexpr u32 kOutputOffsetBytes = 0x1290;             // 0x004B6FC0-0x004B5D30
+    return QuadTableBase() + kOutputOffsetBytes / sizeof(f32);
+}
 } // namespace
 
 namespace {
@@ -55,7 +92,6 @@ extern "C" {
                             s32 x, s32 y, s32 prio);                            // 0x002BF460
     void  UiSprite_DrawPanel(u32 screen, u32 group, u32 panel,
                              s32 x, s32 y, s32 prio);                           // 0x002BF558
-    const void* UiLayout_GetNode(u32 group, u32 node);                          // 0x002BF6D0
     void  UiFont_FormatString(char* dst, const char* fmt, ...);                 // 0x002BE7FC
     void  UiFont_DrawText(u32 font_id, u32 rgba, const char* text,
                           f32 x, f32 y, f32 scale_x, f32 rot, f32 scale_y);     // 0x002BE77C
@@ -68,8 +104,10 @@ extern "C" {
     s32   UiListCursor_GetScrollOffset(const UiListCursor* cursor);             // 0x0029F260
     void  UiSkill_DrawItemIconAndCount(s32 item_id, s32 x, s32 y,
                                        s32 prio, s32 a4);                       // 0x002B6A98
+    // 0x002B6F74 reads both trailing words from the stack: +0x00 is the
+    // integer draw-bars gate (`cmp r4,#0`, 0x002B7000), +0x04 the row offset.
     void  UiParty_DrawDemonBars(s16 demon_id, s32 x, s32 y, s32 prio,
-                                f32 scale, s32 a5);                             // 0x002B6F74
+                                s32 draw_bars, s32 a5);                         // 0x002B6F74
     const char* Quest_GetObjectiveName(u16 entry_id);                           // 0x002BE828
     void  Quest_DrawObjectiveIcon(u16 entry_id, s32 x, s32 y, s32 prio);        // 0x002BE548
     void* Battle_GetTalkEntry(u32 id);                                          // 0x002B9364
@@ -474,6 +512,9 @@ void ui_func_002f150c(BattleCommandWork* work) {
         s32 value = 0;                                       // r5
         s32 bars = 1;                                        // r6
         s32 target_id = 0;                                   // r4
+        // 0x002F1DE8/0x002F1E64: the stack draw-bars gate is 0 on the actor
+        // path and 1 on the non-actor path (both paths keep r6 = 1).
+        const s32 draw_bars_gate = (actor == 0) ? 1 : 0;
 
         if (actor != 0) {
             // Actor path: the camp work holds a row byte at +0x9107+actor
@@ -560,7 +601,8 @@ void ui_func_002f150c(BattleCommandWork* work) {
             static_cast<const CommandLayoutNode*>(UiLayout_GetNode(0x15, 0x12F));
         if (bars != 0) {
             UiParty_DrawDemonBars(static_cast<s16>(target_id),
-                                  icon->x + ex, icon->y + ey, 0xC9, 0.0f, 0);
+                                  icon->x + ex, icon->y + ey, 0xC9,
+                                  draw_bars_gate, 0);
         } else {
             UiSkill_DrawRowIconAlt(static_cast<u16>(target_id),
                                    icon->x + ex, icon->y + ey, 0xC9);
@@ -593,7 +635,7 @@ void ui_func_002f150c(BattleCommandWork* work) {
         const CommandLayoutNode* icon =
             static_cast<const CommandLayoutNode*>(UiLayout_GetNode(0x15, 0x12F));
         UiParty_DrawDemonBars(static_cast<s16>(target_id),
-                              icon->x + ex, icon->y + ey, 0xC9, 0.0f, 0);
+                              icon->x + ex, icon->y + ey, 0xC9, 0, 0);
         Command_DrawValue(0, ex, ey);
         return;
     }
@@ -650,7 +692,8 @@ void ui_func_002f150c(BattleCommandWork* work) {
         Command_DrawCaption(text, ex, ey);
         const CommandLayoutNode* icon =
             static_cast<const CommandLayoutNode*>(UiLayout_GetNode(0x15, 0x12F));
-        UiParty_DrawDemonBars(-2, icon->x + ex, icon->y + ey, 0xC9, 0.0f, 0);
+        // 0x002F2560: mvn r0,#2 -> -3, not -2.
+        UiParty_DrawDemonBars(-3, icon->x + ex, icon->y + ey, 0xC9, 0, 0);
         return;
     }
 
@@ -1432,11 +1475,17 @@ s32 ui_func_003d7630(ResultWork* work, s32 frame) {
 
     // ---- bit 0x80000: slide-in interpolation (0x003D78F4..0x003D7980) -----
     if ((flags & 0x80000u) != 0) {
-        const f32 dx = *F32At(work, 0x0C) - *F32At(work, 0x00);
-        const f32 dy = *F32At(work, 0x10) - *F32At(work, 0x04);
-        const f32 dz = *F32At(work, 0x14) - *F32At(work, 0x08);
+        // 0x003D790C: vldmia [work+0x0C] {s0..s5}, then
+        //   s16 = s3-s0 = work[0x18]-work[0x0C]
+        //   s17 = s4-s1 = work[0x1C]-work[0x10]
+        //   s18 = s5-s2 = work[0x20]-work[0x14]
+        const f32 dx = *F32At(work, 0x18) - *F32At(work, 0x0C);
+        const f32 dy = *F32At(work, 0x1C) - *F32At(work, 0x10);
+        const f32 dz = *F32At(work, 0x20) - *F32At(work, 0x14);
         const f32 e = UiMath_Ease(0, *I32At(work, 0x72C),
                                   *I32At(work, 0x728));
+        // 0x003D7924..0x003D7958: interpolate from the +0x0C triple and
+        // store X/Y/Z as work[0x00]/[0x04]/[0x08].
         *F32At(work, 0x00) = *F32At(work, 0x0C) + dx * e;
         *F32At(work, 0x04) = *F32At(work, 0x10) + dy * e;
         *F32At(work, 0x08) = *F32At(work, 0x14) + dz * e;
@@ -1857,8 +1906,7 @@ s32 ui_func_003d7630(ResultWork* work, s32 frame) {
  *  It arms the 0x800 shake bit and seeds the three vectors:
  *  +0x5E8 = s0, +0x6BC = r1, +0x6C4 = r2, +0x6B8 = 0,
  *  +0x62C = +0x5A4, +0x6C0 = 0 (0x003D86C0..0x003D86FC). */
-[[maybe_unused]] static void Result_BeginShake(ResultWork* work, s32 a, s32 b,
-                                               f32 value) {
+void Result_BeginShake(ResultWork* work, s32 a, s32 b, f32 value) {
     *F32At(work, 0x5E8) = value;
     *I32At(work, 0x6BC) = a;
     *I32At(work, 0x6C4) = b;
@@ -1875,8 +1923,9 @@ s32 ui_func_003d7630(ResultWork* work, s32 frame) {
 
 namespace {
 
-/** 0x002BA520 wrapper: the four register arguments are all the same model
- *  handle at every 0x001E83FC call site except the -1 marker draws. */
+/** 0x002BA520 wrapper.  Most quads repeat one model handle four times, but
+ *  the case-1 primary quad (0x001E87BC..0x001E87DC) and the marker quads pass
+ *  0xFFFFFFFF in all four handle registers. */
 void TalkDrawQuad(u32 object, u32 a, u32 b, u32 c, const f32* m,
                   f32 s12, f32 s13, f32 s14, f32 s15,
                   f32 t0, f32 t1, f32 t2, f32 t3) {
@@ -1917,10 +1966,15 @@ void TalkDrawMarker(TalkTargetEntry* e) {
 constexpr s32 kTalkEntryStride = 0x194;
 
 /** Detail-card ring: builds the procedural palette matrix and transforms the
- *  four 12-byte points selected by `table_index + 3` (0x001E9250..0x001E9368).
- *  The four source points live at 0x004B5D30 (case 3) / 0x004B6990 (case 4)
- *  / 0x004B6FC0 (default); the loop counter `r6` is zero throughout, so case
- *  3 (0x004B5D30) is the one exercised by this build. */
+ *  four 12-byte points selected by `r6 + 3` (0x001E9250..0x001E9368).
+ *  Register aliases at 0x001E9258..0x001E9260:
+ *    sb = 0x004B5D30 (case 1/3 source)
+ *    fp = 0x004B6360 (case 4 source)
+ *    r8 = 0x004B6990 (case 0/2 source)
+ *    sl = 0x004B6FC0 (destination block, sb + 0x1290)
+ *  `r6` is zero, so `r5 = r6 + 3` selects case 3: read sb, write sl.  The
+ *  loop branch at 0x001E9368 returns to 0x001E9264, so the selection is
+ *  loop-invariant. */
 void TalkDrawDetailRing(TalkWork* work, TalkRenderer* rend, s32 ex, s32 ey) {
     TalkSetModel(rend->handle_18);
     const f32 off_x = work->field_24;                     // s20
@@ -1929,69 +1983,90 @@ void TalkDrawDetailRing(TalkWork* work, TalkRenderer* rend, s32 ex, s32 ey) {
     f32 angle = UiCamera_GetAngle() + work->field_b0;
     angle *= 0.7111111f;                                  // 0x3F360B61
 
-    // 0x001E90C0..0x001E9124: absolute-value wrap and integer/frac split.
-    const f32 wrapped = std::fabs(angle);
-    const u32 index = static_cast<u32>(wrapped);
-    const f32 frac = wrapped - static_cast<f32>(index);
-
-    // 0x001E9124..0x001E91D0: the first palette entry is index 0, the second
-    // is the current phase; each lane is lerped toward the next entry.
-    const UiColorEntry& c0 = g_UiColorTable[0];
-    const UiColorEntry& c1 = g_UiColorTable[index & 0xFF];
-    const UiColorEntry& c2 = g_UiColorTable[(index + 1) & 0xFF];
-    const f32 x = c1.r + frac * (c2.r - c1.r);
-    const f32 y = c1.g + frac * (c2.g - c1.g);
-    const f32 z = c1.b + frac * (c2.b - c1.b);
-    const f32 w = c1.a + frac * (c2.a - c1.a);
-
-    // 0x001E91D4..0x001E9248: the three palette rows form a rotation basis.
-    f32 m[12] = {};
-    const f32 nx = x;
-    const f32 ny = y;
-    const f32 nz = z;
-    const f32 nw = w;
-    m[0] = c0.r * nx - c0.g * ny;
-    m[1] = c0.r * ny + c0.g * nx;
-    m[2] = nz;
-    m[3] = 0.0f;
-    m[4] = c0.b * nx - c0.a * nz;
-    m[5] = c0.b * ny + c0.a * nz;
-    m[6] = nw;
-    m[7] = 0.0f;
-    m[8] = c0.g * nz - c0.a * nx;
-    m[9] = c0.r * nz + c0.b * ny;
-    m[10] = c0.r * nw - c0.g * nz;
-    m[11] = 0.0f;
-
-    // The three 0x630-byte point blocks inside the 0x004B5D30 table:
-    // A = +0x000, B = +0x630, C = +0xC60 (floats: 0, 0x18C, 0x318).
-    constexpr u32 kQuadStrideFloats = 0x630 / 4;
-    f32* const base = QuadTableBase();
-    f32 point[3];
-    for (s32 i = 0; i < 4; ++i) {
-        // 0x001E9264..0x001E9314: the switch reads (loop+3).
-        const f32* src;
-        switch (i + 3) {
-        case 3: src = base + kQuadStrideFloats + i * 3; break;          // B
-        case 4: src = base + i * 3; break;                              // A
-        case 5: src = base + 2 * kQuadStrideFloats + i * 3; break;      // C
-        default: src = base + 2 * kQuadStrideFloats + i * 3; break;     // C
-        }
-        point[0] = src[0];
-        point[1] = src[1];
-        point[2] = src[2] + 0.0f;                         // s18 == 0
-        f32 out[3];
-        Matrix_TransformPoint(out, m, point);              // 0x001E9338
-        // The transformed point is always written to block C (sl).
-        f32* const dst = base + 2 * kQuadStrideFloats + i * 3;
-        dst[0] = out[0] + off_x;                          // 0x001E9350
-        dst[1] = out[1] + off_y;
-        dst[2] = out[2] + off_z;
+    // 0x001E90C0..0x001E9118: |angle| wrapped down to [0, 65536) by the
+    // 0x47800000 (65536.0f) constant.  The second wrap loop at 0x001E9100
+    // operates on the zero in s0 and is dead in this build.
+    const bool negative = angle < 0.0f;                   // movlo r5,#1
+    f32 wrapped = std::fabs(angle);
+    while (wrapped >= 65536.0f) {
+        wrapped -= 65536.0f;                              // 0x001E90F0
     }
 
-    // 0x001E936C: final quad over the transformed block C.
+    // 0x001E911C..0x001E9170: index = trunc(|angle|), frac = |angle| - index;
+    // palette rows 0 and (index & 0xFF) are the two endpoints.
+    const u32 index = static_cast<u32>(wrapped);
+    const f32 frac = wrapped - static_cast<f32>(index);
+    const UiColorEntry& p0 = g_UiColorTable[0];
+    const UiColorEntry& p = g_UiColorTable[index & 0xFF];
+
+    // 0x001E9174..0x001E91CC: four-endpoint lerp.
+    //   A (s6)  = p0.r + p0.b
+    //   B (s2)  = p0.g + p0.a
+    //   C (s0)  = p.r  + frac * p.b
+    //   D (s1)  = p.g  + frac * p.a
+    //   E (s9)  = p0.r   (the +0.0 lerp leaves it unchanged)
+    //   F (s7)  = p0.g
+    const f32 a = p0.r + p0.b;
+    const f32 b = p0.g + p0.a;
+    const f32 c = p.r + frac * p.b;
+    const f32 d = p.g + frac * p.a;
+    const f32 e = p0.r;
+    const f32 f = p0.g;
+
+    // 0x001E91D0/0x001E91D8/0x001E91E0: vnegne.  The first and third are
+    // conditioned on r4/ip, both zero here; the second mirrors the sign of
+    // the input angle.
+    const f32 cn = negative ? -c : c;
+
+    // 0x001E91E4..0x001E9248: cross basis, stored as 12 words at [sp+8].
+    f32 m[12] = {};
+    m[0] = f * d;                                         // s11
+    m[1] = b * e - a * f * cn;                            // s12
+    m[2] = a * e + b * f * cn;                            // s10
+    m[3] = 0.0f;
+    m[4] = e * d;                                         // s7
+    m[5] = b * f + a * e * cn;                            // s8
+    m[6] = a * f - b * e * cn;                            // s5
+    m[7] = 0.0f;
+    m[8] = -cn;                                           // s13
+    m[9] = a * d;                                         // s6
+    m[10] = b * d;                                        // s1
+    m[11] = 0.0f;
+
+    // 0x001E9264..0x001E9314: `ldrlo pc,[pc,r5,lsl #2]` with r5 = 3.
+    // Entries: 0/2 -> r8 (0x004B6990), 1/3 -> sb (0x004B5D30),
+    //          4 -> fp (0x004B6360).
+    constexpr u32 kBlockFloats = 0x630 / 4;               // 0x630-byte blocks
+    f32* const base = QuadTableBase();
+    const s32 selector = 3;                                // r5 = r6 + 3, r6 = 0
+    const f32* src = base;                                 // case 3 -> sb
+    switch (selector) {
+    case 0:
+    case 2: src = base + 2 * kBlockFloats; break;         // 0x004B6990 (sb + 0xC60)
+    case 1:
+    case 3: src = base; break;                             // 0x004B5D30
+    case 4: src = base + kBlockFloats; break;              // 0x004B6360
+    default: break;
+    }
+    f32* const dst = DetailRingOutputBase();               // 0x004B6FC0
+
+    for (s32 i = 0; i < 4; ++i) {
+        const f32* const in = src + i * 3;
+        f32 point[3];
+        point[0] = in[0];
+        point[1] = in[1];
+        point[2] = in[2] + 0.0f;                          // s18 == 0, 0x001E9324
+        f32 out[3];
+        Matrix_TransformPoint(out, m, point);              // 0x001E9338
+        // 0x001E933C..0x001E9364: always write block sl (0x004B6FC0).
+        dst[i * 3 + 0] = out[0] + off_x;
+        dst[i * 3 + 1] = out[1] + off_y;
+        dst[i * 3 + 2] = out[2] + off_z;
+    }
+
+    // 0x001E936C: final quad over the transformed block sl.
     TalkDrawQuad(0xFFFFFFFFu, 0xFFFFFFFFu, 0xFFFFFFFFu, 0xFFFFFFFFu,
-                 base + 2 * kQuadStrideFloats,
+                 dst,
                  0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f);
     (void)ex;
     (void)ey;
@@ -2134,8 +2209,10 @@ void ui_func_001e83fc() {
             } else if (q == 3) {
                 oy = 0.75f;
             }
-            TalkDrawQuad(e->handle_080, e->handle_080, e->handle_080,
-                         e->handle_080, e->matrix_090,
+            // 0x001E87BC..0x001E87F0: mvn r3,#0 then r2=r1=r0=r3, so all four
+            // handle registers are 0xFFFFFFFF; matrix_090 is loaded at sl.
+            TalkDrawQuad(0xFFFFFFFFu, 0xFFFFFFFFu, 0xFFFFFFFFu,
+                         0xFFFFFFFFu, e->matrix_090,
                          ox, oy, ox, oy + 0.25f,
                          ox + 1.0f, oy, ox + 1.0f, oy + 0.25f);
             if (e->handle_084 != 0) {
@@ -2306,9 +2383,8 @@ void ui_func_001e83fc() {
             // 0x001E8F40..0x001E8FC4: seed the detail-card header from the
             // selected 56-byte animation row.
             work->mode_4c = 2;
-            // 0x00447E58 is unresolved game data in this reconstruction.  Use
-            // a zero row when the slot is not populated instead of indexing a
-            // null pointer; the listing's field reads are unchanged.
+            // 0x00447E58 holds the observed 0x004BB7B0 pointer.  Keep the
+            // defensive zero-row fallback for tests that clear the global.
             static const TalkAnimRow kZeroAnimRow{};
             const TalkAnimRow* const row = g_TalkAnimRows
                 ? &g_TalkAnimRows[work->selected_1cc] : &kZeroAnimRow;
@@ -2366,9 +2442,10 @@ void ui_func_001e83fc() {
  *  0x1B4238.  The three exclusion ranges are:
  *    value < 0x15, value >= 0x6E, (value-0x54) <= 0xB, value == 0x18.
  *  (0x001E9414..0x001E9508). */
-[[maybe_unused]] static s32 TalkOverlay_PollMode() {
-    // 0x00447E28 is the engine map work pointer slot (g_MapMainWork).
-    u8* const guard = *reinterpret_cast<u8**>(reinterpret_cast<void*>(0x00447E28));
+s32 TalkOverlay_PollMode() {
+    // 0x00447E28 is the canonical engine::g_MapMainWork pointer slot.
+    const u8* const guard =
+        reinterpret_cast<const u8*>(engine::g_MapMainWork);
     const s32 value = *reinterpret_cast<const s32*>(guard + 0x24);
     if (value < 0x15 || value >= 0x6E ||
         static_cast<u32>(value - 0x54) <= 0x0Bu || value == 0x18) {

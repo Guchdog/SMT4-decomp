@@ -11,6 +11,12 @@ UiPartRenderState g_UiPartRenderState{};        // 0x004EA81C (BSS)
 
 namespace {
 
+// Canonical 0x002BF6D0 returns `const void*`; this TU uses the
+// offset-compatible Npc2dLayoutNode view.
+inline const Npc2dLayoutNode* LayoutNode(u32 group, u32 node) {
+    return static_cast<const Npc2dLayoutNode*>(UiLayout_GetNode(group, node));
+}
+
 // ---------------------------------------------------------------------------
 // Shared ABI declarations (one per binary address; canonical spellings).
 // ---------------------------------------------------------------------------
@@ -26,7 +32,6 @@ extern "C" {
                             s32 x, s32 y, s32 prio);                            // 0x002bf460
     void  UiSprite_DrawPanel(u32 screen, u32 group, u32 panel,
                              s32 x, s32 y, s32 prio);                           // 0x002bf558
-    const Npc2dLayoutNode* UiLayout_GetNode(u32 group, u32 node);               // 0x002bf6d0
     void  UiFont_FormatString(char* dst, const char* fmt, ...);                 // 0x002be7fc
     void  UiFont_DrawText(u32 font_id, u32 rgba, const char* text,
                           f32 x, f32 y, f32 scale_x, f32 rot, f32 scale_y);     // 0x002be77c
@@ -51,12 +56,13 @@ extern "C" {
 
     void  UiSkill_DrawItemIconAndCount(s32 item_id, s32 x, s32 y,
                                        s32 prio, s32 a4);                       // 0x002b6a98
+    // 5th/6th arguments are the integer draw-bars gate and row offset.
     void  UiParty_DrawDemonBars(s16 demon_id, s32 x, s32 y, s32 prio,
-                                f32 scale, s32 a5);                             // 0x002b6f74
+                                s32 draw_bars, s32 a5);                         // 0x002b6f74
     s32   Party_GetDemonActiveIndex(s16 demon_id);                              // 0x0029abc0
     const char* Item_GetNameString(u16 item_id);                                // 0x002bcff0
     const char* Item_GetShortNameString(u16 item_id);                           // 0x002bd258
-    const char* Item_GetDescriptionString(u16 item_id);                         // 0x002bd020
+    const char* Item_GetDescriptionString(u16 item_id, s32 mode);                // 0x002bd020
 
     // Quest UI helpers (0x00197D2C call graph).
     void* Quest_GetRow(u16 quest_id);                                           // 0x002b6700
@@ -749,11 +755,11 @@ void ui_func_00197d2c() {
         UiSprite_DrawNode(2, 0x29, 0x0F, x0 + detail_offset, y0, 0x68);
     }
 
-    const Npc2dLayoutNode* node = UiLayout_GetNode(0x29, 0x11); // 0x00197F2C
+    const Npc2dLayoutNode* node = LayoutNode(0x29, 0x11); // 0x00197F2C
     Quest_DrawIcon(quest_id, x0 + detail_offset + node->x,
                    y0 + node->y, 0x6A);                     // 0x00197F54
 
-    node = UiLayout_GetNode(0x29, 0x12);                    // 0x00197F58
+    node = LayoutNode(0x29, 0x12);                    // 0x00197F58
     char text[0x100];
     UiFont_FormatString(text, "%s", Quest_GetTitle(quest_id)); // 0x00197F70
     UiFont_DrawText(3, 0xFFFFFFFFu, text,
@@ -766,7 +772,7 @@ void ui_func_00197d2c() {
         UiGpu_TransformCoord(g_AsdGpuState, 0.305f));       // 0x3E9C28F6
     for (u32 i = 0; i < row->objective_count; ++i) {
         const Npc2dLayoutNode* marker =
-            UiLayout_GetNode(0x29, 5 + (i / 2));            // 0x00197FF8
+            LayoutNode(0x29, 5 + (i / 2));            // 0x00197FF8
         const s32 mx = x0 + objective_offset + marker->x;
         const s32 my = y0 + marker->y;
         if ((i & 1) != 0) {
@@ -778,7 +784,7 @@ void ui_func_00197d2c() {
 
     const s32 desc_offset = static_cast<s32>(
         UiGpu_TransformCoord(g_AsdGpuState, 0.315f));       // 0x00198048
-    node = UiLayout_GetNode(0x29, 0x1A);                    // 0x00198058
+    node = LayoutNode(0x29, 0x1A);                    // 0x00198058
     UiFont_FormatString(text, "%s", Quest_GetDescription(quest_id));
     UiFont_DrawText(2, 0xFFu, text,
                     static_cast<f32>(x0 + desc_offset + node->x),
@@ -798,11 +804,11 @@ void ui_func_00197d2c() {
     switch (*state_ptr) {                                   // 0x00198140..0x00198158
     case 1: {
         if (row->primary_target != 0) {                     // 0x00198204
-            node = UiLayout_GetNode(0x29, 0x1B);
+            node = LayoutNode(0x29, 0x1B);
             Quest_DrawObjectiveIcon(row->primary_target,
                                     x0 + desc_offset + node->x,
                                     y0 + node->y, 0x6A);    // 0x00198238
-            node = UiLayout_GetNode(0x29, 0x1C);
+            node = LayoutNode(0x29, 0x1C);
             UiFont_FormatString(text, "%s",
                                 Quest_GetObjectiveName(row->primary_target));
             UiFont_DrawText(2, 0xFFFFFFFFu, text,
@@ -811,7 +817,7 @@ void ui_func_00197d2c() {
                             1.8f, 0.0f, 1.0f);              // 0x3EE66666
             const f32 width = Quest_MeasureText(text, 2);   // 0x001982B0
             const s32 extra = static_cast<s32>(width + 3.0f); // 0x40400000
-            node = UiLayout_GetNode(0x29, 0x1B);
+            node = LayoutNode(0x29, 0x1B);
             UiFont_DrawFormatted(0,
                                  x0 + desc_offset + node->x + extra,
                                  y0 + node->y, 0, 7, 0x6A, "*", 0); // 0x001982F4
@@ -845,7 +851,7 @@ void ui_func_00197d2c() {
     }
 
     // 0x00198168..0x001981AC: state text at node 0x1B.
-    node = UiLayout_GetNode(0x29, 0x1B);
+    node = LayoutNode(0x29, 0x1B);
     UiFont_DrawText(2, 0xFFFFFFFFu, text,
                     static_cast<f32>(x0 + desc_offset + node->x),
                     static_cast<f32>(y0 + node->y),
@@ -872,11 +878,11 @@ void ui_func_00197d2c() {
     }
 
     UiSprite_DrawNode(2, 0x29, 0x23, panel_x, panel_y, 0x6A); // 0x00198438
-    node = UiLayout_GetNode(0x29, 0x25);                    // 0x00198444
+    node = LayoutNode(0x29, 0x25);                    // 0x00198444
     UiAnimSprite_DrawAt(work->handle_5d8,
                         panel_x + node->x, panel_y + node->y,
                         0x6F, 6, 0, 1.0f);                  // 0x0019847C
-    node = UiLayout_GetNode(0x29, 0x26);                    // 0x00198480
+    node = LayoutNode(0x29, 0x26);                    // 0x00198480
     UiAnimSprite_DrawAt(work->handle_5d8,
                         panel_x + node->x, panel_y + node->y,
                         0x6F, 6, 1, 1.0f);                  // 0x001984B4
@@ -919,7 +925,7 @@ after_quest_preview:
             if (work->field_5c8 == i) {                     // 0x0019879C
                 continue;
             }
-            node = UiLayout_GetNode(0x29, 0x48 + i);        // 0x001987A8
+            node = LayoutNode(0x29, 0x48 + i);        // 0x001987A8
             UiSprite_DrawNode(2, 0x29, 0x40, base_x + node->x,
                               y0 + node->y, 0x65);          // 0x001987E0
             if (i == 0) {
@@ -938,7 +944,7 @@ after_quest_preview:
     }
 
     if (work->field_5c8 == 0) {                             // 0x00198810
-        node = UiLayout_GetNode(0x29, 0x34);                // 0x001988E4
+        node = LayoutNode(0x29, 0x34);                // 0x001988E4
         const s32 list_x = x0 + lower_offset + node->x;
         const s32 list_y = lower_offset + node->y;
         for (s32 i = 0; i < 7; ++i) {
@@ -948,7 +954,7 @@ after_quest_preview:
         }
         const s32 bottom_offset = static_cast<s32>(
             UiGpu_TransformCoord(g_AsdGpuState, 0.315f));   // 0x00198928
-        node = UiLayout_GetNode(0x29, 0x48);                // 0x00198944
+        node = LayoutNode(0x29, 0x48);                // 0x00198944
         const s32 bx = x0 + bottom_offset + node->x;
         const s32 by = y0 + node->y;
         UiSprite_DrawNode(2, 0x29, 0x44, bx, by, 0x6F);     // 0x00198974
@@ -962,7 +968,7 @@ after_quest_preview:
         for (s32 i = 0; i < 6; ++i) {
             QuestRewardEntry reward{};
             if (Quest_GetRewardEntry(quest_id, i, &reward)) { // 0x001989D8
-                node = UiLayout_GetNode(0x29, 0x34);        // 0x001989F0
+                node = LayoutNode(0x29, 0x34);        // 0x001989F0
                 char reward_text[0x80];
                 char value_text[0x80];
                 Quest_FormatReward(reward_text, static_cast<u16>(reward.field_08)); // 0x001989F8..0x00198A00
@@ -998,7 +1004,7 @@ after_quest_preview:
         if (*reinterpret_cast<const u8*>(reinterpret_cast<const u8*>(row) + 6) == 0 &&
             extra_line) {
             s32 row_index;
-            node = UiLayout_GetNode(0x29, 0x34);      // 0x00198B38..0x00198B40
+            node = LayoutNode(0x29, 0x34);      // 0x00198B38..0x00198B40
             if (Quest_IsCompleted(quest_id)) {
                 row_index = 9;
             } else {
@@ -1029,7 +1035,7 @@ after_quest_preview:
         }
 
         // 0x00198C18..0x00198C98: two hint panels.
-        node = UiLayout_GetNode(0x29, 0x49);                // 0x00198C38
+        node = LayoutNode(0x29, 0x49);                // 0x00198C38
         UiSprite_DrawNode(2, 0x29, 0x44,
                           x0 + lower_offset + node->x,
                           y0 + node->y, 0x6F);              // 0x00198C6C
@@ -1041,7 +1047,7 @@ after_quest_preview:
                 (*reinterpret_cast<const u8*>(
                      reinterpret_cast<const u8*>(row) + 7) & 0x40) == 0)) {
         // 0x00198CDC..0x00198D28: second seven-line list.
-        node = UiLayout_GetNode(0x29, 0x34);                // 0x00198CEC
+        node = LayoutNode(0x29, 0x34);                // 0x00198CEC
         const s32 list_x = x0 + lower_offset + node->x;
         const s32 list_y = lower_offset + node->y;
         for (s32 i = 0; i < 7; ++i) {
@@ -1050,9 +1056,9 @@ after_quest_preview:
                                 0x6F, 6, i, 1.0f);          // 0x00198D1C
         }
         if (work->field_5c8 == 2) {                         // 0x00198D40
-            node = UiLayout_GetNode(0x29, 0x4A);            // 0x00198E44
+            node = LayoutNode(0x29, 0x4A);            // 0x00198E44
         } else {
-            node = UiLayout_GetNode(0x29, 0x49);
+            node = LayoutNode(0x29, 0x49);
             UiSprite_DrawNode(2, 0x29, 0x44,
                               x0 + lower_offset + node->x,
                               y0 + node->y, 0x6F);          // 0x00198D8C
@@ -1130,13 +1136,13 @@ void ui_func_001f0454(s32 x, s32 y, s32 mode, s32 flag, s32 has_target,
 
     // 0x001F056C..0x001F0628: "INHERITING" / "Parent Skills".
     char text[0x100];
-    const Npc2dLayoutNode* node = UiLayout_GetNode(0x24, 0x168);
+    const Npc2dLayoutNode* node = LayoutNode(0x24, 0x168);
     UiFont_FormatString(text, "%s", kFusionTitleA);
     UiFont_DrawText(3, 0xFFu, text,
                     static_cast<f32>(x + node->x),
                     static_cast<f32>(y + node->y),
                     0.0f, 0.0f, 1.0f);
-    node = UiLayout_GetNode(0x24, 0x169);
+    node = LayoutNode(0x24, 0x169);
     UiFont_FormatString(text, "%s", kFusionTitleB);
     UiFont_DrawText(3, 0xFFu, text,
                     static_cast<f32>(x + node->x),
@@ -1167,21 +1173,21 @@ void ui_func_001f0454(s32 x, s32 y, s32 mode, s32 flag, s32 has_target,
     }
 
     // 0x001F074C..0x001F0828: result name, description and header count.
-    node = UiLayout_GetNode(0x24, 0x4D);
+    node = LayoutNode(0x24, 0x4D);
     UiFont_FormatString(text, "%s",
                         Item_GetShortNameString(*reinterpret_cast<u16*>(row)));
     UiFont_DrawText(2, 0xFFFFFFFFu, text,
                     static_cast<f32>(x + node->x),
                     static_cast<f32>(y + node->y),
                     0.0f, 0.0f, 1.0f);
-    node = UiLayout_GetNode(0x24, 0x4E);
+    node = LayoutNode(0x24, 0x4E);
     UiFont_FormatString(text, "%s",
-                        Item_GetDescriptionString(*reinterpret_cast<u16*>(row)));
+                        Item_GetDescriptionString(*reinterpret_cast<u16*>(row), 0));
     UiFont_DrawText(2, 0xF49800FFu, text,
                     static_cast<f32>(x + node->x),
                     static_cast<f32>(y + node->y),
                     0.0f, 0.0f, 1.0f);
-    node = UiLayout_GetNode(0x24, 0x51);
+    node = LayoutNode(0x24, 0x51);
 
     // 0x001F0888..0x001F08B8: inherited-skill count.
     UiFont_DrawFormatted(0, x + node->x, y + node->y,
@@ -1199,7 +1205,7 @@ void ui_func_001f0454(s32 x, s32 y, s32 mode, s32 flag, s32 has_target,
     }
 
     // 0x001F0908..0x001F0988: item icon, description icon and local cursor.
-    node = UiLayout_GetNode(0x24, 0x1ED);
+    node = LayoutNode(0x24, 0x1ED);
     UiSkill_DrawItemIconAndCount(*reinterpret_cast<u16*>(row),
                                  x + node->x, y + node->y, 0x8D, 0);
     Item_DrawDescriptionIcon(*reinterpret_cast<u16*>(row),
@@ -1217,7 +1223,7 @@ void ui_func_001f0454(s32 x, s32 y, s32 mode, s32 flag, s32 has_target,
         s32 row_x = x;                                      // 0x001F09B8
         s32 row_y = y;                                      // 0x001F09B4
         f32 fade = 1.0f;                                    // 0x001F09AC
-        node = UiLayout_GetNode(0x24, 0x17D + i);
+        node = LayoutNode(0x24, 0x17D + i);
         if (i >= slot_count) {
             UiSprite_DrawNode(2, 0x24, 0x229, row_x + node->x, row_y + node->y, 0x65);
             UiSprite_DrawNode(2, 0x24, 0x16F, row_x + node->x, row_y + node->y, 0x65);
@@ -1310,19 +1316,19 @@ void ui_func_001f0454(s32 x, s32 y, s32 mode, s32 flag, s32 has_target,
             UiFont_FormatString(text, "%s",
                                 Item_GetNameString(work->rows_9010[i]));
             const Npc2dLayoutNode* name_node =
-                UiLayout_GetNode(0x24, 0x178);              // 0x001F0E38
+                LayoutNode(0x24, 0x178);              // 0x001F0E38
             UiFont_DrawText(2, color, text,
                             static_cast<f32>(row_x + node->x + name_node->x),
                             static_cast<f32>(row_y + node->y + name_node->y),
                             0.0f, 0.0f, fade);              // 0x001F0E8C
             const Npc2dLayoutNode* icon_node =
-                UiLayout_GetNode(0x24, 0x177);              // 0x001F0E90
+                LayoutNode(0x24, 0x177);              // 0x001F0E90
             UiParty_DrawDemonBars(
                 static_cast<s16>(work->rows_9010[i]),
                 row_x + node->x + icon_node->x,
-                row_y + node->y + icon_node->y, 0x74, 0.0f, 0);
+                row_y + node->y + icon_node->y, 0x74, 0, 0);
             const Npc2dLayoutNode* id_node =
-                UiLayout_GetNode(0x24, 0x17C);              // 0x001F0ED4
+                LayoutNode(0x24, 0x17C);              // 0x001F0ED4
             UiFont_DrawFormatted(1,
                                  row_x + node->x + id_node->x,
                                  row_y + node->y + id_node->y,
@@ -1333,7 +1339,7 @@ void ui_func_001f0454(s32 x, s32 y, s32 mode, s32 flag, s32 has_target,
             // 0x001F0F44..0x001F0FB4
             UiFont_FormatString(text, "%s", kFusionDash);
             const Npc2dLayoutNode* dash_node =
-                UiLayout_GetNode(0x24, 0x178);
+                LayoutNode(0x24, 0x178);
             UiFont_DrawText(2, 0xFFu, text,
                             static_cast<f32>(row_x + node->x + dash_node->x),
                             static_cast<f32>(row_y + node->y + dash_node->y),
@@ -1379,26 +1385,26 @@ void ui_func_001f0454(s32 x, s32 y, s32 mode, s32 flag, s32 has_target,
 
     if (pair_count > 0) {
         for (s32 i = 0; i < pair_count; ++i) {
-            node = UiLayout_GetNode(0x24, 0x193 + i);       // 0x001F1298
+            node = LayoutNode(0x24, 0x193 + i);       // 0x001F1298
             UiSprite_DrawNode(2, 0x24, 0x18E, x + node->x, y + node->y, 0x65);
             UiSprite_DrawNode(2, 0x24, 0x18F, x + node->x, y + node->y, 0x65);
             UiSprite_DrawNode(2, 0x24, 0x190, x + node->x, y + node->y, 0x65);
             UiSprite_DrawNode(2, 0x24, 0x191, x + node->x, y + node->y, 0x6A);
             const Npc2dLayoutNode* pair_node =
-                UiLayout_GetNode(0x24, 0x192);              // 0x001F1340
+                LayoutNode(0x24, 0x192);              // 0x001F1340
             UiParty_DrawDemonBars(static_cast<s16>(pairs.values[i]),
                                   x + node->x + pair_node->x,
                                   y + node->y + pair_node->y,
-                                  0x6F, 0.0f, 0);
+                                  0x6F, 0, 0);
         }
     } else {
         // 0x001F1164..0x001F128C
-        node = UiLayout_GetNode(0x24, 0x197);
+        node = LayoutNode(0x24, 0x197);
         UiSprite_DrawNode(2, 0x24, 0x16F, x + node->x, y + node->y, 0x65);
         UiSprite_DrawNode(2, 0x24, 0x170, x + node->x, y + node->y, 0x65);
         UiSprite_DrawNode(2, 0x24, 0x171, x + node->x, y + node->y, 0x65); // 0x001F11C4
         const Npc2dLayoutNode* money_node =
-            UiLayout_GetNode(0x24, 0x178);                  // 0x001F11E4
+            LayoutNode(0x24, 0x178);                  // 0x001F11E4
         UiFont_FormatString(text, "%s", kFusionMoney);
         UiFont_DrawText(2, 0x323232FFu, text,
                         static_cast<f32>(x + node->x + money_node->x),
@@ -1412,7 +1418,7 @@ void ui_func_001f0454(s32 x, s32 y, s32 mode, s32 flag, s32 has_target,
         if (has_target != 0 && UiListCursor_GetSelectedRow(cursor) == i) {
             continue;                                       // 0x001F13A4..0x001F13C0
         }
-        node = UiLayout_GetNode(0x24, 0x185 + i);           // 0x001F13C4
+        node = LayoutNode(0x24, 0x185 + i);           // 0x001F13C4
         UiSprite_DrawNode(2, 0x24, 0x16F, x + node->x, y + node->y, 0x65);
         UiSprite_DrawNode(2, 0x24, 0x170, x + node->x, y + node->y, 0x65);
         UiSprite_DrawNode(2, 0x24, 0x171, x + node->x, y + node->y, 0x65);
@@ -1427,19 +1433,19 @@ void ui_func_001f0454(s32 x, s32 y, s32 mode, s32 flag, s32 has_target,
                     ? 0x008400FFu : 0xFFFFFFFFu;            // 0x001F14F8..0x001F1504
             UiFont_FormatString(text, "%s", Item_GetNameString(entry));
             const Npc2dLayoutNode* name_node =
-                UiLayout_GetNode(0x24, 0x178);              // 0x001F151C
+                LayoutNode(0x24, 0x178);              // 0x001F151C
             UiFont_DrawText(2, color, text,
                             static_cast<f32>(x + node->x + name_node->x),
                             static_cast<f32>(y + node->y + name_node->y),
                             0.0f, 0.0f, 1.0f);              // 0x001F1570
             const Npc2dLayoutNode* icon_node =
-                UiLayout_GetNode(0x24, 0x177);              // 0x001F1574
+                LayoutNode(0x24, 0x177);              // 0x001F1574
             UiParty_DrawDemonBars(static_cast<s16>(entry),
                                   x + node->x + icon_node->x,
                                   y + node->y + icon_node->y,
-                                  0x74, 0.0f, 0);
+                                  0x74, 0, 0);
             const Npc2dLayoutNode* id_node =
-                UiLayout_GetNode(0x24, 0x17C);              // 0x001F15B4
+                LayoutNode(0x24, 0x17C);              // 0x001F15B4
             UiFont_DrawFormatted(1,
                                  x + node->x + id_node->x,
                                  y + node->y + id_node->y,
@@ -1453,7 +1459,7 @@ void ui_func_001f0454(s32 x, s32 y, s32 mode, s32 flag, s32 has_target,
     const s32 lower_selected = UiListCursor_GetScrollOffset(cursor) +
                                UiListCursor_GetSelectedRow(cursor);
     if (has_target != 0) {
-        node = UiLayout_GetNode(0x24, 0x1A7 +
+        node = LayoutNode(0x24, 0x1A7 +
                                 UiListCursor_GetSelectedRow(cursor)); // 0x001F164C
         UiSprite_SetGlobalAlpha(*reinterpret_cast<const f32*>(
             reinterpret_cast<const u8*>(work) + 0x24 + 0x20)); // 0x001F1664
@@ -1474,11 +1480,11 @@ void ui_func_001f0454(s32 x, s32 y, s32 mode, s32 flag, s32 has_target,
         }
 
         const Npc2dLayoutNode* panel_node =
-            UiLayout_GetNode(0x24, 0x19C);                  // 0x001F1768
+            LayoutNode(0x24, 0x19C);                  // 0x001F1768
         const s16* rect = reinterpret_cast<const s16*>(panel_node->extra);
         GpuModeSlotSet(0x30C, 3);                                  // 0x001F1780
         const Npc2dLayoutNode* detail_node =
-            UiLayout_GetNode(0x24, 0x1A7 +
+            LayoutNode(0x24, 0x1A7 +
                              UiListCursor_GetSelectedRow(cursor));
         UiScissor_SetRect(x + detail_node->x + panel_node->x,
                           y + detail_node->y + panel_node->y,
@@ -1499,19 +1505,19 @@ void ui_func_001f0454(s32 x, s32 y, s32 mode, s32 flag, s32 has_target,
                               ? 0x008400FFu : 0xFFFFFFFFu; // 0x001F18D4..0x001F18DC
         UiFont_FormatString(text, "%s", Item_GetNameString(entry));
         const Npc2dLayoutNode* name_node =
-            UiLayout_GetNode(0x24, 0x1A2);                  // 0x001F1904
+            LayoutNode(0x24, 0x1A2);                  // 0x001F1904
         UiFont_DrawText(3, color, text,
                         static_cast<f32>(x + node->x + name_node->x),
                         static_cast<f32>(y + node->y + name_node->y),
                         0.0f, 0.0f, 1.0f);                  // 0x001F1950
         const Npc2dLayoutNode* icon_node =
-            UiLayout_GetNode(0x24, 0x1A1);                  // 0x001F1958
+            LayoutNode(0x24, 0x1A1);                  // 0x001F1958
         UiParty_DrawDemonBars(static_cast<s16>(entry),
                               x + node->x + icon_node->x,
                               y + node->y + icon_node->y,
-                              0x8D, 0.0f, 0);
+                              0x8D, 0, 0);
         const Npc2dLayoutNode* id_node =
-            UiLayout_GetNode(0x24, 0x1A6);                  // 0x001F19DC
+            LayoutNode(0x24, 0x1A6);                  // 0x001F19DC
         UiFont_DrawFormatted(1,
                              x + node->x + id_node->x,
                              y + node->y + id_node->y,

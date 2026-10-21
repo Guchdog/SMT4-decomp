@@ -1,6 +1,19 @@
 #include "ui/save_load.h"
+#include "engine/asd_symbols.h"
 
 namespace smt4::ui {
+
+// Helpers referenced by saveLoadUI_Init / saveLoadUI_DrawMain.  The canonical
+// UiGpu_SetViewportParams / AsdTask_CreateCalc declarations come from
+// engine/asd_symbols.h; the remaining spellings match src/ui/status.cpp.
+extern "C" {
+    void* AsdMem_Alloc(u32 align, u32 line, u32 zero_flag, u32 size, u32 flag); // 0x002C4B84
+    void  AsdMem_Zero(void* ptr, u32 size);                                     // 0x002C4B30
+    void  UiGpu_BeginPass(void* gpu_state);                                     // 0x002C3BA8
+    void  UiSprite_DrawPanelDirect(s32 type, s32 id, s32 sub_id,
+                                   s32 x, s32 y, s32 flag);                     // 0x002BF460
+    extern u8* g_AsdGpuState;                                                   // 0x0044EA00
+}
 
 SaveLoadUIManager g_SaveLoadUIManager = {0, {0, 0, 0}, nullptr, 0, 0}; // 0x0044DE28
 
@@ -8,7 +21,9 @@ SaveLoadUIManager g_SaveLoadUIManager = {0, {0, 0, 0}, nullptr, 0, 0}; // 0x0044
 void saveLoadUI_Init() {
     SaveLoadUIWork* work = g_SaveLoadUIManager.work;
     if (work == nullptr) {
-        work = reinterpret_cast<SaveLoadUIWork*>(AsdMem_Alloc(sizeof(SaveLoadUIWork), 0x100));
+        // 0x00191EB4..0x00191ED8: r0=0x10000, r1=0x100, r2=0, r3=0x388, [sp]=1.
+        work = reinterpret_cast<SaveLoadUIWork*>(
+            AsdMem_Alloc(0x10000, 0x100, 0, sizeof(SaveLoadUIWork), 1));
         g_SaveLoadUIManager.work = work;
     }
 

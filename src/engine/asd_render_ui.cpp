@@ -45,7 +45,6 @@ extern "C" {
     // Text / layout / flag helpers.
     void  UiText_Format(char* dst, const char* fmt, ...);                  // 0x002be7fc
     int   AsdUi_IsRegistered(void* handle);                                // 0x002bf41c
-    const Npc2dLayoutNode* UiLayout_GetNode(u32 group, u32 node);          // 0x002bf6d0
     bool  Flag_CheckEventBit(u32 flag_id);                                 // 0x002c0ba8
 
     // 0x00297004: inclusive LCG range helper, `min + (draw % (max-min+1))`
@@ -743,7 +742,8 @@ void Npc2d_func_00327634(u32 id)
 
     for (u32 i = 0; i < 3; ++i) {                             // 0x003276DC..0x0032771C
         const Npc2dLayoutNode* const node =
-            UiLayout_GetNode(0x32, g_Npc2dNodeIds[i]);        // 0x003276E4
+            static_cast<const Npc2dLayoutNode*>(
+                UiLayout_GetNode(0x32, g_Npc2dNodeIds[i]));   // 0x003276E4
         work->slots[i][0] = static_cast<f32>(node->x);        // 0x003276FC
         work->slots[i][1] = static_cast<f32>(node->y);        // 0x0032770C
 

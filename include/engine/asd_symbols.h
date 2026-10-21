@@ -33,6 +33,13 @@ extern "C" {
     void* UiGpu_SetViewportParams(s32 a0, s32 a1);
     void* UiGpu_SetRenderMode(s32 a0, s32 a1, s32 a2);
 
+    // 0x002BF6D0: 2D layout node lookup.  Returns a 16-byte node whose x/y
+    // live at +0x08/+0x0A and whose payload pointer is at +0x0C.  The shape
+    // is shared by the UI TUs (Npc2dLayoutNode / UiLayoutNode /
+    // CommandLayoutNode), so the canonical return type is `const void*` and
+    // each caller applies its own offset-compatible view.
+    const void* UiLayout_GetNode(u32 group, u32 node);
+
     // 0x002C3344 / 0x002C32F8: UI sprite-group layout helpers.  These are the
     // canonical spellings; camp_func_002c3344 / camp_func_002c32f8 were the
     // duplicate names used by unite_extras.cpp for the same addresses.

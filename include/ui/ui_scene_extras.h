@@ -496,12 +496,18 @@ extern TalkOverlayFlags g_TalkOverlayFlags;    // 0x0049FB1C (BSS)
 extern EffMenuScene g_EffMenuScene;            // 0x004D8F40 (BSS)
 extern EffMenuScroll g_EffMenuScroll;          // 0x004D9290 (BSS)
 extern EffMenuAnimConfig g_EffMenuAnimConfig;  // 0x004D92B4 (BSS)
-extern AsdUiObject g_EffMenuObjectA;           // 0x0044FCA8 (BSS)
-extern AsdUiObject g_EffMenuObjectB;           // 0x0044F970 (BSS)
-extern ResultAnimConfig g_ResultAnim;          // 0x004342C8 (BSS)
+// 0x0044FCA8 (.data image): flags_10 = 0x14 and table_14 = 0x0044F9A8.
+extern AsdUiObject g_EffMenuObjectA;
+// 0x0044F970 (.data image): table_14 = 0x00463EF0 (flags_10 is zero).
+extern AsdUiObject g_EffMenuObjectB;
+// 0x004342C8 (.data): { 0, 0.15f, 0.1f, 5, 0, 0, -1, 5, -1, 5 }.
+extern ResultAnimConfig g_ResultAnim;
 extern f32 g_ResultOrigin[3];                  // 0x00493530 (.data)
-extern TalkAnimRow* g_TalkAnimRows;            // 0x00447E58 (.data pointer)
-extern UiColorEntry g_UiColorTable[256];       // 0x00407FC0 (.rodata palette)
+// 0x00447E58 (.data pointer) -> 0x004BB7B0 (56-byte rows).
+extern TalkAnimRow* g_TalkAnimRows;
+// 0x00407FC0..0x00408FBF: the non-zero 4096-byte .rodata palette transcribed
+// from code.bin (256 rows of four floats; row 0 is {0, 1, ...}).
+extern UiColorEntry g_UiColorTable[256];
 
 // ---------------------------------------------------------------------------
 // Ledger entry points
@@ -522,5 +528,16 @@ s32 ui_func_00243e8c(EffMenuItemState* item, EffMenuSlot* slot, s32 count);
 /** Battle command ring.  Ledger name retained: ui_func_002f150c
  *  (0x002F150C, 4,204 B). */
 void ui_func_002f150c(BattleCommandWork* work);
+
+/** Tail routine inside the 0x003D7630 ledger span
+ *  (0x003D86C0..0x003D8700): arms the 0x800 shake bit and seeds the three
+ *  vectors.  Exposed for callers/tests even though this build never reaches
+ *  it. */
+void Result_BeginShake(ResultWork* work, s32 a, s32 b, f32 value);
+
+/** Second routine inside the 0x001E83FC ledger span
+ *  (0x001E9414..0x001E9518): gates on `[g_MapMainWork]+0x24`, runs the two
+ *  mode updates and returns 0.  Exposed for callers/tests. */
+s32 TalkOverlay_PollMode();
 
 } // namespace smt4::ui
