@@ -1052,7 +1052,7 @@ void EmitShaderCommand(UiActionPanel* panel) {
     // 0x0036C338..0x0036C35C
     g_UiPanelFlags_472088.field_06 =
         ((panel->field_104 & 1u) == 0) ? 1 : 0;
-    g_UiPanelScale_4720fc = BitsFloat(panel->field_108);
+    g_UiPanelScale_4720fc = BitsFloat(panel->field_10c);
 
     // 0x0036C36C..0x0036C3A0
     if ((g_UiPanelCmdFlag_47663c & 1u) == 0 &&
@@ -1094,8 +1094,8 @@ void EmitShaderCommand(UiActionPanel* panel) {
     // 0x0036C408..0x0036C45C
     g_UiPanelCommand_4efddc.color = PackFixed(s0);
     u32* dest = UiCmd_Emit(engine::g_GpuCommandCursor, template_source);
-    dest[0] = panel->field_10c;
-    dest[1] = panel->field_110;
+    dest[0] = panel->field_110;
+    dest[1] = panel->field_114;
     engine::g_GpuCommandCursor = dest + 2;
 }
 
@@ -1219,9 +1219,10 @@ emit_state:
 
 
 // 0x0036C8E8..0x0036CA40 / 0x003695BC..0x00369678: six 28-byte entries at
-// node+0x2C; each entry selects a panel word by its low byte and emits the
-// four-word record at entry+4.
-void EmitEffectEntries(u8* node) {
+// node+0x2C; each entry selects a word from the enclosing panel's +0x24 base
+// (panel+0x24 / work_b4+0x24) by its low byte and emits the four-word record
+// at entry+4.
+void EmitEffectEntries(u8* node, u8* values) {
     if (node == nullptr) {
         return;
     }
@@ -1232,17 +1233,17 @@ void EmitEffectEntries(u8* node) {
         const u32 selector = *reinterpret_cast<u32*>(entry) & 0xFFu;
         u32 value;
         switch (selector) {
-        case 0:  value = *reinterpret_cast<u32*>(entry + 0xC8); break;
-        case 1:  value = *reinterpret_cast<u32*>(entry + 0xCC); break;
-        case 2:  value = *reinterpret_cast<u32*>(entry + 0xD0); break;
-        case 3:  value = *reinterpret_cast<u32*>(entry + 0xD4); break;
-        case 4:  value = *reinterpret_cast<u32*>(entry + 0xD8); break;
-        case 5:  value = *reinterpret_cast<u32*>(entry + 0xB0); break;
-        case 6:  value = *reinterpret_cast<u32*>(entry + 0xB4); break;
-        case 7:  value = *reinterpret_cast<u32*>(entry + 0xB8); break;
-        case 8:  value = *reinterpret_cast<u32*>(entry + 0xBC); break;
-        case 9:  value = *reinterpret_cast<u32*>(entry + 0xC0); break;
-        default: value = *reinterpret_cast<u32*>(entry + 0xC4); break;
+        case 0:  value = *reinterpret_cast<u32*>(values + 0xC8); break;
+        case 1:  value = *reinterpret_cast<u32*>(values + 0xCC); break;
+        case 2:  value = *reinterpret_cast<u32*>(values + 0xD0); break;
+        case 3:  value = *reinterpret_cast<u32*>(values + 0xD4); break;
+        case 4:  value = *reinterpret_cast<u32*>(values + 0xD8); break;
+        case 5:  value = *reinterpret_cast<u32*>(values + 0xB0); break;
+        case 6:  value = *reinterpret_cast<u32*>(values + 0xB4); break;
+        case 7:  value = *reinterpret_cast<u32*>(values + 0xB8); break;
+        case 8:  value = *reinterpret_cast<u32*>(values + 0xBC); break;
+        case 9:  value = *reinterpret_cast<u32*>(values + 0xC0); break;
+        default: value = *reinterpret_cast<u32*>(values + 0xC4); break;
         }
         *reinterpret_cast<u32*>(entry + 0x14) = value;
         engine::g_GpuCommandCursor =
@@ -1313,8 +1314,9 @@ void ui_func_0036c0a8(void* unused, UiActionPanel* frame, UiActionSlot* slot) {
     }
 
     // 0x0036C1C8..0x0036C230: scene 0x8000 bit and visibility record.
+    // `bics r0,#1,r1` leaves r0 zero only when bit 0 is set.
     const s32 visible =
-        ((panel->field_18 & 1u) == 0 && frame->field_e4 != 0) ? 1 : 0;
+        ((panel->field_18 & 1u) != 0 && frame->field_e4 != 0) ? 1 : 0;
     if (visible != 0) {
         scene->field_14 |= 0x8000u;
     } else {
@@ -1334,15 +1336,15 @@ void ui_func_0036c0a8(void* unused, UiActionPanel* frame, UiActionSlot* slot) {
             // at least one row.
             if (list->field_68 > 0) {
                 if (frame->field_e0 > 0 &&
-                    (panel->field_18 & 2u) == 0) {
+                    (panel->field_18 & 2u) != 0) {
                     panel->field_14 |= 0x1000u;
                 } else {
                     panel->field_14 &= ~0x1000u;
                 }
             }
-            if ((list->flags & 4u) == 0) {
+            if ((list->flags & 4u) != 0) {
                 if (frame->field_44 != 0 &&
-                    (panel->field_18 & 4u) == 0) {
+                    (panel->field_18 & 4u) != 0) {
                     panel->field_14 |= 0x20u;
                     if ((panel->field_18 & 8u) != 0) {
                         panel->field_14 |= 0x40u;
@@ -1376,7 +1378,7 @@ void ui_func_0036c0a8(void* unused, UiActionPanel* frame, UiActionSlot* slot) {
 
     // 0x0036C4B0..0x0036C55C: three sprite slots at panel+0x274.
     u32 previous_2b0 = s114;
-    s32 list_flag = 1;
+    s32 list_flag = 0;                              // [sp+0x04]
     if (!(panel->field_2b0 != 0 && previous_2b0 == panel->field_2b0)) {
         u32 mask = 0;
         for (s32 i = 0; i < 3; ++i) {
@@ -1398,13 +1400,14 @@ void ui_func_0036c0a8(void* unused, UiActionPanel* frame, UiActionSlot* slot) {
         s114 = panel->field_2b0;
     }
 
-    // 0x0036C560..0x0036C850: list record / flags.
-    if ((panel->field_18 & 1u) == 0) {
+    // 0x0036C560..0x0036C850: list record / flags.  The record block runs
+    // only when bit 0 is set (0x0036C57C..0x0036C590).
+    if ((panel->field_18 & 1u) != 0) {
         u8* node = (panel->rel_288 != 0)
                  ? reinterpret_cast<u8*>(panel) + 0x288 + panel->rel_288
                  : nullptr;
         u8* record = (node != nullptr) ? node + 0x10 : nullptr;
-        list_flag = ((*reinterpret_cast<u32*>(record) & 0x20u) == 0) ? 1 : 0;
+        list_flag = ((*reinterpret_cast<u32*>(record) & 0x20u) != 0) ? 1 : 0;
 
         if (!(panel->field_2bc != 0 && s118 == panel->field_2bc &&
               active_a == 0)) {
@@ -1413,16 +1416,17 @@ void ui_func_0036c0a8(void* unused, UiActionPanel* frame, UiActionSlot* slot) {
             const u32 b4 = *reinterpret_cast<u32*>(data + 4) & 0xFFu;
             const u32 b8 = *reinterpret_cast<u32*>(data + 8) & 0xFFu;
             const u32 bc = *reinterpret_cast<u32*>(data + 0xC) & 0xFFu;
+            const u32 b10 = *reinterpret_cast<u32*>(data + 0x10) & 0xFFu;
             const u32 b14 = data[0x14];
             const u32 mask = (b14 != 0) ? 0u : 0xFFFFFFFFu;
-            const u32 bit0 = ((mask & bc) == 0) ? 1u : 0u;
+            const u32 bit0 = ((mask & b10) == 0) ? 1u : 0u;
             const u32 flags = *reinterpret_cast<u32*>(data);
             const u32 word0 = 0x80000000u | (b8 << 2) | (b4 << 4)
-                            | (bc << 28)
+                            | (bc << 22) | (b10 << 28)
                             | (((flags & 1u) == 0 ? 1u : 0u) << 27)
                             | ((bit0 ^ 1u) << 30) | 0x400u;
-            const u32 word1 = (((flags & 2u) == 0 ? 1u : 0u) << 16)
-                            | (((flags & 4u) == 0 ? 1u : 0u) << 17)
+            const u32 word1 = (((flags & 2u) != 0 ? 1u : 0u) << 16)
+                            | (((flags & 4u) != 0 ? 1u : 0u) << 17)
                             | ((b8 == 0 ? 1u : 0u) << 19)
                             | ((flags & 0x20u) == 0 ? 7u : 0u) << 20
                             | 0x40000u;
@@ -1442,10 +1446,13 @@ void ui_func_0036c0a8(void* unused, UiActionPanel* frame, UiActionSlot* slot) {
                 for (s32 i = 0; i < static_cast<s32>(frame->field_e4); ++i) {
                     u8* entry = reinterpret_cast<u8*>(
                         static_cast<std::uintptr_t>(entries[i]));
-                    const u32 pair = *reinterpret_cast<u32*>(entry + 0x18) & 2u;
+                    // 0x0036C78C..0x0036C79C: entries[i] is dereferenced at
+                    // +0x08; +0x18/+0xB8 live on that inner object.
+                    u8* inner = *reinterpret_cast<u8**>(entry + 8);
+                    const u32 pair = *reinterpret_cast<u32*>(inner + 0x18) & 2u;
                     const u32 pair_bit = pair >> 1;
                     const u32 actor_state =
-                        *reinterpret_cast<u32*>(entry + 0xB8);
+                        *reinterpret_cast<u32*>(inner + 0xB8);
                     u32 selected = 0;
                     if (actor_state == 0 ||
                         ((g_UiPanelVisibleMask_472100 >> i) & 1u) != 0) {
@@ -1489,7 +1496,7 @@ void ui_func_0036c0a8(void* unused, UiActionPanel* frame, UiActionSlot* slot) {
                  ? reinterpret_cast<u8*>(panel) + 0x288 + panel->rel_288
                  : nullptr;
 
-        EmitEffectEntries(node);
+        EmitEffectEntries(node, reinterpret_cast<u8*>(panel) + 0x24);
         s108 = panel->field_2b4;
         s118 = panel->field_2bc;
         s11c = panel->field_2c0;
@@ -1517,7 +1524,7 @@ void ui_func_0036c0a8(void* unused, UiActionPanel* frame, UiActionSlot* slot) {
         if (changed) {
             func_003744f8(frame, scene, &panel->field_24,
                           static_cast<u32>(list_flag));
-            EmitEffectEntries(node);
+            EmitEffectEntries(node, reinterpret_cast<u8*>(panel) + 0x24);
             s108 = panel->field_2b4;
             s118 = panel->field_2bc;
             s11c = panel->field_2c0;
@@ -1612,7 +1619,7 @@ void ui_func_00368cf8(void* unused, UiActionPanel* frame,
 
     // 0x00368DD8..0x00368E38
     const s32 visible =
-        ((work->field_18 & 1u) == 0 && frame->field_e4 != 0) ? 1 : 0;
+        ((work->field_18 & 1u) != 0 && frame->field_e4 != 0) ? 1 : 0;
     if (visible != 0) {
         scene->field_14 |= 0x8000u;
     } else {
@@ -1629,14 +1636,14 @@ void ui_func_00368cf8(void* unused, UiActionPanel* frame,
         if (list != nullptr) {
             if (list->field_68 > 0) {
                 if (frame->field_e0 > 0 &&
-                    (work->field_18 & 2u) == 0) {
+                    (work->field_18 & 2u) != 0) {
                     work->field_14 |= 0x1000u;
                 } else {
                     work->field_14 &= ~0x1000u;
                 }
             }
-            if ((list->flags & 4u) == 0) {
-                if (frame->field_44 != 0 && (work->field_18 & 4u) == 0) {
+            if ((list->flags & 4u) != 0) {
+                if (frame->field_44 != 0 && (work->field_18 & 4u) != 0) {
                     work->field_14 |= 0x20u;
                     if ((work->field_18 & 8u) != 0) {
                         work->field_14 |= 0x40u;
@@ -1693,14 +1700,14 @@ void ui_func_00368cf8(void* unused, UiActionPanel* frame,
     }
 
     // 0x003691B8..0x003691F8
-    s32 list_flag = ((work->field_18 & 1u) == 0) ? 1 : 0;
-    if ((work->field_18 & 1u) == 0) {
+    s32 list_flag = 0;                              // [sp+0x04]
+    if ((work->field_18 & 1u) != 0) {
         u8* node = (work_bc->rel_288 != 0)
                  ? reinterpret_cast<u8*>(work_bc) + 0x288
                        + work_bc->rel_288
                  : nullptr;
         u8* record = (node != nullptr) ? node + 0x10 : nullptr;
-        list_flag = ((*reinterpret_cast<u32*>(record) & 0x20u) == 0) ? 1 : 0;
+        list_flag = ((*reinterpret_cast<u32*>(record) & 0x20u) != 0) ? 1 : 0;
 
         if (!(work_bc->field_2bc != 0 && s118 == work_bc->field_2bc &&
               active_a == 0)) {
@@ -1709,16 +1716,17 @@ void ui_func_00368cf8(void* unused, UiActionPanel* frame,
             const u32 b4 = *reinterpret_cast<u32*>(data + 4) & 0xFFu;
             const u32 b8 = *reinterpret_cast<u32*>(data + 8) & 0xFFu;
             const u32 bc = *reinterpret_cast<u32*>(data + 0xC) & 0xFFu;
+            const u32 b10 = *reinterpret_cast<u32*>(data + 0x10) & 0xFFu;
             const u32 b14 = data[0x14];
             const u32 mask = (b14 != 0) ? 0u : 0xFFFFFFFFu;
-            const u32 bit0 = ((mask & bc) == 0) ? 1u : 0u;
+            const u32 bit0 = ((mask & b10) == 0) ? 1u : 0u;
             const u32 flags = *reinterpret_cast<u32*>(data);
             const u32 word0 = 0x80000000u | (b8 << 2) | (b4 << 4)
-                            | (bc << 28)
+                            | (bc << 22) | (b10 << 28)
                             | (((flags & 1u) == 0 ? 1u : 0u) << 27)
                             | ((bit0 ^ 1u) << 30) | 0x400u;
-            const u32 word1 = (((flags & 2u) == 0 ? 1u : 0u) << 16)
-                            | (((flags & 4u) == 0 ? 1u : 0u) << 17)
+            const u32 word1 = (((flags & 2u) != 0 ? 1u : 0u) << 16)
+                            | (((flags & 4u) != 0 ? 1u : 0u) << 17)
                             | ((b8 == 0 ? 1u : 0u) << 19)
                             | ((flags & 0x20u) == 0 ? 7u : 0u) << 20
                             | 0x40000u;
@@ -1737,10 +1745,13 @@ void ui_func_00368cf8(void* unused, UiActionPanel* frame,
                 for (s32 i = 0; i < static_cast<s32>(frame->field_e4); ++i) {
                     u8* entry = reinterpret_cast<u8*>(
                         static_cast<std::uintptr_t>(entries[i]));
-                    const u32 pair = *reinterpret_cast<u32*>(entry + 0x18) & 2u;
+                    // 0x0036C78C..0x0036C79C: entries[i] is dereferenced at
+                    // +0x08; +0x18/+0xB8 live on that inner object.
+                    u8* inner = *reinterpret_cast<u8**>(entry + 8);
+                    const u32 pair = *reinterpret_cast<u32*>(inner + 0x18) & 2u;
                     const u32 pair_bit = pair >> 1;
                     const u32 actor_state =
-                        *reinterpret_cast<u32*>(entry + 0xB8);
+                        *reinterpret_cast<u32*>(inner + 0xB8);
                     u32 selected = 0;
                     if (actor_state == 0 ||
                         ((g_UiPanelVisibleMask_472100 >> i) & 1u) != 0) {
@@ -1777,26 +1788,46 @@ void ui_func_00368cf8(void* unused, UiActionPanel* frame,
     }
 
     // 0x003694B8..0x00369508
-    bool skip_c8 = false;
+    bool rerun = false;
     if (!(work_b4 != nullptr && s108 == work_b4->field_2b4 &&
           work_b4->field_2b4 != 0)) {
+        rerun = true;
+    } else {
+        // 0x00369568..0x003695B4: compare the 0x20 bit reached through
+        // [frame+0x24]+0x44/+0x288 with the latched list flag; a change
+        // jumps to 0x003694F8 and re-runs the 0x2B4 block.
+        if (frame->field_24 != 0) {
+            u8* object = reinterpret_cast<u8*>(
+                static_cast<std::uintptr_t>(frame->field_24));
+            u8* inner = *reinterpret_cast<u8**>(object + 0x44);
+            if (inner != nullptr) {
+                const u32 relative =
+                    *reinterpret_cast<u32*>(inner + 0x288);
+                u8* node = (relative != 0) ? inner + 0x288 + relative
+                                           : nullptr;
+                if (node != nullptr) {
+                    const bool bit =
+                        (*reinterpret_cast<u32*>(node + 0x10) & 0x20u) != 0;
+                    rerun = (bit != (list_flag != 0));
+                }
+            }
+        }
+    }
+    if (rerun) {
         func_003744f8(frame, scene, &work_b4->field_24,
                       static_cast<u32>(list_flag));
         s108 = work_b4->field_2b4;
-    } else {
-        // 0x00369568..0x003695B4: no change, so the 0x2C8 block is skipped.
-        skip_c8 = true;
     }
 
-    // 0x00369510..0x0036967C
-    if (!skip_c8 &&
+    // 0x00369510..0x0036967C: the 0x2C8 block also runs after a rerun.
+    if (rerun ||
         !(work_c8 != nullptr && s120 == work_c8->field_2c8 &&
           work_c8->field_2c8 != 0)) {
         u8* node = (work_bc->rel_288 != 0)
                  ? reinterpret_cast<u8*>(work_bc) + 0x288
                        + work_bc->rel_288
                  : nullptr;
-        EmitEffectEntries(node);
+        EmitEffectEntries(node, reinterpret_cast<u8*>(work_b4) + 0x24);
         s120 = work_c8->field_2c8;
     }
 

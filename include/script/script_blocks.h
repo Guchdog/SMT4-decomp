@@ -210,7 +210,10 @@ struct ScriptEffectRowB {
                                         //   (0x0027BAAC)
     u8  field_0c;                       // +0x0C: `ldrsb r0,[r0,#0xc]`
                                         //   (0x0027BF14)
-    u8  pad_00d[0x10];
+    u8  pad_00d[0x0F];
+    u8  field_1c;                       // +0x1C: `ldrsb r0,[r5,#0x1c]`
+                                        //   (0x0027BB58); also the second
+                                        //   colour byte at 0x0027BC4C
     u8  field_1d;                       // +0x1D: `ldrb r0,[r5,#0x1d]`
                                         //   (0x0027BC50)
     u8  field_1e;                       // +0x1E: `ldrb r0,[r5,#0x1e]`
@@ -313,6 +316,9 @@ static_assert(offsetof(ScriptEffectTable, color) == 0x08);
 // Reconstructed entry points (ledger names)
 // ---------------------------------------------------------------------------
 
+/** 0x0043427C: active script VM / battle context slot. */
+extern void* g_ScriptVmContext_43427c;
+
 /**
  * 0x0027EB98, 76 B: resolves the active per-slot script work.  Shared by
  * 0x0024C828 and the battle emitter 0x002553EC (0x00255628).
@@ -331,10 +337,10 @@ void script_vm_func_0024c828(ScriptBattleContext* ctx, s32 mode, s32 param);
 /**
  * 0x0027B8CC, 3,444 B: effect/particle emission.
  *
- * `unused` is the never-read r0; `filter_a` (r1) and `filter_b` (r2) select the
- * effect entries by their +0x08/+0x09 bytes.  The routine has no defined
- * return value.
+ * `filter_a` (r0) and `filter_b` (r1) are the spilled incoming words at
+ * [sp+0xA4]/[sp+0xA8] and select the effect entries by their +0x08/+0x09
+ * bytes.  The routine has no defined return value.
  */
-void script_vm_func_0027b8cc(u32 unused, s32 filter_a, s32 filter_b);
+void script_vm_func_0027b8cc(s32 filter_a, s32 filter_b);
 
 } // namespace smt4::script

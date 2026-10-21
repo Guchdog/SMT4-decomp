@@ -510,18 +510,20 @@ s32 script_vm_func_002eafe4(s32 type);
 s32 script_vm_func_002e00f0(s32 type);
 s32 script_vm_func_002eabf4(s32 kind);
 s32 script_vm_func_002eae80(s32 value, f32* out_a, f32* out_b, f32* out_c);
+// The four register arguments are followed by fifteen stack words and six
+// VFP s0..s5 arguments.
 void script_vm_func_0024f460(u32 id, u32 handle, const char* kind, s32 type,
                              u32 s0, u32 s1, u32 s2, u32 s3, u32 s4,
                              u32 s5, u32 s6, u32 s7, u32 s8, u32 s9,
                              u32 s10, u32 s11, u32 s12, u32 s13,
-                             f32 f0, f32 f1, f32 f2, f32 f3, f32 f4,
-                             f32 f5);
+                             u32 s14, f32 f0, f32 f1, f32 f2, f32 f3,
+                             f32 f4, f32 f5);
 void script_vm_func_00263ee4(u32 id, u32 handle, const char* kind, s32 type,
                              u32 s0, u32 s1, u32 s2, u32 s3, u32 s4,
                              u32 s5, u32 s6, u32 s7, u32 s8, u32 s9,
                              u32 s10, u32 s11, u32 s12, u32 s13,
-                             f32 f0, f32 f1, f32 f2, f32 f3, f32 f4,
-                             f32 f5);
+                             u32 s14, f32 f0, f32 f1, f32 f2, f32 f3,
+                             f32 f4, f32 f5);
 void engine_func_002a7fc4(char* dst, const char* src);
 void script_vm_func_002dfd94(u32 id);
 } // extern "C"
@@ -569,9 +571,7 @@ EffectSelector SelectorFor(s8 value) {
 } // namespace
 
 // DECOMP_FUNC(0x0027b8cc, 3444)
-void script_vm_func_0027b8cc(u32 unused, s32 filter_a, s32 filter_b) {
-    (void)unused;
-
+void script_vm_func_0027b8cc(s32 filter_a, s32 filter_b) {
     // 0x0027B8D8..0x0027B8F0
     const s32 count = camp_func_00248418();
     if (count <= 0) {
@@ -596,6 +596,7 @@ void script_vm_func_0027b8cc(u32 unused, s32 filter_a, s32 filter_b) {
         u32 id_word = entry->id;                    // r8
         s32 found_a = -1;                           // [sp+0x84]
         s32 found_b = -1;                           // [sp+0x80]
+        s32 list_b_index = -1;                      // sb
         s32 kind_sel = 0;                           // [sp+0x68]
         s32 string_flag = 0;                        // [sp+0x78]
         s32 direct_flag = 0;                        // [sp+0x70]
@@ -673,9 +674,11 @@ void script_vm_func_0027b8cc(u32 unused, s32 filter_a, s32 filter_b) {
                             static_cast<u32>(row->field_04)) == 0) {
                         continue;
                     }
+                    // 0x0027BA90..0x0027BAA8: accept when field_06 is zero
+                    // or the flag check succeeds; reject only both nonzero.
                     if (row->field_06 != 0 &&
                         Flag_CheckEventBit(
-                            static_cast<u32>(row->field_06)) == 0) {
+                            static_cast<u32>(row->field_06)) != 0) {
                         continue;
                     }
                     if (row->field_0a == -1) {
@@ -685,48 +688,62 @@ void script_vm_func_0027b8cc(u32 unused, s32 filter_a, s32 filter_b) {
                     break;
                 }
             }
-            if (found_index == -1) {
-                found_a = -1;
-            } else {
-                found_a = found_index;
-                if (found_index != -2) {
-                    ScriptEffectRowB* row =
-                        script_vm_func_00248358(found_index);
-                    // 0x0027BAEC..0x0027BB18
-                    for (s32 i = 0; i < 5; ++i) {
-                        g_ScriptEffectTable_447a28.color[i] = 0;
+            if (found_index != -1) {
+                list_b_index = found_index;
+                ScriptEffectRowB* row =
+                    script_vm_func_00248358(found_index);
+                // 0x0027BAEC..0x0027BB18
+                for (s32 i = 0; i < 5; ++i) {
+                    g_ScriptEffectTable_447a28.color[i] = 0;
+                }
+                // 0x0027BB14: the range check uses the row's +0x0A word;
+                // the +0x1C byte only selects the colour/string branch.
+                const s32 selector = row->field_0a;
+                const bool valid_id =
+                    selector != 0 && selector <= 0x258 &&
+                    row->id != 0x02802001 &&
+                    row->id != 0x03303001 &&
+                    row->id != 0x03402001;
+                if (valid_id && script_vm_func_0027dbd8() != -1) {
+                    // 0x0027BB58: the selector byte is entry +0x1C.
+                    switch (SelectorFor(
+                        static_cast<s8>(row->field_1c))) {
+                    case EffectSelector::kSkip:
+                    case EffectSelector::kSkip2:
+                        continue;                       // 0x0027C620
+                    case EffectSelector::kColor:
+                        // 0x0027BC44..0x0027BC64
+                        g_ScriptEffectTable_447a28.color[0] = 1;
+                        g_ScriptEffectTable_447a28.color[1] =
+                            row->field_1c;
+                        g_ScriptEffectTable_447a28.color[2] =
+                            row->field_1d;
+                        g_ScriptEffectTable_447a28.color[3] =
+                            row->field_1e;
+                        g_ScriptEffectTable_447a28.color[4] =
+                            row->field_1f;
+                        break;
+                    case EffectSelector::kString:
+                        break;
                     }
-                    const s32 selector = row->field_0a;
-                    const bool valid_id =
-                        selector != 0 && selector <= 0x258 &&
-                        row->id != 0x02802001 &&
-                        row->id != 0x03303001 &&
-                        row->id != 0x03402001;
-                    if (valid_id && script_vm_func_0027dbd8() != -1) {
-                        switch (SelectorFor(
-                            static_cast<s8>(row->field_0c & 0xFF))) {
-                        case EffectSelector::kSkip:
-                        case EffectSelector::kSkip2:
-                            break;
-                        case EffectSelector::kColor:
-                            // 0x0027BC44..0x0027BC64
-                            g_ScriptEffectTable_447a28.color[0] = 1;
-                            g_ScriptEffectTable_447a28.color[1] =
-                                static_cast<u8>(row->field_0c);
-                            g_ScriptEffectTable_447a28.color[2] =
-                                row->field_1d;
-                            g_ScriptEffectTable_447a28.color[3] =
-                                row->field_1e;
-                            g_ScriptEffectTable_447a28.color[4] =
-                                row->field_1f;
-                            string_flag = 1;
-                            goto after_search;
-                        case EffectSelector::kString:
-                            string_flag = 1;
-                            goto after_search;
+                }
+                string_flag = 1;                        // 0x0027BC68
+
+                // 0x0027BEF8: the surviving list-B index is cleared when the
+                // row has no +0x08/+0x0A value and its +0x0C byte is 0/0x30.
+                if (list_b_index != -1) {
+                    ScriptEffectRowB* check =
+                        script_vm_func_00248358(list_b_index);
+                    const u16 field_08 = check->field_08;
+                    if (field_08 == 0 && check->field_0a == 0) {
+                        const s8 field_0c =
+                            static_cast<s8>(check->field_0c);
+                        if (field_0c == 0 || field_0c == 0x30) {
+                            list_b_index = -1;
                         }
                     }
                 }
+                goto render_effect;
             }
         }
 
@@ -748,9 +765,11 @@ void script_vm_func_0027b8cc(u32 unused, s32 filter_a, s32 filter_b) {
                             static_cast<u32>(row->field_04)) == 0) {
                         continue;
                     }
+                    // 0x0027BBF0..0x0027BC08: same gate as list B -- reject
+                    // only when field_06 and the flag check are both nonzero.
                     if (row->field_06 != 0 &&
                         Flag_CheckEventBit(
-                            static_cast<u32>(row->field_06)) == 0) {
+                            static_cast<u32>(row->field_06)) != 0) {
                         continue;
                     }
                     found_index = i;
@@ -912,6 +931,7 @@ after_search:
             continue;
         }
 
+render_effect:
         {
             // 0x0027BF38..0x0027BFB0: list G search.
             const s32 n = camp_func_0030f6fc();
@@ -937,9 +957,9 @@ after_search:
                 }
             }
 
-            // 0x0027BFB0..0x0027BFE4
+            // 0x0027BFB0..0x0027BFE4: gate on the surviving list-B index.
             s32 type = entry->kind;
-            if (found_a != -1 &&
+            if (list_b_index != -1 &&
                 (type == 3 || type == 0x0B)) {
                 type = 0x10;
             }
@@ -958,32 +978,67 @@ after_search:
             f32 out_a = 0.0f;
             script_vm_func_002eae80(entry->field_1e, &out_a, &out_b, &out_c);
 
-            const s32 flag_11 = entry->field_11;
-            const f32 field_1f = static_cast<f32>(entry->field_1f);
+            const s32 flag_11 = static_cast<s8>(entry->field_11);
+            const u32 field_1f =
+                static_cast<u32>(static_cast<s32>(
+                    static_cast<s8>(entry->field_1f)));
 
             if (sprite_mode == 1) {
-                // 0x0027C068..0x0027C0EC: POLY draw.  s0..s5 hold
-                // field_16, field_18, field_1a, sp+0x4C, sp+0x48, field_1C.
+                // 0x0027C068..0x0027C0EC: POLY draw.  The fifteen stack
+                // words are kind_arg, index, field_0b..field_10, flag8,
+                // field_11, handle_arg, field_12..field_14, field_1f;
+                // s0..s5 hold field_16, field_18, field_1a, out_a, out_b,
+                // field_1C.
                 script_vm_func_0024f460(
                     id_word, handle, "POLY", type_arg,
-                    static_cast<u32>(kind_arg), 0,
+                    static_cast<u32>(kind_arg), static_cast<u32>(index),
                     entry->field_0b, entry->field_0c, entry->field_0d,
-                    entry->field_0e, entry->field_11, entry->field_10,
+                    entry->field_0e, entry->field_0f, entry->field_10,
                     static_cast<u32>(flag8), static_cast<u32>(flag_11),
                     static_cast<u32>(handle_arg), entry->field_12,
-                    entry->field_13, entry->field_14,
-                    c16, c18, c1a, out_c, out_b, c1c);
+                    entry->field_13, entry->field_14, field_1f,
+                    c16, c18, c1a, out_a, out_b, c1c);
+
+                // 0x0027C0EC..0x0027C1F0: remapped POLY types get a second
+                // 0x00263EE4 pass tagged "NA" (0x0027C3DC).
+                s32 na_type = static_cast<s8>(entry->field_1e);
+                if (type_arg == 1) {
+                    switch (na_type) {
+                    case 0:  na_type = 0x0D; break;
+                    case 3:  na_type = 0x0F; break;
+                    case 4:  na_type = 0x11; break;
+                    default: na_type = 0x0B; break;
+                    }
+                } else if (type_arg == 2) {
+                    switch (na_type) {
+                    case 0:  na_type = 0x0C; break;
+                    case 3:  na_type = 0x0E; break;
+                    case 4:  na_type = 0x10; break;
+                    default: na_type = 0x0A; break;
+                    }
+                }
+                if (type_arg == 0 || type_arg == 1 || type_arg == 2 ||
+                    type_arg == 0x0A || type_arg == 0x2A) {
+                    script_vm_func_00263ee4(
+                        3, 0, "NA", 0x39,
+                        0, 0xFFFFFFFFu, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        static_cast<u32>(na_type), 0, 0, 0,
+                        out_b, c18 - 200.0f, c1a, out_a, out_b + 200.0f,
+                        800.0f);
+                }
             } else if (sprite_mode == 0) {
-                // 0x0027C1F4..0x0027C278: BOX draw.
+                // 0x0027C1F4..0x0027C278: BOX draw; same fifteen stack words,
+                // with s0..s5 = field_16, field_18, field_1a, out_a, out_b,
+                // out_c.
                 script_vm_func_00263ee4(
                     id_word, handle, "BOX", type_arg,
-                    static_cast<u32>(kind_arg), 0,
+                    static_cast<u32>(kind_arg), static_cast<u32>(index),
                     entry->field_0b, entry->field_0c, entry->field_0d,
-                    entry->field_0e, entry->field_11, entry->field_10,
+                    entry->field_0e, entry->field_0f, entry->field_10,
                     static_cast<u32>(flag8), static_cast<u32>(flag_11),
                     static_cast<u32>(handle_arg), entry->field_12,
-                    entry->field_13, entry->field_14,
-                    c16, c18, c1a, out_c, out_b, field_1f);
+                    entry->field_13, entry->field_14, field_1f,
+                    c16, c18, c1a, out_a, out_b, out_c);
             }
 
             // 0x0027C27C..0x0027C368: list A slot update.
@@ -1011,9 +1066,11 @@ after_search:
                 }
             }
 
-            // 0x0027C368..0x0027C4D4: list B slot update.
-            if (found_a != -1) {
-                ScriptEffectRowB* row = script_vm_func_00248358(found_a);
+            // 0x0027C368..0x0027C4D4: list B slot update, keyed by the
+            // surviving list-B index.
+            if (list_b_index != -1) {
+                ScriptEffectRowB* row =
+                    script_vm_func_00248358(list_b_index);
                 ScriptEffectSlot* slot =
                     FindEffectSlot(static_cast<u32>(row->id));
                 if (slot != nullptr) {

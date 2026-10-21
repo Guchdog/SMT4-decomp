@@ -385,7 +385,7 @@ void ReserveHeaderPayload(DrawStream* stream, u32 header, u32 payload) {
 }
 
 // The 16-byte packet built at sp (case 0x40000000), sp+8 (cases 0x40000002,
-// 0x40000042, 0x40000112, 0x40000122, 0x400001E2, 0x400003E2) and sp+0x14.
+// 0x40000042, 0x40000112, 0x40000122, 0x40000222, 0x40000422) and sp+0x14.
 struct DrawPacket16 {
     u32 flags;                          // bytes 0/1 (`strb sl,[sp]`,
                                         //   `strb sl,[sp,#1]`)
@@ -747,15 +747,17 @@ s32 engine_func_002aad14(EngineDrawDesc* desc, DrawStream* out,
             }
 
             // 0x002AB390..0x002AB3D0: one 0x234 header then the five-float
-            // builder.  The float words are the frame slots at sp+0x20..0x30.
-            // The five float words are read from sp+0x20..0x30; the listing
-            // only initialises the first two (packet+0x18/+0x1C) before this
-            // call, so the remaining three are passed as zero.
+            // builder.  r0/r1 carry out/packed, r2 is the packet flags word,
+            // r3 is packet+0x04 and s0..s4 are packet+0x08..+0x18; all five
+            // words are initialised by the descriptor copy at
+            // 0x002AB160..0x002AB18C.
             ReserveAtAlign(out, 0x234);
-            func_0012e3a0(out, packed, packet.field_10, packet.field_14,
-                          WordFloat(packet.field_18),
-                          WordFloat(packet.field_1c),
-                          0.0f, 0.0f, 0.0f);
+            func_0012e3a0(out, packed, packet.flags, packet.field_04,
+                          WordFloat(packet.field_08),
+                          WordFloat(packet.field_0c),
+                          WordFloat(packet.field_10),
+                          WordFloat(packet.field_14),
+                          WordFloat(packet.field_18));
 
             // 0x002AB3D4..0x002AB4B0: iterate count 16-byte records starting
             // at r6+0x2C; the first entry with `[+4] & 1` and `[+0xC] == 1`
@@ -876,7 +878,7 @@ s32 engine_func_002aad14(EngineDrawDesc* desc, DrawStream* out,
             func_0012c090(out, packed, packet.flags, packet.field_04,
                           packet.field_08, 1);
         }
-    } else if (tag == 0x400001E2u) {
+    } else if (tag == 0x40000222u) {
         // 0x002AB720..0x002AB7AC
         DrawPacket16 packet{};
         u8* bytes = reinterpret_cast<u8*>(&packet);
@@ -898,7 +900,7 @@ s32 engine_func_002aad14(EngineDrawDesc* desc, DrawStream* out,
             func_0012abe4(out, packed, packet.flags, packet.field_04,
                           packet.field_08, 1);
         }
-    } else if (tag == 0x400003E2u) {
+    } else if (tag == 0x40000422u) {
         // 0x002AB7B0..0x002AB83C
         DrawPacket16 packet{};
         u8* bytes = reinterpret_cast<u8*>(&packet);
@@ -934,12 +936,20 @@ s32 engine_func_002aad14(EngineDrawDesc* desc, DrawStream* out,
 
 fallthrough_common:
 common_tail:
+    // 0x002AB4B0: commit == 0 skips the descriptor and goes straight to the
+    // virtual-result walk.
+    if (commit == 0) {
+        goto vtable_walk;
+    }
+
     // 0x002AB4B8..0x002AB4F4: the optional tail argument receives the final
-    // commit descriptor {packed, 0, 0, 1}.
+    // commit descriptor {packed, 0, 0, 1}, then the routine returns.
     if (tail_arg != nullptr) {
         func_00132904(desc, out, out2, 0, packed, 0, 0, 1);
     }
+    return static_cast<s32>(reinterpret_cast<std::uintptr_t>(result));
 
+vtable_walk:
     // 0x002ABA28..0x002ABAA0: walk the virtual result.  The loop starts with
     // the vtable slot 2 result (`ldr r1,[r0,#8]; blx r1`).
     if (result != nullptr) {
@@ -963,9 +973,9 @@ common_tail:
 
 namespace {
 
-// 0x00434290: action manager.  0x0043427C: script VM context slot.
+// 0x00434290: action manager.  The 0x0043427C script VM context slot is
+// defined canonically in script_blocks.cpp and declared in script_blocks.h.
 void* g_BattleActionManager_434290 = nullptr;
-void* g_ScriptVmContext_43427c = nullptr;
 // 0x00435D18: global block; the routine reaches +0x3000 for its +0x28 word.
 u8* g_BattleGlobal_435d18 = reinterpret_cast<u8*>(0x00435D18u);
 // 0x00439960: 12-byte effect rows selected by the argument at [sp+0x148].
@@ -1122,7 +1132,7 @@ s32 battle_func_002553ec(s32 base, void* actor, BattleActorRecord* attack,
             script::ScriptSlot* slot =
                 script_vm_func_0027eb98(
                     reinterpret_cast<script::ScriptBattleContext*>(
-                        g_ScriptVmContext_43427c));
+                        script::g_ScriptVmContext_43427c));
             slot->action_latched = 1;               // 0x00255634
 
             if (arg12 == 0) {
@@ -1153,16 +1163,19 @@ s32 battle_func_002553ec(s32 base, void* actor, BattleActorRecord* attack,
             func_002b7f0a(candidates, static_cast<s8>(count), 4,
                           kBattleSortComparator);
 
-            // 0x00255700..0x0025572C marks candidates[0..count-2] (the loop
-            // counter is incremented before the comparison).
-            for (s32 i = 0; i + 1 < count && i < 0x32; ++i) {
+            // 0x00255700..0x0025572C marks candidates[0..eligible-1]; the
+            // counter is incremented before the comparison and capped at
+            // 0x32.
+            for (s32 i = 0; i < eligible && i < 0x32; ++i) {
                 candidates[i]->flags_f8 |= 4u;
             }
         }
     }
 
-    // 0x00255730..0x00255A04: per-unit effect commands.
-    {
+    // 0x00255550 / 0x00255730..0x00255A04: only a unit whose attack record
+    // carries bit 0x10 reaches the per-unit effect commands; the zero case
+    // jumps straight to the post-effect notification at 0x00255A08.
+    if (attack_flags != 0) {
         u8* speed_block = ui + 0x2F00;              // [sp+8]
         u8* counter = ui + 0x2C00 + 0x304;          // [sp+0xC]
         for (s32 i = 4; i < 0x36; ++i) {
@@ -1175,13 +1188,15 @@ s32 battle_func_002553ec(s32 base, void* actor, BattleActorRecord* attack,
             if ((unit->flags_f8 & 2u) != 0) {
                 continue;
             }
-            if (unit->id_62 != attack->id_62 &&
+            // 0x00255780..0x00255790: an eligible unit is only processed when
+            // it is not the attacker and the shuffle marked it (bit 2).
+            if (unit->id_62 == attack->id_62 ||
                 (unit->flags_f8 & 4u) == 0) {
                 continue;
             }
 
             *counter = static_cast<u8>(speed_block[4] + 1);
-            const s32 position = base + arg18 + arg14;
+            const s32 position = base + arg15;       // [sp+0xD0]
 
             switch (arg12) {
             case 0:
@@ -1276,7 +1291,7 @@ post_notify:
         const s32 position = static_cast<s16>(arg16 + base);
         BattleAction* action = NewAction(position, actor, position);
         action->kind = 0x12;
-        action->record = actor;
+        action->record = attack;                    // 0x00255AA0
         action->field_30 = 1.0f;
         action->field_4c = a3;
         action->field_24 = static_cast<s16>(arg22);
@@ -1302,7 +1317,7 @@ post_notify:
         }
 
         if (battle_func_002934d4(ui) != 0) {
-            battle_func_00250800(0, 0, 0x010001A0u, 0, 1, 0, 0);
+            battle_func_00250800(0, 1, 0x010001A0u, 0, 1, 0, 0);
         }
     }
 
@@ -1311,7 +1326,8 @@ post_notify:
         BattleAction* action = NewAction(
             static_cast<s16>(arg17 + base), actor, 0);
         action->kind = 6;
-        action->record = actor;
+        // 0x00255BD4..0x00255BE0 writes only +0x04/+0x18/+0x28; the record
+        // field is left untouched.
         action->field_18 = static_cast<u32>(effect_arg);
         action->field_28 = static_cast<u32>(arg19);
     }
@@ -1330,9 +1346,10 @@ final_entry:
             if (arg5 < 0) {
                 goto after_positions;               // 0x00255DAC
             }
-            // 0x00255CD4: negative first operand, non-negative second.
+            // 0x00255CFC..0x00255D24: negative first operand, non-negative
+            // second; the first stack word is the second operand.
             if (success == 0 && arg16 >= 0 && arg24 != 0) {
-                battle_func_00226a60(position, 0, actor, attack, arg4, 0, 1,
+                battle_func_00226a60(position, 0, actor, attack, arg5, 0, 1,
                                      arg23, flag);
                 action = NewAction(bank, actor, arg5);
                 action->kind = 0x32;
@@ -1353,7 +1370,7 @@ final_entry:
         action = NewAction(bank, actor, arg4);
         action->kind = 0x1C;
         action->record = attack;
-        action->field_28 = static_cast<u32>(arg4);
+        action->field_28 = 0;                       // 0x00255CA0..0x00255CCC
         action->field_4c = static_cast<u32>(neg_sl);
         goto second_action;
 
@@ -1373,8 +1390,9 @@ final_entry:
         goto after_positions;
 
     second_action:
-        // 0x00255D58: always emitted after the first closing action.
-        action = NewAction(bank, actor, arg5);
+        // 0x00255D58: always emitted after the first closing action; the
+        // stack word is zero.
+        action = NewAction(bank, actor, 0);
         action->kind = 0x1C;
         action->record = attack;
         action->field_28 = 1;
@@ -1384,12 +1402,13 @@ final_entry:
         (void)action;
     }
 
-    // 0x00255E5C..0x00255FBC: the two "selected effect" actions.  The listing
+    // 0x00255E5C..0x00255FBC: the two "selected effect" actions.  The gate
+    // reads `a3` from [sp+0x100], not the +0x120 argument, and the listing
     // tests `r8` (always 1 or 2 here) against 3 before the follow-up block, so
     // that block is unreachable.
-    if (arg13 == 1 && success == 0 && arg17 != 0) {
+    if (arg13 == 1 && success == 0 && a3 != 0) {
         const s32 bank = static_cast<s16>(base + arg18 + arg14);
-        if (arg17 == 1) {
+        if (a3 == 1) {
             BattleAction* action = NewAction(bank, actor, 0);
             action->kind = 7;
             action->record = actor;
@@ -1397,7 +1416,7 @@ final_entry:
             action->field_24 = static_cast<s16>(
                 script_vm_func_00255398(attack->id_62) - 1);
             action->flags |= 4u;
-        } else if (arg17 == 2) {
+        } else if (a3 == 2) {
             BattleAction* action = NewAction(bank, actor, 0);
             action->kind = 7;
             action->record = actor;

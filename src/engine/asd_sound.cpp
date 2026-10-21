@@ -68,7 +68,7 @@ extern "C" {
     u32   AsdSoundVoice_Attach(void* voice, void* data, void* a, void* b,
                                u32 index);                                  // 0x00128ff0
     void  AsdSound_UpdateListener(const f32* position, f32 scale);          // 0x00119b48
-    u32   AsdFlag_TestAndSet(u32* flag);                                    // 0x002c00d4 (Thumb)
+    s32   AsdFlag_TestAndSet(u32* flag);                                    // 0x002c00d4 (Thumb)
     u32   AsdList_Append(u32* head, u32* tail, u32* node);                  // 0x002bf774
     void* AsdData_GetBase(const void* data);                                // 0x00128f34
     u32   AsdData_GetCount(const void* data);                               // 0x00128f44
