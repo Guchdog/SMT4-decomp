@@ -80,6 +80,12 @@ extern "C" {
     // previously reached it as engine_func_002c0bcc.
     u32 Random_Range(u32 range_plus_one);
 
+    // 0x002C00D4 (Thumb, 16 B): test-and-set on a flag word.  Sets the word to
+    // 1 and returns 1 only when it observed zero; returns 0 otherwise.  The
+    // lazy-registration blocks in engine_blocks.cpp and the panel emitters in
+    // ui_blocks.cpp share this declaration.
+    s32 AsdFlag_TestAndSet(u32* flag);
+
     // 0x002976AC: lazily resolves one 0x0049382C resource-table slot.
     // Canonical spelling; script_extras.cpp previously called it
     // CampRes_LoadEntry.

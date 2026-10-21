@@ -4,23 +4,23 @@
 
 | Category | Functions | Code Size (Bytes) | Progress % | Status Description |
 |----------|----------:|------------------:|-----------:|--------------------|
-| **Decompiled (Reconstructed)** | 371 | 488,536 B | **15.5629%** | Substantial C++ logic reverse-engineered |
+| **Decompiled (Reconstructed)** | 376 | 505,520 B | **16.1039%** | Substantial C++ logic reverse-engineered |
 | **Scaffolded (Stubs & Interfaces)** | 39 | 248,240 B | 7.9080% | Headers, structs, and function skeletons |
 | **Matching (Byte-for-Byte)** | 0 | 0 B | 0.0000% | 100% compiled machine code match |
-| **Total Architecture Explored** | 410 | 736,776 B | **23.4709%** | Total identified & mapped into `src/` |
-| **Remaining (Todo)** | 9,939 | 2,402,332 B | 76.5291% | Unmapped functions in `.text` |
+| **Total Architecture Explored** | 415 | 753,760 B | **24.0119%** | Total identified & mapped into `src/` |
+| **Remaining (Todo)** | 9,934 | 2,385,348 B | 75.9881% | Unmapped functions in `.text` |
 | **Total `.text` Segment** | 10,349 | 3,139,108 B | 100.0000% | `0x00100000`–`0x003FE624` |
 
 ## Subsystem Breakdown
 
 | Subsystem | Decompiled Funcs | Decompiled Bytes | Stub Funcs | Stub Bytes | Total Funcs | Total Bytes | Decompiled % | Explored % |
 |-----------|-----------------:|-----------------:|-----------:|-----------:|------------:|------------:|-------------:|-----------:|
-| `engine` | 130 | 117,036 B | 2 | 22,760 B | 2,367 | 755,700 B | 15.49% | 18.50% |
-| `ui` | 157 | 157,584 B | 14 | 96,248 B | 1,238 | 682,348 B | 23.09% | 37.20% |
+| `engine` | 131 | 120,520 B | 2 | 22,760 B | 2,367 | 755,700 B | 15.95% | 18.96% |
+| `ui` | 159 | 164,516 B | 14 | 96,248 B | 1,238 | 682,348 B | 24.11% | 38.22% |
 | `unknown` | 9 | 23,652 B | 0 | 0 B | 3,819 | 625,300 B | 3.78% | 3.78% |
-| `script_vm` | 17 | 123,620 B | 3 | 22,836 B | 1,201 | 446,288 B | 27.70% | 32.82% |
+| `script_vm` | 18 | 127,064 B | 3 | 22,836 B | 1,201 | 446,288 B | 28.47% | 33.59% |
 | `camp` | 21 | 29,764 B | 6 | 70,276 B | 918 | 326,396 B | 9.12% | 30.65% |
-| `battle` | 21 | 25,024 B | 11 | 32,664 B | 575 | 236,932 B | 10.56% | 24.35% |
+| `battle` | 22 | 28,148 B | 11 | 32,664 B | 575 | 236,932 B | 11.88% | 25.67% |
 | `shop` | 1 | 364 B | 3 | 3,456 B | 111 | 39,976 B | 0.91% | 9.56% |
 | `crt` | 3 | 4,216 B | 0 | 0 B | 26 | 9,484 B | 44.45% | 44.45% |
 | `nn_sdk` | 5 | 2,564 B | 0 | 0 B | 64 | 8,852 B | 28.97% | 28.97% |
@@ -216,6 +216,7 @@
 | `0x0024fda4` | 192 | `engine` | `non_matching` | `effParts_func_0024fda4` | [`src/engine/asd_effect.cpp`](src/engine/asd_effect.cpp) |
 | `0x0024fe64` | 196 | `engine` | `non_matching` | `effParts_func_0024fe64` | [`src/engine/asd_effect.cpp`](src/engine/asd_effect.cpp) |
 | `0x002523d0` | 336 | `engine` | `non_matching` | `Npc2d_func_002523d0` | [`src/engine/asd_frame.cpp`](src/engine/asd_frame.cpp) |
+| `0x002553ec` | 3124 | `battle` | `non_matching` | `battle_func_002553ec` | [`src/engine/engine_blocks.cpp`](src/engine/engine_blocks.cpp) |
 | `0x00257e6c` | 436 | `engine` | `non_matching` | `AsdTexTGA_func_00257e6c` | [`src/engine/asd_texture.cpp`](src/engine/asd_texture.cpp) |
 | `0x00258e38` | 480 | `ui` | `non_matching` | `StatusCamera_Init` | [`src/ui/status.cpp`](src/ui/status.cpp) |
 | `0x0025955c` | 516 | `engine` | `non_matching` | `eventCommand_func_0025955c` | [`src/script/script_extras.cpp`](src/script/script_extras.cpp) |
@@ -253,6 +254,7 @@
 | `0x0027154c` | 8316 | `script_vm` | `non_matching` | `FlowScript_OpcodeEvaluator` | [`src/script/script_vm.cpp`](src/script/script_vm.cpp) |
 | `0x00276cac` | 4384 | `script_vm` | `non_matching` | `script_vm_func_00276cac` | [`src/script/script_vm_extras.cpp`](src/script/script_vm_extras.cpp) |
 | `0x00277f9c` | 12192 | `script_vm` | `stub` | `FlowScript_InitRuntimeMemory` | [`src/script/script_runtime.cpp`](src/script/script_runtime.cpp) |
+| `0x0027b8cc` | 3444 | `script_vm` | `non_matching` | `script_vm_func_0027b8cc` | [`src/script/script_blocks.cpp`](src/script/script_blocks.cpp) |
 | `0x0027ee6c` | 552 | `engine` | `non_matching` | `mapDepart_func_0027ee6c` | [`src/engine/map_runtime.cpp`](src/engine/map_runtime.cpp) |
 | `0x00280d30` | 524 | `engine` | `non_matching` | `FrameTex_func_00280d30` | [`src/engine/asd_frame.cpp`](src/engine/asd_frame.cpp) |
 | `0x002831f0` | 3784 | `camp` | `non_matching` | `camp_func_002831f0` | [`src/engine/runtime_blocks.cpp`](src/engine/runtime_blocks.cpp) |
@@ -298,6 +300,7 @@
 | `0x002a51dc` | 1808 | `engine` | `non_matching` | `effParts_func_002a51dc` | [`src/engine/asd_effect.cpp`](src/engine/asd_effect.cpp) |
 | `0x002a94e8` | 1508 | `engine` | `non_matching` | `AsdModel_func_002a94e8` | [`src/engine/asd_model.cpp`](src/engine/asd_model.cpp) |
 | `0x002a9acc` | 1880 | `engine` | `non_matching` | `AsdModel_func_002a9acc` | [`src/engine/asd_model.cpp`](src/engine/asd_model.cpp) |
+| `0x002aad14` | 3484 | `engine` | `non_matching` | `engine_func_002aad14` | [`src/engine/engine_blocks.cpp`](src/engine/engine_blocks.cpp) |
 | `0x002ac2f4` | 92 | `ui` | `non_matching` | `Tbb_GetSubTable` | [`src/ui/tbb_loader.cpp`](src/ui/tbb_loader.cpp) |
 | `0x002ae6c8` | 336 | `engine` | `non_matching` | `AsdLoadFile_func_002ae6c8` | [`src/engine/asd_file.cpp`](src/engine/asd_file.cpp) |
 | `0x002b0434` | 480 | `engine` | `non_matching` | `AsdFile_func_002b0434` | [`src/engine/asd_file.cpp`](src/engine/asd_file.cpp) |
@@ -415,6 +418,8 @@
 | `0x0034e028` | 520 | `nn_sdk` | `non_matching` | `helper_S4FsReader_func_0034e028` | [`src/nn/mobiclip.cpp`](src/nn/mobiclip.cpp) |
 | `0x0034e64c` | 476 | `nn_sdk` | `non_matching` | `helper_S4AudioDevice_func_0034e64c` | [`src/nn/mobiclip.cpp`](src/nn/mobiclip.cpp) |
 | `0x003516a8` | 552 | `nn_sdk` | `non_matching` | `helper_S4Player_func_003516a8` | [`src/nn/mobiclip.cpp`](src/nn/mobiclip.cpp) |
+| `0x00368cf8` | 3452 | `ui` | `non_matching` | `ui_func_00368cf8` | [`src/ui/ui_blocks.cpp`](src/ui/ui_blocks.cpp) |
+| `0x0036c0a8` | 3480 | `ui` | `non_matching` | `ui_func_0036c0a8` | [`src/ui/ui_blocks.cpp`](src/ui/ui_blocks.cpp) |
 | `0x003816e4` | 1012 | `engine` | `non_matching` | `qcUtility_func_003816e4` | [`src/script/script_extras.cpp`](src/script/script_extras.cpp) |
 | `0x00386184` | 5964 | `engine` | `stub` | `Engine_TextureStreamer` | [`src/engine/map_field.cpp`](src/engine/map_field.cpp) |
 | `0x0038b384` | 236 | `engine` | `non_matching` | `aocApplication_func_0038b384` | [`src/engine/aoc.cpp`](src/engine/aoc.cpp) |

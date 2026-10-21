@@ -236,6 +236,340 @@ static_assert(offsetof(BattleCommandWork, gauge) == 0x20);
 extern const u8 g_BattleCommandIcons[8];
 
 // ---------------------------------------------------------------------------
+// 0x0036C0A8 / 0x00368CF8: action-panel command emitters
+// ---------------------------------------------------------------------------
+
+/**
+ * One action panel.  Both emitters walk the same layout; 0x00368CF8 reaches
+ * eleven of them through `UiActionSlotTable`, while 0x0036C0A8 receives a
+ * single one through `UiActionSlot`.  Only offsets with a proving access in
+ * either listing are named.
+ */
+struct UiActionPanel {
+    u8  pad_000[8];
+    void* scene;                        // +0x08: `ldr r7,[r0,#8]`
+                                        //   (0x0036C140)
+    u8  pad_00c[7];
+    u8  field_13;                       // +0x13: `ldrb r0,[r0,#0x13]`
+                                        //   (0x0036C1B0)
+    u32 field_14;                       // +0x14: `ldr r2,[r7,#0x14]`
+                                        //   (0x0036C1FC)
+    u32 field_18;                       // +0x18: `ldr r1,[r5,#0x18]`
+                                        //   (0x0036C1C8)
+    u8  pad_01c[8];
+    u32 field_24;                       // +0x24: `ldr r0,[r0,#0x24]`
+                                        //   (0x0036C0EC)
+    u8  pad_028[0x18];
+    u8  field_40;                       // +0x40: `add r6,r0,#0x40`
+                                        //   (0x0036C0B4)
+    u32 field_44;                       // +0x44: `ldr r3,[r6,#4]`
+                                        //   (0x0036C2A0)
+    u8  pad_048[0x1C];
+    u32 field_64;                       // +0x64: `ldr ip,[r6,#0x24]`
+                                        //   (0x0036C78C)
+    u8  pad_068[0x38];
+    u32 field_a0;                       // +0xA0: `ldr r1,[r6,#0x60]`
+                                        //   (0x0036C2F8)
+    u8  pad_0a4[0x3C];
+    u32 field_e0;                       // +0xE0: `ldr r3,[r6,#0xa0]`
+                                        //   (0x0036C264)
+    u32 field_e4;                       // +0xE4: `ldr r0,[r6,#0xa4]`
+                                        //   (0x0036C1E8)
+    u8  field_e8;                       // +0xE8: `ldrb r0,[r0,#0xe8]`
+                                        //   (0x0036C0B8)
+    u8  field_e9;                       // +0xE9: `ldrb r0,[r6,#0xa9]`
+                                        //   (0x0036C0C4)
+    u8  field_ea;                       // +0xEA: `ldrb r1,[r6,#0xaa]`
+                                        //   (0x0036C0BC)
+    u8  field_eb;                       // +0xEB: `ldrb r0,[r6,#0xab]`
+                                        //   (0x0036C0D8)
+    u8  pad_ec[0x14];
+    u32 field_100;                      // +0x100: `ldr r2,[r0,#0x100]`
+                                        //   (0x0036C13C)
+    u32 field_104;                      // +0x104: `ldr r2,[r0,#0x104]`
+                                        //   (0x0036C14C)
+    u32 field_108;                      // +0x108: `ldr r2,[r0,#0x108]`
+                                        //   (0x0036C154)
+    u32 field_10c;                      // +0x10C: `ldr r2,[r0,#0x10c]`
+                                        //   (0x0036C15C)
+    u32 field_110;                      // +0x110: `ldr r2,[r0,#0x110]`
+                                        //   (0x0036C164)
+    u32 field_114;                      // +0x114: `ldr r2,[r0,#0x114]`
+                                        //   (0x0036C16C)
+    u32 field_118;                      // +0x118: `ldr r2,[r0,#0x118]`
+                                        //   (0x0036C174)
+    u32 field_11c;                      // +0x11C: `ldr r2,[r0,#0x11c]`
+                                        //   (0x0036C17C)
+    u32 field_120;                      // +0x120: `ldr r2,[r0,#0x120]`
+                                        //   (0x0036C184)
+    u32 field_124;                      // +0x124: `ldr r2,[r0,#0x124]`
+                                        //   (0x0036C18C)
+    u32 field_128;                      // +0x128: `ldr r0,[r0,#0x128]`
+                                        //   (0x0036C194)
+    u32 field_12c;                      // +0x12C: `add r3,r0,#0x14`
+                                        //   with r0 = panel+0x118
+                                        //   (0x0036CAB4)
+    u32 field_130;                      // +0x130: `ldr r2,[sl,#0x18]`
+                                        //   (0x0036CBE0 with sl=panel+0x118)
+    u8  pad_134[0xC];
+    u32 field_140;                      // +0x140: `ldr r0,[sl,#0x28]`
+                                        //   (0x0036CC40)
+    u8  pad_144[0x14];
+    u32 field_158;                      // +0x158: `add fp,r0,#0x40`
+                                        //   with r0 = panel+0x118
+                                        //   (0x0036CAB0)
+    u8  pad_15c[0x118];
+    u32 field_274;                      // +0x274: `mov r0,#0x274`
+                                        //   (0x0036C4E0)
+    u32 field_278;                      // +0x278
+    u32 field_27c;                      // +0x27C
+    u8  pad_280[8];
+    u32 rel_288;                        // +0x288: `ldr r0,[r5,#0x288]`
+                                        //   (0x0036C594)
+    u8  pad_28c[0x14];
+    u32 field_2a0;                      // +0x2A0: `ldr r0,[r4,#0x2a0]`
+                                        //   (0x0036C230)
+    u32 field_2a4;                      // +0x2A4: `ldr r4,[r1,#0x2a4]`
+                                        //   (0x0036C134)
+    u32 field_2a8;                      // +0x2A8: `ldr r4,[r5,#0x2a8]`
+                                        //   (0x0036C484)
+    u32 field_2ac;                      // +0x2AC
+    u32 field_2b0;                      // +0x2B0: `ldr r0,[r5,#0x2b0]`
+                                        //   (0x0036C4B0)
+    u32 field_2b4;                      // +0x2B4: `ldr r8,[r5,#0x2b4]`
+                                        //   (0x0036C86C)
+    u32 field_2b8;                      // +0x2B8: `ldr r4,[r5,#0x2b8]`
+                                        //   (0x0036C31C)
+    u32 field_2bc;                      // +0x2BC: `ldr r0,[r5,#0x2bc]`
+                                        //   (0x0036C580)
+    u32 field_2c0;                      // +0x2C0: `ldr r0,[r5,#0x2c0]`
+                                        //   (0x0036C588)
+    u32 field_2c4;                      // +0x2C4
+    u32 field_2c8;                      // +0x2C8: `ldr r8,[r5,#0x2c8]`
+                                        //   (0x0036C8B0)
+    u32 field_2cc;                      // +0x2CC: `ldr r0,[r5,#0x2cc]`
+                                        //   (0x0036CA58)
+    u32 field_2d0;                      // +0x2D0: `ldr r4,[r5,#0x2d0]`
+                                        //   (0x0036CA8C)
+};
+static_assert(offsetof(UiActionPanel, scene) == 0x008);
+static_assert(offsetof(UiActionPanel, field_13) == 0x013);
+static_assert(offsetof(UiActionPanel, field_14) == 0x014);
+static_assert(offsetof(UiActionPanel, field_18) == 0x018);
+static_assert(offsetof(UiActionPanel, field_24) == 0x024);
+static_assert(offsetof(UiActionPanel, field_40) == 0x040);
+static_assert(offsetof(UiActionPanel, field_44) == 0x044);
+static_assert(offsetof(UiActionPanel, field_64) == 0x064);
+static_assert(offsetof(UiActionPanel, field_a0) == 0x0A0);
+static_assert(offsetof(UiActionPanel, field_e0) == 0x0E0);
+static_assert(offsetof(UiActionPanel, field_e4) == 0x0E4);
+static_assert(offsetof(UiActionPanel, field_e8) == 0x0E8);
+static_assert(offsetof(UiActionPanel, field_e9) == 0x0E9);
+static_assert(offsetof(UiActionPanel, field_ea) == 0x0EA);
+static_assert(offsetof(UiActionPanel, field_eb) == 0x0EB);
+static_assert(offsetof(UiActionPanel, field_100) == 0x100);
+static_assert(offsetof(UiActionPanel, field_104) == 0x104);
+static_assert(offsetof(UiActionPanel, field_108) == 0x108);
+static_assert(offsetof(UiActionPanel, field_10c) == 0x10C);
+static_assert(offsetof(UiActionPanel, field_110) == 0x110);
+static_assert(offsetof(UiActionPanel, field_114) == 0x114);
+static_assert(offsetof(UiActionPanel, field_118) == 0x118);
+static_assert(offsetof(UiActionPanel, field_11c) == 0x11C);
+static_assert(offsetof(UiActionPanel, field_120) == 0x120);
+static_assert(offsetof(UiActionPanel, field_124) == 0x124);
+static_assert(offsetof(UiActionPanel, field_128) == 0x128);
+static_assert(offsetof(UiActionPanel, field_12c) == 0x12C);
+static_assert(offsetof(UiActionPanel, field_130) == 0x130);
+static_assert(offsetof(UiActionPanel, field_140) == 0x140);
+static_assert(offsetof(UiActionPanel, field_158) == 0x158);
+static_assert(offsetof(UiActionPanel, field_274) == 0x274);
+static_assert(offsetof(UiActionPanel, rel_288) == 0x288);
+static_assert(offsetof(UiActionPanel, field_2a0) == 0x2A0);
+static_assert(offsetof(UiActionPanel, field_2a4) == 0x2A4);
+static_assert(offsetof(UiActionPanel, field_2a8) == 0x2A8);
+static_assert(offsetof(UiActionPanel, field_2b0) == 0x2B0);
+static_assert(offsetof(UiActionPanel, field_2b4) == 0x2B4);
+static_assert(offsetof(UiActionPanel, field_2b8) == 0x2B8);
+static_assert(offsetof(UiActionPanel, field_2bc) == 0x2BC);
+static_assert(offsetof(UiActionPanel, field_2c0) == 0x2C0);
+static_assert(offsetof(UiActionPanel, field_2c8) == 0x2C8);
+static_assert(offsetof(UiActionPanel, field_2cc) == 0x2CC);
+static_assert(offsetof(UiActionPanel, field_2d0) == 0x2D0);
+
+/**
+ * Scene object reached through UiActionPanel::scene.
+ * +0x00 word tested with 4, +0x14 word carrying the 0x8000/0x1000 bits and
+ * +0x68 the signed count.
+ */
+struct UiActionScene {
+    u32 field_00;                       // +0x00: `ldr ip,[ip]`
+                                        //   (0x0036C290)
+    u8  pad_004[4];
+    void* list;                         // +0x08: `ldr ip,[r7,#8]`
+                                        //   (0x0036C250)
+    u8  pad_00c[8];
+    u32 field_14;                       // +0x14: `ldr r2,[r7,#0x14]`
+                                        //   (0x0036C1FC)
+    u8  pad_018[0x50];
+    s32 field_68;                       // +0x68: `ldr r3,[ip,#0x68]`
+                                        //   (0x0036C258)
+    u8  pad_06c[0xB4];
+    u32 field_120;                      // +0x120: `ldr ip,[ip,#0x120]`
+                                        //   (0x00368EAC uses [ip] after
+                                        //   `ldr ip,[r6,#8]`)
+};
+static_assert(offsetof(UiActionScene, field_00) == 0x00);
+static_assert(offsetof(UiActionScene, field_14) == 0x14);
+static_assert(offsetof(UiActionScene, field_68) == 0x68);
+
+/** The 0x288-relative list record, reached from UiActionPanel::rel_288. */
+struct UiActionList {
+    u32 flags;                          // +0x00: `ldr ip,[ip]`
+                                        //   (0x0036C290)
+    u32 field_04;                       // +0x04: `ldr r1,[sb,#4]`
+                                        //   (0x0036C5FC)
+    u32 field_08;                       // +0x08: `ldr r2,[sb,#8]`
+    u32 field_0c;                       // +0x0C: `ldr r3,[sb,#0xc]`
+    u32 field_10;                       // +0x10: `ldr ip,[sb,#0x10]`
+    u8  field_14;                       // +0x14: `ldrb ip,[sb,#0x14]`
+    u8  pad_015[3];
+    u32 field_18;                       // +0x18: `ldr ip,[ip,#0x18]`
+                                        //   (0x0036C2A0 uses scene+8)
+    u8  pad_01c[0x4C];
+    s32 field_68;                       // +0x68: `ldr r3,[ip,#0x68]`
+                                        //   (0x0036C258)
+    u8  pad_06c[0x4C];
+    u32 field_b8;                       // +0xB8: `ldr ip,[ip,#0xb8]`
+                                        //   (0x0036C79C)
+    u8  pad_0bc[0x2C];
+    u32 field_e8;                       // +0xE8: `ldr r0,[r0,#0xe8]`
+                                        //   (shape placeholder)
+};
+static_assert(offsetof(UiActionList, flags) == 0x00);
+static_assert(offsetof(UiActionList, field_04) == 0x04);
+static_assert(offsetof(UiActionList, field_68) == 0x68);
+static_assert(offsetof(UiActionList, field_b8) == 0xB8);
+
+/** The second argument of 0x0036C0A8: `ldr r1,[r2,#8]` (0x0036C0F4). */
+struct UiActionSlot {
+    u8  pad_000[8];
+    UiActionPanel* panel;               // +0x08
+};
+static_assert(offsetof(UiActionSlot, panel) == 0x08);
+
+/**
+ * The second argument of 0x00368CF8.  Each slot is a distinct panel component
+ * selected by the corresponding 0x0036C0A8 path.
+ */
+struct UiActionSlotTable {
+    u8  pad_000[0x28];
+    UiActionPanel* actor;               // +0x28: `ldr r1,[r8,#0x28]`
+                                        //   (0x00368D34)
+    UiActionPanel* field_2c;            // +0x2C: `ldr r1,[r8,#0x2c]`
+                                        //   (0x00368DD8)
+    UiActionPanel* field_30;            // +0x30: `ldr r1,[r8,#0x30]`
+                                        //   (0x003694C4)
+    UiActionPanel* field_34;            // +0x34: `ldr r0,[r8,#0x34]`
+                                        //   (0x00368F34)
+    UiActionPanel* field_38;            // +0x38: `ldr r2,[r8,#0x38]`
+                                        //   (0x003690A4)
+    UiActionPanel* field_3c;            // +0x3C: `ldr sl,[r8,#0x3c]`
+                                        //   (0x0036910C)
+    UiActionPanel* field_40;            // +0x40: `ldr r1,[r8,#0x40]`
+                                        //   (0x003691D4)
+    UiActionPanel* field_44;            // +0x44: `ldr r0,[r8,#0x44]`
+                                        //   (0x003691D0)
+    UiActionPanel* field_48;            // +0x48: `ldr r1,[r8,#0x48]`
+                                        //   (0x00369510)
+    UiActionPanel* field_4c;            // +0x4C: `ldr r2,[r8,#0x4c]`
+                                        //   (0x0036967C)
+    UiActionPanel* field_50;            // +0x50: `ldr r0,[r8,#0x50]`
+                                        //   (0x003696C4)
+};
+static_assert(offsetof(UiActionSlotTable, actor) == 0x28);
+static_assert(offsetof(UiActionSlotTable, field_2c) == 0x2C);
+static_assert(offsetof(UiActionSlotTable, field_30) == 0x30);
+static_assert(offsetof(UiActionSlotTable, field_34) == 0x34);
+static_assert(offsetof(UiActionSlotTable, field_38) == 0x38);
+static_assert(offsetof(UiActionSlotTable, field_3c) == 0x3C);
+static_assert(offsetof(UiActionSlotTable, field_40) == 0x40);
+static_assert(offsetof(UiActionSlotTable, field_44) == 0x44);
+static_assert(offsetof(UiActionSlotTable, field_48) == 0x48);
+static_assert(offsetof(UiActionSlotTable, field_4c) == 0x4C);
+static_assert(offsetof(UiActionSlotTable, field_50) == 0x50);
+
+/**
+ * 0x00472088: per-panel animation/dirty flags.  Byte members are read with
+ * `ldrb`/`ldrsb`; +0x08 is read as a word (`ldr r1,[sb]`, 0x0036CB38).
+ */
+struct UiPanelFlags {
+    u8  field_00;                       // +0x00: `ldrb r0,[r2]`
+                                        //   (0x0036CC4C)
+    u8  field_01;                       // +0x01: `ldrb r2,[r7]`
+                                        //   (0x0036CAC4)
+    u8  field_02;                       // +0x02: `ldrsbeq r1,[r8]`
+                                        //   (0x0036CC0C)
+    u8  field_03;                       // +0x03: `ldrsbeq r2,[ip]`
+                                        //   (0x0036CAD8)
+    u8  field_04;                       // +0x04: `ldrb r6,[r5]`
+                                        //   (0x0036CBB0)
+    u8  field_05;                       // +0x05: `ldrsbeq r0,[r1]`
+                                        //   (0x0036CB0C)
+    u8  field_06;                       // +0x06: `ldrb r0,[sl]`
+                                        //   (0x0036C3D4)
+    u8  field_07;                       // +0x07: `ldrb r2,[r2]`
+                                        //   (0x0036CB3C)
+    u32 field_08;                       // +0x08: `ldr r1,[sb]`
+                                        //   (0x0036CB38)
+};
+static_assert(offsetof(UiPanelFlags, field_00) == 0x00);
+static_assert(offsetof(UiPanelFlags, field_01) == 0x01);
+static_assert(offsetof(UiPanelFlags, field_02) == 0x02);
+static_assert(offsetof(UiPanelFlags, field_03) == 0x03);
+static_assert(offsetof(UiPanelFlags, field_04) == 0x04);
+static_assert(offsetof(UiPanelFlags, field_05) == 0x05);
+static_assert(offsetof(UiPanelFlags, field_06) == 0x06);
+static_assert(offsetof(UiPanelFlags, field_07) == 0x07);
+static_assert(offsetof(UiPanelFlags, field_08) == 0x08);
+static_assert(sizeof(UiPanelFlags) == 0x0C);
+
+/** 0x004720B8: 0x28-byte state block copied into the command stream. */
+struct UiPanelShader {
+    u8  pad_000[0x10];
+    u32 field_10;                       // +0x10: `strne r3,[r0,#0x10]`
+                                        //   (0x0036CD58)
+    u8  pad_014[4];
+    u32 field_18;                       // +0x18: `str r3,[r0,#0x18]`
+                                        //   (0x0036CDD4)
+    u32 field_1c;                       // +0x1C: `str r1,[r0,#0x1c]`
+                                        //   (0x0036CCD8)
+    u32 field_20;                       // +0x20: `str r1,[r0,#0x20]`
+                                        //   (0x0036CCE0)
+    u8  pad_024[4];                     // +0x24..+0x28
+};
+static_assert(offsetof(UiPanelShader, field_10) == 0x10);
+static_assert(offsetof(UiPanelShader, field_18) == 0x18);
+static_assert(offsetof(UiPanelShader, field_1c) == 0x1C);
+static_assert(offsetof(UiPanelShader, field_20) == 0x20);
+static_assert(sizeof(UiPanelShader) == 0x28);
+
+/** 0x004EFDDC: five-word command template patched by the shader path. */
+struct UiPanelCommand {
+    u32 word_00;                        // +0x00: `str r0,[r2],#8`
+                                        //   (0x0036C3C0)
+    u32 word_04;                        // +0x04: `str sb,[r0,#4]!`
+                                        //   (0x0036C394)
+    u32 word_08;                        // +0x08: `str fp,[r0,#8]`
+                                        //   (0x0036C398)
+    u32 word_0c;                        // +0x0C: `str r3,[r2]`
+                                        //   (0x0036C3C8)
+    u32 color;                          // +0x10: `str r0,[r1,#0x10]`
+                                        //   (0x0036C45C)
+};
+static_assert(offsetof(UiPanelCommand, color) == 0x10);
+static_assert(sizeof(UiPanelCommand) == 0x14);
+
+// ---------------------------------------------------------------------------
 // Reconstructed entry points (ledger names)
 // ---------------------------------------------------------------------------
 
@@ -244,5 +578,21 @@ s32 ui_func_001fe590(void* scene);
 
 /** 0x002ED5D0, 3,584 B: battle command panel renderer. */
 s32 ui_func_002ed5d0(void* scene);
+
+/**
+ * 0x0036C0A8, 3,480 B: emits the action-panel command stream for the single
+ * panel reached through `slot->panel`.  `frame` (r1) supplies the +0x40 byte
+ * block and the +0x100 snapshot.  No return value is defined by the epilogue
+ * at 0x0036CE00.
+ */
+void ui_func_0036c0a8(void* unused, UiActionPanel* frame, UiActionSlot* slot);
+
+/**
+ * 0x00368CF8, 3,452 B: the multi-panel variant.  Each component is fetched
+ * from `slots`; `frame` still supplies the +0x40 byte block and the +0x100
+ * snapshot.  No return value is defined by the epilogue at 0x00369A3C.
+ */
+void ui_func_00368cf8(void* unused, UiActionPanel* frame,
+                      UiActionSlotTable* slots);
 
 } // namespace smt4::ui

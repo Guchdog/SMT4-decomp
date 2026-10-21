@@ -1,4 +1,5 @@
 #include "script/script_blocks.h"
+#include "engine/asd_symbols.h"
 
 namespace smt4::script {
 
@@ -8,10 +9,7 @@ namespace smt4::script {
 // ---------------------------------------------------------------------------
 
 extern "C" {
-    // 0x0027EB98 (76 B): resolves the active per-slot script work.  It reads
-    // `*ctx`, then battle_work+0x84, validates [0,4), scales by 0xF1C and adds
-    // the table pointer at 0x00434278+4 plus 4.
-    ScriptSlot* script_vm_func_0027eb98(ScriptBattleContext* ctx);
+    // 0x0027EB98 (76 B) is declared canonically in script/script_blocks.h.
 
     // 0x002475E4 (1,664 B): writes a 16-bit selection result to `out`
     // (`ldrh r0,[sp,#0xc]` at 0x0024C8D0).
@@ -472,6 +470,598 @@ void script_vm_func_0024c828(ScriptBattleContext* ctx, s32 mode, s32 param) {
     const s32 index = RandomIndex(count);
     slot = script_vm_func_0027eb98(ctx);
     slot->selected[candidates[index]] = 1;
+}
+
+// ---------------------------------------------------------------------------
+// 0x0027B8CC: effect/particle emission
+// ---------------------------------------------------------------------------
+
+ScriptEffectTable g_ScriptEffectTable_447a28{};   // 0x00447A28
+ScriptEffectSlot* g_ScriptEffectSlots_4a1264 =
+    reinterpret_cast<ScriptEffectSlot*>(0x004A1264u); // 0x004A1264
+void* g_ScriptVmContext_43427c = nullptr;          // 0x0043427C
+
+namespace {
+
+// Observed call targets.  One declaration per binary address.
+extern "C" {
+s32 camp_func_00248418();
+ScriptEffectEntry* camp_func_002483b8(s32 index);
+s32 camp_func_00321aa4();
+ScriptEffectRowA* camp_func_00308c98(s32 index);
+s32 script_vm_func_00299064(u32 id);
+s32 camp_func_0031b8fc();
+ScriptEffectRowB* script_vm_func_00248358(s32 index);
+s32 script_vm_func_0027dbd8();
+s32 script_vm_func_0024f6e4();
+ScriptEffectRowB* script_vm_func_0027636c(s32 index);
+s32 script_vm_func_00324720();
+ScriptEffectRowE* script_vm_func_00287b10(s32 index);
+s32 script_vm_func_002762d0(s32 index);
+s32 script_vm_func_00327074();
+ScriptEffectRowF* camp_func_00316fc4(s32 index);
+s32 engine_func_002df798(s32 index);
+s32 script_vm_func_00248320();
+ScriptEffectRowD* script_vm_func_0025b8a8(s32 index);
+s32 engine_func_002f35cc(s16 id);
+s32 camp_func_0030f6fc();
+ScriptEffectRowC* script_vm_func_002764d4(s32 index);
+s32 script_vm_func_002eafe4(s32 type);
+s32 script_vm_func_002e00f0(s32 type);
+s32 script_vm_func_002eabf4(s32 kind);
+s32 script_vm_func_002eae80(s32 value, f32* out_a, f32* out_b, f32* out_c);
+void script_vm_func_0024f460(u32 id, u32 handle, const char* kind, s32 type,
+                             u32 s0, u32 s1, u32 s2, u32 s3, u32 s4,
+                             u32 s5, u32 s6, u32 s7, u32 s8, u32 s9,
+                             u32 s10, u32 s11, u32 s12, u32 s13,
+                             f32 f0, f32 f1, f32 f2, f32 f3, f32 f4,
+                             f32 f5);
+void script_vm_func_00263ee4(u32 id, u32 handle, const char* kind, s32 type,
+                             u32 s0, u32 s1, u32 s2, u32 s3, u32 s4,
+                             u32 s5, u32 s6, u32 s7, u32 s8, u32 s9,
+                             u32 s10, u32 s11, u32 s12, u32 s13,
+                             f32 f0, f32 f1, f32 f2, f32 f3, f32 f4,
+                             f32 f5);
+void engine_func_002a7fc4(char* dst, const char* src);
+void script_vm_func_002dfd94(u32 id);
+} // extern "C"
+
+inline f32 S16ToF32(s16 value) {
+    return static_cast<f32>(value);
+}
+
+// 0x0027C2B4..0x0027C368: slot lookup by id.
+ScriptEffectSlot* FindEffectSlot(u32 id) {
+    const s32 count = g_ScriptEffectTable_447a28.count;
+    for (s32 i = 0; i < count; ++i) {
+        ScriptEffectSlot* slot = g_ScriptEffectSlots_4a1264 + i;
+        if (static_cast<u32>(slot->id) == id) {
+            return slot;
+        }
+    }
+    return nullptr;
+}
+
+// 0x0027CC..: the six-entry selector table at 0x0027BB68.
+enum class EffectSelector : s32 {
+    kSkip = 0,
+    kSkip2 = 1,
+    kString = 2,
+    kColor = 3,
+};
+
+EffectSelector SelectorFor(s8 value) {
+    switch (value) {
+    case 0:
+    case 1:
+        return EffectSelector::kSkip;
+    case 2:
+        return EffectSelector::kString;
+    case 3:
+    case 4:
+    case 5:
+        return EffectSelector::kColor;
+    default:
+        return EffectSelector::kString;
+    }
+}
+
+} // namespace
+
+// DECOMP_FUNC(0x0027b8cc, 3444)
+void script_vm_func_0027b8cc(u32 unused, s32 filter_a, s32 filter_b) {
+    (void)unused;
+
+    // 0x0027B8D8..0x0027B8F0
+    const s32 count = camp_func_00248418();
+    if (count <= 0) {
+        return;
+    }
+
+    for (s32 index = 0; index < count; ++index) {
+        ScriptEffectEntry* entry = camp_func_002483b8(index);
+
+        // 0x0027B8FC..0x0027B92C
+        if (entry->filter_a == -1) {
+            break;
+        }
+        if (entry->filter_a != filter_a) {
+            continue;
+        }
+        if (entry->filter_a < 0x64 && entry->filter_b != filter_b) {
+            continue;
+        }
+
+        // 0x0027B930..0x0027B964
+        u32 id_word = entry->id;                    // r8
+        s32 found_a = -1;                           // [sp+0x84]
+        s32 found_b = -1;                           // [sp+0x80]
+        s32 kind_sel = 0;                           // [sp+0x68]
+        s32 string_flag = 0;                        // [sp+0x78]
+        s32 direct_flag = 0;                        // [sp+0x70]
+        const u32 handle = entry->field_04;         // [sp+0x60]
+        s32 flag8 = 0;                              // [sp+8]
+        bool do_render = false;
+
+        if (entry->id == 4) {
+            flag8 = 1;
+            do_render = true;
+            goto after_search;                      // 0x0027B96C
+        }
+        if (entry->id == 0) {
+            // 0x0027BA18..0x0027BA30
+            id_word = 0xFF000000u
+                    | (static_cast<u32>(entry->filter_a) << 16)
+                    | (static_cast<u32>(entry->filter_b) << 8)
+                    | (static_cast<u32>(index) & 0xFFu);
+            do_render = true;
+            goto after_search;
+        }
+        if (entry->id <= 0xFFu) {
+            do_render = true;
+            goto after_search;                      // 0x0027B97C
+        }
+
+        // 0x0027B980..0x0027BA40: list A (0x00321AA4 / 0x00308C98).
+        {
+            const s32 n = camp_func_00321aa4();
+            if (n > 0) {
+                for (s32 i = 0; i < n; ++i) {
+                    ScriptEffectRowA* row = camp_func_00308c98(i);
+                    if (row->id == -1) {
+                        break;
+                    }
+                    if (script_vm_func_00299064(row->field_04) == 0) {
+                        continue;
+                    }
+                    if (static_cast<u32>(row->id) != entry->id) {
+                        continue;
+                    }
+                    if (row->field_06 != 0 &&
+                        Flag_CheckEventBit(
+                            static_cast<u32>(row->field_06)) == 0) {
+                        continue;
+                    }
+                    if (row->field_08 == 0 ||
+                        Flag_CheckEventBit(
+                            static_cast<u32>(row->field_08)) != 0) {
+                        found_a = i;
+                        break;
+                    }
+                }
+            }
+            if (found_a != -1) {
+                goto after_search;
+            }
+        }
+
+        // 0x0027BA40..0x0027BB9C: list B (0x0031B8FC / 0x00248358).
+        {
+            const s32 n = camp_func_0031b8fc();
+            s32 found_index = -1;
+            if (n > 0) {
+                for (s32 i = 0; i < n; ++i) {
+                    ScriptEffectRowB* row = script_vm_func_00248358(i);
+                    if (row->id == -1) {
+                        break;
+                    }
+                    if (static_cast<u32>(row->id) != entry->id) {
+                        continue;
+                    }
+                    if (row->field_04 != 0 &&
+                        Flag_CheckEventBit(
+                            static_cast<u32>(row->field_04)) == 0) {
+                        continue;
+                    }
+                    if (row->field_06 != 0 &&
+                        Flag_CheckEventBit(
+                            static_cast<u32>(row->field_06)) == 0) {
+                        continue;
+                    }
+                    if (row->field_0a == -1) {
+                        break;
+                    }
+                    found_index = i;
+                    break;
+                }
+            }
+            if (found_index == -1) {
+                found_a = -1;
+            } else {
+                found_a = found_index;
+                if (found_index != -2) {
+                    ScriptEffectRowB* row =
+                        script_vm_func_00248358(found_index);
+                    // 0x0027BAEC..0x0027BB18
+                    for (s32 i = 0; i < 5; ++i) {
+                        g_ScriptEffectTable_447a28.color[i] = 0;
+                    }
+                    const s32 selector = row->field_0a;
+                    const bool valid_id =
+                        selector != 0 && selector <= 0x258 &&
+                        row->id != 0x02802001 &&
+                        row->id != 0x03303001 &&
+                        row->id != 0x03402001;
+                    if (valid_id && script_vm_func_0027dbd8() != -1) {
+                        switch (SelectorFor(
+                            static_cast<s8>(row->field_0c & 0xFF))) {
+                        case EffectSelector::kSkip:
+                        case EffectSelector::kSkip2:
+                            break;
+                        case EffectSelector::kColor:
+                            // 0x0027BC44..0x0027BC64
+                            g_ScriptEffectTable_447a28.color[0] = 1;
+                            g_ScriptEffectTable_447a28.color[1] =
+                                static_cast<u8>(row->field_0c);
+                            g_ScriptEffectTable_447a28.color[2] =
+                                row->field_1d;
+                            g_ScriptEffectTable_447a28.color[3] =
+                                row->field_1e;
+                            g_ScriptEffectTable_447a28.color[4] =
+                                row->field_1f;
+                            string_flag = 1;
+                            goto after_search;
+                        case EffectSelector::kString:
+                            string_flag = 1;
+                            goto after_search;
+                        }
+                    }
+                }
+            }
+        }
+
+        // 0x0027BB9C..0x0027BC88: list C (0x0024F6E4 / 0x0027636C).
+        {
+            const s32 n = script_vm_func_0024f6e4();
+            s32 found_index = -1;
+            if (n > 0) {
+                for (s32 i = 0; i < n; ++i) {
+                    ScriptEffectRowB* row = script_vm_func_0027636c(i);
+                    if (row->id == -1) {
+                        break;
+                    }
+                    if (static_cast<u32>(row->id) != entry->id) {
+                        continue;
+                    }
+                    if (row->field_04 != 0 &&
+                        Flag_CheckEventBit(
+                            static_cast<u32>(row->field_04)) == 0) {
+                        continue;
+                    }
+                    if (row->field_06 != 0 &&
+                        Flag_CheckEventBit(
+                            static_cast<u32>(row->field_06)) == 0) {
+                        continue;
+                    }
+                    found_index = i;
+                    break;
+                }
+            }
+            if (found_index == -1) {
+                found_b = -1;
+            } else {
+                found_b = found_index;
+                kind_sel = 1;
+                goto after_search;
+            }
+        }
+
+        // 0x0027BC88..0x0027BD84: list D (0x00324720 / 0x00287B10).
+        {
+            const s32 n = script_vm_func_00324720();
+            s32 found_index = -1;
+            if (n > 0) {
+                for (s32 i = 0; i < n; ++i) {
+                    ScriptEffectRowE* row = script_vm_func_00287b10(i);
+                    if (row->id == -1) {
+                        break;
+                    }
+                    if (static_cast<u32>(row->id) != entry->id) {
+                        continue;
+                    }
+                    if (row->field_06 != 0 &&
+                        Flag_CheckEventBit(
+                            static_cast<u32>(row->field_06)) == 0) {
+                        continue;
+                    }
+                    if (row->field_08 != 0 &&
+                        Flag_CheckEventBit(
+                            static_cast<u32>(row->field_08)) != 0) {
+                        continue;
+                    }
+                    if (row->field_04 != 0 &&
+                        script_vm_func_00299064(row->field_04) == 0) {
+                        continue;
+                    }
+                    const s32 q = script_vm_func_002762d0(i);
+                    if (q > 0 && q != 0xFF) {
+                        kind_sel = 5;
+                        found_b = 0;
+                        goto after_search;
+                    }
+                    if (i == -1) {
+                        break;
+                    }
+                    if (i == -2) {
+                        kind_sel = 5;
+                        found_b = 0;
+                        goto after_search;
+                    }
+                    found_index = i;
+                    kind_sel = 2;
+                    break;
+                }
+            }
+            if (found_index == -1) {
+                found_b = -1;
+            } else {
+                found_b = found_index;
+                goto after_search;
+            }
+        }
+
+        // 0x0027BD84..0x0027BE3C: list E (0x00327074 / 0x00316FC4).
+        {
+            const s32 n = script_vm_func_00327074();
+            s32 found_index = -1;
+            if (n > 0) {
+                for (s32 i = 0; i < n; ++i) {
+                    ScriptEffectRowF* row = camp_func_00316fc4(i);
+                    if (row->id == -1) {
+                        break;
+                    }
+                    if (static_cast<u32>(row->id) != entry->id) {
+                        continue;
+                    }
+                    if (row->field_04 != 0 &&
+                        Flag_CheckEventBit(
+                            static_cast<u32>(row->field_04)) == 0) {
+                        continue;
+                    }
+                    if (row->field_06 != 0 &&
+                        Flag_CheckEventBit(
+                            static_cast<u32>(row->field_06)) != 0) {
+                        continue;
+                    }
+                    if (engine_func_002df798(i) <= 0) {
+                        if (i != -1 && i != -2) {
+                            found_index = i;
+                            kind_sel = 3;
+                        } else if (i == -2) {
+                            kind_sel = 5;
+                            found_b = 0;
+                            goto after_search;
+                        }
+                        break;
+                    }
+                }
+            }
+            if (found_index == -1) {
+                found_b = -1;
+            } else {
+                found_b = found_index;
+                goto after_search;
+            }
+        }
+
+        // 0x0027BE3C..0x0027BEF4: list F (0x00248320 / 0x0025B8A8).
+        if (direct_flag != 0) {
+            goto after_search;
+        } else {
+            const s32 n = script_vm_func_00248320();
+            s32 found_index = -1;
+            if (n > 0) {
+                for (s32 i = 0; i < n; ++i) {
+                    ScriptEffectRowD* row = script_vm_func_0025b8a8(i);
+                    if (row->id == -1) {
+                        break;
+                    }
+                    if (static_cast<u32>(row->id) != entry->id) {
+                        continue;
+                    }
+                    if (engine_func_002f35cc(row->field_24) == 0) {
+                        kind_sel = 5;
+                        found_b = 0;
+                        goto after_search;
+                    }
+                    if (i == -1) {
+                        break;
+                    }
+                    if (i == -2) {
+                        break;
+                    }
+                    found_index = i;
+                    kind_sel = 4;
+                    break;
+                }
+            }
+            found_b = (found_index == -1) ? -1 : found_index;
+        }
+
+after_search:
+        // 0x0027BEB8..0x0027BF34
+        if (entry->kind == 0x12) {
+            do_render = true;
+        } else if (found_b == -1 && found_a == -1 &&
+                   (id_word & 0x80000000u) == 0) {
+            continue;
+        } else {
+            do_render = true;
+        }
+        if (!do_render) {
+            continue;
+        }
+
+        {
+            // 0x0027BF38..0x0027BFB0: list G search.
+            const s32 n = camp_func_0030f6fc();
+            s32 selected = -1;
+            if (n > 0) {
+                for (s32 i = 0; i < n; ++i) {
+                    ScriptEffectRowC* row = script_vm_func_002764d4(i);
+                    if (row->id == -1) {
+                        break;
+                    }
+                    if (row->field_26 != 0 &&
+                        Flag_CheckEventBit(
+                            static_cast<u32>(row->field_26)) != 0) {
+                        continue;
+                    }
+                    if (static_cast<u32>(row->id) != id_word) {
+                        continue;
+                    }
+                    if (script_vm_func_00299064(row->field_24) == 0) {
+                        selected = i;
+                        break;
+                    }
+                }
+            }
+
+            // 0x0027BFB0..0x0027BFE4
+            s32 type = entry->kind;
+            if (found_a != -1 &&
+                (type == 3 || type == 0x0B)) {
+                type = 0x10;
+            }
+            const s32 type_arg = type;
+            const s32 sprite_mode = script_vm_func_002eafe4(type_arg);
+            const s32 handle_arg = script_vm_func_002e00f0(type_arg);
+            const s32 kind_arg = script_vm_func_002eabf4(entry->kind);
+
+            const f32 c16 = S16ToF32(entry->field_16);
+            const f32 c18 = S16ToF32(entry->field_18);
+            const f32 c1a = S16ToF32(entry->field_1a);
+            const f32 c1c = S16ToF32(entry->field_1c);
+
+            f32 out_c = 0.0f;
+            f32 out_b = 0.0f;
+            f32 out_a = 0.0f;
+            script_vm_func_002eae80(entry->field_1e, &out_a, &out_b, &out_c);
+
+            const s32 flag_11 = entry->field_11;
+            const f32 field_1f = static_cast<f32>(entry->field_1f);
+
+            if (sprite_mode == 1) {
+                // 0x0027C068..0x0027C0EC: POLY draw.  s0..s5 hold
+                // field_16, field_18, field_1a, sp+0x4C, sp+0x48, field_1C.
+                script_vm_func_0024f460(
+                    id_word, handle, "POLY", type_arg,
+                    static_cast<u32>(kind_arg), 0,
+                    entry->field_0b, entry->field_0c, entry->field_0d,
+                    entry->field_0e, entry->field_11, entry->field_10,
+                    static_cast<u32>(flag8), static_cast<u32>(flag_11),
+                    static_cast<u32>(handle_arg), entry->field_12,
+                    entry->field_13, entry->field_14,
+                    c16, c18, c1a, out_c, out_b, c1c);
+            } else if (sprite_mode == 0) {
+                // 0x0027C1F4..0x0027C278: BOX draw.
+                script_vm_func_00263ee4(
+                    id_word, handle, "BOX", type_arg,
+                    static_cast<u32>(kind_arg), 0,
+                    entry->field_0b, entry->field_0c, entry->field_0d,
+                    entry->field_0e, entry->field_11, entry->field_10,
+                    static_cast<u32>(flag8), static_cast<u32>(flag_11),
+                    static_cast<u32>(handle_arg), entry->field_12,
+                    entry->field_13, entry->field_14,
+                    c16, c18, c1a, out_c, out_b, field_1f);
+            }
+
+            // 0x0027C27C..0x0027C368: list A slot update.
+            if (found_a != -1) {
+                ScriptEffectRowA* row = camp_func_00308c98(found_a);
+                ScriptEffectSlot* slot =
+                    FindEffectSlot(static_cast<u32>(row->id));
+                if (slot != nullptr) {
+                    slot->field_134 = row->field_0a;
+                    AsdString_Strcpy(
+                        reinterpret_cast<char*>(slot) + 0x138,
+                        reinterpret_cast<const char*>(row) + 0x0C);
+                }
+            }
+
+            // 0x0027C300..0x0027C368: list A flags.
+            if (found_a != -1) {
+                ScriptEffectRowA* row = camp_func_00308c98(found_a);
+                ScriptEffectSlot* slot =
+                    FindEffectSlot(static_cast<u32>(row->id));
+                if (slot != nullptr) {
+                    slot->field_160 = row->field_06;
+                    slot->field_162 = row->field_08;
+                    slot->field_164 = 0;
+                }
+            }
+
+            // 0x0027C368..0x0027C4D4: list B slot update.
+            if (found_a != -1) {
+                ScriptEffectRowB* row = script_vm_func_00248358(found_a);
+                ScriptEffectSlot* slot =
+                    FindEffectSlot(static_cast<u32>(row->id));
+                if (slot != nullptr) {
+                    if (row->field_08 != 0) {
+                        slot->field_15c = row->field_08;
+                    } else {
+                        AsdString_Strcpy(
+                            reinterpret_cast<char*>(slot) + 0x138,
+                            reinterpret_cast<const char*>(row) + 0x0C);
+                        slot->field_160 = row->field_04;
+                        slot->field_162 = row->field_06;
+                        slot->field_164 = 0;
+                    }
+                }
+            }
+
+            // 0x0027C4D4..0x0027C54C: selector/kind record.
+            if (kind_sel != 0) {
+                ScriptEffectSlot* slot = FindEffectSlot(id_word);
+                if (slot != nullptr) {
+                    slot->field_166 = static_cast<s16>(kind_sel);
+                    slot->field_168 = static_cast<s16>(found_b);
+                }
+                if (kind_sel == 5) {
+                    script_vm_func_002dfd94(id_word);
+                }
+            }
+
+            // 0x0027C550..0x0027C5C4: colour copy.
+            if (string_flag != 0) {
+                ScriptEffectSlot* slot = FindEffectSlot(id_word);
+                if (slot != nullptr) {
+                    engine_func_002a7fc4(
+                        reinterpret_cast<char*>(slot) + 0x16E,
+                        reinterpret_cast<const char*>(
+                            g_ScriptEffectTable_447a28.color));
+                }
+            }
+
+            // 0x0027C5C4..0x0027C620: selected-list index.
+            if (selected != -1) {
+                ScriptEffectSlot* slot = FindEffectSlot(id_word);
+                if (slot != nullptr) {
+                    slot->field_15e = static_cast<s16>(selected);
+                }
+            }
+        }
+    }
 }
 
 } // namespace smt4::script

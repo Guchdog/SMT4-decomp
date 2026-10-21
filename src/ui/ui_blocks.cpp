@@ -1,6 +1,8 @@
 #include "ui/ui_blocks.h"
 #include "engine/asd_symbols.h"
 #include "engine/asd_text.h"
+#include "engine/runtime_blocks.h"
+#include <cstring>
 
 namespace smt4::ui {
 
@@ -961,6 +963,876 @@ s32 ui_func_002ed5d0(void* scene) {
     UiGpu_EndPass1(g_AsdGpuState);
     UiGpu_EndPass2(g_AsdGpuState);
     return 0;
+}
+
+// ---------------------------------------------------------------------------
+// 0x0036C0A8 / 0x00368CF8: action-panel command emitters
+// ---------------------------------------------------------------------------
+
+// Observed call targets.  One declaration per binary address.
+extern "C" {
+// 0x002A2570: emits the command template at `src` and returns the payload
+// pointer.  The callers write the payload and advance the cursor themselves.
+u32* UiCmd_Emit(u32* cursor, const void* src);
+
+// 0x002ACD38: memcpy-shaped command payload copy.
+void ui_func_002acd38(void* dst, const void* src, u32 size);
+
+// Battle-panel list helpers.
+void func_003748d4(UiActionScene* scene, UiActionPanel* actor);
+void battle_func_00374e60(UiActionPanel* frame, UiActionScene* scene);
+void func_003744f8(UiActionPanel* frame, UiActionScene* scene,
+                   void* list, u32 flag);
+void func_00375504(void* base, void* node);
+} // extern "C"
+
+namespace {
+
+// ---------------------------------------------------------------------------
+// Reproduced .data/.bss globals
+// ---------------------------------------------------------------------------
+
+UiPanelFlags  g_UiPanelFlags_472088{};      // 0x00472088
+u32           g_UiPanelA_4720a0 = 0;        // 0x004720A0
+UiPanelShader g_UiPanelShader_4720b8{};     // 0x004720B8
+u32           g_UiPanelMode_4720ec = 0;     // 0x004720EC
+void*         g_UiPanelCmd_4720f0 = nullptr; // 0x004720F0
+f32           g_UiPanelTimeA_4720f4 = 0.0f; // 0x004720F4
+f32           g_UiPanelTimeB_4720f8 = 0.0f; // 0x004720F8
+f32           g_UiPanelScale_4720fc = 0.0f; // 0x004720FC
+u32           g_UiPanelVisibleMask_472100 = 0; // 0x00472100
+u32           g_UiPanelCmdFlag_47663c = 0;  // 0x0047663C
+UiPanelCommand g_UiPanelCommand_4efddc{};   // 0x004EFDDC
+
+inline u32 FloatBits(f32 value) {
+    u32 word = 0;
+    std::memcpy(&word, &value, sizeof(word));
+    return word;
+}
+
+inline f32 BitsFloat(u32 word) {
+    f32 value = 0.0f;
+    std::memcpy(&value, &word, sizeof(value));
+    return value;
+}
+
+// 0x0036C408..0x0036C450: float-to-24-bit fixed conversion.  The exponent is
+// kept in bits 16..22 and the mantissa in bits 0..15; the sign is bit 23.
+u32 PackFixed(f32 value) {
+    const u32 bits = FloatBits(value);
+    u32 result = ((bits & 0x80000000u) != 0) ? 0x00800000u : 0u;
+    const u32 exponent = (bits << 1) >> 24;
+    u32 mantissa = (bits << 9) >> 9;
+    if ((bits & 0x7FFFFFFFu) == 0) {
+        mantissa >>= 7;
+        return result | mantissa;
+    }
+    const s32 biased = static_cast<s32>(exponent) - 0x40;
+    mantissa >>= 7;
+    if (biased < 0) {
+        return result;
+    }
+    if (biased > 0x7F) {
+        return 0x007F0000u;
+    }
+    return result | mantissa | (static_cast<u32>(biased & 0x7F) << 16);
+}
+
+// 0x0036C214..0x0036C22C / 0x0036C304..0x0036C314: two-word command.
+void EmitPair(u32 first, u32 second) {
+    u32* cursor = engine::g_GpuCommandCursor;
+    cursor[0] = first;
+    cursor[1] = second;
+    engine::g_GpuCommandCursor = cursor + 2;
+}
+
+// 0x0036C3A4..0x0036C480: shader/timing command built around the
+// 0x004EFDDC template.
+void EmitShaderCommand(UiActionPanel* panel) {
+    // 0x0036C338..0x0036C35C
+    g_UiPanelFlags_472088.field_06 =
+        ((panel->field_104 & 1u) == 0) ? 1 : 0;
+    g_UiPanelScale_4720fc = BitsFloat(panel->field_108);
+
+    // 0x0036C36C..0x0036C3A0
+    if ((g_UiPanelCmdFlag_47663c & 1u) == 0 &&
+        AsdFlag_TestAndSet(&g_UiPanelCmdFlag_47663c) != 0) {
+        g_UiPanelCommand_4efddc.word_04 = 0x0001006Du;
+        g_UiPanelCommand_4efddc.word_0c = 0x8017004Du;
+    }
+
+    // 0x0036C3A4..0x0036C3C8
+    f32 s0 = 0.0f;
+    f32 s1 = -g_UiPanelScale_4720fc;
+    const void* template_source = &g_UiPanelCommand_4efddc;
+    if (g_UiPanelCmd_4720f0 != nullptr) {
+        g_UiPanelCommand_4efddc.word_00 = 0;
+        g_UiPanelCommand_4efddc.word_08 =
+            static_cast<u32>(reinterpret_cast<std::uintptr_t>(
+                g_UiPanelCmd_4720f0));
+    } else {
+        // 0x0036C94C..0x0036C980
+        g_UiPanelCommand_4efddc.word_00 = 1;
+        g_UiPanelCommand_4efddc.word_08 = g_UiPanelA_4720a0;
+        s1 = (g_UiPanelTimeA_4720f4 - g_UiPanelTimeB_4720f8)
+           * g_UiPanelScale_4720fc;
+    }
+
+    // 0x0036C3D4..0x0036C404
+    if (g_UiPanelFlags_472088.field_06 != 0) {
+        f32 s2;
+        if (g_UiPanelMode_4720ec == 0x8100A5u) {
+            s2 = BitsFloat(0x37800080u);            // 1/256
+        } else {
+            const f32 s3 = BitsFloat(0x43000000u);  // 128.0f
+            s2 = BitsFloat(0x33800001u);
+            s1 *= s3;
+        }
+        s0 -= s1 * s2;
+    }
+
+    // 0x0036C408..0x0036C45C
+    g_UiPanelCommand_4efddc.color = PackFixed(s0);
+    u32* dest = UiCmd_Emit(engine::g_GpuCommandCursor, template_source);
+    dest[0] = panel->field_10c;
+    dest[1] = panel->field_110;
+    engine::g_GpuCommandCursor = dest + 2;
+}
+
+// 0x00472088..0x00472090 dirty-byte update used by the 0x118 state block.
+void UpdateDirtyByte(u8* dirty, u8* stored, u8 value) {
+    u8 previous = *stored;
+    if (previous == 0) {
+        previous = *dirty;
+    }
+    *dirty = (previous == value) ? 0 : 1;
+    *stored = value;
+}
+
+// 0x0036CAA8..0x0036CDA0: the 0x118 state block of a panel.
+void EmitPanelStateCommand(UiActionPanel* panel) {
+    u8* state = reinterpret_cast<u8*>(panel) + 0x118;
+    const u32 bit0 = (panel->field_118 & 1u) == 0 ? 1u : 0u;
+    const u32 bit1 = (panel->field_118 & 2u) == 0 ? 1u : 0u;
+
+    // 0x0036CAAC..0x0036CB28
+    UpdateDirtyByte(&g_UiPanelFlags_472088.field_01,
+                    &g_UiPanelFlags_472088.field_03, static_cast<u8>(bit0));
+    UpdateDirtyByte(&g_UiPanelFlags_472088.field_01,
+                    &g_UiPanelFlags_472088.field_05, static_cast<u8>(bit1));
+
+    // 0x0036CB2C..0x0036CB8C: emit the 0x20-byte state record.
+    u32* cursor = engine::g_GpuCommandCursor;
+    const u32 first = (g_UiPanelFlags_472088.field_08 << 8) | 0x1000u;
+    cursor[0] = first;
+    cursor[1] = 0x00020107u;
+    cursor[2] = static_cast<u32>(g_UiPanelFlags_472088.field_07) << 8;
+    cursor[3] = 0x00020105u;
+    cursor[4] = panel->field_11c;
+    cursor[5] = panel->field_120;
+    cursor[6] = panel->field_124;
+    cursor[7] = panel->field_128;
+    engine::g_GpuCommandCursor = cursor + 8;
+
+    // 0x0036CB90..0x0036CBE8: optional 16-byte copy from +0x158.
+    if (panel->field_158 != 0) {
+        u8* source = reinterpret_cast<u8*>(
+            static_cast<std::uintptr_t>(panel->field_158));
+        if ((*reinterpret_cast<u32*>(source) & 1u) != 0) {
+            UpdateDirtyByte(&g_UiPanelFlags_472088.field_01,
+                            &g_UiPanelFlags_472088.field_04, 1);
+            std::memcpy(engine::g_GpuCommandCursor, source, 0x10);
+            engine::g_GpuCommandCursor += 4;
+        } else {
+            UpdateDirtyByte(&g_UiPanelFlags_472088.field_01,
+                            &g_UiPanelFlags_472088.field_04, 0);
+        }
+    }
+
+    // 0x0036CBEC..0x0036CC28: the high bit of +0x12C is the dirty source.
+    const u32 high = (panel->field_12c & 0x80000000u) == 0 ? 1u : 0u;
+    UpdateDirtyByte(&g_UiPanelFlags_472088.field_01,
+                    &g_UiPanelFlags_472088.field_02,
+                    static_cast<u8>(high ^ 1u));
+
+    // 0x0036CC2C..0x0036CC38: reserve the state command.
+    u32* dest = UiCmd_Emit(engine::g_GpuCommandCursor,
+                           reinterpret_cast<void*>(state + 0x14));
+    engine::g_GpuCommandCursor = dest;
+
+    // 0x0036CC40..0x0036CC88: animation state at +0x28 (bits 0..1).
+    const u32 mode = panel->field_140 & 3u;
+    if (g_UiPanelFlags_472088.field_00 != static_cast<u8>(mode)) {
+        g_UiPanelFlags_472088.field_00 = static_cast<u8>(mode);
+        g_UiPanelFlags_472088.field_01 = 1;
+    } else if (g_UiPanelFlags_472088.field_01 == 0) {
+        goto emit_state;
+    }
+
+    // 0x0036CC88..0x0036CD84
+    g_UiPanelFlags_472088.field_01 = 0;
+    g_UiPanelShader_4720b8.field_10 = 0;
+    g_UiPanelShader_4720b8.field_18 = 0;
+    if (mode != 0) {
+        g_UiPanelShader_4720b8.field_10 = 0x0F;
+        g_UiPanelShader_4720b8.field_18 = 0x0F;
+    } else if (g_UiPanelFlags_472088.field_08 != 0) {
+        if (g_UiPanelFlags_472088.field_02 != 0 ||
+            g_UiPanelFlags_472088.field_08 != 0x0F) {
+            g_UiPanelShader_4720b8.field_10 = 0x0F;
+        }
+        g_UiPanelShader_4720b8.field_18 = 0x0F;
+    }
+    g_UiPanelShader_4720b8.field_1c = 0;
+    g_UiPanelShader_4720b8.field_20 = 0;
+    if (mode == 1) {
+        g_UiPanelShader_4720b8.field_1c = 3;
+    } else if (mode == 0) {
+        if (g_UiPanelFlags_472088.field_03 != 0) {
+            if (g_UiPanelFlags_472088.field_05 != 0) {
+                g_UiPanelShader_4720b8.field_1c = 2;
+                g_UiPanelShader_4720b8.field_20 = 2;
+            } else if (g_UiPanelFlags_472088.field_08 != 0) {
+                g_UiPanelShader_4720b8.field_1c = 2;
+            }
+        }
+        if (g_UiPanelFlags_472088.field_04 != 0) {
+            if (g_UiPanelFlags_472088.field_07 != 0) {
+                g_UiPanelShader_4720b8.field_1c |= 1;
+                g_UiPanelShader_4720b8.field_20 |= 1;
+            } else if (g_UiPanelFlags_472088.field_08 != 0) {
+                g_UiPanelShader_4720b8.field_1c |= 1;
+            }
+        }
+    }
+
+emit_state:
+    // 0x0036CD84..0x0036CDA0
+    ui_func_002acd38(engine::g_GpuCommandCursor, &g_UiPanelShader_4720b8,
+                     0x28);
+    engine::g_GpuCommandCursor += 0x0A;
+}
+
+} // namespace
+
+
+
+
+// 0x0036C8E8..0x0036CA40 / 0x003695BC..0x00369678: six 28-byte entries at
+// node+0x2C; each entry selects a panel word by its low byte and emits the
+// four-word record at entry+4.
+void EmitEffectEntries(u8* node) {
+    if (node == nullptr) {
+        return;
+    }
+    u32* cursor = UiCmd_Emit(engine::g_GpuCommandCursor, node + 0xDC);
+    engine::g_GpuCommandCursor = cursor;
+    for (s32 i = 0; i < 6; ++i) {
+        u8* entry = node + 0x2C + i * 28;
+        const u32 selector = *reinterpret_cast<u32*>(entry) & 0xFFu;
+        u32 value;
+        switch (selector) {
+        case 0:  value = *reinterpret_cast<u32*>(entry + 0xC8); break;
+        case 1:  value = *reinterpret_cast<u32*>(entry + 0xCC); break;
+        case 2:  value = *reinterpret_cast<u32*>(entry + 0xD0); break;
+        case 3:  value = *reinterpret_cast<u32*>(entry + 0xD4); break;
+        case 4:  value = *reinterpret_cast<u32*>(entry + 0xD8); break;
+        case 5:  value = *reinterpret_cast<u32*>(entry + 0xB0); break;
+        case 6:  value = *reinterpret_cast<u32*>(entry + 0xB4); break;
+        case 7:  value = *reinterpret_cast<u32*>(entry + 0xB8); break;
+        case 8:  value = *reinterpret_cast<u32*>(entry + 0xBC); break;
+        case 9:  value = *reinterpret_cast<u32*>(entry + 0xC0); break;
+        default: value = *reinterpret_cast<u32*>(entry + 0xC4); break;
+        }
+        *reinterpret_cast<u32*>(entry + 0x14) = value;
+        engine::g_GpuCommandCursor =
+            UiCmd_Emit(engine::g_GpuCommandCursor, entry + 4);
+    }
+}
+
+// ---------------------------------------------------------------------------
+// 0x0036C0A8: single-panel action emitter.
+//
+// The routine reads the status bytes from frame+0x40 (+0xA0..+0xAB), snapshots
+// frame+0x100..+0x128, and emits command records into the GPU stream at
+// 0x004652A0.  All eleven state words are written back at 0x0036CDA4.
+// ---------------------------------------------------------------------------
+
+// DECOMP_FUNC(0x0036c0a8, 3480)
+void ui_func_0036c0a8(void* unused, UiActionPanel* frame, UiActionSlot* slot) {
+    (void)unused;
+    if (frame == nullptr) {
+        return;
+    }
+
+    UiActionScene* scene = static_cast<UiActionScene*>(frame->scene);
+    UiActionPanel* panel = (slot != nullptr) ? slot->panel : nullptr;
+    if (panel == nullptr) {
+        return;
+    }
+
+    // 0x0036C0B8..0x0036C0E8: status bytes frame+0xE8..+0xEB.
+    const s32 active_a = (frame->field_e8 != 0 || frame->field_e9 != 0) ? 1 : 0;
+    const s32 active_b = (frame->field_ea != 0 || frame->field_eb != 0) ? 1 : 0;
+
+    // 0x0036C0F4..0x0036C12C: early out when the list is empty and the
+    // frame/panel pair is unchanged.
+    if (frame->field_24 != 0) {
+        u8* object = reinterpret_cast<u8*>(
+            static_cast<std::uintptr_t>(frame->field_24));
+        if (object[0x14] - object[0x10] == 0) {
+            // 0x0036C118..0x0036C12C: [ [frame+0x24] + 8 ] must equal the
+            // panel pointer for the early return.
+            if (*reinterpret_cast<u32*>(object + 8) ==
+                    static_cast<u32>(
+                        reinterpret_cast<std::uintptr_t>(panel)) &&
+                active_a == 0 && active_b == 0) {
+                return;
+            }
+        }
+    }
+
+    // 0x0036C130..0x0036C198: snapshot of the frame's eleven state words.
+    u32 s100 = frame->field_100;
+    u32 s104 = frame->field_104;
+    u32 s108 = frame->field_108;
+    u32 s10c = frame->field_10c;
+    u32 s110 = frame->field_110;
+    u32 s114 = frame->field_114;
+    u32 s118 = frame->field_118;
+    u32 s11c = frame->field_11c;
+    u32 s120 = frame->field_120;
+    u32 s124 = frame->field_124;
+    u32 s128 = frame->field_128;
+
+    // 0x0036C19C..0x0036C1C4
+    if (!(panel->field_2a4 != 0 && s100 == panel->field_2a4 &&
+          frame->field_13 == 0)) {
+        func_003748d4(scene, panel);
+        s100 = panel->field_2a4;
+    }
+
+    // 0x0036C1C8..0x0036C230: scene 0x8000 bit and visibility record.
+    const s32 visible =
+        ((panel->field_18 & 1u) == 0 && frame->field_e4 != 0) ? 1 : 0;
+    if (visible != 0) {
+        scene->field_14 |= 0x8000u;
+    } else {
+        scene->field_14 &= ~0x8000u;
+    }
+    EmitPair(static_cast<u32>(visible ^ 1), 0x000101C6u);
+    EmitPair(static_cast<u32>(visible), 0x0001008Fu);
+
+    // 0x0036C230..0x0036C318
+    u32 previous_2a0 = s104;
+    if (!(panel->field_2a0 != 0 && previous_2a0 == panel->field_2a0 &&
+          active_b == 0)) {
+        UiActionList* list =
+            static_cast<UiActionList*>(scene->list);
+        if (list != nullptr) {
+            // 0x0036C25C: the 0x1000 bit is only touched when the list has
+            // at least one row.
+            if (list->field_68 > 0) {
+                if (frame->field_e0 > 0 &&
+                    (panel->field_18 & 2u) == 0) {
+                    panel->field_14 |= 0x1000u;
+                } else {
+                    panel->field_14 &= ~0x1000u;
+                }
+            }
+            if ((list->flags & 4u) == 0) {
+                if (frame->field_44 != 0 &&
+                    (panel->field_18 & 4u) == 0) {
+                    panel->field_14 |= 0x20u;
+                    if ((panel->field_18 & 8u) != 0) {
+                        panel->field_14 |= 0x40u;
+                    } else {
+                        panel->field_14 &= ~0x40u;
+                    }
+                } else {
+                    panel->field_14 &= ~0x20u;
+                }
+            }
+        }
+        u32 value = 0;
+        if ((panel->field_18 & 0x10u) != 0 && frame->field_a0 != 0) {
+            value = 5;
+        }
+        EmitPair(value, 0x000100E0u);
+        previous_2a0 = panel->field_2a0;
+    }
+
+    // 0x0036C31C..0x0036C480: shader state.
+    if (!(panel->field_2b8 != 0 && s10c == panel->field_2b8)) {
+        EmitShaderCommand(panel);
+        s10c = panel->field_2b8;
+    }
+
+    // 0x0036C484..0x0036C4AC
+    if (!(panel->field_2a8 != 0 && s110 == panel->field_2a8)) {
+        battle_func_00374e60(frame, scene);
+        s110 = panel->field_2a8;
+    }
+
+    // 0x0036C4B0..0x0036C55C: three sprite slots at panel+0x274.
+    u32 previous_2b0 = s114;
+    s32 list_flag = 1;
+    if (!(panel->field_2b0 != 0 && previous_2b0 == panel->field_2b0)) {
+        u32 mask = 0;
+        for (s32 i = 0; i < 3; ++i) {
+            u32* slot_field = &panel->field_274 + i;
+            u32 relative = *slot_field;
+            u8* object = (relative != 0)
+                       ? reinterpret_cast<u8*>(slot_field) + relative
+                       : nullptr;
+            if (object == nullptr) {
+                continue;
+            }
+            mask |= 1u << i;
+            const u32 width = *reinterpret_cast<u32*>(object + 0x48);
+            ui_func_002acd38(engine::g_GpuCommandCursor, object + 0x10, width);
+            engine::g_GpuCommandCursor += (width & ~3u) / 4u;
+        }
+        EmitPair(mask | 0x10000u, 0x00050080u);
+        previous_2b0 = panel->field_2b0;
+        s114 = panel->field_2b0;
+    }
+
+    // 0x0036C560..0x0036C850: list record / flags.
+    if ((panel->field_18 & 1u) == 0) {
+        u8* node = (panel->rel_288 != 0)
+                 ? reinterpret_cast<u8*>(panel) + 0x288 + panel->rel_288
+                 : nullptr;
+        u8* record = (node != nullptr) ? node + 0x10 : nullptr;
+        list_flag = ((*reinterpret_cast<u32*>(record) & 0x20u) == 0) ? 1 : 0;
+
+        if (!(panel->field_2bc != 0 && s118 == panel->field_2bc &&
+              active_a == 0)) {
+            // 0x0036C5E8..0x0036C6F4: 16-byte descriptor command.
+            u8* data = record;
+            const u32 b4 = *reinterpret_cast<u32*>(data + 4) & 0xFFu;
+            const u32 b8 = *reinterpret_cast<u32*>(data + 8) & 0xFFu;
+            const u32 bc = *reinterpret_cast<u32*>(data + 0xC) & 0xFFu;
+            const u32 b14 = data[0x14];
+            const u32 mask = (b14 != 0) ? 0u : 0xFFFFFFFFu;
+            const u32 bit0 = ((mask & bc) == 0) ? 1u : 0u;
+            const u32 flags = *reinterpret_cast<u32*>(data);
+            const u32 word0 = 0x80000000u | (b8 << 2) | (b4 << 4)
+                            | (bc << 28)
+                            | (((flags & 1u) == 0 ? 1u : 0u) << 27)
+                            | ((bit0 ^ 1u) << 30) | 0x400u;
+            const u32 word1 = (((flags & 2u) == 0 ? 1u : 0u) << 16)
+                            | (((flags & 4u) == 0 ? 1u : 0u) << 17)
+                            | ((b8 == 0 ? 1u : 0u) << 19)
+                            | ((flags & 0x20u) == 0 ? 7u : 0u) << 20
+                            | 0x40000u;
+            u32* cursor = engine::g_GpuCommandCursor;
+            cursor[0] = word0;
+            cursor[1] = 0x000F01C3u;
+            cursor[2] = word1;
+            cursor[3] = 0x000401C4u;
+            engine::g_GpuCommandCursor = cursor + 4;
+
+            // 0x0036C6F8..0x0036C80C: per-actor flags.
+            const u32 bit3 = (flags & 8u) == 0 ? 1u : 0u;
+            const u32 bit4 = (flags & 0x10u) == 0 ? 1u : 0u;
+            if (frame->field_e4 > 0) {
+                u32* entries = reinterpret_cast<u32*>(
+                    static_cast<std::uintptr_t>(frame->field_64));
+                for (s32 i = 0; i < static_cast<s32>(frame->field_e4); ++i) {
+                    u8* entry = reinterpret_cast<u8*>(
+                        static_cast<std::uintptr_t>(entries[i]));
+                    const u32 pair = *reinterpret_cast<u32*>(entry + 0x18) & 2u;
+                    const u32 pair_bit = pair >> 1;
+                    const u32 actor_state =
+                        *reinterpret_cast<u32*>(entry + 0xB8);
+                    u32 selected = 0;
+                    if (actor_state == 0 ||
+                        ((g_UiPanelVisibleMask_472100 >> i) & 1u) != 0) {
+                        selected = 1;
+                    }
+                    u32 word = selected;
+                    if (pair_bit != 0) {
+                        word |= 2u;
+                    }
+                    if (bit3 != 0) {
+                        word |= 4u;
+                    }
+                    if (bit4 != 0) {
+                        word |= 8u;
+                    }
+                    EmitPair(word, 0x00010149u + (static_cast<u32>(i) << 4));
+                }
+            }
+        }
+
+        // 0x0036C810..0x0036C854
+        u8* node2 = (panel->rel_288 != 0)
+                  ? reinterpret_cast<u8*>(panel) + 0x288 + panel->rel_288
+                  : nullptr;
+        u8* list_node = nullptr;
+        if (node2 != nullptr) {
+            const u32 rel_next = *reinterpret_cast<u32*>(node2 + 0x28);
+            list_node = (rel_next != 0) ? node2 + 0x28 + rel_next : nullptr;
+        }
+        if (!(panel->field_2c0 != 0 && s11c == panel->field_2c0)) {
+            func_00375504(record, list_node);
+        }
+    }
+
+    // 0x0036C858..0x0036C9C8: the +0x2B4 list.
+    if (!(panel->field_2b4 != 0 && s108 == panel->field_2b4 &&
+          active_a == 0)) {
+        func_003744f8(frame, scene, &panel->field_24,
+                      static_cast<u32>(list_flag));
+        u8* node = (panel->rel_288 != 0)
+                 ? reinterpret_cast<u8*>(panel) + 0x288 + panel->rel_288
+                 : nullptr;
+
+        EmitEffectEntries(node);
+        s108 = panel->field_2b4;
+        s118 = panel->field_2bc;
+        s11c = panel->field_2c0;
+        s120 = panel->field_2c8;
+    } else {
+        // 0x0036C984..0x0036C9C8: re-run when the sub-object's +0x10 bit
+        // differs from the previously latched list flag.
+        bool changed = false;
+        u8* node = nullptr;
+        if (frame->field_24 != 0) {
+            u8* object = reinterpret_cast<u8*>(
+                static_cast<std::uintptr_t>(frame->field_24));
+            u8* inner = *reinterpret_cast<u8**>(object + 8);
+            if (inner != nullptr) {
+                const u32 relative =
+                    *reinterpret_cast<u32*>(inner + 0x288);
+                node = (relative != 0) ? inner + 0x288 + relative : nullptr;
+                if (node != nullptr) {
+                    const bool bit =
+                        (*reinterpret_cast<u32*>(node + 0x10) & 0x20u) == 0;
+                    changed = (bit != (list_flag != 0));
+                }
+            }
+        }
+        if (changed) {
+            func_003744f8(frame, scene, &panel->field_24,
+                          static_cast<u32>(list_flag));
+            EmitEffectEntries(node);
+            s108 = panel->field_2b4;
+            s118 = panel->field_2bc;
+            s11c = panel->field_2c0;
+            s120 = panel->field_2c8;
+        }
+    }
+
+    // 0x0036CA44..0x0036CA88: the +0x2CC pair.
+    {
+        u8* node = (panel->rel_288 != 0)
+                 ? reinterpret_cast<u8*>(panel) + 0x288 + panel->rel_288
+                 : nullptr;
+        const u32 value = panel->field_2cc;
+        if (!(value != 0 && s128 == value)) {
+            const u32 first = *reinterpret_cast<u32*>(node + 0xD4);
+            const u32 second = *reinterpret_cast<u32*>(node + 0xD8);
+            EmitPair(first, second);
+            s128 = value;
+        }
+    }
+
+    // 0x0036CA8C..0x0036CDA0: the +0x2D0 state block.
+    if (!(panel->field_2d0 != 0 && s124 == panel->field_2d0)) {
+        EmitPanelStateCommand(panel);
+        s124 = panel->field_2d0;
+    }
+
+    // 0x0036CDA4..0x0036CDFC: write the snapshot back.
+    frame->field_100 = s100;
+    frame->field_104 = s104;
+    frame->field_108 = s108;
+    frame->field_10c = s10c;
+    frame->field_110 = s110;
+    frame->field_114 = s114;
+    frame->field_118 = s118;
+    frame->field_11c = s11c;
+    frame->field_120 = s120;
+    frame->field_124 = s124;
+    frame->field_128 = s128;
+}
+
+// ---------------------------------------------------------------------------
+// 0x00368CF8: multi-panel variant.  The same command blocks are emitted, but
+// the panel components are fetched from `slots` (+0x28..+0x50) instead of a
+// single panel.
+// ---------------------------------------------------------------------------
+
+// DECOMP_FUNC(0x00368cf8, 3452)
+void ui_func_00368cf8(void* unused, UiActionPanel* frame,
+                      UiActionSlotTable* slots) {
+    (void)unused;
+    if (frame == nullptr || slots == nullptr) {
+        return;
+    }
+
+    UiActionScene* scene = static_cast<UiActionScene*>(frame->scene);
+    UiActionPanel* actor = slots->actor;         // +0x2A4
+    UiActionPanel* work = slots->field_2c;       // +0x18 / +0x2A0 / +0x104
+    UiActionPanel* work_b4 = slots->field_30;    // +0x2B4
+    UiActionPanel* work_b8 = slots->field_34;    // +0x2B8
+    UiActionPanel* work_a8 = slots->field_38;    // +0x2A8
+    UiActionPanel* sprite = slots->field_3c;     // +0x2B0
+    UiActionPanel* work_bc = slots->field_40;    // +0x2BC
+    UiActionPanel* work_c0 = slots->field_44;    // +0x2C0
+    UiActionPanel* work_c8 = slots->field_48;    // +0x2C8
+    UiActionPanel* work_cc = slots->field_4c;    // +0x2CC
+    UiActionPanel* work_d0 = slots->field_50;    // +0x2D0
+
+    // 0x00368D0C..0x00368D44
+    const s32 active_a = (frame->field_e8 != 0 || frame->field_e9 != 0) ? 1 : 0;
+    const s32 active_b = (frame->field_ea != 0 || frame->field_eb != 0) ? 1 : 0;
+
+    // 0x00368DA8..0x00368DD4
+    if (actor != nullptr && frame->field_100 == actor->field_2a4 &&
+        actor->field_2a4 != 0 && frame->field_13 == 0) {
+        // unchanged
+    } else {
+        func_003748d4(scene, actor);
+    }
+
+    u32 s100 = actor->field_2a4;
+    u32 s104 = frame->field_104;
+    u32 s108 = frame->field_108;
+    u32 s10c = frame->field_10c;
+    u32 s110 = frame->field_110;
+    u32 s114 = frame->field_114;
+    u32 s118 = frame->field_118;
+    u32 s11c = frame->field_11c;
+    u32 s120 = frame->field_120;
+    u32 s124 = frame->field_124;
+    u32 s128 = frame->field_128;
+
+    // 0x00368DD8..0x00368E38
+    const s32 visible =
+        ((work->field_18 & 1u) == 0 && frame->field_e4 != 0) ? 1 : 0;
+    if (visible != 0) {
+        scene->field_14 |= 0x8000u;
+    } else {
+        scene->field_14 &= ~0x8000u;
+    }
+    EmitPair(static_cast<u32>(visible ^ 1), 0x000101C6u);
+    EmitPair(static_cast<u32>(visible), 0x0001008Fu);
+
+    // 0x00368E40..0x00368F30
+    if (!(work->field_2a0 != 0 && s104 == work->field_2a0 &&
+          active_b == 0)) {
+        UiActionList* list =
+            static_cast<UiActionList*>(scene->list);
+        if (list != nullptr) {
+            if (list->field_68 > 0) {
+                if (frame->field_e0 > 0 &&
+                    (work->field_18 & 2u) == 0) {
+                    work->field_14 |= 0x1000u;
+                } else {
+                    work->field_14 &= ~0x1000u;
+                }
+            }
+            if ((list->flags & 4u) == 0) {
+                if (frame->field_44 != 0 && (work->field_18 & 4u) == 0) {
+                    work->field_14 |= 0x20u;
+                    if ((work->field_18 & 8u) != 0) {
+                        work->field_14 |= 0x40u;
+                    } else {
+                        work->field_14 &= ~0x40u;
+                    }
+                } else {
+                    work->field_14 &= ~0x20u;
+                }
+            }
+        }
+        u32 value = 0;
+        if ((work->field_18 & 0x10u) != 0 && frame->field_a0 != 0) {
+            value = 5;
+        }
+        EmitPair(value, 0x000100E0u);
+        s104 = work->field_2a0;
+    }
+
+    // 0x00368F34..0x003690A0: shader state from slots+0x34.
+    if (!(work_b8 != nullptr && s10c == work_b8->field_2b8 &&
+          work_b8->field_2b8 != 0)) {
+        EmitShaderCommand(work_b8);
+        s10c = work_b8->field_2b8;
+    }
+
+    // 0x003690A4..0x00369108
+    if (!(work_a8 != nullptr && s110 == work_a8->field_2a8 &&
+          work_a8->field_2a8 != 0)) {
+        battle_func_00374e60(frame, scene);
+        s110 = work_a8->field_2a8;
+    }
+
+    // 0x0036910C..0x003691B4
+    if (!(sprite != nullptr && s114 == sprite->field_2b0 &&
+          sprite->field_2b0 != 0)) {
+        u32 mask = 0;
+        for (s32 i = 0; i < 3; ++i) {
+            u32* slot_field = &sprite->field_274 + i;
+            const u32 relative = *slot_field;
+            u8* object = (relative != 0)
+                       ? reinterpret_cast<u8*>(slot_field) + relative
+                       : nullptr;
+            if (object == nullptr) {
+                continue;
+            }
+            mask |= 1u << i;
+            const u32 width = *reinterpret_cast<u32*>(object + 0x48);
+            ui_func_002acd38(engine::g_GpuCommandCursor, object + 0x10, width);
+            engine::g_GpuCommandCursor += (width & ~3u) / 4u;
+        }
+        EmitPair(mask | 0x10000u, 0x00050080u);
+        s114 = sprite->field_2b0;
+    }
+
+    // 0x003691B8..0x003691F8
+    s32 list_flag = ((work->field_18 & 1u) == 0) ? 1 : 0;
+    if ((work->field_18 & 1u) == 0) {
+        u8* node = (work_bc->rel_288 != 0)
+                 ? reinterpret_cast<u8*>(work_bc) + 0x288
+                       + work_bc->rel_288
+                 : nullptr;
+        u8* record = (node != nullptr) ? node + 0x10 : nullptr;
+        list_flag = ((*reinterpret_cast<u32*>(record) & 0x20u) == 0) ? 1 : 0;
+
+        if (!(work_bc->field_2bc != 0 && s118 == work_bc->field_2bc &&
+              active_a == 0)) {
+            // same descriptor as 0x0036C5E8
+            u8* data = record;
+            const u32 b4 = *reinterpret_cast<u32*>(data + 4) & 0xFFu;
+            const u32 b8 = *reinterpret_cast<u32*>(data + 8) & 0xFFu;
+            const u32 bc = *reinterpret_cast<u32*>(data + 0xC) & 0xFFu;
+            const u32 b14 = data[0x14];
+            const u32 mask = (b14 != 0) ? 0u : 0xFFFFFFFFu;
+            const u32 bit0 = ((mask & bc) == 0) ? 1u : 0u;
+            const u32 flags = *reinterpret_cast<u32*>(data);
+            const u32 word0 = 0x80000000u | (b8 << 2) | (b4 << 4)
+                            | (bc << 28)
+                            | (((flags & 1u) == 0 ? 1u : 0u) << 27)
+                            | ((bit0 ^ 1u) << 30) | 0x400u;
+            const u32 word1 = (((flags & 2u) == 0 ? 1u : 0u) << 16)
+                            | (((flags & 4u) == 0 ? 1u : 0u) << 17)
+                            | ((b8 == 0 ? 1u : 0u) << 19)
+                            | ((flags & 0x20u) == 0 ? 7u : 0u) << 20
+                            | 0x40000u;
+            u32* cursor = engine::g_GpuCommandCursor;
+            cursor[0] = word0;
+            cursor[1] = 0x000F01C3u;
+            cursor[2] = word1;
+            cursor[3] = 0x000401C4u;
+            engine::g_GpuCommandCursor = cursor + 4;
+
+            const u32 bit3 = (flags & 8u) == 0 ? 1u : 0u;
+            const u32 bit4 = (flags & 0x10u) == 0 ? 1u : 0u;
+            if (frame->field_e4 > 0) {
+                u32* entries = reinterpret_cast<u32*>(
+                    static_cast<std::uintptr_t>(frame->field_64));
+                for (s32 i = 0; i < static_cast<s32>(frame->field_e4); ++i) {
+                    u8* entry = reinterpret_cast<u8*>(
+                        static_cast<std::uintptr_t>(entries[i]));
+                    const u32 pair = *reinterpret_cast<u32*>(entry + 0x18) & 2u;
+                    const u32 pair_bit = pair >> 1;
+                    const u32 actor_state =
+                        *reinterpret_cast<u32*>(entry + 0xB8);
+                    u32 selected = 0;
+                    if (actor_state == 0 ||
+                        ((g_UiPanelVisibleMask_472100 >> i) & 1u) != 0) {
+                        selected = 1;
+                    }
+                    u32 word = selected;
+                    if (pair_bit != 0) {
+                        word |= 2u;
+                    }
+                    if (bit3 != 0) {
+                        word |= 4u;
+                    }
+                    if (bit4 != 0) {
+                        word |= 8u;
+                    }
+                    EmitPair(word, 0x00010149u + (static_cast<u32>(i) << 4));
+                }
+            }
+        }
+
+        // 0x00369474..0x003694B4
+        u8* node2 = (work_bc->rel_288 != 0)
+                  ? reinterpret_cast<u8*>(work_bc) + 0x288
+                        + work_bc->rel_288
+                  : nullptr;
+        u8* list_node = nullptr;
+        if (node2 != nullptr) {
+            const u32 rel_next = *reinterpret_cast<u32*>(node2 + 0x28);
+            list_node = (rel_next != 0) ? node2 + 0x28 + rel_next : nullptr;
+        }
+        if (!(work_c0->field_2c0 != 0 && s11c == work_c0->field_2c0)) {
+            func_00375504(record, list_node);
+        }
+    }
+
+    // 0x003694B8..0x00369508
+    bool skip_c8 = false;
+    if (!(work_b4 != nullptr && s108 == work_b4->field_2b4 &&
+          work_b4->field_2b4 != 0)) {
+        func_003744f8(frame, scene, &work_b4->field_24,
+                      static_cast<u32>(list_flag));
+        s108 = work_b4->field_2b4;
+    } else {
+        // 0x00369568..0x003695B4: no change, so the 0x2C8 block is skipped.
+        skip_c8 = true;
+    }
+
+    // 0x00369510..0x0036967C
+    if (!skip_c8 &&
+        !(work_c8 != nullptr && s120 == work_c8->field_2c8 &&
+          work_c8->field_2c8 != 0)) {
+        u8* node = (work_bc->rel_288 != 0)
+                 ? reinterpret_cast<u8*>(work_bc) + 0x288
+                       + work_bc->rel_288
+                 : nullptr;
+        EmitEffectEntries(node);
+        s120 = work_c8->field_2c8;
+    }
+
+    // 0x0036967C..0x003696C0
+    {
+        u8* node = (work_cc->rel_288 != 0)
+                 ? reinterpret_cast<u8*>(work_cc) + 0x288
+                       + work_cc->rel_288
+                 : nullptr;
+        const u32 value = work_cc->field_2cc;
+        if (!(value != 0 && s128 == value)) {
+            EmitPair(*reinterpret_cast<u32*>(node + 0xD4),
+                     *reinterpret_cast<u32*>(node + 0xD8));
+            s128 = value;
+        }
+    }
+
+    // 0x003696C4..0x003699DC
+    if (!(work_d0 != nullptr && s124 == work_d0->field_2d0 &&
+          work_d0->field_2d0 != 0)) {
+        EmitPanelStateCommand(work_d0);
+        s124 = work_d0->field_2d0;
+    }
+
+    // 0x003699E0..0x00369A38
+    frame->field_100 = s100;
+    frame->field_104 = s104;
+    frame->field_108 = s108;
+    frame->field_10c = s10c;
+    frame->field_110 = s110;
+    frame->field_114 = s114;
+    frame->field_118 = s118;
+    frame->field_11c = s11c;
+    frame->field_120 = s120;
+    frame->field_124 = s124;
+    frame->field_128 = s128;
 }
 
 } // namespace smt4::ui
