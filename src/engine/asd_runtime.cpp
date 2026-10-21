@@ -2143,16 +2143,25 @@ void engine_func_002e4b10(UiPartUpdateOwner* owner) {
                 const s32 clamped =
                     ui_func_002c6c10(frame, source->field_b8);
                 const f32 tf = static_cast<f32>(static_cast<u32>(clamped));
+                // 0x002E583C..0x002E5848: the position curve uses s27
+                // (source+0xF8, `curve_b`), not curve_a.
                 const f32 a =
-                    (part->speed_b * tf + 0.5f * curve_a * tf * tf) *
+                    (part->speed_b * tf + 0.5f * curve_b * tf * tf) *
                     0.001f;
                 const f32 t = std::fmin(std::fmax(a, part->progress), 1.0f);
                 part->progress = t;
 
+                // 0x002E5854..0x002E5880: the rotation angle is the second
+                // curve, speed_a*tf + 0.5*curve_a*tf^2, clamped at zero.
+                const f32 angle_raw =
+                    part->speed_a * tf + 0.5f * curve_a * tf * tf;
+                const f32 spawn_angle =
+                    angle_raw < 0.0f ? 0.0f : angle_raw;
+
                 // 0x002E5950..0x002E59F0: rebuild the orientation matrix
                 // from +0x100, then apply it to +0x110.
-                // 0x002E5950: axis sp+0x50, angle s0 = the curve value `a`.
-                func_002486ec(rs.vector, a);
+                // 0x002E5950: axis sp+0x50, angle s0 = `spawn_angle`.
+                func_002486ec(rs.vector, spawn_angle);
                 for (s32 i = 0; i < 4; ++i) {
                     rs.color[i] = rs.vector[i];
                 }
@@ -2693,8 +2702,10 @@ void engine_func_00304164(TrailOwner* owner) {
                 const TrailSample* const prev_sample = sample - 1;
                 for (s32 k = 0; k < 5; ++k) {
                     const f32 step = accum[k] * sample_step;
-                    const f32 scale = offsets[k] + step + length;
-                    offsets[k] = step;
+                    // 0x00304C70..C78: the ring offset accumulates the step
+                    // and `length` is added to the updated offset.
+                    offsets[k] += step;
+                    const f32 scale = offsets[k] + length;
 
                     sample->points[k][0] = prev_sample->points[k][0] +
                                            dir2[0] * scale;
