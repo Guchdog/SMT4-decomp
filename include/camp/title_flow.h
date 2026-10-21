@@ -136,7 +136,7 @@ struct TitleMainWork {
     u8  flag_63;                        // +0x063 = 0 (0x001EB0A4)
     f32 field_64;                       // +0x064 = 0 (0x001EB0C8)
     f32 field_68;                       // +0x068 = 0 (0x001EB0CC)
-    u32 field_6c;                       // +0x06C
+    f32 field_6c;                       // +0x06C: `vldr s0,[r0,#0x6c]` (0x001EA778)
     u16 field_70;                       // +0x070 = 0 (0x001EB0B8)
     u16 field_72;                       // +0x072 = 0 (0x001EB0BC)
     u32 field_74;                       // +0x074 = 0 (0x001EB0C0)
@@ -147,13 +147,16 @@ struct TitleMainWork {
     u8  flag_84;                        // +0x084 = 1 (0x001EB0D4)
     u8  flag_85;                        // +0x085 = 1 (0x001EB0DC)
     u8  flag_86;                        // +0x086 = 0 (0x001EB0D8)
-    u8  pad_87[0x0D];                   // +0x087..+0x094
+    u8  pad_87;                         // +0x087
+    u32 resource_88;                    // +0x088: `str r0,[r4,#0x88]` (0x001E9B38)
+    u32 resource_8c;                    // +0x08C: `str r0,[r4,#0x8c]` (0x001E9B48)
+    u32 resource_90;                    // +0x090: `str r0,[r4,#0x90]` (0x001E9B58)
     u8  flag_94;                        // +0x094 = 0 (0x001EB0E4)
     u8  flag_95;                        // +0x095 = 0, or argument byte (0x001EB0FC)
     u8  flag_96;                        // +0x096 = 0 (0x001EB0E0)
     u8  pad_97;
     f32 field_98;                       // +0x098 = 0 (0x001EB0E8)
-    u8  pad_9c[4];                      // +0x09C..+0x0A0
+    s32 state_9C;                       // +0x09C: `ldr r0,[r5,#0x9c]` (0x001E98B4)
 };
 static_assert(offsetof(TitleMainWork, flag_04) == 0x004);
 static_assert(offsetof(TitleMainWork, field_40) == 0x040);
@@ -162,6 +165,10 @@ static_assert(offsetof(TitleMainWork, field_70) == 0x070);
 static_assert(offsetof(TitleMainWork, field_80) == 0x080);
 static_assert(offsetof(TitleMainWork, flag_95) == 0x095);
 static_assert(offsetof(TitleMainWork, field_98) == 0x098);
+static_assert(offsetof(TitleMainWork, resource_88) == 0x088);
+static_assert(offsetof(TitleMainWork, resource_8c) == 0x08C);
+static_assert(offsetof(TitleMainWork, resource_90) == 0x090);
+static_assert(offsetof(TitleMainWork, state_9C) == 0x09C);
 static_assert(sizeof(TitleMainWork) == 0xA0);
 
 /**

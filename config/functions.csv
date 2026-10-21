@@ -2294,7 +2294,7 @@ address,size,status,category,name,src_file
 0x001e83fc,4380,non_matching,ui,ui_func_001e83fc,src/ui/ui_scene_extras.cpp
 0x001e9518,528,todo,ui,ui_func_001e9518,
 0x001e9728,372,todo,ui,ui_func_001e9728,
-0x001e989c,3924,todo,ui,ui_func_001e989c,
+0x001e989c,3924,non_matching,ui,ui_func_001e989c,src/ui/ui_runtime2.cpp
 0x001ea7f0,24,todo,script_vm,script_vm_func_001ea7f0,
 0x001ea808,264,non_matching,engine,soundTest_func_001ea808,src/engine/asd_sound.cpp
 0x001ea910,24,todo,unknown,func_001ea910,
@@ -2361,7 +2361,7 @@ address,size,status,category,name,src_file
 0x001eeea0,5556,stub,ui,Ui_MikadoCastleScene,src/ui/mikado_ui.cpp
 0x001f0454,5764,non_matching,ui,ui_func_001f0454,src/ui/ui_runtime.cpp
 0x001f1ad8,1264,todo,camp,camp_func_001f1ad8,
-0x001f1fc8,3960,todo,ui,ui_func_001f1fc8,
+0x001f1fc8,3960,non_matching,ui,ui_func_001f1fc8,src/ui/ui_runtime2.cpp
 0x001f2f40,24,todo,camp,camp_func_001f2f40,
 0x001f2f58,1704,non_matching,camp,Unite_Setup,src/camp/unite.cpp
 0x001f3600,88,todo,unknown,func_001f3600,
@@ -2697,7 +2697,7 @@ address,size,status,category,name,src_file
 0x0021446c,892,todo,camp,camp_func_0021446c,
 0x002147e8,108,todo,script_vm,script_vm_func_002147e8,
 0x00214854,272,todo,engine,engine_func_00214854,
-0x00214964,4020,todo,ui,ui_func_00214964,
+0x00214964,4020,non_matching,ui,ui_func_00214964,src/ui/ui_runtime2.cpp
 0x00215918,16,todo,ui,ui_func_00215918,
 0x00215928,16,todo,engine,engine_func_00215928,
 0x00215938,32,todo,battle,battle_func_00215938,
@@ -10203,7 +10203,7 @@ address,size,status,category,name,src_file
 0x003eb294,16,todo,engine,engine_func_003eb294,
 0x003eb2a4,144,todo,unknown,func_003eb2a4,
 0x003eb334,448,todo,unknown,func_003eb334,
-0x003eb4f4,3724,todo,ui,ui_func_003eb4f4,
+0x003eb4f4,3724,non_matching,ui,ui_func_003eb4f4,src/ui/ui_runtime2.cpp
 0x003ec380,1492,todo,ui,ui_func_003ec380,
 0x003ec954,6616,stub,ui,Ui_BattleActionEffectOverlay,src/ui/battle_hud.cpp
 0x003ee32c,108,todo,camp,camp_func_003ee32c,

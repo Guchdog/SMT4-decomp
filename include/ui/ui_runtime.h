@@ -162,6 +162,12 @@ struct CampFusionView {
     s32 count_926c;                 // +0x926C: `ldr r0,[r0,#0x26c]` (0x001F0A58)
     u8  pad_9270[0x9431 - 0x9270];
     s8  field_9431;                 // +0x9431: `ldrsb r2,[r1,r4]` (0x001AE0A8)
+    u8  pad_9432[0x06];             // +0x9432..+0x9438
+    // Four 8-byte "possible fusion" descriptors.  0x001F1FC8 indexes them
+    // with `add r1,sl,r7,lsl #3` (sl = work) and `ldr r3,[r0,r1]` where
+    // r0 = 0x943C (0x001F2204..0x001F220C); the first byte at +0x9450 is
+    // the table-valid guard (`ldrb r0,[r0,sl]`, 0x001F2188).
+    u32 candidate_pairs_9438[8];    // +0x9438..+0x9458 (4 x {low,high})
 };
 static_assert(offsetof(CampFusionView, sprite_024) == 0x024);
 static_assert(offsetof(CampFusionView, sprite_0b0) == 0x0B0);
@@ -180,6 +186,7 @@ static_assert(offsetof(CampFusionView, list_91a0) == 0x91A0);
 static_assert(offsetof(CampFusionView, cursor_9204) == 0x9204);
 static_assert(offsetof(CampFusionView, count_926c) == 0x926C);
 static_assert(offsetof(CampFusionView, field_9431) == 0x9431);
+static_assert(offsetof(CampFusionView, candidate_pairs_9438) == 0x9438);
 
 // ---------------------------------------------------------------------------
 // 0x00197D2C: quest list / quest detail screen

@@ -2,7 +2,7 @@
 
 namespace smt4::ui {
 
-SaveLoadUIManager g_SaveLoadUIManager = {0, {0, 0, 0}, nullptr}; // 0x0044DE28
+SaveLoadUIManager g_SaveLoadUIManager = {0, {0, 0, 0}, nullptr, 0, 0}; // 0x0044DE28
 
 // DECOMP_FUNC(0x00191eac, 208)
 void saveLoadUI_Init() {
