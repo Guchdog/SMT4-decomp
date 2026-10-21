@@ -2456,7 +2456,7 @@ address,size,status,category,name,src_file
 0x001fe3d0,68,todo,unknown,func_001fe3d0,
 0x001fe414,92,todo,engine,engine_func_001fe414,
 0x001fe470,288,non_matching,engine,AsdModel_func_001fe470,src/engine/asd_model.cpp
-0x001fe590,3608,todo,ui,ui_func_001fe590,
+0x001fe590,3608,non_matching,ui,ui_func_001fe590,src/ui/ui_blocks.cpp
 0x001ff3a8,28,todo,ui,ui_func_001ff3a8,
 0x001ff3c4,1104,todo,camp,camp_func_001ff3c4,
 0x001ff814,28,todo,unknown,func_001ff814,
@@ -3251,7 +3251,7 @@ address,size,status,category,name,src_file
 0x002364e8,552,todo,unknown,func_002364e8,
 0x00236710,292,todo,unknown,func_00236710,
 0x00236834,292,todo,unknown,func_00236834,
-0x00236958,3552,todo,engine,engine_func_00236958,
+0x00236958,3552,non_matching,engine,engine_func_00236958,src/engine/engine_blocks.cpp
 0x00237738,172,todo,unknown,func_00237738,
 0x002377e4,40,todo,unknown,func_002377e4,
 0x0023780c,592,todo,unknown,func_0023780c,
@@ -3644,7 +3644,7 @@ address,size,status,category,name,src_file
 0x0024c74c,104,todo,battle,battle_func_0024c74c,
 0x0024c7b4,12,todo,unknown,func_0024c7b4,
 0x0024c7c0,104,todo,battle,battle_func_0024c7c0,
-0x0024c828,3616,todo,script_vm,script_vm_func_0024c828,
+0x0024c828,3616,non_matching,script_vm,script_vm_func_0024c828,src/script/script_blocks.cpp
 0x0024d648,392,todo,ui,ui_func_0024d648,
 0x0024d7d0,532,todo,unknown,func_0024d7d0,
 0x0024d9e4,380,todo,script_vm,script_vm_func_0024d9e4,
@@ -6322,7 +6322,7 @@ address,size,status,category,name,src_file
 0x002ed50c,88,todo,unknown,func_002ed50c,
 0x002ed564,32,todo,camp,camp_func_002ed564,
 0x002ed584,76,todo,script_vm,script_vm_func_002ed584,
-0x002ed5d0,3584,todo,ui,ui_func_002ed5d0,
+0x002ed5d0,3584,non_matching,ui,ui_func_002ed5d0,src/ui/ui_blocks.cpp
 0x002ee3d0,324,todo,engine,engine_func_002ee3d0,
 0x002ee514,396,todo,engine,engine_func_002ee514,
 0x002ee6a0,784,non_matching,engine,2dEventTex_func_002ee6a0,src/engine/asd_render_ui.cpp
