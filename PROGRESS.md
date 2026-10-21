@@ -4,11 +4,11 @@
 
 | Category | Functions | Code Size (Bytes) | Progress % | Status Description |
 |----------|----------:|------------------:|-----------:|--------------------|
-| **Decompiled (Reconstructed)** | 363 | 459,212 B | **14.6287%** | Substantial C++ logic reverse-engineered |
+| **Decompiled (Reconstructed)** | 367 | 474,176 B | **15.1054%** | Substantial C++ logic reverse-engineered |
 | **Scaffolded (Stubs & Interfaces)** | 39 | 248,240 B | 7.9080% | Headers, structs, and function skeletons |
 | **Matching (Byte-for-Byte)** | 0 | 0 B | 0.0000% | 100% compiled machine code match |
-| **Total Architecture Explored** | 402 | 707,452 B | **22.5367%** | Total identified & mapped into `src/` |
-| **Remaining (Todo)** | 9,947 | 2,431,656 B | 77.4633% | Unmapped functions in `.text` |
+| **Total Architecture Explored** | 406 | 722,416 B | **23.0134%** | Total identified & mapped into `src/` |
+| **Remaining (Todo)** | 9,943 | 2,416,692 B | 76.9866% | Unmapped functions in `.text` |
 | **Total `.text` Segment** | 10,349 | 3,139,108 B | 100.0000% | `0x00100000`–`0x003FE624` |
 
 ## Subsystem Breakdown
@@ -17,7 +17,7 @@
 |-----------|-----------------:|-----------------:|-----------:|-----------:|------------:|------------:|-------------:|-----------:|
 | `engine` | 129 | 113,484 B | 2 | 22,760 B | 2,367 | 755,700 B | 15.02% | 18.03% |
 | `ui` | 155 | 150,392 B | 14 | 96,248 B | 1,238 | 682,348 B | 22.04% | 36.15% |
-| `unknown` | 5 | 8,688 B | 0 | 0 B | 3,819 | 625,300 B | 1.39% | 1.39% |
+| `unknown` | 9 | 23,652 B | 0 | 0 B | 3,819 | 625,300 B | 3.78% | 3.78% |
 | `script_vm` | 16 | 120,004 B | 3 | 22,836 B | 1,201 | 446,288 B | 26.89% | 32.01% |
 | `camp` | 21 | 29,764 B | 6 | 70,276 B | 918 | 326,396 B | 9.12% | 30.65% |
 | `battle` | 21 | 25,024 B | 11 | 32,664 B | 575 | 236,932 B | 10.56% | 24.35% |
@@ -86,6 +86,9 @@
 | `0x0014515c` | 688 | `engine` | `non_matching` | `AsdModel_func_0014515c` | [`src/engine/asd_model.cpp`](src/engine/asd_model.cpp) |
 | `0x0014ec68` | 792 | `engine` | `non_matching` | `AsdModel_func_0014ec68` | [`src/engine/asd_model.cpp`](src/engine/asd_model.cpp) |
 | `0x0015c728` | 2220 | `engine` | `non_matching` | `aocFileLoad_func_0015c728` | [`src/engine/aoc.cpp`](src/engine/aoc.cpp) |
+| `0x00160e90` | 3776 | `unknown` | `non_matching` | `func_00160e90` | [`src/engine/runtime_blocks2.cpp`](src/engine/runtime_blocks2.cpp) |
+| `0x00164c08` | 3776 | `unknown` | `non_matching` | `func_00164c08` | [`src/engine/runtime_blocks2.cpp`](src/engine/runtime_blocks2.cpp) |
+| `0x00168980` | 3776 | `unknown` | `non_matching` | `func_00168980` | [`src/engine/runtime_blocks2.cpp`](src/engine/runtime_blocks2.cpp) |
 | `0x00170d70` | 7456 | `engine` | `non_matching` | `func_00170d70` | [`src/engine/tex_convert.cpp`](src/engine/tex_convert.cpp) |
 | `0x00177370` | 7456 | `engine` | `non_matching` | `func_00177370` | [`src/engine/tex_convert.cpp`](src/engine/tex_convert.cpp) |
 | `0x0017d970` | 7348 | `engine` | `non_matching` | `func_0017d970` | [`src/engine/tex_convert.cpp`](src/engine/tex_convert.cpp) |
@@ -359,6 +362,7 @@
 | `0x002f6620` | 200 | `ui` | `non_matching` | `StatusDown_SelectLastPartySlotAndEnterState11` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x002f66e8` | 36 | `ui` | `non_matching` | `StatusDown_EnterState3` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x002f6734` | 776 | `ui` | `non_matching` | `WhisperEffect_func_002f6734` | [`src/engine/asd_render_ui.cpp`](src/engine/asd_render_ui.cpp) |
+| `0x002f9f54` | 3636 | `unknown` | `non_matching` | `func_002f9f54` | [`src/engine/runtime_blocks2.cpp`](src/engine/runtime_blocks2.cpp) |
 | `0x002fc260` | 800 | `ui` | `non_matching` | `BustupCutAnim_func_002fc260` | [`src/engine/asd_render_ui.cpp`](src/engine/asd_render_ui.cpp) |
 | `0x002fcd20` | 4160 | `engine` | `non_matching` | `EffectEditor_func_002fcd20` | [`src/engine/asd_model.cpp`](src/engine/asd_model.cpp) |
 | `0x002fdfb8` | 336 | `engine` | `non_matching` | `Npc2d_func_002fdfb8` | [`src/engine/asd_frame.cpp`](src/engine/asd_frame.cpp) |

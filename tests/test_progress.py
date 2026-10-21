@@ -129,12 +129,12 @@ class TestProgress(unittest.TestCase):
     def test_real_repo_progress_matches_text_size(self):
         stats = compute_progress(Path("config/functions.csv"), Path("."))
         self.assertEqual(stats["total_bytes"], 0x2FE624)
-        self.assertEqual(stats["decompiled_functions"], 363)
-        self.assertEqual(stats["decompiled_bytes"], 459212)
+        self.assertEqual(stats["decompiled_functions"], 367)
+        self.assertEqual(stats["decompiled_bytes"], 474176)
         self.assertEqual(stats["stub_functions"], 39)
         self.assertEqual(stats["stub_bytes"], 248240)
-        self.assertEqual(stats["total_explored_functions"], 402)
-        self.assertEqual(stats["total_explored_bytes"], 707452)
+        self.assertEqual(stats["total_explored_functions"], 406)
+        self.assertEqual(stats["total_explored_bytes"], 722416)
 
 
 if __name__ == "__main__":
