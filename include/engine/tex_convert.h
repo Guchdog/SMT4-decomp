@@ -65,18 +65,22 @@ static_assert(offsetof(TexConvertDesc, words_178) == 0x178);
 static_assert(sizeof(TexConvertDesc) == 0x1B8);
 
 // ---------------------------------------------------------------------------
-// Ledger block entry points -- NOT ordinary C functions.
+// Ledger block entry points -- block starts, not ordinary AAPCS routines.
 //
-// These three addresses are *block* starts, not AAPCS routines.  0x00170D70
-// begins with `cmp r4,#0xc` and never moves r1 into r4: the format selector is
-// already live in r4 on entry, and the initialiser falls straight through into
-// the sixty converter leaves.  There is therefore no call sequence that can
-// pass arguments to them; they must not be invoked as normal C functions.
+// These three addresses are *block* starts, not ordinary AAPCS routines.  The
+// initialiser at 0x00170D70 begins with `cmp r4,#0xc`: the format selector is
+// already live in r4 on entry and is never loaded from r1.  The initialiser
+// then ends with `mov pc,lr` at 0x00170E1C, so it returns normally instead of
+// falling through into the leaves.
+//
+// The sixty converter leaves are separate ordinary AAPCS functions taking the
+// source pointer in r0, the destination pointer in r1 and the tile count in
+// r2 (each leaf bakes its own tile stride into its body).  Only the three
+// block entries themselves are non-AAPCS, because they read `r4`.
 //
 // The declarations exist only so that the ledger's reconstructed spelling has
-// a definition in src/engine/tex_convert.cpp (and so an offline test can drive
-// the initialiser).  Treat the parameters as a description of r0/r4, not as an
-// ABI contract.
+// a definition in src/engine/tex_convert.cpp.  Treat the parameters as a
+// description of r0/r4, not as an ABI contract.
 // ---------------------------------------------------------------------------
 void func_00170d70(TexConvertDesc* desc, s32 format);   // 0x00170D70, 7456 B
 void func_00177370(TexConvertDesc* desc, s32 format);   // 0x00177370, 7456 B

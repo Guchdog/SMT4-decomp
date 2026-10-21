@@ -7,9 +7,11 @@
  * Three 3DS texture-format conversion blocks.
  *
  * The blocks at 0x00170D70, 0x00177370 and 0x0017D970 are identical except for
- * the tile stride (0x400 / 0x100 / 0x200).  Every block starts with a
- * descriptor initialiser, then runs sixty leaf converters, then (for the first
- * two blocks) a VXS2 program header.  The initialiser builds two 32-bit words
+ * the tile stride (0x400 / 0x100 / 0x200).  Each block begins with a descriptor
+ * initialiser; sixty independent converter leaves and (for the first two
+ * blocks) a VXS2 program header follow it in memory.  The initialiser ends with
+ * `mov pc,lr` at 0x00170E1C and returns, so it does not fall through into the
+ * leaves.  The initialiser builds two 32-bit words
  * per destination component from the permutation tables:
  *
  *   +0x78:  64 words = kTexTranspose64[i] | (kTexPack64[group][i] << shift-2)
@@ -122,7 +124,7 @@ const u8 kTexPack64[6][64] = {
     },
 };
 
-// 0x00170C54: 64-byte identity permutation applied after kTexPack64.
+// 0x00170C54: 64-byte fixed transpose permutation applied after kTexPack64.
 const u8 kTexTranspose64[64] = {
     0x00, 0x01, 0x08, 0x10, 0x09, 0x02, 0x03, 0x0a, 0x11, 0x18, 0x20, 0x19, 0x12, 0x0b, 0x04, 0x05,
     0x0c, 0x13, 0x1a, 0x21, 0x28, 0x30, 0x29, 0x22, 0x1b, 0x14, 0x0d, 0x06, 0x07, 0x0e, 0x15, 0x1c,
@@ -158,7 +160,7 @@ const u8 kTexPack16[6][16] = {
     },
 };
 
-// 0x00170CF4: 16-byte identity permutation applied after kTexPack16.
+// 0x00170CF4: 16-byte fixed transpose permutation applied after kTexPack16.
 const u8 kTexTranspose16[16] = {
     0x00, 0x04, 0x01, 0x02, 0x05, 0x08, 0x0c, 0x09,
     0x06, 0x03, 0x07, 0x0a, 0x0d, 0x0e, 0x0b, 0x0f,
@@ -1160,7 +1162,7 @@ const u8 kTexGroupIndex[54] = {
     dst = d;
 }
 
-// 0x0017187c (0x00177e7c / 0x0017e47c), 312 B: 16 B/tile; 16 B block read; byte gather; 2x unrolled.
+// 0x0017187c (0x00177e7c / 0x0017e47c), 316 B: 16 B/tile; 16 B block read; byte gather; 2x unrolled.
 [[maybe_unused]] static void TexConv_0017187c(const u8*& src, u8*& dst, u32 count, u32 stride)
 {
     const u8* s = src;
@@ -2956,10 +2958,10 @@ const u32 kTexProgram_177370[53] = {
 // ---------------------------------------------------------------------------
 // Tail of the third ledger entry, 0x0017F5BC..0x0017F624.
 //
-// The 7,348-byte size of 0x0017D970 ends four bytes into the following
-// translation unit, so the tail contains the next block pointer, two literal
-// pairs and four unrelated static-init/teardown thunks.  None of them is part
-// of the converter.
+// The 7,348-byte size of 0x0017D970 ends 104 bytes (0x68) into the following
+// translation unit, so the 0x0017F5BC..0x0017F624 tail contains the next block
+// pointer, two literal pairs and five unrelated static-init/teardown thunks.
+// None of them is part of the converter.
 // ---------------------------------------------------------------------------
 
 // 0x0017F5BC: pointer to the second block's VXS2 header (+0x44 into the
@@ -3159,8 +3161,8 @@ void func_00177370(TexConvertDesc* desc, s32 format)
 // 0x0017D970: descriptor initialiser, third block (stride 0x200).
 //
 // The tables sit at 0x0017D6D4..0x0017D970 and are again the same 0x29C bytes.
-// This block is 108 bytes shorter than the other two because it is followed by
-// the four unrelated thunks reproduced above instead of a VXS2 header.
+// This block is 108 bytes shorter than the other two because the 0x68-byte
+// thunk tail reproduced above takes the place of a VXS2 header.
 // ---------------------------------------------------------------------------
 
 // DECOMP_FUNC(0x0017d970, 7348)
@@ -3202,4 +3204,3 @@ void func_0017d970(TexConvertDesc* desc, s32 format)
 }
 
 } // namespace smt4::engine
-

@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Authentically decompile 4 previously-unmapped engine functions totaling 29,180 bytes, raising total architecture explored from **661,788 bytes (21.0820%)** to **690,968 bytes (22.0119%)** and authentically decompiled code from **413,548 bytes (13.1741%)** to **442,728 bytes (14.1042%)** in Shin Megami Tensei IV (`CTR-P-AMXE`).
+**Goal:** Authentically decompile 4 previously-unmapped engine functions totaling 29,180 bytes, raising total architecture explored from **661,788 bytes (21.0820%)** to **690,968 bytes (22.0116%)** and authentically decompiled code from **413,548 bytes (13.1741%)** to **442,728 bytes (14.1036%)** in Shin Megami Tensei IV (`CTR-P-AMXE`).
 
 **Architecture:**
 - `include/engine/tex_convert.h` / `src/engine/tex_convert.cpp`: three large texture/bitmap conversion routines (22,260 B).
@@ -120,10 +120,10 @@ Recover the routine's role from its call graph/literals (`0x00420d30` table refe
 
 - [ ] **Step 4: Update the ledger and verify GREEN**
 
-Set `status=non_matching`, `src_file=src/engine/event_runtime.cpp`; expected 359 / 442,728 B, 398 / 690,968 B (22.0119%); all tests PASS.
+Set `status=non_matching`, `src_file=src/engine/event_runtime.cpp`; expected 359 / 442,728 B, 398 / 690,968 B (22.0116%); all tests PASS.
 
 - [ ] **Step 5: Commit**
 
 ```powershell
-git commit -m "feat(engine): decompile event/resource runtime (+6,920 B, 22.0% milestone reached at 22.0122%)"
+git commit -m "feat(engine): decompile event/resource runtime (+6,920 B, 22.0% milestone reached at 22.0116%)"
 ```

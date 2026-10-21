@@ -60,11 +60,18 @@ AsdPtrVector CreateArray(void* owner, u32 count) {
 // with ip already zero (0x0011EA68), so that pass never calls.  In the
 // successful path every member has already been moved out
 // (`begin = end = 0`), so the 0x0011F21C pass also performs no call; on the
-// failed 0xF8-byte allocation it releases the fifteen live blocks.
+// failed 0xF8-byte allocation it releases the fifteen live blocks in the
+// reverse of their construction order: 0x3C, 0x38, 0x34, 0x30, 0x2C, 0x14,
+// 0x28, 0x24, 0x20, 0x1C, 0x18, 0x10, 0x0C, 0x08, 0x04.
+constexpr u32 kReleaseOrder[15] = {
+    14, 13, 12, 11, 5, 4, 10, 9, 8, 7, 6, 3, 2, 1, 0,
+};
+
 void ReleaseArrays(AsdPtrVector* arrays) {
-    for (s32 i = 14; i >= 0; --i) {
-        if (arrays[i].ctx != nullptr && arrays[i].begin != nullptr) {
-            OwnerRelease(arrays[i].ctx, arrays[i].begin);
+    for (u32 slot : kReleaseOrder) {
+        AsdPtrVector& array = arrays[slot];
+        if (array.ctx != nullptr && array.begin != nullptr) {
+            OwnerRelease(array.ctx, array.begin);
         }
     }
 }
@@ -98,19 +105,21 @@ EventResourceTable* func_0011d9fc(const EventResourceCounts* counts, void* owner
 
     // 0x0011DC1C..0x0011DC24: byte 0 gates all fifteen constructions.
     if (counts->active != 0) {
-        // Construction order follows the listing, not the output layout:
-        // array 4 and array 5 are fed by +0x14 and +0x2C before +0x18.
+        // Construction order follows the listing (and the count offsets):
+        // +0x04, +0x08, +0x0C, +0x10, +0x18..+0x28, then +0x14 and +0x2C,
+        // then +0x30..+0x3C.  The output slots are therefore filled out of
+        // order: array 4 and array 5 are built after array 10.
         arrays[0] = CreateArray(owner, counts->count_04);    // 0x0011DC28
         arrays[1] = CreateArray(owner, counts->count_08);    // 0x0011DD18
         arrays[2] = CreateArray(owner, counts->count_0c);    // 0x0011DE0C
         arrays[3] = CreateArray(owner, counts->count_10);    // 0x0011DF00
-        arrays[4] = CreateArray(owner, counts->count_14);    // 0x0011E4AC
-        arrays[5] = CreateArray(owner, counts->count_2c);    // 0x0011E59C
         arrays[6] = CreateArray(owner, counts->count_18);    // 0x0011DFF0
         arrays[7] = CreateArray(owner, counts->count_1c);    // 0x0011E0E0
         arrays[8] = CreateArray(owner, counts->count_20);    // 0x0011E1D0
         arrays[9] = CreateArray(owner, counts->count_24);    // 0x0011E2C4
         arrays[10] = CreateArray(owner, counts->count_28);   // 0x0011E3BC
+        arrays[4] = CreateArray(owner, counts->count_14);    // 0x0011E4AC
+        arrays[5] = CreateArray(owner, counts->count_2c);    // 0x0011E59C
         arrays[11] = CreateArray(owner, counts->count_30);   // 0x0011E690
         arrays[12] = CreateArray(owner, counts->count_34);   // 0x0011E77C
         arrays[13] = CreateArray(owner, counts->count_38);   // 0x0011E870

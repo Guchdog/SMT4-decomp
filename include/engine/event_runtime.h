@@ -16,9 +16,10 @@
  * `vtable[2](owner, 0xF8, 4)` (0x0011EA50..0x0011EA70), so every embedded
  * vector keeps `owner` in its `ctx` slot.
  *
- * Original position in the binary: the routine sits after the texture
- * converters and immediately before 0x0011F500, the literal pool word that
- * points at the class table 0x00420D30.
+ * Original position in the binary: the routine occupies 0x0011D9FC..0x0011F504
+ * and ends with its own literal-pool word at 0x0011F500 (the class-table
+ * pointer 0x00420D30), not with the start of the next routine.  The texture
+ * converter blocks are later, at 0x00170D70 and above.
  */
 
 namespace smt4::engine {
