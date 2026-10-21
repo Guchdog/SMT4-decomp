@@ -461,7 +461,7 @@ u32 func_003b11a8(ScriptRuntimeState* state, u32 index, ScriptCursor* cursor,
                 goto fail_44;
             }
             *reinterpret_cast<u32*>(node + 0x10) = key;   // 0x003B13A0
-            *reinterpret_cast<void**>(node + 0x18) = nullptr;
+            *reinterpret_cast<void**>(node + 0x18) = variant; // 0x003B13B0-B4
             *reinterpret_cast<void**>(node + 0x14) = nullptr;
             *reinterpret_cast<u8*>(node + 0x0C) = 1;      // 0x003B13F0
             func_00397158(tree, node);                    // 0x003B13EC
@@ -1336,33 +1336,52 @@ namespace {
 // The byte code is (bit 7 = variant, bits 0..6 = field opcode).  The two
 // variants are the two literals immediately below the branch in the listing.
 // 0x002B7F0A..0x002B7F90: Thumb sorted insertion.  r0 is the destination
-// array, r1 the element index, r2 the element size and r3 a comparator
-// callback (invoked as `blx r2` with (previous, new) pointers).
+// array, r1 is a **count** (not a slot), r2 the element size and r3 a
+// comparator callback (invoked as `blx r2` with (previous, new) pointers).
+// 0x002B7F24..0x002B7F2C computes dest + (count-1)*size, and the loop covers
+// [0, count), so the new element is the last slot.
 using CampCompareFn = s32 (*)(const void*, const void*);
 
-void CampInsert(void* dest, u32 index, u32 size, u32 callback)
+void CampInsertionSort(u8* base, u32 count, u32 size, CampCompareFn compare,
+                       u32 copy_size)
 {
-    if (index == 0 || size == 0 || callback == 0) {
+    // 0x002B7F30..0x002B7F88 (and the stack-buffered 0x002B7D0C form):
+    // insertion sort over [0, count).  The first pass is a no-op, so the
+    // loop starts at element 1.
+    for (u32 i = 1; i < count; ++i) {
+        u8 temp[16] = {};
+        u8* element = base + i * size;
+        std::memcpy(temp, element, copy_size);
+        u32 position = i;
+        while (position > 0) {
+            u8* previous = base + (position - 1) * size;
+            if (compare(previous, temp) <= 0) {  // 0x002B7F44 `cmp r0,#0`
+                break;
+            }
+            std::memmove(base + position * size, previous, copy_size);
+            --position;
+        }
+        std::memcpy(base + position * size, temp, copy_size);
+    }
+}
+
+void CampInsert(void* dest, u32 count, u32 size, u32 callback)
+{
+    if (count == 0 || size == 0 || callback == 0) {
         return;
     }
     u8* base = static_cast<u8*>(dest);
-    u8* new_element = base + index * size;
-    u8 temp[16] = {};
-    const u32 copy_size = size < sizeof temp ? size : sizeof temp;
-    std::memcpy(temp, new_element, copy_size);
-
-    u32 position = index;
+    const u32 copy_size = size < 16u ? size : 16u;
     CampCompareFn compare =
         reinterpret_cast<CampCompareFn>(static_cast<std::uintptr_t>(callback));
-    while (position > 0) {
-        u8* previous = base + (position - 1) * size;
-        if (compare(previous, temp) <= 0) {      // 0x002B7F44 `cmp r0,#0`
-            break;
-        }
-        std::memmove(base + position * size, previous, copy_size);
-        --position;
+
+    // 0x002B7F1A..0x002B7F20: counts above 0xA use the stack-buffered
+    // insertion helper at 0x002B7D0C, which has the same ordering contract.
+    if (count > 0xA) {
+        CampInsertionSort(base, count, size, compare, copy_size);
+        return;
     }
-    std::memcpy(base + position * size, temp, copy_size);
+    CampInsertionSort(base, count, size, compare, copy_size);
 }
 
 struct CampRule {
@@ -1587,7 +1606,8 @@ void camp_func_002831f0(u32 layout_opcode)
             {dest, source, 2, 0x00206EB0, 0x002E489C, 0x26, true, 0},
             {dest, source, 2, 0x00206D8C, 0x002E4724, 0x27, true, 0},
             {dest, source, 2, 0x00206E70, 0x002E485C, 0x28, true, 0},
-            {dest, source, 2, 0x002193E0, 0x0030BF38, 0x03, true, 0},
+            {dest, source, 2, 0x002193E0, 0x002F27A0, 0x03, true, 0},
+            {dest, source, 2, 0x002DCD68, 0x0030BF38, 0x32, true, 0},
         };
         for (const CampRule& rule : rules) {
             if (CampRuleMatches(cursor, rule.opcode)) {
