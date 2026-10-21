@@ -121,7 +121,7 @@ extern "C" {
     void  Matrix_TransformPoint(f32* out, const void* matrix, const f32* in);   // 0x002AD6D8
     void  Matrix_FromEuler(void* dst, u32 mode, f32 x, f32 y, f32 z);           // 0x00292C7C
     void  Effect_SetScale(void* work, f32 a, f32 b);                            // 0x002C1774
-    void  Effect_SetAlphaScale(void* work, f32 a, f32 b, f32 c);                // 0x001DB28C
+    void  Effect_SetAlphaScale(void* work, s32 a1, f32 a, f32 b, f32 c);        // 0x001DB28C
     void  UiObject_UpdateBounds(void* object);                                  // 0x002580A8
     void  UiObject_GetSize(void* object, f32* w, f32* h);                       // 0x0023ABC0
     bool  UiObject_IsReady(void* object);                                       // 0x002273F0
@@ -166,10 +166,11 @@ extern "C" {
  *  the identical pushes at 0x002F18A8..0x002F18D4 / 0x002F1920..0x002F194C). */
 void GpuModeSlotSet(u32 slot_offset, u32 value) {
     u8* slot = g_AsdGpuState + 0x1000 + slot_offset;
-    const u32 cursor = *reinterpret_cast<u32*>(slot);
-    u32* entry = reinterpret_cast<u32*>(slot + 8 + cursor * 4);
-    const u32 old = *entry;
-    *entry = value;
+    const u32 cursor = *reinterpret_cast<u32*>(slot);      // 0x001E846C
+    const u32 next = cursor + 1;                          // 0x001E8470
+    const u32 old = *reinterpret_cast<u32*>(slot + 8 + cursor * 4);
+    *reinterpret_cast<u32*>(slot) = next;                 // 0x001E8478/80
+    *reinterpret_cast<u32*>(slot + 8 + next * 4) = value; // 0x001E8484
     if (slot[0x18] != 0 || old != value) {
         reinterpret_cast<void (*)(u32)>(*reinterpret_cast<u32*>(slot + 0x1C))(value);
         slot[0x18] = 0;
@@ -332,7 +333,7 @@ void ui_func_002f150c(BattleCommandWork* work) {
     UiSprite_DrawNode(2, 0x15, 0x119, ex, ey, 0xB7);         // 0x002F169C
     UiSprite_DrawNode(2, 0x15, 0x11A, ex, ey, 0xB7);         // 0x002F16B8
     UiSprite_DrawNode(2, 0x15, 0x11B, ex, ey, 0xB7);         // 0x002F16D4
-    UiSprite_DrawNode(2, 0x15, 0x11C, ex, ey, 0xB7);         // 0x002F16F0
+    UiSprite_DrawNode(2, 0x15, 0x11C, ex, ey, 0xB5);         // 0x002F16F0
     UiSprite_DrawNode(2, 0x15, 0x11D, ex, ey, 0xBB);         // 0x002F1710
 
     // Touch region at work+0x5738: state 1/2 selects the pressed variant
@@ -379,42 +380,55 @@ void ui_func_002f150c(BattleCommandWork* work) {
                 static_cast<const CommandLayoutNode*>(
                     UiLayout_GetNode(0x15, node_id));
             UiSprite_DrawPanel(2, 0x15, 9, node->x + ex, node->y + ey, 0xC9);
+
+            // 0x002F18D8: the 0x19D selection quad uses the icon node's
+            // anchor, not the raw ring origin.
+            if (entry[0x88] != 0) {                          // 0x002F1868
+                Command_DrawSelection(work, 0x19D,
+                                      node->x + ex, node->y + ey, 0xCE);
+            }
+
+            // Five party-slot icons under the row (0x002F1958..0x002F1B00).
+            for (s32 j = 0; j < 5; ++j) {
+                u32 id;
+                if (work->variant_575f != 0) {
+                    id = static_cast<u32>(0x1A1 + j);        // 0x002F1974
+                } else {
+                    const u32 value = *reinterpret_cast<const u32*>(
+                        reinterpret_cast<const u8*>(work) + 0x5780 + i * 0x2C);
+                    if (value - 0x13B <= 4 || value - 0x159 <= 3) {
+                        id = static_cast<u32>(0x13B + j);    // 0x002F19B4
+                    } else {
+                        id = static_cast<u32>(0x14A + j);    // 0x002F19D0
+                    }
+                }
+                const CommandLayoutNode* slot_node =
+                    static_cast<const CommandLayoutNode*>(
+                        UiLayout_GetNode(0x15, id));
+                const u16 slot = work->party_ids_34f8[j];
+                UiSkill_DrawRowIcon(slot, slot_node->x + ex,
+                                    slot_node->y + ey, 0xD3);
+                if (entry[0x88] != 0) {                      // 0x002F1A08
+                    Command_DrawSelection(work, 0x124,
+                                          slot_node->x + ex,
+                                          slot_node->y + ey, 0xD8);
+                }
+            }
         } else {
             // Unavailable row: draw the generic icon at the id from +0x80
-            // (0x002F1B20..0x002F1B54).
+            // (0x002F1B20..0x002F1B54), then a single 0x124 marker at that
+            // node's anchor (0x002F1BD4), with no party-slot loop.
             const u32 id = *reinterpret_cast<const u32*>(
                 reinterpret_cast<const u8*>(work) + 0x5780 + i * 0x2C);
             const CommandLayoutNode* node =
                 static_cast<const CommandLayoutNode*>(UiLayout_GetNode(0x15, id));
             UiSkill_DrawItemIconAndCount(entry_id, node->x + ex,
                                          node->y + ey, 0xC9, 0);
-        }
-
-        if (entry[0x88] != 0) {                              // 0x002F1868
-            Command_DrawSelection(work, 0x19D,
-                                  ex, ey, 0xCE);             // 0x002F18FC
-        }
-
-        // Five party-slot icons under the row (0x002F1958..0x002F1B00).
-        for (s32 j = 0; j < 5; ++j) {
-            u32 id;
-            if (work->variant_575f != 0) {
-                id = static_cast<u32>(0x1A1 + j);            // 0x002F1974
-            } else {
-                const u32 value = *reinterpret_cast<const u32*>(
-                    reinterpret_cast<const u8*>(work) + 0x5780 + i * 0x2C);
-                if (value - 0x13B <= 4 || value - 0x159 <= 3) {
-                    id = static_cast<u32>(0x13B + j);        // 0x002F19B4
-                } else {
-                    id = static_cast<u32>(0x14A + j);        // 0x002F19D0
-                }
-            }
-            const CommandLayoutNode* node =
-                static_cast<const CommandLayoutNode*>(UiLayout_GetNode(0x15, id));
-            const u16 slot = work->party_ids_34f8[j];
-            UiSkill_DrawRowIcon(slot, node->x + ex, node->y + ey, 0xD3);
-            if (entry[0x88] != 0) {                          // 0x002F1A08
-                Command_DrawSelection(work, 0x124, ex, ey, 0xD8);
+            if (entry[0x88] != 0) {                          // 0x002F1B58
+                node = static_cast<const CommandLayoutNode*>(
+                    UiLayout_GetNode(0x15, id));             // 0x002F1B80
+                Command_DrawSelection(work, 0x124,
+                                      node->x + ex, node->y + ey, 0xCE);
             }
         }
     }
@@ -428,9 +442,10 @@ void ui_func_002f150c(BattleCommandWork* work) {
     const s32 state = Battle_CommandState(work, 1);          // 0x002F1C94
 
     if (state == 1) {
-        // Attack/command page (0x002F1D9C..0x002F2148).
+        // Attack/command page (0x002F1D9C..0x002F2148).  The second id is
+        // `0x11E | (0x11E >> 4)` = 0x11F (0x002F1C98..0x002F1CA8).
         UiSprite_DrawNode(2, 0x15, 0x11E, ex, ey, 0xC3);
-        UiSprite_DrawNode(2, 0x15, 0x12E, ex, ey, 0xC3);
+        UiSprite_DrawNode(2, 0x15, 0x11F, ex, ey, 0xC3);
 
         const s32 actor = *reinterpret_cast<const s32*>(
             reinterpret_cast<const u8*>(work) + 0x305C);     // [fp+0x5C]
@@ -534,9 +549,9 @@ void ui_func_002f150c(BattleCommandWork* work) {
     }
 
     if (state == 2) {
-        // Skill/item page (0x002F2154..0x002F22B8).
+        // Skill/item page (0x002F2154..0x002F22B8), same 0x11E/0x11F pair.
         UiSprite_DrawNode(2, 0x15, 0x11E, ex, ey, 0xC3);
-        UiSprite_DrawNode(2, 0x15, 0x12E, ex, ey, 0xC3);
+        UiSprite_DrawNode(2, 0x15, 0x11F, ex, ey, 0xC3);
 
         const void* global = Ui_GetGlobalWork();
         s32 target_id;
@@ -629,7 +644,7 @@ void ui_func_002f150c(BattleCommandWork* work) {
         offset += static_cast<u32>(offset) >> 31;
         const s32 cx = ex + node->x + (offset >> 1);
         const CommandLayoutNode* anchor =
-            static_cast<const CommandLayoutNode*>(UiLayout_GetNode(0x15, 0x11E));
+            static_cast<const CommandLayoutNode*>(UiLayout_GetNode(0x15, 0x12E));
         UiFont_DrawText(3, 0x72E027FFu, text,
                         static_cast<f32>(cx),
                         static_cast<f32>(ey + anchor->y),
@@ -658,8 +673,9 @@ static_assert(offsetof(EffMenuListNode, type_04) == 0x04);
 static_assert(offsetof(EffMenuListNode, field_08) == 0x08);
 
 void EffMenu_PushNode(u32 type, u32 a, u32 b, u32 c, u32 d, u32 e, u32 f) {
+    // 0x002448F8..0x00244900 stores [sp]=0x10 (a4) and [sp+4]=1 (flag).
     EffMenuListNode* node = static_cast<EffMenuListNode*>(
-        AsdWork_Alloc(0x10000, 0x100, 0, 0x68, 1, 0x10));
+        AsdWork_Alloc(0x10000, 0x100, 0, 0x68, 0x10, 1));
     node->type_04 = type;
     node->field_08[0] = a;
     node->field_08[1] = b;
@@ -700,35 +716,38 @@ s32 ui_func_00243e8c(EffMenuItemState* item, EffMenuSlot* slot, s32 count) {
     }
 
     f32 field_04 = item->field_04;                        // s2 / [sp+8]
-    f32 field_0c = item->field_0c;                        // s0
-    f32 field_14 = item->field_14;                        // s1
-    f32 anim_0c = 0.0f;                                   // [sp+0xC]
+    f32 field_0c = item->field_0c;                        // s0 / [sp+0xC]
+    f32 field_14 = item->field_14;                        // s1 / [sp+0x10]
+    // [sp+8] is the colour/position stack and [sp+0x1C] the value stack.
+    // 0x00243EC8/D0: colour[0] = field_04; 0x00243ED4: value[0] = 0.
     u32 colors[8] = {};                                   // [sp+8]
-    colors[0] = 0;
+    colors[0] = *reinterpret_cast<const u32*>(&field_04);
     f32 values[8] = {};                                   // [sp+0x1C]
-    (void)field_14;
+    values[0] = 0.0f;
 
     s32 span = 1;                                         // r6
     switch (item->state) {                                // 0x00243ED8
     case 1:
-        // 0x00243FA8..0x00243FC4
-        anim_0c = field_0c;
-        values[0] = item->field_10;
+        // 0x00243FA8..0x00243FC4: [sp+0xC] = field_0C, [sp+0x20] = field_10
+        // (value[1]), then the >1.0 clamp.
+        colors[1] = *reinterpret_cast<const u32*>(&field_0c);
+        values[1] = item->field_10;
         span = 2;
         if (item->field_10 > 1.0f) {
-            values[0] = 1.0f;
+            values[1] = 1.0f;
             item->field_10 = 1.0f;
         }
         break;
     case 2:
-        // 0x00243FC8..0x00243FFC
-        anim_0c = field_0c;
-        values[0] = item->field_10;
-        values[1] = field_14;
+        // 0x00243FC8..0x00243FFC: [sp+0xC]=field_0C, [sp+0x10]=field_14,
+        // [sp+0x20]=field_10 (value[1]), [sp+0x24]=field_18 (value[2]).
+        colors[1] = *reinterpret_cast<const u32*>(&field_0c);
+        colors[2] = *reinterpret_cast<const u32*>(&field_14);
+        values[1] = item->field_10;
         values[2] = item->field_18;
         span = 3;
         if (item->field_10 > 1.0f) {
-            values[0] = 1.0f;
+            values[1] = 1.0f;
             item->field_10 = 1.0f;
         }
         if (item->field_18 > 1.0f) {
@@ -1186,8 +1205,8 @@ clamp_common:
 
     // ---- per-value bars (0x00244880..0x0024499C) --------------------------
     for (s32 i = 0; i < span; ++i) {
-        const f32 a = values[i] * 260.0f;
-        const f32 b = values[i + 1] * 260.0f;
+        const f32 a = values[i] * 184.0f;
+        const f32 b = values[i + 1] * 184.0f;
         const s32 x = static_cast<s32>(a) + 0xA8;
         const s32 width = static_cast<s32>(b) - x + 0xA8;
         const u32 color0 = (colors[i] | 0xFF000000u);
@@ -1228,8 +1247,8 @@ clamp_common:
     EffMenu_DrawQuadRect(0xA8, 0x2C, 0xB8, 0x10,
                          0x80808080u, 0xFF000000u);
     for (s32 i = 0; i < 3; ++i) {
-        const f32 a = values[i] * 260.0f;
-        const f32 b = values[i + 1] * 260.0f;
+        const f32 a = values[i] * 184.0f;
+        const f32 b = values[i + 1] * 184.0f;
         const s32 x = static_cast<s32>(a) + 0xA8;
         const s32 width = static_cast<s32>(b) - x + 0xA8;
         const u32 raw0 = colors[i];
@@ -1786,7 +1805,8 @@ s32 ui_func_003d7630(ResultWork* work, s32 frame) {
 
     const f32 alpha = *F32At(work, 0x5A8) + *F32At(work, 0x7AC) +
                       *F32At(work, 0x6A8);
-    Effect_SetAlphaScale(base + 0x58, alpha, 0.1f, 100.0f); // 0x003D85C0
+    // 0x003D85A4 sets r1=0 in addition to s0/s1/s2.
+    Effect_SetAlphaScale(base + 0x58, 0, alpha, 0.1f, 100.0f); // 0x003D85C0
 
     UiMath_ApplyMatrixA(pos);                              // 0x003D85CC
     UiMath_ApplyMatrixB(p8);                               // 0x003D85D8
@@ -2265,7 +2285,12 @@ void ui_func_001e83fc() {
             // 0x001E8F40..0x001E8FC4: seed the detail-card header from the
             // selected 56-byte animation row.
             work->mode_4c = 2;
-            const TalkAnimRow* const row = &g_TalkAnimRows[work->selected_1cc];
+            // 0x00447E58 is unresolved game data in this reconstruction.  Use
+            // a zero row when the slot is not populated instead of indexing a
+            // null pointer; the listing's field reads are unchanged.
+            static const TalkAnimRow kZeroAnimRow{};
+            const TalkAnimRow* const row = g_TalkAnimRows
+                ? &g_TalkAnimRows[work->selected_1cc] : &kZeroAnimRow;
             work->field_98[0] = row->field_1c;
             work->field_98[1] = row->field_20;
             work->field_a0[0] = row->field_24;
@@ -2275,6 +2300,10 @@ void ui_func_001e83fc() {
             *F32At(work, 0xA8) = row->field_20 + 500.0f;   // 0x001E8F9C
             *F32At(work, 0xC8) = -360.0f;                  // 0xC3B40000
             *F32At(work, 0x1BC) = 1.0f;                    // 0x001E8FB4
+            // 0x001E8FB8 loads s1 with 0x43A80000 (336.0f) and 0x001E8FBC
+            // loads s0 with 0x44A80000 (1344.0f).  The register order is
+            // therefore (s0,s1,s2,s3) = (1344, 336, -570, -42), which is what
+            // 0x0025A434 consumes at 0x0025A450..0x0025A45C.
             UiSpriteStack_Build(work->field_3c, 1344.0f, 336.0f,
                                 -570.0f, -42.0f);          // 0x001E8FC0
 
@@ -2299,11 +2328,12 @@ void ui_func_001e83fc() {
             *I32At(work, 0x50) < 0x22) {
             TalkDrawDetailRing(work, rend, 0, 0);          // 0x001E9048..0x001E93A4
         }
-    }
 
-    // 0x001E93A4..0x001E93B8
-    if (Camp_CheckTransfer(2, 5)) {
-        Battle_ClearTargets();
+        // 0x001E93A4..0x001E93B8 is only reached when both flags survive the
+        // 0x001E8F20/0x001E8F30 gate; the zero-flag path jumps to 0x001E93BC.
+        if (Camp_CheckTransfer(2, 5)) {
+            Battle_ClearTargets();
+        }
     }
 
     GpuModeSlotPop(0x24C);                                 // 0x001E93BC
