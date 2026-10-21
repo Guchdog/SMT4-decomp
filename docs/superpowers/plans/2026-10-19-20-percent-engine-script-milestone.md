@@ -50,7 +50,7 @@
 - `engine_func_0018844c`: `0x0018844c` (4,016 B)
 - `engine_func_00304164`: `0x00304164` (3,684 B)
 
-- [ ] **Step 1: Update progress test expectations (RED)**
+- [x] **Step 1: Update progress test expectations (RED)**
 
 ```python
 self.assertEqual(stats["decompiled_functions"], 343)
@@ -61,16 +61,16 @@ self.assertEqual(stats["total_explored_functions"], 382)
 self.assertEqual(stats["total_explored_bytes"], 613292)
 ```
 
-- [ ] **Step 2: Run the suite to verify it fails**
+- [x] **Step 2: Run the suite to verify it fails**
 
 Run: `python -m unittest discover -s tests -v`
 Expected: FAIL with `343 != 339`.
 
-- [ ] **Step 3: Disassemble and implement**
+- [x] **Step 3: Disassemble and implement**
 
 Use `python tools/split_asm.py --addr <address>`. Recover each routine's role from its literals/call graph (`engine_func_001aba94` references `map/mr01/mr01_%02d.bam` and `map/mr02/mr02_%02d.bam`). Keep the ledger names and document the recovered role. Preserve all observed calls, branches, and state stores.
 
-- [ ] **Step 4: Update the ledger and verify GREEN**
+- [x] **Step 4: Update the ledger and verify GREEN**
 
 Set `status=non_matching`, `src_file=src/engine/asd_runtime.cpp`. Run:
 
@@ -81,7 +81,7 @@ python -m unittest discover -s tests -v
 
 Expected: 343 / 365,052 B, 39 / 248,240 B, 382 / 613,292 B; all tests PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```powershell
 git commit -m "feat(engine): decompile four large engine runtime routines (+16,488 B, 19.54% explored)"
@@ -103,7 +103,7 @@ git commit -m "feat(engine): decompile four large engine runtime routines (+16,4
 - `script_vm_func_0039d8b8`: `0x0039d8b8` (3,792 B)
 - `script_vm_func_002c8c90`: `0x002c8c90` (3,656 B)
 
-- [ ] **Step 1: Update progress test expectations (RED)**
+- [x] **Step 1: Update progress test expectations (RED)**
 
 ```python
 self.assertEqual(stats["decompiled_functions"], 347)
@@ -114,19 +114,19 @@ self.assertEqual(stats["total_explored_functions"], 386)
 self.assertEqual(stats["total_explored_bytes"], 629052)
 ```
 
-- [ ] **Step 2: Run the suite to verify it fails**
+- [x] **Step 2: Run the suite to verify it fails**
 
 Expected: FAIL with `347 != 343`.
 
-- [ ] **Step 3: Disassemble and implement**
+- [x] **Step 3: Disassemble and implement**
 
 Recover each routine's role from its opcode tables/literals. Preserve opcode/state dispatch, flag-bank accesses, and task/process ownership ordering. Keep the ledger names and document the recovered role.
 
-- [ ] **Step 4: Update the ledger and verify GREEN**
+- [x] **Step 4: Update the ledger and verify GREEN**
 
 Set `status=non_matching`, `src_file=src/script/script_vm_extras.cpp`; expected 347 / 380,812 B, 386 / 629,052 B (20.0386%); all tests PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```powershell
 git commit -m "feat(script): decompile four large script VM routines (+15,760 B, 20.0% milestone reached at 20.0386%)"
