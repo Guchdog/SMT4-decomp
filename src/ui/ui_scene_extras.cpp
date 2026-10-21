@@ -12,24 +12,28 @@ TalkOverlayFlags g_TalkOverlayFlags{};                 // 0x0049FB1C (BSS)
 EffMenuScene g_EffMenuScene{};                         // 0x004D8F40 (BSS)
 EffMenuScroll g_EffMenuScroll{};                       // 0x004D9290 (BSS)
 EffMenuAnimConfig g_EffMenuAnimConfig{};               // 0x004D92B4 (BSS)
-// 0x0044FCA8 (.data image): only +0x10/+0x14 are non-zero.
+// 0x0044FCA8 (.data image): +0x04=0x00A8, +0x08=0x0050,
+// +0x10=0x00000014, +0x14=0x0044F9A8, +0x18=0x00000008.
 AsdUiObject g_EffMenuObjectA = {
-    {},                                                 // pad_00
+    {0x00, 0x00, 0x00, 0x00, 0xA8, 0x00, 0x00, 0x00,
+     0x50, 0x00, 0x00, 0x00},                           // pad_00: +0x04/+0x08
     0,                                                  // field_0c
     0x14u,                                              // flags_10 (0x0044FCA8+0x10)
     reinterpret_cast<u32*>(0x0044F9A8u),                // table_14 (0x0044FCA8+0x14)
-    {},                                                 // pad_18
+    {0x08, 0x00, 0x00, 0x00},                           // pad_18: +0x18=0x08
     nullptr,                                            // user_1c
     {},                                                 // pad_20
     nullptr,                                            // child_34
 };
-// 0x0044F970 (.data image): table_14 differs, flags_10 is zero.
+// 0x0044F970 (.data image): +0x04=0x00000168, +0x08=0x00000008,
+// flags_10 is zero, +0x14=0x00463EF0, +0x18=0x00000004.
 AsdUiObject g_EffMenuObjectB = {
-    {},                                                 // pad_00
+    {0x00, 0x00, 0x00, 0x00, 0x68, 0x01, 0x00, 0x00,
+     0x08, 0x00, 0x00, 0x00},                           // pad_00: +0x04/+0x08
     0,                                                  // field_0c
     0u,                                                 // flags_10
     reinterpret_cast<u32*>(0x00463EF0u),                // table_14
-    {},                                                 // pad_18
+    {0x04, 0x00, 0x00, 0x00},                           // pad_18: +0x18=0x04
     nullptr,                                            // user_1c
     {},                                                 // pad_20
     nullptr,                                            // child_34
@@ -69,12 +73,17 @@ inline EffMenuWork& EffMenuState() {
 inline f32* QuadTableBase() {
     return reinterpret_cast<f32*>(&engine::g_MapIfProjectionTables);
 }
-// 0x004B6FC0: fourth block of the projection area written by the detail-ring
-// loop (`sl = fp + 0xC60`, 0x001E9260).  sb = 0x004B5D30, fp = 0x004B6360,
-// r8 = 0x004B6990; the output block is sb + 0x1290.
+// 0x004B6FC0: the detail-ring output quad written by the loop at
+// 0x001E9260 (`sl = fp + 0xC60`, where fp = 0x004B6360).  This is a separate
+// object from the 0xC90-byte g_MapIfProjectionTables at 0x004B5D30, so model
+// it as its own block instead of pointer arithmetic past that object.
+struct DetailRingOutputBlock {
+    f32 points[4][3];                                   // four transformed points
+};
+static_assert(sizeof(DetailRingOutputBlock) == 0x30);
+DetailRingOutputBlock g_UiDetailRingOutput{};           // 0x004B6FC0
 inline f32* DetailRingOutputBase() {
-    constexpr u32 kOutputOffsetBytes = 0x1290;             // 0x004B6FC0-0x004B5D30
-    return QuadTableBase() + kOutputOffsetBytes / sizeof(f32);
+    return &g_UiDetailRingOutput.points[0][0];
 }
 } // namespace
 
@@ -2000,14 +2009,14 @@ void TalkDrawDetailRing(TalkWork* work, TalkRenderer* rend, s32 ex, s32 ey) {
     const UiColorEntry& p = g_UiColorTable[index & 0xFF];
 
     // 0x001E9174..0x001E91CC: four-endpoint lerp.
-    //   A (s6)  = p0.r + p0.b
-    //   B (s2)  = p0.g + p0.a
+    //   A (s6)  = p0.r + 0 * p0.b = p0.r   (s4 = 0, 0x001E9190)
+    //   B (s2)  = p0.g + 0 * p0.a = p0.g   (s5 = 0, 0x001E91A0)
     //   C (s0)  = p.r  + frac * p.b
     //   D (s1)  = p.g  + frac * p.a
     //   E (s9)  = p0.r   (the +0.0 lerp leaves it unchanged)
     //   F (s7)  = p0.g
-    const f32 a = p0.r + p0.b;
-    const f32 b = p0.g + p0.a;
+    const f32 a = p0.r;
+    const f32 b = p0.g;
     const f32 c = p.r + frac * p.b;
     const f32 d = p.g + frac * p.a;
     const f32 e = p0.r;
