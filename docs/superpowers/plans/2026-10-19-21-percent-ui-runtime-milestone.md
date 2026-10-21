@@ -50,7 +50,7 @@
 - `ui_func_00243e8c`: `0x00243e8c` (4,216 B)
 - `ui_func_002f150c`: `0x002f150c` (4,204 B)
 
-- [ ] **Step 1: Update progress test expectations (RED)**
+- [x] **Step 1: Update progress test expectations (RED)**
 
 ```python
 self.assertEqual(stats["decompiled_functions"], 351)
@@ -61,16 +61,16 @@ self.assertEqual(stats["total_explored_functions"], 390)
 self.assertEqual(stats["total_explored_bytes"], 646160)
 ```
 
-- [ ] **Step 2: Run the suite to verify it fails**
+- [x] **Step 2: Run the suite to verify it fails**
 
 Run: `python -m unittest discover -s tests -v`
 Expected: FAIL with `351 != 347`.
 
-- [ ] **Step 3: Disassemble and implement**
+- [x] **Step 3: Disassemble and implement**
 
 Use `python tools/split_asm.py --addr <address>`. Recover each routine's role from its literals/call graph/layout tables. Keep the ledger names and document the recovered role. Preserve all observed calls, branches, and state stores.
 
-- [ ] **Step 4: Update the ledger and verify GREEN**
+- [x] **Step 4: Update the ledger and verify GREEN**
 
 Set `status=non_matching`, `src_file=src/ui/ui_scene_extras.cpp`. Run:
 
@@ -81,7 +81,7 @@ python -m unittest discover -s tests -v
 
 Expected: 351 / 397,920 B, 39 / 248,240 B, 390 / 646,160 B; all tests PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```powershell
 git commit -m "feat(ui): decompile four UI scene runtime routines (+17,108 B, 20.58% explored)"
@@ -103,7 +103,7 @@ git commit -m "feat(ui): decompile four UI scene runtime routines (+17,108 B, 20
 - `ui_func_001e989c`: `0x001e989c` (3,924 B)
 - `ui_func_003eb4f4`: `0x003eb4f4` (3,724 B)
 
-- [ ] **Step 1: Update progress test expectations (RED)**
+- [x] **Step 1: Update progress test expectations (RED)**
 
 ```python
 self.assertEqual(stats["decompiled_functions"], 355)
@@ -114,19 +114,19 @@ self.assertEqual(stats["total_explored_functions"], 394)
 self.assertEqual(stats["total_explored_bytes"], 661788)
 ```
 
-- [ ] **Step 2: Run the suite to verify it fails**
+- [x] **Step 2: Run the suite to verify it fails**
 
 Expected: FAIL with `355 != 351`.
 
-- [ ] **Step 3: Disassemble and implement**
+- [x] **Step 3: Disassemble and implement**
 
 Preserve sprite/list cursor state, layout table reads, draw-pass ordering, and task ownership. Keep the ledger names and document the recovered roles.
 
-- [ ] **Step 4: Update the ledger and verify GREEN**
+- [x] **Step 4: Update the ledger and verify GREEN**
 
 Set `status=non_matching`, `src_file=src/ui/ui_runtime2.cpp`; expected 355 / 413,548 B, 394 / 661,788 B (21.0820%); all tests PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```powershell
 git commit -m "feat(ui): decompile four UI sprite/list routines (+15,628 B, 21.0% milestone reached at 21.0820%)"
