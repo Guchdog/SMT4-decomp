@@ -371,3 +371,8 @@ u32 func_00142bf0(LcdRenderConfig* config, u32 screen);
 void camp_func_002831f0(u32 layout_opcode);
 
 } // namespace smt4::engine
+
+extern "C" {
+// 0x002AA938: writes sequential PICA200 register packet to command buffer.
+void func_002aa938(u32 reg, u32 count, const void* data = nullptr);
+}

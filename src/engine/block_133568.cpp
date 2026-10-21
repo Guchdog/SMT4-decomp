@@ -16,9 +16,6 @@ extern "C" {
     // 0x002AA908: retrieves texture/sampler object from global table by index.
     u32 func_002aa908(u32 index);
 
-    // 0x002AA938: writes sequential PICA200 register packet to command buffer.
-    void func_002aa938(u32 reg, u32 count, const void* data = nullptr);
-
     // 0x002AAA1C: writes chunked register array (e.g. uniform arrays) to command buffer.
     void func_002aaa1c(u32 reg, u32 count, const void* data);
 
@@ -46,7 +43,7 @@ constexpr u32 kGpuConst_0040b4f8[6] = {
 };
 
 // ---------------------------------------------------------------------------
-// .data state tables recovered from binary (sentinel 0xBD)
+// .data state tables recovered from binary (0x004652BC)
 // ---------------------------------------------------------------------------
 
 const u32 kGpuStateTable_004652bc[] = {
@@ -86,18 +83,13 @@ const u32 kGpuStateTable_0046534c[] = {
     0xB9u, 0xBAu, 0xBBu, 0xBCu, 0xBDu
 };
 
-// Pipeline state struct at 0x004652AC
-struct GpuPipelineState {
-    u32 words[2];               // +0x00..+0x04
-    GpuPassState* active_pass;  // +0x08
-    u32 prev_flag_424;          // +0x0C
-    u32 sentinel;               // +0x10 (0xFFFFFFFF)
-};
+// ---------------------------------------------------------------------------
+// .data runtime state (0x004652AC)
+// ---------------------------------------------------------------------------
 
 alignas(16) GpuPipelineState g_GpuPipelineState = {
     {0, 0},
     nullptr,
-    0,
     0xFFFFFFFFu
 };
 
@@ -191,11 +183,11 @@ void func_00133568(GpuContext* gpu, u32 dirty_flags)
         EmitCmd(static_cast<u32>(x1) | (static_cast<u32>(y1) << 16), 0x000F0067u);
     }
 
-    // 0x001336a4..0x001336b4: Fetch active pass pointer
-    GpuPassState* pass = g_GpuPipelineState.active_pass;
-    if (pass == nullptr) {
+    // 0x001336a4..0x001336b4: Fetch active pass pointer via double indirection
+    if (g_GpuPipelineState.active_pass == nullptr || *g_GpuPipelineState.active_pass == nullptr) {
         return;
     }
+    GpuPassState* pass = *g_GpuPipelineState.active_pass;
 
     // 0x001336b8..0x001337c0: Stage 2 - Texture combiner / TEV stage configuration
     if (dirty_flags & 0x0004u) {
@@ -212,13 +204,7 @@ void func_00133568(GpuContext* gpu, u32 dirty_flags)
 
     // 0x001337c0..0x001339b4: Stage 3 - Vertex shader float uniforms
     if ((dirty_flags & 0x0001u) && (gpu->flags & 0x100000u)) {
-        struct UniformDescriptor {
-            const void* data_00;
-            u32 count_04;
-            const void* data_08;
-            const void* matrix_base_10;
-        };
-        auto* desc = reinterpret_cast<const UniformDescriptor*>(pass->dword_414);
+        const auto* desc = reinterpret_cast<const UniformDescriptor*>(pass->dword_414);
         if (pass->byte_424 != 0) {
             EmitCmd(0u, 0x000F029Bu);
             if (desc != nullptr) {
@@ -227,7 +213,7 @@ void func_00133568(GpuContext* gpu, u32 dirty_flags)
             EmitCmd(1u, 0x000F028Fu);
             EmitCmd(0u, 0x000F02A5u);
             if (desc != nullptr) {
-                func_002aaa1c(0x2A6, desc->count_04, desc->data_08);
+                func_002aaa1c(0x2A6, desc->count_0c, desc->data_08);
             }
         } else {
             if (desc != nullptr && desc->count_04 > 0x200u) {
@@ -244,7 +230,7 @@ void func_00133568(GpuContext* gpu, u32 dirty_flags)
             EmitCmd(1u, 0x000F02BFu);
             EmitCmd(0u, 0x000F02D5u);
             if (desc != nullptr) {
-                func_002aaa1c(0x2D6, desc->count_04, desc->data_08);
+                func_002aaa1c(0x2D6, desc->count_0c, desc->data_08);
             }
         }
     }
@@ -296,42 +282,148 @@ void func_00133568(GpuContext* gpu, u32 dirty_flags)
         }
     }
 
-    // 0x00133b20..0x00134a1c: Stage 6 - Lighting and Materials
+    // 0x00133b20..0x00134a1c: Stage 6 - Fragment Lighting and Materials
     if ((dirty_flags & 0x0200u) && (gpu->flags & 0x00008042u)) {
+        GpuPassState** pass_slot = g_GpuPipelineState.active_pass;
+        if (pass_slot != nullptr) {
+            pass_slot[1] = pass;
+        }
         gpu->byte_81c = 1;
         u32 active_count = 0;
         u32 inactive_count = 0;
         u32 inactive_list[16] = {};
 
-        // Sort light sources
+        struct LightNode {
+            u32 light_idx;
+            LightNode* next;
+        };
+        LightNode node_storage[16];
+        LightNode* head = nullptr;
+        u32 max_dist = 0;
+
+        // Sort active light sources by distance in ascending order
         for (s32 i = 15; i >= 0; --i) {
             u32 slot_valid = *reinterpret_cast<const u32*>(reinterpret_cast<const u8*>(pass) + 0x358 + i * 12);
             if (slot_valid != 0xFFFFFFFFu) {
                 u8 light_type = *reinterpret_cast<const u8*>(reinterpret_cast<const u8*>(gpu) + 0x46D + i * 24);
-                if (light_type != 0) {
-                    ++active_count;
-                } else {
+                if (light_type == 0) {
                     inactive_list[inactive_count++] = static_cast<u32>(i);
+                } else {
+                    u32 light_val = *reinterpret_cast<const u32*>(reinterpret_cast<const u8*>(gpu) + 0x468 + i * 24);
+                    if (light_val == 0) {
+                        gpu->byte_81c = 0;
+                    } else {
+                        u32 d = gpu->dword_6a4[i];
+                        if (d > max_dist) {
+                            max_dist = d;
+                        }
+                    }
+                    LightNode* node = &node_storage[active_count++];
+                    node->light_idx = static_cast<u32>(i);
+                    node->next = nullptr;
+                    if (head == nullptr || gpu->dword_6a4[i] <= gpu->dword_6a4[head->light_idx]) {
+                        node->next = head;
+                        head = node;
+                    } else {
+                        LightNode* curr = head;
+                        while (curr->next != nullptr && gpu->dword_6a4[i] > gpu->dword_6a4[curr->next->light_idx]) {
+                            curr = curr->next;
+                        }
+                        node->next = curr->next;
+                        curr->next = node;
+                    }
                 }
             }
         }
 
-        if (gpu->byte_76c != 0 || (active_count + inactive_count <= 12)) {
-            // Check light configuration changes
-            if (pass->dword_8f4 != active_count || pass->dword_938 != inactive_count || (gpu->flags_04 & 0x200u)) {
-                pass->dword_8f4 = active_count;
-                pass->dword_938 = inactive_count;
+        if (gpu->byte_76c != 0 || (active_count + inactive_count > 12)) {
+            gpu->byte_81c = 0;
+        }
 
-                // Update lighting registers
-                func_002aa938(0x200, 0x27, pass->lighting_words);
-                EmitCmd(pass->dword_9dc, 0x000F02BBu);
-                EmitCmd(pass->dword_9e0, 0x000F02BCu);
-                if (pass->byte_424 != 0) {
-                    EmitCmd(pass->dword_9e4, 0x000F028Bu);
-                    EmitCmd(pass->dword_9e8, 0x000F028Cu);
+        if (active_count > 0 && head != nullptr) {
+            u32 base_dist = gpu->dword_6a4[head->light_idx] & ~0x0Fu;
+            gpu->dword_6e4 = base_dist;
+            if (gpu->byte_81c != 0) {
+                if (gpu->byte_19 == 0) {
+                    u32 r1 = base_dist;
+                    u32 r2 = gpu->dword_6a0;
+                    if (r2 < r1) r1 = r2;
+                    if (r2 > max_dist) max_dist = r2;
+                    if (max_dist - r1 >= 0x10000000u) {
+                        gpu->byte_81c = 0;
+                    }
                 }
-                gpu->dword_820 = active_count;
-                gpu->dword_824 = active_count + inactive_count;
+            }
+        }
+
+        bool config_changed = (pass->dword_8f4 != active_count ||
+                               pass->dword_938 != inactive_count ||
+                               (gpu->flags_04 & 0x200u));
+        if (!config_changed) {
+            LightNode* curr = head;
+            for (u32 idx = 0; idx < active_count && curr != nullptr; ++idx, curr = curr->next) {
+                u32 lidx = curr->light_idx;
+                if (lidx != *reinterpret_cast<const u32*>(reinterpret_cast<const u8*>(pass) + 0x7F0 + idx * 8)) {
+                    config_changed = true;
+                    break;
+                }
+            }
+        }
+
+        if (config_changed) {
+            pass->dword_8f4 = active_count;
+            pass->dword_938 = inactive_count;
+
+            LightNode* curr = head;
+            for (u32 idx = 0; idx < active_count && curr != nullptr; ++idx, curr = curr->next) {
+                u32 lidx = curr->light_idx;
+                *reinterpret_cast<u32*>(reinterpret_cast<u8*>(pass) + 0x7F0 + idx * 8) = lidx;
+                *reinterpret_cast<u32*>(reinterpret_cast<u8*>(pass) + 0x874 + idx * 4) = gpu->dword_6a4[lidx];
+                *reinterpret_cast<u32*>(reinterpret_cast<u8*>(pass) + 0x8B4 + idx * 4) =
+                    *reinterpret_cast<const u32*>(reinterpret_cast<const u8*>(gpu) + 0x464 + lidx * 24);
+                if (idx + 1 < active_count) {
+                    *reinterpret_cast<void**>(reinterpret_cast<u8*>(pass) + 0x7F4 + idx * 8) =
+                        reinterpret_cast<u8*>(pass) + 0x7F0 + (idx + 1) * 8;
+                } else {
+                    *reinterpret_cast<void**>(reinterpret_cast<u8*>(pass) + 0x7F4 + idx * 8) = nullptr;
+                }
+            }
+
+            for (u32 idx = 0; idx < inactive_count; ++idx) {
+                *reinterpret_cast<u32*>(reinterpret_cast<u8*>(pass) + 0x8F8 + idx * 4) = inactive_list[idx];
+            }
+
+            pass->dword_870 = reinterpret_cast<uintptr_t>(reinterpret_cast<u8*>(pass) + 0x7F0);
+
+            // Update lighting registers
+            func_002aa938(0x200, 0x27, pass->lighting_words);
+            EmitCmd(pass->dword_9dc, 0x000F02BBu);
+            EmitCmd(pass->dword_9e0, 0x000F02BCu);
+            if (pass->byte_424 != 0) {
+                EmitCmd(pass->dword_9e4, 0x000F028Bu);
+                EmitCmd(pass->dword_9e8, 0x000F028Cu);
+            }
+            gpu->dword_820 = active_count;
+            gpu->dword_824 = active_count + inactive_count;
+
+            u32 out_idx = 0;
+            curr = head;
+            while (curr != nullptr) {
+                gpu->dword_828[out_idx++] = curr->light_idx;
+                curr = curr->next;
+            }
+            for (u32 idx = 0; idx < inactive_count; ++idx) {
+                gpu->dword_828[out_idx++] = inactive_list[idx];
+            }
+        }
+
+        if (gpu->byte_81c != 0 && (gpu->flags & 0x000080C2u)) {
+            for (u32 r2 = gpu->dword_820; r2 < gpu->dword_824; ++r2) {
+                u32 ip = gpu->dword_828[r2];
+                EmitCmd(r2, 0x000F0232u);
+                EmitCmd(*reinterpret_cast<const u32*>(reinterpret_cast<const u8*>(gpu) + 0x398 + ip * 12), 0x000F0233u);
+                EmitCmd(*reinterpret_cast<const u32*>(reinterpret_cast<const u8*>(gpu) + 0x39C + ip * 12), 0x000F0234u);
+                EmitCmd(*reinterpret_cast<const u32*>(reinterpret_cast<const u8*>(gpu) + 0x3A0 + ip * 12), 0x000F0235u);
             }
         }
     }
@@ -390,25 +482,78 @@ void func_00133568(GpuContext* gpu, u32 dirty_flags)
         }
     }
 
-    // 0x00134c6c..0x00134fd0: Stage 10 - Alpha/Stencil/Depth uniforms
+    // 0x00134c6c..0x00134fd0: Stage 10 - Alpha/Stencil/Depth uniforms & Bit span scanner
     if (dirty_flags & 0x0010u) {
-        if (pass->mask_1b4[0] || pass->mask_1b4[1] || pass->mask_1b4[2] ||
-            pass->mask_348[0] || pass->mask_348[1] || pass->mask_348[2]) {
-            if (pass->dword_1c0 != 0 && (pass->mask_348[0] || pass->mask_348[1] || pass->mask_348[2])) {
-                EmitCmd(0x80000000u, 0x000F0290u);
-                func_002aaa1c(0x291, pass->count_344 * 4, reinterpret_cast<const void*>(pass->dword_1c0));
+        // Scanner 1: mask_348
+        if (pass->dword_1c0 != 0 &&
+            (pass->mask_348[0] || pass->mask_348[1] || pass->mask_348[2])) {
+            const u8* base_data = reinterpret_cast<const u8*>(pass->dword_1c0);
+            u32 span_start = 0;
+            u32 span_len = 0;
+            const void* span_ptr = nullptr;
+
+            for (u32 bit = 0; bit < pass->count_344; ++bit) {
+                u32 word_idx = bit >> 5;
+                u32 bit_idx = bit & 0x1Fu;
+                if (pass->mask_348[word_idx] & (1u << bit_idx)) {
+                    u32 reg = *reinterpret_cast<const u32*>(reinterpret_cast<const u8*>(pass) + 0x1C4 + bit * 4);
+                    if (span_len > 0 && reg == span_start + span_len) {
+                        ++span_len;
+                    } else {
+                        if (span_len > 0) {
+                            EmitCmd(0x80000000u | span_start, 0x000F0290u);
+                            func_002aaa1c(0x291, span_len * 4, span_ptr);
+                        }
+                        span_start = reg;
+                        span_len = 1;
+                        span_ptr = base_data + bit * 16;
+                    }
+                }
             }
-            if (pass->dword_2c != 0 && (pass->mask_1b4[0] || pass->mask_1b4[1] || pass->mask_1b4[2])) {
-                EmitCmd(0x80000000u, 0x000F02C0u);
-                func_002aaa1c(0x2C1, pass->count_1b0 * 4, reinterpret_cast<const void*>(pass->dword_2c));
+            if (span_len > 0) {
+                EmitCmd(0x80000000u | span_start, 0x000F0290u);
+                func_002aaa1c(0x291, span_len * 4, span_ptr);
             }
-            pass->mask_1b4[0] = 0;
-            pass->mask_1b4[1] = 0;
-            pass->mask_1b4[2] = 0;
-            pass->mask_348[0] = 0;
-            pass->mask_348[1] = 0;
-            pass->mask_348[2] = 0;
         }
+
+        // Scanner 2: mask_1b4
+        if (pass->dword_2c != 0 &&
+            (pass->mask_1b4[0] || pass->mask_1b4[1] || pass->mask_1b4[2])) {
+            const u8* base_data = reinterpret_cast<const u8*>(pass->dword_2c);
+            u32 span_start = 0;
+            u32 span_len = 0;
+            const void* span_ptr = nullptr;
+
+            for (u32 bit = 0; bit < pass->count_1b0; ++bit) {
+                u32 word_idx = bit >> 5;
+                u32 bit_idx = bit & 0x1Fu;
+                if (pass->mask_1b4[word_idx] & (1u << bit_idx)) {
+                    u32 reg = *reinterpret_cast<const u32*>(reinterpret_cast<const u8*>(pass) + 0x030 + bit * 4);
+                    if (span_len > 0 && reg == span_start + span_len) {
+                        ++span_len;
+                    } else {
+                        if (span_len > 0) {
+                            EmitCmd(0x80000000u | span_start, 0x000F02C0u);
+                            func_002aaa1c(0x2C1, span_len * 4, span_ptr);
+                        }
+                        span_start = reg;
+                        span_len = 1;
+                        span_ptr = base_data + bit * 16;
+                    }
+                }
+            }
+            if (span_len > 0) {
+                EmitCmd(0x80000000u | span_start, 0x000F02C0u);
+                func_002aaa1c(0x2C1, span_len * 4, span_ptr);
+            }
+        }
+
+        pass->mask_1b4[0] = 0;
+        pass->mask_1b4[1] = 0;
+        pass->mask_1b4[2] = 0;
+        pass->mask_348[0] = 0;
+        pass->mask_348[1] = 0;
+        pass->mask_348[2] = 0;
     }
 
     // 0x00134fd0..0x001351a8: Stage 11 - Fog, Gas and Depth scale
@@ -514,7 +659,8 @@ void func_00133568(GpuContext* gpu, u32 dirty_flags)
 
     // 0x0013565c..0x00136c4c: Stage 16 - Texture Units 0..3 & Samplers
     if ((dirty_flags & 0x0040u) && (pass->dword_590 & 1u) && (gpu->flags & 0x00004008u)) {
-        for (u32 unit = 0; unit < 4; ++unit) {
+        bool lut_updated = false;
+        for (u32 unit = 0; unit < 6; ++unit) {
             if ((pass->dword_a0c >> unit) & 1u) {
                 u32 bit_idx = kGpuConst_0040b4e0[unit];
                 if (!((pass->dword_7c0 >> bit_idx) & 1u)) {
@@ -525,67 +671,128 @@ void func_00133568(GpuContext* gpu, u32 dirty_flags)
                             u32 chan = kGpuConst_0040b4f8[unit];
                             EmitCmd(chan << 8, 0x000F01C5u);
 
-                            // Dynamic allocation callback if buffer not yet allocated
                             if (g_TextureAllocCallback != nullptr) {
                                 void* buf = g_TextureAllocCallback(0x10000u, 0x100u, 0u, 0x400u);
                                 (void)buf;
                             }
 
-                            // Upload sampler and coordinate transform registers
-                            func_002aaa1c(0x0B0, 0x80, reinterpret_cast<const void*>(pass->dword_df8));
+                            func_002aaa1c(0x1C8, 0x100, reinterpret_cast<const void*>(pass->dword_df8));
+                            lut_updated = true;
                         }
                     }
                 }
             }
         }
-        func_002aabb0(0x0C0, 0x2D);
+
+        if ((pass->dword_624 & 7u) && (gpu->flags & 0x00004010u)) {
+            u32 tex_idx = pass->dword_e64;
+            u32 tex_obj = func_002aa908(tex_idx);
+            if (tex_obj != 0) {
+                EmitCmd(0u, 0x000F00E6u);
+            }
+        }
+
+        if (((pass->dword_624 & 7u) == 0) && (gpu->flags & 0x02004000u)) {
+            u32 packed_luts[16] = {};
+            for (u32 r8 = 0; r8 < 3; ++r8) {
+                u32 tex_idx = pass->tex_cube_slots[r8];
+                u32 tex_obj = func_002aa908(tex_idx);
+                if (tex_obj != 0) {
+                    if (g_TextureAllocCallback != nullptr) {
+                        void* buf = g_TextureAllocCallback(0x10000u, 0x100u, 0u, 0x40u);
+                        (void)buf;
+                    }
+                    for (u32 r0 = 0; r0 < 8; ++r0) {
+                        packed_luts[r0] |= (r8 << (r8 * 8));
+                    }
+                }
+            }
+
+            if (!lut_updated) {
+                func_002aabb0(0x0C0, 0x2D);
+            }
+            EmitCmd(0u, 0x000F0123u);
+            func_002aaa1c(0x124, 0x10, packed_luts);
+            EmitCmd(0x100u, 0x000F0110u);
+
+            for (u32 r0 = 0; r0 < 3; ++r0) {
+                u32 tex_idx = pass->tex_cube_slots[r0];
+                *reinterpret_cast<u32*>(reinterpret_cast<u8*>(gpu) + 0x184 + r0 * 4) =
+                    *reinterpret_cast<const u32*>(reinterpret_cast<const u8*>(gpu) + 0x74 + tex_idx * 4);
+            }
+        } else if (!lut_updated) {
+            func_002aabb0(0x0C0, 0x2D);
+        }
     }
 
     // 0x00136c4c..0x00136fa4: Stage 17 - Primitive Geometry and Draw packet generation
     if (dirty_flags & 0x0800u) {
         if ((gpu->flags & 0x100u) || (pass->draw_mode_e38 != gpu->dword_644)) {
+            u32 packed_r0 = static_cast<u32>(gpu->byte_654) |
+                            (static_cast<u32>(gpu->byte_655) << 1) |
+                            (static_cast<u32>(gpu->byte_656) << 2) |
+                            (static_cast<u32>(gpu->byte_657) << 3);
+
             gpu->dword_644 = pass->draw_mode_e38;
 
-            // Emit index buffer configuration (registers 0x111, 0x110, 0x112)
+            // Emit index buffer configuration (registers 0x111, 0x110)
             EmitCmd(1u, 0x000F0111u);
             EmitCmd(1u, 0x000F0110u);
 
             u32 mode_delta = pass->draw_mode_e38 - 0x6000u - 0x30u;
             if (mode_delta == 0) {
                 // 0x00136dac: Mode 0x6030
-                u32 p = 0;
-                if (gpu->dword_688 == 1 || gpu->byte_64c != 0) {
-                    p = 1;
+                u32 flags = 0;
+                if (packed_r0 != 0) {
+                    if (gpu->dword_688 == 1 || gpu->byte_64c != 0 ||
+                        packed_r0 != 0x0Fu || gpu->byte_64d != 0) {
+                        flags = 1;
+                    }
+                    flags |= 2;
+                    if (gpu->byte_64b != 0) {
+                        flags |= 4;
+                        if (gpu->byte_658 != 0) {
+                            flags |= 8;
+                        }
+                    }
+                    if (gpu->byte_64a != 0) {
+                        flags |= 0x10;
+                        if (gpu->byte_65c != 0) {
+                            flags |= 0x20;
+                        }
+                    }
                 }
-                p |= 2u;
-                if (gpu->byte_64b != 0) {
-                    p |= 4u;
+
+                EmitCmd((flags & 1u) ? 0xFu : 0u, 0x000F0112u);
+                EmitCmd((flags & 2u) ? 0xFu : 0u, 0x000F0113u);
+
+                u32 val3 = 0;
+                if ((flags & 4u) && (flags & 0x0Au)) {
+                    val3 |= 2u;
                 }
-                if (gpu->byte_64a != 0 && gpu->byte_658 != 0) {
-                    p |= 8u;
+                if ((flags & 0x10u) && (flags & 0x22u)) {
+                    val3 |= 1u;
                 }
-                if (gpu->byte_64a != 0) {
-                    p |= 0x10u;
+                EmitCmd(val3, 0x000F0114u);
+
+                u32 val4 = 0;
+                if (flags & 8u) {
+                    val4 |= 2u;
                 }
-                if (gpu->byte_65c != 0) {
-                    p |= 0x20u;
-                }
-                EmitCmd((p & 1u) ? 0xFu : 0u, 0x000F0112u);
-                EmitCmd((p & 2u) ? 0xFu : 0u, 0x000F0112u);
-                EmitCmd((p & 4u) ? 2u : 0u, 0x000F0112u);
-                EmitCmd((p & 8u) ? 2u : 0u, 0x000F0123u);
+                val4 |= (flags & 0x20u) >> 5;
+                EmitCmd(val4, 0x000F0115u);
             } else if (mode_delta == 0x18u) {
                 // 0x00136f00: Mode 0x6048
+                EmitCmd(0xFu, 0x000F0113u);
                 EmitCmd(0xFu, 0x000F0112u);
-                EmitCmd(0xFu, 0x000F0112u);
-                EmitCmd(0u, 0x000F0112u);
-                EmitCmd(0u, 0x000F0123u);
+                EmitCmd(0u, 0x000F0114u);
+                EmitCmd(0u, 0x000F0115u);
             } else if (mode_delta == 0x21u) {
                 // 0x00136d20: Mode 0x6051
+                EmitCmd(0xFu, 0x000F0113u);
                 EmitCmd(0xFu, 0x000F0112u);
-                EmitCmd(0xFu, 0x000F0112u);
-                EmitCmd(3u, 0x000F0112u);
-                EmitCmd(0u, 0x000F0123u);
+                EmitCmd(3u, 0x000F0114u);
+                EmitCmd(0u, 0x000F0115u);
             }
         }
     }

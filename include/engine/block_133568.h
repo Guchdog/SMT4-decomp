@@ -75,7 +75,7 @@ struct GpuContext {
     s32 screen_width;       // +0x698
     s32 screen_height;      // +0x69C
     u32 dword_6a0;          // +0x6A0
-    u8  pad_6a4[0x040];     // +0x6A4
+    u32 dword_6a4[16];      // +0x6A4..+0x6E0 (light distance array)
     u32 dword_6e4;          // +0x6E4
     u8  pad_6e8[0x084];     // +0x6E8
     u8  byte_76c;           // +0x76C
@@ -84,6 +84,7 @@ struct GpuContext {
     u8  pad_81d[0x003];     // +0x81D
     u32 dword_820;          // +0x820
     u32 dword_824;          // +0x824
+    u32 dword_828[16];      // +0x828..+0x864 (light assignment indices)
 };
 
 static_assert(offsetof(GpuContext, flags) == 0x000);
@@ -126,11 +127,13 @@ static_assert(offsetof(GpuContext, dword_68c) == 0x68C);
 static_assert(offsetof(GpuContext, screen_width) == 0x698);
 static_assert(offsetof(GpuContext, screen_height) == 0x69C);
 static_assert(offsetof(GpuContext, dword_6a0) == 0x6A0);
+static_assert(offsetof(GpuContext, dword_6a4) == 0x6A4);
 static_assert(offsetof(GpuContext, dword_6e4) == 0x6E4);
 static_assert(offsetof(GpuContext, byte_76c) == 0x76C);
 static_assert(offsetof(GpuContext, byte_81c) == 0x81C);
 static_assert(offsetof(GpuContext, dword_820) == 0x820);
 static_assert(offsetof(GpuContext, dword_824) == 0x824);
+static_assert(offsetof(GpuContext, dword_828) == 0x828);
 
 // Active material / pass state pointed to through 0x004652AC+8
 struct GpuPassState {
@@ -238,6 +241,31 @@ static_assert(offsetof(GpuPassState, float_e4c) == 0xE4C);
 static_assert(offsetof(GpuPassState, dword_e64) == 0xE64);
 static_assert(offsetof(GpuPassState, byte_e74) == 0xE74);
 static_assert(offsetof(GpuPassState, tex_cube_slots) == 0xE78);
+
+// Uniform buffer descriptor consumed by Stage 3 (0x001337c0)
+struct UniformDescriptor {
+    const void* data_00;        // +0x00
+    u32         count_04;       // +0x04
+    const void* data_08;        // +0x08
+    u32         count_0c;       // +0x0C (accessed via pre-indexed ldr r2,[r0,#8]! writeback)
+    const void* matrix_base_10; // +0x10
+};
+static_assert(offsetof(UniformDescriptor, data_00) == 0x00);
+static_assert(offsetof(UniformDescriptor, count_04) == 0x04);
+static_assert(offsetof(UniformDescriptor, data_08) == 0x08);
+static_assert(offsetof(UniformDescriptor, count_0c) == 0x0C);
+static_assert(offsetof(UniformDescriptor, matrix_base_10) == 0x10);
+
+// Pipeline state at 0x004652AC
+struct GpuPipelineState {
+    u32 words[2];               // +0x00..+0x04
+    GpuPassState** active_pass; // +0x08 (double indirection: ldr r1, [r0, #8]; ldr r4, [r1])
+    u32 prev_flag_424;          // +0x0C (initialized to 0xFFFFFFFFu)
+};
+static_assert(sizeof(GpuPipelineState) == 0x10);
+static_assert(offsetof(GpuPipelineState, words) == 0x00);
+static_assert(offsetof(GpuPipelineState, active_pass) == 0x08);
+static_assert(offsetof(GpuPipelineState, prev_flag_424) == 0x0C);
 
 // 0x00133568: PICA200 pipeline state & render command sequencer
 void func_00133568(GpuContext* gpu, u32 dirty_flags);

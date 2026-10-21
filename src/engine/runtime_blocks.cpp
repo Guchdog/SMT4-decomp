@@ -190,7 +190,7 @@ void engine_func_002c5624(u32 value);
 
 // 0x00142BF0 helpers -------------------------------------------------------
 u32  func_00147994(u32 address);
-void func_002aa938(u32 reg, u32 count);
+// Note: func_002aa938 declared canonically in include/engine/runtime_blocks.h
 
 // 0x002831F0 helpers -------------------------------------------------------
 void* camp_func_002a0fac();
