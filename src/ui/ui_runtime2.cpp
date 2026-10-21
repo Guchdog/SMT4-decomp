@@ -1,5 +1,7 @@
 #include "ui/ui_runtime2.h"
 #include "ui/ui_runtime.h"
+#include "ui/tbb_table.h"
+#include "camp/unite_extras.h"
 #include "engine/asd_symbols.h"
 #include "engine/asd_render_ui.h"
 #include "engine/asd_scene.h"
@@ -42,8 +44,6 @@ extern "C" {
     s32   UiText_MeasureWidth(const char* text, s32 mode);                      // 0x002B7118
     s32   UiTouch_GetRegionTouchState(s16 handle);                              // 0x0029D8FC
     s16   UiTouch_RegisterRegion(u32 group, u32 node);                          // 0x002B88C4
-    void* Tbb_SubTable(u32 group, s32 index);                                   // 0x002C0EC4
-    void* Tbb_Payload(void* sub_table);                                         // 0x002C0E9C
 
     // 0x0029F10C: stores the text pointer/colour in the 0x0043DA28 work and
     // resets its 0x4CB..0x550 fields; a null text only clears the flag
@@ -241,8 +241,8 @@ void ui_func_00214964() {
     if (state - 2 < 9 &&
         state != 3 && state != 4 && state != 5 && state != 6 &&
         state != 7 && state != 8 && state != 9) {
-        void* sub_table = Tbb_SubTable(0x3D, 0);
-        const u8* payload = static_cast<const u8*>(Tbb_Payload(sub_table));
+        const Tbl1Header* sub_table = Tbb_GetGlobalSubTable(0x3D, 0);
+        const u8* payload = static_cast<const u8*>(Tbb_GetPayloadData(sub_table));
         const s32 index = work->index_049;
         title_text = reinterpret_cast<const char*>(payload + 0x14 + 84 * index);
     }
@@ -259,8 +259,9 @@ void ui_func_00214964() {
 
         if (work->active_34C[slot] == 0) {
             // 0x00214CD4: empty page.  No GPU ring is pushed on this path.
+            // The anchor is the page's own node (`add r1,sl,#0x51`, 0x00214CD4).
             const Npc2dLayoutNode* anchor =
-                UiLayout_GetNode(0x36, 0x51 + g_SaveLoadUIManager.selected);
+                UiLayout_GetNode(0x36, 0x51 + static_cast<u32>(slot));
             UiSprite_SetGlobalAlpha(scale);
             UiSprite_DrawPanel(2, 0x36,
                                (g_SaveLoadUIManager.selected == static_cast<u32>(slot)) ? 5 : 4,
@@ -268,8 +269,8 @@ void ui_func_00214964() {
 
             UiSprite_SetGlobalAlpha(1.0F);                              // 0x00214D1C
             const Npc2dLayoutNode* name_node = UiLayout_GetNode(0x36, 0x2F);
-            void* sub_table = Tbb_SubTable(0x3D, 0);
-            const u8* payload = static_cast<const u8*>(Tbb_Payload(sub_table));
+            const Tbl1Header* sub_table = Tbb_GetGlobalSubTable(0x3D, 0);
+            const u8* payload = static_cast<const u8*>(Tbb_GetPayloadData(sub_table));
             const char* name =
                 reinterpret_cast<const char*>(payload + 84 * static_cast<s32>(work->index_049));
             UiFont_DrawText(4, 0x787878FF, name,
@@ -279,14 +280,17 @@ void ui_func_00214964() {
             continue;                                                   // 0x00214DA8
         }
 
-        // 0x00214A54..0x00214AA8: viewport + 0x24C ring push.
-        UiGpu_SetViewportParams(1, 0);
-        RingPush(0x24C, 1);
+        // 0x00214A54..0x00214AA8: viewport + 0x24C ring push.  The value
+        // pushed is the 0x002C5F7C return value (r0 survives to `str r0,[r3,#8]`
+        // at 0x00214A88), not the literal 1.
+        const u32 viewport = static_cast<u32>(reinterpret_cast<std::uintptr_t>(
+            UiGpu_SetViewportParams(1, 0)));
+        RingPush(0x24C, viewport);
         UiSprite_SetGlobalAlpha(1.0F);
         UiSprite_ResetBlend();
 
         const Npc2dLayoutNode* anchor =
-            UiLayout_GetNode(0x36, 0x51 + g_SaveLoadUIManager.selected);
+            UiLayout_GetNode(0x36, 0x51 + static_cast<u32>(slot));
         UiSprite_SetGlobalAlpha(scale);
 
         // 0x00214AF4..0x00214B04: panel 3 for the selected page, 2 otherwise.
@@ -355,7 +359,9 @@ void ui_func_00214964() {
             const Npc2dLayoutNode* clock_node = UiLayout_GetNode(0x36, 0x23);
             const u32 timer = page.timer_50;
             const u32 hours = timer / 3600;
-            const u32 rem_hour = timer - 3600 * (timer / 60);
+            // 0x00214F18..0x00214F20: `mul hours,-225; add timer,hours<<4`
+            // => timer - 3600 * hours (both smlal uses 0x91A2B3C5 = 1/3600).
+            const u32 rem_hour = timer - 3600 * hours;
             const u32 minutes = rem_hour / 60;
             const u32 seconds = rem_hour - 60 * minutes;
 
@@ -478,8 +484,9 @@ void ui_func_00214964() {
 
     // 0x002155A4..0x002156A8: faded 3D pass plus the 0xD3-coloured backdrop.
     if (work->flag_055 != 0 && work->flag_072 == 0) {
-        UiGpu_SetViewportParams(1, 0);
-        RingPush(0x24C, 1);
+        const u32 viewport = static_cast<u32>(reinterpret_cast<std::uintptr_t>(
+            UiGpu_SetViewportParams(1, 0)));
+        RingPush(0x24C, viewport);                                      // 0x002155D4
         UiSprite_SetGlobalAlpha(work->field_374);
 
         const f32 quad[4] = {0.0F, 0.0F, 0.0F, 1.0F};
@@ -491,8 +498,9 @@ void ui_func_00214964() {
         UiSprite_ResetBlend();
 
         if (work->flag_055 != 0 && work->flag_072 == 0) {
-            UiGpu_SetViewportParams(1, 0);
-            RingPush(0x24C, 1);
+            const u32 viewport_b = static_cast<u32>(reinterpret_cast<std::uintptr_t>(
+                UiGpu_SetViewportParams(1, 0)));
+            RingPush(0x24C, viewport_b);                                // 0x002156F0
             UiSprite_SetGlobalAlpha(1.0F);
             UiSprite_ResetBlend();
 
@@ -620,8 +628,8 @@ void ui_func_001f1fc8(s32 x, s32 y, s32 selected, s32 column, s16 touch_handle) 
         // descriptor (`ldrd` + `lsl/ orr / lsr #0x11`).
         const u64 descriptor = static_cast<u64>(low) | (static_cast<u64>(high) << 32);
         const u32 entry_id = static_cast<u32>(descriptor >> 34);
-        FusionCandidateEntry* entry =
-            static_cast<FusionCandidateEntry*>(Battle_GetTalkEntry(entry_id));
+        camp::UniteBibleRow* entry =
+            static_cast<camp::UniteBibleRow*>(Battle_GetTalkEntry(entry_id));
 
         // 0x001F223C..0x001F2288: two text panels 0x65/0x66.
         UiSprite_DrawNode(2, 0x24, 0x65, x + row_node->x, y + row_node->y, 0xC9);
@@ -715,8 +723,8 @@ void ui_func_001f1fc8(s32 x, s32 y, s32 selected, s32 column, s16 touch_handle) 
     const u32 high = *reinterpret_cast<const u32*>(record + 4);
     const u64 descriptor = static_cast<u64>(low) | (static_cast<u64>(high) << 32);
     const u32 entry_id = static_cast<u32>(descriptor >> 34);
-    FusionCandidateEntry* entry =
-        static_cast<FusionCandidateEntry*>(Battle_GetTalkEntry(entry_id));
+    camp::UniteBibleRow* entry =
+        static_cast<camp::UniteBibleRow*>(Battle_GetTalkEntry(entry_id));
 
     const Npc2dLayoutNode* detail_node = UiLayout_GetNode(0x24, selected + 0x87);
     UiSprite_SetGlobalAlpha(*reinterpret_cast<const f32*>(work_bytes + 0x44)); // 0x001F279C
@@ -959,8 +967,8 @@ void ui_func_001e989c(void*) {
         ButtonHelp_Init();
         ScriptVm_SetMessageId(0x9F);                                    // 0x001E9AA8
 
-        void* sub_table = Tbb_SubTable(0x3A, 0);
-        const u8* payload = static_cast<const u8*>(Tbb_Payload(sub_table));
+        const Tbl1Header* sub_table = Tbb_GetGlobalSubTable(0x3A, 0);
+        const u8* payload = static_cast<const u8*>(Tbb_GetPayloadData(sub_table));
         const u32 index = work->field_08;
         Camp_SetSlotMessage(
             reinterpret_cast<const char*>(payload + 0x16 + 0x56 * index),
@@ -1161,8 +1169,8 @@ void ui_func_001e989c(void*) {
 
         // 0x001EA12C..0x001EA190: state text for the current cursor.
         {
-            void* sub_table = Tbb_SubTable(0x3A, 0);
-            const u8* payload = static_cast<const u8*>(Tbb_Payload(sub_table));
+            const Tbl1Header* sub_table = Tbb_GetGlobalSubTable(0x3A, 0);
+            const u8* payload = static_cast<const u8*>(Tbb_GetPayloadData(sub_table));
             const u32 index = work->field_08;
             Camp_SetSlotMessage(
                 reinterpret_cast<const char*>(payload + 0x16 + 0x56 * index),
@@ -1184,6 +1192,9 @@ void ui_func_001e989c(void*) {
 
         switch (work->field_08) {
         case 1: {
+            // 0x001EA1C8: `strbeq r7,[r5,#0x61]` (r7 = 1) precedes the blink
+            // loop; cases 1/2 fade in, case 3 does not.
+            work->flag_61 = 1;
             // 0x001EA1F4..0x001EA234: four cursor-blink steps, then state 7.
             for (s32 i = 0; i < 4; ++i) {
                 Camp_AdvanceCursorBlink();
@@ -1210,6 +1221,8 @@ void ui_func_001e989c(void*) {
             break;
         }
         case 2: {
+            // 0x001EA1E0: same `strbeq r7,[r5,#0x61]` as case 1.
+            work->flag_61 = 1;
             // 0x001EA294..0x001EA2D4: same as cursor 1 but state 9.
             for (s32 i = 0; i < 4; ++i) {
                 Camp_AdvanceCursorBlink();
@@ -1236,12 +1249,12 @@ void ui_func_001e989c(void*) {
         default:
             break;
         }
+        // State 5 exits through 0x001E9A08 (`str r0,[r5,#0x9c]`) or directly
+        // to 0x001EA62C; it must not fall into the state-6 handler.
+        break;
     }
     case 6: {
-        // 0x001EA48C: wait for the script, then state 12.
-        if (Script_IsReadyToAdvance() == 0) {
-            break;
-        }
+        // 0x001EA48C: `mov r0,#0xc; b 0x1e9a08` — no wait in this state.
         work->state_9C = 12;
         break;
     }
@@ -1302,9 +1315,9 @@ void ui_func_001e989c(void*) {
             break;
         }
         ScriptVm_ResetTitle();
-        AsdTask_DestroyPair(
-            *reinterpret_cast<void**>(
-                reinterpret_cast<std::uintptr_t>(work->calc_task)), 0);
+        // 0x001EA4AC..0x001EA4B8: r5 = 0x0044E300, `ldr r0,[r5]` (work) then
+        // `ldr r0,[r0]` (work->calc_task) — exactly one dereference.
+        AsdTask_DestroyPair(work->calc_task, 0);
         UiScene_SetupField(3);                                          // 0x001EA4BC
 
         switch (work->field_08) {

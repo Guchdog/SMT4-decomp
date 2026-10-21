@@ -25,22 +25,15 @@ namespace smt4::ui {
 // ---------------------------------------------------------------------------
 
 /**
- * One 0x94-byte row returned by Battle_GetTalkEntry (0x002B9364).  0x001F1FC8
- * reads the id at +0x00 (`ldrh r0,[fp]`, 0x001F2BC8 / 0x001F2C3C / 0x001F2D18)
- * and the small counter at +0x03 (`ldrb ip,[ip,#3]`, 0x001F2610).  The
- * descriptor words are not part of this row: they live at
- * `CampFusionView::candidate_pairs_9438` (+0x9438, four 8-byte pairs).  The
- * rest of the 0x94-byte stride is kept as padding.
+ * The 0x94-byte row returned by Battle_GetTalkEntry (0x002B9364) is the
+ * canonical `camp::UniteBibleRow` (`include/camp/unite_extras.h`, +0x00 id and
+ * +0x03 `field_03`).  0x001F1FC8 reads exactly those two fields
+ * (`ldrh r0,[fp]`, 0x001F2BC8 / 0x001F2C3C / 0x001F2D18; `ldrb ip,[ip,#3]`,
+ * 0x001F2610), so this header reuses that type instead of declaring a second
+ * owner for the same stride.  The descriptor words are not part of the row:
+ * they live at `CampFusionView::candidate_pairs_9438` (+0x9438, four 8-byte
+ * pairs).
  */
-struct FusionCandidateEntry {
-    u16 id;                         // +0x00: `ldrh r0,[fp]` (0x001F2BC8)
-    u8  pad_02;
-    u8  field_03;                   // +0x03: `ldrb ip,[ip,#3]` (0x001F2610)
-    u8  pad_04[0x90];
-};
-static_assert(offsetof(FusionCandidateEntry, id) == 0x00);
-static_assert(offsetof(FusionCandidateEntry, field_03) == 0x03);
-static_assert(sizeof(FusionCandidateEntry) == 0x94);
 
 /**
  * 0x001F1FC8: draws the three "FUSION POSSIBLE" rows (group 0x24, nodes
@@ -88,7 +81,7 @@ void ui_func_00214964();
  *   3 -> 0x001E9B90 (wait for both .bam loads and the .bccam handle)
  *   4 -> 0x001E9BC0 (build the 3D title camera, bind projection)
  *   5 -> 0x001E9D08 (cursor / blend / four touch regions / fade handoff)
- *   6 -> 0x001EA48C (wait 0x00289924 then state 12)
+ *   6 -> 0x001EA48C (`mov r0,#0xc; b 0x1e9a08` — state 12 directly)
  *   7 -> 0x001EA32C (0x0030A9A4 hand-off, state 8)
  *   8 -> 0x001EA358 (wait, then reset or state 12)
  *   9 -> 0x001EA398 (0x002F4CA0, state 10)
