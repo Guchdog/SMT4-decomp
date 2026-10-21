@@ -4,20 +4,20 @@
 
 | Category | Functions | Code Size (Bytes) | Progress % | Status Description |
 |----------|----------:|------------------:|-----------:|--------------------|
-| **Decompiled (Reconstructed)** | 355 | 413,548 B | **13.1741%** | Substantial C++ logic reverse-engineered |
+| **Decompiled (Reconstructed)** | 358 | 435,808 B | **13.8832%** | Substantial C++ logic reverse-engineered |
 | **Scaffolded (Stubs & Interfaces)** | 39 | 248,240 B | 7.9080% | Headers, structs, and function skeletons |
 | **Matching (Byte-for-Byte)** | 0 | 0 B | 0.0000% | 100% compiled machine code match |
-| **Total Architecture Explored** | 394 | 661,788 B | **21.0820%** | Total identified & mapped into `src/` |
-| **Remaining (Todo)** | 9,955 | 2,477,320 B | 78.9180% | Unmapped functions in `.text` |
+| **Total Architecture Explored** | 397 | 684,048 B | **21.7912%** | Total identified & mapped into `src/` |
+| **Remaining (Todo)** | 9,952 | 2,455,060 B | 78.2088% | Unmapped functions in `.text` |
 | **Total `.text` Segment** | 10,349 | 3,139,108 B | 100.0000% | `0x00100000`–`0x003FE624` |
 
 ## Subsystem Breakdown
 
 | Subsystem | Decompiled Funcs | Decompiled Bytes | Stub Funcs | Stub Bytes | Total Funcs | Total Bytes | Decompiled % | Explored % |
 |-----------|-----------------:|-----------------:|-----------:|-----------:|------------:|------------:|-------------:|-----------:|
-| `engine` | 125 | 84,304 B | 2 | 22,760 B | 2,363 | 726,520 B | 11.60% | 14.74% |
+| `engine` | 128 | 106,564 B | 2 | 22,760 B | 2,366 | 748,780 B | 14.23% | 17.27% |
 | `ui` | 155 | 150,392 B | 14 | 96,248 B | 1,238 | 682,348 B | 22.04% | 36.15% |
-| `unknown` | 3 | 132 B | 0 | 0 B | 3,823 | 654,480 B | 0.02% | 0.02% |
+| `unknown` | 3 | 132 B | 0 | 0 B | 3,820 | 632,220 B | 0.02% | 0.02% |
 | `script_vm` | 16 | 120,004 B | 3 | 22,836 B | 1,201 | 446,288 B | 26.89% | 32.01% |
 | `camp` | 20 | 25,980 B | 6 | 70,276 B | 918 | 326,396 B | 7.96% | 29.49% |
 | `battle` | 21 | 25,024 B | 11 | 32,664 B | 575 | 236,932 B | 10.56% | 24.35% |
@@ -83,6 +83,9 @@
 | `0x0014515c` | 688 | `engine` | `non_matching` | `AsdModel_func_0014515c` | [`src/engine/asd_model.cpp`](src/engine/asd_model.cpp) |
 | `0x0014ec68` | 792 | `engine` | `non_matching` | `AsdModel_func_0014ec68` | [`src/engine/asd_model.cpp`](src/engine/asd_model.cpp) |
 | `0x0015c728` | 2220 | `engine` | `non_matching` | `aocFileLoad_func_0015c728` | [`src/engine/aoc.cpp`](src/engine/aoc.cpp) |
+| `0x00170d70` | 7456 | `engine` | `non_matching` | `func_00170d70` | [`src/engine/tex_convert.cpp`](src/engine/tex_convert.cpp) |
+| `0x00177370` | 7456 | `engine` | `non_matching` | `func_00177370` | [`src/engine/tex_convert.cpp`](src/engine/tex_convert.cpp) |
+| `0x0017d970` | 7348 | `engine` | `non_matching` | `func_0017d970` | [`src/engine/tex_convert.cpp`](src/engine/tex_convert.cpp) |
 | `0x0017fb6c` | 584 | `nn_sdk` | `non_matching` | `MobiclipCtrl_func_0017fb6c` | [`src/nn/mobiclip.cpp`](src/nn/mobiclip.cpp) |
 | `0x0017fe9c` | 27308 | `camp` | `stub` | `Camp_MainProc` | [`src/camp/camp_main.cpp`](src/camp/camp_main.cpp) |
 | `0x00187014` | 5176 | `ui` | `non_matching` | `StatusDown_DrawPartyAndSubViews` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |

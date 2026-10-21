@@ -1655,7 +1655,7 @@ address,size,status,category,name,src_file
 0x001700cc,232,todo,unknown,func_001700cc,
 0x001701b4,492,todo,unknown,func_001701b4,
 0x001703a0,2512,todo,unknown,func_001703a0,
-0x00170d70,7456,todo,unknown,func_00170d70,
+0x00170d70,7456,non_matching,engine,func_00170d70,src/engine/tex_convert.cpp
 0x00172a90,576,todo,unknown,func_00172a90,
 0x00172cd0,116,todo,unknown,func_00172cd0,
 0x00172d44,352,todo,unknown,func_00172d44,
@@ -1710,7 +1710,7 @@ address,size,status,category,name,src_file
 0x001766cc,232,todo,unknown,func_001766cc,
 0x001767b4,492,todo,unknown,func_001767b4,
 0x001769a0,2512,todo,unknown,func_001769a0,
-0x00177370,7456,todo,unknown,func_00177370,
+0x00177370,7456,non_matching,engine,func_00177370,src/engine/tex_convert.cpp
 0x00179090,576,todo,unknown,func_00179090,
 0x001792d0,116,todo,unknown,func_001792d0,
 0x00179344,352,todo,unknown,func_00179344,
@@ -1765,7 +1765,7 @@ address,size,status,category,name,src_file
 0x0017cccc,232,todo,unknown,func_0017cccc,
 0x0017cdb4,492,todo,unknown,func_0017cdb4,
 0x0017cfa0,2512,todo,unknown,func_0017cfa0,
-0x0017d970,7348,todo,unknown,func_0017d970,
+0x0017d970,7348,non_matching,engine,func_0017d970,src/engine/tex_convert.cpp
 0x0017f624,376,todo,ui,ui_func_0017f624,
 0x0017f79c,344,todo,unknown,func_0017f79c,
 0x0017f8f4,28,todo,nn_sdk,nn_sdk_func_0017f8f4,
