@@ -54,7 +54,7 @@
 - `ui_func_002ed5d0`: `0x002ed5d0` (3,584 B)
 - `engine_func_00236958`: `0x00236958` (3,552 B)
 
-- [ ] **Step 1: Update progress test expectations (RED)**
+- [x] **Step 1: Update progress test expectations (RED)**
 
 ```python
 self.assertEqual(stats["decompiled_functions"], 371)
@@ -65,16 +65,16 @@ self.assertEqual(stats["total_explored_functions"], 410)
 self.assertEqual(stats["total_explored_bytes"], 736776)
 ```
 
-- [ ] **Step 2: Run the suite to verify it fails**
+- [x] **Step 2: Run the suite to verify it fails**
 
 Run: `python -m unittest discover -s tests -v`
 Expected: FAIL with `371 != 367`.
 
-- [ ] **Step 3: Disassemble and implement**
+- [x] **Step 3: Disassemble and implement**
 
 Use `python tools/split_asm.py --addr <address>`. Recover roles from literals/call graphs. Put script_vm rows in `script_blocks.cpp`, UI rows in `ui_blocks.cpp`, engine row in `engine_blocks.cpp`. Preserve all calls/branches/stores.
 
-- [ ] **Step 4: Update the ledger and verify GREEN**
+- [x] **Step 4: Update the ledger and verify GREEN**
 
 Set statuses `non_matching` with the matching source files. Run:
 
@@ -85,7 +85,7 @@ python -m unittest discover -s tests -v
 
 Expected: 371 / 488,536 B, 39 / 248,240 B, 410 / 736,776 B; all tests PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```powershell
 git commit -m "feat(script,ui,engine): decompile four runtime blocks A (+14,360 B, 23.47% explored)"
@@ -109,7 +109,7 @@ git commit -m "feat(script,ui,engine): decompile four runtime blocks A (+14,360 
 - `script_vm_func_0027b8cc`: `0x0027b8cc` (3,444 B)
 - `battle_func_002553ec`: `0x002553ec` (3,124 B)
 
-- [ ] **Step 1: Update progress test expectations (RED)**
+- [x] **Step 1: Update progress test expectations (RED)**
 
 ```python
 self.assertEqual(stats["decompiled_functions"], 376)
@@ -120,19 +120,19 @@ self.assertEqual(stats["total_explored_functions"], 415)
 self.assertEqual(stats["total_explored_bytes"], 753760)
 ```
 
-- [ ] **Step 2: Run the suite to verify it fails**
+- [x] **Step 2: Run the suite to verify it fails**
 
 Expected: FAIL with `376 != 371`.
 
-- [ ] **Step 3: Disassemble and implement**
+- [x] **Step 3: Disassemble and implement**
 
 Preserve full bodies; route script rows to `script_blocks.cpp`, UI rows to `ui_blocks.cpp`, engine/battle rows to `engine_blocks.cpp`.
 
-- [ ] **Step 4: Update the ledger and verify GREEN**
+- [x] **Step 4: Update the ledger and verify GREEN**
 
 Set statuses `non_matching`; expected 376 / 505,520 B, 415 / 753,760 B (24.0123%); all tests PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```powershell
 git commit -m "feat(script,ui,engine,battle): decompile five runtime blocks B (+16,984 B, 24.0% milestone reached at 24.0123%)"
