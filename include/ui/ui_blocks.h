@@ -70,6 +70,7 @@ static_assert(offsetof(DebugValueEntry, min_value) == 0x210);
 static_assert(offsetof(DebugValueEntry, max_value) == 0x214);
 static_assert(offsetof(DebugValueEntry, user) == 0x218);
 static_assert(offsetof(DebugValueEntry, callback) == 0x21C);
+static_assert(sizeof(DebugValueEntry) == 0x220);
 
 /**
  * List cursor object at HUD+0x0C, updated by camp_func_001FF3C4.

@@ -139,9 +139,9 @@ void EnsureRenderNodes() {
     EnsureNode(&g_RenderInit_471f5c, &g_RenderNode_471fa8,
                reinterpret_cast<void*>(0x00421C34u), 0, 0);
     EnsureNode(&g_RenderInit_471f58, &g_RenderNode_471fb0,
-               reinterpret_cast<void*>(0x00421328u), 1, 1);
-    EnsureNode(&g_RenderInit_471f54, &g_RenderNode_471fb8,
                reinterpret_cast<void*>(0x0042134Cu), 1, 1);
+    EnsureNode(&g_RenderInit_471f54, &g_RenderNode_471fb8,
+               reinterpret_cast<void*>(0x00421328u), 1, 1);
     EnsureNode(&g_RenderInit_471f50, &g_RenderNode_471fc0,
                reinterpret_cast<void*>(0x00421268u), 1, 1);
     EnsureNode(&g_RenderInit_471f4c, &g_RenderNode_471fc8,
@@ -167,15 +167,15 @@ void* SelectRenderNode(u32 id) {
     case 0:  return &g_RenderNode_471f78;
     case 1:  return &g_RenderNode_471f80;
     case 2:  return &g_RenderNode_471f88;
-    case 3:  return &g_RenderNode_471f90;
-    case 4:  return &g_RenderNode_471f98;
-    case 5:  return &g_RenderNode_471fa0;
-    case 6:  return &g_RenderNode_471fa8;
-    case 7:  return &g_RenderNode_471fb0;
-    case 8:  return &g_RenderNode_471fb8;
+    case 3:  return &g_RenderNode_471fa0;
+    case 4:  return &g_RenderNode_4e9db8;
+    case 5:  return &g_RenderNode_471f90;
+    case 6:  return &g_RenderNode_471f98;
+    case 7:  return &g_RenderNode_471fa8;
+    case 8:  return &g_RenderNode_471fb0;
     case 9:  return &g_RenderNode_471fc0;
-    case 10: return &g_RenderNode_471fc8;
-    case 11: return &g_RenderNode_4e9db8;
+    case 10: return &g_RenderNode_471fb8;
+    case 11: return &g_RenderNode_471fc8;
     default: return nullptr;
     }
 }

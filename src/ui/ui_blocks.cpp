@@ -1,7 +1,6 @@
 #include "ui/ui_blocks.h"
 #include "engine/asd_symbols.h"
-
-#include <bit>
+#include "engine/asd_text.h"
 
 namespace smt4::ui {
 
@@ -16,7 +15,7 @@ const DebugPalette g_DebugPalette[5] = {
     {{0x202020A8u, 0x80808080u, 0x80808060u, 0x101010C0u}},
     {{0x400000A8u, 0xC0000080u, 0x54000060u, 0x300000C0u}},
     {{0x004000A8u, 0x00C00080u, 0x00E30040u, 0x003000C0u}},
-    {{0x000040A8u, 0x0000C080u, 0x00E34A00u, 0x000030C0u}},
+    {{0x000040A8u, 0x0000C080u, 0x00E34A60u, 0x000030C0u}},
 };
 
 // 0x0043DC2C: eight icon ids consumed by the state-3/4 icon rows.
@@ -31,7 +30,7 @@ extern "C" {
     extern u8* g_AsdGpuState;                   // 0x0044EA00 (ui_runtime.cpp)
 
     void* AsdRef_Get(void* handle);             // 0x002C0AC8
-    void  ui_func_002c3ba8(void* gpu_state);    // 0x002C3BA8
+    void  UiGpu_BeginPass(void* gpu_state);     // 0x002C3BA8
     void  Ui_DrawModel(void* gpu_state, void* model); // 0x002C1D3C
     void  UiGpu_EndPass1(void* gpu_state);      // 0x002C1B64
     void  UiGpu_EndPass2(void* gpu_state);      // 0x002C1ABC
@@ -61,8 +60,9 @@ extern "C" {
 
     // 0x001FF3C4 (1,104 B): list cursor update, returns 0..4.
     s32   camp_func_001ff3c4(void* list_state);
-    // 0x00254FF0 (76 B): list-box item lookup.
-    DebugValueEntry* AsdListBox_FindItem(void* handle, u32 id);
+    // 0x00254FF0 (76 B): list-box item lookup.  The return type matches the
+    // declaration in src/engine/asd_text.cpp.
+    AsdListBoxItem* AsdListBox_FindItem(void* handle, u32 id);
 
     // 0x0026E910 (108 B): clamped scroll position.
     s32   ui_func_0026e910(s32 a, s32 b, s32 span, s32 offset, s32 reverse);
@@ -129,17 +129,26 @@ s32 StepForRepeat(s32 repeat) {
 }
 
 // 0x001FEEE4..0x001FEF28 and 0x001FF250..0x001FF298: resolve the entry that
-// belongs to the item whose id is (hud->scroll + hud->first_id).
-DebugValueEntry* FindEntryAtCursor(DebugHudWork* hud, void* scene) {
-    const u32 wanted = static_cast<u32>(hud->scroll + hud->first_id);
+// belongs to the item whose id is (hud->scroll + hud->first_id).  The listing
+// resolves the scene handle twice: once for the cursor pair and once for the
+// list head.
+DebugValueEntry* FindEntryAtCursor(void* scene) {
+    DebugHudWork* cursor =
+        static_cast<DebugHudWork*>(AsdRef_Get(scene));   // 0x001FEEDC
+    const u32 wanted =
+        static_cast<u32>(cursor->scroll + cursor->first_id);
+    DebugHudWork* list_work =
+        static_cast<DebugHudWork*>(AsdRef_Get(scene));   // 0x001FEEF0
     u32 entry_id = 0xFFFFFFFFu;                 // `mvn sl,#0` (0x001FEA40)
-    for (DebugListNode* node = hud->list; node != nullptr; node = node->next) {
+    for (DebugListNode* node = list_work->list; node != nullptr;
+         node = node->next) {
         if (node->id == wanted) {
             entry_id = *reinterpret_cast<u32*>(node->entry);
             break;
         }
     }
-    return AsdListBox_FindItem(scene, entry_id);
+    return reinterpret_cast<DebugValueEntry*>(
+        AsdListBox_FindItem(scene, entry_id));
 }
 
 // ---------------------------------------------------------------------------
@@ -152,8 +161,9 @@ DebugValueEntry* FindEntryAtCursor(DebugHudWork* hud, void* scene) {
 struct UiRenderStack {
     s32 count;                          // +0x00: `ldr r1,[r4]` (0x002ED60C)
     u8  pad_004[0x14];
-    u32 dirty;                          // +0x18: `ldrb r2,[r4,#0x18]`
+    u8  dirty;                          // +0x18: `ldrb r2,[r4,#0x18]`
                                         //   (0x002ED628)
+    u8  pad_019[3];
     void (*flush)(u32 value);           // +0x1C: `ldr r1,[r4,#0x1c]`
                                         //   (0x002ED638)
 };
@@ -308,7 +318,7 @@ s32 ui_func_001fe590(void* scene) {
         Ui_DrawModel(g_AsdGpuState, nullptr);
 
         ArgbToFloat4(palette.color[2], color);
-        const f32 row_y = hud->y + kOne
+        const f32 row_y = hud->y + kTwo
                         + static_cast<f32>(hud->line_height)
                         + static_cast<f32>(hud->scroll * hud->line_height);
         func_002b7a10(color, color, color, color,
@@ -351,7 +361,7 @@ s32 ui_func_001fe590(void* scene) {
                 break;
             case 2:
                 // 0x001FEB48..0x001FEBC4: "_FALSE" then the boolean suffix.
-                UiFont_FormatString(buffer, "_FALSE");
+                AsdString_Copy(buffer, "_FALSE", 0x100);
                 cursor_x = hud->x + hud->width - kTwo
                          - static_cast<f32>(hud->measure_text_cb(buffer))
                          + static_cast<f32>(hud->char_width);
@@ -458,7 +468,7 @@ s32 ui_func_001fe590(void* scene) {
     // ---- 0x001FEEC0..0x001FF36C: edits --------------------------------
     if (UiInput_Trigger(3) != 0) {
         // 0x001FEEDC..0x001FF06C: increase.
-        DebugValueEntry* item = FindEntryAtCursor(hud, scene);
+        DebugValueEntry* item = FindEntryAtCursor(scene);
         if (item == nullptr) {
             goto tail;
         }
@@ -490,7 +500,7 @@ s32 ui_func_001fe590(void* scene) {
         }
     } else if (UiInput_Trigger(4) != 0) {
         // 0x001FF070..0x001FF234: decrease.
-        DebugValueEntry* item = FindEntryAtCursor(hud, scene);
+        DebugValueEntry* item = FindEntryAtCursor(scene);
         if (item == nullptr) {
             goto tail;
         }
@@ -522,7 +532,7 @@ s32 ui_func_001fe590(void* scene) {
         }
     } else if (UiInput_Trigger2(0) != 0) {
         // 0x001FF238..0x001FF36C: invoke the entry callback.
-        DebugValueEntry* item = FindEntryAtCursor(hud, scene);
+        DebugValueEntry* item = FindEntryAtCursor(scene);
         if (item == nullptr || item->callback == nullptr) {
             goto tail;
         }
@@ -601,7 +611,7 @@ s32 ui_func_002ed5d0(void* scene) {
     BattleCommandWork* work = static_cast<BattleCommandWork*>(AsdRef_Get(scene));
 
     // 0x002ED5E0..0x002ED604
-    ui_func_002c3ba8(g_AsdGpuState);
+    UiGpu_BeginPass(g_AsdGpuState);
 
     u8* gpu = g_AsdGpuState;
     UiRenderStack* stack_a =
@@ -653,7 +663,6 @@ s32 ui_func_002ed5d0(void* scene) {
         switch (work->substate) {
         case 0: {
             // 0x002ED82C..0x002ED8E4
-            UiSprite_DrawPanel(2, 0x2D, 3, 0, 0, 0x0C);
             const f32 progress = ui_func_0024807c(
                 -16.0f, 0.0f, kPanelSpan,
                 static_cast<f32>(work->value_a));

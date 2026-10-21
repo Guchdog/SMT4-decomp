@@ -91,8 +91,9 @@ void script_vm_func_0024c828(ScriptBattleContext* ctx, s32 mode, s32 param) {
     // state->command_id; 0, 4..7, 9, 10 and 12 land on the common scan.
     switch (state->command_id) {
     case 1: {
-        // 0x0024C898..0x0024C8B4: polarity is the inverse of input bit 0x10.
-        const u32 flags = slot->input->flags;
+        // 0x0024C898..0x0024C8B4: re-resolve the slot for the input flags;
+        // polarity is the inverse of input bit 0x10.
+        const u32 flags = script_vm_func_0027eb98(ctx)->input->flags;
         out_flag = (flags & 0x10u) == 0 ? 1 : 0;
 
         // 0x0024C8B8..0x0024C8DC: re-resolve the slot and read the 16-bit
@@ -104,30 +105,39 @@ void script_vm_func_0024c828(ScriptBattleContext* ctx, s32 mode, s32 param) {
         break;
     }
     case 2:
-    case 3:
-        // 0x0024C8E8..0x0024C924: forward unit id (+0x14E) plus the input.
-        battle_func_003d0e18(ctx, slot->input, state->unit_id,
+    case 3: {
+        // 0x0024C8E8..0x0024C924: re-resolve the slot for the unit id, then
+        // re-resolve it again for the command input.
+        const s16 unit_id = script_vm_func_0027eb98(ctx)->actor->unit_id;
+        ScriptSlot* current = script_vm_func_0027eb98(ctx);
+        battle_func_003d0e18(ctx, current->input, unit_id,
                              &out_flag, &out_result);
         break;
+    }
     case 8: {
         // 0x0024C92C..0x0024C980: look up the command row for the unit.
-        ScriptCommandRow* row = camp_func_002b4854(state->unit_id);
+        const s16 unit_id = script_vm_func_0027eb98(ctx)->actor->unit_id;
+        ScriptCommandRow* row = camp_func_002b4854(unit_id);
         if (row->target_count != 0) {
-            battle_func_003d0e18(ctx, slot->input, row->target_count,
+            ScriptSlot* current = script_vm_func_0027eb98(ctx);
+            battle_func_003d0e18(ctx, current->input, row->target_count,
                                  &out_flag, &out_result);
         } else {
             // 0x0024C984..0x0024C9AC: input bit 0x10 and row bit 0x80.
-            const u32 flags = slot->input->flags;
+            ScriptSlot* current = script_vm_func_0027eb98(ctx);
+            const u32 flags = current->input->flags;
             out_flag = (flags & 0x10u) != 0 ? 1 : 0;
             out_result = (row->flags & 0x80u) != 0 ? 1 : 0;
         }
         break;
     }
-    case 11:
+    case 11: {
         // 0x0024C9C0..0x0024C9E4: direct polarity, zero command result.
-        out_flag = (slot->input->flags & 0x10u) != 0 ? 1 : 0;
+        ScriptSlot* current = script_vm_func_0027eb98(ctx);
+        out_flag = (current->input->flags & 0x10u) != 0 ? 1 : 0;
         out_result = 0;
         break;
+    }
     default:
         break;
     }
@@ -156,9 +166,9 @@ void script_vm_func_0024c828(ScriptBattleContext* ctx, s32 mode, s32 param) {
                 actor.flags = flags | kActorSelected;
             }
         } else if ((flags & 0x10u) == 0) {
-            // 0x0024CA48: actors without 0x10 are eligible when bit 0x20 is
-            // set and the 0x3C8608 predicate agrees (0x0024CA50..0x0024CA5C).
-            if ((flags & 0x20u) != 0 && script_vm_func_003c8608() != 0) {
+            // 0x0024CA48..0x0024CA5C: without 0x10 the actor is eligible
+            // immediately when 0x20 is clear; otherwise 0x003C8608 decides.
+            if ((flags & 0x20u) == 0 || script_vm_func_003c8608() != 0) {
                 actor.flags = flags | kActorSelected;
             }
         }
@@ -193,7 +203,7 @@ void script_vm_func_0024c828(ScriptBattleContext* ctx, s32 mode, s32 param) {
         }
         if (selected >= 3) {                            // 0x0024CB50
             if (roll < 0x1E) {
-                script_vm_func_003d038c(ctx, 2);        // 0x0024CB68
+                script_vm_func_003d038c(ctx, 3);        // 0x0024CB60..68
             } else if (roll < 0x41) {
                 script_vm_func_003d038c(ctx, 2);        // 0x0024CBA8
             } else {
@@ -352,22 +362,24 @@ void script_vm_func_0024c828(ScriptBattleContext* ctx, s32 mode, s32 param) {
         }
         break;
 
-    case 15:
-        // 0x0024D014..0x0024D034: index comes from slot+0x2C.
-        slot = script_vm_func_0027eb98(ctx);
-        slot->selected[slot->actor_index] = 1;
+    case 15: {
+        // 0x0024D014..0x0024D034: the index is read from a first slot
+        // resolution and the byte is stored through a second one.
+        const u16 index = script_vm_func_0027eb98(ctx)->actor_index;
+        ScriptSlot* target = script_vm_func_0027eb98(ctx);
+        target->selected[index] = 1;
         return;
+    }
 
     case 16: {
-        // 0x0024D03C..0x0024D0D4: every selected actor whose slot id differs
-        // from slot+0x2C.
-        slot = script_vm_func_0027eb98(ctx);
-        const u16 exclude = slot->actor_index;
+        // 0x0024D03C..0x0024D0A4: every selected actor whose slot id differs
+        // from slot+0x2C.  The listing re-resolves 0x0027EB98 per actor.
         for (s32 i = 0; i < kActorCount; ++i) {
             ScriptActor& actor = actors[i];
             if ((actor.flags & kActorSelected) == 0) {
                 continue;
             }
+            const u16 exclude = script_vm_func_0027eb98(ctx)->actor_index;
             const s16 id = actor.slot;
             if (id != static_cast<s16>(exclude)) {
                 candidates[count++] = id;
