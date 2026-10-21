@@ -49,7 +49,7 @@
 - `func_00142bf0`: `0x00142bf0` (4,008 B)
 - `camp_func_002831f0`: `0x002831f0` (3,784 B)
 
-- [ ] **Step 1: Update progress test expectations (RED)**
+- [x] **Step 1: Update progress test expectations (RED)**
 
 ```python
 self.assertEqual(stats["decompiled_functions"], 363)
@@ -60,16 +60,16 @@ self.assertEqual(stats["total_explored_functions"], 402)
 self.assertEqual(stats["total_explored_bytes"], 707452)
 ```
 
-- [ ] **Step 2: Run the suite to verify it fails**
+- [x] **Step 2: Run the suite to verify it fails**
 
 Run: `python -m unittest discover -s tests -v`
 Expected: FAIL with `363 != 359`.
 
-- [ ] **Step 3: Disassemble and implement**
+- [x] **Step 3: Disassemble and implement**
 
 Use `python tools/split_asm.py --addr <address>`. Recover roles from literals/call graphs. Keep exact ledger names (including `crt_func_*` and `camp_func_*`), document recovered roles, and preserve all calls/branches/stores.
 
-- [ ] **Step 4: Update the ledger and verify GREEN**
+- [x] **Step 4: Update the ledger and verify GREEN**
 
 Set `status=non_matching`, `src_file=src/engine/runtime_blocks.cpp`. Run:
 
@@ -80,7 +80,7 @@ python -m unittest discover -s tests -v
 
 Expected: 363 / 459,212 B, 39 / 248,240 B, 402 / 707,452 B; all tests PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```powershell
 git commit -m "feat(engine): decompile four runtime blocks (+16,484 B, 22.54% explored)"
@@ -102,7 +102,7 @@ git commit -m "feat(engine): decompile four runtime blocks (+16,484 B, 22.54% ex
 - `func_00168980`: `0x00168980` (3,776 B)
 - `func_002f9f54`: `0x002f9f54` (3,636 B)
 
-- [ ] **Step 1: Update progress test expectations (RED)**
+- [x] **Step 1: Update progress test expectations (RED)**
 
 ```python
 self.assertEqual(stats["decompiled_functions"], 367)
@@ -113,19 +113,19 @@ self.assertEqual(stats["total_explored_functions"], 406)
 self.assertEqual(stats["total_explored_bytes"], 722416)
 ```
 
-- [ ] **Step 2: Run the suite to verify it fails**
+- [x] **Step 2: Run the suite to verify it fails**
 
 Expected: FAIL with `367 != 363`.
 
-- [ ] **Step 3: Disassemble and implement**
+- [x] **Step 3: Disassemble and implement**
 
 The three `0x0016xxxx` entries are near-identical 3,776-byte blocks; recover the shared core and per-block differences. Preserve the full control flow.
 
-- [ ] **Step 4: Update the ledger and verify GREEN**
+- [x] **Step 4: Update the ledger and verify GREEN**
 
 Set `status=non_matching`, `src_file=src/engine/runtime_blocks2.cpp`; expected 367 / 474,176 B, 406 / 722,416 B (23.0135%); all tests PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```powershell
 git commit -m "feat(engine): decompile four runtime blocks B (+14,964 B, 23.0% milestone reached at 23.0135%)"
