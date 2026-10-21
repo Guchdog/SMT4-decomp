@@ -22,7 +22,8 @@ namespace {
 // Literal-pool constants referenced below
 // ---------------------------------------------------------------------------
 
-constexpr u32 kEventTreeAddress = 0x0040FE40u;   // 0x003B1DC4 / 0x003B1E2C
+constexpr u32 kEventAllocMessage = 0x003B178Cu;  // 0x003B1478 add r1,pc,#0x30C
+constexpr u32 kEventVectorMessage = 0x0040FE40u; // 0x003B1DC4 / 0x003B1E2C
 constexpr u32 kEventFailAddress = 0x0040FE80u;   // 0x003B184C
 
 constexpr u32 kLcdCommandData = 0x000F008Eu;     // 0x00143278
@@ -58,8 +59,6 @@ void func_0022c1cc(void* element);
 void func_0022c6f8(void* vector, u32 first, u32 last);
 u32  func_0022c198(u32 current, u32 requested);
 void* func_00397314(void* node);
-void* func_00397398(void* node);
-void func_00397208(void* tree);
 
 // 0x00101308 helpers -------------------------------------------------------
 void engine_func_002c5fbc();
@@ -270,8 +269,6 @@ void ReportNodeFailure(void* tree, u32 message, u32 size)
     reinterpret_cast<FailFn>(vtable[2])(allocator, message, size);
 }
 
-void EraseTreeNode(void* tree, u8* node);
-
 // 0x003B1B08..0x003B1D64: append one 16-byte node to the vector at
 // state+0x1434, growing it through func_0022c198 and destroying the moved
 // range through func_0022c6f8.  The element links are copied with
@@ -280,14 +277,9 @@ void AppendNode(ScriptRuntimeState* state, const ScriptNode16* source)
 {
     ScriptNodeVector& vec = state->nodes;
     if (vec.capacity >= vec.size + 1) {
-        // 0x003B1B48..0x003B1D40: shift the tail down by one element.
-        for (u32 i = vec.size; i > 0; --i) {
-            vec.begin[i] = vec.begin[i - 1];
-        }
-        vec.begin[0] = *source;                    // 0x003B1F6C..0x003B1F90
+        // 0x003B1F60..0x003B1F90: append at begin + size*16.
+        vec.begin[vec.size] = *source;
         vec.size += 1;                             // 0x003B1F54..0x003B1F58
-        // 0x003B1F94..0x003B22E8: unlink the replaced element.
-        EraseTreeNode(&vec, reinterpret_cast<u8*>(vec.begin));
         return;
     }
 
@@ -300,7 +292,7 @@ void AppendNode(ScriptRuntimeState* state, const ScriptNode16* source)
         reinterpret_cast<AllocFn>(vtable[0])(allocator, new_capacity * 0x10));
     if (storage == nullptr) {
         using FailFn = void (*)(void*, u32, u32);
-        reinterpret_cast<FailFn>(vtable[2])(allocator, kEventTreeAddress,
+        reinterpret_cast<FailFn>(vtable[2])(allocator, kEventVectorMessage,
                                             new_capacity * 0x10);
     }
     ScriptNode16* fresh = reinterpret_cast<ScriptNode16*>(storage);
@@ -312,32 +304,6 @@ void AppendNode(ScriptRuntimeState* state, const ScriptNode16* source)
     vec.begin = fresh;
     vec.capacity = new_capacity;
     vec.size += 1;
-    // 0x003B1F94..0x003B22E8: unlink the replaced element.
-    EraseTreeNode(&vec, reinterpret_cast<u8*>(vec.begin));
-}
-
-// 0x003B1F94..0x003B22E8: unlink and destroy one tree node.  The successors
-// come from func_00397314 / func_00397398 and the red-black repair from
-// func_00397208 (called at 0x003B22CC and 0x003B22E4).
-void EraseTreeNode(void* tree, u8* node)
-{
-    u8* header = static_cast<u8*>(tree) + 0x08;
-    u8* next = static_cast<u8*>(func_00397314(node));
-    if (*reinterpret_cast<u8**>(node + 0x18) == header) {
-        *reinterpret_cast<u8**>(node + 0x18) = next;
-    }
-    if (*reinterpret_cast<u8**>(node + 0x1C) == node) {
-        *reinterpret_cast<u8**>(node + 0x1C) =
-            static_cast<u8*>(func_00397398(node));
-    }
-    // 0x003B2000..0x003B2034: replace the node link and call vtable[0]
-    // with the removed node.
-    void* value = *reinterpret_cast<void**>(tree);
-    void** vtable = *reinterpret_cast<void***>(value);
-    using EraseFn = void (*)(void*, u8*);
-    reinterpret_cast<EraseFn>(vtable[0])(value, node);
-    func_00397208(tree);                           // 0x003B22CC
-    func_00397208(static_cast<u8*>(tree) + 0x04);  // 0x003B22E4
 }
 
 // The address of the command tree is state+0x1414; the helper below needs it
@@ -349,7 +315,7 @@ void* tree_address(ScriptRuntimeState* state)
 
 // 0x003B1578..0x003B17C8: create the 0x74-byte child record, initialise its
 // two embedded lists and insert it through func_003b01bc.
-u32 CreateChildRecord(ScriptRuntimeState* state, u32 index, u8* parent_node)
+u32 CreateChildRecord(ScriptRuntimeState* state, u32 index, u8* parent_payload)
 {
     (void)index;
     void* allocator = state->allocator;
@@ -394,14 +360,14 @@ u32 CreateChildRecord(ScriptRuntimeState* state, u32 index, u8* parent_node)
     *reinterpret_cast<u32*>(record + 0x6C) = 0;
     *reinterpret_cast<u8*>(record + 0x70) = 1;
     *reinterpret_cast<u32*>(record + 0x14) =
-        *reinterpret_cast<u32*>(parent_node + 0x14); // 0x003B1694
+        *reinterpret_cast<u32*>(parent_payload + 0x14); // 0x003B1694
 
-    func_003af524(record, *reinterpret_cast<u32*>(parent_node + 0x14),
+    func_003af524(record, *reinterpret_cast<u32*>(parent_payload + 0x14),
                   state->channel_table);              // 0x003B16A0
 
     void* allocator_copy = allocator;
     u8* inserted = reinterpret_cast<u8*>(
-        func_003b01bc(&allocator_copy, *reinterpret_cast<u32*>(parent_node + 0x14),
+        func_003b01bc(&allocator_copy, *reinterpret_cast<u32*>(parent_payload + 0x14),
                       record));                       // 0x003B16B0
     if (inserted == nullptr) {
         return 0x44u;
@@ -410,12 +376,12 @@ u32 CreateChildRecord(ScriptRuntimeState* state, u32 index, u8* parent_node)
     // 0x003B16C0..0x003B1788: payload slots 6 and 4, then the two temporary
     // trees are destroyed through func_003fca6c / func_0022c1cc.
     void** payload_vtable = *reinterpret_cast<void***>(inserted);
-    using Slot6 = void (*)(void*, u32);
-    reinterpret_cast<Slot6>(payload_vtable[6])(inserted, 0);
+    using Slot6 = void (*)(void*, u8*);
+    reinterpret_cast<Slot6>(payload_vtable[6])(inserted, parent_payload);
     using Slot4 = u32 (*)(void*);
     if (reinterpret_cast<Slot4>(payload_vtable[4])(inserted) != 0) {
         *reinterpret_cast<u32*>(inserted + 0x14) =
-            *reinterpret_cast<u32*>(parent_node + 0x14);
+            *reinterpret_cast<u32*>(parent_payload + 0x14);
     }
 
     u8 temp_a[0x30] = {};
@@ -491,7 +457,7 @@ u32 func_003b11a8(ScriptRuntimeState* state, u32 index, ScriptCursor* cursor,
             // 0x003B1310..0x003B13FC: allocate and link the 0x24-byte node.
             node = AllocateTreeNode(tree);
             if (node == nullptr) {
-                ReportNodeFailure(tree, kEventTreeAddress, 0x24);
+                ReportNodeFailure(tree, kEventAllocMessage, 0x24);
                 goto fail_44;
             }
             *reinterpret_cast<u32*>(node + 0x10) = key;   // 0x003B13A0
@@ -532,25 +498,29 @@ u32 func_003b11a8(ScriptRuntimeState* state, u32 index, ScriptCursor* cursor,
         }
 
         // 0x003B1578..0x003B1814: nested command tree.
-        if (CreateChildRecord(state, index, node) == 0x44u) {
+        if (CreateChildRecord(state, index, static_cast<u8*>(variant)) == 0x44u) {
             goto fail_44;
         }
 
-        // 0x003B1818..0x003B18C0: walk the tree and notify the parent once.
+        // 0x003B1818..0x003B18C0: walk the tree with the red-black successor
+        // routine and notify the parent once.
         {
-            u8* header = *reinterpret_cast<u8**>(tree + 0x04);
-            u8* walk = header;
-            while (walk != nullptr) {
+            u8* tree_bytes = static_cast<u8*>(tree);
+            u8* header = tree_bytes + 0x08;
+            u8* walk = *reinterpret_cast<u8**>(tree_bytes + 0x04);
+            while (walk != header) {
                 u8* child = *reinterpret_cast<u8**>(walk + 0x18);
-                if (child != nullptr &&
-                    *reinterpret_cast<u8*>(child + 0x70) != 0) {
+                child = *reinterpret_cast<u8**>(child + 0x10); // 0x003B1828
+                if (*reinterpret_cast<u8*>(child + 0x70) != 0) {
                     if (state->callback_1480 != nullptr) {
-                        state->callback_1480(kEventFailAddress,
-                                             *reinterpret_cast<u32*>(node + 0x14));
+                        state->callback_1480(
+                            kEventFailAddress,
+                            *reinterpret_cast<u32*>(
+                                static_cast<u8*>(variant) + 0x14));
                     }
                     return 0x53u;
                 }
-                walk = *reinterpret_cast<u8**>(walk + 0x0C);
+                walk = static_cast<u8*>(func_00397314(walk)); // 0x003B1864
             }
         }
     }
@@ -597,19 +567,35 @@ fail_44:
 
 namespace {
 
-// `svc #0x28` at 0x00101B80 and 0x00101F08 (GetSystemTick).
+// `svc #0x28` at 0x00101B80 and 0x00101F08 (GetSystemTick).  The host build
+// has no ARM SVC; the fixed-point arithmetic below is independent of the
+// clock source.
 u64 SystemTick()
 {
+    // The shipped ARM body executes `svc #0x28` and consumes the r0:r1 pair.
+    // This host reconstruction keeps a platform-neutral stub; the 64-bit
+    // fixed-point reduction below is independent of the clock source.
     return 0;
 }
 
-// The 64-bit tick delta is reduced by the three literal-pool multipliers
-// 0xBAD34AEE / 0xE353F7CF / 0x20C49BA5 and the final >>7 at
-// 0x00101FD0..0x00101FDC; the result is the whole-millisecond interval used
-// for the frame-load percentage at 0x00101FE0..0x00102004.
-u32 TickDeltaToMilliseconds(u64 delta)
+// 0x00101F20..0x00101FDC: the 64-bit tick delta is first multiplied by the
+// packed magic 0x3BAD34AEE (0xBAD34AEE plus the `mov r1,#3` high term) and
+// reduced by >>32, producing 999,999,999 for 268,111,856 ticks (one second in
+// nanoseconds).  The second stage (0xE353F7CF, then 0x20C49BA5 with `>>7`)
+// divides that value by 1000, so the frame-load input is microseconds.  The
+// combined tick divisor is therefore ~268,111, not 1,000.
+constexpr u64 kTickNanosecondsMagic = 0x3BAD34AEEULL; // 0x00101F24 + r1=3
+constexpr u32 kTickMagic1 = 0xE353F7CFu;              // 0x00101F58
+constexpr u64 kTickMicrosecondsMagic = 0x20C49BA5ULL; // 0x00101F90
+constexpr u32 kTickMicrosecondsShift = 39u;           // 32 + the final >>7
+
+u32 TickDeltaToMicroseconds(u64 delta)
 {
-    return static_cast<u32>(delta / 1000u);
+    (void)kTickMagic1; // first-stage sign correction in the ARM sequence
+    const u64 nanoseconds =
+        (delta * kTickNanosecondsMagic) >> 32;
+    return static_cast<u32>(
+        (nanoseconds * kTickMicrosecondsMagic) >> kTickMicrosecondsShift);
 }
 
 void CreateDrawTask(const char* name, u32 priority, u32 callback)
@@ -640,6 +626,9 @@ void crt_func_00101308(void)
         func_00103c08();
     }
     AsdNgc_func_00103aa0();
+
+    // 0x0010138C..0x00101390: fp = 1, r6 = 0x00446DB0.
+    g_CrtMainState.stereo_enabled = 1;
 
     // 0x0010135C..0x001013B0: the eleven-word initialiser passed to
     // battle_func_00105460.
@@ -902,7 +891,7 @@ main_loop:
     // 0x00101F04..0x00102034: frame timing.
     g_CrtMainState.tick_28 = SystemTick();
     delta = g_CrtMainState.tick_28 - g_CrtMainState.tick_20;
-    elapsed = TickDeltaToMilliseconds(delta);
+    elapsed = TickDeltaToMicroseconds(delta);
     fps = func_00105da4();
     g_CrtMainState.frame_load_18 =
         static_cast<u32>(static_cast<f32>(elapsed) * frame_budget / fps);
@@ -1118,18 +1107,18 @@ void SubmitChannel(u32 screen, LcdRegisterBlock* regs, u32 address)
 
     if (screen == 0) {
         func_002aa938(kLcdChannel0Reg, kLcdChannel0Count);
+        // 0x0014325C..0x00143288: command ring slot is screen 0 only.
+        // Screens 1/2 branch straight to 0x00143B7C after the register write.
+        if (g_GpuCommandCursor < g_GpuCommandEnd) {
+            u32* cursor = g_GpuCommandCursor;
+            *cursor++ = regs->extra0_38;
+            *cursor++ = kLcdCommandData;
+            g_GpuCommandCursor = cursor;
+        }
     } else if (screen == 1) {
         func_002aa938(kLcdChannel1Reg, kLcdChannel1Count);
     } else {
         func_002aa938(kLcdChannel2Reg, kLcdChannel2Count);
-    }
-
-    // 0x0014325C..0x00143288: command ring slot.
-    if (g_GpuCommandCursor < g_GpuCommandEnd) {
-        u32* cursor = g_GpuCommandCursor;
-        *cursor++ = regs->extra0_38;
-        *cursor++ = kLcdCommandData;
-        g_GpuCommandCursor = cursor;
     }
 }
 
@@ -1146,7 +1135,7 @@ u32 func_00142bf0(LcdRenderConfig* config, u32 screen)
     u8 present = gpu[0x104u + screen];           // 0x00142C10
     u32 invalid = config->address_34 == 0 ? 0x502u : 0u;
 
-    if (present == 0 || invalid == 0) {
+    if (present == 0 || config->address_34 == 0) {
         // 0x00142C2C..0x00142C78: disable one screen bit and return.
         LcdRegisterBlock* regs =
             reinterpret_cast<LcdRegisterBlock*>(gpu + 0x770);
@@ -1208,23 +1197,67 @@ u32 func_00142bf0(LcdRenderConfig* config, u32 screen)
     // 0x00142E1C..0x00142E34: config +0x50 low nibble into channel +0x38.
     *extra = (*extra & ~0xFu) | (config->field_50 & 0xFu);
 
-    // 0x00142E38..0x00142E7C: accepted mode set.
+    // 0x00142E38..0x00142E7C (screen 0) and 0x00143330..0x00143384
+    // (screens 1/2): the accepted mode sets differ per screen.
     u32 mode = config->mode_48;
-    bool mode_ok = (mode >= 0x1906u && mode <= 0x190Au) ||
-                   mode == 0x190Au + 0x10u ||   // 0x191A
-                   mode == 0x190Au + 0x6C0u ||  // 0x1FCA
-                   mode == 0x190Au + 0x700u + 0x1Au + 1u || // 0x2025
-                   mode == 0x6050u;             // 0x00143368 (channels 1/2)
+    u32 count_mask = 0;
+    s32 nibble_source = 0;
+    u32 nibble = 0;
+    bool mode_ok = false;
+    if (screen == 0) {
+        mode_ok = (mode >= 0x1906u && mode <= 0x190Au) ||
+                  mode == 0x191Au || mode == 0x1FCAu || mode == 0x2025u;
+    } else {
+        mode_ok = (mode >= 0x1906u && mode <= 0x190Au) ||
+                  mode == 0x6050u || mode == 0x6700u ||
+                  mode == 0x675Au || mode == 0x675Bu;
+    }
     if (!mode_ok) {
         return 0x502u;                           // 0x00142E7C
     }
 
-    // 0x00142E84..0x00142E9C: set the 0x30000000 field from gpu+0xF8.
-    u32 mode_flag = *reinterpret_cast<u32*>(gpu + 0xF8);
-    if (mode_flag == 0x6E00u) {
-        *control = (*control & ~0x70000000u) | 0x30000000u;
-    } else {
+    // 0x00142E44 / 0x00142E64 and 0x00143340..0x00143368: the fixed 2D
+    // modes branch to their own path and never run the 0x6E00/format/
+    // mode_04 sequence below.  The channel 1/2 form is at 0x00143630 /
+    // 0x00143AA8.
+    if (screen == 0 && mode == 0x190Au) {
+        // 0x001431B8..0x001431F0.
+        *control &= ~0x71000000u;
+        *size &= ~0xF000000u;
+        *size &= ~0xF0000u;
+        *control |= 0x20000006u;
+        *control |= 0x100000u;
+        *control = (*control & ~0x7000u & ~0x730u) | 0x1100u;
+        goto submit;
+    }
+    if (screen == 0 && mode == 0x191Au) {
+        // 0x001431F4..0x00143224.
+        *control &= ~0x30u;
+        *size &= ~0xF000000u;
+        *size &= ~0xF0000u;
         *control &= ~0x70000000u;
+        *control &= ~6u;
+        *control &= ~0x7700u;
+        *color = 0;
+        goto submit;
+    }
+    if (screen != 0 && mode == 0x6050u) {
+        // 0x00143630..0x00143658 / 0x00143AA8..0x00143AD4.
+        *control = (*control & ~2u & ~4u & ~0x7700u);
+        *size &= ~0xF000000u;
+        *size &= ~0xF0000u;
+        *color = 0;
+        goto submit;
+    }
+
+    // 0x00142E84..0x00142E9C: set the 0x30000000 field from gpu+0xF8.
+    {
+        u32 mode_flag = *reinterpret_cast<u32*>(gpu + 0xF8);
+        if (mode_flag == 0x6E00u) {
+            *control = (*control & ~0x70000000u) | 0x30000000u;
+        } else {
+            *control &= ~0x70000000u;
+        }
     }
 
     // 0x00142EA0..0x00142FA4: two pixel-format selectors.
@@ -1239,7 +1272,10 @@ u32 func_00142bf0(LcdRenderConfig* config, u32 screen)
     }
 
     // 0x00142FD4..0x001431B0: mode_04 branches.
-    u32 count_mask = (config->count_68 - 1u) << 16;
+    count_mask = ((config->count_68 - 1u) & 0xFu) << 16;
+    nibble_source = static_cast<s32>(config->field_14);
+    nibble = nibble_source < 0 ? 0u
+                               : (static_cast<u32>(nibble_source) & 0xFu);
     switch (config->mode_04) {
     case 0x2600u:                               // 0x00143020
         *size &= ~0xF000000u;
@@ -1256,29 +1292,25 @@ u32 func_00142bf0(LcdRenderConfig* config, u32 screen)
     case 0x2700u:                               // 0x00143044
         *control &= ~4u;
         *size = (*size & ~0xF0000u) | (*control & count_mask);
-        *size = (*size & ~0xF000000u) |
-                ((config->field_50 & 0xFu) << 24);
+        *size = (*size & ~0xF000000u) | (nibble << 24);
         *control &= ~0x1000000u;
         break;
     case 0x2701u:                               // 0x00143130
         *control |= 4u;
         *size = (*size & ~0xF0000u) | (*control & count_mask);
-        *size = (*size & ~0xF000000u) |
-                ((config->field_50 & 0xFu) << 24);
+        *size = (*size & ~0xF000000u) | (nibble << 24);
         *control &= ~0x1000000u;
         break;
     case 0x2702u:                               // 0x00143098
         *control |= 4u;
         *size = (*size & ~0xF0000u) | (*control & count_mask);
-        *size = (*size & ~0xF000000u) |
-                ((config->field_50 & 0xFu) << 24);
+        *size = (*size & ~0xF000000u) | (nibble << 24);
         *control |= 0x1000000u;
         break;
     case 0x2703u:                               // 0x00143170
         *control |= 4u;
         *size = (*size & ~0xF0000u) | (*control & count_mask);
-        *size = (*size & ~0xF000000u) |
-                ((config->field_50 & 0xFu) << 24);
+        *size = (*size & ~0xF000000u) | (nibble << 24);
         *control |= 0x1000000u;
         break;
     default:
@@ -1290,35 +1322,7 @@ u32 func_00142bf0(LcdRenderConfig* config, u32 screen)
         *control = (*control & ~0x30u) | 0x20u;
     }
 
-    // 0x001431B8..0x001431F0: fixed 2D mode.
-    if (screen == 0 && mode == 0x190Au) {
-        *control &= ~0x71000000u;
-        *size &= ~0xF000000u;
-        *size &= ~0xF0000u;
-        *control |= 0x20000006u;
-        *control |= 0x100000u;
-        *control = (*control & ~0x7000u & ~0x730u) | 0x1100u;
-    }
-
-    // 0x001431F4..0x00143224: fixed 2D mode with a zeroed colour word.
-    if (screen == 0 && mode == 0x191Au) {
-        *control &= ~0x30u;
-        *size &= ~0xF000000u;
-        *size &= ~0xF0000u;
-        *control &= ~0x70000000u;
-        *control &= ~6u;
-        *control &= ~0x7700u;
-        *color = 0;
-    }
-
-    // 0x00143630 / 0x00143AA8: the same fixed 2D form for channels 1 and 2.
-    if (screen != 0 && mode == 0x6050u) {
-        *control = (*control & ~2u & ~4u & ~0x7700u);
-        *size &= ~0xF000000u;
-        *size &= ~0xF0000u;
-        *color = 0;
-    }
-
+submit:
     SubmitChannel(screen, regs, config->address_34);
     return 0;                                    // 0x00143B80
 }
@@ -1331,14 +1335,42 @@ namespace {
 
 // The byte code is (bit 7 = variant, bits 0..6 = field opcode).  The two
 // variants are the two literals immediately below the branch in the listing.
-using CampCopyFn = void* (*)(void* dest, u32 value, u32 size);
+// 0x002B7F0A..0x002B7F90: Thumb sorted insertion.  r0 is the destination
+// array, r1 the element index, r2 the element size and r3 a comparator
+// callback (invoked as `blx r2` with (previous, new) pointers).
+using CampCompareFn = s32 (*)(const void*, const void*);
+
+void CampInsert(void* dest, u32 index, u32 size, u32 callback)
+{
+    if (index == 0 || size == 0 || callback == 0) {
+        return;
+    }
+    u8* base = static_cast<u8*>(dest);
+    u8* new_element = base + index * size;
+    u8 temp[16] = {};
+    const u32 copy_size = size < sizeof temp ? size : sizeof temp;
+    std::memcpy(temp, new_element, copy_size);
+
+    u32 position = index;
+    CampCompareFn compare =
+        reinterpret_cast<CampCompareFn>(static_cast<std::uintptr_t>(callback));
+    while (position > 0) {
+        u8* previous = base + (position - 1) * size;
+        if (compare(previous, temp) <= 0) {      // 0x002B7F44 `cmp r0,#0`
+            break;
+        }
+        std::memmove(base + position * size, previous, copy_size);
+        --position;
+    }
+    std::memcpy(base + position * size, temp, copy_size);
+}
 
 struct CampRule {
-    u32 dest;       // r0 at the call site
-    u32 source;     // r0 passed to camp_func_0029f0f4
+    u32 dest;       // r0 at the 0x002B7F0A call
+    u32 source;     // r0 passed to camp_func_0029f0f4 / stream pointer
     u32 size;       // r2 (8 for the first eight bytes, 2 afterwards)
-    u32 variant0;   // literal loaded when bit 7 is clear
-    u32 variant1;   // literal loaded when bit 7 is set
+    u32 variant0;   // callback when bit 7 is clear (`lsrs r0,r0,#7` == 0)
+    u32 variant1;   // callback when bit 7 is set
     u8  opcode;     // low seven bits
     bool from_source; // false when r1 is the precomputed counter
     u32 value;      // precomputed r1 for the counter rule
@@ -1358,8 +1390,7 @@ void InvokeCamp(const CampRule& rule, u32 stream)
         resolved = camp_func_0029f0f4(source);   // 0x00283288 and repeats
     }
     u32 target = (current & 0x80u) ? rule.variant1 : rule.variant0;
-    reinterpret_cast<CampCopyFn>(static_cast<std::uintptr_t>(target))(
-        dest, resolved, rule.size);              // blx 0x002B7F0A
+    CampInsert(dest, resolved, rule.size, target); // 0x002B7F0A
 }
 
 bool CampRuleMatches(u32 stream, u8 opcode)
@@ -1384,10 +1415,10 @@ void camp_func_002831f0(u32 layout_opcode)
         u32 source = reinterpret_cast<std::uintptr_t>(gpu + 0x1DC);
         u32 cursor = stream + 1;
         CampRule rules[] = {
-            {dest, source, 8, 0x00249950, 0x0025779C, 0x0B, true, 0},
-            {dest, source, 8, 0x002F26F4, 0x0021910C, 0x20, true, 0},
-            {dest, source, 8, 0x002DC6C4, 0x001F5E38, 0x0D, true, 0},
-            {dest, source, 8, 0x002F80E4, 0x002C6CA4, 0x0F, true, 0},
+            {dest, source, 8, 0x0025779C, 0x00249950, 0x0B, true, 0},
+            {dest, source, 8, 0x0021910C, 0x002F26F4, 0x20, true, 0},
+            {dest, source, 8, 0x001F5E38, 0x002DC6C4, 0x0D, true, 0},
+            {dest, source, 8, 0x002C6CA4, 0x002F80E4, 0x0F, true, 0},
             {dest, source, 8, 0x00218FE8, 0x002F25D0, 0x11, true, 0},
             {dest, source, 8, 0x0021904C, 0x002F2634, 0x03, true, 0},
         };
@@ -1418,11 +1449,11 @@ void camp_func_002831f0(u32 layout_opcode)
                 reinterpret_cast<void*>(count_slot));
         }
         CampRule rules[] = {
-            {dest, cursor, 2, 0x003132B0, 0x002E4684, 0x0B, false, nonzero},
-            {dest, cursor, 2, 0x0030BE4C, 0x002DCC78, 0x0E, false, nonzero},
-            {dest, cursor, 2, 0x003131E8, 0x002E446C, 0x0F, false, nonzero},
-            {dest, cursor, 2, 0x0030BCB4, 0x002DC52C, 0x11, false, nonzero},
-            {dest, cursor, 2, 0x0030BD54, 0x002DC5CC, 0x03, false, nonzero},
+            {dest, cursor, 2, 0x002E4684, 0x003132B0, 0x0B, false, nonzero},
+            {dest, cursor, 2, 0x002DCC78, 0x0030BE4C, 0x0E, false, nonzero},
+            {dest, cursor, 2, 0x002E446C, 0x003131E8, 0x0F, false, nonzero},
+            {dest, cursor, 2, 0x002DC52C, 0x0030BCB4, 0x11, false, nonzero},
+            {dest, cursor, 2, 0x002DC5CC, 0x0030BD54, 0x03, false, nonzero},
         };
         for (const CampRule& rule : rules) {
             if (CampRuleMatches(cursor, rule.opcode)) {
@@ -1438,9 +1469,9 @@ void camp_func_002831f0(u32 layout_opcode)
         u32 source = reinterpret_cast<std::uintptr_t>(gpu + 0x0B0);
         u32 cursor = stream + 3;
         CampRule rules[] = {
-            {dest, source, 2, 0x002F284C, 0x00219540, 0x0C, true, 0},
-            {dest, source, 2, 0x002E49EC, 0x00206F30, 0x10, true, 0},
-            {dest, source, 2, 0x002E4A38, 0x00206F7C, 0x03, true, 0},
+            {dest, source, 2, 0x00219540, 0x002F284C, 0x0C, true, 0},
+            {dest, source, 2, 0x00206F30, 0x002E49EC, 0x10, true, 0},
+            {dest, source, 2, 0x00206F7C, 0x002E4A38, 0x03, true, 0},
         };
         for (const CampRule& rule : rules) {
             if (CampRuleMatches(cursor, rule.opcode)) {
@@ -1454,7 +1485,7 @@ void camp_func_002831f0(u32 layout_opcode)
     case 14:
     case 15:
     case 16:
-    case 17:
+    case 24:
         return;                                   // 0x00283220
     case 13: {
         // 0x0028379C..0x002838B8.
@@ -1462,9 +1493,9 @@ void camp_func_002831f0(u32 layout_opcode)
         u32 source = reinterpret_cast<std::uintptr_t>(gpu + 0x178);
         u32 cursor = stream + 4;
         CampRule rules[] = {
-            {dest, source, 2, 0x0031339C, 0x002E4968, 0x21, true, 0},
-            {dest, source, 2, 0x00313350, 0x002E491C, 0x10, true, 0},
-            {dest, source, 2, 0x003133C8, 0x002E4998, 0x03, true, 0},
+            {dest, source, 2, 0x002E4968, 0x0031339C, 0x21, true, 0},
+            {dest, source, 2, 0x002E491C, 0x00313350, 0x10, true, 0},
+            {dest, source, 2, 0x002E4998, 0x003133C8, 0x03, true, 0},
         };
         for (const CampRule& rule : rules) {
             if (CampRuleMatches(cursor, rule.opcode)) {
@@ -1474,17 +1505,20 @@ void camp_func_002831f0(u32 layout_opcode)
         }
         return;
     }
-    case 18:
-    case 19: {
+    case 17:
+    case 18: {
         // 0x002838BC..0x00283A64.  The original opcode selects both the
         // destination and the stream offset (r7+5 or r7+6).
         u32 dest = 0;
         u32 source = 0;
         u32 cursor = 0;
-        // 0x002838BC compares the incoming opcode with 0x11 and 0x12.  The
-        // jump table reaches this block for opcodes 18 and 19; only 18
-        // (0x12) selects a destination, so the 0x11 arm is unreachable here.
-        if (layout_opcode == 0x12) {              // case 18
+        // 0x002838BC compares the incoming opcode with 0x11 and 0x12:
+        // 17 (0x11) -> 0x002838D0, 18 (0x12) -> 0x002838E4.
+        if (layout_opcode == 0x11) {              // case 17
+            dest = reinterpret_cast<std::uintptr_t>(gpu + 0x1C27C);
+            source = reinterpret_cast<std::uintptr_t>(gpu + 0x2A4);
+            cursor = stream + 5;
+        } else if (layout_opcode == 0x12) {       // case 18
             dest = reinterpret_cast<std::uintptr_t>(gpu + 0x1C36C);
             source = reinterpret_cast<std::uintptr_t>(gpu + 0x308);
             cursor = stream + 6;
@@ -1492,10 +1526,10 @@ void camp_func_002831f0(u32 layout_opcode)
             return;                               // 0x002838F4 with no match
         }
         CampRule rules[] = {
-            {dest, source, 2, 0x002E47B8, 0x00206DCC, 0x06, true, 0},
-            {dest, source, 2, 0x003132FC, 0x002E4764, 0x11, true, 0},
-            {dest, source, 2, 0x0030BEA4, 0x002DCCD0, 0x12, true, 0},
-            {dest, source, 2, 0x002F27A0, 0x002193E0, 0x03, true, 0},
+            {dest, source, 2, 0x00206DCC, 0x002E47B8, 0x06, true, 0},
+            {dest, source, 2, 0x002E4764, 0x003132FC, 0x11, true, 0},
+            {dest, source, 2, 0x002DCCD0, 0x0030BEA4, 0x12, true, 0},
+            {dest, source, 2, 0x002193E0, 0x002F27A0, 0x03, true, 0},
         };
         for (const CampRule& rule : rules) {
             if (CampRuleMatches(cursor, rule.opcode)) {
@@ -1505,16 +1539,16 @@ void camp_func_002831f0(u32 layout_opcode)
         }
         return;
     }
-    case 20: {
+    case 19: {
         // 0x00283A68..0x00283BA8.
         u32 dest = reinterpret_cast<std::uintptr_t>(gpu + 0x205C);
         u32 source = reinterpret_cast<std::uintptr_t>(gpu + 0x36C);
         u32 cursor = stream + 7;
         CampRule rules[] = {
-            {dest, source, 2, 0x002E47B8, 0x00206DCC, 0x06, true, 0},
-            {dest, source, 2, 0x002F27F4, 0x00219434, 0x1F, true, 0},
-            {dest, source, 2, 0x002E46D0, 0x00206D38, 0x13, true, 0},
-            {dest, source, 2, 0x002F27A0, 0x002193E0, 0x03, true, 0},
+            {dest, source, 2, 0x00206DCC, 0x002E47B8, 0x06, true, 0},
+            {dest, source, 2, 0x00219434, 0x002F27F4, 0x1F, true, 0},
+            {dest, source, 2, 0x00206D38, 0x002E46D0, 0x13, true, 0},
+            {dest, source, 2, 0x002193E0, 0x002F27A0, 0x03, true, 0},
         };
         for (const CampRule& rule : rules) {
             if (CampRuleMatches(cursor, rule.opcode)) {
@@ -1524,14 +1558,18 @@ void camp_func_002831f0(u32 layout_opcode)
         }
         return;
     }
+    case 20:
     case 21:
-    case 22:
-    case 23: {
+    case 22: {
         // 0x00283BAC..0x00283EF4.
         u32 dest = 0;
         u32 source = 0;
         u32 cursor = 0;
-        if (layout_opcode == 0x15) {              // case 21
+        if (layout_opcode == 0x14) {              // case 20
+            dest = reinterpret_cast<std::uintptr_t>(gpu + 0x20C0);
+            source = reinterpret_cast<std::uintptr_t>(gpu + 0x3D0);
+            cursor = stream + 8;
+        } else if (layout_opcode == 0x15) {       // case 21
             dest = reinterpret_cast<std::uintptr_t>(gpu + 0x21B0);
             source = reinterpret_cast<std::uintptr_t>(gpu + 0x434);
             cursor = stream + 9;
@@ -1540,16 +1578,16 @@ void camp_func_002831f0(u32 layout_opcode)
             source = reinterpret_cast<std::uintptr_t>(gpu + 0x498);
             cursor = stream + 10;
         } else {
-            return;                               // case 23: no matching arm
+            return;                               // no matching arm
         }
         CampRule rules[] = {
-            {dest, source, 2, 0x002DCE58, 0x001F6384, 0x04, true, 0},
-            {dest, source, 2, 0x002E48DC, 0x00206EF0, 0x24, true, 0},
-            {dest, source, 2, 0x002E481C, 0x00206E30, 0x25, true, 0},
-            {dest, source, 2, 0x002E489C, 0x00206EB0, 0x26, true, 0},
-            {dest, source, 2, 0x002E4724, 0x00206D8C, 0x27, true, 0},
-            {dest, source, 2, 0x002E485C, 0x00206E70, 0x28, true, 0},
-            {dest, source, 2, 0x0030BF38, 0x002193E0, 0x03, true, 0},
+            {dest, source, 2, 0x001F6384, 0x002DCE58, 0x04, true, 0},
+            {dest, source, 2, 0x00206EF0, 0x002E48DC, 0x24, true, 0},
+            {dest, source, 2, 0x00206E30, 0x002E481C, 0x25, true, 0},
+            {dest, source, 2, 0x00206EB0, 0x002E489C, 0x26, true, 0},
+            {dest, source, 2, 0x00206D8C, 0x002E4724, 0x27, true, 0},
+            {dest, source, 2, 0x00206E70, 0x002E485C, 0x28, true, 0},
+            {dest, source, 2, 0x002193E0, 0x0030BF38, 0x03, true, 0},
         };
         for (const CampRule& rule : rules) {
             if (CampRuleMatches(cursor, rule.opcode)) {
@@ -1559,14 +1597,14 @@ void camp_func_002831f0(u32 layout_opcode)
         }
         return;
     }
-    case 24: {
+    case 23: {
         // 0x00283EF8..0x00283FB8.
         u32 dest = reinterpret_cast<std::uintptr_t>(gpu + 0x2390);
         u32 source = reinterpret_cast<std::uintptr_t>(gpu + 0x4FC);
         u32 cursor = stream + 0x0B;
         CampRule rules[] = {
-            {dest, source, 2, 0x0030BF0C, 0x002DCD38, 0x33, true, 0},
-            {dest, source, 2, 0x002F27A0, 0x002193E0, 0x03, true, 0},
+            {dest, source, 2, 0x002DCD38, 0x0030BF0C, 0x33, true, 0},
+            {dest, source, 2, 0x002193E0, 0x002F27A0, 0x03, true, 0},
         };
         for (const CampRule& rule : rules) {
             if (CampRuleMatches(cursor, rule.opcode)) {

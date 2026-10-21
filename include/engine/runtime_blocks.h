@@ -203,7 +203,8 @@ struct LcdRenderConfig {
     u32 mode_04;            // +0x04 (0x2600/0x2601/0x2700..0x2703)
     u32 format_08;          // +0x08 (0x2901/0x812D/0x812F/0x8130)
     u32 format_0c;          // +0x0C (same selector set)
-    u8  pad_10[0x0008];     // +0x10..+0x17
+    u8  pad_10[0x0004];     // +0x10..+0x13
+    s32 field_14;           // +0x14 (`ldr r0,[r0,#0x14]`, 0x0014306C)
     f32 color_18;           // +0x18 (`vldr s8`, 0x00142C84)
     f32 color_1c;           // +0x1C (`vldr s7`, 0x00142C80)
     f32 color_20;           // +0x20 (`vldr s1`, 0x00142C88)
@@ -224,6 +225,7 @@ static_assert(offsetof(LcdRenderConfig, mode_00) == 0x00);
 static_assert(offsetof(LcdRenderConfig, mode_04) == 0x04);
 static_assert(offsetof(LcdRenderConfig, format_08) == 0x08);
 static_assert(offsetof(LcdRenderConfig, format_0c) == 0x0C);
+static_assert(offsetof(LcdRenderConfig, field_14) == 0x14);
 static_assert(offsetof(LcdRenderConfig, color_18) == 0x18);
 static_assert(offsetof(LcdRenderConfig, alpha_28) == 0x28);
 static_assert(offsetof(LcdRenderConfig, address_34) == 0x34);
