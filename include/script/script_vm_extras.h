@@ -140,7 +140,9 @@ struct ScriptCamera {
     u8  pad_00c[0x10];
     f32 position[3];                    // +0x01C: `vldr s17,[r0,#0x1c]` (0x0025BED0)
     f32 route_position[3];              // +0x028: `vldr s18,[r0,#0x28]` (0x002C8D00)
-    f32 saved_position[3];              // +0x034: `vldr s16,[r0,#0x3c]` (0x002C8D08)
+    f32 saved_position[3];              // +0x034: `vstr s18,[r2,#0x34]`
+                                        //   (0x002C8F48) / `[r0,#0x34]`
+                                        //   (0x002C9130)
     f32 previous_position[3];           // +0x040: `stm r3,{r1,r2}` (0x002C9128)
     f32 yaw;                            // +0x04C: `vldr s0,[r0,#0x4c]` (0x002C9184)
     f32 route_angle;                    // +0x050: `vldr s0,[r0,#0x50]` (0x002C8EEC)
@@ -186,8 +188,9 @@ static_assert(offsetof(ScriptCamera, field_190) == 0x190);
 // 0x0049F91C: FlowScript event state (view over smt4::engine::g_MapRuntimeState)
 //
 // Only the bytes/words touched by these four routines are declared.  The
-// canonical storage is `g_MapRuntimeState` in engine/map_runtime.h, extended to
-// 0x3E4 bytes so the +0x3E0 access below fits.
+// canonical storage is `g_MapRuntimeState` (0x3E4 bytes) in
+// engine/map_runtime.h; the +0x3E0 debug-force dword is its last field and
+// the +0x3CC access below stays inside that block.
 // ---------------------------------------------------------------------------
 
 struct ScriptEventState {
@@ -446,7 +449,10 @@ static_assert(offsetof(MapEventState, field_092) == 0x092);
 static_assert(offsetof(MapEventState, field_094) == 0x094);
 static_assert(offsetof(MapEventState, field_0a0) == 0x0A0);
 
-extern MapEventState* g_MapEventState;            // 0x0049FA1C
+// 0x0049FA1C is the object itself (g_MapRuntimeState + 0x100), not a pointer.
+// It is exposed as an object reference so call sites use `g_MapEventState.x`,
+// mirroring the g_UiPartRenderState overlay style.
+extern MapEventState& g_MapEventState;            // 0x0049FA1C
 
 /**
  * 0x0044CDC8 (.data): world-map transition/palette block.  The only field the

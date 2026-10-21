@@ -1,5 +1,7 @@
 #include "engine/asd_runtime.h"
 #include "engine/asd_symbols.h"
+#include "engine/map_runtime.h"
+#include "camp/camp.h"
 #include "ui/ui_runtime.h"
 #include <cmath>
 #include <cstring>
@@ -10,9 +12,9 @@ namespace smt4::engine {
 // Observed call targets (addresses are the branch targets in code.bin)
 // ---------------------------------------------------------------------------
 
-// 0x0049F91C (BSS): shared map/script word block (declared in map_runtime.h;
-// only the dword at +0x08 is written here, 0x001ABC54).
-extern u8 g_MapRuntimeState[0x22C];
+// 0x0049F91C (BSS): shared map/script word block.  The canonical declaration
+// (u8[0x3E4]) lives in engine/map_runtime.h; only the dword at +0x08 is
+// written here (0x001ABC54).
 
 extern "C" {
     // 0x002C2B1C: engine context singleton (same spelling as window.cpp).
@@ -140,7 +142,10 @@ extern "C" {
     void  UiPart_GetSceneMatrix(void* out);                  // 0x002A2F1C
     f32   engine_func_0024ba44(u32 mode);                    // 0x0024BA44
     void  func_0024b9d0(void* owner);                        // 0x0024B9D0
-    void  func_002486ec(f32* quat);                          // 0x002486EC
+    // 0x002486EC (60 B): build the two rotation matrices at 0x004EA95C/
+    // 0x004EA97C from `axis` (r0) and `angle` (s0), forwarded to
+    // 0x0030F924.  Both arguments are live.
+    void  func_002486ec(const f32* axis, f32 angle);         // 0x002486EC
     void  ui_func_0024b874(UiPartInstance* instance,
                            UiPartSource* source, s32 life,
                            const f32* vector);               // 0x0024B874
@@ -635,10 +640,11 @@ void engine_func_001aba94() {
         // 0x001ABCD0..0x001ABD18: draw a direction permutation that does not
         // start with the previous first direction, then copy its four bytes to
         // work+0x248.
-        u32 order;
-        do {
-            order = Random_Range(0x17);         // 0x001ABCD0
-        } while (g_MazeDirectionOrders[order][0] == previous_direction);
+        u32 order = Random_Range(0x17);         // 0x001ABCD0
+        if (g_MazeDirectionOrders[order][0] == previous_direction) {
+            // 0x001ABCE8..0x001ABCF0: exactly one redraw, not a loop.
+            order = Random_Range(0x17);
+        }
 
         for (s32 i = 0; i < 4; ++i) {
             work->direction[i] = g_MazeDirectionOrders[order][i];
@@ -683,7 +689,7 @@ void engine_func_001aba94() {
             --extra_steps;
             carved_this_pass = 1;
             accepted = 1;
-            previous_direction = work->direction[0];  // 0x001AC00C
+            previous_direction = work->direction[i];  // 0x001AC00C
             if (extra_steps <= 0) {
                 goto next_pass;                 // 0x001AC144
             }
@@ -694,6 +700,11 @@ void engine_func_001aba94() {
                 static_cast<u8>(engine->cursor_x);
             work->cell_list[(work->cell_count - 1) * 2 + 1] =
                 static_cast<u8>(engine->cursor_y);
+
+            // 0x001AC038..0x001AC03C: put the pre-carve cursor back so the
+            // remaining directions start from the same cell.
+            engine->cursor_x = static_cast<s8>(x);
+            engine->cursor_y = static_cast<s8>(y);
         }
 
         // 0x001AC04C..0x001AC060: a pass that carved nothing backtracks.
@@ -745,8 +756,9 @@ void engine_func_001aba94() {
         }
 
     next_pass:
-        // 0x001AC144: the random walk always continues while the caller's
-        // retry flag is set; the flag is only cleared by the shared tail.
+        // 0x001AC144..0x001AC14C: `[sp+0x24]` is written once at entry
+        // (0x001ABAAC) and never modified again, so this test is always true
+        // and the walk continues until the frontier empties or it finishes.
         continue;
     } while (retry != 0);
 
@@ -1117,7 +1129,10 @@ markers_done:
 // All large-object offsets are the raw displacements in the listing; the
 // header only asserts the small prefix.
 
-CampSlotCommandWork* g_CampSlotCommandWork = nullptr;   // 0x0043DA90 (.data)
+// 0x0043DA90 (.data) is `smt4::camp::g_CampWork`, allocated by
+// Camp_Init (0x0028A688) and shared with the camp menu.  The command
+// routine only needs the prefix view `CampSlotCommandWork`, so it reuses the
+// canonical pointer instead of declaring a second, producer-less global.
 
 namespace {
 
@@ -1134,7 +1149,8 @@ inline T& WorkField(CampSlotCommandWork* work, u32 offset) {
 
 // DECOMP_FUNC(0x0018844c, 4016)
 void engine_func_0018844c(u32 command) {
-    CampSlotCommandWork* const work = g_CampSlotCommandWork;
+    CampSlotCommandWork* const work =
+        reinterpret_cast<CampSlotCommandWork*>(camp::g_CampWork);
     u16* const table =
         static_cast<u16*>(script_vm_func_002b66ec());  // 0x00188460
 
@@ -1743,6 +1759,14 @@ void engine_func_0018844c(u32 command) {
         camp_func_002bdac0(WorkBytes(work) + 0x6D4, 3, 0);
         work->field_020 = 6;                    // 0x00189380
 
+        // 0x00189384..0x001893A4: republish the command state before the
+        // model is destroyed: +0x24 <- +0x18, +0x18 <- 5, +0x1C <- 0,
+        // +0x14 <- 0.
+        WorkField<u32>(work, 0x24) = WorkField<u32>(work, 0x18);
+        WorkField<u32>(work, 0x18) = 5;
+        WorkField<u32>(work, 0x1C) = 0;
+        WorkField<u32>(work, 0x14) = 0;
+
         void* const model = WorkField<void*>(work, 0x25C0);
         script_vm_func_002a7aa0(model);          // 0x001893AC
         WorkField<void*>(work, 0x25C0) = nullptr;
@@ -1952,9 +1976,9 @@ void engine_func_002e4b10(UiPartUpdateOwner* owner) {
             rs.color[3] = stack_20;
 
             // 0x002E51B8..0x002E5224: first interpolation, weight
-            // `source+0xC8 * 0.001`.
+            // `source+0xC8 * 0.01` (0x3C23D70A at 0x002E5158/0x002E51D4).
             {
-                const f32 w = static_cast<f32>(source->field_c8) * 0.001f;
+                const f32 w = static_cast<f32>(source->field_c8) * 0.01f;
                 const f32 inv = 1.0f - w;
                 for (s32 i = 0; i < 4; ++i) {
                     rs.vector[i] = rs.vector[i] * inv + rs.color[i] * w;
@@ -1972,9 +1996,9 @@ void engine_func_002e4b10(UiPartUpdateOwner* owner) {
             }
 
             // 0x002E5254..0x002E52BC: second interpolation, weight
-            // `source+0xD4 * 0.001`.
+            // `source+0xD4 * 0.01` (same 0x3C23D70A constant, 0x002E5264).
             {
-                const f32 w = static_cast<f32>(source->field_d4) * 0.001f;
+                const f32 w = static_cast<f32>(source->field_d4) * 0.01f;
                 const f32 inv = 1.0f - w;
                 for (s32 i = 0; i < 4; ++i) {
                     rs.vector[i] = rs.vector[i] * inv + rs.color[i] * w;
@@ -1988,7 +2012,6 @@ void engine_func_002e4b10(UiPartUpdateOwner* owner) {
             f32 second_quad[4] = {
                 rs.vector[0], rs.vector[1], rs.vector[2], rs.vector[3],
             };
-            (void)second_quad;
             for (s32 i = 0; i < 4; ++i) {
                 rs.vector[i] = rs.scratch[i];
             }
@@ -1998,7 +2021,12 @@ void engine_func_002e4b10(UiPartUpdateOwner* owner) {
                 rs.vector[2] - rs.color[2],
                 rs.vector[3] - rs.color[3],
             };
-            Normalize3(delta);                  // 0x002E5348..0x002E5390
+            // 0x002E5348..0x002E534C: descriptor scale is the norm of the
+            // delta before it is normalized into the working vector.
+            part->scale = std::sqrt(delta[0] * delta[0] +
+                                    delta[1] * delta[1] +
+                                    delta[2] * delta[2]);
+            Normalize3(delta);                  // 0x002E5350..0x002E5390
             for (s32 i = 0; i < 3; ++i) {
                 rs.vector[i] = delta[i];
             }
@@ -2018,13 +2046,13 @@ void engine_func_002e4b10(UiPartUpdateOwner* owner) {
             rs.color[3] = g_TrailScratchA[3];
 
             // 0x002E5458..0x002E5494: random spawn rotation and quaternion
-            // matrix.
-            const f32 spin = engine_func_0024ba44(0) *
+            // matrix.  s0 = (rand-0.5)*2*field_e0*0.5*(pi/180).
+            const f32 spin = (engine_func_0024ba44(0) - 0.5f) * 2.0f *
                              static_cast<f32>(source->field_e0) *
-                             (1.0f - 0.5f) * 2.0f * 0.00390625f;
-            // 0x002E548C: the callee receives sp+0x50, which holds the
-            // normalized delta quad.
-            func_002486ec(delta);
+                             0.5f * 0.017453292f;
+            // 0x002E548C: axis sp+0x50 holds the normalized delta quad and
+            // the angle arrives in s0.
+            func_002486ec(delta, spin);
 
             // 0x002E5498..0x002E54D0: radial scale from source+0xCC/+0xD0.
             const f32 random2 = engine_func_0024ba44(0);
@@ -2043,11 +2071,16 @@ void engine_func_002e4b10(UiPartUpdateOwner* owner) {
                 rs.color[i] *= radial;
             }
 
-            // 0x002E55E0..0x002E5708: random life curve from +0xD8/+0xDC.
+            // 0x002E55E0..0x002E5708: the second interpolated quad parked at
+            // sp+0x30/s31/sp+0x60/s29 (0x002E52C0..0x002E52E4) is the base
+            // for the life curve, not the saved first-interpolated quad.
             const f32 random3 = engine_func_0024ba44(0);
             const f32 life_scale =
                 ((1.0f - source->field_dc) +
                  random3 * source->field_dc) * source->field_d8;
+            for (s32 i = 0; i < 4; ++i) {
+                rs.vector[i] = second_quad[i];
+            }
             for (s32 i = 0; i < 4; ++i) {
                 rs.vector[i] *= life_scale;
             }
@@ -2118,7 +2151,8 @@ void engine_func_002e4b10(UiPartUpdateOwner* owner) {
 
                 // 0x002E5950..0x002E59F0: rebuild the orientation matrix
                 // from +0x100, then apply it to +0x110.
-                func_002486ec(rs.vector);
+                // 0x002E5950: axis sp+0x50, angle s0 = the curve value `a`.
+                func_002486ec(rs.vector, a);
                 for (s32 i = 0; i < 4; ++i) {
                     rs.color[i] = rs.vector[i];
                 }
@@ -2231,7 +2265,8 @@ void engine_func_002e4b10(UiPartUpdateOwner* owner) {
                 quat[2] - rs.color[2],
             };
             Normalize3(delta);                  // no-op in the listing
-            func_002486ec(quat);                // 0x002E4EE4
+            // 0x002E4EE4: axis sp+0x50, angle s0 = the second curve value.
+            func_002486ec(quat, b);
 
             // 0x002E4EE8..0x002E4F2C: +0x110 receives the quaternion and is
             // scaled by `part->scale * t`.
@@ -2316,14 +2351,20 @@ void engine_func_00304164(TrailOwner* owner) {
     f32 camera[4] = {0.0f, 0.0f, 0.0f, 0.0f};
     func_0019d9d4(camera);
 
-    // 0x00304210..0x00304260: three cross-section widths derived from
-    // config+0x7C/+0x80.
-    const f32 stack_width0 = config->field_80 + config->field_7c;
-    const f32 stack_width1 = stack_width0 + config->field_7c;
-    const f32 stack_width2 = stack_width1 + config->field_80;
-    (void)stack_width0;
-    (void)stack_width1;
-    (void)stack_width2;
+    // 0x00304210..0x0030426C: cumulative cross-section widths parked at
+    // sp+0x08..sp+0x18 and reused as the per-ring offsets by the history
+    // loop.  sp+0xEC holds the common spread/slope step.
+    const f32 width_80 = config->field_80;
+    const f32 width_7c = config->field_7c;
+    const f32 stack_width0 = width_80 + width_7c;       // sp+0x10
+    const f32 stack_width1 = stack_width0 + width_7c;   // sp+0x14
+    const f32 stack_width2 = stack_width1 + width_80;   // sp+0x18
+    const f32 spread_factor = span * 0.1f * -0.0872665f; // sp+0xEC
+
+    // 0x003041CC/0x00304220: the local radius copy and the jitter base live
+    // across the whole entry loop, not per entry.
+    f32 radius = config->radius;                        // sp+0x74
+    f32 radial_base = 0.34906587f;                      // sp+0xBC
 
     // 0x00304260..0x0030427C: buffer time accumulator.  The old value is the
     // sample time used by the spawn phase.
@@ -2398,12 +2439,13 @@ void engine_func_00304164(TrailOwner* owner) {
             continue;
         }
 
-        // 0x003042DC..0x00304304: random mirror and radial scale.
+        // 0x003042DC..0x00304304: mirror the local radius copy; the listing
+        // negates sp+0x74, never config+0x50.
         if ((engine_func_0024b990(0) & 1) != 0) {
-            config->radius = -config->radius;
+            radius = -radius;
         }
         const f32 random0 = engine_func_0024ba44(0);
-        const f32 radial = (0.05f + random0 * 0.95f) * config->radius;
+        const f32 radial = (0.05f + random0 * 0.95f) * radius;
         const f32 phase = engine_func_0024ba44(0) * 3.14159265f;
 
         // 0x00304330..0x00304370: the two neighbouring ring samples and the
@@ -2415,16 +2457,20 @@ void engine_func_00304164(TrailOwner* owner) {
         const f32 dx = ring1 - ring0;
         const f32 tangent =
             func_002460b4(dx / std::sqrt(dx * dx + span * span));
-        (void)tangent;
 
         const f32 random1 = engine_func_0024ba44(0);
         const f32 spread = 0.3f + random1 * 0.7f;
 
-        // 0x00304394..0x003043D4
-        entry->offset_a = spread * config->field_7c;
-        entry->offset_b = 0.5f * (config->field_7c + config->field_80) *
-                          static_cast<f32>(entry->life + 1);
-        entry->offset_c = 0.0f;
+        // 0x00304394..0x003043DC: the live path only reads the spawn
+        // offsets +0x24/+0x28 to derive the ring angle; it never writes
+        // +0x24/+0x28/+0x2C, so offset_c keeps its spawned value.
+        const f32 life_plus_one = static_cast<f32>(entry->life + 1);
+        const f32 ring_angle =
+            (entry->offset_b +
+             (entry->offset_a +
+              0.5f * config->time_step * life_plus_one) * life_plus_one) *
+            40.743665f;
+        const f32 spread_b = spread * spread_factor;    // sp+0xF8
 
         // 0x003043E0..0x00304438: two rotation matrices and the combined
         // basis.
@@ -2433,20 +2479,20 @@ void engine_func_00304164(TrailOwner* owner) {
         func_00248444();
 
         UiPartRenderStateView& rs = RenderState();
-        const f32 a = entry->offset_b * 40.743665f;
-        rs.vector[0] = ui_func_002b73a4(a) * sample_time;
+        rs.vector[0] = ui_func_002b73a4(ring_angle) * sample_time;
         rs.vector[1] = 0.0f;
-        rs.vector[2] = ui_func_002b740c(a) * sample_time;
+        rs.vector[2] = ui_func_002b740c(ring_angle) * sample_time;
         rs.vector[3] = 0.0f;
         func_0024603c();                            // 0x0030443C
-        Normalize3(rs.vector);
 
-        // 0x00304440..0x003044AC: save the normalized quad (sp+0xC0) and
-        // build the tangent quad (g+0x100) as direction - entry vector.
+        // 0x00304440..0x003044AC: keep the transformed direction D for the
+        // cross-section/translate, then normalize it into the quaternion
+        // copy at sp+0xC0 (used as the first rotation axis).
+        const f32 dir[3] = {rs.vector[0], rs.vector[1], rs.vector[2]};
+        Normalize3(rs.vector);
         f32 quat[4] = {
             rs.vector[0], rs.vector[1], rs.vector[2], rs.vector[3],
         };
-        const f32 dir[3] = {quat[0], quat[1], quat[2]};
         f32 tangent_dir[3] = {
             dir[0] - entry->vector[0],
             dir[1] - entry->vector[1],
@@ -2457,11 +2503,12 @@ void engine_func_00304164(TrailOwner* owner) {
         rs.scratch[1] = tangent_dir[1];
         rs.scratch[2] = tangent_dir[2];
         rs.scratch[3] = 0.0f;
-        // 0x00304594..0x003045C8: first cross product, tangent x direction.
+        // 0x00304594..0x003045C8: first cross product, tangent x normalized
+        // direction (the quaternion copy at +0x110).
         f32 cross[3] = {
-            tangent_dir[1] * dir[2] - tangent_dir[2] * dir[1],
-            tangent_dir[2] * dir[0] - tangent_dir[0] * dir[2],
-            tangent_dir[0] * dir[1] - tangent_dir[1] * dir[0],
+            tangent_dir[1] * quat[2] - tangent_dir[2] * quat[1],
+            tangent_dir[2] * quat[0] - tangent_dir[0] * quat[2],
+            tangent_dir[0] * quat[1] - tangent_dir[1] * quat[0],
         };
         Normalize3(cross);
         // 0x003045D0..0x003045D8: this normalized tangent cross is parked at
@@ -2499,8 +2546,8 @@ void engine_func_00304164(TrailOwner* owner) {
 
         // 0x00304688..0x0030468C: the basis vector is scaled by
         // config+0x80 + config+0x7C and parked in g_TrailScratchB.
-        const f32 width0 = config->field_80 + config->field_7c;
-        const f32 width1 = config->field_7c;
+        const f32 width0 = stack_width0;
+        const f32 width1 = width_7c;
         g_TrailScratchB[0] = basis[0] * width0;
         g_TrailScratchB[1] = basis[1] * width0;
         g_TrailScratchB[2] = basis[2] * width0;
@@ -2549,16 +2596,18 @@ void engine_func_00304164(TrailOwner* owner) {
         // (0x003042B8..0x003042D8: smulbb 0x6667, asr 17).
         const s32 segments = static_cast<s32>(frame->count) / 5;
         f32 offsets[5] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f};   // sp+0xA0
-        f32 accum[5] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f};     // sp+0x08
+        // 0x00304240..0x0030426C: sp+0x08 already holds the five cumulative
+        // ring widths used to scale each per-ring step.
+        f32 accum[5] = {
+            0.0f, width_80, stack_width0, stack_width1, stack_width2,
+        };
         if (segments > 1) {
             u8* history = reinterpret_cast<u8*>(points) + 0x3C;
-            f32 radial_base = 0.34906587f;           // sp+0xBC
-            f32 phase_accum = phase;                 // s17
+            f32 phase_accum = phase + angle_step;    // s17 at 0x00304344
             f32 section_radial = radial;             // sp+0xF4
-            f32 spread_b = 0.0f;                     // sp+0xF8
-            const f32 ring_prev = ring0;             // s28
-            const f32 initial_twist = tangent;       // s29
-            f32 previous_length = 0.0f;
+            f32 spread_b_hist = spread_b;            // sp+0xF8
+            f32 ring_prev = ring1;                   // s28 at 0x00304354
+            f32 prev_twist = tangent;                // s29 at 0x00304374
 
             for (s32 seg = 1; seg < segments; ++seg, history += 0x3C) {
                 // 0x003048F0..0x0030490C
@@ -2571,16 +2620,20 @@ void engine_func_00304164(TrailOwner* owner) {
                     radial_base = -radial_base;
                 }
 
-                // 0x0030492C..0x00304998
+                // 0x0030492C..0x00304998: the first iteration starts at
+                // phase + 2*angle_step because s17 already held
+                // phase + angle_step before the loop.
                 phase_accum += angle_step;
                 if (phase_accum >= 3.14159265f) {
-                    config->radius = -config->radius;
+                    const f32 old_radius = radius;
+                    radius = -radius;
                     phase_accum -= 3.14159265f;
                     const f32 random_a = engine_func_0024ba44(0);
                     section_radial =
-                        -(config->radius * (0.05f + random_a * 0.95f));
+                        -(old_radius * (0.05f + random_a * 0.95f));
                     const f32 random_b = engine_func_0024ba44(0);
-                    spread_b = (0.3f + random_b * 0.7f) * -0.0872665f;
+                    spread_b_hist =
+                        (0.3f + random_b * 0.7f) * spread_factor;
                 }
 
                 // 0x0030499C..0x003049C8: second 0x002460B4 call.
@@ -2593,65 +2646,62 @@ void engine_func_00304164(TrailOwner* owner) {
                                                     span * span)) + jitter;
 
                 // 0x003049D0..0x00304A6C: first orientation matrix from the
-                // saved quaternion, then a matrix multiply of direction2.
-                func_002486ec(quat);
-                for (s32 i = 0; i < 3; ++i) {
-                    rs.vector[i] = tangent_dir[i];
-                }
-                rs.vector[3] = 0.0f;
-                Transform4(rs.matrix, rs.vector, rs.vector);
+                // saved quaternion and the previous twist, then transform the
+                // tangent into dir2.
+                func_002486ec(quat, prev_twist);
+                f32 dir2[4] = {
+                    tangent_dir[0], tangent_dir[1], tangent_dir[2], 0.0f,
+                };
+                Transform4(rs.matrix, dir2, dir2);
 
                 // 0x00304A74..0x00304AFC: second orientation matrix from the
-                // cross-section quad (sp+0x50).
-                func_002486ec(saved_cross_quad);
-                Transform4(rs.matrix, rs.vector, rs.vector);
+                // cross-section quad (sp+0x50) and the spread angle.
+                func_002486ec(saved_cross_quad, spread_b_hist);
 
-                // 0x00304B00..0x00304BA4: final direction multiply.
-                for (s32 i = 0; i < 3; ++i) {
-                    rs.color[i] = dir[i];
-                }
-                rs.color[3] = 0.0f;
-                Transform4(rs.matrix, rs.color, rs.color);
+                // 0x00304B00..0x00304BA4: transform the unnormalized spawn
+                // direction D through the second matrix.
+                f32 delta_dir[4] = {dir[0], dir[1], dir[2], 0.0f};
+                Transform4(rs.matrix, delta_dir, delta_dir);
 
-                // 0x00304BA4..0x00304C10: normalize the delta between the
-                // transformed direction and the cross-section direction,
-                // then convert its length to the per-sample step.
+                // 0x00304BA4..0x00304C10: the per-sample length is the norm
+                // of the D2 - D delta (0x00304BF0..0x00304C08), not the
+                // transformed direction.
                 f32 sample_delta[3] = {
-                    rs.color[0] - rs.scratch[0],
-                    rs.color[1] - rs.scratch[1],
-                    rs.color[2] - rs.scratch[2],
+                    delta_dir[0] - dir[0],
+                    delta_dir[1] - dir[1],
+                    delta_dir[2] - dir[2],
                 };
-                Normalize3(sample_delta);
                 const f32 length = std::sqrt(
-                    rs.color[0] * rs.color[0] +
-                    rs.color[1] * rs.color[1] +
-                    rs.color[2] * rs.color[2]);
-                // 0x00304BA4/0x00304BC4: s6 = twist - initial_twist,
-                // s0 = s6 * [0x304CF8] (0x3F000000); 0x00304C10 then scales
-                // the acos result by pi/128.
-                const f32 twist_delta = (twist - initial_twist) * 0.5f;
+                    sample_delta[0] * sample_delta[0] +
+                    sample_delta[1] * sample_delta[1] +
+                    sample_delta[2] * sample_delta[2]);
+                // 0x00304BC4/0x00304C10: (twist - previous_twist) * 0.5,
+                // then func_00361074(...) * pi/128.
+                const f32 twist_delta = (twist - prev_twist) * 0.5f;
                 const f32 sample_step =
                     func_00361074(twist_delta) * 0.024543693f;  // pi/128
-                previous_length = length;
-                (void)previous_length;
+
+                // 0x00304C18..0x00304C1C: refresh s28/s29 for the next ring.
+                ring_prev = ring;
+                prev_twist = twist;
 
                 // 0x00304C14..0x00304D74: five transformed history points.
+                // r6-0x3C is the previous 0x3C-byte record; r4 advances by
+                // 0x3C at 0x00304D7C.
                 TrailSample* const sample =
                     reinterpret_cast<TrailSample*>(history);
+                const TrailSample* const prev_sample = sample - 1;
                 for (s32 k = 0; k < 5; ++k) {
                     const f32 step = accum[k] * sample_step;
                     const f32 scale = offsets[k] + step + length;
                     offsets[k] = step;
 
-                    sample->points[k][0] = points[k * 3 + 0] +
-                                           rs.scratch[0] * scale;
-                    sample->points[k][1] = points[k * 3 + 1] +
-                                           rs.scratch[1] * scale;
-                    sample->points[k][2] = points[k * 3 + 2] +
-                                           rs.scratch[2] * scale;
-                    accum[k] = step;
-                    (void)initial_twist;
-                    (void)twist;
+                    sample->points[k][0] = prev_sample->points[k][0] +
+                                           dir2[0] * scale;
+                    sample->points[k][1] = prev_sample->points[k][1] +
+                                           dir2[1] * scale;
+                    sample->points[k][2] = prev_sample->points[k][2] +
+                                           dir2[2] * scale;
                 }
             }
         }

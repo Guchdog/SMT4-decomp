@@ -23,9 +23,10 @@ ScriptCameraWork* g_ScriptCameraWork =
 //   g_MapRuntimeState   (0x0049F91C)
 // They are reused here rather than redeclared.
 
-// 0x0049FA1C (.bss): world-map transition state.
-MapEventState* g_MapEventState =
-    reinterpret_cast<MapEventState*>(static_cast<std::uintptr_t>(0x0049FA1C));
+// 0x0049FA1C (.bss): world-map transition state.  This is the object at
+// g_MapRuntimeState+0x100, not a pointer stored at that address.
+MapEventState& g_MapEventState = *reinterpret_cast<MapEventState*>(
+    smt4::engine::g_MapRuntimeState + 0x100);
 
 // 0x0049F3F0 (.bss): camera projection object consumed by 0x00298FEC,
 // 0x002C1774 and 0x002C1FFC.  The object is 0x508 bytes (0x002C1774 stores
@@ -543,13 +544,19 @@ void script_vm_func_00276cac() {
                   w->target[1] - source[1],
                   w->target[2] - source[2]};
     f32 aim_length = sqrtf(aim[0] * aim[0] + aim[1] * aim[1] + aim[2] * aim[2]);
+    f32 inv_aim;
     if (aim_length <= 1.0e-4f) {                            // 0x002775E8 (0x38D1B717)
+        // 0x00277620..0x00277660: the fallback re-normalizes target-eye but
+        // keeps the tiny s16 length for the later clamp comparisons.
         aim[0] = w->target[0] - w->eye[0];
         aim[1] = w->target[1] - w->eye[1];
         aim[2] = w->target[2] - w->eye[2];
-        aim_length = sqrtf(aim[0] * aim[0] + aim[1] * aim[1] + aim[2] * aim[2]);
+        const f32 fallback_length =
+            sqrtf(aim[0] * aim[0] + aim[1] * aim[1] + aim[2] * aim[2]);
+        inv_aim = 1.0f / fallback_length;
+    } else {
+        inv_aim = 1.0f / aim_length;
     }
-    const f32 inv_aim = 1.0f / aim_length;
     dir[0] = aim[0] * inv_aim;
     dir[1] = aim[1] * inv_aim;
     dir[2] = aim[2] * inv_aim;
@@ -589,11 +596,13 @@ void script_vm_func_00276cac() {
 
     // ---- 0x0027774C..0x002777C8: blend distance / speed ------------------
     if (w->hold_flag == 0 && w->track_target == 0 && w->hold_timer <= 0) {
-        if (w->blend_distance > aim_length) {                // 0x0027777C
+        // 0x0027777C..0x00277780: bgt/bhs both target the equal/zero-speed
+        // path, so equality is included.
+        if (w->blend_distance >= aim_length) {
             w->blend_distance = aim_length;
             w->blend_speed = 0.0f;
         } else {
-            w->blend_speed += 10.0f;                         // 0x00277790
+            w->blend_speed += 8.0f;                          // 0x00277788 (0x41000000)
             if (w->blend_speed > 40.0f) {
                 w->blend_speed = 40.0f;
             }
@@ -990,40 +999,40 @@ void script_vm_func_002c8c90() {
             ev->arrival_y = cam->position[1];
             ev->arrival_z = cam->position[2];
             ev->arrival_yaw = cam->yaw;                     // 0x002C9574
-            g_MapEventState->field_090 = 0;                 // 0x002C9578
-            g_MapEventState->field_092 = 0;
+            g_MapEventState.field_090 = 0;                 // 0x002C9578
+            g_MapEventState.field_092 = 0;
         }
 
-        if (g_MapEventState->field_07c != 0) {
+        if (g_MapEventState.field_07c != 0) {
             // 0x002C958C..0x002C961C: arrival counter and section window.
             ev->arrival_x = cam->position[0];
             ev->arrival_y = cam->position[1];
             ev->arrival_z = cam->position[2];
             ev->arrival_yaw = cam->yaw;
 
-            s32 arrival = static_cast<s16>(g_MapEventState->field_090 + 1);
-            g_MapEventState->field_090 = static_cast<s16>(arrival);
-            g_MapEventState->field_092 = 0;
+            s32 arrival = static_cast<s16>(g_MapEventState.field_090 + 1);
+            g_MapEventState.field_090 = static_cast<s16>(arrival);
+            g_MapEventState.field_092 = 0;
 
             switch (ev->field_218) {
                 case 0:
                     if (static_cast<u32>(arrival - 5) <= 3) {
-                        g_MapEventState->field_092 = 1;
+                        g_MapEventState.field_092 = 1;
                     }
                     break;
                 case 1:
                     if (static_cast<u32>(arrival - 3) <= 3) {
-                        g_MapEventState->field_092 = 1;
+                        g_MapEventState.field_092 = 1;
                     }
                     break;
                 case 2:
                     if (static_cast<u32>(arrival - 6) <= 5) {
-                        g_MapEventState->field_092 = 1;
+                        g_MapEventState.field_092 = 1;
                     }
                     break;
                 case 3:
                     if (static_cast<u32>(arrival - 5) <= 4) {
-                        g_MapEventState->field_092 = 1;
+                        g_MapEventState.field_092 = 1;
                     }
                     break;
                 default:
@@ -1031,14 +1040,14 @@ void script_vm_func_002c8c90() {
             }
         }
 
-        if (g_MapEventState->field_0a0 == 0 &&
-            g_MapEventState->field_094 > 0) {
+        if (g_MapEventState.field_0a0 == 0 &&
+            g_MapEventState.field_094 > 0) {
             ev->field_1a0 = 1;                              // 0x002C9634
             ev->field_1a4 = 0;
             goto after_state2;
         }
 
-        if (g_MapEventState->field_094 == 0 && cam->frame > 0xE) {
+        if (g_MapEventState.field_094 == 0 && cam->frame > 0xE) {
             // 0x002C9658: route complete; next frame runs state 2.
             ev->field_17c = 0;
             cam->field_168 = 0;
