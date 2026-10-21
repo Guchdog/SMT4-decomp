@@ -757,7 +757,7 @@ u16   NkmGrowEvent_func_0033bb94(NkmGrowEventWork* work);
 // ---------------------------------------------------------------------------
 
 extern LmapMainWork* g_LmapMainWork;                // 0x00447060 (BSS)
-extern MapSceneView* g_MapSceneView;                // 0x00447E88 (BSS slot)
+extern MapSceneView* g_MapSceneView;                // 0x00447E88 (.data)
 extern MapIfWork* g_MapIfWork;                      // 0x00447A78 (BSS)
 extern MapEnemyWork* g_MapEnemyWork;                // 0x00447600 (BSS)
 extern MapDepartWork* g_MapDepartWork;              // 0x004475B8 (BSS)
@@ -773,9 +773,9 @@ extern MapIfProjectionTables g_MapIfProjectionTables;   // 0x004B5D30 (BSS)
  *
  * mapDepart compares the dword at +0x00 with 100 (`ldr r0,[r8]`,
  * 0x0027EF04), while mapMain and lmapMain clear byte +0x22B
- * (`strb r6,[r0,#0x22b]`, 0x001B4500 / 0x001D2D14).  Only those two accesses
- * are proven, so the array is sized to the highest byte touched.
+ * (`strb r6,[r0,#0x22b]`, 0x001B4500 / 0x001D2D14).  script_vm_func_00399f28
+ * also reads the debug-force dword at +0x3E0, so the block is sized 0x3E4.
  */
-extern u8 g_MapRuntimeState[0x22C];                 // 0x0049F91C (BSS)
+extern u8 g_MapRuntimeState[0x3E4];                 // 0x0049F91C (BSS)
 
 } // namespace smt4::engine

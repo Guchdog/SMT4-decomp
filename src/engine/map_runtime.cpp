@@ -11,10 +11,11 @@ namespace smt4::engine {
 // ---------------------------------------------------------------------------
 
 LmapMainWork* g_LmapMainWork = nullptr;                 // 0x00447060 (BSS)
-// 0x00447E88: the map-scene view singleton is produced by the map-scene
-// loader outside this milestone.  lmapMain (0x001D2B14) assumes that external
-// producer has already populated this slot before it runs.
-MapSceneView* g_MapSceneView = nullptr;                 // 0x00447E88 (BSS slot)
+// 0x00447E88 (.data): pointer slot to the 0x004BCCD0 map-scene view.  The
+// file initializer is the observed 0x004BCCD0 value; the map-scene loader may
+// replace it before lmapMain (0x001D2B14) runs.
+MapSceneView* g_MapSceneView =
+    reinterpret_cast<MapSceneView*>(static_cast<std::uintptr_t>(0x004BCCD0));
 MapIfWork* g_MapIfWork = nullptr;                       // 0x00447A78 (BSS)
 MapEnemyWork* g_MapEnemyWork = nullptr;                 // 0x00447600 (BSS)
 MapDepartWork* g_MapDepartWork = nullptr;               // 0x004475B8 (BSS)
@@ -27,7 +28,7 @@ NaviMainWork* g_NaviMainWork = nullptr;                 // 0x0044CDF0 (BSS)
 MapIfProjectionTables g_MapIfProjectionTables{};
 
 // 0x0049F91C (BSS): shared map/script word block (see map_runtime.h).
-u8 g_MapRuntimeState[0x22C] = {};
+u8 g_MapRuntimeState[0x3E4] = {};
 
 // ---------------------------------------------------------------------------
 // Observed call targets (addresses are the branch targets in code.bin)

@@ -125,11 +125,12 @@ static_assert(offsetof(ScriptCameraWork, track_target) == 0x2B8);
 extern ScriptCameraWork* g_ScriptCameraWork;      // 0x004474F4 -> 0x0049F130
 
 // ---------------------------------------------------------------------------
-// 0x004BCCD0: event/scene camera (`g_ScriptCamera`)
+// 0x004BCCD0: event/scene camera (view over smt4::engine::g_MapSceneView)
 //
-// The pointer lives in .data at 0x00447E88 (`ldr r0,[r8]` with r8 =
-// 0x00447E88 at 0x00276F78/0x002C8CE0).  Its position (+0x1C..+0x24) is
-// returned by 0x002327EC (`add r0,r0,#0x1c`), which both routines use.
+// The canonical pointer lives in .data at 0x00447E88 and is declared as
+// `g_MapSceneView` in engine/map_runtime.h.  Its observed initial value is
+// 0x004BCCD0.  Its position (+0x1C..+0x24) is returned by 0x002327EC
+// (`add r0,r0,#0x1c`), which both routines use.
 // ---------------------------------------------------------------------------
 
 struct ScriptCamera {
@@ -181,13 +182,12 @@ static_assert(offsetof(ScriptCamera, field_188) == 0x188);
 static_assert(offsetof(ScriptCamera, field_18c) == 0x18C);
 static_assert(offsetof(ScriptCamera, field_190) == 0x190);
 
-extern ScriptCamera* g_ScriptCamera;              // 0x00447E88 -> 0x004BCCD0
-
 // ---------------------------------------------------------------------------
-// 0x0049F91C: FlowScript event state (`g_ScriptEventState`)
+// 0x0049F91C: FlowScript event state (view over smt4::engine::g_MapRuntimeState)
 //
 // Only the bytes/words touched by these four routines are declared.  The
-// object is owned by the script runtime, so no size is asserted.
+// canonical storage is `g_MapRuntimeState` in engine/map_runtime.h, extended to
+// 0x3E4 bytes so the +0x3E0 access below fits.
 // ---------------------------------------------------------------------------
 
 struct ScriptEventState {
@@ -243,30 +243,10 @@ static_assert(offsetof(ScriptEventState, field_3d0) == 0x3D0);
 static_assert(offsetof(ScriptEventState, field_3d4) == 0x3D4);
 static_assert(offsetof(ScriptEventState, field_3e0) == 0x3E0);
 
-extern ScriptEventState* g_ScriptEventState;      // 0x0049F91C
-
 // ---------------------------------------------------------------------------
-// 0x0044CDF0: world-map UI context (`g_MapUiContext`)
-//
-// 0x00231F6C reads +0x0C, 0x002327C4 reads +0x10, 0x002327D8 reads +0x28
-// and 0x00231F58 returns its address +0x38.
+// 0x0044CDF0 world-map/navi context is owned by src/engine/map_runtime.cpp as
+// `smt4::engine::g_NaviMainWork`; no duplicate declaration here.
 // ---------------------------------------------------------------------------
-
-struct MapUiContext {
-    u8  pad_000[0x0C];
-    s32 mode;                           // +0x00C: `ldr r0,[r0,#0xc]` (0x00231F74)
-    s32 field_010;                      // +0x010: `ldr r0,[r0,#0x10]` (0x002327CC)
-    u8  pad_014[0x14];
-    void* field_028;                    // +0x028: `ldr r0,[r0,#0x28]` (0x002327E0)
-    u8  pad_02c[0x0C];
-    f32 field_038[2];                   // +0x038: `add r0,r0,#0x38` (0x00231F60)
-};
-static_assert(offsetof(MapUiContext, mode) == 0x00C);
-static_assert(offsetof(MapUiContext, field_010) == 0x010);
-static_assert(offsetof(MapUiContext, field_028) == 0x028);
-static_assert(offsetof(MapUiContext, field_038) == 0x038);
-
-extern MapUiContext* g_MapUiContext;              // 0x0044CDF0 -> object
 
 // ---------------------------------------------------------------------------
 // World-map work buffer shared by 0x00399F28 / 0x0039D8B8

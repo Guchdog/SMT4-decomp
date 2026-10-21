@@ -1,5 +1,6 @@
 #include "script/script_vm_extras.h"
 #include "engine/asd_symbols.h"
+#include "engine/map_runtime.h"
 
 #include <cstdint>
 #include <cstring>
@@ -16,21 +17,15 @@ namespace smt4::script {
 ScriptCameraWork* g_ScriptCameraWork =
     reinterpret_cast<ScriptCameraWork*>(static_cast<std::uintptr_t>(0x0049F130));
 
-// 0x00447E88 (.data): pointer to the 0x004BCCD0 event camera.
-ScriptCamera* g_ScriptCamera =
-    reinterpret_cast<ScriptCamera*>(static_cast<std::uintptr_t>(0x004BCCD0));
-
-// 0x0049F91C (.bss): FlowScript event state.
-ScriptEventState* g_ScriptEventState =
-    reinterpret_cast<ScriptEventState*>(static_cast<std::uintptr_t>(0x0049F91C));
+// 0x00447E88 / 0x0044CDF0 / 0x0049F91C are owned by src/engine/map_runtime.cpp:
+//   g_MapSceneView     (0x00447E88 -> 0x004BCCD0)
+//   g_NaviMainWork      (0x0044CDF0)
+//   g_MapRuntimeState   (0x0049F91C)
+// They are reused here rather than redeclared.
 
 // 0x0049FA1C (.bss): world-map transition state.
 MapEventState* g_MapEventState =
     reinterpret_cast<MapEventState*>(static_cast<std::uintptr_t>(0x0049FA1C));
-
-// 0x0044CDF0 (.data): pointer slot for the world-map UI context.  The word is
-// zero at file time and filled by the UI runtime before 0x00231F6C runs.
-MapUiContext* g_MapUiContext = nullptr;
 
 // 0x0049F3F0 (.bss): camera projection object consumed by 0x00298FEC,
 // 0x002C1774 and 0x002C1FFC.  The object is 0x508 bytes (0x002C1774 stores
@@ -164,6 +159,9 @@ extern "C" {
     void  camp_func_00231d60(void* map_state, s32 id, s32 x, s32 y,
                              f32 a, f32 b);                             // 0x00231D60
     void  ui_func_00231f80(WorldMapWork* work);                         // 0x00231F80
+    // The fifth (y) stack word is produced by `vcvt.s32.f32` + `vstr` and is
+    // read back by the callee via `vldmia r1,{s16,s17}`; callers must pass the
+    // integer bit pattern, not a float value.
     void  func_002b06a0(s32 mode, s32 sprite_type, s32 depth, s32 x,
                         f32 y, f32 alpha, const void* extra);           // 0x002B06A0
 
@@ -193,7 +191,7 @@ extern "C" {
 namespace {
 
 constexpr f32 kDegToRad = 0.01745329238474369f;   // 0x3C8EFA35
-constexpr f32 kRadToDeg = 57.295780181884766f;    // 0x42654CA3
+constexpr f32 kRadToDeg = 57.3248405456543f;      // 0x42654CA3
 
 // Reinterprets a word as a float.  The map renderer passes the phase word
 // (0x0B/0x0F1) through `vldr s0,[0x44CDC8+0x10]` / `vstr s0,[sp]` to callees
@@ -266,7 +264,10 @@ inline f32 YawBetween(const f32* a, const f32* b) {
 void script_vm_func_00276cac() {
     UiEngine_GetContext();                                  // 0x00276CB8
     ScriptCameraWork* w = g_ScriptCameraWork;               // 0x00276CBC
-    ScriptCamera* cam = g_ScriptCamera;
+    ScriptCamera* cam = reinterpret_cast<ScriptCamera*>(
+        smt4::engine::g_MapSceneView);
+    ScriptEventState* const ev_state = reinterpret_cast<ScriptEventState*>(
+        smt4::engine::g_MapRuntimeState);
 
     // ---- 0x00276CC4..0x00276D4C: "snap from model" fast path -------------
     if (w->snap_positions != 0) {
@@ -352,10 +353,10 @@ void script_vm_func_00276cac() {
     }
 
     // ---- 0x00276F20: mode dispatch --------------------------------------
-    const f32 kFar = 200000.0f;                             // 0x48483200
+    const f32 kFar = 205000.0f;                             // 0x48483200
     const f32 kFovA = 45.0f;                                // 0x42340000
     const f32 kNearA = 20.0f;                               // 0x41A00000
-    const f32 kAspect = 1.0f / 3.0f;                        // 0x3FD55555
+    const f32 kAspect = 1.6666666f;                         // 0x3FD55555
     const f32 kNearFloor = 20.0f;
     const f32 kNearLow = 140.0f;                            // 0x430C0000
     const f32 kCutDistance = 180.0f;                        // 0x43340000
@@ -432,6 +433,7 @@ void script_vm_func_00276cac() {
     }
 
     // ---- 0x002771D4..0x0027728C: choose the preset index -----------------
+    UiEngine_GetContext();                                  // 0x002771D4
     s32 preset = static_cast<s32>(w->saved_camera_id);
     if (w->camera_id != -1) {
         preset = w->camera_id;
@@ -529,8 +531,8 @@ void script_vm_func_00276cac() {
     // ---- 0x0027752C..0x00277664: visible point and its distance ----------
     f32 source[3];
     if (w->mode == 0 &&
-        g_ScriptEventState->field_3cc == 0 &&
-        g_ScriptEventState->field_370 != 1 &&
+        ev_state->field_3cc == 0 &&
+        ev_state->field_370 != 1 &&
         w->track_target == 0) {
         script_vm_func_00266e88(w->eye, w->target, source); // 0x002775AC
     } else {
@@ -784,8 +786,10 @@ void script_vm_func_002c8c90() {
     ui_func_002bcf58(&banks[2][0], &g_MapRouteBanks[2][0], 0xA0);
     ui_func_002bcf58(&banks[3][0], &g_MapRouteBanks[3][0], 0xA0);
 
-    ScriptCamera* cam = g_ScriptCamera;
-    ScriptEventState* ev = g_ScriptEventState;
+    ScriptCamera* cam = reinterpret_cast<ScriptCamera*>(
+        smt4::engine::g_MapSceneView);
+    ScriptEventState* ev = reinterpret_cast<ScriptEventState*>(
+        smt4::engine::g_MapRuntimeState);
 
     const f32 start_x = cam->route_position[0];             // s18, 0x002C8D00
     const f32 start_y = cam->route_position[1];             // s17
@@ -844,8 +848,8 @@ void script_vm_func_002c8c90() {
             if (not_in_progress) {
                 // 0x002C8F74: collision with map geometry resets the
                 // accumulated distance, otherwise it eases up to 20.
-                if (script_vm_func_0027f6fc(cam->saved_position,
-                                            cam->route_position) != 0) {
+                if (script_vm_func_0027f6fc(cam->route_position,
+                                            cam->saved_position) != 0) {
                     cam->field_068 = 0.0f;
                 } else {
                     const f32 grown = cam->field_068 + 2.0f;
@@ -855,7 +859,7 @@ void script_vm_func_002c8c90() {
 
             // 0x002C8FB8: `ldr r0,[sb]` compares the first event word with
             // 0x24 and asks 0x0025A378(2,5) for a valid transfer.
-            if (*reinterpret_cast<const s32*>(g_ScriptEventState) != 0x24 &&
+            if (*reinterpret_cast<const s32*>(ev) != 0x24 &&
                 camp_func_0025a378(2, 5)) {
                 const f32 travelled = Distance3(cam->saved_position,
                                                 cam->route_position);
@@ -1047,10 +1051,12 @@ void script_vm_func_002c8c90() {
         // 0x002C9670: post-route / map transfer state.
         cam->frame += 1;
 
-        const f32 kIconDistance = 150.0f;                   // 0x43160000
-        if (*reinterpret_cast<const s32*>(g_ScriptEventState) != 0x24 &&
+        // State 2 arrives with s21 = 0.0f (0x002C8D18); only state 1 reloads
+        // s21 with 150.0f (0x002C9148).
+        const f32 kIconDistance = 0.0f;                     // 0x00000000
+        if (*reinterpret_cast<const s32*>(ev) != 0x24 &&
             camp_func_0025a378(2, 5) &&
-            cam->field_160 > kIconDistance) {
+            cam->field_160 < kIconDistance) {
             func_002565b0(2, 5, 5);                         // 0x002C96C4
             cam->field_160 = 1000.0f;                       // 0x447A0000
             func_00256524(0xF, 0x50);                       // 0x002C96DC
@@ -1065,8 +1071,8 @@ void script_vm_func_002c8c90() {
             // 0x002C9718: choose 1500 for the transfer from section 5/9,
             // otherwise 500, then request state 0x20.
             cam->field_15c =
-                (*reinterpret_cast<const s32*>(g_ScriptEventState) == 5 &&
-                 *(reinterpret_cast<const s32*>(g_ScriptEventState) + 1) == 9)
+                (*reinterpret_cast<const s32*>(ev) == 5 &&
+                 *(reinterpret_cast<const s32*>(ev) + 1) == 9)
                     ? 1500.0f                               // 0x44BB8000
                     : 500.0f;                               // 0x43FA0000
             script_vm_func_0027fd08(0x20);
@@ -1160,7 +1166,7 @@ void script_vm_func_002c8c90() {
                 } else if (ev->field_218 == 2 || ev->field_218 == 3) {
                     cam->field_188 = 4;                    // 0x002C99F4
                 }
-                cam->field_068 = 150.0f;                   // 0x002C99BC
+                cam->field_068 = 0.0f;                     // 0x002C99BC
                 cam->field_058 = 5.0f;                     // 0x002C99C0
                 script_vm_func_0027fd08(1);                // 0x002C99FC
             }
@@ -1211,6 +1217,8 @@ void script_vm_func_00399f28(WorldMapWork* work) {
     // `add r0,r0,#0x100; add r0,r0,#0x62` (0x00399F44) forms work+0x162 and
     // passes it to the four accessors, which ignore r0.
     u8* const handle = reinterpret_cast<u8*>(work) + 0x162;
+    ScriptEventState* const ev_state = reinterpret_cast<ScriptEventState*>(
+        smt4::engine::g_MapRuntimeState);
     const s32 mode = func_00231f6c(handle);                 // 0x00399F48
     const s32 map_center = func_002327c4(handle);           // 0x00399F54
     (void)map_center;
@@ -1239,7 +1247,7 @@ void script_vm_func_00399f28(WorldMapWork* work) {
 
     const f32 kCellHalf = 8.0f;                             // 0x41000000 (0x00399FF8)
 
-    if (g_ScriptEventState->field_025 != 0 ||                // 0x00399FDC
+    if (ev_state->field_025 != 0 ||                          // 0x00399FDC
         script_vm_func_002b89d4()) {                        // 0x00399FE8
         goto final_compass;
     }
@@ -1298,13 +1306,15 @@ void script_vm_func_00399f28(WorldMapWork* work) {
                     const u32 visited =
                         engine_func_00231b74(mode, cell_x, cell_y) ? 1u : 0u;
                     const bool forced =
-                        g_ScriptEventState->field_3e0 != 0;
+                        ev_state->field_3e0 != 0;
                     if (free_move ? forced : (visited != 0 || forced)) {
                         s32 rect[4] = {y, y + 0x40, x, x + 0x40};
                         const f32 px = static_cast<f32>(left) + origin[0];
                         const f32 py = static_cast<f32>(bottom) + origin[1];
                         func_002b06a0(2, 0x1C, 0x1770,
-                                      static_cast<s32>(px), py,
+                                      static_cast<s32>(px),
+                                      BitCastF32(static_cast<u32>(
+                                          static_cast<s32>(py))),
                                       BitCastF32(g_WorldMapUiState.phase),
                                       rect);                // 0x0039A318
                     }
@@ -1323,7 +1333,7 @@ void script_vm_func_00399f28(WorldMapWork* work) {
             const f32 center_x = pair_a + 160.0f;            // s16
             const f32 center_y = pair_b + 120.0f;            // s18
             const f32 outer_r = center_x + 24.0f;            // s28
-            const f32 outer_l = center_x - 30.0f;            // s27, 0x41E00000
+            const f32 outer_l = center_x - 28.0f;            // s27, 0x41E00000
             const f32 outer_d = center_y - 32.0f;            // s26
             const f32 near_d = center_y - 14.0f;             // s4
             const f32 near_l = center_x - 14.0f;             // s17
@@ -1386,7 +1396,7 @@ void script_vm_func_00399f28(WorldMapWork* work) {
                     }
 
                     // 0x39A87C..0x39A918: north strip.
-                    if (cam_z < 8000.0f) {                // 0x45FA0000
+                    if (cam_z > 8000.0f) {                // 0x45FA0000
                         if (inside(center_x, far_u, left, right, bottom, top)) {
                             engine_func_00231c68(mode, cell_x, cell_y);
                         }
@@ -1399,13 +1409,15 @@ void script_vm_func_00399f28(WorldMapWork* work) {
                     const u32 visited =
                         engine_func_00231b74(mode, cell_x, cell_y) ? 1u : 0u;
                     const bool forced =
-                        g_ScriptEventState->field_3e0 != 0;
+                        ev_state->field_3e0 != 0;
                     if (free_move ? forced : (visited != 0 || forced)) {
                         s32 rect[4] = {y, y + 0x40, x, x + 0x40};
                         const f32 px = static_cast<f32>(left) + origin[0];
                         const f32 py = static_cast<f32>(bottom) + origin[1];
                         func_002b06a0(2, 0x1C, 0x1B58,
-                                      static_cast<s32>(px), py,
+                                      static_cast<s32>(px),
+                                      BitCastF32(static_cast<u32>(
+                                          static_cast<s32>(py))),
                                       BitCastF32(g_WorldMapUiState.phase),
                                       rect);                // 0x0039A9A0
                     }
@@ -1473,13 +1485,15 @@ void script_vm_func_00399f28(WorldMapWork* work) {
                     const u32 visited =
                         engine_func_00231b74(mode, cell_x, cell_y) ? 1u : 0u;
                     const bool forced =
-                        g_ScriptEventState->field_3e0 != 0;
+                        ev_state->field_3e0 != 0;
                     if (free_move ? forced : (visited != 0 || forced)) {
                         s32 rect[4] = {y, y + 0x40, x, x + 0x40};
                         const f32 px = static_cast<f32>(left) + origin[0];
                         const f32 py = static_cast<f32>(bottom) + origin[1];
                         func_002b06a0(2, 0x1C, 0x1F40,
-                                      static_cast<s32>(px), py,
+                                      static_cast<s32>(px),
+                                      BitCastF32(static_cast<u32>(
+                                          static_cast<s32>(py))),
                                       BitCastF32(g_WorldMapUiState.phase),
                                       rect);                // 0x0039AD60
                     }
@@ -1939,9 +1953,8 @@ void script_vm_func_0039d8b8(WorldMapWork* work, s32 map_id) {
                 break;
             }
         }
-        if (current == 0x63) {
-            continue;
-        }
+        // No 0x63 filter here: 0x0039E628..0x0039E644 branches straight to
+        // the layer scan (unlike the landmark sweep at 0x0039E36C).
 
         // 0x39E66C..0x39E6BC: the layer row only validates the command; the
         // scan stops on the first row whose type is 0.
