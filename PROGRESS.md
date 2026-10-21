@@ -4,11 +4,11 @@
 
 | Category | Functions | Code Size (Bytes) | Progress % | Status Description |
 |----------|----------:|------------------:|-----------:|--------------------|
-| **Decompiled (Reconstructed)** | 343 | 365,052 B | **11.6292%** | Substantial C++ logic reverse-engineered |
+| **Decompiled (Reconstructed)** | 347 | 380,812 B | **12.1312%** | Substantial C++ logic reverse-engineered |
 | **Scaffolded (Stubs & Interfaces)** | 39 | 248,240 B | 7.9080% | Headers, structs, and function skeletons |
 | **Matching (Byte-for-Byte)** | 0 | 0 B | 0.0000% | 100% compiled machine code match |
-| **Total Architecture Explored** | 382 | 613,292 B | **19.5371%** | Total identified & mapped into `src/` |
-| **Remaining (Todo)** | 9,967 | 2,525,816 B | 80.4629% | Unmapped functions in `.text` |
+| **Total Architecture Explored** | 386 | 629,052 B | **20.0392%** | Total identified & mapped into `src/` |
+| **Remaining (Todo)** | 9,963 | 2,510,056 B | 79.9608% | Unmapped functions in `.text` |
 | **Total `.text` Segment** | 10,349 | 3,139,108 B | 100.0000% | `0x00100000`–`0x003FE624` |
 
 ## Subsystem Breakdown
@@ -18,7 +18,7 @@
 | `engine` | 125 | 84,304 B | 2 | 22,760 B | 2,363 | 726,520 B | 11.60% | 14.74% |
 | `ui` | 147 | 117,656 B | 14 | 96,248 B | 1,238 | 682,348 B | 17.24% | 31.35% |
 | `unknown` | 3 | 132 B | 0 | 0 B | 3,823 | 654,480 B | 0.02% | 0.02% |
-| `script_vm` | 12 | 104,244 B | 3 | 22,836 B | 1,201 | 446,288 B | 23.36% | 28.47% |
+| `script_vm` | 16 | 120,004 B | 3 | 22,836 B | 1,201 | 446,288 B | 26.89% | 32.01% |
 | `camp` | 20 | 25,980 B | 6 | 70,276 B | 918 | 326,396 B | 7.96% | 29.49% |
 | `battle` | 21 | 25,024 B | 11 | 32,664 B | 575 | 236,932 B | 10.56% | 24.35% |
 | `shop` | 1 | 364 B | 3 | 3,456 B | 111 | 39,976 B | 0.91% | 9.56% |
@@ -234,6 +234,7 @@
 | `0x0026d8dc` | 52 | `ui` | `non_matching` | `Status_ResetAffinityView` | [`src/ui/status.cpp`](src/ui/status.cpp) |
 | `0x0026df40` | 1620 | `script_vm` | `non_matching` | `NpcRoom_func_0026df40` | [`src/script/script_extras.cpp`](src/script/script_extras.cpp) |
 | `0x0027154c` | 8316 | `script_vm` | `non_matching` | `FlowScript_OpcodeEvaluator` | [`src/script/script_vm.cpp`](src/script/script_vm.cpp) |
+| `0x00276cac` | 4384 | `script_vm` | `non_matching` | `script_vm_func_00276cac` | [`src/script/script_vm_extras.cpp`](src/script/script_vm_extras.cpp) |
 | `0x00277f9c` | 12192 | `script_vm` | `stub` | `FlowScript_InitRuntimeMemory` | [`src/script/script_runtime.cpp`](src/script/script_runtime.cpp) |
 | `0x0027ee6c` | 552 | `engine` | `non_matching` | `mapDepart_func_0027ee6c` | [`src/engine/map_runtime.cpp`](src/engine/map_runtime.cpp) |
 | `0x00280d30` | 524 | `engine` | `non_matching` | `FrameTex_func_00280d30` | [`src/engine/asd_frame.cpp`](src/engine/asd_frame.cpp) |
@@ -299,6 +300,7 @@
 | `0x002c59b8` | 180 | `engine` | `non_matching` | `AsdSequence_func_002c59b8` | [`src/engine/asd_scene.cpp`](src/engine/asd_scene.cpp) |
 | `0x002c5b04` | 652 | `engine` | `non_matching` | `AsdTMTexTable_func_002c5b04` | [`src/engine/asd_texture.cpp`](src/engine/asd_texture.cpp) |
 | `0x002c684c` | 112 | `engine` | `non_matching` | `AsdMemory_func_002c684c` | [`src/engine/asd_file.cpp`](src/engine/asd_file.cpp) |
+| `0x002c8c90` | 3656 | `script_vm` | `non_matching` | `script_vm_func_002c8c90` | [`src/script/script_vm_extras.cpp`](src/script/script_vm_extras.cpp) |
 | `0x002cabcc` | 800 | `engine` | `non_matching` | `StaffRollMain_func_002cabcc` | [`src/engine/asd_render_ui.cpp`](src/engine/asd_render_ui.cpp) |
 | `0x002cb788` | 204 | `engine` | `non_matching` | `AsdScene_func_002cb788` | [`src/engine/asd_scene.cpp`](src/engine/asd_scene.cpp) |
 | `0x002cecd8` | 52 | `ui` | `non_matching` | `SearchWin_IsActive` | [`src/ui/window.cpp`](src/ui/window.cpp) |
@@ -399,6 +401,8 @@
 | `0x0038bd00` | 408 | `engine` | `non_matching` | `aocFileContent_func_0038bd00` | [`src/engine/aoc.cpp`](src/engine/aoc.cpp) |
 | `0x003936e8` | 336 | `engine` | `non_matching` | `aocTexCtrl_func_003936e8` | [`src/engine/aoc.cpp`](src/engine/aoc.cpp) |
 | `0x00393838` | 456 | `engine` | `non_matching` | `aocTexCtrl_func_00393838` | [`src/engine/aoc.cpp`](src/engine/aoc.cpp) |
+| `0x00399f28` | 3928 | `script_vm` | `non_matching` | `script_vm_func_00399f28` | [`src/script/script_vm_extras.cpp`](src/script/script_vm_extras.cpp) |
+| `0x0039d8b8` | 3792 | `script_vm` | `non_matching` | `script_vm_func_0039d8b8` | [`src/script/script_vm_extras.cpp`](src/script/script_vm_extras.cpp) |
 | `0x003a7ad8` | 668 | `unite` | `non_matching` | `bibleDevil_func_003a7ad8` | [`src/camp/unite_extras.cpp`](src/camp/unite_extras.cpp) |
 | `0x003a9200` | 948 | `unite` | `non_matching` | `bibleAnalyze_Init` | [`src/camp/bible.cpp`](src/camp/bible.cpp) |
 | `0x003ab770` | 592 | `unite` | `non_matching` | `bibleLegionSkill_func_003ab770` | [`src/camp/unite_extras.cpp`](src/camp/unite_extras.cpp) |

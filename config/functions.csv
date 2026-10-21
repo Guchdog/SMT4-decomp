@@ -4207,7 +4207,7 @@ address,size,status,category,name,src_file
 0x00276bc0,24,todo,script_vm,script_vm_func_00276bc0,
 0x00276bd8,76,todo,script_vm,script_vm_func_00276bd8,
 0x00276c24,136,todo,script_vm,script_vm_func_00276c24,
-0x00276cac,4384,todo,script_vm,script_vm_func_00276cac,
+0x00276cac,4384,non_matching,script_vm,script_vm_func_00276cac,src/script/script_vm_extras.cpp
 0x00277dcc,128,todo,script_vm,script_vm_func_00277dcc,
 0x00277e4c,336,todo,script_vm,script_vm_func_00277e4c,
 0x00277f9c,12192,stub,script_vm,FlowScript_InitRuntimeMemory,src/script/script_runtime.cpp
@@ -5761,7 +5761,7 @@ address,size,status,category,name,src_file
 0x002c8a78,148,todo,script_vm,script_vm_func_002c8a78,
 0x002c8b0c,32,todo,unknown,func_002c8b0c,
 0x002c8b2c,356,todo,engine,engine_func_002c8b2c,
-0x002c8c90,3656,todo,script_vm,script_vm_func_002c8c90,
+0x002c8c90,3656,non_matching,script_vm,script_vm_func_002c8c90,src/script/script_vm_extras.cpp
 0x002c9ad8,100,todo,script_vm,script_vm_func_002c9ad8,
 0x002c9b3c,104,todo,script_vm,script_vm_func_002c9b3c,
 0x002c9ba4,120,todo,engine,engine_func_002c9ba4,
@@ -9133,7 +9133,7 @@ address,size,status,category,name,src_file
 0x00399d4c,20,todo,engine,engine_func_00399d4c,
 0x00399d60,192,todo,script_vm,script_vm_func_00399d60,
 0x00399e20,264,todo,engine,engine_func_00399e20,
-0x00399f28,3928,todo,script_vm,script_vm_func_00399f28,
+0x00399f28,3928,non_matching,script_vm,script_vm_func_00399f28,src/script/script_vm_extras.cpp
 0x0039ae80,176,todo,unknown,func_0039ae80,
 0x0039af30,292,todo,unknown,func_0039af30,
 0x0039b054,348,todo,unknown,func_0039b054,
@@ -9160,7 +9160,7 @@ address,size,status,category,name,src_file
 0x0039d2ec,1092,todo,ui,ui_func_0039d2ec,
 0x0039d730,40,todo,script_vm,script_vm_func_0039d730,
 0x0039d758,352,todo,unknown,func_0039d758,
-0x0039d8b8,3792,todo,script_vm,script_vm_func_0039d8b8,
+0x0039d8b8,3792,non_matching,script_vm,script_vm_func_0039d8b8,src/script/script_vm_extras.cpp
 0x0039e788,844,todo,engine,engine_func_0039e788,
 0x0039ead4,276,todo,ui,ui_func_0039ead4,
 0x0039ebe8,384,todo,unknown,func_0039ebe8,
