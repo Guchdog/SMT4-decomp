@@ -4,20 +4,20 @@
 
 | Category | Functions | Code Size (Bytes) | Progress % | Status Description |
 |----------|----------:|------------------:|-----------:|--------------------|
-| **Decompiled (Reconstructed)** | 376 | 505,520 B | **16.1039%** | Substantial C++ logic reverse-engineered |
+| **Decompiled (Reconstructed)** | 377 | 520,428 B | **16.5788%** | Substantial C++ logic reverse-engineered |
 | **Scaffolded (Stubs & Interfaces)** | 39 | 248,240 B | 7.9080% | Headers, structs, and function skeletons |
 | **Matching (Byte-for-Byte)** | 0 | 0 B | 0.0000% | 100% compiled machine code match |
-| **Total Architecture Explored** | 415 | 753,760 B | **24.0119%** | Total identified & mapped into `src/` |
-| **Remaining (Todo)** | 9,934 | 2,385,348 B | 75.9881% | Unmapped functions in `.text` |
+| **Total Architecture Explored** | 416 | 768,668 B | **24.4868%** | Total identified & mapped into `src/` |
+| **Remaining (Todo)** | 9,933 | 2,370,440 B | 75.5132% | Unmapped functions in `.text` |
 | **Total `.text` Segment** | 10,349 | 3,139,108 B | 100.0000% | `0x00100000`–`0x003FE624` |
 
 ## Subsystem Breakdown
 
 | Subsystem | Decompiled Funcs | Decompiled Bytes | Stub Funcs | Stub Bytes | Total Funcs | Total Bytes | Decompiled % | Explored % |
 |-----------|-----------------:|-----------------:|-----------:|-----------:|------------:|------------:|-------------:|-----------:|
-| `engine` | 131 | 120,520 B | 2 | 22,760 B | 2,367 | 755,700 B | 15.95% | 18.96% |
+| `engine` | 132 | 135,428 B | 2 | 22,760 B | 2,368 | 770,608 B | 17.57% | 20.53% |
 | `ui` | 159 | 164,516 B | 14 | 96,248 B | 1,238 | 682,348 B | 24.11% | 38.22% |
-| `unknown` | 9 | 23,652 B | 0 | 0 B | 3,819 | 625,300 B | 3.78% | 3.78% |
+| `unknown` | 9 | 23,652 B | 0 | 0 B | 3,818 | 610,392 B | 3.87% | 3.87% |
 | `script_vm` | 18 | 127,064 B | 3 | 22,836 B | 1,201 | 446,288 B | 28.47% | 33.59% |
 | `camp` | 21 | 29,764 B | 6 | 70,276 B | 918 | 326,396 B | 9.12% | 30.65% |
 | `battle` | 22 | 28,148 B | 11 | 32,664 B | 575 | 236,932 B | 11.88% | 25.67% |
@@ -80,6 +80,7 @@
 | `0x0011ae10` | 792 | `ui` | `non_matching` | `InfoWin_DrawUp` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x0011b128` | 588 | `ui` | `non_matching` | `InfoWin_Calc` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x0011d9fc` | 6920 | `engine` | `non_matching` | `func_0011d9fc` | [`src/engine/event_runtime.cpp`](src/engine/event_runtime.cpp) |
+| `0x00133568` | 14908 | `engine` | `non_matching` | `func_00133568` | [`src/engine/block_133568.cpp`](src/engine/block_133568.cpp) |
 | `0x00142bf0` | 4008 | `unknown` | `non_matching` | `func_00142bf0` | [`src/engine/runtime_blocks.cpp`](src/engine/runtime_blocks.cpp) |
 | `0x00144978` | 320 | `engine` | `non_matching` | `AsdMemory_func_00144978` | [`src/engine/asd_file.cpp`](src/engine/asd_file.cpp) |
 | `0x00144fbc` | 416 | `ui` | `non_matching` | `AsdTMSpr_func_00144fbc` | [`src/engine/asd_texture.cpp`](src/engine/asd_texture.cpp) |
