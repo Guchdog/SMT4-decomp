@@ -19,7 +19,7 @@ address,size,status,category,name,src_file
 0x00100cb8,1360,todo,crt,crt_func_00100cb8,
 0x00101208,244,todo,crt,crt_func_00101208,
 0x001012fc,12,todo,crt,crt_func_001012fc,
-0x00101308,4144,todo,crt,crt_func_00101308,
+0x00101308,4144,non_matching,crt,crt_func_00101308,src/engine/runtime_blocks.cpp
 0x00102338,52,todo,crt,crt_func_00102338,
 0x0010236c,84,todo,crt,crt_func_0010236c,
 0x001023c0,32,todo,crt,crt_func_001023c0,
@@ -1012,7 +1012,7 @@ address,size,status,category,name,src_file
 0x0014297c,32,todo,battle,battle_func_0014297c,
 0x0014299c,308,todo,battle,battle_func_0014299c,
 0x00142ad0,288,todo,battle,battle_func_00142ad0,
-0x00142bf0,4008,todo,unknown,func_00142bf0,
+0x00142bf0,4008,non_matching,unknown,func_00142bf0,src/engine/runtime_blocks.cpp
 0x00143b98,1604,todo,unknown,func_00143b98,
 0x001441dc,36,todo,ui,ui_func_001441dc,
 0x00144200,172,todo,unknown,func_00144200,
@@ -4331,7 +4331,7 @@ address,size,status,category,name,src_file
 0x00282f24,24,todo,script_vm,script_vm_func_00282f24,
 0x00282f3c,420,todo,camp,camp_func_00282f3c,
 0x002830e0,272,todo,camp,camp_func_002830e0,
-0x002831f0,3784,todo,camp,camp_func_002831f0,
+0x002831f0,3784,non_matching,camp,camp_func_002831f0,src/engine/runtime_blocks.cpp
 0x002840b8,116,todo,camp,camp_func_002840b8,
 0x0028412c,116,todo,unknown,func_0028412c,
 0x002841a0,80,todo,script_vm,script_vm_func_002841a0,
@@ -9463,7 +9463,7 @@ address,size,status,category,name,src_file
 0x003b0c30,740,todo,unknown,func_003b0c30,
 0x003b0f14,196,todo,unknown,func_003b0f14,
 0x003b0fd8,464,todo,unknown,func_003b0fd8,
-0x003b11a8,4548,todo,unknown,func_003b11a8,
+0x003b11a8,4548,non_matching,unknown,func_003b11a8,src/engine/runtime_blocks.cpp
 0x003b236c,152,todo,unknown,func_003b236c,
 0x003b2404,12,todo,unknown,func_003b2404,
 0x003b2410,296,todo,unknown,func_003b2410,
