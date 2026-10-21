@@ -1967,7 +1967,7 @@ address,size,status,category,name,src_file
 0x001aa19c,520,todo,ui,ui_func_001aa19c,
 0x001aa3a4,508,todo,ui,ui_func_001aa3a4,
 0x001aa5a0,1728,todo,battle,battle_func_001aa5a0,
-0x001aac60,2448,todo,battle,battle_func_001aac60,
+0x001aac60,2448,non_matching,battle,battle_func_001aac60,src/engine/block_batch.cpp
 0x001ab5f0,232,todo,ui,ui_func_001ab5f0,
 0x001ab6d8,232,todo,ui,ui_func_001ab6d8,
 0x001ab7c0,40,todo,engine,engine_func_001ab7c0,
@@ -2436,7 +2436,7 @@ address,size,status,category,name,src_file
 0x001fb2fc,312,todo,script_vm,script_vm_func_001fb2fc,
 0x001fb434,20,todo,script_vm,script_vm_func_001fb434,
 0x001fb448,216,todo,unknown,func_001fb448,
-0x001fb520,2788,todo,battle,battle_func_001fb520,
+0x001fb520,2788,non_matching,battle,battle_func_001fb520,src/engine/block_batch.cpp
 0x001fc004,416,todo,script_vm,script_vm_func_001fc004,
 0x001fc1a4,104,todo,script_vm,script_vm_func_001fc1a4,
 0x001fc20c,100,todo,script_vm,script_vm_func_001fc20c,
@@ -2599,7 +2599,7 @@ address,size,status,category,name,src_file
 0x0020d7b8,500,todo,script_vm,script_vm_func_0020d7b8,
 0x0020d9ac,548,todo,script_vm,script_vm_func_0020d9ac,
 0x0020dbd0,100,todo,script_vm,script_vm_func_0020dbd0,
-0x0020dc34,2416,todo,battle,battle_func_0020dc34,
+0x0020dc34,2416,non_matching,battle,battle_func_0020dc34,src/engine/block_batch.cpp
 0x0020e5a4,24,todo,engine,engine_func_0020e5a4,
 0x0020e5bc,24,todo,script_vm,script_vm_func_0020e5bc,
 0x0020e5d4,944,todo,battle,battle_func_0020e5d4,
@@ -4004,7 +4004,7 @@ address,size,status,category,name,src_file
 0x002672f8,120,todo,camp,camp_func_002672f8,
 0x00267370,120,todo,camp,camp_func_00267370,
 0x002673e8,56,todo,engine,engine_func_002673e8,
-0x00267420,2888,todo,battle,battle_func_00267420,
+0x00267420,2888,non_matching,battle,battle_func_00267420,src/engine/block_batch.cpp
 0x00267f68,72,todo,battle,battle_func_00267f68,
 0x00267fb0,4672,non_matching,ui,ui_func_00267fb0,src/ui/ui_runtime.cpp
 0x002691f0,532,non_matching,engine,effGeometry_func_002691f0,src/engine/asd_effect2.cpp
@@ -5910,7 +5910,7 @@ address,size,status,category,name,src_file
 0x002d29ac,72,todo,engine,engine_func_002d29ac,
 0x002d29f4,160,todo,unknown,func_002d29f4,
 0x002d2a94,956,todo,script_vm,script_vm_func_002d2a94,
-0x002d2e50,3108,todo,battle,battle_func_002d2e50,
+0x002d2e50,3108,non_matching,battle,battle_func_002d2e50,src/engine/block_batch.cpp
 0x002d3a74,760,todo,script_vm,script_vm_func_002d3a74,
 0x002d3d6c,64,todo,script_vm,script_vm_func_002d3d6c,
 0x002d3dac,48,todo,engine,engine_func_002d3dac,
@@ -7684,7 +7684,7 @@ address,size,status,category,name,src_file
 0x0034a218,556,todo,engine,engine_func_0034a218,
 0x0034a444,156,todo,engine,engine_func_0034a444,
 0x0034a4e0,4,todo,unknown,func_0034a4e0,
-0x0034a4e4,2816,todo,battle,battle_func_0034a4e4,
+0x0034a4e4,2816,non_matching,battle,battle_func_0034a4e4,src/engine/block_batch.cpp
 0x0034afe4,8,todo,unknown,func_0034afe4,
 0x0034afec,576,todo,battle,battle_func_0034afec,
 0x0034b22c,272,todo,engine,engine_func_0034b22c,
