@@ -64,9 +64,20 @@ static_assert(offsetof(TexConvertDesc, words_78) == 0x78);
 static_assert(offsetof(TexConvertDesc, words_178) == 0x178);
 static_assert(sizeof(TexConvertDesc) == 0x1B8);
 
-// The selector is live in r4 on entry (0x00170D70 reads it before writing it)
-// and is clamped to the signed range [0x0C, 0x34] (`movlt` / `movgt` at
-// 0x00170D70 / 0x00170D78) before being stored at +0x48.
+// ---------------------------------------------------------------------------
+// Ledger block entry points -- NOT ordinary C functions.
+//
+// These three addresses are *block* starts, not AAPCS routines.  0x00170D70
+// begins with `cmp r4,#0xc` and never moves r1 into r4: the format selector is
+// already live in r4 on entry, and the initialiser falls straight through into
+// the sixty converter leaves.  There is therefore no call sequence that can
+// pass arguments to them; they must not be invoked as normal C functions.
+//
+// The declarations exist only so that the ledger's reconstructed spelling has
+// a definition in src/engine/tex_convert.cpp (and so an offline test can drive
+// the initialiser).  Treat the parameters as a description of r0/r4, not as an
+// ABI contract.
+// ---------------------------------------------------------------------------
 void func_00170d70(TexConvertDesc* desc, s32 format);   // 0x00170D70, 7456 B
 void func_00177370(TexConvertDesc* desc, s32 format);   // 0x00177370, 7456 B
 void func_0017d970(TexConvertDesc* desc, s32 format);   // 0x0017D970, 7348 B

@@ -178,11 +178,9 @@ const u8 kTexGroupIndex[54] = {
     0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05,
 };
 
-// Strides of the three blocks (the only immediate that differs between the
-// three copies of every leaf below).
-constexpr u32 kTexStride_170d70 = 0x400u;
-constexpr u32 kTexStride_177370 = 0x100u;
-constexpr u32 kTexStride_17d970 = 0x200u;
+// The three blocks use tile strides 0x400 (0x00170D70), 0x100 (0x00177370) and
+// 0x200 (0x0017D970).  The stride is the only immediate that differs between
+// the three copies of every leaf.
 
 // ---------------------------------------------------------------------------
 // Sixty converter leaves
@@ -2959,13 +2957,58 @@ const u32 kTexProgram_177370[53] = {
 // Tail of the third ledger entry, 0x0017F5BC..0x0017F624.
 //
 // The 7,348-byte size of 0x0017D970 ends four bytes into the following
-// translation unit, so the tail contains the next block pointer plus four
-// unrelated static-init/teardown thunks.  They are reproduced here for
-// completeness; none of them is part of the converter.
+// translation unit, so the tail contains the next block pointer, two literal
+// pairs and four unrelated static-init/teardown thunks.  None of them is part
+// of the converter.
 // ---------------------------------------------------------------------------
 
-// 0x0017F5BC: `.word 0x00179000` -- pointer to the second block's VXS2 header
-// (+0x44 into the 0x178FBC blob).
+// 0x0017F5BC: pointer to the second block's VXS2 header (+0x44 into the
+// 0x00178FBC blob).
+const u32 kTexNextProgram_17f5bc = 0x00179000u;
+
+// 0x0017F5E0 / 0x0017F5E4: literal pair loaded by 0x0017F5CC
+// (`ldr r1,[pc,#0xc]` -> 0x00361C24, `ldr r0,[pc,#0xc]` -> 0x004DACE0).
+const u32 kTexThunkLiterals_17f5e0[2] = { 0x00361C24u, 0x004DACE0u };
+
+// 0x0017F61C / 0x0017F620: literal pair loaded by 0x0017F608
+// (`ldr r1,[pc,#0xc]` -> 0x003578E8, `ldr r0,[pc,#0xc]` -> 0x004E5290).
+const u32 kTexThunkLiterals_17f61c[2] = { 0x003578E8u, 0x004E5290u };
+
+// 0x002C68B4 is not a copy routine: it is an ARM->Thumb veneer,
+//     add ip, pc, #1      (0x002C68B4)
+//     bx  ip              (0x002C68B8)
+// into the Thumb routine at 0x002C68BC:
+//
+//     0x002C68BE  movs r5,r0          r5 = base
+//     0x002C68C0  movs r6,r1          r6 = callback
+//     0x002C68C2  movs r7,r2          r7 = stride
+//     0x002C68C4  cmp  r3,#0
+//     0x002C68C6  beq  0x002C68D8     count == 0 -> skip the loop
+//     0x002C68C8  movs r0,r7 / muls r0,r3,r0
+//     0x002C68CC  adds r4,r0,r5
+//     0x002C68CE  subs r4,r4,r7       (loop entry)
+//     0x002C68D0  movs r0,r4 / blx r6
+//     0x002C68D4  cmp  r5,r4 / bne 0x002C68CE
+//     0x002C68D8  movs r0,r5 / subs r0,#8
+//
+// i.e. it invokes callback(base + (count-1)*stride) down to callback(base),
+// then returns base-8 in r0.  The two wrappers below use count=2/stride=0x40
+// and count=3/stride=4.
+using TexInitCallback = void (*)(u32 address);
+
+[[maybe_unused]] u32 TexInvokeInitArray(u32 base, u32 callback, u32 stride, u32 count)
+{
+    if (count != 0u) {
+        u32 cursor = base + count * stride - stride;
+        for (;;) {
+            reinterpret_cast<TexInitCallback>(static_cast<std::uintptr_t>(callback))(cursor);
+            if (cursor == base)          // 0x002C68D4: cmp r5,r4 / bne 0x002C68CE
+                break;
+            cursor -= stride;
+        }
+    }
+    return base - 8u;                    // 0x002C68D8: movs r0,r5 / subs r0,#8
+}
 
 // 0x0017F5C0 (12 B): `mov r1,#0` / `str r1,[r0]` / `bx lr`.
 [[maybe_unused]] void TexTail_0017f5c0(u32* object)
@@ -2974,12 +3017,13 @@ const u32 kTexProgram_177370[53] = {
 }
 
 // 0x0017F5CC (20 B): r0=0x004DACE0, r1=0x00361C24, r2=0x40, r3=2, then
-// `b 0x002C68B4` (the shared copy tail inside AsdMemory_func_002c684c).
-[[maybe_unused]] void TexTail_0017f5cc()
+// `b 0x002C68B4` -> func_00361C24(0x004DAD20), func_00361C24(0x004DACE0);
+// returns 0x004DACD8.
+[[maybe_unused]] u32 TexTail_0017f5cc()
 {
-    std::memcpy(reinterpret_cast<void*>(static_cast<std::uintptr_t>(0x004DACE0u)),
-                reinterpret_cast<const void*>(static_cast<std::uintptr_t>(0x00361C24u)),
-                0x40u);
+    // r0/r1 come from the 0x0017F5E0 literal pair: {func_00361C24, 0x004DACE0}.
+    return TexInvokeInitArray(kTexThunkLiterals_17f5e0[1], kTexThunkLiterals_17f5e0[0],
+                              0x40u, 2u);
 }
 
 // 0x0017F5E8 (16 B) and the byte-identical 0x0017F5F8: `mov r1,#0`,
@@ -2997,12 +3041,13 @@ const u32 kTexProgram_177370[53] = {
 }
 
 // 0x0017F608 (20 B): r0=0x004E5290, r1=0x003578E8, r2=4, r3=3, then
-// `b 0x002C68B4`.
-[[maybe_unused]] void TexTail_0017f608()
+// `b 0x002C68B4` -> func_003578E8(0x004E5298 / 0x004E5294 / 0x004E5290);
+// returns 0x004E5288.
+[[maybe_unused]] u32 TexTail_0017f608()
 {
-    std::memcpy(reinterpret_cast<void*>(static_cast<std::uintptr_t>(0x004E5290u)),
-                reinterpret_cast<const void*>(static_cast<std::uintptr_t>(0x003578E8u)),
-                4u);
+    // r0/r1 come from the 0x0017F61C literal pair: {func_003578E8, 0x004E5290}.
+    return TexInvokeInitArray(kTexThunkLiterals_17f61c[1], kTexThunkLiterals_17f61c[0],
+                              4u, 3u);
 }
 
 } // namespace
@@ -3059,9 +3104,9 @@ void func_00170d70(TexConvertDesc* desc, s32 format)
     desc->field_68 = 9;
     desc->field_70 = 9;
 
-    // 0x00170E20..0x001729BC: the sixty leaves of this block are the
-    // kTexStride_170d70 instantiation (see TexConv_* above).
-    static_assert(kTexStride_170d70 == 0x400u);
+    // 0x00170E20..0x001729BC: the sixty converter leaves that follow this
+    // initialiser all advance by stride 0x400 (the 0x100 and 0x200 copies live
+    // at 0x00177420.. and 0x0017DA20.., see the TexConv_* comments above).
 }
 
 // ---------------------------------------------------------------------------
@@ -3106,9 +3151,8 @@ void func_00177370(TexConvertDesc* desc, s32 format)
     desc->field_68 = 9;
     desc->field_70 = 9;
 
-    // 0x00177420..0x00178FBC: the sixty leaves of this block are the
-    // kTexStride_177370 instantiation (see TexConv_* above).
-    static_assert(kTexStride_177370 == 0x100u);
+    // 0x00177420..0x00178FBC: the sixty converter leaves of this block all
+    // advance by stride 0x100 (see the TexConv_* comments above).
 }
 
 // ---------------------------------------------------------------------------
@@ -3153,9 +3197,8 @@ void func_0017d970(TexConvertDesc* desc, s32 format)
     desc->field_68 = 9;
     desc->field_70 = 9;
 
-    // 0x0017DA20..0x0017F5BC: the sixty leaves of this block are the
-    // kTexStride_17d970 instantiation (see TexConv_* above).
-    static_assert(kTexStride_17d970 == 0x200u);
+    // 0x0017DA20..0x0017F5BC: the sixty converter leaves of this block all
+    // advance by stride 0x200 (see the TexConv_* comments above).
 }
 
 } // namespace smt4::engine
