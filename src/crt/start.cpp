@@ -1,5 +1,7 @@
 #include "types.h"
 
+#include "engine/asd_symbols.h"
+
 namespace smt4::crt {
 
 // External CRT / SDK initialization routines in code.bin
@@ -10,7 +12,7 @@ void engine_func_00104ef4();
 void crt_func_00100cb8();
 void crt_func_00102338();
 void crt_func_001023c0();
-void crt_func_00101308();
+// crt_func_00101308 is declared (C++ linkage) in engine/asd_symbols.h.
 [[noreturn]] void crt_exit_00101300();
 
 // .bss segment boundaries from literal pool at 0x00100040..0x00100044
@@ -36,7 +38,7 @@ extern "C" [[noreturn]] void __start() {
     crt_func_00100cb8();
     crt_func_00102338();
     crt_func_001023c0();
-    crt_func_00101308();
+    smt4::engine::crt_func_00101308();
     crt_exit_00101300();
 }
 

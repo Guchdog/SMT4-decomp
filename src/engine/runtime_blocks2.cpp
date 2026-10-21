@@ -488,10 +488,11 @@ void func_002f9f54(SplineState* spline, u32 row, const f32* point, f32 time) {
     const u16 input_count = input->point_count;      // ip, 0x002F9F7C
     input->flags_58 |= 1;                            // 0x002F9F84..0x002F9F88
 
-    // 0x002F9F94..0x002F9FD4: r4 = base + 12*ip*row + 12*ip, then shift the
-    // 12-byte elements between r4-0x50 and r4-0x18 downwards in steps of 3.
+    // 0x002F9F94..0x002F9FD4: r4 = base + 12*ip*row.  The shift loop runs
+    // between r4+12*ip-0x50 and r4+12*ip-0x18, so only the two loop pointers
+    // carry the extra row step.
     const u32 input_step = 12 * static_cast<u32>(input_count);
-    u8* vertex_row = input_base + input_step * row + input_step;
+    u8* vertex_row = input_base + input_step * row;
     if (input_count > 3) {
         u8* dst = vertex_row + input_step - 0x18;
         const u8* src = vertex_row + input_step - 0x3C;
@@ -724,8 +725,8 @@ void func_002f9f54(SplineState* spline, u32 row, const f32* point, f32 time) {
     const u32 output_step = 12 * static_cast<u32>(output_count);
     u8* const output_row = output_base + output_step * row; // 0x002FA79C
 
-    // `fp` still points at the first vertex of the input row.
-    const u8* const first_vertex = input_base + input_step * row + input_step;
+    // `fp` still points at the first vertex of the input row (r4).
+    const u8* const first_vertex = input_base + input_step * row;
 
     // 0x002FA790..0x002FA7C0: +0x00 tangent, +0x0C position, +0x54 normal.
     std::memcpy(output_row + 0x00, first_vertex + 0x0C, 12);

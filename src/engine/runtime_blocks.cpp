@@ -4,6 +4,15 @@
 
 #include "engine/asd_symbols.h"
 
+// 0x00101B80 / 0x00101F08 execute `svc #0x28`, the nnSdk system-tick import.
+// The host build leaves the import unresolved; callers must supply it when the
+// reconstructed frame loop is linked into a runnable image.
+namespace nn {
+namespace os {
+u64 GetSystemTick();
+} // namespace os
+} // namespace nn
+
 /**
  * Reconstruction notes
  * ====================
@@ -58,12 +67,10 @@ void func_003fca6c(void* out, void* tree, void* key);
 void func_0022c1cc(void* element);
 void func_0022c6f8(void* vector, u32 first, u32 last);
 u32  func_0022c198(u32 current, u32 requested);
-void* func_00397314(void* node);
 
 // 0x00101308 helpers -------------------------------------------------------
 void engine_func_002c5fbc();
 void engine_func_001076d8(u32 a, u32 b);
-void* AsdMemory_func_0010376c(u32 size);
 void func_00105e2c(u32 value);
 void AsdFile_func_0010250c();
 u32  engine_func_0010db6c();
@@ -91,15 +98,12 @@ f32* func_001035d4();
 f32* func_00103754();
 f32* func_0010428c();
 f32* func_00105c44();
-void AsdModel_func_0010495c(u32 a, u32 b);
 void script_vm_func_001041d8();
 f32* script_vm_func_002c5e20();
 void* func_00104db0();
 void* script_vm_func_002c5e10();
 void* AsdGxCommandList_func_002c5d90();
 void ui_func_00102aa0();
-void AsdPrim_func_001042c8(u32 value);
-void AsdProcess_func_00102e80(u32 value);
 void func_00103f70();
 void AsdTMTexTable_func_00105080(const char* path);
 void func_00103c70();
@@ -112,7 +116,6 @@ void engine_func_00107020();
 void func_00104dcc(u32 value);
 void func_00103ef8(u32 value);
 void engine_func_00106b4c();
-void AsdTMTexTable_func_002c5b04(u32 a, u32 b);
 void engine_func_002c5ab8(u32 a, u32 b);
 void GameData_func_00102cf0();
 void func_00104de8(u32 value);
@@ -124,10 +127,7 @@ void soundEffect_func_0010368c();
 void func_00105c1c();
 void script_vm_func_002c5a6c();
 void script_vm_func_00104e68();
-u32  AsdSequence_func_002c59b8(u32 a, u32 b, u32 c);
-void AsdCamera_func_00105c50(u32 value);
 void AsdModelProcess_func_00103ff8(u32 a, u32 b, u32 c, u32 d);
-void FrameTex_func_00104378(u32 value);
 void engine_func_00102dc4(u32 value);
 void engine_func_001069bc(u32 object, f32 s0, f32 s1, f32 s2, f32 s3);
 void ui_func_002c5948(u32 value);
@@ -205,7 +205,7 @@ u32   camp_func_0029f0f4(void* slot);
 void* g_RenderRegisterBase = nullptr;   // 0x0044EA00 (`ldr r4,[r7]`, 0x001013D0)
 u8    g_CrtOverlayFlag = 0;             // 0x0044D048 (`ldrb r0,[r4]`, 0x00101E98)
 void* g_CrtModeContext = nullptr;       // 0x0044E368 (`ldr r2,[r0]`, 0x00102268)
-CrtMainState g_CrtMainState{};          // 0x00446DB0
+CrtMainState g_CrtMainState{0, 1};      // 0x00446DB0, .word 0x00000100
 void* g_LcdGpuState = nullptr;          // 0x004655C0 (`ldr r3,[r2]`, 0x00142BF8)
 u32*  g_GpuCommandCursor = nullptr;     // 0x004652A0 (`ldr r1,[r2]`, 0x00143264)
 u32*  g_GpuCommandEnd = nullptr;        // 0x004652A4 (`ldr r0,[r0]`, 0x00143268)
@@ -269,41 +269,58 @@ void ReportNodeFailure(void* tree, u32 message, u32 size)
     reinterpret_cast<FailFn>(vtable[2])(allocator, message, size);
 }
 
-// 0x003B1B08..0x003B1D64: append one 16-byte node to the vector at
+// 0x003B1B08..0x003B1D64: append one 16-byte element to the vector at
 // state+0x1434, growing it through func_0022c198 and destroying the moved
-// range through func_0022c6f8.  The element links are copied with
-// `ldr/str` pairs at 0x003B1B88..0x003B1BA8.
-void AppendNode(ScriptRuntimeState* state, const ScriptNode16* source)
+// range through func_0022c6f8.  `source` is the link record at node+0x14;
+// 0x003B1F60..0x003B1F90 copies [source], [source+4] and [source+0xC], writes
+// the self pointer at dest+8 and repairs both back-links.  A failed growth
+// allocation returns 0x44 (0x003B1DC8..0x003B1D4C / 0x003B2038).
+u32 AppendNode(ScriptRuntimeState* state, u8* source)
 {
     ScriptNodeVector& vec = state->nodes;
+    ScriptNode16* dest = nullptr;
     if (vec.capacity >= vec.size + 1) {
-        // 0x003B1F60..0x003B1F90: append at begin + size*16.
-        vec.begin[vec.size] = *source;
-        vec.size += 1;                             // 0x003B1F54..0x003B1F58
-        return;
+        // 0x003B1F54..0x003B1F60: append at begin + size*16.
+        dest = vec.begin + vec.size;
+        vec.size += 1;
+    } else {
+        // 0x003B1D68..0x003B1F50: grow to func_0022c198(capacity, size+1).
+        u32 new_capacity = func_0022c198(vec.capacity, vec.size + 1);
+        void* allocator = vec.owner;
+        void** vtable = *reinterpret_cast<void***>(allocator);
+        using AllocFn = void* (*)(void*, u32);
+        u8* storage = static_cast<u8*>(
+            reinterpret_cast<AllocFn>(vtable[0])(allocator, new_capacity * 0x10));
+        if (storage == nullptr) {
+            using FailFn = void (*)(void*, u32, u32);
+            reinterpret_cast<FailFn>(vtable[2])(allocator, kEventVectorMessage,
+                                                new_capacity * 0x10);
+            return 0x44u;                           // 0x003B1E48 / 0x003B2038
+        }
+        ScriptNode16* fresh = reinterpret_cast<ScriptNode16*>(storage);
+        for (u32 i = 0; i < vec.size; ++i) {
+            fresh[i] = vec.begin[i];
+        }
+        dest = fresh + vec.size;
+        func_0022c6f8(&vec, 0, vec.size);           // 0x003B1F30
+        vec.begin = fresh;
+        vec.capacity = new_capacity;
+        vec.size += 1;
     }
 
-    // 0x003B1D68..0x003B1F50: grow to func_0022c198(capacity, size+1).
-    u32 new_capacity = func_0022c198(vec.capacity, vec.size + 1);
-    void* allocator = vec.owner;
-    void** vtable = *reinterpret_cast<void***>(allocator);
-    using AllocFn = void* (*)(void*, u32);
-    u8* storage = static_cast<u8*>(
-        reinterpret_cast<AllocFn>(vtable[0])(allocator, new_capacity * 0x10));
-    if (storage == nullptr) {
-        using FailFn = void (*)(void*, u32, u32);
-        reinterpret_cast<FailFn>(vtable[2])(allocator, kEventVectorMessage,
-                                            new_capacity * 0x10);
-    }
-    ScriptNode16* fresh = reinterpret_cast<ScriptNode16*>(storage);
-    for (u32 i = 0; i < vec.size; ++i) {
-        fresh[i] = vec.begin[i];
-    }
-    fresh[vec.size] = *source;
-    func_0022c6f8(&vec, 0, vec.size);              // 0x003B1F30
-    vec.begin = fresh;
-    vec.capacity = new_capacity;
-    vec.size += 1;
+    // 0x003B1F70..0x003B1F90: copy the three link words, then store the
+    // self pointer and update the two neighbours.
+    u32* const links = reinterpret_cast<u32*>(source);
+    dest->link_00 = links[0];                       // node+0x14
+    dest->link_04 = links[1];                       // node+0x18
+    dest->link_0c = links[3];                       // node+0x20
+    u8* const tail = reinterpret_cast<u8*>(
+        static_cast<std::uintptr_t>(dest->link_0c));
+    *reinterpret_cast<u32*>(tail + 0x08) =
+        static_cast<u32>(reinterpret_cast<std::uintptr_t>(dest));
+    dest->link_08 = static_cast<u32>(reinterpret_cast<std::uintptr_t>(source));
+    links[3] = static_cast<u32>(reinterpret_cast<std::uintptr_t>(dest));
+    return 0;
 }
 
 // The address of the command tree is state+0x1414; the helper below needs it
@@ -390,6 +407,31 @@ u32 CreateChildRecord(ScriptRuntimeState* state, u32 index, u8* parent_payload)
     func_0022c1cc(temp_b);                              // 0x003B1770
     func_0022c1cc(temp_a);                              // 0x003B177C
     return 0;
+}
+
+// 0x003B1864..0x003B18B4: in-order successor on the command tree.  Nodes use
+// +0x04 parent, +0x08 left and +0x0C right; the caller stops when the returned
+// node reaches the header computed at 0x003B15B8..0x003B15E0.
+u8* CommandTreeSuccessor(u8* node)
+{
+    u8* right = *reinterpret_cast<u8**>(node + 0x0C);
+    if (right != nullptr) {
+        node = right;
+        while (*reinterpret_cast<u8**>(node + 0x08) != nullptr) {
+            node = *reinterpret_cast<u8**>(node + 0x08);
+        }
+        return node;
+    }
+
+    u8* parent = *reinterpret_cast<u8**>(node + 0x04);
+    while (node == *reinterpret_cast<u8**>(parent + 0x0C)) {
+        node = parent;
+        parent = *reinterpret_cast<u8**>(parent + 0x04);
+    }
+    if (*reinterpret_cast<u8**>(node + 0x0C) != parent) {
+        node = parent;
+    }
+    return node;
 }
 
 } // namespace
@@ -484,32 +526,66 @@ u32 func_003b11a8(ScriptRuntimeState* state, u32 index, ScriptCursor* cursor,
             }
             using Slot4 = u32 (*)(void*);
             if (reinterpret_cast<Slot4>(vtable[4])(variant) == 0) {
-                // 0x003B1B08..0x003B1D64: append a 16-byte node.
-                ScriptNode16 entry{};
-                entry.link_00 = *reinterpret_cast<u32*>(node + 0x10);
-                entry.link_04 = *reinterpret_cast<u32*>(node + 0x14);
-                entry.link_08 = static_cast<u32>(
-                    reinterpret_cast<std::uintptr_t>(node));
-                entry.link_0c = static_cast<u32>(
-                    reinterpret_cast<std::uintptr_t>(node));
-                AppendNode(state, &entry);
+                // 0x003B1B08..0x003B1D64: append the link record at node+0x14.
+                if (AppendNode(state, node + 0x14) == 0x44u) {
+                    goto fail_44;
+                }
                 goto finish;
             }
         }
 
-        // 0x003B1578..0x003B1814: nested command tree.
-        if (CreateChildRecord(state, index, static_cast<u8*>(variant)) == 0x44u) {
-            goto fail_44;
-        }
-
-        // 0x003B1818..0x003B18C0: walk the tree with the red-black successor
-        // routine and notify the parent once.
+        // 0x003B1578..0x003B1814: locate the insertion point in the command
+        // tree at state+0x1414.  The sentinel is the word at command_tree+0x14;
+        // nodes carry key +0x10, left +0x08, right +0x0C, parent +0x04 and a
+        // payload pointer at +0x18.  `lower` is the first node whose key is
+        // greater than or equal to payload+0x14.
         {
-            u8* tree_bytes = static_cast<u8*>(tree);
-            u8* header = tree_bytes + 0x08;
-            u8* walk = *reinterpret_cast<u8**>(tree_bytes + 0x04);
-            while (walk != header) {
-                u8* child = *reinterpret_cast<u8**>(walk + 0x18);
+            u8* const command_tree = state->command_tree;
+            u8* const sentinel = *reinterpret_cast<u8**>(command_tree + 0x14);
+            const u32 payload_key =
+                *reinterpret_cast<u32*>(static_cast<u8*>(variant) + 0x14);
+            u8* lower = sentinel;
+            u8* node_walk = *reinterpret_cast<u8**>(sentinel + 0x04);
+            while (node_walk != nullptr) {
+                if (*reinterpret_cast<u32*>(node_walk + 0x10) < payload_key) {
+                    node_walk = *reinterpret_cast<u8**>(node_walk + 0x0C);
+                } else {
+                    lower = node_walk;
+                    node_walk = *reinterpret_cast<u8**>(node_walk + 0x08);
+                }
+            }
+
+            // 0x003B15B8..0x003B15E0: the walk terminator starts at the
+            // sentinel and follows the last "key < node key" branch of a
+            // second root-to-leaf descent.
+            u8* header = sentinel;
+            node_walk = *reinterpret_cast<u8**>(sentinel + 0x04);
+            while (node_walk != nullptr) {
+                if (payload_key <
+                    *reinterpret_cast<u32*>(node_walk + 0x10)) {
+                    header = node_walk;
+                    node_walk = *reinterpret_cast<u8**>(node_walk + 0x08);
+                } else {
+                    node_walk = *reinterpret_cast<u8**>(node_walk + 0x0C);
+                }
+            }
+
+            // 0x003B15F4: an empty lower bound takes the direct child-record
+            // path; otherwise the command tree is walked first.
+            if (lower == sentinel) {
+                if (CreateChildRecord(state, index,
+                                      static_cast<u8*>(variant)) == 0x44u) {
+                    goto fail_44;
+                }
+                goto finish;
+            }
+
+            // 0x003B1818..0x003B18C0: reject when any pending child is
+            // already enabled and notify the parent once.
+            for (u8* walk = lower; walk != header;
+                 walk = CommandTreeSuccessor(walk)) {
+                u8* child =
+                    *reinterpret_cast<u8**>(walk + 0x18);   // payload
                 child = *reinterpret_cast<u8**>(child + 0x10); // 0x003B1828
                 if (*reinterpret_cast<u8*>(child + 0x70) != 0) {
                     if (state->callback_1480 != nullptr) {
@@ -520,8 +596,34 @@ u32 func_003b11a8(ScriptRuntimeState* state, u32 index, ScriptCursor* cursor,
                     }
                     return 0x53u;
                 }
-                walk = static_cast<u8*>(func_00397314(walk)); // 0x003B1864
             }
+
+            // 0x003B18C0..0x003B1974: find the matching payload, let virtual
+            // slot 5 bind it and flag the returned child as enabled.
+            for (u8* walk = lower; walk != header;
+                 walk = CommandTreeSuccessor(walk)) {
+                u8* payload = *reinterpret_cast<u8**>(walk + 0x18);
+                if (*reinterpret_cast<u32*>(payload + 0x04) !=
+                    *reinterpret_cast<u32*>(
+                        static_cast<u8*>(variant) + 0x04)) {
+                    continue;
+                }
+                void** payload_vtable = *reinterpret_cast<void***>(payload);
+                using Slot5 = u8* (*)(void*, void*);
+                u8* matched = reinterpret_cast<Slot5>(
+                    payload_vtable[5])(payload, variant);   // 0x003B18F0
+                if (matched != nullptr) {
+                    u8* child =
+                        *reinterpret_cast<u8**>(matched + 0x10); // 0x003B1904
+                    *reinterpret_cast<u8*>(child + 0x70) = 1;    // 0x003B1908
+                    goto finish;
+                }
+            }
+        }
+
+        // 0x003B1978..0x003B1B04: no match, insert the child record.
+        if (CreateChildRecord(state, index, static_cast<u8*>(variant)) == 0x44u) {
+            goto fail_44;
         }
     }
 
@@ -567,15 +669,12 @@ fail_44:
 
 namespace {
 
-// `svc #0x28` at 0x00101B80 and 0x00101F08 (GetSystemTick).  The host build
-// has no ARM SVC; the fixed-point arithmetic below is independent of the
-// clock source.
+// `svc #0x28` at 0x00101B80 and 0x00101F08 (nn::os::GetSystemTick).  The
+// import is declared above; the 64-bit fixed-point reduction below is
+// independent of the clock source.
 u64 SystemTick()
 {
-    // The shipped ARM body executes `svc #0x28` and consumes the r0:r1 pair.
-    // This host reconstruction keeps a platform-neutral stub; the 64-bit
-    // fixed-point reduction below is independent of the clock source.
-    return 0;
+    return nn::os::GetSystemTick();
 }
 
 // 0x00101F20..0x00101FDC: the 64-bit tick delta is first multiplied by the
@@ -615,7 +714,7 @@ void crt_func_00101308(void)
     // 0x00101310..0x00101358: system bring-up.
     engine_func_002c5fbc();
     engine_func_001076d8(0, 0x12345678u);
-    AsdMemory_func_0010376c(0x100000u);
+    AsdMemory_func_0010376c();                  // r0 = 0x100000 ignored
     func_00105e2c(1);
     AsdFile_func_0010250c();
     engine_func_00106db4(engine_func_0010db6c());
@@ -698,7 +797,7 @@ void crt_func_00101308(void)
     *func_00103754() = 12.0f;                  // 0x41400000
     *func_0010428c() = 0.5f;                   // 0x3F000000
     *func_00105c44() = 0.4f;                   // 0x3ECCCCCD
-    AsdModel_func_0010495c(0x100, 0x30000);
+    AsdModel_func_0010495c();                  // r0/r1 = 0x100/0x30000 ignored
     script_vm_func_001041d8();
     *script_vm_func_002c5e20() = 1000.0f;      // 0x447A0000
 
@@ -711,23 +810,24 @@ void crt_func_00101308(void)
         u8* rect = reinterpret_cast<GetFn>(vtable[4])(holder);
         if (rect != nullptr &&
             (*reinterpret_cast<u32*>(rect) & 0x40000000u) != 0) {
-            f32 width = *reinterpret_cast<f32*>(rect + 0x0C);
-            f32 x = *reinterpret_cast<f32*>(rect + 0x14);
-            f32 height = *reinterpret_cast<f32*>(rect + 0x18);
-            f32 value = *script_vm_func_002c5e20();
-            f32 half = 0.5f;                   // 0x3F000000
-            f32 h = height + value * half;
-            f32 y0 = x - value * half;
-            f32 y1 = height - value * half;
-            f32 w = value * width;
-            f32 new_w = h - y0;
-            f32 new_h = (h + y0) * half;
-            f32 y_a = y1 - 0.5f * w;
-            f32 y_b = (y1 + 0.5f * w) * half;
-            *reinterpret_cast<f32*>(rect + 0x10) = new_w;
-            *reinterpret_cast<f32*>(rect + 0x0C) = (y_a - y_b) / new_w;
-            *reinterpret_cast<f32*>(rect + 0x14) = y_b;
-            *reinterpret_cast<f32*>(rect + 0x18) = new_h;
+            f32 a = *reinterpret_cast<f32*>(rect + 0x0C);   // s18
+            f32 b = *reinterpret_cast<f32*>(rect + 0x14);   // s16
+            f32 c = *reinterpret_cast<f32*>(rect + 0x18);   // s17
+            f32 value = *script_vm_func_002c5e20();         // V
+            f32 half = 0.5f;                                // 0x3F000000
+            f32 w = value * a;                              // s3 = V*A
+            f32 ya = b - w * half;                          // s0  = B - 0.5W
+            f32 yb = b + w * half;                          // s16 = B + 0.5W
+            f32 h = c + value * half;                       // s17 = C + 0.5V
+            f32 y1 = c - value * half;                      // s1  = C - 0.5V
+            f32 height = h - y1;                            // s2  = H - Y1
+            *reinterpret_cast<f32*>(rect + 0x10) = height;  // 0x001015B0
+            *reinterpret_cast<f32*>(rect + 0x0C) =
+                (yb - ya) / height;                         // 0x001015B8
+            *reinterpret_cast<f32*>(rect + 0x14) =
+                (yb + ya) * half;                           // 0x001015BC
+            *reinterpret_cast<f32*>(rect + 0x18) =
+                (h + y1) * half;                            // 0x001015C4
         }
     }
 
@@ -735,7 +835,8 @@ void crt_func_00101308(void)
     g_CrtMainState.gx_08 = AsdGxCommandList_func_002c5d90();
     g_CrtMainState.gx_0c = AsdGxCommandList_func_002c5d90();
     ui_func_00102aa0();
-    AsdPrim_func_001042c8(0x100000);
+    AsdPrim_func_001042c8(reinterpret_cast<void*>(
+        static_cast<std::uintptr_t>(0x100000u)));   // r0 = 0x100000
     AsdProcess_func_00102e80(0x163);
     func_00103f70();
     AsdTMTexTable_func_00105080("tex/sdds4TopDir.dat");
@@ -791,9 +892,10 @@ void crt_func_00101308(void)
     CreateDrawTask("DrawDFadeProc", 0x160, 0x00102CC8);
 
     // 0x00101AC8..0x00101B44.
-    AsdCamera_func_00105c50(3);
+    AsdCamera_func_00105c50(reinterpret_cast<void*>(
+        static_cast<std::uintptr_t>(3)));       // r0 = 3
     AsdModelProcess_func_00103ff8(0x67, 0x68, 0xE3, 0);
-    FrameTex_func_00104378(1);
+    FrameTex_func_00104378();                   // r0 = 1 ignored
     engine_func_00102dc4(0);
     engine_func_001069bc(reinterpret_cast<std::uintptr_t>(g_RenderRegisterBase),
                          0.25f, 0.2f, 1.0f, 1.0f);
@@ -1043,7 +1145,7 @@ void ApplyFormatSelector(u32 selector, u32& field, u32 shift)
         field = (field & ~(7u << shift)) | (1u << shift);
     } else if (selector == 0x812Fu) {            // 0x00142EC4 / 0x00142F2C
         field &= ~(7u << shift);
-    } else if (selector == 0x8130u) {            // 0x00142EFC / 0x00142F98
+    } else if (selector == 0x8370u) {            // 0x00142EFC / 0x00142F98
         field = (field & ~(7u << shift)) | (3u << shift);
     }
 }
@@ -1194,11 +1296,18 @@ u32 func_00142bf0(LcdRenderConfig* config, u32 screen)
     // 0x00142D60..0x00142E1C: alpha-derived size field.
     *size = PackAlphaSize(config->alpha_28, *size);
 
+    // 0x00143324..0x0014332C / 0x0014379C..0x001437A4: screens 1 and 2 clear
+    // the two fixed-2D control bits before the mode gate.
+    if (screen != 0) {
+        *control &= ~0xC0u;
+    }
+
     // 0x00142E1C..0x00142E34: config +0x50 low nibble into channel +0x38.
     *extra = (*extra & ~0xFu) | (config->field_50 & 0xFu);
 
     // 0x00142E38..0x00142E7C (screen 0) and 0x00143330..0x00143384
-    // (screens 1/2): the accepted mode sets differ per screen.
+    // (screens 1/2): accepted mode sets.  Screen 0 also accepts 0x6040 and
+    // 0x6050; the 0x6040 body is screen-0 only.
     u32 mode = config->mode_48;
     u32 count_mask = 0;
     s32 nibble_source = 0;
@@ -1206,7 +1315,8 @@ u32 func_00142bf0(LcdRenderConfig* config, u32 screen)
     bool mode_ok = false;
     if (screen == 0) {
         mode_ok = (mode >= 0x1906u && mode <= 0x190Au) ||
-                  mode == 0x191Au || mode == 0x1FCAu || mode == 0x2025u;
+                  mode == 0x6040u || mode == 0x6050u ||
+                  mode == 0x6700u || mode == 0x675Au || mode == 0x675Bu;
     } else {
         mode_ok = (mode >= 0x1906u && mode <= 0x190Au) ||
                   mode == 0x6050u || mode == 0x6700u ||
@@ -1220,21 +1330,23 @@ u32 func_00142bf0(LcdRenderConfig* config, u32 screen)
     // modes branch to their own path and never run the 0x6E00/format/
     // mode_04 sequence below.  The channel 1/2 form is at 0x00143630 /
     // 0x00143AA8.
-    if (screen == 0 && mode == 0x190Au) {
+    if (screen == 0 && mode == 0x6040u) {
         // 0x001431B8..0x001431F0.
         *control &= ~0x71000000u;
         *size &= ~0xF000000u;
         *size &= ~0xF0000u;
+        *size &= ~0x1FFFu;                       // lsr #13 / lsl #13
         *control |= 0x20000006u;
         *control |= 0x100000u;
         *control = (*control & ~0x7000u & ~0x730u) | 0x1100u;
         goto submit;
     }
-    if (screen == 0 && mode == 0x191Au) {
+    if (screen == 0 && mode == 0x6050u) {
         // 0x001431F4..0x00143224.
         *control &= ~0x30u;
         *size &= ~0xF000000u;
         *size &= ~0xF0000u;
+        *size &= ~0x1FFFu;                       // lsr #13 / lsl #13
         *control &= ~0x70000000u;
         *control &= ~6u;
         *control &= ~0x7700u;
@@ -1242,12 +1354,14 @@ u32 func_00142bf0(LcdRenderConfig* config, u32 screen)
         goto submit;
     }
     if (screen != 0 && mode == 0x6050u) {
-        // 0x00143630..0x00143658 / 0x00143AA8..0x00143AD4.
+        // 0x00143630..0x00143658 / 0x00143AA8..0x00143AD4.  This path falls
+        // into the shared 0x0014365C tail rather than jumping to submit.
         *control = (*control & ~2u & ~4u & ~0x7700u);
         *size &= ~0xF000000u;
         *size &= ~0xF0000u;
+        *size &= ~0x1FFFu;                       // lsr #13 / lsl #13
         *color = 0;
-        goto submit;
+        goto tail;
     }
 
     // 0x00142E84..0x00142E9C: set the 0x30000000 field from gpu+0xF8.
@@ -1291,25 +1405,25 @@ u32 func_00142bf0(LcdRenderConfig* config, u32 screen)
         break;
     case 0x2700u:                               // 0x00143044
         *control &= ~4u;
-        *size = (*size & ~0xF0000u) | (*control & count_mask);
+        *size = (*size & ~0xF0000u) | count_mask;
         *size = (*size & ~0xF000000u) | (nibble << 24);
         *control &= ~0x1000000u;
         break;
     case 0x2701u:                               // 0x00143130
         *control |= 4u;
-        *size = (*size & ~0xF0000u) | (*control & count_mask);
+        *size = (*size & ~0xF0000u) | count_mask;
         *size = (*size & ~0xF000000u) | (nibble << 24);
         *control &= ~0x1000000u;
         break;
     case 0x2702u:                               // 0x00143098
         *control |= 4u;
-        *size = (*size & ~0xF0000u) | (*control & count_mask);
+        *size = (*size & ~0xF0000u) | count_mask;
         *size = (*size & ~0xF000000u) | (nibble << 24);
         *control |= 0x1000000u;
         break;
     case 0x2703u:                               // 0x00143170
         *control |= 4u;
-        *size = (*size & ~0xF0000u) | (*control & count_mask);
+        *size = (*size & ~0xF0000u) | count_mask;
         *size = (*size & ~0xF000000u) | (nibble << 24);
         *control |= 0x1000000u;
         break;
@@ -1317,9 +1431,12 @@ u32 func_00142bf0(LcdRenderConfig* config, u32 screen)
         break;
     }
 
-    // 0x0014310C..0x0014312C: 0x675A selects control bits 0x30 = 2.
+    // 0x0014310C..0x0014312C / 0x0014365C..0x0014367C: bits 0x30 are always
+    // cleared; mode 0x675A selects the 0x20 value.
+tail:
+    *control &= ~0x30u;
     if (mode == 0x675Au) {
-        *control = (*control & ~0x30u) | 0x20u;
+        *control |= 0x20u;
     }
 
 submit:
@@ -1345,9 +1462,8 @@ using CampCompareFn = s32 (*)(const void*, const void*);
 void CampInsertionSort(u8* base, u32 count, u32 size, CampCompareFn compare,
                        u32 copy_size)
 {
-    // 0x002B7F30..0x002B7F88 (and the stack-buffered 0x002B7D0C form):
-    // insertion sort over [0, count).  The first pass is a no-op, so the
-    // loop starts at element 1.
+    // 0x002B7F30..0x002B7F88: insertion sort over [0, count).  The first pass
+    // is a no-op, so the loop starts at element 1.
     for (u32 i = 1; i < count; ++i) {
         u8 temp[16] = {};
         u8* element = base + i * size;
@@ -1375,12 +1491,9 @@ void CampInsert(void* dest, u32 count, u32 size, u32 callback)
     CampCompareFn compare =
         reinterpret_cast<CampCompareFn>(static_cast<std::uintptr_t>(callback));
 
-    // 0x002B7F1A..0x002B7F20: counts above 0xA use the stack-buffered
-    // insertion helper at 0x002B7D0C, which has the same ordering contract.
-    if (count > 0xA) {
-        CampInsertionSort(base, count, size, compare, copy_size);
-        return;
-    }
+    // 0x002B7F1A..0x002B7F20 tail-branches into the shared insertion entry;
+    // the listing has no separate count>0xA path, so every count uses the
+    // same helper.
     CampInsertionSort(base, count, size, compare, copy_size);
 }
 
@@ -1450,22 +1563,24 @@ void camp_func_002831f0(u32 layout_opcode)
         return;
     }
     case 10: {
-        // 0x002834A0..0x00283678.  The counter loop re-evaluates
-        // camp_func_0029f0f4 on every iteration.
+        // 0x002834A0..0x00283678.  Pre-checked signed loop: the count is
+        // re-read through camp_func_0029f0f4 before every iteration
+        // (0x002834E4..0x002834F4 `cmp r0,r4` / `bgt`).
         u32 count_slot = reinterpret_cast<std::uintptr_t>(gpu + 0x240);
         u32 dest = reinterpret_cast<std::uintptr_t>(gpu + 0x1DB4);
         u32 cursor = stream + 2;
         u32 nonzero = 0;
-        u32 count = camp_func_0029f0f4(
-            reinterpret_cast<void*>(count_slot));
-        for (u32 i = 0; i != count; ++i) {
+        s32 count = static_cast<s32>(camp_func_0029f0f4(
+            reinterpret_cast<void*>(count_slot)));
+        for (s32 i = 0; count > i; ++i) {
             u16 value = *reinterpret_cast<u16*>(
-                reinterpret_cast<std::uintptr_t>(gpu) + 0x1DB4u + i * 2u);
+                reinterpret_cast<std::uintptr_t>(gpu) + 0x1DB4u +
+                static_cast<u32>(i) * 2u);
             if (value != 0) {
                 nonzero += 1;
             }
-            count = camp_func_0029f0f4(
-                reinterpret_cast<void*>(count_slot));
+            count = static_cast<s32>(camp_func_0029f0f4(
+                reinterpret_cast<void*>(count_slot)));
         }
         CampRule rules[] = {
             {dest, cursor, 2, 0x002E4684, 0x003132B0, 0x0B, false, nonzero},

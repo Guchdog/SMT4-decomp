@@ -196,12 +196,13 @@ static_assert(sizeof(CrtInitBlock) == 0x20);
 // +0x18..+0x24 is scaled by 255.0f (0x437F0000) and packed R/G/B/A; the
 // +0x28 float supplies the size field; +0x34 is the address; +0x40/+0x44
 // are the two pixel-format selectors; +0x48 is the operating mode checked
-// against 0x1906..0x190A / 0x1FCA / 0x2025; +0x50 supplies the four-bit
-// control nibble; +0x68 supplies the size divisor.
+// against 0x1906..0x190A plus 0x6040/0x6050/0x6700/0x675A/0x675B (screen 0)
+// and 0x1906..0x190A plus 0x6050/0x6700/0x675A/0x675B (screens 1/2); +0x50
+// supplies the four-bit control nibble; +0x68 supplies the size divisor.
 struct LcdRenderConfig {
     u32 mode_00;            // +0x00 (0x2600/0x2601 -> control bit 1)
     u32 mode_04;            // +0x04 (0x2600/0x2601/0x2700..0x2703)
-    u32 format_08;          // +0x08 (0x2901/0x812D/0x812F/0x8130)
+    u32 format_08;          // +0x08 (0x2901/0x812D/0x812F/0x8370)
     u32 format_0c;          // +0x0C (same selector set)
     u8  pad_10[0x0004];     // +0x10..+0x13
     s32 field_14;           // +0x14 (`ldr r0,[r0,#0x14]`, 0x0014306C)

@@ -17,6 +17,26 @@ namespace smt4::engine {
 // Defined in src/engine/asd_texture.cpp with C++ linkage (ledger entry).
 void* AsdMemory_func_002c23f8(u32 size);
 
+// Canonical spellings for the engine helpers that runtime_blocks.cpp reaches
+// during bring-up.  Each routine is defined in its own engine TU with C++
+// linkage; keeping the declarations here prevents a second, C-linkage spelling
+// from being introduced at a call site.  Signatures mirror the definitions.
+void  AsdMemory_func_0010376c();                       // 0x0010376C, 820 B
+void* AsdProcess_func_00102e80(u32 count);             // 0x00102E80, 152 B
+void* AsdCamera_func_00105c50(void* name);             // 0x00105C50, 340 B
+void  AsdSequence_func_002c59b8(u32 index, const void* data, u32 size);
+                                                       // 0x002C59B8, 180 B
+void  AsdPrim_func_001042c8(void* owner);              // 0x001042C8, 176 B
+void  AsdModel_func_0010495c();                        // 0x0010495C, 1108 B
+void* AsdTMTexTable_func_002c5b04(u32 group_id, u32 flags);
+                                                       // 0x002C5B04, 652 B
+void  FrameTex_func_00104378();                        // 0x00104378, 1508 B
+
+// 0x00101308: application bring-up and frame loop.  Defined in
+// src/engine/runtime_blocks.cpp as a namespaced C++ function; src/crt/start.cpp
+// calls it through this declaration (it used to declare a C-linkage spelling).
+void  crt_func_00101308();
+
 } // namespace smt4::engine
 
 extern "C" {
