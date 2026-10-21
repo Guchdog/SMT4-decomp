@@ -160,17 +160,38 @@ extern "C" {
 // Shared primitives
 // ---------------------------------------------------------------------------
 
-/** GPU render-mode ring.  The routine writes the cursor word at `slot+0`,
- *  the value at `slot+8+cursor*4`, and then invokes `slot+0x1C` with the value
- *  when `slot+0x18` is set or the slot changed (0x001E846C..0x001E84A4 and
- *  the identical pushes at 0x002F18A8..0x002F18D4 / 0x002F1920..0x002F194C). */
-void GpuModeSlotSet(u32 slot_offset, u32 value) {
+/** 0x24C GPU viewport ring push.  The listing advances the cursor
+ *  (`ldr r1,[r4]` / `add r2,r1,#1` / `str r2,[r4]`, 0x001E846C..0x001E8480)
+ *  and writes the value at `8+(cursor+1)*4` (`add r3,r4,r2,lsl #2` /
+ *  `str r0,[r3,#8]`, 0x001E8474..0x001E8484).  The previous value is read
+ *  from `8+cursor*4` and the `+0x1C` callback runs when `+0x18` is set or the
+ *  value changed (0x001E8488..0x001E84A4). */
+void GpuModeSlotPush(u32 slot_offset, u32 value) {
     u8* slot = g_AsdGpuState + 0x1000 + slot_offset;
     const u32 cursor = *reinterpret_cast<u32*>(slot);      // 0x001E846C
     const u32 next = cursor + 1;                          // 0x001E8470
     const u32 old = *reinterpret_cast<u32*>(slot + 8 + cursor * 4);
     *reinterpret_cast<u32*>(slot) = next;                 // 0x001E8478/80
     *reinterpret_cast<u32*>(slot + 8 + next * 4) = value; // 0x001E8484
+    if (slot[0x18] != 0 || old != value) {
+        reinterpret_cast<void (*)(u32)>(*reinterpret_cast<u32*>(slot + 0x1C))(value);
+        slot[0x18] = 0;
+    }
+}
+
+/** 0x2AC GPU render-mode ring set.  These sites do NOT advance or store the
+ *  cursor: `ldr r1,[rX]` / `add r2,rX,r1,lsl #2` / `ldr r1,[r2,#8]` /
+ *  `str r0,[r2,#8]` (0x001E8B44..0x1E8B50, 0x001E8BE4..0x1E8BF0,
+ *  0x001E8C5C, 0x001E8CFC, 0x001E8D94, 0x001E8E34; 0x002F18A8..0x2F18B4,
+ *  0x002F1920..0x2F192C, 0x002F1A48..0x2F1A54, 0x002F1AC0..0x2F1ACC,
+ *  0x002F1BA8..0x002F1BB4, 0x002F1C18..0x002F1C24).  Only the hook test
+ *  remains. */
+void GpuModeSlotSet(u32 slot_offset, u32 value) {
+    u8* slot = g_AsdGpuState + 0x1000 + slot_offset;
+    const u32 cursor = *reinterpret_cast<u32*>(slot);
+    u32* entry = reinterpret_cast<u32*>(slot + 8 + cursor * 4);
+    const u32 old = *entry;
+    *entry = value;
     if (slot[0x18] != 0 || old != value) {
         reinterpret_cast<void (*)(u32)>(*reinterpret_cast<u32*>(slot + 0x1C))(value);
         slot[0x18] = 0;
@@ -1994,7 +2015,7 @@ void ui_func_001e83fc() {
     }
 
     // 0x001E844C..0x001E84A4: push viewport mode 5/0 onto ring slot 0x24C.
-    GpuModeSlotSet(0x24C,
+    GpuModeSlotPush(0x24C,
                    reinterpret_cast<u32>(UiGpu_SetViewportParams(5, 0)));
 
     s32 order[0x80] = {};                                  // [sp+0x88]
@@ -2276,7 +2297,7 @@ void ui_func_001e83fc() {
 
     // ---- pop/push viewport mode (0x001E8E7C..0x001E8F20) ------------------
     GpuModeSlotPop(0x24C);
-    GpuModeSlotSet(0x24C,
+    GpuModeSlotPush(0x24C,
                    reinterpret_cast<u32>(UiGpu_SetViewportParams(5, 0)));
 
     if (g_TalkOverlayFlags.field_29 != 0 &&
@@ -2353,7 +2374,7 @@ void ui_func_001e83fc() {
         static_cast<u32>(value - 0x54) <= 0x0Bu || value == 0x18) {
         return 0;
     }
-    GpuModeSlotSet(0x24C,
+    GpuModeSlotPush(0x24C,
                    reinterpret_cast<u32>(UiGpu_SetViewportParams(5, 0)));
     TalkMode_UpdateA();                                    // 0x001E94A4
     TalkMode_UpdateB();                                    // 0x001E94B0
