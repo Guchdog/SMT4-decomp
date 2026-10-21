@@ -10,25 +10,35 @@
  * 0x00164C08 (3,776 B) -- same core, plane stride 0x100
  * 0x00168980 (3,776 B) -- same core, plane stride 0x200
  * ---------------------------------------------------------------------------
- * The three 0x0016xxxx entries are byte-identical apart from the four plane
- * addresses (0x404/0x408/0x804/0x808/0xC04/0xC08 in 0x00160E90 become
- * 0x104/0x108/0x204/0x208/0x304/0x308 and 0x204/0x208/0x404/0x408/0x604/
- * 0x608 respectively) and the row step (`add r0,r0,#0x1000` at 0x001617C4,
- * `#0x400` at 0x0016553C, `#0x800` at 0x001692B4).  The row step is always
- * four plane strides, so the shared core takes the stride as a parameter.
+ * The three 0x0016xxxx entries share one instruction stream.  Every listing
+ * difference is an immediate derived from the plane stride: the plane
+ * load/store displacements (0x404/0x408/0x804/0x808/0xC04/0xC08 in
+ * 0x00160E90 become 0x104/0x108/0x204/0x208/0x304/0x308 and
+ * 0x204/0x208/0x404/0x408/0x604/0x608 respectively), the `pld`
+ * displacement (0x420 / 0x120 / 0x220) and both row-step `add` immediates:
+ * `#0x1000` at 0x001617C4 with its width==32 counterpart at 0x00161D2C,
+ * `#0x400` at 0x0016553C / 0x00165AA4, `#0x800` at 0x001692B4 / 0x0016981C.
+ * The row step is always four plane strides.
  *
- * Per invocation the routine walks `cols - 32` bytes in 32-byte chunks
- * (four 8-byte groups) and then the remaining `cols - 8` bytes in 8-byte
- * chunks, decrementing `rows` by four per row.  Each 8-byte group consumes two
- * 32-bit words from every one of the four planes and writes four output bytes
- * back into the *second* word of each group (offsets +6..+9):
+ * The driver keeps a signed counter at `cols - 32`.  It consumes four 8-byte
+ * groups per 32-byte iteration while the counter stays positive
+ * (0x00160ED4..0x001615E4), then adds 0x18 and consumes one 8-byte group per
+ * 8-byte iteration while it stays positive (0x001615F0..0x001617BC).  For
+ * `cols` a multiple of 32 the pointer advances `cols - 8` bytes; the
+ * `subne r0,r0,r2` at 0x001617D0 then places the next row `4*stride` bytes
+ * after the previous row base.  `cols == 32` instead enters the three-group
+ * block at 0x001617E8..0x00161D24, which has no per-group counter.
  *
- *   plane 0 at +0x000, plane 1 at +pointer stride, plane 2 at +2*stride,
- *   plane 3 at +3*stride.  The next row starts 4*stride bytes later.
+ * Each group loads two consecutive 32-bit words per plane (group+4 and
+ * group+8) and overwrites bytes group+6..group+9 -- bytes 2-3 of the first
+ * word and bytes 0-1 of the second -- with the four filtered plane bytes:
+ *
+ *   plane 0 at +0x000, plane 1 at +stride, plane 2 at +2*stride,
+ *   plane 3 at +3*stride.
  *
  * The pixel filter is the ARMv6 SIMD sequence at 0x00160F14..0x00161024
- * (pkhtb/pkhbt byte transpose, uhadd8/uqsub8/ uadd8/usub8 edge weights and
- * four `sel` chooses).  The two lane thresholds come from state+0x10 and
+ * (pkhtb/pkhbt byte transpose, uhadd8/uqsub8/uadd8/usub8 edge weights and
+ * the `sel` choose stages).  The two lane thresholds come from state+0x10 and
  * state+0x14 and are byte-replicated by the `orr r8,r8,r8,lsl #8` /
  * `orr sb,sb,sb,lsl #8` pair at 0x00160EC0..0x00160ECC.
  *
@@ -68,11 +78,12 @@ namespace smt4::engine {
 // 0x00160E90 / 0x00164C08 / 0x00168980 support type
 // ---------------------------------------------------------------------------
 
-// Descriptor passed in r0.  `data` is the plane base; `cols` is the byte
-// count consumed per plane row (`ldr r2,[r0,#8]`, 0x00160E94); `rows` is the
-// countdown decremented by four per row (`ldr r3,[r0,#0xc]`, 0x00160E98).
-// The two threshold words are read at 0x00160E9C/0x00160EA0 and their low
-// byte is replicated across all four lanes.
+// Descriptor passed in r0.  `data` is the plane base; `cols` seeds the signed
+// group counter (`ldr r2,[r0,#8]` then `subs r2,r2,#0x20`, 0x00160E94 and
+// 0x00160EB0); `rows` is the countdown decremented by four per row
+// (`ldr r3,[r0,#0xc]`, 0x00160E98).  The two threshold words are read at
+// 0x00160E9C/0x00160EA0 and their low byte is replicated across all four
+// lanes.
 struct PlaneFilterState {
     u32 field_00;        // +0x00 (never read by the three routines)
     u8* data;            // +0x04 (`ldr r0,[r0,#4]`, 0x00160EA4)

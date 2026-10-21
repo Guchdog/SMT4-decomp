@@ -252,7 +252,10 @@ void func_00160e90(PlaneFilterState* state) {
 
     if (cols == 0x20) {                   // `beq 0x1617E8`, 0x00160ED0
         for (;;) {
-            PlaneFilterGroup(base, kPlaneStride, threshold_a, threshold_b);
+            // 0x001617E8..0x00161D24: three unrolled groups, no counter.
+            PlaneFilterGroup(base + 0x00, kPlaneStride, threshold_a, threshold_b);
+            PlaneFilterGroup(base + 0x08, kPlaneStride, threshold_a, threshold_b);
+            PlaneFilterGroup(base + 0x10, kPlaneStride, threshold_a, threshold_b);
             // 0x00161D2C..0x00161D3C
             base += 4 * kPlaneStride;
             rows -= 4;
@@ -272,7 +275,7 @@ void func_00160e90(PlaneFilterState* state) {
             PlaneFilterGroup(base + 0x18, kPlaneStride, threshold_a, threshold_b);
             base += 0x20;                 // 0x001615D8
             counter -= 0x20;              // 0x001615DC
-        } while (counter > 0);            // `bgt 0x160ED4`, 0x001615E4
+        } while (static_cast<s32>(counter) > 0);            // `bgt 0x160ED4`, 0x001615E4
 
         // 0x001615E8..0x001617BC: the remaining 8-byte groups.
         counter += 0x18;                  // 0x001615E8
@@ -280,7 +283,7 @@ void func_00160e90(PlaneFilterState* state) {
             PlaneFilterGroup(base, kPlaneStride, threshold_a, threshold_b);
             base += 0x08;                 // 0x001617B0
             counter -= 0x08;              // 0x001617B4
-        } while (counter > 0);            // `bgt 0x1615F0`, 0x001617BC
+        } while (static_cast<s32>(counter) > 0);            // `bgt 0x1615F0`, 0x001617BC
 
         // 0x001617C0..0x001617D8: next row.
         base += 4 * kPlaneStride - 0x18;  // 0x001617C4/0x001617C8
@@ -309,7 +312,10 @@ void func_00164c08(PlaneFilterState* state) {
 
     if (cols == 0x20) {
         for (;;) {
-            PlaneFilterGroup(base, kPlaneStride, threshold_a, threshold_b);
+            // 0x001617E8..0x00161D24: three unrolled groups, no counter.
+            PlaneFilterGroup(base + 0x00, kPlaneStride, threshold_a, threshold_b);
+            PlaneFilterGroup(base + 0x08, kPlaneStride, threshold_a, threshold_b);
+            PlaneFilterGroup(base + 0x10, kPlaneStride, threshold_a, threshold_b);
             base += 4 * kPlaneStride;
             rows -= 4;
             if (rows == 0) {
@@ -327,14 +333,14 @@ void func_00164c08(PlaneFilterState* state) {
             PlaneFilterGroup(base + 0x18, kPlaneStride, threshold_a, threshold_b);
             base += 0x20;
             counter -= 0x20;
-        } while (counter > 0);
+        } while (static_cast<s32>(counter) > 0);
 
         counter += 0x18;
         do {
             PlaneFilterGroup(base, kPlaneStride, threshold_a, threshold_b);
             base += 0x08;
             counter -= 0x08;
-        } while (counter > 0);
+        } while (static_cast<s32>(counter) > 0);
 
         base += 4 * kPlaneStride - 0x18;  // `add r0,r0,#0x400`, 0x0016553C
         rows -= 4;
@@ -362,7 +368,10 @@ void func_00168980(PlaneFilterState* state) {
 
     if (cols == 0x20) {
         for (;;) {
-            PlaneFilterGroup(base, kPlaneStride, threshold_a, threshold_b);
+            // 0x001617E8..0x00161D24: three unrolled groups, no counter.
+            PlaneFilterGroup(base + 0x00, kPlaneStride, threshold_a, threshold_b);
+            PlaneFilterGroup(base + 0x08, kPlaneStride, threshold_a, threshold_b);
+            PlaneFilterGroup(base + 0x10, kPlaneStride, threshold_a, threshold_b);
             base += 4 * kPlaneStride;
             rows -= 4;
             if (rows == 0) {
@@ -380,14 +389,14 @@ void func_00168980(PlaneFilterState* state) {
             PlaneFilterGroup(base + 0x18, kPlaneStride, threshold_a, threshold_b);
             base += 0x20;
             counter -= 0x20;
-        } while (counter > 0);
+        } while (static_cast<s32>(counter) > 0);
 
         counter += 0x18;
         do {
             PlaneFilterGroup(base, kPlaneStride, threshold_a, threshold_b);
             base += 0x08;
             counter -= 0x08;
-        } while (counter > 0);
+        } while (static_cast<s32>(counter) > 0);
 
         base += 4 * kPlaneStride - 0x18;  // `add r0,r0,#0x800`, 0x001692B4
         rows -= 4;
@@ -404,28 +413,6 @@ void func_00168980(PlaneFilterState* state) {
 // ---------------------------------------------------------------------------
 
 namespace {
-
-// 0x004EA81C view covering the +0x120 accumulation quad and the +0x180
-// save slot that `ui_runtime.h` leaves outside its 0x180-byte prefix.
-struct SplineRenderStateView {
-    u8  pad_000[0x100];
-    f32 vector[4];   // +0x100
-    f32 color[4];    // +0x110
-    f32 scratch[4];  // +0x120
-    u8  pad_130[0x10];
-    f32 matrix[16];  // +0x140
-    f32 saved[4];    // +0x180
-};
-static_assert(offsetof(SplineRenderStateView, vector) == 0x100);
-static_assert(offsetof(SplineRenderStateView, color) == 0x110);
-static_assert(offsetof(SplineRenderStateView, scratch) == 0x120);
-static_assert(offsetof(SplineRenderStateView, matrix) == 0x140);
-static_assert(offsetof(SplineRenderStateView, saved) == 0x180);
-static_assert(sizeof(SplineRenderStateView) == 0x190);
-
-SplineRenderStateView& RenderState() {
-    return *reinterpret_cast<SplineRenderStateView*>(&ui::g_UiPartRenderState);
-}
 
 // Literal-pool constants used by 0x002F9F54.
 constexpr f32 kHalfPi = 1.5707963705062866f;             // 0x3FC90FDB
@@ -528,7 +515,7 @@ void func_002f9f54(SplineState* spline, u32 row, const f32* point, f32 time) {
         *counter = static_cast<u16>(sample_count);
     }
 
-    SplineRenderStateView& g = RenderState();
+    ui::UiPartRenderState& g = ui::g_UiPartRenderState;
     f32 s16 = 0.0f;
     f32 s17 = 0.0f;
     f32 s20 = 0.0f;                                  // 0x002FA034
@@ -536,7 +523,12 @@ void func_002f9f54(SplineState* spline, u32 row, const f32* point, f32 time) {
     f32 s22 = 1.0f;                                  // 0x002FA038
     f32 angle = 0.0f;                                // s23
     f32 direction[4] = {0.0f, 0.0f, 0.0f, 0.0f};     // [sp+0x20]/[sp+4]/[sp+0x18]
-    f32 transformed[4] = {0.0f, 0.0f, 0.0f, 1.0f};   // [sp+0x10]/[sp]/[sp+8]/s19
+    f32 transformed[4] = {0.0f, 0.0f, 0.0f, 1.0f};   // loop-local matrix result
+    // 0x002FA29C / 0x002FA2A4 / 0x002FA2AC store the first sample's rotated
+    // quad to [sp+0x10] / [sp] / [sp+8]; the sample loop never rewrites those
+    // stack slots, so the cross-section below uses this snapshot, not the
+    // last loop iteration's `transformed`.
+    f32 first_axis[4] = {0.0f, 0.0f, 0.0f, 1.0f};
     u32 index = 0;                                   // r5
     u16 loop_bound = 0;                              // sl
 
@@ -569,9 +561,15 @@ void func_002f9f54(SplineState* spline, u32 row, const f32* point, f32 time) {
         angle = (g.vector[0] * g.color[0] +
                  g.vector[1] * g.color[1] +
                  g.vector[2] * g.color[2]) * kHalfPi;
-        g.scratch[0] = *reinterpret_cast<const f32*>(vertex_row + 0x0C);
-        g.scratch[1] = *reinterpret_cast<const f32*>(vertex_row + 0x10);
-        g.scratch[2] = *reinterpret_cast<const f32*>(vertex_row + 0x14);
+        // 0x002FA0F4/0x002FA108/0x002FA110: the persistent 0x00472550 scratch
+        // receives the current vertex tangent before it is copied to
+        // 0x004EA81C+0x120 (`ldm r7` -> `stm r0`, 0x002FA114/0x002FA130).
+        g_TrailScratchB[0] = *reinterpret_cast<const f32*>(vertex_row + 0x0C);
+        g_TrailScratchB[1] = *reinterpret_cast<const f32*>(vertex_row + 0x10);
+        g_TrailScratchB[2] = *reinterpret_cast<const f32*>(vertex_row + 0x14);
+        g.scratch[0] = g_TrailScratchB[0];
+        g.scratch[1] = g_TrailScratchB[1];
+        g.scratch[2] = g_TrailScratchB[2];
         g.scratch[3] = g_TrailScratchB[3];
 
         // 0x002FA138..0x002FA158: vector = next vertex tangent, w = r7[3].
@@ -602,6 +600,10 @@ void func_002f9f54(SplineState* spline, u32 row, const f32* point, f32 time) {
         g.vector[2] = transformed[2];
         g.vector[3] = transformed[3];
         s19 = transformed[3];                          // 0x002FA2B4
+        first_axis[0] = transformed[0];                // 0x002FA29C ([sp+0x10])
+        first_axis[1] = transformed[1];                // 0x002FA2A4 ([sp])
+        first_axis[2] = transformed[2];                // 0x002FA2AC ([sp+8])
+        first_axis[3] = transformed[3];                // s19
 
         // 0x002FA298..0x002FA2CC: first sample scale.
         Scale4(g.vector, s20);
@@ -627,11 +629,14 @@ void func_002f9f54(SplineState* spline, u32 row, const f32* point, f32 time) {
             for (;;) {
                 u8* const current = vertex_row;
 
-                // 0x002FA3FC..0x002FA468: scratch = current tangent,
-                // vector = next tangent, w from the tail scratch slot.
-                g.scratch[0] = *reinterpret_cast<const f32*>(current + 0x0C);
-                g.scratch[1] = *reinterpret_cast<const f32*>(current + 0x10);
-                g.scratch[2] = *reinterpret_cast<const f32*>(current + 0x14);
+                // 0x002FA3FC..0x002FA468: r7[0..2] receives the current
+                // tangent (persistent 0x00472550), then scratch = r7.
+                g_TrailScratchB[0] = *reinterpret_cast<const f32*>(current + 0x0C);
+                g_TrailScratchB[1] = *reinterpret_cast<const f32*>(current + 0x10);
+                g_TrailScratchB[2] = *reinterpret_cast<const f32*>(current + 0x14);
+                g.scratch[0] = g_TrailScratchB[0];
+                g.scratch[1] = g_TrailScratchB[1];
+                g.scratch[2] = g_TrailScratchB[2];
                 g.scratch[3] = g_TrailScratchB[3];
                 const u8* const next = current + sizeof(SplineVertex);
                 g.vector[0] = *reinterpret_cast<const f32*>(next + 0x0C);
@@ -743,9 +748,9 @@ void func_002f9f54(SplineState* spline, u32 row, const f32* point, f32 time) {
     g.scratch[1] = *reinterpret_cast<const f32*>(first_vertex + 0x10);
     g.scratch[2] = *reinterpret_cast<const f32*>(first_vertex + 0x14);
     g.scratch[3] = g_TrailScratchB[3];
-    g.vector[0] = transformed[0];                     // [sp+0x10]
-    g.vector[1] = transformed[1];                     // [sp]
-    g.vector[2] = transformed[2];                     // [sp+8]
+    g.vector[0] = first_axis[0];                      // [sp+0x10]
+    g.vector[1] = first_axis[1];                      // [sp]
+    g.vector[2] = first_axis[2];                      // [sp+8]
     g.vector[3] = s19;                                // 0x002FA864
     const f32 scale13 = s20 * kScale13;               // s2, 0x002FA870
     Scale4(g.vector, scale13);
@@ -760,9 +765,9 @@ void func_002f9f54(SplineState* spline, u32 row, const f32* point, f32 time) {
     std::memcpy(output_row + 0x18, g.vector, 12);     // 0x002FA964..0x002FA974
 
     // 0x002FA978..0x002FA9AC: vector = first transformed axis * 1.7.
-    g.vector[0] = transformed[0];
-    g.vector[1] = transformed[1];
-    g.vector[2] = transformed[2];
+    g.vector[0] = first_axis[0];
+    g.vector[1] = first_axis[1];
+    g.vector[2] = first_axis[2];
     g.vector[3] = s19;
     const f32 scale17 = s20 * kScale17;               // s5, 0x002FA98C
     Scale4(g.vector, scale17);
@@ -777,9 +782,9 @@ void func_002f9f54(SplineState* spline, u32 row, const f32* point, f32 time) {
     std::memcpy(output_row + 0x24, g.vector, 12);     // 0x002FAA78..0x002FAA88
 
     // 0x002FAA8C..0x002FAB74: -1.3*axis, (2/3)*vector + (1/3)*colour.
-    g.vector[0] = transformed[0];
-    g.vector[1] = transformed[1];
-    g.vector[2] = transformed[2];
+    g.vector[0] = first_axis[0];
+    g.vector[1] = first_axis[1];
+    g.vector[2] = first_axis[2];
     g.vector[3] = s19;
     Scale4(g.vector, scale13);                        // 0x002FAA9C..0x002FAABC
     g.vector[0] = -g.vector[0];                       // 0x002FAAC0
@@ -794,9 +799,9 @@ void func_002f9f54(SplineState* spline, u32 row, const f32* point, f32 time) {
     std::memcpy(output_row + 0x48, g.vector, 12);     // 0x002FAB90..0x002FABA0
 
     // 0x002FABA4..0x002FAC6C: -1.7*axis, (1/3)*vector + (2/3)*colour.
-    g.vector[0] = transformed[0];
-    g.vector[1] = transformed[1];
-    g.vector[2] = transformed[2];
+    g.vector[0] = first_axis[0];
+    g.vector[1] = first_axis[1];
+    g.vector[2] = first_axis[2];
     g.vector[3] = s19;
     Scale4(g.vector, scale17);                        // 0x002FABB0..0x002FABF8
     g.vector[0] = -g.vector[0];                       // 0x002FABFC

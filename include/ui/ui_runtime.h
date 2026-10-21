@@ -100,22 +100,32 @@ static_assert(offsetof(UiPartRenderContext, scale_y) == 0x58);
 
 /** 4-word scratch block at 0x004EA81C.  The renderer keeps the input tint
  *  at +0x100 (`vstmia r0,{s16,s17,s18,s19}`, 0x0026801C), a 4-float colour at
- *  +0x110 and a 16-float matrix at +0x140; the alternating stores/loads at
- *  0x002681B0..0x002681D8 and 0x002687A8..0x002687E0 save/restore the same
- *  slots per entry.  The block overlaps 0x004EA91C by construction: that
- *  address is exactly base+0x100, not a separate global.
+ *  +0x110, an accumulation quad at +0x120 and a 16-float matrix at +0x140;
+ *  the alternating stores/loads at 0x002681B0..0x002681D8 and
+ *  0x002687A8..0x002687E0 save/restore the same slots per entry.  The block
+ *  overlaps 0x004EA91C by construction: that address is exactly base+0x100,
+ *  not a separate global.
+ *
+ *  0x002F9F54 additionally uses the +0x120 scratch quad (0x002FA130) and
+ *  saves the first four-float axis at +0x180 (`vstmia r0,{r1,r2,r3,ip}` over
+ *  0x00472530, 0x002FA090; restored at 0x002FA20C and 0x002FA500).  The block
+ *  is therefore 0x190 bytes; the +0x130..+0x13F gap remains explicit.
  */
 struct UiPartRenderState {
     u8  pad_000[0x100];
     f32 vector[4];                  // +0x100 (also 0x004EA91C tint quad)
     f32 color[4];                   // +0x110
-    u8  pad_120[0x20];
-    f32 matrix[16];                 // +0x140..+0x17C
+    f32 scratch[4];                 // +0x120 (0x002FA130 / 0x002FA5E0)
+    u8  pad_130[0x10];              // +0x130..+0x13F
+    f32 matrix[16];                 // +0x140..+0x17F
+    f32 saved[4];                   // +0x180 (0x002FA094 / 0x002FA20C)
 };
 static_assert(offsetof(UiPartRenderState, vector) == 0x100);
 static_assert(offsetof(UiPartRenderState, color) == 0x110);
+static_assert(offsetof(UiPartRenderState, scratch) == 0x120);
 static_assert(offsetof(UiPartRenderState, matrix) == 0x140);
-static_assert(sizeof(UiPartRenderState) == 0x180);
+static_assert(offsetof(UiPartRenderState, saved) == 0x180);
+static_assert(sizeof(UiPartRenderState) == 0x190);
 
 extern UiPartRenderState g_UiPartRenderState;   // 0x004EA81C (BSS)
 
