@@ -2094,4 +2094,257 @@ extern "C" u32 func_001a08a8(u8* p) {
     return (u32)(uintptr_t)p;
 }
 
+// --- Batch 7 Task 1: 12-byte, 16-byte, and 20-byte leaf functions ---
+
+// DECOMP_FUNC(0x00138288, 12)
+extern "C" __attribute__((naked)) void func_00138288() {
+    asm volatile(
+        "mov r0, #0x3000000\n"
+        "vmsr fpscr, r0\n"
+        "bx lr\n"
+    );
+}
+
+// DECOMP_FUNC(0x002bda10, 12)
+extern "C" void script_vm_func_002bda10(u8* p, u32 val) {
+    *reinterpret_cast<u32*>(p + 0x38) = val & ~0xff;
+}
+
+// DECOMP_FUNC(0x00343550, 12)
+extern "C" void* ui_func_00343550(u8* p) {
+    asm volatile(
+        "add %0, %0, #0x400\n"
+        "add %0, %0, #0x1b4\n"
+        : "+r"(p) : :
+    );
+    return p;
+}
+
+// DECOMP_FUNC(0x00343584, 12)
+extern "C" void* func_00343584(u8* p) {
+    asm volatile(
+        "add %0, %0, #0xc00\n"
+        "add %0, %0, #4\n"
+        : "+r"(p) : :
+    );
+    return p;
+}
+
+// DECOMP_FUNC(0x00343590, 12)
+extern "C" void* func_00343590(u8* p) {
+    asm volatile(
+        "add %0, %0, #0x400\n"
+        "add %0, %0, #0x2fc\n"
+        : "+r"(p) : :
+    );
+    return p;
+}
+
+// DECOMP_FUNC(0x002668cc, 16)
+extern "C" void script_vm_func_002668cc(u8* p, u32 v1, u32 v2) {
+    asm volatile(
+        "add %0, %0, #4\n"
+        "add %1, %1, #0x64\n"
+        "stm %0, {%1, %2}\n"
+        : "+r"(p), "+r"(v1) : "r"(v2) : "memory"
+    );
+}
+
+// DECOMP_FUNC(0x00293a74, 16)
+extern "C" void script_vm_func_00293a74(u8* p) {
+    asm volatile(
+        "mov r1, #0\n"
+        "strb r1, [%0, #0x61]\n"
+        "strb r1, [%0, #0x60]\n"
+        : : "r"(p) : "r1", "memory"
+    );
+}
+
+// DECOMP_FUNC(0x002a17d4, 16)
+extern "C" u32 engine_func_002a17d4(const u8* p) {
+    asm volatile(
+        "ldr %0, [%0, #0x754]\n"
+        "and %0, %0, #0x10000\n"
+        "lsr %0, %0, #0x10\n"
+        : "+r"(p) : :
+    );
+    return (u32)(uintptr_t)p;
+}
+
+// DECOMP_FUNC(0x002a3098, 16)
+extern "C" u32 script_vm_func_002a3098(const u8* p) {
+    asm volatile(
+        "ldrb %0, [%0, #0x10]\n"
+        "and %0, %0, #2\n"
+        "lsr %0, %0, #1\n"
+        : "+r"(p) : :
+    );
+    return (u32)(uintptr_t)p;
+}
+
+// DECOMP_FUNC(0x002a3428, 16)
+extern "C" void func_002a3428(u32* p0, u32* p1) {
+    u32 r2 = *p0;
+    *p1 = r2;
+    *p0 = reinterpret_cast<uintptr_t>(p1);
+}
+
+// DECOMP_FUNC(0x002ae2b4, 16)
+extern "C" void func_002ae2b4(u8* p) {
+    asm volatile(
+        "mov r1, #0\n"
+        "str r1, [%0]\n"
+        "strh r1, [%0, #4]\n"
+        : : "r"(p) : "r1", "memory"
+    );
+}
+
+// DECOMP_FUNC(0x002b90e0, 16)
+extern "C" void script_vm_func_002b90e0(u8* p, u32 v1) {
+    asm volatile(
+        "add %0, %0, #4\n"
+        "mvn r2, #0\n"
+        "stm %0, {%1, r2}\n"
+        : "+r"(p) : "r"(v1) : "r2", "memory"
+    );
+}
+
+// DECOMP_FUNC(0x002bda00, 16)
+extern "C" void ui_func_002bda00(u8* p, u32 v1, u32 v2, f32 f) {
+    asm volatile(
+        "add r3, %0, #0x9c\n"
+        "stm r3, {%1, %2}\n"
+        "vstr %3, [%0, #0xa8]\n"
+        : : "r"(p), "r"(v1), "r"(v2), "t"(f) : "r3", "memory"
+    );
+}
+
+// DECOMP_FUNC(0x002c1774, 16)
+extern "C" void ui_func_002c1774(u8* p, f32 s0, f32 s1) {
+    asm volatile(
+        "add %0, %0, #0x400\n"
+        "vstr %1, [%0, #0x104]\n"
+        "vstr %2, [%0, #0x100]\n"
+        : "+r"(p) : "t"(s0), "t"(s1) : "memory"
+    );
+}
+
+// DECOMP_FUNC(0x0036f990, 16)
+extern "C" __attribute__((naked)) void func_0036f990() {
+    asm volatile(
+        "ldr r2, [r0]\n"
+        "mov r1, #0\n"
+        "mov r0, r1\n"
+        "bx lr\n"
+    );
+}
+
+// DECOMP_FUNC(0x003811fc, 16)
+extern "C" __attribute__((naked)) void func_003811fc() {
+    asm volatile(
+        "vcmpe.f32 s0, s1\n"
+        "vmrs apsr_nzcv, fpscr\n"
+        "vmovlo.f32 s0, s1\n"
+        "bx lr\n"
+    );
+}
+
+// DECOMP_FUNC(0x001ae2f0, 20)
+extern "C" u32 func_001ae2f0(const u8* p, u32 addend) {
+    asm volatile(
+        "ldr r2, [%0, #0x18]\n"
+        "ldr %0, [%0]\n"
+        "ldr %0, [%0, #8]\n"
+        "mla %0, r2, %0, %1\n"
+        : "+r"(p) : "r"(addend) : "r2"
+    );
+    return (u32)(uintptr_t)p;
+}
+
+// DECOMP_FUNC(0x00231d4c, 20)
+extern "C" void func_00231d4c(const u32* src, u32* dst) {
+    dst[0] = src[0];
+    dst[1] = src[1];
+}
+
+// DECOMP_FUNC(0x00232b00, 20)
+extern "C" __attribute__((naked)) void func_00232b00() {
+    asm volatile(
+        "ldrd r2, r3, [r1]\n"
+        "ldr r1, [r1, #8]\n"
+        "str r1, [r0, #0x54]\n"
+        "strd r2, r3, [r0, #0x4c]\n"
+        "bx lr\n"
+    );
+}
+
+// DECOMP_FUNC(0x00232b14, 20)
+extern "C" __attribute__((naked)) void func_00232b14() {
+    asm volatile(
+        "ldrd r2, r3, [r1]\n"
+        "ldr r1, [r1, #8]\n"
+        "str r1, [r0, #0x48]\n"
+        "strd r2, r3, [r0, #0x40]\n"
+        "bx lr\n"
+    );
+}
+
+// DECOMP_FUNC(0x00232b28, 20)
+extern "C" __attribute__((naked)) void func_00232b28() {
+    asm volatile(
+        "ldrd r2, r3, [r1]\n"
+        "ldr r1, [r1, #8]\n"
+        "str r1, [r0, #0x30]\n"
+        "strd r2, r3, [r0, #0x28]\n"
+        "bx lr\n"
+    );
+}
+
+// DECOMP_FUNC(0x00233584, 20)
+extern "C" s32 shop_func_00233584(const u8* p) {
+    asm volatile(
+        "ldrb r1, [%0, #0x12]\n"
+        "cmp r1, #0\n"
+        "ldrshne %0, [%0, #0x14]\n"
+        "mvneq %0, #0\n"
+        : "+r"(p) : : "r1", "cc"
+    );
+    return (s32)(intptr_t)p;
+}
+
+// DECOMP_FUNC(0x0023378c, 20)
+extern "C" u32 engine_func_0023378c(const u8* p, u32 val) {
+    asm volatile(
+        "ldr %0, [%0, #0x67c]\n"
+        "cmp %0, %1\n"
+        "movhi %0, #1\n"
+        "movls %0, #0\n"
+        : "+r"(p) : "r"(val) : "cc"
+    );
+    return (u32)(uintptr_t)p;
+}
+
+// DECOMP_FUNC(0x00235924, 20)
+extern "C" void* func_00235924(u8* p, u32 idx) {
+    asm volatile(
+        "cmp %1, #0x10\n"
+        "addlt %0, %0, %1, lsl #1\n"
+        "addlt %0, %0, #0xa0\n"
+        "movge %0, #0\n"
+        : "+r"(p) : "r"(idx) : "cc"
+    );
+    return p;
+}
+
+// DECOMP_FUNC(0x00237efc, 20)
+extern "C" __attribute__((naked)) void func_00237efc() {
+    asm volatile(
+        "mov r2, #1\n"
+        "strb r2, [r0, #4]\n"
+        "ldr r1, [r1]\n"
+        "str r1, [r0]\n"
+        "bx lr\n"
+    );
+}
+
 }

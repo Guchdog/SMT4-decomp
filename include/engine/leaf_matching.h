@@ -382,4 +382,33 @@ u32 func_00158404(const u8* p, u32 idx);
 u32 engine_func_0017f928(u32 r0, u32 r1);
 u32 func_00192934(u8* p);
 u32 func_001a08a8(u8* p);
+
+// --- Batch 7 Task 1: 12-byte, 16-byte, and 20-byte leaf functions ---
+void func_00138288();
+void script_vm_func_002bda10(u8* p, u32 val);
+void* ui_func_00343550(u8* p);
+void* func_00343584(u8* p);
+void* func_00343590(u8* p);
+
+void script_vm_func_002668cc(u8* p, u32 v1, u32 v2);
+void script_vm_func_00293a74(u8* p);
+u32 engine_func_002a17d4(const u8* p);
+u32 script_vm_func_002a3098(const u8* p);
+void func_002a3428(u32* p0, u32* p1);
+void func_002ae2b4(u8* p);
+void script_vm_func_002b90e0(u8* p, u32 v1);
+void ui_func_002bda00(u8* p, u32 v1, u32 v2, f32 f);
+void ui_func_002c1774(u8* p, f32 s0, f32 s1);
+void func_0036f990();
+void func_003811fc();
+
+u32 func_001ae2f0(const u8* p, u32 addend);
+void func_00231d4c(const u32* src, u32* dst);
+void func_00232b00();
+void func_00232b14();
+void func_00232b28();
+s32 shop_func_00233584(const u8* p);
+u32 engine_func_0023378c(const u8* p, u32 val);
+void* func_00235924(u8* p, u32 idx);
+void func_00237efc();
 }
