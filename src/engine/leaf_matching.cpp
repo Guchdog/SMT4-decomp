@@ -984,4 +984,291 @@ s32 func_003ad7fc(u8* p) {
     return *reinterpret_cast<s8*>(p + 0x10);
 }
 
+// DECOMP_FUNC(0x0011cbf4, 12)
+void func_0011cbf4(u8* p) {
+    *reinterpret_cast<s32*>(p + 0x18) = -1;
+}
+
+// DECOMP_FUNC(0x0014bef8, 12)
+void func_0014bef8(u8* p) {
+    *reinterpret_cast<u8*>(p + 0x85) = 1;
+}
+
+// DECOMP_FUNC(0x0014dbc4, 12)
+void func_0014dbc4(u8* p) {
+    *reinterpret_cast<s32*>(p + 0x1c) = -1;
+}
+
+// DECOMP_FUNC(0x001b1a7c, 12)
+void func_001b1a7c(u8* p) {
+    *reinterpret_cast<u32*>(p + 0x1c) = 0;
+}
+
+// DECOMP_FUNC(0x00207c00, 12)
+void func_00207c00(u8* p) {
+    *reinterpret_cast<u32*>(p + 0x2c) = 0;
+}
+
+// DECOMP_FUNC(0x002abde8, 12)
+void func_002abde8(u8* p) {
+    *reinterpret_cast<u32*>(p + 8) = 0;
+}
+
+// DECOMP_FUNC(0x002aecd8, 12)
+void func_002aecd8(u8* p) {
+    *reinterpret_cast<u8*>(p + 0x12) = 0;
+}
+
+// DECOMP_FUNC(0x002b5058, 12)
+void func_002b5058(u8* p) {
+    *reinterpret_cast<s32*>(p + 0x1c) = -1;
+}
+
+// DECOMP_FUNC(0x002e8124, 12)
+void func_002e8124(u8* p) {
+    *reinterpret_cast<u32*>(p + 0x2c) = 0;
+}
+
+// DECOMP_FUNC(0x00368860, 12)
+void func_00368860(u8* p) {
+    *reinterpret_cast<u32*>(p + 8) = 0;
+}
+
+// DECOMP_FUNC(0x0036fb34, 12)
+void func_0036fb34(u8* p) {
+    *reinterpret_cast<u32*>(p + 0x0c) = 0;
+}
+
+// DECOMP_FUNC(0x0036ff08, 12)
+void func_0036ff08(u8* p) {
+    *reinterpret_cast<u32*>(p + 0x1c) = 0;
+}
+
+// DECOMP_FUNC(0x00379afc, 12)
+void func_00379afc(u8* p) {
+    *reinterpret_cast<u32*>(p + 4) = 0;
+}
+
+// DECOMP_FUNC(0x00379b08, 12)
+void func_00379b08(u8* p) {
+    *reinterpret_cast<u32*>(p + 0x14) = 0;
+}
+
+// DECOMP_FUNC(0x00379c08, 12)
+void func_00379c08(u8* p) {
+    *reinterpret_cast<u32*>(p + 0x18) = 0;
+}
+
+// DECOMP_FUNC(0x00379ed4, 12)
+void func_00379ed4(u8* p) {
+    *reinterpret_cast<u32*>(p + 4) = 0;
+}
+
+// DECOMP_FUNC(0x0038c2a0, 12)
+void func_0038c2a0(u8* p) {
+    *reinterpret_cast<u32*>(p + 0xb0) = 0;
+}
+
+// DECOMP_FUNC(0x0014d040, 12)
+u8* func_0014d040(u8* p) {
+    return p + *reinterpret_cast<u32*>(p + 4);
+}
+
+// DECOMP_FUNC(0x0014d26c, 12)
+u8* func_0014d26c(u8* p) {
+    return p + *reinterpret_cast<u32*>(p + 0x34);
+}
+
+// DECOMP_FUNC(0x0014d278, 12)
+u8* func_0014d278(u8* p) {
+    return p + *reinterpret_cast<u32*>(p + 0x3c);
+}
+
+// DECOMP_FUNC(0x0014d284, 12)
+u8* func_0014d284(u8* p) {
+    return p + *reinterpret_cast<u32*>(p + 0x2c);
+}
+
+// DECOMP_FUNC(0x0014d4c0, 12)
+u8* func_0014d4c0(u8* p) {
+    return p + *reinterpret_cast<u32*>(p + 4);
+}
+
+// DECOMP_FUNC(0x00152170, 12)
+u8* func_00152170(u8* p) {
+    return p + *reinterpret_cast<u32*>(p + 0x10);
+}
+
+// DECOMP_FUNC(0x001521a4, 12)
+u8* func_001521a4(u8* p) {
+    return p + *reinterpret_cast<u32*>(p + 0x10);
+}
+
+// DECOMP_FUNC(0x001557b0, 12)
+u8* func_001557b0(u8* p) {
+    return p + *reinterpret_cast<u32*>(p + 0x0c);
+}
+
+// DECOMP_FUNC(0x003e6374, 12)
+u8* func_003e6374(u8* p) {
+    return p + *reinterpret_cast<u32*>(p + 4);
+}
+
+// DECOMP_FUNC(0x003e6a80, 12)
+u8* func_003e6a80(u8* p) {
+    return p + *reinterpret_cast<u32*>(p + 0x1c);
+}
+
+// DECOMP_FUNC(0x003e6b74, 12)
+u8* func_003e6b74(u8* p) {
+    return p + *reinterpret_cast<u32*>(p + 0x10);
+}
+
+// DECOMP_FUNC(0x003e84b8, 12)
+u8* func_003e84b8(u8* p) {
+    return p + *reinterpret_cast<u32*>(p + 0x0c);
+}
+
+// DECOMP_FUNC(0x003e8840, 12)
+u8* func_003e8840(u8* p) {
+    return p + *reinterpret_cast<u32*>(p + 0x0c);
+}
+
+// DECOMP_FUNC(0x001e18d0, 12)
+u32 func_001e18d0(u8* p) {
+    return *reinterpret_cast<u32*>(*reinterpret_cast<u8**>(p + 0x24) + 0xb8);
+}
+
+// DECOMP_FUNC(0x002cd964, 12)
+u32 func_002cd964(u8* p, u32 v) {
+    *reinterpret_cast<u32*>(p + 0x2c) = v;
+    return 1;
+}
+
+// DECOMP_FUNC(0x002d17e8, 12)
+u32 func_002d17e8(u8* p) {
+    return *reinterpret_cast<u32*>(*reinterpret_cast<u8**>(p + 0x40) + 0x34);
+}
+
+// DECOMP_FUNC(0x002d18bc, 12)
+u32 func_002d18bc(u8* p) {
+    return *reinterpret_cast<u32*>(*reinterpret_cast<u8**>(p + 0x40) + 0x34);
+}
+
+// DECOMP_FUNC(0x002dacf0, 12)
+u32 func_002dacf0(u8* p) {
+    return *reinterpret_cast<u32*>(*reinterpret_cast<u8**>(p) + 0x48);
+}
+
+// DECOMP_FUNC(0x002f345c, 12)
+u32 func_002f345c(u8* p) {
+    return *reinterpret_cast<u32*>(*reinterpret_cast<u8**>(p + 0x34) + 0x34);
+}
+
+// DECOMP_FUNC(0x00362368, 12)
+u32 func_00362368(u8* p, u32 v) {
+    *reinterpret_cast<u32*>(p + 8) = v;
+    return 0;
+}
+
+// DECOMP_FUNC(0x003e89ec, 12)
+void func_003e89ec(void* unused, u32* dst, u8* src) {
+    (void)unused;
+    *dst = *reinterpret_cast<u32*>(src + 8);
+}
+
+// DECOMP_FUNC(0x003e8a0c, 12)
+void func_003e8a0c(void* unused, u8* dst, u8* src) {
+    (void)unused;
+    *dst = *reinterpret_cast<u8*>(src + 8);
+}
+
+// DECOMP_FUNC(0x003e8a7c, 12)
+void func_003e8a7c(void* unused, u32* dst, u8* src) {
+    (void)unused;
+    *dst = *reinterpret_cast<u32*>(src + 8);
+}
+
+// DECOMP_FUNC(0x003ea358, 12)
+u32 func_003ea358(u8* p) {
+    return *reinterpret_cast<u8*>(*reinterpret_cast<u8**>(p + 8) + 7);
+}
+
+// DECOMP_FUNC(0x003ea4c4, 12)
+u32 func_003ea4c4(u8* p) {
+    return *reinterpret_cast<u8*>(*reinterpret_cast<u8**>(p + 8) + 0x15);
+}
+
+// DECOMP_FUNC(0x002c7084, 12)
+void func_002c7084(void* dst, const void* src) {
+    asm volatile(
+        "vldmia %1, {s0, s1, s2, s3}\n"
+        "vstmia %0, {s0, s1, s2, s3}\n"
+        : : "r"(dst), "r"(src) : "memory"
+    );
+}
+
+// DECOMP_FUNC(0x002dd080, 12)
+void func_002dd080(void* dst, const void* src) {
+    asm volatile(
+        "vldmia %1, {s0, s1, s2, s3}\n"
+        "vstmia %0, {s0, s1, s2, s3}\n"
+        : : "r"(dst), "r"(src) : "memory"
+    );
+}
+
+// DECOMP_FUNC(0x002f3450, 12)
+void func_002f3450(void* dst, const void* src) {
+    asm volatile(
+        "vldmia %1, {s0, s1, s2, s3}\n"
+        "vstmia %0, {s0, s1, s2, s3}\n"
+        : : "r"(dst), "r"(src) : "memory"
+    );
+}
+
+// DECOMP_FUNC(0x002f98e0, 12)
+void func_002f98e0(void* dst, const void* src) {
+    asm volatile(
+        "vldmia %1, {s0, s1, s2, s3}\n"
+        "vstmia %0, {s0, s1, s2, s3}\n"
+        : : "r"(dst), "r"(src) : "memory"
+    );
+}
+
+// DECOMP_FUNC(0x002faf08, 12)
+void func_002faf08(void* dst, const void* src) {
+    asm volatile(
+        "vldmia %1, {s0, s1, s2, s3}\n"
+        "vstmia %0, {s0, s1, s2, s3}\n"
+        : : "r"(dst), "r"(src) : "memory"
+    );
+}
+
+// DECOMP_FUNC(0x00302764, 12)
+void func_00302764(void* dst, const void* src) {
+    asm volatile(
+        "vldmia %1, {s0, s1, s2, s3}\n"
+        "vstmia %0, {s0, s1, s2, s3}\n"
+        : : "r"(dst), "r"(src) : "memory"
+    );
+}
+
+// DECOMP_FUNC(0x00315960, 12)
+void func_00315960(void* dst, const void* src) {
+    asm volatile(
+        "vldmia %1, {s0, s1, s2, s3}\n"
+        "vstmia %0, {s0, s1, s2, s3}\n"
+        : : "r"(dst), "r"(src) : "memory"
+    );
+}
+
+// DECOMP_FUNC(0x0031ab34, 12)
+void func_0031ab34(void* dst, const void* src) {
+    asm volatile(
+        "vldmia %1, {s0, s1, s2, s3}\n"
+        "vstmia %0, {s0, s1, s2, s3}\n"
+        : : "r"(dst), "r"(src) : "memory"
+    );
+}
+
 }

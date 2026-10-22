@@ -219,4 +219,58 @@ void func_0037d914(u8* p, u8 v);
 void func_0037dad0(u8* p, u8 v);
 void func_00381464();
 s32 func_003ad7fc(u8* p);
+// 12-byte leaf functions (Batch 4 Task 2)
+void func_0011cbf4(u8* p);
+void func_0014bef8(u8* p);
+void func_0014dbc4(u8* p);
+void func_001b1a7c(u8* p);
+void func_00207c00(u8* p);
+void func_002abde8(u8* p);
+void func_002aecd8(u8* p);
+void func_002b5058(u8* p);
+void func_002e8124(u8* p);
+void func_00368860(u8* p);
+void func_0036fb34(u8* p);
+void func_0036ff08(u8* p);
+void func_00379afc(u8* p);
+void func_00379b08(u8* p);
+void func_00379c08(u8* p);
+void func_00379ed4(u8* p);
+void func_0038c2a0(u8* p);
+
+u8* func_0014d040(u8* p);
+u8* func_0014d26c(u8* p);
+u8* func_0014d278(u8* p);
+u8* func_0014d284(u8* p);
+u8* func_0014d4c0(u8* p);
+u8* func_00152170(u8* p);
+u8* func_001521a4(u8* p);
+u8* func_001557b0(u8* p);
+u8* func_003e6374(u8* p);
+u8* func_003e6a80(u8* p);
+u8* func_003e6b74(u8* p);
+u8* func_003e84b8(u8* p);
+u8* func_003e8840(u8* p);
+
+u32 func_001e18d0(u8* p);
+u32 func_002cd964(u8* p, u32 v);
+u32 func_002d17e8(u8* p);
+u32 func_002d18bc(u8* p);
+u32 func_002dacf0(u8* p);
+u32 func_002f345c(u8* p);
+u32 func_00362368(u8* p, u32 v);
+void func_003e89ec(void* unused, u32* dst, u8* src);
+void func_003e8a0c(void* unused, u8* dst, u8* src);
+void func_003e8a7c(void* unused, u32* dst, u8* src);
+u32 func_003ea358(u8* p);
+u32 func_003ea4c4(u8* p);
+
+void func_002c7084(void* dst, const void* src);
+void func_002dd080(void* dst, const void* src);
+void func_002f3450(void* dst, const void* src);
+void func_002f98e0(void* dst, const void* src);
+void func_002faf08(void* dst, const void* src);
+void func_00302764(void* dst, const void* src);
+void func_00315960(void* dst, const void* src);
+void func_0031ab34(void* dst, const void* src);
 }
