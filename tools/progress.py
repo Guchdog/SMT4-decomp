@@ -217,9 +217,13 @@ def compute_progress(functions_csv: Path, repo_root: Path) -> dict:
                         f"Could not parse function body for {name} ({addr}) in '{src_rel}'"
                     )
 
-                # Strict verification: prevent empty stubs from being marked as decompiled
+                # Strict verification: an empty source body may be the complete
+                # reconstruction of a real ``bx lr`` function.  Matching claims
+                # therefore get checked against the original bytes before the
+                # source-level placeholder heuristic is applied.  Non-matching
+                # empty bodies are still rejected as stubs.
                 if status in DECOMPILED_STATUSES:
-                    if is_stub_body(body, size):
+                    if status != "matching" and is_stub_body(body, size):
                         raise VerificationError(
                             f"Function {name} ({addr}) is marked '{status}' but contains only a stub/placeholder body. "
                             f"Must be marked 'stub'."

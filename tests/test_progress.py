@@ -156,18 +156,45 @@ class TestProgress(unittest.TestCase):
             with self.assertRaises(VerificationError):
                 compute_progress(csv_path, root)
 
+    def test_accepts_empty_body_when_it_is_an_exact_matching_return(self):
+        """An empty C++ body is complete when it emits the original ``bx lr``."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            code_dir = root / "extracted" / "exefs"
+            code_dir.mkdir(parents=True, exist_ok=True)
+            code_dir.joinpath("code.bin").write_bytes(bytes.fromhex("1eff2fe1"))
+
+            src_dir = root / "src" / "engine"
+            src_dir.mkdir(parents=True, exist_ok=True)
+            (src_dir / "leaf.cpp").write_text(
+                "// DECOMP_FUNC(0x00100000, 4)\n"
+                'extern "C" void EmptyReturn() {}\n',
+                encoding="utf-8",
+            )
+            csv_path = root / "functions.csv"
+            csv_path.write_text(
+                "address,size,status,category,name,src_file\n"
+                "0x00100000,4,matching,engine,EmptyReturn,src/engine/leaf.cpp\n",
+                encoding="utf-8",
+            )
+
+            stats = compute_progress(csv_path, root)
+
+        self.assertEqual(stats["matching_functions"], 1)
+        self.assertEqual(stats["matching_bytes"], 4)
+
     def test_real_repo_progress_matches_text_size(self):
         require_private_fixtures(self, Path("extracted/exefs/code.bin"))
         stats = compute_progress(Path("config/functions.csv"), Path("."))
         self.assertEqual(stats["total_bytes"], 0x2FE624)
-        self.assertEqual(stats["decompiled_functions"], 395)
-        self.assertEqual(stats["decompiled_bytes"], 537076)
+        self.assertEqual(stats["decompiled_functions"], 415)
+        self.assertEqual(stats["decompiled_bytes"], 537212)
         self.assertEqual(stats["stub_functions"], 39)
         self.assertEqual(stats["stub_bytes"], 248240)
-        self.assertEqual(stats["total_explored_functions"], 434)
-        self.assertEqual(stats["total_explored_bytes"], 785316)
-        self.assertEqual(stats["matching_functions"], 12)
-        self.assertEqual(stats["matching_bytes"], 184)
+        self.assertEqual(stats["total_explored_functions"], 454)
+        self.assertEqual(stats["total_explored_bytes"], 785452)
+        self.assertEqual(stats["matching_functions"], 32)
+        self.assertEqual(stats["matching_bytes"], 320)
         self.assertEqual(stats["verified_functions"], 338)
         self.assertEqual(stats["verified_bytes"], 297424)
         self.assertEqual(stats["compiled_functions"], stats["verified_functions"])
@@ -188,6 +215,8 @@ class TestProgress(unittest.TestCase):
         self.assertEqual(stats["categories"]["battle"]["matching_bytes"], 12)
         self.assertEqual(stats["categories"]["ui"]["matching_funcs"], 1)
         self.assertEqual(stats["categories"]["ui"]["matching_bytes"], 12)
+        self.assertEqual(stats["categories"]["unknown"]["matching_funcs"], 20)
+        self.assertEqual(stats["categories"]["unknown"]["matching_bytes"], 136)
 
     def _nonmatching_project(self, root):
         src = root / "src" / "function.cpp"
