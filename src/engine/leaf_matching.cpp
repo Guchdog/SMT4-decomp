@@ -165,4 +165,778 @@ u8* func_00368708(u8* p) {
     return p + 0x2C;
 }
 
+
+// DECOMP_FUNC(0x0025721c, 16)
+void engine_func_0025721c(u8* p) {
+    *reinterpret_cast<u32*>(p + 0x1c) += 1;
+}
+
+// DECOMP_FUNC(0x00263194, 16)
+void camp_func_00263194(u8* p, u32 mask) {
+    u16 val = *reinterpret_cast<u16*>(p + 0x44);
+    *reinterpret_cast<u16*>(p + 0x44) = val & ~mask;
+}
+
+// DECOMP_FUNC(0x00269758, 16)
+void engine_func_00269758(u32* p) {
+    *p += 1;
+}
+
+// DECOMP_FUNC(0x00269e28, 12)
+void camp_func_00269e28(u8* p) {
+    *reinterpret_cast<u32*>(p + 0x178) = 0;
+}
+
+// DECOMP_FUNC(0x002a308c, 12)
+u32 engine_func_002a308c(u8* p) {
+    return *reinterpret_cast<u8*>(p + 0x10) & 1;
+}
+
+// DECOMP_FUNC(0x002b2808, 12)
+void script_vm_func_002b2808(volatile u16* p, u16 v1, u16 v2) {
+    p[12] = v1;
+    p[13] = v2;
+}
+
+// DECOMP_FUNC(0x002bac28, 12)
+void engine_func_002bac28(u32* p) {
+    *p = 0;
+}
+
+// DECOMP_FUNC(0x002bef70, 12)
+s32 shop_func_002bef70(u8* p) {
+    return *reinterpret_cast<s32*>(p + 0x10) >> 12;
+}
+
+// DECOMP_FUNC(0x002bef7c, 12)
+s32 ui_func_002bef7c(u8* p) {
+    return *reinterpret_cast<s32*>(p + 0x0C) >> 12;
+}
+
+// DECOMP_FUNC(0x002c7bb8, 8)
+u32 func_002c7bb8(u8* p) {
+    return *reinterpret_cast<u32*>(p + 0xbc);
+}
+
+// DECOMP_FUNC(0x002caeec, 4)
+void func_002caeec() {
+}
+
+// DECOMP_FUNC(0x002cd95c, 8)
+u32 func_002cd95c(u8* p) {
+    return *reinterpret_cast<u32*>(p + 0x2c);
+}
+
+// DECOMP_FUNC(0x002d12c8, 4)
+void func_002d12c8() {
+}
+
+// DECOMP_FUNC(0x002d17f4, 8)
+void func_002d17f4(u8* p, u32 v) {
+    *reinterpret_cast<u32*>(p + 0x24) = v;
+}
+
+// DECOMP_FUNC(0x002d17fc, 8)
+void func_002d17fc(u8* p, f32 v) {
+    *reinterpret_cast<f32*>(p + 0x20) = v;
+}
+
+// DECOMP_FUNC(0x002d7adc, 8)
+u32 func_002d7adc() {
+    return 1;
+}
+
+// DECOMP_FUNC(0x002d8d44, 8)
+u32 func_002d8d44() {
+    return 1;
+}
+
+// DECOMP_FUNC(0x002de938, 8)
+void func_002de938(u8* p, u32 v) {
+    *reinterpret_cast<u32*>(p + 0x30) = v;
+}
+
+// DECOMP_FUNC(0x002df460, 8)
+void func_002df460(u8* p, u32 v) {
+    *reinterpret_cast<u32*>(p + 0x30) = v;
+}
+
+// DECOMP_FUNC(0x002e006c, 12)
+void engine_func_002e006c(u8* p) {
+    *p = 0;
+}
+
+// DECOMP_FUNC(0x002e3eec, 8)
+u32 func_002e3eec() {
+    return 1;
+}
+
+// DECOMP_FUNC(0x002e3ef4, 8)
+u32 func_002e3ef4() {
+    return 1;
+}
+
+// DECOMP_FUNC(0x002e40fc, 8)
+u32 func_002e40fc() {
+    return 1;
+}
+
+// DECOMP_FUNC(0x002e4b0c, 4)
+void func_002e4b0c() {
+}
+
+// DECOMP_FUNC(0x002e6efc, 4)
+void func_002e6efc() {
+}
+
+// DECOMP_FUNC(0x002e80f0, 8)
+void func_002e80f0(u8* p, u32 v) {
+    *reinterpret_cast<u32*>(p + 0x30) = v;
+}
+
+// DECOMP_FUNC(0x002f0634, 8)
+u32 func_002f0634() {
+    return 1;
+}
+
+// DECOMP_FUNC(0x002f2a24, 4)
+void func_002f2a24() {
+}
+
+// DECOMP_FUNC(0x002f88e8, 8)
+void func_002f88e8(u8* p, u32 v) {
+    *reinterpret_cast<u32*>(p + 4) = v;
+}
+
+// DECOMP_FUNC(0x002f9edc, 8)
+u32 func_002f9edc(u8* p) {
+    return *reinterpret_cast<u32*>(p + 0xbc);
+}
+
+// DECOMP_FUNC(0x002f9f44, 8)
+void func_002f9f44(u8* p, u32 v) {
+    *reinterpret_cast<u32*>(p + 0x24) = v;
+}
+
+// DECOMP_FUNC(0x002f9f4c, 8)
+void func_002f9f4c(u8* p, f32 v) {
+    *reinterpret_cast<f32*>(p + 0x20) = v;
+}
+
+// DECOMP_FUNC(0x002ffdbc, 8)
+u32 func_002ffdbc() {
+    return 1;
+}
+
+// DECOMP_FUNC(0x00304144, 8)
+void func_00304144(u8* p, u32 v) {
+    *reinterpret_cast<u32*>(p + 0x24) = v;
+}
+
+// DECOMP_FUNC(0x0030414c, 8)
+void func_0030414c(u8* p, f32 v) {
+    *reinterpret_cast<f32*>(p + 0x20) = v;
+}
+
+// DECOMP_FUNC(0x0031284c, 8)
+u32 func_0031284c() {
+    return 1;
+}
+
+// DECOMP_FUNC(0x00312c24, 8)
+u32 func_00312c24() {
+    return 1;
+}
+
+// DECOMP_FUNC(0x00318a0c, 8)
+u32 func_00318a0c() {
+    return 1;
+}
+
+// DECOMP_FUNC(0x00318df8, 12)
+u32 ui_func_00318df8(u8* p) {
+    return *reinterpret_cast<u32*>(*reinterpret_cast<u8**>(p + 0x30) + 4);
+}
+
+// DECOMP_FUNC(0x0031ccf8, 8)
+u32 func_0031ccf8() {
+    return 1;
+}
+
+// DECOMP_FUNC(0x0031f574, 8)
+u32 func_0031f574() {
+    return 1;
+}
+
+// DECOMP_FUNC(0x0032356c, 8)
+u32 func_0032356c() {
+    return 1;
+}
+
+// DECOMP_FUNC(0x0032aed8, 4)
+void func_0032aed8() {
+}
+
+// DECOMP_FUNC(0x0032aedc, 4)
+void func_0032aedc() {
+}
+
+// DECOMP_FUNC(0x0032aee0, 8)
+u32 func_0032aee0() {
+    return 0;
+}
+
+// DECOMP_FUNC(0x0032aee8, 4)
+void func_0032aee8() {
+}
+
+// DECOMP_FUNC(0x0032aeec, 4)
+void func_0032aeec() {
+}
+
+// DECOMP_FUNC(0x0032aef0, 8)
+u32 func_0032aef0() {
+    return 1;
+}
+
+// DECOMP_FUNC(0x0032aef8, 8)
+u32 func_0032aef8() {
+    return 0;
+}
+
+// DECOMP_FUNC(0x0034242c, 8)
+u32 func_0034242c() {
+    return 0;
+}
+
+// DECOMP_FUNC(0x00342434, 8)
+u32 func_00342434() {
+    return 1;
+}
+
+// DECOMP_FUNC(0x00348aac, 4)
+void func_00348aac() {
+}
+
+// DECOMP_FUNC(0x00348ad8, 8)
+u32 func_00348ad8() {
+    return 0;
+}
+
+// DECOMP_FUNC(0x0034b3bc, 4)
+void func_0034b3bc() {
+}
+
+// DECOMP_FUNC(0x0034dd98, 8)
+u32 func_0034dd98() {
+    return 0x6d;
+}
+
+// DECOMP_FUNC(0x0034df94, 4)
+void func_0034df94() {
+}
+
+// DECOMP_FUNC(0x00351dc8, 8)
+u32 func_00351dc8() {
+    return 2;
+}
+
+// DECOMP_FUNC(0x003558d4, 4)
+void func_003558d4() {
+}
+
+// DECOMP_FUNC(0x00355f10, 4)
+void func_00355f10() {
+}
+
+// DECOMP_FUNC(0x0035ae40, 4)
+void func_0035ae40() {
+}
+
+// DECOMP_FUNC(0x003632c0, 4)
+void func_003632c0() {
+}
+
+// DECOMP_FUNC(0x00365594, 4)
+void func_00365594() {
+}
+
+// DECOMP_FUNC(0x003661bc, 4)
+void func_003661bc() {
+}
+
+// DECOMP_FUNC(0x00367738, 4)
+void func_00367738() {
+}
+
+// DECOMP_FUNC(0x00367fb4, 4)
+void func_00367fb4() {
+}
+
+// DECOMP_FUNC(0x0036830c, 4)
+void func_0036830c() {
+}
+
+// DECOMP_FUNC(0x003683b8, 4)
+void func_003683b8() {
+}
+
+// DECOMP_FUNC(0x003684dc, 4)
+void func_003684dc() {
+}
+
+// DECOMP_FUNC(0x00368528, 4)
+void func_00368528() {
+}
+
+// DECOMP_FUNC(0x0036852c, 4)
+void func_0036852c() {
+}
+
+// DECOMP_FUNC(0x00368530, 4)
+void func_00368530() {
+}
+
+// DECOMP_FUNC(0x00368534, 4)
+void func_00368534() {
+}
+
+// DECOMP_FUNC(0x00368538, 4)
+void func_00368538() {
+}
+
+// DECOMP_FUNC(0x0036853c, 4)
+void func_0036853c() {
+}
+
+// DECOMP_FUNC(0x003685d0, 4)
+void func_003685d0() {
+}
+
+// DECOMP_FUNC(0x003685d4, 4)
+void func_003685d4() {
+}
+
+// DECOMP_FUNC(0x003685d8, 4)
+void func_003685d8() {
+}
+
+// DECOMP_FUNC(0x003685dc, 4)
+void func_003685dc() {
+}
+
+// DECOMP_FUNC(0x003685e0, 4)
+void func_003685e0() {
+}
+
+// DECOMP_FUNC(0x00369a74, 8)
+u32 func_00369a74(u8* p) {
+    return *reinterpret_cast<u32*>(p + 0xc);
+}
+
+// DECOMP_FUNC(0x0036a310, 4)
+void func_0036a310() {
+}
+
+// DECOMP_FUNC(0x0036a9a8, 8)
+u32 func_0036a9a8(u8* p) {
+    return *reinterpret_cast<u32*>(p + 0xc);
+}
+
+// DECOMP_FUNC(0x0036acd0, 8)
+u32 func_0036acd0(u8* p) {
+    return *reinterpret_cast<u32*>(p + 0x1c);
+}
+
+// DECOMP_FUNC(0x0036b3a4, 8)
+u32 func_0036b3a4(u8* p) {
+    return *reinterpret_cast<u32*>(p + 0xc);
+}
+
+// DECOMP_FUNC(0x0036ce44, 8)
+u32 func_0036ce44(u8* p) {
+    return *reinterpret_cast<u32*>(p + 0x1c);
+}
+
+// DECOMP_FUNC(0x0036d07c, 4)
+void func_0036d07c() {
+}
+
+// DECOMP_FUNC(0x0036d970, 4)
+void func_0036d970() {
+}
+
+// DECOMP_FUNC(0x0036e0c4, 8)
+u32 func_0036e0c4(u8* p) {
+    return *reinterpret_cast<u32*>(p + 0x1c);
+}
+
+// DECOMP_FUNC(0x0036e2f8, 4)
+void func_0036e2f8() {
+}
+
+// DECOMP_FUNC(0x0036e2fc, 4)
+void func_0036e2fc() {
+}
+
+// DECOMP_FUNC(0x0036e300, 4)
+void func_0036e300() {
+}
+
+// DECOMP_FUNC(0x0036e304, 4)
+void func_0036e304() {
+}
+
+// DECOMP_FUNC(0x0036e308, 4)
+void func_0036e308() {
+}
+
+// DECOMP_FUNC(0x0036f378, 8)
+u32 func_0036f378() {
+    return 0;
+}
+
+// DECOMP_FUNC(0x0036fa3c, 4)
+void func_0036fa3c() {
+}
+
+// DECOMP_FUNC(0x0036fb40, 4)
+void func_0036fb40() {
+}
+
+// DECOMP_FUNC(0x0036fe14, 4)
+void func_0036fe14() {
+}
+
+// DECOMP_FUNC(0x003700c4, 4)
+void func_003700c4() {
+}
+
+// DECOMP_FUNC(0x0037627c, 4)
+void func_0037627c() {
+}
+
+// DECOMP_FUNC(0x00377004, 4)
+void func_00377004() {
+}
+
+// DECOMP_FUNC(0x0037730c, 4)
+void func_0037730c() {
+}
+
+// DECOMP_FUNC(0x00379bc8, 4)
+void func_00379bc8() {
+}
+
+// DECOMP_FUNC(0x00379da0, 4)
+void func_00379da0() {
+}
+
+// DECOMP_FUNC(0x0037a24c, 8)
+u8* func_0037a24c(u8* p) {
+    return p + 0xf4;
+}
+
+// DECOMP_FUNC(0x0037af80, 8)
+u8* func_0037af80(u8* p) {
+    return p + 0xf4;
+}
+
+// DECOMP_FUNC(0x0037b400, 4)
+void func_0037b400() {
+}
+
+// DECOMP_FUNC(0x0037b404, 4)
+void func_0037b404() {
+}
+
+// DECOMP_FUNC(0x0037b408, 4)
+void func_0037b408() {
+}
+
+// DECOMP_FUNC(0x0037b9e8, 4)
+void func_0037b9e8() {
+}
+
+// DECOMP_FUNC(0x0037b9ec, 4)
+void func_0037b9ec() {
+}
+
+// DECOMP_FUNC(0x0037c48c, 4)
+void func_0037c48c() {
+}
+
+// DECOMP_FUNC(0x0037d858, 8)
+void func_0037d858(u8* p, f32 v) {
+    *reinterpret_cast<f32*>(p + 0x98) = v;
+}
+
+// DECOMP_FUNC(0x0037d8f4, 8)
+void func_0037d8f4(u8* p, f32 v) {
+    *reinterpret_cast<f32*>(p + 0x54) = v;
+}
+
+// DECOMP_FUNC(0x0037d8fc, 8)
+void func_0037d8fc(u8* p, f32 v) {
+    *reinterpret_cast<f32*>(p + 0x58) = v;
+}
+
+// DECOMP_FUNC(0x0037d904, 8)
+void func_0037d904(u8* p, f32 v) {
+    *reinterpret_cast<f32*>(p + 0x18) = v;
+}
+
+// DECOMP_FUNC(0x0037da68, 8)
+void func_0037da68(u8* p, f32 v) {
+    *reinterpret_cast<f32*>(p + 0x14) = v;
+}
+
+// DECOMP_FUNC(0x0037df44, 8)
+void func_0037df44(u8* p, f32 v) {
+    *reinterpret_cast<f32*>(p + 0x10) = v;
+}
+
+// DECOMP_FUNC(0x0037e010, 8)
+void func_0037e010(u8* p, f32 v) {
+    *reinterpret_cast<f32*>(p + 0xc) = v;
+}
+
+// DECOMP_FUNC(0x0037e164, 8)
+void func_0037e164(u8* p, f32 v) {
+    *reinterpret_cast<f32*>(p + 8) = v;
+}
+
+// DECOMP_FUNC(0x0037f80c, 4)
+void func_0037f80c() {
+}
+
+// DECOMP_FUNC(0x00380878, 4)
+void func_00380878() {
+}
+
+// DECOMP_FUNC(0x0038087c, 8)
+u8* func_0038087c(u8* p) {
+    return p + 0xf4;
+}
+
+// DECOMP_FUNC(0x00380c54, 4)
+void func_00380c54() {
+}
+
+// DECOMP_FUNC(0x00380c58, 4)
+void func_00380c58() {
+}
+
+// DECOMP_FUNC(0x00380c5c, 4)
+void func_00380c5c() {
+}
+
+// DECOMP_FUNC(0x00380c60, 4)
+void func_00380c60() {
+}
+
+// DECOMP_FUNC(0x00380c64, 4)
+void func_00380c64() {
+}
+
+// DECOMP_FUNC(0x00380c68, 4)
+void func_00380c68() {
+}
+
+// DECOMP_FUNC(0x00380c6c, 4)
+void func_00380c6c() {
+}
+
+// DECOMP_FUNC(0x0038f1c8, 4)
+void func_0038f1c8() {
+}
+
+// DECOMP_FUNC(0x0038f1cc, 4)
+void func_0038f1cc() {
+}
+
+// DECOMP_FUNC(0x00392ac8, 4)
+void func_00392ac8() {
+}
+
+// DECOMP_FUNC(0x003954c8, 4)
+void func_003954c8() {
+}
+
+// DECOMP_FUNC(0x003957f8, 4)
+void func_003957f8() {
+}
+
+// DECOMP_FUNC(0x003957fc, 4)
+void func_003957fc() {
+}
+
+// DECOMP_FUNC(0x00396088, 4)
+void func_00396088() {
+}
+
+// DECOMP_FUNC(0x0039608c, 4)
+void func_0039608c() {
+}
+
+// DECOMP_FUNC(0x0039648c, 4)
+void func_0039648c() {
+}
+
+// DECOMP_FUNC(0x00398b58, 4)
+void func_00398b58() {
+}
+
+// DECOMP_FUNC(0x00399168, 4)
+void func_00399168() {
+}
+
+// DECOMP_FUNC(0x003aa72c, 4)
+void func_003aa72c() {
+}
+
+// DECOMP_FUNC(0x003b3560, 4)
+void func_003b3560() {
+}
+
+// DECOMP_FUNC(0x003bb808, 12)
+void engine_func_003bb808(u8* p) {
+    *reinterpret_cast<u32*>(p + 0x52c) = 0;
+}
+
+// DECOMP_FUNC(0x003decd0, 12)
+u32 engine_func_003decd0(u8* p) {
+    return *reinterpret_cast<u16*>(*reinterpret_cast<u8**>(p + 0x10) + 0x0c);
+}
+
+// DECOMP_FUNC(0x003df868, 12)
+u32 script_vm_func_003df868(u8* p) {
+    return *reinterpret_cast<u32*>(*reinterpret_cast<u8**>(p) + 0x28);
+}
+
+// DECOMP_FUNC(0x003e1340, 8)
+u8* func_003e1340(u8* p) {
+    return p + 0x8c;
+}
+
+// DECOMP_FUNC(0x003e1348, 8)
+u8* func_003e1348(u8* p) {
+    return p + 0x4c;
+}
+
+// DECOMP_FUNC(0x003e1350, 8)
+u8* func_003e1350(u8* p) {
+    return p + 0xbc;
+}
+
+// DECOMP_FUNC(0x003e1370, 8)
+u8* func_003e1370(u8* p) {
+    return p + 0x2c;
+}
+
+// DECOMP_FUNC(0x003e1378, 8)
+u8* func_003e1378(u8* p) {
+    return p + 8;
+}
+
+// DECOMP_FUNC(0x003e3948, 8)
+u32 func_003e3948(u8* p) {
+    return *reinterpret_cast<u32*>(p + 0xc);
+}
+
+// DECOMP_FUNC(0x003e395c, 8)
+u32 func_003e395c() {
+    return 2;
+}
+
+// DECOMP_FUNC(0x003e4170, 8)
+u32 func_003e4170(u8* p) {
+    return *reinterpret_cast<u32*>(p + 0xc);
+}
+
+// DECOMP_FUNC(0x003e4184, 8)
+u32 func_003e4184() {
+    return 0;
+}
+
+// DECOMP_FUNC(0x003e4708, 8)
+u32 func_003e4708(u8* p) {
+    return *reinterpret_cast<u32*>(p + 0x1c);
+}
+
+// DECOMP_FUNC(0x003e4710, 8)
+u32 func_003e4710() {
+    return 1;
+}
+
+// DECOMP_FUNC(0x003e518c, 8)
+u32 func_003e518c(u8* p) {
+    return *reinterpret_cast<u32*>(p + 0xc);
+}
+
+// DECOMP_FUNC(0x003e51a0, 8)
+u32 func_003e51a0() {
+    return 1;
+}
+
+// DECOMP_FUNC(0x003e51b4, 8)
+u32 func_003e51b4(u8* p) {
+    return *reinterpret_cast<u32*>(p + 0x1c);
+}
+
+// DECOMP_FUNC(0x003e51bc, 8)
+u32 func_003e51bc() {
+    return 2;
+}
+
+// DECOMP_FUNC(0x003e5ed4, 8)
+u32 func_003e5ed4(u8* p) {
+    return *reinterpret_cast<u32*>(p + 0x1c);
+}
+
+// DECOMP_FUNC(0x003e5edc, 8)
+u32 func_003e5edc() {
+    return 0;
+}
+
+// DECOMP_FUNC(0x003e6350, 8)
+u32 func_003e6350() {
+    return 1;
+}
+
+// DECOMP_FUNC(0x003e6358, 8)
+u32 func_003e6358() {
+    return 1;
+}
+
+// DECOMP_FUNC(0x003e6360, 8)
+u32 func_003e6360(u8* p) {
+    return *reinterpret_cast<u32*>(p + 0x44);
+}
+
+// DECOMP_FUNC(0x003e6e60, 8)
+u32 func_003e6e60() {
+    return 0;
+}
+
+// DECOMP_FUNC(0x003e89c8, 8)
+u32 func_003e89c8() {
+    return 1;
+}
+
+// DECOMP_FUNC(0x003e89d0, 8)
+u32 func_003e89d0() {
+    return 1;
+}
+
+// DECOMP_FUNC(0x003ead60, 8)
+u32 func_003ead60() {
+    return 0;
+}
+
+// DECOMP_FUNC(0x003ead68, 8)
+u32 func_003ead68() {
+    return 1;
+}
+
 }
