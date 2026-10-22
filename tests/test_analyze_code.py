@@ -1,6 +1,7 @@
 import unittest
 from pathlib import Path
 from tools.analyze_code import analyze_binary, vaddr_to_offset
+from tests.fixtures import require_private_fixtures
 
 
 class TestAnalyzeCode(unittest.TestCase):
@@ -10,8 +11,9 @@ class TestAnalyzeCode(unittest.TestCase):
         self.assertEqual(vaddr_to_offset(0x0042B000), 0x32B000)
 
     def test_contiguous_text_coverage_and_literal_pool_exclusion(self):
+        require_private_fixtures(self, "extracted/exefs/code.bin")
         funcs, symbols = analyze_binary(
-            Path("extracted/exefs/code.bin"), Path("config/game_info.json")
+            Path("extracted/exefs/code.bin"), Path("config/game_info.json"), write_csv=False
         )
         self.assertGreater(len(funcs), 5000)
         # First function is entrypoint __start at 0x00100000
@@ -26,6 +28,7 @@ class TestAnalyzeCode(unittest.TestCase):
             self.assertIn(expected_cat, categories)
 
     def test_vldr_float_pools_and_thumb_crt_not_misidentified_as_bl(self):
+        require_private_fixtures(self, "extracted/exefs/code.bin")
         funcs, _ = analyze_binary(
             Path("extracted/exefs/code.bin"), Path("config/game_info.json"), write_csv=False
         )

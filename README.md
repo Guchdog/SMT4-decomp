@@ -1,6 +1,6 @@
 # Shin Megami Tensei IV (`CTR-P-AMXE`) Decompilation
 
-Decompilation and reverse-engineering project for **Shin Megami Tensei IV** (Nintendo 3DS, US v0.1.0, Title ID `00040000000E5C00`, internal codename `sdds4`), aimed at producing modifiable C++20 source code (HUD/UI customization) and cross-platform PC / Android ports.
+Decompilation and reverse-engineering project for **Shin Megami Tensei IV** (Nintendo 3DS, US v0.1.0, Title ID `00040000000E5C00`, internal codename `sdds4`), aimed at recovering modifiable C++20 source code. The current build targets 3DS ARMv6K objects and a static library; linking a runnable game and PC / Android ports are future work.
 
 > **Legal Notice:** This repository contains **no copyrighted ROM data, binaries, encryption keys, or extracted assets**. You must supply your own legally dumped `.cia` copy of *Shin Megami Tensei IV* (`CTR-P-AMXE`) and `aes_keys.txt` locally to extract `code.bin` and `RomFS`.
 
@@ -9,22 +9,24 @@ Decompilation and reverse-engineering project for **Shin Megami Tensei IV** (Nin
 ## Live Decompilation Progress
 
 - **Matching (Byte-for-Byte):** `184 / 3,139,108 bytes` (**0.0059%**) across `12` functions (100% verified 3DS ARMv6K machine code match)
-- **Compiles to ARMv6K (≥15% size):** `297,424 / 3,139,108 bytes` (**9.4748%**) across `338` functions (compiled C++ object code verified against disassembly)
+- **Compiled Coverage (≥15% size):** `297,424 / 3,139,108 bytes` (**9.4748%**) across `338` functions (ARMv6K compilation and size threshold only; logic unverified)
 - **Draft Logic (<15% size):** `239,468 / 3,139,108 bytes` (**7.6285%**) across `45` functions (early-stage draft reconstructions)
 - **Scaffolded Architecture (Stubs & Interfaces):** `248,240 / 3,139,108 bytes` (**7.9080%**) across `39` functions (headers, structs, function skeletons)
 - **Total Codebase Explored:** `785,316 / 3,139,108 bytes` (**25.0172%**) across `434` functions (all explored code mapped into `src/`)
-- See [`PROGRESS.md`](PROGRESS.md) for the full subsystem breakdown (`ui`, `camp`, `battle`, `script_vm`, `shop`, `unite`, `engine`, `nn_sdk`, `crt`) and verified function ledger.
+- See [`PROGRESS.md`](PROGRESS.md) for the full subsystem breakdown (`ui`, `camp`, `battle`, `script_vm`, `shop`, `unite`, `engine`, `nn_sdk`, `crt`) and explored function ledger. Coverage totals use original function sizes and do not measure behavioral equivalence.
 
 ---
 
 ## Quick Start
+
+Install Python dependencies with `python -m pip install -r requirements.txt`. Clang is required for ARM compilation; CMake and Ninja are required for the CMake build. See [development setup](docs/development.md) for compiler configuration, build commands, and tests. Run `python -m unittest discover -s tests -v` for tests; tests requiring private game files skip when those files are absent.
 
 ### 1. Extract `code.bin` and UI/HUD Assets from Your Local CIA
 Place your `.cia` and `aes_keys.txt` in the repository root (both are automatically ignored by `.gitignore`) and run:
 ```powershell
 python tools/extract.py
 ```
-This decrypts the CIA, decompresses the BLZ-compressed `ExeFS/.code` into `extracted/exefs/code.bin` (`0x377000` bytes), indexes all 20,126 RomFS files in `extracted/romfs_index.json`, and extracts UI/HUD folders.
+This auto-selects a CIA only when exactly one is present; otherwise pass `--cia path/to/game.cia`. It decrypts the CIA, decompresses the BLZ-compressed `ExeFS/.code` into `extracted/exefs/code.bin` (`0x377000` bytes), verifies its size and SHA-256 against the configured revision by default, indexes all 20,126 RomFS files in `extracted/romfs_index.json`, and extracts UI/HUD folders.
 
 ### 2. Analyze Functions & Subsystem Xrefs
 ```powershell

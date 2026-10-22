@@ -1,0 +1,3 @@
+# Versions used by the local extraction and ARM verification tools.
+capstone==5.0.9
+pycryptodome==3.24.1

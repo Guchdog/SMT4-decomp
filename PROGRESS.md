@@ -5,16 +5,20 @@
 | Category | Functions | Code Size (Bytes) | Progress % | Status Description |
 |----------|----------:|------------------:|-----------:|--------------------|
 | **Matching (Byte-for-Byte)** | 12 | 184 B | **0.0059%** | 100% verified compiled machine code match |
-| **Compiles to ARMv6K (≥15% size)** | 338 | 297,424 B | 9.4748% | Compiles to ARMv6K ELF .o; non-trivial body size |
+| **Compiled Coverage (≥15% size)** | 338 | 297,424 B | 9.4748% | Compiles to ARMv6K ELF .o; size threshold only, logic unverified |
 | **Draft Logic (<15% size)** | 45 | 239,468 B | 7.6285% | Early draft reconstructions awaiting control-flow recovery |
 | **Scaffolded (Stubs & Interfaces)** | 39 | 248,240 B | 7.9080% | Headers, structs, and function skeletons |
 | **Total Architecture Explored** | 434 | 785,316 B | 25.0172% | Total mapped into `src/` (Matching + Compiles + Draft + Stubs) |
 | **Remaining (Todo)** | 9,915 | 2,353,792 B | 74.9828% | Unmapped functions in `.text` |
 | **Total `.text` Segment** | 10,349 | 3,139,108 B | 100.0000% | `0x00100000`–`0x003FE624` |
 
+Compiled coverage and draft totals use original function sizes, not recovered instruction counts. Compilation and size do not establish behavioral equivalence. Only the matching tier verifies machine code equivalence.
+
+Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*` fields remain aliases for compatibility and do not mean verified logic.
+
 ## Subsystem Breakdown
 
-| Subsystem | Matching | Compiles (≥15%) | Draft (<15%) | Stubs | Total Explored | Total Subsystem | Matching % | Explored % |
+| Subsystem | Matching | Compiled Coverage (≥15%) | Draft (<15%) | Stubs | Total Explored | Total Subsystem | Matching % | Explored % |
 |-----------|---------:|----------------:|-------------:|------:|---------------:|----------------:|-----------:|-----------:|
 | `engine` | 10 (160 B) | 127 (98,240 B) | 5 (37,188 B) | 2 (22,760 B) | 144 (158,348 B) | 2,368 (770,608 B) | 0.0208% | 20.55% |
 | `ui` | 1 (12 B) | 141 (100,644 B) | 18 (63,872 B) | 14 (96,248 B) | 174 (260,776 B) | 1,238 (682,348 B) | 0.0018% | 38.22% |

@@ -20,7 +20,7 @@ _REPO_ROOT = Path(__file__).resolve().parent.parent
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
-from tools.build_check import compile_tu_armv6k
+from tools.build_check import ensure_tu_armv6k
 
 _ELF_CACHE: dict[tuple[str, float], dict[str, tuple[bytes, set[int]]]] = {}
 
@@ -223,28 +223,18 @@ def compare_function(
     except ValueError:
         out_obj = src_file.with_suffix(".o")
 
-    # Compile if object file doesn't exist or is out of date
-    need_compile = True
-    if out_obj.exists():
-        try:
-            if out_obj.stat().st_mtime >= src_file.stat().st_mtime:
-                need_compile = False
-        except OSError:
-            pass
-
-    if need_compile:
-        res = compile_tu_armv6k(src_file, out_obj, repo_root=repo_root)
-        if res.returncode != 0 or not out_obj.exists():
-            return {
-                "addr": addr_str,
-                "name": func_name,
-                "expected_size": size,
-                "compiled_size": 0,
-                "exact_match": False,
-                "byte_match_ratio": 0.0,
-                "mnemonic_match_ratio": 0.0,
-                "diff_lines": [f"Compilation failed: {res.stderr.strip()}"],
-            }
+    res = ensure_tu_armv6k(src_file, out_obj, repo_root=repo_root)
+    if res.returncode != 0 or not out_obj.exists():
+        return {
+            "addr": addr_str,
+            "name": func_name,
+            "expected_size": size,
+            "compiled_size": 0,
+            "exact_match": False,
+            "byte_match_ratio": 0.0,
+            "mnemonic_match_ratio": 0.0,
+            "diff_lines": [f"Compilation failed: {res.stderr.strip()}"],
+        }
 
     elf_funcs = extract_elf_functions(out_obj)
     sym_data = find_symbol_in_elf(elf_funcs, func_name, addr_int)
@@ -270,40 +260,16 @@ def compare_function(
     else:
         expected_bytes = b""
 
-    # Exact match check
-    exact_match = False
-    if compiled_size == size and size > 0 and len(expected_bytes) == size:
-        all_words_match = True
-        num_words = size // 4
-        for w_idx in range(num_words):
-            c_word = struct.unpack_from("<I", compiled_bytes, w_idx * 4)[0]
-            e_word = struct.unpack_from("<I", expected_bytes, w_idx * 4)[0]
-            if c_word == e_word:
-                continue
-            if w_idx in reloc_word_offsets:
-                # Opcode / condition high byte matches
-                if (c_word >> 24) == (e_word >> 24):
-                    continue
-            all_words_match = False
-            break
-
-        rem = size % 4
-        if rem != 0 and all_words_match:
-            if compiled_bytes[num_words * 4 :] != expected_bytes[num_words * 4 :]:
-                all_words_match = False
-        exact_match = all_words_match
+    # Unresolved relocations cannot prove final linked bytes or call targets.
+    # Fail closed until relocation resolution is implemented.
+    exact_match = (not reloc_word_offsets and size > 0 and
+                   compiled_size == size and compiled_bytes == expected_bytes)
 
     # Compute byte_match_ratio
     matching_bytes = 0
     compare_len = min(compiled_size, len(expected_bytes), size)
     for i in range(compare_len):
-        w_idx = i // 4
-        if w_idx in reloc_word_offsets:
-            c_word = struct.unpack_from("<I", compiled_bytes, w_idx * 4)[0]
-            e_word = struct.unpack_from("<I", expected_bytes, w_idx * 4)[0]
-            if (c_word >> 24) == (e_word >> 24) or compiled_bytes[i] == expected_bytes[i]:
-                matching_bytes += 1
-        elif compiled_bytes[i] == expected_bytes[i]:
+        if compiled_bytes[i] == expected_bytes[i]:
             matching_bytes += 1
 
     byte_match_ratio = round(matching_bytes / max(1, size), 4)
@@ -334,7 +300,7 @@ def compare_function(
         exp_str = f"{ei.mnemonic} {ei.op_str}" if ei else "<none>"
         comp_str = f"{ci.mnemonic} {ci.op_str}" if ci else "<none>"
 
-        if ei and ci and ei.mnemonic == ci.mnemonic and (ei.op_str == ci.op_str or i in reloc_word_offsets):
+        if ei and ci and ei.mnemonic == ci.mnemonic and ei.op_str == ci.op_str:
             mark = "  "
         else:
             mark = "<>"

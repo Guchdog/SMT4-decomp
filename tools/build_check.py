@@ -3,8 +3,12 @@
 from __future__ import annotations
 
 import argparse
+from functools import lru_cache
+import hashlib
+import json
 import os
 from pathlib import Path
+import re
 import shutil
 import subprocess
 import sys
@@ -41,11 +45,16 @@ def find_clang() -> Path:
 
 def get_clang_resource_dir(clang: Path | None = None) -> Path:
     """Query clang++ for its builtin resource directory."""
-    if clang is None:
-        clang = find_clang()
+    clang = (clang or find_clang()).resolve()
+    stat = clang.stat()
+    return _clang_resource_dir(str(clang), stat.st_mtime_ns, stat.st_size)
 
+
+@lru_cache(maxsize=8)
+def _clang_resource_dir(clang: str, mtime_ns: int, size: int) -> Path:
+    """Cache queries only while the selected compiler executable is unchanged."""
     res = subprocess.run(
-        [str(clang), "-print-resource-dir"],
+        [clang, "-print-resource-dir"],
         capture_output=True,
         text=True,
         check=True,
@@ -92,16 +101,85 @@ def compile_tu_armv6k(
     src_file: Path, out_obj: Path, repo_root: Path = Path(".")
 ) -> subprocess.CompletedProcess:
     """Compile a single C++ translation unit to a 3DS ARMv6K ELF32 object file."""
-    src_file = Path(src_file)
-    out_obj = Path(out_obj)
+    src_file = Path(src_file).resolve()
+    out_obj = Path(out_obj).resolve()
     repo_root = Path(repo_root).resolve()
     clang = find_clang()
 
     out_obj.parent.mkdir(parents=True, exist_ok=True)
     flags = get_armv6k_flags(repo_root, clang)
-    cmd = [str(clang)] + flags + ["-c", str(src_file), "-o", str(out_obj)]
+    depfile = out_obj.with_suffix(out_obj.suffix + ".d")
+    manifest = out_obj.with_suffix(out_obj.suffix + ".json")
+    manifest.unlink(missing_ok=True)
+    cmd = [str(clang)] + flags + ["-MD", "-MF", str(depfile), "-MT", "object",
+                                "-c", str(src_file), "-o", str(out_obj)]
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    if result.returncode == 0 and out_obj.is_file():
+        dependencies = _read_dependencies(depfile)
+        dependencies.add(src_file)
+        metadata = {
+            "identity": _build_identity(repo_root, clang),
+            "dependencies": {str(p): _file_hash(p) for p in sorted(dependencies)},
+            "object_hash": _file_hash(out_obj),
+        }
+        manifest.write_text(json.dumps(metadata, sort_keys=True), encoding="utf-8")
+    else:
+        # A failed rebuild must never leave a previous successful object usable.
+        out_obj.unlink(missing_ok=True)
+    return result
 
-    return subprocess.run(cmd, capture_output=True, text=True)
+
+def _file_hash(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _read_dependencies(depfile: Path) -> set[Path]:
+    """Read Clang Make dependencies, including system headers and escaped spaces."""
+    text = depfile.read_text(encoding="utf-8").replace("\\\n", " ")
+    # The fixed -MT value avoids confusing a Windows drive colon with the rule.
+    payload = text.split(":", 1)[1]
+    words = re.findall(r"(?:\\.|[^\s])+", payload)
+    return {Path(re.sub(r"\\([ #:$\\])", r"\1", word)).resolve() for word in words}
+
+
+@lru_cache(maxsize=8)
+def _compiler_version(path: str, mtime_ns: int, size: int) -> str:
+    return subprocess.run([path, "--version"], capture_output=True, text=True,
+                          check=True).stdout
+
+
+def _build_identity(repo_root: Path, clang: Path | None = None) -> dict:
+    clang = (clang or find_clang()).resolve()
+    stat = clang.stat()
+    return {
+        "compiler": str(clang),
+        "compiler_version": _compiler_version(str(clang), stat.st_mtime_ns, stat.st_size),
+        "compiler_mtime_ns": stat.st_mtime_ns,
+        "flags": get_armv6k_flags(repo_root, clang),
+    }
+
+
+def is_object_current(src_file: Path, out_obj: Path, repo_root: Path = Path(".")) -> bool:
+    """Validate source/header contents, compiler identity, flags, and object contents."""
+    src_file, out_obj = Path(src_file).resolve(), Path(out_obj).resolve()
+    try:
+        metadata = json.loads(out_obj.with_suffix(out_obj.suffix + ".json").read_text(encoding="utf-8"))
+        if metadata["identity"] != _build_identity(Path(repo_root).resolve()):
+            return False
+        dependencies = metadata["dependencies"]
+        return (str(src_file) in dependencies and
+                metadata["object_hash"] == _file_hash(out_obj) and
+                all(_file_hash(Path(p)) == digest for p, digest in dependencies.items()))
+    except (OSError, ValueError, KeyError, TypeError):
+        return False
+
+
+def ensure_tu_armv6k(src_file: Path, out_obj: Path, repo_root: Path = Path("."),
+                      force: bool = False) -> subprocess.CompletedProcess:
+    """Return a valid cached compilation, or rebuild with dependency tracking."""
+    if not force and is_object_current(src_file, out_obj, repo_root):
+        return subprocess.CompletedProcess(args=[], returncode=0, stdout="", stderr="")
+    return compile_tu_armv6k(src_file, out_obj, repo_root)
 
 
 def compile_all_armv6k(
@@ -136,18 +214,7 @@ def compile_all_armv6k(
         out_obj = out_dir / rel.with_suffix(".o")
         rel_posix = src_file.relative_to(repo_root).as_posix()
 
-        # mtime caching: skip recompilation if object is newer than source file
-        if not force and out_obj.exists():
-            try:
-                if out_obj.stat().st_mtime >= src_file.stat().st_mtime:
-                    succeeded += 1
-                    objects[str(src_file)] = out_obj
-                    objects[rel_posix] = out_obj
-                    continue
-            except OSError:
-                pass
-
-        res = compile_tu_armv6k(src_file, out_obj, repo_root=repo_root)
+        res = ensure_tu_armv6k(src_file, out_obj, repo_root=repo_root, force=force)
         if res.returncode == 0 and out_obj.exists():
             succeeded += 1
             objects[str(src_file)] = out_obj

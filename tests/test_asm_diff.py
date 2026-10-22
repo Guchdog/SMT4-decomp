@@ -1,8 +1,9 @@
 import csv
+import os
 import tempfile
 import unittest
 from pathlib import Path
-from tools.build_check import compile_tu_armv6k
+from tools.build_check import compile_tu_armv6k, find_clang
 from tools.asm_diff import extract_elf_functions, compare_function
 from tools.verify_decomp import audit_claimed_functions
 from tools.find_candidates import find_leaf_candidates
@@ -12,10 +13,17 @@ class TestAsmDiff(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.code_path = Path("extracted/exefs/code.bin")
-        if cls.code_path.is_file():
+        if os.environ.get("SMT4_SKIP_PRIVATE_TESTS") != "1" and cls.code_path.is_file():
             cls.code_bytes = cls.code_path.read_bytes()
         else:
             cls.code_bytes = b""
+
+    def setUp(self):
+        if self._testMethodName != "test_find_leaf_candidates_returns_pure_leaf_functions":
+            try:
+                find_clang()
+            except FileNotFoundError as exc:
+                self.skipTest(str(exc))
 
     def test_extract_elf_functions(self):
         with tempfile.TemporaryDirectory() as td:

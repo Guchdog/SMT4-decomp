@@ -5,7 +5,7 @@ for Shin Megami Tensei IV (CTR-P-AMXE).
 
 Differentiates between:
 - 'matching': Byte-for-byte identical compiled machine code verified against code.bin.
-- 'verified': Substantially decompiled C++ logic (ARMv6K compiled size >= 15% binary size).
+- 'compiled': ARMv6K compiled size >= 15% binary size; no semantic verification.
 - 'draft': Early-stage non_matching decompilations (< 15% size) awaiting refinement.
 - 'stub': Subsystem scaffolding, headers, and function skeletons awaiting reversal.
 - 'todo': Undecompiled / unexplored functions in .text.
@@ -25,6 +25,7 @@ if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
 from tools.asm_diff import compare_function, extract_elf_functions, find_symbol_in_elf
+from tools.build_check import ensure_tu_armv6k
 
 VALID_STATUSES = {"todo", "stub", "wip", "non_matching", "matching"}
 DECOMPILED_STATUSES = {"non_matching", "matching"}
@@ -129,6 +130,12 @@ def is_stub_body(body: str, size: int) -> bool:
 
 
 def compute_progress(functions_csv: Path, repo_root: Path) -> dict:
+    """Measure source coverage and exact matches.
+
+    ``compiled_*`` measures only compilation and a 15% size threshold. The
+    legacy ``verified_*`` fields are compatibility aliases for those metrics;
+    neither establishes semantic equivalence.
+    """
     functions_csv = Path(functions_csv)
     repo_root = Path(repo_root).resolve()
 
@@ -245,7 +252,7 @@ def compute_progress(functions_csv: Path, repo_root: Path) -> dict:
                         by_category[cat]["matching_funcs"] += 1
                         by_category[cat]["matching_bytes"] += size
                     else:
-                        # non_matching: classify into verified vs draft
+                        # Classify size coverage only; this does not verify logic.
                         try:
                             src_root = (repo_root / "src").resolve()
                             rel_src = src_path.resolve().relative_to(src_root)
@@ -253,12 +260,16 @@ def compute_progress(functions_csv: Path, repo_root: Path) -> dict:
                         except ValueError:
                             out_obj = src_path.with_suffix(".o")
 
-                        compiled_size = 0
-                        if out_obj.is_file():
-                            elf_funcs = extract_elf_functions(out_obj)
-                            sym_data = find_symbol_in_elf(elf_funcs, name, int(addr, 16))
-                            if sym_data:
-                                compiled_size = len(sym_data[0])
+                        result = ensure_tu_armv6k(src_path, out_obj, repo_root=repo_root)
+                        if result.returncode != 0 or not out_obj.is_file():
+                            raise VerificationError(
+                                f"Compilation failed for {name} ({addr}): {result.stderr.strip()}"
+                            )
+                        elf_funcs = extract_elf_functions(out_obj)
+                        sym_data = find_symbol_in_elf(elf_funcs, name, int(addr, 16))
+                        if sym_data is None:
+                            raise VerificationError(f"Compiled symbol missing for {name} ({addr})")
+                        compiled_size = len(sym_data[0])
 
                         if compiled_size >= min(16, size) and (compiled_size / max(1, size)) >= 0.15:
                             verified_funcs += 1
@@ -281,6 +292,9 @@ def compute_progress(functions_csv: Path, repo_root: Path) -> dict:
 
     total_explored_funcs = decomp_funcs + stub_funcs
     total_explored_bytes = decomp_bytes + stub_bytes
+    for cinfo in by_category.values():
+        cinfo["compiled_funcs"] = cinfo["verified_funcs"]
+        cinfo["compiled_bytes"] = cinfo["verified_bytes"]
 
     return {
         "total_functions": total_funcs,
@@ -293,6 +307,8 @@ def compute_progress(functions_csv: Path, repo_root: Path) -> dict:
         "matching_bytes": matching_bytes,
         "verified_functions": verified_funcs,
         "verified_bytes": verified_bytes,
+        "compiled_functions": verified_funcs,
+        "compiled_bytes": verified_bytes,
         "draft_functions": draft_funcs,
         "draft_bytes": draft_bytes,
         "total_explored_functions": total_explored_funcs,
@@ -301,6 +317,7 @@ def compute_progress(functions_csv: Path, repo_root: Path) -> dict:
         "decomp_func_percentage": (decomp_funcs / total_funcs * 100.0) if total_funcs else 0.0,
         "matching_byte_percentage": (matching_bytes / total_bytes * 100.0) if total_bytes else 0.0,
         "verified_byte_percentage": (verified_bytes / total_bytes * 100.0) if total_bytes else 0.0,
+        "compiled_byte_percentage": (verified_bytes / total_bytes * 100.0) if total_bytes else 0.0,
         "draft_byte_percentage": (draft_bytes / total_bytes * 100.0) if total_bytes else 0.0,
         "stub_byte_percentage": (stub_bytes / total_bytes * 100.0) if total_bytes else 0.0,
         "explored_byte_percentage": (total_explored_bytes / total_bytes * 100.0) if total_bytes else 0.0,
@@ -318,16 +335,20 @@ def render_progress_md(stats: dict) -> str:
         "| Category | Functions | Code Size (Bytes) | Progress % | Status Description |",
         "|----------|----------:|------------------:|-----------:|--------------------|",
         f"| **Matching (Byte-for-Byte)** | {stats['matching_functions']:,} | {stats['matching_bytes']:,} B | **{stats['matching_byte_percentage']:.4f}%** | 100% verified compiled machine code match |",
-        f"| **Compiles to ARMv6K (≥15% size)** | {stats['verified_functions']:,} | {stats['verified_bytes']:,} B | {stats['verified_byte_percentage']:.4f}% | Compiles to ARMv6K ELF .o; non-trivial body size |",
+        f"| **Compiled Coverage (≥15% size)** | {stats['compiled_functions']:,} | {stats['compiled_bytes']:,} B | {stats['compiled_byte_percentage']:.4f}% | Compiles to ARMv6K ELF .o; size threshold only, logic unverified |",
         f"| **Draft Logic (<15% size)** | {stats['draft_functions']:,} | {stats['draft_bytes']:,} B | {stats['draft_byte_percentage']:.4f}% | Early draft reconstructions awaiting control-flow recovery |",
         f"| **Scaffolded (Stubs & Interfaces)** | {stats['stub_functions']:,} | {stats['stub_bytes']:,} B | {stats['stub_byte_percentage']:.4f}% | Headers, structs, and function skeletons |",
         f"| **Total Architecture Explored** | {stats['total_explored_functions']:,} | {stats['total_explored_bytes']:,} B | {stats['explored_byte_percentage']:.4f}% | Total mapped into `src/` (Matching + Compiles + Draft + Stubs) |",
         f"| **Remaining (Todo)** | {stats['total_functions'] - stats['total_explored_functions']:,} | {stats['total_bytes'] - stats['total_explored_bytes']:,} B | {((stats['total_bytes'] - stats['total_explored_bytes']) / stats['total_bytes'] * 100.0):.4f}% | Unmapped functions in `.text` |",
         f"| **Total `.text` Segment** | {stats['total_functions']:,} | {stats['total_bytes']:,} B | 100.0000% | `0x00100000`–`0x003FE624` |",
         "",
+        "Compiled coverage and draft totals use original function sizes, not recovered instruction counts. Compilation and size do not establish behavioral equivalence. Only the matching tier verifies machine code equivalence.",
+        "",
+        "Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*` fields remain aliases for compatibility and do not mean verified logic.",
+        "",
         "## Subsystem Breakdown",
         "",
-        "| Subsystem | Matching | Compiles (≥15%) | Draft (<15%) | Stubs | Total Explored | Total Subsystem | Matching % | Explored % |",
+        "| Subsystem | Matching | Compiled Coverage (≥15%) | Draft (<15%) | Stubs | Total Explored | Total Subsystem | Matching % | Explored % |",
         "|-----------|---------:|----------------:|-------------:|------:|---------------:|----------------:|-----------:|-----------:|",
     ]
 
@@ -365,7 +386,7 @@ def render_progress_md(stats: dict) -> str:
 def render_readme_md(stats: dict) -> str:
     return f"""# Shin Megami Tensei IV (`CTR-P-AMXE`) Decompilation
 
-Decompilation and reverse-engineering project for **Shin Megami Tensei IV** (Nintendo 3DS, US v0.1.0, Title ID `00040000000E5C00`, internal codename `sdds4`), aimed at producing modifiable C++20 source code (HUD/UI customization) and cross-platform PC / Android ports.
+Decompilation and reverse-engineering project for **Shin Megami Tensei IV** (Nintendo 3DS, US v0.1.0, Title ID `00040000000E5C00`, internal codename `sdds4`), aimed at recovering modifiable C++20 source code. The current build targets 3DS ARMv6K objects and a static library; linking a runnable game and PC / Android ports are future work.
 
 > **Legal Notice:** This repository contains **no copyrighted ROM data, binaries, encryption keys, or extracted assets**. You must supply your own legally dumped `.cia` copy of *Shin Megami Tensei IV* (`CTR-P-AMXE`) and `aes_keys.txt` locally to extract `code.bin` and `RomFS`.
 
@@ -374,22 +395,24 @@ Decompilation and reverse-engineering project for **Shin Megami Tensei IV** (Nin
 ## Live Decompilation Progress
 
 - **Matching (Byte-for-Byte):** `{stats['matching_bytes']:,} / {stats['total_bytes']:,} bytes` (**{stats['matching_byte_percentage']:.4f}%**) across `{stats['matching_functions']:,}` functions (100% verified 3DS ARMv6K machine code match)
-- **Compiles to ARMv6K (≥15% size):** `{stats['verified_bytes']:,} / {stats['total_bytes']:,} bytes` (**{stats['verified_byte_percentage']:.4f}%**) across `{stats['verified_functions']:,}` functions (compiled C++ object code verified against disassembly)
+- **Compiled Coverage (≥15% size):** `{stats['compiled_bytes']:,} / {stats['total_bytes']:,} bytes` (**{stats['compiled_byte_percentage']:.4f}%**) across `{stats['compiled_functions']:,}` functions (ARMv6K compilation and size threshold only; logic unverified)
 - **Draft Logic (<15% size):** `{stats['draft_bytes']:,} / {stats['total_bytes']:,} bytes` (**{stats['draft_byte_percentage']:.4f}%**) across `{stats['draft_functions']:,}` functions (early-stage draft reconstructions)
 - **Scaffolded Architecture (Stubs & Interfaces):** `{stats['stub_bytes']:,} / {stats['total_bytes']:,} bytes` (**{stats['stub_byte_percentage']:.4f}%**) across `{stats['stub_functions']:,}` functions (headers, structs, function skeletons)
 - **Total Codebase Explored:** `{stats['total_explored_bytes']:,} / {stats['total_bytes']:,} bytes` (**{stats['explored_byte_percentage']:.4f}%**) across `{stats['total_explored_functions']:,}` functions (all explored code mapped into `src/`)
-- See [`PROGRESS.md`](PROGRESS.md) for the full subsystem breakdown (`ui`, `camp`, `battle`, `script_vm`, `shop`, `unite`, `engine`, `nn_sdk`, `crt`) and verified function ledger.
+- See [`PROGRESS.md`](PROGRESS.md) for the full subsystem breakdown (`ui`, `camp`, `battle`, `script_vm`, `shop`, `unite`, `engine`, `nn_sdk`, `crt`) and explored function ledger. Coverage totals use original function sizes and do not measure behavioral equivalence.
 
 ---
 
 ## Quick Start
+
+Install Python dependencies with `python -m pip install -r requirements.txt`. Clang is required for ARM compilation; CMake and Ninja are required for the CMake build. See [development setup](docs/development.md) for compiler configuration, build commands, and tests. Run `python -m unittest discover -s tests -v` for tests; tests requiring private game files skip when those files are absent.
 
 ### 1. Extract `code.bin` and UI/HUD Assets from Your Local CIA
 Place your `.cia` and `aes_keys.txt` in the repository root (both are automatically ignored by `.gitignore`) and run:
 ```powershell
 python tools/extract.py
 ```
-This decrypts the CIA, decompresses the BLZ-compressed `ExeFS/.code` into `extracted/exefs/code.bin` (`0x377000` bytes), indexes all 20,126 RomFS files in `extracted/romfs_index.json`, and extracts UI/HUD folders.
+This auto-selects a CIA only when exactly one is present; otherwise pass `--cia path/to/game.cia`. It decrypts the CIA, decompresses the BLZ-compressed `ExeFS/.code` into `extracted/exefs/code.bin` (`0x377000` bytes), verifies its size and SHA-256 against the configured revision by default, indexes all 20,126 RomFS files in `extracted/romfs_index.json`, and extracts UI/HUD folders.
 
 ### 2. Analyze Functions & Subsystem Xrefs
 ```powershell
@@ -437,10 +460,10 @@ def main() -> None:
 
     stats = compute_progress(args.functions, args.root)
     print(
-        f"Verified {stats['decompiled_functions']:,} / {stats['total_functions']:,} decompiled functions "
+        f"Recorded {stats['decompiled_functions']:,} / {stats['total_functions']:,} reconstructed functions "
         f"({stats['decompiled_bytes']:,} / {stats['total_bytes']:,} bytes, {stats['decomp_byte_percentage']:.4f}%):\n"
         f"  - Matching (Byte-for-Byte):  {stats['matching_functions']:,} functions ({stats['matching_bytes']:,} bytes, {stats['matching_byte_percentage']:.4f}%)\n"
-        f"  - Verified Logic (>= 15%):   {stats['verified_functions']:,} functions ({stats['verified_bytes']:,} bytes, {stats['verified_byte_percentage']:.4f}%)\n"
+        f"  - Compiled Coverage (>=15%): {stats['compiled_functions']:,} functions ({stats['compiled_bytes']:,} bytes, {stats['compiled_byte_percentage']:.4f}%; logic unverified)\n"
         f"  - Draft Logic (< 15%):       {stats['draft_functions']:,} functions ({stats['draft_bytes']:,} bytes, {stats['draft_byte_percentage']:.4f}%)\n"
         f"Verified {stats['stub_functions']:,} scaffolded stubs ({stats['stub_bytes']:,} bytes, {stats['stub_byte_percentage']:.4f}%)\n"
         f"Total Architecture Explored: {stats['total_explored_functions']:,} functions ({stats['total_explored_bytes']:,} bytes, {stats['explored_byte_percentage']:.4f}%)"

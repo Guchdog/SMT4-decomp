@@ -34,5 +34,6 @@ __pycache__/
 *.rep/
 .vs/
 .vscode/
+.venv/
 .superpowers/
 

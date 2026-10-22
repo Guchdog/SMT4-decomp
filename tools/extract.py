@@ -176,13 +176,14 @@ class CIAExtractor:
 
         return ctr_dec[pad_head : pad_head + size]
 
-    def extract_exefs(self, out_dir: Path) -> dict:
+    def extract_exefs(
+        self, out_dir: Path, game_info_path: Path = Path("config/game_info.json")
+    ) -> dict:
+        """Validate the extracted revision before writing any ExeFS outputs."""
         out_dir = Path(out_dir)
         exefs_dir = out_dir / "exefs"
-        exefs_dir.mkdir(parents=True, exist_ok=True)
 
         exhdr = self.read_ncch_section(0x200, 1, 0, 0x800)
-        (out_dir / "exheader.bin").write_bytes(exhdr)
 
         app_title = exhdr[:8].rstrip(b"\x00").decode("ascii", "ignore")
         sci_flags = exhdr[0xD]
@@ -192,9 +193,9 @@ class CIAExtractor:
         data_addr, data_pages, data_size = struct.unpack_from("<III", exhdr, 0x30)
         bss_size = struct.unpack_from("<I", exhdr, 0x3C)[0]
 
-        code_out = exefs_dir / "code.bin"
         exefs_raw = self.read_ncch_section(self.exefs_off, 2, 0, self.exefs_size)
         exefs_hdr = exefs_raw[:0x200]
+        files: dict[str, bytes] = {}
 
         for i in range(10):
             entry = exefs_hdr[i * 16 : (i + 1) * 16]
@@ -203,18 +204,25 @@ class CIAExtractor:
                 continue
             f_off, f_size = struct.unpack_from("<II", entry, 8)
             file_bytes = exefs_raw[0x200 + f_off : 0x200 + f_off + f_size]
+            if len(file_bytes) != f_size:
+                raise ValueError(f"Truncated ExeFS entry: {name}")
             if name == ".code":
-                if code_out.exists() and code_out.stat().st_size == 0x377000:
-                    decomp_code = code_out.read_bytes()
-                else:
-                    decomp_code = (
-                        decompress_blz(file_bytes) if is_compressed else file_bytes
-                    )
-                    code_out.write_bytes(decomp_code)
+                files["code.bin"] = (
+                    decompress_blz(file_bytes) if is_compressed else file_bytes
+                )
             else:
-                (exefs_dir / f"{name}.bin").write_bytes(file_bytes)
+                files[f"{name}.bin"] = file_bytes
 
-        code_sha256 = hashlib.sha256(code_out.read_bytes()).hexdigest()
+        if "code.bin" not in files:
+            raise ValueError("ExeFS contains no .code entry")
+        decomp_code = files["code.bin"]
+        if not verify_code_bytes(decomp_code, game_info_path):
+            raise ValueError(
+                "Verification FAILED: extracted code.bin size or SHA-256 does not "
+                "match the supported revision in game_info.json; outputs were not changed"
+            )
+
+        code_sha256 = hashlib.sha256(decomp_code).hexdigest()
         info = {
             "product_code": self.product_code,
             "app_title": app_title,
@@ -225,6 +233,10 @@ class CIAExtractor:
             "data": {"vaddr": data_addr, "size": data_size, "pages": data_pages},
             "bss": {"size": bss_size},
         }
+        exefs_dir.mkdir(parents=True, exist_ok=True)
+        (out_dir / "exheader.bin").write_bytes(exhdr)
+        for filename, data in files.items():
+            (exefs_dir / filename).write_bytes(data)
         (out_dir / "exefs_info.json").write_text(
             json.dumps(info, indent=2), encoding="utf-8"
         )
@@ -326,19 +338,35 @@ class CIAExtractor:
         return count
 
 
-def verify_extracted_code(code_path: Path, game_info_path: Path) -> bool:
-    code_path = Path(code_path)
+def verify_code_bytes(data: bytes, game_info_path: Path) -> bool:
     game_info = json.loads(Path(game_info_path).read_text(encoding="utf-8"))
-    if not code_path.exists():
-        return False
-    data = code_path.read_bytes()
     if len(data) != game_info["code_bin_size"]:
         return False
     actual_sha = hashlib.sha256(data).hexdigest()
     return actual_sha.lower() == game_info["code_sha256"].lower()
 
 
-def main() -> None:
+def verify_extracted_code(code_path: Path, game_info_path: Path) -> bool:
+    code_path = Path(code_path)
+    return code_path.is_file() and verify_code_bytes(code_path.read_bytes(), game_info_path)
+
+
+def select_cia(cia_path: Path | None, search_dir: Path = Path(".")) -> Path:
+    """Select a single input without silently choosing between game revisions."""
+    if cia_path is not None:
+        cia_path = Path(cia_path)
+        if not cia_path.is_file():
+            raise ValueError(f"CIA file does not exist: {cia_path}. Supply --cia PATH.")
+        return cia_path
+    candidates = sorted(p for p in Path(search_dir).iterdir() if p.is_file() and p.suffix.lower() == ".cia")
+    if not candidates:
+        raise ValueError("No CIA file found. Supply --cia PATH to your local game dump.")
+    if len(candidates) != 1:
+        raise ValueError("Multiple CIA files found. Supply --cia PATH to select the intended dump.")
+    return candidates[0]
+
+
+def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description="Extract SMT4 CIA for decompilation")
     parser.add_argument("--cia", type=Path, default=None, help="Path to CIA file")
     parser.add_argument(
@@ -373,7 +401,7 @@ def main() -> None:
     parser.add_argument(
         "--all", action="store_true", help="Extract all 20,126 RomFS files"
     )
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     if args.check:
         ok = verify_extracted_code(args.out / "exefs" / "code.bin", args.info)
@@ -382,9 +410,12 @@ def main() -> None:
         print("Verification OK: extracted/exefs/code.bin matches expected SHA-256.")
         return
 
-    cia_path = args.cia or next(Path(".").glob("*.cia"))
-    extractor = CIAExtractor(cia_path, args.keys)
-    info = extractor.extract_exefs(args.out)
+    try:
+        cia_path = select_cia(args.cia)
+        extractor = CIAExtractor(cia_path, args.keys)
+        info = extractor.extract_exefs(args.out, args.info)
+    except (ValueError, OSError, KeyError, struct.error) as exc:
+        parser.exit(1, f"Extraction failed: {exc}\n")
     print(
         f"Extracted ExeFS: {info['product_code']} ({info['app_title'].strip()}), code.bin SHA-256: {info['code_sha256']}"
     )

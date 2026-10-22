@@ -1,7 +1,10 @@
 import tempfile
 import unittest
+import subprocess
+from unittest.mock import patch
 from pathlib import Path
-from tools.progress import compute_progress, VerificationError
+from tools.progress import compute_progress, render_progress_md, render_readme_md, VerificationError
+from tests.fixtures import require_private_fixtures
 
 
 class TestProgress(unittest.TestCase):
@@ -154,6 +157,7 @@ class TestProgress(unittest.TestCase):
                 compute_progress(csv_path, root)
 
     def test_real_repo_progress_matches_text_size(self):
+        require_private_fixtures(self, Path("extracted/exefs/code.bin"))
         stats = compute_progress(Path("config/functions.csv"), Path("."))
         self.assertEqual(stats["total_bytes"], 0x2FE624)
         self.assertEqual(stats["decompiled_functions"], 395)
@@ -166,6 +170,8 @@ class TestProgress(unittest.TestCase):
         self.assertEqual(stats["matching_bytes"], 184)
         self.assertEqual(stats["verified_functions"], 338)
         self.assertEqual(stats["verified_bytes"], 297424)
+        self.assertEqual(stats["compiled_functions"], stats["verified_functions"])
+        self.assertEqual(stats["compiled_bytes"], stats["verified_bytes"])
         self.assertEqual(stats["draft_functions"], 45)
         self.assertEqual(stats["draft_bytes"], 239468)
         self.assertEqual(
@@ -182,6 +188,52 @@ class TestProgress(unittest.TestCase):
         self.assertEqual(stats["categories"]["battle"]["matching_bytes"], 12)
         self.assertEqual(stats["categories"]["ui"]["matching_funcs"], 1)
         self.assertEqual(stats["categories"]["ui"]["matching_bytes"], 12)
+
+    def _nonmatching_project(self, root):
+        src = root / "src" / "function.cpp"
+        src.parent.mkdir()
+        src.write_text(
+            "// DECOMP_FUNC(0x00100000, 64)\n"
+            'extern "C" int Example(int x) { return x + 1; }\n',
+            encoding="utf-8",
+        )
+        ledger = root / "functions.csv"
+        ledger.write_text(
+            "address,size,status,category,name,src_file\n"
+            "0x00100000,64,non_matching,test,Example,src/function.cpp\n",
+            encoding="utf-8",
+        )
+        return src, ledger
+
+    def test_progress_refreshes_objects_and_rejects_compilation_failure(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            src, ledger = self._nonmatching_project(root)
+            obj = root / "build/obj/armv6k/function.o"
+            obj.parent.mkdir(parents=True)
+            obj.touch()  # Even an existing object must go through freshness checking.
+            with patch("tools.progress.ensure_tu_armv6k", return_value=subprocess.CompletedProcess([], 1, "", "bad header")) as ensure:
+                with self.assertRaisesRegex(VerificationError, "Compilation failed.*bad header"):
+                    compute_progress(ledger, root)
+                ensure.assert_called_once_with(src, obj, repo_root=root.resolve())
+
+    def test_compiled_coverage_is_not_reported_as_verified_logic(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            _, ledger = self._nonmatching_project(root)
+            obj = root / "build/obj/armv6k/function.o"
+            obj.parent.mkdir(parents=True)
+            obj.touch()
+            with patch("tools.progress.ensure_tu_armv6k", return_value=subprocess.CompletedProcess([], 0, "", "")), patch("tools.progress.extract_elf_functions", return_value={"Example": (bytes(16), set())}):
+                stats = compute_progress(ledger, root)
+            self.assertEqual(stats["compiled_functions"], 1)
+            self.assertEqual(stats["matching_functions"], 0)
+            self.assertEqual(stats["categories"]["test"]["compiled_funcs"], 1)
+            for report in (render_progress_md(stats), render_readme_md(stats)):
+                self.assertIn("Compiled Coverage", report)
+                self.assertIn("logic unverified", report)
+                self.assertNotIn("Verified Logic", report)
+                self.assertNotIn("object code verified against disassembly", report)
 
 
 if __name__ == "__main__":
