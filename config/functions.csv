@@ -443,7 +443,7 @@ address,size,status,category,name,src_file
 0x0011cde8,236,todo,nn_sdk,nn_sdk_func_0011cde8,
 0x0011ced4,208,todo,engine,engine_func_0011ced4,
 0x0011cfa4,88,todo,unknown,func_0011cfa4,
-0x0011cffc,16,todo,unknown,func_0011cffc,
+0x0011cffc,16,matching,unknown,func_0011cffc,src/engine/leaf_matching.cpp
 0x0011d00c,20,todo,unknown,func_0011d00c,
 0x0011d020,44,todo,unknown,func_0011d020,
 0x0011d04c,104,todo,engine,engine_func_0011d04c,
@@ -533,8 +533,8 @@ address,size,status,category,name,src_file
 0x00121f20,32,todo,engine,engine_func_00121f20,
 0x00121f40,340,todo,engine,engine_func_00121f40,
 0x00122094,48,todo,engine,engine_func_00122094,
-0x001220c4,20,todo,unknown,func_001220c4,
-0x001220d8,20,todo,unknown,func_001220d8,
+0x001220c4,20,matching,unknown,func_001220c4,src/engine/leaf_matching.cpp
+0x001220d8,20,matching,unknown,func_001220d8,src/engine/leaf_matching.cpp
 0x001220ec,24,todo,unknown,func_001220ec,
 0x00122104,68,todo,battle,battle_func_00122104,
 0x00122148,2120,todo,battle,battle_func_00122148,
@@ -587,7 +587,7 @@ address,size,status,category,name,src_file
 0x00126344,72,todo,script_vm,script_vm_func_00126344,
 0x0012638c,92,todo,script_vm,script_vm_func_0012638c,
 0x001263e8,72,todo,unknown,func_001263e8,
-0x00126430,20,todo,unknown,func_00126430,
+0x00126430,20,matching,unknown,func_00126430,src/engine/leaf_matching.cpp
 0x00126444,60,todo,ui,ui_func_00126444,
 0x00126480,424,todo,engine,engine_func_00126480,
 0x00126628,16,todo,ui,ui_func_00126628,
@@ -644,8 +644,8 @@ address,size,status,category,name,src_file
 0x00128e50,20,todo,unknown,func_00128e50,
 0x00128e64,92,todo,unknown,func_00128e64,
 0x00128ec0,116,todo,engine,engine_func_00128ec0,
-0x00128f34,16,todo,engine,engine_func_00128f34,
-0x00128f44,20,todo,engine,engine_func_00128f44,
+0x00128f34,16,matching,engine,engine_func_00128f34,src/engine/leaf_matching.cpp
+0x00128f44,20,matching,engine,engine_func_00128f44,src/engine/leaf_matching.cpp
 0x00128f58,80,todo,engine,engine_func_00128f58,
 0x00128fa8,72,todo,engine,engine_func_00128fa8,
 0x00128ff0,328,todo,engine,engine_func_00128ff0,
@@ -752,7 +752,7 @@ address,size,status,category,name,src_file
 0x00130e18,84,todo,engine,engine_func_00130e18,
 0x00130e6c,316,todo,engine,engine_func_00130e6c,
 0x00130fa8,64,todo,engine,engine_func_00130fa8,
-0x00130fe8,16,todo,engine,engine_func_00130fe8,
+0x00130fe8,16,matching,engine,engine_func_00130fe8,src/engine/leaf_matching.cpp
 0x00130ff8,236,todo,engine,engine_func_00130ff8,
 0x001310e4,8,todo,engine,engine_func_001310e4,
 0x001310ec,60,todo,ui,ui_func_001310ec,
@@ -977,7 +977,7 @@ address,size,status,category,name,src_file
 0x00140778,112,todo,unknown,func_00140778,
 0x001407e8,108,todo,unknown,func_001407e8,
 0x00140854,88,todo,unknown,func_00140854,
-0x001408ac,20,todo,unknown,func_001408ac,
+0x001408ac,20,matching,unknown,func_001408ac,src/engine/leaf_matching.cpp
 0x001408c0,80,todo,unknown,func_001408c0,
 0x00140910,168,todo,engine,engine_func_00140910,
 0x001409b8,28,todo,unknown,func_001409b8,
@@ -991,7 +991,7 @@ address,size,status,category,name,src_file
 0x00140f9c,228,todo,script_vm,script_vm_func_00140f9c,
 0x00141080,776,todo,engine,engine_func_00141080,
 0x00141388,224,todo,battle,battle_func_00141388,
-0x00141468,16,todo,engine,engine_func_00141468,
+0x00141468,16,matching,engine,engine_func_00141468,src/engine/leaf_matching.cpp
 0x00141478,64,todo,engine,engine_func_00141478,
 0x001414b8,84,todo,engine,engine_func_001414b8,
 0x0014150c,64,todo,unknown,func_0014150c,
@@ -1065,9 +1065,9 @@ address,size,status,category,name,src_file
 0x0014699c,316,todo,unknown,func_0014699c,
 0x00146ad8,328,todo,engine,engine_func_00146ad8,
 0x00146c20,192,todo,unknown,func_00146c20,
-0x00146ce0,16,todo,engine,engine_func_00146ce0,
+0x00146ce0,16,matching,engine,engine_func_00146ce0,src/engine/leaf_matching.cpp
 0x00146cf0,32,todo,engine,engine_func_00146cf0,
-0x00146d10,16,todo,engine,engine_func_00146d10,
+0x00146d10,16,matching,engine,engine_func_00146d10,src/engine/leaf_matching.cpp
 0x00146d20,56,todo,unknown,func_00146d20,
 0x00146d58,16,todo,engine,engine_func_00146d58,
 0x00146d68,144,todo,unknown,func_00146d68,
@@ -1212,7 +1212,7 @@ address,size,status,category,name,src_file
 0x0014dd64,2080,todo,engine,engine_func_0014dd64,
 0x0014e584,128,todo,unknown,func_0014e584,
 0x0014e604,48,todo,ui,ui_func_0014e604,
-0x0014e634,20,todo,engine,engine_func_0014e634,
+0x0014e634,20,matching,engine,engine_func_0014e634,src/engine/leaf_matching.cpp
 0x0014e648,252,todo,engine,engine_func_0014e648,
 0x0014e744,28,todo,engine,engine_func_0014e744,
 0x0014e760,164,todo,unknown,func_0014e760,
@@ -1319,7 +1319,7 @@ address,size,status,category,name,src_file
 0x00153134,44,todo,script_vm,script_vm_func_00153134,
 0x00153160,76,todo,unknown,func_00153160,
 0x001531ac,72,todo,unknown,func_001531ac,
-0x001531f4,20,todo,unknown,func_001531f4,
+0x001531f4,20,matching,unknown,func_001531f4,src/engine/leaf_matching.cpp
 0x00153208,96,todo,engine,engine_func_00153208,
 0x00153268,56,todo,unknown,func_00153268,
 0x001532a0,108,todo,engine,engine_func_001532a0,
@@ -1429,7 +1429,7 @@ address,size,status,category,name,src_file
 0x00158350,24,todo,unknown,func_00158350,
 0x00158368,132,todo,unknown,func_00158368,
 0x001583ec,24,todo,unknown,func_001583ec,
-0x00158404,20,todo,unknown,func_00158404,
+0x00158404,20,matching,unknown,func_00158404,src/engine/leaf_matching.cpp
 0x00158418,24,todo,unknown,func_00158418,
 0x00158430,24,todo,unknown,func_00158430,
 0x00158448,136,todo,unknown,func_00158448,
@@ -1499,7 +1499,7 @@ address,size,status,category,name,src_file
 0x0015bf68,152,todo,engine,engine_func_0015bf68,
 0x0015c000,784,todo,unknown,func_0015c000,
 0x0015c310,248,todo,engine,engine_func_0015c310,
-0x0015c408,16,todo,unknown,func_0015c408,
+0x0015c408,16,matching,unknown,func_0015c408,src/engine/leaf_matching.cpp
 0x0015c418,28,todo,unknown,func_0015c418,
 0x0015c434,32,todo,unknown,func_0015c434,
 0x0015c454,192,todo,unknown,func_0015c454,
@@ -1508,7 +1508,7 @@ address,size,status,category,name,src_file
 0x0015c6bc,44,todo,unknown,func_0015c6bc,
 0x0015c6e8,64,todo,unknown,func_0015c6e8,
 0x0015c728,2220,non_matching,engine,aocFileLoad_func_0015c728,src/engine/aoc.cpp
-0x0015cfd4,16,todo,unknown,func_0015cfd4,
+0x0015cfd4,16,matching,unknown,func_0015cfd4,src/engine/leaf_matching.cpp
 0x0015cfe4,44,todo,unknown,func_0015cfe4,
 0x0015d010,164,todo,engine,engine_func_0015d010,
 0x0015d0b4,152,todo,engine,engine_func_0015d0b4,
@@ -1770,7 +1770,7 @@ address,size,status,category,name,src_file
 0x0017f79c,344,todo,unknown,func_0017f79c,
 0x0017f8f4,28,todo,nn_sdk,nn_sdk_func_0017f8f4,
 0x0017f910,24,todo,unknown,func_0017f910,
-0x0017f928,20,todo,engine,engine_func_0017f928,
+0x0017f928,20,matching,engine,engine_func_0017f928,src/engine/leaf_matching.cpp
 0x0017f93c,280,todo,engine,motouchiTest_func_0017f93c,
 0x0017fa54,40,todo,engine,engine_func_0017fa54,
 0x0017fa7c,36,todo,unknown,func_0017fa7c,
@@ -1836,7 +1836,7 @@ address,size,status,category,name,src_file
 0x0019283c,36,todo,unknown,func_0019283c,
 0x00192860,36,todo,unknown,func_00192860,
 0x00192884,176,todo,unknown,func_00192884,
-0x00192934,20,todo,unknown,func_00192934,
+0x00192934,20,matching,unknown,func_00192934,src/engine/leaf_matching.cpp
 0x00192948,36,todo,unknown,func_00192948,
 0x0019296c,80,todo,camp,camp_func_0019296c,
 0x001929bc,1640,todo,ui,ui_func_001929bc,
@@ -1898,7 +1898,7 @@ address,size,status,category,name,src_file
 0x001a07cc,112,todo,unknown,func_001a07cc,
 0x001a083c,52,todo,unknown,func_001a083c,
 0x001a0870,56,todo,unknown,func_001a0870,
-0x001a08a8,20,todo,unknown,func_001a08a8,
+0x001a08a8,20,matching,unknown,func_001a08a8,src/engine/leaf_matching.cpp
 0x001a08bc,80,todo,engine,engine_func_001a08bc,
 0x001a090c,1136,todo,engine,engine_func_001a090c,
 0x001a0d7c,244,todo,script_vm,script_vm_func_001a0d7c,
@@ -2242,7 +2242,7 @@ address,size,status,category,name,src_file
 0x001e17d4,228,todo,ui,ui_func_001e17d4,
 0x001e18b8,24,todo,unknown,func_001e18b8,
 0x001e18d0,12,matching,unknown,func_001e18d0,src/engine/leaf_matching.cpp
-0x001e18dc,16,todo,unknown,func_001e18dc,
+0x001e18dc,16,matching,unknown,func_001e18dc,src/engine/leaf_matching.cpp
 0x001e18ec,20,todo,unknown,func_001e18ec,
 0x001e1900,44,todo,engine,engine_func_001e1900,
 0x001e192c,68,todo,engine,engine_func_001e192c,
@@ -2625,7 +2625,7 @@ address,size,status,category,name,src_file
 0x0020fde0,68,todo,unknown,func_0020fde0,
 0x0020fe24,24,todo,unknown,func_0020fe24,
 0x0020fe3c,56,todo,script_vm,script_vm_func_0020fe3c,
-0x0020fe74,16,todo,unknown,func_0020fe74,
+0x0020fe74,16,matching,unknown,func_0020fe74,src/engine/leaf_matching.cpp
 0x0020fe84,12,todo,ui,ui_func_0020fe84,
 0x0020fe90,8,todo,unknown,func_0020fe90,
 0x0020fe98,264,todo,engine,engine_func_0020fe98,
@@ -3189,7 +3189,7 @@ address,size,status,category,name,src_file
 0x002342b8,76,todo,unknown,func_002342b8,
 0x00234304,100,todo,script_vm,script_vm_func_00234304,
 0x00234368,332,todo,engine,engine_func_00234368,
-0x002344b4,16,todo,script_vm,script_vm_func_002344b4,
+0x002344b4,16,matching,script_vm,script_vm_func_002344b4,src/engine/leaf_matching.cpp
 0x002344c4,300,todo,script_vm,script_vm_func_002344c4,
 0x002345f0,12,matching,script_vm,script_vm_func_002345f0,src/engine/leaf_matching.cpp
 0x002345fc,12,matching,script_vm,script_vm_func_002345fc,src/engine/leaf_matching.cpp
@@ -3396,7 +3396,7 @@ address,size,status,category,name,src_file
 0x0023e030,336,todo,engine,engine_func_0023e030,
 0x0023e180,780,todo,battle,battle_func_0023e180,
 0x0023e48c,72,todo,engine,engine_func_0023e48c,
-0x0023e4d4,16,todo,ui,ui_func_0023e4d4,
+0x0023e4d4,16,matching,ui,ui_func_0023e4d4,src/engine/leaf_matching.cpp
 0x0023e4e4,28,todo,battle,battle_func_0023e4e4,
 0x0023e500,72,todo,engine,engine_func_0023e500,
 0x0023e548,20,todo,battle,battle_func_0023e548,
@@ -3680,7 +3680,7 @@ address,size,status,category,name,src_file
 0x0024f7e8,24,todo,script_vm,script_vm_func_0024f7e8,
 0x0024f800,488,todo,ui,ui_func_0024f800,
 0x0024f9e8,172,todo,engine,engine_func_0024f9e8,
-0x0024fa94,16,todo,unknown,func_0024fa94,
+0x0024fa94,16,matching,unknown,func_0024fa94,src/engine/leaf_matching.cpp
 0x0024faa4,20,todo,unknown,func_0024faa4,
 0x0024fab8,600,non_matching,engine,effPolygonTrack_func_0024fab8,src/engine/asd_effect2.cpp
 0x0024fd10,148,todo,engine,engine_func_0024fd10,
@@ -3712,7 +3712,7 @@ address,size,status,category,name,src_file
 0x00251504,344,todo,ui,ui_func_00251504,
 0x0025165c,2428,todo,ui,ui_func_0025165c,
 0x00251fd8,1000,todo,ui,ui_func_00251fd8,
-0x002523c0,16,todo,unknown,func_002523c0,
+0x002523c0,16,matching,unknown,func_002523c0,src/engine/leaf_matching.cpp
 0x002523d0,336,non_matching,engine,Npc2d_func_002523d0,src/engine/asd_frame.cpp
 0x00252520,24,todo,engine,engine_func_00252520,
 0x00252538,60,todo,engine,engine_func_00252538,

@@ -354,4 +354,32 @@ u32 func_003e884c(const u8* p, u32 val);
 s32 func_003e8878(const u8* p);
 void func_003f6b44();
 void engine_func_0011b850(u32* p);
+
+// --- Batch 6 Task 2: 16-byte and 20-byte leaf functions ---
+void func_0011cffc(u8* p);
+void* engine_func_00128f34(u8* p);
+u32 engine_func_00130fe8(u32 r0_ignored, u32 idx);
+void* engine_func_00141468(void* p);
+u32 engine_func_00146ce0(u8* p, u16 val);
+s32 engine_func_00146d10(u8* p, u8 val);
+void func_0015c408(u8* p, u32 v1, u32 v2);
+u32 func_0015cfd4(u32 val);
+u32 func_001e18dc(const u8* p, u32 idx);
+void* func_0020fe74(const u8* p);
+void* script_vm_func_002344b4(const u8* p);
+u32 ui_func_0023e4d4(const u8* p);
+void func_0024fa94(const u8* p, u8* dst);
+u32 func_002523c0(const u32* p);
+
+u32 func_001220c4(const u8* p);
+u32 func_001220d8(const u8* p);
+u32 func_00126430(const u8* p);
+void* engine_func_00128f44(const u8* p);
+void func_001408ac(u8* p);
+u32 engine_func_0014e634(const u32* p);
+u32 func_001531f4(u8* p, u32 idx, u32 off);
+u32 func_00158404(const u8* p, u32 idx);
+u32 engine_func_0017f928(u32 r0, u32 r1);
+u32 func_00192934(u8* p);
+u32 func_001a08a8(u8* p);
 }
