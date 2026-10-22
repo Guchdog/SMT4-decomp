@@ -1,9 +1,11 @@
+import csv
 import tempfile
 import unittest
 from pathlib import Path
 from tools.build_check import compile_tu_armv6k
 from tools.asm_diff import extract_elf_functions, compare_function
 from tools.verify_decomp import audit_claimed_functions
+from tools.find_candidates import find_leaf_candidates
 
 
 class TestAsmDiff(unittest.TestCase):
@@ -94,11 +96,54 @@ class TestAsmDiff(unittest.TestCase):
             repo_root=Path("."),
             code_path=self.code_path,
         )
-        self.assertEqual(stats["total_claimed"], 383)
-        self.assertEqual(stats["matching_verified"], 0)
+        self.assertEqual(stats["total_claimed"], 395)
+        self.assertEqual(stats["matching_verified"], 12)
         self.assertEqual(stats["matching_failed"], 0)
         self.assertEqual(stats["verified_count"], 338)
         self.assertEqual(stats["draft_count"], 45)
+
+    def test_find_leaf_candidates_returns_pure_leaf_functions(self):
+        if not self.code_bytes:
+            self.skipTest("code.bin not available")
+        candidates = find_leaf_candidates(
+            functions_csv=Path("config/functions.csv"),
+            code_bytes=self.code_bytes,
+            max_size=64,
+            limit=50,
+        )
+        self.assertEqual(len(candidates), 50)
+        for c in candidates:
+            self.assertLessEqual(c["size"], 64)
+            self.assertGreater(c["instruction_count"], 0)
+            self.assertTrue(c["address"].startswith("0x"))
+            self.assertTrue(len(c["name"]) > 0)
+
+    def test_all_matching_functions_in_ledger_are_byte_identical(self):
+        if not self.code_bytes:
+            self.skipTest("code.bin not available")
+        csv_path = Path("config/functions.csv")
+        matching_rows = []
+        with open(csv_path, "r", encoding="utf-8", newline="") as f:
+            for row in csv.DictReader(f):
+                if row["status"].strip() == "matching":
+                    matching_rows.append(row)
+
+        self.assertEqual(len(matching_rows), 12)
+        for row in matching_rows:
+            res = compare_function(
+                addr=int(row["address"], 16),
+                size=int(row["size"]),
+                func_name=row["name"].strip(),
+                src_file=Path(row["src_file"].strip()),
+                code_bytes=self.code_bytes,
+                repo_root=Path("."),
+            )
+            self.assertTrue(
+                res["exact_match"],
+                f"Function {row['name']} ({row['address']}) not exact match: {res['diff_lines']}",
+            )
+            self.assertEqual(res["byte_match_ratio"], 1.0)
+            self.assertEqual(res["compiled_size"], int(row["size"]))
 
 
 if __name__ == "__main__":

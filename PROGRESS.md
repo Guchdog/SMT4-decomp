@@ -4,24 +4,24 @@
 
 | Category | Functions | Code Size (Bytes) | Progress % | Status Description |
 |----------|----------:|------------------:|-----------:|--------------------|
-| **Matching (Byte-for-Byte)** | 0 | 0 B | 0.0000% | 100% compiled machine code match |
+| **Matching (Byte-for-Byte)** | 12 | 184 B | 0.0059% | 100% compiled machine code match |
 | **Verified (ARMv6K Compiled & Checked)** | 338 | 297,424 B | 9.4748% | Substantial compiled C++ logic matching binary structure |
 | **Draft (Under Construction)** | 45 | 239,468 B | 7.6285% | Early-stage decompilations awaiting refinement |
 | **Scaffolded (Stubs & Interfaces)** | 39 | 248,240 B | 7.9080% | Headers, structs, and function skeletons |
-| **Total Architecture Explored** | 422 | 785,132 B | **25.0113%** | Total identified & mapped into `src/` |
-| **Remaining (Todo)** | 9,927 | 2,353,976 B | 74.9887% | Unmapped functions in `.text` |
+| **Total Architecture Explored** | 434 | 785,316 B | **25.0172%** | Total identified & mapped into `src/` |
+| **Remaining (Todo)** | 9,915 | 2,353,792 B | 74.9828% | Unmapped functions in `.text` |
 | **Total `.text` Segment** | 10,349 | 3,139,108 B | 100.0000% | `0x00100000`–`0x003FE624` |
 
 ## Subsystem Breakdown
 
 | Subsystem | Decompiled Funcs | Decompiled Bytes | Stub Funcs | Stub Bytes | Total Funcs | Total Bytes | Decompiled % | Explored % |
 |-----------|-----------------:|-----------------:|-----------:|-----------:|------------:|------------:|-------------:|-----------:|
-| `engine` | 132 | 135,428 B | 2 | 22,760 B | 2,368 | 770,608 B | 17.57% | 20.53% |
-| `ui` | 159 | 164,516 B | 14 | 96,248 B | 1,238 | 682,348 B | 24.11% | 38.22% |
+| `engine` | 142 | 135,588 B | 2 | 22,760 B | 2,368 | 770,608 B | 17.59% | 20.55% |
+| `ui` | 160 | 164,528 B | 14 | 96,248 B | 1,238 | 682,348 B | 24.11% | 38.22% |
 | `unknown` | 9 | 23,652 B | 0 | 0 B | 3,818 | 610,392 B | 3.87% | 3.87% |
 | `script_vm` | 18 | 127,064 B | 3 | 22,836 B | 1,201 | 446,288 B | 28.47% | 33.59% |
 | `camp` | 21 | 29,764 B | 6 | 70,276 B | 918 | 326,396 B | 9.12% | 30.65% |
-| `battle` | 28 | 44,612 B | 11 | 32,664 B | 575 | 236,932 B | 18.83% | 32.62% |
+| `battle` | 29 | 44,624 B | 11 | 32,664 B | 575 | 236,932 B | 18.83% | 32.62% |
 | `shop` | 1 | 364 B | 3 | 3,456 B | 111 | 39,976 B | 0.91% | 9.56% |
 | `crt` | 3 | 4,216 B | 0 | 0 B | 26 | 9,484 B | 44.45% | 44.45% |
 | `nn_sdk` | 5 | 2,564 B | 0 | 0 B | 64 | 8,852 B | 28.97% | 28.97% |
@@ -80,7 +80,13 @@
 | `0x0011a9b4` | 1116 | `ui` | `non_matching` | `GuestWin_DrawUp` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x0011ae10` | 792 | `ui` | `non_matching` | `InfoWin_DrawUp` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x0011b128` | 588 | `ui` | `non_matching` | `InfoWin_Calc` | [`src/ui/window.cpp`](src/ui/window.cpp) |
+| `0x0011b838` | 24 | `engine` | `matching` | `engine_func_0011b838` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x0011d9fc` | 6920 | `engine` | `non_matching` | `func_0011d9fc` | [`src/engine/event_runtime.cpp`](src/engine/event_runtime.cpp) |
+| `0x00121ec4` | 20 | `engine` | `matching` | `engine_func_00121ec4` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
+| `0x00130dcc` | 12 | `engine` | `matching` | `engine_func_00130dcc` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
+| `0x00130dd8` | 12 | `engine` | `matching` | `engine_func_00130dd8` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
+| `0x001311a0` | 12 | `engine` | `matching` | `engine_func_001311a0` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
+| `0x00132fb8` | 12 | `battle` | `matching` | `battle_func_00132fb8` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x00133568` | 14908 | `engine` | `non_matching` | `func_00133568` | [`src/engine/block_133568.cpp`](src/engine/block_133568.cpp) |
 | `0x00142bf0` | 4008 | `unknown` | `non_matching` | `func_00142bf0` | [`src/engine/runtime_blocks.cpp`](src/engine/runtime_blocks.cpp) |
 | `0x00144978` | 320 | `engine` | `non_matching` | `AsdMemory_func_00144978` | [`src/engine/asd_file.cpp`](src/engine/asd_file.cpp) |
@@ -88,6 +94,7 @@
 | `0x0014515c` | 688 | `engine` | `non_matching` | `AsdModel_func_0014515c` | [`src/engine/asd_model.cpp`](src/engine/asd_model.cpp) |
 | `0x0014ec68` | 792 | `engine` | `non_matching` | `AsdModel_func_0014ec68` | [`src/engine/asd_model.cpp`](src/engine/asd_model.cpp) |
 | `0x0015c728` | 2220 | `engine` | `non_matching` | `aocFileLoad_func_0015c728` | [`src/engine/aoc.cpp`](src/engine/aoc.cpp) |
+| `0x0015e7c0` | 16 | `engine` | `matching` | `engine_func_0015e7c0` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x00160e90` | 3776 | `unknown` | `non_matching` | `func_00160e90` | [`src/engine/runtime_blocks2.cpp`](src/engine/runtime_blocks2.cpp) |
 | `0x00164c08` | 3776 | `unknown` | `non_matching` | `func_00164c08` | [`src/engine/runtime_blocks2.cpp`](src/engine/runtime_blocks2.cpp) |
 | `0x00168980` | 3776 | `unknown` | `non_matching` | `func_00168980` | [`src/engine/runtime_blocks2.cpp`](src/engine/runtime_blocks2.cpp) |
@@ -110,6 +117,7 @@
 | `0x001955bc` | 5812 | `script_vm` | `stub` | `FlowScript_EventVmExecute` | [`src/script/script_vm.cpp`](src/script/script_vm.cpp) |
 | `0x00197d2c` | 4432 | `ui` | `non_matching` | `ui_func_00197d2c` | [`src/ui/ui_runtime.cpp`](src/ui/ui_runtime.cpp) |
 | `0x0019a3ec` | 12900 | `camp` | `stub` | `Camp_DrawStereoViews` | [`src/camp/camp_main.cpp`](src/camp/camp_main.cpp) |
+| `0x0019de0c` | 12 | `ui` | `matching` | `ui_func_0019de0c` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x0019e034` | 4772 | `battle` | `stub` | `btlUI_Calc` | [`src/battle/btl_ui.cpp`](src/battle/btl_ui.cpp) |
 | `0x0019fb58` | 756 | `engine` | `non_matching` | `AsdTexTMX_func_0019fb58` | [`src/engine/asd_texture.cpp`](src/engine/asd_texture.cpp) |
 | `0x001a15b0` | 932 | `ui` | `stub` | `Result_DrawUp` | [`src/ui/result.cpp`](src/ui/result.cpp) |
@@ -204,11 +212,14 @@
 | `0x00223b88` | 40 | `ui` | `non_matching` | `StatusDown_IsState20` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x00224ae0` | 276 | `engine` | `non_matching` | `aocBootProcess_func_00224ae0` | [`src/engine/aoc.cpp`](src/engine/aoc.cpp) |
 | `0x002272d0` | 172 | `ui` | `non_matching` | `AsdListBox_func_002272d0` | [`src/engine/asd_text.cpp`](src/engine/asd_text.cpp) |
+| `0x0022b3cc` | 12 | `engine` | `matching` | `engine_func_0022b3cc` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x0022d5c8` | 892 | `unite` | `non_matching` | `unite_func_0022d5c8` | [`src/camp/unite_extras.cpp`](src/camp/unite_extras.cpp) |
 | `0x0022e694` | 32 | `ui` | `non_matching` | `Status_SetFlag1E65` | [`src/ui/status.cpp`](src/ui/status.cpp) |
 | `0x0022e6b4` | 24 | `ui` | `non_matching` | `Status_IsActive` | [`src/ui/status.cpp`](src/ui/status.cpp) |
+| `0x002347ac` | 12 | `engine` | `matching` | `engine_func_002347ac` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x00234ca8` | 164 | `engine` | `non_matching` | `aocTexCtrl_func_00234ca8` | [`src/engine/aoc.cpp`](src/engine/aoc.cpp) |
 | `0x00236958` | 3552 | `engine` | `non_matching` | `engine_func_00236958` | [`src/engine/engine_blocks.cpp`](src/engine/engine_blocks.cpp) |
+| `0x0023abc0` | 20 | `engine` | `matching` | `engine_func_0023abc0` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x0024246c` | 1272 | `engine` | `non_matching` | `EffectEditor_func_0024246c` | [`src/engine/asd_frame.cpp`](src/engine/asd_frame.cpp) |
 | `0x00243e8c` | 4216 | `ui` | `non_matching` | `ui_func_00243e8c` | [`src/ui/ui_scene_extras.cpp`](src/ui/ui_scene_extras.cpp) |
 | `0x002490e0` | 580 | `engine` | `non_matching` | `effParts_func_002490e0` | [`src/engine/asd_effect.cpp`](src/engine/asd_effect.cpp) |
@@ -221,6 +232,7 @@
 | `0x0024fda4` | 192 | `engine` | `non_matching` | `effParts_func_0024fda4` | [`src/engine/asd_effect.cpp`](src/engine/asd_effect.cpp) |
 | `0x0024fe64` | 196 | `engine` | `non_matching` | `effParts_func_0024fe64` | [`src/engine/asd_effect.cpp`](src/engine/asd_effect.cpp) |
 | `0x002523d0` | 336 | `engine` | `non_matching` | `Npc2d_func_002523d0` | [`src/engine/asd_frame.cpp`](src/engine/asd_frame.cpp) |
+| `0x0025503c` | 20 | `engine` | `matching` | `engine_func_0025503c` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x002553ec` | 3124 | `battle` | `non_matching` | `battle_func_002553ec` | [`src/engine/engine_blocks.cpp`](src/engine/engine_blocks.cpp) |
 | `0x00257e6c` | 436 | `engine` | `non_matching` | `AsdTexTGA_func_00257e6c` | [`src/engine/asd_texture.cpp`](src/engine/asd_texture.cpp) |
 | `0x00258e38` | 480 | `ui` | `non_matching` | `StatusCamera_Init` | [`src/ui/status.cpp`](src/ui/status.cpp) |

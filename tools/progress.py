@@ -103,10 +103,11 @@ def extract_function_body(
 
 def is_stub_body(body: str, size: int) -> bool:
     """Detects whether a function body is an empty or trivial skeleton stub."""
+    masked = _mask_comments(body)
     clean_lines = []
-    for line in body.splitlines():
+    for line in masked.splitlines():
         line = line.strip()
-        if not line or line.startswith("//") or line.startswith("/*") or line.startswith("*"):
+        if not line:
             continue
         if line.startswith("(void)") or line in {"return;", "return 0;", "return nullptr;", "{", "}"}:
             continue

@@ -141,6 +141,7 @@ def extract_elf_functions(obj_path: Path) -> dict[str, tuple[bytes, set[int]]]:
             # Must be executable section (.text or SHF_EXECINSTR = 0x4)
             if (sec[2] & 0x4) or sec_name.startswith(".text"):
                 if st_type == 2 or st_size > 0:  # STT_FUNC or non-empty size
+                    st_value = st_value & ~1
                     sym_name = get_sym_name(st_name)
                     if sym_name:
                         func_bytes = data[
@@ -385,6 +386,10 @@ def main() -> None:
 
     if target_row is None:
         print(f"Function {args.addr or args.name} not found in {args.functions}", file=sys.stderr)
+        sys.exit(1)
+
+    if not target_row.get("src_file", "").strip():
+        print(f"Function {target_row.get('name', '')} ({target_row.get('address', '')}) has no src_file assigned in {args.functions}", file=sys.stderr)
         sys.exit(1)
 
     addr = int(target_row["address"], 16)
