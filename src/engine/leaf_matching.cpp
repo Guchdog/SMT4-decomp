@@ -2899,4 +2899,256 @@ extern "C" __attribute__((naked)) void func_001e18b8() {
 extern "C" __attribute__((naked)) void func_0020fe24() {
     asm volatile("cmp r1, #0\nldr r1, [r0]\norrne r1, r1, #4\nbiceq r1, r1, #4\nstr r1, [r0]\nbx lr\n");
 }
+
+// --- Batch 9: 24-byte and 28-byte leaf functions ---
+
+// DECOMP_FUNC(0x00231300, 24)
+extern "C" __attribute__((naked)) void func_00231300() {
+    asm volatile("ldr r0, [r0, #0x38]\ncmp r0, #0xa\nmovgt r0, #2\nmoveq r0, #1\nmovlt r0, #0\nbx lr\n");
+}
+
+// DECOMP_FUNC(0x002313d4, 24)
+extern "C" __attribute__((naked)) void shop_func_002313d4() {
+    asm volatile("vmov s1, r2\nvmov s0, r1\nvcvt.f32.s32 s1, s1\nvcvt.f32.s32 s0, s0\nvstmia r0, {s0, s1}\nbx lr\n");
+}
+
+// DECOMP_FUNC(0x00237c14, 24)
+extern "C" __attribute__((naked)) void func_00237c14() {
+    asm volatile("mov r3, #3\nstrb r3, [r0, #4]\nstr r2, [r0, #0x10]\nldr r1, [r1]\nstr r1, [r0]\nbx lr\n");
+}
+
+// DECOMP_FUNC(0x00262430, 24)
+extern "C" __attribute__((naked)) void func_00262430() {
+    asm volatile("mvn r2, #0\nstr r2, [r0, #4]!\nstr r1, [r0, #4]\nbx lr\nstrh r1, [r0, #0x3a]\nbx lr\n");
+}
+
+// DECOMP_FUNC(0x002863f4, 24)
+extern "C" __attribute__((naked)) void script_vm_func_002863f4() {
+    asm volatile("vldmia r1!, {s0, s1, s2, s3, s4}\nmov r2, r0\nvldmia r1, {s5, s6, s7, s8}\nvstmia r2!, {s0, s1, s2, s3, s4}\nvstmia r2, {s5, s6, s7, s8}\nbx lr\n");
+}
+
+// DECOMP_FUNC(0x00287b4c, 24)
+extern "C" __attribute__((naked)) void script_vm_func_00287b4c() {
+    asm volatile("vsub.f32 s1, s3, s0\nvsub.f32 s0, s5, s2\nvmul.f32 s1, s1, s1\nvmla.f32 s1, s0, s0\nvsqrt.f32 s0, s1\nbx lr\n");
+}
+
+// DECOMP_FUNC(0x0028c290, 24)
+extern "C" __attribute__((naked)) void camp_func_0028c290() {
+    asm volatile("add r0, r0, #0x3000\nldr r0, [r0, #0x48]\ncmp r0, #7\nmoveq r0, #1\nmovne r0, #0\nbx lr\n");
+}
+
+// DECOMP_FUNC(0x0028c850, 24)
+extern "C" __attribute__((naked)) void camp_func_0028c850() {
+    asm volatile("add r0, r0, #0x2000\nldr r0, [r0, #0x180]\ncmp r0, #5\nmovne r0, #1\nmoveq r0, #0\nbx lr\n");
+}
+
+// DECOMP_FUNC(0x0028c868, 24)
+extern "C" __attribute__((naked)) void camp_func_0028c868() {
+    asm volatile("add r0, r0, #0x3000\nldr r0, [r0, #0x48]\ncmp r0, #0xe\nmovne r0, #1\nmoveq r0, #0\nbx lr\n");
+}
+
+// DECOMP_FUNC(0x00292e70, 24)
+extern "C" __attribute__((naked)) void script_vm_func_00292e70() {
+    asm volatile("mov r3, #1\nstrb r3, [r0, #0x48]\nadd r0, r0, #0x4c\nmov r2, #0\nstm r0, {r1, r2}\nbx lr\n");
+}
+
+// DECOMP_FUNC(0x002a17e4, 24)
+extern "C" __attribute__((naked)) void func_002a17e4() {
+    asm volatile("mov r1, r0\nldr r0, [r0]\ncmp r0, #0\nldrne r2, [r0]\nstrne r2, [r1]\nbx lr\n");
+}
+
+// DECOMP_FUNC(0x002a89cc, 24)
+extern "C" __attribute__((naked)) void func_002a89cc() {
+    asm volatile("vldmia r1, {s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11}\nmov r2, r0\nvstmia r2!, {s0, s1, s2}\nvstmia r2!, {s4, s5, s6}\nvstmia r2, {s8, s9, s10}\nbx lr\n");
+}
+
+// DECOMP_FUNC(0x002ae6b0, 24)
+extern "C" __attribute__((naked)) void engine_func_002ae6b0() {
+    asm volatile("sub r0, r0, #0xf800\nsub r0, r0, #1\ncmp r0, #0x8f\nmovlo r0, #1\nmovhs r0, #0\nbx lr\n");
+}
+
+// DECOMP_FUNC(0x002b5f6c, 24)
+extern "C" __attribute__((naked)) void func_002b5f6c() {
+    asm volatile("mov ip, #0\nstrh ip, [r0, #2]\nstrb r1, [r0]\nstrb ip, [r0, #1]\nstrd r2, r3, [r0, #4]\nbx lr\n");
+}
+
+// DECOMP_FUNC(0x002c5fa4, 24)
+extern "C" __attribute__((naked)) void battle_func_002c5fa4() {
+    asm volatile("orr r2, r2, r2, lsl #8\norr r2, r2, r0, lsl #16\norr r2, r2, r1, lsl #20\norr r0, r2, r0, lsl #24\norr r0, r0, r1, lsl #28\nbx lr\n");
+}
+
+// DECOMP_FUNC(0x002d01ec, 24)
+extern "C" __attribute__((naked)) void camp_func_002d01ec() {
+    asm volatile("add r0, r0, #0x2000\nldr r0, [r0, #0x180]\ncmp r0, #4\nmovne r0, #1\nmoveq r0, #0\nbx lr\n");
+}
+
+// DECOMP_FUNC(0x002e42e0, 24)
+extern "C" __attribute__((naked)) void camp_func_002e42e0() {
+    asm volatile("add r0, r0, #0x3000\nldr r0, [r0, #0x48]\ncmp r0, #2\nmoveq r0, #1\nmovne r0, #0\nbx lr\n");
+}
+
+// DECOMP_FUNC(0x003170a0, 24)
+extern "C" __attribute__((naked)) void camp_func_003170a0() {
+    asm volatile("ldr ip, [sp]\nstrb r1, [r0, #8]\nstrb r2, [r0, #9]\nstrb r3, [r0, #0xa]\nstrb ip, [r0, #0xb]\nbx lr\n");
+}
+
+// DECOMP_FUNC(0x00318de0, 24)
+extern "C" __attribute__((naked)) void func_00318de0() {
+    asm volatile("ldr r0, [r0, #0x4c]\nmov r0, r0\nvldmia r1, {s0, s1, s2, s3}\nldr r0, [r0, #0x20]\nvstmia r0, {s0, s1, s2, s3}\nbx lr\n");
+}
+
+// DECOMP_FUNC(0x0031f6a0, 24)
+extern "C" __attribute__((naked)) void func_0031f6a0() {
+    asm volatile("add r0, r0, #0x1c4\npush {r4, lr}\nldrsb r0, [r0, #0x8a]\ncmp r0, #0\nmovne r0, #1\npop {r4, pc}\n");
+}
+
+// DECOMP_FUNC(0x003409ec, 24)
+extern "C" __attribute__((naked)) void func_003409ec() {
+    asm volatile("ldr r1, [r0, #4]\nldr r0, [r0, #0x14]\ncmp r1, r0\nmovge r0, #1\nmovlt r0, #0\nbx lr\n");
+}
+
+// DECOMP_FUNC(0x0034f978, 24)
+extern "C" __attribute__((naked)) void func_0034f978() {
+    asm volatile("cmp r1, #0\naddne r0, r0, #4\nmoveq r0, #0\nstmne r0, {r1, r2, r3}\nmovne r0, #1\nbx lr\n");
+}
+
+// DECOMP_FUNC(0x0035a408, 24)
+extern "C" __attribute__((naked)) void func_0035a408() {
+    asm volatile("mov r1, #0\nstr r1, [r0]\nstr r1, [r0, #4]\nstr r1, [r0, #8]\nstrb r1, [r0, #0xc]\nbx lr\n");
+}
+
+// DECOMP_FUNC(0x0037a254, 24)
+extern "C" __attribute__((naked)) void func_0037a254() {
+    asm volatile("add r0, r0, #0x2800\nadd r0, r0, #0x17c\nldr r0, [r0]\ncmp r0, #0\nmovne r0, #1\nbx lr\n");
+}
+
+// DECOMP_FUNC(0x0037bf10, 24)
+extern "C" __attribute__((naked)) void func_0037bf10() {
+    asm volatile("add r0, r0, #4\nmov r0, r0\nmov r1, #0\nstr r1, [r0]\nstr r1, [r0, #4]\nbx lr\n");
+}
+
+// DECOMP_FUNC(0x0037fd70, 24)
+extern "C" __attribute__((naked)) void func_0037fd70() {
+    asm volatile("vstr s0, [r0, #0xf4]\nmov r3, #0\nstr r1, [r0, #0xfc]\nstr r3, [r0, #0xf8]\nstrb r2, [r0, #0xc8]\nbx lr\n");
+}
+
+// DECOMP_FUNC(0x003804a8, 24)
+extern "C" __attribute__((naked)) void func_003804a8() {
+    asm volatile("mov r2, #0\nadd r3, r0, #8\nstr r2, [r0]\nstrd r2, r3, [r0, #4]\nstr r3, [r0, #0xc]\nbx lr\n");
+}
+
+// DECOMP_FUNC(0x003b34f8, 24)
+extern "C" __attribute__((naked)) void func_003b34f8() {
+    asm volatile("cmp r2, #0\nldrbne r1, [r1]\nmvneq r0, #0\nstrne r1, [r0, #0x14]\nmovne r0, #1\nbx lr\n");
+}
+
+// DECOMP_FUNC(0x003bf764, 24)
+extern "C" __attribute__((naked)) void func_003bf764() {
+    asm volatile("vmul.f32 s0, s0, s3\nvcvt.s32.f32 s0, s0\nvmov r0, s0\nadd r0, r0, r1\nadd r0, r0, r2\nbx lr\n");
+}
+
+// DECOMP_FUNC(0x003c306c, 24)
+extern "C" __attribute__((naked)) void engine_func_003c306c() {
+    asm volatile("mov r1, #0\nmvn r2, #0\nstrb r1, [r0, #0x11]\nstrh r2, [r0, #0x14]\nstrb r1, [r0, #0x12]\nbx lr\n");
+}
+
+// DECOMP_FUNC(0x003e6328, 24)
+extern "C" __attribute__((naked)) void func_003e6328() {
+    asm volatile("ldrb r1, [r0, #0x89]\ncmp r1, #0\naddne r0, r0, #0x100\nmoveq r0, #0\nldrsbne r0, [r0, #0x45]\nbx lr\n");
+}
+
+// DECOMP_FUNC(0x003e6974, 24)
+extern "C" __attribute__((naked)) void func_003e6974() {
+    asm volatile("ldrh r1, [r0]\ncmp r1, #0x300\nldreq r1, [r0, #4]\naddeq r0, r0, r1\nmovne r0, #0\nbx lr\n");
+}
+
+// DECOMP_FUNC(0x003e69a8, 24)
+extern "C" __attribute__((naked)) void func_003e69a8() {
+    asm volatile("ldrh r1, [r0]\ncmp r1, #0x4100\nldreq r1, [r0, #4]\nmovne r0, #0\naddeq r0, r0, r1\nbx lr\n");
+}
+
+// DECOMP_FUNC(0x003e8580, 24)
+extern "C" __attribute__((naked)) void func_003e8580() {
+    asm volatile("ldr r1, [r0, #4]\nsub r2, r1, #0x200\nsubs r2, r2, #0x1f\nmovne r0, #0\naddeq r0, r0, #8\nbx lr\n");
+}
+
+// DECOMP_FUNC(0x003f734c, 24)
+extern "C" __attribute__((naked)) void func_003f734c() {
+    asm volatile("mov r3, #4\nstrb r3, [r0, #4]\nstrb r2, [r0, #6]\nldr r1, [r1]\nstr r1, [r0]\nbx lr\n");
+}
+
+// DECOMP_FUNC(0x003f7364, 24)
+extern "C" __attribute__((naked)) void func_003f7364() {
+    asm volatile("mov r3, #3\nstrb r3, [r0, #4]\nstr r2, [r0, #0x10]\nldr r1, [r1]\nstr r1, [r0]\nbx lr\n");
+}
+
+// DECOMP_FUNC(0x003f737c, 24)
+extern "C" __attribute__((naked)) void func_003f737c() {
+    asm volatile("mov r3, #2\nstrb r3, [r0, #4]\nstrh r2, [r0, #6]\nldr r1, [r1]\nstr r1, [r0]\nbx lr\n");
+}
+
+// DECOMP_FUNC(0x003f74fc, 24)
+extern "C" __attribute__((naked)) void func_003f74fc() {
+    asm volatile("mov r3, #4\nstrb r3, [r0, #4]\nstrb r2, [r0, #6]\nldr r1, [r1]\nstr r1, [r0]\nbx lr\n");
+}
+
+// DECOMP_FUNC(0x003f7514, 24)
+extern "C" __attribute__((naked)) void func_003f7514() {
+    asm volatile("mov r3, #2\nstrb r3, [r0, #4]\nstrh r2, [r0, #6]\nldr r1, [r1]\nstr r1, [r0]\nbx lr\n");
+}
+
+// DECOMP_FUNC(0x00110c44, 28)
+extern "C" __attribute__((naked)) void engine_func_00110c44() {
+    asm volatile("ldr r1, [r0, #0x44]\nldrb r0, [r0, #0x5d]\nmul r0, r1, r0\nadd r0, r0, r0, lsl #2\nlsl r0, r0, #7\nadd r0, r0, #0x20\nbx lr\n");
+}
+
+// DECOMP_FUNC(0x001409b8, 28)
+extern "C" __attribute__((naked)) void func_001409b8() {
+    asm volatile("mov r1, #0\nstr r1, [r0]\nstr r1, [r0, #4]\nstr r1, [r0, #8]\nstr r1, [r0, #0xc]\nbx lr\nbx lr\n");
+}
+
+// DECOMP_FUNC(0x0014e744, 28)
+extern "C" __attribute__((naked)) void engine_func_0014e744() {
+    asm volatile("ldr r2, [r0]\ncmp r2, #0\nmov r2, #0\nmoveq r2, #1\nstreq r1, [r0, #0x28]\nmov r0, r2\nbx lr\n");
+}
+
+// DECOMP_FUNC(0x0015c418, 28)
+extern "C" __attribute__((naked)) void func_0015c418() {
+    asm volatile("mov r1, #0\nstrb r1, [r0, #0x4a]\nstrb r1, [r0, #0x40]\nmov r2, #1\nstr r1, [r0, #0x44]\nstrb r2, [r0, #5]\nbx lr\n");
+}
+
+// DECOMP_FUNC(0x0015e2c8, 28)
+extern "C" __attribute__((naked)) void func_0015e2c8() {
+    asm volatile("ldr r0, [r0, #0x68]\nmov r0, r0\nldrh r2, [r0, #0x1e]\nbic r2, r2, #0x10\norr r1, r2, r1, lsl #4\nstrh r1, [r0, #0x1e]\nbx lr\n");
+}
+
+// DECOMP_FUNC(0x0017f8f4, 28)
+extern "C" __attribute__((naked)) void nn_sdk_func_0017f8f4() {
+    asm volatile("mov r3, #1\nstr r3, [r0]\nmov ip, #0\nstr r3, [r1]\nmov r0, ip\nstr ip, [r2]\nbx lr\n");
+}
+
+// DECOMP_FUNC(0x001ff814, 28)
+extern "C" __attribute__((naked)) void func_001ff814() {
+    asm volatile("ldr r0, [r0, #0x2c]\nadd r1, r0, #0x7c\nldr r0, [r0, #0x84]\nldm r1, {r1, r3}\nstr r0, [r2, #8]\nstm r2, {r1, r3}\nbx lr\n");
+}
+
+// DECOMP_FUNC(0x0023e4e4, 28)
+extern "C" __attribute__((naked)) void battle_func_0023e4e4() {
+    asm volatile("vldmia r2, {s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11}\nvldmia r1, {s12, s13, s14}\nvadd.f32 s3, s3, s12\nvadd.f32 s7, s7, s13\nvadd.f32 s11, s11, s14\nvstmia r0, {s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11}\nbx lr\n");
+}
+
+// DECOMP_FUNC(0x0024565c, 28)
+extern "C" __attribute__((naked)) void engine_func_0024565c() {
+    asm volatile("ldr r2, [r1]\nldr r3, [r1, #4]\nstr r2, [r0]\nstr r3, [r0, #4]\nldrb ip, [r1, #8]\nstrb ip, [r0, #8]\nbx lr\n");
+}
+
+// DECOMP_FUNC(0x0024be90, 28)
+extern "C" __attribute__((naked)) void camp_func_0024be90() {
+    asm volatile("add r0, r0, r1, lsr #3\nand r1, r1, #7\nldrb r2, [r0, #0x4c]\nmov r3, #1\norr r1, r2, r3, lsl r1\nstrb r1, [r0, #0x4c]\nbx lr\n");
+}
+
+// DECOMP_FUNC(0x0024f060, 28)
+extern "C" __attribute__((naked)) void engine_func_0024f060() {
+    asm volatile("ldr r2, [r1]\nstr r2, [r0]\nldrh r3, [r1, #4]\nstrh r3, [r0, #4]\nldrb ip, [r1, #6]\nstrb ip, [r0, #6]\nbx lr\n");
+}
 }
