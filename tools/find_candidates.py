@@ -46,7 +46,7 @@ def is_leaf_instruction(
     # Branch instructions
     branch_mnemonics = {
         "b", "beq", "bne", "bcs", "bcc", "bmi", "bpl", "bvs", "bvc",
-        "bhi", "bls", "bge", "blt", "bgt", "ble", "cbz", "cbnz",
+        "bhi", "bls", "bge", "blt", "bgt", "ble", "bhs", "blo", "cbz", "cbnz",
     }
     if m in branch_mnemonics or (m.startswith("b.") and len(m) <= 4):
         if not allow_internal_branch:
