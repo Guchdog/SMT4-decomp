@@ -4,28 +4,28 @@
 
 | Category | Functions | Code Size (Bytes) | Progress % | Status Description |
 |----------|----------:|------------------:|-----------:|--------------------|
-| **Matching (Byte-for-Byte)** | 12 | 184 B | 0.0059% | 100% compiled machine code match |
-| **Verified (ARMv6K Compiled & Checked)** | 338 | 297,424 B | 9.4748% | Substantial compiled C++ logic matching binary structure |
-| **Draft (Under Construction)** | 45 | 239,468 B | 7.6285% | Early-stage decompilations awaiting refinement |
+| **Matching (Byte-for-Byte)** | 12 | 184 B | **0.0059%** | 100% verified compiled machine code match |
+| **Compiles to ARMv6K (≥15% size)** | 338 | 297,424 B | 9.4748% | Compiles to ARMv6K ELF .o; non-trivial body size |
+| **Draft Logic (<15% size)** | 45 | 239,468 B | 7.6285% | Early draft reconstructions awaiting control-flow recovery |
 | **Scaffolded (Stubs & Interfaces)** | 39 | 248,240 B | 7.9080% | Headers, structs, and function skeletons |
-| **Total Architecture Explored** | 434 | 785,316 B | **25.0172%** | Total identified & mapped into `src/` |
+| **Total Architecture Explored** | 434 | 785,316 B | 25.0172% | Total mapped into `src/` (Matching + Compiles + Draft + Stubs) |
 | **Remaining (Todo)** | 9,915 | 2,353,792 B | 74.9828% | Unmapped functions in `.text` |
 | **Total `.text` Segment** | 10,349 | 3,139,108 B | 100.0000% | `0x00100000`–`0x003FE624` |
 
 ## Subsystem Breakdown
 
-| Subsystem | Decompiled Funcs | Decompiled Bytes | Stub Funcs | Stub Bytes | Total Funcs | Total Bytes | Decompiled % | Explored % |
-|-----------|-----------------:|-----------------:|-----------:|-----------:|------------:|------------:|-------------:|-----------:|
-| `engine` | 142 | 135,588 B | 2 | 22,760 B | 2,368 | 770,608 B | 17.59% | 20.55% |
-| `ui` | 160 | 164,528 B | 14 | 96,248 B | 1,238 | 682,348 B | 24.11% | 38.22% |
-| `unknown` | 9 | 23,652 B | 0 | 0 B | 3,818 | 610,392 B | 3.87% | 3.87% |
-| `script_vm` | 18 | 127,064 B | 3 | 22,836 B | 1,201 | 446,288 B | 28.47% | 33.59% |
-| `camp` | 21 | 29,764 B | 6 | 70,276 B | 918 | 326,396 B | 9.12% | 30.65% |
-| `battle` | 29 | 44,624 B | 11 | 32,664 B | 575 | 236,932 B | 18.83% | 32.62% |
-| `shop` | 1 | 364 B | 3 | 3,456 B | 111 | 39,976 B | 0.91% | 9.56% |
-| `crt` | 3 | 4,216 B | 0 | 0 B | 26 | 9,484 B | 44.45% | 44.45% |
-| `nn_sdk` | 5 | 2,564 B | 0 | 0 B | 64 | 8,852 B | 28.97% | 28.97% |
-| `unite` | 7 | 4,712 B | 0 | 0 B | 30 | 7,832 B | 60.16% | 60.16% |
+| Subsystem | Matching | Compiles (≥15%) | Draft (<15%) | Stubs | Total Explored | Total Subsystem | Matching % | Explored % |
+|-----------|---------:|----------------:|-------------:|------:|---------------:|----------------:|-----------:|-----------:|
+| `engine` | 10 (160 B) | 127 (98,240 B) | 5 (37,188 B) | 2 (22,760 B) | 144 (158,348 B) | 2,368 (770,608 B) | 0.0208% | 20.55% |
+| `ui` | 1 (12 B) | 141 (100,644 B) | 18 (63,872 B) | 14 (96,248 B) | 174 (260,776 B) | 1,238 (682,348 B) | 0.0018% | 38.22% |
+| `unknown` | 0 (0 B) | 6 (12,324 B) | 3 (11,328 B) | 0 (0 B) | 9 (23,652 B) | 3,818 (610,392 B) | 0.0000% | 3.87% |
+| `script_vm` | 0 (0 B) | 12 (28,268 B) | 6 (98,796 B) | 3 (22,836 B) | 21 (149,900 B) | 1,201 (446,288 B) | 0.0000% | 33.59% |
+| `camp` | 0 (0 B) | 13 (14,440 B) | 8 (15,324 B) | 6 (70,276 B) | 27 (100,040 B) | 918 (326,396 B) | 0.0000% | 30.65% |
+| `battle` | 1 (12 B) | 24 (32,600 B) | 4 (12,012 B) | 11 (32,664 B) | 40 (77,288 B) | 575 (236,932 B) | 0.0051% | 32.62% |
+| `shop` | 0 (0 B) | 1 (364 B) | 0 (0 B) | 3 (3,456 B) | 4 (3,820 B) | 111 (39,976 B) | 0.0000% | 9.56% |
+| `crt` | 0 (0 B) | 3 (4,216 B) | 0 (0 B) | 0 (0 B) | 3 (4,216 B) | 26 (9,484 B) | 0.0000% | 44.45% |
+| `nn_sdk` | 0 (0 B) | 5 (2,564 B) | 0 (0 B) | 0 (0 B) | 5 (2,564 B) | 64 (8,852 B) | 0.0000% | 28.97% |
+| `unite` | 0 (0 B) | 6 (3,764 B) | 1 (948 B) | 0 (0 B) | 7 (4,712 B) | 30 (7,832 B) | 0.0000% | 60.16% |
 
 ## Explored Functions Ledger
 

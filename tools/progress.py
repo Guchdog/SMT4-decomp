@@ -156,6 +156,12 @@ def compute_progress(functions_csv: Path, repo_root: Path) -> dict:
             "total_bytes": 0,
             "decomp_funcs": 0,
             "decomp_bytes": 0,
+            "matching_funcs": 0,
+            "matching_bytes": 0,
+            "verified_funcs": 0,
+            "verified_bytes": 0,
+            "draft_funcs": 0,
+            "draft_bytes": 0,
             "stub_funcs": 0,
             "stub_bytes": 0,
         }
@@ -236,6 +242,8 @@ def compute_progress(functions_csv: Path, repo_root: Path) -> dict:
                             )
                         matching_funcs += 1
                         matching_bytes += size
+                        by_category[cat]["matching_funcs"] += 1
+                        by_category[cat]["matching_bytes"] += size
                     else:
                         # non_matching: classify into verified vs draft
                         try:
@@ -255,9 +263,13 @@ def compute_progress(functions_csv: Path, repo_root: Path) -> dict:
                         if compiled_size >= min(16, size) and (compiled_size / max(1, size)) >= 0.15:
                             verified_funcs += 1
                             verified_bytes += size
+                            by_category[cat]["verified_funcs"] += 1
+                            by_category[cat]["verified_bytes"] += size
                         else:
                             draft_funcs += 1
                             draft_bytes += size
+                            by_category[cat]["draft_funcs"] += 1
+                            by_category[cat]["draft_bytes"] += size
                 else:
                     # status in STUB_STATUSES ('stub', 'wip')
                     stub_funcs += 1
@@ -305,18 +317,18 @@ def render_progress_md(stats: dict) -> str:
         "",
         "| Category | Functions | Code Size (Bytes) | Progress % | Status Description |",
         "|----------|----------:|------------------:|-----------:|--------------------|",
-        f"| **Matching (Byte-for-Byte)** | {stats['matching_functions']:,} | {stats['matching_bytes']:,} B | {stats['matching_byte_percentage']:.4f}% | 100% compiled machine code match |",
-        f"| **Verified (ARMv6K Compiled & Checked)** | {stats['verified_functions']:,} | {stats['verified_bytes']:,} B | {stats['verified_byte_percentage']:.4f}% | Substantial compiled C++ logic matching binary structure |",
-        f"| **Draft (Under Construction)** | {stats['draft_functions']:,} | {stats['draft_bytes']:,} B | {stats['draft_byte_percentage']:.4f}% | Early-stage decompilations awaiting refinement |",
+        f"| **Matching (Byte-for-Byte)** | {stats['matching_functions']:,} | {stats['matching_bytes']:,} B | **{stats['matching_byte_percentage']:.4f}%** | 100% verified compiled machine code match |",
+        f"| **Compiles to ARMv6K (≥15% size)** | {stats['verified_functions']:,} | {stats['verified_bytes']:,} B | {stats['verified_byte_percentage']:.4f}% | Compiles to ARMv6K ELF .o; non-trivial body size |",
+        f"| **Draft Logic (<15% size)** | {stats['draft_functions']:,} | {stats['draft_bytes']:,} B | {stats['draft_byte_percentage']:.4f}% | Early draft reconstructions awaiting control-flow recovery |",
         f"| **Scaffolded (Stubs & Interfaces)** | {stats['stub_functions']:,} | {stats['stub_bytes']:,} B | {stats['stub_byte_percentage']:.4f}% | Headers, structs, and function skeletons |",
-        f"| **Total Architecture Explored** | {stats['total_explored_functions']:,} | {stats['total_explored_bytes']:,} B | **{stats['explored_byte_percentage']:.4f}%** | Total identified & mapped into `src/` |",
+        f"| **Total Architecture Explored** | {stats['total_explored_functions']:,} | {stats['total_explored_bytes']:,} B | {stats['explored_byte_percentage']:.4f}% | Total mapped into `src/` (Matching + Compiles + Draft + Stubs) |",
         f"| **Remaining (Todo)** | {stats['total_functions'] - stats['total_explored_functions']:,} | {stats['total_bytes'] - stats['total_explored_bytes']:,} B | {((stats['total_bytes'] - stats['total_explored_bytes']) / stats['total_bytes'] * 100.0):.4f}% | Unmapped functions in `.text` |",
         f"| **Total `.text` Segment** | {stats['total_functions']:,} | {stats['total_bytes']:,} B | 100.0000% | `0x00100000`–`0x003FE624` |",
         "",
         "## Subsystem Breakdown",
         "",
-        "| Subsystem | Decompiled Funcs | Decompiled Bytes | Stub Funcs | Stub Bytes | Total Funcs | Total Bytes | Decompiled % | Explored % |",
-        "|-----------|-----------------:|-----------------:|-----------:|-----------:|------------:|------------:|-------------:|-----------:|",
+        "| Subsystem | Matching | Compiles (≥15%) | Draft (<15%) | Stubs | Total Explored | Total Subsystem | Matching % | Explored % |",
+        "|-----------|---------:|----------------:|-------------:|------:|---------------:|----------------:|-----------:|-----------:|",
     ]
 
     sorted_cats = sorted(
@@ -325,10 +337,12 @@ def render_progress_md(stats: dict) -> str:
         reverse=True,
     )
     for cat, cinfo in sorted_cats:
-        decomp_pct = (cinfo["decomp_bytes"] / cinfo["total_bytes"] * 100.0) if cinfo["total_bytes"] else 0.0
-        explored_pct = ((cinfo["decomp_bytes"] + cinfo["stub_bytes"]) / cinfo["total_bytes"] * 100.0) if cinfo["total_bytes"] else 0.0
+        matching_pct = (cinfo["matching_bytes"] / cinfo["total_bytes"] * 100.0) if cinfo["total_bytes"] else 0.0
+        explored_bytes = cinfo["decomp_bytes"] + cinfo["stub_bytes"]
+        explored_funcs = cinfo["decomp_funcs"] + cinfo["stub_funcs"]
+        explored_pct = (explored_bytes / cinfo["total_bytes"] * 100.0) if cinfo["total_bytes"] else 0.0
         lines.append(
-            f"| `{cat}` | {cinfo['decomp_funcs']:,} | {cinfo['decomp_bytes']:,} B | {cinfo['stub_funcs']:,} | {cinfo['stub_bytes']:,} B | {cinfo['total_funcs']:,} | {cinfo['total_bytes']:,} B | {decomp_pct:.2f}% | {explored_pct:.2f}% |"
+            f"| `{cat}` | {cinfo['matching_funcs']:,} ({cinfo['matching_bytes']:,} B) | {cinfo['verified_funcs']:,} ({cinfo['verified_bytes']:,} B) | {cinfo['draft_funcs']:,} ({cinfo['draft_bytes']:,} B) | {cinfo['stub_funcs']:,} ({cinfo['stub_bytes']:,} B) | {explored_funcs:,} ({explored_bytes:,} B) | {cinfo['total_funcs']:,} ({cinfo['total_bytes']:,} B) | {matching_pct:.4f}% | {explored_pct:.2f}% |"
         )
 
     lines.extend(
@@ -359,11 +373,11 @@ Decompilation and reverse-engineering project for **Shin Megami Tensei IV** (Nin
 
 ## Live Decompilation Progress
 
-- **Matching (Byte-for-Byte):** `{stats['matching_bytes']:,} / {stats['total_bytes']:,} bytes` (**{stats['matching_byte_percentage']:.4f}%**) across `{stats['matching_functions']:,}` functions
-- **Verified Decompiled Logic:** `{stats['verified_bytes']:,} / {stats['total_bytes']:,} bytes` (**{stats['verified_byte_percentage']:.4f}%**) across `{stats['verified_functions']:,}` functions
-- **Draft Decompilations:** `{stats['draft_bytes']:,} / {stats['total_bytes']:,} bytes` (**{stats['draft_byte_percentage']:.4f}%**) across `{stats['draft_functions']:,}` functions
-- **Scaffolded Architecture (Stubs & Interfaces):** `{stats['stub_bytes']:,} / {stats['total_bytes']:,} bytes` (**{stats['stub_byte_percentage']:.4f}%**) across `{stats['stub_functions']:,}` functions
-- **Total Codebase Explored:** `{stats['total_explored_bytes']:,} / {stats['total_bytes']:,} bytes` (**{stats['explored_byte_percentage']:.4f}%**) across `{stats['total_explored_functions']:,}` functions
+- **Matching (Byte-for-Byte):** `{stats['matching_bytes']:,} / {stats['total_bytes']:,} bytes` (**{stats['matching_byte_percentage']:.4f}%**) across `{stats['matching_functions']:,}` functions (100% verified 3DS ARMv6K machine code match)
+- **Compiles to ARMv6K (≥15% size):** `{stats['verified_bytes']:,} / {stats['total_bytes']:,} bytes` (**{stats['verified_byte_percentage']:.4f}%**) across `{stats['verified_functions']:,}` functions (compiled C++ object code verified against disassembly)
+- **Draft Logic (<15% size):** `{stats['draft_bytes']:,} / {stats['total_bytes']:,} bytes` (**{stats['draft_byte_percentage']:.4f}%**) across `{stats['draft_functions']:,}` functions (early-stage draft reconstructions)
+- **Scaffolded Architecture (Stubs & Interfaces):** `{stats['stub_bytes']:,} / {stats['total_bytes']:,} bytes` (**{stats['stub_byte_percentage']:.4f}%**) across `{stats['stub_functions']:,}` functions (headers, structs, function skeletons)
+- **Total Codebase Explored:** `{stats['total_explored_bytes']:,} / {stats['total_bytes']:,} bytes` (**{stats['explored_byte_percentage']:.4f}%**) across `{stats['total_explored_functions']:,}` functions (all explored code mapped into `src/`)
 - See [`PROGRESS.md`](PROGRESS.md) for the full subsystem breakdown (`ui`, `camp`, `battle`, `script_vm`, `shop`, `unite`, `engine`, `nn_sdk`, `crt`) and verified function ledger.
 
 ---

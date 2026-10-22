@@ -176,6 +176,12 @@ class TestProgress(unittest.TestCase):
             stats["verified_bytes"] + stats["draft_bytes"] + stats["matching_bytes"],
             stats["decompiled_bytes"],
         )
+        self.assertEqual(stats["categories"]["engine"]["matching_funcs"], 10)
+        self.assertEqual(stats["categories"]["engine"]["matching_bytes"], 160)
+        self.assertEqual(stats["categories"]["battle"]["matching_funcs"], 1)
+        self.assertEqual(stats["categories"]["battle"]["matching_bytes"], 12)
+        self.assertEqual(stats["categories"]["ui"]["matching_funcs"], 1)
+        self.assertEqual(stats["categories"]["ui"]["matching_bytes"], 12)
 
 
 if __name__ == "__main__":

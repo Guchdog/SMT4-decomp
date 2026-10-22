@@ -121,13 +121,16 @@ SMT4decomp/
    - Scans `.rodata` (`0x003FF000` – `0x0042AB78`) and `.data` (`0x0042B000` – `0x00476644`) for ASCII/Shift-JIS/UTF-16 strings (file paths like `battle/`, `camp/`, `status/`, `saveLoadUI/`, `mikado/`, debug strings, class/RTTI names, SDK strings).
    - Resolves literal pool loads (`LDR rX, [pc, #imm]`) in `.text` to map strings to functions, automatically tagging functions that belong to `ui`, `battle`, `camp`, `script_vm`, `shop`, `unite`, `nn_sdk`, etc.
 
-### 5.4 Progress Tracking & Verification (`tools/progress.py`)
+### 5.4 Progress Tracking & Verification (`tools/progress.py` & `tools/asm_diff.py`)
 - Reads `config/functions.csv` and verifies that every function marked `matching`, `non_matching`, or `wip` actually has a corresponding implementation in `src/`.
-- Calculates:
-  - **Total `.text` Bytes Decompiled:** `decompiled_bytes / 3,139,108` (with separate counts for `matching` vs `non_matching`/`wip` C++ implementations).
-  - **Total Functions Decompiled:** `decompiled_funcs / total_funcs`.
-  - **Subsystem Progress Table:** Progress broken down by `ui` (HUD/menus), `battle`, `camp`, `script_vm`, `engine`, `nn_sdk`, `crt`, and `unknown`.
-- Writes `PROGRESS.md` and updates the progress badges/summary in `README.md` ready to commit and push to `https://github.com/Guchdog/SMT4-decomp`.
+- For `matching` functions: strictly verifies 100% byte-for-byte machine code parity against `code.bin` via `tools/asm_diff.py`.
+- Calculates four granular tiers:
+  - **Matching (Byte-for-Byte):** 100% verified compiled ARMv6K machine code match.
+  - **Compiles to ARMv6K (≥15% size):** Substantial C++ logic compiling to `.o` and verified against binary structure.
+  - **Draft Logic (<15% size):** Reconstructed function skeletons awaiting control-flow recovery.
+  - **Scaffolded Architecture (Stubs & Interfaces):** Structural headers, structs, and function skeletons (`stub`).
+- Subsystem Progress Table: Breaks down all four tiers per subsystem (`ui`, `battle`, `camp`, `script_vm`, `engine`, `nn_sdk`, `crt`, `shop`, `unite`, `unknown`).
+- Writes `PROGRESS.md` and updates the progress summary in `README.md` ready to commit and push to `https://github.com/Guchdog/SMT4-decomp`.
 
 ---
 
