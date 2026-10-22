@@ -1,0 +1,105 @@
+import tempfile
+import unittest
+from pathlib import Path
+from tools.build_check import compile_tu_armv6k
+from tools.asm_diff import extract_elf_functions, compare_function
+from tools.verify_decomp import audit_claimed_functions
+
+
+class TestAsmDiff(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.code_path = Path("extracted/exefs/code.bin")
+        if cls.code_path.is_file():
+            cls.code_bytes = cls.code_path.read_bytes()
+        else:
+            cls.code_bytes = b""
+
+    def test_extract_elf_functions(self):
+        with tempfile.TemporaryDirectory() as td:
+            src = Path(td) / "test_extract.cpp"
+            src.write_text(
+                'extern "C" void engine_func_0011b838(char* p) {\n'
+                "    *(volatile unsigned int*)(p) = 0;\n"
+                "    *(volatile unsigned int*)(p + 4) = 0;\n"
+                "    *(volatile unsigned short*)(p + 0x48) = 0;\n"
+                "    *(volatile unsigned short*)(p + 0x4a) = 0;\n"
+                "}\n",
+                encoding="utf-8",
+            )
+            obj = Path(td) / "test_extract.o"
+            res = compile_tu_armv6k(src, obj)
+            self.assertEqual(res.returncode, 0, f"Compilation failed: {res.stderr}")
+            funcs = extract_elf_functions(obj)
+            self.assertIn("engine_func_0011b838", funcs)
+            func_bytes, reloc_offsets = funcs["engine_func_0011b838"]
+            self.assertEqual(len(func_bytes), 24)
+            self.assertIsInstance(reloc_offsets, set)
+
+    def test_compare_function_matching(self):
+        if not self.code_bytes:
+            self.skipTest("code.bin not available")
+        with tempfile.TemporaryDirectory() as td:
+            src = Path(td) / "matching.cpp"
+            src.write_text(
+                'extern "C" void engine_func_0011b838(char* p) {\n'
+                "    *(volatile unsigned int*)(p) = 0;\n"
+                "    *(volatile unsigned int*)(p + 4) = 0;\n"
+                "    *(volatile unsigned short*)(p + 0x48) = 0;\n"
+                "    *(volatile unsigned short*)(p + 0x4a) = 0;\n"
+                "}\n",
+                encoding="utf-8",
+            )
+            res = compare_function(
+                addr=0x0011B838,
+                size=24,
+                func_name="engine_func_0011b838",
+                src_file=src,
+                code_bytes=self.code_bytes,
+                repo_root=Path("."),
+            )
+            self.assertTrue(res["exact_match"])
+            self.assertEqual(res["compiled_size"], 24)
+            self.assertEqual(res["byte_match_ratio"], 1.0)
+            self.assertEqual(res["mnemonic_match_ratio"], 1.0)
+            self.assertGreater(len(res["diff_lines"]), 0)
+
+    def test_compare_function_non_matching(self):
+        if not self.code_bytes:
+            self.skipTest("code.bin not available")
+        with tempfile.TemporaryDirectory() as td:
+            src = Path(td) / "non_matching.cpp"
+            src.write_text(
+                'extern "C" void engine_func_0011b838(char* p) {\n'
+                "    *(int*)(p) = 42;\n"
+                "}\n",
+                encoding="utf-8",
+            )
+            res = compare_function(
+                addr=0x0011B838,
+                size=24,
+                func_name="engine_func_0011b838",
+                src_file=src,
+                code_bytes=self.code_bytes,
+                repo_root=Path("."),
+            )
+            self.assertFalse(res["exact_match"])
+            self.assertLess(res["byte_match_ratio"], 1.0)
+
+    def test_audit_claimed_functions(self):
+        if not self.code_bytes:
+            self.skipTest("code.bin not available")
+        stats = audit_claimed_functions(
+            functions_csv=Path("config/functions.csv"),
+            repo_root=Path("."),
+            code_path=self.code_path,
+        )
+        self.assertEqual(stats["total_claimed"], 383)
+        self.assertEqual(stats["matching_verified"], 0)
+        self.assertEqual(stats["matching_failed"], 0)
+        self.assertEqual(stats["verified_count"], 338)
+        self.assertEqual(stats["draft_count"], 45)
+
+
+if __name__ == "__main__":
+    unittest.main()

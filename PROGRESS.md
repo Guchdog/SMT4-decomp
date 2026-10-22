@@ -4,9 +4,10 @@
 
 | Category | Functions | Code Size (Bytes) | Progress % | Status Description |
 |----------|----------:|------------------:|-----------:|--------------------|
-| **Decompiled (Reconstructed)** | 383 | 536,892 B | **17.1033%** | Substantial C++ logic reverse-engineered |
-| **Scaffolded (Stubs & Interfaces)** | 39 | 248,240 B | 7.9080% | Headers, structs, and function skeletons |
 | **Matching (Byte-for-Byte)** | 0 | 0 B | 0.0000% | 100% compiled machine code match |
+| **Verified (ARMv6K Compiled & Checked)** | 338 | 297,424 B | 9.4748% | Substantial compiled C++ logic matching binary structure |
+| **Draft (Under Construction)** | 45 | 239,468 B | 7.6285% | Early-stage decompilations awaiting refinement |
+| **Scaffolded (Stubs & Interfaces)** | 39 | 248,240 B | 7.9080% | Headers, structs, and function skeletons |
 | **Total Architecture Explored** | 422 | 785,132 B | **25.0113%** | Total identified & mapped into `src/` |
 | **Remaining (Todo)** | 9,927 | 2,353,976 B | 74.9887% | Unmapped functions in `.text` |
 | **Total `.text` Segment** | 10,349 | 3,139,108 B | 100.0000% | `0x00100000`–`0x003FE624` |

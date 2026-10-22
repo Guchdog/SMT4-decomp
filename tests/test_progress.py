@@ -126,6 +126,33 @@ class TestProgress(unittest.TestCase):
             with self.assertRaises(VerificationError):
                 compute_progress(csv_path, root)
 
+    def test_rejects_non_identical_function_marked_as_matching(self):
+        """Marking a function matching when its compiled bytes do not match code.bin raises VerificationError."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            code_dir = root / "extracted" / "exefs"
+            code_dir.mkdir(parents=True, exist_ok=True)
+            code_data = bytearray(0x20000)
+            code_dir.joinpath("code.bin").write_bytes(bytes(code_data))
+
+            src_dir = root / "src" / "engine"
+            src_dir.mkdir(parents=True, exist_ok=True)
+            (src_dir / "leaf.cpp").write_text(
+                "// DECOMP_FUNC(0x0011b838, 24)\n"
+                'extern "C" void engine_func_0011b838(char* p) {\n'
+                "    *(int*)p = 1234;\n"
+                "}\n",
+                encoding="utf-8",
+            )
+            csv_path = root / "functions.csv"
+            csv_path.write_text(
+                "address,size,status,category,name,src_file\n"
+                "0x0011b838,24,matching,engine,engine_func_0011b838,src/engine/leaf.cpp\n",
+                encoding="utf-8",
+            )
+            with self.assertRaises(VerificationError):
+                compute_progress(csv_path, root)
+
     def test_real_repo_progress_matches_text_size(self):
         stats = compute_progress(Path("config/functions.csv"), Path("."))
         self.assertEqual(stats["total_bytes"], 0x2FE624)
@@ -135,6 +162,20 @@ class TestProgress(unittest.TestCase):
         self.assertEqual(stats["stub_bytes"], 248240)
         self.assertEqual(stats["total_explored_functions"], 422)
         self.assertEqual(stats["total_explored_bytes"], 785132)
+        self.assertEqual(stats["matching_functions"], 0)
+        self.assertEqual(stats["matching_bytes"], 0)
+        self.assertEqual(stats["verified_functions"], 338)
+        self.assertEqual(stats["verified_bytes"], 297424)
+        self.assertEqual(stats["draft_functions"], 45)
+        self.assertEqual(stats["draft_bytes"], 239468)
+        self.assertEqual(
+            stats["verified_functions"] + stats["draft_functions"] + stats["matching_functions"],
+            stats["decompiled_functions"],
+        )
+        self.assertEqual(
+            stats["verified_bytes"] + stats["draft_bytes"] + stats["matching_bytes"],
+            stats["decompiled_bytes"],
+        )
 
 
 if __name__ == "__main__":
