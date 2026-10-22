@@ -209,4 +209,14 @@ u32 func_003e89c8();
 u32 func_003e89d0();
 u32 func_003ead60();
 u32 func_003ead68();
+
+u64 func_001c34e0(u8* p);
+u64 func_00211edc(u8* p);
+void engine_func_0023a350();
+void func_0036a29c();
+void func_0037d90c(u8* p, u8 v);
+void func_0037d914(u8* p, u8 v);
+void func_0037dad0(u8* p, u8 v);
+void func_00381464();
+s32 func_003ad7fc(u8* p);
 }

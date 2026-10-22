@@ -939,4 +939,49 @@ u32 func_003ead68() {
     return 1;
 }
 
+// DECOMP_FUNC(0x001c34e0, 8)
+u64 func_001c34e0(u8* p) {
+    return *reinterpret_cast<u64*>(p + 0x10);
+}
+
+// DECOMP_FUNC(0x00211edc, 8)
+u64 func_00211edc(u8* p) {
+    return *reinterpret_cast<u64*>(p + 0x18);
+}
+
+// DECOMP_FUNC(0x0023a350, 8)
+void engine_func_0023a350() {
+    asm volatile("mov r0, r0");
+}
+
+// DECOMP_FUNC(0x0036a29c, 8)
+void func_0036a29c() {
+    asm volatile("mov r0, r0");
+}
+
+// DECOMP_FUNC(0x0037d90c, 8)
+void func_0037d90c(u8* p, u8 v) {
+    *reinterpret_cast<u8*>(p + 0x4d) = v;
+}
+
+// DECOMP_FUNC(0x0037d914, 8)
+void func_0037d914(u8* p, u8 v) {
+    *reinterpret_cast<u8*>(p + 0x88) = v;
+}
+
+// DECOMP_FUNC(0x0037dad0, 8)
+void func_0037dad0(u8* p, u8 v) {
+    *reinterpret_cast<u8*>(p + 0x85) = v;
+}
+
+// DECOMP_FUNC(0x00381464, 8)
+void func_00381464() {
+    asm volatile("mov r0, r0");
+}
+
+// DECOMP_FUNC(0x003ad7fc, 8)
+s32 func_003ad7fc(u8* p) {
+    return *reinterpret_cast<s8*>(p + 0x10);
+}
+
 }
