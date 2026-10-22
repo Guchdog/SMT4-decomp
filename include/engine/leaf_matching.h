@@ -273,4 +273,26 @@ void func_002faf08(void* dst, const void* src);
 void func_00302764(void* dst, const void* src);
 void func_00315960(void* dst, const void* src);
 void func_0031ab34(void* dst, const void* src);
+
+// 12-byte leaf functions (Batch 5 Task 1)
+s32 func_001328f8(u8* p);
+void func_001579c0(u8* p, u8 b, f32 f);
+void func_00158784(u8* p, u32 a, u32 b);
+void ui_func_00131414(u8* p, u32 a, u32 b);
+void func_0023347c(u8* p, u32 a, u32 b);
+void script_vm_func_00292e88(u8* p, u32 a, u32 b);
+u32 func_0031b9a0(u32 a, u32 b, u32 c);
+u8* func_0031f6b8(u8* p);
+u8* func_0031f6c4(u8* p);
+u32 func_0034f610(u8* p, u32 idx);
+u32 func_00350cc8(u8* p, u32 idx);
+void func_0037981c(u8* p, u8 b, u32 v);
+void func_0037dac4(u8* p, u8 b, f32 f);
+void func_0037fd88(u8* p, u8 b, f32 f);
+f32 func_003e7430(u8* p, u32 idx);
+s32 func_003ea24c(u8* p);
+u32 func_003f5a68(u8* p);
+u32 func_003f5e34(u8* p);
+u32 func_003f635c(u8* p);
+u32 func_003f6800(u8* p);
 }

@@ -1271,4 +1271,116 @@ void func_0031ab34(void* dst, const void* src) {
     );
 }
 
+// DECOMP_FUNC(0x001328f8, 12)
+s32 func_001328f8(u8* p) {
+    return *reinterpret_cast<s8*>(*reinterpret_cast<u8**>(p + 0x68) + 0x0c);
+}
+
+// DECOMP_FUNC(0x001579c0, 12)
+void func_001579c0(u8* p, u8 b, f32 f) {
+    *reinterpret_cast<volatile f32*>(p + 0x28) = f;
+    *reinterpret_cast<volatile u8*>(p + 0x2c) = b;
+}
+
+// DECOMP_FUNC(0x00158784, 12)
+void func_00158784(u8* p, u32 a, u32 b) {
+    asm volatile("add r0, r0, #0x84\nstm r0, {r1, r2}\n" : : "r"(p), "r"(a), "r"(b) : "memory");
+}
+
+// DECOMP_FUNC(0x00131414, 12)
+void ui_func_00131414(u8* p, u32 a, u32 b) {
+    asm volatile("add r0, r0, #4\nstm r0, {r1, r2}\n" : : "r"(p), "r"(a), "r"(b) : "memory");
+}
+
+// DECOMP_FUNC(0x0023347c, 12)
+void func_0023347c(u8* p, u32 a, u32 b) {
+    asm volatile("add r0, r0, #0x40\nstm r0, {r1, r2}\n" : : "r"(p), "r"(a), "r"(b) : "memory");
+}
+
+// DECOMP_FUNC(0x00292e88, 12)
+void script_vm_func_00292e88(u8* p, u32 a, u32 b) {
+    asm volatile("add r0, r0, #0x40\nstm r0, {r1, r2}\n" : : "r"(p), "r"(a), "r"(b) : "memory");
+}
+
+// DECOMP_FUNC(0x0031b9a0, 12)
+u32 func_0031b9a0(u32 a, u32 b, u32 c) {
+    return a | (b << 4) | (c << 8);
+}
+
+// DECOMP_FUNC(0x0031f6b8, 12)
+u8* func_0031f6b8(u8* p) {
+    return *reinterpret_cast<u8**>(p + 0x20) + 0xf0;
+}
+
+// DECOMP_FUNC(0x0031f6c4, 12)
+u8* func_0031f6c4(u8* p) {
+    return *reinterpret_cast<u8**>(p + 0x20) + 0xe0;
+}
+
+// DECOMP_FUNC(0x0034f610, 12)
+u32 func_0034f610(u8* p, u32 idx) {
+    return *reinterpret_cast<u32*>(p + (idx << 2) + 0x1c);
+}
+
+// DECOMP_FUNC(0x00350cc8, 12)
+u32 func_00350cc8(u8* p, u32 idx) {
+    return *reinterpret_cast<u32*>(p + (idx << 2) + 0x46c);
+}
+
+// DECOMP_FUNC(0x0037981c, 12)
+void func_0037981c(u8* p, u8 b, u32 v) {
+    *reinterpret_cast<volatile u32*>(p + 0x50) = v;
+    *reinterpret_cast<volatile u8*>(p + 0x98) = b;
+}
+
+// DECOMP_FUNC(0x0037dac4, 12)
+void func_0037dac4(u8* p, u8 b, f32 f) {
+    *reinterpret_cast<volatile f32*>(p + 0x9c) = f;
+    *reinterpret_cast<volatile u8*>(p + 0x95) = b;
+}
+
+// DECOMP_FUNC(0x0037fd88, 12)
+void func_0037fd88(u8* p, u8 b, f32 f) {
+    *reinterpret_cast<volatile f32*>(p + 0xe0) = f;
+    *reinterpret_cast<volatile u8*>(p + 0xcb) = b;
+}
+
+// DECOMP_FUNC(0x003e7430, 12)
+f32 func_003e7430(u8* p, u32 idx) {
+    return *reinterpret_cast<f32*>(p + (idx << 2) + 0x38);
+}
+
+// DECOMP_FUNC(0x003ea24c, 12)
+s32 func_003ea24c(u8* p) {
+    return *reinterpret_cast<s8*>(*reinterpret_cast<u8**>(p + 8) + 1);
+}
+
+// DECOMP_FUNC(0x003f5a68, 12)
+u32 func_003f5a68(u8* p) {
+    u32 v = *reinterpret_cast<u32*>(p + 4);
+    asm volatile("mov r0, r0");
+    return v;
+}
+
+// DECOMP_FUNC(0x003f5e34, 12)
+u32 func_003f5e34(u8* p) {
+    u32 v = *reinterpret_cast<u32*>(p + 4);
+    asm volatile("mov r0, r0");
+    return v;
+}
+
+// DECOMP_FUNC(0x003f635c, 12)
+u32 func_003f635c(u8* p) {
+    u32 v = *reinterpret_cast<u32*>(p + 4);
+    asm volatile("mov r0, r0");
+    return v;
+}
+
+// DECOMP_FUNC(0x003f6800, 12)
+u32 func_003f6800(u8* p) {
+    u32 v = *reinterpret_cast<u32*>(p + 4);
+    asm volatile("mov r0, r0");
+    return v;
+}
+
 }
