@@ -75,6 +75,31 @@ def is_leaf_instruction(
     return True
 
 
+def is_terminal_return(insn: capstone.CsInsn) -> bool:
+    """Return whether *insn* is an unconditional ARM/Thumb function return.
+
+    A leaf candidate still needs an explicit way to return to its caller.  Merely
+    disassembling a range without calls is not sufficient: alignment words and
+    fragments such as ``mov r0, r0`` otherwise look like one-instruction leaf
+    functions.  Keep this deliberately conservative; unusual exception returns
+    can be investigated manually instead of being ranked as easy candidates.
+    """
+    mnemonic = insn.mnemonic.lower()
+    operands = insn.op_str.replace(" ", "").lower()
+
+    if mnemonic == "bx" and operands == "lr":
+        return True
+    if mnemonic == "mov" and operands == "pc,lr":
+        return True
+    if mnemonic == "pop" and "pc" in operands:
+        return True
+    if mnemonic.startswith("ldm") and mnemonic in {"ldm", "ldmia", "ldmfd"}:
+        return operands.startswith("sp!,") and "pc" in operands
+    if mnemonic == "ldr" and operands.startswith("pc,[sp]"):
+        return True
+    return False
+
+
 def find_leaf_candidates(
     functions_csv: Path = Path("config/functions.csv"),
     code_bytes: bytes = b"",
@@ -91,6 +116,7 @@ def find_leaf_candidates(
         category: str
         name: str
         instruction_count: int
+        terminal_instruction: str
     sorted by size ascending, then instruction_count, then address.
     """
     functions_csv = Path(functions_csv)
@@ -134,14 +160,30 @@ def find_leaf_candidates(
             if sum(i.size for i in insns) != size:
                 continue
 
-            # Check that every instruction satisfies leaf criteria
-            if all(is_leaf_instruction(insn, addr, size, allow_internal_branch=allow_internal_branch) for insn in insns):
+            # Check that every instruction satisfies leaf criteria and that the
+            # supplied range actually ends in an explicit, unconditional return.
+            # This filters padding and fall-through fragments from the shortlist.
+            if (
+                all(
+                    is_leaf_instruction(
+                        insn,
+                        addr,
+                        size,
+                        allow_internal_branch=allow_internal_branch,
+                    )
+                    for insn in insns
+                )
+                and is_terminal_return(insns[-1])
+            ):
                 candidates.append({
                     "address": addr_str,
                     "size": size,
                     "category": row_cat,
                     "name": row["name"].strip(),
                     "instruction_count": len(insns),
+                    "terminal_instruction": (
+                        f"{insns[-1].mnemonic} {insns[-1].op_str}".strip()
+                    ),
                 })
 
     candidates.sort(key=lambda c: (c["size"], c["instruction_count"], int(c["address"], 16)))
@@ -178,10 +220,14 @@ def main() -> None:
     )
 
     print(f"Found {len(candidates)} leaf candidates (max size: {args.max_size} B, category: {args.category or 'any'}):")
-    print(f"{'#':<4} | {'Address':<10} | {'Size':>5} | {'Insns':>5} | {'Category':<10} | {'Name'}")
-    print("-" * 65)
+    print(f"{'#':<4} | {'Address':<10} | {'Size':>5} | {'Insns':>5} | {'Return':<16} | {'Category':<10} | {'Name'}")
+    print("-" * 84)
     for idx, c in enumerate(candidates, 1):
-        print(f"{idx:<4} | {c['address']:<10} | {c['size']:>3} B | {c['instruction_count']:>5} | {c['category']:<10} | {c['name']}")
+        print(
+            f"{idx:<4} | {c['address']:<10} | {c['size']:>3} B | "
+            f"{c['instruction_count']:>5} | {c['terminal_instruction']:<16} | "
+            f"{c['category']:<10} | {c['name']}"
+        )
 
 
 if __name__ == "__main__":
