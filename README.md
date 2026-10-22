@@ -8,11 +8,11 @@ Decompilation and reverse-engineering project for **Shin Megami Tensei IV** (Nin
 
 ## Live Decompilation Progress
 
-- **Matching (Byte-for-Byte):** `3,572 / 3,139,108 bytes` (**0.1138%**) across `361` functions (100% verified 3DS ARMv6K machine code match)
+- **Matching (Byte-for-Byte):** `4,528 / 3,139,108 bytes` (**0.1442%**) across `411` functions (100% verified 3DS ARMv6K machine code match)
 - **Compiled Coverage (≥15% size):** `297,424 / 3,139,108 bytes` (**9.4748%**) across `338` functions (ARMv6K compilation and size threshold only; logic unverified)
 - **Draft Logic (<15% size):** `239,468 / 3,139,108 bytes` (**7.6285%**) across `45` functions (early-stage draft reconstructions)
 - **Scaffolded Architecture (Stubs & Interfaces):** `248,240 / 3,139,108 bytes` (**7.9080%**) across `39` functions (headers, structs, function skeletons)
-- **Total Codebase Explored:** `788,704 / 3,139,108 bytes` (**25.1251%**) across `783` functions (all explored code mapped into `src/`)
+- **Total Codebase Explored:** `789,660 / 3,139,108 bytes` (**25.1556%**) across `833` functions (all explored code mapped into `src/`)
 - See [`PROGRESS.md`](PROGRESS.md) for the full subsystem breakdown (`ui`, `camp`, `battle`, `script_vm`, `shop`, `unite`, `engine`, `nn_sdk`, `crt`) and explored function ledger. Coverage totals use original function sizes and do not measure behavioral equivalence.
 
 ---
