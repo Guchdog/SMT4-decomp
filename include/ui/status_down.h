@@ -1,6 +1,7 @@
 #pragma once
 #include <cstddef>
 #include "types.h"
+#include "engine/asd_symbols.h"
 
 namespace smt4::ui {
 

@@ -52,6 +52,9 @@ extern "C" {
     // the battle title/enemy-draw paths reach the same routines.
     void* UiGpu_SetViewportParams(s32 a0, s32 a1);
     void* UiGpu_SetRenderMode(s32 a0, s32 a1, s32 a2);
+    void  UiGpu_BeginPass(void* gpu_state);
+    void  UiSprite_DrawPanelDirect(s32 type, s32 id, s32 sub_id, s32 x, s32 y, s32 flag);
+    extern u8* g_AsdGpuState;
 
     // 0x002BF6D0: 2D layout node lookup.  Returns a 16-byte node whose x/y
     // live at +0x08/+0x0A and whose payload pointer is at +0x0C.  The shape
@@ -102,6 +105,10 @@ extern "C" {
     void* AsdTask_CreateDraw(const char* name, u32 prio, u32 a2, u32 a3,
                              void (*calc_cb)(void*), u32 a5, u32 a6,
                              void* parent);
+
+    // 0x002C4B84 (384 B) / 0x002C4B30 (84 B): AsdMemory heap allocation and zero-fill.
+    void* AsdMem_Alloc(u32 a0, u32 a1, u32 a2, u32 size, u32 flag);
+    void  AsdMem_Zero(void* ptr, u32 size);
 
     // 0x002C3AA8 (56 B) / 0x002C3A24 (32 B): AsdMemory heap lock
     // acquisition/release.  AsdFile and AsdSound both reach these routines;
@@ -198,4 +205,42 @@ static inline void* AsdUi_CreateLabel(const char* name, u32 id, u32 a1, u32 a2,
         reinterpret_cast<void (*)(void*)>(static_cast<std::uintptr_t>(p0)),
         p1, static_cast<u32>(reinterpret_cast<std::uintptr_t>(p2)),
         reinterpret_cast<void*>(static_cast<std::uintptr_t>(p3)));
+}
+
+static inline void* AsdMem_Alloc(u32 size, u32 flag = 0x100)
+{
+    return AsdMem_Alloc(0x100, 0x100, 0, size, flag);
+}
+
+template <typename T>
+static inline void* AsdTask_CreateCalc(const char* name, u32 prio, u32 a2, u32 a3,
+                                       void (*cb)(void*), T* a5, u32 a6)
+{
+    return AsdTask_CreateCalc(name, prio, a2, a3, cb,
+                              static_cast<u32>(reinterpret_cast<std::uintptr_t>(a5)), a6);
+}
+
+template <typename T>
+static inline void* AsdTask_CreateDraw(const char* name, u32 prio, u32 a2, u32 a3,
+                                       void (*cb)(void*), T* a5, u32 a6)
+{
+    return AsdTask_CreateDraw(name, prio, a2, a3, cb,
+                              static_cast<u32>(reinterpret_cast<std::uintptr_t>(a5)), a6, nullptr);
+}
+
+static inline void* AsdTask_CreateDraw(const char* name, u32 prio, u32 a2, u32 a3,
+                                       void (*cb)(void*), u32 a5, u32 a6)
+{
+    return AsdTask_CreateDraw(name, prio, a2, a3, cb, a5, a6, nullptr);
+}
+
+namespace smt4::ui {
+    using ::AsdMem_Alloc;
+    using ::AsdMem_Zero;
+    using ::AsdTask_CreateCalc;
+    using ::AsdTask_CreateDraw;
+    using ::UiGpu_BeginPass;
+    using ::UiGpu_SetViewportParams;
+    using ::UiSprite_DrawPanelDirect;
+    using ::g_AsdGpuState;
 }

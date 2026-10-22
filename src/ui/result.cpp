@@ -1,5 +1,6 @@
 #include "ui/result.h"
 #include "ui/status_down.h"
+#include "engine/asd_symbols.h"
 
 namespace smt4::ui {
 

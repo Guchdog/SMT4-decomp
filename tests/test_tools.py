@@ -33,6 +33,20 @@ class TestDecompTools(unittest.TestCase):
         self.assertIn(".thumb", asm_text)
         self.assertIn("push", asm_text)
 
+    def test_disassemble_thumb_trailing_halfwords(self):
+        code_bytes = Path("extracted/exefs/code.bin").read_bytes()
+        asm_238 = disassemble_function(
+            code_bytes, 0x00100238, 20, {}, {0x00100238: "thumb_func_00100238"}, thumb=True
+        )
+        self.assertIn(".thumb", asm_238)
+        self.assertIn("0x00100238:", asm_238)
+
+        asm_b44 = disassemble_function(
+            code_bytes, 0x00100b44, 32, {}, {0x00100b44: "thumb_func_00100b44"}, thumb=True
+        )
+        self.assertIn(".thumb", asm_b44)
+        self.assertIn("0x00100b44:", asm_b44)
+
 
 if __name__ == "__main__":
     unittest.main()

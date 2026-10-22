@@ -1,0 +1,58 @@
+#pragma once
+#include <cstddef>
+
+namespace std {
+
+template <typename T>
+constexpr const T& min(const T& a, const T& b) {
+    return (b < a) ? b : a;
+}
+
+template <typename T, typename Compare>
+constexpr const T& min(const T& a, const T& b, Compare comp) {
+    return comp(b, a) ? b : a;
+}
+
+template <typename T>
+constexpr const T& max(const T& a, const T& b) {
+    return (a < b) ? b : a;
+}
+
+template <typename T, typename Compare>
+constexpr const T& max(const T& a, const T& b, Compare comp) {
+    return comp(a, b) ? b : a;
+}
+
+template <typename T>
+constexpr const T& clamp(const T& v, const T& lo, const T& hi) {
+    return (v < lo) ? lo : (hi < v) ? hi : v;
+}
+
+template <typename T, typename Compare>
+constexpr const T& clamp(const T& v, const T& lo, const T& hi, Compare comp) {
+    return comp(v, lo) ? lo : comp(hi, v) ? hi : v;
+}
+
+template <typename T>
+constexpr void swap(T& a, T& b) {
+    T tmp = static_cast<T&&>(a);
+    a = static_cast<T&&>(b);
+    b = static_cast<T&&>(tmp);
+}
+
+template <typename ForwardIt, typename T>
+constexpr void fill(ForwardIt first, ForwardIt last, const T& value) {
+    for (; first != last; ++first) {
+        *first = value;
+    }
+}
+
+template <typename InputIt, typename OutputIt>
+constexpr OutputIt copy(InputIt first, InputIt last, OutputIt d_first) {
+    for (; first != last; ++first, ++d_first) {
+        *d_first = *first;
+    }
+    return d_first;
+}
+
+} // namespace std

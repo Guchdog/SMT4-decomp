@@ -1,0 +1,54 @@
+#pragma once
+#include "math.h"
+
+namespace std {
+    using ::sinf;
+    using ::cosf;
+    using ::tanf;
+    using ::asinf;
+    using ::acosf;
+    using ::atan2f;
+    using ::sqrtf;
+    using ::fabsf;
+    using ::floorf;
+    using ::ceilf;
+    using ::fmodf;
+    using ::powf;
+    using ::fmaxf;
+    using ::fminf;
+
+    using ::sin;
+    using ::cos;
+    using ::sqrt;
+    using ::fabs;
+    using ::floor;
+    using ::ceil;
+    using ::fmax;
+    using ::fmin;
+    using ::fmod;
+    using ::pow;
+
+    inline float abs(float x) { return ::fabsf(x); }
+    inline double abs(double x) { return ::fabs(x); }
+    inline int abs(int x) { return x < 0 ? -x : x; }
+    inline long abs(long x) { return x < 0 ? -x : x; }
+    inline long long abs(long long x) { return x < 0 ? -x : x; }
+
+    inline float fabs(float x) { return ::fabsf(x); }
+    inline float sqrt(float x) { return ::sqrtf(x); }
+    inline float sin(float x) { return ::sinf(x); }
+    inline float cos(float x) { return ::cosf(x); }
+    inline float tan(float x) { return ::tanf(x); }
+    inline float atan2(float y, float x) { return ::atan2f(y, x); }
+    inline float floor(float x) { return ::floorf(x); }
+    inline float ceil(float x) { return ::ceilf(x); }
+    inline float fmod(float x, float y) { return ::fmodf(x, y); }
+    inline float pow(float b, float e) { return ::powf(b, e); }
+    inline float fmax(float x, float y) { return ::fmaxf(x, y); }
+    inline float fmin(float x, float y) { return ::fminf(x, y); }
+
+    inline bool isnan(float x) { return __builtin_isnan(x); }
+    inline bool isnan(double x) { return __builtin_isnan(x); }
+    inline bool isinf(float x) { return __builtin_isinf(x); }
+    inline bool isinf(double x) { return __builtin_isinf(x); }
+}

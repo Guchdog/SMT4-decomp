@@ -17,7 +17,7 @@ struct StatusWork {
     void* draw_up_left;                 // +0x000C: "Status DrawUpLeft" (0x001a310c, prio 0x7D)
     void* draw_up_right;                // +0x0010: "Status DrawUpRight" (0x001a310c, prio 0xDB)
     u32 field_14;                       // +0x0014
-    u8 raw_panels[0x1200 - 0x18];       // +0x0018..+0x1200: UI animation sprites & panel nodes
+    u8 raw_panels[0x12EC - 0x18];       // +0x0018..+0x12EC: UI animation sprites & panel nodes
     s8 sub_state_ec;                    // +0x12EC: Sub-state query (0x0029b0e0)
     u8 pad_12ed[0x12FC - 0x12ED];       // +0x12ED..+0x12FC
     u16 field_12fc;                     // +0x12FC

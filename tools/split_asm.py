@@ -163,9 +163,18 @@ def disassemble_function(
             pos = (insn.address - addr) + insn.size
 
         if not disassembled_any:
-            w = struct.unpack_from("<I", chunk, pos)[0]
-            lines.append(f"0x{cur_addr:08x}:  .word 0x{w:08x}")
-            pos += 4
+            if pos + 4 <= size:
+                w = struct.unpack_from("<I", chunk, pos)[0]
+                lines.append(f"0x{cur_addr:08x}:  .word 0x{w:08x}")
+                pos += 4
+            elif pos + 2 <= size:
+                h = struct.unpack_from("<H", chunk, pos)[0]
+                lines.append(f"0x{cur_addr:08x}:  .short 0x{h:04x}")
+                pos += 2
+            else:
+                b = struct.unpack_from("<B", chunk, pos)[0]
+                lines.append(f"0x{cur_addr:08x}:  .byte 0x{b:02x}")
+                pos += 1
 
     return "\n".join(lines) + "\n"
 
