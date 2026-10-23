@@ -7,7 +7,8 @@ extern "C" {
 extern GlobalTbbSlot g_GlobalTbbSlots[kMaxGlobalTbbSlots]; // 0x0049382C
 
 // Engine memory and task creation functions (AsdSDK)
-void* engine_func_002c4b84(u32 align, u32 heap_id, u32 size, u32 flags);
+void* engine_func_002c4b84(
+    u32 align, u32 heap_id, u32 zero_flag, u32 size, u32 flags);
 void engine_func_002c4b30(void* ptr, u32 size);
 void* engine_func_002c5978(
     const char* name,
@@ -34,13 +35,14 @@ const Tbl1Header* Tbb_GetSubTable(const TbcrHeader* container, u32 table_index) 
     }
 
     const u32 rel_offset = container->table_offsets[table_index] + container->header_size;
-    if (rel_offset == 0) {
+    // The original adds this relative offset to the base address, then rejects
+    // a null result (including 32-bit address wraparound), not a zero offset.
+    const u32 sub_tbl_addr = reinterpret_cast<u32>(container) + rel_offset;
+    if (sub_tbl_addr == 0) {
         return nullptr;
     }
 
-    const auto* sub_tbl = reinterpret_cast<const Tbl1Header*>(
-        reinterpret_cast<const u8*>(container) + rel_offset
-    );
+    const auto* sub_tbl = reinterpret_cast<const Tbl1Header*>(sub_tbl_addr);
     if (sub_tbl->magic != kTbl1Magic) {
         return nullptr;
     }
@@ -85,7 +87,7 @@ void IfTouch_Init() {
         IfTouchWork* work = g_IfTouchGlobal.work_ptr;
         if (work == nullptr) {
             work = static_cast<IfTouchWork*>(
-                engine_func_002c4b84(0x100, 0, sizeof(IfTouchWork), 1)
+                engine_func_002c4b84(0x100, 0x100, 0, sizeof(IfTouchWork), 1)
             );
             g_IfTouchGlobal.work_ptr = work;
         }
