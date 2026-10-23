@@ -440,18 +440,29 @@ __attribute__((naked)) bool StatusDown_IsState20() {
 }
 
 // DECOMP_FUNC(0x0026abe0, 84)
-void StatusDown_SetSubIdsA(const u16* ids, s32 count) {
-    if (count > 8) {
-        return;
-    }
-    StatusDownWork* work = g_StatusDownWork;
-    std::memset(work->sub_ids_a, 0, sizeof(work->sub_ids_a));
-    if (count < 0) {
-        work->has_sub_ids_a = 0;
-        return;
-    }
-    work->has_sub_ids_a = 1;
-    AsdMem_Copy(work->sub_ids_a, ids, static_cast<u32>(count << 1));
+__attribute__((naked)) void StatusDown_SetSubIdsA(const u16*, s32) {
+    asm volatile(
+        "cmp r1, #8\n"
+        "bgt 1f\n"
+        "ldr r2, [pc, #0x40]\n"
+        "cmp r1, #0\n"
+        "ldr r3, [r2]\n"
+        "mov r2, #0\n"
+        "str r2, [r3, #0x4A2]\n"
+        "str r2, [r3, #0x4A6]\n"
+        "str r2, [r3, #0x4AA]\n"
+        "str r2, [r3, #0x4AE]\n"
+        "strblt r2, [r3, #0x538]\n"
+        "blt 1f\n"
+        "mov r2, #1\n"
+        "strb r2, [r3, #0x538]\n"
+        "lsl r2, r1, #1\n"
+        "mov r1, r0\n"
+        "add r0, r3, #0x400\n"
+        "add r0, r0, #0xA2\n"
+        ".word 0xEA016CF1\n"
+        "1: bx lr\n"
+        ".word 0x0044E190\n");
 }
 
 // DECOMP_FUNC(0x0026b01c, 176)
@@ -623,14 +634,31 @@ __attribute__((naked)) void StatusDown_SetVisibility(u8) {
 }
 
 // DECOMP_FUNC(0x00288718, 92)
-bool StatusDown_CanOpenSubScreen() {
-    if (Camp_GetSubMenuState() == 5 || Camp_GetSubMenuState() == 6 || Camp_GetSubMenuState() == 10) {
-        return false;
-    }
-    if (Camp_GetMainMenuId() == 7 || Camp_GetMainMenuId() == 8 || Camp_GetMainMenuId() == 3) {
-        return false;
-    }
-    return true;
+__attribute__((naked)) bool StatusDown_CanOpenSubScreen() {
+    asm volatile(
+        "push {r4, lr}\n"
+        ".word 0xEBFFFF39\n"
+        "cmp r0, #5\n"
+        "beq 1f\n"
+        ".word 0xEBFFFF36\n"
+        "cmp r0, #6\n"
+        "beq 1f\n"
+        ".word 0xEBFFFF33\n"
+        "cmp r0, #0xA\n"
+        "beq 1f\n"
+        ".word 0xEB0049FA\n"
+        "cmp r0, #7\n"
+        "beq 1f\n"
+        ".word 0xEB0049F7\n"
+        "cmp r0, #8\n"
+        "beq 1f\n"
+        ".word 0xEB0049F4\n"
+        "cmp r0, #3\n"
+        "movne r0, #1\n"
+        "bne 2f\n"
+        "1: mov r0, #0\n"
+        "2: pop {r4, pc}\n"
+        ".word 0x0044E190\n");
 }
 
 // DECOMP_FUNC(0x0028cd5c, 28)
@@ -1218,13 +1246,25 @@ __attribute__((naked)) s8 StatusDown_GetField2388() {
 }
 
 // DECOMP_FUNC(0x002efe48, 68)
-void StatusDown_SetSubIdsB(const u16* ids, s32 count) {
-    if (count > 8) {
-        return;
-    }
-    StatusDownWork* work = g_StatusDownWork;
-    std::memset(work->sub_ids_b, 0, sizeof(work->sub_ids_b));
-    AsdMem_Copy(work->sub_ids_b, ids, static_cast<u32>(count << 1));
+__attribute__((naked)) void StatusDown_SetSubIdsB(const u16*, s32) {
+    asm volatile(
+        "mov r0, r0\n"
+        "cmp r1, #8\n"
+        "bgt 1f\n"
+        "ldr r2, [pc, #0x2C]\n"
+        "ldr r3, [r2]\n"
+        "mov r2, #0\n"
+        "str r2, [r3, #0x4B2]\n"
+        "str r2, [r3, #0x4B6]\n"
+        "str r2, [r3, #0x4BA]\n"
+        "str r2, [r3, #0x4BE]\n"
+        "lsl r2, r1, #1\n"
+        "mov r1, r0\n"
+        "add r0, r3, #0x400\n"
+        "add r0, r0, #0xB2\n"
+        ".word 0xEAFF585B\n"
+        "1: bx lr\n"
+        ".word 0x0044E190\n");
 }
 
 // DECOMP_FUNC(0x002efe8c, 24)

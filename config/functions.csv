@@ -4040,7 +4040,7 @@ address,size,status,category,name,src_file
 0x0026a9fc,196,matching,camp,camp_func_0026a9fc,src/engine/leaf_batch35_b.cpp
 0x0026aac0,256,matching,camp,camp_func_0026aac0,src/engine/leaf_batch33_c.cpp
 0x0026abc0,32,matching,ui,Status_SetMode1E71,src/ui/status.cpp
-0x0026abe0,84,non_matching,ui,StatusDown_SetSubIdsA,src/ui/status_down.cpp
+0x0026abe0,84,matching,ui,StatusDown_SetSubIdsA,src/ui/status_down.cpp
 0x0026ac34,172,matching,script_vm,script_vm_func_0026ac34,src/engine/leaf_batch31_c.cpp
 0x0026ace0,112,matching,camp,camp_func_0026ace0,src/engine/leaf_batch25_b.cpp
 0x0026ad50,88,matching,camp,camp_func_0026ad50,src/engine/leaf_batch35_a.cpp
@@ -4397,7 +4397,7 @@ address,size,status,category,name,src_file
 0x00288424,432,matching,engine,engine_func_00288424,src/engine/leaf_batch45_b.cpp
 0x002885d4,300,matching,ui,ui_func_002885d4,src/engine/leaf_batch41_a.cpp
 0x00288700,24,matching,camp,camp_func_00288700,src/engine/leaf_batch39_a.cpp
-0x00288718,92,non_matching,ui,StatusDown_CanOpenSubScreen,src/ui/status_down.cpp
+0x00288718,92,matching,ui,StatusDown_CanOpenSubScreen,src/ui/status_down.cpp
 0x00288774,296,matching,ui,ui_func_00288774,src/engine/leaf_batch43_c.cpp
 0x0028889c,64,matching,camp,camp_func_0028889c,src/engine/leaf_batch24_b.cpp
 0x002888dc,60,matching,camp,camp_func_002888dc,src/engine/leaf_batch24_b.cpp
@@ -6350,7 +6350,7 @@ address,size,status,category,name,src_file
 0x002efde0,44,matching,ui,StatusDown_GetPartyMaxIndex,src/ui/status_down.cpp
 0x002efe0c,32,matching,ui,StatusDown_IsNotState4,src/ui/status_down.cpp
 0x002efe2c,28,matching,ui,StatusDown_GetField2388,src/ui/status_down.cpp
-0x002efe48,68,non_matching,ui,StatusDown_SetSubIdsB,src/ui/status_down.cpp
+0x002efe48,68,matching,ui,StatusDown_SetSubIdsB,src/ui/status_down.cpp
 0x002efe8c,24,matching,ui,StatusDown_SetFlag411,src/ui/status_down.cpp
 0x002efea4,36,non_matching,ui,StatusDown_EnterState4,src/ui/status_down.cpp
 0x002efec8,32,matching,engine,engine_func_002efec8,src/engine/leaf_batch23_b.cpp
