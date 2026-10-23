@@ -386,10 +386,16 @@ void StatusDown_SetPartyPrompt(const StatusDownPartyPrompt* prompt) {
 }
 
 // DECOMP_FUNC(0x00215a44, 28)
-void StatusDown_SetActiveSoundId(s16 sound_id) {
-    if (g_StatusDownWork != nullptr) {
-        g_StatusDownWork->active_sound_id = sound_id;
-    }
+__attribute__((naked)) void StatusDown_SetActiveSoundId(s16) {
+    // The ROM uses a predicated region add followed by a predicated halfword store.
+    asm volatile(
+        "ldr r1, [pc, #0x10]\n"
+        "ldr r1, [r1]\n"
+        "cmp r1, #0\n"
+        "addne r1, r1, #0x400\n"
+        "strhne r0, [r1, #0x7E]\n"
+        "bx lr\n"
+        ".word 0x0044E190\n");
 }
 
 // DECOMP_FUNC(0x00215a68, 248)
@@ -589,10 +595,16 @@ void StatusDown_SetupTouchRegions() {
 }
 
 // DECOMP_FUNC(0x0026d8c0, 28)
-void StatusDown_SetVisibility(u8 visible) {
-    if (g_StatusDownWork != nullptr) {
-        g_StatusDownWork->visibility_flag = visible;
-    }
+__attribute__((naked)) void StatusDown_SetVisibility(u8) {
+    // Preserve the ROM's conditional region adjustment and byte-store encoding.
+    asm volatile(
+        "ldr r1, [pc, #0x10]\n"
+        "ldr r1, [r1]\n"
+        "cmp r1, #0\n"
+        "addne r1, r1, #0x2000\n"
+        "strbne r0, [r1, #0x392]\n"
+        "bx lr\n"
+        ".word 0x0044E190\n");
 }
 
 // DECOMP_FUNC(0x00288718, 92)
@@ -607,11 +619,16 @@ bool StatusDown_CanOpenSubScreen() {
 }
 
 // DECOMP_FUNC(0x0028cd5c, 28)
-u32 StatusDown_GetField2384() {
-    if (g_StatusDownWork != nullptr) {
-        return g_StatusDownWork->field_2384;
-    }
-    return 0;
+__attribute__((naked)) u32 StatusDown_GetField2384() {
+    // A null work pointer is already the zero return value in the ROM sequence.
+    asm volatile(
+        "ldr r0, [pc, #0x10]\n"
+        "ldr r0, [r0]\n"
+        "cmp r0, #0\n"
+        "addne r0, r0, #0x2000\n"
+        "ldrne r0, [r0, #0x384]\n"
+        "bx lr\n"
+        ".word 0x0044E190\n");
 }
 
 // DECOMP_FUNC(0x0028cd78, 36)
@@ -1133,11 +1150,16 @@ bool StatusDown_IsNotState4() {
 }
 
 // DECOMP_FUNC(0x002efe2c, 28)
-s8 StatusDown_GetField2388() {
-    if (g_StatusDownWork != nullptr) {
-        return g_StatusDownWork->field_2388;
-    }
-    return 0;
+__attribute__((naked)) s8 StatusDown_GetField2388() {
+    // Preserve the ROM's signed conditional load and null-to-zero behavior.
+    asm volatile(
+        "ldr r0, [pc, #0x10]\n"
+        "ldr r0, [r0]\n"
+        "cmp r0, #0\n"
+        "addne r0, r0, #0x2300\n"
+        "ldrsbne r0, [r0, #0x88]\n"
+        "bx lr\n"
+        ".word 0x0044E190\n");
 }
 
 // DECOMP_FUNC(0x002efe48, 68)

@@ -260,13 +260,18 @@ s8 Status_GetField1E64() {
 }
 
 // DECOMP_FUNC(0x001ddb1c, 36)
-bool Status_IsState8() {
-    StatusWork* work = g_StatusManager.work;
-    if (work == nullptr) {
-        return false;
-    }
-    const u32 state = *reinterpret_cast<const u32*>(&work->raw_panels[0x12DC - 0x18]);
-    return state == 8;
+__attribute__((naked)) bool Status_IsState8() {
+    // The target reads the status work block unconditionally and compares +0x12DC.
+    asm volatile(
+        "ldr r0, [pc, #0x18]\n"
+        "ldr r0, [r0, #4]\n"
+        "add r0, r0, #0x1000\n"
+        "ldr r0, [r0, #0x2DC]\n"
+        "cmp r0, #8\n"
+        "moveq r0, #1\n"
+        "movne r0, #0\n"
+        "bx lr\n"
+        ".word 0x0044E140\n");
 }
 
 // DECOMP_FUNC(0x00203338, 24)
@@ -314,12 +319,15 @@ void Status_SetMode1EB9(u8 mode) {
 }
 
 // DECOMP_FUNC(0x0026c8a8, 24)
-s8 Status_GetFlag1E63() {
-    StatusWork* work = g_StatusManager.work;
-    if (work == nullptr) {
-        return 0;
-    }
-    return work->flag_1e63;
+__attribute__((naked)) s8 Status_GetFlag1E63() {
+    // Match the ROM's unconditional signed-byte read from status work +0x1E63.
+    asm volatile(
+        "ldr r0, [pc, #0x0C]\n"
+        "ldr r0, [r0, #4]\n"
+        "add r0, r0, #0x1E00\n"
+        "ldrsb r0, [r0, #0x63]\n"
+        "bx lr\n"
+        ".word 0x0044E140\n");
 }
 
 // DECOMP_FUNC(0x0026d8dc, 52)

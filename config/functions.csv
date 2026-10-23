@@ -2211,7 +2211,7 @@ address,size,status,category,name,src_file
 0x001dda38,124,matching,engine,engine_func_001dda38,src/engine/leaf_batch26_a.cpp
 0x001ddab4,68,non_matching,ui,StatusDown_OpenDefaultView,src/ui/status_down.cpp
 0x001ddaf8,36,non_matching,ui,Status_GetField1E64,src/ui/status.cpp
-0x001ddb1c,36,non_matching,ui,Status_IsState8,src/ui/status.cpp
+0x001ddb1c,36,matching,ui,Status_IsState8,src/ui/status.cpp
 0x001ddb40,400,matching,script_vm,script_vm_func_001ddb40,src/engine/leaf_batch44_c.cpp
 0x001ddcd0,1384,matching,camp,camp_func_001ddcd0,src/engine/leaf_batch40_a.cpp
 0x001de238,5020,non_matching,camp,Unite_DrawAndCalc,src/camp/unite.cpp
@@ -2703,7 +2703,7 @@ address,size,status,category,name,src_file
 0x00215938,32,matching,battle,battle_func_00215938,src/engine/leaf_batch39_a.cpp
 0x00215958,56,matching,camp,camp_func_00215958,src/engine/leaf_batch32_b.cpp
 0x00215990,180,non_matching,ui,StatusDown_SetPartyPrompt,src/ui/status_down.cpp
-0x00215a44,28,non_matching,ui,StatusDown_SetActiveSoundId,src/ui/status_down.cpp
+0x00215a44,28,matching,ui,StatusDown_SetActiveSoundId,src/ui/status_down.cpp
 0x00215a60,8,matching,script_vm,script_vm_func_00215a60,src/engine/leaf_batch36_a.cpp
 0x00215a68,248,non_matching,ui,StatusDown_SetPartySlots,src/ui/status_down.cpp
 0x00215b60,64,matching,unknown,func_00215b60,src/engine/leaf_batch20_b.cpp
@@ -4066,7 +4066,7 @@ address,size,status,category,name,src_file
 0x0026c480,592,matching,script_vm,script_vm_func_0026c480,src/engine/leaf_batch42_b.cpp
 0x0026c6d0,280,matching,script_vm,script_vm_func_0026c6d0,src/engine/leaf_batch33_c.cpp
 0x0026c7e8,192,matching,camp,camp_func_0026c7e8,src/engine/leaf_batch40_b.cpp
-0x0026c8a8,24,non_matching,ui,Status_GetFlag1E63,src/ui/status.cpp
+0x0026c8a8,24,matching,ui,Status_GetFlag1E63,src/ui/status.cpp
 0x0026c8c0,188,matching,script_vm,script_vm_func_0026c8c0,src/engine/leaf_batch31_c.cpp
 0x0026c97c,108,matching,script_vm,script_vm_func_0026c97c,src/engine/leaf_batch25_b.cpp
 0x0026c9e8,36,matching,script_vm,script_vm_func_0026c9e8,src/engine/leaf_batch39_b.cpp
@@ -4082,7 +4082,7 @@ address,size,status,category,name,src_file
 0x0026d3b0,668,matching,camp,camp_func_0026d3b0,src/engine/leaf_batch33_c.cpp
 0x0026d64c,452,matching,camp,camp_func_0026d64c,src/engine/leaf_batch33_c.cpp
 0x0026d810,176,matching,camp,camp_func_0026d810,src/engine/leaf_batch38_c.cpp
-0x0026d8c0,28,non_matching,ui,StatusDown_SetVisibility,src/ui/status_down.cpp
+0x0026d8c0,28,matching,ui,StatusDown_SetVisibility,src/ui/status_down.cpp
 0x0026d8dc,52,non_matching,ui,Status_ResetAffinityView,src/ui/status.cpp
 0x0026d910,1088,matching,camp,camp_func_0026d910,src/engine/leaf_batch46_a.cpp
 0x0026dd50,24,matching,script_vm,script_vm_func_0026dd50,src/engine/leaf_batch22_b.cpp
@@ -4474,7 +4474,7 @@ address,size,status,category,name,src_file
 0x0028cbd0,224,matching,ui,ui_func_0028cbd0,src/engine/leaf_batch42_c.cpp
 0x0028ccb0,84,matching,camp,camp_func_0028ccb0,src/engine/leaf_batch29_b.cpp
 0x0028cd04,88,matching,camp,camp_func_0028cd04,src/engine/leaf_batch29_b.cpp
-0x0028cd5c,28,non_matching,ui,StatusDown_GetField2384,src/ui/status_down.cpp
+0x0028cd5c,28,matching,ui,StatusDown_GetField2384,src/ui/status_down.cpp
 0x0028cd78,36,non_matching,ui,StatusDown_IsInactiveOrState0,src/ui/status_down.cpp
 0x0028cd9c,72,matching,camp,camp_func_0028cd9c,src/engine/leaf_batch24_b.cpp
 0x0028cde4,684,matching,camp,camp_func_0028cde4,src/engine/leaf_batch46_a.cpp
@@ -6348,7 +6348,7 @@ address,size,status,category,name,src_file
 0x002efd18,200,matching,engine,engine_func_002efd18,src/engine/leaf_batch37_c.cpp
 0x002efde0,44,non_matching,ui,StatusDown_GetPartyMaxIndex,src/ui/status_down.cpp
 0x002efe0c,32,non_matching,ui,StatusDown_IsNotState4,src/ui/status_down.cpp
-0x002efe2c,28,non_matching,ui,StatusDown_GetField2388,src/ui/status_down.cpp
+0x002efe2c,28,matching,ui,StatusDown_GetField2388,src/ui/status_down.cpp
 0x002efe48,68,non_matching,ui,StatusDown_SetSubIdsB,src/ui/status_down.cpp
 0x002efe8c,24,matching,ui,StatusDown_SetFlag411,src/ui/status_down.cpp
 0x002efea4,36,non_matching,ui,StatusDown_EnterState4,src/ui/status_down.cpp
