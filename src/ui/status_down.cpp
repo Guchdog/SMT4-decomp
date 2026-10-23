@@ -689,7 +689,9 @@ bool StatusDown_IsNotTransitioning() {
 
 // DECOMP_FUNC(0x00293d50, 20)
 u8 StatusDown_GetActiveMode() {
-    return g_StatusDownWork->active_mode;
+    // This fixed-ROM global is a pointer slot at 0x0044E190.
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    return work->active_mode;
 }
 
 // DECOMP_FUNC(0x00293e30, 28)
@@ -702,7 +704,9 @@ s8 StatusDown_GetStatusMode() {
 
 // DECOMP_FUNC(0x002956ac, 20)
 u32 StatusDown_GetField53C() {
-    return g_StatusDownWork->field_53c;
+    // Keep the linked image's absolute pointer-slot literal in the object.
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    return work->field_53c;
 }
 
 // DECOMP_FUNC(0x0029a520, 1696)
@@ -867,8 +871,10 @@ void StatusDown_Close() {
 
 // DECOMP_FUNC(0x0029c6c4, 24)
 void StatusDown_SetFlag412(u8 val) {
-    if (g_StatusDownWork != nullptr) {
-        g_StatusDownWork->flag_412 = val;
+    // Preserve the target's absolute pointer-slot literal and null-guarded store.
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    if (work != nullptr) {
+        work->flag_412 = val;
     }
 }
 
@@ -1146,8 +1152,10 @@ void StatusDown_SetSubIdsB(const u16* ids, s32 count) {
 
 // DECOMP_FUNC(0x002efe8c, 24)
 void StatusDown_SetFlag411(u8 val) {
-    if (g_StatusDownWork != nullptr) {
-        g_StatusDownWork->flag_411 = val;
+    // Preserve the target's absolute pointer-slot literal and null-guarded store.
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    if (work != nullptr) {
+        work->flag_411 = val;
     }
 }
 

@@ -271,10 +271,14 @@ bool Status_IsState8() {
 
 // DECOMP_FUNC(0x00203338, 24)
 void Status_SetActiveDemonId(u16 demon_id) {
-    StatusWork* work = g_StatusManager.work;
-    if (work != nullptr) {
-        work->active_demon_id = demon_id;
-    }
+    // Preserve the ROM's absolute manager-base load and +4 work-pointer read.
+    auto* manager = reinterpret_cast<StatusManager*>(0x0044E140);
+    asm volatile("" : "+r"(manager));
+    auto* active_region = reinterpret_cast<volatile u8*>(manager->work) + 0x1E00;
+    asm volatile("" : "+r"(active_region));
+    auto* active_id = reinterpret_cast<volatile u16*>(
+        active_region + (offsetof(StatusWork, active_demon_id) - 0x1E00));
+    *active_id = demon_id;
 }
 
 // DECOMP_FUNC(0x0022e694, 32)
@@ -287,7 +291,10 @@ void Status_SetFlag1E65(u8 flag) {
 
 // DECOMP_FUNC(0x0022e6b4, 24)
 bool Status_IsActive() {
-    return g_StatusManager.work != nullptr;
+    // Pin this image's base literal; the empty barrier retains the +4 load.
+    auto* manager = reinterpret_cast<StatusManager*>(0x0044E140);
+    asm volatile("" : "+r"(manager));
+    return manager->work != nullptr;
 }
 
 // DECOMP_FUNC(0x0026abc0, 32)
@@ -328,11 +335,14 @@ void Status_ResetAffinityView() {
 
 // DECOMP_FUNC(0x00288408, 28)
 u8 Status_GetSubMenuState() {
-    StatusWork* work = g_StatusManager.work;
-    if (work == nullptr) {
-        return 0;
-    }
-    return work->sub_menu_state;
+    auto* manager = reinterpret_cast<StatusManager*>(0x0044E140);
+    asm volatile("" : "+r"(manager));
+    StatusWork* work = manager->work;
+    auto* field = reinterpret_cast<u8*>(work) + 0x1E00;
+    asm volatile("" : "+r"(field));
+    field += 0x67;
+    asm volatile("" : "+r"(field));
+    return *field;
 }
 
 // DECOMP_FUNC(0x00289158, 112)
@@ -428,19 +438,22 @@ f32 Status_GetCalculatedScale() {
 
 // DECOMP_FUNC(0x0029af30, 28)
 u8 Status_GetMainMenuId() {
-    StatusWork* work = g_StatusManager.work;
-    if (work == nullptr) {
-        return 0;
-    }
-    return work->main_menu_id;
+    auto* manager = reinterpret_cast<StatusManager*>(0x0044E140);
+    asm volatile("" : "+r"(manager));
+    StatusWork* work = manager->work;
+    auto* field = reinterpret_cast<u8*>(work) + 0x1E00;
+    asm volatile("" : "+r"(field));
+    field += 0x66;
+    asm volatile("" : "+r"(field));
+    return *field;
 }
 
 // DECOMP_FUNC(0x0029af4c, 20)
 const u16* Status_GetSelectedActorPtr() {
-    StatusWork* work = g_StatusManager.work;
-    if (work == nullptr) {
-        return nullptr;
-    }
+    // The target unconditionally returns work + 0x1300 (there is no null test).
+    auto* manager = reinterpret_cast<StatusManager*>(0x0044E140);
+    asm volatile("" : "+r"(manager));
+    StatusWork* work = manager->work;
     return reinterpret_cast<const u16*>(&work->unk_1300[0]);
 }
 
