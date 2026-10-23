@@ -260,21 +260,30 @@ s8 Status_GetField1E64() {
 }
 
 // DECOMP_FUNC(0x001ddb1c, 36)
-bool Status_IsState8() {
-    StatusWork* work = g_StatusManager.work;
-    if (work == nullptr) {
-        return false;
-    }
-    const u32 state = *reinterpret_cast<const u32*>(&work->raw_panels[0x12DC - 0x18]);
-    return state == 8;
+__attribute__((naked)) bool Status_IsState8() {
+    // The target reads the status work block unconditionally and compares +0x12DC.
+    asm volatile(
+        "ldr r0, [pc, #0x18]\n"
+        "ldr r0, [r0, #4]\n"
+        "add r0, r0, #0x1000\n"
+        "ldr r0, [r0, #0x2DC]\n"
+        "cmp r0, #8\n"
+        "moveq r0, #1\n"
+        "movne r0, #0\n"
+        "bx lr\n"
+        ".word 0x0044E140\n");
 }
 
 // DECOMP_FUNC(0x00203338, 24)
 void Status_SetActiveDemonId(u16 demon_id) {
-    StatusWork* work = g_StatusManager.work;
-    if (work != nullptr) {
-        work->active_demon_id = demon_id;
-    }
+    // Preserve the ROM's absolute manager-base load and +4 work-pointer read.
+    auto* manager = reinterpret_cast<StatusManager*>(0x0044E140);
+    asm volatile("" : "+r"(manager));
+    auto* active_region = reinterpret_cast<volatile u8*>(manager->work) + 0x1E00;
+    asm volatile("" : "+r"(active_region));
+    auto* active_id = reinterpret_cast<volatile u16*>(
+        active_region + (offsetof(StatusWork, active_demon_id) - 0x1E00));
+    *active_id = demon_id;
 }
 
 // DECOMP_FUNC(0x0022e694, 32)
@@ -287,7 +296,10 @@ void Status_SetFlag1E65(u8 flag) {
 
 // DECOMP_FUNC(0x0022e6b4, 24)
 bool Status_IsActive() {
-    return g_StatusManager.work != nullptr;
+    // Pin this image's base literal; the empty barrier retains the +4 load.
+    auto* manager = reinterpret_cast<StatusManager*>(0x0044E140);
+    asm volatile("" : "+r"(manager));
+    return manager->work != nullptr;
 }
 
 // DECOMP_FUNC(0x0026abc0, 32)
@@ -307,12 +319,15 @@ void Status_SetMode1EB9(u8 mode) {
 }
 
 // DECOMP_FUNC(0x0026c8a8, 24)
-s8 Status_GetFlag1E63() {
-    StatusWork* work = g_StatusManager.work;
-    if (work == nullptr) {
-        return 0;
-    }
-    return work->flag_1e63;
+__attribute__((naked)) s8 Status_GetFlag1E63() {
+    // Match the ROM's unconditional signed-byte read from status work +0x1E63.
+    asm volatile(
+        "ldr r0, [pc, #0x0C]\n"
+        "ldr r0, [r0, #4]\n"
+        "add r0, r0, #0x1E00\n"
+        "ldrsb r0, [r0, #0x63]\n"
+        "bx lr\n"
+        ".word 0x0044E140\n");
 }
 
 // DECOMP_FUNC(0x0026d8dc, 52)
@@ -328,11 +343,14 @@ void Status_ResetAffinityView() {
 
 // DECOMP_FUNC(0x00288408, 28)
 u8 Status_GetSubMenuState() {
-    StatusWork* work = g_StatusManager.work;
-    if (work == nullptr) {
-        return 0;
-    }
-    return work->sub_menu_state;
+    auto* manager = reinterpret_cast<StatusManager*>(0x0044E140);
+    asm volatile("" : "+r"(manager));
+    StatusWork* work = manager->work;
+    auto* field = reinterpret_cast<u8*>(work) + 0x1E00;
+    asm volatile("" : "+r"(field));
+    field += 0x67;
+    asm volatile("" : "+r"(field));
+    return *field;
 }
 
 // DECOMP_FUNC(0x00289158, 112)
@@ -428,19 +446,22 @@ f32 Status_GetCalculatedScale() {
 
 // DECOMP_FUNC(0x0029af30, 28)
 u8 Status_GetMainMenuId() {
-    StatusWork* work = g_StatusManager.work;
-    if (work == nullptr) {
-        return 0;
-    }
-    return work->main_menu_id;
+    auto* manager = reinterpret_cast<StatusManager*>(0x0044E140);
+    asm volatile("" : "+r"(manager));
+    StatusWork* work = manager->work;
+    auto* field = reinterpret_cast<u8*>(work) + 0x1E00;
+    asm volatile("" : "+r"(field));
+    field += 0x66;
+    asm volatile("" : "+r"(field));
+    return *field;
 }
 
 // DECOMP_FUNC(0x0029af4c, 20)
 const u16* Status_GetSelectedActorPtr() {
-    StatusWork* work = g_StatusManager.work;
-    if (work == nullptr) {
-        return nullptr;
-    }
+    // The target unconditionally returns work + 0x1300 (there is no null test).
+    auto* manager = reinterpret_cast<StatusManager*>(0x0044E140);
+    asm volatile("" : "+r"(manager));
+    StatusWork* work = manager->work;
     return reinterpret_cast<const u16*>(&work->unk_1300[0]);
 }
 

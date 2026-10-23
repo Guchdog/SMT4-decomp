@@ -4,6 +4,8 @@
 
 **Goal:** Decompile the 3DS stereoscopic font window and dialog notification subsystem (`c:\SMT4\XRD686\sdds4\program\font\ComWin\ComWin.cpp`, `InfoWin\InfoWin.cpp`, `GuestWin\GuestWin.cpp`), totaling 21 functions and 7,836 bytes across common message dialogs, system alerts, partner notifications, stereo draw passes, and window task callbacks. Crossing this plan achieves the **2% decompilation milestone** of Shin Megami Tensei IV.
 
+> **Address correction (2026-10-23):** `0x0010a6fc`, `0x0010af38`, and `0x0010b340` were initially attributed to window APIs. ROM inspection shows they instead store their argument into `g_AsdTextCodes` offsets `+0x1C`, `+0x14`, and `+0x30`; their recovered names and definitions now live in the engine text module.
+
 **Architecture:**
 - `include/ui/window.h`: Defines structures for `ComWinWork` (0x188 bytes, tag 0x122, global `0x0043E0F8`), `InfoWinWork` (0x1BC bytes, tag 0xFF, global `0x0043E128`), and `GuestWinWork` (0xBC bytes, tag 0xF5, global `0x0043E110`), verified with `static_assert(sizeof(...))` and `static_assert(offsetof(...))`.
 - `src/ui/window.cpp`: Implements the lifecycle, stereoscopic rendering passes (`ComWin DrawUpLeft`/`ComWin DrawUpRight`, `InfoWin DrawUpLeft`/`InfoWin DrawUpRight`, `GuestWin DrawUpLeft`/`GuestWin DrawUpRight`), and task calculation callbacks (`ComWin Calc`, `InfoWin Calc`, `GuestWin Calc`).
@@ -30,7 +32,7 @@
 - Modify: `config/functions.csv`
 
 **Functions:**
-- `ComWin_IsActive`: `0x0010a6fc` (16 B)
+- `AsdText_SetCodeField1C` (not a ComWin API): `0x0010a6fc` (16 B)
 - `ComWin_SetState`: `0x0010a70c` (60 B)
 - `ComWin_Init`: `0x0010a748` (504 B)
 - `ComWin_GetState`: `0x0010a940` (20 B)
@@ -64,14 +66,15 @@ Total for ComWin: 3,740 bytes across 8 functions.
 - Modify: `config/functions.csv`
 
 **Functions:**
-- `InfoWin_IsActive`: `0x0010af38` (16 B)
+- `AsdText_SetCodeField14` (not an InfoWin API): `0x0010af38` (16 B)
 - `InfoWin_SetState`: `0x0010af48` (60 B)
 - `InfoWin_Init`: `0x0010af84` (560 B)
 - `InfoWin_ShowMessage`: `0x0010b1b4` (172 B)
 - `InfoWin_UpdateTimer`: `0x0010b260` (192 B)
 - `InfoWin_Dismiss`: `0x0010b320` (32 B)
 - `InfoWin_DrawUp`: `0x0011ae10` (792 B)
-- `InfoWin_Calc`: `0x0011b128` (588 B) [Shared / adjacent calc dispatcher]
+- `GuestWin_Calc`: `0x0011b128` (148 B) [GuestWin task callback]
+- `InfoWin_Calc`: `0x0011b1bc` (440 B) [InfoWin state/animation callback]
 
 - [x] **Step 1: Update progress test expectations (RED)**
   - Update `tests/test_progress.py` to expect 108 functions and 61,820 bytes.
@@ -96,7 +99,7 @@ Total for ComWin: 3,740 bytes across 8 functions.
 - Modify: `config/functions.csv`
 
 **Functions:**
-- `GuestWin_IsActive`: `0x0010b340` (16 B)
+- `AsdText_SetCodeField30` (not a GuestWin API): `0x0010b340` (16 B)
 - `GuestWin_Init`: `0x0010b350` (448 B)
 - `GuestWin_HandlePrompt`: `0x0010b510` (104 B)
 - `GuestWin_DrawUp`: `0x0011a9b4` (1,116 B)

@@ -8,11 +8,11 @@ Decompilation and reverse-engineering project for **Shin Megami Tensei IV** (Nin
 
 ## Live Decompilation Progress
 
-- **Matching (Byte-for-Byte):** `2,353,976 / 3,139,108 bytes` (**74.9887%**) across `9,927` functions (100% verified 3DS ARMv6K machine code match)
-- **Compiled Coverage (≥15% size):** `297,424 / 3,139,108 bytes` (**9.4748%**) across `338` functions (ARMv6K compilation and size threshold only; logic unverified)
-- **Draft Logic (<15% size):** `239,468 / 3,139,108 bytes` (**7.6285%**) across `45` functions (early-stage draft reconstructions)
+- **Matching (Byte-for-Byte):** `2,354,556 / 3,139,108 bytes` (**75.0072%**) across `9,946` functions (100% verified 3DS ARMv6K machine code match)
+- **Compiled Coverage (≥15% size):** `296,992 / 3,139,108 bytes` (**9.4610%**) across `320` functions (ARMv6K compilation and size threshold only; logic unverified)
+- **Draft Logic (<15% size):** `239,320 / 3,139,108 bytes` (**7.6238%**) across `45` functions (early-stage draft reconstructions)
 - **Scaffolded Architecture (Stubs & Interfaces):** `248,240 / 3,139,108 bytes` (**7.9080%**) across `39` functions (headers, structs, function skeletons)
-- **Total Codebase Explored:** `3,139,108 / 3,139,108 bytes` (**100.0000%**) across `10,349` functions (all explored code mapped into `src/`)
+- **Total Codebase Explored:** `3,139,108 / 3,139,108 bytes` (**100.0000%**) across `10,350` functions (all explored code mapped into `src/`)
 - See [`PROGRESS.md`](PROGRESS.md) for the full subsystem breakdown (`ui`, `camp`, `battle`, `script_vm`, `shop`, `unite`, `engine`, `nn_sdk`, `crt`) and explored function ledger. Coverage totals use original function sizes and do not measure behavioral equivalence.
 
 ---
@@ -57,7 +57,7 @@ python tools/progress.py --write
 ## Project Structure
 
 - [`config/game_info.json`](config/game_info.json) — Memory map and binary metadata for `CTR-P-AMXE`.
-- [`config/functions.csv`](config/functions.csv) — Master ledger of all 10,349 functions covering 100% of `.text` (`3,139,108` bytes).
+- [`config/functions.csv`](config/functions.csv) — Master ledger of all 10,350 functions covering 100% of `.text` (`3,139,108` bytes).
 - [`config/symbols.csv`](config/symbols.csv) — String and data symbols recovered from `.rodata`, `.data`, and `.text` literal pools.
 - [`include/`](include/) & [`src/`](src/) — Decompiled C++20 source code and engine/UI headers.
 - [`docs/architecture.md`](docs/architecture.md) — Documentation of the `XRD686` / `AsdSDK` engine, dual-screen LCD pipelines, and `TBCR`/`TBL1` UI table formats.
