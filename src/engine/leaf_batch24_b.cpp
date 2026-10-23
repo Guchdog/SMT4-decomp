@@ -2220,5 +2220,3 @@ extern "C" __attribute__((naked)) void engine_func_002f78a0() {
         ".inst 0xe8bd8010\n"
     );
 }
-
-\n
