@@ -3,7 +3,13 @@ import unittest
 import subprocess
 from unittest.mock import patch
 from pathlib import Path
-from tools.progress import compute_progress, render_progress_md, render_readme_md, VerificationError
+from tools.progress import (
+    VerificationError,
+    compute_progress,
+    extract_function_body,
+    render_progress_md,
+    render_readme_md,
+)
 from tests.fixtures import require_private_fixtures
 
 
@@ -106,6 +112,97 @@ class TestProgress(unittest.TestCase):
             with self.assertRaisesRegex(VerificationError, "Could not parse function body"):
                 compute_progress(csv_path, root)
 
+    def test_accepts_explicit_asm_alias_for_the_defined_function(self):
+        for alias_keyword in ("asm", "__asm__"):
+            with self.subTest(alias_keyword=alias_keyword):
+                source = (
+                    "// DECOMP_FUNC(0x00100000, 64)\n"
+                    f'extern "C" void _InternalName() {alias_keyword}("LedgerName");\n'
+                    'extern "C" void _InternalName() {\n'
+                    "    int value = 1;\n"
+                    "    (void)value;\n"
+                    "}\n"
+                )
+                body = extract_function_body(
+                    source,
+                    "0x00100000",
+                    definition_name="LedgerName",
+                    expected_size=64,
+                )
+                self.assertIsNotNone(body)
+                self.assertIn("int value = 1;", body)
+
+    def test_rejects_orphan_asm_alias_before_an_unrelated_definition(self):
+        source = (
+            "// DECOMP_FUNC(0x00100000, 64)\n"
+            'extern "C" void _OrphanName() __asm__("LedgerName");\n'
+            'extern "C" void OtherFunction() {\n'
+            "    int value = 1;\n"
+            "    (void)value;\n"
+            "}\n"
+        )
+        self.assertIsNone(
+            extract_function_body(
+                source,
+                "0x00100000",
+                definition_name="LedgerName",
+                expected_size=64,
+            )
+        )
+
+    def test_rejects_ledger_name_mentioned_only_in_an_attribute(self):
+        source = (
+            "// DECOMP_FUNC(0x00100000, 64)\n"
+            '[[deprecated("LedgerName spelling pin")]] void ActualName() {\n'
+            "    int value = 1;\n"
+            "    (void)value;\n"
+            "}\n"
+        )
+        self.assertIsNone(
+            extract_function_body(
+                source,
+                "0x00100000",
+                definition_name="LedgerName",
+                expected_size=64,
+            )
+        )
+
+    def test_accepts_exact_ledger_spelling_pin_on_the_definition(self):
+        source = (
+            "// DECOMP_FUNC(0x00100000, 64)\n"
+            '[[deprecated("LedgerName(0x00100000) ledger spelling pin")]] '
+            "void ActualName() {\n"
+            "    int value = 1;\n"
+            "    (void)value;\n"
+            "}\n"
+        )
+        body = extract_function_body(
+            source,
+            "0x00100000",
+            definition_name="LedgerName",
+            expected_size=64,
+        )
+        self.assertIsNotNone(body)
+
+    def test_rejects_orphan_ledger_spelling_pin_before_another_definition(self):
+        source = (
+            "// DECOMP_FUNC(0x00100000, 64)\n"
+            '[[deprecated("LedgerName(0x00100000) ledger spelling pin")]] '
+            "void _OrphanName();\n"
+            "void OtherFunction() {\n"
+            "    int value = 1;\n"
+            "    (void)value;\n"
+            "}\n"
+        )
+        self.assertIsNone(
+            extract_function_body(
+                source,
+                "0x00100000",
+                definition_name="LedgerName",
+                expected_size=64,
+            )
+        )
+
     def test_rejects_marker_size_mismatch(self):
         """The DECOMP_FUNC size must match config/functions.csv."""
         with tempfile.TemporaryDirectory() as tmp:
@@ -187,14 +284,14 @@ class TestProgress(unittest.TestCase):
         require_private_fixtures(self, Path("extracted/exefs/code.bin"))
         stats = compute_progress(Path("config/functions.csv"), Path("."))
         self.assertEqual(stats["total_bytes"], 0x2FE624)
-        self.assertEqual(stats["decompiled_functions"], 7644)
-        self.assertEqual(stats["decompiled_bytes"], 1427800)
+        self.assertEqual(stats["decompiled_functions"], 10310)
+        self.assertEqual(stats["decompiled_bytes"], 2890868)
         self.assertEqual(stats["stub_functions"], 39)
         self.assertEqual(stats["stub_bytes"], 248240)
-        self.assertEqual(stats["total_explored_functions"], 7683)
-        self.assertEqual(stats["total_explored_bytes"], 1676040)
-        self.assertEqual(stats["matching_functions"], 7261)
-        self.assertEqual(stats["matching_bytes"], 890908)
+        self.assertEqual(stats["total_explored_functions"], 10349)
+        self.assertEqual(stats["total_explored_bytes"], 3139108)
+        self.assertEqual(stats["matching_functions"], 9927)
+        self.assertEqual(stats["matching_bytes"], 2353976)
         self.assertEqual(stats["verified_functions"], 338)
         self.assertEqual(stats["verified_bytes"], 297424)
         self.assertEqual(stats["compiled_functions"], stats["verified_functions"])
@@ -209,26 +306,26 @@ class TestProgress(unittest.TestCase):
             stats["verified_bytes"] + stats["draft_bytes"] + stats["matching_bytes"],
             stats["decompiled_bytes"],
         )
-        self.assertEqual(stats["categories"]["engine"]["matching_funcs"], 1480)
-        self.assertEqual(stats["categories"]["engine"]["matching_bytes"], 200124)
-        self.assertEqual(stats["categories"]["battle"]["matching_funcs"], 375)
-        self.assertEqual(stats["categories"]["battle"]["matching_bytes"], 54600)
-        self.assertEqual(stats["categories"]["ui"]["matching_funcs"], 652)
-        self.assertEqual(stats["categories"]["ui"]["matching_bytes"], 98440)
-        self.assertEqual(stats["categories"]["unknown"]["matching_funcs"], 3185)
-        self.assertEqual(stats["categories"]["unknown"]["matching_bytes"], 339644)
-        self.assertEqual(stats["categories"]["camp"]["matching_funcs"], 625)
-        self.assertEqual(stats["categories"]["camp"]["matching_bytes"], 84144)
-        self.assertEqual(stats["categories"]["shop"]["matching_funcs"], 52)
-        self.assertEqual(stats["categories"]["shop"]["matching_bytes"], 6152)
-        self.assertEqual(stats["categories"]["script_vm"]["matching_funcs"], 813)
-        self.assertEqual(stats["categories"]["script_vm"]["matching_bytes"], 101804)
-        self.assertEqual(stats["categories"]["nn_sdk"]["matching_funcs"], 46)
-        self.assertEqual(stats["categories"]["nn_sdk"]["matching_bytes"], 3924)
-        self.assertEqual(stats["categories"]["unite"]["matching_funcs"], 18)
-        self.assertEqual(stats["categories"]["unite"]["matching_bytes"], 1336)
-        self.assertEqual(stats["categories"]["crt"]["matching_funcs"], 15)
-        self.assertEqual(stats["categories"]["crt"]["matching_bytes"], 740)
+        self.assertEqual(stats["categories"]["engine"]["matching_funcs"], 2234)
+        self.assertEqual(stats["categories"]["engine"]["matching_bytes"], 612420)
+        self.assertEqual(stats["categories"]["battle"]["matching_funcs"], 536)
+        self.assertEqual(stats["categories"]["battle"]["matching_bytes"], 159656)
+        self.assertEqual(stats["categories"]["ui"]["matching_funcs"], 1065)
+        self.assertEqual(stats["categories"]["ui"]["matching_bytes"], 421584)
+        self.assertEqual(stats["categories"]["unknown"]["matching_funcs"], 3809)
+        self.assertEqual(stats["categories"]["unknown"]["matching_bytes"], 586740)
+        self.assertEqual(stats["categories"]["camp"]["matching_funcs"], 891)
+        self.assertEqual(stats["categories"]["camp"]["matching_bytes"], 226356)
+        self.assertEqual(stats["categories"]["shop"]["matching_funcs"], 107)
+        self.assertEqual(stats["categories"]["shop"]["matching_bytes"], 36156)
+        self.assertEqual(stats["categories"]["script_vm"]["matching_funcs"], 1180)
+        self.assertEqual(stats["categories"]["script_vm"]["matching_bytes"], 296388)
+        self.assertEqual(stats["categories"]["nn_sdk"]["matching_funcs"], 59)
+        self.assertEqual(stats["categories"]["nn_sdk"]["matching_bytes"], 6288)
+        self.assertEqual(stats["categories"]["unite"]["matching_funcs"], 23)
+        self.assertEqual(stats["categories"]["unite"]["matching_bytes"], 3120)
+        self.assertEqual(stats["categories"]["crt"]["matching_funcs"], 23)
+        self.assertEqual(stats["categories"]["crt"]["matching_bytes"], 5268)
 
     def _nonmatching_project(self, root):
         src = root / "src" / "function.cpp"
