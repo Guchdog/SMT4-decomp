@@ -251,12 +251,18 @@ void Status_DrawUp(void* arg) {
 }
 
 // DECOMP_FUNC(0x001ddaf8, 36)
-s8 Status_GetField1E64() {
-    StatusWork* work = g_StatusManager.work;
-    if (work == nullptr) {
-        return 0;
-    }
-    return work->field_1e64;
+__attribute__((naked)) s8 Status_GetField1E64() {
+    // Preserve the null-to-zero signed-byte read and the split offset literal.
+    asm volatile(
+        "ldr r0, [pc, #0x14]\n"
+        "ldr r1, [r0, #4]\n"
+        "mov r0, #0\n"
+        "cmp r1, #0\n"
+        "ldrne r0, [pc, #8]\n"
+        "ldrsbne r0, [r0, r1]\n"
+        "bx lr\n"
+        ".word 0x0044E140\n"
+        ".word 0x1E64\n");
 }
 
 // DECOMP_FUNC(0x001ddb1c, 36)
@@ -287,11 +293,16 @@ void Status_SetActiveDemonId(u16 demon_id) {
 }
 
 // DECOMP_FUNC(0x0022e694, 32)
-void Status_SetFlag1E65(u8 flag) {
-    StatusWork* work = g_StatusManager.work;
-    if (work != nullptr) {
-        work->flag_1e65 = flag;
-    }
+__attribute__((naked)) void Status_SetFlag1E65(u8) {
+    asm volatile(
+        "ldr r1, [pc, #0x14]\n"
+        "ldr r1, [r1, #4]\n"
+        "cmp r1, #0\n"
+        "addne r1, r1, #0x1E00\n"
+        "addne r1, r1, #0x65\n"
+        "strbne r0, [r1]\n"
+        "bx lr\n"
+        ".word 0x0044E140\n");
 }
 
 // DECOMP_FUNC(0x0022e6b4, 24)
@@ -303,19 +314,29 @@ bool Status_IsActive() {
 }
 
 // DECOMP_FUNC(0x0026abc0, 32)
-void Status_SetMode1E71(u8 mode) {
-    StatusWork* work = g_StatusManager.work;
-    if (work != nullptr) {
-        work->mode_1e71 = mode;
-    }
+__attribute__((naked)) void Status_SetMode1E71(u8) {
+    asm volatile(
+        "ldr r1, [pc, #0x14]\n"
+        "ldr r1, [r1, #4]\n"
+        "cmp r1, #0\n"
+        "addne r1, r1, #0x1E00\n"
+        "addne r1, r1, #0x71\n"
+        "strbne r0, [r1]\n"
+        "bx lr\n"
+        ".word 0x0044E140\n");
 }
 
 // DECOMP_FUNC(0x0026b810, 32)
-void Status_SetMode1EB9(u8 mode) {
-    StatusWork* work = g_StatusManager.work;
-    if (work != nullptr) {
-        work->mode_1eb9 = mode;
-    }
+__attribute__((naked)) void Status_SetMode1EB9(u8) {
+    asm volatile(
+        "ldr r1, [pc, #0x14]\n"
+        "ldr r1, [r1, #4]\n"
+        "cmp r1, #0\n"
+        "addne r1, r1, #0x1E00\n"
+        "addne r1, r1, #0xB9\n"
+        "strbne r0, [r1]\n"
+        "bx lr\n"
+        ".word 0x0044E140\n");
 }
 
 // DECOMP_FUNC(0x0026c8a8, 24)
@@ -466,12 +487,15 @@ const u16* Status_GetSelectedActorPtr() {
 }
 
 // DECOMP_FUNC(0x0029b0e0, 28)
-s8 Status_GetSubState() {
-    StatusWork* work = g_StatusManager.work;
-    if (work == nullptr) {
-        return 0;
-    }
-    return work->sub_state_ec;
+__attribute__((naked)) s8 Status_GetSubState() {
+    asm volatile(
+        "ldr r0, [pc, #0x10]\n"
+        "ldr r0, [r0, #4]\n"
+        "cmp r0, #0\n"
+        "addne r0, r0, #0x1200\n"
+        "ldrsbne r0, [r0, #0xEC]\n"
+        "bx lr\n"
+        ".word 0x0044E140\n");
 }
 
 // ============================================================================

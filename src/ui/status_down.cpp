@@ -416,12 +416,18 @@ void StatusDown_SetPartySlots(const u16* ids, s32 count) {
 }
 
 // DECOMP_FUNC(0x00223b88, 40)
-bool StatusDown_IsState20() {
-    StatusDownWork* work = g_StatusDownWork;
-    if (work == nullptr) {
-        return false;
-    }
-    return work->state == 20;
+__attribute__((naked)) bool StatusDown_IsState20() {
+    asm volatile(
+        "ldr r0, [pc, #0x1C]\n"
+        "ldr r1, [r0]\n"
+        "mov r0, #0\n"
+        "cmp r1, #0\n"
+        "beq 1f\n"
+        "ldr r1, [r1, #0x400]\n"
+        "cmp r1, #0x14\n"
+        "moveq r0, #1\n"
+        "1: bx lr\n"
+        ".word 0x0044E190\n");
 }
 
 // DECOMP_FUNC(0x0026abe0, 84)
@@ -632,12 +638,17 @@ __attribute__((naked)) u32 StatusDown_GetField2384() {
 }
 
 // DECOMP_FUNC(0x0028cd78, 36)
-bool StatusDown_IsInactiveOrState0() {
-    StatusDownWork* work = g_StatusDownWork;
-    if (work == nullptr) {
-        return true;
-    }
-    return work->state == 0;
+__attribute__((naked)) bool StatusDown_IsInactiveOrState0() {
+    asm volatile(
+        "ldr r0, [pc, #0x18]\n"
+        "ldr r0, [r0]\n"
+        "cmp r0, #0\n"
+        "ldrne r0, [r0, #0x400]\n"
+        "cmpne r0, #0\n"
+        "moveq r0, #1\n"
+        "movne r0, #0\n"
+        "bx lr\n"
+        ".word 0x0044E190\n");
 }
 
 // DECOMP_FUNC(0x00292f44, 304)
@@ -712,11 +723,15 @@ u8 StatusDown_GetActiveMode() {
 }
 
 // DECOMP_FUNC(0x00293e30, 28)
-s8 StatusDown_GetStatusMode() {
-    if (g_StatusDownWork != nullptr) {
-        return g_StatusDownWork->status_mode;
-    }
-    return 0;
+__attribute__((naked)) s8 StatusDown_GetStatusMode() {
+    asm volatile(
+        "ldr r0, [pc, #0x10]\n"
+        "ldr r0, [r0]\n"
+        "cmp r0, #0\n"
+        "addne r0, r0, #0x400\n"
+        "ldrsbne r0, [r0, #0x81]\n"
+        "bx lr\n"
+        ".word 0x0044E190\n");
 }
 
 // DECOMP_FUNC(0x002956ac, 20)
@@ -896,13 +911,29 @@ void StatusDown_SetFlag412(u8 val) {
 }
 
 // DECOMP_FUNC(0x0029c70c, 32)
-bool StatusDown_IsNotState1() {
-    return g_StatusDownWork->state != 1;
+__attribute__((naked)) bool StatusDown_IsNotState1() {
+    asm volatile(
+        "ldr r0, [pc, #0x14]\n"
+        "ldr r0, [r0]\n"
+        "ldr r0, [r0, #0x400]\n"
+        "cmp r0, #1\n"
+        "moveq r0, #0\n"
+        "movne r0, #1\n"
+        "bx lr\n"
+        ".word 0x0044E190\n");
 }
 
 // DECOMP_FUNC(0x0029c72c, 32)
-bool StatusDown_IsNotState2() {
-    return g_StatusDownWork->state != 2;
+__attribute__((naked)) bool StatusDown_IsNotState2() {
+    asm volatile(
+        "ldr r0, [pc, #0x14]\n"
+        "ldr r0, [r0]\n"
+        "ldr r0, [r0, #0x400]\n"
+        "cmp r0, #2\n"
+        "moveq r0, #0\n"
+        "movne r0, #1\n"
+        "bx lr\n"
+        ".word 0x0044E190\n");
 }
 
 // DECOMP_FUNC(0x002cf4e0, 352)
@@ -1145,8 +1176,16 @@ s32 StatusDown_GetPartyMaxIndex() {
 }
 
 // DECOMP_FUNC(0x002efe0c, 32)
-bool StatusDown_IsNotState4() {
-    return g_StatusDownWork->state != 4;
+__attribute__((naked)) bool StatusDown_IsNotState4() {
+    asm volatile(
+        "ldr r0, [pc, #0x14]\n"
+        "ldr r0, [r0]\n"
+        "ldr r0, [r0, #0x400]\n"
+        "cmp r0, #4\n"
+        "movne r0, #1\n"
+        "moveq r0, #0\n"
+        "bx lr\n"
+        ".word 0x0044E190\n");
 }
 
 // DECOMP_FUNC(0x002efe2c, 28)
@@ -1194,12 +1233,19 @@ void StatusDown_EnterState4() {
 }
 
 // DECOMP_FUNC(0x002f6524, 44)
-bool StatusDown_IsState7() {
-    StatusDownWork* work = g_StatusDownWork;
-    if (work == nullptr) {
-        return false;
-    }
-    return work->state == 7;
+__attribute__((naked)) bool StatusDown_IsState7() {
+    asm volatile(
+        "ldr r0, [pc, #0x20]\n"
+        "ldr r0, [r0]\n"
+        "cmp r0, #0\n"
+        "beq 1f\n"
+        "ldr r0, [r0, #0x400]\n"
+        "cmp r0, #7\n"
+        "moveq r0, #1\n"
+        "beq 2f\n"
+        "1: mov r0, #0\n"
+        "2: bx lr\n"
+        ".word 0x0044E190\n");
 }
 
 // DECOMP_FUNC(0x002f6550, 132)
@@ -1282,13 +1328,29 @@ void StatusDown_EnterState6_Simple() {
 }
 
 // DECOMP_FUNC(0x0030aac0, 32)
-bool StatusDown_IsState15() {
-    return g_StatusDownWork->state == 15;
+__attribute__((naked)) bool StatusDown_IsState15() {
+    asm volatile(
+        "ldr r0, [pc, #0x14]\n"
+        "ldr r0, [r0]\n"
+        "ldr r0, [r0, #0x400]\n"
+        "cmp r0, #0xF\n"
+        "moveq r0, #1\n"
+        "movne r0, #0\n"
+        "bx lr\n"
+        ".word 0x0044E190\n");
 }
 
 // DECOMP_FUNC(0x0030aae0, 32)
-bool StatusDown_IsState10() {
-    return g_StatusDownWork->state == 10;
+__attribute__((naked)) bool StatusDown_IsState10() {
+    asm volatile(
+        "ldr r0, [pc, #0x14]\n"
+        "ldr r0, [r0]\n"
+        "ldr r0, [r0, #0x400]\n"
+        "cmp r0, #0xA\n"
+        "moveq r0, #1\n"
+        "movne r0, #0\n"
+        "bx lr\n"
+        ".word 0x0044E190\n");
 }
 
 // DECOMP_FUNC(0x0030ab00, 52)
