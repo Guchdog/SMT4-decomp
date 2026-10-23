@@ -62,6 +62,7 @@ def audit_claimed_functions(
     draft_count = 0
     compilation_failed = 0
     details: list[dict] = []
+    validated_objects: set[Path] = set()
 
     with open(functions_csv, "r", encoding="utf-8", newline="") as f:
         reader = csv.DictReader(f)
@@ -85,6 +86,7 @@ def audit_claimed_functions(
                 src_file=src_file,
                 code_bytes=code_bytes if code_bytes is not None else b"",
                 repo_root=repo_root,
+                validated_object_cache=validated_objects,
             )
             compiled_size = diff["compiled_size"]
             exact = diff["exact_match"]

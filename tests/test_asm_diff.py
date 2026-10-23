@@ -139,6 +139,7 @@ class TestAsmDiff(unittest.TestCase):
                     matching_rows.append(row)
 
         self.assertEqual(len(matching_rows), 6061)
+        validated_objects = set()
         for row in matching_rows:
             res = compare_function(
                 addr=int(row["address"], 16),
@@ -147,6 +148,7 @@ class TestAsmDiff(unittest.TestCase):
                 src_file=Path(row["src_file"].strip()),
                 code_bytes=self.code_bytes,
                 repo_root=Path("."),
+                validated_object_cache=validated_objects,
             )
             self.assertTrue(
                 res["exact_match"],
