@@ -4,12 +4,12 @@
 
 | Category | Functions | Code Size (Bytes) | Progress % | Status Description |
 |----------|----------:|------------------:|-----------:|--------------------|
-| **Matching (Byte-for-Byte)** | 3,361 | 248,228 B | **7.9076%** | 100% verified compiled machine code match |
+| **Matching (Byte-for-Byte)** | 3,661 | 280,992 B | **8.9513%** | 100% verified compiled machine code match |
 | **Compiled Coverage (≥15% size)** | 338 | 297,424 B | 9.4748% | Compiles to ARMv6K ELF .o; size threshold only, logic unverified |
 | **Draft Logic (<15% size)** | 45 | 239,468 B | 7.6285% | Early draft reconstructions awaiting control-flow recovery |
 | **Scaffolded (Stubs & Interfaces)** | 39 | 248,240 B | 7.9080% | Headers, structs, and function skeletons |
-| **Total Architecture Explored** | 3,783 | 1,033,360 B | 32.9189% | Total mapped into `src/` (Matching + Compiles + Draft + Stubs) |
-| **Remaining (Todo)** | 6,566 | 2,105,748 B | 67.0811% | Unmapped functions in `.text` |
+| **Total Architecture Explored** | 4,083 | 1,066,124 B | 33.9626% | Total mapped into `src/` (Matching + Compiles + Draft + Stubs) |
+| **Remaining (Todo)** | 6,266 | 2,072,984 B | 66.0374% | Unmapped functions in `.text` |
 | **Total `.text` Segment** | 10,349 | 3,139,108 B | 100.0000% | `0x00100000`–`0x003FE624` |
 
 Compiled coverage and draft totals use original function sizes, not recovered instruction counts. Compilation and size do not establish behavioral equivalence. Only the matching tier verifies machine code equivalence.
@@ -20,15 +20,15 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 
 | Subsystem | Matching | Compiled Coverage (≥15%) | Draft (<15%) | Stubs | Total Explored | Total Subsystem | Matching % | Explored % |
 |-----------|---------:|----------------:|-------------:|------:|---------------:|----------------:|-----------:|-----------:|
-| `engine` | 568 (42,572 B) | 127 (98,240 B) | 5 (37,188 B) | 2 (22,760 B) | 702 (200,760 B) | 2,368 (770,608 B) | 5.5245% | 26.05% |
-| `ui` | 267 (23,632 B) | 141 (100,644 B) | 18 (63,872 B) | 14 (96,248 B) | 440 (284,396 B) | 1,238 (682,348 B) | 3.4633% | 41.68% |
-| `unknown` | 1,726 (126,576 B) | 6 (12,324 B) | 3 (11,328 B) | 0 (0 B) | 1,735 (150,228 B) | 3,818 (610,392 B) | 20.7368% | 24.61% |
-| `script_vm` | 341 (22,044 B) | 12 (28,268 B) | 6 (98,796 B) | 3 (22,836 B) | 362 (171,944 B) | 1,201 (446,288 B) | 4.9394% | 38.53% |
-| `camp` | 257 (19,432 B) | 13 (14,440 B) | 8 (15,324 B) | 6 (70,276 B) | 284 (119,472 B) | 918 (326,396 B) | 5.9535% | 36.60% |
-| `battle` | 140 (9,848 B) | 24 (32,600 B) | 4 (12,012 B) | 11 (32,664 B) | 179 (87,124 B) | 575 (236,932 B) | 4.1565% | 36.77% |
+| `engine` | 645 (52,056 B) | 127 (98,240 B) | 5 (37,188 B) | 2 (22,760 B) | 779 (210,244 B) | 2,368 (770,608 B) | 6.7552% | 27.28% |
+| `ui` | 284 (26,208 B) | 141 (100,644 B) | 18 (63,872 B) | 14 (96,248 B) | 457 (286,972 B) | 1,238 (682,348 B) | 3.8409% | 42.06% |
+| `unknown` | 1,858 (138,888 B) | 6 (12,324 B) | 3 (11,328 B) | 0 (0 B) | 1,867 (162,540 B) | 3,818 (610,392 B) | 22.7539% | 26.63% |
+| `script_vm` | 377 (26,248 B) | 12 (28,268 B) | 6 (98,796 B) | 3 (22,836 B) | 398 (176,148 B) | 1,201 (446,288 B) | 5.8814% | 39.47% |
+| `camp` | 282 (22,416 B) | 13 (14,440 B) | 8 (15,324 B) | 6 (70,276 B) | 309 (122,456 B) | 918 (326,396 B) | 6.8677% | 37.52% |
+| `battle` | 149 (10,756 B) | 24 (32,600 B) | 4 (12,012 B) | 11 (32,664 B) | 188 (88,032 B) | 575 (236,932 B) | 4.5397% | 37.15% |
 | `shop` | 28 (2,584 B) | 1 (364 B) | 0 (0 B) | 3 (3,456 B) | 32 (6,404 B) | 111 (39,976 B) | 6.4639% | 16.02% |
 | `crt` | 10 (428 B) | 3 (4,216 B) | 0 (0 B) | 0 (0 B) | 13 (4,644 B) | 26 (9,484 B) | 4.5129% | 48.97% |
-| `nn_sdk` | 14 (688 B) | 5 (2,564 B) | 0 (0 B) | 0 (0 B) | 19 (3,252 B) | 64 (8,852 B) | 7.7723% | 36.74% |
+| `nn_sdk` | 18 (984 B) | 5 (2,564 B) | 0 (0 B) | 0 (0 B) | 23 (3,548 B) | 64 (8,852 B) | 11.1161% | 40.08% |
 | `unite` | 10 (424 B) | 6 (3,764 B) | 1 (948 B) | 0 (0 B) | 17 (5,136 B) | 30 (7,832 B) | 5.4137% | 65.58% |
 
 ## Explored Functions Ledger
@@ -191,6 +191,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x0010f524` | 64 | `unknown` | `matching` | `func_0010f524` | [`src/engine/leaf_batch23_a.cpp`](src/engine/leaf_batch23_a.cpp) |
 | `0x0010f564` | 84 | `nn_sdk` | `matching` | `nn_sdk_func_0010f564` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
 | `0x0010f72c` | 16 | `unknown` | `matching` | `func_0010f72c` | [`src/engine/leaf_batch21_a.cpp`](src/engine/leaf_batch21_a.cpp) |
+| `0x0010f73c` | 104 | `engine` | `matching` | `engine_func_0010f73c` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x0010f83c` | 60 | `unknown` | `matching` | `func_0010f83c` | [`src/engine/leaf_batch23_a.cpp`](src/engine/leaf_batch23_a.cpp) |
 | `0x0010f878` | 16 | `unknown` | `matching` | `func_0010f878` | [`src/engine/leaf_batch21_a.cpp`](src/engine/leaf_batch21_a.cpp) |
 | `0x0010f888` | 84 | `unknown` | `matching` | `func_0010f888` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
@@ -222,6 +223,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x001131f0` | 24 | `unknown` | `matching` | `func_001131f0` | [`src/engine/leaf_batch15_a.cpp`](src/engine/leaf_batch15_a.cpp) |
 | `0x00113d58` | 1564 | `engine` | `non_matching` | `AsdFile_func_00113d58` | [`src/engine/asd_file.cpp`](src/engine/asd_file.cpp) |
 | `0x00114374` | 6144 | `camp` | `stub` | `Camp_DemonicaArchiveLoad` | [`src/camp/camp_archive.cpp`](src/camp/camp_archive.cpp) |
+| `0x00115b74` | 92 | `unknown` | `matching` | `func_00115b74` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x001174d4` | 16 | `unknown` | `matching` | `func_001174d4` | [`src/engine/leaf_batch21_a.cpp`](src/engine/leaf_batch21_a.cpp) |
 | `0x001174e4` | 32 | `ui` | `matching` | `ui_func_001174e4` | [`src/engine/leaf_batch22_a.cpp`](src/engine/leaf_batch22_a.cpp) |
 | `0x00117ca4` | 1292 | `battle` | `non_matching` | `titleDbgBg_func_00117ca4` | [`src/battle/battle_extras.cpp`](src/battle/battle_extras.cpp) |
@@ -241,9 +243,12 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x0011b558` | 56 | `unknown` | `matching` | `func_0011b558` | [`src/engine/leaf_batch23_a.cpp`](src/engine/leaf_batch23_a.cpp) |
 | `0x0011b838` | 24 | `engine` | `matching` | `engine_func_0011b838` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x0011b850` | 16 | `engine` | `matching` | `engine_func_0011b850` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
+| `0x0011b860` | 112 | `unknown` | `matching` | `func_0011b860` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x0011ba54` | 44 | `nn_sdk` | `matching` | `nn_sdk_func_0011ba54` | [`src/engine/leaf_batch22_a.cpp`](src/engine/leaf_batch22_a.cpp) |
 | `0x0011ba80` | 48 | `nn_sdk` | `matching` | `nn_sdk_func_0011ba80` | [`src/engine/leaf_batch22_a.cpp`](src/engine/leaf_batch22_a.cpp) |
 | `0x0011bab0` | 16 | `nn_sdk` | `matching` | `nn_sdk_func_0011bab0` | [`src/engine/leaf_batch21_a.cpp`](src/engine/leaf_batch21_a.cpp) |
+| `0x0011bca4` | 100 | `nn_sdk` | `matching` | `nn_sdk_func_0011bca4` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
+| `0x0011bd1c` | 92 | `nn_sdk` | `matching` | `nn_sdk_func_0011bd1c` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x0011c368` | 12 | `unknown` | `matching` | `func_0011c368` | [`src/engine/leaf_batch21_a.cpp`](src/engine/leaf_batch21_a.cpp) |
 | `0x0011c374` | 12 | `unknown` | `matching` | `func_0011c374` | [`src/engine/leaf_batch21_a.cpp`](src/engine/leaf_batch21_a.cpp) |
 | `0x0011c5cc` | 20 | `unknown` | `matching` | `func_0011c5cc` | [`src/engine/leaf_batch17_b.cpp`](src/engine/leaf_batch17_b.cpp) |
@@ -270,8 +275,10 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x0011d30c` | 16 | `unknown` | `matching` | `func_0011d30c` | [`src/engine/leaf_batch21_a.cpp`](src/engine/leaf_batch21_a.cpp) |
 | `0x0011d49c` | 16 | `unknown` | `matching` | `func_0011d49c` | [`src/engine/leaf_batch21_a.cpp`](src/engine/leaf_batch21_a.cpp) |
 | `0x0011d564` | 80 | `unknown` | `matching` | `func_0011d564` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
+| `0x0011d5b4` | 92 | `unknown` | `matching` | `func_0011d5b4` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x0011d610` | 84 | `unknown` | `matching` | `func_0011d610` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
 | `0x0011d664` | 84 | `unknown` | `matching` | `func_0011d664` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
+| `0x0011d6b8` | 112 | `unknown` | `matching` | `func_0011d6b8` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x0011d728` | 80 | `unknown` | `matching` | `func_0011d728` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
 | `0x0011d778` | 48 | `unknown` | `matching` | `func_0011d778` | [`src/engine/leaf_batch22_a.cpp`](src/engine/leaf_batch22_a.cpp) |
 | `0x0011d7a8` | 60 | `unknown` | `matching` | `func_0011d7a8` | [`src/engine/leaf_batch23_a.cpp`](src/engine/leaf_batch23_a.cpp) |
@@ -284,12 +291,15 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x0011fff8` | 16 | `unknown` | `matching` | `func_0011fff8` | [`src/engine/leaf_batch15_a.cpp`](src/engine/leaf_batch15_a.cpp) |
 | `0x00120008` | 76 | `unknown` | `matching` | `func_00120008` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
 | `0x00120a7c` | 76 | `unknown` | `matching` | `func_00120a7c` | [`src/engine/leaf_batch16_b.cpp`](src/engine/leaf_batch16_b.cpp) |
+| `0x00120ce4` | 96 | `engine` | `matching` | `engine_func_00120ce4` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x00120dd4` | 64 | `engine` | `matching` | `engine_func_00120dd4` | [`src/engine/leaf_batch23_a.cpp`](src/engine/leaf_batch23_a.cpp) |
 | `0x00120e14` | 84 | `engine` | `matching` | `engine_func_00120e14` | [`src/engine/leaf_batch13_b.cpp`](src/engine/leaf_batch13_b.cpp) |
 | `0x00121150` | 24 | `engine` | `matching` | `engine_func_00121150` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x001215dc` | 16 | `unknown` | `matching` | `func_001215dc` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x00121890` | 32 | `unknown` | `matching` | `func_00121890` | [`src/engine/leaf_batch18_b.cpp`](src/engine/leaf_batch18_b.cpp) |
 | `0x001218b0` | 44 | `unknown` | `matching` | `func_001218b0` | [`src/engine/leaf_batch19_a.cpp`](src/engine/leaf_batch19_a.cpp) |
+| `0x001218dc` | 104 | `unknown` | `matching` | `func_001218dc` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
+| `0x00121944` | 92 | `unknown` | `matching` | `func_00121944` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x001219a0` | 88 | `unknown` | `matching` | `func_001219a0` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
 | `0x00121a98` | 64 | `engine` | `matching` | `engine_func_00121a98` | [`src/engine/leaf_batch23_a.cpp`](src/engine/leaf_batch23_a.cpp) |
 | `0x00121b50` | 48 | `engine` | `matching` | `engine_func_00121b50` | [`src/engine/leaf_batch19_b.cpp`](src/engine/leaf_batch19_b.cpp) |
@@ -306,6 +316,8 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x00123050` | 64 | `battle` | `matching` | `battle_func_00123050` | [`src/engine/leaf_batch23_a.cpp`](src/engine/leaf_batch23_a.cpp) |
 | `0x0012342c` | 24 | `unknown` | `matching` | `func_0012342c` | [`src/engine/leaf_batch21_a.cpp`](src/engine/leaf_batch21_a.cpp) |
 | `0x00123444` | 64 | `unknown` | `matching` | `func_00123444` | [`src/engine/leaf_batch23_a.cpp`](src/engine/leaf_batch23_a.cpp) |
+| `0x00123484` | 88 | `battle` | `matching` | `battle_func_00123484` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
+| `0x001238f8` | 100 | `ui` | `matching` | `ui_func_001238f8` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x00123a14` | 68 | `unknown` | `matching` | `func_00123a14` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
 | `0x00123aac` | 376 | `unknown` | `matching` | `func_00123aac` | [`src/engine/leaf_batch16_a.cpp`](src/engine/leaf_batch16_a.cpp) |
 | `0x0012409c` | 36 | `nn_sdk` | `matching` | `nn_sdk_func_0012409c` | [`src/engine/leaf_batch15_a.cpp`](src/engine/leaf_batch15_a.cpp) |
@@ -313,6 +325,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x001244b8` | 48 | `unknown` | `matching` | `func_001244b8` | [`src/engine/leaf_batch22_a.cpp`](src/engine/leaf_batch22_a.cpp) |
 | `0x001246f4` | 32 | `unknown` | `matching` | `func_001246f4` | [`src/engine/leaf_batch10_a.cpp`](src/engine/leaf_batch10_a.cpp) |
 | `0x00125d54` | 52 | `unknown` | `matching` | `func_00125d54` | [`src/engine/leaf_batch12_c.cpp`](src/engine/leaf_batch12_c.cpp) |
+| `0x00125f7c` | 88 | `unknown` | `matching` | `func_00125f7c` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x00126084` | 16 | `ui` | `matching` | `ui_func_00126084` | [`src/engine/leaf_batch17_a.cpp`](src/engine/leaf_batch17_a.cpp) |
 | `0x00126094` | 20 | `ui` | `matching` | `ui_func_00126094` | [`src/engine/leaf_batch17_b.cpp`](src/engine/leaf_batch17_b.cpp) |
 | `0x001260a8` | 16 | `ui` | `matching` | `ui_func_001260a8` | [`src/engine/leaf_batch17_a.cpp`](src/engine/leaf_batch17_a.cpp) |
@@ -335,6 +348,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x00128408` | 72 | `unknown` | `matching` | `func_00128408` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
 | `0x00128574` | 80 | `unknown` | `matching` | `func_00128574` | [`src/engine/leaf_batch13_b.cpp`](src/engine/leaf_batch13_b.cpp) |
 | `0x001285c4` | 76 | `unknown` | `matching` | `func_001285c4` | [`src/engine/leaf_batch11_b.cpp`](src/engine/leaf_batch11_b.cpp) |
+| `0x001286a4` | 100 | `unknown` | `matching` | `func_001286a4` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x00128bcc` | 48 | `unknown` | `matching` | `func_00128bcc` | [`src/engine/leaf_batch22_a.cpp`](src/engine/leaf_batch22_a.cpp) |
 | `0x00128bfc` | 48 | `unknown` | `matching` | `func_00128bfc` | [`src/engine/leaf_batch22_a.cpp`](src/engine/leaf_batch22_a.cpp) |
 | `0x00128c80` | 60 | `unknown` | `matching` | `func_00128c80` | [`src/engine/leaf_batch23_a.cpp`](src/engine/leaf_batch23_a.cpp) |
@@ -345,7 +359,9 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x00128f44` | 20 | `engine` | `matching` | `engine_func_00128f44` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x00128f58` | 80 | `engine` | `matching` | `engine_func_00128f58` | [`src/engine/leaf_batch16_b.cpp`](src/engine/leaf_batch16_b.cpp) |
 | `0x00128fa8` | 72 | `engine` | `matching` | `engine_func_00128fa8` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
+| `0x0012939c` | 104 | `unknown` | `matching` | `func_0012939c` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x00129510` | 60 | `unknown` | `matching` | `func_00129510` | [`src/engine/leaf_batch23_a.cpp`](src/engine/leaf_batch23_a.cpp) |
+| `0x0012954c` | 92 | `ui` | `matching` | `ui_func_0012954c` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x001295a8` | 60 | `engine` | `matching` | `engine_func_001295a8` | [`src/engine/leaf_batch23_a.cpp`](src/engine/leaf_batch23_a.cpp) |
 | `0x00129c24` | 52 | `battle` | `matching` | `battle_func_00129c24` | [`src/engine/leaf_batch19_c.cpp`](src/engine/leaf_batch19_c.cpp) |
 | `0x00129c58` | 24 | `battle` | `matching` | `battle_func_00129c58` | [`src/engine/leaf_batch21_a.cpp`](src/engine/leaf_batch21_a.cpp) |
@@ -358,6 +374,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x0012a654` | 16 | `unknown` | `matching` | `func_0012a654` | [`src/engine/leaf_batch21_a.cpp`](src/engine/leaf_batch21_a.cpp) |
 | `0x0012a664` | 56 | `engine` | `matching` | `engine_func_0012a664` | [`src/engine/leaf_batch23_a.cpp`](src/engine/leaf_batch23_a.cpp) |
 | `0x0012a69c` | 60 | `unknown` | `matching` | `func_0012a69c` | [`src/engine/leaf_batch23_a.cpp`](src/engine/leaf_batch23_a.cpp) |
+| `0x0012a6ec` | 108 | `unknown` | `matching` | `func_0012a6ec` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x0012a758` | 424 | `unknown` | `matching` | `func_0012a758` | [`src/engine/leaf_batch16_c.cpp`](src/engine/leaf_batch16_c.cpp) |
 | `0x0012a900` | 372 | `unknown` | `matching` | `func_0012a900` | [`src/engine/leaf_batch16_b.cpp`](src/engine/leaf_batch16_b.cpp) |
 | `0x0012aa74` | 128 | `ui` | `matching` | `ui_func_0012aa74` | [`src/engine/leaf_batch16_c.cpp`](src/engine/leaf_batch16_c.cpp) |
@@ -371,6 +388,9 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x0012d8d4` | 200 | `engine` | `matching` | `engine_func_0012d8d4` | [`src/engine/leaf_batch16_a.cpp`](src/engine/leaf_batch16_a.cpp) |
 | `0x0012f4c0` | 16 | `engine` | `matching` | `engine_func_0012f4c0` | [`src/engine/leaf_batch21_a.cpp`](src/engine/leaf_batch21_a.cpp) |
 | `0x0012f4d0` | 28 | `engine` | `matching` | `engine_func_0012f4d0` | [`src/engine/leaf_batch18_a.cpp`](src/engine/leaf_batch18_a.cpp) |
+| `0x0012f708` | 96 | `engine` | `matching` | `engine_func_0012f708` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
+| `0x00130d18` | 92 | `engine` | `matching` | `engine_func_00130d18` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
+| `0x00130d74` | 88 | `engine` | `matching` | `engine_func_00130d74` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x00130dcc` | 12 | `engine` | `matching` | `engine_func_00130dcc` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x00130dd8` | 12 | `engine` | `matching` | `engine_func_00130dd8` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x00130de4` | 44 | `unknown` | `matching` | `func_00130de4` | [`src/engine/leaf_batch22_a.cpp`](src/engine/leaf_batch22_a.cpp) |
@@ -379,6 +399,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x001310ec` | 60 | `ui` | `matching` | `ui_func_001310ec` | [`src/engine/leaf_batch23_a.cpp`](src/engine/leaf_batch23_a.cpp) |
 | `0x001311a0` | 12 | `engine` | `matching` | `engine_func_001311a0` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x001311ac` | 44 | `engine` | `matching` | `engine_func_001311ac` | [`src/engine/leaf_batch22_a.cpp`](src/engine/leaf_batch22_a.cpp) |
+| `0x001311d8` | 112 | `unknown` | `matching` | `func_001311d8` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x001312cc` | 60 | `unknown` | `matching` | `func_001312cc` | [`src/engine/leaf_batch23_a.cpp`](src/engine/leaf_batch23_a.cpp) |
 | `0x00131308` | 72 | `engine` | `matching` | `engine_func_00131308` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
 | `0x00131414` | 12 | `ui` | `matching` | `ui_func_00131414` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
@@ -386,6 +407,9 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x001316b4` | 56 | `unknown` | `matching` | `func_001316b4` | [`src/engine/leaf_batch23_a.cpp`](src/engine/leaf_batch23_a.cpp) |
 | `0x001316ec` | 208 | `script_vm` | `matching` | `script_vm_func_001316ec` | [`src/engine/leaf_batch16_a.cpp`](src/engine/leaf_batch16_a.cpp) |
 | `0x001317bc` | 208 | `script_vm` | `matching` | `script_vm_func_001317bc` | [`src/engine/leaf_batch16_b.cpp`](src/engine/leaf_batch16_b.cpp) |
+| `0x0013188c` | 104 | `engine` | `matching` | `engine_func_0013188c` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
+| `0x001318f4` | 92 | `unknown` | `matching` | `func_001318f4` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
+| `0x00132894` | 100 | `camp` | `matching` | `camp_func_00132894` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x001328f8` | 12 | `unknown` | `matching` | `func_001328f8` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x00132a20` | 64 | `engine` | `matching` | `engine_func_00132a20` | [`src/engine/leaf_batch23_a.cpp`](src/engine/leaf_batch23_a.cpp) |
 | `0x00132a60` | 64 | `engine` | `matching` | `engine_func_00132a60` | [`src/engine/leaf_batch23_a.cpp`](src/engine/leaf_batch23_a.cpp) |
@@ -393,6 +417,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x00132ad8` | 56 | `engine` | `matching` | `engine_func_00132ad8` | [`src/engine/leaf_batch13_a.cpp`](src/engine/leaf_batch13_a.cpp) |
 | `0x00132fb8` | 12 | `battle` | `matching` | `battle_func_00132fb8` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x00133568` | 14908 | `engine` | `non_matching` | `func_00133568` | [`src/engine/block_133568.cpp`](src/engine/block_133568.cpp) |
+| `0x00137138` | 104 | `battle` | `matching` | `battle_func_00137138` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x001371a0` | 76 | `unknown` | `matching` | `func_001371a0` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
 | `0x0013728c` | 76 | `unknown` | `matching` | `func_0013728c` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
 | `0x001372d8` | 60 | `unknown` | `matching` | `func_001372d8` | [`src/engine/leaf_batch23_a.cpp`](src/engine/leaf_batch23_a.cpp) |
@@ -408,6 +433,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x00138b38` | 48 | `engine` | `matching` | `engine_func_00138b38` | [`src/engine/leaf_batch19_b.cpp`](src/engine/leaf_batch19_b.cpp) |
 | `0x00138f34` | 16 | `unknown` | `matching` | `func_00138f34` | [`src/engine/leaf_batch21_a.cpp`](src/engine/leaf_batch21_a.cpp) |
 | `0x00138f44` | 24 | `ui` | `matching` | `ui_func_00138f44` | [`src/engine/leaf_batch12_a.cpp`](src/engine/leaf_batch12_a.cpp) |
+| `0x001390c0` | 108 | `engine` | `matching` | `engine_func_001390c0` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x00139230` | 28 | `unknown` | `matching` | `func_00139230` | [`src/engine/leaf_batch21_a.cpp`](src/engine/leaf_batch21_a.cpp) |
 | `0x0013924c` | 28 | `unknown` | `matching` | `func_0013924c` | [`src/engine/leaf_batch18_a.cpp`](src/engine/leaf_batch18_a.cpp) |
 | `0x00139ae0` | 80 | `camp` | `matching` | `camp_func_00139ae0` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
@@ -427,8 +453,10 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x0013a8f4` | 56 | `unknown` | `matching` | `func_0013a8f4` | [`src/engine/leaf_batch23_a.cpp`](src/engine/leaf_batch23_a.cpp) |
 | `0x0013aa8c` | 100 | `unknown` | `matching` | `func_0013aa8c` | [`src/engine/leaf_batch13_c.cpp`](src/engine/leaf_batch13_c.cpp) |
 | `0x0013add4` | 64 | `unknown` | `matching` | `func_0013add4` | [`src/engine/leaf_batch13_a.cpp`](src/engine/leaf_batch13_a.cpp) |
+| `0x0013ae14` | 112 | `unknown` | `matching` | `func_0013ae14` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x0013ae84` | 68 | `battle` | `matching` | `battle_func_0013ae84` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
 | `0x0013aec8` | 40 | `unknown` | `matching` | `func_0013aec8` | [`src/engine/leaf_batch15_a.cpp`](src/engine/leaf_batch15_a.cpp) |
+| `0x0013aef0` | 96 | `battle` | `matching` | `battle_func_0013aef0` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x0013af50` | 40 | `unknown` | `matching` | `func_0013af50` | [`src/engine/leaf_batch15_a.cpp`](src/engine/leaf_batch15_a.cpp) |
 | `0x0013af88` | 28 | `battle` | `matching` | `battle_func_0013af88` | [`src/engine/leaf_batch21_a.cpp`](src/engine/leaf_batch21_a.cpp) |
 | `0x0013afa4` | 20 | `unknown` | `matching` | `func_0013afa4` | [`src/engine/leaf_batch21_a.cpp`](src/engine/leaf_batch21_a.cpp) |
@@ -464,16 +492,23 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x0013d980` | 116 | `unknown` | `matching` | `func_0013d980` | [`src/engine/leaf_batch14_a.cpp`](src/engine/leaf_batch14_a.cpp) |
 | `0x0013e224` | 76 | `unknown` | `matching` | `func_0013e224` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
 | `0x0013e558` | 76 | `unknown` | `matching` | `func_0013e558` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
+| `0x0013e5a4` | 104 | `unknown` | `matching` | `func_0013e5a4` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x0013e60c` | 76 | `unknown` | `matching` | `func_0013e60c` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
+| `0x0013ecc4` | 104 | `unknown` | `matching` | `func_0013ecc4` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
+| `0x0013ed2c` | 104 | `unknown` | `matching` | `func_0013ed2c` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
+| `0x0013f68c` | 96 | `unknown` | `matching` | `func_0013f68c` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
+| `0x0013f960` | 88 | `engine` | `matching` | `engine_func_0013f960` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x0013fc98` | 116 | `unknown` | `matching` | `func_0013fc98` | [`src/engine/leaf_batch16_b.cpp`](src/engine/leaf_batch16_b.cpp) |
 | `0x0013fd0c` | 164 | `unknown` | `matching` | `func_0013fd0c` | [`src/engine/leaf_batch16_b.cpp`](src/engine/leaf_batch16_b.cpp) |
 | `0x0013fdb0` | 60 | `engine` | `matching` | `engine_func_0013fdb0` | [`src/engine/leaf_batch23_a.cpp`](src/engine/leaf_batch23_a.cpp) |
 | `0x0013fe34` | 24 | `unknown` | `matching` | `func_0013fe34` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x00140778` | 112 | `unknown` | `matching` | `func_00140778` | [`src/engine/leaf_batch16_b.cpp`](src/engine/leaf_batch16_b.cpp) |
+| `0x001407e8` | 108 | `unknown` | `matching` | `func_001407e8` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x00140854` | 88 | `unknown` | `matching` | `func_00140854` | [`src/engine/leaf_batch13_b.cpp`](src/engine/leaf_batch13_b.cpp) |
 | `0x001408ac` | 20 | `unknown` | `matching` | `func_001408ac` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x001408c0` | 80 | `unknown` | `matching` | `func_001408c0` | [`src/engine/leaf_batch16_a.cpp`](src/engine/leaf_batch16_a.cpp) |
 | `0x001409b8` | 28 | `unknown` | `matching` | `func_001409b8` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
+| `0x00140d40` | 108 | `unknown` | `matching` | `func_00140d40` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x00140dfc` | 188 | `unknown` | `matching` | `func_00140dfc` | [`src/engine/leaf_batch16_b.cpp`](src/engine/leaf_batch16_b.cpp) |
 | `0x00140eb8` | 228 | `engine` | `matching` | `engine_func_00140eb8` | [`src/engine/leaf_batch16_a.cpp`](src/engine/leaf_batch16_a.cpp) |
 | `0x00140f9c` | 228 | `script_vm` | `matching` | `script_vm_func_00140f9c` | [`src/engine/leaf_batch16_b.cpp`](src/engine/leaf_batch16_b.cpp) |
@@ -485,6 +520,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x00141940` | 40 | `engine` | `matching` | `engine_func_00141940` | [`src/engine/leaf_batch22_a.cpp`](src/engine/leaf_batch22_a.cpp) |
 | `0x00141968` | 28 | `engine` | `matching` | `engine_func_00141968` | [`src/engine/leaf_batch18_a.cpp`](src/engine/leaf_batch18_a.cpp) |
 | `0x00141984` | 56 | `engine` | `matching` | `engine_func_00141984` | [`src/engine/leaf_batch23_a.cpp`](src/engine/leaf_batch23_a.cpp) |
+| `0x001419bc` | 96 | `engine` | `matching` | `engine_func_001419bc` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x00142928` | 20 | `battle` | `matching` | `battle_func_00142928` | [`src/engine/leaf_batch17_b.cpp`](src/engine/leaf_batch17_b.cpp) |
 | `0x0014293c` | 32 | `battle` | `matching` | `battle_func_0014293c` | [`src/engine/leaf_batch18_b.cpp`](src/engine/leaf_batch18_b.cpp) |
 | `0x0014295c` | 32 | `battle` | `matching` | `battle_func_0014295c` | [`src/engine/leaf_batch18_b.cpp`](src/engine/leaf_batch18_b.cpp) |
@@ -509,6 +545,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x00145e7c` | 32 | `nn_sdk` | `matching` | `nn_sdk_func_00145e7c` | [`src/engine/leaf_batch18_b.cpp`](src/engine/leaf_batch18_b.cpp) |
 | `0x001465d8` | 68 | `unknown` | `matching` | `func_001465d8` | [`src/engine/leaf_batch13_a.cpp`](src/engine/leaf_batch13_a.cpp) |
 | `0x0014661c` | 68 | `engine` | `matching` | `engine_func_0014661c` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
+| `0x00146660` | 92 | `nn_sdk` | `matching` | `nn_sdk_func_00146660` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x001466e8` | 68 | `engine` | `matching` | `engine_func_001466e8` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
 | `0x0014672c` | 44 | `unknown` | `matching` | `func_0014672c` | [`src/engine/leaf_batch22_a.cpp`](src/engine/leaf_batch22_a.cpp) |
 | `0x00146758` | 84 | `unknown` | `matching` | `func_00146758` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
@@ -528,23 +565,32 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x00146f88` | 80 | `unknown` | `matching` | `func_00146f88` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
 | `0x00146fd8` | 72 | `unknown` | `matching` | `func_00146fd8` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
 | `0x00147020` | 84 | `unknown` | `matching` | `func_00147020` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
+| `0x00147074` | 108 | `unknown` | `matching` | `func_00147074` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x001470e0` | 72 | `unknown` | `matching` | `func_001470e0` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
 | `0x00147128` | 68 | `unknown` | `matching` | `func_00147128` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
 | `0x0014716c` | 72 | `unknown` | `matching` | `func_0014716c` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
+| `0x001471b4` | 88 | `unknown` | `matching` | `func_001471b4` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x0014720c` | 56 | `unknown` | `matching` | `func_0014720c` | [`src/engine/leaf_batch11_a.cpp`](src/engine/leaf_batch11_a.cpp) |
 | `0x00147244` | 32 | `unknown` | `matching` | `func_00147244` | [`src/engine/leaf_batch10_a.cpp`](src/engine/leaf_batch10_a.cpp) |
 | `0x00147264` | 36 | `unknown` | `matching` | `func_00147264` | [`src/engine/leaf_batch10_b.cpp`](src/engine/leaf_batch10_b.cpp) |
 | `0x00147288` | 32 | `engine` | `matching` | `engine_func_00147288` | [`src/engine/leaf_batch10_a.cpp`](src/engine/leaf_batch10_a.cpp) |
+| `0x001472a8` | 88 | `camp` | `matching` | `camp_func_001472a8` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x00147758` | 100 | `unknown` | `matching` | `func_00147758` | [`src/engine/leaf_batch13_c.cpp`](src/engine/leaf_batch13_c.cpp) |
+| `0x001477bc` | 112 | `unknown` | `matching` | `func_001477bc` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
+| `0x00147930` | 100 | `unknown` | `matching` | `func_00147930` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x00147994` | 60 | `unknown` | `matching` | `func_00147994` | [`src/engine/leaf_batch15_c.cpp`](src/engine/leaf_batch15_c.cpp) |
+| `0x00147b4c` | 108 | `unknown` | `matching` | `func_00147b4c` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x00147bb8` | 84 | `unknown` | `matching` | `func_00147bb8` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
 | `0x00147c0c` | 60 | `unknown` | `matching` | `func_00147c0c` | [`src/engine/leaf_batch23_a.cpp`](src/engine/leaf_batch23_a.cpp) |
 | `0x00147c48` | 40 | `unknown` | `matching` | `func_00147c48` | [`src/engine/leaf_batch15_a.cpp`](src/engine/leaf_batch15_a.cpp) |
 | `0x00147c70` | 40 | `unknown` | `matching` | `func_00147c70` | [`src/engine/leaf_batch15_b.cpp`](src/engine/leaf_batch15_b.cpp) |
 | `0x00147c98` | 80 | `unknown` | `matching` | `func_00147c98` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
 | `0x00147ce8` | 16 | `unknown` | `matching` | `func_00147ce8` | [`src/engine/leaf_batch21_a.cpp`](src/engine/leaf_batch21_a.cpp) |
+| `0x00147d00` | 92 | `unknown` | `matching` | `func_00147d00` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x0014809c` | 328 | `unknown` | `matching` | `func_0014809c` | [`src/engine/leaf_batch14_c.cpp`](src/engine/leaf_batch14_c.cpp) |
 | `0x001481e4` | 44 | `unknown` | `matching` | `func_001481e4` | [`src/engine/leaf_batch19_a.cpp`](src/engine/leaf_batch19_a.cpp) |
+| `0x00148210` | 88 | `unknown` | `matching` | `func_00148210` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
+| `0x00148268` | 92 | `unknown` | `matching` | `func_00148268` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x00148350` | 56 | `unknown` | `matching` | `func_00148350` | [`src/engine/leaf_batch23_a.cpp`](src/engine/leaf_batch23_a.cpp) |
 | `0x001492a4` | 252 | `unknown` | `matching` | `func_001492a4` | [`src/engine/leaf_batch14_b.cpp`](src/engine/leaf_batch14_b.cpp) |
 | `0x00149a1c` | 40 | `unknown` | `matching` | `func_00149a1c` | [`src/engine/leaf_batch22_a.cpp`](src/engine/leaf_batch22_a.cpp) |
@@ -552,12 +598,14 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x0014ad08` | 80 | `unknown` | `matching` | `func_0014ad08` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
 | `0x0014bb20` | 604 | `unknown` | `matching` | `func_0014bb20` | [`src/engine/leaf_batch16_b.cpp`](src/engine/leaf_batch16_b.cpp) |
 | `0x0014be3c` | 76 | `unknown` | `matching` | `func_0014be3c` | [`src/engine/leaf_batch16_c.cpp`](src/engine/leaf_batch16_c.cpp) |
+| `0x0014be88` | 112 | `unknown` | `matching` | `func_0014be88` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x0014bef8` | 12 | `unknown` | `matching` | `func_0014bef8` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x0014bfb0` | 44 | `unknown` | `matching` | `func_0014bfb0` | [`src/engine/leaf_batch12_b.cpp`](src/engine/leaf_batch12_b.cpp) |
 | `0x0014bfdc` | 48 | `unknown` | `matching` | `func_0014bfdc` | [`src/engine/leaf_batch22_a.cpp`](src/engine/leaf_batch22_a.cpp) |
 | `0x0014c2d0` | 152 | `unknown` | `matching` | `func_0014c2d0` | [`src/engine/leaf_batch16_b.cpp`](src/engine/leaf_batch16_b.cpp) |
 | `0x0014c368` | 68 | `unknown` | `matching` | `func_0014c368` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
 | `0x0014c3ac` | 52 | `engine` | `matching` | `engine_func_0014c3ac` | [`src/engine/leaf_batch12_c.cpp`](src/engine/leaf_batch12_c.cpp) |
+| `0x0014c818` | 100 | `unknown` | `matching` | `func_0014c818` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x0014c87c` | 80 | `ui` | `matching` | `ui_func_0014c87c` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
 | `0x0014c988` | 52 | `unknown` | `matching` | `func_0014c988` | [`src/engine/leaf_batch22_a.cpp`](src/engine/leaf_batch22_a.cpp) |
 | `0x0014ce64` | 56 | `ui` | `matching` | `ui_func_0014ce64` | [`src/engine/leaf_batch23_a.cpp`](src/engine/leaf_batch23_a.cpp) |
@@ -582,6 +630,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x0014d290` | 24 | `unknown` | `matching` | `func_0014d290` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x0014d2a8` | 60 | `engine` | `matching` | `engine_func_0014d2a8` | [`src/engine/leaf_batch23_a.cpp`](src/engine/leaf_batch23_a.cpp) |
 | `0x0014d2e4` | 48 | `engine` | `matching` | `engine_func_0014d2e4` | [`src/engine/leaf_batch19_b.cpp`](src/engine/leaf_batch19_b.cpp) |
+| `0x0014d390` | 116 | `engine` | `matching` | `engine_func_0014d390` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x0014d404` | 68 | `engine` | `matching` | `engine_func_0014d404` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
 | `0x0014d4c0` | 12 | `unknown` | `matching` | `func_0014d4c0` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x0014d534` | 108 | `unknown` | `matching` | `func_0014d534` | [`src/engine/leaf_batch16_b.cpp`](src/engine/leaf_batch16_b.cpp) |
@@ -598,12 +647,14 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x0014f30c` | 240 | `ui` | `matching` | `ui_func_0014f30c` | [`src/engine/leaf_batch16_c.cpp`](src/engine/leaf_batch16_c.cpp) |
 | `0x0014f3fc` | 48 | `ui` | `matching` | `ui_func_0014f3fc` | [`src/engine/leaf_batch12_b.cpp`](src/engine/leaf_batch12_b.cpp) |
 | `0x0014f514` | 56 | `unknown` | `matching` | `func_0014f514` | [`src/engine/leaf_batch23_a.cpp`](src/engine/leaf_batch23_a.cpp) |
+| `0x0014f54c` | 104 | `unknown` | `matching` | `func_0014f54c` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x0014f5b4` | 60 | `unknown` | `matching` | `func_0014f5b4` | [`src/engine/leaf_batch23_a.cpp`](src/engine/leaf_batch23_a.cpp) |
 | `0x0014f5f0` | 24 | `unknown` | `matching` | `func_0014f5f0` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x0014f994` | 16 | `unknown` | `matching` | `func_0014f994` | [`src/engine/leaf_batch21_a.cpp`](src/engine/leaf_batch21_a.cpp) |
 | `0x0014fac8` | 40 | `unknown` | `matching` | `func_0014fac8` | [`src/engine/leaf_batch18_c.cpp`](src/engine/leaf_batch18_c.cpp) |
 | `0x0014fbe8` | 84 | `unknown` | `matching` | `func_0014fbe8` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
 | `0x0014fc3c` | 56 | `unknown` | `matching` | `func_0014fc3c` | [`src/engine/leaf_batch23_a.cpp`](src/engine/leaf_batch23_a.cpp) |
+| `0x0014fc74` | 116 | `unknown` | `matching` | `func_0014fc74` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x0014feac` | 80 | `unknown` | `matching` | `func_0014feac` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
 | `0x0014fefc` | 56 | `unknown` | `matching` | `func_0014fefc` | [`src/engine/leaf_batch23_a.cpp`](src/engine/leaf_batch23_a.cpp) |
 | `0x0014ff34` | 76 | `unknown` | `matching` | `func_0014ff34` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
@@ -615,6 +666,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x00150ea0` | 44 | `unknown` | `matching` | `func_00150ea0` | [`src/engine/leaf_batch22_a.cpp`](src/engine/leaf_batch22_a.cpp) |
 | `0x00150f1c` | 56 | `unknown` | `matching` | `func_00150f1c` | [`src/engine/leaf_batch23_a.cpp`](src/engine/leaf_batch23_a.cpp) |
 | `0x00151304` | 256 | `unknown` | `matching` | `func_00151304` | [`src/engine/leaf_batch16_b.cpp`](src/engine/leaf_batch16_b.cpp) |
+| `0x00151404` | 108 | `unknown` | `matching` | `func_00151404` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x00151d60` | 52 | `engine` | `matching` | `engine_func_00151d60` | [`src/engine/leaf_batch22_a.cpp`](src/engine/leaf_batch22_a.cpp) |
 | `0x00151d94` | 464 | `unknown` | `matching` | `func_00151d94` | [`src/engine/leaf_batch16_b.cpp`](src/engine/leaf_batch16_b.cpp) |
 | `0x00151f64` | 60 | `unknown` | `matching` | `func_00151f64` | [`src/engine/leaf_batch13_a.cpp`](src/engine/leaf_batch13_a.cpp) |
@@ -633,7 +685,9 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x001521a4` | 12 | `unknown` | `matching` | `func_001521a4` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x001521b0` | 40 | `engine` | `matching` | `engine_func_001521b0` | [`src/engine/leaf_batch12_b.cpp`](src/engine/leaf_batch12_b.cpp) |
 | `0x001521d8` | 64 | `engine` | `matching` | `engine_func_001521d8` | [`src/engine/leaf_batch23_a.cpp`](src/engine/leaf_batch23_a.cpp) |
+| `0x00152224` | 116 | `unknown` | `matching` | `func_00152224` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x00152298` | 68 | `engine` | `matching` | `engine_func_00152298` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
+| `0x001523d8` | 92 | `engine` | `matching` | `engine_func_001523d8` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x001524d0` | 24 | `engine` | `matching` | `engine_func_001524d0` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x001524e8` | 36 | `script_vm` | `matching` | `script_vm_func_001524e8` | [`src/engine/leaf_batch16_a.cpp`](src/engine/leaf_batch16_a.cpp) |
 | `0x00152688` | 56 | `unknown` | `matching` | `func_00152688` | [`src/engine/leaf_batch23_a.cpp`](src/engine/leaf_batch23_a.cpp) |
@@ -644,13 +698,20 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x00153134` | 44 | `script_vm` | `matching` | `script_vm_func_00153134` | [`src/engine/leaf_batch12_b.cpp`](src/engine/leaf_batch12_b.cpp) |
 | `0x00153160` | 76 | `unknown` | `matching` | `func_00153160` | [`src/engine/leaf_batch16_a.cpp`](src/engine/leaf_batch16_a.cpp) |
 | `0x001531f4` | 20 | `unknown` | `matching` | `func_001531f4` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
+| `0x001533a0` | 104 | `unknown` | `matching` | `func_001533a0` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
+| `0x00153408` | 96 | `unknown` | `matching` | `func_00153408` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
+| `0x00153698` | 88 | `unknown` | `matching` | `func_00153698` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
+| `0x001536f0` | 96 | `unknown` | `matching` | `func_001536f0` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
+| `0x00153750` | 116 | `unknown` | `matching` | `func_00153750` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x001537c4` | 108 | `engine` | `matching` | `engine_func_001537c4` | [`src/engine/leaf_batch13_c.cpp`](src/engine/leaf_batch13_c.cpp) |
 | `0x00153918` | 40 | `unknown` | `matching` | `func_00153918` | [`src/engine/leaf_batch15_b.cpp`](src/engine/leaf_batch15_b.cpp) |
 | `0x00153940` | 80 | `unknown` | `matching` | `func_00153940` | [`src/engine/leaf_batch16_b.cpp`](src/engine/leaf_batch16_b.cpp) |
 | `0x00153990` | 20 | `unknown` | `matching` | `func_00153990` | [`src/engine/leaf_batch17_b.cpp`](src/engine/leaf_batch17_b.cpp) |
+| `0x001539a4` | 112 | `unknown` | `matching` | `func_001539a4` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x00153a14` | 68 | `unknown` | `matching` | `func_00153a14` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
 | `0x0015459c` | 48 | `ui` | `matching` | `ui_func_0015459c` | [`src/engine/leaf_batch22_a.cpp`](src/engine/leaf_batch22_a.cpp) |
 | `0x00154d90` | 108 | `unknown` | `matching` | `func_00154d90` | [`src/engine/leaf_batch16_c.cpp`](src/engine/leaf_batch16_c.cpp) |
+| `0x00155584` | 96 | `unknown` | `matching` | `func_00155584` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x001556f4` | 44 | `engine` | `matching` | `engine_func_001556f4` | [`src/engine/leaf_batch12_b.cpp`](src/engine/leaf_batch12_b.cpp) |
 | `0x00155720` | 40 | `engine` | `matching` | `engine_func_00155720` | [`src/engine/leaf_batch12_b.cpp`](src/engine/leaf_batch12_b.cpp) |
 | `0x00155748` | 44 | `unknown` | `matching` | `func_00155748` | [`src/engine/leaf_batch15_b.cpp`](src/engine/leaf_batch15_b.cpp) |
@@ -664,11 +725,13 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x00155a08` | 48 | `unknown` | `matching` | `func_00155a08` | [`src/engine/leaf_batch22_a.cpp`](src/engine/leaf_batch22_a.cpp) |
 | `0x00155bbc` | 28 | `engine` | `matching` | `engine_func_00155bbc` | [`src/engine/leaf_batch18_a.cpp`](src/engine/leaf_batch18_a.cpp) |
 | `0x00155ce4` | 60 | `unknown` | `matching` | `func_00155ce4` | [`src/engine/leaf_batch23_a.cpp`](src/engine/leaf_batch23_a.cpp) |
+| `0x0015647c` | 116 | `engine` | `matching` | `engine_func_0015647c` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x00156c88` | 44 | `unknown` | `matching` | `func_00156c88` | [`src/engine/leaf_batch22_a.cpp`](src/engine/leaf_batch22_a.cpp) |
 | `0x00156e7c` | 416 | `unknown` | `matching` | `func_00156e7c` | [`src/engine/leaf_batch16_b.cpp`](src/engine/leaf_batch16_b.cpp) |
 | `0x00157348` | 36 | `unknown` | `matching` | `func_00157348` | [`src/engine/leaf_batch12_a.cpp`](src/engine/leaf_batch12_a.cpp) |
 | `0x0015736c` | 68 | `unknown` | `matching` | `func_0015736c` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
 | `0x001573b0` | 36 | `unknown` | `matching` | `func_001573b0` | [`src/engine/leaf_batch12_a.cpp`](src/engine/leaf_batch12_a.cpp) |
+| `0x001573d4` | 104 | `unknown` | `matching` | `func_001573d4` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x0015743c` | 36 | `unknown` | `matching` | `func_0015743c` | [`src/engine/leaf_batch12_a.cpp`](src/engine/leaf_batch12_a.cpp) |
 | `0x00157528` | 36 | `unknown` | `matching` | `func_00157528` | [`src/engine/leaf_batch12_a.cpp`](src/engine/leaf_batch12_a.cpp) |
 | `0x0015754c` | 60 | `unknown` | `matching` | `func_0015754c` | [`src/engine/leaf_batch23_a.cpp`](src/engine/leaf_batch23_a.cpp) |
@@ -700,8 +763,10 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x00158f48` | 224 | `unknown` | `matching` | `func_00158f48` | [`src/engine/leaf_batch16_c.cpp`](src/engine/leaf_batch16_c.cpp) |
 | `0x00159370` | 220 | `engine` | `matching` | `engine_func_00159370` | [`src/engine/leaf_batch16_a.cpp`](src/engine/leaf_batch16_a.cpp) |
 | `0x0015944c` | 612 | `engine` | `matching` | `engine_func_0015944c` | [`src/engine/leaf_batch14_c.cpp`](src/engine/leaf_batch14_c.cpp) |
+| `0x00159ee4` | 92 | `unknown` | `matching` | `func_00159ee4` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x0015a2ec` | 52 | `unknown` | `matching` | `func_0015a2ec` | [`src/engine/leaf_batch11_a.cpp`](src/engine/leaf_batch11_a.cpp) |
 | `0x0015a3a4` | 80 | `unknown` | `matching` | `func_0015a3a4` | [`src/engine/leaf_batch13_b.cpp`](src/engine/leaf_batch13_b.cpp) |
+| `0x0015a420` | 108 | `unknown` | `matching` | `func_0015a420` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x0015a48c` | 404 | `unknown` | `matching` | `func_0015a48c` | [`src/engine/leaf_batch14_c.cpp`](src/engine/leaf_batch14_c.cpp) |
 | `0x0015b33c` | 348 | `unknown` | `matching` | `func_0015b33c` | [`src/engine/leaf_batch14_c.cpp`](src/engine/leaf_batch14_c.cpp) |
 | `0x0015bba0` | 108 | `unknown` | `matching` | `func_0015bba0` | [`src/engine/leaf_batch16_b.cpp`](src/engine/leaf_batch16_b.cpp) |
@@ -712,6 +777,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x0015c514` | 180 | `unknown` | `matching` | `func_0015c514` | [`src/engine/leaf_batch16_c.cpp`](src/engine/leaf_batch16_c.cpp) |
 | `0x0015c728` | 2220 | `engine` | `non_matching` | `aocFileLoad_func_0015c728` | [`src/engine/aoc.cpp`](src/engine/aoc.cpp) |
 | `0x0015cfd4` | 16 | `unknown` | `matching` | `func_0015cfd4` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
+| `0x0015d3a0` | 92 | `unknown` | `matching` | `func_0015d3a0` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x0015d3fc` | 80 | `unknown` | `matching` | `func_0015d3fc` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
 | `0x0015d568` | 76 | `unknown` | `matching` | `func_0015d568` | [`src/engine/leaf_batch13_b.cpp`](src/engine/leaf_batch13_b.cpp) |
 | `0x0015d5b4` | 64 | `unknown` | `matching` | `func_0015d5b4` | [`src/engine/leaf_batch13_a.cpp`](src/engine/leaf_batch13_a.cpp) |
@@ -719,8 +785,11 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x0015d85c` | 44 | `unknown` | `matching` | `func_0015d85c` | [`src/engine/leaf_batch22_a.cpp`](src/engine/leaf_batch22_a.cpp) |
 | `0x0015d888` | 148 | `unknown` | `matching` | `func_0015d888` | [`src/engine/leaf_batch14_b.cpp`](src/engine/leaf_batch14_b.cpp) |
 | `0x0015d91c` | 40 | `unknown` | `matching` | `func_0015d91c` | [`src/engine/leaf_batch18_c.cpp`](src/engine/leaf_batch18_c.cpp) |
+| `0x0015dc64` | 100 | `engine` | `matching` | `engine_func_0015dc64` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
+| `0x0015dcc8` | 116 | `unknown` | `matching` | `func_0015dcc8` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x0015dd3c` | 52 | `unknown` | `matching` | `func_0015dd3c` | [`src/engine/leaf_batch19_c.cpp`](src/engine/leaf_batch19_c.cpp) |
 | `0x0015dee8` | 52 | `unknown` | `matching` | `func_0015dee8` | [`src/engine/leaf_batch19_c.cpp`](src/engine/leaf_batch19_c.cpp) |
+| `0x0015df9c` | 116 | `engine` | `matching` | `engine_func_0015df9c` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x0015e010` | 44 | `unknown` | `matching` | `func_0015e010` | [`src/engine/leaf_batch22_a.cpp`](src/engine/leaf_batch22_a.cpp) |
 | `0x0015e03c` | 64 | `engine` | `matching` | `engine_func_0015e03c` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
 | `0x0015e2c8` | 28 | `unknown` | `matching` | `func_0015e2c8` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
@@ -735,6 +804,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x0015eef8` | 20 | `unknown` | `matching` | `func_0015eef8` | [`src/engine/leaf_batch21_a.cpp`](src/engine/leaf_batch21_a.cpp) |
 | `0x0015ef0c` | 40 | `unknown` | `matching` | `func_0015ef0c` | [`src/engine/leaf_batch22_a.cpp`](src/engine/leaf_batch22_a.cpp) |
 | `0x0015f00c` | 84 | `unknown` | `matching` | `func_0015f00c` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
+| `0x0015f060` | 88 | `unknown` | `matching` | `func_0015f060` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x0015f2b8` | 80 | `unknown` | `matching` | `func_0015f2b8` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
 | `0x0015f6d4` | 64 | `battle` | `matching` | `battle_func_0015f6d4` | [`src/engine/leaf_batch11_b.cpp`](src/engine/leaf_batch11_b.cpp) |
 | `0x0015f714` | 52 | `unknown` | `matching` | `func_0015f714` | [`src/engine/leaf_batch15_c.cpp`](src/engine/leaf_batch15_c.cpp) |
@@ -804,6 +874,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x00192168` | 124 | `engine` | `non_matching` | `effParts_func_00192168` | [`src/engine/asd_effect.cpp`](src/engine/asd_effect.cpp) |
 | `0x001921e4` | 20 | `unknown` | `matching` | `func_001921e4` | [`src/engine/leaf_batch21_a.cpp`](src/engine/leaf_batch21_a.cpp) |
 | `0x001924a8` | 84 | `engine` | `matching` | `engine_func_001924a8` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
+| `0x001924fc` | 88 | `script_vm` | `matching` | `script_vm_func_001924fc` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x00192594` | 484 | `engine` | `non_matching` | `AsdModel_func_00192594` | [`src/engine/asd_model.cpp`](src/engine/asd_model.cpp) |
 | `0x00192778` | 44 | `engine` | `matching` | `engine_func_00192778` | [`src/engine/leaf_batch19_a.cpp`](src/engine/leaf_batch19_a.cpp) |
 | `0x001927a4` | 36 | `unknown` | `matching` | `func_001927a4` | [`src/engine/leaf_batch18_c.cpp`](src/engine/leaf_batch18_c.cpp) |
@@ -818,6 +889,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x00193b44` | 16 | `camp` | `matching` | `camp_func_00193b44` | [`src/engine/leaf_batch21_a.cpp`](src/engine/leaf_batch21_a.cpp) |
 | `0x00193b54` | 16 | `unknown` | `matching` | `func_00193b54` | [`src/engine/leaf_batch21_a.cpp`](src/engine/leaf_batch21_a.cpp) |
 | `0x00194dbc` | 648 | `camp` | `non_matching` | `PlayLog_func_00194dbc` | [`src/camp/title_flow.cpp`](src/camp/title_flow.cpp) |
+| `0x001953a8` | 96 | `engine` | `matching` | `engine_func_001953a8` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x00195408` | 28 | `script_vm` | `matching` | `script_vm_func_00195408` | [`src/engine/leaf_batch21_a.cpp`](src/engine/leaf_batch21_a.cpp) |
 | `0x001955bc` | 5812 | `script_vm` | `stub` | `FlowScript_EventVmExecute` | [`src/script/script_vm.cpp`](src/script/script_vm.cpp) |
 | `0x00197d2c` | 4432 | `ui` | `non_matching` | `ui_func_00197d2c` | [`src/ui/ui_runtime.cpp`](src/ui/ui_runtime.cpp) |
@@ -825,11 +897,13 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x0019d9d4` | 64 | `unknown` | `matching` | `func_0019d9d4` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
 | `0x0019da14` | 48 | `engine` | `matching` | `engine_func_0019da14` | [`src/engine/leaf_batch19_b.cpp`](src/engine/leaf_batch19_b.cpp) |
 | `0x0019da44` | 32 | `unknown` | `matching` | `func_0019da44` | [`src/engine/leaf_batch22_a.cpp`](src/engine/leaf_batch22_a.cpp) |
+| `0x0019db00` | 112 | `script_vm` | `matching` | `script_vm_func_0019db00` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x0019de0c` | 12 | `ui` | `matching` | `ui_func_0019de0c` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x0019e034` | 4772 | `battle` | `stub` | `btlUI_Calc` | [`src/battle/btl_ui.cpp`](src/battle/btl_ui.cpp) |
 | `0x0019fb58` | 756 | `engine` | `non_matching` | `AsdTexTMX_func_0019fb58` | [`src/engine/asd_texture.cpp`](src/engine/asd_texture.cpp) |
 | `0x0019fe4c` | 64 | `unknown` | `matching` | `func_0019fe4c` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
 | `0x001a0768` | 100 | `unknown` | `matching` | `func_001a0768` | [`src/engine/leaf_batch13_c.cpp`](src/engine/leaf_batch13_c.cpp) |
+| `0x001a07cc` | 112 | `unknown` | `matching` | `func_001a07cc` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x001a083c` | 52 | `unknown` | `matching` | `func_001a083c` | [`src/engine/leaf_batch11_a.cpp`](src/engine/leaf_batch11_a.cpp) |
 | `0x001a0870` | 56 | `unknown` | `matching` | `func_001a0870` | [`src/engine/leaf_batch11_a.cpp`](src/engine/leaf_batch11_a.cpp) |
 | `0x001a08a8` | 20 | `unknown` | `matching` | `func_001a08a8` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
@@ -843,19 +917,25 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x001a15b0` | 932 | `ui` | `stub` | `Result_DrawUp` | [`src/ui/result.cpp`](src/ui/result.cpp) |
 | `0x001a1e6c` | 16 | `camp` | `matching` | `camp_func_001a1e6c` | [`src/engine/leaf_batch21_a.cpp`](src/engine/leaf_batch21_a.cpp) |
 | `0x001a310c` | 15148 | `ui` | `non_matching` | `Status_DrawUp` | [`src/ui/status.cpp`](src/ui/status.cpp) |
+| `0x001a7c38` | 116 | `unknown` | `matching` | `func_001a7c38` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x001a8104` | 84 | `unknown` | `matching` | `func_001a8104` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
 | `0x001a826c` | 56 | `unknown` | `matching` | `func_001a826c` | [`src/engine/leaf_batch23_a.cpp`](src/engine/leaf_batch23_a.cpp) |
+| `0x001a82a4` | 96 | `engine` | `matching` | `engine_func_001a82a4` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x001a839c` | 44 | `unknown` | `matching` | `func_001a839c` | [`src/engine/leaf_batch22_a.cpp`](src/engine/leaf_batch22_a.cpp) |
 | `0x001a83c8` | 488 | `battle` | `non_matching` | `btlUI_Init` | [`src/battle/btl_ui.cpp`](src/battle/btl_ui.cpp) |
 | `0x001a8924` | 552 | `engine` | `non_matching` | `mapEnemy_func_001a8924` | [`src/engine/map_runtime.cpp`](src/engine/map_runtime.cpp) |
+| `0x001a9408` | 100 | `script_vm` | `matching` | `script_vm_func_001a9408` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x001a95b8` | 60 | `unknown` | `matching` | `func_001a95b8` | [`src/engine/leaf_batch23_a.cpp`](src/engine/leaf_batch23_a.cpp) |
 | `0x001a969c` | 644 | `script_vm` | `non_matching` | `qcMain_func_001a969c` | [`src/script/script_extras.cpp`](src/script/script_extras.cpp) |
 | `0x001a9948` | 40 | `engine` | `matching` | `engine_func_001a9948` | [`src/engine/leaf_batch22_a.cpp`](src/engine/leaf_batch22_a.cpp) |
+| `0x001a9db8` | 108 | `engine` | `matching` | `engine_func_001a9db8` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x001a9e24` | 68 | `engine` | `matching` | `engine_func_001a9e24` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
 | `0x001a9f2c` | 64 | `engine` | `matching` | `engine_func_001a9f2c` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
+| `0x001aa010` | 68 | `unknown` | `matching` | `func_001aa010` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x001aa054` | 64 | `unknown` | `matching` | `func_001aa054` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
 | `0x001aa094` | 88 | `unknown` | `matching` | `func_001aa094` | [`src/engine/leaf_batch13_b.cpp`](src/engine/leaf_batch13_b.cpp) |
 | `0x001aa0ec` | 88 | `unknown` | `matching` | `func_001aa0ec` | [`src/engine/leaf_batch13_b.cpp`](src/engine/leaf_batch13_b.cpp) |
+| `0x001aa144` | 88 | `engine` | `matching` | `engine_func_001aa144` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x001aac60` | 2448 | `battle` | `non_matching` | `battle_func_001aac60` | [`src/engine/block_batch.cpp`](src/engine/block_batch.cpp) |
 | `0x001ab7c0` | 40 | `engine` | `matching` | `engine_func_001ab7c0` | [`src/engine/leaf_batch22_a.cpp`](src/engine/leaf_batch22_a.cpp) |
 | `0x001ab7e8` | 72 | `engine` | `matching` | `engine_func_001ab7e8` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
@@ -866,11 +946,13 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x001ab8ac` | 28 | `unknown` | `matching` | `func_001ab8ac` | [`src/engine/leaf_batch21_a.cpp`](src/engine/leaf_batch21_a.cpp) |
 | `0x001ab8c8` | 16 | `unknown` | `matching` | `func_001ab8c8` | [`src/engine/leaf_batch21_a.cpp`](src/engine/leaf_batch21_a.cpp) |
 | `0x001ab8d8` | 40 | `script_vm` | `matching` | `script_vm_func_001ab8d8` | [`src/engine/leaf_batch22_a.cpp`](src/engine/leaf_batch22_a.cpp) |
+| `0x001aba28` | 108 | `script_vm` | `matching` | `script_vm_func_001aba28` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x001aba94` | 4672 | `engine` | `non_matching` | `engine_func_001aba94` | [`src/engine/asd_runtime.cpp`](src/engine/asd_runtime.cpp) |
 | `0x001accd4` | 1104 | `ui` | `non_matching` | `SearchWin_DrawUpAndCalc` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x001ad124` | 60 | `battle` | `matching` | `battle_func_001ad124` | [`src/engine/leaf_batch23_a.cpp`](src/engine/leaf_batch23_a.cpp) |
 | `0x001ad160` | 60 | `battle` | `matching` | `battle_func_001ad160` | [`src/engine/leaf_batch23_a.cpp`](src/engine/leaf_batch23_a.cpp) |
 | `0x001ad19c` | 60 | `battle` | `matching` | `battle_func_001ad19c` | [`src/engine/leaf_batch23_a.cpp`](src/engine/leaf_batch23_a.cpp) |
+| `0x001ad328` | 88 | `unknown` | `matching` | `func_001ad328` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x001ad380` | 60 | `battle` | `matching` | `battle_func_001ad380` | [`src/engine/leaf_batch23_a.cpp`](src/engine/leaf_batch23_a.cpp) |
 | `0x001ad888` | 76 | `engine` | `matching` | `engine_func_001ad888` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
 | `0x001ad8d4` | 24 | `script_vm` | `matching` | `script_vm_func_001ad8d4` | [`src/engine/leaf_batch21_a.cpp`](src/engine/leaf_batch21_a.cpp) |
@@ -889,6 +971,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x001b41e0` | 32 | `script_vm` | `matching` | `script_vm_func_001b41e0` | [`src/engine/leaf_batch22_a.cpp`](src/engine/leaf_batch22_a.cpp) |
 | `0x001b4200` | 56 | `ui` | `matching` | `ui_func_001b4200` | [`src/engine/leaf_batch23_a.cpp`](src/engine/leaf_batch23_a.cpp) |
 | `0x001b4238` | 68 | `unknown` | `matching` | `func_001b4238` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
+| `0x001b427c` | 112 | `script_vm` | `matching` | `script_vm_func_001b427c` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x001b4410` | 440 | `engine` | `non_matching` | `mapMain_func_001b4410` | [`src/engine/map_runtime.cpp`](src/engine/map_runtime.cpp) |
 | `0x001b4b74` | 36 | `camp` | `matching` | `camp_func_001b4b74` | [`src/engine/leaf_batch22_a.cpp`](src/engine/leaf_batch22_a.cpp) |
 | `0x001b4b98` | 36 | `engine` | `matching` | `engine_func_001b4b98` | [`src/engine/leaf_batch18_c.cpp`](src/engine/leaf_batch18_c.cpp) |
@@ -901,7 +984,10 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x001c0854` | 68 | `script_vm` | `matching` | `script_vm_func_001c0854` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
 | `0x001c1c4c` | 64 | `unknown` | `matching` | `func_001c1c4c` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
 | `0x001c1c8c` | 60 | `unknown` | `matching` | `func_001c1c8c` | [`src/engine/leaf_batch23_a.cpp`](src/engine/leaf_batch23_a.cpp) |
+| `0x001c1cc8` | 100 | `unknown` | `matching` | `func_001c1cc8` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x001c1d2c` | 88 | `unknown` | `matching` | `func_001c1d2c` | [`src/engine/leaf_batch13_b.cpp`](src/engine/leaf_batch13_b.cpp) |
+| `0x001c1d84` | 100 | `unknown` | `matching` | `func_001c1d84` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
+| `0x001c291c` | 100 | `engine` | `matching` | `engine_func_001c291c` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x001c2a14` | 52 | `engine` | `matching` | `engine_func_001c2a14` | [`src/engine/leaf_batch22_a.cpp`](src/engine/leaf_batch22_a.cpp) |
 | `0x001c33f0` | 48 | `battle` | `matching` | `battle_func_001c33f0` | [`src/engine/leaf_batch19_b.cpp`](src/engine/leaf_batch19_b.cpp) |
 | `0x001c34ac` | 32 | `engine` | `matching` | `engine_func_001c34ac` | [`src/engine/leaf_batch18_b.cpp`](src/engine/leaf_batch18_b.cpp) |
@@ -932,6 +1018,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x001d29c8` | 240 | `battle` | `non_matching` | `btlUnit_CheckPartyActive` | [`src/battle/btl_ui.cpp`](src/battle/btl_ui.cpp) |
 | `0x001d2b14` | 760 | `engine` | `non_matching` | `lmapMain_func_001d2b14` | [`src/engine/map_runtime.cpp`](src/engine/map_runtime.cpp) |
 | `0x001d2e24` | 40 | `script_vm` | `matching` | `script_vm_func_001d2e24` | [`src/engine/leaf_batch22_a.cpp`](src/engine/leaf_batch22_a.cpp) |
+| `0x001d33ac` | 100 | `script_vm` | `matching` | `script_vm_func_001d33ac` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x001d3598` | 56 | `script_vm` | `matching` | `script_vm_func_001d3598` | [`src/engine/leaf_batch23_a.cpp`](src/engine/leaf_batch23_a.cpp) |
 | `0x001d371c` | 48 | `script_vm` | `matching` | `script_vm_func_001d371c` | [`src/engine/leaf_batch22_a.cpp`](src/engine/leaf_batch22_a.cpp) |
 | `0x001d374c` | 408 | `ui` | `non_matching` | `nameMain_Init` | [`src/script/script_vm.cpp`](src/script/script_vm.cpp) |
@@ -961,8 +1048,11 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x001dc748` | 88 | `unknown` | `matching` | `func_001dc748` | [`src/engine/leaf_batch13_c.cpp`](src/engine/leaf_batch13_c.cpp) |
 | `0x001dc7a0` | 20 | `battle` | `matching` | `battle_func_001dc7a0` | [`src/engine/leaf_batch18_a.cpp`](src/engine/leaf_batch18_a.cpp) |
 | `0x001dc7b4` | 84 | `engine` | `matching` | `engine_func_001dc7b4` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
+| `0x001dc808` | 100 | `engine` | `matching` | `engine_func_001dc808` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x001dc86c` | 32 | `engine` | `matching` | `engine_func_001dc86c` | [`src/engine/leaf_batch22_a.cpp`](src/engine/leaf_batch22_a.cpp) |
 | `0x001dc88c` | 60 | `engine` | `matching` | `engine_func_001dc88c` | [`src/engine/leaf_batch23_a.cpp`](src/engine/leaf_batch23_a.cpp) |
+| `0x001dce70` | 88 | `unknown` | `matching` | `func_001dce70` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
+| `0x001dcec8` | 88 | `unknown` | `matching` | `func_001dcec8` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x001dcf80` | 60 | `battle` | `matching` | `battle_func_001dcf80` | [`src/engine/leaf_batch23_a.cpp`](src/engine/leaf_batch23_a.cpp) |
 | `0x001dcfbc` | 76 | `engine` | `matching` | `engine_func_001dcfbc` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
 | `0x001dd008` | 48 | `engine` | `matching` | `engine_func_001dd008` | [`src/engine/leaf_batch19_b.cpp`](src/engine/leaf_batch19_b.cpp) |
@@ -977,6 +1067,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x001ddaf8` | 36 | `ui` | `non_matching` | `Status_GetField1E64` | [`src/ui/status.cpp`](src/ui/status.cpp) |
 | `0x001ddb1c` | 36 | `ui` | `non_matching` | `Status_IsState8` | [`src/ui/status.cpp`](src/ui/status.cpp) |
 | `0x001de238` | 5020 | `camp` | `non_matching` | `Unite_DrawAndCalc` | [`src/camp/unite.cpp`](src/camp/unite.cpp) |
+| `0x001dfadc` | 100 | `ui` | `matching` | `ui_func_001dfadc` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x001dfb40` | 32 | `ui` | `matching` | `ui_func_001dfb40` | [`src/engine/leaf_batch22_a.cpp`](src/engine/leaf_batch22_a.cpp) |
 | `0x001e1118` | 488 | `script_vm` | `non_matching` | `clearSave_func_001e1118` | [`src/script/script_extras.cpp`](src/script/script_extras.cpp) |
 | `0x001e15ec` | 60 | `script_vm` | `matching` | `script_vm_func_001e15ec` | [`src/engine/leaf_batch23_a.cpp`](src/engine/leaf_batch23_a.cpp) |
@@ -1002,6 +1093,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x001e4c4c` | 48 | `ui` | `matching` | `ui_func_001e4c4c` | [`src/engine/leaf_batch19_b.cpp`](src/engine/leaf_batch19_b.cpp) |
 | `0x001e5d5c` | 40 | `engine` | `matching` | `engine_func_001e5d5c` | [`src/engine/leaf_batch22_a.cpp`](src/engine/leaf_batch22_a.cpp) |
 | `0x001e5d84` | 9740 | `script_vm` | `non_matching` | `FlowScript_ProcessFlagBank` | [`src/script/script_runtime.cpp`](src/script/script_runtime.cpp) |
+| `0x001e8390` | 108 | `unknown` | `matching` | `func_001e8390` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x001e83fc` | 4380 | `ui` | `non_matching` | `ui_func_001e83fc` | [`src/ui/ui_scene_extras.cpp`](src/ui/ui_scene_extras.cpp) |
 | `0x001e989c` | 3924 | `ui` | `non_matching` | `ui_func_001e989c` | [`src/ui/ui_runtime2.cpp`](src/ui/ui_runtime2.cpp) |
 | `0x001ea7f0` | 24 | `script_vm` | `matching` | `script_vm_func_001ea7f0` | [`src/engine/leaf_batch21_a.cpp`](src/engine/leaf_batch21_a.cpp) |
@@ -1017,6 +1109,9 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x001ebcfc` | 40 | `camp` | `matching` | `camp_func_001ebcfc` | [`src/engine/leaf_batch22_a.cpp`](src/engine/leaf_batch22_a.cpp) |
 | `0x001eca68` | 28 | `unknown` | `matching` | `func_001eca68` | [`src/engine/leaf_batch21_a.cpp`](src/engine/leaf_batch21_a.cpp) |
 | `0x001eca84` | 84 | `engine` | `matching` | `engine_func_001eca84` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
+| `0x001ecad8` | 92 | `engine` | `matching` | `engine_func_001ecad8` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
+| `0x001ecb34` | 112 | `engine` | `matching` | `engine_func_001ecb34` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
+| `0x001ecba4` | 108 | `engine` | `matching` | `engine_func_001ecba4` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x001ed164` | 24 | `unknown` | `matching` | `func_001ed164` | [`src/engine/leaf_batch21_a.cpp`](src/engine/leaf_batch21_a.cpp) |
 | `0x001ed280` | 68 | `engine` | `matching` | `engine_func_001ed280` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
 | `0x001ed2c4` | 32 | `engine` | `matching` | `engine_func_001ed2c4` | [`src/engine/leaf_batch22_a.cpp`](src/engine/leaf_batch22_a.cpp) |
@@ -1025,6 +1120,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x001ed3c8` | 44 | `engine` | `matching` | `engine_func_001ed3c8` | [`src/engine/leaf_batch19_a.cpp`](src/engine/leaf_batch19_a.cpp) |
 | `0x001ed4d4` | 60 | `engine` | `matching` | `engine_func_001ed4d4` | [`src/engine/leaf_batch23_a.cpp`](src/engine/leaf_batch23_a.cpp) |
 | `0x001ed510` | 16 | `unknown` | `matching` | `func_001ed510` | [`src/engine/leaf_batch17_a.cpp`](src/engine/leaf_batch17_a.cpp) |
+| `0x001ed560` | 96 | `engine` | `matching` | `engine_func_001ed560` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x001ed6d0` | 80 | `engine` | `matching` | `engine_func_001ed6d0` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
 | `0x001ed7c0` | 244 | `unknown` | `matching` | `func_001ed7c0` | [`src/engine/leaf_batch14_b.cpp`](src/engine/leaf_batch14_b.cpp) |
 | `0x001ee114` | 188 | `unknown` | `matching` | `func_001ee114` | [`src/engine/leaf_batch16_a.cpp`](src/engine/leaf_batch16_a.cpp) |
@@ -1039,12 +1135,15 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x001f1fc8` | 3960 | `ui` | `non_matching` | `ui_func_001f1fc8` | [`src/ui/ui_runtime2.cpp`](src/ui/ui_runtime2.cpp) |
 | `0x001f2f40` | 24 | `camp` | `matching` | `camp_func_001f2f40` | [`src/engine/leaf_batch21_a.cpp`](src/engine/leaf_batch21_a.cpp) |
 | `0x001f2f58` | 1704 | `camp` | `non_matching` | `Unite_Setup` | [`src/camp/unite.cpp`](src/camp/unite.cpp) |
+| `0x001f3600` | 88 | `unknown` | `matching` | `func_001f3600` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
+| `0x001f417c` | 112 | `unknown` | `matching` | `func_001f417c` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x001f4a54` | 84 | `engine` | `matching` | `engine_func_001f4a54` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
 | `0x001f5db4` | 32 | `camp` | `matching` | `camp_func_001f5db4` | [`src/engine/leaf_batch22_a.cpp`](src/engine/leaf_batch22_a.cpp) |
 | `0x001f5e18` | 32 | `engine` | `matching` | `engine_func_001f5e18` | [`src/engine/leaf_batch18_b.cpp`](src/engine/leaf_batch18_b.cpp) |
 | `0x001f60dc` | 152 | `ui` | `non_matching` | `StatusDown_SkillSortByCostAsc` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x001f6174` | 48 | `ui` | `non_matching` | `StatusDown_SkillSortByNameAsc` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x001f6384` | 84 | `engine` | `matching` | `engine_func_001f6384` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
+| `0x001f63d8` | 100 | `battle` | `matching` | `battle_func_001f63d8` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x001f66f8` | 4 | `unknown` | `matching` | `func_001f66f8` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x001f66fc` | 8 | `unknown` | `matching` | `func_001f66fc` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x001f68a8` | 8 | `unknown` | `matching` | `func_001f68a8` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
@@ -1059,6 +1158,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x001fa68c` | 48 | `script_vm` | `matching` | `script_vm_func_001fa68c` | [`src/engine/leaf_batch22_a.cpp`](src/engine/leaf_batch22_a.cpp) |
 | `0x001fb434` | 20 | `script_vm` | `matching` | `script_vm_func_001fb434` | [`src/engine/leaf_batch21_a.cpp`](src/engine/leaf_batch21_a.cpp) |
 | `0x001fb520` | 2788 | `battle` | `non_matching` | `battle_func_001fb520` | [`src/engine/block_batch.cpp`](src/engine/block_batch.cpp) |
+| `0x001fc1a4` | 104 | `script_vm` | `matching` | `script_vm_func_001fc1a4` | [`src/engine/leaf_batch25_a.cpp`](src/engine/leaf_batch25_a.cpp) |
 | `0x001fc42c` | 84 | `engine` | `matching` | `engine_func_001fc42c` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
 | `0x001fc4d4` | 32 | `engine` | `matching` | `engine_func_001fc4d4` | [`src/engine/leaf_batch18_b.cpp`](src/engine/leaf_batch18_b.cpp) |
 | `0x001fc4f4` | 40 | `engine` | `matching` | `engine_func_001fc4f4` | [`src/engine/leaf_batch19_a.cpp`](src/engine/leaf_batch19_a.cpp) |
@@ -1077,7 +1177,9 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x00200860` | 28 | `unknown` | `matching` | `func_00200860` | [`src/engine/leaf_batch20_b.cpp`](src/engine/leaf_batch20_b.cpp) |
 | `0x00200b1c` | 28 | `unknown` | `matching` | `func_00200b1c` | [`src/engine/leaf_batch20_b.cpp`](src/engine/leaf_batch20_b.cpp) |
 | `0x002012ec` | 44 | `engine` | `matching` | `engine_func_002012ec` | [`src/engine/leaf_batch19_a.cpp`](src/engine/leaf_batch19_a.cpp) |
+| `0x00201384` | 80 | `engine` | `matching` | `engine_func_00201384` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x002013d4` | 20 | `camp` | `matching` | `camp_func_002013d4` | [`src/engine/leaf_batch20_b.cpp`](src/engine/leaf_batch20_b.cpp) |
+| `0x002013e8` | 88 | `camp` | `matching` | `camp_func_002013e8` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x00201440` | 24 | `script_vm` | `matching` | `script_vm_func_00201440` | [`src/engine/leaf_batch20_b.cpp`](src/engine/leaf_batch20_b.cpp) |
 | `0x00201458` | 20 | `script_vm` | `matching` | `script_vm_func_00201458` | [`src/engine/leaf_batch20_b.cpp`](src/engine/leaf_batch20_b.cpp) |
 | `0x0020146c` | 20 | `script_vm` | `matching` | `script_vm_func_0020146c` | [`src/engine/leaf_batch20_b.cpp`](src/engine/leaf_batch20_b.cpp) |
@@ -1091,11 +1193,17 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x00206be8` | 80 | `ui` | `non_matching` | `StatusDown_SkillSortByIdAsc` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x00206c38` | 132 | `ui` | `non_matching` | `StatusDown_ItemSortByTypeAsc` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x00206cbc` | 124 | `ui` | `non_matching` | `StatusDown_ItemSortByIdAsc` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
+| `0x00206d38` | 84 | `engine` | `matching` | `engine_func_00206d38` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x00206d8c` | 64 | `engine` | `matching` | `engine_func_00206d8c` | [`src/engine/leaf_batch24_b.cpp`](src/engine/leaf_batch24_b.cpp) |
+| `0x00206dcc` | 100 | `engine` | `matching` | `engine_func_00206dcc` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x00206e30` | 64 | `engine` | `matching` | `engine_func_00206e30` | [`src/engine/leaf_batch24_b.cpp`](src/engine/leaf_batch24_b.cpp) |
 | `0x00206e70` | 64 | `engine` | `matching` | `engine_func_00206e70` | [`src/engine/leaf_batch24_b.cpp`](src/engine/leaf_batch24_b.cpp) |
 | `0x00206eb0` | 64 | `engine` | `matching` | `engine_func_00206eb0` | [`src/engine/leaf_batch24_b.cpp`](src/engine/leaf_batch24_b.cpp) |
 | `0x00206ef0` | 64 | `engine` | `matching` | `engine_func_00206ef0` | [`src/engine/leaf_batch24_b.cpp`](src/engine/leaf_batch24_b.cpp) |
+| `0x00206f30` | 76 | `camp` | `matching` | `camp_func_00206f30` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
+| `0x00206f7c` | 92 | `unknown` | `matching` | `func_00206f7c` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
+| `0x00207138` | 84 | `unknown` | `matching` | `func_00207138` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
+| `0x00207280` | 80 | `camp` | `matching` | `camp_func_00207280` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x002072fc` | 8 | `unknown` | `matching` | `func_002072fc` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x00207304` | 4 | `unknown` | `matching` | `func_00207304` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x00207308` | 4 | `unknown` | `matching` | `func_00207308` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
@@ -1119,15 +1227,18 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x0020fe74` | 16 | `unknown` | `matching` | `func_0020fe74` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x0021041c` | 204 | `engine` | `non_matching` | `AsdSaveCommon_func_0021041c` | [`src/engine/asd_file.cpp`](src/engine/asd_file.cpp) |
 | `0x002104e8` | 268 | `engine` | `non_matching` | `AsdSaveCommon_func_002104e8` | [`src/engine/asd_file.cpp`](src/engine/asd_file.cpp) |
+| `0x00210758` | 92 | `unknown` | `matching` | `func_00210758` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x002107b4` | 16 | `unknown` | `matching` | `func_002107b4` | [`src/engine/leaf_batch20_b.cpp`](src/engine/leaf_batch20_b.cpp) |
 | `0x00210be4` | 40 | `script_vm` | `matching` | `script_vm_func_00210be4` | [`src/engine/leaf_batch23_b.cpp`](src/engine/leaf_batch23_b.cpp) |
 | `0x00210f94` | 28 | `camp` | `matching` | `camp_func_00210f94` | [`src/engine/leaf_batch20_b.cpp`](src/engine/leaf_batch20_b.cpp) |
 | `0x00211688` | 28 | `camp` | `matching` | `camp_func_00211688` | [`src/engine/leaf_batch20_b.cpp`](src/engine/leaf_batch20_b.cpp) |
 | `0x0021176c` | 32 | `unknown` | `matching` | `func_0021176c` | [`src/engine/leaf_batch20_b.cpp`](src/engine/leaf_batch20_b.cpp) |
+| `0x0021178c` | 92 | `ui` | `matching` | `ui_func_0021178c` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x002117e8` | 60 | `unknown` | `matching` | `func_002117e8` | [`src/engine/leaf_batch20_b.cpp`](src/engine/leaf_batch20_b.cpp) |
 | `0x00211b44` | 40 | `unknown` | `matching` | `func_00211b44` | [`src/engine/leaf_batch20_b.cpp`](src/engine/leaf_batch20_b.cpp) |
 | `0x00211b6c` | 40 | `unknown` | `matching` | `func_00211b6c` | [`src/engine/leaf_batch20_b.cpp`](src/engine/leaf_batch20_b.cpp) |
 | `0x00211e54` | 60 | `engine` | `matching` | `engine_func_00211e54` | [`src/engine/leaf_batch24_b.cpp`](src/engine/leaf_batch24_b.cpp) |
+| `0x00211e90` | 76 | `engine` | `matching` | `engine_func_00211e90` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x00211edc` | 8 | `unknown` | `matching` | `func_00211edc` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x00211ee4` | 40 | `unknown` | `matching` | `func_00211ee4` | [`src/engine/leaf_batch10_b.cpp`](src/engine/leaf_batch10_b.cpp) |
 | `0x0021243c` | 5820 | `ui` | `stub` | `Ui_QuestCenterListRender` | [`src/ui/quest_ui.cpp`](src/ui/quest_ui.cpp) |
@@ -1143,12 +1254,15 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x00215bc0` | 24 | `camp` | `matching` | `camp_func_00215bc0` | [`src/engine/leaf_batch20_b.cpp`](src/engine/leaf_batch20_b.cpp) |
 | `0x002168b4` | 28 | `ui` | `matching` | `ui_func_002168b4` | [`src/engine/leaf_batch20_b.cpp`](src/engine/leaf_batch20_b.cpp) |
 | `0x002176a8` | 68 | `camp` | `matching` | `camp_func_002176a8` | [`src/engine/leaf_batch24_b.cpp`](src/engine/leaf_batch24_b.cpp) |
+| `0x002193e0` | 84 | `engine` | `matching` | `engine_func_002193e0` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
+| `0x00219434` | 88 | `engine` | `matching` | `engine_func_00219434` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x00219510` | 48 | `unknown` | `matching` | `func_00219510` | [`src/engine/leaf_batch19_b.cpp`](src/engine/leaf_batch19_b.cpp) |
 | `0x00219540` | 48 | `unknown` | `matching` | `func_00219540` | [`src/engine/leaf_batch19_b.cpp`](src/engine/leaf_batch19_b.cpp) |
 | `0x00219770` | 8 | `unknown` | `matching` | `func_00219770` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x00219778` | 8 | `unknown` | `matching` | `func_00219778` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x002197d4` | 4 | `unknown` | `matching` | `func_002197d4` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x002197d8` | 52 | `unknown` | `matching` | `func_002197d8` | [`src/engine/leaf_batch15_b.cpp`](src/engine/leaf_batch15_b.cpp) |
+| `0x0021a014` | 148 | `engine` | `matching` | `engine_func_0021a014` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x0021a278` | 8 | `unknown` | `matching` | `func_0021a278` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x0021ae48` | 428 | `battle` | `non_matching` | `btlGameOver_func_0021ae48` | [`src/battle/battle_extras.cpp`](src/battle/battle_extras.cpp) |
 | `0x0021c598` | 5420 | `battle` | `non_matching` | `Btl_StatusEffectCalc` | [`src/battle/battle_ailment.cpp`](src/battle/battle_ailment.cpp) |
@@ -1161,7 +1275,10 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x00220c10` | 24 | `camp` | `matching` | `camp_func_00220c10` | [`src/engine/leaf_batch20_b.cpp`](src/engine/leaf_batch20_b.cpp) |
 | `0x00220c28` | 20 | `ui` | `matching` | `ui_func_00220c28` | [`src/engine/leaf_batch20_b.cpp`](src/engine/leaf_batch20_b.cpp) |
 | `0x00220c3c` | 32 | `unknown` | `matching` | `func_00220c3c` | [`src/engine/leaf_batch18_b.cpp`](src/engine/leaf_batch18_b.cpp) |
+| `0x00220eb4` | 76 | `camp` | `matching` | `camp_func_00220eb4` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
+| `0x0022100c` | 144 | `camp` | `matching` | `camp_func_0022100c` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x0022109c` | 20 | `script_vm` | `matching` | `script_vm_func_0022109c` | [`src/engine/leaf_batch18_a.cpp`](src/engine/leaf_batch18_a.cpp) |
+| `0x00221114` | 84 | `engine` | `matching` | `engine_func_00221114` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x002211fc` | 24 | `engine` | `matching` | `engine_func_002211fc` | [`src/engine/leaf_batch18_a.cpp`](src/engine/leaf_batch18_a.cpp) |
 | `0x002215a0` | 72 | `unknown` | `matching` | `func_002215a0` | [`src/engine/leaf_batch13_a.cpp`](src/engine/leaf_batch13_a.cpp) |
 | `0x00221678` | 72 | `unknown` | `matching` | `func_00221678` | [`src/engine/leaf_batch20_b.cpp`](src/engine/leaf_batch20_b.cpp) |
@@ -1173,6 +1290,8 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x00222198` | 24 | `battle` | `matching` | `battle_func_00222198` | [`src/engine/leaf_batch18_a.cpp`](src/engine/leaf_batch18_a.cpp) |
 | `0x002227dc` | 32 | `camp` | `matching` | `camp_func_002227dc` | [`src/engine/leaf_batch20_b.cpp`](src/engine/leaf_batch20_b.cpp) |
 | `0x00222894` | 44 | `engine` | `matching` | `engine_func_00222894` | [`src/engine/leaf_batch19_a.cpp`](src/engine/leaf_batch19_a.cpp) |
+| `0x00223190` | 108 | `script_vm` | `matching` | `script_vm_func_00223190` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
+| `0x002231fc` | 108 | `script_vm` | `matching` | `script_vm_func_002231fc` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x00223a18` | 28 | `unknown` | `matching` | `func_00223a18` | [`src/engine/leaf_batch20_b.cpp`](src/engine/leaf_batch20_b.cpp) |
 | `0x00223a90` | 248 | `ui` | `non_matching` | `StatusBustUp_Init` | [`src/ui/status.cpp`](src/ui/status.cpp) |
 | `0x00223b88` | 40 | `ui` | `non_matching` | `StatusDown_IsState20` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
@@ -1183,6 +1302,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x00225134` | 32 | `camp` | `matching` | `camp_func_00225134` | [`src/engine/leaf_batch20_b.cpp`](src/engine/leaf_batch20_b.cpp) |
 | `0x002253c8` | 24 | `ui` | `matching` | `ui_func_002253c8` | [`src/engine/leaf_batch20_b.cpp`](src/engine/leaf_batch20_b.cpp) |
 | `0x002253e0` | 28 | `camp` | `matching` | `camp_func_002253e0` | [`src/engine/leaf_batch20_b.cpp`](src/engine/leaf_batch20_b.cpp) |
+| `0x00225678` | 140 | `unknown` | `matching` | `func_00225678` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x00225704` | 76 | `unknown` | `matching` | `func_00225704` | [`src/engine/leaf_batch20_b.cpp`](src/engine/leaf_batch20_b.cpp) |
 | `0x00225824` | 592 | `unknown` | `matching` | `func_00225824` | [`src/engine/leaf_batch16_c.cpp`](src/engine/leaf_batch16_c.cpp) |
 | `0x00225b20` | 132 | `unknown` | `matching` | `func_00225b20` | [`src/engine/leaf_batch14_a.cpp`](src/engine/leaf_batch14_a.cpp) |
@@ -1196,6 +1316,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x002273bc` | 36 | `unknown` | `matching` | `func_002273bc` | [`src/engine/leaf_batch12_a.cpp`](src/engine/leaf_batch12_a.cpp) |
 | `0x002273f0` | 36 | `engine` | `matching` | `engine_func_002273f0` | [`src/engine/leaf_batch15_a.cpp`](src/engine/leaf_batch15_a.cpp) |
 | `0x002277c4` | 56 | `ui` | `matching` | `ui_func_002277c4` | [`src/engine/leaf_batch24_b.cpp`](src/engine/leaf_batch24_b.cpp) |
+| `0x00227918` | 80 | `ui` | `matching` | `ui_func_00227918` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x00227dc4` | 48 | `unknown` | `matching` | `func_00227dc4` | [`src/engine/leaf_batch11_a.cpp`](src/engine/leaf_batch11_a.cpp) |
 | `0x00228b14` | 28 | `unknown` | `matching` | `func_00228b14` | [`src/engine/leaf_batch20_b.cpp`](src/engine/leaf_batch20_b.cpp) |
 | `0x00229888` | 96 | `unknown` | `matching` | `func_00229888` | [`src/engine/leaf_batch16_c.cpp`](src/engine/leaf_batch16_c.cpp) |
@@ -1237,15 +1358,20 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x00230680` | 108 | `shop` | `matching` | `shop_func_00230680` | [`src/engine/leaf_batch13_c.cpp`](src/engine/leaf_batch13_c.cpp) |
 | `0x0023077c` | 20 | `engine` | `matching` | `engine_func_0023077c` | [`src/engine/leaf_batch20_b.cpp`](src/engine/leaf_batch20_b.cpp) |
 | `0x00230aa8` | 64 | `camp` | `matching` | `camp_func_00230aa8` | [`src/engine/leaf_batch24_b.cpp`](src/engine/leaf_batch24_b.cpp) |
+| `0x00230e54` | 108 | `unknown` | `matching` | `func_00230e54` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
+| `0x00230ec0` | 88 | `unknown` | `matching` | `func_00230ec0` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
+| `0x00230f18` | 108 | `ui` | `matching` | `ui_func_00230f18` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x00230f84` | 20 | `shop` | `matching` | `shop_func_00230f84` | [`src/engine/leaf_batch20_b.cpp`](src/engine/leaf_batch20_b.cpp) |
 | `0x00231300` | 24 | `unknown` | `matching` | `func_00231300` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x00231318` | 32 | `unknown` | `matching` | `func_00231318` | [`src/engine/leaf_batch20_b.cpp`](src/engine/leaf_batch20_b.cpp) |
 | `0x002313d4` | 24 | `shop` | `matching` | `shop_func_002313d4` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x002315b4` | 20 | `unknown` | `matching` | `func_002315b4` | [`src/engine/leaf_batch17_b.cpp`](src/engine/leaf_batch17_b.cpp) |
+| `0x002315c8` | 96 | `camp` | `matching` | `camp_func_002315c8` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x00231628` | 60 | `camp` | `matching` | `camp_func_00231628` | [`src/engine/leaf_batch24_b.cpp`](src/engine/leaf_batch24_b.cpp) |
 | `0x00231b38` | 28 | `unknown` | `matching` | `func_00231b38` | [`src/engine/leaf_batch20_b.cpp`](src/engine/leaf_batch20_b.cpp) |
 | `0x00231b54` | 32 | `unknown` | `matching` | `func_00231b54` | [`src/engine/leaf_batch18_b.cpp`](src/engine/leaf_batch18_b.cpp) |
 | `0x00231d4c` | 20 | `unknown` | `matching` | `func_00231d4c` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
+| `0x00231e38` | 136 | `unknown` | `matching` | `func_00231e38` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x00231f44` | 20 | `unknown` | `matching` | `func_00231f44` | [`src/engine/leaf_batch20_b.cpp`](src/engine/leaf_batch20_b.cpp) |
 | `0x00231f58` | 20 | `unknown` | `matching` | `func_00231f58` | [`src/engine/leaf_batch20_b.cpp`](src/engine/leaf_batch20_b.cpp) |
 | `0x00231f6c` | 20 | `unknown` | `matching` | `func_00231f6c` | [`src/engine/leaf_batch20_b.cpp`](src/engine/leaf_batch20_b.cpp) |
@@ -1271,6 +1397,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x002345fc` | 12 | `script_vm` | `matching` | `script_vm_func_002345fc` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x002347ac` | 12 | `engine` | `matching` | `engine_func_002347ac` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x002347b8` | 60 | `engine` | `matching` | `engine_func_002347b8` | [`src/engine/leaf_batch13_a.cpp`](src/engine/leaf_batch13_a.cpp) |
+| `0x00234840` | 96 | `camp` | `matching` | `camp_func_00234840` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x002348a0` | 64 | `camp` | `matching` | `camp_func_002348a0` | [`src/engine/leaf_batch24_b.cpp`](src/engine/leaf_batch24_b.cpp) |
 | `0x002348e0` | 64 | `camp` | `matching` | `camp_func_002348e0` | [`src/engine/leaf_batch24_b.cpp`](src/engine/leaf_batch24_b.cpp) |
 | `0x00234a1c` | 32 | `unknown` | `matching` | `func_00234a1c` | [`src/engine/leaf_batch12_a.cpp`](src/engine/leaf_batch12_a.cpp) |
@@ -1280,6 +1407,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x00235510` | 60 | `script_vm` | `matching` | `script_vm_func_00235510` | [`src/engine/leaf_batch24_b.cpp`](src/engine/leaf_batch24_b.cpp) |
 | `0x002355ac` | 12 | `engine` | `matching` | `engine_func_002355ac` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x002356d4` | 24 | `shop` | `matching` | `shop_func_002356d4` | [`src/engine/leaf_batch20_b.cpp`](src/engine/leaf_batch20_b.cpp) |
+| `0x002356ec` | 88 | `script_vm` | `matching` | `script_vm_func_002356ec` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x00235744` | 20 | `script_vm` | `matching` | `script_vm_func_00235744` | [`src/engine/leaf_batch20_b.cpp`](src/engine/leaf_batch20_b.cpp) |
 | `0x00235758` | 60 | `camp` | `matching` | `camp_func_00235758` | [`src/engine/leaf_batch24_b.cpp`](src/engine/leaf_batch24_b.cpp) |
 | `0x00235924` | 20 | `unknown` | `matching` | `func_00235924` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
@@ -1299,7 +1427,9 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x00237a5c` | 56 | `unknown` | `matching` | `func_00237a5c` | [`src/engine/leaf_batch24_b.cpp`](src/engine/leaf_batch24_b.cpp) |
 | `0x00237a94` | 64 | `ui` | `matching` | `ui_func_00237a94` | [`src/engine/leaf_batch20_b.cpp`](src/engine/leaf_batch20_b.cpp) |
 | `0x00237b34` | 132 | `unknown` | `matching` | `func_00237b34` | [`src/engine/leaf_batch16_a.cpp`](src/engine/leaf_batch16_a.cpp) |
+| `0x00237bb8` | 92 | `unknown` | `matching` | `func_00237bb8` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x00237c14` | 24 | `unknown` | `matching` | `func_00237c14` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
+| `0x00237e94` | 104 | `unknown` | `matching` | `func_00237e94` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x00237efc` | 20 | `unknown` | `matching` | `func_00237efc` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x00237f10` | 36 | `unknown` | `matching` | `func_00237f10` | [`src/engine/leaf_batch10_b.cpp`](src/engine/leaf_batch10_b.cpp) |
 | `0x00238308` | 52 | `unknown` | `matching` | `func_00238308` | [`src/engine/leaf_batch15_b.cpp`](src/engine/leaf_batch15_b.cpp) |
@@ -1330,9 +1460,12 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x0023b17c` | 228 | `engine` | `matching` | `engine_func_0023b17c` | [`src/engine/leaf_batch16_a.cpp`](src/engine/leaf_batch16_a.cpp) |
 | `0x0023c22c` | 72 | `unknown` | `matching` | `func_0023c22c` | [`src/engine/leaf_batch13_b.cpp`](src/engine/leaf_batch13_b.cpp) |
 | `0x0023c2b0` | 104 | `unknown` | `matching` | `func_0023c2b0` | [`src/engine/leaf_batch13_c.cpp`](src/engine/leaf_batch13_c.cpp) |
+| `0x0023c794` | 76 | `script_vm` | `matching` | `script_vm_func_0023c794` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x0023cd20` | 60 | `unknown` | `matching` | `func_0023cd20` | [`src/engine/leaf_batch20_b.cpp`](src/engine/leaf_batch20_b.cpp) |
 | `0x0023cfec` | 96 | `unknown` | `matching` | `func_0023cfec` | [`src/engine/leaf_batch16_b.cpp`](src/engine/leaf_batch16_b.cpp) |
 | `0x0023d190` | 68 | `engine` | `matching` | `engine_func_0023d190` | [`src/engine/leaf_batch24_b.cpp`](src/engine/leaf_batch24_b.cpp) |
+| `0x0023d1d4` | 92 | `unknown` | `matching` | `func_0023d1d4` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
+| `0x0023d2b4` | 148 | `unknown` | `matching` | `func_0023d2b4` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x0023d348` | 32 | `unknown` | `matching` | `func_0023d348` | [`src/engine/leaf_batch10_a.cpp`](src/engine/leaf_batch10_a.cpp) |
 | `0x0023d368` | 52 | `unknown` | `matching` | `func_0023d368` | [`src/engine/leaf_batch11_a.cpp`](src/engine/leaf_batch11_a.cpp) |
 | `0x0023d39c` | 52 | `unknown` | `matching` | `func_0023d39c` | [`src/engine/leaf_batch11_a.cpp`](src/engine/leaf_batch11_a.cpp) |
@@ -1368,6 +1501,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x00245198` | 48 | `unknown` | `matching` | `func_00245198` | [`src/engine/leaf_batch12_c.cpp`](src/engine/leaf_batch12_c.cpp) |
 | `0x00245394` | 80 | `unknown` | `matching` | `func_00245394` | [`src/engine/leaf_batch20_b.cpp`](src/engine/leaf_batch20_b.cpp) |
 | `0x002453e4` | 48 | `unknown` | `matching` | `func_002453e4` | [`src/engine/leaf_batch12_c.cpp`](src/engine/leaf_batch12_c.cpp) |
+| `0x00245414` | 100 | `battle` | `matching` | `battle_func_00245414` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x00245630` | 44 | `engine` | `matching` | `engine_func_00245630` | [`src/engine/leaf_batch19_a.cpp`](src/engine/leaf_batch19_a.cpp) |
 | `0x0024565c` | 28 | `engine` | `matching` | `engine_func_0024565c` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x00245908` | 184 | `unknown` | `matching` | `func_00245908` | [`src/engine/leaf_batch14_b.cpp`](src/engine/leaf_batch14_b.cpp) |
@@ -1384,6 +1518,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x00248728` | 28 | `script_vm` | `matching` | `script_vm_func_00248728` | [`src/engine/leaf_batch20_b.cpp`](src/engine/leaf_batch20_b.cpp) |
 | `0x00248744` | 76 | `unknown` | `matching` | `func_00248744` | [`src/engine/leaf_batch13_b.cpp`](src/engine/leaf_batch13_b.cpp) |
 | `0x002487e4` | 52 | `engine` | `matching` | `engine_func_002487e4` | [`src/engine/leaf_batch19_c.cpp`](src/engine/leaf_batch19_c.cpp) |
+| `0x00248818` | 144 | `engine` | `matching` | `engine_func_00248818` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x002490e0` | 580 | `engine` | `non_matching` | `effParts_func_002490e0` | [`src/engine/asd_effect.cpp`](src/engine/asd_effect.cpp) |
 | `0x00249324` | 484 | `engine` | `non_matching` | `effP2A_func_00249324` | [`src/engine/asd_effect.cpp`](src/engine/asd_effect.cpp) |
 | `0x00249588` | 420 | `engine` | `non_matching` | `effTLP_func_00249588` | [`src/engine/asd_effect.cpp`](src/engine/asd_effect.cpp) |
@@ -1415,7 +1550,9 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x0024df00` | 16 | `battle` | `matching` | `battle_func_0024df00` | [`src/engine/leaf_batch20_b.cpp`](src/engine/leaf_batch20_b.cpp) |
 | `0x0024df5c` | 56 | `ui` | `matching` | `ui_func_0024df5c` | [`src/engine/leaf_batch24_b.cpp`](src/engine/leaf_batch24_b.cpp) |
 | `0x0024df94` | 16 | `ui` | `matching` | `ui_func_0024df94` | [`src/engine/leaf_batch20_b.cpp`](src/engine/leaf_batch20_b.cpp) |
+| `0x0024efe8` | 120 | `ui` | `matching` | `ui_func_0024efe8` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x0024f060` | 28 | `engine` | `matching` | `engine_func_0024f060` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
+| `0x0024f1a4` | 84 | `battle` | `matching` | `battle_func_0024f1a4` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x0024f1f8` | 24 | `unknown` | `matching` | `func_0024f1f8` | [`src/engine/leaf_batch20_b.cpp`](src/engine/leaf_batch20_b.cpp) |
 | `0x0024f7a8` | 64 | `camp` | `matching` | `camp_func_0024f7a8` | [`src/engine/leaf_batch24_b.cpp`](src/engine/leaf_batch24_b.cpp) |
 | `0x0024fa94` | 16 | `unknown` | `matching` | `func_0024fa94` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
@@ -1424,6 +1561,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x0024fda4` | 192 | `engine` | `non_matching` | `effParts_func_0024fda4` | [`src/engine/asd_effect.cpp`](src/engine/asd_effect.cpp) |
 | `0x0024fe64` | 196 | `engine` | `non_matching` | `effParts_func_0024fe64` | [`src/engine/asd_effect.cpp`](src/engine/asd_effect.cpp) |
 | `0x00250614` | 12 | `unknown` | `matching` | `func_00250614` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
+| `0x00250f58` | 92 | `camp` | `matching` | `camp_func_00250f58` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x002523c0` | 16 | `unknown` | `matching` | `func_002523c0` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x002523d0` | 336 | `engine` | `non_matching` | `Npc2d_func_002523d0` | [`src/engine/asd_frame.cpp`](src/engine/asd_frame.cpp) |
 | `0x002526bc` | 64 | `engine` | `matching` | `engine_func_002526bc` | [`src/engine/leaf_batch20_b.cpp`](src/engine/leaf_batch20_b.cpp) |
@@ -1501,6 +1639,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x0025f8f0` | 11004 | `ui` | `stub` | `Ui_MiniMapRender` | [`src/ui/minimap.cpp`](src/ui/minimap.cpp) |
 | `0x002623ec` | 68 | `battle` | `matching` | `battle_func_002623ec` | [`src/engine/leaf_batch24_b.cpp`](src/engine/leaf_batch24_b.cpp) |
 | `0x00262430` | 24 | `unknown` | `matching` | `func_00262430` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
+| `0x00262448` | 80 | `script_vm` | `matching` | `script_vm_func_00262448` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x00262648` | 28 | `script_vm` | `matching` | `script_vm_func_00262648` | [`src/engine/leaf_batch23_b.cpp`](src/engine/leaf_batch23_b.cpp) |
 | `0x002629a8` | 92 | `camp` | `matching` | `camp_func_002629a8` | [`src/engine/leaf_batch16_a.cpp`](src/engine/leaf_batch16_a.cpp) |
 | `0x00262a04` | 64 | `camp` | `matching` | `camp_func_00262a04` | [`src/engine/leaf_batch24_b.cpp`](src/engine/leaf_batch24_b.cpp) |
@@ -1540,6 +1679,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x0026a86c` | 152 | `camp` | `matching` | `camp_func_0026a86c` | [`src/engine/leaf_batch14_b.cpp`](src/engine/leaf_batch14_b.cpp) |
 | `0x0026abc0` | 32 | `ui` | `non_matching` | `Status_SetMode1E71` | [`src/ui/status.cpp`](src/ui/status.cpp) |
 | `0x0026abe0` | 84 | `ui` | `non_matching` | `StatusDown_SetSubIdsA` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
+| `0x0026ace0` | 112 | `camp` | `matching` | `camp_func_0026ace0` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x0026ada8` | 36 | `camp` | `matching` | `camp_func_0026ada8` | [`src/engine/leaf_batch23_b.cpp`](src/engine/leaf_batch23_b.cpp) |
 | `0x0026b01c` | 176 | `ui` | `non_matching` | `StatusDown_PopFirstSubIdA` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x0026b0d0` | 1636 | `ui` | `non_matching` | `StatusDown_SetupTouchRegions` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
@@ -1552,6 +1692,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x0026b874` | 304 | `ui` | `non_matching` | `SaveLoadProcess_Init` | [`src/ui/save_load.cpp`](src/ui/save_load.cpp) |
 | `0x0026b9ec` | 64 | `ui` | `matching` | `ui_func_0026b9ec` | [`src/engine/leaf_batch16_c.cpp`](src/engine/leaf_batch16_c.cpp) |
 | `0x0026c8a8` | 24 | `ui` | `non_matching` | `Status_GetFlag1E63` | [`src/ui/status.cpp`](src/ui/status.cpp) |
+| `0x0026c97c` | 108 | `script_vm` | `matching` | `script_vm_func_0026c97c` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x0026ca0c` | 24 | `script_vm` | `matching` | `script_vm_func_0026ca0c` | [`src/engine/leaf_batch22_b.cpp`](src/engine/leaf_batch22_b.cpp) |
 | `0x0026d8c0` | 28 | `ui` | `non_matching` | `StatusDown_SetVisibility` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x0026d8dc` | 52 | `ui` | `non_matching` | `Status_ResetAffinityView` | [`src/ui/status.cpp`](src/ui/status.cpp) |
@@ -1561,15 +1702,20 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x0026e88c` | 20 | `battle` | `matching` | `battle_func_0026e88c` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x0026e8a0` | 92 | `shop` | `matching` | `shop_func_0026e8a0` | [`src/engine/leaf_batch23_b.cpp`](src/engine/leaf_batch23_b.cpp) |
 | `0x0026e8fc` | 20 | `engine` | `matching` | `engine_func_0026e8fc` | [`src/engine/leaf_batch17_b.cpp`](src/engine/leaf_batch17_b.cpp) |
+| `0x0026e910` | 108 | `ui` | `matching` | `ui_func_0026e910` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x0026e9d8` | 164 | `unknown` | `matching` | `func_0026e9d8` | [`src/engine/leaf_batch14_b.cpp`](src/engine/leaf_batch14_b.cpp) |
 | `0x0026eb14` | 440 | `engine` | `matching` | `engine_func_0026eb14` | [`src/engine/leaf_batch16_a.cpp`](src/engine/leaf_batch16_a.cpp) |
 | `0x0026f460` | 20 | `script_vm` | `matching` | `script_vm_func_0026f460` | [`src/engine/leaf_batch21_b.cpp`](src/engine/leaf_batch21_b.cpp) |
+| `0x0026f9f4` | 124 | `camp` | `matching` | `camp_func_0026f9f4` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x0026fbc0` | 16 | `script_vm` | `matching` | `script_vm_func_0026fbc0` | [`src/engine/leaf_batch17_a.cpp`](src/engine/leaf_batch17_a.cpp) |
+| `0x0026fbd0` | 84 | `script_vm` | `matching` | `script_vm_func_0026fbd0` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x0026fca0` | 20 | `script_vm` | `matching` | `script_vm_func_0026fca0` | [`src/engine/leaf_batch17_b.cpp`](src/engine/leaf_batch17_b.cpp) |
 | `0x002705c8` | 44 | `script_vm` | `matching` | `script_vm_func_002705c8` | [`src/engine/leaf_batch19_b.cpp`](src/engine/leaf_batch19_b.cpp) |
 | `0x0027154c` | 8316 | `script_vm` | `non_matching` | `FlowScript_OpcodeEvaluator` | [`src/script/script_vm.cpp`](src/script/script_vm.cpp) |
 | `0x002735c8` | 72 | `script_vm` | `matching` | `script_vm_func_002735c8` | [`src/engine/leaf_batch23_b.cpp`](src/engine/leaf_batch23_b.cpp) |
 | `0x00273610` | 48 | `script_vm` | `matching` | `script_vm_func_00273610` | [`src/engine/leaf_batch23_b.cpp`](src/engine/leaf_batch23_b.cpp) |
+| `0x002738b4` | 88 | `script_vm` | `matching` | `script_vm_func_002738b4` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
+| `0x0027390c` | 76 | `script_vm` | `matching` | `script_vm_func_0027390c` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x00273a78` | 32 | `script_vm` | `matching` | `script_vm_func_00273a78` | [`src/engine/leaf_batch22_b.cpp`](src/engine/leaf_batch22_b.cpp) |
 | `0x00273a98` | 24 | `script_vm` | `matching` | `script_vm_func_00273a98` | [`src/engine/leaf_batch22_b.cpp`](src/engine/leaf_batch22_b.cpp) |
 | `0x00273bdc` | 32 | `script_vm` | `matching` | `script_vm_func_00273bdc` | [`src/engine/leaf_batch18_b.cpp`](src/engine/leaf_batch18_b.cpp) |
@@ -1622,6 +1768,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x00282f24` | 24 | `script_vm` | `matching` | `script_vm_func_00282f24` | [`src/engine/leaf_batch22_b.cpp`](src/engine/leaf_batch22_b.cpp) |
 | `0x002831f0` | 3784 | `camp` | `non_matching` | `camp_func_002831f0` | [`src/engine/runtime_blocks.cpp`](src/engine/runtime_blocks.cpp) |
 | `0x0028412c` | 116 | `unknown` | `matching` | `func_0028412c` | [`src/engine/leaf_batch16_a.cpp`](src/engine/leaf_batch16_a.cpp) |
+| `0x002841a0` | 80 | `script_vm` | `matching` | `script_vm_func_002841a0` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x002854ec` | 32 | `script_vm` | `matching` | `script_vm_func_002854ec` | [`src/engine/leaf_batch18_b.cpp`](src/engine/leaf_batch18_b.cpp) |
 | `0x002857e4` | 16 | `script_vm` | `matching` | `script_vm_func_002857e4` | [`src/engine/leaf_batch17_a.cpp`](src/engine/leaf_batch17_a.cpp) |
 | `0x002860b4` | 324 | `engine` | `non_matching` | `Npc2d_func_002860b4` | [`src/engine/asd_frame.cpp`](src/engine/asd_frame.cpp) |
@@ -1642,6 +1789,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x00287b10` | 60 | `script_vm` | `matching` | `script_vm_func_00287b10` | [`src/engine/leaf_batch24_b.cpp`](src/engine/leaf_batch24_b.cpp) |
 | `0x00287b4c` | 24 | `script_vm` | `matching` | `script_vm_func_00287b4c` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x00287d54` | 32 | `engine` | `matching` | `engine_func_00287d54` | [`src/engine/leaf_batch10_a.cpp`](src/engine/leaf_batch10_a.cpp) |
+| `0x00288310` | 112 | `unknown` | `matching` | `func_00288310` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x00288380` | 60 | `camp` | `matching` | `camp_func_00288380` | [`src/engine/leaf_batch24_b.cpp`](src/engine/leaf_batch24_b.cpp) |
 | `0x00288408` | 28 | `ui` | `non_matching` | `Status_GetSubMenuState` | [`src/ui/status.cpp`](src/ui/status.cpp) |
 | `0x00288718` | 92 | `ui` | `non_matching` | `StatusDown_CanOpenSubScreen` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
@@ -1690,6 +1838,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x0028f134` | 40 | `script_vm` | `matching` | `script_vm_func_0028f134` | [`src/engine/leaf_batch19_a.cpp`](src/engine/leaf_batch19_a.cpp) |
 | `0x0028f914` | 36 | `camp` | `matching` | `camp_func_0028f914` | [`src/engine/leaf_batch23_b.cpp`](src/engine/leaf_batch23_b.cpp) |
 | `0x002904d0` | 28 | `script_vm` | `matching` | `script_vm_func_002904d0` | [`src/engine/leaf_batch18_a.cpp`](src/engine/leaf_batch18_a.cpp) |
+| `0x002904ec` | 88 | `script_vm` | `matching` | `script_vm_func_002904ec` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x0029066c` | 40 | `script_vm` | `matching` | `script_vm_func_0029066c` | [`src/engine/leaf_batch19_a.cpp`](src/engine/leaf_batch19_a.cpp) |
 | `0x00290694` | 20 | `script_vm` | `matching` | `script_vm_func_00290694` | [`src/engine/leaf_batch17_b.cpp`](src/engine/leaf_batch17_b.cpp) |
 | `0x00290a38` | 20 | `camp` | `matching` | `camp_func_00290a38` | [`src/engine/leaf_batch17_b.cpp`](src/engine/leaf_batch17_b.cpp) |
@@ -1706,6 +1855,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x00292e94` | 28 | `script_vm` | `matching` | `script_vm_func_00292e94` | [`src/engine/leaf_batch22_b.cpp`](src/engine/leaf_batch22_b.cpp) |
 | `0x00292f44` | 304 | `ui` | `non_matching` | `StatusDown_SetDisplayMode` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x002931cc` | 36 | `battle` | `matching` | `battle_func_002931cc` | [`src/engine/leaf_batch18_c.cpp`](src/engine/leaf_batch18_c.cpp) |
+| `0x002939a4` | 140 | `camp` | `matching` | `camp_func_002939a4` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x00293a30` | 60 | `script_vm` | `matching` | `script_vm_func_00293a30` | [`src/engine/leaf_batch24_b.cpp`](src/engine/leaf_batch24_b.cpp) |
 | `0x00293a74` | 16 | `script_vm` | `matching` | `script_vm_func_00293a74` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x00293c98` | 16 | `ui` | `matching` | `ui_func_00293c98` | [`src/engine/leaf_batch21_b.cpp`](src/engine/leaf_batch21_b.cpp) |
@@ -1728,6 +1878,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x00295fac` | 32 | `script_vm` | `matching` | `script_vm_func_00295fac` | [`src/engine/leaf_batch18_b.cpp`](src/engine/leaf_batch18_b.cpp) |
 | `0x002961cc` | 44 | `script_vm` | `matching` | `script_vm_func_002961cc` | [`src/engine/leaf_batch19_b.cpp`](src/engine/leaf_batch19_b.cpp) |
 | `0x00296690` | 136 | `script_vm` | `matching` | `script_vm_func_00296690` | [`src/engine/leaf_batch14_a.cpp`](src/engine/leaf_batch14_a.cpp) |
+| `0x00296d8c` | 84 | `script_vm` | `matching` | `script_vm_func_00296d8c` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x00296de0` | 280 | `engine` | `non_matching` | `AsdText_func_00296de0` | [`src/engine/asd_text.cpp`](src/engine/asd_text.cpp) |
 | `0x00296ef8` | 32 | `ui` | `matching` | `ui_func_00296ef8` | [`src/engine/leaf_batch10_a.cpp`](src/engine/leaf_batch10_a.cpp) |
 | `0x00296f18` | 72 | `ui` | `matching` | `ui_func_00296f18` | [`src/engine/leaf_batch11_b.cpp`](src/engine/leaf_batch11_b.cpp) |
@@ -1751,6 +1902,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x0029a3c4` | 60 | `script_vm` | `matching` | `script_vm_func_0029a3c4` | [`src/engine/leaf_batch23_b.cpp`](src/engine/leaf_batch23_b.cpp) |
 | `0x0029a400` | 24 | `engine` | `matching` | `engine_func_0029a400` | [`src/engine/leaf_batch22_b.cpp`](src/engine/leaf_batch22_b.cpp) |
 | `0x0029a520` | 1696 | `ui` | `non_matching` | `StatusDown_DrawPartySlotRow` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
+| `0x0029ad98` | 88 | `ui` | `matching` | `ui_func_0029ad98` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x0029adf0` | 320 | `ui` | `non_matching` | `StatusDown_DrawLRPrompts` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x0029af30` | 28 | `ui` | `non_matching` | `Status_GetMainMenuId` | [`src/ui/status.cpp`](src/ui/status.cpp) |
 | `0x0029af4c` | 20 | `ui` | `non_matching` | `Status_GetSelectedActorPtr` | [`src/ui/status.cpp`](src/ui/status.cpp) |
@@ -1772,6 +1924,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x0029c72c` | 32 | `ui` | `non_matching` | `StatusDown_IsNotState2` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x0029c74c` | 28 | `camp` | `matching` | `camp_func_0029c74c` | [`src/engine/leaf_batch22_b.cpp`](src/engine/leaf_batch22_b.cpp) |
 | `0x0029c768` | 28 | `script_vm` | `matching` | `script_vm_func_0029c768` | [`src/engine/leaf_batch22_b.cpp`](src/engine/leaf_batch22_b.cpp) |
+| `0x0029cb94` | 88 | `script_vm` | `matching` | `script_vm_func_0029cb94` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x0029d080` | 128 | `camp` | `matching` | `camp_func_0029d080` | [`src/engine/leaf_batch16_c.cpp`](src/engine/leaf_batch16_c.cpp) |
 | `0x0029d8c0` | 36 | `camp` | `matching` | `camp_func_0029d8c0` | [`src/engine/leaf_batch12_a.cpp`](src/engine/leaf_batch12_a.cpp) |
 | `0x0029d8fc` | 40 | `ui` | `matching` | `ui_func_0029d8fc` | [`src/engine/leaf_batch23_b.cpp`](src/engine/leaf_batch23_b.cpp) |
@@ -1782,6 +1935,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x0029e468` | 36 | `camp` | `matching` | `camp_func_0029e468` | [`src/engine/leaf_batch23_b.cpp`](src/engine/leaf_batch23_b.cpp) |
 | `0x0029e63c` | 644 | `camp` | `non_matching` | `SortMenu_Init` | [`src/camp/unite.cpp`](src/camp/unite.cpp) |
 | `0x0029e8c0` | 40 | `camp` | `matching` | `camp_func_0029e8c0` | [`src/engine/leaf_batch23_b.cpp`](src/engine/leaf_batch23_b.cpp) |
+| `0x0029e990` | 132 | `camp` | `matching` | `camp_func_0029e990` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x0029eb14` | 28 | `ui` | `matching` | `ui_func_0029eb14` | [`src/engine/leaf_batch22_b.cpp`](src/engine/leaf_batch22_b.cpp) |
 | `0x0029eb30` | 40 | `camp` | `matching` | `camp_func_0029eb30` | [`src/engine/leaf_batch23_b.cpp`](src/engine/leaf_batch23_b.cpp) |
 | `0x0029ee4c` | 20 | `camp` | `matching` | `camp_func_0029ee4c` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
@@ -1794,6 +1948,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x002a0fc4` | 40 | `unknown` | `matching` | `func_002a0fc4` | [`src/engine/leaf_batch19_a.cpp`](src/engine/leaf_batch19_a.cpp) |
 | `0x002a13d0` | 60 | `engine` | `matching` | `engine_func_002a13d0` | [`src/engine/leaf_batch24_b.cpp`](src/engine/leaf_batch24_b.cpp) |
 | `0x002a14e8` | 36 | `engine` | `matching` | `engine_func_002a14e8` | [`src/engine/leaf_batch18_c.cpp`](src/engine/leaf_batch18_c.cpp) |
+| `0x002a150c` | 108 | `engine` | `matching` | `engine_func_002a150c` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x002a17c0` | 20 | `engine` | `matching` | `engine_func_002a17c0` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x002a17d4` | 16 | `engine` | `matching` | `engine_func_002a17d4` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x002a17e4` | 24 | `unknown` | `matching` | `func_002a17e4` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
@@ -1865,12 +2020,15 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x002a94e8` | 1508 | `engine` | `non_matching` | `AsdModel_func_002a94e8` | [`src/engine/asd_model.cpp`](src/engine/asd_model.cpp) |
 | `0x002a9acc` | 1880 | `engine` | `non_matching` | `AsdModel_func_002a9acc` | [`src/engine/asd_model.cpp`](src/engine/asd_model.cpp) |
 | `0x002aa268` | 72 | `camp` | `matching` | `camp_func_002aa268` | [`src/engine/leaf_batch13_b.cpp`](src/engine/leaf_batch13_b.cpp) |
+| `0x002aa8b0` | 88 | `battle` | `matching` | `battle_func_002aa8b0` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x002aad14` | 3484 | `engine` | `non_matching` | `engine_func_002aad14` | [`src/engine/engine_blocks.cpp`](src/engine/engine_blocks.cpp) |
 | `0x002abde8` | 12 | `unknown` | `matching` | `func_002abde8` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x002abdf4` | 128 | `engine` | `matching` | `engine_func_002abdf4` | [`src/engine/leaf_batch14_a.cpp`](src/engine/leaf_batch14_a.cpp) |
 | `0x002abe74` | 180 | `engine` | `matching` | `engine_func_002abe74` | [`src/engine/leaf_batch16_a.cpp`](src/engine/leaf_batch16_a.cpp) |
 | `0x002abf28` | 412 | `unknown` | `matching` | `func_002abf28` | [`src/engine/leaf_batch16_c.cpp`](src/engine/leaf_batch16_c.cpp) |
 | `0x002ac2f4` | 92 | `ui` | `non_matching` | `Tbb_GetSubTable` | [`src/ui/tbb_loader.cpp`](src/ui/tbb_loader.cpp) |
+| `0x002ac3b8` | 80 | `engine` | `matching` | `engine_func_002ac3b8` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
+| `0x002ac42c` | 140 | `engine` | `matching` | `engine_func_002ac42c` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x002acb8c` | 76 | `unknown` | `matching` | `func_002acb8c` | [`src/engine/leaf_batch13_b.cpp`](src/engine/leaf_batch13_b.cpp) |
 | `0x002acd38` | 1828 | `ui` | `matching` | `ui_func_002acd38` | [`src/engine/leaf_batch16_c.cpp`](src/engine/leaf_batch16_c.cpp) |
 | `0x002ad45c` | 16 | `unknown` | `matching` | `func_002ad45c` | [`src/engine/leaf_batch21_b.cpp`](src/engine/leaf_batch21_b.cpp) |
@@ -1889,6 +2047,8 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x002ae6b0` | 24 | `engine` | `matching` | `engine_func_002ae6b0` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x002ae6c8` | 336 | `engine` | `non_matching` | `AsdLoadFile_func_002ae6c8` | [`src/engine/asd_file.cpp`](src/engine/asd_file.cpp) |
 | `0x002aea28` | 56 | `camp` | `matching` | `camp_func_002aea28` | [`src/engine/leaf_batch24_b.cpp`](src/engine/leaf_batch24_b.cpp) |
+| `0x002aeb2c` | 76 | `script_vm` | `matching` | `script_vm_func_002aeb2c` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
+| `0x002aec80` | 88 | `script_vm` | `matching` | `script_vm_func_002aec80` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x002aecd8` | 12 | `unknown` | `matching` | `func_002aecd8` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x002aed40` | 44 | `engine` | `matching` | `engine_func_002aed40` | [`src/engine/leaf_batch23_b.cpp`](src/engine/leaf_batch23_b.cpp) |
 | `0x002af528` | 220 | `engine` | `matching` | `engine_func_002af528` | [`src/engine/leaf_batch16_a.cpp`](src/engine/leaf_batch16_a.cpp) |
@@ -1915,20 +2075,25 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x002b49d8` | 28 | `script_vm` | `matching` | `script_vm_func_002b49d8` | [`src/engine/leaf_batch22_b.cpp`](src/engine/leaf_batch22_b.cpp) |
 | `0x002b4a0c` | 68 | `unknown` | `matching` | `func_002b4a0c` | [`src/engine/leaf_batch24_b.cpp`](src/engine/leaf_batch24_b.cpp) |
 | `0x002b4d64` | 8 | `script_vm` | `matching` | `script_vm_func_002b4d64` | [`src/engine/leaf_batch15_a.cpp`](src/engine/leaf_batch15_a.cpp) |
+| `0x002b4d78` | 100 | `engine` | `matching` | `engine_func_002b4d78` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x002b4fb0` | 52 | `unknown` | `matching` | `func_002b4fb0` | [`src/engine/leaf_batch12_c.cpp`](src/engine/leaf_batch12_c.cpp) |
 | `0x002b5058` | 12 | `unknown` | `matching` | `func_002b5058` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x002b5124` | 36 | `engine` | `matching` | `engine_func_002b5124` | [`src/engine/leaf_batch10_b.cpp`](src/engine/leaf_batch10_b.cpp) |
+| `0x002b5318` | 132 | `unknown` | `matching` | `func_002b5318` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x002b539c` | 112 | `unknown` | `matching` | `func_002b539c` | [`src/engine/leaf_batch16_c.cpp`](src/engine/leaf_batch16_c.cpp) |
 | `0x002b540c` | 140 | `unknown` | `matching` | `func_002b540c` | [`src/engine/leaf_batch14_a.cpp`](src/engine/leaf_batch14_a.cpp) |
 | `0x002b5a04` | 24 | `nn_sdk` | `matching` | `nn_sdk_func_002b5a04` | [`src/engine/leaf_batch15_a.cpp`](src/engine/leaf_batch15_a.cpp) |
 | `0x002b5b38` | 12 | `unknown` | `matching` | `func_002b5b38` | [`src/engine/leaf_batch21_b.cpp`](src/engine/leaf_batch21_b.cpp) |
+| `0x002b5b44` | 80 | `script_vm` | `matching` | `script_vm_func_002b5b44` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x002b5b94` | 56 | `script_vm` | `matching` | `script_vm_func_002b5b94` | [`src/engine/leaf_batch24_b.cpp`](src/engine/leaf_batch24_b.cpp) |
+| `0x002b5d0c` | 100 | `engine` | `matching` | `engine_func_002b5d0c` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x002b5f6c` | 24 | `unknown` | `matching` | `func_002b5f6c` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x002b5f84` | 12 | `script_vm` | `matching` | `script_vm_func_002b5f84` | [`src/engine/leaf_batch21_b.cpp`](src/engine/leaf_batch21_b.cpp) |
 | `0x002b63bc` | 84 | `engine` | `matching` | `engine_func_002b63bc` | [`src/engine/leaf_batch13_b.cpp`](src/engine/leaf_batch13_b.cpp) |
 | `0x002b6410` | 92 | `engine` | `matching` | `engine_func_002b6410` | [`src/engine/leaf_batch13_c.cpp`](src/engine/leaf_batch13_c.cpp) |
 | `0x002b66ec` | 20 | `script_vm` | `matching` | `script_vm_func_002b66ec` | [`src/engine/leaf_batch21_b.cpp`](src/engine/leaf_batch21_b.cpp) |
 | `0x002b67c0` | 32 | `engine` | `matching` | `engine_func_002b67c0` | [`src/engine/leaf_batch18_b.cpp`](src/engine/leaf_batch18_b.cpp) |
+| `0x002b6d94` | 124 | `battle` | `matching` | `battle_func_002b6d94` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x002b6e10` | 48 | `battle` | `matching` | `battle_func_002b6e10` | [`src/engine/leaf_batch19_c.cpp`](src/engine/leaf_batch19_c.cpp) |
 | `0x002b6e44` | 28 | `script_vm` | `matching` | `script_vm_func_002b6e44` | [`src/engine/leaf_batch22_b.cpp`](src/engine/leaf_batch22_b.cpp) |
 | `0x002b6e60` | 24 | `battle` | `matching` | `battle_func_002b6e60` | [`src/engine/leaf_batch22_b.cpp`](src/engine/leaf_batch22_b.cpp) |
@@ -1971,6 +2136,8 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x002bb774` | 44 | `unknown` | `matching` | `func_002bb774` | [`src/engine/leaf_batch19_b.cpp`](src/engine/leaf_batch19_b.cpp) |
 | `0x002bb7a0` | 16 | `unknown` | `matching` | `func_002bb7a0` | [`src/engine/leaf_batch21_b.cpp`](src/engine/leaf_batch21_b.cpp) |
 | `0x002bb7b0` | 12 | `engine` | `matching` | `engine_func_002bb7b0` | [`src/engine/leaf_batch21_b.cpp`](src/engine/leaf_batch21_b.cpp) |
+| `0x002bb804` | 136 | `engine` | `matching` | `engine_func_002bb804` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
+| `0x002bb88c` | 88 | `engine` | `matching` | `engine_func_002bb88c` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x002bb978` | 16 | `unknown` | `matching` | `func_002bb978` | [`src/engine/leaf_batch21_b.cpp`](src/engine/leaf_batch21_b.cpp) |
 | `0x002bbb04` | 36 | `unknown` | `matching` | `func_002bbb04` | [`src/engine/leaf_batch15_a.cpp`](src/engine/leaf_batch15_a.cpp) |
 | `0x002bbd40` | 24 | `unknown` | `matching` | `func_002bbd40` | [`src/engine/leaf_batch22_b.cpp`](src/engine/leaf_batch22_b.cpp) |
@@ -1981,6 +2148,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x002bcfcc` | 36 | `script_vm` | `matching` | `script_vm_func_002bcfcc` | [`src/engine/leaf_batch18_c.cpp`](src/engine/leaf_batch18_c.cpp) |
 | `0x002bd100` | 20 | `unknown` | `matching` | `func_002bd100` | [`src/engine/leaf_batch21_b.cpp`](src/engine/leaf_batch21_b.cpp) |
 | `0x002bd114` | 40 | `unknown` | `matching` | `func_002bd114` | [`src/engine/leaf_batch12_b.cpp`](src/engine/leaf_batch12_b.cpp) |
+| `0x002bd2e8` | 96 | `engine` | `matching` | `engine_func_002bd2e8` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x002bd3ec` | 16 | `script_vm` | `matching` | `script_vm_func_002bd3ec` | [`src/engine/leaf_batch17_a.cpp`](src/engine/leaf_batch17_a.cpp) |
 | `0x002bd448` | 36 | `engine` | `matching` | `engine_func_002bd448` | [`src/engine/leaf_batch10_b.cpp`](src/engine/leaf_batch10_b.cpp) |
 | `0x002bd730` | 528 | `engine` | `non_matching` | `AsdTexture_func_002bd730` | [`src/engine/asd_texture.cpp`](src/engine/asd_texture.cpp) |
@@ -2006,6 +2174,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x002c00b4` | 32 | `battle` | `matching` | `battle_func_002c00b4` | [`src/engine/leaf_batch10_a.cpp`](src/engine/leaf_batch10_a.cpp) |
 | `0x002c0110` | 24 | `engine` | `matching` | `engine_func_002c0110` | [`src/engine/leaf_batch22_b.cpp`](src/engine/leaf_batch22_b.cpp) |
 | `0x002c0128` | 28 | `script_vm` | `matching` | `script_vm_func_002c0128` | [`src/engine/leaf_batch22_b.cpp`](src/engine/leaf_batch22_b.cpp) |
+| `0x002c0144` | 108 | `camp` | `matching` | `camp_func_002c0144` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x002c0b94` | 20 | `ui` | `matching` | `ui_func_002c0b94` | [`src/engine/leaf_batch21_b.cpp`](src/engine/leaf_batch21_b.cpp) |
 | `0x002c0ba8` | 36 | `script_vm` | `matching` | `script_vm_func_002c0ba8` | [`src/engine/leaf_batch18_c.cpp`](src/engine/leaf_batch18_c.cpp) |
 | `0x002c0bcc` | 56 | `engine` | `matching` | `engine_func_002c0bcc` | [`src/engine/leaf_batch23_b.cpp`](src/engine/leaf_batch23_b.cpp) |
@@ -2040,10 +2209,12 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x002c3714` | 16 | `unknown` | `matching` | `func_002c3714` | [`src/engine/leaf_batch21_b.cpp`](src/engine/leaf_batch21_b.cpp) |
 | `0x002c3724` | 16 | `unknown` | `matching` | `func_002c3724` | [`src/engine/leaf_batch21_b.cpp`](src/engine/leaf_batch21_b.cpp) |
 | `0x002c38d4` | 148 | `engine` | `matching` | `engine_func_002c38d4` | [`src/engine/leaf_batch16_a.cpp`](src/engine/leaf_batch16_a.cpp) |
+| `0x002c3a44` | 100 | `engine` | `matching` | `engine_func_002c3a44` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x002c3aa8` | 56 | `engine` | `matching` | `engine_func_002c3aa8` | [`src/engine/leaf_batch24_b.cpp`](src/engine/leaf_batch24_b.cpp) |
 | `0x002c3b00` | 28 | `ui` | `matching` | `ui_func_002c3b00` | [`src/engine/leaf_batch18_a.cpp`](src/engine/leaf_batch18_a.cpp) |
 | `0x002c3b88` | 16 | `engine` | `matching` | `engine_func_002c3b88` | [`src/engine/leaf_batch21_b.cpp`](src/engine/leaf_batch21_b.cpp) |
 | `0x002c3b98` | 16 | `engine` | `matching` | `engine_func_002c3b98` | [`src/engine/leaf_batch21_b.cpp`](src/engine/leaf_batch21_b.cpp) |
+| `0x002c3ba8` | 112 | `ui` | `matching` | `ui_func_002c3ba8` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x002c43d4` | 32 | `unknown` | `matching` | `func_002c43d4` | [`src/engine/leaf_batch22_b.cpp`](src/engine/leaf_batch22_b.cpp) |
 | `0x002c4710` | 1004 | `ui` | `non_matching` | `AsdFont_func_002c4710` | [`src/engine/asd_text.cpp`](src/engine/asd_text.cpp) |
 | `0x002c4afc` | 32 | `ui` | `matching` | `ui_func_002c4afc` | [`src/engine/leaf_batch18_b.cpp`](src/engine/leaf_batch18_b.cpp) |
@@ -2052,6 +2223,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x002c4c00` | 44 | `camp` | `matching` | `camp_func_002c4c00` | [`src/engine/leaf_batch19_b.cpp`](src/engine/leaf_batch19_b.cpp) |
 | `0x002c4c2c` | 508 | `ui` | `non_matching` | `message_func_002c4c2c` | [`src/engine/asd_text.cpp`](src/engine/asd_text.cpp) |
 | `0x002c4e28` | 620 | `engine` | `non_matching` | `AsdTMTexTable_func_002c4e28` | [`src/engine/asd_texture.cpp`](src/engine/asd_texture.cpp) |
+| `0x002c5190` | 136 | `unknown` | `matching` | `func_002c5190` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x002c5218` | 20 | `ui` | `matching` | `ui_func_002c5218` | [`src/engine/leaf_batch21_b.cpp`](src/engine/leaf_batch21_b.cpp) |
 | `0x002c540c` | 16 | `ui` | `matching` | `ui_func_002c540c` | [`src/engine/leaf_batch21_b.cpp`](src/engine/leaf_batch21_b.cpp) |
 | `0x002c541c` | 52 | `engine` | `matching` | `engine_func_002c541c` | [`src/engine/leaf_batch19_c.cpp`](src/engine/leaf_batch19_c.cpp) |
@@ -2064,6 +2236,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x002c58cc` | 36 | `script_vm` | `matching` | `script_vm_func_002c58cc` | [`src/engine/leaf_batch23_b.cpp`](src/engine/leaf_batch23_b.cpp) |
 | `0x002c5978` | 48 | `engine` | `matching` | `engine_func_002c5978` | [`src/engine/leaf_batch19_c.cpp`](src/engine/leaf_batch19_c.cpp) |
 | `0x002c59b8` | 180 | `engine` | `non_matching` | `AsdSequence_func_002c59b8` | [`src/engine/asd_scene.cpp`](src/engine/asd_scene.cpp) |
+| `0x002c5ab8` | 76 | `engine` | `matching` | `engine_func_002c5ab8` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x002c5b04` | 652 | `engine` | `non_matching` | `AsdTMTexTable_func_002c5b04` | [`src/engine/asd_texture.cpp`](src/engine/asd_texture.cpp) |
 | `0x002c5e10` | 16 | `script_vm` | `matching` | `script_vm_func_002c5e10` | [`src/engine/leaf_batch21_b.cpp`](src/engine/leaf_batch21_b.cpp) |
 | `0x002c5e20` | 12 | `script_vm` | `matching` | `script_vm_func_002c5e20` | [`src/engine/leaf_batch21_b.cpp`](src/engine/leaf_batch21_b.cpp) |
@@ -2073,6 +2246,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x002c6bf4` | 12 | `unknown` | `matching` | `func_002c6bf4` | [`src/engine/leaf_batch21_b.cpp`](src/engine/leaf_batch21_b.cpp) |
 | `0x002c6eb0` | 16 | `unknown` | `matching` | `func_002c6eb0` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x002c7084` | 12 | `unknown` | `matching` | `func_002c7084` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
+| `0x002c79c8` | 76 | `engine` | `matching` | `engine_func_002c79c8` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x002c7bb8` | 8 | `unknown` | `matching` | `func_002c7bb8` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x002c85f0` | 20 | `unknown` | `matching` | `func_002c85f0` | [`src/engine/leaf_batch21_b.cpp`](src/engine/leaf_batch21_b.cpp) |
 | `0x002c8698` | 16 | `unknown` | `matching` | `func_002c8698` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
@@ -2100,6 +2274,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x002cdb50` | 28 | `unknown` | `matching` | `func_002cdb50` | [`src/engine/leaf_batch22_b.cpp`](src/engine/leaf_batch22_b.cpp) |
 | `0x002cdcc4` | 28 | `camp` | `matching` | `camp_func_002cdcc4` | [`src/engine/leaf_batch22_b.cpp`](src/engine/leaf_batch22_b.cpp) |
 | `0x002cdce0` | 60 | `engine` | `matching` | `engine_func_002cdce0` | [`src/engine/leaf_batch24_b.cpp`](src/engine/leaf_batch24_b.cpp) |
+| `0x002cdd1c` | 116 | `script_vm` | `matching` | `script_vm_func_002cdd1c` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x002cdd90` | 72 | `script_vm` | `matching` | `script_vm_func_002cdd90` | [`src/engine/leaf_batch24_b.cpp`](src/engine/leaf_batch24_b.cpp) |
 | `0x002cddd8` | 68 | `engine` | `matching` | `engine_func_002cddd8` | [`src/engine/leaf_batch24_b.cpp`](src/engine/leaf_batch24_b.cpp) |
 | `0x002cec9c` | 12 | `script_vm` | `matching` | `script_vm_func_002cec9c` | [`src/engine/leaf_batch21_b.cpp`](src/engine/leaf_batch21_b.cpp) |
@@ -2150,6 +2325,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x002d7410` | 1012 | `camp` | `non_matching` | `CampCecView_func_002d7410` | [`src/camp/camp_cec.cpp`](src/camp/camp_cec.cpp) |
 | `0x002d7804` | 40 | `camp` | `matching` | `camp_func_002d7804` | [`src/engine/leaf_batch19_a.cpp`](src/engine/leaf_batch19_a.cpp) |
 | `0x002d7adc` | 8 | `unknown` | `matching` | `func_002d7adc` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
+| `0x002d7ae4` | 100 | `engine` | `matching` | `engine_func_002d7ae4` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x002d8160` | 20 | `unknown` | `matching` | `func_002d8160` | [`src/engine/leaf_batch21_b.cpp`](src/engine/leaf_batch21_b.cpp) |
 | `0x002d8174` | 56 | `unknown` | `matching` | `func_002d8174` | [`src/engine/leaf_batch23_b.cpp`](src/engine/leaf_batch23_b.cpp) |
 | `0x002d8590` | 20 | `ui` | `matching` | `ui_func_002d8590` | [`src/engine/leaf_batch17_b.cpp`](src/engine/leaf_batch17_b.cpp) |
@@ -2184,7 +2360,11 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x002dc04c` | 24 | `engine` | `matching` | `engine_func_002dc04c` | [`src/engine/leaf_batch18_a.cpp`](src/engine/leaf_batch18_a.cpp) |
 | `0x002dc384` | 120 | `camp` | `matching` | `camp_func_002dc384` | [`src/engine/leaf_batch14_a.cpp`](src/engine/leaf_batch14_a.cpp) |
 | `0x002dc96c` | 152 | `ui` | `non_matching` | `StatusDown_SkillSortByCostDesc` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
+| `0x002dca40` | 88 | `camp` | `matching` | `camp_func_002dca40` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
+| `0x002dcc78` | 88 | `camp` | `matching` | `camp_func_002dcc78` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
+| `0x002dccd0` | 104 | `engine` | `matching` | `engine_func_002dccd0` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x002dcd38` | 48 | `engine` | `matching` | `engine_func_002dcd38` | [`src/engine/leaf_batch19_c.cpp`](src/engine/leaf_batch19_c.cpp) |
+| `0x002dce58` | 84 | `engine` | `matching` | `engine_func_002dce58` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x002dd080` | 12 | `unknown` | `matching` | `func_002dd080` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x002dd08c` | 116 | `unknown` | `matching` | `func_002dd08c` | [`src/engine/leaf_batch14_a.cpp`](src/engine/leaf_batch14_a.cpp) |
 | `0x002de41c` | 1204 | `engine` | `non_matching` | `effParticle_func_002de41c` | [`src/engine/asd_effect2.cpp`](src/engine/asd_effect2.cpp) |
@@ -2206,6 +2386,8 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x002e05bc` | 28 | `unknown` | `matching` | `func_002e05bc` | [`src/engine/leaf_batch22_b.cpp`](src/engine/leaf_batch22_b.cpp) |
 | `0x002e06bc` | 1080 | `battle` | `stub` | `btlTargetSelect_Calc` | [`src/battle/btl_target_select.cpp`](src/battle/btl_target_select.cpp) |
 | `0x002e10a4` | 36 | `unknown` | `matching` | `func_002e10a4` | [`src/engine/leaf_batch23_b.cpp`](src/engine/leaf_batch23_b.cpp) |
+| `0x002e14a8` | 88 | `engine` | `matching` | `engine_func_002e14a8` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
+| `0x002e1500` | 88 | `engine` | `matching` | `engine_func_002e1500` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x002e1e60` | 72 | `unknown` | `matching` | `func_002e1e60` | [`src/engine/leaf_batch24_b.cpp`](src/engine/leaf_batch24_b.cpp) |
 | `0x002e2040` | 52 | `engine` | `matching` | `engine_func_002e2040` | [`src/engine/leaf_batch19_c.cpp`](src/engine/leaf_batch19_c.cpp) |
 | `0x002e231c` | 48 | `engine` | `matching` | `engine_func_002e231c` | [`src/engine/leaf_batch19_c.cpp`](src/engine/leaf_batch19_c.cpp) |
@@ -2244,12 +2426,20 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x002e4534` | 80 | `ui` | `non_matching` | `StatusDown_SkillSortByIdDesc` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x002e4584` | 132 | `ui` | `non_matching` | `StatusDown_ItemSortByTypeDesc` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x002e4608` | 124 | `ui` | `non_matching` | `StatusDown_ItemSortByIdDesc` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
+| `0x002e4684` | 76 | `unknown` | `matching` | `func_002e4684` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
+| `0x002e46d0` | 84 | `engine` | `matching` | `engine_func_002e46d0` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x002e4724` | 64 | `engine` | `matching` | `engine_func_002e4724` | [`src/engine/leaf_batch24_b.cpp`](src/engine/leaf_batch24_b.cpp) |
+| `0x002e4764` | 84 | `engine` | `matching` | `engine_func_002e4764` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
+| `0x002e47b8` | 100 | `engine` | `matching` | `engine_func_002e47b8` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x002e481c` | 64 | `engine` | `matching` | `engine_func_002e481c` | [`src/engine/leaf_batch24_b.cpp`](src/engine/leaf_batch24_b.cpp) |
 | `0x002e485c` | 64 | `engine` | `matching` | `engine_func_002e485c` | [`src/engine/leaf_batch24_b.cpp`](src/engine/leaf_batch24_b.cpp) |
 | `0x002e489c` | 64 | `engine` | `matching` | `engine_func_002e489c` | [`src/engine/leaf_batch24_b.cpp`](src/engine/leaf_batch24_b.cpp) |
 | `0x002e48dc` | 64 | `engine` | `matching` | `engine_func_002e48dc` | [`src/engine/leaf_batch24_b.cpp`](src/engine/leaf_batch24_b.cpp) |
+| `0x002e491c` | 76 | `camp` | `matching` | `camp_func_002e491c` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x002e4968` | 48 | `unknown` | `matching` | `func_002e4968` | [`src/engine/leaf_batch19_c.cpp`](src/engine/leaf_batch19_c.cpp) |
+| `0x002e4998` | 84 | `unknown` | `matching` | `func_002e4998` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
+| `0x002e49ec` | 76 | `camp` | `matching` | `camp_func_002e49ec` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
+| `0x002e4abc` | 80 | `camp` | `matching` | `camp_func_002e4abc` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x002e4b0c` | 4 | `unknown` | `matching` | `func_002e4b0c` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x002e4b10` | 4116 | `engine` | `non_matching` | `engine_func_002e4b10` | [`src/engine/asd_runtime.cpp`](src/engine/asd_runtime.cpp) |
 | `0x002e5b24` | 128 | `unknown` | `matching` | `func_002e5b24` | [`src/engine/leaf_batch14_a.cpp`](src/engine/leaf_batch14_a.cpp) |
@@ -2269,6 +2459,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x002ebdf0` | 16 | `unknown` | `matching` | `func_002ebdf0` | [`src/engine/leaf_batch21_b.cpp`](src/engine/leaf_batch21_b.cpp) |
 | `0x002ebe00` | 16 | `unknown` | `matching` | `func_002ebe00` | [`src/engine/leaf_batch21_b.cpp`](src/engine/leaf_batch21_b.cpp) |
 | `0x002ebf28` | 60 | `camp` | `matching` | `camp_func_002ebf28` | [`src/engine/leaf_batch24_b.cpp`](src/engine/leaf_batch24_b.cpp) |
+| `0x002ec4bc` | 116 | `unknown` | `matching` | `func_002ec4bc` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x002ed3e0` | 36 | `unknown` | `matching` | `func_002ed3e0` | [`src/engine/leaf_batch23_b.cpp`](src/engine/leaf_batch23_b.cpp) |
 | `0x002ed564` | 32 | `camp` | `matching` | `camp_func_002ed564` | [`src/engine/leaf_batch22_b.cpp`](src/engine/leaf_batch22_b.cpp) |
 | `0x002ed5d0` | 3584 | `ui` | `non_matching` | `ui_func_002ed5d0` | [`src/ui/ui_blocks.cpp`](src/ui/ui_blocks.cpp) |
@@ -2299,10 +2490,13 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x002f11a0` | 36 | `ui` | `matching` | `ui_func_002f11a0` | [`src/engine/leaf_batch18_c.cpp`](src/engine/leaf_batch18_c.cpp) |
 | `0x002f123c` | 64 | `engine` | `matching` | `engine_func_002f123c` | [`src/engine/leaf_batch24_b.cpp`](src/engine/leaf_batch24_b.cpp) |
 | `0x002f127c` | 44 | `ui` | `matching` | `ui_func_002f127c` | [`src/engine/leaf_batch19_b.cpp`](src/engine/leaf_batch19_b.cpp) |
+| `0x002f1438` | 104 | `ui` | `matching` | `ui_func_002f1438` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x002f14a0` | 56 | `engine` | `matching` | `engine_func_002f14a0` | [`src/engine/leaf_batch24_b.cpp`](src/engine/leaf_batch24_b.cpp) |
 | `0x002f14d8` | 52 | `engine` | `matching` | `engine_func_002f14d8` | [`src/engine/leaf_batch24_b.cpp`](src/engine/leaf_batch24_b.cpp) |
 | `0x002f150c` | 4204 | `ui` | `non_matching` | `ui_func_002f150c` | [`src/ui/ui_scene_extras.cpp`](src/ui/ui_scene_extras.cpp) |
 | `0x002f2578` | 44 | `camp` | `matching` | `camp_func_002f2578` | [`src/engine/leaf_batch12_b.cpp`](src/engine/leaf_batch12_b.cpp) |
+| `0x002f27a0` | 84 | `engine` | `matching` | `engine_func_002f27a0` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
+| `0x002f27f4` | 88 | `engine` | `matching` | `engine_func_002f27f4` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x002f284c` | 44 | `unknown` | `matching` | `func_002f284c` | [`src/engine/leaf_batch19_b.cpp`](src/engine/leaf_batch19_b.cpp) |
 | `0x002f28f8` | 68 | `unknown` | `matching` | `func_002f28f8` | [`src/engine/leaf_batch11_b.cpp`](src/engine/leaf_batch11_b.cpp) |
 | `0x002f293c` | 104 | `unknown` | `matching` | `func_002f293c` | [`src/engine/leaf_batch13_c.cpp`](src/engine/leaf_batch13_c.cpp) |
@@ -2310,6 +2504,9 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x002f2a24` | 4 | `unknown` | `matching` | `func_002f2a24` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x002f2a28` | 52 | `unknown` | `matching` | `func_002f2a28` | [`src/engine/leaf_batch15_b.cpp`](src/engine/leaf_batch15_b.cpp) |
 | `0x002f300c` | 32 | `unknown` | `matching` | `func_002f300c` | [`src/engine/leaf_batch10_a.cpp`](src/engine/leaf_batch10_a.cpp) |
+| `0x002f3120` | 156 | `engine` | `matching` | `engine_func_002f3120` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
+| `0x002f31bc` | 84 | `engine` | `matching` | `engine_func_002f31bc` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
+| `0x002f3210` | 112 | `engine` | `matching` | `engine_func_002f3210` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x002f3280` | 16 | `unknown` | `matching` | `func_002f3280` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x002f3450` | 12 | `unknown` | `matching` | `func_002f3450` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x002f345c` | 12 | `unknown` | `matching` | `func_002f345c` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
@@ -2318,6 +2515,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x002f35cc` | 56 | `engine` | `matching` | `engine_func_002f35cc` | [`src/engine/leaf_batch24_b.cpp`](src/engine/leaf_batch24_b.cpp) |
 | `0x002f3aac` | 32 | `unknown` | `matching` | `func_002f3aac` | [`src/engine/leaf_batch22_b.cpp`](src/engine/leaf_batch22_b.cpp) |
 | `0x002f463c` | 32 | `unknown` | `matching` | `func_002f463c` | [`src/engine/leaf_batch22_b.cpp`](src/engine/leaf_batch22_b.cpp) |
+| `0x002f49c8` | 100 | `engine` | `matching` | `engine_func_002f49c8` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x002f4aa4` | 76 | `battle` | `stub` | `btlTargetSelect_DrawUp` | [`src/battle/btl_target_select.cpp`](src/battle/btl_target_select.cpp) |
 | `0x002f4ca0` | 572 | `camp` | `non_matching` | `titleConfig_func_002f4ca0` | [`src/camp/title_flow.cpp`](src/camp/title_flow.cpp) |
 | `0x002f4fbc` | 72 | `camp` | `matching` | `camp_func_002f4fbc` | [`src/engine/leaf_batch23_b.cpp`](src/engine/leaf_batch23_b.cpp) |
@@ -2369,10 +2567,12 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x002fdfa4` | 20 | `script_vm` | `matching` | `script_vm_func_002fdfa4` | [`src/engine/leaf_batch17_b.cpp`](src/engine/leaf_batch17_b.cpp) |
 | `0x002fdfb8` | 336 | `engine` | `non_matching` | `Npc2d_func_002fdfb8` | [`src/engine/asd_frame.cpp`](src/engine/asd_frame.cpp) |
 | `0x002fe184` | 48 | `battle` | `matching` | `battle_func_002fe184` | [`src/engine/leaf_batch19_c.cpp`](src/engine/leaf_batch19_c.cpp) |
+| `0x002fe874` | 72 | `engine` | `matching` | `engine_func_002fe874` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x002fe8bc` | 40 | `engine` | `matching` | `engine_func_002fe8bc` | [`src/engine/leaf_batch19_a.cpp`](src/engine/leaf_batch19_a.cpp) |
 | `0x002fe8e4` | 20 | `unknown` | `matching` | `func_002fe8e4` | [`src/engine/leaf_batch18_a.cpp`](src/engine/leaf_batch18_a.cpp) |
 | `0x002fe8f8` | 44 | `engine` | `matching` | `engine_func_002fe8f8` | [`src/engine/leaf_batch19_b.cpp`](src/engine/leaf_batch19_b.cpp) |
 | `0x002fea30` | 40 | `unknown` | `matching` | `func_002fea30` | [`src/engine/leaf_batch23_b.cpp`](src/engine/leaf_batch23_b.cpp) |
+| `0x002feb44` | 80 | `engine` | `matching` | `engine_func_002feb44` | [`src/engine/leaf_batch25_b.cpp`](src/engine/leaf_batch25_b.cpp) |
 | `0x002feb94` | 16 | `ui` | `matching` | `ui_func_002feb94` | [`src/engine/leaf_batch21_b.cpp`](src/engine/leaf_batch21_b.cpp) |
 | `0x002feba4` | 16 | `ui` | `matching` | `ui_func_002feba4` | [`src/engine/leaf_batch21_b.cpp`](src/engine/leaf_batch21_b.cpp) |
 | `0x002fec24` | 32 | `script_vm` | `matching` | `script_vm_func_002fec24` | [`src/engine/leaf_batch23_b.cpp`](src/engine/leaf_batch23_b.cpp) |
@@ -2740,7 +2940,11 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x00328ab4` | 288 | `ui` | `matching` | `ui_func_00328ab4` | [`src/engine/leaf_batch22_c.cpp`](src/engine/leaf_batch22_c.cpp) |
 | `0x00328bd4` | 56 | `engine` | `matching` | `engine_func_00328bd4` | [`src/engine/leaf_batch20_c.cpp`](src/engine/leaf_batch20_c.cpp) |
 | `0x00328c0c` | 52 | `engine` | `matching` | `engine_func_00328c0c` | [`src/engine/leaf_batch19_c.cpp`](src/engine/leaf_batch19_c.cpp) |
+| `0x00328d50` | 320 | `script_vm` | `matching` | `script_vm_func_00328d50` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x00328ec4` | 92 | `camp` | `matching` | `camp_func_00328ec4` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
 | `0x00329020` | 272 | `engine` | `matching` | `engine_func_00329020` | [`src/engine/leaf_batch22_c.cpp`](src/engine/leaf_batch22_c.cpp) |
+| `0x003291d8` | 128 | `engine` | `matching` | `engine_func_003291d8` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x0032930c` | 96 | `ui` | `matching` | `ui_func_0032930c` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
 | `0x0032aed8` | 4 | `unknown` | `matching` | `func_0032aed8` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x0032aedc` | 4 | `unknown` | `matching` | `func_0032aedc` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x0032aee0` | 8 | `unknown` | `matching` | `func_0032aee0` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
@@ -2748,14 +2952,22 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x0032aeec` | 4 | `unknown` | `matching` | `func_0032aeec` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x0032aef0` | 8 | `unknown` | `matching` | `func_0032aef0` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x0032aef8` | 8 | `unknown` | `matching` | `func_0032aef8` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
+| `0x0032b070` | 68 | `ui` | `matching` | `ui_func_0032b070` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
 | `0x0032b3e8` | 196 | `unknown` | `matching` | `func_0032b3e8` | [`src/engine/leaf_batch14_b.cpp`](src/engine/leaf_batch14_b.cpp) |
 | `0x0032b4ac` | 244 | `unknown` | `matching` | `func_0032b4ac` | [`src/engine/leaf_batch14_b.cpp`](src/engine/leaf_batch14_b.cpp) |
+| `0x0032b5a0` | 88 | `script_vm` | `matching` | `script_vm_func_0032b5a0` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
 | `0x0032be34` | 1672 | `ui` | `non_matching` | `StatusDown_DrawSkillList` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x0032c4bc` | 372 | `ui` | `non_matching` | `StatusDown_SortItemList` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
+| `0x0032c94c` | 444 | `engine` | `matching` | `engine_func_0032c94c` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
 | `0x0032cb08` | 12620 | `camp` | `stub` | `Camp_SubModeProcess` | [`src/camp/camp_party.cpp`](src/camp/camp_party.cpp) |
+| `0x0032ff4c` | 92 | `unknown` | `matching` | `func_0032ff4c` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x0032ffa8` | 124 | `battle` | `matching` | `battle_func_0032ffa8` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x00330024` | 68 | `engine` | `matching` | `engine_func_00330024` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
 | `0x00332100` | 5968 | `camp` | `stub` | `Camp_WhisperSkillTransfer` | [`src/camp/whisper_event.cpp`](src/camp/whisper_event.cpp) |
 | `0x00333850` | 100 | `engine` | `matching` | `engine_func_00333850` | [`src/engine/leaf_batch20_c.cpp`](src/engine/leaf_batch20_c.cpp) |
+| `0x003338fc` | 20 | `engine` | `matching` | `engine_func_003338fc` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
 | `0x00333910` | 728 | `script_vm` | `matching` | `script_vm_func_00333910` | [`src/engine/leaf_batch20_c.cpp`](src/engine/leaf_batch20_c.cpp) |
+| `0x00333be8` | 132 | `camp` | `matching` | `camp_func_00333be8` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
 | `0x00333c6c` | 116 | `script_vm` | `matching` | `script_vm_func_00333c6c` | [`src/engine/leaf_batch22_c.cpp`](src/engine/leaf_batch22_c.cpp) |
 | `0x00333d2c` | 124 | `script_vm` | `matching` | `script_vm_func_00333d2c` | [`src/engine/leaf_batch22_c.cpp`](src/engine/leaf_batch22_c.cpp) |
 | `0x00334018` | 76 | `script_vm` | `matching` | `script_vm_func_00334018` | [`src/engine/leaf_batch22_c.cpp`](src/engine/leaf_batch22_c.cpp) |
@@ -2770,8 +2982,12 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x0033427c` | 16 | `script_vm` | `matching` | `script_vm_func_0033427c` | [`src/engine/leaf_batch17_a.cpp`](src/engine/leaf_batch17_a.cpp) |
 | `0x0033428c` | 232 | `battle` | `matching` | `battle_func_0033428c` | [`src/engine/leaf_batch22_c.cpp`](src/engine/leaf_batch22_c.cpp) |
 | `0x0033522c` | 288 | `camp` | `matching` | `camp_func_0033522c` | [`src/engine/leaf_batch20_c.cpp`](src/engine/leaf_batch20_c.cpp) |
+| `0x00335414` | 492 | `engine` | `matching` | `engine_func_00335414` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x00335600` | 212 | `ui` | `matching` | `ui_func_00335600` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x003356d4` | 120 | `script_vm` | `matching` | `script_vm_func_003356d4` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
 | `0x003358e0` | 20 | `engine` | `matching` | `engine_func_003358e0` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x0033692c` | 72 | `unknown` | `matching` | `func_0033692c` | [`src/engine/leaf_batch16_a.cpp`](src/engine/leaf_batch16_a.cpp) |
+| `0x00336974` | 132 | `script_vm` | `matching` | `script_vm_func_00336974` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
 | `0x00336c14` | 144 | `unknown` | `matching` | `func_00336c14` | [`src/engine/leaf_batch16_b.cpp`](src/engine/leaf_batch16_b.cpp) |
 | `0x00336ca4` | 20 | `unknown` | `matching` | `func_00336ca4` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x00336cb8` | 276 | `script_vm` | `matching` | `script_vm_func_00336cb8` | [`src/engine/leaf_batch22_c.cpp`](src/engine/leaf_batch22_c.cpp) |
@@ -2788,42 +3004,63 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x00337e54` | 220 | `unknown` | `matching` | `func_00337e54` | [`src/engine/leaf_batch16_b.cpp`](src/engine/leaf_batch16_b.cpp) |
 | `0x00337f30` | 668 | `script_vm` | `matching` | `script_vm_func_00337f30` | [`src/engine/leaf_batch23_c.cpp`](src/engine/leaf_batch23_c.cpp) |
 | `0x003381cc` | 200 | `unknown` | `matching` | `func_003381cc` | [`src/engine/leaf_batch16_b.cpp`](src/engine/leaf_batch16_b.cpp) |
+| `0x00338294` | 152 | `unknown` | `matching` | `func_00338294` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
 | `0x0033832c` | 248 | `unknown` | `matching` | `func_0033832c` | [`src/engine/leaf_batch16_b.cpp`](src/engine/leaf_batch16_b.cpp) |
+| `0x00338424` | 136 | `unknown` | `matching` | `func_00338424` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
 | `0x003384ac` | 112 | `camp` | `matching` | `camp_func_003384ac` | [`src/engine/leaf_batch23_c.cpp`](src/engine/leaf_batch23_c.cpp) |
+| `0x0033851c` | 48 | `script_vm` | `matching` | `script_vm_func_0033851c` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
 | `0x0033854c` | 64 | `ui` | `matching` | `ui_func_0033854c` | [`src/engine/leaf_batch16_b.cpp`](src/engine/leaf_batch16_b.cpp) |
 | `0x003385a4` | 52 | `unknown` | `matching` | `func_003385a4` | [`src/engine/leaf_batch12_c.cpp`](src/engine/leaf_batch12_c.cpp) |
 | `0x003385d8` | 96 | `camp` | `matching` | `camp_func_003385d8` | [`src/engine/leaf_batch23_c.cpp`](src/engine/leaf_batch23_c.cpp) |
 | `0x0033868c` | 300 | `unknown` | `matching` | `func_0033868c` | [`src/engine/leaf_batch16_c.cpp`](src/engine/leaf_batch16_c.cpp) |
+| `0x003387b8` | 384 | `script_vm` | `matching` | `script_vm_func_003387b8` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x00338938` | 80 | `script_vm` | `matching` | `script_vm_func_00338938` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
 | `0x00338e10` | 92 | `battle` | `matching` | `battle_func_00338e10` | [`src/engine/leaf_batch23_c.cpp`](src/engine/leaf_batch23_c.cpp) |
+| `0x00338e6c` | 196 | `script_vm` | `matching` | `script_vm_func_00338e6c` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x003391e4` | 300 | `engine` | `matching` | `engine_func_003391e4` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
 | `0x00339310` | 64 | `unknown` | `matching` | `func_00339310` | [`src/engine/leaf_batch16_c.cpp`](src/engine/leaf_batch16_c.cpp) |
 | `0x00339404` | 64 | `ui` | `matching` | `ui_func_00339404` | [`src/engine/leaf_batch16_a.cpp`](src/engine/leaf_batch16_a.cpp) |
 | `0x00339444` | 68 | `ui` | `matching` | `ui_func_00339444` | [`src/engine/leaf_batch16_c.cpp`](src/engine/leaf_batch16_c.cpp) |
 | `0x00339488` | 120 | `unknown` | `matching` | `func_00339488` | [`src/engine/leaf_batch16_a.cpp`](src/engine/leaf_batch16_a.cpp) |
 | `0x003399ec` | 112 | `engine` | `matching` | `engine_func_003399ec` | [`src/engine/leaf_batch23_c.cpp`](src/engine/leaf_batch23_c.cpp) |
+| `0x0033a014` | 88 | `unknown` | `matching` | `func_0033a014` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x0033a06c` | 88 | `unknown` | `matching` | `func_0033a06c` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x0033a0c4` | 92 | `engine` | `matching` | `engine_func_0033a0c4` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x0033a120` | 76 | `engine` | `matching` | `engine_func_0033a120` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
 | `0x0033a1dc` | 116 | `engine` | `matching` | `engine_func_0033a1dc` | [`src/engine/leaf_batch16_c.cpp`](src/engine/leaf_batch16_c.cpp) |
 | `0x0033a250` | 296 | `unknown` | `matching` | `func_0033a250` | [`src/engine/leaf_batch16_b.cpp`](src/engine/leaf_batch16_b.cpp) |
 | `0x0033a378` | 288 | `unknown` | `matching` | `func_0033a378` | [`src/engine/leaf_batch16_a.cpp`](src/engine/leaf_batch16_a.cpp) |
+| `0x0033a4f8` | 156 | `unknown` | `matching` | `func_0033a4f8` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
 | `0x0033a7d4` | 76 | `script_vm` | `matching` | `script_vm_func_0033a7d4` | [`src/engine/leaf_batch16_a.cpp`](src/engine/leaf_batch16_a.cpp) |
 | `0x0033a820` | 132 | `ui` | `matching` | `ui_func_0033a820` | [`src/engine/leaf_batch16_b.cpp`](src/engine/leaf_batch16_b.cpp) |
 | `0x0033a9b4` | 120 | `nn_sdk` | `matching` | `nn_sdk_func_0033a9b4` | [`src/engine/leaf_batch16_b.cpp`](src/engine/leaf_batch16_b.cpp) |
+| `0x0033ae8c` | 416 | `engine` | `matching` | `engine_func_0033ae8c` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x0033b2e0` | 84 | `script_vm` | `matching` | `script_vm_func_0033b2e0` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
 | `0x0033b334` | 172 | `unknown` | `matching` | `func_0033b334` | [`src/engine/leaf_batch16_b.cpp`](src/engine/leaf_batch16_b.cpp) |
 | `0x0033b570` | 32 | `unknown` | `matching` | `func_0033b570` | [`src/engine/leaf_batch18_b.cpp`](src/engine/leaf_batch18_b.cpp) |
 | `0x0033b590` | 52 | `unknown` | `matching` | `func_0033b590` | [`src/engine/leaf_batch12_c.cpp`](src/engine/leaf_batch12_c.cpp) |
 | `0x0033b5c4` | 52 | `unknown` | `matching` | `func_0033b5c4` | [`src/engine/leaf_batch12_c.cpp`](src/engine/leaf_batch12_c.cpp) |
+| `0x0033b5f8` | 232 | `script_vm` | `matching` | `script_vm_func_0033b5f8` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
 | `0x0033b6e8` | 292 | `engine` | `matching` | `engine_func_0033b6e8` | [`src/engine/leaf_batch23_c.cpp`](src/engine/leaf_batch23_c.cpp) |
 | `0x0033b80c` | 64 | `unknown` | `matching` | `func_0033b80c` | [`src/engine/leaf_batch20_c.cpp`](src/engine/leaf_batch20_c.cpp) |
+| `0x0033b84c` | 84 | `unknown` | `matching` | `func_0033b84c` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
 | `0x0033bb28` | 108 | `script_vm` | `matching` | `script_vm_func_0033bb28` | [`src/engine/leaf_batch20_c.cpp`](src/engine/leaf_batch20_c.cpp) |
 | `0x0033bb94` | 564 | `engine` | `non_matching` | `NkmGrowEvent_func_0033bb94` | [`src/engine/map_runtime.cpp`](src/engine/map_runtime.cpp) |
 | `0x0033c0c4` | 560 | `script_vm` | `matching` | `script_vm_func_0033c0c4` | [`src/engine/leaf_batch23_c.cpp`](src/engine/leaf_batch23_c.cpp) |
 | `0x0033c2f4` | 20 | `script_vm` | `matching` | `script_vm_func_0033c2f4` | [`src/engine/leaf_batch17_b.cpp`](src/engine/leaf_batch17_b.cpp) |
 | `0x0033c308` | 144 | `script_vm` | `matching` | `script_vm_func_0033c308` | [`src/engine/leaf_batch23_c.cpp`](src/engine/leaf_batch23_c.cpp) |
 | `0x0033c69c` | 340 | `script_vm` | `matching` | `script_vm_func_0033c69c` | [`src/engine/leaf_batch23_c.cpp`](src/engine/leaf_batch23_c.cpp) |
+| `0x0033c7f0` | 92 | `script_vm` | `matching` | `script_vm_func_0033c7f0` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x0033c84c` | 188 | `script_vm` | `matching` | `script_vm_func_0033c84c` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
 | `0x0033d618` | 20 | `battle` | `matching` | `battle_func_0033d618` | [`src/engine/leaf_batch17_b.cpp`](src/engine/leaf_batch17_b.cpp) |
 | `0x0033d638` | 40 | `unknown` | `matching` | `func_0033d638` | [`src/engine/leaf_batch19_a.cpp`](src/engine/leaf_batch19_a.cpp) |
 | `0x0033eadc` | 2256 | `battle` | `non_matching` | `EnemyDraw_func_0033eadc` | [`src/battle/battle_extras.cpp`](src/battle/battle_extras.cpp) |
 | `0x0033fa2c` | 40 | `ui` | `matching` | `ui_func_0033fa2c` | [`src/engine/leaf_batch19_a.cpp`](src/engine/leaf_batch19_a.cpp) |
+| `0x0033fa54` | 80 | `engine` | `matching` | `engine_func_0033fa54` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
 | `0x0033faa4` | 128 | `unknown` | `matching` | `func_0033faa4` | [`src/engine/leaf_batch16_a.cpp`](src/engine/leaf_batch16_a.cpp) |
 | `0x0033fb24` | 576 | `script_vm` | `matching` | `script_vm_func_0033fb24` | [`src/engine/leaf_batch23_c.cpp`](src/engine/leaf_batch23_c.cpp) |
+| `0x0033fd64` | 292 | `camp` | `matching` | `camp_func_0033fd64` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x0033fe88` | 276 | `camp` | `matching` | `camp_func_0033fe88` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
 | `0x003400a4` | 544 | `script_vm` | `matching` | `script_vm_func_003400a4` | [`src/engine/leaf_batch20_c.cpp`](src/engine/leaf_batch20_c.cpp) |
 | `0x003406d8` | 100 | `battle` | `matching` | `battle_func_003406d8` | [`src/engine/leaf_batch23_c.cpp`](src/engine/leaf_batch23_c.cpp) |
 | `0x0034073c` | 84 | `battle` | `matching` | `battle_func_0034073c` | [`src/engine/leaf_batch23_c.cpp`](src/engine/leaf_batch23_c.cpp) |
@@ -2844,6 +3081,8 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x0034355c` | 40 | `camp` | `matching` | `camp_func_0034355c` | [`src/engine/leaf_batch19_a.cpp`](src/engine/leaf_batch19_a.cpp) |
 | `0x00343584` | 12 | `unknown` | `matching` | `func_00343584` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x00343590` | 12 | `unknown` | `matching` | `func_00343590` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
+| `0x003439b0` | 152 | `unknown` | `matching` | `func_003439b0` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x00343a48` | 120 | `unknown` | `matching` | `func_00343a48` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
 | `0x00343ac0` | 76 | `unknown` | `matching` | `func_00343ac0` | [`src/engine/leaf_batch20_c.cpp`](src/engine/leaf_batch20_c.cpp) |
 | `0x00343b0c` | 16 | `unknown` | `matching` | `func_00343b0c` | [`src/engine/leaf_batch15_a.cpp`](src/engine/leaf_batch15_a.cpp) |
 | `0x00343c8c` | 16 | `unknown` | `matching` | `func_00343c8c` | [`src/engine/leaf_batch17_a.cpp`](src/engine/leaf_batch17_a.cpp) |
@@ -2857,6 +3096,8 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x00343e00` | 16 | `unknown` | `matching` | `func_00343e00` | [`src/engine/leaf_batch17_a.cpp`](src/engine/leaf_batch17_a.cpp) |
 | `0x00343e10` | 52 | `unknown` | `matching` | `func_00343e10` | [`src/engine/leaf_batch20_c.cpp`](src/engine/leaf_batch20_c.cpp) |
 | `0x00343e44` | 76 | `engine` | `matching` | `engine_func_00343e44` | [`src/engine/leaf_batch20_c.cpp`](src/engine/leaf_batch20_c.cpp) |
+| `0x00344094` | 232 | `camp` | `matching` | `camp_func_00344094` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x00344f2c` | 568 | `ui` | `matching` | `ui_func_00344f2c` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
 | `0x00345164` | 48 | `unknown` | `matching` | `func_00345164` | [`src/engine/leaf_batch12_c.cpp`](src/engine/leaf_batch12_c.cpp) |
 | `0x00345194` | 7068 | `ui` | `non_matching` | `Ui_MemoryArenaAllocate` | [`src/ui/ui_memory.cpp`](src/ui/ui_memory.cpp) |
 | `0x00346d38` | 120 | `engine` | `non_matching` | `AsdMemory_func_00346d38` | [`src/engine/asd_file.cpp`](src/engine/asd_file.cpp) |
@@ -2881,6 +3122,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x00349310` | 56 | `engine` | `matching` | `engine_func_00349310` | [`src/engine/leaf_batch20_c.cpp`](src/engine/leaf_batch20_c.cpp) |
 | `0x00349348` | 92 | `engine` | `matching` | `engine_func_00349348` | [`src/engine/leaf_batch20_c.cpp`](src/engine/leaf_batch20_c.cpp) |
 | `0x00349758` | 32 | `unknown` | `matching` | `func_00349758` | [`src/engine/leaf_batch18_b.cpp`](src/engine/leaf_batch18_b.cpp) |
+| `0x00349a5c` | 52 | `engine` | `matching` | `engine_func_00349a5c` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
 | `0x00349bb8` | 172 | `unknown` | `matching` | `func_00349bb8` | [`src/engine/leaf_batch16_c.cpp`](src/engine/leaf_batch16_c.cpp) |
 | `0x0034a4e4` | 2816 | `battle` | `non_matching` | `battle_func_0034a4e4` | [`src/engine/block_batch.cpp`](src/engine/block_batch.cpp) |
 | `0x0034b3bc` | 4 | `unknown` | `matching` | `func_0034b3bc` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
@@ -2897,7 +3139,9 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x0034cbec` | 92 | `unknown` | `matching` | `func_0034cbec` | [`src/engine/leaf_batch16_c.cpp`](src/engine/leaf_batch16_c.cpp) |
 | `0x0034d67c` | 212 | `unknown` | `matching` | `func_0034d67c` | [`src/engine/leaf_batch23_c.cpp`](src/engine/leaf_batch23_c.cpp) |
 | `0x0034d750` | 136 | `unknown` | `matching` | `func_0034d750` | [`src/engine/leaf_batch14_a.cpp`](src/engine/leaf_batch14_a.cpp) |
+| `0x0034d914` | 404 | `ui` | `matching` | `ui_func_0034d914` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
 | `0x0034daa8` | 36 | `unknown` | `matching` | `func_0034daa8` | [`src/engine/leaf_batch10_b.cpp`](src/engine/leaf_batch10_b.cpp) |
+| `0x0034dbc4` | 88 | `unknown` | `matching` | `func_0034dbc4` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
 | `0x0034dd44` | 40 | `unknown` | `matching` | `func_0034dd44` | [`src/engine/leaf_batch10_c.cpp`](src/engine/leaf_batch10_c.cpp) |
 | `0x0034dd6c` | 44 | `unknown` | `matching` | `func_0034dd6c` | [`src/engine/leaf_batch10_c.cpp`](src/engine/leaf_batch10_c.cpp) |
 | `0x0034dd98` | 8 | `unknown` | `matching` | `func_0034dd98` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
@@ -2907,8 +3151,12 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x0034df94` | 4 | `unknown` | `matching` | `func_0034df94` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x0034dff8` | 48 | `ui` | `matching` | `ui_func_0034dff8` | [`src/engine/leaf_batch19_c.cpp`](src/engine/leaf_batch19_c.cpp) |
 | `0x0034e028` | 520 | `nn_sdk` | `non_matching` | `helper_S4FsReader_func_0034e028` | [`src/nn/mobiclip.cpp`](src/nn/mobiclip.cpp) |
+| `0x0034e344` | 12 | `nn_sdk` | `matching` | `nn_sdk_func_0034e344` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
 | `0x0034e4bc` | 100 | `unknown` | `matching` | `func_0034e4bc` | [`src/engine/leaf_batch20_c.cpp`](src/engine/leaf_batch20_c.cpp) |
 | `0x0034e64c` | 476 | `nn_sdk` | `non_matching` | `helper_S4AudioDevice_func_0034e64c` | [`src/nn/mobiclip.cpp`](src/nn/mobiclip.cpp) |
+| `0x0034e828` | 256 | `engine` | `matching` | `engine_func_0034e828` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x0034e928` | 608 | `engine` | `matching` | `engine_func_0034e928` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x0034eb88` | 64 | `unknown` | `matching` | `func_0034eb88` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
 | `0x0034ef48` | 44 | `nn_sdk` | `matching` | `nn_sdk_func_0034ef48` | [`src/engine/leaf_batch19_b.cpp`](src/engine/leaf_batch19_b.cpp) |
 | `0x0034ef74` | 72 | `unknown` | `matching` | `func_0034ef74` | [`src/engine/leaf_batch13_b.cpp`](src/engine/leaf_batch13_b.cpp) |
 | `0x0034efbc` | 156 | `unknown` | `matching` | `func_0034efbc` | [`src/engine/leaf_batch16_b.cpp`](src/engine/leaf_batch16_b.cpp) |
@@ -2924,6 +3172,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x0034fba4` | 52 | `unknown` | `matching` | `func_0034fba4` | [`src/engine/leaf_batch15_b.cpp`](src/engine/leaf_batch15_b.cpp) |
 | `0x0034fbe0` | 52 | `unknown` | `matching` | `func_0034fbe0` | [`src/engine/leaf_batch15_b.cpp`](src/engine/leaf_batch15_b.cpp) |
 | `0x0034fda4` | 52 | `engine` | `matching` | `engine_func_0034fda4` | [`src/engine/leaf_batch19_c.cpp`](src/engine/leaf_batch19_c.cpp) |
+| `0x0034fdd8` | 136 | `engine` | `matching` | `engine_func_0034fdd8` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
 | `0x00350024` | 40 | `unknown` | `matching` | `func_00350024` | [`src/engine/leaf_batch19_a.cpp`](src/engine/leaf_batch19_a.cpp) |
 | `0x003505bc` | 36 | `unknown` | `matching` | `func_003505bc` | [`src/engine/leaf_batch12_a.cpp`](src/engine/leaf_batch12_a.cpp) |
 | `0x00350804` | 32 | `unknown` | `matching` | `func_00350804` | [`src/engine/leaf_batch10_a.cpp`](src/engine/leaf_batch10_a.cpp) |
@@ -2937,12 +3186,32 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x00351a88` | 164 | `ui` | `matching` | `ui_func_00351a88` | [`src/engine/leaf_batch16_b.cpp`](src/engine/leaf_batch16_b.cpp) |
 | `0x00351b2c` | 80 | `unknown` | `matching` | `func_00351b2c` | [`src/engine/leaf_batch20_c.cpp`](src/engine/leaf_batch20_c.cpp) |
 | `0x00351d38` | 16 | `unknown` | `matching` | `func_00351d38` | [`src/engine/leaf_batch17_a.cpp`](src/engine/leaf_batch17_a.cpp) |
+| `0x00351d48` | 12 | `unknown` | `matching` | `func_00351d48` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
 | `0x00351d60` | 32 | `unknown` | `matching` | `func_00351d60` | [`src/engine/leaf_batch18_b.cpp`](src/engine/leaf_batch18_b.cpp) |
+| `0x00351d80` | 36 | `unknown` | `matching` | `func_00351d80` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x00351da4` | 36 | `unknown` | `matching` | `func_00351da4` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
 | `0x00351dc8` | 8 | `unknown` | `matching` | `func_00351dc8` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
+| `0x00351dd0` | 36 | `unknown` | `matching` | `func_00351dd0` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x00351df4` | 36 | `unknown` | `matching` | `func_00351df4` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x00351fc0` | 76 | `unknown` | `matching` | `func_00351fc0` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x0035200c` | 88 | `unknown` | `matching` | `func_0035200c` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x00352064` | 96 | `unknown` | `matching` | `func_00352064` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x003520c4` | 60 | `unknown` | `matching` | `func_003520c4` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x00352100` | 80 | `unknown` | `matching` | `func_00352100` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x00352150` | 60 | `unknown` | `matching` | `func_00352150` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x0035218c` | 60 | `unknown` | `matching` | `func_0035218c` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x003521c8` | 80 | `unknown` | `matching` | `func_003521c8` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x00352218` | 112 | `unknown` | `matching` | `func_00352218` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
 | `0x00352288` | 32 | `unknown` | `matching` | `func_00352288` | [`src/engine/leaf_batch18_b.cpp`](src/engine/leaf_batch18_b.cpp) |
 | `0x003522a8` | 32 | `unknown` | `matching` | `func_003522a8` | [`src/engine/leaf_batch18_b.cpp`](src/engine/leaf_batch18_b.cpp) |
 | `0x003522c8` | 32 | `unknown` | `matching` | `func_003522c8` | [`src/engine/leaf_batch18_b.cpp`](src/engine/leaf_batch18_b.cpp) |
 | `0x003522ec` | 32 | `unknown` | `matching` | `func_003522ec` | [`src/engine/leaf_batch18_b.cpp`](src/engine/leaf_batch18_b.cpp) |
+| `0x0035230c` | 92 | `unknown` | `matching` | `func_0035230c` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x00352368` | 112 | `unknown` | `matching` | `func_00352368` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x003523d8` | 84 | `unknown` | `matching` | `func_003523d8` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x0035242c` | 112 | `unknown` | `matching` | `func_0035242c` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x0035249c` | 108 | `unknown` | `matching` | `func_0035249c` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x00352508` | 100 | `unknown` | `matching` | `func_00352508` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
 | `0x0035256c` | 76 | `unknown` | `matching` | `func_0035256c` | [`src/engine/leaf_batch16_b.cpp`](src/engine/leaf_batch16_b.cpp) |
 | `0x003528d4` | 124 | `engine` | `matching` | `engine_func_003528d4` | [`src/engine/leaf_batch20_c.cpp`](src/engine/leaf_batch20_c.cpp) |
 | `0x00352950` | 36 | `engine` | `matching` | `engine_func_00352950` | [`src/engine/leaf_batch10_b.cpp`](src/engine/leaf_batch10_b.cpp) |
@@ -2950,24 +3219,36 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x003530f8` | 36 | `engine` | `matching` | `engine_func_003530f8` | [`src/engine/leaf_batch10_b.cpp`](src/engine/leaf_batch10_b.cpp) |
 | `0x00353124` | 60 | `script_vm` | `matching` | `script_vm_func_00353124` | [`src/engine/leaf_batch11_b.cpp`](src/engine/leaf_batch11_b.cpp) |
 | `0x003531ac` | 60 | `script_vm` | `matching` | `script_vm_func_003531ac` | [`src/engine/leaf_batch11_b.cpp`](src/engine/leaf_batch11_b.cpp) |
+| `0x003531e8` | 192 | `unknown` | `matching` | `func_003531e8` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x0035334c` | 24 | `unknown` | `matching` | `func_0035334c` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
 | `0x00353364` | 136 | `engine` | `matching` | `engine_func_00353364` | [`src/engine/leaf_batch20_c.cpp`](src/engine/leaf_batch20_c.cpp) |
 | `0x003533ec` | 108 | `engine` | `matching` | `engine_func_003533ec` | [`src/engine/leaf_batch20_c.cpp`](src/engine/leaf_batch20_c.cpp) |
 | `0x003537e8` | 24 | `unknown` | `matching` | `func_003537e8` | [`src/engine/leaf_batch17_c.cpp`](src/engine/leaf_batch17_c.cpp) |
 | `0x00353800` | 44 | `unknown` | `matching` | `func_00353800` | [`src/engine/leaf_batch19_b.cpp`](src/engine/leaf_batch19_b.cpp) |
+| `0x0035382c` | 140 | `unknown` | `matching` | `func_0035382c` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x003538b8` | 12 | `unknown` | `matching` | `func_003538b8` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x00353a50` | 124 | `ui` | `matching` | `ui_func_00353a50` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
 | `0x00353b58` | 68 | `unknown` | `matching` | `func_00353b58` | [`src/engine/leaf_batch20_c.cpp`](src/engine/leaf_batch20_c.cpp) |
 | `0x00353b9c` | 92 | `engine` | `matching` | `engine_func_00353b9c` | [`src/engine/leaf_batch20_c.cpp`](src/engine/leaf_batch20_c.cpp) |
 | `0x00353bf8` | 140 | `engine` | `matching` | `engine_func_00353bf8` | [`src/engine/leaf_batch20_c.cpp`](src/engine/leaf_batch20_c.cpp) |
 | `0x00353c84` | 140 | `engine` | `matching` | `engine_func_00353c84` | [`src/engine/leaf_batch20_c.cpp`](src/engine/leaf_batch20_c.cpp) |
+| `0x003541e8` | 256 | `engine` | `matching` | `engine_func_003541e8` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
 | `0x003542e8` | 144 | `engine` | `matching` | `engine_func_003542e8` | [`src/engine/leaf_batch20_c.cpp`](src/engine/leaf_batch20_c.cpp) |
 | `0x00354d28` | 36 | `script_vm` | `matching` | `script_vm_func_00354d28` | [`src/engine/leaf_batch10_b.cpp`](src/engine/leaf_batch10_b.cpp) |
 | `0x00354d50` | 24 | `unknown` | `matching` | `func_00354d50` | [`src/engine/leaf_batch17_c.cpp`](src/engine/leaf_batch17_c.cpp) |
 | `0x00354d68` | 24 | `unknown` | `matching` | `func_00354d68` | [`src/engine/leaf_batch17_c.cpp`](src/engine/leaf_batch17_c.cpp) |
+| `0x00354d80` | 24 | `unknown` | `matching` | `func_00354d80` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x00354e70` | 128 | `unknown` | `matching` | `func_00354e70` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
 | `0x00354f64` | 88 | `unknown` | `matching` | `func_00354f64` | [`src/engine/leaf_batch20_c.cpp`](src/engine/leaf_batch20_c.cpp) |
 | `0x00355304` | 40 | `engine` | `matching` | `engine_func_00355304` | [`src/engine/leaf_batch19_a.cpp`](src/engine/leaf_batch19_a.cpp) |
+| `0x003555ac` | 12 | `unknown` | `matching` | `func_003555ac` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x003555b8` | 12 | `unknown` | `matching` | `func_003555b8` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
 | `0x0035568c` | 16 | `unknown` | `matching` | `func_0035568c` | [`src/engine/leaf_batch15_a.cpp`](src/engine/leaf_batch15_a.cpp) |
+| `0x0035569c` | 12 | `unknown` | `matching` | `func_0035569c` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
 | `0x003556a8` | 16 | `unknown` | `matching` | `func_003556a8` | [`src/engine/leaf_batch15_a.cpp`](src/engine/leaf_batch15_a.cpp) |
 | `0x003556b8` | 296 | `unknown` | `matching` | `func_003556b8` | [`src/engine/leaf_batch16_b.cpp`](src/engine/leaf_batch16_b.cpp) |
 | `0x00355830` | 152 | `unknown` | `matching` | `func_00355830` | [`src/engine/leaf_batch16_c.cpp`](src/engine/leaf_batch16_c.cpp) |
+| `0x003558c8` | 12 | `unknown` | `matching` | `func_003558c8` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
 | `0x003558d4` | 4 | `unknown` | `matching` | `func_003558d4` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x00355f10` | 4 | `unknown` | `matching` | `func_00355f10` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x003560dc` | 212 | `unknown` | `matching` | `func_003560dc` | [`src/engine/leaf_batch20_c.cpp`](src/engine/leaf_batch20_c.cpp) |
@@ -2978,16 +3259,35 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x00356494` | 144 | `unknown` | `matching` | `func_00356494` | [`src/engine/leaf_batch20_c.cpp`](src/engine/leaf_batch20_c.cpp) |
 | `0x00356524` | 40 | `unknown` | `matching` | `func_00356524` | [`src/engine/leaf_batch15_b.cpp`](src/engine/leaf_batch15_b.cpp) |
 | `0x003566d0` | 40 | `unknown` | `matching` | `func_003566d0` | [`src/engine/leaf_batch15_b.cpp`](src/engine/leaf_batch15_b.cpp) |
+| `0x003566f8` | 88 | `unknown` | `matching` | `func_003566f8` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x00356750` | 76 | `unknown` | `matching` | `func_00356750` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x00356930` | 92 | `unknown` | `matching` | `func_00356930` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x0035698c` | 80 | `unknown` | `matching` | `func_0035698c` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x003569dc` | 100 | `unknown` | `matching` | `func_003569dc` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x00356a40` | 108 | `unknown` | `matching` | `func_00356a40` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x00356aac` | 88 | `unknown` | `matching` | `func_00356aac` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x00356b3c` | 92 | `unknown` | `matching` | `func_00356b3c` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x00356b98` | 60 | `unknown` | `matching` | `func_00356b98` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x00356bd4` | 116 | `unknown` | `matching` | `func_00356bd4` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x00356c48` | 48 | `unknown` | `matching` | `func_00356c48` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x00356cb0` | 88 | `unknown` | `matching` | `func_00356cb0` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x00356d34` | 96 | `unknown` | `matching` | `func_00356d34` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x00356dcc` | 48 | `unknown` | `matching` | `func_00356dcc` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x00356dfc` | 84 | `unknown` | `matching` | `func_00356dfc` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
 | `0x00356e7c` | 84 | `unknown` | `matching` | `func_00356e7c` | [`src/engine/leaf_batch21_c.cpp`](src/engine/leaf_batch21_c.cpp) |
 | `0x00356ed0` | 176 | `unknown` | `matching` | `func_00356ed0` | [`src/engine/leaf_batch21_c.cpp`](src/engine/leaf_batch21_c.cpp) |
 | `0x00357190` | 268 | `engine` | `matching` | `engine_func_00357190` | [`src/engine/leaf_batch16_a.cpp`](src/engine/leaf_batch16_a.cpp) |
 | `0x00357530` | 132 | `unknown` | `matching` | `func_00357530` | [`src/engine/leaf_batch21_c.cpp`](src/engine/leaf_batch21_c.cpp) |
+| `0x003576bc` | 96 | `unknown` | `matching` | `func_003576bc` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
 | `0x003577b0` | 44 | `unknown` | `matching` | `func_003577b0` | [`src/engine/leaf_batch19_b.cpp`](src/engine/leaf_batch19_b.cpp) |
+| `0x003577dc` | 92 | `unknown` | `matching` | `func_003577dc` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
 | `0x00357838` | 176 | `engine` | `matching` | `engine_func_00357838` | [`src/engine/leaf_batch23_c.cpp`](src/engine/leaf_batch23_c.cpp) |
 | `0x003578e8` | 40 | `unknown` | `matching` | `func_003578e8` | [`src/engine/leaf_batch15_b.cpp`](src/engine/leaf_batch15_b.cpp) |
 | `0x00357910` | 40 | `unknown` | `matching` | `func_00357910` | [`src/engine/leaf_batch15_b.cpp`](src/engine/leaf_batch15_b.cpp) |
 | `0x00357938` | 44 | `unknown` | `matching` | `func_00357938` | [`src/engine/leaf_batch19_b.cpp`](src/engine/leaf_batch19_b.cpp) |
 | `0x00357964` | 40 | `unknown` | `matching` | `func_00357964` | [`src/engine/leaf_batch15_b.cpp`](src/engine/leaf_batch15_b.cpp) |
+| `0x0035798c` | 112 | `engine` | `matching` | `engine_func_0035798c` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
+| `0x003579fc` | 44 | `engine` | `matching` | `engine_func_003579fc` | [`src/engine/leaf_batch25_c.cpp`](src/engine/leaf_batch25_c.cpp) |
 | `0x00357a28` | 20 | `ui` | `matching` | `ui_func_00357a28` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x00357c34` | 20 | `unknown` | `matching` | `func_00357c34` | [`src/engine/leaf_batch17_b.cpp`](src/engine/leaf_batch17_b.cpp) |
 | `0x00358fa4` | 124 | `unknown` | `matching` | `func_00358fa4` | [`src/engine/leaf_batch14_a.cpp`](src/engine/leaf_batch14_a.cpp) |
