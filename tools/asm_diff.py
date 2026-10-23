@@ -10,6 +10,8 @@ from __future__ import annotations
 
 import argparse
 import csv
+from dataclasses import dataclass
+from functools import lru_cache
 from pathlib import Path
 import struct
 import sys
@@ -22,16 +24,29 @@ if str(_REPO_ROOT) not in sys.path:
 
 from tools.build_check import ensure_tu_armv6k
 
-_ELF_CACHE: dict[tuple[str, float], dict[str, tuple[bytes, set[int]]]] = {}
+@dataclass(frozen=True)
+class ElfRelocation:
+    """A relocation located inside one extracted function symbol."""
+
+    offset: int
+    relocation_type: int
+    symbol_name: str
+    explicit_addend: int | None = None
 
 
-def extract_elf_functions(obj_path: Path) -> dict[str, tuple[bytes, set[int]]]:
+_ELF_CACHE: dict[
+    tuple[str, float], dict[str, tuple[bytes, tuple[ElfRelocation, ...]]]
+] = {}
+
+
+def extract_elf_functions_detailed(
+    obj_path: Path,
+) -> dict[str, tuple[bytes, tuple[ElfRelocation, ...]]]:
     """Parse a 32-bit little-endian ARM ELF object file.
 
     Returns:
-        dict mapping symbol name to (function_bytes, reloc_word_offsets)
-        where reloc_word_offsets is a set of word indices (byte_offset // 4)
-        that have relocations applied to them.
+        dict mapping symbol name to (function_bytes, relocations), where each
+        relocation offset is relative to the extracted function's first byte.
     """
     obj_path = Path(obj_path)
     if not obj_path.is_file():
@@ -91,18 +106,6 @@ def extract_elf_functions(obj_path: Path) -> dict[str, tuple[bytes, set[int]]]:
 
     sec_names = [get_sh_name(s[0]) for s in sections]
 
-    # Map relocations by target section index: target_sec_idx -> list of r_offset
-    # SHT_REL = 9, SHT_RELA = 4
-    relocs_by_target: dict[int, list[int]] = {}
-    for s in sections:
-        if s[1] in (4, 9):
-            target_sec = s[7]  # sh_info holds the target section index
-            entsize = s[9] or (8 if s[1] == 9 else 12)
-            rel_list = relocs_by_target.setdefault(target_sec, [])
-            for r_i in range(s[5] // entsize):
-                r_offset = struct.unpack_from("<I", data, s[4] + r_i * entsize)[0]
-                rel_list.append(r_offset)
-
     # Locate .symtab (SHT_SYMTAB = 2)
     symtab_idx = None
     for idx, s in enumerate(sections):
@@ -127,67 +130,234 @@ def extract_elf_functions(obj_path: Path) -> dict[str, tuple[bytes, set[int]]]:
 
     entsize = symtab_sec[9] or 16
     count = symtab_sec[5] // entsize
-    funcs: dict[str, tuple[bytes, set[int]]] = {}
-
+    symbols: list[tuple[str, int, int, int, int]] = []
     for i in range(count):
         st_name, st_value, st_size, st_info, st_other, st_shndx = struct.unpack_from(
             "<IIIBBH", data, symtab_sec[4] + i * entsize
         )
-        st_type = st_info & 0x0F
+        symbols.append(
+            (get_sym_name(st_name), st_value & ~1, st_size, st_info & 0x0F, st_shndx)
+        )
 
+    # SHT_REL = 9, SHT_RELA = 4.  Keep relocation type and symbol so the
+    # verifier can resolve supported calls against the function ledger.
+    relocs_by_target: dict[int, list[tuple[int, int, str, int | None]]] = {}
+    for rel_sec in sections:
+        if rel_sec[1] not in (4, 9):
+            continue
+        target_sec = rel_sec[7]  # sh_info holds the relocated section index
+        symtab_for_reloc = rel_sec[6]  # sh_link holds the symbol table index
+        if symtab_for_reloc != symtab_idx:
+            continue
+        is_rela = rel_sec[1] == 4
+        default_entsize = 12 if is_rela else 8
+        reloc_entsize = rel_sec[9] or default_entsize
+        if reloc_entsize < default_entsize:
+            continue
+        rel_list = relocs_by_target.setdefault(target_sec, [])
+        for rel_i in range(rel_sec[5] // reloc_entsize):
+            rel_pos = rel_sec[4] + rel_i * reloc_entsize
+            r_offset, r_info = struct.unpack_from("<II", data, rel_pos)
+            symbol_index = r_info >> 8
+            relocation_type = r_info & 0xFF
+            explicit_addend = None
+            if is_rela:
+                (explicit_addend,) = struct.unpack_from("<i", data, rel_pos + 8)
+            symbol_name = (
+                symbols[symbol_index][0] if symbol_index < len(symbols) else ""
+            )
+            rel_list.append(
+                (r_offset, relocation_type, symbol_name, explicit_addend)
+            )
+
+    funcs: dict[str, tuple[bytes, tuple[ElfRelocation, ...]]] = {}
+
+    for sym_name, st_value, st_size, st_type, st_shndx in symbols:
         if 0 < st_shndx < len(sections):
             sec = sections[st_shndx]
             sec_name = sec_names[st_shndx]
             # Must be executable section (.text or SHF_EXECINSTR = 0x4)
             if (sec[2] & 0x4) or sec_name.startswith(".text"):
                 if st_type == 2 or st_size > 0:  # STT_FUNC or non-empty size
-                    st_value = st_value & ~1
-                    sym_name = get_sym_name(st_name)
                     if sym_name:
                         func_bytes = data[
                             sec[4] + st_value : sec[4] + st_value + st_size
                         ]
                         relocs = relocs_by_target.get(st_shndx, [])
-                        reloc_word_offsets = {
-                            (r_off - st_value) // 4
-                            for r_off in relocs
+                        function_relocs = tuple(
+                            ElfRelocation(
+                                r_off - st_value,
+                                reloc_type,
+                                target_name,
+                                explicit_addend,
+                            )
+                            for r_off, reloc_type, target_name, explicit_addend in relocs
                             if st_value <= r_off < st_value + st_size
-                        }
-                        funcs[sym_name] = (func_bytes, reloc_word_offsets)
+                        )
+                        funcs[sym_name] = (func_bytes, function_relocs)
 
     if cache_key is not None:
         _ELF_CACHE[cache_key] = funcs
     return funcs
 
 
+def extract_elf_functions(obj_path: Path) -> dict[str, tuple[bytes, set[int]]]:
+    """Parse functions while preserving the legacy relocation-offset result."""
+    return {
+        name: (func_bytes, {rel.offset // 4 for rel in relocations})
+        for name, (func_bytes, relocations) in extract_elf_functions_detailed(
+            obj_path
+        ).items()
+    }
+
+
 def find_symbol_in_elf(
-    funcs: dict[str, tuple[bytes, set[int]]],
+    funcs: dict[str, tuple],
     func_name: str,
     addr: int | None = None,
-) -> tuple[bytes, set[int]] | None:
+) -> tuple | None:
     """Find a symbol in extracted ELF functions using exact, Itanium mangled, or address match."""
     if func_name in funcs:
         return funcs[func_name]
 
-    # Itanium C++ mangling matches: e.g. "20engine_func_0011b838"
+    # Itanium C++ mangling matches: e.g. "20engine_func_0011b838".
     needle = f"{len(func_name)}{func_name}"
-    for sname, val in funcs.items():
-        if needle in sname:
-            return val
-
-    # Substring match
-    for sname, val in funcs.items():
-        if func_name in sname:
-            return val
+    mangled_matches = [
+        val
+        for sname, val in funcs.items()
+        if needle in sname and not sname.startswith("_ZZ")
+    ]
+    if len(mangled_matches) == 1:
+        return mangled_matches[0]
+    if len(mangled_matches) > 1:
+        return None
 
     # Address tag match (e.g. "0011b838" in "_Z..._func_0011b838...")
     if addr is not None:
         addr_tag = f"{addr:08x}"
-        for sname, val in funcs.items():
-            if addr_tag in sname:
-                return val
+        address_matches = [val for sname, val in funcs.items() if addr_tag in sname]
+        if len(address_matches) == 1:
+            return address_matches[0]
 
     return None
+
+
+@lru_cache(maxsize=8)
+def _function_addresses_from_csv(
+    csv_path: str, mtime_ns: int, file_size: int
+) -> dict[str, int]:
+    """Return only uniquely named function symbols from a functions ledger."""
+    del mtime_ns, file_size
+    addresses_by_name: dict[str, set[int]] = {}
+    with open(csv_path, "r", encoding="utf-8", newline="") as f:
+        for row in csv.DictReader(f):
+            name = row.get("name", "").strip()
+            address = row.get("address", "").strip()
+            if not name or not address:
+                continue
+            try:
+                value = int(address, 16)
+            except ValueError:
+                continue
+            addresses_by_name.setdefault(name, set()).add(value)
+    return {
+        name: next(iter(values))
+        for name, values in addresses_by_name.items()
+        if len(values) == 1
+    }
+
+
+def load_function_addresses(functions_csv: Path) -> dict[str, int]:
+    """Read a cached exact-name-to-address map from a function ledger."""
+    functions_csv = Path(functions_csv)
+    try:
+        stat = functions_csv.stat()
+    except OSError:
+        return {}
+    return _function_addresses_from_csv(
+        str(functions_csv.resolve()), stat.st_mtime_ns, stat.st_size
+    )
+
+
+def normalize_resolved_arm_calls(
+    compiled_bytes: bytes,
+    relocations: tuple[ElfRelocation, ...] | list[ElfRelocation],
+    expected_bytes: bytes,
+    function_addr: int,
+    functions_csv: Path,
+) -> bytes | None:
+    """Resolve only unambiguous ARM-state R_ARM_CALLs against the ledger.
+
+    The object branch immediate is linker-owned, so it is not trusted as proof.
+    Instead, the relocation must identify a uniquely named ledger function, the
+    original instruction at that offset must be an unconditional ARM BL to that
+    exact address, and the object opcode must match the original BL opcode. Any
+    other relocation or interworking case remains unresolved and fails closed.
+    """
+    if not relocations:
+        return compiled_bytes
+    if len(compiled_bytes) != len(expected_bytes) or not expected_bytes:
+        return None
+    if 0x00100048 <= function_addr < 0x00101300:
+        return None  # Thumb branch relocations are not supported here.
+
+    function_addresses = load_function_addresses(functions_csv)
+    if not function_addresses:
+        return None
+
+    cs = capstone.Cs(capstone.CS_ARCH_ARM, capstone.CS_MODE_ARM)
+    cs.detail = True
+    expected_insns = {
+        insn.address - function_addr: insn
+        for insn in cs.disasm(expected_bytes, function_addr)
+    }
+    normalized = bytearray(compiled_bytes)
+    seen_offsets: set[int] = set()
+
+    for reloc in relocations:
+        offset = reloc.offset
+        if (
+            reloc.relocation_type != 28  # R_ARM_CALL
+            or reloc.explicit_addend is not None
+            or offset in seen_offsets
+            or offset < 0
+            or offset % 4
+            or offset + 4 > len(expected_bytes)
+        ):
+            return None
+        seen_offsets.add(offset)
+
+        target_addr = function_addresses.get(reloc.symbol_name)
+        if target_addr is None:
+            return None
+        if 0x00100048 <= target_addr < 0x00101300:
+            return None  # Do not infer ARM/Thumb interworking or veneer behavior.
+
+        expected_insn = expected_insns.get(offset)
+        if (
+            expected_insn is None
+            or expected_insn.mnemonic.lower() != "bl"
+            or not expected_insn.operands
+            or expected_insn.operands[-1].type != capstone.arm.ARM_OP_IMM
+            or expected_insn.operands[-1].imm != target_addr
+        ):
+            return None
+
+        compiled_word = struct.unpack_from("<I", compiled_bytes, offset)[0]
+        expected_word = struct.unpack_from("<I", expected_bytes, offset)[0]
+        # R_ARM_CALL may fill only the branch displacement; the condition and
+        # opcode must already be the same BL instruction as in the executable.
+        # The assembler's canonical implicit addend for ``bl symbol`` is -8,
+        # encoded as imm24 == 0xfffffe. Reject altered addends rather than
+        # assuming the relocation still names the exact ledger target.
+        if (
+            (compiled_word & 0xFF000000) != (expected_word & 0xFF000000)
+            or (compiled_word & 0x00FFFFFF) != 0x00FFFFFE
+        ):
+            return None
+        normalized[offset : offset + 4] = expected_bytes[offset : offset + 4]
+
+    return bytes(normalized)
 
 
 def compare_function(
@@ -236,7 +406,7 @@ def compare_function(
             "diff_lines": [f"Compilation failed: {res.stderr.strip()}"],
         }
 
-    elf_funcs = extract_elf_functions(out_obj)
+    elf_funcs = extract_elf_functions_detailed(out_obj)
     sym_data = find_symbol_in_elf(elf_funcs, func_name, addr_int)
     if sym_data is None:
         return {
@@ -250,7 +420,7 @@ def compare_function(
             "diff_lines": [f"Symbol '{func_name}' not found in {out_obj.name}"],
         }
 
-    compiled_bytes, reloc_word_offsets = sym_data
+    compiled_bytes, relocations = sym_data
     compiled_size = len(compiled_bytes)
 
     # Slice expected bytes from code.bin (base 0x00100000)
@@ -260,16 +430,26 @@ def compare_function(
     else:
         expected_bytes = b""
 
-    # Unresolved relocations cannot prove final linked bytes or call targets.
-    # Fail closed until relocation resolution is implemented.
-    exact_match = (not reloc_word_offsets and size > 0 and
-                   compiled_size == size and compiled_bytes == expected_bytes)
+    normalized_bytes = normalize_resolved_arm_calls(
+        compiled_bytes,
+        relocations,
+        expected_bytes,
+        addr_int,
+        repo_root / "config" / "functions.csv",
+    )
+    exact_match = (
+        size > 0
+        and compiled_size == size
+        and normalized_bytes is not None
+        and normalized_bytes == expected_bytes
+    )
+    comparison_bytes = normalized_bytes or compiled_bytes
 
     # Compute byte_match_ratio
     matching_bytes = 0
-    compare_len = min(compiled_size, len(expected_bytes), size)
+    compare_len = min(len(comparison_bytes), len(expected_bytes), size)
     for i in range(compare_len):
-        if compiled_bytes[i] == expected_bytes[i]:
+        if comparison_bytes[i] == expected_bytes[i]:
             matching_bytes += 1
 
     byte_match_ratio = round(matching_bytes / max(1, size), 4)
@@ -280,7 +460,7 @@ def compare_function(
         capstone.CS_ARCH_ARM,
         capstone.CS_MODE_THUMB if thumb else capstone.CS_MODE_ARM,
     )
-    comp_insns = list(cs.disasm(compiled_bytes, addr_int))
+    comp_insns = list(cs.disasm(comparison_bytes, addr_int))
     exp_insns = list(cs.disasm(expected_bytes, addr_int))
 
     matching_mnemonics = sum(
