@@ -97,7 +97,11 @@ class TestArmv6kBuild(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             code_path = root / "extracted" / "exefs" / "code.bin"
             if code_path.is_file() and os.environ.get("SMT4_SKIP_PRIVATE_TESTS") != "1":
-                from tools.asm_diff import extract_elf_functions, find_symbol_in_elf
+                from tools.asm_diff import (
+                    extract_elf_functions_detailed,
+                    find_symbol_in_elf,
+                    normalize_resolved_arm_calls,
+                )
                 code = code_path.read_bytes()
                 with (root / "config" / "functions.csv").open(encoding="utf-8") as ledger:
                     matches = [r for r in csv.DictReader(ledger) if r["status"] == "matching"]
@@ -106,12 +110,23 @@ class TestArmv6kBuild(unittest.TestCase):
                     objects = list(build.rglob(Path(row["src_file"]).name + ".o"))
                     objects += list(build.rglob(Path(row["src_file"]).name + ".obj"))
                     self.assertEqual(len(objects), 1, row["src_file"])
-                    symbol = find_symbol_in_elf(extract_elf_functions(objects[0]), row["name"], int(row["address"], 16))
+                    address = int(row["address"], 16)
+                    symbol = find_symbol_in_elf(
+                        extract_elf_functions_detailed(objects[0]), row["name"], address
+                    )
                     self.assertIsNotNone(symbol, row["name"])
                     actual, relocations = symbol
                     offset, size = int(row["address"], 16) - 0x100000, int(row["size"])
-                    self.assertFalse(relocations, row["name"])
-                    self.assertEqual(actual, code[offset:offset + size], row["name"])
+                    expected = code[offset:offset + size]
+                    normalized = normalize_resolved_arm_calls(
+                        actual,
+                        relocations,
+                        expected,
+                        address,
+                        root / "config" / "functions.csv",
+                    )
+                    self.assertIsNotNone(normalized, row["name"])
+                    self.assertEqual(normalized, expected, row["name"])
 
 
 if __name__ == "__main__":

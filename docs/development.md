@@ -73,6 +73,6 @@ Before considering a tooling change complete, run the relevant tests, force the 
 
 ## Progress definitions
 
-Only `matching` verifies exact machine code against the original binary. Functions with unresolved object relocations cannot receive an exact match until those relocations can be resolved and checked. The compiled-coverage tier uses a size threshold (at least 15% of the original function size, with a small minimum) to distinguish larger reconstructions from drafts. It does not establish equivalent behavior. Explored coverage includes stubs and should not be treated as runnable or completed game code.
+Only `matching` verifies exact machine code against the original binary. Relocations are accepted only when their type and symbol are supported and the encoded instruction can be checked against an unambiguous ledger target; currently that is limited to canonical ARM-state `R_ARM_CALL` relocations. Every other unresolved relocation remains ineligible for an exact match. The compiled-coverage tier uses a size threshold (at least 15% of the original function size, with a small minimum) to distinguish larger reconstructions from drafts. It does not establish equivalent behavior. Explored coverage includes stubs and should not be treated as runnable or completed game code.
 
 Use `python tools/progress.py --write` to regenerate the progress report and README from the reporting tool. Update that generator when changing generated documentation.
