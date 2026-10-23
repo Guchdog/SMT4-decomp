@@ -51,12 +51,6 @@ extern "C" {
 // Forward declaration for task callback
 void ComWin_Calc(void* arg);                                                        // 0x0011b094
 
-// DECOMP_FUNC(0x0010a6fc, 16)
-void ComWin_SetParam1C(u32 val) {
-    auto* ptr = reinterpret_cast<u32*>(0x00464D48 + 0x1C);
-    *ptr = val;
-}
-
 // DECOMP_FUNC(0x0010a70c, 60)
 bool ComWin_SetState() {
     auto* state_block = reinterpret_cast<u32*>(0x004E3CD4);
@@ -203,11 +197,6 @@ void ComWin_Calc(void* arg) {
 
 InfoWinWork* g_InfoWinWork = nullptr; // 0x0043E128
 
-// DECOMP_FUNC(0x0010af38, 16)
-bool InfoWin_IsActive() {
-    return g_InfoWinWork != nullptr && g_InfoWinWork->state != 0;
-}
-
 // DECOMP_FUNC(0x0010af48, 60)
 void InfoWin_SetState(u32 state) {
     InfoWinWork* work = g_InfoWinWork;
@@ -333,11 +322,6 @@ void InfoWin_Calc(void* arg) {
 GuestWinWork* g_GuestWinWork = nullptr; // 0x0043E110
 
 void GuestWin_Calc(void* arg);                                                      // 0x0011b128
-
-// DECOMP_FUNC(0x0010b340, 16)
-bool GuestWin_IsActive() {
-    return g_GuestWinWork != nullptr && g_GuestWinWork->state != 0;
-}
 
 // DECOMP_FUNC(0x0010b350, 448)
 void GuestWin_Init() {

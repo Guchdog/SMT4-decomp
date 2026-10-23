@@ -183,7 +183,7 @@ address,size,status,category,name,src_file
 0x0010a588,152,non_matching,ui,AsdFont_func_0010a588,src/engine/asd_text.cpp
 0x0010a620,128,matching,ui,ui_func_0010a620,src/engine/leaf_batch29_a.cpp
 0x0010a6a0,92,matching,battle,battle_func_0010a6a0,src/engine/leaf_batch40_c.cpp
-0x0010a6fc,16,non_matching,ui,ComWin_SetParam1C,src/ui/window.cpp
+0x0010a6fc,16,matching,engine,AsdText_SetCodeField1C,src/engine/asd_text.cpp
 0x0010a70c,60,non_matching,unknown,ComWin_SetState,src/ui/window.cpp
 0x0010a748,504,non_matching,ui,ComWin_Init,src/ui/window.cpp
 0x0010a940,20,non_matching,engine,ComWin_GetState,src/ui/window.cpp
@@ -191,13 +191,13 @@ address,size,status,category,name,src_file
 0x0010ae9c,44,non_matching,battle,ComWin_CheckFlag,src/ui/window.cpp
 0x0010aec8,12,non_matching,unknown,ComWin_GetResult,src/ui/window.cpp
 0x0010aed4,100,non_matching,engine,ComWin_Reset,src/ui/window.cpp
-0x0010af38,16,non_matching,ui,InfoWin_IsActive,src/ui/window.cpp
+0x0010af38,16,matching,engine,AsdText_SetCodeField14,src/engine/asd_text.cpp
 0x0010af48,60,non_matching,unknown,InfoWin_SetState,src/ui/window.cpp
 0x0010af84,560,non_matching,ui,InfoWin_Init,src/ui/window.cpp
 0x0010b1b4,172,non_matching,ui,InfoWin_ShowMessage,src/ui/window.cpp
 0x0010b260,192,non_matching,ui,InfoWin_UpdateTimer,src/ui/window.cpp
 0x0010b320,32,non_matching,ui,InfoWin_Dismiss,src/ui/window.cpp
-0x0010b340,16,non_matching,ui,GuestWin_IsActive,src/ui/window.cpp
+0x0010b340,16,matching,engine,AsdText_SetCodeField30,src/engine/asd_text.cpp
 0x0010b350,448,non_matching,ui,GuestWin_Init,src/ui/window.cpp
 0x0010b510,104,non_matching,engine,GuestWin_HandlePrompt,src/ui/window.cpp
 0x0010b578,604,matching,engine,engine_func_0010b578,src/engine/leaf_batch45_b.cpp

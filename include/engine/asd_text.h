@@ -103,19 +103,38 @@ static_assert(offsetof(AsdText, field_b0) == 0xB0);
 
 /**
  * Global code table used while normalising control code points
- * (`0x00464D48`).  `+0x02` is the fallback glyph code and `+0x20` the code
- * that is remapped to `0x8140` in the primary-font path.
+ * (`0x00464D48`). `+0x02` is the fallback glyph code and `+0x20` the code
+ * that is remapped to `0x8140` in the primary-font path. Other words are
+ * retained as address-pinned fields until their meanings are recovered; the
+ * startup clear at `0x003EBF08` reaches through offsets `+0x38` and `+0x3C`.
  */
 struct AsdTextCodes {
     u8  pad_00[0x02];                   // +0x00..+0x02
     u16 default_code;                   // +0x02: `ldrh r6,[r0,#2]` (0x00286fc4)
-    u8  pad_04[0x1C];                   // +0x04..+0x20
+    u8  pad_04[0x10];                   // +0x04..+0x14
+    u32 field_14;                       // +0x14: 0x0010af38 setter
+    u32 field_18;                       // +0x18: not yet identified
+    u32 field_1c;                       // +0x1C: 0x0010a6fc setter
     u32 special_code;                   // +0x20: `ldr r0,[r0,#0x20]` (0x00286fcc)
+    u8  pad_24[0x0C];                   // +0x24..+0x30
+    u32 field_30;                       // +0x30: 0x0010b340 setter
+    u32 field_34;                       // +0x34: not yet identified
+    u32 field_38;                       // +0x38: startup clear sentinel
+    u32 field_3c;                       // +0x3C: startup clear sentinel
 };
 static_assert(offsetof(AsdTextCodes, default_code) == 0x02);
+static_assert(offsetof(AsdTextCodes, field_14) == 0x14);
+static_assert(offsetof(AsdTextCodes, field_1c) == 0x1C);
 static_assert(offsetof(AsdTextCodes, special_code) == 0x20);
+static_assert(offsetof(AsdTextCodes, field_30) == 0x30);
+static_assert(offsetof(AsdTextCodes, field_38) == 0x38);
+static_assert(offsetof(AsdTextCodes, field_3c) == 0x3C);
+static_assert(sizeof(AsdTextCodes) == 0x40);
 
 extern AsdTextCodes g_AsdTextCodes;     // 0x00464D48
+void AsdText_SetCodeField14(u32 val);    // 0x0010af38
+void AsdText_SetCodeField1C(u32 val);    // 0x0010a6fc
+void AsdText_SetCodeField30(u32 val);    // 0x0010b340
 
 // ---------------------------------------------------------------------------
 // AsdFont (0x0010a588 / 0x002c4710)

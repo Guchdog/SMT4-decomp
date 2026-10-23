@@ -44,7 +44,6 @@ static_assert(sizeof(ComWinWork) == 0x188);
 extern ComWinWork* g_ComWinWork;        // 0x0043E0F8
 
 // ComWin API functions
-void ComWin_SetParam1C(u32 val);                                                    // 0x0010a6fc
 bool ComWin_SetState();                                                             // 0x0010a70c
 void ComWin_Init();                                                                 // 0x0010a748
 void ComWin_GetState(u32* out_state);                                               // 0x0010a940
@@ -86,7 +85,6 @@ static_assert(sizeof(InfoWinWork) == 0x1BC);
 extern InfoWinWork* g_InfoWinWork;      // 0x0043E128
 
 // InfoWin API functions
-bool InfoWin_IsActive();                                                            // 0x0010af38
 void InfoWin_SetState(u32 state);                                                   // 0x0010af48
 void InfoWin_Init();                                                                // 0x0010af84
 void InfoWin_ShowMessage(const char* msg);                                          // 0x0010b1b4
@@ -119,7 +117,6 @@ static_assert(sizeof(GuestWinWork) == 0xBC);
 extern GuestWinWork* g_GuestWinWork;    // 0x0043E110
 
 // GuestWin API functions
-bool GuestWin_IsActive();                                                           // 0x0010b340
 void GuestWin_Init();                                                               // 0x0010b350
 void GuestWin_HandlePrompt();                                                       // 0x0010b510
 void GuestWin_DrawUp(void* arg);                                                    // 0x0011a9b4

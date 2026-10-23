@@ -65,6 +65,30 @@ namespace smt4::engine {
 AsdFontManager g_AsdFontManager{};          // 0x00464A70
 AsdTextCodes g_AsdTextCodes{};              // 0x00464D48
 
+// These short entry points mutate still-unidentified words in the shared
+// text-code table. Keep the base opaque so ARM codegen retains the original
+// shared literal and field displacement.
+// DECOMP_FUNC(0x0010af38, 16)
+void AsdText_SetCodeField14(u32 val) {
+    auto* codes = reinterpret_cast<volatile AsdTextCodes*>(0x00464D48);
+    asm volatile("" : "+r"(codes));
+    codes->field_14 = val;
+}
+
+// DECOMP_FUNC(0x0010a6fc, 16)
+void AsdText_SetCodeField1C(u32 val) {
+    auto* codes = reinterpret_cast<volatile AsdTextCodes*>(0x00464D48);
+    asm volatile("" : "+r"(codes));
+    codes->field_1c = val;
+}
+
+// DECOMP_FUNC(0x0010b340, 16)
+void AsdText_SetCodeField30(u32 val) {
+    auto* codes = reinterpret_cast<volatile AsdTextCodes*>(0x00464D48);
+    asm volatile("" : "+r"(codes));
+    codes->field_30 = val;
+}
+
 // ---------------------------------------------------------------------------
 // AsdFont
 // ---------------------------------------------------------------------------
