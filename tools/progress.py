@@ -46,6 +46,114 @@ def _mask_comments(text: str) -> str:
     return re.sub(r"//[^\n]*", lambda m: " " * len(m.group(0)), text)
 
 
+_NON_FUNCTION_PAREN_WORDS = {
+    "alignas",
+    "alignof",
+    "asm",
+    "catch",
+    "decltype",
+    "if",
+    "noexcept",
+    "requires",
+    "sizeof",
+    "static_assert",
+    "switch",
+    "throw",
+    "while",
+    "__asm__",
+    "__attribute__",
+    "__declspec",
+    "__extension__",
+}
+_ASM_ALIAS_RE = re.compile(
+    r"\b(?:asm|__asm__)\s*\(\s*\"([^\"]+)\"\s*\)"
+)
+_LEDGER_SPELLING_PIN_RE = re.compile(
+    r'\[\[\s*deprecated\s*\(\s*"([^\"]+)"\s*\)\s*\]\]'
+)
+
+
+def _function_declaration_identity(declaration: str) -> tuple[str, str | None] | None:
+    """Return the C identifier and optional explicit asm symbol for a declaration."""
+    names: list[str] = []
+    depth = 0
+    quote: str | None = None
+    escaped = False
+
+    for i, char in enumerate(declaration):
+        if quote is not None:
+            if escaped:
+                escaped = False
+            elif char == "\\":
+                escaped = True
+            elif char == quote:
+                quote = None
+            continue
+        if char in {'"', "'"}:
+            quote = char
+            continue
+        if char == "(":
+            if depth == 0:
+                name_match = re.search(r"([A-Za-z_]\w*)\s*$", declaration[:i])
+                if name_match:
+                    name = name_match.group(1)
+                    if name not in _NON_FUNCTION_PAREN_WORDS:
+                        names.append(name)
+            depth += 1
+        elif char == ")" and depth:
+            depth -= 1
+
+    if not names:
+        return None
+    alias_match = _ASM_ALIAS_RE.search(declaration)
+    alias = alias_match.group(1) if alias_match else None
+    return names[-1], alias
+
+
+def _header_defines_symbol(
+    header: str, definition_name: str, address: str
+) -> bool:
+    """Check that the definition before the body identifies the ledger entry."""
+    declaration_parts = header.split(";")
+    final_declaration = declaration_parts[-1]
+    final_identity = _function_declaration_identity(final_declaration)
+    declarations = [
+        _function_declaration_identity(part) for part in declaration_parts
+    ]
+    declarations = [identity for identity in declarations if identity is not None]
+    if final_identity is None:
+        return False
+
+    c_identifier, _ = final_identity
+    if c_identifier == definition_name:
+        return True
+
+    # An alias is valid only when a declaration for this exact C identifier
+    # explicitly maps it to the ledger name. This rejects a detached prototype
+    # followed by an unrelated function definition.
+    if any(
+        declared_identifier == c_identifier and alias == definition_name
+        for declared_identifier, alias in declarations
+    ):
+        return True
+
+    # A small number of legacy definitions pin the ledger spelling in a
+    # deprecated attribute. Accept only the exact symbol/address pin attached
+    # to the definition immediately before the body, never an earlier prototype.
+    pin_match = _LEDGER_SPELLING_PIN_RE.search(final_declaration)
+    if pin_match is None:
+        return False
+    expected_pin = re.fullmatch(
+        rf"{re.escape(definition_name)}\s*\(\s*(0[xX][0-9a-fA-F]+)\s*\)"
+        rf"\s+ledger spelling pin",
+        pin_match.group(1),
+    )
+    return (
+        expected_pin is not None
+        and int(expected_pin.group(1), 16) == int(address, 16)
+    )
+
+
 def extract_function_body(
     src_text: str,
     addr: str,
@@ -84,7 +192,7 @@ def extract_function_body(
 
     if definition_name is not None:
         header = masked_suffix[:open_rel]
-        if not re.search(rf"\b{re.escape(definition_name)}\s*\(", header):
+        if not _header_defines_symbol(header, definition_name, addr):
             return None
 
     open_brace = match.end() + open_rel
