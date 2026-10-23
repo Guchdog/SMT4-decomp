@@ -4,8 +4,8 @@
 
 | Category | Functions | Code Size (Bytes) | Progress % | Status Description |
 |----------|----------:|------------------:|-----------:|--------------------|
-| **Matching (Byte-for-Byte)** | 9,967 | 2,355,496 B | **75.0371%** | 100% verified compiled machine code match |
-| **Compiled Coverage (≥15% size)** | 299 | 296,052 B | 9.4311% | Compiles to ARMv6K ELF .o; size threshold only, logic unverified |
+| **Matching (Byte-for-Byte)** | 9,972 | 2,355,736 B | **75.0448%** | 100% verified compiled machine code match |
+| **Compiled Coverage (≥15% size)** | 294 | 295,812 B | 9.4234% | Compiles to ARMv6K ELF .o; size threshold only, logic unverified |
 | **Draft Logic (<15% size)** | 45 | 239,320 B | 7.6238% | Early draft reconstructions awaiting control-flow recovery |
 | **Scaffolded (Stubs & Interfaces)** | 39 | 248,240 B | 7.9080% | Headers, structs, and function skeletons |
 | **Total Architecture Explored** | 10,350 | 3,139,108 B | 100.0000% | Total mapped into `src/` (Matching + Compiles + Draft + Stubs) |
@@ -21,7 +21,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | Subsystem | Matching | Compiled Coverage (≥15%) | Draft (<15%) | Stubs | Total Explored | Total Subsystem | Matching % | Explored % |
 |-----------|---------:|----------------:|-------------:|------:|---------------:|----------------:|-----------:|-----------:|
 | `engine` | 2,237 (612,468 B) | 127 (98,240 B) | 5 (37,188 B) | 2 (22,760 B) | 2,371 (770,656 B) | 2,371 (770,656 B) | 79.4736% | 100.00% |
-| `ui` | 1,102 (423,056 B) | 102 (99,272 B) | 18 (63,724 B) | 14 (96,248 B) | 1,236 (682,300 B) | 1,236 (682,300 B) | 62.0044% | 100.00% |
+| `ui` | 1,107 (423,296 B) | 97 (99,032 B) | 18 (63,724 B) | 14 (96,248 B) | 1,236 (682,300 B) | 1,236 (682,300 B) | 62.0396% | 100.00% |
 | `unknown` | 3,809 (586,740 B) | 6 (12,324 B) | 3 (11,328 B) | 0 (0 B) | 3,818 (610,392 B) | 3,818 (610,392 B) | 96.1251% | 100.00% |
 | `script_vm` | 1,180 (296,388 B) | 12 (28,268 B) | 6 (98,796 B) | 3 (22,836 B) | 1,201 (446,288 B) | 1,201 (446,288 B) | 66.4118% | 100.00% |
 | `camp` | 891 (226,356 B) | 13 (14,440 B) | 8 (15,324 B) | 6 (70,276 B) | 918 (326,396 B) | 918 (326,396 B) | 69.3501% | 100.00% |
@@ -5104,7 +5104,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x002abe74` | 180 | `engine` | `matching` | `engine_func_002abe74` | [`src/engine/leaf_batch16_a.cpp`](src/engine/leaf_batch16_a.cpp) |
 | `0x002abf28` | 412 | `unknown` | `matching` | `func_002abf28` | [`src/engine/leaf_batch16_c.cpp`](src/engine/leaf_batch16_c.cpp) |
 | `0x002ac0c4` | 560 | `unknown` | `matching` | `func_002ac0c4` | [`src/engine/leaf_batch45_b.cpp`](src/engine/leaf_batch45_b.cpp) |
-| `0x002ac2f4` | 92 | `ui` | `non_matching` | `Tbb_GetSubTable` | [`src/ui/tbb_loader.cpp`](src/ui/tbb_loader.cpp) |
+| `0x002ac2f4` | 92 | `ui` | `matching` | `Tbb_GetSubTable` | [`src/ui/tbb_loader.cpp`](src/ui/tbb_loader.cpp) |
 | `0x002ac350` | 16 | `engine` | `matching` | `engine_func_002ac350` | [`src/engine/leaf_batch38_a.cpp`](src/engine/leaf_batch38_a.cpp) |
 | `0x002ac360` | 36 | `script_vm` | `matching` | `script_vm_func_002ac360` | [`src/engine/leaf_batch34_b.cpp`](src/engine/leaf_batch34_b.cpp) |
 | `0x002ac384` | 16 | `engine` | `matching` | `engine_func_002ac384` | [`src/engine/leaf_batch38_a.cpp`](src/engine/leaf_batch38_a.cpp) |
@@ -5589,10 +5589,10 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x002c0c5c` | 24 | `ui` | `matching` | `ui_func_002c0c5c` | [`src/engine/leaf_batch17_c.cpp`](src/engine/leaf_batch17_c.cpp) |
 | `0x002c0c74` | 448 | `engine` | `matching` | `engine_func_002c0c74` | [`src/engine/leaf_batch32_c.cpp`](src/engine/leaf_batch32_c.cpp) |
 | `0x002c0e34` | 24 | `camp` | `matching` | `camp_func_002c0e34` | [`src/engine/leaf_batch37_a.cpp`](src/engine/leaf_batch37_a.cpp) |
-| `0x002c0e4c` | 56 | `ui` | `non_matching` | `Tbb_GetRowCount` | [`src/ui/tbb_loader.cpp`](src/ui/tbb_loader.cpp) |
-| `0x002c0e84` | 24 | `ui` | `non_matching` | `Tbb_GetDefaultTable18Payload` | [`src/ui/tbb_loader.cpp`](src/ui/tbb_loader.cpp) |
-| `0x002c0e9c` | 40 | `ui` | `non_matching` | `Tbb_GetPayloadData` | [`src/ui/tbb_loader.cpp`](src/ui/tbb_loader.cpp) |
-| `0x002c0ec4` | 28 | `ui` | `non_matching` | `Tbb_GetGlobalSubTable` | [`src/ui/tbb_loader.cpp`](src/ui/tbb_loader.cpp) |
+| `0x002c0e4c` | 56 | `ui` | `matching` | `Tbb_GetRowCount` | [`src/ui/tbb_loader.cpp`](src/ui/tbb_loader.cpp) |
+| `0x002c0e84` | 24 | `ui` | `matching` | `Tbb_GetDefaultTable18Payload` | [`src/ui/tbb_loader.cpp`](src/ui/tbb_loader.cpp) |
+| `0x002c0e9c` | 40 | `ui` | `matching` | `Tbb_GetPayloadData` | [`src/ui/tbb_loader.cpp`](src/ui/tbb_loader.cpp) |
+| `0x002c0ec4` | 28 | `ui` | `matching` | `Tbb_GetGlobalSubTable` | [`src/ui/tbb_loader.cpp`](src/ui/tbb_loader.cpp) |
 | `0x002c0ee0` | 28 | `unknown` | `matching` | `func_002c0ee0` | [`src/engine/leaf_batch37_a.cpp`](src/engine/leaf_batch37_a.cpp) |
 | `0x002c0efc` | 44 | `unknown` | `matching` | `func_002c0efc` | [`src/engine/leaf_batch19_b.cpp`](src/engine/leaf_batch19_b.cpp) |
 | `0x002c0f28` | 1016 | `unknown` | `matching` | `func_002c0f28` | [`src/engine/leaf_batch45_c.cpp`](src/engine/leaf_batch45_c.cpp) |
