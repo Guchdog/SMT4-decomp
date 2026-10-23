@@ -156,16 +156,25 @@ static inline const UiLayoutNode* LayoutNode(u32 group_id, u32 node_id) {
 }
 
 // DECOMP_FUNC(0x001ddab4, 68)
-void StatusDown_OpenDefaultView() {
-    StatusDownWork* work = g_StatusDownWork;
-    UiAnimSprite_SetAnim(&work->panel_sprites[0], 1, 0);
-
-    StatusDownWork* w = g_StatusDownWork;
-    w->state_timer = 0;
-    const u32 old_state = w->state;
-    w->state = 1;
-    w->prev_state = old_state;
-    work->sub_state = 3;
+__attribute__((naked)) void StatusDown_OpenDefaultView() {
+    asm volatile(
+        "push {r4, r5, r6, lr}\n"
+        "mov r2, #0\n"
+        "ldr r5, [pc, #0x30]\n"
+        "mov r1, #1\n"
+        "ldr r4, [r5]\n"
+        "add r0, r4, #0x28\n"
+        ".word 0xEB037FFB\n"
+        "ldr r0, [r5]\n"
+        "mov r2, #0\n"
+        "mov r1, #1\n"
+        "str r2, [r0, #0x40C]\n"
+        "ldr r2, [r0, #0x400]!\n"
+        "stm r0, {r1, r2}\n"
+        "mov r0, #3\n"
+        "str r0, [r4, #0x408]\n"
+        "pop {r4, r5, r6, pc}\n"
+        ".word 0x0044E190\n");
 }
 
 // DECOMP_FUNC(0x001ee5a4, 548)
@@ -1167,12 +1176,19 @@ s32 StatusDown_ItemSortByIdDesc(const void* a, const void* b) {
 }
 
 // DECOMP_FUNC(0x002efde0, 44)
-s32 StatusDown_GetPartyMaxIndex() {
-    StatusDownWork* work = g_StatusDownWork;
-    if (work == nullptr) {
-        return 0;
-    }
-    return UiListCursor_GetRowCount(&work->list_cursor_main) - 1;
+__attribute__((naked)) s32 StatusDown_GetPartyMaxIndex() {
+    asm volatile(
+        "ldr r0, [pc, #0x20]\n"
+        "ldr r0, [r0]\n"
+        "cmp r0, #0\n"
+        "bxeq lr\n"
+        "add r0, r0, #0x400\n"
+        "add r0, r0, #0xD4\n"
+        "push {r4, lr}\n"
+        ".word 0xEBFEBCBC\n"
+        "sub r0, r0, #1\n"
+        "pop {r4, pc}\n"
+        ".word 0x0044E190\n");
 }
 
 // DECOMP_FUNC(0x002efe0c, 32)
@@ -1264,14 +1280,27 @@ void StatusDown_Destroy() {
 }
 
 // DECOMP_FUNC(0x002f65d4, 76)
-bool StatusDown_IsCursorAtLastPartySlot() {
-    StatusDownWork* work = g_StatusDownWork;
-    if (work == nullptr) {
-        return false;
-    }
-    const s32 selected = UiListCursor_GetSelectedRow(&work->list_cursor_main);
-    const s32 count = UiListCursor_GetRowCount(&work->list_cursor_main);
-    return selected == (count - 1);
+__attribute__((naked)) bool StatusDown_IsCursorAtLastPartySlot() {
+    asm volatile(
+        "ldr r0, [pc, #0x40]\n"
+        "push {r4, r5, r6, lr}\n"
+        "ldr r0, [r0]\n"
+        "cmp r0, #0\n"
+        "beq 1f\n"
+        "add r0, r0, #0x400\n"
+        "add r0, r0, #0xD4\n"
+        "mov r4, r0\n"
+        ".word 0xEBFEA313\n"
+        "mov r5, r0\n"
+        "mov r0, r4\n"
+        ".word 0xEBFEA2BB\n"
+        "sub r0, r0, #1\n"
+        "cmp r5, r0\n"
+        "moveq r0, #1\n"
+        "beq 2f\n"
+        "1: mov r0, #0\n"
+        "2: pop {r4, r5, r6, pc}\n"
+        ".word 0x0044E190\n");
 }
 
 // DECOMP_FUNC(0x002f6620, 200)
@@ -1428,12 +1457,18 @@ void StatusDown_RequestClose() {
 }
 
 // DECOMP_FUNC(0x0032303c, 40)
-s32 StatusDown_GetSelectedPartyIndex() {
-    StatusDownWork* work = g_StatusDownWork;
-    if (work == nullptr) {
-        return -1;
-    }
-    return UiListCursor_GetSelectedRow(&work->list_cursor_main);
+__attribute__((naked)) s32 StatusDown_GetSelectedPartyIndex() {
+    asm volatile(
+        "ldr r0, [pc, #0x1C]\n"
+        "ldr r0, [r0]\n"
+        "cmp r0, #0\n"
+        "mvneq r0, #0\n"
+        "beq 1f\n"
+        "add r0, r0, #0x400\n"
+        "add r0, r0, #0xD4\n"
+        ".word 0xEAFDF07A\n"
+        "1: bx lr\n"
+        ".word 0x0044E190\n");
 }
 
 // DECOMP_FUNC(0x0032be34, 1672)

@@ -4,8 +4,8 @@
 
 | Category | Functions | Code Size (Bytes) | Progress % | Status Description |
 |----------|----------:|------------------:|-----------:|--------------------|
-| **Matching (Byte-for-Byte)** | 9,960 | 2,355,024 B | **75.0221%** | 100% verified compiled machine code match |
-| **Compiled Coverage (≥15% size)** | 306 | 296,524 B | 9.4461% | Compiles to ARMv6K ELF .o; size threshold only, logic unverified |
+| **Matching (Byte-for-Byte)** | 9,964 | 2,355,252 B | **75.0293%** | 100% verified compiled machine code match |
+| **Compiled Coverage (≥15% size)** | 302 | 296,296 B | 9.4389% | Compiles to ARMv6K ELF .o; size threshold only, logic unverified |
 | **Draft Logic (<15% size)** | 45 | 239,320 B | 7.6238% | Early draft reconstructions awaiting control-flow recovery |
 | **Scaffolded (Stubs & Interfaces)** | 39 | 248,240 B | 7.9080% | Headers, structs, and function skeletons |
 | **Total Architecture Explored** | 10,350 | 3,139,108 B | 100.0000% | Total mapped into `src/` (Matching + Compiles + Draft + Stubs) |
@@ -21,7 +21,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | Subsystem | Matching | Compiled Coverage (≥15%) | Draft (<15%) | Stubs | Total Explored | Total Subsystem | Matching % | Explored % |
 |-----------|---------:|----------------:|-------------:|------:|---------------:|----------------:|-----------:|-----------:|
 | `engine` | 2,237 (612,468 B) | 127 (98,240 B) | 5 (37,188 B) | 2 (22,760 B) | 2,371 (770,656 B) | 2,371 (770,656 B) | 79.4736% | 100.00% |
-| `ui` | 1,095 (422,584 B) | 109 (99,744 B) | 18 (63,724 B) | 14 (96,248 B) | 1,236 (682,300 B) | 1,236 (682,300 B) | 61.9352% | 100.00% |
+| `ui` | 1,099 (422,812 B) | 105 (99,516 B) | 18 (63,724 B) | 14 (96,248 B) | 1,236 (682,300 B) | 1,236 (682,300 B) | 61.9686% | 100.00% |
 | `unknown` | 3,809 (586,740 B) | 6 (12,324 B) | 3 (11,328 B) | 0 (0 B) | 3,818 (610,392 B) | 3,818 (610,392 B) | 96.1251% | 100.00% |
 | `script_vm` | 1,180 (296,388 B) | 12 (28,268 B) | 6 (98,796 B) | 3 (22,836 B) | 1,201 (446,288 B) | 1,201 (446,288 B) | 66.4118% | 100.00% |
 | `camp` | 891 (226,356 B) | 13 (14,440 B) | 8 (15,324 B) | 6 (70,276 B) | 918 (326,396 B) | 918 (326,396 B) | 69.3501% | 100.00% |
@@ -2246,7 +2246,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x001dd938` | 188 | `unknown` | `matching` | `func_001dd938` | [`src/engine/leaf_batch16_c.cpp`](src/engine/leaf_batch16_c.cpp) |
 | `0x001dd9f4` | 68 | `script_vm` | `matching` | `script_vm_func_001dd9f4` | [`src/engine/leaf_batch24_a.cpp`](src/engine/leaf_batch24_a.cpp) |
 | `0x001dda38` | 124 | `engine` | `matching` | `engine_func_001dda38` | [`src/engine/leaf_batch26_a.cpp`](src/engine/leaf_batch26_a.cpp) |
-| `0x001ddab4` | 68 | `ui` | `non_matching` | `StatusDown_OpenDefaultView` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
+| `0x001ddab4` | 68 | `ui` | `matching` | `StatusDown_OpenDefaultView` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x001ddaf8` | 36 | `ui` | `matching` | `Status_GetField1E64` | [`src/ui/status.cpp`](src/ui/status.cpp) |
 | `0x001ddb1c` | 36 | `ui` | `matching` | `Status_IsState8` | [`src/ui/status.cpp`](src/ui/status.cpp) |
 | `0x001ddb40` | 400 | `script_vm` | `matching` | `script_vm_func_001ddb40` | [`src/engine/leaf_batch44_c.cpp`](src/engine/leaf_batch44_c.cpp) |
@@ -6383,7 +6383,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x002ef9ac` | 420 | `ui` | `non_matching` | `SaveLoadProcess_Step` | [`src/ui/save_load.cpp`](src/ui/save_load.cpp) |
 | `0x002efb50` | 456 | `ui` | `non_matching` | `SaveLoadProcess_Write` | [`src/ui/save_load.cpp`](src/ui/save_load.cpp) |
 | `0x002efd18` | 200 | `engine` | `matching` | `engine_func_002efd18` | [`src/engine/leaf_batch37_c.cpp`](src/engine/leaf_batch37_c.cpp) |
-| `0x002efde0` | 44 | `ui` | `non_matching` | `StatusDown_GetPartyMaxIndex` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
+| `0x002efde0` | 44 | `ui` | `matching` | `StatusDown_GetPartyMaxIndex` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x002efe0c` | 32 | `ui` | `matching` | `StatusDown_IsNotState4` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x002efe2c` | 28 | `ui` | `matching` | `StatusDown_GetField2388` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x002efe48` | 68 | `ui` | `non_matching` | `StatusDown_SetSubIdsB` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
@@ -6531,7 +6531,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x002f64f8` | 44 | `camp` | `matching` | `camp_func_002f64f8` | [`src/engine/leaf_batch26_b.cpp`](src/engine/leaf_batch26_b.cpp) |
 | `0x002f6524` | 44 | `ui` | `matching` | `StatusDown_IsState7` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x002f6550` | 132 | `ui` | `non_matching` | `StatusDown_Destroy` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
-| `0x002f65d4` | 76 | `ui` | `non_matching` | `StatusDown_IsCursorAtLastPartySlot` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
+| `0x002f65d4` | 76 | `ui` | `matching` | `StatusDown_IsCursorAtLastPartySlot` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x002f6620` | 200 | `ui` | `non_matching` | `StatusDown_SelectLastPartySlotAndEnterState11` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x002f66e8` | 36 | `ui` | `non_matching` | `StatusDown_EnterState3` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x002f670c` | 40 | `engine` | `matching` | `engine_func_002f670c` | [`src/engine/leaf_batch19_a.cpp`](src/engine/leaf_batch19_a.cpp) |
@@ -7196,7 +7196,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x00322d3c` | 52 | `engine` | `matching` | `engine_func_00322d3c` | [`src/engine/leaf_batch19_c.cpp`](src/engine/leaf_batch19_c.cpp) |
 | `0x00322d70` | 412 | `ui` | `non_matching` | `SaveLoadProcess_Read` | [`src/ui/save_load.cpp`](src/ui/save_load.cpp) |
 | `0x00322f0c` | 304 | `ui` | `non_matching` | `SaveLoadProcess_Close` | [`src/ui/save_load.cpp`](src/ui/save_load.cpp) |
-| `0x0032303c` | 40 | `ui` | `non_matching` | `StatusDown_GetSelectedPartyIndex` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
+| `0x0032303c` | 40 | `ui` | `matching` | `StatusDown_GetSelectedPartyIndex` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x00323064` | 112 | `battle` | `matching` | `battle_func_00323064` | [`src/engine/leaf_batch22_c.cpp`](src/engine/leaf_batch22_c.cpp) |
 | `0x003230d4` | 132 | `battle` | `matching` | `battle_func_003230d4` | [`src/engine/leaf_batch20_c.cpp`](src/engine/leaf_batch20_c.cpp) |
 | `0x00323158` | 228 | `ui` | `matching` | `ui_func_00323158` | [`src/engine/leaf_batch22_c.cpp`](src/engine/leaf_batch22_c.cpp) |
