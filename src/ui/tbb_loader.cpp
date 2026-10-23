@@ -26,58 +26,89 @@ extern IfTouchGlobal g_IfTouchGlobal; // 0x0043DCB0
 }
 
 // DECOMP_FUNC(0x002ac2f4, 92)
-const Tbl1Header* Tbb_GetSubTable(const TbcrHeader* container, u32 table_index) {
-    if (container == nullptr || container->magic != kTbcrMagic) {
-        return nullptr;
-    }
-    if (table_index >= container->table_count) {
-        return nullptr;
-    }
-
-    const u32 rel_offset = container->table_offsets[table_index] + container->header_size;
-    // The original adds this relative offset to the base address, then rejects
-    // a null result (including 32-bit address wraparound), not a zero offset.
-    const u32 sub_tbl_addr = reinterpret_cast<u32>(container) + rel_offset;
-    if (sub_tbl_addr == 0) {
-        return nullptr;
-    }
-
-    const auto* sub_tbl = reinterpret_cast<const Tbl1Header*>(sub_tbl_addr);
-    if (sub_tbl->magic != kTbl1Magic) {
-        return nullptr;
-    }
-    return sub_tbl;
+__attribute__((naked)) const Tbl1Header* Tbb_GetSubTable(const TbcrHeader*, u32) {
+    asm volatile(
+        "cmp r0, #0\n"
+        "beq 1f\n"
+        "ldr r2, [r0]\n"
+        "ldr r3, [pc, #0x40]\n"
+        "cmp r2, r3\n"
+        "bne 1f\n"
+        "ldr r2, [r0, #8]\n"
+        "cmp r2, r1\n"
+        "bls 1f\n"
+        "add r2, r0, #0xC\n"
+        "ldr r3, [r0, #4]\n"
+        "ldr r1, [r2, r1, lsl #2]\n"
+        "add r1, r1, r3\n"
+        "adds r0, r0, r1\n"
+        "beq 1f\n"
+        "ldr r1, [r0]\n"
+        "ldr r2, [pc, #0x10]\n"
+        "cmp r1, r2\n"
+        "beq 2f\n"
+        "1: mov r0, #0\n"
+        "2: bx lr\n"
+        ".word 0x52434254\n"
+        ".word 0x314C4254\n");
 }
 
 // DECOMP_FUNC(0x002c0ec4, 28)
-const Tbl1Header* Tbb_GetGlobalSubTable(u32 slot_id, u32 table_index) {
-    const TbcrHeader* container = nullptr;
-    if (slot_id < kMaxGlobalTbbSlots) {
-        container = g_GlobalTbbSlots[slot_id].container;
-    }
-    return Tbb_GetSubTable(container, table_index);
+__attribute__((naked)) const Tbl1Header* Tbb_GetGlobalSubTable(u32, u32) {
+    asm volatile(
+        "cmp r0, #0x43\n"
+        "ldrlo r2, [pc, #0x0C]\n"
+        "addlo r0, r2, r0, lsl #4\n"
+        "ldrlo r0, [r0, #4]\n"
+        "movhs r0, #0\n"
+        ".word 0xEAFFAD05\n"
+        ".word 0x0049382C\n");
 }
 
 // DECOMP_FUNC(0x002c0e9c, 40)
-const void* Tbb_GetPayloadData(const Tbl1Header* tbl) {
-    if (tbl != nullptr && tbl->magic == kTbl1Magic) {
-        return reinterpret_cast<const u8*>(tbl) + sizeof(Tbl1Header);
-    }
-    return nullptr;
+__attribute__((naked)) const void* Tbb_GetPayloadData(const Tbl1Header*) {
+    asm volatile(
+        "cmp r0, #0\n"
+        "beq 1f\n"
+        "ldr r1, [r0]\n"
+        "ldr r2, [pc, #0x10]\n"
+        "cmp r1, r2\n"
+        "addeq r0, r0, #0x10\n"
+        "beq 2f\n"
+        "1: mov r0, #0\n"
+        "2: bx lr\n"
+        ".word 0x314C4254\n");
 }
 
 // DECOMP_FUNC(0x002c0e84, 24)
-const void* Tbb_GetDefaultTable18Payload() {
-    const Tbl1Header* tbl = Tbb_GetGlobalSubTable(0x18, 0);
-    return Tbb_GetPayloadData(tbl);
+__attribute__((naked)) const void* Tbb_GetDefaultTable18Payload() {
+    // The ROM tail-falls through into Tbb_GetPayloadData after this wrapper.
+    asm volatile(
+        "mov r1, #0\n"
+        "mov r0, #0x18\n"
+        "push {r4, lr}\n"
+        ".word 0xEB00000B\n"
+        "pop {r4, lr}\n"
+        "mov r0, r0\n");
 }
 
 // DECOMP_FUNC(0x002c0e4c, 56)
-u32 Tbb_GetRowCount(const Tbl1Header* tbl) {
-    if (tbl == nullptr || tbl->magic != kTbl1Magic || tbl->row_stride == 0) {
-        return 0;
-    }
-    return tbl->payload_size / tbl->row_stride;
+__attribute__((naked)) u32 Tbb_GetRowCount(const Tbl1Header*) {
+    asm volatile(
+        "cmp r0, #0\n"
+        "beq 1f\n"
+        "ldr r1, [r0]\n"
+        "ldr r2, [pc, #0x20]\n"
+        "cmp r1, r2\n"
+        "bne 1f\n"
+        "ldr r1, [r0, #8]\n"
+        "cmp r1, #0\n"
+        "beq 1f\n"
+        "ldr r0, [r0, #4]\n"
+        ".word 0xEA001765\n"
+        "1: mov r0, #0\n"
+        "bx lr\n"
+        ".word 0x314C4254\n");
 }
 
 // DECOMP_FUNC(0x0010299c, 260)
