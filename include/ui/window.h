@@ -91,7 +91,7 @@ void InfoWin_ShowMessage(const char* msg);                                      
 void InfoWin_UpdateTimer();                                                         // 0x0010b260
 void InfoWin_Dismiss();                                                             // 0x0010b320
 void InfoWin_DrawUp(void* arg);                                                     // 0x0011ae10
-void InfoWin_Calc(void* arg);                                                       // 0x0011b128
+void InfoWin_Calc(void* arg);                                                       // 0x0011b1bc
 
 /**
  * Guest Demonica Partner Prompt Window workspace (0xBC bytes).
@@ -118,6 +118,7 @@ extern GuestWinWork* g_GuestWinWork;    // 0x0043E110
 
 // GuestWin API functions
 void GuestWin_Init();                                                               // 0x0010b350
+void GuestWin_Calc(void* arg);                                                     // 0x0011b128
 void GuestWin_HandlePrompt();                                                       // 0x0010b510
 void GuestWin_DrawUp(void* arg);                                                    // 0x0011a9b4
 

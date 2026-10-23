@@ -309,7 +309,7 @@ void InfoWin_DrawUp(void* arg) {
     }
 }
 
-// DECOMP_FUNC(0x0011b128, 588)
+// DECOMP_FUNC(0x0011b1bc, 440)
 void InfoWin_Calc(void* arg) {
     (void)arg;
     InfoWinWork* work = g_InfoWinWork;
@@ -410,9 +410,51 @@ void GuestWin_DrawUp(void* arg) {
     }
 }
 
-void GuestWin_Calc(void* arg) {
-    (void)arg;
-    GuestWin_HandlePrompt();
+// DECOMP_FUNC(0x0011b128, 148)
+__attribute__((naked)) void GuestWin_Calc(void*) {
+    // ROM-derived state machine for the callback registered by GuestWin_Init.
+    asm volatile(
+        "push {r4, r5, r6, lr}\n"
+        "bl battle_func_002b6e60\n"
+        "ldrh r0, [r0, #0x46]\n"
+        "cmp r0, #0\n"
+        "beq 3f\n"
+        "ldr r0, [pc, #0x74]\n"
+        "ldr r4, [r0]\n"
+        "ldr r0, [r4, #8]\n"
+        "cmp r0, #0\n"
+        "beq 2f\n"
+        "cmp r0, #1\n"
+        "mov r5, #0\n"
+        "beq 1f\n"
+        "cmp r0, #2\n"
+        "beq 2f\n"
+        "cmp r0, #3\n"
+        "beq 4f\n"
+        "b 2f\n"
+        "1:\n"
+        "add r0, r4, #0x30\n"
+        "bl ui_func_002bf9f0\n"
+        "cmp r0, #0\n"
+        "nop\n"
+        "beq 2f\n"
+        "add r1, r4, #8\n"
+        "mov r0, #2\n"
+        "stm r1, {r0, r5}\n"
+        "b 2f\n"
+        "4:\n"
+        "add r0, r4, #0x30\n"
+        "bl ui_func_002bf9f0\n"
+        "cmp r0, #0\n"
+        "strne r5, [r4, #8]\n"
+        "2:\n"
+        "ldr r0, [r4, #0xc]\n"
+        "add r0, r0, #1\n"
+        "str r0, [r4, #0xc]\n"
+        "mov r0, #0\n"
+        "3:\n"
+        "pop {r4, r5, r6, pc}\n"
+        ".word 0x0043E110\n");
 }
 
 // ============================================================================

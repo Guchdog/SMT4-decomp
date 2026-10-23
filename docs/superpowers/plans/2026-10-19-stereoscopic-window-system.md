@@ -73,7 +73,8 @@ Total for ComWin: 3,740 bytes across 8 functions.
 - `InfoWin_UpdateTimer`: `0x0010b260` (192 B)
 - `InfoWin_Dismiss`: `0x0010b320` (32 B)
 - `InfoWin_DrawUp`: `0x0011ae10` (792 B)
-- `InfoWin_Calc`: `0x0011b128` (588 B) [Shared / adjacent calc dispatcher]
+- `GuestWin_Calc`: `0x0011b128` (148 B) [GuestWin task callback]
+- `InfoWin_Calc`: `0x0011b1bc` (440 B) [InfoWin state/animation callback]
 
 - [x] **Step 1: Update progress test expectations (RED)**
   - Update `tests/test_progress.py` to expect 108 functions and 61,820 bytes.

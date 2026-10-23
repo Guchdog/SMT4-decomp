@@ -393,7 +393,8 @@ address,size,status,category,name,src_file
 0x0011a354,1632,non_matching,ui,ComWin_DrawUp,src/ui/window.cpp
 0x0011a9b4,1116,non_matching,ui,GuestWin_DrawUp,src/ui/window.cpp
 0x0011ae10,792,non_matching,ui,InfoWin_DrawUp,src/ui/window.cpp
-0x0011b128,588,non_matching,ui,InfoWin_Calc,src/ui/window.cpp
+0x0011b128,148,matching,ui,GuestWin_Calc,src/ui/window.cpp
+0x0011b1bc,440,non_matching,ui,InfoWin_Calc,src/ui/window.cpp
 0x0011b374,20,matching,script_vm,script_vm_func_0011b374,src/engine/leaf_batch17_b.cpp
 0x0011b388,48,matching,engine,engine_func_0011b388,src/engine/leaf_batch22_a.cpp
 0x0011b3b8,240,matching,engine,engine_func_0011b3b8,src/engine/leaf_batch40_b.cpp
