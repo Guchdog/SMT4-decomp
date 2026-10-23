@@ -367,12 +367,15 @@ def compare_function(
     src_file: Path,
     code_bytes: bytes,
     repo_root: Path = Path("."),
+    validated_object_cache: set[Path] | None = None,
 ) -> dict:
     """Compare a decompiled function against original code.bin bytes.
 
     Compiles src_file to an ARMv6K object file (or reuses cached object if up to date),
     extracts the function machine code, and computes exact match, byte match ratio,
-    Capstone mnemonic match ratio, and side-by-side assembly diff.
+    Capstone mnemonic match ratio, and side-by-side assembly diff. Callers auditing
+    several functions from stable translation units may pass a set to cache object
+    freshness checks for the duration of that audit.
     """
     repo_root = Path(repo_root).resolve()
     src_file = Path(src_file)
@@ -393,8 +396,16 @@ def compare_function(
     except ValueError:
         out_obj = src_file.with_suffix(".o")
 
-    res = ensure_tu_armv6k(src_file, out_obj, repo_root=repo_root)
-    if res.returncode != 0 or not out_obj.exists():
+    cache_key = out_obj.resolve()
+    object_is_cached = (
+        validated_object_cache is not None
+        and cache_key in validated_object_cache
+        and out_obj.is_file()
+    )
+    res = None if object_is_cached else ensure_tu_armv6k(
+        src_file, out_obj, repo_root=repo_root
+    )
+    if res is not None and (res.returncode != 0 or not out_obj.exists()):
         return {
             "addr": addr_str,
             "name": func_name,
@@ -405,6 +416,8 @@ def compare_function(
             "mnemonic_match_ratio": 0.0,
             "diff_lines": [f"Compilation failed: {res.stderr.strip()}"],
         }
+    if validated_object_cache is not None and out_obj.is_file():
+        validated_object_cache.add(cache_key)
 
     elf_funcs = extract_elf_functions_detailed(out_obj)
     sym_data = find_symbol_in_elf(elf_funcs, func_name, addr_int)

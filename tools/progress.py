@@ -175,6 +175,7 @@ def compute_progress(functions_csv: Path, repo_root: Path) -> dict:
     )
     claimed_list: list[dict] = []
     src_cache: dict[Path, str] = {}
+    validated_objects: set[Path] = set()
 
     with open(functions_csv, "r", encoding="utf-8", newline="") as f:
         for row in csv.DictReader(f):
@@ -242,6 +243,7 @@ def compute_progress(functions_csv: Path, repo_root: Path) -> dict:
                                 src_file=src_path,
                                 code_bytes=code_bytes,
                                 repo_root=repo_root,
+                                validated_object_cache=validated_objects,
                             )
                             if not diff["exact_match"]:
                                 raise VerificationError(
@@ -264,11 +266,14 @@ def compute_progress(functions_csv: Path, repo_root: Path) -> dict:
                         except ValueError:
                             out_obj = src_path.with_suffix(".o")
 
-                        result = ensure_tu_armv6k(src_path, out_obj, repo_root=repo_root)
-                        if result.returncode != 0 or not out_obj.is_file():
-                            raise VerificationError(
-                                f"Compilation failed for {name} ({addr}): {result.stderr.strip()}"
-                            )
+                        cache_key = out_obj.resolve()
+                        if cache_key not in validated_objects or not out_obj.is_file():
+                            result = ensure_tu_armv6k(src_path, out_obj, repo_root=repo_root)
+                            if result.returncode != 0 or not out_obj.is_file():
+                                raise VerificationError(
+                                    f"Compilation failed for {name} ({addr}): {result.stderr.strip()}"
+                                )
+                            validated_objects.add(cache_key)
                         elf_funcs = extract_elf_functions(out_obj)
                         sym_data = find_symbol_in_elf(elf_funcs, name, int(addr, 16))
                         if sym_data is None:

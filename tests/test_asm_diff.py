@@ -104,8 +104,8 @@ class TestAsmDiff(unittest.TestCase):
             repo_root=Path("."),
             code_path=self.code_path,
         )
-        self.assertEqual(stats["total_claimed"], 5844)
-        self.assertEqual(stats["matching_verified"], 5461)
+        self.assertEqual(stats["total_claimed"], 7644)
+        self.assertEqual(stats["matching_verified"], 7261)
         self.assertEqual(stats["matching_failed"], 0)
         self.assertEqual(stats["verified_count"], 338)
         self.assertEqual(stats["draft_count"], 45)
@@ -138,7 +138,8 @@ class TestAsmDiff(unittest.TestCase):
                 if row["status"].strip() == "matching":
                     matching_rows.append(row)
 
-        self.assertEqual(len(matching_rows), 5461)
+        self.assertEqual(len(matching_rows), 7261)
+        validated_objects = set()
         for row in matching_rows:
             res = compare_function(
                 addr=int(row["address"], 16),
@@ -147,6 +148,7 @@ class TestAsmDiff(unittest.TestCase):
                 src_file=Path(row["src_file"].strip()),
                 code_bytes=self.code_bytes,
                 repo_root=Path("."),
+                validated_object_cache=validated_objects,
             )
             self.assertTrue(
                 res["exact_match"],
