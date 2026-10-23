@@ -161,4 +161,5 @@ extern "C" __attribute__((naked)) void camp_func_002bdac0() {
 
 // DECOMP_FUNC(0x0035b8f0, 108)
 extern "C" __attribute__((naked)) void func_0035b8f0() {
+    asm volatile("ldrd r2, r3, [r0, #0x10]\nadd r2, r2, #1\ncmp r2, r3\nstr r2, [r0, #0x10]\nbeq .L_0035b8f0_0035b954\nldr r3, [r0, #0xc]\nadd r2, r3, r2, lsl #1\nldrh r2, [r2]\nsub r2, r2, #0x41\ncmp r2, #0x1e\nbhi .L_0035b8f0_0035b954\nldr r3, [r1]\nmov r2, #0\nstrb r2, [r3, #8]\nldrd r2, r3, [r0, #0xc]\nldr ip, [r1]\nadd r1, r2, r3, lsl #1\nldrh r1, [r1]\nsub r1, r1, #0x40\nstrh r1, [ip, #0xa]\nldr r1, [r0, #0x10]\nadd r1, r1, #1\nstr r1, [r0, #0x10]\nmov r0, #0\nbx lr\n.L_0035b8f0_0035b954:\nmov r0, #8\nbx lr\n");
 }

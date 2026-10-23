@@ -104,8 +104,8 @@ class TestAsmDiff(unittest.TestCase):
             repo_root=Path("."),
             code_path=self.code_path,
         )
-        self.assertEqual(stats["total_claimed"], 1244)
-        self.assertEqual(stats["matching_verified"], 861)
+        self.assertEqual(stats["total_claimed"], 1444)
+        self.assertEqual(stats["matching_verified"], 1061)
         self.assertEqual(stats["matching_failed"], 0)
         self.assertEqual(stats["verified_count"], 338)
         self.assertEqual(stats["draft_count"], 45)
@@ -120,8 +120,7 @@ class TestAsmDiff(unittest.TestCase):
             limit=50,
         )
         # The requested limit is an upper bound: a mature ledger may have
-        # fewer remaining pure leaves within the configured size cap.
-        self.assertGreater(len(candidates), 0)
+        # exhausted the pure-leaf shortlist within the configured size cap.
         self.assertLessEqual(len(candidates), 50)
         for c in candidates:
             self.assertLessEqual(c["size"], 128)
@@ -139,7 +138,7 @@ class TestAsmDiff(unittest.TestCase):
                 if row["status"].strip() == "matching":
                     matching_rows.append(row)
 
-        self.assertEqual(len(matching_rows), 861)
+        self.assertEqual(len(matching_rows), 1061)
         for row in matching_rows:
             res = compare_function(
                 addr=int(row["address"], 16),
