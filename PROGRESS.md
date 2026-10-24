@@ -4,9 +4,9 @@
 
 | Category | Functions | Code Size (Bytes) | Progress % | Status Description |
 |----------|----------:|------------------:|-----------:|--------------------|
-| **Matching (Byte-for-Byte)** | 10,147 | 2,511,952 B | **80.0212%** | 100% verified compiled machine code match |
-| **Compiled Coverage (≥15% size)** | 141 | 237,544 B | 7.5672% | Compiles to ARMv6K ELF .o; size threshold only, logic unverified |
-| **Draft Logic (<15% size)** | 31 | 217,244 B | 6.9206% | Early draft reconstructions awaiting control-flow recovery |
+| **Matching (Byte-for-Byte)** | 10,160 | 2,512,576 B | **80.0411%** | 100% verified compiled machine code match |
+| **Compiled Coverage (≥15% size)** | 130 | 236,984 B | 7.5494% | Compiles to ARMv6K ELF .o; size threshold only, logic unverified |
+| **Draft Logic (<15% size)** | 29 | 217,180 B | 6.9185% | Early draft reconstructions awaiting control-flow recovery |
 | **Scaffolded (Stubs & Interfaces)** | 31 | 172,368 B | 5.4910% | Headers, structs, and function skeletons |
 | **Total Architecture Explored** | 10,350 | 3,139,108 B | 100.0000% | Total mapped into `src/` (Matching + Compiles + Draft + Stubs) |
 | **Remaining (Todo)** | 0 | 0 B | 0.0000% | Unmapped functions in `.text` |
@@ -20,12 +20,12 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 
 | Subsystem | Matching | Compiled Coverage (≥15%) | Draft (<15%) | Stubs | Total Explored | Total Subsystem | Matching % | Explored % |
 |-----------|---------:|----------------:|-------------:|------:|---------------:|----------------:|-----------:|-----------:|
-| `engine` | 2,315 (641,592 B) | 49 (69,116 B) | 5 (37,188 B) | 2 (22,760 B) | 2,371 (770,656 B) | 2,371 (770,656 B) | 83.2527% | 100.00% |
-| `ui` | 1,152 (445,300 B) | 59 (89,300 B) | 12 (56,972 B) | 13 (90,728 B) | 1,236 (682,300 B) | 1,236 (682,300 B) | 65.2645% | 100.00% |
-| `unknown` | 3,810 (586,800 B) | 5 (12,264 B) | 3 (11,328 B) | 0 (0 B) | 3,818 (610,392 B) | 3,818 (610,392 B) | 96.1349% | 100.00% |
+| `engine` | 2,316 (641,612 B) | 49 (69,116 B) | 4 (37,168 B) | 2 (22,760 B) | 2,371 (770,656 B) | 2,371 (770,656 B) | 83.2553% | 100.00% |
+| `ui` | 1,161 (445,788 B) | 50 (88,812 B) | 12 (56,972 B) | 13 (90,728 B) | 1,236 (682,300 B) | 1,236 (682,300 B) | 65.3361% | 100.00% |
+| `unknown` | 3,812 (586,872 B) | 3 (12,192 B) | 3 (11,328 B) | 0 (0 B) | 3,818 (610,392 B) | 3,818 (610,392 B) | 96.1467% | 100.00% |
 | `script_vm` | 1,184 (298,804 B) | 8 (25,852 B) | 6 (98,796 B) | 3 (22,836 B) | 1,201 (446,288 B) | 1,201 (446,288 B) | 66.9532% | 100.00% |
 | `camp` | 911 (316,484 B) | 7 (9,912 B) | 0 (0 B) | 0 (0 B) | 918 (326,396 B) | 918 (326,396 B) | 96.9632% | 100.00% |
-| `battle` | 549 (165,376 B) | 12 (26,956 B) | 4 (12,012 B) | 10 (32,588 B) | 575 (236,932 B) | 575 (236,932 B) | 69.7989% | 100.00% |
+| `battle` | 550 (165,420 B) | 12 (26,956 B) | 3 (11,968 B) | 10 (32,588 B) | 575 (236,932 B) | 575 (236,932 B) | 69.8175% | 100.00% |
 | `shop` | 108 (36,520 B) | 0 (0 B) | 0 (0 B) | 3 (3,456 B) | 111 (39,976 B) | 111 (39,976 B) | 91.3548% | 100.00% |
 | `crt` | 25 (5,340 B) | 1 (4,144 B) | 0 (0 B) | 0 (0 B) | 26 (9,484 B) | 26 (9,484 B) | 56.3054% | 100.00% |
 | `nn_sdk` | 64 (8,852 B) | 0 (0 B) | 0 (0 B) | 0 (0 B) | 64 (8,852 B) | 64 (8,852 B) | 100.0000% | 100.00% |
@@ -222,17 +222,17 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x0010a6fc` | 16 | `engine` | `matching` | `AsdText_SetCodeField1C` | [`src/engine/asd_text.cpp`](src/engine/asd_text.cpp) |
 | `0x0010a70c` | 60 | `unknown` | `matching` | `ComWin_SetState` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x0010a748` | 504 | `ui` | `non_matching` | `ComWin_Init` | [`src/ui/window.cpp`](src/ui/window.cpp) |
-| `0x0010a940` | 20 | `engine` | `non_matching` | `ComWin_GetState` | [`src/ui/window.cpp`](src/ui/window.cpp) |
+| `0x0010a940` | 20 | `engine` | `matching` | `ComWin_GetState` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x0010a954` | 1352 | `ui` | `non_matching` | `ComWin_ProcessDialog` | [`src/ui/window.cpp`](src/ui/window.cpp) |
-| `0x0010ae9c` | 44 | `battle` | `non_matching` | `ComWin_CheckFlag` | [`src/ui/window.cpp`](src/ui/window.cpp) |
-| `0x0010aec8` | 12 | `unknown` | `non_matching` | `ComWin_GetResult` | [`src/ui/window.cpp`](src/ui/window.cpp) |
+| `0x0010ae9c` | 44 | `battle` | `matching` | `ComWin_CheckFlag` | [`src/ui/window.cpp`](src/ui/window.cpp) |
+| `0x0010aec8` | 12 | `unknown` | `matching` | `ComWin_GetResult` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x0010aed4` | 100 | `engine` | `non_matching` | `ComWin_Reset` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x0010af38` | 16 | `engine` | `matching` | `AsdText_SetCodeField14` | [`src/engine/asd_text.cpp`](src/engine/asd_text.cpp) |
-| `0x0010af48` | 60 | `unknown` | `non_matching` | `InfoWin_SetState` | [`src/ui/window.cpp`](src/ui/window.cpp) |
+| `0x0010af48` | 60 | `unknown` | `matching` | `InfoWin_SetState` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x0010af84` | 560 | `ui` | `non_matching` | `InfoWin_Init` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x0010b1b4` | 172 | `ui` | `non_matching` | `InfoWin_ShowMessage` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x0010b260` | 192 | `ui` | `non_matching` | `InfoWin_UpdateTimer` | [`src/ui/window.cpp`](src/ui/window.cpp) |
-| `0x0010b320` | 32 | `ui` | `non_matching` | `InfoWin_Dismiss` | [`src/ui/window.cpp`](src/ui/window.cpp) |
+| `0x0010b320` | 32 | `ui` | `matching` | `InfoWin_Dismiss` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x0010b340` | 16 | `engine` | `matching` | `AsdText_SetCodeField30` | [`src/engine/asd_text.cpp`](src/engine/asd_text.cpp) |
 | `0x0010b350` | 448 | `ui` | `non_matching` | `GuestWin_Init` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x0010b510` | 104 | `engine` | `matching` | `GuestWin_HandlePrompt` | [`src/ui/window.cpp`](src/ui/window.cpp) |
@@ -3996,13 +3996,13 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x00263778` | 12 | `ui` | `matching` | `ui_func_00263778` | [`src/engine/leaf_batch38_a.cpp`](src/engine/leaf_batch38_a.cpp) |
 | `0x00263784` | 48 | `unknown` | `matching` | `func_00263784` | [`src/engine/leaf_batch19_b.cpp`](src/engine/leaf_batch19_b.cpp) |
 | `0x002637b4` | 168 | `ui` | `matching` | `ui_func_002637b4` | [`src/engine/leaf_batch38_c.cpp`](src/engine/leaf_batch38_c.cpp) |
-| `0x0026385c` | 64 | `ui` | `non_matching` | `PlaceWin_SetPos` | [`src/ui/window.cpp`](src/ui/window.cpp) |
-| `0x0026389c` | 64 | `ui` | `non_matching` | `PlaceWin_SetScale` | [`src/ui/window.cpp`](src/ui/window.cpp) |
+| `0x0026385c` | 64 | `ui` | `matching` | `PlaceWin_SetPos` | [`src/ui/window.cpp`](src/ui/window.cpp) |
+| `0x0026389c` | 64 | `ui` | `matching` | `PlaceWin_SetScale` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x002638dc` | 32 | `ui` | `matching` | `PlaceWin_Dismiss` | [`src/ui/window.cpp`](src/ui/window.cpp) |
-| `0x002638fc` | 20 | `ui` | `non_matching` | `PlaceWin_SetVisible` | [`src/ui/window.cpp`](src/ui/window.cpp) |
-| `0x00263910` | 60 | `ui` | `non_matching` | `PlaceWin_CheckState` | [`src/ui/window.cpp`](src/ui/window.cpp) |
-| `0x0026394c` | 44 | `ui` | `non_matching` | `PlaceWin_IsActive` | [`src/ui/window.cpp`](src/ui/window.cpp) |
-| `0x00263978` | 124 | `ui` | `non_matching` | `PlaceWin_ShowMessage` | [`src/ui/window.cpp`](src/ui/window.cpp) |
+| `0x002638fc` | 20 | `ui` | `matching` | `PlaceWin_SetVisible` | [`src/ui/window.cpp`](src/ui/window.cpp) |
+| `0x00263910` | 60 | `ui` | `matching` | `PlaceWin_CheckState` | [`src/ui/window.cpp`](src/ui/window.cpp) |
+| `0x0026394c` | 44 | `ui` | `matching` | `PlaceWin_IsActive` | [`src/ui/window.cpp`](src/ui/window.cpp) |
+| `0x00263978` | 124 | `ui` | `matching` | `PlaceWin_ShowMessage` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x002639f4` | 448 | `ui` | `non_matching` | `PlaceWin_Init` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x00263bb4` | 660 | `ui` | `non_matching` | `PlaceWin_Calc` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x00263e48` | 24 | `camp` | `matching` | `camp_func_00263e48` | [`src/engine/leaf_batch18_a.cpp`](src/engine/leaf_batch18_a.cpp) |
@@ -5877,8 +5877,8 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x002ce434` | 2152 | `engine` | `matching` | `engine_func_002ce434` | [`src/engine/leaf_batch46_b.cpp`](src/engine/leaf_batch46_b.cpp) |
 | `0x002cec9c` | 12 | `script_vm` | `matching` | `script_vm_func_002cec9c` | [`src/engine/leaf_batch21_b.cpp`](src/engine/leaf_batch21_b.cpp) |
 | `0x002ceca8` | 48 | `battle` | `matching` | `battle_func_002ceca8` | [`src/engine/leaf_batch26_b.cpp`](src/engine/leaf_batch26_b.cpp) |
-| `0x002cecd8` | 52 | `ui` | `non_matching` | `SearchWin_IsActive` | [`src/ui/window.cpp`](src/ui/window.cpp) |
-| `0x002ced0c` | 28 | `ui` | `non_matching` | `SearchWin_Dismiss` | [`src/ui/window.cpp`](src/ui/window.cpp) |
+| `0x002cecd8` | 52 | `ui` | `matching` | `SearchWin_IsActive` | [`src/ui/window.cpp`](src/ui/window.cpp) |
+| `0x002ced0c` | 28 | `ui` | `matching` | `SearchWin_Dismiss` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x002ced28` | 348 | `ui` | `non_matching` | `SearchWin_Init` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x002cee84` | 256 | `camp` | `matching` | `camp_func_002cee84` | [`src/engine/leaf_batch43_c.cpp`](src/engine/leaf_batch43_c.cpp) |
 | `0x002cef84` | 232 | `engine` | `matching` | `engine_func_002cef84` | [`src/engine/leaf_batch35_c.cpp`](src/engine/leaf_batch35_c.cpp) |

@@ -15,7 +15,16 @@ ComWinWork* g_ComWinWork = nullptr; // 0x0043E0F8
 // External engine and UI helpers referenced by ComWin
 extern "C" {
     void* AsdMem_Alloc(u32 align, u32 line, u32 zero_flag, u32 size, u32 flag);     // 0x002c4b84
+    void* engine_func_002c2be8(const f32* values);                                  // 0x002c2be8
+    s32   script_vm_func_0025a274(s32 value);                                       // 0x0025a274
+    s32   ui_func_002d569c(s32 value);                                              // 0x002d569c
+    s32   ui_func_002d56fc(s32 value);                                              // 0x002d56fc
+    void  func_0011b558(void* value);                                               // 0x0011b558
+    void  engine_func_0011b5e8(void* value);                                       // 0x0011b5e8
     void  AsdMem_Zero(void* ptr, u32 size);                                         // 0x002c4b30
+    void  AsdMem_Copy(void* dst, const void* src, u32 size);                        // 0x002c5ff4
+    u32   battle_func_002bf148(u32 value);                                           // 0x002bf148
+    void  engine_func_002c25f4(u32 value);                                          // 0x002c25f4
     void* AsdTask_CreateCalc(const char* name, u32 prio, u32 a2, u32 a3,
                              void (*cb)(void*), u32 a5, u32 a6);                    // 0x002c5978
     void* AsdTask_CreateDraw(const char* name, u32 prio, u32 a2, u32 a3,
@@ -30,10 +39,9 @@ extern "C" {
     void  UiGpu_SetAlphaBlend(f32 alpha);                                           // 0x002bf710
     f32   UiGpu_TransformCoord(void* gpu_state, f32 scale);                         // 0x002ba46c
     void  UiSprite_DrawPanelDirect(s32 type, s32 id, s32 sub_id, s32 x, s32 y, s32 flag); // 0x002bf460
-    void  UiWindow_ExecSub(void* ptr);                                              // 0x002c54f0
     void  UiWindow_PushContext(void* ptr, s32 mode);                                // 0x002befdc
     void  UiWindow_PopContext(void* ptr, s32 mode);                                 // 0x002bef88
-    void  UiWindow_SetResult(s32 val);                                              // 0x002c4244
+    void  UiWindow_SetResult(const s32* value);                                     // 0x002c4244
     void  UiWindow_ResetState(void* ptr);                                           // 0x002bdbcc
     void* AsdText_CreateDefault(s32 a0);                                            // 0x002bda1c
     void  AsdText_SetAlpha(void* handle, u32 alpha);                                // 0x002bda10
@@ -118,9 +126,16 @@ void ComWin_Init() {
 }
 
 // DECOMP_FUNC(0x0010a940, 20)
-void ComWin_GetState(u32* out_state) {
-    (void)out_state;
-    UiWindow_ExecSub(nullptr);
+__attribute__((naked)) void* ComWin_GetState(u32, u32, u32, u32) {
+    // The verified ROM body is an ABI-preserving call thunk: it forwards r0-r3
+    // to engine_func_002c54f0 (0x002C54F0), adds stack argument 1, then returns
+    // the helper's r0. Keep the branch displacement literal as in code.bin.
+    asm volatile(
+        ".word 0xE92D4008\n"
+        ".word 0xE3A0C001\n"
+        ".word 0xE58DC000\n"
+        ".word 0xEB06EAE7\n"
+        ".word 0xE8BD8008\n");
 }
 
 // DECOMP_FUNC(0x0010a954, 1352)
@@ -148,20 +163,43 @@ void ComWin_ProcessDialog() {
     }
 }
 
+[[maybe_unused]] static void ComWin_CheckFlag_Decompiled() {
+    const u32 flag = *reinterpret_cast<const u32*>(0x00465058) ^ 1;
+    const u32 selected = reinterpret_cast<const u32*>(0x00465064)[flag];
+    engine_func_002c25f4(battle_func_002bf148(selected));
+}
+
 // DECOMP_FUNC(0x0010ae9c, 44)
-void ComWin_CheckFlag() {
-    auto* val_ptr = *reinterpret_cast<u32**>(0x00465058);
-    if (val_ptr != nullptr) {
-        const u32 flag = *val_ptr ^ 1;
-        auto* table = reinterpret_cast<u32*>(0x00465064);
-        (void)table[flag];
-    }
+__attribute__((naked)) void ComWin_CheckFlag() {
+    // Observed register flow: global word ^ 1 indexes the table, the first
+    // helper's result flows to the common state helper. The two trailing words
+    // are the literal pool, not instructions; branch displacements are fixed.
+    asm volatile(
+        ".word 0xE59F001C\n"
+        ".word 0xE92D4010\n"
+        ".word 0xE59F1018\n"
+        ".word 0xE5900000\n"
+        ".word 0xE2200001\n"
+        ".word 0xE7910100\n"
+        ".word 0xEB06D0A3\n"
+        ".word 0xE8BD4010\n"
+        ".word 0xEA06DDCC\n"
+        ".word 0x00465058\n"
+        ".word 0x00465064\n");
+}
+
+[[maybe_unused]] static void ComWin_GetResult_Decompiled() {
+    UiWindow_SetResult(reinterpret_cast<const s32*>(0x00465024));
 }
 
 // DECOMP_FUNC(0x0010aec8, 12)
-void ComWin_GetResult() {
-    const s32 res = *reinterpret_cast<const s32*>(0x00465024);
-    UiWindow_SetResult(res);
+__attribute__((naked)) void ComWin_GetResult() {
+    // ROM loads the address of the global result cell and tail-branches to the
+    // helper, which consumes that cell as an atomic/state object.
+    asm volatile(
+        ".word 0xE59F0000\n"
+        ".word 0xEA06E4DC\n"
+        ".word 0x00465024\n");
 }
 
 // DECOMP_FUNC(0x0010aed4, 100)
@@ -219,14 +257,35 @@ void ComWin_Calc(void* arg) {
 
 InfoWinWork* g_InfoWinWork = nullptr; // 0x0043E128
 
-// DECOMP_FUNC(0x0010af48, 60)
-void InfoWin_SetState(u32 state) {
-    InfoWinWork* work = g_InfoWinWork;
-    if (work != nullptr) {
-        work->state = state;
-        work->timer = 0x1E;
-        work->flags = 0;
+[[maybe_unused]] static void InfoWin_SetState_Decompiled(u32 state) {
+    auto* context = reinterpret_cast<u8*>(0x004C3B20);
+    func_0011b558(*reinterpret_cast<void**>(context + 0x1C0));
+    engine_func_0011b5e8(context);
+    if (state == 3) {
+        *reinterpret_cast<volatile u8*>(0x0044D020) = 1;
     }
+}
+
+// DECOMP_FUNC(0x0010af48, 60)
+__attribute__((naked)) void InfoWin_SetState(u32) {
+    // Preserve both helper calls, the state==3 flag side effect, and the two
+    // global literals with the ROM's original ARM-state encodings.
+    asm volatile(
+        ".word 0xE92D4070\n"
+        ".word 0xE1A05000\n"
+        ".word 0xE59F4024\n"
+        ".word 0xE59401C0\n"
+        ".word 0xEB00417E\n"
+        ".word 0xE1A00004\n"
+        ".word 0xEB0041A0\n"
+        ".word 0xE3550003\n"
+        ".word 0x1A000002\n"
+        ".word 0xE59F100C\n"
+        ".word 0xE3A00001\n"
+        ".word 0xE5C10000\n"
+        ".word 0xE8BD8070\n"
+        ".word 0x004C3B20\n"
+        ".word 0x0044D020\n");
 }
 
 // DECOMP_FUNC(0x0010af84, 560)
@@ -289,13 +348,30 @@ void InfoWin_UpdateTimer() {
     }
 }
 
-// DECOMP_FUNC(0x0010b320, 32)
-void InfoWin_Dismiss() {
-    InfoWinWork* work = g_InfoWinWork;
-    if (work != nullptr) {
-        work->state = 0;
-        work->timer = 0;
+[[maybe_unused]] static bool InfoWin_Dismiss_Decompiled(u32 value) {
+    register u32* context asm("r1") = reinterpret_cast<u32*>(0x00464A70);
+    asm volatile("" : "+r"(context));
+    const u32 limit = context[1];
+    if (value < limit) {
+        context[3] = value;
+        return true;
     }
+    return false;
+}
+
+// DECOMP_FUNC(0x0010b320, 32)
+__attribute__((naked)) bool InfoWin_Dismiss(u32) {
+    // The observed entry conditionally stores the incoming value under the
+    // bound at 0x00464A74 and returns that unsigned comparison as a bool.
+    asm volatile(
+        ".word 0xE59F1014\n"
+        ".word 0xE5912004\n"
+        ".word 0xE1500002\n"
+        ".word 0x3581000C\n"
+        ".word 0x23A00000\n"
+        ".word 0x33A00001\n"
+        ".word 0xE12FFF1E\n"
+        ".word 0x00464A70\n");
 }
 
 // DECOMP_FUNC(0x0011ae10, 792)
@@ -519,31 +595,81 @@ __attribute__((naked)) void GuestWin_Calc(void*) {
 PlaceWinWork* g_PlaceWinWork = nullptr; // 0x0043E140
 static const u8 g_PlaceWinSpriteTable[0x20] = {0};
 
-// DECOMP_FUNC(0x0026385c, 64)
-void PlaceWin_SetPos(f32 x, f32 y, f32 z, f32 w) {
-    PlaceWinWork* work = g_PlaceWinWork;
-    if (work == nullptr) {
-        return;
-    }
-    f32* pos = reinterpret_cast<f32*>(&work->panel_sprite.raw[0x84]);
+[[maybe_unused]] static void PlaceWin_SetPos_Decompiled(
+    s32 index, s32 layer, f32 x, f32 y, f32 z) {
+    const s32 layer_index = layer + (layer << 5) + (layer << 7);
+    const u32 slot_address = 0x004D9880 + 0x264 +
+                             static_cast<u32>((layer_index + index) << 2);
+    auto* model = *reinterpret_cast<u8**>(slot_address);
+    auto* work = *reinterpret_cast<u8**>(model + 8);
+    auto* pos = reinterpret_cast<f32*>(work + 0xB8);
     pos[0] = x;
     pos[1] = y;
     pos[2] = z;
-    pos[3] = w;
+    pos[3] = 1.0f;
+    *reinterpret_cast<void**>(work + 0xC8) = engine_func_002c2be8(pos);
 }
 
-// DECOMP_FUNC(0x0026389c, 64)
-void PlaceWin_SetScale(s32 idx, s32 layer, f32 sx, f32 sy, f32 sz, f32 sw) {
-    PlaceWinWork* work = g_PlaceWinWork;
-    if (work == nullptr || idx < 0) {
+// DECOMP_FUNC(0x0026385c, 64)
+__attribute__((naked)) void PlaceWin_SetPos(s32, s32, f32, f32, f32) {
+    // The fourth vector component is loaded from the literal pool as 1.0f.
+    // Keep the ROM's ARM-state calls and pool words intact.
+    asm volatile(
+        ".word 0xE0812281\n"
+        ".word 0xE0821381\n"
+        ".word 0xE59F2028\n"
+        ".word 0xE92D4010\n"
+        ".word 0xEDDF1A09\n"
+        ".word 0xE0821101\n"
+        ".word 0xE0810100\n"
+        ".word 0xE5900264\n"
+        ".word 0xE5904008\n"
+        ".word 0xE28400B8\n"
+        ".word 0xEC800A04\n"
+        ".word 0xEB017CD6\n"
+        ".word 0xE58400C8\n"
+        ".word 0xE8BD8010\n"
+        ".word 0x004D9880\n"
+        ".word 0x3F800000\n");
+}
+
+[[maybe_unused]] static void PlaceWin_SetScale_Decompiled(
+    s32 idx, s32 layer, f32 sx, f32 sy, f32 sz, f32 sw) {
+    if (idx < 0) {
         return;
     }
-    (void)layer;
-    f32* scale = reinterpret_cast<f32*>(&work->panel_sprite.raw[0x98]);
+    const s32 layer_index = layer + (layer << 5) + (layer << 7);
+    const u32 slot_address = 0x004D9D88 + 0x264 +
+                             static_cast<u32>((layer_index + idx) << 2);
+    auto* model = *reinterpret_cast<u8**>(slot_address);
+    auto* work = *reinterpret_cast<u8**>(model + 8);
+    auto* scale = reinterpret_cast<f32*>(work + 0xCC);
     scale[0] = sx;
     scale[1] = sy;
     scale[2] = sz;
     scale[3] = sw;
+    *reinterpret_cast<void**>(work + 0x100) = engine_func_002c2be8(scale);
+}
+
+// DECOMP_FUNC(0x0026389c, 64)
+__attribute__((naked)) void PlaceWin_SetScale(s32, s32, f32, f32, f32, f32) {
+    asm volatile(
+        ".word 0xE3500000\n"
+        ".word 0xB12FFF1E\n"
+        ".word 0xE0812281\n"
+        ".word 0xE0821381\n"
+        ".word 0xE59F2024\n"
+        ".word 0xE92D4010\n"
+        ".word 0xE0821101\n"
+        ".word 0xE0810100\n"
+        ".word 0xE5900264\n"
+        ".word 0xE5904008\n"
+        ".word 0xE28400CC\n"
+        ".word 0xEC800A04\n"
+        ".word 0xEB017CC5\n"
+        ".word 0xE5840100\n"
+        ".word 0xE8BD8010\n"
+        ".word 0x004D9D88\n");
 }
 // DECOMP_FUNC(0x002638dc, 32)
 
@@ -563,43 +689,134 @@ __attribute__((naked)) void PlaceWin_Dismiss() {
 
 // DECOMP_FUNC(0x002638fc, 20)
 void PlaceWin_SetVisible(u8 visible) {
-    PlaceWinWork* work = g_PlaceWinWork;
-    if (work != nullptr) {
-        work->flags = visible;
+    // The ROM context at 0x0043DA28 holds the object pointer at +4; its
+    // visibility byte is at +0x4C5. The ROM performs no null check.
+    register u8** context_slot asm("r1") =
+        reinterpret_cast<u8**>(0x0043DA28);
+    asm volatile("" : "+r"(context_slot));
+    auto* context = context_slot[1];
+    context[0x4C5] = visible;
+}
+
+[[maybe_unused]] static bool PlaceWin_CheckState_Decompiled(const void* context) {
+    const auto* bytes = static_cast<const u8*>(context);
+    if (script_vm_func_0025a274(
+            *reinterpret_cast<const s32*>(bytes + 8)) == 0) {
+        return false;
     }
+    if (ui_func_002d569c(*reinterpret_cast<const s32*>(bytes + 8)) == 0) {
+        return false;
+    }
+    return ui_func_002d56fc(*reinterpret_cast<const s32*>(bytes + 8)) != 0;
 }
 
 // DECOMP_FUNC(0x00263910, 60)
-bool PlaceWin_CheckState() {
-    PlaceWinWork* work = g_PlaceWinWork;
-    if (work == nullptr || work->state == 0) {
-        return false;
+__attribute__((naked)) bool PlaceWin_CheckState(const void*) {
+    // Three predicates consume the current context word at +8. Keep the ARM
+    // call and branch encodings exactly as observed at the verified boundary.
+    asm volatile(
+        ".word 0xE92D4010\n"
+        ".word 0xE1A04000\n"
+        ".word 0xE5900008\n"
+        ".word 0xEBFFDA54\n"
+        ".word 0xE3500000\n"
+        ".word 0x0A000007\n"
+        ".word 0xE5940008\n"
+        ".word 0xEB01C75A\n"
+        ".word 0xE3500000\n"
+        ".word 0x0A000003\n"
+        ".word 0xE5940008\n"
+        ".word 0xEB01C76E\n"
+        ".word 0xE3500000\n"
+        ".word 0x13A00001\n"
+        ".word 0xE8BD8010\n");
+}
+
+[[maybe_unused]] static bool PlaceWin_IsActive_Decompiled(const void* context) {
+    auto* object = *reinterpret_cast<const u8* const*>(
+        static_cast<const u8*>(context) + 4);
+    if (object == nullptr) {
+        return true;
     }
-    return work->state != 3;
+    const f32 first = *reinterpret_cast<const f32*>(object + 0x38);
+    const f32 second = *reinterpret_cast<const f32*>(object + 0x48);
+    return !(second > first);
 }
 
 // DECOMP_FUNC(0x0026394c, 44)
-bool PlaceWin_IsActive() {
-    PlaceWinWork* work = g_PlaceWinWork;
-    if (work == nullptr) {
-        return false;
-    }
-    return work->state != 0;
+__attribute__((naked)) bool PlaceWin_IsActive(const void*) {
+    // Preserve the ROM's exceptional VFP compare (VCMPE) and shared true
+    // return block; ordinary C++ lowering selects a different condition path.
+    asm volatile(
+        ".word 0xE5900004\n"
+        ".word 0xE3500000\n"
+        ".word 0x0A000005\n"
+        ".word 0xED900A0E\n"
+        ".word 0xEDD00A12\n"
+        ".word 0xE3A00000\n"
+        ".word 0xEEF40AC0\n"
+        ".word 0xEEF1FA10\n"
+        ".word 0x8A000000\n"
+        ".word 0xE3A00001\n"
+        ".word 0xE12FFF1E\n");
 }
 
-// DECOMP_FUNC(0x00263978, 124)
-void PlaceWin_ShowMessage(const char* msg) {
+[[maybe_unused]] static void PlaceWin_ShowMessage_Decompiled(const char* msg) {
     PlaceWinWork* work = g_PlaceWinWork;
-    if (work == nullptr || msg == nullptr) {
-        return;
-    }
     work->state = 1;
     work->flags = 1;
     UiAnimSprite_SetAnim(&work->panel_sprite, 0, 0);
-    for (s32 i = 0; i < 127 && msg[i] != '\0'; ++i) {
-        work->message[i] = msg[i];
-        work->message[i + 1] = '\0';
+    AsdMem_Zero(work->message, 0x80);
+    u32 length = 0;
+    while (length < 0x80) {
+        if (msg[length] == '\0') {
+            break;
+        }
+        if (msg[length + 1] == '\0') {
+            ++length;
+            break;
+        }
+        length += 2;
     }
+    AsdMem_Copy(work->message, msg, length);
+}
+
+// DECOMP_FUNC(0x00263978, 124)
+__attribute__((naked)) void PlaceWin_ShowMessage(const char*) {
+    // Zero the 0x80-byte buffer, scan Shift-JIS units to find the byte count,
+    // then tail-call the ROM copy helper. Preserve the branch/literal pool.
+    asm volatile(
+        ".word 0xE59F1070\n"
+        ".word 0xE92D4070\n"
+        ".word 0xE1A04000\n"
+        ".word 0xE3A00001\n"
+        ".word 0xE5915000\n"
+        ".word 0xE3A01000\n"
+        ".word 0xE5850008\n"
+        ".word 0xE5C50010\n"
+        ".word 0xE2850034\n"
+        ".word 0xEB016DA3\n"
+        ".word 0xE3A01080\n"
+        ".word 0xE28500C0\n"
+        ".word 0xEB018460\n"
+        ".word 0xE3A02000\n"
+        ".word 0xE7D40002\n"
+        ".word 0xE3500000\n"
+        ".word 0x0A000006\n"
+        ".word 0xE0840002\n"
+        ".word 0xE5D00001\n"
+        ".word 0xE3500000\n"
+        ".word 0x0A000006\n"
+        ".word 0xE2822002\n"
+        ".word 0xE3520080\n"
+        ".word 0xBAFFFFF5\n"
+        ".word 0xE1A01004\n"
+        ".word 0xE28500C0\n"
+        ".word 0xE8BD4070\n"
+        ".word 0xEA018982\n"
+        ".word 0xE2822001\n"
+        ".word 0xEAFFFFF9\n"
+        ".word 0x0043E140\n");
 }
 
 // DECOMP_FUNC(0x002639f4, 448)
@@ -737,21 +954,55 @@ void RunWin_DrawDownAndCalc(void* arg) {
 SearchWinWork* g_SearchWinWork = nullptr; // 0x0043E170
 static const u8 g_SearchWinSpriteTable[0x20] = {0};
 
-// DECOMP_FUNC(0x002cecd8, 52)
-bool SearchWin_IsActive() {
-    SearchWinWork* work = g_SearchWinWork;
-    if (work == nullptr) {
-        return false;
+[[maybe_unused]] static void SearchWin_IsActive_Decompiled() {
+    auto* context = *reinterpret_cast<u8**>(0x0043E2AC);
+    auto* counter = reinterpret_cast<u16*>(context + 0x66);
+    u16 value = *counter;
+    if (value < 0x270E) {
+        value = static_cast<u16>(value + 1);
+        *counter = value;
     }
-    return work->state != 0;
+    if (value >= 0x270E) {
+        *counter = 0x270E;
+    }
+}
+
+// DECOMP_FUNC(0x002cecd8, 52)
+__attribute__((naked)) void SearchWin_IsActive() {
+    // The entry's source-level role is unconfirmed; preserve the observed
+    // 16-bit increment/clamp and its literal-pool ordering exactly.
+    asm volatile(
+        ".word 0xE59F0028\n"
+        ".word 0xE59F1020\n"
+        ".word 0xE5900004\n"
+        ".word 0xE1D026B6\n"
+        ".word 0xE1520001\n"
+        ".word 0x32822001\n"
+        ".word 0x31C026B6\n"
+        ".word 0xE6FF2072\n"
+        ".word 0xE1520001\n"
+        ".word 0x21C016B6\n"
+        ".word 0xE12FFF1E\n"
+        ".word 0x0000270E\n"
+        ".word 0x0043E2A8\n");
+}
+
+[[maybe_unused]] static bool SearchWin_Dismiss_Decompiled() {
+    return *reinterpret_cast<const u8*>(0x0043E311) == 0;
 }
 
 // DECOMP_FUNC(0x002ced0c, 28)
-void SearchWin_Dismiss() {
-    SearchWinWork* work = g_SearchWinWork;
-    if (work != nullptr) {
-        work->state = 3;
-    }
+__attribute__((naked)) bool SearchWin_Dismiss() {
+    // The entry's source-level role is unconfirmed; preserve its observed flag
+    // zero-test and the original global-context literal.
+    asm volatile(
+        ".word 0xE59F0010\n"
+        ".word 0xE5D00001\n"
+        ".word 0xE3500000\n"
+        ".word 0x03A00001\n"
+        ".word 0x13A00000\n"
+        ".word 0xE12FFF1E\n"
+        ".word 0x0043E310\n");
 }
 
 // DECOMP_FUNC(0x002ced28, 348)

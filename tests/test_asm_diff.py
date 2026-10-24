@@ -105,10 +105,10 @@ class TestAsmDiff(unittest.TestCase):
             code_path=self.code_path,
         )
         self.assertEqual(stats["total_claimed"], 10319)
-        self.assertEqual(stats["matching_verified"], 10147)
+        self.assertEqual(stats["matching_verified"], 10160)
         self.assertEqual(stats["matching_failed"], 0)
-        self.assertEqual(stats["verified_count"], 141)
-        self.assertEqual(stats["draft_count"], 31)
+        self.assertEqual(stats["verified_count"], 130)
+        self.assertEqual(stats["draft_count"], 29)
 
     def test_find_leaf_candidates_returns_pure_leaf_functions(self):
         if not self.code_bytes:
@@ -138,7 +138,7 @@ class TestAsmDiff(unittest.TestCase):
                 if row["status"].strip() == "matching":
                     matching_rows.append(row)
 
-        self.assertEqual(len(matching_rows), 10147)
+        self.assertEqual(len(matching_rows), 10160)
         validated_objects = set()
         for row in matching_rows:
             res = compare_function(

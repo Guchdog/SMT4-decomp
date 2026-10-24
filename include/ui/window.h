@@ -46,7 +46,9 @@ extern ComWinWork* g_ComWinWork;        // 0x0043E0F8
 // ComWin API functions
 bool ComWin_SetState();                                                             // 0x0010a70c
 void ComWin_Init();                                                                 // 0x0010a748
-void ComWin_GetState(u32* out_state);                                               // 0x0010a940
+// The ROM body at this address forwards its four ABI register arguments to
+// engine_func_002c54f0 with a final argument of 1 and returns the helper result.
+void* ComWin_GetState(u32 a0, u32 a1, u32 a2, u32 a3);                              // 0x0010a940
 void ComWin_ProcessDialog();                                                        // 0x0010a954
 void ComWin_CheckFlag();                                                            // 0x0010ae9c
 void ComWin_GetResult();                                                            // 0x0010aec8
@@ -89,7 +91,7 @@ void InfoWin_SetState(u32 state);                                               
 void InfoWin_Init();                                                                // 0x0010af84
 void InfoWin_ShowMessage(const char* msg);                                          // 0x0010b1b4
 void InfoWin_UpdateTimer();                                                         // 0x0010b260
-void InfoWin_Dismiss();                                                             // 0x0010b320
+bool InfoWin_Dismiss(u32 value);                                                    // 0x0010b320
 void InfoWin_DrawUp(void* arg);                                                     // 0x0011ae10
 void InfoWin_Calc(void* arg);                                                       // 0x0011b1bc
 
@@ -149,12 +151,12 @@ static_assert(sizeof(PlaceWinWork) == 0x140);
 extern PlaceWinWork* g_PlaceWinWork;    // 0x0043E140
 
 // PlaceWin API functions
-void PlaceWin_SetPos(f32 x, f32 y, f32 z, f32 w);                                   // 0x0026385c
+void PlaceWin_SetPos(s32 index, s32 layer, f32 x, f32 y, f32 z);                    // 0x0026385c
 void PlaceWin_SetScale(s32 idx, s32 layer, f32 sx, f32 sy, f32 sz, f32 sw);         // 0x0026389c
 void PlaceWin_Dismiss();                                                             // 0x002638dc
 void PlaceWin_SetVisible(u8 visible);                                               // 0x002638fc
-bool PlaceWin_CheckState();                                                         // 0x00263910
-bool PlaceWin_IsActive();                                                           // 0x0026394c
+bool PlaceWin_CheckState(const void* context);                                      // 0x00263910
+bool PlaceWin_IsActive(const void* context);                                        // 0x0026394c
 void PlaceWin_ShowMessage(const char* msg);                                         // 0x00263978
 void PlaceWin_Init();                                                               // 0x002639f4
 void PlaceWin_Calc(void* arg);                                                      // 0x00263bb4
@@ -221,8 +223,8 @@ static_assert(sizeof(SearchWinWork) == 0xE4);
 extern SearchWinWork* g_SearchWinWork;  // 0x0043E170
 
 // SearchWin API functions
-bool SearchWin_IsActive();                                                          // 0x002cecd8
-void SearchWin_Dismiss();                                                           // 0x002ced0c
+void SearchWin_IsActive();                                                          // 0x002cecd8
+bool SearchWin_Dismiss();                                                           // 0x002ced0c
 void SearchWin_Init();                                                              // 0x002ced28
 void SearchWin_DrawUpAndCalc(void* arg);                                            // 0x001accd4
 
