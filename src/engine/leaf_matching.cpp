@@ -2341,13 +2341,7 @@ extern "C" void func_0024faa4(const u8* p, u8* dst) {
 
 // DECOMP_FUNC(0x0026e88c, 20)
 extern "C" void battle_func_0026e88c(u8* p, u32 bit) {
-    asm volatile(
-        "ldrh r2, [%0, #0x44]\n"
-        "mov r3, #1\n"
-        "orr %1, r2, r3, lsl %1\n"
-        "strh %1, [%0, #0x44]\n"
-        : "+r"(p), "+r"(bit) : : "r2", "r3", "memory"
-    );
+    *reinterpret_cast<volatile u16*>(p + 0x44) |= static_cast<u16>(1u << bit);
 }
 
 // DECOMP_FUNC(0x0027e9d0, 20)
