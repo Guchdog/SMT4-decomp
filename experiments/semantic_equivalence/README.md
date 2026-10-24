@@ -11,6 +11,12 @@ The experiment is isolated on `codex/semantic-equivalence-experiment`, based on
 image, and the primary checkout's pending README/progress edits unchanged.
 Experimental candidates do not increase the exact reconstruction count.
 
+For subsequent functions, use the [per-function procedure](../../docs/function-reconstruction-workflow.md),
+its [record template](../../docs/templates/function-reconstruction.md), and the
+[completed byte-getter example](../../docs/function-records/0x00394614.md).
+The current runner is specialized for this pilot; that procedure identifies
+the code and scenarios that must be extended before testing a new function.
+
 ## Results
 
 | Original entry | Reconstructed operation | Original / compiled bytes | Byte-identical | Differential result |

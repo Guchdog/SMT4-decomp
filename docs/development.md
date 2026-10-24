@@ -73,6 +73,10 @@ Before considering a tooling change complete, run the relevant tests, force the 
 
 ## Find semantic reconstruction candidates
 
+Follow the [per-function reconstruction and validation procedure](function-reconstruction-workflow.md)
+for exact and experimental behavioral work. It defines contracts, attempt records,
+negative controls, batch checks and separate ARM/caller/full-game acceptance gates.
+
 The ledger can be 100% byte-matching while functions are still represented by
 inline assembly or `.incbin` wrappers. To find small, call-free wrappers that
 are good candidates for replacement with readable C++, run:
