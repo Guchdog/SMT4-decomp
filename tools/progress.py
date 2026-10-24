@@ -32,6 +32,10 @@ DECOMPILED_STATUSES = {"non_matching", "matching"}
 SPAN_STATUSES = {"matching_span"}
 STUB_STATUSES = {"stub", "wip"}
 CLAIMED_STATUSES = DECOMPILED_STATUSES | SPAN_STATUSES | STUB_STATUSES
+# Number of exact-matching functions converted from assembly wrappers to typed
+# C++ in the semantic reconstruction batches. Keep this milestone count in sync
+# when accepting or reverting such a batch; it is distinct from size coverage.
+SEMANTIC_CPP_RECONSTRUCTIONS = 60
 
 
 class VerificationError(Exception):
@@ -573,6 +577,7 @@ Decompilation and reverse-engineering project for **Shin Megami Tensei IV** (Nin
 ## Live Decompilation Progress
 
 - **Matching (Byte-for-Byte):** `{stats['matching_bytes']:,} / {stats['total_bytes']:,} bytes` (**{stats['matching_byte_percentage']:.4f}%**) across `{stats['matching_functions']:,}` functions and `{stats['matching_spans']:,}` explicitly labeled raw spans (each exact-checked against 3DS ARMv6K code.bin)
+- **Readable C++ reconstructions:** `{SEMANTIC_CPP_RECONSTRUCTIONS}` functions have been converted from assembly wrappers to typed C++ while retaining byte-for-byte ARMv6K output. Recent batches cover engine state/accessors, UI and camp record updates, shop/texture comparators, Script VM helpers, queue/list operations, record initialization, float state updates, a zeroing helper, and a state getter. These semantic milestones are tracked separately from the size-based coverage categories below.
 - **Compiled Coverage (≥15% size):** `{stats['compiled_bytes']:,} / {stats['total_bytes']:,} bytes` (**{stats['compiled_byte_percentage']:.4f}%**) across `{stats['compiled_functions']:,}` functions (ARMv6K compilation and size threshold only; logic unverified)
 - **Draft Logic (<15% size):** `{stats['draft_bytes']:,} / {stats['total_bytes']:,} bytes` (**{stats['draft_byte_percentage']:.4f}%**) across `{stats['draft_functions']:,}` functions (early-stage draft reconstructions)
 - **Scaffolded Architecture (Stubs & Interfaces):** `{stats['stub_bytes']:,} / {stats['total_bytes']:,} bytes` (**{stats['stub_byte_percentage']:.4f}%**) across `{stats['stub_functions']:,}` functions (headers, structs, function skeletons)
