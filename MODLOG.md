@@ -38,9 +38,11 @@ the exact revision used for the IPS. Azahar's [loader](https://github.com/azahar
 searches `load/mods/<Title ID>/exefs/code.ips`; for this game the title path is
 `load/mods/00040000000E5C00/exefs/code.ips`. The 332-byte patch is installed at
 `%APPDATA%/Azahar/load/mods/00040000000E5C00/exefs/code.ips`. Luma uses
-`/luma/titles/00040000000E5C00/code.ips`. The next integration work needs a
-the user to boot and observe the game, then compare loader-log confirmation and
-trace replacement entry execution. A local ready-to-copy Azahar mod folder is in ignored
+`/luma/titles/00040000000E5C00/code.ips`. In the first patched launch, Azahar's
+log reported `code.ips patching code.bin`, and the user provided a screenshot
+showing the SMT IV title menu. This confirms patch loading and a boot to menu;
+it does not prove any replacement function executed. Next, trace replacement
+entry execution and run behavior-focused in-game checks. A local ready-to-copy Azahar mod folder is in ignored
 `build/azahar-mod/00040000000E5C00/`; its `code.ips` hash matches both test runs.
-Only the external patch was added; the CCI and save data were not touched. Do not
-claim a full-game pass from the ARM harness.
+Only the external patch was added; the CCI was not modified. Do not claim a
+full-game pass from the ARM harness.

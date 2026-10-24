@@ -144,20 +144,24 @@ Batch 2 patched image SHA-256:
 Batch 2 IPS SHA-256:
 `5d0cb36fa319678872d7c96ce9a9f878a6df393dbe5b6c3847702c2df749a89a`.
 
-**The game has not yet been booted with the patch.** The decrypted CCI supplied
-for Azahar was inspected without modification: its decompressed `code.bin` is
+**Patched boot confirmed; per-function execution is not yet confirmed.** The
+decrypted CCI supplied for Azahar was inspected without modification: its decompressed `code.bin` is
 3,633,152 bytes and has the expected SHA-256
 `1f98884fe997af22e032a14c51a46c872b05b0e079a0f29e307b0e059cfaa558`. The IPS
-has been installed in this Azahar profile; this is not yet evidence of a
-successful patched boot. Preservation/execution of padding by the real loader
-still needs testing.
+was installed in this Azahar profile. On launch, the log reported
+`File .../load/mods/00040000000E5C00/exefs/code.ips patching code.bin`, and the
+user provided a screenshot of the SMT IV title menu. This confirms the loader
+applied the patch and the game reached its menu, but does not prove any specific
+replacement function was called. No visual difference is expected from
+semantics-preserving replacements. Per-function runtime evidence and behavior
+checks remain outstanding.
 Azahar's [loader](https://github.com/azahar-emu/azahar/blob/master/src/core/file_sys/ncch_container.cpp)
 searches `load/mods/<Title ID>/exefs/code.ips`. For this US title, use
 `load/mods/00040000000E5C00/exefs/code.ips` and the exact base revision whose
 `code.bin` hash is recorded above; IPS does not check the source image. The
 ready-to-copy title folder is `build/azahar-mod/00040000000E5C00/`; the current
 profile copy is under `%APPDATA%/Azahar/load/mods/00040000000E5C00/exefs/`.
-Only the external patch file was added; the CCI and saves were not modified. The
+Only the external patch file was added; the CCI was not modified. The
 repository still has no full executable linking/package target.
 
 Luma3DS documents external decompressed code and IPS loading under
