@@ -541,6 +541,6 @@ void nn_sdk_func_0017f8f4();
 void func_001ff814();
 void battle_func_0023e4e4();
 void engine_func_0024565c();
-void camp_func_0024be90();
+void camp_func_0024be90(u8* p, u32 bit_index);
 void engine_func_0024f060();
 }

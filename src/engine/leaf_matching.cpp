@@ -3129,8 +3129,10 @@ extern "C" __attribute__((naked)) void engine_func_0024565c() {
 }
 
 // DECOMP_FUNC(0x0024be90, 28)
-extern "C" __attribute__((naked)) void camp_func_0024be90() {
-    asm volatile("add r0, r0, r1, lsr #3\nand r1, r1, #7\nldrb r2, [r0, #0x4c]\nmov r3, #1\norr r1, r2, r3, lsl r1\nstrb r1, [r0, #0x4c]\nbx lr\n");
+extern "C" void camp_func_0024be90(u8* p, u32 bit_index) {
+    u8* byte = p + (bit_index >> 3);
+    const u32 bit = 1u << (bit_index & 7u);
+    *reinterpret_cast<u8*>(byte + 0x4c) |= static_cast<u8>(bit);
 }
 
 // DECOMP_FUNC(0x0024f060, 28)
