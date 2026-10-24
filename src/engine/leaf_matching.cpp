@@ -2792,8 +2792,9 @@ extern "C" __attribute__((naked)) void func_003dc244() {
 }
 
 // DECOMP_FUNC(0x003df150, 20)
-extern "C" __attribute__((naked)) void script_vm_func_003df150() {
-    asm volatile("ldr r0, [r0]\nldr r0, [r0, #0x14]\ncmp r0, #0\nmovne r0, #1\nbx lr\n");
+extern "C" u32 script_vm_func_003df150(const u32* p) {
+    const u32* nested = reinterpret_cast<const u32*>(p[0]);
+    return nested[5] != 0;
 }
 
 // DECOMP_FUNC(0x003e741c, 20)

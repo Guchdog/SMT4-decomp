@@ -477,7 +477,7 @@ void script_vm_func_003bf798();
 void camp_func_003c8fc8();
 void camp_func_003c9314();
 void func_003dc244();
-void script_vm_func_003df150();
+u32 script_vm_func_003df150(const u32* p);
 void func_003e741c();
 void func_003e89d8();
 void func_003e89f8();
