@@ -8,8 +8,10 @@ extern "C" __attribute__((naked)) void func_002a2db4() {
 }
 
 // DECOMP_FUNC(0x002c3344, 40)
-extern "C" __attribute__((naked)) void camp_func_002c3344() {
-    asm volatile("mov r1, #0\nstr r1, [r0]\nstr r1, [r0, #4]\nstr r1, [r0, #8]\nstr r1, [r0, #0xc]\nstr r1, [r0, #0x10]\nstr r1, [r0, #0x14]\nstr r1, [r0, #0x18]\nstr r1, [r0, #0x1c]\nbx lr\n");
+extern "C" void camp_func_002c3344(u32* object) {
+    for (u32 i = 0; i < 8; ++i) {
+        object[i] = 0;
+    }
 }
 
 // DECOMP_FUNC(0x002c5f7c, 40)
