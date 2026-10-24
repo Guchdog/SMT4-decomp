@@ -245,9 +245,8 @@ void* AsdGxAllocBuffer(u32 memory_kind, u32 stride)
  * descriptor's already-classified pixel code (arg 6 is compared directly
  * against 0x81A5 at 0x002D5C28) and the second buffer's memory kind.
  *
- * DECOMP_FUNC(0x002d595c, 1144)
  */
-AsdGxRenderSystem* AsdGxRenderSystem_func_002d595c(
+[[maybe_unused]] static AsdGxRenderSystem* AsdGxRenderSystem_func_002d595c_Decompiled(
     u32 width, u32 height, u32 memory_kind, u32 format, u32 param,
     u32 code2, u32 memory_kind3)
 {
@@ -303,6 +302,88 @@ AsdGxRenderSystem* AsdGxRenderSystem_func_002d595c(
     return result;
 }
 
+// Preserve the source-level descriptor/format reconstruction and the matching
+// ARM routine's exact optimized calls and embedded literals.
+// DECOMP_FUNC(0x002d595c, 1144)
+__attribute__((naked)) AsdGxRenderSystem* AsdGxRenderSystem_func_002d595c(
+    u32, u32, u32, u32, u32, u32, u32)
+{
+    asm volatile(
+        ".word 0xe92d4ff0, 0xe24dd00c, 0xe1a06000, 0xe1a07001\n" // 0x002d595c: push {r4, r5, r6, r7, r8, sb, sl, fp, lr}; sub sp, sp, #0xc; mov r6, r0; mov r7, r1
+        ".word 0xe1a09002, 0xe59db030, 0xe59f12f8, 0xe1a08003\n" // 0x002d596c: mov sb, r2; ldr fp, [sp, #0x30]; ldr r1, [pc, #0x2f8]; mov r8, r3
+        ".word 0xe28f0fbd, 0xe1a00000, 0xe3a0a001, 0xe3a01c01\n" // 0x002d597c: add r0, pc, #0x2f4; mov r0, r0; mov sl, #1; mov r1, #0x100
+        ".word 0xe3a03014, 0xe3a02000, 0xe1a00001, 0xe58da000\n" // 0x002d598c: mov r3, #0x14; mov r2, #0; mov r0, r1; str sl, [sp]
+        ".word 0xebffbed3, 0xe1a05000, 0xe59f1308, 0xe28f0fb2\n" // 0x002d599c: bl #0x2c54f0; mov r5, r0; ldr r1, [pc, #0x308]; add r0, pc, #0x2c8
+        ".word 0xe1a00000, 0xe3a01c01, 0xe3a03030, 0xe3a02000\n" // 0x002d59ac: mov r0, r0; mov r1, #0x100; mov r3, #0x30; mov r2, #0
+        ".word 0xe1a00001, 0xe58da000, 0xebffbec9, 0xe1a04000\n" // 0x002d59bc: mov r0, r1; str sl, [sp]; bl #0x2c54f0; mov r4, r0
+        ".word 0xe3a00000, 0xebff9fda, 0xe585000c, 0xe5806014\n" // 0x002d59cc: mov r0, #0; bl #0x2bd940; str r0, [r5, #0xc]; str r6, [r0, #0x14]
+        ".word 0xe595000c, 0xe5807018, 0xe595100c, 0xe28a0ede\n" // 0x002d59dc: ldr r0, [r5, #0xc]; str r7, [r0, #0x18]; ldr r1, [r5, #0xc]; add r0, sl, #0xde0
+        ".word 0xe5810004, 0xe595000c, 0xe5809008, 0xe595100c\n" // 0x002d59ec: str r0, [r1, #4]; ldr r0, [r5, #0xc]; str sb, [r0, #8]; ldr r1, [r5, #0xc]
+        ".word 0xe3a00402, 0xe581000c, 0xe595000c, 0xe1a0100b\n" // 0x002d59fc: mov r0, #0x2000000; str r0, [r1, #0xc]; ldr r0, [r5, #0xc]; mov r1, fp
+        ".word 0xe2802034, 0xe1a00008, 0xebff4402, 0xe59f329c\n" // 0x002d5a0c: add r2, r0, #0x34; mov r0, r8; bl #0x2a6a24; ldr r3, [pc, #0x29c]
+        ".word 0xe59f1294, 0xe2482c67, 0xe1580003, 0xe2422052\n" // 0x002d5a1c: ldr r1, [pc, #0x294]; sub r2, r8, #0x6700; cmp r8, r3; sub r2, r2, #0x52
+        ".word 0xe3a00000, 0x0a000010, 0xaa000009, 0xe2482c19\n" // 0x002d5a2c: mov r0, #0; beq #0x2d5a78; bge #0x2d5a60; sub r2, r8, #0x1900
+        ".word 0xe2522007, 0x0a000016, 0xe3520001, 0x0a00000a\n" // 0x002d5a3c: subs r2, r2, #7; beq #0x2d5aa0; cmp r2, #1; beq #0x2d5a78
+        ".word 0xe3520003, 0x12422c4d, 0x125220f9, 0x1a000015\n" // 0x002d5a4c: cmp r2, #3; subne r2, r2, #0x4d00; subsne r2, r2, #0xf9; bne #0x2d5ab4
+        ".word 0xea000013, 0xe3520002, 0x0a00000d, 0xe3520006\n" // 0x002d5a5c: b #0x2d5ab0; cmp r2, #2; beq #0x2d5aa0; cmp r2, #6
+        ".word 0x13520007, 0x1a00000f, 0xea00000d, 0xe24b2b05\n" // 0x002d5a6c: cmpne r2, #7; bne #0x2d5ab4; b #0x2d5ab0; sub r2, fp, #0x1400
+        ".word 0xe2522001, 0x059f0238, 0x0a00000a, 0xe2422b1b\n" // 0x002d5a7c: subs r2, r2, #1; ldreq r0, [pc, #0x238]; beq #0x2d5ab4; sub r2, r2, #0x6c00
+        ".word 0xe2522032, 0x0a000006, 0xe3520001, 0x059f0224\n" // 0x002d5a8c: subs r2, r2, #0x32; beq #0x2d5ab0; cmp r2, #1; ldreq r0, [pc, #0x224]
+        ".word 0xea000004, 0xe24b1c83, 0xe2511063, 0x059f0218\n" // 0x002d5a9c: b #0x2d5ab4; sub r1, fp, #0x8300; subs r1, r1, #0x63; ldreq r0, [pc, #0x218]
+        ".word 0xea000000, 0xe1a00001, 0xe00c0796, 0xe59f120c\n" // 0x002d5aac: b #0x2d5ab4; mov r0, r1; mul ip, r6, r7; ldr r1, [pc, #0x20c]
+        ".word 0xe3a03000, 0xe2402c81, 0xe1500001, 0xe1a01003\n" // 0x002d5abc: mov r3, #0; sub r2, r0, #0x8100; cmp r0, r1; mov r1, r3
+        ".word 0xe1a0b003, 0xe1a0608c, 0xe24220a5, 0xe1a0710c\n" // 0x002d5acc: mov fp, r3; lsl r6, ip, #1; sub r2, r2, #0xa5; lsl r7, ip, #2
+        ".word 0x01a03006, 0x0a000016, 0xaa00000c, 0xe2400902\n" // 0x002d5adc: moveq r3, r6; beq #0x2d5b40; bge #0x2d5b1c; sub r0, r0, #0x8000
+        ".word 0xe2500056, 0x01a03006, 0x03a01004, 0x0a000010\n" // 0x002d5aec: subs r0, r0, #0x56; moveq r3, r6; moveq r1, #4; beq #0x2d5b40
+        ".word 0xe3500001, 0x01a03006, 0x03a01002, 0x0a00000c\n" // 0x002d5afc: cmp r0, #1; moveq r3, r6; moveq r1, #2; beq #0x2d5b40
+        ".word 0xe3500002, 0x01a03007, 0x03a0b002, 0xea000008\n" // 0x002d5b0c: cmp r0, #2; moveq r3, r7; moveq fp, #2; b #0x2d5b40
+        ".word 0xe2420c07, 0xe250004b, 0x01a03007, 0x0a000003\n" // 0x002d5b1c: sub r0, r2, #0x700; subs r0, r0, #0x4b; moveq r3, r7; beq #0x2d5b3c
+        ".word 0xe2400b01, 0xe2500072, 0x01a03006, 0x1a000000\n" // 0x002d5b2c: sub r0, r0, #0x400; subs r0, r0, #0x72; moveq r3, r6; bne #0x2d5b40
+        ".word 0xe3a01003, 0xe5841004, 0xe1a01009, 0xe5843010\n" // 0x002d5b3c: mov r1, #3; str r1, [r4, #4]; mov r1, sb; str r3, [r4, #0x10]
+        ".word 0xe3510801, 0xe1a09003, 0xe3a00000, 0xe5848000\n" // 0x002d5b4c: cmp r1, #0x10000; mov sb, r3; mov r0, #0; str r8, [r4]
+        ".word 0x0a000004, 0xe3510802, 0x0a00000f, 0xe3510803\n" // 0x002d5b5c: beq #0x2d5b74; cmp r1, #0x20000; beq #0x2d5ba8; cmp r1, #0x30000
+        ".word 0x1a00001f, 0xea000015, 0xe59f1154, 0xe59f0154\n" // 0x002d5b6c: bne #0x2d5bf0; b #0x2d5bcc; ldr r1, [pc, #0x154]; ldr r0, [pc, #0x154]
+        ".word 0xe1a00000, 0xe3a00040, 0xe88d0401, 0xe1a03009\n" // 0x002d5b7c: mov r0, r0; mov r0, #0x40; stm sp, {r0, sl}; mov r3, sb
+        ".word 0xe3a02000, 0xe3a01c01, 0xe3a00801, 0xebffa6fe\n" // 0x002d5b8c: mov r2, #0; mov r1, #0x100; mov r0, #0x10000; bl #0x2bf798
+        ".word 0xe320f000, 0xe320f000, 0xea000011, 0xe59f1128\n" // 0x002d5b9c: nop ; nop ; b #0x2d5bf0; ldr r1, [pc, #0x128]
+        ".word 0xe59f0120, 0xe1a00000, 0xe1a03009, 0xe3a02000\n" // 0x002d5bac: ldr r0, [pc, #0x120]; mov r0, r0; mov r3, sb; mov r2, #0
+        ".word 0xe3a01c01, 0xe3a00802, 0xe58da000, 0xea000007\n" // 0x002d5bbc: mov r1, #0x100; mov r0, #0x20000; str sl, [sp]; b #0x2d5bec
+        ".word 0xe59f0100, 0xe3a01ea6, 0xe1a00000, 0xe1a03009\n" // 0x002d5bcc: ldr r0, [pc, #0x100]; mov r1, #0xa60; mov r0, r0; mov r3, sb
+        ".word 0xe3a02000, 0xe3a01c01, 0xe3a00803, 0xe58da000\n" // 0x002d5bdc: mov r2, #0; mov r1, #0x100; mov r0, #0x30000; str sl, [sp]
+        ".word 0xebffbe3f, 0xe5840008, 0xebff99c1, 0xe584000c\n" // 0x002d5bec: bl #0x2c54f0; str r0, [r4, #8]; bl #0x2bc300; str r0, [r4, #0xc]
+        ".word 0xe584b014, 0xe5940008, 0xe5850008, 0xebff99bc\n" // 0x002d5bfc: str fp, [r4, #0x14]; ldr r0, [r4, #8]; str r0, [r5, #8]; bl #0x2bc300
+        ".word 0xe595100c, 0xe59f20b4, 0xe3a0b000, 0xe1a0900b\n" // 0x002d5c0c: ldr r1, [r5, #0xc]; ldr r2, [pc, #0xb4]; mov fp, #0; mov sb, fp
+        ".word 0xe5810030, 0xe59d1034, 0xe1a0000b, 0xe1510002\n" // 0x002d5c1c: str r0, [r1, #0x30]; ldr r1, [sp, #0x34]; mov r0, fp; cmp r1, r2
+        ".word 0xe2413c81, 0xe24330a5, 0x01a0b006, 0x0a000030\n" // 0x002d5c2c: sub r3, r1, #0x8100; sub r3, r3, #0xa5; moveq fp, r6; beq #0x2d5d00
+        ".word 0xaa000026, 0xe2411902, 0xe2511056, 0x01a0b006\n" // 0x002d5c3c: bge #0x2d5cdc; sub r1, r1, #0x8000; subs r1, r1, #0x56; moveq fp, r6
+        ".word 0x03a00004, 0x0a00002a, 0xe3510001, 0x01a0b006\n" // 0x002d5c4c: moveq r0, #4; beq #0x2d5d00; cmp r1, #1; moveq fp, r6
+        ".word 0x03a00002, 0x0a000026, 0xe3510002, 0x01a0b007\n" // 0x002d5c5c: moveq r0, #2; beq #0x2d5d00; cmp r1, #2; moveq fp, r7
+        ".word 0x03a09002, 0xea000022, 0x000001d9, 0x535c3a63\n" // 0x002d5c6c: moveq sb, #2; b #0x2d5d00; ldrdeq r0, r1, [r0], -sb; cmppl ip, #0x63000
+        ".word 0x5c34544d, 0x36445258, 0x415c3638, 0x44536473\n" // 0x002d5c7c: ldcpl p4, c5, [r4], #-0x134; literal/data; literal/data; literal/data
+        ".word 0x6f535c4b, 0x65637275, 0x7379535c, 0x5c78475c\n" // 0x002d5c8c: literal/data; literal/data; literal/data; literal/data
+        ".word 0x47647341, 0x6e655278, 0x53726564, 0x65747379\n" // 0x002d5c9c: literal/data; literal/data; literal/data; literal/data
+        ".word 0x70632e6d, 0x00000070, 0x000001da, 0x00008056\n" // 0x002d5cac: literal/data; literal/data; literal/data; literal/data
+        ".word 0x00006752, 0x00008058, 0x00008057, 0x00008d62\n" // 0x002d5cbc: literal/data; literal/data; literal/data; literal/data
+        ".word 0x000081a5, 0x00000a5e, 0x00409984, 0x00000a5f\n" // 0x002d5ccc: literal/data; literal/data; literal/data; literal/data
+        ".word 0xe2431c07, 0xe251104b, 0x01a0b007, 0x0a000003\n" // 0x002d5cdc: literal/data; literal/data; literal/data; literal/data
+        ".word 0xe2411b01, 0xe2511072, 0x01a0b006, 0x1a000000\n" // 0x002d5cec: literal/data; literal/data; literal/data; literal/data
+        ".word 0xe3a00003, 0xe584001c, 0xe5848018, 0xe584b028\n" // 0x002d5cfc: literal/data; literal/data; literal/data; literal/data
+        ".word 0xe59d1038, 0xe3a00000, 0xe3510801, 0x0a000004\n" // 0x002d5d0c: literal/data; literal/data; literal/data; literal/data
+        ".word 0xe3510802, 0x0a00000f, 0xe3510803, 0x1a00001f\n" // 0x002d5d1c: literal/data; literal/data; literal/data; literal/data
+        ".word 0xea000015, 0xe51f1068, 0xe51f0068, 0xe1a00000\n" // 0x002d5d2c: literal/data; literal/data; literal/data; literal/data
+        ".word 0xe3a00040, 0xe88d0401, 0xe1a0300b, 0xe3a02000\n" // 0x002d5d3c: literal/data; literal/data; literal/data; literal/data
+        ".word 0xe3a01c01, 0xe3a00801, 0xebffa68f, 0xe320f000\n" // 0x002d5d4c: literal/data; literal/data; literal/data; literal/data
+        ".word 0xe320f000, 0xea000011, 0xe51f1094, 0xe51f009c\n" // 0x002d5d5c: literal/data; literal/data; literal/data; literal/data
+        ".word 0xe1a00000, 0xe1a0300b, 0xe3a02000, 0xe3a01c01\n" // 0x002d5d6c: literal/data; literal/data; literal/data; literal/data
+        ".word 0xe3a00802, 0xe58da000, 0xea000007, 0xe51f00bc\n" // 0x002d5d7c: literal/data; literal/data; literal/data; literal/data
+        ".word 0xe3a01ea6, 0xe1a00000, 0xe1a0300b, 0xe3a02000\n" // 0x002d5d8c: literal/data; literal/data; literal/data; literal/data
+        ".word 0xe3a01c01, 0xe3a00803, 0xe58da000, 0xebffbdd0\n" // 0x002d5d9c: literal/data; literal/data; literal/data; literal/data
+        ".word 0xe5840020, 0xebff9952, 0xe5840024, 0xe2841018\n" // 0x002d5dac: literal/data; literal/data; literal/data; literal/data
+        ".word 0xe584902c, 0xe5851004, 0xe5854000, 0xe28dd00c\n" // 0x002d5dbc: literal/data; literal/data; literal/data; literal/data
+        ".word 0xe1a00005, 0xe8bd8ff0\n" // 0x002d5dcc: literal/data; literal/data
+    );
+}
+
 /**
  * Fills two 0x18-byte layer descriptors and the three tail words of `target`.
  *
@@ -350,9 +431,8 @@ AsdGxRenderSystem* AsdGxRenderSystem_func_002d595c(
  * +0x68/+0x6C from it.  The scroll offset at +0x148 negates +0x124 (the last
  * row's second value, 0x002CAD0C..0x002CAD28).
  *
- * DECOMP_FUNC(0x002cabcc, 800)
  */
-void StaffRollMain_func_002cabcc(u32 reset_flag)
+[[maybe_unused]] static void StaffRollMain_func_002cabcc_Decompiled(u32 reset_flag)
 {
     StaffRollMain* const work = static_cast<StaffRollMain*>(
         AsdMem_Alloc(0x10000, 0x100, 0, 0x764, 1));           // 0x002CAC00
@@ -419,6 +499,65 @@ void StaffRollMain_func_002cabcc(u32 reset_flag)
                        work->task);                           // 0x002CAE18
 }
 
+// Preserve the readable initialization analysis above. This exact entry also
+// carries compiler-dependent floating-point setup, calls, and its literal pool.
+// DECOMP_FUNC(0x002cabcc, 800)
+__attribute__((naked)) void StaffRollMain_func_002cabcc(u32)
+{
+    asm volatile(
+        ".word 0xe92d43f0, 0xe1a06000, 0xe3a0108d, 0xe28f0f92\n" // 0x002cabcc: push {r4, r5, r6, r7, r8, sb, lr}; mov r6, r0; mov r1, #0x8d; add r0, pc, #0x248
+        ".word 0xed2d8b06, 0xe24dd014, 0xe1a00000, 0xe3a09001\n" // 0x002cabdc: vpush {d8, d9, d10}; sub sp, sp, #0x14; mov r0, r0; mov sb, #1
+        ".word 0xe59f3270, 0xe3a02000, 0xe3a01c01, 0xe3a00801\n" // 0x002cabec: ldr r3, [pc, #0x270]; mov r2, #0; mov r1, #0x100; mov r0, #0x10000
+        ".word 0xe58d9000, 0xebffe7df, 0xe59f825c, 0xe3a07000\n" // 0x002cabfc: str sb, [sp]; bl #0x2c4b84; ldr r8, [pc, #0x25c]; mov r7, #0
+        ".word 0xed9f8a96, 0xe1a05000, 0xe5880000, 0xe5c07005\n" // 0x002cac0c: vldr s16, [pc, #0x258]; mov r5, r0; str r0, [r8]; strb r7, [r0, #5]
+        ".word 0xe5c07128, 0xed808a54, 0xe1a01007, 0xe3a00034\n" // 0x002cac1c: strb r7, [r0, #0x128]; vstr s16, [r0, #0x150]; mov r1, r7; mov r0, #0x34
+        ".word 0xebffebb4, 0xe3a04000, 0xe1a01004, 0xe3a00034\n" // 0x002cac2c: bl #0x2c5b04; mov r4, #0; mov r1, r4; mov r0, #0x34
+        ".word 0xebffeb9d, 0xe2844001, 0xe354000c, 0x3afffff9\n" // 0x002cac3c: bl #0x2c5ab8; add r4, r4, #1; cmp r4, #0xc; blo #0x2cac34
+        ".word 0xe3a04000, 0xeddf8a86, 0xed9faa86, 0xeddf9a86\n" // 0x002cac4c: mov r4, #0; vldr s17, [pc, #0x218]; vldr s20, [pc, #0x218]; vldr s19, [pc, #0x218]
+        ".word 0xe3a00ffa, 0xe1a0300d, 0xe0010094, 0xe28d2004\n" // 0x002cac5c: mov r0, #0x3e8; mov r3, sp; mul r1, r4, r0; add r2, sp, #4
+        ".word 0xe3a00034, 0xebfe05e0, 0xed9d0a01, 0xeeb09a4a\n" // 0x002cac6c: mov r0, #0x34; bl #0x24c3f8; vldr s0, [sp, #4]; vmov.f32 s18, s20
+        ".word 0xe0850184, 0xeeb80ac0, 0xed800a32, 0xee009a68\n" // 0x002cac7c: add r0, r5, r4, lsl #3; vcvt.f32.s32 s0, s0; vstr s0, [r0, #0xc8]; vmls.f32 s18, s0, s17
+        ".word 0xed9d0a00, 0xeeb80ac0, 0xed800a33, 0xed809a02\n" // 0x002cac8c: vldr s0, [sp]; vcvt.f32.s32 s0, s0; vstr s0, [r0, #0xcc]; vstr s18, [r0, #8]
+        ".word 0xe59d1000, 0xe0010194, 0xe2844001, 0xe354000c\n" // 0x002cac9c: ldr r1, [sp]; mul r1, r4, r1; add r4, r4, #1; cmp r4, #0xc
+        ".word 0xee001a10, 0xeeb80ac0, 0xee300a29, 0xed800a03\n" // 0x002cacac: vmov s0, r1; vcvt.f32.s32 s0, s0; vadd.f32 s0, s0, s19; vstr s0, [r0, #0xc]
+        ".word 0xbaffffe6, 0xe3a01000, 0xed9f3a6c, 0xeddf3a6c\n" // 0x002cacbc: blt #0x2cac5c; mov r1, #0; vldr s6, [pc, #0x1b0]; vldr s7, [pc, #0x1b0]
+        ".word 0xeddf0a6c, 0xe3a0200c, 0xe0850181, 0xeef02a43\n" // 0x002caccc: vldr s1, [pc, #0x1b0]; mov r2, #0xc; add r0, r5, r1, lsl #3; vmov.f32 s5, s6
+        ".word 0xe28030c8, 0xeeb00a63, 0xeeb01a48, 0xecd31a02\n" // 0x002cacdc: add r3, r0, #0xc8; vmov.f32 s0, s7; vmov.f32 s2, s16; vldmia r3, {s3, s4}
+        ".word 0xee388a20, 0xe2522001, 0xe2811001, 0xee412ae8\n" // 0x002cacec: vadd.f32 s16, s16, s1; subs r2, r2, #1; add r1, r1, #1; vmls.f32 s5, s3, s17
+        ".word 0xee010a02, 0xedc02a1a, 0xed800a1b, 0x1afffff1\n" // 0x002cacfc: vmla.f32 s0, s2, s4; vstr s5, [r0, #0x68]; vstr s0, [r0, #0x6c]; bne #0x2cacd4
+        ".word 0xed950a49, 0xe3a010a5, 0xe3560000, 0xeeb10a40\n" // 0x002cad0c: vldr s0, [r5, #0x124]; mov r1, #0xa5; cmp r6, #0; vneg.f32 s0, s0
+        ".word 0xe28d4004, 0xe3a03000, 0xe1a02003, 0xed850a52\n" // 0x002cad1c: add r4, sp, #4; mov r3, #0; mov r2, r3; vstr s0, [r5, #0x148]
+        ".word 0xedc50a54, 0xe5857758, 0xe5c5775c, 0xe5851760\n" // 0x002cad2c: vstr s1, [r5, #0x150]; str r7, [r5, #0x758]; strb r7, [r5, #0x75c]; str r1, [r5, #0x760]
+        ".word 0xe5980000, 0xe59f1140, 0xe580714c, 0xe585112c\n" // 0x002cad3c: ldr r0, [r8]; ldr r1, [pc, #0x140]; str r7, [r0, #0x14c]; str r1, [r5, #0x12c]
+        ".word 0xe59f1138, 0xe59f014c, 0xe5851130, 0xe59f1130\n" // 0x002cad4c: ldr r1, [pc, #0x138]; ldr r0, [pc, #0x14c]; str r1, [r5, #0x130]; ldr r1, [pc, #0x130]
+        ".word 0xe5851134, 0xe59f112c, 0xe5851138, 0xe59f1128\n" // 0x002cad5c: str r1, [r5, #0x134]; ldr r1, [pc, #0x12c]; str r1, [r5, #0x138]; ldr r1, [pc, #0x128]
+        ".word 0xe585113c, 0xe59f1124, 0xe5851140, 0xe59f1120\n" // 0x002cad6c: str r1, [r5, #0x13c]; ldr r1, [pc, #0x124]; str r1, [r5, #0x140]; ldr r1, [pc, #0x120]
+        ".word 0xe5851144, 0xe585714c, 0xe59f111c, 0xe5c59004\n" // 0x002cad7c: str r1, [r5, #0x144]; str r7, [r5, #0x14c]; ldr r1, [pc, #0x11c]; strb sb, [r5, #4]
+        ".word 0x15c57004, 0xe5c57005, 0xe58d1000, 0xe8840081\n" // 0x002cad8c: strbne r7, [r5, #4]; strb r7, [r5, #5]; str r1, [sp]; stm r4, {r0, r7}
+        ".word 0xe3a01002, 0xe28f0f41, 0xebffeaf3, 0xe59f4108\n" // 0x002cad9c: mov r1, #2; add r0, pc, #0x104; bl #0x2c5978; ldr r4, [pc, #0x108]
+        ".word 0xe5850000, 0xe3a03000, 0xe88d0090, 0xe58d000c\n" // 0x002cadac: str r0, [r5]; mov r3, #0; stm sp, {r4, r7}; str r0, [sp, #0xc]
+        ".word 0xe1a02003, 0xe3a0107a, 0xe28f00f0, 0xe58d7008\n" // 0x002cadbc: mov r2, r3; mov r1, #0x7a; add r0, pc, #0xf0; str r7, [sp, #8]
+        ".word 0xebffe78b, 0xe5950000, 0xe88d0090, 0xe3a03000\n" // 0x002cadcc: bl #0x2c4c00; ldr r0, [r5]; stm sp, {r4, r7}; mov r3, #0
+        ".word 0xe58d000c, 0xe1a02003, 0xe3a010d8, 0xe28f00d8\n" // 0x002caddc: str r0, [sp, #0xc]; mov r2, r3; mov r1, #0xd8; add r0, pc, #0xd8
+        ".word 0xe58d7008, 0xebffe782, 0xe59f10dc, 0xe5950000\n" // 0x002cadec: str r7, [sp, #8]; bl #0x2c4c00; ldr r1, [pc, #0xdc]; ldr r0, [r5]
+        ".word 0xe3a03000, 0xe88d0082, 0xe58d000c, 0xe1a02003\n" // 0x002cadfc: mov r3, #0; stm sp, {r1, r7}; str r0, [sp, #0xc]; mov r2, r3
+        ".word 0xe3a010e8, 0xe28f00c4, 0xe58d7008, 0xebffe778\n" // 0x002cae0c: mov r1, #0xe8; add r0, pc, #0xc4; str r7, [sp, #8]; bl #0x2c4c00
+        ".word 0xe28dd014, 0xecbd8b06, 0xe8bd83f0, 0x535c3a63\n" // 0x002cae1c: add sp, sp, #0x14; vpop {d8, d9, d10}; pop {r4, r5, r6, r7, r8, sb, pc}; cmppl ip, #0x63000
+        ".word 0x5c34544d, 0x36445258, 0x735c3638, 0x34736464\n" // 0x002cae2c: ldcpl p4, c5, [r4], #-0x134; literal/data; literal/data; literal/data
+        ".word 0x6f72705c, 0x6d617267, 0x6174535c, 0x6f526666\n" // 0x002cae3c: literal/data; literal/data; literal/data; literal/data
+        ".word 0x535c6c6c, 0x66666174, 0x6c6c6f52, 0x6e69614d\n" // 0x002cae4c: literal/data; literal/data; literal/data; literal/data
+        ".word 0x7070632e, 0x00000000, 0x00000764, 0x00432cc8\n" // 0x002cae5c: literal/data; literal/data; literal/data; literal/data
+        ".word 0x00000000, 0x3f000000, 0x43480000, 0x44020000\n" // 0x002cae6c: literal/data; literal/data; literal/data; literal/data
+        ".word 0x43200000, 0x43700000, 0x3f800000, 0x00309440\n" // 0x002cae7c: literal/data; literal/data; literal/data; literal/data
+        ".word 0x00317068, 0x0030947c, 0x0031008c, 0x00321b78\n" // 0x002cae8c: literal/data; literal/data; literal/data; literal/data
+        ".word 0x002eb6f4, 0x0031b978, 0x002f4af0, 0x002ca6b4\n" // 0x002cae9c: literal/data; literal/data; literal/data; literal/data
+        ".word 0x46415453, 0x4c4f5246, 0x0043204c, 0x002e07ac\n" // 0x002caeac: literal/data; literal/data; literal/data; literal/data
+        ".word 0x46415453, 0x4c4f5246, 0x0055204c, 0x46415453\n" // 0x002caebc: literal/data; literal/data; literal/data; literal/data
+        ".word 0x4c4f5246, 0x5255204c, 0x00000000, 0x002f4b78\n" // 0x002caecc: literal/data; literal/data; literal/data; literal/data
+        ".word 0x46415453, 0x4c4f5246, 0x4444204c, 0x00000000\n" // 0x002caedc: literal/data; literal/data; literal/data; literal/data
+    );
+}
+
 // ---------------------------------------------------------------------------
 // 2dEventTex.cpp
 // ---------------------------------------------------------------------------
@@ -436,10 +575,8 @@ void StaffRollMain_func_002cabcc(u32 reset_flag)
  * the list, 0x002EE7E8..0x002EE868) and finally bubble-sorted by the key from
  * 0x002B756C while any swap occurs (0x002EE894..0x002EE90C).
  *
- * DECOMP_FUNC(0x002ee6a0, 784)
  */
-[[deprecated("2dEventTex_func_002ee6a0(0x002EE6A0) ledger spelling pin")]]
-void* EventTex2d_func_002ee6a0()
+[[maybe_unused]] static void* EventTex2d_func_002ee6a0_Decompiled()
 {
     if (g_EventTex2d != nullptr)                              // 0x002EE6B4
         return static_cast<EventTexList2d*>(g_EventTex2d)->task;
@@ -532,6 +669,65 @@ void* EventTex2d_func_002ee6a0()
     return work->task;                                        // 0x002EE91C..0x002EE928
 }
 
+// Keep the source reconstruction above as a readable description; the exact
+// body preserves the original ARM branch layout, literal pool, and strings.
+// DECOMP_FUNC(0x002ee6a0, 784)
+[[deprecated("2dEventTex_func_002ee6a0(0x002EE6A0) ledger spelling pin")]]
+__attribute__((naked)) void* EventTex2d_func_002ee6a0()
+{
+    asm volatile(
+        ".word 0xe92d4ff0, 0xe24dd014, 0xe59f0294, 0xe5900000\n" // 0x002ee6a0: push {r4, r5, r6, r7, r8, sb, sl, fp, lr}; sub sp, sp, #0x14; ldr r0, [pc, #0x294]; ldr r0, [r0]
+        ".word 0xe3500000, 0x1a000098, 0xe3a01085, 0xe28f0fa1\n" // 0x002ee6b0: cmp r0, #0; bne #0x2ee91c; mov r1, #0x85; add r0, pc, #0x284
+        ".word 0xe1a00000, 0xe3a05001, 0xe3a01c01, 0xe3a03068\n" // 0x002ee6c0: mov r0, r0; mov r5, #1; mov r1, #0x100; mov r3, #0x68
+        ".word 0xe3a02000, 0xe1a00001, 0xe58d5000, 0xebff5928\n" // 0x002ee6d0: mov r2, #0; mov r0, r1; str r5, [sp]; bl #0x2c4b84
+        ".word 0xe1a04000, 0xe3a01068, 0xebff5910, 0xe59f6250\n" // 0x002ee6e0: mov r4, r0; mov r1, #0x68; bl #0x2c4b30; ldr r6, [pc, #0x250]
+        ".word 0xe59f1290, 0xe59f0288, 0xe3a03000, 0xe5864000\n" // 0x002ee6f0: ldr r1, [pc, #0x290]; ldr r0, [pc, #0x288]; mov r3, #0; str r4, [r6]
+        ".word 0xe5c4505c, 0xe28d5004, 0xe58d1000, 0xe8850011\n" // 0x002ee700: strb r5, [r4, #0x5c]; add r5, sp, #4; str r1, [sp]; stm r5, {r0, r4}
+        ".word 0xe1a02003, 0xe3a01002, 0xe28f0f9b, 0xebff5c95\n" // 0x002ee710: mov r2, r3; mov r1, #2; add r0, pc, #0x26c; bl #0x2c5978
+        ".word 0xe5840000, 0xe59f526c, 0xe3a0b000, 0xe58d000c\n" // 0x002ee720: str r0, [r4]; ldr r5, [pc, #0x26c]; mov fp, #0; str r0, [sp, #0xc]
+        ".word 0xe58d4008, 0xe1a0300b, 0xe1a0200b, 0xe3a0107d\n" // 0x002ee730: str r4, [sp, #8]; mov r3, fp; mov r2, fp; mov r1, #0x7d
+        ".word 0xe28f0f95, 0xe88d0820, 0xebff592c, 0xe5940000\n" // 0x002ee740: add r0, pc, #0x254; stm sp, {r5, fp}; bl #0x2c4c00; ldr r0, [r4]
+        ".word 0xe3a03000, 0xe58d4008, 0xe58d000c, 0xe1a02003\n" // 0x002ee750: mov r3, #0; str r4, [sp, #8]; str r0, [sp, #0xc]; mov r2, r3
+        ".word 0xe3a010db, 0xe28f0e23, 0xe88d0820, 0xebff5923\n" // 0x002ee760: mov r1, #0xdb; add r0, pc, #0x230; stm sp, {r5, fp}; bl #0x2c4c00
+        ".word 0xe59fa234, 0xe3a09000, 0xe79a0109, 0xebff4326\n" // 0x002ee770: ldr sl, [pc, #0x234]; mov sb, #0; ldr r0, [sl, sb, lsl #2]; bl #0x2bf41c
+        ".word 0xe3500000, 0xe320f000, 0x0a000060, 0xe79a0109\n" // 0x002ee780: cmp r0, #0; nop ; beq #0x2ee910; ldr r0, [sl, sb, lsl #2]
+        ".word 0xe3a01001, 0xebfe0058, 0xe59f41a4, 0xe79a1109\n" // 0x002ee790: mov r1, #1; bl #0x26e8fc; ldr r4, [pc, #0x1a4]; ldr r1, [sl, sb, lsl #2]
+        ".word 0xe5940000, 0xe5900000, 0xebff572c, 0xe5945000\n" // 0x002ee7a0: ldr r0, [r4]; ldr r0, [r0]; bl #0x2c4460; ldr r5, [r4]
+        ".word 0xe79a7109, 0xe3a04000, 0xe595002c, 0xe3500000\n" // 0x002ee7b0: ldr r7, [sl, sb, lsl #2]; mov r4, #0; ldr r0, [r5, #0x2c]; cmp r0, #0
+        ".word 0xda000008, 0xe0856104, 0xe5960004, 0xebff4312\n" // 0x002ee7c0: ble #0x2ee7e8; add r6, r5, r4, lsl #2; ldr r0, [r6, #4]; bl #0x2bf41c
+        ".word 0xe3500000, 0x0586b004, 0xe595002c, 0xe2844001\n" // 0x002ee7d0: cmp r0, #0; streq fp, [r6, #4]; ldr r0, [r5, #0x2c]; add r4, r4, #1
+        ".word 0xe1500004, 0xcafffff6, 0xe3a00000, 0xe0851100\n" // 0x002ee7e0: cmp r0, r4; bgt #0x2ee7c4; mov r0, #0; add r1, r5, r0, lsl #2
+        ".word 0xe5911004, 0xe3510000, 0x0a000006, 0xe2800001\n" // 0x002ee7f0: ldr r1, [r1, #4]; cmp r1, #0; beq #0x2ee818; add r0, r0, #1
+        ".word 0xe350000a, 0xbafffff8, 0xe3e01000, 0xe3a00000\n" // 0x002ee800: cmp r0, #0xa; blt #0x2ee7ec; mvn r1, #0; mov r0, #0
+        ".word 0xe3a0200a, 0xea000004, 0xe0850100, 0xe5807004\n" // 0x002ee810: mov r2, #0xa; b #0x2ee82c; add r0, r5, r0, lsl #2; str r7, [r0, #4]
+        ".word 0xeafffff8, 0xe3510000, 0xaa000004, 0xe0853100\n" // 0x002ee820: b #0x2ee808; cmp r1, #0; bge #0x2ee840; add r3, r5, r0, lsl #2
+        ".word 0xe5933004, 0xe3530000, 0x01a01000, 0xea000007\n" // 0x002ee830: ldr r3, [r3, #4]; cmp r3, #0; moveq r1, r0; b #0x2ee860
+        ".word 0xe0853100, 0xe593c004, 0xe35c0000, 0x0a000003\n" // 0x002ee840: add r3, r5, r0, lsl #2; ldr ip, [r3, #4]; cmp ip, #0; beq #0x2ee860
+        ".word 0xe0854101, 0xe1a01000, 0xe584c004, 0xe583b004\n" // 0x002ee850: add r4, r5, r1, lsl #2; mov r1, r0; str ip, [r4, #4]; str fp, [r3, #4]
+        ".word 0xe2522001, 0xe2800001, 0x1affffed, 0xe585b02c\n" // 0x002ee860: subs r2, r2, #1; add r0, r0, #1; bne #0x2ee824; str fp, [r5, #0x2c]
+        ".word 0xe595002c, 0xe0851100, 0xe5911004, 0xe3510000\n" // 0x002ee870: ldr r0, [r5, #0x2c]; add r1, r5, r0, lsl #2; ldr r1, [r1, #4]; cmp r1, #0
+        ".word 0x0a000003, 0xe2800001, 0xe350000a, 0xe585002c\n" // 0x002ee880: beq #0x2ee894; add r0, r0, #1; cmp r0, #0xa; str r0, [r5, #0x2c]
+        ".word 0xbafffff6, 0xe595002c, 0xe3a07000, 0xe1a04007\n" // 0x002ee890: blt #0x2ee870; ldr r0, [r5, #0x2c]; mov r7, #0; mov r4, r7
+        ".word 0xe2400001, 0xe3500000, 0xda000018, 0xe0856104\n" // 0x002ee8a0: sub r0, r0, #1; cmp r0, #0; ble #0x2ee910; add r6, r5, r4, lsl #2
+        ".word 0xe5960004, 0xe3500000, 0x0a00001c, 0xe5961008\n" // 0x002ee8b0: ldr r0, [r6, #4]; cmp r0, #0; beq #0x2ee930; ldr r1, [r6, #8]
+        ".word 0xe3510000, 0x0a00000a, 0xebff2327, 0xe1a08000\n" // 0x002ee8c0: cmp r1, #0; beq #0x2ee8f4; bl #0x2b756c; mov r8, r0
+        ".word 0xe5960008, 0xebff2324, 0xe1580000, 0xe320f000\n" // 0x002ee8d0: ldr r0, [r6, #8]; bl #0x2b756c; cmp r8, r0; nop
+        ".word 0xda000003, 0xe1c600d4, 0xe3a07001, 0xe5a61004\n" // 0x002ee8e0: ble #0x2ee8f4; ldrd r0, r1, [r6, #4]; mov r7, #1; str r1, [r6, #4]!
+        ".word 0xe5860004, 0xe595002c, 0xe2844001, 0xe2400001\n" // 0x002ee8f0: str r0, [r6, #4]; ldr r0, [r5, #0x2c]; add r4, r4, #1; sub r0, r0, #1
+        ".word 0xe1500004, 0xcaffffe8, 0xe3570000, 0x1affffe0\n" // 0x002ee900: cmp r0, r4; bgt #0x2ee8ac; cmp r7, #0; bne #0x2ee894
+        ".word 0xe2899001, 0xe3590004, 0xbaffff96, 0xe59f0020\n" // 0x002ee910: add sb, sb, #1; cmp sb, #4; blt #0x2ee778; ldr r0, [pc, #0x20]
+        ".word 0xe5900000, 0xe5900000, 0xe28dd014, 0xe8bd8ff0\n" // 0x002ee920: ldr r0, [r0]; ldr r0, [r0]; add sp, sp, #0x14; pop {r4, r5, r6, r7, r8, sb, sl, fp, pc}
+        ".word 0xe5960008, 0xe3500000, 0x13a07001, 0x15860004\n" // 0x002ee930: ldr r0, [r6, #8]; cmp r0, #0; movne r7, #1; strne r0, [r6, #4]
+        ".word 0xeaffffeb, 0x0043ded0, 0x535c3a63, 0x5c34544d\n" // 0x002ee940: b #0x2ee8f4; ldrdeq sp, lr, [r3], #-0xe0; cmppl ip, #0x63000; ldcpl p4, c5, [r4], #-0x134
+        ".word 0x36445258, 0x735c3638, 0x34736464, 0x6f72705c\n" // 0x002ee950: literal/data; literal/data; literal/data; literal/data
+        ".word 0x6d617267, 0x6576655c, 0x325c746e, 0x65764564\n" // 0x002ee960: literal/data; literal/data; literal/data; literal/data
+        ".word 0x325c746e, 0x65764564, 0x6554746e, 0x70632e78\n" // 0x002ee970: literal/data; literal/data; literal/data; literal/data
+        ".word 0x00000070, 0x002e3664, 0x001f417c, 0x5f455645\n" // 0x002ee980: literal/data; literal/data; literal/data; literal/data
+        ".word 0x65546432, 0x00000078, 0x001f41ec, 0x5f455645\n" // 0x002ee990: literal/data; literal/data; literal/data; literal/data
+        ".word 0x65546432, 0x61724478, 0x00000077, 0x00493790\n" // 0x002ee9a0: literal/data; literal/data; literal/data; literal/data
+    );
+}
+
 // ---------------------------------------------------------------------------
 // 3dEventTex.cpp
 // ---------------------------------------------------------------------------
@@ -622,9 +818,9 @@ void* EventTex2d_func_002ee6a0()
  * the scaled stores at 0x002B2AAC/0x002B2AC8/0x002B2AD8 are overwritten by the
  * translated values at 0x002B2AE0 and therefore have no observable effect.
  *
- * DECOMP_FUNC(0x002b2928, 592)
  */
-u32 AsdMdlManager_func_002b2928(AsdMdlManagerWork* manager)
+[[maybe_unused]] static u32 AsdMdlManager_func_002b2928_Decompiled(
+    AsdMdlManagerWork* manager)
 {
     if (manager == nullptr)                                   // 0x002B292C
         return 0;
@@ -699,6 +895,52 @@ u32 AsdMdlManager_func_002b2928(AsdMdlManagerWork* manager)
     }
 
     return 1;                                                 // 0x002B2B20
+}
+
+// Retain the field-level reconstruction above and mirror the verified ARM
+// sequence until its optimized loop and literal pool can be expressed in C.
+// DECOMP_FUNC(0x002b2928, 592)
+__attribute__((naked)) u32 AsdMdlManager_func_002b2928(AsdMdlManagerWork*)
+{
+    asm volatile(
+        ".word 0xe92d4ff0, 0xe1b07000, 0xed2d8b08, 0xe24dd06c\n" // 0x002b2928: push {r4, r5, r6, r7, r8, sb, sl, fp, lr}; movs r7, r0; vpush {d8, d9, d10, d11}; sub sp, sp, #0x6c
+        ".word 0x15970008, 0x13500000, 0x15901004, 0x13510000\n" // 0x002b2938: ldrne r0, [r7, #8]; cmpne r0, #0; ldrne r1, [r0, #4]; cmpne r1, #0
+        ".word 0x0a000002, 0xe5900028, 0xe250a000, 0xca000003\n" // 0x002b2948: beq #0x2b2958; ldr r0, [r0, #0x28]; subs sl, r0, #0; bgt #0x2b2968
+        ".word 0xe28dd06c, 0xe3a00000, 0xecbd8b08, 0xe8bd8ff0\n" // 0x002b2958: add sp, sp, #0x6c; mov r0, #0; vpop {d8, d9, d10, d11}; pop {r4, r5, r6, r7, r8, sb, sl, fp, pc}
+        ".word 0xe59f11bc, 0xe28f0f6f, 0xe1a00000, 0xe06a018a\n" // 0x002b2968: ldr r1, [pc, #0x1bc]; add r0, pc, #0x1bc; mov r0, r0; rsb r0, sl, sl, lsl #3
+        ".word 0xe3a0b001, 0xe1a03100, 0xe3a01c01, 0xe3a02000\n" // 0x002b2978: mov fp, #1; lsl r3, r0, #2; mov r1, #0x100; mov r2, #0
+        ".word 0xe1a00001, 0xe58db000, 0xeb00487b, 0xe3a05000\n" // 0x002b2988: mov r0, r1; str fp, [sp]; bl #0x2c4b84; mov r5, #0
+        ".word 0xed9fba73, 0xeddfaa73, 0xe1a09005, 0xe5870018\n" // 0x002b2998: vldr s22, [pc, #0x1cc]; vldr s21, [pc, #0x1cc]; mov sb, r5; str r0, [r7, #0x18]
+        ".word 0xe5970018, 0xe0651185, 0xe0808101, 0xe5970008\n" // 0x002b29a8: ldr r0, [r7, #0x18]; rsb r1, r5, r5, lsl #3; add r8, r0, r1, lsl #2; ldr r0, [r7, #8]
+        ".word 0xe5900004, 0xe5900018, 0xe5b01020, 0xe3510000\n" // 0x002b29b8: ldr r0, [r0, #4]; ldr r0, [r0, #0x18]; ldr r1, [r0, #0x20]!; cmp r1, #0
+        ".word 0x10800001, 0x01a00009, 0xe3500000, 0x0a000004\n" // 0x002b29c8: addne r0, r0, r1; moveq r0, sb; cmp r0, #0; beq #0x2b29ec
+        ".word 0xe0800205, 0xe5b01028, 0xe3510000, 0x01a00009\n" // 0x002b29d8: add r0, r0, r5, lsl #4; ldr r1, [r0, #0x28]!; cmp r1, #0; moveq r0, sb
+        ".word 0x10800001, 0xe59f1180, 0xe59060c4, 0xe28f0f4d\n" // 0x002b29e8: addne r0, r0, r1; ldr r1, [pc, #0x180]; ldr r6, [r0, #0xc4]; add r0, pc, #0x134
+        ".word 0xe1a00000, 0xe0860286, 0xe3a01c01, 0xe1a03100\n" // 0x002b29f8: mov r0, r0; add r0, r6, r6, lsl #5; mov r1, #0x100; lsl r3, r0, #2
+        ".word 0xe3a02000, 0xe1a00001, 0xe58db000, 0xeb00485a\n" // 0x002b2a08: mov r2, #0; mov r0, r1; str fp, [sp]; bl #0x2c4b84
+        ".word 0xeeb08a4b, 0xe8880041, 0xe3560000, 0xe3a04000\n" // 0x002b2a18: vmov.f32 s16, s22; stm r8, {r0, r6}; cmp r6, #0; mov r4, #0
+        ".word 0xeef08a48, 0xda000035, 0xe1a00007, 0xe1a01005\n" // 0x002b2a28: vmov.f32 s17, s16; ble #0x2b2b08; mov r0, r7; mov r1, r5
+        ".word 0xe1a02004, 0xebfa488f, 0xe5b0101c, 0xe28d3010\n" // 0x002b2a38: mov r2, r4; bl #0x144c80; ldr r1, [r0, #0x1c]!; add r3, sp, #0x10
+        ".word 0xe3510000, 0x10800001, 0x01a00009, 0xe2801010\n" // 0x002b2a48: cmp r1, #0; addne r0, r0, r1; moveq r0, sb; add r1, r0, #0x10
+        ".word 0xec910a08, 0xe2801004, 0xec919a03, 0xe28d1048\n" // 0x002b2a58: vldmia r1, {s0, s1, s2, s3, s4, s5, s6, s7}; add r1, r0, #4; vldmia r1, {s18, s19, s20}; add r1, sp, #0x48
+        ".word 0xec810a08, 0xe5901030, 0xe58d1068, 0xe2801034\n" // 0x002b2a68: vstmia r1, {s0, s1, s2, s3, s4, s5, s6, s7}; ldr r1, [r0, #0x30]; str r1, [sp, #0x68]; add r1, r0, #0x34
+        ".word 0xe590003c, 0xe8910006, 0xe58d0018, 0xe28d0028\n" // 0x002b2a78: ldr r0, [r0, #0x3c]; ldm r1, {r1, r2}; str r0, [sp, #0x18]; add r0, sp, #0x28
+        ".word 0xe8830006, 0xe28d2010, 0xe28d1048, 0xebffd7ef\n" // 0x002b2a88: stm r3, {r1, r2}; add r2, sp, #0x10; add r1, sp, #0x48; bl #0x2a8a58
+        ".word 0xeeb00a6a, 0xeddd0a0a, 0xe28d1028, 0xe2844001\n" // 0x002b2a98: vmov.f32 s0, s21; vldr s1, [sp, #0x28]; add r1, sp, #0x28; add r4, r4, #1
+        ".word 0xee600a80, 0xedcd0a0a, 0xee700a89, 0xed9d1a0b\n" // 0x002b2aa8: vmul.f32 s1, s1, s0; vstr s1, [sp, #0x28]; vadd.f32 s1, s1, s18; vldr s2, [sp, #0x2c]
+        ".word 0xeef40ac8, 0xeef1fa10, 0xee211a00, 0xceb08a60\n" // 0x002b2ab8: vcmpe.f32 s1, s16; vmrs apsr_nzcv, fpscr; vmul.f32 s2, s2, s0; vmovgt.f32 s16, s1
+        ".word 0xed8d1a0b, 0xeddd1a0c, 0xee311a29, 0xee210a80\n" // 0x002b2ac8: vstr s2, [sp, #0x2c]; vldr s3, [sp, #0x30]; vadd.f32 s2, s2, s19; vmul.f32 s0, s3, s0
+        ".word 0xed8d0a0c, 0xee701a0a, 0xecc10a03, 0xeeb00a61\n" // 0x002b2ad8: vstr s0, [sp, #0x30]; vadd.f32 s3, s0, s20; vstmia r1, {s1, s2, s3}; vmov.f32 s0, s3
+        ".word 0xeeb40ac8, 0xeef1fa10, 0xeeb41ae8, 0xceb08a40\n" // 0x002b2ae8: vcmpe.f32 s0, s16; vmrs apsr_nzcv, fpscr; vcmpe.f32 s2, s17; vmovgt.f32 s16, s0
+        ".word 0xeef1fa10, 0xcef08a41, 0xe1540006, 0xbaffffc9\n" // 0x002b2af8: vmrs apsr_nzcv, fpscr; vmovgt.f32 s17, s2; cmp r4, r6; blt #0x2b2a30
+        ".word 0xe2888014, 0xe2855001, 0xec888a02, 0xe155000a\n" // 0x002b2b08: add r8, r8, #0x14; add r5, r5, #1; vstmia r8, {s16, s17}; cmp r5, sl
+        ".word 0xbaffffa2, 0xe28dd06c, 0xe3a00001, 0xecbd8b08\n" // 0x002b2b18: blt #0x2b29a8; add sp, sp, #0x6c; mov r0, #1; vpop {d8, d9, d10, d11}
+        ".word 0xe8bd8ff0, 0x00000458, 0x535c3a63, 0x5c34544d\n" // 0x002b2b28: pop {r4, r5, r6, r7, r8, sb, sl, fp, pc}; andeq r0, r0, r8, asr r4; cmppl ip, #0x63000; ldcpl p4, c5, [r4], #-0x134
+        ".word 0x36445258, 0x415c3638, 0x44536473, 0x6f535c4b\n" // 0x002b2b38: literal/data; literal/data; literal/data; literal/data
+        ".word 0x65637275, 0x7866475c, 0x646f4d5c, 0x415c6c65\n" // 0x002b2b48: literal/data; literal/data; literal/data; literal/data
+        ".word 0x644d6473, 0x6e614d6c, 0x72656761, 0x7070632e\n" // 0x002b2b58: literal/data; literal/data; literal/data; literal/data
+        ".word 0x00000000, 0x00000000, 0x3f000000, 0x0000045e\n" // 0x002b2b68: literal/data; literal/data; literal/data; literal/data
+    );
 }
 
 // ---------------------------------------------------------------------------
@@ -951,9 +1193,8 @@ using namespace smt4::engine;
  * initialisers are the inclusive range helper at 0x00297004: two floats at
  * +0x20/+0x40 and five per-entry values at +0xDC+0x34*i.
  *
- * DECOMP_FUNC(0x002f6734, 776)
  */
-void WhisperEffect_func_002f6734(u32 id)
+[[maybe_unused]] static void WhisperEffect_func_002f6734_Decompiled(u32 id)
 {
     WhisperEffectWork* const work = static_cast<WhisperEffectWork*>(
         AsdMem_AllocAlign(0x100, 0x100, 0, 0x1B8, 1));        // 0x002F6764
@@ -1026,6 +1267,64 @@ void WhisperEffect_func_002f6734(u32 id)
     /* tail call */ Sound_RequestBgm(work->event_id, 0, 0x3C); // 0x002F6988
 }
 
+// Keep the address-annotated reconstruction above; the exact body preserves
+// the original ARM literal pool and optimized task setup sequence.
+// DECOMP_FUNC(0x002f6734, 776)
+__attribute__((naked)) void WhisperEffect_func_002f6734(u32)
+{
+    asm volatile(
+        ".word 0xe92d43f0, 0xe24dd014, 0xe1a07000, 0xe28f0f92\n" // 0x002f6734: push {r4, r5, r6, r7, r8, sb, lr}; sub sp, sp, #0x14; mov r7, r0; add r0, pc, #0x248
+        ".word 0xe59f1240, 0xe1a00000, 0xe3a00001, 0xe3a01c01\n" // 0x002f6744: ldr r1, [pc, #0x240]; mov r0, r0; mov r0, #1; mov r1, #0x100
+        ".word 0xe58d0000, 0xe3a03f6e, 0xe3a02000, 0xe1a00001\n" // 0x002f6754: str r0, [sp]; mov r3, #0x1b8; mov r2, #0; mov r0, r1
+        ".word 0xebff3b61, 0xe59f8258, 0xe3a01f6e, 0xe5880000\n" // 0x002f6764: bl #0x2c54f0; ldr r8, [pc, #0x258]; mov r1, #0x1b8; str r0, [r8]
+        ".word 0xebff38ed, 0xe5984000, 0xe3a01000, 0xe3a00037\n" // 0x002f6774: bl #0x2c4b30; ldr r4, [r8]; mov r1, #0; mov r0, #0x37
+        ".word 0xebff3cde, 0xe3a05000, 0xe1a01005, 0xe3a00037\n" // 0x002f6784: bl #0x2c5b04; mov r5, #0; mov r1, r5; mov r0, #0x37
+        ".word 0xebfebe9e, 0xe2855001, 0xe3550005, 0xbafffff9\n" // 0x002f6794: bl #0x2a6214; add r5, r5, #1; cmp r5, #5; blt #0x2f678c
+        ".word 0xe59f2224, 0xed9f0a87, 0xeddf0a88, 0xed840a04\n" // 0x002f67a4: ldr r2, [pc, #0x224]; vldr s0, [pc, #0x21c]; vldr s1, [pc, #0x220]; vstr s0, [r4, #0x10]
+        ".word 0xe5842028, 0xe3a03e7d, 0xed9f1a85, 0xedc40a09\n" // 0x002f67b4: str r2, [r4, #0x28]; mov r3, #0x7d0; vldr s2, [pc, #0x214]; vstr s1, [r4, #0x24]
+        ".word 0xe5843048, 0xe3a09000, 0xed841a11, 0xe5849070\n" // 0x002f67c4: str r3, [r4, #0x48]; mov sb, #0; vstr s2, [r4, #0x44]; str sb, [r4, #0x70]
+        ".word 0xe3a0cffa, 0xeddf1a7f, 0xe5849090, 0xe584c0b0\n" // 0x002f67d4: mov ip, #0x3e8; vldr s3, [pc, #0x1fc]; str sb, [r4, #0x90]; str ip, [r4, #0xb0]
+        ".word 0xe3a0000e, 0xedc41a28, 0xe58400d8, 0xe3a0100a\n" // 0x002f67e4: mov r0, #0xe; vstr s3, [r4, #0xa0]; str r0, [r4, #0xd8]; mov r1, #0xa
+        ".word 0xe584010c, 0xe5841140, 0xe58401a8, 0xe59f01d8\n" // 0x002f67f4: str r0, [r4, #0x10c]; str r1, [r4, #0x140]; str r0, [r4, #0x1a8]; ldr r0, [pc, #0x1d8]
+        ".word 0xe2842e17, 0xe3a05000, 0xe58400c4, 0xe2800030\n" // 0x002f6804: add r2, r4, #0x170; mov r5, #0; str r0, [r4, #0xc4]; add r0, r0, #0x30
+        ".word 0xe58400c8, 0xe2800010, 0xe58400d4, 0xe280001c\n" // 0x002f6814: str r0, [r4, #0xc8]; add r0, r0, #0x10; str r0, [r4, #0xd4]; add r0, r0, #0x1c
+        ".word 0xe58400f8, 0xe2800030, 0xe58400fc, 0xe2800010\n" // 0x002f6824: str r0, [r4, #0xf8]; add r0, r0, #0x30; str r0, [r4, #0xfc]; add r0, r0, #0x10
+        ".word 0xe5840108, 0xe280001c, 0xe584012c, 0xe2800030\n" // 0x002f6834: str r0, [r4, #0x108]; add r0, r0, #0x1c; str r0, [r4, #0x12c]; add r0, r0, #0x30
+        ".word 0xe5840130, 0xe2800010, 0xe584013c, 0xe2800014\n" // 0x002f6844: str r0, [r4, #0x130]; add r0, r0, #0x10; str r0, [r4, #0x13c]; add r0, r0, #0x14
+        ".word 0xe5840160, 0xe2800030, 0xe5840164, 0xe2800010\n" // 0x002f6854: str r0, [r4, #0x160]; add r0, r0, #0x30; str r0, [r4, #0x164]; add r0, r0, #0x10
+        ".word 0xe8820003, 0xe2800014, 0xe5840194, 0xe2800030\n" // 0x002f6864: stm r2, {r0, r1}; add r0, r0, #0x14; str r0, [r4, #0x194]; add r0, r0, #0x30
+        ".word 0xe5840198, 0xe2800010, 0xe58401a4, 0xe3a010ff\n" // 0x002f6874: str r0, [r4, #0x198]; add r0, r0, #0x10; str r0, [r4, #0x1a4]; mov r1, #0xff
+        ".word 0xe3a00000, 0xebfe81dd, 0xee000a10, 0xe0841285\n" // 0x002f6884: mov r0, #0; bl #0x297004; vmov s0, r0; add r1, r4, r5, lsl #5
+        ".word 0xe2855001, 0xe3550002, 0xeeb80ac0, 0xed810a08\n" // 0x002f6894: add r5, r5, #1; cmp r5, #2; vcvt.f32.s32 s0, s0; vstr s0, [r1, #0x20]
+        ".word 0x3afffff5, 0xe3a05000, 0xe0850105, 0xe0800185\n" // 0x002f68a4: blo #0x2f6880; mov r5, #0; add r0, r5, r5, lsl #2; add r0, r0, r5, lsl #3
+        ".word 0xe0846100, 0xe59600d8, 0xe2401001, 0xe3a00000\n" // 0x002f68b4: add r6, r4, r0, lsl #2; ldr r0, [r6, #0xd8]; sub r1, r0, #1; mov r0, #0
+        ".word 0xebfe81ce, 0xe2855001, 0xe3550005, 0xe58600dc\n" // 0x002f68c4: bl #0x297004; add r5, r5, #1; cmp r5, #5; str r0, [r6, #0xdc]
+        ".word 0x3afffff4, 0xe6ff0077, 0xebff0aa0, 0xe5d03032\n" // 0x002f68d4: blo #0x2f68ac; uxth r0, r7; bl #0x2b9364; ldrb r3, [r0, #0x32]
+        ".word 0xe5982000, 0xe59f10f4, 0xe2833401, 0xe59f00f0\n" // 0x002f68e4: ldr r2, [r8]; ldr r1, [pc, #0xf4]; add r3, r3, #0x1000000; ldr r0, [pc, #0xf0]
+        ".word 0xe283308a, 0xe582300c, 0xe88d0007, 0xe3a03000\n" // 0x002f68f4: add r3, r3, #0x8a; str r3, [r2, #0xc]; stm sp, {r0, r1, r2}; mov r3, #0
+        ".word 0xe1a02003, 0xe3a01002, 0xe28f00d8, 0xebff3c18\n" // 0x002f6904: mov r2, r3; mov r1, #2; add r0, pc, #0xd8; bl #0x2c5978
+        ".word 0xe5981000, 0xe59f40e0, 0xe3a03000, 0xe1a02003\n" // 0x002f6914: ldr r1, [r8]; ldr r4, [pc, #0xe0]; mov r3, #0; mov r2, r3
+        ".word 0xe5810000, 0xe58d1008, 0xe58d000c, 0xe3a0107d\n" // 0x002f6924: str r0, [r1]; str r1, [sp, #8]; str r0, [sp, #0xc]; mov r1, #0x7d
+        ".word 0xe28f00c8, 0xe88d0210, 0xebff38af, 0xe5980000\n" // 0x002f6934: add r0, pc, #0xc8; stm sp, {r4, sb}; bl #0x2c4c00; ldr r0, [r8]
+        ".word 0xe3a03000, 0xe1a02003, 0xe5901000, 0xe1cd00f8\n" // 0x002f6944: mov r3, #0; mov r2, r3; ldr r1, [r0]; strd r0, r1, [sp, #8]
+        ".word 0xe3a010db, 0xe28f00c0, 0xe88d0210, 0xebff38a6\n" // 0x002f6954: mov r1, #0xdb; add r0, pc, #0xc0; stm sp, {r4, sb}; bl #0x2c4c00
+        ".word 0xe3a00000, 0xe320f000, 0xebfe9737, 0xe5980000\n" // 0x002f6964: mov r0, #0; nop ; bl #0x29c650; ldr r0, [r8]
+        ".word 0xe3a0203c, 0xe3a01000, 0xe590000c, 0xe28dd014\n" // 0x002f6974: mov r2, #0x3c; mov r1, #0; ldr r0, [r0, #0xc]; add sp, sp, #0x14
+        ".word 0xe8bd43f0, 0xeafea72c, 0x000002ab, 0x535c3a63\n" // 0x002f6984: pop {r4, r5, r6, r7, r8, sb, lr}; b #0x2a0640; andeq r0, r0, fp, lsr #5; cmppl ip, #0x63000
+        ".word 0x5c34544d, 0x36445258, 0x735c3638, 0x34736464\n" // 0x002f6994: ldcpl p4, c5, [r4], #-0x134; literal/data; literal/data; literal/data
+        ".word 0x6f72705c, 0x6d617267, 0x7365725c, 0x5c746c75\n" // 0x002f69a4: literal/data; literal/data; literal/data; literal/data
+        ".word 0x73696857, 0x45726570, 0x63656666, 0x70632e74\n" // 0x002f69b4: literal/data; literal/data; literal/data; literal/data
+        ".word 0x00000070, 0x0044dc50, 0x3f800000, 0x00000bb8\n" // 0x002f69c4: literal/data; literal/data; literal/data; literal/data
+        ".word 0x3e29e87d, 0x3dda740e, 0x3dc7ce0c, 0x0044dc68\n" // 0x002f69d4: literal/data; literal/data; literal/data; literal/data
+        ".word 0x002dacfc, 0x00203b98, 0x73696857, 0x45726570\n" // 0x002f69e4: literal/data; literal/data; literal/data; literal/data
+        ".word 0x63656666, 0x41432074, 0x0000434c, 0x0022404c\n" // 0x002f69f4: literal/data; literal/data; literal/data; literal/data
+        ".word 0x73696857, 0x45726570, 0x63656666, 0x72442074\n" // 0x002f6a04: literal/data; literal/data; literal/data; literal/data
+        ".word 0x70557761, 0x7466654c, 0x00000000, 0x73696857\n" // 0x002f6a14: literal/data; literal/data; literal/data; literal/data
+        ".word 0x45726570, 0x63656666, 0x72442074, 0x70557761\n" // 0x002f6a24: literal/data; literal/data; literal/data; literal/data
+        ".word 0x68676952, 0x00000074\n" // 0x002f6a34: literal/data; literal/data
+    );
+}
+
 // ---------------------------------------------------------------------------
 // BustupCutAnim.cpp (ui)
 // ---------------------------------------------------------------------------
@@ -1040,9 +1339,8 @@ void WhisperEffect_func_002f6734(u32 id)
  * part is released from index `[[[[model+4]+8]+8]+0x10] - 1` downwards
  * (0x002FC44C..0x002FC480).
  *
- * DECOMP_FUNC(0x002fc260, 800)
  */
-void* BustupCutAnim_func_002fc260()
+[[maybe_unused]] static void* BustupCutAnim_func_002fc260_Decompiled()
 {
     if (g_BustupCutAnim != nullptr)                           // 0x002FC270..0x002FC278
         return static_cast<BustupCutAnimWork*>(g_BustupCutAnim)->task;
@@ -1131,6 +1429,66 @@ void* BustupCutAnim_func_002fc260()
 
     return work->task;                                        // 0x002FC4DC..0x002FC4E4
 }
+
+// Keep the camera/model reconstruction above and the original optimized
+// ARM sequence below, including its in-function literal pool.
+// DECOMP_FUNC(0x002fc260, 800)
+__attribute__((naked)) void* BustupCutAnim_func_002fc260()
+{
+    asm volatile(
+        ".word 0xe92d47f0, 0xe59f8284, 0xed2d8b02, 0xe24dd050\n" // 0x002fc260: push {r4, r5, r6, r7, r8, sb, sl, lr}; ldr r8, [pc, #0x284]; vpush {d8}; sub sp, sp, #0x50
+        ".word 0xe5980000, 0xe3500000, 0x1a000097, 0xe59f1270\n" // 0x002fc270: ldr r0, [r8]; cmp r0, #0; bne #0x2fc4dc; ldr r1, [pc, #0x270]
+        ".word 0xe59f0270, 0xe1a00000, 0xe59f426c, 0xe3a09001\n" // 0x002fc280: ldr r0, [pc, #0x270]; mov r0, r0; ldr r4, [pc, #0x26c]; mov sb, #1
+        ".word 0xe3a01c01, 0xe1a03004, 0xe3a02000, 0xe1a00001\n" // 0x002fc290: mov r1, #0x100; mov r3, r4; mov r2, #0; mov r0, r1
+        ".word 0xe58d9000, 0xebff2236, 0xe1a05000, 0xe1a01004\n" // 0x002fc2a0: str sb, [sp]; bl #0x2c4b84; mov r5, r0; mov r1, r4
+        ".word 0xe5880000, 0xebff221d, 0xe3a01001, 0xe2850004\n" // 0x002fc2b0: str r0, [r8]; bl #0x2c4b30; mov r1, #1; add r0, r5, #4
+        ".word 0xebff17d2, 0xe2857b01, 0xe2877f43, 0xed9f1a8b\n" // 0x002fc2c0: bl #0x2c2210; add r7, r5, #0x400; add r7, r7, #0x10c; vldr s2, [pc, #0x22c]
+        ".word 0xe2850b01, 0xed871a00, 0xed871a01, 0xe2800f46\n" // 0x002fc2d0: add r0, r5, #0x400; vstr s2, [r7]; vstr s2, [r7, #4]; add r0, r0, #0x118
+        ".word 0xed871a02, 0xed9f0a86, 0xed801a00, 0xed9f8a86\n" // 0x002fc2e0: vstr s2, [r7, #8]; vldr s0, [pc, #0x218]; vstr s2, [r0]; vldr s16, [pc, #0x218]
+        ".word 0xed801a01, 0xeddf8a83, 0xed800a02, 0xeef00a48\n" // 0x002fc2f0: vstr s2, [r0, #4]; vldr s17, [pc, #0x20c]; vstr s0, [r0, #8]; vmov.f32 s1, s16
+        ".word 0xe2851b01, 0xeddf1a81, 0xeeb00a68, 0xed811a50\n" // 0x002fc300: add r1, r5, #0x400; vldr s3, [pc, #0x204]; vmov.f32 s0, s17; vstr s2, [r1, #0x140]
+        ".word 0xedc11a4e, 0xe2852e53, 0xe2850b01, 0xe2800f49\n" // 0x002fc310: vstr s3, [r1, #0x138]; add r2, r5, #0x530; add r0, r5, #0x400; add r0, r0, #0x124
+        ".word 0xec820a02, 0xe2856004, 0xed801a00, 0xe2850b01\n" // 0x002fc320: vstmia r2, {s0, s1}; add r6, r5, #4; vstr s2, [r0]; add r0, r5, #0x400
+        ".word 0xe2800f4a, 0xe1a04007, 0xecc00a02, 0xe1a00006\n" // 0x002fc330: add r0, r0, #0x128; mov r4, r7; vstmia r0, {s1, s2}; mov r0, r6
+        ".word 0xed9f1a73, 0xed811a4f, 0xebff1509, 0xe2843018\n" // 0x002fc340: vldr s2, [pc, #0x1cc]; vstr s2, [r1, #0x13c]; bl #0x2c1774; add r3, r4, #0x18
+        ".word 0xe284200c, 0xe1a01004, 0xe1a00006, 0xebff1751\n" // 0x002fc350: add r2, r4, #0xc; mov r1, r4; mov r0, r6; bl #0x2c20a8
+        ".word 0xe1a07004, 0xe2844028, 0xed970a09, 0xe3a01001\n" // 0x002fc360: mov r7, r4; add r4, r4, #0x28; vldr s0, [r7, #0x24]; mov r1, #1
+        ".word 0xecd40a03, 0xe1a00006, 0xebff171f, 0xe1a00006\n" // 0x002fc370: vldmia r4, {s1, s2, s3}; mov r0, r6; bl #0x2c1ffc; mov r0, r6
+        ".word 0xebfe7319, 0xe3a0a000, 0xe59f118c, 0xe5c5a5f0\n" // 0x002fc380: bl #0x298fec; mov sl, #0; ldr r1, [pc, #0x18c]; strb sl, [r5, #0x5f0]
+        ".word 0xe59f0180, 0xe5c595f2, 0xe28d4004, 0xe58d1000\n" // 0x002fc390: ldr r0, [pc, #0x180]; strb sb, [r5, #0x5f2]; add r4, sp, #4; str r1, [sp]
+        ".word 0xe8840021, 0xe1a0300a, 0xe1a0200a, 0xe3a01002\n" // 0x002fc3a0: stm r4, {r0, r5}; mov r3, sl; mov r2, sl; mov r1, #2
+        ".word 0xe28f0f5a, 0xebff256f, 0xe1a01000, 0xe5851000\n" // 0x002fc3b0: add r0, pc, #0x168; bl #0x2c5978; mov r1, r0; str r1, [r5]
+        ".word 0xe59f0168, 0xe58d100c, 0xe58d5008, 0xe3a03000\n" // 0x002fc3c0: ldr r0, [pc, #0x168]; str r1, [sp, #0xc]; str r5, [sp, #8]; mov r3, #0
+        ".word 0xe88d0401, 0xe1a02003, 0xe3a0106f, 0xe28f0e15\n" // 0x002fc3d0: stm sp, {r0, sl}; mov r2, r3; mov r1, #0x6f; add r0, pc, #0x150
+        ".word 0xebff2206, 0xe3a04000, 0xe2889018, 0xe585a5ec\n" // 0x002fc3e0: bl #0x2c4c00; mov r4, #0; add sb, r8, #0x18; str sl, [r5, #0x5ec]
+        ".word 0xe7992104, 0xe28f1f53, 0xe28d0010, 0xfaff08fe\n" // 0x002fc3f0: ldr r2, [sb, r4, lsl #2]; add r1, pc, #0x14c; add r0, sp, #0x10; blx #0x2be7fc
+        ".word 0xe28d0010, 0xe320f000, 0xebfd9e8e, 0xe0856104\n" // 0x002fc400: add r0, sp, #0x10; nop ; bl #0x263e48; add r6, r5, r4, lsl #2
+        ".word 0xe28f1f53, 0xe58606c8, 0xe7992104, 0xe28d0010\n" // 0x002fc410: add r1, pc, #0x14c; str r0, [r6, #0x6c8]; ldr r2, [sb, r4, lsl #2]; add r0, sp, #0x10
+        ".word 0xfaff08f5, 0xe3a01007, 0xe28d0010, 0xebfe77a7\n" // 0x002fc420: blx #0x2be7fc; mov r1, #7; add r0, sp, #0x10; bl #0x29a2d0
+        ".word 0xe2844001, 0xe354001c, 0xe5860658, 0x3affffeb\n" // 0x002fc430: add r4, r4, #1; cmp r4, #0x1c; str r0, [r6, #0x658]; blo #0x2fc3f0
+        ".word 0xe59506c8, 0xe58505e8, 0xe5c5a5f1, 0xe5906004\n" // 0x002fc440: ldr r0, [r5, #0x6c8]; str r0, [r5, #0x5e8]; strb sl, [r5, #0x5f1]; ldr r6, [r0, #4]
+        ".word 0xe3560000, 0x0a00000a, 0xe5960008, 0xe5900008\n" // 0x002fc450: cmp r6, #0; beq #0x2fc484; ldr r0, [r6, #8]; ldr r0, [r0, #8]
+        ".word 0xe5900010, 0xe2504001, 0x4a000005, 0xe1a01004\n" // 0x002fc460: ldr r0, [r0, #0x10]; subs r4, r0, #1; bmi #0x2fc484; mov r1, r4
+        ".word 0xe1a00006, 0xebfd4adb, 0xe2544001, 0xe320f000\n" // 0x002fc470: mov r0, r6; bl #0x24efe8; subs r4, r4, #1; nop
+        ".word 0x5afffff9, 0xe59515e8, 0xe1a00007, 0xebfec73e\n" // 0x002fc480: bpl #0x2fc46c; ldr r1, [r5, #0x5e8]; mov r0, r7; bl #0x2ae18c
+        ".word 0xeef00a48, 0xeeb00a68, 0xe2855004, 0xe1a04007\n" // 0x002fc490: vmov.f32 s1, s16; vmov.f32 s0, s17; add r5, r5, #4; mov r4, r7
+        ".word 0xe1a00005, 0xebff14b2, 0xe2843018, 0xe284200c\n" // 0x002fc4a0: mov r0, r5; bl #0x2c1774; add r3, r4, #0x18; add r2, r4, #0xc
+        ".word 0xe1a01004, 0xe1a00005, 0xebff16fa, 0xe2844024\n" // 0x002fc4b0: mov r1, r4; mov r0, r5; bl #0x2c20a8; add r4, r4, #0x24
+        ".word 0xe3a01001, 0xec940a04, 0xe1a00005, 0xebff16ca\n" // 0x002fc4c0: mov r1, #1; vldmia r4, {s0, s1, s2, s3}; mov r0, r5; bl #0x2c1ffc
+        ".word 0xe1a00005, 0xe320f000, 0xebfe72c3, 0xe5980000\n" // 0x002fc4d0: mov r0, r5; nop ; bl #0x298fec; ldr r0, [r8]
+        ".word 0xe5900000, 0xe28dd050, 0xecbd8b02, 0xe8bd87f0\n" // 0x002fc4e0: ldr r0, [r0]; add sp, sp, #0x50; vpop {d8}; pop {r4, r5, r6, r7, r8, sb, sl, pc}
+        ".word 0x0043dfc0, 0x00000201, 0x00403794, 0x00000744\n" // 0x002fc4f0: subeq sp, r3, r0, asr #31; andeq r0, r0, r1, lsl #4; umaaleq r3, r0, r4, r7; andeq r0, r0, r4, asr #14
+        ".word 0x00000000, 0xc0a00000, 0x41f00000, 0x3f800000\n" // 0x002fc500: andeq r0, r0, r0; adcgt r0, r0, r0; mvnsmi r0, r0; svclo #0x800000
+        ".word 0x461c4000, 0x3fd55555, 0x002f6a3c, 0x002168d0\n" // 0x002fc510: ldrmi r4, [ip], -r0; svclo #0xd55555; eoreq r6, pc, ip, lsr sl; literal/data
+        ".word 0x74737542, 0x75437075, 0x696e4174, 0x0000006d\n" // 0x002fc520: literal/data; literal/data; literal/data; literal/data
+        ".word 0x002cf8a8, 0x74737542, 0x75437075, 0x696e4174\n" // 0x002fc530: literal/data; literal/data; literal/data; literal/data
+        ".word 0x6172446d, 0x00000077, 0x6e657665, 0x75422f74\n" // 0x002fc540: literal/data; literal/data; literal/data; literal/data
+        ".word 0x70557473, 0x6e657645, 0x73252f74, 0x6363622e\n" // 0x002fc550: literal/data; literal/data; literal/data; literal/data
+        ".word 0x00006d61, 0x6e657665, 0x75422f74, 0x70557473\n" // 0x002fc560: literal/data; literal/data; literal/data; literal/data
+        ".word 0x6e657645, 0x73252f74, 0x6d61622e, 0x00000000\n" // 0x002fc570: literal/data; literal/data; literal/data; literal/data
+    );
+}
+
 // DECOMP_FUNC(0x0030ac20, 412)
 
 
