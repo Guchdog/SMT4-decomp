@@ -31,8 +31,12 @@ extern "C" __attribute__((naked)) void func_0034f8dc() {
 }
 
 // DECOMP_FUNC(0x0035a080, 28)
-extern "C" __attribute__((naked)) void engine_func_0035a080() {
-    asm volatile("ldr r3, [r0, #0x134]\ncmp r1, #0\nstr r3, [r2]\nldrne r2, [r0, #0x138]\nstrne r2, [r1]\nldr r0, [r0, #0x138]\nbx lr\n");
+extern "C" u32 engine_func_0035a080(volatile u8* object, u32* optional_out, u32* first_out) {
+    *first_out = *reinterpret_cast<volatile u32*>(object + 0x134);
+    if (optional_out != 0) {
+        *optional_out = *reinterpret_cast<volatile u32*>(object + 0x138);
+    }
+    return *reinterpret_cast<volatile u32*>(object + 0x138);
 }
 
 // DECOMP_FUNC(0x00383780, 28)
