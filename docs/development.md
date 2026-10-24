@@ -97,6 +97,13 @@ batches that can be reverted independently.
 
 ## Progress definitions
 
+An isolated [behavioral equivalence pilot](../experiments/semantic_equivalence/README.md)
+compares seven non-byte-identical C++ candidates with their original ARM code.
+Run it with the optional `requirements-experiment.txt` dependencies and
+`python tools/semantic_experiment.py --code <private-code.bin>`. It emits local
+reports and an experimental patch under ignored `build/`; these results do not
+change matching status or establish a complete game boot.
+
 Only `matching` verifies exact machine code against the original binary. Relocations are accepted only when their type and symbol are supported and the encoded instruction can be checked against an unambiguous ledger target; currently that is limited to canonical ARM-state `R_ARM_CALL` relocations. Every other unresolved relocation remains ineligible for an exact match. The compiled-coverage tier uses a size threshold (at least 15% of the original function size, with a small minimum) to distinguish larger reconstructions from drafts. It does not establish equivalent behavior. Explored coverage includes stubs and should not be treated as runnable or completed game code.
 
 Use `python tools/progress.py --write` to regenerate the progress report and README from the reporting tool. Update that generator when changing generated documentation.
