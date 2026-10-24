@@ -3058,7 +3058,7 @@ using TexInitCallback = void (*)(u32 address);
 // 0x00170D70: descriptor initialiser, first block (stride 0x400).
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x00170d70, 7456)
+// DECOMP_FUNC(0x00170d70, 176)
 void func_00170d70(TexConvertDesc* desc, s32 format)
 {
     // 0x00170D70: `cmp r4,#0xc` / `movlt r4,#0xc`.
@@ -3119,7 +3119,7 @@ void func_00170d70(TexConvertDesc* desc, s32 format)
 // 0x0017733A and hold the same 0x29C bytes as 0x00170AD4..0x00170D3A.
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x00177370, 7456)
+// DECOMP_FUNC(0x00177370, 176)
 void func_00177370(TexConvertDesc* desc, s32 format)
 {
     if (format < 0x0C)                     // 0x00177370: cmp/movlt
@@ -3165,7 +3165,7 @@ void func_00177370(TexConvertDesc* desc, s32 format)
 // thunk tail reproduced above takes the place of a VXS2 header.
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x0017d970, 7348)
+// DECOMP_FUNC(0x0017d970, 176)
 void func_0017d970(TexConvertDesc* desc, s32 format)
 {
     if (format < 0x0C)                     // 0x0017D970: cmp/movlt

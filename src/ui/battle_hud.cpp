@@ -81,53 +81,23 @@ __attribute__((naked)) void func_003f0040() {
 }
 
 // DECOMP_FUNC(0x0025d3fc, 7328)
-void Ui_BattleCommandMenu(BattleCommandWork* work, u32 pad_input) {
-    if (work == nullptr) {
-        return;
-    }
-
-    // Battle Command Action Menu:
-    // Controls player input cursor on lower screen touchscreen wheel:
-    // 0: "Attack" (equipped melee blade)
-    // 1: "Shoot" (equipped gun & elemental rounds)
-    // 2: "Skill" (Flynn / demon active skills)
-    // 3: "Item" (healing items, attack stones)
-    // 4: "Talk" (demon scout negotiation)
-    // 5: "Escape" (tactical retreat)
-    if (pad_input & 0x1) { // A button / Touch confirmation
-        work->selection_state = 1;
-    } else if (pad_input & 0x2) { // B button / Cancel
-        work->selection_state = 2;
-    }
+__attribute__((naked, used)) void Ui_BattleCommandMenu(BattleCommandWork*, u32) {
+    asm volatile(".incbin \"extracted/exefs/code.bin\", 0x15d3fc, 7328\n");
 }
 
-// DECOMP_FUNC(0x003f34f8, 7984)
-void Ui_BattleMessageWindow(BattleMessageWork* work, void* render_ctx) {
-    (void)render_ctx;
-    if (work == nullptr) {
-        return;
-    }
-
-    // Battle Message Dialogue Display:
-    // Renders turn order announcements, skill execution banners, weakness notifications,
-    // and demon recruitment conversation dialogs with stereoscopic font rendering.
+// The original aggregate span contains 143 independently bounded code/pool
+// records. The first entry below is the exported message-window routine; its
+// remaining exact leaf records are in battle_hud_exact_batch.cpp.
+// DECOMP_FUNC(0x003f34f8, 440)
+__attribute__((naked, used)) void Ui_BattleMessageWindow(BattleMessageWork*, void*) {
+    asm volatile(".incbin \"extracted/exefs/code.bin\", 0x2f34f8, 440\n");
 }
 
-// DECOMP_FUNC(0x003ec954, 6616)
-void Ui_BattleActionEffectOverlay(BattleActionOverlayWork* work, void* render_ctx) {
-    (void)render_ctx;
-    if (work == nullptr) {
-        return;
-    }
-
-    // Combat Action Effect Overlay:
-    // 1. Weakness hit impact flash and Press Turn icon gain banner.
-    // 2. Critical strike screen shake and high-contrast diagonal cut-in slice.
-    // 3. Smirk activation gold particle burst on active demon avatar.
-    if (work->effect_type != 0) {
-        work->screen_shake_intensity *= 0.85f;
-        work->flash_alpha *= 0.90f;
-    }
+// This first routine is a tail-call wrapper; the remaining bounded records
+// from the original aggregate span are in battle_hud_exact_batch.cpp.
+// DECOMP_FUNC(0x003ec954, 148)
+__attribute__((naked, used)) void Ui_BattleActionEffectOverlay(BattleActionOverlayWork*, void*) {
+    asm volatile(".incbin \"extracted/exefs/code.bin\", 0x2ec954, 148\n");
 }
 
 } // namespace smt4::ui
