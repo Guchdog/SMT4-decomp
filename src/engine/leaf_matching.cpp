@@ -2798,8 +2798,11 @@ extern "C" u32 script_vm_func_003df150(const u32* p) {
 }
 
 // DECOMP_FUNC(0x003e741c, 20)
-extern "C" __attribute__((naked)) void func_003e741c() {
-    asm volatile("ldr r1, [r0]\ncmp r1, #0\nldrbne r0, [r0, #0x50]\nmoveq r0, #1\nbx lr\n");
+extern "C" u32 func_003e741c(const u8* record) {
+    if (*reinterpret_cast<const u32*>(record) != 0) {
+        return record[0x50];
+    }
+    return 1;
 }
 
 // DECOMP_FUNC(0x003e89d8, 20)

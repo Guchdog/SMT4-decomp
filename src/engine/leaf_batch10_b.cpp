@@ -141,8 +141,15 @@ extern "C" __attribute__((naked)) void script_vm_func_00354d28() {
 }
 
 // DECOMP_FUNC(0x0035c23c, 36)
-extern "C" __attribute__((naked)) void func_0035c23c() {
-    asm volatile("mov r1, #0\nstr r1, [r0, #8]\nstr r0, [r0]\nstr r1, [r0, #0xc]\nstr r1, [r0, #0x10]\nstr r1, [r0, #0x14]\nstr r1, [r0, #0x18]\nstr r0, [r0, #4]\nbx lr\n");
+extern "C" void func_0035c23c(u8* p) {
+    volatile u32* words = reinterpret_cast<volatile u32*>(p);
+    words[2] = 0;
+    words[0] = static_cast<u32>(reinterpret_cast<uintptr_t>(p));
+    words[3] = 0;
+    words[4] = 0;
+    words[5] = 0;
+    words[6] = 0;
+    words[1] = static_cast<u32>(reinterpret_cast<uintptr_t>(p));
 }
 
 // DECOMP_FUNC(0x0035e794, 36)
