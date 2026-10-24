@@ -1,7 +1,7 @@
 # ARM behavioral equivalence pilot — 2026-10-24
 
 Ten non-byte-identical typed C++ reconstructions passed **227,124 differential
-function cases** and **3,116 original-caller-window cases** across the two
+function cases** and **4,674 original-caller-window cases** across the two
 completed batches. Nine deliberately incorrect controls were detected for their
 intended errors. These are bounded execution results, not a proof that a complete
 rebuilt game behaves identically.
@@ -21,8 +21,9 @@ The current runner is specialized for this pilot; that procedure identifies
 the code and scenarios that must be extended before testing a new function.
 Batch 2 added signed-byte field read `0x00121D70`, nullable pointer field read
 `0x0014EC5C`, and paired word store `0x00131414`. Each passed 4,352 or 4,107
-cases under each of two seeds, with its corresponding negative control. The
-reports are under `build/semantic-equivalence/batch-002/`.
+cases under each of two seeds, with its corresponding negative control. Caller
+windows were added for the signed-byte getter and paired store. Final reports
+are under `build/semantic-equivalence/batch-002-callers/`.
 
 ## Results
 
@@ -47,8 +48,8 @@ their success rate must not be extrapolated to the whole game.
 |---|---:|---:|---:|---:|
 | `20261024` | 16,384 | 115,010 | 779 | 44.86 s |
 | `7` | 4,096 | 28,994 | 779 | 12.41 s |
-| `20261024` (batch 2) | 4,096 | 41,560 | 779 | 17.92 s |
-| `7` (batch 2) | 4,096 | 41,560 | 779 | 18.40 s |
+| `20261024` (batch 2) | 4,096 | 41,560 | 1,558 | 18.11 s |
+| `7` (batch 2) | 4,096 | 41,560 | 1,558 | 19.35 s |
 
 Each run includes compilation (about 0.27 s), negative controls, patch generation,
 and execution. Timings are local observations under concurrent regression-test
@@ -106,26 +107,34 @@ nonzero padding, invalid bounds, and insufficient padding. No segment offsets,
 file length, original data, or matching source definitions are moved.
 
 All positive function comparisons execute this **same patched-image layout**.
-Two original call windows also execute their unchanged BL and subsequent
-comparison/branch instructions:
+Four original caller windows execute their unchanged BL and following
+instructions:
 
 - `0x001B0370`: caller passes `r5` to `0x002AE464`; both continuations
   `0x001B0384` and `0x001B0394` were exercised.
 - `0x001B4DBC`: caller passes a stack byte to `0x00394614`; both continuations
   `0x001B4DD0` and `0x001B4DF4` were exercised.
+- `0x00110F44`: caller passes a test record to `0x00121D70`; both outcomes at
+  `0x00110F50` and `0x00111008` were exercised. The preceding global producer
+  is outside this window.
+- `0x00121D1C`: caller invokes `0x00131414` and continues at `0x00121D24`.
+  The caller overwrites `r0`, so this checks writes and continuation, not return use.
 
-Batch 2's three additions passed function-level differential execution but do
-not yet have caller-window checks.
+Batch 2's signed-byte getter also exercised both real caller branches at
+`0x00110F44`. The paired-store window at `0x00121D1C` compared the writes and
+the caller continuation; the caller overwrites `r0`, so it does not test the
+callee's return use. The nullable-pointer caller windows discard its return and
+are not counted as useful caller validation.
 
 Successful runs emit ignored, local-only artifacts:
 
-- `build/semantic-equivalence/batch-002/seed-20261024/report.json` and
-  `build/semantic-equivalence/batch-002/seed-7/report.json`: versions, hashes,
+- `build/semantic-equivalence/batch-002-callers/seed-20261024/report.json` and
+  `build/semantic-equivalence/batch-002-callers/seed-7/report.json`: versions, hashes,
   seed, counts,
   timings, patch manifest, counterexamples for controls, and limitations.
-- `build/semantic-equivalence/batch-002/seed-20261024/code.experimental.bin`:
+- `build/semantic-equivalence/batch-002-callers/seed-20261024/code.experimental.bin`:
   derived 3,633,152-byte image.
-- `build/semantic-equivalence/batch-002/seed-20261024/code.ips`: 332-byte
+- `build/semantic-equivalence/batch-002-callers/seed-20261024/code.ips`: 332-byte
   patch containing generated branches and C++ machine code. Both seeds
   generated identical patch/image hashes; the earlier pilot independently
   replayed its IPS to verify exact image reconstruction.
@@ -135,12 +144,17 @@ Batch 2 patched image SHA-256:
 Batch 2 IPS SHA-256:
 `5d0cb36fa319678872d7c96ce9a9f878a6df393dbe5b6c3847702c2df749a89a`.
 
-**A complete game was not booted.** The harness maps the existing text pages
-including padding; preservation/execution of those bytes by a real 3DS loader
-still needs to be tested. No Azahar, Citra or Lime3DS executable was found in
-common installation locations; a portable installation elsewhere was not ruled
-out. Eden is present but is a Switch emulator. The repository still has no full
-executable linking/package target.
+**A complete game was not booted.** The harness maps the existing text pages;
+preservation/execution of padding by a real 3DS loader still needs testing. The
+initial inventory found no installed 3DS emulator; the user is downloading
+Citra. Its [archived official mod guide](https://citra.azahar-emu.org/help/feature/game-modding/)
+documents the `load/mods/<Title ID>/exefs/code.ips` path. For this US title, use
+`load/mods/00040000000E5C00/exefs/code.ips` and the exact base revision whose
+`code.bin` hash is recorded above; IPS does not check the source image. The
+ready-to-copy title folder is `build/citra-mod/00040000000E5C00/`. In Citra,
+right-click the game and open its Mods Location, then copy that title folder
+under the `load/mods/` directory. The repository still has no full executable
+linking/package target.
 
 Luma3DS documents external decompressed code and IPS loading under
 `/luma/titles/<TitleID>/` in its
@@ -155,8 +169,8 @@ From the experiment worktree, with your own verified extracted image:
 ```powershell
 python -m pip install -r requirements-experiment.txt
 python -m unittest tests.test_semantic_experiment -v
-python tools/semantic_experiment.py --code E:/SMT4decomp/extracted/exefs/code.bin --samples 4096 --seed 20261024 --output build/semantic-equivalence/batch-002/seed-20261024
-python tools/semantic_experiment.py --code E:/SMT4decomp/extracted/exefs/code.bin --samples 4096 --seed 7 --output build/semantic-equivalence/batch-002/seed-7
+python tools/semantic_experiment.py --code E:/SMT4decomp/extracted/exefs/code.bin --samples 4096 --seed 20261024 --output build/semantic-equivalence/batch-002-callers/seed-20261024
+python tools/semantic_experiment.py --code E:/SMT4decomp/extracted/exefs/code.bin --samples 4096 --seed 7 --output build/semantic-equivalence/batch-002-callers/seed-7
 ```
 
 Use your actual private input path. No binary, asset, key or dump is needed in
@@ -165,8 +179,9 @@ not require game data; the CLI requires the exact configured US revision.
 
 ## Limits and next gate
 
-The full repository regression after batch 2: `python -m unittest discover -s tests -v` ran 64 tests
-in 323.007 s, with no failures and three extraction/key integration tests skipped
+The final full repository regression:
+`python -m unittest discover -s tests -v` ran 64 tests in 279.534 s, with no
+failures and three extraction/key integration tests skipped
 because the private root-level keys were not copied into the worktree. The game
 byte audits, all-translation-unit ARM build, fresh CMake build and the ten new
 oracle tests ran. `python tools/verify_decomp.py` independently retained all

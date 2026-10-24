@@ -333,11 +333,13 @@ def patch_image(image: bytes, compiled: dict, game: dict):
 def caller_windows(image, patched_image, samples, seed):
     # Real, unchanged instructions before and after BL; no game boot is implied.
     windows = (
-        (0x002AE464, 0x001B0370, 0x001B0374, (0x001B0384, 0x001B0394)),
-        (0x00394614, 0x001B4DBC, 0x001B4DC0, (0x001B4DD0, 0x001B4DF4)),
+        (0x002AE464, 0x001B0370, 0x001B0374, (0x001B0384, 0x001B0394), "threshold"),
+        (0x00394614, 0x001B4DBC, 0x001B4DC0, (0x001B4DD0, 0x001B4DF4), "byte_equality"),
+        (0x00121D70, 0x00110F44, 0x00110F44, (0x00110F50, 0x00111008), "signed_byte"),
+        (0x00131414, 0x00121D1C, 0x00121D1C, (0x00121D24,), "paired_store"),
     )
     results = []
-    for address, start, callsite, stops in windows:
+    for address, start, callsite, stops, setup in windows:
         # Check that this really is an unconditional BL to the selected original.
         word = struct.unpack_from("<I", image, callsite - TEXT)[0]
         imm = word & 0xFFFFFF
@@ -352,10 +354,12 @@ def caller_windows(image, patched_image, samples, seed):
         result = {"callsite": hex(callsite), "callee": hex(address), "passed": True}
         for case in cases(candidate, min(samples, 256), seed):
             regs, stack = list(case.registers), bytearray(case.stack)
-            if address == 0x002AE464:
+            if setup == "threshold":
                 regs[5] = regs[0]  # Original caller executes mov r0,r5 before BL.
-            else:
+            elif setup == "byte_equality":
                 stack[SP - STACK] = case.data[regs[0] - DATA]
+            elif setup == "signed_byte":
+                regs[0] = DATA + 0x100
             case = replace(case, registers=tuple(regs), stack=bytes(stack))
             a = original.run(case, start=start, stops=stops)
             b = patched.run(case, start=start, stops=stops)
@@ -366,8 +370,8 @@ def caller_windows(image, patched_image, samples, seed):
                 result.update(passed=False, reason=reason, counterexample=case.label)
                 break
         result.update(cases=count, continuations=[hex(p) for p in sorted(continuations)])
-        if len(continuations) != 2:
-            result.update(passed=False, reason="Both caller branch outcomes were not exercised")
+        if len(continuations) != len(stops):
+            result.update(passed=False, reason="Not all expected caller continuations were exercised")
         results.append(result)
     return results
 
@@ -443,7 +447,7 @@ def experiment(code_path: Path, output: Path, samples=4096, seed=20261024):
               and all(r["passed"] for r in integration))
     report = {
         "schema": 1, "passed": passed,
-        "scope": "Ten ARM leaf functions and two original caller windows; not a full game boot",
+        "scope": "Ten ARM leaf functions and four original caller windows; not a full game boot",
         "reference_sha256": digest,
         "patched_sha256": hashlib.sha256(patched_image).hexdigest(),
         "ips_sha256": hashlib.sha256(ips).hexdigest(),
