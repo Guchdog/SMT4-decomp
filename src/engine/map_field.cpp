@@ -53,8 +53,10 @@ __attribute__((naked)) void Engine_TextureStreamer(TextureStreamerWork*, void*, 
 
 // DECOMP_FUNC(0x003878c0, 16)
 // Comparator callback: load two halfwords, subtract, and return the result.
-__attribute__((naked)) s32 Engine_TextureStreamer_Compare(const void*, const void*) {
-    asm volatile(".incbin \"extracted/exefs/code.bin\", 0x2878c0, 16\n");
+s32 Engine_TextureStreamer_Compare(const void* lhs, const void* rhs) {
+    const u32 left = *static_cast<const volatile u16*>(lhs);
+    const u32 right = *static_cast<const volatile u16*>(rhs);
+    return static_cast<s32>(left - right);
 }
 
 } // namespace smt4::engine
