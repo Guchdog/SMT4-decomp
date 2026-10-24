@@ -31,13 +31,16 @@ random samples per function plus boundaries under two seeds. Four caller windows
 passed. The 11 focused tests and final full repository regression passed:
 64 tests in 279.534 seconds, with three private-key integration tests skipped.
 
-No 3DS emulator or console was installed in the inspected environment. The user
-will use Azahar. Its [loader](https://github.com/azahar-emu/azahar/blob/master/src/core/file_sys/ncch_container.cpp)
+The user's Azahar build loaded the supplied decrypted CCI before patching. Its
+decompressed `code.bin` is 3,633,152 bytes and SHA-256
+`1f98884fe997af22e032a14c51a46c872b05b0e079a0f29e307b0e059cfaa558`, matching
+the exact revision used for the IPS. Azahar's [loader](https://github.com/azahar-emu/azahar/blob/master/src/core/file_sys/ncch_container.cpp)
 searches `load/mods/<Title ID>/exefs/code.ips`; for this game the title path is
-`load/mods/00040000000E5C00/exefs/code.ips`. Luma uses
+`load/mods/00040000000E5C00/exefs/code.ips`. The 332-byte patch is installed at
+`%APPDATA%/Azahar/load/mods/00040000000E5C00/exefs/code.ips`. Luma uses
 `/luma/titles/00040000000E5C00/code.ips`. The next integration work needs a
-supported emulator or console, the exact US base game, isolated original and
-patched profiles, loader-log confirmation, and a way to trace replacement
-entry execution. A local ready-to-copy Azahar mod folder is in ignored
+the user to boot and observe the game, then compare loader-log confirmation and
+trace replacement entry execution. A local ready-to-copy Azahar mod folder is in ignored
 `build/azahar-mod/00040000000E5C00/`; its `code.ips` hash matches both test runs.
-Do not claim a full-game pass from the ARM harness.
+Only the external patch was added; the CCI and save data were not touched. Do not
+claim a full-game pass from the ARM harness.
