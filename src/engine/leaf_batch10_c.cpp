@@ -25,8 +25,13 @@ extern "C" __attribute__((naked)) void func_003105b4() {
 }
 
 // DECOMP_FUNC(0x00337c40, 40)
-extern "C" __attribute__((naked)) void camp_func_00337c40() {
-    asm volatile("ldr r3, [r0, #0x3f0]\nadd r3, r0, r3, lsl #3\nstr r2, [r3, #0x1f0]\nldr r2, [r0, #0x3f0]\nadd r2, r0, r2, lsl #3\nstr r1, [r2, #0x1f4]\nldr r1, [r0, #0x3f0]\nadd r1, r1, #1\nstr r1, [r0, #0x3f0]\nbx lr\n");
+extern "C" void camp_func_00337c40(volatile u8* object, u32 first, u32 second) {
+    volatile u32* const count = reinterpret_cast<volatile u32*>(object + 0x3f0);
+    volatile u32* const record = reinterpret_cast<volatile u32*>(object + (*count << 3));
+    record[0x1f0 / 4] = second;
+    volatile u32* const next_record = reinterpret_cast<volatile u32*>(object + (*count << 3));
+    next_record[0x1f4 / 4] = first;
+    *count = *count + 1;
 }
 
 // DECOMP_FUNC(0x0034dd44, 40)
