@@ -40,8 +40,13 @@ void Map_Field3DManager(MapFieldWork* work, void* scene_ctx);
 /**
  * Streams compressed texture assets and mipmaps into 3DS PICA200 GPU VRAM.
  *
- * Address: 0x00386184, Size: 5,964 bytes
+ * Address: 0x00386184, Size: 5,948 bytes
  */
 void Engine_TextureStreamer(TextureStreamerWork* streamer, void* tex_data, u32 size);
+
+/** Texture descriptor comparator callback used by Engine_TextureStreamer.
+ * Address: 0x003878c0, Size: 16 bytes
+ */
+s32 Engine_TextureStreamer_Compare(const void* lhs, const void* rhs);
 
 } // namespace smt4::engine

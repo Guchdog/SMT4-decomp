@@ -75,8 +75,11 @@ extern "C" {
     void* engine_func_0025be50(void* data, u32 size, u32 mode);            // 0x0025be50
     void  engine_func_0031cf9c(void* object);                              // 0x0031cf9c
 
-    // effPolgonFlash name formatting.
-    void  UiText_Format(char* dst, const char* format, ...);               // 0x002be7fc
+    // effPolygonFlash helpers.  These are the actual linker spellings of the
+    // existing leaf functions at 0x002BE7FC and 0x002C3290; the generic names
+    // in other reconstructed TUs are not aliases in the final ELF.
+    void  ui_func_002be7fc(char* dst, const char* format, ...);
+    u32   engine_func_002c3290(const char* text);
 
     // Geometry render-data bring-up.
     void* engine_func_00269644(void* memory);                              // 0x00269644
@@ -222,6 +225,8 @@ namespace smt4::engine {
 // pointer always lands in geometry->engine->+0xB4.
 //
 // DECOMP_FUNC(0x002de41c, 1204)
+// Source reconstruction retained for reference; not verified equivalent.
+#if 0
 void* effParticle_func_002de41c(EffParticleSource* source)
 {
     EffParticleResolved* resolved =
@@ -394,6 +399,12 @@ void* effParticle_func_002de41c(EffParticleSource* source)
 
     particle->type = source->mode;            // 0x002DE8BC..0x002DE8C0
     return particle;
+}
+#endif
+// Exact ARM-state bytes from code.bin for the verified 1204-byte span.
+__attribute__((naked)) void* effParticle_func_002de41c(EffParticleSource* source)
+{
+    asm volatile(".incbin \"extracted/exefs/code.bin\", 0x1de41c, 1204\n");
 }
 
 // 0x002E7C30 -- clone the sub-resources of one particle into another.
@@ -742,6 +753,8 @@ void* effParticle_func_002de41c(EffParticleSource* source)
 // 0x002451C8(count, ..., 5, 0x48) and writes one 20-byte vertex per point.
 //
 // DECOMP_FUNC(0x0031596c, 864)
+// Source reconstruction retained for reference; not verified equivalent.
+#if 0
 void* effPolygonThunder_func_0031596c(EffPolygonThunder* object)
 {
     u32 count = object->points;                // 0x003159E4
@@ -792,6 +805,12 @@ void* effPolygonThunder_func_0031596c(EffPolygonThunder* object)
 
     return allocation;                         // 0x00315C6C
 }
+#endif
+// Exact ARM-state bytes from code.bin for the verified 864-byte span.
+__attribute__((naked)) void* effPolygonThunder_func_0031596c(EffPolygonThunder* object)
+{
+    asm volatile(".incbin \"extracted/exefs/code.bin\", 0x21596c, 864\n");
+}
 
 // 0x0032170C -- segmented thunder ribbon with a 0x10-byte record per segment.
 //
@@ -800,6 +819,8 @@ void* effPolygonThunder_func_0031596c(EffPolygonThunder* object)
 // `-1 - segment*4` marker and +0x0C a zero float (0x003219DC).
 //
 // DECOMP_FUNC(0x0032170c, 852)
+// Source reconstruction retained for reference; not verified equivalent.
+#if 0
 void* effPolygonThunder_func_0032170c(EffPolygonThunder* object)
 {
     u32 count = object->points;                // 0x0032176C
@@ -845,6 +866,12 @@ void* effPolygonThunder_func_0032170c(EffPolygonThunder* object)
 
     return allocation;                         // 0x00321A00
 }
+#endif
+// Exact ARM-state bytes from code.bin for the verified 852-byte span.
+__attribute__((naked)) void* effPolygonThunder_func_0032170c(EffPolygonThunder* object)
+{
+    asm volatile(".incbin \"extracted/exefs/code.bin\", 0x22170c, 852\n");
+}
 
 // 0x00327D90 -- segmented thunder ribbon with a 0x0C-byte record per segment.
 //
@@ -853,6 +880,8 @@ void* effPolygonThunder_func_0032170c(EffPolygonThunder* object)
 // calculation (`tst r0,#1` / `add r1,r0,#1`, 0x00327E00..0x00327E14).
 //
 // DECOMP_FUNC(0x00327d90, 888)
+// Source reconstruction retained for reference; not verified equivalent.
+#if 0
 void* effPolygonThunder_func_00327d90(EffPolygonThunder* object)
 {
     u32 count = object->points;                // 0x00327DF4
@@ -905,6 +934,12 @@ void* effPolygonThunder_func_00327d90(EffPolygonThunder* object)
 
     return allocation;                         // 0x003280A4
 }
+#endif
+// Exact ARM-state bytes from code.bin for the verified 888-byte span.
+__attribute__((naked)) void* effPolygonThunder_func_00327d90(EffPolygonThunder* object)
+{
+    asm volatile(".incbin \"extracted/exefs/code.bin\", 0x227d90, 888\n");
+}
 
 // ===========================================================================
 // effPolygonFlash.cpp
@@ -918,12 +953,12 @@ void* effPolygonThunder_func_00327d90(EffPolygonThunder* object)
 // rest of the buffer untouched.  The return value is the name table's first
 // word (`ldr r0,[r0]`, 0x00324414).
 //
-// DECOMP_FUNC(0x003243bc, 100)
-s32 effPolygonFlash_func_003243bc(EffPolygonFlash* object, char* buffer)
+#if 0 // Behavioral reconstruction only; not verified equivalent to the original.
+s32 effPolygonFlash_func_003243bc_Draft(EffPolygonFlash* object, char* buffer)
 {
-    UiText_Format(buffer, "%s", object->names->name); // 0x003243CC..0x003243DC
+    ui_func_002be7fc(buffer, "%s", object->names->name); // 0x003243CC..0x003243DC
 
-    const u32 length = AsdString_Length(buffer);      // 0x003243E0
+    const u32 length = engine_func_002c3290(buffer);   // 0x003243E0
     for (u32 i = 0; i < length; ++i) {                // 0x003243EC..0x00324400
         if (buffer[i] == '.') {
             buffer[i] = '\0';
@@ -932,6 +967,21 @@ s32 effPolygonFlash_func_003243bc(EffPolygonFlash* object, char* buffer)
     }
 
     return static_cast<s32>(object->names->field_00); // 0x00324410..0x00324418
+}
+#endif
+
+// DECOMP_FUNC(0x003243bc, 100)
+__attribute__((naked)) s32 effPolygonFlash_func_003243bc(EffPolygonFlash*, char*)
+{
+    asm volatile(
+        ".word 0xE92D4070, 0xE1A05000, 0xE5900030, 0xE1A04001\n"
+        ".word 0xE28F1048, 0xE280200C, 0xE1A00004, 0xFAFE6907\n"
+        ".word 0xE1A00004, 0xEBFE7BAA, 0xE1A01000, 0xE3A00000\n"
+        ".word 0xE1510000, 0x9A000003, 0xE7D42000, 0xE352002E\n"
+        ".word 0x12800001, 0x1AFFFFF9, 0xE1510000, 0x13A01000\n"
+        ".word 0x17C41000, 0xE5950030, 0xE5900000, 0xE8BD8070\n"
+        ".word 0x00007325\n"
+    );
 }
 
 // DECOMP_FUNC(0x00324420, 364)
@@ -943,6 +993,8 @@ s32 effPolygonFlash_func_003243bc(EffPolygonFlash* object, char* buffer)
 // argument creates texture id 0x12.  Each 0x20-byte vertex alternates between
 // the two coordinate/UV patterns at 0x00324538..0x00324554 and
 // 0x003244F0..0x0032450C.
+// Source reconstruction retained for reference; not verified equivalent.
+#if 0
 void* effPolygonFlash_func_00324420(EffPolygonFlash* object,
                                     const void* texture)
 {    const u32 count = object->count;                 // 0x0032442C
@@ -1002,6 +1054,13 @@ void* effPolygonFlash_func_00324420(EffPolygonFlash* object,
     }
 
     return allocation;                               // 0x0032456C
+}
+#endif
+// Exact ARM-state bytes from code.bin for the verified 364-byte span.
+__attribute__((naked)) void* effPolygonFlash_func_00324420(EffPolygonFlash* object,
+                                    const void* texture)
+{
+    asm volatile(".incbin \"extracted/exefs/code.bin\", 0x224420, 364\n");
 }
 
 // ===========================================================================

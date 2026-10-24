@@ -117,6 +117,7 @@ extern SaveLoadUIManager g_SaveLoadUIManager; // 0x0044DE28
 // saveLoadUI API
 void saveLoadUI_Init();                                                             // 0x00191eac
 void saveLoadUI_DrawMain(void* arg);                                                // 0x001c897c
+void func_001c8d28(void* arg);                                                      // 0x001c8d28
 void saveLoadUI_Calc(void* arg);                                                    // 0x00202950
 
 /**
