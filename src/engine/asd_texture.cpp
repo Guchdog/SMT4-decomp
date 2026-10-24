@@ -16,13 +16,16 @@ extern "C" {
     // Buffer blocks.  0x002C34A4 and 0x002BF798 are byte-identical 196-byte
     // bodies; they only differ in which arena literal their caller selects.
     void* AsdWork_Alloc(u32 a0, u32 a1, u32 a2, u32 size, u32 a4, u32 a5);  // 0x002c34a4
-    void* AsdWork_Alloc2(u32 a0, u32 a1, u32 a2, u32 size, u32 a4, u32 a5); // 0x002bf798
+    void* AsdWork_Alloc2(u32 a0, u32 a1, u32 a2, u32 size, u32 a4, u32 a5)
+        __asm__("engine_func_002bf798"); // 0x002bf798
 
     // String / file helpers
     void  UiText_Format(char* dst, const char* fmt, ...);                   // 0x002be7fc
     char* AsdString_Char(const char* s, int c);                             // 0x0010024c (Thumb)
-    int   AsdMem_Compare(const void* a, const void* b, u32 len);            // 0x002b45f8
-    void  AsdMem_Copy(void* dst, const void* src, u32 size);                // 0x002c5ff4
+    int   AsdMem_Compare(const void* a, const void* b, u32 len)
+        __asm__("engine_func_002b45f8"); // 0x002b45f8
+    void  AsdMem_Copy(void* dst, const void* src, u32 size)
+        __asm__("engine_func_002c5ff4"); // 0x002c5ff4
     void* AsdRes_Load(const char* name, u32* out_size, u32 flags);          // 0x002c32f0
 
     // AsdSDK heap-limit / GPU address helpers
@@ -399,30 +402,23 @@ void AsdTexTMX_func_0019fb58(AsdTexture* texture, const AsdTMXHeader* tmx,
 void AsdTexTGA_func_00257e6c(AsdTexture* texture, const AsdTGAHeader* tga,
                              const void* unused, u32 texture_kind)
 {
-    (void)unused;
-
-    // 0x00257e80: memcmp(data + 0x12, "NW4C_Tga Ver1.0", 0x10).
-    if (AsdMem_Compare(tga->signature, "NW4C_Tga Ver1.0", 0x10) != 0)
+    const u8* const signature = reinterpret_cast<const u8*>(tga) + 0x12;
+    if (AsdMem_Compare(signature, "NW4C_Tga Ver1.0", 0x10) != 0)
         return;
 
-    const u32 height = tga->height;         // 0x00257e9c..0x00257ec0
-    const u32 width = tga->width;
+    const u8* const header_bytes = reinterpret_cast<const u8*>(tga);
+    const u32 height = static_cast<u32>(header_bytes[0x0E]) |
+                       (static_cast<u32>(header_bytes[0x0F]) << 8);
+    const u32 width = static_cast<u32>(header_bytes[0x0C]) |
+                      (static_cast<u32>(header_bytes[0x0D]) << 8);
 
     texture->height = height;               // +0x18
     texture->width = width;                 // +0x14
     texture->kind = texture_kind;           // +0x08 from r3
     texture->format = 0xDE1;                // +0x04
 
-    // 0x00257ED0: unaligned `ldr r0,[r6,#0x10]` with r6 = data + 0x12, i.e. a
-    // little-endian word at +0x22.  Assembled byte-wise because a u32 member
-    // would be aligned to +0x24 by the ABI.
-    const u8* header_bytes = reinterpret_cast<const u8*>(tga);
-    const u32 chunk_offset =
-        static_cast<u32>(header_bytes[0x22]) |
-        (static_cast<u32>(header_bytes[0x23]) << 8) |
-        (static_cast<u32>(header_bytes[0x24]) << 16) |
-        (static_cast<u32>(header_bytes[0x25]) << 24);
-
+    // The format's offset field is unaligned at +0x22 in the file header.
+    const u32 chunk_offset = *reinterpret_cast<const u32*>(signature + 0x10);
     const u8* chunk = header_bytes + chunk_offset;
 
     for (;;) {
@@ -437,28 +433,15 @@ void AsdTexTGA_func_00257e6c(AsdTexture* texture, const AsdTGAHeader* tga,
             AsdMem_Copy(texture->data, payload, texture->data_size);
         }
 
-        // 0x00257F50: `nw4c_tfm` selects the ETC1 texture format.
         if (AsdMem_Compare(chunk, "nw4c_tfm", 8) == 0) {
             const u32 size = reinterpret_cast<const AsdTGABlock*>(chunk)->size;
             u8 name[8] = {};
-
-            // The binary copies the whole tfm payload into an eight-byte
-            // stack buffer and compares only the first eight bytes.  Clamp
-            // the copy to the buffer instead of reproducing that overflow;
-            // only those first eight bytes affect the result.
-            u32 copy_size = size > 0x0Cu ? size - 0x0Cu : 0u;
-            if (copy_size > sizeof(name))
-                copy_size = sizeof(name);
-            AsdMem_Copy(name, chunk + 0x0C, copy_size);
-
-            // 0x00409540: the binary compares eight bytes against
-            // "Etc1\0\0\0\0", not the five-byte literal alone.
-            static const u8 kEtc1Name[8] = { 'E', 't', 'c', '1', 0, 0, 0, 0 };
+            AsdMem_Copy(name, chunk + 0x0C, size - 0x0C);
 
             if (AsdMem_Compare(name, "Etc1_a4", 8) == 0) {
                 texture->param = 0x1401;        // +0x20, 0x00257F9C
                 texture->format2 = 0x675B;      // +0x1C, 0x00257FA0
-            } else if (AsdMem_Compare(name, kEtc1Name, 8) == 0) {
+            } else if (AsdMem_Compare(name, "Etc1", 8) == 0) {
                 texture->format2 = 0x675A;      // +0x1C, 0x00257FC4
                 texture->param = 0x1401;        // +0x20
             }

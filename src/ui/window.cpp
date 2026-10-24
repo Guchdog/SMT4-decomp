@@ -979,7 +979,6 @@ void RunWin_DrawDownAndCalc(void* arg) {
 // ============================================================================
 
 SearchWinWork* g_SearchWinWork = nullptr; // 0x0043E170
-static const u8 g_SearchWinSpriteTable[0x20] = {0};
 
 [[maybe_unused]] static void SearchWin_IsActive_Decompiled() {
     auto* context = *reinterpret_cast<u8**>(0x0043E2AC);
@@ -1045,20 +1044,32 @@ void SearchWin_Init() {
 
     work->calc_task = AsdTask_CreateCalc("SearchWin Calc", 1, 0, 0,
                                          SearchWin_DrawUpAndCalc, 0, 0);
-    work->draw_up_left = AsdTask_CreateDraw("SearchWin DrawUpLeft", 0x81, 0, 0,
-                                            SearchWin_DrawUpAndCalc, 0, 0, work->calc_task);
-    work->draw_up_right = AsdTask_CreateDraw("SearchWin DrawUpRight", 0xDF, 0, 0,
-                                             SearchWin_DrawUpAndCalc, 0, 0, work->calc_task);
+    AsdTask_CreateDraw("SearchWin DrawUpLeft", 0x81, 0, 0,
+                       SearchWin_DrawUpAndCalc, 0, 0, work->calc_task);
+    AsdTask_CreateDraw("SearchWin DrawUpRight", 0xDF, 0, 0,
+                       SearchWin_DrawUpAndCalc, 0, 0, work->calc_task);
 
     UiSpriteGroup_Init(&work->sprite_group);
     UiSpriteGroup_BindTable(&work->sprite_group,
-                            SpriteTableWord(g_SearchWinSpriteTable - 0x48), 0x24,
-                            SpriteTableWord(g_SearchWinSpriteTable - 0x24), 0x24,
+                            0x00403C24u, 0x24,
+                            0x00403C48u, 0x24,
                             0, 0, 0, 0,
-                            SpriteTableWord(g_SearchWinSpriteTable), 0x70);
+                            0x00403C6Cu, 0x70);
 
-    UiAnimSprite_SetupEx(&work->panel_sprite, 0x0E, 0x87, 0, &work->sprite_group, 1, 1.0f);
-    UiAnimSprite_SetAnim(&work->panel_sprite, 0, 0);
+    // The ROM ABI for 0x002BDB2C takes the sprite group in r3; there is no
+    // separate fourth integer argument before it. Keep this corrected
+    // six-argument view local because other reconstructed call sites still
+    // use their current signatures.
+    using SearchWinSetupEx = void (*)(UiAnimSprite*, s32, s32,
+                                     UiSpriteGroup*, u32, f32);
+    reinterpret_cast<SearchWinSetupEx>(UiAnimSprite_SetupEx)(
+        &work->panel_sprite, 0x0E, 0x87, &work->sprite_group, 1, 1.0f);
+    // 0x002BF030 consumes (sprite, animation); it initializes its two
+    // internal search indices itself, so the source frame argument is not
+    // present in the ROM ABI.
+    using SearchWinSetAnim = void (*)(UiAnimSprite*, s32);
+    reinterpret_cast<SearchWinSetAnim>(UiAnimSprite_SetAnim)(
+        &work->panel_sprite, 0);
 }
 
 // DECOMP_FUNC(0x001accd4, 1104)

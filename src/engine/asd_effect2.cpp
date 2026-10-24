@@ -918,7 +918,7 @@ void* effPolygonThunder_func_00327d90(EffPolygonThunder* object)
 // rest of the buffer untouched.  The return value is the name table's first
 // word (`ldr r0,[r0]`, 0x00324414).
 //
-// DECOMP_FUNC(0x003243bc, 464)
+// DECOMP_FUNC(0x003243bc, 100)
 s32 effPolygonFlash_func_003243bc(EffPolygonFlash* object, char* buffer)
 {
     UiText_Format(buffer, "%s", object->names->name); // 0x003243CC..0x003243DC
@@ -934,7 +934,8 @@ s32 effPolygonFlash_func_003243bc(EffPolygonFlash* object, char* buffer)
     return static_cast<s32>(object->names->field_00); // 0x00324410..0x00324418
 }
 
-// 0x00324420 -- second entry inside ledger row 0x003243BC.
+// DECOMP_FUNC(0x00324420, 364)
+// 0x00324420 -- constructs the flash geometry and its alternating UV vertices.
 //
 // The 0x10 + count*0x18 allocation carries the vertex cursor at +0x00, the
 // geometry at +0x04 and itself at +0x08 (0x00324468..0x00324470).  The
