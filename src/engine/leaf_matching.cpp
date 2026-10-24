@@ -2532,14 +2532,9 @@ extern "C" u32 engine_func_001384b8(const u32* p) {
 
 // DECOMP_FUNC(0x0013fe34, 24)
 extern "C" void func_0013fe34(u8* p) {
-    asm volatile(
-        "mov r1, #0\n"
-        "mov r2, #0x2f\n"
-        "str r1, [%0, #4]\n"
-        "strb r2, [%0, #8]\n"
-        "strb r1, [%0, #9]\n"
-        : : "r"(p) : "r1", "r2", "memory"
-    );
+    *reinterpret_cast<volatile u32*>(p + 4) = 0;
+    reinterpret_cast<volatile u8*>(p)[8] = 0x2f;
+    reinterpret_cast<volatile u8*>(p)[9] = 0;
 }
 
 // DECOMP_FUNC(0x001524d0, 24)
