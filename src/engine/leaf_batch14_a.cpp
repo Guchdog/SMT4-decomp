@@ -666,41 +666,23 @@ extern "C" __attribute__((naked)) void func_002a258c() {
 }
 
 // DECOMP_FUNC(0x002abdf4, 128)
-extern "C" __attribute__((naked)) void engine_func_002abdf4() {
-    asm volatile(
-        "str r1, [r0, #8]\n"
-        "ldr r0, [r1, #0xc]\n"
-        "str r0, [r1, #0x10]\n"
-        "ldr r0, [r1, #0x1c]\n"
-        "str r0, [r1, #0x20]\n"
-        "ldr r0, [r1, #0x2c]\n"
-        "str r0, [r1, #0x30]\n"
-        "ldr r0, [r1, #0x3c]\n"
-        "str r0, [r1, #0x40]\n"
-        "ldr r0, [r1, #0x6c]\n"
-        "str r0, [r1, #0x70]\n"
-        "ldr r0, [r1, #0x7c]\n"
-        "str r0, [r1, #0x80]\n"
-        "ldr r0, [r1, #0x8c]\n"
-        "str r0, [r1, #0x90]\n"
-        "ldr r0, [r1, #0x9c]\n"
-        "str r0, [r1, #0xa0]\n"
-        "ldr r0, [r1, #0xac]\n"
-        "str r0, [r1, #0xb0]\n"
-        "ldr r0, [r1, #0x4c]\n"
-        "str r0, [r1, #0x50]\n"
-        "ldr r0, [r1, #0x5c]\n"
-        "str r0, [r1, #0x60]\n"
-        "ldr r0, [r1, #0xbc]\n"
-        "str r0, [r1, #0xc0]\n"
-        "ldr r0, [r1, #0xcc]\n"
-        "str r0, [r1, #0xd0]\n"
-        "ldr r0, [r1, #0xdc]\n"
-        "str r0, [r1, #0xe0]\n"
-        "ldr r0, [r1, #0xec]\n"
-        "str r0, [r1, #0xf0]\n"
-        "bx lr\n"
-    );
+extern "C" void engine_func_002abdf4(u32* owner, volatile u32* record) {
+    owner[2] = reinterpret_cast<u32>(record);
+    record[0x10 / 4] = record[0x0c / 4];
+    record[0x20 / 4] = record[0x1c / 4];
+    record[0x30 / 4] = record[0x2c / 4];
+    record[0x40 / 4] = record[0x3c / 4];
+    record[0x70 / 4] = record[0x6c / 4];
+    record[0x80 / 4] = record[0x7c / 4];
+    record[0x90 / 4] = record[0x8c / 4];
+    record[0xa0 / 4] = record[0x9c / 4];
+    record[0xb0 / 4] = record[0xac / 4];
+    record[0x50 / 4] = record[0x4c / 4];
+    record[0x60 / 4] = record[0x5c / 4];
+    record[0xc0 / 4] = record[0xbc / 4];
+    record[0xd0 / 4] = record[0xcc / 4];
+    record[0xe0 / 4] = record[0xdc / 4];
+    record[0xf0 / 4] = record[0xec / 4];
 }
 
 // DECOMP_FUNC(0x002e5b24, 128)

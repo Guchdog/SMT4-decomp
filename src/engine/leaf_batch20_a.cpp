@@ -275,40 +275,23 @@ extern "C" __attribute__((naked)) void func_00103484() {
 }
 
 // DECOMP_FUNC(0x001035d4, 12)
-extern "C" __attribute__((naked)) void func_001035d4() {
-    asm volatile(
-        "ldr r0, [pc]\n"
-        "bx lr\n"
-        ".word 0x00464b40 @ literal/data\n"
-    );
+extern "C" volatile f32* func_001035d4() {
+    return reinterpret_cast<volatile f32*>(0x00464b40);
 }
 
 // DECOMP_FUNC(0x00103744, 16)
-extern "C" __attribute__((naked)) void func_00103744() {
-    asm volatile(
-        "ldr r0, [pc, #4]\n"
-        "ldrsb r0, [r0]\n"
-        "bx lr\n"
-        ".word 0x00446fd0 @ literal/data\n"
-    );
+extern "C" u32 func_00103744() {
+    return static_cast<u32>(*reinterpret_cast<const volatile s8*>(0x00446fd0));
 }
 
 // DECOMP_FUNC(0x00103754, 12)
-extern "C" __attribute__((naked)) void func_00103754() {
-    asm volatile(
-        "ldr r0, [pc]\n"
-        "bx lr\n"
-        ".word 0x00464b4c @ literal/data\n"
-    );
+extern "C" f32* func_00103754() {
+    return reinterpret_cast<f32*>(0x00464b4c);
 }
 
 // DECOMP_FUNC(0x00103760, 12)
-extern "C" __attribute__((naked)) void func_00103760() {
-    asm volatile(
-        "ldr r0, [pc]\n"
-        "bx lr\n"
-        ".word 0x00464b3c @ literal/data\n"
-    );
+extern "C" f32* func_00103760() {
+    return reinterpret_cast<f32*>(0x00464b3c);
 }
 
 // DECOMP_FUNC(0x00103ba0, 104)
@@ -388,13 +371,8 @@ extern "C" __attribute__((naked)) void func_00103c70() {
 }
 
 // DECOMP_FUNC(0x00103cbc, 16)
-extern "C" __attribute__((naked)) void func_00103cbc() {
-    asm volatile(
-        "ldr r1, [pc, #4]\n"
-        "str r0, [r1]\n"
-        "bx lr\n"
-        ".word 0x004651c0 @ literal/data\n"
-    );
+extern "C" void func_00103cbc(u32 value) {
+    *reinterpret_cast<volatile u32*>(0x004651c0) = value;
 }
 
 // DECOMP_FUNC(0x00103ccc, 68)
@@ -431,13 +409,8 @@ extern "C" __attribute__((naked)) void func_00103dd4() {
 }
 
 // DECOMP_FUNC(0x00103de4, 16)
-extern "C" __attribute__((naked)) void func_00103de4() {
-    asm volatile(
-        "ldr r1, [pc, #4]\n"
-        "str r0, [r1]\n"
-        "bx lr\n"
-        ".word 0x00435e48 @ literal/data\n"
-    );
+extern "C" void func_00103de4(u32 value) {
+    *reinterpret_cast<volatile u32*>(0x00435e48) = value;
 }
 
 // DECOMP_FUNC(0x00103ef8, 28)
@@ -574,12 +547,8 @@ extern "C" __attribute__((naked)) void func_001041a4() {
 }
 
 // DECOMP_FUNC(0x0010428c, 12)
-extern "C" __attribute__((naked)) void func_0010428c() {
-    asm volatile(
-        "ldr r0, [pc]\n"
-        "bx lr\n"
-        ".word 0x00464b50 @ literal/data\n"
-    );
+extern "C" f32* func_0010428c() {
+    return reinterpret_cast<f32*>(0x00464b50);
 }
 
 // DECOMP_FUNC(0x00104298, 48)
@@ -728,12 +697,8 @@ extern "C" __attribute__((naked)) void func_00105c1c() {
 }
 
 // DECOMP_FUNC(0x00105c44, 12)
-extern "C" __attribute__((naked)) void func_00105c44() {
-    asm volatile(
-        "ldr r0, [pc]\n"
-        "bx lr\n"
-        ".word 0x00464b54 @ literal/data\n"
-    );
+extern "C" f32* func_00105c44() {
+    return reinterpret_cast<f32*>(0x00464b54);
 }
 
 // DECOMP_FUNC(0x00105da4, 16)

@@ -31,8 +31,12 @@ extern "C" __attribute__((naked)) void func_0034f8dc() {
 }
 
 // DECOMP_FUNC(0x0035a080, 28)
-extern "C" __attribute__((naked)) void engine_func_0035a080() {
-    asm volatile("ldr r3, [r0, #0x134]\ncmp r1, #0\nstr r3, [r2]\nldrne r2, [r0, #0x138]\nstrne r2, [r1]\nldr r0, [r0, #0x138]\nbx lr\n");
+extern "C" u32 engine_func_0035a080(volatile u8* object, u32* optional_out, u32* first_out) {
+    *first_out = *reinterpret_cast<volatile u32*>(object + 0x134);
+    if (optional_out != 0) {
+        *optional_out = *reinterpret_cast<volatile u32*>(object + 0x138);
+    }
+    return *reinterpret_cast<volatile u32*>(object + 0x138);
 }
 
 // DECOMP_FUNC(0x00383780, 28)
@@ -126,8 +130,12 @@ extern "C" __attribute__((naked)) void engine_func_00287d54() {
 }
 
 // DECOMP_FUNC(0x00296ef8, 32)
-extern "C" __attribute__((naked)) void ui_func_00296ef8() {
-    asm volatile("ldr ip, [sp]\nstrb r1, [r0, #4]\nstrb r2, [r0, #5]\nstrb r3, [r0, #6]\nstrb ip, [r0, #7]\nldr r1, [r0, #4]\nstr r1, [r0, #8]\nbx lr\n");
+extern "C" void ui_func_00296ef8(volatile u8* block, u8 a1, u8 a2, u8 a3, u8 a4) {
+    block[4] = a1;
+    block[5] = a2;
+    block[6] = a3;
+    block[7] = a4;
+    *reinterpret_cast<volatile u32*>(block + 8) = *reinterpret_cast<volatile u32*>(block + 4);
 }
 
 // DECOMP_FUNC(0x0029a2b0, 32)
@@ -136,8 +144,11 @@ extern "C" __attribute__((naked)) void engine_func_0029a2b0() {
 }
 
 // DECOMP_FUNC(0x002b2ccc, 32)
-extern "C" __attribute__((naked)) void engine_func_002b2ccc() {
-    asm volatile("ldr r0, [r0, #0x2c]\nldr r1, [r0, #0x58]\nstr r1, [r2]\nldr r1, [r0, #0x68]\nstr r1, [r2, #4]\nldr r0, [r0, #0x78]\nstr r0, [r2, #8]\nbx lr\n");
+extern "C" void engine_func_002b2ccc(const u8* object, u32 unused, u32* result) {
+    const u8* fields = *reinterpret_cast<const u8* const*>(object + 0x2c);
+    result[0] = *reinterpret_cast<const u32*>(fields + 0x58);
+    result[1] = *reinterpret_cast<const u32*>(fields + 0x68);
+    result[2] = *reinterpret_cast<const u32*>(fields + 0x78);
 }
 
 // DECOMP_FUNC(0x002c00b4, 32)

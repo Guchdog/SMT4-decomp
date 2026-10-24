@@ -1,8 +1,12 @@
 #include "types.h"
 
 // DECOMP_FUNC(0x003b00b4, 44)
-extern "C" __attribute__((naked)) void func_003b00b4() {
-    asm volatile("ldr r2, [r1, #0x1c]\nstr r2, [r0, #0x1c]\nldr r2, [r1, #0x20]\nstr r2, [r0, #0x20]\nldr r2, [r1, #0x18]\nstr r2, [r0, #0x18]\nldr r2, [r1, #4]\nstr r2, [r0, #4]\nldr r1, [r1, #8]\nstr r1, [r0, #8]\nbx lr\n");
+extern "C" void func_003b00b4(u32* destination, const u32* source) {
+    destination[0x1c / 4] = source[0x1c / 4];
+    destination[0x20 / 4] = source[0x20 / 4];
+    destination[0x18 / 4] = source[0x18 / 4];
+    destination[1] = source[1];
+    destination[2] = source[2];
 }
 
 // DECOMP_FUNC(0x003e8ad4, 44)

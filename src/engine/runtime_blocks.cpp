@@ -134,7 +134,7 @@ void ui_func_002c5948(u32 value);
 void camp_func_002c5918(u32 value);
 void script_vm_func_002c58cc(u32 value);
 u32  engine_func_002c586c(void* out);
-void func_00103de4();
+void func_00103de4(u32 value);
 void func_00103cbc(u32 value);
 void engine_func_0010b578();
 u32  func_00103744();
@@ -1203,7 +1203,7 @@ void crt_func_00101308(void)
         u8 tick_out[0x10] = {};
         u32 raw = engine_func_002c586c(tick_out);
         u32 scaled = raw * 1000000u;             // umull r0,r1,#0xF4240
-        func_00103de4();
+        func_00103de4(scaled);
         func_00103cbc(scaled);
     }
 

@@ -38,7 +38,7 @@ extern "C" void engine_func_002b5d0c();
 extern "C" void engine_func_002b67c0();
 extern "C" void engine_func_002bab5c();
 extern "C" void engine_func_002bad80();
-extern "C" void engine_func_002bd448();
+extern "C" void engine_func_002bd448(volatile u8* voice);
 extern "C" void engine_func_002bd688();
 extern "C" void engine_func_002c1f28();
 extern "C" void engine_func_002c31d8();

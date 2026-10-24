@@ -68,7 +68,7 @@ extern "C" void engine_func_00296f60();
 extern "C" void engine_func_0029960c();
 extern "C" void engine_func_002a8a58();
 extern "C" void engine_func_002adf14();
-extern "C" void engine_func_002b5124();
+extern "C" u32 engine_func_002b5124(void*, void*);
 extern "C" void engine_func_002b5148();
 extern "C" void engine_func_002b5bcc();
 extern "C" void engine_func_002b626c();

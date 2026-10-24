@@ -70,14 +70,39 @@ extern "C" __attribute__((naked)) void func_002a4b88() {
     asm volatile("sub r0, r0, #0x1400\nsubs r0, r0, #6\nmov r0, #1\nmoveq r0, #4\nmul r0, r1, r0\nadd r1, r2, #0x1f\nbic r1, r1, #0x1f\nadd r0, r0, r1\nbx lr\n");
 }
 
+struct QueueNode_002b5124 {
+    QueueNode_002b5124* volatile next;
+};
+struct Queue_002b5124 {
+    u8 pad[0x16c];
+    QueueNode_002b5124* volatile head;
+    QueueNode_002b5124* volatile tail;
+    volatile u32 result;
+};
 // DECOMP_FUNC(0x002b5124, 36)
-extern "C" __attribute__((naked)) void engine_func_002b5124() {
-    asm volatile("ldr r2, [r0, #0x170]\ncmp r2, #0\nstreq r1, [r0, #0x16c]\nstrne r1, [r2]\nmov r2, #0\nstr r1, [r0, #0x170]\nstr r2, [r1]\nldr r0, [r0, #0x174]\nbx lr\n");
+extern "C" u32 engine_func_002b5124(void* queue_data, void* node_data) {
+    Queue_002b5124* const queue = static_cast<Queue_002b5124*>(queue_data);
+    QueueNode_002b5124* const node = static_cast<QueueNode_002b5124*>(node_data);
+    QueueNode_002b5124* tail = queue->tail;
+    if (tail == 0) {
+        queue->head = node;
+    } else {
+        tail->next = node;
+    }
+    queue->tail = node;
+    node->next = 0;
+    return queue->result;
 }
 
 // DECOMP_FUNC(0x002bd448, 36)
-extern "C" __attribute__((naked)) void engine_func_002bd448() {
-    asm volatile("mov r1, #0\nstr r1, [r0]\nstr r1, [r0, #4]\nstr r1, [r0, #8]\nstr r1, [r0, #0xc]\nstr r1, [r0, #0x10]\nstr r1, [r0, #0x14]\nstrb r1, [r0, #0x11]\nbx lr\n");
+extern "C" void engine_func_002bd448(volatile u8* voice) {
+    *reinterpret_cast<volatile u32*>(voice) = 0;
+    *reinterpret_cast<volatile u32*>(voice + 4) = 0;
+    *reinterpret_cast<volatile u32*>(voice + 8) = 0;
+    *reinterpret_cast<volatile u32*>(voice + 0x0c) = 0;
+    *reinterpret_cast<volatile u32*>(voice + 0x10) = 0;
+    *reinterpret_cast<volatile u32*>(voice + 0x14) = 0;
+    voice[0x11] = 0;
 }
 
 // DECOMP_FUNC(0x002bf774, 36)

@@ -12,6 +12,7 @@ from __future__ import annotations
 import argparse
 import csv
 from pathlib import Path
+import re
 import sys
 import capstone
 
@@ -100,6 +101,44 @@ def is_terminal_return(insn: capstone.CsInsn) -> bool:
     return False
 
 
+def is_asm_backed_row(row: dict, repo_root: Path = Path(".")) -> bool:
+    """Return whether a ledger entry is still implemented with inline assembly.
+
+    Source files frequently contain a mixture of reconstructed C++ and exact
+    assembly wrappers, so classify the block attached to the row's exact
+    ``DECOMP_FUNC`` marker rather than the whole translation unit.
+    """
+    src_file = row.get("src_file", "").strip()
+    if not src_file:
+        return False
+
+    path = Path(src_file)
+    if not path.is_absolute():
+        path = Path(repo_root) / path
+    if not path.is_file():
+        return False
+
+    text = path.read_text(encoding="utf-8")
+    address = int(row["address"], 16)
+    size = int(row["size"])
+    marker = re.search(
+        rf"(?m)^\s*//\s*DECOMP_FUNC\(0x{address:08x},\s*{size}\)\s*$",
+        text,
+        flags=re.IGNORECASE,
+    )
+    if marker is None:
+        return False
+
+    next_marker = re.search(r"(?m)^\s*//\s*DECOMP_FUNC\(", text[marker.end():])
+    block_end = marker.end() + next_marker.start() if next_marker else len(text)
+    block = text[marker.end():block_end]
+    return re.search(
+        r"\b(?:__asm__|asm)\b|\.incbin\b|\.word\b|\.inst\b|"
+        r"__attribute__\s*\(\([^)]*\bnaked\b",
+        block,
+    ) is not None
+
+
 def find_leaf_candidates(
     functions_csv: Path = Path("config/functions.csv"),
     code_bytes: bytes = b"",
@@ -107,6 +146,9 @@ def find_leaf_candidates(
     limit: int = 50,
     category: str | None = None,
     allow_internal_branch: bool = False,
+    statuses: tuple[str, ...] = ("todo",),
+    asm_backed_only: bool = False,
+    repo_root: Path = Path("."),
 ) -> list[dict]:
     """Scans functions_csv for candidate leaf functions up to max_size.
 
@@ -131,7 +173,11 @@ def find_leaf_candidates(
     with open(functions_csv, "r", encoding="utf-8", newline="") as f:
         reader = csv.DictReader(f)
         for row in reader:
-            if row["status"].strip() != "todo":
+            row_status = row["status"].strip()
+            if row_status not in statuses:
+                continue
+
+            if asm_backed_only and not is_asm_backed_row(row, repo_root=repo_root):
                 continue
 
             size = int(row["size"])
@@ -178,8 +224,10 @@ def find_leaf_candidates(
                 candidates.append({
                     "address": addr_str,
                     "size": size,
+                    "status": row_status,
                     "category": row_cat,
                     "name": row["name"].strip(),
+                    "src_file": row["src_file"].strip(),
                     "instruction_count": len(insns),
                     "terminal_instruction": (
                         f"{insns[-1].mnemonic} {insns[-1].op_str}".strip()
@@ -203,6 +251,17 @@ def main() -> None:
     parser.add_argument("--limit", type=int, default=50, help="Maximum number of candidates to show (default: 50)")
     parser.add_argument("--category", type=str, default=None, help="Filter candidates by subsystem category")
     parser.add_argument("--allow-internal-branches", action="store_true", help="Allow internal branch instructions")
+    parser.add_argument(
+        "--status",
+        action="append",
+        choices=("todo", "stub", "non_matching", "matching"),
+        help="Ledger status to search; repeat for more than one (default: todo)",
+    )
+    parser.add_argument(
+        "--asm-backed-only",
+        action="store_true",
+        help="Only show entries whose DECOMP_FUNC block still uses inline assembly",
+    )
     args = parser.parse_args()
 
     if not args.code.is_file():
@@ -217,9 +276,17 @@ def main() -> None:
         limit=args.limit,
         category=args.category,
         allow_internal_branch=args.allow_internal_branches,
+        statuses=tuple(args.status or ("todo",)),
+        asm_backed_only=args.asm_backed_only,
+        repo_root=_REPO_ROOT,
     )
 
-    print(f"Found {len(candidates)} leaf candidates (max size: {args.max_size} B, category: {args.category or 'any'}):")
+    statuses = ",".join(args.status or ("todo",))
+    print(
+        f"Found {len(candidates)} leaf candidates (max size: {args.max_size} B, "
+        f"category: {args.category or 'any'}, status: {statuses}, "
+        f"asm-backed only: {args.asm_backed_only}):"
+    )
     print(f"{'#':<4} | {'Address':<10} | {'Size':>5} | {'Insns':>5} | {'Return':<16} | {'Category':<10} | {'Name'}")
     print("-" * 84)
     for idx, c in enumerate(candidates, 1):

@@ -367,28 +367,16 @@ extern "C" __attribute__((naked)) void func_0037bb14() {
 }
 
 // DECOMP_FUNC(0x003b0170, 76)
-extern "C" __attribute__((naked)) void func_003b0170() {
-    asm volatile(
-        "ldr r2, [r1, #0x1c]\n"
-        "str r2, [r0, #0x1c]\n"
-        "ldr r2, [r1, #0x20]\n"
-        "str r2, [r0, #0x20]\n"
-        "ldr r2, [r1, #0x24]\n"
-        "str r2, [r0, #0x24]\n"
-        "ldr r2, [r1, #0x28]\n"
-        "str r2, [r0, #0x28]\n"
-        "ldr r2, [r1, #0x2c]\n"
-        "str r2, [r0, #0x2c]\n"
-        "ldr r2, [r1, #0x30]\n"
-        "str r2, [r0, #0x30]\n"
-        "ldr r2, [r1, #0x18]\n"
-        "str r2, [r0, #0x18]\n"
-        "ldr r2, [r1, #4]\n"
-        "str r2, [r0, #4]\n"
-        "ldr r1, [r1, #8]\n"
-        "str r1, [r0, #8]\n"
-        "bx lr\n"
-    );
+extern "C" void func_003b0170(u32* destination, const u32* source) {
+    destination[0x1c / 4] = source[0x1c / 4];
+    destination[0x20 / 4] = source[0x20 / 4];
+    destination[0x24 / 4] = source[0x24 / 4];
+    destination[0x28 / 4] = source[0x28 / 4];
+    destination[0x2c / 4] = source[0x2c / 4];
+    destination[0x30 / 4] = source[0x30 / 4];
+    destination[0x18 / 4] = source[0x18 / 4];
+    destination[1] = source[1];
+    destination[2] = source[2];
 }
 
 // DECOMP_FUNC(0x00128574, 80)
@@ -644,30 +632,14 @@ extern "C" __attribute__((naked)) void func_00257554() {
 }
 
 // DECOMP_FUNC(0x002575a8, 84)
-extern "C" __attribute__((naked)) void func_002575a8() {
-    asm volatile(
-        "tst r1, #1\n"
-        "ldrne r3, [r0, #0x1c]\n"
-        "strne r3, [r2]\n"
-        "tst r1, #2\n"
-        "ldrne r3, [r0, #0x2c]\n"
-        "strne r3, [r2]\n"
-        "tst r1, #4\n"
-        "ldrne r3, [r0, #0x28]\n"
-        "strne r3, [r2]\n"
-        "tst r1, #8\n"
-        "ldrne r3, [r0, #0x20]\n"
-        "strne r3, [r2]\n"
-        "tst r1, #0x20\n"
-        "ldrne r3, [r0, #0x34]\n"
-        "strne r3, [r2]\n"
-        "tst r1, #0x80\n"
-        "ldrne r1, [r0, #0x38]\n"
-        "strne r1, [r2]\n"
-        "ldr r0, [r0, #8]\n"
-        "str r0, [r2, #4]\n"
-        "bx lr\n"
-    );
+extern "C" void func_002575a8(const u32* source, u32 mask, u32* destination) {
+    if (mask & 1) destination[0] = source[0x1c / 4];
+    if (mask & 2) destination[0] = source[0x2c / 4];
+    if (mask & 4) destination[0] = source[0x28 / 4];
+    if (mask & 8) destination[0] = source[0x20 / 4];
+    if (mask & 0x20) destination[0] = source[0x34 / 4];
+    if (mask & 0x80) destination[0] = source[0x38 / 4];
+    destination[1] = source[2];
 }
 
 // DECOMP_FUNC(0x002a1a3c, 84)

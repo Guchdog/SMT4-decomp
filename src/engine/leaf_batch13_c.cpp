@@ -40,8 +40,18 @@ extern "C" __attribute__((naked)) void engine_func_002b6410() {
 }
 
 // DECOMP_FUNC(0x003b0570, 92)
-extern "C" __attribute__((naked)) void func_003b0570() {
-    asm volatile("ldr r2, [r1, #0x34]\nstr r2, [r0, #0x34]\nldr r2, [r1, #0x38]\nstr r2, [r0, #0x38]\nldr r2, [r1, #0x1c]\nstr r2, [r0, #0x1c]\nldr r2, [r1, #0x20]\nstr r2, [r0, #0x20]\nldr r2, [r1, #0x24]\nstr r2, [r0, #0x24]\nldr r2, [r1, #0x28]\nstr r2, [r0, #0x28]\nldr r2, [r1, #0x2c]\nstr r2, [r0, #0x2c]\nldr r2, [r1, #0x30]\nstr r2, [r0, #0x30]\nldr r2, [r1, #0x18]\nstr r2, [r0, #0x18]\nldr r2, [r1, #4]\nstr r2, [r0, #4]\nldr r1, [r1, #8]\nstr r1, [r0, #8]\nbx lr\n");
+extern "C" void func_003b0570(u32* destination, const u32* source) {
+    destination[0x34 / 4] = source[0x34 / 4];
+    destination[0x38 / 4] = source[0x38 / 4];
+    destination[0x1c / 4] = source[0x1c / 4];
+    destination[0x20 / 4] = source[0x20 / 4];
+    destination[0x24 / 4] = source[0x24 / 4];
+    destination[0x28 / 4] = source[0x28 / 4];
+    destination[0x2c / 4] = source[0x2c / 4];
+    destination[0x30 / 4] = source[0x30 / 4];
+    destination[0x18 / 4] = source[0x18 / 4];
+    destination[1] = source[1];
+    destination[2] = source[2];
 }
 
 // DECOMP_FUNC(0x003c9180, 92)
