@@ -2273,14 +2273,7 @@ extern "C" __attribute__((naked)) void func_00232b28() {
 
 // DECOMP_FUNC(0x00233584, 20)
 extern "C" s32 shop_func_00233584(const u8* p) {
-    asm volatile(
-        "ldrb r1, [%0, #0x12]\n"
-        "cmp r1, #0\n"
-        "ldrshne %0, [%0, #0x14]\n"
-        "mvneq %0, #0\n"
-        : "+r"(p) : : "r1", "cc"
-    );
-    return (s32)(intptr_t)p;
+    return p[0x12] != 0 ? *reinterpret_cast<const s16*>(p + 0x14) : -1;
 }
 
 // DECOMP_FUNC(0x0023378c, 20)
