@@ -31,13 +31,13 @@ random samples per function plus boundaries under two seeds. Four caller windows
 passed. The 11 focused tests and final full repository regression passed:
 64 tests in 279.534 seconds, with three private-key integration tests skipped.
 
-No 3DS emulator or console is installed in the inspected environment yet; the
-user is downloading Citra. The [archived Citra mod guide](https://citra.azahar-emu.org/help/feature/game-modding/)
-documents `load/mods/<Title ID>/exefs/code.ips`; for this game the title path is
+No 3DS emulator or console was installed in the inspected environment. The user
+will use Azahar. Its [loader](https://github.com/azahar-emu/azahar/blob/master/src/core/file_sys/ncch_container.cpp)
+searches `load/mods/<Title ID>/exefs/code.ips`; for this game the title path is
 `load/mods/00040000000E5C00/exefs/code.ips`. Luma uses
 `/luma/titles/00040000000E5C00/code.ips`. The next integration work needs a
 supported emulator or console, the exact US base game, isolated original and
 patched profiles, loader-log confirmation, and a way to trace replacement
-entry execution. A local ready-to-copy Citra mod folder is in ignored
-`build/citra-mod/00040000000E5C00/`; its `code.ips` hash matches both test runs.
+entry execution. A local ready-to-copy Azahar mod folder is in ignored
+`build/azahar-mod/00040000000E5C00/`; its `code.ips` hash matches both test runs.
 Do not claim a full-game pass from the ARM harness.

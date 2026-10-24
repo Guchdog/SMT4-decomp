@@ -146,15 +146,14 @@ Batch 2 IPS SHA-256:
 
 **A complete game was not booted.** The harness maps the existing text pages;
 preservation/execution of padding by a real 3DS loader still needs testing. The
-initial inventory found no installed 3DS emulator; the user is downloading
-Citra. Its [archived official mod guide](https://citra.azahar-emu.org/help/feature/game-modding/)
-documents the `load/mods/<Title ID>/exefs/code.ips` path. For this US title, use
+user will use Azahar; this is not yet evidence of a successful game boot.
+Azahar's [loader](https://github.com/azahar-emu/azahar/blob/master/src/core/file_sys/ncch_container.cpp)
+searches `load/mods/<Title ID>/exefs/code.ips`. For this US title, use
 `load/mods/00040000000E5C00/exefs/code.ips` and the exact base revision whose
 `code.bin` hash is recorded above; IPS does not check the source image. The
-ready-to-copy title folder is `build/citra-mod/00040000000E5C00/`. In Citra,
-right-click the game and open its Mods Location, then copy that title folder
-under the `load/mods/` directory. The repository still has no full executable
-linking/package target.
+ready-to-copy title folder is `build/azahar-mod/00040000000E5C00/`. In Azahar,
+open the game's Mods Location and copy the staged `exefs` folder there. The
+repository still has no full executable linking/package target.
 
 Luma3DS documents external decompressed code and IPS loading under
 `/luma/titles/<TitleID>/` in its
