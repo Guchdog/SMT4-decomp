@@ -388,13 +388,8 @@ extern "C" __attribute__((naked)) void func_00103c70() {
 }
 
 // DECOMP_FUNC(0x00103cbc, 16)
-extern "C" __attribute__((naked)) void func_00103cbc() {
-    asm volatile(
-        "ldr r1, [pc, #4]\n"
-        "str r0, [r1]\n"
-        "bx lr\n"
-        ".word 0x004651c0 @ literal/data\n"
-    );
+extern "C" void func_00103cbc(u32 value) {
+    *reinterpret_cast<volatile u32*>(0x004651c0) = value;
 }
 
 // DECOMP_FUNC(0x00103ccc, 68)
