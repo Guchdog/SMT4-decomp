@@ -2147,12 +2147,8 @@ extern "C" void script_vm_func_002668cc(u8* p, u32 v1, u32 v2) {
 
 // DECOMP_FUNC(0x00293a74, 16)
 extern "C" void script_vm_func_00293a74(u8* p) {
-    asm volatile(
-        "mov r1, #0\n"
-        "strb r1, [%0, #0x61]\n"
-        "strb r1, [%0, #0x60]\n"
-        : : "r"(p) : "r1", "memory"
-    );
+    *reinterpret_cast<volatile u8*>(p + 0x61) = 0;
+    *reinterpret_cast<volatile u8*>(p + 0x60) = 0;
 }
 
 // DECOMP_FUNC(0x002a17d4, 16)
@@ -2186,12 +2182,8 @@ extern "C" void func_002a3428(u32* p0, u32* p1) {
 
 // DECOMP_FUNC(0x002ae2b4, 16)
 extern "C" void func_002ae2b4(u8* p) {
-    asm volatile(
-        "mov r1, #0\n"
-        "str r1, [%0]\n"
-        "strh r1, [%0, #4]\n"
-        : : "r"(p) : "r1", "memory"
-    );
+    *reinterpret_cast<volatile u32*>(p) = 0;
+    *reinterpret_cast<volatile u16*>(p + 4) = 0;
 }
 
 // DECOMP_FUNC(0x002b90e0, 16)
@@ -2686,18 +2678,21 @@ extern "C" __attribute__((naked)) void script_vm_func_003df598() {
 }
 
 // DECOMP_FUNC(0x003e6340, 16)
-extern "C" __attribute__((naked)) void func_003e6340() {
-    asm volatile("ldr r1, [r0, #0x3c]\nldr r0, [r0, #0x40]\nsub r0, r1, r0\nbx lr\n");
+extern "C" s32 func_003e6340(const u8* p) {
+    return *reinterpret_cast<const s32*>(p + 0x3c) - *reinterpret_cast<const s32*>(p + 0x40);
 }
 
 // DECOMP_FUNC(0x003ea364, 16)
-extern "C" __attribute__((naked)) void func_003ea364() {
-    asm volatile("ldr r0, [r0, #8]\nldr r0, [r0, #8]\nldrh r0, [r0, #8]\nbx lr\n");
+extern "C" u32 func_003ea364(const u8* p) {
+    const u8* first = *reinterpret_cast<const u8* const*>(p + 8);
+    const u8* second = *reinterpret_cast<const u8* const*>(first + 8);
+    return *reinterpret_cast<const u16*>(second + 8);
 }
 
 // DECOMP_FUNC(0x003eb294, 16)
-extern "C" __attribute__((naked)) void engine_func_003eb294() {
-    asm volatile("mov r1, #0\nstr r1, [r0]\nstrb r1, [r0, #4]\nbx lr\n");
+extern "C" void engine_func_003eb294(u8* p) {
+    *reinterpret_cast<volatile u32*>(p) = 0;
+    *reinterpret_cast<volatile u8*>(p + 4) = 0;
 }
 
 // DECOMP_FUNC(0x0016e468, 20)
