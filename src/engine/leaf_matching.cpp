@@ -2457,13 +2457,9 @@ extern "C" __attribute__((naked)) void engine_func_002a7fc4() {
 
 // DECOMP_FUNC(0x002a84bc, 20)
 extern "C" void battle_func_002a84bc(u8* p) {
-    asm volatile(
-        "mov r1, #0\n"
-        "str r1, [%0]\n"
-        "str r1, [%0, #4]\n"
-        "strh r1, [%0, #8]\n"
-        : : "r"(p) : "r1", "memory"
-    );
+    *reinterpret_cast<volatile u32*>(p) = 0;
+    *reinterpret_cast<volatile u32*>(p + 4) = 0;
+    *reinterpret_cast<volatile u16*>(p + 8) = 0;
 }
 
 // DECOMP_FUNC(0x002adb40, 20)
@@ -2695,8 +2691,10 @@ extern "C" __attribute__((naked)) void battle_func_002c0000() {
 }
 
 // DECOMP_FUNC(0x002c2b90, 20)
-extern "C" __attribute__((naked)) void engine_func_002c2b90() {
-    asm volatile("mov r1, #0\nstr r1, [r0]\nstr r1, [r0, #4]\nstr r1, [r0, #8]\nbx lr\n");
+extern "C" void engine_func_002c2b90(u8* p) {
+    *reinterpret_cast<volatile u32*>(p) = 0;
+    *reinterpret_cast<volatile u32*>(p + 4) = 0;
+    *reinterpret_cast<volatile u32*>(p + 8) = 0;
 }
 
 // DECOMP_FUNC(0x002cbdac, 20)
@@ -2735,13 +2733,17 @@ extern "C" __attribute__((naked)) void func_0035d270() {
 }
 
 // DECOMP_FUNC(0x0035ecb8, 20)
-extern "C" __attribute__((naked)) void func_0035ecb8() {
-    asm volatile("mov r1, #0\nstr r1, [r0]\nstr r1, [r0, #4]\nstr r1, [r0, #8]\nbx lr\n");
+extern "C" void func_0035ecb8(u8* p) {
+    *reinterpret_cast<volatile u32*>(p) = 0;
+    *reinterpret_cast<volatile u32*>(p + 4) = 0;
+    *reinterpret_cast<volatile u32*>(p + 8) = 0;
 }
 
 // DECOMP_FUNC(0x0037bf4c, 20)
-extern "C" __attribute__((naked)) void func_0037bf4c() {
-    asm volatile("mov r1, #0\nstr r1, [r0, #0x38]\nstr r1, [r0, #0x3c]\nstr r1, [r0, #0x40]\nbx lr\n");
+extern "C" void func_0037bf4c(u8* p) {
+    *reinterpret_cast<volatile u32*>(p + 0x38) = 0;
+    *reinterpret_cast<volatile u32*>(p + 0x3c) = 0;
+    *reinterpret_cast<volatile u32*>(p + 0x40) = 0;
 }
 
 // DECOMP_FUNC(0x0038143c, 20)
@@ -2765,8 +2767,11 @@ extern "C" __attribute__((naked)) void engine_func_00399d4c() {
 }
 
 // DECOMP_FUNC(0x0039fe3c, 20)
-extern "C" __attribute__((naked)) void func_0039fe3c() {
-    asm volatile("ldr r2, [r0, #8]\nstr r2, [r1]\nldr r0, [r0, #0xc]\nstr r0, [r1, #4]\nbx lr\n");
+extern "C" u32 func_0039fe3c(const u8* src, u8* dst) {
+    *reinterpret_cast<u32*>(dst) = *reinterpret_cast<const u32*>(src + 8);
+    const u32 second = *reinterpret_cast<const u32*>(src + 0xc);
+    *reinterpret_cast<u32*>(dst + 4) = second;
+    return second;
 }
 
 // DECOMP_FUNC(0x003abcf4, 20)
@@ -2775,8 +2780,9 @@ extern "C" __attribute__((naked)) void func_003abcf4() {
 }
 
 // DECOMP_FUNC(0x003b3510, 20)
-extern "C" __attribute__((naked)) void func_003b3510() {
-    asm volatile("ldr r2, [r1, #4]\nstr r2, [r0, #4]\nldr r1, [r1, #8]\nstr r1, [r0, #8]\nbx lr\n");
+extern "C" void func_003b3510(u8* dst, const u8* src) {
+    *reinterpret_cast<u32*>(dst + 4) = *reinterpret_cast<const u32*>(src + 4);
+    *reinterpret_cast<u32*>(dst + 8) = *reinterpret_cast<const u32*>(src + 8);
 }
 
 // DECOMP_FUNC(0x003bf798, 20)
@@ -2825,8 +2831,10 @@ extern "C" __attribute__((naked)) void func_003e8a68() {
 }
 
 // DECOMP_FUNC(0x003eb280, 20)
-extern "C" __attribute__((naked)) void camp_func_003eb280() {
-    asm volatile("mov r1, #0\nstr r1, [r0]\nstr r1, [r0, #4]\nstr r1, [r0, #8]\nbx lr\n");
+extern "C" void camp_func_003eb280(u8* p) {
+    *reinterpret_cast<volatile u32*>(p) = 0;
+    *reinterpret_cast<volatile u32*>(p + 4) = 0;
+    *reinterpret_cast<volatile u32*>(p + 8) = 0;
 }
 
 // DECOMP_FUNC(0x003f6738, 20)
