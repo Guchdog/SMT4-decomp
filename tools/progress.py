@@ -27,10 +27,11 @@ if str(_REPO_ROOT) not in sys.path:
 from tools.asm_diff import compare_function, extract_elf_functions, find_symbol_in_elf
 from tools.build_check import ensure_tu_armv6k
 
-VALID_STATUSES = {"todo", "stub", "wip", "non_matching", "matching"}
+VALID_STATUSES = {"todo", "stub", "wip", "non_matching", "matching", "matching_span"}
 DECOMPILED_STATUSES = {"non_matching", "matching"}
+SPAN_STATUSES = {"matching_span"}
 STUB_STATUSES = {"stub", "wip"}
-CLAIMED_STATUSES = DECOMPILED_STATUSES | STUB_STATUSES
+CLAIMED_STATUSES = DECOMPILED_STATUSES | SPAN_STATUSES | STUB_STATUSES
 
 
 class VerificationError(Exception):
@@ -159,8 +160,9 @@ def extract_function_body(
     addr: str,
     definition_name: str | None = None,
     expected_size: int | None = None,
+    marker_type: str = "DECOMP_FUNC",
 ) -> str | None:
-    """Extracts the C++ function body following DECOMP_FUNC(addr, size).
+    """Extract the C++ body following a DECOMP_FUNC or DECOMP_SPAN marker.
 
     The marker must declare the ledger size and, when ``definition_name`` is
     supplied, must be followed by that function's definition before the next
@@ -168,7 +170,7 @@ def extract_function_body(
     silently parsing the body of the function that follows it.
     """
     marker_re = re.compile(
-        rf"DECOMP_FUNC\(\s*{re.escape(addr)}\s*,\s*(\d+)\s*\)",
+        rf"{re.escape(marker_type)}\(\s*{re.escape(addr)}\s*,\s*(\d+)\s*\)",
         re.IGNORECASE,
     )
     match = marker_re.search(src_text)
@@ -178,7 +180,7 @@ def extract_function_body(
     marker_size = int(match.group(1))
     if expected_size is not None and marker_size != expected_size:
         raise VerificationError(
-            f"DECOMP_FUNC marker for {addr} declares {marker_size} bytes, "
+            f"{marker_type} marker for {addr} declares {marker_size} bytes, "
             f"expected {expected_size} from config/functions.csv"
         )
 
@@ -254,12 +256,16 @@ def compute_progress(functions_csv: Path, repo_root: Path) -> dict:
 
     total_funcs = 0
     total_bytes = 0
+    total_spans = 0
+    total_span_bytes = 0
     decomp_funcs = 0
     decomp_bytes = 0
     stub_funcs = 0
     stub_bytes = 0
     matching_funcs = 0
     matching_bytes = 0
+    matching_spans = 0
+    matching_span_bytes = 0
     verified_funcs = 0
     verified_bytes = 0
     draft_funcs = 0
@@ -269,10 +275,14 @@ def compute_progress(functions_csv: Path, repo_root: Path) -> dict:
         lambda: {
             "total_funcs": 0,
             "total_bytes": 0,
+            "total_spans": 0,
+            "total_span_bytes": 0,
             "decomp_funcs": 0,
             "decomp_bytes": 0,
             "matching_funcs": 0,
             "matching_bytes": 0,
+            "matching_spans": 0,
+            "matching_span_bytes": 0,
             "verified_funcs": 0,
             "verified_bytes": 0,
             "draft_funcs": 0,
@@ -297,9 +307,25 @@ def compute_progress(functions_csv: Path, repo_root: Path) -> dict:
             if status not in VALID_STATUSES:
                 raise VerificationError(f"Invalid status '{status}' for {addr} ({name})")
 
-            total_funcs += 1
+            is_span = cat == "raw_span"
+            if is_span and status != "matching_span":
+                raise VerificationError(
+                    f"Raw span {name} ({addr}) must use status 'matching_span', got '{status}'"
+                )
+            if status == "matching_span" and not is_span:
+                raise VerificationError(
+                    f"Span {name} ({addr}) must use category 'raw_span'"
+                )
+
+            if is_span:
+                total_spans += 1
+                total_span_bytes += size
+                by_category[cat]["total_spans"] += 1
+                by_category[cat]["total_span_bytes"] += size
+            else:
+                total_funcs += 1
+                by_category[cat]["total_funcs"] += 1
             total_bytes += size
-            by_category[cat]["total_funcs"] += 1
             by_category[cat]["total_bytes"] += size
 
             if status in CLAIMED_STATUSES:
@@ -315,16 +341,47 @@ def compute_progress(functions_csv: Path, repo_root: Path) -> dict:
                 if src_path not in src_cache:
                     src_cache[src_path] = src_path.read_text(encoding="utf-8")
                 src_text = src_cache[src_path]
+                marker_type = "DECOMP_SPAN" if is_span else "DECOMP_FUNC"
                 if addr.lower() not in src_text.lower() or name not in src_text:
                     raise VerificationError(
-                        f"Function {name} ({addr}) not found with DECOMP_FUNC({addr}, ...) in '{src_rel}'"
+                        f"Entry {name} ({addr}) not found with {marker_type}({addr}, ...) in '{src_rel}'"
                     )
 
-                body = extract_function_body(src_text, addr, name, size)
+                body = extract_function_body(
+                    src_text, addr, name, size, marker_type=marker_type
+                )
                 if body is None:
                     raise VerificationError(
-                        f"Could not parse function body for {name} ({addr}) in '{src_rel}'"
+                        f"Could not parse {'raw span' if is_span else 'function'} body for "
+                        f"{name} ({addr}) in '{src_rel}'"
                     )
+
+                if is_span:
+                    if code_bytes is None:
+                        raise VerificationError(
+                            f"Raw span {name} ({addr}) is marked 'matching_span' but code.bin is not available"
+                        )
+                    diff = compare_function(
+                        addr=int(addr, 16),
+                        size=size,
+                        func_name=name,
+                        src_file=src_path,
+                        code_bytes=code_bytes,
+                        repo_root=repo_root,
+                        validated_object_cache=validated_objects,
+                    )
+                    if not diff["exact_match"]:
+                        raise VerificationError(
+                            f"Raw span {name} ({addr}) is marked 'matching_span' but compiled bytes do not match code.bin!"
+                        )
+                    matching_spans += 1
+                    matching_span_bytes += size
+                    matching_bytes += size
+                    by_category[cat]["matching_spans"] += 1
+                    by_category[cat]["matching_span_bytes"] += size
+                    by_category[cat]["matching_bytes"] += size
+                    claimed_list.append(row)
+                    continue
 
                 # Strict verification: an empty source body may be the complete
                 # reconstruction of a real ``bx lr`` function.  Matching claims
@@ -408,7 +465,7 @@ def compute_progress(functions_csv: Path, repo_root: Path) -> dict:
                 claimed_list.append(row)
 
     total_explored_funcs = decomp_funcs + stub_funcs
-    total_explored_bytes = decomp_bytes + stub_bytes
+    total_explored_bytes = decomp_bytes + stub_bytes + matching_span_bytes
     for cinfo in by_category.values():
         cinfo["compiled_funcs"] = cinfo["verified_funcs"]
         cinfo["compiled_bytes"] = cinfo["verified_bytes"]
@@ -416,12 +473,16 @@ def compute_progress(functions_csv: Path, repo_root: Path) -> dict:
     return {
         "total_functions": total_funcs,
         "total_bytes": total_bytes,
+        "total_spans": total_spans,
+        "total_span_bytes": total_span_bytes,
         "decompiled_functions": decomp_funcs,
         "decompiled_bytes": decomp_bytes,
         "stub_functions": stub_funcs,
         "stub_bytes": stub_bytes,
         "matching_functions": matching_funcs,
         "matching_bytes": matching_bytes,
+        "matching_spans": matching_spans,
+        "matching_span_bytes": matching_span_bytes,
         "verified_functions": verified_funcs,
         "verified_bytes": verified_bytes,
         "compiled_functions": verified_funcs,
@@ -451,15 +512,15 @@ def render_progress_md(stats: dict) -> str:
         "",
         "| Category | Functions | Code Size (Bytes) | Progress % | Status Description |",
         "|----------|----------:|------------------:|-----------:|--------------------|",
-        f"| **Matching (Byte-for-Byte)** | {stats['matching_functions']:,} | {stats['matching_bytes']:,} B | **{stats['matching_byte_percentage']:.4f}%** | 100% verified compiled machine code match |",
+        f"| **Matching (Byte-for-Byte)** | {stats['matching_functions']:,} functions + {stats['matching_spans']:,} raw spans | {stats['matching_bytes']:,} B | **{stats['matching_byte_percentage']:.4f}%** | Exact ARMv6K bytes verified against code.bin |",
         f"| **Compiled Coverage (≥15% size)** | {stats['compiled_functions']:,} | {stats['compiled_bytes']:,} B | {stats['compiled_byte_percentage']:.4f}% | Compiles to ARMv6K ELF .o; size threshold only, logic unverified |",
         f"| **Draft Logic (<15% size)** | {stats['draft_functions']:,} | {stats['draft_bytes']:,} B | {stats['draft_byte_percentage']:.4f}% | Early draft reconstructions awaiting control-flow recovery |",
         f"| **Scaffolded (Stubs & Interfaces)** | {stats['stub_functions']:,} | {stats['stub_bytes']:,} B | {stats['stub_byte_percentage']:.4f}% | Headers, structs, and function skeletons |",
-        f"| **Total Architecture Explored** | {stats['total_explored_functions']:,} | {stats['total_explored_bytes']:,} B | {stats['explored_byte_percentage']:.4f}% | Total mapped into `src/` (Matching + Compiles + Draft + Stubs) |",
-        f"| **Remaining (Todo)** | {stats['total_functions'] - stats['total_explored_functions']:,} | {stats['total_bytes'] - stats['total_explored_bytes']:,} B | {((stats['total_bytes'] - stats['total_explored_bytes']) / stats['total_bytes'] * 100.0):.4f}% | Unmapped functions in `.text` |",
-        f"| **Total `.text` Segment** | {stats['total_functions']:,} | {stats['total_bytes']:,} B | 100.0000% | `0x00100000`–`0x003FE624` |",
+        f"| **Total Architecture Explored** | {stats['total_explored_functions']:,} functions + {stats['matching_spans']:,} raw spans | {stats['total_explored_bytes']:,} B | {stats['explored_byte_percentage']:.4f}% | Mapped into `src/` (functions and verified raw spans) |",
+        f"| **Remaining (Todo)** | {stats['total_functions'] - stats['total_explored_functions']:,} functions | {stats['total_bytes'] - stats['total_explored_bytes']:,} B | {((stats['total_bytes'] - stats['total_explored_bytes']) / stats['total_bytes'] * 100.0):.4f}% | Unmapped `.text` bytes |",
+        f"| **Total `.text` Segment** | {stats['total_functions']:,} functions + {stats['total_spans']:,} raw spans | {stats['total_bytes']:,} B | 100.0000% | `0x00100000`–`0x003FE624` |",
         "",
-        "Compiled coverage and draft totals use original function sizes, not recovered instruction counts. Compilation and size do not establish behavioral equivalence. Only the matching tier verifies machine code equivalence.",
+        "Compiled coverage and draft totals use original function sizes, not recovered instruction counts. Compilation and size do not establish behavioral equivalence. Matching functions and explicitly labeled raw spans are counted only after exact byte comparison with code.bin.",
         "",
         "Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*` fields remain aliases for compatibility and do not mean verified logic.",
         "",
@@ -476,7 +537,7 @@ def render_progress_md(stats: dict) -> str:
     )
     for cat, cinfo in sorted_cats:
         matching_pct = (cinfo["matching_bytes"] / cinfo["total_bytes"] * 100.0) if cinfo["total_bytes"] else 0.0
-        explored_bytes = cinfo["decomp_bytes"] + cinfo["stub_bytes"]
+        explored_bytes = cinfo["decomp_bytes"] + cinfo["stub_bytes"] + cinfo["matching_span_bytes"]
         explored_funcs = cinfo["decomp_funcs"] + cinfo["stub_funcs"]
         explored_pct = (explored_bytes / cinfo["total_bytes"] * 100.0) if cinfo["total_bytes"] else 0.0
         lines.append(
@@ -486,7 +547,7 @@ def render_progress_md(stats: dict) -> str:
     lines.extend(
         [
             "",
-            "## Explored Functions Ledger",
+            "## Explored Entries Ledger",
             "",
             "| Address | Size (Bytes) | Category | Status | Symbol Name | Source File |",
             "|---------|-------------:|----------|--------|-------------|-------------|",
@@ -511,11 +572,11 @@ Decompilation and reverse-engineering project for **Shin Megami Tensei IV** (Nin
 
 ## Live Decompilation Progress
 
-- **Matching (Byte-for-Byte):** `{stats['matching_bytes']:,} / {stats['total_bytes']:,} bytes` (**{stats['matching_byte_percentage']:.4f}%**) across `{stats['matching_functions']:,}` functions (100% verified 3DS ARMv6K machine code match)
+- **Matching (Byte-for-Byte):** `{stats['matching_bytes']:,} / {stats['total_bytes']:,} bytes` (**{stats['matching_byte_percentage']:.4f}%**) across `{stats['matching_functions']:,}` functions and `{stats['matching_spans']:,}` explicitly labeled raw spans (each exact-checked against 3DS ARMv6K code.bin)
 - **Compiled Coverage (≥15% size):** `{stats['compiled_bytes']:,} / {stats['total_bytes']:,} bytes` (**{stats['compiled_byte_percentage']:.4f}%**) across `{stats['compiled_functions']:,}` functions (ARMv6K compilation and size threshold only; logic unverified)
 - **Draft Logic (<15% size):** `{stats['draft_bytes']:,} / {stats['total_bytes']:,} bytes` (**{stats['draft_byte_percentage']:.4f}%**) across `{stats['draft_functions']:,}` functions (early-stage draft reconstructions)
 - **Scaffolded Architecture (Stubs & Interfaces):** `{stats['stub_bytes']:,} / {stats['total_bytes']:,} bytes` (**{stats['stub_byte_percentage']:.4f}%**) across `{stats['stub_functions']:,}` functions (headers, structs, function skeletons)
-- **Total Codebase Explored:** `{stats['total_explored_bytes']:,} / {stats['total_bytes']:,} bytes` (**{stats['explored_byte_percentage']:.4f}%**) across `{stats['total_explored_functions']:,}` functions (all explored code mapped into `src/`)
+- **Total Codebase Explored:** `{stats['total_explored_bytes']:,} / {stats['total_bytes']:,} bytes` (**{stats['explored_byte_percentage']:.4f}%**) across `{stats['total_explored_functions']:,}` functions and `{stats['matching_spans']:,}` exact raw spans (all explored bytes mapped into `src/`)
 - See [`PROGRESS.md`](PROGRESS.md) for the full subsystem breakdown (`ui`, `camp`, `battle`, `script_vm`, `shop`, `unite`, `engine`, `nn_sdk`, `crt`) and explored function ledger. Coverage totals use original function sizes and do not measure behavioral equivalence.
 
 ---
@@ -560,7 +621,7 @@ python tools/progress.py --write
 ## Project Structure
 
 - [`config/game_info.json`](config/game_info.json) — Memory map and binary metadata for `CTR-P-AMXE`.
-- [`config/functions.csv`](config/functions.csv) — Master ledger of all {stats['total_functions']:,} functions covering 100% of `.text` (`3,139,108` bytes).
+- [`config/functions.csv`](config/functions.csv) — Master ledger of {stats['total_functions']:,} callable functions and {stats['total_spans']:,} explicitly labeled non-function spans covering 100% of `.text` (`3,139,108` bytes).
 - [`config/symbols.csv`](config/symbols.csv) — String and data symbols recovered from `.rodata`, `.data`, and `.text` literal pools.
 - [`include/`](include/) & [`src/`](src/) — Decompiled C++20 source code and engine/UI headers.
 - [`docs/architecture.md`](docs/architecture.md) — Documentation of the `XRD686` / `AsdSDK` engine, dual-screen LCD pipelines, and `TBCR`/`TBL1` UI table formats.
@@ -579,11 +640,11 @@ def main() -> None:
     print(
         f"Recorded {stats['decompiled_functions']:,} / {stats['total_functions']:,} reconstructed functions "
         f"({stats['decompiled_bytes']:,} / {stats['total_bytes']:,} bytes, {stats['decomp_byte_percentage']:.4f}%):\n"
-        f"  - Matching (Byte-for-Byte):  {stats['matching_functions']:,} functions ({stats['matching_bytes']:,} bytes, {stats['matching_byte_percentage']:.4f}%)\n"
+        f"  - Matching (Byte-for-Byte):  {stats['matching_functions']:,} functions + {stats['matching_spans']:,} raw spans ({stats['matching_bytes']:,} bytes, {stats['matching_byte_percentage']:.4f}%)\n"
         f"  - Compiled Coverage (>=15%): {stats['compiled_functions']:,} functions ({stats['compiled_bytes']:,} bytes, {stats['compiled_byte_percentage']:.4f}%; logic unverified)\n"
         f"  - Draft Logic (< 15%):       {stats['draft_functions']:,} functions ({stats['draft_bytes']:,} bytes, {stats['draft_byte_percentage']:.4f}%)\n"
         f"Verified {stats['stub_functions']:,} scaffolded stubs ({stats['stub_bytes']:,} bytes, {stats['stub_byte_percentage']:.4f}%)\n"
-        f"Total Architecture Explored: {stats['total_explored_functions']:,} functions ({stats['total_explored_bytes']:,} bytes, {stats['explored_byte_percentage']:.4f}%)"
+        f"Total Architecture Explored: {stats['total_explored_functions']:,} functions + {stats['matching_spans']:,} raw spans ({stats['total_explored_bytes']:,} bytes, {stats['explored_byte_percentage']:.4f}%)"
     )
     if args.write:
         (args.root / "PROGRESS.md").write_text(render_progress_md(stats), encoding="utf-8")

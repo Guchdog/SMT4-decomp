@@ -104,11 +104,14 @@ class TestAsmDiff(unittest.TestCase):
             repo_root=Path("."),
             code_path=self.code_path,
         )
-        self.assertEqual(stats["total_claimed"], 10526)
-        self.assertEqual(stats["matching_verified"], 10519)
+        self.assertEqual(stats["total_claimed"], 10959)
+        self.assertEqual(stats["matching_verified"], 10959)
         self.assertEqual(stats["matching_failed"], 0)
-        self.assertEqual(stats["verified_count"], 1)
-        self.assertEqual(stats["draft_count"], 6)
+        self.assertEqual(stats["matching_spans_verified"], 8)
+        self.assertEqual(stats["matching_spans_failed"], 0)
+        self.assertEqual(stats["matching_spans_bytes"], 484)
+        self.assertEqual(stats["verified_count"], 0)
+        self.assertEqual(stats["draft_count"], 0)
 
     def test_find_leaf_candidates_returns_pure_leaf_functions(self):
         if not self.code_bytes:
@@ -138,7 +141,7 @@ class TestAsmDiff(unittest.TestCase):
                 if row["status"].strip() == "matching":
                     matching_rows.append(row)
 
-        self.assertEqual(len(matching_rows), 10519)
+        self.assertEqual(len(matching_rows), 10959)
         validated_objects = set()
         for row in matching_rows:
             res = compare_function(
@@ -156,6 +159,34 @@ class TestAsmDiff(unittest.TestCase):
             )
             self.assertEqual(res["byte_match_ratio"], 1.0)
             self.assertEqual(res["compiled_size"], int(row["size"]))
+
+    def test_all_matching_raw_spans_in_ledger_are_byte_identical(self):
+        if not self.code_bytes:
+            self.skipTest("code.bin not available")
+        with open(Path("config/functions.csv"), "r", encoding="utf-8", newline="") as f:
+            span_rows = [
+                row for row in csv.DictReader(f)
+                if row["status"].strip() == "matching_span"
+            ]
+
+        self.assertEqual(len(span_rows), 8)
+        self.assertEqual(sum(int(row["size"]) for row in span_rows), 484)
+        validated_objects = set()
+        for row in span_rows:
+            result = compare_function(
+                addr=int(row["address"], 16),
+                size=int(row["size"]),
+                func_name=row["name"].strip(),
+                src_file=Path(row["src_file"].strip()),
+                code_bytes=self.code_bytes,
+                repo_root=Path("."),
+                validated_object_cache=validated_objects,
+            )
+            self.assertTrue(
+                result["exact_match"],
+                f"Raw span {row['name']} ({row['address']}) not exact: {result['diff_lines']}",
+            )
+            self.assertEqual(result["compiled_size"], int(row["size"]))
 
 
 if __name__ == "__main__":

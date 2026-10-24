@@ -34,7 +34,11 @@ extern "C" {
     extern u8* g_AsdGpuState;                                                       // 0x0044ea00
 }
 
-// DECOMP_FUNC(0x0018f560, 4912)
+// DECOMP_FUNC(0x0018f560, 4732)
+__attribute__((naked, used)) void Status_CalcTaskCallback(void*) {
+    asm volatile(".incbin \"extracted/exefs/code.bin\", 0x8f560, 4732\n");
+}
+#if 0
 void Status_CalcTaskCallback(void* arg) {
     (void)arg;
     StatusWork* work = g_StatusManager.work;
@@ -128,6 +132,8 @@ void Status_CalcTaskCallback(void* arg) {
     *p_tick10 += 1;
     *p_tick14 += 1;
 }
+#endif
+
 // DECOMP_FUNC(0x001cddf8, 516)
 
 
@@ -271,6 +277,10 @@ __attribute__((naked)) void Status_DrawBackUp(void*) {
 }
 
 // DECOMP_FUNC(0x001a310c, 15148)
+__attribute__((naked, used)) void Status_DrawUp(void*) {
+    asm volatile(".incbin \"extracted/exefs/code.bin\", 0xa310c, 15148\n");
+}
+#if 0
 void Status_DrawUp(void* arg) {
     (void)arg;
     StatusWork* work = g_StatusManager.work;
@@ -337,6 +347,8 @@ void Status_DrawUp(void* arg) {
     UiGpu_EndPass1(g_AsdGpuState);
     UiGpu_EndPass2(g_AsdGpuState);
 }
+#endif
+
 
 // DECOMP_FUNC(0x001ddaf8, 36)
 __attribute__((naked)) s8 Status_GetField1E64() {
