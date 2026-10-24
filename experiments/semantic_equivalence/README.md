@@ -1,10 +1,10 @@
 # ARM behavioral equivalence pilot — 2026-10-24
 
-Seven previously rejected C++ reconstructions passed **144,004 differential
-function cases** and **1,558 original-caller-window cases** across two seeds.
-None produces the original bytes. Six deliberately incorrect controls were
-detected for their intended errors in both runs. These are bounded execution
-results, not a proof that a complete rebuilt game behaves identically.
+Ten non-byte-identical typed C++ reconstructions passed **227,124 differential
+function cases** and **3,116 original-caller-window cases** across the two
+completed batches. Nine deliberately incorrect controls were detected for their
+intended errors. These are bounded execution results, not a proof that a complete
+rebuilt game behaves identically.
 
 The experiment is isolated on `codex/semantic-equivalence-experiment`, based on
 `681ac82`. It leaves `src/`, `include/`, the matching ledger, original private
@@ -14,8 +14,15 @@ Experimental candidates do not increase the exact reconstruction count.
 For subsequent functions, use the [per-function procedure](../../docs/function-reconstruction-workflow.md),
 its [record template](../../docs/templates/function-reconstruction.md), and the
 [completed byte-getter example](../../docs/function-records/0x00394614.md).
+Batch 2 records: [signed byte](../../docs/function-records/0x00121d70.md),
+[nullable pointer](../../docs/function-records/0x0014ec5c.md), and
+[paired store](../../docs/function-records/0x00131414.md).
 The current runner is specialized for this pilot; that procedure identifies
 the code and scenarios that must be extended before testing a new function.
+Batch 2 added signed-byte field read `0x00121D70`, nullable pointer field read
+`0x0014EC5C`, and paired word store `0x00131414`. Each passed 4,352 or 4,107
+cases under each of two seeds, with its corresponding negative control. The
+reports are under `build/semantic-equivalence/batch-002/`.
 
 ## Results
 
@@ -28,22 +35,28 @@ the code and scenarios that must be extended before testing a new function.
 | `0x00381450` | Read byte and advance cursor | 20 / 20 | No | Pass |
 | `0x003D7228` | Copy three record words | 16 / 16 | No | Pass |
 | `0x0037C46C` | Two byte fields plus a flag bit | 32 / 32 | No | Pass |
+| `0x00121D70` | Sign-extended byte at `object + 0x330` | 12 / 12 | No | Pass |
+| `0x0014EC5C` | Null-aware pointer load at `object + 0x1C` | 12 / 16 | No | Pass |
+| `0x00131414` | Store two words at `object + 4`; return `object + 4` | 12 / 12 | No | Pass |
 
-The sample represents 140 original bytes, approximately 0.00446% of the text
-segment. It was deliberately selected for known compiler differences; its
-success rate must not be extrapolated to the whole game.
+Together the ten candidates represent 176 original bytes, approximately
+0.00561% of the text segment. They were selected for known compiler differences;
+their success rate must not be extrapolated to the whole game.
 
 | Seed | Random cases per function | Function comparisons, including boundaries | Caller comparisons | Full pilot elapsed |
 |---|---:|---:|---:|---:|
 | `20261024` | 16,384 | 115,010 | 779 | 44.86 s |
 | `7` | 4,096 | 28,994 | 779 | 12.41 s |
+| `20261024` (batch 2) | 4,096 | 41,560 | 779 | 17.92 s |
+| `7` (batch 2) | 4,096 | 41,560 | 779 | 18.40 s |
 
 Each run includes compilation (about 0.27 s), negative controls, patch generation,
 and execution. Timings are local observations under concurrent regression-test
 load, not a controlled performance benchmark. They exclude manual reconstruction,
-harness development, and the full repository suite. This demonstrates that seven
-functions blocked by byte equality can be retained as tested experimental C++;
-it does not establish an end-to-end project speedup factor or faster game code.
+harness development, and the full repository suite. Batch 2 increased the
+candidate count from seven to ten. This shows that functions rejected by byte
+equality can be retained as tested experimental C++; it does not establish an
+end-to-end project speedup factor or faster game code.
 
 ## What actually executes
 
@@ -58,7 +71,7 @@ is `1f98884fe997af22e032a14c51a46c872b05b0e079a0f29e307b0e059cfaa558`.
 
 The tool checks the following after every run:
 
-- Return register `r0` for all seven functions, including pointer preservation
+- Return register `r0` for all ten functions, including pointer preservation
   for functions whose complete original return type remains uncertain.
 - Callee-saved `r4-r11`, `SP`, and `d8-d15` against their initial values.
 - All test RAM, live caller stack bytes, and observable read/write byte sets.
@@ -70,22 +83,24 @@ continuation after the caller's conditional branch. Internal stack scratch and
 the order of ordinary RAM accesses are not required to match.
 
 Inputs include integer boundaries, seeded random values and surrounding memory,
-all 256 byte-equality inputs, and four valid byte-reader aliases where the input
+all 256 byte-equality and signed-byte inputs, null and non-null pointer cases,
+paired-store boundary values, and four valid byte-reader aliases where the input
 cursor points into its own pointer representation. Halfword/pointer/record
 alignment is respected. Relative offsets stay within the bounded fixture's
 accessible payload; the fixture does not assert an actual game record size.
 
 Negative controls intentionally introduce `>=` instead of `>`, the wrong byte
 constant, the wrong cursor stride, incorrect alias-sensitive load/store ordering,
-the wrong flag bit, and a clobbered callee-saved register. A fault or timeout is
-always failure, even if both versions fail the same way. Controls must fail for
-the expected reason, not merely trigger any error.
+the wrong flag bit, and a clobbered callee-saved register. Batch 2 adds incorrect
+signed-byte extension, wrong nullable-pointer return, and wrong paired-store
+data. A fault or timeout is always failure, even if both versions fail the same
+way. Controls must fail for the expected reason, not merely trigger any error.
 
 ## Patched-image integration
 
 The local image has 2,524 zero bytes between the logical text end `0x003FE624`
-and its existing page boundary `0x003FF000`. The tool places the 144 compiled
-bytes in that padding and replaces the seven original entries with ARM branches.
+and its existing page boundary `0x003FF000`. The tool places the 184 compiled
+bytes in that padding and replaces the ten original entries with ARM branches.
 It rejects relocations, PC-relative replacements, calls, floating-point code,
 nonzero padding, invalid bounds, and insufficient padding. No segment offsets,
 file length, original data, or matching source definitions are moved.
@@ -99,25 +114,33 @@ comparison/branch instructions:
 - `0x001B4DBC`: caller passes a stack byte to `0x00394614`; both continuations
   `0x001B4DD0` and `0x001B4DF4` were exercised.
 
+Batch 2's three additions passed function-level differential execution but do
+not yet have caller-window checks.
+
 Successful runs emit ignored, local-only artifacts:
 
-- `build/semantic-equivalence/report.json`: versions, hashes, seed, counts,
+- `build/semantic-equivalence/batch-002/seed-20261024/report.json` and
+  `build/semantic-equivalence/batch-002/seed-7/report.json`: versions, hashes,
+  seed, counts,
   timings, patch manifest, counterexamples for controls, and limitations.
-- `build/semantic-equivalence/code.experimental.bin`: derived 3,633,152-byte image.
-- `build/semantic-equivalence/code.ips`: 250-byte patch containing generated
-  branches and generated C++ machine code. Independent IPS replay reproduced
-  the tested image exactly. Both seeds generated identical patch/image hashes.
+- `build/semantic-equivalence/batch-002/seed-20261024/code.experimental.bin`:
+  derived 3,633,152-byte image.
+- `build/semantic-equivalence/batch-002/seed-20261024/code.ips`: 332-byte
+  patch containing generated branches and C++ machine code. Both seeds
+  generated identical patch/image hashes; the earlier pilot independently
+  replayed its IPS to verify exact image reconstruction.
 
-Patched image SHA-256:
-`f33a1153b8f41415bc32d24afb463364e5724377b1c8b38ec1ad9602a6ad7c4f`.
-IPS SHA-256:
-`433d3f0fadcb49f7d6b23286c546e4510e4fd20cba6568024ba7d02ad6234955`.
+Batch 2 patched image SHA-256:
+`3b4595c91b1ad41457cab8dc6f4196fadb7ae47c045a828b46adf80120295116`.
+Batch 2 IPS SHA-256:
+`5d0cb36fa319678872d7c96ce9a9f878a6df393dbe5b6c3847702c2df749a89a`.
 
 **A complete game was not booted.** The harness maps the existing text pages
 including padding; preservation/execution of those bytes by a real 3DS loader
-still needs to be tested. No Azahar/Citra executable was found on PATH or through
-the inspected Windows uninstall entries; a portable installation elsewhere was
-not ruled out. The repository still has no full executable linking/package target.
+still needs to be tested. No Azahar, Citra or Lime3DS executable was found in
+common installation locations; a portable installation elsewhere was not ruled
+out. Eden is present but is a Switch emulator. The repository still has no full
+executable linking/package target.
 
 Luma3DS documents external decompressed code and IPS loading under
 `/luma/titles/<TitleID>/` in its
@@ -132,8 +155,8 @@ From the experiment worktree, with your own verified extracted image:
 ```powershell
 python -m pip install -r requirements-experiment.txt
 python -m unittest tests.test_semantic_experiment -v
-python tools/semantic_experiment.py --code E:/SMT4decomp/extracted/exefs/code.bin --samples 16384
-python tools/semantic_experiment.py --code E:/SMT4decomp/extracted/exefs/code.bin --samples 4096 --seed 7 --output build/semantic-equivalence-seed7
+python tools/semantic_experiment.py --code E:/SMT4decomp/extracted/exefs/code.bin --samples 4096 --seed 20261024 --output build/semantic-equivalence/batch-002/seed-20261024
+python tools/semantic_experiment.py --code E:/SMT4decomp/extracted/exefs/code.bin --samples 4096 --seed 7 --output build/semantic-equivalence/batch-002/seed-7
 ```
 
 Use your actual private input path. No binary, asset, key or dump is needed in
@@ -142,13 +165,14 @@ not require game data; the CLI requires the exact configured US revision.
 
 ## Limits and next gate
 
-Final regression checks: `python -m unittest discover -s tests -v` ran 63 tests
-in 324.326 s, with no failures and three extraction/key integration tests skipped
+The full repository regression after batch 2: `python -m unittest discover -s tests -v` ran 64 tests
+in 323.007 s, with no failures and three extraction/key integration tests skipped
 because the private root-level keys were not copied into the worktree. The game
 byte audits, all-translation-unit ARM build, fresh CMake build and the ten new
 oracle tests ran. `python tools/verify_decomp.py` independently retained all
 10,959 matching functions and eight exact raw spans, with zero matching or
-compilation failures. `git diff --check` passed.
+compilation failures. `git diff --check` passed. Batch 2's focused oracle suite
+also ran 11 tests successfully.
 
 The two executions share one emulator backend, so hardware fidelity is not
 independently established. There are no captured gameplay traces, floating-point

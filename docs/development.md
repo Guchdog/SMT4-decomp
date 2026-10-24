@@ -102,7 +102,7 @@ batches that can be reverted independently.
 ## Progress definitions
 
 An isolated [behavioral equivalence pilot](../experiments/semantic_equivalence/README.md)
-compares seven non-byte-identical C++ candidates with their original ARM code.
+compares ten non-byte-identical C++ candidates with their original ARM code.
 Run it with the optional `requirements-experiment.txt` dependencies and
 `python tools/semantic_experiment.py --code <private-code.bin>`. It emits local
 reports and an experimental patch under ignored `build/`; these results do not

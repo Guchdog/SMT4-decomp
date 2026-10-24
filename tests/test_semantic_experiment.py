@@ -95,7 +95,7 @@ class TestSemanticOracle(unittest.TestCase):
         patched, ips, manifest = patch_image(image, compiled, game)
         self.assertEqual(len(patched), len(image))
         self.assertEqual(patched[text_size + 0x1000:], image[text_size + 0x1000:])
-        self.assertEqual(len(manifest), 7)
+        self.assertEqual(len(manifest), len(CANDIDATES))
         allowed = set(range(text_size, text_size + 0x1000))
         for candidate in CANDIDATES:
             allowed.update(range(candidate.address - TEXT, candidate.address - TEXT + 4))
@@ -129,6 +129,18 @@ class TestSemanticOracle(unittest.TestCase):
         cursor = Candidate(0x00381450, "byte_cursor")
         aliased = [c for c in cases(cursor, 0, 7) if "cursor-alias" in c.label]
         self.assertEqual(len(aliased), 4)
+
+    def test_new_generators_cover_signed_bytes_null_and_store_inputs(self):
+        signed = Candidate(0x00121D70, "signed_byte_field")
+        values = {c.data[c.registers[0] - DATA + 0x330] for c in cases(signed, 0, 7)}
+        self.assertEqual(values, set(range(256)))
+        nullable = Candidate(0x0014EC5C, "nullable_pointer_field")
+        inputs = list(cases(nullable, 32, 7))
+        self.assertTrue(any(c.registers[0] == 0 for c in inputs))
+        self.assertTrue(any(c.registers[0] != 0 for c in inputs))
+        stores = Candidate(0x00131414, "paired_word_store")
+        self.assertTrue(all(c.registers[2] == (c.registers[1] ^ 0xFFFFFFFF)
+                            for c in cases(stores, 16, 7)))
 
     def test_compiled_deliberate_bugs_are_detected(self):
         # Use synthetic originals here; private-image controls are also in the CLI.

@@ -63,6 +63,9 @@ CANDIDATES = (
     Candidate(0x00381450, "byte_cursor"),
     Candidate(0x003D7228, "three_word_copy"),
     Candidate(0x0037C46C, "state_flags"),
+    Candidate(0x00121D70, "signed_byte_field"),
+    Candidate(0x0014EC5C, "nullable_pointer_field"),
+    Candidate(0x00131414, "paired_word_store"),
 )
 
 
@@ -223,7 +226,7 @@ def cases(candidate: Candidate, samples: int, seed: int):
     rng = random.Random(seed ^ candidate.address)
     boundaries = [0, 1, 399, 400, 401, 0x7FFF, 0x8000, 0xFFFF,
                   0x7FFFFFFF, 0x80000000, U32_MASK]
-    edge_count = 256 if candidate.name == "byte_equality" else len(boundaries)
+    edge_count = 256 if candidate.name in ("byte_equality", "signed_byte_field") else len(boundaries)
     for index in range(edge_count + samples):
         regs = [rng.getrandbits(32) for _ in range(13)]
         memory = bytearray(rng.randbytes(DATA_SIZE))
@@ -254,6 +257,17 @@ def cases(candidate: Candidate, samples: int, seed: int):
         elif candidate.name == "three_word_copy":
             struct.pack_into("<III", memory, regs[0] - DATA + 12,
                              value, value ^ U32_MASK, (value + 1) & U32_MASK)
+        elif candidate.name == "signed_byte_field":
+            memory[regs[0] - DATA + 0x330] = index if index < 256 else value & 0xFF
+        elif candidate.name == "nullable_pointer_field":
+            if index % 2 == 0:
+                regs[0] = 0
+            else:
+                struct.pack_into("<I", memory, regs[0] - DATA + 0x1C,
+                                 DATA + 0x700 + (index % 64) * 4)
+        elif candidate.name == "paired_word_store":
+            regs[1] = value
+            regs[2] = value ^ U32_MASK
         else:
             raise ValueError(candidate.name)
         yield Case(label, tuple(regs), bytes(memory), stack, rng.getrandbits(4) << 28)
@@ -412,6 +426,9 @@ def experiment(code_path: Path, output: Path, samples=4096, seed=20261024):
         (0x00381450, "wrong_cursor_order", "return value differs"),
         (0x0037C46C, "wrong_state", "data memory differs"),
         (0x002AE464, "wrong_abi", "rebuilt violates callee-saved register/SP contract"),
+        (0x00121D70, "wrong_signed_byte", "return value differs"),
+        (0x0014EC5C, "wrong_nullable_pointer", "return value differs"),
+        (0x00131414, "wrong_pair_store", "data memory differs"),
     ):
         candidate = next(c for c in CANDIDATES if c.address == address)
         outcome = compare_cases(Runner(image, address), Runner(image, address, compiled[symbol]),
@@ -426,7 +443,7 @@ def experiment(code_path: Path, output: Path, samples=4096, seed=20261024):
               and all(r["passed"] for r in integration))
     report = {
         "schema": 1, "passed": passed,
-        "scope": "Seven ARM leaf functions and two original caller windows; not a full game boot",
+        "scope": "Ten ARM leaf functions and two original caller windows; not a full game boot",
         "reference_sha256": digest,
         "patched_sha256": hashlib.sha256(patched_image).hexdigest(),
         "ips_sha256": hashlib.sha256(ips).hexdigest(),
