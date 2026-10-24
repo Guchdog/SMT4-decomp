@@ -2756,40 +2756,6 @@ extern "C" __attribute__((naked)) void func_003e6f4c() {
     );
 }
 
-// DECOMP_FUNC(0x003ee32c, 108)
-extern "C" __attribute__((naked)) void camp_func_003ee32c() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe1a02001\n"
-        ".inst 0xe8800006\n"
-        ".inst 0xe12fff1e\n"
-        ".inst 0x0044d170\n"
-        ".inst 0x0044d178\n"
-        ".inst 0xe59f201c\n"
-        ".inst 0xe3e00000\n"
-        ".inst 0xe1a01000\n"
-        ".inst 0xe1c200f0\n"
-        ".inst 0xe59f0010\n"
-        ".inst 0xe3a01000\n"
-        ".inst 0xe1a02001\n"
-        ".inst 0xe8800006\n"
-        ".inst 0xe12fff1e\n"
-        ".inst 0x0044cf50\n"
-        ".inst 0x0044cf58\n"
-        ".inst 0xe59f201c\n"
-        ".inst 0xe3e00000\n"
-        ".inst 0xe1a01000\n"
-        ".inst 0xe1c200f0\n"
-        ".inst 0xe59f0010\n"
-        ".inst 0xe3a01000\n"
-        ".inst 0xe1a02001\n"
-        ".inst 0xe8800006\n"
-        ".inst 0xe12fff1e\n"
-        ".word 0x00471b00 @ bounded tail data\n"
-        ".word 0x00471b08 @ bounded tail data\n"
-    );
-}
-
 // DECOMP_FUNC(0x003f6794, 108)
 extern "C" __attribute__((naked)) void engine_func_003f6794() {
     asm volatile(

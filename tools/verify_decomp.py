@@ -58,6 +58,9 @@ def audit_claimed_functions(
     total_claimed = 0
     matching_verified = 0
     matching_failed = 0
+    matching_spans_verified = 0
+    matching_spans_failed = 0
+    matching_spans_bytes = 0
     verified_count = 0
     draft_count = 0
     compilation_failed = 0
@@ -68,10 +71,12 @@ def audit_claimed_functions(
         reader = csv.DictReader(f)
         for row in reader:
             status = row["status"].strip()
-            if status not in ("matching", "non_matching"):
+            if status not in ("matching", "non_matching", "matching_span"):
                 continue
 
-            total_claimed += 1
+            is_span = status == "matching_span"
+            if not is_span:
+                total_claimed += 1
             addr = int(row["address"], 16)
             size = int(row["size"])
             name = row["name"].strip()
@@ -96,6 +101,8 @@ def audit_claimed_functions(
                 classification = "compilation_failed"
                 if status == "matching":
                     matching_failed += 1
+                elif is_span:
+                    matching_spans_failed += 1
             elif status == "matching":
                 if exact:
                     matching_verified += 1
@@ -103,6 +110,14 @@ def audit_claimed_functions(
                 else:
                     matching_failed += 1
                     classification = "matching_failed"
+            elif is_span:
+                if exact:
+                    matching_spans_verified += 1
+                    matching_spans_bytes += size
+                    classification = "matching_span"
+                else:
+                    matching_spans_failed += 1
+                    classification = "matching_span_failed"
             else:  # non_matching
                 # Size coverage alone does not establish semantic equivalence.
                 if compiled_size >= min(16, size) and (compiled_size / max(1, size)) >= 0.15:
@@ -129,6 +144,9 @@ def audit_claimed_functions(
         "total_claimed": total_claimed,
         "matching_verified": matching_verified,
         "matching_failed": matching_failed,
+        "matching_spans_verified": matching_spans_verified,
+        "matching_spans_failed": matching_spans_failed,
+        "matching_spans_bytes": matching_spans_bytes,
         "verified_count": verified_count,
         "compiled_count": verified_count,
         "compilation_failed": compilation_failed,
@@ -153,13 +171,14 @@ def main() -> None:
     print("=" * 45)
     print(f"Total Claimed Functions:   {stats['total_claimed']:,}")
     print(f"  - Matching (Byte-for-Byte): {stats['matching_verified']:,}")
+    print(f"  - Exact raw spans:           {stats['matching_spans_verified']:,} ({stats['matching_spans_bytes']:,} B)")
     print(f"  - Compiled Coverage (>=15%): {stats['compiled_count']:,} (logic unverified)")
     print(f"  - Draft Logic (< 15%):      {stats['draft_count']:,}")
     print(f"  - Matching Failed:          {stats['matching_failed']:,}")
     print(f"  - Compilation Failed:       {stats['compilation_failed']:,}")
     print("=" * 45)
 
-    if stats["matching_failed"] > 0 or stats["compilation_failed"] > 0:
+    if stats["matching_failed"] > 0 or stats["matching_spans_failed"] > 0 or stats["compilation_failed"] > 0:
         print("\nERROR: Function compilation or byte verification failed:", file=sys.stderr)
         for d in stats["details"]:
             if d["classification"] in ("matching_failed", "compilation_failed"):

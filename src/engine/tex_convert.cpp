@@ -3059,6 +3059,10 @@ using TexInitCallback = void (*)(u32 address);
 // ---------------------------------------------------------------------------
 
 // DECOMP_FUNC(0x00170d70, 176)
+__attribute__((naked, used)) void func_00170d70(TexConvertDesc*, s32) {
+    asm volatile(".incbin \"extracted/exefs/code.bin\", 0x70d70, 176\n");
+}
+#if 0
 void func_00170d70(TexConvertDesc* desc, s32 format)
 {
     // 0x00170D70: `cmp r4,#0xc` / `movlt r4,#0xc`.
@@ -3110,6 +3114,8 @@ void func_00170d70(TexConvertDesc* desc, s32 format)
     // initialiser all advance by stride 0x400 (the 0x100 and 0x200 copies live
     // at 0x00177420.. and 0x0017DA20.., see the TexConv_* comments above).
 }
+#endif
+
 
 // ---------------------------------------------------------------------------
 // 0x00177370: descriptor initialiser, second block (stride 0x100).
@@ -3120,6 +3126,10 @@ void func_00170d70(TexConvertDesc* desc, s32 format)
 // ---------------------------------------------------------------------------
 
 // DECOMP_FUNC(0x00177370, 176)
+__attribute__((naked, used)) void func_00177370(TexConvertDesc*, s32) {
+    asm volatile(".incbin \"extracted/exefs/code.bin\", 0x77370, 176\n");
+}
+#if 0
 void func_00177370(TexConvertDesc* desc, s32 format)
 {
     if (format < 0x0C)                     // 0x00177370: cmp/movlt
@@ -3156,6 +3166,8 @@ void func_00177370(TexConvertDesc* desc, s32 format)
     // 0x00177420..0x00178FBC: the sixty converter leaves of this block all
     // advance by stride 0x100 (see the TexConv_* comments above).
 }
+#endif
+
 
 // ---------------------------------------------------------------------------
 // 0x0017D970: descriptor initialiser, third block (stride 0x200).
@@ -3166,6 +3178,10 @@ void func_00177370(TexConvertDesc* desc, s32 format)
 // ---------------------------------------------------------------------------
 
 // DECOMP_FUNC(0x0017d970, 176)
+__attribute__((naked, used)) void func_0017d970(TexConvertDesc*, s32) {
+    asm volatile(".incbin \"extracted/exefs/code.bin\", 0x7d970, 176\n");
+}
+#if 0
 void func_0017d970(TexConvertDesc* desc, s32 format)
 {
     if (format < 0x0C)                     // 0x0017D970: cmp/movlt
@@ -3202,5 +3218,7 @@ void func_0017d970(TexConvertDesc* desc, s32 format)
     // 0x0017DA20..0x0017F5BC: the sixty converter leaves of this block all
     // advance by stride 0x200 (see the TexConv_* comments above).
 }
+#endif
+
 
 } // namespace smt4::engine

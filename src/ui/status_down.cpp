@@ -3916,6 +3916,10 @@ __attribute__((naked)) void StatusDown_SortItemList() {
 #endif
 
 // DECOMP_FUNC(0x00187014, 5176)
+__attribute__((naked, used)) void StatusDown_DrawPartyAndSubViews(s32, s32) {
+    asm volatile(".incbin \"extracted/exefs/code.bin\", 0x87014, 5176\n");
+}
+#if 0
 void StatusDown_DrawPartyAndSubViews(s32 x_offset, s32 y_offset) {
     StatusDownWork* work = g_StatusDownWork;
     if (work == nullptr) {
@@ -3962,8 +3966,14 @@ void StatusDown_DrawPartyAndSubViews(s32 x_offset, s32 y_offset) {
         }
     }
 }
+#endif
+
 
 // DECOMP_FUNC(0x001ca648, 8908)
+__attribute__((naked, used)) void StatusDown_CalcTaskCallback(void*) {
+    asm volatile(".incbin \"extracted/exefs/code.bin\", 0xca648, 8908\n");
+}
+#if 0
 void StatusDown_CalcTaskCallback(void* arg) {
     StatusDownWork* work = g_StatusDownWork;
     if (work == nullptr) {
@@ -4157,6 +4167,8 @@ void StatusDown_CalcTaskCallback(void* arg) {
 
     ++work->state_timer;
 }
+#endif
+
 
 // DECOMP_FUNC(0x001cc914, 5348)
 // Verified ARM-state entry/exit and referenced local literal/table bytes.
