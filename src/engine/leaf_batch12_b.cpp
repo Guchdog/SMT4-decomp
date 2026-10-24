@@ -216,20 +216,13 @@ extern "C" __attribute__((naked)) void camp_func_0024ddb0() {
 }
 
 // DECOMP_FUNC(0x002bd114, 40)
-extern "C" __attribute__((naked)) void func_002bd114() {
-    asm volatile(
-        "cmp r3, #0\n"
-        "bne .L_func_002bd114_002bd128\n"
-        "ldr r3, [r1]\n"
-        "add r0, r0, r3, lsl #1\n"
-        "strh r2, [r0]\n"
-        ".L_func_002bd114_002bd128:\n"
-        "ldr r0, [r1]\n"
-        "add r0, r0, #1\n"
-        "str r0, [r1]\n"
-        "mov r0, #1\n"
-        "bx lr\n"
-    );
+extern "C" u32 func_002bd114(u8* dst, volatile u32* count, u16 value, u32 flag) {
+    if (flag == 0) {
+        const u32 index = *count;
+        *reinterpret_cast<volatile u16*>(dst + index * 2) = value;
+    }
+    *count = *count + 1;
+    return 1;
 }
 
 // DECOMP_FUNC(0x002cffac, 40)
