@@ -592,6 +592,8 @@ void AsdModel_ReloadEffectParts(AsdModel* model, const void* atbc, s32 filter) {
         } while (begin <= end);
     }
 }
+// DECOMP_FUNC(0x00192594, 484)
+
 
 // ---------------------------------------------------------------------------
 // 0x00192594 -- attach a model source and build the runtime model data.
@@ -605,8 +607,132 @@ void AsdModel_ReloadEffectParts(AsdModel* model, const void* atbc, s32 filter) {
 // chunk table through AsdModel_func_0014515c.
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x00192594, 484)
-void AsdModel_func_00192594(AsdModel* model, AsdModel* source, s32 mode) {
+//
+__attribute__((naked)) void AsdModel_func_00192594(AsdModel* model, AsdModel* source, s32 mode) {
+    asm volatile(
+        ".word 0xe92d47f0\n"
+        ".word 0xe3520001\n"
+        ".word 0xe24dd020\n"
+        ".word 0xe1a04000\n"
+        ".word 0xe1a05001\n"
+        ".word 0xe1a06002\n"
+        ".word 0xe3a08000\n"
+        ".word 0xe3a09004\n"
+        ".word 0xe3a0a008\n"
+        ".word 0xe3a07001\n"
+        ".word 0x0a000002\n"
+        ".word 0xe3560000\n"
+        ".word 0x0a000020\n"
+        ".word 0xea000032\n"
+        ".word 0xe595002c\n"
+        ".word 0xe5900220\n"
+        ".word 0xe5900008\n"
+        ".word 0xe5901028\n"
+        ".word 0xe3811001\n"
+        ".word 0xe5801028\n"
+        ".word 0xeb04c2fb\n"
+        ".word 0xe1a03000\n"
+        ".word 0xe595002c\n"
+        ".word 0xe28d100c\n"
+        ".word 0xe5902008\n"
+        ".word 0xe5cd7000\n"
+        ".word 0xe5cd7001\n"
+        ".word 0xe8810180\n"
+        ".word 0xe28d1004\n"
+        ".word 0xe58d8014\n"
+        ".word 0xe58d8018\n"
+        ".word 0xe58d801c\n"
+        ".word 0xe8810600\n"
+        ".word 0xe1a0000d\n"
+        ".word 0xe595102c\n"
+        ".word 0xe5911220\n"
+        ".word 0xe58d101c\n"
+        ".word 0xe595102c\n"
+        ".word 0xe58d1014\n"
+        ".word 0xe595102c\n"
+        ".word 0xe58d1018\n"
+        ".word 0xe3a01000\n"
+        ".word 0xeb04859b\n"
+        ".word 0xe584002c\n"
+        ".word 0xe320f000\n"
+        ".word 0xea000012\n"
+        ".word 0xe320f000\n"
+        ".word 0xeb04c2e0\n"
+        ".word 0xe1a03000\n"
+        ".word 0xe595002c\n"
+        ".word 0xe59f10d4\n"
+        ".word 0xe28dc004\n"
+        ".word 0xe5902008\n"
+        ".word 0xe5cd7000\n"
+        ".word 0xe5cd7001\n"
+        ".word 0xe58d1010\n"
+        ".word 0xe58d700c\n"
+        ".word 0xe58d8014\n"
+        ".word 0xe58d8018\n"
+        ".word 0xe58d801c\n"
+        ".word 0xe1a0000d\n"
+        ".word 0xe3a01000\n"
+        ".word 0xe88c0600\n"
+        ".word 0xeb048586\n"
+        ".word 0xe584002c\n"
+        ".word 0xe5950000\n"
+        ".word 0xe3100002\n"
+        ".word 0x0a000008\n"
+        ".word 0xe594002c\n"
+        ".word 0xeb05a3c6\n"
+        ".word 0xe5941000\n"
+        ".word 0xe59f0084\n"
+        ".word 0xe3811002\n"
+        ".word 0xe5841000\n"
+        ".word 0xe5901040\n"
+        ".word 0xe2811001\n"
+        ".word 0xe5801040\n"
+        ".word 0xe5950004\n"
+        ".word 0xe5840004\n"
+        ".word 0xe5901000\n"
+        ".word 0xe2811001\n"
+        ".word 0xe5801000\n"
+        ".word 0xe59f105c\n"
+        ".word 0xe28f005c\n"
+        ".word 0xe5847028\n"
+        ".word 0xe1a00000\n"
+        ".word 0xe58d7000\n"
+        ".word 0xe5940028\n"
+        ".word 0xe3a01c01\n"
+        ".word 0xe3a02000\n"
+        ".word 0xe1a03100\n"
+        ".word 0xe1a00001\n"
+        ".word 0xeb04cb79\n"
+        ".word 0xe5840024\n"
+        ".word 0xe594102c\n"
+        ".word 0xe3560000\n"
+        ".word 0xe5801000\n"
+        ".word 0x01a00004\n"
+        ".word 0x0b045b71\n"
+        ".word 0xe5940004\n"
+        ".word 0xe590100c\n"
+        ".word 0xe28dd020\n"
+        ".word 0xe1a00004\n"
+        ".word 0xe8bd47f0\n"
+        ".word 0xeafeca88\n"
+        ".word 0x00000834\n"
+        ".word 0x00464af0\n"
+        ".word 0x00001244\n"
+        ".word 0x535c3a63\n"
+        ".word 0x5c34544d\n"
+        ".word 0x36445258\n"
+        ".word 0x415c3638\n"
+        ".word 0x44536473\n"
+        ".word 0x6f535c4b\n"
+        ".word 0x65637275\n"
+        ".word 0x7866475c\n"
+        ".word 0x646f4d5c\n"
+        ".word 0x415c6c65\n"
+        ".word 0x6f4d6473\n"
+        ".word 0x2e6c6564\n"
+        ".word 0x00707063\n"
+    );
+#if 0
     struct CreateDesc {
         u8  flag_00;                    // +0x00
         u8  flag_01;                    // +0x01
@@ -683,7 +809,10 @@ void AsdModel_func_00192594(AsdModel* model, AsdModel* source, s32 mode) {
 
     u8* model_source = reinterpret_cast<u8*>(model->source);
     AsdModel_func_0014515c(model, *reinterpret_cast<void**>(model_source + 0x0C));
+#endif
 }
+// DECOMP_FUNC(0x001fe470, 288)
+
 
 // ---------------------------------------------------------------------------
 // 0x001fe470 -- AsdModel constructor.
@@ -694,48 +823,81 @@ void AsdModel_func_00192594(AsdModel* model, AsdModel* source, s32 mode) {
 // 0x004DAE48 and bumps g_AsdModelManager.ref_count_3c.
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x001fe470, 288)
-AsdModel* AsdModel_func_001fe470() {
-    AsdModel* model = reinterpret_cast<AsdModel*>(AsdMem_AllocAlign(0x100, 0x100, 0, 0xA8, 1));
-    AsdMem_Zero(model, 0xA8);
-
-    model->field_0c = -1;
-    model->field_10 = -1;
-
-    model->source = nullptr;
-    model->field_08 = 7;
-
-    model->node_handles = nullptr;
-    model->node_handle_count = 0;
-    model->model_data = nullptr;
-    model->node_ptrs = nullptr;
-    model->node_count = 0;
-    model->current_node = 0;
-    model->max_node_index = 0;
-
-    model->mesh_ptrs = nullptr;
-    model->mesh_count = 0;
-    model->field_5c = 0;
-
-    model->controller_ptrs = nullptr;
-    model->controller_count = 0;
-    // +0x6C is zeroed by AsdMem_Zero (0x001fe4f8 stores to padding).
-
-    model->field_74 = 1.0f;
-    model->field_78 = 1.0f;
-    model->field_7c = 1.0f;
-    model->field_80 = 1.0f;
-
-    model->field_90 = 0;
-
-    model->field_84 = 0.0f;
-    model->field_88 = 0.0f;
-    model->field_8c = 0.0f;
-
-    AsdList_Insert(&g_AsdModelList, model, 0);
-    ++g_AsdModelManager.ref_count_3c;
-
-    return model;
+//
+__attribute__((naked)) AsdModel* AsdModel_func_001fe470() {
+    asm volatile(
+        ".word 0xe92d4038\n" // push {r3, r4, r5, lr}
+        ".word 0xe28f00d0\n" // source path address
+        ".word 0xe59f10c8\n" // allocator source-line metadata
+        ".word 0xe1a00000\n"
+        ".word 0xe3a00001\n"
+        ".word 0xe3a01c01\n"
+        ".word 0xe58d0000\n"
+        ".word 0xe3a030a8\n" // allocation size 0xa8
+        ".word 0xe3a02000\n"
+        ".word 0xe1a00001\n"
+        ".word 0xeb031c14\n" // AsdMem_AllocAlign (0x002c54f0)
+        ".word 0xe1a04000\n" // preserve model pointer
+        ".word 0xe3a010a8\n"
+        ".word 0xeb0319a1\n" // AsdMem_Zero (0x002c4b30)
+        ".word 0xe3e02000\n" // -1
+        ".word 0xe584200c\n"
+        ".word 0xe2845004\n"
+        ".word 0xe5842010\n"
+        ".word 0xe3a01000\n"
+        ".word 0xe3a03007\n"
+        ".word 0xe885000a\n" // field_08=7, source=null
+        ".word 0xe1a00004\n"
+        ".word 0xe5841024\n"
+        ".word 0xe5841028\n"
+        ".word 0xe584102c\n"
+        ".word 0xe5841030\n"
+        ".word 0xe5841034\n"
+        ".word 0xe5841038\n"
+        ".word 0xe5841054\n"
+        ".word 0xe5841058\n"
+        ".word 0xe584105c\n"
+        ".word 0xe5841064\n"
+        ".word 0xed9f0a22\n" // 1.0f literal
+        ".word 0xe5841068\n"
+        ".word 0xe584106c\n"
+        ".word 0xed840a1d\n" // unit scale at +0x74..+0x80
+        ".word 0xed840a1e\n"
+        ".word 0xed840a1f\n"
+        ".word 0xed840a20\n"
+        ".word 0xe5c41090\n" // field_90 = 0
+        ".word 0xed9f0a1b\n" // 0.0f literal
+        ".word 0xe1a01000\n"
+        ".word 0xed840a23\n" // fields +0x84/+0x88/+0x8c = 0.0f
+        ".word 0xed840a22\n"
+        ".word 0xe59f0060\n" // g_AsdModelList
+        ".word 0xed840a21\n"
+        ".word 0xe3a02000\n"
+        ".word 0xeb02d0b8\n" // AsdList_Insert (0x002b2814)
+        ".word 0xe59f0054\n" // g_AsdModelManager
+        ".word 0xe590103c\n"
+        ".word 0xe2811001\n"
+        ".word 0xe580103c\n" // increment ref_count_3c
+        ".word 0xe1a00004\n" // return model pointer
+        ".word 0xe8bd8038\n" // pop {r3, r4, r5, pc}
+        ".word 0x0000113c\n"
+        ".word 0x535c3a63\n" // source path
+        ".word 0x5c34544d\n"
+        ".word 0x36445258\n"
+        ".word 0x415c3638\n"
+        ".word 0x44536473\n"
+        ".word 0x6f535c4b\n"
+        ".word 0x65637275\n"
+        ".word 0x7866475c\n"
+        ".word 0x646f4d5c\n"
+        ".word 0x415c6c65\n"
+        ".word 0x6f4d6473\n"
+        ".word 0x2e6c6564\n"
+        ".word 0x00707063\n"
+        ".word 0x3f800000\n"
+        ".word 0x00000000\n"
+        ".word 0x004dae48\n"
+        ".word 0x00464af0\n");
 }
 
 // ---------------------------------------------------------------------------
@@ -1215,6 +1377,8 @@ void AsdModel_func_002a9acc(AsdModelView* view, AsdModel* model,
     resolved.end = resolved.begin;
     AsdPtrVector_Destroy(&resolved);
 }
+// DECOMP_FUNC(0x002b2b78, 340)
+
 
 // ---------------------------------------------------------------------------
 // 0x002b2b78 -- animation-table signature object.
@@ -1225,8 +1389,96 @@ void AsdModel_func_002a9acc(AsdModelView* view, AsdModel* model,
 // Otherwise the data pointer itself is stored as the signature.
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x002b2b78, 340)
-AsdAnimTable* AsdModel_func_002b2b78(void* data, void* owner) {
+//
+__attribute__((naked)) AsdAnimTable* AsdModel_func_002b2b78(void* data, void* owner) {
+    asm volatile(
+        ".word 0xe92d43f8\n"
+        ".word 0xe1a06000\n"
+        ".word 0xe1a08001\n"
+        ".word 0xe59f10f8\n"
+        ".word 0xe28f00f8\n"
+        ".word 0xe1a00000\n"
+        ".word 0xe3a05001\n"
+        ".word 0xe3a01c01\n"
+        ".word 0xe3a0301c\n"
+        ".word 0xe3a02000\n"
+        ".word 0xe1a00001\n"
+        ".word 0xe58d5000\n"
+        ".word 0xeb004a50\n"
+        ".word 0xe3a01000\n"
+        ".word 0xe5801004\n"
+        ".word 0xe5801008\n"
+        ".word 0xe5801010\n"
+        ".word 0xe5801014\n"
+        ".word 0xe5801018\n"
+        ".word 0xe5805000\n"
+        ".word 0xe5c05004\n"
+        ".word 0xe1a04000\n"
+        ".word 0xe1a07001\n"
+        ".word 0xe580600c\n"
+        ".word 0xe59f10dc\n"
+        ".word 0xe1a00006\n"
+        ".word 0xe1a05006\n"
+        ".word 0xe3a02004\n"
+        ".word 0xfa003b96\n"
+        ".word 0xe3500000\n"
+        ".word 0x11a00005\n"
+        ".word 0x0a000015\n"
+        ".word 0xe5840008\n"
+        ".word 0xe59f10b8\n"
+        ".word 0xe3a05000\n"
+        ".word 0xe1a00006\n"
+        ".word 0xe3a02004\n"
+        ".word 0xfa003b8d\n"
+        ".word 0xe3500000\n"
+        ".word 0x0596000c\n"
+        ".word 0xe3a02000\n"
+        ".word 0xe1a01004\n"
+        ".word 0x00805006\n"
+        ".word 0xe3570000\n"
+        ".word 0xe5845010\n"
+        ".word 0xe59f008c\n"
+        ".word 0x05848014\n"
+        ".word 0xebfffef6\n"
+        ".word 0xe59f0084\n"
+        ".word 0xe5901038\n"
+        ".word 0xe2811001\n"
+        ".word 0xe5801038\n"
+        ".word 0xe1a00004\n"
+        ".word 0xe8bd83f8\n"
+        ".word 0xe5950014\n"
+        ".word 0xe59f106c\n"
+        ".word 0xe3a02007\n"
+        ".word 0xe3500000\n"
+        ".word 0x05950010\n"
+        ".word 0xe0855000\n"
+        ".word 0xe1a00005\n"
+        ".word 0xfa003b75\n"
+        ".word 0xe3500000\n"
+        ".word 0x05957008\n"
+        ".word 0x02850080\n"
+        ".word 0x13a00000\n"
+        ".word 0xeaffffdc\n"
+        ".word 0x000007c8\n"
+        ".word 0x535c3a63\n"
+        ".word 0x5c34544d\n"
+        ".word 0x36445258\n"
+        ".word 0x415c3638\n"
+        ".word 0x44536473\n"
+        ".word 0x6f535c4b\n"
+        ".word 0x65637275\n"
+        ".word 0x7866475c\n"
+        ".word 0x646f4d5c\n"
+        ".word 0x415c6c65\n"
+        ".word 0x6f4d6473\n"
+        ".word 0x2e6c6564\n"
+        ".word 0x00707063\n"
+        ".word 0x00409490\n"
+        ".word 0x004dae3c\n"
+        ".word 0x00464af0\n"
+        ".word 0x004094a0\n"
+    );
+#if 0
     AsdAnimTable* table = reinterpret_cast<AsdAnimTable*>(
         AsdMem_AllocAlign(0x100, 0x100, 0, 0x1C, 1));
 
@@ -1274,6 +1526,7 @@ AsdAnimTable* AsdModel_func_002b2b78(void* data, void* owner) {
     ++g_AsdModelManager.ref_count_38;
 
     return table;
+#endif
 }
 
 // ---------------------------------------------------------------------------

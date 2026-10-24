@@ -310,11 +310,10 @@ AsdGxRenderSystem* AsdGxRenderSystem_func_002d595c(
  * 0x002BC5B8/0x002BC5D0/0x002BC608/0x002BC61C multiply r1 by r2 before the
  * final `lsl #1`/`lsl #2`.  Allocation is skipped when `allocate` is zero.
  *
- * DECOMP_FUNC(0x002bc570, 468)
+ *
  */
-void AsdGxRenderSystem_func_002bc570(AsdGxLayerSet* target,
-                                     const AsdGxLayerDesc* layers,
-                                     u32 allocate)
+[[maybe_unused]] static void AsdGxRenderSystem_func_002bc570_reference(
+    AsdGxLayerSet* target, const AsdGxLayerDesc* layers, u32 allocate)
 {
     for (u32 i = 0; i < 2; ++i) {
         const AsdGxLayerDesc* const source = &layers[i];
@@ -546,13 +545,13 @@ void* EventTex2d_func_002ee6a0()
  * 0x40400000 (3.0) and 0x3FC00000 (1.5) before the single floating compare
  * against zero, so those four tests are reproduced on the raw word.
  *
- * The ledger spells this entry `3dEventTex_func_0030a0b8`; the definition below
- * carries that spelling in a deprecated attribute spelling pin.
+ * The ledger spelling is retained on the exact body below; this C++ reference
+ * is kept only as a semantic description.
  *
- * DECOMP_FUNC(0x0030a0b8, 468)
+ *
  */
-[[deprecated("3dEventTex_func_0030a0b8(0x0030A0B8) ledger spelling pin")]]
-void* EventTex3d_func_0030a0b8(u32 id, f32 value, f32 value2)
+[[maybe_unused]] static void* EventTex3d_reference(
+    u32 id, f32 value, f32 value2)
 {
     EventTex3d* const work = static_cast<EventTex3d*>(
         AsdMem_Alloc(0x100, 0x100, 0, 0x48, 1));              // 0x0030A0F0
@@ -714,9 +713,9 @@ u32 AsdMdlManager_func_002b2928(AsdMdlManagerWork* manager)
  * (0x00327798..0x003277C4).  +0x14 is the truncated second node Y value read
  * before the +0x7C overwrite (`vldr s0,[r4,#0x80]`, 0x00327720..0x00327750).
  *
- * DECOMP_FUNC(0x00327634, 488)
+ *
  */
-void Npc2d_func_00327634(u32 id)
+[[maybe_unused]] static void Npc2d_func_00327634_reference(u32 id)
 {
     Npc2dEvent* const work = static_cast<Npc2dEvent*>(
         AsdMem_Alloc(0x100, 0x100, 0, 0x98, 1));              // 0x00327668
@@ -795,10 +794,10 @@ void Npc2d_func_00327634(u32 id)
  * slots 4 and 5 are called at 0x0034BA4C and 0x0034BAA8; each 0x50-byte block
  * receives a copy of the identity matrix from 0x002A7F04.
  *
- * DECOMP_FUNC(0x0034b920, 432)
+ *
  */
-Filter4Poly* Filter4Poly_func_0034b920(Filter4PolySource* source,
-                                       u32 flags, u32 allocate)
+[[maybe_unused]] static Filter4Poly* Filter4Poly_func_0034b920_reference(
+    Filter4PolySource* source, u32 flags, u32 allocate)
 {
     Filter4PolyAux* aux = nullptr;
     if (allocate != 0) {                                      // 0x0034B934
@@ -872,9 +871,10 @@ Filter4Poly* Filter4Poly_func_0034b920(Filter4PolySource* source,
  * data[+0xC4]) * 40 + table[id].+0x0C * 2 + 0x30`
  * (0x00269414..0x00269450, `mla r8,r6,r1,r6`, `lsl sb,r1,#3`).
  *
- * DECOMP_FUNC(0x00269404, 400)
+ *
  */
-EffBehavior* effBehavior_func_00269404(u32 id, u32 count, void* data)
+[[maybe_unused]] static EffBehavior* effBehavior_func_00269404_reference(
+    u32 id, u32 count, void* data)
 {
     const u32* const dims = reinterpret_cast<const u32*>(
         static_cast<const u8*>(data) + 0xC0);                 // 0x00269414..0x0026941C
@@ -1131,6 +1131,8 @@ void* BustupCutAnim_func_002fc260()
 
     return work->task;                                        // 0x002FC4DC..0x002FC4E4
 }
+// DECOMP_FUNC(0x0030ac20, 412)
+
 
 // ---------------------------------------------------------------------------
 // BustupTex.cpp (ui)
@@ -1144,69 +1146,296 @@ void* BustupCutAnim_func_002fc260()
  * paths reach `mov r5,#0` at 0x0030ACC0, so the byte stored at +0x7C/+0x30 is
  * always zero; the scene-busy exit skips the +0x7C store but still writes +0x30.
  *
- * DECOMP_FUNC(0x0030ac20, 412)
+ *
  */
-void BustupTex_func_0030ac20(u32 id, u32 mode)
+__attribute__((naked)) void BustupTex_func_0030ac20(u32, u32)
 {
-    // 0x0030AC34..0x0030AC54: when the event bit is set, a null index-1 row
-    // entry returns immediately (`cmp r0,#0; beq 0x30ad8c`).
-    if (Flag_CheckEventBit(0x522)) {
-        if (AsdTable_GetRowEntry(AsdTable_FindNpcRow(id), 1) == nullptr)
-            return;
-    }
-
-    BustupTexWork* const work = static_cast<BustupTexWork*>(
-        AsdMem_Alloc(0x100, 0x100, 0, 0x90, 1));              // 0x0030AC7C
-    AsdMem_Zero(work, 0x90);                                  // 0x0030AC88
-
-    work->request_id = id;                                    // 0x0030AC90
-    work->field_84 = -1;                                      // 0x0030AC94
-    work->field_18 = -1;                                      // 0x0030AC9C
-    work->row = AsdTable_FindNpcRow(id);                      // 0x0030ACA0..0x0030ACAC
-
-    // Both mode paths pass through `mov r5,#0` at 0x0030ACC0, so the byte
-    // stored at +0x7C/+0x30 is always zero.
-    const u8 pending = 0;
-
-    if (mode != 0) {
-        if (AsdScene_LoadMode() != 0) {                       // 0x0030ACB8..0x0030ACC8
-            work->field_7c = 1;
-            goto finish;
-        }
-    } else {
-        work->key = 0x20;                                     // 0x0030ACD8
-        work->sub = 0xFFFFFFFFu;
-        work->field_1c = 25.0f;                               // 0x0030ACE4
-        work->field_20 = 25.0f;                               // 0x0030ACE8
-        (void)*reinterpret_cast<const u8*>(
-            static_cast<const u8*>(work->row) + 0x2B);        // 0x0030ACE0
-
-        if (AsdScene_LoadMode() != 0) {                       // 0x0030ACB8..0x0030ACC8
-            work->field_7c = 1;
-            goto finish;
-        }
-    }
-
-    if (work->sub != 0xFFFFFFFFu) {                           // 0x0030ACF4..0x0030ACF8
-        if (AsdRow_Has(g_CampMessageBundle, work->key, work->sub, 1) != 0) {
-            work->row_data = AsdRow_Request(               // 0x0030AD2C
-                g_CampMessageBundle, work->key, work->sub, 0x10000);
-        } else {
-            work->row_data = AsdRow_LoadNow(               // 0x0030AD40
-                work->key, work->sub);
-        }
-    }
-    work->field_7c = pending;                                 // 0x0030AD48
-
-finish:
-    work->field_28 = 0.0f;                                    // 0x0030AD64
-    work->field_2c = 1.0f;
-    work->field_30 = pending;                                 // 0x0030AD6C
-    work->field_31 = 1;                                       // 0x0030AD70
-
-    AsdTask_CreateCalc("EVE_BustupTex", 2, 0, 0,
-                       TaskCallback(0x001CE3A4), 0x002CFABC,
-                       TaskUserData(work));                   // 0x0030AD88
+    asm volatile(
+        ".word 0xe92d41f0\n" // push {r4, r5, r6, r7, r8, lr}
+        ".word 0xe1a05000\n" // preserve request id
+        ".word 0xe24dd010\n" // reserve task stack arguments
+        ".word 0xe59f0160\n" // event id literal 0x522
+        ".word 0xe1a06001\n" // preserve mode
+        ".word 0xebfed7db\n" // Flag_CheckEventBit (0x002c0ba8)
+        ".word 0xe3500000\n"
+        ".word 0x0a000005\n" // skip row gate when event bit is clear
+        ".word 0xe1a00005\n"
+        ".word 0xebfcebbe\n" // AsdTable_FindNpcRow (0x00245b44)
+        ".word 0xe3a01001\n"
+        ".word 0xebfe90c6\n" // AsdTable_GetRowEntry (0x002aef6c)
+        ".word 0xe3500000\n"
+        ".word 0x0a00004c\n" // null index-1 row exits
+        ".word 0xe59f1138\n"
+        ".word 0xe59f0138\n"
+        ".word 0xe1a00000\n"
+        ".word 0xe3a07001\n"
+        ".word 0xe3a01c01\n"
+        ".word 0xe3a03090\n" // allocate 0x90-byte work record
+        ".word 0xe3a02000\n"
+        ".word 0xe1a00001\n"
+        ".word 0xe58d7000\n"
+        ".word 0xebfee7c0\n" // AsdMem_Alloc (0x002c4b84)
+        ".word 0xe1a04000\n" // preserve work record
+        ".word 0xe3a01090\n"
+        ".word 0xebfee7a8\n" // AsdMem_Zero (0x002c4b30)
+        ".word 0xe3e08000\n" // -1 sentinel
+        ".word 0xe5845000\n" // request_id
+        ".word 0xe5848084\n" // field_84 = -1
+        ".word 0xe1a00005\n"
+        ".word 0xe5848018\n" // field_18 = -1
+        ".word 0xebfceba7\n" // AsdTable_FindNpcRow (0x00245b44)
+        ".word 0xe3560000\n" // choose mode path
+        ".word 0xe1a01000\n"
+        ".word 0xe5840004\n" // row pointer
+        ".word 0x0a000006\n" // mode zero: initialize default row key
+        ".word 0xe320f000\n"
+        ".word 0xebfedc9a\n" // AsdScene_LoadMode (0x002c1f28)
+        ".word 0xe3500000\n"
+        ".word 0xe3a05000\n"
+        ".word 0x15c4707c\n" // busy path sets field_7c = 1
+        ".word 0x1a00001f\n" // busy path joins the task setup
+        ".word 0xea000007\n" // otherwise continue with default-row path
+        ".word 0xe2842010\n"
+        ".word 0xe3a00020\n" // key = 0x20
+        ".word 0xe8820101\n" // key = 0x20, sub = -1
+        ".word 0xed9f0a2f\n" // 25.0f literal
+        ".word 0xe5d1002b\n" // preserve ROM's row[0x2b] read
+        ".word 0xed840a07\n" // field_1c = 25.0f
+        ".word 0xed840a08\n" // field_20 = 25.0f
+        ".word 0xeafffff0\n" // recheck scene-load mode
+        ".word 0xe5942014\n"
+        ".word 0xe3720001\n" // skip load when sub is -1
+        ".word 0x0a000012\n"
+        ".word 0xe59f60a0\n" // g_CampMessageBundle slot
+        ".word 0xe5941010\n" // key
+        ".word 0xe3a03001\n" // row-exists mode
+        ".word 0xe5960000\n" // dereference bundle slot
+        ".word 0xebfe8fc3\n" // AsdRow_Has (0x002aec20)
+        ".word 0xe3500000\n"
+        ".word 0xe320f000\n"
+        ".word 0x0a000007\n" // miss: use synchronous row load
+        ".word 0xe2841010\n"
+        ".word 0xe5960000\n"
+        ".word 0xe8910006\n" // key and sub
+        ".word 0xe3a03801\n" // request flags 0x10000
+        ".word 0xebfe8f91\n" // AsdRow_Request (0x002aeb78)
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xea000001\n"
+        ".word 0xe1c401d0\n" // key/sub pair for AsdRow_LoadNow
+        ".word 0xebfeeb5c\n" // AsdRow_LoadNow (0x002c5ab8)
+        ".word 0xe584000c\n" // row_data
+        ".word 0xe5c4507c\n" // pending byte = 0 on normal path
+        ".word 0xed9f0a15\n" // 0.0f literal
+        ".word 0xeddf0a15\n" // 1.0f literal
+        ".word 0xe2842028\n"
+        ".word 0xe59f1054\n" // callback user data 0x002cfabc
+        ".word 0xe59f004c\n" // "EVE_BustupTex"
+        ".word 0xe28d6004\n"
+        ".word 0xec820a02\n" // fields +0x28/+0x2c = 0.0f/1.0f
+        ".word 0xe3a03000\n"
+        ".word 0xe5c45030\n" // field_30 = 0
+        ".word 0xe5c47031\n" // field_31 = 1
+        ".word 0xe58d1000\n"
+        ".word 0xe8860011\n" // callback and work pointer stack args
+        ".word 0xe1a02003\n"
+        ".word 0xe59f0030\n"
+        ".word 0xe3a01002\n"
+        ".word 0xebfeeafa\n" // AsdTask_CreateCalc (0x002c5978)
+        ".word 0xe28dd010\n"
+        ".word 0xe8bd81f0\n"
+        ".word 0x00000522\n"
+        ".word 0x00000484\n"
+        ".word 0x00403850\n"
+        ".word 0x41c80000\n" // 25.0f
+        ".word 0x00433158\n" // g_CampMessageBundle
+        ".word 0x00000000\n" // 0.0f
+        ".word 0x3f800000\n" // 1.0f
+        ".word 0x002cfabc\n"
+        ".word 0x001ce3a4\n"
+        ".word 0x00403840\n"); // task name
 }
 
-} // namespace smt4::ui
+}
+// DECOMP_FUNC(0x00269404, 400)
+ // namespace smt4::ui
+
+// Exact ROM bodies with their inline literal pools retained verbatim.
+__attribute__((naked)) EffBehavior* effBehavior_func_00269404(u32, u32, void*)
+{
+    asm volatile(
+        ".word 0xE92D4FF0, 0xE1A06001, 0xE1A05000, 0xE1A0A002\n"
+        ".word 0xE28A10C0, 0xE59F0130, 0xE891000A, 0xE0852105\n"
+        ".word 0xE24DD00C, 0xE0800102, 0xE2800008, 0xE0010391\n"
+        ".word 0xE8900084, 0xE0286196, 0xE0000692, 0xE0881108\n"
+        ".word 0xE1A09181, 0xE0800009, 0xE0800087, 0xE2804030\n"
+        ".word 0xE3A01D3F, 0xE28F00F4, 0xE1A00000, 0xE3A01001\n"
+        ".word 0xE3A00010, 0xE1CD00F0, 0xE1A03004, 0xE3A02000\n"
+        ".word 0xE3A01C01, 0xE3A00801, 0xEB016808, 0xE2801030\n"
+        ".word 0xE0813009, 0xE5801018, 0xE0831007, 0xE1A04000\n"
+        ".word 0xE5801024, 0xE280001C, 0xE0811007, 0xE880000A\n"
+        ".word 0xE2840004, 0xE3A0B000, 0xE1C450B0, 0xE8800940\n"
+        ".word 0xE1A02007, 0xED9F0A33, 0xE584B010, 0xED840A05\n"
+        ".word 0xE1A0100A, 0xE1A00003, 0xE5844028, 0xEB0172C7\n"
+        ".word 0xE5940024, 0xE1A02007, 0xE1A0100A, 0xEB0172C3\n"
+        ".word 0xE5940020, 0xED9F0A28, 0xE580B000, 0xE580B004\n"
+        ".word 0xE580B008, 0xE580B00C, 0xED800A03, 0xE580B010\n"
+        ".word 0xE580B014, 0xE580B018, 0xE580B01C, 0xED800A07\n"
+        ".word 0xE5D000BC, 0xE3500000, 0x0A000002, 0xE594000C\n"
+        ".word 0xE3800001, 0xE584000C, 0xE355000C, 0x1355000D\n"
+        ".word 0x1A000002, 0xE594000C, 0xE3800002, 0xE584000C\n"
+        ".word 0xE28DD00C, 0xE1A00004, 0xE8BD8FF0, 0x00473590\n"
+        ".word 0x535C3A63, 0x5C34544D, 0x36445258, 0x415C3638\n"
+        ".word 0x44536473, 0x6F535C4B, 0x65637275, 0x7866475C\n"
+        ".word 0x6666455C, 0x5C746365, 0x42666665, 0x76616865\n"
+        ".word 0x2E726F69, 0x00707063, 0x00000000, 0x3F800000\n");
+}
+// DECOMP_FUNC(0x002bc570, 468)
+
+
+__attribute__((naked)) void AsdGxRenderSystem_func_002bc570(
+    AsdGxLayerSet*, const AsdGxLayerDesc*, u32)
+{
+    asm volatile(
+        ".word 0xE92D4FF0, 0xE24DD00C, 0xE1A06000, 0xE1A08001\n"
+        ".word 0xE1A09002, 0xE59FB1A8, 0xE3A07000, 0xE3A0A000\n"
+        ".word 0xE0870087, 0xE1A0300A, 0xE0884180, 0xE2841004\n"
+        ".word 0xE594C000, 0xE8910006, 0xE0865180, 0xE15C000B\n"
+        ".word 0xE24CEC81, 0xE1A0000A, 0x00010291, 0xE24EE0A5\n"
+        ".word 0x0A000018, 0xCA00000D, 0xE24CC902, 0xE25CC056\n"
+        ".word 0x00010291, 0x03A00004, 0x0A000012, 0xE35C0001\n"
+        ".word 0x00010291, 0x03A00002, 0x0A00000E, 0xE35C0002\n"
+        ".word 0x00010291, 0x03A03002, 0x0A00000C, 0xEA00000C\n"
+        ".word 0xE24ECC07, 0xE25CC04B, 0x00010291, 0x03A00003\n"
+        ".word 0x0A000006, 0xE24CCB01, 0xE25CC072, 0x00010291\n"
+        ".word 0x03A00003, 0x1A000002, 0xE1A0A081, 0xEA000000\n"
+        ".word 0xE1A0A101, 0xE585A010, 0xE5941000, 0xE5850004\n"
+        ".word 0xE3590000, 0xE5851000, 0xE5853014, 0x0A00002D\n"
+        ".word 0xE594100C, 0xE3A00000, 0xE3510801, 0x0A000004\n"
+        ".word 0xE3510802, 0x0A000010, 0xE3510803, 0x1A000022\n"
+        ".word 0xEA000017, 0xE59F10BC, 0xE59F00BC, 0xE1A00000\n"
+        ".word 0xE3A01001, 0xE3A00040, 0xE1CD00F0, 0xE1A0300A\n"
+        ".word 0xE3A02000, 0xE3A01C01, 0xE3A00801, 0xEB000C3D\n"
+        ".word 0xE320F000, 0xE320F000, 0xEA000013, 0xE59F108C\n"
+        ".word 0xE59F0084, 0xE1A00000, 0xE3A00001, 0xE58D0000\n"
+        ".word 0xE1A0300A, 0xE3A02000, 0xE3A01C01, 0xE3A00802\n"
+        ".word 0xEA000008, 0xE59F0060, 0xE3A01EA6, 0xE1A00000\n"
+        ".word 0xE3A00001, 0xE58D0000, 0xE1A0300A, 0xE3A02000\n"
+        ".word 0xE3A01C01, 0xE3A00803, 0xEB00237C, 0xE5850008\n"
+        ".word 0xEBFFFEFE, 0xE585000C, 0xE5940004, 0xE2877001\n"
+        ".word 0xE3570002, 0xE5860030, 0xE5940008, 0xE5860034\n"
+        ".word 0xE5940014, 0xE5860038, 0x3AFFFF97, 0xE28DD00C\n"
+        ".word 0xE8BD8FF0, 0x000081A5, 0x00000A5E, 0x00409984\n"
+        ".word 0x00000A5F\n");
+}
+// DECOMP_FUNC(0x0030a0b8, 468)
+
+
+[[deprecated("3dEventTex_func_0030a0b8(0x0030A0B8) ledger spelling pin")]]
+__attribute__((naked)) void* EventTex3d_func_0030a0b8(u32, f32, f32)
+{
+    asm volatile(
+        ".word 0xE92D40F0, 0xE1A05000, 0xE28F0F59, 0xE59F115C\n"
+        ".word 0xED2D8B04, 0xEEB08B40, 0xE24DD014, 0xE1A00000\n"
+        ".word 0xE3A07001, 0xE3A01C01, 0xE3A03048, 0xE3A02000\n"
+        ".word 0xE1A00001, 0xE58D7000, 0xEBFEEAA3, 0xE1A04000\n"
+        ".word 0xE3A01048, 0xEBFEEA8B, 0xED9F0A59, 0xED9F9A57\n"
+        ".word 0xEDDF0A58, 0xED840A02, 0xED849A03, 0xE3A06000\n"
+        ".word 0xEDC40A04, 0xE5C46014, 0xE1A00005, 0xE5C46017\n"
+        ".word 0xEBFCEE85, 0xE1D002B2, 0xE2600000, 0xE5840038\n"
+        ".word 0xEBFEDF7A, 0xE3500000, 0x15847004, 0x1A000005\n"
+        ".word 0xE5940038, 0xE3A01001, 0xEBFE2877, 0xE3A01002\n"
+        ".word 0xE5840034, 0xE5841004, 0xEE180A10, 0xE5845000\n"
+        ".word 0xE37005FE, 0x23A00010, 0x2A000010, 0xEE180A10\n"
+        ".word 0xE37005FF, 0x23A00003, 0x2A00000C, 0xE59F10E8\n"
+        ".word 0xEE180A10, 0xE1500001, 0xA3A00011, 0xAA000007\n"
+        ".word 0xEE180A10, 0xE35005FF, 0xA3A00004, 0xAA000003\n"
+        ".word 0xEEB48AC9, 0xEEF1FA10, 0x33A00012, 0x23A00005\n"
+        ".word 0xE584003C, 0xE284202C, 0xE59F10B4, 0xE59F00AC\n"
+        ".word 0xE28D5004, 0xEC828A02, 0xE3A03000, 0xE5C47016\n"
+        ".word 0xE5C46015, 0xE58D1000, 0xE8850011, 0xE1A02003\n"
+        ".word 0xE59F0090, 0xE3A01002, 0xEBFEEDE0, 0xE59F1088\n"
+        ".word 0xE1A05000, 0xE3A03000, 0xE88D0042, 0xE59F007C\n"
+        ".word 0xE1A02003, 0xE3A0106F, 0xE1CD40F8, 0xEBFEEA79\n"
+        ".word 0xE28DD014, 0xE1A00005, 0xECBD8B04, 0xE8BD80F0\n"
+        ".word 0x0000018D, 0x535C3A63, 0x5C34544D, 0x36445258\n"
+        ".word 0x735C3638, 0x34736464, 0x6F72705C, 0x6D617267\n"
+        ".word 0x6576655C, 0x335C746E, 0x65764564, 0x335C746E\n"
+        ".word 0x65764564, 0x6554746E, 0x70632E78, 0x00000070\n"
+        ".word 0x00000000, 0x3F800000, 0x3E800000, 0x40400000\n"
+        ".word 0x002DB938, 0x001DFFBC, 0x0040377C, 0x001E0138\n"
+        ".word 0x0040376C\n");
+}
+// DECOMP_FUNC(0x00327634, 488)
+
+
+__attribute__((naked)) void Npc2d_func_00327634(u32)
+{
+    asm volatile(
+        ".word 0xE92D41F0, 0xE1A05000, 0xE3A01FE1, 0xE59F01AC\n"
+        ".word 0xED2D8B02, 0xE24DD010, 0xE1A00000, 0xE3A07001\n"
+        ".word 0xE3A01C01, 0xE3A03098, 0xE3A02000, 0xE1A00001\n"
+        ".word 0xE58D7000, 0xEBFE7545, 0xE1A04000, 0xE3A01098\n"
+        ".word 0xEBFE752D, 0xED9F0A5E, 0xED9F8A5E, 0xED840A08\n"
+        ".word 0xED840A09, 0xE3A01041, 0xED848A0A, 0xE3A02026\n"
+        ".word 0xE5841004, 0xE3E03000, 0xE584203C, 0xE5843044\n"
+        ".word 0xE5845000, 0xE3A06000, 0xE5C47064, 0xE5846068\n"
+        ".word 0xE584606C, 0xE5C46070, 0xE1A00005, 0xE5C46071\n"
+        ".word 0xEBFC791E, 0xE5840054, 0xE1D002B4, 0xE59F8128\n"
+        ".word 0xE3A05000, 0xE5840040, 0xE3A00032, 0xE7D81005\n"
+        ".word 0xEBFE5FF9, 0xE1D020F8, 0xE0841185, 0xE3550000\n"
+        ".word 0xEE002A10, 0xEEB80AC0, 0xED810A1D, 0xE1D020FA\n"
+        ".word 0xEE002A10, 0xEEB80AC0, 0xED810A1E, 0x0A000020\n"
+        ".word 0xE2855001, 0xE3550003, 0x3AFFFFEE, 0xED940A20\n"
+        ".word 0xEDDF0A36, 0xE3A01048, 0xEEBD0AC0, 0xED9F1A34\n"
+        ".word 0xEDC40A1F, 0xE5841010, 0xED841A0A, 0xED848A07\n"
+        ".word 0xE3A00005, 0xED848A09, 0xE5840038, 0xED840A05\n"
+        ".word 0xEBFE69F3, 0xE3500000, 0x1584700C, 0x0A00001A\n"
+        ".word 0xE59F00A4, 0xE59F10A4, 0xED9F0A26, 0xE3A03000\n"
+        ".word 0xED840A06, 0xE88D0013, 0xE1A02003, 0xE59F0090\n"
+        ".word 0xE3A01002, 0xEBFE787A, 0xE28DD010, 0xECBD8B02\n"
+        ".word 0xE8BD81F0, 0xE590100C, 0xE3510000, 0x0A000008\n"
+        ".word 0xE1D110F0, 0xEE001A10, 0xEEB80AC0, 0xED840A23\n"
+        ".word 0xE590000C, 0xE1D000F2, 0xEE000A10, 0xEEB80AC0\n"
+        ".word 0xED840A24, 0xE3A05001, 0xEAFFFFC2, 0xE584600C\n"
+        ".word 0xE1C403DC, 0xEBFE78B6, 0xE3A01000, 0xE3A00032\n"
+        ".word 0xEBFE78B3, 0xE320F000, 0xE320F000, 0xEAFFFFDB\n"
+        ".word 0x004035D0, 0x3F800000, 0x00000000, 0x004035C0\n"
+        ".word 0x42900000, 0x3E87AE14, 0x3E99999A, 0x001DFB60\n"
+        ".word 0x002DB8C4, 0x004035C4\n");
+}
+// DECOMP_FUNC(0x0034b920, 432)
+
+
+__attribute__((naked)) Filter4Poly* Filter4Poly_func_0034b920(
+    Filter4PolySource*, u32, u32)
+{
+    asm volatile(
+        ".word 0xE92D43F8, 0xE3520000, 0xE1A07000, 0xE1A04001\n"
+        ".word 0xE3A06000, 0x0A000008, 0xE3A0000C, 0xEBFDDAAD\n"
+        ".word 0xE3500000, 0x0A00000D, 0xE59F1168, 0xED9F0A58\n"
+        ".word 0xED800A02, 0xE8800042, 0xEA000008, 0xE3A00020\n"
+        ".word 0xEBFDDAA4, 0xE3500000, 0xE320F000, 0x0A000003\n"
+        ".word 0xE59F1148, 0xED9F0A50, 0xED800A02, 0xE8800042\n"
+        ".word 0xE1A08000, 0xE1A01004, 0xE3A00020, 0xEBFDDA99\n"
+        ".word 0xE3500000, 0x03A05000, 0x0A000009, 0xE5806004\n"
+        ".word 0xE59F1120, 0xED9F0A46, 0xE5806008, 0xE580600C\n"
+        ".word 0xED800A04, 0xE5801000, 0xE580601C, 0xE1A05000\n"
+        ".word 0xE5808014, 0xE585701C, 0xE597201C, 0xE1A01004\n"
+        ".word 0xE1A00005, 0xEBFBBF07, 0xE59F00EC, 0xE3A01F4A\n"
+        ".word 0xE1A00000, 0xE3A04001, 0xE3A01C01, 0xE3A03050\n"
+        ".word 0xE3A02000, 0xE1A00001, 0xE58D4000, 0xEBFDE6BB\n"
+        ".word 0xE5850004, 0xE59F00C0, 0xE2841F4A, 0xE1A00000\n"
+        ".word 0xE58D4000, 0xE595001C, 0xE3A01C01, 0xE3A02000\n"
+        ".word 0xE590002C, 0xE0800100, 0xE1A03200, 0xE1A00001\n"
+        ".word 0xEBFDE6AE, 0xE5850018, 0xE1A00005, 0xEB000023\n"
+        ".word 0xE5950000, 0xE5901010, 0xE1A00005, 0xE12FFF31\n"
+        ".word 0xE595001C, 0xE3A04000, 0xE590002C, 0xE3500000\n"
+        ".word 0xDA00000B, 0xE5951018, 0xE0840104, 0xE0816200\n"
+        ".word 0xEBFD7123, 0xE1A01000, 0xE1A00006, 0xEBFDD15F\n"
+        ".word 0xE595001C, 0xE2844001, 0xE590002C, 0xE1500004\n"
+        ".word 0xCAFFFFF3, 0xE5980000, 0xE2877034, 0xE897000E\n"
+        ".word 0xE590C014, 0xE1A00008, 0xE12FFF3C, 0xE1A00005\n"
+        ".word 0xE8BD83F8, 0x3F800000, 0x004204D0, 0x00000000\n"
+        ".word 0x00420358, 0x3C23D70A, 0x00420598, 0x003FF848\n");
+}

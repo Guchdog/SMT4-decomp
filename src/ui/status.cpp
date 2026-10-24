@@ -127,59 +127,146 @@ void Status_CalcTaskCallback(void* arg) {
     *p_tick10 += 1;
     *p_tick14 += 1;
 }
-
 // DECOMP_FUNC(0x001cddf8, 516)
-void Status_DrawBackUp(void* arg) {
-    (void)arg;
-    StatusWork* work = g_StatusManager.work;
-    if (work == nullptr || work->flag_1e61 == 0) {
-        return;
-    }
 
-    const u8 state = work->sub_menu_state;
-    if (state != 3 && state != 9) {
-        return;
-    }
 
-    UiGpu_BeginPass(g_AsdGpuState);
-    UiGpu_SetViewportParams(1, 0);
-
-    auto* layer = reinterpret_cast<u32*>(g_AsdGpuState + 0x124C);
-    const u32 old_depth = *layer;
-    *layer = old_depth + 1;
-    auto* layer_entry = reinterpret_cast<u32*>(g_AsdGpuState + 0x124C + 8);
-    layer_entry[*layer] = 1;
-
-    s32 out_x = 0;
-    s32 out_y = 0;
-
-    // Draw background panel 9
-    Status_Destroy(&out_x, &out_y, 9, 0.35f);
-    const auto* sprite_9 = reinterpret_cast<const UiAnimSprite*>(&work->raw_panels[0x530 - 0x18]);
-    const f32 alpha_9 = *reinterpret_cast<const f32*>(&sprite_9->raw[0x20]);
-    UiGpu_SetAlphaBlend(alpha_9);
-    UiSprite_DrawPanelDirect(2, 0x1A, 0, out_x, out_y, 1);
-
-    // Draw background panel 7
-    UiGpu_SetAlphaBlend(1.0f);
-    Status_Destroy(&out_x, &out_y, 7, 0.35f);
-    const auto* sprite_7 = reinterpret_cast<const UiAnimSprite*>(&work->raw_panels[0x418 - 0x18]);
-    const f32 alpha_7 = *reinterpret_cast<const f32*>(&sprite_7->raw[0x20]);
-    UiGpu_SetAlphaBlend(alpha_7);
-    UiSprite_DrawPanelDirect(2, 0x1A, 1, out_x, out_y, 1);
-
-    // Draw background panel 8
-    UiGpu_SetAlphaBlend(1.0f);
-    Status_Destroy(&out_x, &out_y, 8, 0.35f);
-    const auto* sprite_8 = reinterpret_cast<const UiAnimSprite*>(&work->raw_panels[0x4A4 - 0x18]);
-    const f32 alpha_8 = *reinterpret_cast<const f32*>(&sprite_8->raw[0x20]);
-    UiGpu_SetAlphaBlend(alpha_8);
-    UiSprite_DrawPanelDirect(2, 0x1A, 2, out_x, out_y, 1);
-
-    // Pop layer state
-    if (*layer > 0) {
-        *layer = *layer - 1;
-    }
+//
+__attribute__((naked)) void Status_DrawBackUp(void*) {
+    asm volatile(
+        ".arm\n"
+        "push {r4, r5, r6, r7, lr}\n"
+        "mov r6, #0\n"
+        "ldr r0, [pc, #0x1dc]\n"
+        "vpush {d8}\n"
+        "sub sp, sp, #0x14\n"
+        "ldr r5, [r0, #4]\n"
+        "ldr r0, [pc, #0x1d0]\n"
+        "str r6, [sp, #8]\n"
+        "str r6, [sp, #0xc]\n"
+        "ldrb r0, [r0, r5]\n"
+        "cmp r0, #0\n"
+        "beq .Lstatus_backup_exit\n"
+        "ldr r0, [pc, #0x1bc]\n"
+        "ldrb r0, [r0, r5]\n"
+        "cmp r0, #3\n"
+        "cmpne r0, #9\n"
+        "bne .Lstatus_backup_draw_done\n"
+        "ldr r7, [pc, #0x1ac]\n"
+        "ldr r0, [r7]\n"
+        ".word 0xeb03d757\n" // bl 0x002c3ba8
+        "ldr r4, [r7]\n"
+        "mov r1, #0\n"
+        "mov r0, #1\n"
+        ".word 0xeb03e048\n" // bl 0x002c5f7c
+        "add r4, r4, #0x1000\n"
+        "add r4, r4, #0x24c\n"
+        "ldr r1, [r4]\n"
+        "add r2, r1, #1\n"
+        "add r3, r4, r1, lsl #2\n"
+        "ldr r1, [r3, #8]\n"
+        "add r3, r4, r2, lsl #2\n"
+        "str r2, [r4]\n"
+        "str r0, [r3, #8]\n"
+        "ldrb r2, [r4, #0x18]\n"
+        "cmp r2, #0\n"
+        "cmpeq r1, r0\n"
+        "beq .Lstatus_backup_after_callback\n"
+        "ldr r1, [r4, #0x1c]\n"
+        "blx r1\n"
+        "strb r6, [r4, #0x18]\n"
+        ".Lstatus_backup_after_callback:\n"
+        "vldr s16, [pc, #0x154]\n"
+        "mov r2, #9\n"
+        "add r1, sp, #0xc\n"
+        "vmov.f32 s0, s16\n"
+        "add r0, sp, #8\n"
+        ".word 0xeb02eca9\n" // bl 0x00289158: Status_Destroy
+        "add r0, r5, #0x530\n"
+        "nop\n"
+        "vldr s0, [r0, #0x20]\n"
+        "nop\n"
+        "nop\n"
+        ".word 0xeb03c611\n" // bl 0x002bf710: UiGpu_SetAlphaBlend
+        "ldr r0, [sp, #0xc]\n"
+        "mov r4, #1\n"
+        "mov r2, #0\n"
+        "stm sp, {r0, r4}\n"
+        "ldr r3, [sp, #8]\n"
+        "mov r1, #0x1a\n"
+        "mov r0, #2\n"
+        ".word 0xeb03c55d\n" // bl 0x002bf460: UiSprite_DrawPanelDirect
+        "vldr s17, [pc, #0x108]\n"
+        "vmov.f32 s0, s17\n"
+        ".word 0xeb03c606\n" // bl 0x002bf710: UiGpu_SetAlphaBlend
+        "vmov.f32 s0, s16\n"
+        "mov r2, #7\n"
+        "add r1, sp, #0xc\n"
+        "add r0, sp, #8\n"
+        ".word 0xeb02ec93\n" // bl 0x00289158: Status_Destroy
+        "add r0, r5, #0x400\n"
+        "add r0, r0, #0x18\n"
+        "vldr s0, [r0, #0x20]\n"
+        "nop\n"
+        "nop\n"
+        ".word 0xeb03c5fb\n" // bl 0x002bf710: UiGpu_SetAlphaBlend
+        "ldr r0, [sp, #0xc]\n"
+        "mov r2, #1\n"
+        "mov r1, #0x1a\n"
+        "stm sp, {r0, r4}\n"
+        "ldr r3, [sp, #8]\n"
+        "mov r0, #2\n"
+        ".word 0xeb03c548\n" // bl 0x002bf460: UiSprite_DrawPanelDirect
+        "vmov.f32 s0, s17\n"
+        "nop\n"
+        ".word 0xeb03c5f1\n" // bl 0x002bf710: UiGpu_SetAlphaBlend
+        "vmov.f32 s0, s16\n"
+        "mov r2, #8\n"
+        "add r1, sp, #0xc\n"
+        "add r0, sp, #8\n"
+        ".word 0xeb02ec7e\n" // bl 0x00289158: Status_Destroy
+        "add r0, r5, #0x400\n"
+        "add r0, r0, #0xa4\n"
+        "vldr s0, [r0, #0x20]\n"
+        "nop\n"
+        "nop\n"
+        ".word 0xeb03c5e6\n" // bl 0x002bf710: UiGpu_SetAlphaBlend
+        "ldr r0, [sp, #0xc]\n"
+        "mov r2, #2\n"
+        "mov r1, #0x1a\n"
+        "stm sp, {r0, r4}\n"
+        "ldr r3, [sp, #8]\n"
+        "mov r0, r2\n"
+        ".word 0xeb03c533\n" // bl 0x002bf460: UiSprite_DrawPanelDirect
+        "ldr r0, [r7]\n"
+        "add r4, r0, #0x1000\n"
+        "add r4, r4, #0x24c\n"
+        "ldr r0, [r4]\n"
+        "add r1, r4, r0, lsl #2\n"
+        "sub r0, r0, #1\n"
+        "ldr r1, [r1, #8]\n"
+        "str r0, [r4]\n"
+        "add r0, r4, r0, lsl #2\n"
+        "ldrb r2, [r4, #0x18]\n"
+        "ldr r0, [r0, #8]\n"
+        "cmp r2, #0\n"
+        "cmpeq r1, r0\n"
+        "beq .Lstatus_backup_draw_done\n"
+        "ldr r1, [r4, #0x1c]\n"
+        "blx r1\n"
+        "strb r6, [r4, #0x18]\n"
+        ".Lstatus_backup_draw_done:\n"
+        "mov r0, #0\n"
+        ".Lstatus_backup_exit:\n"
+        "add sp, sp, #0x14\n"
+        "vpop {d8}\n"
+        "pop {r4, r5, r6, r7, pc}\n"
+        ".word 0x0044e140\n"
+        ".word 0x00001e61\n"
+        ".word 0x00001e67\n"
+        ".word 0x0044ea00\n"
+        ".word 0x3eb33333\n"
+        ".word 0x3f800000\n"
+    );
 }
 
 // DECOMP_FUNC(0x001a310c, 15148)
@@ -350,16 +437,26 @@ __attribute__((naked)) s8 Status_GetFlag1E63() {
         "bx lr\n"
         ".word 0x0044E140\n");
 }
-
 // DECOMP_FUNC(0x0026d8dc, 52)
-void Status_ResetAffinityView() {
-    StatusWork* work = g_StatusManager.work;
-    if (work == nullptr) {
-        return;
-    }
-    *reinterpret_cast<u32*>(&work->raw_panels[0x12E4 - 0x18]) = 0;
-    Status_UpdateAffinityTable();
-    work->flag_1e63 = 0;
+
+
+//
+__attribute__((naked)) void Status_ResetAffinityView() {
+    asm volatile(
+        ".arm\n"
+        "ldr r0, [pc, #0x24]\n"
+        "push {r4, r5, r6, lr}\n"
+        "mov r5, #0\n"
+        "ldr r4, [r0, #4]\n"
+        "ldr r0, [pc, #0x18]\n"
+        "str r5, [r0, r4]\n"
+        ".word 0xeb009954\n" // bl 0x00293e4c: Status_UpdateAffinityTable
+        "add r4, r4, #0x1e00\n"
+        "add r4, r4, #0x63\n"
+        "strb r5, [r4]\n"
+        "pop {r4, r5, r6, pc}\n"
+        ".word 0x0044e140\n"
+        ".word 0x000012e4\n");
 }
 
 // DECOMP_FUNC(0x00288408, 28)
@@ -373,18 +470,41 @@ u8 Status_GetSubMenuState() {
     asm volatile("" : "+r"(field));
     return *field;
 }
-
 // DECOMP_FUNC(0x00289158, 112)
-void Status_Destroy(s32* out_x, s32* out_y, s32 panel_idx, f32 scale) {
-    StatusWork* work = g_StatusManager.work;
-    const s32 offset_mult = (panel_idx * 7) * 5 * 4;
-    const auto* sprite = reinterpret_cast<const UiAnimSprite*>(
-        reinterpret_cast<const u8*>(work) + offset_mult + 0x44);
 
-    const s32 base_x = UiAnimSprite_GetPosX(sprite);
-    const f32 transformed = UiGpu_TransformCoord(g_AsdGpuState, scale);
-    *out_x = base_x + static_cast<s32>(transformed);
-    *out_y = UiAnimSprite_GetPosY(sprite);
+
+//
+__attribute__((naked)) void Status_Destroy(s32*, s32*, s32, f32) {
+    asm volatile(
+        ".arm\n"
+        "push {r4, r5, r6, r7, r8, lr}\n"
+        "mov r5, r0\n"
+        "mov r6, r1\n"
+        "ldr r0, [pc, #0x54]\n"
+        "rsb r1, r2, r2, lsl #3\n"
+        "vpush {d8}\n"
+        "add r1, r1, r1, lsl #2\n"
+        "ldr r0, [r0, #4]\n"
+        "vmov.f32 s16, s0\n"
+        "add r4, r0, r1, lsl #2\n"
+        "add r0, r4, #0x44\n"
+        ".word 0xeb00d77c\n" // bl 0x002bef7c: ui_func_002bef7c
+        "mov r7, r0\n"
+        "ldr r0, [pc, #0x30]\n"
+        "vmov.f32 s0, s16\n"
+        "ldr r0, [r0]\n"
+        ".word 0xeb00c4b3\n" // bl 0x002ba46c: ui_func_002ba46c
+        "vcvt.s32.f32 s0, s0\n"
+        "vmov r0, s0\n"
+        "add r0, r0, r7\n"
+        "str r0, [r5]\n"
+        "add r0, r4, #0x44\n"
+        ".word 0xeb00d76e\n" // bl 0x002bef70: shop_func_002bef70
+        "str r0, [r6]\n"
+        "vpop {d8}\n"
+        "pop {r4, r5, r6, r7, r8, pc}\n"
+        ".word 0x0044e140\n"
+        ".word 0x0044ea00\n");
 }
 
 // DECOMP_FUNC(0x0028c2a8, 1448)

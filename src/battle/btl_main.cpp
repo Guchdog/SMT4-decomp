@@ -5,77 +5,64 @@
 namespace smt4::battle {
 
 BtlMainManager g_BtlMainManager = {nullptr, nullptr, nullptr};
-
 // DECOMP_FUNC(0x001b0cb0, 812)
-void btlMain_Init(void* arg0, s32 arg1) {
-    // 1. Allocate primary battle engine work (0x4A58 bytes)
-    BtlMainWork* work = reinterpret_cast<BtlMainWork*>(ui::AsdMem_Alloc(sizeof(BtlMainWork), 0x100));
-    g_BtlMainManager.main_work = work;
 
-    // 2. Allocate secondary skill/encounter table buffer (0x97E8 bytes)
-    void* table_buf = ui::AsdMem_Alloc(0x97E8, 0x100);
-    g_BtlMainManager.table_buffer = table_buf;
 
-    // 3. Allocate auxiliary voice/effect queue buffer (0x104A bytes)
-    void* extra_buf = ui::AsdMem_Alloc(0x104A, 0x100);
-    g_BtlMainManager.extra_buffer = extra_buf;
-
-    if (work == nullptr) {
-        return;
-    }
-
-    // 4. Initialize battle arena parameters and setup state
-    btlMain_Setup(work);
-
-    // 5. Unpack encounter parameters if supplied
-    if (arg0 != nullptr && arg1 > 0) {
-        if (arg1 == 4) {
-            work->encounter_id = *reinterpret_cast<s16*>(arg0);
-        } else if (arg1 == 0x12) {
-            struct EncounterParams {
-                s8 pad_00;
-                s8 pad_01;
-                s16 sub_enc;
-                s16 phase;
-                s16 turn;
-                s16 round;
-                s16 init_side;
-                u8 preemptive;
-                u8 pad_0D;
-                s16 press_slots;
-                s16 blink_slots;
-            };
-            const auto* params = reinterpret_cast<const EncounterParams*>(arg0);
-            if (params->pad_00 != 0) {
-                work->sub_encounter_id = params->sub_enc;
-            } else {
-                work->encounter_id = params->sub_enc;
-            }
-            work->btl_phase = params->phase;
-            work->turn_count = params->turn;
-            work->round_count = params->round;
-            work->initiative_side = params->init_side;
-            work->preemptive_type = (params->pad_00 != 0) ? 0 : params->preemptive;
-            work->press_turn_slots = params->press_slots;
-            work->blinking_turn_slots = params->blink_slots;
-        }
-    } else {
-        work->combat_flags |= 0x202;
-    }
-
-    work->state_flag = 0;
-
-    // 6. Register core combat loop calculation task ("BTLMAIN C", priority 2)
-    work->calc_task = ui::AsdTask_CreateCalc("BTLMAIN C", 2, 0, 0, nullptr, work, 0);
-
-    // 7. Register upper and lower rendering tasks
-    ui::AsdTask_CreateDraw("BTLMAIN U", 0x73, 0, 0, nullptr, work, 0);
-    ui::AsdTask_CreateDraw("BTLMAIN D", 0xE6, 0, 0, nullptr, work, 0);
-
-    // 8. Register screen fade overlays (stereoscopic upper left/right + lower)
-    ui::AsdTask_CreateDraw("BTLFADE UL", 0x80, 0, 0, nullptr, work, 0);
-    ui::AsdTask_CreateDraw("BTLFADE UR", 0xDE, 0, 0, nullptr, work, 0);
-    ui::AsdTask_CreateDraw("BTLFADE D", 0xE9, 0, 0, nullptr, work, 0);
+//
+__attribute__((naked)) void btlMain_Init(void*, s32) {
+    asm volatile(
+        ".word 0xE92D43F0, 0xE1A05000, 0xE1A06001, 0xE24DD014\n"
+        ".word 0xE3A010F0, 0xE28F0E27, 0xE1A00000, 0xE3A07001\n"
+        ".word 0xE3A01C01, 0xE59F3290, 0xE3A02000, 0xE1A00001\n"
+        ".word 0xE58D7000, 0xEB044FA6, 0xE59F8280, 0xE1A04000\n"
+        ".word 0xE3A010F4, 0xE5880000, 0xE28F0F8F, 0xE1A00000\n"
+        ".word 0xE59F926C, 0xE3A01C01, 0xE3A02000, 0xE1A03009\n"
+        ".word 0xE1A00001, 0xE58D7000, 0xEB044F99, 0xE5880004\n"
+        ".word 0xEB03DF38, 0xE1A01000, 0xE5980004, 0xE1A02009\n"
+        ".word 0xEB043088, 0xE3A010F7, 0xE28F0F7F, 0xE1A00000\n"
+        ".word 0xE59F9230, 0xE3A01C01, 0xE3A02000, 0xE1A03009\n"
+        ".word 0xE1A00001, 0xE58D7000, 0xEB044F89, 0xE5880008\n"
+        ".word 0xEB03483B, 0xE1A01000, 0xE5980008, 0xE1A02009\n"
+        ".word 0xEB04549F, 0xE1A00004, 0xEB001746, 0xE3550000\n"
+        ".word 0x13560000, 0xE3A07000, 0xDA000024, 0xE3560004\n"
+        ".word 0x05950000, 0x058400C0, 0x0A00002A, 0xE3560012\n"
+        ".word 0x1A000028, 0xE5950000, 0xE58D0000, 0xE5950004\n"
+        ".word 0xE58D0004, 0xE5950008, 0xE58D0008, 0xE595000C\n"
+        ".word 0xE58D000C, 0xE1D501B0, 0xE1CD01B0, 0xE1DD00D0\n"
+        ".word 0xE3500000, 0xE1DD00F2, 0x158400C4, 0x058400C0\n"
+        ".word 0xE1DD00F4, 0xE584013C, 0xE1DD00F6, 0xE5840140\n"
+        ".word 0xE1DD00F8, 0xE5840144, 0xE1DD00FA, 0xE5840148\n"
+        ".word 0xE5DD000C, 0xE5C4014C, 0x15C4714C, 0xE1DD00FE\n"
+        ".word 0xE5840150, 0xE1DD01F0, 0xE5840154, 0xEA000009\n"
+        ".word 0xE5980000, 0xE2842B11, 0xE3A01001, 0xE3500000\n"
+        ".word 0xE28220A8, 0x15801068, 0xE5921000, 0xE3811C02\n"
+        ".word 0xE3811002, 0xE5821000, 0xE5C47060, 0xE59F1128\n"
+        ".word 0xE59F0128, 0xE5982000, 0xE3A03000, 0xE88D0007\n"
+        ".word 0xE1A02003, 0xE3A01002, 0xE28F0F45, 0xEB0452C1\n"
+        ".word 0xE59F1118, 0xE5840000, 0xE3A03000, 0xE88D0082\n"
+        ".word 0xE58D000C, 0xE1A02003, 0xE3A01073, 0xE28F0C01\n"
+        ".word 0xE58D7008, 0xEB044F59, 0xE59F1100, 0xE5940000\n"
+        ".word 0xE3A03000, 0xE88D0082, 0xE58D000C, 0xE1A02003\n"
+        ".word 0xE3A010E6, 0xE28F00E8, 0xE58D7008, 0xEB044F4F\n"
+        ".word 0xE59F50E8, 0xE5940000, 0xE3A03000, 0xE88D00A0\n"
+        ".word 0xE58D000C, 0xE1A02003, 0xE3A01080, 0xE28F00D0\n"
+        ".word 0xE58D7008, 0xEB044F45, 0xE5940000, 0xE88D00A0\n"
+        ".word 0xE3A03000, 0xE58D000C, 0xE1A02003, 0xE3A010DE\n"
+        ".word 0xE28F00B8, 0xE58D7008, 0xEB044F3C, 0xE59F10B8\n"
+        ".word 0xE5940000, 0xE3A03000, 0xE88D0082, 0xE58D000C\n"
+        ".word 0xE1A02003, 0xE3A010E9, 0xE28F00A0, 0xE58D7008\n"
+        ".word 0xEB044F32, 0xE28DD014, 0xE8BD83F0, 0x535C3A63\n"
+        ".word 0x5C34544D, 0x36445258, 0x735C3638, 0x34736464\n"
+        ".word 0x6F72705C, 0x6D617267, 0x7461625C, 0x5C656C74\n"
+        ".word 0x4D6C7462, 0x2E6E6961, 0x00707063, 0x00004A58\n"
+        ".word 0x00435D90, 0x000097E8, 0x0000104A, 0x0020EEE8\n"
+        ".word 0x001B55F0, 0x4D4C5442, 0x204E4941, 0x00000043\n"
+        ".word 0x001E49C4, 0x4D4C5442, 0x204E4941, 0x00000055\n"
+        ".word 0x0020F23C, 0x4D4C5442, 0x204E4941, 0x00000044\n"
+        ".word 0x001E49CC, 0x464C5442, 0x20454441, 0x00004C55\n"
+        ".word 0x464C5442, 0x20454441, 0x00005255, 0x0020F244\n"
+        ".word 0x464C5442, 0x20454441, 0x00000044\n"
+    );
 }
 
 // DECOMP_FUNC(0x001b6a98, 1824)

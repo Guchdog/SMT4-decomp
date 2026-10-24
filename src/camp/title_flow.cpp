@@ -162,68 +162,141 @@ void PlayLog_func_00194dbc(void* arg) {
     // 0x00194FA0..0x00194FB8: UiListCursor_Setup(work+0x2DC, visible, 5, 1, 0, 1).
     UiListCursor_Setup(&work->list_cursor, static_cast<s32>(visible), 5, 1, 0, 1);
 }
+// DECOMP_FUNC(0x002f4ca0, 572)
+
 
 // ---------------------------------------------------------------------------
 // titleConfig.cpp (0x002F4CA0), 572 B
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x002f4ca0, 572)
-void titleConfig_func_002f4ca0(void* arg) {
-    (void)arg;
-    // 0x002F4CA8..0x002F4CE0: this constructor has no null check and never
-    // calls AsdMem_Zero -- every allocation replaces the global outright.
-    TitleConfigWork* work = static_cast<TitleConfigWork*>(
-        AsdMem_Alloc(0x100, 0x100, 0, sizeof(TitleConfigWork), 1));
-    g_TitleConfigWork = work;
-
-    // 0x002F4CE4..0x002F4D00: CreateCalc("TITLE_CONFIG_MAIN", 2, 0, 0,
-    // calc = 0x001EA928, a5 = 0x002CAEF0, a6 = work).
-    work->calc_task = AsdTask_CreateCalc(
-        "TITLE_CONFIG_MAIN", 2, 0, 0, TitleConfig_Calc,
-        static_cast<u32>(
-            reinterpret_cast<std::uintptr_t>(&TitleConfig_Secondary)),
-        static_cast<u32>(reinterpret_cast<std::uintptr_t>(work)));
-
-    // 0x002F4D04..0x002F4D30: CreateDraw("TITLE_CONFIG D", 0xE6, ...).
-    AsdTask_CreateDraw("TITLE_CONFIG D", 0xE6, 0, 0, TitleConfig_Draw, 0, 0,
-                       work->calc_task);
-
-    // 0x002F4D34..0x002F4D98: sprite group, one 0x8C sprite (resource group
-    // 0x2F, panel id 0xC9), animation 0.
-    UiSpriteGroup_Init(&work->sprite_group);                // 0x002C3344
-    UiSpriteGroup_BindTable(
-        &work->sprite_group,
-        static_cast<u32>(kTitleConfigSpriteTable),
-        0x18, 0, 0, 0, 0, 0, 0, 0, 0);
-    UiAnimSprite_Setup(&work->sprite, 0x2F, 0, &work->sprite_group, 0xC9, 1.0f);
-    UiAnimSprite_SetAnim(&work->sprite, 0, 0);
-
-    // 0x002F4D9C..0x002F4DB4: cursor with three rows, then field_08 = 0.
-    UiListCursor_Setup(&work->list_cursor, 3, 3, 1, 0, 1);
-    work->field_08 = 0;
-
-    // 0x002F4DB8..0x002F4DD4: fill +0x1C..+0x24 with the byte 0xFF
-    // (`mvn r1,#0` is the byte fill argument) and clear the halfword at +0x1A.
-    UiConfig_FillPair(&work->field_1c, 0xFF);               // 0x0027EDF8
-    work->field_1a = 0;
-
-    // 0x002F4DC8..0x002F4DE8: config script/message tables.
-    ScriptVm_LoadTable("camp/config.bf", &work->script_bf, 0);
-    ScriptVm_LoadTable("camp/config.mbm", &work->msg_mbm, 0);
-
-    // 0x002F4DEC..0x002F4E00: SE 0x99 and a 0x32 grey fade.
-    Sound_PlaySE(0x99);
-    Camp_SetFadeColor(0, 0x323232FF);
-
-    // 0x002F4E00..0x002F4E24: persisted configuration bytes 0/1/2 are mapped
-    // through three 12-entry lookup tables; the results land at +0x28..+0x30.
-    work->field_28 = Config_MapByteToIndexA(g_ConfigBytes[0]);
-    work->field_2c = Config_MapByteToIndexB(g_ConfigBytes[1]);
-    work->field_30 = Config_MapByteToIndexC(g_ConfigBytes[2]);
-
-    // 0x002F4E28..0x002F4E3C: tail-call UiConfig_CopyPair(work+0x34,
-    // g_ConfigBytes), copying the first two configuration words.
-    UiConfig_CopyPair(&work->field_34, g_ConfigBytes);
+//
+__attribute__((naked)) void titleConfig_func_002f4ca0(void*) {
+    asm volatile(
+        ".arm\n"
+        "push {r4, r5, r6, lr}\n"
+        "sub sp, sp, #0x20\n"
+        "ldr r1, [pc, #0x190]\n"
+        "add r0, pc, #0x190\n"
+        "mov r0, r0\n"
+        "mov r6, #1\n"
+        "mov r1, #0x100\n"
+        "mov r3, #0x158\n"
+        "mov r2, #0\n"
+        "mov r0, r1\n"
+        "str r6, [sp]\n"
+        ".word 0xebff3fac\n" // bl 0x002c4b84
+        "ldr r1, [pc, #0x1a0]\n"
+        "ldr r3, [pc, #0x1a4]\n"
+        "ldr r2, [pc, #0x19c]\n"
+        "mov r4, r0\n"
+        "str r0, [r1]\n"
+        "add r0, sp, #4\n"
+        "str r3, [sp]\n"
+        "stm r0, {r2, r4}\n"
+        "mov r3, #0\n"
+        "mov r2, r3\n"
+        "mov r1, #2\n"
+        "add r0, pc, #0x180\n"
+        ".word 0xebff431c\n" // bl 0x002c5978: AsdTask_CreateCalc
+        "mov r1, r0\n"
+        "ldr r0, [pc, #0x188]\n"
+        "mov r5, #0\n"
+        "str r1, [r4]\n"
+        "stm sp, {r0, r5}\n"
+        "str r1, [sp, #0xc]\n"
+        "mov r3, r5\n"
+        "mov r2, r5\n"
+        "mov r1, #0xe6\n"
+        "add r0, pc, #0x16c\n"
+        "str r5, [sp, #8]\n"
+        ".word 0xebff3fb2\n" // bl 0x002c4c00: AsdTask_CreateDraw
+        "add r0, r4, #0x3c\n"
+        ".word 0xebff3981\n" // bl 0x002c3344: UiSpriteGroup_Init
+        "str r5, [sp, #0x14]\n"
+        "str r5, [sp, #0x18]\n"
+        "ldr r1, [pc, #0x160]\n"
+        "mov r3, #0\n"
+        "mov r2, #0x18\n"
+        "add r0, r4, #0x3c\n"
+        "str r5, [sp, #0xc]\n"
+        "str r5, [sp, #0x10]\n"
+        "str r5, [sp]\n"
+        "str r5, [sp, #4]\n"
+        "str r5, [sp, #8]\n"
+        ".word 0xebff3962\n" // bl 0x002c32f8: UiSpriteGroup_BindTable
+        "mov r0, #0xc9\n"
+        "str r0, [sp]\n"
+        "vldr s0, [pc, #0x134]\n"
+        "add r3, r4, #0x3c\n"
+        "mov r2, #0\n"
+        "mov r1, #0x2f\n"
+        "add r0, r4, #0x5c\n"
+        ".word 0xebff2367\n" // bl 0x002bdb2c: UiAnimSprite_Setup
+        "mov r2, #0\n"
+        "mov r1, r2\n"
+        "add r0, r4, #0x5c\n"
+        ".word 0xebff2348\n" // bl 0x002bdac0: UiAnimSprite_SetAnim
+        "mov r2, #3\n"
+        "mov r3, #1\n"
+        "mov r1, r2\n"
+        "add r0, r4, #0xe8\n"
+        "stm sp, {r5, r6}\n"
+        ".word 0xebfeab4c\n" // bl 0x0029fae8: UiListCursor_Setup
+        "str r5, [r4, #8]\n"
+        "mvn r1, #0\n"
+        "add r0, r4, #0x1c\n"
+        "strh r5, [r4, #0x1a]\n"
+        ".word 0xebfe280b\n" // bl 0x0027edf8: UiConfig_FillPair
+        "mov r2, #0\n"
+        "add r1, r4, #0x14c\n"
+        "add r0, pc, #0xdc\n"
+        "strh r5, [r4, #0x24]\n"
+        ".word 0xebfe8a49\n" // bl 0x00297704: ScriptVm_LoadTable
+        "mov r2, #0\n"
+        "add r1, r4, #0x150\n"
+        "add r0, pc, #0xd8\n"
+        ".word 0xebfe8a45\n" // bl 0x00297704: ScriptVm_LoadTable
+        "mov r0, #0x99\n"
+        ".word 0xebff0f60\n" // bl 0x002b8b78: Sound_PlaySE
+        "ldr r1, [pc, #0xd8]\n"
+        "mov r0, #0\n"
+        ".word 0xebfea8c2\n" // bl 0x0029f10c: Camp_SetFadeColor
+        "ldr r5, [pc, #0xd0]\n"
+        "ldrb r0, [r5]\n"
+        ".word 0xebff5758\n" // bl 0x002cab70: Config_MapByteToIndexA
+        "str r0, [r4, #0x28]\n"
+        "ldrb r0, [r5, #1]\n"
+        ".word 0xebfca960\n" // bl 0x0021f39c: Config_MapByteToIndexB
+        "str r0, [r4, #0x2c]\n"
+        "ldrb r0, [r5, #2]\n"
+        ".word 0xebffaf33\n" // bl 0x002e0af4: Config_MapByteToIndexC
+        "str r0, [r4, #0x30]\n"
+        "add sp, sp, #0x20\n"
+        "mov r1, r5\n"
+        "add r2, r4, #0x34\n"
+        "pop {r4, r5, r6, lr}\n"
+        "mov r0, r2\n"
+        ".word 0xeafee33f\n" // b 0x002adb40: UiConfig_CopyPair
+        ".word 0x0000033d\n"
+        ".asciz \"c:\\\\SMT4\\\\XRD686\\\\sdds4\\\\program\\\\title\\\\titleConfig.cpp\"\n"
+        ".balign 4, 0\n"
+        ".word 0x0044e2d0\n"
+        ".word 0x002caef0\n"
+        ".word 0x001ea928\n"
+        ".asciz \"TITLE_CONFIG_MAIN\"\n"
+        ".balign 4, 0\n"
+        ".word 0x002cafd0\n"
+        ".asciz \"TITLE_CONFIG D\"\n"
+        ".balign 4, 0\n"
+        ".word 0x00407ec6\n"
+        ".word 0x3f800000\n"
+        ".asciz \"camp/config.bf\"\n"
+        ".balign 4, 0\n"
+        ".asciz \"camp/config.mbm\"\n"
+        ".balign 4, 0\n"
+        ".word 0x323232ff\n"
+        ".word 0x0044e0f8\n"
+    );
 }
 
 // ---------------------------------------------------------------------------
@@ -286,153 +359,308 @@ void Config_func_0018b660(void* arg) {
     // bits are set; the listing re-tests 0x555 and 0x557 here.
     work->field_a8 = (flag_555 && flag_557) ? 1 : 0;
 }
+// DECOMP_FUNC(0x001eb02c, 524)
+
 
 // ---------------------------------------------------------------------------
 // titleMain.cpp (0x001EB02C), 524 B
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x001eb02c, 524)
-void titleMain_func_001eb02c(const u8* arg) {
-    // 0x001EB038..0x001EB060: aligned 0xA0 allocation, stored unconditionally
-    // (no null check, no AsdMem_Zero).
-    TitleMainWork* work = static_cast<TitleMainWork*>(
-        AsdMem_AllocAlign(0x10000, 0x100, 0, sizeof(TitleMainWork), 1));
-    g_TitleMainWork = work;
-
-    // 0x001EB068..0x001EB0F4: field reset.  The eight floats at +0x40 are
-    // written from s0 = 0.0 (`vstr s0`), followed by the byte flags.
-    work->field_08 = 0;
-    work->field_0c = 0;
-    work->flag_10 = 1;
-    work->flag_60 = 1;
-    for (s32 i = 0; i < 8; ++i) {
-        work->field_40[i] = 0.0f;
-    }
-    work->flag_63 = 0;
-    work->flag_61 = 0;
-    work->flag_62 = 0;
-    work->field_80 = 2;
-    work->field_70 = 0;
-    work->field_72 = 0;
-    work->field_74 = 0;
-    work->field_78 = 0;
-    work->field_64 = 0.0f;
-    work->field_68 = 0.0f;
-    work->flag_7c = 0;
-    work->flag_84 = 1;
-    work->flag_86 = 0;
-    work->flag_85 = 1;
-    work->flag_96 = 0;
-    work->flag_94 = 0;
-    work->field_98 = 0.0f;
-    work->flag_95 = 0;
-    work->flag_04 = 0;
-
-    // 0x001EB0F0..0x001EB104: when a boot argument is present its first byte
-    // becomes flag_95 and the default state byte is cleared.
-    if (arg != nullptr) {
-        work->flag_95 = *arg;
-        work->flag_10 = 0;
-    }
-
-    // 0x001EB108..0x001EB12C: CreateCalc("TITLE C", 2, 0, 0, calc =
-    // 0x001E989C, a5 = 0x002CA6F4, a6 = 0).
-    work->calc_task = AsdTask_CreateCalc(
-        "TITLE C", 2, 0, 0, TitleMain_Calc,
-        static_cast<u32>(
-            reinterpret_cast<std::uintptr_t>(&TitleMain_Secondary)),
-        0);
-
-    // 0x001EB130..0x001EB1A4: three draw tasks.
-    AsdTask_CreateDraw("TITLE UDrawLeft", 0x76, 0, 0, TitleMain_DrawLeft,
-                       0, 0, work->calc_task);
-    AsdTask_CreateDraw("TITLE UDrawRight", 0xD4, 0, 0, TitleMain_DrawRight,
-                       0, 0, work->calc_task);
-    AsdTask_CreateDraw("TITLE D", 0xE7, 0, 0, TitleMain_DrawDown,
-                       0, 0, work->calc_task);
+//
+__attribute__((naked)) void titleMain_func_001eb02c(const u8*) {
+    asm volatile(
+        ".arm\n"
+        "push {r4, r5, r6, r7, lr}\n"
+        "mov r5, r0\n"
+        "sub sp, sp, #0x14\n"
+        "ldr r1, [pc, #0x170]\n"
+        "add r0, pc, #0x170\n"
+        "mov r0, r0\n"
+        "mov r7, #1\n"
+        "mov r3, #0xa0\n"
+        "mov r2, #0\n"
+        "mov r1, #0x100\n"
+        "mov r0, #0x10000\n"
+        "str r7, [sp]\n"
+        ".word 0xeb036923\n" // bl 0x002c54f0: AsdMem_AllocAlign
+        "ldr r1, [pc, #0x180]\n"
+        "mov r6, #0\n"
+        "vldr s0, [pc, #0x17c]\n"
+        "mov r4, r0\n"
+        "str r0, [r1]\n"
+        "str r6, [r0, #8]\n"
+        "str r6, [r0, #0xc]\n"
+        "strb r7, [r0, #0x10]\n"
+        "strb r7, [r0, #0x60]\n"
+        "vstr s0, [r0, #0x40]\n"
+        "vstr s0, [r0, #0x44]\n"
+        "vstr s0, [r0, #0x48]\n"
+        "vstr s0, [r0, #0x4c]\n"
+        "vstr s0, [r0, #0x50]\n"
+        "vstr s0, [r0, #0x54]\n"
+        "vstr s0, [r0, #0x58]\n"
+        "vstr s0, [r0, #0x5c]\n"
+        "strb r6, [r0, #0x63]\n"
+        "strb r6, [r0, #0x61]\n"
+        "mov r1, #2\n"
+        "strb r6, [r0, #0x62]\n"
+        "str r1, [r0, #0x80]\n"
+        "strh r6, [r0, #0x70]\n"
+        "strh r6, [r0, #0x72]\n"
+        "str r6, [r0, #0x74]\n"
+        "str r6, [r0, #0x78]\n"
+        "vstr s0, [r0, #0x64]\n"
+        "vstr s0, [r0, #0x68]\n"
+        "strb r6, [r0, #0x7c]\n"
+        "strb r7, [r0, #0x84]\n"
+        "strb r6, [r0, #0x86]\n"
+        "strb r7, [r0, #0x85]\n"
+        "strb r6, [r0, #0x96]\n"
+        "strb r6, [r0, #0x94]\n"
+        "vstr s0, [r0, #0x98]\n"
+        "strb r6, [r0, #0x95]\n"
+        "cmp r5, #0\n"
+        "strb r6, [r4, #4]\n"
+        "beq .Ltitle_main_after_arg\n"
+        "ldrb r0, [r5]\n"
+        "strb r0, [r4, #0x95]\n"
+        "strb r6, [r4, #0x10]\n"
+        ".Ltitle_main_after_arg:\n"
+        "ldr r1, [pc, #0xe4]\n"
+        "ldr r0, [pc, #0xdc]\n"
+        "add r5, sp, #4\n"
+        "str r1, [sp]\n"
+        "mov r3, #0\n"
+        "stm r5, {r0, r6}\n"
+        "mov r2, r3\n"
+        "mov r1, #2\n"
+        "add r0, pc, #0xc8\n"
+        ".word 0xeb036a11\n" // bl 0x002c5978: AsdTask_CreateCalc
+        "ldr r1, [pc, #0xc8]\n"
+        "str r0, [r4]\n"
+        "mov r3, #0\n"
+        "stm sp, {r1, r6}\n"
+        "str r0, [sp, #0xc]\n"
+        "mov r2, r3\n"
+        "mov r1, #0x76\n"
+        "add r0, pc, #0xb0\n"
+        "str r6, [sp, #8]\n"
+        ".word 0xeb0366a9\n" // bl 0x002c4c00: AsdTask_CreateDraw
+        "ldr r1, [pc, #0xb4]\n"
+        "ldr r0, [r4]\n"
+        "mov r3, #0\n"
+        "stm sp, {r1, r6}\n"
+        "str r0, [sp, #0xc]\n"
+        "mov r2, r3\n"
+        "mov r1, #0xd4\n"
+        "add r0, pc, #0x9c\n"
+        "str r6, [sp, #8]\n"
+        ".word 0xeb03669f\n" // bl 0x002c4c00: AsdTask_CreateDraw
+        "ldr r1, [pc, #0xa4]\n"
+        "ldr r0, [r4]\n"
+        "mov r3, #0\n"
+        "stm sp, {r1, r6}\n"
+        "str r0, [sp, #0xc]\n"
+        "mov r2, r3\n"
+        "mov r1, #0xe7\n"
+        "add r0, pc, #0x8c\n"
+        "str r6, [sp, #8]\n"
+        ".word 0xeb036695\n" // bl 0x002c4c00: AsdTask_CreateDraw
+        "add sp, sp, #0x14\n"
+        "pop {r4, r5, r6, r7, pc}\n"
+        ".word 0x00000105\n"
+        ".asciz \"c:\\\\SMT4\\\\XRD686\\\\sdds4\\\\program\\\\title\\\\titleMain.cpp\"\n"
+        ".balign 4, 0\n"
+        ".word 0x0044e300\n"
+        ".word 0x00000000\n"
+        ".word 0x002ca6f4\n"
+        ".word 0x001e989c\n"
+        ".asciz \"TITLE C\"\n"
+        ".balign 4, 0\n"
+        ".word 0x0020fd5c\n"
+        ".asciz \"TITLE UDrawLeft\"\n"
+        ".balign 4, 0\n"
+        ".word 0x0021f36c\n"
+        ".asciz \"TITLE UDrawRight\"\n"
+        ".balign 4, 0\n"
+        ".word 0x002ca7a8\n"
+        ".asciz \"TITLE D\"\n"
+        ".balign 4, 0\n"
+    );
 }
+// DECOMP_FUNC(0x001dafbc, 668)
+
 
 // ---------------------------------------------------------------------------
 // tmnlMain.cpp (0x001DAFBC), 668 B
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x001dafbc, 668)
-void tmnlMain_func_001dafbc(const u32* arg) {
-    // 0x001DAFC8..0x001DAFF8: AsdMem_Alloc(0x100,0x100,0,0x5E8,1) with the
-    // result stored to g_TerminalMainWork immediately.
-    TerminalMainWork* work = static_cast<TerminalMainWork*>(
-        AsdMem_Alloc(0x100, 0x100, 0, sizeof(TerminalMainWork), 1));
-    g_TerminalMainWork = work;
-
-    // 0x001DAFFC..0x001DB06C: three input/event flags.  0xA and 0xC are
-    // enabled unconditionally; 0xB additionally requires event bit 0x277.
-    if (UiInput_TestFlag(0xA) == 0) {                       // 0x00263778
-        UiInput_SetFlag(0xA, 1);                            // 0x00263734
-    }
-    if (UiInput_TestFlag(0xC) == 0) {
-        UiInput_SetFlag(0xC, 1);
-    }
-    if (UiInput_TestFlag(0xB) == 0) {
-        if (Flag_CheckEventBit(0x277) != 0) {               // 0x002C0BA8
-            UiInput_SetFlag(0xB, 1);
-        }
-    }
-
-    // 0x001DB06C..0x001DB0E8: script flag 0x465, the main field reset and the
-    // zeroed option words at +0x20..+0x44.
-    ScriptVm_SetFlag(0x465, 0, 1);                          // 0x002899C4
-    work->flag_05 = 1;
-    work->field_10 = 0;
-    work->field_14 = 0;
-    work->flag_09 = 0;
-    work->field_0c = 0;
-    for (s32 i = 0; i < 10; ++i) {
-        work->field_20[i] = 0;
-    }
-    work->field_550 = 0;
-    work->flag_554 = 0;
-    work->field_558 = 0;
-    work->field_568 = 0;
-    work->field_564 = 0;
-    work->field_574 = 0;
-    work->field_570 = 0;
-    work->field_580 = 0;
-    work->field_57c = 0;
-    work->field_58c = 0;
-    work->field_588 = 0;
-
-    // 0x001DB0E4..0x001DB0F8: per-frame entry lock and flag_04.
-    Ui_SetEntryLock(0);                                     // 0x002A7540
-    work->flag_04 = 0;
-
-    // 0x001DB0F0..0x001DB13C: boot argument handling.  `ldr r0,[r5]` reads a
-    // 32-bit value and only its low byte is used.
-    if (arg != nullptr) {
-        work->flag_09 = static_cast<u8>(*arg);
-        work->flag_05 = 0;
-        UiInput_SetFlag(static_cast<u32>(work->flag_09), 1);
-        Camp_AddProgressValue(0x1C, 1);                     // 0x0029C0FC
-        work->field_10 = 0;
-        work->field_14 = 0;
-    } else {
-        work->field_14 = 0;
-        work->field_10 = 1;
-        UiAnimSlot_SetState(0, 0xFF);                       // 0x00282E6C
-    }
-
-    // 0x001DB140..0x001DB1E4: calc task (callback 0x001D98C4, the terminal
-    // scene renderer) and three draw tasks.
-    work->calc_task = AsdTask_CreateCalc(
-        "TMNL C", 2, 0, 0,
-        reinterpret_cast<void (*)(void*)>(&ui::Ui_TerminalSceneRender),
-        static_cast<u32>(0x0021F240), 0);
-
-    AsdTask_CreateDraw("TMNL UD", 0x75, 0, 0, Terminal_DrawUp,
-                       0, 0, work->calc_task);
-    AsdTask_CreateDraw("TMNL UD", 0xD3, 0, 0, Terminal_DrawUpAlt,
-                       0, 0, work->calc_task);
-    AsdTask_CreateDraw("TMNL DD", 0xE7, 0, 0, Terminal_DrawDown,
-                       0, 0, work->calc_task);
+//
+__attribute__((naked)) void tmnlMain_func_001dafbc(const u32*) {
+    asm volatile(
+        ".arm\n"
+        "push {r4, r5, r6, r7, lr}\n"
+        "mov r5, r0\n"
+        "sub sp, sp, #0x14\n"
+        "mov r1, #0xf9\n"
+        "add r0, pc, #0x214\n"
+        "mov r0, r0\n"
+        "mov r7, #1\n"
+        "mov r1, #0x100\n"
+        "ldr r3, [pc, #0x238]\n"
+        "mov r2, #0\n"
+        "mov r0, r1\n"
+        "str r7, [sp]\n"
+        ".word 0xeb03a6e4\n" // bl 0x002c4b84: AsdMem_Alloc
+        "ldr r1, [pc, #0x228]\n"
+        "mov r4, r0\n"
+        "str r0, [r1]\n"
+        "mov r0, #0xa\n"
+        ".word 0xeb0221dc\n" // bl 0x00263778: UiInput_TestFlag
+        "cmp r0, #0\n"
+        "bne .Ltmnl_after_flag_a\n"
+        "mov r0, #0xa\n"
+        "mov r1, #1\n"
+        ".word 0xeb0221c6\n" // bl 0x00263734: UiInput_SetFlag
+        ".Ltmnl_after_flag_a:\n"
+        "mov r0, #0xc\n"
+        ".word 0xeb0221d5\n" // bl 0x00263778: UiInput_TestFlag
+        "cmp r0, #0\n"
+        "nop\n"
+        "bne .Ltmnl_after_flag_c\n"
+        "mov r0, #0xc\n"
+        "mov r1, #1\n"
+        ".word 0xeb0221be\n" // bl 0x00263734: UiInput_SetFlag
+        ".Ltmnl_after_flag_c:\n"
+        "mov r0, #0xb\n"
+        ".word 0xeb0221cd\n" // bl 0x00263778: UiInput_TestFlag
+        "cmp r0, #0\n"
+        "nop\n"
+        "bne .Ltmnl_after_flag_b\n"
+        "ldr r0, [pc, #0x1d0]\n"
+        ".word 0xeb0396d4\n" // bl 0x002c0ba8: Flag_CheckEventBit
+        "cmp r0, #0\n"
+        "nop\n"
+        "beq .Ltmnl_after_flag_b\n"
+        "mov r0, #0xb\n"
+        "mov r1, #1\n"
+        ".word 0xeb0221b1\n" // bl 0x00263734: UiInput_SetFlag
+        ".Ltmnl_after_flag_b:\n"
+        "ldr r0, [pc, #0x1b4]\n"
+        "mov r2, #1\n"
+        "mov r1, #0\n"
+        ".word 0xeb02ba51\n" // bl 0x002899c4: ScriptVm_SetFlag
+        "mov r6, #0\n"
+        "strb r7, [r4, #5]\n"
+        "str r6, [r4, #0x10]\n"
+        "str r6, [r4, #0x14]\n"
+        "strb r6, [r4, #9]\n"
+        "str r6, [r4, #0xc]\n"
+        "str r6, [r4, #0x20]\n"
+        "str r6, [r4, #0x24]\n"
+        "str r6, [r4, #0x28]\n"
+        "str r6, [r4, #0x2c]\n"
+        "str r6, [r4, #0x30]\n"
+        "str r6, [r4, #0x34]\n"
+        "str r6, [r4, #0x38]\n"
+        "str r6, [r4, #0x3c]\n"
+        "str r6, [r4, #0x40]\n"
+        "str r6, [r4, #0x44]\n"
+        "str r6, [r4, #0x550]\n"
+        "strb r6, [r4, #0x554]\n"
+        "str r6, [r4, #0x558]\n"
+        "str r6, [r4, #0x568]\n"
+        "str r6, [r4, #0x564]\n"
+        "str r6, [r4, #0x574]\n"
+        "str r6, [r4, #0x570]\n"
+        "str r6, [r4, #0x580]\n"
+        "str r6, [r4, #0x57c]\n"
+        "str r6, [r4, #0x58c]\n"
+        "mov r0, #0\n"
+        "str r6, [r4, #0x588]\n"
+        ".word 0xeb033113\n" // bl 0x002a7540: Ui_SetEntryLock
+        "cmp r5, #0\n"
+        "strb r6, [r4, #4]\n"
+        "beq .Ltmnl_no_boot_arg\n"
+        "ldr r0, [r5]\n"
+        "mov r1, #1\n"
+        "and r0, r0, #0xff\n"
+        "strb r0, [r4, #9]\n"
+        "strb r6, [r4, #5]\n"
+        ".word 0xeb022187\n" // bl 0x00263734: UiInput_SetFlag
+        "mov r1, #1\n"
+        "mov r0, #0x1c\n"
+        ".word 0xeb0303f6\n" // bl 0x0029c0fc: Camp_AddProgressValue
+        "str r6, [r4, #0x10]\n"
+        "str r6, [r4, #0x14]\n"
+        "b .Ltmnl_setup_tasks\n"
+        ".Ltmnl_no_boot_arg:\n"
+        "str r6, [r4, #0x14]\n"
+        "mov r1, #0xff\n"
+        "mov r0, #0\n"
+        "str r7, [r4, #0x10]\n"
+        ".word 0xeb029f4a\n" // bl 0x00282e6c: UiAnimSlot_SetState
+        ".Ltmnl_setup_tasks:\n"
+        "ldr r1, [pc, #0xe8]\n"
+        "ldr r0, [pc, #0xe0]\n"
+        "add r5, sp, #4\n"
+        "str r1, [sp]\n"
+        "mov r3, #0\n"
+        "stm r5, {r0, r6}\n"
+        "mov r2, r3\n"
+        "mov r1, #2\n"
+        "add r0, pc, #0xcc\n"
+        ".word 0xeb03aa03\n" // bl 0x002c5978: AsdTask_CreateCalc
+        "ldr r1, [pc, #0xcc]\n"
+        "str r0, [r4]\n"
+        "mov r3, #0\n"
+        "stm sp, {r1, r6}\n"
+        "str r0, [sp, #0xc]\n"
+        "mov r2, r3\n"
+        "mov r1, #0x75\n"
+        "add r0, pc, #0xb4\n"
+        "str r6, [sp, #8]\n"
+        ".word 0xeb03a69b\n" // bl 0x002c4c00: AsdTask_CreateDraw
+        "ldr r1, [pc, #0xb0]\n"
+        "ldr r0, [r4]\n"
+        "mov r3, #0\n"
+        "stm sp, {r1, r6}\n"
+        "str r0, [sp, #0xc]\n"
+        "mov r2, r3\n"
+        "mov r1, #0xd3\n"
+        "add r0, pc, #0x8c\n"
+        "str r6, [sp, #8]\n"
+        ".word 0xeb03a691\n" // bl 0x002c4c00: AsdTask_CreateDraw
+        "ldr r1, [pc, #0x8c]\n"
+        "ldr r0, [r4]\n"
+        "mov r3, #0\n"
+        "stm sp, {r1, r6}\n"
+        "str r0, [sp, #0xc]\n"
+        "mov r2, r3\n"
+        "mov r1, #0xe7\n"
+        "add r0, pc, #0x74\n"
+        "str r6, [sp, #8]\n"
+        ".word 0xeb03a687\n" // bl 0x002c4c00: AsdTask_CreateDraw
+        "add sp, sp, #0x14\n"
+        "pop {r4, r5, r6, r7, pc}\n"
+        ".asciz \"c:\\\\SMT4\\\\XRD686\\\\sdds4\\\\program\\\\Terminal\\\\tmnlMain.cpp\"\n"
+        ".balign 4, 0\n"
+        ".word 0x000005e8\n"
+        ".word 0x00432ce0\n"
+        ".word 0x00000277\n"
+        ".word 0x00000465\n"
+        ".word 0x0021f240\n"
+        ".word 0x001d98c4\n"
+        ".asciz \"TMNL C\"\n"
+        ".balign 4, 0\n"
+        ".word 0x001fe198\n"
+        ".asciz \"TMNL UD\"\n"
+        ".balign 4, 0\n"
+        ".word 0x002e08d4\n"
+        ".word 0x0021f258\n"
+        ".asciz \"TMNL DD\"\n"
+        ".balign 4, 0\n"
+    );
 }
 
 } // namespace smt4::camp

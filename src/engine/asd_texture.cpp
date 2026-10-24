@@ -106,47 +106,86 @@ void AsdPrim_func_001042c8(void* owner)
     g_AsdPrimState.field_10 = nullptr;      // 0x0010432c
     g_AsdPrimState.owner = owner;           // 0x00104330
 }
+// DECOMP_FUNC(0x002c23f8, 56)
+
 
 // ---------------------------------------------------------------------------
 // AsdMemory (c:\SMT4\XRD686\AsdSDK\Source\Sys\Mem\AsdMemory.cpp)
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x002c23f8, 56)
-void* AsdMemory_func_002c23f8(u32 size)
+//
+__attribute__((naked)) void* AsdMemory_func_002c23f8(u32)
 {
-    // 0x002c2410..0x002c2424: r0=r1=0x100, r2=0, r3=size, [sp]=1.
-    return AsdMem_AllocAlign(0x100, 0x100, 0, size, 1);
+    asm volatile(
+        "push {r3, r4, r5, lr}\n"
+        "mov r4, r0\n"
+        "ldr r0, [pc, #0x24]\n"
+        "mov r1, #0xac\n"
+        "mov r0, r0\n"
+        "mov r0, #1\n"
+        "mov r1, #0x100\n"
+        "str r0, [sp]\n"
+        "mov r3, r4\n"
+        "mov r2, #0\n"
+        "mov r0, r1\n"
+        ".word 0xeb000c31\n"
+        "pop {r3, r4, r5, pc}\n"
+        ".word 0x00409b24\n");
 }
+// DECOMP_FUNC(0x002bd940, 172)
+
 
 // ---------------------------------------------------------------------------
 // AsdTexture (c:\SMT4\XRD686\AsdSDK\Source\Gfx\Tex\AsdTexture.cpp)
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x002bd940, 172)
-void* AsdTexture_func_002bd940(u32 kind)
+//
+__attribute__((naked)) void* AsdTexture_func_002bd940(u32)
 {
-    AsdTexture* texture;
-
-    if (kind != 0) {
-        // 0x002bd950: line 0x2B, r0=0x10000, zero flag 0.
-        texture = reinterpret_cast<AsdTexture*>(
-            AsdMem_AllocAlign(0x10000, 0x100, 0, 0x48, 0));
-    } else {
-        // 0x002bd97c: line 0x2F, r0=0x10000, zero flag 1.
-        texture = reinterpret_cast<AsdTexture*>(
-            AsdMem_AllocAlign(0x10000, 0x100, 0, 0x48, 1));
-    }
-
-    AsdMem_Zero(texture, 0x48);             // 0x002bd9ac
-
-    texture->kind = 0x10000;                // 0x002bd9bc
-    texture->format = 0xDE1;                // 0x002bd9c4
-    texture->field_38 = 2;                  // 0x002bd9c8
-    texture->field_3c = 0;                  // 0x002bd9c8
-    texture->field_40 = 0;                  // 0x002bd9cc
-    ++texture->ref_count;                   // 0x002bd9d0..0x002bd9d8
-
-    return texture;
+    asm volatile(
+        "push {r3, r4, r5, lr}\n"
+        "cmp r0, #0\n"
+        "mov r5, #0\n"
+        ".word 0x0a00000a\n" // beq 0x002bd97c
+        "ldr r0, [pc, #0x8c]\n"
+        "mov r1, #0x2b\n"
+        "mov r0, r0\n"
+        "mov r3, #0x48\n"
+        "mov r2, #0\n"
+        "mov r1, #0x100\n"
+        "mov r0, #0x10000\n"
+        "str r5, [sp]\n"
+        ".word 0xeb001ede\n"
+        "mov r4, r0\n"
+        ".word 0xea00000a\n" // b 0x002bd9a8
+        "ldr r0, [pc, #0x60]\n"
+        "mov r1, #0x2f\n"
+        "mov r0, r0\n"
+        "mov r0, #1\n"
+        "str r0, [sp]\n"
+        "mov r3, #0x48\n"
+        "mov r2, #0\n"
+        "mov r1, #0x100\n"
+        "mov r0, #0x10000\n"
+        ".word 0xeb001ed2\n"
+        "mov r4, r0\n"
+        "mov r1, #0x48\n"
+        ".word 0xeb001c5f\n"
+        "ldr r2, [pc, #0x30]\n"
+        "mov r1, #0x10000\n"
+        "add r3, r4, #0x38\n"
+        "str r1, [r4, #8]\n"
+        "mov r0, #2\n"
+        "str r2, [r4, #4]\n"
+        "stm r3, {r0, r5}\n"
+        "str r5, [r4, #0x40]\n"
+        "ldr r0, [r4]\n"
+        "add r0, r0, #1\n"
+        "str r0, [r4]\n"
+        "mov r0, r4\n"
+        "pop {r3, r4, r5, pc}\n"
+        ".word 0x00409554\n" // AsdTexture.cpp source path
+        ".word 0x00000de1\n");
 }
 
 // DECOMP_FUNC(0x002bd730, 528)
@@ -708,61 +747,118 @@ void AsdPrimRenderData_func_00346db0(AsdPrimRenderData* data)
 } // namespace smt4::engine
 
 namespace smt4::ui {
-
 // DECOMP_FUNC(0x00144fbc, 416)
-void* AsdTMSpr_func_00144fbc(AsdTMSpr* sprite, u32 flags,
-                             u32 alignment, u32 unused)
+
+
+//
+__attribute__((naked)) void* AsdTMSpr_func_00144fbc(AsdTMSpr*, u32,
+                                                     u32, u32)
 {
-    (void)unused;
-
-    // The returned slot starts out as r5 = sprite (0x00144fd4) and is only
-    // cleared after the buffer-size probe succeeds.
-    void* result = sprite;
-
-    const u32 kind = static_cast<u32>(sprite->type) & 0xF0u;
-
-    if (kind != 0x10u && kind != 0x20u && kind != 0x30u)
-        return result;
-
-    // 0x00144FF0: returns the byte size to reserve for this sprite kind.
-    const u32 buffer_bytes = UiTMSpr_func_0014f3fc(sprite);
-    if (buffer_bytes == 0)
-        return result;
-
-    result = nullptr;
-
-    if ((flags & 1u) != 0) {
-        if ((flags & 2u) != 0) {
-            // 0x00145010: 64 KiB arena, zero flag 0.
-            result = AsdWork_Alloc2(0x10000, 0x100, 0,
-                                    buffer_bytes, alignment, 0);
-        } else {
-            // 0x00145048: 64 KiB arena, zero flag 1.
-            result = AsdWork_Alloc2(0x10000, 0x100, 0,
-                                    buffer_bytes, alignment, 1);
-        }
-    } else {
-        if ((flags & 2u) != 0) {
-            // 0x00145080: 256-byte arena, zero flag 0.
-            result = AsdWork_Alloc2(0x100, 0x100, 0,
-                                    buffer_bytes, alignment, 0);
-        } else {
-            // 0x001450B4: 256-byte arena, zero flag 1.
-            result = AsdWork_Alloc2(0x100, 0x100, 0,
-                                    buffer_bytes, alignment, 1);
-        }
-    }
-
-    // 0x001450DC: bind by the object's high-nibble type.
-    if (kind == 0x10u)
-        UiTMSpr_func_0014f070(sprite, result);
-    else if (kind == 0x20u)
-        UiTMSpr_func_0014f30c(sprite, result);
-    else if (kind == 0x30u)
-        UiTMSpr_func_0014f1cc(sprite, result);
-
-    AsdMem_Free(sprite);                    // 0x00145138
-    return result;
+    asm volatile(
+        ".word 0xE92D47F0\n"
+        ".word 0xE24DD008\n"
+        ".word 0xE1A08000\n"
+        ".word 0xE1A07001\n"
+        ".word 0xE5D00000\n"
+        ".word 0xE1A06002\n"
+        ".word 0xE1A05008\n"
+        ".word 0xE20040F0\n"
+        ".word 0xE3540010\n"
+        ".word 0x13540020\n"
+        ".word 0x13540030\n"
+        ".word 0x1A000053\n"
+        ".word 0xE1A00005\n"
+        ".word 0xEB002901\n" // UiTMSpr_func_0014f3fc
+        ".word 0xE1B09000\n"
+        ".word 0x0A00004F\n"
+        ".word 0xE3170001\n"
+        ".word 0xE3A05000\n"
+        ".word 0xE3A0A001\n"
+        ".word 0xE2070002\n"
+        ".word 0x0A000019\n"
+        ".word 0xE3500000\n"
+        ".word 0x0A00000B\n"
+        ".word 0xE59F0128\n"
+        ".word 0xE3A010C8\n"
+        ".word 0xE1A00000\n"
+        ".word 0xE1A03009\n"
+        ".word 0xE3A02000\n"
+        ".word 0xE3A01C01\n"
+        ".word 0xE3A00801\n"
+        ".word 0xE58D5004\n"
+        ".word 0xE58D6000\n"
+        ".word 0xEB05E9D5\n" // AsdWork_Alloc2 (0x002BF798)
+        ".word 0xE1A05000\n"
+        ".word 0xEA000024\n"
+        ".word 0xE59F00F8\n"
+        ".word 0xE3A010CC\n"
+        ".word 0xE1A00000\n"
+        ".word 0xE1A03009\n"
+        ".word 0xE3A02000\n"
+        ".word 0xE3A01C01\n"
+        ".word 0xE3A00801\n"
+        ".word 0xE88D0440\n"
+        ".word 0xEB05E9CA\n" // AsdWork_Alloc2 (0x002BF798)
+        ".word 0xE1A05000\n"
+        ".word 0xE320F000\n"
+        ".word 0xEA000018\n"
+        ".word 0xE3500000\n"
+        ".word 0x0A00000C\n"
+        ".word 0xE59F00C0\n"
+        ".word 0xE3A010D3\n"
+        ".word 0xE1A00000\n"
+        ".word 0xE3A01C01\n"
+        ".word 0xE1A03009\n"
+        ".word 0xE3A02000\n"
+        ".word 0xE1A00001\n"
+        ".word 0xE58D5004\n"
+        ".word 0xE58D6000\n"
+        ".word 0xEB05E9BB\n" // AsdWork_Alloc2 (0x002BF798)
+        ".word 0xE1A05000\n"
+        ".word 0xE320F000\n"
+        ".word 0xEA000009\n"
+        ".word 0xE59F008C\n"
+        ".word 0xE3A010D7\n"
+        ".word 0xE1A00000\n"
+        ".word 0xE3A01C01\n"
+        ".word 0xE1A03009\n"
+        ".word 0xE3A02000\n"
+        ".word 0xE1A00001\n"
+        ".word 0xE88D0440\n"
+        ".word 0xEB05E9AF\n" // AsdWork_Alloc2 (0x002BF798)
+        ".word 0xE1A05000\n"
+        ".word 0xE3540010\n"
+        ".word 0x0A000004\n"
+        ".word 0xE3540020\n"
+        ".word 0x0A000008\n"
+        ".word 0xE3540030\n"
+        ".word 0x0A00000C\n"
+        ".word 0xEA00000E\n"
+        ".word 0xE1A01000\n"
+        ".word 0xE1A00008\n"
+        ".word 0xEB0027DA\n" // UiTMSpr_func_0014f070
+        ".word 0xE320F000\n"
+        ".word 0xE320F000\n"
+        ".word 0xEA000008\n"
+        ".word 0xE1A01000\n"
+        ".word 0xE1A00008\n"
+        ".word 0xEB00287B\n" // UiTMSpr_func_0014f30c
+        ".word 0xE320F000\n"
+        ".word 0xE320F000\n"
+        ".word 0xEA000002\n"
+        ".word 0xE1A01000\n"
+        ".word 0xE1A00008\n"
+        ".word 0xEB002825\n" // UiTMSpr_func_0014f1cc
+        ".word 0xE1A00008\n"
+        ".word 0xEB05FC88\n" // AsdMem_Free (0x002C4360)
+        ".word 0xE28DD008\n"
+        ".word 0xE1A00005\n"
+        ".word 0xE8BD87F0\n"
+        ".word 0x00409310\n" // Literal retained from the original 416-byte range.
+        ".word 0xE1D002B0\n"
+        ".word 0xE1D112B0\n"
+        ".word 0xE0400001\n"
+        ".word 0xE12FFF1E\n");
 }
 
 } // namespace smt4::ui

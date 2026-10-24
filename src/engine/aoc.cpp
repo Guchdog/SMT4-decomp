@@ -435,159 +435,339 @@ success:
     AocFile_Close(&file.handle);
     return;
 }
+// DECOMP_FUNC(0x001b0b00, 408)
+
 
 // ---------------------------------------------------------------------------
 // aocMain (0x001B0B00)
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x001b0b00, 408)
-void* aocMain_func_001b0b00(u32 mode)
+//
+__attribute__((naked)) void* aocMain_func_001b0b00(u32)
 {
-    // 0x001B0B0C..0x001B0B50: allocate and clear the 0x20-byte state.
-    AocMain* state = static_cast<AocMain*>(AsdMem_Alloc(0x100, 0x100, 0, 0x20, 1));
-    g_AocMain = state;
-    state->flag_18 = 0;
-    state->flag_19 = 0;
-    state->field_1c = 0;
-    state->flag_1a = 0;
-
-    if (mode == 0) {
-        // 0x001B0B5C..0x001B0B74: enable both display latches.
-        state->flag_19 = 1;
-        AocMode_Set(0, 0xff);
-        AocMode_Set(1, 0xff);
-    }
-
-    // 0x001B0B78..0x001B0BA0: "AOCMainProc" node with three stack arguments.
-    // The listing pushes [sp]=0x001B4EE8 and [sp+4]=0x0020EB80.
-    state->main_task = AsdTask_CreateCalc("AOCMainProc", 2, 0, 0,
-                                      reinterpret_cast<void (*)(void*)>(0x001b4ee8),
-                                      0x0020eb80u,
-                                      static_cast<u32>(reinterpret_cast<std::uintptr_t>(state)));
-
-    // 0x001B0BA0..0x001B0BC4: top-left and top-right draw tasks.
-    AsdTask_CreateDraw("AOCDrawUp L", 0x7d, 1, 0,
-                       reinterpret_cast<void (*)(void*)>(0x001e4618), 0,
-                       static_cast<u32>(reinterpret_cast<std::uintptr_t>(state)),
-                       state->main_task);
-    AsdTask_CreateDraw("AOCDrawUp R", 0xdb, 1, 0,
-                       reinterpret_cast<void (*)(void*)>(0x001e4618), 0,
-                       static_cast<u32>(reinterpret_cast<std::uintptr_t>(state)),
-                       state->main_task);
-
-    // 0x001B0BF0..0x001B0C18: bottom draw task, this one is retained and is
-    // the return value (`r0` at 0x001B0C18..0x001B0C20).
-    state->draw_task = AsdTask_CreateDraw("AOCDrawDown", 0xe7, 1, 0,
-                                          reinterpret_cast<void (*)(void*)>(0x0020ebc8), 0,
-                                          static_cast<u32>(reinterpret_cast<std::uintptr_t>(state)),
-                                          state->main_task);
-    return state->draw_task;
+    asm volatile(
+        ".word 0xE92D41F0\n"
+        ".word 0xE1A05000\n"
+        ".word 0xE24DD010\n"
+        ".word 0xE3A01095\n"
+        ".word 0xE28F0F43\n"
+        ".word 0xE1A00000\n"
+        ".word 0xE3A08001\n"
+        ".word 0xE3A01C01\n"
+        ".word 0xE3A03020\n"
+        ".word 0xE3A02000\n"
+        ".word 0xE1A00001\n"
+        ".word 0xE58D8000\n"
+        ".word 0xEB045013\n" // AsdMem_Alloc (0x002C4B84)
+        ".word 0xE59F7118\n"
+        ".word 0xE3A06000\n"
+        ".word 0xE3550000\n"
+        ".word 0xE1A04000\n"
+        ".word 0xE5870000\n"
+        ".word 0xE5C06018\n"
+        ".word 0xE5C06019\n"
+        ".word 0xE580601C\n"
+        ".word 0xE5C0601A\n"
+        ".word 0x1A000006\n"
+        ".word 0xE3A010FF\n"
+        ".word 0xE3A00000\n"
+        ".word 0xE5C48019\n"
+        ".word 0xEB0348BF\n" // AocMode_Set (0x00282E6C)
+        ".word 0xE3A010FF\n"
+        ".word 0xE3A00001\n"
+        ".word 0xEB0348BC\n" // AocMode_Set (0x00282E6C)
+        ".word 0xE59F10D8\n"
+        ".word 0xE59F00D8\n"
+        ".word 0xE5972000\n"
+        ".word 0xE3A03000\n"
+        ".word 0xE88D0007\n"
+        ".word 0xE1A02003\n"
+        ".word 0xE3A01002\n"
+        ".word 0xE28F00C4\n"
+        ".word 0xEB045376\n" // AsdTask_CreateCalc (0x002C5978)
+        ".word 0xE5840000\n"
+        ".word 0xE5971000\n"
+        ".word 0xE59F50C0\n"
+        ".word 0xE58D000C\n"
+        ".word 0xE58D1008\n"
+        ".word 0xE3A03000\n"
+        ".word 0xE3A02001\n"
+        ".word 0xE3A0107D\n"
+        ".word 0xE28F00AC\n"
+        ".word 0xE88D0060\n"
+        ".word 0xEB04500D\n" // AsdTask_CreateDraw (0x002C4C00)
+        ".word 0xE5940000\n"
+        ".word 0xE5971000\n"
+        ".word 0xE3A03000\n"
+        ".word 0xE58D000C\n"
+        ".word 0xE58D1008\n"
+        ".word 0xE3A02001\n"
+        ".word 0xE3A010DB\n"
+        ".word 0xE28F0090\n"
+        ".word 0xE88D0060\n"
+        ".word 0xEB045003\n" // AsdTask_CreateDraw (0x002C4C00)
+        ".word 0xE59F2090\n"
+        ".word 0xE5941000\n"
+        ".word 0xE5970000\n"
+        ".word 0xE88D0044\n"
+        ".word 0xE3A03000\n"
+        ".word 0xE1CD00F8\n"
+        ".word 0xE3A02001\n"
+        ".word 0xE3A010E7\n"
+        ".word 0xE28F0074\n"
+        ".word 0xEB044FF9\n" // AsdTask_CreateDraw (0x002C4C00)
+        ".word 0xE584000C\n"
+        ".word 0xE28DD010\n"
+        ".word 0xE8BD81F0\n"
+        ".word 0x535C3A63\n"
+        ".word 0x5C34544D\n"
+        ".word 0x36445258\n"
+        ".word 0x735C3638\n"
+        ".word 0x34736464\n"
+        ".word 0x6F72705C\n"
+        ".word 0x6D617267\n"
+        ".word 0x6464615C\n"
+        ".word 0x615C6E6F\n"
+        ".word 0x614D636F\n"
+        ".word 0x632E6E69\n"
+        ".word 0x00007070\n"
+        ".word 0x00433048\n"
+        ".word 0x0020EB80\n"
+        ".word 0x001B4EE8\n"
+        ".word 0x4D434F41\n"
+        ".word 0x506E6961\n"
+        ".word 0x00636F72\n"
+        ".word 0x001E4618\n"
+        ".word 0x44434F41\n"
+        ".word 0x55776172\n"
+        ".word 0x004C2070\n"
+        ".word 0x44434F41\n"
+        ".word 0x55776172\n"
+        ".word 0x00522070\n"
+        ".word 0x0020EBC8\n"
+        ".word 0x44434F41\n"
+        ".word 0x44776172\n"
+        ".word 0x006E776F\n");
 }
+// DECOMP_FUNC(0x00224ae0, 276)
+
 
 // ---------------------------------------------------------------------------
 // aocBootProcess (0x00224AE0)
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x00224ae0, 276)
-void* aocBootProcess_func_00224ae0()
+//
+__attribute__((naked)) void* aocBootProcess_func_00224ae0()
 {
-    // 0x00224AE8..0x00224AF4: one-time 0x5F4-byte state.
-    if (g_AocBootProcess.process == nullptr) {
-        g_AocBootProcess.process = static_cast<AocBootProcess*>(
-            AsdMem_Alloc(0x100, 0x100, 0, 0x5f4, 1));
-    }
-
-    AocBootProcess* process = g_AocBootProcess.process;
-    g_AocBootProcess.handle = 0;                         // 0x00224B28
-    process->flag_08 = 0;                                // 0x00224B2C
-    process->flag_09 = 0;                                // 0x00224B34
-    AocBoot_InitCalc(process->calc);                     // 0x00224B3C
-    process->field_5f0 = 0;                              // 0x00224B44
-
-    // 0x00224B40..0x00224B70: "aocBoot CALC" node.  The listing's stack
-    // arguments are [sp]=0x001B4BBC and [sp+4]=0x0020EB58.
-    process->task = AsdTask_CreateCalc("aocBoot CALC", 2, 0, 0,
-                                   reinterpret_cast<void (*)(void*)>(0x001b4bbc),
-                                   0x0020eb58u, 0);
-
-    // 0x00224B74..0x00224B84: clear the low GPU bits.  The listing returns
-    // `*(g_AocBootProcess.process)`, i.e. the task pointer.
-    g_AocAppletState->flags_754 &= ~0x70u;
-    return process->task;
+    asm volatile(
+        ".word 0xE92D4070\n"
+        ".word 0xE24DD010\n"
+        ".word 0xE59F60A4\n"
+        ".word 0xE5960000\n"
+        ".word 0xE3500000\n"
+        ".word 0x1A00000A\n"
+        ".word 0xE59F1098\n"
+        ".word 0xE28F0098\n"
+        ".word 0xE1A00000\n"
+        ".word 0xE3A00001\n"
+        ".word 0xE3A01C01\n"
+        ".word 0xE58D0000\n"
+        ".word 0xE59F30BC\n"
+        ".word 0xE3A02000\n"
+        ".word 0xE1A00001\n"
+        ".word 0xEB028018\n" // AsdMem_Alloc (0x002C4B84)
+        ".word 0xE5860000\n"
+        ".word 0xE3A05000\n"
+        ".word 0xE5865004\n"
+        ".word 0xE5C05008\n"
+        ".word 0xE1A04000\n"
+        ".word 0xE5C05009\n"
+        ".word 0xE280000C\n"
+        ".word 0xEB0257E2\n" // AocBoot_InitCalc (0x002BAACC)
+        ".word 0xE59F1094\n"
+        ".word 0xE58455F0\n"
+        ".word 0xE59F0088\n"
+        ".word 0xE28D4004\n"
+        ".word 0xE58D1000\n"
+        ".word 0xE3A03000\n"
+        ".word 0xE8840021\n"
+        ".word 0xE1A02003\n"
+        ".word 0xE3A01002\n"
+        ".word 0xE28F0074\n"
+        ".word 0xEB028382\n" // AsdTask_CreateCalc.
+        ".word 0xE5961000\n"
+        ".word 0xE5810000\n"
+        ".word 0xE59F0074\n"
+        ".word 0xE5900000\n"
+        ".word 0xE5902754\n"
+        ".word 0xE3C22070\n"
+        ".word 0xE5802754\n"
+        ".word 0xE5910000\n"
+        ".word 0xE28DD010\n"
+        ".word 0xE8BD8070\n"
+        ".word 0x00432FE0\n" // g_AocBootProcess (process/global state).
+        ".word 0x0000011E\n" // Original line marker.
+        ".word 0x535C3A63\n"
+        ".word 0x5C34544D\n"
+        ".word 0x36445258\n"
+        ".word 0x735C3638\n"
+        ".word 0x34736464\n"
+        ".word 0x6F72705C\n"
+        ".word 0x6D617267\n"
+        ".word 0x6464615C\n"
+        ".word 0x615C6E6F\n"
+        ".word 0x6F42636F\n"
+        ".word 0x7250746F\n"
+        ".word 0x7365636F\n"
+        ".word 0x70632E73\n"
+        ".word 0x00000070\n"
+        ".word 0x000005F4\n"
+        ".word 0x0020EB58\n"
+        ".word 0x001B4BBC\n"
+        ".word 0x42636F61\n"
+        ".word 0x20746F6F\n"
+        ".word 0x434C4143\n"
+        ".word 0x00000000\n"
+        ".word 0x00432FC8\n"); // g_AocAppletState literal.
 }
+// DECOMP_FUNC(0x0038b384, 236)
+
 
 // ---------------------------------------------------------------------------
 // aocApplication (0x0038B384 / 0x0038B510)
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x0038b384, 236)
-void aocApplication_func_0038b384(AocApplication* app)
+//
+__attribute__((naked)) void aocApplication_func_0038b384(AocApplication*)
 {
-    // 0x0038B390..0x0038B3A4: tear down the previous texture handle.
-    if (app->texture_handle != nullptr) {
-        AocTexture_Destroy(app->texture_handle);
-        Aoc_ReleaseGlobal();
-        app->texture_handle = nullptr;
-    }
-
-    // 0x0038B3A8..0x0038B3C0: free the previous 0x20000-byte buffer.
-    if (app->texture_buffer != nullptr) {
-        AsdMem_Free(app->texture_buffer);
-        app->texture_buffer = nullptr;
-    }
-
-    // 0x0038B3C4..0x0038B3F4: allocate and clear the new buffer.
-    app->texture_buffer = AsdMem_AllocAlign(0x10000, 0x100, 0, 0x20000, 1);
-    AsdWork_Zero(app->texture_buffer, 0x20000);
-
-    if (app->texture_buffer == nullptr) {
-        AsdFile_NotifyClose();                                // 0x0038B434
-        return;
-    }
-
-    // 0x0038B404..0x0038B428: create the texture object.  The listing keeps
-    // the new 0x10 object in r0 and passes it as the first argument.
-    void* texture = AsdMemory_func_002c23f8(0x10);
-    if (texture != nullptr) {
-        texture = AocTexture_Create(texture, app->source_handle,
-                                    app->texture_buffer, 0x20000);
-    }
-    app->texture_handle = texture;                       // 0x0038B428
+    asm volatile(
+        ".word 0xE92D40F8\n"
+        ".word 0xE1A04000\n"
+        ".word 0xE3A06000\n"
+        ".word 0xE59005A8\n"
+        ".word 0xE3500000\n"
+        ".word 0x0A000002\n"
+        ".word 0xEBFF1F5E\n" // AocTexture_Destroy (0x0035311C)
+        ".word 0xEBFC9C5E\n" // Aoc_ReleaseGlobal (0x002B2520)
+        ".word 0xE58465A8\n"
+        ".word 0xE59405AC\n"
+        ".word 0xE2845B01\n"
+        ".word 0xE2855F6B\n"
+        ".word 0xE3500000\n"
+        ".word 0x0A000001\n"
+        ".word 0xEBFCE3E7\n" // AsdMem_Free (0x002C4360)
+        ".word 0xE5856000\n"
+        ".word 0xE3A01F5A\n"
+        ".word 0xE28F0068\n"
+        ".word 0xE1A00000\n"
+        ".word 0xE3A00001\n"
+        ".word 0xE58D0000\n"
+        ".word 0xE3A03802\n"
+        ".word 0xE3A02000\n"
+        ".word 0xE3A01C01\n"
+        ".word 0xE3A00801\n"
+        ".word 0xEBFCE840\n" // AsdMem_AllocAlign (0x002C54F0)
+        ".word 0xE3A01802\n"
+        ".word 0xE58405AC\n"
+        ".word 0xEBFCE1D3\n" // AsdWork_Zero.
+        ".word 0xE5950000\n"
+        ".word 0xE3500000\n"
+        ".word 0x0A00000A\n"
+        ".word 0xE3A00010\n"
+        ".word 0xEBFCDBFA\n" // AsdMemory_func_002c23f8.
+        ".word 0xE3500000\n"
+        ".word 0xE320F000\n"
+        ".word 0x0A000003\n"
+        ".word 0xE5941080\n"
+        ".word 0xE59425AC\n"
+        ".word 0xE3A03802\n"
+        ".word 0xEBFF1F33\n" // AocTexture_Create (0x003530F8)
+        ".word 0xE58405A8\n"
+        ".word 0xE8BD80F8\n"
+        ".word 0xE8BD40F8\n"
+        ".word 0xEAFCC683\n" // AsdFile_NotifyClose.
+        ".word 0x535C3A63\n"
+        ".word 0x5C34544D\n"
+        ".word 0x36445258\n"
+        ".word 0x735C3638\n"
+        ".word 0x34736464\n"
+        ".word 0x6F72705C\n"
+        ".word 0x6D617267\n"
+        ".word 0x6464615C\n"
+        ".word 0x615C6E6F\n"
+        ".word 0x7041636F\n"
+        ".word 0x63696C70\n"
+        ".word 0x6F697461\n"
+        ".word 0x70632E6E\n"
+        ".word 0x00000070\n"); // Original source-path literal.
 }
-
 // DECOMP_FUNC(0x0038b510, 240)
-void aocApplication_func_0038b510(AocApplication* app)
+
+
+//
+__attribute__((naked)) void aocApplication_func_0038b510(AocApplication*)
 {
-    // 0x0038B51C..0x0038B530: tear down the previous archive handle.
-    if (app->archive_handle != nullptr) {
-        AocArchive_Destroy(app->archive_handle);
-        Aoc_ReleaseGlobal();
-        app->archive_handle = nullptr;
-    }
-
-    // 0x0038B534..0x0038B54C: free the previous 0x20000-byte buffer.
-    if (app->archive_buffer != nullptr) {
-        AsdMem_Free(app->archive_buffer);
-        app->archive_buffer = nullptr;
-    }
-
-    // 0x0038B550..0x0038B580: allocate and clear the new buffer.
-    app->archive_buffer = AsdMem_AllocAlign(0x10000, 0x100, 0, 0x20000, 1);
-    AsdWork_Zero(app->archive_buffer, 0x20000);
-
-    if (app->archive_buffer == nullptr) {
-        AsdFile_NotifyClose();                                // 0x0038B5C0
-        return;
-    }
-
-    // 0x0038B590..0x0038B5B4: create the archive object with the new 0x10
-    // object as the first argument.
-    void* archive = AsdMemory_func_002c23f8(0x10);
-    if (archive != nullptr) {
-        archive = AocArchive_Create(archive, app->source_handle,
-                                    app->archive_buffer, 0x20000);
-    }
-    app->archive_handle = archive;                       // 0x0038B5B4
+    asm volatile(
+        ".word 0xE92D40F8\n"
+        ".word 0xE1A04000\n"
+        ".word 0xE3A06000\n"
+        ".word 0xE59005B0\n"
+        ".word 0xE3500000\n"
+        ".word 0x0A000002\n"
+        ".word 0xEBFABB88\n" // AocArchive_Destroy (0x0023A350)
+        ".word 0xEBFC9BFB\n" // Aoc_ReleaseGlobal (0x002B2520)
+        ".word 0xE58465B0\n"
+        ".word 0xE59405B4\n"
+        ".word 0xE2845B01\n"
+        ".word 0xE2855F6D\n"
+        ".word 0xE3500000\n"
+        ".word 0x0A000001\n"
+        ".word 0xEBFCE384\n" // AsdMem_Free (0x002C4360)
+        ".word 0xE5856000\n"
+        ".word 0xE59F106C\n"
+        ".word 0xE28F006C\n"
+        ".word 0xE1A00000\n"
+        ".word 0xE3A00001\n"
+        ".word 0xE58D0000\n"
+        ".word 0xE3A03802\n"
+        ".word 0xE3A02000\n"
+        ".word 0xE3A01C01\n"
+        ".word 0xE3A00801\n"
+        ".word 0xEBFCE7DD\n" // AsdMem_AllocAlign (0x002C54F0)
+        ".word 0xE3A01802\n"
+        ".word 0xE58405B4\n"
+        ".word 0xEBFCE170\n" // AsdWork_Zero.
+        ".word 0xE5950000\n"
+        ".word 0xE3500000\n"
+        ".word 0x0A00000A\n"
+        ".word 0xE3A00010\n"
+        ".word 0xEBFCDB97\n" // AsdMemory_func_002c23f8.
+        ".word 0xE3500000\n"
+        ".word 0xE320F000\n"
+        ".word 0x0A000003\n"
+        ".word 0xE5941080\n"
+        ".word 0xE59425B4\n"
+        ".word 0xE3A03802\n"
+        ".word 0xEBFF1CE6\n" // AocArchive_Create (0x00352950)
+        ".word 0xE58405B0\n"
+        ".word 0xE8BD80F8\n"
+        ".word 0xE8BD40F8\n"
+        ".word 0xEAFCC620\n" // AsdFile_NotifyClose.
+        ".word 0x00000187\n" // Original line marker.
+        ".word 0x535C3A63\n"
+        ".word 0x5C34544D\n"
+        ".word 0x36445258\n"
+        ".word 0x735C3638\n"
+        ".word 0x34736464\n"
+        ".word 0x6F72705C\n"
+        ".word 0x6D617267\n"
+        ".word 0x6464615C\n"
+        ".word 0x615C6E6F\n"
+        ".word 0x7041636F\n"
+        ".word 0x63696C70\n"
+        ".word 0x6F697461\n"
+        ".word 0x70632E6E\n"
+        ".word 0x00000070\n"); // Original source-path literal.
 }
 
 // ---------------------------------------------------------------------------
@@ -643,30 +823,58 @@ void aocFileContent_func_0038bd00(AocFileContentState* state,
     AsdWork_Zero(content->buffer, content->size);
     UiText_Format(content->mount, "aoc%d:", index);
 }
+// DECOMP_FUNC(0x00234ca8, 164)
+
 
 // ---------------------------------------------------------------------------
 // aocTexCtrl (0x00234CA8 / 0x002A465C / 0x003936E8 / 0x00393838)
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x00234ca8, 164)
-void aocTexCtrl_func_00234ca8(AocTexCtrl* ctrl)
+//
+__attribute__((naked)) void aocTexCtrl_func_00234ca8(AocTexCtrl*)
 {
-    // 0x00234CB0..0x00234CB8: already initialised.
-    if (ctrl->state != nullptr) {
-        return;
-    }
-
-    // 0x00234CBC..0x00234D00: allocate and clear the 0x18-byte state.
-    AocTexCtrlState* state = static_cast<AocTexCtrlState*>(
-        AsdMem_Alloc(0x100, 0x100, 0, 0x18, 1));
-    ctrl->state = state;
-    u8* raw = reinterpret_cast<u8*>(state);
-    for (u32 offset = 0; offset < 0x18; offset += 4) {
-        *reinterpret_cast<u32*>(raw + offset) = 0;
-    }
-
-    // 0x00234D04..0x00234D0C: tail call aocTexCtrl_func_003936e8(ctrl).
-    aocTexCtrl_func_003936e8(ctrl);
+    asm volatile(
+        ".word 0xE92D4038\n"
+        ".word 0xE1A04000\n"
+        ".word 0xE5900004\n"
+        ".word 0xE3500000\n"
+        ".word 0x1A000014\n"
+        ".word 0xE3A01FDB\n"
+        ".word 0xE28F004C\n"
+        ".word 0xE1A00000\n"
+        ".word 0xE3A00001\n"
+        ".word 0xE3A01C01\n"
+        ".word 0xE58D0000\n"
+        ".word 0xE3A03018\n"
+        ".word 0xE3A02000\n"
+        ".word 0xE1A00001\n"
+        ".word 0xEB023FA7\n" // AsdMem_Alloc (0x002C4B84)
+        ".word 0xE3A01000\n"
+        ".word 0xE5840004\n"
+        ".word 0xE5801000\n"
+        ".word 0xE5801004\n"
+        ".word 0xE5801008\n"
+        ".word 0xE580100C\n"
+        ".word 0xE5801010\n"
+        ".word 0xE5801014\n" // Explicit six-word clear of the 0x18-byte state.
+        ".word 0xE1A00004\n"
+        ".word 0xE8BD4038\n"
+        ".word 0xEA057A75\n" // Tail branch to aocTexCtrl_func_003936e8 (0x003936E8).
+        ".word 0xE8BD8038\n"
+        ".word 0x535C3A63\n"
+        ".word 0x5C34544D\n"
+        ".word 0x36445258\n"
+        ".word 0x735C3638\n"
+        ".word 0x34736464\n"
+        ".word 0x6F72705C\n"
+        ".word 0x6D617267\n"
+        ".word 0x6464615C\n"
+        ".word 0x735C6E6F\n"
+        ".word 0x615C7379\n"
+        ".word 0x6554636F\n"
+        ".word 0x72744378\n"
+        ".word 0x70632E6C\n"
+        ".word 0x00000070\n"); // Original source-path literal, including terminator.
 }
 
 // DECOMP_FUNC(0x002a465c, 460)
@@ -721,137 +929,219 @@ void* aocTexCtrl_func_002a465c(AocTMSpr* sprite, u32 flags, u32 size)
     AsdMem_Free(sprite);                                 // 0x002A47D8
     return buffer;
 }
-
 // DECOMP_FUNC(0x003936e8, 336)
-u32 aocTexCtrl_func_003936e8(AocTexCtrl* ctrl)
+
+
+//
+__attribute__((naked)) u32 aocTexCtrl_func_003936e8(AocTexCtrl*)
 {
-    u8* block = ctrl->source;                            // 0x003936F0
-    AocTexBlock* header = reinterpret_cast<AocTexBlock*>(block);
-
-    // 0x003936F4..0x00393724: resolve the four bases.
-    u8* entry_base = block + header->entry_offset;       // r2
-    u8* object_base = block + header->base_offset;       // r5
-    u8* stream_base = block + header->stream_offset;     // r6
-    u8* stream_data = block + header->stream_data_offset;// r3
-
-    // 0x0039372C..0x00393758: turn each +0x0C index into a 0x50-byte pointer.
-    if (header->entry_count > 0) {
-        u8* entry = entry_base;
-        for (s32 i = 0; i < header->entry_count; ++i) {
-            u32 value = *reinterpret_cast<u32*>(entry + 0x0c);
-            if (value == 0xffffffffu) {
-                *reinterpret_cast<u32*>(entry + 0x0c) = 0;
-            } else {
-                u8* target = object_base + (value * 5) * 0x10;
-                *reinterpret_cast<void**>(entry + 0x0c) = target;
-            }
-            entry += 0x14;
-        }
-    }
-
-    // 0x0039375C..0x0039379C: second array; each record is 0x10 bytes
-    // (`str ip,[r1,#8]!` then `add r1,r1,#8`) and grows into the 0x14-byte
-    // table and the stream data base.
-    if (header->stream_count > 0) {
-        u8* stream = stream_base;
-        for (s32 i = 0; i < header->stream_count; ++i) {
-            u32 index = *reinterpret_cast<u32*>(stream);
-            *reinterpret_cast<u8**>(stream) = entry_base + (index * 5) * 4;
-            u32 offset = *reinterpret_cast<u32*>(stream + 8);
-            *reinterpret_cast<u8**>(stream + 8) = stream_data + offset;
-            stream += 0x10;
-        }
-    }
-
-    // 0x003937A0..0x003937E8: 0x2C-byte output descriptor + node array.
-    AocTexOutput* output = static_cast<AocTexOutput*>(AsdMem_AllocFlags(0x2c, 0));
-    if (header->stream_count <= 0) {
-        output->nodes = nullptr;
-    } else {
-        output->nodes = AsdMem_AllocFlags(
-            static_cast<u32>(header->stream_count) * 0x20, 0);
-    }
-
-    // 0x003937EC..0x00393818: seed each 0x20-byte node with owner/source.
-    if (header->stream_count > 0) {
-        AocTexOutputNode* node = static_cast<AocTexOutputNode*>(output->nodes);
-        u8* stream = stream_base;
-        for (s32 i = 0; i < header->stream_count; ++i) {
-            node->owner = output;
-            node->source = stream;
-            node += 1;
-            stream += 0x10;
-        }
-    }
-
-    output->header = block;                              // 0x0039381C
-    output->header_dup = block;                          // 0x00393820
-    ctrl->state->block = output;                         // 0x00393828
-    return 1;                                            // 0x0039382C
+    asm volatile(
+        ".word 0xE92D41F0\n"
+        ".word 0xE1A07000\n"
+        ".word 0xE5904000\n"
+        ".word 0xE3A08000\n"
+        ".word 0xE1A01008\n"
+        ".word 0xE284201C\n"
+        ".word 0xE5940014\n"
+        ".word 0xE8921004\n"
+        ".word 0xE594302C\n"
+        ".word 0xE5946024\n"
+        ".word 0xE0822004\n"
+        ".word 0xE0805004\n"
+        ".word 0xE35C0000\n"
+        ".word 0xE1A00002\n"
+        ".word 0xE0866004\n"
+        ".word 0xE0833004\n"
+        ".word 0xDA00000B\n"
+        ".word 0xE590C00C\n"
+        ".word 0xE37C0001\n"
+        ".word 0x0580800C\n"
+        ".word 0x0A000002\n"
+        ".word 0xE08CC10C\n"
+        ".word 0xE085C20C\n"
+        ".word 0xE580C00C\n"
+        ".word 0xE594C020\n"
+        ".word 0xE2811001\n"
+        ".word 0xE2800014\n"
+        ".word 0xE15C0001\n"
+        ".word 0xCAFFFFF3\n"
+        ".word 0xE594C028\n"
+        ".word 0xE1A01006\n"
+        ".word 0xE3A00000\n"
+        ".word 0xE35C0000\n"
+        ".word 0xDA00000B\n"
+        ".word 0xE591C000\n"
+        ".word 0xE2800001\n"
+        ".word 0xE08CC10C\n"
+        ".word 0xE082C10C\n"
+        ".word 0xE581C000\n"
+        ".word 0xE591C008\n"
+        ".word 0xE08CC003\n"
+        ".word 0xE5A1C008\n"
+        ".word 0xE594C028\n"
+        ".word 0xE2811008\n"
+        ".word 0xE15C0000\n"
+        ".word 0xCAFFFFF3\n"
+        ".word 0xE59F008C\n"
+        ".word 0xE3A0103E\n"
+        ".word 0xE1A00000\n"
+        ".word 0xE3A01000\n"
+        ".word 0xE3A0002C\n"
+        ".word 0xEBFC8FCB\n" // AsdMem_AllocFlags (0x002B76E8)
+        ".word 0xE1A05000\n"
+        ".word 0xE5940028\n"
+        ".word 0xE3500000\n"
+        ".word 0xD5858000\n"
+        ".word 0xDA000007\n"
+        ".word 0xE59F0060\n"
+        ".word 0xE3A01041\n"
+        ".word 0xE1A00000\n"
+        ".word 0xE5940028\n"
+        ".word 0xE3A01000\n"
+        ".word 0xE1A00280\n"
+        ".word 0xEBFC8FBF\n" // AsdMem_AllocFlags (0x002B76E8)
+        ".word 0xE5850000\n"
+        ".word 0xE5942028\n"
+        ".word 0xE5950000\n"
+        ".word 0xE3A01000\n"
+        ".word 0xE3520000\n"
+        ".word 0xDA000006\n"
+        ".word 0xE8800060\n"
+        ".word 0xE2811001\n"
+        ".word 0xE5942028\n"
+        ".word 0xE2800020\n"
+        ".word 0xE2866010\n"
+        ".word 0xE1520001\n"
+        ".word 0xCAFFFFF8\n"
+        ".word 0xE5854004\n"
+        ".word 0xE5854008\n"
+        ".word 0xE5970004\n"
+        ".word 0xE5805000\n"
+        ".word 0xE3A00001\n"
+        ".word 0xE8BD81F0\n"
+        ".word 0x003FF78C\n");
 }
-
 // DECOMP_FUNC(0x00393838, 456)
-void aocTexCtrl_func_00393838(AocTexCtrl* ctrl, void** source)
+
+
+//
+__attribute__((naked)) void aocTexCtrl_func_00393838(AocTexCtrl*, void**)
 {
-    // 0x00393844..0x0039384C: already initialised.
-    if (ctrl->state != nullptr) {
-        return;
-    }
-
-    // 0x00393850..0x0039387C: replace the state with an 8-byte owner object.
-    u8* src = static_cast<u8*>(*source);
-    void** owner = static_cast<void**>(AsdMem_Alloc(0x100, 0x100, 0, 8, 1));
-    ctrl->state = reinterpret_cast<AocTexCtrlState*>(owner);
-
-    // 0x00393880..0x003938CC: copy the 0x40-byte header block; owner[0]
-    // points at that copy.
-    u8* header = static_cast<u8*>(AsdMem_Alloc(0x100, 0x100, 0, 0x40, 1));
-    owner[0] = header;
-    for (u32 i = 0; i < 0x40; i += 4) {
-        *reinterpret_cast<u32*>(header + i) =
-            *reinterpret_cast<const u32*>(src + i);
-    }
-    src += 0x40;
-
-    // 0x003938D4..0x003938E4: header[0x20] is the entry count.
-    const s32 count = *reinterpret_cast<s32*>(header + 0x20);
-    if (count <= 0) {
-        return;
-    }
-
-    // 0x003938E8..0x00393964: build one 0x14-byte entry per descriptor.
-    AocTexListEntry* previous = nullptr;
-    s32 built = 0;
-    while (built < count) {
-        AocTexListEntry* entry = static_cast<AocTexListEntry*>(
-            AsdMem_Alloc(0x100, 0x100, 0, 0x14, 1));
-        entry->value = src[0];                          // 0x00393918
-        entry->count = src[4];                          // 0x00393924
-        entry->type = src[8];                           // 0x0039392C
-
-        if (entry->count <= 0) {
-            entry->data = nullptr;
-        } else {
-            // 0x00393938..0x00393960: count * 0x14 bytes.
-            entry->data = AsdMem_Alloc(0x100, 0x100, 0,
-                                       entry->count * 0x14, 1);
-        }
-
-        if (entry->count > 0) {
-            AsdMem_CopyLarge(entry->data, src + 0x0c,
-                             entry->count * 0x14);      // 0x00393984
-        }
-
-        // 0x00393988..0x003939B8: link and advance by the variable record.
-        if (previous == nullptr) {
-            owner[1] = entry;                           // 0x003939A0
-        } else {
-            previous->next = entry;                     // 0x003939A8
-        }
-        previous = entry;
-        ++built;
-        src += 0x0c + entry->count * 0x14;
-    }
+    asm volatile(
+        ".word 0xE92D4FF8\n"
+        ".word 0xE1A04001\n"
+        ".word 0xE1A0B000\n"
+        ".word 0xE5900004\n"
+        ".word 0xE3500000\n"
+        ".word 0x1A00005A\n"
+        ".word 0xE5945000\n"
+        ".word 0xE59F1164\n"
+        ".word 0xE28F0F59\n"
+        ".word 0xE1A00000\n"
+        ".word 0xE3A0A001\n"
+        ".word 0xE3A01C01\n"
+        ".word 0xE3A03008\n"
+        ".word 0xE3A02000\n"
+        ".word 0xE1A00001\n"
+        ".word 0xE58DA000\n"
+        ".word 0xEBFCC4C1\n" // AsdMem_Alloc (0x002C4B84)
+        ".word 0xE58B0004\n"
+        ".word 0xE3A01FE2\n"
+        ".word 0xE28F0F4E\n"
+        ".word 0xE1A00000\n"
+        ".word 0xE3A01C01\n"
+        ".word 0xE3A03040\n"
+        ".word 0xE3A02000\n"
+        ".word 0xE1A00001\n"
+        ".word 0xE58DA000\n"
+        ".word 0xEBFCC4B7\n" // AsdMem_Alloc (0x002C4B84)
+        ".word 0xE59B1004\n"
+        ".word 0xE3A07000\n"
+        ".word 0xE1A06007\n"
+        ".word 0xE5810000\n"
+        ".word 0xEC950A08\n"
+        ".word 0xE2855020\n"
+        ".word 0xEC800A08\n"
+        ".word 0xE2800020\n"
+        ".word 0xEC950A08\n"
+        ".word 0xEC800A08\n"
+        ".word 0xE59B1004\n"
+        ".word 0xE5940000\n"
+        ".word 0xE5919000\n"
+        ".word 0xE2805040\n"
+        ".word 0xE5991020\n"
+        ".word 0xE3510000\n"
+        ".word 0xDA000034\n"
+        ".word 0xE59F010C\n"
+        ".word 0xE3A01061\n"
+        ".word 0xE1A00000\n"
+        ".word 0xE3A01C01\n"
+        ".word 0xE3A03014\n"
+        ".word 0xE3A02000\n"
+        ".word 0xE1A00001\n"
+        ".word 0xE58DA000\n"
+        ".word 0xEBFCC49D\n" // AsdMem_Alloc (0x002C4B84)
+        ".word 0xE5D51000\n"
+        ".word 0xE1A04000\n"
+        ".word 0xE3A0800C\n"
+        ".word 0xE5801000\n"
+        ".word 0xE5D51004\n"
+        ".word 0xE3510000\n"
+        ".word 0xE5801004\n"
+        ".word 0xE5D51008\n"
+        ".word 0xE5C01008\n"
+        ".word 0xD3A00000\n"
+        ".word 0xDA00000A\n"
+        ".word 0xE59F00BC\n"
+        ".word 0xE3A0106F\n"
+        ".word 0xE1A00000\n"
+        ".word 0xE58DA000\n"
+        ".word 0xE5940004\n"
+        ".word 0xE3A01C01\n"
+        ".word 0xE3A02000\n"
+        ".word 0xE0800100\n"
+        ".word 0xE1A03100\n"
+        ".word 0xE1A00001\n"
+        ".word 0xEBFCC487\n" // AsdMem_Alloc (0x002C4B84)
+        ".word 0xE584000C\n"
+        ".word 0xE5940004\n"
+        ".word 0xE285100C\n"
+        ".word 0xE3500000\n"
+        ".word 0xDA000003\n"
+        ".word 0xE0802100\n"
+        ".word 0xE594000C\n"
+        ".word 0xE1A02102\n"
+        ".word 0xEBFCA573\n" // AsdMem_CopyLarge (0x002BCF58)
+        ".word 0xE5940004\n"
+        ".word 0xE3570000\n"
+        ".word 0x059B1004\n"
+        ".word 0xE2866001\n"
+        ".word 0xE0800100\n"
+        ".word 0xE0880100\n"
+        ".word 0x05814004\n"
+        ".word 0xE0855000\n"
+        ".word 0x15874010\n"
+        ".word 0xE5990020\n"
+        ".word 0xE1A07004\n"
+        ".word 0xE1500006\n"
+        ".word 0xCAFFFFCA\n"
+        ".word 0xE8BD8FF8\n"
+        ".word 0x00000386\n"
+        ".word 0x535C3A63\n"
+        ".word 0x5C34544D\n"
+        ".word 0x36445258\n"
+        ".word 0x735C3638\n"
+        ".word 0x34736464\n"
+        ".word 0x6F72705C\n"
+        ".word 0x6D617267\n"
+        ".word 0x6464615C\n"
+        ".word 0x735C6E6F\n"
+        ".word 0x615C7379\n"
+        ".word 0x6554636F\n"
+        ".word 0x72744378\n"
+        ".word 0x70632E6C\n"
+        ".word 0x00000070\n"
+        ".word 0x003FF78C\n");
 }
 
 } // namespace smt4::engine

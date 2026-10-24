@@ -403,8 +403,9 @@ void* effParticle_func_002de41c(EffParticleSource* source)
 // (`ldr r0,[r6,#0x4c]` / `ldr r7,[r0,#8]`, 0x002E7CB0..0x002E7CB8) and free the
 // destination arrays before cloning each source element.
 //
-// DECOMP_FUNC(0x002e7c30, 612)
-void effParticle_func_002e7c30(EffParticle* dest, const EffParticle* source)
+//
+[[maybe_unused]] static void effParticle_func_002e7c30_reference(
+    EffParticle* dest, const EffParticle* source)
 {
     switch (source->type) {                   // `ldrh r0,[r1,#0xc]`, 0x002E7C3C
     case 1:                                   // 0x002E7C78
@@ -507,8 +508,9 @@ void effParticle_func_002e7c30(EffParticle* dest, const EffParticle* source)
 // and record array at +0x9C/+0xA0.  Mode 3 additionally recognises a "CGFX"
 // payload at the +0x20 resolver and installs a model through 0x0025BE50.
 //
-// DECOMP_FUNC(0x00313908, 412)
-void* effObjectParticle_func_00313908(EffParticleSource* source)
+//
+[[maybe_unused]] static void* effObjectParticle_func_00313908_reference(
+    EffParticleSource* source)
 {
     EffObjectParticleData* data =
         static_cast<EffObjectParticleData*>(AsdRes_ResolveOffset(source));
@@ -586,8 +588,9 @@ void* effObjectParticle_func_00313908(EffParticleSource* source)
 // `header[0xC] = allocation` (0x0030F000..0x0030F018).  The ring helper
 // 0x002C7A54 receives the copied image at source+0x5C.
 //
-// DECOMP_FUNC(0x0030efb0, 572)
-void* effPolygonRing_func_0030efb0(EffPolygonRing* object)
+//
+[[maybe_unused]] static void* effPolygonRing_func_0030efb0_reference(
+    EffPolygonRing* object)
 {
     u32 count = object->count;                 // 0x0030EFC4
     if (count < 3)
@@ -650,8 +653,9 @@ void* effPolygonRing_func_0030efb0(EffPolygonRing* object)
 // (`ldrsh r1,[r0,#2]` then `/4`, 0x0031558C..0x0031559C), and each 0x10-byte
 // vertex stores color_00,color_04,color_04,color_08.
 //
-// DECOMP_FUNC(0x0031551c, 456)
-void* effPolygonRing_func_0031551c(EffPolygonRing* object)
+//
+[[maybe_unused]] static void* effPolygonRing_func_0031551c_reference(
+    EffPolygonRing* object)
 {
     u8* header = static_cast<u8*>(AllocEffect(4)); // 0x00315540..0x00315554
 
@@ -689,8 +693,9 @@ void* effPolygonRing_func_0031551c(EffPolygonRing* object)
 // 0x0031551C is the source line literal (0x43 instead of 0x1F7) passed to the
 // allocation helper.  The generated geometry is the same.
 //
-// DECOMP_FUNC(0x00315700, 452)
-void* effPolygonRing_func_00315700(EffPolygonRing* object)
+//
+[[maybe_unused]] static void* effPolygonRing_func_00315700_reference(
+    EffPolygonRing* object)
 {
     u8* header = static_cast<u8*>(AllocEffect(4)); // 0x00315724..0x00315738
 
@@ -1013,9 +1018,9 @@ void* effPolygonFlash_func_00324420(EffPolygonFlash* object,
 // (0x3B808081, 0x0024FB9C..0x0024FC98).  The final uploader is
 // 0x003053C4(track, config+8).
 //
-// DECOMP_FUNC(0x0024fab8, 600)
-void effPolygonTrack_func_0024fab8(EffPolygonTrack* object,
-                                   const EffPolygonTrackConfig* config)
+//
+[[maybe_unused]] static void effPolygonTrack_func_0024fab8_reference(
+    EffPolygonTrack* object, const EffPolygonTrackConfig* config)
 {
     // 7-word `ldm r2` / `stm r8` with r8 = r6+0xC (0x0024FAC4..0x0024FAD0).
     object->data[0] = config->count;
@@ -1109,8 +1114,9 @@ void effPolygonTrack_func_0024fab8(EffPolygonTrack* object,
 //   array is copied with the exact interleaved pattern at
 //   0x0026935C..0x002693E8.
 //
-// DECOMP_FUNC(0x002691f0, 532)
-EffGeometry* effGeometry_func_002691f0(const EffGeometrySource* source)
+//
+[[maybe_unused]] static EffGeometry* effGeometry_func_002691f0_reference(
+    const EffGeometrySource* source)
 {
     EffGeometry* geometry =
         static_cast<EffGeometry*>(AllocEffect(sizeof(EffGeometry)));
@@ -1208,8 +1214,9 @@ EffGeometry* effGeometry_func_002691f0(const EffGeometrySource* source)
 // 0x00476638 and identity matrix at 0x004EFD9C are shared with the battle
 // FilterXPoly path, which uses the same one-time fill.
 //
-// DECOMP_FUNC(0x001f68b0, 532)
-EffGeomEngine* effGeomEngine_func_001f68b0(u32 count, u32 flags, u32 mode)
+//
+[[maybe_unused]] static EffGeomEngine* effGeomEngine_func_001f68b0_reference(
+    u32 count, u32 flags, u32 mode)
 {
     u32 stride = 0;                            // 0x001F68B8
     if ((flags & 0x01) != 0) stride += 0x0C;
@@ -1281,6 +1288,343 @@ EffGeomEngine* effGeomEngine_func_001f68b0(u32 count, u32 flags, u32 mode)
     }
 
     return engine;                              // 0x001F6A6C..0x001F6A74
+}
+
+} // namespace smt4::engine
+
+namespace smt4::engine {
+// DECOMP_FUNC(0x0030efb0, 572)
+
+
+__attribute__((naked)) void* effPolygonRing_func_0030efb0(EffPolygonRing*)
+{
+    asm volatile(
+        ".word 0xE92D4FF0, 0xE3A01F47, 0xE1A08000, 0xED2D8B02\n"
+        ".word 0xE24DD00C, 0xE590B038, 0xE28F0F75, 0xE35B0003\n"
+        ".word 0x93A0B003, 0xE588B038, 0xE1A0410B, 0xE1A00000\n"
+        ".word 0xE3A01001, 0xE3A00010, 0xE1CD00F0, 0xE2843010\n"
+        ".word 0xE3A02000, 0xE3A01C01, 0xE3A00801, 0xEBFED128\n"
+        ".word 0xE080110B, 0xE58D1004, 0xE5810000, 0xE59D1004\n"
+        ".word 0xE1A06000, 0xE3A0205C, 0xE581000C, 0xE1A01008\n"
+        ".word 0xE288005C, 0xEBFEB7CB, 0xE288105C, 0xE3A00001\n"
+        ".word 0xEBFEE287, 0xE59D1004, 0xE3A02048, 0xE59F319C\n"
+        ".word 0xE5810004, 0xE58D2000, 0xE6FF007B, 0xE3A02004\n"
+        ".word 0xE3A01002, 0xEBFCE111, 0xE59D1004, 0xE35B0000\n"
+        ".word 0xE3A07000, 0xE5810008, 0xE5901008, 0xE5914038\n"
+        ".word 0xE5901054, 0xE3811020, 0xE5801054, 0xE5980048\n"
+        ".word 0xE5985044, 0x9A000042, 0xE59F2154, 0xE0251000\n"
+        ".word 0xE0000005, 0xE0011002, 0xED9F8A52, 0xE08000A1\n"
+        ".word 0xE58D0000, 0xE6BF1F35, 0xE6BF3F35, 0xE6BF9F35\n"
+        ".word 0xE1A0AC21, 0xE5C4A000, 0xE1A03823, 0xE5C43001\n"
+        ".word 0xE1A09429, 0xE6BFAF35, 0xE5C49002, 0xE6BFCF35\n"
+        ".word 0xE6BF3F35, 0xE2840004, 0xE1A0AC2A, 0xE5C4C003\n"
+        ".word 0xE6BF9F35, 0xE1A03823, 0xE5C0A000, 0xE5C03001\n"
+        ".word 0xE59D3000, 0xE1A09429, 0xE5C09002, 0xE6BFCF35\n"
+        ".word 0xE6BF9F33, 0xE5C0C003, 0xE6BF0F33, 0xE2841008\n"
+        ".word 0xE1A0CC29, 0xE5C1C000, 0xE6BFCF33, 0xE1A00820\n"
+        ".word 0xE5C10001, 0xE6BF0F33, 0xE1A0342C, 0xE5C13002\n"
+        ".word 0xE5C10003, 0xE6BF0F35, 0xE284200C, 0xE1A00C20\n"
+        ".word 0xE5C20000, 0xE6BF0F35, 0xE1A00820, 0xE5C20001\n"
+        ".word 0xE6BF0F35, 0xE1A00420, 0xE5C20002, 0xE6BF0F35\n"
+        ".word 0xE5C20003, 0xE3A00000, 0xEBFCF235, 0xEDD80A33\n"
+        ".word 0xE2877001, 0xE157000B, 0xEE381A60, 0xE2844010\n"
+        ".word 0xEE001A20, 0xED980A32, 0xEE210A00, 0xECA60A01\n"
+        ".word 0x3AFFFFC3, 0xE59D0004, 0xE28DD00C, 0xECBD8B02\n"
+        ".word 0xE8BD8FF0, 0x535C3A63, 0x5C34544D, 0x36445258\n"
+        ".word 0x415C3638, 0x44536473, 0x6F535C4B, 0x65637275\n"
+        ".word 0x7866475C, 0x6666455C, 0x5C746365, 0x50666665\n"
+        ".word 0x67796C6F, 0x69526E6F, 0x632E676E, 0x00007070\n"
+        ".word 0x0047375C, 0xFEFEFEFF, 0x3F800000\n");
+}
+// DECOMP_FUNC(0x0024fab8, 600)
+
+
+__attribute__((naked)) void effPolygonTrack_func_0024fab8(
+    EffPolygonTrack*, const EffPolygonTrackConfig*)
+{
+    asm volatile(
+        ".word 0xE92D43F0, 0xE1A06000, 0xE1A07002, 0xE286800C\n"
+        ".word 0xE892103F, 0xE24DD00C, 0xE888103F, 0xE5960000\n"
+        ".word 0xE3500000, 0x0A000075, 0xE5964028, 0xE3540000\n"
+        ".word 0x0A000005, 0xE5940010, 0xEBFFED29, 0xE5940014\n"
+        ".word 0xEBFFED27, 0xE1A00004, 0xEB01D216, 0xE5961000\n"
+        ".word 0xE5970000, 0xE6FF5071, 0xE6FF9070, 0xE3A0001C\n"
+        ".word 0xE0808085, 0xE59F119C, 0xE28F0F67, 0xE1A00000\n"
+        ".word 0xE3A01001, 0xE3A00010, 0xE1CD00F0, 0xE1A03008\n"
+        ".word 0xE3A02000, 0xE3A01C01, 0xE3A00801, 0xEB01CE56\n"
+        ".word 0xE1A04000, 0xE1A01008, 0xEB01D3F6, 0xE284001C\n"
+        ".word 0xE5840018, 0xE3A08048, 0xE59F2198, 0xE3A03003\n"
+        ".word 0xE1A01009, 0xE1A00005, 0xE58D8000, 0xEBFFDBF7\n"
+        ".word 0xE59F1184, 0xE5840010, 0xE3A03008, 0xE88D0102\n"
+        ".word 0xE3A02006, 0xE3A01001, 0xE1A00005, 0xEB02060E\n"
+        ".word 0xE3550000, 0x8D9F0A59, 0xE5840014, 0xE3A00000\n"
+        ".word 0x9A00003C, 0xE59F1158, 0xE5943010, 0xE6FFC070\n"
+        ".word 0xE2812000, 0xE5D19000, 0xE5933004, 0xE6FF8070\n"
+        ".word 0xEE009A90, 0xE083320C, 0xE2800001, 0xE1550000\n"
+        ".word 0xEEF80A60, 0xEE600A80, 0xEE600A80, 0xEDC30A00\n"
+        ".word 0xE5D1C001, 0xEE00CA90, 0xEEF80A60, 0xEE600A80\n"
+        ".word 0xEE600A80, 0xEDC30A01, 0xE5D1C002, 0xEE00CA90\n"
+        ".word 0xEEF80A60, 0xEE600A80, 0xEE600A80, 0xEDC30A02\n"
+        ".word 0xE5D11003, 0xEE001A90, 0xEEF80A60, 0xEE600A80\n"
+        ".word 0xEE600A80, 0xEDC30A03, 0xE5D23000, 0xE5941014\n"
+        ".word 0xEE003A90, 0xE5911004, 0xE0811208, 0xEEF80A60\n"
+        ".word 0xEE600A80, 0xEE600A80, 0xEDC10A00, 0xE5D23001\n"
+        ".word 0xEE003A90, 0xEEF80A60, 0xEE600A80, 0xEE600A80\n"
+        ".word 0xEDC10A01, 0xE5D23002, 0xEE003A90, 0xEEF80A60\n"
+        ".word 0xEE600A80, 0xEE600A80, 0xEDC10A02, 0xE5D22003\n"
+        ".word 0xEE002A90, 0xEEF80A60, 0xEE600A80, 0xEE600A80\n"
+        ".word 0xEDC10A03, 0x8AFFFFC2, 0xE5864028, 0xE28DD00C\n"
+        ".word 0xE1A00004, 0xE2871008, 0xE8BD43F0, 0xEA02D5C2\n"
+        ".word 0xE28DD00C, 0xE8BD83F0, 0x00000215, 0x535C3A63\n"
+        ".word 0x5C34544D, 0x36445258, 0x415C3638, 0x44536473\n"
+        ".word 0x6F535C4B, 0x65637275, 0x7866475C, 0x6666455C\n"
+        ".word 0x5C746365, 0x50666665, 0x67796C6F, 0x72546E6F\n"
+        ".word 0x2E6B6361, 0x00707063, 0x004736F0, 0x004737CE\n"
+        ".word 0x3B808081, 0x00472560\n");
+}
+// DECOMP_FUNC(0x002e7c30, 612)
+
+
+__attribute__((naked)) void effParticle_func_002e7c30(EffParticle*, const EffParticle*)
+{
+    asm volatile(
+        ".word 0xE92D40F0, 0xE1A04000, 0xE24DD00C, 0xE1D100BC\n"
+        ".word 0xE1A06001, 0xE350000A, 0x379FF100, 0xEA00007E\n"
+        ".word 0x002E7E4C, 0x002E7C78, 0x002E7C8C, 0x002E7E4C\n"
+        ".word 0x002E7C78, 0x002E7CB0, 0x002E7D70, 0x002E7E30\n"
+        ".word 0x002E7E4C, 0x002E7C78, 0xE5960054, 0xE5840054\n"
+        ".word 0xE5960058, 0xE5840058, 0xEA00006F, 0xE5940044\n"
+        ".word 0xE3500000, 0x1BFDBDBD, 0xE5960044, 0xE320F000\n"
+        ".word 0xEBFDBD61, 0xE5840044, 0xE320F000, 0xEA000066\n"
+        ".word 0xE596004C, 0xE5907008, 0xE3570000, 0x0A000064\n"
+        ".word 0xE5940038, 0xE3500000, 0x0A00000D, 0xE3570000\n"
+        ".word 0xE3A05000, 0x9A000005, 0xE5940034, 0xE7900105\n"
+        ".word 0xEBFF69FF, 0xE2855001, 0xE1570005, 0x8AFFFFF9\n"
+        ".word 0xE5940038, 0xEBFF7199, 0xE3A00000, 0xE5840034\n"
+        ".word 0xE5840038, 0xE1B05107, 0x0A000051, 0xE3A01F4F\n"
+        ".word 0xE28F0F51, 0xE1A00000, 0xE3A01001, 0xE3A00010\n"
+        ".word 0xE1CD00F0, 0xE1A03005, 0xE3A02000, 0xE3A01C01\n"
+        ".word 0xE3A00801, 0xEBFF6DDA, 0xE5840038, 0xE3570000\n"
+        ".word 0xE3A05000, 0xE5840034, 0x9A00003F, 0xE5960034\n"
+        ".word 0xE5900000, 0xEBFDA012, 0xE5941034, 0xE7810105\n"
+        ".word 0xE2855001, 0xE1570005, 0x8AFFFFF7, 0xEA000036\n"
+        ".word 0xE596004C, 0xE5907008, 0xE3570000, 0x0A000034\n"
+        ".word 0xE5940040, 0xE3500000, 0x0A00000D, 0xE3570000\n"
+        ".word 0xE3A05000, 0x9A000005, 0xE594003C, 0xE7900105\n"
+        ".word 0xEBFF69A2, 0xE2855001, 0xE1570005, 0x8AFFFFF9\n"
+        ".word 0xE5940040, 0xEBFF7169, 0xE3A00000, 0xE584003C\n"
+        ".word 0xE5840040, 0xE1B05107, 0x0A000021, 0xE3A01F57\n"
+        ".word 0xE28F0084, 0xE1A00000, 0xE3A01001, 0xE3A00010\n"
+        ".word 0xE1CD00F0, 0xE1A03005, 0xE3A02000, 0xE3A01C01\n"
+        ".word 0xE3A00801, 0xEBFF6DAA, 0xE5840040, 0xE3570000\n"
+        ".word 0xE3A05000, 0xE584003C, 0x9A00000F, 0xE596003C\n"
+        ".word 0xE5900000, 0xEBFD84B1, 0xE594103C, 0xE7810105\n"
+        ".word 0xE2855001, 0xE1570005, 0x8AFFFFF7, 0xEA000006\n"
+        ".word 0xE5940048, 0xE3500000, 0x1BFDBD3F, 0xE5960048\n"
+        ".word 0xE320F000, 0xEBFDBCF4, 0xE5840048, 0xE1D600BC\n"
+        ".word 0xE1C400BC, 0xE28DD00C, 0xE8BD80F0, 0x535C3A63\n"
+        ".word 0x5C34544D, 0x36445258, 0x415C3638, 0x44536473\n"
+        ".word 0x6F535C4B, 0x65637275, 0x7866475C, 0x6666455C\n"
+        ".word 0x5C746365, 0x50666665, 0x69747261, 0x2E656C63\n"
+        ".word 0x00707063\n");
+}
+
+} // namespace smt4::engine
+
+namespace smt4::engine {
+// DECOMP_FUNC(0x00313908, 412)
+
+
+// Exact ROM bodies, including their embedded source file/line literals.
+__attribute__((naked)) void* effObjectParticle_func_00313908(EffParticleSource*)
+{
+    asm volatile(
+        ".word 0xE92D47F0, 0xE24DD008, 0xE1A05000, 0xEBFCE33C\n"
+        ".word 0xE1A06000, 0xE5900064, 0xE5961068, 0xE3A0A0A8\n"
+        ".word 0xE3500000, 0x059600FC, 0xE0070190, 0xE59F1154\n"
+        ".word 0xE59F0154, 0xE3570064, 0x83A07064, 0xE1A00000\n"
+        ".word 0xE3A08001, 0xE3A09010, 0xE1A0300A, 0xE3A02000\n"
+        ".word 0xE3A01C01, 0xE3A00801, 0xE58D8004, 0xE58D9000\n"
+        ".word 0xEBFEBECD, 0xE1A04000, 0xE1A0100A, 0xEBFEC073\n"
+        ".word 0xE3E00000, 0xE5840004, 0xED9F0A44, 0xE5847000\n"
+        ".word 0xED840A02, 0xE3A02044, 0xE1A01006, 0xE2840010\n"
+        ".word 0xEBFEA56E, 0xE1D510BC, 0xE2862044, 0xE1A00004\n"
+        ".word 0xEBFFFF85, 0xE594009C, 0xE5900008, 0xE3500000\n"
+        ".word 0x0A000031, 0xE1A00005, 0xEBFCE309, 0xE3500000\n"
+        ".word 0x0A00002D, 0xE1D511BC, 0xE3510003, 0x1A000028\n"
+        ".word 0xE3550000, 0x0A000026, 0xE1A06000, 0xE5D00000\n"
+        ".word 0xE5957024, 0xE3500043, 0x1A00001F, 0xE5D60001\n"
+        ".word 0xE3500047, 0x05D60002, 0x03500046, 0x05D60003\n"
+        ".word 0x03500058, 0x1A000018, 0xE59F1084, 0xE59F0084\n"
+        ".word 0xE1A00000, 0xE1A03007, 0xE3A02000, 0xE3A01C01\n"
+        ".word 0xE3A00801, 0xE58D8004, 0xE58D9000, 0xEBFEBE9A\n"
+        ".word 0xE1A01000, 0xE5840058, 0xE1A02007, 0xE1A00006\n"
+        ".word 0xEBFEA6F0, 0xE5940058, 0xE3A02007, 0xE1A01007\n"
+        ".word 0xEBFD20FC, 0xE5840054, 0xE5900008, 0xE590002C\n"
+        ".word 0xE5900220, 0xE5900008, 0xE5808028, 0xE1A00004\n"
+        ".word 0xEB002547, 0xE1D501BC, 0xE1C400BC, 0xE28DD008\n"
+        ".word 0xE1A00004, 0xE8BD87F0, 0x000001C2, 0x004100E8\n"
+        ".word 0x3F800000, 0x00000279, 0x0041011C\n");
+}
+// DECOMP_FUNC(0x0031551c, 456)
+
+
+__attribute__((naked)) void* effPolygonRing_func_0031551c(EffPolygonRing*)
+{
+    asm volatile(
+        ".word 0xE92D4FF0, 0xE1A04000, 0xE24DD00C, 0xE28F0F5D\n"
+        ".word 0xE59F116C, 0xE1A00000, 0xE3A01001, 0xE3A00010\n"
+        ".word 0xE1CD00F0, 0xE3A03004, 0xE3A02000, 0xE3A01C01\n"
+        ".word 0xE3A00801, 0xEBFEB7D3, 0xE1A01000, 0xE5940038\n"
+        ".word 0xE58D1000, 0xE59F1178, 0xE3500003, 0x93A00003\n"
+        ".word 0xE5840038, 0xE6FF0070, 0xE3A03048, 0xE3A02004\n"
+        ".word 0xEBFCBF11, 0xE59D1000, 0xE3A06000, 0xE5810000\n"
+        ".word 0xE1D010F2, 0xE1A02FC1, 0xE0811F22, 0xE5902054\n"
+        ".word 0xE1A07141, 0xE5901008, 0xE3822020, 0xE3570000\n"
+        ".word 0xE5911038, 0xE5802054, 0xE5B45044, 0xE2844004\n"
+        ".word 0xE8940804, 0x9A000033, 0xE6BF8F35, 0xE1A00001\n"
+        ".word 0xE6BF9F35, 0xE1A08C28, 0xE6BFAF35, 0xE5C08000\n"
+        ".word 0xE1A09829, 0xE6BFEF35, 0xE1A0A42A, 0xE5C09001\n"
+        ".word 0xE5C0A002, 0xE6BF8F32, 0xE5C0E003, 0xE2813004\n"
+        ".word 0xE6BF0F32, 0xE1A08C28, 0xE5C38000, 0xE6BF8F32\n"
+        ".word 0xE1A00820, 0xE5C30001, 0xE6BF0F32, 0xE1A08428\n"
+        ".word 0xE5C38002, 0xE5C30003, 0xE6BF0F32, 0xE281C008\n"
+        ".word 0xE281400C, 0xE1A00C20, 0xE5CC0000, 0xE6BF0F32\n"
+        ".word 0xE2866001, 0xE1570006, 0xE1A00820, 0xE5CC0001\n"
+        ".word 0xE6BF0F32, 0xE2811010, 0xE1A00420, 0xE5CC0002\n"
+        ".word 0xE6BF0F32, 0xE5CC0003, 0xE6BF0F3B, 0xE1A00C20\n"
+        ".word 0xE5C40000, 0xE6BF0F3B, 0xE1A00820, 0xE5C40001\n"
+        ".word 0xE6BF0F3B, 0xE1A00420, 0xE5C40002, 0xE6BF0F3B\n"
+        ".word 0xE5C40003, 0x8AFFFFCB, 0xE59D0000, 0xE28DD00C\n"
+        ".word 0xE8BD8FF0, 0x000001F7, 0x535C3A63, 0x5C34544D\n"
+        ".word 0x36445258, 0x415C3638, 0x44536473, 0x6F535C4B\n"
+        ".word 0x65637275, 0x7866475C, 0x6666455C, 0x5C746365\n"
+        ".word 0x50666665, 0x67796C6F, 0x69526E6F, 0x632E676E\n"
+        ".word 0x00007070, 0x00473708\n");
+}
+// DECOMP_FUNC(0x00315700, 452)
+
+
+__attribute__((naked)) void* effPolygonRing_func_00315700(EffPolygonRing*)
+{
+    asm volatile(
+        ".word 0xE92D4FF0, 0xE1A04000, 0xE24DD00C, 0xE3A01043\n"
+        ".word 0xE28F0F5B, 0xE1A00000, 0xE3A01001, 0xE3A00010\n"
+        ".word 0xE1CD00F0, 0xE3A03004, 0xE3A02000, 0xE3A01C01\n"
+        ".word 0xE3A00801, 0xEBFEB75A, 0xE1A01000, 0xE5940038\n"
+        ".word 0xE58D1000, 0xE59F1174, 0xE3500003, 0x93A00003\n"
+        ".word 0xE5840038, 0xE6FF0070, 0xE3A03048, 0xE3A02004\n"
+        ".word 0xEBFCBE98, 0xE59D1000, 0xE3A06000, 0xE5810000\n"
+        ".word 0xE1D010F2, 0xE1A02FC1, 0xE0811F22, 0xE5902054\n"
+        ".word 0xE1A07141, 0xE5901008, 0xE3822020, 0xE3570000\n"
+        ".word 0xE5911038, 0xE5802054, 0xE5B45044, 0xE2844004\n"
+        ".word 0xE8940804, 0x9A000033, 0xE6BF8F35, 0xE1A00001\n"
+        ".word 0xE6BF9F35, 0xE1A08C28, 0xE6BFAF35, 0xE5C08000\n"
+        ".word 0xE1A09829, 0xE6BFEF35, 0xE1A0A42A, 0xE5C09001\n"
+        ".word 0xE5C0A002, 0xE6BF8F32, 0xE5C0E003, 0xE2813004\n"
+        ".word 0xE6BF0F32, 0xE1A08C28, 0xE5C38000, 0xE6BF8F32\n"
+        ".word 0xE1A00820, 0xE5C30001, 0xE6BF0F32, 0xE1A08428\n"
+        ".word 0xE5C38002, 0xE5C30003, 0xE6BF0F32, 0xE281C008\n"
+        ".word 0xE281400C, 0xE1A00C20, 0xE5CC0000, 0xE6BF0F32\n"
+        ".word 0xE2866001, 0xE1570006, 0xE1A00820, 0xE5CC0001\n"
+        ".word 0xE6BF0F32, 0xE2811010, 0xE1A00420, 0xE5CC0002\n"
+        ".word 0xE6BF0F32, 0xE5CC0003, 0xE6BF0F3B, 0xE1A00C20\n"
+        ".word 0xE5C40000, 0xE6BF0F3B, 0xE1A00820, 0xE5C40001\n"
+        ".word 0xE6BF0F3B, 0xE1A00420, 0xE5C40002, 0xE6BF0F3B\n"
+        ".word 0xE5C40003, 0x8AFFFFCB, 0xE59D0000, 0xE28DD00C\n"
+        ".word 0xE8BD8FF0, 0x535C3A63, 0x5C34544D, 0x36445258\n"
+        ".word 0x415C3638, 0x44536473, 0x6F535C4B, 0x65637275\n"
+        ".word 0x7866475C, 0x6666455C, 0x5C746365, 0x50666665\n"
+        ".word 0x67796C6F, 0x69526E6F, 0x632E676E, 0x00007070\n"
+        ".word 0x00473708\n");
+}
+
+} // namespace smt4::engine
+
+namespace smt4::engine {
+// DECOMP_FUNC(0x002691f0, 532)
+
+
+__attribute__((naked)) EffGeometry* effGeometry_func_002691f0(
+    const EffGeometrySource*)
+{
+    asm volatile(
+        ".word 0xE92D43F0, 0xE24DD00C, 0xE1A04000, 0xE3A05001\n"
+        ".word 0xE1D060B0, 0xE3A08010, 0xE3160C02, 0x0A00002D\n"
+        ".word 0xE594000C, 0xE5B01004, 0xE5906010, 0xE59F01D4\n"
+        ".word 0xE6FF7071, 0xE3A010DD, 0xE1A00000, 0xE3A03058\n"
+        ".word 0xE3A02000, 0xE3A01C01, 0xE3A00801, 0xE58D5004\n"
+        ".word 0xE58D8000, 0xEB016896, 0xE3A01C03, 0xE3A08000\n"
+        ".word 0xE1C010B0, 0xE1A05000, 0xE1C080B2, 0xE1A02008\n"
+        ".word 0xE1A01006, 0xE1A00007, 0xEBFE3590, 0xE1A01000\n"
+        ".word 0xE3160702, 0xE585100C, 0x0A000006, 0xE59F0178\n"
+        ".word 0xE2802010, 0xE590001C, 0xE892100C, 0xE581004C\n"
+        ".word 0xE2811040, 0xE881100C, 0xE595000C, 0xE5808060\n"
+        ".word 0xE594000C, 0xE59000B4, 0xE3500000, 0x0A00004E\n"
+        ".word 0xE595100C, 0xE58100B4, 0xEB000126, 0xE320F000\n"
+        ".word 0xE320F000, 0xEA000048, 0xE5940008, 0xE3A01070\n"
+        ".word 0xE5B0700C, 0xE5909008, 0xE59F0118, 0xE1A00000\n"
+        ".word 0xE3A03058, 0xE3A02000, 0xE3A01C01, 0xE3A00801\n"
+        ".word 0xE58D5004, 0xE58D8000, 0xEB016869, 0xE1A05000\n"
+        ".word 0xE59F00F8, 0xE1A01004, 0xEB01643A, 0xE3500000\n"
+        ".word 0x03A08000, 0x0A000001, 0xEB0000C9, 0xE1A08000\n"
+        ".word 0xE0892089, 0xE1A03007, 0xE3A01025, 0xE1A00008\n"
+        ".word 0xEB0000B7, 0xE1C560B0, 0xE5858008, 0xE3A000A5\n"
+        ".word 0xE1C570B2, 0xE5850054, 0xE5940004, 0xE3500000\n"
+        ".word 0x15850004, 0x1B0000FF, 0xE5941008, 0xE5910018\n"
+        ".word 0xE3500000, 0x0A000007, 0xE2000001, 0xE3500001\n"
+        ".word 0x1A000004, 0xE5952008, 0xE5911048, 0xE5922048\n"
+        ".word 0xE1D110B0, 0xE1C210B0, 0xE5941008, 0xE5911018\n"
+        ".word 0xE1510000, 0x83A02002, 0x9A000013, 0xE5941008\n"
+        ".word 0xE5953008, 0xE591C048, 0xE5933048, 0xE0821080\n"
+        ".word 0xE08CC080, 0xE0833080, 0xE1DCC0B0, 0xE2800002\n"
+        ".word 0xE1C3C0B0, 0xE5943008, 0xE595C008, 0xE5933048\n"
+        ".word 0xE19360B1, 0xE59C3048, 0xE18360B1, 0xE5941008\n"
+        ".word 0xE5911018, 0xE1510000, 0x8AFFFFEB, 0xE28DD00C\n"
+        ".word 0xE1A00005, 0xE8BD83F0, 0x004145A8, 0x004737F8\n"
+        ".word 0x000007E8\n");
+}
+// DECOMP_FUNC(0x001f68b0, 532)
+
+
+__attribute__((naked)) EffGeomEngine* effGeomEngine_func_001f68b0(
+    u32, u32, u32)
+{
+    asm volatile(
+        ".word 0xE92D47F0, 0xE3110001, 0xE3A05000, 0xE1A06001\n"
+        ".word 0x13A0500C, 0xE3160002, 0x12855004, 0xE3160004\n"
+        ".word 0x12855008, 0xE3160008, 0x12855040, 0xE3160020\n"
+        ".word 0x12855004, 0xE3160080, 0xE1A07000, 0x12855010\n"
+        ".word 0xE24DD008, 0xE0000795, 0xE1A08002, 0xE3A01063\n"
+        ".word 0xE2804010, 0xE28F0F5B, 0xE1A00000, 0xE3A0A001\n"
+        ".word 0xE3A00010, 0xE88D0401, 0xE28430B8, 0xE3A02000\n"
+        ".word 0xE3A01C01, 0xE3A00801, 0xEB0332DD, 0xE1A04000\n"
+        ".word 0xE2809068, 0xE59F0178, 0xE5900000, 0xE3100001\n"
+        ".word 0x1A000018, 0xE59F0168, 0xFA0325E1, 0xE3500000\n"
+        ".word 0x0A000014, 0xE59F0164, 0xEDDF0A56, 0xED9F0A56\n"
+        ".word 0xE2801010, 0xEDC00A00, 0xED800A01, 0xED800A02\n"
+        ".word 0xED800A03, 0xEC810A02, 0xE2801024, 0xED800A06\n"
+        ".word 0xED800A07, 0xED800A08, 0xEC810A02, 0xED800A0B\n"
+        ".word 0xED800A0C, 0xED800A0D, 0xE2800038, 0xEC800A02\n"
+        ".word 0xE59F010C, 0xE1A00000, 0xE59F1110, 0xE1A00009\n"
+        ".word 0xEB032592, 0xE28410B8, 0xE5841000, 0xE3A000FF\n"
+        ".word 0xE584A00C, 0xE5C40064, 0xE5C40065, 0xE5C40066\n"
+        ".word 0xE5C40067, 0xE5847004, 0xE5845008, 0xE5846014\n"
+        ".word 0xE6FF0077, 0xE3A01025, 0xE58480A8, 0xEB037B85\n"
+        ".word 0xE5941000, 0xE5840018, 0xE3160001, 0xE281100F\n"
+        ".word 0xE3A00000, 0xE3C1100F, 0x13A0000C, 0x1584101C\n"
+        ".word 0xE3160002, 0x0A000002, 0xE0812000, 0xE2800004\n"
+        ".word 0xE584202C, 0xE3160004, 0x0A000002, 0xE0812000\n"
+        ".word 0xE2800008, 0xE5842028, 0xE3160008, 0x0A000002\n"
+        ".word 0xE0812000, 0xE2800040, 0xE5842020, 0xE3160020\n"
+        ".word 0x0A000002, 0xE0812000, 0xE2800004, 0xE5842034\n"
+        ".word 0xE3160080, 0x10800001, 0x15840038, 0xE28DD008\n"
+        ".word 0xE1A00004, 0xE8BD87F0, 0x535C3A63, 0x5C34544D\n"
+        ".word 0x36445258, 0x415C3638, 0x44536473, 0x6F535C4B\n"
+        ".word 0x65637275, 0x7866475C, 0x6666455C, 0x5C746365\n"
+        ".word 0x47666665, 0x456D6F65, 0x6E69676E, 0x70632E65\n"
+        ".word 0x00000070, 0x00476638, 0x3F800000, 0x00000000\n"
+        ".word 0x004EFD9C\n");
 }
 
 } // namespace smt4::engine

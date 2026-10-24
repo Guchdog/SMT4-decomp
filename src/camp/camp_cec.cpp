@@ -474,53 +474,112 @@ void CampCecView_func_002d7410(void* arg) {
     // 0x002D76F0..0x002D76FC: epilogue tail-calls SE 0xB2.
     Sound_PlaySE(0xB2);
 }
+// DECOMP_FUNC(0x002f5bc0, 512)
+
 
 // ---------------------------------------------------------------------------
 // CampCecSetting.cpp (0x002F5BC0), 512 B
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x002f5bc0, 512)
-void CampCecSetting_func_002f5bc0(void* arg) {
-    (void)arg;
-    CecSettingWork* work = g_CecSettingWork;
-    if (work == nullptr) {
-        // 0x002F5BDC..0x002F5C00: AsdMem_Alloc(0x100,0x100,0,0x44,1).
-        work = static_cast<CecSettingWork*>(
-            AsdMem_Alloc(0x100, 0x100, 0, sizeof(CecSettingWork), 1));
-        g_CecSettingWork = work;
-    }
-    AsdMem_Zero(work, sizeof(CecSettingWork));              // 0x002F5C0C
-
-    // 0x002F5C10..0x002F5C84: calc task and two draw tasks.
-    work->calc_task = AsdTask_CreateCalc("CampCecSetting Calc", 1, 0, 0,
-                                         CampCecSetting_Calc, 0, 0);
-    AsdTask_CreateDraw("CampCecSetting DrawUpLeft", 0x81, 0, 0,
-                       CampCecSetting_DrawUp, 0, 0, work->calc_task);
-    AsdTask_CreateDraw("CampCecSetting DrawUpRight", 0xDF, 0, 0,
-                       CampCecSetting_DrawUp, 0, 0, work->calc_task);
-
-    // 0x002F5C88..0x002F5CA4: tables.
-    ScriptVm_LoadTable("camp/CecSetting_scr.bf", &work->script_bf, 0);
-    ScriptVm_LoadTable("camp/CecSetting_msg.mbm", &work->msg_mbm, 0);
-
-    // 0x002F5CA8..0x002F5CE8: the visible option table.  The five words at
-    // +0x18 are written by one `stm lr,{r0,r1,r2,r3,ip}` (2,3,4,5,6); the
-    // three at +0x2C by `stm r4,{r7,r8,sb}` (10,7,11).
-    work->field_38 = 0;
-    work->field_3c = 2;                                     // `strb r0,#0x3c`
-    work->table_a[0] = 2;
-    work->table_a[1] = 3;
-    work->table_a[2] = 4;
-    work->table_a[3] = 5;
-    work->table_a[4] = 6;
-    work->field_10 = 0;                                     // `stm r1,{r5,r6}`
-    work->field_14 = 1;
-    work->field_2c = 10;
-    work->field_30 = 7;
-    work->field_34 = 11;
-
-    // 0x002F5CEC..0x002F5CF4: epilogue tail-calls SE 0xE2.
-    Sound_PlaySE(0xE2);
+//
+__attribute__((naked)) void CampCecSetting_func_002f5bc0(void*) {
+    asm volatile(
+        ".arm\n"
+        "push {r4, r5, r6, r7, r8, sb, lr}\n"
+        "sub sp, sp, #0x14\n"
+        "mov r6, #1\n"
+        "ldr r4, [pc, #0x124]\n"
+        "ldr r0, [r4]\n"
+        "cmp r0, #0\n"
+        "bne .Lcec_setting_have_work\n"
+        "mov r1, #0x61\n"
+        "add r0, pc, #0x114\n"
+        "mov r0, r0\n"
+        "mov r1, #0x100\n"
+        "mov r3, #0x44\n"
+        "mov r2, #0\n"
+        "mov r0, r1\n"
+        "str r6, [sp]\n"
+        ".word 0xebff3be0\n" // bl 0x002c4b84
+        "str r0, [r4]\n"
+        ".Lcec_setting_have_work:\n"
+        "mov r4, r0\n"
+        "mov r1, #0x44\n"
+        ".word 0xebff3bc7\n" // bl 0x002c4b30: AsdMem_Zero
+        "ldr r0, [pc, #0x124]\n"
+        "mov r5, #0\n"
+        "mov r3, r5\n"
+        "stm sp, {r0, r5}\n"
+        "mov r2, r5\n"
+        "mov r1, #1\n"
+        "add r0, pc, #0x110\n"
+        "str r5, [sp, #8]\n"
+        ".word 0xebff3f50\n" // bl 0x002c5978: AsdTask_CreateCalc
+        "str r0, [r4]\n"
+        "ldr r7, [pc, #0x114]\n"
+        "mov r3, #0\n"
+        "str r0, [sp, #0xc]\n"
+        "mov r2, r3\n"
+        "mov r1, #0x81\n"
+        "add r0, pc, #0x104\n"
+        "str r5, [sp, #4]\n"
+        "str r7, [sp]\n"
+        "str r5, [sp, #8]\n"
+        ".word 0xebff3be7\n" // bl 0x002c4c00: AsdTask_CreateDraw
+        "ldr r0, [r4]\n"
+        "mov r3, #0\n"
+        "mov r2, r3\n"
+        "str r0, [sp, #0xc]\n"
+        "mov r1, #0xdf\n"
+        "add r0, pc, #0xf8\n"
+        "str r5, [sp, #4]\n"
+        "str r7, [sp]\n"
+        "str r5, [sp, #8]\n"
+        ".word 0xebff3bdd\n" // bl 0x002c4c00: AsdTask_CreateDraw
+        "mov r2, #0\n"
+        "add r1, r4, #8\n"
+        "add r0, pc, #0xf8\n"
+        ".word 0xebfe869a\n" // bl 0x00297704: ScriptVm_LoadTable
+        "mov r2, #0\n"
+        "add r1, r4, #0xc\n"
+        "add r0, pc, #0x100\n"
+        ".word 0xebfe8696\n" // bl 0x00297704: ScriptVm_LoadTable
+        "mov r0, #2\n"
+        "add lr, r4, #0x18\n"
+        "str r5, [r4, #0x38]\n"
+        "mov r1, #3\n"
+        "mov r2, #4\n"
+        "mov r3, #5\n"
+        "mov ip, #6\n"
+        "strb r0, [r4, #0x3c]\n"
+        "stm lr, {r0, r1, r2, r3, ip}\n"
+        "add r1, r4, #0x10\n"
+        "add r4, r4, #0x2c\n"
+        "stm r1, {r5, r6}\n"
+        "mov r7, #0xa\n"
+        "mov r8, #7\n"
+        "mov sb, #0xb\n"
+        "stm r4, {r7, r8, sb}\n"
+        "add sp, sp, #0x14\n"
+        "mov r0, #0xe2\n"
+        "pop {r4, r5, r6, r7, r8, sb, lr}\n"
+        ".word 0xeaff0b9f\n" // b 0x002b8b78: Sound_PlaySE
+        ".word 0x0043daf8\n"
+        ".asciz \"c:\\\\SMT4\\\\XRD686\\\\sdds4\\\\program\\\\camp\\\\CampCec\\\\CampCecSetting.cpp\"\n"
+        ".balign 4, 0\n"
+        ".word 0x001fff64\n"
+        ".asciz \"CampCecSetting Calc\"\n"
+        ".balign 4, 0\n"
+        ".word 0x001fff48\n"
+        ".asciz \"CampCecSetting DrawUpLeft\"\n"
+        ".balign 4, 0\n"
+        ".asciz \"CampCecSetting DrawUpRight\"\n"
+        ".balign 4, 0\n"
+        ".asciz \"camp/CecSetting_scr.bf\"\n"
+        ".balign 4, 0\n"
+        ".asciz \"camp/CecSetting_msg.mbm\"\n"
+        ".balign 4, 0\n"
+    );
 }
 
 } // namespace smt4::camp

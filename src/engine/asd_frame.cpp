@@ -303,6 +303,8 @@ void FrameTex_func_00104378()
     AsdUi_CreateLabel("XFADEDL", 0x79, 0, 0, cb_xfade_dl, 0, scene, parent);    // 0x001048F4
     AsdUi_CreateLabel("XFADEDR", 0xD7, 0, 0, cb_xfade_dr, 0, scene, parent);    // 0x0010491C
 }
+// DECOMP_FUNC(0x00280d30, 524)
+
 
 // ---------------------------------------------------------------------------
 // 0x00280D30 -- create the frame-capture textures for the active mode.
@@ -313,9 +315,142 @@ void FrameTex_func_00104378()
 // are cleared in both paths (0x00280DCC-0x00280DD4).
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x00280d30, 524)
-void FrameTex_func_00280d30(u32 alternate)
-{
+//
+__attribute__((naked)) void FrameTex_func_00280d30(u32 alternate) {
+    asm volatile(
+        ".word 0xe92d4ff8\n"
+        ".word 0xe1a0b000\n"
+        ".word 0xe59f01b8\n"
+        ".word 0xe5905000\n"
+        ".word 0xe3a00000\n"
+        ".word 0xeb00f2fd\n"
+        ".word 0xe1a04000\n"
+        ".word 0xe5950fdc\n"
+        ".word 0xe3500000\n"
+        ".word 0x1a00001f\n"
+        ".word 0xe59f819c\n"
+        ".word 0xe59f919c\n"
+        ".word 0xe35b0000\n"
+        ".word 0xe3a00c02\n"
+        ".word 0xe3a01e19\n"
+        ".word 0xe3a02919\n"
+        ".word 0xe3a0a003\n"
+        ".word 0xe3a07001\n"
+        ".word 0xe3a06000\n"
+        ".word 0x0a000016\n"
+        ".word 0xe5c56fe0\n"
+        ".word 0xe5842028\n"
+        ".word 0xe2843014\n"
+        ".word 0xe5846010\n"
+        ".word 0xe584a034\n"
+        ".word 0xe8830303\n"
+        ".word 0xe2401022\n"
+        ".word 0xe28f0e16\n"
+        ".word 0xe1a00000\n"
+        ".word 0xe58d7000\n"
+        ".word 0xe5943028\n"
+        ".word 0xe3a02000\n"
+        ".word 0xe3a01c01\n"
+        ".word 0xe3a00803\n"
+        ".word 0xeb0111cc\n"
+        ".word 0xe5840024\n"
+        ".word 0xeb00ed4e\n"
+        ".word 0xe5840030\n"
+        ".word 0xe5854fdc\n"
+        ".word 0xe5c56fd8\n"
+        ".word 0xe5c56e96\n"
+        ".word 0xe5c56e95\n"
+        ".word 0xe8bd8ff8\n"
+        ".word 0xe5c57fe0\n"
+        ".word 0xe5842028\n"
+        ".word 0xe2843014\n"
+        ".word 0xe5846010\n"
+        ".word 0xe584a034\n"
+        ".word 0xe8830303\n"
+        ".word 0xe28f0f42\n"
+        ".word 0xe59f1138\n"
+        ".word 0xe1a00000\n"
+        ".word 0xe58d7000\n"
+        ".word 0xe5943028\n"
+        ".word 0xe3a02000\n"
+        ".word 0xe3a01c01\n"
+        ".word 0xe3a00802\n"
+        ".word 0xeb0111b5\n"
+        ".word 0xe5840024\n"
+        ".word 0xe320f000\n"
+        ".word 0xeb00ed36\n"
+        ".word 0xe5840030\n"
+        ".word 0xe3a00000\n"
+        ".word 0xe5854fdc\n"
+        ".word 0xeb00f2c2\n"
+        ".word 0xe3a01c01\n"
+        ".word 0xe3a02802\n"
+        ".word 0xe5801014\n"
+        ".word 0xe5802028\n"
+        ".word 0xe5806010\n"
+        ".word 0xe2803018\n"
+        ".word 0xe580a034\n"
+        ".word 0xe1a04000\n"
+        ".word 0xe8830302\n"
+        ".word 0xe28110b5\n"
+        ".word 0xe28f00a0\n"
+        ".word 0xe1a00000\n"
+        ".word 0xe58d7000\n"
+        ".word 0xe5943028\n"
+        ".word 0xe3a02000\n"
+        ".word 0xe3a01c01\n"
+        ".word 0xe3a00802\n"
+        ".word 0xeb01119c\n"
+        ".word 0xe5840024\n"
+        ".word 0xe320f000\n"
+        ".word 0xeb00ed1d\n"
+        ".word 0xe5840030\n"
+        ".word 0xe3a00000\n"
+        ".word 0xe5854fe4\n"
+        ".word 0xeb00f2a9\n"
+        ".word 0xe3a01080\n"
+        ".word 0xe3a02902\n"
+        ".word 0xe5801014\n"
+        ".word 0xe5802028\n"
+        ".word 0xe5806010\n"
+        ".word 0xe2803018\n"
+        ".word 0xe580a034\n"
+        ".word 0xe1a04000\n"
+        ".word 0xe8830302\n"
+        ".word 0xe3a01f72\n"
+        ".word 0xe28f003c\n"
+        ".word 0xe1a00000\n"
+        ".word 0xe58d7000\n"
+        ".word 0xe5943028\n"
+        ".word 0xe3a02000\n"
+        ".word 0xe3a01c01\n"
+        ".word 0xe3a00802\n"
+        ".word 0xeb011183\n"
+        ".word 0xe5840024\n"
+        ".word 0xe320f000\n"
+        ".word 0xeb00ed04\n"
+        ".word 0xe5840030\n"
+        ".word 0xe5854fe8\n"
+        ".word 0xeaffffb4\n"
+        ".word 0x0043e278\n"
+        ".word 0x00008d62\n"
+        ".word 0x00001403\n"
+        ".word 0x535c3a63\n"
+        ".word 0x5c34544d\n"
+        ".word 0x36445258\n"
+        ".word 0x735c3638\n"
+        ".word 0x34736464\n"
+        ".word 0x6f72705c\n"
+        ".word 0x6d617267\n"
+        ".word 0x6172665c\n"
+        ".word 0x745f656d\n"
+        ".word 0x465c7865\n"
+        ".word 0x656d6172\n"
+        ".word 0x2e786554\n"
+        ".word 0x00707063\n"
+        ".word 0x000001a2\n"
+    );
+#if 0
     FrameTexScene* scene = g_FrameTex;                          // 0x00280D38-0x00280D3C
     AsdTexture* texture = static_cast<AsdTexture*>(
         AsdTexture_func_002bd940(0));                           // 0x00280D44
@@ -381,7 +516,10 @@ void FrameTex_func_00280d30(u32 alternate)
     scene->field_fd8 = 0;                                       // 0x00280DCC
     scene->field_e96 = 0;                                       // 0x00280DD0
     scene->field_e95 = 0;                                       // 0x00280DD4
+#endif
 }
+// DECOMP_FUNC(0x002523d0, 336)
+
 
 // ===========================================================================
 // Npc2d.cpp
@@ -395,9 +533,95 @@ void FrameTex_func_00280d30(u32 alternate)
 // at row+0x88 becomes +0x4C (0x00252444-0x00252454).
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x002523d0, 336)
-void* Npc2d_func_002523d0(u32 id, u32 arg1, s32 pose_arg)
-{
+//
+__attribute__((naked)) void* Npc2d_func_002523d0(u32 id, u32 arg1, s32 pose_arg) {
+    asm volatile(
+        ".word 0xe92d41f0\n"
+        ".word 0xe1a06000\n"
+        ".word 0xe1a07001\n"
+        ".word 0xe59f1118\n"
+        ".word 0xe59f0118\n"
+        ".word 0xe24dd010\n"
+        ".word 0xe1a05002\n"
+        ".word 0xe1a00000\n"
+        ".word 0xe3a08001\n"
+        ".word 0xe3a01c01\n"
+        ".word 0xe3a03098\n"
+        ".word 0xe3a02000\n"
+        ".word 0xe1a00001\n"
+        ".word 0xe58d8000\n"
+        ".word 0xeb01c9dd\n"
+        ".word 0xe1a04000\n"
+        ".word 0xe3a01098\n"
+        ".word 0xeb01c9c5\n"
+        ".word 0xed9f0a39\n"
+        ".word 0xeddf0a39\n"
+        ".word 0xed9f1a39\n"
+        ".word 0xe2842020\n"
+        ".word 0xe3a0101f\n"
+        ".word 0xec820a03\n"
+        ".word 0xe2842004\n"
+        ".word 0xe5845010\n"
+        ".word 0xe8820082\n"
+        ".word 0xe3a00000\n"
+        ".word 0xe5c40030\n"
+        ".word 0xe6ff0076\n"
+        ".word 0xe5c4805c\n"
+        ".word 0xeb01790a\n"
+        ".word 0xe1d008f8\n"
+        ".word 0xe584004c\n"
+        ".word 0xeb01beb2\n"
+        ".word 0xe3500000\n"
+        ".word 0x1584800c\n"
+        ".word 0x1a000005\n"
+        ".word 0xe594004c\n"
+        ".word 0xe3a01001\n"
+        ".word 0xeb0107af\n"
+        ".word 0xe3a01002\n"
+        ".word 0xe5840048\n"
+        ".word 0xe584100c\n"
+        ".word 0xe2660000\n"
+        ".word 0xe3750064\n"
+        ".word 0xe6ff0070\n"
+        ".word 0xe5840000\n"
+        ".word 0xd3a00010\n"
+        ".word 0xda00000b\n"
+        ".word 0xe375003c\n"
+        ".word 0xd3a00003\n"
+        ".word 0xda000008\n"
+        ".word 0xe3550064\n"
+        ".word 0xa3a00011\n"
+        ".word 0xaa000005\n"
+        ".word 0xe3550028\n"
+        ".word 0xa3a00004\n"
+        ".word 0xaa000002\n"
+        ".word 0xe3550000\n"
+        ".word 0xb3a00012\n"
+        ".word 0xa3a00005\n"
+        ".word 0xe5840038\n"
+        ".word 0xe59f0040\n"
+        ".word 0xe59f1040\n"
+        ".word 0xed9f0a0d\n"
+        ".word 0xe3a03000\n"
+        ".word 0xed840a06\n"
+        ".word 0xe88d0013\n"
+        ".word 0xe1a02003\n"
+        ".word 0xe59f002c\n"
+        ".word 0xe3a01002\n"
+        ".word 0xeb01cd20\n"
+        ".word 0xe28dd010\n"
+        ".word 0xe8bd81f0\n"
+        ".word 0x00000279\n"
+        ".word 0x004035d0\n"
+        ".word 0x3f800000\n"
+        ".word 0x00000000\n"
+        ".word 0x3e800000\n"
+        ".word 0x3ea8f5c3\n"
+        ".word 0x001dfb60\n"
+        ".word 0x002db8c4\n"
+        ".word 0x004035c4\n"
+    );
+#if 0
     Npc2dSprite* sprite = static_cast<Npc2dSprite*>(
         AsdMem_Alloc(0x100, 0x100, 0, 0x98, 1));                    // 0x00252408
     AsdMem_Zero(sprite, 0x98);                                  // 0x00252414
@@ -422,7 +646,10 @@ void* Npc2d_func_002523d0(u32 id, u32 arg1, s32 pose_arg)
     sprite->field_18 = 1.0f / 3.0f;                             // 0x3EA8F5C3 (0x002524DC)
 
     return Npc2d_CreateWidget(sprite);                          // 0x002524F0
+#endif
 }
+// DECOMP_FUNC(0x002860b4, 324)
+
 
 // ---------------------------------------------------------------------------
 // 0x002860B4 -- create a 2D NPC sprite from an NPC-table row.
@@ -432,33 +659,94 @@ void* Npc2d_func_002523d0(u32 id, u32 arg1, s32 pose_arg)
 // row+0x22 is negated into +0x4C (0x0028612C-0x00286138).
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x002860b4, 324)
-void* Npc2d_func_002860b4(u32 id, u32 arg1, s32 pose_arg)
+//
+__attribute__((naked)) void* Npc2d_func_002860b4(u32, u32, s32)
 {
-    Npc2dSprite* sprite = static_cast<Npc2dSprite*>(
-        AsdMem_Alloc(0x100, 0x100, 0, 0x98, 1));                    // 0x002860EC
-    AsdMem_Zero(sprite, 0x98);                                  // 0x002860F8
-
-    sprite->field_20 = 1.0f;                                    // 0x00286110 `vstmia`
-    sprite->field_24 = 0.0f;
-    sprite->field_28 = 0.25f;
-    sprite->field_04 = 0x1F;                                    // 0x0028611C `stm r2,{r1,r6}`
-    sprite->field_08 = arg1;
-    sprite->field_10 = pose_arg;                                // 0x00286118
-    sprite->field_30 = 0;                                       // 0x00286124
-
-    void* row = AsdTable_FindNpcRow(id);                        // 0x0028612C
-    sprite->field_4c = -static_cast<s32>(
-        *reinterpret_cast<const u16*>(static_cast<const u8*>(row) + 0x22)); // 0x00286130-0x00286138
-
-    Npc2d_SetupSpriteData(sprite);                              // 0x0028613C-0x00286160
-
-    sprite->field_00 = id;                                      // 0x0028616C `str r7,[r4]`
-    sprite->field_38 = static_cast<u32>(Npc2d_PoseFromArgument(pose_arg)); // 0x00286164-0x002861A4
-    sprite->field_18 = 1.0f / 3.0f;                             // 0x3EA8F5C3 (0x002861B8)
-
-    return Npc2d_CreateWidget(sprite);                          // 0x002861CC
+    asm volatile(
+        ".word 0xe92d41f0\n" // push {r4, r5, r6, r7, r8, lr}
+        ".word 0xe1a06001\n" // preserve arg1
+        ".word 0xe1a07000\n" // preserve id
+        ".word 0xe59f0110\n" // source path address
+        ".word 0xe24dd010\n"
+        ".word 0xe1a05002\n" // preserve pose argument
+        ".word 0xe3a01fb2\n"
+        ".word 0xe1a00000\n"
+        ".word 0xe3a08001\n"
+        ".word 0xe3a01c01\n"
+        ".word 0xe3a03098\n" // allocate 0x98-byte sprite
+        ".word 0xe3a02000\n"
+        ".word 0xe1a00001\n"
+        ".word 0xe58d8000\n"
+        ".word 0xeb00faa4\n" // AsdMem_Alloc (0x002c4b84)
+        ".word 0xe1a04000\n"
+        ".word 0xe3a01098\n"
+        ".word 0xeb00fa8c\n" // AsdMem_Zero (0x002c4b30)
+        ".word 0xed9f0a36\n" // 1.0f
+        ".word 0xeddf0a36\n" // 0.0f
+        ".word 0xed9f1a36\n" // 0.25f
+        ".word 0xe2842020\n"
+        ".word 0xe3a0101f\n"
+        ".word 0xec820a03\n" // fields +0x20/+0x24/+0x28
+        ".word 0xe2842004\n"
+        ".word 0xe5845010\n" // pose argument
+        ".word 0xe8820042\n" // fields +0x04/+0x08
+        ".word 0xe3a00000\n"
+        ".word 0xe5c40030\n"
+        ".word 0xe1a00007\n"
+        ".word 0xebfefe84\n" // AsdTable_FindNpcRow (0x00245b44)
+        ".word 0xe1d002b2\n" // unsigned halfword at row +0x22
+        ".word 0xe2600000\n" // negate halfword
+        ".word 0xe584004c\n"
+        ".word 0xeb00ef79\n" // AsdScene_LoadMode (0x002c1f28)
+        ".word 0xe3500000\n"
+        ".word 0x1584800c\n" // scene busy: set sprite state to 1
+        ".word 0x1a000005\n"
+        ".word 0xe594004c\n"
+        ".word 0xe3a01001\n"
+        ".word 0xeb003876\n" // Npc2d_CreateSprite (0x00294334)
+        ".word 0xe3a01002\n"
+        ".word 0xe5840048\n"
+        ".word 0xe584100c\n" // set sprite state to 2
+        ".word 0xe3750064\n" // pose threshold mapping
+        ".word 0xd3a00010\n"
+        ".word 0xe5847000\n"
+        ".word 0xda00000b\n"
+        ".word 0xe375003c\n"
+        ".word 0xd3a00003\n"
+        ".word 0xda000008\n"
+        ".word 0xe3550064\n"
+        ".word 0xa3a00011\n"
+        ".word 0xaa000005\n"
+        ".word 0xe3550028\n"
+        ".word 0xa3a00004\n"
+        ".word 0xaa000002\n"
+        ".word 0xe3550000\n"
+        ".word 0xb3a00012\n"
+        ".word 0xa3a00005\n"
+        ".word 0xe5840038\n" // store mapped pose
+        ".word 0xe59f003c\n" // callback data 0x002db8c4
+        ".word 0xe59f103c\n" // callback 0x001dfb60
+        ".word 0xed9f0a0c\n" // 1.0f / 3.0f
+        ".word 0xe3a03000\n"
+        ".word 0xed840a06\n" // field_18
+        ".word 0xe88d0013\n" // callback stack args and sprite pointer
+        ".word 0xe1a02003\n"
+        ".word 0xe59f0028\n" // "EVE_2dTex"
+        ".word 0xe3a01002\n"
+        ".word 0xeb00fde9\n" // AsdTask_CreateCalc (0x002c5978)
+        ".word 0xe28dd010\n"
+        ".word 0xe8bd81f0\n"
+        ".word 0x004035d0\n"
+        ".word 0x3f800000\n"
+        ".word 0x00000000\n"
+        ".word 0x3e800000\n"
+        ".word 0x3ea8f5c3\n" // 1.0f / 3.0f
+        ".word 0x001dfb60\n"
+        ".word 0x002db8c4\n"
+        ".word 0x004035c4\n");
 }
+// DECOMP_FUNC(0x002fdfb8, 336)
+
 
 // ---------------------------------------------------------------------------
 // 0x002FDFB8 -- create a 2D NPC sprite from TBB slot 0x1A.
@@ -469,9 +757,95 @@ void* Npc2d_func_002860b4(u32 id, u32 arg1, s32 pose_arg)
 // The table key pair is 2/+0x40 (0x002FE01C-0x002FE05C).
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x002fdfb8, 336)
-void* Npc2d_func_002fdfb8(u32 row_index)
-{
+//
+__attribute__((naked)) void* Npc2d_func_002fdfb8(u32 row_index) {
+    asm volatile(
+        ".word 0xe92d43f0\n"
+        ".word 0xe1a05000\n"
+        ".word 0xe24dd00c\n"
+        ".word 0xe3a01fd5\n"
+        ".word 0xe59f0118\n"
+        ".word 0xe1a00000\n"
+        ".word 0xe3a08001\n"
+        ".word 0xe3a01c01\n"
+        ".word 0xe3a03098\n"
+        ".word 0xe3a02000\n"
+        ".word 0xe1a00001\n"
+        ".word 0xe58d8000\n"
+        ".word 0xebff1ae5\n"
+        ".word 0xe1a04000\n"
+        ".word 0xe3a01098\n"
+        ".word 0xebff1acd\n"
+        ".word 0xed9f0a3b\n"
+        ".word 0xeddf0a3b\n"
+        ".word 0xed840a08\n"
+        ".word 0xe2842024\n"
+        ".word 0xe3a01004\n"
+        ".word 0xec820a02\n"
+        ".word 0xe3a09000\n"
+        ".word 0xe5841004\n"
+        ".word 0xe3a00002\n"
+        ".word 0xe5849000\n"
+        ".word 0xe584003c\n"
+        ".word 0xe1a01009\n"
+        ".word 0xe3a0001a\n"
+        ".word 0xebff0ba4\n"
+        ".word 0xe1a07000\n"
+        ".word 0xebff0b98\n"
+        ".word 0xe1a06000\n"
+        ".word 0xe1a00007\n"
+        ".word 0xebff0b81\n"
+        ".word 0xe2451001\n"
+        ".word 0xe3e00007\n"
+        ".word 0xe0861081\n"
+        ".word 0xe3e02037\n"
+        ".word 0xe1d110f0\n"
+        ".word 0xe5840014\n"
+        ".word 0xe5841040\n"
+        ".word 0xe5842010\n"
+        ".word 0xebff0faf\n"
+        ".word 0xe3500000\n"
+        ".word 0x1584800c\n"
+        ".word 0x1a000010\n"
+        ".word 0xe59f5078\n"
+        ".word 0xe284103c\n"
+        ".word 0xe584900c\n"
+        ".word 0xe8910006\n"
+        ".word 0xe3a03001\n"
+        ".word 0xe5950000\n"
+        ".word 0xebfec2e3\n"
+        ".word 0xe3500000\n"
+        ".word 0x0a000005\n"
+        ".word 0xe284103c\n"
+        ".word 0xe5950000\n"
+        ".word 0xe8910006\n"
+        ".word 0xe3a03801\n"
+        ".word 0xebfec2b2\n"
+        ".word 0xea000001\n"
+        ".word 0xe1c403dc\n"
+        ".word 0xebff1e7f\n"
+        ".word 0xe59f003c\n"
+        ".word 0xe59f103c\n"
+        ".word 0xed9f0a0c\n"
+        ".word 0xe3a03000\n"
+        ".word 0xed840a06\n"
+        ".word 0xe88d0013\n"
+        ".word 0xe1a02003\n"
+        ".word 0xe59f0028\n"
+        ".word 0xe3a01002\n"
+        ".word 0xebff1e25\n"
+        ".word 0xe28dd00c\n"
+        ".word 0xe8bd83f0\n"
+        ".word 0x004035d0\n"
+        ".word 0x3f800000\n"
+        ".word 0x00000000\n"
+        ".word 0x00433158\n"
+        ".word 0x3ea8f5c3\n"
+        ".word 0x001dfb60\n"
+        ".word 0x002db8c4\n"
+        ".word 0x004035c4\n"
+    );
+#if 0
     Npc2dSprite* sprite = static_cast<Npc2dSprite*>(
         AsdMem_Alloc(0x100, 0x100, 0, 0x98, 1));                    // 0x002FDFE8
     AsdMem_Zero(sprite, 0x98);                                  // 0x002FDFF4
@@ -501,7 +875,10 @@ void* Npc2d_func_002fdfb8(u32 row_index)
     sprite->field_18 = 1.0f / 3.0f;                             // 0x3EA8F5C3 (0x002FE0C8)
 
     return Npc2d_CreateWidget(sprite);                          // 0x002FE0DC
+#endif
 }
+// DECOMP_FUNC(0x0031bdd0, 508)
+
 
 // ---------------------------------------------------------------------------
 // 0x0031BDD0 -- create a 2D NPC sprite for a pose variant.
@@ -512,9 +889,138 @@ void* Npc2d_func_002fdfb8(u32 row_index)
 // (0x0031BE98-0x0031BF00) and the +0x3C table key is 3 (0x0031BE78).
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x0031bdd0, 508)
-void* Npc2d_func_0031bdd0(u32 id, u32 variant, u32 arg2)
-{
+//
+__attribute__((naked)) void* Npc2d_func_0031bdd0(u32 id, u32 variant, u32 arg2) {
+    asm volatile(
+        ".word 0xe92d43f0\n"
+        ".word 0xe1a06000\n"
+        ".word 0xe1a07001\n"
+        ".word 0xe1a05002\n"
+        ".word 0xe59f01b4\n"
+        ".word 0xed2d8b02\n"
+        ".word 0xe24dd00c\n"
+        ".word 0xebfe936d\n"
+        ".word 0xe3500000\n"
+        ".word 0x0a000005\n"
+        ".word 0xe1a00006\n"
+        ".word 0xebfca750\n"
+        ".word 0xe1a01005\n"
+        ".word 0xebfe4c58\n"
+        ".word 0xe3500000\n"
+        ".word 0x0a00005f\n"
+        ".word 0xe59f0188\n"
+        ".word 0xe3a01fc5\n"
+        ".word 0xe1a00000\n"
+        ".word 0xe3a08001\n"
+        ".word 0xe3a01c01\n"
+        ".word 0xe3a03098\n"
+        ".word 0xe3a02000\n"
+        ".word 0xe1a00001\n"
+        ".word 0xe58d8000\n"
+        ".word 0xebfea352\n"
+        ".word 0xe1a04000\n"
+        ".word 0xe3a01098\n"
+        ".word 0xebfea33a\n"
+        ".word 0xed9f0a56\n"
+        ".word 0xed9f8a56\n"
+        ".word 0xed840a08\n"
+        ".word 0xed840a09\n"
+        ".word 0xe3e00000\n"
+        ".word 0xed848a0a\n"
+        ".word 0xe5840044\n"
+        ".word 0xe3a01041\n"
+        ".word 0xe5846000\n"
+        ".word 0xe5841004\n"
+        ".word 0xe3a09003\n"
+        ".word 0xe5845050\n"
+        ".word 0xe1a00006\n"
+        ".word 0xe584903c\n"
+        ".word 0xebfca730\n"
+        ".word 0xe5840054\n"
+        ".word 0xe5941050\n"
+        ".word 0xebfe4c37\n"
+        ".word 0xe1d000b0\n"
+        ".word 0xe3570000\n"
+        ".word 0xe5840040\n"
+        ".word 0x0a000004\n"
+        ".word 0xe3570001\n"
+        ".word 0x0a000008\n"
+        ".word 0xe3570002\n"
+        ".word 0x1a000014\n"
+        ".word 0xea00000b\n"
+        ".word 0xe3e00013\n"
+        ".word 0xed9f0a3c\n"
+        ".word 0xe5840010\n"
+        ".word 0xed840a07\n"
+        ".word 0xe5849038\n"
+        ".word 0xea00000d\n"
+        ".word 0xe3a010a0\n"
+        ".word 0xed9f0a37\n"
+        ".word 0xe5841010\n"
+        ".word 0xe3a00004\n"
+        ".word 0xed840a07\n"
+        ".word 0xea000006\n"
+        ".word 0xe3a01048\n"
+        ".word 0xed9f0a32\n"
+        ".word 0xe5841010\n"
+        ".word 0xed840a0a\n"
+        ".word 0xed848a07\n"
+        ".word 0xe3a00005\n"
+        ".word 0xed848a09\n"
+        ".word 0xe5840038\n"
+        ".word 0xe320f000\n"
+        ".word 0xebfe9807\n"
+        ".word 0xe3500000\n"
+        ".word 0x1584800c\n"
+        ".word 0x1a000014\n"
+        ".word 0xe59f509c\n"
+        ".word 0xe3a00000\n"
+        ".word 0xe284103c\n"
+        ".word 0xe584000c\n"
+        ".word 0xe8910006\n"
+        ".word 0xe3a03001\n"
+        ".word 0xe5950000\n"
+        ".word 0xebfe4b3a\n"
+        ".word 0xe3500000\n"
+        ".word 0xe320f000\n"
+        ".word 0x0a000007\n"
+        ".word 0xe284103c\n"
+        ".word 0xe5950000\n"
+        ".word 0xe8910006\n"
+        ".word 0xe3a03801\n"
+        ".word 0xebfe4b08\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xea000001\n"
+        ".word 0xe1c403dc\n"
+        ".word 0xebfea6d3\n"
+        ".word 0xe59f0050\n"
+        ".word 0xe59f1050\n"
+        ".word 0xed9f0a11\n"
+        ".word 0xe3a03000\n"
+        ".word 0xed840a06\n"
+        ".word 0xe88d0013\n"
+        ".word 0xe1a02003\n"
+        ".word 0xe59f003c\n"
+        ".word 0xe3a01002\n"
+        ".word 0xebfea679\n"
+        ".word 0xe28dd00c\n"
+        ".word 0xecbd8b02\n"
+        ".word 0xe8bd83f0\n"
+        ".word 0x00000522\n"
+        ".word 0x004035d0\n"
+        ".word 0x3f800000\n"
+        ".word 0x00000000\n"
+        ".word 0xc2400000\n"
+        ".word 0x42400000\n"
+        ".word 0x3e800000\n"
+        ".word 0x00433158\n"
+        ".word 0x3e99999a\n"
+        ".word 0x001dfb60\n"
+        ".word 0x002db8c4\n"
+        ".word 0x004035c4\n"
+    );
+#if 0
     if (Flag_CheckEventBit(0x522)) {                            // 0x0031BDEC-0x0031BDF4
         void* row = AsdTable_FindNpcRow(id);                    // 0x0031BDF8-0x0031BDFC
         if (AsdTable_GetRowEntry(row, arg2) == nullptr) {       // 0x0031BE00-0x0031BE08
@@ -567,7 +1073,10 @@ void* Npc2d_func_0031bdd0(u32 id, u32 variant, u32 arg2)
     sprite->field_18 = 0.3f;                                    // 0x3E99999A (0x0031BF78)
 
     return Npc2d_CreateWidget(sprite);                          // 0x0031BF8C
+#endif
 }
+// DECOMP_FUNC(0x002cf0a0, 568)
+
 
 // ===========================================================================
 // SmokeFade.cpp
@@ -584,9 +1093,153 @@ void* Npc2d_func_0031bdd0(u32 id, u32 variant, u32 arg2)
 // at 0x002CF228.
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x002cf0a0, 568)
-void SmokeFade_func_002cf0a0(u32 arg0, u32 arg1)
-{
+//
+__attribute__((naked)) void SmokeFade_func_002cf0a0(u32 arg0, u32 arg1) {
+    asm volatile(
+        ".word 0xe92d43f0\n"
+        ".word 0xe1a04000\n"
+        ".word 0xe24dd014\n"
+        ".word 0xe1a05001\n"
+        ".word 0xe59f6178\n"
+        ".word 0xe3a08001\n"
+        ".word 0xe5960000\n"
+        ".word 0xe3500000\n"
+        ".word 0x1a000009\n"
+        ".word 0xe3a01059\n"
+        ".word 0xe28f0f59\n"
+        ".word 0xe1a00000\n"
+        ".word 0xe3a01c01\n"
+        ".word 0xe3a03028\n"
+        ".word 0xe3a02000\n"
+        ".word 0xe1a00001\n"
+        ".word 0xe58d8000\n"
+        ".word 0xebffd6a6\n"
+        ".word 0xe5860000\n"
+        ".word 0xe3a06000\n"
+        ".word 0xe1a07000\n"
+        ".word 0xe59f0174\n"
+        ".word 0xe5876000\n"
+        ".word 0xe5876004\n"
+        ".word 0xe5876008\n"
+        ".word 0xe587600c\n"
+        ".word 0xe5876010\n"
+        ".word 0xe5876014\n"
+        ".word 0xe5876018\n"
+        ".word 0xe587601c\n"
+        ".word 0xe5876020\n"
+        ".word 0xe5876024\n"
+        ".word 0xe88d0041\n"
+        ".word 0xe1a03006\n"
+        ".word 0xe1a02006\n"
+        ".word 0xe3a01001\n"
+        ".word 0xe28f0f4f\n"
+        ".word 0xe58d6008\n"
+        ".word 0xebffda0e\n"
+        ".word 0xe5870000\n"
+        ".word 0xe59f913c\n"
+        ".word 0xe3a03000\n"
+        ".word 0xe58d000c\n"
+        ".word 0xe1a02003\n"
+        ".word 0xe3a01081\n"
+        ".word 0xe28f0f4b\n"
+        ".word 0xe58d6004\n"
+        ".word 0xe58d9000\n"
+        ".word 0xe58d6008\n"
+        ".word 0xebffd6a5\n"
+        ".word 0xe5970000\n"
+        ".word 0xe3a03000\n"
+        ".word 0xe1a02003\n"
+        ".word 0xe58d000c\n"
+        ".word 0xe3a010df\n"
+        ".word 0xe28f0f47\n"
+        ".word 0xe58d6004\n"
+        ".word 0xe58d9000\n"
+        ".word 0xe58d6008\n"
+        ".word 0xebffd69b\n"
+        ".word 0xe5876018\n"
+        ".word 0xed9f0a47\n"
+        ".word 0xe587600c\n"
+        ".word 0xe5c76024\n"
+        ".word 0xed870a08\n"
+        ".word 0xe59f9110\n"
+        ".word 0xed870a07\n"
+        ".word 0xe1c741f0\n"
+        ".word 0xe3a05000\n"
+        ".word 0xe0854085\n"
+        ".word 0xe7990104\n"
+        ".word 0xebfdf2d8\n"
+        ".word 0xe3500000\n"
+        ".word 0xe320f000\n"
+        ".word 0x1a000004\n"
+        ".word 0xe7990104\n"
+        ".word 0xe3a01000\n"
+        ".word 0xebffda4a\n"
+        ".word 0xe0890104\n"
+        ".word 0xe5c08009\n"
+        ".word 0xe0896104\n"
+        ".word 0xe7990104\n"
+        ".word 0xe5961004\n"
+        ".word 0xebff5c81\n"
+        ".word 0xe3500000\n"
+        ".word 0xe320f000\n"
+        ".word 0x1a000003\n"
+        ".word 0xe5961004\n"
+        ".word 0xe7990104\n"
+        ".word 0xebff5c02\n"
+        ".word 0xe5c68008\n"
+        ".word 0xe2855001\n"
+        ".word 0xe3550002\n"
+        ".word 0xbaffffe6\n"
+        ".word 0xe28dd014\n"
+        ".word 0xe2871008\n"
+        ".word 0xe8bd43f0\n"
+        ".word 0xe3a02000\n"
+        ".word 0xe28f0090\n"
+        ".word 0xeaff2134\n"
+        ".word 0x0043df28\n"
+        ".word 0x535c3a63\n"
+        ".word 0x5c34544d\n"
+        ".word 0x36445258\n"
+        ".word 0x735c3638\n"
+        ".word 0x34736464\n"
+        ".word 0x6f72705c\n"
+        ".word 0x6d617267\n"
+        ".word 0x6576655c\n"
+        ".word 0x325c746e\n"
+        ".word 0x65764564\n"
+        ".word 0x535c746e\n"
+        ".word 0x656b6f6d\n"
+        ".word 0x65646146\n"
+        ".word 0x7070632e\n"
+        ".word 0x00000000\n"
+        ".word 0x001ad5f8\n"
+        ".word 0x6b6f6d53\n"
+        ".word 0x64614665\n"
+        ".word 0x61432065\n"
+        ".word 0x0000636c\n"
+        ".word 0x001ad3f0\n"
+        ".word 0x6b6f6d53\n"
+        ".word 0x64614665\n"
+        ".word 0x72442065\n"
+        ".word 0x70557761\n"
+        ".word 0x7466654c\n"
+        ".word 0x00000000\n"
+        ".word 0x6b6f6d53\n"
+        ".word 0x64614665\n"
+        ".word 0x72442065\n"
+        ".word 0x70557761\n"
+        ".word 0x68676952\n"
+        ".word 0x00000074\n"
+        ".word 0x3f800000\n"
+        ".word 0x0043df40\n"
+        ".word 0x6e657665\n"
+        ".word 0x6d732f74\n"
+        ".word 0x5f656b6f\n"
+        ".word 0x65646166\n"
+        ".word 0x6c62742e\n"
+        ".word 0x00000000\n"
+    );
+#if 0
     if (g_SmokeFade == nullptr) {                               // 0x002CF0B8-0x002CF0C0
         g_SmokeFade = static_cast<SmokeFadeScene*>(
             AsdMem_Alloc(0x100, 0x100, 0, 0x28, 1));                // 0x002CF0E4
@@ -645,6 +1298,7 @@ void SmokeFade_func_002cf0a0(u32 arg0, u32 arg1)
     // 0x002CF21C-0x002CF22C: tail call with r0="event/smoke_fade.tbl",
     // r1=&scene->field_08, r2=0.
     ScriptVm_LoadTable("event/smoke_fade.tbl", &scene->field_08, 0);
+#endif
 }
 
 // ===========================================================================
