@@ -71,6 +71,30 @@ Tests requiring missing local game files skip with a reason. Synthetic extractio
 
 Before considering a tooling change complete, run the relevant tests, force the ARM build, run the audit, build through CMake, and run `git diff --check`.
 
+## Find semantic reconstruction candidates
+
+The ledger can be 100% byte-matching while functions are still represented by
+inline assembly or `.incbin` wrappers. To find small, call-free wrappers that
+are good candidates for replacement with readable C++, run:
+
+```powershell
+python tools/find_candidates.py --status matching --asm-backed-only --max-size 64 --limit 80
+```
+
+The default remains `--status todo` for compatibility. Inspect a candidate
+before editing it, then verify the exact function after rebuilding its
+translation unit:
+
+```powershell
+python tools/split_asm.py --addr 0x00121d70
+python tools/build_check.py --tu src/engine/leaf_matching.cpp
+python tools/asm_diff.py --addr 0x00121d70
+```
+
+Semantic cleanup must not reduce the byte-exact baseline. Keep the exact
+`DECOMP_FUNC` address, size, and ledger symbol, and prefer small coherent
+batches that can be reverted independently.
+
 ## Progress definitions
 
 Only `matching` verifies exact machine code against the original binary. Relocations are accepted only when their type and symbol are supported and the encoded instruction can be checked against an unambiguous ledger target; currently that is limited to canonical ARM-state `R_ARM_CALL` relocations. Every other unresolved relocation remains ineligible for an exact match. The compiled-coverage tier uses a size threshold (at least 15% of the original function size, with a small minimum) to distinguish larger reconstructions from drafts. It does not establish equivalent behavior. Explored coverage includes stubs and should not be treated as runnable or completed game code.

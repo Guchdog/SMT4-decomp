@@ -5,7 +5,11 @@ from pathlib import Path
 
 import capstone
 
-from tools.find_candidates import find_leaf_candidates, is_terminal_return
+from tools.find_candidates import (
+    find_leaf_candidates,
+    is_asm_backed_row,
+    is_terminal_return,
+)
 
 
 class TestFindCandidates(unittest.TestCase):
@@ -69,6 +73,55 @@ class TestFindCandidates(unittest.TestCase):
             ["empty_return", "constant_return"],
         )
         self.assertEqual(candidates[0]["terminal_instruction"], "bx lr")
+
+    def test_matching_search_can_filter_to_asm_backed_entries(self):
+        base = 0x00101308
+        code = bytearray(base - 0x00100000)
+        code.extend(bytes.fromhex("0100a0e31eff2fe1"))
+        code.extend(bytes.fromhex("0200a0e31eff2fe1"))
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            source = root / "candidate.cpp"
+            source.write_text(
+                "// DECOMP_FUNC(0x00101308, 8)\n"
+                "u32 semantic() { return 1; }\n"
+                "// DECOMP_FUNC(0x00101310, 8)\n"
+                "__attribute__((naked)) void wrapped() {\n"
+                "  asm volatile(\".word 0xe3a00002\\n\");\n"
+                "}\n",
+                encoding="utf-8",
+            )
+            functions = root / "functions.csv"
+            with functions.open("w", encoding="utf-8", newline="") as stream:
+                writer = csv.writer(stream)
+                writer.writerow(
+                    ("address", "size", "status", "category", "name", "src_file")
+                )
+                writer.writerow(
+                    ("0x00101308", 8, "matching", "test", "semantic", "candidate.cpp")
+                )
+                writer.writerow(
+                    ("0x00101310", 8, "matching", "test", "wrapped", "candidate.cpp")
+                )
+
+            with functions.open(encoding="utf-8", newline="") as stream:
+                rows = list(csv.DictReader(stream))
+            self.assertFalse(is_asm_backed_row(rows[0], repo_root=root))
+            self.assertTrue(is_asm_backed_row(rows[1], repo_root=root))
+
+            candidates = find_leaf_candidates(
+                functions_csv=functions,
+                code_bytes=bytes(code),
+                max_size=8,
+                limit=0,
+                statuses=("matching",),
+                asm_backed_only=True,
+                repo_root=root,
+            )
+
+        self.assertEqual([candidate["name"] for candidate in candidates], ["wrapped"])
+        self.assertEqual(candidates[0]["status"], "matching")
 
 
 if __name__ == "__main__":
