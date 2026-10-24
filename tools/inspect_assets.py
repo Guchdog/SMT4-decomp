@@ -15,40 +15,51 @@ def parse_tbb_header(data: bytes) -> dict:
       0x00: 'TBCR' (4 bytes)
       0x04: header_size (u32, typically 0x10)
       0x08: table_count (u32)
-      0x0C: reserved (u32)
-    Followed by TBL1 sub-tables:
+      0x0C: table_offsets[table_count] (u32 offsets relative to header_size)
+    Each offset points to a TBL1 sub-table:
       0x00: 'TBL1' (4 bytes)
-      0x04: table_size (u32)
-      0x08: unknown/flags (u32)
-      0x0C: row_size (u32)
+      0x04: payload_size (u32)
+      0x08: row_stride (u32; zero for a single struct)
+      0x0C: reserved (u32)
+      0x10: payload bytes
     """
     if len(data) < 16:
         raise ValueError("Data too short for TBB header")
 
     magic = data[:4].decode("ascii", "ignore")
-    hdr_size, table_count, reserved = struct.unpack_from("<III", data, 4)
+    hdr_size, table_count = struct.unpack_from("<II", data, 4)
+    if magic != "TBCR":
+        raise ValueError(f"Invalid TBCR magic: {magic!r}")
+
+    offsets_end = 0x0C + table_count * 4
+    if offsets_end > len(data):
+        raise ValueError("TBB table-offset array exceeds file size")
+    if hdr_size < offsets_end or hdr_size > len(data):
+        raise ValueError("Invalid TBB header_size")
 
     tables = []
-    pos = hdr_size
-    for _ in range(table_count):
+    for table_index in range(table_count):
+        relative_offset = struct.unpack_from("<I", data, 0x0C + table_index * 4)[0]
+        pos = hdr_size + relative_offset
         if pos + 16 > len(data):
-            break
+            raise ValueError(f"TBL1 header {table_index} exceeds file size")
         sub_magic = data[pos : pos + 4].decode("ascii", "ignore")
         if sub_magic != "TBL1":
-            break
-        tbl_size, flags, row_size = struct.unpack_from("<III", data, pos + 4)
-        payload_bytes = max(0, tbl_size - 16)
-        row_count = (payload_bytes // row_size) if row_size > 0 else 0
+            raise ValueError(f"Invalid TBL1 magic at table index {table_index}: {sub_magic!r}")
+        payload_size, row_stride, _reserved = struct.unpack_from("<III", data, pos + 4)
+        payload_start = pos + 16
+        if payload_start + payload_size > len(data):
+            raise ValueError(f"TBL1 payload {table_index} exceeds file size")
+        row_count = (payload_size // row_stride) if row_stride > 0 else 0
         tables.append(
             {
                 "magic": sub_magic,
                 "offset": pos,
-                "table_size": tbl_size,
-                "row_size": row_size,
+                "payload_size": payload_size,
+                "row_stride": row_stride,
                 "row_count": row_count,
             }
         )
-        pos += (tbl_size + 15) & ~15
 
     return {
         "magic": magic,

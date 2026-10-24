@@ -66,6 +66,10 @@ CANDIDATES = (
     Candidate(0x00121D70, "signed_byte_field"),
     Candidate(0x0014EC5C, "nullable_pointer_field"),
     Candidate(0x00131414, "paired_word_store"),
+    Candidate(0x0023E4D4, "ui_flag_predicate"),
+    Candidate(0x002C4BF0, "ui_widget_flag_or", returns_value=False),
+    Candidate(0x00357A28, "ui_id_pack"),
+    Candidate(0x002ADB40, "two_word_copy", returns_value=False),
 )
 
 
@@ -121,10 +125,68 @@ def validate_leaf(code: bytes):
             raise ValueError("Pilot excludes OS and floating-point instructions")
 
 
+def validate_local_blob(code: bytes):
+    """Validate an ARM blob with local branches and in-blob LDR literals.
+
+    Unlike the original pilot leaf validator, this accepts a code prefix ending
+    at `bx lr` followed by a word-aligned literal/data tail. Relative offsets
+    remain valid when the entire blob is copied as one unit. Calls, external
+    branches, other PC-relative forms, and literals outside the blob fail shut.
+    """
+    cs = capstone.Cs(capstone.CS_ARCH_ARM, capstone.CS_MODE_ARM)
+    cs.detail = True
+    instructions = []
+    return_address = None
+    for instruction in cs.disasm(code, 0):
+        if instruction.address != sum(item.size for item in instructions):
+            raise ValueError("Incomplete ARM disassembly before return")
+        instructions.append(instruction)
+        if instruction.mnemonic == "bx" and instruction.op_str == "lr":
+            return_address = instruction.address
+            break
+    if return_address is None:
+        raise ValueError("Local blob requires a bx lr return")
+    tail_start = return_address + 4
+    if tail_start > len(code) or (len(code) - tail_start) % 4:
+        raise ValueError("Literal/data tail must contain complete 32-bit words")
+
+    for instruction in instructions[:-1]:
+        if instruction.group(capstone.CS_GRP_CALL):
+            raise ValueError("Local blob validator does not allow calls")
+        if instruction.group(capstone.CS_GRP_JUMP):
+            if instruction.mnemonic.startswith("bx") and instruction.op_str == "lr":
+                if instruction.mnemonic == "bx":
+                    raise ValueError("Unconditional bx lr must be the final executable instruction")
+                continue  # Conditional early return; the fall-through remains local.
+            if instruction.mnemonic in ("bx", "blx") or not instruction.operands:
+                raise ValueError("Local blob validator only allows immediate local branches")
+            target = instruction.operands[0].imm
+            if target < 0 or target >= tail_start or target % 4:
+                raise ValueError("Branch target is outside the executable prefix")
+        if instruction.mnemonic.startswith(("svc", "swi", "v")):
+            raise ValueError("Local blob validator excludes OS and floating-point instructions")
+
+        pc_memory_operands = [
+            operand for operand in instruction.operands
+            if operand.type == capstone.CS_OP_MEM
+            and instruction.reg_name(operand.mem.base) == "pc"
+        ]
+        if pc_memory_operands:
+            if not instruction.mnemonic.startswith("ldr"):
+                raise ValueError("Only PC-relative LDR literal operands are supported")
+            for operand in pc_memory_operands:
+                target = (instruction.address + 8 + operand.mem.disp) & ~3
+                if target < tail_start or target + 4 > len(code):
+                    raise ValueError("PC-relative literal target is outside the in-blob data tail")
+        elif "pc" in instruction.op_str:
+            raise ValueError("Unsupported PC-relative operand")
+
+
 class Runner:
     """Execute original image or an in-memory entry trampoline to compiled C++."""
 
-    def __init__(self, image: bytes, entry: int, replacement: bytes | None = None):
+    def __init__(self, image: bytes, entry: int, replacement: bytes | None = None,
+                 replacement_validator=validate_leaf):
         require_unicorn()
         self.entry = entry
         self.uc = unicorn.Uc(unicorn.UC_ARCH_ARM, unicorn.UC_MODE_ARM)
@@ -135,7 +197,7 @@ class Runner:
         self.uc.mem_map(DATA, DATA_SIZE, unicorn.UC_PROT_READ | unicorn.UC_PROT_WRITE)
         self.uc.mem_map(STACK, STACK_SIZE, unicorn.UC_PROT_READ | unicorn.UC_PROT_WRITE)
         if replacement is not None:
-            validate_leaf(replacement)
+            replacement_validator(replacement)
             if len(replacement) > 0x1000:
                 raise ValueError("Replacement exceeds reserved code page")
             self.uc.mem_write(INJECT, replacement)
@@ -196,19 +258,26 @@ class Runner:
 
 
 def difference(original: Execution, rebuilt: Execution, *, returns_value=True,
-               caller_window=False) -> str | None:
+               caller_window=False, compare_flags=None) -> str | None:
+    if compare_flags is None:
+        compare_flags = caller_window
     for label, result in (("original", original), ("rebuilt", rebuilt)):
         if result.fault:
             return f"{label} fault: {result.fault}"
         if not result.stopped:
             return f"{label} instruction budget exhausted / no expected return"
-        if result.preserved != result.expected_preserved:
+        if not caller_window and result.preserved != result.expected_preserved:
             return f"{label} violates callee-saved register/SP contract"
+    # A caller window may itself contain a function prologue/body that updates
+    # its saved registers. Compare the two executions at the same stop PC;
+    # isolated callee runs above still enforce the ABI against initial state.
+    if caller_window and original.preserved != rebuilt.preserved:
+        return "callee-saved register/SP state differs"
     if returns_value and original.result != rebuilt.result:
         return "return value differs"
     if original.pc != rebuilt.pc:
         return "caller continuation differs"
-    if caller_window and original.nzcv != rebuilt.nzcv:
+    if compare_flags and original.nzcv != rebuilt.nzcv:
         return "caller condition flags differ"
     if original.data != rebuilt.data:
         return "data memory differs"
@@ -226,6 +295,15 @@ def cases(candidate: Candidate, samples: int, seed: int):
     rng = random.Random(seed ^ candidate.address)
     boundaries = [0, 1, 399, 400, 401, 0x7FFF, 0x8000, 0xFFFF,
                   0x7FFFFFFF, 0x80000000, U32_MASK]
+    if candidate.name == "ui_flag_predicate":
+        boundaries = [0, 1, 2, 3, 4, 5, 0xFFFFFFFB, 0xFFFFFFFF]
+    elif candidate.name == "ui_widget_flag_or":
+        boundaries = [0, 1, 2, 4, 0x100, 0x200, 0x80000000, U32_MASK]
+    elif candidate.name == "ui_id_pack":
+        boundaries = [0, 1, 0x000FFFFF, 0x00100000, 0x00F00000,
+                      0x01000000, 0x00FFFFFF, 0xFFFFFFFF]
+    elif candidate.name == "two_word_copy":
+        boundaries = [0, 1, 2, 3, 4]
     edge_count = 256 if candidate.name in ("byte_equality", "signed_byte_field") else len(boundaries)
     for index in range(edge_count + samples):
         regs = [rng.getrandbits(32) for _ in range(13)]
@@ -268,6 +346,36 @@ def cases(candidate: Candidate, samples: int, seed: int):
         elif candidate.name == "paired_word_store":
             regs[1] = value
             regs[2] = value ^ U32_MASK
+        elif candidate.name == "ui_flag_predicate":
+            struct.pack_into("<I", memory, regs[0] - DATA + 0x10, value)
+        elif candidate.name == "ui_widget_flag_or":
+            old_flags = rng.getrandbits(32)
+            if index < len(boundaries):
+                old_flags = (0, 1, 0x100, 0x80000000, U32_MASK,
+                             0x55555555, 0xAAAAAAAA, 0)[index]
+            struct.pack_into("<I", memory, regs[0] - DATA + 0x34, old_flags)
+            regs[1] = value
+        elif candidate.name == "ui_id_pack":
+            regs[0] = value
+        elif candidate.name == "two_word_copy":
+            base = DATA + 0x100
+            offsets = ((0, 0), (1, 0), (0, 1), (2, 0), (0, 2))
+            if index < len(offsets):
+                destination_index, source_index = offsets[index]
+            else:
+                destination_index = rng.randrange(7)
+                source_index = rng.randrange(7)
+            words = tuple(rng.getrandbits(32) for _ in range(8))
+            if index < len(offsets):
+                words = (0x11223344, 0x55667788, 0x99AABBCC, 0xDDEEFF00,
+                         0x01020304, 0xA5A5A5A5, 0x5A5A5A5A, 0xFFFFFFFF)
+                label += ("-identical" if index == 0 else
+                          "-overlap-dst-after" if index == 1 else
+                          "-overlap-dst-before" if index == 2 else
+                          "-disjoint-adjacent")
+            struct.pack_into("<8I", memory, 0x100, *words)
+            regs[0] = base + destination_index * 4
+            regs[1] = base + source_index * 4
         else:
             raise ValueError(candidate.name)
         yield Case(label, tuple(regs), bytes(memory), stack, rng.getrandbits(4) << 28)
@@ -333,13 +441,27 @@ def patch_image(image: bytes, compiled: dict, game: dict):
 def caller_windows(image, patched_image, samples, seed):
     # Real, unchanged instructions before and after BL; no game boot is implied.
     windows = (
-        (0x002AE464, 0x001B0370, 0x001B0374, (0x001B0384, 0x001B0394), "threshold"),
-        (0x00394614, 0x001B4DBC, 0x001B4DC0, (0x001B4DD0, 0x001B4DF4), "byte_equality"),
-        (0x00121D70, 0x00110F44, 0x00110F44, (0x00110F50, 0x00111008), "signed_byte"),
-        (0x00131414, 0x00121D1C, 0x00121D1C, (0x00121D24,), "paired_store"),
+        (0x002AE464, 0x001B0370, 0x001B0374, (0x001B0384, 0x001B0394), "threshold", True, True),
+        (0x00394614, 0x001B4DBC, 0x001B4DC0, (0x001B4DD0, 0x001B4DF4), "byte_equality", True, True),
+        (0x00121D70, 0x00110F44, 0x00110F44, (0x00110F50, 0x00111008), "signed_byte", True, True),
+        (0x00131414, 0x00121D1C, 0x00121D1C, (0x00121D24,), "paired_store", False, False),
+        (0x0023E4D4, 0x00295298, 0x00295298,
+         (0x002952A4, 0x002952FC), "ui_flag_predicate", True, True),
+        (0x002C4BF0, 0x00102934, 0x00102934,
+         (0x00102938,), ("ui_widget_flag_or", 0x100), False, False),
+        (0x002C4BF0, 0x00102944, 0x00102944,
+         (0x00102948,), ("ui_widget_flag_or", 0x200), False, False),
+        (0x002C4BF0, 0x00102954, 0x00102954,
+         (0x00102958,), ("ui_widget_flag_or", 0x100), False, False),
+        (0x00357A28, 0x003BBF24, 0x003BBF24,
+         (0x003BBF30,), ("ui_id_pack", 0xC56), False, True),
+        (0x00357A28, 0x003BBF38, 0x003BBF38,
+         (0x003BBF40,), ("ui_id_pack", 0xBD3), False, True),
+        (0x002ADB40, 0x00238E18, 0x00238E28,
+         (0x00238E38,), "two_word_copy", False, False),
     )
     results = []
-    for address, start, callsite, stops, setup in windows:
+    for address, start, callsite, stops, setup, compare_flags, compare_return in windows:
         # Check that this really is an unconditional BL to the selected original.
         word = struct.unpack_from("<I", image, callsite - TEXT)[0]
         imm = word & 0xFFFFFF
@@ -351,8 +473,18 @@ def caller_windows(image, patched_image, samples, seed):
         original, patched = Runner(image, address), Runner(patched_image, address)
         count = 0
         continuations: set[int] = set()
-        result = {"callsite": hex(callsite), "callee": hex(address), "passed": True}
-        for case in cases(candidate, min(samples, 256), seed):
+        observables = ["continuation", "callee-saved registers/SP", "RAM",
+                       "live stack", "read/write footprint"]
+        if compare_return:
+            observables.append("r0 return/consumed argument")
+        if compare_flags:
+            observables.append("NZCV consumed by caller")
+        result = {"callsite": hex(callsite), "callee": hex(address),
+                  "passed": True, "observables": observables}
+        window_inputs = cases(candidate, min(samples, 256), seed)
+        if isinstance(setup, tuple) and setup[0] == "ui_id_pack":
+            window_inputs = (next(window_inputs),)
+        for case in window_inputs:
             regs, stack = list(case.registers), bytearray(case.stack)
             if setup == "threshold":
                 regs[5] = regs[0]  # Original caller executes mov r0,r5 before BL.
@@ -360,10 +492,18 @@ def caller_windows(image, patched_image, samples, seed):
                 stack[SP - STACK] = case.data[regs[0] - DATA]
             elif setup == "signed_byte":
                 regs[0] = DATA + 0x100
+            elif setup == "ui_flag_predicate":
+                regs[0] = DATA + 0x100
+            elif isinstance(setup, tuple) and setup[0] == "ui_widget_flag_or":
+                regs[0] = DATA + 0x100
+                regs[1] = setup[1]
+            elif isinstance(setup, tuple) and setup[0] == "ui_id_pack":
+                regs[0] = setup[1]
             case = replace(case, registers=tuple(regs), stack=bytes(stack))
             a = original.run(case, start=start, stops=stops)
             b = patched.run(case, start=start, stops=stops)
-            reason = difference(a, b, caller_window=True)
+            reason = difference(a, b, returns_value=compare_return,
+                                caller_window=True, compare_flags=compare_flags)
             count += 1
             continuations.add(a.pc)
             if reason:
@@ -433,6 +573,11 @@ def experiment(code_path: Path, output: Path, samples=4096, seed=20261024):
         (0x00121D70, "wrong_signed_byte", "return value differs"),
         (0x0014EC5C, "wrong_nullable_pointer", "return value differs"),
         (0x00131414, "wrong_pair_store", "data memory differs"),
+        (0x0023E4D4, "wrong_ui_flag_predicate", "return value differs"),
+        (0x002C4BF0, "wrong_ui_flag_or", "data memory differs"),
+        (0x00357A28, "wrong_ui_id_pack", "return value differs"),
+        (0x002ADB40, "wrong_pair_copy_forward", "data memory differs"),
+        (0x002ADB40, "wrong_pair_copy_word_order", "data memory differs"),
     ):
         candidate = next(c for c in CANDIDATES if c.address == address)
         outcome = compare_cases(Runner(image, address), Runner(image, address, compiled[symbol]),
@@ -447,7 +592,7 @@ def experiment(code_path: Path, output: Path, samples=4096, seed=20261024):
               and all(r["passed"] for r in integration))
     report = {
         "schema": 1, "passed": passed,
-        "scope": "Ten ARM leaf functions and four original caller windows; not a full game boot",
+        "scope": "Fourteen ARM leaf functions and eleven original caller windows; not a full game boot",
         "reference_sha256": digest,
         "patched_sha256": hashlib.sha256(patched_image).hexdigest(),
         "ips_sha256": hashlib.sha256(ips).hexdigest(),
@@ -467,7 +612,7 @@ def experiment(code_path: Path, output: Path, samples=4096, seed=20261024):
             "Ordinary RAM only: no MMIO, concurrent observers, timing, exceptions or OS services",
             "No floating-point, external calls, relocations or PC-relative replacements",
             "Internal caller-saved registers/flags and scratch stack contents may differ",
-            "Preserved r4-r11, SP, d8-d15; compared r0 for every pilot function, caller flags/continuation, RAM and access footprints",
+            "Checked r4-r11, SP, d8-d15 against initial state in isolated runs and between executions in caller windows; compared r0 only for value-returning functions or consumed caller results, and NZCV only when consumed; compared RAM and access footprints",
             "Patched image uses zero text-page padding; real 3DS loader behavior and full game boot are untested",
             "Source/ledger/private original remain unchanged; experimental functions do not count as exact matching",
         ],

@@ -6,10 +6,18 @@ instrucciones distintas. Las comprobaciones por función son rápidas; la regres
 general se ejecuta al cerrar un lote. El [informe del piloto](../experiments/semantic_equivalence/README.md)
 describe lo ya comprobado y sus límites.
 
-**Estado de partida:** hay un piloto para siete funciones enteras/escalares, no
-un verificador universal ni un juego reconstruido que ya arranque. La integración
-en un emulador completo de 3DS o consola sigue pendiente. No se deben presentar
-pruebas ARM aisladas como una comprobación de todo SMT IV.
+El [plan de hitos funcionales](reconstruction-milestones.md) define cómo elegir
+los lotes por área y comportamiento, sus criterios de cierre y la coordinación
+entre subagentes. Este procedimiento define cómo validar cada función del lote.
+
+**Estado de partida (2026-10-24):** el experimento contiene catorce helpers con
+pruebas ARM y once ventanas de caller. Batch 4 se cargó en Azahar, llegó al
+título, abrió Audio Settings y volvió al título; se observaron entradas de dos
+reemplazos. No se comparó el mismo escenario entre juego original y parche, así
+que esto es una comprobación de carga/recorrido corto, no de equivalencia del
+menú. No presentar pruebas ARM aisladas ni esos dos hits como una comprobación
+de todo SMT IV. Ver el [registro H0](milestones/H0-reproducible-test-base.md)
+y el [plan por hitos](reconstruction-milestones.md).
 
 ## 1. Preparar el trabajo y consultar los intentos anteriores
 
@@ -153,9 +161,24 @@ una prueba incompleta.
 
 Comparar retorno y efectos de memoria; verificar la ABI contra el estado inicial,
 no solo entre ambas ejecuciones. El piloto comprueba `r4-r11`, `SP` y `d8-d15`,
-memoria de prueba, stack vivo y conjuntos de bytes leídos/escritos. Sus siete
-funciones también comparan `r0`. Los temporales caller-saved, flags de una hoja
-y scratch de stack pueden diferir si el contrato permite esas diferencias.
+memoria de prueba, stack vivo y conjuntos de bytes leídos/escritos. En una ventana
+de caller que incluye instrucciones propias de una función mayor, `r4-r11`, `SP`
+y `d8-d15` pueden cambiar legítimamente dentro de la ventana: comparar esos
+estados entre original y parche al mismo punto de parada. En una invocación
+aislada, seguir comparándolos contra el estado inicial para validar el ABI.
+
+La ventana debe declarar observables según el contrato comprobado, no comparar
+por defecto todos los registros caller-saved o NZCV. Comparar `r0` solo cuando el
+calle devuelve un valor consumido por el caller (o al probarlo aislado); en un
+setter `void` no rechazar cambios de `r0` no consumido. Comparar NZCV solo cuando
+el caller realmente consume esos flags tras la llamada. Continuación, estado
+callee-saved/SP entre ambas ejecuciones, memoria y huella de accesos siguen
+siendo observables de la ventana. Añadir un test del runner con implementaciones
+que difieran solo en `r0`/NZCV no consumidos y verificar que no genera falso
+rechazo, además de comprobar que sí detecta un valor/flag cuando es consumido.
+
+Los temporales caller-saved, flags de una hoja y scratch de stack pueden diferir
+si el contrato permite esas diferencias.
 
 Fallos de memoria, instrucciones no soportadas, ausencia de retorno o agotamiento
 del presupuesto invalidan la ejecución. Dos ejecuciones que fallan igual no
@@ -164,7 +187,7 @@ revisar si falla la propuesta, el contrato, la preparación de memoria o el runn
 
 ## 7. Adaptar el piloto actual sin atribuirle funciones que no tiene
 
-`tools/semantic_experiment.py` está especializado para los siete ejemplos.
+`tools/semantic_experiment.py` está especializado para sus ejemplos registrados.
 **No existe una opción `--addr`, un filtro de fallos históricos ni un registro
 genérico que construya escenarios por sí solo.** Para una función adicional:
 
@@ -231,8 +254,10 @@ Después, para aprobar integración real:
 - Guardar evidencia local y anotar lo no ejercitado. Arranque correcto no implica
   equivalencia de todo el programa, estabilidad general o un port terminado.
 
-Este nivel está **pendiente para los siete ejemplos del piloto**. No instalar ni
-publicar un parche como validado en juego basándose solo en el runner ARM.
+Este nivel tiene evidencia de ejecución de entrada para dos de los diez
+reemplazos del piloto, pero no comparación original/parche de escenarios ni
+validación conductual de juego. No instalar ni publicar el parche como
+equivalente basándose solo en el runner ARM o en los hits de entrada.
 
 ## 9. Registrar el estado y cerrar lotes
 

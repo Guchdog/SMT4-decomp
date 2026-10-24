@@ -19,6 +19,10 @@ Decompilation and reverse-engineering project for **Shin Megami Tensei IV** (Nin
 
 ## Quick Start
 
+For the functional reconstruction roadmap, see the [milestone plan](docs/reconstruction-milestones.md) (Spanish): areas, testable scenarios, acceptance criteria, and subagent responsibilities. Implement each batch using the [per-function workflow](docs/function-reconstruction-workflow.md). Exact byte coverage above is separate from reconstructed C++ behavior and milestone completion.
+
+**Current functional milestone:** H0's batch-4 title → Audio Settings → title smoke test is recorded; H1 maps the main-menu flow. Three TBB helper proposals passed 426 synthetic and 14 extracted `TitleTable.tbb` ARM comparisons across two seeds; targeted negative controls were detected. None is integrated or tested in Azahar. See the [H1 flow and acceptance record](docs/milestones/H1-main-menu-flow.md).
+
 Install Python dependencies with `python -m pip install -r requirements.txt`. Clang is required for ARM compilation; CMake and Ninja are required for the CMake build. See [development setup](docs/development.md) for compiler configuration, build commands, and tests. Run `python -m unittest discover -s tests -v` for tests; tests requiring private game files skip when those files are absent.
 
 ### 1. Extract `code.bin` and UI/HUD Assets from Your Local CIA

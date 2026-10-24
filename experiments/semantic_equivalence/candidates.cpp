@@ -87,6 +87,31 @@ extern "C" PairStoreRecord* candidate_00131414(
         reinterpret_cast<u8*>(record) + 4);
 }
 
+struct UiFlagRecord { u8 prefix[0x10]; u32 flags; };
+static_assert(__builtin_offsetof(UiFlagRecord, flags) == 0x10);
+
+extern "C" u32 candidate_0023e4d4(const UiFlagRecord* record) {
+    return (record->flags & 4u) != 0;
+}
+
+struct UiWidgetRecord { u8 prefix[0x34]; u32 flags; };
+static_assert(__builtin_offsetof(UiWidgetRecord, flags) == 0x34);
+
+extern "C" void candidate_002c4bf0(UiWidgetRecord* record, u32 mask) {
+    record->flags |= mask;
+}
+
+extern "C" u32 candidate_00357a28(u32 value) {
+    return (value & ~0x00f00000u) << 8;
+}
+
+extern "C" void candidate_002adb40(u32* destination, const u32* source) {
+    const u32 first = source[0];
+    const u32 second = source[1];
+    destination[0] = first;
+    destination[1] = second;
+}
+
 // Deliberate bugs: the oracle must reject every control below.
 extern "C" u32 wrong_threshold(u32 value) { return value >= 400u; }
 extern "C" u32 wrong_byte(const u8* value) { return *value == 0x69; }
@@ -126,4 +151,26 @@ extern "C" PairStoreRecord* wrong_pair_store(
     record->second = second ^ 1u;
     return reinterpret_cast<PairStoreRecord*>(
         reinterpret_cast<u8*>(record) + 4);
+}
+
+extern "C" u32 wrong_ui_flag_predicate(const UiFlagRecord* record) {
+    return record->flags == 4u;
+}
+
+extern "C" void wrong_ui_flag_or(UiWidgetRecord* record, u32 mask) {
+    record->flags |= mask << 1;
+}
+
+extern "C" u32 wrong_ui_id_pack(u32 value) {
+    return value << 8;
+}
+
+extern "C" void wrong_pair_copy_forward(u32* destination, const u32* source) {
+    destination[0] = source[0];
+    destination[1] = source[1];
+}
+
+extern "C" void wrong_pair_copy_word_order(u32* destination, const u32* source) {
+    destination[0] = source[1];
+    destination[1] = source[0];
 }

@@ -10,11 +10,40 @@ from tools.asm_diff import extract_elf_functions_detailed
 from tools.semantic_experiment import (
     ROOT, TEXT, DATA, DATA_SIZE, STACK_SIZE, Candidate, Case, CANDIDATES,
     Runner, arm_branch, cases, difference, patch_image, validate_leaf,
+    validate_local_blob,
 )
 
 
 def instructions(*words):
     return struct.pack("<" + "I" * len(words), *words)
+
+
+class TestLocalBlobValidator(unittest.TestCase):
+    def test_accepts_local_branch_and_in_blob_literal_pool(self):
+        branch_blob = arm_branch(0, 8) + instructions(0xE1A00000, 0xE12FFF1E)
+        validate_local_blob(branch_blob)
+
+        early_return_blob = instructions(0x012FFF1E, 0xE12FFF1E)
+        validate_local_blob(early_return_blob)
+
+        literal_blob = instructions(0xE59F0004, 0xE12FFF1E, 0xE1A00000, 0x314C4254)
+        validate_local_blob(literal_blob)
+
+    def test_rejects_external_control_flow_and_bad_literals(self):
+        with self.assertRaisesRegex(ValueError, "Branch target"):
+            validate_local_blob(arm_branch(0, 0x100) + instructions(0xE12FFF1E))
+        with self.assertRaisesRegex(ValueError, "calls"):
+            validate_local_blob(instructions(0xEB000000, 0xE12FFF1E))
+        with self.assertRaisesRegex(ValueError, "literal target"):
+            validate_local_blob(instructions(0xE59F0008, 0xE12FFF1E, 0, 0))
+        with self.assertRaisesRegex(ValueError, "PC-relative"):
+            validate_local_blob(instructions(0xE28F0000, 0xE12FFF1E))
+
+    def test_rejects_missing_return_and_truncated_data_tail(self):
+        with self.assertRaisesRegex(ValueError, "bx lr"):
+            validate_local_blob(instructions(0xE3A00001))
+        with self.assertRaisesRegex(ValueError, "complete 32-bit words"):
+            validate_local_blob(instructions(0xE12FFF1E) + b"\x00")
 
 
 @unittest.skipUnless(importlib.util.find_spec("unicorn"), "Optional Unicorn experiment dependency")
@@ -31,6 +60,33 @@ class TestSemanticOracle(unittest.TestCase):
         a = self.runner(instructions(0xE3A00001, 0xE12FFF1E)).run(self.case())
         b = self.runner(instructions(0xE3A01001, 0xE1A00001, 0xE12FFF1E)).run(self.case())
         self.assertIsNone(difference(a, b))
+
+    def test_relocated_blob_reads_its_copied_literal(self):
+        blob = instructions(0xE59F0004, 0xE12FFF1E, 0xE1A00000, 0x314C4254)
+        runner = Runner(bytes(0x1000), TEXT, blob,
+                        replacement_validator=validate_local_blob)
+        result = runner.run(self.case())
+        self.assertTrue(result.stopped)
+        self.assertIsNone(result.fault)
+        self.assertEqual(result.result, 0x314C4254)
+
+    def test_void_caller_window_ignores_unconsumed_r0_and_nzcv(self):
+        # A void callee may leave arbitrary caller-saved r0/NZCV. Its real
+        # caller has no subsequent data/control dependency on either value.
+        initial_nzcv = 0x40000000
+        case = Case("ignored-caller-saved", (0,) + tuple(range(1, 13)),
+                    bytes(DATA_SIZE), bytes(STACK_SIZE), initial_nzcv)
+        original = self.runner(instructions(0xE3A00001, 0xE12FFF1E)).run(case)
+        rebuilt = self.runner(instructions(0xE3B00002, 0xE12FFF1E)).run(case)
+        self.assertNotEqual(original.result, rebuilt.result)
+        self.assertNotEqual(original.nzcv, rebuilt.nzcv)
+        self.assertIsNone(difference(original, rebuilt, returns_value=False,
+                                     caller_window=True, compare_flags=False))
+        self.assertEqual(difference(original, rebuilt, returns_value=True),
+                         "return value differs")
+        self.assertEqual(difference(original, rebuilt, returns_value=False,
+                                    caller_window=True),
+                         "caller condition flags differ")
 
     def test_wrong_return_and_wrong_memory_are_detected(self):
         a = self.runner(instructions(0xE3A00001, 0xE12FFF1E)).run(self.case())
@@ -142,6 +198,42 @@ class TestSemanticOracle(unittest.TestCase):
         self.assertTrue(all(c.registers[2] == (c.registers[1] ^ 0xFFFFFFFF)
                             for c in cases(stores, 16, 7)))
 
+    def test_ui_generators_cover_flag_edges_masks_and_id_shift_edges(self):
+        predicate = Candidate(0x0023E4D4, "ui_flag_predicate")
+        predicate_words = {
+            struct.unpack_from("<I", c.data, c.registers[0] - DATA + 0x10)[0]
+            for c in cases(predicate, 16, 23)
+        }
+        self.assertTrue({0, 1, 4, 5, 0xFFFFFFFB, 0xFFFFFFFF} <= predicate_words)
+
+        setter = Candidate(0x002C4BF0, "ui_widget_flag_or")
+        setter_cases = list(cases(setter, 16, 23))
+        masks = {c.registers[1] for c in setter_cases}
+        old_values = {struct.unpack_from("<I", c.data, c.registers[0] - DATA + 0x34)[0]
+                      for c in setter_cases}
+        self.assertTrue({0, 1, 2, 0x100, 0x200, 0x80000000, 0xFFFFFFFF} <= masks)
+        self.assertTrue({0, 1, 0x100, 0x80000000, 0xFFFFFFFF} <= old_values)
+
+        pack = Candidate(0x00357A28, "ui_id_pack")
+        values = {c.registers[0] for c in cases(pack, 16, 23)}
+        self.assertTrue({0, 1, 0x000FFFFF, 0x00100000, 0x00F00000,
+                         0x01000000, 0x00FFFFFF, 0xFFFFFFFF} <= values)
+
+    def test_two_word_copy_cases_cover_exact_alias_and_both_overlap_directions(self):
+        candidate = Candidate(0x002ADB40, "two_word_copy", returns_value=False)
+        inputs = list(cases(candidate, 16, 20261024))
+        labels = {case.label for case in inputs[:5]}
+        self.assertIn("case-0-identical", labels)
+        self.assertIn("case-1-overlap-dst-after", labels)
+        self.assertIn("case-2-overlap-dst-before", labels)
+        self.assertIn("case-3-disjoint-adjacent", labels)
+        self.assertIn("case-4-disjoint-adjacent", labels)
+        for case in inputs:
+            self.assertEqual(case.registers[0] % 4, 0)
+            self.assertEqual(case.registers[1] % 4, 0)
+            self.assertTrue(DATA + 0x100 <= case.registers[0] <= DATA + 0x118)
+            self.assertTrue(DATA + 0x100 <= case.registers[1] <= DATA + 0x118)
+
     def test_compiled_deliberate_bugs_are_detected(self):
         # Use synthetic originals here; private-image controls are also in the CLI.
         with tempfile.TemporaryDirectory(prefix="smt4-semantic-") as directory:
@@ -178,6 +270,62 @@ class TestSemanticOracle(unittest.TestCase):
             self.assertTrue(any("cursor-alias" in label and reason == "return value differs"
                                 for label, reason in differences))
             self.assertTrue(all(reason is None for label, reason in differences if "cursor-alias" not in label))
+
+    def test_ui_candidates_match_synthetic_arm_oracles_and_reject_controls(self):
+        with tempfile.TemporaryDirectory(prefix="smt4-ui-semantic-") as directory:
+            obj = Path(directory) / "candidates.o"
+            build = compile_tu_armv6k(ROOT / "experiments/semantic_equivalence/candidates.cpp", obj, ROOT)
+            self.assertEqual(build.returncode, 0, build.stderr)
+            functions = extract_elf_functions_detailed(obj)
+
+            fixtures = (
+                (Candidate(0x0023E4D4, "ui_flag_predicate"),
+                 instructions(0xE5900010, 0xE2100004, 0x13A00001, 0xE12FFF1E),
+                 "wrong_ui_flag_predicate", "return value differs"),
+                (Candidate(0x002C4BF0, "ui_widget_flag_or"),
+                 instructions(0xE5902034, 0xE1811002, 0xE5801034, 0xE12FFF1E),
+                 "wrong_ui_flag_or", "data memory differs"),
+                (Candidate(0x00357A28, "ui_id_pack"),
+                 instructions(0xE3A01000, 0xE1A00000, 0xE3C0060F,
+                              0xE1810400, 0xE12FFF1E),
+                 "wrong_ui_id_pack", "return value differs"),
+            )
+            for candidate, oracle_code, wrong_symbol, expected in fixtures:
+                good_code, relocations = functions[candidate.symbol]
+                self.assertFalse(relocations, candidate.name)
+                oracle, good = Runner(oracle_code, TEXT), Runner(oracle_code, TEXT, good_code)
+                inputs = list(cases(candidate, 64, 20261024))
+                self.assertTrue(all(difference(oracle.run(case), good.run(case)) is None
+                                    for case in inputs), candidate.name)
+
+                wrong_code, relocations = functions[wrong_symbol]
+                self.assertFalse(relocations, wrong_symbol)
+                wrong = Runner(oracle_code, TEXT, wrong_code)
+                reasons = [difference(oracle.run(case), wrong.run(case)) for case in inputs]
+                self.assertTrue(any(expected in reason for reason in reasons if reason), wrong_symbol)
+
+    def test_two_word_copy_preserves_load_before_store_overlap_semantics(self):
+        with tempfile.TemporaryDirectory(prefix="smt4-copy-semantic-") as directory:
+            obj = Path(directory) / "candidates.o"
+            build = compile_tu_armv6k(ROOT / "experiments/semantic_equivalence/candidates.cpp", obj, ROOT)
+            self.assertEqual(build.returncode, 0, build.stderr)
+            functions = extract_elf_functions_detailed(obj)
+            oracle_code = instructions(0xE5912000, 0xE5913004, 0xE5802000,
+                                       0xE5803004, 0xE12FFF1E)
+            candidate = Candidate(0x002ADB40, "two_word_copy", returns_value=False)
+            good_code, relocations = functions[candidate.symbol]
+            self.assertFalse(relocations)
+            oracle = Runner(oracle_code, TEXT)
+            good = Runner(oracle_code, TEXT, good_code)
+            inputs = list(cases(candidate, 64, 20261024))
+            self.assertTrue(all(difference(oracle.run(case), good.run(case),
+                                           returns_value=False) is None for case in inputs))
+            bad_code, relocations = functions["wrong_pair_copy_forward"]
+            self.assertFalse(relocations)
+            bad = Runner(oracle_code, TEXT, bad_code)
+            reasons = [difference(oracle.run(case), bad.run(case), returns_value=False)
+                       for case in inputs]
+            self.assertIn("data memory differs", reasons)
 
 
 if __name__ == "__main__":
