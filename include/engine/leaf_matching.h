@@ -515,7 +515,7 @@ void func_00318de0();
 void func_0031f6a0();
 void func_003409ec();
 void func_0034f978();
-void func_0035a408();
+void func_0035a408(u8* p);
 void func_0037a254();
 void func_0037bf10();
 void func_0037fd70();
