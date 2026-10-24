@@ -95,8 +95,14 @@ extern "C" u32 engine_func_002b5124(void* queue_data, void* node_data) {
 }
 
 // DECOMP_FUNC(0x002bd448, 36)
-extern "C" __attribute__((naked)) void engine_func_002bd448() {
-    asm volatile("mov r1, #0\nstr r1, [r0]\nstr r1, [r0, #4]\nstr r1, [r0, #8]\nstr r1, [r0, #0xc]\nstr r1, [r0, #0x10]\nstr r1, [r0, #0x14]\nstrb r1, [r0, #0x11]\nbx lr\n");
+extern "C" void engine_func_002bd448(volatile u8* voice) {
+    *reinterpret_cast<volatile u32*>(voice) = 0;
+    *reinterpret_cast<volatile u32*>(voice + 4) = 0;
+    *reinterpret_cast<volatile u32*>(voice + 8) = 0;
+    *reinterpret_cast<volatile u32*>(voice + 0x0c) = 0;
+    *reinterpret_cast<volatile u32*>(voice + 0x10) = 0;
+    *reinterpret_cast<volatile u32*>(voice + 0x14) = 0;
+    voice[0x11] = 0;
 }
 
 // DECOMP_FUNC(0x002bf774, 36)
