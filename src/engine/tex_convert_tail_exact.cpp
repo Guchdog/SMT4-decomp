@@ -1,8 +1,8 @@
 // Five callable initialization/teardown thunks embedded after the third
 // texture-conversion leaf block. Literal pairs between them stay data rows.
 // DECOMP_FUNC(0x0017f5c0, 12)
-__attribute__((naked, used)) void func_0017f5c0() {
-    asm volatile(".incbin \"extracted/exefs/code.bin\", 0x7f5c0, 12\n");
+__attribute__((used)) void func_0017f5c0(unsigned int* object) {
+    *object = 0;
 }
 // DECOMP_FUNC(0x0017f5cc, 20)
 __attribute__((naked, used)) void func_0017f5cc() {

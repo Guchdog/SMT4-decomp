@@ -71,10 +71,7 @@ __attribute__((naked)) void btlTargetSelect_Calc(void*) {
 }
 
 // DECOMP_FUNC(0x002e07a8, 4)
-__attribute__((naked)) void eventView_DrawUp(void*) {
-    asm volatile(
-        ".word 0xE12FFF1E\n"
-    );
+void eventView_DrawUp(void*) {
 }
 
 // DECOMP_FUNC(0x002e07ac, 296)

@@ -1641,12 +1641,7 @@ extern "C" void func_001584d0(u8* p, u32 idx, u16 val) {
 
 // DECOMP_FUNC(0x0018f554, 12)
 extern "C" void* func_0018f554(void* p) {
-    asm volatile(
-        "cmp %0, #0\n"
-        "addne %0, %0, #8\n"
-        : "+r"(p) : : "cc"
-    );
-    return p;
+    return p ? static_cast<u8*>(p) + 8 : nullptr;
 }
 
 // DECOMP_FUNC(0x002345f0, 12)
