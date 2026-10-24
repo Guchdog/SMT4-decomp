@@ -2921,8 +2921,12 @@ extern "C" __attribute__((naked)) void script_vm_func_00292e70() {
 }
 
 // DECOMP_FUNC(0x002a17e4, 24)
-extern "C" __attribute__((naked)) void func_002a17e4() {
-    asm volatile("mov r1, r0\nldr r0, [r0]\ncmp r0, #0\nldrne r2, [r0]\nstrne r2, [r1]\nbx lr\n");
+extern "C" u32* func_002a17e4(u32** slot) {
+    u32* current = *slot;
+    if (current != nullptr) {
+        *slot = *reinterpret_cast<u32**>(current);
+    }
+    return current;
 }
 
 // DECOMP_FUNC(0x002a89cc, 24)
