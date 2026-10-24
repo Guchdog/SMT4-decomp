@@ -31,5 +31,6 @@ void Result_Init(s32 mode);                                                     
 void Result_Calc(void* task_ctx);                                                   // 0x0018bfec
 void Result_DrawUp(void* task_ctx);                                                 // 0x001a15b0
 void Result_DrawDown(void* task_ctx);                                               // 0x001c87d8
+void func_001c8874(void* task_ctx);                                                 // 0x001c8874
 
 } // namespace smt4::ui

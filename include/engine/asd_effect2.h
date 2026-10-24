@@ -528,8 +528,8 @@ void* effPolygonThunder_func_00327d90(EffPolygonThunder* object);
 
 // effPolygonFlash.cpp
 s32   effPolygonFlash_func_003243bc(EffPolygonFlash* object, char* buffer);
-// 0x00324420 is the second ARM entry inside the 0x003243BC ledger row; the
-// two bodies are split here so each binary address keeps one declaration.
+// Separate ARM entries; 0x003243BC is a 100-byte name-formatting routine,
+// and 0x00324420 starts the 364-byte geometry constructor.
 void* effPolygonFlash_func_00324420(EffPolygonFlash* object,
                                     const void* texture);
 

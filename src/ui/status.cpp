@@ -593,14 +593,103 @@ __attribute__((naked)) s32 Status_HandleLRPrompt() {
 // DECOMP_FUNC(0x00293e4c, 520)
 void Status_UpdateAffinityTable() {
     StatusWork* work = g_StatusManager.work;
-    if (work == nullptr) {
+    work->field_14 = 0;
+    work->flag_1e63 = 1;
+
+    const u8 mode = work->main_menu_id;
+    u8* const work_bytes = reinterpret_cast<u8*>(work);
+    u32* const display_state = reinterpret_cast<u32*>(work_bytes + 0x12e4);
+    const u8* const affinity_lock = work_bytes + 0x12f1;
+
+    if (mode == 0) {
+        if (*display_state == 0) {
+            StatusDown_SetDisplayMode(0);
+        }
+        if (*display_state == 1) {
+            StatusDown_SetDisplayMode(1);
+        }
+        if (*affinity_lock == 0 && *display_state == 2) {
+            StatusDown_SetDisplayMode(2);
+        }
+        if (*display_state == 3) {
+            StatusDown_SetDisplayMode(5);
+        }
         return;
     }
 
-    work->field_14 = 0;
-    const u8 mode = work->main_menu_id;
-    if (mode == 0 || mode == 6 || mode == 8 || mode == 9 || mode == 10 || mode == 11 || mode == 7) {
+    if (mode == 6) {
+        if (*display_state == 0) {
+            StatusDown_SetDisplayMode(0);
+        }
+        if (*display_state == 1) {
+            StatusDown_SetDisplayMode(1);
+        }
+        if (*display_state == 2) {
+            StatusDown_SetDisplayMode(5);
+        }
         return;
+    }
+
+    if (mode == 8 || mode == 9 || mode == 10 || mode == 11 || mode == 7) {
+        if (*display_state == 0) {
+            StatusDown_SetDisplayMode(1);
+        }
+        if (*display_state == 1) {
+            StatusDown_SetDisplayMode(4);
+        }
+        if (*display_state == 2) {
+            StatusDown_SetDisplayMode(5);
+        }
+        return;
+    }
+
+    if (mode == 14) {
+        if (*display_state == 0) {
+            StatusDown_SetDisplayMode(0);
+        }
+        return;
+    }
+
+    if (mode == 13) {
+        if (*display_state == 0) {
+            StatusDown_SetDisplayMode(0);
+        }
+        if (*display_state == 1) {
+            StatusDown_SetDisplayMode(1);
+        }
+        if (*affinity_lock != 0) {
+            return;
+        }
+        if (*display_state == 2) {
+            StatusDown_SetDisplayMode(4);
+        }
+        if (*display_state == 3) {
+            StatusDown_SetDisplayMode(5);
+        }
+        return;
+    }
+
+    if (work->sub_menu_state == 6) {
+        if (*display_state == 0) {
+            StatusDown_SetDisplayMode(1);
+        }
+        return;
+    }
+
+    if (*display_state == 0) {
+        StatusDown_SetDisplayMode(0);
+    }
+    if (*display_state == 1) {
+        StatusDown_SetDisplayMode(1);
+    }
+    if (*affinity_lock != 0) {
+        return;
+    }
+    if (*display_state == 2) {
+        StatusDown_SetDisplayMode(4);
+    }
+    if (*display_state == 3) {
+        StatusDown_SetDisplayMode(5);
     }
 }
 

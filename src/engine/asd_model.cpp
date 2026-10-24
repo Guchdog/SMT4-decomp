@@ -102,8 +102,8 @@ extern u8 g_AsdEditorDefaultEntry;          // 0x0044EB38
 extern u8 g_AsdModelList;                   // 0x004DAE48
 extern u8 g_AsdAnimTableList;               // 0x004DAE3C
 
-// 0x0014ECE0 is emitted as the continuation of 0x0014EC68 (tail call without
-// a branch); it is also reached directly from 0x002A5C6C.
+// 0x0014ECE0 is a separate function entry; it is also reached directly from
+// 0x002A5C6C.
 void AsdModel_ReloadEffectParts(AsdModel* model, const void* atbc, s32 filter);
 
 namespace {
@@ -500,14 +500,12 @@ void AsdModel_func_0014515c(AsdModel* model, const void* atbc) {
 // 0x0014ec68 -- release the effect-part key array, then rebuild it.
 //
 // Atlus source: c:\SMT4\XRD686\AsdSDK\Source\Gfx\Model\AsdModel.cpp
-// The 792-byte ledger entry contains two compiler-emitted halves:
+// The old 792-byte ledger span contains two independently callable entries:
 //   0x0014ec68: destroy pass (effect_parts / effect_part_count)
-//   0x0014ece0: rebuild pass, reached by a tail call that pops the frame and
-//               immediately re-pushes it for the callee
-//               (same target also called directly from 0x002a5c6c).
+//   0x0014ece0: rebuild pass (also called directly from 0x002a5c6c).
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x0014ec68, 792)
+// DECOMP_FUNC(0x0014ec68, 120)
 void AsdModel_func_0014ec68(AsdModel* model, s32 index) {
     for (s32 i = 0; i < model->effect_part_count; ++i) {
         u8* entry = reinterpret_cast<u8*>(model->effect_parts) + static_cast<u32>(i) * 12u;
@@ -526,6 +524,7 @@ void AsdModel_func_0014ec68(AsdModel* model, s32 index) {
     AsdModel_ReloadEffectParts(model, atbc, index);
 }
 
+// DECOMP_FUNC(0x0014ece0, 672)
 void AsdModel_ReloadEffectParts(AsdModel* model, const void* atbc, s32 filter) {
     model->effect_part_count = 0;
 

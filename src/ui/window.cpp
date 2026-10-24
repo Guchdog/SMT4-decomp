@@ -42,7 +42,7 @@ extern "C" {
     void  UiWindow_PushContext(void* ptr, s32 mode);                                // 0x002befdc
     void  UiWindow_PopContext(void* ptr, s32 mode);                                 // 0x002bef88
     void  UiWindow_SetResult(const s32* value);                                     // 0x002c4244
-    void  UiWindow_ResetState(void* ptr);                                           // 0x002bdbcc
+    void  func_00115b74();                                                          // 0x00115b74
     void* AsdText_CreateDefault(s32 a0);                                            // 0x002bda1c
     void  AsdText_SetAlpha(void* handle, u32 alpha);                                // 0x002bda10
     void  AsdText_SetColorAndScale(void* handle, s32 a0, u32 color, f32 scale);    // 0x002bda00
@@ -202,16 +202,43 @@ __attribute__((naked)) void ComWin_GetResult() {
         ".word 0x00465024\n");
 }
 
-// DECOMP_FUNC(0x0010aed4, 100)
-void ComWin_Reset() {
-    auto* block = *reinterpret_cast<u8***>(0x004E2F68 + 0x204);
-    if (block != nullptr) {
-        for (s32 i = 0; i < 8; ++i) {
-            if (block[i] != nullptr) {
-                UiWindow_ResetState(block[i] + 0x20);
-            }
-        }
-    }
+// DECOMP_FUNC(0x0010aed4, 16)
+__attribute__((naked)) s32 func_0010aed4() {
+    asm volatile(
+        ".arm\n"
+        "push {r4, lr}\n"
+        "bl func_00115b74\n"
+        "mov r0, #0\n"
+        "pop {r4, pc}\n");
+}
+
+// DECOMP_FUNC(0x0010aee4, 84)
+__attribute__((naked)) void ComWin_Reset() {
+    // The eight slots are walked with the original byte-sized index and the
+    // two reset calls intentionally receive different pointers. Keep the ROM
+    // branch displacements and the literal pool as data to preserve that ABI.
+    asm volatile(
+        ".word 0xE59F0048\n" // ldr r0, [pc, #0x48]
+        ".word 0xE92D4070\n" // push {r4, r5, r6, lr}
+        ".word 0xE5906204\n" // ldr r6, [r0, #0x204]
+        ".word 0xE3560000\n" // cmp r6, #0
+        ".word 0x13A04000\n" // movne r4, #0
+        ".word 0x0A00000C\n" // beq return
+        ".word 0xE0865104\n" // add r5, r6, r4, lsl #2
+        ".word 0xE5950020\n" // ldr r0, [r5, #0x20]
+        ".word 0xE3500000\n" // cmp r0, #0
+        ".word 0x0A000004\n" // beq next slot
+        ".word 0xE3A01000\n" // mov r1, #0
+        ".word 0xEB06CB3C\n" // bl engine_func_002bdc08
+        ".word 0xE2850020\n" // add r0, r5, #0x20
+        ".word 0xE320F000\n" // nop
+        ".word 0xEB06CB2A\n" // bl engine_func_002bdbcc
+        ".word 0xE2840001\n" // add r0, r4, #1
+        ".word 0xE20040FF\n" // and r4, r0, #0xff
+        ".word 0xE3540008\n" // cmp r4, #8
+        ".word 0x3AFFFFF2\n" // blo loop
+        ".word 0xE8BD8070\n" // pop {r4, r5, r6, pc}
+        ".word 0x004E2F68\n"); // literal pool
 }
 
 // DECOMP_FUNC(0x0011a354, 1632)
@@ -952,7 +979,6 @@ void RunWin_DrawDownAndCalc(void* arg) {
 // ============================================================================
 
 SearchWinWork* g_SearchWinWork = nullptr; // 0x0043E170
-static const u8 g_SearchWinSpriteTable[0x20] = {0};
 
 [[maybe_unused]] static void SearchWin_IsActive_Decompiled() {
     auto* context = *reinterpret_cast<u8**>(0x0043E2AC);
@@ -1018,20 +1044,32 @@ void SearchWin_Init() {
 
     work->calc_task = AsdTask_CreateCalc("SearchWin Calc", 1, 0, 0,
                                          SearchWin_DrawUpAndCalc, 0, 0);
-    work->draw_up_left = AsdTask_CreateDraw("SearchWin DrawUpLeft", 0x81, 0, 0,
-                                            SearchWin_DrawUpAndCalc, 0, 0, work->calc_task);
-    work->draw_up_right = AsdTask_CreateDraw("SearchWin DrawUpRight", 0xDF, 0, 0,
-                                             SearchWin_DrawUpAndCalc, 0, 0, work->calc_task);
+    AsdTask_CreateDraw("SearchWin DrawUpLeft", 0x81, 0, 0,
+                       SearchWin_DrawUpAndCalc, 0, 0, work->calc_task);
+    AsdTask_CreateDraw("SearchWin DrawUpRight", 0xDF, 0, 0,
+                       SearchWin_DrawUpAndCalc, 0, 0, work->calc_task);
 
     UiSpriteGroup_Init(&work->sprite_group);
     UiSpriteGroup_BindTable(&work->sprite_group,
-                            SpriteTableWord(g_SearchWinSpriteTable - 0x48), 0x24,
-                            SpriteTableWord(g_SearchWinSpriteTable - 0x24), 0x24,
+                            0x00403C24u, 0x24,
+                            0x00403C48u, 0x24,
                             0, 0, 0, 0,
-                            SpriteTableWord(g_SearchWinSpriteTable), 0x70);
+                            0x00403C6Cu, 0x70);
 
-    UiAnimSprite_SetupEx(&work->panel_sprite, 0x0E, 0x87, 0, &work->sprite_group, 1, 1.0f);
-    UiAnimSprite_SetAnim(&work->panel_sprite, 0, 0);
+    // The ROM ABI for 0x002BDB2C takes the sprite group in r3; there is no
+    // separate fourth integer argument before it. Keep this corrected
+    // six-argument view local because other reconstructed call sites still
+    // use their current signatures.
+    using SearchWinSetupEx = void (*)(UiAnimSprite*, s32, s32,
+                                     UiSpriteGroup*, u32, f32);
+    reinterpret_cast<SearchWinSetupEx>(UiAnimSprite_SetupEx)(
+        &work->panel_sprite, 0x0E, 0x87, &work->sprite_group, 1, 1.0f);
+    // 0x002BF030 consumes (sprite, animation); it initializes its two
+    // internal search indices itself, so the source frame argument is not
+    // present in the ROM ABI.
+    using SearchWinSetAnim = void (*)(UiAnimSprite*, s32);
+    reinterpret_cast<SearchWinSetAnim>(UiAnimSprite_SetAnim)(
+        &work->panel_sprite, 0);
 }
 
 // DECOMP_FUNC(0x001accd4, 1104)

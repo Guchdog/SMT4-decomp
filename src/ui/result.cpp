@@ -125,11 +125,17 @@ void Result_DrawUp(void* task_ctx) {
     // Party victory poses, 3D demon models, level-up banners, and whisper effects.
 }
 
-// DECOMP_FUNC(0x001c87d8, 420)
+// DECOMP_FUNC(0x001c87d8, 156)
 void Result_DrawDown(void* task_ctx) {
     (void)task_ctx;
     // Lower Touchscreen reward HUD render pass:
     // Numerical EXP counter tickers, Macca tally summary, and acquired item list.
+}
+
+// DECOMP_FUNC(0x001c8874, 264)
+void func_001c8874(void* task_ctx) {
+    (void)task_ctx;
+    // Separate Result DDRAW task callback registered by Result_Init.
 }
 
 } // namespace smt4::ui

@@ -354,7 +354,8 @@ extern EffectEditorState g_EffectEditor;    // 0x0044EA80
 
 void AsdModel_func_0010495c();                                              // 0x0010495c, 1108 B
 void AsdModel_func_0014515c(AsdModel* model, const void* atbc);             // 0x0014515c,  688 B
-void AsdModel_func_0014ec68(AsdModel* model, s32 index);                    // 0x0014ec68,  792 B
+void AsdModel_func_0014ec68(AsdModel* model, s32 index);                    // 0x0014ec68,  120 B
+void AsdModel_ReloadEffectParts(AsdModel* model, const void* atbc, s32 filter); // 0x0014ece0, 672 B
 void AsdModel_func_00192594(AsdModel* model, AsdModel* source, s32 mode);   // 0x00192594,  484 B
 AsdModel* AsdModel_func_001fe470();                                         // 0x001fe470,  288 B
 AsdModel* AsdModel_func_002a94e8(AsdModel* model);                          // 0x002a94e8, 1508 B
