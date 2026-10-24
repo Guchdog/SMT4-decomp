@@ -130,8 +130,12 @@ extern "C" __attribute__((naked)) void engine_func_00287d54() {
 }
 
 // DECOMP_FUNC(0x00296ef8, 32)
-extern "C" __attribute__((naked)) void ui_func_00296ef8() {
-    asm volatile("ldr ip, [sp]\nstrb r1, [r0, #4]\nstrb r2, [r0, #5]\nstrb r3, [r0, #6]\nstrb ip, [r0, #7]\nldr r1, [r0, #4]\nstr r1, [r0, #8]\nbx lr\n");
+extern "C" void ui_func_00296ef8(volatile u8* block, u8 a1, u8 a2, u8 a3, u8 a4) {
+    block[4] = a1;
+    block[5] = a2;
+    block[6] = a3;
+    block[7] = a4;
+    *reinterpret_cast<volatile u32*>(block + 8) = *reinterpret_cast<volatile u32*>(block + 4);
 }
 
 // DECOMP_FUNC(0x0029a2b0, 32)
