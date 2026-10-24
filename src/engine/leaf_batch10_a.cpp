@@ -136,8 +136,11 @@ extern "C" __attribute__((naked)) void engine_func_0029a2b0() {
 }
 
 // DECOMP_FUNC(0x002b2ccc, 32)
-extern "C" __attribute__((naked)) void engine_func_002b2ccc() {
-    asm volatile("ldr r0, [r0, #0x2c]\nldr r1, [r0, #0x58]\nstr r1, [r2]\nldr r1, [r0, #0x68]\nstr r1, [r2, #4]\nldr r0, [r0, #0x78]\nstr r0, [r2, #8]\nbx lr\n");
+extern "C" void engine_func_002b2ccc(const u8* object, u32 unused, u32* result) {
+    const u8* fields = *reinterpret_cast<const u8* const*>(object + 0x2c);
+    result[0] = *reinterpret_cast<const u32*>(fields + 0x58);
+    result[1] = *reinterpret_cast<const u32*>(fields + 0x68);
+    result[2] = *reinterpret_cast<const u32*>(fields + 0x78);
 }
 
 // DECOMP_FUNC(0x002c00b4, 32)
