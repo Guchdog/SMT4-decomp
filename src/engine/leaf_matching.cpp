@@ -2953,8 +2953,11 @@ extern "C" __attribute__((naked)) void camp_func_002e42e0() {
 }
 
 // DECOMP_FUNC(0x003170a0, 24)
-extern "C" __attribute__((naked)) void camp_func_003170a0() {
-    asm volatile("ldr ip, [sp]\nstrb r1, [r0, #8]\nstrb r2, [r0, #9]\nstrb r3, [r0, #0xa]\nstrb ip, [r0, #0xb]\nbx lr\n");
+extern "C" void camp_func_003170a0(volatile u8* p, u8 first, u8 second, u8 third, u8 fourth) {
+    p[8] = first;
+    p[9] = second;
+    p[0xa] = third;
+    p[0xb] = fourth;
 }
 
 // DECOMP_FUNC(0x00318de0, 24)

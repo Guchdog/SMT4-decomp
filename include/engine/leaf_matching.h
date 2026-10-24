@@ -510,7 +510,7 @@ void func_002b5f6c();
 void battle_func_002c5fa4();
 void camp_func_002d01ec();
 void camp_func_002e42e0();
-void camp_func_003170a0();
+void camp_func_003170a0(volatile u8* p, u8 first, u8 second, u8 third, u8 fourth);
 void func_00318de0();
 void func_0031f6a0();
 void func_003409ec();
