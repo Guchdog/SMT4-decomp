@@ -76,8 +76,23 @@ extern "C" __attribute__((naked)) void func_002f28f8() {
 }
 
 // DECOMP_FUNC(0x00121ed8, 72)
-extern "C" __attribute__((naked)) void engine_func_00121ed8() {
-    asm volatile("mov r1, #0\nstr r1, [r0]\nstr r1, [r0, #4]\nstrb r1, [r0, #8]\nstr r1, [r0, #0xc]\nstr r1, [r0, #0x10]\nstr r1, [r0, #0x14]\nstrb r1, [r0, #0x18]\nstrb r1, [r0, #0x19]\nstrb r1, [r0, #0x1a]\nstrh r1, [r0, #0x1c]\nstr r1, [r0, #0x1e]\nstr r1, [r0, #0x22]\nstr r1, [r0, #0x26]\nstr r1, [r0, #0x2a]\nstr r1, [r0, #0x2e]\nstr r1, [r0, #0x32]\nbx lr\n");
+extern "C" void engine_func_00121ed8(volatile u8* record) {
+    *reinterpret_cast<volatile u32*>(record) = 0;
+    *reinterpret_cast<volatile u32*>(record + 4) = 0;
+    record[8] = 0;
+    *reinterpret_cast<volatile u32*>(record + 0x0c) = 0;
+    *reinterpret_cast<volatile u32*>(record + 0x10) = 0;
+    *reinterpret_cast<volatile u32*>(record + 0x14) = 0;
+    record[0x18] = 0;
+    record[0x19] = 0;
+    record[0x1a] = 0;
+    *reinterpret_cast<volatile u16*>(record + 0x1c) = 0;
+    *reinterpret_cast<volatile u32*>(record + 0x1e) = 0;
+    *reinterpret_cast<volatile u32*>(record + 0x22) = 0;
+    *reinterpret_cast<volatile u32*>(record + 0x26) = 0;
+    *reinterpret_cast<volatile u32*>(record + 0x2a) = 0;
+    *reinterpret_cast<volatile u32*>(record + 0x2e) = 0;
+    *reinterpret_cast<volatile u32*>(record + 0x32) = 0;
 }
 
 // DECOMP_FUNC(0x0013d938, 72)
