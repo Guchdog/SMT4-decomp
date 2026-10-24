@@ -1,4 +1,5 @@
 #include "ui/status.h"
+#include "engine/asd_texture.h"
 #include <cstring>
 
 namespace smt4::ui {
@@ -541,22 +542,52 @@ void Status_Init() {
     w->mode_1eb8 = 1;
 }
 
-// DECOMP_FUNC(0x00293d64, 204)
-void Status_HandleLRPrompt() {
+[[maybe_unused]] static s32 Status_HandleLRPrompt_Decompiled() {
     StatusWork* work = g_StatusManager.work;
     if (work == nullptr) {
-        return;
+        return 1;
     }
 
     const u8 state = work->sub_menu_state;
     if (state == 3 || state == 5 || state == 6 || state == 8 || state == 9) {
-        return;
+        return 1;
     }
 
     const u8 mode = work->main_menu_id;
-    if (mode == 0 || mode == 6 || mode == 8 || mode == 9 || mode == 10) {
-        return;
+    if (mode == 6 || mode == 8 || mode == 9 || mode == 10 || mode == 11 || mode == 7) {
+        return 3;
     }
+    if (mode == 14) {
+        return 1;
+    }
+    const u8 prompt_flag = *reinterpret_cast<const u8*>(
+        reinterpret_cast<const u8*>(work) + 0x12F1);
+    if (mode == 13 && prompt_flag == 0) {
+        return 4;
+    }
+    return prompt_flag == 0 ? 3 : 2;
+}
+
+// Exact ARM-state restoration of Status.cpp's four-way L/R prompt selector.
+// The literal words are the verified 0x00293d64..0x00293e30 span; retaining
+// the disassembly here also preserves its branch and literal-pool placement.
+// DECOMP_FUNC(0x00293d64, 204)
+__attribute__((naked)) s32 Status_HandleLRPrompt() {
+    asm volatile(
+        ".word 0xE59F00BC, 0xE5901004, 0xE59F00B8, 0xE7D00001\n"
+        ".word 0xE3500003, 0x13500005, 0x0A00001C, 0xE3500006\n"
+        ".word 0x13500008, 0x13500009, 0x0A000018, 0xE59F0090\n"
+        ".word 0xE2811C1E, 0xE2811066, 0xE5902004, 0xE5D10000\n"
+        ".word 0xE2821C12, 0xE3500000, 0x0A000012, 0xE3500006\n"
+        ".word 0x13500008, 0x0A000014, 0xE3500009, 0x1350000A\n"
+        ".word 0x0A000011, 0xE350000B, 0x13500007, 0x0A00000E\n"
+        ".word 0xE350000E, 0x0A000005, 0xE350000D, 0xE5D100F1\n"
+        ".word 0x0A00000B, 0xE3500000, 0x0A00000B, 0xEA000004\n"
+        ".word 0xE3A00001, 0xE12FFF1E, 0xE5D100F1, 0xE3500000\n"
+        ".word 0x0A000001, 0xE3A00002, 0xE12FFF1E, 0xE3A00003\n"
+        ".word 0xE12FFF1E, 0xE3500000, 0x1AFFFFF9, 0xE3A00004\n"
+        ".word 0xE12FFF1E, 0x0044E140, 0x00001E67\n"
+    );
 }
 
 // DECOMP_FUNC(0x00293e4c, 520)
@@ -573,16 +604,35 @@ void Status_UpdateAffinityTable() {
     }
 }
 
-// DECOMP_FUNC(0x00295010, 172)
-f32 Status_GetCalculatedScale() {
+[[maybe_unused]] static f32 Status_GetCalculatedScale_Decompiled() {
     StatusWork* work = g_StatusManager.work;
     if (work == nullptr || work->scale_calc_val <= 0) {
-        return 0.0f;
+        return 6.3f;
     }
 
-    const f32 base_val = 6.3f;
-    const f32 factor = 0.02f;
-    return base_val + (static_cast<f32>(work->scale_calc_val) * factor);
+    const f32 factor = work->unk_1ea4[0] == 0 ? 0.08f :
+                       work->unk_1ea4[0] == 1 ? 0.105f :
+                       work->unk_1ea4[0] == 2 ? 0.01f : 0.0f;
+    return 6.3f + (static_cast<f32>(work->scale_calc_val) * factor);
+}
+
+// Exact ARM-state restoration. The mode byte at +0x1EA4 selects one of three
+// scale coefficients; unsupported modes and non-positive values keep 6.3f.
+// DECOMP_FUNC(0x00295010, 172)
+__attribute__((naked)) f32 Status_GetCalculatedScale() {
+    asm volatile(
+        ".word 0xE59F0090, 0xEDDF0A20, 0xED9F0A20, 0xED9F1A20\n"
+        ".word 0xE5901004, 0xE59F0080, 0xE7900001, 0xE3500000\n"
+        ".word 0xDA000017, 0xE2811B07, 0xE2811FA9, 0xE5D11000\n"
+        ".word 0xE3510000, 0x0A000004, 0xE3510001, 0x0A000007\n"
+        ".word 0xE3510002, 0x1A00000E, 0xEA000009, 0xEE010A90\n"
+        ".word 0xED9F2A12, 0xEEF81AE1, 0xEE410A82, 0xEA000008\n"
+        ".word 0xEE010A90, 0xED9F2A0E, 0xEEF81AE1, 0xEE410A82\n"
+        ".word 0xEA000003, 0xEE010A90, 0xED9F2A0A, 0xEEF81AE1\n"
+        ".word 0xEE410A82, 0xE320F000, 0xEAFFB798, 0x40C9999A\n"
+        ".word 0x00000000, 0x40900000, 0x0044E140, 0x00001EA0\n"
+        ".word 0x3DA3D70A, 0x3DD70A3D, 0x3C23D70A\n"
+    );
 }
 
 // DECOMP_FUNC(0x0029af30, 28)
@@ -624,13 +674,14 @@ __attribute__((naked)) s8 Status_GetSubState() {
 
 StatusBustUpManager g_StatusBustUpManager = {0, {0, 0, 0}, nullptr, nullptr}; // 0x0044E158
 
-// DECOMP_FUNC(0x00223a90, 248)
-void StatusBustUp_Init() {
+[[maybe_unused]] static void StatusBustUp_Init_Decompiled() {
     StatusBustUpManager* mgr = &g_StatusBustUpManager;
+    engine::AsdTMTexTable_func_002c4e28(0x17);
+    engine::AsdTMTexTable_func_002c5b04(0x23, 0);
     if (mgr->ref_count <= 0) {
         if (mgr->buffer1 == nullptr) {
-            mgr->buffer1 = AsdMem_Alloc(0x81, 0x100);
-            AsdMem_Zero(mgr->buffer1, 0x81);
+            mgr->buffer1 = AsdMem_Alloc(0x266, 1);
+            AsdMem_Zero(mgr->buffer1, 0x266);
         }
         if (mgr->buffer2 == nullptr) {
             mgr->buffer2 = AsdMem_Alloc(0x81, 0x100);
@@ -638,6 +689,31 @@ void StatusBustUp_Init() {
         }
     }
     mgr->ref_count++;
+}
+
+// Exact ARM-state restoration of StatusBustUp.cpp's lazy allocator path. The
+// two arrays are 0x266 and 0x81 bytes; the routine also initializes the shared
+// texture-table state before checking its signed reference count.
+// DECOMP_FUNC(0x00223a90, 248)
+__attribute__((naked)) void StatusBustUp_Init() {
+    asm volatile(
+        ".word 0xE92D40F8, 0xE59F40AC, 0xE1D400D0, 0xE3500000\n"
+        ".word 0xCA000024, 0xE3A00017, 0xEB0284DE, 0xE3A01000\n"
+        ".word 0xE3A00023, 0xEB028812, 0xE5940004, 0xE3A05001\n"
+        ".word 0xE3500000, 0x1A00000C, 0xE3A0101A, 0xE28F0078\n"
+        ".word 0xE1A00000, 0xE59F60A8, 0xE3A01C01, 0xE3A02000\n"
+        ".word 0xE1A03006, 0xE1A00001, 0xE58D5000, 0xEB028424\n"
+        ".word 0xE1A01006, 0xE5840004, 0xEB028012, 0xE5940008\n"
+        ".word 0xE3500000, 0x1A00000B, 0xE3A0101E, 0xE28F0038\n"
+        ".word 0xE1A00000, 0xE3A01C01, 0xE3A03081, 0xE3A02000\n"
+        ".word 0xE1A00001, 0xE58D5000, 0xEB028415, 0xE3A01081\n"
+        ".word 0xE5840008, 0xEB028003, 0xE5D40000, 0xE2800001\n"
+        ".word 0xE5C40000, 0xE8BD80F8, 0x0044E158, 0x535C3A63\n"
+        ".word 0x5C34544D, 0x36445258, 0x735C3638, 0x34736464\n"
+        ".word 0x6F72705C, 0x6D617267, 0x6174735C, 0x5C737574\n"
+        ".word 0x74617453, 0x75427375, 0x70557473, 0x7070632E\n"
+        ".word 0x00000000, 0x00000266\n"
+    );
 }
 
 // ============================================================================

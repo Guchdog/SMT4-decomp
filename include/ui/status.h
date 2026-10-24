@@ -85,7 +85,7 @@ void Status_SetMode1EB9(u8 mode);                                               
 s8   Status_GetFlag1E63();                                                          // 0x0026c8a8
 void Status_ResetAffinityView();                                                    // 0x0026d8dc
 u8   Status_GetSubMenuState();                                                      // 0x00288408
-void Status_HandleLRPrompt();                                                       // 0x00293d64
+s32  Status_HandleLRPrompt();                                                       // 0x00293d64
 void Status_UpdateAffinityTable();                                                  // 0x00293e4c
 f32  Status_GetCalculatedScale();                                                   // 0x00295010
 u8   Status_GetMainMenuId();                                                        // 0x0029af30

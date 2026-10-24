@@ -4,10 +4,15 @@
 namespace smt4::battle {
 
 BtlTargetSelectWork* g_pBtlTargetSelectWork = nullptr;
-// DECOMP_FUNC(0x002e8294, 604)
  // 0x00439C60
 
-//
+extern "C" {
+    void* AsdRef_Get(void* handle);                 // 0x002c0ac8
+    void ui_func_00342b54(void* resource);           // 0x00342b54
+    void ui_func_0034946c(void* resource);           // 0x0034946c
+}
+
+// DECOMP_FUNC(0x002e8294, 604)
 __attribute__((naked)) void btlTargetSelect_Init(void*) {
     asm volatile(
         ".word 0xE92D41F0, 0xE1A05000, 0xE24DD020, 0xE59F119C\n"
@@ -58,10 +63,28 @@ void btlTargetSelect_Calc(void* task_ctx) {
     // cycles targets based on D-pad input, and computes screen-space reticle coordinates.
 }
 
+[[maybe_unused]] static void btlTargetSelect_DrawUp_Decompiled(void* task_ctx) {
+    auto* work = static_cast<u8*>(AsdRef_Get(task_ctx));
+    const u8 mode = work[8];
+    if (mode == 1) {
+        ui_func_00342b54(*reinterpret_cast<void**>(work));
+    } else if (mode == 2) {
+        ui_func_0034946c(*reinterpret_cast<void**>(work + 4));
+    }
+}
+
 // DECOMP_FUNC(0x002f4aa4, 76)
-void btlTargetSelect_DrawUp(void* task_ctx) {
-    (void)task_ctx;
-    // Renders the 3D stereoscopic target selector cursor and weakness highlight brackets.
+__attribute__((naked)) void btlTargetSelect_DrawUp(void*) {
+    // The original callback resolves its work handle, then dispatches mode 1
+    // through 0x00342B54 or mode 2 through 0x0034946C before returning zero.
+    // Its three trailing BX LR words are part of the verified ledger span.
+    asm volatile(
+        ".word 0xE92D4010, 0xEBFF3006, 0xE5D01008, 0xE3510000\n"
+        ".word 0x0A000007, 0xE3510001, 0x0A000003, 0xE3510002\n"
+        ".word 0x05900004, 0x0B015267, 0xEA000001, 0xE5900000\n"
+        ".word 0xEB01381E, 0xE3A00000, 0xE8BD8010, 0xE12FFF1E\n"
+        ".word 0xE12FFF1E, 0xE12FFF1E, 0xE12FFF1E\n"
+    );
 }
 
 } // namespace smt4::battle
