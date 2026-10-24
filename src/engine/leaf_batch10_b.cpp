@@ -70,7 +70,6 @@ extern "C" __attribute__((naked)) void func_002a4b88() {
     asm volatile("sub r0, r0, #0x1400\nsubs r0, r0, #6\nmov r0, #1\nmoveq r0, #4\nmul r0, r1, r0\nadd r1, r2, #0x1f\nbic r1, r1, #0x1f\nadd r0, r0, r1\nbx lr\n");
 }
 
-// DECOMP_FUNC(0x002b5124, 36)
 struct QueueNode_002b5124 {
     QueueNode_002b5124* volatile next;
 };
@@ -80,6 +79,7 @@ struct Queue_002b5124 {
     QueueNode_002b5124* volatile tail;
     volatile u32 result;
 };
+// DECOMP_FUNC(0x002b5124, 36)
 extern "C" u32 engine_func_002b5124(void* queue_data, void* node_data) {
     Queue_002b5124* const queue = static_cast<Queue_002b5124*>(queue_data);
     QueueNode_002b5124* const node = static_cast<QueueNode_002b5124*>(node_data);
