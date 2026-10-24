@@ -14,6 +14,7 @@ import csv
 from pathlib import Path
 import re
 import sys
+from collections.abc import MutableMapping
 import capstone
 
 _REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -101,7 +102,44 @@ def is_terminal_return(insn: capstone.CsInsn) -> bool:
     return False
 
 
-def is_asm_backed_row(row: dict, repo_root: Path = Path(".")) -> bool:
+_DECOMP_START_RE = re.compile(r"(?m)^\s*//\s*DECOMP_FUNC\(")
+_DECOMP_MARKER_RE = re.compile(
+    r"(?m)^\s*//\s*DECOMP_FUNC\(0x([0-9a-f]{8}),\s*(\d+)\)\s*$",
+    flags=re.IGNORECASE,
+)
+_ASM_BLOCK_RE = re.compile(
+    r"\b(?:__asm__|asm)\b|\.incbin\b|\.word\b|\.inst\b|"
+    r"__attribute__\s*\(\([^)]*\bnaked\b"
+)
+
+
+def _asm_backed_index(source: Path) -> dict[tuple[int, int], bool]:
+    """Index each DECOMP_FUNC block in one source file with a single scan."""
+    if not source.is_file():
+        return {}
+
+    text = source.read_text(encoding="utf-8")
+    markers = list(_DECOMP_START_RE.finditer(text))
+    result: dict[tuple[int, int], bool] = {}
+    for index, marker in enumerate(markers):
+        end = markers[index + 1].start() if index + 1 < len(markers) else len(text)
+        parsed_marker = _DECOMP_MARKER_RE.match(text, marker.start())
+        if parsed_marker is None:
+            continue
+        block = text[marker.end():end]
+        key = (int(parsed_marker.group(1), 16), int(parsed_marker.group(2)))
+        # The previous row-local search selected the first exact marker if a
+        # source happened to contain duplicates; preserve that behavior.
+        if key not in result:
+            result[key] = _ASM_BLOCK_RE.search(block) is not None
+    return result
+
+
+def is_asm_backed_row(
+    row: dict,
+    repo_root: Path = Path("."),
+    source_index_cache: MutableMapping[Path, dict[tuple[int, int], bool]] | None = None,
+) -> bool:
     """Return whether a ledger entry is still implemented with inline assembly.
 
     Source files frequently contain a mixture of reconstructed C++ and exact
@@ -115,28 +153,16 @@ def is_asm_backed_row(row: dict, repo_root: Path = Path(".")) -> bool:
     path = Path(src_file)
     if not path.is_absolute():
         path = Path(repo_root) / path
-    if not path.is_file():
-        return False
-
-    text = path.read_text(encoding="utf-8")
     address = int(row["address"], 16)
     size = int(row["size"])
-    marker = re.search(
-        rf"(?m)^\s*//\s*DECOMP_FUNC\(0x{address:08x},\s*{size}\)\s*$",
-        text,
-        flags=re.IGNORECASE,
-    )
-    if marker is None:
-        return False
-
-    next_marker = re.search(r"(?m)^\s*//\s*DECOMP_FUNC\(", text[marker.end():])
-    block_end = marker.end() + next_marker.start() if next_marker else len(text)
-    block = text[marker.end():block_end]
-    return re.search(
-        r"\b(?:__asm__|asm)\b|\.incbin\b|\.word\b|\.inst\b|"
-        r"__attribute__\s*\(\([^)]*\bnaked\b",
-        block,
-    ) is not None
+    source = path.resolve()
+    if source_index_cache is None:
+        index = _asm_backed_index(source)
+    else:
+        if source not in source_index_cache:
+            source_index_cache[source] = _asm_backed_index(source)
+        index = source_index_cache[source]
+    return index.get((address, size), False)
 
 
 def find_leaf_candidates(
@@ -169,6 +195,7 @@ def find_leaf_candidates(
     cs_thumb = capstone.Cs(capstone.CS_ARCH_ARM, capstone.CS_MODE_THUMB)
 
     candidates: list[dict] = []
+    source_index_cache: dict[Path, dict[tuple[int, int], bool]] = {}
 
     with open(functions_csv, "r", encoding="utf-8", newline="") as f:
         reader = csv.DictReader(f)
@@ -177,15 +204,19 @@ def find_leaf_candidates(
             if row_status not in statuses:
                 continue
 
-            if asm_backed_only and not is_asm_backed_row(row, repo_root=repo_root):
-                continue
-
             size = int(row["size"])
             if size <= 0 or size > max_size:
                 continue
 
             row_cat = row["category"].strip()
             if category and row_cat.lower() != category.lower():
+                continue
+
+            if asm_backed_only and not is_asm_backed_row(
+                row,
+                repo_root=repo_root,
+                source_index_cache=source_index_cache,
+            ):
                 continue
 
             addr_str = row["address"].strip()

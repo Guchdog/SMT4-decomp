@@ -1,6 +1,6 @@
 # H1 — Menú principal
 
-Estado: mapeando; recorrido título → Audio Settings → título verificado en H0
+Estado: familias parciales verificadas en ARM; falta la transición visual completa, integrar el callback y validar entradas/runtime en Azahar
 Responsable de integración: agente principal
 Revisión base y fecha: `codex/semantic-equivalence-experiment`, 2026-10-24
 
@@ -31,7 +31,8 @@ que reserva un área de trabajo de `0xA0` bytes en `0x0044E300` y registra
 `ui_func_001e989c` (`0x001E989C`) como callback de cálculo. El callback contiene
 una tabla de 13 estados en `0x001E98C4`; el estado 5, desde `0x001E9D08`, procesa
 el menú. No se ha localizado en el árbol de fuentes un llamador de la
-inicialización ni se ha resuelto dónde se fija inicialmente el estado `0x9C`.
+inicialización; el estado inicial `0x9C=0` sí se deduce de la limpieza del
+bloque de trabajo en la ruta del allocator, detallada abajo.
 
 | Estado | Comportamiento observado en el listado ARM | Resultado/espera |
 | --- | --- | --- |
@@ -65,10 +66,14 @@ stride `0x56` y desplazamiento `0x16`. Las dependencias identificadas incluyen
 Los IDs `5`/`0xE` y `6`/`0xF` llegan por `UiInput_Trigger` (`0x002B902C`);
 `UiInput_Trigger2` (`0x002BFFBC`) se consulta con ID 0 en la compuerta de
 confirmación. Ambos validan IDs lógicos (`< 0x1F`) y consultan estado global y
-una tabla de resultados. Otros callers usan 5/6 como par de navegación, y en H0
-la tecla A configurada abrió Audio Settings, lo que concuerda con ID 0 de
-confirmación. No se encontró el mapeo de esos IDs a botones físicos dentro del
-repositorio, por lo que navegación y asignación física aún requieren medición.
+una tabla de resultados. La rutina `0x001078D8` deriva 31 estados lógicos en
+`0x004E3C58` desde la configuración/máscaras en `0x004E3C28`; la consulta
+`0x001FF830` lee las máscaras por ID en `0x004E3C48` y las compara con el estado
+de la fuente seleccionada (`0x004099C0` o `0x004650A0`). No se encontraron
+valores de máscaras ni bindings físicos inicializados en archivos seguidos por
+Git: la estructura es recuperable estáticamente, pero la correspondencia con
+teclas/gamepad aún necesita captura runtime. En H0, A abrió Audio Settings, lo
+que concuerda con ID lógico 0 de confirmación.
 
 ## Dependencias y calidad de evidencia
 
@@ -88,15 +93,114 @@ repositorio, por lo que navegación y asignación física aún requieren medici�
   28 bytes de datos. Los límites se consideran de confianza alta por referencias
   del constructor/listado, pero el ledger aún conserva los spans exteriores en
   dos callbacks. No atribuir todavía una reconstrucción de dibujo al menú.
-- **Estado inicial pendiente:** el constructor escribe otros campos del área de
-  trabajo, pero no `work+0x9C`; el primer reset explícito a estado 5 está en
-  `0x001EA470`. El estado cero por asignación BSS/heap es una hipótesis, no una
-  conclusión respaldada por la evidencia reunida.
-- **Datos disponibles:** se extrajo `/title/TitleTable.tbb` (880 bytes) a un
-  directorio ignorado bajo `build/semantic-equivalence/real-assets`; cámara,
-  modelos, entorno y texturas del título siguen sin extraerse. No se encontró
+- **Estado inicial:** el constructor no escribe `work+0x9C`, pero la cadena de
+  asignación sí inicializa el bloque: `AsdMem_AllocAlign` (`0x002C54F0`) llama
+  `0x002C3B48` con el puntero devuelto y el tamaño solicitado `0xA0`; esa rutina
+  limpia la región mediante stores de cero y/o el bucle de `0x002C4B30`.
+  Por tanto el primer callback empieza en estado 0. El reset posterior a estado
+  5 en `0x001EA470` no es el origen del estado inicial.
+- **H1-C, piloto aislado:** el bloque inline `0x001E9DAC..0x001E9DC0` normaliza
+  el cursor provisional con aritmética signed y guarda sólo `work+8`. El
+  candidato C++ igualó el bloque ARM para `-1..4`; un control `raw % 4` fue
+  detectado para `-1`. Esto no modifica ni reconstruye activamente el callback
+  de 3924 bytes. Ver el informe `build/semantic-equivalence/title-cursor/`.
+- **H1-C, familia de navegación:**
+  `experiments/semantic_equivalence/title_navigation_family_candidate.cpp`
+  modela las compuertas de disponibilidad, los pares de triggers lógicos
+  anterior/siguiente con short-circuit, normalización del cursor, caché
+  `work+0xC` y la llamada visible al evento `0x0100016C`. El harness ejecuta
+  las ventanas ARM originales con respuestas de trigger controladas y un stub
+  observacional explícito para el evento. Pasó 11 casos dirigidos y 256
+  combinaciones sobre cursor/caché válidos y máscaras de triggers; las tres
+  pruebas enfocadas pasan. No modela el interior del evento, los bindings
+  físicos ni el callback completo; no está integrado en producción.
+  La auditoría estática está en
+  [`title_navigation_family_audit.md`](../../experiments/semantic_equivalence/title_navigation_family_audit.md).
+- **H1-C, familia táctil:**
+  `experiments/semantic_equivalence/title_touch_family_candidate.cpp` modela
+  sólo las dos pasadas de estados táctiles sobre las cuatro regiones. Ejecuta
+  la ventana ARM `0x001E9E4C..0x001E9EB8` con respuestas controladas por handle y
+  coincide en 2,592 vectores de estados estables más flag inicial. El primer
+  estado 1/2 gana en el primer barrido; en el segundo, el último estado 6 gana
+  y fija `work+0x63`. Tres pruebas pasan. Se asume que el helper devuelve el
+  mismo estado entre consultas; no se verifican coordenadas, hitboxes ni
+  comportamiento táctil real en Azahar.
+- **H1-C, continuidad navegación→animación→touch:**
+  `tools/title_callback_continuity_experiment.py` ejecuta en una sola máquina
+  las ventanas ARM de navegación, la animación VFP original y el barrido touch,
+  con el bloque de trabajo y el estado FP compartidos. En tres perfiles
+  estables coincide la composición de navegación C++ + puente ARM + touch C++;
+  un cuarto perfil ARM-only prueba respuestas táctiles variables en las doce
+  consultas. Tres pruebas pasan. Esto no cubre el camino de transición de
+  widgets posterior ni habilita un reemplazo completo del callback. El mapa de
+  dependencias está en
+  [`title_callback_composition_audit.md`](../../experiments/semantic_equivalence/title_callback_composition_audit.md).
+- **H1-C, familia de ayuda/presentación:**
+  `tools/title_help_presentation_experiment.py` ejecuta el caller ARM
+  `0x001EA12C..0x001EA15C` con `TitleTable.tbb` real. Para los cuatro índices,
+  el puntero observado coincide con la cadena de ayuda correcta y prepara el
+  color `0x323232FF`; tres pruebas pasan. La comparación se detiene antes de
+  `Camp_SetSlotMessage`: no valida renderer ni texto visible en Azahar. Ver
+  [`title_help_presentation_audit.md`](../../experiments/semantic_equivalence/title_help_presentation_audit.md).
+- **H1-C, ruta sintética transición→ayuda:**
+  `tools/title_transition_ready_path_experiment.py` ejecuta ARM original desde
+  `0x001E9FD4`, atraviesa ambos predicados de readiness, toma la rama directa
+  con `work+0x94=1` y continúa por los getters TBB originales hasta el límite
+  previo a `Camp_SetSlotMessage`. Para los cuatro índices selecciona las
+  cadenas reales y el color esperado; una prueba enfocada pasa. Es una ruta
+  sintética de control, no el camino de transición visual: no entra al bloque
+  mutador `0x001EA070`, no valida valores runtime-normal ni renderer. Ver
+  [`title_transition_ready_path_report.md`](../../experiments/semantic_equivalence/title_transition_ready_path_report.md)
+  y la [auditoría de readiness](../../experiments/semantic_equivalence/title_transition_ready_audit.md).
+- **H1-C, rama mutadora continua:**
+  `tools/title_transition_mutator_experiment.py` ejecuta 111 PCs ARM desde
+  `0x001E9FD4` por `0x001EA070..0x001EA128`, consulta los getters TBB originales
+  con la tabla real y se detiene antes de `Camp_SetSlotMessage`. En una ruta
+  sintética con salidas tempranas de readiness/fade se observaron 38 lecturas
+  y exactamente seis escrituras (flags de ambos handles, dos bytes anidados,
+  `work+0x98` y `work+0x94`); llega a la cadena correcta para selección 0 y
+  prepara `0x323232FF`. No se llamaron ni stubearon callbacks indirectos. Una
+  prueba enfocada pasa. Esto no valida el camino de gates positivos, estado
+  runtime-normal, renderer ni comportamiento visual en Azahar. Ver
+  [`title_transition_mutator_experiment.md`](../../experiments/semantic_equivalence/title_transition_mutator_experiment.md).
+- **Datos disponibles:** `/title/TitleTable.tbb` (880 bytes) está extraído a un
+  directorio ignorado bajo `build/semantic-equivalence/real-assets`. Una lectura
+  puntual y de solo lectura del CCI descifrado confirmó también los BAM que el
+  caller carga: `title_top1.bam` (778,496 bytes; SHA-256
+  `109c1ce81f06bb90484dda4e685564028b593667a5f16493d44157efe7682e12`) y
+  `title_top2.bam` (774,272 bytes; SHA-256
+  `eaa252616f8ba61ecda915cd1d381e2c4374fa78eb6289b86d6aa0358b5b904f`). El
+  cálculo de offsets se validó contra el hash conocido de `TitleTable.tbb`;
+  los BAM no se escribieron ni modificaron. Ambos tienen wrapper `ATBC`,
+  `MDLSIGN` en `+0x80` y `CGFX` en `+0x100`. Un recorrido de solo lectura de
+  los diccionarios CGFX identificó en cada BAM un modelo, siete texturas y un
+  grupo de cada animación esquelética, material y visibilidad; `title_top1`
+  contiene canales de 150 cuadros y `title_top2` de 1200. Todavía no reconstruye
+  los objetos fuente/tracks que recibe el loader ni su byte de tipo. La traza
+  estática confirma que `AsdAnim_SetupTrack` lee `source+0x10` ya en el objeto
+  runtime, mientras CANM almacena el tipo del miembro en otra estructura
+  (`member+0x08`); no se probó una correspondencia entre ambos. Se encontraron
+  seis callers directos de setup, todos con referencias/nodos ya resueltos, pero
+  no una escritura que explique el byte ni una asociación runtime por categoría.
+  Ver las auditorías [serializada→track](../../experiments/semantic_equivalence/title_bam_track_source_type_mapping_audit.md)
+  y [callers del loader](../../experiments/semantic_equivalence/title_canm_source_type_trace.md).
+  La traza adicional de constructores confirma que los callers de modelo
+  toman los targets de tablas relativas mesh/draw; los `AsdRes_Create` cercanos
+  producen handles de nombre distintos, no esos targets. La materialización
+  de las tablas aún pasa por un loader no identificado. Ver
+  [origen de los targets de modelo](../../experiments/semantic_equivalence/title_track_source_constructor_trace.md).
+  Cámara,
+  entorno y texturas del
+  título siguen sin extraerse. No se encontró
   un script `.bf` de título;
   formato y ubicación del evento `0x0100016C` y del destino AOC siguen abiertos.
+  El inventario se reproduce sin extraer ni escribir los BAM con
+  `python tools/title_bam_inventory.py --cci "<CCI-descifrado>" --romfs-index extracted/romfs_index.json`;
+  valida NCSD/NCCH y el hash ancla de `TitleTable.tbb`, y limita la salida a
+  nombres/tipos de animación, cuadros y cantidad de pistas. Las cinco pruebas
+  de `tests/test_title_bam_inventory.py` pasan con `SMT4_DECRYPTED_CCI` definido
+  para habilitar su caso de integración; sin esa variable, la prueba local se
+  omite y las cuatro pruebas sintéticas siguen ejecutándose.
 - **Contrato TBB confirmado estáticamente:** `Tbb_GetSubTable` valida magic
   TBCR, índice menor que `table_count`, resuelve `container + header_size +
   table_offsets[index]` y exige magic TBL1. `Tbb_GetPayloadData` devuelve
@@ -158,33 +262,79 @@ repositorio, por lo que navegación y asignación física aún requieren medici�
 
 ## Lotes y responsables
 
-- **H1-A, límites y contratos:** límites de callbacks documentados; quedan por
-  resolver el origen del estado inicial, significado de triggers físicos y
-  traza runtime de estados.
+- **H1-A, límites y contratos:** límites de callbacks y origen del estado
+  inicial documentados. La familia de navegación y las ventanas de Trigger/
+  Trigger2 quedaron auditadas estáticamente en
+  [`title_navigation_family_audit.md`](../../experiments/semantic_equivalence/title_navigation_family_audit.md);
+  las máscaras crudas de los IDs 5/6 y E/F apuntan estáticamente a D-pad y
+  Circle Pad arriba/abajo, con etiquetas HID inferidas. En Azahar, flechas
+  configuradas como Circle Pad y T/G como D-pad movieron la selección y
+  actualizaron la ayuda con toques aislados. El mapeo de mando físico, el alias
+  lógico exacto, repetición al mantener y estado interno de inputs siguen
+  pendientes. Ver
+  [`title_input_binding_audit.md`](../../experiments/semantic_equivalence/title_input_binding_audit.md).
 - **H1-B, dependencias TBB:** contratos y pruebas aisladas de
   `Tbb_GetPayloadData` (`0x002C0E9C`), `Tbb_GetSubTable` (`0x002AC2F4`) y
   `Tbb_GetRowCount` (`0x002C0E4C`) están completados para fixtures sintéticos
   y `TitleTable.tbb`, con controles negativos detectados. La ejecución original
   del row-count depende del helper exacto `0x002C6C10` en la imagen fijada por
   hash; su candidato de 132 bytes calcula división unsigned sin relocaciones.
-  Falta probar integración de los tres getters en una ventana de caller segura.
+  La ventana real del menú principal ya validó la integración de
+  `Tbb_GetSubTable` y `Tbb_GetPayloadData` para selecciones 0–3 con el
+  `TitleTable.tbb` extraído. `Tbb_GetRowCount` no participa en este caller.
 - **H1-C, reconstrucción activa:** elegir sólo después del mapa de dependencias
   y contratos. Mantener sustituciones de comportamiento en rama/lote separado
-  del ledger byte-identical y validar con pruebas de función e integración.
+  del ledger byte-identical y validar con pruebas de función e integración. El
+  reductor de navegación, touch y selección de ayuda ya tienen pruebas
+  aisladas por familia; navegación→animación ARM→touch pasa con estado
+  compartido y una ruta sintética `0x001E9FD4`→TBB llega al límite de ayuda.
+  El siguiente lote debe seguir la ruta mutadora con `work+0x94=0` y predicados
+  positivos a través de `0x001EA070..0x001EA128`, usando cuerpos ARM y hooks
+  explícitos para callbacks indirectos. Ya se cubrió sintéticamente el primer
+  gate positivo: el cuerpo original `0x002872B0` ejecutó un `BLX` hacia un stub
+  explícito (`bx lr`) con ABI/FP observados, y la ejecución continua llegó al
+  lookup TBB de ayuda. Ver
+  [`title_transition_positive_gate_report.md`](../../experiments/semantic_equivalence/title_transition_positive_gate_report.md).
+  También se cubrió el segundo cuerpo positivo `0x0020FFAC`: resolvió una
+  tabla/registro sintético indexado, registró un segundo `BLX` y llegó al mismo
+  límite TBB/ayuda. Ambos callbacks son stubs explícitos `bx lr`, no los
+  destinos reales del juego. Ver
+  [`title_transition_second_positive_gate_report.md`](../../experiments/semantic_equivalence/title_transition_second_positive_gate_report.md).
+  En el primer gate, dos casos separados reemplazaron el stub por candidatos
+  originales. `0x0015555C`, asociado estáticamente con recursos tipo 0, ejecutó
+  sus diez PCs ARM y devolvió el clamp esperado. `0x00151404`, asociado con
+  tipo 1, ejecutó su ruta y callees alcanzados del `code.bin` fijado, también
+  llegó al límite TBB y devolvió `s0=0.75`. Ninguno prueba cuál selecciona el
+  título real: falta relacionar los BAM verificados con el track concreto y su
+  byte de tipo/puntero runtime. El índice local confirma que
+  `title_top1.bam` y `title_top2.bam` son precisamente los modelos cargados por
+  el caller; eso todavía no revela los registros seleccionados. Ver
+  [`title_transition_original_callback_report.md`](../../experiments/semantic_equivalence/title_transition_original_callback_report.md),
+  [`title_transition_callback_00151404_report.md`](../../experiments/semantic_equivalence/title_transition_callback_00151404_report.md)
+  y [`title_real_callback_target_audit.md`](../../experiments/semantic_equivalence/title_real_callback_target_audit.md).
+  Para el segundo gate también se probaron en procesos sintéticos separados
+  ambos candidatos originales en `0x00210010`: el de tipo 0 devuelve `s0=0.6`
+  y el de tipo 1 devuelve `s0=0.25`; ambos llegan al mismo lookup TBB. La
+  primera llamada de fade sigue siendo un stub explícito de requisito. Estos
+  escenarios no demuestran qué puntero contiene el track real. Siguen pendientes
+  los punteros/tipos runtime, un snapshot runtime-normal que justifique los
+  valores sintéticos, renderizado e integración del callback completo. No
+  equiparar el resultado sintético con la UI de Azahar. Ver
+  [`title_second_gate_callback_candidates_report.md`](../../experiments/semantic_equivalence/title_second_gate_callback_candidates_report.md).
 - **H1-D, integración segura:** repetir criterios 1–5, documentar dependencias
   originales aún llamadas y actualizar este archivo, el plan y el registro.
 
-Asignación inicial: principal coordina e integra; subagentes pueden trabajar
-H1-A/H1-B en archivos separados. No compartir cambios del runner sin un único
-responsable.
+Asignación: principal coordina e integra; los subagentes deben tomar familias
+no solapadas del H1 activo y entregar evidencia, límites y pruebas. Las hojas
+semánticas ajenas al recorrido H1 pueden conservarse como experimentos laterales,
+pero no cambian el hito ni su criterio de avance. No compartir cambios del
+runner sin un único responsable.
 
 ## Pendientes y cierre
 
-- Resolver caller del constructor y origen de `state_9C`; registrar la
-  delimitación ya auditada de los callbacks de dibujo en el ledger. No se
-  encontró escritura de `work+0x9C` fuera del constructor/state machine; el
-  allocator revisado no muestra un clear explícito, así que el valor inicial
-  sigue sin explicación.
+- Registrar en el ledger la delimitación ya auditada de los callbacks de
+  dibujo. El origen de `state_9C` está resuelto por el clear de `0xA0` bytes en
+  la ruta de asignación, aunque el constructor no lo escriba explícitamente.
 - Medir la correspondencia entre IDs de trigger y botones; confirmar wraparound
   y actualización de ayuda mediante evidencia runtime.
 - Determinar límites reales de las entradas de dibujo y localizar/interpretar
@@ -195,7 +345,13 @@ responsable.
 
 Recorrido integrado validado: parcial (sólo Audio Settings y retorno, por H0).
 Lógica del alcance reconstruida: no.
-Próxima acción: completar H1-A con el origen del estado inicial; medir IDs
-físicos cuando Azahar se vuelva a abrir. En H1-B, preparar una ventana de caller
-segura; no extender
-el emulador a rutas que alteren partidas.
+Próxima acción: localizar el loader que materializa los targets de las tablas
+mesh/draw y seguirlo hasta el objeto fuente que aporta `source+0x10`, o capturar
+ese objeto después de `SetupTrack`;
+el tipo serialized de CANM no está demostrado como ese byte. Ambos candidatos
+del primer y segundo `BLX` ya cuentan con escenarios sintéticos de código
+original por separado; falta sustituir el grafo sintético por
+registros/argumentos reales y observar el callback runtime. La navegación
+segura de teclado ya se verificó en Azahar; quedan por medir control físico,
+alias lógico y repetición de entrada. Mantener separados los valores sintéticos de cualquier
+afirmación runtime-normal. No extender el emulador a rutas que alteren partidas.
