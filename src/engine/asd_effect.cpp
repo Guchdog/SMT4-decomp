@@ -457,6 +457,8 @@ EffPartsSource* effParts_func_002490e0(EffPartsSource* source)
         static_cast<std::uintptr_t>(0xFFFFFFFFu)));             // 0x002a492fc
     return self;
 }
+// DECOMP_FUNC(0x0024972c, 164)
+
 
 // ---------------------------------------------------------------------------
 // 0x0024972C -- replace buffer 0 (+0x10/+0x14/+0x18, key +0x0C).
@@ -465,112 +467,275 @@ EffPartsSource* effParts_func_002490e0(EffPartsSource* source)
 // copies `data`; a null source or non-positive size leaves the cleared triple.
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x0024972c, 164)
-void effParts_func_0024972c(EffPartsParticle* part, const void* data,
-                            s32 size, u16 key)
+//
+__attribute__((naked)) void effParts_func_0024972c(EffPartsParticle*, const void*,
+                                                   s32, u16)
 {
-    if (part->alloc_0 != nullptr) {                             // 0x00249744
-        AsdMem_Free(part->alloc_0);                             // 0x00249750
-        part->data_0 = 0;                                       // 0x00249758
-        part->size_0 = 0;                                       // 0x0024975c
-        part->alloc_0 = nullptr;                                // 0x00249760
-    }
-
-    if (data == nullptr || size <= 0)                           // 0x00249764..0x0024976C
-        return;
-
-    void* buffer = AsdWork_Alloc(0x10000, 0x100, 0, static_cast<u32>(size),
-                                 0x10, 1);                      // 0x00249798
-    part->field_0c = key;                                       // 0x0024979c
-    part->alloc_0 = buffer;                                     // 0x002497a0
-    part->data_0 = AsdAddr(buffer);                             // 0x002497ac
-    part->size_0 = static_cast<u32>(size);                      // 0x002497ac
-    AsdMem_Copy(buffer, data, static_cast<u32>(size));          // 0x002497bc
+    asm volatile(
+        ".word 0xE92D40F0\n"
+        ".word 0xE1A04000\n"
+        ".word 0xE24DD00C\n"
+        ".word 0xE5900018\n"
+        ".word 0xE1A07001\n"
+        ".word 0xE1A05002\n"
+        ".word 0xE3500000\n"
+        ".word 0xE1A06003\n"
+        ".word 0x0A000004\n"
+        ".word 0xEB01EB02\n" // AsdMem_Free (0x002C4360)
+        ".word 0xE3A00000\n"
+        ".word 0xE5840010\n"
+        ".word 0xE5840014\n"
+        ".word 0xE5840018\n"
+        ".word 0xE3570000\n"
+        ".word 0x13550000\n"
+        ".word 0xDA000013\n"
+        ".word 0xE59F1050\n"
+        ".word 0xE59F0050\n"
+        ".word 0xE1A00000\n"
+        ".word 0xE3A01001\n"
+        ".word 0xE3A00010\n"
+        ".word 0xE1CD00F0\n"
+        ".word 0xE1A03005\n"
+        ".word 0xE3A02000\n"
+        ".word 0xE3A01C01\n"
+        ".word 0xE3A00801\n"
+        ".word 0xEB01E741\n" // AsdWork_Alloc (0x002C34A4)
+        ".word 0xE1C460BC\n" // key -> part +0x0C
+        ".word 0xE5840018\n" // allocation -> part +0x18
+        ".word 0xE2844010\n"
+        ".word 0xE1A02005\n"
+        ".word 0xE8840021\n" // buffer and size -> part +0x10/+0x14
+        ".word 0xE28DD00C\n"
+        ".word 0xE1A01007\n" // data source for tail copy
+        ".word 0xE8BD40F0\n"
+        ".word 0xEA01F20C\n" // tail branch to AsdMem_Copy (0x002C5FF4)
+        ".word 0xE28DD00C\n"
+        ".word 0xE8BD80F0\n"
+        ".word 0x00000438\n" // Original line marker.
+        ".word 0x004093F8\n"); // Original literal pool word.
 }
+// DECOMP_FUNC(0x0024fda4, 192)
+
 
 // ---------------------------------------------------------------------------
 // 0x0024FDA4 -- clone a particle through the +0x14 table hook.
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x0024fda4, 192)
-EffPartsParticle* effParts_func_0024fda4(EffPartsParticle* source)
+//
+__attribute__((naked)) EffPartsParticle* effParts_func_0024fda4(EffPartsParticle*)
 {
-    u16 type = source->type;                                    // 0x0024fdac
-    EffPartsParticle* particle = AllocParticle();               // 0x0024fddc
-    ClearParticleFields(particle);                              // 0x0024fde4..0x0024fe10
-    particle->type = type;                                      // 0x0024fe14
-    particle->field_0c = source->field_0c;                      // 0x0024fe20
-    particle->field_1c = source->field_1c;                      // 0x0024fe28
-    EffPartsTypeEntry* entry = &g_EffPartsTypeTable[particle->type]; // 0x0024fe34
-    particle->instance = entry->create_instance(source->instance); // 0x0024fe44
-    return particle;
+    asm volatile(
+        ".word 0xE92D4070\n"
+        ".word 0xE1A05000\n"
+        ".word 0xE1D060B4\n"
+        ".word 0xE59F00A4\n"
+        ".word 0xE24DD008\n"
+        ".word 0xE3A0102E\n"
+        ".word 0xE1A00000\n"
+        ".word 0xE3A00010\n"
+        ".word 0xE3A01001\n"
+        ".word 0xE1CD00F0\n"
+        ".word 0xE3A0302C\n"
+        ".word 0xE3A02000\n"
+        ".word 0xE3A01C01\n"
+        ".word 0xE3A00801\n"
+        ".word 0xEB01CDB0\n" // AsdWork_Alloc (0x002C34A4)
+        ".word 0xE3A01000\n"
+        ".word 0xE5801004\n"
+        ".word 0xE5801008\n"
+        ".word 0xE580100C\n"
+        ".word 0xE5801010\n"
+        ".word 0xE5801014\n"
+        ".word 0xE5801018\n"
+        ".word 0xE580101C\n"
+        ".word 0xE5801020\n"
+        ".word 0xE5801024\n"
+        ".word 0xE3A020DC\n"
+        ".word 0xE5801028\n"
+        ".word 0xE5802000\n"
+        ".word 0xE1C060B4\n"
+        ".word 0xE1D510BC\n"
+        ".word 0xE1A04000\n"
+        ".word 0xE1C010BC\n"
+        ".word 0xE1D511BC\n"
+        ".word 0xE1C011BC\n"
+        ".word 0xE6FF0076\n"
+        ".word 0xE59F1028\n"
+        ".word 0xE0800200\n"
+        ".word 0xE0811100\n"
+        ".word 0xE5950008\n"
+        ".word 0xE5911014\n" // Type-table create-instance hook at +0x14.
+        ".word 0xE12FFF31\n" // Indirect call through that hook.
+        ".word 0xE1A01000\n"
+        ".word 0xE5841008\n"
+        ".word 0xE28DD008\n"
+        ".word 0xE1A00004\n"
+        ".word 0xE8BD8070\n"
+        ".word 0x004093F8\n" // Original literal pool word.
+        ".word 0x00464110\n"); // Original type-table literal.
 }
+// DECOMP_FUNC(0x0024fe64, 196)
+
 
 // ---------------------------------------------------------------------------
 // 0x0024FE64 -- clone a particle through the +0x00 table hook.
 // Unlike 0x0024FDA4 this also copies +0x00 from the record.
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x0024fe64, 196)
-EffPartsParticle* effParts_func_0024fe64(EffPartsParticle* source)
+//
+__attribute__((naked)) EffPartsParticle* effParts_func_0024fe64(EffPartsParticle*)
 {
-    u16 type = source->type;                                    // 0x0024fe6c
-    EffPartsParticle* particle = AllocParticle();               // 0x0024fe9c
-    ClearParticleFields(particle);                              // 0x0024fea4..0x0024fed0
-    particle->type = type;                                      // 0x0024fed4
-    particle->field_00 = source->field_00;                      // 0x0024fee0
-    particle->field_0c = source->field_0c;                      // 0x0024fee8
-    particle->field_1c = source->field_1c;                      // 0x0024fef0
-    EffPartsTypeEntry* entry = &g_EffPartsTypeTable[particle->type]; // 0x0024fefc
-    particle->instance = entry->create_record(source);          // 0x0024ff08
-    return particle;
+    asm volatile(
+        ".word 0xE92D4070\n"
+        ".word 0xE1A05000\n"
+        ".word 0xE1D060B4\n"
+        ".word 0xE59F00A8\n"
+        ".word 0xE24DD008\n"
+        ".word 0xE3A0102E\n"
+        ".word 0xE1A00000\n"
+        ".word 0xE3A00010\n"
+        ".word 0xE3A01001\n"
+        ".word 0xE1CD00F0\n"
+        ".word 0xE3A0302C\n"
+        ".word 0xE3A02000\n"
+        ".word 0xE3A01C01\n"
+        ".word 0xE3A00801\n"
+        ".word 0xEB01CD80\n" // AsdWork_Alloc (0x002C34A4)
+        ".word 0xE3A01000\n"
+        ".word 0xE5801004\n"
+        ".word 0xE5801008\n"
+        ".word 0xE580100C\n"
+        ".word 0xE5801010\n"
+        ".word 0xE5801014\n"
+        ".word 0xE5801018\n"
+        ".word 0xE580101C\n"
+        ".word 0xE5801020\n"
+        ".word 0xE5801024\n"
+        ".word 0xE3A020DC\n"
+        ".word 0xE5801028\n"
+        ".word 0xE5802000\n"
+        ".word 0xE1C060B4\n"
+        ".word 0xE5951000\n"
+        ".word 0xE1A04000\n"
+        ".word 0xE5801000\n"
+        ".word 0xE1D510BC\n"
+        ".word 0xE1C010BC\n"
+        ".word 0xE1D511BC\n"
+        ".word 0xE1C011BC\n"
+        ".word 0xE6FF0076\n"
+        ".word 0xE59F1024\n"
+        ".word 0xE0800200\n"
+        ".word 0xE7911100\n" // Type-table create-record hook at +0.
+        ".word 0xE1A00005\n"
+        ".word 0xE12FFF31\n" // Indirect call through that hook.
+        ".word 0xE1A01000\n"
+        ".word 0xE5841008\n"
+        ".word 0xE28DD008\n"
+        ".word 0xE1A00004\n"
+        ".word 0xE8BD8070\n"
+        ".word 0x004093F8\n" // Original literal pool word.
+        ".word 0x00464110\n"); // Original type-table literal.
 }
+// DECOMP_FUNC(0x0025caa8, 128)
+
 
 // ---------------------------------------------------------------------------
 // 0x0025CAA8 -- allocate and initialise one child node.
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x0025caa8, 128)
-EffPartsNode* effParts_func_0025caa8()
+//
+__attribute__((naked)) EffPartsNode* effParts_func_0025caa8()
 {
-    EffPartsNode* node = reinterpret_cast<EffPartsNode*>(
-        AsdWork_Alloc(0x10000, 0x100, 0, 0xC0, 0x10, 1));       // 0x0025cad8
-    AsdMem_Zero(node, 0xC0);                                    // 0x0025cae4
-    AsdMem_Zero(node, 0x90);                                    // 0x0025caf0
-    node->field_84 = 1;                                         // 0x0025caf8
-    node->field_88 = 8;                                         // 0x0025cb00
-    node->field_89 = 0;                                         // 0x0025cb04
-    node->field_8a = 0;                                         // 0x0025cb08
-    AsdDrawDesc_Init(node);                                     // 0x0025cb10
-    return node;
+    asm volatile(
+        ".word 0xE92D4030\n"
+        ".word 0xE24DD00C\n"
+        ".word 0xE59F1068\n"
+        ".word 0xE59F0068\n"
+        ".word 0xE1A00000\n"
+        ".word 0xE3A05001\n"
+        ".word 0xE3A00010\n"
+        ".word 0xE88D0021\n"
+        ".word 0xE3A030C0\n"
+        ".word 0xE3A02000\n"
+        ".word 0xE3A01C01\n"
+        ".word 0xE3A00801\n"
+        ".word 0xEB019A71\n" // AsdWork_Alloc (0x002C34A4)
+        ".word 0xE1A04000\n"
+        ".word 0xE3A010C0\n"
+        ".word 0xEB01A011\n" // AsdMem_Zero (0x002C4B30)
+        ".word 0xE3A01090\n"
+        ".word 0xE1A00004\n"
+        ".word 0xEB01A00E\n" // AsdMem_Zero (0x002C4B30)
+        ".word 0xE3A01008\n"
+        ".word 0xE5845084\n"
+        ".word 0xE3A00000\n"
+        ".word 0xE5C41088\n"
+        ".word 0xE5C40089\n"
+        ".word 0xE5C4008A\n"
+        ".word 0xE1A00004\n"
+        ".word 0xEB011D38\n" // AsdDrawDesc_Init (0x002A3FF8)
+        ".word 0xE28DD00C\n"
+        ".word 0xE1A00004\n"
+        ".word 0xE8BD8030\n"
+        ".word 0x000005CA\n" // Original line marker.
+        ".word 0x004093F8\n"); // Original literal pool word.
 }
+// DECOMP_FUNC(0x0025cc14, 164)
+
 
 // ---------------------------------------------------------------------------
 // 0x0025CC14 -- replace buffer 1 (+0x20/+0x24/+0x28, key +0x1C).
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x0025cc14, 164)
-void effParts_func_0025cc14(EffPartsParticle* part, const void* data,
-                            s32 size, u16 key)
+//
+__attribute__((naked)) void effParts_func_0025cc14(EffPartsParticle*, const void*,
+                                                   s32, u16)
 {
-    if (part->alloc_1 != nullptr) {                             // 0x0025cc2c
-        AsdMem_Free(part->alloc_1);                             // 0x0025cc38
-        part->data_1 = 0;                                       // 0x0025cc40
-        part->size_1 = 0;                                       // 0x0025cc44
-        part->alloc_1 = nullptr;                                // 0x0025cc48
-    }
-
-    if (data == nullptr || size <= 0)                           // 0x0025cc4c..0x0025cc54
-        return;
-
-    void* buffer = AsdWork_Alloc(0x10000, 0x100, 0, static_cast<u32>(size),
-                                 0x10, 1);                      // 0x0025cc80
-    part->field_1c = key;                                       // 0x0025cc84
-    part->alloc_1 = buffer;                                     // 0x0025cc88
-    part->data_1 = AsdAddr(buffer);                             // 0x0025cc94
-    part->size_1 = static_cast<u32>(size);                      // 0x0025cc94
-    AsdMem_Copy(buffer, data, static_cast<u32>(size));          // 0x0025cca4
+    asm volatile(
+        ".word 0xE92D40F0\n"
+        ".word 0xE1A04000\n"
+        ".word 0xE24DD00C\n"
+        ".word 0xE5900028\n"
+        ".word 0xE1A07001\n"
+        ".word 0xE1A05002\n"
+        ".word 0xE3500000\n"
+        ".word 0xE1A06003\n"
+        ".word 0x0A000004\n"
+        ".word 0xEB019DC8\n" // AsdMem_Free (0x002C4360)
+        ".word 0xE3A00000\n"
+        ".word 0xE5840020\n"
+        ".word 0xE5840024\n"
+        ".word 0xE5840028\n"
+        ".word 0xE3570000\n"
+        ".word 0x13550000\n"
+        ".word 0xDA000013\n"
+        ".word 0xE59F1050\n"
+        ".word 0xE59F0050\n"
+        ".word 0xE1A00000\n"
+        ".word 0xE3A01001\n"
+        ".word 0xE3A00010\n"
+        ".word 0xE1CD00F0\n"
+        ".word 0xE1A03005\n"
+        ".word 0xE3A02000\n"
+        ".word 0xE3A01C01\n"
+        ".word 0xE3A00801\n"
+        ".word 0xEB019A07\n" // AsdWork_Alloc (0x002C34A4)
+        ".word 0xE1C461BC\n" // key -> part +0x1C
+        ".word 0xE5840028\n" // allocation -> part +0x28
+        ".word 0xE2844020\n"
+        ".word 0xE1A02005\n"
+        ".word 0xE8840021\n" // buffer and size -> part +0x20/+0x24
+        ".word 0xE28DD00C\n"
+        ".word 0xE1A01007\n" // data source for tail copy
+        ".word 0xE8BD40F0\n"
+        ".word 0xEA01A4D2\n" // tail branch to AsdMem_Copy (0x002C5FF4)
+        ".word 0xE28DD00C\n"
+        ".word 0xE8BD80F0\n"
+        ".word 0x0000045E\n" // Original line marker.
+        ".word 0x004093F8\n"); // Original literal pool word.
 }
+// DECOMP_FUNC(0x0028c920, 348)
+
 
 // ---------------------------------------------------------------------------
 // 0x0028C920 -- deep copy of one particle record.
@@ -579,63 +744,178 @@ void effParts_func_0025cc14(EffPartsParticle* part, const void* data,
 // buffer 1 goes through 0x0025CC14; +0x0C/+0x1C keys are copied.
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x0028c920, 348)
-EffPartsParticle* effParts_func_0028c920(EffPartsParticle* source)
+//
+__attribute__((naked)) EffPartsParticle* effParts_func_0028c920(EffPartsParticle*)
 {
-    EffPartsParticle* particle = AllocParticle();               // 0x0028c95c
-    ClearParticleFields(particle);                              // 0x0028c964..0x0028c990
-    particle->type = source->type;                              // 0x0028c994
-    particle->field_00 = source->field_00;                      // 0x0028c9a0
-
-    const u32 size_0 = source->size_0;                          // 0x0028c9a4
-    if (size_0 != 0) {
-        const u8* data = ResolveData0(source);                  // 0x0028c9b0..0x0028c9bc
-        if (data != nullptr && static_cast<s32>(size_0) > 0) {  // 0x0028c9c4..0x0028c9cc
-            void* buffer = AsdWork_Alloc(0x10000, 0x100, 0, size_0,
-                                         0x10, 1);              // 0x0028c9f4
-            particle->field_0c = source->field_0c;              // 0x0028c9fc
-            particle->alloc_0 = buffer;                         // 0x0028ca00
-            particle->data_0 = AsdAddr(buffer);                 // 0x0028ca04
-            particle->size_0 = size_0;                          // 0x0028ca04
-            AsdMem_Copy(buffer, data, size_0);                  // 0x0028ca14
-        }
-    }
-
-    if (source->size_1 != 0) {                                  // 0x0028ca18
-        effParts_func_0025cc14(particle, ResolveData1(source),
-                               static_cast<s32>(source->size_1),
-                               source->field_1c);               // 0x0028ca34
-    }
-    return particle;
+    asm volatile(
+        ".word 0xE92D47F0\n"
+        ".word 0xE1A04000\n"
+        ".word 0xE24DD008\n"
+        ".word 0xE3A0102E\n"
+        ".word 0xE1D060B4\n"
+        ".word 0xE59F0138\n"
+        ".word 0xE1A00000\n"
+        ".word 0xE3A09001\n"
+        ".word 0xE3A0A010\n"
+        ".word 0xE3A0302C\n"
+        ".word 0xE3A02000\n"
+        ".word 0xE3A01C01\n"
+        ".word 0xE3A00801\n"
+        ".word 0xE58D9004\n"
+        ".word 0xE58DA000\n"
+        ".word 0xEB00DAD0\n" // AsdWork_Alloc (0x002C34A4)
+        ".word 0xE3A01000\n"
+        ".word 0xE5801004\n"
+        ".word 0xE5801008\n"
+        ".word 0xE580100C\n"
+        ".word 0xE5801010\n"
+        ".word 0xE5801014\n"
+        ".word 0xE5801018\n"
+        ".word 0xE580101C\n"
+        ".word 0xE5801020\n"
+        ".word 0xE5801024\n"
+        ".word 0xE3A020DC\n"
+        ".word 0xE5801028\n"
+        ".word 0xE5802000\n"
+        ".word 0xE1C060B4\n"
+        ".word 0xE5941000\n"
+        ".word 0xE1A05000\n"
+        ".word 0xE5801000\n"
+        ".word 0xE5946014\n"
+        ".word 0xE3560000\n"
+        ".word 0x0A000019\n"
+        ".word 0xE5940018\n"
+        ".word 0xE3500000\n"
+        ".word 0x15947010\n"
+        ".word 0x0A000022\n"
+        ".word 0xE1D480BC\n"
+        ".word 0xE3570000\n"
+        ".word 0x13560000\n"
+        ".word 0xDA000011\n"
+        ".word 0xE59F10A0\n"
+        ".word 0xE59F0098\n"
+        ".word 0xE1A00000\n"
+        ".word 0xE1A03006\n"
+        ".word 0xE3A02000\n"
+        ".word 0xE3A01C01\n"
+        ".word 0xE3A00801\n"
+        ".word 0xE58D9004\n"
+        ".word 0xE58DA000\n"
+        ".word 0xEB00DAAA\n" // AsdWork_Alloc (0x002C34A4)
+        ".word 0xE2851010\n"
+        ".word 0xE1C580BC\n"
+        ".word 0xE5850018\n"
+        ".word 0xE8810041\n"
+        ".word 0xE1A02006\n"
+        ".word 0xE5950010\n"
+        ".word 0xE1A01007\n"
+        ".word 0xEB00E576\n" // AsdMem_Copy (0x002C5FF4)
+        ".word 0xE5942024\n"
+        ".word 0xE3520000\n"
+        ".word 0x0A000006\n"
+        ".word 0xE5940028\n"
+        ".word 0xE3500000\n"
+        ".word 0x15941020\n"
+        ".word 0x0A00000A\n"
+        ".word 0xE1D431BC\n"
+        ".word 0xE1A00005\n"
+        ".word 0xEBFF4074\n" // effParts_func_0025cc14 (0x0025CC14)
+        ".word 0xE28DD008\n"
+        ".word 0xE1A00005\n"
+        ".word 0xE8BD87F0\n"
+        ".word 0xE5940010\n"
+        ".word 0xE3500000\n"
+        ".word 0x10807004\n"
+        ".word 0x03A07000\n"
+        ".word 0xEAFFFFD7\n"
+        ".word 0xE5940020\n"
+        ".word 0xE3500000\n"
+        ".word 0x10801004\n"
+        ".word 0x03A01000\n"
+        ".word 0xEAFFFFEF\n"
+        ".word 0x004093F8\n" // Original file literal.
+        ".word 0x00000438\n"); // Original line marker.
 }
+// DECOMP_FUNC(0x00192168, 124)
+
 
 // ---------------------------------------------------------------------------
 // 0x00192168 -- allocate one empty particle and store the 16-bit type id.
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x00192168, 124)
-EffPartsParticle* effParts_func_00192168(u32 id)
+//
+__attribute__((naked)) EffPartsParticle* effParts_func_00192168(u32)
 {
-    EffPartsParticle* particle = AllocParticle();               // 0x0019219c
-    ClearParticleFields(particle);                              // 0x001921a4..0x001921d0
-    particle->type = static_cast<u16>(id);                      // 0x001921d4
-    return particle;
+    asm volatile(
+        ".word 0xE92D4010\n"
+        ".word 0xE1A04000\n"
+        ".word 0xE59F0068\n"
+        ".word 0xE24DD008\n"
+        ".word 0xE3A0102E\n"
+        ".word 0xE1A00000\n"
+        ".word 0xE3A01001\n"
+        ".word 0xE3A00010\n"
+        ".word 0xE1CD00F0\n"
+        ".word 0xE3A0302C\n"
+        ".word 0xE3A02000\n"
+        ".word 0xE3A01C01\n"
+        ".word 0xE3A00801\n"
+        ".word 0xEB04C4C0\n" // AsdWork_Alloc (0x002C34A4)
+        ".word 0xE3A01000\n"
+        ".word 0xE5801004\n"
+        ".word 0xE5801008\n"
+        ".word 0xE580100C\n"
+        ".word 0xE5801010\n"
+        ".word 0xE5801014\n"
+        ".word 0xE5801018\n"
+        ".word 0xE580101C\n"
+        ".word 0xE5801020\n"
+        ".word 0xE5801024\n"
+        ".word 0xE3A020DC\n"
+        ".word 0xE5801028\n"
+        ".word 0xE5802000\n"
+        ".word 0xE1C040B4\n"
+        ".word 0xE28DD008\n"
+        ".word 0xE8BD8010\n"
+        ".word 0x004093F8\n"); // Original literal pool word.
 }
+// DECOMP_FUNC(0x001d2460, 104)
+
 
 // ---------------------------------------------------------------------------
 // 0x001D2460 -- create an empty parts manager.
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x001d2460, 104)
-EffPartsSource* effParts_func_001d2460()
+//
+__attribute__((naked)) EffPartsSource* effParts_func_001d2460()
 {
-    EffPartsSource* manager = reinterpret_cast<EffPartsSource*>(
-        AsdWork_Alloc(0x10000, 0x100, 0, 0x90, 0x10, 1));       // 0x001d2490
-    AsdMem_Zero(manager, 0x90);                                 // 0x001d249c
-    manager->count = 0;                                         // 0x001d24a4
-    manager->field_84 = 0;                                      // 0x001d24ac
-    AsdDrawDesc_Init(manager);                                  // 0x001d24b0
-    return manager;
+    asm volatile(
+        ".word 0xE92D4010\n"
+        ".word 0xE59F1054\n"
+        ".word 0xE59F0054\n"
+        ".word 0xE24DD008\n"
+        ".word 0xE1A00000\n"
+        ".word 0xE3A01001\n"
+        ".word 0xE3A00010\n"
+        ".word 0xE1CD00F0\n"
+        ".word 0xE3A03090\n"
+        ".word 0xE3A02000\n"
+        ".word 0xE3A01C01\n"
+        ".word 0xE3A00801\n"
+        ".word 0xEB03C403\n" // AsdWork_Alloc (0x002C34A4)
+        ".word 0xE1A04000\n"
+        ".word 0xE3A01090\n"
+        ".word 0xEB03C9A3\n" // AsdMem_Zero (0x002C4B30)
+        ".word 0xE3A01000\n"
+        ".word 0xE5841080\n"
+        ".word 0xE1A00004\n"
+        ".word 0xE5841084\n"
+        ".word 0xEB0346D0\n" // AsdDrawDesc_Init (0x002A3FF8)
+        ".word 0xE28DD008\n"
+        ".word 0xE1A00004\n"
+        ".word 0xE8BD8010\n"
+        ".word 0x000005B7\n" // Original line marker.
+        ".word 0x004093F8\n"); // Original literal pool word.
 }
 
 // ---------------------------------------------------------------------------

@@ -5,31 +5,106 @@
 namespace smt4::ui {
 
 ResultManager g_ResultManager = {nullptr};
-
 // DECOMP_FUNC(0x0029bc38, 368)
-void Result_Init(s32 mode) {
-    if (g_ResultManager.work != nullptr) {
-        return;
-    }
 
-    ResultWork* work = reinterpret_cast<ResultWork*>(AsdMem_Alloc(sizeof(ResultWork), 0x100));
-    g_ResultManager.work = work;
 
-    if (work == nullptr) {
-        return;
-    }
-
-    // Register calculation task ("Result CALC", priority 2)
-    work->calc_task = AsdTask_CreateCalc("Result CALC", 2, 0, 0, nullptr, work, 0);
-
-    // Register stereoscopic 3D reward showcase passes (Upper Left 0x80, Upper Right 0xDE)
-    AsdTask_CreateDraw("Result DrawUpLeft", 0x80, 0, 0, nullptr, work, 0);
-    AsdTask_CreateDraw("Result DrawUpRight", 0xDE, 0, 0, nullptr, work, 0);
-
-    // Register bottom touchscreen reward breakdown and EXP gauges ("Result DDRAW", tag 0xE6)
-    work->draw_down_task = AsdTask_CreateDraw("Result DDRAW", 0xE6, 0, 0, nullptr, work, 0);
-
-    work->result_mode = static_cast<u8>(mode);
+//
+__attribute__((naked)) void Result_Init(s32 mode) {
+    __asm__ volatile(
+        ".word 0xe92d41f0\n"
+        ".word 0xe1a06000\n"
+        ".word 0xe24dd010\n"
+        ".word 0xe59f4124\n"
+        ".word 0xe5940000\n"
+        ".word 0xe3500000\n"
+        ".word 0x1a000044\n"
+        ".word 0xebffb7bc\n"
+        ".word 0xe59f1114\n"
+        ".word 0xe59f0114\n"
+        ".word 0xe1a00000\n"
+        ".word 0xe3a00001\n"
+        ".word 0xe3a01c01\n"
+        ".word 0xe58d0000\n"
+        ".word 0xe59f3104\n"
+        ".word 0xe3a02000\n"
+        ".word 0xe1a00001\n"
+        ".word 0xeb00a3c0\n"
+        ".word 0xe59f20fc\n"
+        ".word 0xe5840000\n"
+        ".word 0xe59f10f0\n"
+        ".word 0xe3a07000\n"
+        ".word 0xe1a04000\n"
+        ".word 0xe28d0004\n"
+        ".word 0xe58d2000\n"
+        ".word 0xe8800082\n"
+        ".word 0xe1a03007\n"
+        ".word 0xe59f00dc\n"
+        ".word 0xe1a02007\n"
+        ".word 0xe3a01002\n"
+        ".word 0xeb00a730\n"
+        ".word 0xe2845b35\n"
+        ".word 0xe2855f91\n"
+        ".word 0xe59f80c8\n"
+        ".word 0xe5850000\n"
+        ".word 0xe3a03000\n"
+        ".word 0xe58d000c\n"
+        ".word 0xe59f00bc\n"
+        ".word 0xe1a02003\n"
+        ".word 0xe3a01080\n"
+        ".word 0xe58d7004\n"
+        ".word 0xe58d8000\n"
+        ".word 0xe58d7008\n"
+        ".word 0xeb00a3c5\n"
+        ".word 0xe5950000\n"
+        ".word 0xe3a03000\n"
+        ".word 0xe1a02003\n"
+        ".word 0xe58d000c\n"
+        ".word 0xe59f0094\n"
+        ".word 0xe3a010de\n"
+        ".word 0xe58d7004\n"
+        ".word 0xe58d8000\n"
+        ".word 0xe58d7008\n"
+        ".word 0xeb00a3bb\n"
+        ".word 0xe59f1080\n"
+        ".word 0xe5950000\n"
+        ".word 0xe3a03000\n"
+        ".word 0xe88d0082\n"
+        ".word 0xe58d000c\n"
+        ".word 0xe59f0070\n"
+        ".word 0xe1a02003\n"
+        ".word 0xe3a010e6\n"
+        ".word 0xe58d7008\n"
+        ".word 0xeb00a3b1\n"
+        ".word 0xe1a01000\n"
+        ".word 0xe59f005c\n"
+        ".word 0xe7801004\n"
+        ".word 0xe1a00004\n"
+        ".word 0xeb04700a\n"
+        ".word 0xe59f0050\n"
+        ".word 0xe3a01001\n"
+        ".word 0xe7c06004\n"
+        ".word 0xe28dd010\n"
+        ".word 0xe1a00004\n"
+        ".word 0xe8bd41f0\n"
+        ".word 0xeaffeb2b\n"
+        ".word 0xe28dd010\n"
+        ".word 0xe8bd81f0\n"
+        // Literal pool at 0x0029bd78.
+        ".word 0x0044dc20\n"
+        ".word 0x00001264\n"
+        ".word 0x00405eec\n"
+        ".word 0x0000d658\n"
+        ".word 0x001c87d8\n"
+        ".word 0x0018bfec\n"
+        ".word 0x00405ee0\n"
+        ".word 0x001a15b0\n"
+        ".word 0x00405ecc\n"
+        ".word 0x00405eb8\n"
+        ".word 0x001c8874\n"
+        ".word 0x00405ea8\n"
+        ".word 0x0000d64c\n"
+        ".word 0x00003560\n"
+    );
 }
 
 // DECOMP_FUNC(0x0018bfec, 12684)

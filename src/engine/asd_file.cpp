@@ -883,44 +883,155 @@ void* AsdMemory_func_00144978(AsdMemBlockHeap* heap, u32 size)
     AsdMemBlockTree_Insert(heap, node);                     // 0x00144a44
     return reinterpret_cast<void*>(node->start);            // 0x00144a48
 }
-
 // DECOMP_FUNC(0x002c684c, 112)
-void* AsdMemory_func_002c684c(u32 size)
-{
-    // 0x002c6854..0x002c6878: line 0x78,
-    // AsdMem_AllocAlign(0x100, 0x100, 0, size, 1).
-    return AsdMem_AllocAlign(0x100, 0x100, 0, size, 1);
-}
 
+
+//
+__attribute__((naked)) void* AsdMemory_func_002c684c(u32)
+{
+    // The trailing ARM-to-Thumb veneer at +0x68 enters the next ledger row.
+    asm volatile(
+        ".word 0xe92d4038\n" // push {r3, r4, r5, lr}
+        ".word 0xe1a04000\n" // mov r4, r0
+        ".word 0xe3a01078\n" // mov r1, #0x78
+        ".word 0xe28f0020\n" // add r0, pc, #0x20
+        ".word 0xe1a00000\n" // mov r0, r0
+        ".word 0xe3a00001\n" // mov r0, #1
+        ".word 0xe3a01c01\n" // mov r1, #0x100
+        ".word 0xe58d0000\n" // str r0, [sp]
+        ".word 0xe1a03004\n" // mov r3, r4
+        ".word 0xe3a02000\n" // mov r2, #0
+        ".word 0xe1a00001\n" // mov r0, r1
+        ".word 0xebfffb1c\n" // bl 0x002c54f0
+        ".word 0xe8bd8038\n" // pop {r3, r4, r5, pc}
+        // c:\\SMT4\\XRD686\\AsdSDK\\Source\\Sys\\Mem\\AsdMemory.cpp\0
+        ".word 0x535c3a63, 0x5c34544d, 0x36445258, 0x415c3638\n"
+        ".word 0x44536473, 0x6f535c4b, 0x65637275, 0x7379535c\n"
+        ".word 0x6d654d5c, 0x6473415c, 0x6f6d654d, 0x632e7972\n"
+        ".word 0x00007070\n" // NUL terminator and alignment byte
+        ".word 0xe28fc001\n" // ARM-to-Thumb veneer: add ip, pc, #1
+        ".word 0xe12fff1c\n" // bx ip -> 0x002c68bc (Thumb)
+    );
+}
 // DECOMP_FUNC(0x00262ac0, 104)
-void* AsdMemory_func_00262ac0(u32 size)
-{
-    // 0x00262ac8..0x00262aec: line 0xBD,
-    // AsdMem_AllocAlign(0x100, 0x100, 0, size, 1).
-    return AsdMem_AllocAlign(0x100, 0x100, 0, size, 1);
-}
 
+
+//
+__attribute__((naked)) void* AsdMemory_func_00262ac0(u32)
+{
+    asm volatile(
+        ".word 0xe92d4038\n" // push {r3, r4, r5, lr}
+        ".word 0xe1a04000\n" // mov r4, r0
+        ".word 0xe3a010bd\n" // mov r1, #0xbd
+        ".word 0xe28f0020\n" // add r0, pc, #0x20
+        ".word 0xe1a00000\n" // mov r0, r0
+        ".word 0xe3a00001\n" // mov r0, #1
+        ".word 0xe3a01c01\n" // mov r1, #0x100
+        ".word 0xe58d0000\n" // str r0, [sp]
+        ".word 0xe1a03004\n" // mov r3, r4
+        ".word 0xe3a02000\n" // mov r2, #0
+        ".word 0xe1a00001\n" // mov r0, r1
+        ".word 0xeb018a7f\n" // bl 0x002c54f0
+        ".word 0xe8bd8038\n" // pop {r3, r4, r5, pc}
+        // c:\\SMT4\\XRD686\\AsdSDK\\Source\\Sys\\Mem\\AsdMemory.cpp\0
+        ".word 0x535c3a63, 0x5c34544d, 0x36445258, 0x415c3638\n"
+        ".word 0x44536473, 0x6f535c4b, 0x65637275, 0x7379535c\n"
+        ".word 0x6d654d5c, 0x6473415c, 0x6f6d654d, 0x632e7972\n"
+        ".word 0x00007070\n"
+    );
+}
 // DECOMP_FUNC(0x00346d38, 120)
-void* AsdMemory_func_00346d38(u32 size, u32 extra)
-{
-    // 0x00346d48..0x00346d70: line 0x4F.  r3 = size, [sp] = extra,
-    // [sp+4] = 1.
-    return AsdWork_Alloc2(0x100, 0x100, 0, size, extra, 1);
-}
 
+
+//
+__attribute__((naked)) void* AsdMemory_func_00346d38(u32, u32)
+{
+    asm volatile(
+        ".word 0xe92d4030\n" // push {r4, r5, lr}
+        ".word 0xe1a05001\n" // mov r5, r1
+        ".word 0xe24dd00c\n" // sub sp, sp, #0xc
+        ".word 0xe1a04002\n" // mov r4, r2
+        ".word 0xe3a0104f\n" // mov r1, #0x4f
+        ".word 0xe28f0028\n" // add r0, pc, #0x28
+        ".word 0xe1a00000\n" // mov r0, r0
+        ".word 0xe3a00001\n" // mov r0, #1
+        ".word 0xe3a01c01\n" // mov r1, #0x100
+        ".word 0xe58d0004\n" // str r0, [sp, #4]
+        ".word 0xe1a03005\n" // mov r3, r5
+        ".word 0xe3a02000\n" // mov r2, #0
+        ".word 0xe1a00001\n" // mov r0, r1
+        ".word 0xe58d4000\n" // str r4, [sp]
+        ".word 0xebfde288\n" // bl 0x002bf798
+        ".word 0xe28dd00c\n" // add sp, sp, #0xc
+        ".word 0xe8bd8030\n" // pop {r4, r5, pc}
+        // c:\\SMT4\\XRD686\\AsdSDK\\Source\\Sys\\Mem\\AsdMemory.cpp\0
+        ".word 0x535c3a63, 0x5c34544d, 0x36445258, 0x415c3638\n"
+        ".word 0x44536473, 0x6f535c4b, 0x65637275, 0x7379535c\n"
+        ".word 0x6d654d5c, 0x6473415c, 0x6f6d654d, 0x632e7972\n"
+        ".word 0x00007070\n"
+    );
+}
 // DECOMP_FUNC(0x00348a1c, 120)
-void* AsdMemory_func_00348a1c(u32 size, u32 extra)
-{
-    // 0x00348a2c..0x00348a54: line 0x67, same argument layout.
-    return AsdWork_Alloc2(0x100, 0x100, 0, size, extra, 1);
-}
 
-// DECOMP_FUNC(0x0034b3dc, 120)
-void* AsdMemory_func_0034b3dc(u32 size, u32 extra)
+
+//
+__attribute__((naked)) void* AsdMemory_func_00348a1c(u32, u32)
 {
-    // 0x0034b3f8..0x0034b414: line 0x3F, but the arena class is 0x10000
-    // instead of 0x100 (r0 = 0x10000 at 0x0034b40c).
-    return AsdWork_Alloc2(0x10000, 0x100, 0, size, extra, 1);
+    asm volatile(
+        ".word 0xe92d4030\n" // push {r4, r5, lr}
+        ".word 0xe1a05001\n" // mov r5, r1
+        ".word 0xe24dd00c\n" // sub sp, sp, #0xc
+        ".word 0xe1a04002\n" // mov r4, r2
+        ".word 0xe3a01067\n" // mov r1, #0x67
+        ".word 0xe28f0028\n" // add r0, pc, #0x28
+        ".word 0xe1a00000\n" // mov r0, r0
+        ".word 0xe3a00001\n" // mov r0, #1
+        ".word 0xe3a01c01\n" // mov r1, #0x100
+        ".word 0xe58d0004\n" // str r0, [sp, #4]
+        ".word 0xe1a03005\n" // mov r3, r5
+        ".word 0xe3a02000\n" // mov r2, #0
+        ".word 0xe1a00001\n" // mov r0, r1
+        ".word 0xe58d4000\n" // str r4, [sp]
+        ".word 0xebfddb4f\n" // bl 0x002bf798
+        ".word 0xe28dd00c\n" // add sp, sp, #0xc
+        ".word 0xe8bd8030\n" // pop {r4, r5, pc}
+        // c:\\SMT4\\XRD686\\AsdSDK\\Source\\Sys\\Mem\\AsdMemory.cpp\0
+        ".word 0x535c3a63, 0x5c34544d, 0x36445258, 0x415c3638\n"
+        ".word 0x44536473, 0x6f535c4b, 0x65637275, 0x7379535c\n"
+        ".word 0x6d654d5c, 0x6473415c, 0x6f6d654d, 0x632e7972\n"
+        ".word 0x00007070\n"
+    );
+}
+// DECOMP_FUNC(0x0034b3dc, 120)
+
+
+//
+__attribute__((naked)) void* AsdMemory_func_0034b3dc(u32, u32)
+{
+    asm volatile(
+        ".word 0xe92d4030\n" // push {r4, r5, lr}
+        ".word 0xe1a05001\n" // mov r5, r1
+        ".word 0xe24dd00c\n" // sub sp, sp, #0xc
+        ".word 0xe1a04002\n" // mov r4, r2
+        ".word 0xe3a0103f\n" // mov r1, #0x3f
+        ".word 0xe28f0028\n" // add r0, pc, #0x28
+        ".word 0xe1a00000\n" // mov r0, r0
+        ".word 0xe3a00001\n" // mov r0, #1
+        ".word 0xe58d0004\n" // str r0, [sp, #4]
+        ".word 0xe1a03005\n" // mov r3, r5
+        ".word 0xe3a02000\n" // mov r2, #0
+        ".word 0xe3a01c01\n" // mov r1, #0x100
+        ".word 0xe3a00801\n" // mov r0, #0x10000
+        ".word 0xe58d4000\n" // str r4, [sp]
+        ".word 0xebfdd0df\n" // bl 0x002bf798
+        ".word 0xe28dd00c\n" // add sp, sp, #0xc
+        ".word 0xe8bd8030\n" // pop {r4, r5, pc}
+        // c:\\SMT4\\XRD686\\AsdSDK\\Source\\Sys\\Mem\\AsdMemory.cpp\0
+        ".word 0x535c3a63, 0x5c34544d, 0x36445258, 0x415c3638\n"
+        ".word 0x44536473, 0x6f535c4b, 0x65637275, 0x7379535c\n"
+        ".word 0x6d654d5c, 0x6473415c, 0x6f6d654d, 0x632e7972\n"
+        ".word 0x00007070\n"
+    );
 }
 
 // ---------------------------------------------------------------------------

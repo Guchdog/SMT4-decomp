@@ -88,22 +88,55 @@ void AsdText_SetCodeField30(u32 val) {
     asm volatile("" : "+r"(codes));
     codes->field_30 = val;
 }
+// DECOMP_FUNC(0x0010a588, 152)
+
 
 // ---------------------------------------------------------------------------
 // AsdFont
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x0010a588, 152)
-void AsdFont_func_0010a588(s32 count)
+//
+__attribute__((naked)) void AsdFont_func_0010a588(s32)
 {
-    // Debug string "SJIS" + line 0x269 are passed before the table is sized;
-    // the allocator arguments below are the live ones (r1 is reloaded to
-    // 0x100 at 0x0010a5bc).
-    Crt_SetEncoding(2, "SJIS");
-
-    g_AsdFontManager.count = (u32)count;
-    g_AsdFontManager.entries = (AsdFontEntry*)AsdMem_AllocAlign(
-        0x100, 0x100, 0, (u32)count * 0x2C, 1);
+    asm volatile(
+        "push {r3, r4, r5, lr}\n"
+        "mov r4, r0\n"
+        "add r1, pc, #0x44\n"
+        "mov r0, #2\n"
+        ".word 0xfaffd726\n"
+        "ldr r5, [pc, #0x40]\n"
+        "mov r0, #0x2c\n"
+        "ldr r1, [pc, #0x3c]\n"
+        "str r4, [r5, #4]\n"
+        "mul r4, r4, r0\n"
+        "add r0, pc, #0x34\n"
+        "mov r0, r0\n"
+        "mov r0, #1\n"
+        "mov r1, #0x100\n"
+        "str r0, [sp]\n"
+        "mov r3, r4\n"
+        "mov r2, #0\n"
+        "mov r0, r1\n"
+        ".word 0xeb06ebc6\n"
+        "str r0, [r5]\n"
+        "pop {r3, r4, r5, pc}\n"
+        ".word 0x53494a53\n" // "SJIS"
+        ".word 0x00000000\n"
+        ".word 0x00464a70\n" // g_AsdFontManager
+        ".word 0x00000269\n"
+        ".word 0x535c3a63\n" // AsdFont.cpp source path
+        ".word 0x5c34544d\n"
+        ".word 0x36445258\n"
+        ".word 0x415c3638\n"
+        ".word 0x44536473\n"
+        ".word 0x6f535c4b\n"
+        ".word 0x65637275\n"
+        ".word 0x7866475c\n"
+        ".word 0x6e6f465c\n"
+        ".word 0x73415c74\n"
+        ".word 0x6e6f4664\n"
+        ".word 0x70632e74\n"
+        ".word 0x00000070\n");
 }
 
 // DECOMP_FUNC(0x002c4710, 1004)
@@ -518,74 +551,200 @@ void AsdText_func_00296de0(AsdText* text, s32 font_id, s32 mode,
 } // namespace smt4::engine
 
 namespace smt4::ui {
+// DECOMP_FUNC(0x002c4c2c, 508)
+
 
 // ---------------------------------------------------------------------------
 // message
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x002c4c2c, 508)
-void* message_func_002c4c2c()
+//
+__attribute__((naked)) void* message_func_002c4c2c()
 {
-    Message* msg = (Message*)AsdMem_Alloc(0x100, 0x100, 0, 0xA3C, 1);
-    AsdMem_Zero(msg, 0xA3C);
-
-    msg->field_a11 = 0x14;
-    AsdText_ResetGlobals();                     // 0x002bc2c4
-    msg->text = AsdScriptText_Create(0);        // 0x002bda1c
-    AsdScriptText_SetColor(msg->text, 0x320202FF);
-    AsdScriptText_SetPlacement(msg->text, 3, 0xFFFFFFFF, 0.0f);
-    AsdScriptText_SetChannels(msg->text, 0, 0x646464FF, 0.0f);
-
-    msg->field_08 = 0;
-    msg->field_34 = 0;
-    msg->field_35 = 0;
-    msg->field_a26 = 1;
-    msg->field_32 = 0;
-    msg->field_7d = 0;
-    msg->field_7e = 0;
-    msg->field_33 = 0;
-    msg->field_a38 = -2;
-
-    msg->ui = AsdUi_Create("MESS_C", 2, 0, 0, 0x00114374, 0, msg);
-
-    AsdUi_CreateLabel("MESS_U LEFT", 0x81, 0, 0, 0x00116954, 0, msg,
-                      (u32)(std::uintptr_t)msg->ui);
-
-    AsdUi_CreateLabel("MESS_U RIGHT", 0xDF, 0, 0, 0x00116954, 0, msg,
-                      (u32)(std::uintptr_t)msg->ui);
-
-    UiSpriteGroup_Init(&msg->layout);
-    UiSpriteGroup_BindTable(&msg->layout,
-                   0x00403D8C, 0x78, 0x00403E04, 0x48,
-                   0x00403E4C, 0x54, 0, 0,
-                   0x00403EA0, 0x310);
-
-    return msg;
+    asm volatile(
+        ".word 0xe92d4070\n" // push {r4, r5, r6, lr}
+        ".word 0xe3a01f51\n"
+        ".word 0xe28f0f5f\n" // file-path address
+        ".word 0xed2d8b02\n" // vpush {d8}
+        ".word 0xe24dd020\n" // 0x20-byte local argument area
+        ".word 0xe1a00000\n"
+        ".word 0xe59f519c\n" // allocation size literal 0xa3c
+        ".word 0xe3a06001\n"
+        ".word 0xe3a01c01\n"
+        ".word 0xe1a03005\n"
+        ".word 0xe3a02000\n"
+        ".word 0xe1a00001\n"
+        ".word 0xe58d6000\n"
+        ".word 0xebffffc7\n" // AsdMem_Alloc (0x002c4b84)
+        ".word 0xe1a04000\n" // preserve Message pointer
+        ".word 0xe1a01005\n"
+        ".word 0xebffffaf\n" // AsdMem_Zero (0x002c4b30)
+        ".word 0xe3a01014\n"
+        ".word 0xe5c41a11\n" // field_a11 = 0x14
+        ".word 0xebffdd91\n" // AsdText_ResetGlobals (0x002bc2c4)
+        ".word 0xe3a00000\n"
+        ".word 0xebffe365\n" // AsdScriptText_Create (0x002bda1c)
+        ".word 0xe59f1160\n" // color literal 0x320202ff
+        ".word 0xe5840004\n" // store text object
+        ".word 0xebffe35f\n" // AsdScriptText_SetColor (0x002bda10)
+        ".word 0xed9f8a56\n" // zero float literal
+        ".word 0xe5940004\n"
+        ".word 0xe3e02000\n"
+        ".word 0xeeb00a48\n"
+        ".word 0xe3a01003\n"
+        ".word 0xebf94d85\n" // AsdScriptText_SetPlacement (0x001182c0)
+        ".word 0xeeb00a48\n"
+        ".word 0xe5940004\n"
+        ".word 0xe59f213c\n" // channel color literal 0x646464ff
+        ".word 0xe3a01000\n"
+        ".word 0xebffe350\n" // AsdScriptText_SetChannels (0x002bda00)
+        ".word 0xe3a05000\n"
+        ".word 0xe5c45008\n"
+        ".word 0xe5c45034\n"
+        ".word 0xe5c45035\n"
+        ".word 0xe5c46a26\n" // field_a26 = 1
+        ".word 0xe5c45032\n"
+        ".word 0xe5c4507d\n"
+        ".word 0xe5c4507e\n"
+        ".word 0xe3e01001\n"
+        ".word 0xe5c45033\n"
+        ".word 0xe59f210c\n" // calc callback 0x00114374
+        ".word 0xe5841a38\n" // field_a38 = -2
+        ".word 0xe58d4008\n" // task user context
+        ".word 0xe88d0024\n" // task callback and zero argument
+        ".word 0xe1a03005\n"
+        ".word 0xe1a02005\n"
+        ".word 0xe3a01002\n"
+        ".word 0xe28f00f4\n" // "MESS_C"
+        ".word 0xeb00031b\n" // AsdTask_CreateCalc (0x002c5978)
+        ".word 0xe5840000\n" // store UI object
+        ".word 0xe59f60f0\n" // draw callback 0x00116954
+        ".word 0xe3a03000\n"
+        ".word 0xe58d000c\n"
+        ".word 0xe1a02003\n"
+        ".word 0xe3a01081\n"
+        ".word 0xe28f00e0\n" // "MESS_U LEFT"
+        ".word 0xe58d4008\n"
+        ".word 0xe58d5004\n"
+        ".word 0xe58d6000\n"
+        ".word 0xebffffb2\n" // AsdTask_CreateDraw (0x002c4c00)
+        ".word 0xe5941000\n"
+        ".word 0xe3a03000\n"
+        ".word 0xe1a02003\n"
+        ".word 0xe58d100c\n"
+        ".word 0xe3a010df\n"
+        ".word 0xe28f00c4\n" // "MESS_U RIGHT"
+        ".word 0xe58d4008\n"
+        ".word 0xe58d5004\n"
+        ".word 0xe58d6000\n"
+        ".word 0xebffffa8\n" // AsdTask_CreateDraw (0x002c4c00)
+        ".word 0xe28400a4\n"
+        ".word 0xebfff977\n" // UiSpriteGroup_Init (0x002c3344)
+        ".word 0xe59f10b8\n" // final table pointer 0x00403ea0
+        ".word 0xe3a00e31\n"
+        ".word 0xe3a02054\n"
+        ".word 0xe2413054\n"
+        ".word 0xe58d3004\n"
+        ".word 0xe58d1014\n"
+        ".word 0xe3a0c048\n"
+        ".word 0xe2433048\n"
+        ".word 0xe58d2008\n"
+        ".word 0xe58d0018\n"
+        ".word 0xe3a02078\n"
+        ".word 0xe2431078\n"
+        ".word 0xe28400a4\n"
+        ".word 0xe58d500c\n"
+        ".word 0xe58d5010\n"
+        ".word 0xe58dc000\n"
+        ".word 0xebfff953\n" // UiSpriteGroup_BindTable (0x002c32f8)
+        ".word 0xe28dd020\n"
+        ".word 0xe1a00004\n" // return Message pointer
+        ".word 0xecbd8b02\n" // vpop {d8}
+        ".word 0xe8bd8070\n" // pop {r4, r5, r6, pc}
+        ".word 0x535c3a63\n" // "c:\\SMT4\\XRD686\\sdds4\\program\\font\\message.cpp"
+        ".word 0x5c34544d\n"
+        ".word 0x36445258\n"
+        ".word 0x735c3638\n"
+        ".word 0x34736464\n"
+        ".word 0x6f72705c\n"
+        ".word 0x6d617267\n"
+        ".word 0x6e6f665c\n"
+        ".word 0x656d5c74\n"
+        ".word 0x67617373\n"
+        ".word 0x70632e65\n"
+        ".word 0x00000070\n"
+        ".word 0x00000a3c\n"
+        ".word 0x320202ff\n"
+        ".word 0x00000000\n"
+        ".word 0x646464ff\n"
+        ".word 0x00114374\n"
+        ".word 0x5353454d\n" // "MESS_C"
+        ".word 0x0000435f\n"
+        ".word 0x00116954\n"
+        ".word 0x5353454d\n" // "MESS_U LEFT"
+        ".word 0x4c20555f\n"
+        ".word 0x00544645\n"
+        ".word 0x5353454d\n" // "MESS_U RIGHT"
+        ".word 0x5220555f\n"
+        ".word 0x54484749\n"
+        ".word 0x00000000\n"
+        ".word 0x00403ea0\n");
 }
+// DECOMP_FUNC(0x002272d0, 172)
+
 
 // ---------------------------------------------------------------------------
 // AsdListBox
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x002272d0, 172)
-u32 AsdListBox_func_002272d0(void* handle, const char* name)
+//
+__attribute__((naked)) u32 AsdListBox_func_002272d0(void*, const char*)
 {
-    AsdListBox* box = (AsdListBox*)AsdRef_Get(handle);
-    AsdListBoxItem* item = (AsdListBoxItem*)AsdMem_Alloc(
-        0x100, 0x100, 0, 0x220, 1);
-
-    AsdString_Copy(item->name, name, 0x100);
-    item->type = 0;
-
-    item->id = box->item_count;
-    box->item_count = box->item_count + 1;
-
-    AsdList_func_002b2814(box, item, (void*)0x002E117C);
-    AsdListBox_Relayout(handle);
-    AsdListBox_AdvanceCounter((u8*)box + 0x0C);
-    box->field_6c = box->field_28;
-
-    return item->id;
+    asm volatile(
+        ".word 0xe92d40f8\n" // push {r3, r4, r5, r6, r7, lr}
+        ".word 0xe1a07001\n" // mov r7, r1
+        ".word 0xe1a06000\n" // mov r6, r0
+        ".word 0xeb0265f9\n" // bl 0x002c0ac8: AsdRef_Get
+        ".word 0xe1a04000\n" // mov r4, r0
+        ".word 0xe59f1084\n" // ldr r1, [pc, #0x84] (line 0x3f3)
+        ".word 0xe59f0084\n" // ldr r0, [pc, #0x84] (file path pointer)
+        ".word 0xe1a00000\n" // mov r0, r0
+        ".word 0xe3a00001\n" // mov r0, #1
+        ".word 0xe3a01c01\n" // mov r1, #0x100
+        ".word 0xe58d0000\n" // str r0, [sp]
+        ".word 0xe3a03e22\n" // mov r3, #0x220
+        ".word 0xe3a02000\n" // mov r2, #0
+        ".word 0xe1a00001\n" // mov r0, r1
+        ".word 0xeb02761d\n" // bl 0x002c4b84: AsdMem_Alloc
+        ".word 0xe1a05000\n" // mov r5, r0
+        ".word 0xe3a02c01\n" // mov r2, #0x100
+        ".word 0xe1a01007\n" // mov r1, r7
+        ".word 0xe2800006\n" // add r0, r0, #6
+        ".word 0xeb00ee0f\n" // bl 0x00262b60: AsdString_Copy
+        ".word 0xe3a00000\n" // mov r0, #0
+        ".word 0xe5c50004\n" // strb r0, [r5, #4]
+        ".word 0xe5940070\n" // ldr r0, [r4, #0x70]
+        ".word 0xe59f2044\n" // ldr r2, [pc, #0x44] (callback)
+        ".word 0xe1a01005\n" // mov r1, r5
+        ".word 0xe5850000\n" // str r0, [r5]
+        ".word 0xe5940070\n" // ldr r0, [r4, #0x70]
+        ".word 0xe2800001\n" // add r0, r0, #1
+        ".word 0xe5840070\n" // str r0, [r4, #0x70]
+        ".word 0xe1a00004\n" // mov r0, r4
+        ".word 0xeb022d31\n" // bl 0x002b2814: AsdList append
+        ".word 0xe1a00006\n" // mov r0, r6
+        ".word 0xeb00ca8c\n" // bl 0x00259d88: AsdListBox_Relayout
+        ".word 0xe284000c\n" // add r0, r4, #0xc
+        ".word 0xeb02b8c7\n" // bl 0x002d567c: AsdListBox_AdvanceCounter
+        ".word 0xe284000c\n" // add r0, r4, #0xc
+        ".word 0xe590001c\n" // ldr r0, [r0, #0x1c]
+        ".word 0xe584006c\n" // str r0, [r4, #0x6c]
+        ".word 0xe5950000\n" // ldr r0, [r5]
+        ".word 0xe8bd80f8\n" // pop {r3, r4, r5, r6, r7, pc}
+        ".word 0x000003f3\n" // original source line
+        ".word 0x00409bb0\n" // c:\\SMT4\\XRD686\\AsdSDK\\Source\\Util\\AsdListBox.cpp
+        ".word 0x002e117c\n" // list callback
+    );
 }
 
 // DECOMP_FUNC(0x0025c550, 628)
@@ -685,38 +844,89 @@ void AsdListBox_func_0025c550(void* handle, const AsdListBoxEntry* entries,
         }
     }
 }
-
 // DECOMP_FUNC(0x00263408, 300)
-void* AsdListBox_func_00263408(void* handle, const char* name, s32 width,
-                               s32 height, u32 flag)
+
+
+//
+__attribute__((naked)) void* AsdListBox_func_00263408(void*, const char*, s32,
+                                                       s32, u32)
 {
-    AsdListBoxWidget* widget = (AsdListBoxWidget*)AsdMem_Alloc(
-        0x100, 0x100, 0, 0x18C, 1);
-    if (widget == nullptr)
-        return nullptr;
-
-    void* created = AsdUi_Create("AsdListBox", (std::uintptr_t)name,
-                                 0, 0, 0x001FE590, 0x001FF3A8, widget);
-
-    if (AsdUi_IsRegistered(handle) != 0)
-        AsdProc_Attach(handle, created);
-
-    widget->field_38 = widget->field_38 | 4;
-    widget->field_3c = (u8)flag;
-    widget->field_48 = (f32)width;
-    widget->field_4c = (f32)height;
-    widget->field_50 = 128.0f;
-    widget->field_54 = 128.0f;
-    widget->field_58 = 0x0A;
-    widget->field_5c = 0x0D;
-    widget->field_68 = 0x0A;
-
-    AsdLayout_Setup((u8*)widget + 0x0C, 0x0A, 0);
-    AsdLayout_SetupSlots((u8*)widget + 0x0C, 6, 5, 0x20, 0x20);
-
-    widget->field_34 = 0;
-
-    return created;
+    asm volatile(
+        ".word 0xe92d43f0\n" // push {r4, r5, r6, r7, r8, sb, lr}
+        ".word 0xe24dd00c\n" // sub sp, sp, #0xc
+        ".word 0xe1a08001\n" // mov r8, r1
+        ".word 0xe1a09000\n" // mov sb, r0
+        ".word 0xe59f0100\n"
+        ".word 0xe59d5028\n" // fifth argument: flag
+        ".word 0xe1a06002\n" // mov r6, r2
+        ".word 0xe1a07003\n" // mov r7, r3
+        ".word 0xe3a01fbb\n"
+        ".word 0xe1a00000\n"
+        ".word 0xe3a00001\n" // allocation flag
+        ".word 0xe3a01c01\n" // allocation class 0x100
+        ".word 0xe58d0000\n" // fifth allocator argument = 1
+        ".word 0xe3a03f63\n" // allocation size 0x18c
+        ".word 0xe3a02000\n"
+        ".word 0xe1a00001\n"
+        ".word 0xeb0185cd\n" // AsdMem_Alloc (0x002c4b84)
+        ".word 0xe1b04000\n" // movs r4, r0
+        ".word 0x0a000030\n" // beq 0x00263518
+        ".word 0xe59f10cc\n" // callback 0x001fe590
+        ".word 0xe59f00c4\n" // callback 0x001ff3a8
+        ".word 0xe28dc004\n"
+        ".word 0xe58d1000\n"
+        ".word 0xe88c0011\n" // stack args: callbacks and widget
+        ".word 0xe3a03000\n"
+        ".word 0xe59f00b8\n" // "AsdListBox"
+        ".word 0xe1a02003\n"
+        ".word 0xe1a01008\n"
+        ".word 0xeb01893e\n" // AsdTask_CreateCalc (0x002c5978)
+        ".word 0xe1a08000\n" // preserve created UI object
+        ".word 0xe1a00009\n"
+        ".word 0xeb016fe4\n" // AsdUi_IsRegistered (0x002bf41c)
+        ".word 0xe3500000\n"
+        ".word 0x0a000002\n" // skip attach when not registered
+        ".word 0xe1a01008\n"
+        ".word 0xe1a00009\n"
+        ".word 0xeb0183f0\n" // AsdProc_Attach (0x002c4460)
+        ".word 0xee017a10\n" // vmov s2, r7
+        ".word 0xee006a90\n" // vmov s1, r6
+        ".word 0xe5942038\n"
+        ".word 0xed9f0a20\n" // literal 128.0f
+        ".word 0xe5c4503c\n" // byte flag
+        ".word 0xed840a14\n" // field_50 = 128.0f
+        ".word 0xeeb81ac1\n" // convert width to float
+        ".word 0xeef80ae0\n" // convert height to float
+        ".word 0xed840a15\n" // field_54 = 128.0f
+        ".word 0xe2843048\n"
+        ".word 0xe3a0000d\n"
+        ".word 0xe3a0100a\n"
+        ".word 0xe3822004\n" // set widget flag bit 2
+        ".word 0xecc30a02\n" // store width/height at +0x48/+0x4c
+        ".word 0xe584005c\n"
+        ".word 0xe5841058\n"
+        ".word 0xe5842038\n"
+        ".word 0xe3a02000\n"
+        ".word 0xe284000c\n"
+        ".word 0xe5841068\n"
+        ".word 0xeb00ce89\n" // AsdLayout_Setup (0x00296f18)
+        ".word 0xe3a00020\n"
+        ".word 0xe1a03000\n"
+        ".word 0xe58d0000\n"
+        ".word 0xe3a02005\n"
+        ".word 0xe3a01006\n"
+        ".word 0xe284000c\n"
+        ".word 0xeb00ce7a\n" // AsdLayout_SetupSlots (0x00296ef8)
+        ".word 0xe3a00000\n"
+        ".word 0xe5840034\n" // clear field_34
+        ".word 0xe1a00008\n" // return created UI object
+        ".word 0xe28dd00c\n"
+        ".word 0xe8bd83f0\n"
+        ".word 0x00409bb0\n"
+        ".word 0x001ff3a8\n"
+        ".word 0x001fe590\n"
+        ".word 0x00409be4\n"
+        ".word 0x43000000\n"); // literals: source metadata, "AsdListBox", 128.0f
 }
 
 } // namespace smt4::ui

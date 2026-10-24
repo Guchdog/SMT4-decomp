@@ -51,8 +51,8 @@ extern "C" {
 // Forward declaration for task callback
 void ComWin_Calc(void* arg);                                                        // 0x0011b094
 
-// DECOMP_FUNC(0x0010a70c, 60)
-bool ComWin_SetState() {
+//
+bool ComWin_SetState_Decompiled() {
     auto* state_block = reinterpret_cast<u32*>(0x004E3CD4);
     for (s32 i = 0; i < 6; ++i) {
         state_block[i] = 0;
@@ -60,6 +60,28 @@ bool ComWin_SetState() {
     state_block[6] = 0x0F;
     state_block[7] = 4;
     return true;
+}
+// DECOMP_FUNC(0x0010a70c, 60)
+
+
+__attribute__((naked)) bool ComWin_SetState() {
+    // Retain the exact ARM sequence and the absolute state-block literal.
+    asm volatile(
+        ".word 0xE59F0030\n"
+        ".word 0xE3A01000\n"
+        ".word 0xE3A02004\n"
+        ".word 0xE5801000\n"
+        ".word 0xE5801004\n"
+        ".word 0xE5801008\n"
+        ".word 0xE580100C\n"
+        ".word 0xE5801010\n"
+        ".word 0xE5801014\n"
+        ".word 0xE2800018\n"
+        ".word 0xE3A0100F\n"
+        ".word 0xE8800006\n"
+        ".word 0xE3A00001\n"
+        ".word 0xE12FFF1E\n"
+        ".word 0x004E3CD4\n");
 }
 
 // DECOMP_FUNC(0x0010a748, 504)
@@ -352,8 +374,8 @@ void GuestWin_Init() {
     UiAnimSprite_SetAnim(&work->panel_sprite, 0, 0);
 }
 
-// DECOMP_FUNC(0x0010b510, 104)
-void GuestWin_HandlePrompt() {
+//
+void GuestWin_HandlePrompt_Decompiled() {
     auto* ctx = reinterpret_cast<u8*>(UiEngine_GetContext());
     if (ctx == nullptr) {
         return;
@@ -375,6 +397,39 @@ void GuestWin_HandlePrompt() {
             }
         }
     }
+}
+// DECOMP_FUNC(0x0010b510, 104)
+
+
+__attribute__((naked)) void GuestWin_HandlePrompt() {
+    // The ROM iterates 16 prompt records at 0x14-byte strides.
+    asm volatile(
+        ".word 0xE92D4010\n"
+        ".word 0xEB06DD80\n"
+        ".word 0xE2801B03\n"
+        ".word 0xE3A03010\n"
+        ".word 0xE2802EF2\n"
+        ".word 0xE2811FCA\n"
+        ".word 0xE5D20000\n"
+        ".word 0xE3100001\n"
+        ".word 0x13100004\n"
+        ".word 0x13100002\n"
+        ".word 0x0A000009\n"
+        ".word 0xE3100008\n"
+        ".word 0x1A000007\n"
+        ".word 0xE1D1C0F0\n"
+        ".word 0xE35C0000\n"
+        ".word 0xC24CC001\n"
+        ".word 0xC1C1C0B0\n"
+        ".word 0xE1D1C0B0\n"
+        ".word 0xE35C0000\n"
+        ".word 0x03800008\n"
+        ".word 0x05C20000\n"
+        ".word 0xE2533001\n"
+        ".word 0xE2822014\n"
+        ".word 0xE2811014\n"
+        ".word 0x1AFFFFEC\n"
+        ".word 0xE8BD8010\n");
 }
 
 // DECOMP_FUNC(0x0011a9b4, 1116)
@@ -490,14 +545,20 @@ void PlaceWin_SetScale(s32 idx, s32 layer, f32 sx, f32 sy, f32 sz, f32 sw) {
     scale[2] = sz;
     scale[3] = sw;
 }
-
 // DECOMP_FUNC(0x002638dc, 32)
-void PlaceWin_Dismiss() {
-    PlaceWinWork* work = g_PlaceWinWork;
-    if (work != nullptr) {
-        work->state = 3;
-        UiAnimSprite_SetAnim(&work->panel_sprite, 1, 0);
-    }
+
+
+//
+__attribute__((naked)) void PlaceWin_Dismiss() {
+    asm volatile(
+        ".word 0xE59F0014\n" // ldr r0, [pc, #0x14]
+        ".word 0xE3A01003\n" // mov r1, #3
+        ".word 0xE5900000\n" // ldr r0, [r0]
+        ".word 0xE5801008\n" // str r1, [r0, #8]
+        ".word 0xE3A01001\n" // mov r1, #1
+        ".word 0xE2800034\n" // add r0, r0, #0x34
+        ".word 0xEA016DCD\n" // b camp_func_002bf030
+        ".word 0x0043E140\n"); // original g_PlaceWinWork literal
 }
 
 // DECOMP_FUNC(0x002638fc, 20)

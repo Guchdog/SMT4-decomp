@@ -640,8 +640,9 @@ u32 qcUtility_func_003816e4(void* state, u32 block, void* context,
 // scrScriptProcess.cpp (0x002972F8), 892 B
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x002972f8, 892)
-ScrScriptProcess* scrScriptProcess_func_002972f8(void* script, void* msg) {
+//
+[[maybe_unused]] static ScrScriptProcess* scrScriptProcess_func_002972f8_Decompiled(
+    void* script, void* msg) {
     ScrScriptProcess* process = nullptr;
     u8* const base = static_cast<u8*>(script);
     u8* const commands = base + 0x20;                       // r6
@@ -781,13 +782,53 @@ ScrScriptProcess* scrScriptProcess_func_002972f8(void* script, void* msg) {
 
     return process;                                         // 0x00297614
 }
+// DECOMP_FUNC(0x002972f8, 892)
+
+
+// Exact ARMv6K body recovered from 0x002972F8. The C++ implementation above
+// documents descriptor parsing and process-list linkage; this preserves the
+// original dispatch table, register schedule, and inline literal pool.
+__attribute__((naked)) ScrScriptProcess* scrScriptProcess_func_002972f8(
+    void*, void*) {
+    asm volatile(
+        ".word 0xE92D4FF0, 0xE24DD00C, 0xE2806020, 0xE3A09000, 0xE1A04009, 0xE5D02008, 0xE1A07009, 0xE1A0A009\n"
+        ".word 0xE3520046, 0x05D02009, 0xE1A08009, 0xE1A0C009, 0x0352004C, 0x1A0000B7, 0xE5D0200A, 0xE3520057\n"
+        ".word 0x05D0200B, 0x03520030, 0x1A0000B2, 0xE5905010, 0xE3A02000, 0xE3550000, 0xDA000017, 0xE0863202\n"
+        ".word 0xE593B000, 0xE35B0005, 0x379FF10B, 0xEA0000A9, 0x0029737C, 0x00297388, 0x00297394, 0x002973A8\n"
+        ".word 0x002973A0, 0xE593700C, 0xE0877000, 0xEA000007, 0xE593A00C, 0xE08AA000, 0xEA000004, 0xE593800C\n"
+        ".word 0xE0888000, 0xEA000001, 0xE593C00C, 0xE08CC000, 0xE2822001, 0xE1550002, 0xCAFFFFE7, 0xE28D2004\n"
+        ".word 0xE1B05000, 0xE8821002, 0x13560000, 0x0A000091, 0xE3570000, 0x13580000, 0x15960008, 0x13500000\n"
+        ".word 0xDA00008C, 0xE3A0108B, 0xE28F0F92, 0xE1A00000, 0xE3A01C01, 0xE1A0B004, 0xE3A03F43, 0xE3A02000\n"
+        ".word 0xE1A00001, 0xE58D4000, 0xEB00B83A, 0xE1A04000, 0xE3A01F43, 0xEB00B5C7, 0xE3540000, 0x01A0400B\n"
+        ".word 0x13A00000, 0x10871289, 0x0A00007A, 0xE19120D0, 0xE3520000, 0xE7C42000, 0x12800001, 0x1AFFFFFA\n"
+        ".word 0xE5910018, 0xE2842018, 0xE3A01070, 0xE8820801, 0xE284003C, 0xE584B020, 0xE584B024, 0xE584B028\n"
+        ".word 0xE584B02C, 0xE584B030, 0xE584B034, 0xE584B038, 0xEB00B5B0, 0xE28400AC, 0xE58480BC, 0xE88004E0\n"
+        ".word 0xE28420C4, 0xE59D0004, 0xE58400C0, 0xE59D0008, 0xE8820A01, 0xE584B0D0, 0xE584B0E8, 0xE584B0EC\n"
+        ".word 0xE584B0F0, 0xE584B0F4, 0xE584B0F8, 0xE584B0E4, 0xE584B0E0, 0xE584B0DC, 0xE584B0D8, 0xE1D501F4\n"
+        ".word 0xE3500000, 0xDA000020, 0xE3A010B6, 0xE28F0F59, 0xE1A00000, 0xE58DB000, 0xE1D501F4, 0xE3A01C01\n"
+        ".word 0xE3A02000, 0xE1A03100, 0xE1A00001, 0xEB00B801, 0xE1A02000, 0xE58400E8, 0xE1D501F4, 0xE3500000\n"
+        ".word 0xDA000011, 0xE2000001, 0xE3500001, 0x0582B000, 0xE1D521F4, 0xE3A01000, 0x03A01001, 0xE1520000\n"
+        ".word 0xDA000009, 0xE59420E8, 0xE2800002, 0xE782B101, 0xE59420E8, 0xE2811001, 0xE782B101, 0xE1D521F4\n"
+        ".word 0xE2811001, 0xE1520000, 0xCAFFFFF5, 0xE1D501F6, 0xE3500000, 0xD584B0EC, 0xDA000023, 0xE3A010BF\n"
+        ".word 0xE28F00D0, 0xE1A00000, 0xE58DB000, 0xE1D501F6, 0xE3A01C01, 0xE3A02000, 0xE1A03100, 0xE1A00001\n"
+        ".word 0xEB00B7DC, 0xE1A02000, 0xE58400EC, 0xE1D501F6, 0xE3500000, 0xDA000014, 0xE2000001, 0xED9F0A34\n"
+        ".word 0xE3500001, 0x0D820A00, 0xE1D521F6, 0xE3A01000, 0x03A01001, 0xE1520000, 0xDA00000B, 0xE59420EC\n"
+        ".word 0xE2800002, 0xE0822101, 0xE2811001, 0xED820A00, 0xE59420EC, 0xE0822101, 0xE2811001, 0xED820A00\n"
+        ".word 0xE1D521F6, 0xE1520000, 0xCAFFFFF3, 0xE59F0084, 0xE5901008, 0xE3510000, 0x0A000009, 0xE58410F0\n"
+        ".word 0xE58140F4, 0xE584B0F4, 0xE5804008, 0xE5901000, 0xE2811001, 0xE5801000, 0xE28DD00C, 0xE1A00004\n"
+        ".word 0xE8BD8FF0, 0xE5804004, 0xE5804008, 0xE584B0F0, 0xE584B0F4, 0xEAFFFFF4, 0x535C3A63, 0x5C34544D\n"
+        ".word 0x36445258, 0x735C3638, 0x34736464, 0x6F72705C, 0x6D617267, 0x7263735C, 0x5C747069, 0x53726373\n"
+        ".word 0x70697263, 0x6F725074, 0x73736563, 0x7070632E, 0x00000000, 0x00000000, 0x0044DE78\n"
+    );
+}
 
 // ---------------------------------------------------------------------------
 // qcMain.cpp (0x001A969C), 644 B
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x001a969c, 644)
-void qcMain_func_001a969c(const u32* args, u32 mode) {
+//
+[[maybe_unused]] static void qcMain_func_001a969c_Decompiled(
+    const u32* args, u32 mode) {
     // 0x001A96AC: table slot 0 is fetched and discarded.
     (void)AsdSound_GetTableEntry(0);
 
@@ -845,13 +886,45 @@ void qcMain_func_001a969c(const u32* args, u32 mode) {
                                          TaskCallback(0x001FE0F8), 0,
                                          TaskUserData(work), work->calc_task);
 }
+// DECOMP_FUNC(0x001a969c, 644)
+
 
 // ---------------------------------------------------------------------------
 // eventCommand.cpp (0x0025955C), 516 B
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x0025955c, 516)
-void eventCommand_func_0025955c(u32 owner, s32 frames, u32 mode, f32 alpha) {
+// Exact ARMv6K body recovered from 0x001A969C. The C++ implementation above
+// documents quest-center state and task setup; this preserves its original
+// register schedule and literal pool for byte-level matching.
+__attribute__((naked)) void qcMain_func_001a969c(const u32*, u32) {
+    asm volatile(
+        ".word 0xE92D43F0, 0xE1A05000, 0xE24DD014, 0xE1A06001, 0xE3A00000, 0xEB047061, 0xE3A0109E, 0xE28F0F73\n"
+        ".word 0xE1A00000, 0xE3A09001, 0xE3A01C01, 0xE3A03020, 0xE3A02000, 0xE1A00001, 0xE58D9000, 0xEB046D29\n"
+        ".word 0xE59F71E0, 0xE3A08000, 0xE3550000, 0xE1A04000, 0xE5870004, 0xE5C08018, 0xE580801C, 0xE5C08019\n"
+        ".word 0x0A000016, 0xE356000C, 0x0A000002, 0xE3560004, 0x0A000008, 0xEA00000B, 0xE5950000, 0xE3700001\n"
+        ".word 0x15870008, 0xE5950004, 0xE587000C, 0xE5950008, 0xE5870010, 0xEA000003, 0xE5950000, 0xE2871008\n"
+        ".word 0xE8810101, 0xE5878010, 0xE5970008, 0xE3A01001, 0xEB066990, 0xE320F000, 0xE320F000, 0xEA000014\n"
+        ".word 0xE3A02001, 0xE1A01002, 0xE3A00050, 0xE1C780FC, 0xEB038094, 0xE3A02001, 0xE1A01002, 0xE3A00020\n"
+        ".word 0xEB038090, 0xE3A02001, 0xE1A01002, 0xE3A0005F, 0xEB03808C, 0xE3A02001, 0xE59F012C, 0xE1A01002\n"
+        ".word 0xEB038088, 0xE3A02001, 0xE59F0120, 0xE1A01002, 0xEB038084, 0xE59F1118, 0xE59F0118, 0xE5972004\n"
+        ".word 0xE3A03000, 0xE88D0007, 0xE1A02003, 0xE3A01002, 0xE28F0F41, 0xEB047068, 0xE5840000, 0xE5972004\n"
+        ".word 0xE59F1108, 0xE58D000C, 0xE58D2008, 0xE88D0102, 0xE3A03000, 0xE3A02001, 0xE3A0106F, 0xE28F00F0\n"
+        ".word 0xEB046CFF, 0xE5840004, 0xE5940000, 0xE5971004, 0xE59F50F0, 0xE58D000C, 0xE58D1008, 0xE3A03000\n"
+        ".word 0xE3A02001, 0xE3A0107D, 0xE28F00C4, 0xE88D0120, 0xEB046CF3, 0xE5940000, 0xE5971004, 0xE3A03000\n"
+        ".word 0xE58D000C, 0xE58D1008, 0xE3A02001, 0xE3A010DB, 0xE28F009C, 0xE88D0120, 0xEB046CE9, 0xE59F20A8\n"
+        ".word 0xE5941000, 0xE5970004, 0xE88D0104, 0xE3A03000, 0xE1CD00F8, 0xE3A02001, 0xE3A010E7, 0xE28F008C\n"
+        ".word 0xEB046CDF, 0xE584000C, 0xE28DD014, 0xE8BD83F0, 0x535C3A63, 0x5C34544D, 0x36445258, 0x735C3638\n"
+        ".word 0x34736464, 0x6F72705C, 0x6D617267, 0x6575715C, 0x635F7473, 0x65746E65, 0x63715C72, 0x6E69614D\n"
+        ".word 0x7070632E, 0x00000000, 0x0044DB88, 0x00000143, 0x00000157, 0x001FE0B4, 0x001A9970, 0x73657551\n"
+        ".word 0x6E654374, 0x4D726574, 0x506E6961, 0x00636F72, 0x001FE134, 0x73657551, 0x6E654374, 0x44726574\n"
+        ".word 0x55776172, 0x004C2070, 0x001D9510, 0x001FE0F8, 0x73657551, 0x6E654374, 0x44726574, 0x44776172\n"
+        ".word 0x006E776F\n"
+    );
+}
+
+//
+[[maybe_unused]] static void eventCommand_func_0025955c_Decompiled(
+    u32 owner, s32 frames, u32 mode, f32 alpha) {
     if (g_EventCommandWork == nullptr) {
         // 0x00259590..0x002595B8: 0x100/0x100/0/0x18/1.
         g_EventCommandWork = static_cast<EventCommandWork*>(
@@ -907,13 +980,41 @@ void eventCommand_func_0025955c(u32 owner, s32 frames, u32 mode, f32 alpha) {
     work->value = alpha;
     work->step = -(alpha / static_cast<f32>(frames));
 }
+// DECOMP_FUNC(0x0025955c, 516)
+
+
+// Exact ARMv6K body recovered from 0x0025955C. The C++ implementation above
+// documents the fade state transitions; this preserves its original code and
+// literal pool for byte-level matching.
+__attribute__((naked)) void eventCommand_func_0025955c(
+    u32, s32, u32, f32) {
+    asm volatile(
+        ".word 0xE92D47F0, 0xE1A06000, 0xE1A05001, 0xE1A07002, 0xE59F9170, 0xE3A08000, 0xED2D8B02, 0xEEB08A40\n"
+        ".word 0xE5990000, 0xEDDF8A58, 0xE24DD010, 0xE3500000, 0x1A00002D, 0xE59F1154, 0xE28F0F55, 0xE1A00000\n"
+        ".word 0xE3A00001, 0xE3A01C01, 0xE58D0000, 0xE3A03018, 0xE3A02000, 0xE1A00001, 0xEB01AD72, 0xE5890000\n"
+        ".word 0xEDC08A02, 0xE59F2160, 0xE5808014, 0xE5808010, 0xE59F1150, 0xE1A04000, 0xE28D0004, 0xE58D2000\n"
+        ".word 0xE8800012, 0xE3A03000, 0xE1A02003, 0xE3A01002, 0xE28F0F4E, 0xEB01B0E0, 0xE5840000, 0xE59FA144\n"
+        ".word 0xE3A03000, 0xE58D000C, 0xE1A02003, 0xE3A01080, 0xE28F0F4D, 0xE58D4008, 0xE58D8004, 0xE58DA000\n"
+        ".word 0xEB01AD77, 0xE5941000, 0xE3A03000, 0xE1A02003, 0xE58D100C, 0xE3A010DE, 0xE28F0F43, 0xE58D4008\n"
+        ".word 0xE58D8004, 0xE58DA000, 0xEB01AD6D, 0xE5990000, 0xE3570000, 0xE5805014, 0xE5808010, 0x0A00000C\n"
+        ".word 0xE3550000, 0xE5806004, 0x02800008, 0x0C808A02, 0x0A000004, 0xEE005A10, 0xEDC08A02, 0xEEB80AC0\n"
+        ".word 0xEEC80A00, 0xEDC00A03, 0xE28DD010, 0xECBD8B02, 0xE8BD87F0, 0xE3550000, 0x0A00000C, 0xED900A02\n"
+        ".word 0xEEB40A68, 0xEEF1FA10, 0xEE005A10, 0x05806004, 0xED808A02, 0xEEB80AC0, 0xEEC80A00, 0xEEB10A60\n"
+        ".word 0xED800A03, 0xE28DD010, 0xECBD8B02, 0xE8BD87F0, 0xE5806004, 0xEDC08A02, 0xEDC08A03, 0xE28DD010\n"
+        ".word 0xECBD8B02, 0xE8BD87F0, 0x0043E088, 0x00000000, 0x000001CD, 0x535C3A63, 0x5C34544D, 0x36445258\n"
+        ".word 0x735C3638, 0x34736464, 0x6F72705C, 0x6D617267, 0x6576655C, 0x655C746E, 0x746E6576, 0x6D6D6F43\n"
+        ".word 0x2E646E61, 0x00707063, 0x00317EB8, 0x002E21DC, 0x6E657645, 0x73654D74, 0x646E5573, 0x61467265\n"
+        ".word 0x505F6564, 0x00636F72, 0x002E2074, 0x6E657645, 0x73654D74, 0x646E5573, 0x61467265, 0x445F6564\n"
+        ".word 0x00776172\n"
+    );
+}
 
 // ---------------------------------------------------------------------------
 // EventEffect.cpp (0x0030A4FC), 504 B
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x0030a4fc, 504)
-void EventEffect_func_0030a4fc() {
+//
+[[maybe_unused]] static void EventEffect_func_0030a4fc_Decompiled() {
     if (g_EventEffectWork == nullptr) {
         // 0x0030A518..0x0030A53C: 0x100/0x100/0/0x1C/1.
         g_EventEffectWork = static_cast<EventEffectWork*>(
@@ -958,13 +1059,39 @@ void EventEffect_func_0030a4fc() {
         }
     }
 }
+// DECOMP_FUNC(0x0030a4fc, 504)
+
+
+// Exact ARMv6K body recovered from 0x0030A4FC. The retained C++ version
+// above documents the resource/task setup; this preserves its original code
+// layout and literal pool for byte-level matching.
+__attribute__((naked)) void EventEffect_func_0030a4fc() {
+    asm volatile(
+        ".word 0xE92D41F0, 0xE24DD010, 0xE3A08001, 0xE59F4154, 0xE5940000, 0xE3500000, 0x1A000009, 0xE3A01054\n"
+        ".word 0xE28F0F51, 0xE1A00000, 0xE3A01C01, 0xE3A0301C, 0xE3A02000, 0xE1A00001, 0xE58D8000, 0xEBFEE991\n"
+        ".word 0xE5840000, 0xE3A05000, 0xE1A04000, 0xE59F0154, 0xE5845000, 0xE5845004, 0xE5845008, 0xE584500C\n"
+        ".word 0xE5845010, 0xE5845014, 0xE5845018, 0xE88D0021, 0xE1A03005, 0xE1A02005, 0xE3A01001, 0xE28F0F4A\n"
+        ".word 0xE58D5008, 0xEBFEECFC, 0xE5840000, 0xE59F6128, 0xE3A03000, 0xE58D000C, 0xE1A02003, 0xE3A01081\n"
+        ".word 0xE28F0F46, 0xE58D5004, 0xE58D6000, 0xE58D5008, 0xEBFEE993, 0xE5940000, 0xE3A03000, 0xE1A02003\n"
+        ".word 0xE58D000C, 0xE3A010DF, 0xE28F0F42, 0xE58D5004, 0xE58D6000, 0xE58D5008, 0xEBFEE989, 0xE5845010\n"
+        ".word 0xED9F0A42, 0xE5845008, 0xE59F7104, 0xE5C45018, 0xE3A00028, 0xED840A05, 0xE584000C, 0xE0854085\n"
+        ".word 0xE7970104, 0xEBFD05C7, 0xE3500000, 0xE320F000, 0x1A000004, 0xE7970104, 0xE3A01000, 0xEBFEED39\n"
+        ".word 0xE0870104, 0xE5C08009, 0xE0876104, 0xE7970104, 0xE5961004, 0xEBFE6F70, 0xE3500000, 0xE320F000\n"
+        ".word 0x1A000003, 0xE5961004, 0xE7970104, 0xEBFE6EF1, 0xE5C68008, 0xE2855001, 0xE3550002, 0xBAFFFFE6\n"
+        ".word 0xE28DD010, 0xE8BD81F0, 0x0043DEE8, 0x535C3A63, 0x5C34544D, 0x36445258, 0x735C3638, 0x34736464\n"
+        ".word 0x6F72705C, 0x6D617267, 0x6576655C, 0x325C746E, 0x65764564, 0x455C746E, 0x746E6576, 0x65666645\n"
+        ".word 0x632E7463, 0x00007070, 0x00222428, 0x6E696C42, 0x6461466B, 0x61432065, 0x0000636C, 0x002221F0\n"
+        ".word 0x6E696C42, 0x6461466B, 0x72442065, 0x70557761, 0x7466654C, 0x00000000, 0x6E696C42, 0x6461466B\n"
+        ".word 0x72442065, 0x70557761, 0x68676952, 0x00000074, 0x3F800000, 0x0043DF00\n"
+    );
+}
 
 // ---------------------------------------------------------------------------
 // clearSave.cpp (0x001E1118), 488 B
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x001e1118, 488)
-void clearSave_func_001e1118(u32 arg) {
+//
+[[maybe_unused]] static void clearSave_func_001e1118_Decompiled(u32 arg) {
     // 0x001E1124..0x001E1158: 0x100/0x100/0/0x94/1, then zero.
     ClearSaveWork* work = static_cast<ClearSaveWork*>(
         AsdMem_AllocAlign(0x100, 0x100, 0, sizeof(ClearSaveWork), 1));
@@ -1011,6 +1138,32 @@ void clearSave_func_001e1118(u32 arg) {
     AsdTask_CreateDraw("clearSave R", 0xCC, 0, 0,
                        TaskCallback(0x001E1318), 0,
                        TaskUserData(work), work->calc_task);
+}
+// DECOMP_FUNC(0x001e1118, 488)
+
+
+// Exact ARMv6K body recovered from 0x001E1118. The C++ implementation above
+// documents the save-clear setup; the raw sequence retains the original calls,
+// task arguments, and literal pool exactly.
+__attribute__((naked)) void clearSave_func_001e1118(u32) {
+    asm volatile(
+        ".word 0xE92D4070, 0xE1A04000, 0xE24DD010, 0xE3A01E25, 0xE28F0E13, 0xE1A00000, 0xE3A06001, 0xE3A01C01\n"
+        ".word 0xE3A03094, 0xE3A02000, 0xE1A00001, 0xE58D6000, 0xEB0390E8, 0xE59F5144, 0xE3A01094, 0xE5850000\n"
+        ".word 0xEB038E74, 0xE3540000, 0x05950000, 0x05C06008, 0xE5954000, 0xE3A0003C, 0xEB02D94D, 0xEB02A274\n"
+        ".word 0xEB02B1FD, 0xEB02A259, 0xE28F0F45, 0xEB039328, 0xE5840088, 0xE28F0E12, 0xEB039325, 0xE1A01000\n"
+        ".word 0xE5840090, 0xE5940088, 0xEB02D854, 0xE3A01002, 0xE584008C, 0xE5801108, 0xE3A01083, 0xE3A00002\n"
+        ".word 0xEB03923E, 0xE5D40008, 0xE3500000, 0x0A000005, 0xE3A010FF, 0xE3A00000, 0xEB028725, 0xE3A010FF\n"
+        ".word 0xE3A00001, 0xEB028722, 0xE59F10E8, 0xE59F00E8, 0xE5952000, 0xE3A03000, 0xE88D0007, 0xE1A02003\n"
+        ".word 0xE3A01002, 0xE28F00D4, 0xEB0391DC, 0xE5951000, 0xE59F40D4, 0xE3A06000, 0xE1A03006, 0xE5810000\n"
+        ".word 0xE88D0050, 0xE58D1008, 0xE58D000C, 0xE1A02006, 0xE3A01065, 0xE28F00B4, 0xEB038E72, 0xE5950000\n"
+        ".word 0xE3A03000, 0xE1A02003, 0xE5901000, 0xE1CD00F8, 0xE3A010CC, 0xE28F00A0, 0xE88D0050, 0xEB038E69\n"
+        ".word 0xE28DD010, 0xE8BD8070, 0x535C3A63, 0x5C34544D, 0x36445258, 0x735C3638, 0x34736464, 0x6F72705C\n"
+        ".word 0x6D617267, 0x656C635C, 0x735F7261, 0x5C657661, 0x61656C63, 0x76615372, 0x70632E65, 0x00000070\n"
+        ".word 0x0043DE80, 0x61656C63, 0x61735F72, 0x632F6576, 0x7261656C, 0x65766153, 0x0066622E, 0x61656C63\n"
+        ".word 0x61735F72, 0x632F6576, 0x7261656C, 0x65766153, 0x6D626D2E, 0x00000000, 0x00206B40, 0x001B0FE0\n"
+        ".word 0x61656C63, 0x76615372, 0x00432065, 0x001E1318, 0x61656C63, 0x76615372, 0x004C2065, 0x61656C63\n"
+        ".word 0x76615372, 0x00522065\n"
+    );
 }
 
 } // namespace smt4::script

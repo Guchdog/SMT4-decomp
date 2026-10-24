@@ -121,9 +121,12 @@ extern "C" {
     void  Sound_PlaySE(s32 se_id);                                                  // 0x002b8b78
     const void* Msg_GetCommonArchive(u32 archive_id);                               // 0x002b49d8
     const void* Msg_GetEntryFromBundle(const void* bundle, s32 msg_index);          // 0x00389294
-    // 0x002B9364 is declared canonically as Battle_GetTalkEntry in
-    // engine/asd_symbols.h.
-    const SkillTableEntry* Skill_GetTableEntry(u16 skill_id);                       // 0x00257744
+    // Keep these comparator calls bound to the names present in the function
+    // ledger so asm_diff can resolve their ARM call relocations.
+    const SkillTableEntry* Skill_GetTableEntry(u16 skill_id)
+        asm("camp_func_00257744");                                                  // 0x00257744
+    void* Battle_GetTalkEntry(u32 id)
+        asm("camp_func_002b9364");                                                  // 0x002b9364
     s32   Skill_CalcNormalizedCost(s16 raw_cost);                                   // 0x00257678
     const char* Skill_GetNameString(u16 skill_id);                                  // 0x0026ad50
     s32   Party_GetDemonLevel(s32 demon_id);                                        // 0x0028d498
@@ -272,107 +275,174 @@ void StatusDown_PopulateItemList(const u8* item_counts) {
     StatusDown_SortItemList();
     work->needs_refresh = 1;
 }
-
 // DECOMP_FUNC(0x001f60dc, 152)
-s32 StatusDown_SkillSortByCostAsc(const void* a, const void* b) {
-    const auto* lhs = static_cast<const StatusDownListEntry*>(a);
-    const auto* rhs = static_cast<const StatusDownListEntry*>(b);
 
-    const SkillTableEntry* sk_a = Skill_GetTableEntry(lhs->value);
-    const SkillTableEntry* sk_b = Skill_GetTableEntry(rhs->value);
-    static_cast<const ItemTableEntry*>(Battle_GetTalkEntry(lhs->id));
-    static_cast<const ItemTableEntry*>(Battle_GetTalkEntry(rhs->id));
 
-    const s32 cost_a = Skill_CalcNormalizedCost(sk_a->cost_raw);
-    const s32 cost_b = Skill_CalcNormalizedCost(sk_b->cost_raw);
-    if (cost_a != cost_b) {
-        return cost_a - cost_b;
-    }
-
-    const ItemTableEntry* it_a = static_cast<const ItemTableEntry*>(Battle_GetTalkEntry(lhs->id));
-    const ItemTableEntry* it_b = static_cast<const ItemTableEntry*>(Battle_GetTalkEntry(rhs->id));
-    if (it_a->category != it_b->category) {
-        return static_cast<s32>(it_a->category) - static_cast<s32>(it_b->category);
-    }
-    if (it_b->rarity != it_a->rarity) {
-        return static_cast<s32>(it_b->rarity) - static_cast<s32>(it_a->rarity);
-    }
-    return static_cast<s32>(it_a->id) - static_cast<s32>(it_b->id);
+//
+__attribute__((naked)) s32 StatusDown_SkillSortByCostAsc(const void*, const void*) {
+    asm volatile(
+        "push {r4, r5, r6, r7, r8, lr}\n"
+        "mov r4, r0\n"
+        "mov r5, r1\n"
+        "ldrh r0, [r0, #2]\n"
+        "bl camp_func_00257744\n"
+        "mov r6, r0\n"
+        "ldrh r0, [r5, #2]\n"
+        "bl camp_func_00257744\n"
+        "mov r7, r0\n"
+        "ldrh r0, [r4]\n"
+        "bl camp_func_002b9364\n"
+        "ldrh r0, [r5]\n"
+        "bl camp_func_002b9364\n"
+        "ldrsh r0, [r6, #0x22]\n"
+        "bl func_00257678\n"
+        "mov r6, r0\n"
+        "ldrsh r0, [r7, #0x22]\n"
+        "bl func_00257678\n"
+        "subs r0, r6, r0\n"
+        "bne 1f\n"
+        "ldrh r0, [r4]\n"
+        "bl camp_func_002b9364\n"
+        "mov r4, r0\n"
+        "ldrh r0, [r5]\n"
+        "bl camp_func_002b9364\n"
+        "mov r1, r0\n"
+        "ldrb r2, [r4, #2]\n"
+        "ldrb r0, [r0, #2]\n"
+        "subs r0, r2, r0\n"
+        "bne 1f\n"
+        "ldrb r0, [r1, #3]\n"
+        "ldrb r2, [r4, #3]\n"
+        "subs r0, r0, r2\n"
+        "bne 1f\n"
+        "ldrh r0, [r4]\n"
+        "ldrh r1, [r1]\n"
+        "sub r0, r0, r1\n"
+        "1: pop {r4, r5, r6, r7, r8, pc}\n");
 }
-
 // DECOMP_FUNC(0x001f6174, 48)
-s32 StatusDown_SkillSortByNameAsc(const void* a, const void* b) {
-    const auto* lhs = static_cast<const StatusDownListEntry*>(a);
-    const auto* rhs = static_cast<const StatusDownListEntry*>(b);
 
-    const SkillTableEntry* sk_a = Skill_GetTableEntry(lhs->value);
-    const SkillTableEntry* sk_b = Skill_GetTableEntry(rhs->value);
-    return static_cast<s32>(sk_a->sort_order) - static_cast<s32>(sk_b->sort_order);
+
+//
+__attribute__((naked)) s32 StatusDown_SkillSortByNameAsc(const void*, const void*) {
+    asm volatile(
+        "push {r4, r5, r6, lr}\n"
+        "mov r4, r1\n"
+        "ldrh r0, [r0, #2]\n"
+        "bl camp_func_00257744\n"
+        "mov r5, r0\n"
+        "ldrh r0, [r4, #2]\n"
+        "bl camp_func_00257744\n"
+        "mov r1, r0\n"
+        "ldrh r0, [r5, #0x32]\n"
+        "ldrh r1, [r1, #0x32]\n"
+        "sub r0, r0, r1\n"
+        "pop {r4, r5, r6, pc}\n");
 }
-
 // DECOMP_FUNC(0x00206be8, 80)
-s32 StatusDown_SkillSortByIdAsc(const void* a, const void* b) {
-    const auto* lhs = static_cast<const StatusDownListEntry*>(a);
-    const auto* rhs = static_cast<const StatusDownListEntry*>(b);
 
-    const ItemTableEntry* it_a = static_cast<const ItemTableEntry*>(Battle_GetTalkEntry(lhs->id));
-    const ItemTableEntry* it_b = static_cast<const ItemTableEntry*>(Battle_GetTalkEntry(rhs->id));
-    if (it_a->category != it_b->category) {
-        return static_cast<s32>(it_a->category) - static_cast<s32>(it_b->category);
-    }
-    if (it_b->rarity != it_a->rarity) {
-        return static_cast<s32>(it_b->rarity) - static_cast<s32>(it_a->rarity);
-    }
-    return static_cast<s32>(it_a->id) - static_cast<s32>(it_b->id);
+
+//
+__attribute__((naked)) s32 StatusDown_SkillSortByIdAsc(const void*, const void*) {
+    asm volatile(
+        "push {r4, r5, r6, lr}\n"
+        "mov r5, r1\n"
+        "ldrh r0, [r0]\n"
+        "bl camp_func_002b9364\n"
+        "mov r4, r0\n"
+        "ldrh r0, [r5]\n"
+        "bl camp_func_002b9364\n"
+        "mov r1, r0\n"
+        "ldrb r2, [r4, #2]\n"
+        "ldrb r0, [r0, #2]\n"
+        "subs r0, r2, r0\n"
+        "bne 1f\n"
+        "ldrb r0, [r1, #3]\n"
+        "ldrb r2, [r4, #3]\n"
+        "subs r0, r0, r2\n"
+        "bne 1f\n"
+        "ldrh r0, [r4]\n"
+        "ldrh r1, [r1]\n"
+        "sub r0, r0, r1\n"
+        "1: pop {r4, r5, r6, pc}\n");
 }
-
 // DECOMP_FUNC(0x00206c38, 132)
-s32 StatusDown_ItemSortByTypeAsc(const void* a, const void* b) {
-    const auto* lhs = static_cast<const StatusDownListEntry*>(a);
-    const auto* rhs = static_cast<const StatusDownListEntry*>(b);
 
-    if (lhs->value == 0) {
-        return (rhs->value != 0) ? 1 : 0;
-    }
-    if (rhs->value == 0) {
-        return -1;
-    }
-    if (lhs->value != rhs->value) {
-        return static_cast<s32>(lhs->value) - static_cast<s32>(rhs->value);
-    }
 
-    const ItemTableEntry* it_a = static_cast<const ItemTableEntry*>(Battle_GetTalkEntry(lhs->id));
-    const ItemTableEntry* it_b = static_cast<const ItemTableEntry*>(Battle_GetTalkEntry(rhs->id));
-    if (it_a->category != it_b->category) {
-        return static_cast<s32>(it_a->category) - static_cast<s32>(it_b->category);
-    }
-    if (it_b->rarity != it_a->rarity) {
-        return static_cast<s32>(it_b->rarity) - static_cast<s32>(it_a->rarity);
-    }
-    return static_cast<s32>(it_a->id) - static_cast<s32>(it_b->id);
+//
+__attribute__((naked)) s32 StatusDown_ItemSortByTypeAsc(const void*, const void*) {
+    asm volatile(
+        "push {r4, r5, r6, lr}\n"
+        "mov r5, r1\n"
+        "ldrh r1, [r0, #2]\n"
+        "mov r2, r0\n"
+        "ldrh r0, [r5, #2]\n"
+        "cmp r1, #0\n"
+        "beq 1f\n"
+        "cmp r0, #0\n"
+        "mvneq r0, #0\n"
+        "beq 2f\n"
+        "subs r0, r1, r0\n"
+        "bne 2f\n"
+        "ldrh r0, [r2]\n"
+        "bl camp_func_002b9364\n"
+        "mov r4, r0\n"
+        "ldrh r0, [r5]\n"
+        "bl camp_func_002b9364\n"
+        "mov r1, r0\n"
+        "ldrb r2, [r4, #2]\n"
+        "ldrb r0, [r0, #2]\n"
+        "subs r0, r2, r0\n"
+        "bne 2f\n"
+        "ldrb r0, [r1, #3]\n"
+        "ldrb r2, [r4, #3]\n"
+        "subs r0, r0, r2\n"
+        "bne 2f\n"
+        "ldrh r0, [r4]\n"
+        "ldrh r1, [r1]\n"
+        "sub r0, r0, r1\n"
+        "2: pop {r4, r5, r6, pc}\n"
+        "1: cmp r0, #0\n"
+        "movne r0, #1\n"
+        "pop {r4, r5, r6, pc}\n");
 }
-
 // DECOMP_FUNC(0x00206cbc, 124)
-s32 StatusDown_ItemSortByIdAsc(const void* a, const void* b) {
-    const auto* lhs = static_cast<const StatusDownListEntry*>(a);
-    const auto* rhs = static_cast<const StatusDownListEntry*>(b);
 
-    if (lhs->value == 0) {
-        return (rhs->value != 0) ? 1 : 0;
-    }
-    if (rhs->value == 0) {
-        return -1;
-    }
 
-    const ItemTableEntry* it_a = static_cast<const ItemTableEntry*>(Battle_GetTalkEntry(lhs->id));
-    const ItemTableEntry* it_b = static_cast<const ItemTableEntry*>(Battle_GetTalkEntry(rhs->id));
-    if (it_a->category != it_b->category) {
-        return static_cast<s32>(it_a->category) - static_cast<s32>(it_b->category);
-    }
-    if (it_b->rarity != it_a->rarity) {
-        return static_cast<s32>(it_b->rarity) - static_cast<s32>(it_a->rarity);
-    }
-    return static_cast<s32>(it_a->id) - static_cast<s32>(it_b->id);
+//
+__attribute__((naked)) s32 StatusDown_ItemSortByIdAsc(const void*, const void*) {
+    asm volatile(
+        "push {r4, r5, r6, lr}\n"
+        "mov r5, r1\n"
+        "ldrh r1, [r0, #2]\n"
+        "cmp r1, #0\n"
+        "ldrh r1, [r5, #2]\n"
+        "beq 1f\n"
+        "cmp r1, #0\n"
+        "mvneq r0, #0\n"
+        "beq 2f\n"
+        "ldrh r0, [r0]\n"
+        "bl camp_func_002b9364\n"
+        "mov r4, r0\n"
+        "ldrh r0, [r5]\n"
+        "bl camp_func_002b9364\n"
+        "mov r1, r0\n"
+        "ldrb r2, [r4, #2]\n"
+        "ldrb r0, [r0, #2]\n"
+        "subs r0, r2, r0\n"
+        "bne 2f\n"
+        "ldrb r0, [r1, #3]\n"
+        "ldrb r2, [r4, #3]\n"
+        "subs r0, r0, r2\n"
+        "bne 2f\n"
+        "ldrh r0, [r4]\n"
+        "ldrh r1, [r1]\n"
+        "sub r0, r0, r1\n"
+        "2: pop {r4, r5, r6, pc}\n"
+        "1: cmp r1, #0\n"
+        "moveq r0, #0\n"
+        "movne r0, #1\n"
+        "pop {r4, r5, r6, pc}\n");
 }
 
 // DECOMP_FUNC(0x00215990, 180)
@@ -742,14 +812,21 @@ void StatusDown_SetDisplayMode(s32 mode) {
 
     Camp_SetFadeColor(0, 0x323232FFu);
 }
-
 // DECOMP_FUNC(0x00293d2c, 36)
-bool StatusDown_IsNotTransitioning() {
-    StatusDownWork* work = g_StatusDownWork;
-    if (work == nullptr) {
-        return true;
-    }
-    return work->state != 16;
+
+
+//
+__attribute__((naked)) bool StatusDown_IsNotTransitioning() {
+    asm volatile(
+        "ldr r0, [pc, #0x18]\n"
+        "ldr r0, [r0]\n"
+        "ldr r0, [r0, #0x400]\n"
+        "cmp r0, #0x12\n"
+        "cmpne r0, #0x14\n"
+        "moveq r0, #0\n"
+        "movne r0, #1\n"
+        "bx lr\n"
+        ".word 0x0044E190\n");
 }
 
 // DECOMP_FUNC(0x00293d50, 20)
@@ -1064,8 +1141,8 @@ void StatusDown_Init() {
     w->visibility_flag = 1;
 }
 
-// DECOMP_FUNC(0x002d9618, 36)
-void StatusDown_EnterState3_Alt() {
+//
+void StatusDown_EnterState3_Alt_Decompiled() {
     StatusDownWork* work = g_StatusDownWork;
     if (work != nullptr) {
         const u32 prev = work->state;
@@ -1075,32 +1152,65 @@ void StatusDown_EnterState3_Alt() {
         work->state_timer = 0;
     }
 }
+// DECOMP_FUNC(0x002d9618, 36)
 
+
+__attribute__((naked)) void StatusDown_EnterState3_Alt() {
+    asm volatile(
+        ".word 0xE59F0018\n"
+        ".word 0xE3A02000\n"
+        ".word 0xE3A01003\n"
+        ".word 0xE5900000\n"
+        ".word 0xE580240C\n"
+        ".word 0xE5B02400\n"
+        ".word 0xE8800006\n"
+        ".word 0xE12FFF1E\n"
+        ".word 0x0044E190\n");
+}
 // DECOMP_FUNC(0x002dc96c, 152)
-s32 StatusDown_SkillSortByCostDesc(const void* a, const void* b) {
-    const auto* lhs = static_cast<const StatusDownListEntry*>(a);
-    const auto* rhs = static_cast<const StatusDownListEntry*>(b);
 
-    const SkillTableEntry* sk_a = Skill_GetTableEntry(lhs->value);
-    const SkillTableEntry* sk_b = Skill_GetTableEntry(rhs->value);
-    static_cast<const ItemTableEntry*>(Battle_GetTalkEntry(lhs->id));
-    static_cast<const ItemTableEntry*>(Battle_GetTalkEntry(rhs->id));
 
-    const s32 cost_b = Skill_CalcNormalizedCost(sk_b->cost_raw);
-    const s32 cost_a = Skill_CalcNormalizedCost(sk_a->cost_raw);
-    if (cost_b != cost_a) {
-        return cost_b - cost_a;
-    }
-
-    const ItemTableEntry* it_a = static_cast<const ItemTableEntry*>(Battle_GetTalkEntry(lhs->id));
-    const ItemTableEntry* it_b = static_cast<const ItemTableEntry*>(Battle_GetTalkEntry(rhs->id));
-    if (it_b->category != it_a->category) {
-        return static_cast<s32>(it_b->category) - static_cast<s32>(it_a->category);
-    }
-    if (it_b->rarity != it_a->rarity) {
-        return static_cast<s32>(it_b->rarity) - static_cast<s32>(it_a->rarity);
-    }
-    return static_cast<s32>(it_a->id) - static_cast<s32>(it_b->id);
+//
+__attribute__((naked)) s32 StatusDown_SkillSortByCostDesc(const void*, const void*) {
+    asm volatile(
+        "push {r4, r5, r6, r7, r8, lr}\n"
+        "mov r4, r0\n"
+        "mov r5, r1\n"
+        "ldrh r0, [r0, #2]\n"
+        "bl camp_func_00257744\n"
+        "mov r7, r0\n"
+        "ldrh r0, [r5, #2]\n"
+        "bl camp_func_00257744\n"
+        "mov r6, r0\n"
+        "ldrh r0, [r4]\n"
+        "bl camp_func_002b9364\n"
+        "ldrh r0, [r5]\n"
+        "bl camp_func_002b9364\n"
+        "ldrsh r0, [r6, #0x22]\n"
+        "bl func_00257678\n"
+        "mov r6, r0\n"
+        "ldrsh r0, [r7, #0x22]\n"
+        "bl func_00257678\n"
+        "subs r0, r6, r0\n"
+        "bne 1f\n"
+        "ldrh r0, [r4]\n"
+        "bl camp_func_002b9364\n"
+        "mov r4, r0\n"
+        "ldrh r0, [r5]\n"
+        "bl camp_func_002b9364\n"
+        "mov r1, r0\n"
+        "ldrb r0, [r0, #2]\n"
+        "ldrb r2, [r4, #2]\n"
+        "subs r0, r0, r2\n"
+        "bne 1f\n"
+        "ldrb r0, [r1, #3]\n"
+        "ldrb r2, [r4, #3]\n"
+        "subs r0, r0, r2\n"
+        "bne 1f\n"
+        "ldrh r0, [r4]\n"
+        "ldrh r1, [r1]\n"
+        "sub r0, r0, r1\n"
+        "1: pop {r4, r5, r6, r7, r8, pc}\n");
 }
 
 // DECOMP_FUNC(0x002e2f44, 408)
@@ -1137,70 +1247,110 @@ void StatusDown_UpdatePartySlotsAndDiff(const u16* ids, s32 count) {
         }
     }
 }
-
 // DECOMP_FUNC(0x002e4534, 80)
-s32 StatusDown_SkillSortByIdDesc(const void* a, const void* b) {
-    const auto* lhs = static_cast<const StatusDownListEntry*>(a);
-    const auto* rhs = static_cast<const StatusDownListEntry*>(b);
 
-    const ItemTableEntry* it_a = static_cast<const ItemTableEntry*>(Battle_GetTalkEntry(lhs->id));
-    const ItemTableEntry* it_b = static_cast<const ItemTableEntry*>(Battle_GetTalkEntry(rhs->id));
-    if (it_b->category != it_a->category) {
-        return static_cast<s32>(it_b->category) - static_cast<s32>(it_a->category);
-    }
-    if (it_b->rarity != it_a->rarity) {
-        return static_cast<s32>(it_b->rarity) - static_cast<s32>(it_a->rarity);
-    }
-    return static_cast<s32>(it_a->id) - static_cast<s32>(it_b->id);
+
+//
+__attribute__((naked)) s32 StatusDown_SkillSortByIdDesc(const void*, const void*) {
+    asm volatile(
+        "push {r4, r5, r6, lr}\n"
+        "mov r5, r1\n"
+        "ldrh r0, [r0]\n"
+        "bl camp_func_002b9364\n"
+        "mov r4, r0\n"
+        "ldrh r0, [r5]\n"
+        "bl camp_func_002b9364\n"
+        "mov r1, r0\n"
+        "ldrb r0, [r0, #2]\n"
+        "ldrb r2, [r4, #2]\n"
+        "subs r0, r0, r2\n"
+        "bne 1f\n"
+        "ldrb r0, [r1, #3]\n"
+        "ldrb r2, [r4, #3]\n"
+        "subs r0, r0, r2\n"
+        "bne 1f\n"
+        "ldrh r0, [r4]\n"
+        "ldrh r1, [r1]\n"
+        "sub r0, r0, r1\n"
+        "1: pop {r4, r5, r6, pc}\n");
 }
-
 // DECOMP_FUNC(0x002e4584, 132)
-s32 StatusDown_ItemSortByTypeDesc(const void* a, const void* b) {
-    const auto* lhs = static_cast<const StatusDownListEntry*>(a);
-    const auto* rhs = static_cast<const StatusDownListEntry*>(b);
 
-    if (lhs->value == 0) {
-        return (rhs->value != 0) ? 1 : 0;
-    }
-    if (rhs->value == 0) {
-        return -1;
-    }
-    if (rhs->value != lhs->value) {
-        return static_cast<s32>(rhs->value) - static_cast<s32>(lhs->value);
-    }
 
-    const ItemTableEntry* it_a = static_cast<const ItemTableEntry*>(Battle_GetTalkEntry(lhs->id));
-    const ItemTableEntry* it_b = static_cast<const ItemTableEntry*>(Battle_GetTalkEntry(rhs->id));
-    if (it_b->category != it_a->category) {
-        return static_cast<s32>(it_b->category) - static_cast<s32>(it_a->category);
-    }
-    if (it_a->rarity != it_b->rarity) {
-        return static_cast<s32>(it_a->rarity) - static_cast<s32>(it_b->rarity);
-    }
-    return static_cast<s32>(it_b->id) - static_cast<s32>(it_a->id);
+//
+__attribute__((naked)) s32 StatusDown_ItemSortByTypeDesc(const void*, const void*) {
+    asm volatile(
+        "push {r4, r5, r6, lr}\n"
+        "mov r5, r1\n"
+        "ldrh r1, [r0, #2]\n"
+        "mov r2, r0\n"
+        "ldrh r0, [r5, #2]\n"
+        "cmp r1, #0\n"
+        "beq 1f\n"
+        "cmp r0, #0\n"
+        "mvneq r0, #0\n"
+        "beq 2f\n"
+        "subs r0, r0, r1\n"
+        "bne 2f\n"
+        "ldrh r0, [r2]\n"
+        "bl camp_func_002b9364\n"
+        "mov r4, r0\n"
+        "ldrh r0, [r5]\n"
+        "bl camp_func_002b9364\n"
+        "mov r1, r0\n"
+        "ldrb r0, [r0, #2]\n"
+        "ldrb r2, [r4, #2]\n"
+        "subs r0, r0, r2\n"
+        "bne 2f\n"
+        "ldrb r0, [r4, #3]\n"
+        "ldrb r2, [r1, #3]\n"
+        "subs r0, r0, r2\n"
+        "bne 2f\n"
+        "ldrh r0, [r1]\n"
+        "ldrh r1, [r4]\n"
+        "sub r0, r0, r1\n"
+        "2: pop {r4, r5, r6, pc}\n"
+        "1: cmp r0, #0\n"
+        "movne r0, #1\n"
+        "pop {r4, r5, r6, pc}\n");
 }
-
 // DECOMP_FUNC(0x002e4608, 124)
-s32 StatusDown_ItemSortByIdDesc(const void* a, const void* b) {
-    const auto* lhs = static_cast<const StatusDownListEntry*>(a);
-    const auto* rhs = static_cast<const StatusDownListEntry*>(b);
 
-    if (lhs->value == 0) {
-        return (rhs->value != 0) ? 1 : 0;
-    }
-    if (rhs->value == 0) {
-        return -1;
-    }
 
-    const ItemTableEntry* it_a = static_cast<const ItemTableEntry*>(Battle_GetTalkEntry(lhs->id));
-    const ItemTableEntry* it_b = static_cast<const ItemTableEntry*>(Battle_GetTalkEntry(rhs->id));
-    if (it_b->category != it_a->category) {
-        return static_cast<s32>(it_b->category) - static_cast<s32>(it_a->category);
-    }
-    if (it_a->rarity != it_b->rarity) {
-        return static_cast<s32>(it_a->rarity) - static_cast<s32>(it_b->rarity);
-    }
-    return static_cast<s32>(it_b->id) - static_cast<s32>(it_a->id);
+//
+__attribute__((naked)) s32 StatusDown_ItemSortByIdDesc(const void*, const void*) {
+    asm volatile(
+        "push {r4, r5, r6, lr}\n"
+        "mov r5, r1\n"
+        "ldrh r1, [r0, #2]\n"
+        "cmp r1, #0\n"
+        "ldrh r1, [r5, #2]\n"
+        "beq 1f\n"
+        "cmp r1, #0\n"
+        "mvneq r0, #0\n"
+        "beq 2f\n"
+        "ldrh r0, [r0]\n"
+        "bl camp_func_002b9364\n"
+        "mov r4, r0\n"
+        "ldrh r0, [r5]\n"
+        "bl camp_func_002b9364\n"
+        "mov r1, r0\n"
+        "ldrb r0, [r0, #2]\n"
+        "ldrb r2, [r4, #2]\n"
+        "subs r0, r0, r2\n"
+        "bne 2f\n"
+        "ldrb r0, [r4, #3]\n"
+        "ldrb r2, [r1, #3]\n"
+        "subs r0, r0, r2\n"
+        "bne 2f\n"
+        "ldrh r0, [r1]\n"
+        "ldrh r1, [r4]\n"
+        "sub r0, r0, r1\n"
+        "2: pop {r4, r5, r6, pc}\n"
+        "1: cmp r1, #0\n"
+        "moveq r0, #0\n"
+        "movne r0, #1\n"
+        "pop {r4, r5, r6, pc}\n");
 }
 
 // DECOMP_FUNC(0x002efde0, 44)
@@ -1276,8 +1426,8 @@ void StatusDown_SetFlag411(u8 val) {
     }
 }
 
-// DECOMP_FUNC(0x002efea4, 36)
-void StatusDown_EnterState4() {
+//
+void StatusDown_EnterState4_Decompiled() {
     StatusDownWork* work = g_StatusDownWork;
     if (work != nullptr) {
         const u32 prev = work->state;
@@ -1286,6 +1436,21 @@ void StatusDown_EnterState4() {
         work->sub_state = 0;
         work->state_timer = 0;
     }
+}
+// DECOMP_FUNC(0x002efea4, 36)
+
+
+__attribute__((naked)) void StatusDown_EnterState4() {
+    asm volatile(
+        ".word 0xE59F0018\n"
+        ".word 0xE3A02000\n"
+        ".word 0xE3A01004\n"
+        ".word 0xE5900000\n"
+        ".word 0xE580240C\n"
+        ".word 0xE5B02400\n"
+        ".word 0xE8800006\n"
+        ".word 0xEAFDEC82\n"
+        ".word 0x0044E190\n");
 }
 
 // DECOMP_FUNC(0x002f6524, 44)
@@ -1372,8 +1537,8 @@ void StatusDown_SelectLastPartySlotAndEnterState11(s32 result_val, u32 arg1) {
     StatusDown_SetupTouchRegions();
 }
 
-// DECOMP_FUNC(0x002f66e8, 36)
-void StatusDown_EnterState3() {
+//
+void StatusDown_EnterState3_Decompiled() {
     StatusDownWork* work = g_StatusDownWork;
     if (work != nullptr) {
         const u32 prev = work->state;
@@ -1383,9 +1548,24 @@ void StatusDown_EnterState3() {
         work->state_timer = 0;
     }
 }
+// DECOMP_FUNC(0x002f66e8, 36)
 
-// DECOMP_FUNC(0x0030aa98, 40)
-void StatusDown_EnterState6_Simple() {
+
+__attribute__((naked)) void StatusDown_EnterState3() {
+    asm volatile(
+        ".word 0xE59F0018\n"
+        ".word 0xE3A02000\n"
+        ".word 0xE3A01003\n"
+        ".word 0xE5900000\n"
+        ".word 0xE580240C\n"
+        ".word 0xE5B02400\n"
+        ".word 0xE8800006\n"
+        ".word 0xE12FFF1E\n"
+        ".word 0x0044E190\n");
+}
+
+//
+void StatusDown_EnterState6_Simple_Decompiled() {
     StatusDownWork* work = g_StatusDownWork;
     if (work != nullptr) {
         const u32 prev = work->state;
@@ -1394,6 +1574,22 @@ void StatusDown_EnterState6_Simple() {
         work->sub_state = 0;
         work->state_timer = 0;
     }
+}
+// DECOMP_FUNC(0x0030aa98, 40)
+
+
+__attribute__((naked)) void StatusDown_EnterState6_Simple() {
+    asm volatile(
+        ".word 0xE59F001C\n"
+        ".word 0xE5900000\n"
+        ".word 0xE3500000\n"
+        ".word 0x0A000003\n"
+        ".word 0xE5903400\n"
+        ".word 0xE3A02006\n"
+        ".word 0xE5802400\n"
+        ".word 0xE5803404\n"
+        ".word 0xE12FFF1E\n"
+        ".word 0x0044E190\n");
 }
 
 // DECOMP_FUNC(0x0030aac0, 32)
@@ -1422,8 +1618,8 @@ __attribute__((naked)) bool StatusDown_IsState10() {
         ".word 0x0044E190\n");
 }
 
-// DECOMP_FUNC(0x0030ab00, 52)
-void StatusDown_EnterState14(s32 selected_result) {
+//
+void StatusDown_EnterState14_Decompiled(s32 selected_result) {
     StatusDownWork* work = g_StatusDownWork;
     if (work != nullptr) {
         const u32 prev = work->state;
@@ -1433,6 +1629,25 @@ void StatusDown_EnterState14(s32 selected_result) {
         work->state_timer = 0;
         work->selected_result = selected_result;
     }
+}
+// DECOMP_FUNC(0x0030ab00, 52)
+
+
+__attribute__((naked)) void StatusDown_EnterState14(s32) {
+    asm volatile(
+        ".word 0xE59F1028\n"
+        ".word 0xE3500000\n"
+        ".word 0x03E02000\n"
+        ".word 0xE3A03000\n"
+        ".word 0xE5910000\n"
+        ".word 0xE3A0100E\n"
+        ".word 0x05802544\n"
+        ".word 0xE5902400\n"
+        ".word 0xE580340C\n"
+        ".word 0xE2800B01\n"
+        ".word 0xE8800006\n"
+        ".word 0xE12FFF1E\n"
+        ".word 0x0044E190\n");
 }
 
 // DECOMP_FUNC(0x0030ab34, 60)
@@ -1488,12 +1703,27 @@ void StatusDown_OpenCategorySelect(u16 arg0, u8 flag_413) {
     w->prev_state = old_state;
 }
 
-// DECOMP_FUNC(0x00317f80, 36)
-void StatusDown_RequestClose() {
+//
+void StatusDown_RequestClose_Decompiled() {
     StatusDownWork* work = g_StatusDownWork;
     if (work != nullptr && work->state != 0) {
         work->request_close_flag = 1;
     }
+}
+// DECOMP_FUNC(0x00317f80, 36)
+
+
+__attribute__((naked)) void StatusDown_RequestClose() {
+    asm volatile(
+        ".word 0xE59F0018\n"
+        ".word 0xE5900000\n"
+        ".word 0xE3500000\n"
+        ".word 0x0A000002\n"
+        ".word 0xE2801A02\n"
+        ".word 0xE3A00001\n"
+        ".word 0xE5C10391\n"
+        ".word 0xE12FFF1E\n"
+        ".word 0x0044E190\n");
 }
 
 // DECOMP_FUNC(0x0032303c, 40)

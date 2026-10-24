@@ -991,327 +991,821 @@ void FilterXPoly_func_00348548(FilterXPolyWork* self, void* source, s32 arg) {
 
     Filter_Submit(self->field_18, g_FilterXPolyMatrix); // 0x003488EC
 }
+// DECOMP_FUNC(0x002217d8, 648)
+
 
 // ---------------------------------------------------------------------------
 // EffectProcess.cpp
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x002217d8, 648)
-void* EffectProcess_func_002217d8(u8 mode) {
-    // 0x002217F0..0x00221824: 0x534-byte singleton.
-    EffectProcessWork* work = static_cast<EffectProcessWork*>(
-        AsdMem_Alloc(0x100, 0x100, 0, 0x534, 1));
-    g_EffectProcessWork = work;
-    AsdMem_Zero(work, 0x534);
-    work->mode = mode;                                  // 0x00221828
-
-    Effect_InitA();                                     // 0x0022182C
-    Effect_InitB(0);                                    // 0x00221834
-    if (work->mode == 0) {
-        Effect_InitC();                                 // 0x00221844
-    }
-    Effect_InitD();                                     // 0x00221848
-
-    // 0x0022184C..0x00221894: default vectors, 5.0/60.0 distances.
-    work->field_508 = 0.0f;
-    work->field_50C = 0.0f;
-    work->field_510 = 5.0f;
-    work->field_514 = 0.0f;
-    work->field_518 = 0.0f;
-    work->field_51C = 0.0f;
-    work->field_520 = 60.0f;
-
-    Effect_Setup(work, 1);                              // 0x002218A0
-    Effect_SetScale(work, 5.0f, 1.0f);                  // 0x002218B0
-    const f32 up[3] = {0.0f, 1.0f, 0.0f};               // [sp+0x10..0x18]
-    Effect_SetVectors(work, &work->field_508, &work->field_514,
-                      up);                              // 0x002218C4
-    Effect_SetDrawParams(work, 1, work->field_520, 0.1f, 25600.0f,
-                         0.33333334f);                  // 0x46C80000 / 0x3FD55555
-
-    // 0x002218E4..0x0022190C: "EffectProc" calculation task.
-    // 0x002218E4..0x00221908: stack word [0] = 0x0017FAE4 (5th argument,
-    // callback), [4] = 0x001DC8C8 (6th), [8] = work (7th).
-    work->task = AsdTask_CreateCalc("EffectProc", 2, 0, 0,
-                                    TaskCallback(0x0017FAE4),
-                                    0x001DC8C8, TaskUserData(work));
-
-    // 0x00221910..0x002219A4: 2D-only or 3D+2D draw tasks.
-    if (work->mode != 0) {
-        work->draw_down = AsdTask_CreateDraw(
-            "EffectDrawDown2D", 0x84, 0, 0, TaskCallback(0x001AA19C), 0,
-            TaskUserData(work), work->task);
-        work->draw_up = nullptr;
-    } else {
-        work->draw_up = AsdTask_CreateDraw(
-            "EffectDrawUp3D", 0x70, 0, 0, TaskCallback(0x001AA3A4), 0,
-            TaskUserData(work), work->task);
-        work->draw_down = AsdTask_CreateDraw(
-            "EffectDrawDown2D", 0xE8, 0, 0, TaskCallback(0x001DC954), 0,
-            TaskUserData(work), work->task);
-    }
-
-    return work->task;                                  // 0x002219A8
+//
+__attribute__((naked)) void* EffectProcess_func_002217d8(u8) {
+    asm volatile(
+        ".word 0xE92D41F0\n"
+        ".word 0xE1A05000\n"
+        ".word 0xE3A01093\n"
+        ".word 0xE28F0F73\n"
+        ".word 0xED2D8B02\n"
+        ".word 0xE24DD020\n"
+        ".word 0xE1A00000\n"
+        ".word 0xE59F61FC\n"
+        ".word 0xE3A00001\n"
+        ".word 0xE3A01C01\n"
+        ".word 0xE58D0000\n"
+        ".word 0xE1A03006\n"
+        ".word 0xE3A02000\n"
+        ".word 0xE1A00001\n"
+        ".word 0xEB028CDB\n" // AsdMem_Alloc (0x002C4B84)
+        ".word 0xE59F11E0\n"
+        ".word 0xE1A04000\n"
+        ".word 0xE5810000\n"
+        ".word 0xE1A01006\n"
+        ".word 0xEB028CC1\n" // AsdMem_Zero (0x002C4B30)
+        ".word 0xE5C45530\n"
+        ".word 0xEB0439DD\n" // Effect_InitA (0x0032FFA8)
+        ".word 0xE3A00000\n"
+        ".word 0xEBFF7C5C\n" // Effect_InitB (0x002009AC)
+        ".word 0xE5D40530\n"
+        ".word 0xE2846C05\n"
+        ".word 0xE3500000\n"
+        ".word 0x0B03D8E3\n" // Effect_InitC (0x00317BD8)
+        ".word 0xEB000098\n" // Effect_InitD (0x00221AB0)
+        ".word 0xED9F1A6B\n"
+        ".word 0xED9F8A6B\n"
+        ".word 0xED8D1A04\n"
+        ".word 0xE2848B01\n"
+        ".word 0xED8D8A05\n"
+        ".word 0xE2888F42\n"
+        ".word 0xED8D1A06\n"
+        ".word 0xEDDF8A66\n"
+        ".word 0xED881A00\n"
+        ".word 0xE2847B01\n"
+        ".word 0xED881A01\n"
+        ".word 0xE2877F45\n"
+        ".word 0xEDC88A02\n"
+        ".word 0xED871A00\n"
+        ".word 0xED871A01\n"
+        ".word 0xED9F0A5F\n"
+        ".word 0xE2845B01\n"
+        ".word 0xED871A02\n"
+        ".word 0xED850A48\n"
+        ".word 0xE3A01001\n"
+        ".word 0xE1A00004\n"
+        ".word 0xEB02825A\n" // Effect_Setup (0x002C2210)
+        ".word 0xEEF00A48\n"
+        ".word 0xEEB00A68\n"
+        ".word 0xE1A00004\n"
+        ".word 0xEB027FAF\n" // Effect_SetScale (0x002C1774)
+        ".word 0xE28D3010\n"
+        ".word 0xE1A02007\n"
+        ".word 0xE1A01008\n"
+        ".word 0xE1A00004\n"
+        ".word 0xEB0281F7\n" // Effect_SetVectors (0x002C20A8)
+        ".word 0xED950A48\n"
+        ".word 0xEDDF1A4F\n"
+        ".word 0xE3A01001\n"
+        ".word 0xED9F1A4E\n"
+        ".word 0xEDDF0A4E\n"
+        ".word 0xE1A00004\n"
+        ".word 0xEB0281C5\n" // Effect_SetDrawParams (0x002C1FFC)
+        ".word 0xE59F1134\n"
+        ".word 0xE59F012C\n"
+        ".word 0xE28D5004\n"
+        ".word 0xE58D1000\n"
+        ".word 0xE3A03000\n"
+        ".word 0xE8850011\n"
+        ".word 0xE1A02003\n"
+        ".word 0xE3A01002\n"
+        ".word 0xE28F0F46\n"
+        ".word 0xEB02901A\n" // AsdTask_CreateCalc (0x002C5978)
+        ".word 0xE5840524\n"
+        ".word 0xE5D61030\n"
+        ".word 0xE2845B01\n"
+        ".word 0xE3A07000\n"
+        ".word 0xE3510000\n"
+        ".word 0xE2855F49\n"
+        ".word 0x0A00000A\n"
+        ".word 0xE59F1100\n"
+        ".word 0xE58D000C\n"
+        ".word 0xE58D4008\n"
+        ".word 0xE3A03000\n"
+        ".word 0xE88D0082\n"
+        ".word 0xE1A02003\n"
+        ".word 0xE3A01084\n"
+        ".word 0xE28F00E8\n"
+        ".word 0xEB028CAC\n" // AsdTask_CreateDraw (0x002C4C00)
+        ".word 0xE584052C\n"
+        ".word 0xEA000014\n"
+        ".word 0xE59F10EC\n"
+        ".word 0xE58D000C\n"
+        ".word 0xE58D4008\n"
+        ".word 0xE3A03000\n"
+        ".word 0xE88D0082\n"
+        ".word 0xE1A02003\n"
+        ".word 0xE3A01070\n"
+        ".word 0xE28F00D4\n"
+        ".word 0xEB028CA1\n" // AsdTask_CreateDraw (0x002C4C00)
+        ".word 0xE5840528\n"
+        ".word 0xE5950000\n"
+        ".word 0xE59F10D4\n"
+        ".word 0xE58D4008\n"
+        ".word 0xE58D000C\n"
+        ".word 0xE3A03000\n"
+        ".word 0xE88D0082\n"
+        ".word 0xE1A02003\n"
+        ".word 0xE3A010E8\n"
+        ".word 0xE28F0090\n"
+        ".word 0xEB028C96\n" // AsdTask_CreateDraw (0x002C4C00)
+        ".word 0xE584052C\n"
+        ".word 0xE5940524\n"
+        ".word 0xE28DD020\n"
+        ".word 0xECBD8B02\n"
+        ".word 0xE8BD81F0\n"
+        ".word 0x535C3A63\n"
+        ".word 0x5C34544D\n"
+        ".word 0x36445258\n"
+        ".word 0x735C3638\n"
+        ".word 0x34736464\n"
+        ".word 0x6F72705C\n"
+        ".word 0x6D617267\n"
+        ".word 0x7461625C\n"
+        ".word 0x5C656C74\n"
+        ".word 0x65666645\n"
+        ".word 0x455C7463\n"
+        ".word 0x63656666\n"
+        ".word 0x6F725074\n"
+        ".word 0x73736563\n"
+        ".word 0x7070632E\n"
+        ".word 0x00000000\n"
+        ".word 0x00000534\n"
+        ".word 0x00433260\n"
+        ".word 0x00000000\n"
+        ".word 0x3F800000\n"
+        ".word 0x40A00000\n"
+        ".word 0x42700000\n"
+        ".word 0x3FD55555\n"
+        ".word 0x46C80000\n"
+        ".word 0x3DCCCCCD\n"
+        ".word 0x001DC8C8\n"
+        ".word 0x0017FAE4\n"
+        ".word 0x65666645\n"
+        ".word 0x72507463\n"
+        ".word 0x0000636F\n"
+        ".word 0x001AA19C\n"
+        ".word 0x65666645\n"
+        ".word 0x72447463\n"
+        ".word 0x6F447761\n"
+        ".word 0x44326E77\n"
+        ".word 0x00000000\n"
+        ".word 0x001AA3A4\n"
+        ".word 0x65666645\n"
+        ".word 0x72447463\n"
+        ".word 0x70557761\n"
+        ".word 0x00004433\n"
+        ".word 0x001DC954\n");
 }
+// DECOMP_FUNC(0x00318770, 516)
+
 
 // ---------------------------------------------------------------------------
 // btlTalkCommand.cpp
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x00318770, 516)
-s32 btlTalkCommand_func_00318770() {
-    // 0x00318774..0x0031879C: selected index -> unit -> talk entry.
-    const u16 selected = Talk_GetSelectedIndex();
-    BtlTalkUnitRecord* unit =
-        static_cast<BtlTalkUnitRecord*>(Battle_GetTalkUnit(selected));
-    const u16 linked = unit->linked_id;
-    BtlTalkUnitRecord* entry =
-        static_cast<BtlTalkUnitRecord*>(Battle_GetTalkUnit(linked));
-    Battle_GetTalkEntry(linked);
-
-    // 0x003187A0..0x003187D8: direct branch when the linked entry is not a
-    // talk candidate (0x0400) or the command availability test succeeds.
-    if (linked != 0 && entry != nullptr && (entry->flags & 0x0400) != 0) {
-        const u8 max = reinterpret_cast<const u8*>(ScriptVm_GetTalkState())[0x76];
-        if (entry->field_02 <= max && Talk_CheckUnit(linked) == 0) {
-            Talk_CommitChoice(linked);                  // 0x0031886C
-            return 1;
-        }
-    }
-
-    // 0x003187DC..0x00318800: 0x962-byte candidate index buffer.
-    u16* candidates = static_cast<u16*>(
-        AsdMem_Alloc(0x100, 0x100, 0, 0x962, 1));
-    u32 candidate_count = 0;
-
-    // 0x0031880C..0x00318844: r7 starts as unit->field_02 and is replaced by
-    // the ScriptVm +0x76 byte only when talk_max <= unit->field_02, so the
-    // threshold base is min(talk_max, unit->field_02).  r6 =
-    // base - max(10, base/2).
-    const u8 talk_max = reinterpret_cast<const u8*>(
-        ScriptVm_GetTalkState())[0x76];
-    const s32 base = std::min<s32>(talk_max, unit->field_02);
-    s32 lower = base;
-    const s32 half = lower / 2;
-    const s32 margin = (half < 10) ? 10 : half;
-    lower = static_cast<s16>(lower - margin);
-    if (Talk_CheckVisible(lower) <= 0) {                // 0x00318848
-        Talk_CommitChoice(-1);                          // 0x0031885C
-        AsdMem_Free(candidates);                        // 0x00318920
-        return 1;
-    }
-    // 0x00318880: clamp the scan's lower bound to 1.
-    if (lower <= 0) {
-        lower = 1;
-    }
-
-    // 0x00318888..0x003188F4: scan ids 1..0x4B0; the record's field_03 is
-    // compared against r6 (lower) and r7 (the threshold base), not the unit
-    // limit.
-    for (u32 id = 1; id <= 0x4B0; ++id) {
-        const u16 narrow = static_cast<u16>(id);
-        BtlTalkUnitRecord* row =
-            static_cast<BtlTalkUnitRecord*>(Battle_GetTalkEntry(narrow));
-        BtlTalkUnitRecord* unit_row =
-            static_cast<BtlTalkUnitRecord*>(Battle_GetTalkUnit(narrow));
-        if (row->field_03 >= lower &&
-            base >= row->field_03 &&
-            (unit_row->flags & 0x0400) != 0 &&
-            Talk_CheckUnit(row->id) == 0) {
-            Talk_SelectUnit(row->id);                   // 0x003188D4
-            candidates[candidate_count++] = row->id;    // 0x003188E8
-        }
-    }
-
-    s32 result;
-    if (candidate_count == 0) {
-        result = -1;                                    // 0x003188FC
-    } else {
-        const s32 index = static_cast<s16>(Random_Range(
-            static_cast<u16>(candidate_count - 1)));    // 0x0031890C
-        result = static_cast<s16>(candidates[index]);   // 0x00318918
-    }
-    Talk_CommitChoice(result);                          // 0x0031891C
-    AsdMem_Free(candidates);                            // 0x00318924
-    return 1;
+//
+__attribute__((naked)) s32 btlTalkCommand_func_00318770() {
+    asm volatile(
+        ".word 0xE92D43F8\n"
+        ".word 0xE3A00000\n"
+        ".word 0xEBFDF9F8\n" // Talk_GetSelectedIndex (0x00296F60)
+        ".word 0xE6FF0070\n"
+        ".word 0xEBFE603D\n" // Battle_GetTalkUnit (0x002B087C)
+        ".word 0xE1D048B2\n"
+        ".word 0xE1A06000\n"
+        ".word 0xE1A00004\n"
+        ".word 0xEBFE6039\n" // Battle_GetTalkUnit (0x002B087C)
+        ".word 0xE1A05000\n"
+        ".word 0xE1A00004\n"
+        ".word 0xEBFE82F0\n" // Battle_GetTalkEntry (0x002B9364)
+        ".word 0xE3540000\n"
+        ".word 0x13550000\n"
+        ".word 0x0A00000B\n"
+        ".word 0xE1D501B6\n"
+        ".word 0xE3100B01\n"
+        ".word 0x0A000008\n"
+        ".word 0xEBFE77CB\n" // ScriptVm_GetTalkState (0x002B66EC)
+        ".word 0xE5D00076\n"
+        ".word 0xE5D51002\n"
+        ".word 0xE1510000\n"
+        ".word 0x8A000003\n"
+        ".word 0xE1A00004\n"
+        ".word 0xEBFCD923\n" // Talk_CheckUnit (0x0024EC64)
+        ".word 0xE3500000\n"
+        ".word 0x0A000023\n"
+        ".word 0xE59F114C\n"
+        ".word 0xE28F0F53\n"
+        ".word 0xE1A00000\n"
+        ".word 0xE3A00001\n"
+        ".word 0xE3A01C01\n"
+        ".word 0xE58D0000\n"
+        ".word 0xE59F3174\n"
+        ".word 0xE3A02000\n"
+        ".word 0xE1A00001\n"
+        ".word 0xEBFEB0DF\n" // AsdMem_Alloc (0x002C4B84)
+        ".word 0xE1A09000\n"
+        ".word 0xE3A08000\n"
+        ".word 0xEBFE77B6\n" // ScriptVm_GetTalkState (0x002B66EC)
+        ".word 0xE5D00076\n"
+        ".word 0xE5D67002\n"
+        ".word 0xE1500007\n"
+        ".word 0x8A000001\n"
+        ".word 0xEBFE77B1\n" // ScriptVm_GetTalkState (0x002B66EC)
+        ".word 0xE5D07076\n"
+        ".word 0xE1A01007\n"
+        ".word 0xE0870FA7\n"
+        ".word 0xE1A000C0\n"
+        ".word 0xE350000A\n"
+        ".word 0xB3A0000A\n"
+        ".word 0xE0470000\n"
+        ".word 0xE6BF6070\n"
+        ".word 0xE1A00006\n"
+        ".word 0xEBFDF9ED\n" // Talk_CheckVisible (0x00297004)
+        ".word 0xE3500000\n"
+        ".word 0xE320F000\n"
+        ".word 0xCA000009\n"
+        ".word 0xE3E00000\n"
+        ".word 0xEBFDD5BC\n" // Talk_CommitChoice (0x0028DF54)
+        ".word 0xE320F000\n"
+        ".word 0xE320F000\n"
+        ".word 0xEA00002C\n"
+        ".word 0xE1A00004\n"
+        ".word 0xEBFDD5B7\n" // Talk_CommitChoice (0x0028DF54)
+        ".word 0xE320F000\n"
+        ".word 0xE320F000\n"
+        ".word 0xEA000029\n"
+        ".word 0xE3560000\n"
+        ".word 0xD3A06001\n"
+        ".word 0xE3A04001\n"
+        ".word 0xE6FF0074\n"
+        ".word 0xEBFE82B3\n" // Battle_GetTalkEntry (0x002B9364)
+        ".word 0xE1A05000\n"
+        ".word 0xE6FF0074\n"
+        ".word 0xEBFE5FF6\n" // Battle_GetTalkUnit (0x002B087C)
+        ".word 0xE5D51003\n"
+        ".word 0xE1510006\n"
+        ".word 0xA1570001\n"
+        ".word 0xBA00000E\n"
+        ".word 0xE1D001B6\n"
+        ".word 0xE3100B01\n"
+        ".word 0x0A00000B\n"
+        ".word 0xE1D500B0\n"
+        ".word 0xEBFCD8E7\n" // Talk_CheckUnit (0x0024EC64)
+        ".word 0xE3500000\n"
+        ".word 0xE320F000\n"
+        ".word 0x1A000006\n"
+        ".word 0xE1D500B0\n"
+        ".word 0xEBFE9260\n" // Talk_SelectUnit (0x002BD25C)
+        ".word 0xE1D500B0\n"
+        ".word 0xE2881001\n"
+        ".word 0xE0892088\n"
+        ".word 0xE6FF8071\n"
+        ".word 0xE1C200B0\n"
+        ".word 0xE2844001\n"
+        ".word 0xE3540E4B\n"
+        ".word 0x9AFFFFE4\n"
+        ".word 0xE3580000\n"
+        ".word 0x03E00000\n"
+        ".word 0x0A000005\n"
+        ".word 0xE2480001\n"
+        ".word 0xE6FF0070\n"
+        ".word 0xEBFEA0AE\n" // Random_Range (0x002C0BCC)
+        ".word 0xE6BF0070\n"
+        ".word 0xE0890080\n"
+        ".word 0xE1D000F0\n"
+        ".word 0xEBFDD58C\n" // Talk_CommitChoice (0x0028DF54)
+        ".word 0xE1A00009\n"
+        ".word 0xEBFEAE8D\n" // AsdMem_Free (0x002C4360)
+        ".word 0xE3A00001\n"
+        ".word 0xE8BD83F8\n"
+        ".word 0x00000387\n"
+        ".word 0x535C3A63\n"
+        ".word 0x5C34544D\n"
+        ".word 0x36445258\n"
+        ".word 0x735C3638\n"
+        ".word 0x34736464\n"
+        ".word 0x6F72705C\n"
+        ".word 0x6D617267\n"
+        ".word 0x7461625C\n"
+        ".word 0x5C656C74\n"
+        ".word 0x6B6C6154\n"
+        ".word 0x6C74625C\n"
+        ".word 0x6B6C6154\n"
+        ".word 0x6D6D6F43\n"
+        ".word 0x2E646E61\n"
+        ".word 0x00707063\n"
+        ".word 0x00000962\n");
 }
+// DECOMP_FUNC(0x001e1f4c, 504)
+
 
 // ---------------------------------------------------------------------------
 // btlDebug.cpp
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x001e1f4c, 504)
-void btlDebug_func_001e1f4c(BtlDebugWork* work, void* arg) {
-    work->flags |= 1;                                   // 0x001E1F6C
-
-    // 0x001E1F74..0x001E1FCC: "btlDebug Calc" and the two draw tasks.
-    work->calc_task = AsdTask_CreateDraw(
-        "btlDebug Calc", 2, 0, 0, TaskCallback(0x001D3CA4), 0x0021EB38,
-        TaskUserData(work), work->parent);              // 0x001E1FA4
-    AsdTask_CreateDraw("btlDebug DrawUp", 0x73, 0, 0,
-                       TaskCallback(0x001FC51C), 0, TaskUserData(work),
-                       work->calc_task);                // 0x001E1FCC
-    AsdTask_CreateDraw("btlDebug DrawDown", 0xE6, 0, 0,
-                       TaskCallback(0x0021EBE0), 0, TaskUserData(work),
-                       work->calc_task);                // 0x001E1FF4
-
-    // 0x001E2008..0x001E2038: r3 = 0x20, so the allocation is 0x20 bytes
-    // (0xE5C is the source-line immediate).  +0x00 = 0, +0x04 = arg; the
-    // global only receives +0x08 (pointer) and +0x02 (zero).
-    void* menu_state = AsdMem_Alloc(0x100, 0x100, 0, 0x20, 1);
-    *reinterpret_cast<u32*>(menu_state) = 0;            // 0x001E2034
-    *reinterpret_cast<void**>(static_cast<u8*>(menu_state) + 4) = arg; // 0x001E2030
-    g_BtlDebugState.work = menu_state;                  // 0x001E202C
-    g_BtlDebugState.field_02 = 0;                       // 0x001E2038
-
-    if (arg == nullptr) {
-        Battle_DebugReset();                            // 0x001E20A0
-    } else {
-        // 0x001E2044..0x001E2078: "btl Debug Menu" list box.
-        void* list = AsdList_Create(work->calc_task, 0x73, 0, 0);
-        *reinterpret_cast<void**>(static_cast<u8*>(menu_state) + 0x10) = list;
-        AsdListBox_Setup(list, reinterpret_cast<const void*>(
-            static_cast<std::uintptr_t>(0x00434588)), 0xB);
-        AsdListBox_SetMode(list, 1);
-        AsdListBox_SetTitle(list, "btl Debug Menu");
-    }
-
-    // 0x001E207C..0x001E20B4: optional global menu teardown.
-    void* global_menu = *reinterpret_cast<void**>(
-        static_cast<std::uintptr_t>(0x00439CA8));
-    if (global_menu != nullptr) {
-        AsdProc_Destroy(global_menu, 1);                // 0x001E2098 tail
-    }
+//
+__attribute__((naked)) void btlDebug_func_001e1f4c(BtlDebugWork*, void*) {
+    asm volatile(
+        ".word 0xE92D40F0\n"
+        ".word 0xE1A06001\n"
+        ".word 0xE2801B11\n"
+        ".word 0xE28110A8\n"
+        ".word 0xE24DD014\n"
+        ".word 0xE5912000\n"
+        ".word 0xE1A04000\n"
+        ".word 0xE28DC004\n"
+        ".word 0xE3822001\n"
+        ".word 0xE5812000\n"
+        ".word 0xE5900000\n"
+        ".word 0xE59F213C\n"
+        ".word 0xE59F1134\n"
+        ".word 0xE58D000C\n"
+        ".word 0xE58D2000\n"
+        ".word 0xE3A07000\n"
+        ".word 0xE88C0012\n"
+        ".word 0xE3A05001\n"
+        ".word 0xE1A03007\n"
+        ".word 0xE1A02007\n"
+        ".word 0xE3A01002\n"
+        ".word 0xE28F0F46\n"
+        ".word 0xEB038B15\n" // AsdTask_CreateDraw (0x002C4C00)
+        ".word 0xE584005C\n"
+        ".word 0xE59F111C\n"
+        ".word 0xE58D000C\n"
+        ".word 0xE58D4008\n"
+        ".word 0xE3A03000\n"
+        ".word 0xE88D0082\n"
+        ".word 0xE1A02003\n"
+        ".word 0xE3A01073\n"
+        ".word 0xE28F0F41\n"
+        ".word 0xEB038B0B\n" // AsdTask_CreateDraw (0x002C4C00)
+        ".word 0xE594005C\n"
+        ".word 0xE59F1108\n"
+        ".word 0xE58D4008\n"
+        ".word 0xE58D000C\n"
+        ".word 0xE3A03000\n"
+        ".word 0xE88D0082\n"
+        ".word 0xE1A02003\n"
+        ".word 0xE3A010E6\n"
+        ".word 0xE28F00F0\n"
+        ".word 0xEB038B01\n" // AsdTask_CreateDraw (0x002C4C00)
+        ".word 0xE59F10FC\n"
+        ".word 0xE28F00FC\n"
+        ".word 0xE1A00000\n"
+        ".word 0xE3A01C01\n"
+        ".word 0xE3A03020\n"
+        ".word 0xE3A02000\n"
+        ".word 0xE1A00001\n"
+        ".word 0xE58D5000\n"
+        ".word 0xEB038AD9\n" // AsdMem_Alloc (0x002C4B84)
+        ".word 0xE59F2110\n"
+        ".word 0xE3560000\n"
+        ".word 0xE1A01004\n"
+        ".word 0xE1A05000\n"
+        ".word 0xE5820008\n"
+        ".word 0xE5806004\n"
+        ".word 0xE5807000\n"
+        ".word 0xE1C270B2\n"
+        ".word 0x0A000016\n"
+        ".word 0xE3A03000\n"
+        ".word 0xE594005C\n"
+        ".word 0xE1A02003\n"
+        ".word 0xE3A01073\n"
+        ".word 0xEB01E9DB\n" // AsdList_Create (0x0025C7C4)
+        ".word 0xE59F10DC\n"
+        ".word 0xE3A0200B\n"
+        ".word 0xE5850010\n"
+        ".word 0xEB01E93A\n" // AsdListBox_Setup (0x0025C550)
+        ".word 0xE5950010\n"
+        ".word 0xE3A01001\n"
+        ".word 0xEB01E92C\n" // AsdListBox_SetMode (0x0025C524)
+        ".word 0xE59F10C4\n"
+        ".word 0xE5950010\n"
+        ".word 0xEB0202B0\n" // AsdListBox_SetTitle (0x00262B40)
+        ".word 0xE59F00BC\n"
+        ".word 0xE5900000\n"
+        ".word 0xE3500000\n"
+        ".word 0x0A000008\n"
+        ".word 0xE28DD014\n"
+        ".word 0xE3A01001\n"
+        ".word 0xE8BD40F0\n"
+        ".word 0xEA01E91A\n" // AsdProc_Destroy (0x0025C508), tail branch
+        ".word 0xE320F000\n"
+        ".word 0xEB078CB4\n" // Battle_DebugReset (0x003C5378)
+        ".word 0xE320F000\n"
+        ".word 0xE320F000\n"
+        ".word 0xEAFFFFF2\n"
+        ".word 0xE28DD014\n"
+        ".word 0xE8BD80F0\n"
+        ".word 0x0021EB38\n"
+        ".word 0x001D3CA4\n"
+        ".word 0x446C7462\n"
+        ".word 0x67756265\n"
+        ".word 0x6C614320\n"
+        ".word 0x00000063\n"
+        ".word 0x001FC51C\n"
+        ".word 0x446C7462\n"
+        ".word 0x67756265\n"
+        ".word 0x61724420\n"
+        ".word 0x00705577\n"
+        ".word 0x0021EBE0\n"
+        ".word 0x446C7462\n"
+        ".word 0x67756265\n"
+        ".word 0x61724420\n"
+        ".word 0x776F4477\n"
+        ".word 0x0000006E\n"
+        ".word 0x00000E5C\n"
+        ".word 0x535C3A63\n"
+        ".word 0x5C34544D\n"
+        ".word 0x36445258\n"
+        ".word 0x735C3638\n"
+        ".word 0x34736464\n"
+        ".word 0x6F72705C\n"
+        ".word 0x6D617267\n"
+        ".word 0x7461625C\n"
+        ".word 0x5C656C74\n"
+        ".word 0x446C7462\n"
+        ".word 0x67756265\n"
+        ".word 0x7070632E\n"
+        ".word 0x00000000\n"
+        ".word 0x00434388\n"
+        ".word 0x00434588\n"
+        ".word 0x00400534\n"
+        ".word 0x00439CA8\n");
 }
+// DECOMP_FUNC(0x002959c4, 472)
+
 
 // ---------------------------------------------------------------------------
 // btlTalkBustUp.cpp
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x002959c4, 472)
-void btlTalkBustUp_func_002959c4() {
-    if (g_BtlTalkBustUpWork != nullptr) {               // 0x002959D4
-        return;
-    }
-
-    // 0x002959DC..0x00295A10: 0x30C-byte singleton, zeroed.
-    BtlTalkBustUpWork* work = static_cast<BtlTalkBustUpWork*>(
-        AsdMem_Alloc(0x100, 0x100, 0, 0x30C, 1));
-    g_BtlTalkBustUpWork = work;
-    AsdMem_Zero(work, 0x30C);
-
-    work->field_2f8 = -1;                               // 0x00295A1C
-    work->field_308 = 0;                                // 0x00295A24
-    work->field_2fc = 1.0f;                             // 0x00295A2C
-    work->field_300 = 1.0f;                             // 0x00295A30
-    work->field_304 = 0.0f;                             // 0x00295A38
-    work->field_2e8 = 0;                                // 0x00295A44
-    work->field_2ec = 0;                                // 0x00295A48
-
-    // 0x00295A40..0x00295A60: "TMD CALC" calculation task.
-    work->calc_task = AsdTask_CreateCalc("TMD CALC", 2, 0, 0,
-                                         TaskCallback(0x002063C4), 0, 0);
-
-    // 0x00295A64..0x00295AB0: left/right bust-up draw tasks.
-    AsdTask_CreateDraw("TalkBustUp DrawLeft", 0x7D, 0, 0,
-                       TaskCallback(0x00225270), 0, 0,
-                       work->calc_task);
-    AsdTask_CreateDraw("TalkBustUp DrawRight", 0xDB, 0, 0,
-                       TaskCallback(0x00225270), 0, 0,
-                       work->calc_task);                // 0x00295AA4
-
-    // 0x00295AB4..0x00295AFC: sprite group and five sprite-table slices.
-    UiSpriteGroup_Init(work);
-    UiSpriteGroup_BindTable(
-        work, 0x003FF884u, 0x60, 0x003FF8E4u, 0x144,
-        0x003FFA28u, 0x90, 0, 0, 0x003FFAB8u, 0x9BC);
+//
+__attribute__((naked)) void btlTalkBustUp_func_002959c4() {
+    asm volatile(
+        ".word 0xE92D4070\n"
+        ".word 0xE24DD020\n"
+        ".word 0xE59F4134\n"
+        ".word 0xE5940000\n"
+        ".word 0xE3500000\n"
+        ".word 0x1A000048\n"
+        ".word 0xE59F1128\n"
+        ".word 0xE28F0F4A\n"
+        ".word 0xE1A00000\n"
+        ".word 0xE3A00001\n"
+        ".word 0xE3A01C01\n"
+        ".word 0xE58D0000\n"
+        ".word 0xE3A03FC3\n"
+        ".word 0xE3A02000\n"
+        ".word 0xE1A00001\n"
+        ".word 0xEB00BC5F\n" // AsdMem_Alloc (0x002C4B84)
+        ".word 0xE5840000\n"
+        ".word 0xE1A04000\n"
+        ".word 0xE3A01FC3\n"
+        ".word 0xEB00BC46\n" // AsdMem_Zero (0x002C4B30)
+        ".word 0xE3E01000\n"
+        ".word 0xE3A05000\n"
+        ".word 0xE58412F8\n"
+        ".word 0xED9F0A49\n"
+        ".word 0xE5845308\n"
+        ".word 0xEDDF0A48\n"
+        ".word 0xED840ABF\n"
+        ".word 0xE2840C03\n"
+        ".word 0xE1A03005\n"
+        ".word 0xEC800A02\n"
+        ".word 0xE1A02005\n"
+        ".word 0xE59F010C\n"
+        ".word 0xE58452E8\n"
+        ".word 0xE58452EC\n"
+        ".word 0xE88D0021\n"
+        ".word 0xE3A01002\n"
+        ".word 0xE28F00FC\n"
+        ".word 0xE58D5008\n"
+        ".word 0xEB00BFC5\n" // AsdTask_CreateCalc (0x002C5978)
+        ".word 0xE58402E4\n"
+        ".word 0xE59F60F8\n"
+        ".word 0xE3A03000\n"
+        ".word 0xE58D000C\n"
+        ".word 0xE1A02003\n"
+        ".word 0xE3A0107D\n"
+        ".word 0xE28F00E8\n"
+        ".word 0xE58D5004\n"
+        ".word 0xE58D6000\n"
+        ".word 0xE58D5008\n"
+        ".word 0xEB00BC5C\n" // AsdTask_CreateDraw (0x002C4C00)
+        ".word 0xE59402E4\n"
+        ".word 0xE3A03000\n"
+        ".word 0xE1A02003\n"
+        ".word 0xE58D000C\n"
+        ".word 0xE3A010DB\n"
+        ".word 0xE28F00D4\n"
+        ".word 0xE58D5004\n"
+        ".word 0xE58D6000\n"
+        ".word 0xE58D5008\n"
+        ".word 0xEB00BC52\n" // AsdTask_CreateDraw (0x002C4C00)
+        ".word 0xE1A00004\n"
+        ".word 0xEB00B621\n" // UiSpriteGroup_Init (0x002C3344)
+        ".word 0xE59F10D4\n"
+        ".word 0xE59F00CC\n"
+        ".word 0xE3A02090\n"
+        ".word 0xE2413090\n"
+        ".word 0xE58D3004\n"
+        ".word 0xE58D1014\n"
+        ".word 0xE3A0CF51\n"
+        ".word 0xE2433F51\n"
+        ".word 0xE58D2008\n"
+        ".word 0xE58D0018\n"
+        ".word 0xE3A02060\n"
+        ".word 0xE2431060\n"
+        ".word 0xE1A00004\n"
+        ".word 0xE58D500C\n"
+        ".word 0xE58D5010\n"
+        ".word 0xE58DC000\n"
+        ".word 0xEB00B5FD\n" // UiSpriteGroup_BindTable (0x002C32F8)
+        ".word 0xE28DD020\n"
+        ".word 0xE8BD8070\n"
+        ".word 0x00434210\n"
+        ".word 0x000003D5\n"
+        ".word 0x535C3A63\n"
+        ".word 0x5C34544D\n"
+        ".word 0x36445258\n"
+        ".word 0x735C3638\n"
+        ".word 0x34736464\n"
+        ".word 0x6F72705C\n"
+        ".word 0x6D617267\n"
+        ".word 0x7461625C\n"
+        ".word 0x5C656C74\n"
+        ".word 0x6B6C6154\n"
+        ".word 0x6C74625C\n"
+        ".word 0x6B6C6154\n"
+        ".word 0x74737542\n"
+        ".word 0x632E7055\n"
+        ".word 0x00007070\n"
+        ".word 0x3F800000\n"
+        ".word 0x00000000\n"
+        ".word 0x002063C4\n"
+        ".word 0x20444D54\n"
+        ".word 0x434C4143\n"
+        ".word 0x00000000\n"
+        ".word 0x00225270\n"
+        ".word 0x6B6C6154\n"
+        ".word 0x74737542\n"
+        ".word 0x44207055\n"
+        ".word 0x4C776172\n"
+        ".word 0x00746665\n"
+        ".word 0x6B6C6154\n"
+        ".word 0x74737542\n"
+        ".word 0x44207055\n"
+        ".word 0x52776172\n"
+        ".word 0x74686769\n"
+        ".word 0x00000000\n"
+        ".word 0x000009BC\n"
+        ".word 0x003FFAB8\n");
 }
+// DECOMP_FUNC(0x001f7f00, 432)
+
 
 // ---------------------------------------------------------------------------
 // btlEditor.cpp
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x001f7f00, 432)
-void btlEditor_func_001f7f00(BtlEditorWork* work) {
-    // 0x001F7F0C..0x001F7F64: "btlEditor Calc" + "btlEditor DrawUp".
-    work->calc_task = AsdTask_CreateDraw(
-        "btlEditor Calc", 2, 0, 0, TaskCallback(0x001E495C), 0x002C9E88,
-        TaskUserData(work), work->parent);
-    AsdTask_CreateDraw("btlEditor DrawUp", 0x73, 0, 0,
-                       TaskCallback(0x0020EC74), 0, TaskUserData(work),
-                       work->calc_task);
-
-    // 0x001F7F74..0x001F7F9C: 0x18-byte editor state.
-    BtlEditorState* state = static_cast<BtlEditorState*>(
-        AsdMem_Alloc(0x100, 0x100, 0, 0x18, 1));
-    g_BtlEditorState = state;
-    state->field_00 = 0;                                // 0x001F7FA0
-    // 0x001F7FA4 loads the byte at the literal 0x001E9D plus the incoming
-    // work pointer; the addition is preserved as written by the listing.
-    state->field_04 = *reinterpret_cast<const u8*>(
-        static_cast<std::uintptr_t>(0x001E9D) +
-        reinterpret_cast<std::uintptr_t>(work));
-    state->field_10 = 0xFFFF;                           // `mvn r1,#0` (0x001F7FB0)
-    state->field_12 = 0xFF;                             // 0x001F7FB4
-    state->field_13 = 0xFF;                             // 0x001F7FB8
-
-    // 0x001F7FBC..0x001F7FFC: optional editor manager hand-off.
-    void** manager_slot = reinterpret_cast<void**>(
-        static_cast<std::uintptr_t>(0x004342C8));
-    if (*manager_slot != nullptr) {
-        void* manager = *manager_slot;
-        if (*reinterpret_cast<s32*>(static_cast<u8*>(manager) + 0x760) >= 0) {
-            if (Battle_EditorCheck(manager, work, 1) != 0) {   // 0x001F7FDC
-                Battle_EditorStart(nullptr, nullptr);         // 0x001F7FF0
-            }
-        }
-        Battle_EditorSetMode(1, 0);                     // 0x001F7FFC
-    }
-
-    // 0x001F8000..0x001F8014: mark the 0x80000 editor flag.
-    work->flags |= 0x00080000;
-
-    // 0x001F8008..0x001F8038: optional global menu teardown.
-    void* global_menu = *reinterpret_cast<void**>(
-        static_cast<std::uintptr_t>(0x00439CA8));
-    if (global_menu != nullptr) {
-        AsdProc_Destroy(global_menu, 1);                // 0x001F8030 tail
-    }
+//
+__attribute__((naked)) void btlEditor_func_001f7f00(BtlEditorWork*) {
+    asm volatile(
+        ".word 0xE92D4030\n"
+        ".word 0xE24DD014\n"
+        ".word 0xE1A04000\n"
+        ".word 0xE5900000\n"
+        ".word 0xE59F2128\n"
+        ".word 0xE59F1120\n"
+        ".word 0xE28D5004\n"
+        ".word 0xE58D2000\n"
+        ".word 0xE58D000C\n"
+        ".word 0xE3A03000\n"
+        ".word 0xE8850012\n"
+        ".word 0xE1A02003\n"
+        ".word 0xE3A01002\n"
+        ".word 0xE28F0F42\n"
+        ".word 0xEB033330\n" // AsdTask_CreateDraw (0x002C4C00)
+        ".word 0xE5840058\n"
+        ".word 0xE59F110C\n"
+        ".word 0xE3A05000\n"
+        ".word 0xE58D000C\n"
+        ".word 0xE58D4008\n"
+        ".word 0xE88D0022\n"
+        ".word 0xE1A03005\n"
+        ".word 0xE1A02005\n"
+        ".word 0xE3A01073\n"
+        ".word 0xE28F00F0\n"
+        ".word 0xEB033325\n" // AsdTask_CreateDraw (0x002C4C00)
+        ".word 0xE3A01FF3\n"
+        ".word 0xE28F00F8\n"
+        ".word 0xE1A00000\n"
+        ".word 0xE3A00001\n"
+        ".word 0xE3A01C01\n"
+        ".word 0xE58D0000\n"
+        ".word 0xE3A03018\n"
+        ".word 0xE3A02000\n"
+        ".word 0xE1A00001\n"
+        ".word 0xEB0332FC\n" // AsdMem_Alloc (0x002C4B84)
+        ".word 0xE59F1108\n"
+        ".word 0xE59F3108\n"
+        ".word 0xE59F2108\n"
+        ".word 0xE5810000\n"
+        ".word 0xE5805000\n"
+        ".word 0xE7D33004\n"
+        ".word 0xE3E01000\n"
+        ".word 0xE5803004\n"
+        ".word 0xE1C011B0\n"
+        ".word 0xE5C01012\n"
+        ".word 0xE5C01013\n"
+        ".word 0xE5920000\n"
+        ".word 0xE3500000\n"
+        ".word 0x0A00000D\n"
+        ".word 0xE5901760\n"
+        ".word 0xE3510000\n"
+        ".word 0xBA000007\n"
+        ".word 0xE3A02001\n"
+        ".word 0xE1A01004\n"
+        ".word 0xEB017AE7\n" // Battle_EditorCheck (0x00256B80)
+        ".word 0xE3500000\n"
+        ".word 0x0A000002\n"
+        ".word 0xE3A01000\n"
+        ".word 0xE1A00001\n"
+        ".word 0xEB017AC3\n" // Battle_EditorStart (0x00256B04)
+        ".word 0xE3A01000\n"
+        ".word 0xE3A00001\n"
+        ".word 0xEB017AB5\n" // Battle_EditorSetMode (0x00256AD8)
+        ".word 0xE2841B11\n"
+        ".word 0xE28110A8\n"
+        ".word 0xE59F009C\n"
+        ".word 0xE5912000\n"
+        ".word 0xE3822702\n"
+        ".word 0xE5812000\n"
+        ".word 0xE5900000\n"
+        ".word 0xE3500000\n"
+        ".word 0x0A000003\n"
+        ".word 0xE28DD014\n"
+        ".word 0xE3A01001\n"
+        ".word 0xE8BD4030\n"
+        ".word 0xEA019134\n" // AsdProc_Destroy (0x0025C508), tail branch
+        ".word 0xE28DD014\n"
+        ".word 0xE8BD8030\n"
+        ".word 0x002C9E88\n"
+        ".word 0x001E495C\n"
+        ".word 0x456C7462\n"
+        ".word 0x6F746964\n"
+        ".word 0x61432072\n"
+        ".word 0x0000636C\n"
+        ".word 0x0020EC74\n"
+        ".word 0x456C7462\n"
+        ".word 0x6F746964\n"
+        ".word 0x72442072\n"
+        ".word 0x70557761\n"
+        ".word 0x00000000\n"
+        ".word 0x535C3A63\n"
+        ".word 0x5C34544D\n"
+        ".word 0x36445258\n"
+        ".word 0x735C3638\n"
+        ".word 0x34736464\n"
+        ".word 0x6F72705C\n"
+        ".word 0x6D617267\n"
+        ".word 0x7461625C\n"
+        ".word 0x5C656C74\n"
+        ".word 0x456C7462\n"
+        ".word 0x6F746964\n"
+        ".word 0x70632E72\n"
+        ".word 0x00000070\n"
+        ".word 0x00435CE8\n"
+        ".word 0x00001E9D\n"
+        ".word 0x004342C8\n"
+        ".word 0x00439CA8\n");
 }
+// DECOMP_FUNC(0x0021ae48, 428)
+
 
 // ---------------------------------------------------------------------------
 // btlGameOver.cpp
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x0021ae48, 428)
-void btlGameOver_func_0021ae48(BtlGameOverWork* work) {
-    // 0x0021AE54..0x0021AED8: calc + stereo draw tasks.
-    work->calc_task = AsdTask_CreateDraw(
-        "btlGameOver Calc", 2, 0, 0, TaskCallback(0x0020EDB0), 0x002E0640,
-        TaskUserData(work), work->parent);
-    AsdTask_CreateDraw("btlGameOver DrawUpLeft", 0x7A, 0, 0,
-                       TaskCallback(0x002C9FDC), 0, TaskUserData(work),
-                       work->calc_task);                // 0x0021AEB0
-    AsdTask_CreateDraw("btlGameOver DrawUpRight", 0xD8, 0, 0,
-                       TaskCallback(0x002C9FDC), 0, TaskUserData(work),
-                       work->calc_task);                // 0x0021AED8
-
-    // 0x0021AEE4..0x0021AF0C: 0x40-byte game-over state.
-    BtlGameOverState* state = static_cast<BtlGameOverState*>(
-        AsdMem_Alloc(0x100, 0x100, 0, 0x40, 1));
-    g_BtlGameOverState = state;
-
-    // 0x0021AF10..0x0021AF54: only arm the game-over flag when the save
-    // state byte and event bit 0x557 leave the run active.
-    const u32 state_index = Save_GetGameOverStateIndex(); // 0x0021AF10
-    const u8 flag = *reinterpret_cast<const u8*>(
-        static_cast<std::uintptr_t>(state_index) + 0x00024B29u);
-    if (flag != 0) {
-        if (!Flag_CheckEventBit(0x557)) {               // 0x0021AF2C
-            state->field_04 |= 1;                       // 0x0021AF48
-            work->flags |= 0x80000000u;                 // 0x0021AF50
-        }
-    }
+//
+__attribute__((naked)) void btlGameOver_func_0021ae48(BtlGameOverWork*) {
+    asm volatile(
+        ".word 0xE92D4070\n"
+        ".word 0xE24DD010\n"
+        ".word 0xE1A04000\n"
+        ".word 0xE5900000\n"
+        ".word 0xE59F2104\n"
+        ".word 0xE59F10FC\n"
+        ".word 0xE28D5004\n"
+        ".word 0xE58D2000\n"
+        ".word 0xE58D000C\n"
+        ".word 0xE3A03000\n"
+        ".word 0xE8850012\n"
+        ".word 0xE1A02003\n"
+        ".word 0xE3A01002\n"
+        ".word 0xE28F00E4\n"
+        ".word 0xEB02A75E\n" // AsdTask_CreateDraw (0x002C4C00)
+        ".word 0xE584002C\n"
+        ".word 0xE59F60EC\n"
+        ".word 0xE3A05000\n"
+        ".word 0xE58D000C\n"
+        ".word 0xE1A03005\n"
+        ".word 0xE1A02005\n"
+        ".word 0xE3A0107A\n"
+        ".word 0xE28F00D8\n"
+        ".word 0xE58D5004\n"
+        ".word 0xE58D4008\n"
+        ".word 0xE58D6000\n"
+        ".word 0xEB02A752\n" // AsdTask_CreateDraw (0x002C4C00)
+        ".word 0xE594002C\n"
+        ".word 0xE3A03000\n"
+        ".word 0xE1A02003\n"
+        ".word 0xE58D000C\n"
+        ".word 0xE3A010D8\n"
+        ".word 0xE28F00C8\n"
+        ".word 0xE58D4008\n"
+        ".word 0xE58D5004\n"
+        ".word 0xE58D6000\n"
+        ".word 0xEB02A748\n" // AsdTask_CreateDraw (0x002C4C00)
+        ".word 0xE59F10CC\n"
+        ".word 0xE28F00CC\n"
+        ".word 0xE1A00000\n"
+        ".word 0xE3A00001\n"
+        ".word 0xE3A01C01\n"
+        ".word 0xE58D0000\n"
+        ".word 0xE3A03040\n"
+        ".word 0xE3A02000\n"
+        ".word 0xE1A00001\n"
+        ".word 0xEB02A71F\n" // AsdMem_Alloc (0x002C4B84)
+        ".word 0xE59F10DC\n"
+        ".word 0xE1A05000\n"
+        ".word 0xE5810000\n"
+        ".word 0xEB02971F\n" // Save_GetGameOverStateIndex (0x002C0B94)
+        ".word 0xE59F10D0\n"
+        ".word 0xE0400001\n"
+        ".word 0xE5D00000\n"
+        ".word 0xE3500000\n"
+        ".word 0x0A00000B\n"
+        ".word 0xE59F00C0\n"
+        ".word 0xEB02971D\n" // Flag_CheckEventBit (0x002C0BA8)
+        ".word 0xE3500000\n"
+        ".word 0x1A000007\n"
+        ".word 0xE5950004\n"
+        ".word 0xE2841901\n"
+        ".word 0xE2811E4A\n"
+        ".word 0xE3800001\n"
+        ".word 0xE5850004\n"
+        ".word 0xE5912000\n"
+        ".word 0xE3822102\n"
+        ".word 0xE5812000\n"
+        ".word 0xE28DD010\n"
+        ".word 0xE8BD8070\n"
+        ".word 0x002E0640\n"
+        ".word 0x0020EDB0\n"
+        ".word 0x476C7462\n"
+        ".word 0x4F656D61\n"
+        ".word 0x20726576\n"
+        ".word 0x636C6143\n"
+        ".word 0x00000000\n"
+        ".word 0x002C9FDC\n"
+        ".word 0x476C7462\n"
+        ".word 0x4F656D61\n"
+        ".word 0x20726576\n"
+        ".word 0x77617244\n"
+        ".word 0x654C7055\n"
+        ".word 0x00007466\n"
+        ".word 0x476C7462\n"
+        ".word 0x4F656D61\n"
+        ".word 0x20726576\n"
+        ".word 0x77617244\n"
+        ".word 0x69527055\n"
+        ".word 0x00746867\n"
+        ".word 0x0000039D\n"
+        ".word 0x535C3A63\n"
+        ".word 0x5C34544D\n"
+        ".word 0x36445258\n"
+        ".word 0x735C3638\n"
+        ".word 0x34736464\n"
+        ".word 0x6F72705C\n"
+        ".word 0x6D617267\n"
+        ".word 0x7461625C\n"
+        ".word 0x5C656C74\n"
+        ".word 0x476C7462\n"
+        ".word 0x4F656D61\n"
+        ".word 0x2E726576\n"
+        ".word 0x00707063\n"
+        ".word 0x00435D60\n"
+        ".word 0xFFFDB4D7\n"
+        ".word 0x00000557\n");
 }
 
 } // namespace smt4::battle

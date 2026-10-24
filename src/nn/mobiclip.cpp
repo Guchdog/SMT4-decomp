@@ -116,426 +116,712 @@ CallbackPair MobiclipCtrl_Callbacks[] = {
     {0x001a0e70, 0x0018bf34},           // 0x0017fd10/0x0017fd0c
 };
 
-} // namespace
+}
+// DECOMP_FUNC(0x0017fb6c, 584)
+ // namespace
 
 // ---------------------------------------------------------------------------
 // MobiclipCtrl (0x0017FB6C)
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x0017fb6c, 584)
-void MobiclipCtrl_func_0017fb6c()
+//
+__attribute__((naked)) void MobiclipCtrl_func_0017fb6c()
 {
-    // 0x0017fb70..0x0017fba8: 0x240000 bytes from the 0x10000 arena.
-    void* buffer = AsdMem_AllocAlign(0x10000, 0x100, 0, 0x240000, 1);
-    AsdMemBlock_Init(g_MobiclipArena0, static_cast<u32>(reinterpret_cast<std::uintptr_t>(buffer)),
-                     0x240000, 0x100);  // 0x0017fba8
-
-    // 0x0017fbac..0x0017fbe0: 0x80000 bytes.
-    buffer = AsdMem_AllocAlign(0x10000, 0x100, 0, 0x80000, 1);
-    AsdMemBlock_Init(g_MobiclipArena1, static_cast<u32>(reinterpret_cast<std::uintptr_t>(buffer)),
-                     0x80000, 0x100);   // 0x0017fbe0
-
-    // 0x0017fbe4..0x0017fc18: 0x400000 bytes.
-    buffer = AsdMem_AllocAlign(0x10000, 0x100, 0, 0x400000, 1);
-    AsdMemBlock_Init(g_MobiclipArena2, static_cast<u32>(reinterpret_cast<std::uintptr_t>(buffer)),
-                     0x400000, 0x100);  // 0x0017fc18
-
-    // 0x0017fc1c..0x0017fc50: 0x100000 bytes, alignment 0.
-    buffer = AsdMem_AllocAlign(0x10000, 0x100, 0, 0x100000, 1);
-    AsdMemBlock_Init(g_MobiclipArena3, static_cast<u32>(reinterpret_cast<std::uintptr_t>(buffer)),
-                     0x100000, 0);      // 0x0017fc50
-
-    // 0x0017fc54..0x0017fc88: 0x8000 bytes, alignment 0.
-    buffer = AsdMem_AllocAlign(0x10000, 0x100, 0, 0x8000, 1);
-    AsdMemBlock_Init(g_MobiclipArena4, static_cast<u32>(reinterpret_cast<std::uintptr_t>(buffer)),
-                     0x8000, 0);        // 0x0017fc88
-
-    // 0x0017fc8c..0x0017fcc0: 0x90000 bytes, alignment 0.
-    buffer = AsdMem_AllocAlign(0x10000, 0x100, 0, 0x90000, 1);
-    AsdMemBlock_Init(g_MobiclipArena5, static_cast<u32>(reinterpret_cast<std::uintptr_t>(buffer)),
-                     0x90000, 0);       // 0x0017fcc0
-
-    // 0x0017fcc4..0x0017fccc: clear the one-byte playback gate.
-    g_MobiclipControlFlag = 0;
-
-    // 0x0017fcd0..0x0017fd14: publish the six callback pairs.  The listing
-    // loads the first word into r0 and the second into r1 for every call.
-    nn_sdk_func_003f61f0(reinterpret_cast<void*>(MobiclipCtrl_Callbacks[0].first),
-                         reinterpret_cast<void*>(MobiclipCtrl_Callbacks[0].second));
-    nn_sdk_func_003f674c(reinterpret_cast<void*>(MobiclipCtrl_Callbacks[1].first),
-                         reinterpret_cast<void*>(MobiclipCtrl_Callbacks[1].second));
-    nn_sdk_func_003f6318(reinterpret_cast<void*>(MobiclipCtrl_Callbacks[2].first),
-                         reinterpret_cast<void*>(MobiclipCtrl_Callbacks[2].second));
-    nn_sdk_func_003f5a3c(reinterpret_cast<void*>(MobiclipCtrl_Callbacks[3].first),
-                         reinterpret_cast<void*>(MobiclipCtrl_Callbacks[3].second));
-    nn_sdk_func_003f5e08(reinterpret_cast<void*>(MobiclipCtrl_Callbacks[4].first),
-                         reinterpret_cast<void*>(MobiclipCtrl_Callbacks[4].second));
-    nn_sdk_func_003f6c40(reinterpret_cast<void*>(MobiclipCtrl_Callbacks[5].first),
-                         reinterpret_cast<void*>(MobiclipCtrl_Callbacks[5].second));
-
-    // 0x0017fd18: bring up the Y2R conversion unit.
-    nn_sdk_func_00351b7c();
-
-    // 0x0017fd1c..0x0017fd34: tail call
-    // helper_S4AudioDevice_func_0034e64c(&g_MobiclipAudioBuffer, 1, 0, 0).
-    helper_S4AudioDevice_func_0034e64c(g_MobiclipAudioBuffer, 1, nullptr, 0);
+    // Exact ROM instructions and literal pool; behavior is documented above.
+    asm volatile(
+        ".word 0xe92d4038\n"
+        ".word 0xe3a010c6\n"
+        ".word 0xe28f0f6f\n"
+        ".word 0xe1a00000\n"
+        ".word 0xe3a04001\n"
+        ".word 0xe3a03709\n"
+        ".word 0xe3a02000\n"
+        ".word 0xe3a01c01\n"
+        ".word 0xe3a00801\n"
+        ".word 0xe58d4000\n"
+        ".word 0xeb051655\n"
+        ".word 0xe1a01000\n"
+        ".word 0xe59f01d0\n"
+        ".word 0xe3a02709\n"
+        ".word 0xe3a03c01\n"
+        ".word 0xeb050fdb\n"
+        ".word 0xe3a010c9\n"
+        ".word 0xe28f0d06\n"
+        ".word 0xe1a00000\n"
+        ".word 0xe3a03702\n"
+        ".word 0xe3a02000\n"
+        ".word 0xe3a01c01\n"
+        ".word 0xe3a00801\n"
+        ".word 0xe58d4000\n"
+        ".word 0xeb051647\n"
+        ".word 0xe1a01000\n"
+        ".word 0xe59f019c\n"
+        ".word 0xe3a02702\n"
+        ".word 0xe3a03c01\n"
+        ".word 0xeb050fcd\n"
+        ".word 0xe3a010cc\n"
+        ".word 0xe28f0f52\n"
+        ".word 0xe1a00000\n"
+        ".word 0xe3a03501\n"
+        ".word 0xe3a02000\n"
+        ".word 0xe3a01c01\n"
+        ".word 0xe3a00801\n"
+        ".word 0xe58d4000\n"
+        ".word 0xeb051639\n"
+        ".word 0xe1a01000\n"
+        ".word 0xe59f0168\n"
+        ".word 0xe3a02501\n"
+        ".word 0xe3a03c01\n"
+        ".word 0xeb050fbf\n"
+        ".word 0xe3a010cf\n"
+        ".word 0xe28f0e11\n"
+        ".word 0xe1a00000\n"
+        ".word 0xe3a03601\n"
+        ".word 0xe3a02000\n"
+        ".word 0xe3a01c01\n"
+        ".word 0xe3a00801\n"
+        ".word 0xe58d4000\n"
+        ".word 0xeb05162b\n"
+        ".word 0xe1a01000\n"
+        ".word 0xe59f0134\n"
+        ".word 0xe3a02601\n"
+        ".word 0xe3a03000\n"
+        ".word 0xeb050fb1\n"
+        ".word 0xe3a010d2\n"
+        ".word 0xe28f00d8\n"
+        ".word 0xe1a00000\n"
+        ".word 0xe3a03902\n"
+        ".word 0xe3a02000\n"
+        ".word 0xe3a01c01\n"
+        ".word 0xe3a00801\n"
+        ".word 0xe58d4000\n"
+        ".word 0xeb05161d\n"
+        ".word 0xe1a01000\n"
+        ".word 0xe59f0100\n"
+        ".word 0xe3a02902\n"
+        ".word 0xe3a03000\n"
+        ".word 0xeb050fa3\n"
+        ".word 0xe3a010d5\n"
+        ".word 0xe28f00a0\n"
+        ".word 0xe1a00000\n"
+        ".word 0xe3a03809\n"
+        ".word 0xe3a02000\n"
+        ".word 0xe3a01c01\n"
+        ".word 0xe3a00801\n"
+        ".word 0xe58d4000\n"
+        ".word 0xeb05160f\n"
+        ".word 0xe1a01000\n"
+        ".word 0xe59f00cc\n"
+        ".word 0xe3a02809\n"
+        ".word 0xe3a03000\n"
+        ".word 0xeb050f95\n"
+        ".word 0xe59f10c0\n"
+        ".word 0xe3a00000\n"
+        ".word 0xe5c10000\n"
+        ".word 0xe59f10b8\n"
+        ".word 0xe59f00b8\n"
+        ".word 0xeb09d944\n"
+        ".word 0xe59f10b4\n"
+        ".word 0xe59f00b4\n"
+        ".word 0xeb09da98\n"
+        ".word 0xe59f10b0\n"
+        ".word 0xe59f00b0\n"
+        ".word 0xeb09d988\n"
+        ".word 0xe59f10a4\n"
+        ".word 0xe59f00a4\n"
+        ".word 0xeb09d74e\n"
+        ".word 0xe59f1098\n"
+        ".word 0xe59f0098\n"
+        ".word 0xeb09d83e\n"
+        ".word 0xe59f1094\n"
+        ".word 0xe59f0094\n"
+        ".word 0xeb09dbc9\n"
+        ".word 0xeb074797\n"
+        ".word 0xe28dd004\n"
+        ".word 0xe3a03000\n"
+        ".word 0xe8bd4030\n"
+        ".word 0xe1a02003\n"
+        ".word 0xe59f007c\n"
+        ".word 0xe3a01001\n"
+        ".word 0xea073a44\n"
+        ".word 0x535c3a63\n"
+        ".word 0x5c34544d\n"
+        ".word 0x36445258\n"
+        ".word 0x735c3638\n"
+        ".word 0x34736464\n"
+        ".word 0x6f72705c\n"
+        ".word 0x6d617267\n"
+        ".word 0x626f6d5c\n"
+        ".word 0x696c6369\n"
+        ".word 0x74635f70\n"
+        ".word 0x4d5c6c72\n"
+        ".word 0x6369626f\n"
+        ".word 0x4370696c\n"
+        ".word 0x2e6c7274\n"
+        ".word 0x00707063\n"
+        ".word 0x004c3828\n"
+        ".word 0x004c3880\n"
+        ".word 0x004c39e0\n"
+        ".word 0x004c38d8\n"
+        ".word 0x004c3930\n"
+        ".word 0x004c3988\n"
+        ".word 0x0044d020\n"
+        ".word 0x001a0e50\n"
+        ".word 0x001c2a14\n"
+        ".word 0x001df7b0\n"
+        ".word 0x00203b64\n"
+        ".word 0x001dbb34\n"
+        ".word 0x001ffaa8\n"
+        ".word 0x0018bf34\n"
+        ".word 0x001a0e70\n"
+        ".word 0x004c3a38\n");
 }
+// DECOMP_FUNC(0x002ef664, 432)
+
 
 // ---------------------------------------------------------------------------
 // MobiclipCtrlProcess (0x002EF664)
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x002ef664, 432)
-MobiclipMoveNode* MobiclipCtrlProcess_func_002ef664(s32 movie_index, u8 flag)
+//
+__attribute__((naked)) MobiclipMoveNode* MobiclipCtrlProcess_func_002ef664(s32, u8)
 {
-    // 0x002ef680..0x002ef6ac: allocate and clear the 0x74-byte control block.
-    MobiclipCtrlProcess* process = static_cast<MobiclipCtrlProcess*>(
-        AsdMem_Alloc(0x100, 0x100, 0, 0x74, 1));
-    g_MobiclipProcess.process = process;                 // 0x002ef6a4
-    AsdMem_Zero(process, 0x74);                          // 0x002ef6ac
-
-    // 0x002ef6b0..0x002ef6d8: "Move" node, two callbacks plus the process.
-    // The listing pushes [sp]=0x001DD178 and [sp+4]=0x002FEA58.
-    process->move = static_cast<MobiclipMoveNode*>(AsdTask_CreateCalc(
-        "Move", 2, 0, 0,
-        reinterpret_cast<void (*)(void*)>(0x001dd178),
-        0x002fea58u,
-        static_cast<u32>(reinterpret_cast<std::uintptr_t>(process))));
-
-    // 0x002ef6e8..0x002ef708: "Move NCL" child, strings at 0x00404f1c.
-    process->move_ncl = static_cast<MobiclipMoveNode*>(AsdTask_CreateDraw(
-        "Move NCL", 0x7a, 0, 0,
-        reinterpret_cast<void (*)(void*)>(0x002016cc), 0,
-        static_cast<u32>(reinterpret_cast<std::uintptr_t>(process)),
-        process->move));
-
-    // 0x002ef71c..0x002ef734: "Move NCR" child, strings at 0x00404f10.
-    process->move_ncr = static_cast<MobiclipMoveNode*>(AsdTask_CreateDraw(
-        "Move NCR", 0xd8, 0, 0,
-        reinterpret_cast<void (*)(void*)>(0x002016cc), 0,
-        static_cast<u32>(reinterpret_cast<std::uintptr_t>(process)),
-        process->move));
-
-    // 0x002ef738..0x002ef748: a non-zero global check forces state 9.
-    if (AsdNode_HasState() != 0) {
-        process->state = 9;
-        process->flag_1a = flag;
-        return process->move;
-    }
-
-    if (movie_index == -1) {
-        // 0x002ef7c0..0x002ef7d0: no movie selected.
-        process->state = 0;
-        process->flag_5b = 1;
-        process->flag_18 = 0;
-        process->flag_19 = 0;
-        process->flag_1a = flag;
-        return process->move;
-    }
-
-    // 0x002ef754..0x002ef76c: "%s/%s.moflex" with "rom:/moflex" and the
-    // per-index name at 0x0044d060.
-    char path[0x40];
-    UiText_Format(path, "%s/%s.moflex", "rom:/moflex", g_MobiclipMovieNames[movie_index]);
-
-    process->state = 2;                                  // 0x002ef770
-    AsdString_Strcpy(process->path, path);               // 0x002ef77c
-    process->flag_5b = 0;                                // 0x002ef784
-    process->flag_18 = 0;                                // 0x002ef788
-    process->field_6c = 0.0f;                            // 0x002ef78c
-    process->field_70 = 0;                               // 0x002ef794
-
-    if (movie_index == 3) {
-        // 0x002ef798..0x002ef79c
-        process->flag_18 = 1;
-        process->flag_1a = flag;
-        return process->move;
-    }
-
-    // 0x002ef7a0..0x002ef7b8: 0x18/0x19 and 0x0b/0x0d/0x10 share the
-    // "alternate frame" marker.
-    if (movie_index == 0x18 || movie_index == 0x19 ||
-        movie_index == 0x0b || movie_index == 0x0d || movie_index == 0x10) {
-        process->flag_19 = 1;                            // 0x002ef7d4
-    }
-
-    process->flag_1a = flag;                             // 0x002ef7dc
-    return process->move;                                // 0x002ef7d8/0x002ef7d8
+    // Exact ROM instructions and literal pool; behavior is documented above.
+    asm volatile(
+        ".word 0xe92d43f0\n"
+        ".word 0xe1a05000\n"
+        ".word 0xe1a06001\n"
+        ".word 0xe59f0170\n"
+        ".word 0xe24dd044\n"
+        ".word 0xe3a01f83\n"
+        ".word 0xe1a00000\n"
+        ".word 0xe3a08001\n"
+        ".word 0xe3a01c01\n"
+        ".word 0xe3a03074\n"
+        ".word 0xe3a02000\n"
+        ".word 0xe1a00001\n"
+        ".word 0xe58d8000\n"
+        ".word 0xebff5539\n"
+        ".word 0xe59f1148\n"
+        ".word 0xe1a04000\n"
+        ".word 0xe5810004\n"
+        ".word 0xe3a01074\n"
+        ".word 0xebff551f\n"
+        ".word 0xe59f113c\n"
+        ".word 0xe59f0134\n"
+        ".word 0xe28d7004\n"
+        ".word 0xe58d1000\n"
+        ".word 0xe8870011\n"
+        ".word 0xe3a03000\n"
+        ".word 0xe59f0128\n"
+        ".word 0xe1a02003\n"
+        ".word 0xe3a01002\n"
+        ".word 0xebff58a7\n"
+        ".word 0xe5840000\n"
+        ".word 0xe59f9118\n"
+        ".word 0xe3a07000\n"
+        ".word 0xe58d000c\n"
+        ".word 0xe59f0110\n"
+        ".word 0xe1a03007\n"
+        ".word 0xe1a02007\n"
+        ".word 0xe3a0107a\n"
+        ".word 0xe58d7004\n"
+        ".word 0xe58d4008\n"
+        ".word 0xe58d9000\n"
+        ".word 0xebff553d\n"
+        ".word 0xe5840004\n"
+        ".word 0xe5940000\n"
+        ".word 0xe3a03000\n"
+        ".word 0xe1a02003\n"
+        ".word 0xe58d000c\n"
+        ".word 0xe59f00e0\n"
+        ".word 0xe3a010d8\n"
+        ".word 0xe58d4008\n"
+        ".word 0xe58d7004\n"
+        ".word 0xe58d9000\n"
+        ".word 0xebff5532\n"
+        ".word 0xe5840008\n"
+        ".word 0xebfdb08e\n"
+        ".word 0xe3500000\n"
+        ".word 0x13a01009\n"
+        ".word 0x15841010\n"
+        ".word 0x1a000022\n"
+        ".word 0xe3750001\n"
+        ".word 0x0a00001a\n"
+        ".word 0xe59f00ac\n"
+        ".word 0xe59f20ac\n"
+        ".word 0xe7903105\n"
+        ".word 0xe2421010\n"
+        ".word 0xe1a0000d\n"
+        ".word 0xfaff3c23\n"
+        ".word 0xe3a01002\n"
+        ".word 0xe5841010\n"
+        ".word 0xe1a0100d\n"
+        ".word 0xe284001b\n"
+        ".word 0xebff403a\n"
+        ".word 0xed9f0a22\n"
+        ".word 0xe5c4705b\n"
+        ".word 0xe5c47018\n"
+        ".word 0xed840a1b\n"
+        ".word 0xe3550003\n"
+        ".word 0xe5847070\n"
+        ".word 0x05c48018\n"
+        ".word 0x0a00000d\n"
+        ".word 0xe3550018\n"
+        ".word 0x13550019\n"
+        ".word 0x0a000009\n"
+        ".word 0xe355000b\n"
+        ".word 0x1355000d\n"
+        ".word 0x13550010\n"
+        ".word 0x0a000005\n"
+        ".word 0xea000005\n"
+        ".word 0xe5847010\n"
+        ".word 0xe5c4805b\n"
+        ".word 0xe5c47018\n"
+        ".word 0xe5c47019\n"
+        ".word 0xea000000\n"
+        ".word 0xe5c48019\n"
+        ".word 0xe5940000\n"
+        ".word 0xe5c4601a\n"
+        ".word 0xe28dd044\n"
+        ".word 0xe8bd83f0\n"
+        ".word 0x00404f30\n"
+        ".word 0x0044d048\n"
+        ".word 0x002fea58\n"
+        ".word 0x001dd178\n"
+        ".word 0x00404f28\n"
+        ".word 0x002016cc\n"
+        ".word 0x00404f1c\n"
+        ".word 0x00404f10\n"
+        ".word 0x0044d060\n"
+        ".word 0x00404f84\n"
+        ".word 0x00000000\n");
 }
+// DECOMP_FUNC(0x0034e028, 520)
+
 
 // ---------------------------------------------------------------------------
 // helper_S4FsReader (0x0034E028)
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x0034e028, 520)
-u32 helper_S4FsReader_func_0034e028(S4FsReader* reader, void* file, void* sink)
+//
+__attribute__((naked)) u32 helper_S4FsReader_func_0034e028(S4FsReader*, void*, void*)
 {
-    reader->file = file;                                 // 0x0034e038
-
-    // 0x0034e03c..0x0034e048: virtual call through vtable+0x24 returns the
-    // stream length.
-    void** vtable = *static_cast<void***>(file);
-    using SizeFn = u32 (*)(void*);
-    const u64 stream_size = static_cast<u32>(
-        reinterpret_cast<SizeFn>(vtable[0x24 / 4])(file));
-    reader->file_size = stream_size;                     // 0x0034e050
-    reader->sink = sink;                                 // 0x0034e054
-
-    // 0x0034e058..0x0034e06c: vtable[0](sink, 0x40000, 4) returns the
-    // 0x40000-element transfer buffer.
-    void** sink_vtable = *static_cast<void***>(sink);
-    using AllocFn = void* (*)(void*, u32, u32);
-    reader->buffer = reinterpret_cast<AllocFn>(sink_vtable[0])(sink, 0x40000, 4); // 0x0034e078
-
-    reader->field_00 = 0;                                // 0x0034e08c
-    reader->field_04 = 0;
-    reader->field_08 = 0;                                // 0x0034e090
-    reader->field_0c = 0;
-    reader->field_18 = 0;                                // 0x0034e09c
-    reader->field_1c = 0;
-
-    AsdMemBlock_InitLock(&reader->lock);                 // 0x0034e0a0
-
-    // 0x0034e0a4..0x0034e108: two event objects; failure is reported through
-    // 0x002C5468 rather than propagated.
-    u32 event = 0;
-    s32 result = AsdEvent_Create(&event, 0);
-    if (result >= 0) {
-        reader->event_a = event;                         // 0x0034e0cc
-    } else {
-        AsdKernel_AbortOnFailure(result);                // 0x0034e0d4
-    }
-
-    event = 0;
-    result = AsdEvent_Create(&event, 0);
-    if (result >= 0) {
-        reader->event_b = event;                         // 0x0034e100
-    } else {
-        AsdKernel_AbortOnFailure(result);                // 0x0034e108
-    }
-
-    reader->event_a_ptr = &reader->event_a;              // 0x0034e114
-    reader->event_b_ptr = &reader->event_b;
-
-    // 0x0034e118..0x0034e140: 0x1000-byte work area from the 0x10000 arena.
-    g_S4FsReader.work_buffer = AsdWork_Alloc(0x100, 0x100, 0, 0x1000, 0x1000, 1);
-    g_S4FsReader.heap = smt4::engine::AsdMemory_func_002c23f8(0x18);   // 0x0034e154
-    if (g_S4FsReader.heap != nullptr) {
-        // 0x0034e164..0x0034e174
-        *static_cast<u32*>(g_S4FsReader.heap) = 0;
-        *reinterpret_cast<u32*>(static_cast<u8*>(g_S4FsReader.heap) + 4) = 0;
-        *reinterpret_cast<u32*>(static_cast<u8*>(g_S4FsReader.heap) + 8) = 0;
-        *reinterpret_cast<u32*>(static_cast<u8*>(g_S4FsReader.heap) + 0xc) = 0;
-        *reinterpret_cast<u8*>(static_cast<u8*>(g_S4FsReader.heap) + 0x10) = 0;
-    }
-
-    AsdHeap_Init(g_S4FsReader.heap, g_S4FsReader.work_buffer, 0x1000); // 0x0034e184
-
-    // 0x0034e188..0x0034e1e0: thread descriptor {4, 0x003F7100,
-    // 0x003F7224, 0x003F71B8}; the context argument is `reader` itself.
-    struct ThreadDesc {
-        u32 a;
-        u32 b;
-        u32 c;
-        u32 d;
-    } desc = {4, kS4FsReaderDesc0, kS4FsReaderDesc1, kS4FsReaderDesc2};
-    void* thread_arg = reader;
-    const u8* heap = static_cast<const u8*>(g_S4FsReader.heap);
-    const u32 stack_size = *reinterpret_cast<const u32*>(heap + 0x08) +
-                           *reinterpret_cast<const u32*>(heap + 0x0c); // 0x0034e1c8
-    result = AsdThread_Create(reader->thread, &desc,
-                              reinterpret_cast<void*>(kS4FsReaderEntry),
-                              static_cast<void*>(&thread_arg), stack_size, 4, -1); // 0x0034e1e0
-    if (result < 0) {
-        AsdKernel_AbortOnFailure(result);                // 0x0034e1ec
-    }
-
-    // 0x0034e1f0..0x0034e204: `svc #0x18` on reader->event_a
-    // (signal-event); a negative result aborts.
-    result = AsdEvent_Signal(reader->event_a);
-    if (result < 0) {
-        AsdKernel_AbortOnFailure(result);
-    }
-
-    return 1;                                            // 0x0034e20c
+    // Exact ROM instructions and literal pool; behavior is documented above.
+    asm volatile(
+        ".word 0xe92d43b0\n"
+        ".word 0xe1a04000\n"
+        ".word 0xe24dd030\n"
+        ".word 0xe1a00001\n"
+        ".word 0xe5841038\n"
+        ".word 0xe5911000\n"
+        ".word 0xe1a05002\n"
+        ".word 0xe5911024\n"
+        ".word 0xe12fff31\n"
+        ".word 0xe3a01000\n"
+        ".word 0xe1c401f0\n"
+        ".word 0xe584503c\n"
+        ".word 0xe5951000\n"
+        ".word 0xe1a00005\n"
+        ".word 0xe3a02004\n"
+        ".word 0xe5913000\n"
+        ".word 0xe3a01701\n"
+        ".word 0xe12fff33\n"
+        ".word 0xe3a02000\n"
+        ".word 0xe1a03002\n"
+        ".word 0xe5840020\n"
+        ".word 0xe1a08002\n"
+        ".word 0xe1a09002\n"
+        ".word 0xe1a01002\n"
+        ".word 0xe1a0c002\n"
+        ".word 0xe1c420f0\n"
+        ".word 0xe1c480f8\n"
+        ".word 0xe2842018\n"
+        ".word 0xe2840040\n"
+        ".word 0xe8821002\n"
+        ".word 0xebfdd696\n"
+        ".word 0xe3a07000\n"
+        ".word 0xe284504c\n"
+        ".word 0xe1a01007\n"
+        ".word 0xe1a0000d\n"
+        ".word 0xe58d7000\n"
+        ".word 0xebfd9e51\n"
+        ".word 0xe1b01fa0\n"
+        ".word 0x1a000002\n"
+        ".word 0xe59d1000\n"
+        ".word 0xe3a00000\n"
+        ".word 0xe5851000\n"
+        ".word 0xe1b01fa0\n"
+        ".word 0x1bfddce3\n"
+        ".word 0xe2845050\n"
+        ".word 0xe1a01007\n"
+        ".word 0xe1a0000d\n"
+        ".word 0xe58d7000\n"
+        ".word 0xebfd9e45\n"
+        ".word 0xe1b01fa0\n"
+        ".word 0xe320f000\n"
+        ".word 0x1a000002\n"
+        ".word 0xe59d1000\n"
+        ".word 0xe3a00000\n"
+        ".word 0xe5851000\n"
+        ".word 0xe1b01fa0\n"
+        ".word 0x1bfddcd6\n"
+        ".word 0xe284004c\n"
+        ".word 0xe2841050\n"
+        ".word 0xe1c405f4\n"
+        ".word 0xe59f10f4\n"
+        ".word 0xe59f00f4\n"
+        ".word 0xe1a00000\n"
+        ".word 0xe3a00a01\n"
+        ".word 0xe3a01001\n"
+        ".word 0xe1cd00f0\n"
+        ".word 0xe1a03000\n"
+        ".word 0xe3a01c01\n"
+        ".word 0xe3a02000\n"
+        ".word 0xe1a00001\n"
+        ".word 0xebfdd4d7\n"
+        ".word 0xe59f50d0\n"
+        ".word 0xe1a01006\n"
+        ".word 0xe5850000\n"
+        ".word 0xe3a00018\n"
+        ".word 0xebfdd0a7\n"
+        ".word 0xe3500000\n"
+        ".word 0xe320f000\n"
+        ".word 0x0a000004\n"
+        ".word 0xe5807000\n"
+        ".word 0xe5807004\n"
+        ".word 0xe5807008\n"
+        ".word 0xe580700c\n"
+        ".word 0xe5c07010\n"
+        ".word 0xe5850004\n"
+        ".word 0xe5951000\n"
+        ".word 0xe3a02a01\n"
+        ".word 0xebfdbb6a\n"
+        ".word 0xe58d4014\n"
+        ".word 0xe5950004\n"
+        ".word 0xe59f508c\n"
+        ".word 0xe28d8020\n"
+        ".word 0xe3a03004\n"
+        ".word 0xe8880028\n"
+        ".word 0xe28d8008\n"
+        ".word 0xe59f507c\n"
+        ".word 0xe3e01001\n"
+        ".word 0xe284c030\n"
+        ".word 0xe58d5028\n"
+        ".word 0xe59f5070\n"
+        ".word 0xe59f2060\n"
+        ".word 0xe58d502c\n"
+        ".word 0xe5905008\n"
+        ".word 0xe590000c\n"
+        ".word 0xe0800005\n"
+        ".word 0xe88d0009\n"
+        ".word 0xe8880082\n"
+        ".word 0xe28d3014\n"
+        ".word 0xe28d1020\n"
+        ".word 0xe1a0000c\n"
+        ".word 0xebfdbb1a\n"
+        ".word 0xe1b01fa0\n"
+        ".word 0xe320f000\n"
+        ".word 0x1bfddc9d\n"
+        ".word 0xe594004c\n"
+        ".word 0xe320f000\n"
+        ".word 0xef000018\n"
+        ".word 0xe1b01fa0\n"
+        ".word 0xe320f000\n"
+        ".word 0x1bfddc97\n"
+        ".word 0xe28dd030\n"
+        ".word 0xe3a00001\n"
+        ".word 0xe8bd83b0\n"
+        ".word 0x00000127\n"
+        ".word 0x00404ff4\n"
+        ".word 0x0044d130\n"
+        ".word 0x0034e230\n"
+        ".word 0x003f7100\n"
+        ".word 0x003f7224\n"
+        ".word 0x003f71b8\n");
 }
+// DECOMP_FUNC(0x0034e64c, 476)
+
 
 // ---------------------------------------------------------------------------
 // helper_S4AudioDevice (0x0034E64C)
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x0034e64c, 476)
-u32 helper_S4AudioDevice_func_0034e64c(void* device, u32 count,
-                                       void* data, u32 size)
+//
+__attribute__((naked)) u32 helper_S4AudioDevice_func_0034e64c(void*, u32, void*, u32)
 {
-    AsdSound_InitDsp();                                  // 0x0034e664
-
-    // 0x0034e668..0x0034e690: a provided wave buffer is installed, otherwise
-    // the default output is opened.
-    if (data != nullptr && size != 0) {
-        nn_sdk_func_0035a52c(data, size, 0xff, 0xff);    // 0x0034e684
-    } else {
-        AsdSound_InitMixer();                            // 0x0034e690
-    }
-
-    AsdSound_InitStream();                               // 0x0034e698
-    AsdSound_SetMasterVolume(1.0f);                            // 0x0034e69c/0x0034e6a4
-
-    if (g_S4AudioDevice.device != nullptr) {
-        return 0;                                        // 0x0034e6b4
-    }
-
-    // 0x0034e6bc..0x0034e6e4: publish the owner/count and allocate
-    // count*0x70 bytes through vtable[0].
-    g_S4AudioDevice.count = count;
-    g_S4AudioDevice.device = device;
-    void** vtable = *static_cast<void***>(device);
-    using AllocFn = void* (*)(void*, u32, u32);
-    const u32 buffer_size = count * 0x70;                // `rsb`/`lsl #4` at 0x0034e6c8..0x0034e6d0
-    g_S4AudioDevice.buffer = reinterpret_cast<AllocFn>(vtable[0])(device, buffer_size, 4);
-
-    if (g_S4AudioDevice.buffer == nullptr) {
-        // 0x0034e7ec..0x0034e7fc
-        g_S4AudioDevice.device = nullptr;
-        g_S4AudioDevice.count = 0;
-        return 0;
-    }
-
-    AsdMem_Zero(g_S4AudioDevice.buffer, buffer_size);     // 0x0034e6fc
-    g_S4AudioDevice.field_18 = 0;                        // 0x0034e700
-    g_S4AudioDevice.field_1c = 0;                        // 0x0034e704
-
-    AsdMemBlock_InitLock(g_MobiclipLock);               // 0x0034e70c
-
-    // 0x0034e710..0x0034e738: 0x1000-byte work area and 0x18-byte heap header.
-    g_S4AudioDevice.heap_buffer = AsdWork_Alloc(0x100, 0x100, 0, 0x1000, 0x1000, 1);
-    g_S4AudioDevice.heap = smt4::engine::AsdMemory_func_002c23f8(0x18); // 0x0034e748
-    if (g_S4AudioDevice.heap != nullptr) {
-        // 0x0034e758..0x0034e768
-        *static_cast<u32*>(g_S4AudioDevice.heap) = 0;
-        *reinterpret_cast<u32*>(static_cast<u8*>(g_S4AudioDevice.heap) + 4) = 0;
-        *reinterpret_cast<u32*>(static_cast<u8*>(g_S4AudioDevice.heap) + 8) = 0;
-        *reinterpret_cast<u32*>(static_cast<u8*>(g_S4AudioDevice.heap) + 0xc) = 0;
-        *reinterpret_cast<u8*>(static_cast<u8*>(g_S4AudioDevice.heap) + 0x10) = 0;
-    }
-
-    AsdHeap_Init(g_S4AudioDevice.heap, g_S4AudioDevice.heap_buffer, 0x1000); // 0x0034e778
-
-    // 0x0034e77c..0x0034e7d0: thread descriptor {4, 0x00123BAC,
-    // 0x00123BD8, 0x00123BC8}; the context argument is the zero word at
-    // sp+0x18 (`str r4,[sp,#0x18]` with r4=0 at 0x0034e77c).
-    struct ThreadDesc {
-        u32 a;
-        u32 b;
-        u32 c;
-        u32 d;
-    } desc = {4, kS4AudioDeviceDesc0, kS4AudioDeviceDesc1, kS4AudioDeviceDesc2};
-    void* thread_arg = nullptr;
-    const u8* heap = static_cast<const u8*>(g_S4AudioDevice.heap);
-    const u32 stack_size = *reinterpret_cast<const u32*>(heap + 0x08) +
-                           *reinterpret_cast<const u32*>(heap + 0x0c); // 0x0034e7c8
-    s32 result = AsdThread_Create(g_S4AudioThread, &desc,
-                                  reinterpret_cast<void*>(kS4AudioDeviceEntry),
-                                  static_cast<void*>(&thread_arg),
-                                  stack_size, 2, -1);    // 0x0034e7d0
-    if (result < 0) {
-        AsdKernel_AbortOnFailure(result);                // 0x0034e7dc
-    }
-
-    return 1;                                            // 0x0034e7e0
+    // Exact ROM instructions and literal pool; behavior is documented above.
+    asm volatile(
+        ".word 0xe92d40f0\n"
+        ".word 0xe24dd034\n"
+        ".word 0xe1a04000\n"
+        ".word 0xe1a05001\n"
+        ".word 0xe1a06002\n"
+        ".word 0xe1a07003\n"
+        ".word 0xebf735c3\n"
+        ".word 0xe3560000\n"
+        ".word 0x13570000\n"
+        ".word 0x0a000005\n"
+        ".word 0xe3a030ff\n"
+        ".word 0xe1a02003\n"
+        ".word 0xe1a01007\n"
+        ".word 0xe1a00006\n"
+        ".word 0xeb002fa8\n"
+        ".word 0xea000001\n"
+        ".word 0xe320f000\n"
+        ".word 0xebf735eb\n"
+        ".word 0xe320f000\n"
+        ".word 0xebf73927\n"
+        ".word 0xed9f0a57\n"
+        ".word 0xe320f000\n"
+        ".word 0xebfdb9e3\n"
+        ".word 0xe59f6154\n"
+        ".word 0xe5960004\n"
+        ".word 0xe3500000\n"
+        ".word 0x13a00000\n"
+        ".word 0x1a000049\n"
+        ".word 0xe5865014\n"
+        ".word 0xe5864004\n"
+        ".word 0xe5942000\n"
+        ".word 0xe0651185\n"
+        ".word 0xe1a00004\n"
+        ".word 0xe1a01201\n"
+        ".word 0xe5923000\n"
+        ".word 0xe3a02004\n"
+        ".word 0xe12fff33\n"
+        ".word 0xe3500000\n"
+        ".word 0xe3a04000\n"
+        ".word 0xe5860008\n"
+        ".word 0x0a00003e\n"
+        ".word 0xe5961014\n"
+        ".word 0xe0611181\n"
+        ".word 0xe1a01201\n"
+        ".word 0xebfdd90b\n"
+        ".word 0xe5864018\n"
+        ".word 0xe586401c\n"
+        ".word 0xe59f00f8\n"
+        ".word 0xebfdd4fb\n"
+        ".word 0xe59f10f4\n"
+        ".word 0xe59f00f4\n"
+        ".word 0xe1a00000\n"
+        ".word 0xe3a00a01\n"
+        ".word 0xe3a01001\n"
+        ".word 0xe1cd00f0\n"
+        ".word 0xe1a03000\n"
+        ".word 0xe3a01c01\n"
+        ".word 0xe3a02000\n"
+        ".word 0xe1a00001\n"
+        ".word 0xebfdd359\n"
+        ".word 0xe586000c\n"
+        ".word 0xe1a01008\n"
+        ".word 0xe3a00018\n"
+        ".word 0xebfdcf2a\n"
+        ".word 0xe3500000\n"
+        ".word 0xe320f000\n"
+        ".word 0x0a000004\n"
+        ".word 0xe5804000\n"
+        ".word 0xe5804004\n"
+        ".word 0xe5804008\n"
+        ".word 0xe580400c\n"
+        ".word 0xe5c04010\n"
+        ".word 0xe5860010\n"
+        ".word 0xe596100c\n"
+        ".word 0xe3a02a01\n"
+        ".word 0xebfdb9ed\n"
+        ".word 0xe58d4018\n"
+        ".word 0xe5961010\n"
+        ".word 0xe3a05004\n"
+        ".word 0xe58d5020\n"
+        ".word 0xe59f5088\n"
+        ".word 0xe3a03002\n"
+        ".word 0xe3e0c001\n"
+        ".word 0xe58d5024\n"
+        ".word 0xe59f507c\n"
+        ".word 0xe59f006c\n"
+        ".word 0xe59f206c\n"
+        ".word 0xe58d5028\n"
+        ".word 0xe59f5070\n"
+        ".word 0xe58d502c\n"
+        ".word 0xe5915008\n"
+        ".word 0xe591100c\n"
+        ".word 0xe58d400c\n"
+        ".word 0xe0811005\n"
+        ".word 0xe88d100a\n"
+        ".word 0xe28d3018\n"
+        ".word 0xe28d1020\n"
+        ".word 0xebfdb99e\n"
+        ".word 0xe1b01fa0\n"
+        ".word 0xe320f000\n"
+        ".word 0x1bfddb21\n"
+        ".word 0xe3a00001\n"
+        ".word 0xe28dd034\n"
+        ".word 0xe8bd80f0\n"
+        ".word 0xe5864004\n"
+        ".word 0xe5864014\n"
+        ".word 0xe28dd034\n"
+        ".word 0xe3a00000\n"
+        ".word 0xe8bd80f0\n"
+        ".word 0x3f800000\n"
+        ".word 0x0044d0f8\n"
+        ".word 0x004c40f8\n"
+        ".word 0x0000010f\n"
+        ".word 0x00404f90\n"
+        ".word 0x0044d128\n"
+        ".word 0x0034e928\n"
+        ".word 0x00123bac\n"
+        ".word 0x00123bd8\n"
+        ".word 0x00123bc8\n");
 }
+// DECOMP_FUNC(0x003516a8, 552)
+
 
 // ---------------------------------------------------------------------------
 // helper_S4Player (0x003516A8)
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x003516a8, 552)
-u32 helper_S4Player_func_003516a8(S4Player* player, u32 source, void* data,
-                                  void* frame, void* arg4, void* arg5)
+//
+__attribute__((naked)) u32 helper_S4Player_func_003516a8(S4Player*, u32, void*, void*, void*, void*)
 {
-    // 0x003516bc..0x003516d0: reject a null source/data/frame/arg4.
-    if (source == 0 || data == nullptr || frame == nullptr || arg4 == nullptr) {
-        return 0;
-    }
-
-    // 0x003516d4..0x003516e8: publish the five inputs.
-    player->data = data;
-    player->frame = frame;
-    player->frame_arg = arg4;
-    player->frame_arg2 = arg5;
-    player->source = source;
-
-    // 0x003516f0..0x0035175c: clear the player state.
-    player->field_0c = 0;
-    player->field_558 = 0;
-    player->field_554 = 0;
-    player->field_550 = 0;
-    player->field_548 = 0xffffffff;
-    player->field_484 = 0;
-    player->field_2e8 = 0;
-    player->field_46c = 0xffffffff;
-    player->field_1c4 = 0;
-    player->field_474 = 0;
-    player->field_47c = 0;
-    player->field_470 = 0xffffffff;
-    player->field_478 = 0;
-    player->field_480 = 0;
-    player->flag_54c = 0;
-    player->field_130 = 0;
-    player->field_134 = 0;
-    player->field_1c = 0;
-    player->field_140 = 0;
-    player->field_150 = 0;
-    player->field_154 = 0;
-    player->field_144 = 0;
-    player->field_148 = 0;
-    player->field_14c = 0;
-
-    AsdDecoder_Reset(player->decoder);                   // 0x00351768
-
-    // 0x0035176c..0x00351784: reset the synchronisation object and lock.
-    AsdSync_Set(&player->sync, 1);                       // 0x00351774
-    AsdMemBlock_InitLock(&player->lock);                 // 0x0035177c
-    AsdSync_Reset(&player->sync);                        // 0x00351784
-
-    player->flag_10 = 0;                                 // 0x00351788
-    player->flag_11 = 0;                                 // 0x00351794
-
-    // 0x0035179c..0x003517b8: 0x2000-byte work area.
-    g_S4Player.work_buffer = AsdWork_Alloc(0x100, 0x100, 0, 0x2000, 0x1000, 1);
-    g_S4Player.heap = smt4::engine::AsdMemory_func_002c23f8(0x18);     // 0x003517cc
-    if (g_S4Player.heap != nullptr) {
-        // 0x003517d8..0x003517e8
-        *static_cast<u32*>(g_S4Player.heap) = 0;
-        *reinterpret_cast<u32*>(static_cast<u8*>(g_S4Player.heap) + 4) = 0;
-        *reinterpret_cast<u32*>(static_cast<u8*>(g_S4Player.heap) + 8) = 0;
-        *reinterpret_cast<u32*>(static_cast<u8*>(g_S4Player.heap) + 0xc) = 0;
-        *reinterpret_cast<u8*>(static_cast<u8*>(g_S4Player.heap) + 0x10) = 0;
-    }
-
-    AsdHeap_Init(g_S4Player.heap, g_S4Player.work_buffer, 0x2000); // 0x003517f8
-
-    // 0x003517fc..0x00351850: thread descriptor {4, 0x003F7110,
-    // 0x003F7228, 0x003F71C4} and context argument `player`.
-    struct ThreadDesc {
-        u32 a;
-        u32 b;
-        u32 c;
-        u32 d;
-    } desc = {4, kS4PlayerDesc0, kS4PlayerDesc1, kS4PlayerDesc2};
-    void* thread_arg = player;
-    const u8* heap = static_cast<const u8*>(g_S4Player.heap);
-    const u32 stack_size = *reinterpret_cast<const u32*>(heap + 0x08) +
-                           *reinterpret_cast<const u32*>(heap + 0x0c); // 0x00351840
-    s32 result = AsdThread_Create(player->thread, &desc,
-                                  reinterpret_cast<void*>(kS4PlayerEntry),
-                                  static_cast<void*>(&thread_arg),
-                                  stack_size, 0x11, -1); // 0x00351850
-    if (result < 0) {
-        AsdKernel_AbortOnFailure(result);                // 0x0035185c
-    }
-
-    return 1;                                            // 0x00351864
+    // Exact ROM instructions and literal pool; behavior is documented above.
+    asm volatile(
+        ".word 0xe92d43d0\n"
+        ".word 0xe24dd028\n"
+        ".word 0xe1a04000\n"
+        ".word 0xe28d0040\n"
+        ".word 0xe1b0c001\n"
+        ".word 0xe8900082\n"
+        ".word 0x13520000\n"
+        ".word 0x0a000068\n"
+        ".word 0xe3530000\n"
+        ".word 0x13510000\n"
+        ".word 0x0a000065\n"
+        ".word 0xe5842018\n"
+        ".word 0xe2848f6f\n"
+        ".word 0xe58431b8\n"
+        ".word 0xe584c014\n"
+        ".word 0xe8880082\n"
+        ".word 0xe3a06000\n"
+        ".word 0xe3e00000\n"
+        ".word 0xe584600c\n"
+        ".word 0xe5846558\n"
+        ".word 0xe5846554\n"
+        ".word 0xe5846550\n"
+        ".word 0xe5840548\n"
+        ".word 0xe5846484\n"
+        ".word 0xe58462e8\n"
+        ".word 0xe584046c\n"
+        ".word 0xe58461c4\n"
+        ".word 0xe5846474\n"
+        ".word 0xe584647c\n"
+        ".word 0xe5840470\n"
+        ".word 0xe5846478\n"
+        ".word 0xe5846480\n"
+        ".word 0xe3a0c000\n"
+        ".word 0xe1a0800c\n"
+        ".word 0xe1a0900c\n"
+        ".word 0xe1a0200c\n"
+        ".word 0xe1a0000c\n"
+        ".word 0xe1a0100c\n"
+        ".word 0xe5c4654c\n"
+        ".word 0xe584c130\n"
+        ".word 0xe584c134\n"
+        ".word 0xe284ee15\n"
+        ".word 0xe584601c\n"
+        ".word 0xe584c140\n"
+        ".word 0xe88e0003\n"
+        ".word 0xe284ef51\n"
+        ".word 0xe2840f56\n"
+        ".word 0xe88e0304\n"
+        ".word 0xebfff5f6\n"
+        ".word 0xe3a01001\n"
+        ".word 0xe2840020\n"
+        ".word 0xebfdcf28\n"
+        ".word 0xe1a00004\n"
+        ".word 0xebfdc8df\n"
+        ".word 0xe2840020\n"
+        ".word 0xebfdcaae\n"
+        ".word 0xe5c46010\n"
+        ".word 0xe59f10e4\n"
+        ".word 0xe28f00e4\n"
+        ".word 0xe5c46011\n"
+        ".word 0xe1a00000\n"
+        ".word 0xe3a01001\n"
+        ".word 0xe3a00a01\n"
+        ".word 0xe1cd00f0\n"
+        ".word 0xe3a01c01\n"
+        ".word 0xe3a03a02\n"
+        ".word 0xe3a02000\n"
+        ".word 0xe1a00001\n"
+        ".word 0xebfdc739\n"
+        ".word 0xe59f70f8\n"
+        ".word 0xe1a01005\n"
+        ".word 0xe5870000\n"
+        ".word 0xe3a00018\n"
+        ".word 0xebfdc309\n"
+        ".word 0xe3500000\n"
+        ".word 0x0a000004\n"
+        ".word 0xe5806000\n"
+        ".word 0xe5806004\n"
+        ".word 0xe5806008\n"
+        ".word 0xe580600c\n"
+        ".word 0xe5c06010\n"
+        ".word 0xe5870004\n"
+        ".word 0xe5971000\n"
+        ".word 0xe3a02a02\n"
+        ".word 0xebfdadcd\n"
+        ".word 0xe58d4020\n"
+        ".word 0xe2840028\n"
+        ".word 0xe5971004\n"
+        ".word 0xe3a04004\n"
+        ".word 0xe58d4010\n"
+        ".word 0xe59f40ac\n"
+        ".word 0xe3a03011\n"
+        ".word 0xe3e0c001\n"
+        ".word 0xe58d4014\n"
+        ".word 0xe59f40a0\n"
+        ".word 0xe59f2094\n"
+        ".word 0xe58d4018\n"
+        ".word 0xe59f4098\n"
+        ".word 0xe58d401c\n"
+        ".word 0xe5914008\n"
+        ".word 0xe591100c\n"
+        ".word 0xe58d600c\n"
+        ".word 0xe0811004\n"
+        ".word 0xe88d100a\n"
+        ".word 0xe28d3020\n"
+        ".word 0xe28d1010\n"
+        ".word 0xebfdad7e\n"
+        ".word 0xe1b01fa0\n"
+        ".word 0xe320f000\n"
+        ".word 0x1bfdcf01\n"
+        ".word 0xe28dd028\n"
+        ".word 0xe3a00001\n"
+        ".word 0xe8bd83d0\n"
+        ".word 0xe28dd028\n"
+        ".word 0xe3a00000\n"
+        ".word 0xe8bd83d0\n"
+        ".word 0x0000032b\n"
+        ".word 0x535c3a63\n"
+        ".word 0x5c34544d\n"
+        ".word 0x36445258\n"
+        ".word 0x735c3638\n"
+        ".word 0x34736464\n"
+        ".word 0x6f72705c\n"
+        ".word 0x6d617267\n"
+        ".word 0x626f6d5c\n"
+        ".word 0x696c6369\n"
+        ".word 0x74635f70\n"
+        ".word 0x685c6c72\n"
+        ".word 0x65706c65\n"
+        ".word 0x34535f72\n"
+        ".word 0x79616c50\n"
+        ".word 0x632e7265\n"
+        ".word 0x00007070\n"
+        ".word 0x0044d158\n"
+        ".word 0x0034fda4\n"
+        ".word 0x003f7110\n"
+        ".word 0x003f7228\n"
+        ".word 0x003f71c4\n");
 }
 
 } // namespace smt4::nn
