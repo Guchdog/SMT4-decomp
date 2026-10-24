@@ -410,7 +410,7 @@ void func_00232b28();
 s32 shop_func_00233584(const u8* p);
 u32 engine_func_0023378c(const u8* p, u32 val);
 void* func_00235924(u8* p, u32 idx);
-void func_00237efc();
+void func_00237efc(u8* p, const u32* value);
 
 // --- Batch 7 Task 2: 20-byte and 24-byte leaf functions ---
 void* shop_func_00240ea4(const u8* p);

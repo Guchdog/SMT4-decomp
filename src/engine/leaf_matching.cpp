@@ -2008,13 +2008,9 @@ extern "C" void* engine_func_00128f44(const u8* p) {
 
 // DECOMP_FUNC(0x001408ac, 20)
 extern "C" void func_001408ac(u8* p) {
-    asm volatile(
-        "mov r1, #0\n"
-        "str r1, [%0, #0x38]\n"
-        "str r1, [%0, #0x3c]\n"
-        "str r1, [%0, #0x40]\n"
-        : : "r"(p) : "r1", "memory"
-    );
+    *reinterpret_cast<volatile u32*>(p + 0x38) = 0;
+    *reinterpret_cast<volatile u32*>(p + 0x3c) = 0;
+    *reinterpret_cast<volatile u32*>(p + 0x40) = 0;
 }
 
 // DECOMP_FUNC(0x0014e634, 20)
@@ -2067,26 +2063,14 @@ extern "C" u32 engine_func_0017f928(u32 r0, u32 r1) {
 
 // DECOMP_FUNC(0x00192934, 20)
 extern "C" u32 func_00192934(u8* p) {
-    asm volatile(
-        "ldr r1, [%0, #0x18]\n"
-        "add r1, r1, #1\n"
-        "str r1, [%0, #0x18]\n"
-        "mov %0, #1\n"
-        : "+r"(p) : : "r1", "memory"
-    );
-    return (u32)(uintptr_t)p;
+    ++*reinterpret_cast<volatile u32*>(p + 0x18);
+    return 1;
 }
 
 // DECOMP_FUNC(0x001a08a8, 20)
 extern "C" u32 func_001a08a8(u8* p) {
-    asm volatile(
-        "ldr r1, [%0, #0x18]\n"
-        "add r1, r1, #1\n"
-        "str r1, [%0, #0x18]\n"
-        "mov %0, #1\n"
-        : "+r"(p) : : "r1", "memory"
-    );
-    return (u32)(uintptr_t)p;
+    ++*reinterpret_cast<volatile u32*>(p + 0x18);
+    return 1;
 }
 
 // --- Batch 7 Task 1: 12-byte, 16-byte, and 20-byte leaf functions ---
@@ -2324,14 +2308,9 @@ extern "C" void* func_00235924(u8* p, u32 idx) {
 }
 
 // DECOMP_FUNC(0x00237efc, 20)
-extern "C" __attribute__((naked)) void func_00237efc() {
-    asm volatile(
-        "mov r2, #1\n"
-        "strb r2, [r0, #4]\n"
-        "ldr r1, [r1]\n"
-        "str r1, [r0]\n"
-        "bx lr\n"
-    );
+extern "C" void func_00237efc(u8* p, const u32* value) {
+    *reinterpret_cast<volatile u8*>(p + 4) = 1;
+    *reinterpret_cast<u32*>(p) = *value;
 }
 
 
