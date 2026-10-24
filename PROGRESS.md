@@ -4,13 +4,13 @@
 
 | Category | Functions | Code Size (Bytes) | Progress % | Status Description |
 |----------|----------:|------------------:|-----------:|--------------------|
-| **Matching (Byte-for-Byte)** | 10,160 | 2,512,576 B | **80.0411%** | 100% verified compiled machine code match |
-| **Compiled Coverage (≥15% size)** | 130 | 236,984 B | 7.5494% | Compiles to ARMv6K ELF .o; size threshold only, logic unverified |
-| **Draft Logic (<15% size)** | 29 | 217,180 B | 6.9185% | Early draft reconstructions awaiting control-flow recovery |
+| **Matching (Byte-for-Byte)** | 10,163 | 2,512,736 B | **80.0462%** | 100% verified compiled machine code match |
+| **Compiled Coverage (≥15% size)** | 129 | 237,344 B | 7.5609% | Compiles to ARMv6K ELF .o; size threshold only, logic unverified |
+| **Draft Logic (<15% size)** | 28 | 216,660 B | 6.9020% | Early draft reconstructions awaiting control-flow recovery |
 | **Scaffolded (Stubs & Interfaces)** | 31 | 172,368 B | 5.4910% | Headers, structs, and function skeletons |
-| **Total Architecture Explored** | 10,350 | 3,139,108 B | 100.0000% | Total mapped into `src/` (Matching + Compiles + Draft + Stubs) |
+| **Total Architecture Explored** | 10,351 | 3,139,108 B | 100.0000% | Total mapped into `src/` (Matching + Compiles + Draft + Stubs) |
 | **Remaining (Todo)** | 0 | 0 B | 0.0000% | Unmapped functions in `.text` |
-| **Total `.text` Segment** | 10,350 | 3,139,108 B | 100.0000% | `0x00100000`–`0x003FE624` |
+| **Total `.text` Segment** | 10,351 | 3,139,108 B | 100.0000% | `0x00100000`–`0x003FE624` |
 
 Compiled coverage and draft totals use original function sizes, not recovered instruction counts. Compilation and size do not establish behavioral equivalence. Only the matching tier verifies machine code equivalence.
 
@@ -20,8 +20,8 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 
 | Subsystem | Matching | Compiled Coverage (≥15%) | Draft (<15%) | Stubs | Total Explored | Total Subsystem | Matching % | Explored % |
 |-----------|---------:|----------------:|-------------:|------:|---------------:|----------------:|-----------:|-----------:|
-| `engine` | 2,316 (641,612 B) | 49 (69,116 B) | 4 (37,168 B) | 2 (22,760 B) | 2,371 (770,656 B) | 2,371 (770,656 B) | 83.2553% | 100.00% |
-| `ui` | 1,161 (445,788 B) | 50 (88,812 B) | 12 (56,972 B) | 13 (90,728 B) | 1,236 (682,300 B) | 1,236 (682,300 B) | 65.3361% | 100.00% |
+| `engine` | 2,318 (641,712 B) | 48 (69,016 B) | 4 (37,168 B) | 2 (22,760 B) | 2,372 (770,656 B) | 2,372 (770,656 B) | 83.2683% | 100.00% |
+| `ui` | 1,162 (445,848 B) | 50 (89,272 B) | 11 (56,452 B) | 13 (90,728 B) | 1,236 (682,300 B) | 1,236 (682,300 B) | 65.3449% | 100.00% |
 | `unknown` | 3,812 (586,872 B) | 3 (12,192 B) | 3 (11,328 B) | 0 (0 B) | 3,818 (610,392 B) | 3,818 (610,392 B) | 96.1467% | 100.00% |
 | `script_vm` | 1,184 (298,804 B) | 8 (25,852 B) | 6 (98,796 B) | 3 (22,836 B) | 1,201 (446,288 B) | 1,201 (446,288 B) | 66.9532% | 100.00% |
 | `camp` | 911 (316,484 B) | 7 (9,912 B) | 0 (0 B) | 0 (0 B) | 918 (326,396 B) | 918 (326,396 B) | 96.9632% | 100.00% |
@@ -226,7 +226,8 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x0010a954` | 1352 | `ui` | `non_matching` | `ComWin_ProcessDialog` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x0010ae9c` | 44 | `battle` | `matching` | `ComWin_CheckFlag` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x0010aec8` | 12 | `unknown` | `matching` | `ComWin_GetResult` | [`src/ui/window.cpp`](src/ui/window.cpp) |
-| `0x0010aed4` | 100 | `engine` | `non_matching` | `ComWin_Reset` | [`src/ui/window.cpp`](src/ui/window.cpp) |
+| `0x0010aed4` | 16 | `engine` | `matching` | `func_0010aed4` | [`src/ui/window.cpp`](src/ui/window.cpp) |
+| `0x0010aee4` | 84 | `engine` | `matching` | `ComWin_Reset` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x0010af38` | 16 | `engine` | `matching` | `AsdText_SetCodeField14` | [`src/engine/asd_text.cpp`](src/engine/asd_text.cpp) |
 | `0x0010af48` | 60 | `unknown` | `matching` | `InfoWin_SetState` | [`src/ui/window.cpp`](src/ui/window.cpp) |
 | `0x0010af84` | 560 | `ui` | `non_matching` | `InfoWin_Init` | [`src/ui/window.cpp`](src/ui/window.cpp) |
@@ -6804,7 +6805,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x0030aac0` | 32 | `ui` | `matching` | `StatusDown_IsState15` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x0030aae0` | 32 | `ui` | `matching` | `StatusDown_IsState10` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x0030ab00` | 52 | `ui` | `matching` | `StatusDown_EnterState14` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
-| `0x0030ab34` | 60 | `ui` | `non_matching` | `StatusDown_EnterState6` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
+| `0x0030ab34` | 60 | `ui` | `matching` | `StatusDown_EnterState6` | [`src/ui/status_down.cpp`](src/ui/status_down.cpp) |
 | `0x0030ab70` | 36 | `camp` | `matching` | `camp_func_0030ab70` | [`src/engine/leaf_batch31_a.cpp`](src/engine/leaf_batch31_a.cpp) |
 | `0x0030ab94` | 140 | `camp` | `matching` | `camp_func_0030ab94` | [`src/engine/leaf_batch33_a.cpp`](src/engine/leaf_batch33_a.cpp) |
 | `0x0030ac20` | 412 | `ui` | `matching` | `BustupTex_func_0030ac20` | [`src/engine/asd_render_ui.cpp`](src/engine/asd_render_ui.cpp) |

@@ -52,7 +52,7 @@ void* ComWin_GetState(u32 a0, u32 a1, u32 a2, u32 a3);                          
 void ComWin_ProcessDialog();                                                        // 0x0010a954
 void ComWin_CheckFlag();                                                            // 0x0010ae9c
 void ComWin_GetResult();                                                            // 0x0010aec8
-void ComWin_Reset();                                                                // 0x0010aed4
+void ComWin_Reset();                                                                // 0x0010aee4
 void ComWin_DrawUp(void* arg);                                                      // 0x0011a354
 
 /**

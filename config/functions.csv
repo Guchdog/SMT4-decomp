@@ -190,7 +190,8 @@ address,size,status,category,name,src_file
 0x0010a954,1352,non_matching,ui,ComWin_ProcessDialog,src/ui/window.cpp
 0x0010ae9c,44,matching,battle,ComWin_CheckFlag,src/ui/window.cpp
 0x0010aec8,12,matching,unknown,ComWin_GetResult,src/ui/window.cpp
-0x0010aed4,100,non_matching,engine,ComWin_Reset,src/ui/window.cpp
+0x0010aed4,16,matching,engine,func_0010aed4,src/ui/window.cpp
+0x0010aee4,84,matching,engine,ComWin_Reset,src/ui/window.cpp
 0x0010af38,16,matching,engine,AsdText_SetCodeField14,src/engine/asd_text.cpp
 0x0010af48,60,matching,unknown,InfoWin_SetState,src/ui/window.cpp
 0x0010af84,560,non_matching,ui,InfoWin_Init,src/ui/window.cpp
@@ -6768,7 +6769,7 @@ address,size,status,category,name,src_file
 0x0030aac0,32,matching,ui,StatusDown_IsState15,src/ui/status_down.cpp
 0x0030aae0,32,matching,ui,StatusDown_IsState10,src/ui/status_down.cpp
 0x0030ab00,52,matching,ui,StatusDown_EnterState14,src/ui/status_down.cpp
-0x0030ab34,60,non_matching,ui,StatusDown_EnterState6,src/ui/status_down.cpp
+0x0030ab34,60,matching,ui,StatusDown_EnterState6,src/ui/status_down.cpp
 0x0030ab70,36,matching,camp,camp_func_0030ab70,src/engine/leaf_batch31_a.cpp
 0x0030ab94,140,matching,camp,camp_func_0030ab94,src/engine/leaf_batch33_a.cpp
 0x0030ac20,412,matching,ui,BustupTex_func_0030ac20,src/engine/asd_render_ui.cpp

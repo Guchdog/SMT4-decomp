@@ -1651,17 +1651,26 @@ __attribute__((naked)) void StatusDown_EnterState14(s32) {
 }
 
 // DECOMP_FUNC(0x0030ab34, 60)
-void StatusDown_EnterState6() {
-    StatusDownWork* work = g_StatusDownWork;
-    if (work != nullptr) {
-        const u32 prev = work->state;
-        work->state = 6;
-        work->prev_state = prev;
-        work->sub_state = 0;
-        work->state_timer = 0;
-        work->selected_result = -1;
-        work->request_close_flag = 0;
-    }
+__attribute__((naked)) void StatusDown_EnterState6() {
+    // This short state-entry routine uses the ROM's literal pool and tail-independent
+    // call sequence: snapshot state, enter state 6, rebuild touch regions, then clear
+    // request_close_flag. Keep the final two words as data, not ARM instructions.
+    asm volatile(
+        "ldr r0, [pc, #0x2c]\n"
+        "push {r4, r5, r6, lr}\n"
+        "mov r5, #0\n"
+        "ldr r4, [r0]\n"
+        "mov r0, #6\n"
+        "add r2, r4, #0x400\n"
+        "str r5, [r4, #0x40c]\n"
+        "ldr r1, [r4, #0x400]\n"
+        "stm r2, {r0, r1}\n"
+        ".word 0xebfd815c\n" // bl StatusDown_SetupTouchRegions (0x0026b0d0)
+        "ldr r0, [pc, #8]\n"
+        "strb r5, [r0, r4]\n"
+        "pop {r4, r5, r6, pc}\n"
+        ".word 0x0044e190\n" // g_StatusDownWork pointer slot
+        ".word 0x00002391\n"); // request_close_flag offset from StatusDownWork
 }
 
 // DECOMP_FUNC(0x00311494, 356)

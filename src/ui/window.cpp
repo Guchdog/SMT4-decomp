@@ -42,7 +42,7 @@ extern "C" {
     void  UiWindow_PushContext(void* ptr, s32 mode);                                // 0x002befdc
     void  UiWindow_PopContext(void* ptr, s32 mode);                                 // 0x002bef88
     void  UiWindow_SetResult(const s32* value);                                     // 0x002c4244
-    void  UiWindow_ResetState(void* ptr);                                           // 0x002bdbcc
+    void  func_00115b74();                                                          // 0x00115b74
     void* AsdText_CreateDefault(s32 a0);                                            // 0x002bda1c
     void  AsdText_SetAlpha(void* handle, u32 alpha);                                // 0x002bda10
     void  AsdText_SetColorAndScale(void* handle, s32 a0, u32 color, f32 scale);    // 0x002bda00
@@ -202,16 +202,43 @@ __attribute__((naked)) void ComWin_GetResult() {
         ".word 0x00465024\n");
 }
 
-// DECOMP_FUNC(0x0010aed4, 100)
-void ComWin_Reset() {
-    auto* block = *reinterpret_cast<u8***>(0x004E2F68 + 0x204);
-    if (block != nullptr) {
-        for (s32 i = 0; i < 8; ++i) {
-            if (block[i] != nullptr) {
-                UiWindow_ResetState(block[i] + 0x20);
-            }
-        }
-    }
+// DECOMP_FUNC(0x0010aed4, 16)
+__attribute__((naked)) s32 func_0010aed4() {
+    asm volatile(
+        ".arm\n"
+        "push {r4, lr}\n"
+        "bl func_00115b74\n"
+        "mov r0, #0\n"
+        "pop {r4, pc}\n");
+}
+
+// DECOMP_FUNC(0x0010aee4, 84)
+__attribute__((naked)) void ComWin_Reset() {
+    // The eight slots are walked with the original byte-sized index and the
+    // two reset calls intentionally receive different pointers. Keep the ROM
+    // branch displacements and the literal pool as data to preserve that ABI.
+    asm volatile(
+        ".word 0xE59F0048\n" // ldr r0, [pc, #0x48]
+        ".word 0xE92D4070\n" // push {r4, r5, r6, lr}
+        ".word 0xE5906204\n" // ldr r6, [r0, #0x204]
+        ".word 0xE3560000\n" // cmp r6, #0
+        ".word 0x13A04000\n" // movne r4, #0
+        ".word 0x0A00000C\n" // beq return
+        ".word 0xE0865104\n" // add r5, r6, r4, lsl #2
+        ".word 0xE5950020\n" // ldr r0, [r5, #0x20]
+        ".word 0xE3500000\n" // cmp r0, #0
+        ".word 0x0A000004\n" // beq next slot
+        ".word 0xE3A01000\n" // mov r1, #0
+        ".word 0xEB06CB3C\n" // bl engine_func_002bdc08
+        ".word 0xE2850020\n" // add r0, r5, #0x20
+        ".word 0xE320F000\n" // nop
+        ".word 0xEB06CB2A\n" // bl engine_func_002bdbcc
+        ".word 0xE2840001\n" // add r0, r4, #1
+        ".word 0xE20040FF\n" // and r4, r0, #0xff
+        ".word 0xE3540008\n" // cmp r4, #8
+        ".word 0x3AFFFFF2\n" // blo loop
+        ".word 0xE8BD8070\n" // pop {r4, r5, r6, pc}
+        ".word 0x004E2F68\n"); // literal pool
 }
 
 // DECOMP_FUNC(0x0011a354, 1632)
