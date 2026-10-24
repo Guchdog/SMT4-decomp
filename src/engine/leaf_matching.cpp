@@ -2600,13 +2600,17 @@ extern "C" __attribute__((naked)) void func_0038120c() {
 }
 
 // DECOMP_FUNC(0x003a8a94, 16)
-extern "C" __attribute__((naked)) void func_003a8a94() {
-    asm volatile("ldrh r0, [r0]\nldrh r1, [r1]\nsub r0, r0, r1\nbx lr\n");
+s32 func_003a8a94(const volatile u16* lhs, const volatile u16* rhs) {
+    const u32 left = *lhs;
+    const u32 right = *rhs;
+    return static_cast<s32>(left - right);
 }
 
 // DECOMP_FUNC(0x003aab20, 16)
-extern "C" __attribute__((naked)) void func_003aab20() {
-    asm volatile("ldrh r1, [r1]\nldrh r0, [r0]\nsub r0, r1, r0\nbx lr\n");
+s32 func_003aab20(const volatile u16* lhs, const volatile u16* rhs) {
+    const u32 right = *rhs;
+    const u32 left = *lhs;
+    return static_cast<s32>(right - left);
 }
 
 // DECOMP_FUNC(0x003c996c, 16)

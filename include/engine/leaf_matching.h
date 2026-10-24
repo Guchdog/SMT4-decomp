@@ -442,8 +442,8 @@ u32 camp_func_0028c124(const u8* p);
 
 // Batch 8: 16-byte, 20-byte, and 24-byte leaf functions.
 void func_0038120c();
-void func_003a8a94();
-void func_003aab20();
+s32 func_003a8a94(const volatile u16* lhs, const volatile u16* rhs);
+s32 func_003aab20(const volatile u16* lhs, const volatile u16* rhs);
 void camp_func_003c996c();
 void func_003d7228();
 void script_vm_func_003df578();
