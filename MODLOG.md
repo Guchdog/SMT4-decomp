@@ -13,9 +13,11 @@ for the configured private image. The current 184 compiled bytes fit there. The
 332-byte batch-2 IPS and 3,633,152-byte derived image have identical hashes for
 both seeds; the earlier pilot separately verified IPS replay. Four original
 caller windows passed, including useful checks for two batch-2 functions.
-Real-loader padding behavior and a full game boot remain
-unverified. Core source/ledger and the user's original image are unchanged. No
-patch was installed, uploaded, or pushed.
+The real Azahar loader applied the IPS and the game reached its title menu.
+Execution of individual replacement functions and behavior beyond the menu
+remain unverified. Core source/ledger and the user's original image are
+unchanged; the IPS is installed only in the local Azahar profile. Nothing was
+uploaded or pushed.
 
 See [the experiment report](experiments/semantic_equivalence/README.md) and the
 [per-function procedure](docs/function-reconstruction-workflow.md) for
