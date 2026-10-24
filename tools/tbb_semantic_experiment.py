@@ -11,6 +11,7 @@ import struct
 import subprocess
 import sys
 
+import capstone
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
@@ -19,13 +20,147 @@ from tools.asm_diff import extract_elf_functions_detailed
 from tools.build_check import compile_tu_armv6k, find_clang
 from tools.inspect_assets import parse_tbb_header
 from tools.semantic_experiment import (
-    DATA, DATA_SIZE, STACK_SIZE, TEXT, Case, Runner, difference,
-    validate_local_blob,
+    DATA, DATA_SIZE, INJECT, STACK_SIZE, TEXT, Case, Runner, arm, arm_branch,
+    difference, unicorn, validate_local_blob,
 )
 
 
 TBL1 = 0x314C4254
 ENTRY = 0x002C0E9C
+SUBTABLE_ENTRY = 0x002AC2F4
+GLOBAL_SUBTABLE_ENTRY = 0x002C0EC4
+TITLE_CALLER_START = 0x001E9AB0
+TITLE_CALLER_STOP = 0x001E9AC8
+TITLE_TBB_SLOT_BASE = 0x0049382C
+TITLE_TBB_SLOT_ID = 0x3A
+TITLE_MENU_STRIDE = 0x56
+
+
+def verify_title_call_sites(image: bytes, reference_hash: str) -> dict:
+    """Fail closed on any drift in the hash-pinned title getter call chain."""
+    expected = {
+        0x001E9AB0: ("mov", "r1, #0"),
+        0x001E9AB4: ("mov", "r0, #0x3a"),
+        0x001E9AB8: ("bl", "#0x2c0ec4"),
+        0x001E9AC4: ("bl", "#0x2c0e9c"),
+        0x002C0ED8: ("b", "#0x2ac2f4"),
+    }
+    if not reference_hash or hashlib.sha256(image).hexdigest() != reference_hash:
+        raise ValueError("Title caller reference hash does not match code.bin")
+    cs = capstone.Cs(capstone.CS_ARCH_ARM, capstone.CS_MODE_ARM)
+    actual = {}
+    for address, (mnemonic, operands) in expected.items():
+        offset = address - TEXT
+        decoded = next(cs.disasm(image[offset:offset + 4], address), None)
+        if decoded is None or (decoded.mnemonic, decoded.op_str) != (mnemonic, operands):
+            raise ValueError(f"Reference title callsite mismatch at {address:#010x}")
+        actual[hex(address)] = {"mnemonic": decoded.mnemonic,
+                                "operands": decoded.op_str,
+                                "bytes": decoded.bytes.hex()}
+    return actual
+
+
+def title_menu_case(selection: int, raw_tbb: bytes, seed: int = 0) -> Case:
+    """Build the caller's entry state; r6 is the already-loaded menu selection."""
+    if selection not in range(4):
+        raise ValueError("Title menu selection must be 0..3")
+    if len(raw_tbb) > DATA_SIZE - 0x100:
+        raise ValueError("Real TBB file does not fit in the experiment DATA region")
+    rng = random.Random(seed ^ selection)
+    data = bytearray(rng.randbytes(DATA_SIZE))
+    data[0x100:0x100 + len(raw_tbb)] = raw_tbb
+    regs = [rng.getrandbits(32) for _ in range(13)]
+    regs[6] = selection
+    return Case(f"title-menu-selection-{selection}", tuple(regs), bytes(data),
+                rng.randbytes(STACK_SIZE), rng.getrandbits(4) << 28)
+
+
+def install_title_slot(runner: Runner, container_pointer: int) -> None:
+    slot_pointer_address = TITLE_TBB_SLOT_BASE + TITLE_TBB_SLOT_ID * 0x10 + 4
+    page = slot_pointer_address & ~0xFFF
+    runner.uc.mem_protect(page, 0x1000,
+                          unicorn.UC_PROT_READ | unicorn.UC_PROT_WRITE)
+    runner.uc.mem_write(slot_pointer_address, struct.pack("<I", container_pointer))
+
+
+def run_title_caller(image: bytes, raw_tbb: bytes, subtable_code: bytes,
+                     payload_code: bytes, seed: int,
+                     reference_hash: str) -> dict:
+    """Execute 0x1E9AB0..0x1E9AC8 with original and both candidate getters."""
+    sites = verify_title_call_sites(image, reference_hash)
+    validate_local_blob(subtable_code)
+    validate_local_blob(payload_code)
+    original = Runner(image, GLOBAL_SUBTABLE_ENTRY)
+    rebuilt = Runner(image, SUBTABLE_ENTRY, subtable_code,
+                     replacement_validator=validate_local_blob)
+    payload_injection = INJECT + 0x200
+    if payload_injection + len(payload_code) >= INJECT + 0x1000:
+        raise ValueError("Title caller candidate blobs exceed the reserved injection page")
+    rebuilt.uc.mem_write(payload_injection, payload_code)
+    rebuilt.uc.mem_write(ENTRY, arm_branch(ENTRY, payload_injection))
+    install_title_slot(original, DATA + 0x100)
+    install_title_slot(rebuilt, DATA + 0x100)
+
+    parsed = parse_tbb_header(raw_tbb)
+    if parsed["table_count"] < 1:
+        raise ValueError("TitleTable.tbb has no table 0 for the menu")
+    first = parsed["tables"][0]
+    if first["magic"] != "TBL1" or first["payload_size"] < 4 * TITLE_MENU_STRIDE:
+        raise ValueError("TitleTable.tbb table 0 does not cover menu selections 0..3")
+    header_size = parsed["header_size"]
+    first_offset = struct.unpack_from("<I", raw_tbb, 0x0C)[0]
+    expected_subtable = DATA + 0x100 + header_size + first_offset
+    expected_payload = expected_subtable + 0x10
+
+    results = []
+    for selection in range(4):
+        case = title_menu_case(selection, raw_tbb, seed)
+        baseline = original.run(case, start=TITLE_CALLER_START,
+                                stops=(TITLE_CALLER_STOP,), budget=512)
+        candidate = rebuilt.run(case, start=TITLE_CALLER_START,
+                                stops=(TITLE_CALLER_STOP,), budget=512)
+        reason = difference(baseline, candidate, caller_window=True)
+        baseline_regs = tuple(original.uc.reg_read(reg) for reg in original.reg_ids)
+        candidate_regs = tuple(rebuilt.uc.reg_read(reg) for reg in rebuilt.reg_ids)
+        baseline_regs += (original.uc.reg_read(arm.UC_ARM_REG_SP),
+                          original.uc.reg_read(arm.UC_ARM_REG_LR))
+        candidate_regs += (rebuilt.uc.reg_read(arm.UC_ARM_REG_SP),
+                           rebuilt.uc.reg_read(arm.UC_ARM_REG_LR))
+        register_differences = [
+            f"r{index}" for index, (left, right) in
+            enumerate(zip(baseline_regs, candidate_regs)) if left != right
+        ]
+        if baseline.result != expected_payload or candidate.result != expected_payload:
+            reason = reason or "caller did not return the TitleTable table-0 payload"
+        selected_record = expected_payload + selection * TITLE_MENU_STRIDE
+        help_string = selected_record + 0x16
+        if baseline_regs[6] != selection or candidate_regs[6] != selection:
+            reason = reason or "caller did not preserve the selected menu index in r6"
+        if help_string + 1 > expected_payload + first["payload_size"]:
+            reason = reason or "selection help-string field is outside table-0 payload"
+        results.append({
+            "selection": selection,
+            "passed": reason is None,
+            "stop_pc": hex(baseline.pc),
+            "payload_pointer": hex(baseline.result),
+            "selected_record": hex(selected_record),
+            "help_string_field": hex(help_string),
+            "nonobservable_register_differences": register_differences,
+            "reason": reason,
+        })
+    return {
+        "passed": all(item["passed"] for item in results),
+        "start": hex(TITLE_CALLER_START),
+        "stop": hex(TITLE_CALLER_STOP),
+        "global_slot_pointer_address": hex(TITLE_TBB_SLOT_BASE + TITLE_TBB_SLOT_ID * 0x10 + 4),
+        "container_pointer": hex(DATA + 0x100),
+        "expected_subtable": hex(expected_subtable),
+        "expected_payload": hex(expected_payload),
+        "call_sites_verified_against_reference_hash": sites,
+        "selections": results,
+        "scope": "original Tbb_GetGlobalSubTable plus original/candidate Tbb_GetSubTable and Tbb_GetPayloadData through the title caller stop; RowCount excluded",
+        "register_policy": "compare r0, r4-r11, SP, continuation, consumed flags, memory/access footprint; report but do not fail on caller-saved r1-r3/r12 that the continuation overwrites or does not consume",
+    }
 
 
 def make_cases(seed: int, samples: int):
@@ -165,7 +300,8 @@ def real_tbb_case(raw: bytes, label: str, *, table_index: int | None = None,
 
 
 def run(code_path: Path, output: Path, seed: int, samples: int,
-        real_tbb_path: Path | None = None):
+        real_tbb_path: Path | None = None,
+        title_caller_tbb_path: Path | None = None):
     output.mkdir(parents=True, exist_ok=True)
     image = code_path.read_bytes()
     game = json.loads((ROOT / "config/game_info.json").read_text(encoding="utf-8"))
@@ -325,6 +461,13 @@ def run(code_path: Path, output: Path, seed: int, samples: int,
                                      "expected": 0, "actual": actual,
                                      "reason": reason})
 
+    title_caller = None
+    if title_caller_tbb_path is not None:
+        title_caller = run_title_caller(
+            image, title_caller_tbb_path.read_bytes(), subtable_code,
+            candidate_code, seed, reference_hash,
+        )
+
     compiler = subprocess.run([str(find_clang()), "--version"], capture_output=True,
                                text=True, check=True)
     report = {
@@ -333,8 +476,10 @@ def run(code_path: Path, output: Path, seed: int, samples: int,
                    and subtable_negative["detected"]
                    and all(item["passed"] for item in row_count_results)
                    and row_count_negative["detected"]
-                   and all(item["passed"] for item in real_tbb_results)),
-        "scope": "TBB getters; isolated calls; row count oracle follows the exact shared helper in the pinned original image; no IPS or game integration",
+                   and all(item["passed"] for item in real_tbb_results)
+                   and (title_caller is None or title_caller["passed"])),
+        "scope": ("TBB getters; isolated calls plus the title caller window" if title_caller
+                  else "TBB getters; isolated calls; row count oracle follows the exact shared helper in the pinned original image"),
         "entry": hex(ENTRY),
         "reference_sha256": reference_hash,
         "candidate_sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
@@ -356,11 +501,14 @@ def run(code_path: Path, output: Path, seed: int, samples: int,
         "real_tbb_path": str(real_tbb_path) if real_tbb_path else None,
         "real_tbb_sha256": real_tbb_sha256,
         "real_tbb_cases": real_tbb_results,
+        "title_caller_tbb_path": str(title_caller_tbb_path) if title_caller_tbb_path else None,
+        "title_caller_window": title_caller,
         "limitations": [
             "Tbb_GetRowCount oracle executes its exact tail-branch target at 0x002C6C10 in the hash-pinned image",
             "Real TitleTable.tbb coverage exercises only its existing two tables and boundary index",
             "A sampled differential test is not a proof for every input",
-            "No caller-window, IPS, emulator, or game integration test",
+            ("No IPS, emulator, or game integration test" if title_caller else
+             "No caller-window, IPS, emulator, or game integration test"),
             "Does not validate malformed offsets or payload memory bounds",
         ],
     }
@@ -379,8 +527,11 @@ def main():
     parser.add_argument("--samples", type=int, default=64)
     parser.add_argument("--real-tbb", type=Path,
                         help="optional extracted TBCR asset for direct getter comparisons")
+    parser.add_argument("--title-caller-tbb", type=Path,
+                        help="run the real title getter caller window for menu selections 0..3")
     args = parser.parse_args()
-    run(args.code, args.output, args.seed, args.samples, args.real_tbb)
+    run(args.code, args.output, args.seed, args.samples, args.real_tbb,
+        args.title_caller_tbb)
 
 
 if __name__ == "__main__":

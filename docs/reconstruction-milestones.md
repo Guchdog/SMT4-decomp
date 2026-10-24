@@ -17,7 +17,7 @@ el historial de cobertura; este documento define el trabajo funcional siguiente.
 - La cobertura exacta del repositorio incluye ensamblador y spans originales.
   El 100% de bytes matching no significa 100% de lógica reconstruida en C++.
 - El experimento contiene 14 helpers C++ con pruebas ARM diferenciales en dos
-  semillas y 11 ventanas de caller. Son pruebas acotadas, no una prueba formal
+  semillas y 12 ventanas de caller. Son pruebas acotadas, no una prueba formal
   de equivalencia para todos los estados del juego.
 - El parche batch 4 arrancó en Azahar y completó el recorrido título → Audio
   Settings → título. Se observaron las entradas `state_flags` y
@@ -27,12 +27,24 @@ el historial de cobertura; este documento define el trabajo funcional siguiente.
   [la ficha H1](milestones/H1-main-menu-flow.md). Ya se auditaron límites de
   callbacks y contratos TBB, y se corrigió el parser Python con pruebas
   sintéticas. El runner recibió un validador aparte para blobs ARM con ramas
-  locales y literales internos. H1 sigue activo: falta medir navegación, ejecutar
-  un modo diferencial específico para más getters TBB, resolver estado inicial
-  y reconstruir lógica C++ activa; tres propuestas TBB pasaron 426 comparaciones
-  sintéticas (70 payload, 71 subtabla y 72 row-count por semilla), más 14 con el
+  locales y literales internos. H1 sigue activo: el reductor lógico de
+  navegación, touch y selección de ayuda tienen experimentos familiares
+  aislados; navegación→animación VFP→touch comparte estado en una máquina, y
+  rutas sintéticas con mutador y ambos gates positivos llegan al caller de
+  ayuda con TBB real, con stubs de callback explícitos. En Azahar se verificó
+  navegación segura de teclado para D-pad/Circle Pad configurados. En el primer
+  gate se ejecutaron candidatos originales `0x0015555C` (tipo 0) y `0x00151404`
+  (tipo 1), cada uno en variantes aisladas de ambos gates. Falta confirmar los
+  tipos/punteros runtime reales de los tracks,
+  control físico, integración del callback completo y validación visual; el estado
+  inicial 0 quedó explicado por la limpieza del bloque de trabajo en
+  `AsdMem_AllocAlign`. Tres propuestas TBB
+  pasaron 426 comparaciones sintéticas (70 payload, 71 subtabla y 72 row-count
+  por semilla), más 14 con el
   `TitleTable.tbb` extraído; los controles negativos dirigidos también se
-  detectaron en las dos semillas. El
+  detectaron en las dos semillas. La ventana real del caller del menú pasó para
+  selecciones 0–3, integrando payload/subtable hasta `0x001E9AC8`; RowCount no
+  forma parte de esa ruta. El
   recorrido de Audio Settings sólo es evidencia parcial de H0.
 - El build produce objetos ARM y una biblioteca estática. El enlace de un juego
   completo y los ports a otras plataformas siguen siendo trabajo futuro.
@@ -54,7 +66,7 @@ el motivo del cambio. No estimar fechas mediante funciones por noche.
 | ID | Área e hito | Criterio de aceptación funcional | Estado inicial |
 | --- | --- | --- | --- |
 | H0 | Base de pruebas reproducible | Regenerar e identificar el parche, comprobar su carga en Azahar y registrar un recorrido repetible con las entradas ejecutadas y sus límites. | Cerrado; batch 4 llegó al título y Audio Settings. Dos entradas dieron hit. [Ficha H0](milestones/H0-reproducible-test-base.md). |
-| H1 | Título: menú principal | Inicializar el menú, mover la selección y despachar cada opción al destino previsto. Mapear inicialización, entrada, presentación y transiciones. | Activo; mapa y parser documentados; tres getters TBB pasaron 426 comparaciones ARM sintéticas y 14 con el asset real. Pendientes navegación, integración TBB y reconstrucción C++ activa. [Ficha H1](milestones/H1-main-menu-flow.md). |
+| H1 | Título: menú principal | Inicializar el menú, mover la selección y despachar cada opción al destino previsto. Mapear inicialización, entrada, presentación y transiciones. | Activo; familias ARM de navegación/touch/ayuda y ramas sintéticas con mutador→TBB real probadas; ambos gates positivos trazados y cada candidato original de tipo 0/1 probado por separado en ambos gates. Pendientes punteros runtime reales de los tracks, control físico, renderer e integración runtime. [Ficha H1](milestones/H1-main-menu-flow.md). |
 | H2 | Título: configuración de audio | Entrar, leer y modificar opciones, volver y comprobar persistencia cuando el original la tenga. | Pendiente. |
 | H3 | Carga de partida de prueba | Seleccionar una partida conocida y llegar a una escena con el estado esperado. | Pendiente. |
 | H4 | Exploración mínima | En una escena delimitada, mover al personaje, controlar la cámara, interactuar y cambiar de zona. | Pendiente. |
@@ -165,11 +177,11 @@ medida auxiliar. Mantener separado el ledger exacto del avance semántico.
 
 ## Próxima sesión
 
-1. Completar H1-A: resolver caller/origen del estado inicial y correspondencia
-   de triggers con entradas físicas, sin confirmar rutas que alteren partidas.
-2. Preparar una ventana segura de caller para los tres getters. El payload,
-   subtable y row count ya tienen pruebas aisladas sintéticas y del asset real;
-   conectar al recorrido sólo tras confirmar su participación real. Las fichas
+1. Completar H1-A: medir la correspondencia de triggers con entradas físicas,
+   sin confirmar rutas que alteren partidas.
+2. Reconstruir activamente un slice pequeño del ciclo del menú y validar sus
+   dependencias con pruebas de función y caller. La ventana TBB actual sólo
+   cubre lectura de datos, no el update/render ni las transiciones. Las fichas
    H1 describen contratos y casos.
 
 Este documento establece el plan; su creación no completa ni ejecuta esos hitos.

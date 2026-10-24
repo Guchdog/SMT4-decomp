@@ -107,8 +107,18 @@ class TestFindCandidates(unittest.TestCase):
 
             with functions.open(encoding="utf-8", newline="") as stream:
                 rows = list(csv.DictReader(stream))
-            self.assertFalse(is_asm_backed_row(rows[0], repo_root=root))
-            self.assertTrue(is_asm_backed_row(rows[1], repo_root=root))
+            source_index_cache = {}
+            self.assertFalse(
+                is_asm_backed_row(
+                    rows[0], repo_root=root, source_index_cache=source_index_cache
+                )
+            )
+            self.assertTrue(
+                is_asm_backed_row(
+                    rows[1], repo_root=root, source_index_cache=source_index_cache
+                )
+            )
+            self.assertEqual(len(source_index_cache), 1)
 
             candidates = find_leaf_candidates(
                 functions_csv=functions,
@@ -122,6 +132,36 @@ class TestFindCandidates(unittest.TestCase):
 
         self.assertEqual([candidate["name"] for candidate in candidates], ["wrapped"])
         self.assertEqual(candidates[0]["status"], "matching")
+
+    def test_asm_index_preserves_malformed_and_duplicate_marker_boundaries(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            source = root / "candidate.cpp"
+            row = {
+                "address": "0x00101308",
+                "size": "8",
+                "src_file": "candidate.cpp",
+            }
+
+            source.write_text(
+                "// DECOMP_FUNC(0x00101308, 8)\n"
+                "u32 semantic() { return 1; }\n"
+                "// DECOMP_FUNC(malformed marker)\n"
+                "asm volatile(\".word 0xe3a00001\\n\");\n",
+                encoding="utf-8",
+            )
+            self.assertFalse(is_asm_backed_row(row, repo_root=root))
+
+            source.write_text(
+                "// DECOMP_FUNC(0x00101308, 8)\n"
+                "u32 first_semantic() { return 1; }\n"
+                "// DECOMP_FUNC(0x00101308, 8)\n"
+                "__attribute__((naked)) void duplicate_asm() {\n"
+                "  asm volatile(\".word 0xe3a00001\\n\");\n"
+                "}\n",
+                encoding="utf-8",
+            )
+            self.assertFalse(is_asm_backed_row(row, repo_root=root))
 
 
 if __name__ == "__main__":
