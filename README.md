@@ -9,6 +9,7 @@ Decompilation and reverse-engineering project for **Shin Megami Tensei IV** (Nin
 ## Live Decompilation Progress
 
 - **Matching (Byte-for-Byte):** `3,139,108 / 3,139,108 bytes` (**100.0000%**) across `10,959` functions and `8` explicitly labeled raw spans (each exact-checked against 3DS ARMv6K code.bin)
+- **Readable C++ reconstructions:** `60` functions have been converted from assembly wrappers to typed C++ while retaining byte-for-byte ARMv6K output. Recent batches cover engine state/accessors, UI and camp record updates, shop/texture comparators, Script VM helpers, queue/list operations, record initialization, float state updates, a zeroing helper, and a state getter. These semantic milestones are tracked separately from the size-based coverage categories below.
 - **Compiled Coverage (≥15% size):** `0 / 3,139,108 bytes` (**0.0000%**) across `0` functions (ARMv6K compilation and size threshold only; logic unverified)
 - **Draft Logic (<15% size):** `0 / 3,139,108 bytes` (**0.0000%**) across `0` functions (early-stage draft reconstructions)
 - **Scaffolded Architecture (Stubs & Interfaces):** `0 / 3,139,108 bytes` (**0.0000%**) across `0` functions (headers, structs, function skeletons)
