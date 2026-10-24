@@ -495,7 +495,7 @@ void func_0020fe24();
 // Batch 9: 24-byte and 28-byte leaf functions.
 void func_00231300();
 void shop_func_002313d4();
-void func_00237c14();
+void func_00237c14(u8* dst, const u32* src, u32 value);
 void func_00262430();
 void script_vm_func_002863f4();
 void script_vm_func_00287b4c();
