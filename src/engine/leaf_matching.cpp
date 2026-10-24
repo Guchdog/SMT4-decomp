@@ -3044,28 +3044,38 @@ extern "C" __attribute__((naked)) void func_003e8580() {
 }
 
 // DECOMP_FUNC(0x003f734c, 24)
-extern "C" __attribute__((naked)) void func_003f734c() {
-    asm volatile("mov r3, #4\nstrb r3, [r0, #4]\nstrb r2, [r0, #6]\nldr r1, [r1]\nstr r1, [r0]\nbx lr\n");
+extern "C" void func_003f734c(u8* dst, const u32* src, u32 value) {
+    reinterpret_cast<volatile u8*>(dst)[4] = 4;
+    reinterpret_cast<volatile u8*>(dst)[6] = static_cast<u8>(value);
+    *reinterpret_cast<u32*>(dst) = *src;
 }
 
 // DECOMP_FUNC(0x003f7364, 24)
-extern "C" __attribute__((naked)) void func_003f7364() {
-    asm volatile("mov r3, #3\nstrb r3, [r0, #4]\nstr r2, [r0, #0x10]\nldr r1, [r1]\nstr r1, [r0]\nbx lr\n");
+extern "C" void func_003f7364(u8* dst, const u32* src, u32 value) {
+    reinterpret_cast<volatile u8*>(dst)[4] = 3;
+    *reinterpret_cast<volatile u32*>(dst + 0x10) = value;
+    *reinterpret_cast<volatile u32*>(dst) = *reinterpret_cast<const volatile u32*>(src);
 }
 
 // DECOMP_FUNC(0x003f737c, 24)
-extern "C" __attribute__((naked)) void func_003f737c() {
-    asm volatile("mov r3, #2\nstrb r3, [r0, #4]\nstrh r2, [r0, #6]\nldr r1, [r1]\nstr r1, [r0]\nbx lr\n");
+extern "C" void func_003f737c(u8* dst, const u32* src, u32 value) {
+    reinterpret_cast<volatile u8*>(dst)[4] = 2;
+    *reinterpret_cast<volatile u16*>(dst + 6) = static_cast<u16>(value);
+    *reinterpret_cast<volatile u32*>(dst) = *reinterpret_cast<const volatile u32*>(src);
 }
 
 // DECOMP_FUNC(0x003f74fc, 24)
-extern "C" __attribute__((naked)) void func_003f74fc() {
-    asm volatile("mov r3, #4\nstrb r3, [r0, #4]\nstrb r2, [r0, #6]\nldr r1, [r1]\nstr r1, [r0]\nbx lr\n");
+extern "C" void func_003f74fc(u8* dst, const u32* src, u32 value) {
+    reinterpret_cast<volatile u8*>(dst)[4] = 4;
+    reinterpret_cast<volatile u8*>(dst)[6] = static_cast<u8>(value);
+    *reinterpret_cast<u32*>(dst) = *src;
 }
 
 // DECOMP_FUNC(0x003f7514, 24)
-extern "C" __attribute__((naked)) void func_003f7514() {
-    asm volatile("mov r3, #2\nstrb r3, [r0, #4]\nstrh r2, [r0, #6]\nldr r1, [r1]\nstr r1, [r0]\nbx lr\n");
+extern "C" void func_003f7514(u8* dst, const u32* src, u32 value) {
+    reinterpret_cast<volatile u8*>(dst)[4] = 2;
+    *reinterpret_cast<volatile u16*>(dst + 6) = static_cast<u16>(value);
+    *reinterpret_cast<volatile u32*>(dst) = *reinterpret_cast<const volatile u32*>(src);
 }
 
 // DECOMP_FUNC(0x00110c44, 28)
