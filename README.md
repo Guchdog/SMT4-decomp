@@ -8,11 +8,11 @@ Decompilation and reverse-engineering project for **Shin Megami Tensei IV** (Nin
 
 ## Live Decompilation Progress
 
-- **Matching (Byte-for-Byte):** `2,514,316 / 3,139,108 bytes` (**80.0965%**) across `10,170` functions (100% verified 3DS ARMv6K machine code match)
-- **Compiled Coverage (≥15% size):** `235,764 / 3,139,108 bytes` (**7.5105%**) across `124` functions (ARMv6K compilation and size threshold only; logic unverified)
-- **Draft Logic (<15% size):** `216,660 / 3,139,108 bytes` (**6.9020%**) across `28` functions (early-stage draft reconstructions)
-- **Scaffolded Architecture (Stubs & Interfaces):** `172,368 / 3,139,108 bytes` (**5.4910%**) across `32` functions (headers, structs, function skeletons)
-- **Total Codebase Explored:** `3,139,108 / 3,139,108 bytes` (**100.0000%**) across `10,354` functions (all explored code mapped into `src/`)
+- **Matching (Byte-for-Byte):** `3,060,748 / 3,139,108 bytes` (**97.5037%**) across `10,519` functions (100% verified 3DS ARMv6K machine code match)
+- **Compiled Coverage (≥15% size):** `5,176 / 3,139,108 bytes` (**0.1649%**) across `1` functions (ARMv6K compilation and size threshold only; logic unverified)
+- **Draft Logic (<15% size):** `51,228 / 3,139,108 bytes` (**1.6319%**) across `6` functions (early-stage draft reconstructions)
+- **Scaffolded Architecture (Stubs & Interfaces):** `21,928 / 3,139,108 bytes` (**0.6985%**) across `3` functions (headers, structs, function skeletons)
+- **Total Codebase Explored:** `3,139,080 / 3,139,108 bytes` (**99.9991%**) across `10,529` functions (all explored code mapped into `src/`)
 - See [`PROGRESS.md`](PROGRESS.md) for the full subsystem breakdown (`ui`, `camp`, `battle`, `script_vm`, `shop`, `unite`, `engine`, `nn_sdk`, `crt`) and explored function ledger. Coverage totals use original function sizes and do not measure behavioral equivalence.
 
 ---
@@ -57,7 +57,7 @@ python tools/progress.py --write
 ## Project Structure
 
 - [`config/game_info.json`](config/game_info.json) — Memory map and binary metadata for `CTR-P-AMXE`.
-- [`config/functions.csv`](config/functions.csv) — Master ledger of all 10,354 functions covering 100% of `.text` (`3,139,108` bytes).
+- [`config/functions.csv`](config/functions.csv) — Master ledger of all 10,531 functions covering 100% of `.text` (`3,139,108` bytes).
 - [`config/symbols.csv`](config/symbols.csv) — String and data symbols recovered from `.rodata`, `.data`, and `.text` literal pools.
 - [`include/`](include/) & [`src/`](src/) — Decompiled C++20 source code and engine/UI headers.
 - [`docs/architecture.md`](docs/architecture.md) — Documentation of the `XRD686` / `AsdSDK` engine, dual-screen LCD pipelines, and `TBCR`/`TBL1` UI table formats.

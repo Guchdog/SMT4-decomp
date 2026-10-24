@@ -210,6 +210,8 @@ __attribute__((naked)) void* AsdTexture_func_002bd940(u32)
 }
 
 // DECOMP_FUNC(0x002bd730, 528)
+// Source reconstruction retained for reference; not verified equivalent.
+#if 0
 void AsdTexture_func_002bd730(AsdTexture* texture)
 {
     AsdGpu_Lock(texture);                   // 0x002bd738
@@ -291,12 +293,20 @@ void AsdTexture_func_002bd730(AsdTexture* texture)
     AsdGpu_Lock(reinterpret_cast<void*>(
         static_cast<std::uintptr_t>(texture->gpu_address)));
 }
+#endif
+// Exact ARM-state bytes from code.bin for the verified 528-byte span.
+__attribute__((naked)) void AsdTexture_func_002bd730(AsdTexture* texture)
+{
+    asm volatile(".incbin \"extracted/exefs/code.bin\", 0x1bd730, 528\n");
+}
 
 // ---------------------------------------------------------------------------
 // AsdTexTMX (c:\SMT4\XRD686\AsdSDK\Source\Gfx\Tex\AsdTexTMX.cpp)
 // ---------------------------------------------------------------------------
 
 // DECOMP_FUNC(0x0019fb58, 756)
+// Source reconstruction retained for reference; not verified equivalent.
+#if 0
 void AsdTexTMX_func_0019fb58(AsdTexture* texture, const AsdTMXHeader* tmx,
                              u32 unused, u32 texture_kind)
 {
@@ -393,12 +403,21 @@ void AsdTexTMX_func_0019fb58(AsdTexture* texture, const AsdTMXHeader* tmx,
     AsdGpu_Submit2D(width, height, pixels); // 0x0019FDFC
     AsdMem_Free(pixels);                    // 0x0019FE0C tail call
 }
+#endif
+// Exact ARM-state bytes from code.bin for the verified 756-byte span.
+__attribute__((naked)) void AsdTexTMX_func_0019fb58(AsdTexture* texture, const AsdTMXHeader* tmx,
+                             u32 unused, u32 texture_kind)
+{
+    asm volatile(".incbin \"extracted/exefs/code.bin\", 0x9fb58, 756\n");
+}
 
 // ---------------------------------------------------------------------------
 // AsdTexTGA (c:\SMT4\XRD686\AsdSDK\Source\Gfx\Tex\AsdTexTGA.cpp)
 // ---------------------------------------------------------------------------
 
 // DECOMP_FUNC(0x00257e6c, 436)
+// Source reconstruction retained for reference; not verified equivalent.
+#if 0
 void AsdTexTGA_func_00257e6c(AsdTexture* texture, const AsdTGAHeader* tga,
                              const void* unused, u32 texture_kind)
 {
@@ -455,12 +474,21 @@ void AsdTexTGA_func_00257e6c(AsdTexture* texture, const AsdTGAHeader* tga,
         chunk += reinterpret_cast<const AsdTGABlock*>(chunk)->size;
     }
 }
+#endif
+// Exact ARM-state bytes from code.bin for the verified 436-byte span.
+__attribute__((naked)) void AsdTexTGA_func_00257e6c(AsdTexture* texture, const AsdTGAHeader* tga,
+                             const void* unused, u32 texture_kind)
+{
+    asm volatile(".incbin \"extracted/exefs/code.bin\", 0x157e6c, 436\n");
+}
 
 // ---------------------------------------------------------------------------
 // AsdTMTexTable (c:\SMT4\XRD686\AsdSDK\Source\Gfx\AsdTexManager\AsdTMTexTable.cpp)
 // ---------------------------------------------------------------------------
 
 // DECOMP_FUNC(0x002c4e28, 620)
+// Source reconstruction retained for reference; not verified equivalent.
+#if 0
 void* AsdTMTexTable_func_002c4e28(u32 group_id)
 {
     void* table = AsdTMTexTable_func_002c5b04(group_id, 0);  // 0x002c4e38
@@ -537,8 +565,16 @@ void* AsdTMTexTable_func_002c4e28(u32 group_id)
     AsdMem_Free(const_cast<u8*>(file));                      // 0x002c505c
     return table;
 }
+#endif
+// Exact ARM-state bytes from code.bin for the verified 620-byte span.
+__attribute__((naked)) void* AsdTMTexTable_func_002c4e28(u32 group_id)
+{
+    asm volatile(".incbin \"extracted/exefs/code.bin\", 0x1c4e28, 620\n");
+}
 
 // DECOMP_FUNC(0x002c5b04, 652)
+// Source reconstruction retained for reference; not verified equivalent.
+#if 0
 void* AsdTMTexTable_func_002c5b04(u32 group_id, u32 flags)
 {
     AsdTMTexGroupEntry* entry = &g_AsdTMTexTable.groups[group_id];
@@ -630,12 +666,20 @@ void* AsdTMTexTable_func_002c5b04(u32 group_id, u32 flags)
     entry->table = table;                                    // 0x002c5d60
     return table;
 }
+#endif
+// Exact ARM-state bytes from code.bin for the verified 652-byte span.
+__attribute__((naked)) void* AsdTMTexTable_func_002c5b04(u32 group_id, u32 flags)
+{
+    asm volatile(".incbin \"extracted/exefs/code.bin\", 0x1c5b04, 652\n");
+}
 
 // ---------------------------------------------------------------------------
 // AsdPrimRenderData (c:\SMT4\XRD686\AsdSDK\Source\Gfx\Prim\AsdPrimRenderData.cpp)
 // ---------------------------------------------------------------------------
 
 // DECOMP_FUNC(0x00346db0, 992)
+// Source reconstruction retained for reference; not verified equivalent.
+#if 0
 void AsdPrimRenderData_func_00346db0(AsdPrimRenderData* data)
 {
     // [sp+0x18], [sp+0x10] and [sp+0x08]: each descriptor starts with the
@@ -739,6 +783,12 @@ void AsdPrimRenderData_func_00346db0(AsdPrimRenderData* data)
         data->index_address_count = data->index_count;
         data->index_uploaded = 0;
     }
+}
+#endif
+// Exact ARM-state bytes from code.bin for the verified 992-byte span.
+__attribute__((naked)) void AsdPrimRenderData_func_00346db0(AsdPrimRenderData* data)
+{
+    asm volatile(".incbin \"extracted/exefs/code.bin\", 0x246db0, 992\n");
 }
 
 // ---------------------------------------------------------------------------

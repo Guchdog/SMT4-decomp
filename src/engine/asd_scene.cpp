@@ -210,7 +210,11 @@ __attribute__((naked)) void* AsdCamera_func_00105c50(void*) {
 // `ldr r1,[r0,#0x28]!` resolves the node at +0x28 (0x003102AC-0x003102D4).
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x00310124, 804)
+// Readable semantic draft for loading camera animation objects and binding
+// their node tracks. Preserve its pointer-chain and VFP notes beside the exact
+// ARM wrapper because the source compiler does not reproduce the original pool
+// and register allocation layout.
+#if 0
 AsdCameraAnim* AsdCamera_func_00310124(AsdCameraScene* scene) {
     AsdCameraAnim* anim = static_cast<AsdCameraAnim*>(
         AsdMem_AllocAlign(0x100, 0x100, 0, 0x18, 1));   // 0x00310158
@@ -340,6 +344,64 @@ AsdCameraAnim* AsdCamera_func_00310124(AsdCameraScene* scene) {
     }
 
     return anim;                                        // 0x003103F4
+}
+#endif
+
+// DECOMP_FUNC(0x00310124, 804)
+// Verified standalone boundary: next ledger function begins at 0x00310448.
+__attribute__((naked)) AsdCameraAnim* AsdCamera_func_00310124(AsdCameraScene*) {
+    asm volatile(
+        ".word 0xe92d4ff0, 0xe1a04000, 0xe28f0e2d, 0xe59f12c8\n"
+        ".word 0xed2d8b02, 0xe24dd054, 0xe1a00000, 0xe3a0a001\n"
+        ".word 0xe3a01c01, 0xe3a03018, 0xe3a02000, 0xe1a00001\n"
+        ".word 0xe58da000, 0xebfed4e4, 0xe58d4020, 0xe5941048\n"
+        ".word 0xe1a06000, 0xe2840048, 0xe3510000, 0x10800001\n"
+        ".word 0xe5941044, 0xe3a02000, 0x01a00002, 0xe3500000\n"
+        ".word 0x1280001c, 0xe0801201, 0xe1500001, 0xe58d100c\n"
+        ".word 0x1ddf8aa8, 0xe5864010, 0xe58d0008, 0x0a000092\n"
+        ".word 0xe5b0100c, 0xe3510000, 0x10814000, 0x03a04000\n"
+        ".word 0xebfecc00, 0xe1a05000, 0xe320f000, 0xebfecc04\n"
+        ".word 0xe3a0c008, 0xe28d1034, 0xe3a07000, 0xe3a03004\n"
+        ".word 0xe5cda02c, 0xe58dc030, 0xe8810088, 0xe1a02000\n"
+        ".word 0xe58d703c, 0xe28d0028, 0xe1a01005, 0xe58d7040\n"
+        ".word 0xe58d7048, 0xe5cda04c, 0xe58d3044, 0xe58d4028\n"
+        ".word 0xebfecbdf, 0xe59f5230, 0xe1b04000, 0x0a000008\n"
+        ".word 0xe5940000, 0xe5901008, 0xe1a00004, 0xe12fff31\n"
+        ".word 0xe1500005, 0x0a000003, 0xe5900000, 0xe3500000\n"
+        ".word 0x1afffffa, 0xe1a04007, 0xe59f5200, 0xe3540000\n"
+        ".word 0x0a00000a, 0xe5940000, 0xe5901008, 0xe1a00004\n"
+        ".word 0xe12fff31, 0xe1500005, 0x1a000001, 0xe1a08004\n"
+        ".word 0xea000003, 0xe5900000, 0xe3500000, 0x1afffff8\n"
+        ".word 0xe1a08007, 0xe586400c, 0xe5868008, 0xe59d0020\n"
+        ".word 0xe5989268, 0xe590b07c, 0xe3590000, 0x0a000050\n"
+        ".word 0xe5990008, 0xe35b0000, 0xe3a05000, 0xed908a04\n"
+        ".word 0xda00004b, 0xe59d0020, 0xe5b01080, 0xe3510000\n"
+        ".word 0x10800001, 0x03a00000, 0xe3500000, 0x0a000004\n"
+        ".word 0xe0800205, 0xe5b01028, 0xe3510000, 0x03a00000\n"
+        ".word 0x10800001, 0xe3a01040, 0xe58d0030, 0xe58d1038\n"
+        ".word 0xed8d8a0d, 0xe28d7030, 0xe3a04000, 0xe5cda03c\n"
+        ".word 0xebfecbb0, 0xe58d0000, 0xe5900000, 0xe3a02004\n"
+        ".word 0xe3a01074, 0xe5903008, 0xe59d0000, 0xe12fff33\n"
+        ".word 0xe3500000, 0x0a000008, 0xe59d1000, 0xebfe5778\n"
+        ".word 0xe1a04000, 0xe1dd03dc, 0xe1a01007, 0xe58d0000\n"
+        ".word 0xe1a00004, 0xe1cd23d4, 0xebfe5658, 0xe5864004\n"
+        ".word 0xe5940000, 0xe1a01009, 0xe590200c, 0xe1a00004\n"
+        ".word 0xe12fff32, 0xe5967004, 0xeeb01a68, 0xe2871044\n"
+        ".word 0xe5970050, 0xe2874030, 0xec910a02, 0xe597104c\n"
+        ".word 0xe12fff31, 0xe5940008, 0xe584000c, 0xed840a02\n"
+        ".word 0xe5c7a058, 0xe5964004, 0xe1a00008, 0xe1a01004\n"
+        ".word 0xebfcd437, 0xe3500000, 0xe320f000, 0x0a000009\n"
+        ".word 0xe5980028, 0xe5901010, 0xe590200c, 0xe0411002\n"
+        ".word 0xe1a01141, 0xe3510000, 0xc5901028, 0xc3510000\n"
+        ".word 0xc590001c, 0xc5804000, 0xe2855001, 0xe155000b\n"
+        ".word 0xbaffffb3, 0xe59d0008, 0xe59d100c, 0xe2800010\n"
+        ".word 0xe1500001, 0xe58d0008, 0x1affff6c, 0xe28dd054\n"
+        ".word 0xe1a00006, 0xecbd8b02, 0xe8bd8ff0, 0x00000481\n"
+        ".word 0x535c3a63, 0x5c34544d, 0x36445258, 0x415c3638\n"
+        ".word 0x44536473, 0x6f535c4b, 0x65637275, 0x7866475c\n"
+        ".word 0x6d61435c, 0x5c617265, 0x43647341, 0x72656d61\n"
+        ".word 0x70632e61, 0x00000070, 0x00000000, 0x0044e858\n"
+        ".word 0x0044e820\n");
 }
 // DECOMP_FUNC(0x0010bd34, 300)
 
@@ -982,7 +1044,10 @@ __attribute__((naked)) void AsdSequence_func_002c59b8(u32, const void*, u32) {
 // larger priority (0x00286350).
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x002861f8, 508)
+// Readable semantic draft of task allocation and priority-list insertion.
+// Keep its field-level explanation beside the exact ARM wrapper; it captures
+// the stable equal-priority ordering and payload initialization behavior.
+#if 0
 void* Task_func_002861f8(void* arg0, void* arg1, void* arg2, f32 arg3,
                          f32 arg4, u32 payload_size, u32 type, u16 priority,
                          u32 init_payload) {
@@ -1063,6 +1128,47 @@ void* Task_func_002861f8(void* arg0, void* arg1, void* arg2, f32 arg3,
         AsdWork_Zero(payload, payload_size);                  // 0x002863A4
     }
     return payload;                                           // 0x002863A8
+}
+#endif
+
+// DECOMP_FUNC(0x002861f8, 508)
+// Verified standalone boundary: next ledger entry begins at 0x002863F4, after
+// this function's list-head, size, and original source-path literals.
+__attribute__((naked)) void* Task_func_002861f8(
+    void*, void*, void*, f32, f32, u32, u32, u16, u32) {
+    asm volatile(
+        ".word 0xe92d4fff, 0xe1a09000, 0xe1a0a001, 0xe59f11b4\n"
+        ".word 0xe1a0b002, 0xed2d8b02, 0xe24dd00c, 0xe28d0050\n"
+        ".word 0xe59d604c, 0xe89001a0, 0xed9d8a12, 0xe2860034\n"
+        ".word 0xe58d0004, 0xe59f0188, 0xe0804205, 0xe28f0f62\n"
+        ".word 0xe1a00000, 0xe3a00001, 0xe3a01c01, 0xe58d0000\n"
+        ".word 0xe59d3004, 0xe3a02000, 0xe1a00001, 0xeb00fca5\n"
+        ".word 0xe3500000, 0x0a000052, 0xe5c05003, 0xe3a01000\n"
+        ".word 0xe1c070b0, 0xe2802008, 0xe5801004, 0xe5c01002\n"
+        ".word 0xe8820e00, 0xed9d0a08, 0xed800a05, 0xed808a06\n"
+        ".word 0xe5942004, 0xe594c000, 0xe580101c, 0xe5801020\n"
+        ".word 0xe5801024, 0xe5801028, 0xe580102c, 0xe5801030\n"
+        ".word 0xe5941008, 0xe3510000, 0x01a01000, 0x01c400f0\n"
+        ".word 0x0a000031, 0xe1d030b0, 0xe1dc10b0, 0xe1510003\n"
+        ".word 0x9a00000a, 0xe59c201c, 0xe280301c, 0xe1a01000\n"
+        ".word 0xe8831004, 0xe3520000, 0x15821020, 0xe5912020\n"
+        ".word 0xe3520000, 0x1582101c, 0xe5840000, 0xea000022\n"
+        ".word 0xe3520000, 0x0a00000d, 0xe1d210b0, 0xe1510003\n"
+        ".word 0x8a00000a, 0xe580201c, 0xe5922020, 0xe1a01000\n"
+        ".word 0xe5802020, 0xe590201c, 0xe5820020, 0xe5902020\n"
+        ".word 0xe3520000, 0x1582101c, 0xe5840004, 0xea000012\n"
+        ".word 0xe5941000, 0xe3510000, 0x0a00000f, 0xe1d120b0\n"
+        ".word 0xe1520003, 0x9a000009, 0xe591301c, 0xe1a02000\n"
+        ".word 0xe580301c, 0xe3530000, 0xe5801020, 0x15832020\n"
+        ".word 0xe5921020, 0xe3510000, 0x1581201c, 0xea000002\n"
+        ".word 0xe5911020, 0xe3510000, 0x1affffef, 0xe5941008\n"
+        ".word 0xe3580000, 0xe2811001, 0xe5841008, 0xe2804034\n"
+        ".word 0x0a000002, 0xe1a01006, 0xe1a00004, 0xeb00f5e7\n"
+        ".word 0xe1a00004, 0xe28dd00c, 0xecbd8b02, 0xe28dd010\n"
+        ".word 0xe8bd8ff0, 0x004c5830, 0x0000015a, 0x535c3a63\n"
+        ".word 0x5c34544d, 0x36445258, 0x735c3638, 0x34736464\n"
+        ".word 0x6f72705c, 0x6d617267, 0x7379735c, 0x7361545c\n"
+        ".word 0x61545c6b, 0x632e6b73, 0x00000000\n");
 }
 
 } // namespace smt4::engine

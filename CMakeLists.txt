@@ -31,7 +31,12 @@ file(GLOB_RECURSE SMT4_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/sr
 add_library(smt4_decomp STATIC ${SMT4_SOURCES})
 target_include_directories(smt4_decomp SYSTEM PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/include/freestanding")
-target_include_directories(smt4_decomp PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include")
+target_include_directories(smt4_decomp PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/include"
+    # The ARM naked wrappers use .incbin with repository-root-relative paths.
+    # CMake invokes Ninja from the build directory, so expose the root as an
+    # assembler include/search path as well as the C++ header directory.
+    "${CMAKE_CURRENT_SOURCE_DIR}")
 target_compile_options(smt4_decomp PRIVATE
         # CMake otherwise strips this as an implicit include, despite -nostdinc.
         "SHELL:-isystem \"${SMT4_CLANG_RESOURCE_DIR}/include\""

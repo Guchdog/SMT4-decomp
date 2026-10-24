@@ -25,6 +25,9 @@ extern BtlTargetSelectWork* g_pBtlTargetSelectWork; // 0x00439C60
 
 void btlTargetSelect_Init(void* parent_work);                                       // 0x002e8294
 void btlTargetSelect_Calc(void* task_ctx);                                          // 0x002e06bc
+void eventView_DrawUp(void* task_ctx);                                              // 0x002e07a8
+void StaffRoll_U_UR_Draw(void* task_ctx);                                           // 0x002e07ac
+void tmnlMain_DrawDown(void* task_ctx);                                             // 0x002e08d4
 void btlTargetSelect_DrawUp(void* task_ctx);                                        // 0x002f4aa4
 
 } // namespace smt4::battle

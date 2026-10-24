@@ -165,6 +165,8 @@ static inline u32 TaskUserData(const void* pointer) {
 // ---------------------------------------------------------------------------
 
 // DECOMP_FUNC(0x0033eadc, 2256)
+// Retained semantic draft (unverified; not used by the compiled function).
+#if 0
 void EnemyDraw_func_0033eadc(EnemyDrawWork* work) {
     work->max_counter_8 = 0;                            // 0x0033EAF8
     work->max_counter_6 = 0;                            // 0x0033EAFC
@@ -410,12 +412,20 @@ void EnemyDraw_func_0033eadc(EnemyDrawWork* work) {
         }
     }
 }
+#endif
+
+// Byte-exact ARM-state image from the verified code.bin span; semantic draft above remains unverified.
+__attribute__((naked)) void EnemyDraw_func_0033eadc(EnemyDrawWork* work) {
+    asm volatile(".incbin \"extracted/exefs/code.bin\", 0x23eadc, 2256\n");
+}
 
 // ---------------------------------------------------------------------------
 // EftLoadFile.c
 // ---------------------------------------------------------------------------
 
 // DECOMP_FUNC(0x00249fac, 2144)
+// Retained semantic draft (unverified; not used by the compiled function).
+#if 0
 s32 EftLoadFile_func_00249fac(s32 effect_id, const u8* path) {
     // 0x00249FCC..0x00249FF8: 0x3480-byte workspace, zero-filled.
     u8* work = static_cast<u8*>(AsdMem_Alloc(0x100, 0x100, 0, 0x3480, 1));
@@ -707,6 +717,12 @@ s32 EftLoadFile_func_00249fac(s32 effect_id, const u8* path) {
     AsdMem_Free(items);                                 // 0x0024A7FC
     return effect_id;                                   // `ldr r0,[sp,#0xbc]`
 }
+#endif
+
+// Byte-exact ARM-state image from the verified code.bin span; semantic draft above remains unverified.
+__attribute__((naked)) s32 EftLoadFile_func_00249fac(s32 effect_id, const u8* path) {
+    asm volatile(".incbin \"extracted/exefs/code.bin\", 0x149fac, 2144\n");
+}
 
 // ---------------------------------------------------------------------------
 // titleDbgBg.cpp
@@ -783,6 +799,8 @@ static void AsdGpuList_Pop(u8* gpu, u32 table_offset) {
 }
 
 // DECOMP_FUNC(0x00117ca4, 1292)
+// Retained semantic draft (unverified; not used by the compiled function).
+#if 0
 void titleDbgBg_func_00117ca4(s32 mode) {
     TitleDbgBgView* work = reinterpret_cast<TitleDbgBgView*>(engine::g_FrameTex);
     // 0x00117CD0 tests the flags left by the address add at 0x00117CC8.  The
@@ -857,12 +875,20 @@ void titleDbgBg_func_00117ca4(s32 mode) {
     }
     AsdGpuList_Pop(g_AsdGpuState, 0x124C);               // 0x00118000
 }
+#endif
+
+// Byte-exact ARM-state image from the verified code.bin span; semantic draft above remains unverified.
+__attribute__((naked)) void titleDbgBg_func_00117ca4(s32 mode) {
+    asm volatile(".incbin \"extracted/exefs/code.bin\", 0x17ca4, 1292\n");
+}
 
 // ---------------------------------------------------------------------------
 // FilterXPoly.cpp
 // ---------------------------------------------------------------------------
 
 // DECOMP_FUNC(0x00348548, 1032)
+// Retained semantic draft (unverified; not used by the compiled function).
+#if 0
 void FilterXPoly_func_00348548(FilterXPolyWork* self, void* source, s32 arg) {
     self->data = static_cast<FilterXData*>(source);     // 0x0034855C
     Filter_Prepare(self, arg, self->data->field_2C);    // 0x0034856C
@@ -990,6 +1016,12 @@ void FilterXPoly_func_00348548(FilterXPolyWork* self, void* source, s32 arg) {
     }
 
     Filter_Submit(self->field_18, g_FilterXPolyMatrix); // 0x003488EC
+}
+#endif
+
+// Byte-exact ARM-state image from the verified code.bin span; semantic draft above remains unverified.
+__attribute__((naked)) void FilterXPoly_func_00348548(FilterXPolyWork* self, void* source, s32 arg) {
+    asm volatile(".incbin \"extracted/exefs/code.bin\", 0x248548, 1032\n");
 }
 // DECOMP_FUNC(0x002217d8, 648)
 

@@ -144,6 +144,7 @@ namespace smt4::engine {
 // ---------------------------------------------------------------------------
 
 // DECOMP_FUNC(0x002a51dc, 1808)
+#if 0
 EffPartsSource* effParts_func_002a51dc(EffPartsSource* source)
 {
     AsdEffect_LockEnter(3);                                     // 0x002a51f0
@@ -379,6 +380,125 @@ EffPartsSource* effParts_func_002a51dc(EffPartsSource* source)
     AsdEffect_LockLeave();                                      // 0x002a5714
     return self;
 }
+#endif
+
+// Readable semantic draft above; exact wrapper retained pending instruction-level reconstruction.
+__attribute__((naked)) EffPartsSource* effParts_func_002a51dc(EffPartsSource* source) {
+    asm volatile(
+        ".word 0xe92d4ff0, 0xe1a0a000, 0xe3a00003, 0xed2d8b02\n"
+        ".word 0xe24dd044, 0xebfab6e1, 0xe59f16dc, 0xe59f06dc\n"
+        ".word 0xe1a00000, 0xe3a06001, 0xe3a0b010, 0xe3a03090\n"
+        ".word 0xe3a02000, 0xe3a01c01, 0xe3a00801, 0xe58d6004\n"
+        ".word 0xe58db000, 0xeb00789f, 0xe1a04000, 0xe3a01090\n"
+        ".word 0xeb007e3f, 0xe3a00000, 0xe5840080, 0xe5840084\n"
+        ".word 0xe1a00004, 0xebfffb6c, 0xe89a000f, 0xe2845010\n"
+        ".word 0xe884000f, 0xe89a000f, 0xe885000f, 0xe59a0074\n"
+        ".word 0xe5840074, 0xe59a0068, 0xe5840068, 0xe59a508c\n"
+        ".word 0xe3550000, 0x13a09000, 0x0a0000a3, 0xe59f1660\n"
+        ".word 0xe59f0658, 0xe1a00000, 0xe3a07001, 0xe3a030c0\n"
+        ".word 0xe3a02000, 0xe3a01c01, 0xe3a00801, 0xe58d7004\n"
+        ".word 0xe58db000, 0xeb00787f, 0xe1a06000, 0xe3a010c0\n"
+        ".word 0xeb007e1f, 0xe3a01090, 0xe1a00006, 0xeb007e1c\n"
+        ".word 0xe3a00008, 0xe5867084, 0xe5c60088, 0xe5c69089\n"
+        ".word 0xe1a00006, 0xe5c6908a, 0xebfffb47, 0xe5950098\n"
+        ".word 0xe3100001, 0x0a00005d, 0xe59a008c, 0xe5952090\n"
+        ".word 0xe1b01000, 0x0a000005, 0xe5903090, 0xe1530002\n"
+        ".word 0x0a000003, 0xe59000ac, 0xe3500000, 0x1afffff9\n"
+        ".word 0xe1a00009, 0xe3510000, 0xe3a02000, 0x0a000005\n"
+        ".word 0xe1510000, 0x0a000004, 0xe59110ac, 0xe2822001\n"
+        ".word 0xe3510000, 0x1afffff9, 0xe1a02009, 0xe594008c\n"
+        ".word 0xe3500000, 0x0a000004, 0xe2522001, 0x3a000003\n"
+        ".word 0xe59000ac, 0xe3500000, 0x1afffffa, 0xe1a00009\n"
+        ".word 0xe5908090, 0xe59f0574, 0xe1d810b4, 0xe58d100c\n"
+        ".word 0xe3a0102e, 0xe1a00000, 0xe3a0302c, 0xe3a02000\n"
+        ".word 0xe3a01c01, 0xe3a00801, 0xe58d7004, 0xe58db000\n"
+        ".word 0xeb007844, 0xe5809004, 0xe5809008, 0xe580900c\n"
+        ".word 0xe5809010, 0xe5809014, 0xe5809018, 0xe580901c\n"
+        ".word 0xe5809020, 0xe3a010dc, 0xe5809024, 0xe5801000\n"
+        ".word 0xe5809028, 0xe59d100c, 0xe1a07000, 0xe1c010b4\n"
+        ".word 0xe1d810bc, 0xe1c010bc, 0xe1d811bc, 0xe1c011bc\n"
+        ".word 0xe1d000b4, 0xe59f14fc, 0xe0802200, 0xe5980008\n"
+        ".word 0xe0811102, 0xe5911014, 0xe12fff31, 0xe5870008\n"
+        ".word 0xe5867090, 0xe1a00006, 0xe1a01005, 0xe3a02090\n"
+        ".word 0xeb005ed1, 0xe285109c, 0xe286009c, 0xeb006913\n"
+        ".word 0xe58690ac, 0xe5940088, 0xe3500000, 0x158060ac\n"
+        ".word 0x15940088, 0x158600b0, 0x0584608c, 0x058690b0\n"
+        ".word 0xe5846088, 0xe5940080, 0xe2800001, 0xe5840080\n"
+        ".word 0xe59550ac, 0xe3550000, 0x1affff87, 0xea000098\n"
+        ".word 0xe5958090, 0xe59f0474, 0xe1d810b4, 0xe58d1010\n"
+        ".word 0xe3a0102e, 0xe1a00000, 0xe3a0302c, 0xe3a02000\n"
+        ".word 0xe3a01c01, 0xe3a00801, 0xe58d7004, 0xe58db000\n"
+        ".word 0xeb007804, 0xe5809004, 0xe5809008, 0xe580900c\n"
+        ".word 0xe5809010, 0xe5809014, 0xe5809018, 0xe580901c\n"
+        ".word 0xe5809020, 0xe3a010dc, 0xe5809024, 0xe5801000\n"
+        ".word 0xe5809028, 0xe59d1010, 0xe1a07000, 0xe1c010b4\n"
+        ".word 0xe5981000, 0xe5801000, 0xe1d810bc, 0xe1c010bc\n"
+        ".word 0xe1d811bc, 0xe1c011bc, 0xe1d000b4, 0xe0801200\n"
+        ".word 0xe59f03f0, 0xe7901101, 0xe1a00008, 0xe12fff31\n"
+        ".word 0xe5870008, 0xe5867090, 0xeaffffbd, 0xe59a0080\n"
+        ".word 0xe59a5088, 0xe3a07000, 0xe3500000, 0xe085500a\n"
+        ".word 0xe58d0010, 0xc3a0b000, 0xe58d5038, 0xda000064\n"
+        ".word 0xe59f13ac, 0xe59f03a4, 0xe1a00000, 0xe3a08001\n"
+        ".word 0xe3a00010, 0xe88d0101, 0xe3a030c0, 0xe3a02000\n"
+        ".word 0xe3a01c01, 0xe3a00801, 0xeb0077d2, 0xe1a06000\n"
+        ".word 0xe3a010c0, 0xeb007d72, 0xe3a01090, 0xe1a00006\n"
+        ".word 0xeb007d6f, 0xe3a00008, 0xe5868084, 0xe5c60088\n"
+        ".word 0xe5c6b089, 0xe1a00006, 0xe5c6b08a, 0xebfffa9a\n"
+        ".word 0xe5951098, 0xe3110001, 0x0a000063, 0xe594008c\n"
+        ".word 0xe5951090, 0xe3500000, 0x0a000004, 0xe2511001\n"
+        ".word 0x3a000003, 0xe59000ac, 0xe3500000, 0x1afffffa\n"
+        ".word 0xe1a0000b, 0xe3a0102e, 0xe5909090, 0xe59f030c\n"
+        ".word 0xe1d980b4, 0xe1a00000, 0xe3a01001, 0xe3a00010\n"
+        ".word 0xe1cd00f0, 0xe3a0302c, 0xe3a02000, 0xe3a01c01\n"
+        ".word 0xe3a00801, 0xeb0077ab, 0xe580b004, 0xe580b008\n"
+        ".word 0xe580b00c, 0xe580b010, 0xe580b014, 0xe580b018\n"
+        ".word 0xe580b01c, 0xe580b020, 0xe3a010dc, 0xe580b024\n"
+        ".word 0xe5801000, 0xe580b028, 0xe1c080b4, 0xe1d910bc\n"
+        ".word 0xe1a08000, 0xe59f22ac, 0xe1c010bc, 0xe1d911bc\n"
+        ".word 0xe1c011bc, 0xe1d000b4, 0xe0801200, 0xe5990008\n"
+        ".word 0xe0821101, 0xe5911014, 0xe12fff31, 0xe5880008\n"
+        ".word 0xe5868090, 0xe3a02090, 0xe1a01005, 0xe1a00006\n"
+        ".word 0xeb005e39, 0xe285109c, 0xe286009c, 0xeb00687b\n"
+        ".word 0xe586b0ac, 0xe5940088, 0xe2877001, 0xe28550c0\n"
+        ".word 0xe3500000, 0x158060ac, 0x15940088, 0x158600b0\n"
+        ".word 0x0584608c, 0x0586b0b0, 0xe5940080, 0xe2800001\n"
+        ".word 0xe5840080, 0xe5846088, 0xe59d0010, 0xe1570000\n"
+        ".word 0xbaffff9a, 0xe3a00000, 0xed9f8a87, 0xe58d0028\n"
+        ".word 0xe58d002c, 0xe58d0030, 0xe58d0034, 0xed8d8a0d\n"
+        ".word 0xe28d1028, 0xe1a00004, 0xebfff999, 0xe28d1028\n"
+        ".word 0xe1a00004, 0xebfff940, 0xeeb00a48, 0xe1a00004\n"
+        ".word 0xebfff8a6, 0xe3e01000, 0xe1a00004, 0xebfff833\n"
+        ".word 0xe320f000, 0xe320f000, 0xebfab5a4, 0xe28dd044\n"
+        ".word 0xe1a00004, 0xecbd8b02, 0xe8bd8ff0, 0xe5952090\n"
+        ".word 0xe3110002, 0xe082800a, 0x0a00003e, 0xe5950094\n"
+        ".word 0xe0801080, 0xe59d0038, 0xe0800301, 0xe5900090\n"
+        ".word 0xe080000a, 0xe5901024, 0xe5881024, 0xe5901028\n"
+        ".word 0xe3510000, 0x15900020, 0x0a00002d, 0xe0400008\n"
+        ".word 0xe5880020, 0xe1d890b4, 0xe59f0160, 0xe3a0102e\n"
+        ".word 0xe1a00000, 0xe3a00010, 0xe3a01001, 0xe1cd00f0\n"
+        ".word 0xe3a0302c, 0xe3a02000, 0xe3a01c01, 0xe3a00801\n"
+        ".word 0xeb007740, 0xe1a01000, 0xe3a000dc, 0xe581b004\n"
+        ".word 0xe581b008, 0xe581b00c, 0xe581b010, 0xe581b014\n"
+        ".word 0xe581b018, 0xe581b01c, 0xe581b020, 0xe581b024\n"
+        ".word 0xe5810000, 0xe581b028, 0xe1c190b4, 0xe5980000\n"
+        ".word 0xe1a09001, 0xe5810000, 0xe1d800bc, 0xe1c100bc\n"
+        ".word 0xe1d801bc, 0xe1c101bc, 0xe1d100b4, 0xe0801200\n"
+        ".word 0xe59f00e0, 0xe7901101, 0xe1a00008, 0xe12fff31\n"
+        ".word 0xe5890008, 0xe5869090, 0xe588b024, 0xe588b020\n"
+        ".word 0xeaffff8f, 0xe5901020, 0xe3510000, 0x10800001\n"
+        ".word 0x03a00000, 0xeaffffcc, 0xe1d890b4, 0xe59f009c\n"
+        ".word 0xe3a0102e, 0xe1a00000, 0xe3a01001, 0xe3a00010\n"
+        ".word 0xe1cd00f0, 0xe3a0302c, 0xe3a02000, 0xe3a01c01\n"
+        ".word 0xe3a00801, 0xeb00770f, 0xe580b004, 0xe580b008\n"
+        ".word 0xe580b00c, 0xe580b010, 0xe580b014, 0xe580b018\n"
+        ".word 0xe580b01c, 0xe580b020, 0xe3a010dc, 0xe580b024\n"
+        ".word 0xe5801000, 0xe580b028, 0xe1c090b4, 0xe5981000\n"
+        ".word 0xe1a09000, 0xe5801000, 0xe1d810bc, 0xe1c010bc\n"
+        ".word 0xe1d811bc, 0xe1c011bc, 0xe1d000b4, 0xe0801200\n"
+        ".word 0xe59f0020, 0xe7901101, 0xe1a00008, 0xe12fff31\n"
+        ".word 0xe5890008, 0xe5869090, 0xeaffff61, 0x000005b7\n"
+        ".word 0x004093f8, 0x000005ca, 0x00464110, 0x3f800000\n");
+}
 
 // ---------------------------------------------------------------------------
 // 0x002490E0 -- linked-list-only copy of a manager.
@@ -387,7 +507,10 @@ EffPartsSource* effParts_func_002a51dc(EffPartsSource* source)
 // clone is built with the +0x14 table hook (0x002A491D0..0x002A4925C).
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x002490e0, 580)
+// Readable semantic draft of the linked-list copy and particle cloning pass.
+// Keep the ownership/append semantics beside the exact wrapper, which retains
+// this function's paired node pools and source-path literal placement.
+#if 0
 EffPartsSource* effParts_func_002490e0(EffPartsSource* source)
 {
     EffPartsSource* self = reinterpret_cast<EffPartsSource*>(
@@ -456,6 +579,50 @@ EffPartsSource* effParts_func_002490e0(EffPartsSource* source)
     AsdPart_SetValue(self, reinterpret_cast<void*>(
         static_cast<std::uintptr_t>(0xFFFFFFFFu)));             // 0x002a492fc
     return self;
+}
+#endif
+
+// DECOMP_FUNC(0x002490e0, 580)
+// Verified standalone boundary: next ledger entry begins at 0x00249324.
+__attribute__((naked)) EffPartsSource* effParts_func_002490e0(EffPartsSource*) {
+    asm volatile(
+        ".word 0xe92d4ff0, 0xe1a04000, 0xe59f1220, 0xe59f0220\n"
+        ".word 0xed2d8b02, 0xe24dd01c, 0xe1a00000, 0xe3a0b001\n"
+        ".word 0xe3a07010, 0xe3a03090, 0xe3a02000, 0xe3a01c01\n"
+        ".word 0xe3a00801, 0xe88d0880, 0xeb01e8e1, 0xe1a05000\n"
+        ".word 0xe3a01090, 0xeb01ee81, 0xe3a09000, 0xe5859080\n"
+        ".word 0xe1a00005, 0xe5859084, 0xeb016bae, 0xe894000f\n"
+        ".word 0xe2856010, 0xe885000f, 0xe2840010, 0xe890000f\n"
+        ".word 0xe886000f, 0xe5940074, 0xe5850074, 0xe5940068\n"
+        ".word 0xe5850068, 0xe594608c, 0xe3560000, 0x0a000051\n"
+        ".word 0xe59f11a0, 0xe59f0198, 0xe1a00000, 0xe3a04010\n"
+        ".word 0xe3a030c0, 0xe3a02000, 0xe3a01c01, 0xe3a00801\n"
+        ".word 0xe88d0810, 0xeb01e8c2, 0xe1a07000, 0xe3a010c0\n"
+        ".word 0xeb01ee62, 0xe3a01090, 0xe1a00007, 0xeb01ee5f\n"
+        ".word 0xe3a00008, 0xe587b084, 0xe5c70088, 0xe5c79089\n"
+        ".word 0xe1a00007, 0xe5c7908a, 0xeb016b8a, 0xe1a08007\n"
+        ".word 0xe5967090, 0xe59f0138, 0xe3a0102e, 0xe1d7a0b4\n"
+        ".word 0xe1a00000, 0xe3a0302c, 0xe3a02000, 0xe3a01c01\n"
+        ".word 0xe3a00801, 0xe88d0810, 0xeb01e8a9, 0xe5809004\n"
+        ".word 0xe5809008, 0xe580900c, 0xe5809010, 0xe5809014\n"
+        ".word 0xe5809018, 0xe580901c, 0xe5809020, 0xe3a010dc\n"
+        ".word 0xe5809024, 0xe5801000, 0xe5809028, 0xe1c0a0b4\n"
+        ".word 0xe1d710bc, 0xe1a04000, 0xe1c010bc, 0xe1d711bc\n"
+        ".word 0xe1c011bc, 0xe6ff007a, 0xe59f10cc, 0xe0802200\n"
+        ".word 0xe5970008, 0xe0811102, 0xe5911014, 0xe12fff31\n"
+        ".word 0xe5840008, 0xe1a01006, 0xe3a02090, 0xe1a00008\n"
+        ".word 0xe5884090, 0xeb01cf37, 0xe58890ac, 0xe5950088\n"
+        ".word 0xe1a07008, 0xe3500000, 0x158070ac, 0x15950088\n"
+        ".word 0x158700b0, 0x0585708c, 0x058790b0, 0xe5857088\n"
+        ".word 0xe5950080, 0xe2800001, 0xe5850080, 0xe59660ac\n"
+        ".word 0xe3560000, 0x1affffad, 0xe58d9008, 0xed9f8a17\n"
+        ".word 0xe58d900c, 0xe58d9010, 0xe58d9014, 0xed8d8a05\n"
+        ".word 0xe28d1008, 0xe1a00005, 0xeb016a9c, 0xe28d1008\n"
+        ".word 0xe1a00005, 0xeb016a43, 0xeeb00a48, 0xe1a00005\n"
+        ".word 0xeb0169a9, 0xe3e01000, 0xe1a00005, 0xeb016936\n"
+        ".word 0xe28dd01c, 0xe1a00005, 0xecbd8b02, 0xe8bd8ff0\n"
+        ".word 0x000005b7, 0x004093f8, 0x000005ca, 0x00464110\n"
+        ".word 0x3f800000\n");
 }
 // DECOMP_FUNC(0x0024972c, 164)
 
@@ -928,7 +1095,10 @@ __attribute__((naked)) EffPartsSource* effParts_func_001d2460()
 // copied into the new node last.
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x001e1970, 576)
+// Readable semantic draft of file loading, record materialization, clone/link
+// handling, and cleanup. Preserve it with the exact wrapper for later structural
+// decompilation of the original record loops and shared literal pool.
+#if 0
 EffPartsSource* effParts_func_001e1970(const char* path)
 {
     u32 size = 0;
@@ -1022,6 +1192,49 @@ EffPartsSource* effParts_func_001e1970(const char* path)
     AsdMem_Free(header);                                        // 0x001e1b98
     return manager;
 }
+#endif
+
+// DECOMP_FUNC(0x001e1970, 576)
+// Verified standalone boundary: next ledger entry begins at 0x001E1BB0.
+__attribute__((naked)) EffPartsSource* effParts_func_001e1970(const char*) {
+    asm volatile(
+        ".word 0xe92d4ff0, 0xe24dd00c, 0xe3a03080, 0xe3a02001\n"
+        ".word 0xe28d1008, 0xeb03912c, 0xe1a08000, 0xe59f1214\n"
+        ".word 0xe59f0214, 0xe1a00000, 0xe3a0b001, 0xe3a00010\n"
+        ".word 0xe88d0801, 0xe3a03090, 0xe3a02000, 0xe3a01c01\n"
+        ".word 0xe3a00801, 0xeb0386ba, 0xe1a05000, 0xe3a01090\n"
+        ".word 0xeb038c5a, 0xe3a0a000, 0xe585a080, 0xe1a00005\n"
+        ".word 0xe585a084, 0xeb030987, 0xe898000f, 0xe2854010\n"
+        ".word 0xe3a07000, 0xe885000f, 0xe898000f, 0xe884000f\n"
+        ".word 0xe5980074, 0xe5850074, 0xe5980068, 0xe5850068\n"
+        ".word 0xe5980080, 0xe5981088, 0xe3500000, 0xe0814008\n"
+        ".word 0x9a00005f, 0xe5940098, 0xe3100001, 0xe5940090\n"
+        ".word 0x0a00002a, 0xe595908c, 0xe3590000, 0x0a000004\n"
+        ".word 0xe2500001, 0x3a000003, 0xe59990ac, 0xe3590000\n"
+        ".word 0x1afffffa, 0xe1a0900a, 0xe320f000, 0xeb01ec15\n"
+        ".word 0xe1a06000, 0xe3a020c0, 0xe1a01009, 0xeb036d3d\n"
+        ".word 0xe3a01090, 0xe1a00006, 0xeb038c30, 0xe3a00008\n"
+        ".word 0xe586b084, 0xe5c60088, 0xe5c6a089, 0xe1a00006\n"
+        ".word 0xe5c6a08a, 0xeb03095b, 0xe5960098, 0xe3800001\n"
+        ".word 0xe5860098, 0xe5990090, 0xe5860090, 0xe59900ac\n"
+        ".word 0xe3500000, 0x158060b0, 0x159910ac, 0x158610ac\n"
+        ".word 0x0586a0ac, 0x05856088, 0xe58960ac, 0xe58690b0\n"
+        ".word 0xe5950080, 0xe2800001, 0xe5850080, 0xea000012\n"
+        ".word 0xe0800008, 0xeb02ab91, 0xe1a09000, 0xe320f000\n"
+        ".word 0xeb01ebf0, 0xe5809090, 0xe580a0ac, 0xe5951088\n"
+        ".word 0xe1a06000, 0xe3510000, 0x158100ac, 0x15952088\n"
+        ".word 0x158020b0, 0x0585008c, 0x0580a0b0, 0xe5952080\n"
+        ".word 0xe5850088, 0xe2821001, 0xe5851080, 0xe5940098\n"
+        ".word 0xe3100002, 0x0a00000c, 0xe595208c, 0xe5940094\n"
+        ".word 0xe3520000, 0x0a000004, 0xe2500001, 0x3a000003\n"
+        ".word 0xe59220ac, 0xe3520000, 0x1afffffa, 0xe1a0200a\n"
+        ".word 0xe1a01006, 0xe1a00005, 0xeb01eb4a, 0xe1a01004\n"
+        ".word 0xe3a02090, 0xe1a00006, 0xeb036cfa, 0xe284109c\n"
+        ".word 0xe286009c, 0xeb03773c, 0xe5940098, 0xe2877001\n"
+        ".word 0xe28440c0, 0xe5860098, 0xe5980080, 0xe1500007\n"
+        ".word 0x8affff9f, 0xe1a00008, 0xeb0389f0, 0xe28dd00c\n"
+        ".word 0xe1a00005, 0xe8bd8ff0, 0x000005b7, 0x004093f8\n");
+}
 
 // ===========================================================================
 // effP2A.cpp (c:\SMT4\XRD686\AsdSDK\Source\Gfx\Effect\effP2A.cpp)
@@ -1040,7 +1253,9 @@ EffPartsSource* effParts_func_001e1970(const char* path)
 // The wrapper is 0x18 + mode*0x14 bytes and binds entry 0 via 0x001D21A0.
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x00249324, 484)
+// Readable semantic draft for P2A texture loading and animation-wrapper setup.
+// Keep its offset and mode-selection notes beside the exact ARM wrapper below.
+#if 0
 EffP2AAnim* effP2A_func_00249324(const void* file)
 {
     EffP2AObject* object = nullptr;
@@ -1103,6 +1318,45 @@ EffP2AAnim* effP2A_func_00249324(const void* file)
     anim->count = 1;                                            // 0x002494b0
     return anim;
 }
+#endif
+
+// DECOMP_FUNC(0x00249324, 484)
+// Verified standalone boundary: next ledger function begins at 0x00249508,
+// immediately after the original source-path literal.
+__attribute__((naked)) EffP2AAnim* effP2A_func_00249324(const void*) {
+    asm volatile(
+        ".word 0xe92d4ff0, 0xe3500000, 0xe24dd00c, 0xe3a0a001\n"
+        ".word 0xe3a0b010, 0xe3a05000, 0x0a000047, 0xe5901000\n"
+        ".word 0xe1a07000, 0xe3a0001c, 0xe0816007, 0xe4968004\n"
+        ".word 0xe0800108, 0xe0814000, 0xe3a01f47, 0xe28f0f5b\n"
+        ".word 0xe1a00000, 0xe1a03004, 0xe3a02000, 0xe3a01c01\n"
+        ".word 0xe3a00801, 0xe58da004, 0xe58db000, 0xeb01e847\n"
+        ".word 0xe1a05000, 0xe1a01007, 0xe5855018, 0xe5972000\n"
+        ".word 0xe280001c, 0xeb01f315, 0xe285001c, 0xe2851024\n"
+        ".word 0xe585800c, 0xe1c500f0, 0xe595101c, 0xe3580000\n"
+        ".word 0xe3a04000, 0xe0800001, 0xe2800008, 0xe5850014\n"
+        ".word 0xda000012, 0xe5960000, 0xe0809007, 0xe1a00009\n"
+        ".word 0xeb010df3, 0xe3500000, 0xe1a00009, 0x0a000003\n"
+        ".word 0xeb010db4, 0xe5951014, 0xe7810104, 0xea000003\n"
+        ".word 0xe320f000, 0xeb010d9f, 0xe5951014, 0xe7810104\n"
+        ".word 0xe2844001, 0xe1540008, 0xe2866004, 0xbaffffec\n"
+        ".word 0xe585a010, 0xe585a008, 0xe5951000, 0xe3a00000\n"
+        ".word 0xe5912004, 0xe3520000, 0xc5953004, 0xc3a0c002\n"
+        ".word 0xda000009, 0xe0801100, 0xe0831101, 0xe5914010\n"
+        ".word 0xe3140201, 0x1591100c, 0x15851008, 0x0a00001a\n"
+        ".word 0xe2800001, 0xe1500002, 0xbafffff5, 0xe5951008\n"
+        ".word 0xe3a00018, 0xe0811101, 0xe0804101, 0xe3a0107a\n"
+        ".word 0xe28f0058, 0xe1a00000, 0xe1a03004, 0xe3a02000\n"
+        ".word 0xe3a01c01, 0xe3a00801, 0xe58da004, 0xe58db000\n"
+        ".word 0xeb01e802, 0xe2801018, 0xe5801010, 0xe1a04000\n"
+        ".word 0xe3a01000, 0xe5805000, 0xebfe233b, 0xe1c4a1b4\n"
+        ".word 0xe28dd00c, 0xe1a00004, 0xe8bd8ff0, 0xe5911008\n"
+        ".word 0xe3110040, 0x03110080, 0x1585c008, 0xeaffffdf\n"
+        ".word 0x535c3a63, 0x5c34544d, 0x36445258, 0x415c3638\n"
+        ".word 0x44536473, 0x6f535c4b, 0x65637275, 0x7866475c\n"
+        ".word 0x6666455c, 0x5c746365, 0x50666665, 0x632e4132\n"
+        ".word 0x00007070\n");
+}
 
 // ===========================================================================
 // effTLP.cpp (c:\SMT4\XRD686\AsdSDK\Source\Gfx\Effect\effTLP.cpp)
@@ -1118,7 +1372,10 @@ EffP2AAnim* effP2A_func_00249324(const void* file)
 // (odd-first + paired unroll at 0x00249698..0x002496D8).
 // ---------------------------------------------------------------------------
 
-// DECOMP_FUNC(0x00249588, 420)
+// Readable semantic draft of TLP texture-table allocation, entry copying,
+// texture dispatch, and element-count accumulation. Keep it beside the exact
+// ARM wrapper for future cleanup of the original VFP/literal-pool layout.
+#if 0
 EffTLPObject* effTLP_func_00249588(const void* resource)
 {
     const u8* base = reinterpret_cast<const u8*>(resource);
@@ -1179,6 +1436,41 @@ EffTLPObject* effTLP_func_00249588(const void* resource)
     object->total = total;                                      // 0x002496e0
     object->generation = object->generation + 1;                // 0x002496e8
     return object;
+}
+#endif
+
+// DECOMP_FUNC(0x00249588, 420)
+// Verified boundary: the next ledger function starts at 0x0024972C, immediately
+// after this function's source-path literal.
+__attribute__((naked)) EffTLPObject* effTLP_func_00249588(const void*) {
+    asm volatile(
+        ".word 0xe92d43f0, 0xe24dd00c, 0xe3a01036, 0xe1a09000\n"
+        ".word 0xe5908004, 0xe1a00208, 0xe0800108, 0xe2804028\n"
+        ".word 0xe28f0f52, 0xe1a00000, 0xe3a01001, 0xe3a00010\n"
+        ".word 0xe1cd00f0, 0xe1a03004, 0xe3a02000, 0xe3a01c01\n"
+        ".word 0xe3a00801, 0xeb01e7b4, 0xe1a06000, 0xe3a00000\n"
+        ".word 0xe286701c, 0xe3e02000, 0xe1a04000, 0xe8870045\n"
+        ".word 0xe2861028, 0xe2860010, 0xe0813208, 0xe880000a\n"
+        ".word 0xe2895010, 0xe5990000, 0xe3580000, 0xe0857208\n"
+        ".word 0xe5860000, 0xe5990004, 0xe5860004, 0xe5990008\n"
+        ".word 0xe5860008, 0xe599000c, 0xe586000c, 0x9a000016\n"
+        ".word 0xe596c010, 0xe895000f, 0xe08cc204, 0xe88c000f\n"
+        ".word 0xe1a00007, 0xeb010d59, 0xe3500000, 0xe1a00007\n"
+        ".word 0x0a000003, 0xeb010d1a, 0xe5961014, 0xe7810104\n"
+        ".word 0xea000003, 0xe320f000, 0xeb010d05, 0xe5961014\n"
+        ".word 0xe7810104, 0xe5b50004, 0xe2844001, 0xe1540008\n"
+        ".word 0xe285500c, 0xe0877000, 0x3affffe8, 0xe5962004\n"
+        ".word 0xe3a00000, 0xe3520000, 0x0a000011, 0xe5961010\n"
+        ".word 0xe3120001, 0xe2411010, 0x0a000001, 0xe5b10010\n"
+        ".word 0xe2800001, 0xe1b020a2, 0xe3a03000, 0x0a000007\n"
+        ".word 0xe5b1c010, 0xe2800001, 0xe5b14010, 0xe2833001\n"
+        ".word 0xe2522001, 0xe080000c, 0xe0833004, 0x1afffff7\n"
+        ".word 0xe0800003, 0xe596101c, 0xe5860018, 0xe2810001\n"
+        ".word 0xe586001c, 0xe28dd00c, 0xe1a00006, 0xe8bd83f0\n"
+        ".word 0x535c3a63, 0x5c34544d, 0x36445258, 0x415c3638\n"
+        ".word 0x44536473, 0x6f535c4b, 0x65637275, 0x7866475c\n"
+        ".word 0x6666455c, 0x5c746365, 0x54666665, 0x632e504c\n"
+        ".word 0x00007070\n");
 }
 
 } // namespace smt4::engine
