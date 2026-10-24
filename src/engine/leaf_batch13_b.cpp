@@ -644,30 +644,14 @@ extern "C" __attribute__((naked)) void func_00257554() {
 }
 
 // DECOMP_FUNC(0x002575a8, 84)
-extern "C" __attribute__((naked)) void func_002575a8() {
-    asm volatile(
-        "tst r1, #1\n"
-        "ldrne r3, [r0, #0x1c]\n"
-        "strne r3, [r2]\n"
-        "tst r1, #2\n"
-        "ldrne r3, [r0, #0x2c]\n"
-        "strne r3, [r2]\n"
-        "tst r1, #4\n"
-        "ldrne r3, [r0, #0x28]\n"
-        "strne r3, [r2]\n"
-        "tst r1, #8\n"
-        "ldrne r3, [r0, #0x20]\n"
-        "strne r3, [r2]\n"
-        "tst r1, #0x20\n"
-        "ldrne r3, [r0, #0x34]\n"
-        "strne r3, [r2]\n"
-        "tst r1, #0x80\n"
-        "ldrne r1, [r0, #0x38]\n"
-        "strne r1, [r2]\n"
-        "ldr r0, [r0, #8]\n"
-        "str r0, [r2, #4]\n"
-        "bx lr\n"
-    );
+extern "C" void func_002575a8(const u32* source, u32 mask, u32* destination) {
+    if (mask & 1) destination[0] = source[0x1c / 4];
+    if (mask & 2) destination[0] = source[0x2c / 4];
+    if (mask & 4) destination[0] = source[0x28 / 4];
+    if (mask & 8) destination[0] = source[0x20 / 4];
+    if (mask & 0x20) destination[0] = source[0x34 / 4];
+    if (mask & 0x80) destination[0] = source[0x38 / 4];
+    destination[1] = source[2];
 }
 
 // DECOMP_FUNC(0x002a1a3c, 84)
