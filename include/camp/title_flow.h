@@ -242,6 +242,7 @@ void TitleConfig_Secondary();                   // 0x002CAEF0 (CreateCalc a5)
 void TitleConfig_Draw(void* arg);               // 0x002CAFD0
 void TitleMain_Calc(void* arg);                 // 0x001E989C
 extern "C" u32 H1_TitleMain_UpdateNavigationSlice(TitleMainWork** captured_work_out);
+extern "C" u32 H1_TitleMain_ProcessConfirmationSlice(TitleMainWork* work);
 void TitleMain_Secondary();                     // 0x002CA6F4 (CreateCalc a5)
 void TitleMain_DrawLeft(void* arg);             // 0x0020FD5C
 void TitleMain_DrawRight(void* arg);            // 0x0021F36C

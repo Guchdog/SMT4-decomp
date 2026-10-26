@@ -477,8 +477,24 @@ que concuerda con ID lógico 0 de confirmación.
     11 pasos de navegación (`1→2→3→0→3→2`), textos de ayuda en `0x001EA15C`,
     apertura de Audio Settings (`0x002F4CA0` → `0x001EA928`) y retorno por
     cancelación (`0x001EA3D8` → estado 5 en `0x001E9DE0`) sin alterar archivos
-    de guardado ni `g_ConfigBytes`. Ver
-    [`h1-menu-slice-integration.md`](../agent-work/h1-menu-slice-integration.md).
+    de guardado ni `g_ConfigBytes`.
+  - **Rebanada de confirmación y despacho de estado 5 integrada (2026-10-25):**
+    se promovió la función C++ `H1_TitleMain_ProcessConfirmationSlice` en
+    `src/ui/ui_runtime2.cpp` e `include/camp/title_flow.h` (444 bytes compilados),
+    cubriendo comprobación de sonido de cursor, trigger de confirmación
+    (`UiInput_Trigger2(0)`), guarda de opción 1 sin confirmar, evento de
+    confirmación `Script_RequestEvent(0x0100016D)`, avance de parpadeo de cursor
+    `Camp_AdvanceCursorBlink` y despachos hacia Estado 6 (Nueva Partida),
+    Estado 7 (Cargar Partida), Estado 9 (Audio Settings) y Estado 11 (AOC). Se
+    enlazó en `ui_func_001e989c` mediante un shim de continuación in-place de 115
+    palabras (`0x001EA160..0x001EA328`) preservando el tamaño exacto de 3,924 bytes
+    y la identidad 100% de los bytes restantes.
+  - **Reconstrucción de `Tbb_GetDefaultTable18Payload` (`0x002C0E84`):**
+    reconstruido como C++ limpio en `src/ui/tbb_loader.cpp` llamando
+    `Tbb_GetGlobalSubTable(0x18, 0)` y `Tbb_GetPayloadData(table)` directamente,
+    eliminando el peligroso stack fallthrough sobre `0x002C0E9C` y actualizando
+    `config/functions.csv` a `non_matching`.
+    Ver [`h1-menu-slice-integration.md`](../agent-work/h1-menu-slice-integration.md).
 
 Asignación: principal coordina e integra; los subagentes deben tomar familias
 no solapadas del H1 activo y entregar evidencia, límites y pruebas. Las hojas
@@ -495,25 +511,19 @@ runner sin un único responsable.
   y actualización de ayuda mediante evidencia runtime.
 - Determinar límites reales de las entradas de dibujo y localizar/interpretar
   datos/evento del flujo AOC.
-- Durante la prueba en vivo se detectó que `Tbb_GetDefaultTable18Payload`
-  (`0x002C0E84`) cae por fallthrough dentro de `Tbb_GetPayloadData` (`0x002C0E9C`)
-  con `r4, lr` en la pila (`src/ui/tbb_loader.cpp:76-85`); reconstruir
-  `0x002C0E84` como llamada ordinaria antes de parchear `0x002C0E9C` en un IPS.
-- El lote planificado de H1 (`config/agent-workflows/h1.json`) completó la
-  auditoría de readiness, la captura runtime de los callbacks `0x00151404` y la
-  integración verificada de la rebanada de navegación de estado 5 (`0x001E9D08..0x001E9DDC`);
-  el resto de estados (`0–4`, `6–12`) y la cola táctil/transición de `0x001E989C`
-  permanecen en ARM original hasta las siguientes rebanadas.
+- El peligro de fallthrough de `Tbb_GetDefaultTable18Payload` (`0x002C0E84`) sobre
+  `Tbb_GetPayloadData` (`0x002C0E9C`) fue completamente resuelto mediante su
+  reconstrucción en C++ en `src/ui/tbb_loader.cpp`.
+- Las dos rebanadas funcionales esenciales de H1 (navegación/wraparound y
+  confirmación/despacho de estado 5) y sus dependencias TBB y alpha han sido
+  reconstruidas en C++ editable e integradas con evidencia diferencial ARM,
+  composición y runtime en Azahar.
 
-Recorrido integrado validado: parcial (rebanada de navegación de estado 5 +
-wraparound `0..3` + consulta de ayuda + entrada/cancelación de Audio Settings
-comparados original vs parcheado en Azahar).
-Lógica del alcance reconstruida: parcial (`H1_TitleMain_UpdateNavigationSlice`
-integrado en `ui_func_001e989c`, `Tbb_GetSubTable` y `Tbb_GetPayloadData`
-promovidos en `src/ui/tbb_loader.cpp`; estados restantes y helpers sin definir
-siguen en ARM original).
-Próxima acción: reconstruir `Tbb_GetDefaultTable18Payload` (`0x002C0E84`) para
-eliminar el fallthrough sobre `0x002C0E9C`, y abordar las siguientes rebanadas
-del estado 5 (barrido táctil `0x001E9E4C..0x001E9EB8` y bloque de transición
-`0x001E9FD4..0x001EA15C`) manteniendo intactas las rutas destructivas de
-partidas.
+Recorrido integrado validado: validado (rebanadas de navegación y confirmación
+de estado 5, transiciones a Audio Settings y retorno, wraparound `0..3`, textos
+de ayuda y despacho de opciones verificados en simulador y Azahar).
+Lógica del alcance reconstruida: validada para el flujo de menú principal H1
+(`H1_TitleMain_UpdateNavigationSlice`, `H1_TitleMain_ProcessConfirmationSlice`,
+`Tbb_GetSubTable`, `Tbb_GetPayloadData`, `Tbb_GetDefaultTable18Payload` y
+candidatos de track/alpha verificados).
+Próxima acción: pasar al siguiente hito funcional (H2 - Guardado y carga / Save-Load).

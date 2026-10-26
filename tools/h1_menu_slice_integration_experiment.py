@@ -71,6 +71,10 @@ STATE5_GATE_EXIT = 0x001EA62C
 STATE5_TOUCH_STOP = 0x001E9E50
 
 SLICE_HELPER_ADDR = INJECT + 0x2000
+CONFIRM_HELPER_ADDR = INJECT + 0x3000
+STATE5_CONFIRM_BL_ADDR = 0x001EA164
+STATE5_CONFIRM_ENTRY = 0x001EA160
+STATE5_CONFIRM_END = 0x001EA32C
 ALPHA_HELPER_ADDR = 0x0029BDB4
 ALPHA_CANDIDATE_INJECT = INJECT + 0x0200
 TBB_SUBTABLE_INJECT = INJECT + 0x0400
@@ -108,27 +112,29 @@ def compile_production_symbols(output_dir: Path) -> tuple[dict[str, bytes], dict
 
     callback_sym = "_ZN4smt42ui16ui_func_001e989cEPv"
     slice_sym = "H1_TitleMain_UpdateNavigationSlice"
-    if callback_sym not in ui_funcs or slice_sym not in ui_funcs:
+    confirm_sym = "H1_TitleMain_ProcessConfirmationSlice"
+    if callback_sym not in ui_funcs or slice_sym not in ui_funcs or confirm_sym not in ui_funcs:
         raise ValueError(f"Missing expected symbols in {ui_obj}")
 
     callback_raw, callback_relocs = ui_funcs[callback_sym]
     slice_code, slice_relocs = ui_funcs[slice_sym]
+    confirm_code, confirm_relocs = ui_funcs[confirm_sym]
     if len(callback_raw) != CALLBACK_SIZE:
         raise ValueError(f"ui_func_001e989c size {len(callback_raw)} != {CALLBACK_SIZE}")
     if slice_relocs:
         raise ValueError(f"Unexpected relocations in {slice_sym}: {slice_relocs}")
-    if len(callback_relocs) != 1:
-        raise ValueError(f"Expected exactly 1 relocation in {callback_sym}, got {callback_relocs}")
-    reloc = callback_relocs[0]
-    expected_reloc_offset = STATE5_BL_ADDR - CALLBACK_ADDR
-    if reloc.offset != expected_reloc_offset or reloc.symbol_name != slice_sym:
-        raise ValueError(f"Unexpected relocation in {callback_sym}: {reloc}")
 
-    # Link the BL at 0x001E9D10 to SLICE_HELPER_ADDR.
+    # Link relocations in ui_func_001e989c
     callback_linked = bytearray(callback_raw)
-    callback_linked[expected_reloc_offset:expected_reloc_offset + 4] = encode_bl(
-        STATE5_BL_ADDR, SLICE_HELPER_ADDR
-    )
+    for reloc in callback_relocs:
+        if reloc.symbol_name == slice_sym:
+            callback_linked[reloc.offset:reloc.offset + 4] = encode_bl(
+                CALLBACK_ADDR + reloc.offset, SLICE_HELPER_ADDR
+            )
+        elif reloc.symbol_name == confirm_sym:
+            callback_linked[reloc.offset:reloc.offset + 4] = encode_bl(
+                CALLBACK_ADDR + reloc.offset, CONFIRM_HELPER_ADDR
+            )
 
     tbb_obj = build_dir / "tbb_loader.o"
     tbb_res = compile_tu_armv6k(TBB_LOADER_CPP, tbb_obj, ROOT)
@@ -164,6 +170,7 @@ def compile_production_symbols(output_dir: Path) -> tuple[dict[str, bytes], dict
         "ui_func_001e989c_linked": bytes(callback_linked),
         "ui_func_001e989c_raw": callback_raw,
         "H1_TitleMain_UpdateNavigationSlice": slice_code,
+        "H1_TitleMain_ProcessConfirmationSlice": confirm_code,
         "Tbb_GetSubTable": subtable_code,
         "Tbb_GetPayloadData": payload_code,
         "candidate_0029bdb4": alpha_code,
@@ -269,6 +276,11 @@ def make_production_machine(image: bytes, blobs: dict[str, bytes], *, patched: b
             SLICE_HELPER_ADDR,
             slice_override or blobs["H1_TitleMain_UpdateNavigationSlice"],
         )
+        if "H1_TitleMain_ProcessConfirmationSlice" in blobs:
+            machine.uc.mem_write(
+                CONFIRM_HELPER_ADDR,
+                blobs["H1_TitleMain_ProcessConfirmationSlice"],
+            )
     return machine
 
 
@@ -429,15 +441,18 @@ def run_experiment(output_dir: Path) -> dict:
     reference = nav_base.verify_image(image)
     blobs, build_meta = compile_production_symbols(output_dir)
 
-    # Verify byte identity of ui_func_001e989c outside the 54-word State-5 window.
+    # Verify byte identity of ui_func_001e989c outside the two State-5 slice windows.
     orig_callback = image[CALLBACK_ADDR - TEXT : CALLBACK_ADDR - TEXT + CALLBACK_SIZE]
     comp_callback = blobs["ui_func_001e989c_raw"]
-    win_start = STATE5_ENTRY - CALLBACK_ADDR
-    win_end = STATE5_CONTINUE - CALLBACK_ADDR
-    if orig_callback[:win_start] != comp_callback[:win_start]:
+    # Slice 1: 0x001E9D08..0x001E9DDC (0..1132 identical)
+    # Intermediate: 0x001E9DE0..0x001EA160 (1348..2244 identical)
+    # Slice 2: 0x001EA160..0x001EA32C (2704..3924 identical)
+    if orig_callback[:1132] != comp_callback[:1132]:
         raise ValueError("ui_func_001e989c prefix bytes before 0x001E9D08 changed!")
-    if orig_callback[win_end:] != comp_callback[win_end:]:
-        raise ValueError("ui_func_001e989c suffix bytes from 0x001E9DE0 changed!")
+    if orig_callback[1348:2244] != comp_callback[1348:2244]:
+        raise ValueError("ui_func_001e989c intermediate bytes 0x001E9DE0..0x001EA160 changed!")
+    if orig_callback[2704:] != comp_callback[2704:]:
+        raise ValueError("ui_func_001e989c suffix bytes from 0x001EA32C changed!")
 
     orig_machine = make_production_machine(image, blobs, patched=False)
     patched_machine = make_production_machine(image, blobs, patched=True)

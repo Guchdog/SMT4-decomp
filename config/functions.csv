@@ -5750,7 +5750,7 @@ address,size,status,category,name,src_file
 0x002c0c74,448,matching,engine,engine_func_002c0c74,src/engine/leaf_batch32_c.cpp
 0x002c0e34,24,matching,camp,camp_func_002c0e34,src/engine/leaf_batch37_a.cpp
 0x002c0e4c,56,matching,ui,Tbb_GetRowCount,src/ui/tbb_loader.cpp
-0x002c0e84,24,matching,ui,Tbb_GetDefaultTable18Payload,src/ui/tbb_loader.cpp
+0x002c0e84,24,non_matching,ui,Tbb_GetDefaultTable18Payload,src/ui/tbb_loader.cpp
 0x002c0e9c,40,non_matching,ui,Tbb_GetPayloadData,src/ui/tbb_loader.cpp
 0x002c0ec4,28,matching,ui,Tbb_GetGlobalSubTable,src/ui/tbb_loader.cpp
 0x002c0ee0,28,matching,unknown,func_002c0ee0,src/engine/leaf_batch37_a.cpp

@@ -73,15 +73,9 @@ const void* Tbb_GetPayloadData(const Tbl1Header* table) {
     return reinterpret_cast<const void*>(payload_address);
 }
 // DECOMP_FUNC(0x002c0e84, 24)
-__attribute__((naked)) const void* Tbb_GetDefaultTable18Payload() {
-    // The ROM tail-falls through into Tbb_GetPayloadData after this wrapper.
-    asm volatile(
-        "mov r1, #0\n"
-        "mov r0, #0x18\n"
-        "push {r4, lr}\n"
-        ".word 0xEB00000B\n"
-        "pop {r4, lr}\n"
-        "mov r0, r0\n");
+const void* Tbb_GetDefaultTable18Payload() {
+    const Tbl1Header* table = Tbb_GetGlobalSubTable(0x18, 0);
+    return Tbb_GetPayloadData(table);
 }
 
 // DECOMP_FUNC(0x002c0e4c, 56)

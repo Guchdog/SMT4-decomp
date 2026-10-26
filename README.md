@@ -23,8 +23,8 @@ python tools/find_candidates.py --include-existing-candidates --limit 20
 
 ## Reference byte coverage
 
-- **Matching (Byte-for-Byte):** `3,135,052 / 3,139,108 bytes` (**99.8708%**) across `10,956` functions and `8` explicitly labeled raw spans (each exact-checked against 3DS ARMv6K code.bin)
-- **Compiled Coverage (≥15% size):** `4,056 / 3,139,108 bytes` (**0.1292%**) across `3` functions (ARMv6K compilation and size threshold only; logic unverified)
+- **Matching (Byte-for-Byte):** `3,135,028 / 3,139,108 bytes` (**99.8700%**) across `10,955` functions and `8` explicitly labeled raw spans (each exact-checked against 3DS ARMv6K code.bin)
+- **Compiled Coverage (≥15% size):** `4,080 / 3,139,108 bytes` (**0.1300%**) across `4` functions (ARMv6K compilation and size threshold only; logic unverified)
 - **Draft Logic (<15% size):** `0 / 3,139,108 bytes` (**0.0000%**) across `0` functions (early-stage draft reconstructions)
 - **Scaffolded Architecture (Stubs & Interfaces):** `0 / 3,139,108 bytes` (**0.0000%**) across `0` functions (headers, structs, function skeletons)
 - **Total Codebase Explored:** `3,139,108 / 3,139,108 bytes` (**100.0000%**) across `10,959` functions and `8` exact raw spans (all explored bytes mapped into `src/`)

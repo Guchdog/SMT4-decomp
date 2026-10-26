@@ -2976,6 +2976,80 @@ extern "C" __attribute__((noinline)) u32 H1_TitleMain_UpdateNavigationSlice(
     }
     return 1u;
 }
+extern "C" __attribute__((noinline)) u32 H1_TitleMain_ProcessConfirmationSlice(
+    camp::TitleMainWork* work) {
+    if (work == nullptr) {
+        return 0u;
+    }
+    // Check confirmation trigger if flag_63 is clear
+    if (work->flag_63 == 0) {
+        if (UiMenu_CheckCursorSound(1) == 0 && UiInput_Trigger2(0) == 0) {
+            return 0u;
+        }
+    }
+
+    // Cursor 1 (Load Game) without flag_60 set clears confirmation and returns to State 5
+    if (work->field_08 == 1 && work->flag_60 == 0) {
+        work->flag_63 = 0;
+        return 0u;
+    }
+
+    Script_RequestEvent(0x0100016D);
+
+    switch (work->field_08) {
+    case 1: {
+        work->flag_61 = 1;
+        for (s32 i = 0; i < 4; ++i) {
+            Camp_AdvanceCursorBlink();
+        }
+        work->flag_63 = 0;
+        work->flag_7c = 1;
+        work->field_80 = 2;
+        Script_PrepareCursor();
+        Script_ApplyCursorMode(1);
+        work->state_9C = 7;
+        break;
+    }
+    case 0: {
+        work->flag_62 = 1;
+        work->flag_63 = 0;
+        for (s32 i = 0; i < 4; ++i) {
+            Camp_AdvanceCursorBlink();
+        }
+        Script_SetCursorSound(0, 0xC, 0xFFFFFFFF);
+        Script_SetCursorSound(1, 0xC, 0xFFFFFFFF);
+        Script_ResetCursorSound(0xF);
+        work->state_9C = 6;
+        break;
+    }
+    case 2: {
+        work->flag_61 = 1;
+        for (s32 i = 0; i < 4; ++i) {
+            Camp_AdvanceCursorBlink();
+        }
+        work->flag_63 = 0;
+        work->flag_7c = 1;
+        work->field_80 = 2;
+        Script_PrepareCursor();
+        Script_ApplyCursorMode(1);
+        work->state_9C = 9;
+        break;
+    }
+    case 3: {
+        work->flag_63 = 0;
+        for (s32 i = 0; i < 4; ++i) {
+            Camp_AdvanceCursorBlink();
+        }
+        work->state_9C = 0x0B;
+        Script_SetCursorSound(0, 0xA, 0xFF);
+        Script_SetCursorSound(1, 0xA, 0xFF);
+        break;
+    }
+    default:
+        break;
+    }
+    return 1u;
+}
 
 // DECOMP_FUNC(0x001e989c, 3924)
 __attribute__((naked)) void ui_func_001e989c(void*) {
@@ -3541,121 +3615,121 @@ __attribute__((naked)) void ui_func_001e989c(void*) {
         ".word 0xe51f1298\n"
         ".word 0xe2800016\n"
         ".word 0xeb02d3ea\n"
-        ".word 0xe5d50063\n"
-        ".word 0xe3500000\n"
-        ".word 0x1a000009\n"
-        ".word 0xe3a00001\n"
-        ".word 0xeb0213d8\n"
-        ".word 0xe3500000\n"
-        ".word 0xe320f000\n"
-        ".word 0x1a000004\n"
-        ".word 0xe3a00000\n"
-        ".word 0xeb03578c\n"
-        ".word 0xe3500000\n"
-        ".word 0xe320f000\n"
-        ".word 0x0a000125\n"
-        ".word 0xe5985000\n"
-        ".word 0xe5950008\n"
-        ".word 0xe3500001\n"
-        ".word 0x05d50060\n"
-        ".word 0x03500000\n"
-        ".word 0x03a00000\n"
-        ".word 0x05c50063\n"
-        ".word 0x0a00011d\n"
-        ".word 0xe59f0530\n"
-        ".word 0xeb033c01\n"
-        ".word 0xe5950008\n"
-        ".word 0xe3500001\n"
-        ".word 0x03a04000\n"
-        ".word 0x05c57061\n"
-        ".word 0x0a000008\n"
-        ".word 0xe3500000\n"
-        ".word 0x0a000017\n"
-        ".word 0xe3500002\n"
-        ".word 0x03a04000\n"
-        ".word 0x05c57061\n"
-        ".word 0x0a00002a\n"
-        ".word 0xe3500003\n"
-        ".word 0x0a000039\n"
-        ".word 0xea00010d\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb033b82\n"
-        ".word 0xe2844001\n"
-        ".word 0xe3540004\n"
-        ".word 0xbafffffa\n"
-        ".word 0xe3a01000\n"
-        ".word 0xe5c51063\n"
-        ".word 0xe3a00002\n"
-        ".word 0xe5c5707c\n"
-        ".word 0xe5850080\n"
-        ".word 0xeb022f84\n"
-        ".word 0xe3a00001\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb022f0a\n"
-        ".word 0xe3a00007\n"
-        ".word 0xe320f000\n"
-        ".word 0xeafffdf3\n"
-        ".word 0xe3a00000\n"
-        ".word 0xe5c57062\n"
-        ".word 0xe1a04000\n"
-        ".word 0xe5c50063\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb033b6d\n"
-        ".word 0xe2844001\n"
-        ".word 0xe3540004\n"
-        ".word 0xbafffffa\n"
-        ".word 0xe3e02000\n"
-        ".word 0xe3a0100c\n"
-        ".word 0xe3a00000\n"
-        ".word 0xeb02c8fc\n"
-        ".word 0xe3e02000\n"
-        ".word 0xe3a0100c\n"
-        ".word 0xe3a00001\n"
-        ".word 0xeb02c8f8\n"
-        ".word 0xe3a0000f\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb02c8f1\n"
-        ".word 0xe3a00006\n"
-        ".word 0xe320f000\n"
-        ".word 0xeafffddc\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb033b5a\n"
-        ".word 0xe2844001\n"
-        ".word 0xe3540004\n"
-        ".word 0xbafffffa\n"
-        ".word 0xe3a01000\n"
-        ".word 0xe5c51063\n"
-        ".word 0xe3a00002\n"
-        ".word 0xe5c5707c\n"
-        ".word 0xe5850080\n"
-        ".word 0xeb022f5c\n"
-        ".word 0xe3a00001\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb022ee2\n"
-        ".word 0xe3a00009\n"
-        ".word 0xe320f000\n"
-        ".word 0xeafffdcb\n"
-        ".word 0xe3a00000\n"
-        ".word 0xe1a04000\n"
-        ".word 0xe5c50063\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb033b46\n"
-        ".word 0xe2844001\n"
-        ".word 0xe3540004\n"
-        ".word 0xbafffffa\n"
-        ".word 0xe3a0000b\n"
-        ".word 0xe585009c\n"
-        ".word 0xe3a020ff\n"
-        ".word 0xe3a0100a\n"
-        ".word 0xe3a00000\n"
-        ".word 0xeb02c8d3\n"
-        ".word 0xe3a020ff\n"
-        ".word 0xe3a0100a\n"
-        ".word 0xe3a00001\n"
-        ".word 0xeb02c8cf\n"
-        ".word 0xe320f000\n"
-        ".word 0xe320f000\n"
+        "mov r0, r5\n"
+        "bl H1_TitleMain_ProcessConfirmationSlice\n"
         ".word 0xea0000bf\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
         ".word 0xe5d5007c\n"
         ".word 0xe3500000\n"
         ".word 0x1a0000bc\n"
