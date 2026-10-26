@@ -1,5 +1,7 @@
 # Semantic Reconstruction Night Shift
 
+> Historical plan, superseded by the semantic-first objective in [AGENTS.md](../../../AGENTS.md) and [functional status](../../functional-status.md). Its requirement to keep every reconstruction byte-identical is no longer the acceptance policy.
+
 **Starting point:** commit `133b379` completed byte-exact coverage of the full
 `0x00100000..0x003FE624` text segment: 10,959 functions plus 8 explicitly
 labeled raw spans, totaling 3,139,108 bytes. The baseline test suite passes all

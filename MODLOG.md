@@ -892,3 +892,134 @@ definitions plus four prefix/control helpers), all statically linked to tests,
 with 155 differential-shaped checks. The matching old aggregate of 169 is a
 numeric coincidence, not reconciliation. Full regression is pending. No
 production, ROM, or matching-ledger changes; no commit or push.
+
+## 2026-10-24 — Safer and clearer editable-source workflow
+
+Fixed analyzer regeneration so it writes review proposals and `ledger_diff.json`
+to ignored `build/analysis/`, with the Python API read-only by default. Curated
+config targets are protected, and a changed heuristic function size no longer
+inherits a matching claim. Running the real CLI reported 619 removed proposals,
+one addition, and 15 size changes; both curated CSV hashes remained unchanged.
+An explicit attempt to write into `config/` was rejected.
+
+Fixed `asm_diff.py` to fail its process on mismatches, compile failures, or missing
+symbols, and resolve relative input paths against `--root`. Added regression
+coverage for these exit codes and analysis preservation/boundary drift.
+
+Added a generated semantic inventory that separates 169 address-named candidate
+symbols from four prefix/helper symbols across 61 translation units. Static test
+and report associations remain distinct from executed differential evidence,
+integration, and runtime acceptance. Earlier aggregate totals remain historical
+rather than being silently reinterpreted as this inventory.
+
+Moved current delivery guidance to `docs/functional-status.md` and linked it from
+the README generator, preserving the functional roadmap on regeneration. H1
+integration remains the active delivery goal. The CMake regression now indexes
+its object files once rather than scanning the build tree twice per function;
+it still checks every matching function.
+
+Validation on this checkout:
+
+- Full suite: 315 tests in 310.584 seconds, OK with four skips. Three require
+  `aes_keys.txt`; the fourth requires the configured decrypted CCI/RomFS index.
+- Forced ARM build: 190/190 translation units succeeded.
+- Exact audit: 10,959 functions and eight raw spans (484 bytes), zero matching
+  or compilation failures.
+- `python tools/progress.py --write`: succeeded; README functional links retained.
+- `git diff --check`: passed.
+
+No production game sources, matching ledger, or private game inputs changed.
+No new Azahar runtime validation was performed for this tooling batch.
+
+## 2026-10-24 — Parallel ARM compilation
+
+The Python bulk build now schedules independent translation units with a bounded
+thread pool, defaulting to the logical CPUs available to the process. `--jobs N`
+/ `-j N` selects a worker count; one job remains supported. Results and failure
+messages retain source order, and each TU keeps its own object, dependency file,
+and cache manifest. The CLI reports worker count, elapsed time, compiled objects,
+and up-to-date objects.
+
+Fixed `--tu` to use the same nested object path and dependency cache as the bulk
+build. Compiler subprocesses now run from the supplied repository root, so
+repository-relative assembly inputs also work when invoking the helper from
+another checkout. Compiler flags and object-cache identity are unchanged.
+
+Local forced-build measurements on the i7-4770K (4 cores / 8 logical CPUs):
+
+- Previous serial builder: 190 objects in 40.034 seconds.
+- Eight workers: 190 objects in 10.321 seconds, about 3.88x faster.
+- Four workers: 190 objects in 12.190 seconds.
+- Both parallel runs reproduced all 190 complete object-file hashes from the
+  serial run. A final CLI forced build passed in 10.48 seconds, with the same
+  190 object hashes. These are local measurements, not a general speed guarantee.
+
+Validation: 319 tests in 296.199 seconds, OK with the same four unavailable
+private-fixture skips. This includes worker-overlap/failure/path regression tests,
+cache invalidation, the full ARM build and CMake object checks. The separate exact
+byte audit verified 10,959 functions and eight raw spans with zero failures.
+A real `--tu` compile invoked from outside the checkout succeeded and produced a
+reusable manifest. `git diff --check` passed. No game sources or private inputs
+changed. Verification/emulation remains a separate stage from parallel compilation.
+
+## 2026-10-24 — Semantic reconstruction becomes the primary goal
+
+Added project instructions in the semantic checkout and the reference checkout:
+recover readable, editable C++ with supported behavior; identical ARM bytes are
+optional diagnostic evidence, not the acceptance gate. The historical exact-only
+night-shift plan is explicitly superseded. README generation now leads with this
+objective and labels the byte table as reference coverage.
+
+`tools/find_candidates.py` defaults to semantic discovery. It searches mapped
+assembly as well as other function statuses, admits call-bearing functions, and
+uses H1 priorities from `config/reconstruction.json`. It skips already written
+address-named experimental C++ unless `--include-existing-candidates` is selected;
+those entries are queued for validation/integration without claiming equivalence.
+The conservative leaf API and explicit `--mode leaf` remain available for triage.
+New and integration queues were generated under ignored
+`build/semantic-equivalence/`. The H1 state callback at 0x001E989C and its scoped
+dependencies lead the queue; internal labels are not invented as ledger entries.
+
+Updated the functional/per-function workflow so byte differences do not cause a
+semantic rejection or a compiler-opcode search. Reference labels remain truthful.
+Removed tests' fixed requirement that all 10,959 implementations be byte-identical;
+they still verify every entry explicitly labeled matching, and retain ledger
+coverage/integrity checks. No production game source or original ledger changed.
+
+Validation: 13 focused discovery, legacy-leaf, verifier, and README checks passed.
+The wider run exercised 324 tests in 300.240 seconds: four private-fixture skips,
+with one newly edited reporting assertion failing because it omitted raw-span
+bytes. Corrected that assertion; the affected full-repository reporting check
+passed on its targeted rerun (65.851 seconds). All remaining regression checks
+passed in the wider run. README/PROGRESS regeneration and `git diff --check`
+passed. This changes priority and discovery, not the completion status of H1.
+
+## 2026-10-25 — Bounded agent workflow for semantic reconstruction
+
+Added `docs/agent-workflow.md`, coordinator instructions in both checkouts, a
+dependency-aware H1 board, and task/handoff templates. One coordinator assigns
+up to three scoped workers for contracts, implementation, and independent review;
+only the integrator changes shared interfaces, promotes source, runs canonical
+batch validation, and owns the runtime profile. The eight-job compiler allowance
+is shared across workers. Each task/run has separate output paths and frozen
+inputs, including shared instructions and policy files.
+
+Added `tools/agent_workflow.py` to check ownership, dependencies and resource
+budgets, list ready work, prepare hashed briefs, and check handoff provenance.
+Draft preparation neither claims nor dispatches work. The checker rejects stale
+inputs, scope changes, unowned submitted files, other-run reports, and malformed
+command records. These checks do not prove command execution or semantic
+equivalence; independent review and scoped runtime evidence remain required.
+
+The initial queued wave covers the track binding capture contract, independent
+TBB/caller review, and the alpha helper at 0x0029BDB4. Follow-on runtime, caller,
+promotion and menu-slice tasks have explicit dependencies. No H1 implementation
+was dispatched or marked accepted while creating this workflow.
+
+Two independent subagents reviewed workflow design and validation. Their findings
+about implicit instruction-file leases, command result types and board collection
+types were fixed with focused regression coverage. Validation: 26 workflow,
+semantic discovery, legacy discovery and README-generation checks passed in
+0.423 seconds; the real board check and `git diff --check` passed. A draft brief
+was generated under ignored `build/agent-work/`. No game source, private input,
+or curated function ledger changed in this workflow batch.

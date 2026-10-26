@@ -1,5 +1,16 @@
 # ARM behavioral equivalence pilot — 2026-10-24
 
+For current source-presence counts, use the [generated inventory](../../docs/semantic-inventory.md).
+It separates address-named candidate symbols from prefix/helper symbols and
+static evidence links. It does not certify equivalence, test execution, or
+integration. The [functional status](../../docs/functional-status.md) identifies
+the delivery goal and links to the milestone acceptance records.
+
+## Historical experiment totals and evidence
+
+The aggregate figures below record earlier experiment scopes. They are retained
+as history, not maintained as a current source inventory or completion metric.
+
 The previous experiment log reported 169 non-byte-identical C++ function
 candidates with isolated differential evidence: the original fourteen-function pilot, three TBB
 getters, twenty-two repeated-family candidates, seventeen table callbacks, and

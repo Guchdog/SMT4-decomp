@@ -2491,7 +2491,7 @@ address,size,status,category,name,src_file
 0x001e83fc,4380,matching,ui,ui_func_001e83fc,src/ui/ui_scene_extras.cpp
 0x001e9518,528,matching,ui,ui_func_001e9518,src/engine/leaf_batch46_a.cpp
 0x001e9728,372,matching,ui,ui_func_001e9728,src/engine/leaf_batch41_c.cpp
-0x001e989c,3924,matching,ui,ui_func_001e989c,src/ui/ui_runtime2.cpp
+0x001e989c,3924,non_matching,ui,ui_func_001e989c,src/ui/ui_runtime2.cpp
 0x001ea7f0,24,matching,script_vm,script_vm_func_001ea7f0,src/engine/leaf_batch21_a.cpp
 0x001ea808,264,matching,engine,soundTest_func_001ea808,src/engine/asd_sound.cpp
 0x001ea910,24,matching,unknown,func_001ea910,src/engine/leaf_batch39_a.cpp
@@ -5264,7 +5264,7 @@ address,size,status,category,name,src_file
 0x002abe74,180,matching,engine,engine_func_002abe74,src/engine/leaf_batch16_a.cpp
 0x002abf28,412,matching,unknown,func_002abf28,src/engine/leaf_batch16_c.cpp
 0x002ac0c4,560,matching,unknown,func_002ac0c4,src/engine/leaf_batch45_b.cpp
-0x002ac2f4,92,matching,ui,Tbb_GetSubTable,src/ui/tbb_loader.cpp
+0x002ac2f4,92,non_matching,ui,Tbb_GetSubTable,src/ui/tbb_loader.cpp
 0x002ac350,16,matching,engine,engine_func_002ac350,src/engine/leaf_batch38_a.cpp
 0x002ac360,36,matching,script_vm,script_vm_func_002ac360,src/engine/leaf_batch34_b.cpp
 0x002ac384,16,matching,engine,engine_func_002ac384,src/engine/leaf_batch38_a.cpp
@@ -5751,7 +5751,7 @@ address,size,status,category,name,src_file
 0x002c0e34,24,matching,camp,camp_func_002c0e34,src/engine/leaf_batch37_a.cpp
 0x002c0e4c,56,matching,ui,Tbb_GetRowCount,src/ui/tbb_loader.cpp
 0x002c0e84,24,matching,ui,Tbb_GetDefaultTable18Payload,src/ui/tbb_loader.cpp
-0x002c0e9c,40,matching,ui,Tbb_GetPayloadData,src/ui/tbb_loader.cpp
+0x002c0e9c,40,non_matching,ui,Tbb_GetPayloadData,src/ui/tbb_loader.cpp
 0x002c0ec4,28,matching,ui,Tbb_GetGlobalSubTable,src/ui/tbb_loader.cpp
 0x002c0ee0,28,matching,unknown,func_002c0ee0,src/engine/leaf_batch37_a.cpp
 0x002c0efc,44,matching,unknown,func_002c0efc,src/engine/leaf_batch19_b.cpp

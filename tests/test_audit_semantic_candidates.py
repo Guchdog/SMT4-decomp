@@ -2,7 +2,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from tools.audit_semantic_candidates import _candidate_definitions, audit
+from tools.audit_semantic_candidates import _candidate_definitions, audit, render_markdown
 
 
 class TestCandidateInventory(unittest.TestCase):
@@ -37,7 +37,8 @@ class TestCandidateInventory(unittest.TestCase):
             for directory in ("experiments/semantic_equivalence", "tools", "tests"):
                 (root / directory).mkdir(parents=True)
             (root / "experiments/semantic_equivalence/family_candidates.cpp").write_text(
-                'int candidate_00000020() { return 1; }\n', encoding="utf-8")
+                'int candidate_00000020() { return 1; }\n'
+                'int candidate_00000020_prefix() { return 1; }\n', encoding="utf-8")
             (root / "tools/family_experiment.py").write_text(
                 'FUNCTIONS = {0x00000020: 4}\n'
                 'SOURCE = ROOT / "experiments/semantic_equivalence/family_candidates.cpp"\n'
@@ -51,12 +52,18 @@ class TestCandidateInventory(unittest.TestCase):
             (root / "experiments/semantic_equivalence/family_report.md").write_text(
                 'Candidate `0x00000020` was exercised.\n', encoding="utf-8")
             result = audit(root)
-            self.assertEqual(result["candidate_count"], 1)
+            self.assertEqual(result["candidate_count"], 2)
+            self.assertEqual(result["counts"]["address_named_candidates"], 1)
+            self.assertEqual(result["counts"]["prefix_or_helper_candidates"], 1)
             candidate = result["candidates"][0]
             self.assertTrue(candidate["presence"])
             self.assertEqual(candidate["linked_tests"], ["test_family_experiment"])
             self.assertEqual(candidate["differential_test_checks"], ["test_family_experiment"])
             self.assertEqual(len(candidate["associated_reports"]), 1)
+            markdown = render_markdown(result)
+            self.assertIn("| Address-named candidate definitions | 1 |", markdown)
+            self.assertIn("candidate_00000020_prefix", markdown)
+            self.assertIn("do not count equivalent, integrated, or runtime-validated", markdown)
 
 
 if __name__ == "__main__":

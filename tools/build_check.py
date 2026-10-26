@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+from concurrent.futures import ThreadPoolExecutor
 from functools import lru_cache
 import hashlib
 import json
@@ -12,6 +13,7 @@ import re
 import shutil
 import subprocess
 import sys
+import time
 
 
 def find_clang() -> Path:
@@ -113,7 +115,7 @@ def compile_tu_armv6k(
     manifest.unlink(missing_ok=True)
     cmd = [str(clang)] + flags + ["-MD", "-MF", str(depfile), "-MT", "object",
                                 "-c", str(src_file), "-o", str(out_obj)]
-    result = subprocess.run(cmd, capture_output=True, text=True)
+    result = subprocess.run(cmd, capture_output=True, text=True, cwd=repo_root)
     if result.returncode == 0 and out_obj.is_file():
         dependencies = _read_dependencies(depfile)
         dependencies.add(src_file)
@@ -182,12 +184,29 @@ def ensure_tu_armv6k(src_file: Path, out_obj: Path, repo_root: Path = Path("."),
     return compile_tu_armv6k(src_file, out_obj, repo_root)
 
 
+def default_job_count() -> int:
+    """Use the CPUs available to this process, falling back on older Python."""
+    available = getattr(os, "process_cpu_count", os.cpu_count)()
+    return max(1, available or 1)
+
+
+def _positive_jobs(value: str) -> int:
+    try:
+        count = int(value)
+    except ValueError as error:
+        raise argparse.ArgumentTypeError("jobs must be a positive integer") from error
+    if count < 1:
+        raise argparse.ArgumentTypeError("jobs must be a positive integer")
+    return count
+
+
 def compile_all_armv6k(
     repo_root: Path = Path("."),
     out_dir: Path = Path("build/obj/armv6k"),
     force: bool = False,
+    jobs: int | None = None,
 ) -> dict:
-    """Compile all C++ translation units under src/ to ARMv6K object files.
+    """Compile independent translation units concurrently; preserve result order.
 
     Returns:
         dict with keys:
@@ -195,6 +214,9 @@ def compile_all_armv6k(
             succeeded: int, count of successfully compiled / up-to-date objects
             failed: list of (src_path, stderr) for failing units
             objects: mapping from source path (str and relative posix) to compiled object Path
+            jobs: actual worker count (zero for an empty source tree)
+            compiled_count: successful compiler invocations
+            cached_count: validated objects reused without invoking Clang
     """
     repo_root = Path(repo_root).resolve()
     out_dir = Path(out_dir)
@@ -205,28 +227,47 @@ def compile_all_armv6k(
     cpp_files = sorted(src_root.rglob("*.cpp"))
 
     total = len(cpp_files)
+    jobs = default_job_count() if jobs is None else jobs
+    if not isinstance(jobs, int) or jobs < 1:
+        raise ValueError("jobs must be a positive integer")
+    worker_count = min(jobs, total)
     succeeded = 0
+    compiled_count = 0
+    cached_count = 0
     failed: list[tuple[str, str]] = []
     objects: dict[str, Path] = {}
 
-    for src_file in cpp_files:
+    def compile_one(src_file: Path):
         rel = src_file.relative_to(src_root)
         out_obj = out_dir / rel.with_suffix(".o")
-        rel_posix = src_file.relative_to(repo_root).as_posix()
-
         res = ensure_tu_armv6k(src_file, out_obj, repo_root=repo_root, force=force)
-        if res.returncode == 0 and out_obj.exists():
-            succeeded += 1
-            objects[str(src_file)] = out_obj
-            objects[rel_posix] = out_obj
-        else:
-            failed.append((rel_posix, res.stderr))
+        return src_file, out_obj, res
+
+    if total:
+        # Each TU owns a distinct object, depfile and manifest. Threads wait on
+        # compiler subprocesses, so Python's GIL does not serialize Clang jobs.
+        with ThreadPoolExecutor(max_workers=worker_count) as executor:
+            for src_file, out_obj, res in executor.map(compile_one, cpp_files):
+                rel_posix = src_file.relative_to(repo_root).as_posix()
+                if res.returncode == 0 and out_obj.exists():
+                    succeeded += 1
+                    if res.args:
+                        compiled_count += 1
+                    else:
+                        cached_count += 1
+                    objects[str(src_file)] = out_obj
+                    objects[rel_posix] = out_obj
+                else:
+                    failed.append((rel_posix, res.stderr))
 
     return {
         "total": total,
         "succeeded": succeeded,
         "failed": failed,
         "objects": objects,
+        "jobs": worker_count,
+        "compiled_count": compiled_count,
+        "cached_count": cached_count,
     }
 
 
@@ -246,7 +287,7 @@ def main() -> None:
     parser.add_argument(
         "--force",
         action="store_true",
-        help="Force recompilation even if object files are newer than source",
+        help="Force recompilation instead of reusing validated cached objects",
     )
     parser.add_argument(
         "--tu",
@@ -254,7 +295,12 @@ def main() -> None:
         default=None,
         help="Compile a specific translation unit only",
     )
+    parser.add_argument("-j", "--jobs", type=_positive_jobs,
+                        help="Concurrent compiler jobs (default: available logical CPUs)")
     args = parser.parse_args()
+    args.repo_root = args.repo_root.resolve()
+    if not args.out_dir.is_absolute():
+        args.out_dir = args.repo_root / args.out_dir
 
     try:
         clang = find_clang()
@@ -264,10 +310,14 @@ def main() -> None:
         sys.exit(1)
 
     if args.tu:
-        src_file = args.tu
-        out_obj = args.out_dir / src_file.name.replace(".cpp", ".o")
+        src_file = (args.tu if args.tu.is_absolute() else args.repo_root / args.tu).resolve()
+        try:
+            rel = src_file.relative_to(args.repo_root / "src")
+        except ValueError:
+            rel = Path(src_file.name)
+        out_obj = args.out_dir / rel.with_suffix(".o")
         print(f"Compiling {src_file} -> {out_obj}...")
-        res = compile_tu_armv6k(src_file, out_obj, repo_root=args.repo_root)
+        res = ensure_tu_armv6k(src_file, out_obj, repo_root=args.repo_root, force=args.force)
         if res.returncode == 0:
             print("OK")
             sys.exit(0)
@@ -275,11 +325,15 @@ def main() -> None:
             print(res.stderr, file=sys.stderr)
             sys.exit(1)
 
-    print("Compiling all translation units to 3DS ARMv6K...")
+    jobs = args.jobs if args.jobs is not None else default_job_count()
+    print(f"Compiling all translation units to 3DS ARMv6K (up to {jobs} parallel jobs)...")
+    start = time.perf_counter()
     result = compile_all_armv6k(
-        repo_root=args.repo_root, out_dir=args.out_dir, force=args.force
+        repo_root=args.repo_root, out_dir=args.out_dir, force=args.force, jobs=jobs
     )
     print(f"Results: {result['succeeded']}/{result['total']} succeeded.")
+    print(f"Compiled: {result['compiled_count']}; up-to-date: {result['cached_count']}.")
+    print(f"Elapsed: {time.perf_counter() - start:.2f}s; workers: {result['jobs']}.")
 
     if result["failed"]:
         print(f"\n{len(result['failed'])} translation unit(s) failed:", file=sys.stderr)

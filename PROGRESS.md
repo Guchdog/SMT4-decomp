@@ -1,11 +1,13 @@
 # Shin Megami Tensei IV (`CTR-P-AMXE`) Decompilation Progress
 
-## Overall `.text` Progress Summary
+Primary goal: [editable C++ semantics](docs/functional-status.md). Byte identity is optional; the reference coverage below includes assembly/raw wrappers and is not semantic completion.
+
+## Reference `.text` Coverage Summary
 
 | Category | Functions | Code Size (Bytes) | Progress % | Status Description |
 |----------|----------:|------------------:|-----------:|--------------------|
-| **Matching (Byte-for-Byte)** | 10,959 functions + 8 raw spans | 3,139,108 B | **100.0000%** | Exact ARMv6K bytes verified against code.bin |
-| **Compiled Coverage (≥15% size)** | 0 | 0 B | 0.0000% | Compiles to ARMv6K ELF .o; size threshold only, logic unverified |
+| **Matching (Byte-for-Byte)** | 10,956 functions + 8 raw spans | 3,135,052 B | **99.8708%** | Exact ARMv6K bytes verified against code.bin |
+| **Compiled Coverage (≥15% size)** | 3 | 4,056 B | 0.1292% | Compiles to ARMv6K ELF .o; size threshold only, logic unverified |
 | **Draft Logic (<15% size)** | 0 | 0 B | 0.0000% | Early draft reconstructions awaiting control-flow recovery |
 | **Scaffolded (Stubs & Interfaces)** | 0 | 0 B | 0.0000% | Headers, structs, and function skeletons |
 | **Total Architecture Explored** | 10,959 functions + 8 raw spans | 3,139,108 B | 100.0000% | Mapped into `src/` (functions and verified raw spans) |
@@ -21,7 +23,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | Subsystem | Matching | Compiled Coverage (≥15%) | Draft (<15%) | Stubs | Total Explored | Total Subsystem | Matching % | Explored % |
 |-----------|---------:|----------------:|-------------:|------:|---------------:|----------------:|-----------:|-----------:|
 | `engine` | 2,560 (770,212 B) | 0 (0 B) | 0 (0 B) | 0 (0 B) | 2,560 (770,212 B) | 2,560 (770,212 B) | 100.0000% | 100.00% |
-| `ui` | 1,654 (682,368 B) | 0 (0 B) | 0 (0 B) | 0 (0 B) | 1,654 (682,368 B) | 1,654 (682,368 B) | 100.0000% | 100.00% |
+| `ui` | 1,651 (678,312 B) | 3 (4,056 B) | 0 (0 B) | 0 (0 B) | 1,654 (682,368 B) | 1,654 (682,368 B) | 99.4056% | 100.00% |
 | `unknown` | 3,818 (610,392 B) | 0 (0 B) | 0 (0 B) | 0 (0 B) | 3,818 (610,392 B) | 3,818 (610,392 B) | 100.0000% | 100.00% |
 | `script_vm` | 1,201 (446,288 B) | 0 (0 B) | 0 (0 B) | 0 (0 B) | 1,201 (446,288 B) | 1,201 (446,288 B) | 100.0000% | 100.00% |
 | `camp` | 917 (326,288 B) | 0 (0 B) | 0 (0 B) | 0 (0 B) | 917 (326,288 B) | 917 (326,288 B) | 100.0000% | 100.00% |
@@ -2528,7 +2530,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x001e83fc` | 4380 | `ui` | `matching` | `ui_func_001e83fc` | [`src/ui/ui_scene_extras.cpp`](src/ui/ui_scene_extras.cpp) |
 | `0x001e9518` | 528 | `ui` | `matching` | `ui_func_001e9518` | [`src/engine/leaf_batch46_a.cpp`](src/engine/leaf_batch46_a.cpp) |
 | `0x001e9728` | 372 | `ui` | `matching` | `ui_func_001e9728` | [`src/engine/leaf_batch41_c.cpp`](src/engine/leaf_batch41_c.cpp) |
-| `0x001e989c` | 3924 | `ui` | `matching` | `ui_func_001e989c` | [`src/ui/ui_runtime2.cpp`](src/ui/ui_runtime2.cpp) |
+| `0x001e989c` | 3924 | `ui` | `non_matching` | `ui_func_001e989c` | [`src/ui/ui_runtime2.cpp`](src/ui/ui_runtime2.cpp) |
 | `0x001ea7f0` | 24 | `script_vm` | `matching` | `script_vm_func_001ea7f0` | [`src/engine/leaf_batch21_a.cpp`](src/engine/leaf_batch21_a.cpp) |
 | `0x001ea808` | 264 | `engine` | `matching` | `soundTest_func_001ea808` | [`src/engine/asd_sound.cpp`](src/engine/asd_sound.cpp) |
 | `0x001ea910` | 24 | `unknown` | `matching` | `func_001ea910` | [`src/engine/leaf_batch39_a.cpp`](src/engine/leaf_batch39_a.cpp) |
@@ -5301,7 +5303,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x002abe74` | 180 | `engine` | `matching` | `engine_func_002abe74` | [`src/engine/leaf_batch16_a.cpp`](src/engine/leaf_batch16_a.cpp) |
 | `0x002abf28` | 412 | `unknown` | `matching` | `func_002abf28` | [`src/engine/leaf_batch16_c.cpp`](src/engine/leaf_batch16_c.cpp) |
 | `0x002ac0c4` | 560 | `unknown` | `matching` | `func_002ac0c4` | [`src/engine/leaf_batch45_b.cpp`](src/engine/leaf_batch45_b.cpp) |
-| `0x002ac2f4` | 92 | `ui` | `matching` | `Tbb_GetSubTable` | [`src/ui/tbb_loader.cpp`](src/ui/tbb_loader.cpp) |
+| `0x002ac2f4` | 92 | `ui` | `non_matching` | `Tbb_GetSubTable` | [`src/ui/tbb_loader.cpp`](src/ui/tbb_loader.cpp) |
 | `0x002ac350` | 16 | `engine` | `matching` | `engine_func_002ac350` | [`src/engine/leaf_batch38_a.cpp`](src/engine/leaf_batch38_a.cpp) |
 | `0x002ac360` | 36 | `script_vm` | `matching` | `script_vm_func_002ac360` | [`src/engine/leaf_batch34_b.cpp`](src/engine/leaf_batch34_b.cpp) |
 | `0x002ac384` | 16 | `engine` | `matching` | `engine_func_002ac384` | [`src/engine/leaf_batch38_a.cpp`](src/engine/leaf_batch38_a.cpp) |
@@ -5788,7 +5790,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x002c0e34` | 24 | `camp` | `matching` | `camp_func_002c0e34` | [`src/engine/leaf_batch37_a.cpp`](src/engine/leaf_batch37_a.cpp) |
 | `0x002c0e4c` | 56 | `ui` | `matching` | `Tbb_GetRowCount` | [`src/ui/tbb_loader.cpp`](src/ui/tbb_loader.cpp) |
 | `0x002c0e84` | 24 | `ui` | `matching` | `Tbb_GetDefaultTable18Payload` | [`src/ui/tbb_loader.cpp`](src/ui/tbb_loader.cpp) |
-| `0x002c0e9c` | 40 | `ui` | `matching` | `Tbb_GetPayloadData` | [`src/ui/tbb_loader.cpp`](src/ui/tbb_loader.cpp) |
+| `0x002c0e9c` | 40 | `ui` | `non_matching` | `Tbb_GetPayloadData` | [`src/ui/tbb_loader.cpp`](src/ui/tbb_loader.cpp) |
 | `0x002c0ec4` | 28 | `ui` | `matching` | `Tbb_GetGlobalSubTable` | [`src/ui/tbb_loader.cpp`](src/ui/tbb_loader.cpp) |
 | `0x002c0ee0` | 28 | `unknown` | `matching` | `func_002c0ee0` | [`src/engine/leaf_batch37_a.cpp`](src/engine/leaf_batch37_a.cpp) |
 | `0x002c0efc` | 44 | `unknown` | `matching` | `func_002c0efc` | [`src/engine/leaf_batch19_b.cpp`](src/engine/leaf_batch19_b.cpp) |

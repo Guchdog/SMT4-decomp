@@ -25,34 +25,33 @@ void IfTouch_ExitCallback_0010a28c();
 extern IfTouchGlobal g_IfTouchGlobal; // 0x0043DCB0
 }
 
-// DECOMP_FUNC(0x002ac2f4, 92)
-__attribute__((naked)) const Tbl1Header* Tbb_GetSubTable(const TbcrHeader*, u32) {
-    asm volatile(
-        "cmp r0, #0\n"
-        "beq 1f\n"
-        "ldr r2, [r0]\n"
-        "ldr r3, [pc, #0x40]\n"
-        "cmp r2, r3\n"
-        "bne 1f\n"
-        "ldr r2, [r0, #8]\n"
-        "cmp r2, r1\n"
-        "bls 1f\n"
-        "add r2, r0, #0xC\n"
-        "ldr r3, [r0, #4]\n"
-        "ldr r1, [r2, r1, lsl #2]\n"
-        "add r1, r1, r3\n"
-        "adds r0, r0, r1\n"
-        "beq 1f\n"
-        "ldr r1, [r0]\n"
-        "ldr r2, [pc, #0x10]\n"
-        "cmp r1, r2\n"
-        "beq 2f\n"
-        "1: mov r0, #0\n"
-        "2: bx lr\n"
-        ".word 0x52434254\n"
-        ".word 0x314C4254\n");
+static u32 ReadU32LEAt(u32 address) {
+    const auto* bytes = reinterpret_cast<const u8*>(address);
+    return static_cast<u32>(bytes[0]) |
+           (static_cast<u32>(bytes[1]) << 8) |
+           (static_cast<u32>(bytes[2]) << 16) |
+           (static_cast<u32>(bytes[3]) << 24);
 }
 
+// DECOMP_FUNC(0x002ac2f4, 92)
+const Tbl1Header* Tbb_GetSubTable(const TbcrHeader* container, u32 table_index) {
+    if (container == nullptr || container->magic != kTbcrMagic ||
+        table_index >= container->table_count) {
+        return nullptr;
+    }
+
+    // Keep address arithmetic in ARM's 32-bit domain. The original API has no
+    // allocation length, so it cannot validate the trailing array or child.
+    const u32 container_address = reinterpret_cast<u32>(container);
+    const u32 offset_address = container_address + kTbcrOffsetsOffset +
+                               (table_index << 2);
+    const u32 child_address = container_address + container->header_size +
+                              ReadU32LEAt(offset_address);
+    if (child_address == 0 || ReadU32LEAt(child_address) != kTbl1Magic) {
+        return nullptr;
+    }
+    return reinterpret_cast<const Tbl1Header*>(child_address);
+}
 // DECOMP_FUNC(0x002c0ec4, 28)
 __attribute__((naked)) const Tbl1Header* Tbb_GetGlobalSubTable(u32, u32) {
     asm volatile(
@@ -66,20 +65,13 @@ __attribute__((naked)) const Tbl1Header* Tbb_GetGlobalSubTable(u32, u32) {
 }
 
 // DECOMP_FUNC(0x002c0e9c, 40)
-__attribute__((naked)) const void* Tbb_GetPayloadData(const Tbl1Header*) {
-    asm volatile(
-        "cmp r0, #0\n"
-        "beq 1f\n"
-        "ldr r1, [r0]\n"
-        "ldr r2, [pc, #0x10]\n"
-        "cmp r1, r2\n"
-        "addeq r0, r0, #0x10\n"
-        "beq 2f\n"
-        "1: mov r0, #0\n"
-        "2: bx lr\n"
-        ".word 0x314C4254\n");
+const void* Tbb_GetPayloadData(const Tbl1Header* table) {
+    if (table == nullptr || table->magic != kTbl1Magic) {
+        return nullptr;
+    }
+    const u32 payload_address = reinterpret_cast<u32>(table) + 0x10;
+    return reinterpret_cast<const void*>(payload_address);
 }
-
 // DECOMP_FUNC(0x002c0e84, 24)
 __attribute__((naked)) const void* Tbb_GetDefaultTable18Payload() {
     // The ROM tail-falls through into Tbb_GetPayloadData after this wrapper.

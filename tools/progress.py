@@ -508,7 +508,9 @@ def render_progress_md(stats: dict) -> str:
     lines = [
         "# Shin Megami Tensei IV (`CTR-P-AMXE`) Decompilation Progress",
         "",
-        "## Overall `.text` Progress Summary",
+        "Primary goal: [editable C++ semantics](docs/functional-status.md). Byte identity is optional; the reference coverage below includes assembly/raw wrappers and is not semantic completion.",
+        "",
+        "## Reference `.text` Coverage Summary",
         "",
         "| Category | Functions | Code Size (Bytes) | Progress % | Status Description |",
         "|----------|----------:|------------------:|-----------:|--------------------|",
@@ -570,7 +572,22 @@ Decompilation and reverse-engineering project for **Shin Megami Tensei IV** (Nin
 
 ---
 
-## Live Decompilation Progress
+## Primary goal: editable C++ semantics
+
+Find and reconstruct readable C++ with supported behavior. Byte-for-byte identity is not an acceptance requirement. Prioritize coherent H1 behavior, differential/caller evidence, and integration; do not optimize the project around matching opcodes.
+
+Follow the [functional status](docs/functional-status.md), [milestone plan](docs/reconstruction-milestones.md), and [per-function workflow](docs/function-reconstruction-workflow.md). The [generated candidate inventory](docs/semantic-inventory.md) measures experimental definitions and static evidence links, not equivalence or integration. H0 records a limited patched-game smoke test; H1 main-menu reconstruction remains active.
+
+Use the [agent workflow](docs/agent-workflow.md) for bounded parallel contracts, implementation and independent review; the coordinator owns shared files, integration and the CPU budget.
+
+Find new semantic work or review existing C++ for validation/integration:
+
+```powershell
+python tools/find_candidates.py --limit 20
+python tools/find_candidates.py --include-existing-candidates --limit 20
+```
+
+## Reference byte coverage
 
 - **Matching (Byte-for-Byte):** `{stats['matching_bytes']:,} / {stats['total_bytes']:,} bytes` (**{stats['matching_byte_percentage']:.4f}%**) across `{stats['matching_functions']:,}` functions and `{stats['matching_spans']:,}` explicitly labeled raw spans (each exact-checked against 3DS ARMv6K code.bin)
 - **Compiled Coverage (≥15% size):** `{stats['compiled_bytes']:,} / {stats['total_bytes']:,} bytes` (**{stats['compiled_byte_percentage']:.4f}%**) across `{stats['compiled_functions']:,}` functions (ARMv6K compilation and size threshold only; logic unverified)
@@ -596,7 +613,7 @@ This auto-selects a CIA only when exactly one is present; otherwise pass `--cia 
 ```powershell
 python tools/analyze_code.py
 ```
-Scans all `3,139,108` bytes of `.text` (`0x00100000`–`0x003FE624`), resolves literal pools and inline `ADR` strings (including original Atlus `c:\\SMT4\\XRD686\\...` source file paths), and populates [`config/functions.csv`](config/functions.csv) and [`config/symbols.csv`](config/symbols.csv).
+Scans all `3,139,108` bytes of `.text` (`0x00100000`–`0x003FE624`), resolves literal pools and inline `ADR` strings (including original Atlus `c:\\SMT4\\XRD686\\...` source file paths), and writes review proposals to `build/analysis/functions.csv`, `symbols.csv`, and `ledger_diff.json`. The curated files in `config/` are never overwritten; review boundary changes before manually accepting individual discoveries.
 
 ### 3. Disassemble Any Function or HUD Subsystem
 ```powershell
@@ -638,7 +655,7 @@ def main() -> None:
 
     stats = compute_progress(args.functions, args.root)
     print(
-        f"Recorded {stats['decompiled_functions']:,} / {stats['total_functions']:,} reconstructed functions "
+        f"Recorded {stats['decompiled_functions']:,} / {stats['total_functions']:,} mapped function implementations (including assembly/raw wrappers) "
         f"({stats['decompiled_bytes']:,} / {stats['total_bytes']:,} bytes, {stats['decomp_byte_percentage']:.4f}%):\n"
         f"  - Matching (Byte-for-Byte):  {stats['matching_functions']:,} functions + {stats['matching_spans']:,} raw spans ({stats['matching_bytes']:,} bytes, {stats['matching_byte_percentage']:.4f}%)\n"
         f"  - Compiled Coverage (>=15%): {stats['compiled_functions']:,} functions ({stats['compiled_bytes']:,} bytes, {stats['compiled_byte_percentage']:.4f}%; logic unverified)\n"

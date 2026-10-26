@@ -239,14 +239,15 @@ def extract_strings(code_bytes: bytes) -> dict[int, tuple[str, str, str]]:
 
 
 def analyze_binary(
-    code_path: Path, game_info_path: Path, write_csv: bool = True
+    code_path: Path, game_info_path: Path, write_csv: bool = False,
+    output_dir: Path | None = None,
 ) -> tuple[list[dict], list[dict]]:
+    """Infer a proposal; never overwrite the curated configuration files."""
     code_bytes = Path(code_path).read_bytes()
     _ = json.loads(Path(game_info_path).read_text(encoding="utf-8"))
 
     config_dir = Path(game_info_path).parent
     funcs_csv = config_dir / "functions.csv"
-    syms_csv = config_dir / "symbols.csv"
 
     strings = extract_strings(code_bytes)
 
@@ -441,7 +442,8 @@ def analyze_binary(
         size_bytes = (end_idx - start_idx) << 2
         addr_hex = f"0x{vaddr:08x}"
 
-        if addr_hex in existing_overrides:
+        if (addr_hex in existing_overrides
+                and int(existing_overrides[addr_hex]["size"]) == size_bytes):
             ov = existing_overrides[addr_hex]
             functions.append(
                 {
@@ -491,23 +493,65 @@ def analyze_binary(
         )
 
     if write_csv:
-        with open(funcs_csv, "w", encoding="utf-8", newline="") as f:
-            writer = csv.DictWriter(
-                f,
-                fieldnames=["address", "size", "status", "category", "name", "src_file"],
-            )
-            writer.writeheader()
-            writer.writerows(functions)
-
-        with open(syms_csv, "w", encoding="utf-8", newline="") as f:
-            writer = csv.DictWriter(
-                f,
-                fieldnames=["address", "section", "type", "name", "string_preview"],
-            )
-            writer.writeheader()
-            writer.writerows(symbols)
+        proposal_dir = (Path(output_dir) if output_dir is not None
+                        else config_dir.parent / "build" / "analysis")
+        write_analysis_proposal(proposal_dir, config_dir, functions, symbols)
 
     return functions, symbols
+
+
+def compare_ledgers(existing: list[dict], proposed: list[dict]) -> dict:
+    """Describe heuristic boundary drift without modifying either ledger."""
+    old = {int(row["address"], 16): row for row in existing}
+    new = {int(row["address"], 16): row for row in proposed}
+    return {
+        "existing_entries": len(old),
+        "proposed_entries": len(new),
+        "removed_addresses": [f"0x{a:08x}" for a in sorted(old.keys() - new.keys())],
+        "added_addresses": [f"0x{a:08x}" for a in sorted(new.keys() - old.keys())],
+        "size_changes": [
+            {"address": f"0x{a:08x}", "existing_size": int(old[a]["size"]),
+             "proposed_size": int(new[a]["size"])}
+            for a in sorted(old.keys() & new.keys())
+            if int(old[a]["size"]) != int(new[a]["size"])
+        ],
+        "note": "Heuristic proposal only; the curated ledger was not changed.",
+    }
+
+
+def write_analysis_proposal(output_dir: Path, config_dir: Path,
+                            functions: list[dict], symbols: list[dict]) -> dict:
+    """Write reviewable CSVs and a boundary diff outside curated configuration."""
+    output_dir, config_dir = Path(output_dir), Path(config_dir)
+    # Resolve individual targets too, so file symlinks cannot bypass the guard.
+    names = ("functions.csv", "symbols.csv", "ledger_diff.json")
+    protected = {(config_dir / name).resolve() for name in names}
+    if any((output_dir / name).resolve() in protected for name in names):
+        raise ValueError("Analysis output must not overwrite curated config files")
+    existing_path = config_dir / "functions.csv"
+    existing = []
+    if existing_path.is_file():
+        with existing_path.open(encoding="utf-8", newline="") as stream:
+            existing = list(csv.DictReader(stream))
+    difference = compare_ledgers(existing, functions)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    with (output_dir / "functions.csv").open("w", encoding="utf-8", newline="") as f:
+        writer = csv.DictWriter(
+            f, fieldnames=["address", "size", "status", "category", "name", "src_file"],
+        )
+        writer.writeheader()
+        writer.writerows(functions)
+
+    with (output_dir / "symbols.csv").open("w", encoding="utf-8", newline="") as f:
+        writer = csv.DictWriter(
+            f, fieldnames=["address", "section", "type", "name", "string_preview"],
+        )
+        writer.writeheader()
+        writer.writerows(symbols)
+
+    (output_dir / "ledger_diff.json").write_text(
+        json.dumps(difference, indent=2) + "\n", encoding="utf-8")
+    return difference
 
 
 def main() -> None:
@@ -524,9 +568,22 @@ def main() -> None:
         default=Path("config/game_info.json"),
         help="Path to game_info.json",
     )
+    parser.add_argument(
+        "--output-dir", type=Path,
+        help="Proposal directory (default: build/analysis beside config); config is protected",
+    )
     args = parser.parse_args()
 
-    funcs, syms = analyze_binary(args.code, args.info, write_csv=True)
+    funcs, syms = analyze_binary(args.code, args.info)
+    output_dir = args.output_dir or args.info.parent.parent / "build" / "analysis"
+    try:
+        difference = write_analysis_proposal(output_dir, args.info.parent, funcs, syms)
+    except ValueError as error:
+        parser.error(str(error))
+    print(f"Proposal written to {output_dir}; curated config unchanged.")
+    print(f"Boundary diff: {len(difference['removed_addresses'])} removed, "
+          f"{len(difference['added_addresses'])} added, "
+          f"{len(difference['size_changes'])} size changes. Review ledger_diff.json.")
     cat_counts = Counter(f["category"] for f in funcs)
     cat_bytes = defaultdict(int)
     for f in funcs:

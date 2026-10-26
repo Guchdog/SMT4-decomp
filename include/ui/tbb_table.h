@@ -16,11 +16,12 @@ struct Tbl1Header {
 };
 
 struct TbcrHeader {
-    u32 magic;            // +0x00: 'TBCR' (0x52434254)
-    u32 header_size;      // +0x04: Offset to first table base
-    u32 table_count;      // +0x08: Number of TBL1 sub-tables
-    u32 table_offsets[1]; // +0x0C: Sub-table offsets relative to header_size
+    u32 magic;       // +0x00: 'TBCR' (0x52434254)
+    u32 header_size; // +0x04: Offset to first table base
+    u32 table_count; // +0x08: Number of TBL1 sub-tables
 };
+
+constexpr u32 kTbcrOffsetsOffset = 0x0C;
 
 struct GlobalTbbSlot {
     u32 flags;                   // +0x00

@@ -1,6 +1,8 @@
 import tempfile
+import csv
 import unittest
 import subprocess
+from collections import defaultdict
 from unittest.mock import patch
 from pathlib import Path
 from tools.progress import (
@@ -14,6 +16,16 @@ from tests.fixtures import require_private_fixtures
 
 
 class TestProgress(unittest.TestCase):
+    def test_generated_readme_keeps_functional_roadmap_and_safe_analysis_workflow(self):
+        readme = render_readme_md(defaultdict(int))
+        self.assertIn("docs/functional-status.md", readme)
+        self.assertIn("docs/semantic-inventory.md", readme)
+        self.assertIn("docs/function-reconstruction-workflow.md", readme)
+        self.assertIn("ledger_diff.json", readme)
+        self.assertIn("never overwritten", readme)
+        self.assertIn("Byte-for-byte identity is not an acceptance requirement", readme)
+        self.assertLess(readme.index("## Primary goal"), readme.index("## Reference byte coverage"))
+
     def test_rejects_claimed_function_without_src_file(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -316,53 +328,43 @@ class TestProgress(unittest.TestCase):
     def test_real_repo_progress_matches_text_size(self):
         require_private_fixtures(self, Path("extracted/exefs/code.bin"))
         stats = compute_progress(Path("config/functions.csv"), Path("."))
+        with Path("config/functions.csv").open(encoding="utf-8", newline="") as stream:
+            rows = list(csv.DictReader(stream))
+        matching = [r for r in rows if r["status"] == "matching"]
+        spans = [r for r in rows if r["status"] == "matching_span"]
+        nonmatching = [r for r in rows if r["status"] == "non_matching"]
+        claimed = matching + nonmatching
+        stubs = [r for r in rows if r["status"] in ("stub", "wip")]
         self.assertEqual(stats["total_bytes"], 0x2FE624)
-        self.assertEqual(stats["decompiled_functions"], 10959)
-        self.assertEqual(stats["decompiled_bytes"], 3138624)
-        self.assertEqual(stats["stub_functions"], 0)
-        self.assertEqual(stats["stub_bytes"], 0)
+        self.assertEqual(stats["total_functions"], 10959)
         self.assertEqual(stats["total_explored_functions"], 10959)
         self.assertEqual(stats["total_explored_bytes"], 3139108)
-        self.assertEqual(stats["matching_functions"], 10959)
-        self.assertEqual(stats["matching_bytes"], 3139108)
-        self.assertEqual(stats["matching_spans"], 8)
-        self.assertEqual(stats["matching_span_bytes"], 484)
-        self.assertEqual(stats["verified_functions"], 0)
-        self.assertEqual(stats["verified_bytes"], 0)
+        self.assertEqual(stats["decompiled_functions"], len(claimed))
+        self.assertEqual(stats["decompiled_bytes"], sum(int(r["size"]) for r in claimed))
+        self.assertEqual(stats["stub_functions"], len(stubs))
+        self.assertEqual(stats["stub_bytes"], sum(int(r["size"]) for r in stubs))
+        self.assertEqual(stats["matching_functions"], len(matching))
+        self.assertEqual(stats["matching_bytes"], sum(int(r["size"]) for r in matching + spans))
+        self.assertEqual(stats["matching_spans"], len(spans))
+        self.assertEqual(stats["matching_span_bytes"], sum(int(r["size"]) for r in spans))
         self.assertEqual(stats["compiled_functions"], stats["verified_functions"])
         self.assertEqual(stats["compiled_bytes"], stats["verified_bytes"])
-        self.assertEqual(stats["draft_functions"], 0)
-        self.assertEqual(stats["draft_bytes"], 0)
-        self.assertEqual(
-            stats["verified_functions"] + stats["draft_functions"] + stats["matching_functions"],
-            stats["decompiled_functions"],
-        )
-        self.assertEqual(
-            stats["verified_bytes"] + stats["draft_bytes"] + stats["matching_bytes"] - stats["matching_span_bytes"],
-            stats["decompiled_bytes"],
-        )
-        self.assertEqual(stats["categories"]["engine"]["matching_funcs"], 2560)
-        self.assertEqual(stats["categories"]["engine"]["matching_bytes"], 770212)
-        self.assertEqual(stats["categories"]["battle"]["matching_funcs"], 578)
-        self.assertEqual(stats["categories"]["battle"]["matching_bytes"], 236932)
-        self.assertEqual(stats["categories"]["ui"]["matching_funcs"], 1654)
-        self.assertEqual(stats["categories"]["ui"]["matching_bytes"], 682368)
-        self.assertEqual(stats["categories"]["unknown"]["matching_funcs"], 3818)
-        self.assertEqual(stats["categories"]["unknown"]["matching_bytes"], 610392)
-        self.assertEqual(stats["categories"]["camp"]["matching_funcs"], 917)
-        self.assertEqual(stats["categories"]["camp"]["matching_bytes"], 326288)
-        self.assertEqual(stats["categories"]["shop"]["matching_funcs"], 111)
-        self.assertEqual(stats["categories"]["shop"]["matching_bytes"], 39976)
-        self.assertEqual(stats["categories"]["script_vm"]["matching_funcs"], 1201)
-        self.assertEqual(stats["categories"]["script_vm"]["matching_bytes"], 446288)
-        self.assertEqual(stats["categories"]["nn_sdk"]["matching_funcs"], 64)
-        self.assertEqual(stats["categories"]["nn_sdk"]["matching_bytes"], 8852)
-        self.assertEqual(stats["categories"]["unite"]["matching_funcs"], 30)
-        self.assertEqual(stats["categories"]["unite"]["matching_bytes"], 7832)
-        self.assertEqual(stats["categories"]["crt"]["matching_funcs"], 26)
-        self.assertEqual(stats["categories"]["crt"]["matching_bytes"], 9484)
-        self.assertEqual(stats["categories"]["raw_span"]["matching_spans"], 8)
-        self.assertEqual(stats["categories"]["raw_span"]["matching_span_bytes"], 484)
+        self.assertEqual(stats["compiled_functions"] + stats["draft_functions"], len(nonmatching))
+        self.assertEqual(stats["compiled_functions"] + stats["draft_functions"] +
+                         stats["matching_functions"], stats["decompiled_functions"])
+        self.assertEqual(stats["compiled_bytes"] + stats["draft_bytes"] +
+                         stats["matching_bytes"] - stats["matching_span_bytes"],
+                         stats["decompiled_bytes"])
+        for category, info in stats["categories"].items():
+            category_rows = [r for r in rows if r["category"] == category]
+            exact_rows = [r for r in category_rows if r["status"] == "matching"]
+            span_rows = [r for r in category_rows if r["status"] == "matching_span"]
+            self.assertEqual(info["total_bytes"], sum(int(r["size"]) for r in category_rows))
+            self.assertEqual(info["matching_funcs"], len(exact_rows))
+            self.assertEqual(info["matching_bytes"],
+                             sum(int(r["size"]) for r in exact_rows + span_rows))
+            self.assertEqual(info["matching_spans"], len(span_rows))
+            self.assertEqual(info["matching_span_bytes"], sum(int(r["size"]) for r in span_rows))
 
     def _nonmatching_project(self, root):
         src = root / "src" / "function.cpp"

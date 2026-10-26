@@ -12,6 +12,14 @@ Los [resultados experimentales](../experiments/semantic_equivalence/README.md)
 registran la evidencia disponible. Los planes de `superpowers/plans/` conservan
 el historial de cobertura; este documento define el trabajo funcional siguiente.
 
+## Prioridad principal
+
+La reconstrucción semántica de C++ modificable es el objetivo principal. El byte
+matching es un diagnóstico opcional, no una condición para aceptar una propuesta.
+`python tools/find_candidates.py` genera ahora la cola semántica por defecto;
+`config/reconstruction.json` prioriza H1. No volver al plan histórico de forzar
+100% de coincidencia de bytes.
+
 ## Estado actual
 
 - La cobertura exacta del repositorio incluye ensamblador y spans originales.
@@ -66,7 +74,7 @@ el motivo del cambio. No estimar fechas mediante funciones por noche.
 | ID | Área e hito | Criterio de aceptación funcional | Estado inicial |
 | --- | --- | --- | --- |
 | H0 | Base de pruebas reproducible | Regenerar e identificar el parche, comprobar su carga en Azahar y registrar un recorrido repetible con las entradas ejecutadas y sus límites. | Cerrado; batch 4 llegó al título y Audio Settings. Dos entradas dieron hit. [Ficha H0](milestones/H0-reproducible-test-base.md). |
-| H1 | Título: menú principal | Inicializar el menú, mover la selección y despachar cada opción al destino previsto. Mapear inicialización, entrada, presentación y transiciones. | Activo; familias ARM de navegación/touch/ayuda y ramas sintéticas con mutador→TBB real probadas; ambos gates positivos trazados y cada candidato original de tipo 0/1 probado por separado en ambos gates. Pendientes punteros runtime reales de los tracks, control físico, renderer e integración runtime. [Ficha H1](milestones/H1-main-menu-flow.md). |
+| H1 | Título: menú principal | Inicializar el menú, mover la selección y despachar cada opción al destino previsto. Mapear inicialización, entrada, presentación y transiciones. | Activo (lote actual de 80 tareas completado); callbacks runtime de los gates A y B (`0x00151404`) capturados en Azahar, `Tbb_GetSubTable` y `Tbb_GetPayloadData` promovidos en `src/ui/tbb_loader.cpp`, y rebanada de navegación de estado 5 (`H1_TitleMain_UpdateNavigationSlice`, `0x001E9D08..0x001E9DDC`) integrada en `src/ui/ui_runtime2.cpp` y validada en matriz diferencial de 258 casos + comparación original vs parcheado de 11 pasos en Azahar. Estados restantes (`0–4`, `6–12`) y cola táctil/transición siguen en ARM original. [Ficha H1](milestones/H1-main-menu-flow.md). |
 | H2 | Título: configuración de audio | Entrar, leer y modificar opciones, volver y comprobar persistencia cuando el original la tenga. | Pendiente. |
 | H3 | Carga de partida de prueba | Seleccionar una partida conocida y llegar a una escena con el estado esperado. | Pendiente. |
 | H4 | Exploración mínima | En una escena delimitada, mover al personaje, controlar la cámara, interactuar y cambiar de zona. | Pendiente. |
@@ -146,6 +154,12 @@ registrar cómo se controla o qué comparación se acepta. Capturar únicamente
 el estado necesario para contrastar el comportamiento.
 
 ## Trabajo con subagentes
+
+El protocolo operativo, ownership, presupuestos y handoffs están en
+[agent-workflow.md](agent-workflow.md). La cola inicial H1 está en
+[`config/agent-workflows/h1.json`](../config/agent-workflows/h1.json);
+`tools/agent_workflow.py` comprueba conflictos y prepara briefs reproducibles.
+El coordinador es el único escritor del board.
 
 - **Mapa y contratos:** identificar flujo, dependencias, llamadas indirectas,
   entradas y salidas; proponer funciones que desbloqueen el hito.

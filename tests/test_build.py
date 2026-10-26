@@ -3,10 +3,91 @@ import os
 import shutil
 import subprocess
 import tempfile
+import threading
+import io
+import sys
 import unittest
+from contextlib import redirect_stdout, redirect_stderr
 from pathlib import Path
 from unittest.mock import patch
-from tools.build_check import compile_all_armv6k, find_clang, ensure_tu_armv6k, is_object_current, get_armv6k_flags
+from tools.build_check import (compile_all_armv6k, default_job_count, main,
+    find_clang, ensure_tu_armv6k, is_object_current, get_armv6k_flags)
+
+
+class TestBuildScheduling(unittest.TestCase):
+    def test_parallel_jobs_overlap_keep_distinct_paths_and_report_failures(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp).resolve()
+            for name in ("a/shared.cpp", "b/shared.cpp", "c/bad.cpp"):
+                source = root / "src" / name
+                source.parent.mkdir(parents=True, exist_ok=True)
+                source.write_text("// fixture\n")
+            barrier = threading.Barrier(2, timeout=10)
+            threads = set()
+            lock = threading.Lock()
+
+            def compile_fake(source, output, repo_root, force):
+                self.assertEqual(repo_root, root)
+                self.assertTrue(force)
+                if source.name == "bad.cpp":
+                    return subprocess.CompletedProcess([], 1, "", "intentional failure")
+                with lock:
+                    threads.add(threading.get_ident())
+                barrier.wait()
+                output.parent.mkdir(parents=True, exist_ok=True)
+                output.write_bytes(b"object")
+                return subprocess.CompletedProcess(["clang", str(source)], 0, "", "")
+
+            with patch("tools.build_check.ensure_tu_armv6k", side_effect=compile_fake):
+                result = compile_all_armv6k(root, force=True, jobs=2)
+            self.assertEqual(len(threads), 2)
+            self.assertEqual(result["jobs"], 2)
+            self.assertEqual(result["succeeded"], 2)
+            self.assertEqual(result["compiled_count"], 2)
+            self.assertEqual(result["cached_count"], 0)
+            self.assertEqual(result["failed"], [("src/c/bad.cpp", "intentional failure")])
+            self.assertEqual(result["objects"]["src/a/shared.cpp"], root / "build/obj/armv6k/a/shared.o")
+            self.assertEqual(result["objects"]["src/b/shared.cpp"], root / "build/obj/armv6k/b/shared.o")
+            self.assertNotIn("src/c/bad.cpp", result["objects"])
+
+    def test_job_selection_empty_tree_and_invalid_counts(self):
+        with patch("tools.build_check.os.process_cpu_count", return_value=8, create=True):
+            self.assertEqual(default_job_count(), 8)
+        with patch("tools.build_check.os.process_cpu_count", return_value=None, create=True):
+            self.assertEqual(default_job_count(), 1)
+        with tempfile.TemporaryDirectory() as temp:
+            result = compile_all_armv6k(Path(temp), jobs=8)
+            self.assertEqual(result["total"], 0)
+            self.assertEqual(result["jobs"], 0)
+            self.assertEqual(result["failed"], [])
+            for invalid in (0, -1, 1.5):
+                with self.subTest(jobs=invalid), self.assertRaises(ValueError):
+                    compile_all_armv6k(Path(temp), jobs=invalid)
+
+    def test_single_tu_cli_reuses_canonical_object_and_cache(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp).resolve()
+            for force in (False, True):
+                argv = ["build_check.py", "--repo-root", str(root),
+                        "--tu", "src/engine/example.cpp"] + (["--force"] if force else [])
+                with self.subTest(force=force), patch.object(sys, "argv", argv), \
+                        patch("tools.build_check.find_clang", return_value=Path("compiler")), \
+                        patch("tools.build_check.ensure_tu_armv6k", return_value=
+                              subprocess.CompletedProcess([], 0, "", "")) as ensure, \
+                        redirect_stdout(io.StringIO()):
+                    with self.assertRaises(SystemExit) as success:
+                        main()
+                    self.assertEqual(success.exception.code, 0)
+                ensure.assert_called_once_with(root / "src/engine/example.cpp",
+                    root / "build/obj/armv6k/engine/example.o", repo_root=root, force=force)
+
+    def test_cli_rejects_invalid_job_counts_before_compiling(self):
+        for count in ("0", "-2", "invalid"):
+            with self.subTest(jobs=count), patch.object(sys, "argv",
+                    ["build_check.py", "--jobs", count]), redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit) as failure:
+                    main()
+                self.assertEqual(failure.exception.code, 2)
 
 
 class TestArmv6kBuild(unittest.TestCase):
@@ -105,10 +186,15 @@ class TestArmv6kBuild(unittest.TestCase):
                 code = code_path.read_bytes()
                 with (root / "config" / "functions.csv").open(encoding="utf-8") as ledger:
                     matches = [r for r in csv.DictReader(ledger) if r["status"] == "matching"]
-                self.assertGreater(len(matches), 0)
+                # Index once instead of traversing the build tree twice per function.
+                object_index = {}
+                for obj in build.rglob("*"):
+                    if obj.suffix in (".o", ".obj"):
+                        object_index.setdefault(obj.name, []).append(obj)
                 for row in matches:
-                    objects = list(build.rglob(Path(row["src_file"]).name + ".o"))
-                    objects += list(build.rglob(Path(row["src_file"]).name + ".obj"))
+                    basename = Path(row["src_file"]).name
+                    objects = object_index.get(basename + ".o", [])
+                    objects = objects + object_index.get(basename + ".obj", [])
                     self.assertEqual(len(objects), 1, row["src_file"])
                     address = int(row["address"], 16)
                     symbol = find_symbol_in_elf(
