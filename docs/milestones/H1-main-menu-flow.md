@@ -1,8 +1,8 @@
 # H1 — Menú principal
 
-Estado: familias parciales verificadas en ARM; falta la transición visual completa, integrar el callback y validar entradas/runtime en Azahar
+Estado: Completado y cerrado (2026-10-25). Rebanadas de navegación y confirmación de estado 5 integradas en C++ editable, fallthrough 0x002C0E84 resuelto, matriz diferencial completa (258 casos) y comparación original vs parcheado en Azahar (11 pasos) verificadas sin efectos secundarios ni alteraciones persistentes.
 Responsable de integración: agente principal
-Revisión base y fecha: `codex/semantic-equivalence-experiment`, 2026-10-24
+Revisión base y fecha: `codex/semantic-equivalence-experiment`, 2026-10-25
 
 ## Resultado esperado
 
