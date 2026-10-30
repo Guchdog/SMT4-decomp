@@ -47,8 +47,8 @@ matching es un diagnóstico opcional, no una condición para aceptar una propues
   Slot vacío y cancelación están cubiertos por corridas emparejadas anteriores.
   La revisión independiente final confirmó la composición. Una prueba de fallo
   post-apertura registró `AsdSave_Read=0`, pero no estableció la respuesta final
-  de UI/manager. Reader, parser, validación y E/S siguen originales. H4 permanece
-  pausado por indicación del usuario.
+  de UI/manager. Reader, parser, validación y E/S siguen originales.
+- H4 (Exploración mínima) está cerrado (2026-10-30): paridad 100% en Azahar autónomo a lo largo de 250 callbacks de escena en Shinjuku Station — Underground (0 diferencias de registros o contexto); los 8 candidatos C++ integrados reproducen inicialización de vista y cámara (0x001B4664), enlace de modelo Flynn (0x001B481C), lectura de ejes analógicos (0x0027FBC8), acceso a actor del jugador (0x001B45C8), reseteo de pool de entidades (0x001B45E0), actualización de visibilidad y transformación 3D del jugador (0x001B4A54), despacho de triggers de mapa (0x001B4B74) y ejecución de opcode 11 de script VM (0x001B4B98). Todas las 89 tareas planificadas en el tablero H4 (config/agent-workflows/h4.json) están aceptadas y revisadas de forma independiente.
 - El build produce objetos ARM y una biblioteca estática. El enlace de un juego
   completo y los ports a otras plataformas siguen siendo trabajo futuro.
 
@@ -72,7 +72,7 @@ el motivo del cambio. No estimar fechas mediante funciones por noche.
 | H1 | Título: menú principal | Inicializar el menú, mover la selección y despachar cada opción al destino previsto. Mapear inicialización, entrada, presentación y transiciones. | Cerrado; callbacks runtime de los gates A y B (`0x00151404`) capturados en Azahar, `Tbb_GetSubTable`, `Tbb_GetPayloadData` y `Tbb_GetDefaultTable18Payload` promovidos en `src/ui/tbb_loader.cpp`, y rebanadas de navegación (`H1_TitleMain_UpdateNavigationSlice`, `0x001E9D08..0x001E9DDC`) y confirmación/despacho (`H1_TitleMain_ProcessConfirmationSlice`, `0x001EA160..0x001EA328`) de estado 5 integradas en `src/ui/ui_runtime2.cpp` y validadas en simulador ARM + Azahar. [Ficha H1](milestones/H1-main-menu-flow.md). |
 | H2 | Título: configuración de audio | Entrar, leer y modificar opciones, volver y comprobar persistencia cuando el original la tenga. | Cerrado (2026-10-30): paridad 100% en Azahar autónomo (51 acciones, 19 checkpoints); ciclo de vida de confirmación State 2 resuelto y reinicio idéntico verificado. [Ficha H2](milestones/H2-audio-settings.md). |
 | H3 | Carga de partida de prueba | Seleccionar una partida conocida y llegar a una escena con el estado esperado. | Cerrado para el recorrido delimitado de guardado conocido; respuesta del fallo real de lectura permanece limitada. [Ficha H3](milestones/H3-load-from-title.md). |
-| H4 | Exploración mínima | En una escena delimitada, mover al personaje, controlar la cámara, interactuar y cambiar de zona. | En curso; [Ficha H4](milestones/H4-exploration-minimum.md). |
+| H4 | Exploración mínima | En una escena delimitada, mover al personaje, controlar la cámara, interactuar y cambiar de zona. | Cerrado (2026-10-30): paridad 100% en Azahar autónomo (250 ticks de escena, 0 diffs); 8 candidatos C++ integrados (vista, subobjetos, actor jugador, pool entidades, ejes, transformación jugador, triggers, script VM). [Ficha H4](milestones/H4-exploration-minimum.md). |
 | H5 | Combate mínimo | Entrar en un combate conocido, elegir acciones, resolver un turno y salir con resultados correctos. | Pendiente. |
 | H6 | Guardado y recarga | Guardar una partida de prueba y recuperar los campos de estado definidos en la ficha. | Pendiente. |
 

@@ -72,22 +72,26 @@ The passive trace requested above has now been completed in both paired profiles
 
 ### Verificación integrada de exploración y cierre (2026-10-30)
 
-- **Candidatos C++ integrados:**
-  1. `0x0027FBC8`: `h4_axis_reader_candidate.cpp` (300 B en ventana de 320 B) — Lector de ejes analógicos para la tarea de cámara `0x001FA840`.
-  2. `0x001B4664`: `h4_view_init_candidate.cpp` (396 B en ventana de 440 B) — Inicializador del espacio de trabajo `g_ViewWork` (`0x00447E88`).
-  3. `0x001B481C`: `h4_view_subobjects_candidate.cpp` (156 B en ventana de 164 B) — Inicialización de subobjetos y enlace del modelo `player/pl01_00.bam`.
-  4. `0x001B45C8`: `h4_map_player_actor_candidate.cpp` (24 B en ventana de 24 B) — Acceso al actor del jugador desde `g_MapMainWork`.
-  5. `0x001B45E0`: `h4_map_entity_pool_candidate.cpp` (100 B en ventana de 132 B) — Reset y liberación del pool de 24 entidades (`g_MapEntities`).
+- **Candidatos C++ integrados (8 en total, Fase 1 y Fase 2):**
+  1. `0x0027FBC8`: `h4_axis_reader_candidate.cpp` (300 B / 320 B) — Lector de ejes analógicos para tarea de cámara `0x001FA840`.
+  2. `0x001B4664`: `h4_view_init_candidate.cpp` (396 B / 440 B) — Inicializador del espacio de trabajo de cámara `g_ViewWork` (`0x00447E88`).
+  3. `0x001B481C`: `h4_view_subobjects_candidate.cpp` (156 B / 164 B) — Inicialización de subobjetos y enlace del modelo `player/pl01_00.bam`.
+  4. `0x001B45C8`: `h4_map_player_actor_candidate.cpp` (24 B / 24 B) — Acceso al actor del jugador desde `g_MapMainWork`.
+  5. `0x001B45E0`: `h4_map_entity_pool_candidate.cpp` (100 B / 132 B) — Reset y liberación del pool de 24 entidades (`g_MapEntities`).
+  6. `0x001B4A54`: `h4_player_transform_candidate.cpp` (284 B / 288 B) — Actualización de visibilidad y transformación 3D del actor del jugador.
+  7. `0x001B4B74`: `h4_map_dispatch_candidate.cpp` (32 B / 36 B) — Despacho de triggers de mapa hacia `0x003BA944`.
+  8. `0x001B4B98`: `h4_script_vm_handler_candidate.cpp` (36 B / 36 B) — Handler anidado de opcode 11 de script VM.
   *(El helper de división `0x002C615C` queda verificado offline en 633 casos directos y 1.982 casos de composición de callers; se mantiene experimental en el repositorio).*
 
 - **Compuertas offline:**
   - Todas las funciones compiladas con Clang ARMv6K cumplen la alineación de 4 bytes e interworking ARM (bit 0 en cero).
   - Paquete IPS round-trip verificado sobre la base compuesta H3 (`code.h3-final.bin`, SHA-256 `af2bc749364703ac11d1b663527a1ea339c571e14f89e0aa4e919c58f71436d8`).
-  - Imagen final integrada: `code.h4-final.bin` (SHA-256: `db36bea481fd35a4434b83d53da61b1a9cad08d4060fc8c68ff21c675c79af58`).
-  - Parche IPS: `code.h4-final.ips` (SHA-256: `9ef1c650c3699ad409a9b39cfbd74e2633b68e310eafcf328b83dc1d77f77992`).
+  - Imagen final integrada: `code.h4-final.bin` (SHA-256: `3e0e4ae440cce5e3644f3f8c19f69806bbfd81fee4e285723bd6979625e37dca`).
+  - Parche IPS: `code.h4-final.ips` (SHA-256: `5e57674af13b5403ad1b43ed795439044df83ea164e2ecd23a31b8ca0f7a8e3b`, 633 registros).
 
 - **Verificación runtime autónoma pareada (Azahar GDB stub):**
   - Ejecución en Shinjuku Station — Underground (guardado slot 0, SHA-256 `6d8d15c90a270e993c057f906e0714a62f9c6260b04713f2a789c475e69d22e9`).
+  - Inyección activa de deflexión analógica (`--field-axis-output 0.5,0.0`) y corrida neutral verificadas.
   - 250 callbacks del field manager (`0x00208CE8`) verificados con cero diferencias en registros de entrada o argumentos de contexto.
   - Sonda live en `0x0027FBC8` interceptada desde la tarea de cámara `0x001FA94C` con retorno y deflectores idénticos.
   - Prefijo de 368 bytes (`0x170`) del espacio de cámara (`g_ViewWork` en `0x004BCCD0`) idéntico entre original y parche en el inicio, tras la sonda de cámara y en el tick 249.
@@ -96,6 +100,6 @@ The passive trace requested above has now been completed in both paired profiles
 ## Pendientes y cierre
 
 - Recorrido integrado validado: **sí**.
-- Lógica del alcance reconstruida: **sí** (subsistemas de inicialización de mapa, pool de entidades, espacio de trabajo de cámara y lectura de ejes).
+- Lógica del alcance reconstruida: **sí** (subsistemas de inicialización de mapa, pool de entidades, espacio de trabajo de cámara, lectura de ejes, actualización de transformación y visibilidad del actor de jugador, despacho de triggers y handler de script VM).
 - Revisión independiente: aprobada en [`h4-autonomous-exploration-verify-review.md`](../agent-work/h4-autonomous-exploration-verify-review.md).
 - Estado final del hito: **CERRADO (2026-10-30)**.
