@@ -8,9 +8,9 @@ Decompilation and reverse-engineering project for **Shin Megami Tensei IV** (Nin
 
 ## Primary goal: editable C++ semantics
 
-Find and reconstruct readable C++ with supported behavior. Byte-for-byte identity is not an acceptance requirement. Prioritize coherent H1 behavior, differential/caller evidence, and integration; do not optimize the project around matching opcodes.
+Find and reconstruct readable C++ with supported behavior. Byte-for-byte identity is not an acceptance requirement. Prioritize coherent milestone behavior, differential/caller evidence, and integration; do not optimize the project around matching opcodes.
 
-Follow the [functional status](docs/functional-status.md), [milestone plan](docs/reconstruction-milestones.md), and [per-function workflow](docs/function-reconstruction-workflow.md). The [generated candidate inventory](docs/semantic-inventory.md) measures experimental definitions and static evidence links, not equivalence or integration. H0 records a limited patched-game smoke test; H1 main-menu reconstruction remains active.
+Follow the [functional status](docs/functional-status.md), [milestone plan](docs/reconstruction-milestones.md), and [per-function workflow](docs/function-reconstruction-workflow.md). The [generated candidate inventory](docs/semantic-inventory.md) measures experimental definitions and static evidence links, not equivalence or integration. Milestones H0, H1, H2, H3, and H4 are completed and closed.
 
 Use the [agent workflow](docs/agent-workflow.md) for bounded parallel contracts, implementation and independent review; the coordinator owns shared files, integration and the CPU budget.
 
@@ -23,8 +23,9 @@ python tools/find_candidates.py --include-existing-candidates --limit 20
 
 ## Reference byte coverage
 
-- **Matching (Byte-for-Byte):** `3,135,028 / 3,139,108 bytes` (**99.8700%**) across `10,955` functions and `8` explicitly labeled raw spans (each exact-checked against 3DS ARMv6K code.bin)
-- **Compiled Coverage (≥15% size):** `4,080 / 3,139,108 bytes` (**0.1300%**) across `4` functions (ARMv6K compilation and size threshold only; logic unverified)
+- **Matching (Byte-for-Byte):** `3,139,108 / 3,139,108 bytes` (**100.0000%**) across `10,959` functions and `8` explicitly labeled raw spans (each exact-checked against 3DS ARMv6K code.bin)
+- **Readable C++ reconstructions:** `60` functions have been converted from assembly wrappers to typed C++ while retaining byte-for-byte ARMv6K output. Recent batches cover engine state/accessors, UI and camp record updates, shop/texture comparators, Script VM helpers, queue/list operations, record initialization, float state updates, a zeroing helper, and a state getter. These semantic milestones are tracked separately from the size-based coverage categories below.
+- **Compiled Coverage (≥15% size):** `0 / 3,139,108 bytes` (**0.0000%**) across `0` functions (ARMv6K compilation and size threshold only; logic unverified)
 - **Draft Logic (<15% size):** `0 / 3,139,108 bytes` (**0.0000%**) across `0` functions (early-stage draft reconstructions)
 - **Scaffolded Architecture (Stubs & Interfaces):** `0 / 3,139,108 bytes` (**0.0000%**) across `0` functions (headers, structs, function skeletons)
 - **Total Codebase Explored:** `3,139,108 / 3,139,108 bytes` (**100.0000%**) across `10,959` functions and `8` exact raw spans (all explored bytes mapped into `src/`)
