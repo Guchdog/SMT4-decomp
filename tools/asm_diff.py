@@ -522,6 +522,11 @@ def main() -> None:
     parser.add_argument("--code", type=Path, default=Path("extracted/exefs/code.bin"))
     parser.add_argument("--root", type=Path, default=Path("."))
     args = parser.parse_args()
+    args.root = args.root.resolve()
+    if not args.code.is_absolute():
+        args.code = args.root / args.code
+    if not args.functions.is_absolute():
+        args.functions = args.root / args.functions
 
     if not args.addr and not args.name:
         parser.error("Specify --addr or --name to diff.")
@@ -568,6 +573,8 @@ def main() -> None:
     for line in res["diff_lines"]:
         print(line)
     print("-" * 75)
+    if not res["exact_match"]:
+        sys.exit(1)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,31 @@
+# Navi query 0x002C01B0 / shared reader 0x002C01B8
+
+Static ARM reconstruction against pinned `extracted/exefs/code.bin` SHA-256 `1f98884fe997af22e032a14c51a46c872b05b0e079a0f29e307b0e059cfaa558`. Ledger gives 0x002C01B0 an 8-byte span, SHA-256 `ceb230c58b98d8ee04d526d24930922c0780ccfb741494345ebbfc07c4732cbf`; it is `mov r2,#0; mov r0,r0`, falling through into separately ledgered 212-byte 0x002C01B8, SHA-256 `ac6584debfca0c9188c0218af7c8abe390c234d261c32cf7732eeb492609bb3b` (includes final literal). Both are ARM-state word-aligned entry points. No build/test/emulator/private profile/save access or guest write was performed.
+
+## ABI and instruction-level behavior
+
+0x002C01B0 takes nullable output pointers in r0/r1, unconditionally sets r2=0 and falls through; r3 and flags are scratch. Shared 0x002C01B8 additionally accepts r2 as a 32-bit mode. It loads the direct absolute state address 0x004E3CD4 into r3, saves r4-r6 on stack (12 bytes), loads byte +0x10 and unsigned halfword +0 unconditionally before determining success, and returns with `BX lr` and r0 equal to 0/1. This global address is the 0x20-byte state block immediately after 31 counters ending at 0x004E3CD3; it is not a pointer slot or the axis-reader 0x004E3C28/48 sample block. No helper calls or explicit writes to the state occur in the reader itself except through caller-provided output pointers if those alias it.
+
+| Shared mode r2 | Further reads and success predicate |
+|---|---|
+| 0 | byte +0x10 equals exactly 1. |
+| 1 | byte +0x10 equals 1 and byte +0x11 equals 0. |
+| 2 | byte +0x10 equals 1 and byte +0x12 equals 1. The +0x12 byte is read conditionally when +0x10 equals 1; +0x11 was already read on the nonzero-mode path. |
+| 3 | byte +0x10 equals 0 and byte +0x11 equals 1. |
+| any other value | failure, including 0xFFFFFFFF; the initial +0/+0x10 and nonzero-mode +0x11 reads still occur. |
+
+On success it stores zero-extended state halfword +0 as a **32-bit word** to r0 when nonnull, then, if r1 is nonnull, reads halfword state +2 and stores it as a 32-bit word to r1. Returns 1 even if either or both outputs are null. On failure neither output is written and return is 0. On success the second halfword read occurs after the first output store; equal/overlapping output pointers or pointers aliasing global state can change the second read or overwrite the first result. A faithful model must preserve order and width rather than assume disjoint buffers. No output-range/alignment check or memory-fault handling is present; invalid pointers, stack mapping, partial writes and ARM unaligned semantics require independent differential/fault work. r4-r6 are restored on ordinary return; no complete ABI/FPSCR/fault equivalence is claimed. There is no physical input, player or coordinate-unit meaning established by these raw halfwords or modes.
+
+## Direct caller inventory and Navi use
+
+Aligned ARM B/BL immediate scan across `[0x00100000,0x003FE624)` finds exactly two direct BLs to the mode-0 entry: 0x0039B5CC (containing function 0x0039B58C) and 0x0039C980 (0x0039C944). In 0x0039C944, object word +0x10 bit 0x20000 must be set at 0x0039C968 to reach the call; clear branches directly to threshold at 0x0039C9E8. With bit set, 0x0039C978..80 sets r0=SP+4, r1=SP, calls 0x002C01B0. Return zero branches to 0x0039C99C. Return nonzero then reads `[0x0049F91C+0x18]`; zero branches to coordinate path 0x0039CA9C, nonzero to 0x0039C99C. Coordinate path converts the two stack words to float and uses them in differences divided by 0x0039FA68 result. These are mode-0 result uses, not proof of natural active input or a valid finite divisor.
+
+0x0039B5CC passes r0=SP+0xC and r1=SP+8 under its own object bit 0x20000 gate. Success plus shared global byte +0x18 zero enters 0x0039B708; otherwise it checks the separate mode-3 wrapper at 0x0039B5EC. Both callers use aligned stack-local words and test the query's r0 before their successful-output path; the state can be modified asynchronously, and no coherent simultaneous snapshot is guaranteed by this reader.
+
+The same scan finds direct BLs to shared 0x002C01B8 at 0x00107D2C, 0x00107DFC, 0x00107E5C, 0x00107E8C (all within 0x0010797C); 0x001C185C (0x001C0F14); 0x002C016C (0x002C0144); and 0x00317464, 0x00317684, 0x00317760 (0x003171F8). Tail B instructions 0x003C3038 and 0x003C3040 also target 0x002C01B8; their entry points 0x003C3034 and 0x003C303C set mode 1 and 3 respectively. These are separate entry contracts, not callers of 0x002C01B0. The scan may include embedded data and does not exhaust indirect, Thumb, computed or externally installed callbacks; local instruction context supports the listed sites.
+
+## Runtime boundary and next work
+
+The accepted run-006/007 trigger evidence is kept separate from this static model: the declared reviewed artifact documents ordered hits at 0x00399D60, 0x0039C944, 0x0039C968 and 0x0039C9E8 with the entry bit clear, not a hit at 0x0039C980 or a query result. Its threshold outcome/divisor calls were not captured. The declared reports do not provide a separate independently reviewed run-007 query hit, so no claim about a query return or outputs in that run follows here. A bit-set route remains static possibility, not a natural-event observation. The failure of a prior no-hit probe cannot establish absence of that path globally.
+
+A candidate could later combine a mode-0 entry and original state reader only after independent review of the shared entry boundary, state producer/lifetime, concurrent behavior and pointer/fault domain. Offline original-vs-compiled tests should cover modes 0/1/2/3/invalid, flag bytes other than 0/1, both/one/null outputs, unsigned halfword extremes, output aliases (including state aliases), store ordering and negative controls, plus the real Navi caller composition with bit clear/set and global gate cases. Explicitly test return and all affected bytes, including failure/no-write, ABI and fault handling. A passive separately assigned capture at 0x0039C980 and 0x0039C984 with state bytes, validated stack pointers, result and actual thread/order could establish one query invocation; do not inject guest state or infer H4 movement or interaction from a hit.

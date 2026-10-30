@@ -198,133 +198,78 @@ __attribute__((naked)) void PlayLog_func_00194dbc(void* arg) {
 // ---------------------------------------------------------------------------
 
 //
-__attribute__((naked)) void titleConfig_func_002f4ca0(void*) {
-    asm volatile(
-        ".arm\n"
-        "push {r4, r5, r6, lr}\n"
-        "sub sp, sp, #0x20\n"
-        "ldr r1, [pc, #0x190]\n"
-        "add r0, pc, #0x190\n"
-        "mov r0, r0\n"
-        "mov r6, #1\n"
-        "mov r1, #0x100\n"
-        "mov r3, #0x158\n"
-        "mov r2, #0\n"
-        "mov r0, r1\n"
-        "str r6, [sp]\n"
-        ".word 0xebff3fac\n" // bl 0x002c4b84
-        "ldr r1, [pc, #0x1a0]\n"
-        "ldr r3, [pc, #0x1a4]\n"
-        "ldr r2, [pc, #0x19c]\n"
-        "mov r4, r0\n"
-        "str r0, [r1]\n"
-        "add r0, sp, #4\n"
-        "str r3, [sp]\n"
-        "stm r0, {r2, r4}\n"
-        "mov r3, #0\n"
-        "mov r2, r3\n"
-        "mov r1, #2\n"
-        "add r0, pc, #0x180\n"
-        ".word 0xebff431c\n" // bl 0x002c5978: AsdTask_CreateCalc
-        "mov r1, r0\n"
-        "ldr r0, [pc, #0x188]\n"
-        "mov r5, #0\n"
-        "str r1, [r4]\n"
-        "stm sp, {r0, r5}\n"
-        "str r1, [sp, #0xc]\n"
-        "mov r3, r5\n"
-        "mov r2, r5\n"
-        "mov r1, #0xe6\n"
-        "add r0, pc, #0x16c\n"
-        "str r5, [sp, #8]\n"
-        ".word 0xebff3fb2\n" // bl 0x002c4c00: AsdTask_CreateDraw
-        "add r0, r4, #0x3c\n"
-        ".word 0xebff3981\n" // bl 0x002c3344: UiSpriteGroup_Init
-        "str r5, [sp, #0x14]\n"
-        "str r5, [sp, #0x18]\n"
-        "ldr r1, [pc, #0x160]\n"
-        "mov r3, #0\n"
-        "mov r2, #0x18\n"
-        "add r0, r4, #0x3c\n"
-        "str r5, [sp, #0xc]\n"
-        "str r5, [sp, #0x10]\n"
-        "str r5, [sp]\n"
-        "str r5, [sp, #4]\n"
-        "str r5, [sp, #8]\n"
-        ".word 0xebff3962\n" // bl 0x002c32f8: UiSpriteGroup_BindTable
-        "mov r0, #0xc9\n"
-        "str r0, [sp]\n"
-        "vldr s0, [pc, #0x134]\n"
-        "add r3, r4, #0x3c\n"
-        "mov r2, #0\n"
-        "mov r1, #0x2f\n"
-        "add r0, r4, #0x5c\n"
-        ".word 0xebff2367\n" // bl 0x002bdb2c: UiAnimSprite_Setup
-        "mov r2, #0\n"
-        "mov r1, r2\n"
-        "add r0, r4, #0x5c\n"
-        ".word 0xebff2348\n" // bl 0x002bdac0: UiAnimSprite_SetAnim
-        "mov r2, #3\n"
-        "mov r3, #1\n"
-        "mov r1, r2\n"
-        "add r0, r4, #0xe8\n"
-        "stm sp, {r5, r6}\n"
-        ".word 0xebfeab4c\n" // bl 0x0029fae8: UiListCursor_Setup
-        "str r5, [r4, #8]\n"
-        "mvn r1, #0\n"
-        "add r0, r4, #0x1c\n"
-        "strh r5, [r4, #0x1a]\n"
-        ".word 0xebfe280b\n" // bl 0x0027edf8: UiConfig_FillPair
-        "mov r2, #0\n"
-        "add r1, r4, #0x14c\n"
-        "add r0, pc, #0xdc\n"
-        "strh r5, [r4, #0x24]\n"
-        ".word 0xebfe8a49\n" // bl 0x00297704: ScriptVm_LoadTable
-        "mov r2, #0\n"
-        "add r1, r4, #0x150\n"
-        "add r0, pc, #0xd8\n"
-        ".word 0xebfe8a45\n" // bl 0x00297704: ScriptVm_LoadTable
-        "mov r0, #0x99\n"
-        ".word 0xebff0f60\n" // bl 0x002b8b78: Sound_PlaySE
-        "ldr r1, [pc, #0xd8]\n"
-        "mov r0, #0\n"
-        ".word 0xebfea8c2\n" // bl 0x0029f10c: Camp_SetFadeColor
-        "ldr r5, [pc, #0xd0]\n"
-        "ldrb r0, [r5]\n"
-        ".word 0xebff5758\n" // bl 0x002cab70: Config_MapByteToIndexA
-        "str r0, [r4, #0x28]\n"
-        "ldrb r0, [r5, #1]\n"
-        ".word 0xebfca960\n" // bl 0x0021f39c: Config_MapByteToIndexB
-        "str r0, [r4, #0x2c]\n"
-        "ldrb r0, [r5, #2]\n"
-        ".word 0xebffaf33\n" // bl 0x002e0af4: Config_MapByteToIndexC
-        "str r0, [r4, #0x30]\n"
-        "add sp, sp, #0x20\n"
-        "mov r1, r5\n"
-        "add r2, r4, #0x34\n"
-        "pop {r4, r5, r6, lr}\n"
-        "mov r0, r2\n"
-        ".word 0xeafee33f\n" // b 0x002adb40: UiConfig_CopyPair
-        ".word 0x0000033d\n"
-        ".asciz \"c:\\\\SMT4\\\\XRD686\\\\sdds4\\\\program\\\\title\\\\titleConfig.cpp\"\n"
-        ".balign 4, 0\n"
-        ".word 0x0044e2d0\n"
-        ".word 0x002caef0\n"
-        ".word 0x001ea928\n"
-        ".asciz \"TITLE_CONFIG_MAIN\"\n"
-        ".balign 4, 0\n"
-        ".word 0x002cafd0\n"
-        ".asciz \"TITLE_CONFIG D\"\n"
-        ".balign 4, 0\n"
-        ".word 0x00407ec6\n"
-        ".word 0x3f800000\n"
-        ".asciz \"camp/config.bf\"\n"
-        ".balign 4, 0\n"
-        ".asciz \"camp/config.mbm\"\n"
-        ".balign 4, 0\n"
-        ".word 0x323232ff\n"
-        ".word 0x0044e0f8\n"
-    );
+void titleConfig_func_002f4ca0(void*) {
+    using Calc = void (*)(void*);
+    using Alloc = void* (*)(u32, u32, u32, u32, u32);
+    using CreateCalc = void* (*)(const char*, u32, u32, u32, Calc, Calc, void*);
+    using CreateDraw = void* (*)(const char*, u32, u32, u32, Calc, u32, u32, void*);
+    using GroupInit = void (*)(void*);
+    using GroupBind = void (*)(void*, u32, u32, u32, u32, u32, u32, u32,
+                               u32, u32, u32);
+    using SpriteSetup = void (*)(void*, u32, s32, void*, u32, f32);
+    using SpriteSetAnim = void (*)(void*, s32, s32);
+    using CursorSetup = void (*)(void*, s32, s32, s32, s32, s32);
+    using LoadTable = u32 (*)(const char*, void*, u32);
+    using SoundPlay = void (*)(s32);
+    using ResetUi = void (*)(u32, u32);
+    using FillPair = void (*)(void*, u32);
+    using Mapper = u32 (*)(u8);
+    using CopyPair = u32 (*)(void*, const void*);
+
+    constexpr std::uintptr_t kWorkGlobal = 0x0044E2D0;
+    constexpr std::uintptr_t kConfigGlobal = 0x0044E0F8;
+    constexpr std::uintptr_t kSpriteTable = 0x00407EC6;
+    constexpr std::uintptr_t kCalcTaskName = 0x0042AB78;
+    constexpr std::uintptr_t kDrawTaskName = 0x0042AB8C;
+    constexpr std::uintptr_t kConfigScriptName = 0x0042AB9C;
+    constexpr std::uintptr_t kConfigMessageName = 0x0042ABAC;
+
+    auto** const work_global = reinterpret_cast<TitleConfigWork**>(kWorkGlobal);
+    auto* const work = static_cast<TitleConfigWork*>(
+        reinterpret_cast<Alloc>(0x002C4B84)(0x100, 0x100, 0, 0x158, 1));
+    *work_global = work;
+
+    auto* const calc_task = reinterpret_cast<CreateCalc>(0x002C5978)(
+        reinterpret_cast<const char*>(kCalcTaskName), 2, 0, 0,
+        reinterpret_cast<Calc>(0x001EA928),
+        reinterpret_cast<Calc>(0x002CAEF0), work);
+    work->calc_task = calc_task;
+    (void)reinterpret_cast<CreateDraw>(0x002C4C00)(
+        reinterpret_cast<const char*>(kDrawTaskName), 0xE6, 0, 0,
+        reinterpret_cast<Calc>(0x002CAFD0), 0, 0, calc_task);
+
+    auto* const group = &work->sprite_group;
+    reinterpret_cast<GroupInit>(0x002C3344)(group);
+    reinterpret_cast<GroupBind>(0x002C32F8)(group, kSpriteTable, 0x18,
+                                            0, 0, 0, 0, 0, 0, 0, 0);
+    auto* const sprite = &work->sprite;
+    reinterpret_cast<SpriteSetup>(0x002BDB2C)(sprite, 0x2F, 0, group, 0xC9, 1.0f);
+    reinterpret_cast<SpriteSetAnim>(0x002BDAC0)(sprite, 0, 0);
+    reinterpret_cast<CursorSetup>(0x0029FAE8)(&work->list_cursor, 3, 3, 1, 0, 1);
+
+    work->field_08 = 0;
+    work->field_1a = 0;
+    reinterpret_cast<FillPair>(0x0027EDF8)(&work->field_1c, 0xFFFFFFFF);
+    work->field_24 = 0;
+    (void)reinterpret_cast<LoadTable>(0x00297704)(
+        reinterpret_cast<const char*>(kConfigScriptName), &work->script_bf, 0);
+    (void)reinterpret_cast<LoadTable>(0x00297704)(
+        reinterpret_cast<const char*>(kConfigMessageName), &work->msg_mbm, 0);
+    reinterpret_cast<SoundPlay>(0x002B8B78)(0x99);
+    reinterpret_cast<ResetUi>(0x0029F10C)(0, 0x323232FF);
+
+    auto* const config = reinterpret_cast<const u8*>(kConfigGlobal);
+    work->field_28 = reinterpret_cast<Mapper>(0x002CAB70)(config[0]);
+    work->field_2c = reinterpret_cast<Mapper>(0x0021F39C)(config[1]);
+    work->field_30 = reinterpret_cast<Mapper>(0x002E0AF4)(config[2]);
+
+    // The header's frozen declaration is void, but the original tail-branch
+    // exposes this helper's result in r0. Preserve that ABI-visible value.
+    const u32 copy_result =
+        reinterpret_cast<CopyPair>(0x002ADB40)(&work->field_34, config);
+    asm volatile("mov r0, %0" : : "r"(copy_result) : "r0");
+    // Keep this replacement within the original 572-byte in-place slot.
+    asm volatile("nop\n\tnop\n\tnop");
 }
 
 // ---------------------------------------------------------------------------

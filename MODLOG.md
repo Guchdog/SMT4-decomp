@@ -892,3 +892,240 @@ definitions plus four prefix/control helpers), all statically linked to tests,
 with 155 differential-shaped checks. The matching old aggregate of 169 is a
 numeric coincidence, not reconciliation. Full regression is pending. No
 production, ROM, or matching-ledger changes; no commit or push.
+
+## 2026-10-24 — Safer and clearer editable-source workflow
+
+Fixed analyzer regeneration so it writes review proposals and `ledger_diff.json`
+to ignored `build/analysis/`, with the Python API read-only by default. Curated
+config targets are protected, and a changed heuristic function size no longer
+inherits a matching claim. Running the real CLI reported 619 removed proposals,
+one addition, and 15 size changes; both curated CSV hashes remained unchanged.
+An explicit attempt to write into `config/` was rejected.
+
+Fixed `asm_diff.py` to fail its process on mismatches, compile failures, or missing
+symbols, and resolve relative input paths against `--root`. Added regression
+coverage for these exit codes and analysis preservation/boundary drift.
+
+Added a generated semantic inventory that separates 169 address-named candidate
+symbols from four prefix/helper symbols across 61 translation units. Static test
+and report associations remain distinct from executed differential evidence,
+integration, and runtime acceptance. Earlier aggregate totals remain historical
+rather than being silently reinterpreted as this inventory.
+
+Moved current delivery guidance to `docs/functional-status.md` and linked it from
+the README generator, preserving the functional roadmap on regeneration. H1
+integration remains the active delivery goal. The CMake regression now indexes
+its object files once rather than scanning the build tree twice per function;
+it still checks every matching function.
+
+Validation on this checkout:
+
+- Full suite: 315 tests in 310.584 seconds, OK with four skips. Three require
+  `aes_keys.txt`; the fourth requires the configured decrypted CCI/RomFS index.
+- Forced ARM build: 190/190 translation units succeeded.
+- Exact audit: 10,959 functions and eight raw spans (484 bytes), zero matching
+  or compilation failures.
+- `python tools/progress.py --write`: succeeded; README functional links retained.
+- `git diff --check`: passed.
+
+No production game sources, matching ledger, or private game inputs changed.
+No new Azahar runtime validation was performed for this tooling batch.
+
+## 2026-10-24 — Parallel ARM compilation
+
+The Python bulk build now schedules independent translation units with a bounded
+thread pool, defaulting to the logical CPUs available to the process. `--jobs N`
+/ `-j N` selects a worker count; one job remains supported. Results and failure
+messages retain source order, and each TU keeps its own object, dependency file,
+and cache manifest. The CLI reports worker count, elapsed time, compiled objects,
+and up-to-date objects.
+
+Fixed `--tu` to use the same nested object path and dependency cache as the bulk
+build. Compiler subprocesses now run from the supplied repository root, so
+repository-relative assembly inputs also work when invoking the helper from
+another checkout. Compiler flags and object-cache identity are unchanged.
+
+Local forced-build measurements on the i7-4770K (4 cores / 8 logical CPUs):
+
+- Previous serial builder: 190 objects in 40.034 seconds.
+- Eight workers: 190 objects in 10.321 seconds, about 3.88x faster.
+- Four workers: 190 objects in 12.190 seconds.
+- Both parallel runs reproduced all 190 complete object-file hashes from the
+  serial run. A final CLI forced build passed in 10.48 seconds, with the same
+  190 object hashes. These are local measurements, not a general speed guarantee.
+
+Validation: 319 tests in 296.199 seconds, OK with the same four unavailable
+private-fixture skips. This includes worker-overlap/failure/path regression tests,
+cache invalidation, the full ARM build and CMake object checks. The separate exact
+byte audit verified 10,959 functions and eight raw spans with zero failures.
+A real `--tu` compile invoked from outside the checkout succeeded and produced a
+reusable manifest. `git diff --check` passed. No game sources or private inputs
+changed. Verification/emulation remains a separate stage from parallel compilation.
+
+## 2026-10-24 — Semantic reconstruction becomes the primary goal
+
+Added project instructions in the semantic checkout and the reference checkout:
+recover readable, editable C++ with supported behavior; identical ARM bytes are
+optional diagnostic evidence, not the acceptance gate. The historical exact-only
+night-shift plan is explicitly superseded. README generation now leads with this
+objective and labels the byte table as reference coverage.
+
+`tools/find_candidates.py` defaults to semantic discovery. It searches mapped
+assembly as well as other function statuses, admits call-bearing functions, and
+uses H1 priorities from `config/reconstruction.json`. It skips already written
+address-named experimental C++ unless `--include-existing-candidates` is selected;
+those entries are queued for validation/integration without claiming equivalence.
+The conservative leaf API and explicit `--mode leaf` remain available for triage.
+New and integration queues were generated under ignored
+`build/semantic-equivalence/`. The H1 state callback at 0x001E989C and its scoped
+dependencies lead the queue; internal labels are not invented as ledger entries.
+
+Updated the functional/per-function workflow so byte differences do not cause a
+semantic rejection or a compiler-opcode search. Reference labels remain truthful.
+Removed tests' fixed requirement that all 10,959 implementations be byte-identical;
+they still verify every entry explicitly labeled matching, and retain ledger
+coverage/integrity checks. No production game source or original ledger changed.
+
+Validation: 13 focused discovery, legacy-leaf, verifier, and README checks passed.
+The wider run exercised 324 tests in 300.240 seconds: four private-fixture skips,
+with one newly edited reporting assertion failing because it omitted raw-span
+bytes. Corrected that assertion; the affected full-repository reporting check
+passed on its targeted rerun (65.851 seconds). All remaining regression checks
+passed in the wider run. README/PROGRESS regeneration and `git diff --check`
+passed. This changes priority and discovery, not the completion status of H1.
+
+## 2026-10-25 — Bounded agent workflow for semantic reconstruction
+
+Added `docs/agent-workflow.md`, coordinator instructions in both checkouts, a
+dependency-aware H1 board, and task/handoff templates. One coordinator assigns
+up to three scoped workers for contracts, implementation, and independent review;
+only the integrator changes shared interfaces, promotes source, runs canonical
+batch validation, and owns the runtime profile. The eight-job compiler allowance
+is shared across workers. Each task/run has separate output paths and frozen
+inputs, including shared instructions and policy files.
+
+Added `tools/agent_workflow.py` to check ownership, dependencies and resource
+budgets, list ready work, prepare hashed briefs, and check handoff provenance.
+Draft preparation neither claims nor dispatches work. The checker rejects stale
+inputs, scope changes, unowned submitted files, other-run reports, and malformed
+command records. These checks do not prove command execution or semantic
+equivalence; independent review and scoped runtime evidence remain required.
+
+The initial queued wave covers the track binding capture contract, independent
+TBB/caller review, and the alpha helper at 0x0029BDB4. Follow-on runtime, caller,
+promotion and menu-slice tasks have explicit dependencies. No H1 implementation
+was dispatched or marked accepted while creating this workflow.
+
+Two independent subagents reviewed workflow design and validation. Their findings
+about implicit instruction-file leases, command result types and board collection
+types were fixed with focused regression coverage. Validation: 26 workflow,
+semantic discovery, legacy discovery and README-generation checks passed in
+0.423 seconds; the real board check and `git diff --check` passed. A draft brief
+was generated under ignored `build/agent-work/`. No game source, private input,
+or curated function ledger changed in this workflow batch.
+
+## 2026-10-26 — H2 config pair helpers
+
+Promoted `UiConfig_FillPair` to a readable production implementation in its
+24-byte slot. Its unsigned C++ byte replication is followed by two explicit ARM
+word stores, preserving the target access width for callers that are only
+halfword-aligned. The ledger is `non_matching` because the first instruction is
+`uxtb` instead of the equivalent `and #0xff`. Independent review accepted the
+ordinary-memory contract; 4,096 helper cases, the combined callback/initializer
+matrix, and the State-9/10 offline caller composition passed.
+
+Changed `UiConfig_CopyPair` from a naked no-argument wrapper to a typed C++
+function and updated its shared and caller declarations. Its four ARM memory
+operations preserve the original load-load-store-store order, unaligned access
+behavior, and destination-in-`r0` return; the production object remains
+byte-identical and the ledger stays `matching`. The dedicated differential
+passed 545 cases, including overlap, all alignment residues, the H2 global, and
+the odd read-only `ERROR` literal; the wrong forward-copy control was detected.
+All five affected consumer TUs compiled separately.
+
+A static allocation-chain audit found the titleConfig workspace becomes
+0x80-aligned if normal allocation succeeds, while the no-fit path dereferences
+the allocator's zero result rather than returning a safe null. H2 remains open:
+the offline H2 image does not validate real input, editing, cancel/confirm,
+persistence, restart, or Azahar runtime behavior. No Azahar session or
+keyboard/mouse input was used in this batch.
+
+## 2026-10-26 — H2 touch-state getter
+
+Replaced the naked `UiTouch_GetRegionTouchState` wrapper with typed production
+C++. The helper compares the manager's signed active index with the caller's
+signed halfword handle and returns the raw state byte only on equality. Its
+44-byte compiled body differs from the original 40-byte span, so the exact ledger
+is `non_matching`; the H2 IPS image still contains the original helper. A
+589,824-case direct ARM differential and six focused tests passed, including a
+wrong-index control. The raw event meaning, callback timing and H2 runtime path
+remain open.
+
+## 2026-10-26 — H2 script-step dispatcher
+
+Replaced `script_vm_func_0019dfbc` with typed production C++ and updated its six
+assembly-caller declarations to `(void*) -> s32`. Its callback table dispatch and
+result branches match pinned ARM under explicit synthetic handler sequences.
+The 128-byte C++ body is larger than the 120-byte original, so the ledger is
+`non_matching`; the H2 IPS image still carries the original dispatcher. Six
+focused tests, five callback-sequence comparisons, an eight-call non-advancing
+bound, a wrong-result control, and seven private TU compiles passed. Actual
+script handlers and the meaning of state-2 results remain unresolved.
+
+## 2026-10-26 — H2 corrected final-image runtime
+
+The reviewed Thumb-corrected H2 image was compared manually against the original
+in isolated Azahar CLI profiles. The user reported that Audio Settings stays
+open, the initial slider positions match, B restores BGM and sound, A keeps
+BGM/SE/Voice edits for the session, BGM returns to its starting level after an
+app restart in both builds, and all three sliders clamp at both ends. The
+patched log confirms the staged IPS was applied; GDB/RPC were disabled. The
+runtime record and independent review accept these observations as partial
+runtime evidence. H2 remains open because guest `g_ConfigBytes[0..2]`, a matched
+input trace, exact option values and complete callback scheduling are not
+captured; SE/Voice restart persistence is untested. No whole-game equivalence
+claim is made. See `docs/agent-work/h2-manual-final-image-runtime.md` and its
+independent review.
+
+## 2026-10-26 — H2 runtime evidence route audit
+
+A read-only audit of the pinned Azahar 2126.2 interfaces found no currently
+approved route that both samples guest `g_ConfigBytes`/callback state and drives
+deterministic H2 input. The GDB/RSP path remains blocked by its wildcard bind,
+missing bounded memory-reader review and unresolved loopback policy; RPC is
+wildcard-bound and asynchronous; CemuHook touch is only a possible coordinate
+source and does not expose guest memory or logical buttons. The manual runtime
+comparison remains partial evidence. No emulator, network, debugger, firewall,
+profile or guest-memory action was taken. See
+`docs/agent-work/h2-safe-guest-state-capture-route.md`.
+## 2026-10-28 — H3 title load handoff closed
+
+The 120-byte `0x0030A9A4` C++ candidate passed the offline differential and
+state-7 caller composition, and the composed H1/H2/H3 image reached the known
+Shinjuku Station — Underground save in original and patched Azahar profiles.
+Empty-slot and cancellation paths matched. A fresh missing-save probe captured
+`r0=0` after the original open call at `0x002D8E60` and the state-7 failure
+marker in both profiles. Independent review confirms the internal result only;
+the screen capture failed, so no user-facing error is claimed. The original
+reader/validator remain dependencies. The supplied source save stayed
+151,088 bytes with its original SHA-256. H4 exploration is now active from this
+scene; see `docs/milestones/H3-load-from-title.md` and
+`docs/milestones/H4-exploration-minimum.md`.
+
+## 2026-10-30 — H2 nested callback final helper audit and independent review
+
+Completed and reviewed the static reconstruction audit of helper `0x00286928`
+and caller `0x00221168` in `docs/agent-work/h2-nested-callback-final-helper-audit.md`
+and `docs/agent-work/h2-nested-callback-final-helper-review.md`. Confirmed the
+six-argument caller contract (`r0=0x0028686C`, `r1=0x00296F60`, `r2=0x00289640`,
+`r3=6`, `[sp]=1`, `[sp+4]=0`) and register-preserving return in `0x00221168`.
+Disassembly of handler 8 wrapper `0x001A07CC` verified its wait-loop contract:
+callback return `r0=0` returns `2` (pending wait), while `r0!=0` advances
+instruction index `[task+0x18]` and returns `1`. Helper `0x00286928` evaluates
+lifecycle byte `[r5+8]` from context `[0x0043E188+4]`, returning `0` while
+`[r5+8]==3` (transition in progress) and `1` on states `4` and `5` (completion).
+The paired Azahar run-002 trace confirmed 100% execution parity (19/19
+checkpoints, 20 nested returns, 40 handler calls) across original and patched
+binaries before hitting observer-safety caps. Tasks
+`h2-nested-callback-final-helper-contract` and `h2-nested-callback-final-helper-review`
+were accepted on the H2 workflow board; provenance and handoff checks passed.

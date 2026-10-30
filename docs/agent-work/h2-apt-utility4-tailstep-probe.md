@@ -1,0 +1,9 @@
+# H2: sondeo de un paso del salto de cola
+
+El sondeo comprueba la imagen original fijada y se detiene una sola vez en `0x002C5638`. Selecciona el hilo informado por GDB, retira el breakpoint `Z0` y avanza una instrucción. La observación solo se considera completada si el mismo hilo llega a `0x002C0EFC` conservando LR y SP. El LR puede ser compatible con `0x00103E80`, pero no establece por sí solo el historial completo de llamadas.
+
+La inserción y retirada de `Z0` modifican temporalmente instrucciones guest; no son una observación de solo lectura. El runner reutiliza el aislamiento y la terminación del hijo, sin paquetes explícitos `M/P/X` ni entrada lógica. Si se pierde una respuesta al modificar un breakpoint o al avanzar, la terminación del proceso aislado es la contención; no se afirma restauración dentro de una sesión que no responda. Las 49 pruebas offline pasaron. No se ha ejecutado este sondeo en Azahar; requiere revisión independiente y nuevas puertas offline.
+
+Tras la primera revisión se exige `SIGTRAP` en ambas paradas y se añadieron pruebas de integración de la limpieza heredada ante respuestas perdidas al insertar el breakpoint y al avanzar. La suite ampliada pasó 51 pruebas offline. La pérdida de la respuesta de inserción sigue sin demostrar la retirada del breakpoint; el proceso aislado se termina. Falta la revisión de esta corrección.
+
+La segunda revisión señaló que desconectar antes de terminar el hijo podía reanudarlo con un breakpoint ambiguo. El runner base ahora intenta terminar y verificar el hijo antes de desconectar ante errores RSP o fallos al retirar el breakpoint; si no puede confirmar la terminación, mantiene el socket abierto para la limpieza exterior y registra el error. Las pruebas simuladas comprueban el orden para respuestas perdidas de `Z0`, `z0` y `s`; pasaron 54 pruebas offline. La restauración del breakpoint sigue sin afirmarse cuando falta una respuesta. Esta corrección requiere revisión independiente.

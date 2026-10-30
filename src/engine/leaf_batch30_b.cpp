@@ -357,9 +357,46 @@ extern "C" __attribute__((naked)) void ui_func_002b8adc() {
     asm volatile(".arm\n.inst 0xe92d4070\n.inst 0xe59f5058\n.inst 0xe5954000\n.inst 0xe3540000\n.inst 0x0a00000f\n.inst 0xe5940000\n.inst 0xebffe68d\n.inst 0xe3500000\n.inst 0x1a00000d\n.inst 0xe5d40008\n.inst 0xe3500000\n.inst 0x0a00000a\n.inst 0xe5950000\n.inst 0xe3500000\n.inst 0x0a000005\n.inst 0xe28000ec\n.inst 0xebffdd9f\n.inst 0xe5950000\n.inst 0xeb002e0d\n.inst 0xe3a00000\n.inst 0xe5850000\n.inst 0xe3a00000\n.inst 0xe8bd8070\n.inst 0xe3a00001\n.inst 0xe8bd8070\n.word 0x00447060\n");
 }
 
+static inline u32 h2_mode0_query_remainder(u32 dividend, u32 divisor) {
+    u32 remainder;
+    asm volatile(
+        "mov r0, %1\n"
+        "mov r1, %2\n"
+        "ldr r12, 1f\n"
+        "blx r12\n"
+        "b 2f\n"
+        ".balign 4\n"
+        "1: .word 0x002c6c10\n"
+        "2:\n"
+        "mov %0, r1\n"
+        : "=r"(remainder)
+        : "r"(dividend), "r"(divisor)
+        : "r0", "r1", "r2", "r3", "r12", "lr", "cc", "memory");
+    return remainder;
+}
+
 // DECOMP_FUNC(0x002b902c, 104)
-extern "C" __attribute__((naked)) void ui_func_002b902c() {
-    asm volatile(".arm\n.inst 0xe350001f\n.inst 0xe92d4010\n.inst 0x2a00000d\n.inst 0xe59f104c\n.inst 0xe5912008\n.inst 0xe3120001\n.inst 0x13a00000\n.inst 0x0a00000a\n.inst 0xe591200c\n.inst 0xe1500002\n.inst 0x9a000005\n.inst 0xe5911010\n.inst 0xe0400002\n.inst 0xeb0036ea\n.inst 0xe3510000\n.inst 0x03a00001\n.inst 0x0a000000\n.inst 0xe3a00000\n.inst 0xe8bd8010\n.inst 0xe59f2010\n.inst 0xe7920100\n.inst 0xe3500001\n.inst 0x1afffff0\n.inst 0xe8bd8010\n.word 0x004650a0\n.word 0x004e3c58\n");
+extern "C" s32 ui_func_002b902c(u32 id) {
+    if (id >= 0x1fu) {
+        return 0;
+    }
+
+    const u32 input_flags = *reinterpret_cast<const u32*>(0x004650A8u);
+    u32 counter = 0;
+    if ((input_flags & 1u) == 0) {
+        counter = *reinterpret_cast<const u32*>(0x004E3C58u + id * 4u);
+        if (counter == 1u) {
+            return 1;
+        }
+    }
+
+    const u32 threshold = *reinterpret_cast<const u32*>(0x004650ACu);
+    if (counter <= threshold) {
+        return 0;
+    }
+
+    const u32 selector = *reinterpret_cast<const u32*>(0x004650B0u);
+    return h2_mode0_query_remainder(counter - threshold, selector) == 0 ? 1 : 0;
 }
 
 // DECOMP_FUNC(0x002be4dc, 108)

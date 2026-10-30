@@ -1,0 +1,11 @@
+# H2 APT utility-4: observed caller context comparison
+
+The offline Unicorn comparison executes the original caller function from `0x00103E4C` through its return instruction at `0x00103EDC`. This includes setup before `BL 0x002C5624`, execution of the original bridge's `CMP`/global-byte store/tail `B` at `0x002C5638`, the in-place candidate at `0x002C0EFC`, and the caller continuation at `0x00103E84`. The earlier runtime probe observed candidate-entry LR `0x00103E84`; the offline trace confirms this static path and also records `r0=0x0044E3B0`, which the bridge loads from its literal before branching.
+
+The 40-byte candidate was compared against the pinned original and the reviewed composed H2 image (`acd8b2f35df08f225ca65b0fbf8aeef2dbbaa71171904e31c301e8bff6a51446`). Both bases passed 40 cases. Cases cover two seeds, five arbitrary wrapper returns, and four primary/secondary readiness outcomes. Assertions compare full caller return flow, `r4-r11`, restored SP, live stack, wrapper ABI and call trace, plus the entire initialized data segment after the caller's actual global stores. Candidate image hashes are `6f4196b5edac295adb56442e7b2c3fb6d40fc1f5793be6e8882fe590f7e10baf` from the original and `788530a1b1ad7d4f361228cbd0e4b87885b37606a8f3485c52e5390ae3223179` from the composed H2 base.
+
+The first harness run had an incorrect expected entry `r0` value and failed identically for original and candidate. Its trace exposed that the bridge supplies a global pointer, not the caller's earlier `1`; the expectation was corrected and the full comparison passed. This harness correction did not change the C++ or patch image bytes.
+
+The native caller and `0x002C5624` bridge execute from the pinned image. The APT wrapper and other non-APT callees are controlled hooks; the two readiness hooks supply selected return values. Therefore this establishes caller control flow and state only within those modeled dependency boundaries. IPC/service effects, unmodeled calls, Thumb or indirect callers, and Azahar runtime remain open. H2 remains open.
+
+See `build/agent-work/H2-semantic/h2-apt-utility4-observed-caller-context/run-001/context-002/report.json` and `unit-tests.txt` for the command, hashes and results. The initial rejected harness assertion is preserved under `context-001/report.json`.

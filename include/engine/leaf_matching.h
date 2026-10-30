@@ -426,7 +426,7 @@ u32 engine_func_002a17c0(const u8* p);
 u32 script_vm_func_002a704c(const u8* p);
 void engine_func_002a7fc4();
 void battle_func_002a84bc(u8* p);
-void ui_func_002adb40();
+u32 ui_func_002adb40(void* destination, const void* source);
 void script_vm_func_002bd9ec();
 
 u32 engine_func_00110c2c(u8* p, u32 v1, u32 v2);

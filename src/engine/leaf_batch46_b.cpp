@@ -12938,235 +12938,268 @@ extern "C" __attribute__((naked)) void ui_func_00228b30() {
 }
 
 // DECOMP_FUNC(0x001ea928, 1796)
-extern "C" __attribute__((naked)) void script_vm_func_001ea928() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x5ff0, 0xe92d, 0x6001, 0xe3a0\n"
-        ".hword 0x76d4, 0xe59f, 0xb6d4, 0xe59f\n"
-        ".hword 0x5000, 0xe597, 0x4005, 0xe1a0\n"
-        ".hword 0x0008, 0xe595, 0x0005, 0xe350\n"
-        ".hword 0xf100, 0x379f, 0x01a4, 0xea00\n"
-        ".hword 0xa964, 0x001e, 0xaa60, 0x001e\n"
-        ".hword 0xaf98, 0x001e, 0xafec, 0x001e\n"
-        ".hword 0xb004, 0x001e, 0x1000, 0xe3a0\n"
-        ".hword 0x002f, 0xe3a0, 0xeea1, 0xeb02\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x0199, 0x0a00, 0x005c, 0xe285\n"
-        ".hword 0x541a, 0xeb03, 0x0000, 0xe350\n"
-        ".hword 0x014c, 0x1595, 0x0000, 0x1350\n"
-        ".hword 0x0150, 0x1595, 0x0000, 0x1350\n"
-        ".hword 0x0191, 0x0a00, 0x101f, 0xe3a0\n"
-        ".hword 0x002f, 0xe3a0, 0x37c6, 0xeb03\n"
-        ".hword 0x01b4, 0xe1c5, 0x01ba, 0xe1d5\n"
-        ".hword 0x1020, 0xe3a0, 0x0001, 0xe280\n"
-        ".hword 0x01ba, 0xe1c5, 0x002f, 0xe3a0\n"
-        ".hword 0x37bf, 0xeb03, 0x01b6, 0xe1c5\n"
-        ".hword 0x01ba, 0xe1d5, 0x1021, 0xe3a0\n"
-        ".hword 0x0001, 0xe280, 0x01ba, 0xe1c5\n"
-        ".hword 0x002f, 0xe3a0, 0x37b8, 0xeb03\n"
-        ".hword 0x01b8, 0xe1c5, 0x01ba, 0xe1d5\n"
-        ".hword 0x0001, 0xe280, 0x01ba, 0xe1c5\n"
-        ".hword 0x4000, 0xe597, 0x00e8, 0xe284\n"
-        ".hword 0xd218, 0xeb02, 0x7000, 0xe1a0\n"
-        ".hword 0x00e8, 0xe284, 0xd20f, 0xeb02\n"
-        ".hword 0x4000, 0xe087, 0x1001, 0xe3a0\n"
-        ".hword 0x003a, 0xe3a0, 0x592a, 0xeb03\n"
-        ".hword 0xf000, 0xe320, 0xf000, 0xe320\n"
-        ".hword 0x591d, 0xeb03, 0x1204, 0xe064\n"
-        ".hword 0x1101, 0xe081, 0x0081, 0xe080\n"
-        ".hword 0x15dc, 0xe59f, 0x0016, 0xe280\n"
-        ".hword 0xd1b3, 0xeb02, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0xbda1, 0xeb01\n"
-        ".hword 0x0f53, 0xe285, 0x0003, 0xe890\n"
-        ".hword 0xb228, 0xeb02, 0x6008, 0xe5a5\n"
-        ".hword 0x014c, 0xe585, 0x0160, 0xea00\n"
-        ".hword 0x00e8, 0xe284, 0xd1fd, 0xeb02\n"
-        ".hword 0x6000, 0xe1a0, 0x00e8, 0xe284\n"
-        ".hword 0xd1f4, 0xeb02, 0x7000, 0xe086\n"
-        ".hword 0x1001, 0xe3a0, 0x003a, 0xe3a0\n"
-        ".hword 0x590f, 0xeb03, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0x5902, 0xeb03\n"
-        ".hword 0x6107, 0xe084, 0x01fc, 0xe1d4\n"
-        ".hword 0xa028, 0xe596, 0x0000, 0xe350\n"
-        ".hword 0x002b, 0xba00, 0xcb94, 0xeb02\n"
-        ".hword 0x0006, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x0005, 0x0a00, 0x1001, 0xe3a0\n"
-        ".hword 0x0009, 0xe3a0, 0x5b5b, 0xeb03\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x0021, 0x0a00, 0x0000, 0xe357\n"
-        ".hword 0x0004, 0x0a00, 0x0001, 0xe357\n"
-        ".hword 0x000a, 0x0a00, 0x0002, 0xe357\n"
-        ".hword 0x0019, 0x1a00, 0x0012, 0xea00\n"
-        ".hword 0xf000, 0xe320, 0x0032, 0xe3a0\n"
-        ".hword 0x0000, 0xe5cb, 0xf000, 0xe320\n"
-        ".hword 0x801c, 0xeb03, 0x0028, 0xe584\n"
-        ".hword 0xf000, 0xe320, 0x0010, 0xea00\n"
-        ".hword 0xf000, 0xe320, 0x0050, 0xe3a0\n"
-        ".hword 0x0001, 0xe5cb, 0xf000, 0xe320\n"
-        ".hword 0x0030, 0xe3a0, 0x0003, 0xe5cb\n"
-        ".hword 0x0001, 0xe5db, 0xd21c, 0xeb00\n"
-        ".hword 0x002c, 0xe584, 0xf000, 0xe320\n"
-        ".hword 0x0005, 0xea00, 0xf000, 0xe320\n"
-        ".hword 0x0050, 0xe3a0, 0x0002, 0xe5cb\n"
-        ".hword 0xf000, 0xe320, 0xd7ea, 0xeb03\n"
-        ".hword 0x0030, 0xe584, 0x04c4, 0xe59f\n"
-        ".hword 0x399b, 0xeb03, 0x8000, 0xe3a0\n"
-        ".hword 0x01fe, 0xe1d4, 0x9008, 0xe1a0\n"
-        ".hword 0xcb65, 0xeb02, 0x0001, 0xe350\n"
-        ".hword 0xf000, 0xe320, 0x0002, 0x0a00\n"
-        ".hword 0x0002, 0xe350, 0x0005, 0x0a00\n"
-        ".hword 0x0005, 0xea00, 0xf000, 0xe320\n"
-        ".hword 0xbd4b, 0xeb01, 0x0001, 0xe350\n"
-        ".hword 0xf000, 0xe320, 0x0000, 0xaa00\n"
-        ".hword 0x8001, 0xe3a0, 0x02f0, 0xe1d4\n"
-        ".hword 0xcb57, 0xeb02, 0x0001, 0xe350\n"
-        ".hword 0xf000, 0xe320, 0x0002, 0x0a00\n"
-        ".hword 0x0002, 0xe350, 0x0005, 0x0a00\n"
-        ".hword 0x0005, 0xea00, 0xf000, 0xe320\n"
-        ".hword 0xbd3d, 0xeb01, 0x0001, 0xe350\n"
-        ".hword 0xf000, 0xe320, 0x0000, 0xaa00\n"
-        ".hword 0x9001, 0xe3a0, 0x0000, 0xe358\n"
-        ".hword 0x0005, 0x1a00, 0x1000, 0xe3a0\n"
-        ".hword 0x0004, 0xe3a0, 0x5b13, 0xeb03\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x0008, 0x0a00, 0x0028, 0xe596\n"
-        ".hword 0x1000, 0xe3a0, 0x0001, 0xe240\n"
-        ".hword 0x0000, 0xe350, 0x0028, 0xe586\n"
-        ".hword 0x0000, 0xd3a0, 0x0028, 0xe586\n"
-        ".hword 0x0004, 0xe3a0, 0x000f, 0xea00\n"
-        ".hword 0x0000, 0xe359, 0x0005, 0x1a00\n"
-        ".hword 0x1000, 0xe3a0, 0x0003, 0xe3a0\n"
-        ".hword 0x5b02, 0xeb03, 0x0000, 0xe350\n"
-        ".hword 0xf000, 0xe320, 0x0009, 0x0a00\n"
-        ".hword 0x0028, 0xe596, 0x1000, 0xe3a0\n"
-        ".hword 0x0001, 0xe280, 0x000a, 0xe350\n"
-        ".hword 0x0028, 0xe586, 0x000a, 0xc3a0\n"
-        ".hword 0x0028, 0xe586, 0x0003, 0xe3a0\n"
-        ".hword 0x5af6, 0xeb03, 0x0016, 0xea00\n"
-        ".hword 0x02f2, 0xe1d4, 0xcb26, 0xeb02\n"
-        ".hword 0x0001, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x0001, 0x0a00, 0x0002, 0xe350\n"
-        ".hword 0x000f, 0x1a00, 0x1033, 0xe3a0\n"
-        ".hword 0x002f, 0xe3a0, 0x5293, 0xeb03\n"
-        ".hword 0x8000, 0xe1a0, 0xf000, 0xe320\n"
-        ".hword 0x623e, 0xebff, 0x9000, 0xe1a0\n"
-        ".hword 0x02f2, 0xe1d4, 0xc92f, 0xebff\n"
-        ".hword 0x1000, 0xe049, 0x000c, 0xe598\n"
-        ".hword 0x2101, 0xe081, 0x10f0, 0xe1d0\n"
-        ".hword 0x0082, 0xe1a0, 0x6d2a, 0xeb03\n"
-        ".hword 0x0028, 0xe586, 0x0028, 0xe594\n"
-        ".hword 0x4dbe, 0xeb00, 0x0000, 0xe5cb\n"
-        ".hword 0x002c, 0xe594, 0x800b, 0xe1a0\n"
-        ".hword 0xfec8, 0xebff, 0x0001, 0xe5c8\n"
-        ".hword 0x0030, 0xe594, 0xd1c7, 0xeb00\n"
-        ".hword 0x0002, 0xe5c8, 0x002c, 0xe594\n"
-        ".hword 0x9438, 0xeb00, 0x0003, 0xe5c8\n"
-        ".hword 0x0028, 0xe596, 0x000a, 0xe150\n"
-        ".hword 0x0028, 0x0a00, 0x6b5c, 0xeb03\n"
-        ".hword 0xf000, 0xe320, 0xf000, 0xe320\n"
-        ".hword 0xbce7, 0xeb01, 0x1000, 0xe1a0\n"
-        ".hword 0x2001, 0xe3a0, 0x0000, 0xe3a0\n"
-        ".hword 0xbcbb, 0xeb01, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0xbce0, 0xeb01\n"
-        ".hword 0x2001, 0xe3a0, 0x1000, 0xe1a0\n"
-        ".hword 0x0002, 0xe1a0, 0xbcb4, 0xeb01\n"
-        ".hword 0x0000, 0xe357, 0x0001, 0x1357\n"
-        ".hword 0x0002, 0x0a00, 0x0002, 0xe357\n"
-        ".hword 0x0005, 0x0a00, 0x00a6, 0xea00\n"
-        ".hword 0x02c8, 0xe59f, 0x391c, 0xeb03\n"
-        ".hword 0xf000, 0xe320, 0xf000, 0xe320\n"
-        ".hword 0x00a1, 0xea00, 0xf000, 0xe320\n"
-        ".hword 0x452a, 0xeb03, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0x548a, 0xeb03\n"
-        ".hword 0x0aa9, 0xed9f, 0x2000, 0xe1a0\n"
-        ".hword 0x12a0, 0xe59f, 0x0a40, 0xeef0\n"
-        ".hword 0x3002, 0xe3a0, 0x0000, 0xe3a0\n"
-        ".hword 0x541b, 0xeb03, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0x0092, 0xea00\n"
-        ".hword 0x1001, 0xe3a0, 0x00e8, 0xe285\n"
-        ".hword 0xd134, 0xeb02, 0x0000, 0xe350\n"
-        ".hword 0xf000, 0xe320, 0x0019, 0x0a00\n"
-        ".hword 0x0254, 0xe59f, 0x4000, 0xe590\n"
-        ".hword 0x00e8, 0xe284, 0xd127, 0xeb02\n"
-        ".hword 0x5000, 0xe1a0, 0x00e8, 0xe284\n"
-        ".hword 0xd11e, 0xeb02, 0x4000, 0xe085\n"
-        ".hword 0x1001, 0xe3a0, 0x003a, 0xe3a0\n"
-        ".hword 0x5839, 0xeb03, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0x582c, 0xeb03\n"
-        ".hword 0x1204, 0xe064, 0x1101, 0xe081\n"
-        ".hword 0x0081, 0xe080, 0x1218, 0xe59f\n"
-        ".hword 0x0016, 0xe280, 0xd0c2, 0xeb02\n"
-        ".hword 0xf000, 0xe320, 0xf000, 0xe320\n"
-        ".hword 0xbcb0, 0xeb01, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0x0072, 0xea00\n"
-        ".hword 0x91ec, 0xe59f, 0x7000, 0xe599\n"
-        ".hword 0x00e8, 0xe287, 0xd107, 0xeb02\n"
-        ".hword 0x6000, 0xe1a0, 0x4000, 0xe3a0\n"
-        ".hword 0x0006, 0xe154, 0x0005, 0x0a00\n"
-        ".hword 0x0084, 0xe087, 0x01f4, 0xe1d0\n"
-        ".hword 0xcaad, 0xeb02, 0x0006, 0xe350\n"
-        ".hword 0xf000, 0xe320, 0x0010, 0x0a00\n"
-        ".hword 0x4001, 0xe284, 0x0003, 0xe354\n"
-        ".hword 0xfff4, 0xbaff, 0x1001, 0xe3a0\n"
-        ".hword 0x0000, 0xe3a0, 0x5a71, 0xeb03\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x0025, 0x0a00, 0x019c, 0xe59f\n"
-        ".hword 0x44e0, 0xeb03, 0x0154, 0xe595\n"
-        ".hword 0x1002, 0xe3a0, 0xb0d6, 0xeb02\n"
-        ".hword 0x0002, 0xe3a0, 0xf000, 0xe320\n"
-        ".hword 0x0052, 0xea00, 0x0188, 0xe59f\n"
-        ".hword 0x38c9, 0xeb03, 0x1004, 0xe1a0\n"
-        ".hword 0x00e8, 0xe287, 0xcfd4, 0xeb02\n"
-        ".hword 0x4000, 0xe599, 0x00e8, 0xe284\n"
-        ".hword 0xd0ea, 0xeb02, 0x5000, 0xe1a0\n"
-        ".hword 0x00e8, 0xe284, 0xd0e1, 0xeb02\n"
-        ".hword 0x4000, 0xe085, 0x1001, 0xe3a0\n"
-        ".hword 0x003a, 0xe3a0, 0x57fc, 0xeb03\n"
-        ".hword 0xf000, 0xe320, 0xf000, 0xe320\n"
-        ".hword 0x57ef, 0xeb03, 0x1204, 0xe064\n"
-        ".hword 0x1101, 0xe081, 0x0081, 0xe080\n"
-        ".hword 0x1124, 0xe59f, 0x0016, 0xe280\n"
-        ".hword 0xd085, 0xeb02, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0xbc73, 0xeb01\n"
-        ".hword 0xf000, 0xe320, 0xf000, 0xe320\n"
-        ".hword 0x0035, 0xea00, 0x1001, 0xe3a0\n"
-        ".hword 0x0001, 0xe1a0, 0x5a45, 0xeb03\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x002f, 0x0a00, 0x00fc, 0xe59f\n"
-        ".hword 0x44b4, 0xeb03, 0x2000, 0xe3a0\n"
-        ".hword 0x1001, 0xe3a0, 0x005c, 0xe285\n"
-        ".hword 0x4ae0, 0xeb03, 0x1034, 0xe285\n"
-        ".hword 0x0008, 0xe1a0, 0x0afd, 0xeb03\n"
-        ".hword 0xf000, 0xe320, 0xf000, 0xe320\n"
-        ".hword 0x6ac5, 0xeb03, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0xbc50, 0xeb01\n"
-        ".hword 0x1000, 0xe1a0, 0x2001, 0xe3a0\n"
-        ".hword 0x0000, 0xe3a0, 0xbc24, 0xeb01\n"
-        ".hword 0xf000, 0xe320, 0xf000, 0xe320\n"
-        ".hword 0xbc49, 0xeb01, 0x2001, 0xe3a0\n"
-        ".hword 0x1000, 0xe1a0, 0x0002, 0xe1a0\n"
-        ".hword 0xbc1d, 0xeb01, 0x0003, 0xe3a0\n"
-        ".hword 0xf000, 0xe320, 0x0011, 0xea00\n"
-        ".hword 0x0154, 0xe595, 0xcc06, 0xebfe\n"
-        ".hword 0x0002, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x000d, 0x1a00, 0xb1b0, 0xeb02\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x0002, 0x0a00, 0x0001, 0xe350\n"
-        ".hword 0x6008, 0x0585, 0x0006, 0xea00\n"
-        ".hword 0x2000, 0xe3a0, 0x1001, 0xe3a0\n"
-        ".hword 0x005c, 0xe285, 0x4ab9, 0xeb03\n"
-        ".hword 0x0003, 0xe3a0, 0x6004, 0xe5cb\n"
-        ".hword 0x0008, 0xe585, 0x0000, 0xe3a0\n"
-        ".hword 0x9ff0, 0xe8bd, 0x005c, 0xe285\n"
-        ".hword 0x527e, 0xeb03, 0x0000, 0xe350\n"
-        ".hword 0x0004, 0x13a0, 0xfff8, 0x0aff\n"
-        ".hword 0xfff6, 0xeaff, 0x0000, 0xe3e0\n"
-        ".hword 0x9ff0, 0xe8bd, 0xe2d0, 0x0044\n"
-        ".hword 0xe0f8, 0x0044, 0x32ff, 0x3232\n"
-        ".hword 0x016d, 0x0100, 0xfdf4, 0x3f34\n"
-        ".hword 0x2712, 0x0000, 0x016c, 0x0100\n"
-        ".hword 0x016e, 0x0100\n"
-    );
+static constexpr u32 kWorkGlobal = 0x0044E2D0u;
+static constexpr u32 kConfig = 0x0044E0F8u;
+static constexpr u32 kTbbTouch = 0x0100016Cu;
+static constexpr u32 kTbbEdit = 0x0100016Du;
+static constexpr u32 kTbbExit = 0x0100016Eu;
+
+template <typename Result, typename... Args>
+static __attribute__((always_inline)) inline Result call(u32 address, Args... args) {
+    using Function = Result (*)(Args...);
+    return reinterpret_cast<Function>(address)(args...);
+}
+
+static __attribute__((always_inline)) inline u32* work_global() {
+    return reinterpret_cast<u32*>(kWorkGlobal);
+}
+
+static __attribute__((always_inline)) inline u8* config_bytes() {
+    return reinterpret_cast<u8*>(kConfig);
+}
+
+static __attribute__((always_inline)) inline u32* word(u32* work, u32 offset) {
+    return reinterpret_cast<u32*>(reinterpret_cast<u8*>(work) + offset);
+}
+
+static __attribute__((always_inline)) inline void display_row(u32* work, u32 row) {
+    const u32 scroll = call<u32>(0x0029F260u, work + 0x3A);
+    const u32 selected = call<u32>(0x0029F248u, work + 0x3A);
+    const u32 table = call<u32>(0x002C0EC4u, 0x3Au, 1u);
+    u32 payload = call<u32>(0x002C0E9Cu, table);
+    const u32 tbb_index = scroll + selected;
+    payload += 0x16u + tbb_index * 0x96u;
+    call<void>(0x0029F10Cu, payload, 0x323232FFu);
+}
+
+static __attribute__((always_inline)) inline void map_row_default(u32* work, u32 row) {
+    u8* config = config_bytes();
+    if (row == 0) {
+        config[0] = 0x32;
+        *word(work, 0x28) = call<u32>(0x002CAB70u, 0x32u);
+    } else if (row == 1) {
+        config[1] = 0x50;
+        config[3] = 0x30;
+        *word(work, 0x2C) = call<u32>(0x0021F39Cu, static_cast<u32>(config[1]));
+    } else if (row == 2) {
+        config[2] = 0x50;
+        *word(work, 0x30) = call<u32>(0x002E0AF4u, static_cast<u32>(config[2]));
+    }
+    call<void>(0x002B91C4u, kTbbEdit);
+}
+
+static __attribute__((always_inline)) inline void encode_live_values(u32* work) {
+    u8* config = config_bytes();
+    config[0] = static_cast<u8>(call<u32>(0x001FE3B8u, *word(work, 0x28)));
+    config[1] = static_cast<u8>(call<u32>(0x001EA7F0u, *word(work, 0x2C)));
+    config[2] = static_cast<u8>(call<u32>(0x0021F3F8u, *word(work, 0x30)));
+    config[3] = static_cast<u8>(call<u32>(0x0020FDC8u, *word(work, 0x2C)));
+}
+
+static __attribute__((always_inline)) inline void changed_value_effects(u32 row) {
+    call<void>(0x002C5A6Cu);
+    u32 value = call<u32>(0x0025A0A4u);
+    call<void>(0x0025A004u, 0u, value, 1u);
+    value = call<u32>(0x0025A0A4u);
+    call<void>(0x0025A004u, 1u, value, 1u);
+    if (row == 0 || row == 1) {
+        call<void>(0x002B91C4u, kTbbEdit);
+    } else if (row == 2) {
+        call<void>(0x002BC210u);
+        const u32 result = call<u32>(0x002BFF9Cu);
+        const float effect_parameter = *reinterpret_cast<const float*>(0x001EB01Cu);
+        call<void, u32, u32, u32, u32, float, float>(
+            0x002BFDFCu, 0u, 0x2712u, result, 2u, effect_parameter, effect_parameter);
+    }
+}
+
+static __attribute__((always_inline)) inline void changed_row_effects(u32* work) {
+    call<void>(0x002C5A6Cu);
+    u32 value = call<u32>(0x0025A0A4u);
+    call<void>(0x0025A004u, 0u, value, 1u);
+    value = call<u32>(0x0025A0A4u);
+    call<void>(0x0025A004u, 1u, value, 1u);
+    (void)work;
+}
+
+extern "C" s32 script_vm_func_001ea928(void* arg) {
+    // The registered callback receives a context word but resolves its state
+    // through the fixed global, matching the original's unused r0 input.
+    (void)arg;
+    u32* work = reinterpret_cast<u32*>(*work_global());
+    u8* config = config_bytes();
+    const u32 state = *word(work, 0x08);
+
+    if (state >= 5u) {
+        return 0;
+    }
+    if (state == 0u) {
+        if (call<s32>(0x002A63F8u, 0x2Fu, 0u) == 0) {
+            return 0;
+        }
+        if (call<s32>(0x002BF9F0u, reinterpret_cast<u8*>(work) + 0x5Cu) == 0 ||
+            *word(work, 0x14C) == 0 || *word(work, 0x150) == 0) {
+            return 0;
+        }
+        *reinterpret_cast<u16*>(reinterpret_cast<u8*>(work) + 0x14) =
+            static_cast<u16>(call<u32>(0x002B88C4u, 0x2Fu, 0x1Fu));
+        ++*reinterpret_cast<u16*>(reinterpret_cast<u8*>(work) + 0x1A);
+        *reinterpret_cast<u16*>(reinterpret_cast<u8*>(work) + 0x16) =
+            static_cast<u16>(call<u32>(0x002B88C4u, 0x2Fu, 0x20u));
+        ++*reinterpret_cast<u16*>(reinterpret_cast<u8*>(work) + 0x1A);
+        *reinterpret_cast<u16*>(reinterpret_cast<u8*>(work) + 0x18) =
+            static_cast<u16>(call<u32>(0x002B88C4u, 0x2Fu, 0x21u));
+        ++*reinterpret_cast<u16*>(reinterpret_cast<u8*>(work) + 0x1A);
+        display_row(work, 0);
+        call<void>(0x0025A0D0u);
+        const u32 script_result = call<u32>(0x002972F8u, *word(work, 0x14C), *word(work, 0x150));
+        *word(work, 0x08) = 1;
+        *word(work, 0x154) = script_result;
+        return 0;
+    }
+
+    if (state == 1u) {
+        const u32 scroll = call<u32>(0x0029F260u, work + 0x3A);
+        const u32 row = call<u32>(0x0029F248u, work + 0x3A);
+        const u32 selection = scroll + row;
+        const u32 selection_offset = selection * 4u + 0x28u;
+        u32* selected_value = word(work, selection_offset);
+        const u32 entry_value = *selected_value;
+
+        (void)call<u32>(0x002C0E9Cu,
+            call<u32>(0x002C0EC4u, 0x3Au, 1u));
+        const s16 row_handle = *reinterpret_cast<s16*>(reinterpret_cast<u8*>(work) + 0x1C);
+        if (row_handle >= 0) {
+            const s32 touch = call<s32>(0x0029D8FCu, row_handle);
+            if (touch == 6 || call<s32>(0x002C1830u, 9u, 1u) != 0) {
+                map_row_default(work, row);
+            }
+        }
+
+        bool decrement = false;
+        bool increment = false;
+        const s32 touch_dec = call<s32>(0x0029D8FCu,
+            *reinterpret_cast<s16*>(reinterpret_cast<u8*>(work) + 0x1E));
+        if (touch_dec == 1) {
+            decrement = call<s32>(0x0025A0B4u) < 1;
+        } else if (touch_dec == 2) {
+            decrement = true;
+        }
+        const s32 touch_inc = call<s32>(0x0029D8FCu,
+            *reinterpret_cast<s16*>(reinterpret_cast<u8*>(work) + 0x20));
+        if (touch_inc == 1) {
+            increment = call<s32>(0x0025A0B4u) < 1;
+        } else if (touch_inc == 2) {
+            increment = true;
+        }
+
+        if (!decrement) {
+            decrement = call<s32>(0x002C1830u, 4u, 0u) != 0;
+        }
+        if (decrement) {
+            if (*selected_value != 0u) {
+                --*selected_value;
+            }
+            call<void>(0x002C1830u, 4u, 0u);
+        } else if (!increment && call<s32>(0x002C1830u, 3u, 0u) != 0) {
+            increment = true;
+        }
+        if (increment) {
+            if (*selected_value < 10u) {
+                ++*selected_value;
+            }
+            call<void>(0x002C1830u, 3u, 0u);
+        }
+
+        if (!decrement && !increment) {
+            const s16 special_handle = *reinterpret_cast<s16*>(reinterpret_cast<u8*>(work) + 0x22);
+            const s32 special = call<s32>(0x0029D8FCu, special_handle);
+            if (special == 1 || special == 2) {
+                const u32* info = reinterpret_cast<const u32*>(
+                    call<u32>(0x002BF6D0u, 0x2Fu, 0x33u));
+                const s32 script_value = call<s32>(0x001C3588u);
+                const s32 current = call<s32>(0x001DD158u, special_handle);
+                // ARM performs these register operations modulo 2^32. Keep
+                // the helper arguments' bit patterns without signed overflow.
+                const u32 difference = static_cast<u32>(script_value) -
+                                       static_cast<u32>(current);
+                const u32 scale = difference * 5u;
+                const u32 doubled_scale = scale * 2u;
+                const s16 limit = *reinterpret_cast<const s16*>(info[3]);
+                *selected_value = call<u32>(0x002C615Cu,
+                    doubled_scale, static_cast<u32>(limit), scale);
+            }
+        }
+
+        encode_live_values(work);
+        if (*selected_value != entry_value) {
+            changed_value_effects(row);
+            return 0;
+        }
+
+        if (call<s32>(0x0029F278u, work + 0x3A, 1u) != 0) {
+            work = reinterpret_cast<u32*>(*work_global());
+            display_row(work, 0);
+            call<void>(0x0025A0D0u);
+            return 0;
+        }
+
+        const u32 selected_row = call<u32>(0x0029F248u,
+            reinterpret_cast<u8*>(work) + 0xE8u);
+        for (u32 handled = 0; handled < 3u; ++handled) {
+            if (handled == selected_row) {
+                continue;
+            }
+            const s16 handle = *reinterpret_cast<s16*>(reinterpret_cast<u8*>(work) + 0x14u + handled * 2u);
+            if (call<s32>(0x0029D8FCu, handle) == 6) {
+                call<void>(0x002B91C4u, kTbbTouch);
+                call<void>(0x0029EDFCu, reinterpret_cast<u8*>(work) + 0xE8u, handled);
+                work = reinterpret_cast<u32*>(*work_global());
+                display_row(work, 0);
+                call<void>(0x0025A0D0u);
+                return 0;
+            }
+        }
+
+        if (call<s32>(0x002C1830u, 0u, 1u) != 0) {
+            call<void>(0x002BC200u, kTbbEdit);
+            call<void>(0x002971E4u, *word(work, 0x154), 2u);
+            *word(work, 0x08) = 2;
+            return 0;
+        }
+        if (call<s32>(0x002C1830u, 1u, 1u) != 0) {
+            call<void>(0x002BC200u, kTbbExit);
+            call<void>(0x002BDAC0u, reinterpret_cast<u8*>(work) + 0x5Cu, 1u, 0u);
+            call<void>(0x002ADB40u, config, reinterpret_cast<u8*>(work) + 0x34u);
+            changed_row_effects(work);
+            *word(work, 0x08) = 3;
+            return 0;
+        }
+        return 0;
+    }
+
+    if (state == 2u) {
+        if (call<s32>(0x0019DFBCu, *word(work, 0x154)) != 2) {
+            return 0;
+        }
+        const s32 result = call<s32>(0x00297674u);
+        if (result == 1) {
+            *word(work, 0x08) = 1;
+        } else if (result == 0) {
+            call<void>(0x002BDAC0u, reinterpret_cast<u8*>(work) + 0x5Cu, 1u, 0u);
+            config[4] = 1;
+            *word(work, 0x08) = 3;
+        }
+        return 0;
+    }
+
+    if (state == 3u) {
+        if (call<s32>(0x002BF9F0u, reinterpret_cast<u8*>(work) + 0x5Cu) != 0) {
+            *word(work, 0x08) = 4;
+        }
+        return 0;
+    }
+    return -1;
 }
 
 // DECOMP_FUNC(0x003babb8, 1812)

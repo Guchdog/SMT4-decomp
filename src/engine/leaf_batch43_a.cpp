@@ -9518,253 +9518,199 @@ extern "C" __attribute__((naked)) void func_003e138c() {
 };
 
 // DECOMP_FUNC(0x002cafd0, 1932)
-extern "C" __attribute__((naked)) void ui_func_002cafd0() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4ff0, 0xe92d, 0x841c, 0xe59f\n"
-        ".hword 0x8b02, 0xed2d, 0xd05c, 0xe24d\n"
-        ".hword 0x6000, 0xe598, 0x005c, 0xe286\n"
-        ".hword 0xcfe3, 0xebff, 0xa000, 0xe1a0\n"
-        ".hword 0x005c, 0xe286, 0xcfdd, 0xebff\n"
-        ".hword 0x1008, 0xe596, 0x4000, 0xe3a0\n"
-        ".hword 0x9000, 0xe1a0, 0x0001, 0xe351\n"
-        ".hword 0x0000, 0xe3a0, 0x0048, 0xe58d\n"
-        ".hword 0x0001, 0x03a0, 0x0048, 0x058d\n"
-        ".hword 0x4008, 0xe58d, 0x4014, 0xe58d\n"
-        ".hword 0x4018, 0xe58d, 0x400c, 0xe58d\n"
-        ".hword 0x4010, 0xe58d, 0x401c, 0xe58d\n"
-        ".hword 0x4028, 0xe58d, 0x402c, 0xe58d\n"
-        ".hword 0x700b, 0xe3a0, 0x4020, 0xe58d\n"
-        ".hword 0x4024, 0xe58d, 0x4030, 0xe58d\n"
-        ".hword 0x403c, 0xe58d, 0x4040, 0xe58d\n"
-        ".hword 0x300a, 0xe1a0, 0x200c, 0xe3a0\n"
-        ".hword 0x102f, 0xe3a0, 0x0002, 0xe3a0\n"
-        ".hword 0x4034, 0xe58d, 0x4038, 0xe58d\n"
-        ".hword 0x4044, 0xe58d, 0x7004, 0xe58d\n"
-        ".hword 0x9000, 0xe58d, 0xd137, 0xebff\n"
-        ".hword 0x00e8, 0xe286, 0x5077, 0xebff\n"
-        ".hword 0x5000, 0xe1a0, 0x00e8, 0xe286\n"
-        ".hword 0x506e, 0xebff, 0x0005, 0xe080\n"
-        ".hword 0x0050, 0xe58d, 0x5000, 0xe3a0\n"
-        ".hword 0x00e8, 0xe286, 0x4a10, 0xebff\n"
-        ".hword 0x0000, 0xe350, 0x8ad4, 0xcddf\n"
-        ".hword 0x8ad4, 0xcd9f, 0x01a6, 0xda00\n"
-        ".hword 0x0048, 0xe59d, 0x0000, 0xe350\n"
-        ".hword 0x0000, 0xe3a0, 0x0008, 0xe58d\n"
-        ".hword 0x000c, 0xe58d, 0x0010, 0xe58d\n"
-        ".hword 0x0014, 0xe58d, 0x0018, 0xe58d\n"
-        ".hword 0x001c, 0xe58d, 0x0020, 0xe58d\n"
-        ".hword 0x0024, 0xe58d, 0x0028, 0xe58d\n"
-        ".hword 0x002c, 0xe58d, 0x0030, 0xe58d\n"
-        ".hword 0x8000, 0xe1a0, 0x0034, 0xe58d\n"
-        ".hword 0x0038, 0xe58d, 0x003c, 0xe58d\n"
-        ".hword 0x0040, 0xe58d, 0x0044, 0xe58d\n"
-        ".hword 0x02fc, 0xe59f, 0x0054, 0xe58d\n"
-        ".hword 0x0008, 0x0a00, 0x00e8, 0xe286\n"
-        ".hword 0x5052, 0xebff, 0x1005, 0xe080\n"
-        ".hword 0x0050, 0xe59d, 0x0000, 0xe151\n"
-        ".hword 0x0002, 0x1a00, 0x02dc, 0xe59f\n"
-        ".hword 0x8001, 0xe3a0, 0x0054, 0xe58d\n"
-        ".hword 0x101f, 0xe285, 0x002f, 0xe3a0\n"
-        ".hword 0xd164, 0xebff, 0x4000, 0xe1a0\n"
-        ".hword 0x00f8, 0xe1d0, 0x10fa, 0xe1d4\n"
-        ".hword 0x2000, 0xe3a0, 0x000a, 0xe080\n"
-        ".hword 0x004c, 0xe58d, 0x02b0, 0xe59f\n"
-        ".hword 0xb009, 0xe081, 0x1001, 0xe3a0\n"
-        ".hword 0x7000, 0xe590, 0x0006, 0xe3a0\n"
-        ".hword 0xeb8d, 0xebff, 0x7a01, 0xe287\n"
-        ".hword 0x7fab, 0xe287, 0x1000, 0xe597\n"
-        ".hword 0x2101, 0xe087, 0x1008, 0xe592\n"
-        ".hword 0x0008, 0xe582, 0x2018, 0xe5d7\n"
-        ".hword 0x0000, 0xe352, 0x0000, 0x0151\n"
-        ".hword 0x0003, 0x0a00, 0x101c, 0xe597\n"
-        ".hword 0xff31, 0xe12f, 0x0000, 0xe3a0\n"
-        ".hword 0x0018, 0xe5c7, 0x304c, 0xe59d\n"
-        ".hword 0x000b, 0xe3a0, 0x0000, 0xe358\n"
-        ".hword 0x0004, 0xe58d, 0xb000, 0xe58d\n"
-        ".hword 0x0095, 0x0a00, 0x200d, 0xe3a0\n"
-        ".hword 0x102f, 0xe3a0, 0x0002, 0xe3a0\n"
-        ".hword 0xd0a4, 0xebff, 0x0238, 0xe59f\n"
-        ".hword 0x2000, 0xe3a0, 0x1007, 0xe3a0\n"
-        ".hword 0x7000, 0xe590, 0x0006, 0xe3a0\n"
-        ".hword 0xeb6f, 0xebff, 0x7a01, 0xe287\n"
-        ".hword 0x7fab, 0xe287, 0x1000, 0xe597\n"
-        ".hword 0x2101, 0xe087, 0x1008, 0xe592\n"
-        ".hword 0x0008, 0xe582, 0x2018, 0xe5d7\n"
-        ".hword 0x0000, 0xe352, 0x0000, 0x0151\n"
-        ".hword 0x0003, 0x0a00, 0x101c, 0xe597\n"
-        ".hword 0xff31, 0xe12f, 0x0000, 0xe3a0\n"
-        ".hword 0x0018, 0xe5c7, 0x0010, 0xe3a0\n"
-        ".hword 0x0004, 0xe58d, 0x304c, 0xe59d\n"
-        ".hword 0x2001, 0xe3a0, 0x102f, 0xe3a0\n"
-        ".hword 0x0002, 0xe3a0, 0xb000, 0xe58d\n"
-        ".hword 0xd0c6, 0xebff, 0x0000, 0xe358\n"
-        ".hword 0xf000, 0xe320, 0x002f, 0x0a00\n"
-        ".hword 0x01bc, 0xe59f, 0x2000, 0xe3a0\n"
-        ".hword 0x1001, 0xe3a0, 0x7000, 0xe590\n"
-        ".hword 0x0006, 0xe3a0, 0xeb50, 0xebff\n"
-        ".hword 0x7a01, 0xe287, 0x7fab, 0xe287\n"
-        ".hword 0x1000, 0xe597, 0x2101, 0xe087\n"
-        ".hword 0x1008, 0xe592, 0x0008, 0xe582\n"
-        ".hword 0x2018, 0xe5d7, 0x0000, 0xe352\n"
-        ".hword 0x0000, 0x0151, 0x0003, 0x0a00\n"
-        ".hword 0x101c, 0xe597, 0xff31, 0xe12f\n"
-        ".hword 0x0000, 0xe3a0, 0x0018, 0xe5c7\n"
-        ".hword 0x0015, 0xe3a0, 0x2002, 0xe3a0\n"
-        ".hword 0x0004, 0xe58d, 0x304c, 0xe59d\n"
-        ".hword 0x102f, 0xe3a0, 0x0002, 0xe1a0\n"
-        ".hword 0xb000, 0xe58d, 0xd0a7, 0xebff\n"
-        ".hword 0x014c, 0xe59f, 0x2000, 0xe3a0\n"
-        ".hword 0x1007, 0xe3a0, 0x7000, 0xe590\n"
-        ".hword 0x0006, 0xe3a0, 0xeb34, 0xebff\n"
-        ".hword 0x7a01, 0xe287, 0x7fab, 0xe287\n"
-        ".hword 0x1000, 0xe597, 0x2101, 0xe087\n"
-        ".hword 0x1008, 0xe592, 0x0008, 0xe582\n"
-        ".hword 0x2018, 0xe5d7, 0x0000, 0xe352\n"
-        ".hword 0x0000, 0x0151, 0x0003, 0x0a00\n"
-        ".hword 0x101c, 0xe597, 0xff31, 0xe12f\n"
-        ".hword 0x0000, 0xe3a0, 0x0018, 0xe5c7\n"
-        ".hword 0x101a, 0xe3a0, 0x002f, 0xe3a0\n"
-        ".hword 0xd0ee, 0xebff, 0xb000, 0xe1a0\n"
-        ".hword 0x00e8, 0xe286, 0x4fcf, 0xebff\n"
-        ".hword 0x7005, 0xe080, 0x0003, 0xe357\n"
-        ".hword 0x001e, 0x2a00, 0x1001, 0xe3a0\n"
-        ".hword 0x003a, 0xe3a0, 0xd6e2, 0xebff\n"
-        ".hword 0xf000, 0xe320, 0xf000, 0xe320\n"
-        ".hword 0xd6d5, 0xebff, 0x1207, 0xe067\n"
-        ".hword 0x1101, 0xe081, 0x2081, 0xe080\n"
-        ".hword 0x10b8, 0xe28f, 0x0008, 0xe28d\n"
-        ".hword 0xcd27, 0xfaff, 0x00fa, 0xe1d4\n"
-        ".hword 0x10f8, 0xe1d4, 0x20fa, 0xe1db\n"
-        ".hword 0x30f8, 0xe1db, 0x1a48, 0xeeb0\n"
-        ".hword 0x0002, 0xe080, 0x1003, 0xe081\n"
-        ".hword 0x0009, 0xe080, 0x100a, 0xe081\n"
-        ".hword 0x0a90, 0xee00, 0x1a10, 0xee00\n"
-        ".hword 0x2a68, 0xeeb0, 0x1a41, 0xeef0\n"
-        ".hword 0x1054, 0xe59d, 0x2008, 0xe28d\n"
-        ".hword 0x0ae0, 0xeef8, 0x0ac0, 0xeeb8\n"
-        ".hword 0x0002, 0xe3a0, 0xccf4, 0xebff\n"
-        ".hword 0x00fa, 0xe1d4, 0x0000, 0xe358\n"
-        ".hword 0x0050, 0x0a00, 0xb01f, 0xe3a0\n"
-        ".hword 0x0009, 0xe080, 0x0801, 0xe88d\n"
-        ".hword 0x00f8, 0xe1d4, 0x201c, 0xe3a0\n"
-        ".hword 0x102f, 0xe3a0, 0x300a, 0xe080\n"
-        ".hword 0x0002, 0xe3a0, 0xd021, 0xebff\n"
-        ".hword 0x01fc, 0xe1d6, 0xf000, 0xe320\n"
-        ".hword 0x4945, 0xebff, 0x0001, 0xe350\n"
-        ".hword 0x0002, 0x1350, 0x0006, 0x1350\n"
-        ".hword 0x000e, 0x0a00, 0x0048, 0xea00\n"
-        ".hword 0xe2d0, 0x0044, 0x0000, 0x3f80\n"
-        ".hword 0x0000, 0x0000, 0x00ff, 0xe098\n"
-        ".hword 0x27ff, 0x72e0, 0xea00, 0x0044\n"
-        ".hword 0x7325, 0x0000, 0x200c, 0xe3a0\n"
-        ".hword 0x102f, 0xe3a0, 0x0002, 0xe3a0\n"
-        ".hword 0xd00e, 0xebff, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0xff66, 0xeaff\n"
-        ".hword 0x002c, 0xe51f, 0x2000, 0xe3a0\n"
-        ".hword 0x1001, 0xe3a0, 0x7000, 0xe590\n"
-        ".hword 0x0006, 0xe3a0, 0xead6, 0xebff\n"
-        ".hword 0x7a01, 0xe287, 0x7fab, 0xe287\n"
-        ".hword 0x1000, 0xe597, 0x2101, 0xe087\n"
-        ".hword 0x1008, 0xe592, 0x0008, 0xe582\n"
-        ".hword 0x2018, 0xe5d7, 0x0000, 0xe352\n"
-        ".hword 0x0000, 0x0151, 0x0003, 0x0a00\n"
-        ".hword 0x101c, 0xe597, 0xff31, 0xe12f\n"
-        ".hword 0x0000, 0xe3a0, 0x0018, 0xe5c7\n"
-        ".hword 0x00fa, 0xe1d4, 0x201d, 0xe3a0\n"
-        ".hword 0x102f, 0xe3a0, 0x0009, 0xe080\n"
-        ".hword 0x0801, 0xe88d, 0x00f8, 0xe1d4\n"
-        ".hword 0x300a, 0xe080, 0x0002, 0xe3a0\n"
-        ".hword 0xcfee, 0xebff, 0x00a0, 0xe51f\n"
-        ".hword 0x2000, 0xe3a0, 0x1007, 0xe3a0\n"
-        ".hword 0x7000, 0xe590, 0x0006, 0xe3a0\n"
-        ".hword 0xeab9, 0xebff, 0x7a01, 0xe287\n"
-        ".hword 0x7fab, 0xe287, 0x1000, 0xe597\n"
-        ".hword 0x2101, 0xe087, 0x1008, 0xe592\n"
-        ".hword 0x0008, 0xe582, 0x2018, 0xe5d7\n"
-        ".hword 0x0000, 0xe352, 0x0000, 0x0151\n"
-        ".hword 0x000d, 0x0a00, 0x101c, 0xe597\n"
-        ".hword 0xff31, 0xe12f, 0x0000, 0xe3a0\n"
-        ".hword 0x0018, 0xe5c7, 0x0008, 0xea00\n"
-        ".hword 0x0009, 0xe080, 0x101f, 0xe3a0\n"
-        ".hword 0x00f0, 0xe1cd, 0x00f8, 0xe1d4\n"
-        ".hword 0x201b, 0xe3a0, 0x102f, 0xe3a0\n"
-        ".hword 0x300a, 0xe080, 0x0002, 0xe3a0\n"
-        ".hword 0xcfd0, 0xebff, 0x00f8, 0xe1d4\n"
-        ".hword 0x10fa, 0xe1d4, 0x000a, 0xe080\n"
-        ".hword 0x004c, 0xe58d, 0x4009, 0xe081\n"
-        ".hword 0x00e8, 0xe286, 0x4f49, 0xebff\n"
-        ".hword 0x1148, 0xe51f, 0x0005, 0xe080\n"
-        ".hword 0x304c, 0xe59d, 0x0100, 0xe086\n"
-        ".hword 0x7000, 0xe591, 0xb028, 0xe590\n"
-        ".hword 0x001f, 0xe3a0, 0x0004, 0xe58d\n"
-        ".hword 0x2003, 0xe3a0, 0x102f, 0xe3a0\n"
-        ".hword 0x0002, 0xe3a0, 0x4000, 0xe58d\n"
-        ".hword 0xcffa, 0xebff, 0x105b, 0xe28b\n"
-        ".hword 0x002f, 0xe3a0, 0xd055, 0xebff\n"
-        ".hword 0x0000, 0xe358, 0xb000, 0xe1a0\n"
-        ".hword 0x0053, 0x0a00, 0x01fe, 0xe1d7\n"
-        ".hword 0x48db, 0xebff, 0x0001, 0xe350\n"
-        ".hword 0x0002, 0x1350, 0x0006, 0x1350\n"
-        ".hword 0x002a, 0x0a00, 0x001f, 0xe3a0\n"
-        ".hword 0x0004, 0xe58d, 0x304c, 0xe59d\n"
-        ".hword 0x2004, 0xe3a0, 0x102f, 0xe3a0\n"
-        ".hword 0x0002, 0xe3a0, 0x4000, 0xe58d\n"
-        ".hword 0xcfe6, 0xebff, 0x02f0, 0xe1d7\n"
-        ".hword 0x48cd, 0xebff, 0x0001, 0xe350\n"
-        ".hword 0x0002, 0x1350, 0x0006, 0x1350\n"
-        ".hword 0x0027, 0x0a00, 0x001f, 0xe3a0\n"
-        ".hword 0x0004, 0xe58d, 0x304c, 0xe59d\n"
-        ".hword 0x2006, 0xe3a0, 0x102f, 0xe3a0\n"
-        ".hword 0x0002, 0xe3a0, 0x4000, 0xe58d\n"
-        ".hword 0xcfd8, 0xebff, 0x02f2, 0xe1d7\n"
-        ".hword 0x48bf, 0xebff, 0x0001, 0xe350\n"
-        ".hword 0x0002, 0x1350, 0x0006, 0x1350\n"
-        ".hword 0x00fa, 0xe1db, 0x0023, 0x0a00\n"
-        ".hword 0x1004, 0xe080, 0x0029, 0xe3a0\n"
-        ".hword 0x0004, 0xe58d, 0x1000, 0xe58d\n"
-        ".hword 0x10f8, 0xe1db, 0x004c, 0xe59d\n"
-        ".hword 0x2031, 0xe3a0, 0x3000, 0xe081\n"
-        ".hword 0x102f, 0xe3a0, 0x0002, 0xe3a0\n"
-        ".hword 0xcf88, 0xebff, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0x003a, 0xea00\n"
-        ".hword 0x0015, 0xe3a0, 0x0004, 0xe58d\n"
-        ".hword 0x304c, 0xe59d, 0x2005, 0xe3a0\n"
-        ".hword 0x102f, 0xe3a0, 0x0002, 0xe3a0\n"
-        ".hword 0x4000, 0xe58d, 0xcfbb, 0xebff\n"
-        ".hword 0xf000, 0xe320, 0xf000, 0xe320\n"
-        ".hword 0xffd1, 0xeaff, 0x0015, 0xe3a0\n"
-        ".hword 0x0004, 0xe58d, 0x304c, 0xe59d\n"
-        ".hword 0x2007, 0xe3a0, 0x102f, 0xe3a0\n"
-        ".hword 0x0002, 0xe3a0, 0x4000, 0xe58d\n"
-        ".hword 0xcfb0, 0xebff, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0xffd4, 0xeaff\n"
-        ".hword 0x0004, 0xe080, 0x1029, 0xe3a0\n"
-        ".hword 0x00f0, 0xe1cd, 0x10f8, 0xe1db\n"
-        ".hword 0x004c, 0xe59d, 0x2032, 0xe3a0\n"
-        ".hword 0x3000, 0xe081, 0x102f, 0xe3a0\n"
-        ".hword 0x0002, 0xe3a0, 0xcf65, 0xebff\n"
-        ".hword 0xf000, 0xe320, 0xf000, 0xe320\n"
-        ".hword 0x0017, 0xea00, 0x701f, 0xe3a0\n"
-        ".hword 0x0090, 0xe88d, 0x304c, 0xe59d\n"
-        ".hword 0x2004, 0xe3a0, 0x102f, 0xe3a0\n"
-        ".hword 0x0002, 0xe3a0, 0xcf99, 0xebff\n"
-        ".hword 0x0090, 0xe88d, 0x304c, 0xe59d\n"
-        ".hword 0x2006, 0xe3a0, 0x102f, 0xe3a0\n"
-        ".hword 0x0002, 0xe3a0, 0xcf93, 0xebff\n"
-        ".hword 0x00fa, 0xe1db, 0x1029, 0xe3a0\n"
-        ".hword 0x2031, 0xe3a0, 0x0004, 0xe080\n"
-        ".hword 0x00f0, 0xe1cd, 0x10f8, 0xe1db\n"
-        ".hword 0x004c, 0xe59d, 0x3000, 0xe081\n"
-        ".hword 0x102f, 0xe3a0, 0x0002, 0xe3a0\n"
-        ".hword 0xcf4a, 0xebff, 0x5001, 0xe285\n"
-        ".hword 0x00e8, 0xe286, 0x4868, 0xebff\n"
-        ".hword 0x0005, 0xe150, 0xf000, 0xe320\n"
-        ".hword 0xfe58, 0xcaff, 0xd05c, 0xe28d\n"
-        ".hword 0x0000, 0xe3a0, 0x8b02, 0xecbd\n"
-        ".hword 0x8ff0, 0xe8bd\n"
-    );
-};
+using draw_u8 = u8;
+using draw_s16 = s16;
+using draw_s32 = s32;
+using draw_u32 = u32;
+using draw_f32 = f32;
+
+static constexpr draw_u32 kDrawWorkGlobal = 0x0044E2D0u;
+static constexpr draw_u32 kDrawRenderRootGlobal = 0x0044EA00u;
+static constexpr draw_u32 kDrawUnselectedColor = 0xE09800FFu;
+static constexpr draw_u32 kDrawSelectedColor = 0x72E027FFu;
+static constexpr char kDrawTextFormat[] = "%s";
+
+template <typename Result, typename... Args>
+static __attribute__((always_inline)) inline Result draw_call(draw_u32 address, Args... args) {
+    using Function = Result (*)(Args...);
+    return reinterpret_cast<Function>(address)(args...);
+}
+
+static __attribute__((always_inline)) inline draw_u32 draw_word(const void* base, draw_u32 offset) {
+    return *reinterpret_cast<const draw_u32*>(reinterpret_cast<const draw_u8*>(base) + offset);
+}
+
+static __attribute__((always_inline)) inline draw_s16 draw_half(const void* base, draw_u32 offset) {
+    return *reinterpret_cast<const draw_s16*>(reinterpret_cast<const draw_u8*>(base) + offset);
+}
+
+static __attribute__((always_inline)) inline void draw_panel(
+    draw_u32 node, draw_s32 x, draw_s32 y, draw_u32 aux, bool with_aux = true) {
+    if (with_aux) {
+        draw_call<void>(0x002BF558u, 2u, 0x2Fu, node, static_cast<draw_u32>(x),
+                        static_cast<draw_u32>(y), aux);
+    } else {
+        draw_call<void>(0x002BF460u, 2u, 0x2Fu, node, static_cast<draw_u32>(x),
+                        static_cast<draw_u32>(y), aux);
+    }
+}
+
+// Outlined so the repeated cache update has one body in the cave-tail probe.
+// Its calls and writes retain the original order at each former inline site.
+static __attribute__((noinline)) void title_config_draw_cached_render_update(
+    draw_u32 first, draw_u32 second) {
+    draw_u32* root = reinterpret_cast<draw_u32*>(kDrawRenderRootGlobal);
+    draw_u8* cache = reinterpret_cast<draw_u8*>(*root) + 0x1000u + 0x2ACu;
+    const draw_u32 value = draw_call<draw_u32>(0x002C5FA4u, 6u, first, second);
+    const draw_u32 index = *reinterpret_cast<draw_u32*>(cache);
+    draw_u32* slot = reinterpret_cast<draw_u32*>(cache + index * 4u + 8u);
+    const draw_u32 previous = *slot;
+    *slot = value;
+    if (cache[0x18] != 0 || previous != value) {
+        const draw_u32 callback = *reinterpret_cast<draw_u32*>(cache + 0x1Cu);
+        // The original indirect BLX receives the just-returned value in r0.
+        draw_call<void>(callback, value);
+        cache[0x18] = 0;
+    }
+}
+
+static __attribute__((always_inline)) inline bool draw_active_touch(draw_s32 result) {
+    return result == 1 || result == 2 || result == 6;
+}
+
+// The callback argument is ignored by the original; the normal return is r0=0.
+extern "C" __attribute__((noinline)) u32 ui_func_002cafd0(void* unused_callback_arg) {
+    (void)unused_callback_arg;
+    draw_u32* global = reinterpret_cast<draw_u32*>(kDrawWorkGlobal);
+    draw_u8* work = reinterpret_cast<draw_u8*>(*global);
+
+    const draw_s32 sprite_x = static_cast<draw_s32>(draw_call<draw_u32>(0x002BEF7Cu, work + 0x5Cu));
+    const draw_s32 sprite_y = static_cast<draw_s32>(draw_call<draw_u32>(0x002BEF70u, work + 0x5Cu));
+    const bool title_config_active = draw_word(work, 8) == 1;
+
+    draw_panel(0x0Cu, sprite_x, sprite_y, 0x0Bu, true);
+
+    const draw_s32 initial_scroll = draw_call<draw_s32>(0x0029F260u, work + 0xE8u);
+    const draw_s32 selected_row = draw_call<draw_s32>(0x0029F248u, work + 0xE8u);
+    const draw_s32 selected_absolute = selected_row + initial_scroll;
+    draw_s32 row = 0;
+    draw_s32 row_count = draw_call<draw_s32>(0x0029D8E4u, work + 0xE8u);
+
+    while (row_count > 0 && row < row_count) {
+        bool selected = false;
+        draw_u32 text_color = kDrawUnselectedColor;
+        if (title_config_active) {
+            const draw_s32 scroll_now = draw_call<draw_s32>(0x0029F260u, work + 0xE8u);
+            if (scroll_now + row == selected_absolute) {
+                selected = true;
+                text_color = kDrawSelectedColor;
+            }
+        }
+
+        draw_u8* row_node = reinterpret_cast<draw_u8*>(
+            draw_call<draw_u32>(0x002BF6D0u, 0x2Fu, static_cast<draw_u32>(row + 0x1F)));
+        const draw_s32 row_node_x = draw_half(row_node, 8);
+        const draw_s32 row_node_y = draw_half(row_node, 0xA);
+        const draw_s32 row_x = sprite_x + row_node_x;
+        const draw_s32 row_y = sprite_y + row_node_y;
+
+        title_config_draw_cached_render_update(1u, 0u);
+
+        if (selected) {
+            draw_panel(0x0Du, row_x, row_y, 0x0Bu, false);
+            title_config_draw_cached_render_update(7u, 0u);
+            draw_panel(1u, row_x, row_y, 0x10u, true);
+            title_config_draw_cached_render_update(1u, 0u);
+            draw_panel(2u, row_x, row_y, 0x15u, true);
+            title_config_draw_cached_render_update(7u, 0u);
+        } else {
+            draw_panel(0x0Cu, row_x, row_y, 0x0Bu, false);
+            title_config_draw_cached_render_update(7u, 0u);
+            draw_panel(1u, row_x, row_y, 0x10u, true);
+        }
+
+        draw_u8* heading_node = reinterpret_cast<draw_u8*>(
+            draw_call<draw_u32>(0x002BF6D0u, 0x2Fu, 0x1Au));
+        const draw_s32 absolute_index = draw_call<draw_s32>(0x0029F260u, work + 0xE8u) + row;
+        // Keep CMP/BHS semantics: this is an unsigned absolute-index guard.
+        if (static_cast<draw_u32>(absolute_index) < 3u) {
+            const draw_u32 table = draw_call<draw_u32>(0x002C0EC4u, 0x3Au, 1u);
+            const draw_u32 payload = draw_call<draw_u32>(0x002C0E9Cu, table);
+            const draw_u32 descriptor = payload + static_cast<draw_u32>(absolute_index) * 0x96u;
+            char formatted[0x5Cu];
+            draw_call<void>(0x002BE7FDu, formatted, kDrawTextFormat, descriptor);
+
+            const draw_s32 text_x = sprite_y + row_node_y + draw_half(heading_node, 0xA);
+            const draw_s32 text_y = sprite_x + row_node_x + draw_half(heading_node, 8);
+            draw_call<void>(0x002BE77Cu, 2u, text_color, formatted,
+                            static_cast<draw_f32>(text_y), static_cast<draw_f32>(text_x),
+                            0.0f, 0.0f, 1.0f);
+        }
+
+        if (!selected) {
+            draw_call<void>(0x002BF460u, 2u, 0x2Fu, 0x1Bu,
+                            static_cast<draw_u32>(row_x), static_cast<draw_u32>(row_y), 0x1Fu);
+        }
+
+        if (selected) {
+            draw_panel(0x1Cu, row_x, row_y, 0x1Fu, false);
+            const draw_s32 row_touch = draw_call<draw_s32>(0x0029D8FCu,
+                static_cast<draw_u32>(static_cast<draw_s32>(draw_half(work, 0x1C))));
+            if (draw_active_touch(row_touch)) {
+                title_config_draw_cached_render_update(1u, 0u);
+                draw_panel(0x1Du, row_x, row_y, 0x1Fu, false);
+                title_config_draw_cached_render_update(7u, 0u);
+            }
+        }
+
+        const draw_s32 option_index = draw_call<draw_s32>(0x0029F260u, work + 0xE8u) + row;
+        draw_u32* value_words = reinterpret_cast<draw_u32*>(work + 0x28u);
+        const draw_s32 option_value = static_cast<draw_s32>(value_words[option_index]);
+        draw_panel(3u, row_x, row_y, 0x1Fu, true);
+        draw_u8* value_node = reinterpret_cast<draw_u8*>(draw_call<draw_u32>(
+            0x002BF6D0u, 0x2Fu, static_cast<draw_u32>(option_value + 0x5B)));
+
+        if (selected) {
+            const draw_s32 decrement_touch = draw_call<draw_s32>(0x0029D8FCu,
+                static_cast<draw_u32>(static_cast<draw_s32>(draw_half(work, 0x1E))));
+            if (draw_active_touch(decrement_touch)) {
+                draw_panel(5u, row_x, row_y, 0x15u, true);
+            } else {
+                draw_panel(4u, row_x, row_y, 0x1Fu, true);
+            }
+            const draw_s32 increment_touch = draw_call<draw_s32>(0x0029D8FCu,
+                static_cast<draw_u32>(static_cast<draw_s32>(draw_half(work, 0x20))));
+            if (draw_active_touch(increment_touch)) {
+                draw_panel(7u, row_x, row_y, 0x15u, true);
+            } else {
+                draw_panel(6u, row_x, row_y, 0x1Fu, true);
+            }
+            const draw_s32 special_touch = draw_call<draw_s32>(0x0029D8FCu,
+                static_cast<draw_u32>(static_cast<draw_s32>(draw_half(work, 0x22))));
+            const draw_s32 node_y = draw_half(value_node, 0xA);
+            const draw_s32 node_x = draw_half(value_node, 8);
+            if (draw_active_touch(special_touch)) {
+                draw_call<void>(0x002BF460u, 2u, 0x2Fu, 0x32u,
+                                static_cast<draw_u32>(row_x + node_x),
+                                static_cast<draw_u32>(row_y + node_y), 0x29u);
+            } else {
+                draw_call<void>(0x002BF460u, 2u, 0x2Fu, 0x31u,
+                                static_cast<draw_u32>(row_x + node_x),
+                                static_cast<draw_u32>(row_y + node_y), 0x29u);
+            }
+        } else {
+            draw_panel(4u, row_x, row_y, 0x1Fu, true);
+            draw_panel(6u, row_x, row_y, 0x1Fu, true);
+            draw_call<void>(0x002BF460u, 2u, 0x2Fu, 0x31u,
+                            static_cast<draw_u32>(row_x + draw_half(value_node, 8)),
+                            static_cast<draw_u32>(row_y + draw_half(value_node, 0xA)), 0x29u);
+        }
+
+        ++row;
+        row_count = draw_call<draw_s32>(0x0029D8E4u, work + 0xE8u);
+    }
+    return 0;
+}
 
 // DECOMP_FUNC(0x002dda20, 1956)
 extern "C" __attribute__((naked)) void engine_func_002dda20() {

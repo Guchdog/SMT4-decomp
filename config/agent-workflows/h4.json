@@ -1,0 +1,3412 @@
+{
+  "schema_version": 1,
+  "batch": "H4-semantic",
+  "milestone": "H4",
+  "max_workers": 3,
+  "cpu_budget": 8,
+  "goal": "Map and reconstruct one controlled field-exploration route from the H3 Shinjuku Station checkpoint.",
+  "coordinator_owned_paths": [
+    "AGENTS.md",
+    "config",
+    "include",
+    "README.md",
+    "PROGRESS.md",
+    "MODLOG.md",
+    "docs/milestones",
+    "tools/agent_workflow.py"
+  ],
+  "tasks": [
+    {
+      "id": "h4-field-control-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Map the H3 Shinjuku checkpoint through field movement, camera, one interaction, and a zone transition; locate actual callers, state, inputs, and measurable checkpoints before choosing implementation functions.",
+      "depends_on": [],
+      "function_claims": [
+        "0x00208ce8",
+        "0x0027fbc8"
+      ],
+      "read_paths": [
+        "src/engine/map_field.cpp",
+        "include/engine/map_field.h",
+        "src/engine/map_runtime.cpp",
+        "include/engine/map_runtime.h",
+        "src/script/script_vm_extras.cpp",
+        "src/engine/leaf_batch41_a.cpp",
+        "docs/milestones/H3-load-from-title.md",
+        "docs/agent-work/h3-runtime-comparison.md",
+        "docs/agent-work/h3-load-contract.md",
+        "docs/emulator-testing-guide.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-field-control-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Identify the real player/camera work addresses and entry/caller chain from pinned evidence; distinguish confirmed fields from naming hypotheses.",
+        "Specify a reproducible input/action path for movement, camera response, an identified interaction, and one zone change, or state precisely which observation is missing.",
+        "Propose bounded original-versus-patched checkpoints, no-input/invalid-interaction controls, and offline-first/runtime gates. Do not imply H4 completion from static hits."
+      ],
+      "validation_plan": [
+        "Cross-check candidate callers, state fields, and branch targets against the pinned original and existing H3 runtime captures. Do not launch Azahar or change shared code/runners."
+      ]
+    },
+    {
+      "id": "h4-live-input-observation",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Identify the live field-camera query path from the verified H3 Shinjuku checkpoint and bound what the current paired runtime evidence proves.",
+      "depends_on": [
+        "h4-field-control-contract"
+      ],
+      "function_claims": [
+        "0x0027fbc8",
+        "0x001fa840",
+        "0x001d2f1c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h4-field-control-contract.md",
+        "docs/agent-work/h3-runtime-comparison.md",
+        "docs/milestones/H3-load-from-title.md",
+        "tools/h3_autonomous_verify.py",
+        "tools/h2_azahar_rsp_probe.py",
+        "docs/emulator-testing-guide.md"
+      ],
+      "write_paths": [
+        "tools/h3_autonomous_verify.py",
+        "docs/agent-work/h4-field-control-contract.md",
+        "docs/agent-work/h4-live-input-observation.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [
+        "Azahar private runtime, isolated profiles, GDB ports 54342/54343"
+      ],
+      "acceptance": [
+        "Preserve original and staged save hashes and profile integrity; no edits to the supplied save.",
+        "Use only paired, private Azahar runs after offline-first and interworking checks pass.",
+        "Capture the live axis helper and caller at matched boundaries, with neutral and opposite-sign controlled output probes against an unchanged view control.",
+        "State unresolved player movement, physical input, visual camera, interaction, and zone-transition behavior explicitly; do not claim H4 completion."
+      ],
+      "validation_plan": [
+        "Run the current H3 offline differential, final placement/interworking checker, and H3 caller-composition runner before each emulator launch.",
+        "Run paired original/patched observations with unique output paths and verify staged save/profile hashes afterward."
+      ]
+    },
+    {
+      "id": "h4-camera-path-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently audit the paired H4 camera-path evidence and its limits before using it as the contract for a candidate reconstruction.",
+      "depends_on": [
+        "h4-live-input-observation"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "docs/agent-work/h4-live-input-observation.md",
+        "docs/agent-work/h4-field-control-contract.md",
+        "docs/agent-work/h3-runtime-comparison.md",
+        "tools/h3_autonomous_verify.py",
+        "build/agent-work/H4-semantic/h4-live-input-observation/run-001/results/runtime-field-call-probes-049/report.json",
+        "build/agent-work/H4-semantic/h4-live-input-observation/run-001/results/runtime-axis-x-positive-050/report.json",
+        "build/agent-work/H4-semantic/h4-live-input-observation/run-001/results/runtime-axis-neutral-control-051/report.json",
+        "build/agent-work/H4-semantic/h4-live-input-observation/run-001/results/runtime-axis-x-negative-052/report.json"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-camera-path-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify the actual caller, helper ABI, applied output slots, neutral no-change control, opposite-sign view-state responses, and byte-for-byte original/patched view equality from raw reports.",
+        "Confirm save/profile integrity claims and identify any asynchronous event drift that limits broader equivalence claims.",
+        "Keep the review at memory-state evidence; do not infer physical controls, player movement, rendered camera, interaction, or destination transition."
+      ],
+      "validation_plan": [
+        "Read-only review; do not launch Azahar or edit the shared runner. Write only the assigned review report and return a structured handoff."
+      ]
+    },
+    {
+      "id": "h4-axis-reader-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Reconstruct the 320-byte 0x0027FBC8 analog-axis query as readable experimental C++ and validate its supported contract against the pinned original and the observed camera caller.",
+      "depends_on": [
+        "h4-live-input-observation"
+      ],
+      "function_claims": [
+        "0x0027fbc8"
+      ],
+      "read_paths": [
+        "src/engine/leaf_batch41_a.cpp",
+        "include/engine/map_runtime.h",
+        "src/engine/map_runtime.cpp",
+        "docs/agent-work/h4-field-control-contract.md",
+        "docs/agent-work/h4-live-input-observation.md",
+        "tools/build_check.py",
+        "tools/h2_azahar_rsp_probe.py",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h4_axis_reader_candidate.cpp",
+        "tools/h4_axis_reader_experiment.py",
+        "docs/function-records/0x0027fbc8.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover the argument, return, global-memory, output, VFP, and 0x0019FE4C dependency contract from the pinned original; distinguish untested domains.",
+        "Compile readable C++ outside production wrappers and compare against original execution with documented setup, directed branch/boundary cases, varied seeds, and a negative control.",
+        "Test the real mode-0 camera caller composition where supported; preserve original dependency behavior and do not use byte identity as acceptance.",
+        "Return a structured handoff with source/tool/report hashes, commands, first counterexample, ABI evidence, and remaining uncertainties."
+      ],
+      "validation_plan": [
+        "Use a dedicated differential runner and fresh output directory under build/agent-work/H4-semantic/h4-axis-reader-candidate/run-001; no canonical full build or emulator launch.",
+        "Include mode 0/1/2 and upper-bound negatives, calibration selector branches, null outputs, zero/nonzero threshold, signed halfword extremes, and denominator-zero behavior only where original execution safely supports it."
+      ],
+      "blocker": "Offline direct differential passes, but the actual camera caller composition, candidate-mutation control, and broader ABI/memory checks are incomplete.",
+      "unblock_condition": "Independent review validates the direct harness, then a bounded camera-caller composition and candidate-mutation/ABI controls pass or are documented as unsupported with a safe narrower claim."
+    },
+    {
+      "id": "h4-axis-reader-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently audit the experimental 0x0027FBC8 candidate and its 238-case direct differential evidence; identify harness flaws, semantic gaps, and the smallest safe next validation before promotion.",
+      "depends_on": [],
+      "function_claims": [],
+      "read_paths": [
+        "experiments/semantic_equivalence/h4_axis_reader_candidate.cpp",
+        "tools/h4_axis_reader_experiment.py",
+        "docs/function-records/0x0027fbc8.md",
+        "docs/agent-work/h4-field-control-contract.md",
+        "docs/agent-work/h4-camera-path-review.md",
+        "build/agent-work/H4-semantic/h4-axis-reader-candidate/run-001/handoff.json",
+        "build/agent-work/H4-semantic/h4-axis-reader-candidate/run-001/checks/seed-7/report.json",
+        "build/agent-work/H4-semantic/h4-axis-reader-candidate/run-001/checks/seed-20261028/report.json",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-axis-reader-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Independently verify frozen hashes, actual original call/ABI/dependency behavior, exact directed/random case coverage, comparison coverage, and negative-control interpretation.",
+        "Inspect readable C++ and harness for meaningful contract discrepancies, invalid assumptions, or missing cases; state evidence boundaries clearly.",
+        "Recommend promotion status and define the smallest useful next offline validation, including candidate-mutation and caller composition feasibility."
+      ],
+      "validation_plan": [
+        "Read-only candidate review; do not edit candidate or runner, run canonical builds, or launch Azahar. Write only the assigned review report and structured handoff."
+      ]
+    },
+    {
+      "id": "h4-axis-caller-sweep",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Classify the remaining static 0x0027FBC8 callers by exact ABI, branch guards, output consumers, and whether any can support the H4 field route; do not infer physical input or player movement from the call alone.",
+      "depends_on": [
+        "h4-live-input-observation"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "extracted/exefs/code.bin",
+        "config/functions.csv",
+        "src/engine/leaf_batch45_b.cpp",
+        "src/engine/leaf_batch46_a.cpp",
+        "src/engine/leaf_batch46_b.cpp",
+        "src/engine/leaf_batch46_c.cpp",
+        "src/ui/ui_blocks.cpp",
+        "src/script/script_vm_extras.cpp",
+        "docs/agent-work/h4-field-control-contract.md",
+        "docs/agent-work/h4-camera-path-review.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-axis-caller-sweep.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Enumerate all known direct callsites and containing functions from pinned original; document register/stack output ABI and local branches/thresholds at each call.",
+        "Cross-check reconstructed callers where readable C++ exists and classify evidenced usage versus unresolved context.",
+        "Recommend whether any other caller offers a bounded offline composition fixture; no runtime/emulator claim."
+      ],
+      "validation_plan": [
+        "Static-only recon; no candidate edits, shared runner edits, builds, or Azahar. Write only the assigned report and return structured handoff."
+      ]
+    },
+    {
+      "id": "h4-camera-candidate-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently validate the integrator-built offline composition of candidate 0x0027FBC8 at the observed field-camera BL 0x001FA948, its same-input candidate mutation control, and the evidence boundaries before updating the experimental record.",
+      "depends_on": [],
+      "function_claims": [],
+      "read_paths": [
+        "experiments/semantic_equivalence/h4_axis_reader_candidate.cpp",
+        "tools/h4_axis_reader_experiment.py",
+        "docs/function-records/0x0027fbc8.md",
+        "docs/agent-work/h4-axis-reader-review.md",
+        "docs/agent-work/h4-axis-caller-sweep.md",
+        "build/agent-work/H4-semantic/h4-axis-reader-candidate/integrator-checks/candidate-mutation.json",
+        "build/agent-work/H4-semantic/h4-axis-reader-candidate/integrator-checks/caller-1fa948.json",
+        "build/agent-work/H4-semantic/h4-axis-reader-candidate/integrator-checks/caller-1fe650.json",
+        "build/agent-work/H4-semantic/h4-axis-reader-candidate/integrator-checks/seed-42/report.json",
+        "build/agent-work/H4-semantic/h4-axis-reader-candidate/integrator-checks/seed-73/report.json",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-camera-candidate-composition-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify exact code image/candidate hashes, BL retargeting math and bounds, register/stack setup for the observed 0x001FA948 call, original 0x0019FE4C dependency, and stop boundary.",
+        "Check the six scenario outputs and equality, and verify that the same-input mutated candidate control is actually distinguished from original.",
+        "State whether this is a bounded field-camera callsite composition or whole 0x001FA840 composition; identify remaining ABI/memory/runtime limits and advise the candidate status."
+      ],
+      "validation_plan": [
+        "Read-only forensic review; do not edit candidate, harnesses, function record, or milestone documents; no build or Azahar. Write only the assigned review report and return a structured handoff."
+      ]
+    },
+    {
+      "id": "h4-reproducible-camera-composition",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Turn the successful one-off H4 0x001FA948 call-site Unicorn composition into a reproducible offline runner that records exact BL replacement provenance, full input cases, original dependency calls, outputs, and a same-input candidate mutation control.",
+      "depends_on": [
+        "h4-live-input-observation"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "extracted/exefs/code.bin",
+        "experiments/semantic_equivalence/h4_axis_reader_candidate.cpp",
+        "tools/h4_axis_reader_experiment.py",
+        "docs/function-records/0x0027fbc8.md",
+        "docs/agent-work/h4-camera-candidate-composition-review.md",
+        "docs/agent-work/h4-axis-caller-sweep.md"
+      ],
+      "write_paths": [
+        "tools/h4_axis_camera_composition.py"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Compile the frozen candidate and compare original versus candidate at 0x001FA948 through the documented 0x001FAA84 stop for neutral, both X signs, exact \u00c2\u00b10.5, and deadzone return-zero.",
+        "Record original and replacement BL words, candidate mapping, aligned/in-range displacement, helper relocations and observed stack/register setup in the output JSON.",
+        "Include a same-input candidate mutation control with the mutation bytes/hash and detected difference; keep mutation out of the candidate source.",
+        "Keep the scope bounded to the actual call-site window and state that full 0x001FA840 behavior, ABI write-set/FPSCR/fault, physical input, and rendered camera remain unproven."
+      ],
+      "validation_plan": [
+        "Run only this dedicated offline ARM/Unicorn runner into a fresh private build output; no canonical build or emulator. Preserve the shared candidate/source unchanged. Return handoff with script/report hashes and commands."
+      ]
+    },
+    {
+      "id": "h4-reproducible-camera-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the reproducible H4 camera call-site composition runner and its report, including exact replacement BL, relocation links, initialized fixture, six cases, and same-input mutation artifact.",
+      "depends_on": [],
+      "function_claims": [],
+      "read_paths": [
+        "tools/h4_axis_camera_composition.py",
+        "tools/h4_axis_reader_experiment.py",
+        "experiments/semantic_equivalence/h4_axis_reader_candidate.cpp",
+        "docs/function-records/0x0027fbc8.md",
+        "docs/agent-work/h4-camera-candidate-composition-review.md",
+        "build/agent-work/H4-semantic/h4-reproducible-camera-composition/run-001/handoff.json",
+        "build/agent-work/H4-semantic/h4-reproducible-camera-composition/run-001/checks/camera-002/report.json",
+        "build/agent-work/H4-semantic/h4-reproducible-camera-composition/run-001/checks/camera-002/mutant.bin",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-reproducible-camera-composition-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify all frozen hashes and report provenance; independently recalculate original/replacement call words and both helper BL relocations from the pinned image/object/candidate mapping.",
+        "Check the fixture registers/stack/global calibration and all six case outputs, stop boundary, view-byte comparison, and original helper execution.",
+        "Verify mutation bytes/hash and same-input mismatch; state bounded scope and remaining whole-task/ABI/runtime limitations."
+      ],
+      "validation_plan": [
+        "Read-only runner/report audit only; do not change candidate, runner, or function record; no build or emulator. Write only the assigned report and structured handoff."
+      ]
+    },
+    {
+      "id": "h4-input-buffer-producer-recon",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Trace static initialization and update references for analog input buffers 0x004E3C28/0x004E3C48 from the H4 axis reader back toward their producer, identifying exact writers, frame/update callers, and any input APIs without claiming physical control or player movement.",
+      "depends_on": [
+        "h4-live-input-observation"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "extracted/exefs/code.bin",
+        "config/functions.csv",
+        "src/engine/leaf_batch45_b.cpp",
+        "src/engine/leaf_batch20_a.cpp",
+        "src/engine/leaf_batch27_a.cpp",
+        "src/engine/leaf_batch30_a.cpp",
+        "src/engine/runtime_blocks.cpp",
+        "src/engine/leaf_batch43_b.cpp",
+        "docs/agent-work/h4-axis-caller-sweep.md",
+        "docs/agent-work/h4-field-control-contract.md",
+        "docs/emulator-testing-guide.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-input-buffer-producers.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Find and enumerate direct code references and stores to the input buffer structures, distinguishing initialization/reset from per-frame production.",
+        "Map relevant producer/consumer callers and registers/fields from the pinned original; classify the extent each is reconstructed in source.",
+        "State the narrowest runtime observation needed next and avoid assigning physical input, player identity, or H4 route semantics from static names."
+      ],
+      "validation_plan": [
+        "Static-only read-only analysis. No source edits, builds, runner edits, emulator, or save access. Write only the assigned report and return a structured handoff."
+      ]
+    },
+    {
+      "id": "h4-input-buffer-producer-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently audit the static H4 analog-buffer producer report, especially literal/xref coverage, the 0x001078D8 to 0x0011C5EC to 0x0012A758 copy path, and its initialization-versus-refresh limits.",
+      "depends_on": [],
+      "function_claims": [],
+      "read_paths": [
+        "extracted/exefs/code.bin",
+        "config/functions.csv",
+        "docs/agent-work/h4-input-buffer-producers.md",
+        "docs/agent-work/h4-axis-caller-sweep.md",
+        "docs/agent-work/h4-field-control-contract.md",
+        "docs/agent-work/h2-input-logical-flag-refresh-review.md",
+        "src/engine/leaf_batch27_a.cpp",
+        "src/engine/leaf_batch30_a.cpp",
+        "src/engine/leaf_batch45_b.cpp",
+        "src/engine/runtime_blocks.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-input-buffer-producer-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify the declared reference hash and key direct xrefs/call targets against pinned code and ledger; identify any scan limitations or decoding gaps.",
+        "Check the claimed caller/output ABI, 16-byte copy shape, halfword writers/resets, and distinguish initialization, counter tracking, and live buffer refresh.",
+        "Recommend the next autonomous observation and state clearly which source/cadence/physical-input/player claims are still unsupported."
+      ],
+      "validation_plan": [
+        "Read-only static review; no build, source/runner edits, emulator or save access. Write only the assigned report and return structured handoff."
+      ]
+    },
+    {
+      "id": "h4-runtime-buffer-capture",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Use the private loopback Azahar pair to read-only trace the primary analog-record refresh chain and its timing at the H3 checkpoint, after the documented offline-first gates pass.",
+      "depends_on": [
+        "h4-input-buffer-producer-recon",
+        "h4-reproducible-camera-composition"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "tools/h3_autonomous_verify.py",
+        "tools/h4_axis_camera_composition.py",
+        "tools/h4_axis_reader_experiment.py",
+        "docs/agent-work/h4-input-buffer-producers.md",
+        "docs/agent-work/h4-reproducible-camera-composition-review.md",
+        "docs/emulator-testing-guide.md",
+        "docs/milestones/H3-load-from-title.md",
+        "docs/agent-work/h3-runtime-comparison.md",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "tools/h3_autonomous_verify.py",
+        "docs/agent-work/h4-input-buffer-runtime-trace.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [
+        "Azahar private runtime, isolated profiles, GDB ports 54342/54343"
+      ],
+      "acceptance": [
+        "Add read-only per-probe snapshots for axis-manager/calibration state and primary/alternate/counter buffers, without changing guest state.",
+        "Run ARM/Thumb and H3/H4 offline differential/caller-composition gates before any Azahar launch; stop if any fails.",
+        "In paired original/H3-patched runs, capture 0x001078E8, 0x0011C640, 0x0011C644, 0x001078EC in execution order with registers, stack, snapshots, callbacks and profile/save integrity.",
+        "Report whether the copied source object or buffer cadence can be identified; do not claim physical input, player movement, or camera rendering without evidence."
+      ],
+      "validation_plan": [
+        "Use a fresh isolated profile root cloned from the known H3 fixture and private loopback-bound Azahar only after all offline gates pass. Do not inject inputs or modify the user save; verify profile/save hashes and child process termination."
+      ]
+    },
+    {
+      "id": "h4-runtime-buffer-capture-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently audit the new passive original-versus-H3-patched input-buffer trace, its read-only probe changes, integrity evidence, and claims about the neutral no-input observation.",
+      "depends_on": [
+        "h4-runtime-buffer-capture",
+        "h4-input-buffer-producer-review"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "tools/h3_autonomous_verify.py",
+        "docs/agent-work/h4-input-buffer-runtime-trace.md",
+        "docs/agent-work/h4-input-buffer-producers.md",
+        "docs/agent-work/h4-input-buffer-producer-review.md",
+        "docs/milestones/H4-exploration-minimum.md",
+        "build/agent-work/H4-semantic/h4-runtime-buffer-capture/run-001/checks/runtime-input-trace-007/original.json",
+        "build/agent-work/H4-semantic/h4-runtime-buffer-capture/run-001/checks/runtime-input-trace-007/patched.json",
+        "build/agent-work/H4-semantic/h4-runtime-buffer-capture/run-001/source-save-integrity.json",
+        "build/agent-work/H4-semantic/h4-runtime-buffer-capture/run-001/checks/runtime-input-trace-007/report.json"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-input-buffer-runtime-trace-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Check the raw original and patched snapshots support the claimed 250 field ticks, four reached probe addresses, zero sample/counter bytes, equal comparison flags, and unchanged staged save/profile hashes.",
+        "Review the telemetry helper changes for read-only guest access and ensure each probe report is accurately scoped as a sequential passive observation rather than active-input cadence or movement evidence.",
+        "Identify any reporting corrections needed and state the remaining source-object, active-input, movement, and H4 milestone limits."
+      ],
+      "validation_plan": [
+        "Read-only review of the runner, markdown and ignored raw report. Do not build, rerun tests, access the user save, launch Azahar, or edit the board. Return a structured handoff and write only the assigned review report."
+      ]
+    },
+    {
+      "id": "h4-input-update-transform-recon",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Map the static input update transform downstream of the observed 0x001078D8 refresh, including 0x0010B578, 0x001078D8, and directly invoked 0x00108B10, to determine whether it leads to field/player state or only prepares logical/controller state.",
+      "depends_on": [
+        "h4-input-buffer-producer-review",
+        "h4-runtime-buffer-capture"
+      ],
+      "function_claims": [
+        "0x0010B578",
+        "0x001078D8",
+        "0x00108B10"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin",
+        "config/functions.csv",
+        "docs/agent-work/h4-input-buffer-producers.md",
+        "docs/agent-work/h4-input-buffer-producer-review.md",
+        "docs/agent-work/h4-input-buffer-runtime-trace.md",
+        "docs/agent-work/h4-field-control-contract.md",
+        "src/engine/leaf_batch27_a.cpp",
+        "src/engine/leaf_batch30_a.cpp"
+      ],
+      "write_paths": [
+        "tools/h3_autonomous_verify.py",
+        "docs/agent-work/h4-input-source-ring-capture.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify relevant ARM/Thumb spans and direct callers against the pinned image; recover the caller's arguments, branches, helper calls, and observable writes with offsets/types where justified.",
+        "Trace any refreshed sample through 0x0010B578/0x00108B10 and identify whether the path reaches a verified map/player-work update; distinguish observed facts from naming or address inference.",
+        "State a concrete bounded next observation or conclude the path is not a player movement route; do not claim physical input, active event behavior, or movement from static evidence alone."
+      ],
+      "validation_plan": [
+        "Static read-only reconstruction only; do not edit C++/runner/shared interfaces, build, launch Azahar, access the source save, or edit the workflow board. Write only the assigned report and return a structured handoff."
+      ]
+    },
+    {
+      "id": "h4-input-update-transform-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently audit the static ARM reconstruction of 0x0010B578/0x001078D8/0x00108B10, including the newly found direct caller and separate 0x004E3CD4 state record.",
+      "depends_on": [],
+      "function_claims": [],
+      "read_paths": [
+        "extracted/exefs/code.bin",
+        "config/functions.csv",
+        "docs/agent-work/h4-input-update-transform.md",
+        "docs/agent-work/h4-input-buffer-producers.md",
+        "docs/agent-work/h4-input-buffer-producer-review.md",
+        "docs/agent-work/h4-input-buffer-runtime-trace.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-input-update-transform-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify the newly found 0x00101B8C to 0x0010B578 branch, ARM bounds, and the report's scan limitations against the pinned image.",
+        "Audit the 0x001078D8 counter/state description and 0x00108B10/0x0011C380 update path, including overlapping byte/word aliases and signed branch conditions.",
+        "Confirm whether the inspected dataflow reaches a verified player-work update and state which source, consumer, active-input, cadence, and movement claims remain open."
+      ],
+      "validation_plan": [
+        "Read-only static review; no code, runner, build, tests, emulator, guest-memory writes, source-save access, or board edits. Write only the assigned review report and return a structured handoff."
+      ]
+    },
+    {
+      "id": "h4-input-source-ring-capture",
+      "role": "integration",
+      "state": "accepted",
+      "owner": "integrator",
+      "goal": "Extend the private paired H3 checkpoint observation to capture the bounded source-ring object and call-stack cursor/count arguments for the 0x0012A758 analog-record copy, without injecting input or writing guest memory.",
+      "depends_on": [
+        "h4-runtime-buffer-capture-review",
+        "h4-input-buffer-producer-review",
+        "h4-input-update-transform-review"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "tools/h3_autonomous_verify.py",
+        "docs/agent-work/h4-input-buffer-runtime-trace.md",
+        "docs/agent-work/h4-input-buffer-producers.md",
+        "docs/agent-work/h4-input-buffer-producer-review.md",
+        "docs/agent-work/h4-input-update-transform.md",
+        "docs/agent-work/h4-input-update-transform-review.md",
+        "docs/emulator-testing-guide.md",
+        "docs/milestones/H3-load-from-title.md",
+        "docs/agent-work/h3-runtime-comparison.md",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "tools/h3_autonomous_verify.py",
+        "docs/agent-work/h4-input-source-ring-capture.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [
+        "Azahar private runtime, fresh isolated profiles, GDB ports 54342/54343"
+      ],
+      "acceptance": [
+        "Add read-only capture of the observed 0x10000000 source object span and relevant caller stack cursors/count values at the existing producer probes; preserve before/after values and include object address validation.",
+        "Run the mandatory offline interworking, H3 differential, H3 caller composition, H4 direct differential, and H4 camera composition gates before Azahar; stop on any failure.",
+        "Use a fresh isolated original/H3-patched profile pair with the known fixture, capture 250 field ticks and producer probes in both runs, and verify staged save/profile integrity and process termination.",
+        "Report only the structure/sequence facts visible in the bytes; do not inject events, interpret an unknown slot as live input, or claim physical mapping or movement."
+      ],
+      "validation_plan": [
+        "Coordinator-owned autonomous run with the private loopback Azahar only after all offline-first gates pass. Guest access is read-only. Keep reports under ignored build/; do not access or modify the source save beyond the separate permitted integrity hash check."
+      ]
+    },
+    {
+      "id": "h4-input-source-ring-capture-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the bounded H4 source-object capture, its read-only before/after instrumentation, paired runtime evidence, and evidence limits.",
+      "depends_on": [],
+      "function_claims": [],
+      "read_paths": [
+        "tools/h3_autonomous_verify.py",
+        "docs/agent-work/h4-input-source-ring-capture.md",
+        "docs/agent-work/h4-input-buffer-runtime-trace.md",
+        "docs/agent-work/h4-input-buffer-producers.md",
+        "docs/agent-work/h4-input-update-transform.md",
+        "build/agent-work/H4-semantic/h4-input-source-ring-capture/run-002/checks/validated-rerun-003/runtime-report.json",
+        "build/agent-work/H4-semantic/h4-input-source-ring-capture/run-002/checks/validated-rerun-003/original.json",
+        "build/agent-work/H4-semantic/h4-input-source-ring-capture/run-002/checks/validated-rerun-003/patched.json",
+        "build/agent-work/H4-semantic/h4-input-source-ring-capture/run-002/checks/validated-rerun-003/offline-h3-entry-report.json",
+        "build/agent-work/H4-semantic/h4-input-source-ring-capture/run-002/checks/validated-rerun-003/offline-h3-caller-report.json",
+        "build/agent-work/H4-semantic/h4-input-source-ring-capture/run-002/checks/validated-rerun-003/offline-h4-direct-report.json",
+        "build/agent-work/H4-semantic/h4-input-source-ring-capture/run-002/checks/validated-rerun-003/offline-h4-camera-report.json",
+        "build/agent-work/H4-semantic/h4-input-source-ring-capture/run-002/handoff.json"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-input-source-ring-capture-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify the runner's source-object address bounds and that entry and post-probe snapshots are read-only and taken at the reported boundaries; check the captured stack/register evidence and offsets against the raw paired reports.",
+        "Verify the original/patched checkpoint, field-tick and profile/save integrity claims against the reports; independently check the cited source-save hash without opening or modifying that file.",
+        "Audit whether the document distinguishes process-specific/dynamic bytes from semantic equivalence, excludes failed setup attempts, and avoids unsupported ring, physical-input, player-movement, or whole-game claims. Record corrections or accept the bounded report."
+      ],
+      "validation_plan": [
+        "Read-only review only. Do not run Azahar, access the source save, write guest memory, edit the runner/report, or edit the workflow board. Write only the assigned review report and return a structured handoff."
+      ]
+    },
+    {
+      "id": "h4-input-cursor-producer-recon",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Statically trace the source object's cursor/count fields and copied record payload observed on the H4 field path, and bound what the pinned ARM image reveals about their producer.",
+      "depends_on": [
+        "h4-input-source-ring-capture",
+        "h4-input-source-ring-capture-review",
+        "h4-input-buffer-producer-review",
+        "h4-input-update-transform-review"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "extracted/exefs/code.bin",
+        "config/functions.csv",
+        "docs/milestones/H4-exploration-minimum.md",
+        "docs/agent-work/h4-input-buffer-producers.md",
+        "docs/agent-work/h4-input-buffer-producer-review.md",
+        "docs/agent-work/h4-input-update-transform.md",
+        "docs/agent-work/h4-input-update-transform-review.md",
+        "docs/agent-work/h4-input-source-ring-capture.md",
+        "docs/agent-work/h4-input-source-ring-capture-review.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-input-cursor-producer-recon.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Map ARM function boundaries and statically evidenced reads/writes of the observed object's 64-bit cursor fields at +0/+8 and count at +0x10, distinguishing the call's known base pointer from unrelated same-offset objects.",
+        "Trace the 0x0012A758 indexed copy from source record offsets +0x28/+0x2C/+0x30/+0x34/+0x36 through the caller's output, and locate direct callsites or a producer/initializer only where the pinned image supports the connection.",
+        "Check whether changed fields at +0xA8/+0xB0/+0xB8 have a statically verified relation to the captured object; separate observed bytes from inferred type/ownership and report unresolved direct, indirect, Thumb, or dynamic paths.",
+        "State whether the current static evidence supports a specific safe next runtime observation; do not infer a physical device, live input event, player state, or movement."
+      ],
+      "validation_plan": [
+        "Read-only static reconstruction against the pinned ARM image; no C++/runner edits, builds, tests, emulator, source-save access, guest-memory writes, or board edits. Write only the assigned report and return a structured handoff."
+      ]
+    },
+    {
+      "id": "h4-input-cursor-producer-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently audit the static cursor/count and indexed-copy recon against the pinned ARM image and verify its safe runtime-observation recommendation.",
+      "depends_on": [],
+      "function_claims": [],
+      "read_paths": [
+        "extracted/exefs/code.bin",
+        "config/functions.csv",
+        "docs/agent-work/h4-input-cursor-producer-recon.md",
+        "docs/agent-work/h4-input-source-ring-capture.md",
+        "docs/agent-work/h4-input-source-ring-capture-review.md",
+        "docs/agent-work/h4-input-buffer-producers.md",
+        "docs/agent-work/h4-input-buffer-producer-review.md",
+        "docs/agent-work/h4-input-update-transform.md",
+        "docs/agent-work/h4-input-update-transform-review.md",
+        "build/agent-work/H4-semantic/h4-input-cursor-producer-recon/run-001/handoff.json"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-input-cursor-producer-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Disassemble and verify the 0x0011C640 call arguments, 0x0012A758 field loads, cursor arithmetic, modulo-8 source index, five payload loads/stores, and consistency retry bounds against the pinned image.",
+        "Check that caller stack pointers/cursor stores are not conflated with writes to the source object's header; verify the 0x0012A900 distinction and the stated limitations for direct/indirect/Thumb writers.",
+        "Audit whether the proposed next observation captures an actual selected source address, raw copied record, caller cursor values, and post-transform output read-only without claiming producer identity or live physical input."
+      ],
+      "validation_plan": [
+        "Read-only static review. Do not edit the capture/recon reports, runner, C++ or board; do not build, run tests, use Azahar, write guest memory, or access the source save. Write only the assigned review report and return a structured handoff."
+      ]
+    },
+    {
+      "id": "h4-input-copy-call-runtime-capture",
+      "role": "integration",
+      "state": "accepted",
+      "owner": "integrator",
+      "goal": "Capture the actual source index, raw copied record, caller cursor outputs, and post-transform primary record at the H4 input-copy call without injecting input or writing guest memory.",
+      "depends_on": [
+        "h4-input-source-ring-capture",
+        "h4-input-source-ring-capture-review",
+        "h4-input-cursor-producer-recon",
+        "h4-input-cursor-producer-review",
+        "h4-input-buffer-producer-review",
+        "h4-input-update-transform-review"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "tools/h3_autonomous_verify.py",
+        "docs/agent-work/h4-input-buffer-runtime-trace.md",
+        "docs/agent-work/h4-input-buffer-producers.md",
+        "docs/agent-work/h4-input-buffer-producer-review.md",
+        "docs/agent-work/h4-input-update-transform.md",
+        "docs/agent-work/h4-input-update-transform-review.md",
+        "docs/agent-work/h4-input-source-ring-capture.md",
+        "docs/agent-work/h4-input-source-ring-capture-review.md",
+        "docs/agent-work/h4-input-cursor-producer-recon.md",
+        "docs/agent-work/h4-input-cursor-producer-review.md",
+        "docs/emulator-testing-guide.md",
+        "docs/milestones/H3-load-from-title.md",
+        "docs/agent-work/h3-runtime-comparison.md",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "tools/h3_autonomous_verify.py",
+        "docs/agent-work/h4-input-copy-call-runtime-capture.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [
+        "Azahar private runtime, isolated original/patched profiles, GDB ports 54342/54343"
+      ],
+      "acceptance": [
+        "Extend passive probes at caller entry 0x0011C640, helper entry 0x0012A758 and pre-load copy boundary 0x0012A85C; capture source +0/+8/+0x10, actual r3 source and r7 destination addresses, loop index, validated selected source payload, and caller stack cursor/count values.",
+        "Capture source snapshot values at the helper stability-check boundary, raw 16-byte destination after 0x0012A758 returns, and a separate destination snapshot after the 0x00128610 transform. Preserve process identity and distinguish capture boundaries.",
+        "Run offline-first ARM/Thumb interworking, H3 differential, H3 caller composition, H4 direct differential and H4 camera composition checks; stop on any failure. Do not write guest state or inject input.",
+        "Run the paired known-checkpoint original/H3-patched scenario through 250 field ticks, preserve source/staged save hashes and within-run profile integrity, ensure Azahar terminates, and report the external timeout honestly. The target helper has an unbounded internal snapshot-retry loop; do not imply otherwise.",
+        "Document only observed source-slot and destination bytes, cursor/count arguments and copy/transform order; state explicitly that producer identity, physical input, player movement and H4 equivalence remain unresolved."
+      ],
+      "validation_plan": [
+        "Coordinator-owned autonomous run with the private loopback Azahar only after all offline-first gates pass. Guest access is read-only and no source save is modified. Keep outputs in the task's ignored build/ directory; use an external timeout because the target snapshot-retry loop has no internal bound."
+      ]
+    },
+    {
+      "id": "h4-input-copy-call-runtime-capture-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the bounded paired input-copy runtime capture, its address checks, source/destination labels, snapshot boundary interpretation, and integrity claims.",
+      "depends_on": [],
+      "function_claims": [],
+      "read_paths": [
+        "tools/h3_autonomous_verify.py",
+        "docs/agent-work/h4-input-copy-call-runtime-capture.md",
+        "docs/agent-work/h4-input-cursor-producer-recon.md",
+        "docs/agent-work/h4-input-cursor-producer-review.md",
+        "docs/agent-work/h4-input-source-ring-capture.md",
+        "docs/agent-work/h4-input-source-ring-capture-review.md",
+        "build/agent-work/H4-semantic/h4-input-copy-call-runtime-capture/run-001/handoff.json",
+        "build/agent-work/H4-semantic/h4-input-copy-call-runtime-capture/run-001/checks/offline2-h3-entry/report.json",
+        "build/agent-work/H4-semantic/h4-input-copy-call-runtime-capture/run-001/checks/offline2-h3-caller/report.json",
+        "build/agent-work/H4-semantic/h4-input-copy-call-runtime-capture/run-001/checks/offline2-h4-direct/report.json",
+        "build/agent-work/H4-semantic/h4-input-copy-call-runtime-capture/run-001/checks/offline2-h4-camera/report.json",
+        "build/agent-work/H4-semantic/h4-input-copy-call-runtime-capture/run-001/checks/runtime-copycall-002/report.json",
+        "build/agent-work/H4-semantic/h4-input-copy-call-runtime-capture/run-001/checks/runtime-copycall-002/original.json",
+        "build/agent-work/H4-semantic/h4-input-copy-call-runtime-capture/run-001/checks/runtime-copycall-002/patched.json",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-input-copy-call-runtime-capture-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Independently verify source address ranges, selected slot address/index and 16-byte payload offsets, destination labels, stack pointer provenance, breakpoint timing, and result count sourced from the caller local.",
+        "Compare original and patched raw reports at each matched boundary; confirm which values are zero or differ, and ensure the unstable snapshot is not described as a committed slot or successful retry.",
+        "Check save/profile integrity scope, offline-first artifacts, exact report hashes, runtime mismatches, and whether the interpretation stays within partial checkpoint evidence. Recommend the next bounded capture needed to establish a stable commit."
+      ],
+      "validation_plan": [
+        "Read-only independent review. Do not edit the runner or integration report, run canonical builds, write guest memory, access the user source save, or launch Azahar. Write only the assigned review report and return a structured handoff."
+      ]
+    },
+    {
+      "id": "h4-input-copy-retry-trace",
+      "role": "integration",
+      "state": "accepted",
+      "owner": "integrator",
+      "goal": "Capture the stable commit of the 0x0012A758 snapshot-copy helper with minimal debugger interruption, derive its committed source slot from the live commit registers and pinned index calculation, and record the caller output in paired H4 checkpoint runs.",
+      "depends_on": [
+        "h4-input-copy-call-runtime-capture",
+        "h4-input-copy-call-runtime-capture-review"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "tools/h3_autonomous_verify.py",
+        "docs/agent-work/h4-input-copy-call-runtime-capture.md",
+        "docs/agent-work/h4-input-copy-call-runtime-capture-review.md",
+        "docs/agent-work/h4-input-cursor-producer-recon.md",
+        "docs/agent-work/h4-input-cursor-producer-review.md",
+        "docs/emulator-testing-guide.md",
+        "docs/agent-work/h3-runtime-comparison.md",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "tools/h3_autonomous_verify.py",
+        "docs/agent-work/h4-input-copy-retry-trace.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [
+        "Azahar private runtime, isolated original/patched profiles, GDB ports 54342/54343"
+      ],
+      "acceptance": [
+        "At helper entry, remove the entry breakpoint and let the target loop run without per-attempt stops. Break only at 0x0012A8DC; capture commit registers, saved source/destination pointers, stable header, selected count and destination bytes before final stores.",
+        "Derive the committed source slot using the pinned first-iteration ARM calculation at 0x0012A83C..58 and the live r4 value at 0x0012A8DC; read the corresponding source payload only after validating its address against the observed 0x100-byte object span. State clearly that retry iterations were not individually observed or counted.",
+        "Use the runner's external RSP timeout for this single commit wait. The target retry loop is internally unbounded; if the commit breakpoint is not reached before timeout, report partial evidence and terminate Azahar cleanly.",
+        "After stable commit, observe caller result local at 0x0011C644 and output after transform at 0x0011C66C; relate the derived committed source slot to the actual copied destination bytes without overstating memory atomicity.",
+        "Pass the offline-first ARM/Thumb interworking, H3 title differential, H3 caller composition, H4 direct reader differential and H4 camera composition gates before paired private Azahar runs. Preserve source/staged save hashes and within-run profile integrity; no physical or axis input is injected.",
+        "Report original/patched attempt counts, loaded count values, retry or commit branch, final selected index/address/payload, output bytes, callback/view mismatches and all limits. Do not claim H4 equivalence or source producer identity."
+      ],
+      "validation_plan": [
+        "Coordinator-owned bounded runner update and paired autonomous run using distinct ignored output paths. Freeze the runner during independent review; do not access or modify the supplied source save."
+      ]
+    },
+    {
+      "id": "h4-input-copy-retry-trace-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently verify the stable-commit source-index derivation, bounded source/destination reads, paired runtime hashes and interpretation of the input-copy retry capture.",
+      "depends_on": [],
+      "function_claims": [],
+      "read_paths": [
+        "tools/h3_autonomous_verify.py",
+        "docs/agent-work/h4-input-copy-retry-trace.md",
+        "docs/agent-work/h4-input-copy-call-runtime-capture.md",
+        "docs/agent-work/h4-input-copy-call-runtime-capture-review.md",
+        "docs/agent-work/h4-input-cursor-producer-recon.md",
+        "docs/agent-work/h4-input-cursor-producer-review.md",
+        "build/agent-work/H4-semantic/h4-input-copy-retry-trace/run-002/handoff.json",
+        "build/agent-work/H4-semantic/h4-input-copy-retry-trace/run-002/checks/runtime-stable-commit-001/report.json",
+        "build/agent-work/H4-semantic/h4-input-copy-retry-trace/run-002/checks/runtime-stable-commit-001/original.json",
+        "build/agent-work/H4-semantic/h4-input-copy-retry-trace/run-002/checks/runtime-stable-commit-001/patched.json",
+        "build/agent-work/H4-semantic/h4-input-copy-retry-trace/run-002/checks/offline-h3-entry/report.json",
+        "build/agent-work/H4-semantic/h4-input-copy-retry-trace/run-002/checks/offline-h3-caller/report.json",
+        "build/agent-work/H4-semantic/h4-input-copy-retry-trace/run-002/checks/offline-h4-direct/report.json",
+        "build/agent-work/H4-semantic/h4-input-copy-retry-trace/run-002/checks/offline-h4-camera/report.json",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-input-copy-retry-trace-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Independently verify the source-pointer and destination-pointer extraction from the helper frame, r4 and selected-count registers at 0x0012A8DC, and the (r4-i+8) signed-remainder index derivation for first iteration i=0 against pinned ARM instructions.",
+        "Check the derived slot and 16-byte payload bounds against the 0x100-byte source span; compare the sampled source payload, destination at commit, caller count, post-transform bytes, and both raw sidecars.",
+        "Verify offline report hashes and paired runtime differences, save/profile integrity scope, and that the report does not claim an observed retry count, producer identity, live physical input, movement, H4 equivalence, or whole-game equivalence. Review the auxiliary event-limit trace as partial evidence only."
+      ],
+      "validation_plan": [
+        "Read-only independent review. Do not edit the runner or integration report, launch Azahar, access the supplied source save, or write guest state. Write only the review report and structured handoff."
+      ]
+    },
+    {
+      "id": "h4-repeat-state-consumer-recon",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Trace static consumers and alternate writers of the separate 0x004E3CD4 record to determine whether its repeat-like state reaches field movement, interaction, or only UI/window state.",
+      "depends_on": [
+        "h4-input-copy-retry-trace",
+        "h4-input-copy-retry-trace-review"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "extracted/exefs/code.bin",
+        "config/functions.csv",
+        "src/engine/leaf_batch27_a.cpp",
+        "src/engine/leaf_batch32_c.cpp",
+        "src/ui/window.cpp",
+        "docs/agent-work/h4-input-update-transform.md",
+        "docs/agent-work/h4-input-update-transform-review.md",
+        "docs/agent-work/h4-field-control-contract.md",
+        "docs/agent-work/h4-input-copy-retry-trace.md",
+        "docs/agent-work/h4-input-copy-retry-trace-review.md"
+      ],
+      "write_paths": [],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Enumerate direct absolute-address references and ledgered ARM callsites affecting 0x004E3CD4 and 0x00108B10/0x0011C380/0x0012A900, separating the state record from the adjacent 31-counter interval ending at 0x004E3CD3.",
+        "Verify each relevant reader/writer's ABI, byte/word overlap, branches, caller and dataflow against the pinned image; distinguish references in window/UI code from the H4 field path.",
+        "Determine whether the audited paths reach a verified player-work, movement or interaction state; if not, state the bounded scan limits and give the smallest useful next static/runtime observation without proposing an unverified guest write or watchpoint-based method."
+      ],
+      "validation_plan": [
+        "Read-only static analysis only. Do not edit shared interfaces/runners, build, test, launch Azahar, access the source save, or write guest memory. Return a structured handoff and use a distinct output/report path."
+      ]
+    },
+    {
+      "id": "h4-repeat-state-consumer-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently audit the 0x004E3CD4 static consumer/writer scan, 0x002C01B8 reader ABI and the report's bounded separation from H4 field behavior.",
+      "depends_on": [],
+      "function_claims": [],
+      "read_paths": [
+        "extracted/exefs/code.bin",
+        "config/functions.csv",
+        "src/engine/leaf_batch27_a.cpp",
+        "src/engine/leaf_batch32_c.cpp",
+        "src/ui/window.cpp",
+        "docs/agent-work/h4-input-update-transform.md",
+        "docs/agent-work/h4-input-update-transform-review.md",
+        "docs/agent-work/h4-field-control-contract.md",
+        "docs/agent-work/h4-input-copy-retry-trace.md",
+        "docs/agent-work/h4-repeat-state-consumer-recon.md",
+        "build/agent-work/H4-semantic/h4-repeat-state-consumer-recon/run-001/handoff.json"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-repeat-state-consumer-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify the bounded absolute-reference scan and separation of counters [0x004E3C58,0x004E3CD4) from the following 0x20-byte state block; check initialization versus active writer behavior.",
+        "Disassemble 0x002C01B8, 0x002C0144, relevant tail wrappers and callers; audit output width, null/failure effects, mode predicates, byte/word aliases and callsite setup against the pinned image.",
+        "Check whether any reported path reaches validated player state or H4 interaction, preserve bounded-scan limitations, and confirm the proposed 0x0039B58C/0x0039D758 next static observation follows from current evidence."
+      ],
+      "validation_plan": [
+        "Read-only independent static review. Do not edit the recon report, build, test, launch Azahar, access the supplied save, or write guest state. Write only the assigned review report and structured handoff."
+      ]
+    },
+    {
+      "id": "h4-repeat-state-context-recon",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Trace the surrounding consumers and state writes in 0x0039B58C and 0x0039D758 to test whether the repeat-state reader wrappers belong to H4 field behavior or another UI path.",
+      "depends_on": [
+        "h4-repeat-state-consumer-recon",
+        "h4-repeat-state-consumer-review"
+      ],
+      "function_claims": [
+        "0x0039B58C",
+        "0x0039D758"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin",
+        "config/functions.csv",
+        "docs/agent-work/h4-repeat-state-consumer-recon.md",
+        "docs/agent-work/h4-repeat-state-consumer-review.md",
+        "docs/agent-work/h4-field-control-contract.md",
+        "docs/milestones/H4-exploration-minimum.md"
+      ],
+      "write_paths": [],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Map function boundaries, direct calls and relevant state/object reads and writes around both functions against the pinned ARM image; verify register/stack arguments and branch conditions at calls to 0x003C3038/0x003C3040.",
+        "Determine whether any path can be statically connected to a field/player work object or an H4 interaction, distinguishing literal offsets and guessed names from validated state.",
+        "Report bounded scan coverage, unresolved indirect/Thumb/dynamic paths, and the smallest useful next observation; do not infer execution or propose unverified guest writes/watchpoints."
+      ],
+      "validation_plan": [
+        "Read-only static reconstruction against pinned ARM and ledger; no candidate or runner edits, builds, tests, Azahar, save access, guest writes, or board edits. Write only the report and structured handoff."
+      ]
+    },
+    {
+      "id": "h4-repeat-state-context-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently audit the static contexts around 0x0039B58C and 0x0039D758, including their common caller object, map/script gate and reader-output consumption, before accepting the bounded H4 conclusion.",
+      "depends_on": [],
+      "function_claims": [],
+      "read_paths": [
+        "extracted/exefs/code.bin",
+        "config/functions.csv",
+        "docs/agent-work/h4-repeat-state-context-recon.md",
+        "docs/agent-work/h4-repeat-state-consumer-recon.md",
+        "docs/agent-work/h4-repeat-state-consumer-review.md",
+        "docs/agent-work/h4-field-control-contract.md",
+        "build/agent-work/H4-semantic/h4-repeat-state-context-recon/run-002/handoff.json"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-repeat-state-context-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify the function/caller boundaries and common r4 object flow at 0x00399D60, 0x0039AF30, 0x0039B58C and 0x0039D758 against pinned ARM.",
+        "Recalculate local wrapper modes, output buffer addresses, whether returns are checked before consumption, relevant flag/global gates, object/subobject accesses, and direct state writes.",
+        "Confirm the evidence does not identify player-work ownership, active H4 runtime reachability, physical input or a particular interaction; assess the proposed next static ownership trace."
+      ],
+      "validation_plan": [
+        "Read-only independent review; no recon/candidate/runner edits, builds, tests, Azahar, save access, guest writes, or board edits. Write only the review report and structured handoff."
+      ]
+    },
+    {
+      "id": "h4-repeat-object-ownership-recon",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Trace callers, initialization and ownership of the shared r4 object received by 0x00399D60 and its +0x162 subobject to determine whether either is linked to the observed H4 field player or input state.",
+      "depends_on": [
+        "h4-repeat-state-context-recon",
+        "h4-repeat-state-context-review"
+      ],
+      "function_claims": [
+        "0x00399D60",
+        "0x00231F58",
+        "0x00231B38"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin",
+        "config/functions.csv",
+        "src/engine/map_field.cpp",
+        "src/engine/map_runtime.cpp",
+        "docs/agent-work/h4-field-control-contract.md",
+        "docs/agent-work/h4-repeat-state-context-recon.md",
+        "docs/agent-work/h4-repeat-state-context-review.md",
+        "docs/milestones/H4-exploration-minimum.md"
+      ],
+      "write_paths": [],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Enumerate pinned direct ARM callers and any statically locatable initializer/callback registration for 0x00399D60; distinguish static references from reachable execution.",
+        "Trace only supported direct loads, stores, allocations and helper contracts that establish the r4 object and the +0x162 subobject ownership/type; keep unknown if no defensible allocation or type chain exists.",
+        "Compare against addresses/structures actually observed in the H4 checkpoint and state explicitly whether a link to player work, movement, input source or interaction is supported; report scan limitations and the smallest useful next observation."
+      ],
+      "validation_plan": [
+        "Read-only static investigation against pinned ARM and existing field records. No code/runner edits, builds, tests, Azahar, save access, guest writes or board edits; write only the assigned report and structured handoff."
+      ]
+    },
+    {
+      "id": "h4-repeat-object-ownership-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently verify the static Navi-host initialization, callback-pair installation, direct caller scope and helper behavior that disproves the presumed +0x162 coordinate subobject contract.",
+      "depends_on": [],
+      "function_claims": [],
+      "read_paths": [
+        "extracted/exefs/code.bin",
+        "config/functions.csv",
+        "src/engine/map_runtime.cpp",
+        "docs/agent-work/h4-repeat-object-ownership-recon.md",
+        "docs/agent-work/h4-repeat-state-context-recon.md",
+        "docs/agent-work/h4-repeat-state-context-review.md",
+        "docs/agent-work/h4-field-control-contract.md",
+        "build/agent-work/H4-semantic/h4-repeat-object-ownership-recon/run-001/handoff.json"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-repeat-object-ownership-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recalculate the function pointer/table pair at 0x00404A8C/90, the +0xB24 copy destination, allocator slot 0x0044CDF0 and the +0x40 adjusted argument through 0x00291D2C, 0x00399594 and 0x00399E20.",
+        "Disassemble 0x00231F58 and 0x00231B38 and verify whether r0 is overwritten, what global slot and offsets are read/written, and whether +0x162 is dereferenced.",
+        "Check the H4 checkpoint pointer comparison and keep the runtime callback entry/dispatch, actual r0, Navi host identity in that checkpoint, player/movement/input/interaction claims unresolved unless directly supported. Assess the proposed next bounded observation."
+      ],
+      "validation_plan": [
+        "Read-only independent review. No report or source edits, builds, tests, Azahar, save access, guest writes or board edits. Write only the review report and structured handoff."
+      ]
+    },
+    {
+      "id": "h4-navi-callback-passive-capture",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "At the settled H3-derived H4 field checkpoint, passively test whether the callback-like 0x00399D60 entry is reached and record its entry r0/LR plus the current Navi global slot and installed table pair in matched original/patched runs.",
+      "depends_on": [
+        "h4-repeat-object-ownership-recon",
+        "h4-repeat-object-ownership-review"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "tools/h3_autonomous_verify.py",
+        "docs/emulator-testing-guide.md",
+        "docs/agent-work/h3-runtime-comparison.md",
+        "docs/agent-work/h4-field-control-contract.md",
+        "docs/agent-work/h4-repeat-object-ownership-recon.md",
+        "docs/agent-work/h4-repeat-object-ownership-review.md",
+        "docs/milestones/H4-exploration-minimum.md",
+        "build/agent-work/H4-semantic/h4-navi-callback-passive-capture/run-001/checks/offline-h3-entry/report.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-passive-capture/run-001/checks/offline-h3-caller/report.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-passive-capture/run-001/checks/offline-h4-direct/report.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-passive-capture/run-001/checks/offline-h4-camera/report.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-passive-capture/run-001/checks/runtime-navi-entry-002/report.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-passive-capture/run-001/checks/runtime-navi-entry-002/original.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-passive-capture/run-001/checks/runtime-navi-entry-002/patched.json",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [],
+      "compiler_slots": 3,
+      "exclusive_resources": [
+        "Azahar private runtime, isolated original/patched profiles, GDB ports 54342/54343"
+      ],
+      "acceptance": [
+        "Extend the existing bounded field-call probe only as needed to capture a hit at 0x00399D60, entry r0/r1/LR/SP and a read-only, range-validated snapshot of the pointer in 0x0044CDF0 plus the pair at host+0xB64. Do not dispatch, write guest memory, or inject input.",
+        "Before Azahar, pass or reuse still-current evidence for ARM/Thumb placement, H3 title differential, H3 caller composition, H4 direct reader differential and H4 camera composition; stop if any gate fails.",
+        "Run paired original/patched known-checkpoint scenarios through 250 field ticks with isolated profiles and fresh outputs. Record each hit/absence/timeout, process identity, return address, slot/pair bytes and whether the pair matches; distinguish checkpoint setup guest writes from read-only probes.",
+        "Preserve source/staged save hashes and within-run profile integrity, terminate both Azahar processes, and state that a callback hit alone does not prove player ownership or H4 interaction."
+      ],
+      "validation_plan": [
+        "Coordinator-owned private loopback Azahar run after offline-first gates. Use only the supplied staged H3 fixture and existing runner route; do not modify source save or profiles outside task staging. Report timeouts/absence honestly and keep generated artifacts under ignored build/."
+      ]
+    },
+    {
+      "id": "h4-navi-callback-passive-capture-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently audit the paired passive 0x00399D60 runtime capture, runner read bounds, dynamic indirect-dispatch derivation and save/profile/process integrity before accepting its bounded H4 result.",
+      "depends_on": [],
+      "function_claims": [],
+      "read_paths": [
+        "tools/h3_autonomous_verify.py",
+        "extracted/exefs/code.bin",
+        "docs/agent-work/h4-navi-callback-passive-capture.md",
+        "docs/agent-work/h4-repeat-object-ownership-recon.md",
+        "docs/agent-work/h4-repeat-object-ownership-review.md",
+        "docs/agent-work/h4-field-control-contract.md",
+        "build/agent-work/H4-semantic/h4-navi-callback-passive-capture/run-002/handoff.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-passive-capture/run-002/checks/runtime-navi-entry-002/report.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-passive-capture/run-002/checks/runtime-navi-entry-002/original.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-passive-capture/run-002/checks/runtime-navi-entry-002/patched.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-passive-capture/run-002/checks/offline-h3-entry/report.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-passive-capture/run-002/checks/offline-h3-caller/report.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-passive-capture/run-002/checks/offline-h4-direct/report.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-passive-capture/run-002/checks/offline-h4-camera/report.json"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-navi-callback-passive-capture-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify runner hash and read-only behavior of the 0x00399D60 capture, numeric address bound, current host-slot pointer, and pair-byte interpretation in both raw JSON files.",
+        "Independently recalculate 0x001A95E8 as the return after 0x001A95E4 BL 0x0039F1F0, the index-2 selection of host+0xB64/+0xB68 and the tail-dispatch to 0x00399D60; check against live r0-r3/LR and raw pair bytes.",
+        "Verify both 250-tick field checkpoints, save hashes, within-run profile integrity, paired comparison claims, process cleanup, offline gate outputs and the failed long-path attempt limitation.",
+        "State whether the runtime evidence supports callback dispatch in this checkpoint while keeping player movement, input semantics, H4 interaction, transition and broader equivalence unproven."
+      ],
+      "validation_plan": [
+        "Read-only independent review; do not edit runner or integration report, build/test, launch Azahar, access source save, or write guest memory. Write only the review report and structured handoff."
+      ]
+    },
+    {
+      "id": "h4-navi-callback-contract-recon",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover the bounded ABI, branch, global-memory and object-field contract of the now-observed 0x00399D60 Navi callback, and determine whether its writes are linked to H4 view or player state.",
+      "depends_on": [
+        "h4-navi-callback-passive-capture",
+        "h4-navi-callback-passive-capture-review"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "extracted/exefs/code.bin",
+        "config/functions.csv",
+        "src/engine/leaf_batch35_c.cpp",
+        "src/engine/leaf_batch16_c.cpp",
+        "src/engine/leaf_batch23_a.cpp",
+        "src/engine/map_runtime.cpp",
+        "include/engine/map_runtime.h",
+        "docs/agent-work/h4-field-control-contract.md",
+        "docs/agent-work/h4-live-input-observation.md",
+        "docs/agent-work/h4-repeat-object-ownership-recon.md",
+        "docs/agent-work/h4-repeat-object-ownership-review.md",
+        "docs/agent-work/h4-navi-callback-passive-capture.md",
+        "docs/agent-work/h4-navi-callback-passive-capture-review.md",
+        "build/agent-work/H4-semantic/h4-navi-callback-passive-capture/run-002/checks/runtime-navi-entry-002/report.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-passive-capture/run-002/checks/runtime-navi-entry-002/original.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-passive-capture/run-002/checks/runtime-navi-entry-002/patched.json"
+      ],
+      "write_paths": [],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Disassemble the complete 192-byte function and its direct dependency/caller paths; recover entry register/stack ABI, return value on each exit, read/write set, object offsets, global dependencies and meaningful branch predicates. Separate proven contracts from unknown callback or Navi field names.",
+        "Trace stores and consumers of the directly modified object fields and the shared 0x0044CDF0 host where pinned code supports it; compare those addresses with the captured host+0x40 argument and H4 view/player pointers.",
+        "Determine whether any validated write affects H4 view, player movement, physical/logical input, interaction or transition. If not, state the bounded limits and smallest next evidence needed; propose implementation only if its dependency contract is supported."
+      ],
+      "validation_plan": [
+        "Read-only static contract reconstruction against pinned ARM, source wrappers and accepted runtime captures. No code or runner edits, builds, tests, Azahar, source-save access or guest writes. Write only the assigned report and structured handoff."
+      ]
+    },
+    {
+      "id": "h4-navi-callback-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently audit the 0x00399D60 direct contract, caller modes, residual return semantics, and unresolved transitive write effects before using it to design a runtime trace or candidate.",
+      "depends_on": [],
+      "function_claims": [],
+      "read_paths": [
+        "extracted/exefs/code.bin",
+        "config/functions.csv",
+        "src/engine/leaf_batch35_c.cpp",
+        "src/engine/leaf_batch16_c.cpp",
+        "src/engine/leaf_batch23_a.cpp",
+        "src/engine/map_runtime.cpp",
+        "include/engine/map_runtime.h",
+        "docs/agent-work/h4-navi-callback-contract-recon.md",
+        "docs/agent-work/h4-navi-callback-passive-capture.md",
+        "docs/agent-work/h4-navi-callback-passive-capture-review.md",
+        "docs/agent-work/h4-repeat-state-context-recon.md",
+        "docs/agent-work/h4-repeat-state-context-review.md",
+        "build/agent-work/H4-semantic/h4-navi-callback-contract-recon/run-001/handoff.json"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-navi-callback-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify all direct callback branches, signed/unsigned +0xC conditions, bit-0x1000 behavior, calls and returns against the pinned 192-byte ARM body.",
+        "Audit the distinction between the callback direct store and transitive helpers, including the unknown residual return value and input-related global work in 0x00220888.",
+        "Check runtime-entry fields and dispatch without claiming return, view/player effect, input meaning or H4 interaction; assess whether the recommended passive entry/return trace is the smallest next evidence."
+      ],
+      "validation_plan": [
+        "Read-only independent static review; no report/runner/source edits, build, test, Azahar, save access or guest writes. Write only the assigned review report and structured handoff."
+      ]
+    },
+    {
+      "id": "h4-navi-callback-call-return-trace",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Trace one dispatched 0x00399D60 callback from its entry through actual helper callsite returns to LR 0x001A95E8 in paired H4 checkpoint runs, and record bounded before/after object, Navi-host, input-object and view snapshots.",
+      "depends_on": [
+        "h4-navi-callback-contract-recon",
+        "h4-navi-callback-contract-review"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "tools/h3_autonomous_verify.py",
+        "docs/emulator-testing-guide.md",
+        "docs/agent-work/h3-runtime-comparison.md",
+        "docs/agent-work/h4-field-control-contract.md",
+        "docs/agent-work/h4-navi-callback-contract-recon.md",
+        "docs/agent-work/h4-navi-callback-contract-review.md",
+        "docs/agent-work/h4-navi-callback-passive-capture.md",
+        "docs/agent-work/h4-navi-callback-passive-capture-review.md",
+        "docs/milestones/H4-exploration-minimum.md",
+        "build/agent-work/H4-semantic/h4-navi-callback-passive-capture/run-002/checks/offline-h3-entry/report.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-passive-capture/run-002/checks/offline-h3-caller/report.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-passive-capture/run-002/checks/offline-h4-direct/report.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-passive-capture/run-002/checks/offline-h4-camera/report.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-passive-capture/run-002/checks/runtime-navi-entry-002/report.json",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [],
+      "compiler_slots": 0,
+      "exclusive_resources": [
+        "Azahar private runtime, isolated original/patched profiles, GDB ports 54342/54343"
+      ],
+      "acceptance": [
+        "Add an opt-in bounded trace that starts at the confirmed 0x00399D60 entry, captures post-BL callsite returns at 0x00399D88/98, 0x00399DAC/B8/CC, 0x00399DEC, 0x00399E00/E14 as reached, and stops at the observed callback LR 0x001A95E8. Record actual order, PC/thread, r0-r4/LR/SP and external timeout/partial status; remove all temporary breakpoints and write no guest state during the callback probe.",
+        "At entry/callsite returns/exit capture the callback object +0..+0x5F only after numeric range validation, current host slot 0x0044CDF0 and host+0x30/+0x38 where valid, pointer at 0x0043DA2C and only validated fields near +0x4B8..+0x4BE, plus view snapshot. Record invalid/null/read failures instead of assuming meaning.",
+        "Before Azahar, pass or reuse still-current ARM/Thumb placement, H3 title differential/caller composition, H4 reader differential and camera composition evidence; stop if any is stale or fails. Run paired original/patched known-checkpoint traces through 250 field ticks with no axis or physical input injection.",
+        "Preserve staged save hashes and within-run profile integrity, terminate both Azahar processes, and state that even a matched call/return trace does not prove player movement, input semantics, H4 interaction, zone transition or whole-game equivalence."
+      ],
+      "validation_plan": [
+        "Coordinator-owned bounded runner update and paired private loopback Azahar run after offline-first gates. Checkpoint setup may use the existing controlled GDB title-load seam; the target callback trace itself is read-only. Use fresh outputs and a short private profile root. No source-save changes or watchpoints."
+      ]
+    },
+    {
+      "id": "h4-navi-callback-call-return-trace-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently audit the bounded Navi callback call/return instrumentation, paired H4 artifacts, source-save/profile guards, and the scope of the integration report.",
+      "depends_on": [],
+      "function_claims": [],
+      "read_paths": [
+        "tools/h3_autonomous_verify.py",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h4-navi-callback-call-return-trace.md",
+        "docs/agent-work/h4-navi-callback-contract-recon.md",
+        "docs/agent-work/h4-navi-callback-contract-review.md",
+        "docs/agent-work/h4-navi-callback-passive-capture-review.md",
+        "build/agent-work/H4-semantic/h4-navi-callback-call-return-trace/002/handoff.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-call-return-trace/002/checks/offline-h3-title-diff.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-call-return-trace/002/checks/offline-h3-placement/report.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-call-return-trace/002/checks/offline-h3-caller/report.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-call-return-trace/002/checks/offline-h4-reader/report.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-call-return-trace/002/checks/offline-h4-camera/report.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-call-return-trace/002/checks/runtime-call-return-003/report.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-call-return-trace/002/checks/runtime-call-return-003/original.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-call-return-trace/002/checks/runtime-call-return-003/patched.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-call-return-trace/002/checks/runtime-call-return-004/report.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-call-return-trace/002/checks/runtime-call-return-004/original.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-call-return-trace/002/checks/runtime-call-return-004/patched.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-call-return-trace/002/checks/runtime-post-run-audit.json"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-navi-callback-call-return-trace-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Audit the new opt-in trace path, the exact reached stop order and GDB thread IDs, register/LR/SP capture, read-span validation, timeout/event-limit behavior, and breakpoint cleanup. Confirm that the callback probe does not write guest memory or registers.",
+        "Cross-check original/patched run-004 JSON against the report: 250 field ticks, observed callback return at 0x001A95E8, bounded object/host/input/view snapshots, profile/save guards, offline gate pins, and the prior diagnostic mismatch disclosure.",
+        "Identify any inaccurate inference or overclaim about callback return semantics, input, movement, H4 interaction, or whole-game equivalence. Review is read-only except assigned report/handoff; no Azahar, builds, save access, or runner edits."
+      ],
+      "validation_plan": [
+        "Independent artifact and source review only. Record evidence levels, limitations, any corrections, and precise acceptance/rework recommendation in the assigned review report and structured handoff."
+      ]
+    },
+    {
+      "id": "h4-navi-helper-00220888-recon",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Reconstruct the bounded ARM contract of helper 0x00220888 as called from Navi callback 0x00399D60, covering ABI, result, direct/transitive reads and writes, and the limits of the observed H4 invocation.",
+      "depends_on": [
+        "h4-navi-callback-contract-recon",
+        "h4-navi-callback-contract-review",
+        "h4-navi-callback-call-return-trace",
+        "h4-navi-callback-call-return-trace-review"
+      ],
+      "function_claims": [
+        "0x00220888"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "extracted/exefs/code.bin",
+        "config/functions.csv",
+        "docs/agent-work/h4-navi-callback-contract-recon.md",
+        "docs/agent-work/h4-navi-callback-contract-review.md",
+        "docs/agent-work/h4-navi-callback-call-return-trace.md",
+        "docs/agent-work/h4-navi-callback-call-return-trace-review.md",
+        "build/agent-work/H4-semantic/h4-navi-callback-call-return-trace/002/handoff.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-call-return-trace/002/checks/runtime-call-return-004/report.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-call-return-trace/002/checks/runtime-call-return-004/original.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-call-return-trace/002/checks/runtime-call-return-004/patched.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-call-return-trace/002/checks/runtime-post-run-audit.json",
+        "docs/agent-work/h4-field-control-contract.md",
+        "docs/agent-work/h4-input-buffer-producers.md",
+        "docs/agent-work/h4-input-buffer-producer-review.md"
+      ],
+      "write_paths": [],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Map the pinned function body, entry mode, register/stack use, return path, direct callees, and memory effects; separate proven direct effects from unresolved transitive effects.",
+        "Use the accepted run-004 callback trace to ground only the actual callsite and observed entry/return values; do not generalize r0=0x086FE985 or infer input, movement, ownership, or interaction semantics.",
+        "Record callers/callsite conditions and the smallest unresolved dependency needed before implementing a candidate. Static reconstruction only; no source edits, build, emulator, guest writes, or source-save access."
+      ],
+      "validation_plan": [
+        "Independent static ARM and caller-context analysis against the pinned code image. Write only the assigned recon report and structured handoff."
+      ]
+    },
+    {
+      "id": "h4-navi-helper-39c944-recon",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Reconstruct the bounded ARM contract of helper 0x0039C944 as conditionally called from Navi callback 0x00399D60, covering ABI, result, direct/transitive effects, and the limits of the observed H4 invocation.",
+      "depends_on": [
+        "h4-navi-callback-contract-recon",
+        "h4-navi-callback-contract-review",
+        "h4-navi-callback-call-return-trace",
+        "h4-navi-callback-call-return-trace-review"
+      ],
+      "function_claims": [
+        "0x0039C944"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "extracted/exefs/code.bin",
+        "config/functions.csv",
+        "docs/agent-work/h4-navi-callback-contract-recon.md",
+        "docs/agent-work/h4-navi-callback-contract-review.md",
+        "docs/agent-work/h4-navi-callback-call-return-trace.md",
+        "docs/agent-work/h4-navi-callback-call-return-trace-review.md",
+        "build/agent-work/H4-semantic/h4-navi-callback-call-return-trace/002/handoff.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-call-return-trace/002/checks/runtime-call-return-004/report.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-call-return-trace/002/checks/runtime-call-return-004/original.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-call-return-trace/002/checks/runtime-call-return-004/patched.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-call-return-trace/002/checks/runtime-post-run-audit.json",
+        "docs/agent-work/h4-field-control-contract.md",
+        "docs/agent-work/h4-input-buffer-producers.md",
+        "docs/agent-work/h4-input-buffer-producer-review.md"
+      ],
+      "write_paths": [],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Map the pinned function body, ARM/Thumb entry mode, register/stack use, branch conditions, return path, callees, and memory effects; separate proven direct effects from unresolved transitive effects.",
+        "Use the accepted run-004 callback trace to ground only the conditional caller path and observed r0 result at return PC 0x00399DAC; do not treat that sampled result as a general contract or infer input, movement, ownership, or interaction semantics.",
+        "Record callers/callsite conditions and the smallest unresolved dependency needed before implementing a candidate. Static reconstruction only; no source edits, build, emulator, guest writes, or source-save access."
+      ],
+      "validation_plan": [
+        "Independent static ARM and caller-context analysis against the pinned code image. Write only the assigned recon report and structured handoff."
+      ]
+    },
+    {
+      "id": "h4-navi-helper-contracts-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the two static helper contracts exposed by the accepted H4 callback call/return trace, including ABI, branch indexing, write sets, return semantics, callers, and unresolved dependency limits.",
+      "depends_on": [],
+      "function_claims": [],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "extracted/exefs/code.bin",
+        "config/functions.csv",
+        "docs/agent-work/h4-navi-callback-contract-recon.md",
+        "docs/agent-work/h4-navi-callback-contract-review.md",
+        "docs/agent-work/h4-navi-callback-call-return-trace.md",
+        "docs/agent-work/h4-navi-callback-call-return-trace-review.md",
+        "build/agent-work/H4-semantic/h4-navi-callback-call-return-trace/002/handoff.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-call-return-trace/002/checks/runtime-call-return-004/report.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-call-return-trace/002/checks/runtime-call-return-004/original.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-call-return-trace/002/checks/runtime-call-return-004/patched.json",
+        "build/agent-work/H4-semantic/h4-navi-helper-00220888-recon/001/handoff.json",
+        "build/agent-work/H4-semantic/h4-navi-helper-00220888-recon/001/task.json",
+        "build/agent-work/H4-semantic/h4-navi-helper-39c944-recon/001/handoff.json",
+        "build/agent-work/H4-semantic/h4-navi-helper-39c944-recon/001/task.json",
+        "docs/agent-work/h4-navi-helper-00220888-recon.md",
+        "docs/agent-work/h4-navi-helper-39c944-recon.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-navi-helper-contracts-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify both recon reports against the pinned ARM image: function boundaries, ARM mode, branch reachability, exact field offsets/widths, special indices and overlaps, direct callees, and returns.",
+        "Check the report-grounded caller details against accepted run-004: 0x00220888 residual r0 at 0x00399DB8 and 0x0039C944 residual r0 at 0x00399DAC are sample-specific; report any caller/value mismatch.",
+        "Assess whether unresolved callees, object initialization/lifetime, pointer validity, and float-divisor behavior are stated precisely enough to block implementation; identify every material correction. Static review only; no code edits except assigned review report/handoff, no emulator/build/save access."
+      ],
+      "validation_plan": [
+        "Independent static review and artifact comparison. Return a structured handoff, evidence levels, exact limitations, and corrections or acceptance."
+      ]
+    },
+    {
+      "id": "h4-navi-divisor-source-recon",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Determine the pinned ARM contract and static provenance of the float read by 0x0039FA68 at Navi host+0x34, including whether the 0x0039C944 divisor has an initialized nonzero finite domain on the observed path.",
+      "depends_on": [
+        "h4-navi-helper-contracts-review",
+        "h4-repeat-object-ownership-review"
+      ],
+      "function_claims": [
+        "0x0039FA68"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "extracted/exefs/code.bin",
+        "config/functions.csv",
+        "docs/agent-work/h4-navi-helper-39c944-recon.md",
+        "docs/agent-work/h4-navi-helper-contracts-review.md",
+        "docs/agent-work/h4-repeat-object-ownership-recon.md",
+        "docs/agent-work/h4-repeat-object-ownership-review.md",
+        "docs/agent-work/h4-navi-callback-call-return-trace.md",
+        "build/agent-work/H4-semantic/h4-navi-callback-call-return-trace/002/checks/runtime-call-return-004/report.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-call-return-trace/002/checks/runtime-call-return-004/original.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-call-return-trace/002/checks/runtime-call-return-004/patched.json"
+      ],
+      "write_paths": [],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Map 0x0039FA68 instruction-level ABI and exact load chain, ARM mode, return representation, and absence/presence of checks.",
+        "Find direct static writers/readers or initializers for host+0x34 and establish their guards, widths, and caller paths; distinguish exhaustive pinned-image evidence from bounded scans.",
+        "Assess whether the accepted run-004 artifacts contain enough information to infer the sampled value or only pointer/branch observations. Do not infer a general finite nonzero divisor or interaction meaning.",
+        "State what remains unresolved for implementation, including allocation lifetime, null/fault behavior, NaN/Inf/zero handling, and multiplication/scale semantics. Static read-only recon; no emulator, builds, save access, or writes outside assigned report and handoff."
+      ],
+      "validation_plan": [
+        "Analyze only the pinned image and declared reports/artifacts. Record exact offsets and scan method, produce a structured handoff, and retain sample-specific limitations."
+      ]
+    },
+    {
+      "id": "h4-navi-divisor-source-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently verify the H4 Navi divisor accessor, initializer, bounded writer scan, and run-004 evidence limits before accepting the static recon.",
+      "depends_on": [],
+      "function_claims": [],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "extracted/exefs/code.bin",
+        "config/functions.csv",
+        "docs/agent-work/h4-navi-helper-39c944-recon.md",
+        "docs/agent-work/h4-navi-helper-contracts-review.md",
+        "docs/agent-work/h4-repeat-object-ownership-recon.md",
+        "docs/agent-work/h4-repeat-object-ownership-review.md",
+        "docs/agent-work/h4-navi-callback-call-return-trace.md",
+        "docs/agent-work/h4-navi-divisor-source-recon.md",
+        "build/agent-work/H4-semantic/h4-navi-divisor-source-recon/001/task.json",
+        "build/agent-work/H4-semantic/h4-navi-divisor-source-recon/001/handoff.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-call-return-trace/002/checks/runtime-call-return-004/report.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-call-return-trace/002/checks/runtime-call-return-004/original.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-call-return-trace/002/checks/runtime-call-return-004/patched.json"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-navi-divisor-source-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Independently disassemble 0x0039FA68 and verify ARM mode, exact instruction/literal chain, ABI result/clobbers, and absence of checks.",
+        "Verify the claimed initializer store at host+0x34 and the scan method/limits for possible writers. Check that 1.0f initialization is not overstated as runtime domain guarantee.",
+        "Cross-check the accepted run-004 fields and state whether they include host+0x34 or an invocation of the accessor/divide sites. Correct any unsupported runtime or general-domain claim.",
+        "Return a bounded acceptance/rework recommendation; no source edits except assigned review report/handoff, no emulator/build/save access."
+      ],
+      "validation_plan": [
+        "Independent static image disassembly and frozen-artifact review; preserve input hash verification and distinction between scan evidence and exhaustive writer proof."
+      ]
+    },
+    {
+      "id": "h4-navi-divisor-runtime-sample",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Passively capture the host+0x34 divisor bytes when helper 0x0039FA68 is reached on the paired H4 checkpoint, and report exact hit/absence evidence without changing guest state.",
+      "depends_on": [
+        "h4-navi-callback-call-return-trace",
+        "h4-navi-callback-call-return-trace-review",
+        "h4-navi-helper-39c944-recon",
+        "h4-navi-helper-contracts-review",
+        "h4-navi-divisor-source-recon",
+        "h4-navi-divisor-source-review"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/emulator-testing-guide.md",
+        "tools/h3_autonomous_verify.py",
+        "extracted/exefs/code.bin",
+        "config/reconstruction.json",
+        "docs/milestones/H4-exploration-minimum.md",
+        "docs/agent-work/h4-navi-callback-call-return-trace.md",
+        "docs/agent-work/h4-navi-callback-call-return-trace-review.md",
+        "docs/agent-work/h4-navi-helper-39c944-recon.md",
+        "docs/agent-work/h4-navi-helper-contracts-review.md",
+        "docs/agent-work/h4-navi-divisor-source-recon.md",
+        "docs/agent-work/h4-navi-divisor-source-review.md",
+        "build/agent-work/H4-semantic/h4-navi-callback-call-return-trace/002/task.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-call-return-trace/002/checks/runtime-call-return-004/report.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-call-return-trace/002/checks/runtime-call-return-004/original.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-call-return-trace/002/checks/runtime-call-return-004/patched.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-call-return-trace/002/checks/runtime-post-run-audit.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-passive-capture/run-002/checks/offline-h3-entry/report.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-passive-capture/run-002/checks/offline-h3-caller/report.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-passive-capture/run-002/checks/offline-h4-direct/report.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-passive-capture/run-002/checks/offline-h4-camera/report.json"
+      ],
+      "write_paths": [],
+      "compiler_slots": 0,
+      "exclusive_resources": [
+        "Azahar private runtime, isolated original/patched profiles, GDB ports 54342/54343"
+      ],
+      "acceptance": [
+        "Before launching Azahar, compare current code.bin, runner, candidate, and pinned offline H3 placement/caller plus H4 direct differential/camera composition artifacts; reuse only evidence whose relevant input hashes still match. Stop on any changed or failed gate.",
+        "Run original and patched profiles from the isolated H3 checkpoint using the existing private loopback-bound Azahar and Python RSP runner. Use only read-only breakpoints 0x0039FA70 and 0x0039FA74 after the 250-field-tick checkpoint; capture actual PC/thread, r0 host pointer, validated host+0x30..+0x38 bytes, and the current callback/object context if available. No axis override, keyboard injection, guest-memory writes, or register writes during the probe.",
+        "Record one hit, multiple hits if naturally observed, timeout/no-hit, pointer validation and read errors without inferring unobserved callback/divide branches. Pair original/patched values and statuses.",
+        "Preserve staged save hashes and per-run profile manifests, terminate both Azahar processes, verify ports/processes closed, and record that a sample does not prove a general divisor domain. Write the assigned report and handoff only."
+      ],
+      "validation_plan": [
+        "Offline-first evidence audit followed by a paired bounded RSP read-only probe. Use a fresh run output directory, default checkpoint load seam, 250 field ticks, and 60 post-callbacks. Do not write the user source save."
+      ]
+    },
+    {
+      "id": "h4-navi-divisor-runtime-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently audit the paired passive Navi divisor no-hit probe, offline gate reuse, save/profile integrity, and evidence limits.",
+      "depends_on": [],
+      "function_claims": [],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "extracted/exefs/code.bin",
+        "tools/h3_autonomous_verify.py",
+        "docs/milestones/H4-exploration-minimum.md",
+        "docs/agent-work/h4-navi-divisor-source-recon.md",
+        "docs/agent-work/h4-navi-divisor-source-review.md",
+        "docs/agent-work/h4-navi-callback-call-return-trace.md",
+        "docs/agent-work/h4-navi-callback-call-return-trace-review.md",
+        "docs/agent-work/h4-navi-divisor-runtime-sample.md",
+        "build/agent-work/H4-semantic/h4-navi-divisor-runtime-sample/001/task.json",
+        "build/agent-work/H4-semantic/h4-navi-divisor-runtime-sample/001/handoff.json",
+        "build/agent-work/H4-semantic/h4-navi-divisor-runtime-sample/001/checks/runtime-005/report.json",
+        "build/agent-work/H4-semantic/h4-navi-divisor-runtime-sample/001/checks/runtime-005/original.json",
+        "build/agent-work/H4-semantic/h4-navi-divisor-runtime-sample/001/checks/runtime-005/patched.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-passive-capture/run-002/checks/offline-h3-entry/report.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-passive-capture/run-002/checks/offline-h3-caller/report.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-passive-capture/run-002/checks/offline-h4-direct/report.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-passive-capture/run-002/checks/offline-h4-camera/report.json"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-navi-divisor-runtime-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify the input hash audit, runner arguments and observed return code; check paired raw JSON for 250 field ticks, comparison fields, target hit/timeout status, stop PC/thread, and save/profile integrity.",
+        "Confirm that target probes did not capture host+0x34 or helper return bits and that the report does not infer callback/divisor reachability, a general divisor domain, physical input, or H4 completion.",
+        "Review the offline-first evidence reuse by checking its frozen report and source/tool hashes. Identify any factual mismatch or materially missing limitation. Read-only except assigned review report and handoff; no builds, emulator, profile/save access."
+      ],
+      "validation_plan": [
+        "Independent artifact/source review only. Recompute declared hashes and issue a bounded acceptance/rework recommendation."
+      ]
+    },
+    {
+      "id": "h4-navi-divisor-trigger-state-recon",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Trace the statically supported producer paths and guards for Navi callback object fields +0x3C/+0x40 and the 0x0039FA68 divisor branch, using run-004 only as sample evidence.",
+      "depends_on": [
+        "h4-navi-helper-39c944-recon",
+        "h4-navi-helper-contracts-review",
+        "h4-repeat-state-context-recon",
+        "h4-repeat-state-context-review",
+        "h4-navi-callback-call-return-trace",
+        "h4-navi-callback-call-return-trace-review"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "extracted/exefs/code.bin",
+        "config/functions.csv",
+        "docs/milestones/H4-exploration-minimum.md",
+        "docs/agent-work/h4-navi-callback-contract-recon.md",
+        "docs/agent-work/h4-navi-callback-contract-review.md",
+        "docs/agent-work/h4-navi-helper-39c944-recon.md",
+        "docs/agent-work/h4-navi-helper-contracts-review.md",
+        "docs/agent-work/h4-repeat-state-context-recon.md",
+        "docs/agent-work/h4-repeat-state-context-review.md",
+        "docs/agent-work/h4-repeat-object-ownership-recon.md",
+        "docs/agent-work/h4-repeat-object-ownership-review.md",
+        "docs/agent-work/h4-navi-callback-call-return-trace.md",
+        "docs/agent-work/h4-navi-callback-call-return-trace-review.md",
+        "build/agent-work/H4-semantic/h4-navi-callback-call-return-trace/002/checks/runtime-call-return-004/original.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-call-return-trace/002/checks/runtime-call-return-004/patched.json",
+        "build/agent-work/H4-semantic/h4-navi-divisor-runtime-sample/001/checks/runtime-005/original.json",
+        "build/agent-work/H4-semantic/h4-navi-divisor-runtime-sample/001/checks/runtime-005/patched.json"
+      ],
+      "write_paths": [],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Map the exact 0x0039C944 bit/float conditions that lead to 0x0039FA68 and identify direct stores to object-relative +0x3C/+0x40 in the callback object lineage.",
+        "Trace relevant initialization/update callers and guards (including 0x0039AF30, 0x0039B58C, 0x0039D758 when applicable); distinguish same-object flow from similarly offset state in unrelated objects.",
+        "Cross-check the prior run-004 callback object snapshot at +0x10/+0x3C/+0x40 and the new paired no-hit run, without transferring values between runs or claiming an internal branch was observed.",
+        "State whether an existing natural caller path can reach a delta >0.5, the smallest passive capture needed, and unresolved input/object identity. Static only: no C++ implementation, build, emulator, save access or guest writes."
+      ],
+      "validation_plan": [
+        "Use pinned ARM image, aligned caller/writer scans with explicit limits, accepted reports and frozen runtime artifacts. Write one bounded dependency recon and a structured handoff."
+      ]
+    },
+    {
+      "id": "h4-navi-divisor-trigger-state-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the Navi callback-object delta producers, divisor branch triggers, and separation of run-004 vs run-005 evidence.",
+      "depends_on": [],
+      "function_claims": [],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "extracted/exefs/code.bin",
+        "config/functions.csv",
+        "docs/milestones/H4-exploration-minimum.md",
+        "docs/agent-work/h4-navi-helper-39c944-recon.md",
+        "docs/agent-work/h4-navi-helper-contracts-review.md",
+        "docs/agent-work/h4-repeat-state-context-recon.md",
+        "docs/agent-work/h4-repeat-state-context-review.md",
+        "docs/agent-work/h4-repeat-object-ownership-recon.md",
+        "docs/agent-work/h4-repeat-object-ownership-review.md",
+        "docs/agent-work/h4-navi-callback-call-return-trace.md",
+        "docs/agent-work/h4-navi-callback-call-return-trace-review.md",
+        "docs/agent-work/h4-navi-divisor-source-recon.md",
+        "docs/agent-work/h4-navi-divisor-source-review.md",
+        "docs/agent-work/h4-navi-divisor-runtime-sample.md",
+        "docs/agent-work/h4-navi-divisor-runtime-review.md",
+        "docs/agent-work/h4-navi-divisor-trigger-state-recon.md",
+        "build/agent-work/H4-semantic/h4-navi-divisor-trigger-state-recon/001/task.json",
+        "build/agent-work/H4-semantic/h4-navi-divisor-trigger-state-recon/001/handoff.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-call-return-trace/002/checks/runtime-call-return-004/original.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-call-return-trace/002/checks/runtime-call-return-004/patched.json",
+        "build/agent-work/H4-semantic/h4-navi-divisor-runtime-sample/001/checks/runtime-005/original.json",
+        "build/agent-work/H4-semantic/h4-navi-divisor-runtime-sample/001/checks/runtime-005/patched.json"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-navi-divisor-trigger-state-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify both control-flow routes to 0x0039FA68 and the exact guards, including the distinct +0x3C/+0x40 threshold path and coordinate-query path.",
+        "Cross-check all listed stores/callers for same-object register flow and confirm the host+0x34 divisor is not conflated with callback-object-relative +0x3C/+0x40.",
+        "Audit run-004 and run-005 raw evidence separately; ensure run-005 is only no-hit and no run-004 values are presented as current-run measurements.",
+        "Review whether suggested passive capture points and interpretations are supported; flag any overclaim about natural runtime reachability, player/movement/interaction, or divisor domain. Static review only; no emulator/build/save access."
+      ],
+      "validation_plan": [
+        "Independent Capstone/static source and artifact verification. Write only assigned review report and structured handoff."
+      ]
+    },
+    {
+      "id": "h4-navi-divisor-trigger-runtime-capture",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Passively trace one naturally scheduled H4 Navi callback from entry through 0x0039C944 and its route/threshold entries in paired original/patched checkpoint runs.",
+      "depends_on": [
+        "h4-navi-callback-call-return-trace",
+        "h4-navi-callback-call-return-trace-review",
+        "h4-navi-divisor-trigger-state-recon",
+        "h4-navi-divisor-trigger-state-review",
+        "h4-navi-divisor-runtime-sample",
+        "h4-navi-divisor-runtime-review"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/emulator-testing-guide.md",
+        "tools/h3_autonomous_verify.py",
+        "extracted/exefs/code.bin",
+        "config/reconstruction.json",
+        "docs/milestones/H4-exploration-minimum.md",
+        "docs/agent-work/h4-navi-callback-call-return-trace.md",
+        "docs/agent-work/h4-navi-callback-call-return-trace-review.md",
+        "docs/agent-work/h4-navi-divisor-trigger-state-recon.md",
+        "docs/agent-work/h4-navi-divisor-trigger-state-review.md",
+        "docs/agent-work/h4-navi-divisor-runtime-sample.md",
+        "docs/agent-work/h4-navi-divisor-runtime-review.md",
+        "build/agent-work/H4-semantic/h4-navi-callback-call-return-trace/002/checks/runtime-call-return-004/report.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-call-return-trace/002/checks/runtime-call-return-004/original.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-call-return-trace/002/checks/runtime-call-return-004/patched.json",
+        "build/agent-work/H4-semantic/h4-navi-divisor-runtime-sample/001/checks/runtime-005/report.json",
+        "build/agent-work/H4-semantic/h4-navi-divisor-runtime-sample/001/checks/runtime-005/original.json",
+        "build/agent-work/H4-semantic/h4-navi-divisor-runtime-sample/001/checks/runtime-005/patched.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-passive-capture/run-002/checks/offline-h3-entry/report.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-passive-capture/run-002/checks/offline-h3-caller/report.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-passive-capture/run-002/checks/offline-h4-direct/report.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-passive-capture/run-002/checks/offline-h4-camera/report.json"
+      ],
+      "write_paths": [],
+      "compiler_slots": 0,
+      "exclusive_resources": [
+        "Azahar private runtime, isolated original/patched profiles, GDB ports 54342/54343"
+      ],
+      "acceptance": [
+        "Before Azahar, verify the packet-pinned image, runner, reusable H3 placement/caller and H4 differential/camera-composition inputs still match; reuse only current offline evidence. Stop if a required pin differs.",
+        "Use paired isolated original/patched profiles from the same known-save checkpoint, with 250 field ticks and passive execution breakpoints at 0x00399D60, 0x0039C944, 0x0039C968 and 0x0039C9E8 in that order. Record target hits, GDB thread, PC, registers and bounded validated same-object/global snapshots. No axis override, physical input, synthetic game-state change, or guest/register writes during the probes.",
+        "Report the clear-entry-bit route and any no-hit/timeout without inferring that the divisor or callback branch ran. Compare the bounded field signature, staged save hashes, per-run profile manifests, process/port cleanup, and distinguish any manual external save hash checks from bundled artifacts.",
+        "Write the report and structured handoff with evidence limits; do not claim movement, interaction, zone transition, or H4 completion."
+      ],
+      "validation_plan": [
+        "Offline-first gate reuses accepted artifacts only after hash equality; paired autonomous loopback Azahar run uses fresh output and standard title-load seam, then closes both processes."
+      ]
+    },
+    {
+      "id": "h4-navi-divisor-trigger-runtime-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently audit the paired Navi trigger-route capture, frozen offline gate, raw GDB stop/register evidence, source/staged save integrity and evidence limits.",
+      "depends_on": [],
+      "function_claims": [],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "tools/h3_autonomous_verify.py",
+        "extracted/exefs/code.bin",
+        "docs/milestones/H4-exploration-minimum.md",
+        "docs/agent-work/h4-navi-divisor-trigger-runtime-capture.md",
+        "docs/agent-work/h4-navi-divisor-trigger-state-recon.md",
+        "docs/agent-work/h4-navi-divisor-trigger-state-review.md",
+        "docs/agent-work/h4-navi-callback-call-return-trace.md",
+        "build/agent-work/H4-semantic/h4-navi-divisor-trigger-runtime-capture/001/task.json",
+        "build/agent-work/H4-semantic/h4-navi-divisor-trigger-runtime-capture/001/handoff.json",
+        "build/agent-work/H4-semantic/h4-navi-divisor-trigger-runtime-capture/001/checks/preflight.json",
+        "build/agent-work/H4-semantic/h4-navi-divisor-trigger-runtime-capture/001/checks/postflight.json",
+        "build/agent-work/H4-semantic/h4-navi-divisor-trigger-runtime-capture/001/checks/runtime-006/report.json",
+        "build/agent-work/H4-semantic/h4-navi-divisor-trigger-runtime-capture/001/checks/runtime-006/original.json",
+        "build/agent-work/H4-semantic/h4-navi-divisor-trigger-runtime-capture/001/checks/runtime-006/patched.json",
+        "build/agent-work/H4-semantic/h4-navi-divisor-runtime-sample/001/checks/runtime-005/report.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-passive-capture/run-002/checks/offline-h3-entry/report.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-passive-capture/run-002/checks/offline-h3-caller/report.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-passive-capture/run-002/checks/offline-h4-direct/report.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-passive-capture/run-002/checks/offline-h4-camera/report.json"
+      ],
+      "write_paths": [],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recompute the task input and frozen offline-gate hashes; check the saved pre/post source-save SHA evidence and both staged before/after save/profile manifests.",
+        "Independently inspect each raw runtime probe for hit, order, PC, thread, registers, callback object snapshots, and confirm that the report distinguishes reaching 0x0039C9E8 from the threshold comparison branch outcome and accessor/divide reachability.",
+        "Check the paired bounded tick/signature claims and cleanup evidence. Report any material factual mismatch or missing limit; do not access the private profile/save or launch Azahar."
+      ],
+      "validation_plan": [
+        "Independent read-only artifact/source review; produce a bounded acceptance or rework recommendation and structured handoff."
+      ]
+    },
+    {
+      "id": "h4-navi-divisor-threshold-runtime-capture",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Fix the passive Navi return-trace opt-in bug in the autonomous runner, then trace the threshold outcome and any naturally reached accessor/divides in paired original/patched checkpoint runs.",
+      "depends_on": [
+        "h4-navi-divisor-trigger-runtime-capture",
+        "h4-navi-divisor-trigger-runtime-review",
+        "h4-navi-divisor-trigger-state-review",
+        "h4-navi-divisor-source-review"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/emulator-testing-guide.md",
+        "tools/h3_autonomous_verify.py",
+        "extracted/exefs/code.bin",
+        "config/reconstruction.json",
+        "docs/milestones/H4-exploration-minimum.md",
+        "docs/agent-work/h4-navi-divisor-trigger-runtime-capture.md",
+        "docs/agent-work/h4-navi-divisor-trigger-runtime-review.md",
+        "docs/agent-work/h4-navi-divisor-trigger-state-recon.md",
+        "docs/agent-work/h4-navi-divisor-trigger-state-review.md",
+        "docs/agent-work/h4-navi-divisor-source-recon.md",
+        "docs/agent-work/h4-navi-divisor-source-review.md",
+        "build/agent-work/H4-semantic/h4-navi-divisor-trigger-runtime-capture/001/checks/preflight.json",
+        "build/agent-work/H4-semantic/h4-navi-divisor-trigger-runtime-capture/001/checks/runtime-006/report.json",
+        "build/agent-work/H4-semantic/h4-navi-divisor-trigger-runtime-capture/001/checks/runtime-006/original.json",
+        "build/agent-work/H4-semantic/h4-navi-divisor-trigger-runtime-capture/001/checks/runtime-006/patched.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-passive-capture/run-002/checks/offline-h3-entry/report.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-passive-capture/run-002/checks/offline-h3-caller/report.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-passive-capture/run-002/checks/offline-h4-direct/report.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-passive-capture/run-002/checks/offline-h4-camera/report.json"
+      ],
+      "write_paths": [],
+      "compiler_slots": 0,
+      "exclusive_resources": [
+        "Azahar private runtime, isolated original/patched profiles, GDB ports 54342/54343"
+      ],
+      "acceptance": [
+        "Before any Azahar launch, verify pinned code image, the four reused offline reports, H3/H4 candidate/runner hashes and H3 ARM/Thumb interworking evidence. Record the current runtime runner hash; if any reused evidence input differs, stop and refresh that evidence first.",
+        "Correct the passive helper so navi_callback_call_return_trace is captured only when --navi-callback-return-trace is specified; keep all existing execution probes and snapshots unchanged. Validate script parse and CLI help.",
+        "Run paired original/patched passive probes on the same staged save checkpoint without axis override, physical input, synthetic game-state change, or guest/register writes. Trace callback/helper entry, threshold fallthrough and exit addresses 0x0039CA18 and 0x0039CA90, the accessor load/return 0x0039FA70/0x0039FA74, accessor return sites 0x0039CA3C/0x0039CAA4, and delta divides 0x0039CA64/0x0039CA7C. Use a finite per-probe timeout and preserve each hit/no-hit, PC, thread, registers, validated object/global and host+0x34 bytes when available.",
+        "Compare bounded checkpoint signature/ticks and both per-run staged saves/profile manifests; persist external source save pre/post hash and Azahar/process/port cleanup. State whether any probe was reached and do not infer movement, interaction, zone transition, divisor domain or H4 completion.",
+        "Write report and structured handoff, then request independent review before any further promotion or semantic claim."
+      ],
+      "validation_plan": [
+        "AST/CLI validation and pinned offline-first hash gate before Azahar; paired autonomous loopback Azahar run uses fresh output and private profiles; check handoff and have an independent reviewer audit every captured value and limitation."
+      ]
+    },
+    {
+      "id": "h4-navi-divisor-threshold-runtime-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently audit the corrected Navi trace opt-in, paired threshold-route capture, raw differences, save/profile integrity and evidence limits.",
+      "depends_on": [],
+      "function_claims": [],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "tools/h3_autonomous_verify.py",
+        "extracted/exefs/code.bin",
+        "docs/milestones/H4-exploration-minimum.md",
+        "docs/agent-work/h4-navi-divisor-threshold-runtime-capture.md",
+        "docs/agent-work/h4-navi-divisor-trigger-runtime-capture.md",
+        "docs/agent-work/h4-navi-divisor-trigger-runtime-review.md",
+        "docs/agent-work/h4-navi-divisor-trigger-state-recon.md",
+        "docs/agent-work/h4-navi-divisor-trigger-state-review.md",
+        "build/agent-work/H4-semantic/h4-navi-divisor-threshold-runtime-capture/001/task.json",
+        "build/agent-work/H4-semantic/h4-navi-divisor-threshold-runtime-capture/001/handoff.json",
+        "build/agent-work/H4-semantic/h4-navi-divisor-threshold-runtime-capture/001/checks/preflight.json",
+        "build/agent-work/H4-semantic/h4-navi-divisor-threshold-runtime-capture/001/checks/postflight.json",
+        "build/agent-work/H4-semantic/h4-navi-divisor-threshold-runtime-capture/001/checks/runtime-007/report.json",
+        "build/agent-work/H4-semantic/h4-navi-divisor-threshold-runtime-capture/001/checks/runtime-007/original.json",
+        "build/agent-work/H4-semantic/h4-navi-divisor-threshold-runtime-capture/001/checks/runtime-007/patched.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-passive-capture/run-002/checks/offline-h3-entry/report.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-passive-capture/run-002/checks/offline-h3-caller/report.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-passive-capture/run-002/checks/offline-h4-direct/report.json",
+        "build/agent-work/H4-semantic/h4-navi-callback-passive-capture/run-002/checks/offline-h4-camera/report.json"
+      ],
+      "write_paths": [],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recompute all packet input hashes and check preflight current offline reports, runner/candidate hashes and H3 IPS/caller evidence.",
+        "Independently inspect the runner diff to confirm nested return-trace capture occurs only under its opt-in flag and inspect CLI/AST check records.",
+        "Inspect paired raw probes for branch route, stop PC/thread/registers, callback object and delta snapshots, no-hits/timeouts, and ensure the report distinguishes true field-signature equality from false title/load/event fields.",
+        "Verify source/staged save hashes, profile manifests and process/socket postflight. Report any mismatch or missing limit. No emulator launch or private profile/save access."
+      ],
+      "validation_plan": [
+        "Read-only independent review of the runner source diff, report and raw artifacts; return a bounded disposition and structured handoff."
+      ]
+    },
+    {
+      "id": "h4-navi-query-002c01b0-recon",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover the static input/output and memory contract of 0x002C01B0 as used by the Navi trigger paths, including mode-specific caller behavior.",
+      "depends_on": [
+        "h4-navi-divisor-trigger-state-review",
+        "h4-navi-divisor-trigger-runtime-capture"
+      ],
+      "function_claims": [
+        "0x002c01b0"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "extracted/exefs/code.bin",
+        "config/functions.csv",
+        "config/symbols.csv",
+        "tools/analyze_code.py",
+        "tools/split_asm.py",
+        "docs/agent-work/h4-navi-divisor-trigger-state-recon.md",
+        "docs/agent-work/h4-navi-divisor-trigger-state-review.md",
+        "docs/agent-work/h4-navi-divisor-trigger-runtime-review.md",
+        "docs/agent-work/h4-navi-callback-contract-recon.md",
+        "docs/agent-work/h4-navi-helper-39c944-recon.md"
+      ],
+      "write_paths": [],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Disassemble the pinned function and enumerate relevant direct callers, especially the call in 0x0039C944.",
+        "Recover arguments, return convention, reads/writes, mode-dependent branches, error/edge behavior and bounds from instructions and caller setup/use.",
+        "Keep domain meaning/ownership unknown unless proven; distinguish static route evidence from run-006/run-007 runtime observations.",
+        "Write a structured report and handoff; no builds, emulator, private profile/save access, or C++ changes."
+      ],
+      "validation_plan": [
+        "Recompute function/source hashes, inspect relevant caller windows and run check-handoff."
+      ]
+    },
+    {
+      "id": "h4-navi-coordinate-helper-contracts-recon",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover the static contracts of 0x00231F58 and 0x00231B38 along the Navi delta and coordinate caller paths.",
+      "depends_on": [
+        "h4-navi-divisor-trigger-state-review",
+        "h4-navi-divisor-trigger-runtime-capture"
+      ],
+      "function_claims": [
+        "0x00231f58",
+        "0x00231b38"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "extracted/exefs/code.bin",
+        "config/functions.csv",
+        "config/symbols.csv",
+        "tools/analyze_code.py",
+        "tools/split_asm.py",
+        "docs/agent-work/h4-navi-divisor-trigger-state-recon.md",
+        "docs/agent-work/h4-navi-divisor-trigger-state-review.md",
+        "docs/agent-work/h4-navi-divisor-trigger-runtime-review.md",
+        "docs/agent-work/h4-navi-helper-39c944-recon.md",
+        "docs/agent-work/h4-navi-divisor-source-recon.md",
+        "docs/agent-work/h4-navi-divisor-source-review.md"
+      ],
+      "write_paths": [],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Disassemble both pinned functions and trace argument construction and post-call use in 0x0039C944 at 0x0039CA40 and 0x0039CA88, plus the coordinate path after 0x0039CAA0.",
+        "Recover pointer dereferences, output structure, mutations, return values/flags, branch and numeric edge behavior, and caller-visible clobbers only where supported.",
+        "Separate the accessor result and `s0` division from helper outputs; do not infer player/movement meaning from coordinates or names.",
+        "Write a structured report and handoff; no builds, emulator, private profile/save access, or C++ changes."
+      ],
+      "validation_plan": [
+        "Recompute function/source hashes, inspect direct caller windows and run check-handoff."
+      ]
+    },
+    {
+      "id": "h4-navi-query-coordinate-contracts-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the Navi shared query and coordinate-helper static contracts, caller mappings, memory effects and stated evidence limits.",
+      "depends_on": [],
+      "function_claims": [],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "extracted/exefs/code.bin",
+        "config/functions.csv",
+        "config/symbols.csv",
+        "tools/analyze_code.py",
+        "tools/split_asm.py",
+        "docs/agent-work/h4-navi-divisor-trigger-state-recon.md",
+        "docs/agent-work/h4-navi-divisor-trigger-state-review.md",
+        "docs/agent-work/h4-navi-divisor-source-recon.md",
+        "docs/agent-work/h4-navi-divisor-source-review.md",
+        "docs/agent-work/h4-navi-query-002c01b0-recon.md",
+        "docs/agent-work/h4-navi-coordinate-helper-contracts-recon.md",
+        "build/agent-work/H4-semantic/h4-navi-query-002c01b0-recon/001/task.json",
+        "build/agent-work/H4-semantic/h4-navi-query-002c01b0-recon/001/handoff.json",
+        "build/agent-work/H4-semantic/h4-navi-coordinate-helper-contracts-recon/001/task.json",
+        "build/agent-work/H4-semantic/h4-navi-coordinate-helper-contracts-recon/001/handoff.json",
+        "build/agent-work/H4-semantic/h4-navi-divisor-trigger-runtime-capture/001/checks/runtime-006/report.json",
+        "build/agent-work/H4-semantic/h4-navi-divisor-threshold-runtime-capture/001/checks/runtime-007/report.json"
+      ],
+      "write_paths": [],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recompute all frozen report/source hashes declared by the two recon packets and handoffs.",
+        "Independently inspect instructions/callers for 0x002C01B0/0x002C01B8, 0x00231F58 and 0x00231B38; verify return values, output widths/order, aliases, memory effects and boundary claims.",
+        "Confirm the query was not asserted to have run in runtime-006/007 unless raw artifacts show a 0x0039C980/0x0039C984 stop, and keep game-specific movement/player semantics unresolved.",
+        "Write any factual corrections and a bounded accept/rework recommendation; read-only except assigned review report/handoff, no emulator/profile/save access."
+      ],
+      "validation_plan": [
+        "Independent disassembly and handoff hash audit, then check-handoff."
+      ]
+    },
+    {
+      "id": "h4-axis-reader-contract-audit",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Strengthen the experimental 0x0027FBC8 candidate\u2019s direct original-vs-C++ evidence with same-input mutation sensitivity, edge/alias cases and bounded ABI/write-set observations.",
+      "depends_on": [
+        "h4-axis-reader-candidate",
+        "h4-axis-reader-review",
+        "h4-reproducible-camera-composition",
+        "h4-reproducible-camera-composition-review"
+      ],
+      "function_claims": [
+        "0x0027fbc8"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "extracted/exefs/code.bin",
+        "config/reconstruction.json",
+        "config/functions.csv",
+        "docs/function-records/0x0027fbc8.md",
+        "experiments/semantic_equivalence/h4_axis_reader_candidate.cpp",
+        "tools/h4_axis_reader_experiment.py",
+        "tools/h4_axis_camera_composition.py",
+        "docs/agent-work/h4-axis-reader-review.md",
+        "docs/agent-work/h4-camera-candidate-composition-review.md",
+        "docs/agent-work/h4-reproducible-camera-composition-review.md",
+        "build/agent-work/H4-semantic/h4-axis-reader-candidate/run-001/checks/seed-7/report.json",
+        "build/agent-work/H4-semantic/h4-axis-reader-candidate/run-001/checks/seed-20261028/report.json",
+        "build/agent-work/H4-semantic/h4-reproducible-camera-composition/run-001/checks/camera-002/report.json"
+      ],
+      "write_paths": [
+        "tools/h4_axis_reader_experiment.py",
+        "docs/agent-work/h4-axis-reader-contract-audit.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Before reruns, verify pinned code.bin, candidate source, prior direct reports, direct runner and camera composition report/tool hashes. Preserve the existing reports and use fresh output directories.",
+        "Add a same-input candidate mutation control for the unsigned upper-mode bound; run original and mutant with identical mode-2 inputs and require the harness to detect a semantic difference. Keep mutation bytes and outputs under ignored build/.",
+        "Expand focused cases for mode/max boundaries, calibration selectors and spans, signed halfword extremes, zero/nonzero/negative-zero/NaN/infinite threshold, deadzone equality boundaries, null and aliased output pointers including X==Y, and zero-span zero/nonzero numerators. Record any faults/differences honestly.",
+        "Compare outputs plus explicitly bounded non-stack writes, callee-saved GPR/VFP registers and FPSCR; distinguish scratch-stack layout differences from caller-visible effects. Do not claim full ABI/fault or hardware equivalence beyond the measured domains.",
+        "Do not edit candidate logic unless a same-input counterexample demonstrates a supported semantic mismatch; if edited, update the report and rerun the affected matrix with negative controls. No emulator launch in this offline validation batch."
+      ],
+      "validation_plan": [
+        "AST/CLI checks, focused direct differentials using fresh run outputs, mutation sensitivity assertion and handoff/hash audit; independent review before any production integration."
+      ]
+    },
+    {
+      "id": "h4-axis-reader-contract-audit-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently audit the expanded 0x0027FBC8 direct differential, same-input mode-2 mutation control, observed invalid-pointer faults, hash provenance, and evidence limits.",
+      "depends_on": [
+        "h4-axis-reader-candidate",
+        "h4-axis-reader-review",
+        "h4-reproducible-camera-composition",
+        "h4-reproducible-camera-composition-review"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "extracted/exefs/code.bin",
+        "config/game_info.json",
+        "experiments/semantic_equivalence/h4_axis_reader_candidate.cpp",
+        "build/agent-work/H4-semantic/h4-axis-reader-contract-audit/001/review-inputs/h4_axis_reader_experiment.py",
+        "build/agent-work/H4-semantic/h4-axis-reader-contract-audit/001/review-inputs/h4-axis-reader-contract-audit.md",
+        "docs/agent-work/h4-axis-reader-review.md",
+        "docs/agent-work/h4-reproducible-camera-composition-review.md",
+        "build/agent-work/H4-semantic/h4-axis-reader-contract-audit/001/task.json",
+        "build/agent-work/H4-semantic/h4-axis-reader-contract-audit/001/handoff.json",
+        "build/agent-work/H4-semantic/h4-axis-reader-contract-audit/001/checks/contract-042-r3/contract-audit-report.json",
+        "build/agent-work/H4-semantic/h4-axis-reader-candidate/run-001/checks/seed-7/report.json",
+        "build/agent-work/H4-semantic/h4-axis-reader-candidate/run-001/checks/seed-20261028/report.json",
+        "build/agent-work/H4-semantic/h4-reproducible-camera-composition/run-001/checks/camera-002/report.json"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-axis-reader-contract-audit-review.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Independently recompute the pinned source/reference/prior-report hashes and inspect the runner logic that builds the expanded matrix, models callee-saved GPR/VFP and FPSCR state, logs writes, and scopes post-fault observations.",
+        "Verify the mode-2 original-versus-mutated run used byte-identical input state and detects the CMP upper-bound mutation; independently rerun the frozen direct audit at a fresh seed/output if feasible.",
+        "Check selector, aliases, zero/reversed span, signed extremes, threshold and deadzone boundaries, null outputs, invalid-pointer faults, write ordering, preserved registers and FPSCR; record gaps or false-positive/false-negative risks.",
+        "Write an independent bounded accept/rework report with evidence levels. Do not edit the runner/candidate, integrate production code, launch an emulator, or inspect/mutate private save/profile data."
+      ],
+      "validation_plan": [
+        "Review frozen hashes, inspect source/report and perform an independent fresh-seed run; handoff findings and run check-handoff."
+      ]
+    },
+    {
+      "id": "h4-axis-calibration-helper-contracts",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover the static value, pointer, calibration-selector and output contracts from 0x0011C5EC through 0x00128610 and its three selector helpers, plus the conditional output-mask helper 0x0013BCAC.",
+      "depends_on": [
+        "h4-input-buffer-producer-recon",
+        "h4-input-buffer-producer-review",
+        "h4-axis-reader-contract-audit",
+        "h4-axis-reader-contract-audit-review"
+      ],
+      "function_claims": [
+        "0x0011c5ec",
+        "0x00128610",
+        "0x0013b9fc",
+        "0x0013b8f8",
+        "0x0013bae0",
+        "0x0013bcac"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "extracted/exefs/code.bin",
+        "config/functions.csv",
+        "config/symbols.csv",
+        "tools/split_asm.py",
+        "tools/analyze_code.py",
+        "src/engine/leaf_batch16_c.cpp",
+        "src/engine/leaf_batch28_a.cpp",
+        "src/engine/leaf_batch29_a.cpp",
+        "src/engine/leaf_batch30_a.cpp",
+        "src/engine/leaf_batch44_c.cpp",
+        "docs/agent-work/h4-input-buffer-producers.md",
+        "docs/agent-work/h4-input-buffer-producer-review.md",
+        "docs/agent-work/h4-input-cursor-producer-recon.md",
+        "docs/agent-work/h4-axis-reader-contract-audit.md",
+        "docs/agent-work/h4-axis-reader-contract-audit-review.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-axis-calibration-helper-contracts-recon.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Disassemble the pinned functions and trace the 0x0011C5EC call setup for 0x00128610 and the parent selector dispatch. Recover register/stack arguments, value versus pointer semantics, signedness and widths, return/clobber evidence, dereferences, writes and alias/order effects where statically supported.",
+        "For selectors 0, 1 and 2, recover each helper's fixed-point/float arithmetic, clamp branches, stores, overflow/rounding behavior and boundary conditions; document selector values outside 0..2 and any branches that skip transformation.",
+        "Recover the exact predicate and data effects of the optional 0x0013BCAC call and how parent code transforms or clears adjacent output words/halfwords after helper calls.",
+        "Separate static consumer-side calibration transforms from the unresolved source-object writer, refresh cadence, physical input API, camera response and player movement. Do not infer meanings from names or numeric plausibility.",
+        "Write a bounded structured report and handoff. No C++ candidate, build, emulator, GDB, save/profile access, or board edits."
+      ],
+      "validation_plan": [
+        "Verify code.bin and all packet inputs against hashes, independently recalculate relevant ARM instruction/dataflow claims, list direct callers where feasible, and run check-handoff."
+      ]
+    },
+    {
+      "id": "h4-axis-calibration-helper-contracts-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently audit the static ARM dataflow, signed arithmetic and VFP predicates reported for the H4 axis calibration pipeline and optional sample-bit remapper.",
+      "depends_on": [
+        "h4-input-buffer-producer-recon",
+        "h4-input-buffer-producer-review",
+        "h4-axis-reader-contract-audit-review"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "extracted/exefs/code.bin",
+        "config/functions.csv",
+        "config/symbols.csv",
+        "tools/split_asm.py",
+        "build/agent-work/H4-semantic/h4-axis-calibration-helper-contracts/001/review-inputs/h4-axis-calibration-helper-contracts-recon.md",
+        "build/agent-work/H4-semantic/h4-axis-calibration-helper-contracts/001/review-inputs/handoff.json",
+        "docs/agent-work/h4-input-buffer-producers.md",
+        "docs/agent-work/h4-input-buffer-producer-review.md",
+        "docs/agent-work/h4-input-cursor-producer-recon.md",
+        "docs/agent-work/h4-axis-reader-contract-audit-review.md",
+        "build/agent-work/H4-semantic/h4-axis-calibration-helper-contracts/001/task.json"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-axis-calibration-helper-contracts-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recompute the pinned image/function identities and inspect the parent and each selected helper directly in ARM; challenge register/stack arguments, signedness, low-word overflow, and output/store ordering.",
+        "Independently verify selectors 0/1/2, selector-out-of-range behavior, integer division/iteration claims, VFP HS/unordered boundary behavior, VCVT rounding direction, and the conditional 0x0013BCAC predicate/store sequence. Identify any overclaims or missing branches.",
+        "Keep unresolved 0x002C615C division behavior, pathological arithmetic, physical device identity, source-object writer, caller cadence, and player movement explicit. No build, C++, emulator, GDB, save/profile access or source edits.",
+        "Write an independent bounded accept/rework report and handoff with verified hashes."
+      ],
+      "validation_plan": [
+        "Independently disassemble/recalculate the claimed instruction windows, verify frozen report snapshots, then run check-handoff."
+      ]
+    },
+    {
+      "id": "h4-axis-integer-divide-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover the integer quotient/remainder, signedness, zero-divisor and ABI behavior of the 0x002C615C helper called by H4 calibration transforms.",
+      "depends_on": [
+        "h4-input-buffer-producer-review",
+        "h4-axis-reader-contract-audit-review"
+      ],
+      "function_claims": [
+        "0x002c615c"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "extracted/exefs/code.bin",
+        "config/functions.csv",
+        "config/symbols.csv",
+        "tools/split_asm.py",
+        "src/engine/leaf_batch32_c.cpp",
+        "build/agent-work/H4-semantic/h4-axis-calibration-helper-contracts/001/review-inputs/h4-axis-calibration-helper-contracts-recon.md",
+        "docs/agent-work/h4-input-buffer-producer-review.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-axis-integer-divide-contract-recon.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Disassemble the pinned 0x002C615C routine and trace all positive/negative operand paths. Recover input registers, quotient/remainder outputs, signed truncation/sign rules, width/overflow boundaries, fast paths and ABI clobbers only where instruction evidence supports them.",
+        "Trace the zero-divisor branch and its 0x0014E604 dependency without inventing the failure outcome; identify direct callers and distinguish signed/unsigned entry behavior when possible.",
+        "Relate only the recovered helper contract to H4 selector-0/1 calibration callers; do not infer valid calibration ranges or treat a mathematical division replacement as supported before differential tests.",
+        "Write a bounded static report and structured handoff. No C++ implementation, build, emulator/GDB, save/profile access, guest writes or task-board edits."
+      ],
+      "validation_plan": [
+        "Verify pinned image and function hashes, calculate representative branch/return paths from ARM conditions, enumerate direct BL references, and run check-handoff."
+      ]
+    },
+    {
+      "id": "h4-axis-integer-divide-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently verify the 0x002C615C signed quotient/remainder derivation, divisor-zero route, overflow notes, ABI and H4 selector call mappings.",
+      "depends_on": [
+        "h4-input-buffer-producer-review",
+        "h4-axis-reader-contract-audit-review"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "extracted/exefs/code.bin",
+        "config/functions.csv",
+        "config/symbols.csv",
+        "tools/split_asm.py",
+        "build/agent-work/H4-semantic/h4-axis-integer-divide-contract/001/review-inputs/h4-axis-integer-divide-contract-recon.md",
+        "build/agent-work/H4-semantic/h4-axis-integer-divide-contract/001/review-inputs/handoff.json",
+        "src/engine/leaf_batch32_c.cpp",
+        "build/agent-work/H4-semantic/h4-axis-calibration-helper-contracts/001/review-inputs/h4-axis-calibration-helper-contracts-recon.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-axis-integer-divide-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Independently recalculate unsigned-magnitude division, quotient and remainder signs, `INT_MIN/-1`, zero divisor, fast paths, return registers, and stack preservation from the pinned ARM instructions.",
+        "Verify the 0x0014E604 -> 0x001524EC branch/tail-return and do not generalize the current-image divisor-zero result into a language or platform exception contract.",
+        "Inspect selector-0/1 callsites, ensure numerator/divisor arguments and no-guard statements match instructions, and challenge the 143-BL scan's bounded scope and any return/ABI overclaims.",
+        "Write an independent bounded accept/rework report and handoff. No C++, build, emulator/GDB, save/profile access, guest writes, or source changes."
+      ],
+      "validation_plan": [
+        "Verify all frozen hashes and function slice, disassemble/sign-trace the routine independently, and run check-handoff."
+      ]
+    },
+    {
+      "id": "h4-axis-integer-divide-correction-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Verify the corrections made to the H4 0x002C615C report after review-001 flagged zero-path stack writes and selector-1 scaled transformed products.",
+      "depends_on": [
+        "h4-input-buffer-producer-review",
+        "h4-axis-reader-contract-audit-review",
+        "h4-axis-integer-divide-contract-review"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "extracted/exefs/code.bin",
+        "config/functions.csv",
+        "build/agent-work/H4-semantic/h4-axis-integer-divide-contract/002/review-inputs/h4-axis-integer-divide-contract-recon.md",
+        "build/agent-work/H4-semantic/h4-axis-integer-divide-contract/002/review-inputs/handoff.json",
+        "docs/agent-work/h4-axis-integer-divide-contract-review.md",
+        "build/agent-work/H4-semantic/h4-axis-integer-divide-contract/002/task.json",
+        "build/agent-work/H4-semantic/h4-axis-calibration-helper-contracts/001/review-inputs/h4-axis-calibration-helper-contracts-recon.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-axis-integer-divide-correction-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Independently verify that the corrected report now describes the 8-byte `PUSH {r0,lr}` write and restored stack, and the selector-1 `r6/r5 * low32((B-A)<<7)` numerator products at the reported callsites.",
+        "Confirm no overclaim was added for zero-divisor language policy, signed-overflow C++ behavior, ABI/fault coverage, or the approximate 143/144 BL scan counts.",
+        "Recalculate the corrections directly from the pinned ARM instructions and prior review, then write a concise accept/rework report and handoff. No code, build, emulator/GDB, save/profile access or guest writes."
+      ],
+      "validation_plan": [
+        "Hash-check all packet inputs and inspect corrected instruction windows, then run check-handoff."
+      ]
+    },
+    {
+      "id": "h4-axis-integer-divide-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Build an experimental editable C++ replacement for 0x002C615C with the observed two-register quotient/remainder ABI, then compare it offline against the pinned ARM helper.",
+      "depends_on": [
+        "h4-axis-integer-divide-contract",
+        "h4-axis-integer-divide-contract-review",
+        "h4-axis-integer-divide-correction-review",
+        "h4-axis-calibration-helper-contracts",
+        "h4-axis-calibration-helper-contracts-review"
+      ],
+      "function_claims": [
+        "0x002c615c"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "extracted/exefs/code.bin",
+        "config/functions.csv",
+        "config/game_info.json",
+        "tools/build_check.py",
+        "tools/asm_diff.py",
+        "experiments/semantic_equivalence/h4_axis_reader_candidate.cpp",
+        "tools/h4_axis_reader_experiment.py",
+        "build/agent-work/H4-semantic/h4-axis-integer-divide-contract/002/review-inputs/h4-axis-integer-divide-contract-recon.md",
+        "docs/agent-work/h4-axis-integer-divide-contract-review.md",
+        "docs/agent-work/h4-axis-integer-divide-correction-review.md",
+        "docs/agent-work/h4-axis-calibration-helper-contracts-recon.md",
+        "docs/agent-work/h4-axis-calibration-helper-contracts-review.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h4_integer_divide_candidate.cpp",
+        "tools/h4_integer_divide_experiment.py",
+        "docs/agent-work/h4-axis-integer-divide-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Implement the pinned ordinary signed 32-bit quotient/remainder results and the observed current-image zero-divisor result without undefined signed overflow: quotient in r0, remainder in r1. Preserve INT_MIN/-1 as the observed wrapped quotient bits where feasible, with explicit guards; do not generalize the pinned zero-divisor behavior into a language exception policy.",
+        "Verify the compiled C++ scalar return type and machine ABI really place both words in r0/r1. Avoid unresolved dependency calls back into 0x002C615C or libc; measure SP and r4-r11 preservation and record original zero-path stack writes separately from caller-visible behavior.",
+        "Run a fresh direct original-versus-candidate differential matrix covering all sign combinations, 0/0 and nonzero/zero, \u00b11, exact and nonexact quotient/remainder, INT_MIN/INT_MAX, INT_MIN/-1 and deterministic randomized bit patterns. Record outputs, faults, SP/callee-saved state and non-stack writes.",
+        "Compile a mutated candidate under build/ which changes a defined same-input result (for example the zero-divisor remainder) and require the harness to detect it. Preserve all prior packet/report outputs; do not alter pinned code or production sources.",
+        "Write a bounded structured report/handoff. Candidate remains experimental; no caller replacement, production integration, emulator/runtime claim or player-control meaning."
+      ],
+      "validation_plan": [
+        "AST/CLI checks, fresh ARM compile, function extraction/relocation audit, exact-output ABI differential plus same-input mutation negative control, hash audit, then independent review."
+      ]
+    },
+    {
+      "id": "h4-axis-integer-divide-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the experimental C++ quotient/remainder candidate, compiled r0/r1 ABI, 633-case differential, mutation control, and differing stack write sets.",
+      "depends_on": [
+        "h4-axis-integer-divide-contract",
+        "h4-axis-integer-divide-contract-review",
+        "h4-axis-integer-divide-correction-review"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "extracted/exefs/code.bin",
+        "config/game_info.json",
+        "tools/build_check.py",
+        "tools/asm_diff.py",
+        "build/agent-work/H4-semantic/h4-axis-integer-divide-candidate/001/review-inputs/h4_integer_divide_candidate.cpp",
+        "build/agent-work/H4-semantic/h4-axis-integer-divide-candidate/001/review-inputs/h4_integer_divide_experiment.py",
+        "build/agent-work/H4-semantic/h4-axis-integer-divide-candidate/001/review-inputs/h4-axis-integer-divide-candidate.md",
+        "build/agent-work/H4-semantic/h4-axis-integer-divide-candidate/001/review-inputs/handoff.json",
+        "build/agent-work/H4-semantic/h4-axis-integer-divide-candidate/001/review-inputs/report.json",
+        "build/agent-work/H4-semantic/h4-axis-integer-divide-candidate/001/task.json",
+        "docs/agent-work/h4-axis-integer-divide-contract-review.md",
+        "docs/agent-work/h4-axis-integer-divide-correction-review.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-axis-integer-divide-candidate-review.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Independently inspect the candidate algorithm for unsigned-loop correctness, modular sign restoration, divisor zero, INT_MIN/-1, and a true two-register scalar return; verify the frozen object has no relocations back to the original or runtime division helpers.",
+        "Recompute every frozen input/source/report hash and inspect directed/random case generation, all r0/r1/SP/r4-r11 outcomes, faults, non-stack writes, original/candidate stack write differences, and same-input compiled mutation detection.",
+        "Rerun the frozen differential at a fresh deterministic seed/output if feasible. Clearly bound flags, stack-fault, full memory, caller composition, real calibration inputs, production integration, and runtime claims.",
+        "Write an independent accept/rework report and handoff. No source changes, production patch, emulator/GDB, save/profile access or guest writes."
+      ],
+      "validation_plan": [
+        "Independent source/object/report audit, fresh-run comparison when feasible, and check-handoff."
+      ]
+    },
+    {
+      "id": "h4-axis-integer-divide-caller-composition",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Compose the experimental 0x002C615C C++ candidate under the real selector-0/1 calibration callers and compare the original caller functions against original and candidate-helper images offline.",
+      "depends_on": [
+        "h4-axis-integer-divide-candidate",
+        "h4-axis-integer-divide-candidate-review",
+        "h4-axis-calibration-helper-contracts",
+        "h4-axis-calibration-helper-contracts-review",
+        "h4-axis-integer-divide-correction-review"
+      ],
+      "function_claims": [
+        "0x0013b9fc",
+        "0x0013b8f8"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "extracted/exefs/code.bin",
+        "config/functions.csv",
+        "config/game_info.json",
+        "experiments/semantic_equivalence/h4_integer_divide_candidate.cpp",
+        "tools/h4_integer_divide_experiment.py",
+        "tools/build_check.py",
+        "tools/asm_diff.py",
+        "docs/agent-work/h4-axis-integer-divide-contract-recon.md",
+        "docs/agent-work/h4-axis-integer-divide-contract-review.md",
+        "docs/agent-work/h4-axis-integer-divide-correction-review.md",
+        "docs/agent-work/h4-axis-integer-divide-candidate.md",
+        "docs/agent-work/h4-axis-integer-divide-candidate-review.md",
+        "docs/agent-work/h4-axis-calibration-helper-contracts-recon.md",
+        "docs/agent-work/h4-axis-calibration-helper-contracts-review.md"
+      ],
+      "write_paths": [
+        "tools/h4_axis_integer_divide_caller_composition.py",
+        "docs/agent-work/h4-axis-integer-divide-caller-composition.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Build a fresh linked image in ignored build/ by replacing only the pinned 0x002C615C body with the reviewed relocation-free 128-byte candidate body; preserve original caller code and record image/object hashes and replacement range verification.",
+        "Execute original caller functions 0x0013B9FC (selector 0) and 0x0013B8F8 (selector 1) against identical synthetic signed-halfword X/Y and A/B fixtures on the original image and candidate-helper image. Compare outputs, return convention, caller-visible memory, SP, callee-saved registers, faults, and document stack/flags limits.",
+        "Cover deadzone/radial boundaries, signed halfword extremes including -32768, A/B ordering, overflow and zero-estimate/divisor paths; record faults and all counterexamples honestly. Keep synthetic domains distinct from known real calibration data, which remains unresolved.",
+        "Include a same-input control proving the composition harness can detect a helper mutation if a bounded caller fixture reaches that mutated branch; otherwise preserve the existing direct helper mutation evidence and state the composition control limitation.",
+        "Write report and handoff. No production patch, canonical build, emulator/runtime, save/profile access, guest writes, or player-control claim."
+      ],
+      "validation_plan": [
+        "Offline-first source/object/hash audit, fresh caller-composition matrix for both selector functions, mutation sensitivity check and independent review."
+      ]
+    },
+    {
+      "id": "h4-axis-integer-divide-caller-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the offline selector-0/1 caller composition of the experimental 0x002C615C helper, report hashes, replacement boundaries, and coverage limits.",
+      "depends_on": [
+        "h4-axis-integer-divide-caller-composition"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "extracted/exefs/code.bin",
+        "config/game_info.json",
+        "tools/build_check.py",
+        "tools/asm_diff.py",
+        "tools/h4_axis_integer_divide_caller_composition.py",
+        "docs/agent-work/h4-axis-integer-divide-caller-composition.md",
+        "build/agent-work/H4-semantic/h4-axis-integer-divide-caller-composition/003/task.json",
+        "build/agent-work/H4-semantic/h4-axis-integer-divide-caller-composition/003/agent-handoff.json",
+        "build/agent-work/H4-semantic/h4-axis-integer-divide-caller-composition/003/output/report.json"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-axis-integer-divide-caller-composition-review.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Independently audit the caller composition harness, replacement range verification, and composed image creation.",
+        "Verify all 1,982 cases across selector-0 (0x0013B9FC) and selector-1 (0x0013B8F8), matching null-pointer faults, and same-input mutation controls.",
+        "Verify report hashes, replacement boundaries, stack-write accounting, and document domain limitations.",
+        "Write an independent review report and handoff. No production patch, emulator/GDB, save/profile access or guest writes."
+      ],
+      "validation_plan": [
+        "Independent source/object/report audit, fresh-run comparison when feasible, and check-handoff."
+      ]
+    },
+    {
+      "id": "h4-view-workspace-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Analyze the field view/camera workspace layout at 0x00447E88 (size 0x1C0) and the repeat-state global at 0x0049F91C initialized by 0x001B4664, mapping all field offsets, float coordinates, target vectors, subobject allocation at +0x194, and helper dependencies.",
+      "depends_on": [
+        "h4-axis-integer-divide-caller-composition-review"
+      ],
+      "function_claims": [
+        "0x001b4664"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "extracted/exefs/code.bin",
+        "config/functions.csv",
+        "config/game_info.json",
+        "include/engine/map_field.h",
+        "include/engine/map_runtime.h",
+        "docs/agent-work/h4-live-input-observation.md",
+        "docs/agent-work/h4-field-control-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-view-workspace-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Map every field write of 0x001B4664 into [0x00447E88] (offsets 0x00..0x1B8), verifying coordinates (+0x1C..+0x24), targets (+0x28..+0x30), vectors, angles (+0x58), and flags.",
+        "Map the 0x100-byte subobject allocation at 0x002C23F8, construction at 0x00294A98, and vtable publication at 0x00420420.",
+        "Map writes into the global repeat-state structure at 0x0049F91C (offsets 0x17C..0x1B4) and correlate with caller contexts.",
+        "Produce verified contract report distinguishing observed offsets from functional interpretations."
+      ],
+      "validation_plan": [
+        "Static Capstone instruction audit, offset table verification, and independent review."
+      ]
+    },
+    {
+      "id": "h4-view-workspace-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the 0x001B4664 view workspace contract report, verifying instruction offsets, float literals, memory layout, and boundary limits.",
+      "depends_on": [
+        "h4-view-workspace-contract"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "extracted/exefs/code.bin",
+        "config/game_info.json",
+        "docs/agent-work/h4-view-workspace-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-view-workspace-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Independently verify all mapped offsets in [0x00447E88] and 0x0049F91C against original ARM instructions.",
+        "Verify float literals and vector components.",
+        "Check subobject allocation size, constructor parameters, and publication boundary.",
+        "Write independent review report and recommendation."
+      ],
+      "validation_plan": [
+        "Independent disassembly audit and check-handoff."
+      ]
+    },
+    {
+      "id": "h4-view-init-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable C++ candidate for 0x001B4664 (view workspace and global repeat state initializer) and validate offline via ARM differential emulation comparing original vs compiled candidate.",
+      "depends_on": [
+        "h4-view-workspace-contract-review"
+      ],
+      "function_claims": [
+        "0x001b4664"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "extracted/exefs/code.bin",
+        "config/functions.csv",
+        "config/game_info.json",
+        "tools/build_check.py",
+        "tools/asm_diff.py",
+        "docs/agent-work/h4-view-workspace-contract.md",
+        "docs/agent-work/h4-view-workspace-contract-review.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h4_view_init_candidate.cpp",
+        "tools/h4_view_init_experiment.py",
+        "docs/agent-work/h4-view-init-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Write editable, type-safe C++ implementation reproducing all field initializations in ViewCameraWork and global 0x0049F91C.",
+        "Build candidate object and verify replacement length does not exceed 440 bytes.",
+        "Execute offline ARM differential harness testing memory initialization, subobject creation, and zero-pointer safety across deterministic test runs.",
+        "Include same-input compiled mutation control.",
+        "Write per-address experiment report and handoff."
+      ],
+      "validation_plan": [
+        "Offline-first differential test, mutation check, and independent review."
+      ]
+    },
+    {
+      "id": "h4-view-init-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the C++ candidate for 0x001B4664, its object layout, ARM differential results, and negative controls.",
+      "depends_on": [
+        "h4-view-init-candidate"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "extracted/exefs/code.bin",
+        "config/game_info.json",
+        "experiments/semantic_equivalence/h4_view_init_candidate.cpp",
+        "tools/h4_view_init_experiment.py",
+        "docs/agent-work/h4-view-init-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-view-init-candidate-review.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Independently review C++ source code for types, invariants, and alignment.",
+        "Re-run differential suite and verify 0 differences and mutation detection.",
+        "Write independent review report and recommendation."
+      ],
+      "validation_plan": [
+        "Independent compilation and verification of report hashes."
+      ]
+    },
+    {
+      "id": "h4-view-subobjects-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Analyze the view subobject setup and channel configuration function at 0x001B481C (164 bytes), mapping subobject initialization with player model pl01_00.bam via 0x00294A64, conditional channel iteration over 0x19C..0x1A4, and callers at 0x001B8BA4 and 0x001BF528.",
+      "depends_on": [
+        "h4-view-init-candidate-review"
+      ],
+      "function_claims": [
+        "0x001b481c"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "extracted/exefs/code.bin",
+        "config/functions.csv",
+        "config/game_info.json",
+        "experiments/semantic_equivalence/h4_view_init_candidate.cpp",
+        "docs/agent-work/h4-view-workspace-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-view-subobjects-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Map full disassembly and control flow of 0x001B481C (164 bytes).",
+        "Document call to 0x00294A64 and subobject layout at offset +0x194.",
+        "Document conditional branches governed by work->field_198 and 3-channel loops.",
+        "Document calls to 0x00343E90 and 0x002946F4 with argument contracts.",
+        "Map FlowScript call sites at 0x001B8BA4 and 0x001BF528.",
+        "Produce verified contract report."
+      ],
+      "validation_plan": [
+        "Static Capstone audit, caller analysis, and independent review."
+      ]
+    },
+    {
+      "id": "h4-view-subobjects-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the 0x001B481C view subobject contract report, verifying instructions, callee contracts, and caller contexts.",
+      "depends_on": [
+        "h4-view-subobjects-contract"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "extracted/exefs/code.bin",
+        "config/game_info.json",
+        "docs/agent-work/h4-view-subobjects-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-view-subobjects-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Independently verify disassembly and instruction semantics of 0x001B481C.",
+        "Verify callee conventions and subobject field accesses.",
+        "Write independent review report and recommendation."
+      ],
+      "validation_plan": [
+        "Independent disassembly audit and check-handoff."
+      ]
+    },
+    {
+      "id": "h4-view-subobjects-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable C++ candidate for 0x001B481C and validate offline via ARM differential emulation comparing original vs compiled candidate.",
+      "depends_on": [
+        "h4-view-subobjects-contract-review"
+      ],
+      "function_claims": [
+        "0x001b481c"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "extracted/exefs/code.bin",
+        "config/game_info.json",
+        "experiments/semantic_equivalence/h4_view_init_candidate.cpp",
+        "docs/agent-work/h4-view-subobjects-contract.md",
+        "docs/agent-work/h4-view-subobjects-contract-review.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h4_view_subobjects_candidate.cpp",
+        "tools/h4_view_subobjects_experiment.py",
+        "docs/agent-work/h4-view-subobjects-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Write readable, type-safe C++ implementation reproducing 0x001B481C.",
+        "Compile candidate and verify length does not exceed 164 bytes.",
+        "Implement and run offline differential test comparing original vs candidate.",
+        "Verify 0 differences and positive mutation detection.",
+        "Write per-address experiment report and handoff."
+      ],
+      "validation_plan": [
+        "Offline-first differential test, mutation check, and independent review."
+      ]
+    },
+    {
+      "id": "h4-view-subobjects-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the C++ candidate for 0x001B481C, its differential test results, and negative controls.",
+      "depends_on": [
+        "h4-view-subobjects-candidate"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "extracted/exefs/code.bin",
+        "config/game_info.json",
+        "experiments/semantic_equivalence/h4_view_subobjects_candidate.cpp",
+        "tools/h4_view_subobjects_experiment.py",
+        "docs/agent-work/h4-view-subobjects-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-view-subobjects-candidate-review.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Independently review C++ source code.",
+        "Re-run differential suite and verify 0 differences and mutation detection.",
+        "Write independent review report and recommendation."
+      ],
+      "validation_plan": [
+        "Independent compilation and verification of report hashes."
+      ]
+    },
+    {
+      "id": "h4-map-player-actor-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Analyze the Map_GetPlayerActor function at 0x001B45C8 (20 bytes), mapping g_MapMainWork (0x00447E28), player handle extraction at +0x00, and tail-call to ActorManager_Lookup (0x002C45B8).",
+      "depends_on": [
+        "h4-view-subobjects-candidate-review"
+      ],
+      "function_claims": [
+        "0x001b45c8"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "extracted/exefs/code.bin",
+        "config/game_info.json",
+        "docs/agent-work/h4-view-workspace-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-map-player-actor-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Map full disassembly of 0x001B45C8 (20 bytes).",
+        "Document g_MapMainWork pointer at 0x00447E28.",
+        "Document handle extraction and call to 0x002C45B8.",
+        "Map table registration at 0x00446E4C.",
+        "Produce verified contract report."
+      ],
+      "validation_plan": [
+        "Static Capstone audit and independent review."
+      ]
+    },
+    {
+      "id": "h4-map-player-actor-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the 0x001B45C8 Map_GetPlayerActor contract report.",
+      "depends_on": [
+        "h4-map-player-actor-contract"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "extracted/exefs/code.bin",
+        "config/game_info.json",
+        "docs/agent-work/h4-map-player-actor-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-map-player-actor-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Independently verify disassembly and instruction semantics of 0x001B45C8.",
+        "Verify callee conventions and return values.",
+        "Write independent review report and recommendation."
+      ],
+      "validation_plan": [
+        "Independent disassembly audit and check-handoff."
+      ]
+    },
+    {
+      "id": "h4-map-player-actor-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable C++ candidate for 0x001B45C8 and validate offline via ARM differential emulation comparing original vs compiled candidate.",
+      "depends_on": [
+        "h4-map-player-actor-contract-review"
+      ],
+      "function_claims": [
+        "0x001b45c8"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "extracted/exefs/code.bin",
+        "config/game_info.json",
+        "docs/agent-work/h4-map-player-actor-contract.md",
+        "docs/agent-work/h4-map-player-actor-contract-review.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h4_map_player_actor_candidate.cpp",
+        "tools/h4_map_player_actor_experiment.py",
+        "docs/agent-work/h4-map-player-actor-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Write readable, type-safe C++ implementation reproducing 0x001B45C8.",
+        "Compile candidate and verify length does not exceed 20 bytes.",
+        "Implement and run offline differential test comparing original vs candidate.",
+        "Verify 0 differences and positive mutation detection.",
+        "Write per-address experiment report and handoff."
+      ],
+      "validation_plan": [
+        "Offline-first differential test, mutation check, and independent review."
+      ]
+    },
+    {
+      "id": "h4-map-player-actor-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the C++ candidate for 0x001B45C8, its differential test results, and negative controls.",
+      "depends_on": [
+        "h4-map-player-actor-candidate"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "extracted/exefs/code.bin",
+        "config/game_info.json",
+        "experiments/semantic_equivalence/h4_map_player_actor_candidate.cpp",
+        "tools/h4_map_player_actor_experiment.py",
+        "docs/agent-work/h4-map-player-actor-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-map-player-actor-candidate-review.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Independently review C++ source code.",
+        "Re-run differential suite and verify 0 differences and mutation detection.",
+        "Write independent review report and recommendation."
+      ],
+      "validation_plan": [
+        "Independent compilation and verification of report hashes."
+      ]
+    },
+    {
+      "id": "h4-map-entity-pool-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Analyze the Map_ClearEntityPool function at 0x001B45E0 (132 bytes), mapping g_MapEntities (0x00447E70), 24-entry entity array with stride 72 (0x48), resource release at offset +0x3C via 0x002A7AA0, and unrolled state clearing at +0x14.",
+      "depends_on": [
+        "h4-map-player-actor-candidate-review"
+      ],
+      "function_claims": [
+        "0x001b45e0"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "extracted/exefs/code.bin",
+        "config/game_info.json",
+        "docs/agent-work/h4-map-player-actor-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-map-entity-pool-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Map full disassembly of 0x001B45E0 (132 bytes).",
+        "Document entity layout (stride 0x48, 24 entries).",
+        "Document resource release call to 0x002A7AA0.",
+        "Document unrolled state clearing loop.",
+        "Produce verified contract report."
+      ],
+      "validation_plan": [
+        "Static Capstone audit and independent review."
+      ]
+    },
+    {
+      "id": "h4-map-entity-pool-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the 0x001B45E0 Map_ClearEntityPool contract report.",
+      "depends_on": [
+        "h4-map-entity-pool-contract"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "extracted/exefs/code.bin",
+        "config/game_info.json",
+        "docs/agent-work/h4-map-entity-pool-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-map-entity-pool-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Independently verify disassembly and instruction semantics of 0x001B45E0.",
+        "Verify entity array indexing, strides, and field offsets.",
+        "Write independent review report and recommendation."
+      ],
+      "validation_plan": [
+        "Independent disassembly audit and check-handoff."
+      ]
+    },
+    {
+      "id": "h4-map-entity-pool-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable C++ candidate for 0x001B45E0 and validate offline via ARM differential emulation comparing original vs compiled candidate.",
+      "depends_on": [
+        "h4-map-entity-pool-contract-review"
+      ],
+      "function_claims": [
+        "0x001b45e0"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "extracted/exefs/code.bin",
+        "config/game_info.json",
+        "docs/agent-work/h4-map-entity-pool-contract.md",
+        "docs/agent-work/h4-map-entity-pool-contract-review.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h4_map_entity_pool_candidate.cpp",
+        "tools/h4_map_entity_pool_experiment.py",
+        "docs/agent-work/h4-map-entity-pool-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Write readable, type-safe C++ implementation reproducing 0x001B45E0.",
+        "Compile candidate and verify length does not exceed 132 bytes.",
+        "Implement and run offline differential test comparing original vs candidate.",
+        "Verify 0 differences and positive mutation detection.",
+        "Write per-address experiment report and handoff."
+      ],
+      "validation_plan": [
+        "Offline-first differential test, mutation check, and independent review."
+      ]
+    },
+    {
+      "id": "h4-map-entity-pool-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the C++ candidate for 0x001B45E0, its differential test results, and negative controls.",
+      "depends_on": [
+        "h4-map-entity-pool-candidate"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "extracted/exefs/code.bin",
+        "config/game_info.json",
+        "experiments/semantic_equivalence/h4_map_entity_pool_candidate.cpp",
+        "tools/h4_map_entity_pool_experiment.py",
+        "docs/agent-work/h4-map-entity-pool-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-map-entity-pool-candidate-review.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Independently review C++ source code.",
+        "Re-run differential suite and verify 0 differences and mutation detection.",
+        "Write independent review report and recommendation."
+      ],
+      "validation_plan": [
+        "Independent compilation and verification of report hashes."
+      ]
+    },
+    {
+      "id": "h4-stage-integrated-image",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Compose and stage the verified H4 candidates into an integrated binary and IPS patch.",
+      "depends_on": [
+        "h4-map-entity-pool-candidate-review"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "extracted/exefs/code.bin",
+        "build/agent-work/H3-semantic/h3-title-entry/in-place-patch-run002/code.h3-final.bin"
+      ],
+      "write_paths": [
+        "tools/h4_staged_image_patch.py"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Stage all candidates.",
+        "Generate valid IPS patch.",
+        "Verify round trip."
+      ],
+      "validation_plan": [
+        "Tool execution and report check."
+      ]
+    },
+    {
+      "id": "h4-autonomous-exploration-verify",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute autonomous paired verification in loopback Azahar emulator comparing original vs patched build across 250 field ticks in Shinjuku Station.",
+      "depends_on": [
+        "h4-stage-integrated-image"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "tools/h3_autonomous_verify.py",
+        "build/agent-work/H4-semantic/h4-integrated-stage/run-001/code.h4-final.ips"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-autonomous-exploration-verify.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [
+        "azahar_process"
+      ],
+      "acceptance": [
+        "250 field ticks match.",
+        "Probe hits at 0x0027fbc8.",
+        "Save integrity verified."
+      ],
+      "validation_plan": [
+        "Autonomous execution and independent review."
+      ]
+    },
+    {
+      "id": "h4-autonomous-exploration-verify-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the autonomous paired exploration verification report and metrics.",
+      "depends_on": [
+        "h4-autonomous-exploration-verify"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h4-autonomous-exploration-verify.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-autonomous-exploration-verify-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify metrics and report integrity.",
+        "Provide recommendation."
+      ],
+      "validation_plan": [
+        "Independent report review."
+      ]
+    },
+    {
+      "id": "h4-player-transform-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Map the contract and behavioral requirements of PlayerActor_UpdateVisibilityTransform (0x001B4A54).",
+      "depends_on": [
+        "h4-autonomous-exploration-verify-review"
+      ],
+      "function_claims": [
+        "0x001b4a54"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-player-transform-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Map g_PlayerActorWork, g_RepeatGate pause flag, visibility flag, and transform subroutines."
+      ],
+      "validation_plan": [
+        "Cross-check against disassembly and callers."
+      ]
+    },
+    {
+      "id": "h4-player-transform-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the player transform contract.",
+      "depends_on": [
+        "h4-player-transform-contract"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "docs/agent-work/h4-player-transform-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-player-transform-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract accuracy."
+      ],
+      "validation_plan": [
+        "Independent review."
+      ]
+    },
+    {
+      "id": "h4-player-transform-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Reconstruct and differentially verify PlayerActor_UpdateVisibilityTransform (0x001B4A54).",
+      "depends_on": [
+        "h4-player-transform-contract-review"
+      ],
+      "function_claims": [
+        "0x001b4a54"
+      ],
+      "read_paths": [
+        "docs/agent-work/h4-player-transform-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h4_player_transform_candidate.cpp",
+        "tools/h4_player_transform_experiment.py",
+        "docs/agent-work/h4-player-transform-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Candidate compiles within 288-byte window.",
+        "Passes offline differential verification across 8 fixtures with positive mutation detection."
+      ],
+      "validation_plan": [
+        "Run tools/h4_player_transform_experiment.py in Unicorn."
+      ]
+    },
+    {
+      "id": "h4-player-transform-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the player transform candidate.",
+      "depends_on": [
+        "h4-player-transform-candidate"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "docs/agent-work/h4-player-transform-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-player-transform-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify offline evidence and code quality."
+      ],
+      "validation_plan": [
+        "Independent report review."
+      ]
+    },
+    {
+      "id": "h4-map-dispatch-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Reconstruct and differentially verify Map_DispatchTrigger (0x001B4B74).",
+      "depends_on": [
+        "h4-player-transform-candidate-review"
+      ],
+      "function_claims": [
+        "0x001b4b74"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h4_map_dispatch_candidate.cpp",
+        "tools/h4_map_dispatch_experiment.py",
+        "docs/agent-work/h4-map-dispatch-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Candidate compiles within 36-byte window.",
+        "Passes offline differential verification across 5 fixtures with positive mutation detection."
+      ],
+      "validation_plan": [
+        "Run tools/h4_map_dispatch_experiment.py in Unicorn."
+      ]
+    },
+    {
+      "id": "h4-map-dispatch-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the map dispatch candidate.",
+      "depends_on": [
+        "h4-map-dispatch-candidate"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "docs/agent-work/h4-map-dispatch-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-map-dispatch-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify offline evidence and code quality."
+      ],
+      "validation_plan": [
+        "Independent report review."
+      ]
+    },
+    {
+      "id": "h4-script-vm-handler-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Reconstruct and differentially verify ScriptVM_NestedHandler11 (0x001B4B98).",
+      "depends_on": [
+        "h4-map-dispatch-candidate-review"
+      ],
+      "function_claims": [
+        "0x001b4b98"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h4_script_vm_handler_candidate.cpp",
+        "tools/h4_script_vm_handler_experiment.py",
+        "docs/agent-work/h4-script-vm-handler-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Candidate compiles within 36-byte window.",
+        "Passes offline differential verification across 4 fixtures with positive mutation detection."
+      ],
+      "validation_plan": [
+        "Run tools/h4_script_vm_handler_experiment.py in Unicorn."
+      ]
+    },
+    {
+      "id": "h4-script-vm-handler-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the script VM handler candidate.",
+      "depends_on": [
+        "h4-script-vm-handler-candidate"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "docs/agent-work/h4-script-vm-handler-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-script-vm-handler-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify offline evidence and code quality."
+      ],
+      "validation_plan": [
+        "Independent report review."
+      ]
+    }
+  ]
+}

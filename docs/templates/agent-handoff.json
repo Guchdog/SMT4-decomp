@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "REPLACE_WITH_TASK_ID",
+  "owner": "REPLACE_WITH_ASSIGNED_OWNER",
+  "outcome": "blocked",
+  "summary": "Replace with the exact bounded result, not a completion slogan.",
+  "changed_files": [],
+  "checks": [],
+  "reports": [],
+  "evidence": {
+    "compiled": "not_run",
+    "arm_differential": "not_run",
+    "caller": "not_run",
+    "runtime": "not_run"
+  },
+  "limitations": [
+    "Replace with exercised domain, unsupported paths, and remaining original dependencies."
+  ],
+  "blocker": "Unfilled template; supply a real blocker or select ready_for_review.",
+  "unblock_condition": "Replace with the concrete evidence/input/support needed.",
+  "next_action": "Replace with the precise review/integration/unblock action."
+}

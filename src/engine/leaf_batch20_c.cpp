@@ -107,7 +107,7 @@ extern "C" void func_003842f4();
 extern "C" void func_003f6228();
 extern "C" void nn_sdk_func_00239c50();
 extern "C" void qcMain_func_001a969c();
-extern "C" void script_vm_func_0019dfbc();
+extern "C" s32 script_vm_func_0019dfbc(void* work);
 extern "C" void script_vm_func_00215ba0();
 extern "C" void script_vm_func_00215bd8();
 extern "C" void script_vm_func_00240e04();

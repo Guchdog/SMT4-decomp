@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 """
-Leaf Function Candidate Finder for Shin Megami Tensei IV (CTR-P-AMXE).
+Semantic reconstruction candidate finder for Shin Megami Tensei IV.
 
-Scans config/functions.csv for unexplored ('todo') functions, slices their machine
-code from extracted/exefs/code.bin, disassembles with Capstone, and identifies
-pure leaf functions (no calls, no syscalls, no external branches) sorted by size.
+The CLI defaults to milestone-oriented semantic discovery. The conservative
+leaf API and explicit --mode leaf remain available for specialized triage.
 """
 
 from __future__ import annotations
 
 import argparse
 import csv
+import json
 from pathlib import Path
 import re
 import sys
@@ -274,32 +274,72 @@ def find_leaf_candidates(
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Find candidate leaf functions in SMT4 code.bin"
+        description="Find editable-C++ reconstruction work; byte identity is not required"
     )
-    parser.add_argument("--functions", type=Path, default=Path("config/functions.csv"), help="Path to functions.csv")
-    parser.add_argument("--code", type=Path, default=Path("extracted/exefs/code.bin"), help="Path to code.bin")
-    parser.add_argument("--max-size", type=int, default=64, help="Maximum function size in bytes (default: 64)")
+    parser.add_argument("--root", type=Path, default=_REPO_ROOT)
+    parser.add_argument("--mode", choices=("semantic", "leaf"), default="semantic")
+    parser.add_argument("--functions", type=Path, help="Path to functions.csv, relative to root")
+    parser.add_argument("--code", type=Path, help="Path to code.bin, relative to root")
+    parser.add_argument("--max-size", type=int, help="Maximum size: semantic default 8192 (0 = unlimited); leaf default 64")
     parser.add_argument("--limit", type=int, default=50, help="Maximum number of candidates to show (default: 50)")
     parser.add_argument("--category", type=str, default=None, help="Filter candidates by subsystem category")
     parser.add_argument("--allow-internal-branches", action="store_true", help="Allow internal branch instructions")
     parser.add_argument(
         "--status",
         action="append",
-        choices=("todo", "stub", "non_matching", "matching"),
-        help="Ledger status to search; repeat for more than one (default: todo)",
+        choices=("todo", "stub", "wip", "non_matching", "matching"),
+        help="Reference ledger status filter; default: all function statuses in semantic mode, todo in leaf mode",
     )
     parser.add_argument(
         "--asm-backed-only",
         action="store_true",
         help="Only show entries whose DECOMP_FUNC block still uses inline assembly",
     )
+    parser.add_argument("--include-existing-candidates", action="store_true",
+                        help="Semantic mode: include experimental C++ needing validation/integration")
+    parser.add_argument("--output", type=Path, help="Optional JSON work-queue report")
     args = parser.parse_args()
+    args.root = args.root.resolve()
+    args.functions = args.functions or Path("config/functions.csv")
+    args.code = args.code or Path("extracted/exefs/code.bin")
+    if not args.functions.is_absolute():
+        args.functions = args.root / args.functions
+    if not args.code.is_absolute():
+        args.code = args.root / args.code
+    if args.max_size is None:
+        args.max_size = 8192 if args.mode == "semantic" else 64
 
     if not args.code.is_file():
         print(f"Error: {args.code} not found.", file=sys.stderr)
         sys.exit(1)
 
     code_bytes = args.code.read_bytes()
+    if args.mode == "semantic":
+        from tools.semantic_candidates import find_semantic_candidates, load_policy
+        policy = load_policy(args.root)
+        candidates = find_semantic_candidates(
+            args.functions, args.root, code_bytes, max_size=args.max_size,
+            limit=args.limit, category=args.category,
+            statuses=tuple(args.status) if args.status else None,
+            include_existing=args.include_existing_candidates, policy=policy,
+            asm_backed_only=args.asm_backed_only,
+        )
+        report = {"objective": "editable_cpp_semantic_behavior",
+                  "active_milestone": policy.get("active_milestone", "unscoped"),
+                  "note": "Static discovery only; acceptance requires behavioral evidence, not identical bytes.",
+                  "candidates": candidates}
+        if args.output:
+            args.output.parent.mkdir(parents=True, exist_ok=True)
+            args.output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+        print(f"Semantic reconstruction queue: {len(candidates)} functions; milestone {report['active_milestone']}.")
+        print("Byte identity is optional. Existing experimental C++ is skipped unless requested.")
+        for idx, candidate in enumerate(candidates, 1):
+            print(f"{idx:>3}. {candidate['address']} {candidate['size']:>5} B "
+                  f"{candidate['name']} [{candidate['next_action']}]\n"
+                  f"     {candidate['priority_reason']}")
+        return
+    if args.include_existing_candidates or args.output:
+        parser.error("--include-existing-candidates and --output require --mode semantic")
     candidates = find_leaf_candidates(
         functions_csv=args.functions,
         code_bytes=code_bytes,
@@ -309,7 +349,7 @@ def main() -> None:
         allow_internal_branch=args.allow_internal_branches,
         statuses=tuple(args.status or ("todo",)),
         asm_backed_only=args.asm_backed_only,
-        repo_root=_REPO_ROOT,
+        repo_root=args.root,
     )
 
     statuses = ",".join(args.status or ("todo",))

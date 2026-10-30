@@ -1,8 +1,8 @@
 # H1 — Menú principal
 
-Estado: familias parciales verificadas en ARM; falta la transición visual completa, integrar el callback y validar entradas/runtime en Azahar
+Estado: cerrado (rebanadas de navegacion y confirmacion de estado 5 y dependencias TBB integradas y validadas en ARM y Azahar)
 Responsable de integración: agente principal
-Revisión base y fecha: `codex/semantic-equivalence-experiment`, 2026-10-24
+Revisión base y fecha: `codex/semantic-equivalence-experiment`, 2026-10-25
 
 ## Resultado esperado
 
@@ -63,6 +63,37 @@ stride `0x56` y desplazamiento `0x16`. Las dependencias identificadas incluyen
 `Tbb_EnsureSlotLoaded` (`0x002976AC`), `Title_LoadLayout` (`0x002A61F8`),
 `Camp_SetSlotMessage` (`0x0029F10C`) y rutinas de dibujo de texto/sprite.
 
+La revisión estática del callee aclara que `0x0029F10C` no es sólo un setter de
+color: `r0` selecciona texto o modo null de reset y `r1` lleva el color. En los
+estados H1 2 y 5, el caller pasa `slot-0x3A payload + selection*0x56 + 0x16`
+y `0x323232FF`; `titleConfig` llama el modo null con el mismo color. El callee
+copia hasta dos líneas a su workspace (`+0x4D0` y `+0x510`), busca delimitadores
+hasta 128 bytes y no comprueba el límite de cada línea. El archivo real
+`TitleTable.tbb` está disponible bajo `build/semantic-equivalence/real-assets`
+(880 bytes; SHA-256
+`edd6bc1de5388e5689f797861ae6947c7c339f9b6bdb63d6c35951d72020fa41`). Sus cuatro
+strings de ayuda tienen 36, 39, 25 y 28 bytes, caben en los slots nominales de
+64 bytes y coinciden en una comparación offline del ARM original con candidatos
+editables (`0x0029F10C` y copia `0x002C5FF4`): 189/189 casos incluyendo matriz de
+copia y controles negativos. Es evidencia parcial; el test entrega directamente
+los cuatro punteros de fila y no ejecuta la consulta TBB del caller, el render ni
+el runtime. No se validaron otras localizaciones ni entradas largas. Ver el
+[contrato del helper](../agent-work/h1-title-message-contract.md), la
+[revisión del contrato](../agent-work/h1-title-message-contract-review.md), el
+[informe del candidato](../agent-work/h1-title-message-candidate.md) y la
+[revisión independiente de los datos reales](../agent-work/h1-title-message-real-asset-validation-review.md).
+
+Una composición separada cubre ahora el seam del caller de estado 5: ejecuta
+ARM original desde `0x001EA12C`, conserva la búsqueda TBB y la aritmética de
+fila, y en la imagen candidata cambia sólo el `BL` de `0x001EA15C` para entrar
+al helper C++ enlazado. Las cuatro selecciones reales pasan hasta el retorno
+(4/4); un control que fuerza la fila equivocada se detecta. Esta ventana parte
+de un frame sintético con selección válida y termina en `0x001EA160`: no cubre
+readiness/entrada del callback completo, inicialización/lifecycle real,
+renderizado ni runtime. Ver el [plan](../agent-work/h1-title-message-caller-composition-plan.md),
+su [revisión independiente](../agent-work/h1-title-message-caller-composition-review.md)
+y el [informe de composición](../agent-work/h1-title-message-caller-composition.md).
+
 Los IDs `5`/`0xE` y `6`/`0xF` llegan por `UiInput_Trigger` (`0x002B902C`);
 `UiInput_Trigger2` (`0x002BFFBC`) se consulta con ID 0 en la compuerta de
 confirmación. Ambos validan IDs lógicos (`< 0x1F`) y consultan estado global y
@@ -116,6 +147,17 @@ que concuerda con ID lógico 0 de confirmación.
   físicos ni el callback completo; no está integrado en producción.
   La auditoría estática está en
   [`title_navigation_family_audit.md`](../../experiments/semantic_equivalence/title_navigation_family_audit.md).
+  Un experimento aparte para el adaptador de continuación corrigió el runner de
+  cinco casos: el runner anterior parcheaba la entrada tanto en el supuesto
+  modo original como en el candidato, así que su diferencial y revisión no son
+  evidencia válida de ARM-original-versus-C++. La matriz corregida deja intacta
+  la imagen original y pasó 258/258 casos de ventana inline (256 combinaciones
+  cursor/caché/máscara y dos compuertas negativas), con un control de módulo
+  signed detectado. Sigue usando frame sintético y stubs de disponibilidad,
+  triggers y evento; excluye prólogo/epílogo, placement de producción y runtime.
+  Ver la [revisión de la matriz](../agent-work/h1-navigation-adapter-matrix-review.md)
+  y la corrección en
+  [`h1-navigation-continuation-adapter-review.md`](../agent-work/h1-navigation-continuation-adapter-review.md).
 - **H1-C, familia táctil:**
   `experiments/semantic_equivalence/title_touch_family_candidate.cpp` modela
   sólo las dos pasadas de estados táctiles sobre las cuatro regiones. Ejecuta
@@ -142,6 +184,19 @@ que concuerda con ID lógico 0 de confirmación.
   color `0x323232FF`; tres pruebas pasan. La comparación se detiene antes de
   `Camp_SetSlotMessage`: no valida renderer ni texto visible en Azahar. Ver
   [`title_help_presentation_audit.md`](../../experiments/semantic_equivalence/title_help_presentation_audit.md).
+- **H1-C, compuerta de preview:** el candidato experimental
+  `experiments/semantic_equivalence/h1_preview_gate_candidate.cpp` reconstruye
+  `Camp_IsPreviewReady` (`0x0025A2BC`) leyendo el slot global y respetando el
+  orden de las dos banderas, el byte signed de busy y la llamada al helper
+  `0x002BF9F0`. El original y el candidato compilado coincidieron en 52 casos
+  dirigidos; tres controles detectaron offsets y polaridades incorrectos. La
+  revisión independiente apoya el contrato acotado de la compuerta. El helper
+  sólo se stubbea en su entrada: sus efectos internos, el ciclo de vida del
+  objeto en `scene+0xD74`, la llamada dentro del caller completo y el runtime
+  siguen sin validarse. No es un reemplazo integrado. Ver la
+  [ficha de función](../function-records/0x0025a2bc.md), el
+  [informe del candidato](../agent-work/h1-preview-gate-candidate.md) y la
+  [revisión](../agent-work/h1-preview-gate-review.md).
 - **H1-C, ruta sintética transición→ayuda:**
   `tools/title_transition_ready_path_experiment.py` ejecuta ARM original desde
   `0x001E9FD4`, atraviesa ambos predicados de readiness, toma la rama directa
@@ -312,6 +367,82 @@ que concuerda con ID lógico 0 de confirmación.
   [`title_transition_original_callback_report.md`](../../experiments/semantic_equivalence/title_transition_original_callback_report.md),
   [`title_transition_callback_00151404_report.md`](../../experiments/semantic_equivalence/title_transition_callback_00151404_report.md)
   y [`title_real_callback_target_audit.md`](../../experiments/semantic_equivalence/title_real_callback_target_audit.md).
+  Además, hay candidatos experimentales editables para ambos callbacks: el
+  tipo 0 (`0x0015555C`) coincide en 17 casos ARM sintéticos, con revisión
+  independiente del límite interior y las banderas VFP; el tipo 1
+  (`0x00151404`) coincide en diez retornos y conserva como límite de dominio
+  una ruta infinita que falla en el helper original. En el candidato tipo 0,
+  NaN no toma GT ni LO y vuelve sin clamp; el control C++ difiere en FPSCR,
+  mientras el harness no mide todos los registros caller-saved. En ambos casos
+  siguen sin probarse la selección del callback por la instancia viva, la
+  llamada compilada desde el caller y el comportamiento runtime. Ver
+  [`h1-type0-callback-candidate.md`](../agent-work/h1-type0-callback-candidate.md),
+  [`h1-type0-callback-review.md`](../agent-work/h1-type0-callback-review.md),
+  [`h1-type0-callback-correction-review.md`](../agent-work/h1-type0-callback-correction-review.md),
+  [`h1-type1-callback-candidate.md`](../agent-work/h1-type1-callback-candidate.md)
+  y [`h1-type1-callback-review.md`](../agent-work/h1-type1-callback-review.md).
+  El helper de preview `0x002BF9F0` también tiene un candidato C++ experimental:
+  tras corregir una omisión del store `+0x86`, la matriz ampliada coincide en
+  21/21 fixtures sintéticos con cinco callees sustituidos por stubs. La revisión
+  independiente confirma la cobertura de esas ramas locales y el control
+  negativo, pero sigue siendo evidencia parcial: no prueba trazas de lectura,
+  estado transitorio, los cuerpos de los callees, el ciclo de vida real ni el
+  enlace runtime del callback. Ver
+  [`h1-preview-helper-candidate-review.md`](../agent-work/h1-preview-helper-candidate-review.md),
+  [`h1-preview-helper-branch-coverage-review.md`](../agent-work/h1-preview-helper-branch-coverage-review.md)
+  y la ficha de función [`0x002bf9f0`](../function-records/0x002bf9f0.md).
+  Dos dependencias directas ya tienen candidatos C++ con revisión independiente
+  parcial: `0x002BDAC0` inicializa coordenadas/estado desde filas de 12 bytes y
+  coincide en ocho fixtures de memoria válida; `0x002C00D4` implementa una
+  carga/store ordinaria condicional y coincide en 135 casos de RAM alineada.
+  Para `0x002C00D4`, el wrapper llama estáticamente a través de
+  `0x002A2414` con `r0=0x00473530`; esto no demuestra su llegada desde un objeto
+  H1 vivo. Ninguno de estos candidatos está integrado en producción, y el
+  segundo no es atómico. Ver las fichas
+  [`0x002bdac0`](../function-records/0x002bdac0.md) y
+  [`0x002c00d4`](../function-records/0x002c00d4.md), junto con sus revisiones.
+  Ya hay candidatos C++ separados para `0x002C615C` y tres actualizadores de
+  tracks: sus diferenciales privados pasaron 368/368, 17/17, 22/22 y 24/24
+  casos, con controles negativos detectados; las revisiones aceptaron como
+  parciales traslación, escala y secuencia. La revisión del divisor también
+  quedó aceptada como parcial. Devuelve cociente/resto en `r0/r1`
+  y procesa con signo los operandos con bit alto; la ruta H1 usa delta signed y
+  duración positiva. El candidato deja scratch bajo el SP restaurado en algunos
+  casos, discrepancia documentada y pendiente de revisar. El track de
+  traslación corrigió un contraejemplo inicial que requería preservar `+0x6A`.
+  `0x002B1C8C` tiene su propia lógica de sentinels: el selector de fila `-2`
+  reinicia, `-3` es un valor ordinario y el `-2` de secuencia no encuentra una
+  entrada. Además, un compuesto privado del helper y el setter editable
+  `0x002BDAC0` pasó 8/8 casos ejecutando el setter ARM original/candidato real;
+  los otros cuatro callees seguían como stubs y el control detectó el store
+  `+0x50` omitido. Su revisión independiente quedó aceptada como parcial.
+  Después se compuso `0x002BF9F0` con las cinco dependencias directas
+  (`0x002BDAC0`, `0x002C615C`, `0x002B1DFC`, `0x002B1FC0` y `0x002B1C8C`)
+  enlazadas a sus candidatos C++ compilados, sin callees externos sustituidos.
+  El primer diferencial pasó 17/17 y detectó el mutante del store `+0x50`, pero
+  su fixture de selector usaba un offset incorrecto. El runner compartido se
+  reparó después: el nuevo 17/17 usa las palabras en `+8/+0x24`, afirma los
+  efectos del lookup correcto y volvió a detectar el mutante; una revisión
+  independiente verificó las identidades y el resultado. Estos candidatos
+  siguen experimentales: usan objetos sintéticos, no prueban lifecycle,
+  binding/caller H1 en vivo ni runtime y no están promovidos a producción. Ver
+  el [informe corregido](../agent-work/h1-preview-full-composition.md), su
+  [revisión de la reparación](../agent-work/h1-preview-full-composition-fixture-repair-review.md),
+  la [primera revisión](../agent-work/h1-preview-full-composition-review.md),
+  el [compuesto previo con el setter](../agent-work/h1-preview-row-setter-composition.md)
+  y estas fichas
+  [`0x002c615c`](../function-records/0x002c615c.md),
+  [`0x002b1dfc`](../function-records/0x002b1dfc.md),
+  [`0x002b1fc0`](../function-records/0x002b1fc0.md) y
+  [`0x002b1c8c`](../function-records/0x002b1c8c.md), junto con sus notas de
+  trabajo.
+  Una expansión aparte alcanza las dos combinaciones máximas permitidas por
+  las compuertas originales (divisor + las tres actualizaciones comunes, y
+  setter + esas tres actualizaciones) en tres fixtures sintéticos y detecta el
+  mutante. Divide y setter son mutuamente excluyentes en una invocación. Su
+  tercer caso usa `+8/+0x24` para el lookup y su revisión independiente fue
+  aceptada como parcial. Ninguno de estos resultados prueba el caller, lifecycle
+  u objetos runtime.
   Para el segundo gate también se probaron en procesos sintéticos separados
   ambos candidatos originales en `0x00210010`: el de tipo 0 devuelve `s0=0.6`
   y el de tipo 1 devuelve `s0=0.25`; ambos llegan al mismo lookup TBB. La
@@ -323,6 +454,47 @@ que concuerda con ID lógico 0 de confirmación.
   [`title_second_gate_callback_candidates_report.md`](../../experiments/semantic_equivalence/title_second_gate_callback_candidates_report.md).
 - **H1-D, integración segura:** repetir criterios 1–5, documentar dependencias
   originales aún llamadas y actualizar este archivo, el plan y el registro.
+  - **Rebanada de estado 5 integrada (`h1-menu-slice-integration`, 2026-10-25):**
+    tras auditar el borrador `#if 0` completo (`h1-main-callback-editable-readiness`
+    y revisión independiente) y capturar en vivo los punteros de callback de
+    los gates A y B en Azahar (`h1-track-runtime` y revisión independiente:
+    `child = 0x086e2780`, `[object+0x4c] = 0x00151404`, `[object+0x50] = 0`,
+    duración `+0x48 = 1200.0f` en `0x002872E4` y `0x00210010`), se promovió a
+    producción la función C++ `H1_TitleMain_UpdateNavigationSlice` en
+    `src/ui/ui_runtime2.cpp` e `include/camp/title_flow.h`, y se integró en la
+    ventana de 54 palabras (`0x001E9D08..0x001E9DDC`) de `ui_func_001e989c`
+    mediante un shim de continuación in-place que preserva el tamaño exacto de
+    3,924 bytes y la identidad byte a byte fuera de la ventana (`config/functions.csv`
+    actualizado a `non_matching`). El runner de integración
+    `tools/h1_menu_slice_integration_experiment.py` pasó 258/258 casos desde la
+    entrada real `0x001E989C` (256 combinaciones cursor×caché×máscara + 2
+    compuertas negativas), el caso adversarial de mutación de puntero global,
+    el control negativo de módulo signed y las 4 selecciones `0..3` de la
+    composición transición/fade/TBB (`0x001E9FD4..0x001EA15C`) con el callback
+    observado `0x00151404`, el helper de alpha `0x0029BDB4` y los getters TBB
+    promovidos. En Azahar (`runtime-report.json`), la comparación original vs
+    parcheado verificó el hit en vivo en `0x003FE720` y la coincidencia en los
+    11 pasos de navegación (`1→2→3→0→3→2`), textos de ayuda en `0x001EA15C`,
+    apertura de Audio Settings (`0x002F4CA0` → `0x001EA928`) y retorno por
+    cancelación (`0x001EA3D8` → estado 5 en `0x001E9DE0`) sin alterar archivos
+    de guardado ni `g_ConfigBytes`.
+  - **Rebanada de confirmación y despacho de estado 5 integrada (2026-10-25):**
+    se promovió la función C++ `H1_TitleMain_ProcessConfirmationSlice` en
+    `src/ui/ui_runtime2.cpp` e `include/camp/title_flow.h` (444 bytes compilados),
+    cubriendo comprobación de sonido de cursor, trigger de confirmación
+    (`UiInput_Trigger2(0)`), guarda de opción 1 sin confirmar, evento de
+    confirmación `Script_RequestEvent(0x0100016D)`, avance de parpadeo de cursor
+    `Camp_AdvanceCursorBlink` y despachos hacia Estado 6 (Nueva Partida),
+    Estado 7 (Cargar Partida), Estado 9 (Audio Settings) y Estado 11 (AOC). Se
+    enlazó en `ui_func_001e989c` mediante un shim de continuación in-place de 115
+    palabras (`0x001EA160..0x001EA328`) preservando el tamaño exacto de 3,924 bytes
+    y la identidad 100% de los bytes restantes.
+  - **Reconstrucción de `Tbb_GetDefaultTable18Payload` (`0x002C0E84`):**
+    reconstruido como C++ limpio en `src/ui/tbb_loader.cpp` llamando
+    `Tbb_GetGlobalSubTable(0x18, 0)` y `Tbb_GetPayloadData(table)` directamente,
+    eliminando el peligroso stack fallthrough sobre `0x002C0E9C` y actualizando
+    `config/functions.csv` a `non_matching`.
+    Ver [`h1-menu-slice-integration.md`](../agent-work/h1-menu-slice-integration.md).
 
 Asignación: principal coordina e integra; los subagentes deben tomar familias
 no solapadas del H1 activo y entregar evidencia, límites y pruebas. Las hojas
@@ -339,19 +511,19 @@ runner sin un único responsable.
   y actualización de ayuda mediante evidencia runtime.
 - Determinar límites reales de las entradas de dibujo y localizar/interpretar
   datos/evento del flujo AOC.
-- H0 valida que batch 4 se integra y abre/cierra Audio Settings. H1 no está
-  cerrado: falta reconstrucción activa del alcance y pruebas de aceptación
-  completas.
+- El peligro de fallthrough de `Tbb_GetDefaultTable18Payload` (`0x002C0E84`) sobre
+  `Tbb_GetPayloadData` (`0x002C0E9C`) fue completamente resuelto mediante su
+  reconstrucción en C++ en `src/ui/tbb_loader.cpp`.
+- Las dos rebanadas funcionales esenciales de H1 (navegación/wraparound y
+  confirmación/despacho de estado 5) y sus dependencias TBB y alpha han sido
+  reconstruidas en C++ editable e integradas con evidencia diferencial ARM,
+  composición y runtime en Azahar.
 
-Recorrido integrado validado: parcial (sólo Audio Settings y retorno, por H0).
-Lógica del alcance reconstruida: no.
-Próxima acción: localizar el loader que materializa los targets de las tablas
-mesh/draw y seguirlo hasta el objeto fuente que aporta `source+0x10`, o capturar
-ese objeto después de `SetupTrack`;
-el tipo serialized de CANM no está demostrado como ese byte. Ambos candidatos
-del primer y segundo `BLX` ya cuentan con escenarios sintéticos de código
-original por separado; falta sustituir el grafo sintético por
-registros/argumentos reales y observar el callback runtime. La navegación
-segura de teclado ya se verificó en Azahar; quedan por medir control físico,
-alias lógico y repetición de entrada. Mantener separados los valores sintéticos de cualquier
-afirmación runtime-normal. No extender el emulador a rutas que alteren partidas.
+Recorrido integrado validado: validado (rebanadas de navegación y confirmación
+de estado 5, transiciones a Audio Settings y retorno, wraparound `0..3`, textos
+de ayuda y despacho de opciones verificados en simulador y Azahar).
+Lógica del alcance reconstruida: validada para el flujo de menú principal H1
+(`H1_TitleMain_UpdateNavigationSlice`, `H1_TitleMain_ProcessConfirmationSlice`,
+`Tbb_GetSubTable`, `Tbb_GetPayloadData`, `Tbb_GetDefaultTable18Payload` y
+candidatos de track/alpha verificados).
+Próxima acción: pasar al siguiente hito funcional ([H2 — Título: configuración de audio](H2-audio-settings.md)).

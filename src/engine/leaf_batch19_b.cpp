@@ -61,7 +61,7 @@ extern "C" void func_003972c8();
 extern "C" void func_003f8c24();
 extern "C" void nn_sdk_func_003f6188();
 extern "C" void script_vm_func_00152af8();
-extern "C" void script_vm_func_0019dfbc();
+extern "C" s32 script_vm_func_0019dfbc(void* work);
 extern "C" void script_vm_func_00262bcc();
 extern "C" void script_vm_func_002705f4();
 extern "C" void script_vm_func_002a7aa0();
@@ -73,8 +73,8 @@ extern "C" void ui_func_00259d88();
 extern "C" void ui_func_0026f0d8();
 extern "C" void ui_func_0027dca0();
 extern "C" void ui_func_00293c98();
-extern "C" void ui_func_002b902c();
-extern "C" void ui_func_002bffbc();
+extern "C" s32 ui_func_002b902c(u32 id);
+extern "C" s32 ui_func_002bffbc(u32 id);
 extern "C" void ui_func_002c0ac8();
 
 // DECOMP_FUNC(0x0025bcf0, 44)

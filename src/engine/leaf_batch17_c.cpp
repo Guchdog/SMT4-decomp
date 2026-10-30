@@ -26,7 +26,7 @@ extern "C" void script_vm_func_002b6700();
 extern "C" void script_vm_func_002cc110();
 extern "C" void shop_func_002337a0();
 extern "C" void shop_func_002ae650();
-extern "C" void ui_func_002bffbc();
+extern "C" s32 ui_func_002bffbc(u32 id);
 extern "C" void ui_func_002c0ac8();
 extern "C" void ui_func_002c0b94();
 extern "C" void ui_func_00380b4c();

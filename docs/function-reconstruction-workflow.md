@@ -31,7 +31,8 @@ Antes de elegir una dirección, buscarla en las fichas y en los planes históric
 
 ```powershell
 rg -n -i '00128f34' docs/function-records docs/superpowers/plans MODLOG.md
-python tools/find_candidates.py --status matching --asm-backed-only --max-size 96 --limit 300
+python tools/find_candidates.py --limit 30
+python tools/find_candidates.py --include-existing-candidates --limit 30
 ```
 
 El buscador ordena candidatos, pero **no excluye automáticamente los intentos
@@ -113,29 +114,27 @@ Compilar con el toolchain ARMv6K canónico. Registrar versión, flags y hashes.
 No cambiar opciones globales para facilitar un candidato sin tratarlo como un
 cambio separado que necesita su propia regresión.
 
-## 5. Distinguir la ruta exacta de la ruta de comportamiento
+## 5. Priorizar equivalencia semántica
 
-Si la propuesta se integra en una definición normal de `src/`, comprobar el TU
-y la dirección con las herramientas existentes:
+La aceptación principal es C++ legible cuyo comportamiento esté respaldado por
+contratos, pruebas diferenciales y callers. No se exige que tamaño, registros
+temporales u opcodes coincidan. No buscar variantes de código sólo para mejorar
+el byte matching ni diferir una propuesta correcta por esa diferencia.
 
-```powershell
-python tools/build_check.py --tu src/engine/leaf_matching.cpp
-python tools/asm_diff.py --addr 0x00128f34
-```
+Compilar y ejecutar la propuesta con su runner específico. El comando
+`asm_diff.py` compara la definición registrada en el ledger, no una propuesta
+situada sólo en `experiments/`; es un diagnóstico opcional o una comprobación
+necesaria cuando se quiere conservar explícitamente la etiqueta `matching`.
+Su salida no es el criterio de aceptación de una propuesta semántica.
 
-Estos comandos actúan sobre la definición registrada en el ledger; **no comparan
-automáticamente una propuesta situada solo en `experiments/`**. El piloto compila
-ese archivo aparte, extrae su símbolo ELF y compara sus bytes contra el original.
-
-Si los bytes coinciden y las comprobaciones pasan, registrar `matching` según el
-flujo existente. Si difieren, clasificar la causa y pasar a las pruebas de
-comportamiento. Una diferencia de registros no es por sí sola un error ni una
-prueba de equivalencia. Limitar las variantes dirigidas por evidencia a dos o
-tres; después registrar el resultado y cambiar de candidato.
-
-En la ruta experimental conservar el wrapper original y su fila `matching`.
-No sustituirlo por C++ no idéntico manteniendo esa etiqueta, ni inventar nuevos
-valores de estado en el CSV: el verificador actual no los admite.
+Conservar el original como referencia reproducible. No llamar `matching` al C++
+que produce bytes diferentes. En experimentos, registrar el avance semántico por
+separado. Al promover una reconstrucción no idéntica a `src/`, usar una
+clasificación soportada como `non_matching` y su ficha de evidencia; esa etiqueta
+sólo clasifica cobertura compilada y no sustituye las pruebas de comportamiento.
+No inventar un estado CSV que el tooling no admita. La referencia histórica
+exacta sigue recuperable en Git; mantener 100% matching no es una obligación de
+las implementaciones semánticas futuras.
 
 ## 6. Preparar las pruebas específicas de esa función
 
@@ -284,10 +283,12 @@ general una vez desde fuentes estables:
 ```powershell
 python -m unittest discover -s tests -v
 if ($LASTEXITCODE -ne 0) { throw 'Fallo de regresion' }
-python tools/verify_decomp.py
-if ($LASTEXITCODE -ne 0) { throw 'Fallo de auditoria exacta' }
 git diff --check
 ```
+
+Ejecutar `verify_decomp.py` al cambiar claims exactos, el ledger de referencia
+o su verificador. Esa auditoría comprueba la veracidad de las etiquetas exactas;
+no decide la aprobación semántica de propuestas con instrucciones distintas.
 
 Para cambios de tooling/flags/build, completar también las comprobaciones de
 [desarrollo](development.md), incluida compilación ARM forzada y CMake. Repetir

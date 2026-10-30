@@ -246,11 +246,11 @@ extern "C" void ui_func_002a2ea0();
 extern "C" void ui_func_002a63f8();
 extern "C" void ui_func_002acd38();
 extern "C" void ui_func_002b2530();
-extern "C" void ui_func_002b902c();
+extern "C" s32 ui_func_002b902c(u32 id);
 extern "C" void ui_func_002bcf58();
 extern "C" void ui_func_002bef7c();
 extern "C" void ui_func_002bf9f0();
-extern "C" void ui_func_002bffbc();
+extern "C" s32 ui_func_002bffbc(u32 id);
 extern "C" void ui_func_002c615c();
 extern "C" void ui_func_002fdd60();
 extern "C" void ui_func_00334a6c();
@@ -1772,36 +1772,16 @@ extern "C" __attribute__((naked)) void script_vm_func_0021e96c() {
     );
 }
 // DECOMP_FUNC(0x0021f39c, 92)
-extern "C" __attribute__((naked)) void camp_func_0021f39c() {
-    asm volatile(
-        "ldr r2, [pc, #0x50]\n"
-        "ldrb r1, [r2]\n"
-        "cmp r1, r0\n"
-        "movlo r1, #1\n"
-        "bhs .L_0021f3ec\n"
-        ".L_0021f3b0:\n"
-        "ldrb r3, [r2, r1]\n"
-        "cmp r3, r0\n"
-        "blo .L_0021f3c4\n"
-        "and r0, r1, #0xff\n"
-        "bx lr\n"
-        ".L_0021f3c4:\n"
-        "add r3, r2, r1\n"
-        "ldrb r3, [r3, #1]\n"
-        "cmp r3, r0\n"
-        "blo .L_0021f3e0\n"
-        "add r0, r1, #1\n"
-        "and r0, r0, #0xff\n"
-        "bx lr\n"
-        ".L_0021f3e0:\n"
-        "add r1, r1, #2\n"
-        "cmp r1, #0xb\n"
-        "blt .L_0021f3b0\n"
-        ".L_0021f3ec:\n"
-        "mov r0, #0\n"
-        "bx lr\n"
-        ".word 0x004077f6\n"
-    );
+extern "C" u32 camp_func_0021f39c(u32 value) {
+    auto const* const thresholds = reinterpret_cast<volatile u8 const*>(0x004077F6u);
+    u32 index = 0;
+#pragma clang loop unroll(disable)
+    for (; index != 11; ++index) {
+        if (value <= thresholds[index]) {
+            return index;
+        }
+    }
+    return 0;
 }
 // DECOMP_FUNC(0x00220394, 196)
 extern "C" __attribute__((naked)) void ui_func_00220394() {

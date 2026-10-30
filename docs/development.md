@@ -30,23 +30,38 @@ With no `--cia`, extraction only selects an input when the current directory con
 python tools/extract.py --check
 ```
 
-## Compile and audit
+## Compile and find semantic work
 
 The Python build helper uses the canonical ARMv6K freestanding configuration:
 
 ```powershell
-python tools/build_check.py --force
-python tools/verify_decomp.py
-python tools/progress.py
+python tools/build_check.py
+python tools/find_candidates.py --limit 30
 ```
 
-`--force` rebuilds every translation unit. Incremental compilation must invalidate cached objects when dependencies, flags, or compiler identity change. Audit commands also check object freshness.
+The Python helper compiles independent translation units in parallel by default,
+using the logical CPUs available to the process (8 on the current machine).
+Use `--jobs N` / `-j N` to choose the worker count, or `--jobs 1` for a serial
+build. It prints elapsed time, the number of workers, and rebuilt/up-to-date
+counts. For example:
+
+```powershell
+python tools/build_check.py --force --jobs 8
+```
+
+`--force` rebuilds every translation unit; omit it for everyday incremental
+builds. Cached objects are checked against source/header contents, compiler
+identity, and flags. `--tu src/engine/leaf_matching.cpp` uses the same object path
+and cache as the full build, avoiding a second compilation during the next audit.
+A single translation unit still uses one compiler process; parallelism helps
+when several files need work. Audit/emulation stages have their own CPU usage.
+Audit commands also check object freshness.
 
 The CMake build uses the same target and optimization settings:
 
 ```powershell
 cmake -S . -B build/cmake-armv6k -G Ninja -DSMT4_ARMV6K=ON -DCMAKE_CXX_COMPILER=clang++
-cmake --build build/cmake-armv6k
+cmake --build build/cmake-armv6k --parallel 8
 ```
 
 This produces a static library, which does not check that all external symbols can be resolved into an executable. The tests separately compare the CMake object code for functions marked `matching` when the original code is available.
@@ -69,40 +84,39 @@ Remove-Item Env:SMT4_SKIP_PRIVATE_TESTS
 
 Tests requiring missing local game files skip with a reason. Synthetic extraction and verifier regression tests remain available without those inputs. Compiler tests require Clang; CMake tests additionally require CMake and Ninja.
 
-Before considering a tooling change complete, run the relevant tests, force the ARM build, run the audit, build through CMake, and run `git diff --check`.
+For tooling changes, run focused regressions and `git diff --check`. Compiler, flags, ABI, or build changes additionally require a forced ARM build, affected consumers, and CMake checks. Run the exact audit when exact-reference claims or their verifier change; byte equality is not a semantic acceptance gate.
 
 ## Find semantic reconstruction candidates
 
-Follow the [per-function reconstruction and validation procedure](function-reconstruction-workflow.md)
-for exact and experimental behavioral work. It defines contracts, attempt records,
-negative controls, batch checks and separate ARM/caller/full-game acceptance gates.
-
-The ledger can be 100% byte-matching while functions are still represented by
-inline assembly or `.incbin` wrappers. To find small, call-free wrappers that
-are good candidates for replacement with readable C++, run:
+Semantic discovery is the default. It searches the original function ledger
+regardless of byte-match status, ranks H1 dependencies from
+`config/reconstruction.json`, includes functions with calls, and omits already
+written experimental C++ from the new-work queue:
 
 ```powershell
-python tools/find_candidates.py --status matching --asm-backed-only --max-size 64 --limit 80
+python tools/find_candidates.py --limit 30 --output build/semantic-equivalence/semantic-queue.json
+python tools/find_candidates.py --include-existing-candidates --limit 30
 ```
 
-The default remains `--status todo` for compatibility. Inspect a candidate
-before editing it, then verify the exact function after rebuilding its
-translation unit:
+The second command includes candidates that need validation or integration;
+presence does not imply a pass. The default size ceiling is 8192 original bytes;
+use `--max-size 0` to remove it, or category/status filters to narrow the scope.
+The explicit `--mode leaf --status matching --asm-backed-only` path preserves the
+old small-leaf triage when it helps a particular task. It is not the main goal.
 
-```powershell
-python tools/split_asm.py --addr 0x00121d70
-python tools/build_check.py --tu src/engine/leaf_matching.cpp
-python tools/asm_diff.py --addr 0x00121d70
-```
-
-Semantic cleanup must not reduce the byte-exact baseline. Keep the exact
-`DECOMP_FUNC` address, size, and ledger symbol, and prefer small coherent
-batches that can be reverted independently.
+Follow the [per-function workflow](function-reconstruction-workflow.md): recover a
+contract, write clear C++, run differential and caller checks, then integrate a
+coherent batch. Different machine code and function sizes are accepted when
+behavior is supported. Do not add volatile or distort types merely for byte
+identity. Keep exact labels truthful and semantic evidence separate.
 
 ## Progress definitions
 
 An isolated [behavioral equivalence pilot](../experiments/semantic_equivalence/README.md)
-compares ten non-byte-identical C++ candidates with their original ARM code.
+compares compiled C++ candidates with their original ARM code. The
+[generated inventory](semantic-inventory.md) separates candidate definitions from
+static test/report links; [functional status](functional-status.md) tracks the
+integration goal without treating candidate presence as completion.
 Run it with the optional `requirements-experiment.txt` dependencies and
 `python tools/semantic_experiment.py --code <private-code.bin>`. It emits local
 reports and an experimental patch under ignored `build/`; these results do not
@@ -111,3 +125,31 @@ change matching status or establish a complete game boot.
 Only `matching` verifies exact machine code against the original binary. Relocations are accepted only when their type and symbol are supported and the encoded instruction can be checked against an unambiguous ledger target; currently that is limited to canonical ARM-state `R_ARM_CALL` relocations. Every other unresolved relocation remains ineligible for an exact match. The compiled-coverage tier uses a size threshold (at least 15% of the original function size, with a small minimum) to distinguish larger reconstructions from drafts. It does not establish equivalent behavior. Explored coverage includes stubs and should not be treated as runnable or completed game code.
 
 Use `python tools/progress.py --write` to regenerate the progress report and README from the reporting tool. Update that generator when changing generated documentation.
+
+## Safe analysis and automated matching
+
+`python tools/analyze_code.py` writes heuristic proposals and a boundary-difference
+report to `build/analysis/`. The Python API is read-only by default. Even when
+writing a proposal, it refuses to overwrite curated configuration files. A changed
+function size does not inherit an existing matching claim. Review discoveries
+against disassembly before accepting them into `config/functions.csv`.
+
+`python tools/asm_diff.py --addr <address>` returns exit code 0 only for an exact
+match, and 1 for a mismatch, compilation failure, or missing symbol. A semantic
+candidate can intentionally differ in bytes: validate it with its differential
+runner and caller tests, keeping its status separate from exact matching.
+
+`python tools/progress.py --write` regenerates the README with links to the
+functional roadmap and generated inventory; detailed functional state lives in
+`docs/functional-status.md` and the milestone records.
+
+## Multi-agent batch coordination
+
+Use [the agent workflow](agent-workflow.md) and the coordinator-owned H1 board.
+`python tools/agent_workflow.py check` validates dependencies, ownership and
+resource allocation; `ready` lists schedulable tasks and `prepare` generates a
+fresh source-hashed brief. The tool does not spawn agents or certify equivalence.
+Workers must use separate output directories/files and inspect test side effects.
+The default object cache, full regression, shared runner edits and runtime profile
+are integrator-owned resources. Never run several default eight-job build processes
+against the same output directory. See the workflow for handoff/provenance checks.

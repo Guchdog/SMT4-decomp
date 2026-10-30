@@ -1784,21 +1784,14 @@ extern "C" __attribute__((naked)) void engine_func_002f6120() {
 }
 
 // DECOMP_FUNC(0x002fc0ec, 52)
-extern "C" __attribute__((naked)) void ui_func_002fc0ec() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe59f0028\n"
-        ".inst 0xe92d4010\n"
-        ".inst 0xe5900000\n"
-        ".inst 0xe3500000\n"
-        ".inst 0x0a000004\n"
-        ".inst 0xe5900000\n"
-        ".inst 0xebff0cc4\n"
-        ".inst 0xe3500000\n"
-        ".inst 0x13a00000\n"
-        ".inst 0x1a000000\n"
-        ".inst 0xe3a00001\n"
-        ".inst 0xe8bd8010\n"
-        ".word 0x0044e2d0\n"
-    );
+extern "C" u32 battle_func_002bf41c(void* task);
+
+extern "C" __attribute__((used, noinline)) u32 ui_func_002fc0ec() {
+    auto* const work = *reinterpret_cast<void* volatile*>(0x0044E2D0u);
+    if (work == nullptr) {
+        return 1;
+    }
+
+    const u32 registered = battle_func_002bf41c(*reinterpret_cast<void**>(work));
+    return registered == 0 ? 1u : 0u;
 }

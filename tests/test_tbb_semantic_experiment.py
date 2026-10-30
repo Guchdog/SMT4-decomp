@@ -5,7 +5,7 @@ import json
 from tools.semantic_experiment import DATA, DATA_SIZE
 from tools.tbb_semantic_experiment import (
     ROOT, make_row_count_cases, real_tbb_case, title_menu_case,
-    verify_title_call_sites,
+    resolve_integration_symbols, verify_title_call_sites,
 )
 
 
@@ -74,6 +74,29 @@ class TestTitleCallerWindowSetup(unittest.TestCase):
         )
         again = list(make_row_count_cases(7, 4))
         self.assertEqual(cases, again)
+
+
+class TestIntegratedSymbolResolution(unittest.TestCase):
+    def test_resolves_namespace_mangled_production_symbols(self):
+        functions = {
+            "_ZN4smt42ui15Tbb_GetSubTableEPKNS0_10TbcrHeaderEj": (b"sub", ()),
+            "_ZN4smt42ui18Tbb_GetPayloadDataEPKNS0_10Tbl1HeaderE": (b"payload", ()),
+        }
+        self.assertEqual(resolve_integration_symbols(functions), {
+            "Tbb_GetSubTable": "_ZN4smt42ui15Tbb_GetSubTableEPKNS0_10TbcrHeaderEj",
+            "Tbb_GetPayloadData": "_ZN4smt42ui18Tbb_GetPayloadDataEPKNS0_10Tbl1HeaderE",
+        })
+
+    def test_rejects_missing_or_ambiguous_production_symbols(self):
+        with self.assertRaisesRegex(ValueError, "Expected one integrated symbol"):
+            resolve_integration_symbols({})
+        ambiguous = {
+            "Tbb_GetSubTable": (b"one", ()),
+            "_Z_Tbb_GetSubTable": (b"two", ()),
+            "Tbb_GetPayloadData": (b"payload", ()),
+        }
+        with self.assertRaisesRegex(ValueError, "Expected one integrated symbol"):
+            resolve_integration_symbols(ambiguous)
 
 
 if __name__ == "__main__":

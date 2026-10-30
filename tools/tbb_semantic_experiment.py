@@ -299,9 +299,21 @@ def real_tbb_case(raw: bytes, label: str, *, table_index: int | None = None,
                 rng.getrandbits(4) << 28)
 
 
+def resolve_integration_symbols(functions: dict[str, tuple[bytes, tuple]]) -> dict[str, str]:
+    """Map the two production accessors from their namespace-mangled ELF names."""
+    resolved = {}
+    for function_name in ("Tbb_GetSubTable", "Tbb_GetPayloadData"):
+        matches = [name for name in functions if function_name in name]
+        if len(matches) != 1:
+            raise ValueError(f"Expected one integrated symbol for {function_name}, found {matches}")
+        resolved[function_name] = matches[0]
+    return resolved
+
+
 def run(code_path: Path, output: Path, seed: int, samples: int,
         real_tbb_path: Path | None = None,
-        title_caller_tbb_path: Path | None = None):
+        title_caller_tbb_path: Path | None = None,
+        integration_tu: Path | None = None):
     output.mkdir(parents=True, exist_ok=True)
     image = code_path.read_bytes()
     game = json.loads((ROOT / "config/game_info.json").read_text(encoding="utf-8"))
@@ -315,7 +327,25 @@ def run(code_path: Path, output: Path, seed: int, samples: int,
     if build.returncode:
         raise RuntimeError(build.stderr)
     functions = extract_elf_functions_detailed(object_path)
-    symbol = "candidate_002c0e9c"
+    integration_object_path = None
+    integration_source_sha256 = None
+    if integration_tu is not None:
+        integration_object_path = output / "integrated_tbb.o"
+        integration_build = compile_tu_armv6k(integration_tu, integration_object_path, ROOT)
+        if integration_build.returncode:
+            raise RuntimeError(integration_build.stderr)
+        integration_functions = extract_elf_functions_detailed(integration_object_path)
+        integration_symbols = resolve_integration_symbols(integration_functions)
+        for function_name, symbol_name in integration_symbols.items():
+            _, relocations = integration_functions[symbol_name]
+            if relocations:
+                raise ValueError(f"Unsupported relocation in integrated {function_name}: {relocations}")
+            validate_local_blob(integration_functions[symbol_name][0])
+        functions.update({function_name: integration_functions[symbol_name]
+                          for function_name, symbol_name in integration_symbols.items()})
+        integration_source_sha256 = hashlib.sha256(integration_tu.read_bytes()).hexdigest()
+
+    symbol = "Tbb_GetPayloadData" if integration_tu is not None else "candidate_002c0e9c"
     wrong_symbol = "wrong_tbb_payload_magic"
     for name in (symbol, wrong_symbol):
         if name not in functions:
@@ -349,7 +379,7 @@ def run(code_path: Path, output: Path, seed: int, samples: int,
     if negative is None:
         negative = {"detected": False}
 
-    subtable_symbol = "candidate_002ac2f4"
+    subtable_symbol = "Tbb_GetSubTable" if integration_tu is not None else "candidate_002ac2f4"
     wrong_subtable_symbol = "wrong_tbb_subtable_magic"
     for name in (subtable_symbol, wrong_subtable_symbol):
         if name not in functions:
@@ -483,6 +513,11 @@ def run(code_path: Path, output: Path, seed: int, samples: int,
         "entry": hex(ENTRY),
         "reference_sha256": reference_hash,
         "candidate_sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
+        "integration_source": str(integration_tu) if integration_tu else None,
+        "integration_source_sha256": integration_source_sha256,
+        "integration_object_sha256": (hashlib.sha256(integration_object_path.read_bytes()).hexdigest()
+                                       if integration_object_path else None),
+        "candidate_symbols": {"payload": symbol, "subtable": subtable_symbol},
         "object_sha256": hashlib.sha256(object_path.read_bytes()).hexdigest(),
         "compiler": compiler.stdout.splitlines()[0],
         "seed": seed,
@@ -529,9 +564,11 @@ def main():
                         help="optional extracted TBCR asset for direct getter comparisons")
     parser.add_argument("--title-caller-tbb", type=Path,
                         help="run the real title getter caller window for menu selections 0..3")
+    parser.add_argument("--integration-tu", type=Path,
+                        help="also compare production Tbb_GetSubTable/PayloadData symbols from this TU")
     args = parser.parse_args()
     run(args.code, args.output, args.seed, args.samples, args.real_tbb,
-        args.title_caller_tbb)
+        args.title_caller_tbb, args.integration_tu)
 
 
 if __name__ == "__main__":

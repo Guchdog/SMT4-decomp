@@ -2,6 +2,7 @@
 #include "ui/ui_runtime.h"
 #include "ui/tbb_table.h"
 #include "camp/unite_extras.h"
+#include "../camp/title_message.h"
 #include "engine/asd_symbols.h"
 #include "engine/asd_render_ui.h"
 #include "engine/asd_scene.h"
@@ -50,10 +51,6 @@ extern "C" {
     s32   UiTouch_GetRegionTouchState(s16 handle);                              // 0x0029D8FC
     s16   UiTouch_RegisterRegion(u32 group, u32 node);                          // 0x002B88C4
 
-    // 0x0029F10C: stores the text pointer/colour in the 0x0043DA28 work and
-    // resets its 0x4CB..0x550 fields; a null text only clears the flag
-    // (`movs r5,r0` / `strbeq r8,[r7,#0x4cb]`, 0x0029F114..0x0029F130).
-    void  Camp_SetSlotMessage(const char* text, u32 rgba);                      // 0x0029F10C
     // 0x00250B4C: three-part field formatter; mode 2 selects the
     // `cmp r4,#0x3e8` branch and writes at most four digits plus NUL.
     void  UiText_FormatSlotField(u32 a, u32 b, u32 mode, char* dst);            // 0x00250B4C
@@ -2921,7 +2918,138 @@ void Title_SequenceRequest() {
     engine::AsdSequence_func_002c59b8(4, &block, 0x20);
 }
 
+inline u32 NormalizeSignedRemainderByFour(u32 provisional) {
+    const u32 adjusted = provisional + 4u;
+    const u32 correction = (0u - (adjusted >> 31)) >> 30;
+    const u32 multiple = (adjusted + correction) & ~3u;
+    return adjusted - multiple;
+}
+
+using TitleReadyPredicate = s32 (*)();
+using TitleTriggerQuery = s32 (*)(u32);
+using TitleEventRequest = void (*)(u32);
+
+constexpr std::uintptr_t kTitleMainWorkSlotAddr = 0x0044E300u;
+constexpr std::uintptr_t kScriptIsReadyAddr = 0x00289924u;
+constexpr std::uintptr_t kPreviewIsReadyAddr = 0x0025A2BCu;
+constexpr std::uintptr_t kUiInputTriggerAddr = 0x002B902Cu;
+constexpr std::uintptr_t kScriptRequestEventAddr = 0x002B91C4u;
+constexpr u32 kTitleSelectionChangedEventId = 0x0100016Cu;
+
 } // namespace
+
+extern "C" __attribute__((noinline)) u32 H1_TitleMain_UpdateNavigationSlice(
+    camp::TitleMainWork** captured_work_out) {
+    const auto script_is_ready =
+        reinterpret_cast<TitleReadyPredicate>(kScriptIsReadyAddr);
+    const auto preview_is_ready =
+        reinterpret_cast<TitleReadyPredicate>(kPreviewIsReadyAddr);
+    if (script_is_ready() == 0) {
+        return 0u;
+    }
+    if (preview_is_ready() == 0) {
+        return 0u;
+    }
+
+    auto* const global_work =
+        reinterpret_cast<camp::TitleMainWork* volatile*>(kTitleMainWorkSlotAddr);
+    camp::TitleMainWork* const work = *global_work;
+    *captured_work_out = work;
+    work->field_64 = work->field_64 + 1.0F;
+
+    const auto trigger = reinterpret_cast<TitleTriggerQuery>(kUiInputTriggerAddr);
+    if (trigger(5u) != 0 || trigger(0xEu) != 0) {
+        work->field_08 = work->field_08 - 1u;
+    }
+    if (trigger(6u) != 0 || trigger(0xFu) != 0) {
+        work->field_08 = work->field_08 + 1u;
+    }
+
+    const u32 selection = NormalizeSignedRemainderByFour(work->field_08);
+    work->field_08 = selection;
+    const u32 cached = work->field_0c;
+    if (selection != cached) {
+        const auto request_event =
+            reinterpret_cast<TitleEventRequest>(kScriptRequestEventAddr);
+        request_event(kTitleSelectionChangedEventId);
+        work->field_0c = selection;
+    }
+    return 1u;
+}
+extern "C" __attribute__((noinline)) u32 H1_TitleMain_ProcessConfirmationSlice(
+    camp::TitleMainWork* work) {
+    if (work == nullptr) {
+        return 0u;
+    }
+    // Check confirmation trigger if flag_63 is clear
+    if (work->flag_63 == 0) {
+        if (UiMenu_CheckCursorSound(1) == 0 && UiInput_Trigger2(0) == 0) {
+            return 0u;
+        }
+    }
+
+    // Cursor 1 (Load Game) without flag_60 set clears confirmation and returns to State 5
+    if (work->field_08 == 1 && work->flag_60 == 0) {
+        work->flag_63 = 0;
+        return 0u;
+    }
+
+    Script_RequestEvent(0x0100016D);
+
+    switch (work->field_08) {
+    case 1: {
+        work->flag_61 = 1;
+        for (s32 i = 0; i < 4; ++i) {
+            Camp_AdvanceCursorBlink();
+        }
+        work->flag_63 = 0;
+        work->flag_7c = 1;
+        work->field_80 = 2;
+        Script_PrepareCursor();
+        Script_ApplyCursorMode(1);
+        work->state_9C = 7;
+        break;
+    }
+    case 0: {
+        work->flag_62 = 1;
+        work->flag_63 = 0;
+        for (s32 i = 0; i < 4; ++i) {
+            Camp_AdvanceCursorBlink();
+        }
+        Script_SetCursorSound(0, 0xC, 0xFFFFFFFF);
+        Script_SetCursorSound(1, 0xC, 0xFFFFFFFF);
+        Script_ResetCursorSound(0xF);
+        work->state_9C = 6;
+        break;
+    }
+    case 2: {
+        work->flag_61 = 1;
+        for (s32 i = 0; i < 4; ++i) {
+            Camp_AdvanceCursorBlink();
+        }
+        work->flag_63 = 0;
+        work->flag_7c = 1;
+        work->field_80 = 2;
+        Script_PrepareCursor();
+        Script_ApplyCursorMode(1);
+        work->state_9C = 9;
+        break;
+    }
+    case 3: {
+        work->flag_63 = 0;
+        for (s32 i = 0; i < 4; ++i) {
+            Camp_AdvanceCursorBlink();
+        }
+        work->state_9C = 0x0B;
+        Script_SetCursorSound(0, 0xA, 0xFF);
+        Script_SetCursorSound(1, 0xA, 0xFF);
+        break;
+    }
+    default:
+        break;
+    }
+    return 1u;
+}
 
 // DECOMP_FUNC(0x001e989c, 3924)
 __attribute__((naked)) void ui_func_001e989c(void*) {
@@ -3209,60 +3337,60 @@ __attribute__((naked)) void ui_func_001e989c(void*) {
         ".word 0xe320f000\n"
         ".word 0xe320f000\n"
         ".word 0xeaffff49\n"
+        "sub sp, sp, #8\n"
+        "mov r0, sp\n"
+        "bl H1_TitleMain_UpdateNavigationSlice\n"
+        "cmp r0, #0\n"
+        "ldr r0, [sp]\n"
+        "add sp, sp, #8\n"
+        ".word 0x0a000241\n"
+        "mov r4, r0\n"
+        "ldr r8, [pc, #16]\n"
+        "mov r12, #0x3f800000\n"
+        "vmov s17, r12\n"
+        ".word 0xea000029\n"
         ".word 0xe320f000\n"
-        ".word 0xeb027f04\n"
-        ".word 0xe3500000\n"
         ".word 0xe320f000\n"
-        ".word 0x0a000243\n"
-        ".word 0xeb01c166\n"
-        ".word 0xe3500000\n"
+        ".word 0x0044e300\n"
         ".word 0xe320f000\n"
-        ".word 0x0a00023f\n"
-        ".word 0xe59f8188\n"
-        ".word 0xeddf8a7e\n"
-        ".word 0xe3a00005\n"
-        ".word 0xe5984000\n"
-        ".word 0xed940a19\n"
-        ".word 0xee300a28\n"
-        ".word 0xed840a19\n"
-        ".word 0xeb033cb7\n"
-        ".word 0xe3500000\n"
         ".word 0xe320f000\n"
-        ".word 0x1a000004\n"
-        ".word 0xe3a0000e\n"
-        ".word 0xeb033cb2\n"
-        ".word 0xe3500000\n"
         ".word 0xe320f000\n"
-        ".word 0x0a000002\n"
-        ".word 0xe5940008\n"
-        ".word 0xe2400001\n"
-        ".word 0xe5840008\n"
-        ".word 0xe3a00006\n"
-        ".word 0xeb033caa\n"
-        ".word 0xe3500000\n"
         ".word 0xe320f000\n"
-        ".word 0x1a000004\n"
-        ".word 0xe3a0000f\n"
-        ".word 0xeb033ca5\n"
-        ".word 0xe3500000\n"
-        ".word 0x05940008\n"
-        ".word 0x0a000002\n"
-        ".word 0xe5940008\n"
-        ".word 0xe2800001\n"
-        ".word 0xe5840008\n"
-        ".word 0xe2800004\n"
-        ".word 0xe1a01fc0\n"
-        ".word 0xe0801f21\n"
-        ".word 0xe3c11003\n"
-        ".word 0xe0400001\n"
-        ".word 0xe5840008\n"
-        ".word 0xe594100c\n"
-        ".word 0xe1500001\n"
-        ".word 0x0a000003\n"
-        ".word 0xe59f0164\n"
-        ".word 0xeb033cfa\n"
-        ".word 0xe5940008\n"
-        ".word 0xe584000c\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
         ".word 0xe5940064\n"
         ".word 0xe59f1154\n"
         ".word 0xe59f2154\n"
@@ -3487,121 +3615,121 @@ __attribute__((naked)) void ui_func_001e989c(void*) {
         ".word 0xe51f1298\n"
         ".word 0xe2800016\n"
         ".word 0xeb02d3ea\n"
-        ".word 0xe5d50063\n"
-        ".word 0xe3500000\n"
-        ".word 0x1a000009\n"
-        ".word 0xe3a00001\n"
-        ".word 0xeb0213d8\n"
-        ".word 0xe3500000\n"
-        ".word 0xe320f000\n"
-        ".word 0x1a000004\n"
-        ".word 0xe3a00000\n"
-        ".word 0xeb03578c\n"
-        ".word 0xe3500000\n"
-        ".word 0xe320f000\n"
-        ".word 0x0a000125\n"
-        ".word 0xe5985000\n"
-        ".word 0xe5950008\n"
-        ".word 0xe3500001\n"
-        ".word 0x05d50060\n"
-        ".word 0x03500000\n"
-        ".word 0x03a00000\n"
-        ".word 0x05c50063\n"
-        ".word 0x0a00011d\n"
-        ".word 0xe59f0530\n"
-        ".word 0xeb033c01\n"
-        ".word 0xe5950008\n"
-        ".word 0xe3500001\n"
-        ".word 0x03a04000\n"
-        ".word 0x05c57061\n"
-        ".word 0x0a000008\n"
-        ".word 0xe3500000\n"
-        ".word 0x0a000017\n"
-        ".word 0xe3500002\n"
-        ".word 0x03a04000\n"
-        ".word 0x05c57061\n"
-        ".word 0x0a00002a\n"
-        ".word 0xe3500003\n"
-        ".word 0x0a000039\n"
-        ".word 0xea00010d\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb033b82\n"
-        ".word 0xe2844001\n"
-        ".word 0xe3540004\n"
-        ".word 0xbafffffa\n"
-        ".word 0xe3a01000\n"
-        ".word 0xe5c51063\n"
-        ".word 0xe3a00002\n"
-        ".word 0xe5c5707c\n"
-        ".word 0xe5850080\n"
-        ".word 0xeb022f84\n"
-        ".word 0xe3a00001\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb022f0a\n"
-        ".word 0xe3a00007\n"
-        ".word 0xe320f000\n"
-        ".word 0xeafffdf3\n"
-        ".word 0xe3a00000\n"
-        ".word 0xe5c57062\n"
-        ".word 0xe1a04000\n"
-        ".word 0xe5c50063\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb033b6d\n"
-        ".word 0xe2844001\n"
-        ".word 0xe3540004\n"
-        ".word 0xbafffffa\n"
-        ".word 0xe3e02000\n"
-        ".word 0xe3a0100c\n"
-        ".word 0xe3a00000\n"
-        ".word 0xeb02c8fc\n"
-        ".word 0xe3e02000\n"
-        ".word 0xe3a0100c\n"
-        ".word 0xe3a00001\n"
-        ".word 0xeb02c8f8\n"
-        ".word 0xe3a0000f\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb02c8f1\n"
-        ".word 0xe3a00006\n"
-        ".word 0xe320f000\n"
-        ".word 0xeafffddc\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb033b5a\n"
-        ".word 0xe2844001\n"
-        ".word 0xe3540004\n"
-        ".word 0xbafffffa\n"
-        ".word 0xe3a01000\n"
-        ".word 0xe5c51063\n"
-        ".word 0xe3a00002\n"
-        ".word 0xe5c5707c\n"
-        ".word 0xe5850080\n"
-        ".word 0xeb022f5c\n"
-        ".word 0xe3a00001\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb022ee2\n"
-        ".word 0xe3a00009\n"
-        ".word 0xe320f000\n"
-        ".word 0xeafffdcb\n"
-        ".word 0xe3a00000\n"
-        ".word 0xe1a04000\n"
-        ".word 0xe5c50063\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb033b46\n"
-        ".word 0xe2844001\n"
-        ".word 0xe3540004\n"
-        ".word 0xbafffffa\n"
-        ".word 0xe3a0000b\n"
-        ".word 0xe585009c\n"
-        ".word 0xe3a020ff\n"
-        ".word 0xe3a0100a\n"
-        ".word 0xe3a00000\n"
-        ".word 0xeb02c8d3\n"
-        ".word 0xe3a020ff\n"
-        ".word 0xe3a0100a\n"
-        ".word 0xe3a00001\n"
-        ".word 0xeb02c8cf\n"
-        ".word 0xe320f000\n"
-        ".word 0xe320f000\n"
+        "mov r0, r5\n"
+        "bl H1_TitleMain_ProcessConfirmationSlice\n"
         ".word 0xea0000bf\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
+        ".word 0xe320f000\n"
         ".word 0xe5d5007c\n"
         ".word 0xe3500000\n"
         ".word 0x1a0000bc\n"
@@ -3975,9 +4103,9 @@ void ui_func_001e989c(void*) {
         const Tbl1Header* sub_table = Tbb_GetGlobalSubTable(0x3A, 0);
         const u8* payload = static_cast<const u8*>(Tbb_GetPayloadData(sub_table));
         const u32 index = work->field_08;
-        Camp_SetSlotMessage(
+        camp::H1_SetTitleHelpMessage(
             reinterpret_cast<const char*>(payload + 0x16 + 0x56 * index),
-            0x323232FF);                                                // 0x001E9ADC
+            0x323232FF);                                                // H1 title message (state 2)
 
         if (work->flag_60 != 0) {
             Title_PreparePreview();                                     // 0x001E9AEC
@@ -4069,25 +4197,8 @@ void ui_func_001e989c(void*) {
     }
     case 5: {
         // 0x001E9D08..0x001EA128: cursor, blend, touch regions, fade handoff.
-        if (Script_IsReadyToAdvance() == 0) {
+        if (camp::H1_TitleMain_UpdateNavigationSlice(&work) == 0u) {
             break;
-        }
-        if (Camp_IsPreviewReady() == 0) {
-            break;
-        }
-        work->field_64 += 1.0F;                                         // 0x001E9D40
-
-        if (UiInput_Trigger(5) != 0 || UiInput_Trigger(0xE) != 0) {
-            work->field_08 -= 1;                                        // 0x001E9D6C
-        }
-        if (UiInput_Trigger(6) != 0 || UiInput_Trigger(0xF) != 0) {
-            work->field_08 += 1;                                        // 0x001E9DA0
-        }
-        // 0x001E9DAC..0x001E9DC0: signed modulo 4 of (cursor + 4).
-        work->field_08 = static_cast<u32>((static_cast<s32>(work->field_08) + 4) % 4);
-        if (work->field_08 != work->field_0c) {
-            Script_RequestEvent(0x0100016C);                            // 0x001E9DD0
-            work->field_0c = work->field_08;
         }
 
         // 0x001E9DE0..0x001E9E48: timer clamp and blend ramp.
@@ -4177,9 +4288,9 @@ void ui_func_001e989c(void*) {
             const Tbl1Header* sub_table = Tbb_GetGlobalSubTable(0x3A, 0);
             const u8* payload = static_cast<const u8*>(Tbb_GetPayloadData(sub_table));
             const u32 index = work->field_08;
-            Camp_SetSlotMessage(
+            camp::H1_SetTitleHelpMessage(
                 reinterpret_cast<const char*>(payload + 0x16 + 0x56 * index),
-                0x323232FF);
+                0x323232FF);                                            // H1 title message (state 5)
         }
         if (work->flag_63 == 0) {
             if (UiMenu_CheckCursorSound(1) == 0 && UiInput_Trigger2(0) == 0) {

@@ -1,0 +1,11 @@
+# H2 callback split manual runtime — complete
+
+The coordinator preflighted the independently reviewed Calc-only diagnostic profile and launched its isolated Azahar CLI as PID 18336. The human alone was asked to open Audio Settings and report whether it opens or the window closes. GDB/RPC are disabled; no automated keyboard/mouse or debugger is used. Mixed-image outcomes narrow the failing configuration but do not establish callback reachability or unique causation.
+
+The user reported that Audio Settings opened in the Calc-only diagnostic. This is a successful mixed-image entry observation; no guest PC or callback reachability was captured. The user was asked to close it before the Draw/Secondary diagnostic.
+
+The Calc process was closed by the user, and its log and profile hashes were saved. The coordinator preflighted and launched the independently reviewed Draw/Secondary diagnostic as PID 22388 with the same staged CCI and disabled GDB/RPC. The user was asked to open Audio Settings and report its behavior.
+
+The user reported that selecting Audio Settings closed the Draw/Secondary diagnostic. Windows Application Error event 1000 independently records PID 22388 (`0x5774`), staged executable `E:\SMT4decomp\build\h2-manual-comparison\run-001\diagnostics\run-002\draw-secondary\app\azahar.exe`, exception `0x20474343` at `KERNELBASE.dll+0x25369`. A local crash dump exists at `%LOCALAPPDATA%\CrashDumps\azahar.exe.22388.dmp`; it remains private and was not copied into the repository or inspected. Calc-only opened Audio Settings per the user and had no captured guest PC or callback reachability. These mixed-image outcomes localize the failing configuration to Draw/Secondary in this split, but do not alone prove which function or instruction caused it.
+
+Handoff evidence: event time `2026-10-26 17:01:13` local, report ID `0800860f-198d-4f51-a0e2-4161f4d70be8`. The dump location, exception and staged path are corroborating host evidence; the UI outcome is user-reported. No input automation, GDB, RPC, or installed profile was used. Next action is to correct and validate the formatter interworking defect identified by the separate static audit, then rebuild a fresh reviewed patch and repeat the human-controlled CLI scenario.

@@ -1,0 +1,7 @@
+# H2 APT utility-4: reproducible experimental image package
+
+The package builder recompiles the reviewed 40-byte candidate, resolves its single direct ARM call to original wrapper `0x002B5A1C`, and overlays only the entry bytes within the original 44-byte range. It starts from the reviewed H2 image `acd8b2f35df08f225ca65b0fbf8aeef2dbbaa71171904e31c301e8bff6a51446`, verifies every inherited changed interval against the pinned final-image manifest, rejects any overlap with the APT entry, and checks the final original-relative change set against the inherited intervals plus the candidate span.
+
+The resulting experimental image is `788530a1b1ad7d4f361228cbd0e4b87885b37606a8f3485c52e5390ae3223179`. The original-based IPS has SHA-256 `9c4f38fbdefc9c52bc745e4cbb1e6425d5822db7c2ed2267331d582c5a841c88` and 539 records. Replaying it against the pinned original reproduces the exact final image. All 533 inherited records remain authorized; the additional bytes arise only within the APT entry span. The manifest and image are under `build/agent-work/H2-semantic/h2-apt-utility4-final-image-package/run-001/package/`.
+
+This makes the candidate placement reproducible on the selected offline H2 composition. It does not prove runtime execution or service behavior, and it does not promote the source ledger or close H2. The package still depends on the original APT wrapper; the caller/service tests use controlled dependencies, and Thumb/indirect paths remain open.

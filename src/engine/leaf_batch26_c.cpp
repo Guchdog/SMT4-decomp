@@ -65,7 +65,7 @@ extern "C" void func_003e87d4();
 extern "C" void script_vm_func_002b5b44();
 extern "C" void ui_func_00150db8();
 extern "C" void ui_func_00238e18();
-extern "C" void ui_func_002adb40();
+extern "C" u32 ui_func_002adb40(void* destination, const void* source);
 extern "C" void ui_func_002c615c();
 extern "C" void ui_func_0037b6c0();
 
