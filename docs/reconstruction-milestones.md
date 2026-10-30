@@ -77,6 +77,20 @@ el motivo del cambio. No estimar fechas mediante funciones por noche.
 | H4 | Exploración mínima | En una escena delimitada, mover al personaje, controlar la cámara, interactuar y cambiar de zona. | Cerrado (2026-10-30): paridad 100% en Azahar autónomo (250 ticks de escena, 0 diffs); 8 candidatos C++ integrados (vista, subobjetos, actor jugador, pool entidades, ejes, transformación jugador, triggers, script VM). [Ficha H4](milestones/H4-exploration-minimum.md). |
 | H5 | Combate mínimo | Entrar en un combate conocido, elegir acciones, resolver un turno y salir con resultados correctos. | Cerrado (2026-10-30): paridad 100% en Azahar autónomo (8 candidatos integrados, 0 diffs). [Ficha H5](milestones/H5-combat-minimum.md). |
 | H6 | Guardado y recarga | Guardar una partida de prueba y recuperar los campos de estado definidos en la ficha. | Cerrado (2026-10-30): paridad 100% en Azahar autónomo (8 candidatos integrados, 0 diffs en Title, Save Load y 250 ticks de campo). [Ficha H6](milestones/H6-save-and-reload.md). |
+| H7 | Máquina virtual de scripts y eventos | Ejecutar secuencias de eventos, opcodes de la VM (`src/script/`), cuadros de diálogo (`window.cpp`), respuestas de alineamiento y flags de progreso. | Pendiente. |
+| H8 | Menú de Campaña (Camp), Inventario y Grupo | Abrir menú de campaña, inspeccionar estado/habilidades (`status*.cpp`), usar consumibles, cambiar equipo (`camp_inventory.cpp`) y gestionar grupo (`camp_party.cpp`). | Pendiente. |
+| H9 | Catedral de las Sombras: Fusión y Compendio | Realizar fusiones normales y especiales (`unite*.cpp`), herencia de habilidades, búsqueda/invocación en el Compendio (`bible.cpp`, `compendium_search.cpp`) y Demon Whisper (`whisper_event.cpp`). | Pendiente. |
+| H10 | Burroughs, Misiones (Quests) y Apps | Aceptar, consultar y entregar misiones principales y Challenge Quests (`quest_ui.cpp`), desbloquear Apps de Burroughs (`app_store.cpp`) y actualizar el archivo (`camp_archive.cpp`). | Pendiente. |
+| H11 | Tiendas, Mercado Negro y Terminales | Comprar y vender equipo/objetos/reliquias (`src/shop/`), navegar menús de Mikado (`mikado_ui.cpp`) y teletransportarse por Terminales (`terminal_ui.cpp`). | Pendiente. |
+| H12 | Combate Avanzado: Press Turn, Smirk, Negociación y Resultados | Resolver consumo/ganancia de íconos Press Turn, estados alterados (`battle_ailment.cpp`), estado Smirk, reclutamiento (`battle_scout.cpp`), HUD completo (`battle_hud*.cpp`) y pantalla de victoria/subida de nivel (`result.cpp`). | Pendiente. |
+| H13 | Exploración Avanzada, Minimapa y Mundo Exterior | Transiciones entre zonas de Tokio, Mikado y sobremapa (`map_field.cpp`, `map_runtime.cpp`), actualización de minimapa (`minimap.cpp`), spawns de enemigos y obstáculos de campo. | Pendiente. |
+| H14 | Motor Gráfico ASD: Escena, Modelos 3D, Texturas y Efectos | Pipeline de carga y renderizado de escenas (`asd_scene.cpp`), modelos/animaciones (`asd_model.cpp`), texturas y conversión de formatos (`asd_texture.cpp`, `tex_convert*.cpp`) y partículas (`asd_effect*.cpp`). | Pendiente. |
+| H15 | Motor de UI, Fuentes y Renderizado 2D | Gestor de ventanas y layouts TBB (`tbb_loader.cpp`), renderizado tipográfico (`asd_text.cpp`), colas de dibujo 2D dual-screen (`asd_render_ui.cpp`, `asd_frame.cpp`) y memoria de UI (`ui_memory.cpp`). | Pendiente. |
+| H16 | Subsistema de Audio, Voces y Video | Reproducción y mezcla de BGM, efectos de sonido (SE), streaming de voces (`asd_sound.cpp`) y decodificación de cinemáticas Mobiclip (`mobiclip.cpp`). | Pendiente. |
+| H17 | StreetPass (DDS / CEC) y Contenido Descargable (AOC / DLC) | Gestión de tarjetas DDS, intercambio StreetPass (`camp_cec.cpp`) y montaje/verificación de DLC (`aoc.cpp`). | Pendiente. |
+| H18 | Promoción e Integración Canónica de Módulos | Promover todos los candidatos C++ semánticos de `experiments/` a `src/`, reemplazando bloques crudos (`exact_byte_spans.cpp`, `block_*.cpp`, `leaf_batch*.cpp`) con C++ legible y verificado. | Pendiente. |
+| H19 | Enlace del Ejecutable Reconstruido Completo | Generar y enlazar el binario `code.bin` completo 100% desde código fuente C++ reconstruido (`crt/start.cpp` + subsistemas), superando toda la suite de regresión en Azahar. | Pendiente. |
+| H20 | Capa de Abstracción de Plataforma (HAL) y Portabilidad Nativa | Desacoplar servicios del kernel/SDK de 3DS (`src/nn/`, `fs`, `gsp`/`gx`, `dsp`, `hid`, `os`) detrás de una HAL multiplataforma para compilación y ejecución nativa fuera de 3DS. | Pendiente. |
 
 H1 cubre el despacho hacia otras pantallas, no toda la lógica de sus destinos.
 H3 usa rutinas originales de lectura identificadas como dependencias; eso consta
@@ -188,10 +202,7 @@ medida auxiliar. Mantener separado el ledger exacto del avance semántico.
 
 ## Próxima sesión
 
-1. Mapear contratos e invariantes de `titleConfig_func_002f4ca0` (`0x002F4CA0`),
-   `TitleConfig_Calc` (`0x001EA928`) y los helpers de mapeo/copia de
-   `g_ConfigBytes`.
-2. Reconstruir y validar en C++ editable el flujo de Audio Settings (H2) desde el
-   menú principal del título.
+1. Iniciar el hito **H7 (Máquina virtual de scripts y eventos)**: mapear contratos e invariantes del bucle de despacho de opcodes en `src/script/script_vm.cpp`, `src/script/script_exec.cpp`, `src/engine/event_runtime.cpp` y la ventana de diálogo en `src/ui/window.cpp`.
+2. Reconstruir y validar en C++ editable el ciclo de ejecución de scripts de eventos, selección de respuestas y actualización de flags de progreso con verificación diferencial y emparejada en Azahar.
 
 Este documento establece el plan; su creación no completa ni ejecuta esos hitos.
