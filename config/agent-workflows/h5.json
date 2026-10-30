@@ -1,0 +1,2577 @@
+{
+  "schema_version": 1,
+  "batch": "batch-h5-001",
+  "milestone": "H5",
+  "max_workers": 3,
+  "cpu_budget": 8,
+  "goal": "Reconstruct readable, editable C++ for Milestone H5 (Minimal Combat), covering party activity evaluation, demon unit discrimination, target selection rendering and interpolation, help and negotiation modal workspaces, combat state release, and channel parameter dispatch with full offline differential validation, caller composition, staging, and autonomous runtime verification.",
+  "coordinator_owned_paths": [
+    "config/agent-workflows/h5.json",
+    "config/reconstruction.json",
+    "docs/milestones/H5-combat-minimum.md",
+    "docs/functional-status.md",
+    "docs/reconstruction-milestones.md"
+  ],
+  "tasks": [
+    {
+      "id": "h5-combat-architecture-recon",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Map minimal combat subsystem architecture, entry points, unit manager, target selection, modal dialogs, and channel parameters.",
+      "depends_on": [],
+      "function_claims": [
+        "0x001d29c8",
+        "0x002ae464",
+        "0x002f4aa4",
+        "0x002e06bc",
+        "0x001d2528",
+        "0x001d2610",
+        "0x002b8a80",
+        "0x0011311c"
+      ],
+      "read_paths": [
+        "src/battle/btl_main.cpp",
+        "src/battle/btl_ui.cpp",
+        "src/battle/btl_target_select.cpp",
+        "include/battle/battle.h",
+        "include/battle/btl_main.h",
+        "docs/reconstruction-milestones.md",
+        "docs/milestones/H4-exploration-minimum.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-combat-architecture-recon.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Identify exact entry points, memory structures, and callers for H5 minimal combat subsystems.",
+        "Define offline-first differential boundaries, positive/negative controls, and mutation criteria."
+      ],
+      "validation_plan": [
+        "Cross-check candidate functions against pinned binary code.bin and functions.csv ledger."
+      ]
+    },
+    {
+      "id": "h5-combat-architecture-recon-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of minimal combat architecture reconnaissance and subsystem boundary definitions.",
+      "depends_on": [
+        "h5-combat-architecture-recon"
+      ],
+      "function_claims": [
+        "0x001d29c8",
+        "0x002ae464",
+        "0x002f4aa4",
+        "0x002e06bc",
+        "0x001d2528",
+        "0x001d2610",
+        "0x002b8a80",
+        "0x0011311c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h5-combat-architecture-recon.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-combat-architecture-recon-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract boundaries, calling conventions, and ABI preservation expectations.",
+        "Approve task division and candidate scope for H5 minimal combat milestone."
+      ],
+      "validation_plan": [
+        "Confirm completeness of architecture reconnaissance and absence of unsupported assumptions."
+      ]
+    },
+    {
+      "id": "h5-party-active-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize contract, parameters, registers, and memory effects for btlUnit_CheckPartyActive (0x001d29c8).",
+      "depends_on": [
+        "h5-combat-architecture-recon-review"
+      ],
+      "function_claims": [
+        "0x001d29c8"
+      ],
+      "read_paths": [
+        "src/battle/btl_main.cpp",
+        "src/battle/btl_ui.cpp",
+        "include/battle/battle.h"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-btl-unit-party-active-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Accurately specify semantics of btlUnit_CheckPartyActive.",
+        "Specify test fixtures and mutation controls."
+      ],
+      "validation_plan": [
+        "Static disassembly and register effect verification against code.bin."
+      ]
+    },
+    {
+      "id": "h5-party-active-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of btlUnit_CheckPartyActive contract specification.",
+      "depends_on": [
+        "h5-party-active-contract"
+      ],
+      "function_claims": [
+        "0x001d29c8"
+      ],
+      "read_paths": [
+        "docs/agent-work/h5-btl-unit-party-active-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-btl-unit-party-active-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract fidelity against ARM disassembled instructions."
+      ],
+      "validation_plan": [
+        "Audit edge cases, register clobbers, and pointer validations."
+      ]
+    },
+    {
+      "id": "h5-party-active-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable C++ candidate for btlUnit_CheckPartyActive in experiments/semantic_equivalence/h5_btl_unit_check_party_active_candidate.cpp.",
+      "depends_on": [
+        "h5-party-active-contract-review"
+      ],
+      "function_claims": [
+        "0x001d29c8"
+      ],
+      "read_paths": [
+        "docs/agent-work/h5-btl-unit-party-active-contract.md",
+        "docs/agent-work/h5-btl-unit-party-active-contract-review.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h5_btl_unit_check_party_active_candidate.cpp",
+        "docs/agent-work/h5-btl-unit-party-active-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Generate clean C++ compiling with Clang ARMv6K under 0x001d29c8 window size."
+      ],
+      "validation_plan": [
+        "Compile with tools/build_check.py compile_tu_armv6k."
+      ]
+    },
+    {
+      "id": "h5-party-active-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of C++ candidate implementation for btlUnit_CheckPartyActive.",
+      "depends_on": [
+        "h5-party-active-candidate"
+      ],
+      "function_claims": [
+        "0x001d29c8"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h5_btl_unit_check_party_active_candidate.cpp",
+        "docs/agent-work/h5-btl-unit-party-active-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-btl-unit-party-active-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify candidate readability, types, and compiler artifact size."
+      ],
+      "validation_plan": [
+        "Inspect code and verify object section boundaries."
+      ]
+    },
+    {
+      "id": "h5-party-active-differential",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline Unicorn differential test runner tools/h5_btl_unit_check_party_active_experiment.py.",
+      "depends_on": [
+        "h5-party-active-candidate-review"
+      ],
+      "function_claims": [
+        "0x001d29c8"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h5_btl_unit_check_party_active_candidate.cpp",
+        "tools/h5_btl_unit_check_party_active_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-party-active-differential.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Pass all differential fixtures with 0 mismatches and detect mutation control."
+      ],
+      "validation_plan": [
+        "Execute Python test script and capture JSON report."
+      ]
+    },
+    {
+      "id": "h5-party-active-differential-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of differential test results for btlUnit_CheckPartyActive.",
+      "depends_on": [
+        "h5-party-active-differential"
+      ],
+      "function_claims": [
+        "0x001d29c8"
+      ],
+      "read_paths": [
+        "docs/agent-work/h5-party-active-differential.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-party-active-differential-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify differential execution logs and confirm mutation failure."
+      ],
+      "validation_plan": [
+        "Audit report metrics and hash integrity."
+      ]
+    },
+    {
+      "id": "h5-party-active-composition",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Test caller integration and context composition for btlUnit_CheckPartyActive.",
+      "depends_on": [
+        "h5-party-active-differential-review"
+      ],
+      "function_claims": [
+        "0x001d29c8"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h5_btl_unit_check_party_active_candidate.cpp",
+        "tools/h5_btl_unit_check_party_active_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-party-active-composition.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify caller-composition contract under real memory layout."
+      ],
+      "validation_plan": [
+        "Run caller composition suites and check register preservation."
+      ]
+    },
+    {
+      "id": "h5-party-active-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of caller composition for btlUnit_CheckPartyActive.",
+      "depends_on": [
+        "h5-party-active-composition"
+      ],
+      "function_claims": [
+        "0x001d29c8"
+      ],
+      "read_paths": [
+        "docs/agent-work/h5-party-active-composition.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-party-active-composition-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Audit caller composition evidence and side effect preservation."
+      ],
+      "validation_plan": [
+        "Verify caller context preservation."
+      ]
+    },
+    {
+      "id": "h5-party-active-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Stage candidate btlUnit_CheckPartyActive into composite H5 mod image.",
+      "depends_on": [
+        "h5-party-active-composition-review"
+      ],
+      "function_claims": [
+        "0x001d29c8"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h5_btl_unit_check_party_active_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-party-active-staging.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify patch window bounds and symbol resolution."
+      ],
+      "validation_plan": [
+        "Verify candidate fits in original binary window."
+      ]
+    },
+    {
+      "id": "h5-party-active-staging-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of staging for btlUnit_CheckPartyActive.",
+      "depends_on": [
+        "h5-party-active-staging"
+      ],
+      "function_claims": [
+        "0x001d29c8"
+      ],
+      "read_paths": [
+        "docs/agent-work/h5-party-active-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-party-active-staging-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve candidate inclusion in composite binary image."
+      ],
+      "validation_plan": [
+        "Verify candidate footprint and absence of relocations."
+      ]
+    },
+    {
+      "id": "h5-demon-unit-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize contract, parameters, registers, and memory effects for Btl_IsDemonUnit (0x002ae464).",
+      "depends_on": [
+        "h5-combat-architecture-recon-review"
+      ],
+      "function_claims": [
+        "0x002ae464"
+      ],
+      "read_paths": [
+        "src/battle/btl_main.cpp",
+        "src/battle/btl_ui.cpp",
+        "include/battle/battle.h"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-btl-is-demon-unit-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Accurately specify semantics of Btl_IsDemonUnit.",
+        "Specify test fixtures and mutation controls."
+      ],
+      "validation_plan": [
+        "Static disassembly and register effect verification against code.bin."
+      ]
+    },
+    {
+      "id": "h5-demon-unit-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of Btl_IsDemonUnit contract specification.",
+      "depends_on": [
+        "h5-demon-unit-contract"
+      ],
+      "function_claims": [
+        "0x002ae464"
+      ],
+      "read_paths": [
+        "docs/agent-work/h5-btl-is-demon-unit-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-btl-is-demon-unit-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract fidelity against ARM disassembled instructions."
+      ],
+      "validation_plan": [
+        "Audit edge cases, register clobbers, and pointer validations."
+      ]
+    },
+    {
+      "id": "h5-demon-unit-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable C++ candidate for Btl_IsDemonUnit in experiments/semantic_equivalence/h5_btl_is_demon_unit_candidate.cpp.",
+      "depends_on": [
+        "h5-demon-unit-contract-review"
+      ],
+      "function_claims": [
+        "0x002ae464"
+      ],
+      "read_paths": [
+        "docs/agent-work/h5-btl-is-demon-unit-contract.md",
+        "docs/agent-work/h5-btl-is-demon-unit-contract-review.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h5_btl_is_demon_unit_candidate.cpp",
+        "docs/agent-work/h5-btl-is-demon-unit-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Generate clean C++ compiling with Clang ARMv6K under 0x002ae464 window size."
+      ],
+      "validation_plan": [
+        "Compile with tools/build_check.py compile_tu_armv6k."
+      ]
+    },
+    {
+      "id": "h5-demon-unit-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of C++ candidate implementation for Btl_IsDemonUnit.",
+      "depends_on": [
+        "h5-demon-unit-candidate"
+      ],
+      "function_claims": [
+        "0x002ae464"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h5_btl_is_demon_unit_candidate.cpp",
+        "docs/agent-work/h5-btl-is-demon-unit-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-btl-is-demon-unit-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify candidate readability, types, and compiler artifact size."
+      ],
+      "validation_plan": [
+        "Inspect code and verify object section boundaries."
+      ]
+    },
+    {
+      "id": "h5-demon-unit-differential",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline Unicorn differential test runner tools/h5_btl_is_demon_unit_experiment.py.",
+      "depends_on": [
+        "h5-demon-unit-candidate-review"
+      ],
+      "function_claims": [
+        "0x002ae464"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h5_btl_is_demon_unit_candidate.cpp",
+        "tools/h5_btl_is_demon_unit_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-demon-unit-differential.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Pass all differential fixtures with 0 mismatches and detect mutation control."
+      ],
+      "validation_plan": [
+        "Execute Python test script and capture JSON report."
+      ]
+    },
+    {
+      "id": "h5-demon-unit-differential-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of differential test results for Btl_IsDemonUnit.",
+      "depends_on": [
+        "h5-demon-unit-differential"
+      ],
+      "function_claims": [
+        "0x002ae464"
+      ],
+      "read_paths": [
+        "docs/agent-work/h5-demon-unit-differential.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-demon-unit-differential-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify differential execution logs and confirm mutation failure."
+      ],
+      "validation_plan": [
+        "Audit report metrics and hash integrity."
+      ]
+    },
+    {
+      "id": "h5-demon-unit-composition",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Test caller integration and context composition for Btl_IsDemonUnit.",
+      "depends_on": [
+        "h5-demon-unit-differential-review"
+      ],
+      "function_claims": [
+        "0x002ae464"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h5_btl_is_demon_unit_candidate.cpp",
+        "tools/h5_btl_is_demon_unit_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-demon-unit-composition.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify caller-composition contract under real memory layout."
+      ],
+      "validation_plan": [
+        "Run caller composition suites and check register preservation."
+      ]
+    },
+    {
+      "id": "h5-demon-unit-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of caller composition for Btl_IsDemonUnit.",
+      "depends_on": [
+        "h5-demon-unit-composition"
+      ],
+      "function_claims": [
+        "0x002ae464"
+      ],
+      "read_paths": [
+        "docs/agent-work/h5-demon-unit-composition.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-demon-unit-composition-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Audit caller composition evidence and side effect preservation."
+      ],
+      "validation_plan": [
+        "Verify caller context preservation."
+      ]
+    },
+    {
+      "id": "h5-demon-unit-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Stage candidate Btl_IsDemonUnit into composite H5 mod image.",
+      "depends_on": [
+        "h5-demon-unit-composition-review"
+      ],
+      "function_claims": [
+        "0x002ae464"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h5_btl_is_demon_unit_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-demon-unit-staging.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify patch window bounds and symbol resolution."
+      ],
+      "validation_plan": [
+        "Verify candidate fits in original binary window."
+      ]
+    },
+    {
+      "id": "h5-demon-unit-staging-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of staging for Btl_IsDemonUnit.",
+      "depends_on": [
+        "h5-demon-unit-staging"
+      ],
+      "function_claims": [
+        "0x002ae464"
+      ],
+      "read_paths": [
+        "docs/agent-work/h5-demon-unit-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-demon-unit-staging-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve candidate inclusion in composite binary image."
+      ],
+      "validation_plan": [
+        "Verify candidate footprint and absence of relocations."
+      ]
+    },
+    {
+      "id": "h5-target-select-draw-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize contract, parameters, registers, and memory effects for btlTargetSelect_DrawUp (0x002f4aa4).",
+      "depends_on": [
+        "h5-combat-architecture-recon-review"
+      ],
+      "function_claims": [
+        "0x002f4aa4"
+      ],
+      "read_paths": [
+        "src/battle/btl_main.cpp",
+        "src/battle/btl_ui.cpp",
+        "include/battle/battle.h"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-btl-target-select-draw-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Accurately specify semantics of btlTargetSelect_DrawUp.",
+        "Specify test fixtures and mutation controls."
+      ],
+      "validation_plan": [
+        "Static disassembly and register effect verification against code.bin."
+      ]
+    },
+    {
+      "id": "h5-target-select-draw-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of btlTargetSelect_DrawUp contract specification.",
+      "depends_on": [
+        "h5-target-select-draw-contract"
+      ],
+      "function_claims": [
+        "0x002f4aa4"
+      ],
+      "read_paths": [
+        "docs/agent-work/h5-btl-target-select-draw-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-btl-target-select-draw-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract fidelity against ARM disassembled instructions."
+      ],
+      "validation_plan": [
+        "Audit edge cases, register clobbers, and pointer validations."
+      ]
+    },
+    {
+      "id": "h5-target-select-draw-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable C++ candidate for btlTargetSelect_DrawUp in experiments/semantic_equivalence/h5_btl_target_select_draw_up_candidate.cpp.",
+      "depends_on": [
+        "h5-target-select-draw-contract-review"
+      ],
+      "function_claims": [
+        "0x002f4aa4"
+      ],
+      "read_paths": [
+        "docs/agent-work/h5-btl-target-select-draw-contract.md",
+        "docs/agent-work/h5-btl-target-select-draw-contract-review.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h5_btl_target_select_draw_up_candidate.cpp",
+        "docs/agent-work/h5-btl-target-select-draw-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Generate clean C++ compiling with Clang ARMv6K under 0x002f4aa4 window size."
+      ],
+      "validation_plan": [
+        "Compile with tools/build_check.py compile_tu_armv6k."
+      ]
+    },
+    {
+      "id": "h5-target-select-draw-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of C++ candidate implementation for btlTargetSelect_DrawUp.",
+      "depends_on": [
+        "h5-target-select-draw-candidate"
+      ],
+      "function_claims": [
+        "0x002f4aa4"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h5_btl_target_select_draw_up_candidate.cpp",
+        "docs/agent-work/h5-btl-target-select-draw-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-btl-target-select-draw-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify candidate readability, types, and compiler artifact size."
+      ],
+      "validation_plan": [
+        "Inspect code and verify object section boundaries."
+      ]
+    },
+    {
+      "id": "h5-target-select-draw-differential",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline Unicorn differential test runner tools/h5_btl_target_select_draw_up_experiment.py.",
+      "depends_on": [
+        "h5-target-select-draw-candidate-review"
+      ],
+      "function_claims": [
+        "0x002f4aa4"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h5_btl_target_select_draw_up_candidate.cpp",
+        "tools/h5_btl_target_select_draw_up_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-target-select-draw-differential.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Pass all differential fixtures with 0 mismatches and detect mutation control."
+      ],
+      "validation_plan": [
+        "Execute Python test script and capture JSON report."
+      ]
+    },
+    {
+      "id": "h5-target-select-draw-differential-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of differential test results for btlTargetSelect_DrawUp.",
+      "depends_on": [
+        "h5-target-select-draw-differential"
+      ],
+      "function_claims": [
+        "0x002f4aa4"
+      ],
+      "read_paths": [
+        "docs/agent-work/h5-target-select-draw-differential.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-target-select-draw-differential-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify differential execution logs and confirm mutation failure."
+      ],
+      "validation_plan": [
+        "Audit report metrics and hash integrity."
+      ]
+    },
+    {
+      "id": "h5-target-select-draw-composition",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Test caller integration and context composition for btlTargetSelect_DrawUp.",
+      "depends_on": [
+        "h5-target-select-draw-differential-review"
+      ],
+      "function_claims": [
+        "0x002f4aa4"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h5_btl_target_select_draw_up_candidate.cpp",
+        "tools/h5_btl_target_select_draw_up_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-target-select-draw-composition.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify caller-composition contract under real memory layout."
+      ],
+      "validation_plan": [
+        "Run caller composition suites and check register preservation."
+      ]
+    },
+    {
+      "id": "h5-target-select-draw-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of caller composition for btlTargetSelect_DrawUp.",
+      "depends_on": [
+        "h5-target-select-draw-composition"
+      ],
+      "function_claims": [
+        "0x002f4aa4"
+      ],
+      "read_paths": [
+        "docs/agent-work/h5-target-select-draw-composition.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-target-select-draw-composition-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Audit caller composition evidence and side effect preservation."
+      ],
+      "validation_plan": [
+        "Verify caller context preservation."
+      ]
+    },
+    {
+      "id": "h5-target-select-draw-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Stage candidate btlTargetSelect_DrawUp into composite H5 mod image.",
+      "depends_on": [
+        "h5-target-select-draw-composition-review"
+      ],
+      "function_claims": [
+        "0x002f4aa4"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h5_btl_target_select_draw_up_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-target-select-draw-staging.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify patch window bounds and symbol resolution."
+      ],
+      "validation_plan": [
+        "Verify candidate fits in original binary window."
+      ]
+    },
+    {
+      "id": "h5-target-select-draw-staging-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of staging for btlTargetSelect_DrawUp.",
+      "depends_on": [
+        "h5-target-select-draw-staging"
+      ],
+      "function_claims": [
+        "0x002f4aa4"
+      ],
+      "read_paths": [
+        "docs/agent-work/h5-target-select-draw-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-target-select-draw-staging-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve candidate inclusion in composite binary image."
+      ],
+      "validation_plan": [
+        "Verify candidate footprint and absence of relocations."
+      ]
+    },
+    {
+      "id": "h5-target-select-calc-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize contract, parameters, registers, and memory effects for btlTargetSelect_Calc (0x002e06bc).",
+      "depends_on": [
+        "h5-combat-architecture-recon-review"
+      ],
+      "function_claims": [
+        "0x002e06bc"
+      ],
+      "read_paths": [
+        "src/battle/btl_main.cpp",
+        "src/battle/btl_ui.cpp",
+        "include/battle/battle.h"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-btl-target-select-calc-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Accurately specify semantics of btlTargetSelect_Calc.",
+        "Specify test fixtures and mutation controls."
+      ],
+      "validation_plan": [
+        "Static disassembly and register effect verification against code.bin."
+      ]
+    },
+    {
+      "id": "h5-target-select-calc-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of btlTargetSelect_Calc contract specification.",
+      "depends_on": [
+        "h5-target-select-calc-contract"
+      ],
+      "function_claims": [
+        "0x002e06bc"
+      ],
+      "read_paths": [
+        "docs/agent-work/h5-btl-target-select-calc-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-btl-target-select-calc-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract fidelity against ARM disassembled instructions."
+      ],
+      "validation_plan": [
+        "Audit edge cases, register clobbers, and pointer validations."
+      ]
+    },
+    {
+      "id": "h5-target-select-calc-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable C++ candidate for btlTargetSelect_Calc in experiments/semantic_equivalence/h5_btl_target_select_calc_candidate.cpp.",
+      "depends_on": [
+        "h5-target-select-calc-contract-review"
+      ],
+      "function_claims": [
+        "0x002e06bc"
+      ],
+      "read_paths": [
+        "docs/agent-work/h5-btl-target-select-calc-contract.md",
+        "docs/agent-work/h5-btl-target-select-calc-contract-review.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h5_btl_target_select_calc_candidate.cpp",
+        "docs/agent-work/h5-btl-target-select-calc-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Generate clean C++ compiling with Clang ARMv6K under 0x002e06bc window size."
+      ],
+      "validation_plan": [
+        "Compile with tools/build_check.py compile_tu_armv6k."
+      ]
+    },
+    {
+      "id": "h5-target-select-calc-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of C++ candidate implementation for btlTargetSelect_Calc.",
+      "depends_on": [
+        "h5-target-select-calc-candidate"
+      ],
+      "function_claims": [
+        "0x002e06bc"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h5_btl_target_select_calc_candidate.cpp",
+        "docs/agent-work/h5-btl-target-select-calc-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-btl-target-select-calc-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify candidate readability, types, and compiler artifact size."
+      ],
+      "validation_plan": [
+        "Inspect code and verify object section boundaries."
+      ]
+    },
+    {
+      "id": "h5-target-select-calc-differential",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline Unicorn differential test runner tools/h5_btl_target_select_calc_experiment.py.",
+      "depends_on": [
+        "h5-target-select-calc-candidate-review"
+      ],
+      "function_claims": [
+        "0x002e06bc"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h5_btl_target_select_calc_candidate.cpp",
+        "tools/h5_btl_target_select_calc_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-target-select-calc-differential.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Pass all differential fixtures with 0 mismatches and detect mutation control."
+      ],
+      "validation_plan": [
+        "Execute Python test script and capture JSON report."
+      ]
+    },
+    {
+      "id": "h5-target-select-calc-differential-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of differential test results for btlTargetSelect_Calc.",
+      "depends_on": [
+        "h5-target-select-calc-differential"
+      ],
+      "function_claims": [
+        "0x002e06bc"
+      ],
+      "read_paths": [
+        "docs/agent-work/h5-target-select-calc-differential.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-target-select-calc-differential-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify differential execution logs and confirm mutation failure."
+      ],
+      "validation_plan": [
+        "Audit report metrics and hash integrity."
+      ]
+    },
+    {
+      "id": "h5-target-select-calc-composition",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Test caller integration and context composition for btlTargetSelect_Calc.",
+      "depends_on": [
+        "h5-target-select-calc-differential-review"
+      ],
+      "function_claims": [
+        "0x002e06bc"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h5_btl_target_select_calc_candidate.cpp",
+        "tools/h5_btl_target_select_calc_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-target-select-calc-composition.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify caller-composition contract under real memory layout."
+      ],
+      "validation_plan": [
+        "Run caller composition suites and check register preservation."
+      ]
+    },
+    {
+      "id": "h5-target-select-calc-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of caller composition for btlTargetSelect_Calc.",
+      "depends_on": [
+        "h5-target-select-calc-composition"
+      ],
+      "function_claims": [
+        "0x002e06bc"
+      ],
+      "read_paths": [
+        "docs/agent-work/h5-target-select-calc-composition.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-target-select-calc-composition-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Audit caller composition evidence and side effect preservation."
+      ],
+      "validation_plan": [
+        "Verify caller context preservation."
+      ]
+    },
+    {
+      "id": "h5-target-select-calc-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Stage candidate btlTargetSelect_Calc into composite H5 mod image.",
+      "depends_on": [
+        "h5-target-select-calc-composition-review"
+      ],
+      "function_claims": [
+        "0x002e06bc"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h5_btl_target_select_calc_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-target-select-calc-staging.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify patch window bounds and symbol resolution."
+      ],
+      "validation_plan": [
+        "Verify candidate fits in original binary window."
+      ]
+    },
+    {
+      "id": "h5-target-select-calc-staging-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of staging for btlTargetSelect_Calc.",
+      "depends_on": [
+        "h5-target-select-calc-staging"
+      ],
+      "function_claims": [
+        "0x002e06bc"
+      ],
+      "read_paths": [
+        "docs/agent-work/h5-target-select-calc-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-target-select-calc-staging-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve candidate inclusion in composite binary image."
+      ],
+      "validation_plan": [
+        "Verify candidate footprint and absence of relocations."
+      ]
+    },
+    {
+      "id": "h5-help-init-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize contract, parameters, registers, and memory effects for btlHelp_Init (0x001d2528).",
+      "depends_on": [
+        "h5-combat-architecture-recon-review"
+      ],
+      "function_claims": [
+        "0x001d2528"
+      ],
+      "read_paths": [
+        "src/battle/btl_main.cpp",
+        "src/battle/btl_ui.cpp",
+        "include/battle/battle.h"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-btl-help-init-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Accurately specify semantics of btlHelp_Init.",
+        "Specify test fixtures and mutation controls."
+      ],
+      "validation_plan": [
+        "Static disassembly and register effect verification against code.bin."
+      ]
+    },
+    {
+      "id": "h5-help-init-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of btlHelp_Init contract specification.",
+      "depends_on": [
+        "h5-help-init-contract"
+      ],
+      "function_claims": [
+        "0x001d2528"
+      ],
+      "read_paths": [
+        "docs/agent-work/h5-btl-help-init-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-btl-help-init-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract fidelity against ARM disassembled instructions."
+      ],
+      "validation_plan": [
+        "Audit edge cases, register clobbers, and pointer validations."
+      ]
+    },
+    {
+      "id": "h5-help-init-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable C++ candidate for btlHelp_Init in experiments/semantic_equivalence/h5_btl_help_init_candidate.cpp.",
+      "depends_on": [
+        "h5-help-init-contract-review"
+      ],
+      "function_claims": [
+        "0x001d2528"
+      ],
+      "read_paths": [
+        "docs/agent-work/h5-btl-help-init-contract.md",
+        "docs/agent-work/h5-btl-help-init-contract-review.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h5_btl_help_init_candidate.cpp",
+        "docs/agent-work/h5-btl-help-init-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Generate clean C++ compiling with Clang ARMv6K under 0x001d2528 window size."
+      ],
+      "validation_plan": [
+        "Compile with tools/build_check.py compile_tu_armv6k."
+      ]
+    },
+    {
+      "id": "h5-help-init-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of C++ candidate implementation for btlHelp_Init.",
+      "depends_on": [
+        "h5-help-init-candidate"
+      ],
+      "function_claims": [
+        "0x001d2528"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h5_btl_help_init_candidate.cpp",
+        "docs/agent-work/h5-btl-help-init-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-btl-help-init-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify candidate readability, types, and compiler artifact size."
+      ],
+      "validation_plan": [
+        "Inspect code and verify object section boundaries."
+      ]
+    },
+    {
+      "id": "h5-help-init-differential",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline Unicorn differential test runner tools/h5_btl_help_init_experiment.py.",
+      "depends_on": [
+        "h5-help-init-candidate-review"
+      ],
+      "function_claims": [
+        "0x001d2528"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h5_btl_help_init_candidate.cpp",
+        "tools/h5_btl_help_init_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-help-init-differential.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Pass all differential fixtures with 0 mismatches and detect mutation control."
+      ],
+      "validation_plan": [
+        "Execute Python test script and capture JSON report."
+      ]
+    },
+    {
+      "id": "h5-help-init-differential-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of differential test results for btlHelp_Init.",
+      "depends_on": [
+        "h5-help-init-differential"
+      ],
+      "function_claims": [
+        "0x001d2528"
+      ],
+      "read_paths": [
+        "docs/agent-work/h5-help-init-differential.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-help-init-differential-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify differential execution logs and confirm mutation failure."
+      ],
+      "validation_plan": [
+        "Audit report metrics and hash integrity."
+      ]
+    },
+    {
+      "id": "h5-help-init-composition",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Test caller integration and context composition for btlHelp_Init.",
+      "depends_on": [
+        "h5-help-init-differential-review"
+      ],
+      "function_claims": [
+        "0x001d2528"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h5_btl_help_init_candidate.cpp",
+        "tools/h5_btl_help_init_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-help-init-composition.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify caller-composition contract under real memory layout."
+      ],
+      "validation_plan": [
+        "Run caller composition suites and check register preservation."
+      ]
+    },
+    {
+      "id": "h5-help-init-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of caller composition for btlHelp_Init.",
+      "depends_on": [
+        "h5-help-init-composition"
+      ],
+      "function_claims": [
+        "0x001d2528"
+      ],
+      "read_paths": [
+        "docs/agent-work/h5-help-init-composition.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-help-init-composition-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Audit caller composition evidence and side effect preservation."
+      ],
+      "validation_plan": [
+        "Verify caller context preservation."
+      ]
+    },
+    {
+      "id": "h5-help-init-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Stage candidate btlHelp_Init into composite H5 mod image.",
+      "depends_on": [
+        "h5-help-init-composition-review"
+      ],
+      "function_claims": [
+        "0x001d2528"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h5_btl_help_init_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-help-init-staging.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify patch window bounds and symbol resolution."
+      ],
+      "validation_plan": [
+        "Verify candidate fits in original binary window."
+      ]
+    },
+    {
+      "id": "h5-help-init-staging-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of staging for btlHelp_Init.",
+      "depends_on": [
+        "h5-help-init-staging"
+      ],
+      "function_claims": [
+        "0x001d2528"
+      ],
+      "read_paths": [
+        "docs/agent-work/h5-help-init-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-help-init-staging-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve candidate inclusion in composite binary image."
+      ],
+      "validation_plan": [
+        "Verify candidate footprint and absence of relocations."
+      ]
+    },
+    {
+      "id": "h5-talk-init-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize contract, parameters, registers, and memory effects for btlTalk_Init (0x001d2610).",
+      "depends_on": [
+        "h5-combat-architecture-recon-review"
+      ],
+      "function_claims": [
+        "0x001d2610"
+      ],
+      "read_paths": [
+        "src/battle/btl_main.cpp",
+        "src/battle/btl_ui.cpp",
+        "include/battle/battle.h"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-btl-talk-init-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Accurately specify semantics of btlTalk_Init.",
+        "Specify test fixtures and mutation controls."
+      ],
+      "validation_plan": [
+        "Static disassembly and register effect verification against code.bin."
+      ]
+    },
+    {
+      "id": "h5-talk-init-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of btlTalk_Init contract specification.",
+      "depends_on": [
+        "h5-talk-init-contract"
+      ],
+      "function_claims": [
+        "0x001d2610"
+      ],
+      "read_paths": [
+        "docs/agent-work/h5-btl-talk-init-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-btl-talk-init-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract fidelity against ARM disassembled instructions."
+      ],
+      "validation_plan": [
+        "Audit edge cases, register clobbers, and pointer validations."
+      ]
+    },
+    {
+      "id": "h5-talk-init-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable C++ candidate for btlTalk_Init in experiments/semantic_equivalence/h5_btl_talk_init_candidate.cpp.",
+      "depends_on": [
+        "h5-talk-init-contract-review"
+      ],
+      "function_claims": [
+        "0x001d2610"
+      ],
+      "read_paths": [
+        "docs/agent-work/h5-btl-talk-init-contract.md",
+        "docs/agent-work/h5-btl-talk-init-contract-review.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h5_btl_talk_init_candidate.cpp",
+        "docs/agent-work/h5-btl-talk-init-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Generate clean C++ compiling with Clang ARMv6K under 0x001d2610 window size."
+      ],
+      "validation_plan": [
+        "Compile with tools/build_check.py compile_tu_armv6k."
+      ]
+    },
+    {
+      "id": "h5-talk-init-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of C++ candidate implementation for btlTalk_Init.",
+      "depends_on": [
+        "h5-talk-init-candidate"
+      ],
+      "function_claims": [
+        "0x001d2610"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h5_btl_talk_init_candidate.cpp",
+        "docs/agent-work/h5-btl-talk-init-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-btl-talk-init-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify candidate readability, types, and compiler artifact size."
+      ],
+      "validation_plan": [
+        "Inspect code and verify object section boundaries."
+      ]
+    },
+    {
+      "id": "h5-talk-init-differential",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline Unicorn differential test runner tools/h5_btl_talk_init_experiment.py.",
+      "depends_on": [
+        "h5-talk-init-candidate-review"
+      ],
+      "function_claims": [
+        "0x001d2610"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h5_btl_talk_init_candidate.cpp",
+        "tools/h5_btl_talk_init_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-talk-init-differential.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Pass all differential fixtures with 0 mismatches and detect mutation control."
+      ],
+      "validation_plan": [
+        "Execute Python test script and capture JSON report."
+      ]
+    },
+    {
+      "id": "h5-talk-init-differential-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of differential test results for btlTalk_Init.",
+      "depends_on": [
+        "h5-talk-init-differential"
+      ],
+      "function_claims": [
+        "0x001d2610"
+      ],
+      "read_paths": [
+        "docs/agent-work/h5-talk-init-differential.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-talk-init-differential-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify differential execution logs and confirm mutation failure."
+      ],
+      "validation_plan": [
+        "Audit report metrics and hash integrity."
+      ]
+    },
+    {
+      "id": "h5-talk-init-composition",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Test caller integration and context composition for btlTalk_Init.",
+      "depends_on": [
+        "h5-talk-init-differential-review"
+      ],
+      "function_claims": [
+        "0x001d2610"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h5_btl_talk_init_candidate.cpp",
+        "tools/h5_btl_talk_init_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-talk-init-composition.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify caller-composition contract under real memory layout."
+      ],
+      "validation_plan": [
+        "Run caller composition suites and check register preservation."
+      ]
+    },
+    {
+      "id": "h5-talk-init-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of caller composition for btlTalk_Init.",
+      "depends_on": [
+        "h5-talk-init-composition"
+      ],
+      "function_claims": [
+        "0x001d2610"
+      ],
+      "read_paths": [
+        "docs/agent-work/h5-talk-init-composition.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-talk-init-composition-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Audit caller composition evidence and side effect preservation."
+      ],
+      "validation_plan": [
+        "Verify caller context preservation."
+      ]
+    },
+    {
+      "id": "h5-talk-init-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Stage candidate btlTalk_Init into composite H5 mod image.",
+      "depends_on": [
+        "h5-talk-init-composition-review"
+      ],
+      "function_claims": [
+        "0x001d2610"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h5_btl_talk_init_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-talk-init-staging.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify patch window bounds and symbol resolution."
+      ],
+      "validation_plan": [
+        "Verify candidate fits in original binary window."
+      ]
+    },
+    {
+      "id": "h5-talk-init-staging-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of staging for btlTalk_Init.",
+      "depends_on": [
+        "h5-talk-init-staging"
+      ],
+      "function_claims": [
+        "0x001d2610"
+      ],
+      "read_paths": [
+        "docs/agent-work/h5-talk-init-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-talk-init-staging-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve candidate inclusion in composite binary image."
+      ],
+      "validation_plan": [
+        "Verify candidate footprint and absence of relocations."
+      ]
+    },
+    {
+      "id": "h5-release-state-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize contract, parameters, registers, and memory effects for Btl_ReleaseState (0x002b8a80).",
+      "depends_on": [
+        "h5-combat-architecture-recon-review"
+      ],
+      "function_claims": [
+        "0x002b8a80"
+      ],
+      "read_paths": [
+        "src/battle/btl_main.cpp",
+        "src/battle/btl_ui.cpp",
+        "include/battle/battle.h"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-btl-release-state-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Accurately specify semantics of Btl_ReleaseState.",
+        "Specify test fixtures and mutation controls."
+      ],
+      "validation_plan": [
+        "Static disassembly and register effect verification against code.bin."
+      ]
+    },
+    {
+      "id": "h5-release-state-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of Btl_ReleaseState contract specification.",
+      "depends_on": [
+        "h5-release-state-contract"
+      ],
+      "function_claims": [
+        "0x002b8a80"
+      ],
+      "read_paths": [
+        "docs/agent-work/h5-btl-release-state-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-btl-release-state-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract fidelity against ARM disassembled instructions."
+      ],
+      "validation_plan": [
+        "Audit edge cases, register clobbers, and pointer validations."
+      ]
+    },
+    {
+      "id": "h5-release-state-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable C++ candidate for Btl_ReleaseState in experiments/semantic_equivalence/h5_btl_release_state_candidate.cpp.",
+      "depends_on": [
+        "h5-release-state-contract-review"
+      ],
+      "function_claims": [
+        "0x002b8a80"
+      ],
+      "read_paths": [
+        "docs/agent-work/h5-btl-release-state-contract.md",
+        "docs/agent-work/h5-btl-release-state-contract-review.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h5_btl_release_state_candidate.cpp",
+        "docs/agent-work/h5-btl-release-state-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Generate clean C++ compiling with Clang ARMv6K under 0x002b8a80 window size."
+      ],
+      "validation_plan": [
+        "Compile with tools/build_check.py compile_tu_armv6k."
+      ]
+    },
+    {
+      "id": "h5-release-state-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of C++ candidate implementation for Btl_ReleaseState.",
+      "depends_on": [
+        "h5-release-state-candidate"
+      ],
+      "function_claims": [
+        "0x002b8a80"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h5_btl_release_state_candidate.cpp",
+        "docs/agent-work/h5-btl-release-state-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-btl-release-state-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify candidate readability, types, and compiler artifact size."
+      ],
+      "validation_plan": [
+        "Inspect code and verify object section boundaries."
+      ]
+    },
+    {
+      "id": "h5-release-state-differential",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline Unicorn differential test runner tools/h5_btl_release_state_experiment.py.",
+      "depends_on": [
+        "h5-release-state-candidate-review"
+      ],
+      "function_claims": [
+        "0x002b8a80"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h5_btl_release_state_candidate.cpp",
+        "tools/h5_btl_release_state_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-release-state-differential.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Pass all differential fixtures with 0 mismatches and detect mutation control."
+      ],
+      "validation_plan": [
+        "Execute Python test script and capture JSON report."
+      ]
+    },
+    {
+      "id": "h5-release-state-differential-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of differential test results for Btl_ReleaseState.",
+      "depends_on": [
+        "h5-release-state-differential"
+      ],
+      "function_claims": [
+        "0x002b8a80"
+      ],
+      "read_paths": [
+        "docs/agent-work/h5-release-state-differential.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-release-state-differential-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify differential execution logs and confirm mutation failure."
+      ],
+      "validation_plan": [
+        "Audit report metrics and hash integrity."
+      ]
+    },
+    {
+      "id": "h5-release-state-composition",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Test caller integration and context composition for Btl_ReleaseState.",
+      "depends_on": [
+        "h5-release-state-differential-review"
+      ],
+      "function_claims": [
+        "0x002b8a80"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h5_btl_release_state_candidate.cpp",
+        "tools/h5_btl_release_state_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-release-state-composition.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify caller-composition contract under real memory layout."
+      ],
+      "validation_plan": [
+        "Run caller composition suites and check register preservation."
+      ]
+    },
+    {
+      "id": "h5-release-state-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of caller composition for Btl_ReleaseState.",
+      "depends_on": [
+        "h5-release-state-composition"
+      ],
+      "function_claims": [
+        "0x002b8a80"
+      ],
+      "read_paths": [
+        "docs/agent-work/h5-release-state-composition.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-release-state-composition-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Audit caller composition evidence and side effect preservation."
+      ],
+      "validation_plan": [
+        "Verify caller context preservation."
+      ]
+    },
+    {
+      "id": "h5-release-state-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Stage candidate Btl_ReleaseState into composite H5 mod image.",
+      "depends_on": [
+        "h5-release-state-composition-review"
+      ],
+      "function_claims": [
+        "0x002b8a80"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h5_btl_release_state_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-release-state-staging.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify patch window bounds and symbol resolution."
+      ],
+      "validation_plan": [
+        "Verify candidate fits in original binary window."
+      ]
+    },
+    {
+      "id": "h5-release-state-staging-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of staging for Btl_ReleaseState.",
+      "depends_on": [
+        "h5-release-state-staging"
+      ],
+      "function_claims": [
+        "0x002b8a80"
+      ],
+      "read_paths": [
+        "docs/agent-work/h5-release-state-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-release-state-staging-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve candidate inclusion in composite binary image."
+      ],
+      "validation_plan": [
+        "Verify candidate footprint and absence of relocations."
+      ]
+    },
+    {
+      "id": "h5-set-channel-param-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize contract, parameters, registers, and memory effects for Btl_SetChannelParameter (0x0011311c).",
+      "depends_on": [
+        "h5-combat-architecture-recon-review"
+      ],
+      "function_claims": [
+        "0x0011311c"
+      ],
+      "read_paths": [
+        "src/battle/btl_main.cpp",
+        "src/battle/btl_ui.cpp",
+        "include/battle/battle.h"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-btl-set-channel-param-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Accurately specify semantics of Btl_SetChannelParameter.",
+        "Specify test fixtures and mutation controls."
+      ],
+      "validation_plan": [
+        "Static disassembly and register effect verification against code.bin."
+      ]
+    },
+    {
+      "id": "h5-set-channel-param-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of Btl_SetChannelParameter contract specification.",
+      "depends_on": [
+        "h5-set-channel-param-contract"
+      ],
+      "function_claims": [
+        "0x0011311c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h5-btl-set-channel-param-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-btl-set-channel-param-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract fidelity against ARM disassembled instructions."
+      ],
+      "validation_plan": [
+        "Audit edge cases, register clobbers, and pointer validations."
+      ]
+    },
+    {
+      "id": "h5-set-channel-param-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable C++ candidate for Btl_SetChannelParameter in experiments/semantic_equivalence/h5_btl_set_channel_param_candidate.cpp.",
+      "depends_on": [
+        "h5-set-channel-param-contract-review"
+      ],
+      "function_claims": [
+        "0x0011311c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h5-btl-set-channel-param-contract.md",
+        "docs/agent-work/h5-btl-set-channel-param-contract-review.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h5_btl_set_channel_param_candidate.cpp",
+        "docs/agent-work/h5-btl-set-channel-param-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Generate clean C++ compiling with Clang ARMv6K under 0x0011311c window size."
+      ],
+      "validation_plan": [
+        "Compile with tools/build_check.py compile_tu_armv6k."
+      ]
+    },
+    {
+      "id": "h5-set-channel-param-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of C++ candidate implementation for Btl_SetChannelParameter.",
+      "depends_on": [
+        "h5-set-channel-param-candidate"
+      ],
+      "function_claims": [
+        "0x0011311c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h5_btl_set_channel_param_candidate.cpp",
+        "docs/agent-work/h5-btl-set-channel-param-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-btl-set-channel-param-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify candidate readability, types, and compiler artifact size."
+      ],
+      "validation_plan": [
+        "Inspect code and verify object section boundaries."
+      ]
+    },
+    {
+      "id": "h5-set-channel-param-differential",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline Unicorn differential test runner tools/h5_btl_set_channel_param_experiment.py.",
+      "depends_on": [
+        "h5-set-channel-param-candidate-review"
+      ],
+      "function_claims": [
+        "0x0011311c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h5_btl_set_channel_param_candidate.cpp",
+        "tools/h5_btl_set_channel_param_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-set-channel-param-differential.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Pass all differential fixtures with 0 mismatches and detect mutation control."
+      ],
+      "validation_plan": [
+        "Execute Python test script and capture JSON report."
+      ]
+    },
+    {
+      "id": "h5-set-channel-param-differential-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of differential test results for Btl_SetChannelParameter.",
+      "depends_on": [
+        "h5-set-channel-param-differential"
+      ],
+      "function_claims": [
+        "0x0011311c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h5-set-channel-param-differential.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-set-channel-param-differential-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify differential execution logs and confirm mutation failure."
+      ],
+      "validation_plan": [
+        "Audit report metrics and hash integrity."
+      ]
+    },
+    {
+      "id": "h5-set-channel-param-composition",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Test caller integration and context composition for Btl_SetChannelParameter.",
+      "depends_on": [
+        "h5-set-channel-param-differential-review"
+      ],
+      "function_claims": [
+        "0x0011311c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h5_btl_set_channel_param_candidate.cpp",
+        "tools/h5_btl_set_channel_param_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-set-channel-param-composition.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify caller-composition contract under real memory layout."
+      ],
+      "validation_plan": [
+        "Run caller composition suites and check register preservation."
+      ]
+    },
+    {
+      "id": "h5-set-channel-param-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of caller composition for Btl_SetChannelParameter.",
+      "depends_on": [
+        "h5-set-channel-param-composition"
+      ],
+      "function_claims": [
+        "0x0011311c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h5-set-channel-param-composition.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-set-channel-param-composition-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Audit caller composition evidence and side effect preservation."
+      ],
+      "validation_plan": [
+        "Verify caller context preservation."
+      ]
+    },
+    {
+      "id": "h5-set-channel-param-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Stage candidate Btl_SetChannelParameter into composite H5 mod image.",
+      "depends_on": [
+        "h5-set-channel-param-composition-review"
+      ],
+      "function_claims": [
+        "0x0011311c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h5_btl_set_channel_param_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-set-channel-param-staging.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify patch window bounds and symbol resolution."
+      ],
+      "validation_plan": [
+        "Verify candidate fits in original binary window."
+      ]
+    },
+    {
+      "id": "h5-set-channel-param-staging-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of staging for Btl_SetChannelParameter.",
+      "depends_on": [
+        "h5-set-channel-param-staging"
+      ],
+      "function_claims": [
+        "0x0011311c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h5-set-channel-param-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-set-channel-param-staging-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve candidate inclusion in composite binary image."
+      ],
+      "validation_plan": [
+        "Verify candidate footprint and absence of relocations."
+      ]
+    },
+    {
+      "id": "h5-staged-image-patch",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Compose all 8 H5 combat candidates over H4 final base and generate code.h5-final.bin and code.h5-final.ips.",
+      "depends_on": [
+        "h5-party-active-staging-review",
+        "h5-demon-unit-staging-review",
+        "h5-target-select-draw-staging-review",
+        "h5-target-select-calc-staging-review",
+        "h5-help-init-staging-review",
+        "h5-talk-init-staging-review",
+        "h5-release-state-staging-review",
+        "h5-set-channel-param-staging-review"
+      ],
+      "function_claims": [
+        "0x001d29c8",
+        "0x002ae464",
+        "0x002f4aa4",
+        "0x002e06bc",
+        "0x001d2528",
+        "0x001d2610",
+        "0x002b8a80",
+        "0x0011311c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h5_btl_unit_check_party_active_candidate.cpp",
+        "experiments/semantic_equivalence/h5_btl_is_demon_unit_candidate.cpp",
+        "experiments/semantic_equivalence/h5_btl_target_select_draw_up_candidate.cpp",
+        "experiments/semantic_equivalence/h5_btl_target_select_calc_candidate.cpp",
+        "experiments/semantic_equivalence/h5_btl_help_init_candidate.cpp",
+        "experiments/semantic_equivalence/h5_btl_talk_init_candidate.cpp",
+        "experiments/semantic_equivalence/h5_btl_release_state_candidate.cpp",
+        "experiments/semantic_equivalence/h5_btl_set_channel_param_candidate.cpp",
+        "tools/h5_staged_image_patch.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-staged-image-patch.md"
+      ],
+      "compiler_slots": 2,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Compile all 8 candidate translation units and resolve target symbols.",
+        "Produce code.h5-final.bin and verified code.h5-final.ips patch."
+      ],
+      "validation_plan": [
+        "Run tools/h5_staged_image_patch.py and verify IPS round-trip."
+      ]
+    },
+    {
+      "id": "h5-staged-image-patch-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of H5 staged composite binary image and IPS patch.",
+      "depends_on": [
+        "h5-staged-image-patch"
+      ],
+      "function_claims": [
+        "0x001d29c8",
+        "0x002ae464",
+        "0x002f4aa4",
+        "0x002e06bc",
+        "0x001d2528",
+        "0x001d2610",
+        "0x002b8a80",
+        "0x0011311c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h5-staged-image-patch.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-staged-image-patch-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify composite image SHA-256 and IPS patch validity."
+      ],
+      "validation_plan": [
+        "Check binary hash pins and candidate window sizes."
+      ]
+    },
+    {
+      "id": "h5-offline-composite-gates",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Verify offline-first gates (ARM/Thumb interworking, 4-byte alignment, 0 relocations) for composite H5.",
+      "depends_on": [
+        "h5-staged-image-patch-review"
+      ],
+      "function_claims": [
+        "0x001d29c8",
+        "0x002ae464",
+        "0x002f4aa4",
+        "0x002e06bc",
+        "0x001d2528",
+        "0x001d2610",
+        "0x002b8a80",
+        "0x0011311c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h5-staged-image-patch.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-offline-composite-gates.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "All 8 candidate windows verify ARM mode (bit 0 = 0) and 4-byte aligned."
+      ],
+      "validation_plan": [
+        "Inspect entry points and symbol alignments in staged ELF/binary."
+      ]
+    },
+    {
+      "id": "h5-offline-composite-gates-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of offline-first composite gates for H5.",
+      "depends_on": [
+        "h5-offline-composite-gates"
+      ],
+      "function_claims": [
+        "0x001d29c8",
+        "0x002ae464",
+        "0x002f4aa4",
+        "0x002e06bc",
+        "0x001d2528",
+        "0x001d2610",
+        "0x002b8a80",
+        "0x0011311c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h5-offline-composite-gates.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-offline-composite-gates-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm pass of all offline interworking and alignment gates."
+      ],
+      "validation_plan": [
+        "Audit gate execution logs."
+      ]
+    },
+    {
+      "id": "h5-autonomous-combat-verify",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute autonomous paired runtime verification in Azahar emulator loopback stub with code.h5-final.ips.",
+      "depends_on": [
+        "h5-offline-composite-gates-review"
+      ],
+      "function_claims": [
+        "0x001d29c8",
+        "0x002ae464",
+        "0x002f4aa4",
+        "0x002e06bc",
+        "0x001d2528",
+        "0x001d2610",
+        "0x002b8a80",
+        "0x0011311c"
+      ],
+      "read_paths": [
+        "tools/h3_autonomous_verify.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-autonomous-combat-verify.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [
+        "emulator_loopback"
+      ],
+      "acceptance": [
+        "Complete paired execution of original vs patched game with 0 functional regressions.",
+        "Verify Title Screen, Save loading, Field scene callbacks (250 ticks), and save data integrity."
+      ],
+      "validation_plan": [
+        "Run tools/h3_autonomous_verify.py and record runtime JSON report."
+      ]
+    },
+    {
+      "id": "h5-autonomous-combat-verify-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of autonomous paired runtime verification for Milestone H5.",
+      "depends_on": [
+        "h5-autonomous-combat-verify"
+      ],
+      "function_claims": [
+        "0x001d29c8",
+        "0x002ae464",
+        "0x002f4aa4",
+        "0x002e06bc",
+        "0x001d2528",
+        "0x001d2610",
+        "0x002b8a80",
+        "0x0011311c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h5-autonomous-combat-verify.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h5-autonomous-combat-verify-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm 100% paired equivalence with zero register or state differences."
+      ],
+      "validation_plan": [
+        "Audit runtime report metrics and save file hash integrity."
+      ]
+    },
+    {
+      "id": "h5-milestone-closure",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize closure of Milestone H5 across documentation and ledger tracking.",
+      "depends_on": [
+        "h5-autonomous-combat-verify-review"
+      ],
+      "function_claims": [
+        "0x001d29c8",
+        "0x002ae464",
+        "0x002f4aa4",
+        "0x002e06bc",
+        "0x001d2528",
+        "0x001d2610",
+        "0x002b8a80",
+        "0x0011311c"
+      ],
+      "read_paths": [
+        "docs/milestones/H5-combat-minimum.md",
+        "docs/functional-status.md",
+        "docs/reconstruction-milestones.md"
+      ],
+      "write_paths": [
+        "docs/milestones/H5-combat-minimum.md",
+        "docs/functional-status.md",
+        "docs/reconstruction-milestones.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Update documentation marking Milestone H5 as completed and closed.",
+        "Ensure clean git state and 0 errors from tools/agent_workflow.py check."
+      ],
+      "validation_plan": [
+        "Run python tools/agent_workflow.py check."
+      ]
+    }
+  ]
+}

@@ -1,21 +1,45 @@
 {
   "primary_goal": "Recover editable C++ with supported semantic behavior; byte identity is optional.",
-  "active_milestone": "H4",
+  "active_milestone": "H5",
   "priority_sources": [
-    "src/engine/map_field.cpp",
-    "src/engine/map_runtime.cpp",
-    "src/script/script_vm_extras.cpp",
-    "src/engine/leaf_batch41_a.cpp"
+    "src/battle/btl_main.cpp",
+    "src/battle/btl_ui.cpp",
+    "src/battle/btl_target_select.cpp",
+    "src/battle/battle_extras.cpp"
   ],
   "priority_functions": [
     {
-      "address": "0x00208ce8",
-      "reason": "H4 field update/caller map"
+      "address": "0x001d29c8",
+      "reason": "H5 party active evaluation / btlUnit_CheckPartyActive"
     },
     {
-      "address": "0x0027fbc8",
-      "reason": "H4 candidate analog-axis input source; caller participation must be verified"
+      "address": "0x002ae464",
+      "reason": "H5 demon unit classifier / Btl_IsDemonUnit"
+    },
+    {
+      "address": "0x002f4aa4",
+      "reason": "H5 target selection upper screen draw dispatch"
+    },
+    {
+      "address": "0x002e06bc",
+      "reason": "H5 target selection calculation and reticle interpolation"
+    },
+    {
+      "address": "0x001d2528",
+      "reason": "H5 battle help modal task initialization"
+    },
+    {
+      "address": "0x001d2610",
+      "reason": "H5 battle talk negotiation modal task initialization"
+    },
+    {
+      "address": "0x002b8a80",
+      "reason": "H5 combat state cleanup and lifecycle deallocation"
+    },
+    {
+      "address": "0x0011311c",
+      "reason": "H5 combat channel parameter setter"
     }
   ],
-  "agent_workflow_board": "config/agent-workflows/h4.json"
+  "agent_workflow_board": "config/agent-workflows/h5.json"
 }
