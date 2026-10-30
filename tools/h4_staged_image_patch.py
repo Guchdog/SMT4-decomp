@@ -27,6 +27,17 @@ TARGET_SYMBOLS = {
     'ui_subobject_set_channel_default_002946f4': 0x002946F4,
     'ActorManager_Lookup_002c45b8': 0x002C45B8,
     'Resource_Release_002a7aa0': 0x002A7AA0,
+    'Model_SetTranslation_0028c8a8': 0x0028C8A8,
+    'Model_SetRotation_0028c880': 0x0028C880,
+    'Model_SetScale_002a5a54': 0x002A5A54,
+    'Model_CommitTransform_00287300': 0x00287300,
+    'g_PlayerActorWork_0044cda0': 0x0044CDA0,
+    'g_RepeatGate_0049f91c': 0x0049F91C,
+    'TriggerHandler_SetPendingFlag_003ba944': 0x003BA944,
+    'g_MapContextWork_0044cfd0': 0x0044CFD0,
+    'ScriptVM_GetBounds_00296f60': 0x00296F60,
+    'ScriptVM_ClampRange_00297004': 0x00297004,
+    'ScriptVM_ApplyState_0028df54': 0x0028DF54,
 }
 
 CANDIDATES = [
@@ -64,6 +75,27 @@ CANDIDATES = [
         'function': 'h4_map_entity_pool_candidate',
         'vma': 0x001B45E0,
         'window_size': 132,
+    },
+    {
+        'id': 'h4_player_transform',
+        'source': 'experiments/semantic_equivalence/h4_player_transform_candidate.cpp',
+        'function': 'h4_player_transform_candidate',
+        'vma': 0x001B4A54,
+        'window_size': 288,
+    },
+    {
+        'id': 'h4_map_dispatch',
+        'source': 'experiments/semantic_equivalence/h4_map_dispatch_candidate.cpp',
+        'function': 'h4_map_dispatch_trigger_candidate',
+        'vma': 0x001B4B74,
+        'window_size': 36,
+    },
+    {
+        'id': 'h4_script_vm_handler',
+        'source': 'experiments/semantic_equivalence/h4_script_vm_handler_candidate.cpp',
+        'function': 'h4_script_vm_handler_candidate',
+        'vma': 0x001B4B98,
+        'window_size': 36,
     },
 ]
 
@@ -137,15 +169,21 @@ def stage_h4(base_path: Path, output_dir: Path) -> dict:
             if r.symbol_name not in TARGET_SYMBOLS:
                 raise KeyError(f'Relocation symbol {r.symbol_name} in {c_id} not recognized')
             tgt = TARGET_SYMBOLS[r.symbol_name]
-            is_bl = (r.relocation_type == 28)
             reloc_vma = vma + r.offset
             
-            # Check ARM/Thumb interworking bit (must be 0 for ARM)
-            if tgt & 1 != 0 or reloc_vma & 3 != 0:
-                raise ValueError(f'Interworking alignment violation at 0x{reloc_vma:08X} -> 0x{tgt:08X}')
-            
-            w = branch_word(reloc_vma, tgt, is_bl=is_bl)
-            struct.pack_into('<I', blob, r.offset, w)
+            if r.relocation_type == 2:  # R_ARM_ABS32
+                struct.pack_into('<I', blob, r.offset, tgt)
+                w = tgt
+            elif r.relocation_type in (28, 29):  # R_ARM_CALL / R_ARM_JUMP24
+                # Check ARM/Thumb interworking bit (must be 0 for ARM)
+                if tgt & 1 != 0 or reloc_vma & 3 != 0:
+                    raise ValueError(f'Interworking alignment violation at 0x{reloc_vma:08X} -> 0x{tgt:08X}')
+                is_bl = (r.relocation_type == 28)
+                w = branch_word(reloc_vma, tgt, is_bl=is_bl)
+                struct.pack_into('<I', blob, r.offset, w)
+            else:
+                raise ValueError(f'Unsupported relocation type {r.relocation_type} for symbol {r.symbol_name}')
+
             resolved_relocs.append({
                 'symbol': r.symbol_name,
                 'offset': r.offset,

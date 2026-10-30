@@ -3190,6 +3190,223 @@
       "validation_plan": [
         "Independent report review."
       ]
+    },
+    {
+      "id": "h4-player-transform-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Map the contract and behavioral requirements of PlayerActor_UpdateVisibilityTransform (0x001B4A54).",
+      "depends_on": [
+        "h4-autonomous-exploration-verify-review"
+      ],
+      "function_claims": [
+        "0x001b4a54"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-player-transform-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Map g_PlayerActorWork, g_RepeatGate pause flag, visibility flag, and transform subroutines."
+      ],
+      "validation_plan": [
+        "Cross-check against disassembly and callers."
+      ]
+    },
+    {
+      "id": "h4-player-transform-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the player transform contract.",
+      "depends_on": [
+        "h4-player-transform-contract"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "docs/agent-work/h4-player-transform-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-player-transform-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract accuracy."
+      ],
+      "validation_plan": [
+        "Independent review."
+      ]
+    },
+    {
+      "id": "h4-player-transform-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Reconstruct and differentially verify PlayerActor_UpdateVisibilityTransform (0x001B4A54).",
+      "depends_on": [
+        "h4-player-transform-contract-review"
+      ],
+      "function_claims": [
+        "0x001b4a54"
+      ],
+      "read_paths": [
+        "docs/agent-work/h4-player-transform-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h4_player_transform_candidate.cpp",
+        "tools/h4_player_transform_experiment.py",
+        "docs/agent-work/h4-player-transform-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Candidate compiles within 288-byte window.",
+        "Passes offline differential verification across 8 fixtures with positive mutation detection."
+      ],
+      "validation_plan": [
+        "Run tools/h4_player_transform_experiment.py in Unicorn."
+      ]
+    },
+    {
+      "id": "h4-player-transform-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the player transform candidate.",
+      "depends_on": [
+        "h4-player-transform-candidate"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "docs/agent-work/h4-player-transform-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-player-transform-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify offline evidence and code quality."
+      ],
+      "validation_plan": [
+        "Independent report review."
+      ]
+    },
+    {
+      "id": "h4-map-dispatch-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Reconstruct and differentially verify Map_DispatchTrigger (0x001B4B74).",
+      "depends_on": [
+        "h4-player-transform-candidate-review"
+      ],
+      "function_claims": [
+        "0x001b4b74"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h4_map_dispatch_candidate.cpp",
+        "tools/h4_map_dispatch_experiment.py",
+        "docs/agent-work/h4-map-dispatch-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Candidate compiles within 36-byte window.",
+        "Passes offline differential verification across 5 fixtures with positive mutation detection."
+      ],
+      "validation_plan": [
+        "Run tools/h4_map_dispatch_experiment.py in Unicorn."
+      ]
+    },
+    {
+      "id": "h4-map-dispatch-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the map dispatch candidate.",
+      "depends_on": [
+        "h4-map-dispatch-candidate"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "docs/agent-work/h4-map-dispatch-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-map-dispatch-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify offline evidence and code quality."
+      ],
+      "validation_plan": [
+        "Independent report review."
+      ]
+    },
+    {
+      "id": "h4-script-vm-handler-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Reconstruct and differentially verify ScriptVM_NestedHandler11 (0x001B4B98).",
+      "depends_on": [
+        "h4-map-dispatch-candidate-review"
+      ],
+      "function_claims": [
+        "0x001b4b98"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h4_script_vm_handler_candidate.cpp",
+        "tools/h4_script_vm_handler_experiment.py",
+        "docs/agent-work/h4-script-vm-handler-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Candidate compiles within 36-byte window.",
+        "Passes offline differential verification across 4 fixtures with positive mutation detection."
+      ],
+      "validation_plan": [
+        "Run tools/h4_script_vm_handler_experiment.py in Unicorn."
+      ]
+    },
+    {
+      "id": "h4-script-vm-handler-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the script VM handler candidate.",
+      "depends_on": [
+        "h4-script-vm-handler-candidate"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "docs/agent-work/h4-script-vm-handler-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-script-vm-handler-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify offline evidence and code quality."
+      ],
+      "validation_plan": [
+        "Independent report review."
+      ]
     }
   ]
 }

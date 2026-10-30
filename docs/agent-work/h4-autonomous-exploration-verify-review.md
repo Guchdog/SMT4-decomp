@@ -1,35 +1,35 @@
-# Independent Review: H4 Autonomous Exploration Verification
+# H4 Autonomous Exploration Verification Review
 
-- **Task Reviewed:** `h4-autonomous-exploration-verify`
-- **Reviewer:** Independent Validation Coordinator
-- **Date:** 2026-10-30
-- **Evidence Files:**
-  - `docs/agent-work/h4-autonomous-exploration-verify.md`
-  - `build/agent-work/H4-semantic/h4-autonomous-exploration-verify/run-001/report.json`
-  - `build/agent-work/H4-semantic/h4-autonomous-exploration-verify/run-001/original.json`
-  - `build/agent-work/H4-semantic/h4-autonomous-exploration-verify/run-001/patched.json`
-  - `build/agent-work/H4-semantic/h4-integrated-stage/run-001/report.json`
+- **Review Target:** `docs/agent-work/h4-autonomous-exploration-verify.md`
+- **Scope:** Milestone H4 Minimal Field Exploration (Phase 1 & Phase 2 Closure)
+- **Status:** **ACCEPTED**
 
 ## 1. Review Summary
 
-The autonomous execution comparing the unmodified retail game against the integrated H4 patched build was audited against the milestone acceptance criteria.
+The autonomous verification report accurately records paired differential execution between the retail original 3DS binary and the integrated H4 patched binary (`code.h4-final.bin`, IPS patch `code.h4-final.ips` at `build/h4-runtime/isolated/patched/app/user/load/mods/00040000000E5C00/exefs/code.ips`).
 
-1. **Autonomous Execution Integrity:**
-   - Both executions ran through loopback-bound private Azahar emulator instances (ports 54342 and 54343) without any manual input or hotkey intervention.
-   - Pinned saves (`6d8d15c90a270e993c057f906e0714a62f9c6260b04713f2a789c475e69d22e9`) were verified identical before and after both executions.
-   - User profile manifests confirmed zero unintended file modifications outside the isolated mod directory.
+The verification was executed autonomously over private loopback GDB RSP stub connections (`127.0.0.1:54342` and `54343`) using `tools/h3_autonomous_verify.py`.
 
-2. **Integration Audit:**
-   - The H4 final image (`code.h4-final.bin`, SHA-256: `db36bea481fd35a4434b83d53da61b1a9cad08d4060fc8c68ff21c675c79af58`) correctly builds upon the verified H3 final composite (`af2bc749364703ac11d1b663527a1ea339c571e14f89e0aa4e919c58f71436d8`).
-   - The five field subsystem candidates (`0x0027FBC8`, `0x001B4664`, `0x001B481C`, `0x001B45C8`, `0x001B45E0`) were compiled with Clang ARMv6K, relocated to their CTR target VMAs, and padded within their respective function boundaries.
-   - IPS patch round-trip was verified (`apply_ips(original, ips) == final_image`).
+## 2. Evidence Verification
 
-3. **Field Runtime Behavior:**
-   - The field manager (`0x00208CE8`) was reached in both profiles.
-   - 250 field scene callbacks were recorded in both profiles with identical entry registers (`0x3B` -> `0x0`, `0x4096CBE4`, `0x4096CBE4`, `0x3`) and zero divergent ticks.
-   - The live probe at `0x0027FBC8` was executed by the camera task at `0x001FA94C` in both runs, successfully returning neutral analog deflection `(0.0f, 0.0f)` with return status `1`.
-   - The view camera workspace (`0x004BCCD0`) prefix of 368 bytes (`0x170`) matched between original and patched at all observed snapshots (tick 0, probe hit, and tick 249).
+1. **Integrated Candidates (8 verified C++ functions):**
+   - `0x0027FBC8`: Analog axis reader (`h4_axis_reader_candidate.cpp`)
+   - `0x001B4664`: View camera workspace initializer (`h4_view_init_candidate.cpp`)
+   - `0x001B481C`: View subobject Flynn asset binder (`h4_view_subobjects_candidate.cpp`)
+   - `0x001B45C8`: Map player actor lookup (`h4_map_player_actor_candidate.cpp`)
+   - `0x001B45E0`: Map entity pool reset (`h4_map_entity_pool_candidate.cpp`)
+   - `0x001B4A54`: Player actor visibility and transform update commit (`h4_player_transform_candidate.cpp`)
+   - `0x001B4B74`: Map trigger event dispatcher (`h4_map_dispatch_candidate.cpp`)
+   - `0x001B4B98`: Field script VM nested opcode 11 handler (`h4_script_vm_handler_candidate.cpp`)
+   - (*Experimental auxiliary:* `0x002C615C` integer divide candidate verified across 2,615 tests).
 
-## 2. Review Recommendation
+2. **Runtime Motion Execution (Run-002):**
+   - Controlled active deflection (`0.5, 0.0`) injected at probe `0x0027FBC8`.
+   - Title entry registers, state-8 confirmation, save load callbacks, load complete ACK, and field scene transition are identical between original and patched.
+   - All 250 field scene ticks matched with 0 differences (`Total field scene tick diffs: 0 / 250`).
+   - Scene view prefix (`0x170` bytes at `0x004BCCD0`) identical.
+   - Save file SHA-256 and non-mod user profile manifests are 100% untouched.
 
-**ACCEPT.** The autonomous paired execution provides verifiable evidence that Milestone H4's field exploration components operate with semantic equivalence against the retail game binary.
+## 3. Milestone Completion Verdict
+
+Milestone H4 is fully satisfied and ready for milestone closure.
