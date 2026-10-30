@@ -6,7 +6,7 @@ These counts describe experimental source definitions and static evidence links.
 
 | Inventory dimension | Count |
 | --- | ---: |
-| Candidate translation units | 97 |
+| Candidate translation units | 99 |
 | Address-named candidate definitions | 188 |
 | Prefix/control/helper candidate definitions | 21 |
 | Total candidate definitions | 209 |

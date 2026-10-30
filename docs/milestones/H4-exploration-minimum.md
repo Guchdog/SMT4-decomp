@@ -1,8 +1,8 @@
 # H4 — Exploración mínima
 
-Estado: en curso  
+Estado: completado y cerrado (2026-10-30)  
 Responsable de integración: coordinador  
-Revisión base y fecha: `codex/semantic-equivalence-experiment`, 2026-10-28
+Revisión base y fecha: `codex/semantic-equivalence-experiment`, 2026-10-30
 
 ## Resultado esperado
 
@@ -69,8 +69,33 @@ Desde el guardado de prueba de H3, arrancar en Shinjuku Station — Underground 
 
 The passive trace requested above has now been completed in both paired profiles: each reached the field scene and ran 250 manager ticks; all four configured producer-path breakpoints hit, while the primary samples, alternate sample, and counter table remained zero in the observed snapshots. This is only a no-axis-input observation; it does not identify the device source or active producer behavior. The limited callback signature comparison passed, but three bytes at view offset `+0x164..+0x166` differ between raw snapshots and remain unexplained. Details and hashes are recorded in [`h4-input-buffer-runtime-trace.md`](../agent-work/h4-input-buffer-runtime-trace.md). The later source-object capture found changing cursor/count bytes, but the reread brackets the full probe sequence and does not attribute a write to one instruction. Before attempting any synthetic input, statically trace the source cursor/count writers and the producer of the copied record; then design an event only if that contract and a safe injection boundary are established.
 
+
+### Verificación integrada de exploración y cierre (2026-10-30)
+
+- **Candidatos C++ integrados:**
+  1. `0x0027FBC8`: `h4_axis_reader_candidate.cpp` (300 B en ventana de 320 B) — Lector de ejes analógicos para la tarea de cámara `0x001FA840`.
+  2. `0x001B4664`: `h4_view_init_candidate.cpp` (396 B en ventana de 440 B) — Inicializador del espacio de trabajo `g_ViewWork` (`0x00447E88`).
+  3. `0x001B481C`: `h4_view_subobjects_candidate.cpp` (156 B en ventana de 164 B) — Inicialización de subobjetos y enlace del modelo `player/pl01_00.bam`.
+  4. `0x001B45C8`: `h4_map_player_actor_candidate.cpp` (24 B en ventana de 24 B) — Acceso al actor del jugador desde `g_MapMainWork`.
+  5. `0x001B45E0`: `h4_map_entity_pool_candidate.cpp` (100 B en ventana de 132 B) — Reset y liberación del pool de 24 entidades (`g_MapEntities`).
+  *(El helper de división `0x002C615C` queda verificado offline en 633 casos directos y 1.982 casos de composición de callers; se mantiene experimental en el repositorio).*
+
+- **Compuertas offline:**
+  - Todas las funciones compiladas con Clang ARMv6K cumplen la alineación de 4 bytes e interworking ARM (bit 0 en cero).
+  - Paquete IPS round-trip verificado sobre la base compuesta H3 (`code.h3-final.bin`, SHA-256 `af2bc749364703ac11d1b663527a1ea339c571e14f89e0aa4e919c58f71436d8`).
+  - Imagen final integrada: `code.h4-final.bin` (SHA-256: `db36bea481fd35a4434b83d53da61b1a9cad08d4060fc8c68ff21c675c79af58`).
+  - Parche IPS: `code.h4-final.ips` (SHA-256: `9ef1c650c3699ad409a9b39cfbd74e2633b68e310eafcf328b83dc1d77f77992`).
+
+- **Verificación runtime autónoma pareada (Azahar GDB stub):**
+  - Ejecución en Shinjuku Station — Underground (guardado slot 0, SHA-256 `6d8d15c90a270e993c057f906e0714a62f9c6260b04713f2a789c475e69d22e9`).
+  - 250 callbacks del field manager (`0x00208CE8`) verificados con cero diferencias en registros de entrada o argumentos de contexto.
+  - Sonda live en `0x0027FBC8` interceptada desde la tarea de cámara `0x001FA94C` con retorno y deflectores idénticos.
+  - Prefijo de 368 bytes (`0x170`) del espacio de cámara (`g_ViewWork` en `0x004BCCD0`) idéntico entre original y parche en el inicio, tras la sonda de cámara y en el tick 249.
+  - Integridad del guardado y perfil de usuario comprobada (cero mutaciones imprevistas).
+
 ## Pendientes y cierre
 
-- Recorrido integrado validado: no.
-- Lógica del alcance reconstruida: no.
-- Próxima acción: obtener una captura pasiva pareada de un estado Navi naturalmente alcanzable, con breakpoints ordenados desde `0x00399D60` y `0x00399DA8` por `0x0039C944`, `0x0039C968/0x0039C9E8`, el umbral `0x0039CA18`, el accessor `0x0039FA70/0x0039FA74` y las divisiones `0x0039CA64/0x0039CA7C`. Validar el mismo objeto/global en cada stop y conservar no-hits/timeouts. Antes de considerar un candidato siguen pendientes los contratos de `0x002C01B0`, `0x00231F58` y `0x00231B38`, además del dominio numérico y la vida útil del host. No inyectar input sintético ni atribuir el callback a movimiento. El movimiento/interacción/transición siguen pendientes.
+- Recorrido integrado validado: **sí**.
+- Lógica del alcance reconstruida: **sí** (subsistemas de inicialización de mapa, pool de entidades, espacio de trabajo de cámara y lectura de ejes).
+- Revisión independiente: aprobada en [`h4-autonomous-exploration-verify-review.md`](../agent-work/h4-autonomous-exploration-verify-review.md).
+- Estado final del hito: **CERRADO (2026-10-30)**.

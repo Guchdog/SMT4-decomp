@@ -2826,6 +2826,370 @@
       "validation_plan": [
         "Independent compilation and verification of report hashes."
       ]
+    },
+    {
+      "id": "h4-map-player-actor-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Analyze the Map_GetPlayerActor function at 0x001B45C8 (20 bytes), mapping g_MapMainWork (0x00447E28), player handle extraction at +0x00, and tail-call to ActorManager_Lookup (0x002C45B8).",
+      "depends_on": [
+        "h4-view-subobjects-candidate-review"
+      ],
+      "function_claims": [
+        "0x001b45c8"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "extracted/exefs/code.bin",
+        "config/game_info.json",
+        "docs/agent-work/h4-view-workspace-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-map-player-actor-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Map full disassembly of 0x001B45C8 (20 bytes).",
+        "Document g_MapMainWork pointer at 0x00447E28.",
+        "Document handle extraction and call to 0x002C45B8.",
+        "Map table registration at 0x00446E4C.",
+        "Produce verified contract report."
+      ],
+      "validation_plan": [
+        "Static Capstone audit and independent review."
+      ]
+    },
+    {
+      "id": "h4-map-player-actor-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the 0x001B45C8 Map_GetPlayerActor contract report.",
+      "depends_on": [
+        "h4-map-player-actor-contract"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "extracted/exefs/code.bin",
+        "config/game_info.json",
+        "docs/agent-work/h4-map-player-actor-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-map-player-actor-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Independently verify disassembly and instruction semantics of 0x001B45C8.",
+        "Verify callee conventions and return values.",
+        "Write independent review report and recommendation."
+      ],
+      "validation_plan": [
+        "Independent disassembly audit and check-handoff."
+      ]
+    },
+    {
+      "id": "h4-map-player-actor-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable C++ candidate for 0x001B45C8 and validate offline via ARM differential emulation comparing original vs compiled candidate.",
+      "depends_on": [
+        "h4-map-player-actor-contract-review"
+      ],
+      "function_claims": [
+        "0x001b45c8"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "extracted/exefs/code.bin",
+        "config/game_info.json",
+        "docs/agent-work/h4-map-player-actor-contract.md",
+        "docs/agent-work/h4-map-player-actor-contract-review.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h4_map_player_actor_candidate.cpp",
+        "tools/h4_map_player_actor_experiment.py",
+        "docs/agent-work/h4-map-player-actor-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Write readable, type-safe C++ implementation reproducing 0x001B45C8.",
+        "Compile candidate and verify length does not exceed 20 bytes.",
+        "Implement and run offline differential test comparing original vs candidate.",
+        "Verify 0 differences and positive mutation detection.",
+        "Write per-address experiment report and handoff."
+      ],
+      "validation_plan": [
+        "Offline-first differential test, mutation check, and independent review."
+      ]
+    },
+    {
+      "id": "h4-map-player-actor-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the C++ candidate for 0x001B45C8, its differential test results, and negative controls.",
+      "depends_on": [
+        "h4-map-player-actor-candidate"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "extracted/exefs/code.bin",
+        "config/game_info.json",
+        "experiments/semantic_equivalence/h4_map_player_actor_candidate.cpp",
+        "tools/h4_map_player_actor_experiment.py",
+        "docs/agent-work/h4-map-player-actor-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-map-player-actor-candidate-review.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Independently review C++ source code.",
+        "Re-run differential suite and verify 0 differences and mutation detection.",
+        "Write independent review report and recommendation."
+      ],
+      "validation_plan": [
+        "Independent compilation and verification of report hashes."
+      ]
+    },
+    {
+      "id": "h4-map-entity-pool-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Analyze the Map_ClearEntityPool function at 0x001B45E0 (132 bytes), mapping g_MapEntities (0x00447E70), 24-entry entity array with stride 72 (0x48), resource release at offset +0x3C via 0x002A7AA0, and unrolled state clearing at +0x14.",
+      "depends_on": [
+        "h4-map-player-actor-candidate-review"
+      ],
+      "function_claims": [
+        "0x001b45e0"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "extracted/exefs/code.bin",
+        "config/game_info.json",
+        "docs/agent-work/h4-map-player-actor-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-map-entity-pool-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Map full disassembly of 0x001B45E0 (132 bytes).",
+        "Document entity layout (stride 0x48, 24 entries).",
+        "Document resource release call to 0x002A7AA0.",
+        "Document unrolled state clearing loop.",
+        "Produce verified contract report."
+      ],
+      "validation_plan": [
+        "Static Capstone audit and independent review."
+      ]
+    },
+    {
+      "id": "h4-map-entity-pool-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the 0x001B45E0 Map_ClearEntityPool contract report.",
+      "depends_on": [
+        "h4-map-entity-pool-contract"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "extracted/exefs/code.bin",
+        "config/game_info.json",
+        "docs/agent-work/h4-map-entity-pool-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-map-entity-pool-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Independently verify disassembly and instruction semantics of 0x001B45E0.",
+        "Verify entity array indexing, strides, and field offsets.",
+        "Write independent review report and recommendation."
+      ],
+      "validation_plan": [
+        "Independent disassembly audit and check-handoff."
+      ]
+    },
+    {
+      "id": "h4-map-entity-pool-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable C++ candidate for 0x001B45E0 and validate offline via ARM differential emulation comparing original vs compiled candidate.",
+      "depends_on": [
+        "h4-map-entity-pool-contract-review"
+      ],
+      "function_claims": [
+        "0x001b45e0"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "extracted/exefs/code.bin",
+        "config/game_info.json",
+        "docs/agent-work/h4-map-entity-pool-contract.md",
+        "docs/agent-work/h4-map-entity-pool-contract-review.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h4_map_entity_pool_candidate.cpp",
+        "tools/h4_map_entity_pool_experiment.py",
+        "docs/agent-work/h4-map-entity-pool-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Write readable, type-safe C++ implementation reproducing 0x001B45E0.",
+        "Compile candidate and verify length does not exceed 132 bytes.",
+        "Implement and run offline differential test comparing original vs candidate.",
+        "Verify 0 differences and positive mutation detection.",
+        "Write per-address experiment report and handoff."
+      ],
+      "validation_plan": [
+        "Offline-first differential test, mutation check, and independent review."
+      ]
+    },
+    {
+      "id": "h4-map-entity-pool-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the C++ candidate for 0x001B45E0, its differential test results, and negative controls.",
+      "depends_on": [
+        "h4-map-entity-pool-candidate"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "extracted/exefs/code.bin",
+        "config/game_info.json",
+        "experiments/semantic_equivalence/h4_map_entity_pool_candidate.cpp",
+        "tools/h4_map_entity_pool_experiment.py",
+        "docs/agent-work/h4-map-entity-pool-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-map-entity-pool-candidate-review.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Independently review C++ source code.",
+        "Re-run differential suite and verify 0 differences and mutation detection.",
+        "Write independent review report and recommendation."
+      ],
+      "validation_plan": [
+        "Independent compilation and verification of report hashes."
+      ]
+    },
+    {
+      "id": "h4-stage-integrated-image",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Compose and stage the verified H4 candidates into an integrated binary and IPS patch.",
+      "depends_on": [
+        "h4-map-entity-pool-candidate-review"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "extracted/exefs/code.bin",
+        "build/agent-work/H3-semantic/h3-title-entry/in-place-patch-run002/code.h3-final.bin"
+      ],
+      "write_paths": [
+        "tools/h4_staged_image_patch.py"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Stage all candidates.",
+        "Generate valid IPS patch.",
+        "Verify round trip."
+      ],
+      "validation_plan": [
+        "Tool execution and report check."
+      ]
+    },
+    {
+      "id": "h4-autonomous-exploration-verify",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute autonomous paired verification in loopback Azahar emulator comparing original vs patched build across 250 field ticks in Shinjuku Station.",
+      "depends_on": [
+        "h4-stage-integrated-image"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "tools/h3_autonomous_verify.py",
+        "build/agent-work/H4-semantic/h4-integrated-stage/run-001/code.h4-final.ips"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-autonomous-exploration-verify.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [
+        "azahar_process"
+      ],
+      "acceptance": [
+        "250 field ticks match.",
+        "Probe hits at 0x0027fbc8.",
+        "Save integrity verified."
+      ],
+      "validation_plan": [
+        "Autonomous execution and independent review."
+      ]
+    },
+    {
+      "id": "h4-autonomous-exploration-verify-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the autonomous paired exploration verification report and metrics.",
+      "depends_on": [
+        "h4-autonomous-exploration-verify"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h4-autonomous-exploration-verify.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h4-autonomous-exploration-verify-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify metrics and report integrity.",
+        "Provide recommendation."
+      ],
+      "validation_plan": [
+        "Independent report review."
+      ]
     }
   ]
 }
