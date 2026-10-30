@@ -222,9 +222,11 @@ extern TitleMainWork* g_TitleMainWork;          // 0x0044E300
 extern TerminalMainWork* g_TerminalMainWork;    // 0x00432CE0
 
 /**
- * 8-byte persisted option block at 0x0044E0F8.  titleConfig only reads it:
- * bytes 0/1/2 are mapped through three table lookups and then the two words
- * are copied to +0x34.  Its initialiser is written by the save/config loader.
+ * 8-byte title configuration block at 0x0044E0F8.  The titleConfig
+ * initializer reads bytes 0/1/2, maps them to work values, and copies the two
+ * words to +0x34.  TitleConfig_Calc also writes bytes 0..3 during its active
+ * update path and byte +4 on one state-2 path.  Whether those changes are
+ * rolled back on exit or persisted to storage is not established here.
  */
 extern u8 g_ConfigBytes[];
 
@@ -237,7 +239,7 @@ void titleMain_func_001eb02c(const u8* arg);    // 0x001EB02C
 
 // Task/draw entry points stored by the constructors above.  Entries outside
 // the ledger are named after the task they service.
-void TitleConfig_Calc(void* arg);               // 0x001EA928
+s32 TitleConfig_Calc(void* arg);                // 0x001EA928
 void TitleConfig_Secondary();                   // 0x002CAEF0 (CreateCalc a5)
 void TitleConfig_Draw(void* arg);               // 0x002CAFD0
 void TitleMain_Calc(void* arg);                 // 0x001E989C

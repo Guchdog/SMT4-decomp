@@ -98,7 +98,7 @@ extern "C" void func_0039fa54();
 extern "C" void func_0039fa7c();
 extern "C" void nn_sdk_func_002c4244();
 extern "C" void scrScriptProcess_func_002972f8();
-extern "C" void script_vm_func_0019dfbc();
+extern "C" s32 script_vm_func_0019dfbc(void* work);
 extern "C" void script_vm_func_0022ebbc();
 extern "C" void script_vm_func_002316a0();
 extern "C" void script_vm_func_0023187c();

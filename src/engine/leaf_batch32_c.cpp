@@ -133,7 +133,7 @@ extern "C" void scrScriptProcess_func_002972f8();
 extern "C" void script_vm_func_00131548();
 extern "C" void script_vm_func_0013851c();
 extern "C" void script_vm_func_00152af8();
-extern "C" void script_vm_func_0019dfbc();
+extern "C" s32 script_vm_func_0019dfbc(void* work);
 extern "C" void script_vm_func_001edc04();
 extern "C" void script_vm_func_001fc270();
 extern "C" void script_vm_func_00248320();
@@ -184,10 +184,10 @@ extern "C" void ui_func_002b1c8c();
 extern "C" void ui_func_002b1dfc();
 extern "C" void ui_func_002b1fc0();
 extern "C" void ui_func_002b85bc();
-extern "C" void ui_func_002b902c();
+extern "C" s32 ui_func_002b902c(u32 id);
 extern "C" void ui_func_002bcf58();
 extern "C" void ui_func_002bf460();
-extern "C" void ui_func_002bffbc();
+extern "C" s32 ui_func_002bffbc(u32 id);
 extern "C" void ui_func_002c0ac8();
 extern "C" void ui_func_002c0b94();
 extern "C" void ui_func_002c0c5c();
@@ -2147,26 +2147,18 @@ extern "C" __attribute__((naked)) void func_002bfcb4() {
 }
 
 // DECOMP_FUNC(0x002bffbc, 60)
-extern "C" __attribute__((naked)) void ui_func_002bffbc() {
-    asm volatile(
-        "cmp r0, #0x1f\n"
-        "bhs .L_002bffd4\n"
-        ".word 0xe59f1024\n"
-        "ldr r1, [r1, #8]\n"
-        "tst r1, #1\n"
-        "beq .L_002bffdc\n"
-        ".L_002bffd4:\n"
-        "mov r0, #0\n"
-        "bx lr\n"
-        ".L_002bffdc:\n"
-        ".word 0xe59f1010\n"
-        "ldr r0, [r1, r0, lsl #2]\n"
-        "cmp r0, #1\n"
-        "bne .L_002bffd4\n"
-        "bx lr\n"
-        ".word 0x004650a0\n"
-        ".word 0x004e3c58\n"
-    );
+extern "C" s32 ui_func_002bffbc(u32 id) {
+    if (id >= 0x1f) {
+        return 0;
+    }
+
+    const u32 input_flags = *reinterpret_cast<const u32*>(0x004650A8);
+    if ((input_flags & 1u) != 0) {
+        return 0;
+    }
+
+    const u32 counter = *reinterpret_cast<const u32*>(0x004E3C58 + (id * 4));
+    return counter == 1u ? 1 : 0;
 }
 
 // DECOMP_FUNC(0x002c01b8, 212)
@@ -3543,107 +3535,80 @@ extern "C" __attribute__((naked)) void engine_func_002ca6a4() {
 }
 
 // DECOMP_FUNC(0x002cab70, 92)
-extern "C" __attribute__((naked)) void camp_func_002cab70() {
-    asm volatile(
-        ".word 0xe59f2050\n"
-        "ldrb r1, [r2]\n"
-        "cmp r1, r0\n"
-        "movlo r1, #1\n"
-        "bhs .L_002cabc0\n"
-        ".L_002cab84:\n"
-        "ldrb r3, [r2, r1]\n"
-        "cmp r3, r0\n"
-        "blo .L_002cab98\n"
-        "and r0, r1, #0xff\n"
-        "bx lr\n"
-        ".L_002cab98:\n"
-        "add r3, r2, r1\n"
-        "ldrb r3, [r3, #1]\n"
-        "cmp r3, r0\n"
-        "blo .L_002cabb4\n"
-        "add r0, r1, #1\n"
-        "and r0, r0, #0xff\n"
-        "bx lr\n"
-        ".L_002cabb4:\n"
-        "add r1, r1, #2\n"
-        "cmp r1, #0xb\n"
-        "blt .L_002cab84\n"
-        ".L_002cabc0:\n"
-        "mov r0, #0\n"
-        "bx lr\n"
-        ".word 0x004077eb\n"
-    );
+extern "C" u32 camp_func_002cab70(u32 value) {
+    auto const* const thresholds = reinterpret_cast<volatile u8 const*>(0x004077EBu);
+    u32 index = 0;
+#pragma clang loop unroll(disable)
+    for (; index != 11; ++index) {
+        if (value <= thresholds[index]) {
+            return index;
+        }
+    }
+    return 0;
 }
 
 // DECOMP_FUNC(0x002caef0, 224)
-extern "C" __attribute__((naked)) void engine_func_002caef0() {
-    asm volatile(
-        "push {r4, r5, r6, lr}\n"
-        "mov r0, #1\n"
-        ".word 0xe59f60cc\n"
-        "mov r5, #0\n"
-        "ldr r4, [r6]\n"
-        "strb r0, [r4, #4]\n"
-        "ldrsh r0, [r4, #0x1a]\n"
-        "cmp r0, #0\n"
-        "ble .L_002caf2c\n"
-        ".L_002caf14:\n"
-        "nop\n"
-        "bl camp_func_002b9008\n"
-        "ldrsh r0, [r4, #0x1a]\n"
-        "add r5, r5, #1\n"
-        "cmp r0, r5\n"
-        "bgt .L_002caf14\n"
-        ".L_002caf2c:\n"
-        "ldrsh r0, [r4, #0x24]\n"
-        "mov r5, #0\n"
-        "cmp r0, #0\n"
-        "ble .L_002caf54\n"
-        ".L_002caf3c:\n"
-        "nop\n"
-        "bl camp_func_002b9008\n"
-        "ldrsh r0, [r4, #0x24]\n"
-        "add r5, r5, #1\n"
-        "cmp r0, r5\n"
-        "bgt .L_002caf3c\n"
-        ".L_002caf54:\n"
-        "ldr r0, [r4, #0x154]\n"
-        "mov r5, #0\n"
-        "cmp r0, #0\n"
-        "beq .L_002caf6c\n"
-        "bl script_vm_func_002a755c\n"
-        "str r5, [r4, #0x154]\n"
-        ".L_002caf6c:\n"
-        "ldr r0, [r4, #0x14c]\n"
-        "cmp r0, #0\n"
-        "beq .L_002caf80\n"
-        "bl engine_func_002c4360\n"
-        "str r5, [r4, #0x14c]\n"
-        ".L_002caf80:\n"
-        "ldr r0, [r4, #0x150]\n"
-        "cmp r0, #0\n"
-        "beq .L_002caf94\n"
-        "bl engine_func_002c4360\n"
-        "str r5, [r4, #0x150]\n"
-        ".L_002caf94:\n"
-        "ldr r0, [r4]\n"
-        "bl battle_func_002bf41c\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "beq .L_002cafb4\n"
-        "ldr r0, [r4]\n"
-        "mov r1, #0\n"
-        "bl battle_func_002c45b8\n"
-        ".L_002cafb4:\n"
-        "ldr r0, [r6]\n"
-        "cmp r0, #0\n"
-        "beq .L_002cafc8\n"
-        "bl engine_func_002c4360\n"
-        "str r5, [r6]\n"
-        ".L_002cafc8:\n"
-        "pop {r4, r5, r6, pc}\n"
-        ".word 0x0044e2d0\n"
-    );
+extern "C" void engine_func_002caef0() {
+    using CounterService = void (*)(s16);
+    using ResourceService = void (*)(void*);
+    using TaskIsRegistered = u32 (*)(void*);
+    using TaskSetState = void (*)(void*, u32);
+
+    auto** const work_global = reinterpret_cast<u8**>(0x0044E2D0u);
+    u8* const work = *work_global;
+    work[4] = 1;
+
+    // Each loop rereads its signed counter after the helper returns. The helper
+    // has a separate manager-side effect and does not drain these TitleConfig
+    // counters; retain the original per-iteration call and counter argument.
+    s32 iteration = 0;
+    s16 counter = *reinterpret_cast<volatile s16*>(work + 0x1Au);
+    while (counter > 0) {
+        reinterpret_cast<CounterService>(0x002B9008u)(counter);
+        counter = *reinterpret_cast<volatile s16*>(work + 0x1Au);
+        ++iteration;
+        if (counter <= iteration) break;
+    }
+
+    iteration = 0;
+    counter = *reinterpret_cast<volatile s16*>(work + 0x24u);
+    while (counter > 0) {
+        reinterpret_cast<CounterService>(0x002B9008u)(counter);
+        counter = *reinterpret_cast<volatile s16*>(work + 0x24u);
+        ++iteration;
+        if (counter <= iteration) break;
+    }
+
+    auto* const script = *reinterpret_cast<void**>(work + 0x154u);
+    if (script != nullptr) {
+        reinterpret_cast<ResourceService>(0x002A755Cu)(script);
+        *reinterpret_cast<u32*>(work + 0x154u) = 0;
+    }
+
+    auto* const first_resource = reinterpret_cast<void**>(work + 0x14Cu);
+    if (*first_resource != nullptr) {
+        reinterpret_cast<ResourceService>(0x002C4360u)(*first_resource);
+        *reinterpret_cast<u32*>(work + 0x14Cu) = 0;
+    }
+
+    auto* const second_resource = reinterpret_cast<void**>(work + 0x150u);
+    if (*second_resource != nullptr) {
+        reinterpret_cast<ResourceService>(0x002C4360u)(*second_resource);
+        *reinterpret_cast<u32*>(work + 0x150u) = 0;
+    }
+
+    auto* const calc_task = *reinterpret_cast<void**>(work);
+    if (reinterpret_cast<TaskIsRegistered>(0x002BF41Cu)(calc_task) != 0) {
+        reinterpret_cast<TaskSetState>(0x002C45B8u)(calc_task, 0);
+    }
+
+    // The original reloads the global after changing task state. It does not
+    // simply release the entry work pointer, and its initial load is unchecked.
+    u8* const current_work = *work_global;
+    if (current_work != nullptr) {
+        reinterpret_cast<ResourceService>(0x002C4360u)(current_work);
+        *work_global = nullptr;
+    }
 }
 
 // DECOMP_FUNC(0x002cba48, 328)
@@ -6161,36 +6126,16 @@ extern "C" __attribute__((naked)) void engine_func_002e0328() {
 }
 
 // DECOMP_FUNC(0x002e0af4, 92)
-extern "C" __attribute__((naked)) void camp_func_002e0af4() {
-    asm volatile(
-        ".word 0xe59f2050\n"
-        "ldrb r1, [r2]\n"
-        "cmp r1, r0\n"
-        "movlo r1, #1\n"
-        "bhs .L_002e0b44\n"
-        ".L_002e0b08:\n"
-        "ldrb r3, [r2, r1]\n"
-        "cmp r3, r0\n"
-        "blo .L_002e0b1c\n"
-        "and r0, r1, #0xff\n"
-        "bx lr\n"
-        ".L_002e0b1c:\n"
-        "add r3, r2, r1\n"
-        "ldrb r3, [r3, #1]\n"
-        "cmp r3, r0\n"
-        "blo .L_002e0b38\n"
-        "add r0, r1, #1\n"
-        "and r0, r0, #0xff\n"
-        "bx lr\n"
-        ".L_002e0b38:\n"
-        "add r1, r1, #2\n"
-        "cmp r1, #0xb\n"
-        "blt .L_002e0b08\n"
-        ".L_002e0b44:\n"
-        "mov r0, #0\n"
-        "bx lr\n"
-        ".word 0x00407801\n"
-    );
+extern "C" u32 camp_func_002e0af4(u32 value) {
+    auto const* const thresholds = reinterpret_cast<volatile u8 const*>(0x00407801u);
+    u32 index = 0;
+#pragma clang loop unroll(disable)
+    for (; index != 11; ++index) {
+        if (value <= thresholds[index]) {
+            return index;
+        }
+    }
+    return 0;
 }
 
 // DECOMP_FUNC(0x002e0b50, 260)

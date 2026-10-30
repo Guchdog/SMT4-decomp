@@ -238,7 +238,7 @@ extern "C" void ui_func_002a63f8();
 extern "C" void ui_func_002aec20();
 extern "C" void ui_func_002b0788();
 extern "C" void ui_func_002b6030();
-extern "C" void ui_func_002b902c();
+extern "C" s32 ui_func_002b902c(u32 id);
 extern "C" void ui_func_002bcf58();
 extern "C" void ui_func_002c0ac8();
 extern "C" void ui_func_002c3b00();

@@ -1,0 +1,316 @@
+{
+  "schema_version": 1,
+  "source_root": "E:\\emulador3ds",
+  "source_executable": {
+    "path": "azahar.exe",
+    "bytes": 38274048,
+    "sha256": "c248414eb5328cb8bb720775ace6959898e2f50a0a10221c3a1e7a14190183eb"
+  },
+  "runtime_files": [
+    {
+      "path": "icudt74.dll",
+      "bytes": 30849536,
+      "sha256": "00cc4d450ea5480e9ea1c1a317f42de2bd0e950e310608967d726566a90700a4"
+    },
+    {
+      "path": "icuin74.dll",
+      "bytes": 5159936,
+      "sha256": "8d1fc2fb1ee3178ac8a25ae191c42732a31c452cfd5d0ef49c052dd40f0f43fe"
+    },
+    {
+      "path": "icuuc74.dll",
+      "bytes": 3057152,
+      "sha256": "3af79bd820d454ec8964a511e3d2dd8bfa2db99352c0d193ef25ce53cc5e8d01"
+    },
+    {
+      "path": "libbrotlicommon.dll",
+      "bytes": 196608,
+      "sha256": "354a685ad12e3593f8bca1292f7e9ad4bc806158e3574e3845d83754295ef344"
+    },
+    {
+      "path": "libbrotlidec.dll",
+      "bytes": 111616,
+      "sha256": "02875c364d4c132617dc829a778ff49b5ad9fae06c31d6ef197a97175d15113b"
+    },
+    {
+      "path": "libbz2.dll",
+      "bytes": 286208,
+      "sha256": "48b99692bc13e43e1dc103881e779e7db8bb1d030a288ddee5f35398080065fc"
+    },
+    {
+      "path": "libc++.dll",
+      "bytes": 1306624,
+      "sha256": "dcbd1bcddded0b13e919e0306c9ac3f33acf10f9ba1687c4bd661b9f0469c298"
+    },
+    {
+      "path": "libfreetype-6.dll",
+      "bytes": 4048896,
+      "sha256": "a5b04ab991d1cb32c80ac0b8550429ee58b797780dfef2d2fdb901ac1cfc795e"
+    },
+    {
+      "path": "libglib-2.0-0.dll",
+      "bytes": 2145280,
+      "sha256": "42285e9aef9a5850626be8403e8ccb910e710589c6f139b825d01eeba91405ee"
+    },
+    {
+      "path": "libharfbuzz-0.dll",
+      "bytes": 1714176,
+      "sha256": "61c09663440cbcb6aacddac52bfcbeea709457887c3eb140f7539a4e04c9e09f"
+    },
+    {
+      "path": "libiconv-2.dll",
+      "bytes": 1370624,
+      "sha256": "f3477a6da90d35ed7f04b23ae456c7ef1eaa371812ec10a57d564839165b6d9f"
+    },
+    {
+      "path": "libintl-8.dll",
+      "bytes": 1222144,
+      "sha256": "17c26366543272c335e23d293eea2c57891bbd18463bc3786131f90ba8765870"
+    },
+    {
+      "path": "libpcre2-16-0.dll",
+      "bytes": 449536,
+      "sha256": "4cf6f4e3b60882b7ad4c6bfb6f91db04a6f1058bb5dd23fd01b69dd43c977b96"
+    },
+    {
+      "path": "libpcre2-8-0.dll",
+      "bytes": 482816,
+      "sha256": "7e6f27daab1ecd619010a29aeede02b956fac38eaf6634f57c22952efe479f67"
+    },
+    {
+      "path": "libpng16-16.dll",
+      "bytes": 1106432,
+      "sha256": "d9e52572c4b965c8e98e6fbd9fd9485c94e25e9fa1ba654d2e052e2f94816832"
+    },
+    {
+      "path": "libunwind.dll",
+      "bytes": 52224,
+      "sha256": "26c2701c3e84dbff88198c2dcc209a4d16aa12f3e624630365a2d346f74faf07"
+    },
+    {
+      "path": "libzstd.dll",
+      "bytes": 1063424,
+      "sha256": "7cf8be8d5fbaefdb2e989def54352cc683d5ccf30b87c0dac98fb5a6b1d9a249"
+    },
+    {
+      "path": "OpenAL32.dll",
+      "bytes": 2397696,
+      "sha256": "31c6259b36907fb4979a5f6148335e1725210f4d1b01e2557b24ea6702d99e52"
+    },
+    {
+      "path": "plugins/designer/qquickwidget.dll",
+      "bytes": 94208,
+      "sha256": "c77e2c2acd6ef088c8dd620d95404a1fc244fa142f96770dc517005ed5d898e4"
+    },
+    {
+      "path": "plugins/generic/qtuiotouchplugin.dll",
+      "bytes": 159232,
+      "sha256": "83a5a95dce7647226c525d733022deb280b3d54c97c734dc0bd6d13b49e6b34c"
+    },
+    {
+      "path": "plugins/iconengines/qsvgicon.dll",
+      "bytes": 124928,
+      "sha256": "02d2705c63ca5aa7690a2bb2309e045f48a42d3370ab9c563ab42e740093c696"
+    },
+    {
+      "path": "plugins/imageformats/qgif.dll",
+      "bytes": 99328,
+      "sha256": "d51885a01d61907d9b8f284b8b30fdd51135d8d5fbba3ac5cb3707a4a9608103"
+    },
+    {
+      "path": "plugins/imageformats/qico.dll",
+      "bytes": 103936,
+      "sha256": "7ae41a1423a795ba36313a3d2962f5229bcf16d196c4df13c156b3cc847a17d8"
+    },
+    {
+      "path": "plugins/imageformats/qjpeg.dll",
+      "bytes": 128000,
+      "sha256": "2d92376bdf97a9db63774088843bcc61e30f47724b4405385312f1473c841e3d"
+    },
+    {
+      "path": "plugins/imageformats/qsvg.dll",
+      "bytes": 92160,
+      "sha256": "6625a2f988da58340277f288b50ea71cc1816176e2248fd2b55680637b9283b7"
+    },
+    {
+      "path": "plugins/multimedia/ffmpegmediaplugin.dll",
+      "bytes": 1011200,
+      "sha256": "0a8b026e49e8183c669bdb0b3c1ea2ff354572db8d9642412ecc28279a95cad0"
+    },
+    {
+      "path": "plugins/multimedia/windowsmediaplugin.dll",
+      "bytes": 1285632,
+      "sha256": "b11eb33efb889a2f752a7079a5bbad7508f6baba9d3089bebc6352adbb62b064"
+    },
+    {
+      "path": "plugins/networkinformation/qnetworklistmanager.dll",
+      "bytes": 521728,
+      "sha256": "09667a8e9b560a15e5d162b1929bb794b07a35b5f5c67fcadf9a60155d2d1ea8"
+    },
+    {
+      "path": "plugins/platforms/qdirect2d.dll",
+      "bytes": 2219008,
+      "sha256": "875e7a8fcbab9ab492398dba4fc6ef1658d567a0b40e6c7f4e04327f918c6246"
+    },
+    {
+      "path": "plugins/platforms/qminimal.dll",
+      "bytes": 104448,
+      "sha256": "32ad63c1cbc3866684cb1035a6d28ae4cd12b62a9ed9152160f867310d4e733b"
+    },
+    {
+      "path": "plugins/platforms/qoffscreen.dll",
+      "bytes": 205824,
+      "sha256": "a1a6b0cb6afe19c79546599c74be95bd4b969bc3213b1211ff6298f683570d42"
+    },
+    {
+      "path": "plugins/platforms/qwindows.dll",
+      "bytes": 2004480,
+      "sha256": "249546edd0eb8152e46f8d7ad8046578cfaf347605074fcaa30fe4e6ca580e21"
+    },
+    {
+      "path": "plugins/qmltooling/qmldbg_debugger.dll",
+      "bytes": 343040,
+      "sha256": "5ae806fe7131b57dc758833084e447f24ef8e5a6ef9d2d20ec5bb328eb6295c0"
+    },
+    {
+      "path": "plugins/qmltooling/qmldbg_inspector.dll",
+      "bytes": 199680,
+      "sha256": "462ea59d74f34f04153082b6a0a11ca746b1b5a773d729c7a83e469e35c00a3f"
+    },
+    {
+      "path": "plugins/qmltooling/qmldbg_local.dll",
+      "bytes": 91648,
+      "sha256": "702b5ebba0ec5449eeea5bda53ab1b65f3fe30d44b73c169294932fa9fb05245"
+    },
+    {
+      "path": "plugins/qmltooling/qmldbg_messages.dll",
+      "bytes": 90112,
+      "sha256": "ed6b0ad354b4cffd0818f721f5bb0244a40d7f1ca7feb0243b89d723014680e9"
+    },
+    {
+      "path": "plugins/qmltooling/qmldbg_native.dll",
+      "bytes": 107008,
+      "sha256": "b90bf95359d24e05fcec49cbdda34ecd2289e4e00a83b84ad35d724c955fe398"
+    },
+    {
+      "path": "plugins/qmltooling/qmldbg_nativedebugger.dll",
+      "bytes": 131584,
+      "sha256": "d12d459f6dabb643406c749db6a7738373b634c05bd67c1a1a661da75b475f2d"
+    },
+    {
+      "path": "plugins/qmltooling/qmldbg_preview.dll",
+      "bytes": 353792,
+      "sha256": "e163acaf5f304601499a86fd0bbc37a8350528f3a7c47bfaf9bf2a22c550d7af"
+    },
+    {
+      "path": "plugins/qmltooling/qmldbg_profiler.dll",
+      "bytes": 197120,
+      "sha256": "a8dd06402171c2a9fcc8227ed4ae89bd7d4d699584c493892e230725fef77012"
+    },
+    {
+      "path": "plugins/qmltooling/qmldbg_quickeventreplay.dll",
+      "bytes": 100864,
+      "sha256": "f60e01bd8858c62e101ad9ddc54ea287e2c1dc67c1bbed2a7c4cbb24aa03b4b7"
+    },
+    {
+      "path": "plugins/qmltooling/qmldbg_quickprofiler.dll",
+      "bytes": 98304,
+      "sha256": "2042a6e0f0451494ffba492546aaaa8886da9a4d2a51bdca4cbee31ddd140728"
+    },
+    {
+      "path": "plugins/qmltooling/qmldbg_server.dll",
+      "bytes": 192512,
+      "sha256": "7c0906fc13d4e522dc514283f353f8d1cbdb21c2f2188125e2cef1c13e1627c5"
+    },
+    {
+      "path": "plugins/qmltooling/qmldbg_tcp.dll",
+      "bytes": 88064,
+      "sha256": "66ec8f07ee0c7711601fb84cea3f8c44a1b380472be05f5a014b8d1e76e2c201"
+    },
+    {
+      "path": "plugins/sqldrivers/qsqlite.dll",
+      "bytes": 178176,
+      "sha256": "4a88c6b580a28dda52cd07787a0fcc49425394dc10cb0b6afb74b00f16305eba"
+    },
+    {
+      "path": "plugins/sqldrivers/qsqlmysql.dll",
+      "bytes": 168448,
+      "sha256": "2685597ed482048ffa974c677d8053f0a3c7eab7a9c8be56fd11737fe0ec82ab"
+    },
+    {
+      "path": "plugins/sqldrivers/qsqlodbc.dll",
+      "bytes": 231424,
+      "sha256": "6ff8ba2bcc2eff009be0a4c18934c53f3cf5e91b08b538c0cdb9345399acf82d"
+    },
+    {
+      "path": "plugins/styles/qmodernwindowsstyle.dll",
+      "bytes": 352256,
+      "sha256": "65e75f387faeed68bb833297c8422243ea7142c65d13974bf1d0f2aa023c3a1a"
+    },
+    {
+      "path": "plugins/tls/qcertonlybackend.dll",
+      "bytes": 169472,
+      "sha256": "6a5136b330dad0c44555c2d28062e9b82dc00c12efbfed57a0f233283533b80f"
+    },
+    {
+      "path": "plugins/tls/qopensslbackend.dll",
+      "bytes": 6388224,
+      "sha256": "96ebdef57b529c8a0a8590eed27c6a5addb7d58d2c26e7e0384e003a4e95ca33"
+    },
+    {
+      "path": "plugins/tls/qschannelbackend.dll",
+      "bytes": 361472,
+      "sha256": "bd59f69305f035d0a36ab8a24e7159d7e16f82e662c12d799222d3f7e0f02717"
+    },
+    {
+      "path": "Qt6Concurrent.dll",
+      "bytes": 84992,
+      "sha256": "a3d98a7b5076db67e62cf1e46573f1a767b21c2db13eec1cf4e234aa4faea778"
+    },
+    {
+      "path": "Qt6Core.dll",
+      "bytes": 8219136,
+      "sha256": "7559bab2580a7700b5abd3827527bbd1bd7014ae25449d3559519010af942c9f"
+    },
+    {
+      "path": "Qt6Gui.dll",
+      "bytes": 10853888,
+      "sha256": "c0a852dca2fe20c04cd988a48b4924865c28885014e035960517f5fbf9b575c6"
+    },
+    {
+      "path": "Qt6Multimedia.dll",
+      "bytes": 2118144,
+      "sha256": "a83e339f490feea968ab08ba1060cc4f7a9b462228df643fa2593b85334c9427"
+    },
+    {
+      "path": "Qt6Network.dll",
+      "bytes": 7577600,
+      "sha256": "00a724e994be0a992c880f012876d2eecd1011635ffef9590453f96ffa6ba067"
+    },
+    {
+      "path": "Qt6Widgets.dll",
+      "bytes": 8744960,
+      "sha256": "47fe88ff797df76b96a92ef5acced141c5092d34b1f4b13c657d607e0f70add9"
+    },
+    {
+      "path": "scripting/AzaharRPC.py",
+      "bytes": 10515,
+      "sha256": "513fa299c51c08645176f1658d277f9d5297e3f12f182075544e35d7284aa765"
+    },
+    {
+      "path": "zlib1.dll",
+      "bytes": 99840,
+      "sha256": "e1edbb544a3b9262d50badbb5922f3adabc28e3477018a2f8969ab510589b3a2"
+    }
+  ],
+  "runtime_file_count": 59,
+  "runtime_bytes": 112727315,
+  "compatibility_evidence": {
+    "private_executable": "build/h2-runtime/autonomous-verify-run001/original/app/azahar.exe",
+    "private_executable_sha256": "8e18aac0df0be63b3351fb4b39b6d5f75fb23992ce3ad9d8ccd8cb671dc6f60a",
+    "successful_prior_run": "build/h2-runtime/autonomous-verify-run001/autonomous-gdb-verification.json",
+    "successful_prior_run_sha256": "e370da857f1738409decc468bee81859eb84cfc9278bacf3d0c9d0b460d045b8",
+    "prior_runner_default_dependency_source": "E:/emulador3ds/azahar.exe",
+    "prior_runner_stages_sibling_dlls_and_plugins": true
+  }
+}

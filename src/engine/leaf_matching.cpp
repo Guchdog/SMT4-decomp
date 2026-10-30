@@ -2450,14 +2450,20 @@ extern "C" void battle_func_002a84bc(u8* p) {
 }
 
 // DECOMP_FUNC(0x002adb40, 20)
-extern "C" __attribute__((naked)) void ui_func_002adb40() {
+extern "C" u32 ui_func_002adb40(void* destination, const void* source) {
+    u32 first;
+    u32 second;
     asm volatile(
-        "ldr r2, [r1]\n"
-        "ldr r3, [r1, #4]\n"
-        "str r2, [r0]\n"
-        "str r3, [r0, #4]\n"
-        "bx lr\n"
+        "ldr %0, [%2]\n"
+        "ldr %1, [%2, #4]\n"
+        "str %0, [%3]\n"
+        "str %1, [%3, #4]\n"
+        : "=&r"(first), "=&r"(second)
+        : "r"(source), "r"(destination)
+        : "memory"
     );
+    // The original leaves the destination in r0; expose those same bits.
+    return static_cast<u32>(reinterpret_cast<std::uintptr_t>(destination));
 }
 
 // DECOMP_FUNC(0x002bd9ec, 20)
@@ -2569,13 +2575,24 @@ extern "C" u32 unite_func_002338ac(const u8* p) {
 
 // DECOMP_FUNC(0x0027edf8, 24)
 extern "C" void camp_func_0027edf8(u8* p, u32 val) {
+    u32 replicated = val & 0xFFu;
+    // Keep each defined shift/OR step visible to Clang; without these
+    // register barriers it folds the replication into a literal multiply,
+    // which no longer fits this function's original in-place slot.
+    asm volatile("" : "+r"(replicated));
+    replicated |= replicated << 8;
+    asm volatile("" : "+r"(replicated));
+    replicated |= replicated << 16;
+    asm volatile("" : "+r"(replicated));
+
+    // Keep the original ARM word-store footprint for callers that provide
+    // only halfword alignment. The target supports these LDR/STR-style
+    // unaligned ordinary-memory accesses; casting p to u32* would assert a
+    // stronger alignment in C++ than every caller establishes.
     asm volatile(
-        "and %1, %1, #0xff\n"
-        "orr %1, %1, %1, lsl #8\n"
-        "orr %1, %1, %1, lsl #16\n"
         "str %1, [%0]\n"
         "str %1, [%0, #4]\n"
-        : : "r"(p), "r"(val) : "memory"
+        : : "r"(p), "r"(replicated) : "memory"
     );
 }
 

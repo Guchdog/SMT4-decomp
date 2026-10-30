@@ -1,0 +1,30 @@
+# Independent review: 0x002C615C integer division
+
+**Disposition: rework the recon before accepting its ABI/caller description.** Its signed quotient/remainder and pinned divisor-zero conclusions are supported, with two material wording corrections: the zero-divisor path writes to stack, and selector-1 final numerators use the transformed intermediates multiplied by `(B-A)<<7`, not simply original x/y times F. No candidate or runtime conclusion follows.
+
+All 12 frozen packet input hashes matched. Pinned image SHA-256 `1f98884fe997af22e032a14c51a46c872b05b0e079a0f29e307b0e059cfaa558`; 556-byte slice 0x002C615C..0x002C6387 SHA-256 `3d7cdf38585407be142951c950b3c44d2ba4d5d860470166cc4d5e4b3a2705b9`. The ledger marks the span matching; this review independently decodes ARM instructions and does not run the function.
+
+## Quotient, remainder and branch edges
+
+0x002C615C begins `ORRS r3,r0,r1`; negative sign bit in either operand enters 0x002C629C. When both are nonnegative, 0x002C6164 compares `dividend>>1` against divisor. If the shifted value is less, 0x002C6280 subtracts divisor and returns `(1, dividend-divisor)` when no borrow, otherwise `(0, dividend)` in r0/r1. The other normal route is the unsigned shift/subtract/carry accumulation at 0x002C616C..627C, with quotient in r0 and remainder in r1. Divisor zero does not take the positive fast branch; it reaches the explicit zero path.
+
+Signed path 0x002C629C masks divisor sign, conditionally negates divisor modulo 2^32, constructs ip from divisor sign XOR arithmetic sign-fill of dividend, and conditionally negates dividend to magnitude. The unsigned core accumulates magnitude quotient/remainder. At 0x002C6360 `ASRS ip,#31` produces quotient-sign N and carry from the retained original dividend-sign relation; `RSBMI r0` conditionally negates quotient and `RSBHS r1` conditionally negates remainder. Consequently for nonzero divisors and representable results, quotient truncates toward zero and remainder follows dividend sign. Static sign examples `17/5=(3,2)`, `-17/5=(-3,-2)`, `17/-5=(-3,2)`, `-17/-5=(3,-2)` agree with that derivation; no execution is implied.
+
+INT_MIN magnitude stays 0x80000000 in 32-bit modular negation. INT_MIN/-1 gives quotient bits 0x80000000 and remainder 0 under the instruction algorithm, with no explicit overflow check. This is not defined C++ signed division behavior. Flags and exact control-flow corner cases still require differential tests.
+
+## Zero divisor and ABI correction
+
+Zero divisor reaches 0x002C6378 directly from nonnegative path or via 0x002C6370..74 which restores a negative dividend before entry. At 0x002C6378 `PUSH {r0,lr}` decrements SP by 8 and **writes two 32-bit words to memory**; `MOVS r0,#0`, BL 0x0014E604 at 0x002C6380, and `POP {r1,pc}` read them back, so SP depth and original return address are restored on successful execution and r1 becomes the original dividend. 0x0014E604 is unconditional ARM `B 0x001524EC`; the target word `0xE12FFF1E` is `BX LR`, so for this pinned image it leaves r0=0 and returns to the pop. Thus the current-image observable result is `(r0=0,r1=original dividend)`, including 0/0, provided the stack and branch target are valid. This is no general language/platform exception policy; stack faults and replacement/hook changes are out of scope.
+
+Recon's phrase “no explicit memory write” is **incorrect** for zero divisor. It should say no explicit data-memory write on the normal path; zero divisor writes saved dividend and LR at `[SP-8,SP)` even though SP is restored. This distinction matters for write-set, stack guard and fault tests. Normal paths use BX LR and do not write r4-r11; r0-r3, ip and condition flags are modified. The zero path also calls another routine, so inspect actual dependency and ABI rather than assume untouched memory or flags. No independent runtime ABI checks were performed.
+
+## Selector callsites and correction
+
+0x0013B9FC calls divider at 0x0013BA78 with numerator r6=`R<<14` and divisor r5 iterative estimate; its final calls 0x0013BAB4/0x0013BAC4 use low-32-bit original x/y times r5 scaling factor and divisor r4=Q. The signed nonpositive shifted-value route can set Q=0; no guard precedes those final BLs. 0x0013B8F8 calls 0x0013B9B4 with r0=`R<<14` and r1 iterative estimate; at 0x0013B9C8 it forms `r4=F<<7`, where F=B-A, and 0x0013B9D0/0x0013B9DC multiply **transformed** r6/r5 intermediates by that r4. Calls at 0x0013B9D4/E4 use those wrapped products as numerators and r8=Q as divisor, with no local zero check. The recon's wording “x*F/y*F” omits both transformed inputs and the `<<7` scale; correct this before using it as a precise caller contract. The branch can set Q=0 when signed shifted R<=0. The ARM low-word multiply, shifts and signed tests remain observable; natural calibration ranges and whether Q=0 occurs in-game are unestablished.
+
+## Caller scan and recommended disposition
+
+The recon's 143 BL figure came from its stated skip-data linear scan, which can omit decodable instructions after data and cannot prove an exhaustive caller graph. An independent unfiltered aligned ARM-word BL scan finds **144 candidate words**, a method-dependent count rather than proof of an additional actual caller; both can include data. Thumb, indirect, computed, external and non-ledger paths are absent. Its instruction-slice and explicit H4 callsites matter more than either count.
+
+Accept the signed/zero/overflow derivation as static evidence **after** correcting stack writes and selector-1 numerator description. Before implementation or promotion, independently validate original vs compiled code across sign combinations, zero divisor/stack boundaries, INT_MIN/-1, remainder registers, flags, callee-saved registers, memory write set and interworking. Exercise the two selector callers with wrapped products, zero Q and output aliases; use same-input mutation controls and record faults. The present review did not execute tests, build, emulator/GDB, guest writes or access profiles/saves.
+

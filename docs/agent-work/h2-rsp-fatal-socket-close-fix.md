@@ -1,0 +1,7 @@
+# H2: cierre del socket tras reintentar la terminación
+
+Si el callback fatal no puede terminar al hijo, la limpieza RSP conserva el socket abierto para evitar una desconexión que reanude el guest. El `finally` exterior vuelve a intentar terminar al hijo y ahora cierra explícitamente ese socket solo cuando confirma que el proceso ha terminado. Si el sistema sigue rechazando la terminación, no se puede garantizar la contención; el staging se conserva y el error se registra.
+
+Dos pruebas de integración usan exclusivamente proceso, socket, juego, perfil y save sintéticos. Cubren la terminación inmediata y el fallo del primer intento seguido de un segundo intento exitoso; comprueban que la terminación precede al cierre, no se envía `D`, los inputs sintéticos conservan sus hashes y el staging se elimina. La suite afectada pasó 60 pruebas offline. Falta la revisión independiente y cualquier packet que fijara la versión anterior del runner debe regenerarse.
+
+La revisión detectó que, si fallaban la terminación y las consultas de estado, un valor inicial podía autorizar la limpieza sin confirmación. El `finally` establece ahora `process_stopped = False` antes de intentar terminar al hijo y registra `confirmed_stopped`. Dos casos sintéticos adicionales comprueban fallos persistentes de terminación y excepciones de `poll`: el socket permanece abierto, el staging se conserva y se registran errores. La suite actual pasó 62 pruebas offline. Falta revisar esta corrección; si el sistema no permite detener al hijo, no se garantiza su contención.

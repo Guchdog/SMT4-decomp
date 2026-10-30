@@ -85,7 +85,7 @@ extern "C" {
 
     // EffectEditor plumbing (shared names with src/engine/asd_model.cpp)
     void  AsdUiObject_Update(void* object);                                // 0x0024df5c
-    int   UiInput_Trigger2(u32 id);                                        // 0x002bffbc
+    s32   UiInput_Trigger2(u32 id);                                        // 0x002bffbc
     void  UiInput_Reset(u32 id);                                           // 0x0024df94
     void  UiText_Format(char* dst, const char* fmt, ...);                  // 0x002be7fc
     u32   AsdParts_Count(void* parts);                                     // 0x00246a74

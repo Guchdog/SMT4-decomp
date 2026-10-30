@@ -1,0 +1,37 @@
+# H2 private Azahar diagnostic CLI: independent review
+
+## Decision
+
+**Request fixes before any runtime assignment.** The observer implementation is bounded and the saved build provenance is internally consistent. The wrapper does useful fail-closed checks, but the Qt observer itself accepts a missing movie-play argument, and the wrapper treats profile file metadata as authoritative without verifying live profile files. Those gaps leave a path to non-replayable captures and a staged profile that differs from the reviewed manifest. H2 remains open; this review does not authorize an emulator launch.
+
+## Findings
+
+### [P1] Observer can capture without movie playback
+
+In `azahar/src/citra_qt/citra_qt.cpp:1596-1614`, `ValidateH2ObserverTitle` is called with an empty movie path whenever `movie_playback_on_start` is false, then title validation succeeds and playback is started only if requested. `azahar/src/core/h2_observer.cpp:199-213` stores the supplied path but never rejects an empty path. Thus direct use of `--h2-snapshot`/`--h2-run-root` can capture while no movie is playing. The wrapper adds `--movie-play`, but the feature binary can be invoked directly and the report explicitly says the Qt CLI does not parse the manifest. Require observer mode to have a nonempty playback path and confirm playback successfully started before emulation-thread startup; otherwise fail closed. The saved source check shows title/process validation is before `StartPlayback`, which is a good ordering, but does not itself gate playback presence or prove `StartPlayback` succeeded.
+
+### [P1] Staged profile paths and hashes are trusted, not revalidated
+
+`h2_ctm_preflight.py:59-71` checks only manifest entries for the selected profiles’ `code.ips` identity and claims that executable hashes match. It does not hash the live profile IPS files or profile executables. It also does not verify that the chosen profile root and working directory are contained in the staging run or correspond to those profile entries. `h2_azahar_launch.py:16-25` hashes the separately supplied private executable, then launches that executable with the manifest CCI and working directory; it never establishes that the live profile configuration actually selects the intended user root. Therefore the wrapper’s check is a check of manifest metadata, not proof of the current profile tree. Before using it, validate the staged profile roots, executable/config selection, and each listed file against live contents, with path-component containment under the run root. This task did not inspect or change any live profile tree.
+
+## Reviewed controls and source observations
+
+- Observer is disabled unless `--h2-snapshot` is supplied (`citra_qt.cpp:350-367`); configuration also rejects malformed/duplicate snapshot args, GDB enabled, or RPC enabled (`h2_observer.cpp:60-108`, `core.cpp:1064-1076`). The output path uses canonicalized path-component containment, has a `.jsonl` suffix check, and the observer opens/truncates only after validation (`h2_observer.cpp:89-108,167-189`).
+- The emulation-thread capture occurs before guest instruction execution (`core.cpp:301-331`), uses the current guest thread’s owning process and process-scoped `ReadBlock`, checks address validity page by page, and bounds the work/touch pointer ranges before snapshotting fixed ranges. It has a fixed PC allowlist and caps records/bytes (`h2_observer.cpp:111-157,252-376`). These checks support the stated bounded, guest read-only design. Runtime coherence, actual process/address semantics, and performance remain unverified here.
+- JSON string values are escaped (`h2_observer.cpp:15-36`). Record-count/output-budget exhaustion calls `MarkIncomplete`; complete is written only by `FinalizeCleanly` (`h2_observer.cpp:216-269,379-389`). If an underlying stream write/flush fails, `EmitRecord` closes the stream and sets failure without writing an `incomplete` terminal record (`263-267`); the resulting file lacks the `complete` record, so downstream consumers must require a terminal `complete` record and never infer completion from a parseable prefix.
+- `h2_ctm_preflight.py:11-40` checks CTM magic, title ID, and exact 20-byte revision. It re-hashes original/final code images and CCI (`72-85`), and checks manifest IPS/executable identity and explicit GDB/RPC-off flags. The supplied staging manifest has the expected title ID in the IPS path, matching original/final/CCI identities, common Azahar identity, GDB/RPC disabled, and distinct original/patched profile inventory. Those manifest fields are metadata; in particular, the wrapper does not independently validate the manifest’s own hash or live profile inventory.
+- The wrapper constructs the child command only after `build_launch` completes preflight (`h2_azahar_launch.py:14-26,29-42`); a raised preflight error therefore prevents `subprocess.run`. This is supported by source and the saved mocked test summary, not by a real launch. The C++ CLI has no manifest enforcement, so direct invocation bypasses wrapper checks.
+
+## Provenance and evidence audit
+
+The prepared review packet’s declared `input_sha256` entries were independently checked with PowerShell `Get-FileHash`; all matched. The feature patch and three separate compatibility patches also match their delivery-manifest SHA-256 values. The feature input manifest lists the observer/front-end/core files, wrapper/preflight and tests; compatibility shims and Dynarmic/LibreSSL submodule changes are separately named and hashed, and the notes state they are not product changes. The feature patch is therefore cleanly separated in the saved artifacts.
+
+The saved report pins Azahar to `219d743a1e698101fe1ab8bef43e6563126c3c27`. The built `azahar.exe` exists at the reported path, is 55,275,008 bytes, and hashes to `f3fd839f273079c976f4aaeae5c4a15a933530b148fbe6562c1c3b630ff324fd`, matching `report.json`. The handoff/report and implementation artifacts’ hashes match the review packet declarations. Saved evidence is: core and Qt build passed; six preflight unit tests passed with a mocked subprocess; C++ observer harness passed. ARM differential, caller, launch, and runtime evidence are `not_run`. This supports build/offline validation only, not guest capture or H2 behavior.
+
+## Review execution and limits
+
+Read-only source/artifact inspection and SHA-256 verification only. No build, tests, wrapper invocation, emulator launch, profile access, debugger/RPC/network operation, or input automation was performed. Commands used were PowerShell `Get-Content`, `Select-String`, `Get-FileHash`, and `Get-Item`; read-only inspection commands exited 0 (one exploratory formatting command had a PowerShell parse error and was immediately corrected; no files were changed by it). The report above was the only review-owned file written.
+
+## Required next action
+
+Implementation owner should require movie playback in observer mode and verify that playback entered the playing state before capture can proceed. The wrapper should verify live profile/executable/IPS selection and enforce profile-root/working-directory containment using the staged run. Then rerun focused offline checks and obtain a fresh independent review. Only after those changes should the coordinator consider assigning a separate runtime capture task; the runtime task must still establish matching guest input/capture behavior and retain H2’s existing limits.

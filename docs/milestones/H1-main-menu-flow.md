@@ -1,6 +1,6 @@
 # H1 — Menú principal
 
-Estado: Completado y cerrado (2026-10-25). Rebanadas de navegación y confirmación de estado 5 integradas en C++ editable, fallthrough 0x002C0E84 resuelto, matriz diferencial completa (258 casos) y comparación original vs parcheado en Azahar (11 pasos) verificadas sin efectos secundarios ni alteraciones persistentes.
+Estado: cerrado (rebanadas de navegacion y confirmacion de estado 5 y dependencias TBB integradas y validadas en ARM y Azahar)
 Responsable de integración: agente principal
 Revisión base y fecha: `codex/semantic-equivalence-experiment`, 2026-10-25
 
@@ -526,4 +526,4 @@ Lógica del alcance reconstruida: validada para el flujo de menú principal H1
 (`H1_TitleMain_UpdateNavigationSlice`, `H1_TitleMain_ProcessConfirmationSlice`,
 `Tbb_GetSubTable`, `Tbb_GetPayloadData`, `Tbb_GetDefaultTable18Payload` y
 candidatos de track/alpha verificados).
-Próxima acción: pasar al siguiente hito funcional (H2 - Guardado y carga / Save-Load).
+Próxima acción: pasar al siguiente hito funcional ([H2 — Título: configuración de audio](H2-audio-settings.md)).

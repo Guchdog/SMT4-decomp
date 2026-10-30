@@ -1,0 +1,473 @@
+{
+  "schema_version": 1,
+  "batch": "H3-semantic",
+  "milestone": "H3",
+  "max_workers": 3,
+  "cpu_budget": 8,
+  "goal": "Reconstruct and validate a known save load from the title to the expected scene.",
+  "coordinator_owned_paths": [
+    "AGENTS.md",
+    "config",
+    "include",
+    "README.md",
+    "PROGRESS.md",
+    "MODLOG.md",
+    "docs/milestones",
+    "tools/agent_workflow.py"
+  ],
+  "tasks": [
+    {
+      "id": "h3-load-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Map the title-to-save-load selection, read and return path against the pinned original, including concrete candidate slices and unresolved indirect calls.",
+      "depends_on": [],
+      "function_claims": [],
+      "read_paths": [
+        "src/ui/save_load.cpp",
+        "include/ui/save_load.h",
+        "src/ui/ui_runtime2.cpp",
+        "docs/milestones/H1-main-menu-flow.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h3-load-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Identify callers, branches, state and memory effects with addresses and delimit a testable slice; distinguish observations from hypotheses."
+      ],
+      "validation_plan": [
+        "Cross-check relevant disassembly and caller paths against the pinned original."
+      ]
+    },
+    {
+      "id": "h3-save-fixture",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Identify a reproducible isolated populated save fixture and observable scene/state for the H3 comparison without modifying original inputs.",
+      "depends_on": [],
+      "function_claims": [],
+      "read_paths": [
+        "docs/emulator-testing-guide.md",
+        "docs/milestones/H1-main-menu-flow.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h3-save-fixture.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Record fixture provenance and identity, isolation method, expected scene and fields, or precise missing evidence."
+      ],
+      "validation_plan": [
+        "Inspect the staged save and paired runtime evidence without modifying the source file."
+      ]
+    },
+    {
+      "id": "h3-title-entry-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the 0x0030A9A4 candidate and its offline differential for contract, ABI, boundaries, negative control, and unsupported claims.",
+      "depends_on": [],
+      "function_claims": [
+        "0x0030a9a4"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h3_title_load_entry_candidate.cpp",
+        "tools/h3_title_load_entry_experiment.py",
+        "docs/function-records/0x0030a9a4.md",
+        "docs/agent-work/h3-load-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h3-title-entry-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Independently inspect pinned instructions and run/report provenance; identify counterexamples or recommend bounded continuation without implying milestone completion."
+      ],
+      "validation_plan": [
+        "Review differential output and candidate disassembly; do not edit candidate or launch emulator."
+      ]
+    },
+    {
+      "id": "h3-title-caller-composition",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Build an offline caller-composition check for title state 7 invoking the reconstructed H3 entry and advancing to state 8, reusing established H1 harnesses where applicable.",
+      "depends_on": [
+        "h3-load-contract",
+        "h3-title-entry-review"
+      ],
+      "function_claims": [
+        "0x0030a9a4"
+      ],
+      "read_paths": [
+        "src/ui/ui_runtime2.cpp",
+        "experiments/semantic_equivalence/h3_title_load_entry_candidate.cpp",
+        "tools/h3_title_load_entry_experiment.py",
+        "docs/agent-work/h3-load-contract.md",
+        "tools/h1_menu_slice_integration_experiment.py"
+      ],
+      "write_paths": [
+        "tools/h3_title_caller_composition.py",
+        "tests/test_h3_title_caller_composition.py",
+        "docs/agent-work/h3-title-caller-composition.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Exercise the actual state-7 caller path against original and candidate with explicit dependency stubs and compare state, manager/work memory, call sequence and return/fault behavior.",
+        "Include a negative control proving the caller assertion detects a wrong target or wrong next state."
+      ],
+      "validation_plan": [
+        "Review existing H1 caller harness and map only the required state-7 transition; run ARM/Thumb interworking checks before any emulator use."
+      ]
+    },
+    {
+      "id": "h3-caller-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review and rerun the H3 title state-7 caller-composition evidence, including branch injection, memory assertions, gates, negative control and interworking.",
+      "depends_on": [
+        "h3-title-caller-composition"
+      ],
+      "function_claims": [
+        "0x0030a9a4"
+      ],
+      "read_paths": [
+        "tools/h3_title_caller_composition.py",
+        "tests/test_h3_title_caller_composition.py",
+        "docs/agent-work/h3-title-caller-composition.md",
+        "experiments/semantic_equivalence/h3_title_load_entry_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h3-title-caller-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Fresh independent review and rerun with accurate evidence levels and limitations."
+      ],
+      "validation_plan": [
+        "Do not edit candidate or runner, do not run emulator."
+      ]
+    },
+    {
+      "id": "h3-title-entry-placement",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Find an evidence-backed placement and patch route for the 120-byte H3 title-entry candidate alongside the integrated H1/H2 image, without changing production files.",
+      "depends_on": [
+        "h3-title-entry-review",
+        "h3-title-caller-composition"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "tools/h2_calc_code_patch.py",
+        "tools/h2_combined_code_patch.py",
+        "tools/h2_final_image_compose.py",
+        "docs/agent-work/h2-combined-code-placement.md",
+        "experiments/semantic_equivalence/h3_title_load_entry_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h3-title-entry-placement.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Report candidate size/relocations, available safe cave space in the correct composed image, branch range/mode, and exact required integrity checks."
+      ],
+      "validation_plan": [
+        "Read-only inspection and local image metadata only; do not edit sources or execute emulator."
+      ]
+    },
+    {
+      "id": "h3-final-image-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the direct-call 120-byte candidate, relocation helper, H3 IPS composition over the pinned H1/H2 image, and in-place caller differential before runtime.",
+      "depends_on": [
+        "h3-title-entry-review",
+        "h3-caller-review"
+      ],
+      "function_claims": [
+        "0x0030a9a4"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h3_title_load_entry_candidate.cpp",
+        "tools/h3_candidate_support.py",
+        "tools/h3_title_load_entry_experiment.py",
+        "tools/h3_title_caller_composition.py",
+        "tools/h3_title_entry_patch.py",
+        "docs/function-records/0x0030a9a4.md",
+        "build/agent-work/H3-semantic/h3-title-entry/in-place-patch-run002/report.json",
+        "build/agent-work/H3-semantic/h3-title-entry/in-place-patch-run002/final-image-caller-check/report.json"
+      ],
+      "write_paths": [
+        "docs/agent-work/h3-final-image-review.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Independently verify branch relocations, exact window boundaries, outside-window preservation, IPS roundtrip, differential and caller result; rerun tests and report limitations."
+      ],
+      "validation_plan": [
+        "Do not edit candidate, helper, patcher or runners; do not run emulator."
+      ]
+    },
+    {
+      "id": "h3-runtime-comparison",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Autonomously compare the original and H1/H2/H3 patched game using identical isolated profiles containing the user-provided save; capture H3 load result and scene/state or precise failure.",
+      "depends_on": [
+        "h3-final-image-review"
+      ],
+      "function_claims": [
+        "0x0030a9a4"
+      ],
+      "read_paths": [
+        "docs/emulator-testing-guide.md",
+        "tools/h2_autonomous_gdb_verify.py",
+        "build/h3-runtime/isolated/staging-manifest.json",
+        "build/agent-work/H3-semantic/h3-title-entry/in-place-patch-run002/report.json"
+      ],
+      "write_paths": [
+        "tools/h3_autonomous_verify.py",
+        "docs/agent-work/h3-runtime-comparison.md",
+        "docs/milestones/H3-load-from-title.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [
+        "azahar_runtime"
+      ],
+      "acceptance": [
+        "Offline gates and review are accepted before launch.",
+        "Use only private loopback-bound Azahar and Python GDB RSP; snapshot save hashes before/after and compare original/patched checkpoints.",
+        "Record scene, slot, field/state observations, faults and unresolved limitations; never claim H3 complete without reaching a known scene."
+      ],
+      "validation_plan": [
+        "Confirm profile identity and save hash, ports free, private Azahar hash, mod IPS hash, then autonomously drive title and save/load callbacks with breakpoints."
+      ]
+    },
+    {
+      "id": "h3-runtime-evidence-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the paired H3 runtime happy-path evidence, screenshots, fixture integrity, semantic comparison, and stated limitations before promotion.",
+      "depends_on": [
+        "h3-runtime-comparison"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "docs/agent-work/h3-runtime-comparison.md",
+        "docs/agent-work/h3-save-fixture.md",
+        "docs/function-records/0x0030a9a4.md",
+        "docs/milestones/H3-load-from-title.md",
+        "build/agent-work/H3-semantic/h3-runtime-comparison/run-001/runtime-field-settle-016/report.json",
+        "build/agent-work/H3-semantic/h3-runtime-comparison/run-001/runtime-field-settle-016/original.json",
+        "build/agent-work/H3-semantic/h3-runtime-comparison/run-001/runtime-field-settle-016/patched.json",
+        "build/agent-work/H3-semantic/h3-runtime-comparison/run-001/runtime-field-settle-016/original/field-scene-screen_small.png",
+        "build/agent-work/H3-semantic/h3-runtime-comparison/run-001/runtime-field-settle-016/patched/field-scene-screen_small.png"
+      ],
+      "write_paths": [
+        "docs/agent-work/h3-runtime-comparison-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Independently check checkpoint progression, normalized differences, screenshot scene, save/profile hashes, and whether the milestone report overclaims; report counterexamples and limits."
+      ],
+      "validation_plan": [
+        "Read the pinned reports and screenshots only; do not edit candidate, runner, board, or milestone, and do not launch the emulator."
+      ]
+    },
+    {
+      "id": "h3-runtime-edge-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review H3 empty-slot, cancel, malformed-payload and unsuccessful read-error injection evidence; confirm fixture restoration and that reports keep actual read-error handling unresolved.",
+      "depends_on": [
+        "h3-runtime-comparison"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "docs/agent-work/h3-runtime-comparison.md",
+        "docs/agent-work/h3-save-fixture.md",
+        "docs/function-records/0x0030a9a4.md",
+        "docs/milestones/H3-load-from-title.md",
+        "build/agent-work/H3-semantic/h3-runtime-comparison/run-001/runtime-empty-slot-018/report.json",
+        "build/agent-work/H3-semantic/h3-runtime-comparison/run-001/runtime-empty-slot-018/original.json",
+        "build/agent-work/H3-semantic/h3-runtime-comparison/run-001/runtime-empty-slot-018/patched.json",
+        "build/agent-work/H3-semantic/h3-runtime-comparison/run-001/runtime-cancel-state-020/report.json",
+        "build/agent-work/H3-semantic/h3-runtime-comparison/run-001/runtime-cancel-state-020/original.json",
+        "build/agent-work/H3-semantic/h3-runtime-comparison/run-001/runtime-cancel-state-020/patched.json",
+        "build/agent-work/H3-semantic/h3-runtime-comparison/run-001/runtime-cancel-state-020/original/load-stall-screen_small.png",
+        "build/agent-work/H3-semantic/h3-runtime-comparison/run-001/runtime-zero-payload-load-036/comparison/report.json",
+        "build/agent-work/H3-semantic/h3-runtime-comparison/run-001/runtime-zero-payload-load-036/comparison/original.json",
+        "build/agent-work/H3-semantic/h3-runtime-comparison/run-001/runtime-zero-payload-load-036/comparison/patched.json",
+        "build/agent-work/H3-semantic/h3-runtime-comparison/run-001/runtime-zero-payload-load-036/mutation-manifest.json",
+        "build/agent-work/H3-semantic/h3-runtime-comparison/run-001/runtime-zero-payload-load-036/restore-manifest.json",
+        "build/agent-work/H3-semantic/h3-runtime-comparison/run-001/runtime-error-missing-save-030/report.json",
+        "build/agent-work/H3-semantic/h3-runtime-comparison/run-001/runtime-error-missing-save-030/original.json",
+        "build/agent-work/H3-semantic/h3-runtime-comparison/run-001/runtime-error-missing-save-030/patched.json",
+        "build/agent-work/H3-semantic/h3-runtime-comparison/run-001/runtime-forced-status-error-031/report.json",
+        "build/agent-work/H3-semantic/h3-runtime-comparison/run-001/runtime-forced-status-error-031/original.json",
+        "build/agent-work/H3-semantic/h3-runtime-comparison/run-001/runtime-forced-status-error-031/patched.json",
+        "build/agent-work/H3-semantic/h3-runtime-comparison/run-001/runtime-field-settle-016/report.json",
+        "build/agent-work/H3-semantic/h3-runtime-comparison/run-001/runtime-field-settle-016/original.json",
+        "build/agent-work/H3-semantic/h3-runtime-comparison/run-001/runtime-field-settle-016/patched.json",
+        "tools/h3_autonomous_verify.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h3-runtime-edge-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Independently verify empty-slot rejection and cancellation checkpoints, compare original/patched edge outcomes, check malformed-payload and injection limits, and confirm source/staged save integrity without implying a real read-error pass."
+      ],
+      "validation_plan": [
+        "Read the pinned reports and screenshots only; do not edit the runner, candidate, board, or milestone and do not launch the emulator."
+      ]
+    },
+    {
+      "id": "h3-read-error-classification-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently determine whether the H3 missing-file runtime probes show a real read-failure result at the original process boundary, using the observed result bytes, process-step branch, and paired controls; identify any remaining ambiguity without overclaiming UI behavior.",
+      "depends_on": [
+        "h3-runtime-comparison",
+        "h3-runtime-edge-review"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "src/ui/save_load.cpp",
+        "src/ui/window.cpp",
+        "docs/agent-work/h3-load-contract.md",
+        "docs/agent-work/h3-runtime-comparison.md",
+        "docs/agent-work/h3-runtime-edge-review.md",
+        "build/agent-work/H3-semantic/h3-runtime-comparison/run-001/runtime-field-settle-016/report.json",
+        "build/agent-work/H3-semantic/h3-runtime-comparison/run-001/runtime-field-settle-016/original.json",
+        "build/agent-work/H3-semantic/h3-runtime-comparison/run-001/runtime-error-missing-save-030/report.json",
+        "build/agent-work/H3-semantic/h3-runtime-comparison/run-001/runtime-error-missing-save-030/original.json",
+        "build/agent-work/H3-semantic/h3-runtime-comparison/run-001/runtime-error-missing-save-030/patched.json",
+        "build/agent-work/H3-semantic/h3-runtime-comparison/run-001/runtime-missing-before-confirm-037/report.json",
+        "build/agent-work/H3-semantic/h3-runtime-comparison/run-001/runtime-missing-before-confirm-037/original.json",
+        "build/agent-work/H3-semantic/h3-runtime-comparison/run-001/runtime-missing-before-confirm-037/patched.json",
+        "build/agent-work/H3-semantic/h3-runtime-comparison/run-001/runtime-short-read-041/report.json",
+        "build/agent-work/H3-semantic/h3-runtime-comparison/run-001/runtime-short-read-041/original.json",
+        "build/agent-work/H3-semantic/h3-runtime-comparison/run-001/runtime-short-read-041/patched.json"
+      ],
+      "write_paths": [
+        "docs/agent-work/h3-read-error-classification-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [
+        "h3-read-error-classification-review"
+      ],
+      "acceptance": [
+        "Check the status byte captured at the setter against both terminal branches in 0x002EF9AC, and compare happy-path, missing-file-before-confirm, missing-file-at-process-start, and short-file controls. State separately whether the game took a failure result branch and whether it displayed an explicit UI error. Do not launch the emulator or edit shared code/docs."
+      ],
+      "validation_plan": [
+        "Independently decode the pinned original branch and recompute per-run status bytes from raw event JSON; verify save/hash restoration and report contradictions."
+      ]
+    },
+    {
+      "id": "h3-read-return-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the paired H3 trace that truncates only the disposable staged save after file open and captures the original AsdSave_Read return; calibrate against an intact-save run and verify outcome and integrity claims.",
+      "depends_on": [
+        "h3-runtime-comparison"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "docs/agent-work/h3-read-return-probe.md",
+        "src/engine/asd_file.cpp",
+        "src/ui/save_load.cpp",
+        "docs/milestones/H3-load-from-title.md",
+        "build/agent-work/H3-semantic/h3-read-return-probe/evidence-run-001/read-error/report.json",
+        "build/agent-work/H3-semantic/h3-read-return-probe/evidence-run-001/read-error/original.json",
+        "build/agent-work/H3-semantic/h3-read-return-probe/evidence-run-001/read-error/patched.json",
+        "build/agent-work/H3-semantic/h3-read-return-probe/evidence-run-001/intact-control/report.json",
+        "build/agent-work/H3-semantic/h3-read-return-probe/evidence-run-001/intact-control/original.json",
+        "build/agent-work/H3-semantic/h3-read-return-probe/evidence-run-001/intact-control/patched.json",
+        "build/agent-work/H3-semantic/h3-read-return-probe/evidence-run-001/h3_read_return_probe.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h3-read-return-independent-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [
+        "h3-read-return-review"
+      ],
+      "acceptance": [
+        "Recompute all declared input hashes and verify both traces show successful open, requested length 0x24E30, and differing AsdSave_Read return values (intact=1, truncated=0).",
+        "Decode the observed status/result bytes against original state-6/state-7 writes; verify the error probe does not reach field manager or acknowledge success, and that no visible UI error is claimed.",
+        "Verify the disposable staged saves were restored byte-for-byte and the user source save was not an input to mutation. Record raw paired differences and limits."
+      ],
+      "validation_plan": [
+        "Read and hash the frozen JSON, runner, and source; do not launch Azahar, edit shared code, update the board, or change milestones."
+      ]
+    },
+    {
+      "id": "h3-final-composite-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the final H2+H3 composed image, offline caller/regression evidence, known-save runtime route, and the paired true post-open read-error traces. Reconcile claims with source and report limits.",
+      "depends_on": [
+        "h3-read-return-review",
+        "h3-runtime-comparison"
+      ],
+      "function_claims": [
+        "0x0030a9a4"
+      ],
+      "read_paths": [
+        "build/agent-work/H3-semantic/h3-final-composite/evidence-run-001/manifest.json",
+        "build/agent-work/H3-semantic/h3-final-composite/evidence-run-001/composition.json",
+        "build/agent-work/H3-semantic/h3-final-composite/evidence-run-001/caller-final-report.json",
+        "build/agent-work/H3-semantic/h3-final-composite/evidence-run-001/h2-regression-report.json",
+        "build/agent-work/H3-semantic/h3-final-composite/evidence-run-001/read-error-report.json",
+        "build/agent-work/H3-semantic/h3-final-composite/evidence-run-001/read-error-original.json",
+        "build/agent-work/H3-semantic/h3-final-composite/evidence-run-001/read-error-patched.json",
+        "build/agent-work/H3-semantic/h3-final-composite/evidence-run-001/known-save-report.json",
+        "build/agent-work/H3-semantic/h3-final-composite/evidence-run-001/known-save-original.json",
+        "build/agent-work/H3-semantic/h3-final-composite/evidence-run-001/known-save-patched.json",
+        "docs/milestones/H3-load-from-title.md",
+        "docs/agent-work/h3-read-return-independent-review.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h3-final-composite-independent-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [
+        "h3-final-composite-review"
+      ],
+      "acceptance": [
+        "Recompute manifest hashes and verify image composition, IPS roundtrip, caller composition and all 12 H2 regression checkpoints.",
+        "Verify final known-save route reaches success acknowledgement and field manager in both profiles with 250 equivalent field callbacks, without overclaiming full game equivalence.",
+        "Verify post-open read failure shows open r0=1, requested size 0x24E30, AsdSave_Read r0=0 in both and intact control r0=1; describe validator r0=1 and register r0=6, but do not claim final error state, acknowledgement, visible UI or field entry.",
+        "Cross-check source and reports, record any divergence, remaining limits and recommendation for H3 closure; do not modify production code or launch emulator."
+      ],
+      "validation_plan": [
+        "Hash frozen packet; independently inspect source/runtime traces and existing review; no emulator; write only assigned review document."
+      ]
+    }
+  ]
+}

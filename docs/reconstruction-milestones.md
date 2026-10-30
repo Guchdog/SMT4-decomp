@@ -1,6 +1,6 @@
 # Plan de hitos de reconstrucción funcional
 
-Fecha de referencia: 2026-10-24.
+Fecha de referencia: 2026-10-25.
 
 El objetivo es recuperar C++ modificable y avanzar hacia un ejecutable
 reconstruido. Los hitos se organizan por comportamientos completos dentro de
@@ -17,7 +17,7 @@ el historial de cobertura; este documento define el trabajo funcional siguiente.
 La reconstrucción semántica de C++ modificable es el objetivo principal. El byte
 matching es un diagnóstico opcional, no una condición para aceptar una propuesta.
 `python tools/find_candidates.py` genera ahora la cola semántica por defecto;
-`config/reconstruction.json` prioriza H1. No volver al plan histórico de forzar
+`config/reconstruction.json` prioriza el hito activo. No volver al plan histórico de forzar
 100% de coincidencia de bytes.
 
 ## Estado actual
@@ -31,33 +31,28 @@ matching es un diagnóstico opcional, no una condición para aceptar una propues
   Settings → título. Se observaron las entradas `state_flags` y
   `two_word_copy`; la [ficha H0](milestones/H0-reproducible-test-base.md)
   conserva hashes, logs, capturas y límites.
-- El mapa estático del menú principal y los criterios de H1 están en
-  [la ficha H1](milestones/H1-main-menu-flow.md). Ya se auditaron límites de
-  callbacks y contratos TBB, y se corrigió el parser Python con pruebas
-  sintéticas. El runner recibió un validador aparte para blobs ARM con ramas
-  locales y literales internos. H1 sigue activo: el reductor lógico de
-  navegación, touch y selección de ayuda tienen experimentos familiares
-  aislados; navegación→animación VFP→touch comparte estado en una máquina, y
-  rutas sintéticas con mutador y ambos gates positivos llegan al caller de
-  ayuda con TBB real, con stubs de callback explícitos. En Azahar se verificó
-  navegación segura de teclado para D-pad/Circle Pad configurados. En el primer
-  gate se ejecutaron candidatos originales `0x0015555C` (tipo 0) y `0x00151404`
-  (tipo 1), cada uno en variantes aisladas de ambos gates. Falta confirmar los
-  tipos/punteros runtime reales de los tracks,
-  control físico, integración del callback completo y validación visual; el estado
-  inicial 0 quedó explicado por la limpieza del bloque de trabajo en
-  `AsdMem_AllocAlign`. Tres propuestas TBB
-  pasaron 426 comparaciones sintéticas (70 payload, 71 subtabla y 72 row-count
-  por semilla), más 14 con el
-  `TitleTable.tbb` extraído; los controles negativos dirigidos también se
-  detectaron en las dos semillas. La ventana real del caller del menú pasó para
-  selecciones 0–3, integrando payload/subtable hasta `0x001E9AC8`; RowCount no
-  forma parte de esa ruta. El
-  recorrido de Audio Settings sólo es evidencia parcial de H0.
+- El hito [H1](milestones/H1-main-menu-flow.md) (Menú principal del título) está
+  cerrado: se capturaron los callbacks runtime de los gates A y B (`0x00151404`)
+  en Azahar, se promovieron `Tbb_GetSubTable`, `Tbb_GetPayloadData` y
+  `Tbb_GetDefaultTable18Payload` en `src/ui/tbb_loader.cpp`, y se integraron las
+  rebanadas de estado 5 de navegación (`H1_TitleMain_UpdateNavigationSlice`,
+  `0x001E9D08..0x001E9DDC`) y de confirmación y despacho
+  (`H1_TitleMain_ProcessConfirmationSlice`, `0x001EA160..0x001EA328`) en
+  `src/ui/ui_runtime2.cpp`, validadas con matrices diferenciales ARM,
+  composiciones de caller y comparación en vivo en Azahar.
+- H2 (Título: configuración de audio) está cerrado (2026-10-30): paridad 100% en Azahar autónomo (51 acciones, 19 checkpoints); se resolvió la máquina de estados de State 2 (Handler 8 en 0x001A07CC y helper 0x00286928 vinculados a ComWin) y se verificó que el título original no persiste cambios de audio entre sesiones de proceso sin guardado en partida.
+- H3 (Carga de partida de prueba) está cerrado para el recorrido delimitado hacia
+  una partida conocida: la composición H2+H3 final llegó al acuse y al field
+  manager en ambos perfiles, con 250 callbacks de campo de semántica concordante.
+  Slot vacío y cancelación están cubiertos por corridas emparejadas anteriores.
+  La revisión independiente final confirmó la composición. Una prueba de fallo
+  post-apertura registró `AsdSave_Read=0`, pero no estableció la respuesta final
+  de UI/manager. Reader, parser, validación y E/S siguen originales. H4 permanece
+  pausado por indicación del usuario.
 - El build produce objetos ARM y una biblioteca estática. El enlace de un juego
   completo y los ports a otras plataformas siguen siendo trabajo futuro.
 
-No asignar un porcentaje de reconstrucción al menú hasta delimitar su lógica y
+No asignar un porcentaje de reconstrucción hasta delimitar su lógica y
 sus dependencias. Las cifras anteriores describen dimensiones distintas.
 
 ## Organización y orden de trabajo
@@ -74,16 +69,16 @@ el motivo del cambio. No estimar fechas mediante funciones por noche.
 | ID | Área e hito | Criterio de aceptación funcional | Estado inicial |
 | --- | --- | --- | --- |
 | H0 | Base de pruebas reproducible | Regenerar e identificar el parche, comprobar su carga en Azahar y registrar un recorrido repetible con las entradas ejecutadas y sus límites. | Cerrado; batch 4 llegó al título y Audio Settings. Dos entradas dieron hit. [Ficha H0](milestones/H0-reproducible-test-base.md). |
-| H1 | Título: menú principal | Inicializar el menú, mover la selección y despachar cada opción al destino previsto. Mapear inicialización, entrada, presentación y transiciones. | Cerrado (2026-10-25); rebanadas de navegación y confirmación de estado 5 integradas, dependencias TBB y alpha promovidas, matriz diferencial de 258 casos y 11 pasos en Azahar verificados sin alterar partidas ni configuración. [Ficha H1](milestones/H1-main-menu-flow.md). |
-| H2 | Título: configuración de audio | Entrar, leer y modificar opciones, volver y comprobar persistencia cuando el original la tenga. | Activo / Siguiente hito funcional en preparación. |
-| H3 | Carga de partida de prueba | Seleccionar una partida conocida y llegar a una escena con el estado esperado. | Pendiente. |
-| H4 | Exploración mínima | En una escena delimitada, mover al personaje, controlar la cámara, interactuar y cambiar de zona. | Pendiente. |
+| H1 | Título: menú principal | Inicializar el menú, mover la selección y despachar cada opción al destino previsto. Mapear inicialización, entrada, presentación y transiciones. | Cerrado; callbacks runtime de los gates A y B (`0x00151404`) capturados en Azahar, `Tbb_GetSubTable`, `Tbb_GetPayloadData` y `Tbb_GetDefaultTable18Payload` promovidos en `src/ui/tbb_loader.cpp`, y rebanadas de navegación (`H1_TitleMain_UpdateNavigationSlice`, `0x001E9D08..0x001E9DDC`) y confirmación/despacho (`H1_TitleMain_ProcessConfirmationSlice`, `0x001EA160..0x001EA328`) de estado 5 integradas en `src/ui/ui_runtime2.cpp` y validadas en simulador ARM + Azahar. [Ficha H1](milestones/H1-main-menu-flow.md). |
+| H2 | Título: configuración de audio | Entrar, leer y modificar opciones, volver y comprobar persistencia cuando el original la tenga. | Cerrado (2026-10-30): paridad 100% en Azahar autónomo (51 acciones, 19 checkpoints); ciclo de vida de confirmación State 2 resuelto y reinicio idéntico verificado. [Ficha H2](milestones/H2-audio-settings.md). |
+| H3 | Carga de partida de prueba | Seleccionar una partida conocida y llegar a una escena con el estado esperado. | Cerrado para el recorrido delimitado de guardado conocido; respuesta del fallo real de lectura permanece limitada. [Ficha H3](milestones/H3-load-from-title.md). |
+| H4 | Exploración mínima | En una escena delimitada, mover al personaje, controlar la cámara, interactuar y cambiar de zona. | En curso; [Ficha H4](milestones/H4-exploration-minimum.md). |
 | H5 | Combate mínimo | Entrar en un combate conocido, elegir acciones, resolver un turno y salir con resultados correctos. | Pendiente. |
 | H6 | Guardado y recarga | Guardar una partida de prueba y recuperar los campos de estado definidos en la ficha. | Pendiente. |
 
 H1 cubre el despacho hacia otras pantallas, no toda la lógica de sus destinos.
-H3 puede usar inicialmente rutinas originales de lectura identificadas como
-dependencias; eso debe constar en el resultado. H6 cubre el ciclo de persistencia
+H3 usa rutinas originales de lectura identificadas como dependencias; eso consta
+en la ficha. H6 cubre el ciclo de persistencia
 del escenario elegido, no todos los formatos y casos de guardado del juego.
 Las pruebas que escriban opciones o partidas usarán un perfil de prueba y copias
 conocidas, con comparación del estado antes y después.
@@ -156,8 +151,8 @@ el estado necesario para contrastar el comportamiento.
 ## Trabajo con subagentes
 
 El protocolo operativo, ownership, presupuestos y handoffs están en
-[agent-workflow.md](agent-workflow.md). La cola inicial H1 está en
-[`config/agent-workflows/h1.json`](../config/agent-workflows/h1.json);
+[agent-workflow.md](agent-workflow.md). La cola activa de H2 está en
+[`config/agent-workflows/h2.json`](../config/agent-workflows/h2.json);
 `tools/agent_workflow.py` comprueba conflictos y prepara briefs reproducibles.
 El coordinador es el único escritor del board.
 
@@ -191,11 +186,10 @@ medida auxiliar. Mantener separado el ledger exacto del avance semántico.
 
 ## Próxima sesión
 
-1. Completar H1-A: medir la correspondencia de triggers con entradas físicas,
-   sin confirmar rutas que alteren partidas.
-2. Reconstruir activamente un slice pequeño del ciclo del menú y validar sus
-   dependencias con pruebas de función y caller. La ventana TBB actual sólo
-   cubre lectura de datos, no el update/render ni las transiciones. Las fichas
-   H1 describen contratos y casos.
+1. Mapear contratos e invariantes de `titleConfig_func_002f4ca0` (`0x002F4CA0`),
+   `TitleConfig_Calc` (`0x001EA928`) y los helpers de mapeo/copia de
+   `g_ConfigBytes`.
+2. Reconstruir y validar en C++ editable el flujo de Audio Settings (H2) desde el
+   menú principal del título.
 
 Este documento establece el plan; su creación no completa ni ejecuta esos hitos.

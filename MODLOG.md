@@ -1023,3 +1023,109 @@ semantic discovery, legacy discovery and README-generation checks passed in
 0.423 seconds; the real board check and `git diff --check` passed. A draft brief
 was generated under ignored `build/agent-work/`. No game source, private input,
 or curated function ledger changed in this workflow batch.
+
+## 2026-10-26 — H2 config pair helpers
+
+Promoted `UiConfig_FillPair` to a readable production implementation in its
+24-byte slot. Its unsigned C++ byte replication is followed by two explicit ARM
+word stores, preserving the target access width for callers that are only
+halfword-aligned. The ledger is `non_matching` because the first instruction is
+`uxtb` instead of the equivalent `and #0xff`. Independent review accepted the
+ordinary-memory contract; 4,096 helper cases, the combined callback/initializer
+matrix, and the State-9/10 offline caller composition passed.
+
+Changed `UiConfig_CopyPair` from a naked no-argument wrapper to a typed C++
+function and updated its shared and caller declarations. Its four ARM memory
+operations preserve the original load-load-store-store order, unaligned access
+behavior, and destination-in-`r0` return; the production object remains
+byte-identical and the ledger stays `matching`. The dedicated differential
+passed 545 cases, including overlap, all alignment residues, the H2 global, and
+the odd read-only `ERROR` literal; the wrong forward-copy control was detected.
+All five affected consumer TUs compiled separately.
+
+A static allocation-chain audit found the titleConfig workspace becomes
+0x80-aligned if normal allocation succeeds, while the no-fit path dereferences
+the allocator's zero result rather than returning a safe null. H2 remains open:
+the offline H2 image does not validate real input, editing, cancel/confirm,
+persistence, restart, or Azahar runtime behavior. No Azahar session or
+keyboard/mouse input was used in this batch.
+
+## 2026-10-26 — H2 touch-state getter
+
+Replaced the naked `UiTouch_GetRegionTouchState` wrapper with typed production
+C++. The helper compares the manager's signed active index with the caller's
+signed halfword handle and returns the raw state byte only on equality. Its
+44-byte compiled body differs from the original 40-byte span, so the exact ledger
+is `non_matching`; the H2 IPS image still contains the original helper. A
+589,824-case direct ARM differential and six focused tests passed, including a
+wrong-index control. The raw event meaning, callback timing and H2 runtime path
+remain open.
+
+## 2026-10-26 — H2 script-step dispatcher
+
+Replaced `script_vm_func_0019dfbc` with typed production C++ and updated its six
+assembly-caller declarations to `(void*) -> s32`. Its callback table dispatch and
+result branches match pinned ARM under explicit synthetic handler sequences.
+The 128-byte C++ body is larger than the 120-byte original, so the ledger is
+`non_matching`; the H2 IPS image still carries the original dispatcher. Six
+focused tests, five callback-sequence comparisons, an eight-call non-advancing
+bound, a wrong-result control, and seven private TU compiles passed. Actual
+script handlers and the meaning of state-2 results remain unresolved.
+
+## 2026-10-26 — H2 corrected final-image runtime
+
+The reviewed Thumb-corrected H2 image was compared manually against the original
+in isolated Azahar CLI profiles. The user reported that Audio Settings stays
+open, the initial slider positions match, B restores BGM and sound, A keeps
+BGM/SE/Voice edits for the session, BGM returns to its starting level after an
+app restart in both builds, and all three sliders clamp at both ends. The
+patched log confirms the staged IPS was applied; GDB/RPC were disabled. The
+runtime record and independent review accept these observations as partial
+runtime evidence. H2 remains open because guest `g_ConfigBytes[0..2]`, a matched
+input trace, exact option values and complete callback scheduling are not
+captured; SE/Voice restart persistence is untested. No whole-game equivalence
+claim is made. See `docs/agent-work/h2-manual-final-image-runtime.md` and its
+independent review.
+
+## 2026-10-26 — H2 runtime evidence route audit
+
+A read-only audit of the pinned Azahar 2126.2 interfaces found no currently
+approved route that both samples guest `g_ConfigBytes`/callback state and drives
+deterministic H2 input. The GDB/RSP path remains blocked by its wildcard bind,
+missing bounded memory-reader review and unresolved loopback policy; RPC is
+wildcard-bound and asynchronous; CemuHook touch is only a possible coordinate
+source and does not expose guest memory or logical buttons. The manual runtime
+comparison remains partial evidence. No emulator, network, debugger, firewall,
+profile or guest-memory action was taken. See
+`docs/agent-work/h2-safe-guest-state-capture-route.md`.
+## 2026-10-28 — H3 title load handoff closed
+
+The 120-byte `0x0030A9A4` C++ candidate passed the offline differential and
+state-7 caller composition, and the composed H1/H2/H3 image reached the known
+Shinjuku Station — Underground save in original and patched Azahar profiles.
+Empty-slot and cancellation paths matched. A fresh missing-save probe captured
+`r0=0` after the original open call at `0x002D8E60` and the state-7 failure
+marker in both profiles. Independent review confirms the internal result only;
+the screen capture failed, so no user-facing error is claimed. The original
+reader/validator remain dependencies. The supplied source save stayed
+151,088 bytes with its original SHA-256. H4 exploration is now active from this
+scene; see `docs/milestones/H3-load-from-title.md` and
+`docs/milestones/H4-exploration-minimum.md`.
+
+## 2026-10-30 — H2 nested callback final helper audit and independent review
+
+Completed and reviewed the static reconstruction audit of helper `0x00286928`
+and caller `0x00221168` in `docs/agent-work/h2-nested-callback-final-helper-audit.md`
+and `docs/agent-work/h2-nested-callback-final-helper-review.md`. Confirmed the
+six-argument caller contract (`r0=0x0028686C`, `r1=0x00296F60`, `r2=0x00289640`,
+`r3=6`, `[sp]=1`, `[sp+4]=0`) and register-preserving return in `0x00221168`.
+Disassembly of handler 8 wrapper `0x001A07CC` verified its wait-loop contract:
+callback return `r0=0` returns `2` (pending wait), while `r0!=0` advances
+instruction index `[task+0x18]` and returns `1`. Helper `0x00286928` evaluates
+lifecycle byte `[r5+8]` from context `[0x0043E188+4]`, returning `0` while
+`[r5+8]==3` (transition in progress) and `1` on states `4` and `5` (completion).
+The paired Azahar run-002 trace confirmed 100% execution parity (19/19
+checkpoints, 20 nested returns, 40 handler calls) across original and patched
+binaries before hitting observer-safety caps. Tasks
+`h2-nested-callback-final-helper-contract` and `h2-nested-callback-final-helper-review`
+were accepted on the H2 workflow board; provenance and handoff checks passed.

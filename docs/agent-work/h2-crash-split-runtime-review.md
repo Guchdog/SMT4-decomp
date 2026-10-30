@@ -1,0 +1,15 @@
+# H2 crash split runtime independent review
+
+## Assessment
+
+The saved evidence supports a difference between the two tested mixed-image configurations. The coordinator report records the user's observation that Audio Settings opened in init/deps, and that selecting it closed the callbacks run. The success and action timing are user reports, not independently captured UI or guest execution traces. Windows independently recorded a callback-process application error. This narrows the investigation toward the callbacks configuration and its interactions; it does not identify a particular replacement or prove the same underlying cause as the full H2 crash.
+
+The launch JSON identifies PID 14440 and the init/deps executable, and PID 14680 and the callbacks executable, each with the same staged CCI path. Both records state GDB and RPC disabled; each saved log independently reports `Debugging_UseGdbstub: false`, program ID `00040000000E5C00`, local diagnostic user paths, and its respective `code.ips` patching `code.bin`. The logs do not explicitly show RPC state or a guest PC, callback invocation or function-level coverage. They establish patch selection, not that every replaced instruction was reached. The two post-session profile inventories contain the corresponding IPS hashes `0c5f8413b5a3a8a8067f3f349a94b176671f11bad823ee26169de217a9f21caa` and `db4919f2c3cfbdff428ed319761c88487cc83f5a52438792be9c99bb2a46e3d3`, consistent with the independently reviewed packages. These are recorded hashes, not a new live-profile inspection or proof of bytes at the exact time of load.
+
+The callback Application Error event names the callback-stage executable and PID `0x3958` (14680), exception `0x20474343`, and `KERNELBASE.dll+0x25369`, agreeing with the launch record and the previously recorded full-image event's code and offset. Such agreement is a host exception signature, not a unique stack, guest PC or causal identity. The callback log ends mid-line; the init log ends with audio stop and process cleanup, consistent with but not independently proving the reported user-close sequence. Both logs contain filesystem errors and warnings; their relation to this difference is unestablished. The saved report says the initial profiles came from matching reviewed seeds; a common seed does not prove identical actions, timing, or later guest state.
+
+## Next action and limits
+
+Independently review smaller callback/cave partitions and their dependencies, then conduct controlled equivalent entry attempts only under the existing runtime workflow, preserving exact IPS identity, profile selection, logs, user actions and failures. A narrower result can prioritize inspection, but mixed original/reconstructed components may interact, paths may not be reached, and repeated identical exception codes do not prove a shared bug. A validated guest-PC/host-stack capture would strengthen localization. No comparison of B Back, A OK, persistence, all settings, or full-game behavior is established by these runs.
+
+This review read only frozen saved evidence; no live emulator or profile access, sockets, or input actions occurred.

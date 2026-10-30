@@ -1633,40 +1633,29 @@ extern "C" __attribute__((naked)) void func_00138800() {
 }
 
 // DECOMP_FUNC(0x0019dfbc, 120)
-extern "C" __attribute__((naked)) void script_vm_func_0019dfbc() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe1a00000 @ mov r0, r0\n"
-        ".inst 0xe92d4070 @ push {r4, r5, r6, lr}\n"
-        ".inst 0xe1a04000 @ mov r4, r0\n"
-        ".inst 0xe59f6060 @ ldr r6, [pc, #0x60]\n"
-        ".inst 0xe3a05000 @ mov r5, #0\n"
-        ".inst 0xe5941018 @ ldr r1, [r4, #0x18]\n"
-        ".inst 0xe59400bc @ ldr r0, [r4, #0xbc]\n"
-        ".inst 0xe0800101 @ add r0, r0, r1, lsl #2\n"
-        ".inst 0xe1d000b0 @ ldrh r0, [r0]\n"
-        ".inst 0xe7961100 @ ldr r1, [r6, r0, lsl #2]\n"
-        ".inst 0xe1a00004 @ mov r0, r4\n"
-        ".inst 0xe12fff31 @ blx r1\n"
-        ".inst 0xe3500000 @ cmp r0, #0\n"
-        ".inst 0x0a000004 @ beq #0x19e008\n"
-        ".inst 0xe3500002 @ cmp r0, #2\n"
-        ".inst 0x0a000005 @ beq #0x19e014\n"
-        ".inst 0xe3500001 @ cmp r0, #1\n"
-        ".inst 0x058450d0 @ streq r5, [r4, #0xd0]\n"
-        ".inst 0xeafffff1 @ b #0x19dfd0\n"
-        ".inst 0xe3a00002 @ mov r0, #2\n"
-        ".inst 0xe58450d0 @ str r5, [r4, #0xd0]\n"
-        ".inst 0xe8bd8070 @ pop {r4, r5, r6, pc}\n"
-        ".inst 0xe59400d0 @ ldr r0, [r4, #0xd0]\n"
-        ".inst 0xe59420cc @ ldr r2, [r4, #0xcc]\n"
-        ".inst 0xe2801001 @ add r1, r0, #1\n"
-        ".inst 0xe2820001 @ add r0, r2, #1\n"
-        ".inst 0xe1c40cfc @ strd r0, r1, [r4, #0xcc]\n"
-        ".inst 0xe3a00001 @ mov r0, #1\n"
-        ".inst 0xe8bd8070 @ pop {r4, r5, r6, pc}\n"
-        ".word 0x0044ded0 @ bounded tail data\n"
-    );
+extern "C" s32 script_vm_func_0019dfbc(void* work) {
+    auto* const bytes = static_cast<u8*>(work);
+    auto* const method_table = *reinterpret_cast<u32**>(bytes + 0xBCu);
+    auto* const handler_table = reinterpret_cast<s32 (**)(void*)>(0x0044DED0u);
+
+    for (;;) {
+        const u32 instruction = *reinterpret_cast<u32*>(bytes + 0x18u);
+        const u16 handler_id = *reinterpret_cast<u16*>(method_table + instruction);
+        const s32 result = handler_table[handler_id](work);
+
+        if (result == 0) {
+            *reinterpret_cast<u32*>(bytes + 0xD0u) = 0;
+            return 2;
+        }
+        if (result == 2) {
+            ++*reinterpret_cast<u32*>(bytes + 0xCCu);
+            ++*reinterpret_cast<u32*>(bytes + 0xD0u);
+            return 1;
+        }
+        if (result == 1) {
+            *reinterpret_cast<u32*>(bytes + 0xD0u) = 0;
+        }
+    }
 }
 
 // DECOMP_FUNC(0x0010f674, 124)

@@ -49,8 +49,8 @@ extern "C" {
                              s32 x, s32 y, s32 prio);  // 0x002BF558
     void  UiSprite_SetGlobalAlpha(f32 alpha);          // 0x002BF710
 
-    // 0x0027FBC8 (216 B): analog-stick axes; returns 0 when the stick is
-    // centred.
+    // 0x0027FBC8 (320 B): calibrated axis reader. A neutral sample can return
+    // 1 and write zero outputs when the deadzone threshold is zero.
     s32   script_vm_func_0027fbc8(f32* out_x, f32* out_y, s32 mode);
     // 0x002B7A10 (152 B): four-colour quad.  The four pointers select the
     // per-corner RGBA tables (ARGB float quadruplets).

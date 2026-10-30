@@ -1,0 +1,17 @@
+# H2 original manual runtime independent review
+
+## Assessment
+
+This is a partial original baseline, not an original-versus-patched comparison or H2 acceptance. The user reports that B Back restored prior slider positions and sound, A OK retained the changed BGM position on re-entry, and after restarting BGM returned to its original level. These are user observations as recorded in the coordinator report; the saved logs and hashes do not independently measure slider positions, button presses, audible output, confirmation prompts, or guest config bytes. No exact initial/changed value, screenshot at each step, or complete option coverage was recorded.
+
+The frozen launch and restart JSON identify PIDs 11028 and 3364, the same staged original `app/azahar.exe`, and the same staged `pinned-title.cci`. The first record states GDB and RPC false; the restart JSON does not state either. The coordinator report records preflight executable/CCI hash checks, absence of original-profile IPS, a process command-line check and process closure; the frozen JSON itself contains paths and PIDs rather than hash or process-command-line evidence for both sessions. The prior independent package review established pre-launch identities and initial layout, not a fresh runtime hash of the executable or title.
+
+Both saved logs identify program ID `00040000000E5C00`, show file access under the staged original user directory and report `Debugging_UseGdbstub: false`. Neither log explicitly reports an RPC setting. A search of these logs found no IPS patch-application message, supporting but not by itself proving an unpatched execution; the report's preflight absence check and staged package review are separate evidence. The logs include filesystem and stub warnings/errors, including the first session's failed archive handle at 8.403 seconds. Their effect on saving or the reported restart outcome is unproven; do not infer causality from their presence or presume a defect solely from them.
+
+The saved first and restart inventories list 15 and 16 files. Independently comparing path, size and hashes, all listed NAND and SDMC files are identical between the two snapshots; five common files differ (two emulator configs, current log, precompiled shader cache and play-time file), and the old log is added with the first log's hash. These are hashes of saved inventories, not the file bytes themselves. The snapshots are after the first session and after the restart, not before/after A OK; no observed NAND/SDMC difference between them proves neither a particular config value nor whether data was written earlier, cached, or transiently changed. A bare metadata file does not demonstrate a saved game/config payload.
+
+## Next action
+
+The patched profile started from the reviewed matching seed, but original state has since changed. Have the user perform the same BGM cancel, confirm, re-entry and restart sequence in the patched profile, recording initial and changed positions, confirmation behavior and comparable starting conditions. Preserve separate logs and explicitly establish patch load and title/profile identity. If the comparison depends on persistence mechanism, capture appropriate guest state and save data at each relevant boundary before claiming a cause. Compare the bounded observations; other sliders, ranges, branches, and whole-game behavior remain open.
+
+This review used only frozen records and did not inspect a live profile, launch an emulator, connect a socket or control input.

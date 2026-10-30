@@ -127,7 +127,25 @@ instructions always take precedence over this workflow.
 | Candidate compilation | Separate output per task/run; normally one compiler per worker |
 | Independent bulk compiler processes | Always distinct `--out-dir`; divide CPU allocation across them |
 | Full regression, canonical build, progress/reference audit | One coordinator-owned closure; freeze sources and stop competing compiler jobs |
-| Emulator, debugger, test profile or installed patch | One explicitly assigned runtime owner |
+| Emulator, debugger, test profile or installed patch | One explicitly assigned runtime owner; autonomous via private loopback-bound `azahar.exe` + Python GDB RSP scripts |
+
+## Agile autonomous emulator verification and anti-bureaucracy rules
+
+To keep milestones agile and avoid blocking on manual user playtesting:
+
+1. **Offline-first gate before any emulator launch:**
+   - Every C++ reconstruction and code-cave/IPS patch must pass static ARM/Thumb interworking checks (verifying bit 0 on function pointers and branch instructions) and offline Unicorn/ARM differential + caller-composition runners (`tools/semantic_experiment.py`, `tools/h2_caller_validation.py`, or milestone-specific offline harnesses) before launching Azahar.
+   - Never use the emulator for blind trial-and-error debugging of crashes that can be caught by static or Unicorn checks.
+
+2. **Autonomous GDB RSP verification (zero user playtesting by default):**
+   - Use the private Azahar build (`build/agent-work/H2-semantic/h2-private-azahar-source/build-clang64/bin/Release/azahar.exe`), whose GDB stub (`src/core/gdbstub/gdbstub.cpp`) is bound strictly to `127.0.0.1` (`INADDR_LOOPBACK`) and supports `qfProcessInfo`.
+   - Drive runtime verification autonomously from Python via GDB RSP (`127.0.0.1:<port>`): attach to `sdds4`, set execution breakpoints (`Z0,<addr>,4`), read/verify work structs and globals (`g_ConfigBytes`, `TitleConfigWork`, `TitleMainWork`, etc.), use temporary one-frame logical trigger stubs or state transitions as documented in [`docs/emulator-testing-guide.md`](emulator-testing-guide.md), and terminate the child process automatically (`proc.terminate()`).
+   - Do **not** require the user to manually play through menus or press hotkeys (`Ctrl+Shift+F8`) unless a milestone explicitly requests human visual/audio sign-off after automated verification passes.
+   - Do **not** inject `CallHostFunction` or `AddTicks` hooks into Dynarmic's JIT translator (`arm_dynarmic.cpp`); use GDB software breakpoints (`Z0`), which Dynarmic handles natively at full JIT speed with synchronized register state.
+
+3. **Lean task board (no bureaucratic task chains):**
+   - Keep task boards focused on meaningful C++ reconstruction slices, contract discovery, and milestone integration.
+   - Do **not** create separate multi-task chains (`implement -> review -> pin-sync -> pin-sync-review`) merely to update a script's SHA-256 pin or test fixture; bundle script/test updates and their hash pins into a single task or coordinator integration step.
 
 On this 8-logical-CPU machine, the board budget is eight compiler jobs total,
 not eight per agent. Single candidate TUs already use one compiler. If a worker

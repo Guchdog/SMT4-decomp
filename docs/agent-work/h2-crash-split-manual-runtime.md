@@ -1,0 +1,11 @@
+# H2 crash split manual runtime — in progress
+
+After independent review of both mixed-image diagnostic packages, the coordinator preflighted the init/deps profile, IPS, pinned Azahar executable and shared CCI. The user-controlled Azahar process was launched by CLI as PID 14440. Its log identifies the intended title, `Debugging_UseGdbstub: false`, and the local init/deps `code.ips` as patching `code.bin`. This does not establish guest code reachability. The user was asked only to open Audio Settings and report whether the screen opens or the process closes.
+
+The profiles are isolated and start from the approved matching seeds; GDB/RPC are disabled. No keyboard/mouse automation is used. Outcomes of mixed-image diagnostics do not alone identify a unique failing function or establish full H2 correctness.
+
+The user reported that Audio Settings opened successfully in the init/deps diagnostic. This is a mixed-image entry observation; it does not establish every replaced function's reachability or correctness. The user was asked to close this process before the callbacks diagnostic.
+
+The first diagnostic process exited after the user closed it; its log and profile file hashes were saved. The coordinator then preflighted the independent callbacks profile and launched it by CLI as PID 14680. Its log identifies the expected title and callbacks IPS, with GDB disabled. The user was asked to open Audio Settings and report whether it opens or the process closes.
+
+The user reported that Audio Settings opened in the initializer/dependencies diagnostic, but the callbacks diagnostic closed when selecting it. The callbacks process PID 14680 exited, and Windows Application Error event 1000 identifies the staged callback executable and the same exception `0x20474343` at `KERNELBASE.dll+0x25369` as the full H2 crash. Its log confirms the callback IPS was selected and GDB was disabled. The callback log, profile hash inventory, event and matching dump were preserved; the dump SHA-256 is `bbf5e3f643eccd3be778b0caf38d5906baf4c0afe3aaca296e72c772c485fc80`. The two diagnostic profiles began with independently reviewed matching seeds. This narrows the failing configuration to the callback subset, but a mixed-image result does not identify a particular callback or rule out interactions.

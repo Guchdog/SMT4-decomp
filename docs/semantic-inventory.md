@@ -6,13 +6,13 @@ These counts describe experimental source definitions and static evidence links.
 
 | Inventory dimension | Count |
 | --- | ---: |
-| Candidate translation units | 78 |
-| Address-named candidate definitions | 174 |
-| Prefix/control/helper candidate definitions | 6 |
-| Total candidate definitions | 180 |
-| Definitions linked to test modules | 177 |
-| Definitions linked to differential-shaped assertions | 155 |
-| Definitions associated with Markdown reports | 97 |
+| Candidate translation units | 97 |
+| Address-named candidate definitions | 188 |
+| Prefix/control/helper candidate definitions | 21 |
+| Total candidate definitions | 209 |
+| Definitions linked to test modules | 206 |
+| Definitions linked to differential-shaped assertions | 163 |
+| Definitions associated with Markdown reports | 108 |
 
 ## How to interpret progress
 
@@ -30,21 +30,21 @@ Historical totals such as 169 semantic candidates and 229 combined functions use
 | `candidate_00110c2c` | address_named_candidate | [conditional_pair_candidates.cpp](../experiments/semantic_equivalence/conditional_pair_candidates.cpp) | 1 | 1 | 1 |
 | `candidate_0011b850` | address_named_candidate | [zero_pair_candidates.cpp](../experiments/semantic_equivalence/zero_pair_candidates.cpp) | 1 | 1 | 2 |
 | `candidate_00121150` | address_named_candidate | [conditional_pair_candidates.cpp](../experiments/semantic_equivalence/conditional_pair_candidates.cpp) | 1 | 1 | 1 |
-| `candidate_00121d70` | address_named_candidate | [candidates.cpp](../experiments/semantic_equivalence/candidates.cpp) | 12 | 10 | 1 |
+| `candidate_00121d70` | address_named_candidate | [candidates.cpp](../experiments/semantic_equivalence/candidates.cpp) | 14 | 10 | 1 |
 | `candidate_001220c4` | address_named_candidate | [signed_delta_candidates.cpp](../experiments/semantic_equivalence/signed_delta_candidates.cpp) | 1 | 1 | 0 |
 | `candidate_001220d8` | address_named_candidate | [signed_delta_candidates.cpp](../experiments/semantic_equivalence/signed_delta_candidates.cpp) | 1 | 1 | 0 |
 | `candidate_00126430` | address_named_candidate | [byte_predicate_pair_candidates.cpp](../experiments/semantic_equivalence/byte_predicate_pair_candidates.cpp) | 1 | 1 | 1 |
 | `candidate_001285c4` | address_named_candidate | [signed_halfword_range_clamp_candidate.cpp](../experiments/semantic_equivalence/signed_halfword_range_clamp_candidate.cpp) | 1 | 1 | 1 |
-| `candidate_00128f34` | address_named_candidate | [candidates.cpp](../experiments/semantic_equivalence/candidates.cpp) | 12 | 10 | 1 |
+| `candidate_00128f34` | address_named_candidate | [candidates.cpp](../experiments/semantic_equivalence/candidates.cpp) | 14 | 10 | 1 |
 | `candidate_00130fe8` | address_named_candidate | [singleton_integer_leaves_candidates.cpp](../experiments/semantic_equivalence/singleton_integer_leaves_candidates.cpp) | 1 | 1 | 1 |
-| `candidate_00131414` | address_named_candidate | [candidates.cpp](../experiments/semantic_equivalence/candidates.cpp) | 13 | 11 | 1 |
+| `candidate_00131414` | address_named_candidate | [candidates.cpp](../experiments/semantic_equivalence/candidates.cpp) | 15 | 11 | 1 |
 | `candidate_00140854` | address_named_candidate | [sparse_record_initializer_candidate.cpp](../experiments/semantic_equivalence/sparse_record_initializer_candidate.cpp) | 1 | 1 | 1 |
 | `candidate_00141468` | address_named_candidate | [null_chain_candidates.cpp](../experiments/semantic_equivalence/null_chain_candidates.cpp) | 1 | 1 | 1 |
 | `candidate_00146ce0` | address_named_candidate | [field_roundtrip_predicate_candidates.cpp](../experiments/semantic_equivalence/field_roundtrip_predicate_candidates.cpp) | 1 | 1 | 1 |
 | `candidate_00146d10` | address_named_candidate | [field_roundtrip_predicate_candidates.cpp](../experiments/semantic_equivalence/field_roundtrip_predicate_candidates.cpp) | 1 | 1 | 1 |
 | `candidate_0014e634` | address_named_candidate | [scalar_predicate_candidates.cpp](../experiments/semantic_equivalence/scalar_predicate_candidates.cpp) | 1 | 1 | 1 |
 | `candidate_0014e744` | address_named_candidate | [conditional_slot_candidates.cpp](../experiments/semantic_equivalence/conditional_slot_candidates.cpp) | 1 | 1 | 0 |
-| `candidate_0014ec5c` | address_named_candidate | [candidates.cpp](../experiments/semantic_equivalence/candidates.cpp) | 12 | 10 | 1 |
+| `candidate_0014ec5c` | address_named_candidate | [candidates.cpp](../experiments/semantic_equivalence/candidates.cpp) | 14 | 10 | 1 |
 | `candidate_00151404` | address_named_candidate | [h1_type1_callback_candidate.cpp](../experiments/semantic_equivalence/h1_type1_callback_candidate.cpp) | 2 | 0 | 6 |
 | `candidate_00151ff4` | address_named_candidate | [indexed_word_vector_00151ff4.cpp](../experiments/semantic_equivalence/indexed_word_vector_00151ff4.cpp) | 1 | 1 | 1 |
 | `candidate_00158784` | address_named_candidate | [paired_store_candidates.cpp](../experiments/semantic_equivalence/paired_store_candidates.cpp) | 1 | 1 | 1 |
@@ -58,12 +58,16 @@ Historical totals such as 169 semantic candidates and 229 combined functions use
 | `candidate_0017ede4` | address_named_candidate | [texconv_sliding_average_candidates.cpp](../experiments/semantic_equivalence/texconv_sliding_average_candidates.cpp) | 1 | 0 | 1 |
 | `candidate_0017f5e8` | address_named_candidate | [zero_pair_candidates.cpp](../experiments/semantic_equivalence/zero_pair_candidates.cpp) | 1 | 1 | 2 |
 | `candidate_0017f5f8` | address_named_candidate | [zero_pair_candidates.cpp](../experiments/semantic_equivalence/zero_pair_candidates.cpp) | 1 | 1 | 2 |
+| `candidate_0019dfbc` | address_named_candidate | [h2_script_step_candidate.cpp](../experiments/semantic_equivalence/h2_script_step_candidate.cpp) | 1 | 0 | 0 |
+| `candidate_0019dfbc_bad` | prefix_or_helper | [h2_script_step_candidate.cpp](../experiments/semantic_equivalence/h2_script_step_candidate.cpp) | 1 | 0 | 0 |
 | `candidate_001aa094` | address_named_candidate | [boolean_record_writer_candidates.cpp](../experiments/semantic_equivalence/boolean_record_writer_candidates.cpp) | 1 | 1 | 1 |
 | `candidate_001aa0ec` | address_named_candidate | [boolean_record_writer_candidates.cpp](../experiments/semantic_equivalence/boolean_record_writer_candidates.cpp) | 1 | 1 | 1 |
 | `candidate_001dc648` | address_named_candidate | [indexed_halfword_dispatch_candidates.cpp](../experiments/semantic_equivalence/indexed_halfword_dispatch_candidates.cpp) | 1 | 1 | 1 |
 | `candidate_001dc6a8` | address_named_candidate | [indexed_halfword_dispatch_candidates.cpp](../experiments/semantic_equivalence/indexed_halfword_dispatch_candidates.cpp) | 1 | 1 | 1 |
+| `candidate_001ea928` | address_named_candidate | [h2_calc_candidate.cpp](../experiments/semantic_equivalence/h2_calc_candidate.cpp) | 9 | 0 | 0 |
 | `candidate_00207b78` | address_named_candidate | [chained_pointer_getter_candidates.cpp](../experiments/semantic_equivalence/chained_pointer_getter_candidates.cpp) | 1 | 1 | 0 |
 | `candidate_00210030` | address_named_candidate | [h1_title_fade_candidate.cpp](../experiments/semantic_equivalence/h1_title_fade_candidate.cpp) | 1 | 0 | 1 |
+| `candidate_0021f39c` | address_named_candidate | [h2_config_mapper_candidates.cpp](../experiments/semantic_equivalence/h2_config_mapper_candidates.cpp) | 2 | 0 | 0 |
 | `candidate_00232b00` | address_named_candidate | [three_word_copy_candidates.cpp](../experiments/semantic_equivalence/three_word_copy_candidates.cpp) | 1 | 1 | 1 |
 | `candidate_00232b14` | address_named_candidate | [three_word_copy_candidates.cpp](../experiments/semantic_equivalence/three_word_copy_candidates.cpp) | 1 | 1 | 1 |
 | `candidate_00232b28` | address_named_candidate | [three_word_copy_candidates.cpp](../experiments/semantic_equivalence/three_word_copy_candidates.cpp) | 1 | 1 | 1 |
@@ -75,7 +79,7 @@ Historical totals such as 169 semantic candidates and 229 combined functions use
 | `candidate_0023a350` | address_named_candidate | [nop_leaf_candidates.cpp](../experiments/semantic_equivalence/nop_leaf_candidates.cpp) | 1 | 1 | 0 |
 | `candidate_0023aff0` | address_named_candidate | [vfp_matrix_transpose_candidates.cpp](../experiments/semantic_equivalence/vfp_matrix_transpose_candidates.cpp) | 1 | 1 | 1 |
 | `candidate_0023d368` | address_named_candidate | [vfp_matrix_scale_candidates.cpp](../experiments/semantic_equivalence/vfp_matrix_scale_candidates.cpp) | 1 | 0 | 0 |
-| `candidate_0023e4d4` | address_named_candidate | [candidates.cpp](../experiments/semantic_equivalence/candidates.cpp) | 12 | 10 | 1 |
+| `candidate_0023e4d4` | address_named_candidate | [candidates.cpp](../experiments/semantic_equivalence/candidates.cpp) | 14 | 10 | 1 |
 | `candidate_0023e4e4` | address_named_candidate | [vfp_lane_add_candidates.cpp](../experiments/semantic_equivalence/vfp_lane_add_candidates.cpp) | 1 | 0 | 0 |
 | `candidate_0023e55c` | address_named_candidate | [vfp_matrix_scale_candidates.cpp](../experiments/semantic_equivalence/vfp_matrix_scale_candidates.cpp) | 1 | 0 | 0 |
 | `candidate_0023e634` | address_named_candidate | [selected_flag_clear_and_struct_init_candidates.cpp](../experiments/semantic_equivalence/selected_flag_clear_and_struct_init_candidates.cpp) | 1 | 1 | 1 |
@@ -83,6 +87,8 @@ Historical totals such as 169 semantic candidates and 229 combined functions use
 | `candidate_002523c0` | address_named_candidate | [field_roundtrip_predicate_candidates.cpp](../experiments/semantic_equivalence/field_roundtrip_predicate_candidates.cpp) | 1 | 1 | 1 |
 | `candidate_00256ed8` | address_named_candidate | [vfp_block_scale_candidates.cpp](../experiments/semantic_equivalence/vfp_block_scale_candidates.cpp) | 1 | 0 | 0 |
 | `candidate_0027ec84` | address_named_candidate | [byte_predicate_pair_candidates.cpp](../experiments/semantic_equivalence/byte_predicate_pair_candidates.cpp) | 1 | 1 | 1 |
+| `candidate_0027edf8` | address_named_candidate | [h2_pair_fill_candidate.cpp](../experiments/semantic_equivalence/h2_pair_fill_candidate.cpp) | 1 | 1 | 0 |
+| `candidate_0027edf8_wrong_one_word` | prefix_or_helper | [h2_pair_fill_candidate.cpp](../experiments/semantic_equivalence/h2_pair_fill_candidate.cpp) | 1 | 1 | 0 |
 | `candidate_00286700` | address_named_candidate | [selected_flag_clear_and_struct_init_candidates.cpp](../experiments/semantic_equivalence/selected_flag_clear_and_struct_init_candidates.cpp) | 1 | 1 | 1 |
 | `candidate_0028c124` | address_named_candidate | [state_predicate_candidates.cpp](../experiments/semantic_equivalence/state_predicate_candidates.cpp) | 1 | 1 | 1 |
 | `candidate_0028c290` | address_named_candidate | [word_state_predicate_pair_candidates.cpp](../experiments/semantic_equivalence/word_state_predicate_pair_candidates.cpp) | 1 | 1 | 0 |
@@ -91,28 +97,47 @@ Historical totals such as 169 semantic candidates and 229 combined functions use
 | `candidate_00292e88` | address_named_candidate | [paired_store_candidates.cpp](../experiments/semantic_equivalence/paired_store_candidates.cpp) | 1 | 1 | 1 |
 | `candidate_00296f18` | address_named_candidate | [record_init_and_progress_writer_candidates.cpp](../experiments/semantic_equivalence/record_init_and_progress_writer_candidates.cpp) | 1 | 1 | 1 |
 | `candidate_0029bdb4` | address_named_candidate | [h1_alpha_candidates.cpp](../experiments/semantic_equivalence/h1_alpha_candidates.cpp) | 2 | 0 | 3 |
+| `candidate_0029d8fc` | address_named_candidate | [h2_touch_state_candidate.cpp](../experiments/semantic_equivalence/h2_touch_state_candidate.cpp) | 1 | 0 | 1 |
+| `candidate_0029d8fc_bad` | prefix_or_helper | [h2_touch_state_candidate.cpp](../experiments/semantic_equivalence/h2_touch_state_candidate.cpp) | 1 | 0 | 1 |
 | `candidate_0029e3bc` | address_named_candidate | [conditional_pointer_getter_candidates.cpp](../experiments/semantic_equivalence/conditional_pointer_getter_candidates.cpp) | 1 | 1 | 0 |
 | `candidate_002a17d4` | address_named_candidate | [singleton_integer_leaves_candidates.cpp](../experiments/semantic_equivalence/singleton_integer_leaves_candidates.cpp) | 1 | 1 | 1 |
 | `candidate_002a1b4c` | address_named_candidate | [vfp_matrix_transpose_candidates.cpp](../experiments/semantic_equivalence/vfp_matrix_transpose_candidates.cpp) | 1 | 1 | 1 |
 | `candidate_002a3788` | address_named_candidate | [vfp_lane_add_candidates.cpp](../experiments/semantic_equivalence/vfp_lane_add_candidates.cpp) | 1 | 0 | 0 |
 | `candidate_002ac2f4` | address_named_candidate | [tbb_candidates.cpp](../experiments/semantic_equivalence/tbb_candidates.cpp) | 1 | 1 | 1 |
-| `candidate_002adb40` | address_named_candidate | [candidates.cpp](../experiments/semantic_equivalence/candidates.cpp) | 12 | 10 | 1 |
-| `candidate_002ae464` | address_named_candidate | [candidates.cpp](../experiments/semantic_equivalence/candidates.cpp) | 12 | 10 | 1 |
+| `candidate_002adb40` | address_named_candidate | [candidates.cpp](../experiments/semantic_equivalence/candidates.cpp), [h2_copy_pair_candidate.cpp](../experiments/semantic_equivalence/h2_copy_pair_candidate.cpp) | 16 | 11 | 1 |
+| `candidate_002adb40_wrong_forward` | prefix_or_helper | [h2_copy_pair_candidate.cpp](../experiments/semantic_equivalence/h2_copy_pair_candidate.cpp) | 2 | 1 | 1 |
+| `candidate_002ae464` | address_named_candidate | [candidates.cpp](../experiments/semantic_equivalence/candidates.cpp) | 14 | 10 | 1 |
 | `candidate_002b0418` | address_named_candidate | [conditional_slot_candidates.cpp](../experiments/semantic_equivalence/conditional_slot_candidates.cpp) | 1 | 1 | 0 |
 | `candidate_002b540c` | address_named_candidate | [selected_flag_clear_and_struct_init_candidates.cpp](../experiments/semantic_equivalence/selected_flag_clear_and_struct_init_candidates.cpp) | 1 | 1 | 1 |
 | `candidate_002b7aa8` | address_named_candidate | [vfp_ui_transpose_candidate.cpp](../experiments/semantic_equivalence/vfp_ui_transpose_candidate.cpp) | 1 | 1 | 1 |
+| `candidate_002b902c` | address_named_candidate | [h2_logical_mode0_query_candidate.cpp](../experiments/semantic_equivalence/h2_logical_mode0_query_candidate.cpp) | 2 | 0 | 2 |
+| `candidate_002b902c_bad_counter` | prefix_or_helper | [h2_logical_mode0_query_candidate.cpp](../experiments/semantic_equivalence/h2_logical_mode0_query_candidate.cpp) | 2 | 0 | 2 |
+| `candidate_002b902c_bad_selector` | prefix_or_helper | [h2_logical_mode0_query_candidate.cpp](../experiments/semantic_equivalence/h2_logical_mode0_query_candidate.cpp) | 2 | 0 | 2 |
+| `candidate_002b902c_bad_threshold` | prefix_or_helper | [h2_logical_mode0_query_candidate.cpp](../experiments/semantic_equivalence/h2_logical_mode0_query_candidate.cpp) | 2 | 0 | 2 |
+| `candidate_002bffbc` | address_named_candidate | [h2_logical_mode1_query_candidate.cpp](../experiments/semantic_equivalence/h2_logical_mode1_query_candidate.cpp) | 2 | 0 | 2 |
+| `candidate_002bffbc_bad_bound` | prefix_or_helper | [h2_logical_mode1_query_candidate.cpp](../experiments/semantic_equivalence/h2_logical_mode1_query_candidate.cpp) | 2 | 0 | 2 |
+| `candidate_002bffbc_bad_counter` | prefix_or_helper | [h2_logical_mode1_query_candidate.cpp](../experiments/semantic_equivalence/h2_logical_mode1_query_candidate.cpp) | 2 | 0 | 2 |
+| `candidate_002bffbc_bad_flag` | prefix_or_helper | [h2_logical_mode1_query_candidate.cpp](../experiments/semantic_equivalence/h2_logical_mode1_query_candidate.cpp) | 2 | 0 | 2 |
 | `candidate_002c00d4` | address_named_candidate | [h1_asd_flag_candidate.cpp](../experiments/semantic_equivalence/h1_asd_flag_candidate.cpp) | 0 | 0 | 0 |
 | `candidate_002c0e4c` | address_named_candidate | [tbb_candidates.cpp](../experiments/semantic_equivalence/tbb_candidates.cpp) | 1 | 1 | 0 |
 | `candidate_002c0e9c` | address_named_candidate | [tbb_candidates.cpp](../experiments/semantic_equivalence/tbb_candidates.cpp) | 1 | 1 | 2 |
-| `candidate_002c4bf0` | address_named_candidate | [candidates.cpp](../experiments/semantic_equivalence/candidates.cpp) | 12 | 10 | 1 |
+| `candidate_002c0efc` | address_named_candidate | [h2_apt_utility4_entry_candidate.cpp](../experiments/semantic_equivalence/h2_apt_utility4_entry_candidate.cpp), [h2_apt_utility4_inplace_candidate.cpp](../experiments/semantic_equivalence/h2_apt_utility4_inplace_candidate.cpp) | 7 | 0 | 0 |
+| `candidate_002c4bf0` | address_named_candidate | [candidates.cpp](../experiments/semantic_equivalence/candidates.cpp) | 14 | 10 | 1 |
 | `candidate_002c615c` | address_named_candidate | [h1_interpolation_divide_candidate.cpp](../experiments/semantic_equivalence/h1_interpolation_divide_candidate.cpp) | 0 | 0 | 0 |
 | `candidate_002c615c_divmod` | prefix_or_helper | [h1_interpolation_divide_candidate.cpp](../experiments/semantic_equivalence/h1_interpolation_divide_candidate.cpp) | 0 | 0 | 0 |
 | `candidate_002c6eb0` | address_named_candidate | [engine_leaf_candidates.cpp](../experiments/semantic_equivalence/engine_leaf_candidates.cpp) | 1 | 1 | 0 |
 | `candidate_002c7084` | address_named_candidate | [engine_leaf_candidates.cpp](../experiments/semantic_equivalence/engine_leaf_candidates.cpp) | 1 | 1 | 0 |
+| `candidate_002cab70` | address_named_candidate | [h2_config_mapper_candidates.cpp](../experiments/semantic_equivalence/h2_config_mapper_candidates.cpp) | 3 | 0 | 0 |
+| `candidate_002cab70_wrong_map` | prefix_or_helper | [h2_config_mapper_candidates.cpp](../experiments/semantic_equivalence/h2_config_mapper_candidates.cpp) | 3 | 0 | 0 |
+| `candidate_002caef0` | address_named_candidate | [h2_secondary_candidate.cpp](../experiments/semantic_equivalence/h2_secondary_candidate.cpp) | 2 | 1 | 0 |
+| `candidate_002caef0_wrong_count` | prefix_or_helper | [h2_secondary_candidate.cpp](../experiments/semantic_equivalence/h2_secondary_candidate.cpp) | 2 | 1 | 0 |
+| `candidate_002caef0_wrong_order` | prefix_or_helper | [h2_secondary_candidate.cpp](../experiments/semantic_equivalence/h2_secondary_candidate.cpp) | 1 | 1 | 0 |
+| `candidate_002cafd0` | address_named_candidate | [h2_draw_candidate.cpp](../experiments/semantic_equivalence/h2_draw_candidate.cpp) | 1 | 0 | 0 |
 | `candidate_002d01ec` | address_named_candidate | [state_predicate_candidates.cpp](../experiments/semantic_equivalence/state_predicate_candidates.cpp) | 1 | 1 | 1 |
 | `candidate_002dd080` | address_named_candidate | [engine_leaf_candidates.cpp](../experiments/semantic_equivalence/engine_leaf_candidates.cpp) | 1 | 1 | 0 |
 | `candidate_002df400` | address_named_candidate | [engine_leaf_candidates.cpp](../experiments/semantic_equivalence/engine_leaf_candidates.cpp) | 1 | 1 | 0 |
 | `candidate_002df440` | address_named_candidate | [chained_pointer_getter_candidates.cpp](../experiments/semantic_equivalence/chained_pointer_getter_candidates.cpp) | 1 | 1 | 0 |
+| `candidate_002e0af4` | address_named_candidate | [h2_config_mapper_candidates.cpp](../experiments/semantic_equivalence/h2_config_mapper_candidates.cpp) | 2 | 0 | 0 |
 | `candidate_002e42e0` | address_named_candidate | [word_state_predicate_pair_candidates.cpp](../experiments/semantic_equivalence/word_state_predicate_pair_candidates.cpp) | 1 | 1 | 0 |
 | `candidate_002e5b24` | address_named_candidate | [vfp_sparse_scale_candidates.cpp](../experiments/semantic_equivalence/vfp_sparse_scale_candidates.cpp) | 2 | 2 | 1 |
 | `candidate_002e8114` | address_named_candidate | [engine_leaf_candidates.cpp](../experiments/semantic_equivalence/engine_leaf_candidates.cpp) | 1 | 1 | 0 |
@@ -122,8 +147,12 @@ Historical totals such as 169 semantic candidates and 229 combined functions use
 | `candidate_002f300c` | address_named_candidate | [chained_pointer_getter_candidates.cpp](../experiments/semantic_equivalence/chained_pointer_getter_candidates.cpp) | 1 | 1 | 0 |
 | `candidate_002f3280` | address_named_candidate | [engine_leaf_candidates.cpp](../experiments/semantic_equivalence/engine_leaf_candidates.cpp) | 1 | 1 | 0 |
 | `candidate_002f3450` | address_named_candidate | [engine_leaf_candidates.cpp](../experiments/semantic_equivalence/engine_leaf_candidates.cpp) | 1 | 1 | 0 |
+| `candidate_002f4ca0` | address_named_candidate | [h2_init_orchestration_candidate.cpp](../experiments/semantic_equivalence/h2_init_orchestration_candidate.cpp) | 3 | 1 | 0 |
+| `candidate_002f4ca0_wrong_count` | prefix_or_helper | [h2_init_orchestration_candidate.cpp](../experiments/semantic_equivalence/h2_init_orchestration_candidate.cpp) | 3 | 1 | 0 |
 | `candidate_002f98e0` | address_named_candidate | [engine_leaf_candidates.cpp](../experiments/semantic_equivalence/engine_leaf_candidates.cpp) | 1 | 1 | 0 |
 | `candidate_002faf08` | address_named_candidate | [engine_leaf_candidates.cpp](../experiments/semantic_equivalence/engine_leaf_candidates.cpp) | 1 | 1 | 0 |
+| `candidate_002fc0ec` | address_named_candidate | [h2_ready_candidate.cpp](../experiments/semantic_equivalence/h2_ready_candidate.cpp) | 1 | 0 | 0 |
+| `candidate_002fc0ec_bad` | prefix_or_helper | [h2_ready_candidate.cpp](../experiments/semantic_equivalence/h2_ready_candidate.cpp) | 1 | 0 | 0 |
 | `candidate_00302764` | address_named_candidate | [engine_leaf_candidates.cpp](../experiments/semantic_equivalence/engine_leaf_candidates.cpp) | 1 | 1 | 0 |
 | `candidate_00304154` | address_named_candidate | [engine_leaf_candidates.cpp](../experiments/semantic_equivalence/engine_leaf_candidates.cpp) | 1 | 1 | 0 |
 | `candidate_0030c8bc` | address_named_candidate | [vfp_sparse_scale_candidates.cpp](../experiments/semantic_equivalence/vfp_sparse_scale_candidates.cpp) | 2 | 2 | 1 |
@@ -143,7 +172,7 @@ Historical totals such as 169 semantic candidates and 229 combined functions use
 | `candidate_00353124` | address_named_candidate | [script_vm_init_candidates.cpp](../experiments/semantic_equivalence/script_vm_init_candidates.cpp) | 1 | 1 | 0 |
 | `candidate_003531ac` | address_named_candidate | [script_vm_init_candidates.cpp](../experiments/semantic_equivalence/script_vm_init_candidates.cpp) | 1 | 1 | 0 |
 | `candidate_00354d28` | address_named_candidate | [aoc_initializer_candidates.cpp](../experiments/semantic_equivalence/aoc_initializer_candidates.cpp) | 2 | 2 | 1 |
-| `candidate_00357a28` | address_named_candidate | [candidates.cpp](../experiments/semantic_equivalence/candidates.cpp) | 12 | 10 | 1 |
+| `candidate_00357a28` | address_named_candidate | [candidates.cpp](../experiments/semantic_equivalence/candidates.cpp) | 14 | 10 | 1 |
 | `candidate_0035b254` | address_named_candidate | [conditional_record_writer_candidates.cpp](../experiments/semantic_equivalence/conditional_record_writer_candidates.cpp) | 1 | 1 | 1 |
 | `candidate_0035b6fc` | address_named_candidate | [table_callback_candidates.cpp](../experiments/semantic_equivalence/table_callback_candidates.cpp) | 1 | 1 | 1 |
 | `candidate_0035b728` | address_named_candidate | [table_callback_candidates.cpp](../experiments/semantic_equivalence/table_callback_candidates.cpp) | 1 | 1 | 0 |
@@ -167,12 +196,12 @@ Historical totals such as 169 semantic candidates and 229 combined functions use
 | `candidate_0035c00c` | address_named_candidate | [indexed_halfword_writer_candidates.cpp](../experiments/semantic_equivalence/indexed_halfword_writer_candidates.cpp) | 1 | 1 | 1 |
 | `candidate_0035d270` | address_named_candidate | [scalar_0035d270_candidate.cpp](../experiments/semantic_equivalence/scalar_0035d270_candidate.cpp) | 1 | 1 | 1 |
 | `candidate_0036a29c` | address_named_candidate | [nop_leaf_candidates.cpp](../experiments/semantic_equivalence/nop_leaf_candidates.cpp) | 1 | 1 | 0 |
-| `candidate_0037c46c` | address_named_candidate | [candidates.cpp](../experiments/semantic_equivalence/candidates.cpp) | 12 | 10 | 1 |
-| `candidate_0038143c` | address_named_candidate | [candidates.cpp](../experiments/semantic_equivalence/candidates.cpp) | 12 | 10 | 1 |
-| `candidate_00381450` | address_named_candidate | [candidates.cpp](../experiments/semantic_equivalence/candidates.cpp) | 12 | 10 | 1 |
+| `candidate_0037c46c` | address_named_candidate | [candidates.cpp](../experiments/semantic_equivalence/candidates.cpp) | 14 | 10 | 1 |
+| `candidate_0038143c` | address_named_candidate | [candidates.cpp](../experiments/semantic_equivalence/candidates.cpp) | 14 | 10 | 1 |
+| `candidate_00381450` | address_named_candidate | [candidates.cpp](../experiments/semantic_equivalence/candidates.cpp) | 14 | 10 | 1 |
 | `candidate_00381464` | address_named_candidate | [nop_leaf_candidates.cpp](../experiments/semantic_equivalence/nop_leaf_candidates.cpp) | 1 | 1 | 0 |
 | `candidate_00383780` | address_named_candidate | [flag_initializer_candidates.cpp](../experiments/semantic_equivalence/flag_initializer_candidates.cpp) | 1 | 1 | 0 |
-| `candidate_00394614` | address_named_candidate | [candidates.cpp](../experiments/semantic_equivalence/candidates.cpp) | 12 | 10 | 1 |
+| `candidate_00394614` | address_named_candidate | [candidates.cpp](../experiments/semantic_equivalence/candidates.cpp) | 14 | 10 | 1 |
 | `candidate_00399d4c` | address_named_candidate | [fixed_pair_initializer_candidates.cpp](../experiments/semantic_equivalence/fixed_pair_initializer_candidates.cpp) | 1 | 1 | 1 |
 | `candidate_003a1a6c` | address_named_candidate | [flag_initializer_candidates.cpp](../experiments/semantic_equivalence/flag_initializer_candidates.cpp) | 1 | 1 | 0 |
 | `candidate_003a80cc` | address_named_candidate | [typed_constructor_candidates.cpp](../experiments/semantic_equivalence/typed_constructor_candidates.cpp) | 1 | 1 | 0 |
@@ -180,7 +209,7 @@ Historical totals such as 169 semantic candidates and 229 combined functions use
 | `candidate_003abcf4` | address_named_candidate | [fixed_pair_initializer_candidates.cpp](../experiments/semantic_equivalence/fixed_pair_initializer_candidates.cpp) | 1 | 1 | 1 |
 | `candidate_003c8fc8` | address_named_candidate | [camp_setter_candidates.cpp](../experiments/semantic_equivalence/camp_setter_candidates.cpp) | 1 | 1 | 0 |
 | `candidate_003c9314` | address_named_candidate | [camp_setter_candidates.cpp](../experiments/semantic_equivalence/camp_setter_candidates.cpp) | 1 | 1 | 0 |
-| `candidate_003d7228` | address_named_candidate | [candidates.cpp](../experiments/semantic_equivalence/candidates.cpp) | 12 | 10 | 1 |
+| `candidate_003d7228` | address_named_candidate | [candidates.cpp](../experiments/semantic_equivalence/candidates.cpp) | 14 | 10 | 1 |
 | `candidate_003df578` | address_named_candidate | [null_chain_candidates.cpp](../experiments/semantic_equivalence/null_chain_candidates.cpp) | 1 | 1 | 1 |
 | `candidate_003df588` | address_named_candidate | [null_chain_candidates.cpp](../experiments/semantic_equivalence/null_chain_candidates.cpp) | 1 | 1 | 0 |
 | `candidate_003df598` | address_named_candidate | [null_chain_candidates.cpp](../experiments/semantic_equivalence/null_chain_candidates.cpp) | 1 | 1 | 0 |

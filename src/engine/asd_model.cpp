@@ -73,7 +73,7 @@ extern "C" {
     void* AsdParts_Get(void* parts, u32 index);                            // 0x00246a4c
     void* AsdParts_Current();                                              // 0x002469c0
     int   UiInput_Trigger(u32 id);                                         // 0x002b902c
-    int   UiInput_Trigger2(u32 id);                                        // 0x002bffbc
+    s32   UiInput_Trigger2(u32 id);                                        // 0x002bffbc
     int   UiInput_Trigger3(u32 id);                                        // 0x002c17d4
     void  UiInput_Reset(u32 id);                                           // 0x0024df94
     void  UiText_Draw(u32 a0, u32 a1, u32 a2, const char* fmt, ...);       // 0x0024df14

@@ -409,19 +409,14 @@ extern "C" __attribute__((naked)) void camp_func_00298fc4() {
 }
 
 // DECOMP_FUNC(0x0029d8fc, 40)
-extern "C" __attribute__((naked)) void ui_func_0029d8fc() {
-    asm volatile(
-        "ldr r1, [pc, #0x18]\n"
-        "ldr r2, [pc, #0x18]\n"
-        "ldr r1, [r1, #4]\n"
-        "ldrsh r2, [r2, r1]\n"
-        "cmp r2, r0\n"
-        "ldrbeq r0, [r1, #8]\n"
-        "movne r0, #0\n"
-        "bx lr\n"
-        ".word 0x0043dcb0\n"
-        ".word 0x0000064e\n"
-    );
+extern "C" s32 ui_func_0029d8fc(s16 handle) {
+    auto* const manager = *reinterpret_cast<void* volatile*>(0x0043DCB4u);
+    auto* const bytes = static_cast<volatile u8*>(manager);
+    const s16 active_panel = *reinterpret_cast<volatile s16*>(bytes + 0x64Eu);
+    if (active_panel != handle) {
+        return 0;
+    }
+    return bytes[0x08u];
 }
 
 // DECOMP_FUNC(0x0029e8c0, 40)

@@ -13,8 +13,8 @@ checkout is a reference. Preserve existing user changes in either checkout.
 ## Work selection
 
 - Follow `docs/functional-status.md`, `docs/reconstruction-milestones.md`, and
-  `config/reconstruction.json` in the semantic checkout. H1 main-menu integration
-  is the active functional milestone.
+  `config/reconstruction.json` in the semantic checkout. H2 title audio settings
+  (`titleConfig`) is the active functional milestone.
 - `python tools/find_candidates.py` defaults to semantic discovery, including
   non-leaf functions. It prioritizes milestone dependencies and omits already
   written experimental C++ from the new-reconstruction queue.
@@ -49,13 +49,21 @@ approve or reject a new semantic candidate merely because its bytes differ.
 Keep generated artifacts in ignored `build/` and private game inputs out of Git.
 Historical exact-matching plans are superseded by this objective.
 
+Enforce an **offline-first gate** before any emulator launch: verify ARM/Thumb
+interworking bits and pass offline differential + caller-composition runners
+first. When runtime verification is needed, run it **autonomously** using the
+private loopback-bound Azahar build (`127.0.0.1` GDB stub) and Python GDB RSP
+scripts (`docs/emulator-testing-guide.md`) rather than asking the user for
+manual playtesting or hotkey presses. Keep the task board lean: do not spawn
+multi-task chains for minor script or hash-pin updates.
+
 ## Agentic execution
 
 Use the coordinator-plus-bounded-subagents workflow in `docs/agent-workflow.md`
 for continued semantic decompilation when independent work is available. The
 coordinator may proactively delegate at most three scoped workers (or the tool's
 lower available limit), using internal subagent tools and small prepared briefs.
-Keep one active milestone and reuse idle agents for H1 review/dependency work.
+Keep one active milestone and reuse idle agents for H2 review/dependency work.
 Do not create new user-owned chats for subtasks.
 
 The coordinator alone updates the active board selected by

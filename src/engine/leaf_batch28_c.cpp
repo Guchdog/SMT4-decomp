@@ -127,7 +127,7 @@ extern "C" void ui_func_0027dd20();
 extern "C" void ui_func_00282b94();
 extern "C" void ui_func_00293c98();
 extern "C" void ui_func_002acd38();
-extern "C" void ui_func_002adb40();
+extern "C" u32 ui_func_002adb40(void* destination, const void* source);
 extern "C" void ui_func_002bcf58();
 extern "C" void ui_func_00337078();
 extern "C" void ui_func_00340ec8();
