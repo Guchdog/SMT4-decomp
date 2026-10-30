@@ -37,7 +37,7 @@ Only the coordinator claims tasks and changes board state.
 
 ## Efficient development loop
 
-1. Milestone H5 (minimal combat) is completed and closed (2026-10-30) through input/camera/movement contracts and caller compositions; H2 is closed.
+1. Milestone H6 (save and reload) is completed and closed (2026-10-30) through paired autonomous verification in Azahar with 0 regressions across Title, Save Load, and 250 Field ticks; H5 and H2 are closed.
 2. Run focused differential/caller tests during development, including boundary cases and negative controls. Reuse shared runner infrastructure.
 3. Close a batch with the relevant wider regression and affected build checks. Audit exact-reference claims when those claims/tools change; a byte mismatch alone does not reject semantic C++. Save artifacts under ignored `build/`.
 4. Promote accepted candidates through a reproducible experimental patch. Compare the same scenario against the original and document remaining original dependencies.

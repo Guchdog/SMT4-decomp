@@ -1,45 +1,43 @@
 {
   "primary_goal": "Recover editable C++ with supported semantic behavior; byte identity is optional.",
-  "active_milestone": "H5",
+  "active_milestone": "H6",
   "priority_sources": [
-    "src/battle/btl_main.cpp",
-    "src/battle/btl_ui.cpp",
-    "src/battle/btl_target_select.cpp",
-    "src/battle/battle_extras.cpp"
+    "src/ui/save_load.cpp",
+    "src/engine/asd_file.cpp"
   ],
   "priority_functions": [
     {
-      "address": "0x001d29c8",
-      "reason": "H5 party active evaluation / btlUnit_CheckPartyActive"
+      "address": "0x0021041c",
+      "reason": "H6 save common read container unpack / AsdSaveCommon_func_0021041c"
     },
     {
-      "address": "0x002ae464",
-      "reason": "H5 demon unit classifier / Btl_IsDemonUnit"
+      "address": "0x002104e8",
+      "reason": "H6 save common write container pack / AsdSaveCommon_func_002104e8"
     },
     {
-      "address": "0x002f4aa4",
-      "reason": "H5 target selection upper screen draw dispatch"
+      "address": "0x0026b874",
+      "reason": "H6 save/load worker process init and load task setup / SaveLoadProcess_Init"
     },
     {
-      "address": "0x002e06bc",
-      "reason": "H5 target selection calculation and reticle interpolation"
+      "address": "0x002ef9ac",
+      "reason": "H6 save/load worker execution step machine / SaveLoadProcess_Step"
     },
     {
-      "address": "0x001d2528",
-      "reason": "H5 battle help modal task initialization"
+      "address": "0x002efb50",
+      "reason": "H6 save/load worker write step machine / SaveLoadProcess_Write"
     },
     {
-      "address": "0x001d2610",
-      "reason": "H5 battle talk negotiation modal task initialization"
+      "address": "0x00322d70",
+      "reason": "H6 save/load worker read operation dispatch / SaveLoadProcess_Read"
     },
     {
-      "address": "0x002b8a80",
-      "reason": "H5 combat state cleanup and lifecycle deallocation"
+      "address": "0x00322f0c",
+      "reason": "H6 save/load worker save operation dispatch / SaveLoadProcess_Close"
     },
     {
-      "address": "0x0011311c",
-      "reason": "H5 combat channel parameter setter"
+      "address": "0x00191eac",
+      "reason": "H6 save/load UI manager initialization / saveLoadUI_Init"
     }
   ],
-  "agent_workflow_board": "config/agent-workflows/h5.json"
+  "agent_workflow_board": "config/agent-workflows/h6.json"
 }
