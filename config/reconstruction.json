@@ -1,44 +1,43 @@
 {
   "primary_goal": "Recover editable C++ with supported semantic behavior; byte identity is optional.",
-  "active_milestone": "H14",
+  "active_milestone": "H15",
   "priority_sources": [
-    "src/engine/asd_effect.cpp",
-    "src/engine/asd_model.cpp",
-    "src/engine/asd_texture.cpp"
+    "src/ui/window.cpp",
+    "src/ui/ui_runtime.cpp"
   ],
   "priority_functions": [
     {
-      "address": "0x00152d7c",
-      "reason": "H14 ASD particle effect lock entrance / AsdEffect_LockEnter"
+      "address": "0x0010e570",
+      "reason": "H15 UI text formatting control field 0x10 / UiText_SetCodeField10"
     },
     {
-      "address": "0x00152dac",
-      "reason": "H14 ASD particle effect lock departure / AsdEffect_LockLeave"
+      "address": "0x0010e5bc",
+      "reason": "H15 UI text formatting control field 0x28 / UiText_SetCodeField28"
     },
     {
-      "address": "0x002c31bc",
-      "reason": "H14 ASD resource manager context resolution / AsdRes_GetContext"
+      "address": "0x00126084",
+      "reason": "H15 UI dialog state query / UiDialog_GetState"
     },
     {
-      "address": "0x002c3b88",
-      "reason": "H14 ASD GPU heap size query / AsdGpu_HeapSize"
+      "address": "0x001260a8",
+      "reason": "H15 UI dialog flags inspection / UiDialog_GetFlags"
     },
     {
-      "address": "0x0010a6fc",
-      "reason": "H14 ASD text engine shader field 1C / AsdText_SetCodeField1C"
+      "address": "0x00126220",
+      "reason": "H15 UI dialog cursor index query / UiDialog_GetCursorIndex"
     },
     {
-      "address": "0x0010af38",
-      "reason": "H14 ASD text engine shader field 14 / AsdText_SetCodeField14"
+      "address": "0x00126628",
+      "reason": "H15 UI text draw coordinate X / UiText_GetDrawCoordX"
     },
     {
-      "address": "0x0010b340",
-      "reason": "H14 ASD text engine shader field 30 / AsdText_SetCodeField30"
+      "address": "0x00126638",
+      "reason": "H15 UI text draw coordinate Y / UiText_GetDrawCoordY"
     },
     {
-      "address": "0x003878c0",
-      "reason": "H14 Texture streaming comparator / TextureStreamer_Compare"
+      "address": "0x0026b844",
+      "reason": "H15 UI context handle lookup / UiManager_GetContextHandle"
     }
   ],
-  "agent_workflow_board": "config/agent-workflows/h14.json"
+  "agent_workflow_board": "config/agent-workflows/h15.json"
 }
