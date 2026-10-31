@@ -1,43 +1,43 @@
 {
   "primary_goal": "Recover editable C++ with supported semantic behavior; byte identity is optional.",
-  "active_milestone": "H16",
+  "active_milestone": "H17",
   "priority_sources": [
-    "src/engine/sound.cpp",
-    "src/engine/audio_runtime.cpp"
+    "src/camp/camp_cec.cpp",
+    "src/engine/aoc.cpp"
   ],
   "priority_functions": [
     {
-      "address": "0x00110c2c",
-      "reason": "H16 sound effect buffer registration / AsdSoundEffect_SetBuffer"
+      "address": "0x001ffadc",
+      "reason": "H17 Camp CEC edit work validation / CampCec_HasEditWork"
     },
     {
-      "address": "0x00110c44",
-      "reason": "H16 sound effect buffer size calculation / AsdSoundEffect_GetBufferSize"
+      "address": "0x001ff814",
+      "reason": "H17 Camp CEC DDS card header copy / CampCec_CopyCardData"
     },
     {
-      "address": "0x00121150",
-      "reason": "H16 secondary sound effect buffer registration / AsdSoundEffect2_SetBuffer"
+      "address": "0x002a17c0",
+      "reason": "H17 AOC result status readiness check / Aoc_ResultIsReady"
     },
     {
-      "address": "0x00121f20",
-      "reason": "H16 sound data block size calculation / AsdSound_GetDataSize"
+      "address": "0x002a17d4",
+      "reason": "H17 AOC applet flag 0x10000 test / AocApplet_IsFlag10000"
     },
     {
-      "address": "0x00122094",
-      "reason": "H16 sound sample byte size calculation / AsdSound_GetSampleBytes"
+      "address": "0x002a17e4",
+      "reason": "H17 AOC result object copy / Aoc_ResultCopyValue"
     },
     {
-      "address": "0x00128f34",
-      "reason": "H16 sound data base pointer derivation / AsdData_GetBase"
+      "address": "0x002b2520",
+      "reason": "H17 AOC global buffer free guard / Aoc_ReleaseGlobal"
     },
     {
-      "address": "0x00128f44",
-      "reason": "H16 sound data element count retrieval / AsdData_GetCount"
+      "address": "0x002d73f4",
+      "reason": "H17 Camp CEC setting flag query / CampCec_GetWorkHandle"
     },
     {
-      "address": "0x00215a44",
-      "reason": "H16 status sound track ID update / StatusDown_SetActiveSoundId"
+      "address": "0x0038c248",
+      "reason": "H17 AOC icon object initialization / AocIcon_Init"
     }
   ],
-  "agent_workflow_board": "config/agent-workflows/h16.json"
+  "agent_workflow_board": "config/agent-workflows/h17.json"
 }
