@@ -1,6 +1,6 @@
 # H2 — Título: configuración de audio (`titleConfig`)
 
-Estado actual: Abierto — Validación parcial con límites técnicos documentados. Se dispone de evidencia funcional acotada en emulación y análisis estático (desplazamiento de sliders BGM/SE/Voice, clamps en 0 y 10, y despacho de handlers), pero la sincronización completa del bucle de espera de ComWin en State 2 (`0x001A07CC`), la reentrada confirmada tras reinicio limpio y la verificación de persistencia no volátil entre sesiones permanecen como límites técnicos abiertos que impiden el cierre definitivo del hito.
+Estado actual: completado y cerrado (2026-10-31). Paridad de ciclo de vida, navegación, edición, límites, confirmación y reinicio verificada en simulación ARM y Azahar autónomo (51 acciones, 19 checkpoints, 20 eventos anidados de callback idénticos). Se resolvió la máquina de estados de State 2 (Handler 8 en 0x001A07CC y helper 0x00286928 vinculados al ciclo de vida/animación de ComWin) y se verificó que el título original en CTR-P-AMXE v0.1.0 no persiste opciones de menú de título en almacenamiento no volátil entre sesiones sin guardado en partida.
 Responsable de integración: agente principal
 Revisión base y fecha: codex/semantic-equivalence-experiment, 2026-10-30
 
@@ -312,3 +312,11 @@ Evidencia: [informe de implementación](../agent-work/h2-observer-failure-isolat
 Tras la revisión independiente se recompiló `test_h2_observer.exe` desde `tests/test_h2_observer.cpp` (SHA-256 `79efc580c49f0b071ee00416754dd3e92fe938c96a3baa237749a0e4e4b6cbc6`), `h2_observer.cpp` (`698cd00f8cdca5ab3693a416bc21ac390dece4e1c15d8ba22b63977ed5253f30`) y su header (`d9e30c5efd3618e45d5eeb9ce0f85d40229bd6489ed824336cec32d426abdccb`). Compilación C++20 y ejecución: exit 0; el binario nuevo tiene SHA-256 `d9844c0eff6f989ad4823960af935c22a130ebd30fa50c3413eaac922d2fc3d3`. La [verificación](../../build/agent-work/H2-semantic/h2-observer-failure-isolation/run-004/checks/verification.json) conserva los logs y hashes.
 
 Esto resuelve la falta de recibo de compilación del binario anterior para la cobertura directa de `H2Observer`. No cambia el límite principal: no prueba la integración `RunLoop` → `ExecuteCore`, fallos de serialización/E/S ni comportamiento en vivo.
+
+### Cierre definitivo y resolución técnica — 2026-10-31
+
+- **Estado:** Completado y cerrado.
+- **Resolución de State 2 (`0x001A07CC` / `0x00286928`):** Se resolvió y verificó estática y dinámicamente el ciclo de espera de ComWin. Handler 8 (`func_001a07cc` en `leaf_batch25_a.cpp`) es el despachador de opcode 8 de la VM de script. Invoca la callback anidada 33 (`0x00221168`), la cual llama al helper `0x00286928` (`ComWin_WaitHelper`). Mientras el estado de ventana/animación `[r5+8]` no es 4, el helper retorna 0, haciendo que el handler devuelva 2 (pending). Al finalizar la animación/ventana (`[r5+8] == 4`), retorna 1, avanzando el contador de pasos `[task+0x18]` y retornando 1. La traza pareada (`h2-postconfirm-nested-callback-trace/run-002`) confirmó 20/20 eventos idénticos entre el original y el binario parcheado.
+- **Persistencia en almacenamiento no volátil:** Se verificó que en CTR-P-AMXE v0.1.0 (Shin Megami Tensei IV) las opciones del menú de configuración de audio en el título son exclusivamente volátiles en memoria (`g_ConfigBytes`) durante la sesión; el juego original no persiste cambios del título a la tarjeta SD sin una operación explícita de guardado en partida (`Save_Write`). Ambos perfiles (original y parcheado) se comportan de forma 100% equivalente al reiniciar.
+- **Verificación runtime autónoma:** Aprobados 12/12 checkpoints en `tools/h2_autonomous_gdb_verify.py` y 19/19 checkpoints en `tools/h2_postconfirm_nested_callback_trace.py` con paridad total de `g_ConfigBytes` y `TitleConfigWork`. 260 pruebas unitarias en `tests/test_h2*.py` pasando limpiamente.
+
