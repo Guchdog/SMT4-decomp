@@ -1,44 +1,44 @@
 {
   "primary_goal": "Recover editable C++ with supported semantic behavior; byte identity is optional.",
-  "active_milestone": "H9",
+  "active_milestone": "H10",
   "priority_sources": [
-    "src/camp/camp.cpp",
-    "src/camp/unite.cpp",
-    "src/camp/bible.cpp"
+    "src/camp/quest_ui.cpp",
+    "src/camp/app_store.cpp",
+    "src/camp/camp_archive.cpp"
   ],
   "priority_functions": [
     {
-      "address": "0x002e315c",
-      "reason": "H9 Cathedral of Shadows 3D fusion summoning circle and lighting particle effect setup / UniteEffect_Init"
+      "address": "0x002a0fac",
+      "reason": "H10 Burroughs and Quest save data pointer resolution from main game work / Burroughs_GetSaveData"
     },
     {
-      "address": "0x00269cc8",
-      "reason": "H9 Demon Compendium Devil Book manager initialization / bibleMain_Init"
+      "address": "0x002a0ea8",
+      "reason": "H10 Burroughs application selection dispatcher and audio cue trigger / Burroughs_AppDispatch"
     },
     {
-      "address": "0x003ab770",
-      "reason": "H9 Cathedral of Shadows Legion Skill setup, task registration, and UI list initialization / bibleLegionSkill_Init"
+      "address": "0x0026a004",
+      "reason": "H10 Quest list selection reset, category flag set, and row counter zeroing / Quest_ResetSelection"
     },
     {
-      "address": "0x003ad300",
-      "reason": "H9 Cathedral of Shadows Legion upper/lower stereoscopic draw manager setup / bibleLegionDraw_Init"
+      "address": "0x0026a86c",
+      "reason": "H10 Quest objective target condition evaluation and flag matching / Quest_EvaluateTargetCondition"
     },
     {
-      "address": "0x0029e63c",
-      "reason": "H9 demon fusion and compendium sorting modal and comparator dispatcher / SortMenu_Init"
+      "address": "0x0026a9fc",
+      "reason": "H10 Quest availability checking for main and challenge quests / Quest_GetAvailability"
     },
     {
-      "address": "0x003c9ebc",
-      "reason": "H9 demon fusion candidate roster counter, race bucket allocator, and qsort sorter / UniteCtrl_RosterPopulate"
+      "address": "0x0026aac0",
+      "reason": "H10 Quest static definition unpack into dynamic UI buffers and formatted strings / Quest_UnpackEntryData"
     },
     {
-      "address": "0x003a7ad8",
-      "reason": "H9 compendium demon inspector, 3D model task registration, and UI list population / bibleDevil_Init"
+      "address": "0x003253d8",
+      "reason": "H10 Burroughs Demonica App Store purchase flag registration and status bit update / AppStore_SetFlag"
     },
     {
-      "address": "0x0028d974",
-      "reason": "H9 Cathedral of Shadows dynamic button prompt HUD and input helper / ButtonHelp_Init"
+      "address": "0x00325444",
+      "reason": "H10 Burroughs Demonica App Store parameter query and string formatting / AppStore_GetAppParam"
     }
   ],
-  "agent_workflow_board": "config/agent-workflows/h9.json"
+  "agent_workflow_board": "config/agent-workflows/h10.json"
 }

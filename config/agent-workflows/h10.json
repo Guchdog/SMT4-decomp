@@ -1,0 +1,2599 @@
+{
+  "schema_version": 1,
+  "batch": "batch-h10-001",
+  "milestone": "H10",
+  "max_workers": 3,
+  "cpu_budget": 8,
+  "goal": "Reconstruct readable, editable C++ for Milestone H10 (Burroughs, Quests, and Apps), covering Burroughs save data resolution (Burroughs_GetSaveData), application selection dispatching (Burroughs_AppDispatch), quest list selection reset (Quest_ResetSelection), quest objective condition evaluation (Quest_EvaluateTargetCondition), quest availability checking for main and challenge quests (Quest_GetAvailability), quest static definition unpacking (Quest_UnpackEntryData), Demonica App Store purchase flag registration (AppStore_SetFlag), and App Store parameter query and string formatting (AppStore_GetAppParam) with full offline differential validation, caller composition, staging, and autonomous runtime verification.",
+  "coordinator_owned_paths": [
+    "config/agent-workflows/h10.json",
+    "config/reconstruction.json",
+    "docs/milestones/H10-burroughs-quests-apps.md",
+    "docs/functional-status.md",
+    "docs/reconstruction-milestones.md"
+  ],
+  "tasks": [
+    {
+      "id": "h10-burroughs-quests-apps-recon",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Comprehensive static and architectural reconnaissance of Milestone H10 Burroughs, Quests, and Apps.",
+      "depends_on": [],
+      "function_claims": [
+        "0x002a0fac",
+        "0x002a0ea8",
+        "0x0026a004",
+        "0x0026a86c",
+        "0x0026a9fc",
+        "0x0026aac0",
+        "0x003253d8",
+        "0x00325444"
+      ],
+      "read_paths": [
+        "src/camp/quest_ui.cpp",
+        "src/camp/app_store.cpp",
+        "src/camp/camp_archive.cpp",
+        "docs/reconstruction-milestones.md",
+        "docs/milestones/H9-cathedral-fusion-compendium.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-burroughs-quests-apps-recon.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Identify exact entry points, memory structures, and callers for H10 Burroughs, Quest, and App Store subsystems.",
+        "Define offline-first differential boundaries, positive/negative controls, and mutation criteria."
+      ],
+      "validation_plan": [
+        "Cross-check candidate functions against pinned binary code.bin and functions.csv ledger."
+      ]
+    },
+    {
+      "id": "h10-burroughs-quests-apps-recon-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of Burroughs, Quests, and Apps architecture reconnaissance and boundary definitions.",
+      "depends_on": [
+        "h10-burroughs-quests-apps-recon"
+      ],
+      "function_claims": [
+        "0x002a0fac",
+        "0x002a0ea8",
+        "0x0026a004",
+        "0x0026a86c",
+        "0x0026a9fc",
+        "0x0026aac0",
+        "0x003253d8",
+        "0x00325444"
+      ],
+      "read_paths": [
+        "docs/agent-work/h10-burroughs-quests-apps-recon.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-burroughs-quests-apps-recon-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract boundaries, calling conventions, and ABI preservation expectations.",
+        "Approve task division and candidate scope for H10 Burroughs, Quests, and Apps milestone."
+      ],
+      "validation_plan": [
+        "Confirm completeness of architecture reconnaissance and absence of unsupported assumptions."
+      ]
+    },
+    {
+      "id": "h10-camp-burroughs-getsavedata-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize contract, parameters, registers, and memory effects for Burroughs_GetSaveData (0x002a0fac).",
+      "depends_on": [
+        "h10-burroughs-quests-apps-recon-review"
+      ],
+      "function_claims": [
+        "0x002a0fac"
+      ],
+      "read_paths": [
+        "src/camp/quest_ui.cpp",
+        "src/camp/app_store.cpp",
+        "src/camp/camp_archive.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-burroughs-getsavedata-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Accurately specify semantics of Burroughs_GetSaveData.",
+        "Specify test fixtures and mutation controls."
+      ],
+      "validation_plan": [
+        "Static disassembly and register effect verification against code.bin."
+      ]
+    },
+    {
+      "id": "h10-camp-burroughs-getsavedata-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of Burroughs_GetSaveData contract specification.",
+      "depends_on": [
+        "h10-camp-burroughs-getsavedata-contract"
+      ],
+      "function_claims": [
+        "0x002a0fac"
+      ],
+      "read_paths": [
+        "docs/agent-work/h10-camp-burroughs-getsavedata-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-burroughs-getsavedata-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract fidelity against ARM disassembled instructions."
+      ],
+      "validation_plan": [
+        "Audit edge cases, register clobbers, and pointer validations."
+      ]
+    },
+    {
+      "id": "h10-camp-burroughs-getsavedata-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable, editable C++ candidate for Burroughs_GetSaveData with mutation control.",
+      "depends_on": [
+        "h10-camp-burroughs-getsavedata-contract-review"
+      ],
+      "function_claims": [
+        "0x002a0fac"
+      ],
+      "read_paths": [
+        "docs/agent-work/h10-camp-burroughs-getsavedata-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h10_camp_burroughs_getsavedata_candidate.cpp",
+        "docs/agent-work/h10-camp-burroughs-getsavedata-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Implement Burroughs_GetSaveData candidate and verified mutation control.",
+        "Ensure compiled ARM size fits strictly within the original binary function window."
+      ],
+      "validation_plan": [
+        "Compile with tools/build_check.py (armv6k clang) and check ELF size."
+      ]
+    },
+    {
+      "id": "h10-camp-burroughs-getsavedata-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of Burroughs_GetSaveData candidate implementation.",
+      "depends_on": [
+        "h10-camp-burroughs-getsavedata-candidate"
+      ],
+      "function_claims": [
+        "0x002a0fac"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h10_camp_burroughs_getsavedata_candidate.cpp",
+        "docs/agent-work/h10-camp-burroughs-getsavedata-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-burroughs-getsavedata-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Audit C++ syntax, memory safety, ABI conformance, and headroom margin.",
+        "Verify mutation control triggers distinct divergence."
+      ],
+      "validation_plan": [
+        "Check ELF symbol tables and relocation bindings."
+      ]
+    },
+    {
+      "id": "h10-camp-burroughs-getsavedata-differential",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline Unicorn differential test for Burroughs_GetSaveData against original ARM code.",
+      "depends_on": [
+        "h10-camp-burroughs-getsavedata-candidate-review"
+      ],
+      "function_claims": [
+        "0x002a0fac"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h10_camp_burroughs_getsavedata_candidate.cpp",
+        "tools/h10_camp_burroughs_getsavedata_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-burroughs-getsavedata-differential.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Pass Unicorn emulation comparing original Burroughs_GetSaveData against candidate.",
+        "Confirm mutation control is detected with non-zero divergence."
+      ],
+      "validation_plan": [
+        "Execute python tools/h10_camp_burroughs_getsavedata_experiment.py."
+      ]
+    },
+    {
+      "id": "h10-camp-burroughs-getsavedata-differential-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of offline differential test results for Burroughs_GetSaveData.",
+      "depends_on": [
+        "h10-camp-burroughs-getsavedata-differential"
+      ],
+      "function_claims": [
+        "0x002a0fac"
+      ],
+      "read_paths": [
+        "docs/agent-work/h10-camp-burroughs-getsavedata-differential.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-burroughs-getsavedata-differential-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm zero divergence in state effects between original and candidate."
+      ],
+      "validation_plan": [
+        "Audit differential execution logs and register dump hashes."
+      ]
+    },
+    {
+      "id": "h10-camp-burroughs-getsavedata-composition",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Verify caller composition and interworking for Burroughs_GetSaveData in integrated context.",
+      "depends_on": [
+        "h10-camp-burroughs-getsavedata-differential-review"
+      ],
+      "function_claims": [
+        "0x002a0fac"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h10_camp_burroughs_getsavedata_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-burroughs-getsavedata-composition.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify caller interface and stack alignment for Burroughs_GetSaveData.",
+        "Ensure all external calls resolve cleanly without ABI violations."
+      ],
+      "validation_plan": [
+        "Audit caller sequence and callee stack frame preservation."
+      ]
+    },
+    {
+      "id": "h10-camp-burroughs-getsavedata-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of caller composition for Burroughs_GetSaveData.",
+      "depends_on": [
+        "h10-camp-burroughs-getsavedata-composition"
+      ],
+      "function_claims": [
+        "0x002a0fac"
+      ],
+      "read_paths": [
+        "docs/agent-work/h10-camp-burroughs-getsavedata-composition.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-burroughs-getsavedata-composition-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Validate absence of stack corruption or register clobbering across callers."
+      ],
+      "validation_plan": [
+        "Review composition verification reports."
+      ]
+    },
+    {
+      "id": "h10-camp-burroughs-getsavedata-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Stage candidate object and relocation records for Burroughs_GetSaveData into composite image builder.",
+      "depends_on": [
+        "h10-camp-burroughs-getsavedata-composition-review"
+      ],
+      "function_claims": [
+        "0x002a0fac"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h10_camp_burroughs_getsavedata_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-burroughs-getsavedata-staging.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Successfully link and stage Burroughs_GetSaveData into staging pipeline."
+      ],
+      "validation_plan": [
+        "Check ELF relocation resolution and window bounds."
+      ]
+    },
+    {
+      "id": "h10-camp-burroughs-getsavedata-staging-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of staged candidate Burroughs_GetSaveData.",
+      "depends_on": [
+        "h10-camp-burroughs-getsavedata-staging"
+      ],
+      "function_claims": [
+        "0x002a0fac"
+      ],
+      "read_paths": [
+        "docs/agent-work/h10-camp-burroughs-getsavedata-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-burroughs-getsavedata-staging-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify candidate is properly aligned, relocations patched, and padding clean."
+      ],
+      "validation_plan": [
+        "Confirm relocation offset calculations and target VMA mapping."
+      ]
+    },
+    {
+      "id": "h10-camp-burroughs-appdispatch-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize contract, parameters, registers, and memory effects for Burroughs_AppDispatch (0x002a0ea8).",
+      "depends_on": [
+        "h10-burroughs-quests-apps-recon-review"
+      ],
+      "function_claims": [
+        "0x002a0ea8"
+      ],
+      "read_paths": [
+        "src/camp/quest_ui.cpp",
+        "src/camp/app_store.cpp",
+        "src/camp/camp_archive.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-burroughs-appdispatch-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Accurately specify semantics of Burroughs_AppDispatch.",
+        "Specify test fixtures and mutation controls."
+      ],
+      "validation_plan": [
+        "Static disassembly and register effect verification against code.bin."
+      ]
+    },
+    {
+      "id": "h10-camp-burroughs-appdispatch-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of Burroughs_AppDispatch contract specification.",
+      "depends_on": [
+        "h10-camp-burroughs-appdispatch-contract"
+      ],
+      "function_claims": [
+        "0x002a0ea8"
+      ],
+      "read_paths": [
+        "docs/agent-work/h10-camp-burroughs-appdispatch-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-burroughs-appdispatch-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract fidelity against ARM disassembled instructions."
+      ],
+      "validation_plan": [
+        "Audit edge cases, register clobbers, and pointer validations."
+      ]
+    },
+    {
+      "id": "h10-camp-burroughs-appdispatch-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable, editable C++ candidate for Burroughs_AppDispatch with mutation control.",
+      "depends_on": [
+        "h10-camp-burroughs-appdispatch-contract-review"
+      ],
+      "function_claims": [
+        "0x002a0ea8"
+      ],
+      "read_paths": [
+        "docs/agent-work/h10-camp-burroughs-appdispatch-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h10_camp_burroughs_appdispatch_candidate.cpp",
+        "docs/agent-work/h10-camp-burroughs-appdispatch-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Implement Burroughs_AppDispatch candidate and verified mutation control.",
+        "Ensure compiled ARM size fits strictly within the original binary function window."
+      ],
+      "validation_plan": [
+        "Compile with tools/build_check.py (armv6k clang) and check ELF size."
+      ]
+    },
+    {
+      "id": "h10-camp-burroughs-appdispatch-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of Burroughs_AppDispatch candidate implementation.",
+      "depends_on": [
+        "h10-camp-burroughs-appdispatch-candidate"
+      ],
+      "function_claims": [
+        "0x002a0ea8"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h10_camp_burroughs_appdispatch_candidate.cpp",
+        "docs/agent-work/h10-camp-burroughs-appdispatch-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-burroughs-appdispatch-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Audit C++ syntax, memory safety, ABI conformance, and headroom margin.",
+        "Verify mutation control triggers distinct divergence."
+      ],
+      "validation_plan": [
+        "Check ELF symbol tables and relocation bindings."
+      ]
+    },
+    {
+      "id": "h10-camp-burroughs-appdispatch-differential",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline Unicorn differential test for Burroughs_AppDispatch against original ARM code.",
+      "depends_on": [
+        "h10-camp-burroughs-appdispatch-candidate-review"
+      ],
+      "function_claims": [
+        "0x002a0ea8"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h10_camp_burroughs_appdispatch_candidate.cpp",
+        "tools/h10_camp_burroughs_appdispatch_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-burroughs-appdispatch-differential.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Pass Unicorn emulation comparing original Burroughs_AppDispatch against candidate.",
+        "Confirm mutation control is detected with non-zero divergence."
+      ],
+      "validation_plan": [
+        "Execute python tools/h10_camp_burroughs_appdispatch_experiment.py."
+      ]
+    },
+    {
+      "id": "h10-camp-burroughs-appdispatch-differential-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of offline differential test results for Burroughs_AppDispatch.",
+      "depends_on": [
+        "h10-camp-burroughs-appdispatch-differential"
+      ],
+      "function_claims": [
+        "0x002a0ea8"
+      ],
+      "read_paths": [
+        "docs/agent-work/h10-camp-burroughs-appdispatch-differential.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-burroughs-appdispatch-differential-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm zero divergence in state effects between original and candidate."
+      ],
+      "validation_plan": [
+        "Audit differential execution logs and register dump hashes."
+      ]
+    },
+    {
+      "id": "h10-camp-burroughs-appdispatch-composition",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Verify caller composition and interworking for Burroughs_AppDispatch in integrated context.",
+      "depends_on": [
+        "h10-camp-burroughs-appdispatch-differential-review"
+      ],
+      "function_claims": [
+        "0x002a0ea8"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h10_camp_burroughs_appdispatch_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-burroughs-appdispatch-composition.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify caller interface and stack alignment for Burroughs_AppDispatch.",
+        "Ensure all external calls resolve cleanly without ABI violations."
+      ],
+      "validation_plan": [
+        "Audit caller sequence and callee stack frame preservation."
+      ]
+    },
+    {
+      "id": "h10-camp-burroughs-appdispatch-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of caller composition for Burroughs_AppDispatch.",
+      "depends_on": [
+        "h10-camp-burroughs-appdispatch-composition"
+      ],
+      "function_claims": [
+        "0x002a0ea8"
+      ],
+      "read_paths": [
+        "docs/agent-work/h10-camp-burroughs-appdispatch-composition.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-burroughs-appdispatch-composition-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Validate absence of stack corruption or register clobbering across callers."
+      ],
+      "validation_plan": [
+        "Review composition verification reports."
+      ]
+    },
+    {
+      "id": "h10-camp-burroughs-appdispatch-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Stage candidate object and relocation records for Burroughs_AppDispatch into composite image builder.",
+      "depends_on": [
+        "h10-camp-burroughs-appdispatch-composition-review"
+      ],
+      "function_claims": [
+        "0x002a0ea8"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h10_camp_burroughs_appdispatch_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-burroughs-appdispatch-staging.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Successfully link and stage Burroughs_AppDispatch into staging pipeline."
+      ],
+      "validation_plan": [
+        "Check ELF relocation resolution and window bounds."
+      ]
+    },
+    {
+      "id": "h10-camp-burroughs-appdispatch-staging-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of staged candidate Burroughs_AppDispatch.",
+      "depends_on": [
+        "h10-camp-burroughs-appdispatch-staging"
+      ],
+      "function_claims": [
+        "0x002a0ea8"
+      ],
+      "read_paths": [
+        "docs/agent-work/h10-camp-burroughs-appdispatch-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-burroughs-appdispatch-staging-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify candidate is properly aligned, relocations patched, and padding clean."
+      ],
+      "validation_plan": [
+        "Confirm relocation offset calculations and target VMA mapping."
+      ]
+    },
+    {
+      "id": "h10-camp-quest-resetselection-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize contract, parameters, registers, and memory effects for Quest_ResetSelection (0x0026a004).",
+      "depends_on": [
+        "h10-burroughs-quests-apps-recon-review"
+      ],
+      "function_claims": [
+        "0x0026a004"
+      ],
+      "read_paths": [
+        "src/camp/quest_ui.cpp",
+        "src/camp/app_store.cpp",
+        "src/camp/camp_archive.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-quest-resetselection-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Accurately specify semantics of Quest_ResetSelection.",
+        "Specify test fixtures and mutation controls."
+      ],
+      "validation_plan": [
+        "Static disassembly and register effect verification against code.bin."
+      ]
+    },
+    {
+      "id": "h10-camp-quest-resetselection-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of Quest_ResetSelection contract specification.",
+      "depends_on": [
+        "h10-camp-quest-resetselection-contract"
+      ],
+      "function_claims": [
+        "0x0026a004"
+      ],
+      "read_paths": [
+        "docs/agent-work/h10-camp-quest-resetselection-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-quest-resetselection-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract fidelity against ARM disassembled instructions."
+      ],
+      "validation_plan": [
+        "Audit edge cases, register clobbers, and pointer validations."
+      ]
+    },
+    {
+      "id": "h10-camp-quest-resetselection-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable, editable C++ candidate for Quest_ResetSelection with mutation control.",
+      "depends_on": [
+        "h10-camp-quest-resetselection-contract-review"
+      ],
+      "function_claims": [
+        "0x0026a004"
+      ],
+      "read_paths": [
+        "docs/agent-work/h10-camp-quest-resetselection-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h10_camp_quest_resetselection_candidate.cpp",
+        "docs/agent-work/h10-camp-quest-resetselection-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Implement Quest_ResetSelection candidate and verified mutation control.",
+        "Ensure compiled ARM size fits strictly within the original binary function window."
+      ],
+      "validation_plan": [
+        "Compile with tools/build_check.py (armv6k clang) and check ELF size."
+      ]
+    },
+    {
+      "id": "h10-camp-quest-resetselection-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of Quest_ResetSelection candidate implementation.",
+      "depends_on": [
+        "h10-camp-quest-resetselection-candidate"
+      ],
+      "function_claims": [
+        "0x0026a004"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h10_camp_quest_resetselection_candidate.cpp",
+        "docs/agent-work/h10-camp-quest-resetselection-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-quest-resetselection-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Audit C++ syntax, memory safety, ABI conformance, and headroom margin.",
+        "Verify mutation control triggers distinct divergence."
+      ],
+      "validation_plan": [
+        "Check ELF symbol tables and relocation bindings."
+      ]
+    },
+    {
+      "id": "h10-camp-quest-resetselection-differential",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline Unicorn differential test for Quest_ResetSelection against original ARM code.",
+      "depends_on": [
+        "h10-camp-quest-resetselection-candidate-review"
+      ],
+      "function_claims": [
+        "0x0026a004"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h10_camp_quest_resetselection_candidate.cpp",
+        "tools/h10_camp_quest_resetselection_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-quest-resetselection-differential.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Pass Unicorn emulation comparing original Quest_ResetSelection against candidate.",
+        "Confirm mutation control is detected with non-zero divergence."
+      ],
+      "validation_plan": [
+        "Execute python tools/h10_camp_quest_resetselection_experiment.py."
+      ]
+    },
+    {
+      "id": "h10-camp-quest-resetselection-differential-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of offline differential test results for Quest_ResetSelection.",
+      "depends_on": [
+        "h10-camp-quest-resetselection-differential"
+      ],
+      "function_claims": [
+        "0x0026a004"
+      ],
+      "read_paths": [
+        "docs/agent-work/h10-camp-quest-resetselection-differential.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-quest-resetselection-differential-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm zero divergence in state effects between original and candidate."
+      ],
+      "validation_plan": [
+        "Audit differential execution logs and register dump hashes."
+      ]
+    },
+    {
+      "id": "h10-camp-quest-resetselection-composition",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Verify caller composition and interworking for Quest_ResetSelection in integrated context.",
+      "depends_on": [
+        "h10-camp-quest-resetselection-differential-review"
+      ],
+      "function_claims": [
+        "0x0026a004"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h10_camp_quest_resetselection_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-quest-resetselection-composition.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify caller interface and stack alignment for Quest_ResetSelection.",
+        "Ensure all external calls resolve cleanly without ABI violations."
+      ],
+      "validation_plan": [
+        "Audit caller sequence and callee stack frame preservation."
+      ]
+    },
+    {
+      "id": "h10-camp-quest-resetselection-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of caller composition for Quest_ResetSelection.",
+      "depends_on": [
+        "h10-camp-quest-resetselection-composition"
+      ],
+      "function_claims": [
+        "0x0026a004"
+      ],
+      "read_paths": [
+        "docs/agent-work/h10-camp-quest-resetselection-composition.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-quest-resetselection-composition-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Validate absence of stack corruption or register clobbering across callers."
+      ],
+      "validation_plan": [
+        "Review composition verification reports."
+      ]
+    },
+    {
+      "id": "h10-camp-quest-resetselection-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Stage candidate object and relocation records for Quest_ResetSelection into composite image builder.",
+      "depends_on": [
+        "h10-camp-quest-resetselection-composition-review"
+      ],
+      "function_claims": [
+        "0x0026a004"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h10_camp_quest_resetselection_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-quest-resetselection-staging.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Successfully link and stage Quest_ResetSelection into staging pipeline."
+      ],
+      "validation_plan": [
+        "Check ELF relocation resolution and window bounds."
+      ]
+    },
+    {
+      "id": "h10-camp-quest-resetselection-staging-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of staged candidate Quest_ResetSelection.",
+      "depends_on": [
+        "h10-camp-quest-resetselection-staging"
+      ],
+      "function_claims": [
+        "0x0026a004"
+      ],
+      "read_paths": [
+        "docs/agent-work/h10-camp-quest-resetselection-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-quest-resetselection-staging-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify candidate is properly aligned, relocations patched, and padding clean."
+      ],
+      "validation_plan": [
+        "Confirm relocation offset calculations and target VMA mapping."
+      ]
+    },
+    {
+      "id": "h10-camp-quest-evaltarget-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize contract, parameters, registers, and memory effects for Quest_EvaluateTargetCondition (0x0026a86c).",
+      "depends_on": [
+        "h10-burroughs-quests-apps-recon-review"
+      ],
+      "function_claims": [
+        "0x0026a86c"
+      ],
+      "read_paths": [
+        "src/camp/quest_ui.cpp",
+        "src/camp/app_store.cpp",
+        "src/camp/camp_archive.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-quest-evaltarget-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Accurately specify semantics of Quest_EvaluateTargetCondition.",
+        "Specify test fixtures and mutation controls."
+      ],
+      "validation_plan": [
+        "Static disassembly and register effect verification against code.bin."
+      ]
+    },
+    {
+      "id": "h10-camp-quest-evaltarget-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of Quest_EvaluateTargetCondition contract specification.",
+      "depends_on": [
+        "h10-camp-quest-evaltarget-contract"
+      ],
+      "function_claims": [
+        "0x0026a86c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h10-camp-quest-evaltarget-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-quest-evaltarget-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract fidelity against ARM disassembled instructions."
+      ],
+      "validation_plan": [
+        "Audit edge cases, register clobbers, and pointer validations."
+      ]
+    },
+    {
+      "id": "h10-camp-quest-evaltarget-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable, editable C++ candidate for Quest_EvaluateTargetCondition with mutation control.",
+      "depends_on": [
+        "h10-camp-quest-evaltarget-contract-review"
+      ],
+      "function_claims": [
+        "0x0026a86c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h10-camp-quest-evaltarget-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h10_camp_quest_evaltarget_candidate.cpp",
+        "docs/agent-work/h10-camp-quest-evaltarget-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Implement Quest_EvaluateTargetCondition candidate and verified mutation control.",
+        "Ensure compiled ARM size fits strictly within the original binary function window."
+      ],
+      "validation_plan": [
+        "Compile with tools/build_check.py (armv6k clang) and check ELF size."
+      ]
+    },
+    {
+      "id": "h10-camp-quest-evaltarget-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of Quest_EvaluateTargetCondition candidate implementation.",
+      "depends_on": [
+        "h10-camp-quest-evaltarget-candidate"
+      ],
+      "function_claims": [
+        "0x0026a86c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h10_camp_quest_evaltarget_candidate.cpp",
+        "docs/agent-work/h10-camp-quest-evaltarget-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-quest-evaltarget-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Audit C++ syntax, memory safety, ABI conformance, and headroom margin.",
+        "Verify mutation control triggers distinct divergence."
+      ],
+      "validation_plan": [
+        "Check ELF symbol tables and relocation bindings."
+      ]
+    },
+    {
+      "id": "h10-camp-quest-evaltarget-differential",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline Unicorn differential test for Quest_EvaluateTargetCondition against original ARM code.",
+      "depends_on": [
+        "h10-camp-quest-evaltarget-candidate-review"
+      ],
+      "function_claims": [
+        "0x0026a86c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h10_camp_quest_evaltarget_candidate.cpp",
+        "tools/h10_camp_quest_evaltarget_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-quest-evaltarget-differential.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Pass Unicorn emulation comparing original Quest_EvaluateTargetCondition against candidate.",
+        "Confirm mutation control is detected with non-zero divergence."
+      ],
+      "validation_plan": [
+        "Execute python tools/h10_camp_quest_evaltarget_experiment.py."
+      ]
+    },
+    {
+      "id": "h10-camp-quest-evaltarget-differential-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of offline differential test results for Quest_EvaluateTargetCondition.",
+      "depends_on": [
+        "h10-camp-quest-evaltarget-differential"
+      ],
+      "function_claims": [
+        "0x0026a86c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h10-camp-quest-evaltarget-differential.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-quest-evaltarget-differential-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm zero divergence in state effects between original and candidate."
+      ],
+      "validation_plan": [
+        "Audit differential execution logs and register dump hashes."
+      ]
+    },
+    {
+      "id": "h10-camp-quest-evaltarget-composition",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Verify caller composition and interworking for Quest_EvaluateTargetCondition in integrated context.",
+      "depends_on": [
+        "h10-camp-quest-evaltarget-differential-review"
+      ],
+      "function_claims": [
+        "0x0026a86c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h10_camp_quest_evaltarget_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-quest-evaltarget-composition.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify caller interface and stack alignment for Quest_EvaluateTargetCondition.",
+        "Ensure all external calls resolve cleanly without ABI violations."
+      ],
+      "validation_plan": [
+        "Audit caller sequence and callee stack frame preservation."
+      ]
+    },
+    {
+      "id": "h10-camp-quest-evaltarget-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of caller composition for Quest_EvaluateTargetCondition.",
+      "depends_on": [
+        "h10-camp-quest-evaltarget-composition"
+      ],
+      "function_claims": [
+        "0x0026a86c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h10-camp-quest-evaltarget-composition.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-quest-evaltarget-composition-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Validate absence of stack corruption or register clobbering across callers."
+      ],
+      "validation_plan": [
+        "Review composition verification reports."
+      ]
+    },
+    {
+      "id": "h10-camp-quest-evaltarget-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Stage candidate object and relocation records for Quest_EvaluateTargetCondition into composite image builder.",
+      "depends_on": [
+        "h10-camp-quest-evaltarget-composition-review"
+      ],
+      "function_claims": [
+        "0x0026a86c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h10_camp_quest_evaltarget_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-quest-evaltarget-staging.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Successfully link and stage Quest_EvaluateTargetCondition into staging pipeline."
+      ],
+      "validation_plan": [
+        "Check ELF relocation resolution and window bounds."
+      ]
+    },
+    {
+      "id": "h10-camp-quest-evaltarget-staging-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of staged candidate Quest_EvaluateTargetCondition.",
+      "depends_on": [
+        "h10-camp-quest-evaltarget-staging"
+      ],
+      "function_claims": [
+        "0x0026a86c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h10-camp-quest-evaltarget-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-quest-evaltarget-staging-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify candidate is properly aligned, relocations patched, and padding clean."
+      ],
+      "validation_plan": [
+        "Confirm relocation offset calculations and target VMA mapping."
+      ]
+    },
+    {
+      "id": "h10-camp-quest-getavailability-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize contract, parameters, registers, and memory effects for Quest_GetAvailability (0x0026a9fc).",
+      "depends_on": [
+        "h10-burroughs-quests-apps-recon-review"
+      ],
+      "function_claims": [
+        "0x0026a9fc"
+      ],
+      "read_paths": [
+        "src/camp/quest_ui.cpp",
+        "src/camp/app_store.cpp",
+        "src/camp/camp_archive.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-quest-getavailability-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Accurately specify semantics of Quest_GetAvailability.",
+        "Specify test fixtures and mutation controls."
+      ],
+      "validation_plan": [
+        "Static disassembly and register effect verification against code.bin."
+      ]
+    },
+    {
+      "id": "h10-camp-quest-getavailability-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of Quest_GetAvailability contract specification.",
+      "depends_on": [
+        "h10-camp-quest-getavailability-contract"
+      ],
+      "function_claims": [
+        "0x0026a9fc"
+      ],
+      "read_paths": [
+        "docs/agent-work/h10-camp-quest-getavailability-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-quest-getavailability-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract fidelity against ARM disassembled instructions."
+      ],
+      "validation_plan": [
+        "Audit edge cases, register clobbers, and pointer validations."
+      ]
+    },
+    {
+      "id": "h10-camp-quest-getavailability-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable, editable C++ candidate for Quest_GetAvailability with mutation control.",
+      "depends_on": [
+        "h10-camp-quest-getavailability-contract-review"
+      ],
+      "function_claims": [
+        "0x0026a9fc"
+      ],
+      "read_paths": [
+        "docs/agent-work/h10-camp-quest-getavailability-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h10_camp_quest_getavailability_candidate.cpp",
+        "docs/agent-work/h10-camp-quest-getavailability-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Implement Quest_GetAvailability candidate and verified mutation control.",
+        "Ensure compiled ARM size fits strictly within the original binary function window."
+      ],
+      "validation_plan": [
+        "Compile with tools/build_check.py (armv6k clang) and check ELF size."
+      ]
+    },
+    {
+      "id": "h10-camp-quest-getavailability-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of Quest_GetAvailability candidate implementation.",
+      "depends_on": [
+        "h10-camp-quest-getavailability-candidate"
+      ],
+      "function_claims": [
+        "0x0026a9fc"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h10_camp_quest_getavailability_candidate.cpp",
+        "docs/agent-work/h10-camp-quest-getavailability-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-quest-getavailability-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Audit C++ syntax, memory safety, ABI conformance, and headroom margin.",
+        "Verify mutation control triggers distinct divergence."
+      ],
+      "validation_plan": [
+        "Check ELF symbol tables and relocation bindings."
+      ]
+    },
+    {
+      "id": "h10-camp-quest-getavailability-differential",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline Unicorn differential test for Quest_GetAvailability against original ARM code.",
+      "depends_on": [
+        "h10-camp-quest-getavailability-candidate-review"
+      ],
+      "function_claims": [
+        "0x0026a9fc"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h10_camp_quest_getavailability_candidate.cpp",
+        "tools/h10_camp_quest_getavailability_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-quest-getavailability-differential.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Pass Unicorn emulation comparing original Quest_GetAvailability against candidate.",
+        "Confirm mutation control is detected with non-zero divergence."
+      ],
+      "validation_plan": [
+        "Execute python tools/h10_camp_quest_getavailability_experiment.py."
+      ]
+    },
+    {
+      "id": "h10-camp-quest-getavailability-differential-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of offline differential test results for Quest_GetAvailability.",
+      "depends_on": [
+        "h10-camp-quest-getavailability-differential"
+      ],
+      "function_claims": [
+        "0x0026a9fc"
+      ],
+      "read_paths": [
+        "docs/agent-work/h10-camp-quest-getavailability-differential.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-quest-getavailability-differential-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm zero divergence in state effects between original and candidate."
+      ],
+      "validation_plan": [
+        "Audit differential execution logs and register dump hashes."
+      ]
+    },
+    {
+      "id": "h10-camp-quest-getavailability-composition",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Verify caller composition and interworking for Quest_GetAvailability in integrated context.",
+      "depends_on": [
+        "h10-camp-quest-getavailability-differential-review"
+      ],
+      "function_claims": [
+        "0x0026a9fc"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h10_camp_quest_getavailability_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-quest-getavailability-composition.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify caller interface and stack alignment for Quest_GetAvailability.",
+        "Ensure all external calls resolve cleanly without ABI violations."
+      ],
+      "validation_plan": [
+        "Audit caller sequence and callee stack frame preservation."
+      ]
+    },
+    {
+      "id": "h10-camp-quest-getavailability-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of caller composition for Quest_GetAvailability.",
+      "depends_on": [
+        "h10-camp-quest-getavailability-composition"
+      ],
+      "function_claims": [
+        "0x0026a9fc"
+      ],
+      "read_paths": [
+        "docs/agent-work/h10-camp-quest-getavailability-composition.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-quest-getavailability-composition-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Validate absence of stack corruption or register clobbering across callers."
+      ],
+      "validation_plan": [
+        "Review composition verification reports."
+      ]
+    },
+    {
+      "id": "h10-camp-quest-getavailability-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Stage candidate object and relocation records for Quest_GetAvailability into composite image builder.",
+      "depends_on": [
+        "h10-camp-quest-getavailability-composition-review"
+      ],
+      "function_claims": [
+        "0x0026a9fc"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h10_camp_quest_getavailability_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-quest-getavailability-staging.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Successfully link and stage Quest_GetAvailability into staging pipeline."
+      ],
+      "validation_plan": [
+        "Check ELF relocation resolution and window bounds."
+      ]
+    },
+    {
+      "id": "h10-camp-quest-getavailability-staging-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of staged candidate Quest_GetAvailability.",
+      "depends_on": [
+        "h10-camp-quest-getavailability-staging"
+      ],
+      "function_claims": [
+        "0x0026a9fc"
+      ],
+      "read_paths": [
+        "docs/agent-work/h10-camp-quest-getavailability-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-quest-getavailability-staging-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify candidate is properly aligned, relocations patched, and padding clean."
+      ],
+      "validation_plan": [
+        "Confirm relocation offset calculations and target VMA mapping."
+      ]
+    },
+    {
+      "id": "h10-camp-quest-unpackentry-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize contract, parameters, registers, and memory effects for Quest_UnpackEntryData (0x0026aac0).",
+      "depends_on": [
+        "h10-burroughs-quests-apps-recon-review"
+      ],
+      "function_claims": [
+        "0x0026aac0"
+      ],
+      "read_paths": [
+        "src/camp/quest_ui.cpp",
+        "src/camp/app_store.cpp",
+        "src/camp/camp_archive.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-quest-unpackentry-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Accurately specify semantics of Quest_UnpackEntryData.",
+        "Specify test fixtures and mutation controls."
+      ],
+      "validation_plan": [
+        "Static disassembly and register effect verification against code.bin."
+      ]
+    },
+    {
+      "id": "h10-camp-quest-unpackentry-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of Quest_UnpackEntryData contract specification.",
+      "depends_on": [
+        "h10-camp-quest-unpackentry-contract"
+      ],
+      "function_claims": [
+        "0x0026aac0"
+      ],
+      "read_paths": [
+        "docs/agent-work/h10-camp-quest-unpackentry-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-quest-unpackentry-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract fidelity against ARM disassembled instructions."
+      ],
+      "validation_plan": [
+        "Audit edge cases, register clobbers, and pointer validations."
+      ]
+    },
+    {
+      "id": "h10-camp-quest-unpackentry-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable, editable C++ candidate for Quest_UnpackEntryData with mutation control.",
+      "depends_on": [
+        "h10-camp-quest-unpackentry-contract-review"
+      ],
+      "function_claims": [
+        "0x0026aac0"
+      ],
+      "read_paths": [
+        "docs/agent-work/h10-camp-quest-unpackentry-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h10_camp_quest_unpackentry_candidate.cpp",
+        "docs/agent-work/h10-camp-quest-unpackentry-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Implement Quest_UnpackEntryData candidate and verified mutation control.",
+        "Ensure compiled ARM size fits strictly within the original binary function window."
+      ],
+      "validation_plan": [
+        "Compile with tools/build_check.py (armv6k clang) and check ELF size."
+      ]
+    },
+    {
+      "id": "h10-camp-quest-unpackentry-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of Quest_UnpackEntryData candidate implementation.",
+      "depends_on": [
+        "h10-camp-quest-unpackentry-candidate"
+      ],
+      "function_claims": [
+        "0x0026aac0"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h10_camp_quest_unpackentry_candidate.cpp",
+        "docs/agent-work/h10-camp-quest-unpackentry-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-quest-unpackentry-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Audit C++ syntax, memory safety, ABI conformance, and headroom margin.",
+        "Verify mutation control triggers distinct divergence."
+      ],
+      "validation_plan": [
+        "Check ELF symbol tables and relocation bindings."
+      ]
+    },
+    {
+      "id": "h10-camp-quest-unpackentry-differential",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline Unicorn differential test for Quest_UnpackEntryData against original ARM code.",
+      "depends_on": [
+        "h10-camp-quest-unpackentry-candidate-review"
+      ],
+      "function_claims": [
+        "0x0026aac0"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h10_camp_quest_unpackentry_candidate.cpp",
+        "tools/h10_camp_quest_unpackentry_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-quest-unpackentry-differential.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Pass Unicorn emulation comparing original Quest_UnpackEntryData against candidate.",
+        "Confirm mutation control is detected with non-zero divergence."
+      ],
+      "validation_plan": [
+        "Execute python tools/h10_camp_quest_unpackentry_experiment.py."
+      ]
+    },
+    {
+      "id": "h10-camp-quest-unpackentry-differential-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of offline differential test results for Quest_UnpackEntryData.",
+      "depends_on": [
+        "h10-camp-quest-unpackentry-differential"
+      ],
+      "function_claims": [
+        "0x0026aac0"
+      ],
+      "read_paths": [
+        "docs/agent-work/h10-camp-quest-unpackentry-differential.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-quest-unpackentry-differential-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm zero divergence in state effects between original and candidate."
+      ],
+      "validation_plan": [
+        "Audit differential execution logs and register dump hashes."
+      ]
+    },
+    {
+      "id": "h10-camp-quest-unpackentry-composition",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Verify caller composition and interworking for Quest_UnpackEntryData in integrated context.",
+      "depends_on": [
+        "h10-camp-quest-unpackentry-differential-review"
+      ],
+      "function_claims": [
+        "0x0026aac0"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h10_camp_quest_unpackentry_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-quest-unpackentry-composition.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify caller interface and stack alignment for Quest_UnpackEntryData.",
+        "Ensure all external calls resolve cleanly without ABI violations."
+      ],
+      "validation_plan": [
+        "Audit caller sequence and callee stack frame preservation."
+      ]
+    },
+    {
+      "id": "h10-camp-quest-unpackentry-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of caller composition for Quest_UnpackEntryData.",
+      "depends_on": [
+        "h10-camp-quest-unpackentry-composition"
+      ],
+      "function_claims": [
+        "0x0026aac0"
+      ],
+      "read_paths": [
+        "docs/agent-work/h10-camp-quest-unpackentry-composition.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-quest-unpackentry-composition-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Validate absence of stack corruption or register clobbering across callers."
+      ],
+      "validation_plan": [
+        "Review composition verification reports."
+      ]
+    },
+    {
+      "id": "h10-camp-quest-unpackentry-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Stage candidate object and relocation records for Quest_UnpackEntryData into composite image builder.",
+      "depends_on": [
+        "h10-camp-quest-unpackentry-composition-review"
+      ],
+      "function_claims": [
+        "0x0026aac0"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h10_camp_quest_unpackentry_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-quest-unpackentry-staging.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Successfully link and stage Quest_UnpackEntryData into staging pipeline."
+      ],
+      "validation_plan": [
+        "Check ELF relocation resolution and window bounds."
+      ]
+    },
+    {
+      "id": "h10-camp-quest-unpackentry-staging-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of staged candidate Quest_UnpackEntryData.",
+      "depends_on": [
+        "h10-camp-quest-unpackentry-staging"
+      ],
+      "function_claims": [
+        "0x0026aac0"
+      ],
+      "read_paths": [
+        "docs/agent-work/h10-camp-quest-unpackentry-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-quest-unpackentry-staging-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify candidate is properly aligned, relocations patched, and padding clean."
+      ],
+      "validation_plan": [
+        "Confirm relocation offset calculations and target VMA mapping."
+      ]
+    },
+    {
+      "id": "h10-camp-appstore-setflag-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize contract, parameters, registers, and memory effects for AppStore_SetFlag (0x003253d8).",
+      "depends_on": [
+        "h10-burroughs-quests-apps-recon-review"
+      ],
+      "function_claims": [
+        "0x003253d8"
+      ],
+      "read_paths": [
+        "src/camp/quest_ui.cpp",
+        "src/camp/app_store.cpp",
+        "src/camp/camp_archive.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-appstore-setflag-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Accurately specify semantics of AppStore_SetFlag.",
+        "Specify test fixtures and mutation controls."
+      ],
+      "validation_plan": [
+        "Static disassembly and register effect verification against code.bin."
+      ]
+    },
+    {
+      "id": "h10-camp-appstore-setflag-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of AppStore_SetFlag contract specification.",
+      "depends_on": [
+        "h10-camp-appstore-setflag-contract"
+      ],
+      "function_claims": [
+        "0x003253d8"
+      ],
+      "read_paths": [
+        "docs/agent-work/h10-camp-appstore-setflag-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-appstore-setflag-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract fidelity against ARM disassembled instructions."
+      ],
+      "validation_plan": [
+        "Audit edge cases, register clobbers, and pointer validations."
+      ]
+    },
+    {
+      "id": "h10-camp-appstore-setflag-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable, editable C++ candidate for AppStore_SetFlag with mutation control.",
+      "depends_on": [
+        "h10-camp-appstore-setflag-contract-review"
+      ],
+      "function_claims": [
+        "0x003253d8"
+      ],
+      "read_paths": [
+        "docs/agent-work/h10-camp-appstore-setflag-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h10_camp_appstore_setflag_candidate.cpp",
+        "docs/agent-work/h10-camp-appstore-setflag-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Implement AppStore_SetFlag candidate and verified mutation control.",
+        "Ensure compiled ARM size fits strictly within the original binary function window."
+      ],
+      "validation_plan": [
+        "Compile with tools/build_check.py (armv6k clang) and check ELF size."
+      ]
+    },
+    {
+      "id": "h10-camp-appstore-setflag-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of AppStore_SetFlag candidate implementation.",
+      "depends_on": [
+        "h10-camp-appstore-setflag-candidate"
+      ],
+      "function_claims": [
+        "0x003253d8"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h10_camp_appstore_setflag_candidate.cpp",
+        "docs/agent-work/h10-camp-appstore-setflag-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-appstore-setflag-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Audit C++ syntax, memory safety, ABI conformance, and headroom margin.",
+        "Verify mutation control triggers distinct divergence."
+      ],
+      "validation_plan": [
+        "Check ELF symbol tables and relocation bindings."
+      ]
+    },
+    {
+      "id": "h10-camp-appstore-setflag-differential",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline Unicorn differential test for AppStore_SetFlag against original ARM code.",
+      "depends_on": [
+        "h10-camp-appstore-setflag-candidate-review"
+      ],
+      "function_claims": [
+        "0x003253d8"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h10_camp_appstore_setflag_candidate.cpp",
+        "tools/h10_camp_appstore_setflag_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-appstore-setflag-differential.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Pass Unicorn emulation comparing original AppStore_SetFlag against candidate.",
+        "Confirm mutation control is detected with non-zero divergence."
+      ],
+      "validation_plan": [
+        "Execute python tools/h10_camp_appstore_setflag_experiment.py."
+      ]
+    },
+    {
+      "id": "h10-camp-appstore-setflag-differential-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of offline differential test results for AppStore_SetFlag.",
+      "depends_on": [
+        "h10-camp-appstore-setflag-differential"
+      ],
+      "function_claims": [
+        "0x003253d8"
+      ],
+      "read_paths": [
+        "docs/agent-work/h10-camp-appstore-setflag-differential.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-appstore-setflag-differential-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm zero divergence in state effects between original and candidate."
+      ],
+      "validation_plan": [
+        "Audit differential execution logs and register dump hashes."
+      ]
+    },
+    {
+      "id": "h10-camp-appstore-setflag-composition",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Verify caller composition and interworking for AppStore_SetFlag in integrated context.",
+      "depends_on": [
+        "h10-camp-appstore-setflag-differential-review"
+      ],
+      "function_claims": [
+        "0x003253d8"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h10_camp_appstore_setflag_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-appstore-setflag-composition.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify caller interface and stack alignment for AppStore_SetFlag.",
+        "Ensure all external calls resolve cleanly without ABI violations."
+      ],
+      "validation_plan": [
+        "Audit caller sequence and callee stack frame preservation."
+      ]
+    },
+    {
+      "id": "h10-camp-appstore-setflag-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of caller composition for AppStore_SetFlag.",
+      "depends_on": [
+        "h10-camp-appstore-setflag-composition"
+      ],
+      "function_claims": [
+        "0x003253d8"
+      ],
+      "read_paths": [
+        "docs/agent-work/h10-camp-appstore-setflag-composition.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-appstore-setflag-composition-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Validate absence of stack corruption or register clobbering across callers."
+      ],
+      "validation_plan": [
+        "Review composition verification reports."
+      ]
+    },
+    {
+      "id": "h10-camp-appstore-setflag-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Stage candidate object and relocation records for AppStore_SetFlag into composite image builder.",
+      "depends_on": [
+        "h10-camp-appstore-setflag-composition-review"
+      ],
+      "function_claims": [
+        "0x003253d8"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h10_camp_appstore_setflag_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-appstore-setflag-staging.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Successfully link and stage AppStore_SetFlag into staging pipeline."
+      ],
+      "validation_plan": [
+        "Check ELF relocation resolution and window bounds."
+      ]
+    },
+    {
+      "id": "h10-camp-appstore-setflag-staging-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of staged candidate AppStore_SetFlag.",
+      "depends_on": [
+        "h10-camp-appstore-setflag-staging"
+      ],
+      "function_claims": [
+        "0x003253d8"
+      ],
+      "read_paths": [
+        "docs/agent-work/h10-camp-appstore-setflag-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-appstore-setflag-staging-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify candidate is properly aligned, relocations patched, and padding clean."
+      ],
+      "validation_plan": [
+        "Confirm relocation offset calculations and target VMA mapping."
+      ]
+    },
+    {
+      "id": "h10-camp-appstore-getappparam-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize contract, parameters, registers, and memory effects for AppStore_GetAppParam (0x00325444).",
+      "depends_on": [
+        "h10-burroughs-quests-apps-recon-review"
+      ],
+      "function_claims": [
+        "0x00325444"
+      ],
+      "read_paths": [
+        "src/camp/quest_ui.cpp",
+        "src/camp/app_store.cpp",
+        "src/camp/camp_archive.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-appstore-getappparam-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Accurately specify semantics of AppStore_GetAppParam.",
+        "Specify test fixtures and mutation controls."
+      ],
+      "validation_plan": [
+        "Static disassembly and register effect verification against code.bin."
+      ]
+    },
+    {
+      "id": "h10-camp-appstore-getappparam-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of AppStore_GetAppParam contract specification.",
+      "depends_on": [
+        "h10-camp-appstore-getappparam-contract"
+      ],
+      "function_claims": [
+        "0x00325444"
+      ],
+      "read_paths": [
+        "docs/agent-work/h10-camp-appstore-getappparam-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-appstore-getappparam-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract fidelity against ARM disassembled instructions."
+      ],
+      "validation_plan": [
+        "Audit edge cases, register clobbers, and pointer validations."
+      ]
+    },
+    {
+      "id": "h10-camp-appstore-getappparam-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable, editable C++ candidate for AppStore_GetAppParam with mutation control.",
+      "depends_on": [
+        "h10-camp-appstore-getappparam-contract-review"
+      ],
+      "function_claims": [
+        "0x00325444"
+      ],
+      "read_paths": [
+        "docs/agent-work/h10-camp-appstore-getappparam-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h10_camp_appstore_getappparam_candidate.cpp",
+        "docs/agent-work/h10-camp-appstore-getappparam-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Implement AppStore_GetAppParam candidate and verified mutation control.",
+        "Ensure compiled ARM size fits strictly within the original binary function window."
+      ],
+      "validation_plan": [
+        "Compile with tools/build_check.py (armv6k clang) and check ELF size."
+      ]
+    },
+    {
+      "id": "h10-camp-appstore-getappparam-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of AppStore_GetAppParam candidate implementation.",
+      "depends_on": [
+        "h10-camp-appstore-getappparam-candidate"
+      ],
+      "function_claims": [
+        "0x00325444"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h10_camp_appstore_getappparam_candidate.cpp",
+        "docs/agent-work/h10-camp-appstore-getappparam-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-appstore-getappparam-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Audit C++ syntax, memory safety, ABI conformance, and headroom margin.",
+        "Verify mutation control triggers distinct divergence."
+      ],
+      "validation_plan": [
+        "Check ELF symbol tables and relocation bindings."
+      ]
+    },
+    {
+      "id": "h10-camp-appstore-getappparam-differential",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline Unicorn differential test for AppStore_GetAppParam against original ARM code.",
+      "depends_on": [
+        "h10-camp-appstore-getappparam-candidate-review"
+      ],
+      "function_claims": [
+        "0x00325444"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h10_camp_appstore_getappparam_candidate.cpp",
+        "tools/h10_camp_appstore_getappparam_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-appstore-getappparam-differential.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Pass Unicorn emulation comparing original AppStore_GetAppParam against candidate.",
+        "Confirm mutation control is detected with non-zero divergence."
+      ],
+      "validation_plan": [
+        "Execute python tools/h10_camp_appstore_getappparam_experiment.py."
+      ]
+    },
+    {
+      "id": "h10-camp-appstore-getappparam-differential-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of offline differential test results for AppStore_GetAppParam.",
+      "depends_on": [
+        "h10-camp-appstore-getappparam-differential"
+      ],
+      "function_claims": [
+        "0x00325444"
+      ],
+      "read_paths": [
+        "docs/agent-work/h10-camp-appstore-getappparam-differential.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-appstore-getappparam-differential-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm zero divergence in state effects between original and candidate."
+      ],
+      "validation_plan": [
+        "Audit differential execution logs and register dump hashes."
+      ]
+    },
+    {
+      "id": "h10-camp-appstore-getappparam-composition",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Verify caller composition and interworking for AppStore_GetAppParam in integrated context.",
+      "depends_on": [
+        "h10-camp-appstore-getappparam-differential-review"
+      ],
+      "function_claims": [
+        "0x00325444"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h10_camp_appstore_getappparam_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-appstore-getappparam-composition.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify caller interface and stack alignment for AppStore_GetAppParam.",
+        "Ensure all external calls resolve cleanly without ABI violations."
+      ],
+      "validation_plan": [
+        "Audit caller sequence and callee stack frame preservation."
+      ]
+    },
+    {
+      "id": "h10-camp-appstore-getappparam-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of caller composition for AppStore_GetAppParam.",
+      "depends_on": [
+        "h10-camp-appstore-getappparam-composition"
+      ],
+      "function_claims": [
+        "0x00325444"
+      ],
+      "read_paths": [
+        "docs/agent-work/h10-camp-appstore-getappparam-composition.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-appstore-getappparam-composition-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Validate absence of stack corruption or register clobbering across callers."
+      ],
+      "validation_plan": [
+        "Review composition verification reports."
+      ]
+    },
+    {
+      "id": "h10-camp-appstore-getappparam-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Stage candidate object and relocation records for AppStore_GetAppParam into composite image builder.",
+      "depends_on": [
+        "h10-camp-appstore-getappparam-composition-review"
+      ],
+      "function_claims": [
+        "0x00325444"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h10_camp_appstore_getappparam_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-appstore-getappparam-staging.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Successfully link and stage AppStore_GetAppParam into staging pipeline."
+      ],
+      "validation_plan": [
+        "Check ELF relocation resolution and window bounds."
+      ]
+    },
+    {
+      "id": "h10-camp-appstore-getappparam-staging-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of staged candidate AppStore_GetAppParam.",
+      "depends_on": [
+        "h10-camp-appstore-getappparam-staging"
+      ],
+      "function_claims": [
+        "0x00325444"
+      ],
+      "read_paths": [
+        "docs/agent-work/h10-camp-appstore-getappparam-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-camp-appstore-getappparam-staging-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify candidate is properly aligned, relocations patched, and padding clean."
+      ],
+      "validation_plan": [
+        "Confirm relocation offset calculations and target VMA mapping."
+      ]
+    },
+    {
+      "id": "h10-staged-image-patch",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Compose all 8 validated H10 semantic candidates into final staged executable image and IPS patch.",
+      "depends_on": [
+        "h10-camp-burroughs-getsavedata-staging-review",
+        "h10-camp-burroughs-appdispatch-staging-review",
+        "h10-camp-quest-resetselection-staging-review",
+        "h10-camp-quest-evaltarget-staging-review",
+        "h10-camp-quest-getavailability-staging-review",
+        "h10-camp-quest-unpackentry-staging-review",
+        "h10-camp-appstore-setflag-staging-review",
+        "h10-camp-appstore-getappparam-staging-review"
+      ],
+      "function_claims": [
+        "0x002a0fac",
+        "0x002a0ea8",
+        "0x0026a004",
+        "0x0026a86c",
+        "0x0026a9fc",
+        "0x0026aac0",
+        "0x003253d8",
+        "0x00325444"
+      ],
+      "read_paths": [
+        "tools/h10_staged_image_patch.py",
+        "experiments/semantic_equivalence/h10_camp_burroughs_getsavedata_candidate.cpp",
+        "experiments/semantic_equivalence/h10_camp_burroughs_appdispatch_candidate.cpp",
+        "experiments/semantic_equivalence/h10_camp_quest_resetselection_candidate.cpp",
+        "experiments/semantic_equivalence/h10_camp_quest_evaltarget_candidate.cpp",
+        "experiments/semantic_equivalence/h10_camp_quest_getavailability_candidate.cpp",
+        "experiments/semantic_equivalence/h10_camp_quest_unpackentry_candidate.cpp",
+        "experiments/semantic_equivalence/h10_camp_appstore_setflag_candidate.cpp",
+        "experiments/semantic_equivalence/h10_camp_appstore_getappparam_candidate.cpp"
+      ],
+      "write_paths": [
+        "build/agent-work/H10-semantic/h10-integrated-stage/code.h10-final.bin",
+        "build/agent-work/H10-semantic/h10-integrated-stage/code.h10-final.ips",
+        "build/agent-work/H10-semantic/h10-integrated-stage/report.json",
+        "docs/agent-work/h10-staged-image-patch.md"
+      ],
+      "compiler_slots": 2,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Successfully compile and relocate all 8 candidates onto the H9 base image.",
+        "Generate valid code.h10-final.bin and byte-accurate code.h10-final.ips.",
+        "Verify 100% round-trip fidelity through apply_ips."
+      ],
+      "validation_plan": [
+        "Run tools/h10_staged_image_patch.py."
+      ]
+    },
+    {
+      "id": "h10-staged-image-patch-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of H10 final composite binary and IPS patch artifacts.",
+      "depends_on": [
+        "h10-staged-image-patch"
+      ],
+      "function_claims": [
+        "0x002a0fac",
+        "0x002a0ea8",
+        "0x0026a004",
+        "0x0026a86c",
+        "0x0026a9fc",
+        "0x0026aac0",
+        "0x003253d8",
+        "0x00325444"
+      ],
+      "read_paths": [
+        "docs/agent-work/h10-staged-image-patch.md",
+        "build/agent-work/H10-semantic/h10-integrated-stage/report.json"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-staged-image-patch-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify binary integrity, non-overlapping windows, and SHA-256 hashes."
+      ],
+      "validation_plan": [
+        "Audit report.json manifest and verify zero regression outside target windows."
+      ]
+    },
+    {
+      "id": "h10-offline-composite-gates",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute full suite of offline composite differential gates and caller compositions for H10 image.",
+      "depends_on": [
+        "h10-staged-image-patch-review"
+      ],
+      "function_claims": [
+        "0x002a0fac",
+        "0x002a0ea8",
+        "0x0026a004",
+        "0x0026a86c",
+        "0x0026a9fc",
+        "0x0026aac0",
+        "0x003253d8",
+        "0x00325444"
+      ],
+      "read_paths": [
+        "tools/build_h10_all.py",
+        "build/agent-work/H10-semantic/h10-integrated-stage/code.h10-final.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-offline-composite-gates.md"
+      ],
+      "compiler_slots": 2,
+      "exclusive_resources": [],
+      "acceptance": [
+        "All 8 candidates pass individual Unicorn offline differential validations.",
+        "Zero regressions across combined candidate assembly and ARM/Thumb interworking bits."
+      ],
+      "validation_plan": [
+        "Run tools/build_h10_all.py and all 8 experiment scripts."
+      ]
+    },
+    {
+      "id": "h10-offline-composite-gates-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of offline composite gates and interworking integrity.",
+      "depends_on": [
+        "h10-offline-composite-gates"
+      ],
+      "function_claims": [
+        "0x002a0fac",
+        "0x002a0ea8",
+        "0x0026a004",
+        "0x0026a86c",
+        "0x0026a9fc",
+        "0x0026aac0",
+        "0x003253d8",
+        "0x00325444"
+      ],
+      "read_paths": [
+        "docs/agent-work/h10-offline-composite-gates.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-offline-composite-gates-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve offline test results prior to emulator runtime verification."
+      ],
+      "validation_plan": [
+        "Audit gate execution outputs and mutation sensitivity logs."
+      ]
+    },
+    {
+      "id": "h10-autonomous-quests-apps-verify",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Autonomous runtime verification in Azahar emulator: Title, Save Load, Field, and Burroughs / Quests / Apps sequences.",
+      "depends_on": [
+        "h10-offline-composite-gates-review"
+      ],
+      "function_claims": [
+        "0x002a0fac",
+        "0x002a0ea8",
+        "0x0026a004",
+        "0x0026a86c",
+        "0x0026a9fc",
+        "0x0026aac0",
+        "0x003253d8",
+        "0x00325444"
+      ],
+      "read_paths": [
+        "tools/h3_autonomous_verify.py",
+        "code.h10-final.ips"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-autonomous-quests-apps-verify.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [
+        "emulator_session"
+      ],
+      "acceptance": [
+        "Run paired autonomous test via GDB RSP loopback stub.",
+        "0 register differences across Title, Save Load, 250 Field scene ticks, and Burroughs / Quests / Apps subsystems."
+      ],
+      "validation_plan": [
+        "Execute autonomous verify script and generate paired report.json."
+      ]
+    },
+    {
+      "id": "h10-autonomous-quests-apps-verify-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of autonomous paired runtime verification for Milestone H10.",
+      "depends_on": [
+        "h10-autonomous-quests-apps-verify"
+      ],
+      "function_claims": [
+        "0x002a0fac",
+        "0x002a0ea8",
+        "0x0026a004",
+        "0x0026a86c",
+        "0x0026a9fc",
+        "0x0026aac0",
+        "0x003253d8",
+        "0x00325444"
+      ],
+      "read_paths": [
+        "docs/agent-work/h10-autonomous-quests-apps-verify.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h10-autonomous-quests-apps-verify-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm 100% paired equivalence with zero register or state differences."
+      ],
+      "validation_plan": [
+        "Audit runtime report metrics and save file hash integrity."
+      ]
+    },
+    {
+      "id": "h10-milestone-closure",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize closure of Milestone H10 across documentation and ledger tracking.",
+      "depends_on": [
+        "h10-autonomous-quests-apps-verify-review"
+      ],
+      "function_claims": [
+        "0x002a0fac",
+        "0x002a0ea8",
+        "0x0026a004",
+        "0x0026a86c",
+        "0x0026a9fc",
+        "0x0026aac0",
+        "0x003253d8",
+        "0x00325444"
+      ],
+      "read_paths": [
+        "docs/milestones/H10-burroughs-quests-apps.md",
+        "docs/functional-status.md",
+        "docs/reconstruction-milestones.md"
+      ],
+      "write_paths": [
+        "docs/milestones/H10-burroughs-quests-apps.md",
+        "docs/functional-status.md",
+        "docs/reconstruction-milestones.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Update documentation marking Milestone H10 as completed and closed.",
+        "Ensure clean git state and 0 errors from tools/agent_workflow.py check."
+      ],
+      "validation_plan": [
+        "Run python tools/agent_workflow.py check."
+      ]
+    }
+  ]
+}
