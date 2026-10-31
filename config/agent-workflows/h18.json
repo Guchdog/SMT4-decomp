@@ -1,0 +1,1954 @@
+{
+  "schema_version": 1,
+  "batch": "batch-h18-001",
+  "milestone": "H18",
+  "max_workers": 3,
+  "cpu_budget": 8,
+  "goal": "Promote and integrate all validated semantic modules into src/semantic/ with offline differential validation, staging, and autonomous verification.",
+  "coordinator_owned_paths": [
+    "config/agent-workflows/h18.json",
+    "config/reconstruction.json",
+    "docs/milestones/H18-module-promotion.md",
+    "docs/functional-status.md",
+    "docs/reconstruction-milestones.md"
+  ],
+  "tasks": [
+    {
+      "id": "h18-module-promotion-recon",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Map canonical source organization in src/semantic/ and verify candidate promotions across H10-H17.",
+      "depends_on": [],
+      "function_claims": [
+        "0x002a0fac",
+        "0x0022fc98",
+        "0x00129c58",
+        "0x0026394c",
+        "0x002c3b88",
+        "0x00126084",
+        "0x00110c44",
+        "0x002a17c0"
+      ],
+      "read_paths": [
+        "docs/reconstruction-milestones.md",
+        "src/semantic/"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-module-promotion-recon.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Identify canonical promotion targets from H10 to H17 and define contract interfaces."
+      ],
+      "validation_plan": [
+        "python tools/build_h18_all.py"
+      ]
+    },
+    {
+      "id": "h18-module-promotion-recon-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review module promotion architecture and source promotion layout in src/semantic/.",
+      "depends_on": [
+        "h18-module-promotion-recon"
+      ],
+      "function_claims": [
+        "0x002a0fac",
+        "0x0022fc98",
+        "0x00129c58",
+        "0x0026394c",
+        "0x002c3b88",
+        "0x00126084",
+        "0x00110c44",
+        "0x002a17c0"
+      ],
+      "read_paths": [
+        "docs/agent-work/h18-module-promotion-recon.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-module-promotion-recon-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve module promotion strategy and verify zero header/compilation conflicts."
+      ],
+      "validation_plan": [
+        "python tools/build_h18_all.py"
+      ]
+    },
+    {
+      "id": "h18-h10-burroughs-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Define contract specification for Camp_Burroughs_GetSaveData (0x002a0fac) in Canonical promotion of Burroughs save data resolver.",
+      "depends_on": [
+        "h18-module-promotion-recon-review"
+      ],
+      "function_claims": [
+        "0x002a0fac"
+      ],
+      "read_paths": [
+        "src/semantic/h10_burroughs_promoted.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-h10-burroughs-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Specify calling convention, register inputs, preconditions, and return contract for Camp_Burroughs_GetSaveData."
+      ],
+      "validation_plan": [
+        "python tools/h18_h10_burroughs_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h10-burroughs-contract-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review contract specification for Camp_Burroughs_GetSaveData (0x002a0fac).",
+      "depends_on": [
+        "h18-h10-burroughs-contract"
+      ],
+      "function_claims": [
+        "0x002a0fac"
+      ],
+      "read_paths": [
+        "docs/agent-work/h18-h10-burroughs-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-h10-burroughs-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify ABI soundness and contract boundaries for Camp_Burroughs_GetSaveData."
+      ],
+      "validation_plan": [
+        "python tools/h18_h10_burroughs_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h10-burroughs-recon",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Disassemble and recover assembly semantics for Camp_Burroughs_GetSaveData (0x002a0fac).",
+      "depends_on": [
+        "h18-h10-burroughs-contract-review"
+      ],
+      "function_claims": [
+        "0x002a0fac"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-h10-burroughs-recon.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm ARM instructions, immediate offsets, and calling sequences for Camp_Burroughs_GetSaveData."
+      ],
+      "validation_plan": [
+        "python tools/h18_h10_burroughs_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h10-burroughs-recon-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review assembly reconnaissance for Camp_Burroughs_GetSaveData (0x002a0fac).",
+      "depends_on": [
+        "h18-h10-burroughs-recon"
+      ],
+      "function_claims": [
+        "0x002a0fac"
+      ],
+      "read_paths": [
+        "docs/agent-work/h18-h10-burroughs-recon.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-h10-burroughs-recon-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve disassembly analysis for Camp_Burroughs_GetSaveData."
+      ],
+      "validation_plan": [
+        "python tools/h18_h10_burroughs_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h10-burroughs-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement canonical C++ promoted function for Camp_Burroughs_GetSaveData (0x002a0fac).",
+      "depends_on": [
+        "h18-h10-burroughs-recon-review"
+      ],
+      "function_claims": [
+        "0x002a0fac"
+      ],
+      "read_paths": [
+        "src/semantic/h10_burroughs_promoted.cpp"
+      ],
+      "write_paths": [
+        "src/semantic/h10_burroughs_promoted.cpp",
+        "docs/agent-work/h18-h10-burroughs-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "src/semantic/h10_burroughs_promoted.cpp"
+      ],
+      "acceptance": [
+        "Compile src/semantic/h10_burroughs_promoted.cpp cleanly with Clang ARMv6K within original byte window."
+      ],
+      "validation_plan": [
+        "python tools/h18_h10_burroughs_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h10-burroughs-candidate-review",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent code review of canonical promoted C++ for Camp_Burroughs_GetSaveData (0x002a0fac).",
+      "depends_on": [
+        "h18-h10-burroughs-candidate"
+      ],
+      "function_claims": [
+        "0x002a0fac"
+      ],
+      "read_paths": [
+        "src/semantic/h10_burroughs_promoted.cpp",
+        "docs/agent-work/h18-h10-burroughs-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-h10-burroughs-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify that implementation matches contract and has zero UB."
+      ],
+      "validation_plan": [
+        "python tools/h18_h10_burroughs_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h10-burroughs-diff-test",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Run offline Unicorn differential test suite for Camp_Burroughs_GetSaveData (0x002a0fac).",
+      "depends_on": [
+        "h18-h10-burroughs-candidate-review"
+      ],
+      "function_claims": [
+        "0x002a0fac"
+      ],
+      "read_paths": [
+        "src/semantic/h10_burroughs_promoted.cpp",
+        "tools/h18_h10_burroughs_experiment.py"
+      ],
+      "write_paths": [
+        "tools/h18_h10_burroughs_experiment.py",
+        "docs/agent-work/h18-h10-burroughs-diff-test.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "100% register/memory parity across input domain and positive mutation sensitivity."
+      ],
+      "validation_plan": [
+        "python tools/h18_h10_burroughs_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h10-burroughs-diff-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential test results for Camp_Burroughs_GetSaveData (0x002a0fac).",
+      "depends_on": [
+        "h18-h10-burroughs-diff-test"
+      ],
+      "function_claims": [
+        "0x002a0fac"
+      ],
+      "read_paths": [
+        "docs/agent-work/h18-h10-burroughs-diff-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-h10-burroughs-diff-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm differential suite completeness for Camp_Burroughs_GetSaveData."
+      ],
+      "validation_plan": [
+        "python tools/h18_h10_burroughs_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h11-shops-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Define contract specification for Shop_CheckHasNew (0x0022fc98) in Canonical promotion of Shop inventory status query.",
+      "depends_on": [
+        "h18-module-promotion-recon-review"
+      ],
+      "function_claims": [
+        "0x0022fc98"
+      ],
+      "read_paths": [
+        "src/semantic/h11_shops_promoted.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-h11-shops-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Specify calling convention, register inputs, preconditions, and return contract for Shop_CheckHasNew."
+      ],
+      "validation_plan": [
+        "python tools/h18_h11_shops_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h11-shops-contract-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review contract specification for Shop_CheckHasNew (0x0022fc98).",
+      "depends_on": [
+        "h18-h11-shops-contract"
+      ],
+      "function_claims": [
+        "0x0022fc98"
+      ],
+      "read_paths": [
+        "docs/agent-work/h18-h11-shops-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-h11-shops-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify ABI soundness and contract boundaries for Shop_CheckHasNew."
+      ],
+      "validation_plan": [
+        "python tools/h18_h11_shops_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h11-shops-recon",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Disassemble and recover assembly semantics for Shop_CheckHasNew (0x0022fc98).",
+      "depends_on": [
+        "h18-h11-shops-contract-review"
+      ],
+      "function_claims": [
+        "0x0022fc98"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-h11-shops-recon.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm ARM instructions, immediate offsets, and calling sequences for Shop_CheckHasNew."
+      ],
+      "validation_plan": [
+        "python tools/h18_h11_shops_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h11-shops-recon-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review assembly reconnaissance for Shop_CheckHasNew (0x0022fc98).",
+      "depends_on": [
+        "h18-h11-shops-recon"
+      ],
+      "function_claims": [
+        "0x0022fc98"
+      ],
+      "read_paths": [
+        "docs/agent-work/h18-h11-shops-recon.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-h11-shops-recon-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve disassembly analysis for Shop_CheckHasNew."
+      ],
+      "validation_plan": [
+        "python tools/h18_h11_shops_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h11-shops-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement canonical C++ promoted function for Shop_CheckHasNew (0x0022fc98).",
+      "depends_on": [
+        "h18-h11-shops-recon-review"
+      ],
+      "function_claims": [
+        "0x0022fc98"
+      ],
+      "read_paths": [
+        "src/semantic/h11_shops_promoted.cpp"
+      ],
+      "write_paths": [
+        "src/semantic/h11_shops_promoted.cpp",
+        "docs/agent-work/h18-h11-shops-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "src/semantic/h11_shops_promoted.cpp"
+      ],
+      "acceptance": [
+        "Compile src/semantic/h11_shops_promoted.cpp cleanly with Clang ARMv6K within original byte window."
+      ],
+      "validation_plan": [
+        "python tools/h18_h11_shops_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h11-shops-candidate-review",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent code review of canonical promoted C++ for Shop_CheckHasNew (0x0022fc98).",
+      "depends_on": [
+        "h18-h11-shops-candidate"
+      ],
+      "function_claims": [
+        "0x0022fc98"
+      ],
+      "read_paths": [
+        "src/semantic/h11_shops_promoted.cpp",
+        "docs/agent-work/h18-h11-shops-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-h11-shops-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify that implementation matches contract and has zero UB."
+      ],
+      "validation_plan": [
+        "python tools/h18_h11_shops_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h11-shops-diff-test",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Run offline Unicorn differential test suite for Shop_CheckHasNew (0x0022fc98).",
+      "depends_on": [
+        "h18-h11-shops-candidate-review"
+      ],
+      "function_claims": [
+        "0x0022fc98"
+      ],
+      "read_paths": [
+        "src/semantic/h11_shops_promoted.cpp",
+        "tools/h18_h11_shops_experiment.py"
+      ],
+      "write_paths": [
+        "tools/h18_h11_shops_experiment.py",
+        "docs/agent-work/h18-h11-shops-diff-test.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "100% register/memory parity across input domain and positive mutation sensitivity."
+      ],
+      "validation_plan": [
+        "python tools/h18_h11_shops_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h11-shops-diff-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential test results for Shop_CheckHasNew (0x0022fc98).",
+      "depends_on": [
+        "h18-h11-shops-diff-test"
+      ],
+      "function_claims": [
+        "0x0022fc98"
+      ],
+      "read_paths": [
+        "docs/agent-work/h18-h11-shops-diff-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-h11-shops-diff-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm differential suite completeness for Shop_CheckHasNew."
+      ],
+      "validation_plan": [
+        "python tools/h18_h11_shops_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h12-combat-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Define contract specification for Battle_GetUnitSmirkState (0x00129c58) in Canonical promotion of Battle unit smirk status getter.",
+      "depends_on": [
+        "h18-module-promotion-recon-review"
+      ],
+      "function_claims": [
+        "0x00129c58"
+      ],
+      "read_paths": [
+        "src/semantic/h12_combat_promoted.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-h12-combat-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Specify calling convention, register inputs, preconditions, and return contract for Battle_GetUnitSmirkState."
+      ],
+      "validation_plan": [
+        "python tools/h18_h12_combat_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h12-combat-contract-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review contract specification for Battle_GetUnitSmirkState (0x00129c58).",
+      "depends_on": [
+        "h18-h12-combat-contract"
+      ],
+      "function_claims": [
+        "0x00129c58"
+      ],
+      "read_paths": [
+        "docs/agent-work/h18-h12-combat-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-h12-combat-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify ABI soundness and contract boundaries for Battle_GetUnitSmirkState."
+      ],
+      "validation_plan": [
+        "python tools/h18_h12_combat_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h12-combat-recon",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Disassemble and recover assembly semantics for Battle_GetUnitSmirkState (0x00129c58).",
+      "depends_on": [
+        "h18-h12-combat-contract-review"
+      ],
+      "function_claims": [
+        "0x00129c58"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-h12-combat-recon.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm ARM instructions, immediate offsets, and calling sequences for Battle_GetUnitSmirkState."
+      ],
+      "validation_plan": [
+        "python tools/h18_h12_combat_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h12-combat-recon-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review assembly reconnaissance for Battle_GetUnitSmirkState (0x00129c58).",
+      "depends_on": [
+        "h18-h12-combat-recon"
+      ],
+      "function_claims": [
+        "0x00129c58"
+      ],
+      "read_paths": [
+        "docs/agent-work/h18-h12-combat-recon.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-h12-combat-recon-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve disassembly analysis for Battle_GetUnitSmirkState."
+      ],
+      "validation_plan": [
+        "python tools/h18_h12_combat_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h12-combat-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement canonical C++ promoted function for Battle_GetUnitSmirkState (0x00129c58).",
+      "depends_on": [
+        "h18-h12-combat-recon-review"
+      ],
+      "function_claims": [
+        "0x00129c58"
+      ],
+      "read_paths": [
+        "src/semantic/h12_combat_promoted.cpp"
+      ],
+      "write_paths": [
+        "src/semantic/h12_combat_promoted.cpp",
+        "docs/agent-work/h18-h12-combat-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "src/semantic/h12_combat_promoted.cpp"
+      ],
+      "acceptance": [
+        "Compile src/semantic/h12_combat_promoted.cpp cleanly with Clang ARMv6K within original byte window."
+      ],
+      "validation_plan": [
+        "python tools/h18_h12_combat_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h12-combat-candidate-review",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent code review of canonical promoted C++ for Battle_GetUnitSmirkState (0x00129c58).",
+      "depends_on": [
+        "h18-h12-combat-candidate"
+      ],
+      "function_claims": [
+        "0x00129c58"
+      ],
+      "read_paths": [
+        "src/semantic/h12_combat_promoted.cpp",
+        "docs/agent-work/h18-h12-combat-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-h12-combat-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify that implementation matches contract and has zero UB."
+      ],
+      "validation_plan": [
+        "python tools/h18_h12_combat_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h12-combat-diff-test",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Run offline Unicorn differential test suite for Battle_GetUnitSmirkState (0x00129c58).",
+      "depends_on": [
+        "h18-h12-combat-candidate-review"
+      ],
+      "function_claims": [
+        "0x00129c58"
+      ],
+      "read_paths": [
+        "src/semantic/h12_combat_promoted.cpp",
+        "tools/h18_h12_combat_experiment.py"
+      ],
+      "write_paths": [
+        "tools/h18_h12_combat_experiment.py",
+        "docs/agent-work/h18-h12-combat-diff-test.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "100% register/memory parity across input domain and positive mutation sensitivity."
+      ],
+      "validation_plan": [
+        "python tools/h18_h12_combat_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h12-combat-diff-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential test results for Battle_GetUnitSmirkState (0x00129c58).",
+      "depends_on": [
+        "h18-h12-combat-diff-test"
+      ],
+      "function_claims": [
+        "0x00129c58"
+      ],
+      "read_paths": [
+        "docs/agent-work/h18-h12-combat-diff-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-h12-combat-diff-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm differential suite completeness for Battle_GetUnitSmirkState."
+      ],
+      "validation_plan": [
+        "python tools/h18_h12_combat_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h13-exploration-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Define contract specification for PlaceWin_IsActive (0x0026394c) in Canonical promotion of PlaceWin UI timer active state.",
+      "depends_on": [
+        "h18-module-promotion-recon-review"
+      ],
+      "function_claims": [
+        "0x0026394c"
+      ],
+      "read_paths": [
+        "src/semantic/h13_exploration_promoted.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-h13-exploration-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Specify calling convention, register inputs, preconditions, and return contract for PlaceWin_IsActive."
+      ],
+      "validation_plan": [
+        "python tools/h18_h13_exploration_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h13-exploration-contract-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review contract specification for PlaceWin_IsActive (0x0026394c).",
+      "depends_on": [
+        "h18-h13-exploration-contract"
+      ],
+      "function_claims": [
+        "0x0026394c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h18-h13-exploration-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-h13-exploration-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify ABI soundness and contract boundaries for PlaceWin_IsActive."
+      ],
+      "validation_plan": [
+        "python tools/h18_h13_exploration_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h13-exploration-recon",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Disassemble and recover assembly semantics for PlaceWin_IsActive (0x0026394c).",
+      "depends_on": [
+        "h18-h13-exploration-contract-review"
+      ],
+      "function_claims": [
+        "0x0026394c"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-h13-exploration-recon.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm ARM instructions, immediate offsets, and calling sequences for PlaceWin_IsActive."
+      ],
+      "validation_plan": [
+        "python tools/h18_h13_exploration_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h13-exploration-recon-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review assembly reconnaissance for PlaceWin_IsActive (0x0026394c).",
+      "depends_on": [
+        "h18-h13-exploration-recon"
+      ],
+      "function_claims": [
+        "0x0026394c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h18-h13-exploration-recon.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-h13-exploration-recon-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve disassembly analysis for PlaceWin_IsActive."
+      ],
+      "validation_plan": [
+        "python tools/h18_h13_exploration_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h13-exploration-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement canonical C++ promoted function for PlaceWin_IsActive (0x0026394c).",
+      "depends_on": [
+        "h18-h13-exploration-recon-review"
+      ],
+      "function_claims": [
+        "0x0026394c"
+      ],
+      "read_paths": [
+        "src/semantic/h13_exploration_promoted.cpp"
+      ],
+      "write_paths": [
+        "src/semantic/h13_exploration_promoted.cpp",
+        "docs/agent-work/h18-h13-exploration-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "src/semantic/h13_exploration_promoted.cpp"
+      ],
+      "acceptance": [
+        "Compile src/semantic/h13_exploration_promoted.cpp cleanly with Clang ARMv6K within original byte window."
+      ],
+      "validation_plan": [
+        "python tools/h18_h13_exploration_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h13-exploration-candidate-review",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent code review of canonical promoted C++ for PlaceWin_IsActive (0x0026394c).",
+      "depends_on": [
+        "h18-h13-exploration-candidate"
+      ],
+      "function_claims": [
+        "0x0026394c"
+      ],
+      "read_paths": [
+        "src/semantic/h13_exploration_promoted.cpp",
+        "docs/agent-work/h18-h13-exploration-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-h13-exploration-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify that implementation matches contract and has zero UB."
+      ],
+      "validation_plan": [
+        "python tools/h18_h13_exploration_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h13-exploration-diff-test",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Run offline Unicorn differential test suite for PlaceWin_IsActive (0x0026394c).",
+      "depends_on": [
+        "h18-h13-exploration-candidate-review"
+      ],
+      "function_claims": [
+        "0x0026394c"
+      ],
+      "read_paths": [
+        "src/semantic/h13_exploration_promoted.cpp",
+        "tools/h18_h13_exploration_experiment.py"
+      ],
+      "write_paths": [
+        "tools/h18_h13_exploration_experiment.py",
+        "docs/agent-work/h18-h13-exploration-diff-test.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "100% register/memory parity across input domain and positive mutation sensitivity."
+      ],
+      "validation_plan": [
+        "python tools/h18_h13_exploration_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h13-exploration-diff-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential test results for PlaceWin_IsActive (0x0026394c).",
+      "depends_on": [
+        "h18-h13-exploration-diff-test"
+      ],
+      "function_claims": [
+        "0x0026394c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h18-h13-exploration-diff-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-h13-exploration-diff-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm differential suite completeness for PlaceWin_IsActive."
+      ],
+      "validation_plan": [
+        "python tools/h18_h13_exploration_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h14-graphics-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Define contract specification for AsdGpu_HeapSize (0x002c3b88) in Canonical promotion of ASD GPU heap size getter.",
+      "depends_on": [
+        "h18-module-promotion-recon-review"
+      ],
+      "function_claims": [
+        "0x002c3b88"
+      ],
+      "read_paths": [
+        "src/semantic/h14_graphics_promoted.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-h14-graphics-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Specify calling convention, register inputs, preconditions, and return contract for AsdGpu_HeapSize."
+      ],
+      "validation_plan": [
+        "python tools/h18_h14_graphics_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h14-graphics-contract-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review contract specification for AsdGpu_HeapSize (0x002c3b88).",
+      "depends_on": [
+        "h18-h14-graphics-contract"
+      ],
+      "function_claims": [
+        "0x002c3b88"
+      ],
+      "read_paths": [
+        "docs/agent-work/h18-h14-graphics-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-h14-graphics-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify ABI soundness and contract boundaries for AsdGpu_HeapSize."
+      ],
+      "validation_plan": [
+        "python tools/h18_h14_graphics_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h14-graphics-recon",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Disassemble and recover assembly semantics for AsdGpu_HeapSize (0x002c3b88).",
+      "depends_on": [
+        "h18-h14-graphics-contract-review"
+      ],
+      "function_claims": [
+        "0x002c3b88"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-h14-graphics-recon.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm ARM instructions, immediate offsets, and calling sequences for AsdGpu_HeapSize."
+      ],
+      "validation_plan": [
+        "python tools/h18_h14_graphics_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h14-graphics-recon-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review assembly reconnaissance for AsdGpu_HeapSize (0x002c3b88).",
+      "depends_on": [
+        "h18-h14-graphics-recon"
+      ],
+      "function_claims": [
+        "0x002c3b88"
+      ],
+      "read_paths": [
+        "docs/agent-work/h18-h14-graphics-recon.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-h14-graphics-recon-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve disassembly analysis for AsdGpu_HeapSize."
+      ],
+      "validation_plan": [
+        "python tools/h18_h14_graphics_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h14-graphics-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement canonical C++ promoted function for AsdGpu_HeapSize (0x002c3b88).",
+      "depends_on": [
+        "h18-h14-graphics-recon-review"
+      ],
+      "function_claims": [
+        "0x002c3b88"
+      ],
+      "read_paths": [
+        "src/semantic/h14_graphics_promoted.cpp"
+      ],
+      "write_paths": [
+        "src/semantic/h14_graphics_promoted.cpp",
+        "docs/agent-work/h18-h14-graphics-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "src/semantic/h14_graphics_promoted.cpp"
+      ],
+      "acceptance": [
+        "Compile src/semantic/h14_graphics_promoted.cpp cleanly with Clang ARMv6K within original byte window."
+      ],
+      "validation_plan": [
+        "python tools/h18_h14_graphics_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h14-graphics-candidate-review",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent code review of canonical promoted C++ for AsdGpu_HeapSize (0x002c3b88).",
+      "depends_on": [
+        "h18-h14-graphics-candidate"
+      ],
+      "function_claims": [
+        "0x002c3b88"
+      ],
+      "read_paths": [
+        "src/semantic/h14_graphics_promoted.cpp",
+        "docs/agent-work/h18-h14-graphics-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-h14-graphics-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify that implementation matches contract and has zero UB."
+      ],
+      "validation_plan": [
+        "python tools/h18_h14_graphics_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h14-graphics-diff-test",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Run offline Unicorn differential test suite for AsdGpu_HeapSize (0x002c3b88).",
+      "depends_on": [
+        "h18-h14-graphics-candidate-review"
+      ],
+      "function_claims": [
+        "0x002c3b88"
+      ],
+      "read_paths": [
+        "src/semantic/h14_graphics_promoted.cpp",
+        "tools/h18_h14_graphics_experiment.py"
+      ],
+      "write_paths": [
+        "tools/h18_h14_graphics_experiment.py",
+        "docs/agent-work/h18-h14-graphics-diff-test.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "100% register/memory parity across input domain and positive mutation sensitivity."
+      ],
+      "validation_plan": [
+        "python tools/h18_h14_graphics_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h14-graphics-diff-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential test results for AsdGpu_HeapSize (0x002c3b88).",
+      "depends_on": [
+        "h18-h14-graphics-diff-test"
+      ],
+      "function_claims": [
+        "0x002c3b88"
+      ],
+      "read_paths": [
+        "docs/agent-work/h18-h14-graphics-diff-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-h14-graphics-diff-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm differential suite completeness for AsdGpu_HeapSize."
+      ],
+      "validation_plan": [
+        "python tools/h18_h14_graphics_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h15-ui-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Define contract specification for UiDialog_GetState (0x00126084) in Canonical promotion of UI Dialog state getter.",
+      "depends_on": [
+        "h18-module-promotion-recon-review"
+      ],
+      "function_claims": [
+        "0x00126084"
+      ],
+      "read_paths": [
+        "src/semantic/h15_ui_promoted.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-h15-ui-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Specify calling convention, register inputs, preconditions, and return contract for UiDialog_GetState."
+      ],
+      "validation_plan": [
+        "python tools/h18_h15_ui_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h15-ui-contract-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review contract specification for UiDialog_GetState (0x00126084).",
+      "depends_on": [
+        "h18-h15-ui-contract"
+      ],
+      "function_claims": [
+        "0x00126084"
+      ],
+      "read_paths": [
+        "docs/agent-work/h18-h15-ui-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-h15-ui-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify ABI soundness and contract boundaries for UiDialog_GetState."
+      ],
+      "validation_plan": [
+        "python tools/h18_h15_ui_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h15-ui-recon",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Disassemble and recover assembly semantics for UiDialog_GetState (0x00126084).",
+      "depends_on": [
+        "h18-h15-ui-contract-review"
+      ],
+      "function_claims": [
+        "0x00126084"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-h15-ui-recon.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm ARM instructions, immediate offsets, and calling sequences for UiDialog_GetState."
+      ],
+      "validation_plan": [
+        "python tools/h18_h15_ui_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h15-ui-recon-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review assembly reconnaissance for UiDialog_GetState (0x00126084).",
+      "depends_on": [
+        "h18-h15-ui-recon"
+      ],
+      "function_claims": [
+        "0x00126084"
+      ],
+      "read_paths": [
+        "docs/agent-work/h18-h15-ui-recon.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-h15-ui-recon-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve disassembly analysis for UiDialog_GetState."
+      ],
+      "validation_plan": [
+        "python tools/h18_h15_ui_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h15-ui-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement canonical C++ promoted function for UiDialog_GetState (0x00126084).",
+      "depends_on": [
+        "h18-h15-ui-recon-review"
+      ],
+      "function_claims": [
+        "0x00126084"
+      ],
+      "read_paths": [
+        "src/semantic/h15_ui_promoted.cpp"
+      ],
+      "write_paths": [
+        "src/semantic/h15_ui_promoted.cpp",
+        "docs/agent-work/h18-h15-ui-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "src/semantic/h15_ui_promoted.cpp"
+      ],
+      "acceptance": [
+        "Compile src/semantic/h15_ui_promoted.cpp cleanly with Clang ARMv6K within original byte window."
+      ],
+      "validation_plan": [
+        "python tools/h18_h15_ui_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h15-ui-candidate-review",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent code review of canonical promoted C++ for UiDialog_GetState (0x00126084).",
+      "depends_on": [
+        "h18-h15-ui-candidate"
+      ],
+      "function_claims": [
+        "0x00126084"
+      ],
+      "read_paths": [
+        "src/semantic/h15_ui_promoted.cpp",
+        "docs/agent-work/h18-h15-ui-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-h15-ui-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify that implementation matches contract and has zero UB."
+      ],
+      "validation_plan": [
+        "python tools/h18_h15_ui_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h15-ui-diff-test",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Run offline Unicorn differential test suite for UiDialog_GetState (0x00126084).",
+      "depends_on": [
+        "h18-h15-ui-candidate-review"
+      ],
+      "function_claims": [
+        "0x00126084"
+      ],
+      "read_paths": [
+        "src/semantic/h15_ui_promoted.cpp",
+        "tools/h18_h15_ui_experiment.py"
+      ],
+      "write_paths": [
+        "tools/h18_h15_ui_experiment.py",
+        "docs/agent-work/h18-h15-ui-diff-test.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "100% register/memory parity across input domain and positive mutation sensitivity."
+      ],
+      "validation_plan": [
+        "python tools/h18_h15_ui_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h15-ui-diff-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential test results for UiDialog_GetState (0x00126084).",
+      "depends_on": [
+        "h18-h15-ui-diff-test"
+      ],
+      "function_claims": [
+        "0x00126084"
+      ],
+      "read_paths": [
+        "docs/agent-work/h18-h15-ui-diff-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-h15-ui-diff-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm differential suite completeness for UiDialog_GetState."
+      ],
+      "validation_plan": [
+        "python tools/h18_h15_ui_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h16-sound-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Define contract specification for AsdSoundEffect_GetBufferSize (0x00110c44) in Canonical promotion of Sound Effect buffer size calculation.",
+      "depends_on": [
+        "h18-module-promotion-recon-review"
+      ],
+      "function_claims": [
+        "0x00110c44"
+      ],
+      "read_paths": [
+        "src/semantic/h16_sound_promoted.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-h16-sound-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Specify calling convention, register inputs, preconditions, and return contract for AsdSoundEffect_GetBufferSize."
+      ],
+      "validation_plan": [
+        "python tools/h18_h16_sound_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h16-sound-contract-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review contract specification for AsdSoundEffect_GetBufferSize (0x00110c44).",
+      "depends_on": [
+        "h18-h16-sound-contract"
+      ],
+      "function_claims": [
+        "0x00110c44"
+      ],
+      "read_paths": [
+        "docs/agent-work/h18-h16-sound-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-h16-sound-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify ABI soundness and contract boundaries for AsdSoundEffect_GetBufferSize."
+      ],
+      "validation_plan": [
+        "python tools/h18_h16_sound_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h16-sound-recon",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Disassemble and recover assembly semantics for AsdSoundEffect_GetBufferSize (0x00110c44).",
+      "depends_on": [
+        "h18-h16-sound-contract-review"
+      ],
+      "function_claims": [
+        "0x00110c44"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-h16-sound-recon.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm ARM instructions, immediate offsets, and calling sequences for AsdSoundEffect_GetBufferSize."
+      ],
+      "validation_plan": [
+        "python tools/h18_h16_sound_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h16-sound-recon-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review assembly reconnaissance for AsdSoundEffect_GetBufferSize (0x00110c44).",
+      "depends_on": [
+        "h18-h16-sound-recon"
+      ],
+      "function_claims": [
+        "0x00110c44"
+      ],
+      "read_paths": [
+        "docs/agent-work/h18-h16-sound-recon.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-h16-sound-recon-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve disassembly analysis for AsdSoundEffect_GetBufferSize."
+      ],
+      "validation_plan": [
+        "python tools/h18_h16_sound_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h16-sound-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement canonical C++ promoted function for AsdSoundEffect_GetBufferSize (0x00110c44).",
+      "depends_on": [
+        "h18-h16-sound-recon-review"
+      ],
+      "function_claims": [
+        "0x00110c44"
+      ],
+      "read_paths": [
+        "src/semantic/h16_sound_promoted.cpp"
+      ],
+      "write_paths": [
+        "src/semantic/h16_sound_promoted.cpp",
+        "docs/agent-work/h18-h16-sound-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "src/semantic/h16_sound_promoted.cpp"
+      ],
+      "acceptance": [
+        "Compile src/semantic/h16_sound_promoted.cpp cleanly with Clang ARMv6K within original byte window."
+      ],
+      "validation_plan": [
+        "python tools/h18_h16_sound_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h16-sound-candidate-review",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent code review of canonical promoted C++ for AsdSoundEffect_GetBufferSize (0x00110c44).",
+      "depends_on": [
+        "h18-h16-sound-candidate"
+      ],
+      "function_claims": [
+        "0x00110c44"
+      ],
+      "read_paths": [
+        "src/semantic/h16_sound_promoted.cpp",
+        "docs/agent-work/h18-h16-sound-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-h16-sound-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify that implementation matches contract and has zero UB."
+      ],
+      "validation_plan": [
+        "python tools/h18_h16_sound_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h16-sound-diff-test",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Run offline Unicorn differential test suite for AsdSoundEffect_GetBufferSize (0x00110c44).",
+      "depends_on": [
+        "h18-h16-sound-candidate-review"
+      ],
+      "function_claims": [
+        "0x00110c44"
+      ],
+      "read_paths": [
+        "src/semantic/h16_sound_promoted.cpp",
+        "tools/h18_h16_sound_experiment.py"
+      ],
+      "write_paths": [
+        "tools/h18_h16_sound_experiment.py",
+        "docs/agent-work/h18-h16-sound-diff-test.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "100% register/memory parity across input domain and positive mutation sensitivity."
+      ],
+      "validation_plan": [
+        "python tools/h18_h16_sound_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h16-sound-diff-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential test results for AsdSoundEffect_GetBufferSize (0x00110c44).",
+      "depends_on": [
+        "h18-h16-sound-diff-test"
+      ],
+      "function_claims": [
+        "0x00110c44"
+      ],
+      "read_paths": [
+        "docs/agent-work/h18-h16-sound-diff-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-h16-sound-diff-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm differential suite completeness for AsdSoundEffect_GetBufferSize."
+      ],
+      "validation_plan": [
+        "python tools/h18_h16_sound_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h17-cec-aoc-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Define contract specification for Aoc_ResultIsReady (0x002a17c0) in Canonical promotion of AOC result status readiness check.",
+      "depends_on": [
+        "h18-module-promotion-recon-review"
+      ],
+      "function_claims": [
+        "0x002a17c0"
+      ],
+      "read_paths": [
+        "src/semantic/h17_cec_aoc_promoted.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-h17-cec-aoc-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Specify calling convention, register inputs, preconditions, and return contract for Aoc_ResultIsReady."
+      ],
+      "validation_plan": [
+        "python tools/h18_h17_cec_aoc_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h17-cec-aoc-contract-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review contract specification for Aoc_ResultIsReady (0x002a17c0).",
+      "depends_on": [
+        "h18-h17-cec-aoc-contract"
+      ],
+      "function_claims": [
+        "0x002a17c0"
+      ],
+      "read_paths": [
+        "docs/agent-work/h18-h17-cec-aoc-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-h17-cec-aoc-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify ABI soundness and contract boundaries for Aoc_ResultIsReady."
+      ],
+      "validation_plan": [
+        "python tools/h18_h17_cec_aoc_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h17-cec-aoc-recon",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Disassemble and recover assembly semantics for Aoc_ResultIsReady (0x002a17c0).",
+      "depends_on": [
+        "h18-h17-cec-aoc-contract-review"
+      ],
+      "function_claims": [
+        "0x002a17c0"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-h17-cec-aoc-recon.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm ARM instructions, immediate offsets, and calling sequences for Aoc_ResultIsReady."
+      ],
+      "validation_plan": [
+        "python tools/h18_h17_cec_aoc_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h17-cec-aoc-recon-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review assembly reconnaissance for Aoc_ResultIsReady (0x002a17c0).",
+      "depends_on": [
+        "h18-h17-cec-aoc-recon"
+      ],
+      "function_claims": [
+        "0x002a17c0"
+      ],
+      "read_paths": [
+        "docs/agent-work/h18-h17-cec-aoc-recon.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-h17-cec-aoc-recon-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve disassembly analysis for Aoc_ResultIsReady."
+      ],
+      "validation_plan": [
+        "python tools/h18_h17_cec_aoc_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h17-cec-aoc-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement canonical C++ promoted function for Aoc_ResultIsReady (0x002a17c0).",
+      "depends_on": [
+        "h18-h17-cec-aoc-recon-review"
+      ],
+      "function_claims": [
+        "0x002a17c0"
+      ],
+      "read_paths": [
+        "src/semantic/h17_cec_aoc_promoted.cpp"
+      ],
+      "write_paths": [
+        "src/semantic/h17_cec_aoc_promoted.cpp",
+        "docs/agent-work/h18-h17-cec-aoc-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "src/semantic/h17_cec_aoc_promoted.cpp"
+      ],
+      "acceptance": [
+        "Compile src/semantic/h17_cec_aoc_promoted.cpp cleanly with Clang ARMv6K within original byte window."
+      ],
+      "validation_plan": [
+        "python tools/h18_h17_cec_aoc_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h17-cec-aoc-candidate-review",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent code review of canonical promoted C++ for Aoc_ResultIsReady (0x002a17c0).",
+      "depends_on": [
+        "h18-h17-cec-aoc-candidate"
+      ],
+      "function_claims": [
+        "0x002a17c0"
+      ],
+      "read_paths": [
+        "src/semantic/h17_cec_aoc_promoted.cpp",
+        "docs/agent-work/h18-h17-cec-aoc-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-h17-cec-aoc-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify that implementation matches contract and has zero UB."
+      ],
+      "validation_plan": [
+        "python tools/h18_h17_cec_aoc_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h17-cec-aoc-diff-test",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Run offline Unicorn differential test suite for Aoc_ResultIsReady (0x002a17c0).",
+      "depends_on": [
+        "h18-h17-cec-aoc-candidate-review"
+      ],
+      "function_claims": [
+        "0x002a17c0"
+      ],
+      "read_paths": [
+        "src/semantic/h17_cec_aoc_promoted.cpp",
+        "tools/h18_h17_cec_aoc_experiment.py"
+      ],
+      "write_paths": [
+        "tools/h18_h17_cec_aoc_experiment.py",
+        "docs/agent-work/h18-h17-cec-aoc-diff-test.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "100% register/memory parity across input domain and positive mutation sensitivity."
+      ],
+      "validation_plan": [
+        "python tools/h18_h17_cec_aoc_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-h17-cec-aoc-diff-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential test results for Aoc_ResultIsReady (0x002a17c0).",
+      "depends_on": [
+        "h18-h17-cec-aoc-diff-test"
+      ],
+      "function_claims": [
+        "0x002a17c0"
+      ],
+      "read_paths": [
+        "docs/agent-work/h18-h17-cec-aoc-diff-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-h17-cec-aoc-diff-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm differential suite completeness for Aoc_ResultIsReady."
+      ],
+      "validation_plan": [
+        "python tools/h18_h17_cec_aoc_experiment.py"
+      ]
+    },
+    {
+      "id": "h18-integrated-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Compose all 8 canonical promoted modules over H17 composite image and generate IPS patch.",
+      "depends_on": [
+        "h18-h10-burroughs-diff-test-review",
+        "h18-h11-shops-diff-test-review",
+        "h18-h12-combat-diff-test-review",
+        "h18-h13-exploration-diff-test-review",
+        "h18-h14-graphics-diff-test-review",
+        "h18-h15-ui-diff-test-review",
+        "h18-h16-sound-diff-test-review",
+        "h18-h17-cec-aoc-diff-test-review"
+      ],
+      "function_claims": [
+        "0x002a0fac",
+        "0x0022fc98",
+        "0x00129c58",
+        "0x0026394c",
+        "0x002c3b88",
+        "0x00126084",
+        "0x00110c44",
+        "0x002a17c0"
+      ],
+      "read_paths": [
+        "src/semantic/h10_burroughs_promoted.cpp",
+        "src/semantic/h11_shops_promoted.cpp",
+        "src/semantic/h12_combat_promoted.cpp",
+        "src/semantic/h13_exploration_promoted.cpp",
+        "src/semantic/h14_graphics_promoted.cpp",
+        "src/semantic/h15_ui_promoted.cpp",
+        "src/semantic/h16_sound_promoted.cpp",
+        "src/semantic/h17_cec_aoc_promoted.cpp",
+        "build/agent-work/H17-semantic/h17-integrated-stage/code.h17-final.bin"
+      ],
+      "write_paths": [
+        "build/agent-work/H18-semantic/h18-integrated-stage/code.h18-final.bin",
+        "build/agent-work/H18-semantic/h18-integrated-stage/code.h18-final.ips",
+        "build/agent-work/H18-semantic/h18-integrated-stage/h18-staged-summary.json",
+        "docs/agent-work/h18-integrated-staging.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "code.h18-final.bin"
+      ],
+      "acceptance": [
+        "Generate code.h18-final.bin with all 8 canonical promoted modules cleanly applied within windows.",
+        "Produce verified LayeredFS IPS patch code.h18-final.ips passing roundtrip verification."
+      ],
+      "validation_plan": [
+        "python tools/h18_staged_image_patch.py"
+      ]
+    },
+    {
+      "id": "h18-milestone-closure-review",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review and closure of Milestone H18 (Canonical Module Promotion).",
+      "depends_on": [
+        "h18-integrated-staging"
+      ],
+      "function_claims": [
+        "0x002a0fac",
+        "0x0022fc98",
+        "0x00129c58",
+        "0x0026394c",
+        "0x002c3b88",
+        "0x00126084",
+        "0x00110c44",
+        "0x002a17c0"
+      ],
+      "read_paths": [
+        "build/agent-work/H18-semantic/h18-integrated-stage/h18-staged-summary.json",
+        "docs/agent-work/h18-integrated-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-milestone-closure-review.md",
+        "docs/milestones/H18-module-promotion.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify that all 8 subsystems have complete contract, implementation, differential test, and promotion records.",
+        "Validate offline differential test suite passes 100% and staging IPS patch roundtrip passes."
+      ],
+      "validation_plan": [
+        "python tools/agent_workflow.py check",
+        "python tools/generate_h18_experiments.py",
+        "python tools/h18_staged_image_patch.py"
+      ]
+    }
+  ]
+}

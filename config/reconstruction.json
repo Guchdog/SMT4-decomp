@@ -1,43 +1,49 @@
 {
   "primary_goal": "Recover editable C++ with supported semantic behavior; byte identity is optional.",
-  "active_milestone": "H17",
+  "active_milestone": "H18",
   "priority_sources": [
-    "src/camp/camp_cec.cpp",
-    "src/engine/aoc.cpp"
+    "src/semantic/h10_burroughs_promoted.cpp",
+    "src/semantic/h11_shops_promoted.cpp",
+    "src/semantic/h12_combat_promoted.cpp",
+    "src/semantic/h13_exploration_promoted.cpp",
+    "src/semantic/h14_graphics_promoted.cpp",
+    "src/semantic/h15_ui_promoted.cpp",
+    "src/semantic/h16_sound_promoted.cpp",
+    "src/semantic/h17_cec_aoc_promoted.cpp"
   ],
   "priority_functions": [
     {
-      "address": "0x001ffadc",
-      "reason": "H17 Camp CEC edit work validation / CampCec_HasEditWork"
+      "address": "0x002a0fac",
+      "reason": "H18 Burroughs Save Data canonical promotion / Camp_Burroughs_GetSaveData"
     },
     {
-      "address": "0x001ff814",
-      "reason": "H17 Camp CEC DDS card header copy / CampCec_CopyCardData"
+      "address": "0x0022fc98",
+      "reason": "H18 Shop Check New Inventory canonical promotion / Shop_CheckHasNew"
+    },
+    {
+      "address": "0x00129c58",
+      "reason": "H18 Battle Unit Smirk State canonical promotion / Battle_GetUnitSmirkState"
+    },
+    {
+      "address": "0x0026394c",
+      "reason": "H18 PlaceWin UI Active State canonical promotion / PlaceWin_IsActive"
+    },
+    {
+      "address": "0x002c3b88",
+      "reason": "H18 ASD GPU Heap Size canonical promotion / AsdGpu_HeapSize"
+    },
+    {
+      "address": "0x00126084",
+      "reason": "H18 UI Dialog State canonical promotion / UiDialog_GetState"
+    },
+    {
+      "address": "0x00110c44",
+      "reason": "H18 ASD Sound Effect Buffer Size canonical promotion / AsdSoundEffect_GetBufferSize"
     },
     {
       "address": "0x002a17c0",
-      "reason": "H17 AOC result status readiness check / Aoc_ResultIsReady"
-    },
-    {
-      "address": "0x002a17d4",
-      "reason": "H17 AOC applet flag 0x10000 test / AocApplet_IsFlag10000"
-    },
-    {
-      "address": "0x002a17e4",
-      "reason": "H17 AOC result object copy / Aoc_ResultCopyValue"
-    },
-    {
-      "address": "0x002b2520",
-      "reason": "H17 AOC global buffer free guard / Aoc_ReleaseGlobal"
-    },
-    {
-      "address": "0x002d73f4",
-      "reason": "H17 Camp CEC setting flag query / CampCec_GetWorkHandle"
-    },
-    {
-      "address": "0x0038c248",
-      "reason": "H17 AOC icon object initialization / AocIcon_Init"
+      "reason": "H18 AOC Result Readiness Check canonical promotion / Aoc_ResultIsReady"
     }
   ],
-  "agent_workflow_board": "config/agent-workflows/h17.json"
+  "agent_workflow_board": "config/agent-workflows/h18.json"
 }
