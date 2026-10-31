@@ -1,42 +1,44 @@
 {
   "primary_goal": "Recover editable C++ with supported semantic behavior; byte identity is optional.",
-  "active_milestone": "H13",
+  "active_milestone": "H14",
   "priority_sources": [
-    "src/map/map_runtime.cpp"
+    "src/engine/asd_effect.cpp",
+    "src/engine/asd_model.cpp",
+    "src/engine/asd_texture.cpp"
   ],
   "priority_functions": [
     {
-      "address": "0x002638fc",
-      "reason": "H13 Place window banner visibility state update / PlaceWin_SetVisible"
+      "address": "0x00152d7c",
+      "reason": "H14 ASD particle effect lock entrance / AsdEffect_LockEnter"
     },
     {
-      "address": "0x002638dc",
-      "reason": "H13 Place window banner dismissal and state transition to inactive / PlaceWin_Dismiss"
+      "address": "0x00152dac",
+      "reason": "H14 ASD particle effect lock departure / AsdEffect_LockLeave"
     },
     {
-      "address": "0x0026394c",
-      "reason": "H13 Place window banner timer duration and activity state evaluation / PlaceWin_IsActive"
+      "address": "0x002c31bc",
+      "reason": "H14 ASD resource manager context resolution / AsdRes_GetContext"
     },
     {
-      "address": "0x00208a70",
-      "reason": "H13 Exploration field active flag clearing and reset / MapField_ClearActiveFlag"
+      "address": "0x002c3b88",
+      "reason": "H14 ASD GPU heap size query / AsdGpu_HeapSize"
     },
     {
-      "address": "0x001d2e24",
-      "reason": "H13 Minimap navigation marker target coordinates configuration / MapNavi_SetTargetCoords"
+      "address": "0x0010a6fc",
+      "reason": "H14 ASD text engine shader field 1C / AsdText_SetCodeField1C"
     },
     {
-      "address": "0x001d2e0c",
-      "reason": "H13 Minimap navigation system state reset and runtime buffer synchronization / MapNavi_Reset"
+      "address": "0x0010af38",
+      "reason": "H14 ASD text engine shader field 14 / AsdText_SetCodeField14"
     },
     {
-      "address": "0x00193b28",
-      "reason": "H13 Map particle effect scaling calculation / MapEpl_CalcScale"
+      "address": "0x0010b340",
+      "reason": "H14 ASD text engine shader field 30 / AsdText_SetCodeField30"
     },
     {
-      "address": "0x001d3a9c",
-      "reason": "H13 Overworld entity Euclidean distance computation using VFP / MapCalc_DistanceToEntity"
+      "address": "0x003878c0",
+      "reason": "H14 Texture streaming comparator / TextureStreamer_Compare"
     }
   ],
-  "agent_workflow_board": "config/agent-workflows/h13.json"
+  "agent_workflow_board": "config/agent-workflows/h14.json"
 }
