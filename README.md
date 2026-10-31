@@ -21,6 +21,20 @@ python tools/find_candidates.py --limit 20
 python tools/find_candidates.py --include-existing-candidates --limit 20
 ```
 
+## Full C++ reconstruction and native port progress
+
+The [full reconstruction and native port plan](docs/native-port-plan.md) tracks every inventoried function and raw span through classification, readable C++ or a documented portable replacement, and contract-specific validation. Native gameplay scenarios are tracked separately from per-function coverage.
+
+| Progress dimension | Current baseline |
+| --- | --- |
+| Original inventory | 10,959 functions and 8 raw spans; boundaries require audit |
+| Readable byte-identical C++ | 60 functions reported by the historical exact ledger; this is not a complete semantic count |
+| Experimental candidate inventory | 188 address-named definitions and 21 prefix/control/helper definitions in the [generated snapshot](docs/semantic-inventory.md); static presence is not validation or integration |
+| Classified, integrated and contract-validated across the full inventory | Baseline audit pending; these dimensions must be counted separately |
+| Native game scenarios without original ARM code | Not established; H20 tests isolated host HAL components |
+
+The 100% exact-byte figure below includes original ARM-backed code and is not a translation or native-port percentage. H19's composite ARM image retains original code; H20's host tests do not establish a native game build. The next step is the reproducible P0 inventory audit described in the plan.
+
 ## Reference byte coverage
 
 - **Matching (Byte-for-Byte):** `3,139,108 / 3,139,108 bytes` (**100.0000%**) across `10,959` functions and `8` explicitly labeled raw spans (each exact-checked against 3DS ARMv6K code.bin)

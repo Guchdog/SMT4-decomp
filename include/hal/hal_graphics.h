@@ -26,4 +26,7 @@ void Graphics_SetFramebuffer(DisplayTarget target, const FramebufferConfig& conf
 void Graphics_Present();
 void Graphics_WaitForVBlank();
 
+u64 Graphics_GetPresentCount();
+const FramebufferConfig* Graphics_GetFramebuffer(DisplayTarget target);
+
 } // namespace smt4::hal
