@@ -1,43 +1,43 @@
 {
   "primary_goal": "Recover editable C++ with supported semantic behavior; byte identity is optional.",
-  "active_milestone": "H15",
+  "active_milestone": "H16",
   "priority_sources": [
-    "src/ui/window.cpp",
-    "src/ui/ui_runtime.cpp"
+    "src/engine/sound.cpp",
+    "src/engine/audio_runtime.cpp"
   ],
   "priority_functions": [
     {
-      "address": "0x0010e570",
-      "reason": "H15 UI text formatting control field 0x10 / UiText_SetCodeField10"
+      "address": "0x00110c2c",
+      "reason": "H16 sound effect buffer registration / AsdSoundEffect_SetBuffer"
     },
     {
-      "address": "0x0010e5bc",
-      "reason": "H15 UI text formatting control field 0x28 / UiText_SetCodeField28"
+      "address": "0x00110c44",
+      "reason": "H16 sound effect buffer size calculation / AsdSoundEffect_GetBufferSize"
     },
     {
-      "address": "0x00126084",
-      "reason": "H15 UI dialog state query / UiDialog_GetState"
+      "address": "0x00121150",
+      "reason": "H16 secondary sound effect buffer registration / AsdSoundEffect2_SetBuffer"
     },
     {
-      "address": "0x001260a8",
-      "reason": "H15 UI dialog flags inspection / UiDialog_GetFlags"
+      "address": "0x00121f20",
+      "reason": "H16 sound data block size calculation / AsdSound_GetDataSize"
     },
     {
-      "address": "0x00126220",
-      "reason": "H15 UI dialog cursor index query / UiDialog_GetCursorIndex"
+      "address": "0x00122094",
+      "reason": "H16 sound sample byte size calculation / AsdSound_GetSampleBytes"
     },
     {
-      "address": "0x00126628",
-      "reason": "H15 UI text draw coordinate X / UiText_GetDrawCoordX"
+      "address": "0x00128f34",
+      "reason": "H16 sound data base pointer derivation / AsdData_GetBase"
     },
     {
-      "address": "0x00126638",
-      "reason": "H15 UI text draw coordinate Y / UiText_GetDrawCoordY"
+      "address": "0x00128f44",
+      "reason": "H16 sound data element count retrieval / AsdData_GetCount"
     },
     {
-      "address": "0x0026b844",
-      "reason": "H15 UI context handle lookup / UiManager_GetContextHandle"
+      "address": "0x00215a44",
+      "reason": "H16 status sound track ID update / StatusDown_SetActiveSoundId"
     }
   ],
-  "agent_workflow_board": "config/agent-workflows/h15.json"
+  "agent_workflow_board": "config/agent-workflows/h16.json"
 }
