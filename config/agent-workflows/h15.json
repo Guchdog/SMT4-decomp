@@ -1,0 +1,2435 @@
+{
+  "schema_version": 1,
+  "batch": "batch-h15-001",
+  "milestone": "H15",
+  "max_workers": 3,
+  "cpu_budget": 8,
+  "goal": "Reconstruct readable, editable C++ for Milestone H15 (UI Engine, Fonts, and 2D Rendering), covering text formatting code setup (UiText_SetCodeField10, UiText_SetCodeField28), dialog state/flag/cursor extraction (UiDialog_GetState, UiDialog_GetFlags, UiDialog_GetCursorIndex), text draw buffer coordinate retrieval (UiText_GetDrawCoordX, UiText_GetDrawCoordY), and UI context manager handle lookup (UiManager_GetContextHandle) with offline differential validation, caller composition, staging, and autonomous runtime verification.",
+  "coordinator_owned_paths": [
+    "config/agent-workflows/h15.json",
+    "config/reconstruction.json",
+    "docs/milestones/H15-ui-engine.md",
+    "docs/functional-status.md",
+    "docs/reconstruction-milestones.md"
+  ],
+  "tasks": [
+    {
+      "id": "h15-ui-engine-recon",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Comprehensive static and architectural reconnaissance of Milestone H15 UI Engine, Fonts, and 2D Rendering.",
+      "depends_on": [],
+      "function_claims": [
+        "0x0010e570",
+        "0x0010e5bc",
+        "0x00126084",
+        "0x001260a8",
+        "0x00126220",
+        "0x00126628",
+        "0x00126638",
+        "0x0026b844"
+      ],
+      "read_paths": [
+        "docs/reconstruction-milestones.md",
+        "docs/milestones/H14-graphics-engine.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-ui-engine-recon.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Identify exact entry points, memory structures, and callers for H15 UI Engine subsystems.",
+        "Define offline-first differential boundaries, positive/negative controls, and mutation criteria."
+      ],
+      "validation_plan": [
+        "Cross-check candidate functions against pinned binary code.bin and functions.csv ledger."
+      ]
+    },
+    {
+      "id": "h15-ui-engine-recon-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of H15 UI Engine architecture reconnaissance.",
+      "depends_on": [
+        "h15-ui-engine-recon"
+      ],
+      "function_claims": [
+        "0x0010e570",
+        "0x0010e5bc",
+        "0x00126084",
+        "0x001260a8",
+        "0x00126220",
+        "0x00126628",
+        "0x00126638",
+        "0x0026b844"
+      ],
+      "read_paths": [
+        "docs/agent-work/h15-ui-engine-recon.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-ui-engine-recon-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm scope boundaries, calling conventions, and offline differential test plans."
+      ],
+      "validation_plan": [
+        "Verify against function signatures and registers."
+      ]
+    },
+    {
+      "id": "h15-uitext-setcodefield10-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover precise calling contract, memory boundaries, and semantics for UiText_SetCodeField10.",
+      "depends_on": [
+        "h15-ui-engine-recon-review"
+      ],
+      "function_claims": [
+        "0x0010e570"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uitext-setcodefield10-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover registers, arguments, preconditions, and return values."
+      ],
+      "validation_plan": [
+        "Static disassembly analysis."
+      ]
+    },
+    {
+      "id": "h15-uitext-setcodefield10-contract-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review contract specification for UiText_SetCodeField10.",
+      "depends_on": [
+        "h15-uitext-setcodefield10-contract"
+      ],
+      "function_claims": [
+        "0x0010e570"
+      ],
+      "read_paths": [
+        "docs/agent-work/h15-uitext-setcodefield10-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uitext-setcodefield10-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve verified contract record."
+      ],
+      "validation_plan": [
+        "Compare contract against disassembled original."
+      ]
+    },
+    {
+      "id": "h15-uitext-setcodefield10-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement clean, editable C++ candidate for UiText_SetCodeField10 within binary window footprint.",
+      "depends_on": [
+        "h15-uitext-setcodefield10-contract-review"
+      ],
+      "function_claims": [
+        "0x0010e570"
+      ],
+      "read_paths": [
+        "docs/agent-work/h15-uitext-setcodefield10-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h15_uitext_setcodefield10_candidate.cpp",
+        "docs/agent-work/h15-uitext-setcodefield10-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "experiments/semantic_equivalence/h15_uitext_setcodefield10_candidate.cpp"
+      ],
+      "acceptance": [
+        "Compile freestanding ARMv6K object within allocated window footprint."
+      ],
+      "validation_plan": [
+        "python tools/build_h15_all.py"
+      ]
+    },
+    {
+      "id": "h15-uitext-setcodefield10-candidate-review",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review C++ candidate implementation for UiText_SetCodeField10.",
+      "depends_on": [
+        "h15-uitext-setcodefield10-candidate"
+      ],
+      "function_claims": [
+        "0x0010e570"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h15_uitext_setcodefield10_candidate.cpp",
+        "docs/agent-work/h15-uitext-setcodefield10-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uitext-setcodefield10-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm semantic clarity, type safety, and zero window overflow."
+      ],
+      "validation_plan": [
+        "Inspect C++ code and compilation metrics."
+      ]
+    },
+    {
+      "id": "h15-uitext-setcodefield10-test",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Create Unicorn offline differential test harness for UiText_SetCodeField10.",
+      "depends_on": [
+        "h15-uitext-setcodefield10-candidate-review"
+      ],
+      "function_claims": [
+        "0x0010e570"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h15_uitext_setcodefield10_candidate.cpp",
+        "docs/agent-work/h15-uitext-setcodefield10-contract.md"
+      ],
+      "write_paths": [
+        "tools/h15_uitext_setcodefield10_experiment.py",
+        "docs/agent-work/h15-uitext-setcodefield10-test.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [
+        "tools/h15_uitext_setcodefield10_experiment.py"
+      ],
+      "acceptance": [
+        "Harness simulates original vs candidate with mutation sensitivity."
+      ],
+      "validation_plan": [
+        "python tools/h15_uitext_setcodefield10_experiment.py"
+      ]
+    },
+    {
+      "id": "h15-uitext-setcodefield10-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential test harness for UiText_SetCodeField10.",
+      "depends_on": [
+        "h15-uitext-setcodefield10-test"
+      ],
+      "function_claims": [
+        "0x0010e570"
+      ],
+      "read_paths": [
+        "tools/h15_uitext_setcodefield10_experiment.py",
+        "docs/agent-work/h15-uitext-setcodefield10-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uitext-setcodefield10-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify boundary cases and mutation probe efficacy."
+      ],
+      "validation_plan": [
+        "Validate test harness coverage."
+      ]
+    },
+    {
+      "id": "h15-uitext-setcodefield10-diff",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline differential validation run for UiText_SetCodeField10.",
+      "depends_on": [
+        "h15-uitext-setcodefield10-test-review"
+      ],
+      "function_claims": [
+        "0x0010e570"
+      ],
+      "read_paths": [
+        "tools/h15_uitext_setcodefield10_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uitext-setcodefield10-diff.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Achieve 100% parity across registers and memory effects."
+      ],
+      "validation_plan": [
+        "python tools/h15_uitext_setcodefield10_experiment.py"
+      ]
+    },
+    {
+      "id": "h15-uitext-setcodefield10-diff-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential run results for UiText_SetCodeField10.",
+      "depends_on": [
+        "h15-uitext-setcodefield10-diff"
+      ],
+      "function_claims": [
+        "0x0010e570"
+      ],
+      "read_paths": [
+        "docs/agent-work/h15-uitext-setcodefield10-diff.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uitext-setcodefield10-diff-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm zero divergence and successful mutation failure."
+      ],
+      "validation_plan": [
+        "Inspect differential log."
+      ]
+    },
+    {
+      "id": "h15-uitext-setcodefield10-integration",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Integrate candidate UiText_SetCodeField10 into staging binary image with relocations resolved.",
+      "depends_on": [
+        "h15-uitext-setcodefield10-diff-review"
+      ],
+      "function_claims": [
+        "0x0010e570"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h15_uitext_setcodefield10_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uitext-setcodefield10-integration.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Resolved relocations and patched into code image."
+      ],
+      "validation_plan": [
+        "python tools/h15_staged_image_patch.py"
+      ]
+    },
+    {
+      "id": "h15-uitext-setcodefield10-integration-review",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review subsystem staging integration for UiText_SetCodeField10.",
+      "depends_on": [
+        "h15-uitext-setcodefield10-integration"
+      ],
+      "function_claims": [
+        "0x0010e570"
+      ],
+      "read_paths": [
+        "docs/agent-work/h15-uitext-setcodefield10-integration.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uitext-setcodefield10-integration-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve staged integration record."
+      ],
+      "validation_plan": [
+        "Verify staging summary and binary offsets."
+      ]
+    },
+    {
+      "id": "h15-uitext-setcodefield28-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover precise calling contract, memory boundaries, and semantics for UiText_SetCodeField28.",
+      "depends_on": [
+        "h15-ui-engine-recon-review"
+      ],
+      "function_claims": [
+        "0x0010e5bc"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uitext-setcodefield28-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover registers, arguments, preconditions, and return values."
+      ],
+      "validation_plan": [
+        "Static disassembly analysis."
+      ]
+    },
+    {
+      "id": "h15-uitext-setcodefield28-contract-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review contract specification for UiText_SetCodeField28.",
+      "depends_on": [
+        "h15-uitext-setcodefield28-contract"
+      ],
+      "function_claims": [
+        "0x0010e5bc"
+      ],
+      "read_paths": [
+        "docs/agent-work/h15-uitext-setcodefield28-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uitext-setcodefield28-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve verified contract record."
+      ],
+      "validation_plan": [
+        "Compare contract against disassembled original."
+      ]
+    },
+    {
+      "id": "h15-uitext-setcodefield28-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement clean, editable C++ candidate for UiText_SetCodeField28 within binary window footprint.",
+      "depends_on": [
+        "h15-uitext-setcodefield28-contract-review"
+      ],
+      "function_claims": [
+        "0x0010e5bc"
+      ],
+      "read_paths": [
+        "docs/agent-work/h15-uitext-setcodefield28-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h15_uitext_setcodefield28_candidate.cpp",
+        "docs/agent-work/h15-uitext-setcodefield28-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "experiments/semantic_equivalence/h15_uitext_setcodefield28_candidate.cpp"
+      ],
+      "acceptance": [
+        "Compile freestanding ARMv6K object within allocated window footprint."
+      ],
+      "validation_plan": [
+        "python tools/build_h15_all.py"
+      ]
+    },
+    {
+      "id": "h15-uitext-setcodefield28-candidate-review",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review C++ candidate implementation for UiText_SetCodeField28.",
+      "depends_on": [
+        "h15-uitext-setcodefield28-candidate"
+      ],
+      "function_claims": [
+        "0x0010e5bc"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h15_uitext_setcodefield28_candidate.cpp",
+        "docs/agent-work/h15-uitext-setcodefield28-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uitext-setcodefield28-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm semantic clarity, type safety, and zero window overflow."
+      ],
+      "validation_plan": [
+        "Inspect C++ code and compilation metrics."
+      ]
+    },
+    {
+      "id": "h15-uitext-setcodefield28-test",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Create Unicorn offline differential test harness for UiText_SetCodeField28.",
+      "depends_on": [
+        "h15-uitext-setcodefield28-candidate-review"
+      ],
+      "function_claims": [
+        "0x0010e5bc"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h15_uitext_setcodefield28_candidate.cpp",
+        "docs/agent-work/h15-uitext-setcodefield28-contract.md"
+      ],
+      "write_paths": [
+        "tools/h15_uitext_setcodefield28_experiment.py",
+        "docs/agent-work/h15-uitext-setcodefield28-test.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [
+        "tools/h15_uitext_setcodefield28_experiment.py"
+      ],
+      "acceptance": [
+        "Harness simulates original vs candidate with mutation sensitivity."
+      ],
+      "validation_plan": [
+        "python tools/h15_uitext_setcodefield28_experiment.py"
+      ]
+    },
+    {
+      "id": "h15-uitext-setcodefield28-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential test harness for UiText_SetCodeField28.",
+      "depends_on": [
+        "h15-uitext-setcodefield28-test"
+      ],
+      "function_claims": [
+        "0x0010e5bc"
+      ],
+      "read_paths": [
+        "tools/h15_uitext_setcodefield28_experiment.py",
+        "docs/agent-work/h15-uitext-setcodefield28-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uitext-setcodefield28-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify boundary cases and mutation probe efficacy."
+      ],
+      "validation_plan": [
+        "Validate test harness coverage."
+      ]
+    },
+    {
+      "id": "h15-uitext-setcodefield28-diff",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline differential validation run for UiText_SetCodeField28.",
+      "depends_on": [
+        "h15-uitext-setcodefield28-test-review"
+      ],
+      "function_claims": [
+        "0x0010e5bc"
+      ],
+      "read_paths": [
+        "tools/h15_uitext_setcodefield28_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uitext-setcodefield28-diff.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Achieve 100% parity across registers and memory effects."
+      ],
+      "validation_plan": [
+        "python tools/h15_uitext_setcodefield28_experiment.py"
+      ]
+    },
+    {
+      "id": "h15-uitext-setcodefield28-diff-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential run results for UiText_SetCodeField28.",
+      "depends_on": [
+        "h15-uitext-setcodefield28-diff"
+      ],
+      "function_claims": [
+        "0x0010e5bc"
+      ],
+      "read_paths": [
+        "docs/agent-work/h15-uitext-setcodefield28-diff.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uitext-setcodefield28-diff-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm zero divergence and successful mutation failure."
+      ],
+      "validation_plan": [
+        "Inspect differential log."
+      ]
+    },
+    {
+      "id": "h15-uitext-setcodefield28-integration",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Integrate candidate UiText_SetCodeField28 into staging binary image with relocations resolved.",
+      "depends_on": [
+        "h15-uitext-setcodefield28-diff-review"
+      ],
+      "function_claims": [
+        "0x0010e5bc"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h15_uitext_setcodefield28_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uitext-setcodefield28-integration.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Resolved relocations and patched into code image."
+      ],
+      "validation_plan": [
+        "python tools/h15_staged_image_patch.py"
+      ]
+    },
+    {
+      "id": "h15-uitext-setcodefield28-integration-review",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review subsystem staging integration for UiText_SetCodeField28.",
+      "depends_on": [
+        "h15-uitext-setcodefield28-integration"
+      ],
+      "function_claims": [
+        "0x0010e5bc"
+      ],
+      "read_paths": [
+        "docs/agent-work/h15-uitext-setcodefield28-integration.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uitext-setcodefield28-integration-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve staged integration record."
+      ],
+      "validation_plan": [
+        "Verify staging summary and binary offsets."
+      ]
+    },
+    {
+      "id": "h15-uidialog-getstate-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover precise calling contract, memory boundaries, and semantics for UiDialog_GetState.",
+      "depends_on": [
+        "h15-ui-engine-recon-review"
+      ],
+      "function_claims": [
+        "0x00126084"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uidialog-getstate-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover registers, arguments, preconditions, and return values."
+      ],
+      "validation_plan": [
+        "Static disassembly analysis."
+      ]
+    },
+    {
+      "id": "h15-uidialog-getstate-contract-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review contract specification for UiDialog_GetState.",
+      "depends_on": [
+        "h15-uidialog-getstate-contract"
+      ],
+      "function_claims": [
+        "0x00126084"
+      ],
+      "read_paths": [
+        "docs/agent-work/h15-uidialog-getstate-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uidialog-getstate-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve verified contract record."
+      ],
+      "validation_plan": [
+        "Compare contract against disassembled original."
+      ]
+    },
+    {
+      "id": "h15-uidialog-getstate-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement clean, editable C++ candidate for UiDialog_GetState within binary window footprint.",
+      "depends_on": [
+        "h15-uidialog-getstate-contract-review"
+      ],
+      "function_claims": [
+        "0x00126084"
+      ],
+      "read_paths": [
+        "docs/agent-work/h15-uidialog-getstate-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h15_uidialog_getstate_candidate.cpp",
+        "docs/agent-work/h15-uidialog-getstate-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "experiments/semantic_equivalence/h15_uidialog_getstate_candidate.cpp"
+      ],
+      "acceptance": [
+        "Compile freestanding ARMv6K object within allocated window footprint."
+      ],
+      "validation_plan": [
+        "python tools/build_h15_all.py"
+      ]
+    },
+    {
+      "id": "h15-uidialog-getstate-candidate-review",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review C++ candidate implementation for UiDialog_GetState.",
+      "depends_on": [
+        "h15-uidialog-getstate-candidate"
+      ],
+      "function_claims": [
+        "0x00126084"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h15_uidialog_getstate_candidate.cpp",
+        "docs/agent-work/h15-uidialog-getstate-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uidialog-getstate-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm semantic clarity, type safety, and zero window overflow."
+      ],
+      "validation_plan": [
+        "Inspect C++ code and compilation metrics."
+      ]
+    },
+    {
+      "id": "h15-uidialog-getstate-test",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Create Unicorn offline differential test harness for UiDialog_GetState.",
+      "depends_on": [
+        "h15-uidialog-getstate-candidate-review"
+      ],
+      "function_claims": [
+        "0x00126084"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h15_uidialog_getstate_candidate.cpp",
+        "docs/agent-work/h15-uidialog-getstate-contract.md"
+      ],
+      "write_paths": [
+        "tools/h15_uidialog_getstate_experiment.py",
+        "docs/agent-work/h15-uidialog-getstate-test.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [
+        "tools/h15_uidialog_getstate_experiment.py"
+      ],
+      "acceptance": [
+        "Harness simulates original vs candidate with mutation sensitivity."
+      ],
+      "validation_plan": [
+        "python tools/h15_uidialog_getstate_experiment.py"
+      ]
+    },
+    {
+      "id": "h15-uidialog-getstate-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential test harness for UiDialog_GetState.",
+      "depends_on": [
+        "h15-uidialog-getstate-test"
+      ],
+      "function_claims": [
+        "0x00126084"
+      ],
+      "read_paths": [
+        "tools/h15_uidialog_getstate_experiment.py",
+        "docs/agent-work/h15-uidialog-getstate-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uidialog-getstate-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify boundary cases and mutation probe efficacy."
+      ],
+      "validation_plan": [
+        "Validate test harness coverage."
+      ]
+    },
+    {
+      "id": "h15-uidialog-getstate-diff",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline differential validation run for UiDialog_GetState.",
+      "depends_on": [
+        "h15-uidialog-getstate-test-review"
+      ],
+      "function_claims": [
+        "0x00126084"
+      ],
+      "read_paths": [
+        "tools/h15_uidialog_getstate_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uidialog-getstate-diff.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Achieve 100% parity across registers and memory effects."
+      ],
+      "validation_plan": [
+        "python tools/h15_uidialog_getstate_experiment.py"
+      ]
+    },
+    {
+      "id": "h15-uidialog-getstate-diff-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential run results for UiDialog_GetState.",
+      "depends_on": [
+        "h15-uidialog-getstate-diff"
+      ],
+      "function_claims": [
+        "0x00126084"
+      ],
+      "read_paths": [
+        "docs/agent-work/h15-uidialog-getstate-diff.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uidialog-getstate-diff-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm zero divergence and successful mutation failure."
+      ],
+      "validation_plan": [
+        "Inspect differential log."
+      ]
+    },
+    {
+      "id": "h15-uidialog-getstate-integration",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Integrate candidate UiDialog_GetState into staging binary image with relocations resolved.",
+      "depends_on": [
+        "h15-uidialog-getstate-diff-review"
+      ],
+      "function_claims": [
+        "0x00126084"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h15_uidialog_getstate_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uidialog-getstate-integration.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Resolved relocations and patched into code image."
+      ],
+      "validation_plan": [
+        "python tools/h15_staged_image_patch.py"
+      ]
+    },
+    {
+      "id": "h15-uidialog-getstate-integration-review",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review subsystem staging integration for UiDialog_GetState.",
+      "depends_on": [
+        "h15-uidialog-getstate-integration"
+      ],
+      "function_claims": [
+        "0x00126084"
+      ],
+      "read_paths": [
+        "docs/agent-work/h15-uidialog-getstate-integration.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uidialog-getstate-integration-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve staged integration record."
+      ],
+      "validation_plan": [
+        "Verify staging summary and binary offsets."
+      ]
+    },
+    {
+      "id": "h15-uidialog-getflags-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover precise calling contract, memory boundaries, and semantics for UiDialog_GetFlags.",
+      "depends_on": [
+        "h15-ui-engine-recon-review"
+      ],
+      "function_claims": [
+        "0x001260a8"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uidialog-getflags-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover registers, arguments, preconditions, and return values."
+      ],
+      "validation_plan": [
+        "Static disassembly analysis."
+      ]
+    },
+    {
+      "id": "h15-uidialog-getflags-contract-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review contract specification for UiDialog_GetFlags.",
+      "depends_on": [
+        "h15-uidialog-getflags-contract"
+      ],
+      "function_claims": [
+        "0x001260a8"
+      ],
+      "read_paths": [
+        "docs/agent-work/h15-uidialog-getflags-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uidialog-getflags-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve verified contract record."
+      ],
+      "validation_plan": [
+        "Compare contract against disassembled original."
+      ]
+    },
+    {
+      "id": "h15-uidialog-getflags-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement clean, editable C++ candidate for UiDialog_GetFlags within binary window footprint.",
+      "depends_on": [
+        "h15-uidialog-getflags-contract-review"
+      ],
+      "function_claims": [
+        "0x001260a8"
+      ],
+      "read_paths": [
+        "docs/agent-work/h15-uidialog-getflags-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h15_uidialog_getflags_candidate.cpp",
+        "docs/agent-work/h15-uidialog-getflags-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "experiments/semantic_equivalence/h15_uidialog_getflags_candidate.cpp"
+      ],
+      "acceptance": [
+        "Compile freestanding ARMv6K object within allocated window footprint."
+      ],
+      "validation_plan": [
+        "python tools/build_h15_all.py"
+      ]
+    },
+    {
+      "id": "h15-uidialog-getflags-candidate-review",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review C++ candidate implementation for UiDialog_GetFlags.",
+      "depends_on": [
+        "h15-uidialog-getflags-candidate"
+      ],
+      "function_claims": [
+        "0x001260a8"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h15_uidialog_getflags_candidate.cpp",
+        "docs/agent-work/h15-uidialog-getflags-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uidialog-getflags-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm semantic clarity, type safety, and zero window overflow."
+      ],
+      "validation_plan": [
+        "Inspect C++ code and compilation metrics."
+      ]
+    },
+    {
+      "id": "h15-uidialog-getflags-test",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Create Unicorn offline differential test harness for UiDialog_GetFlags.",
+      "depends_on": [
+        "h15-uidialog-getflags-candidate-review"
+      ],
+      "function_claims": [
+        "0x001260a8"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h15_uidialog_getflags_candidate.cpp",
+        "docs/agent-work/h15-uidialog-getflags-contract.md"
+      ],
+      "write_paths": [
+        "tools/h15_uidialog_getflags_experiment.py",
+        "docs/agent-work/h15-uidialog-getflags-test.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [
+        "tools/h15_uidialog_getflags_experiment.py"
+      ],
+      "acceptance": [
+        "Harness simulates original vs candidate with mutation sensitivity."
+      ],
+      "validation_plan": [
+        "python tools/h15_uidialog_getflags_experiment.py"
+      ]
+    },
+    {
+      "id": "h15-uidialog-getflags-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential test harness for UiDialog_GetFlags.",
+      "depends_on": [
+        "h15-uidialog-getflags-test"
+      ],
+      "function_claims": [
+        "0x001260a8"
+      ],
+      "read_paths": [
+        "tools/h15_uidialog_getflags_experiment.py",
+        "docs/agent-work/h15-uidialog-getflags-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uidialog-getflags-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify boundary cases and mutation probe efficacy."
+      ],
+      "validation_plan": [
+        "Validate test harness coverage."
+      ]
+    },
+    {
+      "id": "h15-uidialog-getflags-diff",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline differential validation run for UiDialog_GetFlags.",
+      "depends_on": [
+        "h15-uidialog-getflags-test-review"
+      ],
+      "function_claims": [
+        "0x001260a8"
+      ],
+      "read_paths": [
+        "tools/h15_uidialog_getflags_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uidialog-getflags-diff.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Achieve 100% parity across registers and memory effects."
+      ],
+      "validation_plan": [
+        "python tools/h15_uidialog_getflags_experiment.py"
+      ]
+    },
+    {
+      "id": "h15-uidialog-getflags-diff-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential run results for UiDialog_GetFlags.",
+      "depends_on": [
+        "h15-uidialog-getflags-diff"
+      ],
+      "function_claims": [
+        "0x001260a8"
+      ],
+      "read_paths": [
+        "docs/agent-work/h15-uidialog-getflags-diff.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uidialog-getflags-diff-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm zero divergence and successful mutation failure."
+      ],
+      "validation_plan": [
+        "Inspect differential log."
+      ]
+    },
+    {
+      "id": "h15-uidialog-getflags-integration",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Integrate candidate UiDialog_GetFlags into staging binary image with relocations resolved.",
+      "depends_on": [
+        "h15-uidialog-getflags-diff-review"
+      ],
+      "function_claims": [
+        "0x001260a8"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h15_uidialog_getflags_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uidialog-getflags-integration.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Resolved relocations and patched into code image."
+      ],
+      "validation_plan": [
+        "python tools/h15_staged_image_patch.py"
+      ]
+    },
+    {
+      "id": "h15-uidialog-getflags-integration-review",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review subsystem staging integration for UiDialog_GetFlags.",
+      "depends_on": [
+        "h15-uidialog-getflags-integration"
+      ],
+      "function_claims": [
+        "0x001260a8"
+      ],
+      "read_paths": [
+        "docs/agent-work/h15-uidialog-getflags-integration.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uidialog-getflags-integration-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve staged integration record."
+      ],
+      "validation_plan": [
+        "Verify staging summary and binary offsets."
+      ]
+    },
+    {
+      "id": "h15-uidialog-getcursorindex-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover precise calling contract, memory boundaries, and semantics for UiDialog_GetCursorIndex.",
+      "depends_on": [
+        "h15-ui-engine-recon-review"
+      ],
+      "function_claims": [
+        "0x00126220"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uidialog-getcursorindex-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover registers, arguments, preconditions, and return values."
+      ],
+      "validation_plan": [
+        "Static disassembly analysis."
+      ]
+    },
+    {
+      "id": "h15-uidialog-getcursorindex-contract-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review contract specification for UiDialog_GetCursorIndex.",
+      "depends_on": [
+        "h15-uidialog-getcursorindex-contract"
+      ],
+      "function_claims": [
+        "0x00126220"
+      ],
+      "read_paths": [
+        "docs/agent-work/h15-uidialog-getcursorindex-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uidialog-getcursorindex-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve verified contract record."
+      ],
+      "validation_plan": [
+        "Compare contract against disassembled original."
+      ]
+    },
+    {
+      "id": "h15-uidialog-getcursorindex-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement clean, editable C++ candidate for UiDialog_GetCursorIndex within binary window footprint.",
+      "depends_on": [
+        "h15-uidialog-getcursorindex-contract-review"
+      ],
+      "function_claims": [
+        "0x00126220"
+      ],
+      "read_paths": [
+        "docs/agent-work/h15-uidialog-getcursorindex-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h15_uidialog_getcursorindex_candidate.cpp",
+        "docs/agent-work/h15-uidialog-getcursorindex-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "experiments/semantic_equivalence/h15_uidialog_getcursorindex_candidate.cpp"
+      ],
+      "acceptance": [
+        "Compile freestanding ARMv6K object within allocated window footprint."
+      ],
+      "validation_plan": [
+        "python tools/build_h15_all.py"
+      ]
+    },
+    {
+      "id": "h15-uidialog-getcursorindex-candidate-review",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review C++ candidate implementation for UiDialog_GetCursorIndex.",
+      "depends_on": [
+        "h15-uidialog-getcursorindex-candidate"
+      ],
+      "function_claims": [
+        "0x00126220"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h15_uidialog_getcursorindex_candidate.cpp",
+        "docs/agent-work/h15-uidialog-getcursorindex-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uidialog-getcursorindex-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm semantic clarity, type safety, and zero window overflow."
+      ],
+      "validation_plan": [
+        "Inspect C++ code and compilation metrics."
+      ]
+    },
+    {
+      "id": "h15-uidialog-getcursorindex-test",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Create Unicorn offline differential test harness for UiDialog_GetCursorIndex.",
+      "depends_on": [
+        "h15-uidialog-getcursorindex-candidate-review"
+      ],
+      "function_claims": [
+        "0x00126220"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h15_uidialog_getcursorindex_candidate.cpp",
+        "docs/agent-work/h15-uidialog-getcursorindex-contract.md"
+      ],
+      "write_paths": [
+        "tools/h15_uidialog_getcursorindex_experiment.py",
+        "docs/agent-work/h15-uidialog-getcursorindex-test.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [
+        "tools/h15_uidialog_getcursorindex_experiment.py"
+      ],
+      "acceptance": [
+        "Harness simulates original vs candidate with mutation sensitivity."
+      ],
+      "validation_plan": [
+        "python tools/h15_uidialog_getcursorindex_experiment.py"
+      ]
+    },
+    {
+      "id": "h15-uidialog-getcursorindex-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential test harness for UiDialog_GetCursorIndex.",
+      "depends_on": [
+        "h15-uidialog-getcursorindex-test"
+      ],
+      "function_claims": [
+        "0x00126220"
+      ],
+      "read_paths": [
+        "tools/h15_uidialog_getcursorindex_experiment.py",
+        "docs/agent-work/h15-uidialog-getcursorindex-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uidialog-getcursorindex-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify boundary cases and mutation probe efficacy."
+      ],
+      "validation_plan": [
+        "Validate test harness coverage."
+      ]
+    },
+    {
+      "id": "h15-uidialog-getcursorindex-diff",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline differential validation run for UiDialog_GetCursorIndex.",
+      "depends_on": [
+        "h15-uidialog-getcursorindex-test-review"
+      ],
+      "function_claims": [
+        "0x00126220"
+      ],
+      "read_paths": [
+        "tools/h15_uidialog_getcursorindex_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uidialog-getcursorindex-diff.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Achieve 100% parity across registers and memory effects."
+      ],
+      "validation_plan": [
+        "python tools/h15_uidialog_getcursorindex_experiment.py"
+      ]
+    },
+    {
+      "id": "h15-uidialog-getcursorindex-diff-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential run results for UiDialog_GetCursorIndex.",
+      "depends_on": [
+        "h15-uidialog-getcursorindex-diff"
+      ],
+      "function_claims": [
+        "0x00126220"
+      ],
+      "read_paths": [
+        "docs/agent-work/h15-uidialog-getcursorindex-diff.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uidialog-getcursorindex-diff-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm zero divergence and successful mutation failure."
+      ],
+      "validation_plan": [
+        "Inspect differential log."
+      ]
+    },
+    {
+      "id": "h15-uidialog-getcursorindex-integration",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Integrate candidate UiDialog_GetCursorIndex into staging binary image with relocations resolved.",
+      "depends_on": [
+        "h15-uidialog-getcursorindex-diff-review"
+      ],
+      "function_claims": [
+        "0x00126220"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h15_uidialog_getcursorindex_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uidialog-getcursorindex-integration.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Resolved relocations and patched into code image."
+      ],
+      "validation_plan": [
+        "python tools/h15_staged_image_patch.py"
+      ]
+    },
+    {
+      "id": "h15-uidialog-getcursorindex-integration-review",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review subsystem staging integration for UiDialog_GetCursorIndex.",
+      "depends_on": [
+        "h15-uidialog-getcursorindex-integration"
+      ],
+      "function_claims": [
+        "0x00126220"
+      ],
+      "read_paths": [
+        "docs/agent-work/h15-uidialog-getcursorindex-integration.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uidialog-getcursorindex-integration-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve staged integration record."
+      ],
+      "validation_plan": [
+        "Verify staging summary and binary offsets."
+      ]
+    },
+    {
+      "id": "h15-uitext-getdrawcoordx-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover precise calling contract, memory boundaries, and semantics for UiText_GetDrawCoordX.",
+      "depends_on": [
+        "h15-ui-engine-recon-review"
+      ],
+      "function_claims": [
+        "0x00126628"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uitext-getdrawcoordx-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover registers, arguments, preconditions, and return values."
+      ],
+      "validation_plan": [
+        "Static disassembly analysis."
+      ]
+    },
+    {
+      "id": "h15-uitext-getdrawcoordx-contract-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review contract specification for UiText_GetDrawCoordX.",
+      "depends_on": [
+        "h15-uitext-getdrawcoordx-contract"
+      ],
+      "function_claims": [
+        "0x00126628"
+      ],
+      "read_paths": [
+        "docs/agent-work/h15-uitext-getdrawcoordx-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uitext-getdrawcoordx-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve verified contract record."
+      ],
+      "validation_plan": [
+        "Compare contract against disassembled original."
+      ]
+    },
+    {
+      "id": "h15-uitext-getdrawcoordx-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement clean, editable C++ candidate for UiText_GetDrawCoordX within binary window footprint.",
+      "depends_on": [
+        "h15-uitext-getdrawcoordx-contract-review"
+      ],
+      "function_claims": [
+        "0x00126628"
+      ],
+      "read_paths": [
+        "docs/agent-work/h15-uitext-getdrawcoordx-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h15_uitext_getdrawcoordx_candidate.cpp",
+        "docs/agent-work/h15-uitext-getdrawcoordx-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "experiments/semantic_equivalence/h15_uitext_getdrawcoordx_candidate.cpp"
+      ],
+      "acceptance": [
+        "Compile freestanding ARMv6K object within allocated window footprint."
+      ],
+      "validation_plan": [
+        "python tools/build_h15_all.py"
+      ]
+    },
+    {
+      "id": "h15-uitext-getdrawcoordx-candidate-review",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review C++ candidate implementation for UiText_GetDrawCoordX.",
+      "depends_on": [
+        "h15-uitext-getdrawcoordx-candidate"
+      ],
+      "function_claims": [
+        "0x00126628"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h15_uitext_getdrawcoordx_candidate.cpp",
+        "docs/agent-work/h15-uitext-getdrawcoordx-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uitext-getdrawcoordx-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm semantic clarity, type safety, and zero window overflow."
+      ],
+      "validation_plan": [
+        "Inspect C++ code and compilation metrics."
+      ]
+    },
+    {
+      "id": "h15-uitext-getdrawcoordx-test",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Create Unicorn offline differential test harness for UiText_GetDrawCoordX.",
+      "depends_on": [
+        "h15-uitext-getdrawcoordx-candidate-review"
+      ],
+      "function_claims": [
+        "0x00126628"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h15_uitext_getdrawcoordx_candidate.cpp",
+        "docs/agent-work/h15-uitext-getdrawcoordx-contract.md"
+      ],
+      "write_paths": [
+        "tools/h15_uitext_getdrawcoordx_experiment.py",
+        "docs/agent-work/h15-uitext-getdrawcoordx-test.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [
+        "tools/h15_uitext_getdrawcoordx_experiment.py"
+      ],
+      "acceptance": [
+        "Harness simulates original vs candidate with mutation sensitivity."
+      ],
+      "validation_plan": [
+        "python tools/h15_uitext_getdrawcoordx_experiment.py"
+      ]
+    },
+    {
+      "id": "h15-uitext-getdrawcoordx-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential test harness for UiText_GetDrawCoordX.",
+      "depends_on": [
+        "h15-uitext-getdrawcoordx-test"
+      ],
+      "function_claims": [
+        "0x00126628"
+      ],
+      "read_paths": [
+        "tools/h15_uitext_getdrawcoordx_experiment.py",
+        "docs/agent-work/h15-uitext-getdrawcoordx-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uitext-getdrawcoordx-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify boundary cases and mutation probe efficacy."
+      ],
+      "validation_plan": [
+        "Validate test harness coverage."
+      ]
+    },
+    {
+      "id": "h15-uitext-getdrawcoordx-diff",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline differential validation run for UiText_GetDrawCoordX.",
+      "depends_on": [
+        "h15-uitext-getdrawcoordx-test-review"
+      ],
+      "function_claims": [
+        "0x00126628"
+      ],
+      "read_paths": [
+        "tools/h15_uitext_getdrawcoordx_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uitext-getdrawcoordx-diff.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Achieve 100% parity across registers and memory effects."
+      ],
+      "validation_plan": [
+        "python tools/h15_uitext_getdrawcoordx_experiment.py"
+      ]
+    },
+    {
+      "id": "h15-uitext-getdrawcoordx-diff-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential run results for UiText_GetDrawCoordX.",
+      "depends_on": [
+        "h15-uitext-getdrawcoordx-diff"
+      ],
+      "function_claims": [
+        "0x00126628"
+      ],
+      "read_paths": [
+        "docs/agent-work/h15-uitext-getdrawcoordx-diff.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uitext-getdrawcoordx-diff-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm zero divergence and successful mutation failure."
+      ],
+      "validation_plan": [
+        "Inspect differential log."
+      ]
+    },
+    {
+      "id": "h15-uitext-getdrawcoordx-integration",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Integrate candidate UiText_GetDrawCoordX into staging binary image with relocations resolved.",
+      "depends_on": [
+        "h15-uitext-getdrawcoordx-diff-review"
+      ],
+      "function_claims": [
+        "0x00126628"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h15_uitext_getdrawcoordx_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uitext-getdrawcoordx-integration.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Resolved relocations and patched into code image."
+      ],
+      "validation_plan": [
+        "python tools/h15_staged_image_patch.py"
+      ]
+    },
+    {
+      "id": "h15-uitext-getdrawcoordx-integration-review",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review subsystem staging integration for UiText_GetDrawCoordX.",
+      "depends_on": [
+        "h15-uitext-getdrawcoordx-integration"
+      ],
+      "function_claims": [
+        "0x00126628"
+      ],
+      "read_paths": [
+        "docs/agent-work/h15-uitext-getdrawcoordx-integration.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uitext-getdrawcoordx-integration-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve staged integration record."
+      ],
+      "validation_plan": [
+        "Verify staging summary and binary offsets."
+      ]
+    },
+    {
+      "id": "h15-uitext-getdrawcoordy-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover precise calling contract, memory boundaries, and semantics for UiText_GetDrawCoordY.",
+      "depends_on": [
+        "h15-ui-engine-recon-review"
+      ],
+      "function_claims": [
+        "0x00126638"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uitext-getdrawcoordy-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover registers, arguments, preconditions, and return values."
+      ],
+      "validation_plan": [
+        "Static disassembly analysis."
+      ]
+    },
+    {
+      "id": "h15-uitext-getdrawcoordy-contract-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review contract specification for UiText_GetDrawCoordY.",
+      "depends_on": [
+        "h15-uitext-getdrawcoordy-contract"
+      ],
+      "function_claims": [
+        "0x00126638"
+      ],
+      "read_paths": [
+        "docs/agent-work/h15-uitext-getdrawcoordy-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uitext-getdrawcoordy-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve verified contract record."
+      ],
+      "validation_plan": [
+        "Compare contract against disassembled original."
+      ]
+    },
+    {
+      "id": "h15-uitext-getdrawcoordy-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement clean, editable C++ candidate for UiText_GetDrawCoordY within binary window footprint.",
+      "depends_on": [
+        "h15-uitext-getdrawcoordy-contract-review"
+      ],
+      "function_claims": [
+        "0x00126638"
+      ],
+      "read_paths": [
+        "docs/agent-work/h15-uitext-getdrawcoordy-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h15_uitext_getdrawcoordy_candidate.cpp",
+        "docs/agent-work/h15-uitext-getdrawcoordy-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "experiments/semantic_equivalence/h15_uitext_getdrawcoordy_candidate.cpp"
+      ],
+      "acceptance": [
+        "Compile freestanding ARMv6K object within allocated window footprint."
+      ],
+      "validation_plan": [
+        "python tools/build_h15_all.py"
+      ]
+    },
+    {
+      "id": "h15-uitext-getdrawcoordy-candidate-review",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review C++ candidate implementation for UiText_GetDrawCoordY.",
+      "depends_on": [
+        "h15-uitext-getdrawcoordy-candidate"
+      ],
+      "function_claims": [
+        "0x00126638"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h15_uitext_getdrawcoordy_candidate.cpp",
+        "docs/agent-work/h15-uitext-getdrawcoordy-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uitext-getdrawcoordy-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm semantic clarity, type safety, and zero window overflow."
+      ],
+      "validation_plan": [
+        "Inspect C++ code and compilation metrics."
+      ]
+    },
+    {
+      "id": "h15-uitext-getdrawcoordy-test",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Create Unicorn offline differential test harness for UiText_GetDrawCoordY.",
+      "depends_on": [
+        "h15-uitext-getdrawcoordy-candidate-review"
+      ],
+      "function_claims": [
+        "0x00126638"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h15_uitext_getdrawcoordy_candidate.cpp",
+        "docs/agent-work/h15-uitext-getdrawcoordy-contract.md"
+      ],
+      "write_paths": [
+        "tools/h15_uitext_getdrawcoordy_experiment.py",
+        "docs/agent-work/h15-uitext-getdrawcoordy-test.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [
+        "tools/h15_uitext_getdrawcoordy_experiment.py"
+      ],
+      "acceptance": [
+        "Harness simulates original vs candidate with mutation sensitivity."
+      ],
+      "validation_plan": [
+        "python tools/h15_uitext_getdrawcoordy_experiment.py"
+      ]
+    },
+    {
+      "id": "h15-uitext-getdrawcoordy-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential test harness for UiText_GetDrawCoordY.",
+      "depends_on": [
+        "h15-uitext-getdrawcoordy-test"
+      ],
+      "function_claims": [
+        "0x00126638"
+      ],
+      "read_paths": [
+        "tools/h15_uitext_getdrawcoordy_experiment.py",
+        "docs/agent-work/h15-uitext-getdrawcoordy-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uitext-getdrawcoordy-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify boundary cases and mutation probe efficacy."
+      ],
+      "validation_plan": [
+        "Validate test harness coverage."
+      ]
+    },
+    {
+      "id": "h15-uitext-getdrawcoordy-diff",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline differential validation run for UiText_GetDrawCoordY.",
+      "depends_on": [
+        "h15-uitext-getdrawcoordy-test-review"
+      ],
+      "function_claims": [
+        "0x00126638"
+      ],
+      "read_paths": [
+        "tools/h15_uitext_getdrawcoordy_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uitext-getdrawcoordy-diff.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Achieve 100% parity across registers and memory effects."
+      ],
+      "validation_plan": [
+        "python tools/h15_uitext_getdrawcoordy_experiment.py"
+      ]
+    },
+    {
+      "id": "h15-uitext-getdrawcoordy-diff-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential run results for UiText_GetDrawCoordY.",
+      "depends_on": [
+        "h15-uitext-getdrawcoordy-diff"
+      ],
+      "function_claims": [
+        "0x00126638"
+      ],
+      "read_paths": [
+        "docs/agent-work/h15-uitext-getdrawcoordy-diff.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uitext-getdrawcoordy-diff-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm zero divergence and successful mutation failure."
+      ],
+      "validation_plan": [
+        "Inspect differential log."
+      ]
+    },
+    {
+      "id": "h15-uitext-getdrawcoordy-integration",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Integrate candidate UiText_GetDrawCoordY into staging binary image with relocations resolved.",
+      "depends_on": [
+        "h15-uitext-getdrawcoordy-diff-review"
+      ],
+      "function_claims": [
+        "0x00126638"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h15_uitext_getdrawcoordy_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uitext-getdrawcoordy-integration.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Resolved relocations and patched into code image."
+      ],
+      "validation_plan": [
+        "python tools/h15_staged_image_patch.py"
+      ]
+    },
+    {
+      "id": "h15-uitext-getdrawcoordy-integration-review",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review subsystem staging integration for UiText_GetDrawCoordY.",
+      "depends_on": [
+        "h15-uitext-getdrawcoordy-integration"
+      ],
+      "function_claims": [
+        "0x00126638"
+      ],
+      "read_paths": [
+        "docs/agent-work/h15-uitext-getdrawcoordy-integration.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uitext-getdrawcoordy-integration-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve staged integration record."
+      ],
+      "validation_plan": [
+        "Verify staging summary and binary offsets."
+      ]
+    },
+    {
+      "id": "h15-uimanager-getcontexthandle-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover precise calling contract, memory boundaries, and semantics for UiManager_GetContextHandle.",
+      "depends_on": [
+        "h15-ui-engine-recon-review"
+      ],
+      "function_claims": [
+        "0x0026b844"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uimanager-getcontexthandle-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover registers, arguments, preconditions, and return values."
+      ],
+      "validation_plan": [
+        "Static disassembly analysis."
+      ]
+    },
+    {
+      "id": "h15-uimanager-getcontexthandle-contract-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review contract specification for UiManager_GetContextHandle.",
+      "depends_on": [
+        "h15-uimanager-getcontexthandle-contract"
+      ],
+      "function_claims": [
+        "0x0026b844"
+      ],
+      "read_paths": [
+        "docs/agent-work/h15-uimanager-getcontexthandle-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uimanager-getcontexthandle-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve verified contract record."
+      ],
+      "validation_plan": [
+        "Compare contract against disassembled original."
+      ]
+    },
+    {
+      "id": "h15-uimanager-getcontexthandle-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement clean, editable C++ candidate for UiManager_GetContextHandle within binary window footprint.",
+      "depends_on": [
+        "h15-uimanager-getcontexthandle-contract-review"
+      ],
+      "function_claims": [
+        "0x0026b844"
+      ],
+      "read_paths": [
+        "docs/agent-work/h15-uimanager-getcontexthandle-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h15_uimanager_getcontexthandle_candidate.cpp",
+        "docs/agent-work/h15-uimanager-getcontexthandle-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "experiments/semantic_equivalence/h15_uimanager_getcontexthandle_candidate.cpp"
+      ],
+      "acceptance": [
+        "Compile freestanding ARMv6K object within allocated window footprint."
+      ],
+      "validation_plan": [
+        "python tools/build_h15_all.py"
+      ]
+    },
+    {
+      "id": "h15-uimanager-getcontexthandle-candidate-review",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review C++ candidate implementation for UiManager_GetContextHandle.",
+      "depends_on": [
+        "h15-uimanager-getcontexthandle-candidate"
+      ],
+      "function_claims": [
+        "0x0026b844"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h15_uimanager_getcontexthandle_candidate.cpp",
+        "docs/agent-work/h15-uimanager-getcontexthandle-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uimanager-getcontexthandle-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm semantic clarity, type safety, and zero window overflow."
+      ],
+      "validation_plan": [
+        "Inspect C++ code and compilation metrics."
+      ]
+    },
+    {
+      "id": "h15-uimanager-getcontexthandle-test",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Create Unicorn offline differential test harness for UiManager_GetContextHandle.",
+      "depends_on": [
+        "h15-uimanager-getcontexthandle-candidate-review"
+      ],
+      "function_claims": [
+        "0x0026b844"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h15_uimanager_getcontexthandle_candidate.cpp",
+        "docs/agent-work/h15-uimanager-getcontexthandle-contract.md"
+      ],
+      "write_paths": [
+        "tools/h15_uimanager_getcontexthandle_experiment.py",
+        "docs/agent-work/h15-uimanager-getcontexthandle-test.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [
+        "tools/h15_uimanager_getcontexthandle_experiment.py"
+      ],
+      "acceptance": [
+        "Harness simulates original vs candidate with mutation sensitivity."
+      ],
+      "validation_plan": [
+        "python tools/h15_uimanager_getcontexthandle_experiment.py"
+      ]
+    },
+    {
+      "id": "h15-uimanager-getcontexthandle-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential test harness for UiManager_GetContextHandle.",
+      "depends_on": [
+        "h15-uimanager-getcontexthandle-test"
+      ],
+      "function_claims": [
+        "0x0026b844"
+      ],
+      "read_paths": [
+        "tools/h15_uimanager_getcontexthandle_experiment.py",
+        "docs/agent-work/h15-uimanager-getcontexthandle-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uimanager-getcontexthandle-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify boundary cases and mutation probe efficacy."
+      ],
+      "validation_plan": [
+        "Validate test harness coverage."
+      ]
+    },
+    {
+      "id": "h15-uimanager-getcontexthandle-diff",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline differential validation run for UiManager_GetContextHandle.",
+      "depends_on": [
+        "h15-uimanager-getcontexthandle-test-review"
+      ],
+      "function_claims": [
+        "0x0026b844"
+      ],
+      "read_paths": [
+        "tools/h15_uimanager_getcontexthandle_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uimanager-getcontexthandle-diff.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Achieve 100% parity across registers and memory effects."
+      ],
+      "validation_plan": [
+        "python tools/h15_uimanager_getcontexthandle_experiment.py"
+      ]
+    },
+    {
+      "id": "h15-uimanager-getcontexthandle-diff-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential run results for UiManager_GetContextHandle.",
+      "depends_on": [
+        "h15-uimanager-getcontexthandle-diff"
+      ],
+      "function_claims": [
+        "0x0026b844"
+      ],
+      "read_paths": [
+        "docs/agent-work/h15-uimanager-getcontexthandle-diff.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uimanager-getcontexthandle-diff-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm zero divergence and successful mutation failure."
+      ],
+      "validation_plan": [
+        "Inspect differential log."
+      ]
+    },
+    {
+      "id": "h15-uimanager-getcontexthandle-integration",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Integrate candidate UiManager_GetContextHandle into staging binary image with relocations resolved.",
+      "depends_on": [
+        "h15-uimanager-getcontexthandle-diff-review"
+      ],
+      "function_claims": [
+        "0x0026b844"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h15_uimanager_getcontexthandle_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uimanager-getcontexthandle-integration.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Resolved relocations and patched into code image."
+      ],
+      "validation_plan": [
+        "python tools/h15_staged_image_patch.py"
+      ]
+    },
+    {
+      "id": "h15-uimanager-getcontexthandle-integration-review",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review subsystem staging integration for UiManager_GetContextHandle.",
+      "depends_on": [
+        "h15-uimanager-getcontexthandle-integration"
+      ],
+      "function_claims": [
+        "0x0026b844"
+      ],
+      "read_paths": [
+        "docs/agent-work/h15-uimanager-getcontexthandle-integration.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-uimanager-getcontexthandle-integration-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve staged integration record."
+      ],
+      "validation_plan": [
+        "Verify staging summary and binary offsets."
+      ]
+    },
+    {
+      "id": "h15-batch-integration",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Compose all 8 H15 subsystems into cumulative staged image code.h15-final.bin and emit LayeredFS IPS mod.",
+      "depends_on": [
+        "h15-uitext-setcodefield10-integration-review",
+        "h15-uitext-setcodefield28-integration-review",
+        "h15-uidialog-getstate-integration-review",
+        "h15-uidialog-getflags-integration-review",
+        "h15-uidialog-getcursorindex-integration-review",
+        "h15-uitext-getdrawcoordx-integration-review",
+        "h15-uitext-getdrawcoordy-integration-review",
+        "h15-uimanager-getcontexthandle-integration-review"
+      ],
+      "function_claims": [
+        "0x0010e570",
+        "0x0010e5bc",
+        "0x00126084",
+        "0x001260a8",
+        "0x00126220",
+        "0x00126628",
+        "0x00126638",
+        "0x0026b844"
+      ],
+      "read_paths": [
+        "build/agent-work/H14-semantic/h14-integrated-stage/code.h14-final.bin",
+        "tools/h15_staged_image_patch.py"
+      ],
+      "write_paths": [
+        "build/agent-work/H15-semantic/h15-integrated-stage/code.h15-final.bin",
+        "build/agent-work/H15-semantic/h15-integrated-stage/code.h15-final.ips",
+        "build/agent-work/H15-semantic/h15-integrated-stage/h15_staging_summary.json",
+        "docs/agent-work/h15-batch-integration.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Generate code.h15-final.bin with all H15 patches applied.",
+        "Emit LayeredFS IPS mod with roundtrip verification."
+      ],
+      "validation_plan": [
+        "python tools/h15_staged_image_patch.py"
+      ]
+    },
+    {
+      "id": "h15-batch-integration-review",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review cumulative batch integration for Milestone H15.",
+      "depends_on": [
+        "h15-batch-integration"
+      ],
+      "function_claims": [
+        "0x0010e570",
+        "0x0010e5bc",
+        "0x00126084",
+        "0x001260a8",
+        "0x00126220",
+        "0x00126628",
+        "0x00126638",
+        "0x0026b844"
+      ],
+      "read_paths": [
+        "docs/agent-work/h15-batch-integration.md",
+        "build/agent-work/H15-semantic/h15-integrated-stage/h15_staging_summary.json"
+      ],
+      "write_paths": [
+        "docs/agent-work/h15-batch-integration-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Validate SHA256 hashes and IPS roundtrip verification."
+      ],
+      "validation_plan": [
+        "Inspect staging summary and verify SHA256 integrity."
+      ]
+    },
+    {
+      "id": "h15-milestone-closure",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Milestone H15 closure, documentation finalization, and transition to Milestone H16.",
+      "depends_on": [
+        "h15-batch-integration-review"
+      ],
+      "function_claims": [
+        "0x0010e570",
+        "0x0010e5bc",
+        "0x00126084",
+        "0x001260a8",
+        "0x00126220",
+        "0x00126628",
+        "0x00126638",
+        "0x0026b844"
+      ],
+      "read_paths": [
+        "docs/agent-work/h15-batch-integration-review.md",
+        "build/agent-work/H15-semantic/h15-integrated-stage/h15_staging_summary.json"
+      ],
+      "write_paths": [
+        "docs/milestones/H15-ui-engine.md",
+        "docs/functional-status.md",
+        "docs/reconstruction-milestones.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Milestone documentation complete with candidate metrics, validation proof, and status ledger updates."
+      ],
+      "validation_plan": [
+        "python tools/agent_workflow.py check"
+      ]
+    }
+  ]
+}

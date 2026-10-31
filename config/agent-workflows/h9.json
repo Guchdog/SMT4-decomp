@@ -1,0 +1,2601 @@
+{
+  "schema_version": 1,
+  "batch": "batch-h9-001",
+  "milestone": "H9",
+  "max_workers": 3,
+  "cpu_budget": 8,
+  "goal": "Reconstruct readable, editable C++ for Milestone H9 (Cathedral of Shadows: Fusion & Compendium), covering 3D fusion effect initialization (UniteEffect_Init), Demon Compendium manager (bibleMain_Init), Legion Skill setup and UI registration (bibleLegionSkill_Init), Legion stereo draw manager (bibleLegionDraw_Init), sort menu modal dispatcher (SortMenu_Init), demon fusion candidate roster counting, categorization and sorting (UniteCtrl_RosterPopulate), compendium demon inspector and task registration (bibleDevil_Init), and button prompt HUD helper (ButtonHelp_Init) with full offline differential validation, caller composition, staging, and autonomous runtime verification.",
+  "coordinator_owned_paths": [
+    "config/agent-workflows/h9.json",
+    "config/reconstruction.json",
+    "docs/milestones/H9-cathedral-fusion-compendium.md",
+    "docs/functional-status.md",
+    "docs/reconstruction-milestones.md"
+  ],
+  "tasks": [
+    {
+      "id": "h9-cathedral-fusion-recon",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Comprehensive static and architectural reconnaissance of Milestone H9 Cathedral of Shadows: Fusion and Compendium.",
+      "depends_on": [],
+      "function_claims": [
+        "0x002e315c",
+        "0x00269cc8",
+        "0x003ab770",
+        "0x003ad300",
+        "0x0029e63c",
+        "0x003c9ebc",
+        "0x003a7ad8",
+        "0x0028d974"
+      ],
+      "read_paths": [
+        "src/camp/unite.cpp",
+        "src/camp/unite_extras.cpp",
+        "src/camp/bible.cpp",
+        "src/camp/compendium_search.cpp",
+        "src/camp/whisper_event.cpp",
+        "docs/reconstruction-milestones.md",
+        "docs/milestones/H8-camp-menu-inventory-party.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-cathedral-fusion-recon.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Identify exact entry points, memory structures, and callers for H9 fusion and compendium subsystems.",
+        "Define offline-first differential boundaries, positive/negative controls, and mutation criteria."
+      ],
+      "validation_plan": [
+        "Cross-check candidate functions against pinned binary code.bin and functions.csv ledger."
+      ]
+    },
+    {
+      "id": "h9-cathedral-fusion-recon-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of Cathedral of Shadows fusion and compendium architecture reconnaissance and boundary definitions.",
+      "depends_on": [
+        "h9-cathedral-fusion-recon"
+      ],
+      "function_claims": [
+        "0x002e315c",
+        "0x00269cc8",
+        "0x003ab770",
+        "0x003ad300",
+        "0x0029e63c",
+        "0x003c9ebc",
+        "0x003a7ad8",
+        "0x0028d974"
+      ],
+      "read_paths": [
+        "docs/agent-work/h9-cathedral-fusion-recon.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-cathedral-fusion-recon-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract boundaries, calling conventions, and ABI preservation expectations.",
+        "Approve task division and candidate scope for H9 Cathedral of Shadows milestone."
+      ],
+      "validation_plan": [
+        "Confirm completeness of architecture reconnaissance and absence of unsupported assumptions."
+      ]
+    },
+    {
+      "id": "h9-camp-uniteeffect-init-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize contract, parameters, registers, and memory effects for UniteEffect_Init (0x002e315c).",
+      "depends_on": [
+        "h9-cathedral-fusion-recon-review"
+      ],
+      "function_claims": [
+        "0x002e315c"
+      ],
+      "read_paths": [
+        "src/camp/unite.cpp",
+        "src/camp/unite_extras.cpp",
+        "src/camp/bible.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-uniteeffect-init-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Accurately specify semantics of UniteEffect_Init.",
+        "Specify test fixtures and mutation controls."
+      ],
+      "validation_plan": [
+        "Static disassembly and register effect verification against code.bin."
+      ]
+    },
+    {
+      "id": "h9-camp-uniteeffect-init-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of UniteEffect_Init contract specification.",
+      "depends_on": [
+        "h9-camp-uniteeffect-init-contract"
+      ],
+      "function_claims": [
+        "0x002e315c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h9-camp-uniteeffect-init-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-uniteeffect-init-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract fidelity against ARM disassembled instructions."
+      ],
+      "validation_plan": [
+        "Audit edge cases, register clobbers, and pointer validations."
+      ]
+    },
+    {
+      "id": "h9-camp-uniteeffect-init-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable, editable C++ candidate for UniteEffect_Init with mutation control.",
+      "depends_on": [
+        "h9-camp-uniteeffect-init-contract-review"
+      ],
+      "function_claims": [
+        "0x002e315c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h9-camp-uniteeffect-init-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h9_camp_uniteeffect_init_candidate.cpp",
+        "docs/agent-work/h9-camp-uniteeffect-init-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Implement UniteEffect_Init candidate and verified mutation control.",
+        "Ensure compiled ARM size fits strictly within the original binary function window."
+      ],
+      "validation_plan": [
+        "Compile with tools/build_check.py (armv6k clang) and check ELF size."
+      ]
+    },
+    {
+      "id": "h9-camp-uniteeffect-init-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of UniteEffect_Init candidate implementation.",
+      "depends_on": [
+        "h9-camp-uniteeffect-init-candidate"
+      ],
+      "function_claims": [
+        "0x002e315c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h9_camp_uniteeffect_init_candidate.cpp",
+        "docs/agent-work/h9-camp-uniteeffect-init-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-uniteeffect-init-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Audit C++ syntax, memory safety, ABI conformance, and headroom margin.",
+        "Verify mutation control triggers distinct divergence."
+      ],
+      "validation_plan": [
+        "Check ELF symbol tables and relocation bindings."
+      ]
+    },
+    {
+      "id": "h9-camp-uniteeffect-init-differential",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline Unicorn differential test for UniteEffect_Init against original ARM code.",
+      "depends_on": [
+        "h9-camp-uniteeffect-init-candidate-review"
+      ],
+      "function_claims": [
+        "0x002e315c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h9_camp_uniteeffect_init_candidate.cpp",
+        "tools/h9_camp_uniteeffect_init_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-uniteeffect-init-differential.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Pass Unicorn emulation comparing original UniteEffect_Init against candidate.",
+        "Confirm mutation control is detected with non-zero divergence."
+      ],
+      "validation_plan": [
+        "Execute python tools/h9_camp_uniteeffect_init_experiment.py."
+      ]
+    },
+    {
+      "id": "h9-camp-uniteeffect-init-differential-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of offline differential test results for UniteEffect_Init.",
+      "depends_on": [
+        "h9-camp-uniteeffect-init-differential"
+      ],
+      "function_claims": [
+        "0x002e315c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h9-camp-uniteeffect-init-differential.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-uniteeffect-init-differential-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm zero divergence in state effects between original and candidate."
+      ],
+      "validation_plan": [
+        "Audit differential execution logs and register dump hashes."
+      ]
+    },
+    {
+      "id": "h9-camp-uniteeffect-init-composition",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Verify caller composition and interworking for UniteEffect_Init in integrated context.",
+      "depends_on": [
+        "h9-camp-uniteeffect-init-differential-review"
+      ],
+      "function_claims": [
+        "0x002e315c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h9_camp_uniteeffect_init_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-uniteeffect-init-composition.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify caller interface and stack alignment for UniteEffect_Init.",
+        "Ensure all external calls resolve cleanly without ABI violations."
+      ],
+      "validation_plan": [
+        "Audit caller sequence and callee stack frame preservation."
+      ]
+    },
+    {
+      "id": "h9-camp-uniteeffect-init-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of caller composition for UniteEffect_Init.",
+      "depends_on": [
+        "h9-camp-uniteeffect-init-composition"
+      ],
+      "function_claims": [
+        "0x002e315c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h9-camp-uniteeffect-init-composition.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-uniteeffect-init-composition-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Validate absence of stack corruption or register clobbering across callers."
+      ],
+      "validation_plan": [
+        "Review composition verification reports."
+      ]
+    },
+    {
+      "id": "h9-camp-uniteeffect-init-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Stage candidate object and relocation records for UniteEffect_Init into composite image builder.",
+      "depends_on": [
+        "h9-camp-uniteeffect-init-composition-review"
+      ],
+      "function_claims": [
+        "0x002e315c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h9_camp_uniteeffect_init_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-uniteeffect-init-staging.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Successfully link and stage UniteEffect_Init into staging pipeline."
+      ],
+      "validation_plan": [
+        "Check ELF relocation resolution and window bounds."
+      ]
+    },
+    {
+      "id": "h9-camp-uniteeffect-init-staging-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of staged candidate UniteEffect_Init.",
+      "depends_on": [
+        "h9-camp-uniteeffect-init-staging"
+      ],
+      "function_claims": [
+        "0x002e315c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h9-camp-uniteeffect-init-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-uniteeffect-init-staging-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify candidate is properly aligned, relocations patched, and padding clean."
+      ],
+      "validation_plan": [
+        "Confirm relocation offset calculations and target VMA mapping."
+      ]
+    },
+    {
+      "id": "h9-camp-biblemain-init-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize contract, parameters, registers, and memory effects for bibleMain_Init (0x00269cc8).",
+      "depends_on": [
+        "h9-cathedral-fusion-recon-review"
+      ],
+      "function_claims": [
+        "0x00269cc8"
+      ],
+      "read_paths": [
+        "src/camp/unite.cpp",
+        "src/camp/unite_extras.cpp",
+        "src/camp/bible.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-biblemain-init-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Accurately specify semantics of bibleMain_Init.",
+        "Specify test fixtures and mutation controls."
+      ],
+      "validation_plan": [
+        "Static disassembly and register effect verification against code.bin."
+      ]
+    },
+    {
+      "id": "h9-camp-biblemain-init-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of bibleMain_Init contract specification.",
+      "depends_on": [
+        "h9-camp-biblemain-init-contract"
+      ],
+      "function_claims": [
+        "0x00269cc8"
+      ],
+      "read_paths": [
+        "docs/agent-work/h9-camp-biblemain-init-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-biblemain-init-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract fidelity against ARM disassembled instructions."
+      ],
+      "validation_plan": [
+        "Audit edge cases, register clobbers, and pointer validations."
+      ]
+    },
+    {
+      "id": "h9-camp-biblemain-init-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable, editable C++ candidate for bibleMain_Init with mutation control.",
+      "depends_on": [
+        "h9-camp-biblemain-init-contract-review"
+      ],
+      "function_claims": [
+        "0x00269cc8"
+      ],
+      "read_paths": [
+        "docs/agent-work/h9-camp-biblemain-init-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h9_camp_biblemain_init_candidate.cpp",
+        "docs/agent-work/h9-camp-biblemain-init-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Implement bibleMain_Init candidate and verified mutation control.",
+        "Ensure compiled ARM size fits strictly within the original binary function window."
+      ],
+      "validation_plan": [
+        "Compile with tools/build_check.py (armv6k clang) and check ELF size."
+      ]
+    },
+    {
+      "id": "h9-camp-biblemain-init-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of bibleMain_Init candidate implementation.",
+      "depends_on": [
+        "h9-camp-biblemain-init-candidate"
+      ],
+      "function_claims": [
+        "0x00269cc8"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h9_camp_biblemain_init_candidate.cpp",
+        "docs/agent-work/h9-camp-biblemain-init-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-biblemain-init-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Audit C++ syntax, memory safety, ABI conformance, and headroom margin.",
+        "Verify mutation control triggers distinct divergence."
+      ],
+      "validation_plan": [
+        "Check ELF symbol tables and relocation bindings."
+      ]
+    },
+    {
+      "id": "h9-camp-biblemain-init-differential",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline Unicorn differential test for bibleMain_Init against original ARM code.",
+      "depends_on": [
+        "h9-camp-biblemain-init-candidate-review"
+      ],
+      "function_claims": [
+        "0x00269cc8"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h9_camp_biblemain_init_candidate.cpp",
+        "tools/h9_camp_biblemain_init_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-biblemain-init-differential.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Pass Unicorn emulation comparing original bibleMain_Init against candidate.",
+        "Confirm mutation control is detected with non-zero divergence."
+      ],
+      "validation_plan": [
+        "Execute python tools/h9_camp_biblemain_init_experiment.py."
+      ]
+    },
+    {
+      "id": "h9-camp-biblemain-init-differential-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of offline differential test results for bibleMain_Init.",
+      "depends_on": [
+        "h9-camp-biblemain-init-differential"
+      ],
+      "function_claims": [
+        "0x00269cc8"
+      ],
+      "read_paths": [
+        "docs/agent-work/h9-camp-biblemain-init-differential.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-biblemain-init-differential-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm zero divergence in state effects between original and candidate."
+      ],
+      "validation_plan": [
+        "Audit differential execution logs and register dump hashes."
+      ]
+    },
+    {
+      "id": "h9-camp-biblemain-init-composition",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Verify caller composition and interworking for bibleMain_Init in integrated context.",
+      "depends_on": [
+        "h9-camp-biblemain-init-differential-review"
+      ],
+      "function_claims": [
+        "0x00269cc8"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h9_camp_biblemain_init_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-biblemain-init-composition.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify caller interface and stack alignment for bibleMain_Init.",
+        "Ensure all external calls resolve cleanly without ABI violations."
+      ],
+      "validation_plan": [
+        "Audit caller sequence and callee stack frame preservation."
+      ]
+    },
+    {
+      "id": "h9-camp-biblemain-init-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of caller composition for bibleMain_Init.",
+      "depends_on": [
+        "h9-camp-biblemain-init-composition"
+      ],
+      "function_claims": [
+        "0x00269cc8"
+      ],
+      "read_paths": [
+        "docs/agent-work/h9-camp-biblemain-init-composition.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-biblemain-init-composition-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Validate absence of stack corruption or register clobbering across callers."
+      ],
+      "validation_plan": [
+        "Review composition verification reports."
+      ]
+    },
+    {
+      "id": "h9-camp-biblemain-init-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Stage candidate object and relocation records for bibleMain_Init into composite image builder.",
+      "depends_on": [
+        "h9-camp-biblemain-init-composition-review"
+      ],
+      "function_claims": [
+        "0x00269cc8"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h9_camp_biblemain_init_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-biblemain-init-staging.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Successfully link and stage bibleMain_Init into staging pipeline."
+      ],
+      "validation_plan": [
+        "Check ELF relocation resolution and window bounds."
+      ]
+    },
+    {
+      "id": "h9-camp-biblemain-init-staging-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of staged candidate bibleMain_Init.",
+      "depends_on": [
+        "h9-camp-biblemain-init-staging"
+      ],
+      "function_claims": [
+        "0x00269cc8"
+      ],
+      "read_paths": [
+        "docs/agent-work/h9-camp-biblemain-init-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-biblemain-init-staging-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify candidate is properly aligned, relocations patched, and padding clean."
+      ],
+      "validation_plan": [
+        "Confirm relocation offset calculations and target VMA mapping."
+      ]
+    },
+    {
+      "id": "h9-camp-biblelegionskill-init-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize contract, parameters, registers, and memory effects for bibleLegionSkill_Init (0x003ab770).",
+      "depends_on": [
+        "h9-cathedral-fusion-recon-review"
+      ],
+      "function_claims": [
+        "0x003ab770"
+      ],
+      "read_paths": [
+        "src/camp/unite.cpp",
+        "src/camp/unite_extras.cpp",
+        "src/camp/bible.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-biblelegionskill-init-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Accurately specify semantics of bibleLegionSkill_Init.",
+        "Specify test fixtures and mutation controls."
+      ],
+      "validation_plan": [
+        "Static disassembly and register effect verification against code.bin."
+      ]
+    },
+    {
+      "id": "h9-camp-biblelegionskill-init-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of bibleLegionSkill_Init contract specification.",
+      "depends_on": [
+        "h9-camp-biblelegionskill-init-contract"
+      ],
+      "function_claims": [
+        "0x003ab770"
+      ],
+      "read_paths": [
+        "docs/agent-work/h9-camp-biblelegionskill-init-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-biblelegionskill-init-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract fidelity against ARM disassembled instructions."
+      ],
+      "validation_plan": [
+        "Audit edge cases, register clobbers, and pointer validations."
+      ]
+    },
+    {
+      "id": "h9-camp-biblelegionskill-init-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable, editable C++ candidate for bibleLegionSkill_Init with mutation control.",
+      "depends_on": [
+        "h9-camp-biblelegionskill-init-contract-review"
+      ],
+      "function_claims": [
+        "0x003ab770"
+      ],
+      "read_paths": [
+        "docs/agent-work/h9-camp-biblelegionskill-init-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h9_camp_biblelegionskill_init_candidate.cpp",
+        "docs/agent-work/h9-camp-biblelegionskill-init-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Implement bibleLegionSkill_Init candidate and verified mutation control.",
+        "Ensure compiled ARM size fits strictly within the original binary function window."
+      ],
+      "validation_plan": [
+        "Compile with tools/build_check.py (armv6k clang) and check ELF size."
+      ]
+    },
+    {
+      "id": "h9-camp-biblelegionskill-init-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of bibleLegionSkill_Init candidate implementation.",
+      "depends_on": [
+        "h9-camp-biblelegionskill-init-candidate"
+      ],
+      "function_claims": [
+        "0x003ab770"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h9_camp_biblelegionskill_init_candidate.cpp",
+        "docs/agent-work/h9-camp-biblelegionskill-init-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-biblelegionskill-init-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Audit C++ syntax, memory safety, ABI conformance, and headroom margin.",
+        "Verify mutation control triggers distinct divergence."
+      ],
+      "validation_plan": [
+        "Check ELF symbol tables and relocation bindings."
+      ]
+    },
+    {
+      "id": "h9-camp-biblelegionskill-init-differential",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline Unicorn differential test for bibleLegionSkill_Init against original ARM code.",
+      "depends_on": [
+        "h9-camp-biblelegionskill-init-candidate-review"
+      ],
+      "function_claims": [
+        "0x003ab770"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h9_camp_biblelegionskill_init_candidate.cpp",
+        "tools/h9_camp_biblelegionskill_init_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-biblelegionskill-init-differential.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Pass Unicorn emulation comparing original bibleLegionSkill_Init against candidate.",
+        "Confirm mutation control is detected with non-zero divergence."
+      ],
+      "validation_plan": [
+        "Execute python tools/h9_camp_biblelegionskill_init_experiment.py."
+      ]
+    },
+    {
+      "id": "h9-camp-biblelegionskill-init-differential-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of offline differential test results for bibleLegionSkill_Init.",
+      "depends_on": [
+        "h9-camp-biblelegionskill-init-differential"
+      ],
+      "function_claims": [
+        "0x003ab770"
+      ],
+      "read_paths": [
+        "docs/agent-work/h9-camp-biblelegionskill-init-differential.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-biblelegionskill-init-differential-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm zero divergence in state effects between original and candidate."
+      ],
+      "validation_plan": [
+        "Audit differential execution logs and register dump hashes."
+      ]
+    },
+    {
+      "id": "h9-camp-biblelegionskill-init-composition",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Verify caller composition and interworking for bibleLegionSkill_Init in integrated context.",
+      "depends_on": [
+        "h9-camp-biblelegionskill-init-differential-review"
+      ],
+      "function_claims": [
+        "0x003ab770"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h9_camp_biblelegionskill_init_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-biblelegionskill-init-composition.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify caller interface and stack alignment for bibleLegionSkill_Init.",
+        "Ensure all external calls resolve cleanly without ABI violations."
+      ],
+      "validation_plan": [
+        "Audit caller sequence and callee stack frame preservation."
+      ]
+    },
+    {
+      "id": "h9-camp-biblelegionskill-init-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of caller composition for bibleLegionSkill_Init.",
+      "depends_on": [
+        "h9-camp-biblelegionskill-init-composition"
+      ],
+      "function_claims": [
+        "0x003ab770"
+      ],
+      "read_paths": [
+        "docs/agent-work/h9-camp-biblelegionskill-init-composition.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-biblelegionskill-init-composition-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Validate absence of stack corruption or register clobbering across callers."
+      ],
+      "validation_plan": [
+        "Review composition verification reports."
+      ]
+    },
+    {
+      "id": "h9-camp-biblelegionskill-init-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Stage candidate object and relocation records for bibleLegionSkill_Init into composite image builder.",
+      "depends_on": [
+        "h9-camp-biblelegionskill-init-composition-review"
+      ],
+      "function_claims": [
+        "0x003ab770"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h9_camp_biblelegionskill_init_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-biblelegionskill-init-staging.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Successfully link and stage bibleLegionSkill_Init into staging pipeline."
+      ],
+      "validation_plan": [
+        "Check ELF relocation resolution and window bounds."
+      ]
+    },
+    {
+      "id": "h9-camp-biblelegionskill-init-staging-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of staged candidate bibleLegionSkill_Init.",
+      "depends_on": [
+        "h9-camp-biblelegionskill-init-staging"
+      ],
+      "function_claims": [
+        "0x003ab770"
+      ],
+      "read_paths": [
+        "docs/agent-work/h9-camp-biblelegionskill-init-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-biblelegionskill-init-staging-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify candidate is properly aligned, relocations patched, and padding clean."
+      ],
+      "validation_plan": [
+        "Confirm relocation offset calculations and target VMA mapping."
+      ]
+    },
+    {
+      "id": "h9-camp-biblelegiondraw-init-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize contract, parameters, registers, and memory effects for bibleLegionDraw_Init (0x003ad300).",
+      "depends_on": [
+        "h9-cathedral-fusion-recon-review"
+      ],
+      "function_claims": [
+        "0x003ad300"
+      ],
+      "read_paths": [
+        "src/camp/unite.cpp",
+        "src/camp/unite_extras.cpp",
+        "src/camp/bible.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-biblelegiondraw-init-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Accurately specify semantics of bibleLegionDraw_Init.",
+        "Specify test fixtures and mutation controls."
+      ],
+      "validation_plan": [
+        "Static disassembly and register effect verification against code.bin."
+      ]
+    },
+    {
+      "id": "h9-camp-biblelegiondraw-init-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of bibleLegionDraw_Init contract specification.",
+      "depends_on": [
+        "h9-camp-biblelegiondraw-init-contract"
+      ],
+      "function_claims": [
+        "0x003ad300"
+      ],
+      "read_paths": [
+        "docs/agent-work/h9-camp-biblelegiondraw-init-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-biblelegiondraw-init-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract fidelity against ARM disassembled instructions."
+      ],
+      "validation_plan": [
+        "Audit edge cases, register clobbers, and pointer validations."
+      ]
+    },
+    {
+      "id": "h9-camp-biblelegiondraw-init-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable, editable C++ candidate for bibleLegionDraw_Init with mutation control.",
+      "depends_on": [
+        "h9-camp-biblelegiondraw-init-contract-review"
+      ],
+      "function_claims": [
+        "0x003ad300"
+      ],
+      "read_paths": [
+        "docs/agent-work/h9-camp-biblelegiondraw-init-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h9_camp_biblelegiondraw_init_candidate.cpp",
+        "docs/agent-work/h9-camp-biblelegiondraw-init-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Implement bibleLegionDraw_Init candidate and verified mutation control.",
+        "Ensure compiled ARM size fits strictly within the original binary function window."
+      ],
+      "validation_plan": [
+        "Compile with tools/build_check.py (armv6k clang) and check ELF size."
+      ]
+    },
+    {
+      "id": "h9-camp-biblelegiondraw-init-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of bibleLegionDraw_Init candidate implementation.",
+      "depends_on": [
+        "h9-camp-biblelegiondraw-init-candidate"
+      ],
+      "function_claims": [
+        "0x003ad300"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h9_camp_biblelegiondraw_init_candidate.cpp",
+        "docs/agent-work/h9-camp-biblelegiondraw-init-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-biblelegiondraw-init-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Audit C++ syntax, memory safety, ABI conformance, and headroom margin.",
+        "Verify mutation control triggers distinct divergence."
+      ],
+      "validation_plan": [
+        "Check ELF symbol tables and relocation bindings."
+      ]
+    },
+    {
+      "id": "h9-camp-biblelegiondraw-init-differential",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline Unicorn differential test for bibleLegionDraw_Init against original ARM code.",
+      "depends_on": [
+        "h9-camp-biblelegiondraw-init-candidate-review"
+      ],
+      "function_claims": [
+        "0x003ad300"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h9_camp_biblelegiondraw_init_candidate.cpp",
+        "tools/h9_camp_biblelegiondraw_init_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-biblelegiondraw-init-differential.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Pass Unicorn emulation comparing original bibleLegionDraw_Init against candidate.",
+        "Confirm mutation control is detected with non-zero divergence."
+      ],
+      "validation_plan": [
+        "Execute python tools/h9_camp_biblelegiondraw_init_experiment.py."
+      ]
+    },
+    {
+      "id": "h9-camp-biblelegiondraw-init-differential-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of offline differential test results for bibleLegionDraw_Init.",
+      "depends_on": [
+        "h9-camp-biblelegiondraw-init-differential"
+      ],
+      "function_claims": [
+        "0x003ad300"
+      ],
+      "read_paths": [
+        "docs/agent-work/h9-camp-biblelegiondraw-init-differential.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-biblelegiondraw-init-differential-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm zero divergence in state effects between original and candidate."
+      ],
+      "validation_plan": [
+        "Audit differential execution logs and register dump hashes."
+      ]
+    },
+    {
+      "id": "h9-camp-biblelegiondraw-init-composition",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Verify caller composition and interworking for bibleLegionDraw_Init in integrated context.",
+      "depends_on": [
+        "h9-camp-biblelegiondraw-init-differential-review"
+      ],
+      "function_claims": [
+        "0x003ad300"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h9_camp_biblelegiondraw_init_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-biblelegiondraw-init-composition.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify caller interface and stack alignment for bibleLegionDraw_Init.",
+        "Ensure all external calls resolve cleanly without ABI violations."
+      ],
+      "validation_plan": [
+        "Audit caller sequence and callee stack frame preservation."
+      ]
+    },
+    {
+      "id": "h9-camp-biblelegiondraw-init-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of caller composition for bibleLegionDraw_Init.",
+      "depends_on": [
+        "h9-camp-biblelegiondraw-init-composition"
+      ],
+      "function_claims": [
+        "0x003ad300"
+      ],
+      "read_paths": [
+        "docs/agent-work/h9-camp-biblelegiondraw-init-composition.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-biblelegiondraw-init-composition-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Validate absence of stack corruption or register clobbering across callers."
+      ],
+      "validation_plan": [
+        "Review composition verification reports."
+      ]
+    },
+    {
+      "id": "h9-camp-biblelegiondraw-init-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Stage candidate object and relocation records for bibleLegionDraw_Init into composite image builder.",
+      "depends_on": [
+        "h9-camp-biblelegiondraw-init-composition-review"
+      ],
+      "function_claims": [
+        "0x003ad300"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h9_camp_biblelegiondraw_init_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-biblelegiondraw-init-staging.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Successfully link and stage bibleLegionDraw_Init into staging pipeline."
+      ],
+      "validation_plan": [
+        "Check ELF relocation resolution and window bounds."
+      ]
+    },
+    {
+      "id": "h9-camp-biblelegiondraw-init-staging-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of staged candidate bibleLegionDraw_Init.",
+      "depends_on": [
+        "h9-camp-biblelegiondraw-init-staging"
+      ],
+      "function_claims": [
+        "0x003ad300"
+      ],
+      "read_paths": [
+        "docs/agent-work/h9-camp-biblelegiondraw-init-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-biblelegiondraw-init-staging-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify candidate is properly aligned, relocations patched, and padding clean."
+      ],
+      "validation_plan": [
+        "Confirm relocation offset calculations and target VMA mapping."
+      ]
+    },
+    {
+      "id": "h9-camp-sortmenu-init-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize contract, parameters, registers, and memory effects for SortMenu_Init (0x0029e63c).",
+      "depends_on": [
+        "h9-cathedral-fusion-recon-review"
+      ],
+      "function_claims": [
+        "0x0029e63c"
+      ],
+      "read_paths": [
+        "src/camp/unite.cpp",
+        "src/camp/unite_extras.cpp",
+        "src/camp/bible.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-sortmenu-init-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Accurately specify semantics of SortMenu_Init.",
+        "Specify test fixtures and mutation controls."
+      ],
+      "validation_plan": [
+        "Static disassembly and register effect verification against code.bin."
+      ]
+    },
+    {
+      "id": "h9-camp-sortmenu-init-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of SortMenu_Init contract specification.",
+      "depends_on": [
+        "h9-camp-sortmenu-init-contract"
+      ],
+      "function_claims": [
+        "0x0029e63c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h9-camp-sortmenu-init-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-sortmenu-init-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract fidelity against ARM disassembled instructions."
+      ],
+      "validation_plan": [
+        "Audit edge cases, register clobbers, and pointer validations."
+      ]
+    },
+    {
+      "id": "h9-camp-sortmenu-init-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable, editable C++ candidate for SortMenu_Init with mutation control.",
+      "depends_on": [
+        "h9-camp-sortmenu-init-contract-review"
+      ],
+      "function_claims": [
+        "0x0029e63c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h9-camp-sortmenu-init-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h9_camp_sortmenu_init_candidate.cpp",
+        "docs/agent-work/h9-camp-sortmenu-init-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Implement SortMenu_Init candidate and verified mutation control.",
+        "Ensure compiled ARM size fits strictly within the original binary function window."
+      ],
+      "validation_plan": [
+        "Compile with tools/build_check.py (armv6k clang) and check ELF size."
+      ]
+    },
+    {
+      "id": "h9-camp-sortmenu-init-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of SortMenu_Init candidate implementation.",
+      "depends_on": [
+        "h9-camp-sortmenu-init-candidate"
+      ],
+      "function_claims": [
+        "0x0029e63c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h9_camp_sortmenu_init_candidate.cpp",
+        "docs/agent-work/h9-camp-sortmenu-init-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-sortmenu-init-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Audit C++ syntax, memory safety, ABI conformance, and headroom margin.",
+        "Verify mutation control triggers distinct divergence."
+      ],
+      "validation_plan": [
+        "Check ELF symbol tables and relocation bindings."
+      ]
+    },
+    {
+      "id": "h9-camp-sortmenu-init-differential",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline Unicorn differential test for SortMenu_Init against original ARM code.",
+      "depends_on": [
+        "h9-camp-sortmenu-init-candidate-review"
+      ],
+      "function_claims": [
+        "0x0029e63c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h9_camp_sortmenu_init_candidate.cpp",
+        "tools/h9_camp_sortmenu_init_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-sortmenu-init-differential.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Pass Unicorn emulation comparing original SortMenu_Init against candidate.",
+        "Confirm mutation control is detected with non-zero divergence."
+      ],
+      "validation_plan": [
+        "Execute python tools/h9_camp_sortmenu_init_experiment.py."
+      ]
+    },
+    {
+      "id": "h9-camp-sortmenu-init-differential-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of offline differential test results for SortMenu_Init.",
+      "depends_on": [
+        "h9-camp-sortmenu-init-differential"
+      ],
+      "function_claims": [
+        "0x0029e63c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h9-camp-sortmenu-init-differential.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-sortmenu-init-differential-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm zero divergence in state effects between original and candidate."
+      ],
+      "validation_plan": [
+        "Audit differential execution logs and register dump hashes."
+      ]
+    },
+    {
+      "id": "h9-camp-sortmenu-init-composition",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Verify caller composition and interworking for SortMenu_Init in integrated context.",
+      "depends_on": [
+        "h9-camp-sortmenu-init-differential-review"
+      ],
+      "function_claims": [
+        "0x0029e63c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h9_camp_sortmenu_init_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-sortmenu-init-composition.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify caller interface and stack alignment for SortMenu_Init.",
+        "Ensure all external calls resolve cleanly without ABI violations."
+      ],
+      "validation_plan": [
+        "Audit caller sequence and callee stack frame preservation."
+      ]
+    },
+    {
+      "id": "h9-camp-sortmenu-init-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of caller composition for SortMenu_Init.",
+      "depends_on": [
+        "h9-camp-sortmenu-init-composition"
+      ],
+      "function_claims": [
+        "0x0029e63c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h9-camp-sortmenu-init-composition.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-sortmenu-init-composition-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Validate absence of stack corruption or register clobbering across callers."
+      ],
+      "validation_plan": [
+        "Review composition verification reports."
+      ]
+    },
+    {
+      "id": "h9-camp-sortmenu-init-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Stage candidate object and relocation records for SortMenu_Init into composite image builder.",
+      "depends_on": [
+        "h9-camp-sortmenu-init-composition-review"
+      ],
+      "function_claims": [
+        "0x0029e63c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h9_camp_sortmenu_init_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-sortmenu-init-staging.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Successfully link and stage SortMenu_Init into staging pipeline."
+      ],
+      "validation_plan": [
+        "Check ELF relocation resolution and window bounds."
+      ]
+    },
+    {
+      "id": "h9-camp-sortmenu-init-staging-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of staged candidate SortMenu_Init.",
+      "depends_on": [
+        "h9-camp-sortmenu-init-staging"
+      ],
+      "function_claims": [
+        "0x0029e63c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h9-camp-sortmenu-init-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-sortmenu-init-staging-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify candidate is properly aligned, relocations patched, and padding clean."
+      ],
+      "validation_plan": [
+        "Confirm relocation offset calculations and target VMA mapping."
+      ]
+    },
+    {
+      "id": "h9-camp-unitectrl-roster-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize contract, parameters, registers, and memory effects for UniteCtrl_RosterPopulate (0x003c9ebc).",
+      "depends_on": [
+        "h9-cathedral-fusion-recon-review"
+      ],
+      "function_claims": [
+        "0x003c9ebc"
+      ],
+      "read_paths": [
+        "src/camp/unite.cpp",
+        "src/camp/unite_extras.cpp",
+        "src/camp/bible.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-unitectrl-roster-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Accurately specify semantics of UniteCtrl_RosterPopulate.",
+        "Specify test fixtures and mutation controls."
+      ],
+      "validation_plan": [
+        "Static disassembly and register effect verification against code.bin."
+      ]
+    },
+    {
+      "id": "h9-camp-unitectrl-roster-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of UniteCtrl_RosterPopulate contract specification.",
+      "depends_on": [
+        "h9-camp-unitectrl-roster-contract"
+      ],
+      "function_claims": [
+        "0x003c9ebc"
+      ],
+      "read_paths": [
+        "docs/agent-work/h9-camp-unitectrl-roster-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-unitectrl-roster-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract fidelity against ARM disassembled instructions."
+      ],
+      "validation_plan": [
+        "Audit edge cases, register clobbers, and pointer validations."
+      ]
+    },
+    {
+      "id": "h9-camp-unitectrl-roster-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable, editable C++ candidate for UniteCtrl_RosterPopulate with mutation control.",
+      "depends_on": [
+        "h9-camp-unitectrl-roster-contract-review"
+      ],
+      "function_claims": [
+        "0x003c9ebc"
+      ],
+      "read_paths": [
+        "docs/agent-work/h9-camp-unitectrl-roster-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h9_camp_unitectrl_roster_candidate.cpp",
+        "docs/agent-work/h9-camp-unitectrl-roster-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Implement UniteCtrl_RosterPopulate candidate and verified mutation control.",
+        "Ensure compiled ARM size fits strictly within the original binary function window."
+      ],
+      "validation_plan": [
+        "Compile with tools/build_check.py (armv6k clang) and check ELF size."
+      ]
+    },
+    {
+      "id": "h9-camp-unitectrl-roster-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of UniteCtrl_RosterPopulate candidate implementation.",
+      "depends_on": [
+        "h9-camp-unitectrl-roster-candidate"
+      ],
+      "function_claims": [
+        "0x003c9ebc"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h9_camp_unitectrl_roster_candidate.cpp",
+        "docs/agent-work/h9-camp-unitectrl-roster-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-unitectrl-roster-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Audit C++ syntax, memory safety, ABI conformance, and headroom margin.",
+        "Verify mutation control triggers distinct divergence."
+      ],
+      "validation_plan": [
+        "Check ELF symbol tables and relocation bindings."
+      ]
+    },
+    {
+      "id": "h9-camp-unitectrl-roster-differential",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline Unicorn differential test for UniteCtrl_RosterPopulate against original ARM code.",
+      "depends_on": [
+        "h9-camp-unitectrl-roster-candidate-review"
+      ],
+      "function_claims": [
+        "0x003c9ebc"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h9_camp_unitectrl_roster_candidate.cpp",
+        "tools/h9_camp_unitectrl_roster_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-unitectrl-roster-differential.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Pass Unicorn emulation comparing original UniteCtrl_RosterPopulate against candidate.",
+        "Confirm mutation control is detected with non-zero divergence."
+      ],
+      "validation_plan": [
+        "Execute python tools/h9_camp_unitectrl_roster_experiment.py."
+      ]
+    },
+    {
+      "id": "h9-camp-unitectrl-roster-differential-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of offline differential test results for UniteCtrl_RosterPopulate.",
+      "depends_on": [
+        "h9-camp-unitectrl-roster-differential"
+      ],
+      "function_claims": [
+        "0x003c9ebc"
+      ],
+      "read_paths": [
+        "docs/agent-work/h9-camp-unitectrl-roster-differential.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-unitectrl-roster-differential-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm zero divergence in state effects between original and candidate."
+      ],
+      "validation_plan": [
+        "Audit differential execution logs and register dump hashes."
+      ]
+    },
+    {
+      "id": "h9-camp-unitectrl-roster-composition",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Verify caller composition and interworking for UniteCtrl_RosterPopulate in integrated context.",
+      "depends_on": [
+        "h9-camp-unitectrl-roster-differential-review"
+      ],
+      "function_claims": [
+        "0x003c9ebc"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h9_camp_unitectrl_roster_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-unitectrl-roster-composition.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify caller interface and stack alignment for UniteCtrl_RosterPopulate.",
+        "Ensure all external calls resolve cleanly without ABI violations."
+      ],
+      "validation_plan": [
+        "Audit caller sequence and callee stack frame preservation."
+      ]
+    },
+    {
+      "id": "h9-camp-unitectrl-roster-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of caller composition for UniteCtrl_RosterPopulate.",
+      "depends_on": [
+        "h9-camp-unitectrl-roster-composition"
+      ],
+      "function_claims": [
+        "0x003c9ebc"
+      ],
+      "read_paths": [
+        "docs/agent-work/h9-camp-unitectrl-roster-composition.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-unitectrl-roster-composition-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Validate absence of stack corruption or register clobbering across callers."
+      ],
+      "validation_plan": [
+        "Review composition verification reports."
+      ]
+    },
+    {
+      "id": "h9-camp-unitectrl-roster-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Stage candidate object and relocation records for UniteCtrl_RosterPopulate into composite image builder.",
+      "depends_on": [
+        "h9-camp-unitectrl-roster-composition-review"
+      ],
+      "function_claims": [
+        "0x003c9ebc"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h9_camp_unitectrl_roster_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-unitectrl-roster-staging.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Successfully link and stage UniteCtrl_RosterPopulate into staging pipeline."
+      ],
+      "validation_plan": [
+        "Check ELF relocation resolution and window bounds."
+      ]
+    },
+    {
+      "id": "h9-camp-unitectrl-roster-staging-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of staged candidate UniteCtrl_RosterPopulate.",
+      "depends_on": [
+        "h9-camp-unitectrl-roster-staging"
+      ],
+      "function_claims": [
+        "0x003c9ebc"
+      ],
+      "read_paths": [
+        "docs/agent-work/h9-camp-unitectrl-roster-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-unitectrl-roster-staging-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify candidate is properly aligned, relocations patched, and padding clean."
+      ],
+      "validation_plan": [
+        "Confirm relocation offset calculations and target VMA mapping."
+      ]
+    },
+    {
+      "id": "h9-camp-bibledevil-init-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize contract, parameters, registers, and memory effects for bibleDevil_Init (0x003a7ad8).",
+      "depends_on": [
+        "h9-cathedral-fusion-recon-review"
+      ],
+      "function_claims": [
+        "0x003a7ad8"
+      ],
+      "read_paths": [
+        "src/camp/unite.cpp",
+        "src/camp/unite_extras.cpp",
+        "src/camp/bible.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-bibledevil-init-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Accurately specify semantics of bibleDevil_Init.",
+        "Specify test fixtures and mutation controls."
+      ],
+      "validation_plan": [
+        "Static disassembly and register effect verification against code.bin."
+      ]
+    },
+    {
+      "id": "h9-camp-bibledevil-init-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of bibleDevil_Init contract specification.",
+      "depends_on": [
+        "h9-camp-bibledevil-init-contract"
+      ],
+      "function_claims": [
+        "0x003a7ad8"
+      ],
+      "read_paths": [
+        "docs/agent-work/h9-camp-bibledevil-init-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-bibledevil-init-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract fidelity against ARM disassembled instructions."
+      ],
+      "validation_plan": [
+        "Audit edge cases, register clobbers, and pointer validations."
+      ]
+    },
+    {
+      "id": "h9-camp-bibledevil-init-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable, editable C++ candidate for bibleDevil_Init with mutation control.",
+      "depends_on": [
+        "h9-camp-bibledevil-init-contract-review"
+      ],
+      "function_claims": [
+        "0x003a7ad8"
+      ],
+      "read_paths": [
+        "docs/agent-work/h9-camp-bibledevil-init-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h9_camp_bibledevil_init_candidate.cpp",
+        "docs/agent-work/h9-camp-bibledevil-init-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Implement bibleDevil_Init candidate and verified mutation control.",
+        "Ensure compiled ARM size fits strictly within the original binary function window."
+      ],
+      "validation_plan": [
+        "Compile with tools/build_check.py (armv6k clang) and check ELF size."
+      ]
+    },
+    {
+      "id": "h9-camp-bibledevil-init-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of bibleDevil_Init candidate implementation.",
+      "depends_on": [
+        "h9-camp-bibledevil-init-candidate"
+      ],
+      "function_claims": [
+        "0x003a7ad8"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h9_camp_bibledevil_init_candidate.cpp",
+        "docs/agent-work/h9-camp-bibledevil-init-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-bibledevil-init-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Audit C++ syntax, memory safety, ABI conformance, and headroom margin.",
+        "Verify mutation control triggers distinct divergence."
+      ],
+      "validation_plan": [
+        "Check ELF symbol tables and relocation bindings."
+      ]
+    },
+    {
+      "id": "h9-camp-bibledevil-init-differential",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline Unicorn differential test for bibleDevil_Init against original ARM code.",
+      "depends_on": [
+        "h9-camp-bibledevil-init-candidate-review"
+      ],
+      "function_claims": [
+        "0x003a7ad8"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h9_camp_bibledevil_init_candidate.cpp",
+        "tools/h9_camp_bibledevil_init_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-bibledevil-init-differential.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Pass Unicorn emulation comparing original bibleDevil_Init against candidate.",
+        "Confirm mutation control is detected with non-zero divergence."
+      ],
+      "validation_plan": [
+        "Execute python tools/h9_camp_bibledevil_init_experiment.py."
+      ]
+    },
+    {
+      "id": "h9-camp-bibledevil-init-differential-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of offline differential test results for bibleDevil_Init.",
+      "depends_on": [
+        "h9-camp-bibledevil-init-differential"
+      ],
+      "function_claims": [
+        "0x003a7ad8"
+      ],
+      "read_paths": [
+        "docs/agent-work/h9-camp-bibledevil-init-differential.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-bibledevil-init-differential-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm zero divergence in state effects between original and candidate."
+      ],
+      "validation_plan": [
+        "Audit differential execution logs and register dump hashes."
+      ]
+    },
+    {
+      "id": "h9-camp-bibledevil-init-composition",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Verify caller composition and interworking for bibleDevil_Init in integrated context.",
+      "depends_on": [
+        "h9-camp-bibledevil-init-differential-review"
+      ],
+      "function_claims": [
+        "0x003a7ad8"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h9_camp_bibledevil_init_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-bibledevil-init-composition.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify caller interface and stack alignment for bibleDevil_Init.",
+        "Ensure all external calls resolve cleanly without ABI violations."
+      ],
+      "validation_plan": [
+        "Audit caller sequence and callee stack frame preservation."
+      ]
+    },
+    {
+      "id": "h9-camp-bibledevil-init-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of caller composition for bibleDevil_Init.",
+      "depends_on": [
+        "h9-camp-bibledevil-init-composition"
+      ],
+      "function_claims": [
+        "0x003a7ad8"
+      ],
+      "read_paths": [
+        "docs/agent-work/h9-camp-bibledevil-init-composition.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-bibledevil-init-composition-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Validate absence of stack corruption or register clobbering across callers."
+      ],
+      "validation_plan": [
+        "Review composition verification reports."
+      ]
+    },
+    {
+      "id": "h9-camp-bibledevil-init-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Stage candidate object and relocation records for bibleDevil_Init into composite image builder.",
+      "depends_on": [
+        "h9-camp-bibledevil-init-composition-review"
+      ],
+      "function_claims": [
+        "0x003a7ad8"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h9_camp_bibledevil_init_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-bibledevil-init-staging.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Successfully link and stage bibleDevil_Init into staging pipeline."
+      ],
+      "validation_plan": [
+        "Check ELF relocation resolution and window bounds."
+      ]
+    },
+    {
+      "id": "h9-camp-bibledevil-init-staging-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of staged candidate bibleDevil_Init.",
+      "depends_on": [
+        "h9-camp-bibledevil-init-staging"
+      ],
+      "function_claims": [
+        "0x003a7ad8"
+      ],
+      "read_paths": [
+        "docs/agent-work/h9-camp-bibledevil-init-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-bibledevil-init-staging-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify candidate is properly aligned, relocations patched, and padding clean."
+      ],
+      "validation_plan": [
+        "Confirm relocation offset calculations and target VMA mapping."
+      ]
+    },
+    {
+      "id": "h9-camp-buttonhelp-init-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize contract, parameters, registers, and memory effects for ButtonHelp_Init (0x0028d974).",
+      "depends_on": [
+        "h9-cathedral-fusion-recon-review"
+      ],
+      "function_claims": [
+        "0x0028d974"
+      ],
+      "read_paths": [
+        "src/camp/unite.cpp",
+        "src/camp/unite_extras.cpp",
+        "src/camp/bible.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-buttonhelp-init-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Accurately specify semantics of ButtonHelp_Init.",
+        "Specify test fixtures and mutation controls."
+      ],
+      "validation_plan": [
+        "Static disassembly and register effect verification against code.bin."
+      ]
+    },
+    {
+      "id": "h9-camp-buttonhelp-init-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of ButtonHelp_Init contract specification.",
+      "depends_on": [
+        "h9-camp-buttonhelp-init-contract"
+      ],
+      "function_claims": [
+        "0x0028d974"
+      ],
+      "read_paths": [
+        "docs/agent-work/h9-camp-buttonhelp-init-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-buttonhelp-init-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract fidelity against ARM disassembled instructions."
+      ],
+      "validation_plan": [
+        "Audit edge cases, register clobbers, and pointer validations."
+      ]
+    },
+    {
+      "id": "h9-camp-buttonhelp-init-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable, editable C++ candidate for ButtonHelp_Init with mutation control.",
+      "depends_on": [
+        "h9-camp-buttonhelp-init-contract-review"
+      ],
+      "function_claims": [
+        "0x0028d974"
+      ],
+      "read_paths": [
+        "docs/agent-work/h9-camp-buttonhelp-init-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h9_camp_buttonhelp_init_candidate.cpp",
+        "docs/agent-work/h9-camp-buttonhelp-init-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Implement ButtonHelp_Init candidate and verified mutation control.",
+        "Ensure compiled ARM size fits strictly within the original binary function window."
+      ],
+      "validation_plan": [
+        "Compile with tools/build_check.py (armv6k clang) and check ELF size."
+      ]
+    },
+    {
+      "id": "h9-camp-buttonhelp-init-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of ButtonHelp_Init candidate implementation.",
+      "depends_on": [
+        "h9-camp-buttonhelp-init-candidate"
+      ],
+      "function_claims": [
+        "0x0028d974"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h9_camp_buttonhelp_init_candidate.cpp",
+        "docs/agent-work/h9-camp-buttonhelp-init-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-buttonhelp-init-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Audit C++ syntax, memory safety, ABI conformance, and headroom margin.",
+        "Verify mutation control triggers distinct divergence."
+      ],
+      "validation_plan": [
+        "Check ELF symbol tables and relocation bindings."
+      ]
+    },
+    {
+      "id": "h9-camp-buttonhelp-init-differential",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline Unicorn differential test for ButtonHelp_Init against original ARM code.",
+      "depends_on": [
+        "h9-camp-buttonhelp-init-candidate-review"
+      ],
+      "function_claims": [
+        "0x0028d974"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h9_camp_buttonhelp_init_candidate.cpp",
+        "tools/h9_camp_buttonhelp_init_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-buttonhelp-init-differential.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Pass Unicorn emulation comparing original ButtonHelp_Init against candidate.",
+        "Confirm mutation control is detected with non-zero divergence."
+      ],
+      "validation_plan": [
+        "Execute python tools/h9_camp_buttonhelp_init_experiment.py."
+      ]
+    },
+    {
+      "id": "h9-camp-buttonhelp-init-differential-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of offline differential test results for ButtonHelp_Init.",
+      "depends_on": [
+        "h9-camp-buttonhelp-init-differential"
+      ],
+      "function_claims": [
+        "0x0028d974"
+      ],
+      "read_paths": [
+        "docs/agent-work/h9-camp-buttonhelp-init-differential.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-buttonhelp-init-differential-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm zero divergence in state effects between original and candidate."
+      ],
+      "validation_plan": [
+        "Audit differential execution logs and register dump hashes."
+      ]
+    },
+    {
+      "id": "h9-camp-buttonhelp-init-composition",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Verify caller composition and interworking for ButtonHelp_Init in integrated context.",
+      "depends_on": [
+        "h9-camp-buttonhelp-init-differential-review"
+      ],
+      "function_claims": [
+        "0x0028d974"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h9_camp_buttonhelp_init_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-buttonhelp-init-composition.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify caller interface and stack alignment for ButtonHelp_Init.",
+        "Ensure all external calls resolve cleanly without ABI violations."
+      ],
+      "validation_plan": [
+        "Audit caller sequence and callee stack frame preservation."
+      ]
+    },
+    {
+      "id": "h9-camp-buttonhelp-init-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of caller composition for ButtonHelp_Init.",
+      "depends_on": [
+        "h9-camp-buttonhelp-init-composition"
+      ],
+      "function_claims": [
+        "0x0028d974"
+      ],
+      "read_paths": [
+        "docs/agent-work/h9-camp-buttonhelp-init-composition.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-buttonhelp-init-composition-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Validate absence of stack corruption or register clobbering across callers."
+      ],
+      "validation_plan": [
+        "Review composition verification reports."
+      ]
+    },
+    {
+      "id": "h9-camp-buttonhelp-init-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Stage candidate object and relocation records for ButtonHelp_Init into composite image builder.",
+      "depends_on": [
+        "h9-camp-buttonhelp-init-composition-review"
+      ],
+      "function_claims": [
+        "0x0028d974"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h9_camp_buttonhelp_init_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-buttonhelp-init-staging.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Successfully link and stage ButtonHelp_Init into staging pipeline."
+      ],
+      "validation_plan": [
+        "Check ELF relocation resolution and window bounds."
+      ]
+    },
+    {
+      "id": "h9-camp-buttonhelp-init-staging-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of staged candidate ButtonHelp_Init.",
+      "depends_on": [
+        "h9-camp-buttonhelp-init-staging"
+      ],
+      "function_claims": [
+        "0x0028d974"
+      ],
+      "read_paths": [
+        "docs/agent-work/h9-camp-buttonhelp-init-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-camp-buttonhelp-init-staging-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify candidate is properly aligned, relocations patched, and padding clean."
+      ],
+      "validation_plan": [
+        "Confirm relocation offset calculations and target VMA mapping."
+      ]
+    },
+    {
+      "id": "h9-staged-image-patch",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Compose all 8 validated H9 semantic candidates into final staged executable image and IPS patch.",
+      "depends_on": [
+        "h9-camp-uniteeffect-init-staging-review",
+        "h9-camp-biblemain-init-staging-review",
+        "h9-camp-biblelegionskill-init-staging-review",
+        "h9-camp-biblelegiondraw-init-staging-review",
+        "h9-camp-sortmenu-init-staging-review",
+        "h9-camp-unitectrl-roster-staging-review",
+        "h9-camp-bibledevil-init-staging-review",
+        "h9-camp-buttonhelp-init-staging-review"
+      ],
+      "function_claims": [
+        "0x002e315c",
+        "0x00269cc8",
+        "0x003ab770",
+        "0x003ad300",
+        "0x0029e63c",
+        "0x003c9ebc",
+        "0x003a7ad8",
+        "0x0028d974"
+      ],
+      "read_paths": [
+        "tools/h9_staged_image_patch.py",
+        "experiments/semantic_equivalence/h9_camp_uniteeffect_init_candidate.cpp",
+        "experiments/semantic_equivalence/h9_camp_biblemain_init_candidate.cpp",
+        "experiments/semantic_equivalence/h9_camp_biblelegionskill_init_candidate.cpp",
+        "experiments/semantic_equivalence/h9_camp_biblelegiondraw_init_candidate.cpp",
+        "experiments/semantic_equivalence/h9_camp_sortmenu_init_candidate.cpp",
+        "experiments/semantic_equivalence/h9_camp_unitectrl_roster_candidate.cpp",
+        "experiments/semantic_equivalence/h9_camp_bibledevil_init_candidate.cpp",
+        "experiments/semantic_equivalence/h9_camp_buttonhelp_init_candidate.cpp"
+      ],
+      "write_paths": [
+        "build/agent-work/H9-semantic/h9-integrated-stage/code.h9-final.bin",
+        "build/agent-work/H9-semantic/h9-integrated-stage/code.h9-final.ips",
+        "build/agent-work/H9-semantic/h9-integrated-stage/report.json",
+        "docs/agent-work/h9-staged-image-patch.md"
+      ],
+      "compiler_slots": 2,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Successfully compile and relocate all 8 candidates onto the H8 base image.",
+        "Generate valid code.h9-final.bin and byte-accurate code.h9-final.ips.",
+        "Verify 100% round-trip fidelity through apply_ips."
+      ],
+      "validation_plan": [
+        "Run tools/h9_staged_image_patch.py."
+      ]
+    },
+    {
+      "id": "h9-staged-image-patch-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of H9 final composite binary and IPS patch artifacts.",
+      "depends_on": [
+        "h9-staged-image-patch"
+      ],
+      "function_claims": [
+        "0x002e315c",
+        "0x00269cc8",
+        "0x003ab770",
+        "0x003ad300",
+        "0x0029e63c",
+        "0x003c9ebc",
+        "0x003a7ad8",
+        "0x0028d974"
+      ],
+      "read_paths": [
+        "docs/agent-work/h9-staged-image-patch.md",
+        "build/agent-work/H9-semantic/h9-integrated-stage/report.json"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-staged-image-patch-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify binary integrity, non-overlapping windows, and SHA-256 hashes."
+      ],
+      "validation_plan": [
+        "Audit report.json manifest and verify zero regression outside target windows."
+      ]
+    },
+    {
+      "id": "h9-offline-composite-gates",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute full suite of offline composite differential gates and caller compositions for H9 image.",
+      "depends_on": [
+        "h9-staged-image-patch-review"
+      ],
+      "function_claims": [
+        "0x002e315c",
+        "0x00269cc8",
+        "0x003ab770",
+        "0x003ad300",
+        "0x0029e63c",
+        "0x003c9ebc",
+        "0x003a7ad8",
+        "0x0028d974"
+      ],
+      "read_paths": [
+        "tools/build_h9_all.py",
+        "build/agent-work/H9-semantic/h9-integrated-stage/code.h9-final.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-offline-composite-gates.md"
+      ],
+      "compiler_slots": 2,
+      "exclusive_resources": [],
+      "acceptance": [
+        "All 8 candidates pass individual Unicorn offline differential validations.",
+        "Zero regressions across combined candidate assembly and ARM/Thumb interworking bits."
+      ],
+      "validation_plan": [
+        "Run tools/build_h9_all.py and all 8 experiment scripts."
+      ]
+    },
+    {
+      "id": "h9-offline-composite-gates-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of offline composite gates and interworking integrity.",
+      "depends_on": [
+        "h9-offline-composite-gates"
+      ],
+      "function_claims": [
+        "0x002e315c",
+        "0x00269cc8",
+        "0x003ab770",
+        "0x003ad300",
+        "0x0029e63c",
+        "0x003c9ebc",
+        "0x003a7ad8",
+        "0x0028d974"
+      ],
+      "read_paths": [
+        "docs/agent-work/h9-offline-composite-gates.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-offline-composite-gates-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve offline test results prior to emulator runtime verification."
+      ],
+      "validation_plan": [
+        "Audit gate execution outputs and mutation sensitivity logs."
+      ]
+    },
+    {
+      "id": "h9-autonomous-fusion-verify",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Autonomous runtime verification in Azahar emulator: Title, Save Load, Field, and Cathedral of Shadows Fusion & Compendium sequences.",
+      "depends_on": [
+        "h9-offline-composite-gates-review"
+      ],
+      "function_claims": [
+        "0x002e315c",
+        "0x00269cc8",
+        "0x003ab770",
+        "0x003ad300",
+        "0x0029e63c",
+        "0x003c9ebc",
+        "0x003a7ad8",
+        "0x0028d974"
+      ],
+      "read_paths": [
+        "tools/h3_autonomous_verify.py",
+        "code.h9-final.ips"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-autonomous-fusion-verify.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [
+        "emulator_session"
+      ],
+      "acceptance": [
+        "Run paired autonomous test via GDB RSP loopback stub.",
+        "0 register differences across Title, Save Load, 250 Field scene ticks, and Cathedral of Shadows fusion & compendium subsystems."
+      ],
+      "validation_plan": [
+        "Execute autonomous verify script and generate paired report.json."
+      ]
+    },
+    {
+      "id": "h9-autonomous-fusion-verify-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of autonomous paired runtime verification for Milestone H9.",
+      "depends_on": [
+        "h9-autonomous-fusion-verify"
+      ],
+      "function_claims": [
+        "0x002e315c",
+        "0x00269cc8",
+        "0x003ab770",
+        "0x003ad300",
+        "0x0029e63c",
+        "0x003c9ebc",
+        "0x003a7ad8",
+        "0x0028d974"
+      ],
+      "read_paths": [
+        "docs/agent-work/h9-autonomous-fusion-verify.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h9-autonomous-fusion-verify-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm 100% paired equivalence with zero register or state differences."
+      ],
+      "validation_plan": [
+        "Audit runtime report metrics and save file hash integrity."
+      ]
+    },
+    {
+      "id": "h9-milestone-closure",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize closure of Milestone H9 across documentation and ledger tracking.",
+      "depends_on": [
+        "h9-autonomous-fusion-verify-review"
+      ],
+      "function_claims": [
+        "0x002e315c",
+        "0x00269cc8",
+        "0x003ab770",
+        "0x003ad300",
+        "0x0029e63c",
+        "0x003c9ebc",
+        "0x003a7ad8",
+        "0x0028d974"
+      ],
+      "read_paths": [
+        "docs/milestones/H9-cathedral-fusion-compendium.md",
+        "docs/functional-status.md",
+        "docs/reconstruction-milestones.md"
+      ],
+      "write_paths": [
+        "docs/milestones/H9-cathedral-fusion-compendium.md",
+        "docs/functional-status.md",
+        "docs/reconstruction-milestones.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Update documentation marking Milestone H9 as completed and closed.",
+        "Ensure clean git state and 0 errors from tools/agent_workflow.py check."
+      ],
+      "validation_plan": [
+        "Run python tools/agent_workflow.py check."
+      ]
+    }
+  ]
+}

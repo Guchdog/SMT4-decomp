@@ -1,0 +1,2584 @@
+{
+  "schema_version": 1,
+  "batch": "batch-h8-001",
+  "milestone": "H8",
+  "max_workers": 3,
+  "cpu_budget": 8,
+  "goal": "Reconstruct readable, editable C++ for Milestone H8 (Camp Menu, Inventory, and Party Management), covering Gauntlet/Burroughs app menu initialization (GauntletAppMenu_Init), status portrait bust-up rendering (StatusBustUp_Init), status 3D camera projection (StatusCamera_Init), elemental affinity resistance table evaluation (Status_UpdateAffinityTable), and touchscreen bottom-screen party/status workspace, item list population, inventory sorting, and skill list building (StatusDown_Init, StatusDown_PopulateItemList, StatusDown_SortItemList, StatusDown_PopulateSkillList) with full offline differential validation, caller composition, staging, and autonomous runtime verification.",
+  "coordinator_owned_paths": [
+    "config/agent-workflows/h8.json",
+    "config/reconstruction.json",
+    "docs/milestones/H8-camp-menu-inventory-party.md",
+    "docs/functional-status.md",
+    "docs/reconstruction-milestones.md"
+  ],
+  "tasks": [
+    {
+      "id": "h8-camp-status-recon",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Comprehensive static and architectural reconnaissance of Milestone H8 Camp Menu, Inventory, and Party Management.",
+      "depends_on": [],
+      "function_claims": [
+        "0x002e2454",
+        "0x00223a90",
+        "0x00258e38",
+        "0x00293e4c",
+        "0x002d931c",
+        "0x001ee7c8",
+        "0x0032c4bc",
+        "0x001ee5a4"
+      ],
+      "read_paths": [
+        "src/camp/camp.cpp",
+        "src/camp/camp_main.cpp",
+        "src/camp/camp_inventory.cpp",
+        "src/camp/camp_party.cpp",
+        "src/ui/status.cpp",
+        "src/ui/status_down.cpp",
+        "docs/reconstruction-milestones.md",
+        "docs/milestones/H7-event-script-vm.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-camp-status-recon.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Identify exact entry points, memory structures, and callers for H8 camp menu, inventory, and status subsystems.",
+        "Define offline-first differential boundaries, positive/negative controls, and mutation criteria."
+      ],
+      "validation_plan": [
+        "Cross-check candidate functions against pinned binary code.bin and functions.csv ledger."
+      ]
+    },
+    {
+      "id": "h8-camp-status-recon-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of camp menu, inventory, and party architecture reconnaissance and subsystem boundary definitions.",
+      "depends_on": [
+        "h8-camp-status-recon"
+      ],
+      "function_claims": [
+        "0x002e2454",
+        "0x00223a90",
+        "0x00258e38",
+        "0x00293e4c",
+        "0x002d931c",
+        "0x001ee7c8",
+        "0x0032c4bc",
+        "0x001ee5a4"
+      ],
+      "read_paths": [
+        "docs/agent-work/h8-camp-status-recon.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-camp-status-recon-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract boundaries, calling conventions, and ABI preservation expectations.",
+        "Approve task division and candidate scope for H8 camp menu and status management milestone."
+      ],
+      "validation_plan": [
+        "Confirm completeness of architecture reconnaissance and absence of unsupported assumptions."
+      ]
+    },
+    {
+      "id": "h8-camp-gauntletmenu-init-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize contract, parameters, registers, and memory effects for GauntletAppMenu_Init (0x002e2454).",
+      "depends_on": [
+        "h8-camp-status-recon-review"
+      ],
+      "function_claims": [
+        "0x002e2454"
+      ],
+      "read_paths": [
+        "src/camp/camp.cpp",
+        "src/ui/status.cpp",
+        "src/ui/status_down.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-camp-gauntletmenu-init-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Accurately specify semantics of GauntletAppMenu_Init.",
+        "Specify test fixtures and mutation controls."
+      ],
+      "validation_plan": [
+        "Static disassembly and register effect verification against code.bin."
+      ]
+    },
+    {
+      "id": "h8-camp-gauntletmenu-init-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of GauntletAppMenu_Init contract specification.",
+      "depends_on": [
+        "h8-camp-gauntletmenu-init-contract"
+      ],
+      "function_claims": [
+        "0x002e2454"
+      ],
+      "read_paths": [
+        "docs/agent-work/h8-camp-gauntletmenu-init-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-camp-gauntletmenu-init-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract fidelity against ARM disassembled instructions."
+      ],
+      "validation_plan": [
+        "Audit edge cases, register clobbers, and pointer validations."
+      ]
+    },
+    {
+      "id": "h8-camp-gauntletmenu-init-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable, editable C++ candidate for GauntletAppMenu_Init with mutation control.",
+      "depends_on": [
+        "h8-camp-gauntletmenu-init-contract-review"
+      ],
+      "function_claims": [
+        "0x002e2454"
+      ],
+      "read_paths": [
+        "docs/agent-work/h8-camp-gauntletmenu-init-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h8_camp_gauntletmenu_init_candidate.cpp",
+        "docs/agent-work/h8-camp-gauntletmenu-init-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Implement GauntletAppMenu_Init candidate and verified mutation control.",
+        "Ensure compiled ARM size fits strictly within the original binary function window."
+      ],
+      "validation_plan": [
+        "Compile with tools/build_check.py (armv6k clang) and check ELF size."
+      ]
+    },
+    {
+      "id": "h8-camp-gauntletmenu-init-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent code review of C++ reconstruction for GauntletAppMenu_Init.",
+      "depends_on": [
+        "h8-camp-gauntletmenu-init-candidate"
+      ],
+      "function_claims": [
+        "0x002e2454"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h8_camp_gauntletmenu_init_candidate.cpp",
+        "docs/agent-work/h8-camp-gauntletmenu-init-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-camp-gauntletmenu-init-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Validate readable C++ idioms, absent UB, and exact ABI compatibility."
+      ],
+      "validation_plan": [
+        "Static analysis of C++ code, type checks, and assembly review."
+      ]
+    },
+    {
+      "id": "h8-camp-gauntletmenu-init-differential",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline ARM Unicorn differential test cases for GauntletAppMenu_Init.",
+      "depends_on": [
+        "h8-camp-gauntletmenu-init-candidate-review"
+      ],
+      "function_claims": [
+        "0x002e2454"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h8_camp_gauntletmenu_init_candidate.cpp",
+        "tools/h8_camp_gauntletmenu_init_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-camp-gauntletmenu-init-differential.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Pass 100% paired differential cases for GauntletAppMenu_Init against original ROM binary.",
+        "Confirm mutation control triggers expected discrepancy (negative control)."
+      ],
+      "validation_plan": [
+        "Run python tools/h8_camp_gauntletmenu_init_experiment.py."
+      ]
+    },
+    {
+      "id": "h8-camp-gauntletmenu-init-differential-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of differential test report for GauntletAppMenu_Init.",
+      "depends_on": [
+        "h8-camp-gauntletmenu-init-differential"
+      ],
+      "function_claims": [
+        "0x002e2454"
+      ],
+      "read_paths": [
+        "docs/agent-work/h8-camp-gauntletmenu-init-differential.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-camp-gauntletmenu-init-differential-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm boundary coverage, register comparisons, and negative control verification."
+      ],
+      "validation_plan": [
+        "Audit report.json generated by offline runner."
+      ]
+    },
+    {
+      "id": "h8-camp-gauntletmenu-init-composition",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Validate caller composition and ABI integration for GauntletAppMenu_Init.",
+      "depends_on": [
+        "h8-camp-gauntletmenu-init-differential-review"
+      ],
+      "function_claims": [
+        "0x002e2454"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h8_camp_gauntletmenu_init_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-camp-gauntletmenu-init-composition.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify GauntletAppMenu_Init callers preserve register invariants and memory bounds."
+      ],
+      "validation_plan": [
+        "Audit callers and stack layout compatibility."
+      ]
+    },
+    {
+      "id": "h8-camp-gauntletmenu-init-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of caller composition for GauntletAppMenu_Init.",
+      "depends_on": [
+        "h8-camp-gauntletmenu-init-composition"
+      ],
+      "function_claims": [
+        "0x002e2454"
+      ],
+      "read_paths": [
+        "docs/agent-work/h8-camp-gauntletmenu-init-composition.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-camp-gauntletmenu-init-composition-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm calling conventions, argument passing, and stack teardown."
+      ],
+      "validation_plan": [
+        "Verify absence of stack corruption or clobbered caller-saved registers."
+      ]
+    },
+    {
+      "id": "h8-camp-gauntletmenu-init-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Verify binary staging and relocation patching for GauntletAppMenu_Init.",
+      "depends_on": [
+        "h8-camp-gauntletmenu-init-composition-review"
+      ],
+      "function_claims": [
+        "0x002e2454"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h8_camp_gauntletmenu_init_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-camp-gauntletmenu-init-staging.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Ensure patched candidate GauntletAppMenu_Init integrates cleanly into binary layout."
+      ],
+      "validation_plan": [
+        "Verify relocation targets and binary window padding."
+      ]
+    },
+    {
+      "id": "h8-camp-gauntletmenu-init-staging-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of binary staging for GauntletAppMenu_Init.",
+      "depends_on": [
+        "h8-camp-gauntletmenu-init-staging"
+      ],
+      "function_claims": [
+        "0x002e2454"
+      ],
+      "read_paths": [
+        "docs/agent-work/h8-camp-gauntletmenu-init-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-camp-gauntletmenu-init-staging-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify binary window margin and IPS patch offset integrity."
+      ],
+      "validation_plan": [
+        "Cross-check ELF symbol map with target VMA."
+      ]
+    },
+    {
+      "id": "h8-ui-status-bustup-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize contract, parameters, registers, and memory effects for StatusBustUp_Init (0x00223a90).",
+      "depends_on": [
+        "h8-camp-status-recon-review"
+      ],
+      "function_claims": [
+        "0x00223a90"
+      ],
+      "read_paths": [
+        "src/camp/camp.cpp",
+        "src/ui/status.cpp",
+        "src/ui/status_down.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-status-bustup-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Accurately specify semantics of StatusBustUp_Init.",
+        "Specify test fixtures and mutation controls."
+      ],
+      "validation_plan": [
+        "Static disassembly and register effect verification against code.bin."
+      ]
+    },
+    {
+      "id": "h8-ui-status-bustup-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of StatusBustUp_Init contract specification.",
+      "depends_on": [
+        "h8-ui-status-bustup-contract"
+      ],
+      "function_claims": [
+        "0x00223a90"
+      ],
+      "read_paths": [
+        "docs/agent-work/h8-ui-status-bustup-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-status-bustup-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract fidelity against ARM disassembled instructions."
+      ],
+      "validation_plan": [
+        "Audit edge cases, register clobbers, and pointer validations."
+      ]
+    },
+    {
+      "id": "h8-ui-status-bustup-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable, editable C++ candidate for StatusBustUp_Init with mutation control.",
+      "depends_on": [
+        "h8-ui-status-bustup-contract-review"
+      ],
+      "function_claims": [
+        "0x00223a90"
+      ],
+      "read_paths": [
+        "docs/agent-work/h8-ui-status-bustup-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h8_ui_status_bustup_candidate.cpp",
+        "docs/agent-work/h8-ui-status-bustup-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Implement StatusBustUp_Init candidate and verified mutation control.",
+        "Ensure compiled ARM size fits strictly within the original binary function window."
+      ],
+      "validation_plan": [
+        "Compile with tools/build_check.py (armv6k clang) and check ELF size."
+      ]
+    },
+    {
+      "id": "h8-ui-status-bustup-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent code review of C++ reconstruction for StatusBustUp_Init.",
+      "depends_on": [
+        "h8-ui-status-bustup-candidate"
+      ],
+      "function_claims": [
+        "0x00223a90"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h8_ui_status_bustup_candidate.cpp",
+        "docs/agent-work/h8-ui-status-bustup-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-status-bustup-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Validate readable C++ idioms, absent UB, and exact ABI compatibility."
+      ],
+      "validation_plan": [
+        "Static analysis of C++ code, type checks, and assembly review."
+      ]
+    },
+    {
+      "id": "h8-ui-status-bustup-differential",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline ARM Unicorn differential test cases for StatusBustUp_Init.",
+      "depends_on": [
+        "h8-ui-status-bustup-candidate-review"
+      ],
+      "function_claims": [
+        "0x00223a90"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h8_ui_status_bustup_candidate.cpp",
+        "tools/h8_ui_status_bustup_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-status-bustup-differential.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Pass 100% paired differential cases for StatusBustUp_Init against original ROM binary.",
+        "Confirm mutation control triggers expected discrepancy (negative control)."
+      ],
+      "validation_plan": [
+        "Run python tools/h8_ui_status_bustup_experiment.py."
+      ]
+    },
+    {
+      "id": "h8-ui-status-bustup-differential-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of differential test report for StatusBustUp_Init.",
+      "depends_on": [
+        "h8-ui-status-bustup-differential"
+      ],
+      "function_claims": [
+        "0x00223a90"
+      ],
+      "read_paths": [
+        "docs/agent-work/h8-ui-status-bustup-differential.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-status-bustup-differential-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm boundary coverage, register comparisons, and negative control verification."
+      ],
+      "validation_plan": [
+        "Audit report.json generated by offline runner."
+      ]
+    },
+    {
+      "id": "h8-ui-status-bustup-composition",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Validate caller composition and ABI integration for StatusBustUp_Init.",
+      "depends_on": [
+        "h8-ui-status-bustup-differential-review"
+      ],
+      "function_claims": [
+        "0x00223a90"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h8_ui_status_bustup_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-status-bustup-composition.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify StatusBustUp_Init callers preserve register invariants and memory bounds."
+      ],
+      "validation_plan": [
+        "Audit callers and stack layout compatibility."
+      ]
+    },
+    {
+      "id": "h8-ui-status-bustup-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of caller composition for StatusBustUp_Init.",
+      "depends_on": [
+        "h8-ui-status-bustup-composition"
+      ],
+      "function_claims": [
+        "0x00223a90"
+      ],
+      "read_paths": [
+        "docs/agent-work/h8-ui-status-bustup-composition.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-status-bustup-composition-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm calling conventions, argument passing, and stack teardown."
+      ],
+      "validation_plan": [
+        "Verify absence of stack corruption or clobbered caller-saved registers."
+      ]
+    },
+    {
+      "id": "h8-ui-status-bustup-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Verify binary staging and relocation patching for StatusBustUp_Init.",
+      "depends_on": [
+        "h8-ui-status-bustup-composition-review"
+      ],
+      "function_claims": [
+        "0x00223a90"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h8_ui_status_bustup_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-status-bustup-staging.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Ensure patched candidate StatusBustUp_Init integrates cleanly into binary layout."
+      ],
+      "validation_plan": [
+        "Verify relocation targets and binary window padding."
+      ]
+    },
+    {
+      "id": "h8-ui-status-bustup-staging-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of binary staging for StatusBustUp_Init.",
+      "depends_on": [
+        "h8-ui-status-bustup-staging"
+      ],
+      "function_claims": [
+        "0x00223a90"
+      ],
+      "read_paths": [
+        "docs/agent-work/h8-ui-status-bustup-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-status-bustup-staging-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify binary window margin and IPS patch offset integrity."
+      ],
+      "validation_plan": [
+        "Cross-check ELF symbol map with target VMA."
+      ]
+    },
+    {
+      "id": "h8-ui-status-camera-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize contract, parameters, registers, and memory effects for StatusCamera_Init (0x00258e38).",
+      "depends_on": [
+        "h8-camp-status-recon-review"
+      ],
+      "function_claims": [
+        "0x00258e38"
+      ],
+      "read_paths": [
+        "src/camp/camp.cpp",
+        "src/ui/status.cpp",
+        "src/ui/status_down.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-status-camera-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Accurately specify semantics of StatusCamera_Init.",
+        "Specify test fixtures and mutation controls."
+      ],
+      "validation_plan": [
+        "Static disassembly and register effect verification against code.bin."
+      ]
+    },
+    {
+      "id": "h8-ui-status-camera-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of StatusCamera_Init contract specification.",
+      "depends_on": [
+        "h8-ui-status-camera-contract"
+      ],
+      "function_claims": [
+        "0x00258e38"
+      ],
+      "read_paths": [
+        "docs/agent-work/h8-ui-status-camera-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-status-camera-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract fidelity against ARM disassembled instructions."
+      ],
+      "validation_plan": [
+        "Audit edge cases, register clobbers, and pointer validations."
+      ]
+    },
+    {
+      "id": "h8-ui-status-camera-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable, editable C++ candidate for StatusCamera_Init with mutation control.",
+      "depends_on": [
+        "h8-ui-status-camera-contract-review"
+      ],
+      "function_claims": [
+        "0x00258e38"
+      ],
+      "read_paths": [
+        "docs/agent-work/h8-ui-status-camera-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h8_ui_status_camera_candidate.cpp",
+        "docs/agent-work/h8-ui-status-camera-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Implement StatusCamera_Init candidate and verified mutation control.",
+        "Ensure compiled ARM size fits strictly within the original binary function window."
+      ],
+      "validation_plan": [
+        "Compile with tools/build_check.py (armv6k clang) and check ELF size."
+      ]
+    },
+    {
+      "id": "h8-ui-status-camera-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent code review of C++ reconstruction for StatusCamera_Init.",
+      "depends_on": [
+        "h8-ui-status-camera-candidate"
+      ],
+      "function_claims": [
+        "0x00258e38"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h8_ui_status_camera_candidate.cpp",
+        "docs/agent-work/h8-ui-status-camera-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-status-camera-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Validate readable C++ idioms, absent UB, and exact ABI compatibility."
+      ],
+      "validation_plan": [
+        "Static analysis of C++ code, type checks, and assembly review."
+      ]
+    },
+    {
+      "id": "h8-ui-status-camera-differential",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline ARM Unicorn differential test cases for StatusCamera_Init.",
+      "depends_on": [
+        "h8-ui-status-camera-candidate-review"
+      ],
+      "function_claims": [
+        "0x00258e38"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h8_ui_status_camera_candidate.cpp",
+        "tools/h8_ui_status_camera_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-status-camera-differential.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Pass 100% paired differential cases for StatusCamera_Init against original ROM binary.",
+        "Confirm mutation control triggers expected discrepancy (negative control)."
+      ],
+      "validation_plan": [
+        "Run python tools/h8_ui_status_camera_experiment.py."
+      ]
+    },
+    {
+      "id": "h8-ui-status-camera-differential-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of differential test report for StatusCamera_Init.",
+      "depends_on": [
+        "h8-ui-status-camera-differential"
+      ],
+      "function_claims": [
+        "0x00258e38"
+      ],
+      "read_paths": [
+        "docs/agent-work/h8-ui-status-camera-differential.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-status-camera-differential-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm boundary coverage, register comparisons, and negative control verification."
+      ],
+      "validation_plan": [
+        "Audit report.json generated by offline runner."
+      ]
+    },
+    {
+      "id": "h8-ui-status-camera-composition",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Validate caller composition and ABI integration for StatusCamera_Init.",
+      "depends_on": [
+        "h8-ui-status-camera-differential-review"
+      ],
+      "function_claims": [
+        "0x00258e38"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h8_ui_status_camera_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-status-camera-composition.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify StatusCamera_Init callers preserve register invariants and memory bounds."
+      ],
+      "validation_plan": [
+        "Audit callers and stack layout compatibility."
+      ]
+    },
+    {
+      "id": "h8-ui-status-camera-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of caller composition for StatusCamera_Init.",
+      "depends_on": [
+        "h8-ui-status-camera-composition"
+      ],
+      "function_claims": [
+        "0x00258e38"
+      ],
+      "read_paths": [
+        "docs/agent-work/h8-ui-status-camera-composition.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-status-camera-composition-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm calling conventions, argument passing, and stack teardown."
+      ],
+      "validation_plan": [
+        "Verify absence of stack corruption or clobbered caller-saved registers."
+      ]
+    },
+    {
+      "id": "h8-ui-status-camera-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Verify binary staging and relocation patching for StatusCamera_Init.",
+      "depends_on": [
+        "h8-ui-status-camera-composition-review"
+      ],
+      "function_claims": [
+        "0x00258e38"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h8_ui_status_camera_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-status-camera-staging.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Ensure patched candidate StatusCamera_Init integrates cleanly into binary layout."
+      ],
+      "validation_plan": [
+        "Verify relocation targets and binary window padding."
+      ]
+    },
+    {
+      "id": "h8-ui-status-camera-staging-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of binary staging for StatusCamera_Init.",
+      "depends_on": [
+        "h8-ui-status-camera-staging"
+      ],
+      "function_claims": [
+        "0x00258e38"
+      ],
+      "read_paths": [
+        "docs/agent-work/h8-ui-status-camera-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-status-camera-staging-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify binary window margin and IPS patch offset integrity."
+      ],
+      "validation_plan": [
+        "Cross-check ELF symbol map with target VMA."
+      ]
+    },
+    {
+      "id": "h8-ui-status-affinity-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize contract, parameters, registers, and memory effects for Status_UpdateAffinityTable (0x00293e4c).",
+      "depends_on": [
+        "h8-camp-status-recon-review"
+      ],
+      "function_claims": [
+        "0x00293e4c"
+      ],
+      "read_paths": [
+        "src/camp/camp.cpp",
+        "src/ui/status.cpp",
+        "src/ui/status_down.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-status-affinity-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Accurately specify semantics of Status_UpdateAffinityTable.",
+        "Specify test fixtures and mutation controls."
+      ],
+      "validation_plan": [
+        "Static disassembly and register effect verification against code.bin."
+      ]
+    },
+    {
+      "id": "h8-ui-status-affinity-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of Status_UpdateAffinityTable contract specification.",
+      "depends_on": [
+        "h8-ui-status-affinity-contract"
+      ],
+      "function_claims": [
+        "0x00293e4c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h8-ui-status-affinity-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-status-affinity-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract fidelity against ARM disassembled instructions."
+      ],
+      "validation_plan": [
+        "Audit edge cases, register clobbers, and pointer validations."
+      ]
+    },
+    {
+      "id": "h8-ui-status-affinity-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable, editable C++ candidate for Status_UpdateAffinityTable with mutation control.",
+      "depends_on": [
+        "h8-ui-status-affinity-contract-review"
+      ],
+      "function_claims": [
+        "0x00293e4c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h8-ui-status-affinity-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h8_ui_status_affinity_candidate.cpp",
+        "docs/agent-work/h8-ui-status-affinity-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Implement Status_UpdateAffinityTable candidate and verified mutation control.",
+        "Ensure compiled ARM size fits strictly within the original binary function window."
+      ],
+      "validation_plan": [
+        "Compile with tools/build_check.py (armv6k clang) and check ELF size."
+      ]
+    },
+    {
+      "id": "h8-ui-status-affinity-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent code review of C++ reconstruction for Status_UpdateAffinityTable.",
+      "depends_on": [
+        "h8-ui-status-affinity-candidate"
+      ],
+      "function_claims": [
+        "0x00293e4c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h8_ui_status_affinity_candidate.cpp",
+        "docs/agent-work/h8-ui-status-affinity-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-status-affinity-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Validate readable C++ idioms, absent UB, and exact ABI compatibility."
+      ],
+      "validation_plan": [
+        "Static analysis of C++ code, type checks, and assembly review."
+      ]
+    },
+    {
+      "id": "h8-ui-status-affinity-differential",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline ARM Unicorn differential test cases for Status_UpdateAffinityTable.",
+      "depends_on": [
+        "h8-ui-status-affinity-candidate-review"
+      ],
+      "function_claims": [
+        "0x00293e4c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h8_ui_status_affinity_candidate.cpp",
+        "tools/h8_ui_status_affinity_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-status-affinity-differential.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Pass 100% paired differential cases for Status_UpdateAffinityTable against original ROM binary.",
+        "Confirm mutation control triggers expected discrepancy (negative control)."
+      ],
+      "validation_plan": [
+        "Run python tools/h8_ui_status_affinity_experiment.py."
+      ]
+    },
+    {
+      "id": "h8-ui-status-affinity-differential-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of differential test report for Status_UpdateAffinityTable.",
+      "depends_on": [
+        "h8-ui-status-affinity-differential"
+      ],
+      "function_claims": [
+        "0x00293e4c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h8-ui-status-affinity-differential.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-status-affinity-differential-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm boundary coverage, register comparisons, and negative control verification."
+      ],
+      "validation_plan": [
+        "Audit report.json generated by offline runner."
+      ]
+    },
+    {
+      "id": "h8-ui-status-affinity-composition",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Validate caller composition and ABI integration for Status_UpdateAffinityTable.",
+      "depends_on": [
+        "h8-ui-status-affinity-differential-review"
+      ],
+      "function_claims": [
+        "0x00293e4c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h8_ui_status_affinity_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-status-affinity-composition.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify Status_UpdateAffinityTable callers preserve register invariants and memory bounds."
+      ],
+      "validation_plan": [
+        "Audit callers and stack layout compatibility."
+      ]
+    },
+    {
+      "id": "h8-ui-status-affinity-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of caller composition for Status_UpdateAffinityTable.",
+      "depends_on": [
+        "h8-ui-status-affinity-composition"
+      ],
+      "function_claims": [
+        "0x00293e4c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h8-ui-status-affinity-composition.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-status-affinity-composition-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm calling conventions, argument passing, and stack teardown."
+      ],
+      "validation_plan": [
+        "Verify absence of stack corruption or clobbered caller-saved registers."
+      ]
+    },
+    {
+      "id": "h8-ui-status-affinity-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Verify binary staging and relocation patching for Status_UpdateAffinityTable.",
+      "depends_on": [
+        "h8-ui-status-affinity-composition-review"
+      ],
+      "function_claims": [
+        "0x00293e4c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h8_ui_status_affinity_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-status-affinity-staging.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Ensure patched candidate Status_UpdateAffinityTable integrates cleanly into binary layout."
+      ],
+      "validation_plan": [
+        "Verify relocation targets and binary window padding."
+      ]
+    },
+    {
+      "id": "h8-ui-status-affinity-staging-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of binary staging for Status_UpdateAffinityTable.",
+      "depends_on": [
+        "h8-ui-status-affinity-staging"
+      ],
+      "function_claims": [
+        "0x00293e4c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h8-ui-status-affinity-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-status-affinity-staging-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify binary window margin and IPS patch offset integrity."
+      ],
+      "validation_plan": [
+        "Cross-check ELF symbol map with target VMA."
+      ]
+    },
+    {
+      "id": "h8-ui-statusdown-init-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize contract, parameters, registers, and memory effects for StatusDown_Init (0x002d931c).",
+      "depends_on": [
+        "h8-camp-status-recon-review"
+      ],
+      "function_claims": [
+        "0x002d931c"
+      ],
+      "read_paths": [
+        "src/camp/camp.cpp",
+        "src/ui/status.cpp",
+        "src/ui/status_down.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-statusdown-init-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Accurately specify semantics of StatusDown_Init.",
+        "Specify test fixtures and mutation controls."
+      ],
+      "validation_plan": [
+        "Static disassembly and register effect verification against code.bin."
+      ]
+    },
+    {
+      "id": "h8-ui-statusdown-init-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of StatusDown_Init contract specification.",
+      "depends_on": [
+        "h8-ui-statusdown-init-contract"
+      ],
+      "function_claims": [
+        "0x002d931c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h8-ui-statusdown-init-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-statusdown-init-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract fidelity against ARM disassembled instructions."
+      ],
+      "validation_plan": [
+        "Audit edge cases, register clobbers, and pointer validations."
+      ]
+    },
+    {
+      "id": "h8-ui-statusdown-init-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable, editable C++ candidate for StatusDown_Init with mutation control.",
+      "depends_on": [
+        "h8-ui-statusdown-init-contract-review"
+      ],
+      "function_claims": [
+        "0x002d931c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h8-ui-statusdown-init-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h8_ui_statusdown_init_candidate.cpp",
+        "docs/agent-work/h8-ui-statusdown-init-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Implement StatusDown_Init candidate and verified mutation control.",
+        "Ensure compiled ARM size fits strictly within the original binary function window."
+      ],
+      "validation_plan": [
+        "Compile with tools/build_check.py (armv6k clang) and check ELF size."
+      ]
+    },
+    {
+      "id": "h8-ui-statusdown-init-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent code review of C++ reconstruction for StatusDown_Init.",
+      "depends_on": [
+        "h8-ui-statusdown-init-candidate"
+      ],
+      "function_claims": [
+        "0x002d931c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h8_ui_statusdown_init_candidate.cpp",
+        "docs/agent-work/h8-ui-statusdown-init-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-statusdown-init-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Validate readable C++ idioms, absent UB, and exact ABI compatibility."
+      ],
+      "validation_plan": [
+        "Static analysis of C++ code, type checks, and assembly review."
+      ]
+    },
+    {
+      "id": "h8-ui-statusdown-init-differential",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline ARM Unicorn differential test cases for StatusDown_Init.",
+      "depends_on": [
+        "h8-ui-statusdown-init-candidate-review"
+      ],
+      "function_claims": [
+        "0x002d931c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h8_ui_statusdown_init_candidate.cpp",
+        "tools/h8_ui_statusdown_init_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-statusdown-init-differential.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Pass 100% paired differential cases for StatusDown_Init against original ROM binary.",
+        "Confirm mutation control triggers expected discrepancy (negative control)."
+      ],
+      "validation_plan": [
+        "Run python tools/h8_ui_statusdown_init_experiment.py."
+      ]
+    },
+    {
+      "id": "h8-ui-statusdown-init-differential-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of differential test report for StatusDown_Init.",
+      "depends_on": [
+        "h8-ui-statusdown-init-differential"
+      ],
+      "function_claims": [
+        "0x002d931c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h8-ui-statusdown-init-differential.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-statusdown-init-differential-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm boundary coverage, register comparisons, and negative control verification."
+      ],
+      "validation_plan": [
+        "Audit report.json generated by offline runner."
+      ]
+    },
+    {
+      "id": "h8-ui-statusdown-init-composition",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Validate caller composition and ABI integration for StatusDown_Init.",
+      "depends_on": [
+        "h8-ui-statusdown-init-differential-review"
+      ],
+      "function_claims": [
+        "0x002d931c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h8_ui_statusdown_init_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-statusdown-init-composition.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify StatusDown_Init callers preserve register invariants and memory bounds."
+      ],
+      "validation_plan": [
+        "Audit callers and stack layout compatibility."
+      ]
+    },
+    {
+      "id": "h8-ui-statusdown-init-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of caller composition for StatusDown_Init.",
+      "depends_on": [
+        "h8-ui-statusdown-init-composition"
+      ],
+      "function_claims": [
+        "0x002d931c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h8-ui-statusdown-init-composition.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-statusdown-init-composition-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm calling conventions, argument passing, and stack teardown."
+      ],
+      "validation_plan": [
+        "Verify absence of stack corruption or clobbered caller-saved registers."
+      ]
+    },
+    {
+      "id": "h8-ui-statusdown-init-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Verify binary staging and relocation patching for StatusDown_Init.",
+      "depends_on": [
+        "h8-ui-statusdown-init-composition-review"
+      ],
+      "function_claims": [
+        "0x002d931c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h8_ui_statusdown_init_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-statusdown-init-staging.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Ensure patched candidate StatusDown_Init integrates cleanly into binary layout."
+      ],
+      "validation_plan": [
+        "Verify relocation targets and binary window padding."
+      ]
+    },
+    {
+      "id": "h8-ui-statusdown-init-staging-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of binary staging for StatusDown_Init.",
+      "depends_on": [
+        "h8-ui-statusdown-init-staging"
+      ],
+      "function_claims": [
+        "0x002d931c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h8-ui-statusdown-init-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-statusdown-init-staging-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify binary window margin and IPS patch offset integrity."
+      ],
+      "validation_plan": [
+        "Cross-check ELF symbol map with target VMA."
+      ]
+    },
+    {
+      "id": "h8-ui-statusdown-itemlist-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize contract, parameters, registers, and memory effects for StatusDown_PopulateItemList (0x001ee7c8).",
+      "depends_on": [
+        "h8-camp-status-recon-review"
+      ],
+      "function_claims": [
+        "0x001ee7c8"
+      ],
+      "read_paths": [
+        "src/camp/camp.cpp",
+        "src/ui/status.cpp",
+        "src/ui/status_down.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-statusdown-itemlist-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Accurately specify semantics of StatusDown_PopulateItemList.",
+        "Specify test fixtures and mutation controls."
+      ],
+      "validation_plan": [
+        "Static disassembly and register effect verification against code.bin."
+      ]
+    },
+    {
+      "id": "h8-ui-statusdown-itemlist-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of StatusDown_PopulateItemList contract specification.",
+      "depends_on": [
+        "h8-ui-statusdown-itemlist-contract"
+      ],
+      "function_claims": [
+        "0x001ee7c8"
+      ],
+      "read_paths": [
+        "docs/agent-work/h8-ui-statusdown-itemlist-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-statusdown-itemlist-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract fidelity against ARM disassembled instructions."
+      ],
+      "validation_plan": [
+        "Audit edge cases, register clobbers, and pointer validations."
+      ]
+    },
+    {
+      "id": "h8-ui-statusdown-itemlist-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable, editable C++ candidate for StatusDown_PopulateItemList with mutation control.",
+      "depends_on": [
+        "h8-ui-statusdown-itemlist-contract-review"
+      ],
+      "function_claims": [
+        "0x001ee7c8"
+      ],
+      "read_paths": [
+        "docs/agent-work/h8-ui-statusdown-itemlist-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h8_ui_statusdown_itemlist_candidate.cpp",
+        "docs/agent-work/h8-ui-statusdown-itemlist-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Implement StatusDown_PopulateItemList candidate and verified mutation control.",
+        "Ensure compiled ARM size fits strictly within the original binary function window."
+      ],
+      "validation_plan": [
+        "Compile with tools/build_check.py (armv6k clang) and check ELF size."
+      ]
+    },
+    {
+      "id": "h8-ui-statusdown-itemlist-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent code review of C++ reconstruction for StatusDown_PopulateItemList.",
+      "depends_on": [
+        "h8-ui-statusdown-itemlist-candidate"
+      ],
+      "function_claims": [
+        "0x001ee7c8"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h8_ui_statusdown_itemlist_candidate.cpp",
+        "docs/agent-work/h8-ui-statusdown-itemlist-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-statusdown-itemlist-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Validate readable C++ idioms, absent UB, and exact ABI compatibility."
+      ],
+      "validation_plan": [
+        "Static analysis of C++ code, type checks, and assembly review."
+      ]
+    },
+    {
+      "id": "h8-ui-statusdown-itemlist-differential",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline ARM Unicorn differential test cases for StatusDown_PopulateItemList.",
+      "depends_on": [
+        "h8-ui-statusdown-itemlist-candidate-review"
+      ],
+      "function_claims": [
+        "0x001ee7c8"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h8_ui_statusdown_itemlist_candidate.cpp",
+        "tools/h8_ui_statusdown_itemlist_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-statusdown-itemlist-differential.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Pass 100% paired differential cases for StatusDown_PopulateItemList against original ROM binary.",
+        "Confirm mutation control triggers expected discrepancy (negative control)."
+      ],
+      "validation_plan": [
+        "Run python tools/h8_ui_statusdown_itemlist_experiment.py."
+      ]
+    },
+    {
+      "id": "h8-ui-statusdown-itemlist-differential-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of differential test report for StatusDown_PopulateItemList.",
+      "depends_on": [
+        "h8-ui-statusdown-itemlist-differential"
+      ],
+      "function_claims": [
+        "0x001ee7c8"
+      ],
+      "read_paths": [
+        "docs/agent-work/h8-ui-statusdown-itemlist-differential.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-statusdown-itemlist-differential-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm boundary coverage, register comparisons, and negative control verification."
+      ],
+      "validation_plan": [
+        "Audit report.json generated by offline runner."
+      ]
+    },
+    {
+      "id": "h8-ui-statusdown-itemlist-composition",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Validate caller composition and ABI integration for StatusDown_PopulateItemList.",
+      "depends_on": [
+        "h8-ui-statusdown-itemlist-differential-review"
+      ],
+      "function_claims": [
+        "0x001ee7c8"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h8_ui_statusdown_itemlist_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-statusdown-itemlist-composition.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify StatusDown_PopulateItemList callers preserve register invariants and memory bounds."
+      ],
+      "validation_plan": [
+        "Audit callers and stack layout compatibility."
+      ]
+    },
+    {
+      "id": "h8-ui-statusdown-itemlist-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of caller composition for StatusDown_PopulateItemList.",
+      "depends_on": [
+        "h8-ui-statusdown-itemlist-composition"
+      ],
+      "function_claims": [
+        "0x001ee7c8"
+      ],
+      "read_paths": [
+        "docs/agent-work/h8-ui-statusdown-itemlist-composition.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-statusdown-itemlist-composition-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm calling conventions, argument passing, and stack teardown."
+      ],
+      "validation_plan": [
+        "Verify absence of stack corruption or clobbered caller-saved registers."
+      ]
+    },
+    {
+      "id": "h8-ui-statusdown-itemlist-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Verify binary staging and relocation patching for StatusDown_PopulateItemList.",
+      "depends_on": [
+        "h8-ui-statusdown-itemlist-composition-review"
+      ],
+      "function_claims": [
+        "0x001ee7c8"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h8_ui_statusdown_itemlist_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-statusdown-itemlist-staging.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Ensure patched candidate StatusDown_PopulateItemList integrates cleanly into binary layout."
+      ],
+      "validation_plan": [
+        "Verify relocation targets and binary window padding."
+      ]
+    },
+    {
+      "id": "h8-ui-statusdown-itemlist-staging-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of binary staging for StatusDown_PopulateItemList.",
+      "depends_on": [
+        "h8-ui-statusdown-itemlist-staging"
+      ],
+      "function_claims": [
+        "0x001ee7c8"
+      ],
+      "read_paths": [
+        "docs/agent-work/h8-ui-statusdown-itemlist-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-statusdown-itemlist-staging-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify binary window margin and IPS patch offset integrity."
+      ],
+      "validation_plan": [
+        "Cross-check ELF symbol map with target VMA."
+      ]
+    },
+    {
+      "id": "h8-ui-statusdown-itemsort-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize contract, parameters, registers, and memory effects for StatusDown_SortItemList (0x0032c4bc).",
+      "depends_on": [
+        "h8-camp-status-recon-review"
+      ],
+      "function_claims": [
+        "0x0032c4bc"
+      ],
+      "read_paths": [
+        "src/camp/camp.cpp",
+        "src/ui/status.cpp",
+        "src/ui/status_down.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-statusdown-itemsort-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Accurately specify semantics of StatusDown_SortItemList.",
+        "Specify test fixtures and mutation controls."
+      ],
+      "validation_plan": [
+        "Static disassembly and register effect verification against code.bin."
+      ]
+    },
+    {
+      "id": "h8-ui-statusdown-itemsort-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of StatusDown_SortItemList contract specification.",
+      "depends_on": [
+        "h8-ui-statusdown-itemsort-contract"
+      ],
+      "function_claims": [
+        "0x0032c4bc"
+      ],
+      "read_paths": [
+        "docs/agent-work/h8-ui-statusdown-itemsort-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-statusdown-itemsort-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract fidelity against ARM disassembled instructions."
+      ],
+      "validation_plan": [
+        "Audit edge cases, register clobbers, and pointer validations."
+      ]
+    },
+    {
+      "id": "h8-ui-statusdown-itemsort-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable, editable C++ candidate for StatusDown_SortItemList with mutation control.",
+      "depends_on": [
+        "h8-ui-statusdown-itemsort-contract-review"
+      ],
+      "function_claims": [
+        "0x0032c4bc"
+      ],
+      "read_paths": [
+        "docs/agent-work/h8-ui-statusdown-itemsort-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h8_ui_statusdown_itemsort_candidate.cpp",
+        "docs/agent-work/h8-ui-statusdown-itemsort-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Implement StatusDown_SortItemList candidate and verified mutation control.",
+        "Ensure compiled ARM size fits strictly within the original binary function window."
+      ],
+      "validation_plan": [
+        "Compile with tools/build_check.py (armv6k clang) and check ELF size."
+      ]
+    },
+    {
+      "id": "h8-ui-statusdown-itemsort-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent code review of C++ reconstruction for StatusDown_SortItemList.",
+      "depends_on": [
+        "h8-ui-statusdown-itemsort-candidate"
+      ],
+      "function_claims": [
+        "0x0032c4bc"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h8_ui_statusdown_itemsort_candidate.cpp",
+        "docs/agent-work/h8-ui-statusdown-itemsort-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-statusdown-itemsort-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Validate readable C++ idioms, absent UB, and exact ABI compatibility."
+      ],
+      "validation_plan": [
+        "Static analysis of C++ code, type checks, and assembly review."
+      ]
+    },
+    {
+      "id": "h8-ui-statusdown-itemsort-differential",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline ARM Unicorn differential test cases for StatusDown_SortItemList.",
+      "depends_on": [
+        "h8-ui-statusdown-itemsort-candidate-review"
+      ],
+      "function_claims": [
+        "0x0032c4bc"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h8_ui_statusdown_itemsort_candidate.cpp",
+        "tools/h8_ui_statusdown_itemsort_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-statusdown-itemsort-differential.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Pass 100% paired differential cases for StatusDown_SortItemList against original ROM binary.",
+        "Confirm mutation control triggers expected discrepancy (negative control)."
+      ],
+      "validation_plan": [
+        "Run python tools/h8_ui_statusdown_itemsort_experiment.py."
+      ]
+    },
+    {
+      "id": "h8-ui-statusdown-itemsort-differential-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of differential test report for StatusDown_SortItemList.",
+      "depends_on": [
+        "h8-ui-statusdown-itemsort-differential"
+      ],
+      "function_claims": [
+        "0x0032c4bc"
+      ],
+      "read_paths": [
+        "docs/agent-work/h8-ui-statusdown-itemsort-differential.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-statusdown-itemsort-differential-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm boundary coverage, register comparisons, and negative control verification."
+      ],
+      "validation_plan": [
+        "Audit report.json generated by offline runner."
+      ]
+    },
+    {
+      "id": "h8-ui-statusdown-itemsort-composition",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Validate caller composition and ABI integration for StatusDown_SortItemList.",
+      "depends_on": [
+        "h8-ui-statusdown-itemsort-differential-review"
+      ],
+      "function_claims": [
+        "0x0032c4bc"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h8_ui_statusdown_itemsort_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-statusdown-itemsort-composition.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify StatusDown_SortItemList callers preserve register invariants and memory bounds."
+      ],
+      "validation_plan": [
+        "Audit callers and stack layout compatibility."
+      ]
+    },
+    {
+      "id": "h8-ui-statusdown-itemsort-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of caller composition for StatusDown_SortItemList.",
+      "depends_on": [
+        "h8-ui-statusdown-itemsort-composition"
+      ],
+      "function_claims": [
+        "0x0032c4bc"
+      ],
+      "read_paths": [
+        "docs/agent-work/h8-ui-statusdown-itemsort-composition.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-statusdown-itemsort-composition-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm calling conventions, argument passing, and stack teardown."
+      ],
+      "validation_plan": [
+        "Verify absence of stack corruption or clobbered caller-saved registers."
+      ]
+    },
+    {
+      "id": "h8-ui-statusdown-itemsort-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Verify binary staging and relocation patching for StatusDown_SortItemList.",
+      "depends_on": [
+        "h8-ui-statusdown-itemsort-composition-review"
+      ],
+      "function_claims": [
+        "0x0032c4bc"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h8_ui_statusdown_itemsort_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-statusdown-itemsort-staging.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Ensure patched candidate StatusDown_SortItemList integrates cleanly into binary layout."
+      ],
+      "validation_plan": [
+        "Verify relocation targets and binary window padding."
+      ]
+    },
+    {
+      "id": "h8-ui-statusdown-itemsort-staging-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of binary staging for StatusDown_SortItemList.",
+      "depends_on": [
+        "h8-ui-statusdown-itemsort-staging"
+      ],
+      "function_claims": [
+        "0x0032c4bc"
+      ],
+      "read_paths": [
+        "docs/agent-work/h8-ui-statusdown-itemsort-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-statusdown-itemsort-staging-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify binary window margin and IPS patch offset integrity."
+      ],
+      "validation_plan": [
+        "Cross-check ELF symbol map with target VMA."
+      ]
+    },
+    {
+      "id": "h8-ui-statusdown-skilllist-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize contract, parameters, registers, and memory effects for StatusDown_PopulateSkillList (0x001ee5a4).",
+      "depends_on": [
+        "h8-camp-status-recon-review"
+      ],
+      "function_claims": [
+        "0x001ee5a4"
+      ],
+      "read_paths": [
+        "src/camp/camp.cpp",
+        "src/ui/status.cpp",
+        "src/ui/status_down.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-statusdown-skilllist-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Accurately specify semantics of StatusDown_PopulateSkillList.",
+        "Specify test fixtures and mutation controls."
+      ],
+      "validation_plan": [
+        "Static disassembly and register effect verification against code.bin."
+      ]
+    },
+    {
+      "id": "h8-ui-statusdown-skilllist-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of StatusDown_PopulateSkillList contract specification.",
+      "depends_on": [
+        "h8-ui-statusdown-skilllist-contract"
+      ],
+      "function_claims": [
+        "0x001ee5a4"
+      ],
+      "read_paths": [
+        "docs/agent-work/h8-ui-statusdown-skilllist-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-statusdown-skilllist-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract fidelity against ARM disassembled instructions."
+      ],
+      "validation_plan": [
+        "Audit edge cases, register clobbers, and pointer validations."
+      ]
+    },
+    {
+      "id": "h8-ui-statusdown-skilllist-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable, editable C++ candidate for StatusDown_PopulateSkillList with mutation control.",
+      "depends_on": [
+        "h8-ui-statusdown-skilllist-contract-review"
+      ],
+      "function_claims": [
+        "0x001ee5a4"
+      ],
+      "read_paths": [
+        "docs/agent-work/h8-ui-statusdown-skilllist-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h8_ui_statusdown_skilllist_candidate.cpp",
+        "docs/agent-work/h8-ui-statusdown-skilllist-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Implement StatusDown_PopulateSkillList candidate and verified mutation control.",
+        "Ensure compiled ARM size fits strictly within the original binary function window."
+      ],
+      "validation_plan": [
+        "Compile with tools/build_check.py (armv6k clang) and check ELF size."
+      ]
+    },
+    {
+      "id": "h8-ui-statusdown-skilllist-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent code review of C++ reconstruction for StatusDown_PopulateSkillList.",
+      "depends_on": [
+        "h8-ui-statusdown-skilllist-candidate"
+      ],
+      "function_claims": [
+        "0x001ee5a4"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h8_ui_statusdown_skilllist_candidate.cpp",
+        "docs/agent-work/h8-ui-statusdown-skilllist-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-statusdown-skilllist-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Validate readable C++ idioms, absent UB, and exact ABI compatibility."
+      ],
+      "validation_plan": [
+        "Static analysis of C++ code, type checks, and assembly review."
+      ]
+    },
+    {
+      "id": "h8-ui-statusdown-skilllist-differential",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline ARM Unicorn differential test cases for StatusDown_PopulateSkillList.",
+      "depends_on": [
+        "h8-ui-statusdown-skilllist-candidate-review"
+      ],
+      "function_claims": [
+        "0x001ee5a4"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h8_ui_statusdown_skilllist_candidate.cpp",
+        "tools/h8_ui_statusdown_skilllist_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-statusdown-skilllist-differential.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Pass 100% paired differential cases for StatusDown_PopulateSkillList against original ROM binary.",
+        "Confirm mutation control triggers expected discrepancy (negative control)."
+      ],
+      "validation_plan": [
+        "Run python tools/h8_ui_statusdown_skilllist_experiment.py."
+      ]
+    },
+    {
+      "id": "h8-ui-statusdown-skilllist-differential-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of differential test report for StatusDown_PopulateSkillList.",
+      "depends_on": [
+        "h8-ui-statusdown-skilllist-differential"
+      ],
+      "function_claims": [
+        "0x001ee5a4"
+      ],
+      "read_paths": [
+        "docs/agent-work/h8-ui-statusdown-skilllist-differential.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-statusdown-skilllist-differential-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm boundary coverage, register comparisons, and negative control verification."
+      ],
+      "validation_plan": [
+        "Audit report.json generated by offline runner."
+      ]
+    },
+    {
+      "id": "h8-ui-statusdown-skilllist-composition",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Validate caller composition and ABI integration for StatusDown_PopulateSkillList.",
+      "depends_on": [
+        "h8-ui-statusdown-skilllist-differential-review"
+      ],
+      "function_claims": [
+        "0x001ee5a4"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h8_ui_statusdown_skilllist_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-statusdown-skilllist-composition.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify StatusDown_PopulateSkillList callers preserve register invariants and memory bounds."
+      ],
+      "validation_plan": [
+        "Audit callers and stack layout compatibility."
+      ]
+    },
+    {
+      "id": "h8-ui-statusdown-skilllist-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of caller composition for StatusDown_PopulateSkillList.",
+      "depends_on": [
+        "h8-ui-statusdown-skilllist-composition"
+      ],
+      "function_claims": [
+        "0x001ee5a4"
+      ],
+      "read_paths": [
+        "docs/agent-work/h8-ui-statusdown-skilllist-composition.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-statusdown-skilllist-composition-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm calling conventions, argument passing, and stack teardown."
+      ],
+      "validation_plan": [
+        "Verify absence of stack corruption or clobbered caller-saved registers."
+      ]
+    },
+    {
+      "id": "h8-ui-statusdown-skilllist-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Verify binary staging and relocation patching for StatusDown_PopulateSkillList.",
+      "depends_on": [
+        "h8-ui-statusdown-skilllist-composition-review"
+      ],
+      "function_claims": [
+        "0x001ee5a4"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h8_ui_statusdown_skilllist_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-statusdown-skilllist-staging.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Ensure patched candidate StatusDown_PopulateSkillList integrates cleanly into binary layout."
+      ],
+      "validation_plan": [
+        "Verify relocation targets and binary window padding."
+      ]
+    },
+    {
+      "id": "h8-ui-statusdown-skilllist-staging-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of binary staging for StatusDown_PopulateSkillList.",
+      "depends_on": [
+        "h8-ui-statusdown-skilllist-staging"
+      ],
+      "function_claims": [
+        "0x001ee5a4"
+      ],
+      "read_paths": [
+        "docs/agent-work/h8-ui-statusdown-skilllist-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-ui-statusdown-skilllist-staging-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify binary window margin and IPS patch offset integrity."
+      ],
+      "validation_plan": [
+        "Cross-check ELF symbol map with target VMA."
+      ]
+    },
+    {
+      "id": "h8-staged-image-patch",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Compose all 8 validated H8 candidate replacements into unified executable and produce code.h8-final.ips.",
+      "depends_on": [
+        "h8-camp-gauntletmenu-init-staging-review",
+        "h8-ui-status-bustup-staging-review",
+        "h8-ui-status-camera-staging-review",
+        "h8-ui-status-affinity-staging-review",
+        "h8-ui-statusdown-init-staging-review",
+        "h8-ui-statusdown-itemlist-staging-review",
+        "h8-ui-statusdown-itemsort-staging-review",
+        "h8-ui-statusdown-skilllist-staging-review"
+      ],
+      "function_claims": [
+        "0x002e2454",
+        "0x00223a90",
+        "0x00258e38",
+        "0x00293e4c",
+        "0x002d931c",
+        "0x001ee7c8",
+        "0x0032c4bc",
+        "0x001ee5a4"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h8_camp_gauntletmenu_init_candidate.cpp",
+        "experiments/semantic_equivalence/h8_ui_status_bustup_candidate.cpp",
+        "experiments/semantic_equivalence/h8_ui_status_camera_candidate.cpp",
+        "experiments/semantic_equivalence/h8_ui_status_affinity_candidate.cpp",
+        "experiments/semantic_equivalence/h8_ui_statusdown_init_candidate.cpp",
+        "experiments/semantic_equivalence/h8_ui_statusdown_itemlist_candidate.cpp",
+        "experiments/semantic_equivalence/h8_ui_statusdown_itemsort_candidate.cpp",
+        "experiments/semantic_equivalence/h8_ui_statusdown_skilllist_candidate.cpp",
+        "tools/h8_staged_image_patch.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-staged-image-patch.md",
+        "code.h8-final.ips"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "staged_binary"
+      ],
+      "acceptance": [
+        "Produce code.h8-final.bin and code.h8-final.ips over H7 baseline.",
+        "Zero overflow across all 8 function windows (+margins padded with NOP).",
+        "Verify round-trip IPS patch identity."
+      ],
+      "validation_plan": [
+        "Run python tools/h8_staged_image_patch.py."
+      ]
+    },
+    {
+      "id": "h8-staged-image-patch-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of composite image staging and IPS patch generation for Milestone H8.",
+      "depends_on": [
+        "h8-staged-image-patch"
+      ],
+      "function_claims": [
+        "0x002e2454",
+        "0x00223a90",
+        "0x00258e38",
+        "0x00293e4c",
+        "0x002d931c",
+        "0x001ee7c8",
+        "0x0032c4bc",
+        "0x001ee5a4"
+      ],
+      "read_paths": [
+        "docs/agent-work/h8-staged-image-patch.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-staged-image-patch-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Validate SHA-256 hashes, patch size, and byte-replacement boundaries."
+      ],
+      "validation_plan": [
+        "Audit staging manifest and IPS patch offsets."
+      ]
+    },
+    {
+      "id": "h8-offline-composite-gates",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Run comprehensive offline composite gate validation across all 8 subsystems.",
+      "depends_on": [
+        "h8-staged-image-patch-review"
+      ],
+      "function_claims": [
+        "0x002e2454",
+        "0x00223a90",
+        "0x00258e38",
+        "0x00293e4c",
+        "0x002d931c",
+        "0x001ee7c8",
+        "0x0032c4bc",
+        "0x001ee5a4"
+      ],
+      "read_paths": [
+        "docs/agent-work/h8-staged-image-patch.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-offline-composite-gates.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm interworking ARM/Thumb bits for all call sites.",
+        "Confirm all 8 offline differential tests pass synchronously."
+      ],
+      "validation_plan": [
+        "Execute offline validation test suite."
+      ]
+    },
+    {
+      "id": "h8-offline-composite-gates-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of offline composite gate test results.",
+      "depends_on": [
+        "h8-offline-composite-gates"
+      ],
+      "function_claims": [
+        "0x002e2454",
+        "0x00223a90",
+        "0x00258e38",
+        "0x00293e4c",
+        "0x002d931c",
+        "0x001ee7c8",
+        "0x0032c4bc",
+        "0x001ee5a4"
+      ],
+      "read_paths": [
+        "docs/agent-work/h8-offline-composite-gates.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-offline-composite-gates-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify offline gate pass certificates."
+      ],
+      "validation_plan": [
+        "Audit gate execution log."
+      ]
+    },
+    {
+      "id": "h8-autonomous-camp-verify",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Autonomous runtime verification in Azahar emulator: Title, Save Load, Field, Camp Menu, and Status sequences.",
+      "depends_on": [
+        "h8-offline-composite-gates-review"
+      ],
+      "function_claims": [
+        "0x002e2454",
+        "0x00223a90",
+        "0x00258e38",
+        "0x00293e4c",
+        "0x002d931c",
+        "0x001ee7c8",
+        "0x0032c4bc",
+        "0x001ee5a4"
+      ],
+      "read_paths": [
+        "tools/h3_autonomous_verify.py",
+        "code.h8-final.ips"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-autonomous-camp-verify.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [
+        "emulator_session"
+      ],
+      "acceptance": [
+        "Run paired autonomous test via GDB RSP loopback stub.",
+        "0 register differences across Title, Save Load, 250 Field scene ticks, Camp application menu, and Status down screens."
+      ],
+      "validation_plan": [
+        "Execute autonomous verify script and generate paired report.json."
+      ]
+    },
+    {
+      "id": "h8-autonomous-camp-verify-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of autonomous paired runtime verification for Milestone H8.",
+      "depends_on": [
+        "h8-autonomous-camp-verify"
+      ],
+      "function_claims": [
+        "0x002e2454",
+        "0x00223a90",
+        "0x00258e38",
+        "0x00293e4c",
+        "0x002d931c",
+        "0x001ee7c8",
+        "0x0032c4bc",
+        "0x001ee5a4"
+      ],
+      "read_paths": [
+        "docs/agent-work/h8-autonomous-camp-verify.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h8-autonomous-camp-verify-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm 100% paired equivalence with zero register or state differences."
+      ],
+      "validation_plan": [
+        "Audit runtime report metrics and save file hash integrity."
+      ]
+    },
+    {
+      "id": "h8-milestone-closure",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize closure of Milestone H8 across documentation and ledger tracking.",
+      "depends_on": [
+        "h8-autonomous-camp-verify-review"
+      ],
+      "function_claims": [
+        "0x002e2454",
+        "0x00223a90",
+        "0x00258e38",
+        "0x00293e4c",
+        "0x002d931c",
+        "0x001ee7c8",
+        "0x0032c4bc",
+        "0x001ee5a4"
+      ],
+      "read_paths": [
+        "docs/milestones/H8-camp-menu-inventory-party.md",
+        "docs/functional-status.md",
+        "docs/reconstruction-milestones.md"
+      ],
+      "write_paths": [
+        "docs/milestones/H8-camp-menu-inventory-party.md",
+        "docs/functional-status.md",
+        "docs/reconstruction-milestones.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Update documentation marking Milestone H8 as completed and closed.",
+        "Ensure clean git state and 0 errors from tools/agent_workflow.py check."
+      ],
+      "validation_plan": [
+        "Run python tools/agent_workflow.py check."
+      ]
+    }
+  ]
+}

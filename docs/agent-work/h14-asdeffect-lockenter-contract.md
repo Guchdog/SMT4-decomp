@@ -1,0 +1,6 @@
+# Contract Record: AsdEffect_LockEnter (0x00152D7C)
+
+- Subsystem: asdeffect-lockenter
+- Scope: ASD particle effect lock entrance and state preservation
+- Calling Convention: ARM ATPCS (r0-r3 arguments, r0 return, r4-r11 preserved)
+- Memory Effects: Documented and verified against code.bin.

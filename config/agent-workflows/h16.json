@@ -1,0 +1,1956 @@
+{
+  "schema_version": 1,
+  "batch": "batch-h16-001",
+  "milestone": "H16",
+  "max_workers": 3,
+  "cpu_budget": 8,
+  "goal": "Reconstruct readable, editable C++ for Milestone H16 (Audio/Video/Mobiclip Subsystem), covering sound effect buffer assignment, rate/channel buffer size calculation, secondary buffer assignment, data size calculation, sample byte calculation, data base pointer derivation, data element count lookup, and status sound track ID update with offline differential validation, staging, and autonomous verification.",
+  "coordinator_owned_paths": [
+    "config/agent-workflows/h16.json",
+    "config/reconstruction.json",
+    "docs/milestones/H16-audio-engine.md",
+    "docs/functional-status.md",
+    "docs/reconstruction-milestones.md"
+  ],
+  "tasks": [
+    {
+      "id": "h16-audio-engine-recon",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Comprehensive static and architectural reconnaissance of Milestone H16 Audio, Voices, and Video / Mobiclip Subsystem.",
+      "depends_on": [],
+      "function_claims": [
+        "0x00110c2c",
+        "0x00110c44",
+        "0x00121150",
+        "0x00121f20",
+        "0x00122094",
+        "0x00128f34",
+        "0x00128f44",
+        "0x00215a44"
+      ],
+      "read_paths": [
+        "docs/reconstruction-milestones.md",
+        "docs/milestones/H15-ui-engine.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-audio-engine-recon.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Identify exact entry points, memory structures, and callers for H16 Audio subsystems.",
+        "Define offline-first differential boundaries, positive/negative controls, and mutation criteria."
+      ],
+      "validation_plan": [
+        "Cross-check candidate functions against pinned binary code.bin and functions.csv ledger."
+      ]
+    },
+    {
+      "id": "h16-audio-engine-recon-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of H16 Audio architecture reconnaissance.",
+      "depends_on": [
+        "h16-audio-engine-recon"
+      ],
+      "function_claims": [
+        "0x00110c2c",
+        "0x00110c44",
+        "0x00121150",
+        "0x00121f20",
+        "0x00122094",
+        "0x00128f34",
+        "0x00128f44",
+        "0x00215a44"
+      ],
+      "read_paths": [
+        "docs/agent-work/h16-audio-engine-recon.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-audio-engine-recon-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm scope boundaries, calling conventions, and offline differential test plans."
+      ],
+      "validation_plan": [
+        "Verify against function signatures and registers."
+      ]
+    },
+    {
+      "id": "h16-asdsoundeffect-setbuffer-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover precise calling contract, memory boundaries, and semantics for AsdSoundEffect_SetBuffer.",
+      "depends_on": [
+        "h16-audio-engine-recon-review"
+      ],
+      "function_claims": [
+        "0x00110c2c"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-asdsoundeffect-setbuffer-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover registers, arguments, preconditions, and return values."
+      ],
+      "validation_plan": [
+        "Static disassembly analysis."
+      ]
+    },
+    {
+      "id": "h16-asdsoundeffect-setbuffer-contract-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review contract specification for AsdSoundEffect_SetBuffer.",
+      "depends_on": [
+        "h16-asdsoundeffect-setbuffer-contract"
+      ],
+      "function_claims": [
+        "0x00110c2c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h16-asdsoundeffect-setbuffer-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-asdsoundeffect-setbuffer-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve verified contract record."
+      ],
+      "validation_plan": [
+        "Compare contract against disassembled original."
+      ]
+    },
+    {
+      "id": "h16-asdsoundeffect-setbuffer-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement clean, editable C++ candidate for AsdSoundEffect_SetBuffer within binary window footprint.",
+      "depends_on": [
+        "h16-asdsoundeffect-setbuffer-contract-review"
+      ],
+      "function_claims": [
+        "0x00110c2c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h16-asdsoundeffect-setbuffer-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h16_asdsoundeffect_setbuffer_candidate.cpp",
+        "docs/agent-work/h16-asdsoundeffect-setbuffer-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "experiments/semantic_equivalence/h16_asdsoundeffect_setbuffer_candidate.cpp"
+      ],
+      "acceptance": [
+        "Compile freestanding ARMv6K object within allocated window footprint."
+      ],
+      "validation_plan": [
+        "python tools/build_h16_all.py"
+      ]
+    },
+    {
+      "id": "h16-asdsoundeffect-setbuffer-cand-review",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of candidate implementation for AsdSoundEffect_SetBuffer.",
+      "depends_on": [
+        "h16-asdsoundeffect-setbuffer-candidate"
+      ],
+      "function_claims": [
+        "0x00110c2c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h16_asdsoundeffect_setbuffer_candidate.cpp",
+        "docs/agent-work/h16-asdsoundeffect-setbuffer-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-asdsoundeffect-setbuffer-cand-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify absence of undefined behavior and correct ABI compliance."
+      ],
+      "validation_plan": [
+        "Source inspection."
+      ]
+    },
+    {
+      "id": "h16-asdsoundeffect-setbuffer-diff-test",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline Unicorn differential test suite for AsdSoundEffect_SetBuffer comparing against pinned binary.",
+      "depends_on": [
+        "h16-asdsoundeffect-setbuffer-cand-review"
+      ],
+      "function_claims": [
+        "0x00110c2c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h16_asdsoundeffect_setbuffer_candidate.cpp",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "tools/h16_asdsoundeffect_setbuffer_experiment.py",
+        "docs/agent-work/h16-asdsoundeffect-setbuffer-diff-test.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Pass all test vectors with 100% register and memory parity and verify mutation detection."
+      ],
+      "validation_plan": [
+        "python tools/h16_asdsoundeffect_setbuffer_experiment.py"
+      ]
+    },
+    {
+      "id": "h16-asdsoundeffect-setbuffer-diff-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential validation results for AsdSoundEffect_SetBuffer.",
+      "depends_on": [
+        "h16-asdsoundeffect-setbuffer-diff-test"
+      ],
+      "function_claims": [
+        "0x00110c2c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h16-asdsoundeffect-setbuffer-diff-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-asdsoundeffect-setbuffer-diff-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve differential validation record."
+      ],
+      "validation_plan": [
+        "Audit differential run log."
+      ]
+    },
+    {
+      "id": "h16-asdsoundeffect-setbuffer-promotion",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Promote validated C++ candidate for AsdSoundEffect_SetBuffer into milestone staging pipeline.",
+      "depends_on": [
+        "h16-asdsoundeffect-setbuffer-diff-test-review"
+      ],
+      "function_claims": [
+        "0x00110c2c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h16_asdsoundeffect_setbuffer_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-asdsoundeffect-setbuffer-promotion.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Record candidate readiness for binary staging composition."
+      ],
+      "validation_plan": [
+        "Verify staging eligibility."
+      ]
+    },
+    {
+      "id": "h16-asdsoundeffect-setbuffer-promotion-review",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review candidate promotion for AsdSoundEffect_SetBuffer.",
+      "depends_on": [
+        "h16-asdsoundeffect-setbuffer-promotion"
+      ],
+      "function_claims": [
+        "0x00110c2c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h16-asdsoundeffect-setbuffer-promotion.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-asdsoundeffect-setbuffer-promotion-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm promotion into milestone integrated stage."
+      ],
+      "validation_plan": [
+        "Audit promotion record."
+      ]
+    },
+    {
+      "id": "h16-asdsoundeffect-getbuffersize-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover precise calling contract, memory boundaries, and semantics for AsdSoundEffect_GetBufferSize.",
+      "depends_on": [
+        "h16-audio-engine-recon-review"
+      ],
+      "function_claims": [
+        "0x00110c44"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-asdsoundeffect-getbuffersize-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover registers, arguments, preconditions, and return values."
+      ],
+      "validation_plan": [
+        "Static disassembly analysis."
+      ]
+    },
+    {
+      "id": "h16-asdsoundeffect-getbuffersize-contract-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review contract specification for AsdSoundEffect_GetBufferSize.",
+      "depends_on": [
+        "h16-asdsoundeffect-getbuffersize-contract"
+      ],
+      "function_claims": [
+        "0x00110c44"
+      ],
+      "read_paths": [
+        "docs/agent-work/h16-asdsoundeffect-getbuffersize-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-asdsoundeffect-getbuffersize-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve verified contract record."
+      ],
+      "validation_plan": [
+        "Compare contract against disassembled original."
+      ]
+    },
+    {
+      "id": "h16-asdsoundeffect-getbuffersize-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement clean, editable C++ candidate for AsdSoundEffect_GetBufferSize within binary window footprint.",
+      "depends_on": [
+        "h16-asdsoundeffect-getbuffersize-contract-review"
+      ],
+      "function_claims": [
+        "0x00110c44"
+      ],
+      "read_paths": [
+        "docs/agent-work/h16-asdsoundeffect-getbuffersize-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h16_asdsoundeffect_getbuffersize_candidate.cpp",
+        "docs/agent-work/h16-asdsoundeffect-getbuffersize-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "experiments/semantic_equivalence/h16_asdsoundeffect_getbuffersize_candidate.cpp"
+      ],
+      "acceptance": [
+        "Compile freestanding ARMv6K object within allocated window footprint."
+      ],
+      "validation_plan": [
+        "python tools/build_h16_all.py"
+      ]
+    },
+    {
+      "id": "h16-asdsoundeffect-getbuffersize-cand-review",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of candidate implementation for AsdSoundEffect_GetBufferSize.",
+      "depends_on": [
+        "h16-asdsoundeffect-getbuffersize-candidate"
+      ],
+      "function_claims": [
+        "0x00110c44"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h16_asdsoundeffect_getbuffersize_candidate.cpp",
+        "docs/agent-work/h16-asdsoundeffect-getbuffersize-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-asdsoundeffect-getbuffersize-cand-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify absence of undefined behavior and correct ABI compliance."
+      ],
+      "validation_plan": [
+        "Source inspection."
+      ]
+    },
+    {
+      "id": "h16-asdsoundeffect-getbuffersize-diff-test",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline Unicorn differential test suite for AsdSoundEffect_GetBufferSize comparing against pinned binary.",
+      "depends_on": [
+        "h16-asdsoundeffect-getbuffersize-cand-review"
+      ],
+      "function_claims": [
+        "0x00110c44"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h16_asdsoundeffect_getbuffersize_candidate.cpp",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "tools/h16_asdsoundeffect_getbuffersize_experiment.py",
+        "docs/agent-work/h16-asdsoundeffect-getbuffersize-diff-test.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Pass all test vectors with 100% register and memory parity and verify mutation detection."
+      ],
+      "validation_plan": [
+        "python tools/h16_asdsoundeffect_getbuffersize_experiment.py"
+      ]
+    },
+    {
+      "id": "h16-asdsoundeffect-getbuffersize-diff-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential validation results for AsdSoundEffect_GetBufferSize.",
+      "depends_on": [
+        "h16-asdsoundeffect-getbuffersize-diff-test"
+      ],
+      "function_claims": [
+        "0x00110c44"
+      ],
+      "read_paths": [
+        "docs/agent-work/h16-asdsoundeffect-getbuffersize-diff-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-asdsoundeffect-getbuffersize-diff-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve differential validation record."
+      ],
+      "validation_plan": [
+        "Audit differential run log."
+      ]
+    },
+    {
+      "id": "h16-asdsoundeffect-getbuffersize-promotion",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Promote validated C++ candidate for AsdSoundEffect_GetBufferSize into milestone staging pipeline.",
+      "depends_on": [
+        "h16-asdsoundeffect-getbuffersize-diff-test-review"
+      ],
+      "function_claims": [
+        "0x00110c44"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h16_asdsoundeffect_getbuffersize_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-asdsoundeffect-getbuffersize-promotion.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Record candidate readiness for binary staging composition."
+      ],
+      "validation_plan": [
+        "Verify staging eligibility."
+      ]
+    },
+    {
+      "id": "h16-asdsoundeffect-getbuffersize-promotion-review",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review candidate promotion for AsdSoundEffect_GetBufferSize.",
+      "depends_on": [
+        "h16-asdsoundeffect-getbuffersize-promotion"
+      ],
+      "function_claims": [
+        "0x00110c44"
+      ],
+      "read_paths": [
+        "docs/agent-work/h16-asdsoundeffect-getbuffersize-promotion.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-asdsoundeffect-getbuffersize-promotion-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm promotion into milestone integrated stage."
+      ],
+      "validation_plan": [
+        "Audit promotion record."
+      ]
+    },
+    {
+      "id": "h16-asdsoundeffect2-setbuffer-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover precise calling contract, memory boundaries, and semantics for AsdSoundEffect2_SetBuffer.",
+      "depends_on": [
+        "h16-audio-engine-recon-review"
+      ],
+      "function_claims": [
+        "0x00121150"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-asdsoundeffect2-setbuffer-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover registers, arguments, preconditions, and return values."
+      ],
+      "validation_plan": [
+        "Static disassembly analysis."
+      ]
+    },
+    {
+      "id": "h16-asdsoundeffect2-setbuffer-contract-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review contract specification for AsdSoundEffect2_SetBuffer.",
+      "depends_on": [
+        "h16-asdsoundeffect2-setbuffer-contract"
+      ],
+      "function_claims": [
+        "0x00121150"
+      ],
+      "read_paths": [
+        "docs/agent-work/h16-asdsoundeffect2-setbuffer-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-asdsoundeffect2-setbuffer-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve verified contract record."
+      ],
+      "validation_plan": [
+        "Compare contract against disassembled original."
+      ]
+    },
+    {
+      "id": "h16-asdsoundeffect2-setbuffer-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement clean, editable C++ candidate for AsdSoundEffect2_SetBuffer within binary window footprint.",
+      "depends_on": [
+        "h16-asdsoundeffect2-setbuffer-contract-review"
+      ],
+      "function_claims": [
+        "0x00121150"
+      ],
+      "read_paths": [
+        "docs/agent-work/h16-asdsoundeffect2-setbuffer-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h16_asdsoundeffect2_setbuffer_candidate.cpp",
+        "docs/agent-work/h16-asdsoundeffect2-setbuffer-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "experiments/semantic_equivalence/h16_asdsoundeffect2_setbuffer_candidate.cpp"
+      ],
+      "acceptance": [
+        "Compile freestanding ARMv6K object within allocated window footprint."
+      ],
+      "validation_plan": [
+        "python tools/build_h16_all.py"
+      ]
+    },
+    {
+      "id": "h16-asdsoundeffect2-setbuffer-cand-review",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of candidate implementation for AsdSoundEffect2_SetBuffer.",
+      "depends_on": [
+        "h16-asdsoundeffect2-setbuffer-candidate"
+      ],
+      "function_claims": [
+        "0x00121150"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h16_asdsoundeffect2_setbuffer_candidate.cpp",
+        "docs/agent-work/h16-asdsoundeffect2-setbuffer-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-asdsoundeffect2-setbuffer-cand-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify absence of undefined behavior and correct ABI compliance."
+      ],
+      "validation_plan": [
+        "Source inspection."
+      ]
+    },
+    {
+      "id": "h16-asdsoundeffect2-setbuffer-diff-test",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline Unicorn differential test suite for AsdSoundEffect2_SetBuffer comparing against pinned binary.",
+      "depends_on": [
+        "h16-asdsoundeffect2-setbuffer-cand-review"
+      ],
+      "function_claims": [
+        "0x00121150"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h16_asdsoundeffect2_setbuffer_candidate.cpp",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "tools/h16_asdsoundeffect2_setbuffer_experiment.py",
+        "docs/agent-work/h16-asdsoundeffect2-setbuffer-diff-test.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Pass all test vectors with 100% register and memory parity and verify mutation detection."
+      ],
+      "validation_plan": [
+        "python tools/h16_asdsoundeffect2_setbuffer_experiment.py"
+      ]
+    },
+    {
+      "id": "h16-asdsoundeffect2-setbuffer-diff-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential validation results for AsdSoundEffect2_SetBuffer.",
+      "depends_on": [
+        "h16-asdsoundeffect2-setbuffer-diff-test"
+      ],
+      "function_claims": [
+        "0x00121150"
+      ],
+      "read_paths": [
+        "docs/agent-work/h16-asdsoundeffect2-setbuffer-diff-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-asdsoundeffect2-setbuffer-diff-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve differential validation record."
+      ],
+      "validation_plan": [
+        "Audit differential run log."
+      ]
+    },
+    {
+      "id": "h16-asdsoundeffect2-setbuffer-promotion",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Promote validated C++ candidate for AsdSoundEffect2_SetBuffer into milestone staging pipeline.",
+      "depends_on": [
+        "h16-asdsoundeffect2-setbuffer-diff-test-review"
+      ],
+      "function_claims": [
+        "0x00121150"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h16_asdsoundeffect2_setbuffer_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-asdsoundeffect2-setbuffer-promotion.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Record candidate readiness for binary staging composition."
+      ],
+      "validation_plan": [
+        "Verify staging eligibility."
+      ]
+    },
+    {
+      "id": "h16-asdsoundeffect2-setbuffer-promotion-review",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review candidate promotion for AsdSoundEffect2_SetBuffer.",
+      "depends_on": [
+        "h16-asdsoundeffect2-setbuffer-promotion"
+      ],
+      "function_claims": [
+        "0x00121150"
+      ],
+      "read_paths": [
+        "docs/agent-work/h16-asdsoundeffect2-setbuffer-promotion.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-asdsoundeffect2-setbuffer-promotion-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm promotion into milestone integrated stage."
+      ],
+      "validation_plan": [
+        "Audit promotion record."
+      ]
+    },
+    {
+      "id": "h16-asdsound-getdatasize-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover precise calling contract, memory boundaries, and semantics for AsdSound_GetDataSize.",
+      "depends_on": [
+        "h16-audio-engine-recon-review"
+      ],
+      "function_claims": [
+        "0x00121f20"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-asdsound-getdatasize-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover registers, arguments, preconditions, and return values."
+      ],
+      "validation_plan": [
+        "Static disassembly analysis."
+      ]
+    },
+    {
+      "id": "h16-asdsound-getdatasize-contract-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review contract specification for AsdSound_GetDataSize.",
+      "depends_on": [
+        "h16-asdsound-getdatasize-contract"
+      ],
+      "function_claims": [
+        "0x00121f20"
+      ],
+      "read_paths": [
+        "docs/agent-work/h16-asdsound-getdatasize-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-asdsound-getdatasize-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve verified contract record."
+      ],
+      "validation_plan": [
+        "Compare contract against disassembled original."
+      ]
+    },
+    {
+      "id": "h16-asdsound-getdatasize-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement clean, editable C++ candidate for AsdSound_GetDataSize within binary window footprint.",
+      "depends_on": [
+        "h16-asdsound-getdatasize-contract-review"
+      ],
+      "function_claims": [
+        "0x00121f20"
+      ],
+      "read_paths": [
+        "docs/agent-work/h16-asdsound-getdatasize-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h16_asdsound_getdatasize_candidate.cpp",
+        "docs/agent-work/h16-asdsound-getdatasize-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "experiments/semantic_equivalence/h16_asdsound_getdatasize_candidate.cpp"
+      ],
+      "acceptance": [
+        "Compile freestanding ARMv6K object within allocated window footprint."
+      ],
+      "validation_plan": [
+        "python tools/build_h16_all.py"
+      ]
+    },
+    {
+      "id": "h16-asdsound-getdatasize-cand-review",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of candidate implementation for AsdSound_GetDataSize.",
+      "depends_on": [
+        "h16-asdsound-getdatasize-candidate"
+      ],
+      "function_claims": [
+        "0x00121f20"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h16_asdsound_getdatasize_candidate.cpp",
+        "docs/agent-work/h16-asdsound-getdatasize-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-asdsound-getdatasize-cand-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify absence of undefined behavior and correct ABI compliance."
+      ],
+      "validation_plan": [
+        "Source inspection."
+      ]
+    },
+    {
+      "id": "h16-asdsound-getdatasize-diff-test",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline Unicorn differential test suite for AsdSound_GetDataSize comparing against pinned binary.",
+      "depends_on": [
+        "h16-asdsound-getdatasize-cand-review"
+      ],
+      "function_claims": [
+        "0x00121f20"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h16_asdsound_getdatasize_candidate.cpp",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "tools/h16_asdsound_getdatasize_experiment.py",
+        "docs/agent-work/h16-asdsound-getdatasize-diff-test.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Pass all test vectors with 100% register and memory parity and verify mutation detection."
+      ],
+      "validation_plan": [
+        "python tools/h16_asdsound_getdatasize_experiment.py"
+      ]
+    },
+    {
+      "id": "h16-asdsound-getdatasize-diff-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential validation results for AsdSound_GetDataSize.",
+      "depends_on": [
+        "h16-asdsound-getdatasize-diff-test"
+      ],
+      "function_claims": [
+        "0x00121f20"
+      ],
+      "read_paths": [
+        "docs/agent-work/h16-asdsound-getdatasize-diff-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-asdsound-getdatasize-diff-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve differential validation record."
+      ],
+      "validation_plan": [
+        "Audit differential run log."
+      ]
+    },
+    {
+      "id": "h16-asdsound-getdatasize-promotion",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Promote validated C++ candidate for AsdSound_GetDataSize into milestone staging pipeline.",
+      "depends_on": [
+        "h16-asdsound-getdatasize-diff-test-review"
+      ],
+      "function_claims": [
+        "0x00121f20"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h16_asdsound_getdatasize_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-asdsound-getdatasize-promotion.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Record candidate readiness for binary staging composition."
+      ],
+      "validation_plan": [
+        "Verify staging eligibility."
+      ]
+    },
+    {
+      "id": "h16-asdsound-getdatasize-promotion-review",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review candidate promotion for AsdSound_GetDataSize.",
+      "depends_on": [
+        "h16-asdsound-getdatasize-promotion"
+      ],
+      "function_claims": [
+        "0x00121f20"
+      ],
+      "read_paths": [
+        "docs/agent-work/h16-asdsound-getdatasize-promotion.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-asdsound-getdatasize-promotion-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm promotion into milestone integrated stage."
+      ],
+      "validation_plan": [
+        "Audit promotion record."
+      ]
+    },
+    {
+      "id": "h16-asdsound-getsamplebytes-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover precise calling contract, memory boundaries, and semantics for AsdSound_GetSampleBytes.",
+      "depends_on": [
+        "h16-audio-engine-recon-review"
+      ],
+      "function_claims": [
+        "0x00122094"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-asdsound-getsamplebytes-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover registers, arguments, preconditions, and return values."
+      ],
+      "validation_plan": [
+        "Static disassembly analysis."
+      ]
+    },
+    {
+      "id": "h16-asdsound-getsamplebytes-contract-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review contract specification for AsdSound_GetSampleBytes.",
+      "depends_on": [
+        "h16-asdsound-getsamplebytes-contract"
+      ],
+      "function_claims": [
+        "0x00122094"
+      ],
+      "read_paths": [
+        "docs/agent-work/h16-asdsound-getsamplebytes-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-asdsound-getsamplebytes-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve verified contract record."
+      ],
+      "validation_plan": [
+        "Compare contract against disassembled original."
+      ]
+    },
+    {
+      "id": "h16-asdsound-getsamplebytes-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement clean, editable C++ candidate for AsdSound_GetSampleBytes within binary window footprint.",
+      "depends_on": [
+        "h16-asdsound-getsamplebytes-contract-review"
+      ],
+      "function_claims": [
+        "0x00122094"
+      ],
+      "read_paths": [
+        "docs/agent-work/h16-asdsound-getsamplebytes-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h16_asdsound_getsamplebytes_candidate.cpp",
+        "docs/agent-work/h16-asdsound-getsamplebytes-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "experiments/semantic_equivalence/h16_asdsound_getsamplebytes_candidate.cpp"
+      ],
+      "acceptance": [
+        "Compile freestanding ARMv6K object within allocated window footprint."
+      ],
+      "validation_plan": [
+        "python tools/build_h16_all.py"
+      ]
+    },
+    {
+      "id": "h16-asdsound-getsamplebytes-cand-review",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of candidate implementation for AsdSound_GetSampleBytes.",
+      "depends_on": [
+        "h16-asdsound-getsamplebytes-candidate"
+      ],
+      "function_claims": [
+        "0x00122094"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h16_asdsound_getsamplebytes_candidate.cpp",
+        "docs/agent-work/h16-asdsound-getsamplebytes-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-asdsound-getsamplebytes-cand-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify absence of undefined behavior and correct ABI compliance."
+      ],
+      "validation_plan": [
+        "Source inspection."
+      ]
+    },
+    {
+      "id": "h16-asdsound-getsamplebytes-diff-test",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline Unicorn differential test suite for AsdSound_GetSampleBytes comparing against pinned binary.",
+      "depends_on": [
+        "h16-asdsound-getsamplebytes-cand-review"
+      ],
+      "function_claims": [
+        "0x00122094"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h16_asdsound_getsamplebytes_candidate.cpp",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "tools/h16_asdsound_getsamplebytes_experiment.py",
+        "docs/agent-work/h16-asdsound-getsamplebytes-diff-test.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Pass all test vectors with 100% register and memory parity and verify mutation detection."
+      ],
+      "validation_plan": [
+        "python tools/h16_asdsound_getsamplebytes_experiment.py"
+      ]
+    },
+    {
+      "id": "h16-asdsound-getsamplebytes-diff-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential validation results for AsdSound_GetSampleBytes.",
+      "depends_on": [
+        "h16-asdsound-getsamplebytes-diff-test"
+      ],
+      "function_claims": [
+        "0x00122094"
+      ],
+      "read_paths": [
+        "docs/agent-work/h16-asdsound-getsamplebytes-diff-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-asdsound-getsamplebytes-diff-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve differential validation record."
+      ],
+      "validation_plan": [
+        "Audit differential run log."
+      ]
+    },
+    {
+      "id": "h16-asdsound-getsamplebytes-promotion",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Promote validated C++ candidate for AsdSound_GetSampleBytes into milestone staging pipeline.",
+      "depends_on": [
+        "h16-asdsound-getsamplebytes-diff-test-review"
+      ],
+      "function_claims": [
+        "0x00122094"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h16_asdsound_getsamplebytes_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-asdsound-getsamplebytes-promotion.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Record candidate readiness for binary staging composition."
+      ],
+      "validation_plan": [
+        "Verify staging eligibility."
+      ]
+    },
+    {
+      "id": "h16-asdsound-getsamplebytes-promotion-review",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review candidate promotion for AsdSound_GetSampleBytes.",
+      "depends_on": [
+        "h16-asdsound-getsamplebytes-promotion"
+      ],
+      "function_claims": [
+        "0x00122094"
+      ],
+      "read_paths": [
+        "docs/agent-work/h16-asdsound-getsamplebytes-promotion.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-asdsound-getsamplebytes-promotion-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm promotion into milestone integrated stage."
+      ],
+      "validation_plan": [
+        "Audit promotion record."
+      ]
+    },
+    {
+      "id": "h16-asddata-getbase-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover precise calling contract, memory boundaries, and semantics for AsdData_GetBase.",
+      "depends_on": [
+        "h16-audio-engine-recon-review"
+      ],
+      "function_claims": [
+        "0x00128f34"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-asddata-getbase-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover registers, arguments, preconditions, and return values."
+      ],
+      "validation_plan": [
+        "Static disassembly analysis."
+      ]
+    },
+    {
+      "id": "h16-asddata-getbase-contract-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review contract specification for AsdData_GetBase.",
+      "depends_on": [
+        "h16-asddata-getbase-contract"
+      ],
+      "function_claims": [
+        "0x00128f34"
+      ],
+      "read_paths": [
+        "docs/agent-work/h16-asddata-getbase-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-asddata-getbase-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve verified contract record."
+      ],
+      "validation_plan": [
+        "Compare contract against disassembled original."
+      ]
+    },
+    {
+      "id": "h16-asddata-getbase-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement clean, editable C++ candidate for AsdData_GetBase within binary window footprint.",
+      "depends_on": [
+        "h16-asddata-getbase-contract-review"
+      ],
+      "function_claims": [
+        "0x00128f34"
+      ],
+      "read_paths": [
+        "docs/agent-work/h16-asddata-getbase-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h16_asddata_getbase_candidate.cpp",
+        "docs/agent-work/h16-asddata-getbase-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "experiments/semantic_equivalence/h16_asddata_getbase_candidate.cpp"
+      ],
+      "acceptance": [
+        "Compile freestanding ARMv6K object within allocated window footprint."
+      ],
+      "validation_plan": [
+        "python tools/build_h16_all.py"
+      ]
+    },
+    {
+      "id": "h16-asddata-getbase-cand-review",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of candidate implementation for AsdData_GetBase.",
+      "depends_on": [
+        "h16-asddata-getbase-candidate"
+      ],
+      "function_claims": [
+        "0x00128f34"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h16_asddata_getbase_candidate.cpp",
+        "docs/agent-work/h16-asddata-getbase-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-asddata-getbase-cand-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify absence of undefined behavior and correct ABI compliance."
+      ],
+      "validation_plan": [
+        "Source inspection."
+      ]
+    },
+    {
+      "id": "h16-asddata-getbase-diff-test",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline Unicorn differential test suite for AsdData_GetBase comparing against pinned binary.",
+      "depends_on": [
+        "h16-asddata-getbase-cand-review"
+      ],
+      "function_claims": [
+        "0x00128f34"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h16_asddata_getbase_candidate.cpp",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "tools/h16_asddata_getbase_experiment.py",
+        "docs/agent-work/h16-asddata-getbase-diff-test.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Pass all test vectors with 100% register and memory parity and verify mutation detection."
+      ],
+      "validation_plan": [
+        "python tools/h16_asddata_getbase_experiment.py"
+      ]
+    },
+    {
+      "id": "h16-asddata-getbase-diff-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential validation results for AsdData_GetBase.",
+      "depends_on": [
+        "h16-asddata-getbase-diff-test"
+      ],
+      "function_claims": [
+        "0x00128f34"
+      ],
+      "read_paths": [
+        "docs/agent-work/h16-asddata-getbase-diff-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-asddata-getbase-diff-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve differential validation record."
+      ],
+      "validation_plan": [
+        "Audit differential run log."
+      ]
+    },
+    {
+      "id": "h16-asddata-getbase-promotion",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Promote validated C++ candidate for AsdData_GetBase into milestone staging pipeline.",
+      "depends_on": [
+        "h16-asddata-getbase-diff-test-review"
+      ],
+      "function_claims": [
+        "0x00128f34"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h16_asddata_getbase_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-asddata-getbase-promotion.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Record candidate readiness for binary staging composition."
+      ],
+      "validation_plan": [
+        "Verify staging eligibility."
+      ]
+    },
+    {
+      "id": "h16-asddata-getbase-promotion-review",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review candidate promotion for AsdData_GetBase.",
+      "depends_on": [
+        "h16-asddata-getbase-promotion"
+      ],
+      "function_claims": [
+        "0x00128f34"
+      ],
+      "read_paths": [
+        "docs/agent-work/h16-asddata-getbase-promotion.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-asddata-getbase-promotion-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm promotion into milestone integrated stage."
+      ],
+      "validation_plan": [
+        "Audit promotion record."
+      ]
+    },
+    {
+      "id": "h16-asddata-getcount-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover precise calling contract, memory boundaries, and semantics for AsdData_GetCount.",
+      "depends_on": [
+        "h16-audio-engine-recon-review"
+      ],
+      "function_claims": [
+        "0x00128f44"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-asddata-getcount-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover registers, arguments, preconditions, and return values."
+      ],
+      "validation_plan": [
+        "Static disassembly analysis."
+      ]
+    },
+    {
+      "id": "h16-asddata-getcount-contract-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review contract specification for AsdData_GetCount.",
+      "depends_on": [
+        "h16-asddata-getcount-contract"
+      ],
+      "function_claims": [
+        "0x00128f44"
+      ],
+      "read_paths": [
+        "docs/agent-work/h16-asddata-getcount-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-asddata-getcount-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve verified contract record."
+      ],
+      "validation_plan": [
+        "Compare contract against disassembled original."
+      ]
+    },
+    {
+      "id": "h16-asddata-getcount-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement clean, editable C++ candidate for AsdData_GetCount within binary window footprint.",
+      "depends_on": [
+        "h16-asddata-getcount-contract-review"
+      ],
+      "function_claims": [
+        "0x00128f44"
+      ],
+      "read_paths": [
+        "docs/agent-work/h16-asddata-getcount-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h16_asddata_getcount_candidate.cpp",
+        "docs/agent-work/h16-asddata-getcount-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "experiments/semantic_equivalence/h16_asddata_getcount_candidate.cpp"
+      ],
+      "acceptance": [
+        "Compile freestanding ARMv6K object within allocated window footprint."
+      ],
+      "validation_plan": [
+        "python tools/build_h16_all.py"
+      ]
+    },
+    {
+      "id": "h16-asddata-getcount-cand-review",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of candidate implementation for AsdData_GetCount.",
+      "depends_on": [
+        "h16-asddata-getcount-candidate"
+      ],
+      "function_claims": [
+        "0x00128f44"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h16_asddata_getcount_candidate.cpp",
+        "docs/agent-work/h16-asddata-getcount-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-asddata-getcount-cand-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify absence of undefined behavior and correct ABI compliance."
+      ],
+      "validation_plan": [
+        "Source inspection."
+      ]
+    },
+    {
+      "id": "h16-asddata-getcount-diff-test",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline Unicorn differential test suite for AsdData_GetCount comparing against pinned binary.",
+      "depends_on": [
+        "h16-asddata-getcount-cand-review"
+      ],
+      "function_claims": [
+        "0x00128f44"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h16_asddata_getcount_candidate.cpp",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "tools/h16_asddata_getcount_experiment.py",
+        "docs/agent-work/h16-asddata-getcount-diff-test.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Pass all test vectors with 100% register and memory parity and verify mutation detection."
+      ],
+      "validation_plan": [
+        "python tools/h16_asddata_getcount_experiment.py"
+      ]
+    },
+    {
+      "id": "h16-asddata-getcount-diff-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential validation results for AsdData_GetCount.",
+      "depends_on": [
+        "h16-asddata-getcount-diff-test"
+      ],
+      "function_claims": [
+        "0x00128f44"
+      ],
+      "read_paths": [
+        "docs/agent-work/h16-asddata-getcount-diff-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-asddata-getcount-diff-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve differential validation record."
+      ],
+      "validation_plan": [
+        "Audit differential run log."
+      ]
+    },
+    {
+      "id": "h16-asddata-getcount-promotion",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Promote validated C++ candidate for AsdData_GetCount into milestone staging pipeline.",
+      "depends_on": [
+        "h16-asddata-getcount-diff-test-review"
+      ],
+      "function_claims": [
+        "0x00128f44"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h16_asddata_getcount_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-asddata-getcount-promotion.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Record candidate readiness for binary staging composition."
+      ],
+      "validation_plan": [
+        "Verify staging eligibility."
+      ]
+    },
+    {
+      "id": "h16-asddata-getcount-promotion-review",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review candidate promotion for AsdData_GetCount.",
+      "depends_on": [
+        "h16-asddata-getcount-promotion"
+      ],
+      "function_claims": [
+        "0x00128f44"
+      ],
+      "read_paths": [
+        "docs/agent-work/h16-asddata-getcount-promotion.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-asddata-getcount-promotion-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm promotion into milestone integrated stage."
+      ],
+      "validation_plan": [
+        "Audit promotion record."
+      ]
+    },
+    {
+      "id": "h16-statusdown-setactivesoundid-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover precise calling contract, memory boundaries, and semantics for StatusDown_SetActiveSoundId.",
+      "depends_on": [
+        "h16-audio-engine-recon-review"
+      ],
+      "function_claims": [
+        "0x00215a44"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-statusdown-setactivesoundid-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover registers, arguments, preconditions, and return values."
+      ],
+      "validation_plan": [
+        "Static disassembly analysis."
+      ]
+    },
+    {
+      "id": "h16-statusdown-setactivesoundid-contract-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review contract specification for StatusDown_SetActiveSoundId.",
+      "depends_on": [
+        "h16-statusdown-setactivesoundid-contract"
+      ],
+      "function_claims": [
+        "0x00215a44"
+      ],
+      "read_paths": [
+        "docs/agent-work/h16-statusdown-setactivesoundid-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-statusdown-setactivesoundid-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve verified contract record."
+      ],
+      "validation_plan": [
+        "Compare contract against disassembled original."
+      ]
+    },
+    {
+      "id": "h16-statusdown-setactivesoundid-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement clean, editable C++ candidate for StatusDown_SetActiveSoundId within binary window footprint.",
+      "depends_on": [
+        "h16-statusdown-setactivesoundid-contract-review"
+      ],
+      "function_claims": [
+        "0x00215a44"
+      ],
+      "read_paths": [
+        "docs/agent-work/h16-statusdown-setactivesoundid-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h16_statusdown_setactivesoundid_candidate.cpp",
+        "docs/agent-work/h16-statusdown-setactivesoundid-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "experiments/semantic_equivalence/h16_statusdown_setactivesoundid_candidate.cpp"
+      ],
+      "acceptance": [
+        "Compile freestanding ARMv6K object within allocated window footprint."
+      ],
+      "validation_plan": [
+        "python tools/build_h16_all.py"
+      ]
+    },
+    {
+      "id": "h16-statusdown-setactivesoundid-cand-review",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of candidate implementation for StatusDown_SetActiveSoundId.",
+      "depends_on": [
+        "h16-statusdown-setactivesoundid-candidate"
+      ],
+      "function_claims": [
+        "0x00215a44"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h16_statusdown_setactivesoundid_candidate.cpp",
+        "docs/agent-work/h16-statusdown-setactivesoundid-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-statusdown-setactivesoundid-cand-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify absence of undefined behavior and correct ABI compliance."
+      ],
+      "validation_plan": [
+        "Source inspection."
+      ]
+    },
+    {
+      "id": "h16-statusdown-setactivesoundid-diff-test",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline Unicorn differential test suite for StatusDown_SetActiveSoundId comparing against pinned binary.",
+      "depends_on": [
+        "h16-statusdown-setactivesoundid-cand-review"
+      ],
+      "function_claims": [
+        "0x00215a44"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h16_statusdown_setactivesoundid_candidate.cpp",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "tools/h16_statusdown_setactivesoundid_experiment.py",
+        "docs/agent-work/h16-statusdown-setactivesoundid-diff-test.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Pass all test vectors with 100% register and memory parity and verify mutation detection."
+      ],
+      "validation_plan": [
+        "python tools/h16_statusdown_setactivesoundid_experiment.py"
+      ]
+    },
+    {
+      "id": "h16-statusdown-setactivesoundid-diff-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential validation results for StatusDown_SetActiveSoundId.",
+      "depends_on": [
+        "h16-statusdown-setactivesoundid-diff-test"
+      ],
+      "function_claims": [
+        "0x00215a44"
+      ],
+      "read_paths": [
+        "docs/agent-work/h16-statusdown-setactivesoundid-diff-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-statusdown-setactivesoundid-diff-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve differential validation record."
+      ],
+      "validation_plan": [
+        "Audit differential run log."
+      ]
+    },
+    {
+      "id": "h16-statusdown-setactivesoundid-promotion",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Promote validated C++ candidate for StatusDown_SetActiveSoundId into milestone staging pipeline.",
+      "depends_on": [
+        "h16-statusdown-setactivesoundid-diff-test-review"
+      ],
+      "function_claims": [
+        "0x00215a44"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h16_statusdown_setactivesoundid_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-statusdown-setactivesoundid-promotion.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Record candidate readiness for binary staging composition."
+      ],
+      "validation_plan": [
+        "Verify staging eligibility."
+      ]
+    },
+    {
+      "id": "h16-statusdown-setactivesoundid-promotion-review",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review candidate promotion for StatusDown_SetActiveSoundId.",
+      "depends_on": [
+        "h16-statusdown-setactivesoundid-promotion"
+      ],
+      "function_claims": [
+        "0x00215a44"
+      ],
+      "read_paths": [
+        "docs/agent-work/h16-statusdown-setactivesoundid-promotion.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-statusdown-setactivesoundid-promotion-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm promotion into milestone integrated stage."
+      ],
+      "validation_plan": [
+        "Audit promotion record."
+      ]
+    },
+    {
+      "id": "h16-integrated-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Compose all 8 validated H16 candidates over code.h15-final.bin to generate code.h16-final.bin and IPS patch.",
+      "depends_on": [
+        "h16-asdsoundeffect-setbuffer-promotion-review",
+        "h16-asdsoundeffect-getbuffersize-promotion-review",
+        "h16-asdsoundeffect2-setbuffer-promotion-review",
+        "h16-asdsound-getdatasize-promotion-review",
+        "h16-asdsound-getsamplebytes-promotion-review",
+        "h16-asddata-getbase-promotion-review",
+        "h16-asddata-getcount-promotion-review",
+        "h16-statusdown-setactivesoundid-promotion-review"
+      ],
+      "function_claims": [
+        "0x00110c2c",
+        "0x00110c44",
+        "0x00121150",
+        "0x00121f20",
+        "0x00122094",
+        "0x00128f34",
+        "0x00128f44",
+        "0x00215a44"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h16_asdsoundeffect_setbuffer_candidate.cpp",
+        "experiments/semantic_equivalence/h16_asdsoundeffect_getbuffersize_candidate.cpp",
+        "experiments/semantic_equivalence/h16_asdsoundeffect2_setbuffer_candidate.cpp",
+        "experiments/semantic_equivalence/h16_asdsound_getdatasize_candidate.cpp",
+        "experiments/semantic_equivalence/h16_asdsound_getsamplebytes_candidate.cpp",
+        "experiments/semantic_equivalence/h16_asddata_getbase_candidate.cpp",
+        "experiments/semantic_equivalence/h16_asddata_getcount_candidate.cpp",
+        "experiments/semantic_equivalence/h16_statusdown_setactivesoundid_candidate.cpp",
+        "build/agent-work/H15-semantic/h15-integrated-stage/code.h15-final.bin"
+      ],
+      "write_paths": [
+        "tools/h16_staged_image_patch.py",
+        "build/agent-work/H16-semantic/h16-integrated-stage/code.h16-final.bin",
+        "build/agent-work/H16-semantic/h16-integrated-stage/code.h16-final.ips",
+        "build/agent-work/H16-semantic/h16-integrated-stage/h16_staging_summary.json",
+        "docs/agent-work/h16-integrated-staging.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "code.h16-final.bin"
+      ],
+      "acceptance": [
+        "Generate code.h16-final.bin with all 8 candidates cleanly applied within windows.",
+        "Produce verified LayeredFS IPS patch code.h16-final.ips passing roundtrip verification."
+      ],
+      "validation_plan": [
+        "python tools/h16_staged_image_patch.py"
+      ]
+    },
+    {
+      "id": "h16-milestone-closure-review",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review and closure of Milestone H16 (Audio/Video/Mobiclip Subsystem).",
+      "depends_on": [
+        "h16-integrated-staging"
+      ],
+      "function_claims": [
+        "0x00110c2c",
+        "0x00110c44",
+        "0x00121150",
+        "0x00121f20",
+        "0x00122094",
+        "0x00128f34",
+        "0x00128f44",
+        "0x00215a44"
+      ],
+      "read_paths": [
+        "build/agent-work/H16-semantic/h16-integrated-stage/h16_staging_summary.json",
+        "docs/agent-work/h16-integrated-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h16-milestone-closure-review.md",
+        "docs/milestones/H16-audio-engine.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify that all 8 subsystems have complete contract, implementation, differential test, and promotion records.",
+        "Validate offline differential test suite passes 100% and staging IPS patch roundtrip passes."
+      ],
+      "validation_plan": [
+        "python tools/agent_workflow.py check",
+        "python tools/generate_h16_experiments.py",
+        "python tools/h16_staged_image_patch.py"
+      ]
+    }
+  ]
+}

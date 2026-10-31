@@ -1,0 +1,2435 @@
+{
+  "schema_version": 1,
+  "batch": "batch-h14-001",
+  "milestone": "H14",
+  "max_workers": 3,
+  "cpu_budget": 8,
+  "goal": "Reconstruct readable, editable C++ for Milestone H14 (ASD Graphics Engine: Scene, 3D Models, Textures, Effects), covering particle effect lock enter and exit (AsdEffect_LockEnter, AsdEffect_LockLeave), resource manager context routing (AsdRes_GetContext), GPU heap size parameter query (AsdGpu_HeapSize), text shader register code field setters (AsdText_SetCodeField1C, AsdText_SetCodeField14, AsdText_SetCodeField30), and texture streaming comparator (TextureStreamer_Compare) with offline differential validation, caller composition, staging, and autonomous runtime verification.",
+  "coordinator_owned_paths": [
+    "config/agent-workflows/h14.json",
+    "config/reconstruction.json",
+    "docs/milestones/H14-graphics-engine.md",
+    "docs/functional-status.md",
+    "docs/reconstruction-milestones.md"
+  ],
+  "tasks": [
+    {
+      "id": "h14-graphics-engine-recon",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Comprehensive static and architectural reconnaissance of Milestone H14 ASD Graphics Engine: Scene, 3D Models, Textures, and Effects.",
+      "depends_on": [],
+      "function_claims": [
+        "0x00152d7c",
+        "0x00152dac",
+        "0x002c31bc",
+        "0x002c3b88",
+        "0x0010a6fc",
+        "0x0010af38",
+        "0x0010b340",
+        "0x003878c0"
+      ],
+      "read_paths": [
+        "docs/reconstruction-milestones.md",
+        "docs/milestones/H13-advanced-exploration.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-graphics-engine-recon.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Identify exact entry points, memory structures, and callers for H14 ASD Graphics Engine subsystems.",
+        "Define offline-first differential boundaries, positive/negative controls, and mutation criteria."
+      ],
+      "validation_plan": [
+        "Cross-check candidate functions against pinned binary code.bin and functions.csv ledger."
+      ]
+    },
+    {
+      "id": "h14-graphics-engine-recon-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of H14 ASD Graphics Engine architecture reconnaissance.",
+      "depends_on": [
+        "h14-graphics-engine-recon"
+      ],
+      "function_claims": [
+        "0x00152d7c",
+        "0x00152dac",
+        "0x002c31bc",
+        "0x002c3b88",
+        "0x0010a6fc",
+        "0x0010af38",
+        "0x0010b340",
+        "0x003878c0"
+      ],
+      "read_paths": [
+        "docs/agent-work/h14-graphics-engine-recon.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-graphics-engine-recon-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm scope boundaries, calling conventions, and offline differential test plans."
+      ],
+      "validation_plan": [
+        "Verify against function signatures and registers."
+      ]
+    },
+    {
+      "id": "h14-asdeffect-lockenter-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover precise calling contract, memory boundaries, and semantics for AsdEffect_LockEnter.",
+      "depends_on": [
+        "h14-graphics-engine-recon-review"
+      ],
+      "function_claims": [
+        "0x00152d7c"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdeffect-lockenter-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover registers, arguments, preconditions, and return values."
+      ],
+      "validation_plan": [
+        "Static disassembly analysis."
+      ]
+    },
+    {
+      "id": "h14-asdeffect-lockenter-contract-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review contract specification for AsdEffect_LockEnter.",
+      "depends_on": [
+        "h14-asdeffect-lockenter-contract"
+      ],
+      "function_claims": [
+        "0x00152d7c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h14-asdeffect-lockenter-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdeffect-lockenter-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve verified contract record."
+      ],
+      "validation_plan": [
+        "Compare contract against disassembled original."
+      ]
+    },
+    {
+      "id": "h14-asdeffect-lockenter-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement clean, editable C++ candidate for AsdEffect_LockEnter within binary window footprint.",
+      "depends_on": [
+        "h14-asdeffect-lockenter-contract-review"
+      ],
+      "function_claims": [
+        "0x00152d7c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h14-asdeffect-lockenter-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h14_asdeffect_lockenter_candidate.cpp",
+        "docs/agent-work/h14-asdeffect-lockenter-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "experiments/semantic_equivalence/h14_asdeffect_lockenter_candidate.cpp"
+      ],
+      "acceptance": [
+        "Compile freestanding ARMv6K object within allocated window footprint."
+      ],
+      "validation_plan": [
+        "python tools/build_h14_all.py"
+      ]
+    },
+    {
+      "id": "h14-asdeffect-lockenter-candidate-review",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review C++ candidate implementation for AsdEffect_LockEnter.",
+      "depends_on": [
+        "h14-asdeffect-lockenter-candidate"
+      ],
+      "function_claims": [
+        "0x00152d7c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h14_asdeffect_lockenter_candidate.cpp",
+        "docs/agent-work/h14-asdeffect-lockenter-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdeffect-lockenter-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm semantic clarity, type safety, and zero window overflow."
+      ],
+      "validation_plan": [
+        "Inspect C++ code and compilation metrics."
+      ]
+    },
+    {
+      "id": "h14-asdeffect-lockenter-test",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Create Unicorn offline differential test harness for AsdEffect_LockEnter.",
+      "depends_on": [
+        "h14-asdeffect-lockenter-candidate-review"
+      ],
+      "function_claims": [
+        "0x00152d7c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h14_asdeffect_lockenter_candidate.cpp",
+        "docs/agent-work/h14-asdeffect-lockenter-contract.md"
+      ],
+      "write_paths": [
+        "tools/h14_asdeffect_lockenter_experiment.py",
+        "docs/agent-work/h14-asdeffect-lockenter-test.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [
+        "tools/h14_asdeffect_lockenter_experiment.py"
+      ],
+      "acceptance": [
+        "Harness simulates original vs candidate with mutation sensitivity."
+      ],
+      "validation_plan": [
+        "python tools/h14_asdeffect_lockenter_experiment.py"
+      ]
+    },
+    {
+      "id": "h14-asdeffect-lockenter-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential test harness for AsdEffect_LockEnter.",
+      "depends_on": [
+        "h14-asdeffect-lockenter-test"
+      ],
+      "function_claims": [
+        "0x00152d7c"
+      ],
+      "read_paths": [
+        "tools/h14_asdeffect_lockenter_experiment.py",
+        "docs/agent-work/h14-asdeffect-lockenter-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdeffect-lockenter-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify boundary cases and mutation probe efficacy."
+      ],
+      "validation_plan": [
+        "Validate test harness coverage."
+      ]
+    },
+    {
+      "id": "h14-asdeffect-lockenter-diff",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline differential validation run for AsdEffect_LockEnter.",
+      "depends_on": [
+        "h14-asdeffect-lockenter-test-review"
+      ],
+      "function_claims": [
+        "0x00152d7c"
+      ],
+      "read_paths": [
+        "tools/h14_asdeffect_lockenter_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdeffect-lockenter-diff.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Achieve 100% parity across registers and memory effects."
+      ],
+      "validation_plan": [
+        "python tools/h14_asdeffect_lockenter_experiment.py"
+      ]
+    },
+    {
+      "id": "h14-asdeffect-lockenter-diff-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential run results for AsdEffect_LockEnter.",
+      "depends_on": [
+        "h14-asdeffect-lockenter-diff"
+      ],
+      "function_claims": [
+        "0x00152d7c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h14-asdeffect-lockenter-diff.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdeffect-lockenter-diff-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm zero divergence and successful mutation failure."
+      ],
+      "validation_plan": [
+        "Inspect differential log."
+      ]
+    },
+    {
+      "id": "h14-asdeffect-lockenter-integration",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Integrate candidate AsdEffect_LockEnter into staging binary image with relocations resolved.",
+      "depends_on": [
+        "h14-asdeffect-lockenter-diff-review"
+      ],
+      "function_claims": [
+        "0x00152d7c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h14_asdeffect_lockenter_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdeffect-lockenter-integration.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Resolved relocations and patched into code image."
+      ],
+      "validation_plan": [
+        "python tools/h14_staged_image_patch.py"
+      ]
+    },
+    {
+      "id": "h14-asdeffect-lockenter-integration-review",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review subsystem staging integration for AsdEffect_LockEnter.",
+      "depends_on": [
+        "h14-asdeffect-lockenter-integration"
+      ],
+      "function_claims": [
+        "0x00152d7c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h14-asdeffect-lockenter-integration.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdeffect-lockenter-integration-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve staged integration record."
+      ],
+      "validation_plan": [
+        "Verify staging summary and binary offsets."
+      ]
+    },
+    {
+      "id": "h14-asdeffect-lockleave-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover precise calling contract, memory boundaries, and semantics for AsdEffect_LockLeave.",
+      "depends_on": [
+        "h14-graphics-engine-recon-review"
+      ],
+      "function_claims": [
+        "0x00152dac"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdeffect-lockleave-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover registers, arguments, preconditions, and return values."
+      ],
+      "validation_plan": [
+        "Static disassembly analysis."
+      ]
+    },
+    {
+      "id": "h14-asdeffect-lockleave-contract-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review contract specification for AsdEffect_LockLeave.",
+      "depends_on": [
+        "h14-asdeffect-lockleave-contract"
+      ],
+      "function_claims": [
+        "0x00152dac"
+      ],
+      "read_paths": [
+        "docs/agent-work/h14-asdeffect-lockleave-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdeffect-lockleave-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve verified contract record."
+      ],
+      "validation_plan": [
+        "Compare contract against disassembled original."
+      ]
+    },
+    {
+      "id": "h14-asdeffect-lockleave-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement clean, editable C++ candidate for AsdEffect_LockLeave within binary window footprint.",
+      "depends_on": [
+        "h14-asdeffect-lockleave-contract-review"
+      ],
+      "function_claims": [
+        "0x00152dac"
+      ],
+      "read_paths": [
+        "docs/agent-work/h14-asdeffect-lockleave-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h14_asdeffect_lockleave_candidate.cpp",
+        "docs/agent-work/h14-asdeffect-lockleave-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "experiments/semantic_equivalence/h14_asdeffect_lockleave_candidate.cpp"
+      ],
+      "acceptance": [
+        "Compile freestanding ARMv6K object within allocated window footprint."
+      ],
+      "validation_plan": [
+        "python tools/build_h14_all.py"
+      ]
+    },
+    {
+      "id": "h14-asdeffect-lockleave-candidate-review",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review C++ candidate implementation for AsdEffect_LockLeave.",
+      "depends_on": [
+        "h14-asdeffect-lockleave-candidate"
+      ],
+      "function_claims": [
+        "0x00152dac"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h14_asdeffect_lockleave_candidate.cpp",
+        "docs/agent-work/h14-asdeffect-lockleave-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdeffect-lockleave-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm semantic clarity, type safety, and zero window overflow."
+      ],
+      "validation_plan": [
+        "Inspect C++ code and compilation metrics."
+      ]
+    },
+    {
+      "id": "h14-asdeffect-lockleave-test",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Create Unicorn offline differential test harness for AsdEffect_LockLeave.",
+      "depends_on": [
+        "h14-asdeffect-lockleave-candidate-review"
+      ],
+      "function_claims": [
+        "0x00152dac"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h14_asdeffect_lockleave_candidate.cpp",
+        "docs/agent-work/h14-asdeffect-lockleave-contract.md"
+      ],
+      "write_paths": [
+        "tools/h14_asdeffect_lockleave_experiment.py",
+        "docs/agent-work/h14-asdeffect-lockleave-test.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [
+        "tools/h14_asdeffect_lockleave_experiment.py"
+      ],
+      "acceptance": [
+        "Harness simulates original vs candidate with mutation sensitivity."
+      ],
+      "validation_plan": [
+        "python tools/h14_asdeffect_lockleave_experiment.py"
+      ]
+    },
+    {
+      "id": "h14-asdeffect-lockleave-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential test harness for AsdEffect_LockLeave.",
+      "depends_on": [
+        "h14-asdeffect-lockleave-test"
+      ],
+      "function_claims": [
+        "0x00152dac"
+      ],
+      "read_paths": [
+        "tools/h14_asdeffect_lockleave_experiment.py",
+        "docs/agent-work/h14-asdeffect-lockleave-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdeffect-lockleave-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify boundary cases and mutation probe efficacy."
+      ],
+      "validation_plan": [
+        "Validate test harness coverage."
+      ]
+    },
+    {
+      "id": "h14-asdeffect-lockleave-diff",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline differential validation run for AsdEffect_LockLeave.",
+      "depends_on": [
+        "h14-asdeffect-lockleave-test-review"
+      ],
+      "function_claims": [
+        "0x00152dac"
+      ],
+      "read_paths": [
+        "tools/h14_asdeffect_lockleave_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdeffect-lockleave-diff.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Achieve 100% parity across registers and memory effects."
+      ],
+      "validation_plan": [
+        "python tools/h14_asdeffect_lockleave_experiment.py"
+      ]
+    },
+    {
+      "id": "h14-asdeffect-lockleave-diff-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential run results for AsdEffect_LockLeave.",
+      "depends_on": [
+        "h14-asdeffect-lockleave-diff"
+      ],
+      "function_claims": [
+        "0x00152dac"
+      ],
+      "read_paths": [
+        "docs/agent-work/h14-asdeffect-lockleave-diff.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdeffect-lockleave-diff-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm zero divergence and successful mutation failure."
+      ],
+      "validation_plan": [
+        "Inspect differential log."
+      ]
+    },
+    {
+      "id": "h14-asdeffect-lockleave-integration",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Integrate candidate AsdEffect_LockLeave into staging binary image with relocations resolved.",
+      "depends_on": [
+        "h14-asdeffect-lockleave-diff-review"
+      ],
+      "function_claims": [
+        "0x00152dac"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h14_asdeffect_lockleave_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdeffect-lockleave-integration.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Resolved relocations and patched into code image."
+      ],
+      "validation_plan": [
+        "python tools/h14_staged_image_patch.py"
+      ]
+    },
+    {
+      "id": "h14-asdeffect-lockleave-integration-review",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review subsystem staging integration for AsdEffect_LockLeave.",
+      "depends_on": [
+        "h14-asdeffect-lockleave-integration"
+      ],
+      "function_claims": [
+        "0x00152dac"
+      ],
+      "read_paths": [
+        "docs/agent-work/h14-asdeffect-lockleave-integration.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdeffect-lockleave-integration-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve staged integration record."
+      ],
+      "validation_plan": [
+        "Verify staging summary and binary offsets."
+      ]
+    },
+    {
+      "id": "h14-asdres-getcontext-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover precise calling contract, memory boundaries, and semantics for AsdRes_GetContext.",
+      "depends_on": [
+        "h14-graphics-engine-recon-review"
+      ],
+      "function_claims": [
+        "0x002c31bc"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdres-getcontext-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover registers, arguments, preconditions, and return values."
+      ],
+      "validation_plan": [
+        "Static disassembly analysis."
+      ]
+    },
+    {
+      "id": "h14-asdres-getcontext-contract-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review contract specification for AsdRes_GetContext.",
+      "depends_on": [
+        "h14-asdres-getcontext-contract"
+      ],
+      "function_claims": [
+        "0x002c31bc"
+      ],
+      "read_paths": [
+        "docs/agent-work/h14-asdres-getcontext-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdres-getcontext-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve verified contract record."
+      ],
+      "validation_plan": [
+        "Compare contract against disassembled original."
+      ]
+    },
+    {
+      "id": "h14-asdres-getcontext-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement clean, editable C++ candidate for AsdRes_GetContext within binary window footprint.",
+      "depends_on": [
+        "h14-asdres-getcontext-contract-review"
+      ],
+      "function_claims": [
+        "0x002c31bc"
+      ],
+      "read_paths": [
+        "docs/agent-work/h14-asdres-getcontext-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h14_asdres_getcontext_candidate.cpp",
+        "docs/agent-work/h14-asdres-getcontext-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "experiments/semantic_equivalence/h14_asdres_getcontext_candidate.cpp"
+      ],
+      "acceptance": [
+        "Compile freestanding ARMv6K object within allocated window footprint."
+      ],
+      "validation_plan": [
+        "python tools/build_h14_all.py"
+      ]
+    },
+    {
+      "id": "h14-asdres-getcontext-candidate-review",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review C++ candidate implementation for AsdRes_GetContext.",
+      "depends_on": [
+        "h14-asdres-getcontext-candidate"
+      ],
+      "function_claims": [
+        "0x002c31bc"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h14_asdres_getcontext_candidate.cpp",
+        "docs/agent-work/h14-asdres-getcontext-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdres-getcontext-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm semantic clarity, type safety, and zero window overflow."
+      ],
+      "validation_plan": [
+        "Inspect C++ code and compilation metrics."
+      ]
+    },
+    {
+      "id": "h14-asdres-getcontext-test",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Create Unicorn offline differential test harness for AsdRes_GetContext.",
+      "depends_on": [
+        "h14-asdres-getcontext-candidate-review"
+      ],
+      "function_claims": [
+        "0x002c31bc"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h14_asdres_getcontext_candidate.cpp",
+        "docs/agent-work/h14-asdres-getcontext-contract.md"
+      ],
+      "write_paths": [
+        "tools/h14_asdres_getcontext_experiment.py",
+        "docs/agent-work/h14-asdres-getcontext-test.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [
+        "tools/h14_asdres_getcontext_experiment.py"
+      ],
+      "acceptance": [
+        "Harness simulates original vs candidate with mutation sensitivity."
+      ],
+      "validation_plan": [
+        "python tools/h14_asdres_getcontext_experiment.py"
+      ]
+    },
+    {
+      "id": "h14-asdres-getcontext-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential test harness for AsdRes_GetContext.",
+      "depends_on": [
+        "h14-asdres-getcontext-test"
+      ],
+      "function_claims": [
+        "0x002c31bc"
+      ],
+      "read_paths": [
+        "tools/h14_asdres_getcontext_experiment.py",
+        "docs/agent-work/h14-asdres-getcontext-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdres-getcontext-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify boundary cases and mutation probe efficacy."
+      ],
+      "validation_plan": [
+        "Validate test harness coverage."
+      ]
+    },
+    {
+      "id": "h14-asdres-getcontext-diff",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline differential validation run for AsdRes_GetContext.",
+      "depends_on": [
+        "h14-asdres-getcontext-test-review"
+      ],
+      "function_claims": [
+        "0x002c31bc"
+      ],
+      "read_paths": [
+        "tools/h14_asdres_getcontext_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdres-getcontext-diff.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Achieve 100% parity across registers and memory effects."
+      ],
+      "validation_plan": [
+        "python tools/h14_asdres_getcontext_experiment.py"
+      ]
+    },
+    {
+      "id": "h14-asdres-getcontext-diff-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential run results for AsdRes_GetContext.",
+      "depends_on": [
+        "h14-asdres-getcontext-diff"
+      ],
+      "function_claims": [
+        "0x002c31bc"
+      ],
+      "read_paths": [
+        "docs/agent-work/h14-asdres-getcontext-diff.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdres-getcontext-diff-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm zero divergence and successful mutation failure."
+      ],
+      "validation_plan": [
+        "Inspect differential log."
+      ]
+    },
+    {
+      "id": "h14-asdres-getcontext-integration",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Integrate candidate AsdRes_GetContext into staging binary image with relocations resolved.",
+      "depends_on": [
+        "h14-asdres-getcontext-diff-review"
+      ],
+      "function_claims": [
+        "0x002c31bc"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h14_asdres_getcontext_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdres-getcontext-integration.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Resolved relocations and patched into code image."
+      ],
+      "validation_plan": [
+        "python tools/h14_staged_image_patch.py"
+      ]
+    },
+    {
+      "id": "h14-asdres-getcontext-integration-review",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review subsystem staging integration for AsdRes_GetContext.",
+      "depends_on": [
+        "h14-asdres-getcontext-integration"
+      ],
+      "function_claims": [
+        "0x002c31bc"
+      ],
+      "read_paths": [
+        "docs/agent-work/h14-asdres-getcontext-integration.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdres-getcontext-integration-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve staged integration record."
+      ],
+      "validation_plan": [
+        "Verify staging summary and binary offsets."
+      ]
+    },
+    {
+      "id": "h14-asdgpu-heapsize-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover precise calling contract, memory boundaries, and semantics for AsdGpu_HeapSize.",
+      "depends_on": [
+        "h14-graphics-engine-recon-review"
+      ],
+      "function_claims": [
+        "0x002c3b88"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdgpu-heapsize-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover registers, arguments, preconditions, and return values."
+      ],
+      "validation_plan": [
+        "Static disassembly analysis."
+      ]
+    },
+    {
+      "id": "h14-asdgpu-heapsize-contract-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review contract specification for AsdGpu_HeapSize.",
+      "depends_on": [
+        "h14-asdgpu-heapsize-contract"
+      ],
+      "function_claims": [
+        "0x002c3b88"
+      ],
+      "read_paths": [
+        "docs/agent-work/h14-asdgpu-heapsize-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdgpu-heapsize-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve verified contract record."
+      ],
+      "validation_plan": [
+        "Compare contract against disassembled original."
+      ]
+    },
+    {
+      "id": "h14-asdgpu-heapsize-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement clean, editable C++ candidate for AsdGpu_HeapSize within binary window footprint.",
+      "depends_on": [
+        "h14-asdgpu-heapsize-contract-review"
+      ],
+      "function_claims": [
+        "0x002c3b88"
+      ],
+      "read_paths": [
+        "docs/agent-work/h14-asdgpu-heapsize-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h14_asdgpu_heapsize_candidate.cpp",
+        "docs/agent-work/h14-asdgpu-heapsize-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "experiments/semantic_equivalence/h14_asdgpu_heapsize_candidate.cpp"
+      ],
+      "acceptance": [
+        "Compile freestanding ARMv6K object within allocated window footprint."
+      ],
+      "validation_plan": [
+        "python tools/build_h14_all.py"
+      ]
+    },
+    {
+      "id": "h14-asdgpu-heapsize-candidate-review",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review C++ candidate implementation for AsdGpu_HeapSize.",
+      "depends_on": [
+        "h14-asdgpu-heapsize-candidate"
+      ],
+      "function_claims": [
+        "0x002c3b88"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h14_asdgpu_heapsize_candidate.cpp",
+        "docs/agent-work/h14-asdgpu-heapsize-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdgpu-heapsize-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm semantic clarity, type safety, and zero window overflow."
+      ],
+      "validation_plan": [
+        "Inspect C++ code and compilation metrics."
+      ]
+    },
+    {
+      "id": "h14-asdgpu-heapsize-test",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Create Unicorn offline differential test harness for AsdGpu_HeapSize.",
+      "depends_on": [
+        "h14-asdgpu-heapsize-candidate-review"
+      ],
+      "function_claims": [
+        "0x002c3b88"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h14_asdgpu_heapsize_candidate.cpp",
+        "docs/agent-work/h14-asdgpu-heapsize-contract.md"
+      ],
+      "write_paths": [
+        "tools/h14_asdgpu_heapsize_experiment.py",
+        "docs/agent-work/h14-asdgpu-heapsize-test.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [
+        "tools/h14_asdgpu_heapsize_experiment.py"
+      ],
+      "acceptance": [
+        "Harness simulates original vs candidate with mutation sensitivity."
+      ],
+      "validation_plan": [
+        "python tools/h14_asdgpu_heapsize_experiment.py"
+      ]
+    },
+    {
+      "id": "h14-asdgpu-heapsize-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential test harness for AsdGpu_HeapSize.",
+      "depends_on": [
+        "h14-asdgpu-heapsize-test"
+      ],
+      "function_claims": [
+        "0x002c3b88"
+      ],
+      "read_paths": [
+        "tools/h14_asdgpu_heapsize_experiment.py",
+        "docs/agent-work/h14-asdgpu-heapsize-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdgpu-heapsize-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify boundary cases and mutation probe efficacy."
+      ],
+      "validation_plan": [
+        "Validate test harness coverage."
+      ]
+    },
+    {
+      "id": "h14-asdgpu-heapsize-diff",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline differential validation run for AsdGpu_HeapSize.",
+      "depends_on": [
+        "h14-asdgpu-heapsize-test-review"
+      ],
+      "function_claims": [
+        "0x002c3b88"
+      ],
+      "read_paths": [
+        "tools/h14_asdgpu_heapsize_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdgpu-heapsize-diff.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Achieve 100% parity across registers and memory effects."
+      ],
+      "validation_plan": [
+        "python tools/h14_asdgpu_heapsize_experiment.py"
+      ]
+    },
+    {
+      "id": "h14-asdgpu-heapsize-diff-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential run results for AsdGpu_HeapSize.",
+      "depends_on": [
+        "h14-asdgpu-heapsize-diff"
+      ],
+      "function_claims": [
+        "0x002c3b88"
+      ],
+      "read_paths": [
+        "docs/agent-work/h14-asdgpu-heapsize-diff.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdgpu-heapsize-diff-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm zero divergence and successful mutation failure."
+      ],
+      "validation_plan": [
+        "Inspect differential log."
+      ]
+    },
+    {
+      "id": "h14-asdgpu-heapsize-integration",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Integrate candidate AsdGpu_HeapSize into staging binary image with relocations resolved.",
+      "depends_on": [
+        "h14-asdgpu-heapsize-diff-review"
+      ],
+      "function_claims": [
+        "0x002c3b88"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h14_asdgpu_heapsize_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdgpu-heapsize-integration.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Resolved relocations and patched into code image."
+      ],
+      "validation_plan": [
+        "python tools/h14_staged_image_patch.py"
+      ]
+    },
+    {
+      "id": "h14-asdgpu-heapsize-integration-review",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review subsystem staging integration for AsdGpu_HeapSize.",
+      "depends_on": [
+        "h14-asdgpu-heapsize-integration"
+      ],
+      "function_claims": [
+        "0x002c3b88"
+      ],
+      "read_paths": [
+        "docs/agent-work/h14-asdgpu-heapsize-integration.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdgpu-heapsize-integration-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve staged integration record."
+      ],
+      "validation_plan": [
+        "Verify staging summary and binary offsets."
+      ]
+    },
+    {
+      "id": "h14-asdtext-setcodefield1c-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover precise calling contract, memory boundaries, and semantics for AsdText_SetCodeField1C.",
+      "depends_on": [
+        "h14-graphics-engine-recon-review"
+      ],
+      "function_claims": [
+        "0x0010a6fc"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdtext-setcodefield1c-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover registers, arguments, preconditions, and return values."
+      ],
+      "validation_plan": [
+        "Static disassembly analysis."
+      ]
+    },
+    {
+      "id": "h14-asdtext-setcodefield1c-contract-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review contract specification for AsdText_SetCodeField1C.",
+      "depends_on": [
+        "h14-asdtext-setcodefield1c-contract"
+      ],
+      "function_claims": [
+        "0x0010a6fc"
+      ],
+      "read_paths": [
+        "docs/agent-work/h14-asdtext-setcodefield1c-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdtext-setcodefield1c-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve verified contract record."
+      ],
+      "validation_plan": [
+        "Compare contract against disassembled original."
+      ]
+    },
+    {
+      "id": "h14-asdtext-setcodefield1c-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement clean, editable C++ candidate for AsdText_SetCodeField1C within binary window footprint.",
+      "depends_on": [
+        "h14-asdtext-setcodefield1c-contract-review"
+      ],
+      "function_claims": [
+        "0x0010a6fc"
+      ],
+      "read_paths": [
+        "docs/agent-work/h14-asdtext-setcodefield1c-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h14_asdtext_setcodefield1c_candidate.cpp",
+        "docs/agent-work/h14-asdtext-setcodefield1c-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "experiments/semantic_equivalence/h14_asdtext_setcodefield1c_candidate.cpp"
+      ],
+      "acceptance": [
+        "Compile freestanding ARMv6K object within allocated window footprint."
+      ],
+      "validation_plan": [
+        "python tools/build_h14_all.py"
+      ]
+    },
+    {
+      "id": "h14-asdtext-setcodefield1c-candidate-review",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review C++ candidate implementation for AsdText_SetCodeField1C.",
+      "depends_on": [
+        "h14-asdtext-setcodefield1c-candidate"
+      ],
+      "function_claims": [
+        "0x0010a6fc"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h14_asdtext_setcodefield1c_candidate.cpp",
+        "docs/agent-work/h14-asdtext-setcodefield1c-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdtext-setcodefield1c-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm semantic clarity, type safety, and zero window overflow."
+      ],
+      "validation_plan": [
+        "Inspect C++ code and compilation metrics."
+      ]
+    },
+    {
+      "id": "h14-asdtext-setcodefield1c-test",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Create Unicorn offline differential test harness for AsdText_SetCodeField1C.",
+      "depends_on": [
+        "h14-asdtext-setcodefield1c-candidate-review"
+      ],
+      "function_claims": [
+        "0x0010a6fc"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h14_asdtext_setcodefield1c_candidate.cpp",
+        "docs/agent-work/h14-asdtext-setcodefield1c-contract.md"
+      ],
+      "write_paths": [
+        "tools/h14_asdtext_setcodefield1c_experiment.py",
+        "docs/agent-work/h14-asdtext-setcodefield1c-test.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [
+        "tools/h14_asdtext_setcodefield1c_experiment.py"
+      ],
+      "acceptance": [
+        "Harness simulates original vs candidate with mutation sensitivity."
+      ],
+      "validation_plan": [
+        "python tools/h14_asdtext_setcodefield1c_experiment.py"
+      ]
+    },
+    {
+      "id": "h14-asdtext-setcodefield1c-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential test harness for AsdText_SetCodeField1C.",
+      "depends_on": [
+        "h14-asdtext-setcodefield1c-test"
+      ],
+      "function_claims": [
+        "0x0010a6fc"
+      ],
+      "read_paths": [
+        "tools/h14_asdtext_setcodefield1c_experiment.py",
+        "docs/agent-work/h14-asdtext-setcodefield1c-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdtext-setcodefield1c-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify boundary cases and mutation probe efficacy."
+      ],
+      "validation_plan": [
+        "Validate test harness coverage."
+      ]
+    },
+    {
+      "id": "h14-asdtext-setcodefield1c-diff",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline differential validation run for AsdText_SetCodeField1C.",
+      "depends_on": [
+        "h14-asdtext-setcodefield1c-test-review"
+      ],
+      "function_claims": [
+        "0x0010a6fc"
+      ],
+      "read_paths": [
+        "tools/h14_asdtext_setcodefield1c_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdtext-setcodefield1c-diff.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Achieve 100% parity across registers and memory effects."
+      ],
+      "validation_plan": [
+        "python tools/h14_asdtext_setcodefield1c_experiment.py"
+      ]
+    },
+    {
+      "id": "h14-asdtext-setcodefield1c-diff-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential run results for AsdText_SetCodeField1C.",
+      "depends_on": [
+        "h14-asdtext-setcodefield1c-diff"
+      ],
+      "function_claims": [
+        "0x0010a6fc"
+      ],
+      "read_paths": [
+        "docs/agent-work/h14-asdtext-setcodefield1c-diff.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdtext-setcodefield1c-diff-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm zero divergence and successful mutation failure."
+      ],
+      "validation_plan": [
+        "Inspect differential log."
+      ]
+    },
+    {
+      "id": "h14-asdtext-setcodefield1c-integration",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Integrate candidate AsdText_SetCodeField1C into staging binary image with relocations resolved.",
+      "depends_on": [
+        "h14-asdtext-setcodefield1c-diff-review"
+      ],
+      "function_claims": [
+        "0x0010a6fc"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h14_asdtext_setcodefield1c_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdtext-setcodefield1c-integration.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Resolved relocations and patched into code image."
+      ],
+      "validation_plan": [
+        "python tools/h14_staged_image_patch.py"
+      ]
+    },
+    {
+      "id": "h14-asdtext-setcodefield1c-integration-review",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review subsystem staging integration for AsdText_SetCodeField1C.",
+      "depends_on": [
+        "h14-asdtext-setcodefield1c-integration"
+      ],
+      "function_claims": [
+        "0x0010a6fc"
+      ],
+      "read_paths": [
+        "docs/agent-work/h14-asdtext-setcodefield1c-integration.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdtext-setcodefield1c-integration-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve staged integration record."
+      ],
+      "validation_plan": [
+        "Verify staging summary and binary offsets."
+      ]
+    },
+    {
+      "id": "h14-asdtext-setcodefield14-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover precise calling contract, memory boundaries, and semantics for AsdText_SetCodeField14.",
+      "depends_on": [
+        "h14-graphics-engine-recon-review"
+      ],
+      "function_claims": [
+        "0x0010af38"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdtext-setcodefield14-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover registers, arguments, preconditions, and return values."
+      ],
+      "validation_plan": [
+        "Static disassembly analysis."
+      ]
+    },
+    {
+      "id": "h14-asdtext-setcodefield14-contract-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review contract specification for AsdText_SetCodeField14.",
+      "depends_on": [
+        "h14-asdtext-setcodefield14-contract"
+      ],
+      "function_claims": [
+        "0x0010af38"
+      ],
+      "read_paths": [
+        "docs/agent-work/h14-asdtext-setcodefield14-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdtext-setcodefield14-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve verified contract record."
+      ],
+      "validation_plan": [
+        "Compare contract against disassembled original."
+      ]
+    },
+    {
+      "id": "h14-asdtext-setcodefield14-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement clean, editable C++ candidate for AsdText_SetCodeField14 within binary window footprint.",
+      "depends_on": [
+        "h14-asdtext-setcodefield14-contract-review"
+      ],
+      "function_claims": [
+        "0x0010af38"
+      ],
+      "read_paths": [
+        "docs/agent-work/h14-asdtext-setcodefield14-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h14_asdtext_setcodefield14_candidate.cpp",
+        "docs/agent-work/h14-asdtext-setcodefield14-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "experiments/semantic_equivalence/h14_asdtext_setcodefield14_candidate.cpp"
+      ],
+      "acceptance": [
+        "Compile freestanding ARMv6K object within allocated window footprint."
+      ],
+      "validation_plan": [
+        "python tools/build_h14_all.py"
+      ]
+    },
+    {
+      "id": "h14-asdtext-setcodefield14-candidate-review",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review C++ candidate implementation for AsdText_SetCodeField14.",
+      "depends_on": [
+        "h14-asdtext-setcodefield14-candidate"
+      ],
+      "function_claims": [
+        "0x0010af38"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h14_asdtext_setcodefield14_candidate.cpp",
+        "docs/agent-work/h14-asdtext-setcodefield14-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdtext-setcodefield14-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm semantic clarity, type safety, and zero window overflow."
+      ],
+      "validation_plan": [
+        "Inspect C++ code and compilation metrics."
+      ]
+    },
+    {
+      "id": "h14-asdtext-setcodefield14-test",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Create Unicorn offline differential test harness for AsdText_SetCodeField14.",
+      "depends_on": [
+        "h14-asdtext-setcodefield14-candidate-review"
+      ],
+      "function_claims": [
+        "0x0010af38"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h14_asdtext_setcodefield14_candidate.cpp",
+        "docs/agent-work/h14-asdtext-setcodefield14-contract.md"
+      ],
+      "write_paths": [
+        "tools/h14_asdtext_setcodefield14_experiment.py",
+        "docs/agent-work/h14-asdtext-setcodefield14-test.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [
+        "tools/h14_asdtext_setcodefield14_experiment.py"
+      ],
+      "acceptance": [
+        "Harness simulates original vs candidate with mutation sensitivity."
+      ],
+      "validation_plan": [
+        "python tools/h14_asdtext_setcodefield14_experiment.py"
+      ]
+    },
+    {
+      "id": "h14-asdtext-setcodefield14-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential test harness for AsdText_SetCodeField14.",
+      "depends_on": [
+        "h14-asdtext-setcodefield14-test"
+      ],
+      "function_claims": [
+        "0x0010af38"
+      ],
+      "read_paths": [
+        "tools/h14_asdtext_setcodefield14_experiment.py",
+        "docs/agent-work/h14-asdtext-setcodefield14-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdtext-setcodefield14-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify boundary cases and mutation probe efficacy."
+      ],
+      "validation_plan": [
+        "Validate test harness coverage."
+      ]
+    },
+    {
+      "id": "h14-asdtext-setcodefield14-diff",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline differential validation run for AsdText_SetCodeField14.",
+      "depends_on": [
+        "h14-asdtext-setcodefield14-test-review"
+      ],
+      "function_claims": [
+        "0x0010af38"
+      ],
+      "read_paths": [
+        "tools/h14_asdtext_setcodefield14_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdtext-setcodefield14-diff.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Achieve 100% parity across registers and memory effects."
+      ],
+      "validation_plan": [
+        "python tools/h14_asdtext_setcodefield14_experiment.py"
+      ]
+    },
+    {
+      "id": "h14-asdtext-setcodefield14-diff-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential run results for AsdText_SetCodeField14.",
+      "depends_on": [
+        "h14-asdtext-setcodefield14-diff"
+      ],
+      "function_claims": [
+        "0x0010af38"
+      ],
+      "read_paths": [
+        "docs/agent-work/h14-asdtext-setcodefield14-diff.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdtext-setcodefield14-diff-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm zero divergence and successful mutation failure."
+      ],
+      "validation_plan": [
+        "Inspect differential log."
+      ]
+    },
+    {
+      "id": "h14-asdtext-setcodefield14-integration",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Integrate candidate AsdText_SetCodeField14 into staging binary image with relocations resolved.",
+      "depends_on": [
+        "h14-asdtext-setcodefield14-diff-review"
+      ],
+      "function_claims": [
+        "0x0010af38"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h14_asdtext_setcodefield14_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdtext-setcodefield14-integration.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Resolved relocations and patched into code image."
+      ],
+      "validation_plan": [
+        "python tools/h14_staged_image_patch.py"
+      ]
+    },
+    {
+      "id": "h14-asdtext-setcodefield14-integration-review",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review subsystem staging integration for AsdText_SetCodeField14.",
+      "depends_on": [
+        "h14-asdtext-setcodefield14-integration"
+      ],
+      "function_claims": [
+        "0x0010af38"
+      ],
+      "read_paths": [
+        "docs/agent-work/h14-asdtext-setcodefield14-integration.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdtext-setcodefield14-integration-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve staged integration record."
+      ],
+      "validation_plan": [
+        "Verify staging summary and binary offsets."
+      ]
+    },
+    {
+      "id": "h14-asdtext-setcodefield30-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover precise calling contract, memory boundaries, and semantics for AsdText_SetCodeField30.",
+      "depends_on": [
+        "h14-graphics-engine-recon-review"
+      ],
+      "function_claims": [
+        "0x0010b340"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdtext-setcodefield30-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover registers, arguments, preconditions, and return values."
+      ],
+      "validation_plan": [
+        "Static disassembly analysis."
+      ]
+    },
+    {
+      "id": "h14-asdtext-setcodefield30-contract-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review contract specification for AsdText_SetCodeField30.",
+      "depends_on": [
+        "h14-asdtext-setcodefield30-contract"
+      ],
+      "function_claims": [
+        "0x0010b340"
+      ],
+      "read_paths": [
+        "docs/agent-work/h14-asdtext-setcodefield30-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdtext-setcodefield30-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve verified contract record."
+      ],
+      "validation_plan": [
+        "Compare contract against disassembled original."
+      ]
+    },
+    {
+      "id": "h14-asdtext-setcodefield30-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement clean, editable C++ candidate for AsdText_SetCodeField30 within binary window footprint.",
+      "depends_on": [
+        "h14-asdtext-setcodefield30-contract-review"
+      ],
+      "function_claims": [
+        "0x0010b340"
+      ],
+      "read_paths": [
+        "docs/agent-work/h14-asdtext-setcodefield30-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h14_asdtext_setcodefield30_candidate.cpp",
+        "docs/agent-work/h14-asdtext-setcodefield30-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "experiments/semantic_equivalence/h14_asdtext_setcodefield30_candidate.cpp"
+      ],
+      "acceptance": [
+        "Compile freestanding ARMv6K object within allocated window footprint."
+      ],
+      "validation_plan": [
+        "python tools/build_h14_all.py"
+      ]
+    },
+    {
+      "id": "h14-asdtext-setcodefield30-candidate-review",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review C++ candidate implementation for AsdText_SetCodeField30.",
+      "depends_on": [
+        "h14-asdtext-setcodefield30-candidate"
+      ],
+      "function_claims": [
+        "0x0010b340"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h14_asdtext_setcodefield30_candidate.cpp",
+        "docs/agent-work/h14-asdtext-setcodefield30-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdtext-setcodefield30-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm semantic clarity, type safety, and zero window overflow."
+      ],
+      "validation_plan": [
+        "Inspect C++ code and compilation metrics."
+      ]
+    },
+    {
+      "id": "h14-asdtext-setcodefield30-test",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Create Unicorn offline differential test harness for AsdText_SetCodeField30.",
+      "depends_on": [
+        "h14-asdtext-setcodefield30-candidate-review"
+      ],
+      "function_claims": [
+        "0x0010b340"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h14_asdtext_setcodefield30_candidate.cpp",
+        "docs/agent-work/h14-asdtext-setcodefield30-contract.md"
+      ],
+      "write_paths": [
+        "tools/h14_asdtext_setcodefield30_experiment.py",
+        "docs/agent-work/h14-asdtext-setcodefield30-test.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [
+        "tools/h14_asdtext_setcodefield30_experiment.py"
+      ],
+      "acceptance": [
+        "Harness simulates original vs candidate with mutation sensitivity."
+      ],
+      "validation_plan": [
+        "python tools/h14_asdtext_setcodefield30_experiment.py"
+      ]
+    },
+    {
+      "id": "h14-asdtext-setcodefield30-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential test harness for AsdText_SetCodeField30.",
+      "depends_on": [
+        "h14-asdtext-setcodefield30-test"
+      ],
+      "function_claims": [
+        "0x0010b340"
+      ],
+      "read_paths": [
+        "tools/h14_asdtext_setcodefield30_experiment.py",
+        "docs/agent-work/h14-asdtext-setcodefield30-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdtext-setcodefield30-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify boundary cases and mutation probe efficacy."
+      ],
+      "validation_plan": [
+        "Validate test harness coverage."
+      ]
+    },
+    {
+      "id": "h14-asdtext-setcodefield30-diff",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline differential validation run for AsdText_SetCodeField30.",
+      "depends_on": [
+        "h14-asdtext-setcodefield30-test-review"
+      ],
+      "function_claims": [
+        "0x0010b340"
+      ],
+      "read_paths": [
+        "tools/h14_asdtext_setcodefield30_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdtext-setcodefield30-diff.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Achieve 100% parity across registers and memory effects."
+      ],
+      "validation_plan": [
+        "python tools/h14_asdtext_setcodefield30_experiment.py"
+      ]
+    },
+    {
+      "id": "h14-asdtext-setcodefield30-diff-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential run results for AsdText_SetCodeField30.",
+      "depends_on": [
+        "h14-asdtext-setcodefield30-diff"
+      ],
+      "function_claims": [
+        "0x0010b340"
+      ],
+      "read_paths": [
+        "docs/agent-work/h14-asdtext-setcodefield30-diff.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdtext-setcodefield30-diff-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm zero divergence and successful mutation failure."
+      ],
+      "validation_plan": [
+        "Inspect differential log."
+      ]
+    },
+    {
+      "id": "h14-asdtext-setcodefield30-integration",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Integrate candidate AsdText_SetCodeField30 into staging binary image with relocations resolved.",
+      "depends_on": [
+        "h14-asdtext-setcodefield30-diff-review"
+      ],
+      "function_claims": [
+        "0x0010b340"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h14_asdtext_setcodefield30_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdtext-setcodefield30-integration.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Resolved relocations and patched into code image."
+      ],
+      "validation_plan": [
+        "python tools/h14_staged_image_patch.py"
+      ]
+    },
+    {
+      "id": "h14-asdtext-setcodefield30-integration-review",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review subsystem staging integration for AsdText_SetCodeField30.",
+      "depends_on": [
+        "h14-asdtext-setcodefield30-integration"
+      ],
+      "function_claims": [
+        "0x0010b340"
+      ],
+      "read_paths": [
+        "docs/agent-work/h14-asdtext-setcodefield30-integration.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-asdtext-setcodefield30-integration-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve staged integration record."
+      ],
+      "validation_plan": [
+        "Verify staging summary and binary offsets."
+      ]
+    },
+    {
+      "id": "h14-texturestreamer-compare-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover precise calling contract, memory boundaries, and semantics for TextureStreamer_Compare.",
+      "depends_on": [
+        "h14-graphics-engine-recon-review"
+      ],
+      "function_claims": [
+        "0x003878c0"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-texturestreamer-compare-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover registers, arguments, preconditions, and return values."
+      ],
+      "validation_plan": [
+        "Static disassembly analysis."
+      ]
+    },
+    {
+      "id": "h14-texturestreamer-compare-contract-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review contract specification for TextureStreamer_Compare.",
+      "depends_on": [
+        "h14-texturestreamer-compare-contract"
+      ],
+      "function_claims": [
+        "0x003878c0"
+      ],
+      "read_paths": [
+        "docs/agent-work/h14-texturestreamer-compare-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-texturestreamer-compare-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve verified contract record."
+      ],
+      "validation_plan": [
+        "Compare contract against disassembled original."
+      ]
+    },
+    {
+      "id": "h14-texturestreamer-compare-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement clean, editable C++ candidate for TextureStreamer_Compare within binary window footprint.",
+      "depends_on": [
+        "h14-texturestreamer-compare-contract-review"
+      ],
+      "function_claims": [
+        "0x003878c0"
+      ],
+      "read_paths": [
+        "docs/agent-work/h14-texturestreamer-compare-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h14_texturestreamer_compare_candidate.cpp",
+        "docs/agent-work/h14-texturestreamer-compare-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "experiments/semantic_equivalence/h14_texturestreamer_compare_candidate.cpp"
+      ],
+      "acceptance": [
+        "Compile freestanding ARMv6K object within allocated window footprint."
+      ],
+      "validation_plan": [
+        "python tools/build_h14_all.py"
+      ]
+    },
+    {
+      "id": "h14-texturestreamer-compare-candidate-review",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review C++ candidate implementation for TextureStreamer_Compare.",
+      "depends_on": [
+        "h14-texturestreamer-compare-candidate"
+      ],
+      "function_claims": [
+        "0x003878c0"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h14_texturestreamer_compare_candidate.cpp",
+        "docs/agent-work/h14-texturestreamer-compare-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-texturestreamer-compare-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm semantic clarity, type safety, and zero window overflow."
+      ],
+      "validation_plan": [
+        "Inspect C++ code and compilation metrics."
+      ]
+    },
+    {
+      "id": "h14-texturestreamer-compare-test",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Create Unicorn offline differential test harness for TextureStreamer_Compare.",
+      "depends_on": [
+        "h14-texturestreamer-compare-candidate-review"
+      ],
+      "function_claims": [
+        "0x003878c0"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h14_texturestreamer_compare_candidate.cpp",
+        "docs/agent-work/h14-texturestreamer-compare-contract.md"
+      ],
+      "write_paths": [
+        "tools/h14_texturestreamer_compare_experiment.py",
+        "docs/agent-work/h14-texturestreamer-compare-test.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [
+        "tools/h14_texturestreamer_compare_experiment.py"
+      ],
+      "acceptance": [
+        "Harness simulates original vs candidate with mutation sensitivity."
+      ],
+      "validation_plan": [
+        "python tools/h14_texturestreamer_compare_experiment.py"
+      ]
+    },
+    {
+      "id": "h14-texturestreamer-compare-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential test harness for TextureStreamer_Compare.",
+      "depends_on": [
+        "h14-texturestreamer-compare-test"
+      ],
+      "function_claims": [
+        "0x003878c0"
+      ],
+      "read_paths": [
+        "tools/h14_texturestreamer_compare_experiment.py",
+        "docs/agent-work/h14-texturestreamer-compare-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-texturestreamer-compare-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify boundary cases and mutation probe efficacy."
+      ],
+      "validation_plan": [
+        "Validate test harness coverage."
+      ]
+    },
+    {
+      "id": "h14-texturestreamer-compare-diff",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline differential validation run for TextureStreamer_Compare.",
+      "depends_on": [
+        "h14-texturestreamer-compare-test-review"
+      ],
+      "function_claims": [
+        "0x003878c0"
+      ],
+      "read_paths": [
+        "tools/h14_texturestreamer_compare_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-texturestreamer-compare-diff.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Achieve 100% parity across registers and memory effects."
+      ],
+      "validation_plan": [
+        "python tools/h14_texturestreamer_compare_experiment.py"
+      ]
+    },
+    {
+      "id": "h14-texturestreamer-compare-diff-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential run results for TextureStreamer_Compare.",
+      "depends_on": [
+        "h14-texturestreamer-compare-diff"
+      ],
+      "function_claims": [
+        "0x003878c0"
+      ],
+      "read_paths": [
+        "docs/agent-work/h14-texturestreamer-compare-diff.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-texturestreamer-compare-diff-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm zero divergence and successful mutation failure."
+      ],
+      "validation_plan": [
+        "Inspect differential log."
+      ]
+    },
+    {
+      "id": "h14-texturestreamer-compare-integration",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Integrate candidate TextureStreamer_Compare into staging binary image with relocations resolved.",
+      "depends_on": [
+        "h14-texturestreamer-compare-diff-review"
+      ],
+      "function_claims": [
+        "0x003878c0"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h14_texturestreamer_compare_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-texturestreamer-compare-integration.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Resolved relocations and patched into code image."
+      ],
+      "validation_plan": [
+        "python tools/h14_staged_image_patch.py"
+      ]
+    },
+    {
+      "id": "h14-texturestreamer-compare-integration-review",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review subsystem staging integration for TextureStreamer_Compare.",
+      "depends_on": [
+        "h14-texturestreamer-compare-integration"
+      ],
+      "function_claims": [
+        "0x003878c0"
+      ],
+      "read_paths": [
+        "docs/agent-work/h14-texturestreamer-compare-integration.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-texturestreamer-compare-integration-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve staged integration record."
+      ],
+      "validation_plan": [
+        "Verify staging summary and binary offsets."
+      ]
+    },
+    {
+      "id": "h14-batch-integration",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Compose all 8 H14 subsystems into cumulative staged image code.h14-final.bin and emit LayeredFS IPS mod.",
+      "depends_on": [
+        "h14-asdeffect-lockenter-integration-review",
+        "h14-asdeffect-lockleave-integration-review",
+        "h14-asdres-getcontext-integration-review",
+        "h14-asdgpu-heapsize-integration-review",
+        "h14-asdtext-setcodefield1c-integration-review",
+        "h14-asdtext-setcodefield14-integration-review",
+        "h14-asdtext-setcodefield30-integration-review",
+        "h14-texturestreamer-compare-integration-review"
+      ],
+      "function_claims": [
+        "0x00152d7c",
+        "0x00152dac",
+        "0x002c31bc",
+        "0x002c3b88",
+        "0x0010a6fc",
+        "0x0010af38",
+        "0x0010b340",
+        "0x003878c0"
+      ],
+      "read_paths": [
+        "build/agent-work/H13-semantic/h13-integrated-stage/code.h13-final.bin",
+        "tools/h14_staged_image_patch.py"
+      ],
+      "write_paths": [
+        "build/agent-work/H14-semantic/h14-integrated-stage/code.h14-final.bin",
+        "build/agent-work/H14-semantic/h14-integrated-stage/code.h14-final.ips",
+        "build/agent-work/H14-semantic/h14-integrated-stage/h14_staging_summary.json",
+        "docs/agent-work/h14-batch-integration.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Generate code.h14-final.bin with all H14 patches applied.",
+        "Emit LayeredFS IPS mod with roundtrip verification."
+      ],
+      "validation_plan": [
+        "python tools/h14_staged_image_patch.py"
+      ]
+    },
+    {
+      "id": "h14-batch-integration-review",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review cumulative batch integration for Milestone H14.",
+      "depends_on": [
+        "h14-batch-integration"
+      ],
+      "function_claims": [
+        "0x00152d7c",
+        "0x00152dac",
+        "0x002c31bc",
+        "0x002c3b88",
+        "0x0010a6fc",
+        "0x0010af38",
+        "0x0010b340",
+        "0x003878c0"
+      ],
+      "read_paths": [
+        "docs/agent-work/h14-batch-integration.md",
+        "build/agent-work/H14-semantic/h14-integrated-stage/h14_staging_summary.json"
+      ],
+      "write_paths": [
+        "docs/agent-work/h14-batch-integration-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Validate SHA256 hashes and IPS roundtrip verification."
+      ],
+      "validation_plan": [
+        "Inspect staging summary and verify SHA256 integrity."
+      ]
+    },
+    {
+      "id": "h14-milestone-closure",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Milestone H14 closure, documentation finalization, and transition to Milestone H15.",
+      "depends_on": [
+        "h14-batch-integration-review"
+      ],
+      "function_claims": [
+        "0x00152d7c",
+        "0x00152dac",
+        "0x002c31bc",
+        "0x002c3b88",
+        "0x0010a6fc",
+        "0x0010af38",
+        "0x0010b340",
+        "0x003878c0"
+      ],
+      "read_paths": [
+        "docs/agent-work/h14-batch-integration-review.md",
+        "build/agent-work/H14-semantic/h14-integrated-stage/h14_staging_summary.json"
+      ],
+      "write_paths": [
+        "docs/milestones/H14-graphics-engine.md",
+        "docs/functional-status.md",
+        "docs/reconstruction-milestones.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Milestone documentation complete with candidate metrics, validation proof, and status ledger updates."
+      ],
+      "validation_plan": [
+        "python tools/agent_workflow.py check"
+      ]
+    }
+  ]
+}

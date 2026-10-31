@@ -1,0 +1,2452 @@
+{
+  "schema_version": 1,
+  "batch": "batch-h12-001",
+  "milestone": "H12",
+  "max_workers": 3,
+  "cpu_budget": 8,
+  "goal": "Reconstruct readable, editable C++ for Milestone H12 (Advanced Combat: Press Turn, Smirk, Negotiation, Results), covering turn subsystems initialization (Battle_InitTurnSubsystems), smirk condition query (Battle_GetUnitSmirkState), smirk actor owner lookup (Battle_GetSmirkActor), atomic smirk slot exchange (Battle_ExchangeSmirkSlot), turn phase data setup (Battle_InitTurnData), victory/defeat result screen teardown (Result_Cleanup), battle unit defeat evaluation (Battle_IsUnitDefeated), and unit state buffer restoration (Battle_ResetUnitStateBuffer) with offline differential validation, caller composition, staging, and autonomous runtime verification.",
+  "coordinator_owned_paths": [
+    "config/agent-workflows/h12.json",
+    "config/reconstruction.json",
+    "docs/milestones/H12-advanced-combat.md",
+    "docs/functional-status.md",
+    "docs/reconstruction-milestones.md"
+  ],
+  "tasks": [
+    {
+      "id": "h12-advanced-combat-recon",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Comprehensive static and architectural reconnaissance of Milestone H12 Advanced Combat (Press Turn, Smirk, Negotiation, Results).",
+      "depends_on": [],
+      "function_claims": [
+        "0x00123050",
+        "0x00129c58",
+        "0x00129cbc",
+        "0x00129c70",
+        "0x00136fa4",
+        "0x001c87d8",
+        "0x0028de4c",
+        "0x00215938"
+      ],
+      "read_paths": [
+        "src/battle/battle_runtime.cpp",
+        "docs/reconstruction-milestones.md",
+        "docs/milestones/H11-shops-blackmarket-terminals.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-advanced-combat-recon.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Identify exact entry points, memory structures, and callers for H12 Advanced Combat subsystems.",
+        "Define offline-first differential boundaries, positive/negative controls, and mutation criteria."
+      ],
+      "validation_plan": [
+        "Cross-check candidate functions against pinned binary code.bin and functions.csv ledger."
+      ]
+    },
+    {
+      "id": "h12-advanced-combat-recon-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of H12 Advanced Combat architecture reconnaissance and differential boundary definitions.",
+      "depends_on": [
+        "h12-advanced-combat-recon"
+      ],
+      "function_claims": [
+        "0x00123050",
+        "0x00129c58",
+        "0x00129cbc",
+        "0x00129c70",
+        "0x00136fa4",
+        "0x001c87d8",
+        "0x0028de4c",
+        "0x00215938"
+      ],
+      "read_paths": [
+        "docs/agent-work/h12-advanced-combat-recon.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-advanced-combat-recon-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Validate candidate function selections against milestone goals and footprint requirements."
+      ],
+      "validation_plan": [
+        "Inspect address ranges, calling conventions, and struct layouts."
+      ]
+    },
+    {
+      "id": "h12-battle-initturnsubsystems-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover formal semantic contract, types, and ABI for Battle_InitTurnSubsystems (0x00123050).",
+      "depends_on": [
+        "h12-advanced-combat-recon-review"
+      ],
+      "function_claims": [
+        "0x00123050"
+      ],
+      "read_paths": [
+        "docs/agent-work/h12-advanced-combat-recon.md",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-initturnsubsystems-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Document contract, pre/postconditions, parameter semantics, and mutations for Battle_InitTurnSubsystems."
+      ],
+      "validation_plan": [
+        "Audit ARM assembly in code.bin at target address."
+      ]
+    },
+    {
+      "id": "h12-battle-initturnsubsystems-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of formal semantic contract for Battle_InitTurnSubsystems (0x00123050).",
+      "depends_on": [
+        "h12-battle-initturnsubsystems-contract"
+      ],
+      "function_claims": [
+        "0x00123050"
+      ],
+      "read_paths": [
+        "docs/agent-work/h12-battle-initturnsubsystems-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-initturnsubsystems-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract accuracy against disassembly."
+      ],
+      "validation_plan": [
+        "Cross-check against Capstone disassembly."
+      ]
+    },
+    {
+      "id": "h12-battle-initturnsubsystems-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement clean C++ semantic candidate and mutation probe for Battle_InitTurnSubsystems (0x00123050).",
+      "depends_on": [
+        "h12-battle-initturnsubsystems-contract-review"
+      ],
+      "function_claims": [
+        "0x00123050"
+      ],
+      "read_paths": [
+        "docs/agent-work/h12-battle-initturnsubsystems-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h12_battle_initturnsubsystems_candidate.cpp",
+        "docs/agent-work/h12-battle-initturnsubsystems-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "experiments/semantic_equivalence/h12_battle_initturnsubsystems_candidate.cpp"
+      ],
+      "acceptance": [
+        "Candidate compiles cleanly with clang++ ARMv6K and fits within target window."
+      ],
+      "validation_plan": [
+        "Compile candidate TU to object file and check binary footprint."
+      ]
+    },
+    {
+      "id": "h12-battle-initturnsubsystems-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of C++ candidate implementation for Battle_InitTurnSubsystems (0x00123050).",
+      "depends_on": [
+        "h12-battle-initturnsubsystems-candidate"
+      ],
+      "function_claims": [
+        "0x00123050"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h12_battle_initturnsubsystems_candidate.cpp",
+        "docs/agent-work/h12-battle-initturnsubsystems-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-initturnsubsystems-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify C++ readability, contract adherence, and footprint safety."
+      ],
+      "validation_plan": [
+        "Review source code and compiler diagnostic output."
+      ]
+    },
+    {
+      "id": "h12-battle-initturnsubsystems-test",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement standalone Unicorn differential test harness for Battle_InitTurnSubsystems (0x00123050).",
+      "depends_on": [
+        "h12-battle-initturnsubsystems-candidate-review"
+      ],
+      "function_claims": [
+        "0x00123050"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h12_battle_initturnsubsystems_candidate.cpp",
+        "docs/agent-work/h12-battle-initturnsubsystems-contract.md"
+      ],
+      "write_paths": [
+        "tools/h12_battle_initturnsubsystems_experiment.py",
+        "docs/agent-work/h12-battle-initturnsubsystems-test.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "tools/h12_battle_initturnsubsystems_experiment.py"
+      ],
+      "acceptance": [
+        "Harness executes original vs candidate across test vectors with register/memory verification."
+      ],
+      "validation_plan": [
+        "Run script under python with Unicorn engine."
+      ]
+    },
+    {
+      "id": "h12-battle-initturnsubsystems-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of differential test harness for Battle_InitTurnSubsystems (0x00123050).",
+      "depends_on": [
+        "h12-battle-initturnsubsystems-test"
+      ],
+      "function_claims": [
+        "0x00123050"
+      ],
+      "read_paths": [
+        "tools/h12_battle_initturnsubsystems_experiment.py",
+        "docs/agent-work/h12-battle-initturnsubsystems-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-initturnsubsystems-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify test coverage, boundary cases, and mutation sensitivity check."
+      ],
+      "validation_plan": [
+        "Audit test logic and execution trace."
+      ]
+    },
+    {
+      "id": "h12-battle-initturnsubsystems-diff",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline Unicorn differential validation suite for Battle_InitTurnSubsystems (0x00123050).",
+      "depends_on": [
+        "h12-battle-initturnsubsystems-test-review"
+      ],
+      "function_claims": [
+        "0x00123050"
+      ],
+      "read_paths": [
+        "tools/h12_battle_initturnsubsystems_experiment.py",
+        "experiments/semantic_equivalence/h12_battle_initturnsubsystems_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-initturnsubsystems-diff.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "All differential test cases pass with 100% register/memory parity; mutation probe triggers mismatch."
+      ],
+      "validation_plan": [
+        "python tools/h12_battle_initturnsubsystems_experiment.py"
+      ]
+    },
+    {
+      "id": "h12-battle-initturnsubsystems-diff-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent audit of differential execution results for Battle_InitTurnSubsystems (0x00123050).",
+      "depends_on": [
+        "h12-battle-initturnsubsystems-diff"
+      ],
+      "function_claims": [
+        "0x00123050"
+      ],
+      "read_paths": [
+        "docs/agent-work/h12-battle-initturnsubsystems-diff.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-initturnsubsystems-diff-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm 100% equivalence and mutation sensitivity."
+      ],
+      "validation_plan": [
+        "Verify differential test logs and assertion proofs."
+      ]
+    },
+    {
+      "id": "h12-battle-initturnsubsystems-integration",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Stage binary candidate Battle_InitTurnSubsystems (0x00123050) into composite image.",
+      "depends_on": [
+        "h12-battle-initturnsubsystems-diff-review"
+      ],
+      "function_claims": [
+        "0x00123050"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h12_battle_initturnsubsystems_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-initturnsubsystems-integration.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Candidate integrated into staged binary with relocations resolved."
+      ],
+      "validation_plan": [
+        "Verify relocations and memory offset layout."
+      ]
+    },
+    {
+      "id": "h12-battle-initturnsubsystems-integration-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent audit of staged candidate integration for Battle_InitTurnSubsystems (0x00123050).",
+      "depends_on": [
+        "h12-battle-initturnsubsystems-integration"
+      ],
+      "function_claims": [
+        "0x00123050"
+      ],
+      "read_paths": [
+        "docs/agent-work/h12-battle-initturnsubsystems-integration.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-initturnsubsystems-integration-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify candidate footprint compliance in composite stage."
+      ],
+      "validation_plan": [
+        "Audit integration record."
+      ]
+    },
+    {
+      "id": "h12-battle-getunitsmirkstate-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover formal semantic contract, types, and ABI for Battle_GetUnitSmirkState (0x00129c58).",
+      "depends_on": [
+        "h12-advanced-combat-recon-review"
+      ],
+      "function_claims": [
+        "0x00129c58"
+      ],
+      "read_paths": [
+        "docs/agent-work/h12-advanced-combat-recon.md",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-getunitsmirkstate-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Document contract, pre/postconditions, parameter semantics, and mutations for Battle_GetUnitSmirkState."
+      ],
+      "validation_plan": [
+        "Audit ARM assembly in code.bin at target address."
+      ]
+    },
+    {
+      "id": "h12-battle-getunitsmirkstate-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of formal semantic contract for Battle_GetUnitSmirkState (0x00129c58).",
+      "depends_on": [
+        "h12-battle-getunitsmirkstate-contract"
+      ],
+      "function_claims": [
+        "0x00129c58"
+      ],
+      "read_paths": [
+        "docs/agent-work/h12-battle-getunitsmirkstate-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-getunitsmirkstate-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract accuracy against disassembly."
+      ],
+      "validation_plan": [
+        "Cross-check against Capstone disassembly."
+      ]
+    },
+    {
+      "id": "h12-battle-getunitsmirkstate-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement clean C++ semantic candidate and mutation probe for Battle_GetUnitSmirkState (0x00129c58).",
+      "depends_on": [
+        "h12-battle-getunitsmirkstate-contract-review"
+      ],
+      "function_claims": [
+        "0x00129c58"
+      ],
+      "read_paths": [
+        "docs/agent-work/h12-battle-getunitsmirkstate-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h12_battle_getunitsmirkstate_candidate.cpp",
+        "docs/agent-work/h12-battle-getunitsmirkstate-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "experiments/semantic_equivalence/h12_battle_getunitsmirkstate_candidate.cpp"
+      ],
+      "acceptance": [
+        "Candidate compiles cleanly with clang++ ARMv6K and fits within target window."
+      ],
+      "validation_plan": [
+        "Compile candidate TU to object file and check binary footprint."
+      ]
+    },
+    {
+      "id": "h12-battle-getunitsmirkstate-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of C++ candidate implementation for Battle_GetUnitSmirkState (0x00129c58).",
+      "depends_on": [
+        "h12-battle-getunitsmirkstate-candidate"
+      ],
+      "function_claims": [
+        "0x00129c58"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h12_battle_getunitsmirkstate_candidate.cpp",
+        "docs/agent-work/h12-battle-getunitsmirkstate-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-getunitsmirkstate-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify C++ readability, contract adherence, and footprint safety."
+      ],
+      "validation_plan": [
+        "Review source code and compiler diagnostic output."
+      ]
+    },
+    {
+      "id": "h12-battle-getunitsmirkstate-test",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement standalone Unicorn differential test harness for Battle_GetUnitSmirkState (0x00129c58).",
+      "depends_on": [
+        "h12-battle-getunitsmirkstate-candidate-review"
+      ],
+      "function_claims": [
+        "0x00129c58"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h12_battle_getunitsmirkstate_candidate.cpp",
+        "docs/agent-work/h12-battle-getunitsmirkstate-contract.md"
+      ],
+      "write_paths": [
+        "tools/h12_battle_getunitsmirkstate_experiment.py",
+        "docs/agent-work/h12-battle-getunitsmirkstate-test.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "tools/h12_battle_getunitsmirkstate_experiment.py"
+      ],
+      "acceptance": [
+        "Harness executes original vs candidate across test vectors with register/memory verification."
+      ],
+      "validation_plan": [
+        "Run script under python with Unicorn engine."
+      ]
+    },
+    {
+      "id": "h12-battle-getunitsmirkstate-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of differential test harness for Battle_GetUnitSmirkState (0x00129c58).",
+      "depends_on": [
+        "h12-battle-getunitsmirkstate-test"
+      ],
+      "function_claims": [
+        "0x00129c58"
+      ],
+      "read_paths": [
+        "tools/h12_battle_getunitsmirkstate_experiment.py",
+        "docs/agent-work/h12-battle-getunitsmirkstate-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-getunitsmirkstate-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify test coverage, boundary cases, and mutation sensitivity check."
+      ],
+      "validation_plan": [
+        "Audit test logic and execution trace."
+      ]
+    },
+    {
+      "id": "h12-battle-getunitsmirkstate-diff",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline Unicorn differential validation suite for Battle_GetUnitSmirkState (0x00129c58).",
+      "depends_on": [
+        "h12-battle-getunitsmirkstate-test-review"
+      ],
+      "function_claims": [
+        "0x00129c58"
+      ],
+      "read_paths": [
+        "tools/h12_battle_getunitsmirkstate_experiment.py",
+        "experiments/semantic_equivalence/h12_battle_getunitsmirkstate_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-getunitsmirkstate-diff.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "All differential test cases pass with 100% register/memory parity; mutation probe triggers mismatch."
+      ],
+      "validation_plan": [
+        "python tools/h12_battle_getunitsmirkstate_experiment.py"
+      ]
+    },
+    {
+      "id": "h12-battle-getunitsmirkstate-diff-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent audit of differential execution results for Battle_GetUnitSmirkState (0x00129c58).",
+      "depends_on": [
+        "h12-battle-getunitsmirkstate-diff"
+      ],
+      "function_claims": [
+        "0x00129c58"
+      ],
+      "read_paths": [
+        "docs/agent-work/h12-battle-getunitsmirkstate-diff.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-getunitsmirkstate-diff-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm 100% equivalence and mutation sensitivity."
+      ],
+      "validation_plan": [
+        "Verify differential test logs and assertion proofs."
+      ]
+    },
+    {
+      "id": "h12-battle-getunitsmirkstate-integration",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Stage binary candidate Battle_GetUnitSmirkState (0x00129c58) into composite image.",
+      "depends_on": [
+        "h12-battle-getunitsmirkstate-diff-review"
+      ],
+      "function_claims": [
+        "0x00129c58"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h12_battle_getunitsmirkstate_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-getunitsmirkstate-integration.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Candidate integrated into staged binary with relocations resolved."
+      ],
+      "validation_plan": [
+        "Verify relocations and memory offset layout."
+      ]
+    },
+    {
+      "id": "h12-battle-getunitsmirkstate-integration-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent audit of staged candidate integration for Battle_GetUnitSmirkState (0x00129c58).",
+      "depends_on": [
+        "h12-battle-getunitsmirkstate-integration"
+      ],
+      "function_claims": [
+        "0x00129c58"
+      ],
+      "read_paths": [
+        "docs/agent-work/h12-battle-getunitsmirkstate-integration.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-getunitsmirkstate-integration-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify candidate footprint compliance in composite stage."
+      ],
+      "validation_plan": [
+        "Audit integration record."
+      ]
+    },
+    {
+      "id": "h12-battle-getsmirkactor-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover formal semantic contract, types, and ABI for Battle_GetSmirkActor (0x00129cbc).",
+      "depends_on": [
+        "h12-advanced-combat-recon-review"
+      ],
+      "function_claims": [
+        "0x00129cbc"
+      ],
+      "read_paths": [
+        "docs/agent-work/h12-advanced-combat-recon.md",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-getsmirkactor-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Document contract, pre/postconditions, parameter semantics, and mutations for Battle_GetSmirkActor."
+      ],
+      "validation_plan": [
+        "Audit ARM assembly in code.bin at target address."
+      ]
+    },
+    {
+      "id": "h12-battle-getsmirkactor-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of formal semantic contract for Battle_GetSmirkActor (0x00129cbc).",
+      "depends_on": [
+        "h12-battle-getsmirkactor-contract"
+      ],
+      "function_claims": [
+        "0x00129cbc"
+      ],
+      "read_paths": [
+        "docs/agent-work/h12-battle-getsmirkactor-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-getsmirkactor-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract accuracy against disassembly."
+      ],
+      "validation_plan": [
+        "Cross-check against Capstone disassembly."
+      ]
+    },
+    {
+      "id": "h12-battle-getsmirkactor-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement clean C++ semantic candidate and mutation probe for Battle_GetSmirkActor (0x00129cbc).",
+      "depends_on": [
+        "h12-battle-getsmirkactor-contract-review"
+      ],
+      "function_claims": [
+        "0x00129cbc"
+      ],
+      "read_paths": [
+        "docs/agent-work/h12-battle-getsmirkactor-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h12_battle_getsmirkactor_candidate.cpp",
+        "docs/agent-work/h12-battle-getsmirkactor-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "experiments/semantic_equivalence/h12_battle_getsmirkactor_candidate.cpp"
+      ],
+      "acceptance": [
+        "Candidate compiles cleanly with clang++ ARMv6K and fits within target window."
+      ],
+      "validation_plan": [
+        "Compile candidate TU to object file and check binary footprint."
+      ]
+    },
+    {
+      "id": "h12-battle-getsmirkactor-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of C++ candidate implementation for Battle_GetSmirkActor (0x00129cbc).",
+      "depends_on": [
+        "h12-battle-getsmirkactor-candidate"
+      ],
+      "function_claims": [
+        "0x00129cbc"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h12_battle_getsmirkactor_candidate.cpp",
+        "docs/agent-work/h12-battle-getsmirkactor-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-getsmirkactor-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify C++ readability, contract adherence, and footprint safety."
+      ],
+      "validation_plan": [
+        "Review source code and compiler diagnostic output."
+      ]
+    },
+    {
+      "id": "h12-battle-getsmirkactor-test",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement standalone Unicorn differential test harness for Battle_GetSmirkActor (0x00129cbc).",
+      "depends_on": [
+        "h12-battle-getsmirkactor-candidate-review"
+      ],
+      "function_claims": [
+        "0x00129cbc"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h12_battle_getsmirkactor_candidate.cpp",
+        "docs/agent-work/h12-battle-getsmirkactor-contract.md"
+      ],
+      "write_paths": [
+        "tools/h12_battle_getsmirkactor_experiment.py",
+        "docs/agent-work/h12-battle-getsmirkactor-test.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "tools/h12_battle_getsmirkactor_experiment.py"
+      ],
+      "acceptance": [
+        "Harness executes original vs candidate across test vectors with register/memory verification."
+      ],
+      "validation_plan": [
+        "Run script under python with Unicorn engine."
+      ]
+    },
+    {
+      "id": "h12-battle-getsmirkactor-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of differential test harness for Battle_GetSmirkActor (0x00129cbc).",
+      "depends_on": [
+        "h12-battle-getsmirkactor-test"
+      ],
+      "function_claims": [
+        "0x00129cbc"
+      ],
+      "read_paths": [
+        "tools/h12_battle_getsmirkactor_experiment.py",
+        "docs/agent-work/h12-battle-getsmirkactor-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-getsmirkactor-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify test coverage, boundary cases, and mutation sensitivity check."
+      ],
+      "validation_plan": [
+        "Audit test logic and execution trace."
+      ]
+    },
+    {
+      "id": "h12-battle-getsmirkactor-diff",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline Unicorn differential validation suite for Battle_GetSmirkActor (0x00129cbc).",
+      "depends_on": [
+        "h12-battle-getsmirkactor-test-review"
+      ],
+      "function_claims": [
+        "0x00129cbc"
+      ],
+      "read_paths": [
+        "tools/h12_battle_getsmirkactor_experiment.py",
+        "experiments/semantic_equivalence/h12_battle_getsmirkactor_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-getsmirkactor-diff.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "All differential test cases pass with 100% register/memory parity; mutation probe triggers mismatch."
+      ],
+      "validation_plan": [
+        "python tools/h12_battle_getsmirkactor_experiment.py"
+      ]
+    },
+    {
+      "id": "h12-battle-getsmirkactor-diff-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent audit of differential execution results for Battle_GetSmirkActor (0x00129cbc).",
+      "depends_on": [
+        "h12-battle-getsmirkactor-diff"
+      ],
+      "function_claims": [
+        "0x00129cbc"
+      ],
+      "read_paths": [
+        "docs/agent-work/h12-battle-getsmirkactor-diff.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-getsmirkactor-diff-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm 100% equivalence and mutation sensitivity."
+      ],
+      "validation_plan": [
+        "Verify differential test logs and assertion proofs."
+      ]
+    },
+    {
+      "id": "h12-battle-getsmirkactor-integration",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Stage binary candidate Battle_GetSmirkActor (0x00129cbc) into composite image.",
+      "depends_on": [
+        "h12-battle-getsmirkactor-diff-review"
+      ],
+      "function_claims": [
+        "0x00129cbc"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h12_battle_getsmirkactor_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-getsmirkactor-integration.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Candidate integrated into staged binary with relocations resolved."
+      ],
+      "validation_plan": [
+        "Verify relocations and memory offset layout."
+      ]
+    },
+    {
+      "id": "h12-battle-getsmirkactor-integration-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent audit of staged candidate integration for Battle_GetSmirkActor (0x00129cbc).",
+      "depends_on": [
+        "h12-battle-getsmirkactor-integration"
+      ],
+      "function_claims": [
+        "0x00129cbc"
+      ],
+      "read_paths": [
+        "docs/agent-work/h12-battle-getsmirkactor-integration.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-getsmirkactor-integration-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify candidate footprint compliance in composite stage."
+      ],
+      "validation_plan": [
+        "Audit integration record."
+      ]
+    },
+    {
+      "id": "h12-battle-exchangesmirkslot-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover formal semantic contract, types, and ABI for Battle_ExchangeSmirkSlot (0x00129c70).",
+      "depends_on": [
+        "h12-advanced-combat-recon-review"
+      ],
+      "function_claims": [
+        "0x00129c70"
+      ],
+      "read_paths": [
+        "docs/agent-work/h12-advanced-combat-recon.md",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-exchangesmirkslot-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Document contract, pre/postconditions, parameter semantics, and mutations for Battle_ExchangeSmirkSlot."
+      ],
+      "validation_plan": [
+        "Audit ARM assembly in code.bin at target address."
+      ]
+    },
+    {
+      "id": "h12-battle-exchangesmirkslot-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of formal semantic contract for Battle_ExchangeSmirkSlot (0x00129c70).",
+      "depends_on": [
+        "h12-battle-exchangesmirkslot-contract"
+      ],
+      "function_claims": [
+        "0x00129c70"
+      ],
+      "read_paths": [
+        "docs/agent-work/h12-battle-exchangesmirkslot-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-exchangesmirkslot-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract accuracy against disassembly."
+      ],
+      "validation_plan": [
+        "Cross-check against Capstone disassembly."
+      ]
+    },
+    {
+      "id": "h12-battle-exchangesmirkslot-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement clean C++ semantic candidate and mutation probe for Battle_ExchangeSmirkSlot (0x00129c70).",
+      "depends_on": [
+        "h12-battle-exchangesmirkslot-contract-review"
+      ],
+      "function_claims": [
+        "0x00129c70"
+      ],
+      "read_paths": [
+        "docs/agent-work/h12-battle-exchangesmirkslot-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h12_battle_exchangesmirkslot_candidate.cpp",
+        "docs/agent-work/h12-battle-exchangesmirkslot-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "experiments/semantic_equivalence/h12_battle_exchangesmirkslot_candidate.cpp"
+      ],
+      "acceptance": [
+        "Candidate compiles cleanly with clang++ ARMv6K and fits within target window."
+      ],
+      "validation_plan": [
+        "Compile candidate TU to object file and check binary footprint."
+      ]
+    },
+    {
+      "id": "h12-battle-exchangesmirkslot-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of C++ candidate implementation for Battle_ExchangeSmirkSlot (0x00129c70).",
+      "depends_on": [
+        "h12-battle-exchangesmirkslot-candidate"
+      ],
+      "function_claims": [
+        "0x00129c70"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h12_battle_exchangesmirkslot_candidate.cpp",
+        "docs/agent-work/h12-battle-exchangesmirkslot-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-exchangesmirkslot-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify C++ readability, contract adherence, and footprint safety."
+      ],
+      "validation_plan": [
+        "Review source code and compiler diagnostic output."
+      ]
+    },
+    {
+      "id": "h12-battle-exchangesmirkslot-test",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement standalone Unicorn differential test harness for Battle_ExchangeSmirkSlot (0x00129c70).",
+      "depends_on": [
+        "h12-battle-exchangesmirkslot-candidate-review"
+      ],
+      "function_claims": [
+        "0x00129c70"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h12_battle_exchangesmirkslot_candidate.cpp",
+        "docs/agent-work/h12-battle-exchangesmirkslot-contract.md"
+      ],
+      "write_paths": [
+        "tools/h12_battle_exchangesmirkslot_experiment.py",
+        "docs/agent-work/h12-battle-exchangesmirkslot-test.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "tools/h12_battle_exchangesmirkslot_experiment.py"
+      ],
+      "acceptance": [
+        "Harness executes original vs candidate across test vectors with register/memory verification."
+      ],
+      "validation_plan": [
+        "Run script under python with Unicorn engine."
+      ]
+    },
+    {
+      "id": "h12-battle-exchangesmirkslot-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of differential test harness for Battle_ExchangeSmirkSlot (0x00129c70).",
+      "depends_on": [
+        "h12-battle-exchangesmirkslot-test"
+      ],
+      "function_claims": [
+        "0x00129c70"
+      ],
+      "read_paths": [
+        "tools/h12_battle_exchangesmirkslot_experiment.py",
+        "docs/agent-work/h12-battle-exchangesmirkslot-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-exchangesmirkslot-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify test coverage, boundary cases, and mutation sensitivity check."
+      ],
+      "validation_plan": [
+        "Audit test logic and execution trace."
+      ]
+    },
+    {
+      "id": "h12-battle-exchangesmirkslot-diff",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline Unicorn differential validation suite for Battle_ExchangeSmirkSlot (0x00129c70).",
+      "depends_on": [
+        "h12-battle-exchangesmirkslot-test-review"
+      ],
+      "function_claims": [
+        "0x00129c70"
+      ],
+      "read_paths": [
+        "tools/h12_battle_exchangesmirkslot_experiment.py",
+        "experiments/semantic_equivalence/h12_battle_exchangesmirkslot_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-exchangesmirkslot-diff.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "All differential test cases pass with 100% register/memory parity; mutation probe triggers mismatch."
+      ],
+      "validation_plan": [
+        "python tools/h12_battle_exchangesmirkslot_experiment.py"
+      ]
+    },
+    {
+      "id": "h12-battle-exchangesmirkslot-diff-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent audit of differential execution results for Battle_ExchangeSmirkSlot (0x00129c70).",
+      "depends_on": [
+        "h12-battle-exchangesmirkslot-diff"
+      ],
+      "function_claims": [
+        "0x00129c70"
+      ],
+      "read_paths": [
+        "docs/agent-work/h12-battle-exchangesmirkslot-diff.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-exchangesmirkslot-diff-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm 100% equivalence and mutation sensitivity."
+      ],
+      "validation_plan": [
+        "Verify differential test logs and assertion proofs."
+      ]
+    },
+    {
+      "id": "h12-battle-exchangesmirkslot-integration",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Stage binary candidate Battle_ExchangeSmirkSlot (0x00129c70) into composite image.",
+      "depends_on": [
+        "h12-battle-exchangesmirkslot-diff-review"
+      ],
+      "function_claims": [
+        "0x00129c70"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h12_battle_exchangesmirkslot_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-exchangesmirkslot-integration.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Candidate integrated into staged binary with relocations resolved."
+      ],
+      "validation_plan": [
+        "Verify relocations and memory offset layout."
+      ]
+    },
+    {
+      "id": "h12-battle-exchangesmirkslot-integration-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent audit of staged candidate integration for Battle_ExchangeSmirkSlot (0x00129c70).",
+      "depends_on": [
+        "h12-battle-exchangesmirkslot-integration"
+      ],
+      "function_claims": [
+        "0x00129c70"
+      ],
+      "read_paths": [
+        "docs/agent-work/h12-battle-exchangesmirkslot-integration.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-exchangesmirkslot-integration-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify candidate footprint compliance in composite stage."
+      ],
+      "validation_plan": [
+        "Audit integration record."
+      ]
+    },
+    {
+      "id": "h12-battle-initturndata-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover formal semantic contract, types, and ABI for Battle_InitTurnData (0x00136fa4).",
+      "depends_on": [
+        "h12-advanced-combat-recon-review"
+      ],
+      "function_claims": [
+        "0x00136fa4"
+      ],
+      "read_paths": [
+        "docs/agent-work/h12-advanced-combat-recon.md",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-initturndata-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Document contract, pre/postconditions, parameter semantics, and mutations for Battle_InitTurnData."
+      ],
+      "validation_plan": [
+        "Audit ARM assembly in code.bin at target address."
+      ]
+    },
+    {
+      "id": "h12-battle-initturndata-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of formal semantic contract for Battle_InitTurnData (0x00136fa4).",
+      "depends_on": [
+        "h12-battle-initturndata-contract"
+      ],
+      "function_claims": [
+        "0x00136fa4"
+      ],
+      "read_paths": [
+        "docs/agent-work/h12-battle-initturndata-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-initturndata-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract accuracy against disassembly."
+      ],
+      "validation_plan": [
+        "Cross-check against Capstone disassembly."
+      ]
+    },
+    {
+      "id": "h12-battle-initturndata-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement clean C++ semantic candidate and mutation probe for Battle_InitTurnData (0x00136fa4).",
+      "depends_on": [
+        "h12-battle-initturndata-contract-review"
+      ],
+      "function_claims": [
+        "0x00136fa4"
+      ],
+      "read_paths": [
+        "docs/agent-work/h12-battle-initturndata-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h12_battle_initturndata_candidate.cpp",
+        "docs/agent-work/h12-battle-initturndata-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "experiments/semantic_equivalence/h12_battle_initturndata_candidate.cpp"
+      ],
+      "acceptance": [
+        "Candidate compiles cleanly with clang++ ARMv6K and fits within target window."
+      ],
+      "validation_plan": [
+        "Compile candidate TU to object file and check binary footprint."
+      ]
+    },
+    {
+      "id": "h12-battle-initturndata-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of C++ candidate implementation for Battle_InitTurnData (0x00136fa4).",
+      "depends_on": [
+        "h12-battle-initturndata-candidate"
+      ],
+      "function_claims": [
+        "0x00136fa4"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h12_battle_initturndata_candidate.cpp",
+        "docs/agent-work/h12-battle-initturndata-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-initturndata-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify C++ readability, contract adherence, and footprint safety."
+      ],
+      "validation_plan": [
+        "Review source code and compiler diagnostic output."
+      ]
+    },
+    {
+      "id": "h12-battle-initturndata-test",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement standalone Unicorn differential test harness for Battle_InitTurnData (0x00136fa4).",
+      "depends_on": [
+        "h12-battle-initturndata-candidate-review"
+      ],
+      "function_claims": [
+        "0x00136fa4"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h12_battle_initturndata_candidate.cpp",
+        "docs/agent-work/h12-battle-initturndata-contract.md"
+      ],
+      "write_paths": [
+        "tools/h12_battle_initturndata_experiment.py",
+        "docs/agent-work/h12-battle-initturndata-test.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "tools/h12_battle_initturndata_experiment.py"
+      ],
+      "acceptance": [
+        "Harness executes original vs candidate across test vectors with register/memory verification."
+      ],
+      "validation_plan": [
+        "Run script under python with Unicorn engine."
+      ]
+    },
+    {
+      "id": "h12-battle-initturndata-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of differential test harness for Battle_InitTurnData (0x00136fa4).",
+      "depends_on": [
+        "h12-battle-initturndata-test"
+      ],
+      "function_claims": [
+        "0x00136fa4"
+      ],
+      "read_paths": [
+        "tools/h12_battle_initturndata_experiment.py",
+        "docs/agent-work/h12-battle-initturndata-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-initturndata-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify test coverage, boundary cases, and mutation sensitivity check."
+      ],
+      "validation_plan": [
+        "Audit test logic and execution trace."
+      ]
+    },
+    {
+      "id": "h12-battle-initturndata-diff",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline Unicorn differential validation suite for Battle_InitTurnData (0x00136fa4).",
+      "depends_on": [
+        "h12-battle-initturndata-test-review"
+      ],
+      "function_claims": [
+        "0x00136fa4"
+      ],
+      "read_paths": [
+        "tools/h12_battle_initturndata_experiment.py",
+        "experiments/semantic_equivalence/h12_battle_initturndata_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-initturndata-diff.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "All differential test cases pass with 100% register/memory parity; mutation probe triggers mismatch."
+      ],
+      "validation_plan": [
+        "python tools/h12_battle_initturndata_experiment.py"
+      ]
+    },
+    {
+      "id": "h12-battle-initturndata-diff-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent audit of differential execution results for Battle_InitTurnData (0x00136fa4).",
+      "depends_on": [
+        "h12-battle-initturndata-diff"
+      ],
+      "function_claims": [
+        "0x00136fa4"
+      ],
+      "read_paths": [
+        "docs/agent-work/h12-battle-initturndata-diff.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-initturndata-diff-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm 100% equivalence and mutation sensitivity."
+      ],
+      "validation_plan": [
+        "Verify differential test logs and assertion proofs."
+      ]
+    },
+    {
+      "id": "h12-battle-initturndata-integration",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Stage binary candidate Battle_InitTurnData (0x00136fa4) into composite image.",
+      "depends_on": [
+        "h12-battle-initturndata-diff-review"
+      ],
+      "function_claims": [
+        "0x00136fa4"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h12_battle_initturndata_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-initturndata-integration.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Candidate integrated into staged binary with relocations resolved."
+      ],
+      "validation_plan": [
+        "Verify relocations and memory offset layout."
+      ]
+    },
+    {
+      "id": "h12-battle-initturndata-integration-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent audit of staged candidate integration for Battle_InitTurnData (0x00136fa4).",
+      "depends_on": [
+        "h12-battle-initturndata-integration"
+      ],
+      "function_claims": [
+        "0x00136fa4"
+      ],
+      "read_paths": [
+        "docs/agent-work/h12-battle-initturndata-integration.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-initturndata-integration-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify candidate footprint compliance in composite stage."
+      ],
+      "validation_plan": [
+        "Audit integration record."
+      ]
+    },
+    {
+      "id": "h12-result-cleanup-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover formal semantic contract, types, and ABI for Result_Cleanup (0x001c87d8).",
+      "depends_on": [
+        "h12-advanced-combat-recon-review"
+      ],
+      "function_claims": [
+        "0x001c87d8"
+      ],
+      "read_paths": [
+        "docs/agent-work/h12-advanced-combat-recon.md",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-result-cleanup-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Document contract, pre/postconditions, parameter semantics, and mutations for Result_Cleanup."
+      ],
+      "validation_plan": [
+        "Audit ARM assembly in code.bin at target address."
+      ]
+    },
+    {
+      "id": "h12-result-cleanup-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of formal semantic contract for Result_Cleanup (0x001c87d8).",
+      "depends_on": [
+        "h12-result-cleanup-contract"
+      ],
+      "function_claims": [
+        "0x001c87d8"
+      ],
+      "read_paths": [
+        "docs/agent-work/h12-result-cleanup-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-result-cleanup-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract accuracy against disassembly."
+      ],
+      "validation_plan": [
+        "Cross-check against Capstone disassembly."
+      ]
+    },
+    {
+      "id": "h12-result-cleanup-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement clean C++ semantic candidate and mutation probe for Result_Cleanup (0x001c87d8).",
+      "depends_on": [
+        "h12-result-cleanup-contract-review"
+      ],
+      "function_claims": [
+        "0x001c87d8"
+      ],
+      "read_paths": [
+        "docs/agent-work/h12-result-cleanup-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h12_result_cleanup_candidate.cpp",
+        "docs/agent-work/h12-result-cleanup-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "experiments/semantic_equivalence/h12_result_cleanup_candidate.cpp"
+      ],
+      "acceptance": [
+        "Candidate compiles cleanly with clang++ ARMv6K and fits within target window."
+      ],
+      "validation_plan": [
+        "Compile candidate TU to object file and check binary footprint."
+      ]
+    },
+    {
+      "id": "h12-result-cleanup-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of C++ candidate implementation for Result_Cleanup (0x001c87d8).",
+      "depends_on": [
+        "h12-result-cleanup-candidate"
+      ],
+      "function_claims": [
+        "0x001c87d8"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h12_result_cleanup_candidate.cpp",
+        "docs/agent-work/h12-result-cleanup-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-result-cleanup-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify C++ readability, contract adherence, and footprint safety."
+      ],
+      "validation_plan": [
+        "Review source code and compiler diagnostic output."
+      ]
+    },
+    {
+      "id": "h12-result-cleanup-test",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement standalone Unicorn differential test harness for Result_Cleanup (0x001c87d8).",
+      "depends_on": [
+        "h12-result-cleanup-candidate-review"
+      ],
+      "function_claims": [
+        "0x001c87d8"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h12_result_cleanup_candidate.cpp",
+        "docs/agent-work/h12-result-cleanup-contract.md"
+      ],
+      "write_paths": [
+        "tools/h12_result_cleanup_experiment.py",
+        "docs/agent-work/h12-result-cleanup-test.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "tools/h12_result_cleanup_experiment.py"
+      ],
+      "acceptance": [
+        "Harness executes original vs candidate across test vectors with register/memory verification."
+      ],
+      "validation_plan": [
+        "Run script under python with Unicorn engine."
+      ]
+    },
+    {
+      "id": "h12-result-cleanup-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of differential test harness for Result_Cleanup (0x001c87d8).",
+      "depends_on": [
+        "h12-result-cleanup-test"
+      ],
+      "function_claims": [
+        "0x001c87d8"
+      ],
+      "read_paths": [
+        "tools/h12_result_cleanup_experiment.py",
+        "docs/agent-work/h12-result-cleanup-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-result-cleanup-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify test coverage, boundary cases, and mutation sensitivity check."
+      ],
+      "validation_plan": [
+        "Audit test logic and execution trace."
+      ]
+    },
+    {
+      "id": "h12-result-cleanup-diff",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline Unicorn differential validation suite for Result_Cleanup (0x001c87d8).",
+      "depends_on": [
+        "h12-result-cleanup-test-review"
+      ],
+      "function_claims": [
+        "0x001c87d8"
+      ],
+      "read_paths": [
+        "tools/h12_result_cleanup_experiment.py",
+        "experiments/semantic_equivalence/h12_result_cleanup_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-result-cleanup-diff.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "All differential test cases pass with 100% register/memory parity; mutation probe triggers mismatch."
+      ],
+      "validation_plan": [
+        "python tools/h12_result_cleanup_experiment.py"
+      ]
+    },
+    {
+      "id": "h12-result-cleanup-diff-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent audit of differential execution results for Result_Cleanup (0x001c87d8).",
+      "depends_on": [
+        "h12-result-cleanup-diff"
+      ],
+      "function_claims": [
+        "0x001c87d8"
+      ],
+      "read_paths": [
+        "docs/agent-work/h12-result-cleanup-diff.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-result-cleanup-diff-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm 100% equivalence and mutation sensitivity."
+      ],
+      "validation_plan": [
+        "Verify differential test logs and assertion proofs."
+      ]
+    },
+    {
+      "id": "h12-result-cleanup-integration",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Stage binary candidate Result_Cleanup (0x001c87d8) into composite image.",
+      "depends_on": [
+        "h12-result-cleanup-diff-review"
+      ],
+      "function_claims": [
+        "0x001c87d8"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h12_result_cleanup_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-result-cleanup-integration.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Candidate integrated into staged binary with relocations resolved."
+      ],
+      "validation_plan": [
+        "Verify relocations and memory offset layout."
+      ]
+    },
+    {
+      "id": "h12-result-cleanup-integration-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent audit of staged candidate integration for Result_Cleanup (0x001c87d8).",
+      "depends_on": [
+        "h12-result-cleanup-integration"
+      ],
+      "function_claims": [
+        "0x001c87d8"
+      ],
+      "read_paths": [
+        "docs/agent-work/h12-result-cleanup-integration.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-result-cleanup-integration-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify candidate footprint compliance in composite stage."
+      ],
+      "validation_plan": [
+        "Audit integration record."
+      ]
+    },
+    {
+      "id": "h12-battle-isunitdefeated-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover formal semantic contract, types, and ABI for Battle_IsUnitDefeated (0x0028de4c).",
+      "depends_on": [
+        "h12-advanced-combat-recon-review"
+      ],
+      "function_claims": [
+        "0x0028de4c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h12-advanced-combat-recon.md",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-isunitdefeated-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Document contract, pre/postconditions, parameter semantics, and mutations for Battle_IsUnitDefeated."
+      ],
+      "validation_plan": [
+        "Audit ARM assembly in code.bin at target address."
+      ]
+    },
+    {
+      "id": "h12-battle-isunitdefeated-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of formal semantic contract for Battle_IsUnitDefeated (0x0028de4c).",
+      "depends_on": [
+        "h12-battle-isunitdefeated-contract"
+      ],
+      "function_claims": [
+        "0x0028de4c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h12-battle-isunitdefeated-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-isunitdefeated-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract accuracy against disassembly."
+      ],
+      "validation_plan": [
+        "Cross-check against Capstone disassembly."
+      ]
+    },
+    {
+      "id": "h12-battle-isunitdefeated-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement clean C++ semantic candidate and mutation probe for Battle_IsUnitDefeated (0x0028de4c).",
+      "depends_on": [
+        "h12-battle-isunitdefeated-contract-review"
+      ],
+      "function_claims": [
+        "0x0028de4c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h12-battle-isunitdefeated-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h12_battle_isunitdefeated_candidate.cpp",
+        "docs/agent-work/h12-battle-isunitdefeated-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "experiments/semantic_equivalence/h12_battle_isunitdefeated_candidate.cpp"
+      ],
+      "acceptance": [
+        "Candidate compiles cleanly with clang++ ARMv6K and fits within target window."
+      ],
+      "validation_plan": [
+        "Compile candidate TU to object file and check binary footprint."
+      ]
+    },
+    {
+      "id": "h12-battle-isunitdefeated-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of C++ candidate implementation for Battle_IsUnitDefeated (0x0028de4c).",
+      "depends_on": [
+        "h12-battle-isunitdefeated-candidate"
+      ],
+      "function_claims": [
+        "0x0028de4c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h12_battle_isunitdefeated_candidate.cpp",
+        "docs/agent-work/h12-battle-isunitdefeated-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-isunitdefeated-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify C++ readability, contract adherence, and footprint safety."
+      ],
+      "validation_plan": [
+        "Review source code and compiler diagnostic output."
+      ]
+    },
+    {
+      "id": "h12-battle-isunitdefeated-test",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement standalone Unicorn differential test harness for Battle_IsUnitDefeated (0x0028de4c).",
+      "depends_on": [
+        "h12-battle-isunitdefeated-candidate-review"
+      ],
+      "function_claims": [
+        "0x0028de4c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h12_battle_isunitdefeated_candidate.cpp",
+        "docs/agent-work/h12-battle-isunitdefeated-contract.md"
+      ],
+      "write_paths": [
+        "tools/h12_battle_isunitdefeated_experiment.py",
+        "docs/agent-work/h12-battle-isunitdefeated-test.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "tools/h12_battle_isunitdefeated_experiment.py"
+      ],
+      "acceptance": [
+        "Harness executes original vs candidate across test vectors with register/memory verification."
+      ],
+      "validation_plan": [
+        "Run script under python with Unicorn engine."
+      ]
+    },
+    {
+      "id": "h12-battle-isunitdefeated-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of differential test harness for Battle_IsUnitDefeated (0x0028de4c).",
+      "depends_on": [
+        "h12-battle-isunitdefeated-test"
+      ],
+      "function_claims": [
+        "0x0028de4c"
+      ],
+      "read_paths": [
+        "tools/h12_battle_isunitdefeated_experiment.py",
+        "docs/agent-work/h12-battle-isunitdefeated-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-isunitdefeated-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify test coverage, boundary cases, and mutation sensitivity check."
+      ],
+      "validation_plan": [
+        "Audit test logic and execution trace."
+      ]
+    },
+    {
+      "id": "h12-battle-isunitdefeated-diff",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline Unicorn differential validation suite for Battle_IsUnitDefeated (0x0028de4c).",
+      "depends_on": [
+        "h12-battle-isunitdefeated-test-review"
+      ],
+      "function_claims": [
+        "0x0028de4c"
+      ],
+      "read_paths": [
+        "tools/h12_battle_isunitdefeated_experiment.py",
+        "experiments/semantic_equivalence/h12_battle_isunitdefeated_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-isunitdefeated-diff.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "All differential test cases pass with 100% register/memory parity; mutation probe triggers mismatch."
+      ],
+      "validation_plan": [
+        "python tools/h12_battle_isunitdefeated_experiment.py"
+      ]
+    },
+    {
+      "id": "h12-battle-isunitdefeated-diff-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent audit of differential execution results for Battle_IsUnitDefeated (0x0028de4c).",
+      "depends_on": [
+        "h12-battle-isunitdefeated-diff"
+      ],
+      "function_claims": [
+        "0x0028de4c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h12-battle-isunitdefeated-diff.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-isunitdefeated-diff-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm 100% equivalence and mutation sensitivity."
+      ],
+      "validation_plan": [
+        "Verify differential test logs and assertion proofs."
+      ]
+    },
+    {
+      "id": "h12-battle-isunitdefeated-integration",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Stage binary candidate Battle_IsUnitDefeated (0x0028de4c) into composite image.",
+      "depends_on": [
+        "h12-battle-isunitdefeated-diff-review"
+      ],
+      "function_claims": [
+        "0x0028de4c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h12_battle_isunitdefeated_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-isunitdefeated-integration.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Candidate integrated into staged binary with relocations resolved."
+      ],
+      "validation_plan": [
+        "Verify relocations and memory offset layout."
+      ]
+    },
+    {
+      "id": "h12-battle-isunitdefeated-integration-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent audit of staged candidate integration for Battle_IsUnitDefeated (0x0028de4c).",
+      "depends_on": [
+        "h12-battle-isunitdefeated-integration"
+      ],
+      "function_claims": [
+        "0x0028de4c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h12-battle-isunitdefeated-integration.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-isunitdefeated-integration-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify candidate footprint compliance in composite stage."
+      ],
+      "validation_plan": [
+        "Audit integration record."
+      ]
+    },
+    {
+      "id": "h12-battle-resetunitstatebuffer-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover formal semantic contract, types, and ABI for Battle_ResetUnitStateBuffer (0x00215938).",
+      "depends_on": [
+        "h12-advanced-combat-recon-review"
+      ],
+      "function_claims": [
+        "0x00215938"
+      ],
+      "read_paths": [
+        "docs/agent-work/h12-advanced-combat-recon.md",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-resetunitstatebuffer-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Document contract, pre/postconditions, parameter semantics, and mutations for Battle_ResetUnitStateBuffer."
+      ],
+      "validation_plan": [
+        "Audit ARM assembly in code.bin at target address."
+      ]
+    },
+    {
+      "id": "h12-battle-resetunitstatebuffer-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of formal semantic contract for Battle_ResetUnitStateBuffer (0x00215938).",
+      "depends_on": [
+        "h12-battle-resetunitstatebuffer-contract"
+      ],
+      "function_claims": [
+        "0x00215938"
+      ],
+      "read_paths": [
+        "docs/agent-work/h12-battle-resetunitstatebuffer-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-resetunitstatebuffer-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract accuracy against disassembly."
+      ],
+      "validation_plan": [
+        "Cross-check against Capstone disassembly."
+      ]
+    },
+    {
+      "id": "h12-battle-resetunitstatebuffer-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement clean C++ semantic candidate and mutation probe for Battle_ResetUnitStateBuffer (0x00215938).",
+      "depends_on": [
+        "h12-battle-resetunitstatebuffer-contract-review"
+      ],
+      "function_claims": [
+        "0x00215938"
+      ],
+      "read_paths": [
+        "docs/agent-work/h12-battle-resetunitstatebuffer-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h12_battle_resetunitstatebuffer_candidate.cpp",
+        "docs/agent-work/h12-battle-resetunitstatebuffer-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "experiments/semantic_equivalence/h12_battle_resetunitstatebuffer_candidate.cpp"
+      ],
+      "acceptance": [
+        "Candidate compiles cleanly with clang++ ARMv6K and fits within target window."
+      ],
+      "validation_plan": [
+        "Compile candidate TU to object file and check binary footprint."
+      ]
+    },
+    {
+      "id": "h12-battle-resetunitstatebuffer-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of C++ candidate implementation for Battle_ResetUnitStateBuffer (0x00215938).",
+      "depends_on": [
+        "h12-battle-resetunitstatebuffer-candidate"
+      ],
+      "function_claims": [
+        "0x00215938"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h12_battle_resetunitstatebuffer_candidate.cpp",
+        "docs/agent-work/h12-battle-resetunitstatebuffer-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-resetunitstatebuffer-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify C++ readability, contract adherence, and footprint safety."
+      ],
+      "validation_plan": [
+        "Review source code and compiler diagnostic output."
+      ]
+    },
+    {
+      "id": "h12-battle-resetunitstatebuffer-test",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement standalone Unicorn differential test harness for Battle_ResetUnitStateBuffer (0x00215938).",
+      "depends_on": [
+        "h12-battle-resetunitstatebuffer-candidate-review"
+      ],
+      "function_claims": [
+        "0x00215938"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h12_battle_resetunitstatebuffer_candidate.cpp",
+        "docs/agent-work/h12-battle-resetunitstatebuffer-contract.md"
+      ],
+      "write_paths": [
+        "tools/h12_battle_resetunitstatebuffer_experiment.py",
+        "docs/agent-work/h12-battle-resetunitstatebuffer-test.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "tools/h12_battle_resetunitstatebuffer_experiment.py"
+      ],
+      "acceptance": [
+        "Harness executes original vs candidate across test vectors with register/memory verification."
+      ],
+      "validation_plan": [
+        "Run script under python with Unicorn engine."
+      ]
+    },
+    {
+      "id": "h12-battle-resetunitstatebuffer-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of differential test harness for Battle_ResetUnitStateBuffer (0x00215938).",
+      "depends_on": [
+        "h12-battle-resetunitstatebuffer-test"
+      ],
+      "function_claims": [
+        "0x00215938"
+      ],
+      "read_paths": [
+        "tools/h12_battle_resetunitstatebuffer_experiment.py",
+        "docs/agent-work/h12-battle-resetunitstatebuffer-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-resetunitstatebuffer-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify test coverage, boundary cases, and mutation sensitivity check."
+      ],
+      "validation_plan": [
+        "Audit test logic and execution trace."
+      ]
+    },
+    {
+      "id": "h12-battle-resetunitstatebuffer-diff",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline Unicorn differential validation suite for Battle_ResetUnitStateBuffer (0x00215938).",
+      "depends_on": [
+        "h12-battle-resetunitstatebuffer-test-review"
+      ],
+      "function_claims": [
+        "0x00215938"
+      ],
+      "read_paths": [
+        "tools/h12_battle_resetunitstatebuffer_experiment.py",
+        "experiments/semantic_equivalence/h12_battle_resetunitstatebuffer_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-resetunitstatebuffer-diff.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "All differential test cases pass with 100% register/memory parity; mutation probe triggers mismatch."
+      ],
+      "validation_plan": [
+        "python tools/h12_battle_resetunitstatebuffer_experiment.py"
+      ]
+    },
+    {
+      "id": "h12-battle-resetunitstatebuffer-diff-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent audit of differential execution results for Battle_ResetUnitStateBuffer (0x00215938).",
+      "depends_on": [
+        "h12-battle-resetunitstatebuffer-diff"
+      ],
+      "function_claims": [
+        "0x00215938"
+      ],
+      "read_paths": [
+        "docs/agent-work/h12-battle-resetunitstatebuffer-diff.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-resetunitstatebuffer-diff-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm 100% equivalence and mutation sensitivity."
+      ],
+      "validation_plan": [
+        "Verify differential test logs and assertion proofs."
+      ]
+    },
+    {
+      "id": "h12-battle-resetunitstatebuffer-integration",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Stage binary candidate Battle_ResetUnitStateBuffer (0x00215938) into composite image.",
+      "depends_on": [
+        "h12-battle-resetunitstatebuffer-diff-review"
+      ],
+      "function_claims": [
+        "0x00215938"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h12_battle_resetunitstatebuffer_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-resetunitstatebuffer-integration.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Candidate integrated into staged binary with relocations resolved."
+      ],
+      "validation_plan": [
+        "Verify relocations and memory offset layout."
+      ]
+    },
+    {
+      "id": "h12-battle-resetunitstatebuffer-integration-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent audit of staged candidate integration for Battle_ResetUnitStateBuffer (0x00215938).",
+      "depends_on": [
+        "h12-battle-resetunitstatebuffer-integration"
+      ],
+      "function_claims": [
+        "0x00215938"
+      ],
+      "read_paths": [
+        "docs/agent-work/h12-battle-resetunitstatebuffer-integration.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-battle-resetunitstatebuffer-integration-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify candidate footprint compliance in composite stage."
+      ],
+      "validation_plan": [
+        "Audit integration record."
+      ]
+    },
+    {
+      "id": "h12-batch-integration",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Compose all 8 H12 candidates over H11 staged baseline image and build IPS LayeredFS patch.",
+      "depends_on": [
+        "h12-battle-initturnsubsystems-integration-review",
+        "h12-battle-getunitsmirkstate-integration-review",
+        "h12-battle-getsmirkactor-integration-review",
+        "h12-battle-exchangesmirkslot-integration-review",
+        "h12-battle-initturndata-integration-review",
+        "h12-result-cleanup-integration-review",
+        "h12-battle-isunitdefeated-integration-review",
+        "h12-battle-resetunitstatebuffer-integration-review"
+      ],
+      "function_claims": [
+        "0x00123050",
+        "0x00129c58",
+        "0x00129cbc",
+        "0x00129c70",
+        "0x00136fa4",
+        "0x001c87d8",
+        "0x0028de4c",
+        "0x00215938"
+      ],
+      "read_paths": [
+        "build/agent-work/H11-semantic/h11-integrated-stage/code.h11-final.bin",
+        "tools/h12_staged_image_patch.py"
+      ],
+      "write_paths": [
+        "build/agent-work/H12-semantic/h12-integrated-stage/code.h12-final.bin",
+        "build/agent-work/H12-semantic/h12-integrated-stage/code.h12-final.ips",
+        "build/agent-work/H12-semantic/h12-integrated-stage/h12_staging_summary.json",
+        "docs/agent-work/h12-batch-integration.md"
+      ],
+      "compiler_slots": 2,
+      "exclusive_resources": [],
+      "acceptance": [
+        "code.h12-final.bin successfully generated with all 8 functions patched.",
+        "code.h12-final.ips successfully generated with round-trip fidelity verified."
+      ],
+      "validation_plan": [
+        "python tools/h12_staged_image_patch.py"
+      ]
+    },
+    {
+      "id": "h12-batch-integration-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review and verification of H12 composite binary, IPS patch, and staging summary.",
+      "depends_on": [
+        "h12-batch-integration"
+      ],
+      "function_claims": [
+        "0x00123050",
+        "0x00129c58",
+        "0x00129cbc",
+        "0x00129c70",
+        "0x00136fa4",
+        "0x001c87d8",
+        "0x0028de4c",
+        "0x00215938"
+      ],
+      "read_paths": [
+        "build/agent-work/H12-semantic/h12-integrated-stage/h12_staging_summary.json",
+        "docs/agent-work/h12-batch-integration.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h12-batch-integration-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Validate SHA256 hashes and IPS roundtrip verification."
+      ],
+      "validation_plan": [
+        "Inspect staging summary and verify SHA256 integrity."
+      ]
+    },
+    {
+      "id": "h12-milestone-closure",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Milestone H12 closure, documentation finalization, and transition to Milestone H13.",
+      "depends_on": [
+        "h12-batch-integration-review"
+      ],
+      "function_claims": [
+        "0x00123050",
+        "0x00129c58",
+        "0x00129cbc",
+        "0x00129c70",
+        "0x00136fa4",
+        "0x001c87d8",
+        "0x0028de4c",
+        "0x00215938"
+      ],
+      "read_paths": [
+        "docs/agent-work/h12-batch-integration-review.md",
+        "build/agent-work/H12-semantic/h12-integrated-stage/h12_staging_summary.json"
+      ],
+      "write_paths": [
+        "docs/milestones/H12-advanced-combat.md",
+        "docs/functional-status.md",
+        "docs/reconstruction-milestones.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Milestone documentation complete with candidate metrics, validation proof, and status ledger updates."
+      ],
+      "validation_plan": [
+        "python tools/agent_workflow.py check"
+      ]
+    }
+  ]
+}

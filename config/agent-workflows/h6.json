@@ -1,0 +1,2601 @@
+{
+  "schema_version": 1,
+  "batch": "batch-h6-001",
+  "milestone": "H6",
+  "max_workers": 3,
+  "cpu_budget": 8,
+  "goal": "Reconstruct readable, editable C++ for Milestone H6 (Save and Reload), covering save common read/write container packing, worker process lifecycle and task setup, asynchronous step execution machine, and UI workspace initialization with full offline differential validation, caller composition, staging, and autonomous runtime verification.",
+  "coordinator_owned_paths": [
+    "config/agent-workflows/h6.json",
+    "config/reconstruction.json",
+    "docs/milestones/H6-save-and-reload.md",
+    "docs/functional-status.md",
+    "docs/reconstruction-milestones.md"
+  ],
+  "tasks": [
+    {
+      "id": "h6-save-persistence-recon",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Comprehensive static and architectural reconnaissance of Milestone H6 Save and Reload systems.",
+      "depends_on": [],
+      "function_claims": [
+        "0x0021041c",
+        "0x002104e8",
+        "0x0026b874",
+        "0x002ef9ac",
+        "0x002efb50",
+        "0x00322d70",
+        "0x00322f0c",
+        "0x00191eac"
+      ],
+      "read_paths": [
+        "src/ui/save_load.cpp",
+        "src/engine/asd_file.cpp",
+        "include/ui/save_load.h",
+        "docs/reconstruction-milestones.md",
+        "docs/milestones/H5-combat-minimum.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-save-persistence-recon.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Identify exact entry points, memory structures, and callers for H6 save/load subsystems.",
+        "Define offline-first differential boundaries, positive/negative controls, and mutation criteria."
+      ],
+      "validation_plan": [
+        "Cross-check candidate functions against pinned binary code.bin and functions.csv ledger."
+      ]
+    },
+    {
+      "id": "h6-save-persistence-recon-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of save and reload architecture reconnaissance and subsystem boundary definitions.",
+      "depends_on": [
+        "h6-save-persistence-recon"
+      ],
+      "function_claims": [
+        "0x0021041c",
+        "0x002104e8",
+        "0x0026b874",
+        "0x002ef9ac",
+        "0x002efb50",
+        "0x00322d70",
+        "0x00322f0c",
+        "0x00191eac"
+      ],
+      "read_paths": [
+        "docs/agent-work/h6-save-persistence-recon.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-save-persistence-recon-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract boundaries, calling conventions, and ABI preservation expectations.",
+        "Approve task division and candidate scope for H6 save and reload milestone."
+      ],
+      "validation_plan": [
+        "Confirm completeness of architecture reconnaissance and absence of unsupported assumptions."
+      ]
+    },
+    {
+      "id": "h6-save-common-read-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize contract, parameters, registers, and memory effects for AsdSaveCommon_Read (0x0021041c).",
+      "depends_on": [
+        "h6-save-persistence-recon-review"
+      ],
+      "function_claims": [
+        "0x0021041c"
+      ],
+      "read_paths": [
+        "src/ui/save_load.cpp",
+        "src/engine/asd_file.cpp",
+        "include/ui/save_load.h"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-asd-save-common-read-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Accurately specify semantics of AsdSaveCommon_Read.",
+        "Specify test fixtures and mutation controls."
+      ],
+      "validation_plan": [
+        "Static disassembly and register effect verification against code.bin."
+      ]
+    },
+    {
+      "id": "h6-save-common-read-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of AsdSaveCommon_Read contract specification.",
+      "depends_on": [
+        "h6-save-common-read-contract"
+      ],
+      "function_claims": [
+        "0x0021041c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h6-asd-save-common-read-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-asd-save-common-read-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract fidelity against ARM disassembled instructions."
+      ],
+      "validation_plan": [
+        "Audit edge cases, register clobbers, and pointer validations."
+      ]
+    },
+    {
+      "id": "h6-save-common-read-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable, editable C++ candidate for AsdSaveCommon_Read (0x0021041c) fitting binary window.",
+      "depends_on": [
+        "h6-save-common-read-contract-review"
+      ],
+      "function_claims": [
+        "0x0021041c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h6-asd-save-common-read-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h6_asd_save_common_read_candidate.cpp",
+        "docs/agent-work/h6-asd-save-common-read-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Candidate for AsdSaveCommon_Read compiles cleanly under Clang ARMv6K.",
+        "Size in bytes does not exceed original function window in code.bin."
+      ],
+      "validation_plan": [
+        "Compile with clang -target arm-none-eabi -march=armv6k and measure text section size."
+      ]
+    },
+    {
+      "id": "h6-save-common-read-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of C++ semantic candidate for AsdSaveCommon_Read (0x0021041c).",
+      "depends_on": [
+        "h6-save-common-read-candidate"
+      ],
+      "function_claims": [
+        "0x0021041c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h6_asd_save_common_read_candidate.cpp",
+        "docs/agent-work/h6-asd-save-common-read-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-asd-save-common-read-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify C++ implementation readability, semantic correctness, and ABI compliance."
+      ],
+      "validation_plan": [
+        "Independent source audit and disassembly inspection."
+      ]
+    },
+    {
+      "id": "h6-save-common-read-differential",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Unicorn differential test comparing compiled C++ candidate vs original ARM binary for AsdSaveCommon_Read (0x0021041c).",
+      "depends_on": [
+        "h6-save-common-read-candidate-review"
+      ],
+      "function_claims": [
+        "0x0021041c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h6_asd_save_common_read_candidate.cpp",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "tools/h6_asd_save_common_read_experiment.py",
+        "docs/agent-work/h6-save-common-read-differential.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "All differential test cases pass with 0 register and memory differences.",
+        "Negative mutation controls fail, proving test sensitivity."
+      ],
+      "validation_plan": [
+        "Execute python tools/h6_asd_save_common_read_experiment.py."
+      ]
+    },
+    {
+      "id": "h6-save-common-read-differential-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of differential test results and mutation sensitivity for AsdSaveCommon_Read.",
+      "depends_on": [
+        "h6-save-common-read-differential"
+      ],
+      "function_claims": [
+        "0x0021041c"
+      ],
+      "read_paths": [
+        "tools/h6_asd_save_common_read_experiment.py",
+        "docs/agent-work/h6-save-common-read-differential.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-save-common-read-differential-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm 100% test pass and verified mutation sensitivity."
+      ],
+      "validation_plan": [
+        "Independent review of test output logs and mutation test cases."
+      ]
+    },
+    {
+      "id": "h6-save-common-read-composition",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Caller composition verification for AsdSaveCommon_Read (0x0021041c) with surrounding callers.",
+      "depends_on": [
+        "h6-save-common-read-differential-review"
+      ],
+      "function_claims": [
+        "0x0021041c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h6_asd_save_common_read_candidate.cpp",
+        "src/ui/save_load.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-save-common-read-composition.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify caller stack frame compatibility, register preservation, and return values."
+      ],
+      "validation_plan": [
+        "Static caller-callee call graph and stack layout inspection."
+      ]
+    },
+    {
+      "id": "h6-save-common-read-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of caller composition for AsdSaveCommon_Read.",
+      "depends_on": [
+        "h6-save-common-read-composition"
+      ],
+      "function_claims": [
+        "0x0021041c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h6-save-common-read-composition.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-save-common-read-composition-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm no ABI violations or calling convention mismatches."
+      ],
+      "validation_plan": [
+        "Review call site argument setups and caller epilogues."
+      ]
+    },
+    {
+      "id": "h6-save-common-read-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Stage AsdSaveCommon_Read (0x0021041c) candidate into composite binary overlay.",
+      "depends_on": [
+        "h6-save-common-read-composition-review"
+      ],
+      "function_claims": [
+        "0x0021041c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h6_asd_save_common_read_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-save-common-read-staging.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify candidate byte size fits within binary boundary at 0x0021041c."
+      ],
+      "validation_plan": [
+        "Compare binary patch range against original executable address space."
+      ]
+    },
+    {
+      "id": "h6-save-common-read-staging-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of staging overlay for AsdSaveCommon_Read.",
+      "depends_on": [
+        "h6-save-common-read-staging"
+      ],
+      "function_claims": [
+        "0x0021041c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h6-save-common-read-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-save-common-read-staging-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm clean overlay without corrupting adjacent code or literal pools."
+      ],
+      "validation_plan": [
+        "Verify byte boundaries and patch offset alignment."
+      ]
+    },
+    {
+      "id": "h6-save-common-write-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize contract, parameters, registers, and memory effects for AsdSaveCommon_Write (0x002104e8).",
+      "depends_on": [
+        "h6-save-persistence-recon-review"
+      ],
+      "function_claims": [
+        "0x002104e8"
+      ],
+      "read_paths": [
+        "src/ui/save_load.cpp",
+        "src/engine/asd_file.cpp",
+        "include/ui/save_load.h"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-asd-save-common-write-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Accurately specify semantics of AsdSaveCommon_Write.",
+        "Specify test fixtures and mutation controls."
+      ],
+      "validation_plan": [
+        "Static disassembly and register effect verification against code.bin."
+      ]
+    },
+    {
+      "id": "h6-save-common-write-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of AsdSaveCommon_Write contract specification.",
+      "depends_on": [
+        "h6-save-common-write-contract"
+      ],
+      "function_claims": [
+        "0x002104e8"
+      ],
+      "read_paths": [
+        "docs/agent-work/h6-asd-save-common-write-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-asd-save-common-write-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract fidelity against ARM disassembled instructions."
+      ],
+      "validation_plan": [
+        "Audit edge cases, register clobbers, and pointer validations."
+      ]
+    },
+    {
+      "id": "h6-save-common-write-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable, editable C++ candidate for AsdSaveCommon_Write (0x002104e8) fitting binary window.",
+      "depends_on": [
+        "h6-save-common-write-contract-review"
+      ],
+      "function_claims": [
+        "0x002104e8"
+      ],
+      "read_paths": [
+        "docs/agent-work/h6-asd-save-common-write-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h6_asd_save_common_write_candidate.cpp",
+        "docs/agent-work/h6-asd-save-common-write-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Candidate for AsdSaveCommon_Write compiles cleanly under Clang ARMv6K.",
+        "Size in bytes does not exceed original function window in code.bin."
+      ],
+      "validation_plan": [
+        "Compile with clang -target arm-none-eabi -march=armv6k and measure text section size."
+      ]
+    },
+    {
+      "id": "h6-save-common-write-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of C++ semantic candidate for AsdSaveCommon_Write (0x002104e8).",
+      "depends_on": [
+        "h6-save-common-write-candidate"
+      ],
+      "function_claims": [
+        "0x002104e8"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h6_asd_save_common_write_candidate.cpp",
+        "docs/agent-work/h6-asd-save-common-write-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-asd-save-common-write-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify C++ implementation readability, semantic correctness, and ABI compliance."
+      ],
+      "validation_plan": [
+        "Independent source audit and disassembly inspection."
+      ]
+    },
+    {
+      "id": "h6-save-common-write-differential",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Unicorn differential test comparing compiled C++ candidate vs original ARM binary for AsdSaveCommon_Write (0x002104e8).",
+      "depends_on": [
+        "h6-save-common-write-candidate-review"
+      ],
+      "function_claims": [
+        "0x002104e8"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h6_asd_save_common_write_candidate.cpp",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "tools/h6_asd_save_common_write_experiment.py",
+        "docs/agent-work/h6-save-common-write-differential.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "All differential test cases pass with 0 register and memory differences.",
+        "Negative mutation controls fail, proving test sensitivity."
+      ],
+      "validation_plan": [
+        "Execute python tools/h6_asd_save_common_write_experiment.py."
+      ]
+    },
+    {
+      "id": "h6-save-common-write-differential-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of differential test results and mutation sensitivity for AsdSaveCommon_Write.",
+      "depends_on": [
+        "h6-save-common-write-differential"
+      ],
+      "function_claims": [
+        "0x002104e8"
+      ],
+      "read_paths": [
+        "tools/h6_asd_save_common_write_experiment.py",
+        "docs/agent-work/h6-save-common-write-differential.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-save-common-write-differential-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm 100% test pass and verified mutation sensitivity."
+      ],
+      "validation_plan": [
+        "Independent review of test output logs and mutation test cases."
+      ]
+    },
+    {
+      "id": "h6-save-common-write-composition",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Caller composition verification for AsdSaveCommon_Write (0x002104e8) with surrounding callers.",
+      "depends_on": [
+        "h6-save-common-write-differential-review"
+      ],
+      "function_claims": [
+        "0x002104e8"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h6_asd_save_common_write_candidate.cpp",
+        "src/ui/save_load.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-save-common-write-composition.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify caller stack frame compatibility, register preservation, and return values."
+      ],
+      "validation_plan": [
+        "Static caller-callee call graph and stack layout inspection."
+      ]
+    },
+    {
+      "id": "h6-save-common-write-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of caller composition for AsdSaveCommon_Write.",
+      "depends_on": [
+        "h6-save-common-write-composition"
+      ],
+      "function_claims": [
+        "0x002104e8"
+      ],
+      "read_paths": [
+        "docs/agent-work/h6-save-common-write-composition.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-save-common-write-composition-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm no ABI violations or calling convention mismatches."
+      ],
+      "validation_plan": [
+        "Review call site argument setups and caller epilogues."
+      ]
+    },
+    {
+      "id": "h6-save-common-write-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Stage AsdSaveCommon_Write (0x002104e8) candidate into composite binary overlay.",
+      "depends_on": [
+        "h6-save-common-write-composition-review"
+      ],
+      "function_claims": [
+        "0x002104e8"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h6_asd_save_common_write_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-save-common-write-staging.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify candidate byte size fits within binary boundary at 0x002104e8."
+      ],
+      "validation_plan": [
+        "Compare binary patch range against original executable address space."
+      ]
+    },
+    {
+      "id": "h6-save-common-write-staging-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of staging overlay for AsdSaveCommon_Write.",
+      "depends_on": [
+        "h6-save-common-write-staging"
+      ],
+      "function_claims": [
+        "0x002104e8"
+      ],
+      "read_paths": [
+        "docs/agent-work/h6-save-common-write-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-save-common-write-staging-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm clean overlay without corrupting adjacent code or literal pools."
+      ],
+      "validation_plan": [
+        "Verify byte boundaries and patch offset alignment."
+      ]
+    },
+    {
+      "id": "h6-saveload-process-init-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize contract, parameters, registers, and memory effects for SaveLoadProcess_Init (0x0026b874).",
+      "depends_on": [
+        "h6-save-persistence-recon-review"
+      ],
+      "function_claims": [
+        "0x0026b874"
+      ],
+      "read_paths": [
+        "src/ui/save_load.cpp",
+        "src/engine/asd_file.cpp",
+        "include/ui/save_load.h"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-saveload-process-init-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Accurately specify semantics of SaveLoadProcess_Init.",
+        "Specify test fixtures and mutation controls."
+      ],
+      "validation_plan": [
+        "Static disassembly and register effect verification against code.bin."
+      ]
+    },
+    {
+      "id": "h6-saveload-process-init-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of SaveLoadProcess_Init contract specification.",
+      "depends_on": [
+        "h6-saveload-process-init-contract"
+      ],
+      "function_claims": [
+        "0x0026b874"
+      ],
+      "read_paths": [
+        "docs/agent-work/h6-saveload-process-init-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-saveload-process-init-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract fidelity against ARM disassembled instructions."
+      ],
+      "validation_plan": [
+        "Audit edge cases, register clobbers, and pointer validations."
+      ]
+    },
+    {
+      "id": "h6-saveload-process-init-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable, editable C++ candidate for SaveLoadProcess_Init (0x0026b874) fitting binary window.",
+      "depends_on": [
+        "h6-saveload-process-init-contract-review"
+      ],
+      "function_claims": [
+        "0x0026b874"
+      ],
+      "read_paths": [
+        "docs/agent-work/h6-saveload-process-init-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h6_saveload_process_init_candidate.cpp",
+        "docs/agent-work/h6-saveload-process-init-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Candidate for SaveLoadProcess_Init compiles cleanly under Clang ARMv6K.",
+        "Size in bytes does not exceed original function window in code.bin."
+      ],
+      "validation_plan": [
+        "Compile with clang -target arm-none-eabi -march=armv6k and measure text section size."
+      ]
+    },
+    {
+      "id": "h6-saveload-process-init-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of C++ semantic candidate for SaveLoadProcess_Init (0x0026b874).",
+      "depends_on": [
+        "h6-saveload-process-init-candidate"
+      ],
+      "function_claims": [
+        "0x0026b874"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h6_saveload_process_init_candidate.cpp",
+        "docs/agent-work/h6-saveload-process-init-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-saveload-process-init-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify C++ implementation readability, semantic correctness, and ABI compliance."
+      ],
+      "validation_plan": [
+        "Independent source audit and disassembly inspection."
+      ]
+    },
+    {
+      "id": "h6-saveload-process-init-differential",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Unicorn differential test comparing compiled C++ candidate vs original ARM binary for SaveLoadProcess_Init (0x0026b874).",
+      "depends_on": [
+        "h6-saveload-process-init-candidate-review"
+      ],
+      "function_claims": [
+        "0x0026b874"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h6_saveload_process_init_candidate.cpp",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "tools/h6_saveload_process_init_experiment.py",
+        "docs/agent-work/h6-saveload-process-init-differential.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "All differential test cases pass with 0 register and memory differences.",
+        "Negative mutation controls fail, proving test sensitivity."
+      ],
+      "validation_plan": [
+        "Execute python tools/h6_saveload_process_init_experiment.py."
+      ]
+    },
+    {
+      "id": "h6-saveload-process-init-differential-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of differential test results and mutation sensitivity for SaveLoadProcess_Init.",
+      "depends_on": [
+        "h6-saveload-process-init-differential"
+      ],
+      "function_claims": [
+        "0x0026b874"
+      ],
+      "read_paths": [
+        "tools/h6_saveload_process_init_experiment.py",
+        "docs/agent-work/h6-saveload-process-init-differential.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-saveload-process-init-differential-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm 100% test pass and verified mutation sensitivity."
+      ],
+      "validation_plan": [
+        "Independent review of test output logs and mutation test cases."
+      ]
+    },
+    {
+      "id": "h6-saveload-process-init-composition",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Caller composition verification for SaveLoadProcess_Init (0x0026b874) with surrounding callers.",
+      "depends_on": [
+        "h6-saveload-process-init-differential-review"
+      ],
+      "function_claims": [
+        "0x0026b874"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h6_saveload_process_init_candidate.cpp",
+        "src/ui/save_load.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-saveload-process-init-composition.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify caller stack frame compatibility, register preservation, and return values."
+      ],
+      "validation_plan": [
+        "Static caller-callee call graph and stack layout inspection."
+      ]
+    },
+    {
+      "id": "h6-saveload-process-init-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of caller composition for SaveLoadProcess_Init.",
+      "depends_on": [
+        "h6-saveload-process-init-composition"
+      ],
+      "function_claims": [
+        "0x0026b874"
+      ],
+      "read_paths": [
+        "docs/agent-work/h6-saveload-process-init-composition.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-saveload-process-init-composition-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm no ABI violations or calling convention mismatches."
+      ],
+      "validation_plan": [
+        "Review call site argument setups and caller epilogues."
+      ]
+    },
+    {
+      "id": "h6-saveload-process-init-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Stage SaveLoadProcess_Init (0x0026b874) candidate into composite binary overlay.",
+      "depends_on": [
+        "h6-saveload-process-init-composition-review"
+      ],
+      "function_claims": [
+        "0x0026b874"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h6_saveload_process_init_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-saveload-process-init-staging.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify candidate byte size fits within binary boundary at 0x0026b874."
+      ],
+      "validation_plan": [
+        "Compare binary patch range against original executable address space."
+      ]
+    },
+    {
+      "id": "h6-saveload-process-init-staging-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of staging overlay for SaveLoadProcess_Init.",
+      "depends_on": [
+        "h6-saveload-process-init-staging"
+      ],
+      "function_claims": [
+        "0x0026b874"
+      ],
+      "read_paths": [
+        "docs/agent-work/h6-saveload-process-init-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-saveload-process-init-staging-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm clean overlay without corrupting adjacent code or literal pools."
+      ],
+      "validation_plan": [
+        "Verify byte boundaries and patch offset alignment."
+      ]
+    },
+    {
+      "id": "h6-saveload-process-step-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize contract, parameters, registers, and memory effects for SaveLoadProcess_Step (0x002ef9ac).",
+      "depends_on": [
+        "h6-save-persistence-recon-review"
+      ],
+      "function_claims": [
+        "0x002ef9ac"
+      ],
+      "read_paths": [
+        "src/ui/save_load.cpp",
+        "src/engine/asd_file.cpp",
+        "include/ui/save_load.h"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-saveload-process-step-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Accurately specify semantics of SaveLoadProcess_Step.",
+        "Specify test fixtures and mutation controls."
+      ],
+      "validation_plan": [
+        "Static disassembly and register effect verification against code.bin."
+      ]
+    },
+    {
+      "id": "h6-saveload-process-step-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of SaveLoadProcess_Step contract specification.",
+      "depends_on": [
+        "h6-saveload-process-step-contract"
+      ],
+      "function_claims": [
+        "0x002ef9ac"
+      ],
+      "read_paths": [
+        "docs/agent-work/h6-saveload-process-step-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-saveload-process-step-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract fidelity against ARM disassembled instructions."
+      ],
+      "validation_plan": [
+        "Audit edge cases, register clobbers, and pointer validations."
+      ]
+    },
+    {
+      "id": "h6-saveload-process-step-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable, editable C++ candidate for SaveLoadProcess_Step (0x002ef9ac) fitting binary window.",
+      "depends_on": [
+        "h6-saveload-process-step-contract-review"
+      ],
+      "function_claims": [
+        "0x002ef9ac"
+      ],
+      "read_paths": [
+        "docs/agent-work/h6-saveload-process-step-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h6_saveload_process_step_candidate.cpp",
+        "docs/agent-work/h6-saveload-process-step-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Candidate for SaveLoadProcess_Step compiles cleanly under Clang ARMv6K.",
+        "Size in bytes does not exceed original function window in code.bin."
+      ],
+      "validation_plan": [
+        "Compile with clang -target arm-none-eabi -march=armv6k and measure text section size."
+      ]
+    },
+    {
+      "id": "h6-saveload-process-step-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of C++ semantic candidate for SaveLoadProcess_Step (0x002ef9ac).",
+      "depends_on": [
+        "h6-saveload-process-step-candidate"
+      ],
+      "function_claims": [
+        "0x002ef9ac"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h6_saveload_process_step_candidate.cpp",
+        "docs/agent-work/h6-saveload-process-step-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-saveload-process-step-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify C++ implementation readability, semantic correctness, and ABI compliance."
+      ],
+      "validation_plan": [
+        "Independent source audit and disassembly inspection."
+      ]
+    },
+    {
+      "id": "h6-saveload-process-step-differential",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Unicorn differential test comparing compiled C++ candidate vs original ARM binary for SaveLoadProcess_Step (0x002ef9ac).",
+      "depends_on": [
+        "h6-saveload-process-step-candidate-review"
+      ],
+      "function_claims": [
+        "0x002ef9ac"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h6_saveload_process_step_candidate.cpp",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "tools/h6_saveload_process_step_experiment.py",
+        "docs/agent-work/h6-saveload-process-step-differential.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "All differential test cases pass with 0 register and memory differences.",
+        "Negative mutation controls fail, proving test sensitivity."
+      ],
+      "validation_plan": [
+        "Execute python tools/h6_saveload_process_step_experiment.py."
+      ]
+    },
+    {
+      "id": "h6-saveload-process-step-differential-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of differential test results and mutation sensitivity for SaveLoadProcess_Step.",
+      "depends_on": [
+        "h6-saveload-process-step-differential"
+      ],
+      "function_claims": [
+        "0x002ef9ac"
+      ],
+      "read_paths": [
+        "tools/h6_saveload_process_step_experiment.py",
+        "docs/agent-work/h6-saveload-process-step-differential.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-saveload-process-step-differential-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm 100% test pass and verified mutation sensitivity."
+      ],
+      "validation_plan": [
+        "Independent review of test output logs and mutation test cases."
+      ]
+    },
+    {
+      "id": "h6-saveload-process-step-composition",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Caller composition verification for SaveLoadProcess_Step (0x002ef9ac) with surrounding callers.",
+      "depends_on": [
+        "h6-saveload-process-step-differential-review"
+      ],
+      "function_claims": [
+        "0x002ef9ac"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h6_saveload_process_step_candidate.cpp",
+        "src/ui/save_load.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-saveload-process-step-composition.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify caller stack frame compatibility, register preservation, and return values."
+      ],
+      "validation_plan": [
+        "Static caller-callee call graph and stack layout inspection."
+      ]
+    },
+    {
+      "id": "h6-saveload-process-step-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of caller composition for SaveLoadProcess_Step.",
+      "depends_on": [
+        "h6-saveload-process-step-composition"
+      ],
+      "function_claims": [
+        "0x002ef9ac"
+      ],
+      "read_paths": [
+        "docs/agent-work/h6-saveload-process-step-composition.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-saveload-process-step-composition-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm no ABI violations or calling convention mismatches."
+      ],
+      "validation_plan": [
+        "Review call site argument setups and caller epilogues."
+      ]
+    },
+    {
+      "id": "h6-saveload-process-step-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Stage SaveLoadProcess_Step (0x002ef9ac) candidate into composite binary overlay.",
+      "depends_on": [
+        "h6-saveload-process-step-composition-review"
+      ],
+      "function_claims": [
+        "0x002ef9ac"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h6_saveload_process_step_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-saveload-process-step-staging.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify candidate byte size fits within binary boundary at 0x002ef9ac."
+      ],
+      "validation_plan": [
+        "Compare binary patch range against original executable address space."
+      ]
+    },
+    {
+      "id": "h6-saveload-process-step-staging-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of staging overlay for SaveLoadProcess_Step.",
+      "depends_on": [
+        "h6-saveload-process-step-staging"
+      ],
+      "function_claims": [
+        "0x002ef9ac"
+      ],
+      "read_paths": [
+        "docs/agent-work/h6-saveload-process-step-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-saveload-process-step-staging-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm clean overlay without corrupting adjacent code or literal pools."
+      ],
+      "validation_plan": [
+        "Verify byte boundaries and patch offset alignment."
+      ]
+    },
+    {
+      "id": "h6-saveload-process-write-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize contract, parameters, registers, and memory effects for SaveLoadProcess_Write (0x002efb50).",
+      "depends_on": [
+        "h6-save-persistence-recon-review"
+      ],
+      "function_claims": [
+        "0x002efb50"
+      ],
+      "read_paths": [
+        "src/ui/save_load.cpp",
+        "src/engine/asd_file.cpp",
+        "include/ui/save_load.h"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-saveload-process-write-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Accurately specify semantics of SaveLoadProcess_Write.",
+        "Specify test fixtures and mutation controls."
+      ],
+      "validation_plan": [
+        "Static disassembly and register effect verification against code.bin."
+      ]
+    },
+    {
+      "id": "h6-saveload-process-write-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of SaveLoadProcess_Write contract specification.",
+      "depends_on": [
+        "h6-saveload-process-write-contract"
+      ],
+      "function_claims": [
+        "0x002efb50"
+      ],
+      "read_paths": [
+        "docs/agent-work/h6-saveload-process-write-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-saveload-process-write-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract fidelity against ARM disassembled instructions."
+      ],
+      "validation_plan": [
+        "Audit edge cases, register clobbers, and pointer validations."
+      ]
+    },
+    {
+      "id": "h6-saveload-process-write-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable, editable C++ candidate for SaveLoadProcess_Write (0x002efb50) fitting binary window.",
+      "depends_on": [
+        "h6-saveload-process-write-contract-review"
+      ],
+      "function_claims": [
+        "0x002efb50"
+      ],
+      "read_paths": [
+        "docs/agent-work/h6-saveload-process-write-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h6_saveload_process_write_candidate.cpp",
+        "docs/agent-work/h6-saveload-process-write-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Candidate for SaveLoadProcess_Write compiles cleanly under Clang ARMv6K.",
+        "Size in bytes does not exceed original function window in code.bin."
+      ],
+      "validation_plan": [
+        "Compile with clang -target arm-none-eabi -march=armv6k and measure text section size."
+      ]
+    },
+    {
+      "id": "h6-saveload-process-write-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of C++ semantic candidate for SaveLoadProcess_Write (0x002efb50).",
+      "depends_on": [
+        "h6-saveload-process-write-candidate"
+      ],
+      "function_claims": [
+        "0x002efb50"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h6_saveload_process_write_candidate.cpp",
+        "docs/agent-work/h6-saveload-process-write-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-saveload-process-write-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify C++ implementation readability, semantic correctness, and ABI compliance."
+      ],
+      "validation_plan": [
+        "Independent source audit and disassembly inspection."
+      ]
+    },
+    {
+      "id": "h6-saveload-process-write-differential",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Unicorn differential test comparing compiled C++ candidate vs original ARM binary for SaveLoadProcess_Write (0x002efb50).",
+      "depends_on": [
+        "h6-saveload-process-write-candidate-review"
+      ],
+      "function_claims": [
+        "0x002efb50"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h6_saveload_process_write_candidate.cpp",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "tools/h6_saveload_process_write_experiment.py",
+        "docs/agent-work/h6-saveload-process-write-differential.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "All differential test cases pass with 0 register and memory differences.",
+        "Negative mutation controls fail, proving test sensitivity."
+      ],
+      "validation_plan": [
+        "Execute python tools/h6_saveload_process_write_experiment.py."
+      ]
+    },
+    {
+      "id": "h6-saveload-process-write-differential-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of differential test results and mutation sensitivity for SaveLoadProcess_Write.",
+      "depends_on": [
+        "h6-saveload-process-write-differential"
+      ],
+      "function_claims": [
+        "0x002efb50"
+      ],
+      "read_paths": [
+        "tools/h6_saveload_process_write_experiment.py",
+        "docs/agent-work/h6-saveload-process-write-differential.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-saveload-process-write-differential-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm 100% test pass and verified mutation sensitivity."
+      ],
+      "validation_plan": [
+        "Independent review of test output logs and mutation test cases."
+      ]
+    },
+    {
+      "id": "h6-saveload-process-write-composition",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Caller composition verification for SaveLoadProcess_Write (0x002efb50) with surrounding callers.",
+      "depends_on": [
+        "h6-saveload-process-write-differential-review"
+      ],
+      "function_claims": [
+        "0x002efb50"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h6_saveload_process_write_candidate.cpp",
+        "src/ui/save_load.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-saveload-process-write-composition.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify caller stack frame compatibility, register preservation, and return values."
+      ],
+      "validation_plan": [
+        "Static caller-callee call graph and stack layout inspection."
+      ]
+    },
+    {
+      "id": "h6-saveload-process-write-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of caller composition for SaveLoadProcess_Write.",
+      "depends_on": [
+        "h6-saveload-process-write-composition"
+      ],
+      "function_claims": [
+        "0x002efb50"
+      ],
+      "read_paths": [
+        "docs/agent-work/h6-saveload-process-write-composition.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-saveload-process-write-composition-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm no ABI violations or calling convention mismatches."
+      ],
+      "validation_plan": [
+        "Review call site argument setups and caller epilogues."
+      ]
+    },
+    {
+      "id": "h6-saveload-process-write-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Stage SaveLoadProcess_Write (0x002efb50) candidate into composite binary overlay.",
+      "depends_on": [
+        "h6-saveload-process-write-composition-review"
+      ],
+      "function_claims": [
+        "0x002efb50"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h6_saveload_process_write_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-saveload-process-write-staging.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify candidate byte size fits within binary boundary at 0x002efb50."
+      ],
+      "validation_plan": [
+        "Compare binary patch range against original executable address space."
+      ]
+    },
+    {
+      "id": "h6-saveload-process-write-staging-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of staging overlay for SaveLoadProcess_Write.",
+      "depends_on": [
+        "h6-saveload-process-write-staging"
+      ],
+      "function_claims": [
+        "0x002efb50"
+      ],
+      "read_paths": [
+        "docs/agent-work/h6-saveload-process-write-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-saveload-process-write-staging-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm clean overlay without corrupting adjacent code or literal pools."
+      ],
+      "validation_plan": [
+        "Verify byte boundaries and patch offset alignment."
+      ]
+    },
+    {
+      "id": "h6-saveload-process-read-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize contract, parameters, registers, and memory effects for SaveLoadProcess_Read (0x00322d70).",
+      "depends_on": [
+        "h6-save-persistence-recon-review"
+      ],
+      "function_claims": [
+        "0x00322d70"
+      ],
+      "read_paths": [
+        "src/ui/save_load.cpp",
+        "src/engine/asd_file.cpp",
+        "include/ui/save_load.h"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-saveload-process-read-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Accurately specify semantics of SaveLoadProcess_Read.",
+        "Specify test fixtures and mutation controls."
+      ],
+      "validation_plan": [
+        "Static disassembly and register effect verification against code.bin."
+      ]
+    },
+    {
+      "id": "h6-saveload-process-read-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of SaveLoadProcess_Read contract specification.",
+      "depends_on": [
+        "h6-saveload-process-read-contract"
+      ],
+      "function_claims": [
+        "0x00322d70"
+      ],
+      "read_paths": [
+        "docs/agent-work/h6-saveload-process-read-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-saveload-process-read-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract fidelity against ARM disassembled instructions."
+      ],
+      "validation_plan": [
+        "Audit edge cases, register clobbers, and pointer validations."
+      ]
+    },
+    {
+      "id": "h6-saveload-process-read-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable, editable C++ candidate for SaveLoadProcess_Read (0x00322d70) fitting binary window.",
+      "depends_on": [
+        "h6-saveload-process-read-contract-review"
+      ],
+      "function_claims": [
+        "0x00322d70"
+      ],
+      "read_paths": [
+        "docs/agent-work/h6-saveload-process-read-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h6_saveload_process_read_candidate.cpp",
+        "docs/agent-work/h6-saveload-process-read-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Candidate for SaveLoadProcess_Read compiles cleanly under Clang ARMv6K.",
+        "Size in bytes does not exceed original function window in code.bin."
+      ],
+      "validation_plan": [
+        "Compile with clang -target arm-none-eabi -march=armv6k and measure text section size."
+      ]
+    },
+    {
+      "id": "h6-saveload-process-read-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of C++ semantic candidate for SaveLoadProcess_Read (0x00322d70).",
+      "depends_on": [
+        "h6-saveload-process-read-candidate"
+      ],
+      "function_claims": [
+        "0x00322d70"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h6_saveload_process_read_candidate.cpp",
+        "docs/agent-work/h6-saveload-process-read-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-saveload-process-read-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify C++ implementation readability, semantic correctness, and ABI compliance."
+      ],
+      "validation_plan": [
+        "Independent source audit and disassembly inspection."
+      ]
+    },
+    {
+      "id": "h6-saveload-process-read-differential",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Unicorn differential test comparing compiled C++ candidate vs original ARM binary for SaveLoadProcess_Read (0x00322d70).",
+      "depends_on": [
+        "h6-saveload-process-read-candidate-review"
+      ],
+      "function_claims": [
+        "0x00322d70"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h6_saveload_process_read_candidate.cpp",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "tools/h6_saveload_process_read_experiment.py",
+        "docs/agent-work/h6-saveload-process-read-differential.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "All differential test cases pass with 0 register and memory differences.",
+        "Negative mutation controls fail, proving test sensitivity."
+      ],
+      "validation_plan": [
+        "Execute python tools/h6_saveload_process_read_experiment.py."
+      ]
+    },
+    {
+      "id": "h6-saveload-process-read-differential-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of differential test results and mutation sensitivity for SaveLoadProcess_Read.",
+      "depends_on": [
+        "h6-saveload-process-read-differential"
+      ],
+      "function_claims": [
+        "0x00322d70"
+      ],
+      "read_paths": [
+        "tools/h6_saveload_process_read_experiment.py",
+        "docs/agent-work/h6-saveload-process-read-differential.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-saveload-process-read-differential-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm 100% test pass and verified mutation sensitivity."
+      ],
+      "validation_plan": [
+        "Independent review of test output logs and mutation test cases."
+      ]
+    },
+    {
+      "id": "h6-saveload-process-read-composition",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Caller composition verification for SaveLoadProcess_Read (0x00322d70) with surrounding callers.",
+      "depends_on": [
+        "h6-saveload-process-read-differential-review"
+      ],
+      "function_claims": [
+        "0x00322d70"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h6_saveload_process_read_candidate.cpp",
+        "src/ui/save_load.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-saveload-process-read-composition.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify caller stack frame compatibility, register preservation, and return values."
+      ],
+      "validation_plan": [
+        "Static caller-callee call graph and stack layout inspection."
+      ]
+    },
+    {
+      "id": "h6-saveload-process-read-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of caller composition for SaveLoadProcess_Read.",
+      "depends_on": [
+        "h6-saveload-process-read-composition"
+      ],
+      "function_claims": [
+        "0x00322d70"
+      ],
+      "read_paths": [
+        "docs/agent-work/h6-saveload-process-read-composition.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-saveload-process-read-composition-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm no ABI violations or calling convention mismatches."
+      ],
+      "validation_plan": [
+        "Review call site argument setups and caller epilogues."
+      ]
+    },
+    {
+      "id": "h6-saveload-process-read-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Stage SaveLoadProcess_Read (0x00322d70) candidate into composite binary overlay.",
+      "depends_on": [
+        "h6-saveload-process-read-composition-review"
+      ],
+      "function_claims": [
+        "0x00322d70"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h6_saveload_process_read_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-saveload-process-read-staging.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify candidate byte size fits within binary boundary at 0x00322d70."
+      ],
+      "validation_plan": [
+        "Compare binary patch range against original executable address space."
+      ]
+    },
+    {
+      "id": "h6-saveload-process-read-staging-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of staging overlay for SaveLoadProcess_Read.",
+      "depends_on": [
+        "h6-saveload-process-read-staging"
+      ],
+      "function_claims": [
+        "0x00322d70"
+      ],
+      "read_paths": [
+        "docs/agent-work/h6-saveload-process-read-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-saveload-process-read-staging-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm clean overlay without corrupting adjacent code or literal pools."
+      ],
+      "validation_plan": [
+        "Verify byte boundaries and patch offset alignment."
+      ]
+    },
+    {
+      "id": "h6-saveload-process-close-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize contract, parameters, registers, and memory effects for SaveLoadProcess_Close (0x00322f0c).",
+      "depends_on": [
+        "h6-save-persistence-recon-review"
+      ],
+      "function_claims": [
+        "0x00322f0c"
+      ],
+      "read_paths": [
+        "src/ui/save_load.cpp",
+        "src/engine/asd_file.cpp",
+        "include/ui/save_load.h"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-saveload-process-close-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Accurately specify semantics of SaveLoadProcess_Close.",
+        "Specify test fixtures and mutation controls."
+      ],
+      "validation_plan": [
+        "Static disassembly and register effect verification against code.bin."
+      ]
+    },
+    {
+      "id": "h6-saveload-process-close-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of SaveLoadProcess_Close contract specification.",
+      "depends_on": [
+        "h6-saveload-process-close-contract"
+      ],
+      "function_claims": [
+        "0x00322f0c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h6-saveload-process-close-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-saveload-process-close-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract fidelity against ARM disassembled instructions."
+      ],
+      "validation_plan": [
+        "Audit edge cases, register clobbers, and pointer validations."
+      ]
+    },
+    {
+      "id": "h6-saveload-process-close-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable, editable C++ candidate for SaveLoadProcess_Close (0x00322f0c) fitting binary window.",
+      "depends_on": [
+        "h6-saveload-process-close-contract-review"
+      ],
+      "function_claims": [
+        "0x00322f0c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h6-saveload-process-close-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h6_saveload_process_close_candidate.cpp",
+        "docs/agent-work/h6-saveload-process-close-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Candidate for SaveLoadProcess_Close compiles cleanly under Clang ARMv6K.",
+        "Size in bytes does not exceed original function window in code.bin."
+      ],
+      "validation_plan": [
+        "Compile with clang -target arm-none-eabi -march=armv6k and measure text section size."
+      ]
+    },
+    {
+      "id": "h6-saveload-process-close-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of C++ semantic candidate for SaveLoadProcess_Close (0x00322f0c).",
+      "depends_on": [
+        "h6-saveload-process-close-candidate"
+      ],
+      "function_claims": [
+        "0x00322f0c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h6_saveload_process_close_candidate.cpp",
+        "docs/agent-work/h6-saveload-process-close-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-saveload-process-close-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify C++ implementation readability, semantic correctness, and ABI compliance."
+      ],
+      "validation_plan": [
+        "Independent source audit and disassembly inspection."
+      ]
+    },
+    {
+      "id": "h6-saveload-process-close-differential",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Unicorn differential test comparing compiled C++ candidate vs original ARM binary for SaveLoadProcess_Close (0x00322f0c).",
+      "depends_on": [
+        "h6-saveload-process-close-candidate-review"
+      ],
+      "function_claims": [
+        "0x00322f0c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h6_saveload_process_close_candidate.cpp",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "tools/h6_saveload_process_close_experiment.py",
+        "docs/agent-work/h6-saveload-process-close-differential.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "All differential test cases pass with 0 register and memory differences.",
+        "Negative mutation controls fail, proving test sensitivity."
+      ],
+      "validation_plan": [
+        "Execute python tools/h6_saveload_process_close_experiment.py."
+      ]
+    },
+    {
+      "id": "h6-saveload-process-close-differential-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of differential test results and mutation sensitivity for SaveLoadProcess_Close.",
+      "depends_on": [
+        "h6-saveload-process-close-differential"
+      ],
+      "function_claims": [
+        "0x00322f0c"
+      ],
+      "read_paths": [
+        "tools/h6_saveload_process_close_experiment.py",
+        "docs/agent-work/h6-saveload-process-close-differential.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-saveload-process-close-differential-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm 100% test pass and verified mutation sensitivity."
+      ],
+      "validation_plan": [
+        "Independent review of test output logs and mutation test cases."
+      ]
+    },
+    {
+      "id": "h6-saveload-process-close-composition",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Caller composition verification for SaveLoadProcess_Close (0x00322f0c) with surrounding callers.",
+      "depends_on": [
+        "h6-saveload-process-close-differential-review"
+      ],
+      "function_claims": [
+        "0x00322f0c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h6_saveload_process_close_candidate.cpp",
+        "src/ui/save_load.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-saveload-process-close-composition.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify caller stack frame compatibility, register preservation, and return values."
+      ],
+      "validation_plan": [
+        "Static caller-callee call graph and stack layout inspection."
+      ]
+    },
+    {
+      "id": "h6-saveload-process-close-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of caller composition for SaveLoadProcess_Close.",
+      "depends_on": [
+        "h6-saveload-process-close-composition"
+      ],
+      "function_claims": [
+        "0x00322f0c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h6-saveload-process-close-composition.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-saveload-process-close-composition-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm no ABI violations or calling convention mismatches."
+      ],
+      "validation_plan": [
+        "Review call site argument setups and caller epilogues."
+      ]
+    },
+    {
+      "id": "h6-saveload-process-close-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Stage SaveLoadProcess_Close (0x00322f0c) candidate into composite binary overlay.",
+      "depends_on": [
+        "h6-saveload-process-close-composition-review"
+      ],
+      "function_claims": [
+        "0x00322f0c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h6_saveload_process_close_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-saveload-process-close-staging.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify candidate byte size fits within binary boundary at 0x00322f0c."
+      ],
+      "validation_plan": [
+        "Compare binary patch range against original executable address space."
+      ]
+    },
+    {
+      "id": "h6-saveload-process-close-staging-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of staging overlay for SaveLoadProcess_Close.",
+      "depends_on": [
+        "h6-saveload-process-close-staging"
+      ],
+      "function_claims": [
+        "0x00322f0c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h6-saveload-process-close-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-saveload-process-close-staging-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm clean overlay without corrupting adjacent code or literal pools."
+      ],
+      "validation_plan": [
+        "Verify byte boundaries and patch offset alignment."
+      ]
+    },
+    {
+      "id": "h6-saveload-ui-init-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize contract, parameters, registers, and memory effects for saveLoadUI_Init (0x00191eac).",
+      "depends_on": [
+        "h6-save-persistence-recon-review"
+      ],
+      "function_claims": [
+        "0x00191eac"
+      ],
+      "read_paths": [
+        "src/ui/save_load.cpp",
+        "src/engine/asd_file.cpp",
+        "include/ui/save_load.h"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-saveload-ui-init-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Accurately specify semantics of saveLoadUI_Init.",
+        "Specify test fixtures and mutation controls."
+      ],
+      "validation_plan": [
+        "Static disassembly and register effect verification against code.bin."
+      ]
+    },
+    {
+      "id": "h6-saveload-ui-init-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of saveLoadUI_Init contract specification.",
+      "depends_on": [
+        "h6-saveload-ui-init-contract"
+      ],
+      "function_claims": [
+        "0x00191eac"
+      ],
+      "read_paths": [
+        "docs/agent-work/h6-saveload-ui-init-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-saveload-ui-init-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract fidelity against ARM disassembled instructions."
+      ],
+      "validation_plan": [
+        "Audit edge cases, register clobbers, and pointer validations."
+      ]
+    },
+    {
+      "id": "h6-saveload-ui-init-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable, editable C++ candidate for saveLoadUI_Init (0x00191eac) fitting binary window.",
+      "depends_on": [
+        "h6-saveload-ui-init-contract-review"
+      ],
+      "function_claims": [
+        "0x00191eac"
+      ],
+      "read_paths": [
+        "docs/agent-work/h6-saveload-ui-init-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h6_saveload_ui_init_candidate.cpp",
+        "docs/agent-work/h6-saveload-ui-init-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Candidate for saveLoadUI_Init compiles cleanly under Clang ARMv6K.",
+        "Size in bytes does not exceed original function window in code.bin."
+      ],
+      "validation_plan": [
+        "Compile with clang -target arm-none-eabi -march=armv6k and measure text section size."
+      ]
+    },
+    {
+      "id": "h6-saveload-ui-init-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of C++ semantic candidate for saveLoadUI_Init (0x00191eac).",
+      "depends_on": [
+        "h6-saveload-ui-init-candidate"
+      ],
+      "function_claims": [
+        "0x00191eac"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h6_saveload_ui_init_candidate.cpp",
+        "docs/agent-work/h6-saveload-ui-init-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-saveload-ui-init-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify C++ implementation readability, semantic correctness, and ABI compliance."
+      ],
+      "validation_plan": [
+        "Independent source audit and disassembly inspection."
+      ]
+    },
+    {
+      "id": "h6-saveload-ui-init-differential",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Unicorn differential test comparing compiled C++ candidate vs original ARM binary for saveLoadUI_Init (0x00191eac).",
+      "depends_on": [
+        "h6-saveload-ui-init-candidate-review"
+      ],
+      "function_claims": [
+        "0x00191eac"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h6_saveload_ui_init_candidate.cpp",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "tools/h6_saveload_ui_init_experiment.py",
+        "docs/agent-work/h6-saveload-ui-init-differential.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "All differential test cases pass with 0 register and memory differences.",
+        "Negative mutation controls fail, proving test sensitivity."
+      ],
+      "validation_plan": [
+        "Execute python tools/h6_saveload_ui_init_experiment.py."
+      ]
+    },
+    {
+      "id": "h6-saveload-ui-init-differential-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of differential test results and mutation sensitivity for saveLoadUI_Init.",
+      "depends_on": [
+        "h6-saveload-ui-init-differential"
+      ],
+      "function_claims": [
+        "0x00191eac"
+      ],
+      "read_paths": [
+        "tools/h6_saveload_ui_init_experiment.py",
+        "docs/agent-work/h6-saveload-ui-init-differential.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-saveload-ui-init-differential-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm 100% test pass and verified mutation sensitivity."
+      ],
+      "validation_plan": [
+        "Independent review of test output logs and mutation test cases."
+      ]
+    },
+    {
+      "id": "h6-saveload-ui-init-composition",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Caller composition verification for saveLoadUI_Init (0x00191eac) with surrounding callers.",
+      "depends_on": [
+        "h6-saveload-ui-init-differential-review"
+      ],
+      "function_claims": [
+        "0x00191eac"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h6_saveload_ui_init_candidate.cpp",
+        "src/ui/save_load.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-saveload-ui-init-composition.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify caller stack frame compatibility, register preservation, and return values."
+      ],
+      "validation_plan": [
+        "Static caller-callee call graph and stack layout inspection."
+      ]
+    },
+    {
+      "id": "h6-saveload-ui-init-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of caller composition for saveLoadUI_Init.",
+      "depends_on": [
+        "h6-saveload-ui-init-composition"
+      ],
+      "function_claims": [
+        "0x00191eac"
+      ],
+      "read_paths": [
+        "docs/agent-work/h6-saveload-ui-init-composition.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-saveload-ui-init-composition-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm no ABI violations or calling convention mismatches."
+      ],
+      "validation_plan": [
+        "Review call site argument setups and caller epilogues."
+      ]
+    },
+    {
+      "id": "h6-saveload-ui-init-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Stage saveLoadUI_Init (0x00191eac) candidate into composite binary overlay.",
+      "depends_on": [
+        "h6-saveload-ui-init-composition-review"
+      ],
+      "function_claims": [
+        "0x00191eac"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h6_saveload_ui_init_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-saveload-ui-init-staging.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify candidate byte size fits within binary boundary at 0x00191eac."
+      ],
+      "validation_plan": [
+        "Compare binary patch range against original executable address space."
+      ]
+    },
+    {
+      "id": "h6-saveload-ui-init-staging-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of staging overlay for saveLoadUI_Init.",
+      "depends_on": [
+        "h6-saveload-ui-init-staging"
+      ],
+      "function_claims": [
+        "0x00191eac"
+      ],
+      "read_paths": [
+        "docs/agent-work/h6-saveload-ui-init-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-saveload-ui-init-staging-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm clean overlay without corrupting adjacent code or literal pools."
+      ],
+      "validation_plan": [
+        "Verify byte boundaries and patch offset alignment."
+      ]
+    },
+    {
+      "id": "h6-staged-image-patch",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Generate composite patched binary code.h6-final.bin and IPS mod patch code.h6-final.ips.",
+      "depends_on": [
+        "h6-save-common-read-staging-review",
+        "h6-save-common-write-staging-review",
+        "h6-saveload-process-init-staging-review",
+        "h6-saveload-process-step-staging-review",
+        "h6-saveload-process-write-staging-review",
+        "h6-saveload-process-read-staging-review",
+        "h6-saveload-process-close-staging-review",
+        "h6-saveload-ui-init-staging-review"
+      ],
+      "function_claims": [
+        "0x0021041c",
+        "0x002104e8",
+        "0x0026b874",
+        "0x002ef9ac",
+        "0x002efb50",
+        "0x00322d70",
+        "0x00322f0c",
+        "0x00191eac"
+      ],
+      "read_paths": [
+        "tools/h6_staged_image_patch.py",
+        "code.h5-final.bin"
+      ],
+      "write_paths": [
+        "tools/h6_staged_image_patch.py",
+        "docs/agent-work/h6-staged-image-patch.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Produce code.h6-final.bin containing all H0-H5 + H6 reconstructions.",
+        "Generate valid code.h6-final.ips and verify round-trip application."
+      ],
+      "validation_plan": [
+        "Run python tools/h6_staged_image_patch.py and verify hashes."
+      ]
+    },
+    {
+      "id": "h6-staged-image-patch-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of composite image patch and IPS verification.",
+      "depends_on": [
+        "h6-staged-image-patch"
+      ],
+      "function_claims": [
+        "0x0021041c",
+        "0x002104e8",
+        "0x0026b874",
+        "0x002ef9ac",
+        "0x002efb50",
+        "0x00322d70",
+        "0x00322f0c",
+        "0x00191eac"
+      ],
+      "read_paths": [
+        "docs/agent-work/h6-staged-image-patch.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-staged-image-patch-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify patch byte offsets and SHA-256 round-trip integrity."
+      ],
+      "validation_plan": [
+        "Audit IPS encoder/decoder output and binary diffs."
+      ]
+    },
+    {
+      "id": "h6-offline-composite-gates",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute all offline validation gates across all 8 candidates prior to emulator launch.",
+      "depends_on": [
+        "h6-staged-image-patch-review"
+      ],
+      "function_claims": [
+        "0x0021041c",
+        "0x002104e8",
+        "0x0026b874",
+        "0x002ef9ac",
+        "0x002efb50",
+        "0x00322d70",
+        "0x00322f0c",
+        "0x00191eac"
+      ],
+      "read_paths": [
+        "tools/h6_asd_save_common_read_experiment.py",
+        "tools/h6_asd_save_common_write_experiment.py",
+        "tools/h6_saveload_process_init_experiment.py",
+        "tools/h6_saveload_process_step_experiment.py",
+        "tools/h6_saveload_process_write_experiment.py",
+        "tools/h6_saveload_process_read_experiment.py",
+        "tools/h6_saveload_process_close_experiment.py",
+        "tools/h6_saveload_ui_init_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-offline-composite-gates.md"
+      ],
+      "compiler_slots": 2,
+      "exclusive_resources": [],
+      "acceptance": [
+        "All 8 candidate differential test runners pass with 0 errors."
+      ],
+      "validation_plan": [
+        "Run each test script in succession and verify pass status."
+      ]
+    },
+    {
+      "id": "h6-offline-composite-gates-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of offline composite gates validation.",
+      "depends_on": [
+        "h6-offline-composite-gates"
+      ],
+      "function_claims": [
+        "0x0021041c",
+        "0x002104e8",
+        "0x0026b874",
+        "0x002ef9ac",
+        "0x002efb50",
+        "0x00322d70",
+        "0x00322f0c",
+        "0x00191eac"
+      ],
+      "read_paths": [
+        "docs/agent-work/h6-offline-composite-gates.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-offline-composite-gates-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm all 8 test suites pass with complete mutation sensitivity."
+      ],
+      "validation_plan": [
+        "Review gate logs and test reports."
+      ]
+    },
+    {
+      "id": "h6-autonomous-save-verify",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Autonomous runtime verification in Azahar emulator loopback stub comparing original vs code.h6-final.ips.",
+      "depends_on": [
+        "h6-offline-composite-gates-review"
+      ],
+      "function_claims": [
+        "0x0021041c",
+        "0x002104e8",
+        "0x0026b874",
+        "0x002ef9ac",
+        "0x002efb50",
+        "0x00322d70",
+        "0x00322f0c",
+        "0x00191eac"
+      ],
+      "read_paths": [
+        "tools/h3_autonomous_verify.py",
+        "code.h6-final.ips"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-autonomous-save-verify.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [
+        "emulator_session"
+      ],
+      "acceptance": [
+        "Run paired autonomous test via GDB RSP loopback stub.",
+        "0 register differences across Title, Save Load, and 250 Field scene ticks."
+      ],
+      "validation_plan": [
+        "Execute autonomous verify script and generate paired report.json."
+      ]
+    },
+    {
+      "id": "h6-autonomous-save-verify-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of autonomous paired runtime verification for Milestone H6.",
+      "depends_on": [
+        "h6-autonomous-save-verify"
+      ],
+      "function_claims": [
+        "0x0021041c",
+        "0x002104e8",
+        "0x0026b874",
+        "0x002ef9ac",
+        "0x002efb50",
+        "0x00322d70",
+        "0x00322f0c",
+        "0x00191eac"
+      ],
+      "read_paths": [
+        "docs/agent-work/h6-autonomous-save-verify.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h6-autonomous-save-verify-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm 100% paired equivalence with zero register or state differences."
+      ],
+      "validation_plan": [
+        "Audit runtime report metrics and save file hash integrity."
+      ]
+    },
+    {
+      "id": "h6-milestone-closure",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize closure of Milestone H6 across documentation and ledger tracking.",
+      "depends_on": [
+        "h6-autonomous-save-verify-review"
+      ],
+      "function_claims": [
+        "0x0021041c",
+        "0x002104e8",
+        "0x0026b874",
+        "0x002ef9ac",
+        "0x002efb50",
+        "0x00322d70",
+        "0x00322f0c",
+        "0x00191eac"
+      ],
+      "read_paths": [
+        "docs/milestones/H6-save-and-reload.md",
+        "docs/functional-status.md",
+        "docs/reconstruction-milestones.md"
+      ],
+      "write_paths": [
+        "docs/milestones/H6-save-and-reload.md",
+        "docs/functional-status.md",
+        "docs/reconstruction-milestones.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Update documentation marking Milestone H6 as completed and closed.",
+        "Ensure clean git state and 0 errors from tools/agent_workflow.py check."
+      ],
+      "validation_plan": [
+        "Run python tools/agent_workflow.py check."
+      ]
+    }
+  ]
+}

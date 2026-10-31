@@ -1,21 +1,34 @@
 {
   "primary_goal": "Recover editable C++ with supported semantic behavior; byte identity is optional.",
-  "active_milestone": "H4",
+  "active_milestone": "H20",
   "priority_sources": [
-    "src/engine/map_field.cpp",
-    "src/engine/map_runtime.cpp",
-    "src/script/script_vm_extras.cpp",
-    "src/engine/leaf_batch41_a.cpp"
+    "src/hal/hal_system.cpp",
+    "src/hal/hal_filesystem.cpp",
+    "src/hal/hal_graphics.cpp",
+    "src/hal/hal_audio.cpp",
+    "src/hal/hal_input.cpp"
   ],
   "priority_functions": [
     {
-      "address": "0x00208ce8",
-      "reason": "H4 field update/caller map"
+      "address": "0x00104ef4",
+      "reason": "H20 Platform Lifecycle & Clock / HAL_System"
+    },
+    {
+      "address": "0x0021041c",
+      "reason": "H20 File System & Stream Abstraction / HAL_FileSystem"
+    },
+    {
+      "address": "0x002c3b88",
+      "reason": "H20 Display Targets & Frame Presentation / HAL_Graphics"
+    },
+    {
+      "address": "0x0011311c",
+      "reason": "H20 Multi-channel Audio Streaming / HAL_Audio"
     },
     {
       "address": "0x0027fbc8",
-      "reason": "H4 candidate analog-axis input source; caller participation must be verified"
+      "reason": "H20 Touch, Circle Pad & Button Inputs / HAL_Input"
     }
   ],
-  "agent_workflow_board": "config/agent-workflows/h4.json"
+  "agent_workflow_board": "config/agent-workflows/h20.json"
 }

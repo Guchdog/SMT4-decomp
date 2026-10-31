@@ -1,0 +1,1956 @@
+{
+  "schema_version": 1,
+  "batch": "batch-h17-001",
+  "milestone": "H17",
+  "max_workers": 3,
+  "cpu_budget": 8,
+  "goal": "Reconstruct readable, editable C++ for Milestone H17 (StreetPass / CEC and DLC / AOC), covering Camp CEC edit work validation, card data copy, setting flag query, AOC result readiness, applet state flags, result copy value, global buffer release, and icon structure initialization with offline differential validation, staging, and autonomous verification.",
+  "coordinator_owned_paths": [
+    "config/agent-workflows/h17.json",
+    "config/reconstruction.json",
+    "docs/milestones/H17-cec-aoc.md",
+    "docs/functional-status.md",
+    "docs/reconstruction-milestones.md"
+  ],
+  "tasks": [
+    {
+      "id": "h17-cec-aoc-recon",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Comprehensive static and architectural reconnaissance of Milestone H17 StreetPass (DDS / CEC) and DLC (AOC) Subsystems.",
+      "depends_on": [],
+      "function_claims": [
+        "0x001ffadc",
+        "0x001ff814",
+        "0x002a17c0",
+        "0x002a17d4",
+        "0x002a17e4",
+        "0x002b2520",
+        "0x002d73f4",
+        "0x0038c248"
+      ],
+      "read_paths": [
+        "docs/reconstruction-milestones.md",
+        "docs/milestones/H16-audio-engine.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-cec-aoc-recon.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Identify exact entry points, memory structures, and callers for H17 CEC/AOC subsystems.",
+        "Define offline-first differential boundaries, positive/negative controls, and mutation criteria."
+      ],
+      "validation_plan": [
+        "Cross-check candidate functions against pinned binary code.bin and functions.csv ledger."
+      ]
+    },
+    {
+      "id": "h17-cec-aoc-recon-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of H17 CEC/AOC architecture reconnaissance.",
+      "depends_on": [
+        "h17-cec-aoc-recon"
+      ],
+      "function_claims": [
+        "0x001ffadc",
+        "0x001ff814",
+        "0x002a17c0",
+        "0x002a17d4",
+        "0x002a17e4",
+        "0x002b2520",
+        "0x002d73f4",
+        "0x0038c248"
+      ],
+      "read_paths": [
+        "docs/agent-work/h17-cec-aoc-recon.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-cec-aoc-recon-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm scope boundaries, calling conventions, and offline differential test plans."
+      ],
+      "validation_plan": [
+        "Verify against function signatures and registers."
+      ]
+    },
+    {
+      "id": "h17-campcec-haseditwork-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover precise calling contract, memory boundaries, and semantics for CampCec_HasEditWork.",
+      "depends_on": [
+        "h17-cec-aoc-recon-review"
+      ],
+      "function_claims": [
+        "0x001ffadc"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-campcec-haseditwork-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover registers, arguments, preconditions, and return values."
+      ],
+      "validation_plan": [
+        "Static disassembly analysis."
+      ]
+    },
+    {
+      "id": "h17-campcec-haseditwork-contract-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review contract specification for CampCec_HasEditWork.",
+      "depends_on": [
+        "h17-campcec-haseditwork-contract"
+      ],
+      "function_claims": [
+        "0x001ffadc"
+      ],
+      "read_paths": [
+        "docs/agent-work/h17-campcec-haseditwork-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-campcec-haseditwork-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve verified contract record."
+      ],
+      "validation_plan": [
+        "Compare contract against disassembled original."
+      ]
+    },
+    {
+      "id": "h17-campcec-haseditwork-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement clean, editable C++ candidate for CampCec_HasEditWork within binary window footprint.",
+      "depends_on": [
+        "h17-campcec-haseditwork-contract-review"
+      ],
+      "function_claims": [
+        "0x001ffadc"
+      ],
+      "read_paths": [
+        "docs/agent-work/h17-campcec-haseditwork-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h17_campcec_haseditwork_candidate.cpp",
+        "docs/agent-work/h17-campcec-haseditwork-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "experiments/semantic_equivalence/h17_campcec_haseditwork_candidate.cpp"
+      ],
+      "acceptance": [
+        "Compile freestanding ARMv6K object within allocated window footprint."
+      ],
+      "validation_plan": [
+        "python tools/build_h17_all.py"
+      ]
+    },
+    {
+      "id": "h17-campcec-haseditwork-cand-review",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of candidate implementation for CampCec_HasEditWork.",
+      "depends_on": [
+        "h17-campcec-haseditwork-candidate"
+      ],
+      "function_claims": [
+        "0x001ffadc"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h17_campcec_haseditwork_candidate.cpp",
+        "docs/agent-work/h17-campcec-haseditwork-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-campcec-haseditwork-cand-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify absence of undefined behavior and correct ABI compliance."
+      ],
+      "validation_plan": [
+        "Source inspection."
+      ]
+    },
+    {
+      "id": "h17-campcec-haseditwork-diff-test",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline Unicorn differential test suite for CampCec_HasEditWork comparing against pinned binary.",
+      "depends_on": [
+        "h17-campcec-haseditwork-cand-review"
+      ],
+      "function_claims": [
+        "0x001ffadc"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h17_campcec_haseditwork_candidate.cpp",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "tools/h17_campcec_haseditwork_experiment.py",
+        "docs/agent-work/h17-campcec-haseditwork-diff-test.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Pass all test vectors with 100% register and memory parity and verify mutation detection."
+      ],
+      "validation_plan": [
+        "python tools/h17_campcec_haseditwork_experiment.py"
+      ]
+    },
+    {
+      "id": "h17-campcec-haseditwork-diff-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential validation results for CampCec_HasEditWork.",
+      "depends_on": [
+        "h17-campcec-haseditwork-diff-test"
+      ],
+      "function_claims": [
+        "0x001ffadc"
+      ],
+      "read_paths": [
+        "docs/agent-work/h17-campcec-haseditwork-diff-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-campcec-haseditwork-diff-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve differential validation record."
+      ],
+      "validation_plan": [
+        "Audit differential run log."
+      ]
+    },
+    {
+      "id": "h17-campcec-haseditwork-promotion",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Promote validated C++ candidate for CampCec_HasEditWork into milestone staging pipeline.",
+      "depends_on": [
+        "h17-campcec-haseditwork-diff-test-review"
+      ],
+      "function_claims": [
+        "0x001ffadc"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h17_campcec_haseditwork_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-campcec-haseditwork-promotion.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Record candidate readiness for binary staging composition."
+      ],
+      "validation_plan": [
+        "Verify staging eligibility."
+      ]
+    },
+    {
+      "id": "h17-campcec-haseditwork-promotion-review",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review candidate promotion for CampCec_HasEditWork.",
+      "depends_on": [
+        "h17-campcec-haseditwork-promotion"
+      ],
+      "function_claims": [
+        "0x001ffadc"
+      ],
+      "read_paths": [
+        "docs/agent-work/h17-campcec-haseditwork-promotion.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-campcec-haseditwork-promotion-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm promotion into milestone integrated stage."
+      ],
+      "validation_plan": [
+        "Audit promotion record."
+      ]
+    },
+    {
+      "id": "h17-campcec-copycarddata-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover precise calling contract, memory boundaries, and semantics for CampCec_CopyCardData.",
+      "depends_on": [
+        "h17-cec-aoc-recon-review"
+      ],
+      "function_claims": [
+        "0x001ff814"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-campcec-copycarddata-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover registers, arguments, preconditions, and return values."
+      ],
+      "validation_plan": [
+        "Static disassembly analysis."
+      ]
+    },
+    {
+      "id": "h17-campcec-copycarddata-contract-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review contract specification for CampCec_CopyCardData.",
+      "depends_on": [
+        "h17-campcec-copycarddata-contract"
+      ],
+      "function_claims": [
+        "0x001ff814"
+      ],
+      "read_paths": [
+        "docs/agent-work/h17-campcec-copycarddata-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-campcec-copycarddata-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve verified contract record."
+      ],
+      "validation_plan": [
+        "Compare contract against disassembled original."
+      ]
+    },
+    {
+      "id": "h17-campcec-copycarddata-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement clean, editable C++ candidate for CampCec_CopyCardData within binary window footprint.",
+      "depends_on": [
+        "h17-campcec-copycarddata-contract-review"
+      ],
+      "function_claims": [
+        "0x001ff814"
+      ],
+      "read_paths": [
+        "docs/agent-work/h17-campcec-copycarddata-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h17_campcec_copycarddata_candidate.cpp",
+        "docs/agent-work/h17-campcec-copycarddata-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "experiments/semantic_equivalence/h17_campcec_copycarddata_candidate.cpp"
+      ],
+      "acceptance": [
+        "Compile freestanding ARMv6K object within allocated window footprint."
+      ],
+      "validation_plan": [
+        "python tools/build_h17_all.py"
+      ]
+    },
+    {
+      "id": "h17-campcec-copycarddata-cand-review",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of candidate implementation for CampCec_CopyCardData.",
+      "depends_on": [
+        "h17-campcec-copycarddata-candidate"
+      ],
+      "function_claims": [
+        "0x001ff814"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h17_campcec_copycarddata_candidate.cpp",
+        "docs/agent-work/h17-campcec-copycarddata-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-campcec-copycarddata-cand-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify absence of undefined behavior and correct ABI compliance."
+      ],
+      "validation_plan": [
+        "Source inspection."
+      ]
+    },
+    {
+      "id": "h17-campcec-copycarddata-diff-test",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline Unicorn differential test suite for CampCec_CopyCardData comparing against pinned binary.",
+      "depends_on": [
+        "h17-campcec-copycarddata-cand-review"
+      ],
+      "function_claims": [
+        "0x001ff814"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h17_campcec_copycarddata_candidate.cpp",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "tools/h17_campcec_copycarddata_experiment.py",
+        "docs/agent-work/h17-campcec-copycarddata-diff-test.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Pass all test vectors with 100% register and memory parity and verify mutation detection."
+      ],
+      "validation_plan": [
+        "python tools/h17_campcec_copycarddata_experiment.py"
+      ]
+    },
+    {
+      "id": "h17-campcec-copycarddata-diff-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential validation results for CampCec_CopyCardData.",
+      "depends_on": [
+        "h17-campcec-copycarddata-diff-test"
+      ],
+      "function_claims": [
+        "0x001ff814"
+      ],
+      "read_paths": [
+        "docs/agent-work/h17-campcec-copycarddata-diff-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-campcec-copycarddata-diff-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve differential validation record."
+      ],
+      "validation_plan": [
+        "Audit differential run log."
+      ]
+    },
+    {
+      "id": "h17-campcec-copycarddata-promotion",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Promote validated C++ candidate for CampCec_CopyCardData into milestone staging pipeline.",
+      "depends_on": [
+        "h17-campcec-copycarddata-diff-test-review"
+      ],
+      "function_claims": [
+        "0x001ff814"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h17_campcec_copycarddata_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-campcec-copycarddata-promotion.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Record candidate readiness for binary staging composition."
+      ],
+      "validation_plan": [
+        "Verify staging eligibility."
+      ]
+    },
+    {
+      "id": "h17-campcec-copycarddata-promotion-review",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review candidate promotion for CampCec_CopyCardData.",
+      "depends_on": [
+        "h17-campcec-copycarddata-promotion"
+      ],
+      "function_claims": [
+        "0x001ff814"
+      ],
+      "read_paths": [
+        "docs/agent-work/h17-campcec-copycarddata-promotion.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-campcec-copycarddata-promotion-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm promotion into milestone integrated stage."
+      ],
+      "validation_plan": [
+        "Audit promotion record."
+      ]
+    },
+    {
+      "id": "h17-aoc-resultisready-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover precise calling contract, memory boundaries, and semantics for Aoc_ResultIsReady.",
+      "depends_on": [
+        "h17-cec-aoc-recon-review"
+      ],
+      "function_claims": [
+        "0x002a17c0"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-aoc-resultisready-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover registers, arguments, preconditions, and return values."
+      ],
+      "validation_plan": [
+        "Static disassembly analysis."
+      ]
+    },
+    {
+      "id": "h17-aoc-resultisready-contract-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review contract specification for Aoc_ResultIsReady.",
+      "depends_on": [
+        "h17-aoc-resultisready-contract"
+      ],
+      "function_claims": [
+        "0x002a17c0"
+      ],
+      "read_paths": [
+        "docs/agent-work/h17-aoc-resultisready-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-aoc-resultisready-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve verified contract record."
+      ],
+      "validation_plan": [
+        "Compare contract against disassembled original."
+      ]
+    },
+    {
+      "id": "h17-aoc-resultisready-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement clean, editable C++ candidate for Aoc_ResultIsReady within binary window footprint.",
+      "depends_on": [
+        "h17-aoc-resultisready-contract-review"
+      ],
+      "function_claims": [
+        "0x002a17c0"
+      ],
+      "read_paths": [
+        "docs/agent-work/h17-aoc-resultisready-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h17_aoc_resultisready_candidate.cpp",
+        "docs/agent-work/h17-aoc-resultisready-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "experiments/semantic_equivalence/h17_aoc_resultisready_candidate.cpp"
+      ],
+      "acceptance": [
+        "Compile freestanding ARMv6K object within allocated window footprint."
+      ],
+      "validation_plan": [
+        "python tools/build_h17_all.py"
+      ]
+    },
+    {
+      "id": "h17-aoc-resultisready-cand-review",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of candidate implementation for Aoc_ResultIsReady.",
+      "depends_on": [
+        "h17-aoc-resultisready-candidate"
+      ],
+      "function_claims": [
+        "0x002a17c0"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h17_aoc_resultisready_candidate.cpp",
+        "docs/agent-work/h17-aoc-resultisready-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-aoc-resultisready-cand-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify absence of undefined behavior and correct ABI compliance."
+      ],
+      "validation_plan": [
+        "Source inspection."
+      ]
+    },
+    {
+      "id": "h17-aoc-resultisready-diff-test",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline Unicorn differential test suite for Aoc_ResultIsReady comparing against pinned binary.",
+      "depends_on": [
+        "h17-aoc-resultisready-cand-review"
+      ],
+      "function_claims": [
+        "0x002a17c0"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h17_aoc_resultisready_candidate.cpp",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "tools/h17_aoc_resultisready_experiment.py",
+        "docs/agent-work/h17-aoc-resultisready-diff-test.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Pass all test vectors with 100% register and memory parity and verify mutation detection."
+      ],
+      "validation_plan": [
+        "python tools/h17_aoc_resultisready_experiment.py"
+      ]
+    },
+    {
+      "id": "h17-aoc-resultisready-diff-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential validation results for Aoc_ResultIsReady.",
+      "depends_on": [
+        "h17-aoc-resultisready-diff-test"
+      ],
+      "function_claims": [
+        "0x002a17c0"
+      ],
+      "read_paths": [
+        "docs/agent-work/h17-aoc-resultisready-diff-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-aoc-resultisready-diff-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve differential validation record."
+      ],
+      "validation_plan": [
+        "Audit differential run log."
+      ]
+    },
+    {
+      "id": "h17-aoc-resultisready-promotion",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Promote validated C++ candidate for Aoc_ResultIsReady into milestone staging pipeline.",
+      "depends_on": [
+        "h17-aoc-resultisready-diff-test-review"
+      ],
+      "function_claims": [
+        "0x002a17c0"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h17_aoc_resultisready_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-aoc-resultisready-promotion.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Record candidate readiness for binary staging composition."
+      ],
+      "validation_plan": [
+        "Verify staging eligibility."
+      ]
+    },
+    {
+      "id": "h17-aoc-resultisready-promotion-review",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review candidate promotion for Aoc_ResultIsReady.",
+      "depends_on": [
+        "h17-aoc-resultisready-promotion"
+      ],
+      "function_claims": [
+        "0x002a17c0"
+      ],
+      "read_paths": [
+        "docs/agent-work/h17-aoc-resultisready-promotion.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-aoc-resultisready-promotion-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm promotion into milestone integrated stage."
+      ],
+      "validation_plan": [
+        "Audit promotion record."
+      ]
+    },
+    {
+      "id": "h17-aocapplet-isflag10000-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover precise calling contract, memory boundaries, and semantics for AocApplet_IsFlag10000.",
+      "depends_on": [
+        "h17-cec-aoc-recon-review"
+      ],
+      "function_claims": [
+        "0x002a17d4"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-aocapplet-isflag10000-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover registers, arguments, preconditions, and return values."
+      ],
+      "validation_plan": [
+        "Static disassembly analysis."
+      ]
+    },
+    {
+      "id": "h17-aocapplet-isflag10000-contract-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review contract specification for AocApplet_IsFlag10000.",
+      "depends_on": [
+        "h17-aocapplet-isflag10000-contract"
+      ],
+      "function_claims": [
+        "0x002a17d4"
+      ],
+      "read_paths": [
+        "docs/agent-work/h17-aocapplet-isflag10000-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-aocapplet-isflag10000-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve verified contract record."
+      ],
+      "validation_plan": [
+        "Compare contract against disassembled original."
+      ]
+    },
+    {
+      "id": "h17-aocapplet-isflag10000-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement clean, editable C++ candidate for AocApplet_IsFlag10000 within binary window footprint.",
+      "depends_on": [
+        "h17-aocapplet-isflag10000-contract-review"
+      ],
+      "function_claims": [
+        "0x002a17d4"
+      ],
+      "read_paths": [
+        "docs/agent-work/h17-aocapplet-isflag10000-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h17_aocapplet_isflag10000_candidate.cpp",
+        "docs/agent-work/h17-aocapplet-isflag10000-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "experiments/semantic_equivalence/h17_aocapplet_isflag10000_candidate.cpp"
+      ],
+      "acceptance": [
+        "Compile freestanding ARMv6K object within allocated window footprint."
+      ],
+      "validation_plan": [
+        "python tools/build_h17_all.py"
+      ]
+    },
+    {
+      "id": "h17-aocapplet-isflag10000-cand-review",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of candidate implementation for AocApplet_IsFlag10000.",
+      "depends_on": [
+        "h17-aocapplet-isflag10000-candidate"
+      ],
+      "function_claims": [
+        "0x002a17d4"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h17_aocapplet_isflag10000_candidate.cpp",
+        "docs/agent-work/h17-aocapplet-isflag10000-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-aocapplet-isflag10000-cand-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify absence of undefined behavior and correct ABI compliance."
+      ],
+      "validation_plan": [
+        "Source inspection."
+      ]
+    },
+    {
+      "id": "h17-aocapplet-isflag10000-diff-test",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline Unicorn differential test suite for AocApplet_IsFlag10000 comparing against pinned binary.",
+      "depends_on": [
+        "h17-aocapplet-isflag10000-cand-review"
+      ],
+      "function_claims": [
+        "0x002a17d4"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h17_aocapplet_isflag10000_candidate.cpp",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "tools/h17_aocapplet_isflag10000_experiment.py",
+        "docs/agent-work/h17-aocapplet-isflag10000-diff-test.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Pass all test vectors with 100% register and memory parity and verify mutation detection."
+      ],
+      "validation_plan": [
+        "python tools/h17_aocapplet_isflag10000_experiment.py"
+      ]
+    },
+    {
+      "id": "h17-aocapplet-isflag10000-diff-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential validation results for AocApplet_IsFlag10000.",
+      "depends_on": [
+        "h17-aocapplet-isflag10000-diff-test"
+      ],
+      "function_claims": [
+        "0x002a17d4"
+      ],
+      "read_paths": [
+        "docs/agent-work/h17-aocapplet-isflag10000-diff-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-aocapplet-isflag10000-diff-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve differential validation record."
+      ],
+      "validation_plan": [
+        "Audit differential run log."
+      ]
+    },
+    {
+      "id": "h17-aocapplet-isflag10000-promotion",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Promote validated C++ candidate for AocApplet_IsFlag10000 into milestone staging pipeline.",
+      "depends_on": [
+        "h17-aocapplet-isflag10000-diff-test-review"
+      ],
+      "function_claims": [
+        "0x002a17d4"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h17_aocapplet_isflag10000_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-aocapplet-isflag10000-promotion.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Record candidate readiness for binary staging composition."
+      ],
+      "validation_plan": [
+        "Verify staging eligibility."
+      ]
+    },
+    {
+      "id": "h17-aocapplet-isflag10000-promotion-review",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review candidate promotion for AocApplet_IsFlag10000.",
+      "depends_on": [
+        "h17-aocapplet-isflag10000-promotion"
+      ],
+      "function_claims": [
+        "0x002a17d4"
+      ],
+      "read_paths": [
+        "docs/agent-work/h17-aocapplet-isflag10000-promotion.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-aocapplet-isflag10000-promotion-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm promotion into milestone integrated stage."
+      ],
+      "validation_plan": [
+        "Audit promotion record."
+      ]
+    },
+    {
+      "id": "h17-aoc-resultcopyvalue-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover precise calling contract, memory boundaries, and semantics for Aoc_ResultCopyValue.",
+      "depends_on": [
+        "h17-cec-aoc-recon-review"
+      ],
+      "function_claims": [
+        "0x002a17e4"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-aoc-resultcopyvalue-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover registers, arguments, preconditions, and return values."
+      ],
+      "validation_plan": [
+        "Static disassembly analysis."
+      ]
+    },
+    {
+      "id": "h17-aoc-resultcopyvalue-contract-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review contract specification for Aoc_ResultCopyValue.",
+      "depends_on": [
+        "h17-aoc-resultcopyvalue-contract"
+      ],
+      "function_claims": [
+        "0x002a17e4"
+      ],
+      "read_paths": [
+        "docs/agent-work/h17-aoc-resultcopyvalue-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-aoc-resultcopyvalue-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve verified contract record."
+      ],
+      "validation_plan": [
+        "Compare contract against disassembled original."
+      ]
+    },
+    {
+      "id": "h17-aoc-resultcopyvalue-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement clean, editable C++ candidate for Aoc_ResultCopyValue within binary window footprint.",
+      "depends_on": [
+        "h17-aoc-resultcopyvalue-contract-review"
+      ],
+      "function_claims": [
+        "0x002a17e4"
+      ],
+      "read_paths": [
+        "docs/agent-work/h17-aoc-resultcopyvalue-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h17_aoc_resultcopyvalue_candidate.cpp",
+        "docs/agent-work/h17-aoc-resultcopyvalue-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "experiments/semantic_equivalence/h17_aoc_resultcopyvalue_candidate.cpp"
+      ],
+      "acceptance": [
+        "Compile freestanding ARMv6K object within allocated window footprint."
+      ],
+      "validation_plan": [
+        "python tools/build_h17_all.py"
+      ]
+    },
+    {
+      "id": "h17-aoc-resultcopyvalue-cand-review",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of candidate implementation for Aoc_ResultCopyValue.",
+      "depends_on": [
+        "h17-aoc-resultcopyvalue-candidate"
+      ],
+      "function_claims": [
+        "0x002a17e4"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h17_aoc_resultcopyvalue_candidate.cpp",
+        "docs/agent-work/h17-aoc-resultcopyvalue-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-aoc-resultcopyvalue-cand-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify absence of undefined behavior and correct ABI compliance."
+      ],
+      "validation_plan": [
+        "Source inspection."
+      ]
+    },
+    {
+      "id": "h17-aoc-resultcopyvalue-diff-test",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline Unicorn differential test suite for Aoc_ResultCopyValue comparing against pinned binary.",
+      "depends_on": [
+        "h17-aoc-resultcopyvalue-cand-review"
+      ],
+      "function_claims": [
+        "0x002a17e4"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h17_aoc_resultcopyvalue_candidate.cpp",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "tools/h17_aoc_resultcopyvalue_experiment.py",
+        "docs/agent-work/h17-aoc-resultcopyvalue-diff-test.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Pass all test vectors with 100% register and memory parity and verify mutation detection."
+      ],
+      "validation_plan": [
+        "python tools/h17_aoc_resultcopyvalue_experiment.py"
+      ]
+    },
+    {
+      "id": "h17-aoc-resultcopyvalue-diff-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential validation results for Aoc_ResultCopyValue.",
+      "depends_on": [
+        "h17-aoc-resultcopyvalue-diff-test"
+      ],
+      "function_claims": [
+        "0x002a17e4"
+      ],
+      "read_paths": [
+        "docs/agent-work/h17-aoc-resultcopyvalue-diff-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-aoc-resultcopyvalue-diff-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve differential validation record."
+      ],
+      "validation_plan": [
+        "Audit differential run log."
+      ]
+    },
+    {
+      "id": "h17-aoc-resultcopyvalue-promotion",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Promote validated C++ candidate for Aoc_ResultCopyValue into milestone staging pipeline.",
+      "depends_on": [
+        "h17-aoc-resultcopyvalue-diff-test-review"
+      ],
+      "function_claims": [
+        "0x002a17e4"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h17_aoc_resultcopyvalue_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-aoc-resultcopyvalue-promotion.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Record candidate readiness for binary staging composition."
+      ],
+      "validation_plan": [
+        "Verify staging eligibility."
+      ]
+    },
+    {
+      "id": "h17-aoc-resultcopyvalue-promotion-review",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review candidate promotion for Aoc_ResultCopyValue.",
+      "depends_on": [
+        "h17-aoc-resultcopyvalue-promotion"
+      ],
+      "function_claims": [
+        "0x002a17e4"
+      ],
+      "read_paths": [
+        "docs/agent-work/h17-aoc-resultcopyvalue-promotion.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-aoc-resultcopyvalue-promotion-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm promotion into milestone integrated stage."
+      ],
+      "validation_plan": [
+        "Audit promotion record."
+      ]
+    },
+    {
+      "id": "h17-aoc-releaseglobal-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover precise calling contract, memory boundaries, and semantics for Aoc_ReleaseGlobal.",
+      "depends_on": [
+        "h17-cec-aoc-recon-review"
+      ],
+      "function_claims": [
+        "0x002b2520"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-aoc-releaseglobal-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover registers, arguments, preconditions, and return values."
+      ],
+      "validation_plan": [
+        "Static disassembly analysis."
+      ]
+    },
+    {
+      "id": "h17-aoc-releaseglobal-contract-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review contract specification for Aoc_ReleaseGlobal.",
+      "depends_on": [
+        "h17-aoc-releaseglobal-contract"
+      ],
+      "function_claims": [
+        "0x002b2520"
+      ],
+      "read_paths": [
+        "docs/agent-work/h17-aoc-releaseglobal-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-aoc-releaseglobal-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve verified contract record."
+      ],
+      "validation_plan": [
+        "Compare contract against disassembled original."
+      ]
+    },
+    {
+      "id": "h17-aoc-releaseglobal-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement clean, editable C++ candidate for Aoc_ReleaseGlobal within binary window footprint.",
+      "depends_on": [
+        "h17-aoc-releaseglobal-contract-review"
+      ],
+      "function_claims": [
+        "0x002b2520"
+      ],
+      "read_paths": [
+        "docs/agent-work/h17-aoc-releaseglobal-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h17_aoc_releaseglobal_candidate.cpp",
+        "docs/agent-work/h17-aoc-releaseglobal-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "experiments/semantic_equivalence/h17_aoc_releaseglobal_candidate.cpp"
+      ],
+      "acceptance": [
+        "Compile freestanding ARMv6K object within allocated window footprint."
+      ],
+      "validation_plan": [
+        "python tools/build_h17_all.py"
+      ]
+    },
+    {
+      "id": "h17-aoc-releaseglobal-cand-review",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of candidate implementation for Aoc_ReleaseGlobal.",
+      "depends_on": [
+        "h17-aoc-releaseglobal-candidate"
+      ],
+      "function_claims": [
+        "0x002b2520"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h17_aoc_releaseglobal_candidate.cpp",
+        "docs/agent-work/h17-aoc-releaseglobal-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-aoc-releaseglobal-cand-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify absence of undefined behavior and correct ABI compliance."
+      ],
+      "validation_plan": [
+        "Source inspection."
+      ]
+    },
+    {
+      "id": "h17-aoc-releaseglobal-diff-test",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline Unicorn differential test suite for Aoc_ReleaseGlobal comparing against pinned binary.",
+      "depends_on": [
+        "h17-aoc-releaseglobal-cand-review"
+      ],
+      "function_claims": [
+        "0x002b2520"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h17_aoc_releaseglobal_candidate.cpp",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "tools/h17_aoc_releaseglobal_experiment.py",
+        "docs/agent-work/h17-aoc-releaseglobal-diff-test.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Pass all test vectors with 100% register and memory parity and verify mutation detection."
+      ],
+      "validation_plan": [
+        "python tools/h17_aoc_releaseglobal_experiment.py"
+      ]
+    },
+    {
+      "id": "h17-aoc-releaseglobal-diff-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential validation results for Aoc_ReleaseGlobal.",
+      "depends_on": [
+        "h17-aoc-releaseglobal-diff-test"
+      ],
+      "function_claims": [
+        "0x002b2520"
+      ],
+      "read_paths": [
+        "docs/agent-work/h17-aoc-releaseglobal-diff-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-aoc-releaseglobal-diff-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve differential validation record."
+      ],
+      "validation_plan": [
+        "Audit differential run log."
+      ]
+    },
+    {
+      "id": "h17-aoc-releaseglobal-promotion",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Promote validated C++ candidate for Aoc_ReleaseGlobal into milestone staging pipeline.",
+      "depends_on": [
+        "h17-aoc-releaseglobal-diff-test-review"
+      ],
+      "function_claims": [
+        "0x002b2520"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h17_aoc_releaseglobal_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-aoc-releaseglobal-promotion.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Record candidate readiness for binary staging composition."
+      ],
+      "validation_plan": [
+        "Verify staging eligibility."
+      ]
+    },
+    {
+      "id": "h17-aoc-releaseglobal-promotion-review",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review candidate promotion for Aoc_ReleaseGlobal.",
+      "depends_on": [
+        "h17-aoc-releaseglobal-promotion"
+      ],
+      "function_claims": [
+        "0x002b2520"
+      ],
+      "read_paths": [
+        "docs/agent-work/h17-aoc-releaseglobal-promotion.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-aoc-releaseglobal-promotion-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm promotion into milestone integrated stage."
+      ],
+      "validation_plan": [
+        "Audit promotion record."
+      ]
+    },
+    {
+      "id": "h17-campcec-getworkhandle-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover precise calling contract, memory boundaries, and semantics for CampCec_GetWorkHandle.",
+      "depends_on": [
+        "h17-cec-aoc-recon-review"
+      ],
+      "function_claims": [
+        "0x002d73f4"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-campcec-getworkhandle-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover registers, arguments, preconditions, and return values."
+      ],
+      "validation_plan": [
+        "Static disassembly analysis."
+      ]
+    },
+    {
+      "id": "h17-campcec-getworkhandle-contract-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review contract specification for CampCec_GetWorkHandle.",
+      "depends_on": [
+        "h17-campcec-getworkhandle-contract"
+      ],
+      "function_claims": [
+        "0x002d73f4"
+      ],
+      "read_paths": [
+        "docs/agent-work/h17-campcec-getworkhandle-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-campcec-getworkhandle-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve verified contract record."
+      ],
+      "validation_plan": [
+        "Compare contract against disassembled original."
+      ]
+    },
+    {
+      "id": "h17-campcec-getworkhandle-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement clean, editable C++ candidate for CampCec_GetWorkHandle within binary window footprint.",
+      "depends_on": [
+        "h17-campcec-getworkhandle-contract-review"
+      ],
+      "function_claims": [
+        "0x002d73f4"
+      ],
+      "read_paths": [
+        "docs/agent-work/h17-campcec-getworkhandle-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h17_campcec_getworkhandle_candidate.cpp",
+        "docs/agent-work/h17-campcec-getworkhandle-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "experiments/semantic_equivalence/h17_campcec_getworkhandle_candidate.cpp"
+      ],
+      "acceptance": [
+        "Compile freestanding ARMv6K object within allocated window footprint."
+      ],
+      "validation_plan": [
+        "python tools/build_h17_all.py"
+      ]
+    },
+    {
+      "id": "h17-campcec-getworkhandle-cand-review",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of candidate implementation for CampCec_GetWorkHandle.",
+      "depends_on": [
+        "h17-campcec-getworkhandle-candidate"
+      ],
+      "function_claims": [
+        "0x002d73f4"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h17_campcec_getworkhandle_candidate.cpp",
+        "docs/agent-work/h17-campcec-getworkhandle-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-campcec-getworkhandle-cand-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify absence of undefined behavior and correct ABI compliance."
+      ],
+      "validation_plan": [
+        "Source inspection."
+      ]
+    },
+    {
+      "id": "h17-campcec-getworkhandle-diff-test",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline Unicorn differential test suite for CampCec_GetWorkHandle comparing against pinned binary.",
+      "depends_on": [
+        "h17-campcec-getworkhandle-cand-review"
+      ],
+      "function_claims": [
+        "0x002d73f4"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h17_campcec_getworkhandle_candidate.cpp",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "tools/h17_campcec_getworkhandle_experiment.py",
+        "docs/agent-work/h17-campcec-getworkhandle-diff-test.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Pass all test vectors with 100% register and memory parity and verify mutation detection."
+      ],
+      "validation_plan": [
+        "python tools/h17_campcec_getworkhandle_experiment.py"
+      ]
+    },
+    {
+      "id": "h17-campcec-getworkhandle-diff-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential validation results for CampCec_GetWorkHandle.",
+      "depends_on": [
+        "h17-campcec-getworkhandle-diff-test"
+      ],
+      "function_claims": [
+        "0x002d73f4"
+      ],
+      "read_paths": [
+        "docs/agent-work/h17-campcec-getworkhandle-diff-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-campcec-getworkhandle-diff-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve differential validation record."
+      ],
+      "validation_plan": [
+        "Audit differential run log."
+      ]
+    },
+    {
+      "id": "h17-campcec-getworkhandle-promotion",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Promote validated C++ candidate for CampCec_GetWorkHandle into milestone staging pipeline.",
+      "depends_on": [
+        "h17-campcec-getworkhandle-diff-test-review"
+      ],
+      "function_claims": [
+        "0x002d73f4"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h17_campcec_getworkhandle_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-campcec-getworkhandle-promotion.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Record candidate readiness for binary staging composition."
+      ],
+      "validation_plan": [
+        "Verify staging eligibility."
+      ]
+    },
+    {
+      "id": "h17-campcec-getworkhandle-promotion-review",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review candidate promotion for CampCec_GetWorkHandle.",
+      "depends_on": [
+        "h17-campcec-getworkhandle-promotion"
+      ],
+      "function_claims": [
+        "0x002d73f4"
+      ],
+      "read_paths": [
+        "docs/agent-work/h17-campcec-getworkhandle-promotion.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-campcec-getworkhandle-promotion-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm promotion into milestone integrated stage."
+      ],
+      "validation_plan": [
+        "Audit promotion record."
+      ]
+    },
+    {
+      "id": "h17-aocicon-init-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover precise calling contract, memory boundaries, and semantics for AocIcon_Init.",
+      "depends_on": [
+        "h17-cec-aoc-recon-review"
+      ],
+      "function_claims": [
+        "0x0038c248"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-aocicon-init-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover registers, arguments, preconditions, and return values."
+      ],
+      "validation_plan": [
+        "Static disassembly analysis."
+      ]
+    },
+    {
+      "id": "h17-aocicon-init-contract-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review contract specification for AocIcon_Init.",
+      "depends_on": [
+        "h17-aocicon-init-contract"
+      ],
+      "function_claims": [
+        "0x0038c248"
+      ],
+      "read_paths": [
+        "docs/agent-work/h17-aocicon-init-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-aocicon-init-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve verified contract record."
+      ],
+      "validation_plan": [
+        "Compare contract against disassembled original."
+      ]
+    },
+    {
+      "id": "h17-aocicon-init-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement clean, editable C++ candidate for AocIcon_Init within binary window footprint.",
+      "depends_on": [
+        "h17-aocicon-init-contract-review"
+      ],
+      "function_claims": [
+        "0x0038c248"
+      ],
+      "read_paths": [
+        "docs/agent-work/h17-aocicon-init-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h17_aocicon_init_candidate.cpp",
+        "docs/agent-work/h17-aocicon-init-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "experiments/semantic_equivalence/h17_aocicon_init_candidate.cpp"
+      ],
+      "acceptance": [
+        "Compile freestanding ARMv6K object within allocated window footprint."
+      ],
+      "validation_plan": [
+        "python tools/build_h17_all.py"
+      ]
+    },
+    {
+      "id": "h17-aocicon-init-cand-review",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of candidate implementation for AocIcon_Init.",
+      "depends_on": [
+        "h17-aocicon-init-candidate"
+      ],
+      "function_claims": [
+        "0x0038c248"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h17_aocicon_init_candidate.cpp",
+        "docs/agent-work/h17-aocicon-init-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-aocicon-init-cand-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify absence of undefined behavior and correct ABI compliance."
+      ],
+      "validation_plan": [
+        "Source inspection."
+      ]
+    },
+    {
+      "id": "h17-aocicon-init-diff-test",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline Unicorn differential test suite for AocIcon_Init comparing against pinned binary.",
+      "depends_on": [
+        "h17-aocicon-init-cand-review"
+      ],
+      "function_claims": [
+        "0x0038c248"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h17_aocicon_init_candidate.cpp",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "tools/h17_aocicon_init_experiment.py",
+        "docs/agent-work/h17-aocicon-init-diff-test.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Pass all test vectors with 100% register and memory parity and verify mutation detection."
+      ],
+      "validation_plan": [
+        "python tools/h17_aocicon_init_experiment.py"
+      ]
+    },
+    {
+      "id": "h17-aocicon-init-diff-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential validation results for AocIcon_Init.",
+      "depends_on": [
+        "h17-aocicon-init-diff-test"
+      ],
+      "function_claims": [
+        "0x0038c248"
+      ],
+      "read_paths": [
+        "docs/agent-work/h17-aocicon-init-diff-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-aocicon-init-diff-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve differential validation record."
+      ],
+      "validation_plan": [
+        "Audit differential run log."
+      ]
+    },
+    {
+      "id": "h17-aocicon-init-promotion",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Promote validated C++ candidate for AocIcon_Init into milestone staging pipeline.",
+      "depends_on": [
+        "h17-aocicon-init-diff-test-review"
+      ],
+      "function_claims": [
+        "0x0038c248"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h17_aocicon_init_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-aocicon-init-promotion.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Record candidate readiness for binary staging composition."
+      ],
+      "validation_plan": [
+        "Verify staging eligibility."
+      ]
+    },
+    {
+      "id": "h17-aocicon-init-promotion-review",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review candidate promotion for AocIcon_Init.",
+      "depends_on": [
+        "h17-aocicon-init-promotion"
+      ],
+      "function_claims": [
+        "0x0038c248"
+      ],
+      "read_paths": [
+        "docs/agent-work/h17-aocicon-init-promotion.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-aocicon-init-promotion-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm promotion into milestone integrated stage."
+      ],
+      "validation_plan": [
+        "Audit promotion record."
+      ]
+    },
+    {
+      "id": "h17-integrated-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Compose all 8 validated H17 candidates over code.h16-final.bin to generate code.h17-final.bin and IPS patch.",
+      "depends_on": [
+        "h17-campcec-haseditwork-promotion-review",
+        "h17-campcec-copycarddata-promotion-review",
+        "h17-aoc-resultisready-promotion-review",
+        "h17-aocapplet-isflag10000-promotion-review",
+        "h17-aoc-resultcopyvalue-promotion-review",
+        "h17-aoc-releaseglobal-promotion-review",
+        "h17-campcec-getworkhandle-promotion-review",
+        "h17-aocicon-init-promotion-review"
+      ],
+      "function_claims": [
+        "0x001ffadc",
+        "0x001ff814",
+        "0x002a17c0",
+        "0x002a17d4",
+        "0x002a17e4",
+        "0x002b2520",
+        "0x002d73f4",
+        "0x0038c248"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h17_campcec_haseditwork_candidate.cpp",
+        "experiments/semantic_equivalence/h17_campcec_copycarddata_candidate.cpp",
+        "experiments/semantic_equivalence/h17_aoc_resultisready_candidate.cpp",
+        "experiments/semantic_equivalence/h17_aocapplet_isflag10000_candidate.cpp",
+        "experiments/semantic_equivalence/h17_aoc_resultcopyvalue_candidate.cpp",
+        "experiments/semantic_equivalence/h17_aoc_releaseglobal_candidate.cpp",
+        "experiments/semantic_equivalence/h17_campcec_getworkhandle_candidate.cpp",
+        "experiments/semantic_equivalence/h17_aocicon_init_candidate.cpp",
+        "build/agent-work/H16-semantic/h16-integrated-stage/code.h16-final.bin"
+      ],
+      "write_paths": [
+        "tools/h17_staged_image_patch.py",
+        "build/agent-work/H17-semantic/h17-integrated-stage/code.h17-final.bin",
+        "build/agent-work/H17-semantic/h17-integrated-stage/code.h17-final.ips",
+        "build/agent-work/H17-semantic/h17-integrated-stage/h17_staging_summary.json",
+        "docs/agent-work/h17-integrated-staging.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "code.h17-final.bin"
+      ],
+      "acceptance": [
+        "Generate code.h17-final.bin with all 8 candidates cleanly applied within windows.",
+        "Produce verified LayeredFS IPS patch code.h17-final.ips passing roundtrip verification."
+      ],
+      "validation_plan": [
+        "python tools/h17_staged_image_patch.py"
+      ]
+    },
+    {
+      "id": "h17-milestone-closure-review",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review and closure of Milestone H17 (StreetPass / CEC and DLC / AOC).",
+      "depends_on": [
+        "h17-integrated-staging"
+      ],
+      "function_claims": [
+        "0x001ffadc",
+        "0x001ff814",
+        "0x002a17c0",
+        "0x002a17d4",
+        "0x002a17e4",
+        "0x002b2520",
+        "0x002d73f4",
+        "0x0038c248"
+      ],
+      "read_paths": [
+        "build/agent-work/H17-semantic/h17-integrated-stage/h17_staging_summary.json",
+        "docs/agent-work/h17-integrated-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h17-milestone-closure-review.md",
+        "docs/milestones/H17-cec-aoc.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify that all 8 subsystems have complete contract, implementation, differential test, and promotion records.",
+        "Validate offline differential test suite passes 100% and staging IPS patch roundtrip passes."
+      ],
+      "validation_plan": [
+        "python tools/agent_workflow.py check",
+        "python tools/generate_h17_experiments.py",
+        "python tools/h17_staged_image_patch.py"
+      ]
+    }
+  ]
+}

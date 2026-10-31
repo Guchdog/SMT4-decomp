@@ -1,6 +1,6 @@
 # H2 — Título: configuración de audio (`titleConfig`)
 
-Estado actual: completado y cerrado (2026-10-30). Paridad de ciclo de vida, navegación, edición, límites, confirmación y reinicio verificada en simulación ARM y Azahar autónomo (51 acciones, 19 checkpoints). Se resolvió la máquina de estados de State 2 (Handler 8 en 0x001A07CC y helper 0x00286928 vinculados al ciclo de vida de ComWin) y se verificó que el título original en CTR-P-AMXE v0.1.0 no persiste opciones de menú de título en almacenamiento no volátil entre sesiones sin guardado en partida.
+Estado actual: Abierto — Validación parcial con límites técnicos documentados. Se dispone de evidencia funcional acotada en emulación y análisis estático (desplazamiento de sliders BGM/SE/Voice, clamps en 0 y 10, y despacho de handlers), pero la sincronización completa del bucle de espera de ComWin en State 2 (`0x001A07CC`), la reentrada confirmada tras reinicio limpio y la verificación de persistencia no volátil entre sesiones permanecen como límites técnicos abiertos que impiden el cierre definitivo del hito.
 Responsable de integración: agente principal
 Revisión base y fecha: codex/semantic-equivalence-experiment, 2026-10-30
 
