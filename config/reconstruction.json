@@ -1,43 +1,44 @@
 {
   "primary_goal": "Recover editable C++ with supported semantic behavior; byte identity is optional.",
-  "active_milestone": "H6",
+  "active_milestone": "H7",
   "priority_sources": [
-    "src/ui/save_load.cpp",
-    "src/engine/asd_file.cpp"
+    "src/ui/window.cpp",
+    "src/script/script_vm.cpp",
+    "src/script/script_extras.cpp"
   ],
   "priority_functions": [
     {
-      "address": "0x0021041c",
-      "reason": "H6 save common read container unpack / AsdSaveCommon_func_0021041c"
+      "address": "0x0010a748",
+      "reason": "H7 dialog window manager initialization / ComWin_Init"
     },
     {
-      "address": "0x002104e8",
-      "reason": "H6 save common write container pack / AsdSaveCommon_func_002104e8"
+      "address": "0x0010aee4",
+      "reason": "H7 dialog response slot reset / ComWin_Reset"
     },
     {
-      "address": "0x0026b874",
-      "reason": "H6 save/load worker process init and load task setup / SaveLoadProcess_Init"
+      "address": "0x0010af84",
+      "reason": "H7 event subtitle info window initialization / InfoWin_Init"
     },
     {
-      "address": "0x002ef9ac",
-      "reason": "H6 save/load worker execution step machine / SaveLoadProcess_Step"
+      "address": "0x0010b350",
+      "reason": "H7 event guest dialog window initialization / GuestWin_Init"
     },
     {
-      "address": "0x002efb50",
-      "reason": "H6 save/load worker write step machine / SaveLoadProcess_Write"
+      "address": "0x001d374c",
+      "reason": "H7 FlowScript character naming prompt lifecycle / nameMain_Init"
     },
     {
-      "address": "0x00322d70",
-      "reason": "H6 save/load worker read operation dispatch / SaveLoadProcess_Read"
+      "address": "0x001d38fc",
+      "reason": "H7 barracks event room script VM runner / onesRoom_Init"
     },
     {
-      "address": "0x00322f0c",
-      "reason": "H6 save/load worker save operation dispatch / SaveLoadProcess_Close"
+      "address": "0x0025955c",
+      "reason": "H7 event command screen fade transition machine / eventCommand_func_0025955c"
     },
     {
-      "address": "0x00191eac",
-      "reason": "H6 save/load UI manager initialization / saveLoadUI_Init"
+      "address": "0x0030a4fc",
+      "reason": "H7 event visual blink and fade effect setup / EventEffect_func_0030a4fc"
     }
   ],
-  "agent_workflow_board": "config/agent-workflows/h6.json"
+  "agent_workflow_board": "config/agent-workflows/h7.json"
 }
