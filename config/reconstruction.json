@@ -1,26 +1,34 @@
 {
   "primary_goal": "Recover editable C++ with supported semantic behavior; byte identity is optional.",
-  "active_milestone": "H19",
+  "active_milestone": "H20",
   "priority_sources": [
-    "src/crt/start.cpp",
-    "src/semantic/h10_burroughs_promoted.cpp",
-    "src/semantic/h11_shops_promoted.cpp",
-    "src/semantic/h12_combat_promoted.cpp",
-    "src/semantic/h13_exploration_promoted.cpp",
-    "src/semantic/h14_graphics_promoted.cpp",
-    "src/semantic/h15_ui_promoted.cpp",
-    "src/semantic/h16_sound_promoted.cpp",
-    "src/semantic/h17_cec_aoc_promoted.cpp"
+    "src/hal/hal_system.cpp",
+    "src/hal/hal_filesystem.cpp",
+    "src/hal/hal_graphics.cpp",
+    "src/hal/hal_audio.cpp",
+    "src/hal/hal_input.cpp"
   ],
   "priority_functions": [
     {
-      "address": "0x00100000",
-      "reason": "H19 CRT Process Entry Point / __start"
+      "address": "0x00104ef4",
+      "reason": "H20 Platform Lifecycle & Clock / HAL_System"
     },
     {
-      "address": "0x00100024",
-      "reason": "H19 CRT BSS Initialization Routine / __init_bss"
+      "address": "0x0021041c",
+      "reason": "H20 File System & Stream Abstraction / HAL_FileSystem"
+    },
+    {
+      "address": "0x002c3b88",
+      "reason": "H20 Display Targets & Frame Presentation / HAL_Graphics"
+    },
+    {
+      "address": "0x0011311c",
+      "reason": "H20 Multi-channel Audio Streaming / HAL_Audio"
+    },
+    {
+      "address": "0x0027fbc8",
+      "reason": "H20 Touch, Circle Pad & Button Inputs / HAL_Input"
     }
   ],
-  "agent_workflow_board": "config/agent-workflows/h19.json"
+  "agent_workflow_board": "config/agent-workflows/h20.json"
 }
