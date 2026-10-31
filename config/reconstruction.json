@@ -1,42 +1,42 @@
 {
   "primary_goal": "Recover editable C++ with supported semantic behavior; byte identity is optional.",
-  "active_milestone": "H11",
+  "active_milestone": "H12",
   "priority_sources": [
-    "src/shop/shop_runtime.cpp"
+    "src/battle/battle_runtime.cpp"
   ],
   "priority_functions": [
     {
-      "address": "0x0022a60c",
-      "reason": "H11 Shop inventory item selection state and dirty flag update / Shop_SetSelectedItem"
+      "address": "0x00123050",
+      "reason": "H12 Battle turn subsystem initialization and dispatcher registration / Battle_InitTurnSubsystems"
     },
     {
-      "address": "0x0022fc98",
-      "reason": "H11 Shop inventory new item arrival and category badge check / Shop_CheckHasNewInventoryItem"
+      "address": "0x00129c58",
+      "reason": "H12 Party and enemy unit smirk condition state query across active smirk work struct / Battle_GetUnitSmirkState"
     },
     {
-      "address": "0x0022fcc8",
-      "reason": "H11 Black market and specialty shop exclusive stock availability check / Shop_CheckHasSpecialStockItem"
+      "address": "0x00129cbc",
+      "reason": "H12 Active smirk buff owner entity reference lookup / Battle_GetSmirkActor"
     },
     {
-      "address": "0x00230680",
-      "reason": "H11 Shop catalog entry push and bitfield flag packing into active display buffer / Shop_PushItemRecord"
+      "address": "0x00129c70",
+      "reason": "H12 Atomic smirk state slot exchange with boundary validation and lock/unlock guard / Battle_ExchangeSmirkSlot"
     },
     {
-      "address": "0x00230d24",
-      "reason": "H11 Party unit equipment category slot matching and compatibility verification / Shop_IsEquipSlotMatch"
+      "address": "0x00136fa4",
+      "reason": "H12 Turn phase data setup and state work bitfield flag configuration / Battle_InitTurnData"
     },
     {
-      "address": "0x00230db0",
-      "reason": "H11 Shop inventory item purchase quantity limit clamped against bag capacity / Shop_CalcPurchasableQty"
+      "address": "0x001c87d8",
+      "reason": "H12 Combat victory and defeat result screen resource deallocation / Result_Cleanup"
     },
     {
-      "address": "0x00263734",
-      "reason": "H11 Terminal network teleport unlock bitfield registration and status persistence / Terminal_SetUnlockFlag"
+      "address": "0x0028de4c",
+      "reason": "H12 Battle unit defeat status evaluation checking inactive flag and HP / Battle_IsUnitDefeated"
     },
     {
-      "address": "0x00263778",
-      "reason": "H11 Terminal network teleport destination query across 32-node bitset / Terminal_IsUnlocked"
+      "address": "0x00215938",
+      "reason": "H12 Battle unit state work buffer copy and restoration / Battle_ResetUnitStateBuffer"
     }
   ],
-  "agent_workflow_board": "config/agent-workflows/h11.json"
+  "agent_workflow_board": "config/agent-workflows/h12.json"
 }
