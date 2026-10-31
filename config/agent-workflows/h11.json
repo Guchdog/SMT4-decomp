@@ -1,0 +1,2581 @@
+{
+  "schema_version": 1,
+  "batch": "batch-h11-001",
+  "milestone": "H11",
+  "max_workers": 3,
+  "cpu_budget": 8,
+  "goal": "Reconstruct readable, editable C++ for Milestone H11 (Shops, Black Market, and Terminals), covering Shop item selection state and dirty flags (Shop_SetSelectedItem), shop inventory new item check (Shop_CheckHasNewInventoryItem), black market special stock query (Shop_CheckHasSpecialStockItem), catalog entry record packing into display buffers (Shop_PushItemRecord), unit equipment slot validation (Shop_IsEquipSlotMatch), purchase quantity calculation clamped against bag capacity (Shop_CalcPurchasableQty), terminal network unlock bitfield registration (Terminal_SetUnlockFlag), and terminal unlock query across 32-node bitset (Terminal_IsUnlocked) with full offline differential validation, caller composition, staging, and autonomous runtime verification.",
+  "coordinator_owned_paths": [
+    "config/agent-workflows/h11.json",
+    "config/reconstruction.json",
+    "docs/milestones/H11-shops-blackmarket-terminals.md",
+    "docs/functional-status.md",
+    "docs/reconstruction-milestones.md"
+  ],
+  "tasks": [
+    {
+      "id": "h11-shops-blackmarket-terminals-recon",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Comprehensive static and architectural reconnaissance of Milestone H11 Shops, Black Market, and Terminals.",
+      "depends_on": [],
+      "function_claims": [
+        "0x0022a60c",
+        "0x0022fc98",
+        "0x0022fcc8",
+        "0x00230680",
+        "0x00230d24",
+        "0x00230db0",
+        "0x00263734",
+        "0x00263778"
+      ],
+      "read_paths": [
+        "src/shop/shop_runtime.cpp",
+        "docs/reconstruction-milestones.md",
+        "docs/milestones/H10-burroughs-quests-apps.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shops-blackmarket-terminals-recon.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Identify exact entry points, memory structures, and callers for H11 Shops, Black Market, and Terminal subsystems.",
+        "Define offline-first differential boundaries, positive/negative controls, and mutation criteria."
+      ],
+      "validation_plan": [
+        "Cross-check candidate functions against pinned binary code.bin and functions.csv ledger."
+      ]
+    },
+    {
+      "id": "h11-shops-blackmarket-terminals-recon-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of Shops, Black Market, and Terminals architecture reconnaissance and boundary definitions.",
+      "depends_on": [
+        "h11-shops-blackmarket-terminals-recon"
+      ],
+      "function_claims": [
+        "0x0022a60c",
+        "0x0022fc98",
+        "0x0022fcc8",
+        "0x00230680",
+        "0x00230d24",
+        "0x00230db0",
+        "0x00263734",
+        "0x00263778"
+      ],
+      "read_paths": [
+        "docs/agent-work/h11-shops-blackmarket-terminals-recon.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shops-blackmarket-terminals-recon-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify contract boundaries, calling conventions, and ABI preservation expectations.",
+        "Approve task division and candidate scope for H11 Shops, Black Market, and Terminals milestone."
+      ],
+      "validation_plan": [
+        "Confirm completeness of architecture reconnaissance and absence of unsupported assumptions."
+      ]
+    },
+    {
+      "id": "h11-shop-setselecteditem-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize contract, parameters, registers, and memory effects for Shop_SetSelectedItem (0x0022a60c).",
+      "depends_on": [
+        "h11-shops-blackmarket-terminals-recon-review"
+      ],
+      "function_claims": [
+        "0x0022a60c"
+      ],
+      "read_paths": [
+        "src/shop/shop_runtime.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-setselecteditem-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Accurately specify semantics of Shop_SetSelectedItem.",
+        "Specify test fixtures and mutation controls."
+      ],
+      "validation_plan": [
+        "Static disassembly and register effect verification against code.bin."
+      ]
+    },
+    {
+      "id": "h11-shop-setselecteditem-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of semantic contract for Shop_SetSelectedItem (0x0022a60c).",
+      "depends_on": [
+        "h11-shop-setselecteditem-contract"
+      ],
+      "function_claims": [
+        "0x0022a60c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h11-shop-setselecteditem-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-setselecteditem-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve pre/post conditions and side effects."
+      ],
+      "validation_plan": [
+        "Independent verification against disassembly."
+      ]
+    },
+    {
+      "id": "h11-shop-setselecteditem-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable, editable C++ for Shop_SetSelectedItem (0x0022a60c) with positive headroom margin.",
+      "depends_on": [
+        "h11-shop-setselecteditem-contract-review"
+      ],
+      "function_claims": [
+        "0x0022a60c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h11-shop-setselecteditem-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h11_shop_setselecteditem_candidate.cpp",
+        "docs/agent-work/h11-shop-setselecteditem-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Compile freestanding ARMv6K object.",
+        "Size within original window.",
+        "Headroom positive."
+      ],
+      "validation_plan": [
+        "Compile with clang++ and inspect size and relocations."
+      ]
+    },
+    {
+      "id": "h11-shop-setselecteditem-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of C++ implementation for Shop_SetSelectedItem (0x0022a60c).",
+      "depends_on": [
+        "h11-shop-setselecteditem-candidate"
+      ],
+      "function_claims": [
+        "0x0022a60c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h11_shop_setselecteditem_candidate.cpp",
+        "docs/agent-work/h11-shop-setselecteditem-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-setselecteditem-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify readable C++ structure.",
+        "Confirm no undefined behavior."
+      ],
+      "validation_plan": [
+        "Static analysis and code inspection."
+      ]
+    },
+    {
+      "id": "h11-shop-setselecteditem-differential",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Offline ARM Unicorn differential testing of Shop_SetSelectedItem against pinned code.bin.",
+      "depends_on": [
+        "h11-shop-setselecteditem-candidate-review"
+      ],
+      "function_claims": [
+        "0x0022a60c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h11_shop_setselecteditem_candidate.cpp",
+        "tools/h11_shop_setselecteditem_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-setselecteditem-differential.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Zero register and memory diffs against original implementation.",
+        "Mutation sensitivity confirmed."
+      ],
+      "validation_plan": [
+        "Run tools/h11_shop_setselecteditem_experiment.py."
+      ]
+    },
+    {
+      "id": "h11-shop-setselecteditem-differential-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of differential test results for Shop_SetSelectedItem.",
+      "depends_on": [
+        "h11-shop-setselecteditem-differential"
+      ],
+      "function_claims": [
+        "0x0022a60c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h11-shop-setselecteditem-differential.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-setselecteditem-differential-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve test coverage and mutation sensitivity evidence."
+      ],
+      "validation_plan": [
+        "Audit execution logs and mutation outputs."
+      ]
+    },
+    {
+      "id": "h11-shop-setselecteditem-composition",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Validate caller composition and ABI compatibility for Shop_SetSelectedItem.",
+      "depends_on": [
+        "h11-shop-setselecteditem-differential-review"
+      ],
+      "function_claims": [
+        "0x0022a60c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h11_shop_setselecteditem_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-setselecteditem-composition.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify register conventions and caller expectations."
+      ],
+      "validation_plan": [
+        "Composition analysis against calling functions."
+      ]
+    },
+    {
+      "id": "h11-shop-setselecteditem-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of caller composition for Shop_SetSelectedItem.",
+      "depends_on": [
+        "h11-shop-setselecteditem-composition"
+      ],
+      "function_claims": [
+        "0x0022a60c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h11-shop-setselecteditem-composition.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-setselecteditem-composition-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve caller composition and interworking proof."
+      ],
+      "validation_plan": [
+        "Audit caller composition report."
+      ]
+    },
+    {
+      "id": "h11-shop-setselecteditem-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Stage candidate binary for Shop_SetSelectedItem into H11 composite build.",
+      "depends_on": [
+        "h11-shop-setselecteditem-composition-review"
+      ],
+      "function_claims": [
+        "0x0022a60c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h11_shop_setselecteditem_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-setselecteditem-staging.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Generate binary patch.",
+        "Integrate into composite stage."
+      ],
+      "validation_plan": [
+        "Verify patch size matches window exactly."
+      ]
+    },
+    {
+      "id": "h11-shop-setselecteditem-staging-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of staged candidate for Shop_SetSelectedItem.",
+      "depends_on": [
+        "h11-shop-setselecteditem-staging"
+      ],
+      "function_claims": [
+        "0x0022a60c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h11-shop-setselecteditem-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-setselecteditem-staging-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve integration patch and hash validation."
+      ],
+      "validation_plan": [
+        "Audit binary diff against window."
+      ]
+    },
+    {
+      "id": "h11-shop-checkhasnew-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize contract, parameters, registers, and memory effects for Shop_CheckHasNewInventoryItem (0x0022fc98).",
+      "depends_on": [
+        "h11-shops-blackmarket-terminals-recon-review"
+      ],
+      "function_claims": [
+        "0x0022fc98"
+      ],
+      "read_paths": [
+        "src/shop/shop_runtime.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-checkhasnew-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Accurately specify semantics of Shop_CheckHasNewInventoryItem.",
+        "Specify test fixtures and mutation controls."
+      ],
+      "validation_plan": [
+        "Static disassembly and register effect verification against code.bin."
+      ]
+    },
+    {
+      "id": "h11-shop-checkhasnew-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of semantic contract for Shop_CheckHasNewInventoryItem (0x0022fc98).",
+      "depends_on": [
+        "h11-shop-checkhasnew-contract"
+      ],
+      "function_claims": [
+        "0x0022fc98"
+      ],
+      "read_paths": [
+        "docs/agent-work/h11-shop-checkhasnew-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-checkhasnew-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve pre/post conditions and side effects."
+      ],
+      "validation_plan": [
+        "Independent verification against disassembly."
+      ]
+    },
+    {
+      "id": "h11-shop-checkhasnew-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable, editable C++ for Shop_CheckHasNewInventoryItem (0x0022fc98) with positive headroom margin.",
+      "depends_on": [
+        "h11-shop-checkhasnew-contract-review"
+      ],
+      "function_claims": [
+        "0x0022fc98"
+      ],
+      "read_paths": [
+        "docs/agent-work/h11-shop-checkhasnew-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h11_shop_checkhasnew_candidate.cpp",
+        "docs/agent-work/h11-shop-checkhasnew-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Compile freestanding ARMv6K object.",
+        "Size within original window.",
+        "Headroom positive."
+      ],
+      "validation_plan": [
+        "Compile with clang++ and inspect size and relocations."
+      ]
+    },
+    {
+      "id": "h11-shop-checkhasnew-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of C++ implementation for Shop_CheckHasNewInventoryItem (0x0022fc98).",
+      "depends_on": [
+        "h11-shop-checkhasnew-candidate"
+      ],
+      "function_claims": [
+        "0x0022fc98"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h11_shop_checkhasnew_candidate.cpp",
+        "docs/agent-work/h11-shop-checkhasnew-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-checkhasnew-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify readable C++ structure.",
+        "Confirm no undefined behavior."
+      ],
+      "validation_plan": [
+        "Static analysis and code inspection."
+      ]
+    },
+    {
+      "id": "h11-shop-checkhasnew-differential",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Offline ARM Unicorn differential testing of Shop_CheckHasNewInventoryItem against pinned code.bin.",
+      "depends_on": [
+        "h11-shop-checkhasnew-candidate-review"
+      ],
+      "function_claims": [
+        "0x0022fc98"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h11_shop_checkhasnew_candidate.cpp",
+        "tools/h11_shop_checkhasnew_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-checkhasnew-differential.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Zero register and memory diffs against original implementation.",
+        "Mutation sensitivity confirmed."
+      ],
+      "validation_plan": [
+        "Run tools/h11_shop_checkhasnew_experiment.py."
+      ]
+    },
+    {
+      "id": "h11-shop-checkhasnew-differential-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of differential test results for Shop_CheckHasNewInventoryItem.",
+      "depends_on": [
+        "h11-shop-checkhasnew-differential"
+      ],
+      "function_claims": [
+        "0x0022fc98"
+      ],
+      "read_paths": [
+        "docs/agent-work/h11-shop-checkhasnew-differential.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-checkhasnew-differential-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve test coverage and mutation sensitivity evidence."
+      ],
+      "validation_plan": [
+        "Audit execution logs and mutation outputs."
+      ]
+    },
+    {
+      "id": "h11-shop-checkhasnew-composition",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Validate caller composition and ABI compatibility for Shop_CheckHasNewInventoryItem.",
+      "depends_on": [
+        "h11-shop-checkhasnew-differential-review"
+      ],
+      "function_claims": [
+        "0x0022fc98"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h11_shop_checkhasnew_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-checkhasnew-composition.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify register conventions and caller expectations."
+      ],
+      "validation_plan": [
+        "Composition analysis against calling functions."
+      ]
+    },
+    {
+      "id": "h11-shop-checkhasnew-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of caller composition for Shop_CheckHasNewInventoryItem.",
+      "depends_on": [
+        "h11-shop-checkhasnew-composition"
+      ],
+      "function_claims": [
+        "0x0022fc98"
+      ],
+      "read_paths": [
+        "docs/agent-work/h11-shop-checkhasnew-composition.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-checkhasnew-composition-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve caller composition and interworking proof."
+      ],
+      "validation_plan": [
+        "Audit caller composition report."
+      ]
+    },
+    {
+      "id": "h11-shop-checkhasnew-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Stage candidate binary for Shop_CheckHasNewInventoryItem into H11 composite build.",
+      "depends_on": [
+        "h11-shop-checkhasnew-composition-review"
+      ],
+      "function_claims": [
+        "0x0022fc98"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h11_shop_checkhasnew_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-checkhasnew-staging.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Generate binary patch.",
+        "Integrate into composite stage."
+      ],
+      "validation_plan": [
+        "Verify patch size matches window exactly."
+      ]
+    },
+    {
+      "id": "h11-shop-checkhasnew-staging-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of staged candidate for Shop_CheckHasNewInventoryItem.",
+      "depends_on": [
+        "h11-shop-checkhasnew-staging"
+      ],
+      "function_claims": [
+        "0x0022fc98"
+      ],
+      "read_paths": [
+        "docs/agent-work/h11-shop-checkhasnew-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-checkhasnew-staging-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve integration patch and hash validation."
+      ],
+      "validation_plan": [
+        "Audit binary diff against window."
+      ]
+    },
+    {
+      "id": "h11-shop-checkhasspecial-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize contract, parameters, registers, and memory effects for Shop_CheckHasSpecialStockItem (0x0022fcc8).",
+      "depends_on": [
+        "h11-shops-blackmarket-terminals-recon-review"
+      ],
+      "function_claims": [
+        "0x0022fcc8"
+      ],
+      "read_paths": [
+        "src/shop/shop_runtime.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-checkhasspecial-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Accurately specify semantics of Shop_CheckHasSpecialStockItem.",
+        "Specify test fixtures and mutation controls."
+      ],
+      "validation_plan": [
+        "Static disassembly and register effect verification against code.bin."
+      ]
+    },
+    {
+      "id": "h11-shop-checkhasspecial-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of semantic contract for Shop_CheckHasSpecialStockItem (0x0022fcc8).",
+      "depends_on": [
+        "h11-shop-checkhasspecial-contract"
+      ],
+      "function_claims": [
+        "0x0022fcc8"
+      ],
+      "read_paths": [
+        "docs/agent-work/h11-shop-checkhasspecial-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-checkhasspecial-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve pre/post conditions and side effects."
+      ],
+      "validation_plan": [
+        "Independent verification against disassembly."
+      ]
+    },
+    {
+      "id": "h11-shop-checkhasspecial-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable, editable C++ for Shop_CheckHasSpecialStockItem (0x0022fcc8) with positive headroom margin.",
+      "depends_on": [
+        "h11-shop-checkhasspecial-contract-review"
+      ],
+      "function_claims": [
+        "0x0022fcc8"
+      ],
+      "read_paths": [
+        "docs/agent-work/h11-shop-checkhasspecial-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h11_shop_checkhasspecial_candidate.cpp",
+        "docs/agent-work/h11-shop-checkhasspecial-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Compile freestanding ARMv6K object.",
+        "Size within original window.",
+        "Headroom positive."
+      ],
+      "validation_plan": [
+        "Compile with clang++ and inspect size and relocations."
+      ]
+    },
+    {
+      "id": "h11-shop-checkhasspecial-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of C++ implementation for Shop_CheckHasSpecialStockItem (0x0022fcc8).",
+      "depends_on": [
+        "h11-shop-checkhasspecial-candidate"
+      ],
+      "function_claims": [
+        "0x0022fcc8"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h11_shop_checkhasspecial_candidate.cpp",
+        "docs/agent-work/h11-shop-checkhasspecial-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-checkhasspecial-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify readable C++ structure.",
+        "Confirm no undefined behavior."
+      ],
+      "validation_plan": [
+        "Static analysis and code inspection."
+      ]
+    },
+    {
+      "id": "h11-shop-checkhasspecial-differential",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Offline ARM Unicorn differential testing of Shop_CheckHasSpecialStockItem against pinned code.bin.",
+      "depends_on": [
+        "h11-shop-checkhasspecial-candidate-review"
+      ],
+      "function_claims": [
+        "0x0022fcc8"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h11_shop_checkhasspecial_candidate.cpp",
+        "tools/h11_shop_checkhasspecial_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-checkhasspecial-differential.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Zero register and memory diffs against original implementation.",
+        "Mutation sensitivity confirmed."
+      ],
+      "validation_plan": [
+        "Run tools/h11_shop_checkhasspecial_experiment.py."
+      ]
+    },
+    {
+      "id": "h11-shop-checkhasspecial-differential-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of differential test results for Shop_CheckHasSpecialStockItem.",
+      "depends_on": [
+        "h11-shop-checkhasspecial-differential"
+      ],
+      "function_claims": [
+        "0x0022fcc8"
+      ],
+      "read_paths": [
+        "docs/agent-work/h11-shop-checkhasspecial-differential.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-checkhasspecial-differential-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve test coverage and mutation sensitivity evidence."
+      ],
+      "validation_plan": [
+        "Audit execution logs and mutation outputs."
+      ]
+    },
+    {
+      "id": "h11-shop-checkhasspecial-composition",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Validate caller composition and ABI compatibility for Shop_CheckHasSpecialStockItem.",
+      "depends_on": [
+        "h11-shop-checkhasspecial-differential-review"
+      ],
+      "function_claims": [
+        "0x0022fcc8"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h11_shop_checkhasspecial_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-checkhasspecial-composition.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify register conventions and caller expectations."
+      ],
+      "validation_plan": [
+        "Composition analysis against calling functions."
+      ]
+    },
+    {
+      "id": "h11-shop-checkhasspecial-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of caller composition for Shop_CheckHasSpecialStockItem.",
+      "depends_on": [
+        "h11-shop-checkhasspecial-composition"
+      ],
+      "function_claims": [
+        "0x0022fcc8"
+      ],
+      "read_paths": [
+        "docs/agent-work/h11-shop-checkhasspecial-composition.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-checkhasspecial-composition-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve caller composition and interworking proof."
+      ],
+      "validation_plan": [
+        "Audit caller composition report."
+      ]
+    },
+    {
+      "id": "h11-shop-checkhasspecial-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Stage candidate binary for Shop_CheckHasSpecialStockItem into H11 composite build.",
+      "depends_on": [
+        "h11-shop-checkhasspecial-composition-review"
+      ],
+      "function_claims": [
+        "0x0022fcc8"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h11_shop_checkhasspecial_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-checkhasspecial-staging.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Generate binary patch.",
+        "Integrate into composite stage."
+      ],
+      "validation_plan": [
+        "Verify patch size matches window exactly."
+      ]
+    },
+    {
+      "id": "h11-shop-checkhasspecial-staging-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of staged candidate for Shop_CheckHasSpecialStockItem.",
+      "depends_on": [
+        "h11-shop-checkhasspecial-staging"
+      ],
+      "function_claims": [
+        "0x0022fcc8"
+      ],
+      "read_paths": [
+        "docs/agent-work/h11-shop-checkhasspecial-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-checkhasspecial-staging-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve integration patch and hash validation."
+      ],
+      "validation_plan": [
+        "Audit binary diff against window."
+      ]
+    },
+    {
+      "id": "h11-shop-pushitemrecord-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize contract, parameters, registers, and memory effects for Shop_PushItemRecord (0x00230680).",
+      "depends_on": [
+        "h11-shops-blackmarket-terminals-recon-review"
+      ],
+      "function_claims": [
+        "0x00230680"
+      ],
+      "read_paths": [
+        "src/shop/shop_runtime.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-pushitemrecord-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Accurately specify semantics of Shop_PushItemRecord.",
+        "Specify test fixtures and mutation controls."
+      ],
+      "validation_plan": [
+        "Static disassembly and register effect verification against code.bin."
+      ]
+    },
+    {
+      "id": "h11-shop-pushitemrecord-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of semantic contract for Shop_PushItemRecord (0x00230680).",
+      "depends_on": [
+        "h11-shop-pushitemrecord-contract"
+      ],
+      "function_claims": [
+        "0x00230680"
+      ],
+      "read_paths": [
+        "docs/agent-work/h11-shop-pushitemrecord-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-pushitemrecord-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve pre/post conditions and side effects."
+      ],
+      "validation_plan": [
+        "Independent verification against disassembly."
+      ]
+    },
+    {
+      "id": "h11-shop-pushitemrecord-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable, editable C++ for Shop_PushItemRecord (0x00230680) with positive headroom margin.",
+      "depends_on": [
+        "h11-shop-pushitemrecord-contract-review"
+      ],
+      "function_claims": [
+        "0x00230680"
+      ],
+      "read_paths": [
+        "docs/agent-work/h11-shop-pushitemrecord-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h11_shop_pushitemrecord_candidate.cpp",
+        "docs/agent-work/h11-shop-pushitemrecord-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Compile freestanding ARMv6K object.",
+        "Size within original window.",
+        "Headroom positive."
+      ],
+      "validation_plan": [
+        "Compile with clang++ and inspect size and relocations."
+      ]
+    },
+    {
+      "id": "h11-shop-pushitemrecord-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of C++ implementation for Shop_PushItemRecord (0x00230680).",
+      "depends_on": [
+        "h11-shop-pushitemrecord-candidate"
+      ],
+      "function_claims": [
+        "0x00230680"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h11_shop_pushitemrecord_candidate.cpp",
+        "docs/agent-work/h11-shop-pushitemrecord-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-pushitemrecord-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify readable C++ structure.",
+        "Confirm no undefined behavior."
+      ],
+      "validation_plan": [
+        "Static analysis and code inspection."
+      ]
+    },
+    {
+      "id": "h11-shop-pushitemrecord-differential",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Offline ARM Unicorn differential testing of Shop_PushItemRecord against pinned code.bin.",
+      "depends_on": [
+        "h11-shop-pushitemrecord-candidate-review"
+      ],
+      "function_claims": [
+        "0x00230680"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h11_shop_pushitemrecord_candidate.cpp",
+        "tools/h11_shop_pushitemrecord_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-pushitemrecord-differential.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Zero register and memory diffs against original implementation.",
+        "Mutation sensitivity confirmed."
+      ],
+      "validation_plan": [
+        "Run tools/h11_shop_pushitemrecord_experiment.py."
+      ]
+    },
+    {
+      "id": "h11-shop-pushitemrecord-differential-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of differential test results for Shop_PushItemRecord.",
+      "depends_on": [
+        "h11-shop-pushitemrecord-differential"
+      ],
+      "function_claims": [
+        "0x00230680"
+      ],
+      "read_paths": [
+        "docs/agent-work/h11-shop-pushitemrecord-differential.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-pushitemrecord-differential-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve test coverage and mutation sensitivity evidence."
+      ],
+      "validation_plan": [
+        "Audit execution logs and mutation outputs."
+      ]
+    },
+    {
+      "id": "h11-shop-pushitemrecord-composition",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Validate caller composition and ABI compatibility for Shop_PushItemRecord.",
+      "depends_on": [
+        "h11-shop-pushitemrecord-differential-review"
+      ],
+      "function_claims": [
+        "0x00230680"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h11_shop_pushitemrecord_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-pushitemrecord-composition.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify register conventions and caller expectations."
+      ],
+      "validation_plan": [
+        "Composition analysis against calling functions."
+      ]
+    },
+    {
+      "id": "h11-shop-pushitemrecord-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of caller composition for Shop_PushItemRecord.",
+      "depends_on": [
+        "h11-shop-pushitemrecord-composition"
+      ],
+      "function_claims": [
+        "0x00230680"
+      ],
+      "read_paths": [
+        "docs/agent-work/h11-shop-pushitemrecord-composition.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-pushitemrecord-composition-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve caller composition and interworking proof."
+      ],
+      "validation_plan": [
+        "Audit caller composition report."
+      ]
+    },
+    {
+      "id": "h11-shop-pushitemrecord-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Stage candidate binary for Shop_PushItemRecord into H11 composite build.",
+      "depends_on": [
+        "h11-shop-pushitemrecord-composition-review"
+      ],
+      "function_claims": [
+        "0x00230680"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h11_shop_pushitemrecord_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-pushitemrecord-staging.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Generate binary patch.",
+        "Integrate into composite stage."
+      ],
+      "validation_plan": [
+        "Verify patch size matches window exactly."
+      ]
+    },
+    {
+      "id": "h11-shop-pushitemrecord-staging-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of staged candidate for Shop_PushItemRecord.",
+      "depends_on": [
+        "h11-shop-pushitemrecord-staging"
+      ],
+      "function_claims": [
+        "0x00230680"
+      ],
+      "read_paths": [
+        "docs/agent-work/h11-shop-pushitemrecord-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-pushitemrecord-staging-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve integration patch and hash validation."
+      ],
+      "validation_plan": [
+        "Audit binary diff against window."
+      ]
+    },
+    {
+      "id": "h11-shop-isequipslotmatch-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize contract, parameters, registers, and memory effects for Shop_IsEquipSlotMatch (0x00230d24).",
+      "depends_on": [
+        "h11-shops-blackmarket-terminals-recon-review"
+      ],
+      "function_claims": [
+        "0x00230d24"
+      ],
+      "read_paths": [
+        "src/shop/shop_runtime.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-isequipslotmatch-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Accurately specify semantics of Shop_IsEquipSlotMatch.",
+        "Specify test fixtures and mutation controls."
+      ],
+      "validation_plan": [
+        "Static disassembly and register effect verification against code.bin."
+      ]
+    },
+    {
+      "id": "h11-shop-isequipslotmatch-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of semantic contract for Shop_IsEquipSlotMatch (0x00230d24).",
+      "depends_on": [
+        "h11-shop-isequipslotmatch-contract"
+      ],
+      "function_claims": [
+        "0x00230d24"
+      ],
+      "read_paths": [
+        "docs/agent-work/h11-shop-isequipslotmatch-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-isequipslotmatch-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve pre/post conditions and side effects."
+      ],
+      "validation_plan": [
+        "Independent verification against disassembly."
+      ]
+    },
+    {
+      "id": "h11-shop-isequipslotmatch-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable, editable C++ for Shop_IsEquipSlotMatch (0x00230d24) with positive headroom margin.",
+      "depends_on": [
+        "h11-shop-isequipslotmatch-contract-review"
+      ],
+      "function_claims": [
+        "0x00230d24"
+      ],
+      "read_paths": [
+        "docs/agent-work/h11-shop-isequipslotmatch-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h11_shop_isequipslotmatch_candidate.cpp",
+        "docs/agent-work/h11-shop-isequipslotmatch-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Compile freestanding ARMv6K object.",
+        "Size within original window.",
+        "Headroom positive."
+      ],
+      "validation_plan": [
+        "Compile with clang++ and inspect size and relocations."
+      ]
+    },
+    {
+      "id": "h11-shop-isequipslotmatch-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of C++ implementation for Shop_IsEquipSlotMatch (0x00230d24).",
+      "depends_on": [
+        "h11-shop-isequipslotmatch-candidate"
+      ],
+      "function_claims": [
+        "0x00230d24"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h11_shop_isequipslotmatch_candidate.cpp",
+        "docs/agent-work/h11-shop-isequipslotmatch-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-isequipslotmatch-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify readable C++ structure.",
+        "Confirm no undefined behavior."
+      ],
+      "validation_plan": [
+        "Static analysis and code inspection."
+      ]
+    },
+    {
+      "id": "h11-shop-isequipslotmatch-differential",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Offline ARM Unicorn differential testing of Shop_IsEquipSlotMatch against pinned code.bin.",
+      "depends_on": [
+        "h11-shop-isequipslotmatch-candidate-review"
+      ],
+      "function_claims": [
+        "0x00230d24"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h11_shop_isequipslotmatch_candidate.cpp",
+        "tools/h11_shop_isequipslotmatch_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-isequipslotmatch-differential.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Zero register and memory diffs against original implementation.",
+        "Mutation sensitivity confirmed."
+      ],
+      "validation_plan": [
+        "Run tools/h11_shop_isequipslotmatch_experiment.py."
+      ]
+    },
+    {
+      "id": "h11-shop-isequipslotmatch-differential-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of differential test results for Shop_IsEquipSlotMatch.",
+      "depends_on": [
+        "h11-shop-isequipslotmatch-differential"
+      ],
+      "function_claims": [
+        "0x00230d24"
+      ],
+      "read_paths": [
+        "docs/agent-work/h11-shop-isequipslotmatch-differential.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-isequipslotmatch-differential-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve test coverage and mutation sensitivity evidence."
+      ],
+      "validation_plan": [
+        "Audit execution logs and mutation outputs."
+      ]
+    },
+    {
+      "id": "h11-shop-isequipslotmatch-composition",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Validate caller composition and ABI compatibility for Shop_IsEquipSlotMatch.",
+      "depends_on": [
+        "h11-shop-isequipslotmatch-differential-review"
+      ],
+      "function_claims": [
+        "0x00230d24"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h11_shop_isequipslotmatch_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-isequipslotmatch-composition.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify register conventions and caller expectations."
+      ],
+      "validation_plan": [
+        "Composition analysis against calling functions."
+      ]
+    },
+    {
+      "id": "h11-shop-isequipslotmatch-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of caller composition for Shop_IsEquipSlotMatch.",
+      "depends_on": [
+        "h11-shop-isequipslotmatch-composition"
+      ],
+      "function_claims": [
+        "0x00230d24"
+      ],
+      "read_paths": [
+        "docs/agent-work/h11-shop-isequipslotmatch-composition.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-isequipslotmatch-composition-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve caller composition and interworking proof."
+      ],
+      "validation_plan": [
+        "Audit caller composition report."
+      ]
+    },
+    {
+      "id": "h11-shop-isequipslotmatch-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Stage candidate binary for Shop_IsEquipSlotMatch into H11 composite build.",
+      "depends_on": [
+        "h11-shop-isequipslotmatch-composition-review"
+      ],
+      "function_claims": [
+        "0x00230d24"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h11_shop_isequipslotmatch_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-isequipslotmatch-staging.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Generate binary patch.",
+        "Integrate into composite stage."
+      ],
+      "validation_plan": [
+        "Verify patch size matches window exactly."
+      ]
+    },
+    {
+      "id": "h11-shop-isequipslotmatch-staging-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of staged candidate for Shop_IsEquipSlotMatch.",
+      "depends_on": [
+        "h11-shop-isequipslotmatch-staging"
+      ],
+      "function_claims": [
+        "0x00230d24"
+      ],
+      "read_paths": [
+        "docs/agent-work/h11-shop-isequipslotmatch-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-isequipslotmatch-staging-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve integration patch and hash validation."
+      ],
+      "validation_plan": [
+        "Audit binary diff against window."
+      ]
+    },
+    {
+      "id": "h11-shop-calcpurchasableqty-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize contract, parameters, registers, and memory effects for Shop_CalcPurchasableQty (0x00230db0).",
+      "depends_on": [
+        "h11-shops-blackmarket-terminals-recon-review"
+      ],
+      "function_claims": [
+        "0x00230db0"
+      ],
+      "read_paths": [
+        "src/shop/shop_runtime.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-calcpurchasableqty-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Accurately specify semantics of Shop_CalcPurchasableQty.",
+        "Specify test fixtures and mutation controls."
+      ],
+      "validation_plan": [
+        "Static disassembly and register effect verification against code.bin."
+      ]
+    },
+    {
+      "id": "h11-shop-calcpurchasableqty-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of semantic contract for Shop_CalcPurchasableQty (0x00230db0).",
+      "depends_on": [
+        "h11-shop-calcpurchasableqty-contract"
+      ],
+      "function_claims": [
+        "0x00230db0"
+      ],
+      "read_paths": [
+        "docs/agent-work/h11-shop-calcpurchasableqty-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-calcpurchasableqty-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve pre/post conditions and side effects."
+      ],
+      "validation_plan": [
+        "Independent verification against disassembly."
+      ]
+    },
+    {
+      "id": "h11-shop-calcpurchasableqty-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable, editable C++ for Shop_CalcPurchasableQty (0x00230db0) with positive headroom margin.",
+      "depends_on": [
+        "h11-shop-calcpurchasableqty-contract-review"
+      ],
+      "function_claims": [
+        "0x00230db0"
+      ],
+      "read_paths": [
+        "docs/agent-work/h11-shop-calcpurchasableqty-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h11_shop_calcpurchasableqty_candidate.cpp",
+        "docs/agent-work/h11-shop-calcpurchasableqty-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Compile freestanding ARMv6K object.",
+        "Size within original window.",
+        "Headroom positive."
+      ],
+      "validation_plan": [
+        "Compile with clang++ and inspect size and relocations."
+      ]
+    },
+    {
+      "id": "h11-shop-calcpurchasableqty-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of C++ implementation for Shop_CalcPurchasableQty (0x00230db0).",
+      "depends_on": [
+        "h11-shop-calcpurchasableqty-candidate"
+      ],
+      "function_claims": [
+        "0x00230db0"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h11_shop_calcpurchasableqty_candidate.cpp",
+        "docs/agent-work/h11-shop-calcpurchasableqty-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-calcpurchasableqty-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify readable C++ structure.",
+        "Confirm no undefined behavior."
+      ],
+      "validation_plan": [
+        "Static analysis and code inspection."
+      ]
+    },
+    {
+      "id": "h11-shop-calcpurchasableqty-differential",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Offline ARM Unicorn differential testing of Shop_CalcPurchasableQty against pinned code.bin.",
+      "depends_on": [
+        "h11-shop-calcpurchasableqty-candidate-review"
+      ],
+      "function_claims": [
+        "0x00230db0"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h11_shop_calcpurchasableqty_candidate.cpp",
+        "tools/h11_shop_calcpurchasableqty_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-calcpurchasableqty-differential.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Zero register and memory diffs against original implementation.",
+        "Mutation sensitivity confirmed."
+      ],
+      "validation_plan": [
+        "Run tools/h11_shop_calcpurchasableqty_experiment.py."
+      ]
+    },
+    {
+      "id": "h11-shop-calcpurchasableqty-differential-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of differential test results for Shop_CalcPurchasableQty.",
+      "depends_on": [
+        "h11-shop-calcpurchasableqty-differential"
+      ],
+      "function_claims": [
+        "0x00230db0"
+      ],
+      "read_paths": [
+        "docs/agent-work/h11-shop-calcpurchasableqty-differential.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-calcpurchasableqty-differential-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve test coverage and mutation sensitivity evidence."
+      ],
+      "validation_plan": [
+        "Audit execution logs and mutation outputs."
+      ]
+    },
+    {
+      "id": "h11-shop-calcpurchasableqty-composition",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Validate caller composition and ABI compatibility for Shop_CalcPurchasableQty.",
+      "depends_on": [
+        "h11-shop-calcpurchasableqty-differential-review"
+      ],
+      "function_claims": [
+        "0x00230db0"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h11_shop_calcpurchasableqty_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-calcpurchasableqty-composition.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify register conventions and caller expectations."
+      ],
+      "validation_plan": [
+        "Composition analysis against calling functions."
+      ]
+    },
+    {
+      "id": "h11-shop-calcpurchasableqty-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of caller composition for Shop_CalcPurchasableQty.",
+      "depends_on": [
+        "h11-shop-calcpurchasableqty-composition"
+      ],
+      "function_claims": [
+        "0x00230db0"
+      ],
+      "read_paths": [
+        "docs/agent-work/h11-shop-calcpurchasableqty-composition.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-calcpurchasableqty-composition-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve caller composition and interworking proof."
+      ],
+      "validation_plan": [
+        "Audit caller composition report."
+      ]
+    },
+    {
+      "id": "h11-shop-calcpurchasableqty-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Stage candidate binary for Shop_CalcPurchasableQty into H11 composite build.",
+      "depends_on": [
+        "h11-shop-calcpurchasableqty-composition-review"
+      ],
+      "function_claims": [
+        "0x00230db0"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h11_shop_calcpurchasableqty_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-calcpurchasableqty-staging.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Generate binary patch.",
+        "Integrate into composite stage."
+      ],
+      "validation_plan": [
+        "Verify patch size matches window exactly."
+      ]
+    },
+    {
+      "id": "h11-shop-calcpurchasableqty-staging-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of staged candidate for Shop_CalcPurchasableQty.",
+      "depends_on": [
+        "h11-shop-calcpurchasableqty-staging"
+      ],
+      "function_claims": [
+        "0x00230db0"
+      ],
+      "read_paths": [
+        "docs/agent-work/h11-shop-calcpurchasableqty-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-shop-calcpurchasableqty-staging-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve integration patch and hash validation."
+      ],
+      "validation_plan": [
+        "Audit binary diff against window."
+      ]
+    },
+    {
+      "id": "h11-terminal-setunlockflag-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize contract, parameters, registers, and memory effects for Terminal_SetUnlockFlag (0x00263734).",
+      "depends_on": [
+        "h11-shops-blackmarket-terminals-recon-review"
+      ],
+      "function_claims": [
+        "0x00263734"
+      ],
+      "read_paths": [
+        "src/shop/shop_runtime.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-terminal-setunlockflag-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Accurately specify semantics of Terminal_SetUnlockFlag.",
+        "Specify test fixtures and mutation controls."
+      ],
+      "validation_plan": [
+        "Static disassembly and register effect verification against code.bin."
+      ]
+    },
+    {
+      "id": "h11-terminal-setunlockflag-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of semantic contract for Terminal_SetUnlockFlag (0x00263734).",
+      "depends_on": [
+        "h11-terminal-setunlockflag-contract"
+      ],
+      "function_claims": [
+        "0x00263734"
+      ],
+      "read_paths": [
+        "docs/agent-work/h11-terminal-setunlockflag-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-terminal-setunlockflag-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve pre/post conditions and side effects."
+      ],
+      "validation_plan": [
+        "Independent verification against disassembly."
+      ]
+    },
+    {
+      "id": "h11-terminal-setunlockflag-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable, editable C++ for Terminal_SetUnlockFlag (0x00263734) with positive headroom margin.",
+      "depends_on": [
+        "h11-terminal-setunlockflag-contract-review"
+      ],
+      "function_claims": [
+        "0x00263734"
+      ],
+      "read_paths": [
+        "docs/agent-work/h11-terminal-setunlockflag-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h11_terminal_setunlockflag_candidate.cpp",
+        "docs/agent-work/h11-terminal-setunlockflag-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Compile freestanding ARMv6K object.",
+        "Size within original window.",
+        "Headroom positive."
+      ],
+      "validation_plan": [
+        "Compile with clang++ and inspect size and relocations."
+      ]
+    },
+    {
+      "id": "h11-terminal-setunlockflag-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of C++ implementation for Terminal_SetUnlockFlag (0x00263734).",
+      "depends_on": [
+        "h11-terminal-setunlockflag-candidate"
+      ],
+      "function_claims": [
+        "0x00263734"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h11_terminal_setunlockflag_candidate.cpp",
+        "docs/agent-work/h11-terminal-setunlockflag-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-terminal-setunlockflag-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify readable C++ structure.",
+        "Confirm no undefined behavior."
+      ],
+      "validation_plan": [
+        "Static analysis and code inspection."
+      ]
+    },
+    {
+      "id": "h11-terminal-setunlockflag-differential",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Offline ARM Unicorn differential testing of Terminal_SetUnlockFlag against pinned code.bin.",
+      "depends_on": [
+        "h11-terminal-setunlockflag-candidate-review"
+      ],
+      "function_claims": [
+        "0x00263734"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h11_terminal_setunlockflag_candidate.cpp",
+        "tools/h11_terminal_setunlockflag_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-terminal-setunlockflag-differential.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Zero register and memory diffs against original implementation.",
+        "Mutation sensitivity confirmed."
+      ],
+      "validation_plan": [
+        "Run tools/h11_terminal_setunlockflag_experiment.py."
+      ]
+    },
+    {
+      "id": "h11-terminal-setunlockflag-differential-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of differential test results for Terminal_SetUnlockFlag.",
+      "depends_on": [
+        "h11-terminal-setunlockflag-differential"
+      ],
+      "function_claims": [
+        "0x00263734"
+      ],
+      "read_paths": [
+        "docs/agent-work/h11-terminal-setunlockflag-differential.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-terminal-setunlockflag-differential-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve test coverage and mutation sensitivity evidence."
+      ],
+      "validation_plan": [
+        "Audit execution logs and mutation outputs."
+      ]
+    },
+    {
+      "id": "h11-terminal-setunlockflag-composition",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Validate caller composition and ABI compatibility for Terminal_SetUnlockFlag.",
+      "depends_on": [
+        "h11-terminal-setunlockflag-differential-review"
+      ],
+      "function_claims": [
+        "0x00263734"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h11_terminal_setunlockflag_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-terminal-setunlockflag-composition.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify register conventions and caller expectations."
+      ],
+      "validation_plan": [
+        "Composition analysis against calling functions."
+      ]
+    },
+    {
+      "id": "h11-terminal-setunlockflag-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of caller composition for Terminal_SetUnlockFlag.",
+      "depends_on": [
+        "h11-terminal-setunlockflag-composition"
+      ],
+      "function_claims": [
+        "0x00263734"
+      ],
+      "read_paths": [
+        "docs/agent-work/h11-terminal-setunlockflag-composition.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-terminal-setunlockflag-composition-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve caller composition and interworking proof."
+      ],
+      "validation_plan": [
+        "Audit caller composition report."
+      ]
+    },
+    {
+      "id": "h11-terminal-setunlockflag-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Stage candidate binary for Terminal_SetUnlockFlag into H11 composite build.",
+      "depends_on": [
+        "h11-terminal-setunlockflag-composition-review"
+      ],
+      "function_claims": [
+        "0x00263734"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h11_terminal_setunlockflag_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-terminal-setunlockflag-staging.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Generate binary patch.",
+        "Integrate into composite stage."
+      ],
+      "validation_plan": [
+        "Verify patch size matches window exactly."
+      ]
+    },
+    {
+      "id": "h11-terminal-setunlockflag-staging-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of staged candidate for Terminal_SetUnlockFlag.",
+      "depends_on": [
+        "h11-terminal-setunlockflag-staging"
+      ],
+      "function_claims": [
+        "0x00263734"
+      ],
+      "read_paths": [
+        "docs/agent-work/h11-terminal-setunlockflag-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-terminal-setunlockflag-staging-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve integration patch and hash validation."
+      ],
+      "validation_plan": [
+        "Audit binary diff against window."
+      ]
+    },
+    {
+      "id": "h11-terminal-isunlocked-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize contract, parameters, registers, and memory effects for Terminal_IsUnlocked (0x00263778).",
+      "depends_on": [
+        "h11-shops-blackmarket-terminals-recon-review"
+      ],
+      "function_claims": [
+        "0x00263778"
+      ],
+      "read_paths": [
+        "src/shop/shop_runtime.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-terminal-isunlocked-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Accurately specify semantics of Terminal_IsUnlocked.",
+        "Specify test fixtures and mutation controls."
+      ],
+      "validation_plan": [
+        "Static disassembly and register effect verification against code.bin."
+      ]
+    },
+    {
+      "id": "h11-terminal-isunlocked-contract-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of semantic contract for Terminal_IsUnlocked (0x00263778).",
+      "depends_on": [
+        "h11-terminal-isunlocked-contract"
+      ],
+      "function_claims": [
+        "0x00263778"
+      ],
+      "read_paths": [
+        "docs/agent-work/h11-terminal-isunlocked-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-terminal-isunlocked-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve pre/post conditions and side effects."
+      ],
+      "validation_plan": [
+        "Independent verification against disassembly."
+      ]
+    },
+    {
+      "id": "h11-terminal-isunlocked-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement readable, editable C++ for Terminal_IsUnlocked (0x00263778) with positive headroom margin.",
+      "depends_on": [
+        "h11-terminal-isunlocked-contract-review"
+      ],
+      "function_claims": [
+        "0x00263778"
+      ],
+      "read_paths": [
+        "docs/agent-work/h11-terminal-isunlocked-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h11_terminal_isunlocked_candidate.cpp",
+        "docs/agent-work/h11-terminal-isunlocked-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Compile freestanding ARMv6K object.",
+        "Size within original window.",
+        "Headroom positive."
+      ],
+      "validation_plan": [
+        "Compile with clang++ and inspect size and relocations."
+      ]
+    },
+    {
+      "id": "h11-terminal-isunlocked-candidate-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of C++ implementation for Terminal_IsUnlocked (0x00263778).",
+      "depends_on": [
+        "h11-terminal-isunlocked-candidate"
+      ],
+      "function_claims": [
+        "0x00263778"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h11_terminal_isunlocked_candidate.cpp",
+        "docs/agent-work/h11-terminal-isunlocked-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-terminal-isunlocked-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify readable C++ structure.",
+        "Confirm no undefined behavior."
+      ],
+      "validation_plan": [
+        "Static analysis and code inspection."
+      ]
+    },
+    {
+      "id": "h11-terminal-isunlocked-differential",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Offline ARM Unicorn differential testing of Terminal_IsUnlocked against pinned code.bin.",
+      "depends_on": [
+        "h11-terminal-isunlocked-candidate-review"
+      ],
+      "function_claims": [
+        "0x00263778"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h11_terminal_isunlocked_candidate.cpp",
+        "tools/h11_terminal_isunlocked_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-terminal-isunlocked-differential.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Zero register and memory diffs against original implementation.",
+        "Mutation sensitivity confirmed."
+      ],
+      "validation_plan": [
+        "Run tools/h11_terminal_isunlocked_experiment.py."
+      ]
+    },
+    {
+      "id": "h11-terminal-isunlocked-differential-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of differential test results for Terminal_IsUnlocked.",
+      "depends_on": [
+        "h11-terminal-isunlocked-differential"
+      ],
+      "function_claims": [
+        "0x00263778"
+      ],
+      "read_paths": [
+        "docs/agent-work/h11-terminal-isunlocked-differential.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-terminal-isunlocked-differential-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve test coverage and mutation sensitivity evidence."
+      ],
+      "validation_plan": [
+        "Audit execution logs and mutation outputs."
+      ]
+    },
+    {
+      "id": "h11-terminal-isunlocked-composition",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Validate caller composition and ABI compatibility for Terminal_IsUnlocked.",
+      "depends_on": [
+        "h11-terminal-isunlocked-differential-review"
+      ],
+      "function_claims": [
+        "0x00263778"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h11_terminal_isunlocked_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-terminal-isunlocked-composition.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify register conventions and caller expectations."
+      ],
+      "validation_plan": [
+        "Composition analysis against calling functions."
+      ]
+    },
+    {
+      "id": "h11-terminal-isunlocked-composition-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of caller composition for Terminal_IsUnlocked.",
+      "depends_on": [
+        "h11-terminal-isunlocked-composition"
+      ],
+      "function_claims": [
+        "0x00263778"
+      ],
+      "read_paths": [
+        "docs/agent-work/h11-terminal-isunlocked-composition.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-terminal-isunlocked-composition-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve caller composition and interworking proof."
+      ],
+      "validation_plan": [
+        "Audit caller composition report."
+      ]
+    },
+    {
+      "id": "h11-terminal-isunlocked-staging",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Stage candidate binary for Terminal_IsUnlocked into H11 composite build.",
+      "depends_on": [
+        "h11-terminal-isunlocked-composition-review"
+      ],
+      "function_claims": [
+        "0x00263778"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h11_terminal_isunlocked_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-terminal-isunlocked-staging.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Generate binary patch.",
+        "Integrate into composite stage."
+      ],
+      "validation_plan": [
+        "Verify patch size matches window exactly."
+      ]
+    },
+    {
+      "id": "h11-terminal-isunlocked-staging-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of staged candidate for Terminal_IsUnlocked.",
+      "depends_on": [
+        "h11-terminal-isunlocked-staging"
+      ],
+      "function_claims": [
+        "0x00263778"
+      ],
+      "read_paths": [
+        "docs/agent-work/h11-terminal-isunlocked-staging.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-terminal-isunlocked-staging-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve integration patch and hash validation."
+      ],
+      "validation_plan": [
+        "Audit binary diff against window."
+      ]
+    },
+    {
+      "id": "h11-staged-image-patch",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Compose all 8 H11 semantic candidates over H10 final image and generate LayeredFS IPS mod.",
+      "depends_on": [
+        "h11-shop-setselecteditem-staging-review",
+        "h11-shop-checkhasnew-staging-review",
+        "h11-shop-checkhasspecial-staging-review",
+        "h11-shop-pushitemrecord-staging-review",
+        "h11-shop-isequipslotmatch-staging-review",
+        "h11-shop-calcpurchasableqty-staging-review",
+        "h11-terminal-setunlockflag-staging-review",
+        "h11-terminal-isunlocked-staging-review"
+      ],
+      "function_claims": [
+        "0x0022a60c",
+        "0x0022fc98",
+        "0x0022fcc8",
+        "0x00230680",
+        "0x00230d24",
+        "0x00230db0",
+        "0x00263734",
+        "0x00263778"
+      ],
+      "read_paths": [
+        "tools/h11_staged_image_patch.py",
+        "code.h10-final.bin"
+      ],
+      "write_paths": [
+        "build/agent-work/H11-semantic/h11-integrated-stage/code.h11-final.bin",
+        "build/agent-work/H11-semantic/h11-integrated-stage/code.h11-final.ips",
+        "docs/agent-work/h11-staged-image-patch.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "staged_image"
+      ],
+      "acceptance": [
+        "Build code.h11-final.bin with all 8 candidates integrated.",
+        "Generate and verify code.h11-final.ips against original binary with round-trip proof."
+      ],
+      "validation_plan": [
+        "Run python tools/h11_staged_image_patch.py."
+      ]
+    },
+    {
+      "id": "h11-staged-image-patch-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of H11 composite staged image and LayeredFS IPS patch.",
+      "depends_on": [
+        "h11-staged-image-patch"
+      ],
+      "function_claims": [
+        "0x0022a60c",
+        "0x0022fc98",
+        "0x0022fcc8",
+        "0x00230680",
+        "0x00230d24",
+        "0x00230db0",
+        "0x00263734",
+        "0x00263778"
+      ],
+      "read_paths": [
+        "docs/agent-work/h11-staged-image-patch.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-staged-image-patch-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify SHA-256 integrity and IPS round-trip fidelity."
+      ],
+      "validation_plan": [
+        "Audit manifest hashes and IPS validation output."
+      ]
+    },
+    {
+      "id": "h11-offline-composite-gates",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute combined offline differential and caller composition suite for all 8 candidates.",
+      "depends_on": [
+        "h11-staged-image-patch-review"
+      ],
+      "function_claims": [
+        "0x0022a60c",
+        "0x0022fc98",
+        "0x0022fcc8",
+        "0x00230680",
+        "0x00230d24",
+        "0x00230db0",
+        "0x00263734",
+        "0x00263778"
+      ],
+      "read_paths": [
+        "tools/build_h11_all.py",
+        "tools/generate_h11_experiments.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-offline-composite-gates.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "100% pass across all 8 Unicorn differential validations.",
+        "Zero regressions across combined candidate assembly and ARM/Thumb interworking bits."
+      ],
+      "validation_plan": [
+        "Run tools/build_h11_all.py and all 8 experiment scripts."
+      ]
+    },
+    {
+      "id": "h11-offline-composite-gates-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of offline composite gates and interworking integrity.",
+      "depends_on": [
+        "h11-offline-composite-gates"
+      ],
+      "function_claims": [
+        "0x0022a60c",
+        "0x0022fc98",
+        "0x0022fcc8",
+        "0x00230680",
+        "0x00230d24",
+        "0x00230db0",
+        "0x00263734",
+        "0x00263778"
+      ],
+      "read_paths": [
+        "docs/agent-work/h11-offline-composite-gates.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-offline-composite-gates-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve offline test results prior to emulator runtime verification."
+      ],
+      "validation_plan": [
+        "Audit gate execution outputs and mutation sensitivity logs."
+      ]
+    },
+    {
+      "id": "h11-autonomous-shops-terminals-verify",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Autonomous runtime verification in Azahar emulator: Title, Save Load, Field, and Shops / Black Market / Terminals sequences.",
+      "depends_on": [
+        "h11-offline-composite-gates-review"
+      ],
+      "function_claims": [
+        "0x0022a60c",
+        "0x0022fc98",
+        "0x0022fcc8",
+        "0x00230680",
+        "0x00230d24",
+        "0x00230db0",
+        "0x00263734",
+        "0x00263778"
+      ],
+      "read_paths": [
+        "tools/h3_autonomous_verify.py",
+        "code.h11-final.ips"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-autonomous-shops-terminals-verify.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [
+        "emulator_session"
+      ],
+      "acceptance": [
+        "Run paired autonomous test via GDB RSP loopback stub.",
+        "0 register differences across Title, Save Load, 250 Field scene ticks, and Shops / Black Market / Terminals subsystems."
+      ],
+      "validation_plan": [
+        "Execute autonomous verify script and generate paired report.json."
+      ]
+    },
+    {
+      "id": "h11-autonomous-shops-terminals-verify-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of autonomous paired runtime verification for Milestone H11.",
+      "depends_on": [
+        "h11-autonomous-shops-terminals-verify"
+      ],
+      "function_claims": [
+        "0x0022a60c",
+        "0x0022fc98",
+        "0x0022fcc8",
+        "0x00230680",
+        "0x00230d24",
+        "0x00230db0",
+        "0x00263734",
+        "0x00263778"
+      ],
+      "read_paths": [
+        "docs/agent-work/h11-autonomous-shops-terminals-verify.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h11-autonomous-shops-terminals-verify-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm 100% paired equivalence with zero register or state differences."
+      ],
+      "validation_plan": [
+        "Audit runtime report metrics and save file hash integrity."
+      ]
+    },
+    {
+      "id": "h11-milestone-closure",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Formalize closure of Milestone H11 across documentation and ledger tracking.",
+      "depends_on": [
+        "h11-autonomous-shops-terminals-verify-review"
+      ],
+      "function_claims": [
+        "0x0022a60c",
+        "0x0022fc98",
+        "0x0022fcc8",
+        "0x00230680",
+        "0x00230d24",
+        "0x00230db0",
+        "0x00263734",
+        "0x00263778"
+      ],
+      "read_paths": [
+        "docs/milestones/H11-shops-blackmarket-terminals.md",
+        "docs/functional-status.md",
+        "docs/reconstruction-milestones.md"
+      ],
+      "write_paths": [
+        "docs/milestones/H11-shops-blackmarket-terminals.md",
+        "docs/functional-status.md",
+        "docs/reconstruction-milestones.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Update documentation marking Milestone H11 as completed and closed.",
+        "Ensure clean git state and 0 errors from tools/agent_workflow.py check."
+      ],
+      "validation_plan": [
+        "Run python tools/agent_workflow.py check."
+      ]
+    }
+  ]
+}
