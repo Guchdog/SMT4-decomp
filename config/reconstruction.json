@@ -1,42 +1,42 @@
 {
   "primary_goal": "Recover editable C++ with supported semantic behavior; byte identity is optional.",
-  "active_milestone": "H12",
+  "active_milestone": "H13",
   "priority_sources": [
-    "src/battle/battle_runtime.cpp"
+    "src/map/map_runtime.cpp"
   ],
   "priority_functions": [
     {
-      "address": "0x00123050",
-      "reason": "H12 Battle turn subsystem initialization and dispatcher registration / Battle_InitTurnSubsystems"
+      "address": "0x002638fc",
+      "reason": "H13 Place window banner visibility state update / PlaceWin_SetVisible"
     },
     {
-      "address": "0x00129c58",
-      "reason": "H12 Party and enemy unit smirk condition state query across active smirk work struct / Battle_GetUnitSmirkState"
+      "address": "0x002638dc",
+      "reason": "H13 Place window banner dismissal and state transition to inactive / PlaceWin_Dismiss"
     },
     {
-      "address": "0x00129cbc",
-      "reason": "H12 Active smirk buff owner entity reference lookup / Battle_GetSmirkActor"
+      "address": "0x0026394c",
+      "reason": "H13 Place window banner timer duration and activity state evaluation / PlaceWin_IsActive"
     },
     {
-      "address": "0x00129c70",
-      "reason": "H12 Atomic smirk state slot exchange with boundary validation and lock/unlock guard / Battle_ExchangeSmirkSlot"
+      "address": "0x00208a70",
+      "reason": "H13 Exploration field active flag clearing and reset / MapField_ClearActiveFlag"
     },
     {
-      "address": "0x00136fa4",
-      "reason": "H12 Turn phase data setup and state work bitfield flag configuration / Battle_InitTurnData"
+      "address": "0x001d2e24",
+      "reason": "H13 Minimap navigation marker target coordinates configuration / MapNavi_SetTargetCoords"
     },
     {
-      "address": "0x001c87d8",
-      "reason": "H12 Combat victory and defeat result screen resource deallocation / Result_Cleanup"
+      "address": "0x001d2e0c",
+      "reason": "H13 Minimap navigation system state reset and runtime buffer synchronization / MapNavi_Reset"
     },
     {
-      "address": "0x0028de4c",
-      "reason": "H12 Battle unit defeat status evaluation checking inactive flag and HP / Battle_IsUnitDefeated"
+      "address": "0x00193b28",
+      "reason": "H13 Map particle effect scaling calculation / MapEpl_CalcScale"
     },
     {
-      "address": "0x00215938",
-      "reason": "H12 Battle unit state work buffer copy and restoration / Battle_ResetUnitStateBuffer"
+      "address": "0x001d3a9c",
+      "reason": "H13 Overworld entity Euclidean distance computation using VFP / MapCalc_DistanceToEntity"
     }
   ],
-  "agent_workflow_board": "config/agent-workflows/h12.json"
+  "agent_workflow_board": "config/agent-workflows/h13.json"
 }

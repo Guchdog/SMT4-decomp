@@ -1,0 +1,2435 @@
+{
+  "schema_version": 1,
+  "batch": "batch-h13-001",
+  "milestone": "H13",
+  "max_workers": 3,
+  "cpu_budget": 8,
+  "goal": "Reconstruct readable, editable C++ for Milestone H13 (Advanced Exploration, Minimap, and Overworld), covering place window banner visibility update (PlaceWin_SetVisible), place window banner dismissal (PlaceWin_Dismiss), place window activity state evaluation (PlaceWin_IsActive), exploration field active flag clearing (MapField_ClearActiveFlag), minimap navigation target coordinates configuration (MapNavi_SetTargetCoords), minimap navigation runtime reset (MapNavi_Reset), map particle effect scaling calculation (MapEpl_CalcScale), and overworld entity Euclidean distance computation (MapCalc_DistanceToEntity) with offline differential validation, caller composition, staging, and autonomous runtime verification.",
+  "coordinator_owned_paths": [
+    "config/agent-workflows/h13.json",
+    "config/reconstruction.json",
+    "docs/milestones/H13-advanced-exploration.md",
+    "docs/functional-status.md",
+    "docs/reconstruction-milestones.md"
+  ],
+  "tasks": [
+    {
+      "id": "h13-advanced-exploration-recon",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Comprehensive static and architectural reconnaissance of Milestone H13 Advanced Exploration, Minimap, and Overworld.",
+      "depends_on": [],
+      "function_claims": [
+        "0x002638fc",
+        "0x002638dc",
+        "0x0026394c",
+        "0x00208a70",
+        "0x001d2e24",
+        "0x001d2e0c",
+        "0x00193b28",
+        "0x001d3a9c"
+      ],
+      "read_paths": [
+        "docs/reconstruction-milestones.md",
+        "docs/milestones/H12-advanced-combat.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-advanced-exploration-recon.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Identify exact entry points, memory structures, and callers for H13 Advanced Exploration subsystems.",
+        "Define offline-first differential boundaries, positive/negative controls, and mutation criteria."
+      ],
+      "validation_plan": [
+        "Cross-check candidate functions against pinned binary code.bin and functions.csv ledger."
+      ]
+    },
+    {
+      "id": "h13-advanced-exploration-recon-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independent review of H13 Advanced Exploration architecture reconnaissance.",
+      "depends_on": [
+        "h13-advanced-exploration-recon"
+      ],
+      "function_claims": [
+        "0x002638fc",
+        "0x002638dc",
+        "0x0026394c",
+        "0x00208a70",
+        "0x001d2e24",
+        "0x001d2e0c",
+        "0x00193b28",
+        "0x001d3a9c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h13-advanced-exploration-recon.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-advanced-exploration-recon-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm scope boundaries, calling conventions, and offline differential test plans."
+      ],
+      "validation_plan": [
+        "Verify against function signatures and registers."
+      ]
+    },
+    {
+      "id": "h13-placewin-setvisible-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover precise calling contract, memory boundaries, and semantics for PlaceWin_SetVisible.",
+      "depends_on": [
+        "h13-advanced-exploration-recon-review"
+      ],
+      "function_claims": [
+        "0x002638fc"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-placewin-setvisible-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover registers, arguments, preconditions, and return values."
+      ],
+      "validation_plan": [
+        "Static disassembly analysis."
+      ]
+    },
+    {
+      "id": "h13-placewin-setvisible-contract-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review contract specification for PlaceWin_SetVisible.",
+      "depends_on": [
+        "h13-placewin-setvisible-contract"
+      ],
+      "function_claims": [
+        "0x002638fc"
+      ],
+      "read_paths": [
+        "docs/agent-work/h13-placewin-setvisible-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-placewin-setvisible-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve verified contract record."
+      ],
+      "validation_plan": [
+        "Compare contract against disassembled original."
+      ]
+    },
+    {
+      "id": "h13-placewin-setvisible-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement clean, editable C++ candidate for PlaceWin_SetVisible within binary window footprint.",
+      "depends_on": [
+        "h13-placewin-setvisible-contract-review"
+      ],
+      "function_claims": [
+        "0x002638fc"
+      ],
+      "read_paths": [
+        "docs/agent-work/h13-placewin-setvisible-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h13_placewin_setvisible_candidate.cpp",
+        "docs/agent-work/h13-placewin-setvisible-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "experiments/semantic_equivalence/h13_placewin_setvisible_candidate.cpp"
+      ],
+      "acceptance": [
+        "Compile freestanding ARMv6K object within allocated window footprint."
+      ],
+      "validation_plan": [
+        "python tools/build_h13_all.py"
+      ]
+    },
+    {
+      "id": "h13-placewin-setvisible-candidate-review",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review C++ candidate implementation for PlaceWin_SetVisible.",
+      "depends_on": [
+        "h13-placewin-setvisible-candidate"
+      ],
+      "function_claims": [
+        "0x002638fc"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h13_placewin_setvisible_candidate.cpp",
+        "docs/agent-work/h13-placewin-setvisible-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-placewin-setvisible-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm semantic clarity, type safety, and zero window overflow."
+      ],
+      "validation_plan": [
+        "Inspect C++ code and compilation metrics."
+      ]
+    },
+    {
+      "id": "h13-placewin-setvisible-test",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Create Unicorn offline differential test harness for PlaceWin_SetVisible.",
+      "depends_on": [
+        "h13-placewin-setvisible-candidate-review"
+      ],
+      "function_claims": [
+        "0x002638fc"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h13_placewin_setvisible_candidate.cpp",
+        "docs/agent-work/h13-placewin-setvisible-contract.md"
+      ],
+      "write_paths": [
+        "tools/h13_placewin_setvisible_experiment.py",
+        "docs/agent-work/h13-placewin-setvisible-test.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [
+        "tools/h13_placewin_setvisible_experiment.py"
+      ],
+      "acceptance": [
+        "Harness simulates original vs candidate with mutation sensitivity."
+      ],
+      "validation_plan": [
+        "python tools/h13_placewin_setvisible_experiment.py"
+      ]
+    },
+    {
+      "id": "h13-placewin-setvisible-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential test harness for PlaceWin_SetVisible.",
+      "depends_on": [
+        "h13-placewin-setvisible-test"
+      ],
+      "function_claims": [
+        "0x002638fc"
+      ],
+      "read_paths": [
+        "tools/h13_placewin_setvisible_experiment.py",
+        "docs/agent-work/h13-placewin-setvisible-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-placewin-setvisible-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify boundary cases and mutation probe efficacy."
+      ],
+      "validation_plan": [
+        "Validate test harness coverage."
+      ]
+    },
+    {
+      "id": "h13-placewin-setvisible-diff",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline differential validation run for PlaceWin_SetVisible.",
+      "depends_on": [
+        "h13-placewin-setvisible-test-review"
+      ],
+      "function_claims": [
+        "0x002638fc"
+      ],
+      "read_paths": [
+        "tools/h13_placewin_setvisible_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-placewin-setvisible-diff.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Achieve 100% parity across registers and memory effects."
+      ],
+      "validation_plan": [
+        "python tools/h13_placewin_setvisible_experiment.py"
+      ]
+    },
+    {
+      "id": "h13-placewin-setvisible-diff-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential run results for PlaceWin_SetVisible.",
+      "depends_on": [
+        "h13-placewin-setvisible-diff"
+      ],
+      "function_claims": [
+        "0x002638fc"
+      ],
+      "read_paths": [
+        "docs/agent-work/h13-placewin-setvisible-diff.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-placewin-setvisible-diff-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm zero divergence and successful mutation failure."
+      ],
+      "validation_plan": [
+        "Inspect differential log."
+      ]
+    },
+    {
+      "id": "h13-placewin-setvisible-integration",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Integrate candidate PlaceWin_SetVisible into staging binary image with relocations resolved.",
+      "depends_on": [
+        "h13-placewin-setvisible-diff-review"
+      ],
+      "function_claims": [
+        "0x002638fc"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h13_placewin_setvisible_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-placewin-setvisible-integration.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Resolved relocations and patched into code image."
+      ],
+      "validation_plan": [
+        "python tools/h13_staged_image_patch.py"
+      ]
+    },
+    {
+      "id": "h13-placewin-setvisible-integration-review",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review subsystem staging integration for PlaceWin_SetVisible.",
+      "depends_on": [
+        "h13-placewin-setvisible-integration"
+      ],
+      "function_claims": [
+        "0x002638fc"
+      ],
+      "read_paths": [
+        "docs/agent-work/h13-placewin-setvisible-integration.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-placewin-setvisible-integration-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve staged integration record."
+      ],
+      "validation_plan": [
+        "Verify staging summary and binary offsets."
+      ]
+    },
+    {
+      "id": "h13-placewin-dismiss-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover precise calling contract, memory boundaries, and semantics for PlaceWin_Dismiss.",
+      "depends_on": [
+        "h13-advanced-exploration-recon-review"
+      ],
+      "function_claims": [
+        "0x002638dc"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-placewin-dismiss-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover registers, arguments, preconditions, and return values."
+      ],
+      "validation_plan": [
+        "Static disassembly analysis."
+      ]
+    },
+    {
+      "id": "h13-placewin-dismiss-contract-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review contract specification for PlaceWin_Dismiss.",
+      "depends_on": [
+        "h13-placewin-dismiss-contract"
+      ],
+      "function_claims": [
+        "0x002638dc"
+      ],
+      "read_paths": [
+        "docs/agent-work/h13-placewin-dismiss-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-placewin-dismiss-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve verified contract record."
+      ],
+      "validation_plan": [
+        "Compare contract against disassembled original."
+      ]
+    },
+    {
+      "id": "h13-placewin-dismiss-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement clean, editable C++ candidate for PlaceWin_Dismiss within binary window footprint.",
+      "depends_on": [
+        "h13-placewin-dismiss-contract-review"
+      ],
+      "function_claims": [
+        "0x002638dc"
+      ],
+      "read_paths": [
+        "docs/agent-work/h13-placewin-dismiss-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h13_placewin_dismiss_candidate.cpp",
+        "docs/agent-work/h13-placewin-dismiss-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "experiments/semantic_equivalence/h13_placewin_dismiss_candidate.cpp"
+      ],
+      "acceptance": [
+        "Compile freestanding ARMv6K object within allocated window footprint."
+      ],
+      "validation_plan": [
+        "python tools/build_h13_all.py"
+      ]
+    },
+    {
+      "id": "h13-placewin-dismiss-candidate-review",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review C++ candidate implementation for PlaceWin_Dismiss.",
+      "depends_on": [
+        "h13-placewin-dismiss-candidate"
+      ],
+      "function_claims": [
+        "0x002638dc"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h13_placewin_dismiss_candidate.cpp",
+        "docs/agent-work/h13-placewin-dismiss-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-placewin-dismiss-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm semantic clarity, type safety, and zero window overflow."
+      ],
+      "validation_plan": [
+        "Inspect C++ code and compilation metrics."
+      ]
+    },
+    {
+      "id": "h13-placewin-dismiss-test",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Create Unicorn offline differential test harness for PlaceWin_Dismiss.",
+      "depends_on": [
+        "h13-placewin-dismiss-candidate-review"
+      ],
+      "function_claims": [
+        "0x002638dc"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h13_placewin_dismiss_candidate.cpp",
+        "docs/agent-work/h13-placewin-dismiss-contract.md"
+      ],
+      "write_paths": [
+        "tools/h13_placewin_dismiss_experiment.py",
+        "docs/agent-work/h13-placewin-dismiss-test.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [
+        "tools/h13_placewin_dismiss_experiment.py"
+      ],
+      "acceptance": [
+        "Harness simulates original vs candidate with mutation sensitivity."
+      ],
+      "validation_plan": [
+        "python tools/h13_placewin_dismiss_experiment.py"
+      ]
+    },
+    {
+      "id": "h13-placewin-dismiss-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential test harness for PlaceWin_Dismiss.",
+      "depends_on": [
+        "h13-placewin-dismiss-test"
+      ],
+      "function_claims": [
+        "0x002638dc"
+      ],
+      "read_paths": [
+        "tools/h13_placewin_dismiss_experiment.py",
+        "docs/agent-work/h13-placewin-dismiss-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-placewin-dismiss-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify boundary cases and mutation probe efficacy."
+      ],
+      "validation_plan": [
+        "Validate test harness coverage."
+      ]
+    },
+    {
+      "id": "h13-placewin-dismiss-diff",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline differential validation run for PlaceWin_Dismiss.",
+      "depends_on": [
+        "h13-placewin-dismiss-test-review"
+      ],
+      "function_claims": [
+        "0x002638dc"
+      ],
+      "read_paths": [
+        "tools/h13_placewin_dismiss_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-placewin-dismiss-diff.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Achieve 100% parity across registers and memory effects."
+      ],
+      "validation_plan": [
+        "python tools/h13_placewin_dismiss_experiment.py"
+      ]
+    },
+    {
+      "id": "h13-placewin-dismiss-diff-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential run results for PlaceWin_Dismiss.",
+      "depends_on": [
+        "h13-placewin-dismiss-diff"
+      ],
+      "function_claims": [
+        "0x002638dc"
+      ],
+      "read_paths": [
+        "docs/agent-work/h13-placewin-dismiss-diff.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-placewin-dismiss-diff-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm zero divergence and successful mutation failure."
+      ],
+      "validation_plan": [
+        "Inspect differential log."
+      ]
+    },
+    {
+      "id": "h13-placewin-dismiss-integration",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Integrate candidate PlaceWin_Dismiss into staging binary image with relocations resolved.",
+      "depends_on": [
+        "h13-placewin-dismiss-diff-review"
+      ],
+      "function_claims": [
+        "0x002638dc"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h13_placewin_dismiss_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-placewin-dismiss-integration.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Resolved relocations and patched into code image."
+      ],
+      "validation_plan": [
+        "python tools/h13_staged_image_patch.py"
+      ]
+    },
+    {
+      "id": "h13-placewin-dismiss-integration-review",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review subsystem staging integration for PlaceWin_Dismiss.",
+      "depends_on": [
+        "h13-placewin-dismiss-integration"
+      ],
+      "function_claims": [
+        "0x002638dc"
+      ],
+      "read_paths": [
+        "docs/agent-work/h13-placewin-dismiss-integration.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-placewin-dismiss-integration-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve staged integration record."
+      ],
+      "validation_plan": [
+        "Verify staging summary and binary offsets."
+      ]
+    },
+    {
+      "id": "h13-placewin-isactive-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover precise calling contract, memory boundaries, and semantics for PlaceWin_IsActive.",
+      "depends_on": [
+        "h13-advanced-exploration-recon-review"
+      ],
+      "function_claims": [
+        "0x0026394c"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-placewin-isactive-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover registers, arguments, preconditions, and return values."
+      ],
+      "validation_plan": [
+        "Static disassembly analysis."
+      ]
+    },
+    {
+      "id": "h13-placewin-isactive-contract-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review contract specification for PlaceWin_IsActive.",
+      "depends_on": [
+        "h13-placewin-isactive-contract"
+      ],
+      "function_claims": [
+        "0x0026394c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h13-placewin-isactive-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-placewin-isactive-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve verified contract record."
+      ],
+      "validation_plan": [
+        "Compare contract against disassembled original."
+      ]
+    },
+    {
+      "id": "h13-placewin-isactive-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement clean, editable C++ candidate for PlaceWin_IsActive within binary window footprint.",
+      "depends_on": [
+        "h13-placewin-isactive-contract-review"
+      ],
+      "function_claims": [
+        "0x0026394c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h13-placewin-isactive-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h13_placewin_isactive_candidate.cpp",
+        "docs/agent-work/h13-placewin-isactive-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "experiments/semantic_equivalence/h13_placewin_isactive_candidate.cpp"
+      ],
+      "acceptance": [
+        "Compile freestanding ARMv6K object within allocated window footprint."
+      ],
+      "validation_plan": [
+        "python tools/build_h13_all.py"
+      ]
+    },
+    {
+      "id": "h13-placewin-isactive-candidate-review",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review C++ candidate implementation for PlaceWin_IsActive.",
+      "depends_on": [
+        "h13-placewin-isactive-candidate"
+      ],
+      "function_claims": [
+        "0x0026394c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h13_placewin_isactive_candidate.cpp",
+        "docs/agent-work/h13-placewin-isactive-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-placewin-isactive-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm semantic clarity, type safety, and zero window overflow."
+      ],
+      "validation_plan": [
+        "Inspect C++ code and compilation metrics."
+      ]
+    },
+    {
+      "id": "h13-placewin-isactive-test",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Create Unicorn offline differential test harness for PlaceWin_IsActive.",
+      "depends_on": [
+        "h13-placewin-isactive-candidate-review"
+      ],
+      "function_claims": [
+        "0x0026394c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h13_placewin_isactive_candidate.cpp",
+        "docs/agent-work/h13-placewin-isactive-contract.md"
+      ],
+      "write_paths": [
+        "tools/h13_placewin_isactive_experiment.py",
+        "docs/agent-work/h13-placewin-isactive-test.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [
+        "tools/h13_placewin_isactive_experiment.py"
+      ],
+      "acceptance": [
+        "Harness simulates original vs candidate with mutation sensitivity."
+      ],
+      "validation_plan": [
+        "python tools/h13_placewin_isactive_experiment.py"
+      ]
+    },
+    {
+      "id": "h13-placewin-isactive-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential test harness for PlaceWin_IsActive.",
+      "depends_on": [
+        "h13-placewin-isactive-test"
+      ],
+      "function_claims": [
+        "0x0026394c"
+      ],
+      "read_paths": [
+        "tools/h13_placewin_isactive_experiment.py",
+        "docs/agent-work/h13-placewin-isactive-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-placewin-isactive-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify boundary cases and mutation probe efficacy."
+      ],
+      "validation_plan": [
+        "Validate test harness coverage."
+      ]
+    },
+    {
+      "id": "h13-placewin-isactive-diff",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline differential validation run for PlaceWin_IsActive.",
+      "depends_on": [
+        "h13-placewin-isactive-test-review"
+      ],
+      "function_claims": [
+        "0x0026394c"
+      ],
+      "read_paths": [
+        "tools/h13_placewin_isactive_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-placewin-isactive-diff.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Achieve 100% parity across registers and memory effects."
+      ],
+      "validation_plan": [
+        "python tools/h13_placewin_isactive_experiment.py"
+      ]
+    },
+    {
+      "id": "h13-placewin-isactive-diff-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential run results for PlaceWin_IsActive.",
+      "depends_on": [
+        "h13-placewin-isactive-diff"
+      ],
+      "function_claims": [
+        "0x0026394c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h13-placewin-isactive-diff.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-placewin-isactive-diff-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm zero divergence and successful mutation failure."
+      ],
+      "validation_plan": [
+        "Inspect differential log."
+      ]
+    },
+    {
+      "id": "h13-placewin-isactive-integration",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Integrate candidate PlaceWin_IsActive into staging binary image with relocations resolved.",
+      "depends_on": [
+        "h13-placewin-isactive-diff-review"
+      ],
+      "function_claims": [
+        "0x0026394c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h13_placewin_isactive_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-placewin-isactive-integration.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Resolved relocations and patched into code image."
+      ],
+      "validation_plan": [
+        "python tools/h13_staged_image_patch.py"
+      ]
+    },
+    {
+      "id": "h13-placewin-isactive-integration-review",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review subsystem staging integration for PlaceWin_IsActive.",
+      "depends_on": [
+        "h13-placewin-isactive-integration"
+      ],
+      "function_claims": [
+        "0x0026394c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h13-placewin-isactive-integration.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-placewin-isactive-integration-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve staged integration record."
+      ],
+      "validation_plan": [
+        "Verify staging summary and binary offsets."
+      ]
+    },
+    {
+      "id": "h13-mapfield-clearactiveflag-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover precise calling contract, memory boundaries, and semantics for MapField_ClearActiveFlag.",
+      "depends_on": [
+        "h13-advanced-exploration-recon-review"
+      ],
+      "function_claims": [
+        "0x00208a70"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-mapfield-clearactiveflag-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover registers, arguments, preconditions, and return values."
+      ],
+      "validation_plan": [
+        "Static disassembly analysis."
+      ]
+    },
+    {
+      "id": "h13-mapfield-clearactiveflag-contract-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review contract specification for MapField_ClearActiveFlag.",
+      "depends_on": [
+        "h13-mapfield-clearactiveflag-contract"
+      ],
+      "function_claims": [
+        "0x00208a70"
+      ],
+      "read_paths": [
+        "docs/agent-work/h13-mapfield-clearactiveflag-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-mapfield-clearactiveflag-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve verified contract record."
+      ],
+      "validation_plan": [
+        "Compare contract against disassembled original."
+      ]
+    },
+    {
+      "id": "h13-mapfield-clearactiveflag-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement clean, editable C++ candidate for MapField_ClearActiveFlag within binary window footprint.",
+      "depends_on": [
+        "h13-mapfield-clearactiveflag-contract-review"
+      ],
+      "function_claims": [
+        "0x00208a70"
+      ],
+      "read_paths": [
+        "docs/agent-work/h13-mapfield-clearactiveflag-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h13_mapfield_clearactiveflag_candidate.cpp",
+        "docs/agent-work/h13-mapfield-clearactiveflag-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "experiments/semantic_equivalence/h13_mapfield_clearactiveflag_candidate.cpp"
+      ],
+      "acceptance": [
+        "Compile freestanding ARMv6K object within allocated window footprint."
+      ],
+      "validation_plan": [
+        "python tools/build_h13_all.py"
+      ]
+    },
+    {
+      "id": "h13-mapfield-clearactiveflag-candidate-review",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review C++ candidate implementation for MapField_ClearActiveFlag.",
+      "depends_on": [
+        "h13-mapfield-clearactiveflag-candidate"
+      ],
+      "function_claims": [
+        "0x00208a70"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h13_mapfield_clearactiveflag_candidate.cpp",
+        "docs/agent-work/h13-mapfield-clearactiveflag-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-mapfield-clearactiveflag-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm semantic clarity, type safety, and zero window overflow."
+      ],
+      "validation_plan": [
+        "Inspect C++ code and compilation metrics."
+      ]
+    },
+    {
+      "id": "h13-mapfield-clearactiveflag-test",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Create Unicorn offline differential test harness for MapField_ClearActiveFlag.",
+      "depends_on": [
+        "h13-mapfield-clearactiveflag-candidate-review"
+      ],
+      "function_claims": [
+        "0x00208a70"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h13_mapfield_clearactiveflag_candidate.cpp",
+        "docs/agent-work/h13-mapfield-clearactiveflag-contract.md"
+      ],
+      "write_paths": [
+        "tools/h13_mapfield_clearactiveflag_experiment.py",
+        "docs/agent-work/h13-mapfield-clearactiveflag-test.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [
+        "tools/h13_mapfield_clearactiveflag_experiment.py"
+      ],
+      "acceptance": [
+        "Harness simulates original vs candidate with mutation sensitivity."
+      ],
+      "validation_plan": [
+        "python tools/h13_mapfield_clearactiveflag_experiment.py"
+      ]
+    },
+    {
+      "id": "h13-mapfield-clearactiveflag-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential test harness for MapField_ClearActiveFlag.",
+      "depends_on": [
+        "h13-mapfield-clearactiveflag-test"
+      ],
+      "function_claims": [
+        "0x00208a70"
+      ],
+      "read_paths": [
+        "tools/h13_mapfield_clearactiveflag_experiment.py",
+        "docs/agent-work/h13-mapfield-clearactiveflag-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-mapfield-clearactiveflag-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify boundary cases and mutation probe efficacy."
+      ],
+      "validation_plan": [
+        "Validate test harness coverage."
+      ]
+    },
+    {
+      "id": "h13-mapfield-clearactiveflag-diff",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline differential validation run for MapField_ClearActiveFlag.",
+      "depends_on": [
+        "h13-mapfield-clearactiveflag-test-review"
+      ],
+      "function_claims": [
+        "0x00208a70"
+      ],
+      "read_paths": [
+        "tools/h13_mapfield_clearactiveflag_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-mapfield-clearactiveflag-diff.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Achieve 100% parity across registers and memory effects."
+      ],
+      "validation_plan": [
+        "python tools/h13_mapfield_clearactiveflag_experiment.py"
+      ]
+    },
+    {
+      "id": "h13-mapfield-clearactiveflag-diff-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential run results for MapField_ClearActiveFlag.",
+      "depends_on": [
+        "h13-mapfield-clearactiveflag-diff"
+      ],
+      "function_claims": [
+        "0x00208a70"
+      ],
+      "read_paths": [
+        "docs/agent-work/h13-mapfield-clearactiveflag-diff.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-mapfield-clearactiveflag-diff-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm zero divergence and successful mutation failure."
+      ],
+      "validation_plan": [
+        "Inspect differential log."
+      ]
+    },
+    {
+      "id": "h13-mapfield-clearactiveflag-integration",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Integrate candidate MapField_ClearActiveFlag into staging binary image with relocations resolved.",
+      "depends_on": [
+        "h13-mapfield-clearactiveflag-diff-review"
+      ],
+      "function_claims": [
+        "0x00208a70"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h13_mapfield_clearactiveflag_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-mapfield-clearactiveflag-integration.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Resolved relocations and patched into code image."
+      ],
+      "validation_plan": [
+        "python tools/h13_staged_image_patch.py"
+      ]
+    },
+    {
+      "id": "h13-mapfield-clearactiveflag-integration-review",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review subsystem staging integration for MapField_ClearActiveFlag.",
+      "depends_on": [
+        "h13-mapfield-clearactiveflag-integration"
+      ],
+      "function_claims": [
+        "0x00208a70"
+      ],
+      "read_paths": [
+        "docs/agent-work/h13-mapfield-clearactiveflag-integration.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-mapfield-clearactiveflag-integration-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve staged integration record."
+      ],
+      "validation_plan": [
+        "Verify staging summary and binary offsets."
+      ]
+    },
+    {
+      "id": "h13-mapnavi-settargetcoords-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover precise calling contract, memory boundaries, and semantics for MapNavi_SetTargetCoords.",
+      "depends_on": [
+        "h13-advanced-exploration-recon-review"
+      ],
+      "function_claims": [
+        "0x001d2e24"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-mapnavi-settargetcoords-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover registers, arguments, preconditions, and return values."
+      ],
+      "validation_plan": [
+        "Static disassembly analysis."
+      ]
+    },
+    {
+      "id": "h13-mapnavi-settargetcoords-contract-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review contract specification for MapNavi_SetTargetCoords.",
+      "depends_on": [
+        "h13-mapnavi-settargetcoords-contract"
+      ],
+      "function_claims": [
+        "0x001d2e24"
+      ],
+      "read_paths": [
+        "docs/agent-work/h13-mapnavi-settargetcoords-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-mapnavi-settargetcoords-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve verified contract record."
+      ],
+      "validation_plan": [
+        "Compare contract against disassembled original."
+      ]
+    },
+    {
+      "id": "h13-mapnavi-settargetcoords-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement clean, editable C++ candidate for MapNavi_SetTargetCoords within binary window footprint.",
+      "depends_on": [
+        "h13-mapnavi-settargetcoords-contract-review"
+      ],
+      "function_claims": [
+        "0x001d2e24"
+      ],
+      "read_paths": [
+        "docs/agent-work/h13-mapnavi-settargetcoords-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h13_mapnavi_settargetcoords_candidate.cpp",
+        "docs/agent-work/h13-mapnavi-settargetcoords-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "experiments/semantic_equivalence/h13_mapnavi_settargetcoords_candidate.cpp"
+      ],
+      "acceptance": [
+        "Compile freestanding ARMv6K object within allocated window footprint."
+      ],
+      "validation_plan": [
+        "python tools/build_h13_all.py"
+      ]
+    },
+    {
+      "id": "h13-mapnavi-settargetcoords-candidate-review",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review C++ candidate implementation for MapNavi_SetTargetCoords.",
+      "depends_on": [
+        "h13-mapnavi-settargetcoords-candidate"
+      ],
+      "function_claims": [
+        "0x001d2e24"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h13_mapnavi_settargetcoords_candidate.cpp",
+        "docs/agent-work/h13-mapnavi-settargetcoords-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-mapnavi-settargetcoords-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm semantic clarity, type safety, and zero window overflow."
+      ],
+      "validation_plan": [
+        "Inspect C++ code and compilation metrics."
+      ]
+    },
+    {
+      "id": "h13-mapnavi-settargetcoords-test",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Create Unicorn offline differential test harness for MapNavi_SetTargetCoords.",
+      "depends_on": [
+        "h13-mapnavi-settargetcoords-candidate-review"
+      ],
+      "function_claims": [
+        "0x001d2e24"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h13_mapnavi_settargetcoords_candidate.cpp",
+        "docs/agent-work/h13-mapnavi-settargetcoords-contract.md"
+      ],
+      "write_paths": [
+        "tools/h13_mapnavi_settargetcoords_experiment.py",
+        "docs/agent-work/h13-mapnavi-settargetcoords-test.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [
+        "tools/h13_mapnavi_settargetcoords_experiment.py"
+      ],
+      "acceptance": [
+        "Harness simulates original vs candidate with mutation sensitivity."
+      ],
+      "validation_plan": [
+        "python tools/h13_mapnavi_settargetcoords_experiment.py"
+      ]
+    },
+    {
+      "id": "h13-mapnavi-settargetcoords-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential test harness for MapNavi_SetTargetCoords.",
+      "depends_on": [
+        "h13-mapnavi-settargetcoords-test"
+      ],
+      "function_claims": [
+        "0x001d2e24"
+      ],
+      "read_paths": [
+        "tools/h13_mapnavi_settargetcoords_experiment.py",
+        "docs/agent-work/h13-mapnavi-settargetcoords-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-mapnavi-settargetcoords-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify boundary cases and mutation probe efficacy."
+      ],
+      "validation_plan": [
+        "Validate test harness coverage."
+      ]
+    },
+    {
+      "id": "h13-mapnavi-settargetcoords-diff",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline differential validation run for MapNavi_SetTargetCoords.",
+      "depends_on": [
+        "h13-mapnavi-settargetcoords-test-review"
+      ],
+      "function_claims": [
+        "0x001d2e24"
+      ],
+      "read_paths": [
+        "tools/h13_mapnavi_settargetcoords_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-mapnavi-settargetcoords-diff.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Achieve 100% parity across registers and memory effects."
+      ],
+      "validation_plan": [
+        "python tools/h13_mapnavi_settargetcoords_experiment.py"
+      ]
+    },
+    {
+      "id": "h13-mapnavi-settargetcoords-diff-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential run results for MapNavi_SetTargetCoords.",
+      "depends_on": [
+        "h13-mapnavi-settargetcoords-diff"
+      ],
+      "function_claims": [
+        "0x001d2e24"
+      ],
+      "read_paths": [
+        "docs/agent-work/h13-mapnavi-settargetcoords-diff.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-mapnavi-settargetcoords-diff-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm zero divergence and successful mutation failure."
+      ],
+      "validation_plan": [
+        "Inspect differential log."
+      ]
+    },
+    {
+      "id": "h13-mapnavi-settargetcoords-integration",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Integrate candidate MapNavi_SetTargetCoords into staging binary image with relocations resolved.",
+      "depends_on": [
+        "h13-mapnavi-settargetcoords-diff-review"
+      ],
+      "function_claims": [
+        "0x001d2e24"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h13_mapnavi_settargetcoords_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-mapnavi-settargetcoords-integration.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Resolved relocations and patched into code image."
+      ],
+      "validation_plan": [
+        "python tools/h13_staged_image_patch.py"
+      ]
+    },
+    {
+      "id": "h13-mapnavi-settargetcoords-integration-review",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review subsystem staging integration for MapNavi_SetTargetCoords.",
+      "depends_on": [
+        "h13-mapnavi-settargetcoords-integration"
+      ],
+      "function_claims": [
+        "0x001d2e24"
+      ],
+      "read_paths": [
+        "docs/agent-work/h13-mapnavi-settargetcoords-integration.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-mapnavi-settargetcoords-integration-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve staged integration record."
+      ],
+      "validation_plan": [
+        "Verify staging summary and binary offsets."
+      ]
+    },
+    {
+      "id": "h13-mapnavi-reset-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover precise calling contract, memory boundaries, and semantics for MapNavi_Reset.",
+      "depends_on": [
+        "h13-advanced-exploration-recon-review"
+      ],
+      "function_claims": [
+        "0x001d2e0c"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-mapnavi-reset-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover registers, arguments, preconditions, and return values."
+      ],
+      "validation_plan": [
+        "Static disassembly analysis."
+      ]
+    },
+    {
+      "id": "h13-mapnavi-reset-contract-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review contract specification for MapNavi_Reset.",
+      "depends_on": [
+        "h13-mapnavi-reset-contract"
+      ],
+      "function_claims": [
+        "0x001d2e0c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h13-mapnavi-reset-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-mapnavi-reset-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve verified contract record."
+      ],
+      "validation_plan": [
+        "Compare contract against disassembled original."
+      ]
+    },
+    {
+      "id": "h13-mapnavi-reset-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement clean, editable C++ candidate for MapNavi_Reset within binary window footprint.",
+      "depends_on": [
+        "h13-mapnavi-reset-contract-review"
+      ],
+      "function_claims": [
+        "0x001d2e0c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h13-mapnavi-reset-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h13_mapnavi_reset_candidate.cpp",
+        "docs/agent-work/h13-mapnavi-reset-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "experiments/semantic_equivalence/h13_mapnavi_reset_candidate.cpp"
+      ],
+      "acceptance": [
+        "Compile freestanding ARMv6K object within allocated window footprint."
+      ],
+      "validation_plan": [
+        "python tools/build_h13_all.py"
+      ]
+    },
+    {
+      "id": "h13-mapnavi-reset-candidate-review",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review C++ candidate implementation for MapNavi_Reset.",
+      "depends_on": [
+        "h13-mapnavi-reset-candidate"
+      ],
+      "function_claims": [
+        "0x001d2e0c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h13_mapnavi_reset_candidate.cpp",
+        "docs/agent-work/h13-mapnavi-reset-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-mapnavi-reset-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm semantic clarity, type safety, and zero window overflow."
+      ],
+      "validation_plan": [
+        "Inspect C++ code and compilation metrics."
+      ]
+    },
+    {
+      "id": "h13-mapnavi-reset-test",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Create Unicorn offline differential test harness for MapNavi_Reset.",
+      "depends_on": [
+        "h13-mapnavi-reset-candidate-review"
+      ],
+      "function_claims": [
+        "0x001d2e0c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h13_mapnavi_reset_candidate.cpp",
+        "docs/agent-work/h13-mapnavi-reset-contract.md"
+      ],
+      "write_paths": [
+        "tools/h13_mapnavi_reset_experiment.py",
+        "docs/agent-work/h13-mapnavi-reset-test.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [
+        "tools/h13_mapnavi_reset_experiment.py"
+      ],
+      "acceptance": [
+        "Harness simulates original vs candidate with mutation sensitivity."
+      ],
+      "validation_plan": [
+        "python tools/h13_mapnavi_reset_experiment.py"
+      ]
+    },
+    {
+      "id": "h13-mapnavi-reset-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential test harness for MapNavi_Reset.",
+      "depends_on": [
+        "h13-mapnavi-reset-test"
+      ],
+      "function_claims": [
+        "0x001d2e0c"
+      ],
+      "read_paths": [
+        "tools/h13_mapnavi_reset_experiment.py",
+        "docs/agent-work/h13-mapnavi-reset-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-mapnavi-reset-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify boundary cases and mutation probe efficacy."
+      ],
+      "validation_plan": [
+        "Validate test harness coverage."
+      ]
+    },
+    {
+      "id": "h13-mapnavi-reset-diff",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline differential validation run for MapNavi_Reset.",
+      "depends_on": [
+        "h13-mapnavi-reset-test-review"
+      ],
+      "function_claims": [
+        "0x001d2e0c"
+      ],
+      "read_paths": [
+        "tools/h13_mapnavi_reset_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-mapnavi-reset-diff.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Achieve 100% parity across registers and memory effects."
+      ],
+      "validation_plan": [
+        "python tools/h13_mapnavi_reset_experiment.py"
+      ]
+    },
+    {
+      "id": "h13-mapnavi-reset-diff-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential run results for MapNavi_Reset.",
+      "depends_on": [
+        "h13-mapnavi-reset-diff"
+      ],
+      "function_claims": [
+        "0x001d2e0c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h13-mapnavi-reset-diff.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-mapnavi-reset-diff-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm zero divergence and successful mutation failure."
+      ],
+      "validation_plan": [
+        "Inspect differential log."
+      ]
+    },
+    {
+      "id": "h13-mapnavi-reset-integration",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Integrate candidate MapNavi_Reset into staging binary image with relocations resolved.",
+      "depends_on": [
+        "h13-mapnavi-reset-diff-review"
+      ],
+      "function_claims": [
+        "0x001d2e0c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h13_mapnavi_reset_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-mapnavi-reset-integration.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Resolved relocations and patched into code image."
+      ],
+      "validation_plan": [
+        "python tools/h13_staged_image_patch.py"
+      ]
+    },
+    {
+      "id": "h13-mapnavi-reset-integration-review",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review subsystem staging integration for MapNavi_Reset.",
+      "depends_on": [
+        "h13-mapnavi-reset-integration"
+      ],
+      "function_claims": [
+        "0x001d2e0c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h13-mapnavi-reset-integration.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-mapnavi-reset-integration-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve staged integration record."
+      ],
+      "validation_plan": [
+        "Verify staging summary and binary offsets."
+      ]
+    },
+    {
+      "id": "h13-mapepl-calcscale-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover precise calling contract, memory boundaries, and semantics for MapEpl_CalcScale.",
+      "depends_on": [
+        "h13-advanced-exploration-recon-review"
+      ],
+      "function_claims": [
+        "0x00193b28"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-mapepl-calcscale-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover registers, arguments, preconditions, and return values."
+      ],
+      "validation_plan": [
+        "Static disassembly analysis."
+      ]
+    },
+    {
+      "id": "h13-mapepl-calcscale-contract-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review contract specification for MapEpl_CalcScale.",
+      "depends_on": [
+        "h13-mapepl-calcscale-contract"
+      ],
+      "function_claims": [
+        "0x00193b28"
+      ],
+      "read_paths": [
+        "docs/agent-work/h13-mapepl-calcscale-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-mapepl-calcscale-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve verified contract record."
+      ],
+      "validation_plan": [
+        "Compare contract against disassembled original."
+      ]
+    },
+    {
+      "id": "h13-mapepl-calcscale-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement clean, editable C++ candidate for MapEpl_CalcScale within binary window footprint.",
+      "depends_on": [
+        "h13-mapepl-calcscale-contract-review"
+      ],
+      "function_claims": [
+        "0x00193b28"
+      ],
+      "read_paths": [
+        "docs/agent-work/h13-mapepl-calcscale-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h13_mapepl_calcscale_candidate.cpp",
+        "docs/agent-work/h13-mapepl-calcscale-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "experiments/semantic_equivalence/h13_mapepl_calcscale_candidate.cpp"
+      ],
+      "acceptance": [
+        "Compile freestanding ARMv6K object within allocated window footprint."
+      ],
+      "validation_plan": [
+        "python tools/build_h13_all.py"
+      ]
+    },
+    {
+      "id": "h13-mapepl-calcscale-candidate-review",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review C++ candidate implementation for MapEpl_CalcScale.",
+      "depends_on": [
+        "h13-mapepl-calcscale-candidate"
+      ],
+      "function_claims": [
+        "0x00193b28"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h13_mapepl_calcscale_candidate.cpp",
+        "docs/agent-work/h13-mapepl-calcscale-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-mapepl-calcscale-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm semantic clarity, type safety, and zero window overflow."
+      ],
+      "validation_plan": [
+        "Inspect C++ code and compilation metrics."
+      ]
+    },
+    {
+      "id": "h13-mapepl-calcscale-test",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Create Unicorn offline differential test harness for MapEpl_CalcScale.",
+      "depends_on": [
+        "h13-mapepl-calcscale-candidate-review"
+      ],
+      "function_claims": [
+        "0x00193b28"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h13_mapepl_calcscale_candidate.cpp",
+        "docs/agent-work/h13-mapepl-calcscale-contract.md"
+      ],
+      "write_paths": [
+        "tools/h13_mapepl_calcscale_experiment.py",
+        "docs/agent-work/h13-mapepl-calcscale-test.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [
+        "tools/h13_mapepl_calcscale_experiment.py"
+      ],
+      "acceptance": [
+        "Harness simulates original vs candidate with mutation sensitivity."
+      ],
+      "validation_plan": [
+        "python tools/h13_mapepl_calcscale_experiment.py"
+      ]
+    },
+    {
+      "id": "h13-mapepl-calcscale-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential test harness for MapEpl_CalcScale.",
+      "depends_on": [
+        "h13-mapepl-calcscale-test"
+      ],
+      "function_claims": [
+        "0x00193b28"
+      ],
+      "read_paths": [
+        "tools/h13_mapepl_calcscale_experiment.py",
+        "docs/agent-work/h13-mapepl-calcscale-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-mapepl-calcscale-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify boundary cases and mutation probe efficacy."
+      ],
+      "validation_plan": [
+        "Validate test harness coverage."
+      ]
+    },
+    {
+      "id": "h13-mapepl-calcscale-diff",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline differential validation run for MapEpl_CalcScale.",
+      "depends_on": [
+        "h13-mapepl-calcscale-test-review"
+      ],
+      "function_claims": [
+        "0x00193b28"
+      ],
+      "read_paths": [
+        "tools/h13_mapepl_calcscale_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-mapepl-calcscale-diff.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Achieve 100% parity across registers and memory effects."
+      ],
+      "validation_plan": [
+        "python tools/h13_mapepl_calcscale_experiment.py"
+      ]
+    },
+    {
+      "id": "h13-mapepl-calcscale-diff-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential run results for MapEpl_CalcScale.",
+      "depends_on": [
+        "h13-mapepl-calcscale-diff"
+      ],
+      "function_claims": [
+        "0x00193b28"
+      ],
+      "read_paths": [
+        "docs/agent-work/h13-mapepl-calcscale-diff.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-mapepl-calcscale-diff-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm zero divergence and successful mutation failure."
+      ],
+      "validation_plan": [
+        "Inspect differential log."
+      ]
+    },
+    {
+      "id": "h13-mapepl-calcscale-integration",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Integrate candidate MapEpl_CalcScale into staging binary image with relocations resolved.",
+      "depends_on": [
+        "h13-mapepl-calcscale-diff-review"
+      ],
+      "function_claims": [
+        "0x00193b28"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h13_mapepl_calcscale_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-mapepl-calcscale-integration.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Resolved relocations and patched into code image."
+      ],
+      "validation_plan": [
+        "python tools/h13_staged_image_patch.py"
+      ]
+    },
+    {
+      "id": "h13-mapepl-calcscale-integration-review",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review subsystem staging integration for MapEpl_CalcScale.",
+      "depends_on": [
+        "h13-mapepl-calcscale-integration"
+      ],
+      "function_claims": [
+        "0x00193b28"
+      ],
+      "read_paths": [
+        "docs/agent-work/h13-mapepl-calcscale-integration.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-mapepl-calcscale-integration-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve staged integration record."
+      ],
+      "validation_plan": [
+        "Verify staging summary and binary offsets."
+      ]
+    },
+    {
+      "id": "h13-mapcalc-distancetoentity-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover precise calling contract, memory boundaries, and semantics for MapCalc_DistanceToEntity.",
+      "depends_on": [
+        "h13-advanced-exploration-recon-review"
+      ],
+      "function_claims": [
+        "0x001d3a9c"
+      ],
+      "read_paths": [
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-mapcalc-distancetoentity-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover registers, arguments, preconditions, and return values."
+      ],
+      "validation_plan": [
+        "Static disassembly analysis."
+      ]
+    },
+    {
+      "id": "h13-mapcalc-distancetoentity-contract-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review contract specification for MapCalc_DistanceToEntity.",
+      "depends_on": [
+        "h13-mapcalc-distancetoentity-contract"
+      ],
+      "function_claims": [
+        "0x001d3a9c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h13-mapcalc-distancetoentity-contract.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-mapcalc-distancetoentity-contract-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve verified contract record."
+      ],
+      "validation_plan": [
+        "Compare contract against disassembled original."
+      ]
+    },
+    {
+      "id": "h13-mapcalc-distancetoentity-candidate",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement clean, editable C++ candidate for MapCalc_DistanceToEntity within binary window footprint.",
+      "depends_on": [
+        "h13-mapcalc-distancetoentity-contract-review"
+      ],
+      "function_claims": [
+        "0x001d3a9c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h13-mapcalc-distancetoentity-contract.md"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h13_mapcalc_distancetoentity_candidate.cpp",
+        "docs/agent-work/h13-mapcalc-distancetoentity-candidate.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "experiments/semantic_equivalence/h13_mapcalc_distancetoentity_candidate.cpp"
+      ],
+      "acceptance": [
+        "Compile freestanding ARMv6K object within allocated window footprint."
+      ],
+      "validation_plan": [
+        "python tools/build_h13_all.py"
+      ]
+    },
+    {
+      "id": "h13-mapcalc-distancetoentity-candidate-review",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review C++ candidate implementation for MapCalc_DistanceToEntity.",
+      "depends_on": [
+        "h13-mapcalc-distancetoentity-candidate"
+      ],
+      "function_claims": [
+        "0x001d3a9c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h13_mapcalc_distancetoentity_candidate.cpp",
+        "docs/agent-work/h13-mapcalc-distancetoentity-candidate.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-mapcalc-distancetoentity-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm semantic clarity, type safety, and zero window overflow."
+      ],
+      "validation_plan": [
+        "Inspect C++ code and compilation metrics."
+      ]
+    },
+    {
+      "id": "h13-mapcalc-distancetoentity-test",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Create Unicorn offline differential test harness for MapCalc_DistanceToEntity.",
+      "depends_on": [
+        "h13-mapcalc-distancetoentity-candidate-review"
+      ],
+      "function_claims": [
+        "0x001d3a9c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h13_mapcalc_distancetoentity_candidate.cpp",
+        "docs/agent-work/h13-mapcalc-distancetoentity-contract.md"
+      ],
+      "write_paths": [
+        "tools/h13_mapcalc_distancetoentity_experiment.py",
+        "docs/agent-work/h13-mapcalc-distancetoentity-test.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [
+        "tools/h13_mapcalc_distancetoentity_experiment.py"
+      ],
+      "acceptance": [
+        "Harness simulates original vs candidate with mutation sensitivity."
+      ],
+      "validation_plan": [
+        "python tools/h13_mapcalc_distancetoentity_experiment.py"
+      ]
+    },
+    {
+      "id": "h13-mapcalc-distancetoentity-test-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential test harness for MapCalc_DistanceToEntity.",
+      "depends_on": [
+        "h13-mapcalc-distancetoentity-test"
+      ],
+      "function_claims": [
+        "0x001d3a9c"
+      ],
+      "read_paths": [
+        "tools/h13_mapcalc_distancetoentity_experiment.py",
+        "docs/agent-work/h13-mapcalc-distancetoentity-test.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-mapcalc-distancetoentity-test-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify boundary cases and mutation probe efficacy."
+      ],
+      "validation_plan": [
+        "Validate test harness coverage."
+      ]
+    },
+    {
+      "id": "h13-mapcalc-distancetoentity-diff",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Execute offline differential validation run for MapCalc_DistanceToEntity.",
+      "depends_on": [
+        "h13-mapcalc-distancetoentity-test-review"
+      ],
+      "function_claims": [
+        "0x001d3a9c"
+      ],
+      "read_paths": [
+        "tools/h13_mapcalc_distancetoentity_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-mapcalc-distancetoentity-diff.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Achieve 100% parity across registers and memory effects."
+      ],
+      "validation_plan": [
+        "python tools/h13_mapcalc_distancetoentity_experiment.py"
+      ]
+    },
+    {
+      "id": "h13-mapcalc-distancetoentity-diff-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review differential run results for MapCalc_DistanceToEntity.",
+      "depends_on": [
+        "h13-mapcalc-distancetoentity-diff"
+      ],
+      "function_claims": [
+        "0x001d3a9c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h13-mapcalc-distancetoentity-diff.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-mapcalc-distancetoentity-diff-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm zero divergence and successful mutation failure."
+      ],
+      "validation_plan": [
+        "Inspect differential log."
+      ]
+    },
+    {
+      "id": "h13-mapcalc-distancetoentity-integration",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Integrate candidate MapCalc_DistanceToEntity into staging binary image with relocations resolved.",
+      "depends_on": [
+        "h13-mapcalc-distancetoentity-diff-review"
+      ],
+      "function_claims": [
+        "0x001d3a9c"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h13_mapcalc_distancetoentity_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-mapcalc-distancetoentity-integration.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Resolved relocations and patched into code image."
+      ],
+      "validation_plan": [
+        "python tools/h13_staged_image_patch.py"
+      ]
+    },
+    {
+      "id": "h13-mapcalc-distancetoentity-integration-review",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review subsystem staging integration for MapCalc_DistanceToEntity.",
+      "depends_on": [
+        "h13-mapcalc-distancetoentity-integration"
+      ],
+      "function_claims": [
+        "0x001d3a9c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h13-mapcalc-distancetoentity-integration.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-mapcalc-distancetoentity-integration-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Approve staged integration record."
+      ],
+      "validation_plan": [
+        "Verify staging summary and binary offsets."
+      ]
+    },
+    {
+      "id": "h13-batch-integration",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Compose all 8 H13 subsystems into cumulative staged image code.h13-final.bin and emit LayeredFS IPS mod.",
+      "depends_on": [
+        "h13-placewin-setvisible-integration-review",
+        "h13-placewin-dismiss-integration-review",
+        "h13-placewin-isactive-integration-review",
+        "h13-mapfield-clearactiveflag-integration-review",
+        "h13-mapnavi-settargetcoords-integration-review",
+        "h13-mapnavi-reset-integration-review",
+        "h13-mapepl-calcscale-integration-review",
+        "h13-mapcalc-distancetoentity-integration-review"
+      ],
+      "function_claims": [
+        "0x002638fc",
+        "0x002638dc",
+        "0x0026394c",
+        "0x00208a70",
+        "0x001d2e24",
+        "0x001d2e0c",
+        "0x00193b28",
+        "0x001d3a9c"
+      ],
+      "read_paths": [
+        "build/agent-work/H12-semantic/h12-integrated-stage/code.h12-final.bin",
+        "tools/h13_staged_image_patch.py"
+      ],
+      "write_paths": [
+        "build/agent-work/H13-semantic/h13-integrated-stage/code.h13-final.bin",
+        "build/agent-work/H13-semantic/h13-integrated-stage/code.h13-final.ips",
+        "build/agent-work/H13-semantic/h13-integrated-stage/h13_staging_summary.json",
+        "docs/agent-work/h13-batch-integration.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Generate code.h13-final.bin with all H13 patches applied.",
+        "Emit LayeredFS IPS mod with roundtrip verification."
+      ],
+      "validation_plan": [
+        "python tools/h13_staged_image_patch.py"
+      ]
+    },
+    {
+      "id": "h13-batch-integration-review",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review cumulative batch integration for Milestone H13.",
+      "depends_on": [
+        "h13-batch-integration"
+      ],
+      "function_claims": [
+        "0x002638fc",
+        "0x002638dc",
+        "0x0026394c",
+        "0x00208a70",
+        "0x001d2e24",
+        "0x001d2e0c",
+        "0x00193b28",
+        "0x001d3a9c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h13-batch-integration.md",
+        "build/agent-work/H13-semantic/h13-integrated-stage/h13_staging_summary.json"
+      ],
+      "write_paths": [
+        "docs/agent-work/h13-batch-integration-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Validate SHA256 hashes and IPS roundtrip verification."
+      ],
+      "validation_plan": [
+        "Inspect staging summary and verify SHA256 integrity."
+      ]
+    },
+    {
+      "id": "h13-milestone-closure",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Milestone H13 closure, documentation finalization, and transition to Milestone H14.",
+      "depends_on": [
+        "h13-batch-integration-review"
+      ],
+      "function_claims": [
+        "0x002638fc",
+        "0x002638dc",
+        "0x0026394c",
+        "0x00208a70",
+        "0x001d2e24",
+        "0x001d2e0c",
+        "0x00193b28",
+        "0x001d3a9c"
+      ],
+      "read_paths": [
+        "docs/agent-work/h13-batch-integration-review.md",
+        "build/agent-work/H13-semantic/h13-integrated-stage/h13_staging_summary.json"
+      ],
+      "write_paths": [
+        "docs/milestones/H13-advanced-exploration.md",
+        "docs/functional-status.md",
+        "docs/reconstruction-milestones.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Milestone documentation complete with candidate metrics, validation proof, and status ledger updates."
+      ],
+      "validation_plan": [
+        "python tools/agent_workflow.py check"
+      ]
+    }
+  ]
+}
