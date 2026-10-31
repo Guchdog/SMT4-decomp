@@ -16,4 +16,8 @@ bool Audio_QueueBuffer(const void* pcm_data, u32 byte_count);
 void Audio_SetMasterVolume(f32 volume);
 f32  Audio_GetMasterVolume();
 
+u32 Audio_ProcessOutput(void* out_buffer, u32 requested_frames);
+u32 Audio_GetQueuedFrameCount();
+u64 Audio_GetTotalBytesProcessed();
+
 } // namespace smt4::hal

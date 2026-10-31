@@ -41,4 +41,9 @@ bool Input_Init();
 void Input_Poll();
 InputState Input_GetState();
 
+void Input_SetButton(ButtonMask button, bool down);
+void Input_SetTouch(bool down, u16 x, u16 y);
+void Input_SetCirclePad(f32 x, f32 y);
+void Input_InjectState(const InputState& state);
+
 } // namespace smt4::hal
