@@ -1,7 +1,8 @@
 {
   "primary_goal": "Recover editable C++ with supported semantic behavior; byte identity is optional.",
-  "active_milestone": "H18",
+  "active_milestone": "H19",
   "priority_sources": [
+    "src/crt/start.cpp",
     "src/semantic/h10_burroughs_promoted.cpp",
     "src/semantic/h11_shops_promoted.cpp",
     "src/semantic/h12_combat_promoted.cpp",
@@ -13,37 +14,13 @@
   ],
   "priority_functions": [
     {
-      "address": "0x002a0fac",
-      "reason": "H18 Burroughs Save Data canonical promotion / Camp_Burroughs_GetSaveData"
+      "address": "0x00100000",
+      "reason": "H19 CRT Process Entry Point / __start"
     },
     {
-      "address": "0x0022fc98",
-      "reason": "H18 Shop Check New Inventory canonical promotion / Shop_CheckHasNew"
-    },
-    {
-      "address": "0x00129c58",
-      "reason": "H18 Battle Unit Smirk State canonical promotion / Battle_GetUnitSmirkState"
-    },
-    {
-      "address": "0x0026394c",
-      "reason": "H18 PlaceWin UI Active State canonical promotion / PlaceWin_IsActive"
-    },
-    {
-      "address": "0x002c3b88",
-      "reason": "H18 ASD GPU Heap Size canonical promotion / AsdGpu_HeapSize"
-    },
-    {
-      "address": "0x00126084",
-      "reason": "H18 UI Dialog State canonical promotion / UiDialog_GetState"
-    },
-    {
-      "address": "0x00110c44",
-      "reason": "H18 ASD Sound Effect Buffer Size canonical promotion / AsdSoundEffect_GetBufferSize"
-    },
-    {
-      "address": "0x002a17c0",
-      "reason": "H18 AOC Result Readiness Check canonical promotion / Aoc_ResultIsReady"
+      "address": "0x00100024",
+      "reason": "H19 CRT BSS Initialization Routine / __init_bss"
     }
   ],
-  "agent_workflow_board": "config/agent-workflows/h18.json"
+  "agent_workflow_board": "config/agent-workflows/h19.json"
 }
