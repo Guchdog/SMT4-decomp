@@ -3030,7 +3030,7 @@ address,size,status,category,name,src_file
 0x0022109c,20,matching,script_vm,script_vm_func_0022109c,src/engine/leaf_batch18_a.cpp
 0x002210b0,100,matching,engine,engine_func_002210b0,src/engine/leaf_batch28_b.cpp
 0x00221114,84,matching,engine,engine_func_00221114,src/engine/leaf_batch25_b.cpp
-0x00221168,148,matching,engine,engine_func_00221168,src/engine/leaf_batch30_c.cpp
+0x00221168,148,non_matching,engine,engine_func_00221168,src/engine/leaf_batch30_c.cpp
 0x002211fc,24,matching,engine,engine_func_002211fc,src/engine/leaf_batch18_a.cpp
 0x00221214,816,matching,script_vm,script_vm_func_00221214,src/engine/leaf_batch46_a.cpp
 0x00221544,92,matching,camp,camp_func_00221544,src/engine/leaf_batch35_b.cpp

@@ -24,6 +24,186 @@
   ],
   "tasks": [
     {
+      "id": "h2-final-helper-contract-followup",
+      "role": "recon",
+      "state": "claimed",
+      "owner": "h2_contract",
+      "goal": "Map bounded 0x00286928 helper paths and original callees required by H2, then define a feasible C++ slice and differential fixture.",
+      "depends_on": [
+        "h2-callback-closure-review"
+      ],
+      "function_claims": [
+        "0x00286928"
+      ],
+      "read_paths": [
+        "docs/agent-work/h2-nested-callback-final-helper-audit.md",
+        "docs/agent-work/h2-callback-conversion-contract.md",
+        "src/engine/leaf_batch45_a.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-final-helper-conversion-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover and document branches, ABI, memory and call dependencies; identify unknown domains and practical original-vs-candidate tests without assuming observed zero has a unique cause."
+      ],
+      "validation_plan": [
+        "Inspect pinned ARM and callers; independent review before implementation."
+      ]
+    },
+    {
+      "id": "h2-callback-closure-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review final production source, ledger, expanded negative controls and preserved runtime evidence.",
+      "depends_on": [
+        "h2-callback-production-review"
+      ],
+      "function_claims": [
+        "0x00221168"
+      ],
+      "read_paths": [
+        "src/engine/leaf_batch30_c.cpp",
+        "config/functions.csv",
+        "tools/h2_callback_00221168_experiment.py",
+        "tools/h2_callback_00221168_package.py",
+        "docs/function-records/0x00221168.md",
+        "docs/agent-work/h2-callback-candidate-progress.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-callback-closure-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Review final diff, exact ledger status, mutation detection, runtime report and production object comparison; report remaining limitations and evidence provenance."
+      ],
+      "validation_plan": [
+        "Read-only review; no emulator or canonical build."
+      ]
+    },
+    {
+      "id": "h2-callback-production-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review proposed production wrapper and ABI declarations for safe canonical promotion.",
+      "depends_on": [
+        "h2-callback-package-review"
+      ],
+      "function_claims": [
+        "0x00221168"
+      ],
+      "read_paths": [
+        "build/h2-callback-00221168/h2_production_preview.cpp",
+        "src/engine/leaf_batch30_c.cpp",
+        "experiments/semantic_equivalence/h2_callback_00221168_candidate.cpp",
+        "docs/agent-work/h2-callback-package-review.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-callback-production-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Review diff, name bindings, ABI validity of legacy function declarations, production symbol and ledger impact. Identify blockers and required consumer builds."
+      ],
+      "validation_plan": [
+        "Static source and ABI review; no canonical build."
+      ]
+    },
+    {
+      "id": "h2-callback-package-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review final-address callback packaging and static interworking, evidence limitations and safe promotion.",
+      "depends_on": [
+        "h2-callback-candidate-review"
+      ],
+      "function_claims": [
+        "0x00221168"
+      ],
+      "read_paths": [
+        "experiments/semantic_equivalence/h2_callback_00221168_candidate.cpp",
+        "tools/h2_callback_00221168_experiment.py",
+        "tools/h2_callback_00221168_package.py",
+        "docs/agent-work/h2-callback-candidate-review.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-callback-package-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Review original and final target bytes, relocation targets, executable mode and interior-entry audit; report evidence limits."
+      ],
+      "validation_plan": [
+        "Inspect package inputs and generated image without running emulator or changing frozen inputs."
+      ]
+    },
+    {
+      "id": "h2-callback-candidate-review",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review candidate 0x00221168, compiled behavior, test coverage and limitations before promotion.",
+      "depends_on": [
+        "h2-callback-conversion-contract-prep"
+      ],
+      "function_claims": [
+        "0x00221168"
+      ],
+      "read_paths": [
+        "docs/agent-work/h2-callback-conversion-contract.md",
+        "experiments/semantic_equivalence/h2_callback_00221168_candidate.cpp",
+        "tools/h2_callback_00221168_experiment.py",
+        "src/engine/leaf_batch30_c.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-callback-candidate-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Independently inspect C++ and runner against original, report counterexamples, interworking, test gaps and promotion readiness."
+      ],
+      "validation_plan": [
+        "Static review of pinned original, candidate and runner."
+      ]
+    },
+    {
+      "id": "h2-callback-conversion-contract-prep",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover a bounded implementable contract for callback 0x00221168 and its direct dependencies; document unresolved domains before C++ implementation.",
+      "depends_on": [],
+      "function_claims": [
+        "0x00221168"
+      ],
+      "read_paths": [
+        "docs/agent-work/h2-callback-contract-00221168.md",
+        "docs/agent-work/h2-nested-callback-final-helper-audit.md",
+        "docs/agent-work/h2-postconfirm-nested-callback-trace.md",
+        "src/engine/leaf_batch30_c.cpp",
+        "src/engine/leaf_batch45_a.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-callback-conversion-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Document ABI, memory effects, calls and valid domains against pinned original, with concrete differential and caller cases and unknowns. Do not infer a complete helper contract from the callback trace."
+      ],
+      "validation_plan": [
+        "Inspect pinned original and callers; report source and reference identities and independent review needs."
+      ]
+    },
+    {
       "id": "h2-config-mappers",
       "role": "implementation",
       "state": "accepted",

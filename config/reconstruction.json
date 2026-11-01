@@ -1,34 +1,19 @@
 {
   "primary_goal": "Recover editable C++ with supported semantic behavior; byte identity is optional.",
-  "active_milestone": "H20",
+  "active_milestone": "H2",
   "priority_sources": [
-    "src/hal/hal_system.cpp",
-    "src/hal/hal_filesystem.cpp",
-    "src/hal/hal_graphics.cpp",
-    "src/hal/hal_audio.cpp",
-    "src/hal/hal_input.cpp"
+    "src/engine/leaf_batch30_c.cpp",
+    "src/engine/leaf_batch45_a.cpp"
   ],
   "priority_functions": [
     {
-      "address": "0x00104ef4",
-      "reason": "H20 Platform Lifecycle & Clock / HAL_System"
+      "address": "0x00221168",
+      "reason": "H2 titleConfig nested callback contract and reconstruction"
     },
     {
-      "address": "0x0021041c",
-      "reason": "H20 File System & Stream Abstraction / HAL_FileSystem"
-    },
-    {
-      "address": "0x002c3b88",
-      "reason": "H20 Display Targets & Frame Presentation / HAL_Graphics"
-    },
-    {
-      "address": "0x0011311c",
-      "reason": "H20 Multi-channel Audio Streaming / HAL_Audio"
-    },
-    {
-      "address": "0x0027fbc8",
-      "reason": "H20 Touch, Circle Pad & Button Inputs / HAL_Input"
+      "address": "0x00286928",
+      "reason": "H2 nested callback direct dependency; recover bounded contract"
     }
   ],
-  "agent_workflow_board": "config/agent-workflows/h20.json"
+  "agent_workflow_board": "config/agent-workflows/h2.json"
 }
