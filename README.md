@@ -37,17 +37,19 @@ The 100% exact-byte figure below includes original ARM-backed code and is not a 
 
 ## Recent H2 C++ semantic progress
 
-The following H2 functions now have typed C++ definitions and truthful `non_matching` ledger entries. Their per-function contracts and differential evidence are linked below. This work does not establish equivalence for one cumulative patched image or close H2; the milestone still requires the full caller/runtime scenario.
+The following H2 functions have typed C++ definitions and truthful `non_matching` ledger entries. Their per-function contracts and differential evidence are linked below. Several are bounded helpers that retain original ARM services. This work does not establish equivalence for one cumulative patched image or close H2; the milestone still requires the full caller/runtime scenario.
 
-| Address | Reconstructed behavior | Recorded evidence | Pushed commit |
-| --- | --- | --- | --- |
-| `0x00221168` | `titleConfig` nested callback slice | 20 paired callback returns and 19 checkpoints; readiness and re-entry remain incomplete. [Function record](docs/function-records/0x00221168.md) | `fa00f1e` |
-| `0x0028DF54` | H2 state-field writes and raw return | 64 direct cases, 64 compositions through original `0x00286928`, one negative control; RAM/ordering limits documented. [Function record](docs/function-records/0x0028df54.md) | `a0c40a4` |
-| `0x002C1F28` | Signed global predicate and byte return | 153 direct cases, 32 zero-result caller compositions, three negative controls; six named callsites audited. [Function record](docs/function-records/0x002c1f28.md) | `7b16227` |
-| `0x002B89A0` | Null or manager-mode predicate | 139 direct cases, 32 nonzero caller continuations, three negative controls; caller entry is asserted. [Function record](docs/function-records/0x002b89a0.md) | `ed471c2`, evidence follow-up `81d008a` |
-| `0x002AF854` | Indexed field selection and state resets | 371 direct cases, 32 compositions through original `0x002B8D24`, four negative controls. [Function record](docs/function-records/0x002af854.md) | `90885e3` |
+| Address | Reconstructed behavior | Recorded evidence |
+| --- | --- | --- |
+| `0x00221168` | `titleConfig` nested callback slice | 20 paired callback returns and 19 checkpoints; readiness and re-entry remain incomplete. [Function record](docs/function-records/0x00221168.md) |
+| `0x0028DF54` | H2 state-field writes and raw return | 64 direct cases, 64 compositions through original `0x00286928`, one negative control; RAM/ordering limits documented. [Function record](docs/function-records/0x0028df54.md) |
+| `0x002C1F28` | Signed global predicate and byte return | 153 direct cases, 32 zero-result caller compositions, three negative controls; six named callsites audited. [Function record](docs/function-records/0x002c1f28.md) |
+| `0x002B89A0` | Null or manager-mode predicate | 139 direct cases, 32 nonzero caller continuations, three negative controls; caller entry is asserted. [Function record](docs/function-records/0x002b89a0.md) |
+| `0x002AF854` | Indexed field selection and state resets | 371 direct cases, 32 compositions through original `0x002B8D24`, four negative controls. [Function record](docs/function-records/0x002af854.md) |
+| `0x002CAB70`, `0x0021F39C`, `0x002E0AF4` | `titleConfig` config-byte-to-index mappers | Two 512-case runs per mapper, each covering all 256 byte values, plus production-image checks and initializer caller compositions. [Mapper records](docs/function-records/0x002cab70.md), [0x0021F39C](docs/function-records/0x0021f39c.md), [0x002E0AF4](docs/function-records/0x002e0af4.md) |
+| `0x002BF030` | Sentinel-counted table selector, retaining original service `0x00138934` | 128 direct cases, 24 compositions through original `0x002B8D24`, six negative controls; full service branches and cumulative H2 runtime remain open. [Function record](docs/function-records/0x002bf030.md) |
 
-Each helper batch compiled all 204 translation units. Runtime and integration limits remain explicit in the per-function reviews and the [H2 milestone record](docs/milestones/H2-audio-settings.md).
+The recent helper batch compiled all 204 translation units. Runtime and integration limits remain explicit in the per-function reviews and the [H2 milestone record](docs/milestones/H2-audio-settings.md).
 
 ---
 
