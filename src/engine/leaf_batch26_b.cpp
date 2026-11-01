@@ -1604,23 +1604,14 @@ extern "C" __attribute__((naked)) void script_vm_func_00295e74() {
 }
 
 // DECOMP_FUNC(0x002b89a0, 52)
-extern "C" __attribute__((naked)) void camp_func_002b89a0() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe59f0028\n"
-        ".inst 0xe5900000\n"
-        ".inst 0xe3500000\n"
-        ".inst 0x0a000005\n"
-        ".inst 0xe2800b0d\n"
-        ".inst 0xe2800f4b\n"
-        ".inst 0xe5900000\n"
-        ".inst 0xe3500014\n"
-        ".inst 0x13a00000\n"
-        ".inst 0x1a000000\n"
-        ".inst 0xe3a00001\n"
-        ".inst 0xe12fff1e\n"
-        ".word 0x0044dc20\n"
-    );
+extern "C" int32_t camp_func_002b89a0() {
+    auto manager_slot = reinterpret_cast<const uint8_t* const*>(0x0044dc20);
+    auto manager = *manager_slot;
+    if (manager == nullptr) {
+        return 1;
+    }
+    auto mode = *reinterpret_cast<const uint32_t*>(manager + 0x352c);
+    return mode == 0x14 ? 1 : 0;
 }
 
 // DECOMP_FUNC(0x002c87d0, 52)
