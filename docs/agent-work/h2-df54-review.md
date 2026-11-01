@@ -1,0 +1,23 @@
+# Independent review: H2 helper 0x0028DF54
+
+## Scope and identity
+
+Read-only review of production source `src/engine/leaf_batch22_b.cpp` SHA-256 `f59bb14d57f4071889e1deb0a6b8e26b256a166fa7e22c754b09fadee9107b7f`, experimental candidate SHA-256 `357bb8a8e46a5b29fff25764096ac6e301874d6cf54fffb06e5246f3d2b62653`, runner SHA-256 `6915e385e0d58a5e28842b672e9c0a59c262d60cc0524bd3ce801be25dc270b3`, recorded output and objects. No independent compilation, runner execution or emulator use was performed. Reference is pinned code.bin SHA-256 `1f98884fe997af22e032a14c51a46c872b05b0e079a0f29e307b0e059cfaa558`.
+
+## Contract and object
+
+The original loads the state pointer at 0x0044DEB8, stores zero byte at state+0x3B, stores incoming r0 as a word at state+0xA8, and returns r0 unchanged. The C++ expresses these effects and raw return for valid ordinary mapped memory and an appropriately aligned word field. It performs no null check, so null or otherwise invalid pointers are outside the supported C++ domain; no equivalence of faults is established.
+
+The inspected candidate and production object function bytes are identical, 28 bytes each, with no function relocations. Candidate object SHA-256 `2115b240bae44a71ce3aab463c585b6b24b61fa07e62d54e72d0734720ea13e7`, production object SHA-256 `53a10c6f8577f2658d527ce88992404d8436094800ea1c69c6d23ae378a70f4d`; the production manifest records the current source hash. The generated ARM writes the word at +0xA8 *before* clearing byte +0x3B, reversing the original's write order. These locations are distinct, so the final-memory comparison supports ordinary RAM without concurrent observers; the source/object must not be claimed equivalent for MMIO, asynchronous observation or fault ordering without further evidence. The range of actual game callers that satisfy this assumption is not fully established.
+
+Legacy consumers declare this symbol as `extern "C" void battle_func_0028df54()` and call it through ARM inline assembly; production definition now declares `uint32_t(uint32_t)`. The register convention is supported by original code, but complete cross-TU C++ type compatibility and LTO are not. Affected consumers and the final integration must retain the documented ABI and be built/verified. The exact ledger labels it `non_matching`, consistent with the 28-byte reordered body.
+
+## Tests and remaining work
+
+The recorded output `build/h2-df54/offline-closure.txt`, SHA-256 `d7e7211a23e044cf83553197b17ce3b7202a87d95f5bef23cf7d577b3f7c1a4b`, reports 64/64 direct, candidate/production and original-helper caller comparisons, and 64/64 detection of the byte-store mutant. The runner initializes seeded, valid, aligned, disjoint objects, compares raw return, SP, r4-r11 and memory. Its composition enters original 0x00286928 with r3=6, nonzero r2 and object state=5, where the original calls 0x0028DF54. This is useful bounded caller evidence; it does not validate all helper states, all original callers, null/fault cases, global-pointer aliases, inter-thread observation or write timing. The runner does not directly observe write order. The output is a recorded result, not an independently repeated execution by this reviewer.
+
+The 64 cases use distinct random seeds but no explicit return-boundary set. The lone mutant changes the byte store; independent controls for dropped/incorrect word store and raw return would improve fault sensitivity. Exact full-build command result and final-address replacement/interworking should be checked against frozen artifacts by the integrator. The candidate is suitable for continued bounded integration if its RAM and ABI assumptions are accepted; full H2 and whole-game equivalence require the prescribed offline gate and paired runtime scenario using the cumulative patched image. No such runtime result is established by this review.
+
+## Runner update, review packet 002
+
+The current runner SHA-256 is `434f83276d5554d0dc724c289ea9c8e1e8ba499a03cf235a677d4b66bc83ab35`. Relative to the reviewed prior script, the project root is now derived from `__file__`, artifacts are written under `ROOT/build/df54`, and the compiler is found through `find_clang()` with `llvm-objcopy.exe` expected beside it. The fixture operations, seeds, comparisons, and mutant logic remain unchanged in the source inspected. This change does not resolve the semantic, ABI, write-order or coverage limits above. A different discovered compiler or object-copy tool can generate different binaries, so its actual identity and results must be recorded for each run. The earlier offline output and object hashes above describe the earlier run and runner revision; they do not alone prove a new-run result for the current script. This review did not rerun the changed script.
