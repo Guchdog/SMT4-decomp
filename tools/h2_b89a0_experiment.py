@@ -103,8 +103,11 @@ def run_real_helper(body, seed):
     writes = []
     u.hook_add(UC_HOOK_MEM_WRITE, lambda uc, access, address, size, value, data: writes.append((address, size, value)))
     returned = False
+    calls = 0
     def hook(uc, address, size, data):
-        nonlocal returned
+        nonlocal returned, calls
+        if address == 0x2b89a0:
+            calls += 1
         if address == lr:
             returned = True
             uc.emu_stop()
@@ -112,6 +115,8 @@ def run_real_helper(body, seed):
     u.emu_start(0x286928, 0, count=6000)
     if not returned:
         raise AssertionError('original 0x00286928 caller did not return')
+    if calls != 1:
+        raise AssertionError(f'expected one call to 0x002b89a0, observed {calls}')
     return (u.reg_read(UC_ARM_REG_R0), u.reg_read(UC_ARM_REG_SP),
             [u.reg_read(reg) for reg in regs], bytes(u.mem_read(obj, 0x1200)),
             bytes(u.mem_read(state, 0x200)), bytes(u.mem_read(0x43e0b8, 8)),
@@ -166,7 +171,7 @@ for seed in range(32):
     if run_real_helper(original, seed) != run_real_helper(production, seed):
         raise SystemExit(f'production 0x00286928 continuation mismatch seed={seed}')
 
-print(f'PASS {len(cases)}/{len(cases)} direct cases, zero direct writes, 32/32 nonzero 0x00286928 continuations, '
+print(f'PASS {len(cases)}/{len(cases)} direct cases, zero direct writes, 32/32 nonzero 0x00286928 continuations with callee-entry assertion, '
       f'3/3 negative controls detected; candidate/production/original bytes '
       f'{len(candidate)}/{len(production)}/{len(original)}; candidate matches production={candidate == production}; '
       f'production matches original={production == original}; reference SHA-256 {hashlib.sha256(IMAGE).hexdigest()}')

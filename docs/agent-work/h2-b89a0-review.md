@@ -21,3 +21,7 @@ The caller fixture uses original 0x00286928 with selector 6, nonzero third argum
 ## Assessment
 
 No static counterexample was found within the documented ordinary-memory domain. Cumulative image packaging, address binding/interworking, offline composition with other replacements and original-versus-patched runtime are separate integration work. Preserve exact ledger status and do not infer complete H2, other callers or whole-game equivalence from this review.
+
+## Callee-entry assertion, packet 004
+
+The current runner SHA-256 is `7601740c7601fa52608aa094a289554c07f89275ff2322bfc24aec76f61a3f43`. The caller-composition hook now counts entries at 0x002b89a0 and raises unless exactly one occurs in each original, candidate and production execution. This supersedes the earlier observation that callee entry was not explicitly asserted. The revised preserved output SHA-256 `f50a88f93aff95c4f0dfe4bf0144fa8800259e8aba74c8c8d6ab08b7234d1c0b` reports 139 direct cases, 32 caller seeds with that assertion and three detected controls. The reviewer did not rerun the script; output provenance remains recorded rather than independently reproduced. Other fixture and runtime limits are unchanged.
