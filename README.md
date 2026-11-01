@@ -10,7 +10,7 @@ Decompilation and reverse-engineering project for **Shin Megami Tensei IV** (Nin
 
 Find and reconstruct readable C++ with supported behavior. Byte-for-byte identity is not an acceptance requirement. Prioritize coherent milestone behavior, differential/caller evidence, and integration; do not optimize the project around matching opcodes.
 
-Follow the [functional status](docs/functional-status.md), [milestone plan](docs/reconstruction-milestones.md), and [per-function workflow](docs/function-reconstruction-workflow.md). The [generated candidate inventory](docs/semantic-inventory.md) measures experimental definitions and static evidence links, not equivalence or integration. Milestones H0, H1, H2, H3, and H4 are completed and closed.
+Follow the [functional status](docs/functional-status.md), [milestone plan](docs/reconstruction-milestones.md), and [per-function workflow](docs/function-reconstruction-workflow.md). The [generated candidate inventory](docs/semantic-inventory.md) measures experimental definitions and static evidence links, not equivalence or integration. Milestone status lives in the functional and reconstruction plans. H2 (title audio settings) remains open: earlier paired runtime evidence stopped before readiness and re-entry, and the per-function conversions below do not close that milestone.
 
 Use the [agent workflow](docs/agent-workflow.md) for bounded parallel contracts, implementation and independent review; the coordinator owns shared files, integration and the CPU budget.
 
@@ -34,6 +34,22 @@ The [full reconstruction and native port plan](docs/native-port-plan.md) tracks 
 | Native game scenarios without original ARM code | Not established; H20 tests isolated host HAL components |
 
 The 100% exact-byte figure below includes original ARM-backed code and is not a translation or native-port percentage. H19's composite ARM image retains original code; H20's host tests do not establish a native game build. The next step is the reproducible P0 inventory audit described in the plan.
+
+## Recent H2 C++ semantic progress
+
+The following H2 functions now have typed C++ definitions and truthful `non_matching` ledger entries. Their per-function contracts and differential evidence are linked below. This work does not establish equivalence for one cumulative patched image or close H2; the milestone still requires the full caller/runtime scenario.
+
+| Address | Reconstructed behavior | Recorded evidence | Pushed commit |
+| --- | --- | --- | --- |
+| `0x00221168` | `titleConfig` nested callback slice | 20 paired callback returns and 19 checkpoints; readiness and re-entry remain incomplete. [Function record](docs/function-records/0x00221168.md) | `fa00f1e` |
+| `0x0028DF54` | H2 state-field writes and raw return | 64 direct cases, 64 compositions through original `0x00286928`, one negative control; RAM/ordering limits documented. [Function record](docs/function-records/0x0028df54.md) | `a0c40a4` |
+| `0x002C1F28` | Signed global predicate and byte return | 153 direct cases, 32 zero-result caller compositions, three negative controls; six named callsites audited. [Function record](docs/function-records/0x002c1f28.md) | `7b16227` |
+| `0x002B89A0` | Null or manager-mode predicate | 139 direct cases, 32 nonzero caller continuations, three negative controls; caller entry is asserted. [Function record](docs/function-records/0x002b89a0.md) | `ed471c2`, evidence follow-up `81d008a` |
+| `0x002AF854` | Indexed field selection and state resets | 371 direct cases, 32 compositions through original `0x002B8D24`, four negative controls. [Function record](docs/function-records/0x002af854.md) | `90885e3` |
+
+Each helper batch compiled all 204 translation units. Runtime and integration limits remain explicit in the per-function reviews and the [H2 milestone record](docs/milestones/H2-audio-settings.md).
+
+---
 
 ## Reference byte coverage
 
