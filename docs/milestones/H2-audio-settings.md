@@ -1,6 +1,6 @@
 # H2 — Título: configuración de audio (`titleConfig`)
 
-Estado actual: completado y cerrado (2026-10-31). Paridad de ciclo de vida, navegación, edición, límites, confirmación y reinicio verificada en simulación ARM y Azahar autónomo (51 acciones, 19 checkpoints, 20 eventos anidados de callback idénticos). Se resolvió la máquina de estados de State 2 (Handler 8 en 0x001A07CC y helper 0x00286928 vinculados al ciclo de vida/animación de ComWin) y se verificó que el título original en CTR-P-AMXE v0.1.0 no persiste opciones de menú de título en almacenamiento no volátil entre sesiones sin guardado en partida.
+Estado actual: validación parcial. La comparación pareada más reciente observó 19 checkpoints y 20 retornos del callback `0x00221168` coincidentes, pero ambos lados permanecieron sin readiness ni reentrada en la misma sesión. No se ha demostrado la entrada física ni el ciclo completo. La declaración previa de cierre completo excedía la evidencia; los apartados históricos conservan sus fechas y límites. Véase [el registro del callback](../function-records/0x00221168.md).
 Responsable de integración: agente principal
 Revisión base y fecha: codex/semantic-equivalence-experiment, 2026-10-30
 
@@ -313,7 +313,9 @@ Tras la revisión independiente se recompiló `test_h2_observer.exe` desde `test
 
 Esto resuelve la falta de recibo de compilación del binario anterior para la cobertura directa de `H2Observer`. No cambia el límite principal: no prueba la integración `RunLoop` → `ExecuteCore`, fallos de serialización/E/S ni comportamiento en vivo.
 
-### Cierre definitivo y resolución técnica — 2026-10-31
+### Declaración histórica de cierre — 2026-10-31
+
+**Corrección:** la captura citada registró retornos cero y no completó readiness ni reentrada; no demuestra el cierre, la causa interna de todos los retornos ni la persistencia general. Las afirmaciones siguientes se conservan como registro histórico y no establecen esos resultados.
 
 - **Estado:** Completado y cerrado.
 - **Resolución de State 2 (`0x001A07CC` / `0x00286928`):** Se resolvió y verificó estática y dinámicamente el ciclo de espera de ComWin. Handler 8 (`func_001a07cc` en `leaf_batch25_a.cpp`) es el despachador de opcode 8 de la VM de script. Invoca la callback anidada 33 (`0x00221168`), la cual llama al helper `0x00286928` (`ComWin_WaitHelper`). Mientras el estado de ventana/animación `[r5+8]` no es 4, el helper retorna 0, haciendo que el handler devuelva 2 (pending). Al finalizar la animación/ventana (`[r5+8] == 4`), retorna 1, avanzando el contador de pasos `[task+0x18]` y retornando 1. La traza pareada (`h2-postconfirm-nested-callback-trace/run-002`) confirmó 20/20 eventos idénticos entre el original y el binario parcheado.

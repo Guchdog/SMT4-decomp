@@ -47,9 +47,26 @@ extern "C" __attribute__((naked)) void camp_func_00219624() {
     asm volatile(".arm\n.inst 0xe92d4070\n.inst 0xe1a04000\n.inst 0xe1d000b0\n.inst 0xe1a05001\n.inst 0xeb0215b3\n.inst 0xe1a06000\n.inst 0xe1d500b0\n.inst 0xeb0215b0\n.inst 0xe1d01006\n.inst 0x13e00000\n.inst 0x1a000013\n.inst 0xe1d60000\n.inst 0x13a00001\n.inst 0x1a000010\n.inst 0xe1d400b0\n.inst 0xeb027f3f\n.inst 0xe1a04000\n.inst 0xe1d500b0\n.inst 0xeb027f3c\n.inst 0xe1a01000\n.inst 0xe5d42002\n.inst 0xe5d00002\n.inst 0xe0520000\n.inst 0x1a000006\n.inst 0xe5d10003\n.inst 0xe5d42003\n.inst 0xe0500002\n.inst 0x1a000002\n.inst 0xe1d400b0\n.inst 0xe1d110b0\n.inst 0xe0400001\n.inst 0xe8bd8070\n");
 }
 
+extern "C" uint32_t h2_set_global(uint32_t) __asm__("ui_func_0028df3c");
+extern "C" uint32_t h2_get_state(uint32_t) __asm__("engine_func_00289640");
+extern "C" uint32_t h2_get_context(uint32_t) __asm__("func_0028686c");
+extern "C" uint32_t h2_select_value(uint32_t) __asm__("engine_func_00296f60");
+extern "C" uint32_t h2_final_helper(uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t) __asm__("engine_func_00286928");
 // DECOMP_FUNC(0x00221168, 148)
-extern "C" __attribute__((naked)) void engine_func_00221168() {
-    asm volatile(".arm\n.inst 0xe92d40f0\n.inst 0xe24dd00c\n.inst 0xe3a00000\n.inst 0xeb01b370\n.inst 0xeb01a130\n.inst 0xe3500000\n.inst 0xe59f0070\n.inst 0x1a000004\n.inst 0xe3a02001\n.inst 0xe5901008\n.inst 0xe3510000\n.inst 0x15c12030\n.inst 0xe5c12031\n.inst 0xe5900004\n.inst 0xe3a05006\n.inst 0xe3a04001\n.inst 0xe3500000\n.inst 0x13a01014\n.inst 0x15c01a11\n.inst 0xeb0195ac\n.inst 0xe1a07000\n.inst 0xe3a00000\n.inst 0xeb01d766\n.inst 0xe1a06000\n.inst 0xe320f000\n.inst 0xeb01a11b\n.inst 0xe3a01000\n.inst 0xe1a02000\n.inst 0xe58d1004\n.inst 0xe1a03005\n.inst 0xe1a01006\n.inst 0xe1a00007\n.inst 0xe58d4000\n.inst 0xeb0195cd\n.inst 0xe28dd00c\n.inst 0xe8bd80f0\n.word 0x0043e188\n");
+extern "C" uint32_t engine_func_00221168() {
+    auto slots = reinterpret_cast<uint32_t*>(0x0043e188);
+    uint32_t state = h2_get_state(h2_set_global(0));
+    if (state == 0) {
+        auto object = reinterpret_cast<uint8_t*>(slots[2]);
+        if (object != nullptr) object[0x30] = 1;
+        object[0x31] = 1;
+    }
+    auto object = reinterpret_cast<uint8_t*>(slots[1]);
+    if (object != nullptr) object[0xa11] = 0x14;
+    uint32_t context = h2_get_context(reinterpret_cast<uint32_t>(object));
+    uint32_t value = h2_select_value(0);
+    uint32_t current = h2_get_state(value);
+    return h2_final_helper(context, value, current, 6, 1, 0);
 }
 
 // DECOMP_FUNC(0x00221fb4, 128)

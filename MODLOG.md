@@ -1,3 +1,7 @@
+# H2 callback 0x00221168 — 2026-10-31
+
+Converted the callback wrapper to bounded C++ in production, classified it `non_matching`, and built a reproducible integrated H2 IPS. ARM differential and caller tests, four negative controls, all 204 translation units, and a paired Azahar scenario passed within documented bounds. The paired run observed 20 matching nested callback returns and 19 matching checkpoints; neither side completed readiness or same-session reentry. Original helper/selector dependencies and ABI limitations remain explicit in [the function record](docs/function-records/0x00221168.md).
+
 # Semantic experiment field notes — 2026-10-24
 
 Ten leaf functions at `0x00128F34`, `0x002AE464`, `0x00394614`, `0x0038143C`,

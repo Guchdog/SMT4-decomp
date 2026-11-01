@@ -662,16 +662,12 @@ extern "C" __attribute__((naked)) void unite_func_00289fc0() {
 }
 
 // DECOMP_FUNC(0x0028df54, 28)
-extern "C" __attribute__((naked)) void battle_func_0028df54() {
-    asm volatile(
-        "ldr r1, [pc, #0x10]\n"
-        "mov r2, #0\n"
-        "ldr r1, [r1, #0x20]\n"
-        "strb r2, [r1, #0x3b]\n"
-        "str r0, [r1, #0xa8]\n"
-        "bx lr\n"
-        ".word 0x0044de98\n"
-    );
+extern "C" uint32_t battle_func_0028df54(uint32_t value) {
+    auto base = reinterpret_cast<uint8_t*>(0x0044de98);
+    auto state = *reinterpret_cast<uint8_t**>(base + 0x20);
+    state[0x3b] = 0;
+    *reinterpret_cast<uint32_t*>(state + 0xa8) = value;
+    return value;
 }
 
 // DECOMP_FUNC(0x00290a4c, 28)
