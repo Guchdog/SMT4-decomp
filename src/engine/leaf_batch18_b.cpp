@@ -14,7 +14,7 @@ extern "C" void crt_func_001023e0();
 extern "C" void engine_func_0010fc00();
 extern "C" void engine_func_002310d8();
 extern "C" void engine_func_00266d70();
-extern "C" void engine_func_00286928();
+extern "C" uint32_t engine_func_00286928(uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t);
 extern "C" void engine_func_00296f60();
 extern "C" void engine_func_002adf14();
 extern "C" void engine_func_002bd630();

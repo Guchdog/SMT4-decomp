@@ -37,7 +37,7 @@ The 100% exact-byte figure below includes original ARM-backed code and is not a 
 
 ## Recent H2 C++ semantic progress
 
-The following H2 functions have typed C++ definitions and truthful `non_matching` ledger entries. Their per-function contracts and differential evidence are linked below. Several are bounded helpers that retain original ARM services. This work does not establish equivalence for one cumulative patched image or close H2; the milestone still requires the full caller/runtime scenario.
+The following H2 functions have typed C++ definitions and truthful `non_matching` ledger entries. Their per-function contracts and differential evidence are linked below. Several are bounded helpers that retain original ARM services. The paired runtime comparison establishes parity only for its defined scripted scenario on the recorded cumulative image; it does not establish whole-game or full H2 equivalence.
 
 | Address | Reconstructed behavior | Recorded evidence |
 | --- | --- | --- |
@@ -49,6 +49,7 @@ The following H2 functions have typed C++ definitions and truthful `non_matching
 | `0x002CAB70`, `0x0021F39C`, `0x002E0AF4` | `titleConfig` config-byte-to-index mappers | Two 512-case runs per mapper, each covering all 256 byte values, plus production-image checks and initializer caller compositions. [Mapper records](docs/function-records/0x002cab70.md), [0x0021F39C](docs/function-records/0x0021f39c.md), [0x002E0AF4](docs/function-records/0x002e0af4.md) |
 | `0x002BF030` | Sentinel-counted table selector, retaining original service `0x00138934` | 128 direct cases, 24 compositions through original `0x002B8D24`, six negative controls; full service branches and cumulative H2 runtime remain open. [Function record](docs/function-records/0x002bf030.md) |
 | `0x002B8D24` | Typed selector dispatcher, retaining original helpers `0x002AF854`, `0x002BF030` and `0x001384F0` | 116 direct cases, two selector-11 caller compositions, two five-call selector-12 cross-alias chains and seven controls; 356/360 bytes. Paired cumulative-image H2 runtime matched 19/19 checkpoints across 51 scripted actions; a hit at this helper is unverified, and readiness/re-entry still prevent H2 closure. [Function record](docs/function-records/0x002b8d24.md) |
+| `0x00286928` | Typed titleConfig state dispatcher, retaining its original callees | 296 direct cases, four compositions through original callback `0x00221168`, six negative controls; 812/820 bytes and 22 ARM call relocations. Cumulative paired runtime captured 129/129 helper hits with arguments/returns matched and 19/19 checkpoints across 51 actions; readiness/re-entry are incomplete, so H2 remains open. [Function record](docs/function-records/0x00286928.md) |
 
 The recent helper batch compiled all 204 translation units. Runtime and integration limits remain explicit in the per-function reviews and the [H2 milestone record](docs/milestones/H2-audio-settings.md).
 

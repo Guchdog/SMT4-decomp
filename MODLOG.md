@@ -1,3 +1,7 @@
+# H2 titleConfig helper 0x00286928 — 2026-11-02
+
+Replaced the 820-byte ARM body with a complete typed C++ implementation (812 bytes plus two ARM NOPs; 22 direct ARM calls) and corrected both inline-assembly consumers to the six-word ABI. The offline candidate and staged production image passed 296 direct cases, four original-callback compositions and six mutation controls; all 204 translation units compiled. A dedicated paired loopback Azahar run captured 129 original and 129 patched helper hits with matching arguments/returns, plus 19/19 checkpoints over 51 scripted actions. Readiness and same-session re-entry remain incomplete, so H2 stays open. [Function record](docs/function-records/0x00286928.md); [implementation evidence](docs/agent-work/h2-86928-implementation.md).
+
 # H2 callback 0x00221168 — 2026-10-31
 
 Converted the callback wrapper to bounded C++ in production, classified it `non_matching`, and built a reproducible integrated H2 IPS. ARM differential and caller tests, four negative controls, all 204 translation units, and a paired Azahar scenario passed within documented bounds. The paired run observed 20 matching nested callback returns and 19 matching checkpoints; neither side completed readiness or same-session reentry. Original helper/selector dependencies and ABI limitations remain explicit in [the function record](docs/function-records/0x00221168.md).

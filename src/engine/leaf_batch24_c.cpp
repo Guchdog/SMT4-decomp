@@ -47,7 +47,7 @@ extern "C" void engine_func_0024736c();
 extern "C" void engine_func_002487e4();
 extern "C" void engine_func_00259510();
 extern "C" void engine_func_0025c110();
-extern "C" void engine_func_00286928();
+extern "C" uint32_t engine_func_00286928(uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t);
 extern "C" void engine_func_00289640();
 extern "C" void engine_func_00296f60();
 extern "C" void engine_func_002a65a8();
