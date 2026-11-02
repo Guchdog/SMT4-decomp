@@ -113,7 +113,7 @@ extern "C" {
                              s32 a3, s32 a4, s32 a5, u8* out,
                              s32 a7, s32 a8);                // 0x0029F878
     s32   camp_func_0029f278(void* slot, u32 mode);          // 0x0029F278
-    s32   camp_func_002c1830(u32 a, u32 b);                  // 0x002C1830
+    u32   camp_func_002c1830(u32 id, u32 mode);                  // 0x002C1830
     s32   engine_func_00299874(u32 id);                      // 0x00299874
     void  engine_func_0029960c(u32 mode);                    // 0x0029960C
     void  camp_func_002bc200(u32 id);                        // 0x002BC200
@@ -124,12 +124,12 @@ extern "C" {
     s32   engine_func_0029eba8(void* list);                  // 0x0029EBA8
     s32   engine_func_0029ebf8(void* list);                  // 0x0029EBF8
     s32   engine_func_002994b4(s32 a, s32 b);                // 0x002994B4
-    void  script_vm_func_002b8b78(u32 index);               // 0x002B8B78
+    u32   script_vm_func_002b8b78(u32 index);               // 0x002B8B78
     void  SortMenu_Init(u32 index, u32 mode);                // 0x0029E63C
     void  engine_func_0029e5c8(u32 index);                   // 0x0029E5C8
     void  camp_func_0029f10c(u32 index, u32 color);          // 0x0029F10C
     u8    camp_func_002b8ccc();                              // 0x002B8CCC
-    void  camp_func_002bdac0(void* object, u32 mode, u32 a2); // 0x002BDAC0
+    void* camp_func_002bdac0(void* object, u32 mode, u32 selector); // 0x002BDAC0
     void  script_vm_func_002a7aa0(void* model);              // 0x002A7AA0
     void  engine_func_00299410(void* slot, u32 mode);        // 0x00299410
     void  engine_func_002993d4();                            // 0x002993D4

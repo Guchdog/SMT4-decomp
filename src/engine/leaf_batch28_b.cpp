@@ -54,29 +54,14 @@ extern "C" __attribute__((naked)) void func_002a86e4() {
     );
 }
 // DECOMP_FUNC(0x002ae664, 76)
-extern "C" __attribute__((naked)) void func_002ae664() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe52d4004\n"
-        ".inst 0xe59f4038\n"
-        ".inst 0xe59fc038\n"
-        ".inst 0xe3a02000\n"
-        ".inst 0xe0841202\n"
-        ".inst 0xe1d130b0\n"
-        ".inst 0xe153000c\n"
-        ".inst 0x0a000005\n"
-        ".inst 0xe1530000\n"
-        ".inst 0x12822001\n"
-        ".inst 0x1afffff8\n"
-        ".inst 0xe3510000\n"
-        ".inst 0x15910004\n"
-        ".inst 0x1a000000\n"
-        ".inst 0xe3a00000\n"
-        ".inst 0xe49d4004\n"
-        ".inst 0xe12fff1e\n"
-        ".word 0x00464da8\n"
-        ".word 0x0000f890\n"
-    );
+extern "C" __attribute__((minsize)) u32 func_002ae664(u32 code) {
+    const auto* entry = reinterpret_cast<const u8*>(0x00464da8u);
+    for (;;) {
+        const u16 key = *reinterpret_cast<const u16*>(entry);
+        if (key == 0xf890) return 0;
+        if (key == code) return *reinterpret_cast<const u32*>(entry + 4);
+        entry += 0x10;
+    }
 }
 
 // DECOMP_FUNC(0x002b74c4, 76)

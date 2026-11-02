@@ -37,7 +37,7 @@ extern "C" {
     smt4::ui::AsdListBoxItem* AsdListBox_FindItem(void* handle, u32 id);    // 0x00254ff0
     void  AsdListBox_Relayout(void* handle);                                // 0x00259d88
     void  AsdListBox_AdvanceCounter(void* field);                           // 0x002d567c
-    int   AsdUi_IsRegistered(void* handle);                                 // 0x002bf41c
+    u32   AsdUi_IsRegistered(void* handle);                                 // 0x002bf41c
     void  AsdText_ResetGlobals();                                           // 0x002bc2c4
     void  AsdScriptText_SetChannels(void* obj, u32 a1, u32 a2, f32 value);  // 0x002bda00
     void  AsdScriptText_SetColor(void* obj, u32 color);                     // 0x002bda10

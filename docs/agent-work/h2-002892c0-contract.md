@@ -1,0 +1,5 @@
+# 0x002892C0 contract
+
+ARM leaf, r0=valid aligned object and r1=32-bit index, returns 1. Reads count at +0x1C. If count=0, writes 0 to +0x24 then +0x20. Otherwise index is clamped with signed comparisons: index<=0 becomes 0; else count<index becomes count-1; index equal to count is retained. Compute delta=index-[object+0x20] modulo 2^32. If delta signed-negative, write index to +0x20 then 0 to +0x24. Otherwise read visible at +0x10, write delta to +0x24, use signed min(visible,count), compute limit=count-visible modulo 2^32; if signed delta>limit write limit to +0x24 then index-limit to +0x20. All arithmetic wraps as ARM; comparisons use signed interpretation. r4-r11/SP preserved, no globals, calls or VFP. Null/unmapped/misaligned addresses, concurrency and MMIO are outside the exercised domain. CPSR and scratch registers are not compared.
+
+Original caller 0x0029EDFC optionally writes byte+0x60 and tail-calls this helper with original object/index unless byte+0x62 is nonzero; the disabled caller returns that byte and does not enter helper. Exact higher-level object semantics remain unproven.

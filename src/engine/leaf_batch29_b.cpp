@@ -468,8 +468,11 @@ extern "C" __attribute__((naked)) void engine_func_002f5070() {
 }
 
 // DECOMP_FUNC(0x002f5b2c, 44)
-extern "C" __attribute__((naked)) void func_002f5b2c() {
-    asm volatile(".arm\n.inst 0xe59f1020\n.inst 0xe5911004\n.inst 0xe3510000\n.inst 0x0a000003\n.inst 0xe3500006\n.inst 0x30810100\n.inst 0x35d00494\n.inst 0x3a000000\n.inst 0xe3a00000\n.inst 0xe12fff1e\n.word 0x0043da28\n");
+extern "C" uint32_t func_002f5b2c(uint32_t index) {
+    const uint32_t manager = *reinterpret_cast<volatile const uint32_t*>(0x0043DA2Cu);
+    if (manager == 0 || index >= 6) return 0;
+    const auto* const field = reinterpret_cast<volatile const uint8_t*>(manager + index * 4u + 0x494u);
+    return *field;
 }
 
 // DECOMP_FUNC(0x002f5e20, 72)

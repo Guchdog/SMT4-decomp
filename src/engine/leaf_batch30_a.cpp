@@ -4706,86 +4706,78 @@ extern "C" __attribute__((naked)) void engine_func_0015db38() {
 }
 
 // DECOMP_FUNC(0x0011c5ec, 304)
-extern "C" __attribute__((naked)) void func_0011c5ec() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe92d4070\n"
-        ".inst 0xe1a05000\n"
-        ".inst 0xe24dd018\n"
-        ".inst 0xe3e00000\n"
-        ".inst 0xe1a04001\n"
-        ".inst 0xe1a01000\n"
-        ".inst 0xe1cd01f0\n"
-        ".inst 0xe58d000c\n"
-        ".inst 0xeb003186\n"
-        ".inst 0xe3500000\n"
-        ".inst 0x1a00003c\n"
-        ".inst 0xe285000c\n"
-        ".inst 0xeb002fe8\n"
-        ".inst 0xe5950000\n"
-        ".inst 0xe28d200c\n"
-        ".inst 0xe28d1010\n"
-        ".inst 0xe88d0006\n"
-        ".inst 0xe5900004\n"
-        ".inst 0xe28d3008\n"
-        ".inst 0xe3a02001\n"
-        ".inst 0xe1a01004\n"
-        ".inst 0xeb003844\n"
-        ".inst 0xe59d0008\n"
-        ".inst 0xe3500000\n"
-        ".inst 0xda00002e\n"
-        ".inst 0xe1d400fe\n"
-        ".inst 0xe284200e\n"
-        ".inst 0xe284100c\n"
-        ".inst 0xe58d0000\n"
-        ".inst 0xe1d430fc\n"
-        ".inst 0xe285000c\n"
-        ".inst 0xeb002fe8\n"
-        ".inst 0xe5d50030\n"
-        ".inst 0xe3a06000\n"
-        ".inst 0xe3500000\n"
-        ".inst 0x0a000002\n"
-        ".inst 0xe5940000\n"
-        ".inst 0xe5850008\n"
-        ".inst 0xe5c56030\n"
-        ".inst 0xe5940000\n"
-        ".inst 0xe3c00a02\n"
-        ".inst 0xe5840000\n"
-        ".inst 0xe5951008\n"
-        ".inst 0xe0202001\n"
-        ".inst 0xe1c21001\n"
-        ".inst 0xe5841004\n"
-        ".inst 0xe5951008\n"
-        ".inst 0xe1c10000\n"
-        ".inst 0xe5840008\n"
-        ".inst 0xeb067cb0\n"
-        ".inst 0xe3500000\n"
-        ".inst 0xe320f000\n"
-        ".inst 0x0a000008\n"
-        ".inst 0xeb0680c0\n"
-        ".inst 0xe3500000\n"
-        ".inst 0xe320f000\n"
-        ".inst 0x1a000004\n"
-        ".inst 0xe5846000\n"
-        ".inst 0xe5846008\n"
-        ".inst 0xe5846004\n"
-        ".inst 0xe1c460bc\n"
-        ".inst 0xe1c460be\n"
-        ".inst 0xe5940000\n"
-        ".inst 0xe5850008\n"
-        ".inst 0xe59f0024\n"
-        ".inst 0xe5d00000\n"
-        ".inst 0xe3500000\n"
-        ".inst 0x01a00004\n"
-        ".inst 0x0b007d6a\n"
-        ".inst 0xe28dd018\n"
-        ".inst 0xe3a00001\n"
-        ".inst 0xe8bd8070\n"
-        ".inst 0xe28dd018\n"
-        ".inst 0xe3a00000\n"
-        ".inst 0xe8bd8070\n"
-        ".word 0x00471ad8 @ bounded tail data\n"
-    );
+extern "C" s32 input_mode_is_four_00128c2c() __asm__("func_00128c2c");
+extern "C" void clamp_input_calibration_001285c4(s16* calibration) __asm__("func_001285c4");
+extern "C" s32 read_input_ring_0012a758(u8* source, u8* output, s32 requested,
+                                           s32* count, u64* timestamp, u32* index)
+    __asm__("func_0012a758");
+extern "C" void normalize_input_sample_00128610(s16* calibration, s16* output_x,
+                                                  s16* output_y, s32 sample_x,
+                                                  s32 sample_y)
+    __asm__("func_00128610");
+extern "C" s32 input_global_flag_a_002bb978() __asm__("func_002bb978");
+extern "C" s32 input_global_flag_b_002bc9c8() __asm__("func_002bc9c8");
+extern "C" void postprocess_input_words_0013bcac(u8* output) __asm__("func_0013bcac");
+
+extern "C" s32 func_0011c5ec(u8* context, u8* output) {
+    // The original prepares these out-parameters even when the ring read fails.
+    u64 timestamp = 0xFFFFFFFFFFFFFFFFull;
+    u32 index = 0xFFFFFFFFu;
+    s32 count;
+
+    if (input_mode_is_four_00128c2c() != 0) return 0;
+
+    auto* calibration = reinterpret_cast<s16*>(context + 0x0C);
+    clamp_input_calibration_001285c4(calibration);
+
+    // Keep the original two loads separate: context[0] is a pointer to a
+    // source object whose second word is the ring buffer handle.
+    const u32 source_object = *reinterpret_cast<const u32*>(context);
+    auto* source = reinterpret_cast<u8*>(
+        *reinterpret_cast<const u32*>(source_object + 4));
+    read_input_ring_0012a758(source, output, 1, &count, &timestamp, &index);
+    if (count <= 0) return 0;
+
+    auto* output_x = reinterpret_cast<s16*>(output + 0x0C);
+    auto* output_y = reinterpret_cast<s16*>(output + 0x0E);
+    const s32 sample_x = *output_x;
+    const s32 sample_y = *output_y;
+    normalize_input_sample_00128610(calibration, output_x, output_y,
+                                    sample_x, sample_y);
+
+    if (context[0x30] != 0) {
+        *reinterpret_cast<u32*>(context + 8) = *reinterpret_cast<u32*>(output);
+        // The original publishes the prior word before clearing this marker.
+        asm volatile("" ::: "memory");
+        context[0x30] = 0;
+    }
+
+    const u32 new_state = *reinterpret_cast<u32*>(output) & ~0x2000u;
+    *reinterpret_cast<u32*>(output) = new_state;
+    const u32 old_state = *reinterpret_cast<u32*>(context + 8);
+    *reinterpret_cast<u32*>(output + 4) = (new_state ^ old_state) & ~old_state;
+    // Preserve the original output-store order before the reverse-transition word.
+    asm volatile("" ::: "memory");
+    *reinterpret_cast<u32*>(output + 8) = old_state & ~new_state;
+
+    if (input_global_flag_a_002bb978() != 0 &&
+        input_global_flag_b_002bc9c8() == 0) {
+        *reinterpret_cast<u32*>(output) = 0;
+        asm volatile("" ::: "memory");
+        *reinterpret_cast<u32*>(output + 8) = 0;
+        asm volatile("" ::: "memory");
+        *reinterpret_cast<u32*>(output + 4) = 0;
+        asm volatile("" ::: "memory");
+        *reinterpret_cast<u16*>(output + 0x0C) = 0;
+        asm volatile("" ::: "memory");
+        *reinterpret_cast<u16*>(output + 0x0E) = 0;
+    }
+
+    // This context snapshot intentionally precedes the optional postprocess.
+    *reinterpret_cast<u32*>(context + 8) = *reinterpret_cast<u32*>(output);
+    if (*reinterpret_cast<const u8*>(0x00471AD8) == 0)
+        postprocess_input_words_0013bcac(output);
+    return 1;
 }
 
 // DECOMP_FUNC(0x00158164, 304)

@@ -7418,116 +7418,73 @@ extern "C" __attribute__((naked)) void func_00159028() {
     );
 }
 
+extern "C" u32 query_counter_2bffbc(u32) __asm__("ui_func_002bffbc");
+extern "C" u32 query_repeat_2b902c(u32) __asm__("ui_func_002b902c");
+extern "C" u32 query_mask_2c17d4(u32) __asm__("ui_func_002c17d4");
+extern "C" u32 query_axis_27fbc8(float*, float*, u32) __asm__("script_vm_func_0027fbc8");
+extern "C" float query_angle_2820a4(float, float) __asm__("ui_func_002820a4");
+
 // DECOMP_FUNC(0x00254ca8, 840)
-extern "C" __attribute__((naked)) void ui_func_00254ca8() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x41f0, 0xe92d, 0x6000, 0xe3a0\n"
-        ".hword 0x0000, 0xe352, 0x8000, 0xe1a0\n"
-        ".hword 0x8b02, 0xed2d, 0xd008, 0xe24d\n"
-        ".hword 0x7001, 0xe1a0, 0x5006, 0xe1a0\n"
-        ".hword 0x4006, 0xe1a0, 0x0004, 0x0a00\n"
-        ".hword 0x0001, 0xe352, 0x000a, 0x0a00\n"
-        ".hword 0x0002, 0xe352, 0x0020, 0x1a00\n"
-        ".hword 0x0018, 0xea00, 0xf000, 0xe320\n"
-        ".hword 0xacb3, 0xeb01, 0x5000, 0xe1a0\n"
-        ".hword 0x0007, 0xe1a0, 0xacb0, 0xeb01\n"
-        ".hword 0x4000, 0xe1a0, 0x6004, 0xe185\n"
-        ".hword 0x0017, 0xea00, 0xf000, 0xe320\n"
-        ".hword 0x90c7, 0xeb01, 0x5000, 0xe1a0\n"
-        ".hword 0x0007, 0xe1a0, 0x90c4, 0xeb01\n"
-        ".hword 0x4000, 0xe1a0, 0x0008, 0xe1a0\n"
-        ".hword 0xb2ab, 0xeb01, 0x0000, 0xe350\n"
-        ".hword 0xf000, 0xe320, 0x0003, 0x0a00\n"
-        ".hword 0x0007, 0xe1a0, 0xb2a6, 0xeb01\n"
-        ".hword 0x0000, 0xe350, 0x4000, 0x13a0\n"
-        ".hword 0x6004, 0xe185, 0x0006, 0xea00\n"
-        ".hword 0xf000, 0xe320, 0xb2a0, 0xeb01\n"
-        ".hword 0x5000, 0xe1a0, 0x0007, 0xe1a0\n"
-        ".hword 0xb29d, 0xeb01, 0x4000, 0xe1a0\n"
-        ".hword 0x6004, 0xe185, 0x000c, 0xe358\n"
-        ".hword 0x000d, 0x1358, 0x0009, 0x0a00\n"
-        ".hword 0x000e, 0xe358, 0x000f, 0x1358\n"
-        ".hword 0x0006, 0x0a00, 0x000c, 0xe357\n"
-        ".hword 0x000d, 0x1357, 0x0005, 0x0a00\n"
-        ".hword 0x000e, 0xe357, 0x000f, 0x1357\n"
-        ".hword 0x0002, 0x0a00, 0x008c, 0xea00\n"
-        ".hword 0x7001, 0xe3a0, 0x0000, 0xea00\n"
-        ".hword 0x7002, 0xe3a0, 0x8230, 0xe59f\n"
-        ".hword 0x0010, 0xe5d8, 0x0000, 0xe350\n"
-        ".hword 0x0085, 0x0a00, 0x000e, 0xe3a0\n"
-        ".hword 0xb285, 0xeb01, 0x0000, 0xe350\n"
-        ".hword 0xf000, 0xe320, 0x000e, 0x1a00\n"
-        ".hword 0x000f, 0xe3a0, 0xb280, 0xeb01\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x0009, 0x1a00, 0x000c, 0xe3a0\n"
-        ".hword 0xb27b, 0xeb01, 0x0000, 0xe350\n"
-        ".hword 0xf000, 0xe320, 0x0004, 0x1a00\n"
-        ".hword 0x000d, 0xe3a0, 0xb276, 0xeb01\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x0071, 0x0a00, 0x2000, 0xe3a0\n"
-        ".hword 0x1004, 0xe28d, 0x000d, 0xe1a0\n"
-        ".hword 0xab6c, 0xeb00, 0x0a02, 0xec9d\n"
-        ".hword 0xf000, 0xe320, 0xb4a0, 0xeb00\n"
-        ".hword 0x1a6e, 0xed9f, 0x0a6e, 0xeddf\n"
-        ".hword 0x8a6e, 0xeddf, 0x8a01, 0xee20\n"
-        ".hword 0x8ae0, 0xeeb4, 0xfa10, 0xeef1\n"
-        ".hword 0x0a00, 0xed9d, 0x8a28, 0x3e38\n"
-        ".hword 0x0a60, 0xeeb4, 0xfa10, 0xeef1\n"
-        ".hword 0x0a01, 0x0d9d, 0x0a60, 0x0eb4\n"
-        ".hword 0xfa10, 0x0ef1, 0x005c, 0x0a00\n"
-        ".hword 0x000e, 0xe3a0, 0xb25c, 0xeb01\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x0018, 0x0a00, 0x00f0, 0xe1d8\n"
-        ".hword 0x10f2, 0xe1d8, 0x2001, 0xe040\n"
-        ".hword 0x2a10, 0xee00, 0x0ac0, 0xeeb8\n"
-        ".hword 0x0a28, 0xee30, 0x0ac8, 0xeeb4\n"
-        ".hword 0xfa10, 0xeef1, 0x0003, 0x8a00\n"
-        ".hword 0x3154, 0xe59f, 0x2a10, 0xee18\n"
-        ".hword 0x0003, 0xe152, 0x004a, 0xba00\n"
-        ".hword 0x0a10, 0xee00, 0x0ac0, 0xeeb8\n"
-        ".hword 0x0ac8, 0xeeb4, 0xfa10, 0xeef1\n"
-        ".hword 0x0041, 0x8a00, 0x0001, 0xe080\n"
-        ".hword 0x0a10, 0xee00, 0x0ac0, 0xeeb8\n"
-        ".hword 0x0ac8, 0xeeb4, 0xfa10, 0xeef1\n"
-        ".hword 0x003b, 0xda00, 0x003e, 0xea00\n"
-        ".hword 0x000f, 0xe3a0, 0xb23e, 0xeb01\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x000e, 0x0a00, 0x00f4, 0xe1d8\n"
-        ".hword 0x10f6, 0xe1d8, 0x2001, 0xe040\n"
-        ".hword 0x2a10, 0xee00, 0x0ac0, 0xeeb8\n"
-        ".hword 0x0ac8, 0xeeb4, 0xfa10, 0xeef1\n"
-        ".hword 0x002d, 0x8a00, 0x0001, 0xe080\n"
-        ".hword 0x0a10, 0xee00, 0x0ac0, 0xeeb8\n"
-        ".hword 0x0ac8, 0xeeb4, 0xfa10, 0xeef1\n"
-        ".hword 0x0027, 0xda00, 0x002a, 0xea00\n"
-        ".hword 0x000c, 0xe3a0, 0xb22a, 0xeb01\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x000e, 0x0a00, 0x00f8, 0xe1d8\n"
-        ".hword 0x10fa, 0xe1d8, 0x2001, 0xe040\n"
-        ".hword 0x2a10, 0xee00, 0x0ac0, 0xeeb8\n"
-        ".hword 0x0ac8, 0xeeb4, 0xfa10, 0xeef1\n"
-        ".hword 0x0019, 0x8a00, 0x0001, 0xe080\n"
-        ".hword 0x0a10, 0xee00, 0x0ac0, 0xeeb8\n"
-        ".hword 0x0ac8, 0xeeb4, 0xfa10, 0xeef1\n"
-        ".hword 0x0013, 0xda00, 0x0016, 0xea00\n"
-        ".hword 0x000d, 0xe3a0, 0xb216, 0xeb01\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x000d, 0x0a00, 0x00fc, 0xe1d8\n"
-        ".hword 0x10fe, 0xe1d8, 0x2001, 0xe040\n"
-        ".hword 0x2a10, 0xee00, 0x0ac0, 0xeeb8\n"
-        ".hword 0x0ac8, 0xeeb4, 0xfa10, 0xeef1\n"
-        ".hword 0x0005, 0x8a00, 0x0001, 0xe080\n"
-        ".hword 0x0a10, 0xee00, 0x0ac0, 0xeeb8\n"
-        ".hword 0x0ac8, 0xeeb4, 0xfa10, 0xeef1\n"
-        ".hword 0x0003, 0xca00, 0x0001, 0xe357\n"
-        ".hword 0x5000, 0x03a0, 0x4000, 0x13a0\n"
-        ".hword 0x6004, 0xe185, 0xd008, 0xe28d\n"
-        ".hword 0x0006, 0xe1a0, 0x8b02, 0xecbd\n"
-        ".hword 0x81f0, 0xe8bd, 0x5278, 0x0046\n"
-        ".hword 0x2ee0, 0x4265, 0x0000, 0x0000\n"
-        ".hword 0x0000, 0x43b4, 0x0000, 0x43b4\n"
-    );
+extern "C" __attribute__((minsize)) u32 ui_func_00254ca8(u32 id0, u32 id1, u32 mode) {
+    u32 first = 0;
+    u32 second = 0;
+    if (mode == 0) {
+        first = query_counter_2bffbc(id0);
+        second = query_counter_2bffbc(id1);
+    } else if (mode == 1) {
+        first = query_repeat_2b902c(id0);
+        second = query_repeat_2b902c(id1);
+        if (query_mask_2c17d4(id0) && query_mask_2c17d4(id1)) second = 0;
+    } else if (mode == 2) {
+        first = query_mask_2c17d4(id0);
+        second = query_mask_2c17d4(id1);
+    }
+    const u32 base = first | second;
+    const u32 selector = (id0 >= 12 && id0 <= 15) ? 1 :
+                         (id1 >= 12 && id1 <= 15) ? 2 : 0;
+    if (!selector) return base;
+    auto calibration = reinterpret_cast<volatile s16*>(0x00465278u);
+    if (!*reinterpret_cast<volatile u8*>(0x00465288u)) return base;
+    if (!query_mask_2c17d4(14) && !query_mask_2c17d4(15) &&
+        !query_mask_2c17d4(12) && !query_mask_2c17d4(13)) return base;
+
+    // Valid candidate domain: the original axis reader writes both outputs.
+    // The original reads prior stack contents if it does not; no default is supplied.
+    float x;
+    float y;
+    query_axis_27fbc8(&x, &y, 0);
+    float angle = query_angle_2820a4(x, y) * 57.2957763671875f;
+    if (angle < 0.0f) angle += 360.0f;
+    if (x == 0.0f && y == 0.0f) return base;
+
+    bool suppress = false;
+    if (query_mask_2c17d4(14)) {
+        const s32 a = calibration[0];
+        const s32 b = calibration[1];
+        if (static_cast<float>(a - b) + 360.0f > angle ||
+            static_cast<s32>(__builtin_bit_cast(u32, angle)) >= static_cast<s32>(0x43b40000u)) {
+            suppress = static_cast<float>(a) > angle || static_cast<float>(a + b) <= angle;
+        }
+    } else if (query_mask_2c17d4(15)) {
+        const s32 a = calibration[2];
+        const s32 b = calibration[3];
+        suppress = static_cast<float>(a - b) > angle || static_cast<float>(a + b) <= angle;
+    } else if (query_mask_2c17d4(12)) {
+        const s32 a = calibration[4];
+        const s32 b = calibration[5];
+        suppress = static_cast<float>(a - b) > angle || static_cast<float>(a + b) <= angle;
+    } else if (query_mask_2c17d4(13)) {
+        const s32 a = calibration[6];
+        const s32 b = calibration[7];
+        suppress = static_cast<float>(a - b) > angle || !(static_cast<float>(a + b) > angle);
+    } else {
+        suppress = true;
+    }
+    if (suppress) {
+        if (selector == 1) first = 0;
+        else second = 0;
+    }
+    return first | second;
 }
 
 // DECOMP_FUNC(0x0039e788, 844)

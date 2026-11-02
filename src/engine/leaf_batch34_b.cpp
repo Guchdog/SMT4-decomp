@@ -88,22 +88,30 @@ extern "C" __attribute__((naked)) void camp_func_0029f0f4() {
     );
 }
 
+// The targets are small existing getters inside other functions' mapped spans.
+asm(".global AsdSlot_GetField20Tail\n"
+    ".set AsdSlot_GetField20Tail, 0x002CB84C\n"
+    ".global AsdSlot_GetField24Tail\n"
+    ".set AsdSlot_GetField24Tail, 0x002D5674");
+extern "C" s32 AsdSlot_GetField20Tail(void* slot);
+extern "C" s32 AsdSlot_GetField24Tail(void* slot);
+
 // DECOMP_FUNC(0x0029f248, 24)
-extern "C" __attribute__((naked)) void camp_func_0029f248() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe5d01062\n.inst 0xe3510000\n.inst 0x13a00000\n.inst 0x1a000000\n"
-        ".inst 0xea00b17b\n.inst 0xe12fff1e\n"
-    );
+extern "C" s32 camp_func_0029f248(void* slot) {
+    const uintptr_t address = reinterpret_cast<uintptr_t>(slot);
+    if (*reinterpret_cast<const u8*>(address + 0x62u) != 0) {
+        return 0;
+    }
+    return AsdSlot_GetField20Tail(slot);
 }
 
 // DECOMP_FUNC(0x0029f260, 24)
-extern "C" __attribute__((naked)) void camp_func_0029f260() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe5d01062\n.inst 0xe3510000\n.inst 0x13a00000\n.inst 0x1a000000\n"
-        ".inst 0xea00d8ff\n.inst 0xe12fff1e\n"
-    );
+extern "C" s32 camp_func_0029f260(void* slot) {
+    const uintptr_t address = reinterpret_cast<uintptr_t>(slot);
+    if (*reinterpret_cast<const u8*>(address + 0x62u) != 0) {
+        return 0;
+    }
+    return AsdSlot_GetField24Tail(slot);
 }
 
 // DECOMP_FUNC(0x00219eac, 28)
@@ -771,15 +779,21 @@ extern "C" __attribute__((naked)) void camp_func_0029eb58() {
 }
 
 // DECOMP_FUNC(0x0029edfc, 80)
-extern "C" __attribute__((naked)) void camp_func_0029edfc() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe92d4070\n.inst 0xe1a04000\n.inst 0xe5d00062\n.inst 0xe1a05001\n"
-        ".inst 0xe3500000\n.inst 0x1a00000c\n.inst 0xe1a00004\n.inst 0xe5900024\n"
-        ".inst 0xe1a06000\n.inst 0xe1a00004\n.inst 0xe5900020\n.inst 0xe0800006\n"
-        ".inst 0xe1500005\n.inst 0x13a00001\n.inst 0x15c40060\n.inst 0xe1a01005\n"
-        ".inst 0xe1a00004\n.inst 0xe8bd4070\n.inst 0xeaffa91d\n.inst 0xe8bd8070\n"
-    );
+extern "C" u32 camp_func_002892c0(void* object, u32 index);
+
+extern "C" u32 camp_func_0029edfc(void* object, u32 index) {
+    auto* const bytes = static_cast<u8*>(object);
+    const u8 disabled = bytes[0x62];
+    if (disabled != 0) {
+        return disabled;
+    }
+
+    const u32 end = *reinterpret_cast<const u32*>(bytes + 0x24);
+    const u32 start = *reinterpret_cast<const u32*>(bytes + 0x20);
+    if (end + start != index) {
+        bytes[0x60] = 1;
+    }
+    return camp_func_002892c0(object, index);
 }
 
 // DECOMP_FUNC(0x0021938c, 84)

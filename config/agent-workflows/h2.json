@@ -999,7 +999,7 @@
         "Do not claim full UI, caller, persistence or Azahar equivalence from the function-level harness; make any uncovered state a precise blocker, not a passing report."
       ],
       "validation_plan": [
-        "Use one compiler slot, fresh task output paths and focused tests. Do not edit shared runners or other workers\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u00a0\u00c3\u00a2\u00e2\u201a\u00ac\u00e2\u201e\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c2\u00a0\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u00a2\u00e2\u20ac\u017e\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00a1\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u00a0\u00c3\u00a2\u00e2\u201a\u00ac\u00e2\u201e\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c2\u00a6\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a1\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00a1\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u00a0\u00c3\u00a2\u00e2\u201a\u00ac\u00e2\u201e\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c2\u00a6\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00be\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00a1\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2 files; no canonical build or emulator control."
+        "Use one compiler slot, fresh task output paths and focused tests. Do not edit shared runners or other workersÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¾ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ files; no canonical build or emulator control."
       ]
     },
     {
@@ -1083,7 +1083,7 @@
       "compiler_slots": 1,
       "exclusive_resources": [],
       "acceptance": [
-        "Implement the callback\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u00a0\u00c3\u00a2\u00e2\u201a\u00ac\u00e2\u201e\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c2\u00a0\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u00a2\u00e2\u20ac\u017e\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00a1\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u00a0\u00c3\u00a2\u00e2\u201a\u00ac\u00e2\u201e\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c2\u00a6\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a1\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00a1\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u00a0\u00c3\u00a2\u00e2\u201a\u00ac\u00e2\u201e\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c2\u00a6\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00be\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00a1\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2s direct work/global behavior in readable ARM C++, preserving loop rereads/call counts, null checks, clear-after-call order, registration predicate branch, task-state args, return/ABI and the final global reload/release. Keep scheduler/lifetime meanings unresolved.",
+        "Implement the callbackÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¾ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢s direct work/global behavior in readable ARM C++, preserving loop rereads/call counts, null checks, clear-after-call order, registration predicate branch, task-state args, return/ABI and the final global reload/release. Keep scheduler/lifetime meanings unresolved.",
         "Build a non-leaf ARM differential harness with explicit helper stubs or pinned helper execution, valid TitleConfigWork/global fixtures, and comparisons of full work bytes, relevant globals, helper trace/order/args, return and preserved state. Declare every modeled effect and limit.",
         "Cover nonpositive/positive loop values, both counter loops independently, nullable +0x154/+0x14C/+0x150 slots, active predicate false/true, relevant manager-halfword threshold cases, and a targeted wrong-order/count negative control. Report any unsupported behavior instead of passing it.",
         "Do not claim scheduler timing, actual free semantics, caller lifecycle, UI edit behavior, persistence or Azahar runtime equivalence."
@@ -1245,7 +1245,7 @@
       "compiler_slots": 0,
       "exclusive_resources": [],
       "acceptance": [
-        "Use the executable\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u00a0\u00c3\u00a2\u00e2\u201a\u00ac\u00e2\u201e\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00e2\u20ac\u00a6\u00c3\u201a\u00c2\u00a1\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00e2\u20ac\u00a6\u00c3\u201a\u00c2\u00be\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2s embedded build identity and matching official Azahar source to distinguish CLI parsing, runtime packaging, and profile-path behavior.",
+        "Use the executableÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¾ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢s embedded build identity and matching official Azahar source to distinguish CLI parsing, runtime packaging, and profile-path behavior.",
         "Inspect run-005 staged contents versus the source runtime package; make no emulator launch and no input control.",
         "Give a testable root-cause hypothesis with evidence, explicitly label unresolved causes, and prescribe a fresh bounded run packet if justified.",
         "Return structured handoff; do not edit the existing probe runner or board."
@@ -1839,7 +1839,7 @@
       "compiler_slots": 0,
       "exclusive_resources": [],
       "acceptance": [
-        "Inspect the actual State-9/10 title caller and existing H1 Unicorn integration harness. Propose a reproducible offline harness composition that proves initializer\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u00a0\u00c3\u00a2\u00e2\u201a\u00ac\u00e2\u201e\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a0\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00be\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2Calc callback registration\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u00a0\u00c3\u00a2\u00e2\u201a\u00ac\u00e2\u201e\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a0\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00be\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2state-10 readiness\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u00a0\u00c3\u00a2\u00e2\u201a\u00ac\u00e2\u201e\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a0\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00be\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2title reset for original and patched code, using only explicit observable HLE boundaries.",
+        "Inspect the actual State-9/10 title caller and existing H1 Unicorn integration harness. Propose a reproducible offline harness composition that proves initializerÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢Calc callback registrationÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢state-10 readinessÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢title reset for original and patched code, using only explicit observable HLE boundaries.",
         "Separate a feasible first vertical slice from unresolved state-1 input/cursor/resource/service behavior; do not invent physical button mappings, persistent file semantics, or UI behavior.",
         "List exact sources, memory/register fixtures, execution entry/exit points, comparison observables, controls, and expected work owners needed for an implementation task.",
         "No Azahar/emulator, RSP, profile/game I/O, or keyboard/mouse. Return a structured handoff."
@@ -2560,7 +2560,7 @@
       "role": "implementation",
       "state": "accepted",
       "owner": null,
-      "goal": "Factor the repeated TitleConfig_Draw renderer-cache update into one production helper and measure whether the main symbol fits its original 1,932-byte span while helper plus format literal fits Calc\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u00a0\u00c3\u00a2\u00e2\u201a\u00ac\u00e2\u201e\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00e2\u20ac\u00a6\u00c3\u201a\u00c2\u00a1\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00e2\u20ac\u00a6\u00c3\u201a\u00c2\u00be\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2s exact 428-byte cave tail.",
+      "goal": "Factor the repeated TitleConfig_Draw renderer-cache update into one production helper and measure whether the main symbol fits its original 1,932-byte span while helper plus format literal fits CalcÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¾ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢s exact 428-byte cave tail.",
       "depends_on": [
         "h2-draw-production-integration-plan",
         "h2-combined-code-placement-plan",
@@ -4817,7 +4817,7 @@
       "exclusive_resources": [],
       "acceptance": [
         "Independently verify ID signedness/bounds, availability-flag branch, counter-one pulse, threshold comparison, selector/division fallback arguments and remainder result against pinned instructions and real H2 callers.",
-        "Check the differential\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00be\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2s 140,864-case matrix plus invalid IDs, helper-call instrumentation, stack/data writes, register preservation and all three mutation controls; verify exact report hashes and the 136-byte production/candidate body identity.",
+        "Check the differentialÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢s 140,864-case matrix plus invalid IDs, helper-call instrumentation, stack/data writes, register preservation and all three mutation controls; verify exact report hashes and the 136-byte production/candidate body identity.",
         "Review selector-zero exclusion, retained original service dependency, ledger classification and caller/runtime limits; recommend only a bounded promotion scope and list remaining evidence."
       ],
       "validation_plan": [
@@ -4865,7 +4865,7 @@
       "role": "validation",
       "state": "accepted",
       "owner": null,
-      "goal": "Independently check the refreshed mode-0 query differential\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00be\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2s exact division-service argument traces and stack-range evidence.",
+      "goal": "Independently check the refreshed mode-0 query differentialÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢s exact division-service argument traces and stack-range evidence.",
       "depends_on": [
         "h2-logical-mode0-service-args"
       ],
@@ -4943,7 +4943,7 @@
         "Record candidate compilation identities, scenario coverage, negative controls, source/image hashes and limits. This is injected offline caller composition, not IPS patch or runtime equivalence."
       ],
       "validation_plan": [
-        "Use a fresh output root; run focused tests and a bounded original-vs-injected caller matrix using the existing pinned Calc runner\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00be\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2s deterministic non-input service boundaries. Do not change the shared Calc runner or run Azahar."
+        "Use a fresh output root; run focused tests and a bounded original-vs-injected caller matrix using the existing pinned Calc runnerÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢s deterministic non-input service boundaries. Do not change the shared Calc runner or run Azahar."
       ]
     },
     {
@@ -6751,7 +6751,7 @@
       "compiler_slots": 0,
       "exclusive_resources": [],
       "acceptance": [
-        "Compose the reviewed five-callback final image with the exact three mapper and FillPair production replacements into one reproducible final code image and one IPS based on the pinned original; preserve CopyPair\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00be\u00c3\u201a\u00c2\u00a2s already matching body.",
+        "Compose the reviewed five-callback final image with the exact three mapper and FillPair production replacements into one reproducible final code image and one IPS based on the pinned original; preserve CopyPairÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢s already matching body.",
         "Pin and verify every source image, incremental IPS, source/object identity and final manifest/image/IPS hash; prove IPS round-trip and that all changed bytes are within authorized original callback/helper slots and audited cave placements.",
         "Run the available callback, mapper, FillPair and State-9/10 caller differentials against the same final image; if current runners cannot consume that image, extend only task-owned tooling and add a negative control. Report any scope limits honestly.",
         "Write a structured report with exact commands, outputs and hashes; do not change the ledger or milestone and do not run Azahar."
@@ -6830,7 +6830,7 @@
       "exclusive_resources": [],
       "acceptance": [
         "Verify all delivery-manifest feature, compatibility, patch and binary hashes against the current private source/package; identify the exact pinned source revision and private binary SHA-256.",
-        "Verify the generated feature patch contains the reviewed live-query return capture, on-demand snapshot shortcut and no unintended unrelated changes; confirm the wrapper\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00be\u00c3\u201a\u00c2\u00a2s profile/observer guards still match the reviewed route.",
+        "Verify the generated feature patch contains the reviewed live-query return capture, on-demand snapshot shortcut and no unintended unrelated changes; confirm the wrapperÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢s profile/observer guards still match the reviewed route.",
         "Return accept/request_fixes/blocked with artifact identities and limitations; do not build, launch or access profiles."
       ],
       "validation_plan": [
@@ -8023,7 +8023,7 @@
       "role": "validation",
       "state": "accepted",
       "owner": null,
-      "goal": "Independently audit the H0\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00e2\u20ac\u0153H3 validation plan against current milestone records, pinned evidence artifacts, and the H0\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00e2\u20ac\u0153H3 function inventory; identify each requirement as proven, partial, contradicted, or missing without broadening claims.",
+      "goal": "Independently audit the H0ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œH3 validation plan against current milestone records, pinned evidence artifacts, and the H0ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œH3 function inventory; identify each requirement as proven, partial, contradicted, or missing without broadening claims.",
       "depends_on": [],
       "function_claims": [],
       "read_paths": [
@@ -8054,7 +8054,7 @@
       ],
       "acceptance": [
         "Recompute the H0 batch-4 IPS/image and H2/H3 composition/report hashes that are present in the checkout; identify absent or stale artifact paths.",
-        "Audit each numbered H0\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00e2\u20ac\u0153H3 plan requirement and H0/H1/H2/H3 acceptance records, separating runtime route, C++ reconstruction, experimental candidate, and exact ledger status.",
+        "Audit each numbered H0ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œH3 plan requirement and H0/H1/H2/H3 acceptance records, separating runtime route, C++ reconstruction, experimental candidate, and exact ledger status.",
         "Independently inspect H1/H2/H3 evidence limits and the non-accepted H2 board tasks; determine which are auxiliary tooling or which invalidate a claimed milestone acceptance.",
         "Give a justified per-milestone status and an evidence-backed count of unique replacement units by category without summing duplicate experiments or treating static presence as validation. Do not edit source, ledger, milestone records, board, or launch an emulator."
       ],
@@ -8414,7 +8414,7 @@
         "Run-020: after the one-shot object call at 0x0013AD6C captures its base, arm a one-shot at 0x0013AD70 (the return after BL 0x002C3AA8). Record only three raw dwords at r4+0/+4/+8 and the raw byte at r4+0x76; clear and resume the original instruction. Retain the compare capture and timeout header. Pin a fresh packet and pass offline gates before the disposable original-only launch.",
         "Run-021: after the caller-specific 0x0013AD6C stop, arm a one-shot at 0x002C3ACC (after the helper's second MRC and immediately before STR r0,[r4,#4]). Record raw r0/r4 and at most three raw dwords at r4+0/+4/+8 only when r4 matches the captured caller base; clear the breakpoint and resume the original store. Offline-check that the target is the pinned ARM STR word, run focused tests, pin all inputs afresh, and pass the offline differential/caller/interworking gates first. Use a 10-second startup bound for this early observation; preserve the read-only guest, disposable-profile, loopback, cleanup, save-hash, and breakpoint checks.",
         "Run-022: Run-021 captured r0=0x1FF82800 at the pre-store PC 0x002C3ACC but read owner=0x1FF82000 by the caller return at 0x0013AD70. After the same caller-specific base is captured, arm a one-shot at 0x002C3AD0, immediately after STR r0,[r4,#4] and before LDR r0,[r4,#8]. Record raw r0/r4 and at most three raw words at the matching caller base, clear the breakpoint, and resume. Offline-check the ARM instruction at this PC, run focused tests, pin fresh inputs and all offline gates, and use the 10-second startup bound. The aim is to localize when the observed owner-word difference appears, without assigning thread or game-level semantics.",
-        "Run-023: Run-022 confirmed the owner word equals r0 at 0x002C3AD0 but differs by the 0x0013AD70 return; no actor is identified. The early SVC/atomic/lock startup breakpoints are now opt-in via --observe-startup-lock-path and must remain disabled for this task's next State-5/A-confirm route attempt. Prepare a fresh packet pinning runner/tests, rerun the focused suite and all offline differential/caller/interworking gates, and use the original-only State-5 \u2192 Audio Settings \u2192 A-confirm query sequence. Bound startup to 90 seconds, nested callback returns to 20, readiness checks to 40, packet waits to 30 seconds, and State-2 capture to 120 seconds. Record the actual nested callback ID/target at BLX 0x001A07FC and r0 at 0x001A0800. Preserve the same save/profile/loopback/cleanup protections and keep H2 open on any partial result.",
+        "Run-023: Run-022 confirmed the owner word equals r0 at 0x002C3AD0 but differs by the 0x0013AD70 return; no actor is identified. The early SVC/atomic/lock startup breakpoints are now opt-in via --observe-startup-lock-path and must remain disabled for this task's next State-5/A-confirm route attempt. Prepare a fresh packet pinning runner/tests, rerun the focused suite and all offline differential/caller/interworking gates, and use the original-only State-5 → Audio Settings → A-confirm query sequence. Bound startup to 90 seconds, nested callback returns to 20, readiness checks to 40, packet waits to 30 seconds, and State-2 capture to 120 seconds. Record the actual nested callback ID/target at BLX 0x001A07FC and r0 at 0x001A0800. Preserve the same save/profile/loopback/cleanup protections and keep H2 open on any partial result.",
         "Run-024: Run-023 had the same CCI, save, profile seeds and staged config hashes as the earlier State-2 run-017, but it did not hit TitleMain; unlike run-017, its trace still stopped at native-command progress sites. The cause is unproven. Make those progress/epilogue observers opt-in via --observe-startup-command-progress and leave them off together with --observe-startup-lock-path to match the earlier minimal title route. Pin a fresh packet, pass focused tests and all offline gates, and bound startup to 90 seconds. Continue original title query seams, then capture State 2 with at most 20 nested returns, 40 readiness checks and 120 seconds. Record the nested method ID/table target and actual BLX/return; preserve save/profile/loopback protections, and classify any timeout as partial.",
         "Run-025: Run-024 had both startup observer groups disabled but stopped at 90 seconds; the reviewed State-2 run-017 Azahar log reaches 189 seconds during its capture. Reproduce with the same minimal title route and extend startup only to 180 seconds. Keep packet timeout 30 seconds, nested-return cap 20, readiness cap 40, State-2 capture bound 120 seconds, and all original-only/save/profile/loopback/cleanup invariants. Freshly pin changed runner/tests, pass all offline differential/caller/interworking gates, and classify any timeout as partial without assigning the sync wrapper as cause.",
         "Run-026: Run-025 used the minimal route and reached a different timeout PC after 180 seconds, but observed no TitleMain or title query. Perform one final original-only reproduction with the same staged CCI, disposable save fixture, clean profile seeds, and both optional startup observer groups disabled; startup cap 300 seconds, packet cap 30 seconds, State-2 capture cap 120 seconds, at most 20 nested returns and 40 readiness checks. Before launch rerun the focused runner suite, pin fresh inputs, and pass H2 differential/caller, H3 caller-composition, and ARM/Thumb interworking gates. Preserve all save/profile/loopback/cleanup invariants. Another timeout is partial evidence only and ends generic startup retries; inspect the timed-out PC and route statically instead of extending the bound again.",
@@ -11326,6 +11326,2339 @@
       ],
       "validation_plan": [
         "Independent disassembly and static inspection against pinned reference image."
+      ]
+    },
+    {
+      "id": "h2-helper-002bf6d0-manager-slot-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the typed 0x002BF6D0 pointer-chain and signed-index helper against pinned ARM, including its relocation and documented limitations.",
+      "depends_on": [],
+      "function_claims": [
+        "0x002bf6d0"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "src/engine/leaf_batch27_b.cpp",
+        "src/engine/leaf_batch39_a.cpp",
+        "src/engine/asd_runtime.cpp",
+        "tools/h2_bf6d0_experiment.py",
+        "build/agent-work/H2-semantic/h2-bf6d0-manager-slot-convert/run001/report.json",
+        "extracted/exefs/code.bin",
+        "docs/function-records/0x002bf6d0.md",
+        "config/functions.csv"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-2bf6d0-independent-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify original helper call, pointer dereferences, signed remainder semantics, index scaling, return pointer, and AAPCS effects from the pinned ARM span and C++.",
+        "Inspect the exhaustive signed-remainder domain, directed and seeded inputs, final-address relocation, stack-write filtering, and both compiled mutation controls.",
+        "Write a bounded promotion recommendation or smallest counterexample; do not edit implementation, runner, ledger, README, PROGRESS, or board. Preserve that caller composition and runtime were not run."
+      ],
+      "validation_plan": [
+        "Read-only independent review against frozen packet inputs; no canonical build or emulator. Record report/source hashes and explicit evidence limits."
+      ]
+    },
+    {
+      "id": "h2-helper-002b88c4-touch-region-review-002",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the corrected 0x002B88C4 candidate with volatile work/count reloads and ordered stores, including final-address composition with 0x002BF6D0.",
+      "depends_on": [
+        "h2-helper-002b88c4-touch-region-convert"
+      ],
+      "function_claims": [
+        "0x002b88c4",
+        "0x002bf6d0"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "src/engine/leaf_batch32_c.cpp",
+        "src/engine/leaf_batch27_b.cpp",
+        "src/engine/leaf_batch33_c.cpp",
+        "src/engine/leaf_batch32_b.cpp",
+        "src/engine/leaf_batch46_b.cpp",
+        "include/ui/tbb_table.h",
+        "tools/h2_b88c4_experiment.py",
+        "build/agent-work/H2-semantic/h2-helper-002b88c4-touch-region-convert/run001/report.json",
+        "extracted/exefs/code.bin",
+        "docs/function-records/0x002b88c4.md",
+        "docs/function-records/0x002bf6d0.md",
+        "docs/agent-work/h2-2b88c4-independent-review.md",
+        "config/functions.csv"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-2b88c4-independent-review-run002.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify original global/count reload order and four record stores against the current volatile C++ body.",
+        "Inspect the 58 current report cases, ordered trace comparison, both mutations, final-address caller/helper bodies and hashes.",
+        "State whether the concurrency caveat is now bounded correctly; caller/runtime claims must remain limited to the report. Do not edit implementation, runner, ledger, README, PROGRESS, or board."
+      ],
+      "validation_plan": [
+        "Read-only independent review of frozen run002 packet inputs; no canonical build or emulator. Record hashes and evidence limits."
+      ]
+    },
+    {
+      "id": "h2-helper-002b88c4-touch-region-convert",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Reconstruct the 0x002B88C4 touch-region registrar as typed C++ and compare its helper composition against pinned ARM.",
+      "depends_on": [
+        "h2-helper-002bf6d0-manager-slot-review"
+      ],
+      "function_claims": [
+        "0x002b88c4"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/milestones/H2-audio-settings.md",
+        "src/engine/leaf_batch32_c.cpp",
+        "src/engine/leaf_batch27_b.cpp",
+        "src/engine/leaf_batch33_c.cpp",
+        "src/engine/leaf_batch32_b.cpp",
+        "include/ui/tbb_table.h",
+        "tools/h2_bf6d0_experiment.py",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "src/engine/leaf_batch32_c.cpp",
+        "tools/h2_b88c4_experiment.py",
+        "docs/function-records/0x002b88c4.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover global work pointer, 200-entry capacity guard, node record branches, field masks/order, returned slot, and ABI from pinned ARM.",
+        "Differentially exercise both region representations, boundary counts, helper calls/args, writes, return and callee-saved state; include targeted compiled mutations.",
+        "Install both 0x002BF6D0 and 0x002B88C4 at final addresses in the composition profile. Preserve unsupported service and runtime limits."
+      ],
+      "validation_plan": [
+        "Run the focused offline pinned-ARM runner with private task output; run one four-job full ARMv6K build after source freeze; obtain an independent review before promotion."
+      ]
+    },
+    {
+      "id": "h2-helper-002b88c4-touch-region-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review 0x002B88C4 touch-region semantics, its 0x002BF6D0 final-address composition, and the documented temporal store-order difference.",
+      "depends_on": [
+        "h2-helper-002b88c4-touch-region-convert"
+      ],
+      "function_claims": [
+        "0x002b88c4",
+        "0x002bf6d0"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "src/engine/leaf_batch32_c.cpp",
+        "src/engine/leaf_batch27_b.cpp",
+        "src/engine/leaf_batch33_c.cpp",
+        "src/engine/leaf_batch32_b.cpp",
+        "src/engine/leaf_batch46_b.cpp",
+        "include/ui/tbb_table.h",
+        "tools/h2_b88c4_experiment.py",
+        "build/agent-work/H2-semantic/h2-helper-002b88c4-touch-region-convert/run001/report.json",
+        "extracted/exefs/code.bin",
+        "docs/function-records/0x002b88c4.md",
+        "docs/function-records/0x002bf6d0.md",
+        "config/functions.csv"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-2b88c4-independent-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify original pointer/global offsets, count checks/reloads, record field source/order, return, and caller ABI from pinned ARM.",
+        "Inspect all 58 direct/final composition fixtures, both mutations, relocation encodings, and exact report/source/image hashes.",
+        "Assess the candidate’s reversed temporal store order: determine whether bounded final-state promotion is supportable and state concurrent-reader limits. Do not edit implementation, runner, ledger, README, PROGRESS, or board."
+      ],
+      "validation_plan": [
+        "Read-only frozen-input review, no canonical build or emulator. Return structured handoff with evidence levels and limitations."
+      ]
+    },
+    {
+      "id": "h2-helper-002bf6d0-slot-fit-after-hidden-index",
+      "role": "implementation",
+      "state": "blocked",
+      "owner": null,
+      "goal": "Recover and fit a correct typed 0x002BF6D0 replacement that forwards node_index through the 0x002B0188 / 0x00138B90 manager-selection contract.",
+      "depends_on": [],
+      "function_claims": [
+        "0x002bf6d0"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-2bf6d0-abi-correction.md",
+        "src/engine/leaf_batch27_b.cpp",
+        "src/engine/leaf_batch39_a.cpp",
+        "extracted/exefs/code.bin",
+        "tools/h2_b88c4_experiment.py"
+      ],
+      "write_paths": [
+        "src/engine/leaf_batch27_b.cpp",
+        "tools/h2_bf6d0_experiment.py",
+        "docs/function-records/0x002bf6d0.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "blocker": "The complete two-argument C++ call compiles to a 68-byte body, four bytes larger than the 64-byte slot. The previous 64-byte candidate failed to forward node_index in r1 and is not promoted.",
+      "unblock_condition": "Produce a semantics-preserving body no larger than 64 bytes, or establish an approved out-of-line replacement route with offline caller composition and interworking validation.",
+      "acceptance": [
+        "The service receives both group and node_index, and the returned pointer follows the quotient/modulo-1000 block/index contract.",
+        "The replacement and final caller chain pass pinned ARM differential, boundaries across quotient blocks, mutations, and the offline caller composition."
+      ]
+    },
+    {
+      "id": "h2-ui-helper-002b0188-manager-resolver-convert",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Convert the 24-byte 0x002B0188 manager-table selector to typed C++ while preserving its implicit two-register contract and tail call to 0x00138B90.",
+      "depends_on": [],
+      "function_claims": [
+        "0x002b0188"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/milestones/H2-audio-settings.md",
+        "src/engine/leaf_batch39_a.cpp",
+        "src/engine/leaf_batch27_b.cpp",
+        "src/engine/leaf_batch32_c.cpp",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "src/engine/leaf_batch39_a.cpp",
+        "tools/h2_b0188_experiment.py",
+        "docs/function-records/0x002b0188.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Use u32(group, node_index): index the global table at group*24, then tail-call 0x00138B90(manager_entry, node_index).",
+        "Fit the original 24-byte slot with a supported relocation, and test null/non-null table entries, group stride, signed quotient boundaries and preserved state.",
+        "Install converted 0x002B0188 in the 0x002B88C4 caller chain while the original 0x002BF6D0 and 0x00138B90 execute; capture both input registers. Include two compiled negative controls."
+      ],
+      "validation_plan": [
+        "Run focused pinned-ARM direct and caller composition; then one four-job full ARMv6K build and independent review."
+      ]
+    },
+    {
+      "id": "h2-ui-helper-002b0188-manager-resolver-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the frozen 0x002B0188 C++ candidate, 261-case pinned-ARM report, and refreshed 0x002B88C4 composition with original 0x002BF6D0 and 0x00138B90 executing.",
+      "depends_on": [
+        "h2-ui-helper-002b0188-manager-resolver-convert"
+      ],
+      "function_claims": [
+        "0x002b0188",
+        "0x002b88c4"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "src/engine/leaf_batch39_a.cpp",
+        "src/engine/leaf_batch32_c.cpp",
+        "src/engine/leaf_batch27_b.cpp",
+        "tools/h2_b0188_experiment.py",
+        "tools/h2_b88c4_experiment.py",
+        "build/agent-work/H2-semantic/h2-ui-helper-002b0188-manager-resolver-convert/run001/report.json",
+        "build/agent-work/H2-semantic/h2-helper-002b88c4-touch-region-convert/run001/report.json",
+        "docs/function-records/0x002b0188.md",
+        "docs/function-records/0x002b88c4.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-2b0188-independent-review.md",
+        "build/agent-work/H2-semantic/h2-ui-helper-002b0188-manager-resolver-review/run001/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify ABI, signed quotient boundaries, group stride and null-manager handling from source and pinned reports without editing candidates or rerunning canonical builds.",
+        "Review the composed 0x002B88C4 chain and identify any remaining mocked behavior, fixture limits, or trace gaps.",
+        "Return a structured handoff with hashes, evidence level, recommendation and limits."
+      ]
+    },
+    {
+      "id": "h2-ui-helper-00221fb4-readiness-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover the contract and real caller/callee context for 0x00221FB4, the titleConfig readiness gate that now calls reconstructed 0x002BF41C; recommend whether it is a bounded next C++ slice.",
+      "depends_on": [],
+      "function_claims": [
+        "0x00221fb4"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/milestones/H2-audio-settings.md",
+        "docs/function-records/0x002bf41c.md",
+        "src/engine/leaf_batch30_c.cpp",
+        "src/engine/leaf_batch32_a.cpp",
+        "extracted/exefs/code.bin",
+        "config/functions.csv"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-00221fb4-readiness-contract.md",
+        "build/agent-work/H2-semantic/h2-ui-helper-00221fb4-readiness-contract/run001/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover arguments, returns, memory effects, branch conditions and ABI from pinned ARM and relevant callers/callees.",
+        "Identify the actual task registration manager structure and describe which dependencies can remain original or need controlled stubs for validation.",
+        "Return a structured handoff with source/image hashes, evidence level, uncertainty and a scoped recommendation; do not edit C++ or shared runners."
+      ]
+    },
+    {
+      "id": "h2-ui-helper-00207d84-callback-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover contract and actual caller relevance for the next semantic-discovery candidate 0x00207D84; determine whether it belongs to H2 titleConfig/audio work before implementation.",
+      "depends_on": [],
+      "function_claims": [
+        "0x00207d84"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/milestones/H2-audio-settings.md",
+        "config/reconstruction.json",
+        "config/functions.csv",
+        "src/engine/leaf_batch30_c.cpp",
+        "src/ui/ui_runtime2.cpp",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-00207d84-contract.md",
+        "build/agent-work/H2-semantic/h2-ui-helper-00207d84-callback-contract/run001/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover arguments, return, memory and VFP effects, call order, and ABI from pinned ARM.",
+        "Identify direct callers or exact callback-table references and assess relevance to titleConfig/audio using evidence rather than source-file proximity alone.",
+        "Return a structured handoff with hashes, limits and implement-or-defer recommendation; do not edit code or shared runners."
+      ]
+    },
+    {
+      "id": "h2-helper-002b88c4-staged-integration",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Stage the reviewed C++ 0x002B88C4 replacement onto the reviewed H2 run-013 image and compare original versus staged code images through the pinned caller/helper chain.",
+      "depends_on": [
+        "h2-helper-002b88c4-touch-region-review-002",
+        "h2-ui-helper-002b0188-manager-resolver-review"
+      ],
+      "function_claims": [
+        "0x002b88c4",
+        "0x002b0188"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/function-records/0x002b88c4.md",
+        "docs/function-records/0x002b0188.md",
+        "src/engine/leaf_batch32_c.cpp",
+        "src/engine/leaf_batch27_b.cpp",
+        "src/engine/leaf_batch39_a.cpp",
+        "tools/h2_b88c4_experiment.py",
+        "build/agent-work/H2-semantic/h2-init-ready-final-image/run-013/combined-build-final/code.combined.bin",
+        "build/agent-work/H2-semantic/h2-init-ready-final-image/run-013/combined-build-final/manifest.json",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "tools/h2_b88c4_staged_image.py",
+        "tools/h2_b88c4_staged_validation.py",
+        "docs/function-records/0x002b88c4.md",
+        "docs/milestones/H2-audio-settings.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Create a reproducible one-slot IPS overlay from the pinned H2 run-013 image, resolve and check the 0x002BF6D0 ARM call at final VMA, and prove no bytes outside 0x002B88C4 changed.",
+        "Compare the original run-013 image and staged image across all 58 established caller fixtures, with original 0x002BF6D0 and 0x00138B90 executing and final 0x002B0188 present.",
+        "Record image/IPS/manifests, source and report hashes, evidence limits, then run one independent review before promotion."
+      ]
+    },
+    {
+      "id": "h2-helper-002b88c4-staged-integration-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the staged 0x002B88C4 replacement, IPS scope and 58-case original-versus-staged caller-chain evidence before promotion.",
+      "depends_on": [
+        "h2-helper-002b88c4-staged-integration"
+      ],
+      "function_claims": [
+        "0x002b88c4",
+        "0x002b0188"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/function-records/0x002b88c4.md",
+        "docs/function-records/0x002b0188.md",
+        "docs/milestones/H2-audio-settings.md",
+        "src/engine/leaf_batch32_c.cpp",
+        "src/engine/leaf_batch27_b.cpp",
+        "src/engine/leaf_batch39_a.cpp",
+        "tools/h2_b88c4_staged_image.py",
+        "tools/h2_b88c4_staged_validation.py",
+        "tools/h2_b88c4_experiment.py",
+        "build/agent-work/H2-semantic/h2-helper-002b88c4-staged-integration/run001/staging/manifest.json",
+        "build/agent-work/H2-semantic/h2-helper-002b88c4-staged-integration/run001/validation/staged-image-validation.json",
+        "build/agent-work/H2-semantic/h2-helper-002b88c4-staged-integration/run001/staging/code.h2-touch-region.bin",
+        "build/agent-work/H2-semantic/h2-helper-002b88c4-staged-integration/run001/staging/code.h2-touch-region.ips"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-2b88c4-staged-integration-review.md",
+        "build/agent-work/H2-semantic/h2-helper-002b88c4-staged-integration-review/run001/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify the declared base/patch/image hashes and prove the staged diff stays within the 0x002B88C4 slot.",
+        "Inspect relocation/interworking and the 58-case report's actual original/staged mapping and remaining mocks.",
+        "Return a structured handoff with review recommendation and limits; do not edit candidates or rerun builds."
+      ]
+    },
+    {
+      "id": "h2-resource-resolver-002a63f8-002b96f0-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover the caller-facing ABI and dependency contract for the H2 resource flag predicate 0x002A63F8 and its table resolver 0x002B96F0; confirm they form a coherent pair for C++ conversion.",
+      "depends_on": [],
+      "function_claims": [
+        "0x002a63f8",
+        "0x002b96f0"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/milestones/H2-audio-settings.md",
+        "docs/agent-work/h2-calc-contract.md",
+        "src/engine/leaf_batch17_c.cpp",
+        "src/engine/leaf_batch39_a.cpp",
+        "src/engine/leaf_batch17_a.cpp",
+        "src/engine/leaf_batch21_c.cpp",
+        "src/engine/leaf_batch29_c.cpp",
+        "src/engine/leaf_batch32_b.cpp",
+        "extracted/exefs/code.bin",
+        "config/functions.csv"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-2a63f8-2b96f0-contract.md",
+        "build/agent-work/H2-semantic/h2-resource-resolver-002a63f8-002b96f0-contract/run001/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover input registers, return value, memory effects, branch/tail-call target and ARM ABI for both addresses from pinned code.",
+        "Audit all in-image BL callers of 0x002B96F0 for use of r0/r1 and determine whether a common typed signature is supported.",
+        "Return a structured handoff with source/image hashes, domain limits and a scoped implementation recommendation; no C++ or runner edits."
+      ]
+    },
+    {
+      "id": "h2-resource-flag-predicate-002a63f8-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the typed C++ 0x002A63F8 predicate, offline differential, actual TitleConfig_Calc caller slice, and one-slot H2 staging evidence.",
+      "depends_on": [
+        "h2-resource-resolver-002a63f8-002b96f0-contract"
+      ],
+      "function_claims": [
+        "0x002a63f8"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-2a63f8-2b96f0-contract.md",
+        "src/engine/leaf_batch17_c.cpp",
+        "src/engine/leaf_batch39_a.cpp",
+        "src/engine/leaf_batch17_a.cpp",
+        "src/engine/leaf_batch18_b.cpp",
+        "src/engine/leaf_batch21_c.cpp",
+        "src/engine/leaf_batch23_c.cpp",
+        "src/engine/leaf_batch24_c.cpp",
+        "src/engine/leaf_batch29_c.cpp",
+        "src/engine/leaf_batch32_b.cpp",
+        "src/engine/leaf_batch33_c.cpp",
+        "src/engine/leaf_batch34_c.cpp",
+        "tools/h2_2a63f8_experiment.py",
+        "tools/h2_2a63f8_staged_image.py",
+        "build/agent-work/H2-semantic/h2-resource-flag-predicate-002a63f8/run001/report.json",
+        "build/agent-work/H2-semantic/h2-resource-flag-predicate-002a63f8/run001/staged-image/manifest.json",
+        "build/agent-work/H2-semantic/h2-resource-flag-predicate-002a63f8/run001/staged-image/code.h2-resource-flag.bin",
+        "build/agent-work/H2-semantic/h2-resource-flag-predicate-002a63f8/run001/staged-image/code.h2-resource-flag.ips",
+        "extracted/exefs/code.bin",
+        "config/functions.csv"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-resource-flag-predicate-002a63f8-review-final.md",
+        "build/agent-work/H2-semantic/h2-resource-flag-predicate-review/run005/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify base, source, object, staged image, IPS and report hashes; prove the replacement stays in the 0x002A63F8 slot and its ARM BL reaches even target 0x002B96F0.",
+        "Review direct cases, null-fault behavior, negative controls and the actual TitleConfig_Calc call slice at 0x001EA964; identify mocks and semantic limits.",
+        "Return a structured handoff with an independent review recommendation; do not edit source, runner, staging tools, status or ledger."
+      ]
+    },
+    {
+      "id": "h2-resource-resolver-002b96f0-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review typed C++ 0x002B96F0, its absolute ARM tail relocation, 103-case differential, negative controls and paired TitleConfig_Calc composition.",
+      "depends_on": [
+        "h2-resource-resolver-002a63f8-002b96f0-contract"
+      ],
+      "function_claims": [
+        "0x002b96f0"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-2a63f8-2b96f0-contract.md",
+        "src/engine/leaf_batch39_a.cpp",
+        "src/engine/leaf_batch17_c.cpp",
+        "tools/h2_2b96f0_experiment.py",
+        "tools/h2_2a63f8_experiment.py",
+        "build/agent-work/H2-semantic/h2-resource-resolver-002b96f0/run001/report.json",
+        "build/h2-resource-resolver-full/engine/leaf_batch39_a.o",
+        "extracted/exefs/code.bin",
+        "config/functions.csv"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-resource-resolver-002b96f0-review.md",
+        "build/agent-work/H2-semantic/h2-resource-resolver-review/run001/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recompute image/source/report/object hashes and verify the final-VMA ARM JUMP24 rebase targets 0x00145798 and yields the exact 24-byte original body.",
+        "Review direct behavior and ABI across 103 differential cases, both negative controls and the paired actual TitleConfig_Calc caller slice; note the preserved internal tail helper and all semantic limits.",
+        "Return a structured independent recommendation and handoff; do not edit candidates, runners, ledger or status."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-slot-getters-0029f248-0029f260-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review typed C++ ASD slot getters 0x0029F248 and 0x0029F260, their absolute tail relocations, 76-case differential per function, actual TitleConfig_Calc caller slice and cumulative H2 staged image.",
+      "depends_on": [],
+      "function_claims": [
+        "0x0029f248",
+        "0x0029f260"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "src/engine/leaf_batch34_b.cpp",
+        "src/engine/leaf_batch33_c.cpp",
+        "tools/h2_slot_getters_experiment.py",
+        "tools/h2_2a63f8_experiment.py",
+        "build/agent-work/H2-semantic/h2-slot-getters-0029f248-0029f260/run001/report.json",
+        "build/agent-work/H2-semantic/h2-slot-getters-0029f248-0029f260/run001/staged/manifest.json",
+        "build/agent-work/H2-semantic/h2-slot-getters-0029f248-0029f260/run001/staged/code.h2-slot-getters.bin",
+        "build/agent-work/H2-semantic/h2-slot-getters-0029f248-0029f260/run001/staged/code.h2-slot-getters.ips",
+        "build/h2-slot-getters-full/engine/leaf_batch34_b.o",
+        "extracted/exefs/code.bin",
+        "config/functions.csv"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-titleconfig-slot-getters-0029f248-0029f260-review-final.md",
+        "build/agent-work/H2-semantic/h2-titleconfig-slot-getters-review/run002/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recompute source/image/object/report/stage hashes; verify both final-VMA ARM tail branches target 0x002CB84C and 0x002D5674 and stay inside their 24-byte slots.",
+        "Review both functions' gate and field behavior, 76 cases each, negative controls, and the actual 0x001EA9F4-0x001EAA0C caller slice against the cumulative staged image.",
+        "Return an independent structured recommendation with limits; do not edit candidate source, runners, staged artifacts, ledger or progress docs."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-002bdac0-convert",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Convert camp_func_002bdac0 to readable typed C++ and validate its ARM contract and actual TitleConfig_Calc caller behavior with truthful H2 evidence.",
+      "depends_on": [
+        "h2-titleconfig-002bdac0-contract"
+      ],
+      "function_claims": [
+        "0x002bdac0"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-002bdac0-contract.md",
+        "src/engine/leaf_batch13_c.cpp",
+        "src/engine/asd_runtime.cpp",
+        "src/engine/leaf_batch46_b.cpp",
+        "extracted/exefs/code.bin",
+        "tools/h2_slot_getters_experiment.py",
+        "tools/h2_002bdac0_experiment.py"
+      ],
+      "write_paths": [
+        "src/engine/leaf_batch13_c.cpp",
+        "src/engine/asd_runtime.cpp",
+        "tools/h2_002bdac0_experiment.py",
+        "docs/function-records/0x002bdac0.md",
+        "src/engine/leaf_batch21_c.cpp",
+        "src/engine/leaf_batch24_c.cpp",
+        "src/engine/leaf_batch32_c.cpp",
+        "src/engine/leaf_batch32_b.cpp",
+        "src/engine/leaf_batch33_c.cpp"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Use full-width selector and index semantics, preserve no-write null-table behavior, exact output fields/scaling and original r0 return; fit the 108-byte production slot.",
+        "Pass directed and seeded direct differential cases including both selectors, selector 0x100, signed boundaries, full-width indices, null table, ordered side effects and at least two negative controls.",
+        "Compare an actual TitleConfig_Calc state-1 or state-2 call slice with original and staged image; record table bounds as unknown absent evidence.",
+        "Stage only the declared slot, update the ledger to truthful non_matching if final bytes differ, and provide report hashes and limits for independent review."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-002bdac0-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently recover the full caller-facing contract of camp_func_002bdac0, emphasizing TitleConfig_Calc call contexts, table bounds/layout evidence, return/ABI, and integration risks for typed C++ conversion.",
+      "depends_on": [],
+      "function_claims": [
+        "0x002bdac0"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/milestones/H2-audio-settings.md",
+        "src/engine/leaf_batch13_c.cpp",
+        "src/engine/leaf_batch46_b.cpp",
+        "src/engine/asd_runtime.cpp",
+        "extracted/exefs/code.bin",
+        "config/functions.csv"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-002bdac0-contract.md",
+        "build/agent-work/H2-semantic/h2-titleconfig-002bdac0-contract/run001/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover all direct in-image callers and actual TitleConfig_Calc caller states; specify argument registers, return, side effects, conditional table reads and null behavior.",
+        "Establish table entry stride/type and valid index limits from callers or data references; distinguish established facts from unproven bounds.",
+        "Return a structured handoff with hashes, evidence level, risks and recommendation; do not edit C++ or shared interfaces/runners."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-002bdac0-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the frozen typed C++ reconstruction of 0x002BDAC0, its offline differential/caller evidence, and cumulative slot-only staging; provide a structured promotion recommendation.",
+      "depends_on": [],
+      "function_claims": [
+        "0x002bdac0"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-002bdac0-contract.md",
+        "src/engine/leaf_batch13_c.cpp",
+        "src/engine/asd_runtime.cpp",
+        "src/engine/leaf_batch21_c.cpp",
+        "src/engine/leaf_batch24_c.cpp",
+        "src/engine/leaf_batch32_c.cpp",
+        "src/engine/leaf_batch32_b.cpp",
+        "src/engine/leaf_batch33_c.cpp",
+        "tools/h2_002bdac0_experiment.py",
+        "docs/function-records/0x002bdac0.md",
+        "config/functions.csv",
+        "extracted/exefs/code.bin",
+        "build/agent-work/H2-semantic/h2-titleconfig-002bdac0-convert/run004/report.json",
+        "build/agent-work/H2-semantic/h2-titleconfig-002bdac0-convert/run004/staged/manifest.json",
+        "build/agent-work/H2-semantic/h2-titleconfig-002bdac0-convert/run004/staged/code.h2-002bdac0.bin",
+        "build/agent-work/H2-semantic/h2-titleconfig-002bdac0-convert/run004/staged/code.h2-002bdac0.ips"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-002bdac0-independent-review.md",
+        "build/agent-work/H2-semantic/h2-titleconfig-002bdac0-review/run003/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recompute input/source/report/image/IPS hashes; verify the compiled body fits 108 bytes, no unsupported relocation exists, and the IPS round-trips while changing only 0x002BDAC0.",
+        "Review full-width selector/index semantics, null no-write return, signed scaling and alias/store-read ordering against the original and the harness cases.",
+        "Independently inspect direct, negative-control, actual TitleConfig_Calc call-slice and staged evidence; note coverage limits and any mismatch.",
+        "Return a structured independent recommendation; do not edit implementation, harness, ledger or progress files."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-002c1830-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review frozen 0x002C1830 conversion and corrected run006 caller composition against pinned original TitleConfig_Calc.",
+      "depends_on": [],
+      "function_claims": [
+        "0x002c1830"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-002c1830-contract.md",
+        "src/engine/leaf_batch40_a.cpp",
+        "src/engine/asd_runtime.cpp",
+        "src/engine/leaf_batch33_c.cpp",
+        "src/engine/leaf_batch34_c.cpp",
+        "src/engine/leaf_batch19_a.cpp",
+        "src/engine/leaf_batch24_c.cpp",
+        "src/engine/leaf_batch32_c.cpp",
+        "experiments/semantic_equivalence/h2_2c1830_candidate.cpp",
+        "tools/h2_2c1830_experiment.py",
+        "tools/h2_logical_query_caller_composition.py",
+        "docs/function-records/0x002c1830.md",
+        "config/functions.csv",
+        "extracted/exefs/code.bin",
+        "build/agent-work/H2-semantic/h2-titleconfig-002c1830-convert/run006/report.json",
+        "build/agent-work/H2-semantic/h2-titleconfig-002c1830-convert/run006/staged/manifest.json",
+        "build/agent-work/H2-semantic/h2-titleconfig-002c1830-convert/run006/staged/code.h2-002c1830.bin",
+        "build/agent-work/H2-semantic/h2-titleconfig-002c1830-convert/run006/staged/code.h2-002c1830.ips",
+        "build/agent-work/H2-semantic/h2-titleconfig-002c1830-convert/run006/candidate.o",
+        "build/agent-work/H2-semantic/h2-titleconfig-002c1830-convert/run005/final.o"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-002c1830-independent-review-run006.md",
+        "build/agent-work/H2-semantic/h2-titleconfig-002c1830-review/run006/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recompute frozen source/object/report/base/staged/IPS hashes; verify all six ARM call relocations, body size and slot-only roundtrip.",
+        "Review the 114 direct cases for dispatch, raw returns, secondary IDs, fallback targets, ABI projections and negative controls.",
+        "Inspect 43 caller scenarios comparing pinned original Calc with pinned original Calc plus only the wrapper patch; verify all six static PCs and both argument alternatives at 0x001EAC50, plus original and typed mode-helper profiles.",
+        "Return an independent structured recommendation and evidence limits; do not edit implementation, runner, ledger or progress files."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-002c1830-convert",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Convert camp_func_002c1830 to readable typed C++ while preserving its H2 query dispatch, exact fallback/return behavior and direct original helper dependencies.",
+      "depends_on": [
+        "h2-titleconfig-002c1830-contract"
+      ],
+      "function_claims": [
+        "0x002c1830"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-002c1830-contract.md",
+        "docs/agent-work/h2-calc-contract.md",
+        "src/engine/leaf_batch40_a.cpp",
+        "src/engine/leaf_batch46_b.cpp",
+        "src/engine/leaf_batch30_b.cpp",
+        "extracted/exefs/code.bin",
+        "tools/h2_logical_query_caller_composition.py"
+      ],
+      "write_paths": [
+        "src/engine/leaf_batch40_a.cpp",
+        "src/engine/asd_runtime.cpp",
+        "src/engine/leaf_batch33_c.cpp",
+        "src/engine/leaf_batch34_c.cpp",
+        "src/engine/leaf_batch19_a.cpp",
+        "tools/h2_2c1830_experiment.py",
+        "docs/function-records/0x002c1830.md",
+        "experiments/semantic_equivalence/h2_2c1830_candidate.cpp",
+        "src/engine/leaf_batch24_c.cpp",
+        "src/engine/leaf_batch32_c.cpp"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "The typed dispatcher preserves full-width ID/mode comparisons, primary then optional secondary query, nonzero raw returns, fallback mapping and default zero; all original helper targets and ABI are audited.",
+        "Pass all mode/ID branches, seeded helper returns, fallback tail behavior, ordered call tracing, register/stack ABI and at least three negative controls in offline differential.",
+        "Compose the candidate in actual TitleConfig_Calc caller slices across the six PCs and seven ID/mode combinations, with original helpers and the previously validated typed mode-0/mode-1 helpers as separate profiles.",
+        "Produce final-VMA staging within the 504-byte span, validate all call/interworking relocations, truthful non_matching ledger classification if bytes differ, and report limits for independent review."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-002c1830-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover whether 0x002C1830 is a coherent next H2 semantic conversion: its exact register/return/memory contract, mode/selector dispatch, helper dependencies, and actual TitleConfig_Calc call slices.",
+      "depends_on": [],
+      "function_claims": [
+        "0x002c1830"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-calc-contract.md",
+        "docs/milestones/H2-audio-settings.md",
+        "src/engine/leaf_batch40_a.cpp",
+        "src/engine/leaf_batch46_b.cpp",
+        "src/engine/leaf_batch33_c.cpp",
+        "src/engine/leaf_batch34_c.cpp",
+        "extracted/exefs/code.bin",
+        "config/functions.csv"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-002c1830-contract.md",
+        "build/agent-work/H2-semantic/h2-titleconfig-002c1830-contract/run001/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover the 32-bit mode/ID dispatch, all branches/calls, preserved registers, stack and return values from pinned ARM; audit all direct in-image callers and relevant H2 ones.",
+        "Identify existing typed/experimental callees and the smallest coherent bounded C++ slice; distinguish actual caller reachability from source proximity.",
+        "Return a structured report with hashes, evidence limits and implement/defer recommendation; do not edit C++ or shared runners."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-0029edfc-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover the bounded contract of direct TitleConfig_Calc dependency camp_func_0029edfc, including cursor object inputs, branches, writes, tail helper ABI and actual H2 caller context.",
+      "depends_on": [],
+      "function_claims": [
+        "0x0029edfc"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-calc-contract.md",
+        "docs/milestones/H2-audio-settings.md",
+        "src/engine/leaf_batch34_b.cpp",
+        "src/engine/leaf_batch46_b.cpp",
+        "extracted/exefs/code.bin",
+        "config/functions.csv"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-0029edfc-contract.md",
+        "build/agent-work/H2-semantic/h2-titleconfig-0029edfc-contract/run001/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover full ARM control flow, argument/return and preserved-register contract, memory accesses and exact tail-call target from the pinned image.",
+        "Relate 0x0029EDFC to actual TitleConfig_Calc call slices and other callers; separate supported object invariants from assumptions about cursor/input semantics.",
+        "Recommend a bounded typed C++ slice and offline differential/caller evidence; give hashes, unresolved behavior, domain limits and implement/defer recommendation. Do not edit C++ or shared runners."
+      ],
+      "validation_plan": [
+        "Read-only static analysis of the pinned original and source declaration; record structured handoff. No emulator or full build."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-0029edfc-convert",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Convert direct TitleConfig_Calc cursor helper 0x0029EDFC to typed C++ while preserving its disabled-byte return, conditional flag write and original 0x002892C0 tail behavior.",
+      "depends_on": [
+        "h2-titleconfig-0029edfc-contract"
+      ],
+      "function_claims": [
+        "0x0029edfc"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-0029edfc-contract.md",
+        "docs/agent-work/h2-calc-contract.md",
+        "src/engine/leaf_batch34_b.cpp",
+        "src/engine/leaf_batch46_b.cpp",
+        "src/engine/leaf_batch16_c.cpp",
+        "src/engine/leaf_batch32_c.cpp",
+        "src/engine/leaf_batch33_c.cpp",
+        "extracted/exefs/code.bin",
+        "tools/h2_logical_query_caller_composition.py"
+      ],
+      "write_paths": [
+        "src/engine/leaf_batch34_b.cpp",
+        "src/engine/leaf_batch32_c.cpp",
+        "src/engine/leaf_batch33_c.cpp",
+        "src/engine/leaf_batch46_b.cpp",
+        "experiments/semantic_equivalence/h2_29edfc_candidate.cpp",
+        "tools/h2_29edfc_experiment.py",
+        "docs/function-records/0x0029edfc.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Preserve +0x62 raw nonzero return with no call/store; otherwise compare modulo-32-bit (+0x24 + +0x20) against original index, conditionally set +0x60 to 1, and call original ARM helper 0x002892C0 with original object/index and return unchanged.",
+        "Pass focused direct original/candidate/production differential with ordered write/helper traces, raw return, r4-r11/SP, exact flag retention, overflow and boundaries, at least three detected negative controls.",
+        "Compose original TitleConfig_Calc touch path at 0x001EAEA4, including selected-row skip and touched non-selected rows; stage only the declared 80-byte slot, audit ARM/interworking calls and keep ledger `non_matching` if bytes differ. Produce a reproducible report for independent review."
+      ],
+      "validation_plan": [
+        "Compile the affected production translation units and run offline direct differential and original caller composition first. Freeze all relevant inputs and reports for independent review; no emulator until gates pass."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-0029edfc-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review 0x0029EDFC C++ body, typed helper ABI, direct differential, original TitleConfig_Calc touch-path composition and cumulative slot staging.",
+      "depends_on": [],
+      "function_claims": [
+        "0x0029edfc",
+        "0x002892c0"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-0029edfc-contract.md",
+        "docs/agent-work/h2-calc-contract.md",
+        "docs/function-records/0x0029edfc.md",
+        "config/functions.csv",
+        "src/engine/leaf_batch34_b.cpp",
+        "src/engine/leaf_batch16_c.cpp",
+        "src/engine/leaf_batch32_c.cpp",
+        "src/engine/leaf_batch33_c.cpp",
+        "src/engine/leaf_batch46_b.cpp",
+        "experiments/semantic_equivalence/h2_29edfc_candidate.cpp",
+        "tools/h2_29edfc_experiment.py",
+        "tools/h2_logical_query_caller_composition.py",
+        "extracted/exefs/code.bin",
+        "build/agent-work/H2-semantic/h2-titleconfig-0029edfc-convert/run001/report.json",
+        "build/agent-work/H2-semantic/h2-titleconfig-0029edfc-convert/run001/candidate.o",
+        "build/agent-work/H2-semantic/h2-titleconfig-0029edfc-convert/run001/production.o",
+        "build/agent-work/H2-semantic/h2-titleconfig-0029edfc-convert/run001/tail-helper.o",
+        "build/agent-work/H2-semantic/h2-titleconfig-0029edfc-convert/run001/staged/manifest.json",
+        "build/agent-work/H2-semantic/h2-titleconfig-0029edfc-convert/run001/staged/code.h2-0029edfc.bin",
+        "build/agent-work/H2-semantic/h2-titleconfig-0029edfc-convert/run001/staged/code.h2-0029edfc.ips",
+        "build/h2-0029edfc-full/engine/leaf_batch16_c.o",
+        "build/h2-0029edfc-full/engine/leaf_batch32_c.o",
+        "build/h2-0029edfc-full/engine/leaf_batch33_c.o",
+        "build/h2-0029edfc-full/engine/leaf_batch34_b.o",
+        "build/h2-0029edfc-full/engine/leaf_batch46_b.o"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-0029edfc-independent-review-run001.md",
+        "build/agent-work/H2-semantic/h2-titleconfig-0029edfc-review/run001/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recompute packet hashes and verify candidate/production body, 80-byte slot, ARM jump relocation to 0x002892C0, slot-only staged image and IPS roundtrip.",
+        "Independently check disabled raw return, modulo sum, conditional retained flag, original helper behavior, ordered stores, ABI and exact direct matrix/negative controls.",
+        "Verify caller runs use pinned original TitleConfig_Calc, hit 0x001EAEA4 for indices 0/1/2 only when non-selected, prove selected-row skip and compare original vs patched state/trace/ABI; review limits and build objects.",
+        "Return structured recommendation; do not edit implementation, harness, ledger or progress docs."
+      ],
+      "validation_plan": [
+        "Read-only independent review and handoff check. No canonical build or emulator."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-00297674-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover the exact contract and real H2 caller behavior for 0x00297674, the TitleConfig_Calc state-2 decision helper; determine whether a bounded C++ conversion can retain the remaining original dependencies.",
+      "depends_on": [],
+      "function_claims": [
+        "0x00297674"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-calc-contract.md",
+        "src/engine/leaf_batch21_b.cpp",
+        "src/engine/leaf_batch46_b.cpp",
+        "src/engine/leaf_batch22_c.cpp",
+        "extracted/exefs/code.bin",
+        "config/functions.csv",
+        "config/game_info.json"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-00297674-contract.md",
+        "build/agent-work/H2-semantic/h2-titleconfig-00297674-contract/run001/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Decode 0x00297674 exactly, including literal/global provenance, return width/values, memory effects, and ABI; distinguish fact from inference.",
+        "Locate every caller and analyze the actual TitleConfig_Calc state-2 call context, input domain, and consequences for each return.",
+        "Recommend bounded conversion scope and identify any unknown that blocks an honest contract; include pinned original identity, source evidence, hashes, and next-step validation requirements."
+      ],
+      "validation_plan": [
+        "Read-only static disassembly/source/caller analysis. No candidate edits, compiler, or emulator. Return structured handoff and contract report."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-00297674-convert",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Convert the H2 global decision-word getter 0x00297674 to typed C++ and validate its full raw-word contract plus TitleConfig_Calc state-2 caller behavior.",
+      "depends_on": [
+        "h2-titleconfig-00297674-contract"
+      ],
+      "function_claims": [
+        "0x00297674"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-00297674-contract.md",
+        "docs/agent-work/h2-calc-contract.md",
+        "src/engine/leaf_batch21_b.cpp",
+        "src/engine/leaf_batch22_c.cpp",
+        "src/engine/leaf_batch46_b.cpp",
+        "extracted/exefs/code.bin",
+        "config/functions.csv",
+        "tools/h2_29edfc_experiment.py",
+        "tools/h2_logical_query_caller_composition.py"
+      ],
+      "write_paths": [
+        "src/engine/leaf_batch21_b.cpp",
+        "src/engine/leaf_batch22_c.cpp",
+        "experiments/semantic_equivalence/h2_297674_candidate.cpp",
+        "tools/h2_297674_experiment.py",
+        "docs/function-records/0x00297674.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Implement a typed 32-bit raw-word getter that preserves the two reads, absence of null checks/writes, return bits and ordinary ABI; audit and correct incompatible C++ declarations while preserving all existing callers.",
+        "Pass offline original-versus-candidate and production direct cases for zero, one, high-bit, all-ones and additional field values; compare read ordering/addresses, no writes, raw r0 and ABI. Detect at least three mutants including slot, field and return-width changes.",
+        "Compose the actual pinned original TitleConfig_Calc state-2 path with original helper 0x0019DFBC and original 0x002BDAC0 dependencies: gate not-equal-2, getter results 0/1/other, comparing state, config, call/write traces and ABI. Audit ARM/Thumb interworking and slot staging; record limits honestly and keep ledger non_matching if output differs."
+      ],
+      "validation_plan": [
+        "Compile focused candidate/affected production units with one job in a fresh output directory, run offline differential and caller composition before any emulator. Prepare reproducible evidence for independent review; no emulator unless the offline gates pass and runtime adds material evidence."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-00297674-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the 0x00297674 raw-word C++ getter, the exact-slot staged patch, and direct plus pinned TitleConfig_Calc state-2 differential evidence.",
+      "depends_on": [
+        "h2-titleconfig-00297674-convert"
+      ],
+      "function_claims": [
+        "0x00297674"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-00297674-contract.md",
+        "docs/function-records/0x00297674.md",
+        "config/functions.csv",
+        "src/engine/leaf_batch21_b.cpp",
+        "src/engine/leaf_batch22_c.cpp",
+        "src/engine/leaf_batch46_b.cpp",
+        "experiments/semantic_equivalence/h2_297674_candidate.cpp",
+        "tools/h2_297674_experiment.py",
+        "tools/h2_calc_experiment.py",
+        "tools/h2_calc_code_patch.py",
+        "tools/semantic_experiment.py",
+        "extracted/exefs/code.bin",
+        "build/agent-work/H2-semantic/h2-titleconfig-00297674-convert/run001/report.json",
+        "build/agent-work/H2-semantic/h2-titleconfig-00297674-convert/run001/candidate.o",
+        "build/agent-work/H2-semantic/h2-titleconfig-00297674-convert/run001/production.o",
+        "build/h2-297674-focused/engine/leaf_batch21_b.o",
+        "build/h2-297674-focused/engine/leaf_batch22_c.o"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-00297674-independent-review-run001.md",
+        "build/agent-work/H2-semantic/h2-titleconfig-00297674-review/run001/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recompute task input hashes; verify the candidate and production bodies, 20-byte slot, IPS roundtrip, exact changed range and even ARM call target.",
+        "Independently check pointer slot/field offsets, full-width values, no null normalization or writes, fault presence, register/stack/flags, read order and all negative controls.",
+        "Verify caller comparisons use pinned original TitleConfig_Calc with only the getter slot patched; cover the helper gate and results 0/1/other, inspect state/config/call behavior and original 0x002BDAC0 execution, and validate focused build objects.",
+        "Return an independent recommendation and precise limitations; do not edit implementation, runner, ledger or progress docs."
+      ],
+      "validation_plan": [
+        "Read-only independent review and check-handoff. No canonical build or emulator."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-002c17d4-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover the exact contract, global input-table dependencies, and H2 cursor/dispatcher caller behavior for the 92-byte query helper 0x002C17D4.",
+      "depends_on": [],
+      "function_claims": [
+        "0x002c17d4"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-input-seam-contract.md",
+        "docs/agent-work/h2-logical-input-table-producer-audit.md",
+        "docs/agent-work/h2-logical-input-table-producer-review.md",
+        "docs/agent-work/h2-calc-contract.md",
+        "docs/function-records/0x002c1830.md",
+        "src/engine/leaf_batch32_c.cpp",
+        "src/engine/leaf_batch40_a.cpp",
+        "src/engine/leaf_batch46_b.cpp",
+        "extracted/exefs/code.bin",
+        "config/functions.csv",
+        "config/game_info.json"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-002c17d4-contract.md",
+        "build/agent-work/H2-semantic/h2-titleconfig-002c17d4-contract/run001/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Decode every branch and full-width argument/return behavior, memory read/write order, exact global/table pointers, bounds, fault behavior and ABI; distinguish literal addresses from loaded pointers.",
+        "Census callers and establish how the H2 cursor update at 0x0029F278 and converted dispatcher 0x002C1830(mode 2) consume results. Keep physical input labels and natural reachability unresolved unless directly proven.",
+        "Recommend a bounded C++ conversion and direct/caller differential matrix with negative controls; include pinned original, source hashes, input hashes and structured handoff."
+      ],
+      "validation_plan": [
+        "Read-only static analysis of pinned original, source and prior table producer reports. No compilation, emulation, debugger, or input mutation."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-002c17d4-convert",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Convert the 92-byte H2 logical input bit query 0x002C17D4 to typed C++ and validate table guards, state selection, boolean returns, and original dispatcher mode-2 composition.",
+      "depends_on": [
+        "h2-titleconfig-002c17d4-contract"
+      ],
+      "function_claims": [
+        "0x002c17d4"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-002c17d4-contract.md",
+        "docs/agent-work/h2-input-seam-contract.md",
+        "docs/agent-work/h2-logical-input-table-producer-audit.md",
+        "docs/agent-work/h2-logical-input-table-producer-review.md",
+        "docs/function-records/0x002c1830.md",
+        "src/engine/leaf_batch32_c.cpp",
+        "src/engine/leaf_batch40_a.cpp",
+        "src/engine/leaf_batch46_b.cpp",
+        "extracted/exefs/code.bin",
+        "config/functions.csv",
+        "tools/h2_297674_experiment.py",
+        "tools/h2_2c1830_experiment.py"
+      ],
+      "write_paths": [
+        "src/engine/leaf_batch32_c.cpp",
+        "experiments/semantic_equivalence/h2_2c17d4_candidate.cpp",
+        "tools/h2_2c17d4_experiment.py",
+        "docs/function-records/0x002c17d4.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Implement unsigned ID guard (>=31), pinned row gate and mask, fixed state-word selection by mode bit 0, and normalized 0/1 result without assigning physical-control meaning.",
+        "Pass offline direct original/candidate/production comparisons for pinned IDs 0..30, out-of-range/high-bit IDs, gate short-circuit, altered masks, both mode choices with higher mode bits, and conflicting state words. Compare read order/addresses, no writes, raw return and preserved ABI; detect at least three mutations.",
+        "Compose pinned original 0x002C1830(mode 2) with only this helper patched, covering primary hit, ID+9 secondary hit, neither hit, and ID >=31. Verify helper call order and return propagation. Preserve the four pinned cursor callsites and the documented 0x20 skip behavior as static caller facts; do not claim full 0x0029F278 execution. Stage only the 92-byte slot with IPS roundtrip and static ARM/Thumb audit; keep non_matching if bytes differ."
+      ],
+      "validation_plan": [
+        "Compile focused production TU with one job, run offline direct and original-dispatcher composition before emulator. Freeze sources/reports for independent review. No emulator unless offline gates pass and runtime would answer a material unresolved question."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-002c17d4-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the 0x002C17D4 logical input query, direct ARM differential, exact-slot patch, and original mode-2 dispatcher composition.",
+      "depends_on": [
+        "h2-titleconfig-002c17d4-convert"
+      ],
+      "function_claims": [
+        "0x002c17d4"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-002c17d4-contract.md",
+        "docs/agent-work/h2-input-seam-contract.md",
+        "docs/agent-work/h2-logical-input-table-producer-audit.md",
+        "docs/agent-work/h2-logical-input-table-producer-review.md",
+        "docs/function-records/0x002c17d4.md",
+        "docs/function-records/0x002c1830.md",
+        "config/functions.csv",
+        "src/engine/leaf_batch32_c.cpp",
+        "src/engine/leaf_batch40_a.cpp",
+        "src/engine/leaf_batch46_b.cpp",
+        "experiments/semantic_equivalence/h2_2c17d4_candidate.cpp",
+        "tools/h2_2c17d4_experiment.py",
+        "tools/h2_calc_experiment.py",
+        "tools/h2_calc_code_patch.py",
+        "tools/semantic_experiment.py",
+        "extracted/exefs/code.bin",
+        "build/agent-work/H2-semantic/h2-titleconfig-002c17d4-convert/run001/report.json",
+        "build/agent-work/H2-semantic/h2-titleconfig-002c17d4-convert/run001/candidate.o",
+        "build/agent-work/H2-semantic/h2-titleconfig-002c17d4-convert/run001/production.o",
+        "build/h2-2c17d4-focused/engine/leaf_batch32_c.o"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-002c17d4-independent-review-run001.md",
+        "build/agent-work/H2-semantic/h2-titleconfig-002c17d4-review/run001/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recompute input hashes; verify exact 92-byte candidate/production body, relocations, declared slot, IPS roundtrip, changed range and even ARM call targets.",
+        "Independently inspect pinned table/mode/state behavior, unsigned guard, gated read short-circuit, full return normalization, read addresses/order and no writes; assess mode-load width difference as ordinary RAM behavior and check ABI.",
+        "Verify all direct boundaries/masks/modes and mutation controls. Confirm caller cases execute pinned original 0x002C1830 with only helper patched, including primary/secondary short-circuit/order and limits on 0x0029F278. Inspect focused object/build evidence and report any counterexample.",
+        "Return independent proceed/defer recommendation; do not edit implementation, harness, ledger or progress docs."
+      ],
+      "validation_plan": [
+        "Read-only independent review and check-handoff. No canonical build or emulator."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-0029f278-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover the exact full contract and H2 call paths for 0x0029F278, the 1536-byte stateful list-cursor updater, and assess a bounded C++ conversion/test boundary.",
+      "depends_on": [],
+      "function_claims": [
+        "0x0029f278"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-input-seam-contract.md",
+        "docs/agent-work/h2-calc-contract.md",
+        "docs/function-records/0x00297674.md",
+        "docs/function-records/0x002c17d4.md",
+        "src/engine/leaf_batch46_b.cpp",
+        "src/engine/asd_runtime.cpp",
+        "src/ui/status_down.cpp",
+        "extracted/exefs/code.bin",
+        "config/functions.csv",
+        "config/game_info.json",
+        "tools/h2_calc_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-0029f278-contract.md",
+        "build/agent-work/H2-semantic/h2-titleconfig-0029f278-contract/run001/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Decode the entire function control flow, input/return contract, cursor layout fields, memory effects/order, call arguments and ABI, marking static facts versus inference.",
+        "Census all callers and prove TitleConfig_Calc state-1 call context and the four 0x002C17D4 sites, byte 0x20 skip conditions, and return consumption. Identify dependencies that can remain original and any unsupported indirect/float behavior.",
+        "Recommend an implementable bounded C++ scope and a differential/caller test matrix; be explicit if whole-function conversion lacks a support seam. Include pinned image/source hashes and structured handoff."
+      ],
+      "validation_plan": [
+        "Read-only disassembly/source/caller analysis. No compiler, emulator, guest input mutation, or implementation edits."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-002892c0-convert",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover and convert the bounded H2 axis-adjustment helper 0x002892C0 to readable C++, with direct offline differential evidence and an original 0x0029EDFC caller composition.",
+      "depends_on": [
+        "h2-titleconfig-0029f278-contract"
+      ],
+      "function_claims": [
+        "0x002892c0"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-0029f278-contract.md",
+        "src/engine/leaf_batch16_c.cpp",
+        "src/engine/leaf_batch34_b.cpp",
+        "tools/h2_29edfc_experiment.py",
+        "extracted/exefs/code.bin",
+        "config/functions.csv"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h2_2892c0_candidate.cpp",
+        "tools/h2_2892c0_experiment.py",
+        "docs/agent-work/h2-002892c0-contract.md",
+        "docs/agent-work/h2-002892c0-convert.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Document exact ABI, memory reads/writes, arithmetic/comparison semantics, return values, caller context, and domain limits from pinned ARM code.",
+        "Create typed C++ candidate and offline differential matrix covering signed/unsigned boundaries, zero/nonzero object fields, clamp/adjust/wrap branches, and exact object byte diffs.",
+        "Add a negative control that the direct runner detects.",
+        "Compose the candidate into the original 0x0029EDFC wrapper, preserving all other code and reporting caller limits.",
+        "Do not edit production source, shared headers, global ledgers, board, or canonical build outputs. Return a structured handoff and hashes."
+      ],
+      "validation_plan": [
+        "Run only this task’s direct differential/caller runner with a private output directory and one compiler job. No canonical build or emulator. Freeze input hashes before running."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-002892c0-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the 0x002892C0 candidate, direct and original-caller evidence, domain limits, and whether the 132-byte candidate has a defensible integration placement.",
+      "depends_on": [
+        "h2-titleconfig-002892c0-convert"
+      ],
+      "function_claims": [
+        "0x002892c0"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "experiments/semantic_equivalence/h2_2892c0_candidate.cpp",
+        "tools/h2_2892c0_experiment.py",
+        "docs/agent-work/h2-002892c0-contract.md",
+        "docs/agent-work/h2-002892c0-convert.md",
+        "src/engine/leaf_batch16_c.cpp",
+        "src/engine/leaf_batch34_b.cpp",
+        "tools/h2_29edfc_experiment.py",
+        "build/agent-work/H2-semantic/h2-titleconfig-002892c0-convert/run001/report.json",
+        "build/agent-work/H2-semantic/h2-titleconfig-002892c0-convert/run001/task.json",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-002892c0-independent-review.md",
+        "build/agent-work/H2-semantic/h2-titleconfig-002892c0-review/run001/handoff.json"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recompute every declared input hash before review.",
+        "Independently audit signed branch translation, modulo arithmetic, ordered writes, ABI assumptions, direct edge/boundary coverage, caller routing, and whether the negative control is meaningful.",
+        "If feasible, rerun in a distinct private output directory; do not overwrite the implementer report.",
+        "Assess whether a production in-place or trampoline placement is supported without overwriting adjacent bytes. Do not infer equivalence from the worker status flag.",
+        "Report concrete counterexamples or bounded approval and list unproven domains; do not edit candidate/source/runner/production files."
+      ],
+      "validation_plan": [
+        "Read-only independent review; any rerun uses distinct outputs and one compiler job. No canonical build or emulator."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-002892c0-production-integration",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Build the production C++ 0x002892C0 helper into the verified Calc-only H2 cave and validate its final-address helper and original-wrapper behavior.",
+      "depends_on": [
+        "h2-titleconfig-002892c0-review"
+      ],
+      "function_claims": [
+        "0x002892c0"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "experiments/semantic_equivalence/h2_2892c0_candidate.cpp",
+        "src/engine/leaf_batch16_c.cpp",
+        "tools/h2_2892c0_experiment.py",
+        "tools/h2_2892c0_production_integration.py",
+        "tools/h2_calc_code_patch.py",
+        "tools/h2_29edfc_experiment.py",
+        "docs/agent-work/h2-002892c0-contract.md",
+        "docs/agent-work/h2-002892c0-convert.md",
+        "docs/agent-work/h2-002892c0-independent-review.md",
+        "build/agent-work/H2-semantic/h2-titleconfig-002892c0-integration/run003/manifest.json",
+        "build/agent-work/H2-semantic/h2-titleconfig-002892c0-integration/run003/final-address-report.json",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "src/engine/leaf_batch16_c.cpp",
+        "tools/h2_2892c0_production_integration.py",
+        "docs/function-records/0x002892c0.md",
+        "docs/agent-work/h2-002892c0-production-integration.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Compile the production symbol from the production TU and assert no unresolved relocations.",
+        "Build a reproducible Calc-only base plus the helper in the audited cave, with nonoverlapping patch records, branch interworking checks, and independent IPS roundtrip.",
+        "Pass direct and original-wrapper final-address differential cases and detect the wrong-entry-target control.",
+        "Record that the placement is not merged into the accumulated five-callback H2 image and that runtime is not run."
+      ],
+      "validation_plan": [
+        "The coordinator runs the focused production integration builder with a new private output directory; no emulator."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-002892c0-production-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently audit the 0x002892C0 production source, combined IPS builder, cave/ARM branch checks, and final-address caller evidence.",
+      "depends_on": [
+        "h2-titleconfig-002892c0-production-integration"
+      ],
+      "function_claims": [
+        "0x002892c0"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "src/engine/leaf_batch16_c.cpp",
+        "tools/h2_2892c0_production_integration.py",
+        "tools/h2_calc_code_patch.py",
+        "tools/h2_2892c0_experiment.py",
+        "docs/function-records/0x002892c0.md",
+        "docs/agent-work/h2-002892c0-production-integration.md",
+        "docs/agent-work/h2-002892c0-independent-review.md",
+        "build/agent-work/H2-semantic/h2-titleconfig-002892c0-integration/run003/manifest.json",
+        "build/agent-work/H2-semantic/h2-titleconfig-002892c0-integration/run003/final-address-report.json",
+        "build/agent-work/H2-semantic/h2-titleconfig-002892c0-integration/run003/code.combined.ips",
+        "build/agent-work/H2-semantic/h2-titleconfig-002892c0-integration/run003/code.combined.bin",
+        "extracted/exefs/code.bin",
+        "experiments/semantic_equivalence/h2_calc_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-002892c0-production-independent-review.md",
+        "build/agent-work/H2-semantic/h2-titleconfig-002892c0-production-review/run001/handoff.json",
+        "build/agent-work/H2-semantic/h2-titleconfig-002892c0-production-review/run002/handoff.json"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recompute all review-packet input hashes.",
+        "Independently rerun the builder into a distinct private output directory and verify final hashes or report a concrete discrepancy.",
+        "Audit IPS reapplication, non-overlap, cave availability, even ARM target, source/object/body identities, and comparisons at final guest addresses.",
+        "State exactly which base image and original caller were executed, whether evidence supports this helper promotion, and all material limits; no whole-H2/runtime claim."
+      ],
+      "validation_plan": [
+        "Read-only integration review; one compiler job and distinct run output if rerun. No canonical build or emulator."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-002c615c-production-integration",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Promote the signed quotient/remainder helper 0x002C615C to production C++ and validate its preserved interior entries plus real preview caller at final addresses.",
+      "depends_on": [],
+      "function_claims": [
+        "0x002c615c"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h1-interpolation-divide-candidate.md",
+        "docs/agent-work/h1-interpolation-divide-candidate-review.md",
+        "docs/agent-work/h1-preview-full-composition.md",
+        "docs/agent-work/h2-0029f278-contract.md",
+        "src/engine/leaf_batch32_c.cpp",
+        "src/camp/unite_extras.cpp",
+        "src/script/script_vm_extras.cpp",
+        "tools/h1_interpolation_divide_experiment.py",
+        "tools/h1_preview_full_composition_experiment.py",
+        "tools/h2_2c615c_production_experiment.py",
+        "extracted/exefs/code.bin",
+        "config/functions.csv"
+      ],
+      "write_paths": [
+        "src/engine/leaf_batch32_c.cpp",
+        "src/camp/unite_extras.cpp",
+        "src/script/script_vm_extras.cpp",
+        "src/engine/leaf_batch19_c.cpp",
+        "src/engine/leaf_batch20_c.cpp",
+        "src/engine/leaf_batch23_c.cpp",
+        "src/engine/leaf_batch24_c.cpp",
+        "src/engine/leaf_batch25_c.cpp",
+        "src/engine/leaf_batch26_c.cpp",
+        "src/engine/leaf_batch27_c.cpp",
+        "src/engine/leaf_batch32_b.cpp",
+        "src/engine/leaf_batch33_c.cpp",
+        "src/engine/leaf_batch34_c.cpp",
+        "tools/h2_2c615c_production_experiment.py",
+        "docs/agent-work/h2-2c615c-production-integration.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Expose the quotient in r0 and remainder in r1 through a typed C++ return with consistent declarations; C++ quotient-only callers explicitly project the low word.",
+        "Preserve the six pinned 0x002C6C10 branches into the original function interior by redirecting only the main entry and retaining the original suffix.",
+        "Pass production-body direct differential boundaries, zero divisor observations, real original 0x002BF9F0 interpolation caller cases, IPS roundtrip and wrong-target control.",
+        "State that 0x0029F278 and the accumulated five-callback H2 image are not tested/updated."
+      ],
+      "validation_plan": [
+        "Run the production integration runner with a private output, then perform one canonical full build after independent review. No emulator."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-002c615c-production-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review production 0x002C615C ABI/source, interior branch preservation, IPS placement, direct cases and original H1 caller evidence.",
+      "depends_on": [
+        "h2-titleconfig-002c615c-production-integration"
+      ],
+      "function_claims": [
+        "0x002c615c"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "src/engine/leaf_batch32_c.cpp",
+        "src/camp/unite_extras.cpp",
+        "src/script/script_vm_extras.cpp",
+        "experiments/semantic_equivalence/h1_interpolation_divide_candidate.cpp",
+        "docs/function-records/0x002c615c.md",
+        "docs/agent-work/h1-interpolation-divide-candidate.md",
+        "docs/agent-work/h1-interpolation-divide-candidate-review.md",
+        "docs/agent-work/h1-preview-full-composition.md",
+        "docs/agent-work/h2-2c615c-production-integration.md",
+        "docs/agent-work/h2-0029f278-contract.md",
+        "tools/h2_2c615c_production_experiment.py",
+        "tools/h1_interpolation_divide_experiment.py",
+        "tools/h1_preview_full_composition_experiment.py",
+        "build/agent-work/H2-semantic/h2-titleconfig-002c615c-production/run004/report.json",
+        "build/agent-work/H2-semantic/h2-titleconfig-002c615c-production/run004/code.production.ips",
+        "build/agent-work/H2-semantic/h2-titleconfig-002c615c-production/run004/code.production.bin",
+        "extracted/exefs/code.bin",
+        "config/functions.csv"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-2c615c-production-independent-review.md",
+        "build/agent-work/H2-semantic/h2-titleconfig-002c615c-production-review/run001/handoff.json"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recompute all packet input hashes.",
+        "Independently rerun the production integration runner in an unused output directory and verify hashes/IPS roundtrip.",
+        "Audit r0/r1 two-register return, zero-divisor scope, caller composition, final branch and retained interior branch targets.",
+        "Report bounded approval or concrete counterexample; do not claim H2 cursor or whole-game/runtime equivalence."
+      ],
+      "validation_plan": [
+        "Read-only review with one compiler job and a distinct output directory. No canonical full build or emulator."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-001ff3c4-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover the static behavioral contract and H2 call domain for direct cursor movement helper 0x001FF3C4, including its calls to 0x00254CA8 and observable cursor/input writes.",
+      "depends_on": [],
+      "function_claims": [
+        "0x001ff3c4"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-0029f278-contract.md",
+        "docs/agent-work/h2-input-seam-contract.md",
+        "docs/agent-work/h2-logical-input-table-producer-audit.md",
+        "src/engine/leaf_batch43_a.cpp",
+        "config/functions.csv",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-001ff3c4-contract.md",
+        "build/agent-work/H2-semantic/h2-titleconfig-001ff3c4-contract/run001/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Describe exact arguments, return condition, callee-saved/stack ABI, ordered calls and arguments, cursor/global reads/writes, signed/unsigned boundaries, early exits and faults based on pinned ARM instructions.",
+        "Map the H2 call site from 0x0029F278 and separate established setup/domain facts from assumptions; audit direct branch callers and unresolved transitive helpers.",
+        "Use static pinned-image evidence only; no candidate edits, compiler, emulator, or claims of semantic equivalence.",
+        "Return provenance hashes, commands/exits, evidence level, limits and specific next differential cases in the structured handoff."
+      ],
+      "validation_plan": [
+        "Read-only contract recovery from pinned disassembly and declared call sites; no compile or runtime."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-001ff3c4-cursor-mover-cpp",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Replace the complete 1104-byte 0x001FF3C4 cursor-axis mover assembly with readable typed C++ using its recovered branch, ABI, query-order and status contract.",
+      "depends_on": [
+        "h2-titleconfig-001ff3c4-contract"
+      ],
+      "function_claims": [
+        "0x001ff3c4"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-001ff3c4-contract.md",
+        "docs/agent-work/h2-0029f278-contract.md",
+        "src/engine/leaf_batch43_a.cpp",
+        "config/functions.csv",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "src/engine/leaf_batch43_a.cpp",
+        "docs/function-records/0x001ff3c4.md",
+        "docs/agent-work/h2-001ff3c4-cpp-handoff.md",
+        "build/agent-work/H2-semantic/h2-titleconfig-001ff3c4-cursor-mover-cpp/run001/handoff.json"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Replace the entire target asm body with typed readable C++; preserve all ten eager 0x00254CA8 calls and argument/mode order, flag behavior, signed and wrapped arithmetic branches, status values 0-4, and exact target writes.",
+        "Keep unsupported input/calibration helpers original and state memory/domain assumptions and unresolved ABI/read-order limits.",
+        "Compile the affected TU only into a private run001 output with one compiler job; do not edit shared runners, run full build or emulator.",
+        "Return structured handoff with source/object/body hashes, compile command/exit, evidence level and next differential cases."
+      ],
+      "validation_plan": [
+        "Candidate source review against the frozen static contract and pinned disassembly, then focused leaf_batch43_a.cpp compile. Integrator owns differential and caller composition after handoff."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-001ff3c4-independent-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the 0x001FF3C4 typed C++ conversion and run006 direct/caller evidence, including the two corrected ARM branch conditions and outlined helper placement.",
+      "depends_on": [
+        "h2-titleconfig-001ff3c4-cursor-mover-cpp"
+      ],
+      "function_claims": [
+        "0x001ff3c4"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-001ff3c4-contract.md",
+        "docs/agent-work/h2-001ff3c4-cpp-handoff.md",
+        "docs/agent-work/h2-001ff3c4-integration.md",
+        "docs/function-records/0x001ff3c4.md",
+        "src/engine/leaf_batch43_a.cpp",
+        "tools/h2_1ff3c4_experiment.py",
+        "tools/h2_calc_experiment.py",
+        "tools/h2_29f278_slot_experiment.py",
+        "build/h2-1ff3c4-direct/run006/report.json",
+        "build/h2-1ff3c4-experiment/candidate.o",
+        "extracted/exefs/code.bin",
+        "config/functions.csv"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-001ff3c4-independent-review.md",
+        "build/agent-work/H2-semantic/h2-titleconfig-001ff3c4-independent-review/run001/handoff.json"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recompute frozen hashes and independently run the direct experiment with a fresh output, distinct seed and sample count; verify all direct cases, caller compositions and wrong-query-target control.",
+        "Inspect pinned ARM and C++ for C2/C1 no-count-gate/original-width behavior and B0/B2 SUBS/N overflow semantics; verify the two outlined helper bodies are contiguous and all internal branches remain within the 880-byte slot.",
+        "Bound conclusions to offline fixtures, original query dependencies and modeled outer Calc services; do not claim physical mapping, natural runtime, sound delivery or whole-game equivalence."
+      ],
+      "validation_plan": [
+        "Independent code review and fresh focused differential/caller run. No source, runner, shared interface, board or full-build edits; no emulator."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-001ff3c4-slot-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently verify the reproducible 0x001FF3C4 IPS placement in the accumulated H2 image and its caller composition results.",
+      "depends_on": [
+        "h2-titleconfig-001ff3c4-independent-review"
+      ],
+      "function_claims": [
+        "0x001ff3c4"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-001ff3c4-contract.md",
+        "docs/agent-work/h2-001ff3c4-integration.md",
+        "docs/agent-work/h2-001ff3c4-slot-integration.md",
+        "docs/function-records/0x001ff3c4.md",
+        "tools/h2_1ff3c4_integrate.py",
+        "tools/h2_1ff3c4_experiment.py",
+        "tools/h2_29f278_slot_experiment.py",
+        "build/h2-1ff3c4-integrated/run002/report.json",
+        "build/h2-1ff3c4-integrated/run002/code.h2-cursor-axis.bin",
+        "build/h2-1ff3c4-integrated/run002/code.h2-cursor-axis.ips",
+        "build/agent-work/H2-semantic/h2-titleconfig-0029f278-slot/run004/code.h2-cursor.bin",
+        "extracted/exefs/code.bin",
+        "config/functions.csv"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-001ff3c4-slot-independent-review.md",
+        "build/agent-work/H2-semantic/h2-titleconfig-001ff3c4-slot-review/run001/handoff.json"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recompute pins and independently run the slot integrator into fresh run003; verify exact placement, all ten call targets, untouched suffix, roundtrip IPS and resulting hashes.",
+        "Independently compare accumulated base and patched image across all four pinned TitleConfig_Calc scenarios; verify no unrelated slot changed and all cases pass.",
+        "Bound results to offline accumulated composition; no emulator or whole-game claim."
+      ],
+      "validation_plan": [
+        "Independent fresh artifact generation and caller composition with one compiler job; no source/runner/board edits and no emulator."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-00254ca8-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover the pinned ARM contract for H2 query/calibration service 0x00254CA8, a direct dependency of the accepted 0x001FF3C4 mover.",
+      "depends_on": [
+        "h2-titleconfig-001ff3c4-independent-review"
+      ],
+      "function_claims": [
+        "0x00254ca8"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-001ff3c4-contract.md",
+        "docs/function-records/0x002c17d4.md",
+        "docs/function-records/0x002c615c.md",
+        "src/engine/leaf_batch45_b.cpp",
+        "config/functions.csv",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-00254ca8-contract.md",
+        "build/agent-work/H2-semantic/h2-titleconfig-00254ca8-contract/run001/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover raw ARM ABI including all six argument words, return/state class and callee-saved/SP behavior.",
+        "Document ordered direct calls, exact modes, global/object reads and writes, VFP behavior, short-circuit paths, faults/domains, and H2 (6,15)/(5,14) query behavior from pinned instructions.",
+        "Separate target-local behavior from transitive logical-query, input/calibration, and float helper behavior; note all caller sites and unresolved physical meanings.",
+        "Use static pinned-image evidence only; no candidate, compiler, emulator or semantic-equivalence claim. Return hashes, commands/exits, limitations and differential cases."
+      ],
+      "validation_plan": [
+        "Read-only Capstone disassembly of 0x00254CA8 and callers, source cross-check, and aligned call/reference census."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-00254ca8-independent-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the bounded 0x00254CA8 C++ differential, its H2 original-mover compositions, and explicit no-write/FPSCR limits.",
+      "depends_on": [
+        "h2-titleconfig-00254ca8-offline-integration"
+      ],
+      "function_claims": [
+        "0x00254ca8"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-00254ca8-contract.md",
+        "docs/agent-work/h2-00254ca8-cpp-handoff.md",
+        "docs/agent-work/h2-00254ca8-integration.md",
+        "docs/agent-work/h2-001ff3c4-contract.md",
+        "docs/function-records/0x0027fbc8.md",
+        "docs/function-records/0x00254ca8.md",
+        "src/engine/leaf_batch45_b.cpp",
+        "src/engine/leaf_batch43_a.cpp",
+        "tools/h2_254ca8_experiment.py",
+        "build/agent-work/H2-semantic/h2-titleconfig-00254ca8-offline-integration/run005/report.json",
+        "build/agent-work/H2-semantic/h2-titleconfig-00254ca8-offline-integration/run005/candidate.o",
+        "build/agent-work/H2-semantic/h2-titleconfig-00254ca8-offline-integration/run005/code.production.bin",
+        "build/agent-work/H2-semantic/h2-titleconfig-00254ca8-offline-integration/run005/code.production.ips",
+        "extracted/exefs/code.bin",
+        "config/functions.csv"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-00254ca8-independent-review.md",
+        "build/agent-work/H2-semantic/h2-titleconfig-00254ca8-independent-review/run002/handoff.json"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recompute packet pins and run a fresh differential with distinct seed/sample count; confirm all comparable direct cases, three original-mover H2 compositions, wrong-target control, and slot IPS roundtrip.",
+        "Independently inspect exact 0/1/2 query order, H2 IDs, selector precedence, calibration comparisons, VFP state, 0x27FBC8 output writes, and correctness of the excluded no-write domain. Verify FPSCR and stack pointer normalization are clearly limited rather than hidden.",
+        "Do not infer that live H2 excludes the no-write case; approve only the tested bounded domain and report any counterexample. No emulator or whole-game claim."
+      ],
+      "validation_plan": [
+        "Fresh one-job offline differential and independent source/contract review; no shared input edits, full build or emulator."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-00254ca8-offline-integration",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Build a pinned original-versus-C++ differential and H2 mover composition for 0x00254CA8 using explicit controlled transitive query/axis seams.",
+      "depends_on": [
+        "h2-titleconfig-00254ca8-query-cpp"
+      ],
+      "function_claims": [
+        "0x00254ca8"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-00254ca8-contract.md",
+        "docs/agent-work/h2-00254ca8-cpp-handoff.md",
+        "docs/agent-work/h2-001ff3c4-contract.md",
+        "docs/function-records/0x0027fbc8.md",
+        "src/engine/leaf_batch45_b.cpp",
+        "src/engine/leaf_batch43_a.cpp",
+        "tools/asm_diff.py",
+        "tools/build_check.py",
+        "config/functions.csv",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "tools/h2_254ca8_experiment.py",
+        "docs/agent-work/h2-00254ca8-integration.md",
+        "docs/function-records/0x00254ca8.md",
+        "build/agent-work/H2-semantic/h2-titleconfig-00254ca8-offline-integration/run001/report.json"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Compile and place the candidate in the exact original slot with all 18 calls resolved to unique even pinned ARM addresses and size within 840 bytes.",
+        "Differentially compare original and candidate under identical deterministic helper stubs for modes, H2 IDs, special-ID precedence, both rounds of short-circuit logical queries, finite written sample outputs, calibration sectors and angle boundaries. Compare return, helper trace/args, record/global memory effects, SP and callee-saved state.",
+        "Add controlled invalid/no-write reader cases as an explicit limitation and do not claim equivalence for them; detect at least one mutation with a negative control.",
+        "Compose candidate query service through the original 0x001FF3C4 mover in H2 initialized axis scenarios, recording that the mover and unrelated outer services are modeled or original as appropriate. Run the full affected-consumer ARMv6K build after ABI declarations change."
+      ],
+      "validation_plan": [
+        "Focused deterministic Unicorn differential/caller run, exact slot IPS roundtrip, affected-consumer full build with bounded jobs; no emulator before offline gate."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-00254ca8-query-cpp",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Replace the complete 840-byte 0x00254CA8 logical-query and special-axis service with readable typed C++ while retaining original transitive query, calibration and VFP helpers.",
+      "depends_on": [
+        "h2-titleconfig-00254ca8-contract"
+      ],
+      "function_claims": [
+        "0x00254ca8"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-00254ca8-contract.md",
+        "docs/agent-work/h2-001ff3c4-contract.md",
+        "docs/function-records/0x0027fbc8.md",
+        "docs/function-records/0x002c17d4.md",
+        "src/engine/leaf_batch45_b.cpp",
+        "config/functions.csv",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "src/engine/leaf_batch45_b.cpp",
+        "docs/function-records/0x00254ca8.md",
+        "docs/agent-work/h2-00254ca8-cpp-handoff.md",
+        "build/agent-work/H2-semantic/h2-titleconfig-00254ca8-query-cpp/run001/handoff.json"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Replace the entire target assembly body with readable typed C++ preserving exact mode dispatch, eager/conditional call order, ID precedence, calibration pair selection, VFP angle computation, suppression selector, return, and observable global effects.",
+        "Keep called logical-query, axis-reader and atan2 helpers original; preserve the uninitialized local-output behavior or explicitly document any bounded domain where equivalence cannot be claimed. Do not substitute zero outputs when 0x0027FBC8 declines to write.",
+        "Compile only the affected TU into private run001 output with one compiler job; no shared runner, canonical full build or emulator.",
+        "Return source/object/body hashes, relocation and ABI notes, compile command/result, unresolved limits and differential cases."
+      ],
+      "validation_plan": [
+        "Review against the accepted static ARM contract and pinned disassembly, then focused affected-TU compile. Integrator owns direct and 0x001FF3C4 composition runners and independent review."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-0029f278-cursor-cpp",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Convert the full stateful cursor updater 0x0029F278 from inline ARM to readable typed C++ using the recovered contract, preserving ordered calls, two-register divide result, cursor/global writes and branch conditions.",
+      "depends_on": [],
+      "function_claims": [
+        "0x0029f278"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-0029f278-contract.md",
+        "src/engine/leaf_batch46_b.cpp",
+        "src/engine/leaf_batch32_c.cpp",
+        "config/functions.csv",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "src/engine/leaf_batch46_b.cpp",
+        "docs/function-records/0x0029f278.md",
+        "docs/agent-work/h2-0029f278-cpp-handoff.md",
+        "build/agent-work/H2-semantic/h2-titleconfig-0029f278-cursor-cpp/run001/handoff.json"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Replace the complete 1536-byte assembly definition with typed readable C++; preserve the disabled short circuit, both axis update paths, all four query pairs and ordered bitset changes, status/global updates, sound gating, return values and two-register divide ABI.",
+        "Do not use a partial stub or claim runtime equivalence. Record unresolved assumptions and every narrowed memory/domain assumption.",
+        "Compile only the affected TU into a private output with one compiler job; do not run full build, shared runner, or emulator.",
+        "Return structured provenance handoff with hashes, command/exit, source hash, compile evidence, contract limits and next integration step."
+      ],
+      "validation_plan": [
+        "Candidate/source review against the frozen contract and pinned disassembly, then compile leaf_batch46_b.cpp with one job to a distinct task output. Differential and caller-composition evidence will be owned by integrator after handoff."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-0029f278-h2setup-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently verify that the in-place cursor conversion covers the statically recovered H2 UiListCursor_Setup domain, especially axis-0 IDs 6/15 and 5/14 and the skipped axis-1 path.",
+      "depends_on": [
+        "h2-titleconfig-0029f278-slot-review",
+        "h2-titleconfig-001ff3c4-contract"
+      ],
+      "function_claims": [
+        "0x0029f278"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-001ff3c4-contract.md",
+        "docs/agent-work/h2-0029f278-contract.md",
+        "docs/function-records/0x0029f278.md",
+        "docs/agent-work/h2-29f278-slot-integration.md",
+        "src/engine/leaf_batch46_b.cpp",
+        "tools/h2_29f278_slot_experiment.py",
+        "tools/h2_calc_experiment.py",
+        "build/agent-work/H2-semantic/h2-titleconfig-0029f278-slot/run004/report.json",
+        "build/agent-work/H2-semantic/h2-titleconfig-0029f278-slot/run004/code.h2-cursor.bin",
+        "build/agent-work/H2-semantic/h2-titleconfig-0029f278-slot/run004/code.h2-cursor.ips",
+        "build/agent-work/H2-semantic/h2-final-image-composition/run-001/composed-003/code.h2-final.bin",
+        "build/agent-work/H2-semantic/h2-final-image-composition/run-001/composed-003/manifest.json",
+        "extracted/exefs/code.bin",
+        "config/functions.csv"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-29f278-h2setup-independent-review.md",
+        "build/agent-work/H2-semantic/h2-titleconfig-0029f278-h2setup-review/run001/handoff.json"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recompute packet pins and independently rerun the latest slot runner into fresh run005 with a distinct seed/sample count.",
+        "Verify the H2 initialized cursor fields and ordered 0x001FF3C4 subcalls use pairs (6,15) and (5,14), modes 0/2/1, with axis 0 active and initialized axis 1 skipped; confirm the 15/14 calibration path is reached with wrapper global initialization.",
+        "Check both original and accumulated TitleConfig_Calc compositions for the new H2-initialized cursor scenario and prior cases; report any mismatch.",
+        "Bound the approval to static H2 setup and offline fixtures; no physical input, runtime or whole-game claim."
+      ],
+      "validation_plan": [
+        "Read-only independent runner rerun with one compiler job and fresh run005 output. No full build or emulator."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-0029f278-production-integration",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Integrate the complete 0x0029F278 C++ updater into a standalone final-address patch and validate direct plus original TitleConfig_Calc caller behavior.",
+      "depends_on": [
+        "h2-titleconfig-0029f278-cursor-cpp"
+      ],
+      "function_claims": [
+        "0x0029f278"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-0029f278-contract.md",
+        "docs/agent-work/h2-0029f278-cpp-handoff.md",
+        "src/engine/leaf_batch46_b.cpp",
+        "tools/h2_29f278_production_experiment.py",
+        "tools/h2_calc_experiment.py",
+        "extracted/exefs/code.bin",
+        "config/functions.csv"
+      ],
+      "write_paths": [
+        "tools/h2_29f278_production_experiment.py",
+        "docs/function-records/0x0029f278.md",
+        "docs/agent-work/h2-29f278-production-integration.md",
+        "docs/functional-status.md",
+        "docs/milestones/H2-audio-settings.md",
+        "README.md",
+        "config/functions.csv"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Resolve and audit the 15 original ARM helper calls and the local mask-table ABS32 placement; check ARM entry target, cave capacity, IPS roundtrip and preservation of the original function suffix/interior entries.",
+        "Pass the production-source direct differential with boundaries and a negative control, plus original TitleConfig_Calc caller compositions that execute the actual cursor updater.",
+        "Record modeled outer Calc service boundaries, synthetic RAM/input limits, lack of runtime, and that this standalone cave layout is not the accumulated H2 image.",
+        "Update the function record, status, and ledger truthfully as non_matching."
+      ],
+      "validation_plan": [
+        "Run the dedicated production runner into a fresh ignored build output with 1 compiler job, then coordinator-owned independent review and one canonical full build. No emulator before offline gate."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-0029f278-production-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review and rerun the complete cursor updater production patch, direct differential, ABI/side effects and original TitleConfig_Calc compositions.",
+      "depends_on": [
+        "h2-titleconfig-0029f278-production-integration"
+      ],
+      "function_claims": [
+        "0x0029f278"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-0029f278-contract.md",
+        "docs/agent-work/h2-0029f278-cpp-handoff.md",
+        "docs/function-records/0x0029f278.md",
+        "docs/agent-work/h2-29f278-production-integration.md",
+        "src/engine/leaf_batch46_b.cpp",
+        "tools/h2_29f278_production_experiment.py",
+        "tools/h2_calc_experiment.py",
+        "build/agent-work/H2-semantic/h2-titleconfig-0029f278-production/run006/report.json",
+        "build/agent-work/H2-semantic/h2-titleconfig-0029f278-production/run006/code.production.bin",
+        "build/agent-work/H2-semantic/h2-titleconfig-0029f278-production/run006/code.production.ips",
+        "extracted/exefs/code.bin",
+        "config/functions.csv"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-29f278-production-independent-review.md",
+        "build/agent-work/H2-semantic/h2-titleconfig-0029f278-production-review/run001/handoff.json"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recompute packet input hashes and independently rerun the production runner in a fresh run007 output using a distinct seed/sample count.",
+        "Audit ARM relocation destinations, local table bytes and placement, final entry branch, preserved original suffix/interior scan, direct observable comparison and negative control.",
+        "Independently inspect all three original TitleConfig_Calc caller runs and state that outer service boundaries are modeled; identify any counterexample.",
+        "Give a bounded approval or concrete blocker; do not claim runtime, physical input, accumulated-image, or whole-game equivalence."
+      ],
+      "validation_plan": [
+        "Read-only independent review with one compiler job and a distinct run007 output. No canonical full build or emulator."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-0029f278-slot-integration",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Replace the standalone cave placement with a final-address in-place slot patch and verify the composed accumulated H2 image plus real cursor caller path.",
+      "depends_on": [
+        "h2-titleconfig-0029f278-production-review"
+      ],
+      "function_claims": [
+        "0x0029f278"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-0029f278-contract.md",
+        "docs/agent-work/h2-29f278-production-integration.md",
+        "docs/agent-work/h2-29f278-production-independent-review.md",
+        "src/engine/leaf_batch46_b.cpp",
+        "tools/h2_29f278_slot_experiment.py",
+        "tools/h2_calc_experiment.py",
+        "build/agent-work/H2-semantic/h2-final-image-composition/run-001/composed-003/code.h2-final.bin",
+        "build/agent-work/H2-semantic/h2-final-image-composition/run-001/composed-003/manifest.json",
+        "extracted/exefs/code.bin",
+        "config/functions.csv"
+      ],
+      "write_paths": [
+        "tools/h2_29f278_slot_experiment.py",
+        "docs/function-records/0x0029f278.md",
+        "docs/agent-work/h2-29f278-slot-integration.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Build an in-place patch of the 1024-byte candidate plus local table inside the original 1536-byte slot; verify exact helper relocations, even ARM entry/alignment, no external interior branches/pointers, preserved suffix and IPS roundtrip.",
+        "Pass 144 direct cases, three original Calc caller compositions and three accumulated-H2 Calc caller compositions; detect the wrong helper-target control.",
+        "Report accumulated base and patched hashes, and preserve modeled outer service, synthetic-input, runtime and whole-game limits.",
+        "Avoid a shared cave allocation and do not alter the existing accumulated H2 base image."
+      ],
+      "validation_plan": [
+        "Run the in-place production runner in a fresh output with one compile job; then independent review and final build closure. No emulator before offline gate."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-0029f278-slot-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review and rerun the in-place 0x0029F278 patch against original and accumulated H2 images, including caller compositions.",
+      "depends_on": [
+        "h2-titleconfig-0029f278-slot-integration"
+      ],
+      "function_claims": [
+        "0x0029f278"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-0029f278-contract.md",
+        "docs/function-records/0x0029f278.md",
+        "docs/agent-work/h2-29f278-slot-integration.md",
+        "src/engine/leaf_batch46_b.cpp",
+        "tools/h2_29f278_slot_experiment.py",
+        "tools/h2_calc_experiment.py",
+        "build/agent-work/H2-semantic/h2-titleconfig-0029f278-slot/run002/report.json",
+        "build/agent-work/H2-semantic/h2-titleconfig-0029f278-slot/run002/code.production.bin",
+        "build/agent-work/H2-semantic/h2-titleconfig-0029f278-slot/run002/code.production.ips",
+        "build/agent-work/H2-semantic/h2-titleconfig-0029f278-slot/run002/code.h2-cursor.bin",
+        "build/agent-work/H2-semantic/h2-titleconfig-0029f278-slot/run002/code.h2-cursor.ips",
+        "build/agent-work/H2-semantic/h2-final-image-composition/run-001/composed-003/code.h2-final.bin",
+        "build/agent-work/H2-semantic/h2-final-image-composition/run-001/composed-003/manifest.json",
+        "extracted/exefs/code.bin",
+        "config/functions.csv"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-29f278-slot-independent-review.md",
+        "build/agent-work/H2-semantic/h2-titleconfig-0029f278-slot-review/run001/handoff.json"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recompute packet input hashes and independently rerun the in-place runner into fresh run003 output with a distinct seed/sample count.",
+        "Audit the slot fit, local table/ABS32, ARM call relocations, interior-entry scan, suffix bytes, IPS and accumulated-image overlay identity.",
+        "Inspect direct cases and all six original/accumulated Calc caller compositions, including the modeled-service boundary; report any counterexample.",
+        "Give a bounded approval or concrete issue; no runtime, physical-input, or whole-game claim."
+      ],
+      "validation_plan": [
+        "Read-only independent review, one compiler job, distinct run003 output. No canonical full build or emulator."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-cursor-cumulative-closure",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Compose the accepted 0x0029F278, 0x001FF3C4 and bounded 0x00254CA8 replacements into one reproducible H2 image and compare original versus patched TitleConfig_Calc cursor scenarios.",
+      "depends_on": [
+        "h2-titleconfig-0029f278-h2setup-review",
+        "h2-titleconfig-001ff3c4-slot-review",
+        "h2-titleconfig-00254ca8-independent-review"
+      ],
+      "function_claims": [
+        "0x0029f278",
+        "0x001ff3c4",
+        "0x00254ca8"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-29f278-slot-integration.md",
+        "docs/agent-work/h2-29f278-h2setup-independent-review.md",
+        "docs/agent-work/h2-001ff3c4-slot-integration.md",
+        "docs/agent-work/h2-001ff3c4-slot-independent-review.md",
+        "docs/agent-work/h2-00254ca8-integration.md",
+        "docs/agent-work/h2-00254ca8-independent-review.md",
+        "tools/h2_29f278_slot_experiment.py",
+        "tools/h2_1ff3c4_integrate.py",
+        "tools/h2_254ca8_experiment.py",
+        "tools/h2_calc_experiment.py",
+        "build/agent-work/H2-semantic/h2-final-image-composition/run-001/composed-003/code.h2-final.bin",
+        "build/agent-work/H2-semantic/h2-titleconfig-0029f278-slot/run004/code.h2-cursor.bin",
+        "build/h2-1ff3c4-integrated/run002/code.h2-cursor-axis.bin",
+        "build/agent-work/H2-semantic/h2-titleconfig-00254ca8-offline-integration/run005/code.production.ips",
+        "config/functions.csv"
+      ],
+      "write_paths": [
+        "tools/h2_cursor_cumulative_closure.py",
+        "docs/agent-work/h2-cursor-cumulative-closure.md",
+        "build/agent-work/H2-semantic/h2-titleconfig-cursor-cumulative-closure/run001/report.json"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Compose only the three reviewed slot replacements on the pinned accumulated H2 base; verify image size/hash, one-slot scope/IPS roundtrips, no overlap and deterministic output.",
+        "Compare the defined TitleConfig_Calc original base against the cumulative image for stable, active, logical-bits, initialized H2 and special-ID H2 cursor scenarios. Execute real cursor/updater/query functions from each image while keeping declared unrelated Calc services modeled.",
+        "Record any candidate failure, fault or no-write domain encounter honestly; do not call it whole-game/runtime equivalence. Full build already passed for source changes; no emulator before any further offline gate."
+      ],
+      "validation_plan": [
+        "One-job/focused offline image composition and paired Unicorn caller scenarios; preserve prior immutable artifacts."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-cursor-cumulative-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently audit the cumulative H2 cursor image, changed-byte scope, paired caller evidence, baseline interworking findings, and bounded no-write limitation.",
+      "depends_on": [
+        "h2-titleconfig-cursor-cumulative-closure"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-cursor-cumulative-closure.md",
+        "tools/h2_cursor_cumulative_closure.py",
+        "tools/h2_29f278_slot_experiment.py",
+        "tools/h2_254ca8_experiment.py",
+        "tools/h2_calc_experiment.py",
+        "build/agent-work/H2-semantic/h2-titleconfig-cursor-cumulative-closure/run001/report.json",
+        "build/agent-work/H2-semantic/h2-titleconfig-cursor-cumulative-closure/run002/report.json",
+        "build/agent-work/H2-semantic/h2-titleconfig-cursor-cumulative-closure/run002/interworking-audit.json",
+        "build/agent-work/H2-semantic/h2-titleconfig-cursor-cumulative-closure/run002/interworking-base.json",
+        "build/agent-work/H2-semantic/h2-titleconfig-cursor-cumulative-closure/run001/results-002/code.h2-cursor-cumulative.bin",
+        "build/agent-work/H2-semantic/h2-titleconfig-cursor-cumulative-closure/run001/results-002/code.h2-cursor-cumulative.ips",
+        "build/agent-work/H2-semantic/h2-final-image-composition/run-001/composed-003/code.h2-final.bin",
+        "build/h2-1ff3c4-integrated/run002/code.h2-cursor-axis.bin",
+        "build/agent-work/H2-semantic/h2-titleconfig-00254ca8-offline-integration/run005/code.production.ips",
+        "extracted/exefs/code.bin",
+        "config/functions.csv"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-cursor-cumulative-independent-review.md",
+        "build/agent-work/H2-semantic/h2-titleconfig-cursor-cumulative-review/run001/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recompute all pinned image/report/input hashes; regenerate the cumulative composition independently into a fresh private output and compare its image hash, image size, exact changed extents, suffix preservation, and IPS roundtrip.",
+        "Independently rerun paired TitleConfig_Calc and mover/query caller scenarios or equivalent direct evidence; check actual candidate bodies executed, assertions, traces, and no-write exclusion.",
+        "Compare whole-image audit findings against the original accumulated base and report whether this H2 batch added any interworking issue. Keep runtime and whole-game claims out of scope."
+      ],
+      "validation_plan": [
+        "Fresh offline image recomposition and bounded Unicorn caller checks with one compiler job; do not edit candidate/shared runners or use emulator."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-cursor-cumulative-runtime",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Run the reviewed cumulative H2 cursor image through the autonomous original-versus-patched TitleConfig scenario using isolated profiles and the private loopback Azahar build.",
+      "depends_on": [
+        "h2-titleconfig-cursor-cumulative-review"
+      ],
+      "function_claims": [
+        "0x0029f278",
+        "0x001ff3c4",
+        "0x00254ca8"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/emulator-testing-guide.md",
+        "docs/agent-work/h2-cursor-cumulative-closure.md",
+        "docs/agent-work/h2-cursor-cumulative-independent-review.md",
+        "tools/h2_autonomous_gdb_verify.py",
+        "tools/h2_azahar_rsp_probe.py",
+        "tools/h2_calc_code_patch.py",
+        "tools/audit_accumulated_substitutions.py",
+        "build/agent-work/H2-semantic/h2-titleconfig-cursor-cumulative-closure/run001/results-002/code.h2-cursor-cumulative.bin",
+        "build/agent-work/H2-semantic/h2-final-image-composition/run-001/composed-003/code.h2-final.bin",
+        "extracted/exefs/code.bin",
+        "build/h2-runtime/profile-pristine-user/sysdata/mcu.dat",
+        "build/h2-runtime/profile-pristine-user/sysdata/mac.txt",
+        "build/h2-runtime/profile-pristine-user/config/qt-config.ini",
+        "build/h2-runtime/profile-pristine-user/config/custom/00040000000E5C00.ini",
+        "build/h2-runtime/profile-pristine-user/sdmc/Nintendo 3DS/00000000000000000000000000000000/00000000000000000000000000000000/title/00040000/000e5c00/data/00000001.metadata",
+        "build/h2-runtime/profile-pristine-user/nand/data/00000000000000000000000000000000/sysdata/00010035/00000000/news.db",
+        "build/h2-runtime/profile-pristine-user/nand/data/00000000000000000000000000000000/sysdata/00010017/00000000/config",
+        "build/h2-runtime/profile-pristine-user/nand/data/00000000000000000000000000000000/sysdata/00010026/00000000/eventlog.dat",
+        "build/h2-runtime/profile-pristine-user/nand/data/00000000000000000000000000000000/sysdata/00010026/00000000/CEC/MBoxList____",
+        "build/h2-runtime/profile-pristine-user/nand/data/00000000000000000000000000000000/extdata/00048000/F000000B/user/gamecoin.dat",
+        "build/h2-runtime/profile-pristine-user/nand/data/00000000000000000000000000000000/extdata/00048000/F000000B/metadata"
+      ],
+      "write_paths": [
+        "tools/h2_cursor_cumulative_runtime.py",
+        "docs/agent-work/h2-cursor-cumulative-runtime.md",
+        "build/agent-work/H2-semantic/h2-titleconfig-cursor-cumulative-runtime/run001/runtime-report.json",
+        "docs/milestones/H2-audio-settings.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [
+        "azahar-loopback"
+      ],
+      "acceptance": [
+        "Build an original-based IPS from the pinned original code.bin and reviewed cumulative image; verify image and IPS hashes, deterministic byte scope, and exact IPS replay before any emulator launch.",
+        "After the verified offline gate, run the existing paired autonomous TitleConfig scenario on the original and cumulative image with the private loopback-bound Azahar executable, disposable isolated profiles, and a loopback-only GDB port.",
+        "Report action/checkpoint parity, lifecycle/readiness/restart outcomes, save/profile integrity, process/listener cleanup, and the fact that this scenario does not prove all axis-reader outputs are written or establish whole-game equivalence."
+      ],
+      "validation_plan": [
+        "Offline IPS generation/replay and reviewed interworking audit comparison first; one paired autonomous GDB RSP runtime scenario, no user input, no stock emulator, no shared profile."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-cursor-cumulative-runtime-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the autonomous original-versus-cumulative H2 runtime report, IPS/image provenance, isolated-profile integrity, and incomplete readiness limits.",
+      "depends_on": [
+        "h2-titleconfig-cursor-cumulative-runtime"
+      ],
+      "function_claims": [],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/emulator-testing-guide.md",
+        "docs/agent-work/h2-cursor-cumulative-runtime.md",
+        "tools/h2_cursor_cumulative_runtime.py",
+        "tools/h2_autonomous_gdb_verify.py",
+        "build/agent-work/H2-semantic/h2-titleconfig-cursor-cumulative-runtime/run001/runtime-report.json",
+        "build/agent-work/H2-semantic/h2-titleconfig-cursor-cumulative-runtime/run001/autonomous-gdb-verification.json",
+        "build/agent-work/H2-semantic/h2-titleconfig-cursor-cumulative-runtime/run001/image/code.h2-cursor-cumulative-original.ips",
+        "build/agent-work/H2-semantic/h2-titleconfig-cursor-cumulative-runtime/run001/image/code.h2-cursor-cumulative.bin",
+        "build/agent-work/H2-semantic/h2-titleconfig-cursor-cumulative-runtime/run002/runtime-report.json",
+        "build/agent-work/H2-semantic/h2-titleconfig-cursor-cumulative-runtime/run002/autonomous-gdb-verification.json",
+        "build/agent-work/H2-semantic/h2-titleconfig-cursor-cumulative-runtime/run002/code.h2-cursor-cumulative-original.ips",
+        "build/agent-work/H2-semantic/h2-titleconfig-cursor-cumulative-runtime/run002/code.h2-cursor-cumulative.bin",
+        "build/h2-runtime/profile-pristine-user/config/qt-config.ini",
+        "build/h2-runtime/profile-pristine-user/config/custom/00040000000E5C00.ini",
+        "config/game_info.json",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-cursor-cumulative-runtime-review.md",
+        "build/agent-work/H2-semantic/h2-titleconfig-cursor-cumulative-runtime-review/run001/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recompute image, IPS, runner and report hashes; confirm the original-based IPS replay equals the cumulative image and the private Azahar process/listeners are no longer active.",
+        "Audit the paired run report for 51 actions, 19/19 checkpoints, readiness/reentry outcome on both sides, profile/runtime-asset/emulator integrity and clean shutdown.",
+        "State clearly that the runtime report is bounded, does not prove no-write axis outputs unreachable, and does not meet full H2 lifecycle acceptance. No emulator relaunch is needed."
+      ],
+      "validation_plan": [
+        "Read-only independent report/hash audit; no emulator relaunch, no profile mutation, no candidate/shared-runner edits."
       ]
     }
   ]

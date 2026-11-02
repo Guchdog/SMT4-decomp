@@ -21,6 +21,7 @@ void* engine_func_002c5978(
 );
 void IfTouch_CalcCallback_00107ccc();
 void IfTouch_ExitCallback_0010a28c();
+s32 ui_func_002c6c10(s32 value, s32 divisor);
 
 extern IfTouchGlobal g_IfTouchGlobal; // 0x0043DCB0
 }
@@ -79,22 +80,12 @@ const void* Tbb_GetDefaultTable18Payload() {
 }
 
 // DECOMP_FUNC(0x002c0e4c, 56)
-__attribute__((naked)) u32 Tbb_GetRowCount(const Tbl1Header*) {
-    asm volatile(
-        "cmp r0, #0\n"
-        "beq 1f\n"
-        "ldr r1, [r0]\n"
-        "ldr r2, [pc, #0x20]\n"
-        "cmp r1, r2\n"
-        "bne 1f\n"
-        "ldr r1, [r0, #8]\n"
-        "cmp r1, #0\n"
-        "beq 1f\n"
-        "ldr r0, [r0, #4]\n"
-        ".word 0xEA001765\n"
-        "1: mov r0, #0\n"
-        "bx lr\n"
-        ".word 0x314C4254\n");
+__attribute__((minsize)) u32 Tbb_GetRowCount(const Tbl1Header* table) {
+    if (table == nullptr || table->magic != kTbl1Magic || table->row_stride == 0) {
+        return 0;
+    }
+    return static_cast<u32>(ui_func_002c6c10(
+        static_cast<s32>(table->payload_size), static_cast<s32>(table->row_stride)));
 }
 // DECOMP_FUNC(0x0010299c, 260)
 

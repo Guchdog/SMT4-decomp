@@ -271,18 +271,15 @@ extern "C" __attribute__((naked)) void ui_func_002a8a8c() {
 }
 
 // DECOMP_FUNC(0x002b9008, 36)
-extern "C" __attribute__((naked)) void camp_func_002b9008() {
-    asm volatile(
-        "ldr r0, [pc, #0x18]\n"
-        "ldr r0, [r0, #4]\n"
-        "add r0, r0, #0x600\n"
-        "ldrsh r1, [r0, #0x4a]\n"
-        "cmp r1, #0xa\n"
-        "subgt r1, r1, #1\n"
-        "strhgt r1, [r0, #0x4a]\n"
-        "bx lr\n"
-        ".word 0x0043dcb0\n"
-    );
+extern "C" void camp_func_002b9008() {
+    // The callback ignores its incoming r0; the global structure's +4 pointer
+    // selects the manager whose separate signed counter lives at +0x64A.
+    const u32 manager = *reinterpret_cast<volatile const u32*>(0x0043DCB4u);
+    auto* const manager_base = reinterpret_cast<volatile u8*>(manager + 0x600u);
+    auto* const counter = reinterpret_cast<volatile s16*>(manager_base + 0x4Au);
+    const s16 value = *counter;
+    if (value > 10) *counter = static_cast<s16>(value - 1);
+
 }
 
 // DECOMP_FUNC(0x002c2684, 36)

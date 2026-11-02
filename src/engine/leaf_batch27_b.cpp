@@ -1263,8 +1263,10 @@ extern "C" __attribute__((naked)) void engine_func_0029a384() {
     );
 }
 
+extern "C" void* ui_func_002b0188(u32 group, u32 node_index);
+
 // DECOMP_FUNC(0x002bf6d0, 64)
-extern "C" __attribute__((naked)) void camp_func_002bf6d0() {
+extern "C" __attribute__((naked)) void* camp_func_002bf6d0(u32 group, u32 node_index) {
     asm volatile(
         ".arm\n"
         ".inst 0xe92d4010\n"

@@ -1,3 +1,18 @@
+# H2 ASD line-count helper 0x002B787C — 2026-11-02
+
+Converted `AsdText_GetLineCount` to typed C++ in its original 176-byte slot and
+classified it `non_matching`. The pinned ARM differential passed 515 direct
+cases, selector 11/19 compositions through original `0x00286928`, and six
+negative controls; both the direct signed-bound case and its mutant use an
+isolated initialized table. Production staging passed the final-address
+differential; two direct ARM callees retain even ARM targets; all 204 TUs
+compiled. The paired autonomous Azahar scenario retained 19/19 H2 checkpoints.
+A GDB-controlled direct invocation of the actual guest entry returned and
+consumed `r0=1` in both profiles. The normal H2 selector-6 path does not reach
+this helper, so no natural caller reachability or H2 closure is claimed. See
+[function record](docs/function-records/0x002b787c.md) and
+[implementation evidence](docs/agent-work/h2-2b787c-implementation.md).
+
 # H2 titleConfig helper 0x00286928 — 2026-11-02
 
 Replaced the 820-byte ARM body with a complete typed C++ implementation (812 bytes plus two ARM NOPs; 22 direct ARM calls) and corrected both inline-assembly consumers to the six-word ABI. The offline candidate and staged production image passed 296 direct cases, four original-callback compositions and six mutation controls; all 204 translation units compiled. A dedicated paired loopback Azahar run captured 129 original and 129 patched helper hits with matching arguments/returns, plus 19/19 checkpoints over 51 scripted actions. Readiness and same-session re-entry remain incomplete, so H2 stays open. [Function record](docs/function-records/0x00286928.md); [implementation evidence](docs/agent-work/h2-86928-implementation.md).

@@ -44,7 +44,7 @@ extern "C" {
 
     // Text / layout / flag helpers.
     void  UiText_Format(char* dst, const char* fmt, ...);                  // 0x002be7fc
-    int   AsdUi_IsRegistered(void* handle);                                // 0x002bf41c
+    u32   AsdUi_IsRegistered(void* handle);                                // 0x002bf41c
     bool  Flag_CheckEventBit(u32 flag_id);                                 // 0x002c0ba8
 
     // 0x00297004: inclusive LCG range helper, `min + (draw % (max-min+1))`

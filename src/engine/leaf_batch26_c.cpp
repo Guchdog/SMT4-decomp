@@ -66,7 +66,7 @@ extern "C" void script_vm_func_002b5b44();
 extern "C" void ui_func_00150db8();
 extern "C" void ui_func_00238e18();
 extern "C" u32 ui_func_002adb40(void* destination, const void* source);
-extern "C" void ui_func_002c615c();
+extern "C" u64 ui_func_002c615c(u32 numerator, u32 denominator);
 extern "C" void ui_func_0037b6c0();
 
 // DECOMP_FUNC(0x00357ac8, 100)

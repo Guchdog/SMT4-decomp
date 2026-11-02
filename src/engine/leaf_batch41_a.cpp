@@ -828,30 +828,59 @@ extern "C" __attribute__((naked)) void func_0024bd60() {
 }
 
 // DECOMP_FUNC(0x002b8794, 304)
-// 73 ARM instructions through bx lr; trailing data: 12 bytes.
-extern "C" __attribute__((naked)) void camp_func_002b8794() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x0006, 0xe350, 0xff1e, 0x212f, 0xc114, 0xe59f, 0xc004, 0xe59c\n"
-        ".hword 0x0000, 0xe35c, 0xff1e, 0x012f, 0x01f0, 0xe92d, 0x0000, 0xe353\n"
-        ".hword 0x5000, 0xe3e0, 0x0015, 0x0a00, 0x70f8, 0xe59f, 0x6018, 0xe287\n"
-        ".hword 0x8100, 0xe797, 0x0000, 0xe358, 0x3000, 0xb3a0, 0x000a, 0xaa00\n"
-        ".hword 0x4003, 0xe08c, 0x44b8, 0xe5d4, 0x0000, 0xe354, 0x0003, 0x0a00\n"
-        ".hword 0x1100, 0xe787, 0x2100, 0xe786, 0x01f0, 0xe8bd, 0xff1e, 0xe12f\n"
-        ".hword 0x3001, 0xe283, 0x0006, 0xe353, 0xfff4, 0xbaff, 0x0001, 0xe158\n"
-        ".hword 0x3100, 0x0796, 0x0002, 0x0153, 0x5100, 0x0787, 0x5100, 0x0786\n"
-        ".hword 0x60a4, 0xe59f, 0x4100, 0xe08c, 0x0180, 0xe060, 0x0007, 0xe351\n"
-        ".hword 0x1494, 0xe5c4, 0x0009, 0x1351, 0x3012, 0xe3a0, 0x0100, 0xe080\n"
-        ".hword 0x20b4, 0xe186, 0x0017, 0x0a00, 0x000a, 0xe351, 0x000b, 0x1351\n"
-        ".hword 0x0014, 0x0a00, 0x000c, 0xe351, 0x000d, 0x1351, 0x0011, 0x0a00\n"
-        ".hword 0x000e, 0xe351, 0x000f, 0x1351, 0x000e, 0x0a00, 0x0010, 0xe351\n"
-        ".hword 0x0011, 0x1351, 0x000b, 0x0a00, 0x0008, 0xe351, 0x0100, 0xe08c\n"
-        ".hword 0x1004, 0x03a0, 0x103c, 0x0580, 0x0034, 0x0280, 0x1003, 0x13a0\n"
-        ".hword 0x0028, 0x0880, 0x3034, 0x15a0, 0x0004, 0x1280, 0x0022, 0x1880\n"
-        ".hword 0x01f0, 0xe8bd, 0xff1e, 0xe12f, 0x0100, 0xe08c, 0x1001, 0xe3a0\n"
-        ".hword 0x103c, 0xe580, 0x0034, 0xe280, 0x0028, 0xe880, 0x01f0, 0xe8bd\n"
-        ".hword 0xff1e, 0xe12f, 0xda28, 0x0043, 0xda50, 0x0043, 0x0496, 0x0000\n"
-    );
+extern "C" __attribute__((minsize)) void camp_func_002b8794(
+    u32 slot, u32 priority, u32 value, u32 mode) {
+    if (slot >= 6) {
+        return;
+    }
+
+    constexpr u32 kManagerPointerAddress = 0x0043DA2Cu;
+    constexpr u32 kSlotRegistryAddress = 0x0043DA50u;
+    const u32 manager_address = *reinterpret_cast<volatile const u32*>(kManagerPointerAddress);
+    if (manager_address == 0) {
+        return;
+    }
+
+    auto* const manager = reinterpret_cast<volatile u8*>(manager_address);
+    auto* const first_registry = reinterpret_cast<volatile u32*>(kSlotRegistryAddress);
+    auto* const second_registry = reinterpret_cast<volatile u32*>(kSlotRegistryAddress + 0x18u);
+    if (mode != 0) {
+        const s32 current_registration = static_cast<s32>(first_registry[slot]);
+        if (current_registration < 0) {
+            for (u32 owner = 0; owner < 6; ++owner) {
+                if (manager[0x4B8u + owner] != 0) {
+                    first_registry[slot] = priority;
+                    second_registry[slot] = value;
+                    return;
+                }
+            }
+        }
+        if (first_registry[slot] == priority && second_registry[slot] == value) {
+            first_registry[slot] = 0xFFFFFFFFu;
+            second_registry[slot] = 0xFFFFFFFFu;
+        }
+    }
+
+    const u32 slot_offset = slot * 4u;
+    manager[0x494u + slot_offset] = static_cast<u8>(priority);
+    *reinterpret_cast<volatile u16*>(manager + 0x496u + slot_offset) =
+        static_cast<u16>(value);
+
+    const u32 row_address = manager_address + slot * 0x8Cu;
+    auto* const row = reinterpret_cast<volatile u32*>(row_address);
+    if (priority == 8) {
+        row[0x3Cu / 4u] = 4u;
+        row[0x34u / 4u] = 0x12u;
+        row[0x38u / 4u] = 0xFFFFFFFFu;
+    } else if (priority == 7 || (priority >= 9 && priority <= 17)) {
+        row[0x3Cu / 4u] = 1u;
+        row[0x34u / 4u] = 0x12u;
+        row[0x38u / 4u] = 0xFFFFFFFFu;
+    } else {
+        row[0x34u / 4u] = 0x12u;
+        row[0x38u / 4u] = 3u;
+        row[0x3Cu / 4u] = 0xFFFFFFFFu;
+    }
 }
 
 // DECOMP_FUNC(0x002d72c4, 304)
@@ -1441,31 +1470,29 @@ extern "C" __attribute__((naked)) void EnemyGrRenderer_func_0023b03c() {
 }
 
 // DECOMP_FUNC(0x0027fbc8, 320)
-// 76 ARM instructions through pop {r4, r5, r6, pc}; trailing data: 16 bytes.
-extern "C" __attribute__((naked)) void script_vm_func_0027fbc8() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4070, 0xe92d, 0x4000, 0xe1a0, 0x6120, 0xe59f, 0x5001, 0xe1a0\n"
-        ".hword 0x8b02, 0xed2d, 0xd008, 0xe24d, 0x0000, 0xe596, 0x1018, 0xe5d0\n"
-        ".hword 0x0000, 0xe351, 0x10fc, 0x01d0, 0x01f2, 0x01d0, 0x0004, 0x0a00\n"
-        ".hword 0x0001, 0xe351, 0x10fe, 0x01d0, 0x01f4, 0x01d0, 0x11f0, 0x11d0\n"
-        ".hword 0x01f6, 0x11d0, 0x0002, 0xe352, 0x1071, 0xe6bf, 0x0070, 0xe6bf\n"
-        ".hword 0x0001, 0xe040, 0x0a10, 0xee00, 0x0ac0, 0xeeb8, 0x0025, 0x2a00\n"
-        ".hword 0x0004, 0xe596, 0x0002, 0xe150, 0x0022, 0x3a00, 0x0008, 0xe596\n"
-        ".hword 0x0001, 0xe310, 0x00bc, 0x059f, 0x00b4, 0x159f, 0x0202, 0x0080\n"
-        ".hword 0x0000, 0xe350, 0x001b, 0x0a00, 0x10fc, 0xe1d0, 0x00fe, 0xe1d0\n"
-        ".hword 0x8a29, 0xed9f, 0x1a90, 0xee00, 0x0a10, 0xee01, 0x0ae0, 0xeef8\n"
-        ".hword 0x1ac1, 0xeeb8, 0x1a80, 0xeec0, 0x1a00, 0xedcd, 0x0a00, 0xeec1\n"
-        ".hword 0x0a01, 0xedcd, 0x0a05, 0xed96, 0x0a48, 0xeeb4, 0xfa10, 0xeef1\n"
-        ".hword 0x0010, 0x0a00, 0x000d, 0xe1a0, 0x806d, 0xebfc, 0x0a05, 0xed96\n"
-        ".hword 0x0004, 0xe28d, 0x806a, 0xebfc, 0x0a00, 0xed9d, 0x0a48, 0xeeb4\n"
-        ".hword 0xfa10, 0xeef1, 0x0007, 0x1a00, 0x0a01, 0xed9d, 0x0a48, 0xeeb4\n"
-        ".hword 0xfa10, 0xeef1, 0x0003, 0x1a00, 0xd008, 0xe28d, 0x0000, 0xe3a0\n"
-        ".hword 0x8b02, 0xecbd, 0x8070, 0xe8bd, 0x0000, 0xe354, 0x0000, 0x159d\n"
-        ".hword 0x0000, 0x1584, 0x0000, 0xe355, 0x0004, 0x159d, 0x0000, 0x1585\n"
-        ".hword 0xd008, 0xe28d, 0x0001, 0xe3a0, 0x8b02, 0xecbd, 0x8070, 0xe8bd\n"
-        ".hword 0x50a0, 0x0046, 0x3c48, 0x004e, 0x3c28, 0x004e, 0x0000, 0x0000\n"
-    );
+extern "C" float h4_original_deadzone(float*, float) __asm__("func_0019fe4c");
+extern "C" s32 script_vm_func_0027fbc8(f32* out_x, f32* out_y, u32 mode) {
+    const auto* state = reinterpret_cast<const u8*>(0x004650a0);
+    const auto* calibration = *reinterpret_cast<const u8* const*>(state);
+    const u8 selector = calibration[0x18];
+    const u32 axis = selector == 0 ? 0 : selector == 1 ? 1 : 2;
+    const auto* lo = reinterpret_cast<const s16*>(calibration + 0x0c);
+    const auto* hi = reinterpret_cast<const s16*>(calibration + 0x12);
+    const f32 span = static_cast<f32>(static_cast<s32>(hi[axis]) - static_cast<s32>(lo[axis]));
+    if (mode >= 2 || *reinterpret_cast<const u32*>(state + 4) < mode) return 0;
+    const u32 flags = *reinterpret_cast<const u32*>(state + 8);
+    const auto* sample = reinterpret_cast<const u8*>(flags & 1 ? 0x004e3c48 : 0x004e3c28 + mode * 16);
+    f32 x = static_cast<f32>(*reinterpret_cast<const s16*>(sample + 0x0c)) / span;
+    f32 y = static_cast<f32>(*reinterpret_cast<const s16*>(sample + 0x0e)) / span;
+    const f32 threshold = *reinterpret_cast<const f32*>(state + 0x14);
+    if (threshold != 0.0f) {
+        h4_original_deadzone(&x, threshold);
+        h4_original_deadzone(&y, threshold);
+        if (x == 0.0f && y == 0.0f) return 0;
+    }
+    if (out_x) *out_x = x;
+    if (out_y) *out_y = y;
+    return 1;
 }
 
 // DECOMP_FUNC(0x00287590, 320)

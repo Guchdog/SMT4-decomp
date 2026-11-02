@@ -60,7 +60,7 @@ extern "C" {
     void  AsdText_SetColorAndScale(void* text_handle, u32 a1, u32 rgba, f32 scale); // 0x002bda00
     void  AsdText_SetMessageSource(void* text_handle, u32 mode, s32 mask,
                                    u32 a3, u32 a4, const void* msg_data, s32 id);   // 0x00296d8c
-    s32   AsdText_GetLineCount(void* text_handle);                                  // 0x002b787c
+    s32   AsdText_GetLineCount(void* text_handle) __asm__("engine_func_002b787c"); // 0x002b787c
     void  AsdText_DestroyHandle(void* text_handle);                                 // 0x002a7b50
 
     // UiSpriteGroup_Init / UiSpriteGroup_BindTable are declared canonically in

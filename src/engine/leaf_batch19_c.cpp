@@ -12,7 +12,7 @@ extern "C" void battle_func_0028df54();
 extern "C" void battle_func_002ad4f0();
 extern "C" void battle_func_002ae3f0();
 extern "C" void battle_func_002b6e60();
-extern "C" void battle_func_002bf41c();
+extern "C" u32 battle_func_002bf41c(void* task);
 extern "C" void battle_func_002c45b8();
 extern "C" void camp_func_0022a0c4();
 extern "C" void camp_func_00253fa0();
@@ -64,7 +64,7 @@ extern "C" s32 ui_func_002bffbc(u32 id);
 extern "C" void ui_func_002c0a6c();
 extern "C" void ui_func_002c0ac8();
 extern "C" void ui_func_002c0b94();
-extern "C" void ui_func_002c615c();
+extern "C" u64 ui_func_002c615c(u32 numerator, u32 denominator);
 extern "C" void ui_func_002d81d0();
 
 // DECOMP_FUNC(0x00276550, 48)

@@ -803,14 +803,9 @@ extern "C" __attribute__((naked)) void script_vm_func_002954b8() {
 }
 
 // DECOMP_FUNC(0x00297674, 20)
-extern "C" __attribute__((naked)) void script_vm_func_00297674() {
-    asm volatile(
-        "ldr r0, [pc, #8]\n"
-        "ldr r0, [r0, #8]\n"
-        "ldr r0, [r0, #0x1c]\n"
-        "bx lr\n"
-        ".word 0x0043e188\n"
-    );
+extern "C" u32 script_vm_func_00297674() {
+    auto* const object = *reinterpret_cast<u32**>(0x0043E190u);
+    return *reinterpret_cast<u32*>(reinterpret_cast<u8*>(object) + 0x1Cu);
 }
 
 // DECOMP_FUNC(0x00298fec, 20)

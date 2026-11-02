@@ -63,7 +63,7 @@ extern "C" void shop_func_00297178();
 extern "C" void ui_func_00254ff0();
 extern "C" void ui_func_00282b94();
 extern "C" void ui_func_00293c98();
-extern "C" void ui_func_002a63f8();
+extern "C" u32 ui_func_002a63f8(u32 group, u32 subindex);
 extern "C" void ui_func_002c0b94();
 
 // DECOMP_FUNC(0x00398b3c, 28)

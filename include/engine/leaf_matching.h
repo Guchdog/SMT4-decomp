@@ -505,7 +505,7 @@ void camp_func_0028c868();
 void script_vm_func_00292e70();
 u32* func_002a17e4(u32** slot);
 void func_002a89cc();
-void engine_func_002ae6b0();
+u32 engine_func_002ae6b0(u32 code);
 void func_002b5f6c();
 void battle_func_002c5fa4();
 void camp_func_002d01ec();

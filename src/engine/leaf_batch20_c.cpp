@@ -15,7 +15,7 @@ extern "C" void battle_func_002ae3f0();
 extern "C" void battle_func_002ae464();
 extern "C" void battle_func_002b89fc();
 extern "C" void battle_func_002b8a80();
-extern "C" void battle_func_002bf41c();
+extern "C" u32 battle_func_002bf41c(void* task);
 extern "C" void battle_func_002bf8d4();
 extern "C" void battle_func_00337594();
 extern "C" void camp_func_00249a44();
@@ -127,7 +127,7 @@ extern "C" void script_vm_func_00299224();
 extern "C" void script_vm_func_002b5f84();
 extern "C" void script_vm_func_002b66ec();
 extern "C" void script_vm_func_002b6700();
-extern "C" void script_vm_func_002b8b78();
+extern "C" u32 script_vm_func_002b8b78(u32 request);
 extern "C" void script_vm_func_002c0ba8();
 extern "C" void script_vm_func_002d1a9c();
 extern "C" void script_vm_func_002d4dac();
@@ -138,7 +138,7 @@ extern "C" void ui_func_00293c98();
 extern "C" void ui_func_002b8adc();
 extern "C" void ui_func_002bf460();
 extern "C" void ui_func_002c0ac8();
-extern "C" void ui_func_002c615c();
+extern "C" u64 ui_func_002c615c(u32 numerator, u32 denominator);
 
 // DECOMP_FUNC(0x003001e8, 144)
 extern "C" __attribute__((naked)) void engine_func_003001e8() {

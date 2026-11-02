@@ -8258,7 +8258,7 @@ extern "C" uint32_t func_002f5b2c(uint32_t);
 extern "C" uint32_t func_002d65b4(uint32_t);
 extern "C" uint32_t camp_func_0028df70(uint32_t);
 extern "C" uint32_t camp_func_002b8ccc();
-extern "C" void script_vm_func_002b8b78(uint32_t);
+extern "C" uint32_t script_vm_func_002b8b78(uint32_t request);
 extern "C" void engine_func_002b8584(uint32_t);
 extern "C" void battle_func_0028df54(uint32_t);
 extern "C" void ui_func_0028df3c(uint32_t);

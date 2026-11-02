@@ -8,7 +8,7 @@ extern "C" void engine_func_00234a3c();
 extern "C" void engine_func_0023963c();
 extern "C" void engine_func_00246874();
 extern "C" void engine_func_002adf14();
-extern "C" void engine_func_002b96f0();
+extern "C" u32 engine_func_002b96f0(u32 group, u32 subindex);
 extern "C" void engine_func_002bc9d8();
 extern "C" void engine_func_002c2b1c();
 extern "C" void engine_func_0035ffd8();
@@ -272,15 +272,9 @@ extern "C" __attribute__((naked)) void script_vm_func_00299224() {
 }
 
 // DECOMP_FUNC(0x002a63f8, 24)
-extern "C" __attribute__((naked)) void ui_func_002a63f8() {
-    asm volatile(
-        "push {r4, lr}\n"
-        "bl engine_func_002b96f0\n"
-        "ldr r0, [r0, #0x10]\n"
-        "ands r0, r0, #4\n"
-        "movne r0, #1\n"
-        "pop {r4, pc}\n"
-    );
+extern "C" u32 ui_func_002a63f8(u32 group, u32 subindex) {
+    const u32 record = engine_func_002b96f0(group, subindex);
+    return (*reinterpret_cast<const u32*>(record + 0x10u) & 4u) != 0 ? 1u : 0u;
 }
 
 // DECOMP_FUNC(0x002b7488, 24)

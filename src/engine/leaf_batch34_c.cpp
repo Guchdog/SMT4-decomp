@@ -14,7 +14,7 @@ extern "C" void battle_func_002a3068();
 extern "C" void battle_func_002ad4f0();
 extern "C" void battle_func_002ade34();
 extern "C" void battle_func_002b087c();
-extern "C" void battle_func_002bf41c();
+extern "C" u32 battle_func_002bf41c(void* task);
 extern "C" void battle_func_002c45b8();
 extern "C" void battle_func_003c0564();
 extern "C" void battle_func_003d236c();
@@ -41,7 +41,7 @@ extern "C" void camp_func_002b9364();
 extern "C" void camp_func_002bb490();
 extern "C" void camp_func_002bc200();
 extern "C" void camp_func_002bf030();
-extern "C" void camp_func_002c1830();
+extern "C" u32 camp_func_002c1830(u32 id, u32 mode);
 extern "C" void engine_func_0010f4e8();
 extern "C" void engine_func_001112bc();
 extern "C" void engine_func_00111630();
@@ -234,7 +234,7 @@ extern "C" void ui_func_00131414();
 extern "C" void ui_func_00140110();
 extern "C" void ui_func_001401cc();
 extern "C" void ui_func_001441dc();
-extern "C" void ui_func_002a63f8();
+extern "C" u32 ui_func_002a63f8(u32 group, u32 subindex);
 extern "C" void ui_func_002aec20();
 extern "C" void ui_func_002b0788();
 extern "C" void ui_func_002b6030();
@@ -243,7 +243,7 @@ extern "C" void ui_func_002bcf58();
 extern "C" void ui_func_002c0ac8();
 extern "C" void ui_func_002c3b00();
 extern "C" void ui_func_002c3ba8();
-extern "C" void ui_func_002c615c();
+extern "C" u64 ui_func_002c615c(u32 numerator, u32 denominator);
 
 // DECOMP_FUNC(0x00102dc4, 188)
 extern "C" __attribute__((naked)) void engine_func_00102dc4() {
