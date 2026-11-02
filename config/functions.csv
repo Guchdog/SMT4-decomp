@@ -2655,7 +2655,7 @@ address,size,status,category,name,src_file
 0x001fe470,288,matching,engine,AsdModel_func_001fe470,src/engine/asd_model.cpp
 0x001fe590,3608,matching,ui,ui_func_001fe590,src/ui/ui_blocks.cpp
 0x001ff3a8,28,matching,ui,ui_func_001ff3a8,src/engine/leaf_batch39_a.cpp
-0x001ff3c4,1104,matching,camp,camp_func_001ff3c4,src/engine/leaf_batch43_a.cpp
+0x001ff3c4,1104,non_matching,camp,camp_func_001ff3c4,src/engine/leaf_batch43_a.cpp
 0x001ff814,28,matching,unknown,func_001ff814,src/engine/leaf_matching.cpp
 0x001ff830,92,matching,ui,ui_func_001ff830,src/engine/leaf_batch29_a.cpp
 0x001ff88c,252,matching,engine,engine_func_001ff88c,src/engine/leaf_batch30_a.cpp
@@ -3963,7 +3963,7 @@ address,size,status,category,name,src_file
 0x00254a64,96,matching,unknown,func_00254a64,src/engine/leaf_batch30_b.cpp
 0x00254ac4,424,matching,ui,ui_func_00254ac4,src/engine/leaf_batch44_b.cpp
 0x00254c6c,60,matching,engine,engine_func_00254c6c,src/engine/leaf_batch27_b.cpp
-0x00254ca8,840,matching,ui,ui_func_00254ca8,src/engine/leaf_batch45_b.cpp
+0x00254ca8,840,non_matching,ui,ui_func_00254ca8,src/engine/leaf_batch45_b.cpp
 0x00254ff0,76,matching,ui,ui_func_00254ff0,src/engine/leaf_batch39_c.cpp
 0x0025503c,20,matching,engine,engine_func_0025503c,src/engine/leaf_matching.cpp
 0x00255050,28,matching,script_vm,script_vm_func_00255050,src/engine/leaf_batch18_a.cpp
@@ -5034,7 +5034,7 @@ address,size,status,category,name,src_file
 0x0029f10c,316,matching,camp,camp_func_0029f10c,src/engine/leaf_batch33_c.cpp
 0x0029f248,24,non_matching,camp,camp_func_0029f248,src/engine/leaf_batch34_b.cpp
 0x0029f260,24,non_matching,camp,camp_func_0029f260,src/engine/leaf_batch34_b.cpp
-0x0029f278,1536,matching,camp,camp_func_0029f278,src/engine/leaf_batch46_b.cpp
+0x0029f278,1536,non_matching,camp,camp_func_0029f278,src/engine/leaf_batch46_b.cpp
 0x0029f878,508,matching,camp,camp_func_0029f878,src/engine/leaf_batch33_c.cpp
 0x0029fa74,116,matching,camp,camp_func_0029fa74,src/engine/leaf_batch35_a.cpp
 0x0029fae8,452,matching,camp,camp_func_0029fae8,src/engine/leaf_batch40_a.cpp

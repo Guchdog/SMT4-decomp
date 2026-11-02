@@ -4526,150 +4526,124 @@ extern "C" __attribute__((naked)) void func_003fd12c() {
     );
 };
 
+extern "C" u32 cursor_pair_query_254ca8(u32, u32, u32) __asm__("ui_func_00254ca8");
+namespace {
+inline bool axis_less(u32 a, u32 b) { return static_cast<s32>(a) < static_cast<s32>(b); }
+inline u32 axis_word(volatile u32* words, u32 offset) { return words[offset / 4]; }
+inline void axis_store(volatile u32* words, u32 offset, u32 value) { words[offset / 4] = value; }
+
+inline u32 axis_forward(volatile u32* w) {
+    const u32 count = axis_word(w, 0x1c);
+    if (!axis_less(1, count)) return 0;
+    const u32 start = axis_word(w, 0x14);
+    const u32 width = axis_word(w, 0x10);
+    const u32 index = axis_word(w, 0x20);
+    u32 threshold = width - start;
+    if (!axis_less(0, threshold)) threshold = 1;
+    const u32 next = index + 1u;
+    if (axis_less(next, threshold)) {
+        if (axis_less(next, count)) { axis_store(w, 0x20, next); return 1; }
+        if (axis_word(w, 0) & 1u) return 0;
+        axis_store(w, 0x20, 0); axis_store(w, 0x24, 0); return 1;
+    }
+    const u32 offset = axis_word(w, 0x24);
+    if (axis_less(width + offset, count)) { axis_store(w, 0x24, offset + 1u); return 1; }
+    if (axis_less(offset + index, count - 1u)) { axis_store(w, 0x20, next); return 1; }
+    if (axis_word(w, 0) & 1u) return 0;
+    axis_store(w, 0x20, 0); axis_store(w, 0x24, 0); return 1;
+}
+
+inline u32 axis_reverse(volatile u32* w) {
+    const u32 count = axis_word(w, 0x1c);
+    if (!axis_less(1, count)) return 0;
+    u32 width = axis_word(w, 0x10);
+    u32 start = axis_word(w, 0x14);
+    const u32 index = axis_word(w, 0x20);
+    if (axis_less(count, width)) width = count;
+    if (axis_less(start, 0)) start = 0;
+    const u32 previous = index - 1u;
+    if (axis_less(previous, start)) {
+        const u32 offset = axis_word(w, 0x24);
+        const u32 decremented = offset - 1u;
+        // SUBS/BMI tests the result's N flag, including signed overflow.
+        if ((decremented & 0x80000000u) == 0) {
+            axis_store(w, 0x24, decremented); return 2;
+        }
+        if (axis_less(0, offset + index)) { axis_store(w, 0x20, previous); return 2; }
+    } else if (axis_less(0, index)) {
+        axis_store(w, 0x20, previous); return 2;
+    }
+    if (axis_word(w, 0) & 1u) return 0;
+    axis_store(w, 0x20, width - 1u);
+    axis_store(w, 0x24, count - width);
+    return 2;
+}
+}
+
 // DECOMP_FUNC(0x001ff3c4, 1104)
-extern "C" __attribute__((naked)) void camp_func_001ff3c4() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4ff0, 0xe92d, 0x4000, 0xe1a0\n"
-        ".hword 0xd00c, 0xe24d, 0x5000, 0xe3a0\n"
-        ".hword 0x2000, 0xe3a0, 0x0000, 0xe590\n"
-        ".hword 0x0002, 0xe310, 0x0001, 0x1380\n"
-        ".hword 0x0000, 0x1584, 0x1008, 0xe5d4\n"
-        ".hword 0x0004, 0xe5d4, 0x562c, 0xeb01\n"
-        ".hword 0x0000, 0xe58d, 0x1009, 0xe5d4\n"
-        ".hword 0x0005, 0xe5d4, 0x2000, 0xe3a0\n"
-        ".hword 0x5627, 0xeb01, 0x8000, 0xe1a0\n"
-        ".hword 0x1008, 0xe5d4, 0x0004, 0xe5d4\n"
-        ".hword 0x2002, 0xe3a0, 0x5622, 0xeb01\n"
-        ".hword 0x6000, 0xe1a0, 0x1009, 0xe5d4\n"
-        ".hword 0x0005, 0xe5d4, 0x2002, 0xe3a0\n"
-        ".hword 0x561d, 0xeb01, 0xa000, 0xe1a0\n"
-        ".hword 0x1008, 0xe5d4, 0x0004, 0xe5d4\n"
-        ".hword 0x2001, 0xe3a0, 0x5618, 0xeb01\n"
-        ".hword 0x9000, 0xe1a0, 0x1009, 0xe5d4\n"
-        ".hword 0x0005, 0xe5d4, 0x2001, 0xe3a0\n"
-        ".hword 0x5613, 0xeb01, 0x7000, 0xe1a0\n"
-        ".hword 0x100a, 0xe5d4, 0x0006, 0xe5d4\n"
-        ".hword 0x2002, 0xe3a0, 0x560e, 0xeb01\n"
-        ".hword 0xb000, 0xe1a0, 0x100b, 0xe5d4\n"
-        ".hword 0x0007, 0xe5d4, 0x2002, 0xe3a0\n"
-        ".hword 0x5609, 0xeb01, 0x0004, 0xe58d\n"
-        ".hword 0x100a, 0xe5d4, 0x0006, 0xe5d4\n"
-        ".hword 0x2001, 0xe3a0, 0x5604, 0xeb01\n"
-        ".hword 0x0008, 0xe58d, 0x100b, 0xe5d4\n"
-        ".hword 0x0007, 0xe5d4, 0x2001, 0xe3a0\n"
-        ".hword 0x55ff, 0xeb01, 0x2000, 0xe59d\n"
-        ".hword 0x1000, 0xe1a0, 0x0000, 0xe3a0\n"
-        ".hword 0x0000, 0xe352, 0x0030, 0x0a00\n"
-        ".hword 0x1000, 0xe594, 0x0004, 0xe311\n"
-        ".hword 0x0006, 0x1a00, 0x2024, 0xe594\n"
-        ".hword 0x3020, 0xe594, 0xc01c, 0xe594\n"
-        ".hword 0x2003, 0xe082, 0x200c, 0xe042\n"
-        ".hword 0x0001, 0xe372, 0x0001, 0x0a00\n"
-        ".hword 0x1001, 0xe3c1, 0x1000, 0xe584\n"
-        ".hword 0x201c, 0xe594, 0x0001, 0xe352\n"
-        ".hword 0x004d, 0xda00, 0x1014, 0xe594\n"
-        ".hword 0xc010, 0xe594, 0x6020, 0xe594\n"
-        ".hword 0x1001, 0xe04c, 0x0000, 0xe351\n"
-        ".hword 0x1001, 0xd3a0, 0x3001, 0xe286\n"
-        ".hword 0x0001, 0xe153, 0x0005, 0xaa00\n"
-        ".hword 0x0003, 0xe152, 0x000b, 0xca00\n"
-        ".hword 0x1000, 0xe594, 0x0001, 0xe311\n"
-        ".hword 0x003f, 0x1a00, 0x0087, 0xea00\n"
-        ".hword 0x1024, 0xe594, 0xc001, 0xe08c\n"
-        ".hword 0x0002, 0xe15c, 0x0089, 0xba00\n"
-        ".hword 0x1006, 0xe081, 0x2001, 0xe242\n"
-        ".hword 0x0001, 0xe152, 0x0003, 0xda00\n"
-        ".hword 0x3020, 0xe584, 0x0006, 0xea00\n"
-        ".hword 0x0024, 0xe584, 0x0004, 0xea00\n"
-        ".hword 0x1000, 0xe594, 0x0001, 0xe311\n"
-        ".hword 0x002f, 0x1a00, 0x0020, 0xe584\n"
-        ".hword 0x0024, 0xe584, 0x5001, 0xe3a0\n"
-        ".hword 0x002b, 0xea00, 0x0000, 0xe358\n"
-        ".hword 0x0030, 0x0a00, 0x0000, 0xe594\n"
-        ".hword 0x0004, 0xe310, 0x0003, 0x1a00\n"
-        ".hword 0x1024, 0xe594, 0x2020, 0xe594\n"
-        ".hword 0x1002, 0xe091, 0x0001, 0x0a00\n"
-        ".hword 0x0001, 0xe3c0, 0x0000, 0xe584\n"
-        ".hword 0x101c, 0xe594, 0x0001, 0xe351\n"
-        ".hword 0x001d, 0xda00, 0x0010, 0xe594\n"
-        ".hword 0x2014, 0xe594, 0x3020, 0xe594\n"
-        ".hword 0x0001, 0xe150, 0x0001, 0xc1a0\n"
-        ".hword 0x0000, 0xe352, 0x2000, 0xb3a0\n"
-        ".hword 0xc001, 0xe243, 0x0002, 0xe15c\n"
-        ".hword 0x0009, 0xba00, 0x0000, 0xe353\n"
-        ".hword 0x000f, 0xca00, 0x2000, 0xe594\n"
-        ".hword 0x0001, 0xe312, 0x000e, 0x1a00\n"
-        ".hword 0x2001, 0xe240, 0x2020, 0xe5a4\n"
-        ".hword 0x0000, 0xe041, 0x0004, 0xe584\n"
-        ".hword 0x0008, 0xea00, 0x2024, 0xe594\n"
-        ".hword 0x6001, 0xe252, 0x0001, 0x4a00\n"
-        ".hword 0x6024, 0xe584, 0x0003, 0xea00\n"
-        ".hword 0x2003, 0xe082, 0x0000, 0xe352\n"
-        ".hword 0x0004, 0xda00, 0xc020, 0xe584\n"
-        ".hword 0x5002, 0xe3a0, 0xd00c, 0xe28d\n"
-        ".hword 0x0005, 0xe1a0, 0x8ff0, 0xe8bd\n"
-        ".hword 0x2000, 0xe594, 0x0001, 0xe312\n"
-        ".hword 0xfff9, 0x1aff, 0xffe9, 0xeaff\n"
-        ".hword 0x0000, 0xe35b, 0x0019, 0x0a00\n"
-        ".hword 0x0008, 0xe59d, 0x0000, 0xe350\n"
-        ".hword 0xfff3, 0x0aff, 0x0010, 0xe594\n"
-        ".hword 0x101c, 0xe594, 0x3024, 0xe594\n"
-        ".hword 0x2000, 0xe1a0, 0x0001, 0xe150\n"
-        ".hword 0x0001, 0xc1a0, 0xc002, 0xe083\n"
-        ".hword 0x0001, 0xe15c, 0x0008, 0xaa00\n"
-        ".hword 0x0018, 0xe594, 0x5003, 0xe3a0\n"
-        ".hword 0x0003, 0xe080, 0x3002, 0xe080\n"
-        ".hword 0x0001, 0xe153, 0x0024, 0xe584\n"
-        ".hword 0x0002, 0xc041, 0x0024, 0xc584\n"
-        ".hword 0xffe1, 0xeaff, 0x2001, 0xe240\n"
-        ".hword 0x2020, 0xe5a4, 0x0000, 0xe041\n"
-        ".hword 0x0004, 0xe584, 0xffdc, 0xeaff\n"
-        ".hword 0x2004, 0xe59d, 0x0000, 0xe352\n"
-        ".hword 0x000e, 0x0a00, 0x0000, 0xe351\n"
-        ".hword 0xffd7, 0x0aff, 0x1024, 0xe594\n"
-        ".hword 0x0000, 0xe351, 0x0024, 0xd584\n"
-        ".hword 0x0020, 0xd584, 0xffd2, 0xdaff\n"
-        ".hword 0x0018, 0xe594, 0x5004, 0xe3a0\n"
-        ".hword 0x0000, 0xe041, 0x0000, 0xe350\n"
-        ".hword 0x0024, 0xe584, 0x0000, 0xd3a0\n"
-        ".hword 0x0024, 0xd584, 0xffca, 0xeaff\n"
-        ".hword 0x0000, 0xe356, 0x0021, 0x0a00\n"
-        ".hword 0x0000, 0xe359, 0x201c, 0x1594\n"
-        ".hword 0x0001, 0x1352, 0xffc4, 0xdaff\n"
-        ".hword 0x1014, 0xe594, 0xc010, 0xe594\n"
-        ".hword 0x6020, 0xe594, 0x1001, 0xe04c\n"
-        ".hword 0x0000, 0xe351, 0x1001, 0xd3a0\n"
-        ".hword 0x3001, 0xe286, 0x0001, 0xe153\n"
-        ".hword 0x0006, 0xaa00, 0x0003, 0xe152\n"
-        ".hword 0xff82, 0xcaff, 0x1000, 0xe594\n"
-        ".hword 0x0001, 0xe311, 0xffb6, 0x1aff\n"
-        ".hword 0x0020, 0xe584, 0xff7f, 0xeaff\n"
-        ".hword 0x1024, 0xe594, 0xc001, 0xe08c\n"
-        ".hword 0x0002, 0xe15c, 0x0001, 0xaa00\n"
-        ".hword 0x0001, 0xe281, 0xff79, 0xeaff\n"
-        ".hword 0x1006, 0xe081, 0x2001, 0xe242\n"
-        ".hword 0x0001, 0xe152, 0xff73, 0xcaff\n"
-        ".hword 0x1000, 0xe594, 0x0001, 0xe311\n"
-        ".hword 0xffa7, 0x1aff, 0xff76, 0xeaff\n"
-        ".hword 0x0000, 0xe35a, 0xffa4, 0x0aff\n"
-        ".hword 0x0000, 0xe357, 0x101c, 0x1594\n"
-        ".hword 0x0001, 0x1351, 0xffa0, 0xdaff\n"
-        ".hword 0x0010, 0xe594, 0x2014, 0xe594\n"
-        ".hword 0x3020, 0xe594, 0x0001, 0xe150\n"
-        ".hword 0x0001, 0xc1a0, 0x0000, 0xe352\n"
-        ".hword 0x2000, 0xb3a0, 0xc001, 0xe243\n"
-        ".hword 0x0002, 0xe15c, 0x0005, 0xba00\n"
-        ".hword 0x0000, 0xe353, 0xff92, 0xcaff\n"
-        ".hword 0x2000, 0xe594, 0x0001, 0xe312\n"
-        ".hword 0xff91, 0x1aff, 0xff81, 0xeaff\n"
-        ".hword 0x2024, 0xe594, 0x6001, 0xe252\n"
-        ".hword 0xff86, 0x5aff, 0x2003, 0xe082\n"
-        ".hword 0x0000, 0xe352, 0xff88, 0xcaff\n"
-        ".hword 0x2000, 0xe594, 0x0001, 0xe312\n"
-        ".hword 0xff87, 0x1aff, 0xff77, 0xeaff\n"
-    );
-};
+extern "C" __attribute__((minsize)) u32 camp_func_001ff3c4(void* object) {
+    auto bytes = static_cast<volatile u8*>(object);
+    auto words = static_cast<volatile u32*>(object);
+    u32 flags = axis_word(words, 0);
+    if (flags & 2u) axis_store(words, 0, flags | 1u);
+
+    // All ten calls are eager; reload ID bytes at each original call boundary.
+    const u32 a0 = cursor_pair_query_254ca8(bytes[4], bytes[8], 0);
+    const u32 b0 = cursor_pair_query_254ca8(bytes[5], bytes[9], 0);
+    const u32 a2 = cursor_pair_query_254ca8(bytes[4], bytes[8], 2);
+    const u32 b2 = cursor_pair_query_254ca8(bytes[5], bytes[9], 2);
+    const u32 a1 = cursor_pair_query_254ca8(bytes[4], bytes[8], 1);
+    const u32 b1 = cursor_pair_query_254ca8(bytes[5], bytes[9], 1);
+    const u32 c2 = cursor_pair_query_254ca8(bytes[6], bytes[10], 2);
+    const u32 d2 = cursor_pair_query_254ca8(bytes[7], bytes[11], 2);
+    const u32 c1 = cursor_pair_query_254ca8(bytes[6], bytes[10], 1);
+    const u32 d1 = cursor_pair_query_254ca8(bytes[7], bytes[11], 1);
+
+    if (a0) {
+        flags = axis_word(words, 0);
+        if ((flags & 4u) || axis_word(words, 0x24) + axis_word(words, 0x20) - axis_word(words, 0x1c) != 0xffffffffu)
+            axis_store(words, 0, flags & ~1u);
+        return axis_forward(words);
+    }
+    if (b0) {
+        flags = axis_word(words, 0);
+        if ((flags & 4u) || axis_word(words, 0x24) + axis_word(words, 0x20) != 0)
+            axis_store(words, 0, flags & ~1u);
+        return axis_reverse(words);
+    }
+    if (c2) {
+        if (!c1) return 0;
+        const u32 width = axis_word(words, 0x10);
+        const u32 count = axis_word(words, 0x1c);
+        const u32 offset = axis_word(words, 0x24);
+        if (!axis_less(offset + width, count)) {
+            const u32 limited = axis_less(count, width) ? count : width;
+            axis_store(words, 0x20, limited - 1u);
+            axis_store(words, 0x24, count - limited);
+            return 0;
+        }
+        u32 next = axis_word(words, 0x18) + offset;
+        axis_store(words, 0x24, next);
+        if (axis_less(count, next + width)) axis_store(words, 0x24, count - width);
+        return 3;
+    }
+    if (d2) {
+        if (!d1) return 0;
+        const u32 offset = axis_word(words, 0x24);
+        if (!axis_less(0, offset)) {
+            axis_store(words, 0x24, 0);
+            axis_store(words, 0x20, 0);
+            return 0;
+        }
+        const u32 next = offset - axis_word(words, 0x18);
+        axis_store(words, 0x24, next);
+        if (!axis_less(0, next)) axis_store(words, 0x24, 0);
+        return 4;
+    }
+    if (a2) return a1 ? axis_forward(words) : 0;
+    if (b2) return b1 ? axis_reverse(words) : 0;
+    return 0;
+}
 
 // DECOMP_FUNC(0x00364370, 1116)
 extern "C" __attribute__((naked)) void func_00364370() {
