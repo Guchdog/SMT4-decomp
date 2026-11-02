@@ -1,4 +1,5 @@
 #include "types.h"
+#include "ui/tbb_table.h"
 
 // Batch 24 B exact ARM encodings; each complete ledger extent is emitted as raw words.
 
@@ -321,24 +322,21 @@ extern "C" __attribute__((naked)) void ui_func_00282c0c() {
 }
 
 // DECOMP_FUNC(0x002aea28, 56)
-extern "C" __attribute__((naked)) void camp_func_002aea28() {
+extern "C" __attribute__((minsize)) u32 camp_func_002aea28(u32 profile_id) {
+    const auto* const table = smt4::ui::Tbb_GetGlobalSubTable(0x0Eu, 0);
+    const void* const payload = smt4::ui::Tbb_GetPayloadData(table);
+    const u32 row_count = smt4::ui::Tbb_GetRowCount(table);
+    // Keep the 56-byte ARM slot while returning through r0 with the original
+    // unsigned HS/LO boundary; the table calls and payload computation stay typed.
+    register u32 result asm("r0");
     asm volatile(
-        ".arm\n"
-        ".inst 0xe92d4070\n"
-        ".inst 0xe1a04000\n"
-        ".inst 0xe3a01000\n"
-        ".inst 0xe3a0000e\n"
-        ".inst 0xeb004921\n"
-        ".inst 0xe1a06000\n"
-        ".inst 0xeb004915\n"
-        ".inst 0xe1a05000\n"
-        ".inst 0xe1a00006\n"
-        ".inst 0xeb0048fe\n"
-        ".inst 0xe1540000\n"
-        ".inst 0x23a00000\n"
-        ".inst 0x30850204\n"
-        ".inst 0xe8bd8070\n"
-    );
+        "cmp %1, %2\n"
+        "movhs %0, #0\n"
+        "addlo %0, %3, %1, lsl #4\n"
+        : "=r"(result)
+        : "r"(profile_id), "r"(row_count), "r"(reinterpret_cast<u32>(payload))
+        : "cc");
+    return result;
 }
 
 // DECOMP_FUNC(0x002b5b94, 56)
