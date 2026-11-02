@@ -5330,7 +5330,7 @@ address,size,status,category,name,src_file
 0x002ae54c,256,matching,unknown,func_002ae54c,src/engine/leaf_batch44_a.cpp
 0x002ae64c,4,matching,shop,shop_func_002ae64c,src/engine/leaf_batch36_a.cpp
 0x002ae650,20,matching,shop,shop_func_002ae650,src/engine/leaf_batch17_b.cpp
-0x002ae664,76,matching,unknown,func_002ae664,src/engine/leaf_batch28_b.cpp
+0x002ae664,76,non_matching,unknown,func_002ae664,src/engine/leaf_batch28_b.cpp
 0x002ae6b0,24,non_matching,engine,engine_func_002ae6b0,src/engine/leaf_matching.cpp
 0x002ae6c8,336,matching,engine,AsdLoadFile_func_002ae6c8,src/engine/asd_file.cpp
 0x002ae818,92,matching,camp,camp_func_002ae818,src/engine/leaf_batch35_a.cpp

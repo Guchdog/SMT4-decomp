@@ -6,8 +6,8 @@ Primary goal: [editable C++ semantics](docs/functional-status.md). Byte identity
 
 | Category | Functions | Code Size (Bytes) | Progress % | Status Description |
 |----------|----------:|------------------:|-----------:|--------------------|
-| **Matching (Byte-for-Byte)** | 10,932 functions + 8 raw spans | 3,128,008 B | **99.6464%** | Current matching/matching_span ledger classifications |
-| **Compiled Coverage (≥15% size)** | 27 | 11,100 B | 0.3536% | Compiles to ARMv6K ELF .o; size threshold only, logic unverified |
+| **Matching (Byte-for-Byte)** | 10,931 functions + 8 raw spans | 3,127,932 B | **99.6440%** | Current matching/matching_span ledger classifications |
+| **Compiled Coverage (≥15% size)** | 28 | 11,176 B | 0.3560% | Compiles to ARMv6K ELF .o; size threshold only, logic unverified |
 | **Draft Logic (<15% size)** | 0 | 0 B | 0.0000% | Early draft reconstructions awaiting control-flow recovery |
 | **Scaffolded (Stubs & Interfaces)** | 0 | 0 B | 0.0000% | Headers, structs, and function skeletons |
 | **Total Architecture Explored** | 10,959 functions + 8 raw spans | 3,139,108 B | 100.0000% | Mapped into `src/` (functions and verified raw spans) |
@@ -24,7 +24,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 |-----------|---------:|----------------:|-------------:|------:|---------------:|----------------:|-----------:|-----------:|
 | `engine` | 2,554 (768,792 B) | 6 (1,420 B) | 0 (0 B) | 0 (0 B) | 2,560 (770,212 B) | 2,560 (770,212 B) | 99.8156% | 100.00% |
 | `ui` | 1,645 (676,100 B) | 9 (6,268 B) | 0 (0 B) | 0 (0 B) | 1,654 (682,368 B) | 1,654 (682,368 B) | 99.0814% | 100.00% |
-| `unknown` | 3,818 (610,392 B) | 0 (0 B) | 0 (0 B) | 0 (0 B) | 3,818 (610,392 B) | 3,818 (610,392 B) | 100.0000% | 100.00% |
+| `unknown` | 3,817 (610,316 B) | 1 (76 B) | 0 (0 B) | 0 (0 B) | 3,818 (610,392 B) | 3,818 (610,392 B) | 99.9876% | 100.00% |
 | `script_vm` | 1,199 (444,372 B) | 2 (1,916 B) | 0 (0 B) | 0 (0 B) | 1,201 (446,288 B) | 1,201 (446,288 B) | 99.5707% | 100.00% |
 | `camp` | 910 (325,244 B) | 7 (1,044 B) | 0 (0 B) | 0 (0 B) | 917 (326,288 B) | 917 (326,288 B) | 99.6800% | 100.00% |
 | `battle` | 575 (236,480 B) | 3 (452 B) | 0 (0 B) | 0 (0 B) | 578 (236,932 B) | 578 (236,932 B) | 99.8092% | 100.00% |
@@ -5369,7 +5369,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x002ae54c` | 256 | `unknown` | `matching` | `func_002ae54c` | [`src/engine/leaf_batch44_a.cpp`](src/engine/leaf_batch44_a.cpp) |
 | `0x002ae64c` | 4 | `shop` | `matching` | `shop_func_002ae64c` | [`src/engine/leaf_batch36_a.cpp`](src/engine/leaf_batch36_a.cpp) |
 | `0x002ae650` | 20 | `shop` | `matching` | `shop_func_002ae650` | [`src/engine/leaf_batch17_b.cpp`](src/engine/leaf_batch17_b.cpp) |
-| `0x002ae664` | 76 | `unknown` | `matching` | `func_002ae664` | [`src/engine/leaf_batch28_b.cpp`](src/engine/leaf_batch28_b.cpp) |
+| `0x002ae664` | 76 | `unknown` | `non_matching` | `func_002ae664` | [`src/engine/leaf_batch28_b.cpp`](src/engine/leaf_batch28_b.cpp) |
 | `0x002ae6b0` | 24 | `engine` | `non_matching` | `engine_func_002ae6b0` | [`src/engine/leaf_matching.cpp`](src/engine/leaf_matching.cpp) |
 | `0x002ae6c8` | 336 | `engine` | `matching` | `AsdLoadFile_func_002ae6c8` | [`src/engine/asd_file.cpp`](src/engine/asd_file.cpp) |
 | `0x002ae818` | 92 | `camp` | `matching` | `camp_func_002ae818` | [`src/engine/leaf_batch35_a.cpp`](src/engine/leaf_batch35_a.cpp) |
