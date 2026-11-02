@@ -473,51 +473,28 @@ extern "C" __attribute__((naked)) void script_vm_func_00198e7c() {
 }
 
 // DECOMP_FUNC(0x001078d8, 164)
-extern "C" __attribute__((naked)) void func_001078d8() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe92d41f0 @ push {r4, r5, r6, r7, r8, lr}\n"
-        ".inst 0xe59f508c @ ldr r5, [pc, #0x8c]\n"
-        ".inst 0xe59f1084 @ ldr r1, [pc, #0x84]\n"
-        ".inst 0xe5950000 @ ldr r0, [r5]\n"
-        ".inst 0xeb00533f @ bl #0x11c5ec\n"
-        ".inst 0xe3500000 @ cmp r0, #0\n"
-        ".inst 0x13a00001 @ movne r0, #1\n"
-        ".inst 0x15850004 @ strne r0, [r5, #4]\n"
-        ".inst 0xe3a04000 @ mov r4, #0\n"
-        ".inst 0xe59f0070 @ ldr r0, [pc, #0x70]\n"
-        ".inst 0xe59f1070 @ ldr r1, [pc, #0x70]\n"
-        ".inst 0x05854004 @ streq r4, [r5, #4]\n"
-        ".inst 0xe5955004 @ ldr r5, [r5, #4]\n"
-        ".inst 0xe3a0301f @ mov r3, #0x1f\n"
-        ".inst 0xe2812004 @ add r2, r1, #4\n"
-        ".inst 0xe2406030 @ sub r6, r0, #0x30\n"
-        ".inst 0xe591c000 @ ldr ip, [r1]\n"
-        ".inst 0xe35c0000 @ cmp ip, #0\n"
-        ".inst 0x13a0c000 @ movne ip, #0\n"
-        ".inst 0x0a000007 @ beq #0x107948\n"
-        ".inst 0xe5927000 @ ldr r7, [r2]\n"
-        ".inst 0xe11c0007 @ tst ip, r7\n"
-        ".inst 0x05804000 @ streq r4, [r0]\n"
-        ".inst 0x0a000006 @ beq #0x107954\n"
-        ".inst 0xe590c000 @ ldr ip, [r0]\n"
-        ".inst 0xe28cc001 @ add ip, ip, #1\n"
-        ".inst 0xe580c000 @ str ip, [r0]\n"
-        ".inst 0xea000002 @ b #0x107954\n"
-        ".inst 0xe3550000 @ cmp r5, #0\n"
-        ".inst 0xc596c000 @ ldrgt ip, [r6]\n"
-        ".inst 0xcafffff4 @ bgt #0x107928\n"
-        ".inst 0xe2533001 @ subs r3, r3, #1\n"
-        ".inst 0xe2800004 @ add r0, r0, #4\n"
-        ".inst 0xe2811008 @ add r1, r1, #8\n"
-        ".inst 0xe2822008 @ add r2, r2, #8\n"
-        ".inst 0x1affffeb @ bne #0x107918\n"
-        ".inst 0xe8bd81f0 @ pop {r4, r5, r6, r7, r8, pc}\n"
-        ".word 0x004e3c28 @ bounded tail data\n"
-        ".word 0x004650a0 @ bounded tail data\n"
-        ".word 0x004e3c58 @ bounded tail data\n"
-        ".word 0x004099c0 @ bounded tail data\n"
-    );
+extern "C" u32 read_input_state_0011c5ec(u32 handle, u8* state) __asm__("func_0011c5ec");
+extern "C" void func_001078d8() {
+    auto* input_global = reinterpret_cast<u32*>(0x004650a0);
+    const u32 available = read_input_state_0011c5ec(
+        input_global[0], reinterpret_cast<u8*>(0x004e3c28)) != 0;
+    input_global[1] = available;
+
+    auto* counters = reinterpret_cast<u32*>(0x004e3c58);
+    const auto* mappings = reinterpret_cast<const u32*>(0x004099c0);
+    const auto* state_words = reinterpret_cast<const u32*>(0x004e3c28);
+    for (u32 index = 0; index < 31; ++index) {
+        if (mappings[index * 2] != 0) {
+            counters[index] = 0;
+            continue;
+        }
+        if (static_cast<s32>(available) <= 0) continue;
+        if ((state_words[0] & mappings[index * 2 + 1]) == 0) {
+            counters[index] = 0;
+        } else {
+            counters[index] = counters[index] + 1u;
+        }
+    }
 }
 
 // DECOMP_FUNC(0x00129404, 164)

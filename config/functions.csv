@@ -139,7 +139,7 @@ address,size,status,category,name,src_file
 0x001076d8,80,matching,engine,engine_func_001076d8,src/engine/leaf_batch34_c.cpp
 0x00107728,360,matching,ui,ui_func_00107728,src/engine/leaf_batch28_a.cpp
 0x00107890,72,matching,ui,ui_func_00107890,src/engine/leaf_batch20_a.cpp
-0x001078d8,164,matching,unknown,func_001078d8,src/engine/leaf_batch27_a.cpp
+0x001078d8,164,non_matching,unknown,func_001078d8,src/engine/leaf_batch27_a.cpp
 0x0010797c,1692,matching,engine,engine_func_0010797c,src/engine/leaf_batch46_b.cpp
 0x00108018,76,matching,script_vm,script_vm_func_00108018,src/engine/leaf_batch20_a.cpp
 0x00108064,108,matching,ui,ui_func_00108064,src/engine/leaf_batch20_a.cpp
