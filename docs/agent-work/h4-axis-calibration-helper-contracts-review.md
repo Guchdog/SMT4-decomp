@@ -1,5 +1,15 @@
 # H4 axis calibration helper contracts — independent ARM review
 
+## Post-review correction
+
+The earlier selector-1 note below incorrectly treated sign-extended `-32768`
+as 32-bit `INT32_MIN`. In the parent ABI, `-32768` is `0xFFFF8000`, so
+`RSB #0` yields positive `32768` and the comparison against signed-halfword A
+uses that positive value. Only a direct `INT32_MIN` input wraps to
+`0x80000000` and fails that signed comparison. Differential coverage for the
+selector-1 candidate checks direct `INT32_MIN` wrap separately from the
+caller-reachable halfword boundary.
+
 ## Disposition
 
 The bounded reconstruction is broadly supported by the pinned ARM instructions and is suitable for static dependency mapping. Before using it as a precise numeric contract, clarify two edge details: selector 1's negation at `x=-32768`, and the architectural unordered behavior of the selector-2 VFP condition codes. These do not establish a different normal result for the parent-supplied halfword inputs, but they matter to the stated edge domain and any general helper contract. The unresolved `0x002C615C` divide semantics, arithmetic overflow, source-object writer, caller cadence, physical device identity, and movement meaning remain real blockers for implementation or behavioral claims.

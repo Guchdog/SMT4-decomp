@@ -3034,7 +3034,7 @@ extern "C" __attribute__((naked)) void engine_func_001d1a8c() {
 
 // DECOMP_FUNC(0x00128610, 148)
 extern "C" s32 ui_func_0013b9fc(s16*, s16*, s32, s32, s32, s32);
-extern "C" u32 ui_func_0013b8f8(s16*, s16*, s32, s32, s32, s32);
+extern "C" s32 ui_func_0013b8f8(s16*, s16*, s32, s32, s32, s32);
 extern "C" u32 func_0013bae0(s16*, s16*, s32, s32, s32, s32);
 
 extern "C" __attribute__((minsize)) u32 func_00128610(
