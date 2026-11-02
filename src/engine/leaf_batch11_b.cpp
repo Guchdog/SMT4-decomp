@@ -116,8 +116,14 @@ extern "C" __attribute__((naked)) void func_00127fe8() {
 }
 
 // DECOMP_FUNC(0x001285c4, 76)
-extern "C" __attribute__((naked)) void func_001285c4() {
-    asm volatile("ldrsh r1, [r0]\ncmp r1, #0x28\nmovlt r1, #0x28\nstrhlt r1, [r0]\nldrsh r1, [r0, #2]\ncmp r1, #0x24\nmovlt r1, #0x24\nstrhlt r1, [r0, #2]\nldrsh r2, [r0, #6]\nmov r1, #0x91\ncmp r2, #0x91\nstrhgt r1, [r0, #6]\nldrsh r2, [r0, #8]\ncmp r2, #0x91\nstrhgt r1, [r0, #8]\nldrsh r2, [r0, #0xa]\ncmp r2, #0x91\nstrhgt r1, [r0, #0xa]\nbx lr\n");
+extern "C" __attribute__((minsize)) void func_001285c4(s16* calibration) {
+    if (calibration[0] < 40) calibration[0] = 40;
+    if (calibration[1] < 36) calibration[1] = 36;
+    s32 maximum;
+    asm volatile("mov %0, #145" : "=r"(maximum));
+    if (calibration[3] > maximum) calibration[3] = static_cast<s16>(maximum);
+    if (calibration[4] > maximum) calibration[4] = static_cast<s16>(maximum);
+    if (calibration[5] > maximum) calibration[5] = static_cast<s16>(maximum);
 }
 
 // DECOMP_FUNC(0x0023aff0, 76)
