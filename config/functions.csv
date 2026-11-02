@@ -5529,7 +5529,7 @@ address,size,status,category,name,src_file
 0x002b8b44,16,matching,battle,battle_func_002b8b44,src/engine/leaf_batch38_a.cpp
 0x002b8b54,28,matching,battle,battle_func_002b8b54,src/engine/leaf_batch32_c.cpp
 0x002b8b70,8,matching,script_vm,script_vm_func_002b8b70,src/engine/leaf_batch36_a.cpp
-0x002b8b78,340,matching,script_vm,script_vm_func_002b8b78,src/engine/leaf_batch32_c.cpp
+0x002b8b78,340,non_matching,script_vm,script_vm_func_002b8b78,src/engine/leaf_batch32_c.cpp
 0x002b8ccc,24,matching,camp,camp_func_002b8ccc,src/engine/leaf_batch22_b.cpp
 0x002b8ce4,64,matching,camp,camp_func_002b8ce4,src/engine/leaf_batch32_c.cpp
 0x002b8d24,360,non_matching,battle,battle_func_002b8d24,src/engine/leaf_batch46_a.cpp

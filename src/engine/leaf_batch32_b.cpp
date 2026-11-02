@@ -215,7 +215,7 @@ extern "C" void script_vm_func_002aeb2c();
 extern "C" void script_vm_func_002b49d8();
 extern "C" void script_vm_func_002b66ec();
 extern "C" void script_vm_func_002b6700();
-extern "C" void script_vm_func_002b8b78();
+extern "C" u32 script_vm_func_002b8b78(u32 request);
 extern "C" void script_vm_func_002b90e0();
 extern "C" void script_vm_func_002bd25c();
 extern "C" void script_vm_func_002bd3ec();

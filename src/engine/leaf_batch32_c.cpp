@@ -49,11 +49,11 @@ extern "C" void camp_func_002a0fac();
 extern "C" void camp_func_002a89e4();
 extern "C" void camp_func_002a8a08();
 extern "C" void camp_func_002a8a1c();
-extern "C" void camp_func_002ae874();
-extern "C" void camp_func_002aea28();
+extern "C" u32 camp_func_002ae874(u32 enable);
+extern "C" u32 camp_func_002aea28(u32 profile_id);
 extern "C" void camp_func_002b0824();
 extern "C" void camp_func_002b4854();
-extern "C" void camp_func_002b8794();
+extern "C" void camp_func_002b8794(u32 slot, u32 priority, u32 value, u32 mode);
 extern "C" void camp_func_002b9008();
 extern "C" void camp_func_002b9364();
 extern "C" void camp_func_002ba9d8();
@@ -131,7 +131,7 @@ extern "C" void nn_sdk_func_002bce50();
 extern "C" void nn_sdk_func_002bcf34();
 extern "C" void scrScriptProcess_func_002972f8();
 extern "C" void script_vm_func_00131548();
-extern "C" void script_vm_func_0013851c();
+extern "C" u32 script_vm_func_0013851c(u32 enable);
 extern "C" void script_vm_func_00152af8();
 extern "C" s32 script_vm_func_0019dfbc(void* work);
 extern "C" void script_vm_func_001edc04();
@@ -162,7 +162,7 @@ extern "C" void script_vm_func_002a7aa0();
 extern "C" void script_vm_func_002b49d8();
 extern "C" void script_vm_func_002b66ec();
 extern "C" void script_vm_func_002b780c();
-extern "C" void script_vm_func_002b8b78();
+extern "C" u32 script_vm_func_002b8b78(u32 request);
 extern "C" void script_vm_func_002b931c();
 extern "C" void script_vm_func_002bd25c();
 extern "C" void script_vm_func_002bd3ec();
@@ -183,7 +183,7 @@ extern "C" void ui_func_002b0188();
 extern "C" void ui_func_002b1c8c();
 extern "C" void ui_func_002b1dfc();
 extern "C" void ui_func_002b1fc0();
-extern "C" void ui_func_002b85bc();
+extern "C" void ui_func_002b85bc(u32 request);
 extern "C" s32 ui_func_002b902c(u32 id);
 extern "C" void ui_func_002bcf58();
 extern "C" void ui_func_002bf460();
@@ -862,101 +862,63 @@ extern "C" __attribute__((naked)) void battle_func_002b8b54() {
 }
 
 // DECOMP_FUNC(0x002b8b78, 340)
-extern "C" __attribute__((naked)) void script_vm_func_002b8b78() {
-    asm volatile(
-        "push {r4, r5, r6, r7, r8, sb, lr}\n"
-        "mov r5, r0\n"
-        "sub sp, sp, #0xc\n"
-        ".word 0xe59f9138\n"
-        "ldr r4, [sb, #4]\n"
-        "add r7, r4, #0x400\n"
-        "ldrb r0, [r4, #0x4c9]\n"
-        "add r7, r7, #0xc9\n"
-        "cmp r0, r5\n"
-        "beq .L_002b8bc4\n"
-        "ldr r0, [sb, #0x10]\n"
-        "cmp r0, #0\n"
-        "movlt r0, #0\n"
-        "bge .L_002b8bd8\n"
-        ".L_002b8bb0:\n"
-        "add r1, r4, r0\n"
-        "ldrb r1, [r1, #0x4b8]\n"
-        "cmp r1, #0\n"
-        "beq .L_002b8bcc\n"
-        "str r5, [sb, #0x10]\n"
-        ".L_002b8bc4:\n"
-        "add sp, sp, #0xc\n"
-        "pop {r4, r5, r6, r7, r8, sb, pc}\n"
-        ".L_002b8bcc:\n"
-        "add r0, r0, #1\n"
-        "cmp r0, #6\n"
-        "blt .L_002b8bb0\n"
-        ".L_002b8bd8:\n"
-        "mvn r0, #0\n"
-        "str r0, [sb, #0x10]\n"
-        "mov r0, r5\n"
-        "bl ui_func_002b85bc\n"
-        "ldrb r0, [r4, #0x4c9]\n"
-        "nop\n"
-        "bl camp_func_002aea28\n"
-        "mov r6, r0\n"
-        "mov r0, r5\n"
-        "bl camp_func_002aea28\n"
-        "cmp r6, #0\n"
-        "mov r8, r0\n"
-        "cmpne r8, #0\n"
-        "beq .L_002b8bc4\n"
-        "ldrb r0, [r4, #0x4c9]\n"
-        ".word 0xe59f10ac\n"
-        "strb r0, [r4, #0x4ca]\n"
-        "strb r5, [r7]\n"
-        "ldrd r0, r1, [r1, #8]\n"
-        "mov r4, #0\n"
-        "mov r5, sp\n"
-        "strd r0, r1, [sp]\n"
-        ".L_002b8c30:\n"
-        "add r0, r8, r4, lsl #1\n"
-        "mov r3, #0\n"
-        "ldrh r0, [r0]\n"
-        "cmp r0, #0\n"
-        "andne r2, r0, #0xff\n"
-        "ldrbne r1, [r5, r4]\n"
-        "and r0, r4, #0xff\n"
-        "moveq r2, #0x51\n"
-        "moveq r1, #0x12\n"
-        "bl camp_func_002b8794\n"
-        "add r4, r4, #1\n"
-        "cmp r4, #6\n"
-        "blt .L_002b8c30\n"
-        "ldrb r0, [r6, #0xc]\n"
-        "cmp r0, #0\n"
-        "beq .L_002b8cac\n"
-        "ldrb r0, [r8, #0xc]\n"
-        "cmp r0, #0\n"
-        "beq .L_002b8c94\n"
-        "ldr r1, [sb, #4]\n"
-        "mov r0, #0\n"
-        "strb r0, [r1, #0x4c5]\n"
-        "bl script_vm_func_0013851c\n"
-        "add sp, sp, #0xc\n"
-        "pop {r4, r5, r6, r7, r8, sb, pc}\n"
-        ".L_002b8c94:\n"
-        "ldr r1, [sb, #4]\n"
-        "mov r0, #1\n"
-        "strb r0, [r1, #0x4c5]\n"
-        "bl camp_func_002ae874\n"
-        "add sp, sp, #0xc\n"
-        "pop {r4, r5, r6, r7, r8, sb, pc}\n"
-        ".L_002b8cac:\n"
-        "ldr r1, [sb, #4]\n"
-        "mov r0, #1\n"
-        "strb r0, [r1, #0x4c5]\n"
-        "bl script_vm_func_0013851c\n"
-        "add sp, sp, #0xc\n"
-        "pop {r4, r5, r6, r7, r8, sb, pc}\n"
-        ".word 0x0043da28\n"
-        ".word 0x00402548\n"
-    );
+extern "C" __attribute__((minsize)) u32 script_vm_func_002b8b78(u32 request) {
+    auto* const manager_root = reinterpret_cast<volatile u8*>(0x0043DA28u);
+    const u32 object_address = *reinterpret_cast<volatile const u32*>(manager_root + 4);
+    auto* const object = reinterpret_cast<volatile u8*>(object_address);
+    auto* const latch = reinterpret_cast<volatile s32*>(manager_root + 0x10);
+    const u8 selected_profile = object[0x4C9];
+    if (static_cast<u32>(selected_profile) == request) return selected_profile;
+
+    if (*latch < 0) {
+        for (u32 slot = 0; slot < 6; ++slot) {
+            if (object[0x4B8 + slot] != 0) {
+                *latch = static_cast<s32>(request);
+                return slot;
+            }
+        }
+    }
+    *latch = -1;
+
+    ui_func_002b85bc(request);
+    const u8 old_profile_id = object[0x4C9];
+    const u32 old_profile_address = camp_func_002aea28(old_profile_id);
+    const u32 new_profile_address = camp_func_002aea28(request);
+    if (old_profile_address == 0 || new_profile_address == 0) return new_profile_address;
+
+    object[0x4CA] = old_profile_id;
+    object[0x4C9] = static_cast<u8>(request);
+
+    static constexpr u8 priorities[6] = {5, 6, 4, 3, 2, 1};
+    auto* const new_profile = reinterpret_cast<volatile const u16*>(new_profile_address);
+    for (u32 slot = 0; slot < 6; ++slot) {
+        const u16 value = new_profile[slot];
+        const u32 priority = priorities[slot];
+        if (value != 0) {
+            camp_func_002b8794(slot, priority, value & 0xFFu, 0);
+        } else {
+            camp_func_002b8794(slot, 0x12u, 0x51u, 0);
+        }
+    }
+
+    const auto* const old_profile = reinterpret_cast<volatile const u8*>(old_profile_address);
+    if (old_profile[0x0C] == 0) {
+        auto* const current_object = reinterpret_cast<volatile u8*>(
+            *reinterpret_cast<volatile const u32*>(manager_root + 4));
+        current_object[0x4C5] = 1;
+        return script_vm_func_0013851c(1);
+    }
+    if (reinterpret_cast<volatile const u8*>(new_profile_address)[0x0C] != 0) {
+        auto* const current_object = reinterpret_cast<volatile u8*>(
+            *reinterpret_cast<volatile const u32*>(manager_root + 4));
+        current_object[0x4C5] = 0;
+        return script_vm_func_0013851c(0);
+    }
+
+    auto* const current_object = reinterpret_cast<volatile u8*>(
+        *reinterpret_cast<volatile const u32*>(manager_root + 4));
+    current_object[0x4C5] = 1;
+    return camp_func_002ae874(1);
 }
 
 // DECOMP_FUNC(0x002b8ce4, 64)

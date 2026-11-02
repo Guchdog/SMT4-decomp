@@ -124,7 +124,7 @@ extern "C" {
     s32   engine_func_0029eba8(void* list);                  // 0x0029EBA8
     s32   engine_func_0029ebf8(void* list);                  // 0x0029EBF8
     s32   engine_func_002994b4(s32 a, s32 b);                // 0x002994B4
-    void  script_vm_func_002b8b78(u32 index);               // 0x002B8B78
+    u32   script_vm_func_002b8b78(u32 index);               // 0x002B8B78
     void  SortMenu_Init(u32 index, u32 mode);                // 0x0029E63C
     void  engine_func_0029e5c8(u32 index);                   // 0x0029E5C8
     void  camp_func_0029f10c(u32 index, u32 color);          // 0x0029F10C
