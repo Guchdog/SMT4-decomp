@@ -25,28 +25,29 @@ extern "C" __attribute__((naked)) void func_0023c22c() {
     );
 }
 // DECOMP_FUNC(0x002aa268, 72)
-extern "C" __attribute__((naked)) void camp_func_002aa268() {
-    asm volatile(
-        "ldr ip, [r0, #0x64]\n"
-        "cmp ip, #0\n"
-        "beq .L_camp_func_002aa268_002aa2ac\n"
-        "strh r1, [r0, #0x68]\n"
-        "mov r3, #0\n"
-        "add r1, r1, r1, lsl #1\n"
-        "strh r3, [r0, #0x6a]\n"
-        "strb r3, [r0, #0x88]\n"
-        "add r1, ip, r1, lsl #2\n"
-        "strb r3, [r0, #0x8a]\n"
-        "cmp r2, #0\n"
-        "strb r2, [r0, #0x6c]\n"
-        "ldrne r1, [r1, #4]\n"
-        "ldreq r1, [r1]\n"
-        "str r1, [r0, #0x24]\n"
-        "str r1, [r0, #0x28]\n"
-        "str r1, [r0, #0x2c]\n"
-        ".L_camp_func_002aa268_002aa2ac:\n"
-        "bx lr\n"
-    );
+extern "C" __attribute__((minsize)) u32 camp_func_002aa268(
+    u8* record, u32 index, u32 selector) {
+    auto* const bytes = reinterpret_cast<volatile u8*>(record);
+    const u32 table_address =
+        *reinterpret_cast<volatile const u32*>(bytes + 0x64);
+    if (table_address == 0) {
+        return reinterpret_cast<u32>(record);
+    }
+
+    *reinterpret_cast<volatile u16*>(bytes + 0x68) = static_cast<u16>(index);
+    *reinterpret_cast<volatile u16*>(bytes + 0x6A) = 0;
+    bytes[0x88] = 0;
+    bytes[0x8A] = 0;
+    bytes[0x6C] = static_cast<u8>(selector);
+
+    const u32 word_index = index * 3u + (selector == 0 ? 0u : 1u);
+    const u32 selected_address = table_address + word_index * 4u;
+    const u32 selected_value =
+        *reinterpret_cast<volatile const u32*>(selected_address);
+    *reinterpret_cast<volatile u32*>(bytes + 0x24) = selected_value;
+    *reinterpret_cast<volatile u32*>(bytes + 0x28) = selected_value;
+    *reinterpret_cast<volatile u32*>(bytes + 0x2C) = selected_value;
+    return reinterpret_cast<u32>(record);
 }
 
 // DECOMP_FUNC(0x0034ef74, 72)
