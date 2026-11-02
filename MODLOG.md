@@ -1165,3 +1165,17 @@ Staged typed `0x002B88C4` and `0x002BF6D0` together in their original H2 slots. 
 # H2 unsigned query divider contract correction — 2026-11-02
 
 Pinned audit corrected `0x002C6C10` to unsigned divmod semantics: divisor zero returns quotient `0xFFFFFFFF` and the original dividend as remainder, without a fault. A seven-case selector-zero caller probe matched the original and production mode-0 query. A typed full-domain shape compiles to 52 bytes with an unresolved `__aeabi_uidiv` call, so no production replacement was made; the signed neighboring divider does not cover established full caller bounds. See [service record](docs/function-records/0x002c6c10.md), [contract audit](docs/agent-work/h2-002c6c10-divmod-contract-recon.md), and [probe](build/agent-work/H2-semantic/h2-logical-mode0-zero-selector/run002/report.json).
+# H2 cursor-axis initializer 0x00296F18 — 2026-11-02
+
+Converted the 72-byte helper to typed C++ and classified its different bytes as
+`non_matching`. The 68-byte body has no relocations. Run005 passed 61 direct
+cases, a matched mapped-boundary fault, three detected mutation controls, all
+four ARM BL target checks, and the exact two-call `0x0029FAE8` setup composition;
+both affected translation units compiled. Independent review found no
+counterexample in aligned ordinary RAM. The caller finalizes both axis starts
+to 1 after the helper's intermediate write of 2. Runtime, other lifecycle
+helpers, and full H2 equivalence remain unverified. See [function record](docs/function-records/0x00296f18.md),
+[conversion evidence](docs/agent-work/h2-296f18-cursor-axis-conversion.md), and
+[review](docs/agent-work/h2-296f18-independent-review-run002.md).
+
+\r\n

@@ -101,8 +101,21 @@ extern "C" __attribute__((naked)) void func_0013d938() {
 }
 
 // DECOMP_FUNC(0x00296f18, 72)
-extern "C" __attribute__((naked)) void ui_func_00296f18() {
-    asm volatile("mov ip, #0\nstr r2, [r0, #0x1c]\nstr ip, [r0]\nstr ip, [r0, #4]\nstr ip, [r0, #8]\nstr ip, [r0, #0xc]\nstr ip, [r0, #0x20]\nmov r3, #2\nstr r1, [r0, #0x10]\nstr r3, [r0, #0x14]\nstr ip, [r0, #0x24]\ncmp r1, #0\nstr r1, [r0, #0x18]\nmovle r1, #0\nstr r1, [r0, #0x18]\nmov r1, #6\nstr r1, [r0]\nbx lr\n");
+extern "C" __attribute__((minsize)) void ui_func_00296f18(volatile u8* block, s32 start, s32 metadata) {
+    auto* const words = reinterpret_cast<volatile u32*>(block);
+    words[7] = static_cast<u32>(metadata);
+    words[0] = 0;
+    words[1] = 0;
+    words[2] = 0;
+    words[3] = 0;
+    words[8] = 0;
+    words[4] = static_cast<u32>(start);
+    words[5] = 2;
+    words[9] = 0;
+    words[6] = static_cast<u32>(start);
+    const s32 clamped_start = start <= 0 ? 0 : start;
+    words[6] = static_cast<u32>(clamped_start);
+    words[0] = 6;
 }
 
 // DECOMP_FUNC(0x002b7aa8, 72)
