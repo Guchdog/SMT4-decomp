@@ -1155,3 +1155,8 @@ were accepted on the H2 workflow board; provenance and handoff checks passed.
 # H2 indexed manager-node resolver 0x002BF6D0 — 2026-11-02
 
 Replaced the 64-byte naked ARM body with 60 bytes of typed C++ calling the original manager resolver and signed divide helper. The direct pinned differential passed 2,269 cases; the original touch caller composition passed 42, and three negative controls were detected. Independent review repeated the offline matrix. The resolver remains `non_matching`; below-SP spill residue, runtime behavior, and malformed-pointer domains are outside the evidence. See [function record](docs/function-records/0x002bf6d0.md), [conversion evidence](docs/agent-work/h2-bf6d0-conversion.md), and [review](docs/agent-work/h2-bf6d0-independent-review.md).
+
+
+# H2 touch-region and manager-resolver integration — 2026-11-02
+
+Staged typed `0x002B88C4` and `0x002BF6D0` together in their original H2 slots. The 242-byte two-slot IPS passed roundtrip, slot-scope, even ARM interworking, and 58 original-caller comparisons; an independent fresh-seed review repeated all 58 cases. The manager resolver and divider remain original dependencies. Controlled fixture, below-SP spill, scheduler, and runtime limits remain explicit in the [integration record](docs/agent-work/h2-b88c4-bf6d0-cumulative-integration.md) and [review](docs/agent-work/h2-b88c4-bf6d0-cumulative-independent-review.md).
