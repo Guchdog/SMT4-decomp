@@ -11490,6 +11490,259 @@
       "validation_plan": [
         "Read-only frozen-input review, no canonical build or emulator. Return structured handoff with evidence levels and limitations."
       ]
+    },
+    {
+      "id": "h2-helper-002bf6d0-slot-fit-after-hidden-index",
+      "role": "implementation",
+      "state": "blocked",
+      "owner": null,
+      "goal": "Recover and fit a correct typed 0x002BF6D0 replacement that forwards node_index through the 0x002B0188 / 0x00138B90 manager-selection contract.",
+      "depends_on": [],
+      "function_claims": [
+        "0x002bf6d0"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-2bf6d0-abi-correction.md",
+        "src/engine/leaf_batch27_b.cpp",
+        "src/engine/leaf_batch39_a.cpp",
+        "extracted/exefs/code.bin",
+        "tools/h2_b88c4_experiment.py"
+      ],
+      "write_paths": [
+        "src/engine/leaf_batch27_b.cpp",
+        "tools/h2_bf6d0_experiment.py",
+        "docs/function-records/0x002bf6d0.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "blocker": "The complete two-argument C++ call compiles to a 68-byte body, four bytes larger than the 64-byte slot. The previous 64-byte candidate failed to forward node_index in r1 and is not promoted.",
+      "unblock_condition": "Produce a semantics-preserving body no larger than 64 bytes, or establish an approved out-of-line replacement route with offline caller composition and interworking validation.",
+      "acceptance": [
+        "The service receives both group and node_index, and the returned pointer follows the quotient/modulo-1000 block/index contract.",
+        "The replacement and final caller chain pass pinned ARM differential, boundaries across quotient blocks, mutations, and the offline caller composition."
+      ]
+    },
+    {
+      "id": "h2-ui-helper-002b0188-manager-resolver-convert",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Convert the 24-byte 0x002B0188 manager-table selector to typed C++ while preserving its implicit two-register contract and tail call to 0x00138B90.",
+      "depends_on": [],
+      "function_claims": [
+        "0x002b0188"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/milestones/H2-audio-settings.md",
+        "src/engine/leaf_batch39_a.cpp",
+        "src/engine/leaf_batch27_b.cpp",
+        "src/engine/leaf_batch32_c.cpp",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "src/engine/leaf_batch39_a.cpp",
+        "tools/h2_b0188_experiment.py",
+        "docs/function-records/0x002b0188.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Use u32(group, node_index): index the global table at group*24, then tail-call 0x00138B90(manager_entry, node_index).",
+        "Fit the original 24-byte slot with a supported relocation, and test null/non-null table entries, group stride, signed quotient boundaries and preserved state.",
+        "Install converted 0x002B0188 in the 0x002B88C4 caller chain while the original 0x002BF6D0 and 0x00138B90 execute; capture both input registers. Include two compiled negative controls."
+      ],
+      "validation_plan": [
+        "Run focused pinned-ARM direct and caller composition; then one four-job full ARMv6K build and independent review."
+      ]
+    },
+    {
+      "id": "h2-ui-helper-002b0188-manager-resolver-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the frozen 0x002B0188 C++ candidate, 261-case pinned-ARM report, and refreshed 0x002B88C4 composition with original 0x002BF6D0 and 0x00138B90 executing.",
+      "depends_on": [
+        "h2-ui-helper-002b0188-manager-resolver-convert"
+      ],
+      "function_claims": [
+        "0x002b0188",
+        "0x002b88c4"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "src/engine/leaf_batch39_a.cpp",
+        "src/engine/leaf_batch32_c.cpp",
+        "src/engine/leaf_batch27_b.cpp",
+        "tools/h2_b0188_experiment.py",
+        "tools/h2_b88c4_experiment.py",
+        "build/agent-work/H2-semantic/h2-ui-helper-002b0188-manager-resolver-convert/run001/report.json",
+        "build/agent-work/H2-semantic/h2-helper-002b88c4-touch-region-convert/run001/report.json",
+        "docs/function-records/0x002b0188.md",
+        "docs/function-records/0x002b88c4.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-2b0188-independent-review.md",
+        "build/agent-work/H2-semantic/h2-ui-helper-002b0188-manager-resolver-review/run001/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify ABI, signed quotient boundaries, group stride and null-manager handling from source and pinned reports without editing candidates or rerunning canonical builds.",
+        "Review the composed 0x002B88C4 chain and identify any remaining mocked behavior, fixture limits, or trace gaps.",
+        "Return a structured handoff with hashes, evidence level, recommendation and limits."
+      ]
+    },
+    {
+      "id": "h2-ui-helper-00221fb4-readiness-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover the contract and real caller/callee context for 0x00221FB4, the titleConfig readiness gate that now calls reconstructed 0x002BF41C; recommend whether it is a bounded next C++ slice.",
+      "depends_on": [],
+      "function_claims": [
+        "0x00221fb4"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/milestones/H2-audio-settings.md",
+        "docs/function-records/0x002bf41c.md",
+        "src/engine/leaf_batch30_c.cpp",
+        "src/engine/leaf_batch32_a.cpp",
+        "extracted/exefs/code.bin",
+        "config/functions.csv"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-00221fb4-readiness-contract.md",
+        "build/agent-work/H2-semantic/h2-ui-helper-00221fb4-readiness-contract/run001/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover arguments, returns, memory effects, branch conditions and ABI from pinned ARM and relevant callers/callees.",
+        "Identify the actual task registration manager structure and describe which dependencies can remain original or need controlled stubs for validation.",
+        "Return a structured handoff with source/image hashes, evidence level, uncertainty and a scoped recommendation; do not edit C++ or shared runners."
+      ]
+    },
+    {
+      "id": "h2-ui-helper-00207d84-callback-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover contract and actual caller relevance for the next semantic-discovery candidate 0x00207D84; determine whether it belongs to H2 titleConfig/audio work before implementation.",
+      "depends_on": [],
+      "function_claims": [
+        "0x00207d84"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/milestones/H2-audio-settings.md",
+        "config/reconstruction.json",
+        "config/functions.csv",
+        "src/engine/leaf_batch30_c.cpp",
+        "src/ui/ui_runtime2.cpp",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-00207d84-contract.md",
+        "build/agent-work/H2-semantic/h2-ui-helper-00207d84-callback-contract/run001/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover arguments, return, memory and VFP effects, call order, and ABI from pinned ARM.",
+        "Identify direct callers or exact callback-table references and assess relevance to titleConfig/audio using evidence rather than source-file proximity alone.",
+        "Return a structured handoff with hashes, limits and implement-or-defer recommendation; do not edit code or shared runners."
+      ]
+    },
+    {
+      "id": "h2-helper-002b88c4-staged-integration",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Stage the reviewed C++ 0x002B88C4 replacement onto the reviewed H2 run-013 image and compare original versus staged code images through the pinned caller/helper chain.",
+      "depends_on": [
+        "h2-helper-002b88c4-touch-region-review-002",
+        "h2-ui-helper-002b0188-manager-resolver-review"
+      ],
+      "function_claims": [
+        "0x002b88c4",
+        "0x002b0188"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/function-records/0x002b88c4.md",
+        "docs/function-records/0x002b0188.md",
+        "src/engine/leaf_batch32_c.cpp",
+        "src/engine/leaf_batch27_b.cpp",
+        "src/engine/leaf_batch39_a.cpp",
+        "tools/h2_b88c4_experiment.py",
+        "build/agent-work/H2-semantic/h2-init-ready-final-image/run-013/combined-build-final/code.combined.bin",
+        "build/agent-work/H2-semantic/h2-init-ready-final-image/run-013/combined-build-final/manifest.json",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "tools/h2_b88c4_staged_image.py",
+        "tools/h2_b88c4_staged_validation.py",
+        "docs/function-records/0x002b88c4.md",
+        "docs/milestones/H2-audio-settings.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Create a reproducible one-slot IPS overlay from the pinned H2 run-013 image, resolve and check the 0x002BF6D0 ARM call at final VMA, and prove no bytes outside 0x002B88C4 changed.",
+        "Compare the original run-013 image and staged image across all 58 established caller fixtures, with original 0x002BF6D0 and 0x00138B90 executing and final 0x002B0188 present.",
+        "Record image/IPS/manifests, source and report hashes, evidence limits, then run one independent review before promotion."
+      ]
+    },
+    {
+      "id": "h2-helper-002b88c4-staged-integration-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the staged 0x002B88C4 replacement, IPS scope and 58-case original-versus-staged caller-chain evidence before promotion.",
+      "depends_on": [
+        "h2-helper-002b88c4-staged-integration"
+      ],
+      "function_claims": [
+        "0x002b88c4",
+        "0x002b0188"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/function-records/0x002b88c4.md",
+        "docs/function-records/0x002b0188.md",
+        "docs/milestones/H2-audio-settings.md",
+        "src/engine/leaf_batch32_c.cpp",
+        "src/engine/leaf_batch27_b.cpp",
+        "src/engine/leaf_batch39_a.cpp",
+        "tools/h2_b88c4_staged_image.py",
+        "tools/h2_b88c4_staged_validation.py",
+        "tools/h2_b88c4_experiment.py",
+        "build/agent-work/H2-semantic/h2-helper-002b88c4-staged-integration/run001/staging/manifest.json",
+        "build/agent-work/H2-semantic/h2-helper-002b88c4-staged-integration/run001/validation/staged-image-validation.json",
+        "build/agent-work/H2-semantic/h2-helper-002b88c4-staged-integration/run001/staging/code.h2-touch-region.bin",
+        "build/agent-work/H2-semantic/h2-helper-002b88c4-staged-integration/run001/staging/code.h2-touch-region.ips"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-2b88c4-staged-integration-review.md",
+        "build/agent-work/H2-semantic/h2-helper-002b88c4-staged-integration-review/run001/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify the declared base/patch/image hashes and prove the staged diff stays within the 0x002B88C4 slot.",
+        "Inspect relocation/interworking and the 58-case report's actual original/staged mapping and remaining mocks.",
+        "Return a structured handoff with review recommendation and limits; do not edit candidates or rerun builds."
+      ]
     }
   ]
 }

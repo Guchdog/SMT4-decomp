@@ -483,13 +483,13 @@ extern "C" __attribute__((naked)) void shop_func_0029ebc4() {
 }
 
 // DECOMP_FUNC(0x002b0188, 24)
-extern "C" __attribute__((naked)) void ui_func_002b0188() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x200c, 0xe59f, 0x0080, 0xe080\n"
-        ".hword 0x2000, 0xe592, 0x0180, 0xe792\n"
-        ".hword 0x227c, 0xeafa, 0xea28, 0x0044\n"
-    );
+extern "C" void* func_00138b90(void* manager_entry, u32 node_index);
+
+extern "C" void* ui_func_002b0188(u32 group, u32 node_index) {
+    const u32 table = *reinterpret_cast<const u32*>(0x0044ea28u);
+    const u32 manager_entry = *reinterpret_cast<const u32*>(table + group * 24u);
+    return func_00138b90(
+        reinterpret_cast<void*>(static_cast<uintptr_t>(manager_entry)), node_index);
 }
 
 // DECOMP_FUNC(0x002b49f4, 24)

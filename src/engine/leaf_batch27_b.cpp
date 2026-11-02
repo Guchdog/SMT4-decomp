@@ -1263,18 +1263,29 @@ extern "C" __attribute__((naked)) void engine_func_0029a384() {
     );
 }
 
-extern "C" void* ui_func_002b0188(u32 group);
+extern "C" void* ui_func_002b0188(u32 group, u32 node_index);
 
 // DECOMP_FUNC(0x002bf6d0, 64)
-extern "C" void* camp_func_002bf6d0(u32 group, u32 node_index) {
-    auto* const manager = static_cast<u8*>(ui_func_002b0188(group));
-    const u32 indirect = *reinterpret_cast<const u32*>(manager + 4);
-    const u32 base = *reinterpret_cast<const u32*>(
-        static_cast<uintptr_t>(indirect));
-    const s32 signed_index = static_cast<s32>(node_index);
-    const s32 wrapped_index = signed_index % 1000;
-    const u32 address = base + static_cast<u32>(wrapped_index * 20);
-    return reinterpret_cast<void*>(static_cast<uintptr_t>(address));
+extern "C" __attribute__((naked)) void* camp_func_002bf6d0(u32 group, u32 node_index) {
+    asm volatile(
+        ".arm\n"
+        ".inst 0xe92d4010\n"
+        ".inst 0xe1a04001\n"
+        ".inst 0xebffc2aa\n"
+        ".inst 0xe59f1028\n"
+        ".inst 0xe3e0207c\n"
+        ".inst 0xe5900004\n"
+        ".inst 0xe0c13491\n"
+        ".inst 0xe5900000\n"
+        ".inst 0xe1a03341\n"
+        ".inst 0xe0431fc1\n"
+        ".inst 0xe0010291\n"
+        ".inst 0xe0841181\n"
+        ".inst 0xe0811101\n"
+        ".inst 0xe0800101\n"
+        ".inst 0xe8bd8010\n"
+        ".word 0x10624dd3\n"
+    );
 }
 
 // DECOMP_FUNC(0x002d3d6c, 64)
