@@ -21,9 +21,9 @@ def link(raw,relocs):
     if len(rows)!=2: raise ValueError(f'expected two helper relocations: {rows}')
     return bytes(data),rows
 
-def run(entry,blob,c,extended=False):
+def run(entry,blob,c,extended=False,code_image=None):
     uc=unicorn.Uc(unicorn.UC_ARCH_ARM,unicorn.UC_MODE_ARM); uc.ctl_set_cpu_model(a.UC_CPU_ARM_11MPCORE)
-    uc.mem_map(0x100000,0x480000,7); uc.mem_write(0x100000,CODE.read_bytes())
+    uc.mem_map(0x100000,0x480000,7); uc.mem_write(0x100000,CODE.read_bytes() if code_image is None else code_image)
     uc.mem_map(CAND,0x10000,7); uc.mem_write(CAND,blob); uc.mem_map(0x2000000,0x20000,3); uc.mem_map(STACK,0x4000,3)
     uc.reg_write(a.UC_ARM_REG_FPEXC,0x40000000); uc.reg_write(a.UC_ARM_REG_C1_C0_2,0xf00000)
     if extended:

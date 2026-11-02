@@ -4490,7 +4490,7 @@ address,size,status,category,name,src_file
 0x0027f6fc,956,matching,script_vm,script_vm_func_0027f6fc,src/engine/leaf_batch45_c.cpp
 0x0027fab8,260,matching,script_vm,script_vm_func_0027fab8,src/engine/leaf_batch40_b.cpp
 0x0027fbbc,12,matching,ui,ui_func_0027fbbc,src/engine/leaf_batch38_a.cpp
-0x0027fbc8,320,matching,script_vm,script_vm_func_0027fbc8,src/engine/leaf_batch41_a.cpp
+0x0027fbc8,320,non_matching,script_vm,script_vm_func_0027fbc8,src/engine/leaf_batch41_a.cpp
 0x0027fd08,76,matching,script_vm,script_vm_func_0027fd08,src/engine/leaf_batch27_b.cpp
 0x0027fd54,304,matching,engine,engine_func_0027fd54,src/engine/leaf_batch43_c.cpp
 0x0027fe84,140,matching,script_vm,script_vm_func_0027fe84,src/engine/leaf_batch42_a.cpp
