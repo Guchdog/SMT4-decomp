@@ -58,7 +58,7 @@ extern "C" void camp_func_002b9008();
 extern "C" void camp_func_002b9364();
 extern "C" void camp_func_002ba9d8();
 extern "C" void camp_func_002bdac0();
-extern "C" void camp_func_002bf6d0();
+extern "C" void* camp_func_002bf6d0(u32 group_id, u32 node_id);
 extern "C" void camp_func_002c4450();
 extern "C" void camp_func_002d4e48();
 extern "C" void camp_func_002d4e80();
@@ -793,68 +793,59 @@ extern "C" __attribute__((naked)) void ui_func_002b8104() {
 }
 
 // DECOMP_FUNC(0x002b88c4, 220)
-extern "C" __attribute__((naked)) void camp_func_002b88c4() {
-    asm volatile(
-        "push {r4, r5, r6, r7, r8, lr}\n"
-        ".word 0xe59f50c8\n"
-        "ldr r4, [r5, #4]\n"
-        "bl camp_func_002bf6d0\n"
-        ".word 0xe59f10c0\n"
-        "ldrsh r1, [r1, r4]\n"
-        "cmp r1, #0xc8\n"
-        "mvnge r0, #0\n"
-        "bge .L_002b8920\n"
-        "ldr r1, [r0, #0xc]\n"
-        "mvn r7, #0\n"
-        "cmp r1, #0\n"
-        "beq .L_002b8924\n"
-        "ldrsh r4, [r1]\n"
-        "ldrsh r6, [r1, #2]\n"
-        "ldr r1, [r5, #4]\n"
-        "ldrsh r3, [r0, #8]\n"
-        "ldrsh ip, [r0, #0xa]\n"
-        "add r2, r1, #0x600\n"
-        "ldrsh r0, [r2, #0x4a]\n"
-        "cmp r0, #0xc8\n"
-        "blt .L_002b8974\n"
-        ".L_002b891c:\n"
-        "mov r0, r7\n"
-        ".L_002b8920:\n"
-        "pop {r4, r5, r6, r7, r8, pc}\n"
-        ".L_002b8924:\n"
-        "ldrh r1, [r0, #6]\n"
-        "ldrh r2, [r0, #4]\n"
-        "ldrsh r4, [r0, #8]\n"
-        "bic ip, r1, #0x8000\n"
-        "ldr r1, [r5, #4]\n"
-        "bic r3, r2, #0x8000\n"
-        "ldrsh r6, [r0, #0xa]\n"
-        "add r2, r1, #0x600\n"
-        "ldrsh r0, [r2, #0x4a]\n"
-        "cmp r0, #0xc8\n"
-        "bge .L_002b891c\n"
-        "add r1, r1, r0, lsl #3\n"
-        "strh r4, [r1, #0xa]\n"
-        "strh r6, [r1, #0xc]\n"
-        "strh r3, [r1, #0xe]\n"
-        "strh ip, [r1, #0x10]\n"
-        "ldrh r1, [r2, #0x4a]\n"
-        "add r1, r1, #1\n"
-        "strh r1, [r2, #0x4a]\n"
-        "pop {r4, r5, r6, r7, r8, pc}\n"
-        ".L_002b8974:\n"
-        "add r1, r1, r0, lsl #3\n"
-        "strh r3, [r1, #0xa]\n"
-        "strh ip, [r1, #0xc]\n"
-        "strh r4, [r1, #0xe]\n"
-        "strh r6, [r1, #0x10]\n"
-        "ldrh r1, [r2, #0x4a]\n"
-        "add r1, r1, #1\n"
-        "strh r1, [r2, #0x4a]\n"
-        "pop {r4, r5, r6, r7, r8, pc}\n"
-        ".word 0x0043dcb0\n"
-        ".word 0x0000064a\n"
-    );
+extern "C" s32 camp_func_002b88c4(u32 group_id, u32 node_id) {
+    constexpr s32 kRegionCapacity = 0xC8;
+    constexpr u32 kRegionCountOffset = 0x64A;
+    constexpr u32 kRegionArrayOffset = 0xA;
+    constexpr u32 kRegionStride = 8;
+
+    const u32 touch_work = *reinterpret_cast<volatile u32*>(0x0043DCB4u);
+    auto* const node = static_cast<u8*>(camp_func_002bf6d0(group_id, node_id));
+    const u32 work = touch_work;
+    const u32 count_address = work + kRegionCountOffset;
+    const s32 initial_count = *reinterpret_cast<volatile s16*>(
+        static_cast<uintptr_t>(count_address));
+    if (initial_count >= kRegionCapacity) {
+        return -1;
+    }
+
+    u16 first = 0;
+    u16 second = 0;
+    u16 third = 0;
+    u16 fourth = 0;
+    const u32 custom_rect = *reinterpret_cast<const u32*>(node + 0xC);
+    if (custom_rect != 0) {
+        const auto* const rect = reinterpret_cast<const u8*>(
+            static_cast<uintptr_t>(custom_rect));
+        first = static_cast<u16>(*reinterpret_cast<const s16*>(node + 8));
+        second = static_cast<u16>(*reinterpret_cast<const s16*>(node + 0xA));
+        third = static_cast<u16>(*reinterpret_cast<const s16*>(rect));
+        fourth = static_cast<u16>(*reinterpret_cast<const s16*>(rect + 2));
+    } else {
+        const u16 flags_a = *reinterpret_cast<const u16*>(node + 4);
+        const u16 flags_b = *reinterpret_cast<const u16*>(node + 6);
+        first = static_cast<u16>(*reinterpret_cast<const s16*>(node + 8));
+        second = static_cast<u16>(*reinterpret_cast<const s16*>(node + 0xA));
+        third = static_cast<u16>(flags_a & 0x7FFFu);
+        fourth = static_cast<u16>(flags_b & 0x7FFFu);
+    }
+
+    const u32 current_work = *reinterpret_cast<volatile u32*>(0x0043DCB4u);
+    const u32 current_count_address = current_work + kRegionCountOffset;
+    const s32 count = *reinterpret_cast<volatile s16*>(
+        static_cast<uintptr_t>(current_count_address));
+    if (count >= kRegionCapacity) {
+        return -1;
+    }
+    const u32 record = current_work + static_cast<u32>(count) * kRegionStride;
+    const u32 record_base = record + kRegionArrayOffset;
+    *reinterpret_cast<volatile u16*>(static_cast<uintptr_t>(record_base)) = first;
+    *reinterpret_cast<volatile u16*>(static_cast<uintptr_t>(record_base + 2)) = second;
+    *reinterpret_cast<volatile u16*>(static_cast<uintptr_t>(record_base + 4)) = third;
+    *reinterpret_cast<volatile u16*>(static_cast<uintptr_t>(record_base + 6)) = fourth;
+    *reinterpret_cast<volatile u16*>(static_cast<uintptr_t>(current_count_address)) =
+        static_cast<u16>(count + 1);
+    return count;
 }
 
 // DECOMP_FUNC(0x002b8b54, 28)
