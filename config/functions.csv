@@ -6146,7 +6146,7 @@ address,size,status,category,name,src_file
 0x002d6544,28,matching,ui,ui_func_002d6544,src/engine/leaf_batch34_b.cpp
 0x002d6560,76,matching,engine,engine_func_002d6560,src/engine/leaf_batch29_b.cpp
 0x002d65ac,8,matching,unknown,func_002d65ac,src/engine/leaf_batch36_c.cpp
-0x002d65b4,52,matching,unknown,func_002d65b4,src/engine/leaf_batch32_c.cpp
+0x002d65b4,52,non_matching,unknown,func_002d65b4,src/engine/leaf_batch32_c.cpp
 0x002d65e8,20,matching,nn_sdk,nn_sdk_func_002d65e8,src/engine/leaf_batch21_b.cpp
 0x002d65fc,160,matching,camp,camp_func_002d65fc,src/engine/leaf_batch31_c.cpp
 0x002d669c,240,matching,camp,camp_func_002d669c,src/engine/leaf_batch35_b.cpp
@@ -6669,7 +6669,7 @@ address,size,status,category,name,src_file
 0x002f5898,240,matching,engine,engine_func_002f5898,src/engine/leaf_batch35_b.cpp
 0x002f5988,64,matching,script_vm,script_vm_func_002f5988,src/engine/leaf_batch37_c.cpp
 0x002f59c8,356,matching,ui,BustupTex_func_002f59c8,src/engine/leaf_batch41_a.cpp
-0x002f5b2c,44,matching,unknown,func_002f5b2c,src/engine/leaf_batch29_b.cpp
+0x002f5b2c,44,non_matching,unknown,func_002f5b2c,src/engine/leaf_batch29_b.cpp
 0x002f5b58,104,matching,engine,engine_func_002f5b58,src/engine/leaf_batch28_b.cpp
 0x002f5bc0,512,matching,camp,CampCecSetting_func_002f5bc0,src/camp/camp_cec.cpp
 0x002f5dc0,96,matching,engine,engine_func_002f5dc0,src/engine/leaf_batch30_b.cpp

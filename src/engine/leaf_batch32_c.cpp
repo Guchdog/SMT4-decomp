@@ -4847,23 +4847,11 @@ extern "C" __attribute__((naked)) void func_002d4ef4() {
 }
 
 // DECOMP_FUNC(0x002d65b4, 52)
-extern "C" __attribute__((naked)) void func_002d65b4() {
-    asm volatile(
-        ".word 0xe59f1028\n"
-        "ldr r1, [r1, #4]\n"
-        "cmp r1, #0\n"
-        "beq .L_002d65dc\n"
-        "cmp r0, #6\n"
-        "bhs .L_002d65dc\n"
-        "add r0, r1, r0, lsl #2\n"
-        "add r0, r0, #0x400\n"
-        "ldrh r0, [r0, #0x96]\n"
-        "bx lr\n"
-        ".L_002d65dc:\n"
-        "mov r0, #0\n"
-        "bx lr\n"
-        ".word 0x0043da28\n"
-    );
+extern "C" uint32_t func_002d65b4(uint32_t index) {
+    const uint32_t manager = *reinterpret_cast<volatile const uint32_t*>(0x0043DA2Cu);
+    if (manager == 0 || index >= 6) return 0;
+    const auto* const field = reinterpret_cast<volatile const uint16_t*>(manager + index * 4u + 0x496u);
+    return *field;
 }
 
 // DECOMP_FUNC(0x002d85a4, 424)
