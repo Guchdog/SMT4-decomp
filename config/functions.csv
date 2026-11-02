@@ -2767,7 +2767,7 @@ address,size,status,category,name,src_file
 0x00207c0c,56,matching,unknown,func_00207c0c,src/engine/leaf_batch35_a.cpp
 0x00207c44,276,matching,engine,effPolygonWind_func_00207c44,src/engine/leaf_batch40_b.cpp
 0x00207d58,44,matching,unknown,func_00207d58,src/engine/leaf_batch39_b.cpp
-0x00207d84,128,matching,ui,ui_func_00207d84,src/engine/leaf_batch30_c.cpp
+0x00207d84,128,non_matching,ui,ui_func_00207d84,src/engine/leaf_batch30_c.cpp
 0x00207e04,384,matching,battle,btlEncount_func_00207e04,src/engine/leaf_batch44_b.cpp
 0x00207f84,120,matching,engine,engine_func_00207f84,src/engine/leaf_batch39_c.cpp
 0x00207ffc,228,matching,script_vm,script_vm_func_00207ffc,src/engine/leaf_batch43_a.cpp

@@ -3,8 +3,38 @@
 // Batch 30 C: redirected to 0x00200000-0x002fffff; exact ARM bytes and bounded literal tails.
 
 // DECOMP_FUNC(0x00207d84, 128)
-extern "C" __attribute__((naked)) void ui_func_00207d84() {
-    asm volatile(".arm\n.inst 0xe92d4010\n.inst 0xe24dd020\n.inst 0xeb02f521\n.inst 0xe59f4060\n.inst 0xe59fc060\n.inst 0xe2843c01\n.inst 0xe28c1000\n.inst 0xec930a04\n.inst 0xe28d3010\n.inst 0xec8c0a04\n.inst 0xe5912000\n.inst 0xe58d2010\n.inst 0xe5912004\n.inst 0xe58d2014\n.inst 0xe5911008\n.inst 0xe1a02000\n.inst 0xe1a0000d\n.inst 0xe58d1018\n.inst 0xe3a01000\n.inst 0xeb016d4d\n.inst 0xed9f0a09\n.inst 0xe2840c01\n.inst 0xed8d0a03\n.inst 0xe89d000e\n.inst 0xee10ca10\n.inst 0xe880100e\n.inst 0xed9d0a02\n.inst 0xe28dd020\n.inst 0xe8bd8010\n.word 0x004ea81c\n.word 0x00472550\n.word 0x00000000\n");
+extern "C" u32 ui_func_002c5218();
+extern "C" void ui_func_0026330c(float* output, u32 index, u32 context,
+                                  const float* input);
+
+extern "C" __attribute__((minsize)) float ui_func_00207d84() {
+    constexpr u32 kVectorAddress = 0x004EA91Cu;
+    constexpr u32 kScratchAddress = 0x00472550u;
+    auto* const vector = reinterpret_cast<volatile u32*>(kVectorAddress);
+    auto* const scratch = reinterpret_cast<volatile u32*>(kScratchAddress);
+    const u32 context = ui_func_002c5218();
+
+    for (u32 word = 0; word < 4; ++word) {
+        scratch[word] = vector[word];
+    }
+
+    alignas(8) u32 frame[8];
+    auto* const input_words = reinterpret_cast<volatile u32*>(frame + 4);
+    input_words[0] = scratch[0];
+    input_words[1] = scratch[1];
+    input_words[2] = scratch[2];
+
+    ui_func_0026330c(reinterpret_cast<float*>(frame), 0, context,
+                     reinterpret_cast<const float*>(frame + 4));
+    frame[3] = 0;
+    vector[0] = frame[0];
+    vector[1] = frame[1];
+    vector[2] = frame[2];
+    vector[3] = frame[3];
+
+    register u32 return_r0 asm("r0") = kVectorAddress;
+    asm volatile("" : "+r"(return_r0));
+    return *reinterpret_cast<float*>(&frame[2]);
 }
 
 // DECOMP_FUNC(0x0020e9ac, 152)
