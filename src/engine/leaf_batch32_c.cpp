@@ -23,7 +23,7 @@ extern "C" void battle_func_002bc3c8();
 extern "C" void battle_func_002bdd20();
 extern "C" void battle_func_002bf148();
 extern "C" void battle_func_002bf2b4();
-extern "C" void battle_func_002bf41c();
+extern "C" u32 battle_func_002bf41c(void* task);
 extern "C" void battle_func_002c45b8();
 extern "C" void camp_func_00193b44();
 extern "C" void camp_func_001a1e6c();
@@ -1609,29 +1609,20 @@ extern "C" __attribute__((naked)) void engine_func_002bf2cc() {
 }
 
 // DECOMP_FUNC(0x002bf41c, 68)
-extern "C" __attribute__((naked)) void battle_func_002bf41c() {
-    asm volatile(
-        ".word 0xe59f1038\n"
-        "ldr r2, [r1]\n"
-        "lsr r1, r0, #0x14\n"
-        "ldr r1, [r2, r1, lsl #3]\n"
-        "cmp r1, #0\n"
-        "beq .L_002bf454\n"
-        ".L_002bf434:\n"
-        "ldr r2, [r1, #0x28]\n"
-        "cmp r2, r0\n"
-        "bne .L_002bf448\n"
-        "mov r0, #1\n"
-        "bx lr\n"
-        ".L_002bf448:\n"
-        "ldr r1, [r1, #0x4c]\n"
-        "cmp r1, #0\n"
-        "bne .L_002bf434\n"
-        ".L_002bf454:\n"
-        "mov r0, #0\n"
-        "bx lr\n"
-        ".word 0x004e3cf4\n"
-    );
+extern "C" u32 battle_func_002bf41c(void* task) {
+    const u32 handle = static_cast<u32>(reinterpret_cast<uintptr_t>(task));
+    const u32 registry = *reinterpret_cast<const u32*>(0x004e3cf4u);
+    const u32 bucket_index = handle >> 20;
+    u32 node = *reinterpret_cast<const u32*>(
+        static_cast<uintptr_t>(registry + (bucket_index << 3)));
+    while (node != 0) {
+        const u32 node_handle = *reinterpret_cast<const u32*>(
+            static_cast<uintptr_t>(node + 0x28));
+        if (node_handle == handle) return 1;
+        node = *reinterpret_cast<const u32*>(
+            static_cast<uintptr_t>(node + 0x4c));
+    }
+    return 0;
 }
 
 // DECOMP_FUNC(0x002bf460, 248)

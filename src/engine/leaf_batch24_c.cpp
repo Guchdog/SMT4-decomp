@@ -22,7 +22,7 @@ extern "C" void battle_func_002553ec();
 extern "C" void battle_func_00267f68();
 extern "C" void battle_func_0028df54();
 extern "C" void battle_func_002b087c();
-extern "C" void battle_func_002bf41c();
+extern "C" u32 battle_func_002bf41c(void* task);
 extern "C" void battle_func_002bf8d4();
 extern "C" void battle_func_002c45b8();
 extern "C" void battle_func_003de7fc();

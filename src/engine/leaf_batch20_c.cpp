@@ -15,7 +15,7 @@ extern "C" void battle_func_002ae3f0();
 extern "C" void battle_func_002ae464();
 extern "C" void battle_func_002b89fc();
 extern "C" void battle_func_002b8a80();
-extern "C" void battle_func_002bf41c();
+extern "C" u32 battle_func_002bf41c(void* task);
 extern "C" void battle_func_002bf8d4();
 extern "C" void battle_func_00337594();
 extern "C" void camp_func_00249a44();
