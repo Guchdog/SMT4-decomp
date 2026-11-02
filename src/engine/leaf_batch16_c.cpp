@@ -1242,7 +1242,7 @@ extern "C" __attribute__((naked)) void ui_func_00282b94() {
 }
 
 // DECOMP_FUNC(0x002892c0, 124)
-extern "C" __attribute__((naked)) void camp_func_002892c0() {
+extern "C" __attribute__((naked)) u32 camp_func_002892c0(void* object, u32 index) {
     asm volatile(
         "ldr r2, [r0, #0x1c]\n"
         "mov ip, #0\n"

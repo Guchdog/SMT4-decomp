@@ -43,7 +43,7 @@ extern "C" void camp_func_0028d838();
 extern "C" void camp_func_0028dc54();
 extern "C" void camp_func_00293a84();
 extern "C" void camp_func_0029eb58();
-extern "C" void camp_func_0029edfc();
+extern "C" u32 camp_func_0029edfc(void* object, u32 index);
 extern "C" void camp_func_0029ee4c();
 extern "C" void camp_func_002a0fac();
 extern "C" void camp_func_002a89e4();

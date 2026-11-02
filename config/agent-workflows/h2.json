@@ -12146,6 +12146,142 @@
         "Identify existing typed/experimental callees and the smallest coherent bounded C++ slice; distinguish actual caller reachability from source proximity.",
         "Return a structured report with hashes, evidence limits and implement/defer recommendation; do not edit C++ or shared runners."
       ]
+    },
+    {
+      "id": "h2-titleconfig-0029edfc-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover the bounded contract of direct TitleConfig_Calc dependency camp_func_0029edfc, including cursor object inputs, branches, writes, tail helper ABI and actual H2 caller context.",
+      "depends_on": [],
+      "function_claims": [
+        "0x0029edfc"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-calc-contract.md",
+        "docs/milestones/H2-audio-settings.md",
+        "src/engine/leaf_batch34_b.cpp",
+        "src/engine/leaf_batch46_b.cpp",
+        "extracted/exefs/code.bin",
+        "config/functions.csv"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-0029edfc-contract.md",
+        "build/agent-work/H2-semantic/h2-titleconfig-0029edfc-contract/run001/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover full ARM control flow, argument/return and preserved-register contract, memory accesses and exact tail-call target from the pinned image.",
+        "Relate 0x0029EDFC to actual TitleConfig_Calc call slices and other callers; separate supported object invariants from assumptions about cursor/input semantics.",
+        "Recommend a bounded typed C++ slice and offline differential/caller evidence; give hashes, unresolved behavior, domain limits and implement/defer recommendation. Do not edit C++ or shared runners."
+      ],
+      "validation_plan": [
+        "Read-only static analysis of the pinned original and source declaration; record structured handoff. No emulator or full build."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-0029edfc-convert",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Convert direct TitleConfig_Calc cursor helper 0x0029EDFC to typed C++ while preserving its disabled-byte return, conditional flag write and original 0x002892C0 tail behavior.",
+      "depends_on": [
+        "h2-titleconfig-0029edfc-contract"
+      ],
+      "function_claims": [
+        "0x0029edfc"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-0029edfc-contract.md",
+        "docs/agent-work/h2-calc-contract.md",
+        "src/engine/leaf_batch34_b.cpp",
+        "src/engine/leaf_batch46_b.cpp",
+        "src/engine/leaf_batch16_c.cpp",
+        "src/engine/leaf_batch32_c.cpp",
+        "src/engine/leaf_batch33_c.cpp",
+        "extracted/exefs/code.bin",
+        "tools/h2_logical_query_caller_composition.py"
+      ],
+      "write_paths": [
+        "src/engine/leaf_batch34_b.cpp",
+        "src/engine/leaf_batch32_c.cpp",
+        "src/engine/leaf_batch33_c.cpp",
+        "src/engine/leaf_batch46_b.cpp",
+        "experiments/semantic_equivalence/h2_29edfc_candidate.cpp",
+        "tools/h2_29edfc_experiment.py",
+        "docs/function-records/0x0029edfc.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Preserve +0x62 raw nonzero return with no call/store; otherwise compare modulo-32-bit (+0x24 + +0x20) against original index, conditionally set +0x60 to 1, and call original ARM helper 0x002892C0 with original object/index and return unchanged.",
+        "Pass focused direct original/candidate/production differential with ordered write/helper traces, raw return, r4-r11/SP, exact flag retention, overflow and boundaries, at least three detected negative controls.",
+        "Compose original TitleConfig_Calc touch path at 0x001EAEA4, including selected-row skip and touched non-selected rows; stage only the declared 80-byte slot, audit ARM/interworking calls and keep ledger `non_matching` if bytes differ. Produce a reproducible report for independent review."
+      ],
+      "validation_plan": [
+        "Compile the affected production translation units and run offline direct differential and original caller composition first. Freeze all relevant inputs and reports for independent review; no emulator until gates pass."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-0029edfc-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review 0x0029EDFC C++ body, typed helper ABI, direct differential, original TitleConfig_Calc touch-path composition and cumulative slot staging.",
+      "depends_on": [],
+      "function_claims": [
+        "0x0029edfc",
+        "0x002892c0"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-0029edfc-contract.md",
+        "docs/agent-work/h2-calc-contract.md",
+        "docs/function-records/0x0029edfc.md",
+        "config/functions.csv",
+        "src/engine/leaf_batch34_b.cpp",
+        "src/engine/leaf_batch16_c.cpp",
+        "src/engine/leaf_batch32_c.cpp",
+        "src/engine/leaf_batch33_c.cpp",
+        "src/engine/leaf_batch46_b.cpp",
+        "experiments/semantic_equivalence/h2_29edfc_candidate.cpp",
+        "tools/h2_29edfc_experiment.py",
+        "tools/h2_logical_query_caller_composition.py",
+        "extracted/exefs/code.bin",
+        "build/agent-work/H2-semantic/h2-titleconfig-0029edfc-convert/run001/report.json",
+        "build/agent-work/H2-semantic/h2-titleconfig-0029edfc-convert/run001/candidate.o",
+        "build/agent-work/H2-semantic/h2-titleconfig-0029edfc-convert/run001/production.o",
+        "build/agent-work/H2-semantic/h2-titleconfig-0029edfc-convert/run001/tail-helper.o",
+        "build/agent-work/H2-semantic/h2-titleconfig-0029edfc-convert/run001/staged/manifest.json",
+        "build/agent-work/H2-semantic/h2-titleconfig-0029edfc-convert/run001/staged/code.h2-0029edfc.bin",
+        "build/agent-work/H2-semantic/h2-titleconfig-0029edfc-convert/run001/staged/code.h2-0029edfc.ips",
+        "build/h2-0029edfc-full/engine/leaf_batch16_c.o",
+        "build/h2-0029edfc-full/engine/leaf_batch32_c.o",
+        "build/h2-0029edfc-full/engine/leaf_batch33_c.o",
+        "build/h2-0029edfc-full/engine/leaf_batch34_b.o",
+        "build/h2-0029edfc-full/engine/leaf_batch46_b.o"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-0029edfc-independent-review-run001.md",
+        "build/agent-work/H2-semantic/h2-titleconfig-0029edfc-review/run001/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recompute packet hashes and verify candidate/production body, 80-byte slot, ARM jump relocation to 0x002892C0, slot-only staged image and IPS roundtrip.",
+        "Independently check disabled raw return, modulo sum, conditional retained flag, original helper behavior, ordered stores, ABI and exact direct matrix/negative controls.",
+        "Verify caller runs use pinned original TitleConfig_Calc, hit 0x001EAEA4 for indices 0/1/2 only when non-selected, prove selected-row skip and compare original vs patched state/trace/ABI; review limits and build objects.",
+        "Return structured recommendation; do not edit implementation, harness, ledger or progress docs."
+      ],
+      "validation_plan": [
+        "Read-only independent review and handoff check. No canonical build or emulator."
+      ]
     }
   ]
 }

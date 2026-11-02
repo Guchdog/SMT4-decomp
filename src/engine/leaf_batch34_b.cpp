@@ -779,15 +779,21 @@ extern "C" __attribute__((naked)) void camp_func_0029eb58() {
 }
 
 // DECOMP_FUNC(0x0029edfc, 80)
-extern "C" __attribute__((naked)) void camp_func_0029edfc() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe92d4070\n.inst 0xe1a04000\n.inst 0xe5d00062\n.inst 0xe1a05001\n"
-        ".inst 0xe3500000\n.inst 0x1a00000c\n.inst 0xe1a00004\n.inst 0xe5900024\n"
-        ".inst 0xe1a06000\n.inst 0xe1a00004\n.inst 0xe5900020\n.inst 0xe0800006\n"
-        ".inst 0xe1500005\n.inst 0x13a00001\n.inst 0x15c40060\n.inst 0xe1a01005\n"
-        ".inst 0xe1a00004\n.inst 0xe8bd4070\n.inst 0xeaffa91d\n.inst 0xe8bd8070\n"
-    );
+extern "C" u32 camp_func_002892c0(void* object, u32 index);
+
+extern "C" u32 camp_func_0029edfc(void* object, u32 index) {
+    auto* const bytes = static_cast<u8*>(object);
+    const u8 disabled = bytes[0x62];
+    if (disabled != 0) {
+        return disabled;
+    }
+
+    const u32 end = *reinterpret_cast<const u32*>(bytes + 0x24);
+    const u32 start = *reinterpret_cast<const u32*>(bytes + 0x20);
+    if (end + start != index) {
+        bytes[0x60] = 1;
+    }
+    return camp_func_002892c0(object, index);
 }
 
 // DECOMP_FUNC(0x0021938c, 84)

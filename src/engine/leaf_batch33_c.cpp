@@ -57,7 +57,7 @@ extern "C" void camp_func_0029df14();
 extern "C" void camp_func_0029e2f4();
 extern "C" void camp_func_0029ebdc();
 extern "C" void camp_func_0029ed08();
-extern "C" void camp_func_0029edfc();
+extern "C" u32 camp_func_0029edfc(void* object, u32 index);
 extern "C" void camp_func_0029ee4c();
 extern "C" void camp_func_0029f0f4();
 extern "C" s32 camp_func_0029f248(void* slot);

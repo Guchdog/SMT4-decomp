@@ -13153,7 +13153,7 @@ extern "C" s32 script_vm_func_001ea928(void* arg) {
             const s16 handle = *reinterpret_cast<s16*>(reinterpret_cast<u8*>(work) + 0x14u + handled * 2u);
             if (call<s32>(0x0029D8FCu, handle) == 6) {
                 call<void>(0x002B91C4u, kTbbTouch);
-                call<void>(0x0029EDFCu, reinterpret_cast<u8*>(work) + 0xE8u, handled);
+                call<u32>(0x0029EDFCu, reinterpret_cast<u8*>(work) + 0xE8u, handled);
                 work = reinterpret_cast<u32*>(*work_global());
                 display_row(work, 0);
                 call<void>(0x0025A0D0u);
