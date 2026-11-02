@@ -1166,41 +1166,70 @@ extern "C" __attribute__((naked)) void script_vm_func_0024a9f8() {
 }
 
 // DECOMP_FUNC(0x002b85bc, 472)
-// Capstone ARM full coverage (118 instructions); raw bytes only, no terminal-return claim.
-extern "C" __attribute__((naked)) void ui_func_002b85bc() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d41f0, 0xe1a05000, 0xe59f81c4, 0xe5980004\n"
-        ".word 0xe5d004c9, 0xebffd914, 0xe1a04000, 0xe1a00005\n"
-        ".word 0xebffd911, 0xe3540000, 0x13500000, 0x0a000022\n"
-        ".word 0xe5d4100c, 0xe3a07000, 0xe3510000, 0x15985004\n"
-        ".word 0x13a04000, 0x0a00001d, 0xe0640184, 0xe3a01001\n"
-        ".word 0xe0800100, 0xe0850100, 0xe2800034, 0xeb001a84\n"
-        ".word 0xe0856104, 0xe5d60494, 0xe3500000, 0x0a00000b\n"
-        ".word 0xe3500007, 0x13500009, 0x0bffc114, 0xe5d60494\n"
-        ".word 0xe3500008, 0x1a000003, 0xebffc110, 0xe320f000\n"
-        ".word 0xe320f000, 0xebffc10d, 0xe320f000, 0xebffc10b\n"
-        ".word 0xe2844001, 0xe3540006, 0xbaffffe6, 0xe5980004\n"
-        ".word 0xe3a01003, 0xe5a0700c, 0xe5801004, 0xe8bd81f0\n"
-        ".word 0xe5d0000c, 0xe5985004, 0xe3a04000, 0xe3500000\n"
-        ".word 0x13a06001, 0x0a000024, 0xe0640184, 0xe3a01001\n"
-        ".word 0xe0800100, 0xe0850100, 0xe2800034, 0xeb001a60\n"
-        ".word 0xe0850104, 0xe5d01494, 0xe3510000, 0x0a000002\n"
-        ".word 0xe3560000, 0x15c07494, 0xebffc0f0, 0xe2844001\n"
-        ".word 0xe3540006, 0xbaffffef, 0xe3a04000, 0xe5d504c8\n"
-        ".word 0xe3500001, 0xe0640184, 0xe0800100, 0xe0850100\n"
-        ".word 0xe2800fdf, 0x0a000006, 0xe3a02001, 0xe3a01000\n"
-        ".word 0xebffc6d9, 0xe2844001, 0xe3540002, 0xbafffff2\n"
-        ".word 0xeaffffd5, 0xe3a02000, 0xe3a01003, 0xeb0014e8\n"
-        ".word 0xe320f000, 0xe320f000, 0xeafffff5, 0xe0640184\n"
-        ".word 0xe3a01001, 0xe0800100, 0xe0850100, 0xe2800034\n"
-        ".word 0xeb001a3b, 0xe0856104, 0xe5d60494, 0xe3500000\n"
-        ".word 0x0a00000b, 0xe3500007, 0x13500009, 0x0bffc0cb\n"
-        ".word 0xe5d60494, 0xe3500008, 0x1a000003, 0xebffc0c7\n"
-        ".word 0xe320f000, 0xe320f000, 0xebffc0c4, 0xe320f000\n"
-        ".word 0xebffc0c2, 0xe2844001, 0xe3540006, 0xbaffffe6\n"
-        ".word 0xeaffffb5, 0x0043da28\n"
-    );
+extern "C" u32 camp_func_002aea28(u32 index);
+extern "C" u32 camp_func_002bf030(u8* slot, u32 selector);
+extern "C" void ui_func_002a8a8c();
+extern "C" u32 camp_func_002bdac0(u8* slot, u32 mode, u32 value);
+extern "C" u32 camp_func_002aa268(u8* slot, u32 mode, u32 value);
+
+extern "C" u32 ui_func_002b85bc(u32 request) {
+    auto* const manager = reinterpret_cast<volatile u8*>(0x0043DA28u);
+    auto* const initial_object = reinterpret_cast<volatile u8*>(
+        *reinterpret_cast<volatile const u32*>(manager + 4));
+    const u32 old_id = initial_object[0x4C9];
+    const u32 old_profile_address = camp_func_002aea28(old_id);
+    const u32 new_profile_address = camp_func_002aea28(request);
+    if (old_profile_address == 0 || new_profile_address == 0) {
+        return new_profile_address;
+    }
+
+    auto* const old_profile = reinterpret_cast<volatile const u8*>(old_profile_address);
+    auto* const new_profile = reinterpret_cast<volatile const u8*>(new_profile_address);
+    const bool clear_status = old_profile[0x0C] == 0 && new_profile[0x0C] != 0;
+    auto* const object = reinterpret_cast<volatile u8*>(
+        *reinterpret_cast<volatile const u32*>(manager + 4));
+    for (u32 slot = 0; slot < 6; ++slot) {
+        auto* const slot_record = object + 0x34 + slot * 0x8C;
+        camp_func_002bf030(const_cast<u8*>(slot_record), 1);
+
+        const u32 status_offset = 0x494 + slot * 4;
+        if (clear_status) {
+            if (object[status_offset] != 0) {
+                object[status_offset] = 0;
+                ui_func_002a8a8c();
+            }
+            continue;
+        }
+        if (object[status_offset] == 0) continue;
+        if (object[status_offset] == 7 || object[status_offset] == 9) {
+            ui_func_002a8a8c();
+        }
+        // The original reloads the byte after the first service call.
+        if (object[status_offset] == 8) {
+            ui_func_002a8a8c();
+            ui_func_002a8a8c();
+            ui_func_002a8a8c();
+        } else {
+            ui_func_002a8a8c();
+        }
+    }
+
+    if (clear_status) {
+        for (u32 slot = 0; slot < 2; ++slot) {
+            auto* const slot_record = object + 0x37C + slot * 0x8C;
+            if (object[0x4C8] == 1) {
+                camp_func_002bdac0(const_cast<u8*>(slot_record), 3, 0);
+            } else {
+                camp_func_002aa268(const_cast<u8*>(slot_record), 0, 1);
+            }
+        }
+    }
+
+    auto* const cleanup_object = reinterpret_cast<volatile u8*>(
+        *reinterpret_cast<volatile const u32*>(manager + 4));
+    *reinterpret_cast<volatile u32*>(cleanup_object + 0x0C) = 0;
+    *reinterpret_cast<volatile u32*>(cleanup_object + 0x10) = 3;
+    return reinterpret_cast<u32>(cleanup_object + 0x0C);
 }
 
 // DECOMP_FUNC(0x00302494, 472)
