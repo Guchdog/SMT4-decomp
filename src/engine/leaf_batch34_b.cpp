@@ -88,22 +88,30 @@ extern "C" __attribute__((naked)) void camp_func_0029f0f4() {
     );
 }
 
+// The targets are small existing getters inside other functions' mapped spans.
+asm(".global AsdSlot_GetField20Tail\n"
+    ".set AsdSlot_GetField20Tail, 0x002CB84C\n"
+    ".global AsdSlot_GetField24Tail\n"
+    ".set AsdSlot_GetField24Tail, 0x002D5674");
+extern "C" s32 AsdSlot_GetField20Tail(void* slot);
+extern "C" s32 AsdSlot_GetField24Tail(void* slot);
+
 // DECOMP_FUNC(0x0029f248, 24)
-extern "C" __attribute__((naked)) void camp_func_0029f248() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe5d01062\n.inst 0xe3510000\n.inst 0x13a00000\n.inst 0x1a000000\n"
-        ".inst 0xea00b17b\n.inst 0xe12fff1e\n"
-    );
+extern "C" s32 camp_func_0029f248(void* slot) {
+    const uintptr_t address = reinterpret_cast<uintptr_t>(slot);
+    if (*reinterpret_cast<const u8*>(address + 0x62u) != 0) {
+        return 0;
+    }
+    return AsdSlot_GetField20Tail(slot);
 }
 
 // DECOMP_FUNC(0x0029f260, 24)
-extern "C" __attribute__((naked)) void camp_func_0029f260() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe5d01062\n.inst 0xe3510000\n.inst 0x13a00000\n.inst 0x1a000000\n"
-        ".inst 0xea00d8ff\n.inst 0xe12fff1e\n"
-    );
+extern "C" s32 camp_func_0029f260(void* slot) {
+    const uintptr_t address = reinterpret_cast<uintptr_t>(slot);
+    if (*reinterpret_cast<const u8*>(address + 0x62u) != 0) {
+        return 0;
+    }
+    return AsdSlot_GetField24Tail(slot);
 }
 
 // DECOMP_FUNC(0x00219eac, 28)

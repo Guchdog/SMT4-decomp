@@ -11865,6 +11865,44 @@
         "Review direct behavior and ABI across 103 differential cases, both negative controls and the paired actual TitleConfig_Calc caller slice; note the preserved internal tail helper and all semantic limits.",
         "Return a structured independent recommendation and handoff; do not edit candidates, runners, ledger or status."
       ]
+    },
+    {
+      "id": "h2-titleconfig-slot-getters-0029f248-0029f260-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review typed C++ ASD slot getters 0x0029F248 and 0x0029F260, their absolute tail relocations, 76-case differential per function, actual TitleConfig_Calc caller slice and cumulative H2 staged image.",
+      "depends_on": [],
+      "function_claims": [
+        "0x0029f248",
+        "0x0029f260"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "src/engine/leaf_batch34_b.cpp",
+        "src/engine/leaf_batch33_c.cpp",
+        "tools/h2_slot_getters_experiment.py",
+        "tools/h2_2a63f8_experiment.py",
+        "build/agent-work/H2-semantic/h2-slot-getters-0029f248-0029f260/run001/report.json",
+        "build/agent-work/H2-semantic/h2-slot-getters-0029f248-0029f260/run001/staged/manifest.json",
+        "build/agent-work/H2-semantic/h2-slot-getters-0029f248-0029f260/run001/staged/code.h2-slot-getters.bin",
+        "build/agent-work/H2-semantic/h2-slot-getters-0029f248-0029f260/run001/staged/code.h2-slot-getters.ips",
+        "build/h2-slot-getters-full/engine/leaf_batch34_b.o",
+        "extracted/exefs/code.bin",
+        "config/functions.csv"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-titleconfig-slot-getters-0029f248-0029f260-review-final.md",
+        "build/agent-work/H2-semantic/h2-titleconfig-slot-getters-review/run002/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recompute source/image/object/report/stage hashes; verify both final-VMA ARM tail branches target 0x002CB84C and 0x002D5674 and stay inside their 24-byte slots.",
+        "Review both functions' gate and field behavior, 76 cases each, negative controls, and the actual 0x001EA9F4-0x001EAA0C caller slice against the cumulative staged image.",
+        "Return an independent structured recommendation with limits; do not edit candidate source, runners, staged artifacts, ledger or progress docs."
+      ]
     }
   ]
 }
