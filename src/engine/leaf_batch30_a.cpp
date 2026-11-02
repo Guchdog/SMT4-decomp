@@ -4711,9 +4711,9 @@ extern "C" void clamp_input_calibration_001285c4(s16* calibration) __asm__("func
 extern "C" s32 read_input_ring_0012a758(u8* source, u8* output, s32 requested,
                                            s32* count, u64* timestamp, u32* index)
     __asm__("func_0012a758");
-extern "C" void normalize_input_sample_00128610(s16* calibration, s16* output_x,
-                                                  s16* output_y, s32 sample_x,
-                                                  s32 sample_y)
+extern "C" u32 normalize_input_sample_00128610(s16* calibration, s16* output_x,
+                                                 s16* output_y, s32 sample_x,
+                                                 s32 sample_y)
     __asm__("func_00128610");
 extern "C" s32 input_global_flag_a_002bb978() __asm__("func_002bb978");
 extern "C" s32 input_global_flag_b_002bc9c8() __asm__("func_002bc9c8");

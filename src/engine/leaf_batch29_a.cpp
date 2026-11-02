@@ -3033,47 +3033,29 @@ extern "C" __attribute__((naked)) void engine_func_001d1a8c() {
 }
 
 // DECOMP_FUNC(0x00128610, 148)
-extern "C" __attribute__((naked)) void func_00128610() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe92d4010 @ push {r4, lr}\n"
-        ".inst 0xe24dd008 @ sub sp, sp, #8\n"
-        ".inst 0xe1a0c001 @ mov ip, r1\n"
-        ".inst 0xe1a04002 @ mov r4, r2\n"
-        ".inst 0xe5d0100c @ ldrb r1, [r0, #0xc]\n"
-        ".inst 0xe1a02003 @ mov r2, r3\n"
-        ".inst 0xe59d3010 @ ldr r3, [sp, #0x10]\n"
-        ".inst 0xe3510000 @ cmp r1, #0\n"
-        ".inst 0x0a00000b @ beq #0x128664\n"
-        ".inst 0xe3510001 @ cmp r1, #1\n"
-        ".inst 0x0a000011 @ beq #0x128684\n"
-        ".inst 0xe3510002 @ cmp r1, #2\n"
-        ".inst 0x1a000005 @ bne #0x12865c\n"
-        ".inst 0xe1d010fa @ ldrsh r1, [r0, #0xa]\n"
-        ".inst 0xe1d000f4 @ ldrsh r0, [r0, #4]\n"
-        ".inst 0xe1cd00f0 @ strd r0, r1, [sp]\n"
-        ".inst 0xe1a01004 @ mov r1, r4\n"
-        ".inst 0xe1a0000c @ mov r0, ip\n"
-        ".inst 0xeb004d20 @ bl #0x13bae0\n"
-        ".inst 0xe28dd008 @ add sp, sp, #8\n"
-        ".inst 0xe8bd8010 @ pop {r4, pc}\n"
-        ".inst 0xe1d010f6 @ ldrsh r1, [r0, #6]\n"
-        ".inst 0xe1d000f0 @ ldrsh r0, [r0]\n"
-        ".inst 0xe1cd00f0 @ strd r0, r1, [sp]\n"
-        ".inst 0xe1a01004 @ mov r1, r4\n"
-        ".inst 0xe1a0000c @ mov r0, ip\n"
-        ".inst 0xeb004cdf @ bl #0x13b9fc\n"
-        ".inst 0xe28dd008 @ add sp, sp, #8\n"
-        ".inst 0xe8bd8010 @ pop {r4, pc}\n"
-        ".inst 0xe1d010f8 @ ldrsh r1, [r0, #8]\n"
-        ".inst 0xe1d000f2 @ ldrsh r0, [r0, #2]\n"
-        ".inst 0xe1cd00f0 @ strd r0, r1, [sp]\n"
-        ".inst 0xe1a01004 @ mov r1, r4\n"
-        ".inst 0xe1a0000c @ mov r0, ip\n"
-        ".inst 0xeb004c96 @ bl #0x13b8f8\n"
-        ".inst 0xe28dd008 @ add sp, sp, #8\n"
-        ".inst 0xe8bd8010 @ pop {r4, pc}\n"
-    );
+extern "C" u32 ui_func_0013b9fc(s16*, s16*, s32, s32, s32, s32);
+extern "C" u32 ui_func_0013b8f8(s16*, s16*, s32, s32, s32, s32);
+extern "C" u32 func_0013bae0(s16*, s16*, s32, s32, s32, s32);
+
+extern "C" __attribute__((minsize)) u32 func_00128610(
+    s16* calibration, s16* output_x, s16* output_y,
+    s32 sample_x, s32 sample_y) {
+    register s32 sample_x_in_r2 asm("r2") = sample_x;
+    register s32 sample_y_in_r3 asm("r3") = sample_y;
+    asm volatile("" : "+r"(sample_x_in_r2), "+r"(sample_y_in_r3));
+    switch (reinterpret_cast<const u8*>(calibration)[0x0C]) {
+    case 0:
+        return ui_func_0013b9fc(output_x, output_y, sample_x_in_r2, sample_y_in_r3,
+                                calibration[0], calibration[3]);
+    case 1:
+        return ui_func_0013b8f8(output_x, output_y, sample_x_in_r2, sample_y_in_r3,
+                                calibration[1], calibration[4]);
+    case 2:
+        return func_0013bae0(output_x, output_y, sample_x_in_r2, sample_y_in_r3,
+                             calibration[2], calibration[5]);
+    default:
+        return static_cast<u32>(reinterpret_cast<std::uintptr_t>(calibration));
+    }
 }
 
 // DECOMP_FUNC(0x0013c05c, 148)
