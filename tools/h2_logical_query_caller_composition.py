@@ -30,6 +30,10 @@ from tools.semantic_experiment import arm_branch
 MODE0_ADDRESS = 0x002B902C
 MODE1_ADDRESS = 0x002BFFBC
 LOGICAL_WRAPPER = 0x002C1830
+TITLECONFIG_QUERY_CALLS = {
+    0x001EAABC, 0x001EABDC, 0x001EAC20, 0x001EAC50,
+    0x001EAE64, 0x001EAF14,
+}
 MODE0_INJECT = 0x01004000
 MODE1_INJECT = 0x01004200
 FLAGS = 0x004650A8
@@ -87,6 +91,8 @@ class LogicalQueryCalcMachine(CalcMachine):
     def __init__(self, image: bytes, scenario: Scenario, calc_code: bytes | None,
                  mode0_code: bytes | None, mode1_code: bytes | None):
         self.logical_wrapper_trace: list[tuple[int, int]] = []
+        self.logical_wrapper_pc_trace: list[tuple[int, int, int]] = []
+        self.titleconfig_query_site_trace: list[tuple[int, int, int]] = []
         self.query_entry_trace: list[tuple[int, int]] = []
         super().__init__(image, entry_code=calc_code, scenario=scenario)
 
@@ -107,9 +113,18 @@ class LogicalQueryCalcMachine(CalcMachine):
         self.uc.mem_write(COUNTERS, b"".join(struct.pack("<I", value) for value in words))
 
     def _code(self, uc, address, size, user_data):
+        if address in TITLECONFIG_QUERY_CALLS:
+            self.titleconfig_query_site_trace.append((address,
+                                                      uc.reg_read(arm.UC_ARM_REG_R0),
+                                                      uc.reg_read(arm.UC_ARM_REG_R1)))
         if address == LOGICAL_WRAPPER:
-            self.logical_wrapper_trace.append((uc.reg_read(arm.UC_ARM_REG_R0),
-                                               uc.reg_read(arm.UC_ARM_REG_R1)))
+            query_id = uc.reg_read(arm.UC_ARM_REG_R0)
+            mode = uc.reg_read(arm.UC_ARM_REG_R1)
+            self.logical_wrapper_trace.append((query_id, mode))
+            # ARM BL stores the instruction after the call in LR. Record the
+            # call instruction address so caller scenarios prove site coverage.
+            self.logical_wrapper_pc_trace.append((uc.reg_read(arm.UC_ARM_REG_LR) - 4,
+                                                  query_id, mode))
             # Do not return a mocked value; execute the pinned wrapper body.
             return
         if address == MODE0_ADDRESS:
@@ -121,6 +136,8 @@ class LogicalQueryCalcMachine(CalcMachine):
     def run(self) -> dict:
         result = super().run()
         result["logical_wrapper_trace"] = list(self.logical_wrapper_trace)
+        result["logical_wrapper_pc_trace"] = list(self.logical_wrapper_pc_trace)
+        result["titleconfig_query_site_trace"] = list(self.titleconfig_query_site_trace)
         result["query_entry_trace"] = list(self.query_entry_trace)
         return result
 
@@ -134,7 +151,8 @@ def compare_runs(left: dict, right: dict) -> str | None:
         if item["preserved"] != item["expected_preserved"]:
             return f"{label} violates callee-saved register/SP/d8-d15 ABI"
     for key in ("fault", "stopped", "return", "pc", "preserved", "work", "config",
-                "trace", "logical_wrapper_trace", "query_entry_trace"):
+                "trace", "logical_wrapper_trace", "logical_wrapper_pc_trace",
+                "titleconfig_query_site_trace", "query_entry_trace"):
         if left[key] != right[key]:
             return f"{key} differs"
     return None

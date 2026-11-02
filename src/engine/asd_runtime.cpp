@@ -113,7 +113,7 @@ extern "C" {
                              s32 a3, s32 a4, s32 a5, u8* out,
                              s32 a7, s32 a8);                // 0x0029F878
     s32   camp_func_0029f278(void* slot, u32 mode);          // 0x0029F278
-    s32   camp_func_002c1830(u32 a, u32 b);                  // 0x002C1830
+    u32   camp_func_002c1830(u32 id, u32 mode);                  // 0x002C1830
     s32   engine_func_00299874(u32 id);                      // 0x00299874
     void  engine_func_0029960c(u32 mode);                    // 0x0029960C
     void  camp_func_002bc200(u32 id);                        // 0x002BC200

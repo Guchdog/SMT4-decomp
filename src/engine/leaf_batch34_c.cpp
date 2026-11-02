@@ -41,7 +41,7 @@ extern "C" void camp_func_002b9364();
 extern "C" void camp_func_002bb490();
 extern "C" void camp_func_002bc200();
 extern "C" void camp_func_002bf030();
-extern "C" void camp_func_002c1830();
+extern "C" u32 camp_func_002c1830(u32 id, u32 mode);
 extern "C" void engine_func_0010f4e8();
 extern "C" void engine_func_001112bc();
 extern "C" void engine_func_00111630();

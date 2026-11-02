@@ -110,7 +110,7 @@ extern "C" u32 ui_func_002a63f8(u32 group, u32 subindex);
 extern "C" u32 ui_func_002adb40(void* destination, const void* source);
 extern "C" void ui_func_002c0a6c();
 extern "C" void ui_func_002c0ac8();
-extern "C" void ui_func_002c17d4();
+extern "C" u32 ui_func_002c17d4(u32 id);
 extern "C" void ui_func_002c615c();
 extern "C" void ui_func_002d18c8();
 

@@ -1780,74 +1780,57 @@ extern "C" __attribute__((naked)) void script_vm_func_0027e668() {
 };
 
 // DECOMP_FUNC(0x002c1830, 504)
-extern "C" __attribute__((naked)) void camp_func_002c1830() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4070, 0xe92d, 0x6000, 0xe1a0\n"
-        ".hword 0x0000, 0xe3a0, 0x000b, 0xe356\n"
-        ".hword 0x5001, 0xe1a0, 0x4000, 0xe1a0\n"
-        ".hword 0xf106, 0x379f, 0x0015, 0xea00\n"
-        ".hword 0x187c, 0x002c, 0x1884, 0x002c\n"
-        ".hword 0x18a8, 0x002c, 0x18a8, 0x002c\n"
-        ".hword 0x18a8, 0x002c, 0x18a8, 0x002c\n"
-        ".hword 0x18a8, 0x002c, 0x18a4, 0x002c\n"
-        ".hword 0x189c, 0x002c, 0x188c, 0x002c\n"
-        ".hword 0x1894, 0x002c, 0x4001, 0xe3a0\n"
-        ".hword 0x0008, 0xea00, 0x4002, 0xe3a0\n"
-        ".hword 0x0006, 0xea00, 0x4003, 0xe3a0\n"
-        ".hword 0x0004, 0xea00, 0x4004, 0xe3a0\n"
-        ".hword 0x0002, 0xea00, 0x4005, 0xe3a0\n"
-        ".hword 0x0000, 0xea00, 0x4006, 0xe3a0\n"
-        ".hword 0x0000, 0xe355, 0x0004, 0x0a00\n"
-        ".hword 0x0001, 0xe355, 0x0007, 0x0a00\n"
-        ".hword 0x0002, 0xe355, 0x000e, 0x1a00\n"
-        ".hword 0x0009, 0xea00, 0x0006, 0xe1a0\n"
-        ".hword 0xddd7, 0xebff, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0x0006, 0xea00\n"
-        ".hword 0x0006, 0xe1a0, 0xf9b6, 0xebff\n"
-        ".hword 0xf000, 0xe320, 0xf000, 0xe320\n"
-        ".hword 0x0001, 0xea00, 0x0006, 0xe1a0\n"
-        ".hword 0xffb7, 0xebff, 0x0000, 0xe350\n"
-        ".hword 0x0049, 0x1a00, 0x0005, 0xe356\n"
-        ".hword 0x0006, 0x0a00, 0x0006, 0xe356\n"
-        ".hword 0x000c, 0x0a00, 0x0004, 0xe356\n"
-        ".hword 0x0012, 0x0a00, 0x0003, 0xe356\n"
-        ".hword 0x0032, 0x0a00, 0x0024, 0xea00\n"
-        ".hword 0x0000, 0xe355, 0x100e, 0xe3a0\n"
-        ".hword 0x0015, 0x0a00, 0x0001, 0xe355\n"
-        ".hword 0x0018, 0x0a00, 0x0002, 0xe355\n"
-        ".hword 0x001f, 0x1a00, 0x001a, 0xea00\n"
-        ".hword 0x0000, 0xe355, 0x100f, 0xe3a0\n"
-        ".hword 0x000d, 0x0a00, 0x0001, 0xe355\n"
-        ".hword 0x0010, 0x0a00, 0x0002, 0xe355\n"
-        ".hword 0x0017, 0x1a00, 0x0012, 0xea00\n"
-        ".hword 0x0000, 0xe355, 0x100d, 0xe3a0\n"
-        ".hword 0x0000, 0xe3a0, 0x0004, 0x0a00\n"
-        ".hword 0x0001, 0xe355, 0x0007, 0x0a00\n"
-        ".hword 0x0002, 0xe355, 0x000e, 0x1a00\n"
-        ".hword 0x0009, 0xea00, 0x0001, 0xe1a0\n"
-        ".hword 0xdda7, 0xebff, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0x0006, 0xea00\n"
-        ".hword 0x0001, 0xe1a0, 0xf986, 0xebff\n"
-        ".hword 0xf000, 0xe320, 0xf000, 0xe320\n"
-        ".hword 0x0001, 0xea00, 0x0001, 0xe1a0\n"
-        ".hword 0xff87, 0xebff, 0x0000, 0xe350\n"
-        ".hword 0x0019, 0x1a00, 0x0000, 0xe354\n"
-        ".hword 0x0017, 0x0a00, 0x0000, 0xe355\n"
-        ".hword 0x0012, 0x0a00, 0x0001, 0xe355\n"
-        ".hword 0x000d, 0x0a00, 0x0002, 0xe355\n"
-        ".hword 0x0011, 0x1a00, 0x0004, 0xe1a0\n"
-        ".hword 0x4070, 0xe8bd, 0x8d48, 0xeaf9\n"
-        ".hword 0x0000, 0xe355, 0x100c, 0xe3a0\n"
-        ".hword 0x0000, 0xe3a0, 0xffe2, 0x0aff\n"
-        ".hword 0x0001, 0xe355, 0xffe5, 0x0aff\n"
-        ".hword 0x0002, 0xe355, 0xffec, 0x1aff\n"
-        ".hword 0xffe7, 0xeaff, 0x0004, 0xe1a0\n"
-        ".hword 0x4070, 0xe8bd, 0x8d63, 0xeaf9\n"
-        ".hword 0x0004, 0xe1a0, 0x4070, 0xe8bd\n"
-        ".hword 0x907a, 0xeaf9, 0x8070, 0xe8bd\n"
-    );
-};
+extern "C" s32 ui_func_002b902c(u32 id);
+extern "C" s32 ui_func_002bffbc(u32 id);
+extern "C" u32 ui_func_002c17d4(u32 id);
+
+using H2LogicalFallback = u32 (*)(u32);
+
+extern "C" u32 camp_func_002c1830(u32 id, u32 mode) {
+    u32 value = 0;
+    if (mode == 0) {
+        value = static_cast<u32>(ui_func_002b902c(id));
+    } else if (mode == 1) {
+        value = static_cast<u32>(ui_func_002bffbc(id));
+    } else if (mode == 2) {
+        value = ui_func_002c17d4(id);
+    } else {
+        return 0;
+    }
+    if (value != 0) {
+        return value;
+    }
+
+    const u32 fallback_code = static_cast<u32>(id == 0)
+                            + (static_cast<u32>(id == 1) << 1)
+                            + static_cast<u32>(id == 7) * 6u
+                            + static_cast<u32>(id == 8) * 5u
+                            + static_cast<u32>(id == 9) * 3u
+                            + static_cast<u32>(id == 10) * 4u;
+    const u32 secondary_id = id >= 3 && id <= 6 ? id + 9u : 0u;
+
+    if (secondary_id != 0) {
+        if (mode == 0) {
+            value = static_cast<u32>(ui_func_002b902c(secondary_id));
+        } else if (mode == 1) {
+            value = static_cast<u32>(ui_func_002bffbc(secondary_id));
+        } else {
+            value = ui_func_002c17d4(secondary_id);
+        }
+        if (value != 0) {
+            return value;
+        }
+    }
+    if (fallback_code == 0) {
+        return 0;
+    }
+
+    const u32 fallback_address = mode == 0 ? 0x00125C10u
+                              : mode == 1 ? 0x00124FA8u
+                                          : 0x00124F0Cu;
+    return reinterpret_cast<H2LogicalFallback>(fallback_address)(fallback_code);
+}
+
 
 // DECOMP_FUNC(0x0014056c, 524)
 extern "C" __attribute__((naked)) void engine_func_0014056c() {

@@ -2464,7 +2464,7 @@ extern "C" __attribute__((naked)) void battle_func_002c1740() {
 }
 
 // DECOMP_FUNC(0x002c17d4, 92)
-extern "C" __attribute__((naked)) void ui_func_002c17d4() {
+extern "C" __attribute__((naked)) u32 ui_func_002c17d4(u32 id) {
     asm volatile(
         "cmp r0, #0x1f\n"
         "bhs .L_002c17ec\n"
