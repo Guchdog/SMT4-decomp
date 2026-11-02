@@ -2953,8 +2953,9 @@ extern "C" __attribute__((naked)) void func_002a89cc() {
 }
 
 // DECOMP_FUNC(0x002ae6b0, 24)
-extern "C" __attribute__((naked)) void engine_func_002ae6b0() {
-    asm volatile("sub r0, r0, #0xf800\nsub r0, r0, #1\ncmp r0, #0x8f\nmovlo r0, #1\nmovhs r0, #0\nbx lr\n");
+extern "C" __attribute__((minsize)) uint32_t engine_func_002ae6b0(
+    uint32_t code) {
+    return static_cast<uint32_t>(code - 0xf801u) < 0x8fu ? 1u : 0u;
 }
 
 // DECOMP_FUNC(0x002b5f6c, 24)
