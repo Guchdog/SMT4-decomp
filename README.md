@@ -54,6 +54,7 @@ The following H2 functions have typed C++ definitions and truthful `non_matching
 | `0x002AE6B0` | `AsdText_IsControlCode`, unsigned predicate for `[0xF801, 0xF88F]` | Exhaustive 65,536 halfword values, 18 directed and 512 seeded 32-bit cases, two boundary mutation controls, and selector 11/19 partial compositions through original callers (other services stubbed; imported harness hashes not pinned); 24/24 bytes with no relocations, but bytes differ. Runtime not run for this helper. [Function record](docs/function-records/0x002ae6b0.md) |
 | `0x002AE664` | ASD control-code mapping helper used by `AsdText_GetLineCount` | 65,798 direct values, three table layouts, two detected mutations; 515 line-count cases plus selector 11/19 compositions through original callers. Candidate 56/76 bytes, zero relocations; bytes differ. Stack spill and runtime limits are documented. [Function record](docs/function-records/0x002ae664.md) |
 | `0x002BF41C` | Task-registration lookup for `TitleConfig_IsReady` | All 4,096 bucket indices, empty/boundary handles, 5 chain probes, 64 seeded chains, two mutations; five compositions through the original ready gate. 68/68 bytes, no relocations, but bytes differ. Runtime/scheduler lifecycle not run. [Function record](docs/function-records/0x002bf41c.md) |
+| `0x002BF6D0` | Indexed manager slot lookup used by H2 calculation/touch paths | Exhaustive signed remainder domain `-1000..1000`, 12 directed and 1,024 seeded indices, two detected mutations; final-address relocation passed. 64/64 bytes with one helper relocation. Caller composition and runtime not run. [Function record](docs/function-records/0x002bf6d0.md) |
 
 The recent helper batch compiled all 204 translation units. Runtime and integration limits remain explicit in the per-function reviews and the [H2 milestone record](docs/milestones/H2-audio-settings.md).
 
@@ -61,8 +62,8 @@ The recent helper batch compiled all 204 translation units. Runtime and integrat
 
 ## Reference byte coverage
 
-- **Current ledger exact matches:** `3,127,864 / 3,139,108 bytes` (**99.6418%**) across `10,930` matching functions and `8` matching raw spans, according to the current `config/functions.csv` classifications.
-- **Current non-matching reconstructions:** `11,244 bytes` across `29` functions; semantic evidence is recorded per function. `0x002B787C`, `0x002AE6B0`, `0x002AE664` and `0x002BF41C` now have typed C++ with bounded offline and caller evidence; runtime scope is documented per function.
+- **Current ledger exact matches:** `3,127,800 / 3,139,108 bytes` (**99.6398%**) across `10,929` matching functions and `8` matching raw spans, according to the current `config/functions.csv` classifications.
+- **Current non-matching reconstructions:** `11,308 bytes` across `30` functions; semantic evidence is recorded per function. `0x002B787C`, `0x002AE6B0`, `0x002AE664`, `0x002BF41C` and `0x002BF6D0` now have typed C++ with bounded offline evidence; caller and runtime scope is documented per function.
 - **Readable byte-identical C++ reconstructions:** `60` functions from the historical exact-conversion count. Non-identical semantic reconstructions, including `0x002B787C`, are counted separately in the ledger.
 - **Total Codebase Explored:** `3,139,108 / 3,139,108 bytes` (**100.0000%**) across `10,959` functions and `8` raw spans; this measures mapped inventory, not byte matching or behavioral equivalence.
 - See [`PROGRESS.md`](PROGRESS.md) for the full subsystem breakdown (`ui`, `camp`, `battle`, `script_vm`, `shop`, `unite`, `engine`, `nn_sdk`, `crt`) and explored function ledger. Coverage totals use original function sizes and do not measure behavioral equivalence.

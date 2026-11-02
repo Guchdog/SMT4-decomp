@@ -6,8 +6,8 @@ Primary goal: [editable C++ semantics](docs/functional-status.md). Byte identity
 
 | Category | Functions | Code Size (Bytes) | Progress % | Status Description |
 |----------|----------:|------------------:|-----------:|--------------------|
-| **Matching (Byte-for-Byte)** | 10,930 functions + 8 raw spans | 3,127,864 B | **99.6418%** | Current matching/matching_span ledger classifications |
-| **Compiled Coverage (≥15% size)** | 29 | 11,244 B | 0.3582% | Compiles to ARMv6K ELF .o; size threshold only, logic unverified |
+| **Matching (Byte-for-Byte)** | 10,929 functions + 8 raw spans | 3,127,800 B | **99.6398%** | Current matching/matching_span ledger classifications |
+| **Compiled Coverage (≥15% size)** | 30 | 11,308 B | 0.3602% | Compiles to ARMv6K ELF .o; size threshold only, logic unverified |
 | **Draft Logic (<15% size)** | 0 | 0 B | 0.0000% | Early draft reconstructions awaiting control-flow recovery |
 | **Scaffolded (Stubs & Interfaces)** | 0 | 0 B | 0.0000% | Headers, structs, and function skeletons |
 | **Total Architecture Explored** | 10,959 functions + 8 raw spans | 3,139,108 B | 100.0000% | Mapped into `src/` (functions and verified raw spans) |
@@ -26,7 +26,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `ui` | 1,645 (676,100 B) | 9 (6,268 B) | 0 (0 B) | 0 (0 B) | 1,654 (682,368 B) | 1,654 (682,368 B) | 99.0814% | 100.00% |
 | `unknown` | 3,817 (610,316 B) | 1 (76 B) | 0 (0 B) | 0 (0 B) | 3,818 (610,392 B) | 3,818 (610,392 B) | 99.9876% | 100.00% |
 | `script_vm` | 1,199 (444,372 B) | 2 (1,916 B) | 0 (0 B) | 0 (0 B) | 1,201 (446,288 B) | 1,201 (446,288 B) | 99.5707% | 100.00% |
-| `camp` | 910 (325,244 B) | 7 (1,044 B) | 0 (0 B) | 0 (0 B) | 917 (326,288 B) | 917 (326,288 B) | 99.6800% | 100.00% |
+| `camp` | 909 (325,180 B) | 8 (1,108 B) | 0 (0 B) | 0 (0 B) | 917 (326,288 B) | 917 (326,288 B) | 99.6604% | 100.00% |
 | `battle` | 574 (236,412 B) | 4 (520 B) | 0 (0 B) | 0 (0 B) | 578 (236,932 B) | 578 (236,932 B) | 99.7805% | 100.00% |
 | `shop` | 111 (39,976 B) | 0 (0 B) | 0 (0 B) | 0 (0 B) | 111 (39,976 B) | 111 (39,976 B) | 100.0000% | 100.00% |
 | `crt` | 26 (9,484 B) | 0 (0 B) | 0 (0 B) | 0 (0 B) | 26 (9,484 B) | 26 (9,484 B) | 100.0000% | 100.00% |
@@ -5744,6 +5744,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x002bf460` | 248 | `ui` | `matching` | `ui_func_002bf460` | [`src/engine/leaf_batch32_c.cpp`](src/engine/leaf_batch32_c.cpp) |
 | `0x002bf558` | 368 | `unknown` | `matching` | `func_002bf558` | [`src/engine/leaf_batch32_c.cpp`](src/engine/leaf_batch32_c.cpp) |
 | `0x002bf6c8` | 8 | `camp` | `matching` | `camp_func_002bf6c8` | [`src/engine/leaf_batch36_a.cpp`](src/engine/leaf_batch36_a.cpp) |
+| `0x002bf6d0` | 64 | `camp` | `non_matching` | `camp_func_002bf6d0` | [`src/engine/leaf_batch27_b.cpp`](src/engine/leaf_batch27_b.cpp) |
 | `0x002bf6d0` | 64 | `camp` | `matching` | `camp_func_002bf6d0` | [`src/engine/leaf_batch27_b.cpp`](src/engine/leaf_batch27_b.cpp) |
 | `0x002bf710` | 76 | `ui` | `matching` | `ui_func_002bf710` | [`src/engine/leaf_batch23_b.cpp`](src/engine/leaf_batch23_b.cpp) |
 | `0x002bf75c` | 24 | `unknown` | `matching` | `func_002bf75c` | [`src/engine/leaf_batch39_a.cpp`](src/engine/leaf_batch39_a.cpp) |
