@@ -11327,6 +11327,42 @@
       "validation_plan": [
         "Independent disassembly and static inspection against pinned reference image."
       ]
+    },
+    {
+      "id": "h2-helper-002bf6d0-manager-slot-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the typed 0x002BF6D0 pointer-chain and signed-index helper against pinned ARM, including its relocation and documented limitations.",
+      "depends_on": [],
+      "function_claims": [
+        "0x002bf6d0"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "src/engine/leaf_batch27_b.cpp",
+        "src/engine/leaf_batch39_a.cpp",
+        "src/engine/asd_runtime.cpp",
+        "tools/h2_bf6d0_experiment.py",
+        "build/agent-work/H2-semantic/h2-bf6d0-manager-slot-convert/run001/report.json",
+        "extracted/exefs/code.bin",
+        "docs/function-records/0x002bf6d0.md",
+        "config/functions.csv"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-2bf6d0-independent-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify original helper call, pointer dereferences, signed remainder semantics, index scaling, return pointer, and AAPCS effects from the pinned ARM span and C++.",
+        "Inspect the exhaustive signed-remainder domain, directed and seeded inputs, final-address relocation, stack-write filtering, and both compiled mutation controls.",
+        "Write a bounded promotion recommendation or smallest counterexample; do not edit implementation, runner, ledger, README, PROGRESS, or board. Preserve that caller composition and runtime were not run."
+      ],
+      "validation_plan": [
+        "Read-only independent review against frozen packet inputs; no canonical build or emulator. Record report/source hashes and explicit evidence limits."
+      ]
     }
   ]
 }
