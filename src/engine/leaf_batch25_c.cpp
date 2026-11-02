@@ -120,7 +120,7 @@ extern "C" void ui_func_002bcf58();
 extern "C" void ui_func_002c1abc();
 extern "C" void ui_func_002c1b64();
 extern "C" void ui_func_002c1d3c();
-extern "C" void ui_func_002c615c();
+extern "C" u64 ui_func_002c615c(u32 numerator, u32 denominator);
 extern "C" void ui_func_00323c00();
 extern "C" void ui_func_003316d0();
 extern "C" void ui_func_003ae28c();

@@ -126,9 +126,10 @@ extern "C" {
     // 0x002C0BCC is declared canonically as Random_Range in
     // engine/asd_symbols.h.
 
-    // 0x002C615C (556 B): unsigned division (r0 / r1); second argument is the
-    // divisor loaded from the list capacity at 0x0022E250.
-    u32   ui_func_002c615c(u32 numerator, u32 denominator);
+    // 0x002C615C: quotient/remainder result in r0/r1. The binary uses a
+    // sign-aware divide when either operand has its high bit set; this caller
+    // supplies the list capacity as divisor and consumes the quotient.
+    u64   ui_func_002c615c(u32 numerator, u32 denominator);
 
     // 0x0029E01C (100 B): set the status mode / refresh affinity table.
     void  camp_func_0029e01c(u32 mode);

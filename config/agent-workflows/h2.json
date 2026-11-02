@@ -12763,6 +12763,111 @@
       "validation_plan": [
         "Read-only integration review; one compiler job and distinct run output if rerun. No canonical build or emulator."
       ]
+    },
+    {
+      "id": "h2-titleconfig-002c615c-production-integration",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Promote the signed quotient/remainder helper 0x002C615C to production C++ and validate its preserved interior entries plus real preview caller at final addresses.",
+      "depends_on": [],
+      "function_claims": [
+        "0x002c615c"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h1-interpolation-divide-candidate.md",
+        "docs/agent-work/h1-interpolation-divide-candidate-review.md",
+        "docs/agent-work/h1-preview-full-composition.md",
+        "docs/agent-work/h2-0029f278-contract.md",
+        "src/engine/leaf_batch32_c.cpp",
+        "src/camp/unite_extras.cpp",
+        "src/script/script_vm_extras.cpp",
+        "tools/h1_interpolation_divide_experiment.py",
+        "tools/h1_preview_full_composition_experiment.py",
+        "tools/h2_2c615c_production_experiment.py",
+        "extracted/exefs/code.bin",
+        "config/functions.csv"
+      ],
+      "write_paths": [
+        "src/engine/leaf_batch32_c.cpp",
+        "src/camp/unite_extras.cpp",
+        "src/script/script_vm_extras.cpp",
+        "src/engine/leaf_batch19_c.cpp",
+        "src/engine/leaf_batch20_c.cpp",
+        "src/engine/leaf_batch23_c.cpp",
+        "src/engine/leaf_batch24_c.cpp",
+        "src/engine/leaf_batch25_c.cpp",
+        "src/engine/leaf_batch26_c.cpp",
+        "src/engine/leaf_batch27_c.cpp",
+        "src/engine/leaf_batch32_b.cpp",
+        "src/engine/leaf_batch33_c.cpp",
+        "src/engine/leaf_batch34_c.cpp",
+        "tools/h2_2c615c_production_experiment.py",
+        "docs/agent-work/h2-2c615c-production-integration.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Expose the quotient in r0 and remainder in r1 through a typed C++ return with consistent declarations; C++ quotient-only callers explicitly project the low word.",
+        "Preserve the six pinned 0x002C6C10 branches into the original function interior by redirecting only the main entry and retaining the original suffix.",
+        "Pass production-body direct differential boundaries, zero divisor observations, real original 0x002BF9F0 interpolation caller cases, IPS roundtrip and wrong-target control.",
+        "State that 0x0029F278 and the accumulated five-callback H2 image are not tested/updated."
+      ],
+      "validation_plan": [
+        "Run the production integration runner with a private output, then perform one canonical full build after independent review. No emulator."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-002c615c-production-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review production 0x002C615C ABI/source, interior branch preservation, IPS placement, direct cases and original H1 caller evidence.",
+      "depends_on": [
+        "h2-titleconfig-002c615c-production-integration"
+      ],
+      "function_claims": [
+        "0x002c615c"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "src/engine/leaf_batch32_c.cpp",
+        "src/camp/unite_extras.cpp",
+        "src/script/script_vm_extras.cpp",
+        "experiments/semantic_equivalence/h1_interpolation_divide_candidate.cpp",
+        "docs/function-records/0x002c615c.md",
+        "docs/agent-work/h1-interpolation-divide-candidate.md",
+        "docs/agent-work/h1-interpolation-divide-candidate-review.md",
+        "docs/agent-work/h1-preview-full-composition.md",
+        "docs/agent-work/h2-2c615c-production-integration.md",
+        "docs/agent-work/h2-0029f278-contract.md",
+        "tools/h2_2c615c_production_experiment.py",
+        "tools/h1_interpolation_divide_experiment.py",
+        "tools/h1_preview_full_composition_experiment.py",
+        "build/agent-work/H2-semantic/h2-titleconfig-002c615c-production/run004/report.json",
+        "build/agent-work/H2-semantic/h2-titleconfig-002c615c-production/run004/code.production.ips",
+        "build/agent-work/H2-semantic/h2-titleconfig-002c615c-production/run004/code.production.bin",
+        "extracted/exefs/code.bin",
+        "config/functions.csv"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-2c615c-production-independent-review.md",
+        "build/agent-work/H2-semantic/h2-titleconfig-002c615c-production-review/run001/handoff.json"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recompute all packet input hashes.",
+        "Independently rerun the production integration runner in an unused output directory and verify hashes/IPS roundtrip.",
+        "Audit r0/r1 two-register return, zero-divisor scope, caller composition, final branch and retained interior branch targets.",
+        "Report bounded approval or concrete counterexample; do not claim H2 cursor or whole-game/runtime equivalence."
+      ],
+      "validation_plan": [
+        "Read-only review with one compiler job and a distinct output directory. No canonical full build or emulator."
+      ]
     }
   ]
 }

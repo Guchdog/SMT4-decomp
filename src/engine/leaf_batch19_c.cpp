@@ -64,7 +64,7 @@ extern "C" s32 ui_func_002bffbc(u32 id);
 extern "C" void ui_func_002c0a6c();
 extern "C" void ui_func_002c0ac8();
 extern "C" void ui_func_002c0b94();
-extern "C" void ui_func_002c615c();
+extern "C" u64 ui_func_002c615c(u32 numerator, u32 denominator);
 extern "C" void ui_func_002d81d0();
 
 // DECOMP_FUNC(0x00276550, 48)

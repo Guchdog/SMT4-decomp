@@ -94,8 +94,8 @@ extern "C" {
                                f32 bx, f32 by, f32 bz);
     // 0x0027DC18 (64 B): LCG float in [0,1).
     f32   ui_func_0027dc18();
-    // 0x002C615C (556 B): unsigned division (r0 / r1).
-    u32   ui_func_002c615c(u32 numerator, u32 denominator);
+    // 0x002C615C: sign-aware quotient in r0 and remainder in r1.
+    u64   ui_func_002c615c(u32 numerator, u32 denominator);
 
     // 0x0025C470 (96 B): look-at from two vectors, adding the work shake
     // offset (+0x294..+0x29C) to the second vector.
@@ -345,11 +345,11 @@ inline f32 YawBetween(const f32* a, const f32* b) {
     if (w->shake_timer > 0) {
         const u32 divisor = static_cast<u32>(w->shake_timer) + 5u;
         w->shake_angle_x = static_cast<u16>(
-            w->shake_angle_x - ui_func_002c615c(w->shake_angle_x, divisor));
+            w->shake_angle_x - static_cast<u32>(ui_func_002c615c(w->shake_angle_x, divisor)));
         w->shake_angle_y = static_cast<u16>(
-            w->shake_angle_y - ui_func_002c615c(w->shake_angle_y, divisor));
+            w->shake_angle_y - static_cast<u32>(ui_func_002c615c(w->shake_angle_y, divisor)));
         w->shake_angle_z = static_cast<u16>(
-            w->shake_angle_z - ui_func_002c615c(w->shake_angle_z, divisor));
+            w->shake_angle_z - static_cast<u32>(ui_func_002c615c(w->shake_angle_z, divisor)));
         w->shake_timer -= 1;                                // 0x00276F18
     }
 

@@ -163,7 +163,7 @@ extern "C" void ui_func_002c0ac8();
 extern "C" void ui_func_002c0c5c();
 extern "C" void ui_func_002c3b00();
 extern "C" void ui_func_002c5218();
-extern "C" void ui_func_002c615c();
+extern "C" u64 ui_func_002c615c(u32 numerator, u32 denominator);
 extern "C" void ui_func_0033854c();
 extern "C" void ui_func_00339404();
 extern "C" void ui_func_00339444();

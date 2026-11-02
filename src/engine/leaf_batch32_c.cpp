@@ -192,7 +192,7 @@ extern "C" void ui_func_002c0ac8();
 extern "C" void ui_func_002c0b94();
 extern "C" void ui_func_002c0c5c();
 extern "C" void ui_func_002c3b00();
-extern "C" void ui_func_002c615c();
+extern "C" u64 ui_func_002c615c(u32 numerator, u32 denominator);
 
 // DECOMP_FUNC(0x002b6030, 572)
 extern "C" __attribute__((naked)) void ui_func_002b6030() {
@@ -3224,161 +3224,49 @@ extern "C" __attribute__((naked)) void engine_func_002c54f0() {
 }
 
 // DECOMP_FUNC(0x002c615c, 556)
-extern "C" __attribute__((naked)) void ui_func_002c615c() {
-    asm volatile(
-        "orrs r3, r0, r1\n"
-        "bmi .L_002c629c\n"
-        "rsbs r3, r1, r0, lsr #1\n"
-        "blo .L_002c6280\n"
-        "movs r2, #0\n"
-        "rsbs r3, r1, r0, lsr #4\n"
-        "blo .L_002c624c\n"
-        "rsbs r3, r1, r0, lsr #8\n"
-        "blo .L_002c621c\n"
-        "rsbs r3, r1, r0, lsr #12\n"
-        "blo .L_002c61e8\n"
-        "rsbs r3, r1, r0, lsr #16\n"
-        "blo .L_002c61b8\n"
-        "lsl r1, r1, #8\n"
-        "rsbs r3, r1, r0, lsr #16\n"
-        "orr r2, r2, #0xff000000\n"
-        "orrhs r2, r2, #0xff0000\n"
-        "lslhs r1, r1, #8\n"
-        "rsbs r3, r1, r0, lsr #12\n"
-        "blo .L_002c61e8\n"
-        "rsbs r3, r1, #0\n"
-        "bhs .L_002c6378\n"
-        ".L_002c61b4:\n"
-        "lsrhs r1, r1, #8\n"
-        ".L_002c61b8:\n"
-        "rsbs r3, r1, r0, lsr #15\n"
-        "subhs r0, r0, r1, lsl #15\n"
-        "adcs r2, r2, r2\n"
-        "rsbs r3, r1, r0, lsr #14\n"
-        "subhs r0, r0, r1, lsl #14\n"
-        "adcs r2, r2, r2\n"
-        "rsbs r3, r1, r0, lsr #13\n"
-        "subhs r0, r0, r1, lsl #13\n"
-        "adcs r2, r2, r2\n"
-        "rsbs r3, r1, r0, lsr #12\n"
-        "subhs r0, r0, r1, lsl #12\n"
-        "adcs r2, r2, r2\n"
-        ".L_002c61e8:\n"
-        "rsbs r3, r1, r0, lsr #11\n"
-        "subhs r0, r0, r1, lsl #11\n"
-        "adcs r2, r2, r2\n"
-        "rsbs r3, r1, r0, lsr #10\n"
-        "subhs r0, r0, r1, lsl #10\n"
-        "adcs r2, r2, r2\n"
-        "rsbs r3, r1, r0, lsr #9\n"
-        "subhs r0, r0, r1, lsl #9\n"
-        "adcs r2, r2, r2\n"
-        "rsbs r3, r1, r0, lsr #8\n"
-        "subhs r0, r0, r1, lsl #8\n"
-        "adcs r2, r2, r2\n"
-        "bhs .L_002c61b4\n"
-        ".L_002c621c:\n"
-        "rsbs r3, r1, r0, lsr #7\n"
-        "subhs r0, r0, r1, lsl #7\n"
-        "adcs r2, r2, r2\n"
-        "rsbs r3, r1, r0, lsr #6\n"
-        "subhs r0, r0, r1, lsl #6\n"
-        "adcs r2, r2, r2\n"
-        "rsbs r3, r1, r0, lsr #5\n"
-        "subhs r0, r0, r1, lsl #5\n"
-        "adcs r2, r2, r2\n"
-        "rsbs r3, r1, r0, lsr #4\n"
-        "subhs r0, r0, r1, lsl #4\n"
-        "adcs r2, r2, r2\n"
-        ".L_002c624c:\n"
-        "rsbs r3, r1, r0, lsr #3\n"
-        "subhs r0, r0, r1, lsl #3\n"
-        "adcs r2, r2, r2\n"
-        "rsbs r3, r1, r0, lsr #2\n"
-        "subhs r0, r0, r1, lsl #2\n"
-        "adcs r2, r2, r2\n"
-        "rsbs r3, r1, r0, lsr #1\n"
-        "subhs r0, r0, r1, lsl #1\n"
-        "adcs r2, r2, r2\n"
-        "subs r1, r0, r1\n"
-        "movlo r1, r0\n"
-        "adc r0, r2, r2\n"
-        "bx lr\n"
-        ".L_002c6280:\n"
-        "subs r1, r0, r1\n"
-        "blo .L_002c6290\n"
-        "movs r0, #1\n"
-        "bx lr\n"
-        ".L_002c6290:\n"
-        "mov r1, r0\n"
-        "movs r0, #0\n"
-        "bx lr\n"
-        ".L_002c629c:\n"
-        "ands r2, r1, #0x80000000\n"
-        "rsbmi r1, r1, #0\n"
-        "eors ip, r2, r0, asr #32\n"
-        "rsbhs r0, r0, #0\n"
-        "rsbs r3, r1, r0, lsr #4\n"
-        "blo .L_002c632c\n"
-        "rsbs r3, r1, r0, lsr #8\n"
-        "blo .L_002c62fc\n"
-        "lsl r1, r1, #6\n"
-        "rsbs r3, r1, r0, lsr #8\n"
-        "orr r2, r2, #0xfc000000\n"
-        "blo .L_002c62fc\n"
-        "lsl r1, r1, #6\n"
-        "rsbs r3, r1, r0, lsr #8\n"
-        "orr r2, r2, #0x3f00000\n"
-        "blo .L_002c62fc\n"
-        "lsl r1, r1, #6\n"
-        "rsbs r3, r1, r0, lsr #8\n"
-        "orr r2, r2, #0xfc000\n"
-        "lslhs r1, r1, #6\n"
-        "orrhs r2, r2, #0x3f00\n"
-        "rsbs r3, r1, #0\n"
-        "bhs .L_002c6370\n"
-        ".L_002c62f8:\n"
-        "lsrhs r1, r1, #6\n"
-        ".L_002c62fc:\n"
-        "rsbs r3, r1, r0, lsr #7\n"
-        "subhs r0, r0, r1, lsl #7\n"
-        "adcs r2, r2, r2\n"
-        "rsbs r3, r1, r0, lsr #6\n"
-        "subhs r0, r0, r1, lsl #6\n"
-        "adcs r2, r2, r2\n"
-        "rsbs r3, r1, r0, lsr #5\n"
-        "subhs r0, r0, r1, lsl #5\n"
-        "adcs r2, r2, r2\n"
-        "rsbs r3, r1, r0, lsr #4\n"
-        "subhs r0, r0, r1, lsl #4\n"
-        "adcs r2, r2, r2\n"
-        ".L_002c632c:\n"
-        "rsbs r3, r1, r0, lsr #3\n"
-        "subhs r0, r0, r1, lsl #3\n"
-        "adcs r2, r2, r2\n"
-        "rsbs r3, r1, r0, lsr #2\n"
-        "subhs r0, r0, r1, lsl #2\n"
-        "adcs r2, r2, r2\n"
-        "bhs .L_002c62f8\n"
-        "rsbs r3, r1, r0, lsr #1\n"
-        "subhs r0, r0, r1, lsl #1\n"
-        "adcs r2, r2, r2\n"
-        "subs r1, r0, r1\n"
-        "movlo r1, r0\n"
-        "adc r0, r2, r2\n"
-        "asrs ip, ip, #0x1f\n"
-        "rsbmi r0, r0, #0\n"
-        "rsbhs r1, r1, #0\n"
-        "bx lr\n"
-        ".L_002c6370:\n"
-        "asrs ip, ip, #0x1f\n"
-        "rsbmi r0, r0, #0\n"
-        ".L_002c6378:\n"
-        "push {r0, lr}\n"
-        "movs r0, #0\n"
-        "bl ui_func_0014e604\n"
-        "pop {r1, pc}\n"
-    );
+namespace {
+
+static u32 ui_divide_magnitude(u32 value) {
+    return (value & 0x80000000u) ? (0u - value) : value;
+}
+
+static u64 ui_divide_unsigned_divmod(u32 numerator, u32 denominator) {
+    u32 quotient = 0;
+    u32 remainder = 0;
+    for (u32 bit = 0; bit < 32; ++bit) {
+        const u32 shift = 31u - bit;
+        const u32 carry = remainder >> 31;
+        const u32 shifted = (remainder << 1) | ((numerator >> shift) & 1u);
+        if (carry || shifted >= denominator) {
+            remainder = shifted - denominator;
+            quotient |= 1u << shift;
+        } else {
+            remainder = shifted;
+        }
+    }
+    return (static_cast<u64>(remainder) << 32) | quotient;
+}
+
+} // namespace
+
+extern "C" u64 ui_func_002c615c(u32 numerator_bits, u32 denominator_bits) {
+    if (denominator_bits == 0) {
+        return static_cast<u64>(numerator_bits) << 32;
+    }
+
+    const bool numerator_negative = (numerator_bits & 0x80000000u) != 0;
+    const bool denominator_negative = (denominator_bits & 0x80000000u) != 0;
+    const u64 unsigned_result = ui_divide_unsigned_divmod(
+        ui_divide_magnitude(numerator_bits), ui_divide_magnitude(denominator_bits));
+    u32 quotient = static_cast<u32>(unsigned_result);
+    u32 remainder = static_cast<u32>(unsigned_result >> 32);
+    if (numerator_negative != denominator_negative) {
+        quotient = 0u - quotient;
+    }
+    if (numerator_negative) {
+        remainder = 0u - remainder;
+    }
+    return (static_cast<u64>(remainder) << 32) | quotient;
 }
 
 // DECOMP_FUNC(0x002c6f7c, 264)

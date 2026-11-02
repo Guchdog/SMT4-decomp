@@ -243,7 +243,7 @@ extern "C" void ui_func_002bcf58();
 extern "C" void ui_func_002c0ac8();
 extern "C" void ui_func_002c3b00();
 extern "C" void ui_func_002c3ba8();
-extern "C" void ui_func_002c615c();
+extern "C" u64 ui_func_002c615c(u32 numerator, u32 denominator);
 
 // DECOMP_FUNC(0x00102dc4, 188)
 extern "C" __attribute__((naked)) void engine_func_00102dc4() {

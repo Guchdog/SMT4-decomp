@@ -199,7 +199,7 @@ extern "C" void ui_func_002b1dfc();
 extern "C" void ui_func_002b1fc0();
 extern "C" void ui_func_002bcf58();
 extern "C" void ui_func_002c0b94();
-extern "C" void ui_func_002c615c();
+extern "C" u64 ui_func_002c615c(u32 numerator, u32 denominator);
 
 // DECOMP_FUNC(0x00253634, 480)
 extern "C" __attribute__((naked)) void camp_func_00253634() {
