@@ -11828,6 +11828,43 @@
         "Review direct cases, null-fault behavior, negative controls and the actual TitleConfig_Calc call slice at 0x001EA964; identify mocks and semantic limits.",
         "Return a structured handoff with an independent review recommendation; do not edit source, runner, staging tools, status or ledger."
       ]
+    },
+    {
+      "id": "h2-resource-resolver-002b96f0-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review typed C++ 0x002B96F0, its absolute ARM tail relocation, 103-case differential, negative controls and paired TitleConfig_Calc composition.",
+      "depends_on": [
+        "h2-resource-resolver-002a63f8-002b96f0-contract"
+      ],
+      "function_claims": [
+        "0x002b96f0"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-2a63f8-2b96f0-contract.md",
+        "src/engine/leaf_batch39_a.cpp",
+        "src/engine/leaf_batch17_c.cpp",
+        "tools/h2_2b96f0_experiment.py",
+        "tools/h2_2a63f8_experiment.py",
+        "build/agent-work/H2-semantic/h2-resource-resolver-002b96f0/run001/report.json",
+        "build/h2-resource-resolver-full/engine/leaf_batch39_a.o",
+        "extracted/exefs/code.bin",
+        "config/functions.csv"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-resource-resolver-002b96f0-review.md",
+        "build/agent-work/H2-semantic/h2-resource-resolver-review/run001/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recompute image/source/report/object hashes and verify the final-VMA ARM JUMP24 rebase targets 0x00145798 and yields the exact 24-byte original body.",
+        "Review direct behavior and ABI across 103 differential cases, both negative controls and the paired actual TitleConfig_Calc caller slice; note the preserved internal tail helper and all semantic limits.",
+        "Return a structured independent recommendation and handoff; do not edit candidates, runners, ledger or status."
+      ]
     }
   ]
 }

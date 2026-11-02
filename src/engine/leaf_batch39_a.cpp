@@ -512,14 +512,16 @@ extern "C" __attribute__((naked)) void func_002b4ea0() {
     );
 }
 
+// 0x00145798 is an existing ARM tail helper inside func_00145788's span.
+asm(".global AsdResource_ResolveSubindexTail\n"
+    ".set AsdResource_ResolveSubindexTail, 0x00145798");
+extern "C" u32 AsdResource_ResolveSubindexTail(u32 manager_entry, u32 subindex);
+
 // DECOMP_FUNC(0x002b96f0, 24)
-extern "C" __attribute__((naked)) u32 engine_func_002b96f0(u32, u32) {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x200c, 0xe59f, 0x0080, 0xe080\n"
-        ".hword 0x2000, 0xe592, 0x0180, 0xe792\n"
-        ".hword 0x3024, 0xeafa, 0xea28, 0x0044\n"
-    );
+extern "C" u32 engine_func_002b96f0(u32 group, u32 subindex) {
+    const u32 table = *reinterpret_cast<const u32*>(0x0044ea28u);
+    const u32 manager_entry = *reinterpret_cast<const u32*>(table + group * 24u);
+    return AsdResource_ResolveSubindexTail(manager_entry, subindex);
 }
 
 // DECOMP_FUNC(0x002bd48c, 24)
