@@ -11363,6 +11363,133 @@
       "validation_plan": [
         "Read-only independent review against frozen packet inputs; no canonical build or emulator. Record report/source hashes and explicit evidence limits."
       ]
+    },
+    {
+      "id": "h2-helper-002b88c4-touch-region-review-002",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the corrected 0x002B88C4 candidate with volatile work/count reloads and ordered stores, including final-address composition with 0x002BF6D0.",
+      "depends_on": [
+        "h2-helper-002b88c4-touch-region-convert"
+      ],
+      "function_claims": [
+        "0x002b88c4",
+        "0x002bf6d0"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "src/engine/leaf_batch32_c.cpp",
+        "src/engine/leaf_batch27_b.cpp",
+        "src/engine/leaf_batch33_c.cpp",
+        "src/engine/leaf_batch32_b.cpp",
+        "src/engine/leaf_batch46_b.cpp",
+        "include/ui/tbb_table.h",
+        "tools/h2_b88c4_experiment.py",
+        "build/agent-work/H2-semantic/h2-helper-002b88c4-touch-region-convert/run001/report.json",
+        "extracted/exefs/code.bin",
+        "docs/function-records/0x002b88c4.md",
+        "docs/function-records/0x002bf6d0.md",
+        "docs/agent-work/h2-2b88c4-independent-review.md",
+        "config/functions.csv"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-2b88c4-independent-review-run002.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify original global/count reload order and four record stores against the current volatile C++ body.",
+        "Inspect the 58 current report cases, ordered trace comparison, both mutations, final-address caller/helper bodies and hashes.",
+        "State whether the concurrency caveat is now bounded correctly; caller/runtime claims must remain limited to the report. Do not edit implementation, runner, ledger, README, PROGRESS, or board."
+      ],
+      "validation_plan": [
+        "Read-only independent review of frozen run002 packet inputs; no canonical build or emulator. Record hashes and evidence limits."
+      ]
+    },
+    {
+      "id": "h2-helper-002b88c4-touch-region-convert",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Reconstruct the 0x002B88C4 touch-region registrar as typed C++ and compare its helper composition against pinned ARM.",
+      "depends_on": [
+        "h2-helper-002bf6d0-manager-slot-review"
+      ],
+      "function_claims": [
+        "0x002b88c4"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/milestones/H2-audio-settings.md",
+        "src/engine/leaf_batch32_c.cpp",
+        "src/engine/leaf_batch27_b.cpp",
+        "src/engine/leaf_batch33_c.cpp",
+        "src/engine/leaf_batch32_b.cpp",
+        "include/ui/tbb_table.h",
+        "tools/h2_bf6d0_experiment.py",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "src/engine/leaf_batch32_c.cpp",
+        "tools/h2_b88c4_experiment.py",
+        "docs/function-records/0x002b88c4.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover global work pointer, 200-entry capacity guard, node record branches, field masks/order, returned slot, and ABI from pinned ARM.",
+        "Differentially exercise both region representations, boundary counts, helper calls/args, writes, return and callee-saved state; include targeted compiled mutations.",
+        "Install both 0x002BF6D0 and 0x002B88C4 at final addresses in the composition profile. Preserve unsupported service and runtime limits."
+      ],
+      "validation_plan": [
+        "Run the focused offline pinned-ARM runner with private task output; run one four-job full ARMv6K build after source freeze; obtain an independent review before promotion."
+      ]
+    },
+    {
+      "id": "h2-helper-002b88c4-touch-region-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review 0x002B88C4 touch-region semantics, its 0x002BF6D0 final-address composition, and the documented temporal store-order difference.",
+      "depends_on": [
+        "h2-helper-002b88c4-touch-region-convert"
+      ],
+      "function_claims": [
+        "0x002b88c4",
+        "0x002bf6d0"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "src/engine/leaf_batch32_c.cpp",
+        "src/engine/leaf_batch27_b.cpp",
+        "src/engine/leaf_batch33_c.cpp",
+        "src/engine/leaf_batch32_b.cpp",
+        "src/engine/leaf_batch46_b.cpp",
+        "include/ui/tbb_table.h",
+        "tools/h2_b88c4_experiment.py",
+        "build/agent-work/H2-semantic/h2-helper-002b88c4-touch-region-convert/run001/report.json",
+        "extracted/exefs/code.bin",
+        "docs/function-records/0x002b88c4.md",
+        "docs/function-records/0x002bf6d0.md",
+        "config/functions.csv"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-2b88c4-independent-review.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify original pointer/global offsets, count checks/reloads, record field source/order, return, and caller ABI from pinned ARM.",
+        "Inspect all 58 direct/final composition fixtures, both mutations, relocation encodings, and exact report/source/image hashes.",
+        "Assess the candidate\u2019s reversed temporal store order: determine whether bounded final-state promotion is supportable and state concurrent-reader limits. Do not edit implementation, runner, ledger, README, PROGRESS, or board."
+      ],
+      "validation_plan": [
+        "Read-only frozen-input review, no canonical build or emulator. Return structured handoff with evidence levels and limitations."
+      ]
     }
   ]
 }
