@@ -111,7 +111,7 @@ extern "C" void script_vm_func_00258020();
 extern "C" void script_vm_func_00269e34();
 extern "C" void script_vm_func_0028f134();
 extern "C" void script_vm_func_002958bc();
-extern "C" void script_vm_func_00297674();
+extern "C" u32 script_vm_func_00297674();
 extern "C" void script_vm_func_002b66ec();
 extern "C" void script_vm_func_002b6700();
 extern "C" void script_vm_func_002b6e78();

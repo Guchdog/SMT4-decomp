@@ -12282,6 +12282,134 @@
       "validation_plan": [
         "Read-only independent review and handoff check. No canonical build or emulator."
       ]
+    },
+    {
+      "id": "h2-titleconfig-00297674-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover the exact contract and real H2 caller behavior for 0x00297674, the TitleConfig_Calc state-2 decision helper; determine whether a bounded C++ conversion can retain the remaining original dependencies.",
+      "depends_on": [],
+      "function_claims": [
+        "0x00297674"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-calc-contract.md",
+        "src/engine/leaf_batch21_b.cpp",
+        "src/engine/leaf_batch46_b.cpp",
+        "src/engine/leaf_batch22_c.cpp",
+        "extracted/exefs/code.bin",
+        "config/functions.csv",
+        "config/game_info.json"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-00297674-contract.md",
+        "build/agent-work/H2-semantic/h2-titleconfig-00297674-contract/run001/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Decode 0x00297674 exactly, including literal/global provenance, return width/values, memory effects, and ABI; distinguish fact from inference.",
+        "Locate every caller and analyze the actual TitleConfig_Calc state-2 call context, input domain, and consequences for each return.",
+        "Recommend bounded conversion scope and identify any unknown that blocks an honest contract; include pinned original identity, source evidence, hashes, and next-step validation requirements."
+      ],
+      "validation_plan": [
+        "Read-only static disassembly/source/caller analysis. No candidate edits, compiler, or emulator. Return structured handoff and contract report."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-00297674-convert",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Convert the H2 global decision-word getter 0x00297674 to typed C++ and validate its full raw-word contract plus TitleConfig_Calc state-2 caller behavior.",
+      "depends_on": [
+        "h2-titleconfig-00297674-contract"
+      ],
+      "function_claims": [
+        "0x00297674"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-00297674-contract.md",
+        "docs/agent-work/h2-calc-contract.md",
+        "src/engine/leaf_batch21_b.cpp",
+        "src/engine/leaf_batch22_c.cpp",
+        "src/engine/leaf_batch46_b.cpp",
+        "extracted/exefs/code.bin",
+        "config/functions.csv",
+        "tools/h2_29edfc_experiment.py",
+        "tools/h2_logical_query_caller_composition.py"
+      ],
+      "write_paths": [
+        "src/engine/leaf_batch21_b.cpp",
+        "src/engine/leaf_batch22_c.cpp",
+        "experiments/semantic_equivalence/h2_297674_candidate.cpp",
+        "tools/h2_297674_experiment.py",
+        "docs/function-records/0x00297674.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Implement a typed 32-bit raw-word getter that preserves the two reads, absence of null checks/writes, return bits and ordinary ABI; audit and correct incompatible C++ declarations while preserving all existing callers.",
+        "Pass offline original-versus-candidate and production direct cases for zero, one, high-bit, all-ones and additional field values; compare read ordering/addresses, no writes, raw r0 and ABI. Detect at least three mutants including slot, field and return-width changes.",
+        "Compose the actual pinned original TitleConfig_Calc state-2 path with original helper 0x0019DFBC and original 0x002BDAC0 dependencies: gate not-equal-2, getter results 0/1/other, comparing state, config, call/write traces and ABI. Audit ARM/Thumb interworking and slot staging; record limits honestly and keep ledger non_matching if output differs."
+      ],
+      "validation_plan": [
+        "Compile focused candidate/affected production units with one job in a fresh output directory, run offline differential and caller composition before any emulator. Prepare reproducible evidence for independent review; no emulator unless the offline gates pass and runtime adds material evidence."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-00297674-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the 0x00297674 raw-word C++ getter, the exact-slot staged patch, and direct plus pinned TitleConfig_Calc state-2 differential evidence.",
+      "depends_on": [
+        "h2-titleconfig-00297674-convert"
+      ],
+      "function_claims": [
+        "0x00297674"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-00297674-contract.md",
+        "docs/function-records/0x00297674.md",
+        "config/functions.csv",
+        "src/engine/leaf_batch21_b.cpp",
+        "src/engine/leaf_batch22_c.cpp",
+        "src/engine/leaf_batch46_b.cpp",
+        "experiments/semantic_equivalence/h2_297674_candidate.cpp",
+        "tools/h2_297674_experiment.py",
+        "tools/h2_calc_experiment.py",
+        "tools/h2_calc_code_patch.py",
+        "tools/semantic_experiment.py",
+        "extracted/exefs/code.bin",
+        "build/agent-work/H2-semantic/h2-titleconfig-00297674-convert/run001/report.json",
+        "build/agent-work/H2-semantic/h2-titleconfig-00297674-convert/run001/candidate.o",
+        "build/agent-work/H2-semantic/h2-titleconfig-00297674-convert/run001/production.o",
+        "build/h2-297674-focused/engine/leaf_batch21_b.o",
+        "build/h2-297674-focused/engine/leaf_batch22_c.o"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-00297674-independent-review-run001.md",
+        "build/agent-work/H2-semantic/h2-titleconfig-00297674-review/run001/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recompute task input hashes; verify the candidate and production bodies, 20-byte slot, IPS roundtrip, exact changed range and even ARM call target.",
+        "Independently check pointer slot/field offsets, full-width values, no null normalization or writes, fault presence, register/stack/flags, read order and all negative controls.",
+        "Verify caller comparisons use pinned original TitleConfig_Calc with only the getter slot patched; cover the helper gate and results 0/1/other, inspect state/config/call behavior and original 0x002BDAC0 execution, and validate focused build objects.",
+        "Return an independent recommendation and precise limitations; do not edit implementation, runner, ledger or progress docs."
+      ],
+      "validation_plan": [
+        "Read-only independent review and check-handoff. No canonical build or emulator."
+      ]
     }
   ]
 }
