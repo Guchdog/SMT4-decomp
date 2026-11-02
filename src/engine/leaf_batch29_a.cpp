@@ -3035,7 +3035,7 @@ extern "C" __attribute__((naked)) void engine_func_001d1a8c() {
 // DECOMP_FUNC(0x00128610, 148)
 extern "C" s32 ui_func_0013b9fc(s16*, s16*, s32, s32, s32, s32);
 extern "C" s32 ui_func_0013b8f8(s16*, s16*, s32, s32, s32, s32);
-extern "C" u32 func_0013bae0(s16*, s16*, s32, s32, s32, s32);
+extern "C" s16* func_0013bae0(s16*, s16*, s32, s32, s32, s32);
 
 extern "C" __attribute__((minsize)) u32 func_00128610(
     s16* calibration, s16* output_x, s16* output_y,
@@ -3051,8 +3051,9 @@ extern "C" __attribute__((minsize)) u32 func_00128610(
         return ui_func_0013b8f8(output_x, output_y, sample_x_in_r2, sample_y_in_r3,
                                 calibration[1], calibration[4]);
     case 2:
-        return func_0013bae0(output_x, output_y, sample_x_in_r2, sample_y_in_r3,
-                             calibration[2], calibration[5]);
+        return reinterpret_cast<u32>(func_0013bae0(
+            output_x, output_y, sample_x_in_r2, sample_y_in_r3,
+            calibration[2], calibration[5]));
     default:
         return static_cast<u32>(reinterpret_cast<std::uintptr_t>(calibration));
     }

@@ -719,39 +719,96 @@ extern "C" __attribute__((naked)) void engine_func_00124fa8() {
 
 // DECOMP_FUNC(0x0013bae0, 460)
 // Capstone ARM full coverage (115 instructions); raw bytes only, no terminal-return claim.
-extern "C" __attribute__((naked)) void func_0013bae0() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d0070, 0xe0050292, 0xeddf0a6b, 0xe0265393\n"
-        ".word 0xe59dc010, 0xe3a04000, 0xee006a10, 0xeeb81ac0\n"
-        ".word 0xeeb41a60, 0xeef1fa10, 0x0a00002e, 0xe0060393\n"
-        ".word 0xeddf0a62, 0xed9f0a62, 0xe1560005, 0xaa000010\n"
-        ".word 0xe3520000, 0xaa000006, 0xee003a10, 0xee012a90\n"
-        ".word 0xeeb80ac0, 0xeef81ae1, 0xee202a80, 0xee820a21\n"
-        ".word 0xea000017, 0xee013a90, 0xeef00a40, 0xee022a10\n"
-        ".word 0xeeb80ae1, 0xeef81ac2, 0xee202a80, 0xee820a21\n"
-        ".word 0xea00000f, 0xe3530000, 0xaa000007, 0xee012a90\n"
-        ".word 0xeeb00a60, 0xee023a10, 0xeef80ae1, 0xeef81ac2\n"
-        ".word 0xee202a20, 0xeec20a21, 0xea000005, 0xee002a90\n"
-        ".word 0xee013a90, 0xeef80ae0, 0xeef81ae1, 0xee202a20\n"
-        ".word 0xeec20a21, 0xeddf1a3f, 0xee600aa0, 0xee400a00\n"
-        ".word 0xeef40ae1, 0xeef1fa10, 0x2ef00a61, 0xeeb41ae0\n"
-        ".word 0xeef1fa10, 0x2a000003, 0xe1c040b0, 0xe1c140b0\n"
-        ".word 0xe8bd0070, 0xe12fff1e, 0xee00ca10, 0xe0040c9c\n"
-        ".word 0xe24cc028, 0xee03ca10, 0xee024a90, 0xeef81ac0\n"
-        ".word 0xeeb10ae0, 0xeef82ae2, 0xee312ac0, 0xeeb41ae2\n"
-        ".word 0xeef10ac1, 0xee701ac0, 0xeeb80ac3, 0xeef1fa10\n"
-        ".word 0xee012a10, 0xba00000e, 0xee013a90, 0xeeb81ac1\n"
-        ".word 0xeef81ae1, 0xee211a00, 0xee611a80, 0xee810a20\n"
-        ".word 0xeebd0ac0, 0xee811aa0, 0xee102a10, 0xe1c020b0\n"
-        ".word 0xeefd0ac1, 0xee103a90, 0xe1c130b0, 0xe8bd0070\n"
-        ".word 0xe12fff1e, 0xeeb81ac1, 0xee023a90, 0xee620a20\n"
-        ".word 0xeeb82ae2, 0xee211a00, 0xee220a00, 0xee211a21\n"
-        ".word 0xee601a21, 0xee810a20, 0xeebd0ac0, 0xee811aa0\n"
-        ".word 0xee102a10, 0xe1c020b0, 0xeefd0ac1, 0xee103a90\n"
-        ".word 0xe1c130b0, 0xe8bd0070, 0xe12fff1e, 0x00000000\n"
-        ".word 0xc2100000, 0x42100000, 0x44c80000\n"
-    );
+static __attribute__((always_inline)) inline s32 input_bits_as_s32_0013bae0(u32 bits) {
+    return static_cast<s32>(bits);
+}
+
+static __attribute__((always_inline)) inline float input_vsqrt_0013bae0(float value) {
+    float result;
+    asm volatile("vsqrt.f32 %0, %1" : "=t"(result) : "t"(value));
+    return result;
+}
+
+extern "C" __attribute__((minsize)) s16* func_0013bae0(
+    s16* output_x, s16* output_y, s32 sample_x, s32 sample_y,
+    s32 calibration_a, s32 calibration_b) {
+    (void)calibration_a;
+    const u32 x_bits = static_cast<u32>(sample_x);
+    const u32 y_bits = static_cast<u32>(sample_y);
+    const u32 x_squared_bits = x_bits * x_bits;
+    const u32 y_squared_bits = y_bits * y_bits;
+    const u32 radius_squared_bits = y_squared_bits + x_squared_bits;
+    const s32 radius_squared_i = input_bits_as_s32_0013bae0(radius_squared_bits);
+    const float radius_squared = static_cast<float>(radius_squared_i);
+    if (radius_squared == 0.0f) {
+        *reinterpret_cast<u16*>(output_x) = 0;
+        *reinterpret_cast<u16*>(output_y) = 0;
+        return output_x;
+    }
+
+    const float boundary_extent = 36.0f;
+    float boundary_x;
+    float boundary_y;
+    if (input_bits_as_s32_0013bae0(y_squared_bits)
+        >= input_bits_as_s32_0013bae0(x_squared_bits)) {
+        if (sample_y < 0) {
+            boundary_x = -boundary_extent;
+            boundary_y = (-boundary_extent * static_cast<float>(sample_x))
+                       / static_cast<float>(sample_y);
+        } else {
+            boundary_x = boundary_extent;
+            boundary_y = (boundary_extent * static_cast<float>(sample_x))
+                       / static_cast<float>(sample_y);
+        }
+    } else if (sample_x < 0) {
+        boundary_x = (-boundary_extent * static_cast<float>(sample_y))
+                   / static_cast<float>(sample_x);
+        boundary_y = -boundary_extent;
+    } else {
+        boundary_x = (boundary_extent * static_cast<float>(sample_y))
+                   / static_cast<float>(sample_x);
+        boundary_y = boundary_extent;
+    }
+
+    float boundary_squared = boundary_x * boundary_x;
+    boundary_squared = boundary_squared + boundary_y * boundary_y;
+    if (!(boundary_squared < 1600.0f)) boundary_squared = 1600.0f;
+    if (radius_squared < boundary_squared) {
+        *reinterpret_cast<u16*>(output_x) = 0;
+        *reinterpret_cast<u16*>(output_y) = 0;
+        return output_x;
+    }
+
+    const u32 b_bits = static_cast<u32>(calibration_b);
+    const s32 b_squared_i = input_bits_as_s32_0013bae0(b_bits * b_bits);
+    const s32 b_minus_40_i = input_bits_as_s32_0013bae0(b_bits - 40u);
+    const float b_value = static_cast<float>(calibration_b);
+    const float b_minus_40 = static_cast<float>(b_minus_40_i);
+    const float boundary_radius = input_vsqrt_0013bae0(boundary_squared);
+    const float input_radius = input_vsqrt_0013bae0(radius_squared);
+    const float b_squared = static_cast<float>(b_squared_i);
+    const float denominator = (b_value - boundary_radius) * input_radius;
+
+    float scaled_x;
+    float scaled_y;
+    if (radius_squared < b_squared) {
+        const float radius_delta = input_radius - boundary_radius;
+        const float x_component = static_cast<float>(sample_x) * b_minus_40;
+        const float y_component = static_cast<float>(sample_y) * b_minus_40;
+        scaled_x = (x_component * radius_delta) / denominator;
+        scaled_y = (y_component * radius_delta) / denominator;
+    } else {
+        const float x_component = static_cast<float>(sample_x) * b_minus_40;
+        const float y_component = static_cast<float>(sample_y) * b_minus_40;
+        scaled_x = x_component / input_radius;
+        scaled_y = y_component / input_radius;
+    }
+
+    const s32 output_x_value = static_cast<s32>(scaled_x);
+    *reinterpret_cast<u16*>(output_x) = static_cast<u16>(output_x_value);
+    const s32 output_y_value = static_cast<s32>(scaled_y);
+    *reinterpret_cast<u16*>(output_y) = static_cast<u16>(output_y_value);
+    return output_x;
 }
 
 // DECOMP_FUNC(0x001dcb5c, 460)
