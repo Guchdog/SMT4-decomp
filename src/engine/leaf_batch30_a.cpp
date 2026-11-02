@@ -3092,67 +3092,86 @@ extern "C" __attribute__((naked)) void engine_func_00150b50() {
 }
 
 // DECOMP_FUNC(0x0013b9fc, 228)
-extern "C" __attribute__((naked)) void ui_func_0013b9fc() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe92d5fff\n"
-        ".inst 0xe1a0a000\n"
-        ".inst 0xe28d0038\n"
-        ".inst 0xe1a09003\n"
-        ".inst 0xe8900880\n"
-        ".inst 0xe59d0008\n"
-        ".inst 0xe0010797\n"
-        ".inst 0xe0020090\n"
-        ".inst 0xe3a00000\n"
-        ".inst 0xe0282993\n"
-        ".inst 0xe1580001\n"
-        ".inst 0xca000004\n"
-        ".inst 0xe59d1004\n"
-        ".inst 0xe1c100b0\n"
-        ".inst 0xe1ca00b0\n"
-        ".inst 0xe28dd010\n"
-        ".inst 0xe8bd9ff0\n"
-        ".inst 0xe1a06708\n"
-        ".inst 0xe3560000\n"
-        ".inst 0xd1a04000\n"
-        ".inst 0xda00000f\n"
-        ".inst 0xe3560001\n"
-        ".inst 0xe1a00006\n"
-        ".inst 0xe3a05001\n"
-        ".inst 0xda000003\n"
-        ".inst 0xe1a05085\n"
-        ".inst 0xe1a000c0\n"
-        ".inst 0xe1500005\n"
-        ".inst 0xcafffffb\n"
-        ".inst 0xe1a01005\n"
-        ".inst 0xe1a00006\n"
-        ".inst 0xeb0629b7\n"
-        ".inst 0xe1a04005\n"
-        ".inst 0xe0800004\n"
-        ".inst 0xe1a050c0\n"
-        ".inst 0xe1550004\n"
-        ".inst 0xbafffff7\n"
-        ".inst 0xe0000b9b\n"
-        ".inst 0xe1a01004\n"
-        ".inst 0xe1500008\n"
-        ".inst 0xd04b6007\n"
-        ".inst 0xe59d0008\n"
-        ".inst 0xd1a05386\n"
-        ".inst 0xc0445387\n"
-        ".inst 0xc06763c4\n"
-        ".inst 0xe0000590\n"
-        ".inst 0xeb0629a8\n"
-        ".inst 0xe1ca00b0\n"
-        ".inst 0xe0000599\n"
-        ".inst 0xe1a01004\n"
-        ".inst 0xeb0629a4\n"
-        ".inst 0xe59d2004\n"
-        ".inst 0xe6bf1076\n"
-        ".inst 0xe1c200b0\n"
-        ".inst 0xe28dd010\n"
-        ".inst 0xe1a00001\n"
-        ".inst 0xe8bd9ff0\n"
-    );
+extern "C" u64 ui_func_002c615c(u32 numerator_bits, u32 denominator_bits);
+
+static __attribute__((always_inline)) inline s32 input_bits_as_s32_0013b9fc(u32 bits) {
+    return static_cast<s32>(bits);
+}
+
+static __attribute__((always_inline)) inline s32 input_divide_0013b9fc(
+    u32 numerator_bits, s32 denominator) {
+    const u64 quotient_remainder = ui_func_002c615c(
+        numerator_bits, static_cast<u32>(denominator));
+    return input_bits_as_s32_0013b9fc(static_cast<u32>(quotient_remainder));
+}
+
+extern "C" __attribute__((minsize)) s32 ui_func_0013b9fc(
+    s16* output_x, s16* output_y, s32 sample_x, s32 sample_y,
+    s32 calibration_a, s32 calibration_b) {
+    const u32 sample_x_bits = static_cast<u32>(sample_x);
+    const u32 sample_y_bits = static_cast<u32>(sample_y);
+    const u32 radius_squared_bits = sample_x_bits * sample_x_bits
+                                  + sample_y_bits * sample_y_bits;
+    const u32 inner_squared_bits = static_cast<u32>(calibration_a)
+                                 * static_cast<u32>(calibration_a);
+    const s32 radius_squared = input_bits_as_s32_0013b9fc(radius_squared_bits);
+    const s32 inner_squared = input_bits_as_s32_0013b9fc(inner_squared_bits);
+
+    if (radius_squared <= inner_squared) {
+        *output_y = 0;
+        *output_x = 0;
+        return 0;
+    }
+
+    const u32 scaled_radius_bits = radius_squared_bits << 14;
+    const s32 scaled_radius = input_bits_as_s32_0013b9fc(scaled_radius_bits);
+    s32 magnitude = 0;
+    if (scaled_radius > 0) {
+        s32 power = 1;
+        s32 shifted = scaled_radius;
+        if (scaled_radius > 1) {
+            do {
+                power = input_bits_as_s32_0013b9fc(static_cast<u32>(power) << 1);
+                shifted >>= 1;
+            } while (shifted > power);
+        }
+
+        magnitude = power;
+        for (;;) {
+            const s32 quotient = input_divide_0013b9fc(scaled_radius_bits, magnitude);
+            const u32 sum_bits = static_cast<u32>(quotient) + static_cast<u32>(magnitude);
+            const s32 next = input_bits_as_s32_0013b9fc(sum_bits) >> 1;
+            if (next >= magnitude) break;
+            magnitude = next;
+        }
+    }
+
+    const u32 outer_squared_bits = static_cast<u32>(calibration_b)
+                                 * static_cast<u32>(calibration_b);
+    s32 delta;
+    s32 scale;
+    if (input_bits_as_s32_0013b9fc(outer_squared_bits) <= radius_squared) {
+        const u32 delta_bits = static_cast<u32>(calibration_b)
+                             - static_cast<u32>(calibration_a);
+        delta = input_bits_as_s32_0013b9fc(delta_bits);
+        scale = input_bits_as_s32_0013b9fc(delta_bits << 7);
+    } else {
+        const u32 scale_bits = static_cast<u32>(magnitude)
+                             - (static_cast<u32>(calibration_a) << 7);
+        scale = input_bits_as_s32_0013b9fc(scale_bits);
+        const s32 radial = magnitude >> 7;
+        delta = input_bits_as_s32_0013b9fc(
+            static_cast<u32>(radial) - static_cast<u32>(calibration_a));
+    }
+
+    const u32 x_numerator = sample_x_bits * static_cast<u32>(scale);
+    const s32 scaled_x = input_divide_0013b9fc(x_numerator, magnitude);
+    *reinterpret_cast<u16*>(output_x) = static_cast<u16>(scaled_x);
+
+    const u32 y_numerator = sample_y_bits * static_cast<u32>(scale);
+    const s32 scaled_y = input_divide_0013b9fc(y_numerator, magnitude);
+    *reinterpret_cast<u16*>(output_y) = static_cast<u16>(scaled_y);
+    return static_cast<s16>(static_cast<u16>(delta));
 }
 
 // DECOMP_FUNC(0x0011cde8, 236)
