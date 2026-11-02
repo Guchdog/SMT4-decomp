@@ -4612,7 +4612,7 @@ address,size,status,category,name,src_file
 0x002891c8,24,matching,ui,ui_func_002891c8,src/engine/leaf_batch22_b.cpp
 0x002891e0,192,matching,engine,engine_func_002891e0,src/engine/leaf_batch31_c.cpp
 0x002892a0,32,matching,unknown,func_002892a0,src/engine/leaf_batch22_b.cpp
-0x002892c0,124,matching,camp,camp_func_002892c0,src/engine/leaf_batch16_c.cpp
+0x002892c0,124,non_matching,camp,camp_func_002892c0,src/engine/leaf_batch16_c.cpp
 0x0028933c,352,matching,battle,Filter4Poly_func_0028933c,src/engine/leaf_batch41_a.cpp
 0x0028949c,396,matching,engine,engine_func_0028949c,src/engine/leaf_batch44_b.cpp
 0x00289628,24,matching,engine,engine_func_00289628,src/engine/leaf_batch39_a.cpp

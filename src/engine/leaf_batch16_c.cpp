@@ -1242,43 +1242,43 @@ extern "C" __attribute__((naked)) void ui_func_00282b94() {
 }
 
 // DECOMP_FUNC(0x002892c0, 124)
-extern "C" __attribute__((naked)) u32 camp_func_002892c0(void* object, u32 index) {
-    asm volatile(
-        "ldr r2, [r0, #0x1c]\n"
-        "mov ip, #0\n"
-        "cmp r2, #0\n"
-        "beq .Lbatch16c_0028932c\n"
-        "cmp r1, #0\n"
-        "movle r1, #0\n"
-        "ble .Lbatch16c_002892e4\n"
-        "cmp r2, r1\n"
-        "sublt r1, r2, #1\n"
-        ".Lbatch16c_002892e4:\n"
-        "ldr r3, [r0, #0x20]\n"
-        "sub r3, r1, r3\n"
-        "cmp r3, #0\n"
-        "addlt r0, r0, #0x20\n"
-        "stmlt r0, {r1, ip}\n"
-        "blt .Lbatch16c_00289324\n"
-        "ldr ip, [r0, #0x10]\n"
-        "str r3, [r0, #0x24]\n"
-        "cmp ip, r2\n"
-        "movgt ip, r2\n"
-        "sub r2, r2, ip\n"
-        "cmp r3, r2\n"
-        "ble .Lbatch16c_00289324\n"
-        "sub r1, r1, r2\n"
-        "str r2, [r0, #0x24]\n"
-        "str r1, [r0, #0x20]\n"
-        ".Lbatch16c_00289324:\n"
-        "mov r0, #1\n"
-        "bx lr\n"
-        ".Lbatch16c_0028932c:\n"
-        "str ip, [r0, #0x24]\n"
-        "str ip, [r0, #0x20]\n"
-        "mov r0, #1\n"
-        "bx lr\n"
-    );
+static inline bool camp_less_signed_u32(u32 left, u32 right) {
+    return static_cast<s32>(left) < static_cast<s32>(right);
+}
+
+extern "C" u32 camp_func_002892c0(void* object, u32 index) {
+    auto words = static_cast<u32*>(object);
+    auto writes = static_cast<volatile u32*>(object);
+    const u32 count = words[7];
+    if (count == 0) {
+        writes[9] = 0;
+        writes[8] = 0;
+        return 1;
+    }
+
+    if (!camp_less_signed_u32(0, index)) {
+        index = 0;
+    } else if (camp_less_signed_u32(count, index)) {
+        index = count - 1u;
+    }
+
+    const u32 delta = index - words[8];
+    if (camp_less_signed_u32(delta, 0)) {
+        writes[8] = index;
+        writes[9] = 0;
+    } else {
+        u32 visible = words[4];
+        writes[9] = delta;
+        if (camp_less_signed_u32(count, visible)) {
+            visible = count;
+        }
+        const u32 limit = count - visible;
+        if (camp_less_signed_u32(limit, delta)) {
+            writes[9] = limit;
+            writes[8] = index - limit;
+        }
+    }
+    return 1;
 }
 
 // DECOMP_FUNC(0x0012aa74, 128)

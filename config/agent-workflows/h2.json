@@ -999,7 +999,7 @@
         "Do not claim full UI, caller, persistence or Azahar equivalence from the function-level harness; make any uncovered state a precise blocker, not a passing report."
       ],
       "validation_plan": [
-        "Use one compiler slot, fresh task output paths and focused tests. Do not edit shared runners or other workers\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u00a0\u00c3\u00a2\u00e2\u201a\u00ac\u00e2\u201e\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c2\u00a0\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u00a2\u00e2\u20ac\u017e\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00a1\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u00a0\u00c3\u00a2\u00e2\u201a\u00ac\u00e2\u201e\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c2\u00a6\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a1\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00a1\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u00a0\u00c3\u00a2\u00e2\u201a\u00ac\u00e2\u201e\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c2\u00a6\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00be\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00a1\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2 files; no canonical build or emulator control."
+        "Use one compiler slot, fresh task output paths and focused tests. Do not edit shared runners or other workersÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¾ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ files; no canonical build or emulator control."
       ]
     },
     {
@@ -1083,7 +1083,7 @@
       "compiler_slots": 1,
       "exclusive_resources": [],
       "acceptance": [
-        "Implement the callback\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u00a0\u00c3\u00a2\u00e2\u201a\u00ac\u00e2\u201e\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c2\u00a0\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u00a2\u00e2\u20ac\u017e\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00a1\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u00a0\u00c3\u00a2\u00e2\u201a\u00ac\u00e2\u201e\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c2\u00a6\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a1\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00a1\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u00a0\u00c3\u00a2\u00e2\u201a\u00ac\u00e2\u201e\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c2\u00a6\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00be\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00a1\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2s direct work/global behavior in readable ARM C++, preserving loop rereads/call counts, null checks, clear-after-call order, registration predicate branch, task-state args, return/ABI and the final global reload/release. Keep scheduler/lifetime meanings unresolved.",
+        "Implement the callbackÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¾ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢s direct work/global behavior in readable ARM C++, preserving loop rereads/call counts, null checks, clear-after-call order, registration predicate branch, task-state args, return/ABI and the final global reload/release. Keep scheduler/lifetime meanings unresolved.",
         "Build a non-leaf ARM differential harness with explicit helper stubs or pinned helper execution, valid TitleConfigWork/global fixtures, and comparisons of full work bytes, relevant globals, helper trace/order/args, return and preserved state. Declare every modeled effect and limit.",
         "Cover nonpositive/positive loop values, both counter loops independently, nullable +0x154/+0x14C/+0x150 slots, active predicate false/true, relevant manager-halfword threshold cases, and a targeted wrong-order/count negative control. Report any unsupported behavior instead of passing it.",
         "Do not claim scheduler timing, actual free semantics, caller lifecycle, UI edit behavior, persistence or Azahar runtime equivalence."
@@ -1245,7 +1245,7 @@
       "compiler_slots": 0,
       "exclusive_resources": [],
       "acceptance": [
-        "Use the executable\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u00a0\u00c3\u00a2\u00e2\u201a\u00ac\u00e2\u201e\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00e2\u20ac\u00a6\u00c3\u201a\u00c2\u00a1\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00e2\u20ac\u00a6\u00c3\u201a\u00c2\u00be\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2s embedded build identity and matching official Azahar source to distinguish CLI parsing, runtime packaging, and profile-path behavior.",
+        "Use the executableÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¾ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢s embedded build identity and matching official Azahar source to distinguish CLI parsing, runtime packaging, and profile-path behavior.",
         "Inspect run-005 staged contents versus the source runtime package; make no emulator launch and no input control.",
         "Give a testable root-cause hypothesis with evidence, explicitly label unresolved causes, and prescribe a fresh bounded run packet if justified.",
         "Return structured handoff; do not edit the existing probe runner or board."
@@ -1839,7 +1839,7 @@
       "compiler_slots": 0,
       "exclusive_resources": [],
       "acceptance": [
-        "Inspect the actual State-9/10 title caller and existing H1 Unicorn integration harness. Propose a reproducible offline harness composition that proves initializer\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u00a0\u00c3\u00a2\u00e2\u201a\u00ac\u00e2\u201e\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a0\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00be\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2Calc callback registration\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u00a0\u00c3\u00a2\u00e2\u201a\u00ac\u00e2\u201e\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a0\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00be\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2state-10 readiness\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u00a0\u00c3\u00a2\u00e2\u201a\u00ac\u00e2\u201e\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a0\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00be\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2title reset for original and patched code, using only explicit observable HLE boundaries.",
+        "Inspect the actual State-9/10 title caller and existing H1 Unicorn integration harness. Propose a reproducible offline harness composition that proves initializerÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢Calc callback registrationÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢state-10 readinessÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢title reset for original and patched code, using only explicit observable HLE boundaries.",
         "Separate a feasible first vertical slice from unresolved state-1 input/cursor/resource/service behavior; do not invent physical button mappings, persistent file semantics, or UI behavior.",
         "List exact sources, memory/register fixtures, execution entry/exit points, comparison observables, controls, and expected work owners needed for an implementation task.",
         "No Azahar/emulator, RSP, profile/game I/O, or keyboard/mouse. Return a structured handoff."
@@ -2560,7 +2560,7 @@
       "role": "implementation",
       "state": "accepted",
       "owner": null,
-      "goal": "Factor the repeated TitleConfig_Draw renderer-cache update into one production helper and measure whether the main symbol fits its original 1,932-byte span while helper plus format literal fits Calc\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u00a0\u00c3\u00a2\u00e2\u201a\u00ac\u00e2\u201e\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00e2\u20ac\u00a6\u00c3\u201a\u00c2\u00a1\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00e2\u20ac\u00a6\u00c3\u201a\u00c2\u00be\u00c3\u0192\u00c6\u2019\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2s exact 428-byte cave tail.",
+      "goal": "Factor the repeated TitleConfig_Draw renderer-cache update into one production helper and measure whether the main symbol fits its original 1,932-byte span while helper plus format literal fits CalcÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¾ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢s exact 428-byte cave tail.",
       "depends_on": [
         "h2-draw-production-integration-plan",
         "h2-combined-code-placement-plan",
@@ -4817,7 +4817,7 @@
       "exclusive_resources": [],
       "acceptance": [
         "Independently verify ID signedness/bounds, availability-flag branch, counter-one pulse, threshold comparison, selector/division fallback arguments and remainder result against pinned instructions and real H2 callers.",
-        "Check the differential\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00be\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2s 140,864-case matrix plus invalid IDs, helper-call instrumentation, stack/data writes, register preservation and all three mutation controls; verify exact report hashes and the 136-byte production/candidate body identity.",
+        "Check the differentialÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢s 140,864-case matrix plus invalid IDs, helper-call instrumentation, stack/data writes, register preservation and all three mutation controls; verify exact report hashes and the 136-byte production/candidate body identity.",
         "Review selector-zero exclusion, retained original service dependency, ledger classification and caller/runtime limits; recommend only a bounded promotion scope and list remaining evidence."
       ],
       "validation_plan": [
@@ -4865,7 +4865,7 @@
       "role": "validation",
       "state": "accepted",
       "owner": null,
-      "goal": "Independently check the refreshed mode-0 query differential\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00be\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2s exact division-service argument traces and stack-range evidence.",
+      "goal": "Independently check the refreshed mode-0 query differentialÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢s exact division-service argument traces and stack-range evidence.",
       "depends_on": [
         "h2-logical-mode0-service-args"
       ],
@@ -4943,7 +4943,7 @@
         "Record candidate compilation identities, scenario coverage, negative controls, source/image hashes and limits. This is injected offline caller composition, not IPS patch or runtime equivalence."
       ],
       "validation_plan": [
-        "Use a fresh output root; run focused tests and a bounded original-vs-injected caller matrix using the existing pinned Calc runner\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00be\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2s deterministic non-input service boundaries. Do not change the shared Calc runner or run Azahar."
+        "Use a fresh output root; run focused tests and a bounded original-vs-injected caller matrix using the existing pinned Calc runnerÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢s deterministic non-input service boundaries. Do not change the shared Calc runner or run Azahar."
       ]
     },
     {
@@ -6751,7 +6751,7 @@
       "compiler_slots": 0,
       "exclusive_resources": [],
       "acceptance": [
-        "Compose the reviewed five-callback final image with the exact three mapper and FillPair production replacements into one reproducible final code image and one IPS based on the pinned original; preserve CopyPair\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00be\u00c3\u201a\u00c2\u00a2s already matching body.",
+        "Compose the reviewed five-callback final image with the exact three mapper and FillPair production replacements into one reproducible final code image and one IPS based on the pinned original; preserve CopyPairÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢s already matching body.",
         "Pin and verify every source image, incremental IPS, source/object identity and final manifest/image/IPS hash; prove IPS round-trip and that all changed bytes are within authorized original callback/helper slots and audited cave placements.",
         "Run the available callback, mapper, FillPair and State-9/10 caller differentials against the same final image; if current runners cannot consume that image, extend only task-owned tooling and add a negative control. Report any scope limits honestly.",
         "Write a structured report with exact commands, outputs and hashes; do not change the ledger or milestone and do not run Azahar."
@@ -6830,7 +6830,7 @@
       "exclusive_resources": [],
       "acceptance": [
         "Verify all delivery-manifest feature, compatibility, patch and binary hashes against the current private source/package; identify the exact pinned source revision and private binary SHA-256.",
-        "Verify the generated feature patch contains the reviewed live-query return capture, on-demand snapshot shortcut and no unintended unrelated changes; confirm the wrapper\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00be\u00c3\u201a\u00c2\u00a2s profile/observer guards still match the reviewed route.",
+        "Verify the generated feature patch contains the reviewed live-query return capture, on-demand snapshot shortcut and no unintended unrelated changes; confirm the wrapperÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢s profile/observer guards still match the reviewed route.",
         "Return accept/request_fixes/blocked with artifact identities and limitations; do not build, launch or access profiles."
       ],
       "validation_plan": [
@@ -8023,7 +8023,7 @@
       "role": "validation",
       "state": "accepted",
       "owner": null,
-      "goal": "Independently audit the H0\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00e2\u20ac\u0153H3 validation plan against current milestone records, pinned evidence artifacts, and the H0\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00e2\u20ac\u0153H3 function inventory; identify each requirement as proven, partial, contradicted, or missing without broadening claims.",
+      "goal": "Independently audit the H0ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œH3 validation plan against current milestone records, pinned evidence artifacts, and the H0ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œH3 function inventory; identify each requirement as proven, partial, contradicted, or missing without broadening claims.",
       "depends_on": [],
       "function_claims": [],
       "read_paths": [
@@ -8054,7 +8054,7 @@
       ],
       "acceptance": [
         "Recompute the H0 batch-4 IPS/image and H2/H3 composition/report hashes that are present in the checkout; identify absent or stale artifact paths.",
-        "Audit each numbered H0\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00e2\u20ac\u0153H3 plan requirement and H0/H1/H2/H3 acceptance records, separating runtime route, C++ reconstruction, experimental candidate, and exact ledger status.",
+        "Audit each numbered H0ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œH3 plan requirement and H0/H1/H2/H3 acceptance records, separating runtime route, C++ reconstruction, experimental candidate, and exact ledger status.",
         "Independently inspect H1/H2/H3 evidence limits and the non-accepted H2 board tasks; determine which are auxiliary tooling or which invalidate a claimed milestone acceptance.",
         "Give a justified per-milestone status and an evidence-backed count of unique replacement units by category without summing duplicate experiments or treating static presence as validation. Do not edit source, ledger, milestone records, board, or launch an emulator."
       ],
@@ -8414,7 +8414,7 @@
         "Run-020: after the one-shot object call at 0x0013AD6C captures its base, arm a one-shot at 0x0013AD70 (the return after BL 0x002C3AA8). Record only three raw dwords at r4+0/+4/+8 and the raw byte at r4+0x76; clear and resume the original instruction. Retain the compare capture and timeout header. Pin a fresh packet and pass offline gates before the disposable original-only launch.",
         "Run-021: after the caller-specific 0x0013AD6C stop, arm a one-shot at 0x002C3ACC (after the helper's second MRC and immediately before STR r0,[r4,#4]). Record raw r0/r4 and at most three raw dwords at r4+0/+4/+8 only when r4 matches the captured caller base; clear the breakpoint and resume the original store. Offline-check that the target is the pinned ARM STR word, run focused tests, pin all inputs afresh, and pass the offline differential/caller/interworking gates first. Use a 10-second startup bound for this early observation; preserve the read-only guest, disposable-profile, loopback, cleanup, save-hash, and breakpoint checks.",
         "Run-022: Run-021 captured r0=0x1FF82800 at the pre-store PC 0x002C3ACC but read owner=0x1FF82000 by the caller return at 0x0013AD70. After the same caller-specific base is captured, arm a one-shot at 0x002C3AD0, immediately after STR r0,[r4,#4] and before LDR r0,[r4,#8]. Record raw r0/r4 and at most three raw words at the matching caller base, clear the breakpoint, and resume. Offline-check the ARM instruction at this PC, run focused tests, pin fresh inputs and all offline gates, and use the 10-second startup bound. The aim is to localize when the observed owner-word difference appears, without assigning thread or game-level semantics.",
-        "Run-023: Run-022 confirmed the owner word equals r0 at 0x002C3AD0 but differs by the 0x0013AD70 return; no actor is identified. The early SVC/atomic/lock startup breakpoints are now opt-in via --observe-startup-lock-path and must remain disabled for this task's next State-5/A-confirm route attempt. Prepare a fresh packet pinning runner/tests, rerun the focused suite and all offline differential/caller/interworking gates, and use the original-only State-5 \u2192 Audio Settings \u2192 A-confirm query sequence. Bound startup to 90 seconds, nested callback returns to 20, readiness checks to 40, packet waits to 30 seconds, and State-2 capture to 120 seconds. Record the actual nested callback ID/target at BLX 0x001A07FC and r0 at 0x001A0800. Preserve the same save/profile/loopback/cleanup protections and keep H2 open on any partial result.",
+        "Run-023: Run-022 confirmed the owner word equals r0 at 0x002C3AD0 but differs by the 0x0013AD70 return; no actor is identified. The early SVC/atomic/lock startup breakpoints are now opt-in via --observe-startup-lock-path and must remain disabled for this task's next State-5/A-confirm route attempt. Prepare a fresh packet pinning runner/tests, rerun the focused suite and all offline differential/caller/interworking gates, and use the original-only State-5 → Audio Settings → A-confirm query sequence. Bound startup to 90 seconds, nested callback returns to 20, readiness checks to 40, packet waits to 30 seconds, and State-2 capture to 120 seconds. Record the actual nested callback ID/target at BLX 0x001A07FC and r0 at 0x001A0800. Preserve the same save/profile/loopback/cleanup protections and keep H2 open on any partial result.",
         "Run-024: Run-023 had the same CCI, save, profile seeds and staged config hashes as the earlier State-2 run-017, but it did not hit TitleMain; unlike run-017, its trace still stopped at native-command progress sites. The cause is unproven. Make those progress/epilogue observers opt-in via --observe-startup-command-progress and leave them off together with --observe-startup-lock-path to match the earlier minimal title route. Pin a fresh packet, pass focused tests and all offline gates, and bound startup to 90 seconds. Continue original title query seams, then capture State 2 with at most 20 nested returns, 40 readiness checks and 120 seconds. Record the nested method ID/table target and actual BLX/return; preserve save/profile/loopback protections, and classify any timeout as partial.",
         "Run-025: Run-024 had both startup observer groups disabled but stopped at 90 seconds; the reviewed State-2 run-017 Azahar log reaches 189 seconds during its capture. Reproduce with the same minimal title route and extend startup only to 180 seconds. Keep packet timeout 30 seconds, nested-return cap 20, readiness cap 40, State-2 capture bound 120 seconds, and all original-only/save/profile/loopback/cleanup invariants. Freshly pin changed runner/tests, pass all offline differential/caller/interworking gates, and classify any timeout as partial without assigning the sync wrapper as cause.",
         "Run-026: Run-025 used the minimal route and reached a different timeout PC after 180 seconds, but observed no TitleMain or title query. Perform one final original-only reproduction with the same staged CCI, disposable save fixture, clean profile seeds, and both optional startup observer groups disabled; startup cap 300 seconds, packet cap 30 seconds, State-2 capture cap 120 seconds, at most 20 nested returns and 40 readiness checks. Before launch rerun the focused runner suite, pin fresh inputs, and pass H2 differential/caller, H3 caller-composition, and ARM/Thumb interworking gates. Preserve all save/profile/loopback/cleanup invariants. Another timeout is partial evidence only and ends generic startup retries; inspect the timed-out PC and route statically instead of extending the bound again.",
@@ -11485,7 +11485,7 @@
       "acceptance": [
         "Verify original pointer/global offsets, count checks/reloads, record field source/order, return, and caller ABI from pinned ARM.",
         "Inspect all 58 direct/final composition fixtures, both mutations, relocation encodings, and exact report/source/image hashes.",
-        "Assess the candidate\u2019s reversed temporal store order: determine whether bounded final-state promotion is supportable and state concurrent-reader limits. Do not edit implementation, runner, ledger, README, PROGRESS, or board."
+        "Assess the candidate’s reversed temporal store order: determine whether bounded final-state promotion is supportable and state concurrent-reader limits. Do not edit implementation, runner, ledger, README, PROGRESS, or board."
       ],
       "validation_plan": [
         "Read-only frozen-input review, no canonical build or emulator. Return structured handoff with evidence levels and limitations."
@@ -12546,6 +12546,222 @@
       ],
       "validation_plan": [
         "Read-only independent review and check-handoff. No canonical build or emulator."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-0029f278-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover the exact full contract and H2 call paths for 0x0029F278, the 1536-byte stateful list-cursor updater, and assess a bounded C++ conversion/test boundary.",
+      "depends_on": [],
+      "function_claims": [
+        "0x0029f278"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-input-seam-contract.md",
+        "docs/agent-work/h2-calc-contract.md",
+        "docs/function-records/0x00297674.md",
+        "docs/function-records/0x002c17d4.md",
+        "src/engine/leaf_batch46_b.cpp",
+        "src/engine/asd_runtime.cpp",
+        "src/ui/status_down.cpp",
+        "extracted/exefs/code.bin",
+        "config/functions.csv",
+        "config/game_info.json",
+        "tools/h2_calc_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-0029f278-contract.md",
+        "build/agent-work/H2-semantic/h2-titleconfig-0029f278-contract/run001/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Decode the entire function control flow, input/return contract, cursor layout fields, memory effects/order, call arguments and ABI, marking static facts versus inference.",
+        "Census all callers and prove TitleConfig_Calc state-1 call context and the four 0x002C17D4 sites, byte 0x20 skip conditions, and return consumption. Identify dependencies that can remain original and any unsupported indirect/float behavior.",
+        "Recommend an implementable bounded C++ scope and a differential/caller test matrix; be explicit if whole-function conversion lacks a support seam. Include pinned image/source hashes and structured handoff."
+      ],
+      "validation_plan": [
+        "Read-only disassembly/source/caller analysis. No compiler, emulator, guest input mutation, or implementation edits."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-002892c0-convert",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover and convert the bounded H2 axis-adjustment helper 0x002892C0 to readable C++, with direct offline differential evidence and an original 0x0029EDFC caller composition.",
+      "depends_on": [
+        "h2-titleconfig-0029f278-contract"
+      ],
+      "function_claims": [
+        "0x002892c0"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-0029f278-contract.md",
+        "src/engine/leaf_batch16_c.cpp",
+        "src/engine/leaf_batch34_b.cpp",
+        "tools/h2_29edfc_experiment.py",
+        "extracted/exefs/code.bin",
+        "config/functions.csv"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h2_2892c0_candidate.cpp",
+        "tools/h2_2892c0_experiment.py",
+        "docs/agent-work/h2-002892c0-contract.md",
+        "docs/agent-work/h2-002892c0-convert.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Document exact ABI, memory reads/writes, arithmetic/comparison semantics, return values, caller context, and domain limits from pinned ARM code.",
+        "Create typed C++ candidate and offline differential matrix covering signed/unsigned boundaries, zero/nonzero object fields, clamp/adjust/wrap branches, and exact object byte diffs.",
+        "Add a negative control that the direct runner detects.",
+        "Compose the candidate into the original 0x0029EDFC wrapper, preserving all other code and reporting caller limits.",
+        "Do not edit production source, shared headers, global ledgers, board, or canonical build outputs. Return a structured handoff and hashes."
+      ],
+      "validation_plan": [
+        "Run only this task’s direct differential/caller runner with a private output directory and one compiler job. No canonical build or emulator. Freeze input hashes before running."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-002892c0-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the 0x002892C0 candidate, direct and original-caller evidence, domain limits, and whether the 132-byte candidate has a defensible integration placement.",
+      "depends_on": [
+        "h2-titleconfig-002892c0-convert"
+      ],
+      "function_claims": [
+        "0x002892c0"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "experiments/semantic_equivalence/h2_2892c0_candidate.cpp",
+        "tools/h2_2892c0_experiment.py",
+        "docs/agent-work/h2-002892c0-contract.md",
+        "docs/agent-work/h2-002892c0-convert.md",
+        "src/engine/leaf_batch16_c.cpp",
+        "src/engine/leaf_batch34_b.cpp",
+        "tools/h2_29edfc_experiment.py",
+        "build/agent-work/H2-semantic/h2-titleconfig-002892c0-convert/run001/report.json",
+        "build/agent-work/H2-semantic/h2-titleconfig-002892c0-convert/run001/task.json",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-002892c0-independent-review.md",
+        "build/agent-work/H2-semantic/h2-titleconfig-002892c0-review/run001/handoff.json"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recompute every declared input hash before review.",
+        "Independently audit signed branch translation, modulo arithmetic, ordered writes, ABI assumptions, direct edge/boundary coverage, caller routing, and whether the negative control is meaningful.",
+        "If feasible, rerun in a distinct private output directory; do not overwrite the implementer report.",
+        "Assess whether a production in-place or trampoline placement is supported without overwriting adjacent bytes. Do not infer equivalence from the worker status flag.",
+        "Report concrete counterexamples or bounded approval and list unproven domains; do not edit candidate/source/runner/production files."
+      ],
+      "validation_plan": [
+        "Read-only independent review; any rerun uses distinct outputs and one compiler job. No canonical build or emulator."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-002892c0-production-integration",
+      "role": "integration",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Build the production C++ 0x002892C0 helper into the verified Calc-only H2 cave and validate its final-address helper and original-wrapper behavior.",
+      "depends_on": [
+        "h2-titleconfig-002892c0-review"
+      ],
+      "function_claims": [
+        "0x002892c0"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "experiments/semantic_equivalence/h2_2892c0_candidate.cpp",
+        "src/engine/leaf_batch16_c.cpp",
+        "tools/h2_2892c0_experiment.py",
+        "tools/h2_2892c0_production_integration.py",
+        "tools/h2_calc_code_patch.py",
+        "tools/h2_29edfc_experiment.py",
+        "docs/agent-work/h2-002892c0-contract.md",
+        "docs/agent-work/h2-002892c0-convert.md",
+        "docs/agent-work/h2-002892c0-independent-review.md",
+        "build/agent-work/H2-semantic/h2-titleconfig-002892c0-integration/run003/manifest.json",
+        "build/agent-work/H2-semantic/h2-titleconfig-002892c0-integration/run003/final-address-report.json",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "src/engine/leaf_batch16_c.cpp",
+        "tools/h2_2892c0_production_integration.py",
+        "docs/function-records/0x002892c0.md",
+        "docs/agent-work/h2-002892c0-production-integration.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Compile the production symbol from the production TU and assert no unresolved relocations.",
+        "Build a reproducible Calc-only base plus the helper in the audited cave, with nonoverlapping patch records, branch interworking checks, and independent IPS roundtrip.",
+        "Pass direct and original-wrapper final-address differential cases and detect the wrong-entry-target control.",
+        "Record that the placement is not merged into the accumulated five-callback H2 image and that runtime is not run."
+      ],
+      "validation_plan": [
+        "The coordinator runs the focused production integration builder with a new private output directory; no emulator."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-002892c0-production-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently audit the 0x002892C0 production source, combined IPS builder, cave/ARM branch checks, and final-address caller evidence.",
+      "depends_on": [
+        "h2-titleconfig-002892c0-production-integration"
+      ],
+      "function_claims": [
+        "0x002892c0"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "src/engine/leaf_batch16_c.cpp",
+        "tools/h2_2892c0_production_integration.py",
+        "tools/h2_calc_code_patch.py",
+        "tools/h2_2892c0_experiment.py",
+        "docs/function-records/0x002892c0.md",
+        "docs/agent-work/h2-002892c0-production-integration.md",
+        "docs/agent-work/h2-002892c0-independent-review.md",
+        "build/agent-work/H2-semantic/h2-titleconfig-002892c0-integration/run003/manifest.json",
+        "build/agent-work/H2-semantic/h2-titleconfig-002892c0-integration/run003/final-address-report.json",
+        "build/agent-work/H2-semantic/h2-titleconfig-002892c0-integration/run003/code.combined.ips",
+        "build/agent-work/H2-semantic/h2-titleconfig-002892c0-integration/run003/code.combined.bin",
+        "extracted/exefs/code.bin",
+        "experiments/semantic_equivalence/h2_calc_candidate.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-002892c0-production-independent-review.md",
+        "build/agent-work/H2-semantic/h2-titleconfig-002892c0-production-review/run001/handoff.json",
+        "build/agent-work/H2-semantic/h2-titleconfig-002892c0-production-review/run002/handoff.json"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recompute all review-packet input hashes.",
+        "Independently rerun the builder into a distinct private output directory and verify final hashes or report a concrete discrepancy.",
+        "Audit IPS reapplication, non-overlap, cave availability, even ARM target, source/object/body identities, and comparisons at final guest addresses.",
+        "State exactly which base image and original caller were executed, whether evidence supports this helper promotion, and all material limits; no whole-H2/runtime claim."
+      ],
+      "validation_plan": [
+        "Read-only integration review; one compiler job and distinct run output if rerun. No canonical build or emulator."
       ]
     }
   ]
