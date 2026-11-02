@@ -5532,7 +5532,7 @@ address,size,status,category,name,src_file
 0x002b8b78,340,matching,script_vm,script_vm_func_002b8b78,src/engine/leaf_batch32_c.cpp
 0x002b8ccc,24,matching,camp,camp_func_002b8ccc,src/engine/leaf_batch22_b.cpp
 0x002b8ce4,64,matching,camp,camp_func_002b8ce4,src/engine/leaf_batch32_c.cpp
-0x002b8d24,360,matching,battle,battle_func_002b8d24,src/engine/leaf_batch46_a.cpp
+0x002b8d24,360,non_matching,battle,battle_func_002b8d24,src/engine/leaf_batch46_a.cpp
 0x002b8e8c,380,matching,camp,camp_func_002b8e8c,src/engine/leaf_batch41_c.cpp
 0x002b9008,36,matching,camp,camp_func_002b9008,src/engine/leaf_batch23_b.cpp
 0x002b902c,104,non_matching,ui,ui_func_002b902c,src/engine/leaf_batch30_b.cpp

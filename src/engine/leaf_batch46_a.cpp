@@ -536,56 +536,43 @@ extern "C" __attribute__((naked)) void func_002009c0() {
 };
 
 // DECOMP_FUNC(0x002b8d24, 360)
-extern "C" __attribute__((naked)) void battle_func_002b8d24() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4070, 0xe92d, 0x0013, 0xe351\n"
-        ".hword 0x5000, 0xe1a0, 0xf101, 0x379f\n"
-        ".hword 0x8070, 0xe8bd, 0x8d34, 0x002b\n"
-        ".hword 0x8e04, 0x002b, 0x8d84, 0x002b\n"
-        ".hword 0x8d84, 0x002b, 0x8d84, 0x002b\n"
-        ".hword 0x8d84, 0x002b, 0x8db4, 0x002b\n"
-        ".hword 0x8ddc, 0x002b, 0x8ddc, 0x002b\n"
-        ".hword 0x8ddc, 0x002b, 0x8e04, 0x002b\n"
-        ".hword 0x8e18, 0x002b, 0x8e40, 0x002b\n"
-        ".hword 0x8d34, 0x002b, 0x8d34, 0x002b\n"
-        ".hword 0x8d34, 0x002b, 0x8d84, 0x002b\n"
-        ".hword 0x8d84, 0x002b, 0x8d84, 0x002b\n"
-        ".hword 0x2000, 0xe3a0, 0x1002, 0xe3a0\n"
-        ".hword 0x00c4, 0xe285, 0xdaaf, 0xebff\n"
-        ".hword 0x2000, 0xe3a0, 0x1002, 0xe3a0\n"
-        ".hword 0x0f77, 0xe285, 0xdaab, 0xebff\n"
-        ".hword 0x0e15, 0xe285, 0x4070, 0xe8bd\n"
-        ".hword 0x1000, 0xe3a0, 0xfdce, 0xeaf9\n"
-        ".hword 0x00c4, 0xe285, 0x0a08, 0xed90\n"
-        ".hword 0x0a10, 0xee10, 0x05fe, 0xe350\n"
-        ".hword 0xffda, 0x1aff, 0x00c4, 0xe285\n"
-        ".hword 0x4070, 0xe8bd, 0x2000, 0xe3a0\n"
-        ".hword 0x1002, 0xe3a0, 0xda9d, 0xeaff\n"
-        ".hword 0x2000, 0xe3a0, 0x1002, 0xe3a0\n"
-        ".hword 0x00c4, 0xe285, 0xda99, 0xebff\n"
-        ".hword 0x0b01, 0xe285, 0x4070, 0xe8bd\n"
-        ".hword 0x2000, 0xe3a0, 0x1002, 0xe3a0\n"
-        ".hword 0x000c, 0xe280, 0xda93, 0xeaff\n"
-        ".hword 0x4070, 0xe8bd, 0x2000, 0xe3a0\n"
-        ".hword 0x1002, 0xe3a0, 0x00c4, 0xe280\n"
-        ".hword 0xda8e, 0xeaff, 0x1007, 0xe3a0\n"
-        ".hword 0x00c4, 0xe285, 0x1882, 0xeb00\n"
-        ".hword 0x1007, 0xe3a0, 0x0f9a, 0xe285\n"
-        ".hword 0x187f, 0xeb00, 0x0d0e, 0xe285\n"
-        ".hword 0x4070, 0xe8bd, 0x1000, 0xe3a0\n"
-        ".hword 0xfdab, 0xeaf9, 0x4000, 0xe3a0\n"
-        ".hword 0x0004, 0xe085, 0x0037, 0xe5d0\n"
-        ".hword 0x0000, 0xe350, 0x0007, 0x0a00\n"
-        ".hword 0x0184, 0xe064, 0x2000, 0xe3a0\n"
-        ".hword 0x0100, 0xe080, 0x1005, 0xe3a0\n"
-        ".hword 0x0100, 0xe085, 0x0b01, 0xe280\n"
-        ".hword 0x0098, 0xe280, 0xda77, 0xebff\n"
-        ".hword 0x4001, 0xe284, 0x0005, 0xe354\n"
-        ".hword 0xfff0, 0xbaff, 0x0000, 0xe3a0\n"
-        ".hword 0x0028, 0xe585, 0x8070, 0xe8bd\n"
-    );
-};
+extern "C" __attribute__((minsize)) uint32_t battle_func_002b8d24(uint8_t* object, uint32_t selector) {
+    using Reset = uint8_t* (*)(uint8_t*, uint32_t, uint32_t);
+    using Process = uint32_t (*)(uint8_t*, uint32_t);
+    using SetByte = uint8_t* (*)(uint8_t*, uint32_t);
+    auto reset = reinterpret_cast<Reset>(0x002af854);
+    auto process = reinterpret_cast<Process>(0x002bf030);
+    auto set_byte = reinterpret_cast<SetByte>(0x001384f0);
+    if (selector >= 19) return reinterpret_cast<uint32_t>(object);
+    if (selector == 1 || selector == 10)
+        return reinterpret_cast<uint32_t>(reset(object + 0xc4, 2, 0));
+    if ((selector >= 2 && selector <= 5) || selector >= 16) {
+        reset(object + 0xc4, 2, 0);
+        reset(object + 0x1dc, 2, 0);
+        return reinterpret_cast<uint32_t>(set_byte(object + 0x150, 0));
+    }
+    if (selector == 6) {
+        auto value = *reinterpret_cast<uint32_t*>(object + 0xe4);
+        if (value != 0x3f800000) return value;
+        return reinterpret_cast<uint32_t>(reset(object + 0xc4, 2, 0));
+    }
+    if (selector >= 7 && selector <= 9) {
+        reset(object + 0xc4, 2, 0);
+        return reinterpret_cast<uint32_t>(reset(object + 0x40c, 2, 0));
+    }
+    if (selector == 11) {
+        process(object + 0xc4, 7);
+        process(object + 0x268, 7);
+        return reinterpret_cast<uint32_t>(set_byte(object + 0x380, 0));
+    }
+    if (selector == 12) {
+        for (uint32_t i = 0; i < 5; ++i)
+            if (object[0x37 + i]) reset(object + 0x498 + i * 140, 5, 0);
+        *reinterpret_cast<uint32_t*>(object + 0x28) = 0;
+        return 0;
+    }
+    return reinterpret_cast<uint32_t>(object);
+}
 
 // DECOMP_FUNC(0x002b2690, 376)
 extern "C" __attribute__((naked)) void engine_func_002b2690() {
