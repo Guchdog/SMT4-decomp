@@ -32,7 +32,7 @@ extern "C" void camp_func_0029c68c();
 extern "C" void camp_func_0029d100();
 extern "C" void camp_func_002a0f68();
 extern "C" void camp_func_002b9220();
-extern "C" void camp_func_002bdac0();
+extern "C" void* camp_func_002bdac0(void* object, u32 mode, u32 selector);
 extern "C" void camp_func_002bf6d0();
 extern "C" void camp_func_003ad900();
 extern "C" void engine_func_001390c0();

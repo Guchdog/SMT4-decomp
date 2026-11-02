@@ -165,8 +165,29 @@ extern "C" __attribute__((naked)) void shop_func_00230680() {
 }
 
 // DECOMP_FUNC(0x002bdac0, 108)
-extern "C" __attribute__((naked)) void camp_func_002bdac0() {
-    asm volatile("ldr ip, [r0, #0x4c]\ncmp ip, #0\nbeq .L_002bdac0_002bdb0c\nstrh r1, [r0, #0x50]\nmov r3, #0\nstrh r3, [r0, #0x52]\nadd r1, r1, r1, lsl #1\nstrb r3, [r0, #0x86]\nstrb r3, [r0, #0x8a]\ncmp r2, #0\nadd r1, ip, r1, lsl #2\nstrb r2, [r0, #0x54]\nbeq .L_002bdac0_002bdb10\nldrsh r2, [r1, #4]\nlsl r2, r2, #0xc\nstr r2, [r0, #0xc]\nldrsh r1, [r1, #6]\nlsl r1, r1, #0xc\nstr r1, [r0, #0x10]\n.L_002bdac0_002bdb0c:\nbx lr\n.L_002bdac0_002bdb10:\nldrsh r2, [r1]\nlsl r2, r2, #0xc\nstr r2, [r0, #0xc]\nldrsh r1, [r1, #2]\nlsl r1, r1, #0xc\nstr r1, [r0, #0x10]\nbx lr\n");
+extern "C" void* camp_func_002bdac0(void* object, u32 mode, u32 selector) {
+    // Volatile accesses preserve the original order when the table aliases this object.
+    auto* bytes = static_cast<u8*>(object);
+    const u32 table = *reinterpret_cast<const u32*>(bytes + 0x4cu);
+    if (table == 0) {
+        return object;
+    }
+
+    *reinterpret_cast<volatile u16*>(bytes + 0x50u) = static_cast<u16>(mode);
+    *reinterpret_cast<volatile u16*>(bytes + 0x52u) = 0;
+    *reinterpret_cast<volatile u8*>(bytes + 0x86u) = 0;
+    *reinterpret_cast<volatile u8*>(bytes + 0x8au) = 0;
+    *reinterpret_cast<volatile u8*>(bytes + 0x54u) = static_cast<u8>(selector);
+
+    const u32 row_address = table + mode * 12u;
+    const auto* row = reinterpret_cast<const u8*>(row_address);
+    const u32 first_offset = selector == 0 ? 0u : 4u;
+    const auto* fields = reinterpret_cast<const volatile s16*>(row + first_offset);
+    const s32 x = fields[0];
+    *reinterpret_cast<volatile u32*>(bytes + 0x0cu) = static_cast<u32>(x) << 12;
+    const s32 y = fields[1];
+    *reinterpret_cast<volatile u32*>(bytes + 0x10u) = static_cast<u32>(y) << 12;
+    return object;
 }
 
 // DECOMP_FUNC(0x0035b8f0, 108)

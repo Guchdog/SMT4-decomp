@@ -129,7 +129,7 @@ extern "C" {
     void  engine_func_0029e5c8(u32 index);                   // 0x0029E5C8
     void  camp_func_0029f10c(u32 index, u32 color);          // 0x0029F10C
     u8    camp_func_002b8ccc();                              // 0x002B8CCC
-    void  camp_func_002bdac0(void* object, u32 mode, u32 a2); // 0x002BDAC0
+    void* camp_func_002bdac0(void* object, u32 mode, u32 selector); // 0x002BDAC0
     void  script_vm_func_002a7aa0(void* model);              // 0x002A7AA0
     void  engine_func_00299410(void* slot, u32 mode);        // 0x00299410
     void  engine_func_002993d4();                            // 0x002993D4

@@ -11903,6 +11903,124 @@
         "Review both functions' gate and field behavior, 76 cases each, negative controls, and the actual 0x001EA9F4-0x001EAA0C caller slice against the cumulative staged image.",
         "Return an independent structured recommendation with limits; do not edit candidate source, runners, staged artifacts, ledger or progress docs."
       ]
+    },
+    {
+      "id": "h2-titleconfig-002bdac0-convert",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Convert camp_func_002bdac0 to readable typed C++ and validate its ARM contract and actual TitleConfig_Calc caller behavior with truthful H2 evidence.",
+      "depends_on": [
+        "h2-titleconfig-002bdac0-contract"
+      ],
+      "function_claims": [
+        "0x002bdac0"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-002bdac0-contract.md",
+        "src/engine/leaf_batch13_c.cpp",
+        "src/engine/asd_runtime.cpp",
+        "src/engine/leaf_batch46_b.cpp",
+        "extracted/exefs/code.bin",
+        "tools/h2_slot_getters_experiment.py",
+        "tools/h2_002bdac0_experiment.py"
+      ],
+      "write_paths": [
+        "src/engine/leaf_batch13_c.cpp",
+        "src/engine/asd_runtime.cpp",
+        "tools/h2_002bdac0_experiment.py",
+        "docs/function-records/0x002bdac0.md",
+        "src/engine/leaf_batch21_c.cpp",
+        "src/engine/leaf_batch24_c.cpp",
+        "src/engine/leaf_batch32_c.cpp",
+        "src/engine/leaf_batch32_b.cpp",
+        "src/engine/leaf_batch33_c.cpp"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Use full-width selector and index semantics, preserve no-write null-table behavior, exact output fields/scaling and original r0 return; fit the 108-byte production slot.",
+        "Pass directed and seeded direct differential cases including both selectors, selector 0x100, signed boundaries, full-width indices, null table, ordered side effects and at least two negative controls.",
+        "Compare an actual TitleConfig_Calc state-1 or state-2 call slice with original and staged image; record table bounds as unknown absent evidence.",
+        "Stage only the declared slot, update the ledger to truthful non_matching if final bytes differ, and provide report hashes and limits for independent review."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-002bdac0-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently recover the full caller-facing contract of camp_func_002bdac0, emphasizing TitleConfig_Calc call contexts, table bounds/layout evidence, return/ABI, and integration risks for typed C++ conversion.",
+      "depends_on": [],
+      "function_claims": [
+        "0x002bdac0"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/milestones/H2-audio-settings.md",
+        "src/engine/leaf_batch13_c.cpp",
+        "src/engine/leaf_batch46_b.cpp",
+        "src/engine/asd_runtime.cpp",
+        "extracted/exefs/code.bin",
+        "config/functions.csv"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-002bdac0-contract.md",
+        "build/agent-work/H2-semantic/h2-titleconfig-002bdac0-contract/run001/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover all direct in-image callers and actual TitleConfig_Calc caller states; specify argument registers, return, side effects, conditional table reads and null behavior.",
+        "Establish table entry stride/type and valid index limits from callers or data references; distinguish established facts from unproven bounds.",
+        "Return a structured handoff with hashes, evidence level, risks and recommendation; do not edit C++ or shared interfaces/runners."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-002bdac0-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the frozen typed C++ reconstruction of 0x002BDAC0, its offline differential/caller evidence, and cumulative slot-only staging; provide a structured promotion recommendation.",
+      "depends_on": [],
+      "function_claims": [
+        "0x002bdac0"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-002bdac0-contract.md",
+        "src/engine/leaf_batch13_c.cpp",
+        "src/engine/asd_runtime.cpp",
+        "src/engine/leaf_batch21_c.cpp",
+        "src/engine/leaf_batch24_c.cpp",
+        "src/engine/leaf_batch32_c.cpp",
+        "src/engine/leaf_batch32_b.cpp",
+        "src/engine/leaf_batch33_c.cpp",
+        "tools/h2_002bdac0_experiment.py",
+        "docs/function-records/0x002bdac0.md",
+        "config/functions.csv",
+        "extracted/exefs/code.bin",
+        "build/agent-work/H2-semantic/h2-titleconfig-002bdac0-convert/run004/report.json",
+        "build/agent-work/H2-semantic/h2-titleconfig-002bdac0-convert/run004/staged/manifest.json",
+        "build/agent-work/H2-semantic/h2-titleconfig-002bdac0-convert/run004/staged/code.h2-002bdac0.bin",
+        "build/agent-work/H2-semantic/h2-titleconfig-002bdac0-convert/run004/staged/code.h2-002bdac0.ips"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-002bdac0-independent-review.md",
+        "build/agent-work/H2-semantic/h2-titleconfig-002bdac0-review/run003/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recompute input/source/report/image/IPS hashes; verify the compiled body fits 108 bytes, no unsupported relocation exists, and the IPS round-trips while changing only 0x002BDAC0.",
+        "Review full-width selector/index semantics, null no-write return, signed scaling and alias/store-read ordering against the original and the harness cases.",
+        "Independently inspect direct, negative-control, actual TitleConfig_Calc call-slice and staged evidence; note coverage limits and any mismatch.",
+        "Return a structured independent recommendation; do not edit implementation, harness, ledger or progress files."
+      ]
     }
   ]
 }
