@@ -11743,6 +11743,91 @@
         "Inspect relocation/interworking and the 58-case report's actual original/staged mapping and remaining mocks.",
         "Return a structured handoff with review recommendation and limits; do not edit candidates or rerun builds."
       ]
+    },
+    {
+      "id": "h2-resource-resolver-002a63f8-002b96f0-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover the caller-facing ABI and dependency contract for the H2 resource flag predicate 0x002A63F8 and its table resolver 0x002B96F0; confirm they form a coherent pair for C++ conversion.",
+      "depends_on": [],
+      "function_claims": [
+        "0x002a63f8",
+        "0x002b96f0"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/milestones/H2-audio-settings.md",
+        "docs/agent-work/h2-calc-contract.md",
+        "src/engine/leaf_batch17_c.cpp",
+        "src/engine/leaf_batch39_a.cpp",
+        "src/engine/leaf_batch17_a.cpp",
+        "src/engine/leaf_batch21_c.cpp",
+        "src/engine/leaf_batch29_c.cpp",
+        "src/engine/leaf_batch32_b.cpp",
+        "extracted/exefs/code.bin",
+        "config/functions.csv"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-2a63f8-2b96f0-contract.md",
+        "build/agent-work/H2-semantic/h2-resource-resolver-002a63f8-002b96f0-contract/run001/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover input registers, return value, memory effects, branch/tail-call target and ARM ABI for both addresses from pinned code.",
+        "Audit all in-image BL callers of 0x002B96F0 for use of r0/r1 and determine whether a common typed signature is supported.",
+        "Return a structured handoff with source/image hashes, domain limits and a scoped implementation recommendation; no C++ or runner edits."
+      ]
+    },
+    {
+      "id": "h2-resource-flag-predicate-002a63f8-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the typed C++ 0x002A63F8 predicate, offline differential, actual TitleConfig_Calc caller slice, and one-slot H2 staging evidence.",
+      "depends_on": [
+        "h2-resource-resolver-002a63f8-002b96f0-contract"
+      ],
+      "function_claims": [
+        "0x002a63f8"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-2a63f8-2b96f0-contract.md",
+        "src/engine/leaf_batch17_c.cpp",
+        "src/engine/leaf_batch39_a.cpp",
+        "src/engine/leaf_batch17_a.cpp",
+        "src/engine/leaf_batch18_b.cpp",
+        "src/engine/leaf_batch21_c.cpp",
+        "src/engine/leaf_batch23_c.cpp",
+        "src/engine/leaf_batch24_c.cpp",
+        "src/engine/leaf_batch29_c.cpp",
+        "src/engine/leaf_batch32_b.cpp",
+        "src/engine/leaf_batch33_c.cpp",
+        "src/engine/leaf_batch34_c.cpp",
+        "tools/h2_2a63f8_experiment.py",
+        "tools/h2_2a63f8_staged_image.py",
+        "build/agent-work/H2-semantic/h2-resource-flag-predicate-002a63f8/run001/report.json",
+        "build/agent-work/H2-semantic/h2-resource-flag-predicate-002a63f8/run001/staged-image/manifest.json",
+        "build/agent-work/H2-semantic/h2-resource-flag-predicate-002a63f8/run001/staged-image/code.h2-resource-flag.bin",
+        "build/agent-work/H2-semantic/h2-resource-flag-predicate-002a63f8/run001/staged-image/code.h2-resource-flag.ips",
+        "extracted/exefs/code.bin",
+        "config/functions.csv"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-resource-flag-predicate-002a63f8-review-final.md",
+        "build/agent-work/H2-semantic/h2-resource-flag-predicate-review/run005/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify base, source, object, staged image, IPS and report hashes; prove the replacement stays in the 0x002A63F8 slot and its ARM BL reaches even target 0x002B96F0.",
+        "Review direct cases, null-fault behavior, negative controls and the actual TitleConfig_Calc call slice at 0x001EA964; identify mocks and semantic limits.",
+        "Return a structured handoff with an independent review recommendation; do not edit source, runner, staging tools, status or ledger."
+      ]
     }
   ]
 }

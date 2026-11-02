@@ -513,7 +513,7 @@ extern "C" __attribute__((naked)) void func_002b4ea0() {
 }
 
 // DECOMP_FUNC(0x002b96f0, 24)
-extern "C" __attribute__((naked)) void engine_func_002b96f0() {
+extern "C" __attribute__((naked)) u32 engine_func_002b96f0(u32, u32) {
     asm volatile(
         ".arm\n"
         ".hword 0x200c, 0xe59f, 0x0080, 0xe080\n"

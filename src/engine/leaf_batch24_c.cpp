@@ -106,7 +106,7 @@ extern "C" void ui_func_002462a0();
 extern "C" void ui_func_002473ac();
 extern "C" void ui_func_00282b94();
 extern "C" void ui_func_00293c98();
-extern "C" void ui_func_002a63f8();
+extern "C" u32 ui_func_002a63f8(u32 group, u32 subindex);
 extern "C" u32 ui_func_002adb40(void* destination, const void* source);
 extern "C" void ui_func_002c0a6c();
 extern "C" void ui_func_002c0ac8();

@@ -12,7 +12,7 @@ extern "C" void script_vm_func_002bc210();
 extern "C" void camp_func_002a8a08();
 extern "C" void engine_func_002c2b1c();
 extern "C" void script_vm_func_002b66ec();
-extern "C" void engine_func_002b96f0();
+extern "C" u32 engine_func_002b96f0(u32 group, u32 subindex);
 extern "C" void script_vm_func_00252630();
 extern "C" void ui_func_002d7f0c();
 extern "C" void script_vm_func_002b8b70();
