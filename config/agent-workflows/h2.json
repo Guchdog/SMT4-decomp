@@ -12410,6 +12410,143 @@
       "validation_plan": [
         "Read-only independent review and check-handoff. No canonical build or emulator."
       ]
+    },
+    {
+      "id": "h2-titleconfig-002c17d4-contract",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover the exact contract, global input-table dependencies, and H2 cursor/dispatcher caller behavior for the 92-byte query helper 0x002C17D4.",
+      "depends_on": [],
+      "function_claims": [
+        "0x002c17d4"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-input-seam-contract.md",
+        "docs/agent-work/h2-logical-input-table-producer-audit.md",
+        "docs/agent-work/h2-logical-input-table-producer-review.md",
+        "docs/agent-work/h2-calc-contract.md",
+        "docs/function-records/0x002c1830.md",
+        "src/engine/leaf_batch32_c.cpp",
+        "src/engine/leaf_batch40_a.cpp",
+        "src/engine/leaf_batch46_b.cpp",
+        "extracted/exefs/code.bin",
+        "config/functions.csv",
+        "config/game_info.json"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-002c17d4-contract.md",
+        "build/agent-work/H2-semantic/h2-titleconfig-002c17d4-contract/run001/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Decode every branch and full-width argument/return behavior, memory read/write order, exact global/table pointers, bounds, fault behavior and ABI; distinguish literal addresses from loaded pointers.",
+        "Census callers and establish how the H2 cursor update at 0x0029F278 and converted dispatcher 0x002C1830(mode 2) consume results. Keep physical input labels and natural reachability unresolved unless directly proven.",
+        "Recommend a bounded C++ conversion and direct/caller differential matrix with negative controls; include pinned original, source hashes, input hashes and structured handoff."
+      ],
+      "validation_plan": [
+        "Read-only static analysis of pinned original, source and prior table producer reports. No compilation, emulation, debugger, or input mutation."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-002c17d4-convert",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Convert the 92-byte H2 logical input bit query 0x002C17D4 to typed C++ and validate table guards, state selection, boolean returns, and original dispatcher mode-2 composition.",
+      "depends_on": [
+        "h2-titleconfig-002c17d4-contract"
+      ],
+      "function_claims": [
+        "0x002c17d4"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-002c17d4-contract.md",
+        "docs/agent-work/h2-input-seam-contract.md",
+        "docs/agent-work/h2-logical-input-table-producer-audit.md",
+        "docs/agent-work/h2-logical-input-table-producer-review.md",
+        "docs/function-records/0x002c1830.md",
+        "src/engine/leaf_batch32_c.cpp",
+        "src/engine/leaf_batch40_a.cpp",
+        "src/engine/leaf_batch46_b.cpp",
+        "extracted/exefs/code.bin",
+        "config/functions.csv",
+        "tools/h2_297674_experiment.py",
+        "tools/h2_2c1830_experiment.py"
+      ],
+      "write_paths": [
+        "src/engine/leaf_batch32_c.cpp",
+        "experiments/semantic_equivalence/h2_2c17d4_candidate.cpp",
+        "tools/h2_2c17d4_experiment.py",
+        "docs/function-records/0x002c17d4.md"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Implement unsigned ID guard (>=31), pinned row gate and mask, fixed state-word selection by mode bit 0, and normalized 0/1 result without assigning physical-control meaning.",
+        "Pass offline direct original/candidate/production comparisons for pinned IDs 0..30, out-of-range/high-bit IDs, gate short-circuit, altered masks, both mode choices with higher mode bits, and conflicting state words. Compare read order/addresses, no writes, raw return and preserved ABI; detect at least three mutations.",
+        "Compose pinned original 0x002C1830(mode 2) with only this helper patched, covering primary hit, ID+9 secondary hit, neither hit, and ID >=31. Verify helper call order and return propagation. Preserve the four pinned cursor callsites and the documented 0x20 skip behavior as static caller facts; do not claim full 0x0029F278 execution. Stage only the 92-byte slot with IPS roundtrip and static ARM/Thumb audit; keep non_matching if bytes differ."
+      ],
+      "validation_plan": [
+        "Compile focused production TU with one job, run offline direct and original-dispatcher composition before emulator. Freeze sources/reports for independent review. No emulator unless offline gates pass and runtime would answer a material unresolved question."
+      ]
+    },
+    {
+      "id": "h2-titleconfig-002c17d4-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the 0x002C17D4 logical input query, direct ARM differential, exact-slot patch, and original mode-2 dispatcher composition.",
+      "depends_on": [
+        "h2-titleconfig-002c17d4-convert"
+      ],
+      "function_claims": [
+        "0x002c17d4"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/agent-work/h2-002c17d4-contract.md",
+        "docs/agent-work/h2-input-seam-contract.md",
+        "docs/agent-work/h2-logical-input-table-producer-audit.md",
+        "docs/agent-work/h2-logical-input-table-producer-review.md",
+        "docs/function-records/0x002c17d4.md",
+        "docs/function-records/0x002c1830.md",
+        "config/functions.csv",
+        "src/engine/leaf_batch32_c.cpp",
+        "src/engine/leaf_batch40_a.cpp",
+        "src/engine/leaf_batch46_b.cpp",
+        "experiments/semantic_equivalence/h2_2c17d4_candidate.cpp",
+        "tools/h2_2c17d4_experiment.py",
+        "tools/h2_calc_experiment.py",
+        "tools/h2_calc_code_patch.py",
+        "tools/semantic_experiment.py",
+        "extracted/exefs/code.bin",
+        "build/agent-work/H2-semantic/h2-titleconfig-002c17d4-convert/run001/report.json",
+        "build/agent-work/H2-semantic/h2-titleconfig-002c17d4-convert/run001/candidate.o",
+        "build/agent-work/H2-semantic/h2-titleconfig-002c17d4-convert/run001/production.o",
+        "build/h2-2c17d4-focused/engine/leaf_batch32_c.o"
+      ],
+      "write_paths": [
+        "docs/agent-work/h2-002c17d4-independent-review-run001.md",
+        "build/agent-work/H2-semantic/h2-titleconfig-002c17d4-review/run001/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recompute input hashes; verify exact 92-byte candidate/production body, relocations, declared slot, IPS roundtrip, changed range and even ARM call targets.",
+        "Independently inspect pinned table/mode/state behavior, unsigned guard, gated read short-circuit, full return normalization, read addresses/order and no writes; assess mode-load width difference as ordinary RAM behavior and check ABI.",
+        "Verify all direct boundaries/masks/modes and mutation controls. Confirm caller cases execute pinned original 0x002C1830 with only helper patched, including primary/secondary short-circuit/order and limits on 0x0029F278. Inspect focused object/build evidence and report any counterexample.",
+        "Return independent proceed/defer recommendation; do not edit implementation, harness, ledger or progress docs."
+      ],
+      "validation_plan": [
+        "Read-only independent review and check-handoff. No canonical build or emulator."
+      ]
     }
   ]
 }

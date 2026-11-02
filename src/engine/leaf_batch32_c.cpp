@@ -2464,34 +2464,21 @@ extern "C" __attribute__((naked)) void battle_func_002c1740() {
 }
 
 // DECOMP_FUNC(0x002c17d4, 92)
-extern "C" __attribute__((naked)) u32 ui_func_002c17d4(u32 id) {
-    asm volatile(
-        "cmp r0, #0x1f\n"
-        "bhs .L_002c17ec\n"
-        ".word 0xe59f103c\n"
-        "ldr r0, [r1, r0, lsl #3]!\n"
-        "cmp r0, #0\n"
-        "beq .L_002c17f4\n"
-        ".L_002c17ec:\n"
-        "mov r0, #0\n"
-        "bx lr\n"
-        ".L_002c17f4:\n"
-        ".word 0xe59f0028\n"
-        "ldr r1, [r1, #4]\n"
-        "ldr r0, [r0, #8]\n"
-        "tst r0, #1\n"
-        ".word 0x159f001c\n"
-        ".word 0x059f001c\n"
-        "cmp r0, #0\n"
-        "ldrne r0, [r0]\n"
-        "ands r0, r0, r1\n"
-        "movne r0, #1\n"
-        "bx lr\n"
-        ".word 0x004099c0\n"
-        ".word 0x004650a0\n"
-        ".word 0x004e3c48\n"
-        ".word 0x004e3c28\n"
-    );
+extern "C" u32 ui_func_002c17d4(u32 id) {
+    if (id >= 31u) {
+        return 0;
+    }
+
+    auto* const row = reinterpret_cast<const u32*>(0x004099C0u + id * 8u);
+    if (row[0] != 0u) {
+        return 0;
+    }
+
+    const u32 mask = row[1];
+    const u32 mode = *reinterpret_cast<const u32*>(0x004650A8u);
+    const u32 state_address = (mode & 1u) != 0u ? 0x004E3C48u : 0x004E3C28u;
+    const u32 state = *reinterpret_cast<const u32*>(state_address);
+    return (state & mask) != 0u ? 1u : 0u;
 }
 
 // DECOMP_FUNC(0x002c2cf0, 1176)
