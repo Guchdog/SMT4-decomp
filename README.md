@@ -33,7 +33,7 @@ The [full reconstruction and native port plan](docs/native-port-plan.md) tracks 
 | Classified, integrated and contract-validated across the full inventory | Baseline audit pending; these dimensions must be counted separately |
 | Native game scenarios without original ARM code | Not established; H20 tests isolated host HAL components |
 
-The 100% exact-byte figure below includes original ARM-backed code and is not a translation or native-port percentage. H19's composite ARM image retains original code; H20's host tests do not establish a native game build. The next step is the reproducible P0 inventory audit described in the plan.
+The historical 100% exact-byte baseline is retained as a recoverable reference, not a claim about the current semantic ledger. H19's composite ARM image retains original code; H20's host tests do not establish a native game build. The next step is the reproducible P0 inventory audit described in the plan.
 
 ## Recent H2 C++ semantic progress
 
@@ -50,6 +50,7 @@ The following H2 functions have typed C++ definitions and truthful `non_matching
 | `0x002BF030` | Sentinel-counted table selector, retaining original service `0x00138934` | 128 direct cases, 24 compositions through original `0x002B8D24`, six negative controls; full service branches and cumulative H2 runtime remain open. [Function record](docs/function-records/0x002bf030.md) |
 | `0x002B8D24` | Typed selector dispatcher, retaining original helpers `0x002AF854`, `0x002BF030` and `0x001384F0` | 116 direct cases, two selector-11 caller compositions, two five-call selector-12 cross-alias chains and seven controls; 356/360 bytes. Paired cumulative-image H2 runtime matched 19/19 checkpoints across 51 scripted actions; a hit at this helper is unverified, and readiness/re-entry still prevent H2 closure. [Function record](docs/function-records/0x002b8d24.md) |
 | `0x00286928` | Typed titleConfig state dispatcher, retaining its original callees | 296 direct cases, four compositions through original callback `0x00221168`, six negative controls; 812/820 bytes and 22 ARM call relocations. Cumulative paired runtime captured 129/129 helper hits with arguments/returns matched and 19/19 checkpoints across 51 actions; readiness/re-entry are incomplete, so H2 remains open. [Function record](docs/function-records/0x00286928.md) |
+| `0x002B787C` | `AsdText_GetLineCount`, retaining original text-code helpers | 515 direct cases, selector 11/19 caller compositions, six controls; 176/176 bytes and two ARM call relocations. Final-address staged differential passed. Paired Azahar scenario matched 19/19 H2 checkpoints; a GDB-controlled direct invocation returned/consumed `1` in both profiles. The normal H2 selector-6 route does not reach this helper, and the probe does not establish natural runtime caller reachability. [Function record](docs/function-records/0x002b787c.md) |
 
 The recent helper batch compiled all 204 translation units. Runtime and integration limits remain explicit in the per-function reviews and the [H2 milestone record](docs/milestones/H2-audio-settings.md).
 
@@ -57,12 +58,10 @@ The recent helper batch compiled all 204 translation units. Runtime and integrat
 
 ## Reference byte coverage
 
-- **Matching (Byte-for-Byte):** `3,139,108 / 3,139,108 bytes` (**100.0000%**) across `10,959` functions and `8` explicitly labeled raw spans (each exact-checked against 3DS ARMv6K code.bin)
-- **Readable C++ reconstructions:** `60` functions have been converted from assembly wrappers to typed C++ while retaining byte-for-byte ARMv6K output. Recent batches cover engine state/accessors, UI and camp record updates, shop/texture comparators, Script VM helpers, queue/list operations, record initialization, float state updates, a zeroing helper, and a state getter. These semantic milestones are tracked separately from the size-based coverage categories below.
-- **Compiled Coverage (≥15% size):** `0 / 3,139,108 bytes` (**0.0000%**) across `0` functions (ARMv6K compilation and size threshold only; logic unverified)
-- **Draft Logic (<15% size):** `0 / 3,139,108 bytes` (**0.0000%**) across `0` functions (early-stage draft reconstructions)
-- **Scaffolded Architecture (Stubs & Interfaces):** `0 / 3,139,108 bytes` (**0.0000%**) across `0` functions (headers, structs, function skeletons)
-- **Total Codebase Explored:** `3,139,108 / 3,139,108 bytes` (**100.0000%**) across `10,959` functions and `8` exact raw spans (all explored bytes mapped into `src/`)
+- **Current ledger exact matches:** `3,128,032 / 3,139,108 bytes` (**99.6472%**) across `10,933` matching functions and `8` matching raw spans, according to the current `config/functions.csv` classifications.
+- **Current non-matching reconstructions:** `11,076 bytes` across `26` functions; semantic evidence is recorded per function. `0x002B787C` is one of these and now has typed C++ with bounded offline, caller, staged, and runtime evidence.
+- **Readable byte-identical C++ reconstructions:** `60` functions from the historical exact-conversion count. Non-identical semantic reconstructions, including `0x002B787C`, are counted separately in the ledger.
+- **Total Codebase Explored:** `3,139,108 / 3,139,108 bytes` (**100.0000%**) across `10,959` functions and `8` raw spans; this measures mapped inventory, not byte matching or behavioral equivalence.
 - See [`PROGRESS.md`](PROGRESS.md) for the full subsystem breakdown (`ui`, `camp`, `battle`, `script_vm`, `shop`, `unite`, `engine`, `nn_sdk`, `crt`) and explored function ledger. Coverage totals use original function sizes and do not measure behavioral equivalence.
 
 ---

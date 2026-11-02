@@ -1,6 +1,18 @@
 # H2 — Título: configuración de audio (`titleConfig`)
 
 Estado actual: validación parcial. La comparación autónoma más reciente (2026-11-02, imagen H2 acumulada con el dispatcher C++ `0x002B8D24` y el helper `0x00286928`) igualó 51 acciones y 19/19 checkpoints; se capturaron 129/129 hits de `0x00286928` con los seis argumentos ABI y el retorno `r0` coincidentes. La readiness y la reentrada en la misma sesión no completaron en ninguno de los lados; el reporte mantiene `h2_full_acceptance_supported: false`. El mapeo físico y el scheduling de entrada siguen sin demostrarse. Véanse [el registro del helper y su reporte runtime](../function-records/0x00286928.md), [el informe de implementación](../agent-work/h2-86928-implementation.md) y [el reporte anterior de 0x002B8D24](../agent-work/h2-8d24-runtime.md).
+
+Actualización de dependencia (2026-11-02): `AsdText_GetLineCount` (`0x002B787C`)
+se convirtió a C++ tipado en su slot original de 176 bytes. Pasó 515 casos
+directos, dos composiciones de `0x00286928` (selectores 11 y 19), seis controles,
+la validación del parche a dirección final y una compilación de 204 translation
+units. Una ejecución pareada de Azahar mantuvo 19/19 checkpoints; un probe GDB
+invocó directamente la función una vez en cada perfil y ambos retornaron y
+consumieron `r0=1`. Esa llamada fue controlada por el probe: la ruta H2 normal
+usa selector 6 y no llega a este helper. No demuestra uso natural en el juego ni
+modifica el estado de cierre de H2. [Registro de función](../function-records/0x002b787c.md),
+[evidencia de implementación](../agent-work/h2-2b787c-implementation.md),
+[reporte runtime](../../build/h2-2b787c-integration/runtime-probe-001/autonomous-gdb-verification.json).
 Responsable de integración: agente principal
 Revisión base y fecha: codex/semantic-equivalence-experiment, 2026-10-30
 

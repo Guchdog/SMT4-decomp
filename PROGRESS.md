@@ -6,8 +6,8 @@ Primary goal: [editable C++ semantics](docs/functional-status.md). Byte identity
 
 | Category | Functions | Code Size (Bytes) | Progress % | Status Description |
 |----------|----------:|------------------:|-----------:|--------------------|
-| **Matching (Byte-for-Byte)** | 10,955 functions + 8 raw spans | 3,135,028 B | **99.8700%** | Exact ARMv6K bytes verified against code.bin |
-| **Compiled Coverage (≥15% size)** | 4 | 4,080 B | 0.1300% | Compiles to ARMv6K ELF .o; size threshold only, logic unverified |
+| **Matching (Byte-for-Byte)** | 10,933 functions + 8 raw spans | 3,128,032 B | **99.6472%** | Current matching/matching_span ledger classifications |
+| **Compiled Coverage (≥15% size)** | 26 | 11,076 B | 0.3528% | Compiles to ARMv6K ELF .o; size threshold only, logic unverified |
 | **Draft Logic (<15% size)** | 0 | 0 B | 0.0000% | Early draft reconstructions awaiting control-flow recovery |
 | **Scaffolded (Stubs & Interfaces)** | 0 | 0 B | 0.0000% | Headers, structs, and function skeletons |
 | **Total Architecture Explored** | 10,959 functions + 8 raw spans | 3,139,108 B | 100.0000% | Mapped into `src/` (functions and verified raw spans) |
@@ -22,12 +22,12 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 
 | Subsystem | Matching | Compiled Coverage (≥15%) | Draft (<15%) | Stubs | Total Explored | Total Subsystem | Matching % | Explored % |
 |-----------|---------:|----------------:|-------------:|------:|---------------:|----------------:|-----------:|-----------:|
-| `engine` | 2,560 (770,212 B) | 0 (0 B) | 0 (0 B) | 0 (0 B) | 2,560 (770,212 B) | 2,560 (770,212 B) | 100.0000% | 100.00% |
-| `ui` | 1,650 (678,288 B) | 4 (4,080 B) | 0 (0 B) | 0 (0 B) | 1,654 (682,368 B) | 1,654 (682,368 B) | 99.4021% | 100.00% |
+| `engine` | 2,555 (768,816 B) | 5 (1,396 B) | 0 (0 B) | 0 (0 B) | 2,560 (770,212 B) | 2,560 (770,212 B) | 99.8188% | 100.00% |
+| `ui` | 1,645 (676,100 B) | 9 (6,268 B) | 0 (0 B) | 0 (0 B) | 1,654 (682,368 B) | 1,654 (682,368 B) | 99.0814% | 100.00% |
 | `unknown` | 3,818 (610,392 B) | 0 (0 B) | 0 (0 B) | 0 (0 B) | 3,818 (610,392 B) | 3,818 (610,392 B) | 100.0000% | 100.00% |
-| `script_vm` | 1,201 (446,288 B) | 0 (0 B) | 0 (0 B) | 0 (0 B) | 1,201 (446,288 B) | 1,201 (446,288 B) | 100.0000% | 100.00% |
-| `camp` | 917 (326,288 B) | 0 (0 B) | 0 (0 B) | 0 (0 B) | 917 (326,288 B) | 917 (326,288 B) | 100.0000% | 100.00% |
-| `battle` | 578 (236,932 B) | 0 (0 B) | 0 (0 B) | 0 (0 B) | 578 (236,932 B) | 578 (236,932 B) | 100.0000% | 100.00% |
+| `script_vm` | 1,199 (444,372 B) | 2 (1,916 B) | 0 (0 B) | 0 (0 B) | 1,201 (446,288 B) | 1,201 (446,288 B) | 99.5707% | 100.00% |
+| `camp` | 910 (325,244 B) | 7 (1,044 B) | 0 (0 B) | 0 (0 B) | 917 (326,288 B) | 917 (326,288 B) | 99.6800% | 100.00% |
+| `battle` | 575 (236,480 B) | 3 (452 B) | 0 (0 B) | 0 (0 B) | 578 (236,932 B) | 578 (236,932 B) | 99.8092% | 100.00% |
 | `shop` | 111 (39,976 B) | 0 (0 B) | 0 (0 B) | 0 (0 B) | 111 (39,976 B) | 111 (39,976 B) | 100.0000% | 100.00% |
 | `crt` | 26 (9,484 B) | 0 (0 B) | 0 (0 B) | 0 (0 B) | 26 (9,484 B) | 26 (9,484 B) | 100.0000% | 100.00% |
 | `nn_sdk` | 64 (8,852 B) | 0 (0 B) | 0 (0 B) | 0 (0 B) | 64 (8,852 B) | 64 (8,852 B) | 100.0000% | 100.00% |
@@ -5541,7 +5541,7 @@ Machine-readable `compiled_*` fields describe size coverage; legacy `verified_*`
 | `0x002b77a8` | 16 | `unknown` | `matching` | `func_002b77a8` | [`src/engine/leaf_batch38_a.cpp`](src/engine/leaf_batch38_a.cpp) |
 | `0x002b77b8` | 84 | `unknown` | `matching` | `func_002b77b8` | [`src/engine/leaf_batch28_b.cpp`](src/engine/leaf_batch28_b.cpp) |
 | `0x002b780c` | 112 | `script_vm` | `matching` | `script_vm_func_002b780c` | [`src/engine/leaf_batch16_a.cpp`](src/engine/leaf_batch16_a.cpp) |
-| `0x002b787c` | 176 | `engine` | `matching` | `engine_func_002b787c` | [`src/engine/leaf_batch42_c.cpp`](src/engine/leaf_batch42_c.cpp) |
+| `0x002b787c` | 176 | `engine` | `non_matching` | `engine_func_002b787c` | [`src/engine/leaf_batch42_c.cpp`](src/engine/leaf_batch42_c.cpp) |
 | `0x002b792c` | 76 | `unknown` | `matching` | `func_002b792c` | [`src/engine/leaf_batch39_c.cpp`](src/engine/leaf_batch39_c.cpp) |
 | `0x002b7978` | 152 | `ui` | `matching` | `ui_func_002b7978` | [`src/engine/leaf_batch42_a.cpp`](src/engine/leaf_batch42_a.cpp) |
 | `0x002b7a10` | 152 | `unknown` | `matching` | `func_002b7a10` | [`src/engine/leaf_batch42_a.cpp`](src/engine/leaf_batch42_a.cpp) |

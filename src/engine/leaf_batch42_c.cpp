@@ -463,32 +463,48 @@ extern "C" __attribute__((naked)) void script_vm_func_002a7aa0() {
 }
 
 // DECOMP_FUNC(0x002b787c, 176)
-extern "C" __attribute__((naked)) void engine_func_002b787c() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x41f0, 0xe92d, 0x6000, 0xe1a0\n"
-        ".hword 0x7000, 0xe3a0, 0x0014, 0xe590\n"
-        ".hword 0x0000, 0xe350, 0x400c, 0x1596\n"
-        ".hword 0x808c, 0x159f, 0x0000, 0x03a0\n"
-        ".hword 0x001b, 0x0a00, 0x0000, 0xe596\n"
-        ".hword 0x0284, 0xe080, 0x50b0, 0xe1d0\n"
-        ".hword 0x0008, 0xe155, 0x0015, 0x0a00\n"
-        ".hword 0x0005, 0xe1a0, 0xdb7c, 0xebff\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x000a, 0x0a00, 0x0b3e, 0xe245\n"
-        ".hword 0x0001, 0xe250, 0x7001, 0x0287\n"
-        ".hword 0x0006, 0x0a00, 0x0001, 0xe350\n"
-        ".hword 0x000a, 0x0a00, 0x0019, 0xe350\n"
-        ".hword 0x000a, 0x0a00, 0x0005, 0xe1a0\n"
-        ".hword 0xdb5c, 0xebff, 0x4000, 0xe084\n"
-        ".hword 0x000c, 0xe596, 0x4001, 0xe284\n"
-        ".hword 0x0c03, 0xe280, 0x00e7, 0xe280\n"
-        ".hword 0x0004, 0xe150, 0xffe4, 0xcaff\n"
-        ".hword 0x0007, 0xe1a0, 0x81f0, 0xe8bd\n"
-        ".hword 0x0000, 0xe596, 0x4001, 0xe284\n"
-        ".hword 0x0284, 0xe080, 0x70b0, 0xe1d0\n"
-        ".hword 0xfff2, 0xeaff, 0xffff, 0x0000\n"
-    );
+extern "C" uint32_t engine_func_002ae6b0(uint32_t code);
+extern "C" uint32_t func_002ae664(uint32_t code);
+extern "C" __attribute__((minsize)) uint32_t engine_func_002b787c(
+    uint32_t raw_handle) {
+    const auto* handle = reinterpret_cast<const uint8_t*>(
+        static_cast<uintptr_t>(raw_handle));
+    if (*reinterpret_cast<const uint32_t*>(handle + 0x14) == 0) return 0;
+
+    const uint32_t start = *reinterpret_cast<const uint32_t*>(handle + 0x0c);
+    const int32_t signed_limit = static_cast<int32_t>(start + 0x3e7);
+    uint32_t index = start;
+    uint32_t count = 0;
+    for (;;) {
+        const uint32_t table_base = *reinterpret_cast<const uint32_t*>(handle);
+        const uint32_t record_address = table_base + (index << 5);
+        const uint32_t code = *reinterpret_cast<const uint16_t*>(
+            static_cast<uintptr_t>(record_address));
+        if (code == 0xffff) return count;
+
+        if (engine_func_002ae6b0(code) != 0) {
+            // The retained predicate has already constrained this to F801..F88F,
+            // so its low byte uniquely selects the three special values.
+            const uint8_t control_code = static_cast<uint8_t>(code);
+            if (control_code == 1) {
+                count += 1;
+            } else if (control_code == 2) {
+                return count;
+            } else if (control_code == 0x1a) {
+                index += 1;
+                const uint32_t payload_table =
+                    *reinterpret_cast<const uint32_t*>(handle);
+                const uint32_t payload_address = payload_table + (index << 5);
+                count = *reinterpret_cast<const uint16_t*>(
+                    static_cast<uintptr_t>(payload_address));
+            } else {
+                index += func_002ae664(code);
+            }
+        }
+
+        index += 1;
+        if (static_cast<int32_t>(index) >= signed_limit) return count;
+    }
 }
 
 // DECOMP_FUNC(0x00227414, 180)
