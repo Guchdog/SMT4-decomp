@@ -1160,3 +1160,8 @@ Replaced the 64-byte naked ARM body with 60 bytes of typed C++ calling the origi
 # H2 touch-region and manager-resolver integration — 2026-11-02
 
 Staged typed `0x002B88C4` and `0x002BF6D0` together in their original H2 slots. The 242-byte two-slot IPS passed roundtrip, slot-scope, even ARM interworking, and 58 original-caller comparisons; an independent fresh-seed review repeated all 58 cases. The manager resolver and divider remain original dependencies. Controlled fixture, below-SP spill, scheduler, and runtime limits remain explicit in the [integration record](docs/agent-work/h2-b88c4-bf6d0-cumulative-integration.md) and [review](docs/agent-work/h2-b88c4-bf6d0-cumulative-independent-review.md).
+
+
+# H2 unsigned query divider contract correction — 2026-11-02
+
+Pinned audit corrected `0x002C6C10` to unsigned divmod semantics: divisor zero returns quotient `0xFFFFFFFF` and the original dividend as remainder, without a fault. A seven-case selector-zero caller probe matched the original and production mode-0 query. A typed full-domain shape compiles to 52 bytes with an unresolved `__aeabi_uidiv` call, so no production replacement was made; the signed neighboring divider does not cover established full caller bounds. See [service record](docs/function-records/0x002c6c10.md), [contract audit](docs/agent-work/h2-002c6c10-divmod-contract-recon.md), and [probe](build/agent-work/H2-semantic/h2-logical-mode0-zero-selector/run002/report.json).
