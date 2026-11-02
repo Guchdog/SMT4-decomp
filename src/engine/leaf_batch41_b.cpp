@@ -1280,25 +1280,30 @@ extern "C" __attribute__((naked)) void func_002bb4d4() {
 }
 
 // DECOMP_FUNC(0x002bf030, 120)
-extern "C" __attribute__((naked)) void camp_func_002bf030() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x0030, 0xe92d, 0xc048, 0xe590\n"
-        ".hword 0x4064, 0xe59f, 0x3000, 0xe3a0\n"
-        ".hword 0x2003, 0xe1a0, 0x50b8, 0xe1dc\n"
-        ".hword 0x0495, 0xe004, 0x4c92, 0xe284\n"
-        ".hword 0x4049, 0xe284, 0x5a24, 0xe1a0\n"
-        ".hword 0x0000, 0xe355, 0xc01c, 0x859c\n"
-        ".hword 0x000c, 0x9a00, 0x0001, 0xe153\n"
-        ".hword 0x0002, 0x1a00, 0x1182, 0xe062\n"
-        ".hword 0x1101, 0xe08c, 0x0008, 0xea00\n"
-        ".hword 0x5182, 0xe062, 0x2001, 0xe282\n"
-        ".hword 0x5105, 0xe79c, 0x0001, 0xe375\n"
-        ".hword 0x3001, 0x0283, 0x5a24, 0xe1a0\n"
-        ".hword 0x0002, 0xe155, 0xfff2, 0x8aff\n"
-        ".hword 0x1000, 0xe3a0, 0x0030, 0xe8bd\n"
-        ".hword 0xe623, 0xeaf9, 0x9249, 0x0000\n"
-    );
+extern "C" uint32_t camp_func_002bf030(uint8_t* object, uint32_t selector) {
+    auto manager = *reinterpret_cast<uint8_t**>(object + 0x48);
+    auto n = *reinterpret_cast<const uint16_t*>(manager + 8);
+    auto count = (static_cast<uint32_t>(n) * 0x9249u + 0x9249u) >> 20;
+
+    uint8_t* selected = nullptr;
+    if (count != 0) {
+        auto table = *reinterpret_cast<uint8_t**>(manager + 0x1c);
+        uint32_t markers = 0;
+        for (uint32_t i = 0; i < count; ++i) {
+            auto entry = table + i * 28u;
+            if (markers == selector) {
+                selected = entry;
+                break;
+            }
+            if (*reinterpret_cast<const uint32_t*>(entry) == 0xffffffffu) {
+                ++markers;
+            }
+        }
+    }
+
+    using service_fn = uint32_t (*)(uint8_t*, uint8_t*);
+    auto service = reinterpret_cast<service_fn>(0x00138934);
+    return service(object, selected);
 }
 
 // DECOMP_FUNC(0x002c0b1c, 120)

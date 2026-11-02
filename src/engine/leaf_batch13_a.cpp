@@ -116,8 +116,22 @@ extern "C" __attribute__((naked)) void camp_func_00249acc() {
 }
 
 // DECOMP_FUNC(0x002af854, 64)
-extern "C" __attribute__((naked)) void battle_func_002af854() {
-    asm volatile("ldr ip, [r0, #0x58]\ncmp ip, #0\nbeq 1f\nstrh r1, [r0, #0x5c]\nmov r3, #0\nadd r1, r1, r1, lsl #1\nstrh r3, [r0, #0x5e]\nstrb r3, [r0, #0x87]\nadd r1, ip, r1, lsl #2\nstrb r3, [r0, #0x8a]\ncmp r2, #0\nstrb r2, [r0, #0x60]\nldrne r1, [r1, #4]\nldreq r1, [r1]\nstr r1, [r0, #0x20]\n1:\nbx lr\n");
+extern "C" uint8_t* battle_func_002af854(uint8_t* object, uint32_t index, uint32_t mode) {
+    auto list = *reinterpret_cast<const uint32_t* const*>(object + 0x58);
+    if (list == nullptr) {
+        return object;
+    }
+
+    *reinterpret_cast<volatile uint16_t*>(object + 0x5c) = static_cast<uint16_t>(index);
+    *reinterpret_cast<volatile uint16_t*>(object + 0x5e) = 0;
+    *reinterpret_cast<volatile uint8_t*>(object + 0x87) = 0;
+    *reinterpret_cast<volatile uint8_t*>(object + 0x8a) = 0;
+    *reinterpret_cast<volatile uint8_t*>(object + 0x60) = static_cast<uint8_t>(mode);
+
+    auto entry = reinterpret_cast<const uint8_t*>(list) + index * 12u;
+    auto selected = *reinterpret_cast<const volatile uint32_t*>(entry + (mode != 0 ? 4 : 0));
+    *reinterpret_cast<uint32_t*>(object + 0x20) = selected;
+    return object;
 }
 
 // DECOMP_FUNC(0x0035b324, 64)

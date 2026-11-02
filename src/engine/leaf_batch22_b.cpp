@@ -866,16 +866,13 @@ extern "C" __attribute__((naked)) void script_vm_func_002c0128() {
 }
 
 // DECOMP_FUNC(0x002c1f28, 28)
-extern "C" __attribute__((naked)) void engine_func_002c1f28() {
-    asm volatile(
-        "ldr r0, [pc, #0x10]\n"
-        "ldr r1, [r0, #4]\n"
-        "cmp r1, #0\n"
-        "ldrsblt r0, [r0]\n"
-        "movge r0, #0\n"
-        "bx lr\n"
-        ".word 0x0043e0b8\n"
-    );
+extern "C" int32_t engine_func_002c1f28() {
+    auto globals = reinterpret_cast<const uint8_t*>(0x0043e0b8);
+    auto enabled = *reinterpret_cast<const int32_t*>(globals + 4);
+    if (enabled < 0) {
+        return *reinterpret_cast<const int8_t*>(globals);
+    }
+    return 0;
 }
 
 // DECOMP_FUNC(0x002c31bc, 28)

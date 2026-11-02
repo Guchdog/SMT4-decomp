@@ -10,7 +10,7 @@ Decompilation and reverse-engineering project for **Shin Megami Tensei IV** (Nin
 
 Find and reconstruct readable C++ with supported behavior. Byte-for-byte identity is not an acceptance requirement. Prioritize coherent milestone behavior, differential/caller evidence, and integration; do not optimize the project around matching opcodes.
 
-Follow the [functional status](docs/functional-status.md), [milestone plan](docs/reconstruction-milestones.md), and [per-function workflow](docs/function-reconstruction-workflow.md). The [generated candidate inventory](docs/semantic-inventory.md) measures experimental definitions and static evidence links, not equivalence or integration. Milestones H0, H1, H2, H3, and H4 are completed and closed.
+Follow the [functional status](docs/functional-status.md), [milestone plan](docs/reconstruction-milestones.md), and [per-function workflow](docs/function-reconstruction-workflow.md). The [generated candidate inventory](docs/semantic-inventory.md) measures experimental definitions and static evidence links, not equivalence or integration. Milestone status lives in the functional and reconstruction plans. H2 (title audio settings) remains open: earlier paired runtime evidence stopped before readiness and re-entry, and the per-function conversions below do not close that milestone.
 
 Use the [agent workflow](docs/agent-workflow.md) for bounded parallel contracts, implementation and independent review; the coordinator owns shared files, integration and the CPU budget.
 
@@ -34,6 +34,26 @@ The [full reconstruction and native port plan](docs/native-port-plan.md) tracks 
 | Native game scenarios without original ARM code | Not established; H20 tests isolated host HAL components |
 
 The 100% exact-byte figure below includes original ARM-backed code and is not a translation or native-port percentage. H19's composite ARM image retains original code; H20's host tests do not establish a native game build. The next step is the reproducible P0 inventory audit described in the plan.
+
+## Recent H2 C++ semantic progress
+
+The following H2 functions have typed C++ definitions and truthful `non_matching` ledger entries. Their per-function contracts and differential evidence are linked below. Several are bounded helpers that retain original ARM services. The paired runtime comparison establishes parity only for its defined scripted scenario on the recorded cumulative image; it does not establish whole-game or full H2 equivalence.
+
+| Address | Reconstructed behavior | Recorded evidence |
+| --- | --- | --- |
+| `0x00221168` | `titleConfig` nested callback slice | 20 paired callback returns and 19 checkpoints; readiness and re-entry remain incomplete. [Function record](docs/function-records/0x00221168.md) |
+| `0x0028DF54` | H2 state-field writes and raw return | 64 direct cases, 64 compositions through original `0x00286928`, one negative control; RAM/ordering limits documented. [Function record](docs/function-records/0x0028df54.md) |
+| `0x002C1F28` | Signed global predicate and byte return | 153 direct cases, 32 zero-result caller compositions, three negative controls; six named callsites audited. [Function record](docs/function-records/0x002c1f28.md) |
+| `0x002B89A0` | Null or manager-mode predicate | 139 direct cases, 32 nonzero caller continuations, three negative controls; caller entry is asserted. [Function record](docs/function-records/0x002b89a0.md) |
+| `0x002AF854` | Indexed field selection with ordered alias-safe accesses | 503 direct cases, 32 disjoint and 32 cross-alias compositions through original `0x002B8D24`, five controls; selector-12 cross-call aliasing is covered by two five-call chains for one documented topology. [Function record](docs/function-records/0x002af854.md) |
+| `0x002CAB70`, `0x0021F39C`, `0x002E0AF4` | `titleConfig` config-byte-to-index mappers | Two 512-case runs per mapper, each covering all 256 byte values, plus production-image checks and initializer caller compositions. [Mapper records](docs/function-records/0x002cab70.md), [0x0021F39C](docs/function-records/0x0021f39c.md), [0x002E0AF4](docs/function-records/0x002e0af4.md) |
+| `0x002BF030` | Sentinel-counted table selector, retaining original service `0x00138934` | 128 direct cases, 24 compositions through original `0x002B8D24`, six negative controls; full service branches and cumulative H2 runtime remain open. [Function record](docs/function-records/0x002bf030.md) |
+| `0x002B8D24` | Typed selector dispatcher, retaining original helpers `0x002AF854`, `0x002BF030` and `0x001384F0` | 116 direct cases, two selector-11 caller compositions, two five-call selector-12 cross-alias chains and seven controls; 356/360 bytes. Paired cumulative-image H2 runtime matched 19/19 checkpoints across 51 scripted actions; a hit at this helper is unverified, and readiness/re-entry still prevent H2 closure. [Function record](docs/function-records/0x002b8d24.md) |
+| `0x00286928` | Typed titleConfig state dispatcher, retaining its original callees | 296 direct cases, four compositions through original callback `0x00221168`, six negative controls; 812/820 bytes and 22 ARM call relocations. Cumulative paired runtime captured 129/129 helper hits with arguments/returns matched and 19/19 checkpoints across 51 actions; readiness/re-entry are incomplete, so H2 remains open. [Function record](docs/function-records/0x00286928.md) |
+
+The recent helper batch compiled all 204 translation units. Runtime and integration limits remain explicit in the per-function reviews and the [H2 milestone record](docs/milestones/H2-audio-settings.md).
+
+---
 
 ## Reference byte coverage
 
