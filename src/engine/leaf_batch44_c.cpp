@@ -1168,7 +1168,7 @@ extern "C" __attribute__((naked)) void script_vm_func_0024a9f8() {
 // DECOMP_FUNC(0x002b85bc, 472)
 extern "C" u32 camp_func_002aea28(u32 index);
 extern "C" u32 camp_func_002bf030(u8* slot, u32 selector);
-extern "C" void ui_func_002a8a8c();
+extern "C" u32 ui_func_002a8a8c();
 extern "C" u32 camp_func_002bdac0(u8* slot, u32 mode, u32 value);
 extern "C" u32 camp_func_002aa268(u8* slot, u32 mode, u32 value);
 

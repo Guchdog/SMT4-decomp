@@ -5230,7 +5230,7 @@ address,size,status,category,name,src_file
 0x002a8a08,20,matching,camp,camp_func_002a8a08,src/engine/leaf_batch21_b.cpp
 0x002a8a1c,60,matching,camp,camp_func_002a8a1c,src/engine/leaf_batch29_b.cpp
 0x002a8a58,52,matching,engine,engine_func_002a8a58,src/engine/leaf_batch11_a.cpp
-0x002a8a8c,36,matching,ui,ui_func_002a8a8c,src/engine/leaf_batch23_b.cpp
+0x002a8a8c,36,non_matching,ui,ui_func_002a8a8c,src/engine/leaf_batch23_b.cpp
 0x002a8ab0,588,matching,engine,engine_func_002a8ab0,src/engine/leaf_batch46_a.cpp
 0x002a8cfc,108,matching,unknown,func_002a8cfc,src/engine/leaf_batch30_b.cpp
 0x002a8d68,1708,matching,ui,ui_func_002a8d68,src/engine/leaf_batch46_b.cpp
