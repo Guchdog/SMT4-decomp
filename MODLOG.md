@@ -1,3 +1,11 @@
+# H2 shared manager helper 0x002B9008 — 2026-11-02
+
+Refreshed the existing typed C++ helper against the current shared TU. The
+32-case signed-boundary/argument matrix, two mutation controls, slot-only IPS,
+and TU build passed, then an independent fresh-seed review accepted the bounded
+ordinary-memory contract. Shared lifecycle and runtime behavior remain open.
+See [function record](docs/function-records/0x002b9008.md).
+
 # H2 logical input counter refresh 0x001078D8 — 2026-11-02
 
 Fixed the differential runner's unmapped return sentinel and added explicit
