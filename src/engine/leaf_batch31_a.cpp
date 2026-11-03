@@ -3,54 +3,39 @@
 // Batch 31 A: raw ARM encodings with explicit bounded return/data tails.
 
 // DECOMP_FUNC(0x0034afe4, 8)
-extern "C" __attribute__((naked)) void func_0034afe4() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xeafd9d4d\n"
-        ".inst 0xe12fff1e\n"
-    );
+extern "C" void engine_func_002b2520(void* sub);
+
+extern "C" void func_0034afe4(void* sub) {
+    engine_func_002b2520(sub);
 }
+
 // DECOMP_FUNC(0x0035311c, 8)
-extern "C" __attribute__((naked)) void engine_func_0035311c() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xeafb9c8c\n"
-        ".inst 0xe12fff1e\n"
-    );
+extern "C" void engine_func_0035311c(void) {
 }
 
 // DECOMP_FUNC(0x00394ee0, 12)
-extern "C" __attribute__((naked)) void script_vm_func_00394ee0() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe3a00001\n"
-        ".inst 0xeafcc254\n"
-        ".inst 0xe12fff1e\n"
-    );
+extern "C" u32 engine_func_002c583c(u32 val);
+
+extern "C" u32 script_vm_func_00394ee0(void) {
+    return engine_func_002c583c(1);
 }
 
 // DECOMP_FUNC(0x003968c0, 20)
-extern "C" __attribute__((naked)) void script_vm_func_003968c0() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe5901000\n"
-        ".inst 0xe3110001\n"
-        ".inst 0x1a000000\n"
-        ".inst 0xea000000\n"
-        ".inst 0xe12fff1e\n"
-    );
+extern "C" void script_vm_func_003968d4(void* obj);
+
+extern "C" void script_vm_func_003968c0(void* obj) {
+    if ((*reinterpret_cast<u32*>(obj) & 1) == 0) {
+        script_vm_func_003968d4(obj);
+    }
 }
 
 // DECOMP_FUNC(0x003eafac, 20)
-extern "C" __attribute__((naked)) void func_003eafac() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe3510000\n"
-        ".inst 0xe2800004\n"
-        ".inst 0x0a000000\n"
-        ".inst 0xeafae11a\n"
-        ".inst 0xe12fff1e\n"
-    );
+extern "C" void func_002a3428(u32* p0, u32* p1);
+
+extern "C" void func_003eafac(u32* p0, u32* p1) {
+    if (p1 != nullptr) {
+        func_002a3428(p0 + 1, p1);
+    }
 }
 
 // DECOMP_FUNC(0x0033858c, 24)
