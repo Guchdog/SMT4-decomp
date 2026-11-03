@@ -1207,3 +1207,16 @@ ordinary RAM without concurrent observers. See the
 [function record](docs/function-records/0x002bdb2c.md),
 [conversion report](docs/agent-work/h2-2bdb2c-conversion.md), and
 [static contract](docs/agent-work/h2-002bdb2c-contract.md).
+
+# H2 TitleConfig sprite-group binder 0x002C32F8 — 2026-11-02
+
+Replaced the 76-byte naked ARM body with typed C++ preserving its eleven raw
+word arguments, descriptor writes and incidental `r0=group+0x14` return. The
+coordinator differential passed 51 direct cases, the original group-init/bind
+caller slice, and a missing-count-store control. The candidate remains
+`non_matching`; independent review passed 67 direct cases plus the caller, and
+the full ARMv6K build passed 204/204 TUs. The table's meaning and store-order
+observability remain unverified. See the
+[function record](docs/function-records/0x002c32f8.md),
+[conversion report](docs/agent-work/h2-2c32f8-conversion.md), and
+[dependency contract](docs/agent-work/h2-init-dependency-contracts.md).

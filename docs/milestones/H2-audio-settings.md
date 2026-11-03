@@ -1,5 +1,17 @@
 # H2 — Título: configuración de audio (`titleConfig`)
 
+Actualización de inicialización (2026-11-02): `camp_func_002c32f8`
+(`0x002C32F8`) ya está reconstruida en C++ para enlazar el descriptor del grupo
+de sprites. El cuerpo ocupa 76/76 bytes, no tiene relocaciones y devuelve el
+valor crudo `group+0x14`. Pasó 51 diferenciales directos, la secuencia original
+de `TitleConfig` que inicializa y enlaza el grupo, y un control negativo. La
+revisión independiente pasó 67 casos directos más el caller, y el build
+completo pasó 204/204 TUs. Los bytes de
+relleno `+0x0A..+0x0B` se preservan por el binder; el caller los pone a cero
+antes de la llamada. La tabla y su resultado visual no están caracterizados.
+[Registro](../function-records/0x002c32f8.md),
+[evidencia](../agent-work/h2-2c32f8-conversion.md).
+
 Actualización de inicialización (2026-11-02): `camp_func_002bdb2c`
 (`0x002BDB2C`) ahora tiene C++ tipado para crear el nodo de sprite de
 `TitleConfig`, conservando la llamada original a `AsdMem_Zero` y su retorno
