@@ -52,63 +52,34 @@ extern "C" void* func_003e6128(void) {
 }
 
 // DECOMP_FUNC(0x003e6134, 12)
-extern "C" __attribute__((naked)) void func_003e6134() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe59f0000\n"
-        ".inst 0xe12fff1e\n"
-        ".word 0x0044e858 @ bounded tail data\n"
-    );
+extern "C" void* func_003e6134(void) {
+    return reinterpret_cast<void*>(0x0044E858);
 }
 
 // DECOMP_FUNC(0x003bcfc8, 16)
-extern "C" __attribute__((naked)) void func_003bcfc8() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xeddf0a01\n"
-        ".inst 0xee200a20\n"
-        ".inst 0xe12fff1e\n"
-        ".word 0x3fa00000 @ bounded tail data\n"
-    );
+extern "C" float func_003bcfc8(float val) {
+    return val * 1.25f;
 }
 
 // DECOMP_FUNC(0x003409d4, 24)
-extern "C" __attribute__((naked)) void func_003409d4() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe3a01000\n"
-        ".inst 0xed9f0a02\n"
-        ".inst 0xe5801004\n"
-        ".inst 0xed800a02\n"
-        ".inst 0xe12fff1e\n"
-        ".word 0x00000000 @ bounded tail data\n"
-    );
+extern "C" void func_003409d4(void* obj) {
+    *reinterpret_cast<u32*>(static_cast<char*>(obj) + 4) = 0;
+    *reinterpret_cast<float*>(static_cast<char*>(obj) + 8) = 0.0f;
 }
 
 // DECOMP_FUNC(0x00348ac0, 24)
-extern "C" __attribute__((naked)) void func_00348ac0() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe3a01000\n"
-        ".inst 0xed9f0a02\n"
-        ".inst 0xe5801004\n"
-        ".inst 0xed800a02\n"
-        ".inst 0xe12fff1e\n"
-        ".word 0x3f800000 @ bounded tail data\n"
-    );
+extern "C" void func_00348ac0(void* obj) {
+    *reinterpret_cast<u32*>(static_cast<char*>(obj) + 4) = 0;
+    *reinterpret_cast<float*>(static_cast<char*>(obj) + 8) = 1.0f;
 }
 
 // DECOMP_FUNC(0x0035a220, 24)
-extern "C" __attribute__((naked)) void script_vm_func_0035a220() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe3500007\n"
-        ".inst 0x359f1008\n"
-        ".inst 0x37910100\n"
-        ".inst 0x23a00000\n"
-        ".inst 0xe12fff1e\n"
-        ".word 0x00465768 @ bounded tail data\n"
-    );
+extern "C" const char* script_vm_func_0035a220(u32 region_id) {
+    if (region_id < 7) {
+        const char* const* table = reinterpret_cast<const char* const*>(0x00465768);
+        return table[region_id];
+    }
+    return nullptr;
 }
 
 // DECOMP_FUNC(0x0035a270, 24)

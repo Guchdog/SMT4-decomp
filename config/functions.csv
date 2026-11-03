@@ -7750,7 +7750,7 @@ address,size,status,category,name,src_file
 0x003408ec,44,matching,unknown,func_003408ec,src/engine/leaf_batch40_c.cpp
 0x00340918,64,matching,unknown,func_00340918,src/engine/leaf_batch31_b.cpp
 0x00340958,124,matching,unknown,func_00340958,src/engine/leaf_batch33_a.cpp
-0x003409d4,24,matching,unknown,func_003409d4,src/engine/leaf_batch31_b.cpp
+0x003409d4,24,non_matching,unknown,func_003409d4,src/engine/leaf_batch31_b.cpp
 0x003409ec,24,matching,unknown,func_003409ec,src/engine/leaf_matching.cpp
 0x00340a04,4,matching,unknown,func_00340a04,src/engine/leaf_batch36_c.cpp
 0x00340a08,552,matching,camp,camp_func_00340a08,src/engine/leaf_batch44_c.cpp
@@ -7850,7 +7850,7 @@ address,size,status,category,name,src_file
 0x00348a94,24,matching,unknown,func_00348a94,src/engine/leaf_batch17_c.cpp
 0x00348aac,4,matching,unknown,func_00348aac,src/engine/leaf_matching.cpp
 0x00348ab0,16,matching,unknown,func_00348ab0,src/engine/leaf_matching.cpp
-0x00348ac0,24,matching,unknown,func_00348ac0,src/engine/leaf_batch31_b.cpp
+0x00348ac0,24,non_matching,unknown,func_00348ac0,src/engine/leaf_batch31_b.cpp
 0x00348ad8,8,matching,unknown,func_00348ad8,src/engine/leaf_matching.cpp
 0x00348ae0,4,matching,unknown,func_00348ae0,src/engine/leaf_batch36_c.cpp
 0x00348ae4,316,matching,script_vm,script_vm_func_00348ae4,src/engine/leaf_batch34_a.cpp
@@ -8268,7 +8268,7 @@ address,size,status,category,name,src_file
 0x0035a09c,184,matching,unknown,func_0035a09c,src/engine/leaf_batch40_b.cpp
 0x0035a154,76,matching,engine,engine_func_0035a154,src/engine/leaf_batch21_c.cpp
 0x0035a1a0,128,matching,camp,camp_func_0035a1a0,src/engine/leaf_batch33_a.cpp
-0x0035a220,24,matching,script_vm,script_vm_func_0035a220,src/engine/leaf_batch31_b.cpp
+0x0035a220,24,non_matching,script_vm,script_vm_func_0035a220,src/engine/leaf_batch31_b.cpp
 0x0035a238,56,non_matching,camp,camp_func_0035a238,src/engine/leaf_batch31_a.cpp
 0x0035a270,24,matching,script_vm,script_vm_func_0035a270,src/engine/leaf_batch31_b.cpp
 0x0035a288,60,matching,unknown,func_0035a288,src/engine/leaf_batch26_c.cpp
@@ -9758,7 +9758,7 @@ address,size,status,category,name,src_file
 0x003bcbf8,584,matching,ui,ui_func_003bcbf8,src/engine/leaf_batch36_b.cpp
 0x003bce40,88,matching,battle,battle_func_003bce40,src/engine/leaf_batch29_c.cpp
 0x003bce98,304,matching,ui,ui_func_003bce98,src/engine/leaf_batch38_b.cpp
-0x003bcfc8,16,matching,unknown,func_003bcfc8,src/engine/leaf_batch31_b.cpp
+0x003bcfc8,16,non_matching,unknown,func_003bcfc8,src/engine/leaf_batch31_b.cpp
 0x003bcfd8,824,matching,ui,ui_func_003bcfd8,src/engine/leaf_batch23_c.cpp
 0x003bd310,60,matching,battle,battle_func_003bd310,src/engine/leaf_batch13_a.cpp
 0x003bd34c,180,matching,ui,ui_func_003bd34c,src/engine/leaf_batch23_c.cpp
@@ -10236,7 +10236,7 @@ address,size,status,category,name,src_file
 0x003e608c,144,matching,unknown,func_003e608c,src/engine/leaf_batch16_c.cpp
 0x003e611c,12,non_matching,unknown,func_003e611c,src/engine/leaf_batch31_b.cpp
 0x003e6128,12,non_matching,unknown,func_003e6128,src/engine/leaf_batch31_b.cpp
-0x003e6134,12,matching,unknown,func_003e6134,src/engine/leaf_batch31_b.cpp
+0x003e6134,12,non_matching,unknown,func_003e6134,src/engine/leaf_batch31_b.cpp
 0x003e6140,44,matching,unknown,func_003e6140,src/engine/leaf_batch19_b.cpp
 0x003e616c,144,matching,engine,engine_func_003e616c,src/engine/leaf_batch38_c.cpp
 0x003e61fc,144,matching,engine,engine_func_003e61fc,src/engine/leaf_batch38_c.cpp
