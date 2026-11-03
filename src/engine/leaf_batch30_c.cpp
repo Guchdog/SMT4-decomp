@@ -209,8 +209,32 @@ extern "C" __attribute__((minsize)) void func_0022922c(const uintptr_t* obj) {
 }
 
 // DECOMP_FUNC(0x00229aa8, 132)
-extern "C" __attribute__((naked)) void ui_func_00229aa8() {
-    asm volatile(".arm\n.inst 0xe92d4070\n.inst 0xe1a05000\n.inst 0xe1a06001\n.inst 0xe5900000\n.inst 0xe1a01002\n.inst 0xe1a04002\n.inst 0xeb016433\n.inst 0xe3500000\n.inst 0x11d046fe\n.inst 0xe0840104\n.inst 0xe0860080\n.inst 0xe2800c09\n.inst 0xe1d00db4\n.inst 0xe3500000\n.inst 0x1a00000f\n.inst 0xe5951000\n.inst 0xe0840204\n.inst 0xe0800304\n.inst 0xe2811d7f\n.inst 0xe5911000\n.inst 0xe7912180\n.inst 0xe3120001\n.inst 0x0a000007\n.inst 0xe3120501\n.inst 0x1a000005\n.inst 0xe3a020c8\n.inst 0xe0820180\n.inst 0xe7910000\n.inst 0xe3500000\n.inst 0xd3a00001\n.inst 0xda000000\n.inst 0xe3a00000\n.inst 0xe8bd8070\n");
+extern "C" void* ui_func_00282b94(void* inner, s32 idx);
+
+extern "C" u32 ui_func_00229aa8(void* const* obj, const void* table, s32 default_idx) {
+    void* const inner = *obj;
+    void* const node = ui_func_00282b94(inner, default_idx);
+
+    s32 idx = default_idx;
+    if (node != nullptr) {
+        idx = static_cast<s32>(*reinterpret_cast<const s16*>(static_cast<const u8*>(node) + 0x6E));
+    }
+
+    const auto* const tbl = static_cast<const u8*>(table);
+    const u16 flag = *reinterpret_cast<const u16*>(tbl + 0x9D4 + idx * 10);
+    if (flag == 0) {
+        const auto* const entity_table = *reinterpret_cast<const u8* const*>(static_cast<const u8*>(inner) + 0x1FC0);
+        const auto* const elem = entity_table + idx * 648;
+        const u32 elem_flags = *reinterpret_cast<const u32*>(elem);
+
+        if ((elem_flags & 1u) != 0 && (elem_flags & 0x400000u) == 0) {
+            const s32 timer = *reinterpret_cast<const s32*>(elem + 0xC8);
+            if (timer <= 0) {
+                return 1;
+            }
+        }
+    }
+    return 0;
 }
 
 // DECOMP_FUNC(0x00229b2c, 140)
