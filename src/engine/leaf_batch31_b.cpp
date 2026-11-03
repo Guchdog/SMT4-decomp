@@ -27,53 +27,28 @@ extern "C" void* func_003e6024(void) {
 }
 
 // DECOMP_FUNC(0x003e6030, 12)
-extern "C" __attribute__((naked)) void func_003e6030() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe59f0000\n"
-        ".inst 0xe12fff1e\n"
-        ".word 0x004732d8 @ bounded tail data\n"
-    );
+extern "C" void* func_003e6030(void) {
+    return reinterpret_cast<void*>(0x004732D8);
 }
 
 // DECOMP_FUNC(0x003e603c, 12)
-extern "C" __attribute__((naked)) void func_003e603c() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe59f0000\n"
-        ".inst 0xe12fff1e\n"
-        ".word 0x00472180 @ bounded tail data\n"
-    );
+extern "C" void* func_003e603c(void) {
+    return reinterpret_cast<void*>(0x00472180);
 }
 
 // DECOMP_FUNC(0x003e6048, 12)
-extern "C" __attribute__((naked)) void func_003e6048() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe59f0000\n"
-        ".inst 0xe12fff1e\n"
-        ".word 0x0044e820 @ bounded tail data\n"
-    );
+extern "C" void* func_003e6048(void) {
+    return reinterpret_cast<void*>(0x0044E820);
 }
 
 // DECOMP_FUNC(0x003e611c, 12)
-extern "C" __attribute__((naked)) void func_003e611c() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe59f0000\n"
-        ".inst 0xe12fff1e\n"
-        ".word 0x00472158 @ bounded tail data\n"
-    );
+extern "C" void* func_003e611c(void) {
+    return reinterpret_cast<void*>(0x00472158);
 }
 
 // DECOMP_FUNC(0x003e6128, 12)
-extern "C" __attribute__((naked)) void func_003e6128() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe59f0000\n"
-        ".inst 0xe12fff1e\n"
-        ".word 0x004765b0 @ bounded tail data\n"
-    );
+extern "C" void* func_003e6128(void) {
+    return reinterpret_cast<void*>(0x004765B0);
 }
 
 // DECOMP_FUNC(0x003e6134, 12)
