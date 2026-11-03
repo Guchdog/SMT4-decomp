@@ -1,3 +1,5 @@
+Actualización de entrada (2026-11-02): los getters firmados `0x002BB978` y `0x002BC9C8` ahora tienen C++ tipado. Pasaron 512 casos directos (todos los bytes para ambos), 25 composiciones por el reader original `0x0011C5EC`, replay IPS y un control unsigned detectado; ambos cuerpos ocupan 16/16 bytes y quedan `non_matching`. La segunda llamada condicional y la ruta de clear se cubrieron. La evidencia usa RAM sintética y un seam de anillo; no demuestra procedencia física ni runtime H2. [Registros](../function-records/0x002bb978.md), [evidencia](../agent-work/h2-input-flag-getters-conversion.md).
+
 # H2 — Título: configuración de audio (`titleConfig`)
 
 Actualización de dependencia de entrada (2026-11-02): el postprocesador de

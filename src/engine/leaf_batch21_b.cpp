@@ -434,23 +434,13 @@ extern "C" __attribute__((naked)) void func_002bb7a0() {
 }
 
 // DECOMP_FUNC(0x002bb978, 16)
-extern "C" __attribute__((naked)) void func_002bb978() {
-    asm volatile(
-        "ldr r0, [pc, #4]\n"
-        "ldrsb r0, [r0, #2]\n"
-        "bx lr\n"
-        ".word 0x0044e360\n"
-    );
+extern "C" s32 func_002bb978() {
+    return *reinterpret_cast<volatile s8*>(0x0044E362u);
 }
 
 // DECOMP_FUNC(0x002bc9c8, 16)
-extern "C" __attribute__((naked)) void func_002bc9c8() {
-    asm volatile(
-        "ldr r0, [pc, #4]\n"
-        "ldrsb r0, [r0, #1]\n"
-        "bx lr\n"
-        ".word 0x0044e380\n"
-    );
+extern "C" s32 func_002bc9c8() {
+    return *reinterpret_cast<volatile s8*>(0x0044E381u);
 }
 
 // DECOMP_FUNC(0x002bff9c, 16)
