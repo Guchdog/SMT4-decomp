@@ -682,7 +682,7 @@ address,size,status,category,name,src_file
 0x0012a69c,60,matching,unknown,func_0012a69c,src/engine/leaf_batch23_a.cpp
 0x0012a6d8,20,matching,unknown,func_0012a6d8,src/engine/leaf_batch38_a.cpp
 0x0012a6ec,108,matching,unknown,func_0012a6ec,src/engine/leaf_batch25_a.cpp
-0x0012a758,424,matching,unknown,func_0012a758,src/engine/leaf_batch16_c.cpp
+0x0012a758,424,non_matching,unknown,func_0012a758,src/engine/leaf_batch16_c.cpp
 0x0012a900,372,matching,unknown,func_0012a900,src/engine/leaf_batch16_b.cpp
 0x0012aa74,128,matching,ui,ui_func_0012aa74,src/engine/leaf_batch16_c.cpp
 0x0012aaf4,240,matching,engine,engine_func_0012aaf4,src/engine/leaf_batch27_a.cpp

@@ -1,3 +1,7 @@
+# H2 input ring reader 0x0012A758 — 2026-11-02
+
+Converted the 424-byte H2 ring reader to typed C++. Coordinator direct and actual-reader caller differentials passed (1,353 direct cases, six retry scenarios, eight caller compositions); four negative controls were detected. The path-dependent raw return is documented. Independent review passed and the full ARMv6K build compiled all 204 translation units; the producer lifecycle and physical input mapping remain unknown. See [function record](docs/function-records/0x0012a758.md) and [conversion evidence](docs/agent-work/h2-input-ring-reader-conversion.md).
+
 # H2 input mode predicate 0x00128C2C — 2026-11-02
 
 Converted the 24-byte mode predicate to typed C++ and retained the independently callable SVC entry and literal pool in its 84-byte ledger span. Coordinator and independent differentials passed; the full ARMv6K build compiled 204/204 translation units. The span is `non_matching` because its wrapper bytes changed. SVC effects remain unverified. See [function record](docs/function-records/0x00128c2c.md) and [conversion evidence](docs/agent-work/h2-input-mode-wrapper-conversion.md).
