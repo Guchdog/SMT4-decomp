@@ -593,90 +593,58 @@ extern "C" u32 func_003ade5c(void) {
 }
 
 // DECOMP_FUNC(0x003d7200, 40)
-extern "C" __attribute__((naked)) void engine_func_003d7200() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe5902730\n"
-        ".inst 0xe1a03001\n"
-        ".inst 0xe3520000\n"
-        ".inst 0x1a000004\n"
-        ".inst 0xe2801b01\n"
-        ".inst 0xe3a02000\n"
-        ".inst 0xe2811fcd\n"
-        ".inst 0xe1a00003\n"
-        ".inst 0xeafb0137\n"
-        ".inst 0xe12fff1e\n"
-    );
+extern "C" u32 script_vm_func_00297704(u32 arg0, void* arg1, u32 arg2);
+
+extern "C" u32 engine_func_003d7200(void* arg0, u32 arg1) {
+    if (*reinterpret_cast<void**>(reinterpret_cast<u8*>(arg0) + 0x730) == nullptr) {
+        return script_vm_func_00297704(arg1, reinterpret_cast<u8*>(arg0) + 0x734, 0);
+    }
+    return reinterpret_cast<uintptr_t>(arg0);
 }
 
 // DECOMP_FUNC(0x003d9fa0, 40)
-extern "C" __attribute__((naked)) void engine_func_003d9fa0() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe92d4010\n"
-        ".inst 0xe1a04000\n"
-        ".inst 0xe3a00044\n"
-        ".inst 0xebfba111\n"
-        ".inst 0xe3500000\n"
-        ".inst 0x1bfdc122\n"
-        ".inst 0xe2844b07\n"
-        ".inst 0xe28440f8\n"
-        ".inst 0xe5840000\n"
-        ".inst 0xe8bd8010\n"
-    );
+extern "C" void* AsdMemory_func_002c23f8(u32 size);
+extern "C" void* engine_func_0034a444(void* obj);
+
+extern "C" void engine_func_003d9fa0(void* self) {
+    void* obj = AsdMemory_func_002c23f8(0x44);
+    if (obj != nullptr) {
+        obj = engine_func_0034a444(obj);
+    }
+    *reinterpret_cast<void**>(reinterpret_cast<u8*>(self) + 0x1CF8) = obj;
 }
 
 // DECOMP_FUNC(0x003e72fc, 40)
-extern "C" __attribute__((naked)) void func_003e72fc() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe5900004\n"
-        ".inst 0xe1a00000\n"
-        ".inst 0xe92d4010\n"
-        ".inst 0xe590003c\n"
-        ".inst 0xebfafe91\n"
-        ".inst 0xe3500000\n"
-        ".inst 0x0a000001\n"
-        ".inst 0xe8bd4010\n"
-        ".inst 0xeafffe01\n"
-        ".inst 0xe8bd8010\n"
-    );
+extern "C" u32 func_002a6d58(void* target);
+extern "C" u32 func_003e6b28(void);
+
+extern "C" u32 func_003e72fc(void* arg0) {
+    void* sub = *reinterpret_cast<void**>(reinterpret_cast<u8*>(arg0) + 4);
+    void* target = *reinterpret_cast<void**>(reinterpret_cast<u8*>(sub) + 0x3C);
+    if (func_002a6d58(target) != 0) {
+        return func_003e6b28();
+    }
+    return 0;
 }
 
 // DECOMP_FUNC(0x0033534c, 44)
-extern "C" __attribute__((naked)) void ui_func_0033534c() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe5900008\n"
-        ".inst 0xe5900008\n"
-        ".inst 0xeafb6ac8\n"
-        ".inst 0xe3a01000\n"
-        ".inst 0xe3a02007\n"
-        ".inst 0xe5801000\n"
-        ".inst 0xe1c020b4\n"
-        ".inst 0xe5801008\n"
-        ".inst 0xe580100c\n"
-        ".inst 0xe5c01010\n"
-        ".inst 0xe12fff1e\n"
-    );
+extern "C" u32 func_0020fe7c(void* sub2);
+
+extern "C" u32 ui_func_0033534c(void* arg0) {
+    void* sub1 = *reinterpret_cast<void**>(reinterpret_cast<u8*>(arg0) + 8);
+    void* sub2 = *reinterpret_cast<void**>(reinterpret_cast<u8*>(sub1) + 8);
+    return func_0020fe7c(sub2);
 }
 
 // DECOMP_FUNC(0x003489e8, 44)
-extern "C" __attribute__((naked)) void func_003489e8() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe92d4010\n"
-        ".inst 0xe1a04000\n"
-        ".inst 0xe59f2014\n"
-        ".inst 0xe59f1014\n"
-        ".inst 0xe3a03002\n"
-        ".inst 0xe2800004\n"
-        ".inst 0xfafdf7ad\n"
-        ".inst 0xe1a00004\n"
-        ".inst 0xe8bd8010\n"
-        ".word 0x00000544 @ bounded tail data\n"
-        ".word 0x0033b7f0 @ bounded tail data\n"
+extern "C" void* func_003489e8(void* self) {
+    func_002c68bc(
+        reinterpret_cast<u8*>(self) + 4,
+        reinterpret_cast<const void*>(0x0033B7F0),
+        0x544,
+        2
     );
+    return self;
 }
 
 // DECOMP_FUNC(0x0034f61c, 44)
