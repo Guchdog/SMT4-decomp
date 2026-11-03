@@ -516,119 +516,89 @@ extern "C" void engine_func_00360780(u32* handle_storage) {
     *handle_storage = new_handle;
 }
 
+typedef float (*TimerStepCallback)(void* ctx, float a, float b, float c);
+
 // DECOMP_FUNC(0x00368820, 64)
-extern "C" __attribute__((naked)) void func_00368820() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe92d4010\n"
-        ".inst 0xedd00a0e\n"
-        ".inst 0xe1a04000\n"
-        ".inst 0xe2841044\n"
-        ".inst 0xee301a80\n"
-        ".inst 0xec910a02\n"
-        ".inst 0xe594104c\n"
-        ".inst 0xe5900050\n"
-        ".inst 0xe12fff31\n"
-        ".inst 0xe5940038\n"
-        ".inst 0xed840a0e\n"
-        ".inst 0xe584003c\n"
-        ".inst 0xe3a00001\n"
-        ".inst 0xe5c40058\n"
-        ".inst 0xe8bd8010\n"
-        ".word 0x00000000 @ bounded tail data\n"
-    );
+extern "C" void func_00368820(void* obj, float dt) {
+    char* p = static_cast<char*>(obj);
+    float old_val = *reinterpret_cast<float*>(p + 0x38);
+    float s0 = *reinterpret_cast<float*>(p + 0x44);
+    float s1 = *reinterpret_cast<float*>(p + 0x48);
+    float s2 = old_val + dt;
+    TimerStepCallback fn = *reinterpret_cast<TimerStepCallback*>(p + 0x4C);
+    void* ctx = *reinterpret_cast<void**>(p + 0x50);
+    float new_val = fn(ctx, s0, s1, s2);
+    *reinterpret_cast<float*>(p + 0x3C) = old_val;
+    *reinterpret_cast<float*>(p + 0x38) = new_val;
+    *reinterpret_cast<u8*>(p + 0x58) = 1;
 }
 
 // DECOMP_FUNC(0x0036a25c, 64)
-extern "C" __attribute__((naked)) void func_0036a25c() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe92d4010\n"
-        ".inst 0xe5d01008\n"
-        ".inst 0xe1a04000\n"
-        ".inst 0xe59f0028\n"
-        ".inst 0xe3510000\n"
-        ".inst 0xe5840000\n"
-        ".inst 0x1594100c\n"
-        ".inst 0x13510000\n"
-        ".inst 0x0a000003\n"
-        ".inst 0xe5940004\n"
-        ".inst 0xe5902000\n"
-        ".inst 0xe592200c\n"
-        ".inst 0xe12fff32\n"
-        ".inst 0xe1a00004\n"
-        ".inst 0xe8bd8010\n"
-        ".word 0x00421104 @ bounded tail data\n"
-    );
+extern "C" void* func_0036a25c(void* obj) {
+    char* p = static_cast<char*>(obj);
+    u8 flag = *reinterpret_cast<u8*>(p + 8);
+    *reinterpret_cast<uintptr_t*>(p) = 0x00421104;
+    if (flag != 0) {
+        void* inner = *reinterpret_cast<void**>(p + 0x0C);
+        if (inner != nullptr) {
+            void* sub_obj = *reinterpret_cast<void**>(p + 4);
+            typedef void (*VirtualMethod)(void*);
+            VirtualMethod* vtable = *reinterpret_cast<VirtualMethod**>(sub_obj);
+            vtable[3](sub_obj);
+        }
+    }
+    return obj;
 }
 
 // DECOMP_FUNC(0x0036ac80, 64)
-extern "C" __attribute__((naked)) void func_0036ac80() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe92d4010\n"
-        ".inst 0xe5d01008\n"
-        ".inst 0xe1a04000\n"
-        ".inst 0xe59f0028\n"
-        ".inst 0xe3510000\n"
-        ".inst 0xe5840000\n"
-        ".inst 0x1594100c\n"
-        ".inst 0x13510000\n"
-        ".inst 0x0a000003\n"
-        ".inst 0xe5940004\n"
-        ".inst 0xe5902000\n"
-        ".inst 0xe592200c\n"
-        ".inst 0xe12fff32\n"
-        ".inst 0xe1a00004\n"
-        ".inst 0xe8bd8010\n"
-        ".word 0x0042114c @ bounded tail data\n"
-    );
+extern "C" void* func_0036ac80(void* obj) {
+    char* p = static_cast<char*>(obj);
+    u8 flag = *reinterpret_cast<u8*>(p + 8);
+    *reinterpret_cast<uintptr_t*>(p) = 0x0042114C;
+    if (flag != 0) {
+        void* inner = *reinterpret_cast<void**>(p + 0x0C);
+        if (inner != nullptr) {
+            void* sub_obj = *reinterpret_cast<void**>(p + 4);
+            typedef void (*VirtualMethod)(void*);
+            VirtualMethod* vtable = *reinterpret_cast<VirtualMethod**>(sub_obj);
+            vtable[3](sub_obj);
+        }
+    }
+    return obj;
 }
 
 // DECOMP_FUNC(0x0036aed4, 64)
-extern "C" __attribute__((naked)) void func_0036aed4() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe92d4010\n"
-        ".inst 0xe5d01009\n"
-        ".inst 0xe1a04000\n"
-        ".inst 0xe59f0028\n"
-        ".inst 0xe3510000\n"
-        ".inst 0xe5840000\n"
-        ".inst 0x1594101c\n"
-        ".inst 0x13510000\n"
-        ".inst 0x0a000003\n"
-        ".inst 0xe5940004\n"
-        ".inst 0xe5902000\n"
-        ".inst 0xe592200c\n"
-        ".inst 0xe12fff32\n"
-        ".inst 0xe1a00004\n"
-        ".inst 0xe8bd8010\n"
-        ".word 0x00421194 @ bounded tail data\n"
-    );
+extern "C" void* func_0036aed4(void* obj) {
+    char* p = static_cast<char*>(obj);
+    u8 flag = *reinterpret_cast<u8*>(p + 9);
+    *reinterpret_cast<uintptr_t*>(p) = 0x00421194;
+    if (flag != 0) {
+        void* inner = *reinterpret_cast<void**>(p + 0x1C);
+        if (inner != nullptr) {
+            void* sub_obj = *reinterpret_cast<void**>(p + 4);
+            typedef void (*VirtualMethod)(void*);
+            VirtualMethod* vtable = *reinterpret_cast<VirtualMethod**>(sub_obj);
+            vtable[3](sub_obj);
+        }
+    }
+    return obj;
 }
 
 // DECOMP_FUNC(0x0036b570, 64)
-extern "C" __attribute__((naked)) void func_0036b570() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe92d4010\n"
-        ".inst 0xe5d01008\n"
-        ".inst 0xe1a04000\n"
-        ".inst 0xe59f0028\n"
-        ".inst 0xe3510000\n"
-        ".inst 0xe5840000\n"
-        ".inst 0x1594100c\n"
-        ".inst 0x13510000\n"
-        ".inst 0x0a000003\n"
-        ".inst 0xe5940004\n"
-        ".inst 0xe5902000\n"
-        ".inst 0xe592200c\n"
-        ".inst 0xe12fff32\n"
-        ".inst 0xe1a00004\n"
-        ".inst 0xe8bd8010\n"
-        ".word 0x004211f4 @ bounded tail data\n"
-    );
+extern "C" void* func_0036b570(void* obj) {
+    char* p = static_cast<char*>(obj);
+    u8 flag = *reinterpret_cast<u8*>(p + 8);
+    *reinterpret_cast<uintptr_t*>(p) = 0x004211F4;
+    if (flag != 0) {
+        void* inner = *reinterpret_cast<void**>(p + 0x0C);
+        if (inner != nullptr) {
+            void* sub_obj = *reinterpret_cast<void**>(p + 4);
+            typedef void (*VirtualMethod)(void*);
+            VirtualMethod* vtable = *reinterpret_cast<VirtualMethod**>(sub_obj);
+            vtable[3](sub_obj);
+        }
+    }
+    return obj;
 }
 
 // DECOMP_FUNC(0x0036d03c, 64)
