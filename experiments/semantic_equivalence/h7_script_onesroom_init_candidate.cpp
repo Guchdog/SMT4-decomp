@@ -14,7 +14,7 @@ extern "C" {
     void* FlowScript_Create_002972f8(void* bf, u32 flag);
     void  FlowScript_Helper_002971e4(void* proc, u32 flag);
     void  camp_func_00282e6c(u32 screen, u32 mode);
-    void* AsdTask_Create_002c5978(const char* name, u32 prio, u32 f1, u32 f2, void* cb, void* work, u32 parent);
+    void* AsdTask_Create_002c5978(const char* name, u32 prio, u32 f1, u32 f2, void* cb, void* work, void* parent);
 
     extern void* g_OnesRoomManager_0044d1c8[];
 }
@@ -56,7 +56,7 @@ extern "C" void h7_script_onesroom_init_candidate(void* arg0, s32 arg1) {
         camp_func_00282e6c(1, 0xFF);
     }
 
-    void* task = AsdTask_Create_002c5978("onesRoom C", 2, 0, 0, reinterpret_cast<void*>(0x001FC4BC), work, 0);
+    void* task = AsdTask_Create_002c5978("onesRoom C", 2, 0, 0, reinterpret_cast<void*>(0x001A95F4), reinterpret_cast<void*>(0x001FC4BC), work);
     *reinterpret_cast<void**>(work) = task;
 }
 

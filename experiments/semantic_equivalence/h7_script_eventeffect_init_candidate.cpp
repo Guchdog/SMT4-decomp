@@ -5,8 +5,8 @@ typedef uint8_t  u8;
 
 extern "C" {
     void* AsdMem_Alloc_002c4b84(u32 heap, u32 flag, u32 unused, u32 size, u32 align);
-    void* AsdTask_Create_002c5978(const char* name, u32 prio, u32 f1, u32 f2, void* cb, void* work, u32 parent);
-    void* AsdTask_CreateDraw_002c4c00(const char* name, u32 prio, u32 f1, u32 f2, void* cb, void* work, u32 parent);
+    void* AsdTask_Create_002c5978(const char* name, u32 prio, u32 f1, u32 f2, void* cb, void* work, void* parent);
+    void* AsdTask_CreateDraw_002c4c00(const char* name, u32 prio, u32 f1, u32 f2, void* cb, u32 u1, void* work, void* parent);
 
     extern void* g_EventEffectWork_0043dee8;
 }
@@ -33,11 +33,11 @@ extern "C" void h7_script_eventeffect_init_candidate() {
         words[i] = 0;
     }
 
-    void* calc = AsdTask_Create_002c5978("BlinkFade Calc", 1, 0, 0, reinterpret_cast<void*>(0x00222428), work, 0);
+    void* calc = AsdTask_Create_002c5978("BlinkFade Calc", 1, 0, 0, reinterpret_cast<void*>(0x00222428), nullptr, nullptr);
     work->calc_task = calc;
 
-    AsdTask_CreateDraw_002c4c00("BlinkFade DrawUpLeft", 0x81, 0, 0, reinterpret_cast<void*>(0x002221F0), work, reinterpret_cast<u32>(calc));
-    AsdTask_CreateDraw_002c4c00("BlinkFade DrawUpRight", 0xDF, 0, 0, reinterpret_cast<void*>(0x002221F0), work, reinterpret_cast<u32>(calc));
+    AsdTask_CreateDraw_002c4c00("BlinkFade DrawUpLeft", 0x81, 0, 0, reinterpret_cast<void*>(0x002221F0), 0, nullptr, calc);
+    AsdTask_CreateDraw_002c4c00("BlinkFade DrawUpRight", 0xDF, 0, 0, reinterpret_cast<void*>(0x002221F0), 0, nullptr, calc);
 
     work->field_10 = 0;
     work->draw_up_right = nullptr;

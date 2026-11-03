@@ -116,9 +116,22 @@ def rsp_clear_bp(rsp: Rsp, addr: int, length: int = 4) -> None:
 def run_to_bp(rsp: Rsp, addr: int, length: int = 4) -> int:
     rsp_set_bp(rsp, addr, length)
     try:
-        rsp.continue_to_stop()
+        reply = rsp.continue_to_stop()
         pc = decode_r0(rsp.request(b"p0f"))
         if pc != addr:
+            regs = {}
+            for reg_idx in range(16):
+                regs[f"r{reg_idx}"] = hex(decode_r0(rsp.request(f"p{reg_idx:02x}".encode("ascii"))))
+            sp = int(regs["r13"], 16)
+            stack_words = []
+            try:
+                for off in range(0, 64, 4):
+                    stack_words.append(hex(rsp_read_u32(rsp, sp + off)))
+            except Exception as e:
+                stack_words.append(str(e))
+            print(f"DIAG STOP: reply={reply!r}, pc={pc:#x}, expected={addr:#x}")
+            print(f"REGS: {regs}")
+            print(f"STACK: {stack_words}")
             raise ProbeError(f"expected stop at {addr:#x}, got {pc:#x}")
         return pc
     finally:

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Stage and compose all validated H9 semantic candidates over the H8 composite image."""
 from __future__ import annotations
-import argparse, hashlib, json, struct
+import argparse, hashlib, json, struct, subprocess
 from pathlib import Path
 import sys
 
@@ -9,8 +9,10 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from tools.asm_diff import extract_elf_functions_detailed
-from tools.build_check import compile_tu_armv6k
+from tools.build_check import compile_tu_armv6k, find_clang, get_armv6k_flags
 from tools.h2_calc_code_patch import apply_ips, encode_ips
+from tools.arm_interworking import relocate_thumb_call
+from tools.local_section_relocations import resolve_local_sections
 
 ORIGINAL = ROOT / 'extracted/exefs/code.bin'
 DEFAULT_BASE = ROOT / 'build/agent-work/H8-semantic/h8-integrated-stage/code.h8-final.bin'
@@ -19,6 +21,10 @@ H8_BASE_SHA = 'bddb53a22a86d9759eb138164ddbc6652f00e5066446c2ef6c85c3a6bb8e3b6d'
 TEXT_BASE = 0x00100000
 
 TARGET_SYMBOLS = {
+    'engine_func_002c0ec4': 0x002C0EC4,
+    'engine_func_002c0e9c': 0x002C0E9C,
+    'engine_func_002c0e4c': 0x002C0E4C,
+    'row_func_002b9364': 0x002B9364,
     'AsdMem_Alloc_002c4b84': 0x002C4B84,
     'AsdMem_Zero_002c4b30': 0x002C4B30,
     'AsdTask_Create_002c5978': 0x002C5978,
@@ -58,6 +64,12 @@ TARGET_SYMBOLS = {
     'camp_func_0022d33c': 0x0022D33C,
     'g_BibleDevilHandle_0043d9c8': 0x0043D9C8,
     'UiAnimSprite_SetMode_002bf030': 0x002BF030,
+    'QuestUi_SetTextPair_00262448': 0x00262448,
+    'UiAnimSprite_SetText_00296154': 0x00296154,
+    'AsdText_CreateDefault_002bda1c': 0x002BDA1C,
+    'AsdText_SetAlpha_002bda10': 0x002BDA10,
+    'AsdText_SetColorAndScale_002bda00': 0x002BDA00,
+    'scrScriptProcess_func_002972f8': 0x002972F8,
     'g_ButtonHelpManager_0043da28': 0x0043DA28,
 }
 
@@ -153,7 +165,12 @@ def stage_candidates(out_dir: Path, base_bin: Path):
     for sub in SUBSYSTEMS:
         src = ROOT / sub['src']
         obj = obj_dir / f"{sub['id']}.o"
-        res = compile_tu_armv6k(src, obj, ROOT)
+        if sub['id'] in ('camp-unitectrl-roster', 'camp-buttonhelp-init'):
+            compiler = find_clang()
+            flags = [('-Oz' if flag == '-O2' else flag) for flag in get_armv6k_flags(ROOT, compiler)]
+            res = subprocess.run([str(compiler), *flags, '-fno-builtin', '-c', str(src), '-o', str(obj)], capture_output=True, text=True)
+        else:
+            res = compile_tu_armv6k(src, obj, ROOT)
         if res.returncode != 0:
             raise RuntimeError(f"Failed to compile {src}: {res.stderr}")
 
@@ -169,22 +186,34 @@ def stage_candidates(out_dir: Path, base_bin: Path):
             raise RuntimeError(f"Candidate {cand_name} overflows window by {-margin} bytes!")
 
         blob = bytearray(raw)
+        local_offsets = resolve_local_sections(obj, cand_name, addr, blob, win_sz)
 
         # Apply relocations
         for r in relocs:
+            if r.offset in local_offsets:
+                continue
             if r.symbol_name in TARGET_SYMBOLS:
                 tgt = TARGET_SYMBOLS[r.symbol_name]
                 site = addr + r.offset
-                if r.relocation_type == 28: # R_ARM_CALL
-                    word = branch_word(site, tgt, is_bl=True)
-                    struct.pack_into('<I', blob, r.offset, word)
-                elif r.relocation_type == 29: # R_ARM_JUMP24
-                    word = branch_word(site, tgt, is_bl=False)
-                    struct.pack_into('<I', blob, r.offset, word)
+                if r.relocation_type in (28, 29):
+                    if r.symbol_name == 'qsort_002b7f0a':
+                        relocate_thumb_call(blob, r.offset, addr, tgt, r.relocation_type, win_sz)
+                    else:
+                        if tgt & 3:
+                            raise ValueError(f"Unaligned ARM branch target {r.symbol_name}: {tgt:#x}")
+                        word = branch_word(site, tgt, is_bl=(r.relocation_type == 28))
+                        struct.pack_into('<I', blob, r.offset, word)
                 elif r.relocation_type == 2: # R_ARM_ABS32
                     struct.pack_into('<I', blob, r.offset, tgt)
+                else:
+                    raise ValueError(f'Unsupported relocation {r.relocation_type} in {sub["id"]}')
+            else:
+                raise ValueError(f'Unresolved relocation {r.symbol_name!r} at {r.offset:#x} in {sub["id"]}; section relocations need explicit handling')
 
-        # Pad remaining window with NOP (0xE1A00000)
+        # Veneers consume candidate window space and must be included in padding.
+        margin = win_sz - len(blob)
+        if margin < 0 or margin % 4:
+            raise ValueError(f'Invalid remaining window: {margin}')
         blob.extend(b'\x00\x00\xa0\xe1' * (margin // 4))
 
         off = addr - TEXT_BASE

@@ -6,8 +6,8 @@ typedef uint8_t  u8;
 
 extern "C" {
     void* AsdMem_Alloc_002c4b84(u32 heap, u32 flag, u32 unused, u32 size, u32 align);
-    void* AsdTask_Create_002c5978(const char* name, u32 prio, u32 f1, u32 f2, void* cb, void* work, u32 parent);
-    void* AsdTask_CreateDraw_002c4c00(const char* name, u32 prio, u32 f1, u32 f2, void* cb, void* work, u32 parent);
+    void* AsdTask_Create_002c5978(const char* name, u32 prio, u32 f1, u32 f2, void* cb, void* work, void* parent);
+    void* AsdTask_CreateDraw_002c4c00(const char* name, u32 prio, u32 f1, u32 f2, void* cb, u32 u1, void* work, void* parent);
 
     extern void* g_EventFadeWork_0043e088;
 }
@@ -32,11 +32,11 @@ extern "C" void h7_script_eventcmd_fade_candidate(u32 mode, s32 frames, u32 flag
         work->frames = 0;
         work->flag = 0;
 
-        void* proc = AsdTask_Create_002c5978("EventMessUnderFade_Proc", 2, 0, 0, reinterpret_cast<void*>(0x00317EB8), work, 0);
+        void* proc = AsdTask_Create_002c5978("EventMessUnderFade_Proc", 2, 0, 0, reinterpret_cast<void*>(0x002E21DC), reinterpret_cast<void*>(0x00317EB8), work);
         work->proc_task = proc;
 
-        AsdTask_CreateDraw_002c4c00("EventMessUnderFade_Draw", 0x80, 0, 0, reinterpret_cast<void*>(0x002E21DC), work, 0);
-        AsdTask_CreateDraw_002c4c00("EventMessUnderFade_Draw", 0xDE, 0, 0, reinterpret_cast<void*>(0x002E21DC), work, 0);
+        AsdTask_CreateDraw_002c4c00("EventMessUnderFade_Draw", 0x80, 0, 0, reinterpret_cast<void*>(0x002E2074), 0, work, proc);
+        AsdTask_CreateDraw_002c4c00("EventMessUnderFade_Draw", 0xDE, 0, 0, reinterpret_cast<void*>(0x002E2074), 0, work, proc);
     }
 
     work->frames = frames;

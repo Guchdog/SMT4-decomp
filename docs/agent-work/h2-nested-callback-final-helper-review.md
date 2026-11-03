@@ -21,20 +21,20 @@ The epilogue of `0x00221168` strictly restores registers and pops PC without mod
 
 ## 2. Helper Body and Control Flow Structure
 
-Disassembly of `0x00286928` (205 instructions, 820 bytes) confirms:
+The `0x00286928` span is 820 bytes: 202 ARM instructions in the 808-byte code prefix and a 12-byte literal pool. Static disassembly confirms:
 - **Stack frame:** `push {r0..r3, r4..r8, sb, sl, fp, lr}` (13 words = 52 bytes), `vpush {d8}` (8 bytes), `sub sp, #0xc` (12 bytes). Args 5 and 6 are retrieved from `[sp + 0x48]` and `[sp + 0x4c]`.
 - **Selector Table:** Base table loaded from literal `0x0043E188`. With `r3 = 6`, the default branch selects pointer `[0x0043E188 + 4]`, and sets literal constant `0x035AB9FF` into `r5 + 0x10`.
 - **Return Paths:**
   - Common exit epilogue begins at `0x00286BE8`: `add sp, #0xc`; `vpop {d8}`; `add sp, #0x10`; `pop {r4..fp, pc}`.
-  - Return `r0 = 0`: Explicitly loaded at `0x00286BE4` (`mov r0, #0`) right before the epilogue. This path is reached following normal completion of `0x0028E974` and the 6-iteration indexing loop.
+  - Return `r0 = 0`: Explicitly loaded at `0x00286BE4` (`mov r0, #0`) right before the epilogue. One ordinary update route reaches this shared return after `0x0028E974` and the 6-iteration indexing loop; early query/state exits and the alternate nonzero-`+0x2E` path also reach it without that loop.
   - Return `r0 = 1`: Explicitly loaded at `0x00286C38` (`mov r0, #1`; `b 0x00286BE8`) and `0x00286C48` (`mov r0, #1`; `b 0x00286BE8` after callee `0x0028DF54`).
 
 ## 3. Conclusions and Assessment
 
-1. **Audit Accuracy:** The findings in `docs/agent-work/h2-nested-callback-final-helper-audit.md` are 100% verified and accurate against the pinned ARM binary.
+1. **Static Audit Scope:** The instruction and address observations checked in `docs/agent-work/h2-nested-callback-final-helper-audit.md` match the pinned ARM binary. The trace does not show the helper's internal branch or assign semantic meaning to its return.
 2. **Semantic Interpretation:**
-   - Return `r0 = 0` is not an error state; it is the ordinary successful termination path of the helper for argument `r3 = 6`.
+   - The observed raw callback return `r0 = 0` is preserved from its final helper call, but the helper entry arguments and internal branch were not captured. Do not assign error/success semantics to this value from run-002.
    - The enclosing handler wrapper `0x001A07CC` (handler 8) inspects the callback return: when the callback returns 0, handler 8 returns `r0 = 2` (pending), causing the script dispatcher to keep the task alive in State 2.
 3. **Next Steps for Milestone H2:**
-   - The callback and helper behavior is now fully characterized both dynamically (in run-002) and statically.
+   - The run-002 trace identifies the nested callback target and its raw return; static disassembly maps the helper paths. It does not capture helper arguments, selected-object state or the internal branch, so the callback/helper cause is not dynamically characterized.
    - The remaining question for H2 completion is what event or counter triggers transition out of handler 8 into the subsequent script handlers (e.g. completion/fade/save).

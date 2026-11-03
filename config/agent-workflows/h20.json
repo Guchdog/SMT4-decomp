@@ -1258,6 +1258,43 @@
         "python tools/build_h20_all.py",
         "python tools/verify_h20_hal.py"
       ]
+    },
+    {
+      "id": "h19-qsort-interworking-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review restoration of H2 current production helpers and integrated image evidence.",
+      "depends_on": [],
+      "function_claims": [],
+      "read_paths": [
+        "tools/arm_interworking.py",
+        "tools/h8_staged_image_patch.py",
+        "tools/h9_staged_image_patch.py",
+        "experiments/semantic_equivalence/h8_ui_statusdown_itemsort_candidate.cpp",
+        "experiments/semantic_equivalence/h8_ui_statusdown_skilllist_candidate.cpp",
+        "experiments/semantic_equivalence/h9_camp_unitectrl_roster_candidate.cpp",
+        "tools/local_section_relocations.py",
+        "tests/test_arm_interworking.py",
+        "tests/test_local_section_relocations.py",
+        "tools/h9_roster_caller_regression.py",
+        "tools/h8_itemsort_caller_regression.py",
+        "tools/h8_skilllist_caller_regression.py",
+        "tools/rebuild_h19_candidate.py",
+        "src/engine/leaf_batch32_b.cpp",
+        "src/engine/leaf_batch32_c.cpp",
+        "src/engine/leaf_matching.cpp"
+      ],
+      "write_paths": [],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Review fixes, caller evidence, failures, and remaining gate gaps independently."
+      ],
+      "validation_plan": [
+        "Read-only review and structured handoff."
+      ],
+      "review_summary": "Independent reviews accepted bounded corrections and H2 per-function provenance; full offline-first gate remains open. See docs/agent-work/h19-interworking-correction-batch.md."
     }
   ]
 }

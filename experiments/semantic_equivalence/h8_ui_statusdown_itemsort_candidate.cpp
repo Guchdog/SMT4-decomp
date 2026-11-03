@@ -26,25 +26,28 @@ extern "C" void h8_ui_statusdown_itemsort_candidate() {
     u8* work = static_cast<u8*>(g_StatusDownContext_0044e190);
     if (!work) return;
 
-    u8* opt = UiMenu_GetSortOptions_002a0fac(work);
-    u8 mode_byte = opt[0x16];
-    u32 crit = mode_byte & 0x7F;
-    bool desc = (mode_byte >> 7) != 0;
-
+    volatile u8* opt = UiMenu_GetSortOptions_002a0fac(work);
     void* base = work + 0xE30;
-    s16 count = *reinterpret_cast<s16*>(work + 0x2230);
+    s16 count = *reinterpret_cast<volatile s16*>(work + 0x2230);
 
-    if (crit == 1) {
-        CompareFn cmp = desc ? StatusDown_ItemSortByIdDesc : StatusDown_ItemSortByIdAsc;
+    u8 m1 = opt[0x16];
+    if ((m1 & 0x7F) == 1) {
+        CompareFn cmp = (m1 >> 7) ? StatusDown_ItemSortByIdDesc : StatusDown_ItemSortByIdAsc;
         qsort_002b7f0a(base, count, 4, cmp);
-    } else if (crit == 8) {
-        CompareFn cmp = desc ? engine_func_002c6d30 : engine_func_002dca98;
+    }
+    u8 m8 = opt[0x16];
+    if ((m8 & 0x7F) == 8) {
+        CompareFn cmp = (m8 >> 7) ? StatusDown_ItemSortByTypeDesc : StatusDown_ItemSortByTypeAsc;
         qsort_002b7f0a(base, count, 4, cmp);
-    } else if (crit == 2) {
-        CompareFn cmp = desc ? StatusDown_ItemSortByTypeDesc : StatusDown_ItemSortByTypeAsc;
+    }
+    u8 m2 = opt[0x16];
+    if ((m2 & 0x7F) == 2) {
+        CompareFn cmp = (m2 >> 7) ? engine_func_002c6d30 : engine_func_001d1bb8;
         qsort_002b7f0a(base, count, 4, cmp);
-    } else if (crit == 3) {
-        CompareFn cmp = desc ? engine_func_001d1bb8 : engine_func_001f61a4;
+    }
+    u8 m3 = opt[0x16];
+    if ((m3 & 0x7F) == 3) {
+        CompareFn cmp = (m3 >> 7) ? engine_func_002dca98 : engine_func_001f61a4;
         qsort_002b7f0a(base, count, 4, cmp);
     }
 }

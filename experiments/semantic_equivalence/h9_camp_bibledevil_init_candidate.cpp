@@ -8,8 +8,8 @@ typedef int16_t s16;
 
 extern "C" {
     void* AsdMem_Alloc_002c4b84(u32 heap, u32 flag, u32 unused, u32 size, u32 align);
-    void* AsdTask_Create_002c5978(const char* name, u32 prio, u32 f1, u32 f2, void* cb, void* work, u32 parent);
-    void* AsdTask_CreateDraw_002c4c00(const char* name, u32 prio, u32 f1, u32 f2, void* cb, void* work, u32 parent);
+    void* AsdTask_Create_002c5978(const char* name, u32 prio, u32 f1, u32 f2, void* cb, void* work, void* parent);
+    void* AsdTask_CreateDraw_002c4c00(const char* name, u32 prio, u32 f1, u32 f2, void* cb, u32 u1, void* work, void* parent);
     void  unite_func_00232800(void* ptr, u32 a, u32 b, u32 c);
     void* engine_func_002c23f8(u32 size);
     void  unite_func_002333bc(void* ptr);
@@ -39,11 +39,11 @@ extern "C" void h9_camp_bibledevil_init_candidate(u8* work) {
     g_BibleDevilHandle_0043d9c8 = handle;
     handle[0] = work;
 
-    void* calc = AsdTask_Create_002c5978("BIBLE DEVIL CALC", 2, 0, 0, reinterpret_cast<void*>(0x003AAF08), handle, 0);
+    void* calc = AsdTask_Create_002c5978("BIBLE DEVIL CALC", 2, 0, 0, reinterpret_cast<void*>(0x003AAF08), nullptr, handle);
     *reinterpret_cast<void**>(work + 4) = calc;
 
-    AsdTask_CreateDraw_002c4c00("BIBLE DEVIL UP", 0x6F, 1, 0, reinterpret_cast<void*>(0x003AC958), handle, reinterpret_cast<u32>(calc));
-    AsdTask_CreateDraw_002c4c00("BIBLE DEVIL DOWN", 0xE6, 1, 0, reinterpret_cast<void*>(0x003ACC74), handle, reinterpret_cast<u32>(calc));
+    AsdTask_CreateDraw_002c4c00("BIBLE DEVIL UP", 0x6F, 1, 0, reinterpret_cast<void*>(0x003AC958), 0, handle, calc);
+    AsdTask_CreateDraw_002c4c00("BIBLE DEVIL DOWN", 0xE6, 1, 0, reinterpret_cast<void*>(0x003ACC74), 0, handle, calc);
 
     unite_func_00232800(work + 0xC8, 0x140, 0, 0x1D);
 
