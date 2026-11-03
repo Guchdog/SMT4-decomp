@@ -1193,3 +1193,17 @@ reachability remain unverified. See [function record](docs/function-records/0x00
 [conversion evidence](docs/agent-work/h2-29fae8-cursor-setup-conversion.md),
 [contract](docs/agent-work/h2-0029fae8-contract.md), and
 [independent review](docs/agent-work/h2-29fae8-independent-review.md).
+
+# H2 TitleConfig sprite setup 0x002BDB2C — 2026-11-02
+
+Replaced the 152-byte naked ARM body with a 148-byte typed C++ implementation
+that retains the original `AsdMem_Zero` call and the raw `sprite+0x8C` return.
+The offline differential passed 36 direct cases, the exact TitleConfig caller
+slice, and a wrong-zero-target control; the ledger is `non_matching`. Independent
+fresh-seed review passed 52 direct cases plus the caller slice, and the full
+ARMv6K build passed 204/204 TUs. Resource lookup, rendering, runtime reachability
+and full H2 behavior remain unverified; write-width/order parity is limited to
+ordinary RAM without concurrent observers. See the
+[function record](docs/function-records/0x002bdb2c.md),
+[conversion report](docs/agent-work/h2-2bdb2c-conversion.md), and
+[static contract](docs/agent-work/h2-002bdb2c-contract.md).

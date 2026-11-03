@@ -385,8 +385,37 @@ extern "C" __attribute__((naked)) void engine_func_002bc170() {
 }
 
 // DECOMP_FUNC(0x002bdb2c, 152)
-extern "C" __attribute__((naked)) void camp_func_002bdb2c() {
-    asm volatile(".arm\n.inst 0xe92d47f0\n.inst 0xe1a06001\n.inst 0xe1a04000\n.inst 0xe1a07002\n.inst 0xe1a05003\n.inst 0xed2d8b02\n.inst 0xeeb08a40\n.inst 0xe59d8028\n.inst 0xe3e09000\n.inst 0xe3a0108c\n.inst 0xeb001bf5\n.inst 0xe88402c0\n.inst 0xe3a01001\n.inst 0xeddf0a16\n.inst 0xed848a08\n.inst 0xe1c483b8\n.inst 0xedc40a09\n.inst 0xedc40a0a\n.inst 0xedc40a0b\n.inst 0xe5845048\n.inst 0xe595200c\n.inst 0xe584204c\n.inst 0xe5952010\n.inst 0xe5842058\n.inst 0xe5952014\n.inst 0xe5842064\n.inst 0xe5952018\n.inst 0xe5842070\n.inst 0xe595201c\n.inst 0xe5842078\n.inst 0xe5c41086\n.inst 0xe5c41087\n.inst 0xe5c41088\n.inst 0xe5c41089\n.inst 0xe5c4108a\n.inst 0xecbd8b02\n.inst 0xe8bd87f0\n.word 0x3f800000\n");
+extern "C" void engine_func_002c4b30(volatile u8* destination, u32 size);
+
+extern "C" __attribute__((minsize)) u32 camp_func_002bdb2c(
+    u8* __restrict sprite, u32 type, u32 index,
+    const u8* __restrict group,
+    u32 panel, f32 scale) {
+    engine_func_002c4b30(sprite, 0x8C);
+
+    *reinterpret_cast<u32*>(sprite + 0x00) = type;
+    *reinterpret_cast<u32*>(sprite + 0x04) = index;
+    *reinterpret_cast<u32*>(sprite + 0x08) = 0xFFFFFFFFu;
+    *reinterpret_cast<f32*>(sprite + 0x20) = scale;
+    *reinterpret_cast<u16*>(sprite + 0x38) = static_cast<u16>(panel);
+    *reinterpret_cast<f32*>(sprite + 0x24) = 1.0f;
+    *reinterpret_cast<f32*>(sprite + 0x28) = 1.0f;
+    *reinterpret_cast<f32*>(sprite + 0x2C) = 1.0f;
+
+    *reinterpret_cast<u32*>(sprite + 0x48) = reinterpret_cast<u32>(group);
+    const u32* const group_words = reinterpret_cast<const u32*>(group);
+    *reinterpret_cast<u32*>(sprite + 0x4C) = group_words[3];
+    *reinterpret_cast<u32*>(sprite + 0x58) = group_words[4];
+    *reinterpret_cast<u32*>(sprite + 0x64) = group_words[5];
+    *reinterpret_cast<u32*>(sprite + 0x70) = group_words[6];
+    *reinterpret_cast<u32*>(sprite + 0x78) = group_words[7];
+
+    sprite[0x86] = 1;
+    sprite[0x87] = 1;
+    sprite[0x88] = 1;
+    sprite[0x89] = 1;
+    sprite[0x8A] = 1;
+    return reinterpret_cast<u32>(sprite + 0x8C);
 }
 
 // DECOMP_FUNC(0x002bf0a8, 152)

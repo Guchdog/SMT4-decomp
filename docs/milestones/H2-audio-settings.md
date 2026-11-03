@@ -1,5 +1,16 @@
 # H2 — Título: configuración de audio (`titleConfig`)
 
+Actualización de inicialización (2026-11-02): `camp_func_002bdb2c`
+(`0x002BDB2C`) ahora tiene C++ tipado para crear el nodo de sprite de
+`TitleConfig`, conservando la llamada original a `AsdMem_Zero` y su retorno
+crudo `sprite+0x8C`. El diferencial offline pasó 36 casos directos, el tramo
+real de llamada del inicializador y un control negativo; el cuerpo ocupa
+148/152 bytes y queda clasificado `non_matching`. La revisión independiente pasó 52 casos directos más el caller, y el build
+completo pasó 204/204 TUs. No demuestra carga de recursos, dibujo, alcance
+runtime ni cierre de H2; el ancho/orden de stores solo se considera para RAM
+ordinaria sin observadores concurrentes. [Registro](../function-records/0x002bdb2c.md),
+[evidencia](../agent-work/h2-2bdb2c-conversion.md).
+
 Estado actual: validación parcial. La comparación autónoma más reciente (2026-11-02, imagen H2 acumulada con el dispatcher C++ `0x002B8D24` y el helper `0x00286928`) igualó 51 acciones y 19/19 checkpoints; se capturaron 129/129 hits de `0x00286928` con los seis argumentos ABI y el retorno `r0` coincidentes. La readiness y la reentrada en la misma sesión no completaron en ninguno de los lados; el reporte mantiene `h2_full_acceptance_supported: false`. El mapeo físico y el scheduling de entrada siguen sin demostrarse. Véanse [el registro del helper y su reporte runtime](../function-records/0x00286928.md), [el informe de implementación](../agent-work/h2-86928-implementation.md) y [el reporte anterior de 0x002B8D24](../agent-work/h2-8d24-runtime.md).
 
 Actualización de dependencia (2026-11-02): `AsdText_GetLineCount` (`0x002B787C`)
