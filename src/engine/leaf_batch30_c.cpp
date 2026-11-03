@@ -643,8 +643,55 @@ extern "C" __attribute__((naked)) void engine_func_002c25f4() {
 }
 
 // DECOMP_FUNC(0x002c3734, 128)
-extern "C" __attribute__((naked)) void engine_func_002c3734() {
-    asm volatile(".arm\n.inst 0xe59f2074\n.inst 0xe1b0c000\n.inst 0xe3a00000\n.inst 0xe92d4008\n.inst 0x03a03000\n.inst 0x02820088\n.inst 0x0a000005\n.inst 0xe35c0001\n.inst 0x03a03000\n.inst 0x028200c4\n.inst 0x0a000001\n.inst 0xe35c0002\n.inst 0x0a00000b\n.inst 0xe58d1000\n.inst 0xe0821203\n.inst 0xe082c103\n.inst 0xedd11a60\n.inst 0xe2811f5d\n.inst 0xe59c21b0\n.inst 0xed9c2a69\n.inst 0xe3a03007\n.inst 0xec910a03\n.inst 0xe2801018\n.inst 0xebf957b6\n.inst 0xe8bd8008\n.inst 0xe5920084\n.inst 0xe3500001\n.inst 0x13a03001\n.inst 0x12820c01\n.inst 0x1affffee\n.inst 0xe8bd8008\n.word 0x004e39e0\n");
+extern "C" void battle_func_00119670(
+    void* r0,
+    void* r1,
+    u32 r2,
+    u32 r3,
+    float s0,
+    float s1,
+    float s2,
+    float s3,
+    float s4,
+    u32 stack_param
+);
+
+extern "C" void engine_func_002c3734(u32 mode, u32 param) {
+    u8* const base = reinterpret_cast<u8*>(0x004E39E0u);
+    u8* sub_r0;
+    u32 r3_idx = 0;
+
+    if (mode == 0) {
+        sub_r0 = base + 0x88;
+    } else if (mode == 1) {
+        sub_r0 = base + 0xC4;
+    } else if (mode == 2) {
+        if (*reinterpret_cast<const u32*>(base + 0x84) == 1) {
+            return;
+        }
+        r3_idx = 1;
+        sub_r0 = base + 0x100;
+    } else {
+        return;
+    }
+
+    const float* const vec = reinterpret_cast<const float*>(base + (r3_idx * 16) + 0x174);
+    const float s3 = *reinterpret_cast<const float*>(base + (r3_idx * 16) + 0x180);
+    const u32 r2_val = *reinterpret_cast<const u32*>(base + (r3_idx * 4) + 0x1B0);
+    const float s4 = *reinterpret_cast<const float*>(base + (r3_idx * 4) + 0x1A4);
+
+    battle_func_00119670(
+        sub_r0,
+        sub_r0 + 0x18,
+        r2_val,
+        7,
+        vec[0],
+        vec[1],
+        vec[2],
+        s3,
+        s4,
+        param
+    );
 }
 
 // DECOMP_FUNC(0x002c854c, 136)
