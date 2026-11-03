@@ -630,8 +630,29 @@ extern "C" __attribute__((naked)) void battle_func_002c854c() {
 }
 
 // DECOMP_FUNC(0x002c8750, 128)
-extern "C" __attribute__((naked)) void script_vm_func_002c8750() {
-    asm volatile(".arm\n.inst 0xe59f0074\n.inst 0xe52d4004\n.inst 0xe3a01000\n.inst 0xe1a0c001\n.inst 0xe5902000\n.inst 0xe3a04001\n.inst 0xe0810081\n.inst 0xe0820380\n.inst 0xe5f03034\n.inst 0xe3530000\n.inst 0x15903174\n.inst 0x13530000\n.inst 0x0a00000c\n.inst 0xe353000b\n.inst 0xaa00000a\n.inst 0xe5d0307d\n.inst 0xe3530000\n.inst 0x1a000007\n.inst 0xe5903084\n.inst 0xe3530000\n.inst 0x0a000002\n.inst 0xe3530004\n.inst 0x13530005\n.inst 0x1a000001\n.inst 0xe2800084\n.inst 0xe8801010\n.inst 0xe2811001\n.inst 0xe3510020\n.inst 0xbaffffe8\n.inst 0xe49d4004\n.inst 0xe12fff1e\n.word 0x00447600\n");
+extern "C" __attribute__((minsize)) void script_vm_func_002c8750() {
+    auto* const base = *reinterpret_cast<u8* const*>(0x00447600u);
+    for (u32 i = 0; i < 32; ++i) {
+        auto* const elem = base + i * 384u + 0x34u;
+        if (*elem == 0) {
+            continue;
+        }
+
+        const u32 val = *reinterpret_cast<const u32*>(elem + 0x174u);
+        if (val == 0 || val >= 11) {
+            continue;
+        }
+
+        if (*reinterpret_cast<const u8*>(elem + 0x7Du) != 0) {
+            continue;
+        }
+
+        const u32 state = *reinterpret_cast<const u32*>(elem + 0x84u);
+        if (state == 0 || state == 4 || state == 5) {
+            *reinterpret_cast<u32*>(elem + 0x84u) = 1;
+            *reinterpret_cast<u32*>(elem + 0x88u) = 0;
+        }
+    }
 }
 
 // DECOMP_FUNC(0x002c8a78, 148)
