@@ -83,68 +83,39 @@ extern "C" const char* script_vm_func_0035a220(u32 region_id) {
 }
 
 // DECOMP_FUNC(0x0035a270, 24)
-extern "C" __attribute__((naked)) void script_vm_func_0035a270() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe350000c\n"
-        ".inst 0x359f1008\n"
-        ".inst 0x37910100\n"
-        ".inst 0x23a00000\n"
-        ".inst 0xe12fff1e\n"
-        ".word 0x00465728 @ bounded tail data\n"
-    );
+extern "C" const char* script_vm_func_0035a270(u32 lang_id) {
+    if (lang_id < 12) {
+        const char* const* table = reinterpret_cast<const char* const*>(0x00465728);
+        return table[lang_id];
+    }
+    return nullptr;
 }
 
 // DECOMP_FUNC(0x00380420, 24)
-extern "C" __attribute__((naked)) void func_00380420() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xed9f0a03\n"
-        ".inst 0xe3a01000\n"
-        ".inst 0xed800a05\n"
-        ".inst 0xe5801010\n"
-        ".inst 0xe12fff1e\n"
-        ".word 0x00000000 @ bounded tail data\n"
-    );
+extern "C" void func_00380420(void* obj) {
+    *reinterpret_cast<u32*>(static_cast<char*>(obj) + 0x10) = 0;
+    *reinterpret_cast<float*>(static_cast<char*>(obj) + 0x14) = 0.0f;
 }
 
 // DECOMP_FUNC(0x003f59f0, 24)
-extern "C" __attribute__((naked)) void func_003f59f0() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe59f000c\n"
-        ".inst 0xe3a01000\n"
-        ".inst 0xe5801000\n"
-        ".inst 0xe5801004\n"
-        ".inst 0xe12fff1e\n"
-        ".word 0x0044e918 @ bounded tail data\n"
-    );
+extern "C" void func_003f59f0(void) {
+    u32* target = reinterpret_cast<u32*>(0x0044E918);
+    target[0] = 0;
+    target[1] = 0;
 }
 
 // DECOMP_FUNC(0x003f5dc8, 24)
-extern "C" __attribute__((naked)) void func_003f5dc8() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe59f000c\n"
-        ".inst 0xe3a01000\n"
-        ".inst 0xe5801000\n"
-        ".inst 0xe5801004\n"
-        ".inst 0xe12fff1e\n"
-        ".word 0x0044e930 @ bounded tail data\n"
-    );
+extern "C" void func_003f5dc8(void) {
+    u32* target = reinterpret_cast<u32*>(0x0044E930);
+    target[0] = 0;
+    target[1] = 0;
 }
 
 // DECOMP_FUNC(0x003f61d8, 24)
-extern "C" __attribute__((naked)) void func_003f61d8() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe59f000c\n"
-        ".inst 0xe3a01000\n"
-        ".inst 0xe5801000\n"
-        ".inst 0xe5801004\n"
-        ".inst 0xe12fff1e\n"
-        ".word 0x0044e948 @ bounded tail data\n"
-    );
+extern "C" void func_003f61d8(void) {
+    u32* target = reinterpret_cast<u32*>(0x0044E948);
+    target[0] = 0;
+    target[1] = 0;
 }
 
 // DECOMP_FUNC(0x003f6b2c, 24)
