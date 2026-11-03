@@ -1,0 +1,17 @@
+# Independent review: 0x00296F60 callback value getter
+
+## Finding
+
+**Accept within the documented mapped-memory and finite-float domain.** The run001 review found an indentation defect that reduced the official float cross-product; the frozen run002 runner repairs it and explicitly asserts all 48 combinations. No counterexample was found in the new replay. This acceptance is for the getter and bounded original-callback composition, not arbitrary floats, invalid tables or full H2 runtime.
+
+## Contract and validation
+
+Pinned ARM and typed source read the pointer at 0x0044DEB8, count at work+0x1C, then type byte at work+0x20+index for `index=count-selector-1` modulo 2^32. Types 0/4 return work+0x3C raw word; type 1 converts its float toward zero; types 2/3 use the stored word as an index into 0x004C4744 word / 0x004C4D44 float arrays, converting type 3; type >=5 returns 0. Data writes are absent in source/original, no pointer or bounds validation exists. Valid mapped work, `selector<count`, and valid backing-table indices are required. Tested floating casts are finite and within signed-32 representability; NaN, infinities, out-of-range values, concurrent mutation, MMIO and malformed pointers remain outside scope.
+
+Fresh `python tools/h2_96f60_experiment.py --out build/agent-work/H2-semantic/h2-callback-value-getter-00296f60-review/run002/fresh --seed 20270119` exited 0: 109/109 direct and 24/24 original 0x00221168 compositions matched, with both wrong-slot-offset and wrong-global-index mutants detected. Independently enumerated all 48 combinations of type 1/3 × four positions × six finite float boundaries in generated inputs. Replayed all cases to assert expected raw returns, no faults, SP/r4-r11 and no writes in observed ranges; inspected all 109 ordered data-read traces against type-specific expected addresses. The hook filters writes to selected work/global/table regions, so execution alone is not a universal all-address write audit. The type-2 out-of-mapping probe records the same unmapped-read class for original and candidate but is outside the supported domain.
+
+Original callback calls the getter at 0x002211C0 with selector 0. The original set-global, state and context getters execute; final 0x00286928 is a controlled seam. Tests compare call order/arguments, callback return and selected memory effects, but do not establish the final helper or natural H2 behavior. The original BL targets even ARM 0x00296F60. Independently parsed and replayed the private 164-byte IPS exactly; it changes only the getter slot, which contains a 156-byte production body and two NOPs. The compiled body has no relocations, SHA-256 `a40ad449679a0bae9d3d985198c8a2cdf76abdb836fece5daba7c38fb1063b83`. Runtime and complete interworking in the installed image remain untested.
+
+## Ledger, README and provenance
+
+Frozen ledger: 10,883 matching functions / 3,116,804 bytes plus eight matching spans / 484 bytes = 3,117,288 matching; 76 non-matching / 21,820 bytes; total 3,139,108. `3,117,288 / 3,139,108 * 100 = 99.304898079327%`, correctly rounded in README as 99.3049%. Getter row is correctly `non_matching`. All 13 frozen inputs matched. Reference SHA-256 `1f98884fe997af22e032a14c51a46c872b05b0e079a0f29e307b0e059cfaa558`; source `d9ad8b4bbd8952daab3c199ca2379561fc16c4901ae41ebd230213ce5098b4ac`; repaired runner `76ca1fd1017a718cb5a7f771a32d2eaf0f203cb31d97b38a8d6f294ba5675180`; fresh report `d27a73c7ec729ff9b91d1f072558135190fb6a2a8e25dd1b6577ee5faa45e675`. No emulator, full build or runtime was run.

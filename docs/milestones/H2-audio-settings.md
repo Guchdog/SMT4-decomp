@@ -30,6 +30,18 @@ runtime H2.
 [Registro](../function-records/0x0028686c.md),
 [evidencia](../agent-work/h2-0028686c-conversion.md).
 
+Actualización de dependencia (2026-11-02): `engine_func_00296f60`
+(`0x00296F60`) ahora tiene C++ tipado para los tipos 0–4 y el retorno cero
+para tipos desconocidos. Pasó 109 casos directos (48 combinaciones de tipo,
+posición y frontera float) y 24 composiciones de la
+callback ARM original `0x00221168`, con dos controles mutantes detectados; el
+cuerpo ocupa 156/164 bytes y queda `non_matching`. Los casos float cubren solo
+valores finitos representables como signed-32; tipos 2/3 indexan arrays usando
+el word de la ranura seleccionada. La revisión independiente pasó el run002 y
+el build completo dio 204/204 TU. El seam final `0x00286928` y el runtime H2
+siguen sin validar. [Registro](../function-records/0x00296f60.md),
+[evidencia](../agent-work/h2-00296f60-conversion.md).
+
 Actualización de dependencia de entrada (2026-11-02): el postprocesador de
 registro `0x0013BCAC`, llamado condicionalmente por `0x0011C5EC`, pasó a C++.
 Pasó 192 casos directos, 32 composiciones por el lector original, replay IPS y
