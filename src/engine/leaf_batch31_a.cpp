@@ -39,68 +39,49 @@ extern "C" void func_003eafac(u32* p0, u32* p1) {
 }
 
 // DECOMP_FUNC(0x0033858c, 24)
-extern "C" __attribute__((naked)) void engine_func_0033858c() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe2800901\n"
-        ".inst 0xe5900394\n"
-        ".inst 0xe3500000\n"
-        ".inst 0x0a000000\n"
-        ".inst 0xeafd7cdf\n"
-        ".inst 0xe12fff1e\n"
-    );
+extern "C" void ui_func_00297920(void* p);
+
+extern "C" void engine_func_0033858c(void* p) {
+    void* sub = *reinterpret_cast<void**>(reinterpret_cast<u8*>(p) + 0x4394);
+    if (sub != nullptr) {
+        ui_func_00297920(sub);
+    }
 }
 
 // DECOMP_FUNC(0x00349740, 24)
-extern "C" __attribute__((naked)) void func_00349740() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xeafda376\n"
-        ".inst 0xe12fff1e\n"
-        ".inst 0xe3a02000\n"
-        ".inst 0xe5802000\n"
-        ".inst 0xe5802004\n"
-        ".inst 0xe12fff1e\n"
-    );
+extern "C" void func_00349740(void* p) {
+    engine_func_002b2520(p);
 }
 
 // DECOMP_FUNC(0x00351e98, 24)
-extern "C" __attribute__((naked)) void func_00351e98() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe3500000\n"
-        ".inst 0x059f0008\n"
-        ".inst 0x0a000000\n"
-        ".inst 0xea0000a9\n"
-        ".inst 0xe12fff1e\n"
-        ".word 0xe0409fff @ bounded tail data\n"
-    );
+extern "C" u32 func_00352150(void* p);
+
+extern "C" u32 func_00351e98(void* p) {
+    if (p == nullptr) {
+        return 0xE0409FFFu;
+    }
+    return func_00352150(p);
 }
 
 // DECOMP_FUNC(0x00351ee0, 24)
-extern "C" __attribute__((naked)) void func_00351ee0() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe3500000\n"
-        ".inst 0x059f0008\n"
-        ".inst 0x0a000000\n"
-        ".inst 0xea0000b5\n"
-        ".inst 0xe12fff1e\n"
-        ".word 0xe0409fff @ bounded tail data\n"
-    );
+extern "C" u32 func_003521c8(void* p);
+
+extern "C" u32 func_00351ee0(void* p) {
+    if (p == nullptr) {
+        return 0xE0409FFFu;
+    }
+    return func_003521c8(p);
 }
 
 // DECOMP_FUNC(0x003c0a90, 24)
-extern "C" __attribute__((naked)) void func_003c0a90() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe5900008\n"
-        ".inst 0xe3500000\n"
-        ".inst 0x0a000001\n"
-        ".inst 0xe3a01000\n"
-        ".inst 0xeafbae13\n"
-        ".inst 0xe12fff1e\n"
-    );
+extern "C" void* Tbb_GetSubTable(void* sub, u32 index);
+
+extern "C" void* func_003c0a90(void* p) {
+    void* sub = *reinterpret_cast<void**>(reinterpret_cast<u8*>(p) + 8);
+    if (sub != nullptr) {
+        return Tbb_GetSubTable(sub, 0);
+    }
+    return nullptr;
 }
 
 // DECOMP_FUNC(0x003d6634, 24)
