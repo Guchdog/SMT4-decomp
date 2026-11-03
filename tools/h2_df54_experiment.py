@@ -107,6 +107,7 @@ def main():
         ref=run_direct(body,case,False); got=run_direct(body,case,True); prod_result=run_direct(prod_body,case,True)
         assert same_semantics(ref,got),('original/candidate direct mismatch',case,ref,got)
         assert same_semantics(ref,prod_result),('candidate/production mismatch',case,ref,prod_result)
+        assert ref['events']==got['events']==prod_result['events'],('write-order mismatch',case,ref['events'],got['events'],prod_result['events'])
         if not same_semantics(run_direct(mutbody,case,True),ref): mutant_detected+=1
         direct+=1
     compositions=[]; caller_mutant_detected=0
@@ -116,6 +117,7 @@ def main():
         prodcaller=run_state5(prod_body,seed,True)
         assert same_semantics(ref,got),('state5 composition mismatch',seed,ref,got)
         assert same_semantics(ref,prodcaller),('production state5 composition mismatch',seed,ref,prodcaller)
+        assert ref['events']==got['events']==prodcaller['events'],('caller write-order mismatch',seed,ref['events'],got['events'],prodcaller['events'])
         assert ref['helper_entries']==[FUNC],('state5 did not call helper exactly once',seed,ref['helper_entries'])
         assert prodcaller['helper_entries']==[FUNC],('production did not call helper exactly once',seed,prodcaller['helper_entries'])
         assert ref['r0']==1 and int(ref['state'][2*(0xA8):2*(0xA8+4)],16)>=0,('unexpected state5 result',seed)
@@ -133,12 +135,12 @@ def main():
     assert len(body)<=SLOT,(len(body),SLOT)
     assert not reloc,reloc
     assert len(prod_body)<=SLOT,(len(prod_body),SLOT)
-    report={'passed':True,'scope':'valid mapped writable ordinary RAM; direct helper and original 0x00286928 selector-6 state-5 composition only; write ordering is recorded but excluded from equivalence because writes are disjoint and concurrent observers are outside scope',
+    report={'passed':True,'scope':'valid mapped writable ordinary RAM; direct helper and original 0x00286928 selector-6 state-5 composition; original, candidate and production final effects and ordered writes match',
       'seed':a.seed,'random_cases':a.random_cases,'direct_cases':direct,'alias_cases':6,'direct_mutation_detected':mutant_detected,
       'state5_compositions':compositions,'caller_mutation_detected':caller_mutant_detected,
       'image_sha256':hashlib.sha256(IMAGE).hexdigest(),'candidate_sha256':sha(src),'production_tu_sha256':sha(prod),
       'candidate_body_bytes':len(body),'production_body_bytes':len(prod_body),'candidate_relocations':reloc,
-      'commands':[ccmd,pcmd],'exit_codes':[0,0,0],'limits':['null/invalid global pointer faults are not differentially characterized','no MMIO/concurrent-observer guarantees','0x00286928 dependencies are original pinned code, not fully reconstructed']}
+      'commands':[ccmd,pcmd],'exit_codes':[0,0,0],'limits':['null/invalid global pointer faults are not differentially characterized','volatile ordering does not establish thread-safety or MMIO suitability','0x00286928 dependencies are original pinned code, not fully reconstructed']}
     (out/'report.json').write_text(json.dumps(report,indent=2)+'\n',encoding='utf-8')
     print(json.dumps({'passed':True,'direct':direct,'state5':len(compositions),'mutations':[mutant_detected,caller_mutant_detected],'body_bytes':[len(body),len(prod_body)],'report':str(out/'report.json')},indent=2))
 if __name__=='__main__': main()

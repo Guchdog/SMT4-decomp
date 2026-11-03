@@ -2,11 +2,11 @@
 
 Refreshed and independently reviewed the typed helper's evidence: 102 direct
 cases and eight original `0x00286928` state-5 compositions passed with both
-candidate and production bodies; a wrong-byte-value mutant was caught in every
-case. The full ARMv6K build passed 204/204 TUs. Production may reverse the
-original store order, so the supported claim is final-state equality for stable,
-disjoint ordinary RAM only. MMIO, concurrency, fault ordering, runtime and full
-H2 behavior remain open. See [function record](docs/function-records/0x0028df54.md)
+candidate and production bodies; exact byte-then-word write order matched, and
+a wrong-byte-value mutant was caught in every case. The full ARMv6K build passed
+204/204 TUs. Volatile ordering does not establish thread-safety or MMIO
+suitability. Invalid-pointer faults, runtime and full H2 behavior remain open.
+See [function record](docs/function-records/0x0028df54.md)
 and [integration closure](docs/agent-work/h2-0028df54-integration.md).
 
 # H2 input ring reader 0x0012A758 — 2026-11-02

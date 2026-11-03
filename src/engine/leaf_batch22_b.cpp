@@ -659,10 +659,10 @@ extern "C" __attribute__((naked)) void unite_func_00289fc0() {
 
 // DECOMP_FUNC(0x0028df54, 28)
 extern "C" uint32_t battle_func_0028df54(uint32_t value) {
-    auto base = reinterpret_cast<uint8_t*>(0x0044de98);
-    auto state = *reinterpret_cast<uint8_t**>(base + 0x20);
-    state[0x3b] = 0;
-    *reinterpret_cast<uint32_t*>(state + 0xa8) = value;
+    auto* const state = *reinterpret_cast<uint8_t* volatile*>(0x0044deb8);
+    auto* const bytes = reinterpret_cast<volatile uint8_t*>(state);
+    bytes[0x3b] = 0;
+    *reinterpret_cast<volatile uint32_t*>(bytes + 0xa8) = value;
     return value;
 }
 
