@@ -1,3 +1,41 @@
+# H2 titleConfig dispatcher 0x00286928 — 2026-11-02
+
+Corrected the selector-6/q=0 conditional read and reload of `P+4`; the current
+production body is 808/820 bytes with 22 ARM calls. Fresh direct/callback
+differentials and a staged-image comparison cover the three pointer cases,
+including mutation by the `0x002C4BF0` fixture, and detect eight controls. The
+current source passed the full ARMv6K build (204/204 TUs). Prior 129-hit and
+19-checkpoint runtime evidence belongs to the previous 812-byte image; current
+runtime, readiness and re-entry remain open. See [function record](docs/function-records/0x00286928.md)
+and [integration closure](docs/agent-work/h2-86928-q0-pointer-load-integration.md).
+
+# H2 state-field helper 0x0028DF54 — 2026-11-02
+
+Refreshed and independently reviewed the typed helper's evidence: 102 direct
+cases and eight original `0x00286928` state-5 compositions passed with both
+candidate and production bodies; exact byte-then-word write order matched, and
+a wrong-byte-value mutant was caught in every case. The full ARMv6K build passed
+204/204 TUs. Volatile ordering does not establish thread-safety or MMIO
+suitability. Invalid-pointer faults, runtime and full H2 behavior remain open.
+See [function record](docs/function-records/0x0028df54.md)
+and [integration closure](docs/agent-work/h2-0028df54-integration.md).
+
+# H2 input ring reader 0x0012A758 — 2026-11-02
+
+Converted the 424-byte H2 ring reader to typed C++. Coordinator direct and actual-reader caller differentials passed (1,353 direct cases, six retry scenarios, eight caller compositions); four negative controls were detected. The path-dependent raw return is documented. Independent review passed and the full ARMv6K build compiled all 204 translation units; the producer lifecycle and physical input mapping remain unknown. See [function record](docs/function-records/0x0012a758.md) and [conversion evidence](docs/agent-work/h2-input-ring-reader-conversion.md).
+
+# H2 input mode predicate 0x00128C2C — 2026-11-02
+
+Converted the 24-byte mode predicate to typed C++ and retained the independently callable SVC entry and literal pool in its 84-byte ledger span. Coordinator and independent differentials passed; the full ARMv6K build compiled 204/204 translation units. The span is `non_matching` because its wrapper bytes changed. SVC effects remain unverified. See [function record](docs/function-records/0x00128c2c.md) and [conversion evidence](docs/agent-work/h2-input-mode-wrapper-conversion.md).
+
+# H2 input mode byte getter 0x00138F34 — 2026-11-02
+
+Converted the H2 input mode getter to typed C++ using an unsigned volatile byte read. Exhaustive direct and original-reader cases passed, the mode-four early return remained intact, and the signedness mutation was detected. Independent review passed; the full ARMv6K batch closure then compiled 204/204 translation units. Physical mode provenance and runtime behavior remain unknown. See [function record](docs/function-records/0x00138f34.md) and [conversion evidence](docs/agent-work/h2-input-mode-getter-conversion.md).
+
+# H2 paired signed-byte input getters — 2026-11-02
+
+Converted `0x002BB978` and `0x002BC9C8` to typed volatile signed-byte reads. The offline pinned-image differential passed 512 direct byte cases and 25 compositions through the original `0x0011C5EC` reader; it checked signed returns, caller writes and conditional call traces, with an unsigned-load mutation detected. Both 16-byte bodies are classified `non_matching`. Integrator batch closure compiled all 204 ARMv6K translation units in a private output directory. Physical input provenance and runtime behavior remain unproven. See [function records](docs/function-records/0x002bb978.md) and [conversion evidence](docs/agent-work/h2-input-flag-getters-conversion.md).
+
 # H2 ASD line-count helper 0x002B787C — 2026-11-02
 
 Converted `AsdText_GetLineCount` to typed C++ in its original 176-byte slot and
@@ -1152,3 +1190,96 @@ checkpoints, 20 nested returns, 40 handler calls) across original and patched
 binaries before hitting observer-safety caps. Tasks
 `h2-nested-callback-final-helper-contract` and `h2-nested-callback-final-helper-review`
 were accepted on the H2 workflow board; provenance and handoff checks passed.
+# H2 indexed manager-node resolver 0x002BF6D0 — 2026-11-02
+
+Replaced the 64-byte naked ARM body with 60 bytes of typed C++ calling the original manager resolver and signed divide helper. The direct pinned differential passed 2,269 cases; the original touch caller composition passed 42, and three negative controls were detected. Independent review repeated the offline matrix. The resolver remains `non_matching`; below-SP spill residue, runtime behavior, and malformed-pointer domains are outside the evidence. See [function record](docs/function-records/0x002bf6d0.md), [conversion evidence](docs/agent-work/h2-bf6d0-conversion.md), and [review](docs/agent-work/h2-bf6d0-independent-review.md).
+
+
+# H2 touch-region and manager-resolver integration — 2026-11-02
+
+Staged typed `0x002B88C4` and `0x002BF6D0` together in their original H2 slots. The 242-byte two-slot IPS passed roundtrip, slot-scope, even ARM interworking, and 58 original-caller comparisons; an independent fresh-seed review repeated all 58 cases. The manager resolver and divider remain original dependencies. Controlled fixture, below-SP spill, scheduler, and runtime limits remain explicit in the [integration record](docs/agent-work/h2-b88c4-bf6d0-cumulative-integration.md) and [review](docs/agent-work/h2-b88c4-bf6d0-cumulative-independent-review.md).
+
+
+# H2 unsigned query divider contract correction — 2026-11-02
+
+Pinned audit corrected `0x002C6C10` to unsigned divmod semantics: divisor zero returns quotient `0xFFFFFFFF` and the original dividend as remainder, without a fault. A seven-case selector-zero caller probe matched the original and production mode-0 query. A typed full-domain shape compiles to 52 bytes with an unresolved `__aeabi_uidiv` call, so no production replacement was made; the signed neighboring divider does not cover established full caller bounds. See [service record](docs/function-records/0x002c6c10.md), [contract audit](docs/agent-work/h2-002c6c10-divmod-contract-recon.md), and [probe](build/agent-work/H2-semantic/h2-logical-mode0-zero-selector/run002/report.json).
+# H2 cursor-axis initializer 0x00296F18 — 2026-11-02
+
+Converted the 72-byte helper to typed C++ and classified its different bytes as
+`non_matching`. The 68-byte body has no relocations. Run005 passed 61 direct
+cases, a matched mapped-boundary fault, three detected mutation controls, all
+four ARM BL target checks, and the exact two-call `0x0029FAE8` setup composition;
+both affected translation units compiled. Independent review found no
+counterexample in aligned ordinary RAM. The caller finalizes both axis starts
+to 1 after the helper's intermediate write of 2. Runtime, other lifecycle
+helpers, and full H2 equivalence remain unverified. See [function record](docs/function-records/0x00296f18.md),
+[conversion evidence](docs/agent-work/h2-296f18-cursor-axis-conversion.md), and
+[review](docs/agent-work/h2-296f18-independent-review-run002.md).
+
+\r\n
+
+# H2 cursor setup orchestration 0x0029FAE8 — 2026-11-02
+
+Converted the 452-byte cursor setup wrapper to typed C++. The 392-byte body
+retains the original divider and axis/ID helpers and resolves seven ARM `BL`
+relocations to pinned even ARM entries. The coordinator and independent runs
+each passed 60/60 offline differential cases, including the stack `wrap_row`
+and `repeat` arguments, exact H2 helper trace and final axis records. A
+wrong-helper-target control was detected. The ledger now truthfully records
+`non_matching`; full TitleConfig lifecycle, audio/input timing and runtime
+reachability remain unverified. See [function record](docs/function-records/0x0029fae8.md),
+[conversion evidence](docs/agent-work/h2-29fae8-cursor-setup-conversion.md),
+[contract](docs/agent-work/h2-0029fae8-contract.md), and
+[independent review](docs/agent-work/h2-29fae8-independent-review.md).
+
+# H2 TitleConfig sprite setup 0x002BDB2C — 2026-11-02
+
+Replaced the 152-byte naked ARM body with a 148-byte typed C++ implementation
+that retains the original `AsdMem_Zero` call and the raw `sprite+0x8C` return.
+The offline differential passed 36 direct cases, the exact TitleConfig caller
+slice, and a wrong-zero-target control; the ledger is `non_matching`. Independent
+fresh-seed review passed 52 direct cases plus the caller slice, and the full
+ARMv6K build passed 204/204 TUs. Resource lookup, rendering, runtime reachability
+and full H2 behavior remain unverified; write-width/order parity is limited to
+ordinary RAM without concurrent observers. See the
+[function record](docs/function-records/0x002bdb2c.md),
+[conversion report](docs/agent-work/h2-2bdb2c-conversion.md), and
+[static contract](docs/agent-work/h2-002bdb2c-contract.md).
+
+# H2 TitleConfig sprite-group binder 0x002C32F8 — 2026-11-02
+
+Replaced the 76-byte naked ARM body with typed C++ preserving its eleven raw
+word arguments, descriptor writes and incidental `r0=group+0x14` return. The
+coordinator differential passed 51 direct cases, the original group-init/bind
+caller slice, and a missing-count-store control. The candidate remains
+`non_matching`; independent review passed 67 direct cases plus the caller, and
+the full ARMv6K build passed 204/204 TUs. The table's meaning and store-order
+observability remain unverified. See the
+[function record](docs/function-records/0x002c32f8.md),
+[conversion report](docs/agent-work/h2-2c32f8-conversion.md), and
+[dependency contract](docs/agent-work/h2-init-dependency-contracts.md).
+
+# H2 TitleConfig async table-load wrapper 0x00297704 — 2026-11-02
+
+Replaced the 32-byte naked wrapper with 24 bytes of typed C++ preserving the
+loader's raw base-PCS stack payloads and return. The coordinator differential
+passed 34 direct cases and both real TitleConfig calls through the wrapper;
+the exact downstream `(0,4)` stack words and a wrong-size control were checked.
+The candidate is `non_matching`; independent review passed 66 fresh direct
+cases plus the caller, and the full ARMv6K build compiled 204/204 translation
+units. Real loader queue/completion and loaded asset behavior are not tested.
+See the [function record](docs/function-records/0x00297704.md) and
+[conversion report](docs/agent-work/h2-297704-wrapper-conversion.md).
+
+# H2 input record postprocessor 0x0013BCAC — 2026-11-02
+
+Replaced the 212-byte ARM body with 148 bytes of typed C++. The final-VMA
+differential passed 192 direct cases and 32 compositions through original
+reader `0x0011C5EC`; the postprocessor ran in 16, and the save-before-call
+ordering was observed. A bit-condition mutation was detected. The candidate is
+`non_matching`; the full ARMv6K build passed 204/204 translation units, and an
+independent fresh-seed review passed with 192 direct cases and 32 caller cases.
+The controlled
+ring seam does not establish live input or H2 lifecycle behavior. See the
+[function record](docs/function-records/0x0013bcac.md) and
+[conversion report](docs/agent-work/h2-0013bcac-conversion.md).

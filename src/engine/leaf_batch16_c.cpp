@@ -3476,122 +3476,95 @@ extern "C" __attribute__((naked)) void func_002abf28() {
 }
 
 // DECOMP_FUNC(0x0012a758, 424)
-extern "C" __attribute__((naked)) void func_0012a758() {
-    asm volatile(
-        "push {r0, r1, r2, r3, r4, r5, r6, r7, r8, sb, sl, fp, lr}\n"
-        "sub sp, sp, #0x14\n"
-        "mov ip, #0\n"
-        "cmp r2, #0\n"
-        "ldr r3, [sp, #0x20]\n"
-        "str ip, [r3]\n"
-        "ble .Lbatch16c_0012a8f8\n"
-        "cmp r2, #7\n"
-        "movgt r2, #7\n"
-        "str r2, [sp, #4]\n"
-        ".Lbatch16c_0012a780:\n"
-        "ldr r4, [r0, #0x10]\n"
-        "str r4, [sp, #0xc]\n"
-        "ldrd r8, sb, [r0]\n"
-        "ldrd r2, r3, [r0, #8]\n"
-        "mov r6, sb\n"
-        "cmp r4, #0\n"
-        "str r2, [sp, #8]\n"
-        "str r3, [sp]\n"
-        "bgt .Lbatch16c_0012a7cc\n"
-        "bne .Lbatch16c_0012a8f8\n"
-        "mov r3, r2\n"
-        "ldr r2, [sp]\n"
-        "eor r3, r3, r8\n"
-        "eor r2, r2, r6\n"
-        "orrs r2, r2, r3\n"
-        "bne .Lbatch16c_0012a7cc\n"
-        "cmp r6, #0\n"
-        "movge r4, #7\n"
-        "blt .Lbatch16c_0012a8f8\n"
-        ".Lbatch16c_0012a7cc:\n"
-        "ldr r3, [sp, #0x48]\n"
-        "ldrd r2, r3, [r3]\n"
-        "subs ip, r2, r8\n"
-        "sbcs ip, r3, r6\n"
-        "blt .Lbatch16c_0012a7f0\n"
-        "ldr r2, [sp, #0x4c]\n"
-        "ldr r2, [r2]\n"
-        "sub sb, r4, r2\n"
-        "b .Lbatch16c_0012a824\n"
-        ".Lbatch16c_0012a7f0:\n"
-        "ldr ip, [sp]\n"
-        "cmp ip, #0\n"
-        "addlt sb, r4, #1\n"
-        "blt .Lbatch16c_0012a824\n"
-        "ldr lr, [sp, #8]\n"
-        "subs r2, r2, lr\n"
-        "sbcs r2, r3, ip\n"
-        "ldrlt sb, [sp, #4]\n"
-        "blt .Lbatch16c_0012a824\n"
-        "ldr r2, [sp, #0x4c]\n"
-        "ldr r2, [r2]\n"
-        "sub r2, r4, r2\n"
-        "add sb, r2, #8\n"
-        ".Lbatch16c_0012a824:\n"
-        "ldr r2, [sp, #4]\n"
-        "mov r5, #0\n"
-        "cmp sb, r2\n"
-        "movgt sb, r2\n"
-        "cmp sb, #0\n"
-        "ble .Lbatch16c_0012a89c\n"
-        ".Lbatch16c_0012a83c:\n"
-        "sub r2, r4, r5\n"
-        "add r2, r2, #8\n"
-        "add r7, r1, r5, lsl #4\n"
-        "asr r3, r2, #0x1f\n"
-        "add r3, r2, r3, lsr #29\n"
-        "bic r3, r3, #7\n"
-        "sub r2, r2, r3\n"
-        "add r3, r0, r2, lsl #4\n"
-        "ldr sl, [r3, #0x28]\n"
-        "add lr, r3, #0x30\n"
-        "add r2, r3, #0x34\n"
-        "add fp, r3, #0x36\n"
-        "str sl, [r7]\n"
-        "ldr r3, [r3, #0x2c]\n"
-        "add r5, r5, #1\n"
-        "cmp sb, r5\n"
-        "str r3, [r7, #4]\n"
-        "ldr r3, [lr]\n"
-        "str r3, [r7, #8]\n"
-        "ldrh r2, [r2]\n"
-        "strh r2, [r7, #0xc]\n"
-        "ldrh r2, [fp]\n"
-        "strh r2, [r7, #0xe]\n"
-        "bgt .Lbatch16c_0012a83c\n"
-        ".Lbatch16c_0012a89c:\n"
-        "ldr ip, [r0, #0x10]\n"
-        "ldrd r2, r3, [r0]\n"
-        "ldrd sl, fp, [r0, #8]\n"
-        "ldr lr, [sp, #0xc]\n"
-        "cmp ip, lr\n"
-        "bne .Lbatch16c_0012a780\n"
-        "eor r2, r2, r8\n"
-        "eor r3, r3, r6\n"
-        "orrs r2, r2, r3\n"
-        "bne .Lbatch16c_0012a780\n"
-        "ldr r3, [sp, #8]\n"
-        "ldr r2, [sp]\n"
-        "eor r3, r3, sl\n"
-        "eor r2, r2, fp\n"
-        "orrs r2, r2, r3\n"
-        "bne .Lbatch16c_0012a780\n"
-        "ldr r1, [sp, #0x20]\n"
-        "ldr r0, [sp, #0x48]\n"
-        "str sb, [r1]\n"
-        "str r6, [r0, #4]\n"
-        "str r8, [r0]\n"
-        "ldr r0, [sp, #0x4c]\n"
-        "str r4, [r0]\n"
-        ".Lbatch16c_0012a8f8:\n"
-        "add sp, sp, #0x24\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, fp, pc}\n"
-    );
+extern "C" __attribute__((minsize)) u8* func_0012a758(
+    u8* source, u8* output, s32 requested, s32* count_out,
+    u64* cursor_out, u32* index_inout) {
+    auto* const source_words = reinterpret_cast<volatile u32*>(source);
+    auto* const output_bytes = reinterpret_cast<volatile u8*>(output);
+    auto* const count = reinterpret_cast<volatile s32*>(count_out);
+    auto* const cursor = reinterpret_cast<volatile u32*>(cursor_out);
+    auto* const index = reinterpret_cast<volatile u32*>(index_inout);
+
+    *count = 0;
+    if (requested <= 0) return source;
+    if (requested > 7) requested = 7;
+
+    for (;;) {
+        const s32 effective_index = static_cast<s32>(source_words[4]);
+        const u32 pair0_low = source_words[0];
+        const u32 pair0_high = source_words[1];
+        const u32 pair1_low = source_words[2];
+        const u32 pair1_high = source_words[3];
+        s32 slot_index = effective_index;
+
+        if (effective_index < 0) return source;
+        if (effective_index == 0 && pair0_low == pair1_low &&
+            pair0_high == pair1_high) {
+            if (static_cast<s32>(pair0_high) < 0) return source;
+            slot_index = 7;
+        }
+
+        const u32 cursor_low = cursor[0];
+        const u32 cursor_high = cursor[1];
+        const u64 cursor_bits = (static_cast<u64>(cursor_high) << 32) | cursor_low;
+        const u64 pair0_bits = (static_cast<u64>(pair0_high) << 32) | pair0_low;
+        const u64 pair1_bits = (static_cast<u64>(pair1_high) << 32) | pair1_low;
+        const s64 cursor_value = static_cast<s64>(cursor_bits);
+        const s64 pair0_value = static_cast<s64>(pair0_bits);
+        const s64 pair1_value = static_cast<s64>(pair1_bits);
+        const s32 input_index = static_cast<s32>(*index);
+
+        s32 available;
+        if (cursor_value >= pair0_value) {
+            available = slot_index - input_index;
+        } else if (static_cast<s32>(pair0_high) < 0) {
+            available = slot_index + 1;
+        } else if (cursor_value < pair1_value) {
+            available = requested;
+        } else {
+            available = slot_index - input_index + 8;
+        }
+        if (available > requested) available = requested;
+
+        if (available > 0) {
+            for (s32 i = 0; i < available; ++i) {
+                // For canonical indices 0..7 and i in 0..6, the original
+                // signed remainder expression is nonnegative and equals & 7.
+                const u32 ring_slot = static_cast<u32>(slot_index - i + 8) & 7u;
+                volatile u8* const ring_record =
+                    reinterpret_cast<volatile u8*>(source_words) +
+                    (ring_slot << 4) + 0x28;
+                volatile u8* const output_record = output_bytes +
+                    (static_cast<u32>(i) << 4);
+                auto* const ring_words = reinterpret_cast<volatile u32*>(ring_record);
+                auto* const output_words = reinterpret_cast<volatile u32*>(output_record);
+                auto* const ring_halfwords = reinterpret_cast<volatile u16*>(ring_record + 0x0C);
+                auto* const output_halfwords = reinterpret_cast<volatile u16*>(output_record + 0x0C);
+                output_words[0] = ring_words[0];
+                output_words[1] = ring_words[1];
+                output_words[2] = ring_words[2];
+                output_halfwords[0] = ring_halfwords[0];
+                output_halfwords[1] = ring_halfwords[1];
+            }
+        }
+
+        const s32 check_index = static_cast<s32>(source_words[4]);
+        const u32 check_pair0_low = source_words[0];
+        const u32 check_pair0_high = source_words[1];
+        const u32 check_pair1_low = source_words[2];
+        const u32 check_pair1_high = source_words[3];
+        if (check_index != effective_index || check_pair0_low != pair0_low ||
+            check_pair0_high != pair0_high || check_pair1_low != pair1_low ||
+            check_pair1_high != pair1_high) {
+            continue;
+        }
+
+        *count = available;
+        cursor[1] = pair0_high;
+        cursor[0] = pair0_low;
+        *index = static_cast<u32>(slot_index);
+        return reinterpret_cast<u8*>(index_inout);
+    }
 }
 
 // DECOMP_FUNC(0x002cfff8, 500)
@@ -4789,71 +4762,38 @@ extern "C" __attribute__((naked)) void func_00355830() {
 }
 
 // DECOMP_FUNC(0x0013bcac, 212)
-extern "C" __attribute__((naked)) void func_0013bcac() {
-    asm volatile(
-        "add r2, r0, #8\n"
-        "add r1, r0, #4\n"
-        "mov r0, r0\n"
-        "str r4, [sp, #-4]!\n"
-        "ldr r3, [r1]\n"
-        "mov ip, #0xc\n"
-        "bics r4, ip, r3\n"
-        "beq .Lbatch16c_0013bd70\n"
-        "tst r3, #4\n"
-        "beq .Lbatch16c_0013bce0\n"
-        "ldr r4, [r0]\n"
-        "tst r4, #8\n"
-        "beq .Lbatch16c_0013bd70\n"
-        ".Lbatch16c_0013bce0:\n"
-        "tst r3, #8\n"
-        "beq .Lbatch16c_0013bcf4\n"
-        "ldr r4, [r0]\n"
-        "tst r4, #4\n"
-        "beq .Lbatch16c_0013bd70\n"
-        ".Lbatch16c_0013bcf4:\n"
-        "bic r3, r3, #8\n"
-        ".Lbatch16c_0013bcf8:\n"
-        "str r3, [r1]\n"
-        "ldr r3, [r2]\n"
-        "bics ip, ip, r3\n"
-        "beq .Lbatch16c_0013bd78\n"
-        "tst r3, #4\n"
-        "beq .Lbatch16c_0013bd1c\n"
-        "ldr ip, [r0]\n"
-        "tst ip, #8\n"
-        "beq .Lbatch16c_0013bd78\n"
-        ".Lbatch16c_0013bd1c:\n"
-        "tst r3, #8\n"
-        "beq .Lbatch16c_0013bd30\n"
-        "ldr ip, [r0]\n"
-        "tst ip, #4\n"
-        "beq .Lbatch16c_0013bd78\n"
-        ".Lbatch16c_0013bd30:\n"
-        "bic r3, r3, #8\n"
-        ".Lbatch16c_0013bd34:\n"
-        "str r3, [r2]\n"
-        "ldr r3, [r0]\n"
-        "tst r3, #4\n"
-        "beq .Lbatch16c_0013bd50\n"
-        "bic r3, r3, #4\n"
-        "orr r3, r3, #8\n"
-        "str r3, [r0]\n"
-        ".Lbatch16c_0013bd50:\n"
-        "ldr r0, [r1]\n"
-        "bic r0, r0, #4\n"
-        "str r0, [r1]\n"
-        "ldr r0, [r2]\n"
-        "bic r0, r0, #4\n"
-        "str r0, [r2]\n"
-        "pop {r4}\n"
-        "bx lr\n"
-        ".Lbatch16c_0013bd70:\n"
-        "orr r3, r3, #8\n"
-        "b .Lbatch16c_0013bcf8\n"
-        ".Lbatch16c_0013bd78:\n"
-        "orr r3, r3, #8\n"
-        "b .Lbatch16c_0013bd34\n"
-    );
+static inline u32 input_postprocess_bit8(u32 current, u32 previous) {
+    const u32 current4 = (current >> 2) & 1u;
+    const u32 current8 = (current >> 3) & 1u;
+    const u32 previous4 = (previous >> 2) & 1u;
+    const u32 previous8 = (previous >> 3) & 1u;
+    const u32 set_bit8 = ((current4 & current8) |
+                          (current4 & (previous8 ^ 1u)) |
+                          (current8 & (previous4 ^ 1u))) << 3;
+    return (current & ~0x08u) | set_bit8;
+}
+
+extern "C" u32 func_0013bcac(volatile u32* record) {
+    auto* const word0 = record;
+    auto* const word4 = record + 1;
+    auto* const word8 = record + 2;
+
+    const u32 current4 = *word4;
+    const u32 previous_for4 = *word0;
+    *word4 = input_postprocess_bit8(current4, previous_for4);
+    const u32 current8 = *word8;
+    const u32 previous_for8 = *word0;
+    *word8 = input_postprocess_bit8(current8, previous_for8);
+
+    const u32 previous = *word0;
+    if ((previous & 0x04u) != 0) {
+        *word0 = (previous & ~0x04u) | 0x08u;
+    }
+
+    *word4 &= ~0x04u;
+    const u32 result = *word8 & ~0x04u;
+    *word8 = result;
+    return result;
 }
 // DECOMP_FUNC(0x003b03b0, 232)
 extern "C" __attribute__((naked)) void func_003b03b0() {

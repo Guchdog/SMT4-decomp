@@ -1170,75 +1170,95 @@ extern "C" __attribute__((naked)) void ui_func_00126230() {
 }
 
 // DECOMP_FUNC(0x0013b8f8, 260)
-extern "C" __attribute__((naked)) void ui_func_0013b8f8() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe92d5ff0 @ push {r4, r5, r6, r7, r8, sb, sl, fp, ip, lr}\n"
-        ".inst 0xe3520000 @ cmp r2, #0\n"
-        ".inst 0xe1a09000 @ mov sb, r0\n"
-        ".inst 0xe1a0a001 @ mov sl, r1\n"
-        ".inst 0xe1cd02d8 @ ldrd r0, r1, [sp, #0x28]\n"
-        ".inst 0xaa000004 @ bge #0x13b924\n"
-        ".inst 0xe262c000 @ rsb ip, r2, #0\n"
-        ".inst 0xe15c0000 @ cmp ip, r0\n"
-        ".inst 0xc0826000 @ addgt r6, r2, r0\n"
-        ".inst 0xca000004 @ bgt #0x13b934\n"
-        ".inst 0xea000002 @ b #0x13b930\n"
-        ".inst 0xe1500002 @ cmp r0, r2\n"
-        ".inst 0xb0426000 @ sublt r6, r2, r0\n"
-        ".inst 0xba000000 @ blt #0x13b934\n"
-        ".inst 0xe3a06000 @ mov r6, #0\n"
-        ".inst 0xe3530000 @ cmp r3, #0\n"
-        ".inst 0xaa000004 @ bge #0x13b950\n"
-        ".inst 0xe2632000 @ rsb r2, r3, #0\n"
-        ".inst 0xe1520000 @ cmp r2, r0\n"
-        ".inst 0xc0835000 @ addgt r5, r3, r0\n"
-        ".inst 0xca000004 @ bgt #0x13b960\n"
-        ".inst 0xea000002 @ b #0x13b95c\n"
-        ".inst 0xe1500003 @ cmp r0, r3\n"
-        ".inst 0xb0435000 @ sublt r5, r3, r0\n"
-        ".inst 0xba000000 @ blt #0x13b960\n"
-        ".inst 0xe3a05000 @ mov r5, #0\n"
-        ".inst 0xe0020696 @ mul r2, r6, r6\n"
-        ".inst 0xe041b000 @ sub fp, r1, r0\n"
-        ".inst 0xe0202595 @ mla r0, r5, r5, r2\n"
-        ".inst 0xe0010b9b @ mul r1, fp, fp\n"
-        ".inst 0xe1510000 @ cmp r1, r0\n"
-        ".inst 0xca00001c @ bgt #0x13b9ec\n"
-        ".inst 0xe1a07700 @ lsl r7, r0, #0xe\n"
-        ".inst 0xe3570000 @ cmp r7, #0\n"
-        ".inst 0xd3a08000 @ movle r8, #0\n"
-        ".inst 0xda00000f @ ble #0x13b9c8\n"
-        ".inst 0xe3570001 @ cmp r7, #1\n"
-        ".inst 0xe1a00007 @ mov r0, r7\n"
-        ".inst 0xe3a04001 @ mov r4, #1\n"
-        ".inst 0xda000003 @ ble #0x13b9a8\n"
-        ".inst 0xe1a04084 @ lsl r4, r4, #1\n"
-        ".inst 0xe1a000c0 @ asr r0, r0, #1\n"
-        ".inst 0xe1500004 @ cmp r0, r4\n"
-        ".inst 0xcafffffb @ bgt #0x13b998\n"
-        ".inst 0xe1a08004 @ mov r8, r4\n"
-        ".inst 0xe1a01008 @ mov r1, r8\n"
-        ".inst 0xe1a00007 @ mov r0, r7\n"
-        ".inst 0xeb0629e8 @ bl #0x2c615c\n"
-        ".inst 0xe0800004 @ add r0, r0, r4\n"
-        ".inst 0xe1a040c0 @ asr r4, r0, #1\n"
-        ".inst 0xe1540008 @ cmp r4, r8\n"
-        ".inst 0xbafffff7 @ blt #0x13b9a8\n"
-        ".inst 0xe1a0438b @ lsl r4, fp, #7\n"
-        ".inst 0xe1a01008 @ mov r1, r8\n"
-        ".inst 0xe0000496 @ mul r0, r6, r4\n"
-        ".inst 0xeb0629e0 @ bl #0x2c615c\n"
-        ".inst 0xe6bf6070 @ sxth r6, r0\n"
-        ".inst 0xe0000495 @ mul r0, r5, r4\n"
-        ".inst 0xe1a01008 @ mov r1, r8\n"
-        ".inst 0xeb0629dc @ bl #0x2c615c\n"
-        ".inst 0xe6bf5070 @ sxth r5, r0\n"
-        ".inst 0xe1c960b0 @ strh r6, [sb]\n"
-        ".inst 0xe6bf007b @ sxth r0, fp\n"
-        ".inst 0xe1ca50b0 @ strh r5, [sl]\n"
-        ".inst 0xe8bd9ff0 @ pop {r4, r5, r6, r7, r8, sb, sl, fp, ip, pc}\n"
-    );
+extern "C" u64 ui_func_002c615c(u32 numerator_bits, u32 denominator_bits);
+
+static __attribute__((always_inline)) inline s32 input_bits_as_s32_0013b8f8(u32 bits) {
+    return static_cast<s32>(bits);
+}
+
+static __attribute__((always_inline)) inline s32 input_divide_0013b8f8(
+    u32 numerator_bits, s32 denominator) {
+    const u64 quotient_remainder = ui_func_002c615c(
+        numerator_bits, static_cast<u32>(denominator));
+    return input_bits_as_s32_0013b8f8(static_cast<u32>(quotient_remainder));
+}
+
+extern "C" __attribute__((minsize)) s32 ui_func_0013b8f8(
+    s16* output_x, s16* output_y, s32 sample_x, s32 sample_y,
+    s32 calibration_a, s32 calibration_b) {
+    const u32 x_bits = static_cast<u32>(sample_x);
+    const u32 y_bits = static_cast<u32>(sample_y);
+    const u32 calibration_a_bits = static_cast<u32>(calibration_a);
+    const u32 calibration_b_bits = static_cast<u32>(calibration_b);
+    const s32 delta = input_bits_as_s32_0013b8f8(
+        calibration_b_bits - calibration_a_bits);
+
+    s32 transformed_x;
+    if (sample_x < 0) {
+        const s32 negated_x = input_bits_as_s32_0013b8f8(0u - x_bits);
+        transformed_x = negated_x > calibration_a
+            ? input_bits_as_s32_0013b8f8(x_bits + calibration_a_bits) : 0;
+    } else {
+        transformed_x = calibration_a < sample_x
+            ? input_bits_as_s32_0013b8f8(x_bits - calibration_a_bits) : 0;
+    }
+
+    s32 transformed_y;
+    if (sample_y < 0) {
+        const s32 negated_y = input_bits_as_s32_0013b8f8(0u - y_bits);
+        transformed_y = negated_y > calibration_a
+            ? input_bits_as_s32_0013b8f8(y_bits + calibration_a_bits) : 0;
+    } else {
+        transformed_y = calibration_a < sample_y
+            ? input_bits_as_s32_0013b8f8(y_bits - calibration_a_bits) : 0;
+    }
+
+    const u32 transformed_x_bits = static_cast<u32>(transformed_x);
+    const u32 transformed_y_bits = static_cast<u32>(transformed_y);
+    const u32 radius_squared_bits = transformed_x_bits * transformed_x_bits
+                                  + transformed_y_bits * transformed_y_bits;
+    const u32 delta_squared_bits = static_cast<u32>(delta) * static_cast<u32>(delta);
+    const s32 radius_squared = input_bits_as_s32_0013b8f8(radius_squared_bits);
+    const s32 delta_squared = input_bits_as_s32_0013b8f8(delta_squared_bits);
+
+    if (delta_squared > radius_squared) {
+        *output_x = static_cast<s16>(static_cast<u16>(transformed_x));
+        *output_y = static_cast<s16>(static_cast<u16>(transformed_y));
+        return static_cast<s16>(static_cast<u16>(delta));
+    }
+
+    const u32 scaled_radius_bits = radius_squared_bits << 14;
+    const s32 scaled_radius = input_bits_as_s32_0013b8f8(scaled_radius_bits);
+    s32 magnitude = 0;
+    if (scaled_radius > 0) {
+        s32 power = 1;
+        s32 shifted = scaled_radius;
+        if (scaled_radius > 1) {
+            do {
+                power = input_bits_as_s32_0013b8f8(static_cast<u32>(power) << 1);
+                shifted >>= 1;
+            } while (shifted > power);
+        }
+
+        magnitude = power;
+        for (;;) {
+            const s32 quotient = input_divide_0013b8f8(scaled_radius_bits, magnitude);
+            const u32 sum_bits = static_cast<u32>(quotient) + static_cast<u32>(magnitude);
+            const s32 next = input_bits_as_s32_0013b8f8(sum_bits) >> 1;
+            if (next >= magnitude) break;
+            magnitude = next;
+        }
+    }
+
+    const u32 scale_bits = static_cast<u32>(delta) << 7;
+    const u32 x_numerator = transformed_x_bits * scale_bits;
+    const s32 scaled_x = input_divide_0013b8f8(x_numerator, magnitude);
+    *reinterpret_cast<u16*>(output_x) = static_cast<u16>(scaled_x);
+
+    const u32 y_numerator = transformed_y_bits * scale_bits;
+    const s32 scaled_y = input_divide_0013b8f8(y_numerator, magnitude);
+    *reinterpret_cast<u16*>(output_y) = static_cast<u16>(scaled_y);
+    return static_cast<s16>(static_cast<u16>(delta));
 }
 
 // DECOMP_FUNC(0x0019d8d0, 260)

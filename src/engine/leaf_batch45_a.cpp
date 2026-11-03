@@ -8346,9 +8346,10 @@ extern "C" __attribute__((minsize)) uint32_t engine_func_00286928(
             engine_func_002b787c(*reinterpret_cast<volatile uint32_t*>(object + 4));
     if (object[0x35] == 0)
         camp_func_0028df98(object, object[9]);
-    uint32_t global_object = *reinterpret_cast<volatile uint32_t*>(object + 4);
     if (arg5 != 0) {
+        uint32_t global_object = *reinterpret_cast<volatile uint32_t*>(object + 4);
         ui_func_002c4bf0(global_object, 0x20);
+        global_object = *reinterpret_cast<volatile uint32_t*>(object + 4);
         func_002b90f0(global_object, 0x40);
     }
     *reinterpret_cast<volatile uint8_t*>(object + 0xa12) = 0;

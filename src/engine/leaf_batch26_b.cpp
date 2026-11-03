@@ -227,20 +227,15 @@ extern "C" __attribute__((naked)) void engine_func_0028c880() {
 }
 
 // DECOMP_FUNC(0x0028df70, 40)
-extern "C" __attribute__((naked)) void camp_func_0028df70() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe3500006\n"
-        ".inst 0x23a00000\n"
-        ".inst 0x2a000004\n"
-        ".inst 0xe59f1010\n"
-        ".inst 0xe5911004\n"
-        ".inst 0xe0810100\n"
-        ".inst 0xe2800b01\n"
-        ".inst 0xe1d009b6\n"
-        ".inst 0xe12fff1e\n"
-        ".word 0x0043da28\n"
-    );
+extern "C" __attribute__((minsize)) uint32_t camp_func_0028df70(uint32_t index) {
+    if (index >= 6u) return 0;
+    const uint32_t manager = *reinterpret_cast<volatile uint32_t*>(0x0043da2cu);
+    auto* const row_words = reinterpret_cast<volatile uint32_t*>(manager + 0x400u);
+    auto* const selected_row = row_words + index;
+    register uint32_t result __asm__("r0");
+    __asm__ volatile("ldrh %0, [%1, #0x96]"
+                     : "=r"(result) : "r"(selected_row) : "memory");
+    return result;
 }
 
 // DECOMP_FUNC(0x00291154, 40)

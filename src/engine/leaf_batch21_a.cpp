@@ -242,13 +242,8 @@ extern "C" __attribute__((naked)) void engine_func_0012f4c0() {
 }
 
 // DECOMP_FUNC(0x00138f34, 16)
-extern "C" __attribute__((naked)) void func_00138f34() {
-    asm volatile(
-        "ldr r0, [pc, #4]\n"
-        "ldrb r0, [r0, #3]\n"
-        "bx lr\n"
-        ".word 0x00473888 @ tail data\n"
-    );
+extern "C" u32 func_00138f34() {
+    return *reinterpret_cast<volatile u8*>(0x0047388Bu);
 }
 
 // DECOMP_FUNC(0x0013afb8, 16)

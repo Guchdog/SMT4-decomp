@@ -1579,68 +1579,62 @@ extern "C" __attribute__((naked)) void camp_func_002d0204() {
 };
 
 // DECOMP_FUNC(0x0029fae8, 452)
-extern "C" __attribute__((naked)) void camp_func_0029fae8() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4ff8, 0xe92d, 0x4000, 0xe1a0\n"
-        ".hword 0x0028, 0xe28d, 0x6003, 0xe1a0\n"
-        ".hword 0x5001, 0xe1a0, 0x0180, 0xe890\n"
-        ".hword 0x9002, 0xe1a0, 0x0000, 0xe357\n"
-        ".hword 0x0001, 0x1356, 0x7000, 0xc3a0\n"
-        ".hword 0x0000, 0xe355, 0x0001, 0xd3a0\n"
-        ".hword 0x0062, 0xd5c4, 0x0061, 0xda00\n"
-        ".hword 0x0001, 0xe356, 0x0002, 0x1a00\n"
-        ".hword 0xffff, 0xeaff, 0x0005, 0xe159\n"
-        ".hword 0x9001, 0xc1a0, 0xb000, 0xe3a0\n"
-        ".hword 0x5050, 0xe584, 0x0005, 0xe1a0\n"
-        ".hword 0x1003, 0xe1a0, 0xb062, 0xe5c4\n"
-        ".hword 0x9983, 0xeb00, 0x0000, 0xe351\n"
-        ".hword 0x2000, 0xe1a0, 0x2001, 0xc280\n"
-        ".hword 0x0000, 0xe357, 0xa020, 0xe3a0\n"
-        ".hword 0x1009, 0xe1a0, 0x0004, 0xe1a0\n"
-        ".hword 0x0014, 0x0a00, 0xdce9, 0xebff\n"
-        ".hword 0x0004, 0xe3a0, 0x0000, 0xe58d\n"
-        ".hword 0x3003, 0xe3a0, 0x2005, 0xe3a0\n"
-        ".hword 0x1006, 0xe3a0, 0x0004, 0xe1a0\n"
-        ".hword 0xdcda, 0xebff, 0x0000, 0xe358\n"
-        ".hword 0xf000, 0xe320, 0x001a, 0x0a00\n"
-        ".hword 0x000d, 0xe3a0, 0x0000, 0xe58d\n"
-        ".hword 0x300c, 0xe3a0, 0x200e, 0xe3a0\n"
-        ".hword 0x100f, 0xe3a0, 0x0004, 0xe1a0\n"
-        ".hword 0xdd3a, 0xeb01, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0x0010, 0xea00\n"
-        ".hword 0xf000, 0xe320, 0xdcd3, 0xebff\n"
-        ".hword 0x3020, 0xe3a0, 0x2005, 0xe3a0\n"
-        ".hword 0x1006, 0xe3a0, 0x0004, 0xe1a0\n"
-        ".hword 0xa000, 0xe58d, 0xdcc5, 0xebff\n"
-        ".hword 0x0000, 0xe358, 0xf000, 0xe320\n"
-        ".hword 0x0005, 0x0a00, 0x3020, 0xe3a0\n"
-        ".hword 0x200e, 0xe3a0, 0x100f, 0xe3a0\n"
-        ".hword 0x0004, 0xe1a0, 0xa000, 0xe58d\n"
-        ".hword 0xdd26, 0xeb01, 0x0001, 0xe359\n"
-        ".hword 0x000a, 0x1a00, 0x0001, 0xe356\n"
-        ".hword 0x0008, 0xda00, 0x0005, 0xe156\n"
-        ".hword 0x6005, 0xc1a0, 0x2050, 0xe594\n"
-        ".hword 0x1006, 0xe1a0, 0x0028, 0xe284\n"
-        ".hword 0xdcba, 0xebff, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0x0003, 0xea00\n"
-        ".hword 0x2006, 0xe1a0, 0x1002, 0xe1a0\n"
-        ".hword 0x0028, 0xe284, 0xdcb3, 0xebff\n"
-        ".hword 0x3020, 0xe3a0, 0x2004, 0xe3a0\n"
-        ".hword 0x1003, 0xe3a0, 0x0028, 0xe284\n"
-        ".hword 0xa000, 0xe58d, 0xdca5, 0xebff\n"
-        ".hword 0x0000, 0xe358, 0xf000, 0xe320\n"
-        ".hword 0x0005, 0x0a00, 0x3020, 0xe3a0\n"
-        ".hword 0x200d, 0xe3a0, 0x100c, 0xe3a0\n"
-        ".hword 0x0028, 0xe284, 0xa000, 0xe58d\n"
-        ".hword 0xdd06, 0xeb01, 0xb5bc, 0xe1c4\n"
-        ".hword 0x1001, 0xe3a0, 0x0004, 0xe1a0\n"
-        ".hword 0xb5be, 0xe1c4, 0x1014, 0xe580\n"
-        ".hword 0x0028, 0xe284, 0x4ff8, 0xe8bd\n"
-        ".hword 0x1001, 0xe3a0, 0x7158, 0xea01\n"
-        ".hword 0x8ff8, 0xe8bd\n"
-    );
-};
+extern "C" u64 ui_func_002c615c(u32 numerator, u32 denominator);
+extern "C" void ui_func_00296f18(volatile u8* axis, s32 start, s32 metadata);
+extern "C" void ui_func_00296ef8(volatile u8* axis, u8 first, u8 second,
+                                  u8 third, u8 fourth);
+extern "C" void camp_func_003170a0(volatile u8* axis, u8 first, u8 second,
+                                    u8 third, u8 fourth);
+
+extern "C" u32 camp_func_0029fae8(volatile u8* cursor, s32 total_items,
+                                   s32 visible_rows, s32 columns,
+                                   s32 wrap_row, s32 repeat) {
+    const bool use_wrap_ids = wrap_row != 0 && columns <= 1;
+    if (total_items <= 0) {
+        cursor[0x62] = 1;
+        return 1;
+    }
+
+    if (columns == 1 && visible_rows > total_items) {
+        visible_rows = total_items;
+    }
+    *reinterpret_cast<volatile s32*>(cursor + 0x50) = total_items;
+    cursor[0x62] = 0;
+
+    const u64 quotient_and_remainder = ui_func_002c615c(
+        static_cast<u32>(total_items), static_cast<u32>(columns));
+    const s32 quotient = static_cast<s32>(static_cast<u32>(quotient_and_remainder));
+    const s32 remainder = static_cast<s32>(quotient_and_remainder >> 32);
+    const s32 rows = quotient + (remainder > 0 ? 1 : 0);
+
+    ui_func_00296f18(cursor, visible_rows, rows);
+    ui_func_00296ef8(cursor, 6, 5, use_wrap_ids ? 3 : 32,
+                     use_wrap_ids ? 4 : 32);
+    if (repeat != 0) {
+        camp_func_003170a0(cursor, 15, 14, use_wrap_ids ? 12 : 32,
+                           use_wrap_ids ? 13 : 32);
+    }
+
+    volatile u8* const column_axis = cursor + 0x28;
+    if (visible_rows == 1 && columns > 1) {
+        if (columns > total_items) {
+            columns = total_items;
+        }
+        ui_func_00296f18(column_axis, columns, total_items);
+    } else {
+        ui_func_00296f18(column_axis, columns, columns);
+    }
+    ui_func_00296ef8(column_axis, 3, 4, 32, 32);
+    if (repeat != 0) {
+        camp_func_003170a0(column_axis, 12, 13, 32, 32);
+    }
+
+    *reinterpret_cast<volatile u16*>(cursor + 0x5C) = 0;
+    *reinterpret_cast<volatile u16*>(cursor + 0x5E) = 0;
+    *reinterpret_cast<volatile s32*>(cursor + 0x14) = 1;
+    *reinterpret_cast<volatile s32*>(column_axis + 0x14) = 1;
+    return reinterpret_cast<u32>(column_axis);
+}
 
 // DECOMP_FUNC(0x002ff740, 488)
 extern "C" __attribute__((naked)) void battle_func_002ff740() {

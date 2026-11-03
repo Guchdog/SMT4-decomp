@@ -256,18 +256,20 @@ extern "C" __attribute__((naked)) void camp_func_002a89e4() {
 }
 
 // DECOMP_FUNC(0x002a8a8c, 36)
-extern "C" __attribute__((naked)) void ui_func_002a8a8c() {
-    asm volatile(
-        "ldr r0, [pc, #0x18]\n"
-        "ldr r0, [r0, #4]\n"
-        "add r0, r0, #0x600\n"
-        "ldrsh r1, [r0, #0x4c]\n"
-        "cmp r1, #0\n"
-        "subgt r1, r1, #1\n"
-        "strhgt r1, [r0, #0x4c]\n"
-        "bx lr\n"
-        ".word 0x0043dcb0\n"
-    );
+extern "C" __attribute__((minsize)) u32 ui_func_002a8a8c() {
+    const u32 global_pointer = 0x0043DCB0u;
+    const u32 manager =
+        *reinterpret_cast<volatile const u32*>(global_pointer + 4u);
+    u32 object = manager + 0x600u;
+    // Keep the raw return base distinct from the signed-halfword access base.
+    asm volatile("" : "+r"(object));
+    const u32 counter_address = object + 0x4Cu;
+    auto* const counter = reinterpret_cast<volatile s16*>(counter_address);
+    const s16 value = *counter;
+    if (value > 0) {
+        *counter = static_cast<s16>(value - 1);
+    }
+    return object;
 }
 
 // DECOMP_FUNC(0x002b9008, 36)

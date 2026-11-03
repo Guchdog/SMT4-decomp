@@ -1264,28 +1264,20 @@ extern "C" __attribute__((naked)) void engine_func_0029a384() {
 }
 
 extern "C" void* ui_func_002b0188(u32 group, u32 node_index);
+extern "C" u64 ui_func_002c615c(u32 numerator, u32 denominator);
 
 // DECOMP_FUNC(0x002bf6d0, 64)
-extern "C" __attribute__((naked)) void* camp_func_002bf6d0(u32 group, u32 node_index) {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe92d4010\n"
-        ".inst 0xe1a04001\n"
-        ".inst 0xebffc2aa\n"
-        ".inst 0xe59f1028\n"
-        ".inst 0xe3e0207c\n"
-        ".inst 0xe5900004\n"
-        ".inst 0xe0c13491\n"
-        ".inst 0xe5900000\n"
-        ".inst 0xe1a03341\n"
-        ".inst 0xe0431fc1\n"
-        ".inst 0xe0010291\n"
-        ".inst 0xe0841181\n"
-        ".inst 0xe0811101\n"
-        ".inst 0xe0800101\n"
-        ".inst 0xe8bd8010\n"
-        ".word 0x10624dd3\n"
-    );
+extern "C" __attribute__((minsize)) void* camp_func_002bf6d0(u32 group, u32 node_index) {
+    auto* manager = static_cast<u8*>(ui_func_002b0188(group, node_index));
+    auto* indirect_nodes = *reinterpret_cast<u8**>(manager + 4);
+    auto* node_base = *reinterpret_cast<u8**>(indirect_nodes);
+
+    const s32 signed_index = static_cast<s32>(node_index);
+    const s32 quotient = static_cast<s32>(ui_func_002c615c(node_index, 1000));
+    const s32 remainder = signed_index - quotient * 1000;
+    const u32 result_address = reinterpret_cast<u32>(node_base)
+                             + static_cast<u32>(remainder * 20);
+    return reinterpret_cast<void*>(result_address);
 }
 
 // DECOMP_FUNC(0x002d3d6c, 64)

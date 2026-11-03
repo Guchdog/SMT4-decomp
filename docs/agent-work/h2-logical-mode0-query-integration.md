@@ -14,8 +14,12 @@ compared the return, fault, PC, SP, r4-r11 and every fallback service's `(r0,r1)
 arguments, found no data writes, and detected wrong counter, threshold and
 selector controls. Original and candidate fallback argument trace hashes match.
 Stack writes differ as scratch below entry SP; the runner verifies their range
-and SP restoration. Selector zero is excluded because the original divide
-service enters its zero-divisor error path.
+and SP restoration. That matrix used nonzero selectors. A later focused probe
+matched seven selector-zero and bypass cases, including eligible positive
+dividends. The pinned unsigned service returns quotient `0xFFFFFFFF` and the
+input dividend as remainder for divisor zero; the mode-0 caller consumes the
+remainder, so the eligible query returns false. The service contract and limits
+are recorded separately in [its function record](../function-records/0x002c6c10.md).
 
 The candidate and production bodies are byte-identical at 136 bytes with no
 relocations, versus the original 104-byte body. The ledger is therefore
@@ -28,3 +32,6 @@ Focused tests: `python -m unittest tests.test_h2_logical_mode0_query_experiment 
 
 Differential:
 `python -m tools.h2_logical_mode0_query_experiment --output build/agent-work/H2-semantic/h2-logical-mode0-service-args/run-002/checks/differential-20261026`
+
+
+Focused selector-zero check: `python tools/h2_logical_mode0_zero_selector_probe.py --out build/agent-work/H2-semantic/h2-logical-mode0-zero-selector/run002`. The run passed 7/7 original-versus-production-candidate caller cases; report SHA-256 `801bddf23289a5ec05fcc9bf3016749d278066c127328dd7d1b5c11ef0111a73`. It retains the original divider and does not establish its replacement feasibility.

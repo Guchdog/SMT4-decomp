@@ -2454,31 +2454,30 @@ extern "C" __attribute__((naked)) void func_00230c80() {
 }
 
 // DECOMP_FUNC(0x00296f60, 164)
-extern "C" __attribute__((naked)) void engine_func_00296f60() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x1090, 0xe59f, 0x1020, 0xe591\n"
-        ".hword 0x201c, 0xe591, 0x0000, 0xe042\n"
-        ".hword 0x0001, 0xe240, 0x2000, 0xe081\n"
-        ".hword 0x2020, 0xe5d2, 0x0005, 0xe352\n"
-        ".hword 0xf102, 0x379f, 0x0019, 0xea00\n"
-        ".hword 0x6f9c, 0x0029, 0x6fa8, 0x0029\n"
-        ".hword 0x6fbc, 0x0029, 0x6fd0, 0x0029\n"
-        ".hword 0x6f9c, 0x0029, 0x0100, 0xe081\n"
-        ".hword 0x003c, 0xe590, 0xff1e, 0xe12f\n"
-        ".hword 0x0100, 0xe081, 0x0a0f, 0xed90\n"
-        ".hword 0x0ac0, 0xeebd, 0x0a10, 0xee10\n"
-        ".hword 0xff1e, 0xe12f, 0x0100, 0xe081\n"
-        ".hword 0x1034, 0xe59f, 0x003c, 0xe590\n"
-        ".hword 0x0100, 0xe791, 0xff1e, 0xe12f\n"
-        ".hword 0x0100, 0xe081, 0x1024, 0xe59f\n"
-        ".hword 0x003c, 0xe590, 0x0100, 0xe081\n"
-        ".hword 0x0a00, 0xed90, 0x0ac0, 0xeebd\n"
-        ".hword 0x0a10, 0xee10, 0xff1e, 0xe12f\n"
-        ".hword 0x0000, 0xe3a0, 0xff1e, 0xe12f\n"
-        ".hword 0xde98, 0x0044, 0x4744, 0x004c\n"
-        ".hword 0x4d44, 0x004c\n"
-    );
+extern "C" uint32_t engine_func_00296f60(uint32_t selector) {
+    auto* const globals = reinterpret_cast<volatile uint32_t*>(0x0044de98u);
+    auto* const work = reinterpret_cast<volatile uint8_t*>(globals[8]);
+    const uint32_t count = *reinterpret_cast<volatile uint32_t*>(work + 0x1cu);
+    const uint32_t index = count - selector - 1u;
+    const uint8_t type = work[0x20u + index];
+
+    if (type == 0 || type == 4) {
+        return reinterpret_cast<volatile uint32_t*>(work + 0x3cu)[index];
+    }
+    if (type == 1) {
+        return static_cast<uint32_t>(static_cast<int32_t>(
+            reinterpret_cast<volatile float*>(work + 0x3cu)[index]));
+    }
+    if (type == 2) {
+        const uint32_t slot_index = reinterpret_cast<volatile uint32_t*>(work + 0x3cu)[index];
+        return reinterpret_cast<volatile uint32_t*>(0x004c4744u)[slot_index];
+    }
+    if (type == 3) {
+        const uint32_t slot_index = reinterpret_cast<volatile uint32_t*>(work + 0x3cu)[index];
+        return static_cast<uint32_t>(static_cast<int32_t>(
+            reinterpret_cast<volatile float*>(0x004c4d44u)[slot_index]));
+    }
+    return 0;
 }
 
 // DECOMP_FUNC(0x002bd348, 164)

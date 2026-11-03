@@ -434,23 +434,13 @@ extern "C" __attribute__((naked)) void func_002bb7a0() {
 }
 
 // DECOMP_FUNC(0x002bb978, 16)
-extern "C" __attribute__((naked)) void func_002bb978() {
-    asm volatile(
-        "ldr r0, [pc, #4]\n"
-        "ldrsb r0, [r0, #2]\n"
-        "bx lr\n"
-        ".word 0x0044e360\n"
-    );
+extern "C" s32 func_002bb978() {
+    return *reinterpret_cast<volatile s8*>(0x0044E362u);
 }
 
 // DECOMP_FUNC(0x002bc9c8, 16)
-extern "C" __attribute__((naked)) void func_002bc9c8() {
-    asm volatile(
-        "ldr r0, [pc, #4]\n"
-        "ldrsb r0, [r0, #1]\n"
-        "bx lr\n"
-        ".word 0x0044e380\n"
-    );
+extern "C" s32 func_002bc9c8() {
+    return *reinterpret_cast<volatile s8*>(0x0044E381u);
 }
 
 // DECOMP_FUNC(0x002bff9c, 16)
@@ -759,25 +749,19 @@ extern "C" __attribute__((naked)) void script_vm_func_0027f13c() {
 }
 
 // DECOMP_FUNC(0x0028686c, 20)
-extern "C" __attribute__((naked)) void func_0028686c() {
-    asm volatile(
-        "ldr r0, [pc, #8]\n"
-        "ldr r0, [r0, #0x20]\n"
-        "ldr r0, [r0, #0xc0]\n"
-        "bx lr\n"
-        ".word 0x0044de98\n"
-    );
+extern "C" u32 func_0028686c(u32 ignored_input) {
+    (void)ignored_input;
+    auto* const global_slots = reinterpret_cast<volatile u32*>(0x0044de98u);
+    const u32 context = global_slots[8];
+    return *reinterpret_cast<volatile u32*>(context + 0xc0u);
 }
 
 // DECOMP_FUNC(0x00289640, 20)
-extern "C" __attribute__((naked)) void engine_func_00289640() {
-    asm volatile(
-        "ldr r0, [pc, #8]\n"
-        "ldr r0, [r0, #0x20]\n"
-        "ldr r0, [r0, #0xd0]\n"
-        "bx lr\n"
-        ".word 0x0044de98\n"
-    );
+extern "C" u32 engine_func_00289640(u32 input) {
+    (void)input;
+    auto* const global_slots = reinterpret_cast<volatile u32*>(0x0044de98u);
+    const u32 state = global_slots[8];
+    return *reinterpret_cast<volatile u32*>(state + 0xd0u);
 }
 
 // DECOMP_FUNC(0x00291140, 20)

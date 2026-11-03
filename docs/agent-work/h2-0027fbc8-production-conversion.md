@@ -36,3 +36,20 @@ The final-VMA validator recompiled both candidate and production objects, confir
 The detailed files and reports are under `build/agent-work/H2-semantic/h2-titleconfig-0027fbc8-reader-cpp/`. Static interworking evidence covers the even ARM entry, original caller BL, two final-VMA ARM BL calls, and their even helper target. The complete stack scratch bytes, SP, condition flags and all caller-saved GPRs are not part of the direct runner's equality contract. Runtime comparison was not run.
 
 Independent review recomputed all 17 frozen input hashes and reran fresh 146-case direct and final-VMA checks with seeds `20261102` and `20261106`. Both runs passed with no differences or counterexamples. The reviewer approved the `non_matching` classification and bounded behavior; the downstream no-write read remains unresolved. See [independent review](h2-0027fbc8-independent-review.md).
+
+## Run007 production validation
+
+The production function was already present as typed C++ in the pinned source, so this run validated that implementation without rewriting it. All run007 input and writable-baseline hashes matched. A fresh contract audit with seed `20261230` passed 146 cases with zero differences and detected the mode-bound mutation. Its matrix includes invalid-mode and both-zero/deadzone no-write paths, null outputs, X/Y-equal and swapped outputs, and writes aliasing state, calibration, and sample spans. Two invalid output-pointer probes reproduced matching unmapped-write faults and ordered writes; they remain out-of-contract observations.
+
+The production final-VMA validator with seed `20261231` passed 146 cases with zero differences. Production and experimental candidate object bodies were byte-identical at 300 bytes; both `R_ARM_CALL` sites resolved to even ARM helper `0x0019FE4C`. The original camera BL at `0x001FA948` targets even ARM entry `0x0027FBC8`. The 320-byte slot IPS replayed exactly and changed bytes only within the function span. The production TU compiled in the validator.
+
+| Run007 evidence | Value |
+| --- | --- |
+| Direct report SHA-256 | `5c6d9210f2733453a36be00aa790ba088a8c957a442e95e8d777e87e260d5481` |
+| Production report SHA-256 | `598e99bd2e259dcd969107398141945317f85909b96f697102cb4394e8624088` |
+| Production source SHA-256 | `7e81b244bad7117a7d69b693f5335a036a74087deb8d1b7ecc04a6eb6d3ee441` |
+| Production object SHA-256 | `264362a05d1f50d907784b043780938a4f3417699210edd76ce5ca3d29774787` |
+| Staged image SHA-256 | `64175ee8940de6faa132185ba2684af241fe9fa6bfe9c6857287b764c999515c` |
+| Slot IPS SHA-256 | `486c8191f83ba2212a66874689c66e43b4b0191fa118cbc6d7006b75c4ade1e8` |
+
+This closes the assigned production-object/final-VMA validation, not the consumer domain. `0x00254CA8` may read its local output floats after a zero/no-write return, which remains unresolved. Runtime and full H2 lifecycle remain unverified.
