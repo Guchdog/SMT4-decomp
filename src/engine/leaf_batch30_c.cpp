@@ -531,8 +531,31 @@ extern "C" __attribute__((naked)) void engine_func_002a140c() {
 }
 
 // DECOMP_FUNC(0x002a515c, 128)
-extern "C" __attribute__((naked)) void engine_func_002a515c() {
-    asm volatile(".arm\n.inst 0xe92d4070\n.inst 0xe1a05000\n.inst 0xe59f0068\n.inst 0xe1a06001\n.inst 0xe5904000\n.inst 0xe3540000\n.inst 0x03a00000\n.inst 0x0a000012\n.inst 0xe59405e4\n.inst 0xe3500000\n.inst 0x0a000010\n.inst 0xeb0023f7\n.inst 0xe3500000\n.inst 0x0a00000d\n.inst 0xe59405e4\n.inst 0xe59f1038\n.inst 0xe1a02005\n.inst 0xe5900008\n.inst 0xe7911106\n.inst 0xeb0023b1\n.inst 0xe3560000\n.inst 0x1a000004\n.inst 0xe2841b01\n.inst 0xed950a02\n.inst 0xedd10a90\n.inst 0xee300a20\n.inst 0xed850a02\n.inst 0xe8bd8070\n.inst 0xe3a00001\n.inst 0xe8bd8070\n.word 0x0043dfc0\n.word 0x0043e048\n");
+extern "C" u32 engine_func_002ae16c(const void* sub);
+extern "C" u32 engine_func_002ae074(const void* field8, u32 entry, void* target);
+
+extern "C" u32 engine_func_002a515c(void* target, u32 slot_index) {
+    auto* const ctx = *reinterpret_cast<u8* const*>(0x0043DFC0u);
+    if (!ctx) {
+        return 0;
+    }
+
+    auto* const sub = *reinterpret_cast<u8* const*>(ctx + 0x5E4);
+    if (!sub || !engine_func_002ae16c(sub)) {
+        return 1;
+    }
+
+    const auto* const sub_field8 = *reinterpret_cast<const void* const*>(sub + 8);
+    const auto* const table = reinterpret_cast<const u32*>(0x0043E048u);
+    const u32 ret = engine_func_002ae074(sub_field8, table[slot_index], target);
+
+    if (slot_index == 0) {
+        auto* const target_y = reinterpret_cast<float*>(static_cast<u8*>(target) + 8);
+        const float offset = *reinterpret_cast<const float*>(ctx + 0x640);
+        *target_y += offset;
+    }
+
+    return ret;
 }
 
 // DECOMP_FUNC(0x002a9414, 132)
