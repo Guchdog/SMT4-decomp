@@ -100,14 +100,16 @@ class Machine:
         self.reader_calls: list[tuple[int, int]] = []
         self.followup_calls = 0
         self.spec = (0, 0)
+        self.stopped_at = None
+        self.uc.mem_map(RETURN & ~0xFFF, 0x1000)
         self.uc.hook_add(unicorn.UC_HOOK_MEM_WRITE, self._write)
         self.uc.hook_add(unicorn.UC_HOOK_CODE, self._hook, begin=READER, end=READER)
         self.uc.hook_add(unicorn.UC_HOOK_CODE, self._followup, begin=FOLLOWUP, end=FOLLOWUP)
         self.uc.hook_add(unicorn.UC_HOOK_CODE, self._stop, begin=RETURN, end=RETURN)
         self.uc.hook_add(unicorn.UC_HOOK_CODE, self._stop, begin=CALLER_END, end=CALLER_END)
 
-    @staticmethod
-    def _stop(uc, _addr, _size, _data):
+    def _stop(self, uc, addr, _size, _data):
+        self.stopped_at = addr
         uc.emu_stop()
 
     def _write(self, uc, _access, addr, size, value, _data):
@@ -142,14 +144,18 @@ class Machine:
         for reg, value in zip(regs, initial): self.uc.reg_write(reg, value)
         self.uc.reg_write(arm.UC_ARM_REG_SP, SP)
         self.uc.reg_write(arm.UC_ARM_REG_LR, RETURN)
+        self.stopped_at = None
         fault = None
         try: self.uc.emu_start(entry, 0, count=10000)
         except unicorn.UcError as e: fault = str(e)
+        expected_stop = CALLER_END if entry == CALLER else RETURN
         after = [self.uc.reg_read(reg) for reg in regs]
         counters = list(struct.unpack("<32I", self.uc.mem_read(COUNTERS, 128)))
         relevant_writes = [row for row in self.writes
                            if row[0] == INPUT + 4 or COUNTERS <= row[0] < COUNTERS + 128]
         return {"fault": fault,
+                "stop_address": self.stopped_at,
+                "completed": self.stopped_at == expected_stop,
                 "sp": self.uc.reg_read(arm.UC_ARM_REG_SP),
                 "callee_saved": after[4:12] == initial[4:12],
                 "counters": counters,
@@ -222,12 +228,17 @@ def main() -> int:
     (args.out / "staged-image.bin").write_bytes(patched)
     cases = list(fixtures(args.seed))
     mismatches = []
+    direct_completion_failures = []
     for index, case in enumerate(cases):
         ref = run_case(original, None, case, ADDRESS)
         got = run_case(patched, None, case, ADDRESS)
         if ref != got:
             mismatches.append({"index": index, "case": {"available": case[0], "state": case[1]},
                                "original": ref, "candidate": got})
+        if ref["fault"] is not None or got["fault"] is not None or not ref["completed"] or not got["completed"]:
+            direct_completion_failures.append({"index": index,
+                                               "original": {"fault": ref["fault"], "stop_address": ref["stop_address"]},
+                                               "candidate": {"fault": got["fault"], "stop_address": got["stop_address"]}})
     changed = bytearray(body)
     # Negative control: shrink the loop bound from 31 to 30 at the observed CMP r3,#31.
     cmp_offset = 0x0010791C - ADDRESS
@@ -255,6 +266,8 @@ def main() -> int:
               "arm_interworking": {"reader_entry": hex(READER), "entry_bit0": READER & 1,
                                    "relocation": "R_ARM_CALL", "passed": interworking_ok},
               "direct_cases": len(cases), "direct_mismatches": mismatches,
+              "direct_completion_failures": direct_completion_failures,
+              "direct_completion_passed": not direct_completion_failures,
               "caller_cases": caller_cases,
               "exact_slot_ips_replay": replay == patched,
               "only_slot_changed": original[:slot_offset] == patched[:slot_offset] and
@@ -263,8 +276,11 @@ def main() -> int:
               "negative_control": {"mutated_compare": hex(cmp_word),
                                    "original_counters": mutation_ref["counters"],
                                    "mutated_counters": mutation_got["counters"]},
-              "all_passed": not mismatches and all(x["equal"] and
+              "all_passed": not mismatches and not direct_completion_failures and all(x["equal"] and
                                                     x["original"]["fault"] is None and
+                                                    x["candidate"]["fault"] is None and
+                                                    x["original"]["completed"] and
+                                                    x["candidate"]["completed"] and
                                                     x["original"]["followup_calls"] == 1
                                                     for x in caller_cases)
                             and replay == patched and mutation_detected,

@@ -1,3 +1,14 @@
+# H2 logical input counter refresh 0x001078D8 — 2026-11-02
+
+Fixed the differential runner's unmapped return sentinel and added explicit
+stop-address/fault checks. The refreshed production image passes 140 direct
+cases and four original-caller compositions; an independent review repeated
+both with two fresh seeds and detected the 31-to-30 loop mutation. This only
+covers controlled synthetic memory with reader/follow-up seams; physical input,
+cadence and runtime remain open. Earlier run006 direct claims are retained as
+historical but invalidated. See [function record](docs/function-records/0x001078d8.md)
+and [current validation](docs/agent-work/h2-001078d8-refresh-current-validation.md).
+
 # H2 titleConfig dispatcher 0x00286928 — 2026-11-02
 
 Corrected the selector-6/q=0 conditional read and reload of `P+4`; the current
