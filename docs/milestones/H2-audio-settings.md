@@ -41,6 +41,16 @@ pasó y el build ARMv6K dio 204/204 TU. Otro consumidor declara el símbolo como
 validó el helper final completo ni runtime H2. [Registro](../function-records/0x0028df3c.md),
 [evidencia](../agent-work/h2-0028df3c-conversion.md).
 
+Actualización de dependencia (2026-11-02): `camp_func_0028df70`
+(`0x0028DF70`) ahora tiene C++ tipado para consultar la halfword de manager
+con índice unsigned limitado a 0–5. Pasó 94 casos directos y nueve caminos de
+fila 7/8/9 del helper original `0x00286928`, con los otros servicios bajo
+stubs controlados; se detectaron el bound y el offset erróneos. El cuerpo ocupa
+40/40 bytes, contiene un `LDRH` inline y queda `non_matching`. La revisión
+independiente aceptó el alcance probado y el build completo pasó 204/204 TU;
+los otros servicios del helper siguen como stubs. [Registro](../function-records/0x0028df70.md),
+[evidencia](../agent-work/h2-0028df70-conversion.md).
+
 Actualización de dependencia (2026-11-02): `engine_func_00296f60`
 (`0x00296F60`) ahora tiene C++ tipado para los tipos 0–4 y el retorno cero
 para tipos desconocidos. Pasó 109 casos directos (48 combinaciones de tipo,
