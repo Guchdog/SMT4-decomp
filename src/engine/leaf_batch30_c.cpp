@@ -895,8 +895,33 @@ extern "C" __attribute__((naked)) void engine_func_002ed47c() {
 }
 
 // DECOMP_FUNC(0x002f02b8, 132)
-extern "C" __attribute__((naked)) void battle_func_002f02b8() {
-    asm volatile(".arm\n.inst 0xe92d4070\n.inst 0xe3a00000\n.inst 0xebfe9b26\n.inst 0xe3a06001\n.inst 0xe1a05016\n.inst 0xe3a04000\n.inst 0xe320f000\n.inst 0xebfe8e6f\n.inst 0xe2800d7f\n.inst 0xe0841204\n.inst 0xe5900000\n.inst 0xe0811304\n.inst 0xe7b01181\n.inst 0xe3110010\n.inst 0x13110001\n.inst 0x0a000009\n.inst 0xe3110040\n.inst 0x1a000007\n.inst 0xe2800c01\n.inst 0xe1d00cb6\n.inst 0xe1100005\n.inst 0x0a000003\n.inst 0xe3a00001\n.inst 0xebfe770e\n.inst 0xe1a00006\n.inst 0xe8bd8070\n.inst 0xe2844001\n.inst 0xe354006d\n.inst 0xbaffffe8\n.inst 0xe3a00000\n.inst 0xebfe7707\n.inst 0xe1a00006\n.inst 0xe8bd8070\n");
+extern "C" u32 engine_func_00296f60(u32);
+extern "C" void* ui_func_00293c98();
+extern "C" void battle_func_0028df54(u32);
+
+extern "C" u32 battle_func_002f02b8() {
+    const u32 shift = engine_func_00296f60(0);
+    const u32 bitmask = 1u << shift;
+
+    for (u32 i = 0; i < 109; ++i) {
+        auto* const ctx = static_cast<u8*>(ui_func_00293c98());
+        auto* const table = *reinterpret_cast<u8* const*>(ctx + 0x1FC0);
+        auto* const elem = table + i * 648;
+        const u32 flags = *reinterpret_cast<const u32*>(elem);
+
+        if ((flags & 0x10u) != 0 && (flags & 1u) != 0) {
+            if ((flags & 0x40u) == 0) {
+                const u16 mask = *reinterpret_cast<const u16*>(elem + 0x1C6);
+                if ((mask & bitmask) != 0) {
+                    battle_func_0028df54(1);
+                    return 1;
+                }
+            }
+        }
+    }
+
+    battle_func_0028df54(0);
+    return 1;
 }
 
 // DECOMP_FUNC(0x002f033c, 148)
@@ -989,6 +1014,27 @@ extern "C" __attribute__((naked)) void battle_func_002ff180() {
 }
 
 // DECOMP_FUNC(0x002ff208, 132)
-extern "C" __attribute__((naked)) void battle_func_002ff208() {
-    asm volatile(".arm\n.inst 0xe92d4070\n.inst 0xe3a00000\n.inst 0xebfe5f52\n.inst 0xe3a01001\n.inst 0xe1a05011\n.inst 0xe3a04000\n.inst 0xe320f000\n.inst 0xebfe529b\n.inst 0xe2800d7f\n.inst 0xe0841204\n.inst 0xe5900000\n.inst 0xe0811304\n.inst 0xe7b01181\n.inst 0xe3110010\n.inst 0x13110001\n.inst 0x0a000005\n.inst 0xe3110040\n.inst 0x1a000003\n.inst 0xe2800c01\n.inst 0xe1d00cb6\n.inst 0xe1100005\n.inst 0x0a000006\n.inst 0xe2844001\n.inst 0xe354006d\n.inst 0xbaffffec\n.inst 0xe3a00000\n.inst 0xebfe3b37\n.inst 0xe3a00001\n.inst 0xe8bd8070\n.inst 0xe3a00001\n.inst 0xebfe3b33\n.inst 0xe3a00001\n.inst 0xe8bd8070\n");
+extern "C" u32 battle_func_002ff208() {
+    const u32 shift = engine_func_00296f60(0);
+    const u32 bitmask = 1u << shift;
+
+    for (u32 i = 0; i < 109; ++i) {
+        auto* const ctx = static_cast<u8*>(ui_func_00293c98());
+        auto* const table = *reinterpret_cast<u8* const*>(ctx + 0x1FC0);
+        auto* const elem = table + i * 648;
+        const u32 flags = *reinterpret_cast<const u32*>(elem);
+
+        if ((flags & 0x10u) != 0 && (flags & 1u) != 0) {
+            if ((flags & 0x40u) == 0) {
+                const u16 mask = *reinterpret_cast<const u16*>(elem + 0x1C6);
+                if ((mask & bitmask) == 0) {
+                    battle_func_0028df54(1);
+                    return 1;
+                }
+            }
+        }
+    }
+
+    battle_func_0028df54(0);
+    return 1;
 }
