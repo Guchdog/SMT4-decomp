@@ -239,8 +239,19 @@ extern "C" __attribute__((naked)) void engine_func_002306ec() {
 }
 
 // DECOMP_FUNC(0x0023d230, 132)
-extern "C" __attribute__((naked)) void func_0023d230() {
-    asm volatile(".arm\n.inst 0xe20128ff\n.inst 0xe2013cff\n.inst 0xe1a0c822\n.inst 0xe1a02c21\n.inst 0xee002a90\n.inst 0xee01ca10\n.inst 0xe1a03423\n.inst 0xe20110ff\n.inst 0xee023a10\n.inst 0xee001a10\n.inst 0xeef82a60\n.inst 0xeef80a41\n.inst 0xeddf1a10\n.inst 0xe59f1040\n.inst 0xeeb81a42\n.inst 0xeeb82a40\n.inst 0xe5d12000\n.inst 0xe59f1034\n.inst 0xee220aa1\n.inst 0xee600aa1\n.inst 0xe3822102\n.inst 0xe4802004\n.inst 0xee211a21\n.inst 0xee621a21\n.inst 0xe4801004\n.inst 0xece01a01\n.inst 0xeca01a01\n.inst 0xece00a01\n.inst 0xeca00a01\n.inst 0xe12fff1e\n.word 0x3b808081\n.word 0x00490e46\n.word 0x804f02c0\n");
+extern "C" __attribute__((minsize)) void func_0023d230(void* out, u32 packed) {
+    auto* const out_words = reinterpret_cast<u32*>(out);
+    auto* const out_floats = reinterpret_cast<float*>(out_words + 2);
+
+    const u8 tag = *reinterpret_cast<const u8*>(0x00490E46u);
+    out_words[0] = static_cast<u32>(tag) | 0x80000000u;
+    out_words[1] = 0x804F02C0u;
+
+    constexpr float kInv255 = 1.0f / 255.0f;
+    out_floats[0] = static_cast<float>(packed & 0xFFu) * kInv255;
+    out_floats[1] = static_cast<float>((packed >> 8) & 0xFFu) * kInv255;
+    out_floats[2] = static_cast<float>((packed >> 16) & 0xFFu) * kInv255;
+    out_floats[3] = static_cast<float>((packed >> 24) & 0xFFu) * kInv255;
 }
 
 // DECOMP_FUNC(0x0024095c, 128)
