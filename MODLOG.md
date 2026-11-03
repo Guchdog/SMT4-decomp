@@ -1,3 +1,14 @@
+# H2 state-field helper 0x0028DF54 — 2026-11-02
+
+Refreshed and independently reviewed the typed helper's evidence: 102 direct
+cases and eight original `0x00286928` state-5 compositions passed with both
+candidate and production bodies; a wrong-byte-value mutant was caught in every
+case. The full ARMv6K build passed 204/204 TUs. Production may reverse the
+original store order, so the supported claim is final-state equality for stable,
+disjoint ordinary RAM only. MMIO, concurrency, fault ordering, runtime and full
+H2 behavior remain open. See [function record](docs/function-records/0x0028df54.md)
+and [integration closure](docs/agent-work/h2-0028df54-integration.md).
+
 # H2 input ring reader 0x0012A758 — 2026-11-02
 
 Converted the 424-byte H2 ring reader to typed C++. Coordinator direct and actual-reader caller differentials passed (1,353 direct cases, six retry scenarios, eight caller compositions); four negative controls were detected. The path-dependent raw return is documented. Independent review passed and the full ARMv6K build compiled all 204 translation units; the producer lifecycle and physical input mapping remain unknown. See [function record](docs/function-records/0x0012a758.md) and [conversion evidence](docs/agent-work/h2-input-ring-reader-conversion.md).
