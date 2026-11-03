@@ -18,6 +18,18 @@ escribe memoria. Las pruebas usan RAM sintética y stubs controlados para otras
 dependencias; no demuestran estado natural ni cierre/runtime de H2. [Registro](../function-records/0x00289640.md),
 [evidencia](../agent-work/h2-00289640-conversion.md).
 
+Actualización de dependencia (2026-11-02): `func_0028686c` (`0x0028686C`)
+ahora tiene C++ tipado para leer el puntero global y devolver el word crudo en
+`+0xC0`, ignorando el argumento. Pasó 38 casos directos y 50 composiciones de
+la callback ARM original `0x00221168`, con el getter real y mutación del offset
+detectada; su cuerpo de 20 bytes difiere del original y el ledger lo marca
+`non_matching`. La revisión independiente aceptó el alcance acotado y el build
+ARMv6K completo pasó 204/204 TU. Las otras rutinas selector/final fueron seams
+controlados; la evidencia es offline y no demuestra input físico ni cierre/
+runtime H2.
+[Registro](../function-records/0x0028686c.md),
+[evidencia](../agent-work/h2-0028686c-conversion.md).
+
 Actualización de dependencia de entrada (2026-11-02): el postprocesador de
 registro `0x0013BCAC`, llamado condicionalmente por `0x0011C5EC`, pasó a C++.
 Pasó 192 casos directos, 32 composiciones por el lector original, replay IPS y

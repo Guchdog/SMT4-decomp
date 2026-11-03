@@ -749,14 +749,11 @@ extern "C" __attribute__((naked)) void script_vm_func_0027f13c() {
 }
 
 // DECOMP_FUNC(0x0028686c, 20)
-extern "C" __attribute__((naked)) void func_0028686c() {
-    asm volatile(
-        "ldr r0, [pc, #8]\n"
-        "ldr r0, [r0, #0x20]\n"
-        "ldr r0, [r0, #0xc0]\n"
-        "bx lr\n"
-        ".word 0x0044de98\n"
-    );
+extern "C" u32 func_0028686c(u32 ignored_input) {
+    (void)ignored_input;
+    auto* const global_slots = reinterpret_cast<volatile u32*>(0x0044de98u);
+    const u32 context = global_slots[8];
+    return *reinterpret_cast<volatile u32*>(context + 0xc0u);
 }
 
 // DECOMP_FUNC(0x00289640, 20)
