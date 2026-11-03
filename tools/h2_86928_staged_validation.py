@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import argparse
 from pathlib import Path
 import sys
 
@@ -12,10 +13,8 @@ sys.path.insert(0, str(ROOT))
 from tools import h2_86928_experiment as experiment
 
 BASE = ROOT / "extracted/exefs/code.bin"
-STAGED_DIR = ROOT / "build/h2-86928-integration/staged-image"
-STAGED = STAGED_DIR / "code.h2-86928.bin"
-MANIFEST = STAGED_DIR / "manifest.json"
-OUT = ROOT / "build/h2-86928-integration/staged-validation"
+DEFAULT_STAGED_DIR = ROOT / "build/h2-86928-integration/staged-image"
+DEFAULT_OUT = ROOT / "build/h2-86928-integration/staged-validation"
 
 
 def sha(data: bytes) -> str:
@@ -33,12 +32,20 @@ def callback_cases():
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--staged-dir", type=Path, default=DEFAULT_STAGED_DIR)
+    parser.add_argument("--out-dir", type=Path, default=DEFAULT_OUT)
+    args = parser.parse_args()
+    staged_dir = args.staged_dir.resolve()
+    out_dir = args.out_dir.resolve()
+    staged_path = staged_dir / "code.h2-86928.bin"
+    manifest_path = staged_dir / "manifest.json"
     original = BASE.read_bytes()
-    staged = STAGED.read_bytes()
-    manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
+    staged = staged_path.read_bytes()
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     if sha(original) != experiment.IMAGE_SHA or sha(staged) != manifest["patched_image_sha256"]:
         raise SystemExit("image hash does not match the pinned base/staged manifest")
-    OUT.mkdir(parents=True, exist_ok=True)
+    out_dir.mkdir(parents=True, exist_ok=True)
     direct = experiment.directed_cases()
     for index, case in enumerate(direct):
         left = experiment.run(case, image=original)
@@ -55,6 +62,22 @@ def main() -> int:
         if helper[1] != (0x12003456, 0x87654321, case.incoming_r2, 6) or helper[2] != (1, 0):
             raise AssertionError(f"staged callback ABI mismatch: {helper}")
 
+    pointer_cases = experiment.pointer_timing_cases()
+    for index, case in enumerate(pointer_cases):
+        left = experiment.run(case, image=original)
+        right = experiment.run(case, image=staged)
+        if left != right:
+            raise AssertionError(f"production staged pointer timing mismatch {index}: {case}")
+        ptr_reads = left[8]
+        calls = [event for event in left[3] if event[0] in (0x002C4BF0, 0x002B90F0)]
+        if case.arg5 == 0:
+            if ptr_reads or calls:
+                raise AssertionError(f"staged arg5=0 did not skip P+4/helpers: {ptr_reads}, {calls}")
+        elif (len(ptr_reads) != 2 or ptr_reads[0][2] != experiment.GLOBAL_OBJECT
+              or ptr_reads[1][2] != case.replacement_pointer
+              or len(calls) != 2 or calls[1][1][0] != case.replacement_pointer):
+            raise AssertionError(f"staged P+4 reload trace mismatch: {ptr_reads}, {calls}")
+
     report = {
         "schema_version": 1,
         "function": "0x00286928",
@@ -66,6 +89,7 @@ def main() -> int:
         "slot_bytes": manifest["slot_bytes"],
         "direct_cases": len(direct),
         "callback_cases": len(callbacks),
+        "pointer_timing_cases": len(pointer_cases),
         "callback": "original pinned 0x00221168; synthetic upstream getter returns; production helper installed only in staged image",
         "result": "passed",
         "limitations": [
@@ -73,14 +97,14 @@ def main() -> int:
             "The callback's handler 0x001A07CC continuation and emulator runtime are not covered."
         ]
     }
-    report_path = OUT / "production-offline-validation.json"
+    report_path = out_dir / "production-offline-validation.json"
     report_path.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     manifest["evidence"]["arm_differential"] = "passed"
-    manifest["evidence"]["caller"] = "passed: 296 direct plus 4 callback compositions, stub-scoped"
+    manifest["evidence"]["caller"] = f"passed: {len(direct)} direct, {len(callbacks)} callback, and {len(pointer_cases)} P+4 timing cases; stub-scoped"
     manifest["staged_validation_report"] = str(report_path.relative_to(ROOT))
     manifest["staged_validation_sha256"] = sha(report_path.read_bytes())
-    MANIFEST.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
-    print(f"PASS staged production image: {len(direct)} direct + {len(callbacks)} callback cases")
+    manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    print(f"PASS staged production image: {len(direct)} direct + {len(callbacks)} callback + {len(pointer_cases)} pointer cases")
     print(f"REPORT {report_path.relative_to(ROOT)} SHA256 {sha(report_path.read_bytes())}")
     return 0
 

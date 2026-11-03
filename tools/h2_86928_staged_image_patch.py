@@ -42,7 +42,7 @@ def compile_function(output: Path) -> tuple[Path, bytes, list[dict]]:
     if SYMBOL not in functions:
         raise SystemExit(f"production symbol missing from {obj}: {SYMBOL}")
     body, relocations = functions[SYMBOL]
-    if len(body) != 812 or len(body) > SPAN or (SPAN - len(body)) % 4:
+    if len(body) > SPAN or (SPAN - len(body)) % 4:
         raise SystemExit(f"unexpected production body size {len(body)} for {SPAN}-byte slot")
     ledger = {row["name"]: int(row["address"], 0)
               for row in csv.DictReader((ROOT / "config/functions.csv").open(encoding="utf-8"))}
@@ -88,7 +88,8 @@ def main() -> int:
         raise SystemExit("pinned original image hash mismatch")
     obj, body, relocation_rows = compile_function(out)
     offset = VMA - IMAGE_BASE
-    replacement = body + ARM_NOP * ((SPAN - len(body)) // 4)
+    tail_words = (SPAN - len(body)) // 4
+    replacement = body + ARM_NOP * tail_words
     patched = bytearray(original)
     patched[offset:offset + SPAN] = replacement
     if bytes(patched[:offset]) != original[:offset] or bytes(patched[offset + SPAN:]) != original[offset + SPAN:]:
@@ -96,8 +97,8 @@ def main() -> int:
     patch = encode_ips([(offset, replacement)], len(original))
     if apply_ips(original, patch) != bytes(patched):
         raise SystemExit("IPS round trip mismatch")
-    if replacement[-8:] != ARM_NOP * 2:
-        raise SystemExit("expected two ARM NOP words in the 8-byte function tail")
+    if replacement[len(body):] != ARM_NOP * tail_words:
+        raise SystemExit("function slot tail is not fully padded with ARM NOPs")
 
     image_path = out / "code.h2-86928.bin"
     ips_path = out / "code.h2-86928.ips"
@@ -109,7 +110,7 @@ def main() -> int:
         "source": str(SOURCE.relative_to(ROOT)), "source_sha256": sha(SOURCE.read_bytes()),
         "object": str(obj.relative_to(ROOT)), "object_sha256": sha(obj.read_bytes()),
         "compiled_body_bytes": len(body), "compiled_body_sha256": sha(body),
-        "slot_bytes": SPAN, "tail_policy": "two ARM NOPs (8 bytes)",
+        "slot_bytes": SPAN, "tail_policy": f"{tail_words} ARM NOP words ({tail_words * 4} bytes)",
         "relocations": relocation_rows,
         "original_image_sha256": sha(original), "patched_image_sha256": sha(patched),
         "ips_sha256": sha(patch), "ips_roundtrip": True,

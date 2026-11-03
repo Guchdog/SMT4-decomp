@@ -1,3 +1,14 @@
+# H2 titleConfig dispatcher 0x00286928 — 2026-11-02
+
+Corrected the selector-6/q=0 conditional read and reload of `P+4`; the current
+production body is 808/820 bytes with 22 ARM calls. Fresh direct/callback
+differentials and a staged-image comparison cover the three pointer cases,
+including mutation by the `0x002C4BF0` fixture, and detect eight controls. The
+current source passed the full ARMv6K build (204/204 TUs). Prior 129-hit and
+19-checkpoint runtime evidence belongs to the previous 812-byte image; current
+runtime, readiness and re-entry remain open. See [function record](docs/function-records/0x00286928.md)
+and [integration closure](docs/agent-work/h2-86928-q0-pointer-load-integration.md).
+
 # H2 state-field helper 0x0028DF54 — 2026-11-02
 
 Refreshed and independently reviewed the typed helper's evidence: 102 direct
