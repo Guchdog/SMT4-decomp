@@ -759,97 +759,64 @@ extern "C" u32 engine_func_003a6614(void) {
 }
 
 // DECOMP_FUNC(0x003e0dbc, 44)
-extern "C" __attribute__((naked)) void engine_func_003e0dbc() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe1a03000\n"
-        ".inst 0xe1b00001\n"
-        ".inst 0xe92d4010\n"
-        ".inst 0x0a000005\n"
-        ".inst 0xe3a02008\n"
-        ".inst 0xe1a01003\n"
-        ".inst 0xfafb831b\n"
-        ".inst 0xe3500000\n"
-        ".inst 0x03a00001\n"
-        ".inst 0x13a00000\n"
-        ".inst 0xe8bd8010\n"
-    );
+extern "C" u32 func_002c1a48(void* arg0, void* arg1, u32 arg2);
+
+extern "C" u32 engine_func_003e0dbc(void* arg0, void* arg1) {
+    if (arg1 == nullptr) {
+        return 0;
+    }
+    return (func_002c1a48(arg1, arg0, 8) == 0) ? 1 : 0;
 }
 
 // DECOMP_FUNC(0x003619cc, 48)
-extern "C" __attribute__((naked)) void func_003619cc() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe59f0020\n"
-        ".inst 0xe92d4010\n"
-        ".inst 0xebfd19ed\n"
-        ".inst 0xe1b01fa0\n"
-        ".inst 0x159f1014\n"
-        ".inst 0x11500001\n"
-        ".inst 0x0a000001\n"
-        ".inst 0xe8bd4010\n"
-        ".inst 0xeafd6d15\n"
-        ".inst 0xe8bd8010\n"
-        ".word 0x00000401 @ bounded tail data\n"
-        ".word 0xc8a0cffc @ bounded tail data\n"
-    );
+extern "C" s32 func_002a8190(u32 id);
+
+extern "C" u32 func_003619cc(void) {
+    s32 res = func_002a8190(0x401);
+    if (res < 0 && static_cast<u32>(res) != 0xC8A0CFFCu) {
+        return engine_func_002bce48(static_cast<u32>(res));
+    }
+    return static_cast<u32>(res);
 }
 
 // DECOMP_FUNC(0x00361b7c, 48)
-extern "C" __attribute__((naked)) void script_vm_func_00361b7c() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe3a01000\n"
-        ".inst 0xe1a00001\n"
-        ".inst 0xe92d4010\n"
-        ".inst 0xebfd7de4\n"
-        ".inst 0xe1b01fa0\n"
-        ".inst 0x159f1010\n"
-        ".inst 0x11500001\n"
-        ".inst 0x0a000001\n"
-        ".inst 0xe8bd4010\n"
-        ".inst 0xeafd6ca8\n"
-        ".inst 0xe8bd8010\n"
-        ".word 0xc8a0cffc @ bounded tail data\n"
-    );
+extern "C" s32 func_002c1320(u32 a0, u32 a1);
+
+extern "C" u32 script_vm_func_00361b7c(void) {
+    s32 res = func_002c1320(0, 0);
+    if (res < 0 && static_cast<u32>(res) != 0xC8A0CFFCu) {
+        return engine_func_002bce48(static_cast<u32>(res));
+    }
+    return static_cast<u32>(res);
 }
 
 // DECOMP_FUNC(0x00384dc8, 48)
-extern "C" __attribute__((naked)) void ui_func_00384dc8() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe92d4010\n"
-        ".inst 0xe5900004\n"
-        ".inst 0xe3500002\n"
-        ".inst 0xda000005\n"
-        ".inst 0xe59f4014\n"
-        ".inst 0xe5940000\n"
-        ".inst 0xebfcf35f\n"
-        ".inst 0xe5940000\n"
-        ".inst 0xe8bd4010\n"
-        ".inst 0xeafcf332\n"
-        ".inst 0xe8bd8010\n"
-        ".word 0x0044ea00 @ bounded tail data\n"
-    );
+extern "C" void func_002c1b64(void* obj);
+extern "C" u32 func_002c1abc(void* obj);
+
+extern "C" u32 ui_func_00384dc8(void* arg0) {
+    u32 val = *reinterpret_cast<u32*>(reinterpret_cast<u8*>(arg0) + 4);
+    if (static_cast<s32>(val) > 2) {
+        void* global_obj = *reinterpret_cast<void**>(0x0044EA00);
+        func_002c1b64(global_obj);
+        return func_002c1abc(global_obj);
+    }
+    return val;
 }
 
 // DECOMP_FUNC(0x00394c6c, 48)
-extern "C" __attribute__((naked)) void battle_func_00394c6c() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe3a00001\n"
-        ".inst 0xe92d4010\n"
-        ".inst 0xebfcc2f0\n"
-        ".inst 0xe3500000\n"
-        ".inst 0x1a000005\n"
-        ".inst 0xe3a00002\n"
-        ".inst 0xebfcb4c6\n"
-        ".inst 0xe3a00002\n"
-        ".inst 0xebfd31f7\n"
-        ".inst 0xe8bd4010\n"
-        ".inst 0xeaf9ab72\n"
-        ".inst 0xe8bd8010\n"
-    );
+extern "C" void func_002c1fa4(u32 id);
+extern "C" void func_002e1470(u32 id);
+extern "C" u32 func_001ffa64(void);
+
+extern "C" u32 battle_func_00394c6c(void) {
+    u32 res = engine_func_002c583c(1);
+    if (res != 0) {
+        return res;
+    }
+    func_002c1fa4(2);
+    func_002e1470(2);
+    return func_001ffa64();
 }
 
 // DECOMP_FUNC(0x003a65e4, 48)
