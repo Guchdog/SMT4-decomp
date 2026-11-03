@@ -1115,138 +1115,97 @@ extern "C" void func_003eb014(void* obj_44, u32 min_val, u32 max_val) {
     base[0x0d] = 0;
 }
 
+struct MemNode_003f5e40 {
+    void* field_0;
+    void* field_4;
+};
+
 // DECOMP_FUNC(0x003f5e40, 76)
-extern "C" __attribute__((naked)) void func_003f5e40() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe92d4070\n"
-        ".inst 0xe59f503c\n"
-        ".inst 0xe5951004\n"
-        ".inst 0xe3510000\n"
-        ".inst 0x13500000\n"
-        ".inst 0x0a00000a\n"
-        ".inst 0xe1a04000\n"
-        ".inst 0xe5900004\n"
-        ".inst 0xe3500000\n"
-        ".inst 0x112fff31\n"
-        ".inst 0xe5951004\n"
-        ".inst 0xe5940000\n"
-        ".inst 0xe12fff31\n"
-        ".inst 0xe5951004\n"
-        ".inst 0xe1a00004\n"
-        ".inst 0xe8bd4070\n"
-        ".inst 0xe12fff11\n"
-        ".inst 0xe8bd8070\n"
-        ".word 0x0044e930 @ bounded tail data\n"
-    );
+extern "C" void func_003f5e40(MemNode_003f5e40* node) {
+    typedef void (*FreeFn)(void*);
+    FreeFn volatile* p_free = reinterpret_cast<FreeFn volatile*>(0x0044E934);
+    FreeFn free_fn = *p_free;
+    if (free_fn == nullptr || node == nullptr) {
+        return;
+    }
+    if (node->field_4 != nullptr) {
+        free_fn(node->field_4);
+    }
+    free_fn = *p_free;
+    free_fn(node->field_0);
+    free_fn = *p_free;
+    free_fn(node);
 }
+
+struct SearchKey_00311d20 {
+    u16 field_0;
+    u16 field_2;
+};
+
+extern "C" void* script_vm_func_002b49d8(u32);
+extern "C" void* script_vm_func_002b48dc(const void*, const void*, u32, u32, int (*)(const void*, const void*));
 
 // DECOMP_FUNC(0x00311d20, 80)
-extern "C" __attribute__((naked)) void camp_func_00311d20() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe92d4030\n"
-        ".inst 0xe1a04000\n"
-        ".inst 0xe24dd014\n"
-        ".inst 0xe1a05001\n"
-        ".inst 0xe3a0001f\n"
-        ".inst 0xebfe8b27\n"
-        ".inst 0xe4902004\n"
-        ".inst 0xe59f3028\n"
-        ".inst 0xe1a01000\n"
-        ".inst 0xe2420004\n"
-        ".inst 0xe1cd40ba\n"
-        ".inst 0xe1a021a0\n"
-        ".inst 0xe58d3000\n"
-        ".inst 0xe3a03008\n"
-        ".inst 0xe28d0008\n"
-        ".inst 0xe1cd50b8\n"
-        ".inst 0xfafe8add\n"
-        ".inst 0xe28dd014\n"
-        ".inst 0xe8bd8030\n"
-        ".word 0x001e15bc @ bounded tail data\n"
-    );
+extern "C" void* camp_func_00311d20(u16 arg0, u16 arg1) {
+    SearchKey_00311d20 key;
+    key.field_0 = arg1;
+    key.field_2 = arg0;
+    const u32* table = reinterpret_cast<const u32*>(script_vm_func_002b49d8(0x1F));
+    u32 total_size = table[0];
+    const void* base = table + 1;
+    u32 num = (total_size - 4) >> 3;
+    typedef int (*ComparFn)(const void*, const void*);
+    ComparFn compar = reinterpret_cast<ComparFn>(0x001E15BC);
+    return script_vm_func_002b48dc(&key, base, num, 8, compar);
 }
+
+extern "C" void* ui_func_002c5f58(void*, void (*)(void*), u32, u32);
+extern "C" void ui_func_0034e01c(void*);
 
 // DECOMP_FUNC(0x0034f648, 80)
-extern "C" __attribute__((naked)) void ui_func_0034f648() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe92d4010\n"
-        ".inst 0xe59f1038\n"
-        ".inst 0xe3a04000\n"
-        ".inst 0xe5804004\n"
-        ".inst 0xe5804008\n"
-        ".inst 0xe480100c\n"
-        ".inst 0xe59f1028\n"
-        ".inst 0xe3a03003\n"
-        ".inst 0xe3a02020\n"
-        ".inst 0xe4804034\n"
-        ".inst 0xfafdda38\n"
-        ".inst 0xe2400040\n"
-        ".inst 0xe5804010\n"
-        ".inst 0xe5804014\n"
-        ".inst 0xe5804018\n"
-        ".inst 0xe58040a0\n"
-        ".inst 0xe8bd8010\n"
-        ".inst 0x0042067c\n"
-        ".inst 0x0034e01c\n"
-        ".inst 0xe12fff1e\n"
-    );
+extern "C" void ui_func_0034f648(void* obj) {
+    char* p = static_cast<char*>(obj);
+    *reinterpret_cast<u32*>(p + 0x04) = 0;
+    *reinterpret_cast<u32*>(p + 0x08) = 0;
+    *reinterpret_cast<uintptr_t*>(p + 0x00) = 0x0042067C;
+    *reinterpret_cast<u32*>(p + 0x0C) = 0;
+    ui_func_002c5f58(p + 0x40, ui_func_0034e01c, 0x20, 3);
+    *reinterpret_cast<u32*>(p + 0x10) = 0;
+    *reinterpret_cast<u32*>(p + 0x14) = 0;
+    *reinterpret_cast<u32*>(p + 0x18) = 0;
+    *reinterpret_cast<u32*>(p + 0xA0) = 0;
 }
+
+extern "C" s32 engine_func_00357b2c(void*, u32, u32, u32, u32);
+extern "C" s32 ui_func_00359d8c(void*, u32, u32);
 
 // DECOMP_FUNC(0x00357be4, 80)
-extern "C" __attribute__((naked)) void engine_func_00357be4() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe92d40f8\n"
-        ".inst 0xe1a0c000\n"
-        ".inst 0xe1a05002\n"
-        ".inst 0xe59d001c\n"
-        ".inst 0xe1a06003\n"
-        ".inst 0xe1a04001\n"
-        ".inst 0xe58d0000\n"
-        ".inst 0xe59d3018\n"
-        ".inst 0xe1a02006\n"
-        ".inst 0xe1a01005\n"
-        ".inst 0xe1a0000c\n"
-        ".inst 0xebffffc5\n"
-        ".inst 0xe2101102\n"
-        ".inst 0x4a000004\n"
-        ".inst 0xe1a02006\n"
-        ".inst 0xe1a01005\n"
-        ".inst 0xe1a00004\n"
-        ".inst 0xe8bd40f8\n"
-        ".inst 0xea000856\n"
-        ".inst 0xe8bd80f8\n"
-    );
+extern "C" s32 engine_func_00357be4(void* a0, void* a1, u32 a2, u32 a3, u32 a4, u32 a5) {
+    s32 res = engine_func_00357b2c(a0, a2, a3, a4, a5);
+    if (res < 0) {
+        return res;
+    }
+    return ui_func_00359d8c(a1, a2, a3);
 }
 
+extern "C" void func_0037c314(void*, u32);
+
 // DECOMP_FUNC(0x0038007c, 80)
-extern "C" __attribute__((naked)) void func_0038007c() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe92d4010\n"
-        ".inst 0xe1a04000\n"
-        ".inst 0xe5d000ca\n"
-        ".inst 0xe3500000\n"
-        ".inst 0x1a00000d\n"
-        ".inst 0xe5d40090\n"
-        ".inst 0xe3500004\n"
-        ".inst 0x0a000008\n"
-        ".inst 0xe5940134\n"
-        ".inst 0xe3500000\n"
-        ".inst 0x0a000003\n"
-        ".inst 0xe5d410c9\n"
-        ".inst 0xe3510000\n"
-        ".inst 0x03a01001\n"
-        ".inst 0x0bfff096\n"
-        ".inst 0xe3a00004\n"
-        ".inst 0xe5c40090\n"
-        ".inst 0xe3a00000\n"
-        ".inst 0xe5c400c5\n"
-        ".inst 0xe8bd8010\n"
-    );
+extern "C" void func_0038007c(void* obj) {
+    u8* p = static_cast<u8*>(obj);
+    if (p[0xCA] != 0) {
+        return;
+    }
+    if (p[0x90] != 4) {
+        void* target = *reinterpret_cast<void**>(p + 0x134);
+        if (target != nullptr) {
+            if (p[0xC9] == 0) {
+                func_0037c314(target, 1);
+            }
+        }
+        p[0x90] = 4;
+    }
+    p[0xC5] = 0;
 }
 
 // DECOMP_FUNC(0x0038b334, 80)
