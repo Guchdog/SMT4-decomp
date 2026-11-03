@@ -4789,71 +4789,38 @@ extern "C" __attribute__((naked)) void func_00355830() {
 }
 
 // DECOMP_FUNC(0x0013bcac, 212)
-extern "C" __attribute__((naked)) void func_0013bcac() {
-    asm volatile(
-        "add r2, r0, #8\n"
-        "add r1, r0, #4\n"
-        "mov r0, r0\n"
-        "str r4, [sp, #-4]!\n"
-        "ldr r3, [r1]\n"
-        "mov ip, #0xc\n"
-        "bics r4, ip, r3\n"
-        "beq .Lbatch16c_0013bd70\n"
-        "tst r3, #4\n"
-        "beq .Lbatch16c_0013bce0\n"
-        "ldr r4, [r0]\n"
-        "tst r4, #8\n"
-        "beq .Lbatch16c_0013bd70\n"
-        ".Lbatch16c_0013bce0:\n"
-        "tst r3, #8\n"
-        "beq .Lbatch16c_0013bcf4\n"
-        "ldr r4, [r0]\n"
-        "tst r4, #4\n"
-        "beq .Lbatch16c_0013bd70\n"
-        ".Lbatch16c_0013bcf4:\n"
-        "bic r3, r3, #8\n"
-        ".Lbatch16c_0013bcf8:\n"
-        "str r3, [r1]\n"
-        "ldr r3, [r2]\n"
-        "bics ip, ip, r3\n"
-        "beq .Lbatch16c_0013bd78\n"
-        "tst r3, #4\n"
-        "beq .Lbatch16c_0013bd1c\n"
-        "ldr ip, [r0]\n"
-        "tst ip, #8\n"
-        "beq .Lbatch16c_0013bd78\n"
-        ".Lbatch16c_0013bd1c:\n"
-        "tst r3, #8\n"
-        "beq .Lbatch16c_0013bd30\n"
-        "ldr ip, [r0]\n"
-        "tst ip, #4\n"
-        "beq .Lbatch16c_0013bd78\n"
-        ".Lbatch16c_0013bd30:\n"
-        "bic r3, r3, #8\n"
-        ".Lbatch16c_0013bd34:\n"
-        "str r3, [r2]\n"
-        "ldr r3, [r0]\n"
-        "tst r3, #4\n"
-        "beq .Lbatch16c_0013bd50\n"
-        "bic r3, r3, #4\n"
-        "orr r3, r3, #8\n"
-        "str r3, [r0]\n"
-        ".Lbatch16c_0013bd50:\n"
-        "ldr r0, [r1]\n"
-        "bic r0, r0, #4\n"
-        "str r0, [r1]\n"
-        "ldr r0, [r2]\n"
-        "bic r0, r0, #4\n"
-        "str r0, [r2]\n"
-        "pop {r4}\n"
-        "bx lr\n"
-        ".Lbatch16c_0013bd70:\n"
-        "orr r3, r3, #8\n"
-        "b .Lbatch16c_0013bcf8\n"
-        ".Lbatch16c_0013bd78:\n"
-        "orr r3, r3, #8\n"
-        "b .Lbatch16c_0013bd34\n"
-    );
+static inline u32 input_postprocess_bit8(u32 current, u32 previous) {
+    const u32 current4 = (current >> 2) & 1u;
+    const u32 current8 = (current >> 3) & 1u;
+    const u32 previous4 = (previous >> 2) & 1u;
+    const u32 previous8 = (previous >> 3) & 1u;
+    const u32 set_bit8 = ((current4 & current8) |
+                          (current4 & (previous8 ^ 1u)) |
+                          (current8 & (previous4 ^ 1u))) << 3;
+    return (current & ~0x08u) | set_bit8;
+}
+
+extern "C" u32 func_0013bcac(volatile u32* record) {
+    auto* const word0 = record;
+    auto* const word4 = record + 1;
+    auto* const word8 = record + 2;
+
+    const u32 current4 = *word4;
+    const u32 previous_for4 = *word0;
+    *word4 = input_postprocess_bit8(current4, previous_for4);
+    const u32 current8 = *word8;
+    const u32 previous_for8 = *word0;
+    *word8 = input_postprocess_bit8(current8, previous_for8);
+
+    const u32 previous = *word0;
+    if ((previous & 0x04u) != 0) {
+        *word0 = (previous & ~0x04u) | 0x08u;
+    }
+
+    *word4 &= ~0x04u;
+    const u32 result = *word8 & ~0x04u;
+    *word8 = result;
+    return result;
 }
 // DECOMP_FUNC(0x003b03b0, 232)
 extern "C" __attribute__((naked)) void func_003b03b0() {

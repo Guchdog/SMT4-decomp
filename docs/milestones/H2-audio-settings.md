@@ -1,5 +1,13 @@
 # H2 — Título: configuración de audio (`titleConfig`)
 
+Actualización de dependencia de entrada (2026-11-02): el postprocesador de
+registro `0x0013BCAC`, llamado condicionalmente por `0x0011C5EC`, pasó a C++.
+Pasó 192 casos directos, 32 composiciones por el lector original, replay IPS y
+un control de mutación; el cuerpo ocupa 148/212 bytes. La revisión independiente
+repitió los casos con otra semilla; el build completo pasó 204/204 unidades. La composición usa un seam de anillo
+controlado y no demuestra entrada física ni cierre de H2. [Registro](../function-records/0x0013bcac.md),
+[evidencia](../agent-work/h2-0013bcac-conversion.md).
+
 Actualización de carga asíncrona (2026-11-02): `script_vm_func_00297704`
 (`0x00297704`) ya tiene un wrapper C++ tipado. Mantiene el argumento crudo de
 escala y tamaño en la pila AAPCS y retorna el `r0` original. Pasó 34 casos

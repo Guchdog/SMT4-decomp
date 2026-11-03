@@ -1232,3 +1232,16 @@ cases plus the caller, and the full ARMv6K build compiled 204/204 translation
 units. Real loader queue/completion and loaded asset behavior are not tested.
 See the [function record](docs/function-records/0x00297704.md) and
 [conversion report](docs/agent-work/h2-297704-wrapper-conversion.md).
+
+# H2 input record postprocessor 0x0013BCAC — 2026-11-02
+
+Replaced the 212-byte ARM body with 148 bytes of typed C++. The final-VMA
+differential passed 192 direct cases and 32 compositions through original
+reader `0x0011C5EC`; the postprocessor ran in 16, and the save-before-call
+ordering was observed. A bit-condition mutation was detected. The candidate is
+`non_matching`; the full ARMv6K build passed 204/204 translation units, and an
+independent fresh-seed review passed with 192 direct cases and 32 caller cases.
+The controlled
+ring seam does not establish live input or H2 lifecycle behavior. See the
+[function record](docs/function-records/0x0013bcac.md) and
+[conversion report](docs/agent-work/h2-0013bcac-conversion.md).
