@@ -22,3 +22,16 @@ The exact-slot IPS replay passed, and only the original 36-byte slot changed.
 Valid mapped ordinary memory is the tested domain. Invalid pointers, aliasing,
 concurrency, MMIO, scheduler behavior and wider manager lifecycle are not
 established. The test does not claim whole H2 runtime equivalence.
+
+## Current-TU refresh
+
+The original run001 is tied to an earlier `leaf_batch23_b.cpp` hash. Run002
+recompiled the current TU and repeated the same final-VMA suite with seed
+`20261120`; all 32 cases and both mutations passed, and the affected TU built.
+Current object SHA-256 is
+`8b4be8a9e2193fc9c11fcca7f3d66ec4d386403044255fc032a386ba19f12625`; staged
+image SHA-256 is `9efadb93e56b09f34bb50e0446815d2b8b66cd5a54bc941f227e855006ab51be`;
+IPS SHA-256 is `ff9265eba1f390a8afb56d2034045e72679a5e7c9a4d3fa51a9a934af8c1807c`.
+The current run002 was independently reviewed with a fresh seed; that review
+accepted the bounded direct behavior and preserved the valid ordinary-memory
+and caller-lifecycle limits above. See the [independent review](h2-002b9008-independent-review.md).

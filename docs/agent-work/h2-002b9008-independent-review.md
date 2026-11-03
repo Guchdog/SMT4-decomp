@@ -1,34 +1,13 @@
-# Independent review: 0x002B9008 manager counter helper
+# Independent review: 0x002B9008 current production
 
-## Recommendation
+**Decision:** accept bounded final-VMA direct evidence for valid mapped ordinary RAM. Shared caller lifecycle and runtime remain unproven. All 21 packet pins matched.
 
-Approve the conversion as a bounded semantic reconstruction of the direct helper contract on valid, mapped ordinary memory. The fresh final-VMA run matched all 32 cases, including the signed threshold boundary, changed incoming registers, raw `r0`, memory effects, and ABI observations. Keep the `non_matching` classification: the compiled 36-byte body is not byte-identical to the original. This review does not establish shared scheduler/manager lifecycle behavior or caller-specific semantics.
+Pinned original instructions 0x2B9008–0x2B9024 load the literal 0x43DCB0, load the manager pointer at +4 (0x43DCB4), form manager+0x600, signed-load halfword at +0x4A, and decrement/store only when signed value >10; r0 returns manager+0x600. Compiled production uses literal 0x43DCB4 and loads the same pointer directly, then same signed-halfword access and return. Its comparison `>=11` is equivalent on all signed 16-bit values. Literal load addresses differ but the pointer slot read and subsequent side effects are the same in the stated ordinary-memory domain. Ledger correctly classifies the non-identical body `non_matching`. Existing inspected declarations use void; the suite also compares raw r0, but LTO, uninspected callsites and complete manager lifecycle remain outside scope.
 
-## Frozen inputs and fresh run
+Fresh seed 20261547 passes 32 final-VMA original/production cases: eight signed boundary values (-32768, -1, 0, 9, 10, 11, 12, 32767) times four incoming r0 values with varied r1-r3 and randomized manager bytes. It compares raw r0, SP, callee-saved r4-r11, full manager bytes, global pointer words, and ordered memory writes; signed threshold 10→9 and offset +0x64A→+0x648 mutants are detected. The runner's mapped STOP hook does not itself record whether execution reached STOP, so the earlier run002 review separately instrumented that hook for the 32 signed/input combinations on each side: all 64 explicitly reached STOP with no fault, expected raw r0=manager+0x600, preserved SP and r4-r11. This extra check uses fixed r1-r3 and is separate from the saved runner report. CPSR and all possible invalid pointers/aliases are not established. No original-caller composition was run in this review.
 
-Recomputed all 21 `input_sha256` entries in the run001 packet; all match. The pinned original image SHA-256 is `1f98884fe997af22e032a14c51a46c872b05b0e079a0f29e307b0e059cfaa558`; pinned candidate source SHA-256 is `c7c21625bf8c5b13ac9072f1a92b304abac74709daa44b7b2d22ccb7065d2fff`.
+The body is 36/36 bytes, no relocations, entry ARM. Saved report `810025603b9be2f6552faedb3159a67270979fc1bdbbe0e6863133f9982a91b5`; staged image `9efadb93e56b09f34bb50e0446815d2b8b66cd5a54bc941f227e855006ab51be`, IPS `ff9265eba1f390a8afb56d2034045e72679a5e7c9a4d3fa51a9a934af8c1807c` and compiled object `8b4be8a9e2193fc9c11fcca7f3d66ec4d386403044255fc032a386ba19f12625` match frozen run002 artifacts. Runner verifies IPS roundtrip and no differences outside the slot. Production TU hash `718839e52ac638f0d9612ffcce047bcbcb874037e0f9a0051c31ff6000104f8f`, runner `fc9efc0a6ccc034db6624629526b988d331349a66113ad2ee9af399888f1f6ac`, image `1f98884fe997af22e032a14c51a46c872b05b0e079a0f29e307b0e059cfaa558`.
 
-Ran a fresh isolated seeded case set:
+No full build or emulator was used. Invalid pointers, wrap/alias, concurrent writers, MMIO, arbitrary manager layout, real caller sequencing and H2 runtime are not validated.
 
-```text
-python tools/h2_b9008_experiment.py --out build/agent-work/H2-semantic/h2-manager-counter-adjust-002b9008-review/run001/checks/fresh-seed-20261119 --seed 20261119
-exit: 0
-```
-
-The report at `checks/fresh-seed-20261119/report.json` has SHA-256 `e3a4bc123db4a8a711c066ab2adc40ce289064db92994906dbff2eac4283b16a`, seed `20261119`, and fixture SHA-256 `8620b5caa61476c8ca04ca4b2fb1193b0cf2dd4c189b43340e56f8904e2455a5. The fixture digest differs from the implementation run (`ff4021ea2f66936e0ad5786ebc28f22d8c563d27451b9260deacbf3eab0b7ac0`), confirming a distinct generated fixture. Result: `all_passed=true`, 32/32 direct cases, zero mismatches, both mutation controls detected.
-
-## Contract and ABI audit
-
-The original ARM at `0x002B9008` loads the literal global address `0x0043DCB0`, dereferences word `[global+4]` at `0x0043DCB4` to obtain the manager pointer, adds `0x600`, then loads a **signed** halfword at manager+`0x64A`. It decrements and stores that halfword only when the signed value is greater than 10, then returns. The original leaves raw `r0` equal to manager+`0x600`; incoming `r0` is ignored.
-
-The candidate preserves this order and signed comparison. The 32 fixtures cover values `-32768, -1, 0, 9, 10, 11, 12, 32767`, each under incoming `r0` values `0`, `1`, `0xDEADBEEF`, and the manager base. Values through 10 remain unchanged with no write; 11, 12, and 32767 decrement by one. Every case returns raw `r0=0x500600`, with original/staged state equal, including stack pointer and callee-saved register checks. The observed store, when taken, is a two-byte write at manager+`0x64A`. The runner snapshots the manager region and checks the configured global bytes; no out-of-contract memory effect appeared.
-
-The object emits a 36-byte body for the 36-byte slot, with no relocations and ARM entry bit 0 clear. The body SHA-256 is `b80321a4a7ef17f8513b315497eadc6cae9a6c8bdd4cd01efe57111c3afcf7b0`; `body_byte_identical=false` is expected and the report explicitly records it. The generated slot-only IPS replays exactly against the staged image (`exact_slot_ips_replay=true`), and the staged image differs from the base only in the helper slot (`only_slot_changed=true`). The runner's two negative mutations—lowered threshold and wrong halfword offset—are both detected. Thus the report exercises the stated contract rather than merely trusting a passing flag.
-
-Declarations in the two engine callers and the UI alias are no-argument `void` declarations. That supports the call ABI and ignored-input-argument contract; callers do not consume the raw `r0`. It does not show that helper effects alone reproduce the wider status-down flow, manager setup, or scheduler lifecycle. The `0x002CAEF0` record describes the broader callback context; no caller-composition or runtime result is claimed here.
-
-## Classification, totals, and limits
-
-`config/functions.csv` truthfully labels `0x002B9008` `non_matching`. README totals reconcile with the ledger: 10,912 matching functions (3,121,300 bytes), 8 matching spans (484 bytes), and 47 non-matching functions (17,324 bytes), for 3,139,108 bytes total. The README's combined exact-byte total of 3,121,784 includes the 484 span bytes; its function total is 10,959 plus 8 spans.
-
-The evidence supports only the helper's direct behavior for valid mapped ordinary memory with the global+4 manager pointer. It does not test null, unmapped, aliasing, concurrent, or MMIO accesses. Volatile accesses retain memory operations in the C++ implementation but do not establish atomicity or thread synchronization. No natural runtime reachability, shared manager lifecycle, scheduler semantics, or equivalence of the UI alias's broader effects is established. Keep those as open integration questions; no concrete counterexample was observed in the bounded domain.
+The current body SHA-256 `b80321a4a7ef17f8513b315497eadc6cae9a6c8bdd4cd01efe57111c3afcf7b0` matches the pinned implementation run002 body. The updated conversion and function records describe the current shared TU review rather than leaving it pending; all 21 run003 pins match.

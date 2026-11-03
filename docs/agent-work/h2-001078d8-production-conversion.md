@@ -19,12 +19,20 @@ compiled C++ body is 160 bytes within the original 164-byte slot, with one
 
 ## Validation
 
-`python tools/h2_1078d8_experiment.py --out build/agent-work/H2-semantic/h2-titleconfig-001078d8-counter-refresh-cpp/run005/checks/direct`
+The original `run005`/`run006` direct-pass claims are invalid because those
+runner versions did not map the direct return sentinel and accepted matching
+fetch faults. The runner now maps the sentinel, records its stop address, and
+requires fault-free completion. Corrected run `run009` used seed `20261104`:
+
+```powershell
+python tools/h2_1078d8_experiment.py --out build/agent-work/H2-semantic/h2-titleconfig-001078d8-counter-refresh-cpp/run009/checks/direct --seed 20261104
+```
 
 The pinned original (`extracted/exefs/code.bin`, SHA-256
 `1f98884fe997af22e032a14c51a46c872b05b0e079a0f29e307b0e059cfaa558`) and the
-production C++ staged at `0x001078D8` matched in all 140 direct fixtures and four
-compositions through original caller `0x0010B578`. The cases cover all rows,
+production C++ staged at `0x001078D8` matched in all 140 direct fixtures with
+explicit stop/fault assertions, and four compositions through original caller
+`0x0010B578`. The cases cover all rows,
 availability zero/nonzero normalization, mask match/miss, row-gate resets,
 unavailable retention, wraparound, and the untouched row 31. The loop-bound
 mutation was detected. The helper receives the original handle and fixed state
@@ -36,15 +44,16 @@ The affected translation unit compiled with:
 python tools/build_check.py --out-dir build/agent-work/H2-semantic/h2-titleconfig-001078d8-counter-refresh-cpp/run005/checks/tu --tu src/engine/leaf_batch27_a.cpp --jobs 1
 ```
 
-The saved reports, IPS, and staged image are under the `run005/checks` paths
+The current reports, IPS, and staged image are under the `run009/checks` paths
 above. The offline evidence and compilation do not claim full runtime
 equivalence.
 
 ## Independent review
 
-Accepted for the bounded synthetic-memory contract. The reviewer recomputed all
-18 frozen-input pins and ran two fresh seeds (`20261104`, `20261105`), each
-passing 140 direct cases and four caller compositions with zero differences,
-mutation detection, and exact-slot IPS replay. See the
-[independent review](h2-001078d8-independent-review.md). Physical input
-provenance, scheduling/cadence, and runtime behavior remain open.
+The first independent review found and documented the unmapped-sentinel bug;
+that review is retained as historical evidence in the [review report](h2-001078d8-independent-review.md).
+The follow-up review accepted the repaired runner against two fresh seeds
+(`20261421`, `20261422`), each passing 140 direct cases and four caller
+compositions with explicit successful returns, mutation detection, and
+exact-slot IPS replay. Physical input provenance, scheduling/cadence, and
+runtime behavior remain open.
