@@ -645,8 +645,22 @@ extern "C" __attribute__((naked)) void script_vm_func_002cf6d4() {
 }
 
 // DECOMP_FUNC(0x002cfc60, 128)
-extern "C" __attribute__((naked)) void engine_func_002cfc60() {
-    asm volatile(".arm\n.inst 0xe52de004\n.inst 0xe24dd044\n.inst 0xe3a00000\n.inst 0xebfe2627\n.inst 0xe3a02000\n.inst 0xe58d2000\n.inst 0xe58d2004\n.inst 0xe58d2008\n.inst 0xe58d200c\n.inst 0xe58d2010\n.inst 0xe58d2014\n.inst 0xe1a01000\n.inst 0xe58d2018\n.inst 0xe58d201c\n.inst 0xe58d2020\n.inst 0xe58d2024\n.inst 0xe58d2028\n.inst 0xe1a0000d\n.inst 0xe58d202c\n.inst 0xe58d2030\n.inst 0xe58d2034\n.inst 0xe58d2038\n.inst 0xe58d203c\n.inst 0xebffbeea\n.inst 0xe59f0014\n.inst 0xe1a0100d\n.inst 0xe5900000\n.inst 0xeb042dec\n.inst 0xe28dd044\n.inst 0xe3a00001\n.inst 0xe49df004\n.word 0x00435d18\n");
+extern "C" u32 engine_func_00259510(u32);
+extern "C" void engine_func_002bf86c(void* buf, u32 id);
+extern "C" void engine_func_003db484(void* context, const void* buf);
+
+extern "C" __attribute__((minsize)) u32 engine_func_002cfc60() {
+    u32 stack_buf[16];
+    #pragma unroll
+    for (int i = 0; i < 16; ++i) {
+        stack_buf[i] = 0;
+    }
+    const u32 id = engine_func_00259510(0);
+    engine_func_002bf86c(stack_buf, id);
+
+    void* const ctx = *reinterpret_cast<void* const*>(0x00435D18u);
+    engine_func_003db484(ctx, stack_buf);
+    return 1;
 }
 
 // DECOMP_FUNC(0x002d0400, 152)
