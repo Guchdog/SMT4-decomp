@@ -391,7 +391,7 @@ extern "C" s32 engine_func_00224730(void* input) {
 }
 
 // DECOMP_FUNC(0x002277fc, 144)
-extern "C" void func_00293c98(void*);
+extern "C" void* func_00293c98(void);
 extern "C" u32 func_002934d4(void);
 
 extern "C" s32 ui_func_002277fc(void* entity) {
@@ -400,7 +400,7 @@ extern "C" s32 ui_func_002277fc(void* entity) {
         return -1;
     }
 
-    func_00293c98(r3);
+    func_00293c98();
     if (func_002934d4() != 0) {
         return -1;
     }
@@ -421,8 +421,29 @@ extern "C" s32 ui_func_002277fc(void* entity) {
 }
 
 // DECOMP_FUNC(0x00227f50, 144)
-extern "C" __attribute__((naked)) void engine_func_00227f50() {
-    asm volatile(".arm\n.inst 0xe92d41f0\n.inst 0xe2806b07\n.inst 0xe28660fc\n.inst 0xe5960000\n.inst 0xe3500000\n.inst 0x0a000018\n.inst 0xeb01af4a\n.inst 0xeb01ad58\n.inst 0xe3500000\n.inst 0x1a000014\n.inst 0xe59f705c\n.inst 0xe3a04000\n.inst 0xe3a08058\n.inst 0xe0840084\n.inst 0xe5961000\n.inst 0xe0800184\n.inst 0xe0880080\n.inst 0xe0915000\n.inst 0x0a000008\n.inst 0xe597000c\n.inst 0xeb026cba\n.inst 0xe1a02000\n.inst 0xe597100c\n.inst 0xe1a00005\n.inst 0xeb023190\n.inst 0xe3500000\n.inst 0xe320f000\n.inst 0x0a000004\n.inst 0xe2844001\n.inst 0xe3540004\n.inst 0xbaffffed\n.inst 0xe3e00000\n.inst 0xe8bd81f0\n.inst 0xe1d501f0\n.inst 0xe8bd81f0\n.word 0x00435d00\n");
+extern "C" u32 engine_func_002c3290(u32 context);
+extern "C" u32 engine_func_002b45f8(const void* entry, u32 context, u32 aux);
+
+extern "C" s32 engine_func_00227f50(void* entity) {
+    u8* base = *reinterpret_cast<u8**>(reinterpret_cast<u8*>(entity) + 0x1CFC);
+    if (base == nullptr) {
+        return -1;
+    }
+
+    func_00293c98();
+    if (func_002934d4() != 0) {
+        return -1;
+    }
+
+    u32 context = *reinterpret_cast<const u32*>(0x00435D00 + 0x0C);
+    for (u32 i = 0; i < 4; ++i) {
+        u8* entry = base + 0x58 + i * 22;
+        u32 aux = engine_func_002c3290(context);
+        if (engine_func_002b45f8(entry, context, aux) == 0) {
+            return *reinterpret_cast<const s16*>(entry + 0x10);
+        }
+    }
+    return -1;
 }
 
 // DECOMP_FUNC(0x00227fe0, 128)
@@ -449,8 +470,37 @@ extern "C" __attribute__((minsize)) s32 engine_func_00227fe0(const u8* object) {
 }
 
 // DECOMP_FUNC(0x002282a0, 152)
-extern "C" __attribute__((naked)) void ui_func_002282a0() {
-    asm volatile(".arm\n.inst 0xe92d4070\n.inst 0xe2804b07\n.inst 0xe28440fc\n.inst 0xe1a05001\n.inst 0xe5940000\n.inst 0xe3500000\n.inst 0x0a000018\n.inst 0xe2800c01\n.inst 0xe1d009f0\n.inst 0xe3500000\n.inst 0xba000014\n.inst 0xeb01ae71\n.inst 0xeb01ac7f\n.inst 0xe3500000\n.inst 0x0a000007\n.inst 0xeb01ae6d\n.inst 0xe2800b11\n.inst 0xe28000ac\n.inst 0xe5900000\n.inst 0xe2000002\n.inst 0xe1b00000\n.inst 0x13a00000\n.inst 0x1a000009\n.inst 0xe3550000\n.inst 0x0a000008\n.inst 0xeb01ae63\n.inst 0xe320f000\n.inst 0xe320f000\n.inst 0xeb01ac6f\n.inst 0xe3500000\n.inst 0xe320f000\n.inst 0x0a000001\n.inst 0xe3e00000\n.inst 0xe8bd8070\n.inst 0xe5940000\n.inst 0xe2800c01\n.inst 0xe1d009f0\n.inst 0xe8bd8070\n");
+extern "C" void* func_00293c98(void);
+extern "C" u32 func_002934d4(void);
+
+extern "C" s32 ui_func_002282a0(void* entity, u32 flag) {
+    u8* comp = *reinterpret_cast<u8**>(reinterpret_cast<u8*>(entity) + 0x1CFC);
+    if (comp == nullptr) {
+        return -1;
+    }
+
+    s16 val = *reinterpret_cast<s16*>(comp + 0x190);
+    if (val < 0) {
+        return -1;
+    }
+
+    func_00293c98();
+    if (func_002934d4() != 0) {
+        u8* sub = reinterpret_cast<u8*>(func_00293c98());
+        if ((*reinterpret_cast<u32*>(sub + 0x44AC) & 2) != 0) {
+            return 0;
+        }
+    }
+
+    if (flag != 0) {
+        func_00293c98();
+        if (func_002934d4() != 0) {
+            return -1;
+        }
+    }
+
+    comp = *reinterpret_cast<u8**>(reinterpret_cast<u8*>(entity) + 0x1CFC);
+    return *reinterpret_cast<s16*>(comp + 0x190);
 }
 
 // DECOMP_FUNC(0x0022922c, 128)
@@ -493,13 +543,56 @@ extern "C" u32 ui_func_00229aa8(void* const* obj, const void* table, s32 default
 }
 
 // DECOMP_FUNC(0x00229b2c, 140)
-extern "C" __attribute__((naked)) void script_vm_func_00229b2c() {
-    asm volatile(".arm\n.inst 0xe92d41f0\n.inst 0xe24ddf6d\n.inst 0xe3a03000\n.inst 0xe5901000\n.inst 0xe59f2070\n.inst 0xe3a0506d\n.inst 0xe2811d7f\n.inst 0xe1a0600d\n.inst 0xe5911000\n.inst 0xe281cf6d\n.inst 0xe281406e\n.inst 0xe5917000\n.inst 0xe3170b01\n.inst 0x0a000006\n.inst 0xe1dc70f0\n.inst 0xe1570002\n.inst 0xca000003\n.inst 0xe1d480f0\n.inst 0xe1a02007\n.inst 0xe7868103\n.inst 0xe2833001\n.inst 0xe2555001\n.inst 0xe2811fa2\n.inst 0xe28ccfa2\n.inst 0xe2844fa2\n.inst 0x1afffff0\n.inst 0xeb0153ff\n.inst 0xe0861103\n.inst 0xe2800038\n.inst 0xe5111004\n.inst 0xe3a02001\n.inst 0xe7c12000\n.inst 0xe28ddf6d\n.inst 0xe8bd81f0\n.word 0x000186a0\n");
+extern "C" u8* script_vm_func_0027eb98(void);
+
+extern "C" void script_vm_func_00229b2c(void* manager) {
+    u8* mgr = *reinterpret_cast<u8**>(manager);
+    u8* base = *reinterpret_cast<u8**>(mgr + 0x1FC0);
+
+    s32 count = 0;
+    s32 min_val = 100000;
+    s32 stack[109];
+
+    for (s32 i = 0; i < 109; ++i) {
+        u8* entry = base + i * 648;
+        if ((*reinterpret_cast<u32*>(entry) & 0x400) != 0) {
+            s16 key = *reinterpret_cast<s16*>(entry + 0x1B4);
+            if (key <= min_val) {
+                min_val = key;
+                stack[count++] = *reinterpret_cast<s16*>(entry + 0x6E);
+            }
+        }
+    }
+
+    u8* obj = script_vm_func_0027eb98();
+    s32 id = stack[count - 1];
+    obj[0x38 + id] = 1;
 }
 
 // DECOMP_FUNC(0x00229bd0, 152)
-extern "C" __attribute__((naked)) void battle_func_00229bd0() {
-    asm volatile(".arm\n.inst 0xe92d41f0\n.inst 0xe1a04003\n.inst 0xe1a03001\n.inst 0xe59f7080\n.inst 0xe6bf1070\n.inst 0xe1a06002\n.inst 0xe59d5018\n.inst 0xe5970000\n.inst 0xe3a02000\n.inst 0xebfff3cc\n.inst 0xe3550000\n.inst 0x0a000013\n.inst 0xe5971000\n.inst 0xe5911008\n.inst 0xe3510000\n.inst 0x0a00000f\n.inst 0xe5d13004\n.inst 0xe591200c\n.inst 0xe353000e\n.inst 0x05913028\n.inst 0x03530000\n.inst 0x0591104c\n.inst 0x01510004\n.inst 0x1a000005\n.inst 0xe1d010f2\n.inst 0xe3510000\n.inst 0xba000002\n.inst 0xe3e01000\n.inst 0xe1c010b2\n.inst 0xea000001\n.inst 0xe1b01002\n.inst 0x1affffef\n.inst 0xe3a0100e\n.inst 0xe5806028\n.inst 0xe5c01004\n.inst 0xe580404c\n.inst 0xe8bd81f0\n.word 0x00434290\n");
+extern "C" u8* func_00226b2c(void*, s16, u32, u32);
+
+extern "C" void battle_func_00229bd0(s32 arg0, u32 arg1, u32 arg2, u32 arg3, u32 arg4) {
+    u8* mgr = *reinterpret_cast<u8**>(0x00434290);
+    u8* r0 = func_00226b2c(mgr, static_cast<s16>(arg0), 0, arg1);
+
+    if (arg4 != 0) {
+        u8* node = *reinterpret_cast<u8**>(mgr + 8);
+        while (node != nullptr) {
+            u8* next = *reinterpret_cast<u8**>(node + 0x0C);
+            if (node[4] == 0x0E && *reinterpret_cast<u32*>(node + 0x28) == 0 && *reinterpret_cast<u32*>(node + 0x4C) == arg3) {
+                if (*reinterpret_cast<s16*>(r0 + 2) >= 0) {
+                    *reinterpret_cast<s16*>(r0 + 2) = -1;
+                    break;
+                }
+            }
+            node = next;
+        }
+    }
+
+    *reinterpret_cast<u32*>(r0 + 0x28) = arg2;
+    r0[4] = 0x0E;
+    *reinterpret_cast<u32*>(r0 + 0x4C) = arg3;
 }
 
 // DECOMP_FUNC(0x0022b9d0, 132)
@@ -561,8 +654,25 @@ extern "C" void unite_func_0022df7c(void* container, u32 demon_id) {
 }
 
 // DECOMP_FUNC(0x002306ec, 144)
-extern "C" __attribute__((naked)) void engine_func_002306ec() {
-    asm volatile(".arm\n.inst 0xe3500000\n.inst 0xe59f0080\n.inst 0xe92d4038\n.inst 0xe3a0100b\n.inst 0xed9f0a1c\n.inst 0xe5904008\n.inst 0x0a00000c\n.inst 0xe3a00001\n.inst 0xe5c40082\n.inst 0xe58d1000\n.inst 0xe28430a4\n.inst 0xe3a02000\n.inst 0xe3a0100e\n.inst 0xe2840e7e\n.inst 0xeb023500\n.inst 0xe3a02000\n.inst 0xe3a01008\n.inst 0xe2840e7e\n.inst 0xeb0234e1\n.inst 0xea00000b\n.inst 0xe3a00002\n.inst 0xe5c40082\n.inst 0xe58d1000\n.inst 0xe28430a4\n.inst 0xe3a02000\n.inst 0xe3a0100e\n.inst 0xe2840e7e\n.inst 0xeb0234f3\n.inst 0xe3a02000\n.inst 0xe3a01009\n.inst 0xe2840e7e\n.inst 0xeb0234d4\n.inst 0xe3a00001\n.inst 0xe8bd8038\n.word 0x3f800000\n.word 0x0043e188\n");
+extern "C" __attribute__((noinline)) u32 camp_func_002bdb2c(
+    u8* sprite, u32 type, u32 index,
+    const u8* group, u32 panel, float scale);
+extern "C" void func_002bdac0(void*, u32, u32);
+
+extern "C" u32 engine_func_002306ec(u32 input) {
+    u8* r4 = *reinterpret_cast<u8**>(0x0043E188 + 8);
+
+    if (input != 0) {
+        r4[0x82] = 1;
+        camp_func_002bdb2c(r4 + 0x7E0, 0x0E, 0, r4 + 0xA4, 11, 1.0f);
+        func_002bdac0(r4 + 0x7E0, 8, 0);
+    } else {
+        r4[0x82] = 2;
+        camp_func_002bdb2c(r4 + 0x7E0, 0x0E, 0, r4 + 0xA4, 11, 1.0f);
+        func_002bdac0(r4 + 0x7E0, 9, 0);
+    }
+
+    return 1;
 }
 
 // DECOMP_FUNC(0x0023d230, 132)
@@ -1599,7 +1709,7 @@ extern "C" void engine_func_002bc170(float* mtx, float left, float right, float 
 // DECOMP_FUNC(0x002bdb2c, 152)
 extern "C" void engine_func_002c4b30(volatile u8* destination, u32 size);
 
-extern "C" __attribute__((minsize)) u32 camp_func_002bdb2c(
+extern "C" __attribute__((noinline, minsize)) u32 camp_func_002bdb2c(
     u8* __restrict sprite, u32 type, u32 index,
     const u8* __restrict group,
     u32 panel, f32 scale) {
