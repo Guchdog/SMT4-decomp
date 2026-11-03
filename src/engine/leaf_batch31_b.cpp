@@ -313,108 +313,67 @@ extern "C" void* func_003e6a10(void* archive, u32 index) {
     return nullptr;
 }
 
+extern "C" u32 func_002a6d94(void* obj, u32* out, u32 tag);
+
 // DECOMP_FUNC(0x003e6af4, 52)
-extern "C" __attribute__((naked)) void func_003e6af4() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe92d4008\n"
-        ".inst 0xe3a02000\n"
-        ".inst 0xe1a0100d\n"
-        ".inst 0xe2800004\n"
-        ".inst 0xebfb00a2\n"
-        ".inst 0xe3500000\n"
-        ".inst 0x0a000004\n"
-        ".inst 0xe59d0000\n"
-        ".inst 0xe1a00800\n"
-        ".inst 0xe1a00c20\n"
-        ".inst 0xe3500001\n"
-        ".inst 0x13a00000\n"
-        ".inst 0xe8bd8008\n"
-    );
+extern "C" u32 func_003e6af4(void* obj) {
+    u32 val = 0;
+    if (func_002a6d94(static_cast<char*>(obj) + 4, &val, 0) != 0) {
+        if (((val >> 8) & 0xFF) == 1) {
+            return 1;
+        }
+    }
+    return 0;
 }
 
+extern "C" const u8* func_003f89f8(void* obj);
+
 // DECOMP_FUNC(0x003f9044, 52)
-extern "C" __attribute__((naked)) void func_003f9044() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe92d4010\n"
-        ".inst 0xe1a04000\n"
-        ".inst 0xebfffe69\n"
-        ".inst 0xe5d01002\n"
-        ".inst 0xe5d00001\n"
-        ".inst 0xed940a03\n"
-        ".inst 0xe201100f\n"
-        ".inst 0xed941a02\n"
-        ".inst 0xe0800401\n"
-        ".inst 0xee000a90\n"
-        ".inst 0xeef80a60\n"
-        ".inst 0xee000a81\n"
-        ".inst 0xe8bd8010\n"
-    );
+extern "C" float func_003f9044(void* obj) {
+    const u8* data = func_003f89f8(obj);
+    u32 int_val = static_cast<u32>(data[1]) | (static_cast<u32>(data[2] & 0xF) << 8);
+    float scale = *reinterpret_cast<float*>(static_cast<char*>(obj) + 8);
+    float base = *reinterpret_cast<float*>(static_cast<char*>(obj) + 12);
+    return base + (static_cast<float>(int_val) * scale);
 }
 
 // DECOMP_FUNC(0x003e646c, 56)
-extern "C" __attribute__((naked)) void func_003e646c() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe92d4038\n"
-        ".inst 0xe1a04000\n"
-        ".inst 0xe3a02009\n"
-        ".inst 0xe1a0100d\n"
-        ".inst 0xebfb0244\n"
-        ".inst 0xe3500000\n"
-        ".inst 0x059f0014\n"
-        ".inst 0x0a000003\n"
-        ".inst 0xe59d0000\n"
-        ".inst 0xe0800004\n"
-        ".inst 0xe5901004\n"
-        ".inst 0xe0800001\n"
-        ".inst 0xe8bd8038\n"
-        ".word 0x004765dd @ bounded tail data\n"
-    );
+extern "C" void* func_003e646c(void* obj) {
+    u32 offset = 0;
+    if (func_002a6d94(obj, &offset, 9) == 0) {
+        return reinterpret_cast<void*>(0x004765DD);
+    }
+    char* target = static_cast<char*>(obj) + offset;
+    u32 inner_offset = *reinterpret_cast<u32*>(target + 4);
+    return target + inner_offset;
 }
 
+extern "C" const void* Tbb_GetGlobalSubTable(u32 slot_id, u32 table_index);
+extern "C" const void* Tbb_GetPayloadData(const void* table);
+extern "C" u32 Tbb_GetRowCount(const void* table);
+
 // DECOMP_FUNC(0x003ea4f8, 56)
-extern "C" __attribute__((naked)) void camp_func_003ea4f8() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe92d4070\n"
-        ".inst 0xe1a04002\n"
-        ".inst 0xe1a01081\n"
-        ".inst 0xe3a00026\n"
-        ".inst 0xebfb5a6d\n"
-        ".inst 0xe1a06000\n"
-        ".inst 0xebfb5a61\n"
-        ".inst 0xe1a05000\n"
-        ".inst 0xe1a00006\n"
-        ".inst 0xebfb5a4a\n"
-        ".inst 0xe1540000\n"
-        ".inst 0x23a00000\n"
-        ".inst 0x30850284\n"
-        ".inst 0xe8bd8070\n"
-    );
+extern "C" const void* camp_func_003ea4f8(u32 unused, u32 sub_index, u32 entry_index) {
+    const void* table = Tbb_GetGlobalSubTable(0x26, sub_index * 2);
+    const void* payload = Tbb_GetPayloadData(table);
+    u32 row_count = Tbb_GetRowCount(table);
+    if (entry_index < row_count) {
+        return static_cast<const char*>(payload) + (entry_index * 32);
+    }
+    return nullptr;
 }
 
 // DECOMP_FUNC(0x003d71c4, 60)
-extern "C" __attribute__((naked)) void func_003d71c4() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe2801b01\n"
-        ".inst 0xed9f0a0b\n"
-        ".inst 0xe2811fce\n"
-        ".inst 0xed810a02\n"
-        ".inst 0xed810a01\n"
-        ".inst 0xed810a00\n"
-        ".inst 0xe5902634\n"
-        ".inst 0xe3c22502\n"
-        ".inst 0xe5a02634\n"
-        ".inst 0xe2800e13\n"
-        ".inst 0xed800a02\n"
-        ".inst 0xed800a01\n"
-        ".inst 0xed800a00\n"
-        ".inst 0xe12fff1e\n"
-        ".word 0x00000000 @ bounded tail data\n"
-    );
+extern "C" void func_003d71c4(void* obj) {
+    float* v1 = reinterpret_cast<float*>(static_cast<char*>(obj) + 0x738);
+    v1[0] = 0.0f;
+    v1[1] = 0.0f;
+    v1[2] = 0.0f;
+    *reinterpret_cast<u32*>(static_cast<char*>(obj) + 0x634) &= ~0x00800000u;
+    float* v2 = reinterpret_cast<float*>(static_cast<char*>(obj) + 0x764);
+    v2[0] = 0.0f;
+    v2[1] = 0.0f;
+    v2[2] = 0.0f;
 }
 
 // DECOMP_FUNC(0x003d8acc, 60)
