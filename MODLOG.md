@@ -1,3 +1,7 @@
+# H2 input mode byte getter 0x00138F34 — 2026-11-02
+
+Converted the H2 input mode getter to typed C++ using an unsigned volatile byte read. Exhaustive direct and original-reader cases passed, the mode-four early return remained intact, and the signedness mutation was detected. Independent review passed; the full ARMv6K batch closure then compiled 204/204 translation units. Physical mode provenance and runtime behavior remain unknown. See [function record](docs/function-records/0x00138f34.md) and [conversion evidence](docs/agent-work/h2-input-mode-getter-conversion.md).
+
 # H2 paired signed-byte input getters — 2026-11-02
 
 Converted `0x002BB978` and `0x002BC9C8` to typed volatile signed-byte reads. The offline pinned-image differential passed 512 direct byte cases and 25 compositions through the original `0x0011C5EC` reader; it checked signed returns, caller writes and conditional call traces, with an unsigned-load mutation detected. Both 16-byte bodies are classified `non_matching`. Integrator batch closure compiled all 204 ARMv6K translation units in a private output directory. Physical input provenance and runtime behavior remain unproven. See [function records](docs/function-records/0x002bb978.md) and [conversion evidence](docs/agent-work/h2-input-flag-getters-conversion.md).
