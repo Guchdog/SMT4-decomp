@@ -255,101 +255,62 @@ extern "C" s32 func_003e0e7c(const void* range, void* out) {
 }
 
 // DECOMP_FUNC(0x003e70c8, 48)
-extern "C" __attribute__((naked)) void func_003e70c8() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe5910000\n"
-        ".inst 0xe59f2020\n"
-        ".inst 0xe1500002\n"
-        ".inst 0x13a00000\n"
-        ".inst 0x1a000004\n"
-        ".inst 0xe5911008\n"
-        ".inst 0xe3a00000\n"
-        ".inst 0xe28114fe\n"
-        ".inst 0xe3510801\n"
-        ".inst 0x93a00001\n"
-        ".inst 0xe12fff1e\n"
-        ".word 0x4d545343 @ bounded tail data\n"
-    );
+extern "C" bool func_003e70c8(void* unused, const void* header) {
+    const u32* h = reinterpret_cast<const u32*>(header);
+    if (h[0] != 0x4D545343) {
+        return false;
+    }
+    u32 ver_offset = h[2] - 0x02000000u;
+    return ver_offset <= 0x10000u;
 }
 
+extern "C" void engine_func_002c3aa8(void* mutex);
+extern "C" void engine_func_002c3a24(void* mutex);
+
 // DECOMP_FUNC(0x003f6708, 48)
-extern "C" __attribute__((naked)) void engine_func_003f6708() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe92d4070\n"
-        ".inst 0xe1a04000\n"
-        ".inst 0xe59f001c\n"
-        ".inst 0xe1a05001\n"
-        ".inst 0xebfb34e2\n"
-        ".inst 0xe5940038\n"
-        ".inst 0xe5850000\n"
-        ".inst 0xe59f0008\n"
-        ".inst 0xebfb34bd\n"
-        ".inst 0xe3a00001\n"
-        ".inst 0xe8bd8070\n"
-        ".word 0x004d4674 @ bounded tail data\n"
-    );
+extern "C" u32 engine_func_003f6708(const void* src, u32* out) {
+    void* mutex = reinterpret_cast<void*>(0x004D4674);
+    engine_func_002c3aa8(mutex);
+    *out = *reinterpret_cast<const u32*>(static_cast<const char*>(src) + 0x38);
+    engine_func_002c3a24(mutex);
+    return 1;
 }
 
 // DECOMP_FUNC(0x00338658, 52)
-extern "C" __attribute__((naked)) void func_00338658() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe2800b07\n"
-        ".inst 0xe2800fa9\n"
-        ".inst 0xed9f0a08\n"
-        ".inst 0xe3a01000\n"
-        ".inst 0xed800a00\n"
-        ".inst 0xed800a01\n"
-        ".inst 0xed800a02\n"
-        ".inst 0xed800a03\n"
-        ".inst 0xed800a04\n"
-        ".inst 0xed800a05\n"
-        ".inst 0xe5801018\n"
-        ".inst 0xe12fff1e\n"
-        ".word 0x00000000 @ bounded tail data\n"
-    );
+extern "C" void func_00338658(void* obj) {
+    float* p = reinterpret_cast<float*>(static_cast<char*>(obj) + 0x1EA4);
+    for (int i = 0; i < 6; ++i) {
+        p[i] = 0.0f;
+    }
+    *reinterpret_cast<u32*>(static_cast<char*>(obj) + 0x1EBC) = 0;
 }
 
 // DECOMP_FUNC(0x003e69dc, 52)
-extern "C" __attribute__((naked)) void func_003e69dc() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe5902000\n"
-        ".inst 0xe1520001\n"
-        ".inst 0xe59f2020\n"
-        ".inst 0x9a000005\n"
-        ".inst 0xe0801181\n"
-        ".inst 0xe1d130b4\n"
-        ".inst 0xe1530002\n"
-        ".inst 0x05911008\n"
-        ".inst 0x00800001\n"
-        ".inst 0x0a000000\n"
-        ".inst 0xe3a00000\n"
-        ".inst 0xe12fff1e\n"
-        ".word 0x00004101 @ bounded tail data\n"
-    );
+extern "C" void* func_003e69dc(void* archive, u32 index) {
+    u32 count = *reinterpret_cast<u32*>(archive);
+    if (index < count) {
+        const char* entry = static_cast<const char*>(archive) + (index * 8);
+        u16 tag = *reinterpret_cast<const u16*>(entry + 4);
+        if (tag == 0x4101) {
+            u32 offset = *reinterpret_cast<const u32*>(entry + 8);
+            return static_cast<char*>(archive) + offset;
+        }
+    }
+    return nullptr;
 }
 
 // DECOMP_FUNC(0x003e6a10, 52)
-extern "C" __attribute__((naked)) void func_003e6a10() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe5902000\n"
-        ".inst 0xe1520001\n"
-        ".inst 0xe59f2020\n"
-        ".inst 0x9a000005\n"
-        ".inst 0xe0801181\n"
-        ".inst 0xe1d130b4\n"
-        ".inst 0xe1530002\n"
-        ".inst 0x05911008\n"
-        ".inst 0x00800001\n"
-        ".inst 0x0a000000\n"
-        ".inst 0xe3a00000\n"
-        ".inst 0xe12fff1e\n"
-        ".word 0x00004102 @ bounded tail data\n"
-    );
+extern "C" void* func_003e6a10(void* archive, u32 index) {
+    u32 count = *reinterpret_cast<u32*>(archive);
+    if (index < count) {
+        const char* entry = static_cast<const char*>(archive) + (index * 8);
+        u16 tag = *reinterpret_cast<const u16*>(entry + 4);
+        if (tag == 0x4102) {
+            u32 offset = *reinterpret_cast<const u32*>(entry + 8);
+            return static_cast<char*>(archive) + offset;
+        }
+    }
+    return nullptr;
 }
 
 // DECOMP_FUNC(0x003e6af4, 52)
