@@ -2,7 +2,8 @@
 
 // Call targets are declared by ledger name so the ARM CALL relocations remain
 // explicit and can be checked against their known code addresses.
-extern "C" void AsdLoadFile_func_002ae6c8();
+extern "C" __attribute__((pcs("aapcs"))) u32 AsdLoadFile_func_002ae6c8(
+    const char* name, u32* out_status, u32 flags, void* owner, f32 scale, u32 size);
 extern "C" void AsdSequence_func_002c59b8();
 extern "C" void battle_func_0028df54();
 extern "C" void camp_func_0022e4e8();
@@ -498,17 +499,10 @@ extern "C" __attribute__((naked)) void script_vm_func_00295fac() {
 }
 
 // DECOMP_FUNC(0x00297704, 32)
-extern "C" __attribute__((naked)) void script_vm_func_00297704() {
-    asm volatile(
-        "str lr, [sp, #-4]!\n"
-        "sub sp, sp, #0xc\n"
-        "mov ip, #4\n"
-        "mov r3, #0\n"
-        "stm sp, {r3, ip}\n"
-        "bl AsdLoadFile_func_002ae6c8\n"
-        "add sp, sp, #0xc\n"
-        "pop {pc}\n"
-    );
+extern "C" __attribute__((minsize)) u32 script_vm_func_00297704(
+    const char* name, u32* out_status, u32 flags, u32 /* ignored_r3 */) {
+    asm volatile("" : : : "r9", "r10");
+    return AsdLoadFile_func_002ae6c8(name, out_status, flags, nullptr, 0.0f, 4);
 }
 
 // DECOMP_FUNC(0x00299064, 32)

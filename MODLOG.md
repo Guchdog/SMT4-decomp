@@ -1220,3 +1220,15 @@ observability remain unverified. See the
 [function record](docs/function-records/0x002c32f8.md),
 [conversion report](docs/agent-work/h2-2c32f8-conversion.md), and
 [dependency contract](docs/agent-work/h2-init-dependency-contracts.md).
+
+# H2 TitleConfig async table-load wrapper 0x00297704 — 2026-11-02
+
+Replaced the 32-byte naked wrapper with 24 bytes of typed C++ preserving the
+loader's raw base-PCS stack payloads and return. The coordinator differential
+passed 34 direct cases and both real TitleConfig calls through the wrapper;
+the exact downstream `(0,4)` stack words and a wrong-size control were checked.
+The candidate is `non_matching`; independent review passed 66 fresh direct
+cases plus the caller, and the full ARMv6K build compiled 204/204 translation
+units. Real loader queue/completion and loaded asset behavior are not tested.
+See the [function record](docs/function-records/0x00297704.md) and
+[conversion report](docs/agent-work/h2-297704-wrapper-conversion.md).

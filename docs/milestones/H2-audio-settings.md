@@ -1,5 +1,15 @@
 # H2 — Título: configuración de audio (`titleConfig`)
 
+Actualización de carga asíncrona (2026-11-02): `script_vm_func_00297704`
+(`0x00297704`) ya tiene un wrapper C++ tipado. Mantiene el argumento crudo de
+escala y tamaño en la pila AAPCS y retorna el `r0` original. Pasó 34 casos
+directos y las dos llamadas reales del inicializador `TitleConfig`, con un
+control de tamaño incorrecto detectado. La revisión independiente añadió 66
+casos frescos, confirmó el mismo caller y detectó el control; el build completo
+pasó con 204/204 traducciones. La cola, terminación y contenido de los recursos
+no se probaron. [Registro](../function-records/0x00297704.md),
+[evidencia](../agent-work/h2-297704-wrapper-conversion.md).
+
 Actualización de inicialización (2026-11-02): `camp_func_002c32f8`
 (`0x002C32F8`) ya está reconstruida en C++ para enlazar el descriptor del grupo
 de sprites. El cuerpo ocupa 76/76 bytes, no tiene relocaciones y devuelve el
