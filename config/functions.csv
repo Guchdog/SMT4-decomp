@@ -2933,7 +2933,7 @@ address,size,status,category,name,src_file
 0x0021948c,132,matching,camp,camp_func_0021948c,src/engine/leaf_batch41_b.cpp
 0x00219510,48,matching,unknown,func_00219510,src/engine/leaf_batch19_b.cpp
 0x00219540,48,matching,unknown,func_00219540,src/engine/leaf_batch19_b.cpp
-0x00219570,180,matching,unknown,func_00219570,src/engine/leaf_batch31_c.cpp
+0x00219570,180,non_matching,unknown,func_00219570,src/engine/leaf_batch31_c.cpp
 0x00219624,128,non_matching,camp,camp_func_00219624,src/engine/leaf_batch30_c.cpp
 0x002196a4,116,non_matching,battle,battle_func_002196a4,src/engine/leaf_batch30_b.cpp
 0x00219718,44,matching,battle,battle_func_00219718,src/engine/leaf_batch34_b.cpp
@@ -2951,7 +2951,7 @@ address,size,status,category,name,src_file
 0x00219eac,28,matching,unknown,func_00219eac,src/engine/leaf_batch34_b.cpp
 0x00219ec8,332,matching,engine,engine_func_00219ec8,src/engine/leaf_batch40_a.cpp
 0x0021a014,148,matching,engine,engine_func_0021a014,src/engine/leaf_batch25_b.cpp
-0x0021a0a8,172,matching,engine,engine_func_0021a0a8,src/engine/leaf_batch31_c.cpp
+0x0021a0a8,172,non_matching,engine,engine_func_0021a0a8,src/engine/leaf_batch31_c.cpp
 0x0021a154,292,matching,ui,ui_func_0021a154,src/engine/leaf_batch43_c.cpp
 0x0021a278,8,matching,unknown,func_0021a278,src/engine/leaf_matching.cpp
 0x0021a280,236,matching,engine,effParticle_func_0021a280,src/engine/leaf_batch32_b.cpp
@@ -2972,13 +2972,13 @@ address,size,status,category,name,src_file
 0x0021b1f0,2056,matching,script_vm,script_vm_func_0021b1f0,src/engine/leaf_batch46_b.cpp
 0x0021b9f8,272,matching,script_vm,script_vm_func_0021b9f8,src/engine/leaf_batch40_b.cpp
 0x0021bb08,508,matching,script_vm,script_vm_func_0021bb08,src/engine/leaf_batch44_a.cpp
-0x0021bd04,160,matching,script_vm,script_vm_func_0021bd04,src/engine/leaf_batch31_c.cpp
+0x0021bd04,160,non_matching,script_vm,script_vm_func_0021bd04,src/engine/leaf_batch31_c.cpp
 0x0021bda4,2036,matching,script_vm,script_vm_func_0021bda4,src/engine/leaf_batch46_b.cpp
 0x0021c598,5420,matching,battle,Btl_StatusEffectCalc,src/battle/battle_ailment.cpp
 0x0021dac4,744,matching,engine,engine_func_0021dac4,src/engine/leaf_batch45_a.cpp
 0x0021ddac,112,matching,script_vm,script_vm_func_0021ddac,src/engine/leaf_batch35_a.cpp
-0x0021de1c,164,matching,script_vm,script_vm_func_0021de1c,src/engine/leaf_batch31_c.cpp
-0x0021dec0,156,matching,script_vm,script_vm_func_0021dec0,src/engine/leaf_batch31_c.cpp
+0x0021de1c,164,non_matching,script_vm,script_vm_func_0021de1c,src/engine/leaf_batch31_c.cpp
+0x0021dec0,156,non_matching,script_vm,script_vm_func_0021dec0,src/engine/leaf_batch31_c.cpp
 0x0021df5c,28,matching,engine,engine_func_0021df5c,src/engine/leaf_batch39_a.cpp
 0x0021df78,220,matching,script_vm,script_vm_func_0021df78,src/engine/leaf_batch32_b.cpp
 0x0021e054,28,matching,camp,camp_func_0021e054,src/engine/leaf_batch39_a.cpp
