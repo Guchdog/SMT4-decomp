@@ -30,6 +30,17 @@ runtime H2.
 [Registro](../function-records/0x0028686c.md),
 [evidencia](../agent-work/h2-0028686c-conversion.md).
 
+Actualización de dependencia (2026-11-02): `ui_func_0028df3c` (`0x0028DF3C`)
+ahora tiene C++ tipado con predicate unsigned de 32 bits y store condicional
+del raw `r0` en `0x0043E0BC`. Pasó 59 casos directos (incluido `UINT32_MAX`)
+y 18 composiciones por el callback ARM original `0x00221168`; se detectaron
+las mutaciones del predicate no-wrapping y del valor almacenado. El cuerpo es
+24/24 bytes, difiere del original y queda `non_matching`; la revisión independiente
+pasó y el build ARMv6K dio 204/204 TU. Otro consumidor declara el símbolo como
+`void` y descarta `r0`; esa limpieza de tipos cross-TU sigue pendiente. No se
+validó el helper final completo ni runtime H2. [Registro](../function-records/0x0028df3c.md),
+[evidencia](../agent-work/h2-0028df3c-conversion.md).
+
 Actualización de dependencia (2026-11-02): `engine_func_00296f60`
 (`0x00296F60`) ahora tiene C++ tipado para los tipos 0–4 y el retorno cero
 para tipos desconocidos. Pasó 109 casos directos (48 combinaciones de tipo,

@@ -4693,7 +4693,7 @@ address,size,status,category,name,src_file
 0x0028de4c,56,matching,battle,battle_func_0028de4c,src/engine/leaf_batch33_c.cpp
 0x0028de84,136,matching,script_vm,script_vm_func_0028de84,src/engine/leaf_batch30_c.cpp
 0x0028df0c,48,matching,script_vm,script_vm_func_0028df0c,src/engine/leaf_batch33_c.cpp
-0x0028df3c,24,matching,ui,ui_func_0028df3c,src/engine/leaf_batch22_b.cpp
+0x0028df3c,24,non_matching,ui,ui_func_0028df3c,src/engine/leaf_batch22_b.cpp
 0x0028df54,28,non_matching,battle,battle_func_0028df54,src/engine/leaf_batch22_b.cpp
 0x0028df70,40,matching,camp,camp_func_0028df70,src/engine/leaf_batch26_b.cpp
 0x0028df98,2524,matching,camp,camp_func_0028df98,src/engine/leaf_batch46_c.cpp
