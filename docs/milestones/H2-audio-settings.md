@@ -8,6 +8,16 @@ Actualización de entrada (2026-11-02): los getters firmados `0x002BB978` y `0x0
 
 # H2 — Título: configuración de audio (`titleConfig`)
 
+Actualización de dependencia (2026-11-02): `engine_func_00289640` (`0x00289640`)
+ahora tiene un getter C++ tipado del estado global usado dos veces por el callback
+`0x00221168`. Pasó 40 casos directos y cinco composiciones con el callback ARM
+original; en cada composición se ejecutaron ambas llamadas reales al getter y
+se detectó una mutación del offset. El cuerpo ocupa 20 bytes, difiere en el
+literal y queda clasificado `non_matching`; conserva el retorno crudo y no
+escribe memoria. Las pruebas usan RAM sintética y stubs controlados para otras
+dependencias; no demuestran estado natural ni cierre/runtime de H2. [Registro](../function-records/0x00289640.md),
+[evidencia](../agent-work/h2-00289640-conversion.md).
+
 Actualización de dependencia de entrada (2026-11-02): el postprocesador de
 registro `0x0013BCAC`, llamado condicionalmente por `0x0011C5EC`, pasó a C++.
 Pasó 192 casos directos, 32 composiciones por el lector original, replay IPS y
