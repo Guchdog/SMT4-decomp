@@ -956,28 +956,108 @@ extern "C" u32 ui_func_002879c0(void) {
 }
 
 // DECOMP_FUNC(0x00287ce0, 116)
-extern "C" __attribute__((naked)) void script_vm_func_00287ce0() {
-    asm volatile(".arm\n.inst 0xee320a40\n.inst 0xee730a41\n.inst 0xe92d4010\n.inst 0xed2d8b02\n.inst 0xeeb08a61\n.inst 0xebffe8ea\n.inst 0xeef00a40\n.inst 0xed9f1a10\n.inst 0xed9f2a10\n.inst 0xed9f0a10\n.inst 0xe59f1040\n.inst 0xee600a81\n.inst 0xeef40ac2\n.inst 0xeef1fa10\n.inst 0x3e700a80\n.inst 0xee100a90\n.inst 0xe1500001\n.inst 0xce700ac0\n.inst 0xeeb00a48\n.inst 0xeb000010\n.inst 0xeeb40ac2\n.inst 0xeef1fa10\n.inst 0xecbd8b02\n.inst 0x3eb10a40\n.inst 0xe8bd8010\n.word 0x42654ca3\n.word 0x00000000\n.word 0x43b40000\n.word 0x43b40000\n");
+extern "C" float ui_func_002820a4(float dx, float dz);
+extern "C" float script_vm_func_00287d74(float heading, float angle);
+
+extern "C" float script_vm_func_00287ce0(float x1, float y1, float z1, float heading, float x2, float y2, float z2) {
+    float rad = ui_func_002820a4(x2 - x1, z2 - z1);
+    float deg = rad * 57.3248405456543f;
+    if (deg < 0.0f) {
+        deg += 360.0f;
+    }
+    if (deg > 360.0f) {
+        deg -= 360.0f;
+    }
+    float delta = script_vm_func_00287d74(heading, deg);
+    if (delta < 0.0f) {
+        delta = -delta;
+    }
+    return delta;
 }
 
 // DECOMP_FUNC(0x00288990, 104)
-extern "C" __attribute__((naked)) void ui_func_00288990() {
-    asm volatile(".arm\n.inst 0xe92d41f0\n.inst 0xe3a04000\n.inst 0xe1a06000\n.inst 0xe1a07004\n.inst 0xe0840104\n.inst 0xe0860200\n.inst 0xe2805010\n.inst 0xe5900018\n.inst 0xe3500000\n.inst 0x0a000001\n.inst 0xeb007c38\n.inst 0xe5857008\n.inst 0xe595000c\n.inst 0xe3500000\n.inst 0x0a000001\n.inst 0xeb00ee63\n.inst 0xe585700c\n.inst 0xe2844001\n.inst 0xe3540003\n.inst 0xbaffffef\n.inst 0xe5960008\n.inst 0xe3500000\n.inst 0x0a000001\n.inst 0xeb007c2b\n.inst 0xe5867008\n.inst 0xe8bd81f0\n");
+extern "C" void script_vm_func_002a7aa0(void*);
+extern "C" void engine_func_002c4360(void*);
+
+extern "C" void ui_func_00288990(void* ptr) {
+    u8* obj = reinterpret_cast<u8*>(ptr);
+
+    for (s32 i = 0; i < 3; ++i) {
+        u8* slot = obj + i * 80;
+        void** p18 = reinterpret_cast<void**>(slot + 0x18);
+        if (*p18 != nullptr) {
+            script_vm_func_002a7aa0(*p18);
+            *p18 = nullptr;
+        }
+
+        void** p1c = reinterpret_cast<void**>(slot + 0x1C);
+        if (*p1c != nullptr) {
+            engine_func_002c4360(*p1c);
+            *p1c = nullptr;
+        }
+    }
+
+    void** p8 = reinterpret_cast<void**>(obj + 8);
+    if (*p8 != nullptr) {
+        script_vm_func_002a7aa0(*p8);
+        *p8 = nullptr;
+    }
 }
 
 // DECOMP_FUNC(0x00289fdc, 112)
-extern "C" __attribute__((naked)) void script_vm_func_00289fdc() {
-    asm volatile(".arm\n.inst 0xe92d4070\n.inst 0xe24dd090\n.inst 0xe1a05000\n.inst 0xe1a04001\n.inst 0xe1a06002\n.inst 0xe3a01080\n.inst 0xe28d0010\n.inst 0xeb00eacc\n.inst 0xe28d3010\n.inst 0xe1a02004\n.inst 0xe3a01008\n.inst 0xe1a00005\n.inst 0xeb00746b\n.inst 0xe3500000\n.inst 0x0a000009\n.inst 0xe3a03000\n.inst 0xe3a02080\n.inst 0xe3a01001\n.inst 0xe88d000e\n.inst 0xe2803008\n.inst 0xe59f0014\n.inst 0xe1a02006\n.inst 0xe28d1010\n.inst 0xe5900000\n.inst 0xeb0069f9\n.inst 0xe28dd090\n.inst 0xe8bd8070\n.word 0x00433130\n");
+extern "C" void engine_func_002a4828(void* mgr, void* buf, u32 arg2, void* res_plus8, u32 p5, u32 p6, u32 p7);
+
+extern "C" void script_vm_func_00289fdc(u32 arg0, u32 arg1, u32 arg2) {
+    u8 buffer[128];
+    for (s32 i = 0; i < 128; ++i) {
+        buffer[i] = 0;
+    }
+
+    u8* res = reinterpret_cast<u8*>(static_cast<uintptr_t>(engine_func_002a71c0(arg0, 8, arg1, buffer)));
+    if (res != nullptr) {
+        void* mgr = *reinterpret_cast<void**>(0x00433130);
+        engine_func_002a4828(mgr, buffer, arg2, res + 8, 1, 128, 0);
+    }
 }
 
 // DECOMP_FUNC(0x0028a04c, 112)
-extern "C" __attribute__((naked)) void script_vm_func_0028a04c() {
-    asm volatile(".arm\n.inst 0xe92d4070\n.inst 0xe24dd090\n.inst 0xe1a05000\n.inst 0xe1a04001\n.inst 0xe1a06002\n.inst 0xe3a01080\n.inst 0xe28d0010\n.inst 0xeb00eab0\n.inst 0xe28d3010\n.inst 0xe1a02004\n.inst 0xe3a01007\n.inst 0xe1a00005\n.inst 0xeb00744f\n.inst 0xe3500000\n.inst 0x0a000009\n.inst 0xe3a03000\n.inst 0xe3a02080\n.inst 0xe3a01001\n.inst 0xe88d000e\n.inst 0xe2803008\n.inst 0xe59f0014\n.inst 0xe1a02006\n.inst 0xe28d1010\n.inst 0xe5900000\n.inst 0xeb0069dd\n.inst 0xe28dd090\n.inst 0xe8bd8070\n.word 0x00433130\n");
+extern "C" void script_vm_func_0028a04c(u32 arg0, u32 arg1, u32 arg2) {
+    u8 buffer[128];
+    for (s32 i = 0; i < 128; ++i) {
+        buffer[i] = 0;
+    }
+
+    u8* res = reinterpret_cast<u8*>(static_cast<uintptr_t>(engine_func_002a71c0(arg0, 7, arg1, buffer)));
+    if (res != nullptr) {
+        void* mgr = *reinterpret_cast<void**>(0x00433130);
+        engine_func_002a4828(mgr, buffer, arg2, res + 8, 1, 128, 0);
+    }
 }
 
 // DECOMP_FUNC(0x0028c194, 112)
-extern "C" __attribute__((naked)) void script_vm_func_0028c194() {
-    asm volatile(".arm\n.inst 0xe92d4070\n.inst 0xe59f505c\n.inst 0xe5954000\n.inst 0xe3540000\n.inst 0x0a000013\n.inst 0xe59412f8\n.inst 0xe3510000\n.inst 0xba00000c\n.inst 0xe3a00018\n.inst 0xeb008a5b\n.inst 0xe5950000\n.inst 0xe3a01000\n.inst 0xe3500000\n.inst 0x15c012f4\n.inst 0xe59f002c\n.inst 0xe59422f8\n.inst 0xe3a01018\n.inst 0xe5900000\n.inst 0xeb00688b\n.inst 0xe3e00000\n.inst 0xe58402f8\n.inst 0xe2844fba\n.inst 0xe3a01000\n.inst 0xe3a00003\n.inst 0xe8840003\n.inst 0xe8bd8070\n.word 0x00434210\n.word 0x00433158\n");
+extern "C" void script_vm_func_002aeb2c(u32);
+extern "C" void engine_func_002a6410(void*, u32, s32);
+
+extern "C" void script_vm_func_0028c194(void) {
+    u8* r4 = *reinterpret_cast<u8**>(0x00434210);
+    if (r4 == nullptr) {
+        return;
+    }
+
+    s32 id = *reinterpret_cast<s32*>(r4 + 0x2F8);
+    if (id >= 0) {
+        script_vm_func_002aeb2c(0x18);
+        u8* r0 = *reinterpret_cast<u8**>(0x00434210);
+        if (r0 != nullptr) {
+            r0[0x2F4] = 0;
+        }
+        void* mgr2 = *reinterpret_cast<void**>(0x00433158);
+        engine_func_002a6410(mgr2, 0x18, *reinterpret_cast<s32*>(r4 + 0x2F8));
+        *reinterpret_cast<s32*>(r4 + 0x2F8) = -1;
+    }
+
+    *reinterpret_cast<s32*>(r4 + 0x2E8) = 3;
+    *reinterpret_cast<s32*>(r4 + 0x2EC) = 0;
 }
 
 // DECOMP_FUNC(0x0028ebd8, 108)
