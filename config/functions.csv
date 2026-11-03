@@ -5523,7 +5523,7 @@ address,size,status,category,name,src_file
 0x002b88c4,220,non_matching,camp,camp_func_002b88c4,src/engine/leaf_batch32_c.cpp
 0x002b89a0,52,non_matching,camp,camp_func_002b89a0,src/engine/leaf_batch26_b.cpp
 0x002b89d4,40,matching,script_vm,script_vm_func_002b89d4,src/engine/leaf_batch26_b.cpp
-0x002b89fc,132,matching,battle,battle_func_002b89fc,src/engine/leaf_batch30_c.cpp
+0x002b89fc,132,non_matching,battle,battle_func_002b89fc,src/engine/leaf_batch30_c.cpp
 0x002b8a80,92,matching,battle,battle_func_002b8a80,src/engine/leaf_batch29_b.cpp
 0x002b8adc,104,matching,ui,ui_func_002b8adc,src/engine/leaf_batch30_b.cpp
 0x002b8b44,16,matching,battle,battle_func_002b8b44,src/engine/leaf_batch38_a.cpp

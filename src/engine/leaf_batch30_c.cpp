@@ -619,8 +619,46 @@ extern "C" __attribute__((naked)) void ui_func_002b8070() {
 }
 
 // DECOMP_FUNC(0x002b89fc, 132)
-extern "C" __attribute__((naked)) void battle_func_002b89fc() {
-    asm volatile(".arm\n.inst 0xe92d4070\n.inst 0xe59f5074\n.inst 0xe5954004\n.inst 0xe3540000\n.inst 0x0a000016\n.inst 0xe5940000\n.inst 0xebffe6c5\n.inst 0xe3500000\n.inst 0x1a000014\n.inst 0xe5d40018\n.inst 0xe3500000\n.inst 0x0a000011\n.inst 0xe5954004\n.inst 0xe3540000\n.inst 0x0a00000c\n.inst 0xe3a00001\n.inst 0xe5c40018\n.inst 0xe594001c\n.inst 0xe3a06000\n.inst 0xe3500000\n.inst 0x0a000003\n.inst 0xebffba29\n.inst 0xe594001c\n.inst 0xebffe6b0\n.inst 0xe584601c\n.inst 0xe5950004\n.inst 0xeb002e3d\n.inst 0xe5856004\n.inst 0xe3a00000\n.inst 0xe8bd8070\n.inst 0xe3a00001\n.inst 0xe8bd8070\n.word 0x0044db88\n");
+extern "C" u32 ui_func_002b2530(void* handle);
+extern "C" void script_vm_func_002a72fc(void* sub);
+extern "C" void engine_func_002b2520(void* sub);
+extern "C" void engine_func_002c4360(void* main);
+
+extern "C" u32 battle_func_002b89fc() {
+    auto** const p_main = reinterpret_cast<u8**>(0x0044DB8Cu);
+    auto* main = *p_main;
+    if (!main) {
+        return 0;
+    }
+
+    void* const handle = *reinterpret_cast<void**>(main);
+    if (ui_func_002b2530(handle) != 0) {
+        return 1;
+    }
+
+    if (main[0x18] == 0) {
+        return 1;
+    }
+
+    main = *p_main;
+    if (!main) {
+        return 0;
+    }
+
+    main[0x18] = 1;
+
+    void* sub = *reinterpret_cast<void**>(main + 0x1C);
+    if (sub != nullptr) {
+        script_vm_func_002a72fc(sub);
+        sub = *reinterpret_cast<void**>(main + 0x1C);
+        engine_func_002b2520(sub);
+        *reinterpret_cast<void**>(main + 0x1C) = nullptr;
+    }
+
+    engine_func_002c4360(*p_main);
+    *p_main = nullptr;
+
+    return 0;
 }
 
 // DECOMP_FUNC(0x002baacc, 144)
