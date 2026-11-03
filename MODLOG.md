@@ -1,3 +1,7 @@
+# H2 input mode predicate 0x00128C2C — 2026-11-02
+
+Converted the 24-byte mode predicate to typed C++ and retained the independently callable SVC entry and literal pool in its 84-byte ledger span. Coordinator and independent differentials passed; the full ARMv6K build compiled 204/204 translation units. The span is `non_matching` because its wrapper bytes changed. SVC effects remain unverified. See [function record](docs/function-records/0x00128c2c.md) and [conversion evidence](docs/agent-work/h2-input-mode-wrapper-conversion.md).
+
 # H2 input mode byte getter 0x00138F34 — 2026-11-02
 
 Converted the H2 input mode getter to typed C++ using an unsigned volatile byte read. Exhaustive direct and original-reader cases passed, the mode-four early return remained intact, and the signedness mutation was detected. Independent review passed; the full ARMv6K batch closure then compiled 204/204 translation units. Physical mode provenance and runtime behavior remain unknown. See [function record](docs/function-records/0x00138f34.md) and [conversion evidence](docs/agent-work/h2-input-mode-getter-conversion.md).

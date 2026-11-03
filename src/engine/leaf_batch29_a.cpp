@@ -522,16 +522,17 @@ extern "C" __attribute__((naked)) void ui_func_00127e7c() {
 }
 
 // DECOMP_FUNC(0x00128c2c, 84)
-extern "C" __attribute__((naked)) void func_00128c2c() {
+extern "C" u32 func_00138f34();
+
+extern "C" s32 func_00128c2c() {
+    return func_00138f34() == 4 ? 1 : 0;
+}
+
+// The 84-byte ledger span also contains this independently branched-to SVC
+// entry and its literal pool. Keep its original ARM stream at the same VMA.
+extern "C" __attribute__((naked)) void func_00128c48() {
     asm volatile(
         ".arm\n"
-        ".inst 0xe92d4010 @ push {r4, lr}\n"
-        ".inst 0xeb0040bf @ bl #0x138f34\n"
-        ".inst 0xe3500004 @ cmp r0, #4\n"
-        ".inst 0x03a00001 @ moveq r0, #1\n"
-        ".inst 0x13a00000 @ movne r0, #0\n"
-        ".inst 0xe8bd8010 @ pop {r4, pc}\n"
-        ".inst 0xe1a00000 @ mov r0, r0\n"
         ".inst 0xe92d4010 @ push {r4, lr}\n"
         ".inst 0xee1d4f70 @ mrc p15, #0, r4, c13, c0, #3\n"
         ".inst 0xe59f1020 @ ldr r1, [pc, #0x20]\n"
@@ -544,8 +545,8 @@ extern "C" __attribute__((naked)) void func_00128c2c() {
         ".inst 0xe3510000 @ cmp r1, #0\n"
         ".inst 0xa5940004 @ ldrge r0, [r4, #4]\n"
         ".inst 0xe8bd8010 @ pop {r4, pc}\n"
-        ".word 0x00060040 @ bounded tail data\n"
-        ".word 0x00472ad8 @ bounded tail data\n"
+        ".word 0x00060040\n"
+        ".word 0x00472ad8\n"
     );
 }
 
