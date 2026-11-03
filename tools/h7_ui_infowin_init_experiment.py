@@ -28,6 +28,9 @@ TARGET_SYMBOLS = {
     'UiSpriteGroup_BindTable_002c32f8': 0x002C32F8,
     'UiAnimSprite_SetupEx_002bdb2c': 0x002BDB2C,
     'UiAnimSprite_SetMode_002bdac0': 0x002BDAC0,
+    'AsdText_func_002bda1c': 0x002BDA1C,
+    'script_vm_func_002bda10': 0x002BDA10,
+    'ui_func_002bda00': 0x002BDA00,
     'g_InfoWinWork_0043e128': 0x0043E128,
     'g_InfoWinSpriteTable_00403aa8': 0x00403AA8,
 }

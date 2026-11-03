@@ -16,8 +16,8 @@ struct SortMenuManager {
 extern "C" {
     void* AsdMem_Alloc_002c4b84(u32 heap, u32 flag, u32 unused, u32 size, u32 align);
     void  AsdMem_Zero_002c4b30(void* ptr, u32 size);
-    void* AsdTask_Create_002c5978(const char* name, u32 prio, u32 f1, u32 f2, void* cb, void* work, u32 parent);
-    void* AsdTask_CreateDraw_002c4c00(const char* name, u32 prio, u32 f1, u32 f2, void* cb, void* work, u32 parent);
+    void* AsdTask_Create_002c5978(const char* name, u32 prio, u32 f1, u32 f2, void* cb, void* work, void* parent);
+    void* AsdTask_CreateDraw_002c4c00(const char* name, u32 prio, u32 f1, u32 f2, void* cb, u32 u1, void* work, void* parent);
     void  UiSpriteGroup_Init_002c3344(void* obj);
     void  UiSpriteGroup_BindTable_002c32f8(void* obj, u32 t1, u32 s1, u32 t2, u32 s2, u32 a, u32 b, u32 c, u32 d, u32 t3, u32 s3);
     void  UiAnimSprite_SetupEx_002bdb2c(void* node, u32 a, u32 b, void* grp, f32 scale, u32 flag);
@@ -36,10 +36,10 @@ extern "C" void h9_camp_sortmenu_init_candidate(s32 mode) {
         }
         AsdMem_Zero_002c4b30(work, 0x878);
 
-        void* calc = AsdTask_Create_002c5978("SORT CALC", 2, 0, 0, reinterpret_cast<void*>(0x001A1E7C), work, 0);
+        void* calc = AsdTask_Create_002c5978("SORT CALC", 2, 0, 0, reinterpret_cast<void*>(0x001A1E7C), nullptr, nullptr);
         *reinterpret_cast<void**>(work) = calc;
 
-        void* draw = AsdTask_CreateDraw_002c4c00("SORT DDRAW", 0xE7, 0, 0, reinterpret_cast<void*>(0x001A25CC), work, 0);
+        void* draw = AsdTask_CreateDraw_002c4c00("SORT DDRAW", 0xE7, 0, 0, reinterpret_cast<void*>(0x001A25CC), 0, nullptr, calc);
         *reinterpret_cast<void**>(work + 4) = draw;
 
         UiSpriteGroup_Init_002c3344(work + 0x08);

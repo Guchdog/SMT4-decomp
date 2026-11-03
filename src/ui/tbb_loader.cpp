@@ -54,15 +54,12 @@ const Tbl1Header* Tbb_GetSubTable(const TbcrHeader* container, u32 table_index) 
     return reinterpret_cast<const Tbl1Header*>(child_address);
 }
 // DECOMP_FUNC(0x002c0ec4, 28)
-__attribute__((naked)) const Tbl1Header* Tbb_GetGlobalSubTable(u32, u32) {
-    asm volatile(
-        "cmp r0, #0x43\n"
-        "ldrlo r2, [pc, #0x0C]\n"
-        "addlo r0, r2, r0, lsl #4\n"
-        "ldrlo r0, [r0, #4]\n"
-        "movhs r0, #0\n"
-        ".word 0xEAFFAD05\n"
-        ".word 0x0049382C\n");
+__attribute__((minsize)) const Tbl1Header* Tbb_GetGlobalSubTable(u32 slot_id, u32 table_index) {
+    const TbcrHeader* container = nullptr;
+    if (__builtin_expect(slot_id < 0x43u, 1)) {
+        container = *reinterpret_cast<const TbcrHeader* const*>(0x00493830u + slot_id * 16);
+    }
+    return Tbb_GetSubTable(container, table_index);
 }
 
 // DECOMP_FUNC(0x002c0e9c, 40)

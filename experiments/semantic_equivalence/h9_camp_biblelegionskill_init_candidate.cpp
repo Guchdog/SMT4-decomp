@@ -6,8 +6,8 @@ typedef uint8_t u8;
 
 extern "C" {
     void* AsdMem_Alloc_002c4b84(u32 heap, u32 flag, u32 unused, u32 size, u32 align);
-    void* AsdTask_Create_002c5978(const char* name, u32 prio, u32 f1, u32 f2, void* cb, void* work, u32 parent);
-    void* AsdTask_CreateDraw_002c4c00(const char* name, u32 prio, u32 f1, u32 f2, void* cb, void* work, u32 parent);
+    void* AsdTask_Create_002c5978(const char* name, u32 prio, u32 f1, u32 f2, void* cb, void* work, void* parent);
+    void* AsdTask_CreateDraw_002c4c00(const char* name, u32 prio, u32 f1, u32 f2, void* cb, u32 u1, void* work, void* parent);
     void  unite_func_00232800(void* ptr, u32 a, u32 b, u32 c);
     void  unite_func_00233600(void* ptr);
     void  shop_func_002333d4(void* ptr, u32 flag);
@@ -34,11 +34,11 @@ extern "C" void h9_camp_biblelegionskill_init_candidate(u8* work) {
     g_BibleLegionSkillHandle_0043d9f8 = handle;
     handle[0] = work;
 
-    void* calc = AsdTask_Create_002c5978("BIBLE LEGIONSKILL CALC", 2, 0, 0, reinterpret_cast<void*>(0x003AD034), handle, 0);
+    void* calc = AsdTask_Create_002c5978("BIBLE LEGIONSKILL CALC", 2, 0, 0, reinterpret_cast<void*>(0x003AD034), nullptr, handle);
     *reinterpret_cast<void**>(work + 4) = calc;
 
-    AsdTask_CreateDraw_002c4c00("BIBLE LEGIONSKILL UP", 0x6F, 1, 0, reinterpret_cast<void*>(0x003AD288), handle, reinterpret_cast<u32>(calc));
-    AsdTask_CreateDraw_002c4c00("BIBLE LEGIONSKILL DOWN", 0xE6, 1, 0, reinterpret_cast<void*>(0x003AD588), handle, reinterpret_cast<u32>(calc));
+    AsdTask_CreateDraw_002c4c00("BIBLE LEGIONSKILL UP", 0x6F, 1, 0, reinterpret_cast<void*>(0x003AD288), 0, handle, calc);
+    AsdTask_CreateDraw_002c4c00("BIBLE LEGIONSKILL DOWN", 0xE6, 1, 0, reinterpret_cast<void*>(0x003AD588), 0, handle, calc);
 
     unite_func_00232800(work + 0xC8, 0x140, 0, 0x1D);
     unite_func_00233600(work + 0xDC);

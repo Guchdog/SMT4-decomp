@@ -11,11 +11,13 @@ sys.path.insert(0, str(ROOT))
 from tools.asm_diff import extract_elf_functions_detailed
 from tools.build_check import compile_tu_armv6k
 from tools.h2_calc_code_patch import apply_ips, encode_ips
+from tools.arm_interworking import relocate_thumb_call
+from tools.local_section_relocations import resolve_local_sections
 
 ORIGINAL = ROOT / 'extracted/exefs/code.bin'
 DEFAULT_BASE = ROOT / 'build/agent-work/H7-semantic/h7-integrated-stage/code.h7-final.bin'
 ORIGINAL_SHA = '1f98884fe997af22e032a14c51a46c872b05b0e079a0f29e307b0e059cfaa558'
-H7_BASE_SHA = '477ae5941b1163f56533b74128635e6deb22ddf796d4f4c18d65bdb02ddda3f8'
+H7_BASE_SHA = 'c98517b9c6f87b1261fd6b37051b03ef1b83e72bc3f498c66da01b826b2f96e9'
 TEXT_BASE = 0x00100000
 
 TARGET_SYMBOLS = {
@@ -64,8 +66,10 @@ TARGET_SYMBOLS = {
     'UiSpriteGroup_Init_002c3344': 0x002C3344,
     'UiSpriteGroup_BindTable_002c32f8': 0x002C32F8,
     'UiAnimSprite_SetupEx_002bdb2c': 0x002BDB2C,
+    'UiAnimSprite_Setup_002bf0a8': 0x002BF0A8,
     'UiAnimSprite_SetMode_002bdac0': 0x002BDAC0,
     'UiAnimSprite_SetMode_002bf030': 0x002BF030,
+    'UiAnimSprite_SetAnim_002bf030': 0x002BF030,
     'engine_func_002bda1c': 0x002BDA1C,
     'engine_func_002bda10': 0x002BDA10,
     'engine_func_002bda00': 0x002BDA00,
@@ -182,20 +186,32 @@ def stage_candidates(out_dir: Path, base_bin: Path):
             raise ValueError(f"Function {sub['id']} overflows window by {-margin} bytes!")
 
         blob = bytearray(raw)
+        local_offsets = resolve_local_sections(obj_path, sub['cand_fn'], addr, blob, win_sz)
         for r in relocs:
+            if r.offset in local_offsets:
+                continue
             if r.symbol_name in TARGET_SYMBOLS:
                 tgt = TARGET_SYMBOLS[r.symbol_name]
                 site = addr + r.offset
-                if r.relocation_type == 28: # R_ARM_CALL
-                    word = branch_word(site, tgt, is_bl=True)
-                    struct.pack_into('<I', blob, r.offset, word)
-                elif r.relocation_type == 29: # R_ARM_JUMP24
-                    word = branch_word(site, tgt, is_bl=False)
-                    struct.pack_into('<I', blob, r.offset, word)
+                if r.relocation_type in (28, 29):
+                    if r.symbol_name == 'qsort_002b7f0a':
+                        relocate_thumb_call(blob, r.offset, addr, tgt, r.relocation_type, win_sz)
+                    else:
+                        if tgt & 3:
+                            raise ValueError(f"Unaligned ARM branch target {r.symbol_name}: {tgt:#x}")
+                        word = branch_word(site, tgt, is_bl=(r.relocation_type == 28))
+                        struct.pack_into('<I', blob, r.offset, word)
                 elif r.relocation_type == 2: # R_ARM_ABS32
                     struct.pack_into('<I', blob, r.offset, tgt)
+                else:
+                    raise ValueError(f'Unsupported relocation {r.relocation_type} in {sub["id"]}')
+            else:
+                raise ValueError(f'Unresolved relocation {r.symbol_name!r} at {r.offset:#x} in {sub["id"]}; section relocations need explicit handling')
 
-        # Pad remaining window with NOP (0xE1A00000)
+        # Veneers consume candidate window space and must be included in padding.
+        margin = win_sz - len(blob)
+        if margin < 0 or margin % 4:
+            raise ValueError(f'Invalid remaining window: {margin}')
         blob.extend(b'\x00\x00\xa0\xe1' * (margin // 4))
 
         off = addr - TEXT_BASE

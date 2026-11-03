@@ -6,12 +6,15 @@ typedef uint8_t u8;
 extern "C" {
     void* AsdMem_Alloc_002c4b84(u32 heap, u32 flag, u32 unused, u32 size, u32 align);
     void  AsdMem_Zero_002c4b30(void* ptr, u32 size);
-    void* AsdTask_Create_002c5978(const char* name, u32 prio, u32 f1, u32 f2, void* cb, void* work, u32 parent);
-    void* AsdTask_CreateDraw_002c4c00(const char* name, u32 prio, u32 f1, u32 f2, void* cb, void* work, u32 parent);
+    void* AsdTask_Create_002c5978(const char* name, u32 prio, u32 f1, u32 f2, void* cb, void* work, void* parent);
+    void* AsdTask_CreateDraw_002c4c00(const char* name, u32 prio, u32 f1, u32 f2, void* cb, u32 u1, void* work, void* parent);
     void  UiSpriteGroup_Init_002c3344(void* group);
-    void  UiSpriteGroup_BindTable_002c32f8(void* group, u32 a, u32 b, void* c, u32 d, void* e, u32 f, u32 g, void* h, u32 i);
-    void  UiAnimSprite_SetupEx_002bdb2c(void* sprite, u32 id, u32 param, u32 unused, void* group, u32 flag, float scale);
+    void  UiSpriteGroup_BindTable_002c32f8(void* group, const void* a1, u32 a2, const void* a3, u32 a4, const void* a5, u32 a6, u32 a7, u32 a8, const void* a9, u32 a10);
+    void  UiAnimSprite_SetupEx_002bdb2c(void* sprite, u32 id, u32 param, void* group, u32 flag, float scale);
     void  UiAnimSprite_SetMode_002bdac0(void* sprite, u32 mode, u32 flags);
+    void* AsdText_func_002bda1c(u32 arg0);
+    void  script_vm_func_002bda10(void* handle, u32 alpha);
+    void  ui_func_002bda00(void* handle, u32 a1, u32 rgba, float scale);
 
     extern void* g_InfoWinWork_0043e128;
     extern u8    g_InfoWinSpriteTable_00403aa8[];
@@ -25,23 +28,28 @@ extern "C" void h7_ui_infowin_init_candidate() {
     }
     AsdMem_Zero_002c4b30(work, 0x1BC);
 
-    void* calc_task = AsdTask_Create_002c5978("InfoWin Calc", 1, 0, 0, reinterpret_cast<void*>(0x0011B1BC), work, 0);
+    void* calc_task = AsdTask_Create_002c5978("InfoWin Calc", 1, 0, 0, reinterpret_cast<void*>(0x0011B1BC), nullptr, nullptr);
     *reinterpret_cast<void**>(work) = calc_task;
 
-    AsdTask_CreateDraw_002c4c00("InfoWin DrawUpLeft", 0x81, 0, 0, reinterpret_cast<void*>(0x0011AE10), work, reinterpret_cast<u32>(calc_task));
-    AsdTask_CreateDraw_002c4c00("InfoWin DrawUpRight", 0xDF, 0, 0, reinterpret_cast<void*>(0x0011AE10), work, reinterpret_cast<u32>(calc_task));
+    AsdTask_CreateDraw_002c4c00("InfoWin DrawUpLeft", 0x81, 0, 0, reinterpret_cast<void*>(0x0011AE10), 0, nullptr, calc_task);
+    AsdTask_CreateDraw_002c4c00("InfoWin DrawUpRight", 0xDF, 0, 0, reinterpret_cast<void*>(0x0011AE10), 0, nullptr, calc_task);
 
     u8* group = work + 0x24;
     UiSpriteGroup_Init_002c3344(group);
 
     u8* table = g_InfoWinSpriteTable_00403aa8;
-    UiSpriteGroup_BindTable_002c32f8(group, 0, 0x24, table, 0, 0, 0, 0, 0, 0);
+    UiSpriteGroup_BindTable_002c32f8(group, table, 0x24, 0, 0, 0, 0, 0, 0, 0, 0);
 
-    UiAnimSprite_SetupEx_002bdb2c(work + 0x44, 0x0E, 0x87, 0, group, 1, 1.0f);
+    UiAnimSprite_SetupEx_002bdb2c(work + 0x44, 0x0E, 0x87, group, 1, 1.0f);
     UiAnimSprite_SetMode_002bdac0(work + 0x44, 0, 0);
 
-    UiAnimSprite_SetupEx_002bdb2c(work + 0xD0, 0x0E, 0x87, 0, group, 1, 1.0f);
-    UiAnimSprite_SetMode_002bdac0(work + 0xD0, 0, 0);
+    UiAnimSprite_SetupEx_002bdb2c(work + 0xD0, 0x0E, 0x87, group, 1, 1.0f);
+    UiAnimSprite_SetMode_002bdac0(work + 0xD0, 2, 0);
+
+    void* handle = AsdText_func_002bda1c(0);
+    *reinterpret_cast<void**>(work + 0x1B8) = handle;
+    script_vm_func_002bda10(handle, 0xFF);
+    ui_func_002bda00(handle, 0, 0x646464FF, 0.0f);
 
     *reinterpret_cast<u32*>(work + 0x10) = 0x1E;
 }

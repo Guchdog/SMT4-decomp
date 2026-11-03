@@ -60,23 +60,26 @@ extern "C" void h8_ui_statusdown_skilllist_candidate(const u8* skill_bitfield) {
     void* page = work + 0xDCC;
     UiPage_Setup_0029fae8(page, total, 11, 1, 0, 1);
 
-    u8* opt = UiMenu_GetSortOptions_002a0fac(work);
-    u8 mode_byte = opt[0x15];
-    u32 crit = mode_byte & 0x7F;
-    bool desc = (mode_byte >> 7) != 0;
+    u8* work_after = static_cast<u8*>(*reinterpret_cast<void* volatile*>(&g_StatusDownContext_0044e190));
+    volatile u8* opt = UiMenu_GetSortOptions_002a0fac(work_after);
 
-    void* base = work + 0x5C8;
-    s16 count = *reinterpret_cast<s16*>(work + 0xDC8);
-
-    if (crit == 1) {
-        CompareFn cmp = desc ? StatusDown_SkillSortByIdDesc : StatusDown_SkillSortByIdAsc;
-        qsort_002b7f0a(base, count, 4, cmp);
-    } else if (crit == 0x21) {
-        CompareFn cmp = desc ? StatusDown_SkillSortByNameDesc : StatusDown_SkillSortByNameAsc;
-        qsort_002b7f0a(base, count, 4, cmp);
-    } else if (crit == 3) {
-        CompareFn cmp = desc ? StatusDown_SkillSortByCostDesc : StatusDown_SkillSortByCostAsc;
-        qsort_002b7f0a(base, count, 4, cmp);
+    u8 mode_1 = opt[0x15];
+    if ((mode_1 & 0x7F) == 1) {
+        CompareFn cmp = (mode_1 >> 7) ? StatusDown_SkillSortByIdDesc : StatusDown_SkillSortByIdAsc;
+        s16 count = *reinterpret_cast<volatile s16*>(work_after + 0xDC8);
+        qsort_002b7f0a(work_after + 0x5C8, count, 4, cmp);
+    }
+    u8 mode_2 = opt[0x15];
+    if ((mode_2 & 0x7F) == 0x21) {
+        CompareFn cmp = (mode_2 >> 7) ? StatusDown_SkillSortByCostDesc : StatusDown_SkillSortByCostAsc;
+        s16 count = *reinterpret_cast<volatile s16*>(work_after + 0xDC8);
+        qsort_002b7f0a(work_after + 0x5C8, count, 4, cmp);
+    }
+    u8 mode_3 = opt[0x15];
+    if ((mode_3 & 0x7F) == 3) {
+        CompareFn cmp = (mode_3 >> 7) ? StatusDown_SkillSortByNameDesc : StatusDown_SkillSortByNameAsc;
+        s16 count = *reinterpret_cast<volatile s16*>(work_after + 0xDC8);
+        qsort_002b7f0a(work_after + 0x5C8, count, 4, cmp);
     }
 
     work[0x410] = 1;
