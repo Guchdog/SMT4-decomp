@@ -755,8 +755,32 @@ extern "C" __attribute__((naked)) void engine_func_002f10dc() {
 }
 
 // DECOMP_FUNC(0x002f2878, 128)
-extern "C" __attribute__((naked)) void camp_func_002f2878() {
-    asm volatile(".arm\n.inst 0xe92d4070\n.inst 0xe1a04000\n.inst 0xe1d000b0\n.inst 0xe1a05001\n.inst 0xebfeb11e\n.inst 0xe1a06000\n.inst 0xe1d500b0\n.inst 0xebfeb11b\n.inst 0xe1d01006\n.inst 0x13a00001\n.inst 0x1a000013\n.inst 0xe1d60000\n.inst 0x13e00000\n.inst 0x1a000010\n.inst 0xe1d400b0\n.inst 0xebff1aaa\n.inst 0xe1a04000\n.inst 0xe1d500b0\n.inst 0xebff1aa7\n.inst 0xe1a01000\n.inst 0xe5d00002\n.inst 0xe5d42002\n.inst 0xe0500002\n.inst 0x1a000006\n.inst 0xe5d40003\n.inst 0xe5d12003\n.inst 0xe0500002\n.inst 0x1a000002\n.inst 0xe1d100b0\n.inst 0xe1d410b0\n.inst 0xe0400001\n.inst 0xe8bd8070\n");
+extern "C" u32 camp_func_0029ed08(u16 id);
+
+extern "C" s32 camp_func_002f2878(const u16* a, const u16* b) {
+    u32 flags_a = camp_func_0029ed08(*a);
+    u32 flags_b = camp_func_0029ed08(*b);
+
+    s32 res;
+    if (flags_b & ~flags_a) {
+        res = 1;
+    } else if (flags_a & ~flags_b) {
+        res = -1;
+    } else {
+        const u8* rec_a = camp_func_002b9364(*a);
+        const u8* rec_b = camp_func_002b9364(*b);
+
+        res = static_cast<s32>(rec_b[2]) - static_cast<s32>(rec_a[2]);
+        if (res == 0) {
+            res = static_cast<s32>(rec_a[3]) - static_cast<s32>(rec_b[3]);
+            if (res == 0) {
+                res = static_cast<s32>(*reinterpret_cast<const u16*>(rec_b)) -
+                      static_cast<s32>(*reinterpret_cast<const u16*>(rec_a));
+            }
+        }
+    }
+    asm volatile("" : "+r"(res));
+    return res;
 }
 
 // DECOMP_FUNC(0x002f6cf0, 148)
