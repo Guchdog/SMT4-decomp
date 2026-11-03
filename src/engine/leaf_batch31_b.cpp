@@ -205,95 +205,53 @@ extern "C" void* func_0037f7e0(void* obj, s32 index) {
 }
 
 // DECOMP_FUNC(0x003f5a3c, 44)
-extern "C" __attribute__((naked)) void nn_sdk_func_003f5a3c() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe92d4070\n"
-        ".inst 0xe1a04000\n"
-        ".inst 0xe1a05001\n"
-        ".inst 0xe59f1010\n"
-        ".inst 0xe3a00000\n"
-        ".inst 0xe1a00000\n"
-        ".inst 0xe59f0008\n"
-        ".inst 0xe1c040f0\n"
-        ".inst 0xe8bd8070\n"
-        ".word 0x04000047 @ bounded tail data\n"
-        ".word 0x0044e918 @ bounded tail data\n"
-    );
+extern "C" void* nn_sdk_func_003f5a3c(u32 a0, u32 a1) {
+    u32* target = reinterpret_cast<u32*>(0x0044E918);
+    target[0] = a0;
+    target[1] = a1;
+    return target;
 }
 
 // DECOMP_FUNC(0x003f5e08, 44)
-extern "C" __attribute__((naked)) void nn_sdk_func_003f5e08() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe92d4070\n"
-        ".inst 0xe1a04000\n"
-        ".inst 0xe1a05001\n"
-        ".inst 0xe59f1010\n"
-        ".inst 0xe3a00000\n"
-        ".inst 0xe1a00000\n"
-        ".inst 0xe59f0008\n"
-        ".inst 0xe1c040f0\n"
-        ".inst 0xe8bd8070\n"
-        ".word 0x04000068 @ bounded tail data\n"
-        ".word 0x0044e930 @ bounded tail data\n"
-    );
+extern "C" void* nn_sdk_func_003f5e08(u32 a0, u32 a1) {
+    u32* target = reinterpret_cast<u32*>(0x0044E930);
+    target[0] = a0;
+    target[1] = a1;
+    return target;
 }
 
 // DECOMP_FUNC(0x003f6c40, 44)
-extern "C" __attribute__((naked)) void nn_sdk_func_003f6c40() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe92d4070\n"
-        ".inst 0xe1a04000\n"
-        ".inst 0xe1a05001\n"
-        ".inst 0xe59f1010\n"
-        ".inst 0xe3a00000\n"
-        ".inst 0xe1a00000\n"
-        ".inst 0xe59f0008\n"
-        ".inst 0xe1c040f0\n"
-        ".inst 0xe8bd8070\n"
-        ".word 0x040000eb @ bounded tail data\n"
-        ".word 0x0044e990 @ bounded tail data\n"
-    );
+extern "C" void* nn_sdk_func_003f6c40(u32 a0, u32 a1) {
+    u32* target = reinterpret_cast<u32*>(0x0044E990);
+    target[0] = a0;
+    target[1] = a1;
+    return target;
 }
 
 // DECOMP_FUNC(0x003e0df8, 48)
-extern "C" __attribute__((naked)) void func_003e0df8() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe5902004\n"
-        ".inst 0xe5903000\n"
-        ".inst 0xe0422003\n"
-        ".inst 0xe1a020c2\n"
-        ".inst 0xe3520c01\n"
-        ".inst 0x95812000\n"
-        ".inst 0x95900000\n"
-        ".inst 0x859f0008\n"
-        ".inst 0x95810004\n"
-        ".inst 0x93a00000\n"
-        ".inst 0xe12fff1e\n"
-        ".word 0xe0e046c7 @ bounded tail data\n"
-    );
+extern "C" s32 func_003e0df8(const void* range, void* out) {
+    const char* start = *reinterpret_cast<const char* const*>(range);
+    const char* end = *reinterpret_cast<const char* const*>(static_cast<const char*>(range) + 4);
+    s32 count = static_cast<s32>(end - start) >> 1;
+    if (static_cast<u32>(count) <= 0x100) {
+        reinterpret_cast<u32*>(out)[0] = static_cast<u32>(count);
+        reinterpret_cast<const void**>(out)[1] = start;
+        return 0;
+    }
+    return static_cast<s32>(0xE0E046C7);
 }
 
 // DECOMP_FUNC(0x003e0e7c, 48)
-extern "C" __attribute__((naked)) void func_003e0e7c() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe5902004\n"
-        ".inst 0xe5903000\n"
-        ".inst 0xe0422003\n"
-        ".inst 0xe1a020c2\n"
-        ".inst 0xe3520c01\n"
-        ".inst 0x95812000\n"
-        ".inst 0x95900000\n"
-        ".inst 0x859f0008\n"
-        ".inst 0x95810004\n"
-        ".inst 0x93a00000\n"
-        ".inst 0xe12fff1e\n"
-        ".word 0xe0e046c8 @ bounded tail data\n"
-    );
+extern "C" s32 func_003e0e7c(const void* range, void* out) {
+    const char* start = *reinterpret_cast<const char* const*>(range);
+    const char* end = *reinterpret_cast<const char* const*>(static_cast<const char*>(range) + 4);
+    s32 count = static_cast<s32>(end - start) >> 1;
+    if (static_cast<u32>(count) <= 0x100) {
+        reinterpret_cast<u32*>(out)[0] = static_cast<u32>(count);
+        reinterpret_cast<const void**>(out)[1] = start;
+        return 0;
+    }
+    return static_cast<s32>(0xE0E046C8);
 }
 
 // DECOMP_FUNC(0x003e70c8, 48)
