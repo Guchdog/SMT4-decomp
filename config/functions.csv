@@ -6053,7 +6053,7 @@ address,size,status,category,name,src_file
 0x002cf68c,24,matching,camp,camp_func_002cf68c,src/engine/leaf_batch22_b.cpp
 0x002cf6a4,24,matching,camp,camp_func_002cf6a4,src/engine/leaf_batch22_b.cpp
 0x002cf6bc,24,matching,camp,camp_func_002cf6bc,src/engine/leaf_batch22_b.cpp
-0x002cf6d4,128,matching,script_vm,script_vm_func_002cf6d4,src/engine/leaf_batch30_c.cpp
+0x002cf6d4,128,non_matching,script_vm,script_vm_func_002cf6d4,src/engine/leaf_batch30_c.cpp
 0x002cf754,20,matching,camp,camp_func_002cf754,src/engine/leaf_batch21_b.cpp
 0x002cf768,320,matching,ui,ui_func_002cf768,src/engine/leaf_batch32_c.cpp
 0x002cf8a8,532,matching,ui,ui_func_002cf8a8,src/engine/leaf_batch42_b.cpp

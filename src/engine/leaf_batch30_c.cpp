@@ -731,8 +731,30 @@ extern "C" __attribute__((naked)) void script_vm_func_002c8a78() {
 }
 
 // DECOMP_FUNC(0x002cf6d4, 128)
-extern "C" __attribute__((naked)) void script_vm_func_002cf6d4() {
-    asm volatile(".arm\n.inst 0xe92d41f0\n.inst 0xe3a00001\n.inst 0xe59f606c\n.inst 0xe5964000\n.inst 0xe5c405c4\n.inst 0xebfe04ba\n.inst 0xe2840b01\n.inst 0xe2800f7f\n.inst 0xe1a05000\n.inst 0xebff3ed8\n.inst 0xe1a07000\n.inst 0xe1a00005\n.inst 0xebff3ecf\n.inst 0xe0800007\n.inst 0xe3a01001\n.inst 0xe0840080\n.inst 0xe2800c06\n.inst 0xe1d00cb4\n.inst 0xebff0263\n.inst 0xe3a02000\n.inst 0xe1a01002\n.inst 0xe2840034\n.inst 0xebffb8e3\n.inst 0xe5960000\n.inst 0xe3a01001\n.inst 0xe5902004\n.inst 0xe5802008\n.inst 0xe5a01004\n.inst 0xe3a02000\n.inst 0xe580200c\n.inst 0xe8bd81f0\n.word 0x0043dd50\n");
+extern "C" void script_vm_func_002509d8();
+extern "C" s32 camp_func_0029f260(void* slot);
+extern "C" s32 camp_func_0029f248(void* slot);
+extern "C" void script_vm_func_002900b0(u16 id, u32 mode);
+extern "C" void camp_func_002bdac0(void* entity, u32 p1, u32 p2);
+
+extern "C" void script_vm_func_002cf6d4() {
+    auto* const ctx = *reinterpret_cast<u8* const*>(0x0043DD50u);
+    ctx[0x5C4] = 1;
+    script_vm_func_002509d8();
+
+    auto* const slot = ctx + 0x5FC;
+    const s32 q1 = camp_func_0029f260(slot);
+    const s32 q2 = camp_func_0029f248(slot);
+    const u32 sum = static_cast<u32>(q1 + q2);
+
+    const u16 id = *reinterpret_cast<const u16*>(ctx + 0x6C4 + sum * 2);
+    script_vm_func_002900b0(id, 1);
+    camp_func_002bdac0(ctx + 0x34, 0, 0);
+
+    auto* const ctx2 = *reinterpret_cast<u8* const*>(0x0043DD50u);
+    *reinterpret_cast<u32*>(ctx2 + 8) = *reinterpret_cast<const u32*>(ctx2 + 4);
+    *reinterpret_cast<u32*>(ctx2 + 4) = 1;
+    *reinterpret_cast<u32*>(ctx2 + 0x10) = 0;
 }
 
 // DECOMP_FUNC(0x002cfc60, 128)
