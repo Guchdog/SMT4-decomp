@@ -3,52 +3,27 @@
 // Batch 31 B: raw ARM/Thumb encodings with explicit bounded return/data tails.
 
 // DECOMP_FUNC(0x003e4eb0, 12)
-extern "C" __attribute__((naked)) void func_003e4eb0() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe59f0000\n"
-        ".inst 0xe12fff1e\n"
-        ".word 0x0044e870 @ bounded tail data\n"
-    );
+extern "C" void* func_003e4eb0(void) {
+    return reinterpret_cast<void*>(0x0044E870);
 }
 // DECOMP_FUNC(0x003e5194, 12)
-extern "C" __attribute__((naked)) void func_003e5194() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe59f0000\n"
-        ".inst 0xe12fff1e\n"
-        ".word 0x00472140 @ bounded tail data\n"
-    );
+extern "C" void* func_003e5194(void) {
+    return reinterpret_cast<void*>(0x00472140);
 }
 
 // DECOMP_FUNC(0x003e51a8, 12)
-extern "C" __attribute__((naked)) void func_003e51a8() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe59f0000\n"
-        ".inst 0xe12fff1e\n"
-        ".word 0x00472238 @ bounded tail data\n"
-    );
+extern "C" void* func_003e51a8(void) {
+    return reinterpret_cast<void*>(0x00472238);
 }
 
 // DECOMP_FUNC(0x003e5224, 12)
-extern "C" __attribute__((naked)) void func_003e5224() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe59f0000\n"
-        ".inst 0xe12fff1e\n"
-        ".word 0x004722a0 @ bounded tail data\n"
-    );
+extern "C" void* func_003e5224(void) {
+    return reinterpret_cast<void*>(0x004722A0);
 }
 
 // DECOMP_FUNC(0x003e6024, 12)
-extern "C" __attribute__((naked)) void func_003e6024() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe59f0000\n"
-        ".inst 0xe12fff1e\n"
-        ".word 0x00472030 @ bounded tail data\n"
-    );
+extern "C" void* func_003e6024(void) {
+    return reinterpret_cast<void*>(0x00472030);
 }
 
 // DECOMP_FUNC(0x003e6030, 12)
