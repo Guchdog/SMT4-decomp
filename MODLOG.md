@@ -1179,3 +1179,17 @@ helpers, and full H2 equivalence remain unverified. See [function record](docs/f
 [review](docs/agent-work/h2-296f18-independent-review-run002.md).
 
 \r\n
+
+# H2 cursor setup orchestration 0x0029FAE8 — 2026-11-02
+
+Converted the 452-byte cursor setup wrapper to typed C++. The 392-byte body
+retains the original divider and axis/ID helpers and resolves seven ARM `BL`
+relocations to pinned even ARM entries. The coordinator and independent runs
+each passed 60/60 offline differential cases, including the stack `wrap_row`
+and `repeat` arguments, exact H2 helper trace and final axis records. A
+wrong-helper-target control was detected. The ledger now truthfully records
+`non_matching`; full TitleConfig lifecycle, audio/input timing and runtime
+reachability remain unverified. See [function record](docs/function-records/0x0029fae8.md),
+[conversion evidence](docs/agent-work/h2-29fae8-cursor-setup-conversion.md),
+[contract](docs/agent-work/h2-0029fae8-contract.md), and
+[independent review](docs/agent-work/h2-29fae8-independent-review.md).
