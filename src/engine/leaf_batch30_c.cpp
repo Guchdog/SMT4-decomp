@@ -736,8 +736,34 @@ extern "C" __attribute__((naked)) void engine_func_002baacc() {
 }
 
 // DECOMP_FUNC(0x002bc170, 144)
-extern "C" __attribute__((naked)) void engine_func_002bc170() {
-    asm volatile(".arm\n.inst 0xed9f3a1f\n.inst 0xee306ac0\n.inst 0xee304a80\n.inst 0xee715ac1\n.inst 0xee724ac2\n.inst 0xeddf2a1c\n.inst 0xee315a81\n.inst 0xedc02a01\n.inst 0xedc02a02\n.inst 0xedc02a04\n.inst 0xedc02a06\n.inst 0xeec30a06\n.inst 0xedc02a08\n.inst 0xedc02a09\n.inst 0xedc02a0c\n.inst 0xeddf3a11\n.inst 0xedc02a0d\n.inst 0xe2801038\n.inst 0xecc12a02\n.inst 0xee831a25\n.inst 0xee612a23\n.inst 0xee251a41\n.inst 0xee830a24\n.inst 0xee203aa3\n.inst 0xee640a60\n.inst 0xed800a0a\n.inst 0xee621a00\n.inst 0xed803a00\n.inst 0xedc00a03\n.inst 0xedc02a05\n.inst 0xed801a07\n.inst 0xedc01a0b\n.inst 0xe12fff1e\n.word 0x3f800000\n.word 0x40000000\n.word 0x00000000\n");
+extern "C" void engine_func_002bc170(float* mtx, float left, float right, float bottom, float top, float near_val, float far_val) {
+    const float dx = right - left;
+    const float dy = top - bottom;
+    const float dz = far_val - near_val;
+
+    const float inv_dx = 1.0f / dx;
+    const float inv_dy = 1.0f / dy;
+    const float inv_dz = 1.0f / dz;
+
+    mtx[0] = inv_dx * 2.0f;
+    mtx[1] = 0.0f;
+    mtx[2] = 0.0f;
+    mtx[3] = -(right + left) * inv_dx;
+
+    mtx[4] = 0.0f;
+    mtx[5] = inv_dy * 2.0f;
+    mtx[6] = 0.0f;
+    mtx[7] = -(top + bottom) * inv_dy;
+
+    mtx[8] = 0.0f;
+    mtx[9] = 0.0f;
+    mtx[10] = inv_dz;
+    mtx[11] = near_val * inv_dz;
+
+    mtx[12] = 0.0f;
+    mtx[13] = 0.0f;
+    mtx[14] = 0.0f;
+    mtx[15] = 1.0f;
 }
 
 // DECOMP_FUNC(0x002bdb2c, 152)
@@ -780,8 +806,32 @@ extern "C" __attribute__((naked)) void ui_func_002bf0a8() {
 }
 
 // DECOMP_FUNC(0x002c25f4, 144)
-extern "C" __attribute__((naked)) void engine_func_002c25f4() {
-    asm volatile(".arm\n.inst 0xe59f007c\n.inst 0xe92d4010\n.inst 0xe590409c\n.inst 0xe3540000\n.inst 0x0a00001a\n.inst 0xe5940004\n.inst 0xe3500000\n.inst 0x1a000002\n.inst 0xe5940018\n.inst 0xe3500000\n.inst 0x0a000014\n.inst 0xe5941020\n.inst 0xe5940018\n.inst 0xe0611181\n.inst 0xe1a01101\n.inst 0xeb00093e\n.inst 0xe3a00000\n.inst 0xe584000c\n.inst 0xe5840010\n.inst 0xe5840020\n.inst 0xe5840028\n.inst 0xe5840014\n.inst 0xe5840024\n.inst 0xe5840034\n.inst 0xe59f1020\n.inst 0xe5840030\n.inst 0xe5940004\n.inst 0xe5810000\n.inst 0xe5941008\n.inst 0xe0800001\n.inst 0xe59f100c\n.inst 0xe5810000\n.inst 0xe8bd8010\n.word 0x004c6290\n.word 0x004652a0\n.word 0x004652a4\n");
+extern "C" void engine_func_002c25f4() {
+    auto* const r4 = *reinterpret_cast<u8* const*>(0x004C6290u + 0x9C);
+    if (r4 == nullptr) {
+        return;
+    }
+    const u32 f4 = *reinterpret_cast<const u32*>(r4 + 4);
+    auto* const f18 = *reinterpret_cast<volatile u8* const*>(r4 + 0x18);
+    if (f4 == 0 && f18 == nullptr) {
+        return;
+    }
+
+    const u32 f20 = *reinterpret_cast<const u32*>(r4 + 0x20);
+    engine_func_002c4b30(f18, f20 * 28u);
+
+    *reinterpret_cast<u32*>(r4 + 0x0C) = 0;
+    *reinterpret_cast<u32*>(r4 + 0x10) = 0;
+    *reinterpret_cast<u32*>(r4 + 0x20) = 0;
+    *reinterpret_cast<u32*>(r4 + 0x28) = 0;
+    *reinterpret_cast<u32*>(r4 + 0x14) = 0;
+    *reinterpret_cast<u32*>(r4 + 0x24) = 0;
+    *reinterpret_cast<u32*>(r4 + 0x34) = 0;
+    *reinterpret_cast<u32*>(r4 + 0x30) = 0;
+
+    *reinterpret_cast<u32*>(0x004652A0u) = f4;
+    const u32 f8 = *reinterpret_cast<const u32*>(r4 + 8);
+    *reinterpret_cast<u32*>(0x004652A4u) = f4 + f8;
 }
 
 // DECOMP_FUNC(0x002c3734, 128)
@@ -837,8 +887,40 @@ extern "C" void engine_func_002c3734(u32 mode, u32 param) {
 }
 
 // DECOMP_FUNC(0x002c854c, 136)
-extern "C" __attribute__((naked)) void battle_func_002c854c() {
-    asm volatile(".arm\n.inst 0xe92d4010\n.inst 0xe5900008\n.inst 0xebffdbb0\n.inst 0xe3500000\n.inst 0x0a000016\n.inst 0xe59f005c\n.inst 0xe5900000\n.inst 0xe3500000\n.inst 0x0a000012\n.inst 0xe59f1050\n.inst 0xe5911000\n.inst 0xe3510000\n.inst 0x0a00000e\n.inst 0xe59f1044\n.inst 0xe5911000\n.inst 0xe3510000\n.inst 0x0a00000a\n.inst 0xe59f1038\n.inst 0xe5911000\n.inst 0xe3510000\n.inst 0x0a000006\n.inst 0xe5911634\n.inst 0xe3110702\n.inst 0x13a00000\n.inst 0x1a000003\n.inst 0xe590000c\n.inst 0xe2100004\n.inst 0x0a000000\n.inst 0xe3a00001\n.inst 0xe8bd8010\n.word 0x00435d30\n.word 0x00434290\n.word 0x00435d18\n.word 0x004342c8\n");
+extern "C" u32 battle_func_002c854c(const void* obj) {
+    void* const inner = *reinterpret_cast<void* const*>(static_cast<const u8*>(obj) + 8);
+    if (battle_func_002bf41c(reinterpret_cast<uintptr_t>(inner)) == 0) {
+        return 1;
+    }
+
+    auto* const p_5d30 = *reinterpret_cast<u8* const*>(0x00435D30u);
+    if (p_5d30 == nullptr) {
+        return 1;
+    }
+    auto* const p_4290 = *reinterpret_cast<u8* const*>(0x00434290u);
+    if (p_4290 == nullptr) {
+        return 1;
+    }
+    auto* const p_5d18 = *reinterpret_cast<u8* const*>(0x00435D18u);
+    if (p_5d18 == nullptr) {
+        return 1;
+    }
+    auto* const p_42c8 = *reinterpret_cast<u8* const*>(0x004342C8u);
+    if (p_42c8 == nullptr) {
+        return 1;
+    }
+
+    const u32 flag_state = *reinterpret_cast<const u32*>(p_42c8 + 0x634);
+    if ((flag_state & 0x80000u) != 0) {
+        return 0;
+    }
+
+    const u32 ui_flag = *reinterpret_cast<const u32*>(p_5d30 + 0xC);
+    if ((ui_flag & 4u) == 0) {
+        return 0;
+    }
+
+    return 1;
 }
 
 // DECOMP_FUNC(0x002c8750, 128)
@@ -868,8 +950,32 @@ extern "C" __attribute__((minsize)) void script_vm_func_002c8750() {
 }
 
 // DECOMP_FUNC(0x002c8a78, 148)
-extern "C" __attribute__((naked)) void script_vm_func_002c8a78() {
-    asm volatile(".arm\n.inst 0xe92d41f0\n.inst 0xe3a04008\n.inst 0xe3a07000\n.inst 0xe59f607c\n.inst 0xe0841084\n.inst 0xe0811184\n.inst 0xe5960000\n.inst 0xe0805101\n.inst 0xe2855a01\n.inst 0xe2855f45\n.inst 0xe5d50000\n.inst 0xe3500000\n.inst 0x15950020\n.inst 0x13500000\n.inst 0x0a000001\n.inst 0xebfa280f\n.inst 0xe5c57024\n.inst 0xe2544001\n.inst 0x5afffff0\n.inst 0xe3a04002\n.inst 0xe5960000\n.inst 0xe0841084\n.inst 0xe0811184\n.inst 0xe0805101\n.inst 0xe2855a01\n.inst 0xe2855e2a\n.inst 0xe5d50000\n.inst 0xe3500000\n.inst 0x15950020\n.inst 0x13500000\n.inst 0x0a000001\n.inst 0xebfa27ff\n.inst 0xe5c57024\n.inst 0xe2544001\n.inst 0x5afffff0\n.inst 0xe8bd81f0\n.word 0x00447e10\n");
+extern "C" void func_00152af8(void*);
+
+extern "C" void script_vm_func_002c8a78() {
+    auto* const base = *reinterpret_cast<u8* const*>(0x00447E10u);
+
+    for (s32 i = 8; i >= 0; --i) {
+        auto* const slot = base + (i * 44) + 0x1114;
+        if (slot[0] != 0) {
+            void* const item = *reinterpret_cast<void* const*>(slot + 0x20);
+            if (item != nullptr) {
+                func_00152af8(item);
+                slot[0x24] = 0;
+            }
+        }
+    }
+
+    for (s32 i = 2; i >= 0; --i) {
+        auto* const slot = base + (i * 44) + 0x12A0;
+        if (slot[0] != 0) {
+            void* const item = *reinterpret_cast<void* const*>(slot + 0x20);
+            if (item != nullptr) {
+                func_00152af8(item);
+                slot[0x24] = 0;
+            }
+        }
+    }
 }
 
 // DECOMP_FUNC(0x002cf6d4, 128)
@@ -919,8 +1025,41 @@ extern "C" __attribute__((minsize)) u32 engine_func_002cfc60() {
 }
 
 // DECOMP_FUNC(0x002d0400, 152)
-extern "C" __attribute__((naked)) void script_vm_func_002d0400() {
-    asm volatile(".arm\n.inst 0xe92d41f0\n.inst 0xe1a05000\n.inst 0xe1a06001\n.inst 0xe1d000b0\n.inst 0xebff2321\n.inst 0xe1a07000\n.inst 0xe1d600b0\n.inst 0xe3a04000\n.inst 0xebff231d\n.inst 0xe1d71000\n.inst 0x13a04001\n.inst 0xe1d00007\n.inst 0x13e04000\n.inst 0x03540000\n.inst 0x1a00000b\n.inst 0xe1d500b0\n.inst 0xebff98ae\n.inst 0xe1a05000\n.inst 0xe1d600b0\n.inst 0xebff98ab\n.inst 0xe3550000\n.inst 0x13500000\n.inst 0xe3a04000\n.inst 0x0a000002\n.inst 0xe1d000b4\n.inst 0xe1d510b4\n.inst 0xe0404001\n.inst 0xe1a00004\n.inst 0xe8bd81f0\n.inst 0xe1a02000\n.inst 0xe5d00000\n.inst 0xe5d13000\n.inst 0xe0500003\n.inst 0x1a000002\n.inst 0xe5d20001\n.inst 0xe5d11001\n.inst 0xe0400001\n.inst 0xe12fff1e\n");
+extern "C" u32 camp_func_0029909c(u16 id);
+extern "C" void* func_002b6700(u16 id);
+
+extern "C" s32 script_vm_func_002d0400(const u16* a, const u16* b) {
+    const u32 fa = camp_func_0029909c(*a);
+    const u32 fb = camp_func_0029909c(*b);
+
+    s32 diff = 0;
+    if ((fa & ~fb) != 0) {
+        diff = 1;
+    }
+    if ((fb & ~fa) != 0) {
+        diff = -1;
+    }
+    if (diff != 0) {
+        return diff;
+    }
+
+    auto* const ra = static_cast<const u8*>(func_002b6700(*a));
+    auto* const rb = static_cast<const u8*>(func_002b6700(*b));
+    if (ra == nullptr || rb == nullptr) {
+        return 0;
+    }
+
+    const s32 pa = *reinterpret_cast<const u16*>(ra + 4);
+    const s32 pb = *reinterpret_cast<const u16*>(rb + 4);
+    return pb - pa;
+}
+
+extern "C" s32 script_vm_func_002d0474(const u8* a, const u8* b) {
+    const s32 d0 = static_cast<s32>(a[0]) - static_cast<s32>(b[0]);
+    if (d0 != 0) {
+        return d0;
+    }
+    return static_cast<s32>(a[1]) - static_cast<s32>(b[1]);
 }
 
 // DECOMP_FUNC(0x002d54c4, 128)
