@@ -1020,134 +1020,99 @@ extern "C" void nn_sdk_func_00351b7c(void) {
     }
 }
 
+extern "C" u32 func_003523d8(void*, u32, u32, u32);
+
 // DECOMP_FUNC(0x00353160, 76)
-extern "C" __attribute__((naked)) void func_00353160() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe92d4008\n"
-        ".inst 0xe1a02000\n"
-        ".inst 0xe1a03001\n"
-        ".inst 0xe3a01001\n"
-        ".inst 0xe1a0000d\n"
-        ".inst 0xebfffc97\n"
-        ".inst 0xe59f1024\n"
-        ".inst 0xe1500001\n"
-        ".inst 0x03a00000\n"
-        ".inst 0x0a000005\n"
-        ".inst 0xe1b01fa0\n"
-        ".inst 0x1a000003\n"
-        ".inst 0xe5dd0000\n"
-        ".inst 0xe3500000\n"
-        ".inst 0x159f0008\n"
-        ".inst 0x0affffff\n"
-        ".inst 0xe8bd8008\n"
-        ".word 0xd8a083fa @ bounded tail data\n"
-        ".word 0xe0a13899 @ bounded tail data\n"
-    );
+extern "C" u32 func_00353160(u32 a0, u32 a1) {
+    u8 temp = 0;
+    u32 res = func_003523d8(&temp, 1, a0, a1);
+    if (res == 0xd8a083fa) {
+        return 0;
+    }
+    if (static_cast<s32>(res) < 0) {
+        return res;
+    }
+    if (temp != 0) {
+        return 0xe0a13899;
+    }
+    return 0;
 }
 
 // DECOMP_FUNC(0x0035f454, 76)
-extern "C" __attribute__((naked)) void func_0035f454() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe3520000\n"
-        ".inst 0xc59fc03c\n"
-        ".inst 0xe3a00000\n"
-        ".inst 0xda00000b\n"
-        ".inst 0xe0813080\n"
-        ".inst 0xe1d330b0\n"
-        ".inst 0xe3530000\n"
-        ".inst 0x0a000007\n"
-        ".inst 0xe3530040\n"
-        ".inst 0x1153000c\n"
-        ".inst 0x1a000001\n"
-        ".inst 0xe3a00001\n"
-        ".inst 0xe12fff1e\n"
-        ".inst 0xe2800001\n"
-        ".inst 0xe1520000\n"
-        ".inst 0xcafffff3\n"
-        ".inst 0xe3a00000\n"
-        ".inst 0xe12fff1e\n"
-        ".word 0x0000ff20 @ bounded tail data\n"
-    );
+extern "C" s32 func_0035f454(u32, const u16* str, s32 max_len) {
+    if (max_len <= 0) {
+        return 0;
+    }
+    for (s32 i = 0; i < max_len; ++i) {
+        u16 c = str[i];
+        if (c == 0) {
+            return 0;
+        }
+        if (c == 0x0040 || c == 0xFF20) {
+            return 1;
+        }
+    }
+    return 0;
 }
+
+extern "C" void engine_func_002c5ff4(void*, u32, u32);
 
 // DECOMP_FUNC(0x00379a28, 76)
-extern "C" __attribute__((naked)) void engine_func_00379a28() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe92d4070\n"
-        ".inst 0xe1a05000\n"
-        ".inst 0xe5910008\n"
-        ".inst 0xe1a04001\n"
-        ".inst 0xe5911010\n"
-        ".inst 0xe5902000\n"
-        ".inst 0xe5922008\n"
-        ".inst 0xe12fff32\n"
-        ".inst 0xe1b06000\n"
-        ".inst 0x0a000007\n"
-        ".inst 0xe284100c\n"
-        ".inst 0xe8910006\n"
-        ".inst 0xebfd3165\n"
-        ".inst 0xe5943010\n"
-        ".inst 0xe8940007\n"
-        ".inst 0xe585302c\n"
-        ".inst 0xe285501c\n"
-        ".inst 0xe8850047\n"
-        ".inst 0xe8bd8070\n"
-    );
+extern "C" void engine_func_00379a28(void* dst, const void* src) {
+    const u32* s = reinterpret_cast<const u32*>(src);
+    void* obj = reinterpret_cast<void*>(s[2]);
+    u32 arg = s[4];
+    typedef void* (*VFn)(void*, u32);
+    VFn vfn = (*reinterpret_cast<VFn**>(obj))[2];
+    void* res = vfn(obj, arg);
+    if (res != nullptr) {
+        engine_func_002c5ff4(res, s[3], arg);
+        u32* d = reinterpret_cast<u32*>(static_cast<char*>(dst) + 0x1c);
+        d[0] = s[0];
+        d[1] = s[1];
+        d[2] = s[2];
+        d[3] = reinterpret_cast<uintptr_t>(res);
+        d[4] = arg;
+    }
 }
+
+struct TreeNode_003972c8 {
+    TreeNode_003972c8* left;
+    TreeNode_003972c8* right;
+};
 
 // DECOMP_FUNC(0x003972c8, 76)
-extern "C" __attribute__((naked)) void func_003972c8() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe92d4070\n"
-        ".inst 0xe1a05000\n"
-        ".inst 0xe2800008\n"
-        ".inst 0xe1510000\n"
-        ".inst 0xe1a04001\n"
-        ".inst 0x0a00000b\n"
-        ".inst 0xe5941000\n"
-        ".inst 0xe1a00005\n"
-        ".inst 0xebfffff6\n"
-        ".inst 0xe5941004\n"
-        ".inst 0xe1a00005\n"
-        ".inst 0xebfffff3\n"
-        ".inst 0xe5950000\n"
-        ".inst 0xe1a01004\n"
-        ".inst 0xe5902000\n"
-        ".inst 0xe1a00005\n"
-        ".inst 0xe8bd4070\n"
-        ".inst 0xe12fff12\n"
-        ".inst 0xe8bd8070\n"
-    );
+extern "C" void func_003972c8(void* tree, TreeNode_003972c8* node) {
+    TreeNode_003972c8* sentinel = reinterpret_cast<TreeNode_003972c8*>(static_cast<char*>(tree) + 8);
+    if (node == sentinel) {
+        return;
+    }
+    func_003972c8(tree, node->left);
+    func_003972c8(tree, node->right);
+    typedef void (*DestroyFn)(void*, TreeNode_003972c8*);
+    DestroyFn destroy = (*reinterpret_cast<DestroyFn**>(tree))[0];
+    destroy(tree, node);
 }
 
+extern "C" void* func_002bd630(void);
+extern "C" void func_002b7770(void*, void*);
+
 // DECOMP_FUNC(0x003eb014, 76)
-extern "C" __attribute__((naked)) void func_003eb014() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe92d4010\n"
-        ".inst 0xe2404044\n"
-        ".inst 0xe5500038\n"
-        ".inst 0xe3500000\n"
-        ".inst 0x0a00000c\n"
-        ".inst 0xe5940064\n"
-        ".inst 0xe1510000\n"
-        ".inst 0x8a000009\n"
-        ".inst 0xe1500002\n"
-        ".inst 0x8a000007\n"
-        ".inst 0xe5d4000d\n"
-        ".inst 0xe3500000\n"
-        ".inst 0x0a000004\n"
-        ".inst 0xebfb4978\n"
-        ".inst 0xe2841050\n"
-        ".inst 0xebfb31c6\n"
-        ".inst 0xe3a00000\n"
-        ".inst 0xe5c4000d\n"
-        ".inst 0xe8bd8010\n"
-    );
+extern "C" void func_003eb014(void* obj_44, u32 min_val, u32 max_val) {
+    u8* base = static_cast<u8*>(obj_44) - 0x44;
+    if (base[0x0c] == 0) {
+        return;
+    }
+    u32 val = *reinterpret_cast<u32*>(base + 0x64);
+    if (min_val > val || val > max_val) {
+        return;
+    }
+    if (base[0x0d] == 0) {
+        return;
+    }
+    void* ctx = func_002bd630();
+    func_002b7770(ctx, base + 0x50);
+    base[0x0d] = 0;
 }
 
 // DECOMP_FUNC(0x003f5e40, 76)
