@@ -849,16 +849,8 @@ extern "C" s32 camp_func_002b88c4(u32 group_id, u32 node_id) {
 }
 
 // DECOMP_FUNC(0x002b8b54, 28)
-extern "C" __attribute__((naked)) void battle_func_002b8b54() {
-    asm volatile(
-        "push {r4, lr}\n"
-        "ldr r0, [r0]\n"
-        "bl battle_func_002bf41c\n"
-        "cmp r0, #0\n"
-        "movne r0, #1\n"
-        "pop {r4, pc}\n"
-        ".word 0x0043e0d0\n"
-    );
+extern "C" u32 battle_func_002b8b54(void* const* ptr) {
+    return (battle_func_002bf41c(*ptr) != 0) ? 1 : 0;
 }
 
 // DECOMP_FUNC(0x002b8b78, 340)
@@ -922,27 +914,19 @@ extern "C" __attribute__((minsize)) u32 script_vm_func_002b8b78(u32 request) {
 }
 
 // DECOMP_FUNC(0x002b8ce4, 64)
-extern "C" __attribute__((naked)) void camp_func_002b8ce4() {
-    asm volatile(
-        ".word 0xe59f1034\n"
-        "add r0, r0, r0, lsl #2\n"
-        "add r0, r1, r0, lsl #2\n"
-        "ldrb r1, [r0, #0x10]\n"
-        "cmp r1, #0\n"
-        "beq .L_002b8d18\n"
-        "cmp r1, #3\n"
-        "bne .L_002b8d10\n"
-        "ldr r0, [r0, #4]\n"
-        "cmp r0, #1\n"
-        "bge .L_002b8d18\n"
-        ".L_002b8d10:\n"
-        "mov r0, #0\n"
-        "bx lr\n"
-        ".L_002b8d18:\n"
-        "mov r0, #1\n"
-        "bx lr\n"
-        ".word 0x004d9758\n"
-    );
+extern "C" u32 camp_func_002b8ce4(u32 idx) {
+    const u8* entry = reinterpret_cast<const u8*>(0x004D9758) + idx * 20;
+    u8 status = entry[0x10];
+    if (status == 0) {
+        return 1;
+    }
+    if (status == 3) {
+        s32 count = *reinterpret_cast<const s32*>(entry + 4);
+        if (count >= 1) {
+            return 1;
+        }
+    }
+    return 0;
 }
 
 // DECOMP_FUNC(0x002b91c4, 92)
@@ -1562,7 +1546,7 @@ extern "C" __attribute__((naked)) void engine_func_002bf2cc() {
 }
 
 // DECOMP_FUNC(0x002bf41c, 68)
-extern "C" u32 battle_func_002bf41c(void* task) {
+extern "C" __attribute__((noinline)) u32 battle_func_002bf41c(void* task) {
     const u32 handle = static_cast<u32>(reinterpret_cast<uintptr_t>(task));
     const u32 registry = *reinterpret_cast<const u32*>(0x004e3cf4u);
     const u32 bucket_index = handle >> 20;
@@ -2405,24 +2389,15 @@ extern "C" __attribute__((naked)) void engine_func_002c15d8() {
 }
 
 // DECOMP_FUNC(0x002c1740, 52)
-extern "C" __attribute__((naked)) void battle_func_002c1740() {
-    asm volatile(
-        ".word 0xe59f2028\n"
-        "mov r1, #0\n"
-        "ldr r2, [r2, #4]\n"
-        ".L_002c174c:\n"
-        "ldr r3, [r2, r1, lsl #2]\n"
-        "cmp r3, #0\n"
-        "beq .L_002c1768\n"
-        "add r1, r1, #1\n"
-        "cmp r1, #0x20\n"
-        "blt .L_002c174c\n"
-        "bx lr\n"
-        ".L_002c1768:\n"
-        "str r0, [r2, r1, lsl #2]\n"
-        "bx lr\n"
-        ".word 0x0044ea58\n"
-    );
+extern "C" void battle_func_002c1740(void* item) {
+    void*** mgr = reinterpret_cast<void***>(0x0044EA58);
+    void** table = mgr[1];
+    for (u32 i = 0; i < 32; ++i) {
+        if (table[i] == nullptr) {
+            table[i] = item;
+            return;
+        }
+    }
 }
 
 // DECOMP_FUNC(0x002c17d4, 92)
@@ -2832,19 +2807,15 @@ extern "C" __attribute__((naked)) void engine_func_002c34a4() {
 }
 
 // DECOMP_FUNC(0x002c36ec, 40)
-extern "C" __attribute__((naked)) void func_002c36ec() {
-    asm volatile(
-        ".word 0xe59f1004\n"
-        "strb r0, [r1]\n"
-        "bx lr\n"
-        ".word 0x0044e0b0\n"
-        ".word 0xe59f100c\n"
-        ".word 0xe1d120d1\n"
-        ".word 0xe5c10001\n"
-        ".word 0xe1a00002\n"
-        ".word 0xe12fff1e\n"
-        ".word 0x00465198\n"
-    );
+extern "C" void func_002c36ec(u8 val) {
+    *reinterpret_cast<u8*>(0x0044E0B0) = val;
+}
+
+extern "C" s32 func_002c36fc(u8 val) {
+    u8* ptr = reinterpret_cast<u8*>(0x00465198);
+    s8 prev = static_cast<s8>(ptr[1]);
+    ptr[1] = val;
+    return prev;
 }
 
 // DECOMP_FUNC(0x002c42fc, 100)
@@ -6336,16 +6307,9 @@ extern "C" __attribute__((naked)) void camp_func_002e3684() {
 }
 
 // DECOMP_FUNC(0x002e3830, 28)
-extern "C" __attribute__((naked)) void battle_func_002e3830() {
-    asm volatile(
-        "push {r4, lr}\n"
-        "ldr r0, [r0, #0x2c]\n"
-        "bl battle_func_002bf41c\n"
-        "cmp r0, #0\n"
-        "movne r0, #1\n"
-        "pop {r4, pc}\n"
-        ".word 0x00435d90\n"
-    );
+extern "C" u32 battle_func_002e3830(const u8* task_ctx) {
+    void* task = *reinterpret_cast<void* const*>(task_ctx + 0x2C);
+    return (battle_func_002bf41c(task) != 0) ? 1 : 0;
 }
 
 // DECOMP_FUNC(0x002e3c68, 264)
