@@ -10,6 +10,8 @@ extern "C" {
     void* AsdRef_Get(void* handle);                 // 0x002c0ac8
     void ui_func_00342b54(void* resource);           // 0x00342b54
     void ui_func_0034946c(void* resource);           // 0x0034946c
+    u32  ui_func_002bf9f0(void* resource);           // 0x002bf9f0
+    void camp_func_003428a4(void* object);           // 0x003428a4
 }
 
 // DECOMP_FUNC(0x002e8294, 604)
@@ -57,17 +59,37 @@ __attribute__((naked)) void btlTargetSelect_Init(void*) {
 }
 
 // DECOMP_FUNC(0x002e06bc, 236)
-__attribute__((naked)) void btlTargetSelect_Calc(void*) {
-    asm volatile(
-        ".word 0xE92D4010, 0xEBFF8100, 0xE1A04000, 0xE280002C, 0xEBFF7CC7, 0xE5940030, 0xE3500071, 0xE5940000\n"
-        ".word 0x03A01000, 0x13A01001, 0xE5801120, 0xE5940004, 0x03A01000, 0x13A01001, 0xE5801054, 0xE5D40008\n"
-        ".word 0xE3500000, 0x0A000020, 0xE3500001, 0x0A000002, 0xE3500002, 0x1A00001C, 0xEA000004, 0xE5940000\n"
-        ".word 0xEB018860, 0xE320F000, 0xE320F000, 0xEA000016, 0xE5940004, 0xED9F0A16, 0xE59F2058, 0xEDD00A16\n"
-        ".word 0xEE300A80, 0xEE101A10, 0xED800A16, 0xE1510002, 0xBA000002, 0xEDDF0A10, 0xEE300A60, 0xED800A16\n"
-        ".word 0xED900A17, 0xEDDF0A0D, 0xE59F2034, 0xEE300A20, 0xEE101A10, 0xED800A17, 0xE1510002, 0xDA000002\n"
-        ".word 0xEDDF0A08, 0xEE300A60, 0xED800A17, 0xE3A00000, 0xE8BD8010, 0x3F800000, 0x41F00000, 0x41F00000\n"
-        ".word 0x41400000, 0x43B40000, 0x43B40000\n"
-    );
+void btlTargetSelect_Calc(void* task_ctx) {
+    auto* const work = static_cast<u8*>(AsdRef_Get(task_ctx));
+    ui_func_002bf9f0(work + 0x2c);
+
+    const u32 tag = *reinterpret_cast<const u32*>(work + 0x30);
+    const u32 flag = (tag != 0x71) ? 1 : 0;
+
+    auto* const obj0 = *reinterpret_cast<u8**>(work);
+    *reinterpret_cast<u32*>(obj0 + 0x120) = flag;
+
+    auto* const obj1 = *reinterpret_cast<u8**>(work + 4);
+    *reinterpret_cast<u32*>(obj1 + 0x54) = flag;
+
+    const u8 mode = work[8];
+    if (mode == 1) {
+        camp_func_003428a4(obj0);
+    } else if (mode == 2) {
+        f32 val = *reinterpret_cast<f32*>(obj1 + 0x58) + 1.0f;
+        *reinterpret_cast<f32*>(obj1 + 0x58) = val;
+        if (val >= 30.0f) {
+            val -= 30.0f;
+            *reinterpret_cast<f32*>(obj1 + 0x58) = val;
+        }
+
+        f32 rot = *reinterpret_cast<f32*>(obj1 + 0x5c) + 12.0f;
+        *reinterpret_cast<f32*>(obj1 + 0x5c) = rot;
+        if (rot > 360.0f) {
+            rot -= 360.0f;
+            *reinterpret_cast<f32*>(obj1 + 0x5c) = rot;
+        }
+    }
 }
 
 // DECOMP_FUNC(0x002e07a8, 4)
@@ -113,28 +135,15 @@ __attribute__((naked)) void tmnlMain_DrawDown(void*) {
     );
 }
 
-[[maybe_unused]] static void btlTargetSelect_DrawUp_Decompiled(void* task_ctx) {
-    auto* work = static_cast<u8*>(AsdRef_Get(task_ctx));
+// DECOMP_FUNC(0x002f4aa4, 76)
+void btlTargetSelect_DrawUp(void* task_ctx) {
+    auto* const work = static_cast<u8*>(AsdRef_Get(task_ctx));
     const u8 mode = work[8];
     if (mode == 1) {
         ui_func_00342b54(*reinterpret_cast<void**>(work));
     } else if (mode == 2) {
         ui_func_0034946c(*reinterpret_cast<void**>(work + 4));
     }
-}
-
-// DECOMP_FUNC(0x002f4aa4, 76)
-__attribute__((naked)) void btlTargetSelect_DrawUp(void*) {
-    // The original callback resolves its work handle, then dispatches mode 1
-    // through 0x00342B54 or mode 2 through 0x0034946C before returning zero.
-    // Its three trailing BX LR words are part of the verified ledger span.
-    asm volatile(
-        ".word 0xE92D4010, 0xEBFF3006, 0xE5D01008, 0xE3510000\n"
-        ".word 0x0A000007, 0xE3510001, 0x0A000003, 0xE3510002\n"
-        ".word 0x05900004, 0x0B015267, 0xEA000001, 0xE5900000\n"
-        ".word 0xEB01381E, 0xE3A00000, 0xE8BD8010, 0xE12FFF1E\n"
-        ".word 0xE12FFF1E, 0xE12FFF1E, 0xE12FFF1E\n"
-    );
 }
 
 } // namespace smt4::battle
