@@ -46,7 +46,9 @@ struct UiLayoutNode {
 extern "C" {
     void* AsdMem_Alloc(u32 align, u32 line, u32 zero_flag, u32 size, u32 flag);     // 0x002c4b84
     void  AsdMem_Zero(void* ptr, u32 size);                                         // 0x002c4b30
-    void  AsdMem_Copy(void* dst, const void* src, u32 size);                        // 0x002c5ff4
+    void  AsdMem_Copy(void* dst, const void* src, u32 size);
+    s32   camp_func_0029f0f4(void* cursor);
+    s32   camp_func_0029f248(void* cursor);                        // 0x002c5ff4
     void  AsdMem_FreeWork(void* ptr);                                               // 0x002c4360
 
     void* AsdTask_CreateCalc(const char* name, u32 prio, u32 a2, u32 a3,
@@ -748,16 +750,11 @@ __attribute__((naked)) void StatusDown_SetPartyPrompt(const StatusDownPartyPromp
 }
 
 // DECOMP_FUNC(0x00215a44, 28)
-__attribute__((naked)) void StatusDown_SetActiveSoundId(s16) {
-    // The ROM uses a predicated region add followed by a predicated halfword store.
-    asm volatile(
-        "ldr r1, [pc, #0x10]\n"
-        "ldr r1, [r1]\n"
-        "cmp r1, #0\n"
-        "addne r1, r1, #0x400\n"
-        "strhne r0, [r1, #0x7E]\n"
-        "bx lr\n"
-        ".word 0x0044E190\n");
+void StatusDown_SetActiveSoundId(s16 id) {
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    if (work != nullptr) {
+        work->active_sound_id = id;
+    }
 }
 
 // DECOMP_FUNC(0x00215a68, 248)
@@ -833,93 +830,49 @@ __attribute__((naked)) void StatusDown_SetPartySlots(const u16*, s32) {
 }
 
 // DECOMP_FUNC(0x00223b88, 40)
-__attribute__((naked)) bool StatusDown_IsState20() {
-    asm volatile(
-        "ldr r0, [pc, #0x1C]\n"
-        "ldr r1, [r0]\n"
-        "mov r0, #0\n"
-        "cmp r1, #0\n"
-        "beq 1f\n"
-        "ldr r1, [r1, #0x400]\n"
-        "cmp r1, #0x14\n"
-        "moveq r0, #1\n"
-        "1: bx lr\n"
-        ".word 0x0044E190\n");
+bool StatusDown_IsState20() {
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    if (work == nullptr) {
+        return false;
+    }
+    return work->state == 0x14;
 }
 
 // DECOMP_FUNC(0x0026abe0, 84)
-__attribute__((naked)) void StatusDown_SetSubIdsA(const u16*, s32) {
-    asm volatile(
-        "cmp r1, #8\n"
-        "bgt 1f\n"
-        "ldr r2, [pc, #0x40]\n"
-        "cmp r1, #0\n"
-        "ldr r3, [r2]\n"
-        "mov r2, #0\n"
-        "str r2, [r3, #0x4A2]\n"
-        "str r2, [r3, #0x4A6]\n"
-        "str r2, [r3, #0x4AA]\n"
-        "str r2, [r3, #0x4AE]\n"
-        "strblt r2, [r3, #0x538]\n"
-        "blt 1f\n"
-        "mov r2, #1\n"
-        "strb r2, [r3, #0x538]\n"
-        "lsl r2, r1, #1\n"
-        "mov r1, r0\n"
-        "add r0, r3, #0x400\n"
-        "add r0, r0, #0xA2\n"
-        ".word 0xEA016CF1\n"
-        "1: bx lr\n"
-        ".word 0x0044E190\n");
+void StatusDown_SetSubIdsA(const u16* ids, s32 count) {
+    if (count > 8) {
+        return;
+    }
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    for (int i = 0; i < 8; i++) {
+        work->sub_ids_a[i] = 0;
+    }
+    if (count < 0) {
+        work->has_sub_ids_a = 0;
+        return;
+    }
+    work->has_sub_ids_a = 1;
+    AsdMem_Copy(work->sub_ids_a, ids, count * sizeof(u16));
 }
 
 // DECOMP_FUNC(0x0026b01c, 176)
-__attribute__((naked)) void StatusDown_PopFirstSubIdA() {
-    asm volatile(
-        "ldr r0, .LStatusDownPopFirstSubIdAGlobal\n"
-        "push {r4, r5, r6}\n"
-        "mov r1, #8\n"
-        "ldr ip, [r0]\n"
-        "mov r0, #0\n"
-        "mov r3, r0\n"
-        "add r2, ip, #0x400\n"
-        "2: add r4, ip, r0, lsl #1\n"
-        "add r4, r4, #0x400\n"
-        "ldrh r5, [r4, #0xb2]\n"
-        "cmp r5, #0\n"
-        "beq 1f\n"
-        "ldrh r6, [r2, #0xa2]\n"
-        "cmp r5, r6\n"
-        "strheq r3, [r4, #0xb2]\n"
-        "1: subs r1, r1, #1\n"
-        "add r0, r0, #1\n"
-        "bne 2b\n"
-        "mov r0, #0\n"
-        "strh r3, [r2, #0xa2]\n"
-        "3: rsb r1, r0, #7\n"
-        "cmp r1, #0\n"
-        "movgt r1, #0\n"
-        "rsbgt r4, r0, #7\n"
-        "ble 5f\n"
-        "4: add r2, r0, r1\n"
-        "add r2, ip, r2, lsl #1\n"
-        "add r2, r2, #0x400\n"
-        "ldrh r5, [r2, #0xa2]\n"
-        "cmp r5, #0\n"
-        "bne 6f\n"
-        "ldrh r5, [r2, #0xa4]\n"
-        "cmp r5, #0\n"
-        "strhne r5, [r2, #0xa2]\n"
-        "strhne r3, [r2, #0xa4]\n"
-        "6: subs r4, r4, #1\n"
-        "add r1, r1, #1\n"
-        "bne 4b\n"
-        "5: add r0, r0, #1\n"
-        "cmp r0, #7\n"
-        "blt 3b\n"
-        "pop {r4, r5, r6}\n"
-        "bx lr\n"
-        ".LStatusDownPopFirstSubIdAGlobal: .word 0x0044E190\n");
+void StatusDown_PopFirstSubIdA() {
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    u16 first_a = work->sub_ids_a[0];
+    for (int i = 0; i < 8; i++) {
+        if (work->sub_ids_b[i] != 0 && work->sub_ids_b[i] == first_a) {
+            work->sub_ids_b[i] = 0;
+        }
+    }
+    work->sub_ids_a[0] = 0;
+    for (int i = 0; i < 7; i++) {
+        for (int j = i; j < 7; j++) {
+            if (work->sub_ids_a[j] == 0 && work->sub_ids_a[j + 1] != 0) {
+                work->sub_ids_a[j] = work->sub_ids_a[j + 1];
+                work->sub_ids_a[j + 1] = 0;
+            }
+        }
+    }
 }
 
 #if 0 // Unverified behavioral reconstruction; retained for reference only.
@@ -1063,16 +1016,11 @@ __attribute__((naked)) void StatusDown_SetupTouchRegions() {
 }
 
 // DECOMP_FUNC(0x0026d8c0, 28)
-__attribute__((naked)) void StatusDown_SetVisibility(u8) {
-    // Preserve the ROM's conditional region adjustment and byte-store encoding.
-    asm volatile(
-        "ldr r1, [pc, #0x10]\n"
-        "ldr r1, [r1]\n"
-        "cmp r1, #0\n"
-        "addne r1, r1, #0x2000\n"
-        "strbne r0, [r1, #0x392]\n"
-        "bx lr\n"
-        ".word 0x0044E190\n");
+void StatusDown_SetVisibility(u8 val) {
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    if (work != nullptr) {
+        work->visibility_flag = val;
+    }
 }
 
 // DECOMP_FUNC(0x00288718, 92)
@@ -1104,30 +1052,21 @@ __attribute__((naked)) bool StatusDown_CanOpenSubScreen() {
 }
 
 // DECOMP_FUNC(0x0028cd5c, 28)
-__attribute__((naked)) u32 StatusDown_GetField2384() {
-    // A null work pointer is already the zero return value in the ROM sequence.
-    asm volatile(
-        "ldr r0, [pc, #0x10]\n"
-        "ldr r0, [r0]\n"
-        "cmp r0, #0\n"
-        "addne r0, r0, #0x2000\n"
-        "ldrne r0, [r0, #0x384]\n"
-        "bx lr\n"
-        ".word 0x0044E190\n");
+u32 StatusDown_GetField2384() {
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    if (work == nullptr) {
+        return 0;
+    }
+    return work->field_2384;
 }
 
 // DECOMP_FUNC(0x0028cd78, 36)
-__attribute__((naked)) bool StatusDown_IsInactiveOrState0() {
-    asm volatile(
-        "ldr r0, [pc, #0x18]\n"
-        "ldr r0, [r0]\n"
-        "cmp r0, #0\n"
-        "ldrne r0, [r0, #0x400]\n"
-        "cmpne r0, #0\n"
-        "moveq r0, #1\n"
-        "movne r0, #0\n"
-        "bx lr\n"
-        ".word 0x0044E190\n");
+bool StatusDown_IsInactiveOrState0() {
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    if (work == nullptr) {
+        return true;
+    }
+    return work->state == 0;
 }
 
 // DECOMP_FUNC(0x00292f44, 304)
@@ -1216,20 +1155,9 @@ __attribute__((naked)) void StatusDown_SetDisplayMode(s32) {
         ".LStatusDownSetDisplayModeColor: .word 0x323232ff\n");
 }
 // DECOMP_FUNC(0x00293d2c, 36)
-
-
-//
-__attribute__((naked)) bool StatusDown_IsNotTransitioning() {
-    asm volatile(
-        "ldr r0, [pc, #0x18]\n"
-        "ldr r0, [r0]\n"
-        "ldr r0, [r0, #0x400]\n"
-        "cmp r0, #0x12\n"
-        "cmpne r0, #0x14\n"
-        "moveq r0, #0\n"
-        "movne r0, #1\n"
-        "bx lr\n"
-        ".word 0x0044E190\n");
+bool StatusDown_IsNotTransitioning() {
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    return (work->state != 0x12 && work->state != 0x14);
 }
 
 // DECOMP_FUNC(0x00293d50, 20)
@@ -1240,15 +1168,12 @@ u8 StatusDown_GetActiveMode() {
 }
 
 // DECOMP_FUNC(0x00293e30, 28)
-__attribute__((naked)) s8 StatusDown_GetStatusMode() {
-    asm volatile(
-        "ldr r0, [pc, #0x10]\n"
-        "ldr r0, [r0]\n"
-        "cmp r0, #0\n"
-        "addne r0, r0, #0x400\n"
-        "ldrsbne r0, [r0, #0x81]\n"
-        "bx lr\n"
-        ".word 0x0044E190\n");
+s8 StatusDown_GetStatusMode() {
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    if (work == nullptr) {
+        return 0;
+    }
+    return work->status_mode;
 }
 
 // DECOMP_FUNC(0x002956ac, 20)
@@ -1946,29 +1871,15 @@ void StatusDown_SetFlag412(u8 val) {
 }
 
 // DECOMP_FUNC(0x0029c70c, 32)
-__attribute__((naked)) bool StatusDown_IsNotState1() {
-    asm volatile(
-        "ldr r0, [pc, #0x14]\n"
-        "ldr r0, [r0]\n"
-        "ldr r0, [r0, #0x400]\n"
-        "cmp r0, #1\n"
-        "moveq r0, #0\n"
-        "movne r0, #1\n"
-        "bx lr\n"
-        ".word 0x0044E190\n");
+bool StatusDown_IsNotState1() {
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    return work->state != 1;
 }
 
 // DECOMP_FUNC(0x0029c72c, 32)
-__attribute__((naked)) bool StatusDown_IsNotState2() {
-    asm volatile(
-        "ldr r0, [pc, #0x14]\n"
-        "ldr r0, [r0]\n"
-        "ldr r0, [r0, #0x400]\n"
-        "cmp r0, #2\n"
-        "moveq r0, #0\n"
-        "movne r0, #1\n"
-        "bx lr\n"
-        ".word 0x0044E190\n");
+bool StatusDown_IsNotState2() {
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    return work->state != 2;
 }
 
 // DECOMP_FUNC(0x002cf4e0, 352)
@@ -2369,19 +2280,12 @@ void StatusDown_EnterState3_Alt_Decompiled() {
     }
 }
 // DECOMP_FUNC(0x002d9618, 36)
-
-
-__attribute__((naked)) void StatusDown_EnterState3_Alt() {
-    asm volatile(
-        ".word 0xE59F0018\n"
-        ".word 0xE3A02000\n"
-        ".word 0xE3A01003\n"
-        ".word 0xE5900000\n"
-        ".word 0xE580240C\n"
-        ".word 0xE5B02400\n"
-        ".word 0xE8800006\n"
-        ".word 0xE12FFF1E\n"
-        ".word 0x0044E190\n");
+void StatusDown_EnterState3_Alt() {
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    work->state_timer = 0;
+    u32 prev = work->state;
+    work->state = 3;
+    work->prev_state = prev;
 }
 // DECOMP_FUNC(0x002dc96c, 152)
 
@@ -2680,67 +2584,39 @@ __attribute__((naked)) s32 StatusDown_ItemSortByIdDesc(const void*, const void*)
 }
 
 // DECOMP_FUNC(0x002efde0, 44)
-__attribute__((naked)) s32 StatusDown_GetPartyMaxIndex() {
-    asm volatile(
-        "ldr r0, [pc, #0x20]\n"
-        "ldr r0, [r0]\n"
-        "cmp r0, #0\n"
-        "bxeq lr\n"
-        "add r0, r0, #0x400\n"
-        "add r0, r0, #0xD4\n"
-        "push {r4, lr}\n"
-        ".word 0xEBFEBCBC\n"
-        "sub r0, r0, #1\n"
-        "pop {r4, pc}\n"
-        ".word 0x0044E190\n");
+s32 StatusDown_GetPartyMaxIndex() {
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    if (work == nullptr) {
+        return 0;
+    }
+    return camp_func_0029f0f4(&work->list_cursor_main) - 1;
 }
 
 // DECOMP_FUNC(0x002efe0c, 32)
-__attribute__((naked)) bool StatusDown_IsNotState4() {
-    asm volatile(
-        "ldr r0, [pc, #0x14]\n"
-        "ldr r0, [r0]\n"
-        "ldr r0, [r0, #0x400]\n"
-        "cmp r0, #4\n"
-        "movne r0, #1\n"
-        "moveq r0, #0\n"
-        "bx lr\n"
-        ".word 0x0044E190\n");
+bool StatusDown_IsNotState4() {
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    return work->state != 4;
 }
 
 // DECOMP_FUNC(0x002efe2c, 28)
-__attribute__((naked)) s8 StatusDown_GetField2388() {
-    // Preserve the ROM's signed conditional load and null-to-zero behavior.
-    asm volatile(
-        "ldr r0, [pc, #0x10]\n"
-        "ldr r0, [r0]\n"
-        "cmp r0, #0\n"
-        "addne r0, r0, #0x2300\n"
-        "ldrsbne r0, [r0, #0x88]\n"
-        "bx lr\n"
-        ".word 0x0044E190\n");
+s8 StatusDown_GetField2388() {
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    if (work == nullptr) {
+        return 0;
+    }
+    return work->field_2388;
 }
 
 // DECOMP_FUNC(0x002efe48, 68)
-__attribute__((naked)) void StatusDown_SetSubIdsB(const u16*, s32) {
-    asm volatile(
-        "mov r0, r0\n"
-        "cmp r1, #8\n"
-        "bgt 1f\n"
-        "ldr r2, [pc, #0x2C]\n"
-        "ldr r3, [r2]\n"
-        "mov r2, #0\n"
-        "str r2, [r3, #0x4B2]\n"
-        "str r2, [r3, #0x4B6]\n"
-        "str r2, [r3, #0x4BA]\n"
-        "str r2, [r3, #0x4BE]\n"
-        "lsl r2, r1, #1\n"
-        "mov r1, r0\n"
-        "add r0, r3, #0x400\n"
-        "add r0, r0, #0xB2\n"
-        ".word 0xEAFF585B\n"
-        "1: bx lr\n"
-        ".word 0x0044E190\n");
+void StatusDown_SetSubIdsB(const u16* ids, s32 count) {
+    if (count > 8) {
+        return;
+    }
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    for (int i = 0; i < 8; i++) {
+        work->sub_ids_b[i] = 0;
+    }
+    AsdMem_Copy(work->sub_ids_b, ids, count * sizeof(u16));
 }
 
 // DECOMP_FUNC(0x002efe8c, 24)
@@ -2764,35 +2640,22 @@ void StatusDown_EnterState4_Decompiled() {
     }
 }
 // DECOMP_FUNC(0x002efea4, 36)
-
-
-__attribute__((naked)) void StatusDown_EnterState4() {
-    asm volatile(
-        ".word 0xE59F0018\n"
-        ".word 0xE3A02000\n"
-        ".word 0xE3A01004\n"
-        ".word 0xE5900000\n"
-        ".word 0xE580240C\n"
-        ".word 0xE5B02400\n"
-        ".word 0xE8800006\n"
-        ".word 0xEAFDEC82\n"
-        ".word 0x0044E190\n");
+void StatusDown_EnterState4() {
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    work->state_timer = 0;
+    u32 prev = work->state;
+    work->state = 4;
+    work->prev_state = prev;
+    StatusDown_SetupTouchRegions();
 }
 
 // DECOMP_FUNC(0x002f6524, 44)
-__attribute__((naked)) bool StatusDown_IsState7() {
-    asm volatile(
-        "ldr r0, [pc, #0x20]\n"
-        "ldr r0, [r0]\n"
-        "cmp r0, #0\n"
-        "beq 1f\n"
-        "ldr r0, [r0, #0x400]\n"
-        "cmp r0, #7\n"
-        "moveq r0, #1\n"
-        "beq 2f\n"
-        "1: mov r0, #0\n"
-        "2: bx lr\n"
-        ".word 0x0044E190\n");
+bool StatusDown_IsState7() {
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    if (work == nullptr) {
+        return false;
+    }
+    return work->state == 7;
 }
 
 // DECOMP_FUNC(0x002f6550, 132)
@@ -2852,27 +2715,14 @@ __attribute__((naked)) void StatusDown_Destroy() {
 }
 
 // DECOMP_FUNC(0x002f65d4, 76)
-__attribute__((naked)) bool StatusDown_IsCursorAtLastPartySlot() {
-    asm volatile(
-        "ldr r0, [pc, #0x40]\n"
-        "push {r4, r5, r6, lr}\n"
-        "ldr r0, [r0]\n"
-        "cmp r0, #0\n"
-        "beq 1f\n"
-        "add r0, r0, #0x400\n"
-        "add r0, r0, #0xD4\n"
-        "mov r4, r0\n"
-        ".word 0xEBFEA313\n"
-        "mov r5, r0\n"
-        "mov r0, r4\n"
-        ".word 0xEBFEA2BB\n"
-        "sub r0, r0, #1\n"
-        "cmp r5, r0\n"
-        "moveq r0, #1\n"
-        "beq 2f\n"
-        "1: mov r0, #0\n"
-        "2: pop {r4, r5, r6, pc}\n"
-        ".word 0x0044E190\n");
+bool StatusDown_IsCursorAtLastPartySlot() {
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    if (work == nullptr) {
+        return false;
+    }
+    s32 cur = camp_func_0029f248(&work->list_cursor_main);
+    s32 max = camp_func_0029f0f4(&work->list_cursor_main) - 1;
+    return cur == max;
 }
 
 // DECOMP_FUNC(0x002f6620, 200)
@@ -2943,19 +2793,12 @@ void StatusDown_EnterState3_Decompiled() {
     }
 }
 // DECOMP_FUNC(0x002f66e8, 36)
-
-
-__attribute__((naked)) void StatusDown_EnterState3() {
-    asm volatile(
-        ".word 0xE59F0018\n"
-        ".word 0xE3A02000\n"
-        ".word 0xE3A01003\n"
-        ".word 0xE5900000\n"
-        ".word 0xE580240C\n"
-        ".word 0xE5B02400\n"
-        ".word 0xE8800006\n"
-        ".word 0xE12FFF1E\n"
-        ".word 0x0044E190\n");
+void StatusDown_EnterState3() {
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    work->state_timer = 0;
+    u32 prev = work->state;
+    work->state = 3;
+    work->prev_state = prev;
 }
 
 //
@@ -2970,46 +2813,25 @@ void StatusDown_EnterState6_Simple_Decompiled() {
     }
 }
 // DECOMP_FUNC(0x0030aa98, 40)
-
-
-__attribute__((naked)) void StatusDown_EnterState6_Simple() {
-    asm volatile(
-        ".word 0xE59F001C\n"
-        ".word 0xE5900000\n"
-        ".word 0xE3500000\n"
-        ".word 0x0A000003\n"
-        ".word 0xE5903400\n"
-        ".word 0xE3A02006\n"
-        ".word 0xE5802400\n"
-        ".word 0xE5803404\n"
-        ".word 0xE12FFF1E\n"
-        ".word 0x0044E190\n");
+void StatusDown_EnterState6_Simple() {
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    if (work != nullptr) {
+        u32 prev = work->state;
+        work->state = 6;
+        work->prev_state = prev;
+    }
 }
 
 // DECOMP_FUNC(0x0030aac0, 32)
-__attribute__((naked)) bool StatusDown_IsState15() {
-    asm volatile(
-        "ldr r0, [pc, #0x14]\n"
-        "ldr r0, [r0]\n"
-        "ldr r0, [r0, #0x400]\n"
-        "cmp r0, #0xF\n"
-        "moveq r0, #1\n"
-        "movne r0, #0\n"
-        "bx lr\n"
-        ".word 0x0044E190\n");
+bool StatusDown_IsState15() {
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    return work->state == 0xF;
 }
 
 // DECOMP_FUNC(0x0030aae0, 32)
-__attribute__((naked)) bool StatusDown_IsState10() {
-    asm volatile(
-        "ldr r0, [pc, #0x14]\n"
-        "ldr r0, [r0]\n"
-        "ldr r0, [r0, #0x400]\n"
-        "cmp r0, #0xA\n"
-        "moveq r0, #1\n"
-        "movne r0, #0\n"
-        "bx lr\n"
-        ".word 0x0044E190\n");
+bool StatusDown_IsState10() {
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    return work->state == 0xA;
 }
 
 //
@@ -3025,46 +2847,26 @@ void StatusDown_EnterState14_Decompiled(s32 selected_result) {
     }
 }
 // DECOMP_FUNC(0x0030ab00, 52)
-
-
-__attribute__((naked)) void StatusDown_EnterState14(s32) {
-    asm volatile(
-        ".word 0xE59F1028\n"
-        ".word 0xE3500000\n"
-        ".word 0x03E02000\n"
-        ".word 0xE3A03000\n"
-        ".word 0xE5910000\n"
-        ".word 0xE3A0100E\n"
-        ".word 0x05802544\n"
-        ".word 0xE5902400\n"
-        ".word 0xE580340C\n"
-        ".word 0xE2800B01\n"
-        ".word 0xE8800006\n"
-        ".word 0xE12FFF1E\n"
-        ".word 0x0044E190\n");
+void StatusDown_EnterState14(s32 selected_result) {
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    if (selected_result == 0) {
+        work->selected_result = -1;
+    }
+    work->state_timer = 0;
+    u32 prev = work->state;
+    work->state = 0xE;
+    work->prev_state = prev;
 }
 
 // DECOMP_FUNC(0x0030ab34, 60)
-__attribute__((naked)) void StatusDown_EnterState6() {
-    // This short state-entry routine uses the ROM's literal pool and tail-independent
-    // call sequence: snapshot state, enter state 6, rebuild touch regions, then clear
-    // request_close_flag. Keep the final two words as data, not ARM instructions.
-    asm volatile(
-        "ldr r0, [pc, #0x2c]\n"
-        "push {r4, r5, r6, lr}\n"
-        "mov r5, #0\n"
-        "ldr r4, [r0]\n"
-        "mov r0, #6\n"
-        "add r2, r4, #0x400\n"
-        "str r5, [r4, #0x40c]\n"
-        "ldr r1, [r4, #0x400]\n"
-        "stm r2, {r0, r1}\n"
-        ".word 0xebfd815c\n" // bl StatusDown_SetupTouchRegions (0x0026b0d0)
-        "ldr r0, [pc, #8]\n"
-        "strb r5, [r0, r4]\n"
-        "pop {r4, r5, r6, pc}\n"
-        ".word 0x0044e190\n" // g_StatusDownWork pointer slot
-        ".word 0x00002391\n"); // request_close_flag offset from StatusDownWork
+void StatusDown_EnterState6() {
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    work->state_timer = 0;
+    u32 prev = work->state;
+    work->state = 6;
+    work->prev_state = prev;
+    StatusDown_SetupTouchRegions();
+    work->request_close_flag = 0;
 }
 
 // DECOMP_FUNC(0x00311494, 356)
@@ -3211,34 +3013,20 @@ void StatusDown_RequestClose_Decompiled() {
     }
 }
 // DECOMP_FUNC(0x00317f80, 36)
-
-
-__attribute__((naked)) void StatusDown_RequestClose() {
-    asm volatile(
-        ".word 0xE59F0018\n"
-        ".word 0xE5900000\n"
-        ".word 0xE3500000\n"
-        ".word 0x0A000002\n"
-        ".word 0xE2801A02\n"
-        ".word 0xE3A00001\n"
-        ".word 0xE5C10391\n"
-        ".word 0xE12FFF1E\n"
-        ".word 0x0044E190\n");
+void StatusDown_RequestClose() {
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    if (work != nullptr) {
+        work->request_close_flag = 1;
+    }
 }
 
 // DECOMP_FUNC(0x0032303c, 40)
-__attribute__((naked)) s32 StatusDown_GetSelectedPartyIndex() {
-    asm volatile(
-        "ldr r0, [pc, #0x1C]\n"
-        "ldr r0, [r0]\n"
-        "cmp r0, #0\n"
-        "mvneq r0, #0\n"
-        "beq 1f\n"
-        "add r0, r0, #0x400\n"
-        "add r0, r0, #0xD4\n"
-        ".word 0xEAFDF07A\n"
-        "1: bx lr\n"
-        ".word 0x0044E190\n");
+s32 StatusDown_GetSelectedPartyIndex() {
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    if (work == nullptr) {
+        return -1;
+    }
+    return camp_func_0029f248(&work->list_cursor_main);
 }
 
 // DECOMP_FUNC(0x0032be34, 1672)
