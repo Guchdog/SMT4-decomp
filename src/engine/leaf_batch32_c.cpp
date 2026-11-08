@@ -1,6 +1,6 @@
 #include "types.h"
 
-extern "C" void AsdEffectTexture_func_0028cabc();
+extern "C" uintptr_t AsdEffectTexture_func_0028cabc(void* arg);
 extern "C" void AsdGxCommandList_func_00125fd4();
 extern "C" void ButtonHelp_Init();
 extern "C" void CecProcess_func_001a06d4();
@@ -63,9 +63,9 @@ extern "C" void camp_func_002c4450();
 extern "C" void camp_func_002d4e48();
 extern "C" void camp_func_002d4e80();
 extern "C" void* camp_func_00316fc4(u32 id);
-extern "C" void effGeometry_func_00207334();
-extern "C" void effParts_func_002490e0();
-extern "C" void effParts_func_002a51dc();
+extern "C" void* effGeometry_func_00207334(s32 arg0, s32 arg1, s32 arg2, u32 arg5);
+extern "C" void* effParts_func_002490e0(void* arg);
+extern "C" void* effParts_func_002a51dc(void* arg);
 extern "C" void engine_func_00120660();
 extern "C" void engine_func_0012070c();
 extern "C" void engine_func_00120784();
@@ -75,18 +75,18 @@ extern "C" void engine_func_00137570();
 extern "C" void engine_func_001375fc();
 extern "C" void engine_func_0013f960();
 extern "C" void engine_func_001a9f2c();
-extern "C" void engine_func_001d2058();
+extern "C" uintptr_t engine_func_001d2058(u32 id, uintptr_t ctx);
 extern "C" void engine_func_001e3408();
 extern "C" void engine_func_00248c0c();
 extern "C" void engine_func_00248f6c();
-extern "C" void engine_func_0024c5dc();
-extern "C" void engine_func_0024c5ec();
-extern "C" void engine_func_0024c60c();
+extern "C" uintptr_t engine_func_0024c5dc(u32 val);
+extern "C" uintptr_t engine_func_0024c5ec(const void* arg);
+extern "C" uintptr_t engine_func_0024c60c(const void* arg);
 extern "C" void engine_func_0025be50();
 extern "C" void engine_func_0027f094();
 extern "C" void engine_func_002874e4();
 extern "C" void engine_func_00289640();
-extern "C" void engine_func_0028ca7c();
+extern "C" uintptr_t engine_func_0028ca7c(void* arg);
 extern "C" u32 engine_func_00296f60(u32);
 extern "C" void engine_func_002a06c8();
 extern "C" void engine_func_002acc98();
@@ -94,20 +94,20 @@ extern "C" void engine_func_002adb14();
 extern "C" void engine_func_002b25ac();
 extern "C" void* engine_func_002b2690(u32, u32, u32, u32, u32);
 extern "C" void engine_func_002b45f8();
-extern "C" void engine_func_002b47cc();
+extern "C" u8* engine_func_002b47cc(u32 id);
 extern "C" s32 engine_func_002bb8e4(void* obj, void* buf, u32 mode);
 extern "C" void engine_func_002bc9d8();
 extern "C" void engine_func_002bd688();
 extern "C" void engine_func_002c0bcc();
-extern "C" void engine_func_002c2430();
+extern "C" void engine_func_002c2430(void* item);
 extern "C" void engine_func_002c25f4();
 extern "C" void* engine_func_002c2b1c();
 extern "C" void engine_func_002c3290();
-extern "C" void* engine_func_002c34a4(u32, u32, u32, u32, u32, u32);
+extern "C" __attribute__((noinline)) void* engine_func_002c34a4(u32, u32, u32, u32, u32, u32);
 extern "C" void engine_func_002c3a24(void*);
 extern "C" void engine_func_002c3aa8(void*);
 extern "C" void engine_func_002c3b48(void*, u32);
-extern "C" void engine_func_002c4360();
+extern "C" void engine_func_002c4360(void* ptr);
 extern "C" void engine_func_002c4b30();
 extern "C" void engine_func_002c5468();
 extern "C" void engine_func_002e006c();
@@ -120,7 +120,7 @@ extern "C" void func_00140dac();
 extern "C" void func_00249b54(u32*, u32*);
 extern "C" u32 func_0024c740(u32 id);
 extern "C" void func_00250960();
-extern "C" void func_00288ad4();
+extern "C" s32 func_00288ad4(s32 a, s32 b);
 extern "C" void func_002a9414();
 extern "C" void func_002b06a0();
 extern "C" void func_002b0908();
@@ -2526,7 +2526,7 @@ extern "C" __attribute__((naked)) void engine_func_002c2cf0() {
 }
 
 // DECOMP_FUNC(0x002c34a4, 196)
-extern "C" void* engine_func_002c34a4(u32 arg0, u32 arg1, u32 arg2, u32 size, u32 align, u32 priority) {
+extern "C" __attribute__((noinline)) void* engine_func_002c34a4(u32 arg0, u32 arg1, u32 arg2, u32 size, u32 align, u32 priority) {
     void* mutex = *reinterpret_cast<void**>(0x00465120 + 4);
     engine_func_002c3aa8(mutex);
 
@@ -2908,81 +2908,39 @@ extern "C" u64 ui_func_002c615c(u32 numerator_bits, u32 denominator_bits) {
 }
 
 // DECOMP_FUNC(0x002c6f7c, 264)
-extern "C" __attribute__((naked)) void engine_func_002c6f7c() {
-    asm volatile(
-        "push {r4, r5, r6, r7, r8, sb, lr}\n"
-        "sub sp, sp, #0xc\n"
-        "mov r4, r0\n"
-        "bl engine_func_0024c60c\n"
-        "ldrh r2, [r4, #0xc]\n"
-        "mov r1, r0\n"
-        "mov r0, r2\n"
-        "bl engine_func_001d2058\n"
-        "mov r7, r0\n"
-        "mov r0, r4\n"
-        "bl engine_func_0024c5ec\n"
-        "cmp r0, #0\n"
-        "beq .L_002c706c\n"
-        "ldr r1, [r7, #0x18]\n"
-        ".word 0xe59f20bc\n"
-        "add r1, r1, r1, lsl #1\n"
-        "add r1, r2, r1, lsl #3\n"
-        "ldrb r1, [r1, #0x10]\n"
-        "cmp r1, #0\n"
-        "beq .L_002c706c\n"
-        "mov r6, r0\n"
-        "ldrh r5, [r4, #0x1c]\n"
-        ".word 0xe59f10a0\n"
-        ".word 0xe59f00a0\n"
-        "mov r8, #0xc\n"
-        "mov r0, r0\n"
-        "mov sb, #1\n"
-        "mov r0, #0x10\n"
-        "stm sp, {r0, sb}\n"
-        "mov r3, r8\n"
-        "mov r2, #0\n"
-        "mov r1, #0x100\n"
-        "mov r0, #0x10000\n"
-        "bl engine_func_002c34a4\n"
-        "mov r4, r0\n"
-        "mov r1, r8\n"
-        "bl engine_func_002c3b48\n"
-        "stm r4, {r5, sb}\n"
-        "cmp r5, #1\n"
-        "beq .L_002c7030\n"
-        "cmp r5, #4\n"
-        "beq .L_002c7058\n"
-        "cmp r5, #9\n"
-        "beq .L_002c7044\n"
-        "b .L_002c7068\n"
-        ".L_002c7030:\n"
-        "mov r0, r6\n"
-        "bl engine_func_0028ca7c\n"
-        "str r0, [r4, #8]\n"
-        "nop\n"
-        "b .L_002c7068\n"
-        ".L_002c7044:\n"
-        "mov r0, r6\n"
-        "bl AsdEffectTexture_func_0028cabc\n"
-        "nop\n"
-        "nop\n"
-        "b .L_002c7064\n"
-        ".L_002c7058:\n"
-        "ldr r0, [r6]\n"
-        "uxth r0, r0\n"
-        "bl engine_func_0024c5dc\n"
-        ".L_002c7064:\n"
-        "str r0, [r4, #8]\n"
-        ".L_002c7068:\n"
-        "str r4, [r7, #0x28]\n"
-        ".L_002c706c:\n"
-        "add sp, sp, #0xc\n"
-        "mov r0, r7\n"
-        "pop {r4, r5, r6, r7, r8, sb, pc}\n"
-        ".word 0x00472480\n"
-        ".word 0x000001c2\n"
-        ".word 0x00410010\n"
-    );
+extern "C" uintptr_t engine_func_002c6f7c(const void* arg0) {
+    const u8* desc = reinterpret_cast<const u8*>(arg0);
+    uintptr_t v0 = engine_func_0024c60c(desc);
+    u16 sub_id = *reinterpret_cast<const u16*>(desc + 0xC);
+    uintptr_t target = engine_func_001d2058(sub_id, v0);
+    uintptr_t res_ec = engine_func_0024c5ec(desc);
+    if (res_ec == 0) {
+        return target;
+    }
+
+    u32 table_idx = *reinterpret_cast<const u32*>(target + 0x18);
+    const u8* table_entry = reinterpret_cast<const u8*>(0x00472480 + (table_idx * 24));
+    if (table_entry[0x10] == 0) {
+        return target;
+    }
+
+    u16 mode = *reinterpret_cast<const u16*>(desc + 0x1C);
+    u32* buf = reinterpret_cast<u32*>(engine_func_002c34a4(0x10000, 0x100, 0, 12, 0x10, 1));
+    engine_func_002c3b48(buf, 12);
+    buf[0] = mode;
+    buf[1] = 1;
+
+    if (mode == 1) {
+        buf[2] = static_cast<u32>(engine_func_0028ca7c(reinterpret_cast<void*>(res_ec)));
+    } else if (mode == 4) {
+        u16 code = *reinterpret_cast<const u16*>(res_ec);
+        buf[2] = static_cast<u32>(engine_func_0024c5dc(code));
+    } else if (mode == 9) {
+        buf[2] = static_cast<u32>(AsdEffectTexture_func_0028cabc(reinterpret_cast<void*>(res_ec)));
+    }
+
+    *reinterpret_cast<uintptr_t*>(target + 0x28) = reinterpret_cast<uintptr_t>(buf);
+    return target;
 }
 
 // DECOMP_FUNC(0x002c9c2c, 44)
@@ -3862,80 +3820,40 @@ extern "C" __attribute__((naked)) void camp_func_002d0498() {
 }
 
 // DECOMP_FUNC(0x002d13d4, 260)
-extern "C" __attribute__((naked)) void engine_func_002d13d4() {
-    asm volatile(
-        "push {r0, r1, r2, r3, r4, r5, r6, r7, r8, sb, sl, fp, lr}\n"
-        "mul r0, r1, r2\n"
-        "mov r5, r3\n"
-        "sub sp, sp, #0xc\n"
-        "mul r6, r1, r5\n"
-        "add r7, r2, r2, lsl #1\n"
-        "sxth r2, r0\n"
-        "mov r4, r1\n"
-        "sxth r1, r6\n"
-        "ldr r0, [sp, #0xc]\n"
-        "ldr r3, [sp, #0x44]\n"
-        "bl effGeometry_func_00207334\n"
-        "str r0, [sp]\n"
-        "ldr r1, [r0]\n"
-        "ldr r0, [sp, #0xc]\n"
-        "mov r2, #0\n"
-        "cmp r0, #0\n"
-        "ldr r0, [r1, #0x48]\n"
-        "ble .L_002d14c8\n"
-        ".word 0xe59f10ac\n"
-        "add r3, r7, #2\n"
-        "sub ip, r4, #1\n"
-        "smull r3, r1, r1, r3\n"
-        "mla sb, ip, r5, r5\n"
-        "sub r3, r6, r5\n"
-        "add r3, r3, r5\n"
-        "sub r1, r1, r1, asr #31\n"
-        "sub r3, r3, sb\n"
-        "add fp, r1, r1, lsl #1\n"
-        "str r1, [sp, #8]\n"
-        "str r3, [sp, #4]\n"
-        ".L_002d1450:\n"
-        "cmp r4, #0\n"
-        "mulgt r1, r4, r2\n"
-        "mov r7, #0\n"
-        "mov r6, r7\n"
-        "addgt lr, r1, r1, lsl #1\n"
-        "ble .L_002d14b8\n"
-        ".L_002d1468:\n"
-        "cmp fp, #0\n"
-        "ble .L_002d14a8\n"
-        "ldr r8, [sp, #8]\n"
-        "add ip, lr, r7\n"
-        "ldr r3, [sp, #0x40]\n"
-        "mov r1, fp\n"
-        "mul ip, r8, ip\n"
-        "ldr r8, [sp, #4]\n"
-        "mla r8, r5, r6, r8\n"
-        "add ip, r0, ip, lsl #1\n"
-        ".L_002d1490:\n"
-        "ldrh sl, [r3], #2\n"
-        "subs r1, r1, #1\n"
-        "mla sl, sb, r2, sl\n"
-        "add sl, sl, r8\n"
-        "strh sl, [ip], #2\n"
-        "bne .L_002d1490\n"
-        ".L_002d14a8:\n"
-        "add r6, r6, #1\n"
-        "cmp r4, r6\n"
-        "add r7, r7, #3\n"
-        "bgt .L_002d1468\n"
-        ".L_002d14b8:\n"
-        "ldr r1, [sp, #0xc]\n"
-        "add r2, r2, #1\n"
-        "cmp r1, r2\n"
-        "bgt .L_002d1450\n"
-        ".L_002d14c8:\n"
-        "ldr r0, [sp]\n"
-        "add sp, sp, #0x1c\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, fp, pc}\n"
-        ".word 0x55555556\n"
-    );
+extern "C" void* engine_func_002d13d4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, const u16* src_data, u32 geom_mode) {
+    s16 scaled_w = static_cast<s16>(arg1 * arg2);
+    s16 scaled_h = static_cast<s16>(arg1 * arg3);
+    void* res_ptr = effGeometry_func_00207334(arg0, scaled_h, scaled_w, geom_mode);
+    if (arg0 <= 0) {
+        return res_ptr;
+    }
+
+    const u8* obj_desc = *reinterpret_cast<const u8* const*>(res_ptr);
+    u16* dst_buffer = *reinterpret_cast<u16* const*>(obj_desc + 0x48);
+
+    s32 r7 = arg2 * 3;
+    s32 div_val = static_cast<s32>((static_cast<s64>(r7 + 2) * 0x55555556LL) >> 32);
+    div_val -= (div_val >> 31);
+    s32 fp = div_val * 3;
+
+    s32 sb = (arg1 - 1) * arg3 + arg3;
+    s32 local_4 = (arg1 * arg3) - sb;
+
+    for (s32 z = 0; z < arg0; ++z) {
+        for (s32 y = 0; y < arg1; ++y) {
+            s32 ip = ((arg1 * z * 3) + (y * 3)) * div_val;
+            s32 base_r8 = local_4 + (arg3 * y);
+            u16* dst = reinterpret_cast<u16*>(reinterpret_cast<uintptr_t>(dst_buffer) + (ip * 2));
+            const u16* src = src_data;
+            for (s32 x = 0; x < fp; ++x) {
+                s32 val = *src++;
+                val += (sb * z) + base_r8;
+                *dst++ = static_cast<u16>(val);
+            }
+        }
+    }
+
+    return res_ptr;
 }
 
 // DECOMP_FUNC(0x002d18c8, 468)
@@ -5165,73 +5083,45 @@ extern "C" __attribute__((naked)) void camp_func_002dc840() {
 }
 
 // DECOMP_FUNC(0x002dcd68, 240)
-extern "C" __attribute__((naked)) void engine_func_002dcd68() {
-    asm volatile(
-        "push {r0, r1, r4, r5, r6, r7, r8, sb, sl, fp, ip, lr}\n"
-        "ldr r0, [sp]\n"
-        "ldrh r0, [r0]\n"
-        "bl engine_func_002b47cc\n"
-        "mov r8, r0\n"
-        "ldr r0, [sp, #4]\n"
-        "ldrh r0, [r0]\n"
-        "bl engine_func_002b47cc\n"
-        "mov sb, r0\n"
-        ".word 0xe59f00c0\n"
-        "mov r5, #0\n"
-        "mov r6, r5\n"
-        "mov r4, r5\n"
-        "ldrd sl, fp, [r0]\n"
-        ".L_002dcda0:\n"
-        "add r7, r8, r4, lsl #1\n"
-        "mov r0, r6\n"
-        "ldrsh r1, [r7, #0x74]\n"
-        "asr r1, r1, #0xa\n"
-        "bl func_00288ad4\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "ble .L_002dcdcc\n"
-        "ldrsh r0, [r7, #0x74]\n"
-        "mov sl, r4\n"
-        "asr r6, r0, #0xa\n"
-        ".L_002dcdcc:\n"
-        "add r7, sb, r4, lsl #1\n"
-        "mov r0, r5\n"
-        "ldrsh r1, [r7, #0x74]\n"
-        "asr r1, r1, #0xa\n"
-        "bl func_00288ad4\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "ble .L_002dcdf8\n"
-        "ldrsh r0, [r7, #0x74]\n"
-        "mov fp, r4\n"
-        "asr r5, r0, #0xa\n"
-        ".L_002dcdf8:\n"
-        "add r4, r4, #1\n"
-        "cmp r4, #7\n"
-        "ble .L_002dcda0\n"
-        "subs r0, sl, fp\n"
-        "bne .L_002dce4c\n"
-        "mov r1, r5\n"
-        "mov r0, r6\n"
-        "bl func_00288ad4\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "bne .L_002dce4c\n"
-        "ldr r0, [sp]\n"
-        "ldrh r0, [r0]\n"
-        "bl engine_func_002b47cc\n"
-        "mov r4, r0\n"
-        "ldr r0, [sp, #4]\n"
-        "ldrh r0, [r0]\n"
-        "bl engine_func_002b47cc\n"
-        "ldrh r2, [r4, #0x98]\n"
-        "ldrh r0, [r0, #0x98]\n"
-        "sub r0, r2, r0\n"
-        ".L_002dce4c:\n"
-        "add sp, sp, #8\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, fp, ip, pc}\n"
-        ".word 0x00402688\n"
-    );
+extern "C" s32 engine_func_002dcd68(const u16* a, const u16* b) {
+    const u8* obj_a = engine_func_002b47cc(*a);
+    const u8* obj_b = engine_func_002b47cc(*b);
+    const u32* init_vals = reinterpret_cast<const u32*>(0x00402688);
+    s32 best_idx_a = static_cast<s32>(init_vals[0]);
+    s32 best_idx_b = static_cast<s32>(init_vals[1]);
+    s32 best_val_a = 0;
+    s32 best_val_b = 0;
+
+    for (s32 i = 0; i <= 7; ++i) {
+        s16 raw_a = *reinterpret_cast<const s16*>(obj_a + 0x74 + (i * 2));
+        s32 val_a = raw_a >> 10;
+        if (func_00288ad4(best_val_a, val_a) > 0) {
+            best_idx_a = i;
+            best_val_a = val_a;
+        }
+
+        s16 raw_b = *reinterpret_cast<const s16*>(obj_b + 0x74 + (i * 2));
+        s32 val_b = raw_b >> 10;
+        if (func_00288ad4(best_val_b, val_b) > 0) {
+            best_idx_b = i;
+            best_val_b = val_b;
+        }
+    }
+
+    s32 diff = best_idx_a - best_idx_b;
+    if (diff != 0) {
+        return diff;
+    }
+
+    s32 cmp_val = func_00288ad4(best_val_a, best_val_b);
+    if (cmp_val != 0) {
+        return cmp_val;
+    }
+
+    const u8* ref_a = engine_func_002b47cc(*a);
+    const u8* ref_b = engine_func_002b47cc(*b);
+    return static_cast<s32>(*reinterpret_cast<const u16*>(ref_a + 0x98)) -
+           static_cast<s32>(*reinterpret_cast<const u16*>(ref_b + 0x98));
 }
 
 // DECOMP_FUNC(0x002df7f8, 220)
@@ -5852,73 +5742,42 @@ extern "C" s32 func_002e4aac(const u16* a, const u16* b) {
 }
 
 // DECOMP_FUNC(0x002e7b44, 236)
-extern "C" __attribute__((naked)) void effParticle_func_002e7b44() {
-    asm volatile(
-        "push {r4, r5, r6, r7, lr}\n"
-        "mov r4, r0\n"
-        "sub sp, sp, #0xc\n"
-        "ldr r0, [r0, #0x4c]\n"
-        "mov r7, r1\n"
-        "cmp r0, #0\n"
-        "ldrne r6, [r0, #8]\n"
-        "ldr r0, [r4, #0x40]\n"
-        "ldreq r6, [r4]\n"
-        "cmp r0, #0\n"
-        "beq .L_002e7ba8\n"
-        "cmp r6, #0\n"
-        "mov r5, #0\n"
-        "bls .L_002e7b94\n"
-        ".L_002e7b7c:\n"
-        "ldr r0, [r4, #0x3c]\n"
-        "ldr r0, [r0, r5, lsl #2]\n"
-        "bl engine_func_002c2430\n"
-        "add r5, r5, #1\n"
-        "cmp r6, r5\n"
-        "bhi .L_002e7b7c\n"
-        ".L_002e7b94:\n"
-        "ldr r0, [r4, #0x40]\n"
-        "bl engine_func_002c4360\n"
-        "mov r0, #0\n"
-        "str r0, [r4, #0x3c]\n"
-        "str r0, [r4, #0x40]\n"
-        ".L_002e7ba8:\n"
-        "lsls r5, r6, #2\n"
-        "beq .L_002e7c20\n"
-        ".word 0xe59f1070\n"
-        ".word 0xe59f0070\n"
-        "mov r0, r0\n"
-        "mov r1, #1\n"
-        "mov r0, #0x10\n"
-        "strd r0, r1, [sp]\n"
-        "mov r3, r5\n"
-        "mov r2, #0\n"
-        "mov r1, #0x100\n"
-        "mov r0, #0x10000\n"
-        "bl engine_func_002c34a4\n"
-        "str r0, [r4, #0x40]\n"
-        "str r0, [r4, #0x3c]\n"
-        "mov r0, r7\n"
-        "bl effParts_func_002a51dc\n"
-        "ldr r1, [r4, #0x3c]\n"
-        "cmp r6, #1\n"
-        "mov r5, #1\n"
-        "str r0, [r1]\n"
-        "bls .L_002e7c20\n"
-        ".L_002e7c00:\n"
-        "ldr r0, [r4, #0x3c]\n"
-        "ldr r0, [r0]\n"
-        "bl effParts_func_002490e0\n"
-        "ldr r1, [r4, #0x3c]\n"
-        "str r0, [r1, r5, lsl #2]\n"
-        "add r5, r5, #1\n"
-        "cmp r6, r5\n"
-        "bhi .L_002e7c00\n"
-        ".L_002e7c20:\n"
-        "add sp, sp, #0xc\n"
-        "pop {r4, r5, r6, r7, pc}\n"
-        ".word 0x00000275\n"
-        ".word 0x00410194\n"
-    );
+extern "C" void effParticle_func_002e7b44(void* self, void* arg1) {
+    u8* p = reinterpret_cast<u8*>(self);
+    const u8* f4c = *reinterpret_cast<const u8* const*>(p + 0x4C);
+    u32 count;
+    if (f4c != nullptr) {
+        count = *reinterpret_cast<const u32*>(f4c + 8);
+    } else {
+        count = *reinterpret_cast<const u32*>(p);
+    }
+
+    void** arr = *reinterpret_cast<void***>(p + 0x3C);
+    void* old_buf = *reinterpret_cast<void**>(p + 0x40);
+    if (old_buf != nullptr) {
+        for (u32 i = 0; i < count; ++i) {
+            engine_func_002c2430(arr[i]);
+        }
+        engine_func_002c4360(old_buf);
+        *reinterpret_cast<void**>(p + 0x3C) = nullptr;
+        *reinterpret_cast<void**>(p + 0x40) = nullptr;
+    }
+
+    u32 alloc_size = count * sizeof(void*);
+    if (alloc_size == 0) {
+        return;
+    }
+
+    void** new_buf = reinterpret_cast<void**>(engine_func_002c34a4(0x10000, 0x100, 0, alloc_size, 0x10, 1));
+    *reinterpret_cast<void**>(p + 0x40) = reinterpret_cast<void*>(new_buf);
+    *reinterpret_cast<void**>(p + 0x3C) = reinterpret_cast<void*>(new_buf);
+
+    void* first = effParts_func_002a51dc(arg1);
+    new_buf[0] = first;
+
+    for (u32 i = 1; i < count; ++i) {
+        new_buf[i] = effParts_func_002490e0(new_buf[0]);
+    }
 }
 
 // DECOMP_FUNC(0x002eb0f4, 80)
@@ -6419,82 +6278,48 @@ extern "C" __attribute__((naked)) void camp_func_002eff60() {
 }
 
 // DECOMP_FUNC(0x002f077c, 268)
-extern "C" __attribute__((naked)) void ui_func_002f077c() {
-    asm volatile(
-        "push {r4, r5, r6, r7, lr}\n"
-        "sub sp, sp, #0x14\n"
-        "mov r0, #0\n"
-        "bl engine_func_00296f60\n"
-        "mov r5, r0\n"
-        "mov r0, #1\n"
-        "bl engine_func_00296f60\n"
-        "bl ui_func_00249bac\n"
-        "mov r2, sp\n"
-        "add r1, sp, #4\n"
-        "bl func_00249b54\n"
-        "ldm sp, {r0, r4}\n"
-        "mov r7, #1\n"
-        "add r0, r0, r4\n"
-        "cmp r0, r4\n"
-        "lslgt r6, r7, r5\n"
-        "ble .L_002f082c\n"
-        ".L_002f07c0:\n"
-        "nop\n"
-        "bl ui_func_00293c98\n"
-        "add r0, r0, #0x1fc0\n"
-        "add r1, r4, r4, lsl #4\n"
-        "ldr r0, [r0]\n"
-        "add r1, r1, r4, lsl #6\n"
-        "ldr r1, [r0, r1, lsl #3]!\n"
-        "tst r1, #0x10\n"
-        "bne .L_002f0818\n"
-        "tst r1, #1\n"
-        "beq .L_002f0818\n"
-        "tst r1, #0x40\n"
-        "bne .L_002f0818\n"
-        "add r0, r0, #0x100\n"
-        "ldrh r0, [r0, #0xc6]\n"
-        "tst r0, r6\n"
-        "beq .L_002f0818\n"
-        "mov r0, #1\n"
-        "bl battle_func_0028df54\n"
-        "nop\n"
-        "nop\n"
-        "b .L_002f087c\n"
-        ".L_002f0818:\n"
-        "ldrd r0, r1, [sp]\n"
-        "add r4, r4, #1\n"
-        "add r0, r0, r1\n"
-        "cmp r0, r4\n"
-        "bgt .L_002f07c0\n"
-        ".L_002f082c:\n"
-        "nop\n"
-        "bl ui_func_00293c98\n"
-        "add r0, r0, #0x4900\n"
-        "ldrb r0, [r0, #0xc5]\n"
-        "cmp r0, #0\n"
-        "beq .L_002f0874\n"
-        "bl ui_func_00293c98\n"
-        "nop\n"
-        "nop\n"
-        "bl battle_func_00249b0c\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "beq .L_002f0874\n"
-        "add r0, r0, #0x100\n"
-        "ldrh r0, [r0, #0xc6]\n"
-        "tst r0, r7, lsl r5\n"
-        "movne r0, #1\n"
-        "bne .L_002f0878\n"
-        ".L_002f0874:\n"
-        "mov r0, #0\n"
-        ".L_002f0878:\n"
-        "bl battle_func_0028df54\n"
-        ".L_002f087c:\n"
-        "add sp, sp, #0x14\n"
-        "mov r0, r7\n"
-        "pop {r4, r5, r6, r7, pc}\n"
-    );
+extern "C" u32 ui_func_002f077c(void) {
+    u32 bit_shift = engine_func_00296f60(0);
+    engine_func_00296f60(1);
+    ui_func_00249bac();
+
+    u32 count = 0;
+    u32 start = 0;
+    func_00249b54(&start, &count);
+
+    u32 limit = count + start;
+    if (limit > start) {
+        u32 mask = 1u << bit_shift;
+        for (u32 curr = start; curr < limit; ++curr) {
+            const u8* base = reinterpret_cast<const u8*>(ui_func_00293c98());
+            const u8* table = *reinterpret_cast<const u8* const*>(base + 0x1FC0);
+            const u8* unit = table + curr * 648;
+            u32 flags = *reinterpret_cast<const u32*>(unit);
+            if ((flags & 0x10) == 0 && (flags & 1) != 0 && (flags & 0x40) == 0) {
+                u16 field_1c6 = *reinterpret_cast<const u16*>(unit + 0x1C6);
+                if ((field_1c6 & mask) != 0) {
+                    battle_func_0028df54(1);
+                    return 1;
+                }
+            }
+        }
+    }
+
+    const u8* base2 = reinterpret_cast<const u8*>(ui_func_00293c98());
+    if (base2[0x49C5] != 0) {
+        ui_func_00293c98();
+        const u8* bonus_unit = reinterpret_cast<const u8*>(battle_func_00249b0c());
+        if (bonus_unit != nullptr) {
+            u16 bonus_field_1c6 = *reinterpret_cast<const u16*>(bonus_unit + 0x1C6);
+            if ((bonus_field_1c6 & (1u << bit_shift)) != 0) {
+                battle_func_0028df54(1);
+                return 1;
+            }
+        }
+    }
+
+    battle_func_0028df54(0);
+    return 1;
 }
 
 // DECOMP_FUNC(0x002f0888, 312)
