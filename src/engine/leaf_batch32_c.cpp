@@ -992,128 +992,109 @@ extern "C" __attribute__((naked)) void func_002bb5c4() {
 }
 
 // DECOMP_FUNC(0x002bbb2c, 432)
-extern "C" __attribute__((naked)) void engine_func_002bbb2c() {
-    asm volatile(
-        "push {r4, r5, r6, r7, r8, sb, sl, lr}\n"
-        "mov r5, r1\n"
-        "mov r7, r0\n"
-        "add r0, r0, #0xc\n"
-        "mov sb, r2\n"
-        "mov sl, r3\n"
-        "mov r6, r0\n"
-        "bl engine_func_002c3aa8\n"
-        "ldr ip, [r7, #8]\n"
-        "mov r3, #0\n"
-        "cmp ip, #0\n"
-        "beq .L_002bbbac\n"
-        "ldr r4, [ip]\n"
-        "ldr r1, [r7, #4]\n"
-        "cmp r4, #0\n"
-        "addne r8, sb, sl\n"
-        "beq .L_002bbc5c\n"
-        ".L_002bbb70:\n"
-        "add r0, r4, #8\n"
-        "ldm r0, {r0, r2}\n"
-        "add r2, r2, r0\n"
-        "sub r1, r1, r2\n"
-        "cmp r8, r1\n"
-        "bhi .L_002bbb90\n"
-        "mov r3, r4\n"
-        "b .L_002bbbac\n"
-        ".L_002bbb90:\n"
-        "cmp ip, r4\n"
-        "sub r1, r0, sl\n"
-        "beq .L_002bbbac\n"
-        "ldr r4, [r4]\n"
-        "cmp r4, #0\n"
-        "bne .L_002bbb70\n"
-        "b .L_002bbc5c\n"
-        ".L_002bbbac:\n"
-        "cmp r3, #0\n"
-        "beq .L_002bbc5c\n"
-        "ldrd r0, r1, [r3, #8]\n"
-        "cmp ip, #0\n"
-        "add r0, r0, r1\n"
-        "add r8, r0, sl\n"
-        "ldrne r0, [ip]\n"
-        "moveq r0, #0\n"
-        "mov r1, r3\n"
-        "cmp r0, r3\n"
-        "ldrne r0, [r1, #4]\n"
-        "cmpne r0, #0\n"
-        "beq .L_002bbc38\n"
-        "cmp ip, r0\n"
-        "bne .L_002bbc1c\n"
-        "mov r0, r5\n"
-        "cmp ip, #0\n"
-        "streq r0, [r0, #4]\n"
-        "streq r0, [r0]\n"
-        "beq .L_002bbc14\n"
-        "str ip, [r5, #4]\n"
-        "ldr r2, [ip]\n"
-        "str r5, [r2, #4]\n"
-        "ldr r2, [ip]\n"
-        "str r2, [r5]\n"
-        "str r5, [ip]\n"
-        ".L_002bbc14:\n"
-        "str r0, [r7, #8]\n"
-        "b .L_002bbcc8\n"
-        ".L_002bbc1c:\n"
-        "str r0, [r5, #4]\n"
-        "ldr r2, [r0]\n"
-        "str r5, [r2, #4]\n"
-        "ldr r2, [r0]\n"
-        "str r2, [r5]\n"
-        "str r5, [r0]\n"
-        "b .L_002bbcc8\n"
-        ".L_002bbc38:\n"
-        "cmp ip, #0\n"
-        "beq .L_002bbcbc\n"
-        "str ip, [r5, #4]\n"
-        "ldr r1, [ip]\n"
-        "str r5, [r1, #4]\n"
-        "ldr r1, [ip]\n"
-        "str r1, [r5]\n"
-        "str r5, [ip]\n"
-        "b .L_002bbcc8\n"
-        ".L_002bbc5c:\n"
-        "ldr r8, [r7]\n"
-        "cmp ip, #0\n"
-        "beq .L_002bbc9c\n"
-        "ldr r0, [ip, #8]\n"
-        "add r1, r8, sb\n"
-        "add r1, r1, sl\n"
-        "cmp r1, r0\n"
-        "bhi .L_002bbcac\n"
-        "str ip, [r5, #4]\n"
-        "ldr r2, [ip]\n"
-        "str r5, [r2, #4]\n"
-        "ldr r2, [ip]\n"
-        "str r2, [r5]\n"
-        "str r5, [ip]\n"
-        "str r5, [r7, #8]\n"
-        "b .L_002bbcc8\n"
-        ".L_002bbc9c:\n"
-        "ldr r1, [r7, #4]\n"
-        "add r0, r8, sb\n"
-        "cmp r1, r0\n"
-        "bhs .L_002bbcbc\n"
-        ".L_002bbcac:\n"
-        "mov r0, r6\n"
-        "bl engine_func_002c3a24\n"
-        "mov r0, #0\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, pc}\n"
-        ".L_002bbcbc:\n"
-        "str r5, [r5, #4]\n"
-        "str r5, [r5]\n"
-        "str r5, [r7, #8]\n"
-        ".L_002bbcc8:\n"
-        "strd r8, sb, [r5, #8]\n"
-        "mov r0, r6\n"
-        "bl engine_func_002c3a24\n"
-        "mov r0, r8\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, pc}\n"
-    );
+extern "C" u32 engine_func_002bbb2c(void* heap_ptr, void* node_ptr, u32 alloc_size, u32 align) {
+    u8* heap = reinterpret_cast<u8*>(heap_ptr);
+    u8* node = reinterpret_cast<u8*>(node_ptr);
+    void* mutex = heap + 0x0C;
+    reinterpret_cast<void (*)(void*)>(engine_func_002c3aa8)(mutex);
+
+    u8* head = *reinterpret_cast<u8**>(heap + 8);
+    u8* candidate = nullptr;
+
+    if (head != nullptr) {
+        u8* cur = *reinterpret_cast<u8**>(head);
+        u32 limit = *reinterpret_cast<u32*>(heap + 4);
+        if (cur != nullptr) {
+            u32 req = alloc_size + align;
+            while (true) {
+                u32 cur_addr = *reinterpret_cast<u32*>(cur + 8);
+                u32 cur_size = *reinterpret_cast<u32*>(cur + 12);
+                u32 end = cur_addr + cur_size;
+                u32 gap = limit - end;
+                if (req <= gap) {
+                    candidate = cur;
+                    break;
+                }
+                if (head == cur) {
+                    break;
+                }
+                limit = cur_addr - align;
+                cur = *reinterpret_cast<u8**>(cur);
+                if (cur == nullptr) {
+                    break;
+                }
+            }
+        }
+    }
+
+    u32 new_addr;
+    if (candidate != nullptr) {
+        u32 cand_addr = *reinterpret_cast<u32*>(candidate + 8);
+        u32 cand_size = *reinterpret_cast<u32*>(candidate + 12);
+        new_addr = cand_addr + cand_size + align;
+        u8* head_next = (head != nullptr) ? *reinterpret_cast<u8**>(head) : nullptr;
+        u8* cand_prev = (head_next != candidate) ? *reinterpret_cast<u8**>(candidate + 4) : nullptr;
+        if (cand_prev == nullptr) {
+            if (head == nullptr) {
+                *reinterpret_cast<u8**>(node + 4) = node;
+                *reinterpret_cast<u8**>(node) = node;
+                *reinterpret_cast<u8**>(heap + 8) = node;
+            } else {
+                *reinterpret_cast<u8**>(node + 4) = head;
+                u8* h_next = *reinterpret_cast<u8**>(head);
+                *reinterpret_cast<u8**>(h_next + 4) = node;
+                *reinterpret_cast<u8**>(node) = h_next;
+                *reinterpret_cast<u8**>(head) = node;
+            }
+        } else if (head == cand_prev) {
+            if (head == nullptr) {
+                *reinterpret_cast<u8**>(node + 4) = node;
+                *reinterpret_cast<u8**>(node) = node;
+            } else {
+                *reinterpret_cast<u8**>(node + 4) = head;
+                u8* h_next = *reinterpret_cast<u8**>(head);
+                *reinterpret_cast<u8**>(h_next + 4) = node;
+                *reinterpret_cast<u8**>(node) = h_next;
+                *reinterpret_cast<u8**>(head) = node;
+            }
+            *reinterpret_cast<u8**>(heap + 8) = node;
+        } else {
+            *reinterpret_cast<u8**>(node + 4) = cand_prev;
+            u8* p_next = *reinterpret_cast<u8**>(cand_prev);
+            *reinterpret_cast<u8**>(p_next + 4) = node;
+            *reinterpret_cast<u8**>(node) = p_next;
+            *reinterpret_cast<u8**>(cand_prev) = node;
+        }
+    } else {
+        new_addr = *reinterpret_cast<u32*>(heap);
+        if (head != nullptr) {
+            u32 head_addr = *reinterpret_cast<u32*>(head + 8);
+            if (new_addr + alloc_size + align > head_addr) {
+                reinterpret_cast<void (*)(void*)>(engine_func_002c3a24)(mutex);
+                return 0;
+            }
+            *reinterpret_cast<u8**>(node + 4) = head;
+            u8* h_next = *reinterpret_cast<u8**>(head);
+            *reinterpret_cast<u8**>(h_next + 4) = node;
+            *reinterpret_cast<u8**>(node) = h_next;
+            *reinterpret_cast<u8**>(head) = node;
+            *reinterpret_cast<u8**>(heap + 8) = node;
+        } else {
+            u32 limit = *reinterpret_cast<u32*>(heap + 4);
+            if (limit < new_addr + alloc_size) {
+                reinterpret_cast<void (*)(void*)>(engine_func_002c3a24)(mutex);
+                return 0;
+            }
+            *reinterpret_cast<u8**>(node + 4) = node;
+            *reinterpret_cast<u8**>(node) = node;
+            *reinterpret_cast<u8**>(heap + 8) = node;
+        }
+    }
+
+    *reinterpret_cast<u32*>(node + 8) = new_addr;
+    *reinterpret_cast<u32*>(node + 12) = alloc_size;
+    reinterpret_cast<void (*)(void*)>(engine_func_002c3a24)(mutex);
+    return new_addr;
 }
 
 // DECOMP_FUNC(0x002bc304, 196)
@@ -1754,108 +1735,54 @@ extern "C" u32 engine_func_002c0c74(u32 param0, u32 param1, s32 param2) {
 }
 
 // DECOMP_FUNC(0x002c15d8, 360)
-extern "C" __attribute__((naked)) void engine_func_002c15d8() {
-    asm volatile(
-        "push {r0, r1, r2, r4, r5, r6, r7, r8, sb, sl, fp, lr}\n"
-        "mov r4, r1\n"
-        "ldrb r1, [r1]\n"
-        "cmp r1, #1\n"
-        "ldreq r1, [r0, #4]\n"
-        "ldrne r1, [r0]\n"
-        "add r0, r0, r1, lsl #2\n"
-        "ldr r5, [r0, #0xc]\n"
-        "ldr r0, [r5, #0x38]\n"
-        "ldr r1, [r5, #0x30]\n"
-        "add r8, r0, r5\n"
-        "ldr r0, [sp, #8]\n"
-        "add sb, r1, r5\n"
-        "bl engine_func_002c3290\n"
-        "mov fp, r0\n"
-        "ldr r0, [r5, #0x34]\n"
-        "mov r7, #0\n"
-        "cmp r0, #0\n"
-        "addhi sl, r8, fp\n"
-        "bls .L_002c1734\n"
-        ".L_002c1628:\n"
-        "add r6, sb, r7, lsl #3\n"
-        "mov r2, fp\n"
-        "ldr r0, [r6]\n"
-        "add r1, r0, r8\n"
-        "ldr r0, [sp, #8]\n"
-        "bl engine_func_002b45f8\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "bne .L_002c1664\n"
-        "ldr r0, [r6]\n"
-        "ldrsb r0, [r0, sl]\n"
-        "cmp r0, #0\n"
-        "beq .L_002c1678\n"
-        "cmp r0, #0x2e\n"
-        "beq .L_002c1678\n"
-        ".L_002c1664:\n"
-        "ldr r0, [r5, #0x34]\n"
-        "add r7, r7, #1\n"
-        "cmp r0, r7\n"
-        "bhi .L_002c1628\n"
-        "b .L_002c1734\n"
-        ".L_002c1678:\n"
-        "ldr r0, [r6]\n"
-        "add r0, r0, r8\n"
-        "str r0, [r4, #4]\n"
-        "ldr r0, [r6, #4]\n"
-        "and r0, r0, #0xff\n"
-        "strb r0, [r4, #2]\n"
-        "ldr r1, [r6, #4]\n"
-        "cmp r0, #0x88\n"
-        "lsl r1, r1, #8\n"
-        "lsr r1, r1, #0x18\n"
-        "strb r1, [r4, #3]\n"
-        "bhs .L_002c1734\n"
-        "cmp r0, #0x78\n"
-        "blo .L_002c16d0\n"
-        "ldrb r2, [r4, #1]\n"
-        "sub r0, r0, #0x78\n"
-        "sub r1, r1, #0x78\n"
-        "strb r0, [r4, #2]\n"
-        "cmp r2, #4\n"
-        "strb r1, [r4, #3]\n"
-        "beq .L_002c171c\n"
-        "b .L_002c1734\n"
-        ".L_002c16d0:\n"
-        "cmp r0, #0x70\n"
-        "blo .L_002c16f8\n"
-        "ldrb r2, [r4, #1]\n"
-        "sub r0, r0, #0x70\n"
-        "sub r1, r1, #0x70\n"
-        "strb r0, [r4, #2]\n"
-        "cmp r2, #3\n"
-        "strb r1, [r4, #3]\n"
-        "beq .L_002c171c\n"
-        "b .L_002c1734\n"
-        ".L_002c16f8:\n"
-        "cmp r0, #0x10\n"
-        "blo .L_002c1728\n"
-        "ldrb r2, [r4, #1]\n"
-        "sub r0, r0, #0x10\n"
-        "sub r1, r1, #0x10\n"
-        "strb r0, [r4, #2]\n"
-        "cmp r2, #2\n"
-        "strb r1, [r4, #3]\n"
-        "bne .L_002c1734\n"
-        ".L_002c171c:\n"
-        "mov r0, #1\n"
-        ".L_002c1720:\n"
-        "add sp, sp, #0xc\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, fp, pc}\n"
-        ".L_002c1728:\n"
-        "ldrb r0, [r4, #1]\n"
-        "cmp r0, #1\n"
-        "beq .L_002c1720\n"
-        ".L_002c1734:\n"
-        "add sp, sp, #0xc\n"
-        "mov r0, #0\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, fp, pc}\n"
-    );
+extern "C" u32 engine_func_002c15d8(void* ctx_ptr, u8* out_param, const void* query) {
+    u8* ctx = reinterpret_cast<u8*>(ctx_ptr);
+    u32 offset = (out_param[0] == 1) ? *reinterpret_cast<u32*>(ctx + 4) : *reinterpret_cast<u32*>(ctx);
+    u8* node = *reinterpret_cast<u8**>(ctx + (offset << 2) + 0x0C);
+
+    u8* str_base = node + *reinterpret_cast<u32*>(node + 0x38);
+    u8* desc_base = node + *reinterpret_cast<u32*>(node + 0x30);
+
+    u32 fp = reinterpret_cast<u32 (*)(const void*)>(engine_func_002c3290)(query);
+    u32 count = *reinterpret_cast<u32*>(node + 0x34);
+
+    for (u32 i = 0; i < count; ++i) {
+        u8* desc = desc_base + i * 8;
+        u32 str_off = *reinterpret_cast<u32*>(desc);
+        const char* s = reinterpret_cast<const char*>(str_base + str_off);
+        if (reinterpret_cast<u32 (*)(const void*, const char*, u32)>(engine_func_002b45f8)(query, s, fp) == 0) {
+            s8 sep = static_cast<s8>(s[fp]);
+            if (sep == 0 || sep == 0x2E) {
+                *reinterpret_cast<const char**>(out_param + 4) = s;
+                u32 f4 = *reinterpret_cast<u32*>(desc + 4);
+                u8 b0 = static_cast<u8>(f4 & 0xFF);
+                u8 b1 = static_cast<u8>((f4 >> 16) & 0xFF);
+                out_param[2] = b0;
+                out_param[3] = b1;
+
+                if (b0 >= 0x88) {
+                    return 0;
+                }
+                if (b0 >= 0x78) {
+                    out_param[2] = b0 - 0x78;
+                    out_param[3] = b1 - 0x78;
+                    return (out_param[1] == 4) ? 1 : 0;
+                }
+                if (b0 >= 0x70) {
+                    out_param[2] = b0 - 0x70;
+                    out_param[3] = b1 - 0x70;
+                    return (out_param[1] == 3) ? 1 : 0;
+                }
+                if (b0 >= 0x10) {
+                    out_param[2] = b0 - 0x10;
+                    out_param[3] = b1 - 0x10;
+                    return (out_param[1] == 2) ? 1 : 0;
+                }
+                return (out_param[1] == 1) ? 1 : 0;
+            }
+        }
+    }
+    return 0;
 }
 
 // DECOMP_FUNC(0x002c1740, 52)
@@ -1889,336 +1816,42 @@ extern "C" u32 ui_func_002c17d4(u32 id) {
 }
 
 // DECOMP_FUNC(0x002c2cf0, 1176)
-extern "C" __attribute__((naked)) void engine_func_002c2cf0() {
-    asm volatile(
-        "push {r3, r4, r5, r6, r7, r8, sb, sl, fp, lr}\n"
-        "mov r5, r0\n"
-        "mov r4, #0\n"
-        "mov sb, r2\n"
-        "mov sl, r1\n"
-        "ldr r0, [r0]\n"
-        "mov r8, r4\n"
-        "mov r6, r4\n"
-        "ldr r7, [r0, #0x2c]\n"
-        "cmp r7, #0\n"
-        "ble .L_002c2d70\n"
-        ".L_002c2d1c:\n"
-        "ldr r0, [r5]\n"
-        "ldr r1, [r0, #0x30]!\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r8\n"
-        "cmp r0, #0\n"
-        "beq .L_002c2d4c\n"
-        "add r0, r0, r6, lsl #4\n"
-        "ldr r1, [r0, #0x28]!\n"
-        "cmp r1, #0\n"
-        "moveq r0, r8\n"
-        "addne r0, r0, r1\n"
-        ".L_002c2d4c:\n"
-        "str r0, [sp]\n"
-        "mov r2, sb\n"
-        "mov r1, sl\n"
-        "mov r0, sp\n"
-        "bl engine_func_00120660\n"
-        "add r6, r6, #1\n"
-        "cmp r6, r7\n"
-        "orr r4, r4, r0\n"
-        "blt .L_002c2d1c\n"
-        ".L_002c2d70:\n"
-        "ldr r0, [r5]\n"
-        "mov r6, #0\n"
-        "ldr r7, [r0, #0x4c]\n"
-        "cmp r7, #0\n"
-        "ble .L_002c2dd8\n"
-        ".L_002c2d84:\n"
-        "ldr r0, [r5]\n"
-        "ldr r1, [r0, #0x50]!\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r8\n"
-        "cmp r0, #0\n"
-        "beq .L_002c2db4\n"
-        "add r0, r0, r6, lsl #4\n"
-        "ldr r1, [r0, #0x28]!\n"
-        "cmp r1, #0\n"
-        "moveq r0, r8\n"
-        "addne r0, r0, r1\n"
-        ".L_002c2db4:\n"
-        "str r0, [sp]\n"
-        "mov r2, sb\n"
-        "mov r1, sl\n"
-        "mov r0, sp\n"
-        "bl engine_func_00120784\n"
-        "add r6, r6, #1\n"
-        "cmp r6, r7\n"
-        "orr r4, r4, r0\n"
-        "blt .L_002c2d84\n"
-        ".L_002c2dd8:\n"
-        "ldr r0, [r5]\n"
-        "mov r6, #0\n"
-        "ldr r7, [r0, #0x54]\n"
-        "cmp r7, #0\n"
-        "ble .L_002c2e40\n"
-        ".L_002c2dec:\n"
-        "ldr r0, [r5]\n"
-        "ldr r1, [r0, #0x58]!\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r8\n"
-        "cmp r0, #0\n"
-        "beq .L_002c2e1c\n"
-        "add r0, r0, r6, lsl #4\n"
-        "ldr r1, [r0, #0x28]!\n"
-        "cmp r1, #0\n"
-        "moveq r0, r8\n"
-        "addne r0, r0, r1\n"
-        ".L_002c2e1c:\n"
-        "str r0, [sp]\n"
-        "mov r2, sb\n"
-        "mov r1, sl\n"
-        "mov r0, sp\n"
-        "bl engine_func_0012070c\n"
-        "add r6, r6, #1\n"
-        "cmp r6, r7\n"
-        "orr r4, r4, r0\n"
-        "blt .L_002c2dec\n"
-        ".L_002c2e40:\n"
-        "ldr r0, [r5]\n"
-        "mov r6, #0\n"
-        "ldr r7, [r0, #0x3c]\n"
-        "cmp r7, #0\n"
-        "ble .L_002c2ea8\n"
-        ".L_002c2e54:\n"
-        "ldr r0, [r5]\n"
-        "ldr r1, [r0, #0x40]!\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r8\n"
-        "cmp r0, #0\n"
-        "beq .L_002c2e84\n"
-        "add r0, r0, r6, lsl #4\n"
-        "ldr r1, [r0, #0x28]!\n"
-        "cmp r1, #0\n"
-        "moveq r0, r8\n"
-        "addne r0, r0, r1\n"
-        ".L_002c2e84:\n"
-        "str r0, [sp]\n"
-        "mov r2, sb\n"
-        "mov r1, sl\n"
-        "mov r0, sp\n"
-        "bl engine_func_0013f960\n"
-        "add r6, r6, #1\n"
-        "cmp r6, r7\n"
-        "orr r4, r4, r0\n"
-        "blt .L_002c2e54\n"
-        ".L_002c2ea8:\n"
-        "ldr r0, [r5]\n"
-        "mov r6, #0\n"
-        "ldr r7, [r0, #0x24]\n"
-        "cmp r7, #0\n"
-        "ble .L_002c2f10\n"
-        ".L_002c2ebc:\n"
-        "ldr r0, [r5]\n"
-        "ldr r1, [r0, #0x28]!\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r8\n"
-        "cmp r0, #0\n"
-        "beq .L_002c2eec\n"
-        "add r0, r0, r6, lsl #4\n"
-        "ldr r1, [r0, #0x28]!\n"
-        "cmp r1, #0\n"
-        "moveq r0, r8\n"
-        "addne r0, r0, r1\n"
-        ".L_002c2eec:\n"
-        "str r0, [sp]\n"
-        "mov r2, sb\n"
-        "mov r1, sl\n"
-        "mov r0, sp\n"
-        "bl engine_func_002bd688\n"
-        "add r6, r6, #1\n"
-        "cmp r6, r7\n"
-        "orr r4, r4, r0\n"
-        "blt .L_002c2ebc\n"
-        ".L_002c2f10:\n"
-        "ldr r0, [r5]\n"
-        "mov r6, #0\n"
-        "ldr r7, [r0, #0x64]\n"
-        "cmp r7, #0\n"
-        "ble .L_002c2f78\n"
-        ".L_002c2f24:\n"
-        "ldr r0, [r5]\n"
-        "ldr r1, [r0, #0x68]!\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r8\n"
-        "cmp r0, #0\n"
-        "beq .L_002c2f54\n"
-        "add r0, r0, r6, lsl #4\n"
-        "ldr r1, [r0, #0x28]!\n"
-        "cmp r1, #0\n"
-        "moveq r0, r8\n"
-        "addne r0, r0, r1\n"
-        ".L_002c2f54:\n"
-        "str r0, [sp]\n"
-        "mov r2, sb\n"
-        "mov r1, sl\n"
-        "mov r0, sp\n"
-        "bl engine_func_002acc98\n"
-        "add r6, r6, #1\n"
-        "cmp r6, r7\n"
-        "orr r4, r4, r0\n"
-        "blt .L_002c2f24\n"
-        ".L_002c2f78:\n"
-        "ldr r0, [r5]\n"
-        "mov r6, #0\n"
-        "ldr r7, [r0, #0x6c]\n"
-        "cmp r7, #0\n"
-        "ble .L_002c2fe0\n"
-        ".L_002c2f8c:\n"
-        "ldr r0, [r5]\n"
-        "ldr r1, [r0, #0x70]!\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r8\n"
-        "cmp r0, #0\n"
-        "beq .L_002c2fbc\n"
-        "add r0, r0, r6, lsl #4\n"
-        "ldr r1, [r0, #0x28]!\n"
-        "cmp r1, #0\n"
-        "moveq r0, r8\n"
-        "addne r0, r0, r1\n"
-        ".L_002c2fbc:\n"
-        "str r0, [sp]\n"
-        "mov r2, sb\n"
-        "mov r1, sl\n"
-        "mov r0, sp\n"
-        "bl engine_func_002acc98\n"
-        "add r6, r6, #1\n"
-        "cmp r6, r7\n"
-        "orr r4, r4, r0\n"
-        "blt .L_002c2f8c\n"
-        ".L_002c2fe0:\n"
-        "ldr r0, [r5]\n"
-        "mov r6, #0\n"
-        "ldr r7, [r0, #0x74]\n"
-        "cmp r7, #0\n"
-        "ble .L_002c3048\n"
-        ".L_002c2ff4:\n"
-        "ldr r0, [r5]\n"
-        "ldr r1, [r0, #0x78]!\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r8\n"
-        "cmp r0, #0\n"
-        "beq .L_002c3024\n"
-        "add r0, r0, r6, lsl #4\n"
-        "ldr r1, [r0, #0x28]!\n"
-        "cmp r1, #0\n"
-        "moveq r0, r8\n"
-        "addne r0, r0, r1\n"
-        ".L_002c3024:\n"
-        "str r0, [sp]\n"
-        "mov r2, sb\n"
-        "mov r1, sl\n"
-        "mov r0, sp\n"
-        "bl engine_func_002acc98\n"
-        "add r6, r6, #1\n"
-        "cmp r6, r7\n"
-        "orr r4, r4, r0\n"
-        "blt .L_002c2ff4\n"
-        ".L_002c3048:\n"
-        "ldr r0, [r5]\n"
-        "mov r6, #0\n"
-        "ldr r7, [r0, #0x7c]\n"
-        "cmp r7, #0\n"
-        "ble .L_002c30b0\n"
-        ".L_002c305c:\n"
-        "ldr r0, [r5]\n"
-        "ldr r1, [r0, #0x80]!\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r8\n"
-        "cmp r0, #0\n"
-        "beq .L_002c308c\n"
-        "add r0, r0, r6, lsl #4\n"
-        "ldr r1, [r0, #0x28]!\n"
-        "cmp r1, #0\n"
-        "moveq r0, r8\n"
-        "addne r0, r0, r1\n"
-        ".L_002c308c:\n"
-        "str r0, [sp]\n"
-        "mov r2, sb\n"
-        "mov r1, sl\n"
-        "mov r0, sp\n"
-        "bl engine_func_002acc98\n"
-        "add r6, r6, #1\n"
-        "cmp r6, r7\n"
-        "orr r4, r4, r0\n"
-        "blt .L_002c305c\n"
-        ".L_002c30b0:\n"
-        "ldr r0, [r5]\n"
-        "mov r6, #0\n"
-        "ldr r7, [r0, #0x84]\n"
-        "cmp r7, #0\n"
-        "ble .L_002c3118\n"
-        ".L_002c30c4:\n"
-        "ldr r0, [r5]\n"
-        "ldr r1, [r0, #0x88]!\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r8\n"
-        "cmp r0, #0\n"
-        "beq .L_002c30f4\n"
-        "add r0, r0, r6, lsl #4\n"
-        "ldr r1, [r0, #0x28]!\n"
-        "cmp r1, #0\n"
-        "moveq r0, r8\n"
-        "addne r0, r0, r1\n"
-        ".L_002c30f4:\n"
-        "str r0, [sp]\n"
-        "mov r2, sb\n"
-        "mov r1, sl\n"
-        "mov r0, sp\n"
-        "bl engine_func_002acc98\n"
-        "add r6, r6, #1\n"
-        "cmp r6, r7\n"
-        "orr r4, r4, r0\n"
-        "blt .L_002c30c4\n"
-        ".L_002c3118:\n"
-        "ldr r0, [r5]\n"
-        "mov r6, #0\n"
-        "ldr r7, [r0, #0x1c]\n"
-        "cmp r7, #0\n"
-        "ble .L_002c3180\n"
-        ".L_002c312c:\n"
-        "ldr r0, [r5]\n"
-        "ldr r1, [r0, #0x20]!\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r8\n"
-        "cmp r0, #0\n"
-        "beq .L_002c315c\n"
-        "add r0, r0, r6, lsl #4\n"
-        "ldr r1, [r0, #0x28]!\n"
-        "cmp r1, #0\n"
-        "moveq r0, r8\n"
-        "addne r0, r0, r1\n"
-        ".L_002c315c:\n"
-        "str r0, [sp]\n"
-        "mov r2, sb\n"
-        "mov r1, sl\n"
-        "mov r0, sp\n"
-        "bl engine_func_001208b8\n"
-        "add r6, r6, #1\n"
-        "cmp r6, r7\n"
-        "orr r4, r4, r0\n"
-        "blt .L_002c312c\n"
-        ".L_002c3180:\n"
-        "mov r0, r4\n"
-        "pop {r3, r4, r5, r6, r7, r8, sb, sl, fp, pc}\n"
-    );
+extern "C" u32 engine_func_002c2cf0(void** obj_holder, u32 arg1, u32 arg2) {
+    u32 result = 0;
+
+    auto process_section = [&](u32 count_off, u32 off_field, void (*cb)()) {
+        u8* obj = reinterpret_cast<u8*>(*obj_holder);
+        s32 count = *reinterpret_cast<s32*>(obj + count_off);
+        for (s32 i = 0; i < count; ++i) {
+            u8* cur_obj = reinterpret_cast<u8*>(*obj_holder);
+            s32 off1 = *reinterpret_cast<s32*>(cur_obj + off_field);
+            u8* p1 = (off1 != 0) ? (cur_obj + off_field + off1) : nullptr;
+            u8* target = nullptr;
+            if (p1 != nullptr) {
+                u8* entry = p1 + i * 16;
+                s32 off2 = *reinterpret_cast<s32*>(entry + 0x28);
+                if (off2 != 0) {
+                    target = entry + 0x28 + off2;
+                }
+            }
+            void* sp_arg = target;
+            result |= reinterpret_cast<u32 (*)(void*, u32, u32)>(cb)(&sp_arg, arg1, arg2);
+        }
+    };
+
+    process_section(0x2C, 0x30, engine_func_00120660);
+    process_section(0x4C, 0x50, engine_func_00120784);
+    process_section(0x54, 0x58, engine_func_0012070c);
+    process_section(0x3C, 0x40, engine_func_0013f960);
+    process_section(0x24, 0x28, engine_func_002bd688);
+    process_section(0x64, 0x68, engine_func_002acc98);
+    process_section(0x6C, 0x70, engine_func_002acc98);
+    process_section(0x74, 0x78, engine_func_002acc98);
+    process_section(0x7C, 0x80, engine_func_002acc98);
+    process_section(0x84, 0x88, engine_func_002acc98);
+    process_section(0x1C, 0x20, engine_func_001208b8);
+
+    return result;
 }
 
 // DECOMP_FUNC(0x002c34a4, 196)
@@ -2767,199 +2400,102 @@ extern "C" void func_002cbfcc(u8 val) {
 }
 
 // DECOMP_FUNC(0x002cd2cc, 716)
-extern "C" __attribute__((naked)) void camp_func_002cd2cc() {
-    asm volatile(
-        "push {r4, r5, r6, r7, r8, lr}\n"
-        "sub sp, sp, #0x670\n"
-        "mov r4, r0\n"
-        "ldrh r6, [r0, #0x46]\n"
-        "add r1, sp, #0x400\n"
-        "mov r5, #1\n"
-        "add r1, r1, #0x238\n"
-        "mov r0, r6\n"
-        "bl camp_func_002883bc\n"
-        "cmp r0, #0\n"
-        "beq .L_002cd58c\n"
-        "add r7, sp, #0x34\n"
-        "mov r0, r6\n"
-        "bl camp_func_002b9364\n"
-        "mov r8, r0\n"
-        "mov r1, sp\n"
-        "mov r0, r6\n"
-        "bl camp_func_002883bc\n"
-        ".word 0xe59f1278\n"
-        "mov r0, r7\n"
-        "bl engine_func_002c4b30\n"
-        "strh r6, [sp, #0x7a]\n"
-        "ldrh r0, [sp]\n"
-        "strb r0, [sp, #0x7c]\n"
-        "ldrh r0, [sp, #0x18]\n"
-        "strh r0, [sp, #0x34]\n"
-        "ldrh r0, [sp, #0x1a]\n"
-        "strh r0, [sp, #0x36]\n"
-        "ldrh r0, [sp, #2]\n"
-        "strh r0, [sp, #0x38]\n"
-        "ldrh r0, [sp, #6]\n"
-        "strh r0, [sp, #0x3c]\n"
-        "ldrh r0, [sp, #8]\n"
-        "strh r0, [sp, #0x3e]\n"
-        "ldrh r0, [sp, #0xa]\n"
-        "strh r0, [sp, #0x40]\n"
-        "mov r0, #0\n"
-        "strh r0, [sp, #0x50]\n"
-        "strh r0, [sp, #0x52]\n"
-        "ldrh r1, [sp, #4]\n"
-        "ldrh r0, [sp, #0xc]\n"
-        "strh r1, [sp, #0x3a]\n"
-        "strh r0, [sp, #0x54]\n"
-        "ldrh r0, [sp, #0x10]\n"
-        "strh r0, [sp, #0x58]\n"
-        "ldrh r0, [sp, #0x12]\n"
-        "strh r0, [sp, #0x5a]\n"
-        "ldrh r0, [sp, #0x14]\n"
-        "strh r0, [sp, #0x5c]\n"
-        "ldrh r0, [sp, #0xe]\n"
-        "strh r0, [sp, #0x56]\n"
-        "ldrh r0, [sp, #0x1c]\n"
-        "strh r0, [sp, #0x68]\n"
-        "ldrh r0, [sp, #0x1e]\n"
-        "strh r0, [sp, #0x6a]\n"
-        "ldrh r0, [sp, #0x20]\n"
-        "strh r0, [sp, #0x6c]\n"
-        "ldrh r0, [sp, #0x22]\n"
-        "strh r0, [sp, #0x6e]\n"
-        "ldrh r0, [sp, #0x24]\n"
-        "strh r0, [sp, #0x70]\n"
-        "ldrh r0, [sp, #0x26]\n"
-        "strh r0, [sp, #0x72]\n"
-        "ldrh r0, [sp, #0x28]\n"
-        "strh r0, [sp, #0x74]\n"
-        "ldrh r0, [sp, #0x2a]\n"
-        "strh r0, [sp, #0x76]\n"
-        "ldr r0, [sp, #0x30]\n"
-        "str r0, [sp, #0x64]\n"
-        "ldrb r0, [sp, #0x16]\n"
-        "lsl r0, r0, #0x1a\n"
-        "lsr r0, r0, #0x1c\n"
-        "strb r0, [sp, #0x635]\n"
-        "ldrh r1, [r8, #0x38]\n"
-        "mov r0, r7\n"
-        "bl camp_func_0024be90\n"
-        "mov r0, r7\n"
-        "bl script_vm_func_0029c950\n"
-        "ldrh r0, [sp, #0x42]\n"
-        "strh r0, [sp, #0x5e]\n"
-        "ldrh r0, [sp, #0x44]\n"
-        "strh r0, [sp, #0x60]\n"
-        "ldrb r1, [r4, #0x48]\n"
-        "ldrb r0, [sp, #0x7c]\n"
-        "cmp r0, r1\n"
-        "bne .L_002cd434\n"
-        "ldr r1, [r4, #0x30]\n"
-        "ldr r0, [sp, #0x64]\n"
-        "cmp r0, r1\n"
-        "beq .L_002cd438\n"
-        ".L_002cd434:\n"
-        "mov r5, #0\n"
-        ".L_002cd438:\n"
-        "ldrsh r0, [r4]\n"
-        "ldrsh r1, [sp, #0x34]\n"
-        "ldrsh r3, [sp, #0x38]\n"
-        "cmp r1, r0\n"
-        "ldrsh r0, [r4, #2]\n"
-        "ldrsh r1, [sp, #0x36]\n"
-        "movne r5, #0\n"
-        "cmp r1, r0\n"
-        "add r0, r4, #0x500\n"
-        "ldrsh r1, [r4, #4]\n"
-        "ldrh r2, [r0, #0x90]\n"
-        "movne r5, #0\n"
-        "add r1, r1, r2\n"
-        "cmp r1, r3\n"
-        "ldrsh r1, [r4, #6]\n"
-        "ldrh r2, [r0, #0x92]\n"
-        "ldrsh r3, [sp, #0x3a]\n"
-        "movne r5, #0\n"
-        "add r1, r1, r2\n"
-        "cmp r1, r3\n"
-        "ldrsh r1, [r4, #8]\n"
-        "ldrh r2, [r0, #0x94]\n"
-        "ldrsh r3, [sp, #0x3c]\n"
-        "movne r5, #0\n"
-        "add r1, r1, r2\n"
-        "cmp r1, r3\n"
-        "ldrsh r1, [r4, #0xa]\n"
-        "ldrh r2, [r0, #0x96]\n"
-        "ldrsh r3, [sp, #0x3e]\n"
-        "movne r5, #0\n"
-        "add r1, r1, r2\n"
-        "cmp r1, r3\n"
-        "ldrsh r1, [r4, #0xc]\n"
-        "ldrh r0, [r0, #0x98]\n"
-        "ldrsh r2, [sp, #0x40]\n"
-        "movne r5, #0\n"
-        "add r0, r0, r1\n"
-        "cmp r0, r2\n"
-        "movne r5, #0\n"
-        "mov r0, r4\n"
-        "bl script_vm_func_0029cb94\n"
-        "cmp r0, #0\n"
-        "mov r1, #0\n"
-        "andgt r2, r0, #1\n"
-        "ble .L_002cd588\n"
-        ".L_002cd4ec:\n"
-        "add r3, r4, r1, lsl #1\n"
-        "ldrh ip, [r3, #0x34]\n"
-        "cmp ip, #0\n"
-        "beq .L_002cd57c\n"
-        "cmp r0, #0\n"
-        "movgt r6, r2\n"
-        "movle r6, #0\n"
-        "cmpgt r6, #0\n"
-        "mov r3, #0\n"
-        "ble .L_002cd530\n"
-        ".L_002cd514:\n"
-        "add r8, r7, r3, lsl #1\n"
-        "ldrh r8, [r8, #0x34]\n"
-        "cmp ip, r8\n"
-        "beq .L_002cd56c\n"
-        "add r3, r3, #1\n"
-        "cmp r6, r3\n"
-        "bgt .L_002cd514\n"
-        ".L_002cd530:\n"
-        "cmp r6, r0\n"
-        "mov r3, r6\n"
-        "bge .L_002cd56c\n"
-        ".L_002cd53c:\n"
-        "add r6, r7, r3, lsl #1\n"
-        "ldrh r8, [r6, #0x34]\n"
-        "cmp ip, r8\n"
-        "beq .L_002cd56c\n"
-        "ldrh r6, [r6, #0x36]\n"
-        "cmp ip, r6\n"
-        "bne .L_002cd560\n"
-        "add r3, r3, #1\n"
-        "b .L_002cd56c\n"
-        ".L_002cd560:\n"
-        "add r3, r3, #2\n"
-        "cmp r0, r3\n"
-        "bgt .L_002cd53c\n"
-        ".L_002cd56c:\n"
-        "cmp r3, r0\n"
-        "bne .L_002cd57c\n"
-        "mov r5, #0\n"
-        "b .L_002cd588\n"
-        ".L_002cd57c:\n"
-        "add r1, r1, #1\n"
-        "cmp r1, r0\n"
-        "blt .L_002cd4ec\n"
-        ".L_002cd588:\n"
-        "mov r0, r5\n"
-        ".L_002cd58c:\n"
-        "add sp, sp, #0x670\n"
-        "pop {r4, r5, r6, r7, r8, pc}\n"
-        ".word 0x00000604\n"
-    );
+extern "C" u32 camp_func_002cd2cc(const void* src_record) {
+    const u8* r4 = reinterpret_cast<const u8*>(src_record);
+    u16 r6 = *reinterpret_cast<const u16*>(r4 + 0x46);
+
+    u8 sp_buf[0x670];
+    u8* sp_638 = sp_buf + 0x638;
+    if (reinterpret_cast<u32 (*)(u32, void*)>(camp_func_002883bc)(r6, sp_638) == 0) {
+        return 0;
+    }
+
+    u8* r8 = reinterpret_cast<u8*>(camp_func_002b9364(r6));
+    reinterpret_cast<u32 (*)(u32, void*)>(camp_func_002883bc)(r6, sp_buf);
+
+    u8* r7 = sp_buf + 0x34;
+    reinterpret_cast<void (*)(void*, u32)>(engine_func_002c4b30)(r7, 0x604);
+
+    *reinterpret_cast<u16*>(r7 + 0x46) = r6;
+    *reinterpret_cast<u8*>(r7 + 0x48) = static_cast<u8>(*reinterpret_cast<u16*>(sp_buf) & 0xFF);
+    *reinterpret_cast<u16*>(r7 + 0x00) = *reinterpret_cast<u16*>(sp_buf + 0x18);
+    *reinterpret_cast<u16*>(r7 + 0x02) = *reinterpret_cast<u16*>(sp_buf + 0x1A);
+    *reinterpret_cast<u16*>(r7 + 0x04) = *reinterpret_cast<u16*>(sp_buf + 0x02);
+    *reinterpret_cast<u16*>(r7 + 0x08) = *reinterpret_cast<u16*>(sp_buf + 0x06);
+    *reinterpret_cast<u16*>(r7 + 0x0A) = *reinterpret_cast<u16*>(sp_buf + 0x08);
+    *reinterpret_cast<u16*>(r7 + 0x0C) = *reinterpret_cast<u16*>(sp_buf + 0x0A);
+    *reinterpret_cast<u16*>(r7 + 0x1C) = 0;
+    *reinterpret_cast<u16*>(r7 + 0x1E) = 0;
+    *reinterpret_cast<u16*>(r7 + 0x06) = *reinterpret_cast<u16*>(sp_buf + 0x04);
+    *reinterpret_cast<u16*>(r7 + 0x20) = *reinterpret_cast<u16*>(sp_buf + 0x0C);
+    *reinterpret_cast<u16*>(r7 + 0x24) = *reinterpret_cast<u16*>(sp_buf + 0x10);
+    *reinterpret_cast<u16*>(r7 + 0x26) = *reinterpret_cast<u16*>(sp_buf + 0x12);
+    *reinterpret_cast<u16*>(r7 + 0x28) = *reinterpret_cast<u16*>(sp_buf + 0x14);
+    *reinterpret_cast<u16*>(r7 + 0x22) = *reinterpret_cast<u16*>(sp_buf + 0x0E);
+    *reinterpret_cast<u16*>(r7 + 0x34) = *reinterpret_cast<u16*>(sp_buf + 0x1C);
+    *reinterpret_cast<u16*>(r7 + 0x36) = *reinterpret_cast<u16*>(sp_buf + 0x1E);
+    *reinterpret_cast<u16*>(r7 + 0x38) = *reinterpret_cast<u16*>(sp_buf + 0x20);
+    *reinterpret_cast<u16*>(r7 + 0x3A) = *reinterpret_cast<u16*>(sp_buf + 0x22);
+    *reinterpret_cast<u16*>(r7 + 0x3C) = *reinterpret_cast<u16*>(sp_buf + 0x24);
+    *reinterpret_cast<u16*>(r7 + 0x3E) = *reinterpret_cast<u16*>(sp_buf + 0x26);
+    *reinterpret_cast<u16*>(r7 + 0x40) = *reinterpret_cast<u16*>(sp_buf + 0x28);
+    *reinterpret_cast<u16*>(r7 + 0x42) = *reinterpret_cast<u16*>(sp_buf + 0x2A);
+    *reinterpret_cast<u32*>(r7 + 0x30) = *reinterpret_cast<u32*>(sp_buf + 0x30);
+
+    u32 raw_16 = sp_buf[0x16];
+    sp_buf[0x635] = static_cast<u8>((raw_16 << 26) >> 28);
+
+    u16 f38 = *reinterpret_cast<u16*>(r8 + 0x38);
+    reinterpret_cast<void (*)(void*, u32)>(camp_func_0024be90)(r7, f38);
+    reinterpret_cast<void (*)(void*)>(script_vm_func_0029c950)(r7);
+
+    *reinterpret_cast<u16*>(r7 + 0x2A) = *reinterpret_cast<u16*>(r7 + 0x0E);
+    *reinterpret_cast<u16*>(r7 + 0x2C) = *reinterpret_cast<u16*>(r7 + 0x10);
+
+    u32 r5 = 1;
+    if (*reinterpret_cast<const u8*>(r7 + 0x48) != *reinterpret_cast<const u8*>(r4 + 0x48) ||
+        *reinterpret_cast<const u32*>(r7 + 0x30) != *reinterpret_cast<const u32*>(r4 + 0x30)) {
+        r5 = 0;
+    }
+
+    if (*reinterpret_cast<const s16*>(r7 + 0x00) != *reinterpret_cast<const s16*>(r4 + 0x00) ||
+        *reinterpret_cast<const s16*>(r7 + 0x02) != *reinterpret_cast<const s16*>(r4 + 0x02)) {
+        r5 = 0;
+    }
+
+    const u8* r4_500 = r4 + 0x500;
+    if (static_cast<s16>(*reinterpret_cast<const s16*>(r4 + 0x04) + *reinterpret_cast<const u16*>(r4_500 + 0x90)) != *reinterpret_cast<const s16*>(r7 + 0x04) ||
+        static_cast<s16>(*reinterpret_cast<const s16*>(r4 + 0x06) + *reinterpret_cast<const u16*>(r4_500 + 0x92)) != *reinterpret_cast<const s16*>(r7 + 0x06) ||
+        static_cast<s16>(*reinterpret_cast<const s16*>(r4 + 0x08) + *reinterpret_cast<const u16*>(r4_500 + 0x94)) != *reinterpret_cast<const s16*>(r7 + 0x08) ||
+        static_cast<s16>(*reinterpret_cast<const s16*>(r4 + 0x0A) + *reinterpret_cast<const u16*>(r4_500 + 0x96)) != *reinterpret_cast<const s16*>(r7 + 0x0A) ||
+        static_cast<s16>(*reinterpret_cast<const s16*>(r4 + 0x0C) + *reinterpret_cast<const u16*>(r4_500 + 0x98)) != *reinterpret_cast<const s16*>(r7 + 0x0C)) {
+        r5 = 0;
+    }
+
+    s32 count = reinterpret_cast<s32 (*)(const void*)>(script_vm_func_0029cb94)(r4);
+    if (count <= 0) {
+        return r5;
+    }
+
+    for (s32 r1 = 0; r1 < count; ++r1) {
+        u16 skill_id = *reinterpret_cast<const u16*>(r4 + 0x34 + r1 * 2);
+        if (skill_id == 0) {
+            continue;
+        }
+
+        bool found = false;
+        for (s32 j = 0; j < count; ++j) {
+            if (*reinterpret_cast<const u16*>(r7 + 0x34 + j * 2) == skill_id) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            return 0;
+        }
+    }
+
+    return r5;
 }
 
 // DECOMP_FUNC(0x002cd970, 132)
@@ -2996,120 +2532,17 @@ extern "C" u32 func_002cd9f4(s32 idx) {
 }
 
 // DECOMP_FUNC(0x002cf308, 444)
-extern "C" __attribute__((naked)) void camp_func_002cf308() {
-    asm volatile(
-        "push {r4, r5, r6, r7, r8, sb, sl, lr}\n"
-        "bl camp_func_002a0fac\n"
-        "ldrb r6, [r0]\n"
-        "ldrb r7, [r0, #1]\n"
-        "ldrb r8, [r0, #2]\n"
-        "ldrb sb, [r0, #3]\n"
-        "ldrb sl, [r0, #4]\n"
-        "ldrb r4, [r0, #0x14]\n"
-        "ldrb r1, [r0, #0x17]\n"
-        "ldrb r2, [r0, #5]\n"
-        "ldrb r3, [r0, #6]\n"
-        "ldrb ip, [r0, #7]\n"
-        "ldrb r5, [r0, #0x1a]\n"
-        "bic r4, r4, #0x7f\n"
-        "strb r4, [r0, #0x14]\n"
-        "ldrb r4, [r0, #8]\n"
-        "bic r1, r1, #0x7f\n"
-        "bic r5, r5, #0x7f\n"
-        "strb r1, [r0, #0x17]\n"
-        "orr r1, r5, #0x21\n"
-        "ldrb r5, [r0, #9]\n"
-        "bic r6, r6, #0x7f\n"
-        "orr r6, r6, #2\n"
-        "strb r6, [r0]\n"
-        "ldrb r6, [r0, #0xa]\n"
-        "bic r7, r7, #0x7f\n"
-        "orr r7, r7, #0xb\n"
-        "strb r7, [r0, #1]\n"
-        "ldrb r7, [r0, #0xb]\n"
-        "bic r8, r8, #0x7f\n"
-        "orr r8, r8, #0xb\n"
-        "strb r8, [r0, #2]\n"
-        "ldrb r8, [r0, #0xc]\n"
-        "bic sb, sb, #0x7f\n"
-        "orr sb, sb, #0xc\n"
-        "strb sb, [r0, #3]\n"
-        "ldrb sb, [r0, #0xd]\n"
-        "bic sl, sl, #0x7f\n"
-        "orr sl, sl, #0x21\n"
-        "bic r2, r2, #0x7f\n"
-        "strb sl, [r0, #4]\n"
-        "ldrb sl, [r0, #0xe]\n"
-        "orr r2, r2, #6\n"
-        "bic r3, r3, #0x7f\n"
-        "strb r2, [r0, #5]\n"
-        "ldrb r2, [r0, #0xf]\n"
-        "orr r3, r3, #6\n"
-        "bic ip, ip, #0x7f\n"
-        "strb r3, [r0, #6]\n"
-        "ldrb r3, [r0, #0x10]\n"
-        "orr ip, ip, #6\n"
-        "bic r4, r4, #0x7f\n"
-        "strb ip, [r0, #7]\n"
-        "ldrb ip, [r0, #0x11]\n"
-        "orr r4, r4, #4\n"
-        "bic r5, r5, #0x7f\n"
-        "strb r4, [r0, #8]\n"
-        "ldrb r4, [r0, #0x12]\n"
-        "orr r5, r5, #4\n"
-        "bic r6, r6, #0x7f\n"
-        "strb r5, [r0, #9]\n"
-        "ldrb r5, [r0, #0x13]\n"
-        "orr r6, r6, #4\n"
-        "bic r7, r7, #0x7f\n"
-        "strb r6, [r0, #0xa]\n"
-        "ldrb r6, [r0, #0x15]\n"
-        "orr r7, r7, #0x33\n"
-        "bic r8, r8, #0x7f\n"
-        "strb r7, [r0, #0xb]\n"
-        "ldrb r7, [r0, #0x16]\n"
-        "orr r8, r8, #1\n"
-        "bic sb, sb, #0x7f\n"
-        "strb r8, [r0, #0xc]\n"
-        "ldrb r8, [r0, #0x18]\n"
-        "orr sb, sb, #0x21\n"
-        "strb sb, [r0, #0xd]\n"
-        "ldrb sb, [r0, #0x19]\n"
-        "bic sl, sl, #0x7f\n"
-        "bic r2, r2, #0x7f\n"
-        "orr sl, sl, #0x22\n"
-        "bic r3, r3, #0x7f\n"
-        "orr r2, r2, #1\n"
-        "strb sl, [r0, #0xe]\n"
-        "bic ip, ip, #0x7f\n"
-        "orr r3, r3, #0xb\n"
-        "strb r2, [r0, #0xf]\n"
-        "bic r4, r4, #0x7f\n"
-        "orr ip, ip, #1\n"
-        "strb r3, [r0, #0x10]\n"
-        "bic r5, r5, #0x7f\n"
-        "orr r4, r4, #1\n"
-        "strb ip, [r0, #0x11]\n"
-        "bic r6, r6, #0x7f\n"
-        "orr r5, r5, #1\n"
-        "strb r4, [r0, #0x12]\n"
-        "bic r7, r7, #0x7f\n"
-        "orr r6, r6, #1\n"
-        "strb r5, [r0, #0x13]\n"
-        "bic r8, r8, #0x7f\n"
-        "orr r7, r7, #1\n"
-        "strb r6, [r0, #0x15]\n"
-        "bic sb, sb, #0x7f\n"
-        "orr r8, r8, #1\n"
-        "strb r7, [r0, #0x16]\n"
-        "orr sb, sb, #0x23\n"
-        "bic r1, r1, #0x7f\n"
-        "strb r8, [r0, #0x18]\n"
-        "orr r1, r1, #0x21\n"
-        "strb sb, [r0, #0x19]\n"
-        "strb r1, [r0, #0x1a]\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, pc}\n"
-    );
+extern "C" void camp_func_002cf308() {
+    u8* tbl = reinterpret_cast<u8* (*)()>(camp_func_002a0fac)();
+    static const u8 kDefaults[27] = {
+        0x02, 0x0B, 0x0B, 0x0C, 0x21, 0x06, 0x06, 0x06,
+        0x04, 0x04, 0x04, 0x33, 0x01, 0x21, 0x22, 0x01,
+        0x0B, 0x01, 0x01, 0x01, 0x00, 0x01, 0x01, 0x00,
+        0x01, 0x23, 0x21
+    };
+    for (s32 i = 0; i < 27; ++i) {
+        tbl[i] = static_cast<u8>((tbl[i] & 0x80) | kDefaults[i]);
+    }
 }
 
 // DECOMP_FUNC(0x002cf768, 320)
