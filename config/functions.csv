@@ -7542,7 +7542,7 @@ address,size,status,category,name,src_file
 0x0032b72c,1256,matching,ui,ui_func_0032b72c,src/engine/leaf_batch40_a.cpp
 0x0032bc14,404,matching,engine,engine_func_0032bc14,src/engine/leaf_batch41_c.cpp
 0x0032bda8,140,matching,engine,engine_func_0032bda8,src/engine/leaf_batch35_c.cpp
-0x0032be34,1672,matching,ui,StatusDown_DrawSkillList,src/ui/status_down.cpp
+0x0032be34,1672,non_matching,ui,StatusDown_DrawSkillList,src/ui/status_down.cpp
 0x0032c4bc,372,non_matching,ui,StatusDown_SortItemList,src/ui/status_down.cpp
 0x0032c630,672,matching,script_vm,script_vm_func_0032c630,src/engine/leaf_batch42_b.cpp
 0x0032c8d0,124,matching,script_vm,script_vm_func_0032c8d0,src/engine/leaf_batch33_a.cpp
