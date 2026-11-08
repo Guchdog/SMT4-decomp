@@ -6048,7 +6048,7 @@ address,size,status,category,name,src_file
 0x002cf2d8,48,matching,ui,ui_func_002cf2d8,src/engine/leaf_batch23_b.cpp
 0x002cf308,444,non_matching,camp,camp_func_002cf308,src/engine/leaf_batch32_c.cpp
 0x002cf4c4,28,matching,ui,ui_func_002cf4c4,src/engine/leaf_batch22_b.cpp
-0x002cf4e0,352,matching,ui,StatusDown_UpdateHelpMessage,src/ui/status_down.cpp
+0x002cf4e0,352,non_matching,ui,StatusDown_UpdateHelpMessage,src/ui/status_down.cpp
 0x002cf640,76,matching,battle,battle_func_002cf640,src/engine/leaf_batch28_b.cpp
 0x002cf68c,24,matching,camp,camp_func_002cf68c,src/engine/leaf_batch22_b.cpp
 0x002cf6a4,24,matching,camp,camp_func_002cf6a4,src/engine/leaf_batch22_b.cpp
@@ -6367,7 +6367,7 @@ address,size,status,category,name,src_file
 0x002e294c,1364,matching,engine,engine_func_002e294c,src/engine/leaf_batch46_b.cpp
 0x002e2ea0,156,matching,engine,engine_func_002e2ea0,src/engine/leaf_batch38_b.cpp
 0x002e2f3c,8,matching,unknown,func_002e2f3c,src/engine/leaf_batch36_c.cpp
-0x002e2f44,408,matching,ui,StatusDown_UpdatePartySlotsAndDiff,src/ui/status_down.cpp
+0x002e2f44,408,non_matching,ui,StatusDown_UpdatePartySlotsAndDiff,src/ui/status_down.cpp
 0x002e30dc,60,matching,camp,camp_func_002e30dc,src/engine/leaf_batch40_c.cpp
 0x002e3118,36,matching,unknown,func_002e3118,src/engine/leaf_batch23_b.cpp
 0x002e313c,32,matching,script_vm,script_vm_func_002e313c,src/engine/leaf_batch22_b.cpp
@@ -7090,7 +7090,7 @@ address,size,status,category,name,src_file
 0x00311328,20,matching,script_vm,script_vm_func_00311328,src/engine/leaf_batch18_a.cpp
 0x0031133c,20,matching,battle,battle_func_0031133c,src/engine/leaf_batch18_a.cpp
 0x00311350,324,matching,ui,ui_func_00311350,src/engine/leaf_batch38_b.cpp
-0x00311494,356,matching,ui,StatusDown_OpenCategorySelect,src/ui/status_down.cpp
+0x00311494,356,non_matching,ui,StatusDown_OpenCategorySelect,src/ui/status_down.cpp
 0x003115f8,32,matching,script_vm,script_vm_func_003115f8,src/engine/leaf_batch24_c.cpp
 0x00311618,276,matching,script_vm,script_vm_func_00311618,src/engine/leaf_batch43_c.cpp
 0x0031172c,1308,matching,script_vm,script_vm_func_0031172c,src/engine/leaf_batch44_a.cpp

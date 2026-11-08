@@ -1322,105 +1322,10 @@ bool StatusDown_IsNotState2() {
 }
 
 // DECOMP_FUNC(0x002cf4e0, 352)
-// Verified ARM-state entry/exit and referenced local literal/table bytes.
-__attribute__((naked)) void StatusDown_UpdateHelpMessage(s32 msg_index) {
-    asm volatile(
-        ".word 0xe92d41f0\n"
-        ".word 0xe1a05000\n"
-        ".word 0xe24dd010\n"
-        ".word 0xe59f0140\n"
-        ".word 0xe5904000\n"
-        ".word 0xe2846b01\n"
-        ".word 0xe1d607fe\n"
-        ".word 0xe3500000\n"
-        ".word 0xaa000013\n"
-        ".word 0xe3550000\n"
-        ".word 0xba000011\n"
-        ".word 0xe5d403fc\n"
-        ".word 0xe3500001\n"
-        ".word 0x1a00000e\n"
-        ".word 0xebff2e84\n"
-        ".word 0xe350000d\n"
-        ".word 0x13500006\n"
-        ".word 0x03a00031\n"
-        ".word 0x0a000008\n"
-        ".word 0xe3500008\n"
-        ".word 0x13500009\n"
-        ".word 0x0a000019\n"
-        ".word 0xe350000b\n"
-        ".word 0x13500007\n"
-        ".word 0x0a000016\n"
-        ".word 0xe3500002\n"
-        ".word 0x03a00027\n"
-        ".word 0x13a0002b\n"
-        ".word 0xebffa588\n"
-        ".word 0xe3550000\n"
-        ".word 0xe3a07003\n"
-        ".word 0xe3a08000\n"
-        ".word 0xe1c657be\n"
-        ".word 0xaa00000f\n"
-        ".word 0xe3a00040\n"
-        ".word 0xebff9519\n"
-        ".word 0xe28d1004\n"
-        ".word 0xe58d7000\n"
-        ".word 0xe8810101\n"
-        ".word 0xe3a03000\n"
-        ".word 0xe59f00b0\n"
-        ".word 0xe3e02000\n"
-        ".word 0xe3a01003\n"
-        ".word 0xe7900004\n"
-        ".word 0xebff1dfd\n"
-        ".word 0xe320f000\n"
-        ".word 0xe320f000\n"
-        ".word 0xea000011\n"
-        ".word 0xe3a00060\n"
-        ".word 0xeaffffe9\n"
-        ".word 0xe59f008c\n"
-        ".word 0xe1a01005\n"
-        ".word 0xe5900000\n"
-        ".word 0xeb02e736\n"
-        ".word 0xe3500000\n"
-        ".word 0x03a00040\n"
-        ".word 0x0bff9504\n"
-        ".word 0xe28d1004\n"
-        ".word 0xe58d7000\n"
-        ".word 0xe8810021\n"
-        ".word 0xe3a03000\n"
-        ".word 0xe59f005c\n"
-        ".word 0xe3e02000\n"
-        ".word 0xe3a01003\n"
-        ".word 0xe7900004\n"
-        ".word 0xebff1de8\n"
-        ".word 0xe59f0048\n"
-        ".word 0xe7900004\n"
-        ".word 0xebffa0a1\n"
-        ".word 0xe1a01000\n"
-        ".word 0xe3a06001\n"
-        ".word 0xe2840a02\n"
-        ".word 0xe2800faa\n"
-        ".word 0xe1a03006\n"
-        ".word 0xe3a02008\n"
-        ".word 0xe1a05000\n"
-        ".word 0xe58d6004\n"
-        ".word 0xe58d8000\n"
-        ".word 0xebff4132\n"
-        ".word 0xe3a01000\n"
-        ".word 0xe1a00005\n"
-        ".word 0xebfd01fe\n"
-        ".word 0xe5c46410\n"
-        ".word 0xe28dd010\n"
-        ".word 0xe8bd81f0\n"
-        ".word 0x0044e190\n"
-        ".word 0x000022a0\n"
-        ".word 0x00433158\n"
-    );
-}
-#if 0
-// Partial semantic draft retained for reconstruction; not compiled.
-[[maybe_unused]] static void StatusDown_UpdateHelpMessage_Draft(s32 msg_index) {
-    StatusDownWork* work = g_StatusDownWork;
+void StatusDown_UpdateHelpMessage(s32 msg_index) {
+    auto* work = g_StatusDownWork;
     if (work->active_sound_id < 0 && msg_index >= 0 && work->active_mode == 1) {
-        const s32 menu_id = Camp_GetMainMenuId();
+        const s32 menu_id = Status_GetMainMenuId();
         s32 se_id = 0x2B;
         if (menu_id == 0xD || menu_id == 6) {
             se_id = 0x31;
@@ -1449,7 +1354,6 @@ __attribute__((naked)) void StatusDown_UpdateHelpMessage(s32 msg_index) {
     UiListCursor_ResetScroll(&work->list_cursor_help, 0);
     work->needs_refresh = 1;
 }
-#endif
 
 // DECOMP_FUNC(0x002d931c, 764)
 // Verified ARM-state entry/exit and referenced local literal/table bytes.
@@ -1752,121 +1656,16 @@ s32 StatusDown_SkillSortByCostDesc(const void* a, const void* b) {
 }
 
 // DECOMP_FUNC(0x002e2f44, 408)
-// Verified ARM-state entry/exit and referenced local literal/table bytes.
-__attribute__((naked)) void StatusDown_UpdatePartySlotsAndDiff(const u16* ids, s32 count) {
-    asm volatile(
-        ".word 0xe92d41f0\n"
-        ".word 0xe1a06001\n"
-        ".word 0xe24dd018\n"
-        ".word 0xe59f1180\n"
-        ".word 0xe3a08000\n"
-        ".word 0xe1a02086\n"
-        ".word 0xe5915000\n"
-        ".word 0xe1a04005\n"
-        ".word 0xe5951482\n"
-        ".word 0xe58d1008\n"
-        ".word 0xe5951486\n"
-        ".word 0xe58d100c\n"
-        ".word 0xe595148a\n"
-        ".word 0xe58d1010\n"
-        ".word 0xe595148e\n"
-        ".word 0xe58d1014\n"
-        ".word 0xe58584c2\n"
-        ".word 0xe58584c6\n"
-        ".word 0xe58584ca\n"
-        ".word 0xe58584ce\n"
-        ".word 0xe5858482\n"
-        ".word 0xe1a01000\n"
-        ".word 0xe5848486\n"
-        ".word 0xe2840b01\n"
-        ".word 0xe584848a\n"
-        ".word 0xe2800082\n"
-        ".word 0xe584848e\n"
-        ".word 0xebff8c0f\n"
-        ".word 0xe2560000\n"
-        ".word 0x12060001\n"
-        ".word 0x13500000\n"
-        ".word 0xe3a01000\n"
-        ".word 0xda000007\n"
-        ".word 0xe0842081\n"
-        ".word 0xe2822b01\n"
-        ".word 0xe1d228b2\n"
-        ".word 0xe3520000\n"
-        ".word 0x0a000010\n"
-        ".word 0xe2811001\n"
-        ".word 0xe1500001\n"
-        ".word 0xcafffff7\n"
-        ".word 0xe1500006\n"
-        ".word 0xe1a01000\n"
-        ".word 0xaa00000a\n"
-        ".word 0xe0840081\n"
-        ".word 0xe2800b01\n"
-        ".word 0xe1d028b2\n"
-        ".word 0xe3520000\n"
-        ".word 0x0a000005\n"
-        ".word 0xe1d008b4\n"
-        ".word 0xe3500000\n"
-        ".word 0x0a000023\n"
-        ".word 0xe2811002\n"
-        ".word 0xe1560001\n"
-        ".word 0xcafffff4\n"
-        ".word 0xe3a07001\n"
-        ".word 0xe2840b01\n"
-        ".word 0xe1a03007\n"
-        ".word 0xe3a02008\n"
-        ".word 0xe28000d4\n"
-        ".word 0xe58d7004\n"
-        ".word 0xe58d8000\n"
-        ".word 0xebfef2a9\n"
-        ".word 0xe3560000\n"
-        ".word 0xe5c47410\n"
-        ".word 0xe3a01000\n"
-        ".word 0xc28d2008\n"
-        ".word 0xe5c48548\n"
-        ".word 0xda00001d\n"
-        ".word 0xe0850081\n"
-        ".word 0xe2800b01\n"
-        ".word 0xe1d038b2\n"
-        ".word 0xe3530000\n"
-        ".word 0x13a00000\n"
-        ".word 0x0a000014\n"
-        ".word 0xe082c080\n"
-        ".word 0xe1dc40b0\n"
-        ".word 0xe3540000\n"
-        ".word 0x0a000001\n"
-        ".word 0xe1540003\n"
-        ".word 0x0a00000b\n"
-        ".word 0xe1dcc0b2\n"
-        ".word 0xe35c0000\n"
-        ".word 0x0a000005\n"
-        ".word 0xe15c0003\n"
-        ".word 0x1a000003\n"
-        ".word 0xe2800001\n"
-        ".word 0xea000004\n"
-        ".word 0xe2811001\n"
-        ".word 0xeaffffdc\n"
-        ".word 0xe2800002\n"
-        ".word 0xe3500008\n"
-        ".word 0xbaffffed\n"
-        ".word 0xe3500008\n"
-        ".word 0xa0850001\n"
-        ".word 0xa5c074c2\n"
-        ".word 0xe2811001\n"
-        ".word 0xe1510006\n"
-        ".word 0xbaffffe1\n"
-        ".word 0xe28dd018\n"
-        ".word 0xe8bd81f0\n"
-        ".word 0x0044e190\n"
-    );
-}
-#if 0
-// Partial semantic draft retained for reconstruction; not compiled.
-[[maybe_unused]] static void StatusDown_UpdatePartySlotsAndDiff_Draft(const u16* ids, s32 count) {
-    StatusDownWork* work = g_StatusDownWork;
+void StatusDown_UpdatePartySlotsAndDiff(const u16* ids, s32 count) {
+    auto* work = g_StatusDownWork;
     u16 prev_ids[8];
-    std::memcpy(prev_ids, work->party_ids, sizeof(prev_ids));
-    std::memset(work->new_party_flags, 0, sizeof(work->new_party_flags));
-    std::memset(work->party_ids, 0, sizeof(work->party_ids));
+    for (s32 i = 0; i < 8; ++i) {
+        prev_ids[i] = work->party_ids[i];
+    }
+    for (s32 i = 0; i < 4; ++i) {
+        reinterpret_cast<u32*>(work->new_party_flags)[i] = 0;
+        reinterpret_cast<u32*>(work->party_ids)[i] = 0;
+    }
     AsdMem_Copy(work->party_ids, ids, static_cast<u32>(count << 1));
 
     s32 valid_count = 0;
@@ -1894,7 +1693,6 @@ __attribute__((naked)) void StatusDown_UpdatePartySlotsAndDiff(const u16* ids, s
         }
     }
 }
-#endif
 // DECOMP_FUNC(0x002e4534, 80)
 s32 StatusDown_SkillSortByIdDesc(const void* a, const void* b) {
     const auto* ea = static_cast<const StatusDownListEntry*>(a);
@@ -2180,107 +1978,13 @@ void StatusDown_EnterState6() {
 }
 
 // DECOMP_FUNC(0x00311494, 356)
-// Verified ARM-state entry/exit and referenced local literal/table bytes.
-__attribute__((naked)) void StatusDown_OpenCategorySelect(u16 arg0, u8 flag_413) {
-    asm volatile(
-        ".word 0xe92d43f0\n"
-        ".word 0xe3a03d8e\n"
-        ".word 0xe24dd00c\n"
-        ".word 0xe3a07000\n"
-        ".word 0xe59f8144\n"
-        ".word 0xe59f9144\n"
-        ".word 0xe1a06007\n"
-        ".word 0xe5985000\n"
-        ".word 0xe2494063\n"
-        ".word 0xe2852a02\n"
-        ".word 0xe18300b5\n"
-        ".word 0xe5c51413\n"
-        ".word 0xe5827370\n"
-        ".word 0xe5827374\n"
-        ".word 0xe5827378\n"
-        ".word 0xe582737c\n"
-        ".word 0xea000002\n"
-        ".word 0xe3540000\n"
-        ".word 0x03a04001\n"
-        ".word 0x0afffffc\n"
-        ".word 0xe6ff0074\n"
-        ".word 0xebfd467b\n"
-        ".word 0xe3500000\n"
-        ".word 0xe320f000\n"
-        ".word 0x0a000008\n"
-        ".word 0xe1a00004\n"
-        ".word 0xebfddef3\n"
-        ".word 0xe3500000\n"
-        ".word 0xe320f000\n"
-        ".word 0x0a000003\n"
-        ".word 0xe0850086\n"
-        ".word 0xe2800c23\n"
-        ".word 0xe2866001\n"
-        ".word 0xe1c047b0\n"
-        ".word 0xe2844001\n"
-        ".word 0xe1540009\n"
-        ".word 0x9affffeb\n"
-        ".word 0xe3a0000e\n"
-        ".word 0xebfe3e5d\n"
-        ".word 0xe3a00005\n"
-        ".word 0xe320f000\n"
-        ".word 0xebfe9d8e\n"
-        ".word 0xe3a02000\n"
-        ".word 0xe3a01001\n"
-        ".word 0xe2850028\n"
-        ".word 0xebfeb15c\n"
-        ".word 0xe320f000\n"
-        ".word 0xe320f000\n"
-        ".word 0xebfd65e1\n"
-        ".word 0xe1500006\n"
-        ".word 0xe3a04001\n"
-        ".word 0xca00000b\n"
-        ".word 0xebfd65dd\n"
-        ".word 0xe2801001\n"
-        ".word 0xe2850a02\n"
-        ".word 0xe3a03001\n"
-        ".word 0xe3a02009\n"
-        ".word 0xe2800fc3\n"
-        ".word 0xe58d4000\n"
-        ".word 0xe58d4004\n"
-        ".word 0xebfe3957\n"
-        ".word 0xe3a00019\n"
-        ".word 0xe320f000\n"
-        ".word 0xea00000e\n"
-        ".word 0xe320f000\n"
-        ".word 0xebfd65d0\n"
-        ".word 0xe1a01000\n"
-        ".word 0xe2850a02\n"
-        ".word 0xe2800fc3\n"
-        ".word 0xe58d4000\n"
-        ".word 0xe58d4004\n"
-        ".word 0xe3a03001\n"
-        ".word 0xe3a02009\n"
-        ".word 0xe1a04000\n"
-        ".word 0xebfe3949\n"
-        ".word 0xe1a01006\n"
-        ".word 0xe1a00004\n"
-        ".word 0xebfe360b\n"
-        ".word 0xe3a00016\n"
-        ".word 0xe5850408\n"
-        ".word 0xe5980000\n"
-        ".word 0xe3a01001\n"
-        ".word 0xe580740c\n"
-        ".word 0xe5b02400\n"
-        ".word 0xe8800006\n"
-        ".word 0xe28dd00c\n"
-        ".word 0xe8bd83f0\n"
-        ".word 0x0044e190\n"
-        ".word 0x00000802\n"
-    );
-}
-#if 0
-// Partial semantic draft retained for reconstruction; not compiled.
-[[maybe_unused]] static void StatusDown_OpenCategorySelect_Draft(u16 arg0, u8 flag_413) {
-    StatusDownWork* work = g_StatusDownWork;
+void StatusDown_OpenCategorySelect(u16 arg0, u8 flag_413) {
+    auto* work = g_StatusDownWork;
     work->category_arg0 = arg0;
     work->flag_413 = flag_413;
-    std::memset(work->category_ids, 0, sizeof(work->category_ids));
+    for (s32 i = 0; i < 4; ++i) {
+        reinterpret_cast<u32*>(work->category_ids)[i] = 0;
+    }
 
     s32 matched_count = 0;
     for (u32 id = 0x79F; id <= 0x802; ++id) {
@@ -2307,13 +2011,12 @@ __attribute__((naked)) void StatusDown_OpenCategorySelect(u16 arg0, u8 flag_413)
         work->sub_state = 0x16;
     }
 
-    StatusDownWork* w = g_StatusDownWork;
+    auto* w = g_StatusDownWork;
     w->state_timer = 0;
     const u32 old_state = w->state;
     w->state = 1;
     w->prev_state = old_state;
 }
-#endif
 
 //
 void StatusDown_RequestClose_Decompiled() {
