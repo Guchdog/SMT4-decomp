@@ -165,25 +165,15 @@ static inline const UiLayoutNode* LayoutNode(u32 group_id, u32 node_id) {
 }
 
 // DECOMP_FUNC(0x001ddab4, 68)
-__attribute__((naked)) void StatusDown_OpenDefaultView() {
-    asm volatile(
-        "push {r4, r5, r6, lr}\n"
-        "mov r2, #0\n"
-        "ldr r5, [pc, #0x30]\n"
-        "mov r1, #1\n"
-        "ldr r4, [r5]\n"
-        "add r0, r4, #0x28\n"
-        ".word 0xEB037FFB\n"
-        "ldr r0, [r5]\n"
-        "mov r2, #0\n"
-        "mov r1, #1\n"
-        "str r2, [r0, #0x40C]\n"
-        "ldr r2, [r0, #0x400]!\n"
-        "stm r0, {r1, r2}\n"
-        "mov r0, #3\n"
-        "str r0, [r4, #0x408]\n"
-        "pop {r4, r5, r6, pc}\n"
-        ".word 0x0044E190\n");
+void StatusDown_OpenDefaultView() {
+    auto* work = g_StatusDownWork;
+    UiAnimSprite_SetAnim(&work->panel_sprites[0], 1, 0);
+    work = g_StatusDownWork;
+    work->state_timer = 0;
+    u32 prev = work->state;
+    work->state = 1;
+    work->prev_state = prev;
+    work->sub_state = 3;
 }
 
 // DECOMP_FUNC(0x001ee5a4, 548)
@@ -1753,46 +1743,25 @@ __attribute__((naked)) void StatusDown_DrawLRPrompts(s32, s32) {
 }
 
 // DECOMP_FUNC(0x0029bfec, 152)
-__attribute__((naked)) void StatusDown_Close() {
-    asm volatile(
-        "push {r4, r5, r6, lr}\n"
-        "ldr r5, .LStatusDownCloseLiteral\n"
-        "ldr r4, [r5]\n"
-        "ldr r0, [r4, #0x400]\n"
-        "cmp r0, #0\n"
-        "beq 3f\n"
-        "mov r2, #0\n"
-        "mov r1, #2\n"
-        "add r0, r4, #0x28\n"
-        ".word 0xeb0086aa\n" // bl 0x002bdac0: UiAnimSprite_SetAnim
-        "ldr r5, [r5]\n"
-        "mov r6, #0\n"
-        "mov r0, #2\n"
-        "add r2, r5, #0x400\n"
-        "str r6, [r5, #0x40c]\n"
-        "ldr r1, [r5, #0x400]\n"
-        "stm r2, {r0, r1}\n"
-        "str r6, [r4, #0x408]\n"
-        "strb r6, [r4, #0x3fc]\n"
-        "ldrb r0, [r5, #0x480]\n"
-        "mov r4, r6\n"
-        "cmp r0, #0\n"
-        "ble 1f\n"
-        "2: nop\n"
-        ".word 0xeb0073ed\n" // bl 0x002b9008: UiTouch_UnregisterLastRegion
-        "ldrb r0, [r5, #0x480]\n"
-        "add r4, r4, #1\n"
-        "cmp r0, r4\n"
-        "bgt 2b\n"
-        "1: add r0, r5, #0x400\n"
-        "strb r6, [r5, #0x480]\n"
-        "pop {r4, r5, r6, lr}\n"
-        "mvn r2, #0\n"
-        "mov r1, #0x29\n"
-        "add r0, r0, #0x2c\n"
-        ".word 0xea00a0f4\n" // b 0x002c4450: AsdMem_FillBytes
-        "3: pop {r4, r5, r6, pc}\n"
-        ".LStatusDownCloseLiteral: .word 0x0044E190\n");
+void StatusDown_Close() {
+    auto* work = g_StatusDownWork;
+    if (work->state == 0) {
+        return;
+    }
+    UiAnimSprite_SetAnim(&work->panel_sprites[0], 2, 0);
+    work = g_StatusDownWork;
+    work->state_timer = 0;
+    u32 prev = work->state;
+    work->state = 2;
+    work->prev_state = prev;
+    work->sub_state = 0;
+    work->active_mode = 0;
+    const u8 tr_count = static_cast<u8>(work->registered_touch_count);
+    for (s32 i = 0; i < tr_count; ++i) {
+        UiTouch_UnregisterLastRegion();
+    }
+    work->registered_touch_count = 0;
+    AsdMem_FillBytes(work->slot_touch_handles, 0x29, 0xFFFFFFFF);
 }
 
 // DECOMP_FUNC(0x0029c6c4, 24)
@@ -2535,60 +2504,20 @@ bool StatusDown_IsState7() {
 }
 
 // DECOMP_FUNC(0x002f6550, 132)
-__attribute__((naked)) void StatusDown_Destroy() {
-    asm volatile(
-        ".word 0xe92d4070\n"
-        ".word 0xe3a04000\n"
-        ".word 0xe59f606c\n"
-        ".word 0xe5965000\n"
-        ".word 0xe5d50480\n"
-        ".word 0xe3500000\n"
-        ".word 0xda000005\n"
-        ".word 0xe320f000\n"
-        ".word 0xebff0aa4\n"
-        ".word 0xe5d50480\n"
-        ".word 0xe2844001\n"
-        ".word 0xe1500004\n"
-        ".word 0xcafffff9\n"
-        ".word 0xe3a04000\n"
-        ".word 0xe2850b01\n"
-        ".word 0xe3e02000\n"
-        ".word 0xe3a01029\n"
-        ".word 0xe280002c\n"
-        ".word 0xe5c54480\n"
-        ".word 0xebff37ab\n"
-        ".word 0xe59f0028\n"
-        ".word 0xe7900005\n"
-        ".word 0xebfec568\n"
-        ".word 0xe5950000\n"
-        ".word 0xe3a01000\n"
-        ".word 0xebff37ff\n"
-        ".word 0xe1a00005\n"
-        ".word 0xe320f000\n"
-        ".word 0xebff3766\n"
-        ".word 0xe5864000\n"
-        ".word 0xe8bd8070\n"
-        ".word 0x0044e190\n"
-        ".word 0x000022a0\n");
-}
-
-// Semantic reconstruction retained for analysis.  The exported function
-// above is the currently verified exact ARMv6K implementation; this C++ form
-// remains a readable account of its observable cleanup work.
-[[maybe_unused]] static void StatusDown_Destroy_Decompiled() {
-    StatusDownWork* work = g_StatusDownWork;
-    const volatile u8* registered_touch_count =
-        reinterpret_cast<const volatile u8*>(work) + 0x480;
-    for (s32 i = 0; i < *registered_touch_count; ++i) {
+void StatusDown_Destroy() {
+    auto* work = g_StatusDownWork;
+    const u8 tr_count = static_cast<u8>(work->registered_touch_count);
+    for (s32 i = 0; i < tr_count; ++i) {
         UiTouch_UnregisterLastRegion();
     }
     work->registered_touch_count = 0;
-    AsdMem_FillBytes(work->slot_touch_handles, 0x29, -1);
+    AsdMem_FillBytes(work->slot_touch_handles, 0x29, 0xFFFFFFFF);
     AsdText_DestroyHandle(work->text_handle);
     AsdTask_DestroyPair(work->calc_task, 0);
     AsdMem_FreeWork(work);
     g_StatusDownWork = nullptr;
 }
+
 
 // DECOMP_FUNC(0x002f65d4, 76)
 bool StatusDown_IsCursorAtLastPartySlot() {
@@ -2602,59 +2531,28 @@ bool StatusDown_IsCursorAtLastPartySlot() {
 }
 
 // DECOMP_FUNC(0x002f6620, 200)
-__attribute__((naked)) void StatusDown_SelectLastPartySlotAndEnterState11(s32, u32) {
-    asm volatile(
-        "push {r4, r5, r6, r7, r8, lr}\n"
-        "sub sp, sp, #8\n"
-        "ldr r7, .LStatusDownSelectLiteral\n"
-        "ldr r4, [r7]\n"
-        "str r0, [r4, #0x544]\n"
-        "add r0, r4, #0x400\n"
-        "add r0, r0, #0xd4\n"
-        "mov r5, r0\n"
-        "str r1, [r4, #0x540]\n"
-        ".word 0xebfea2aa\n" // bl 0x0029f0f4: UiListCursor_GetRowCount
-        "mov r8, #1\n"
-        "mov r6, #0\n"
-        "add r1, r0, #1\n"
-        "mov r3, r8\n"
-        "mov r2, #9\n"
-        "mov r0, r5\n"
-        "stm sp, {r6, r8}\n"
-        ".word 0xebfea51f\n" // bl 0x0029fae8: UiListCursor_Setup
-        "mov r0, r5\n"
-        ".word 0xebfea2a0\n" // bl 0x0029f0f4: UiListCursor_GetRowCount
-        "sub r1, r0, #1\n"
-        "mov r0, r5\n"
-        ".word 0xebfea1df\n" // bl 0x0029edfc: UiListCursor_SetSelectedRow
-        "strb r8, [r4, #0x410]\n"
-        "ldr r5, [r7]\n"
-        "mov r4, #0\n"
-        "ldrb r0, [r5, #0x480]\n"
-        "cmp r0, #0\n"
-        "ble .LStatusDownSelectCleanup\n"
-        ".LStatusDownSelectTouchLoop: nop\n"
-        ".word 0xebff0a5a\n" // bl 0x002b9008: UiTouch_UnregisterLastRegion
-        "ldrb r0, [r5, #0x480]\n"
-        "add r4, r4, #1\n"
-        "cmp r0, r4\n"
-        "bgt .LStatusDownSelectTouchLoop\n"
-        ".LStatusDownSelectCleanup:\n"
-        "add r0, r5, #0x400\n"
-        "mvn r2, #0\n"
-        "mov r1, #0x29\n"
-        "add r0, r0, #0x2c\n"
-        "strb r6, [r5, #0x480]\n"
-        ".word 0xebff3762\n" // bl 0x002c4450: AsdMem_FillBytes
-        "ldr r0, [r7]\n"
-        "mov r1, #0xb\n"
-        "str r6, [r0, #0x40c]\n"
-        "ldr r2, [r0, #0x400]!\n"
-        "stm r0, {r1, r2}\n"
-        "add sp, sp, #8\n"
-        "pop {r4, r5, r6, r7, r8, lr}\n"
-        ".word 0xeafdd27a\n" // b 0x0026b0d0: StatusDown_SetupTouchRegions
-        ".LStatusDownSelectLiteral: .word 0x0044E190\n");
+void StatusDown_SelectLastPartySlotAndEnterState11(s32 a0, u32 a1) {
+    auto* work = g_StatusDownWork;
+    work->selected_result = a0;
+    work->callback_arg1 = a1;
+    s32 count = UiListCursor_GetRowCount(&work->list_cursor_main);
+    UiListCursor_Setup(&work->list_cursor_main, count + 1, 9, 1, 0, 1);
+    s32 new_count = UiListCursor_GetRowCount(&work->list_cursor_main);
+    UiListCursor_SetSelectedRow(&work->list_cursor_main, new_count - 1);
+    work->needs_refresh = 1;
+    work = g_StatusDownWork;
+    const u8 tr_count = static_cast<u8>(work->registered_touch_count);
+    for (s32 i = 0; i < tr_count; ++i) {
+        UiTouch_UnregisterLastRegion();
+    }
+    work->registered_touch_count = 0;
+    AsdMem_FillBytes(work->slot_touch_handles, 0x29, 0xFFFFFFFF);
+    work = g_StatusDownWork;
+    work->state_timer = 0;
+    u32 prev = work->state;
+    work->state = 0x0B;
+    work->prev_state = prev;
+    StatusDown_SetupTouchRegions();
 }
 
 //
