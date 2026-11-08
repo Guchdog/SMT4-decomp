@@ -1,5 +1,17 @@
 #include "types.h"
 
+static __attribute__((always_inline)) inline float inline_vsqrt_f32(float value) {
+    float result;
+    asm volatile("vsqrt.f32 %0, %1" : "=t"(result) : "t"(value));
+    return result;
+}
+
+static __attribute__((always_inline)) inline float return_vector_r0(u32 r0_val, float s0_val) {
+    register u32 r0 asm("r0") = r0_val;
+    asm volatile("" : "+r"(r0));
+    return s0_val;
+}
+
 // Batch 30 C: redirected to 0x00200000-0x002fffff; exact ARM bytes and bounded literal tails.
 
 // DECOMP_FUNC(0x00207d84, 128)
@@ -32,9 +44,7 @@ extern "C" __attribute__((minsize)) float ui_func_00207d84() {
     vector[2] = frame[2];
     vector[3] = frame[3];
 
-    register u32 return_r0 asm("r0") = kVectorAddress;
-    asm volatile("" : "+r"(return_r0));
-    return *reinterpret_cast<float*>(&frame[2]);
+    return return_vector_r0(kVectorAddress, *reinterpret_cast<float*>(&frame[2]));
 }
 
 // DECOMP_FUNC(0x0020e9ac, 152)
@@ -282,15 +292,17 @@ extern "C" __attribute__((minsize)) s32 camp_func_00219624(const u16* a, const u
            static_cast<s32>(*reinterpret_cast<const u16*>(rec_b));
 }
 
-extern "C" uint32_t h2_set_global(uint32_t) __asm__("ui_func_0028df3c");
-extern "C" uint32_t h2_get_state(uint32_t) __asm__("engine_func_00289640");
-extern "C" uint32_t h2_get_context(uint32_t) __asm__("func_0028686c");
-extern "C" uint32_t h2_select_value(uint32_t) __asm__("engine_func_00296f60");
-extern "C" uint32_t h2_final_helper(uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t) __asm__("engine_func_00286928");
+extern "C" uint32_t ui_func_0028df3c(uint32_t);
+extern "C" uint32_t engine_func_00286928(uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t);
+extern "C" u32 engine_func_00296f60(u32);
+extern "C" u32 engine_func_00289640();
+
 // DECOMP_FUNC(0x00221168, 148)
 extern "C" uint32_t engine_func_00221168() {
+    auto fn_get_state = reinterpret_cast<uint32_t (*)(uint32_t)>(engine_func_00289640);
+    auto fn_get_context = reinterpret_cast<uint32_t (*)(uint32_t)>(func_0028686c);
     auto slots = reinterpret_cast<uint32_t*>(0x0043e188);
-    uint32_t state = h2_get_state(h2_set_global(0));
+    uint32_t state = fn_get_state(ui_func_0028df3c(0));
     if (state == 0) {
         auto object = reinterpret_cast<uint8_t*>(slots[2]);
         if (object != nullptr) object[0x30] = 1;
@@ -298,16 +310,14 @@ extern "C" uint32_t engine_func_00221168() {
     }
     auto object = reinterpret_cast<uint8_t*>(slots[1]);
     if (object != nullptr) object[0xa11] = 0x14;
-    uint32_t context = h2_get_context(reinterpret_cast<uint32_t>(object));
-    uint32_t value = h2_select_value(0);
-    uint32_t current = h2_get_state(value);
-    return h2_final_helper(context, value, current, 6, 1, 0);
+    uint32_t context = fn_get_context(reinterpret_cast<uint32_t>(object));
+    uint32_t value = engine_func_00296f60(0);
+    uint32_t current = fn_get_state(value);
+    return engine_func_00286928(context, value, current, 6, 1, 0);
 }
 
 // DECOMP_FUNC(0x00221fb4, 128)
 extern "C" u32 engine_func_00259510(u32);
-extern "C" u32 engine_func_00296f60(u32);
-extern "C" u32 engine_func_00289640();
 extern "C" u32 battle_func_002bf41c(u32);
 extern "C" u32 _3dEventEffect_func_0030a28c(u32, u32, u32, u32);
 
@@ -696,32 +706,20 @@ extern "C" __attribute__((minsize)) void func_0024095c(u8* obj, u32 param_1) {
     *reinterpret_cast<u32*>(obj + 0x72C) = param_1;
     *reinterpret_cast<u32*>(obj + 0x728) = 0;
 
-    u32 flags = *reinterpret_cast<u32*>(obj + 0x634);
-    flags |= 0x80000u;
+    u32 flags = *reinterpret_cast<u32*>(obj + 0x634) | 0x80000u;
     *reinterpret_cast<u32*>(obj + 0x634) = flags;
 
-    float p0[2];
-    __builtin_memcpy(p0, obj + 0xC, sizeof(p0));
+    const float* const p1 = reinterpret_cast<const float*>(obj + 0x0C);
+    const float* const p2 = reinterpret_cast<const float*>(obj + 0x18);
 
-    float s2, s1;
-    __asm__("vldr %0, [%1, #0x18]" : "=t"(s2) : "r"(obj));
-    __asm__("vldr %0, [%1, #0x1c]" : "=t"(s1) : "r"(obj));
+    const float dx = p1[0] - p2[0];
+    const float dy = p1[1] - p2[1];
+    const float dz = p1[2] - p2[2];
+    const float dist = inline_vsqrt_f32(dx * dx + dy * dy + dz * dz);
 
-    float diff0 = p0[0] - s2;
-    float diff1 = p0[1] - s1;
-    float dist_sq = diff0 * diff0 + diff1 * diff1;
-
-    float dist;
-    __asm__("vsqrt.f32 %0, %1" : "=t"(dist) : "t"(dist_sq));
-
-    u32 dist_raw;
-    __asm__("vmov %0, %1" : "=r"(dist_raw) : "t"(dist));
-
-    if (dist_raw <= 0xBC23D70Au) {
-        if (dist_raw <= 0x3C23D70Au) {
-            flags &= ~0x80000u;
-            *reinterpret_cast<u32*>(obj + 0x634) = flags;
-        }
+    if (dist <= 0.01f) {
+        flags &= ~0x80000u;
+        *reinterpret_cast<u32*>(obj + 0x634) = flags;
     }
 }
 
@@ -1511,7 +1509,7 @@ extern "C" u32 script_vm_func_00295f04(void* obj, s32 level) {
 // DECOMP_FUNC(0x002960d4, 128)
 extern "C" const void* Tbb_GetPayloadData(const void* subtable);
 
-extern "C" __attribute__((minsize)) u32 camp_func_002960d4(u16 key, u32 index, s32 stat_val) {
+extern "C" u32 camp_func_002960d4(u16 key, u32 index, s32 stat_val) {
     const void* const sub1 = Tbb_GetGlobalSubTable(9, 1);
     const auto* const table1 = reinterpret_cast<const u32*>(Tbb_GetPayloadData(sub1));
     const u32 base_val = table1[index - 1];
@@ -1531,10 +1529,7 @@ extern "C" __attribute__((minsize)) u32 camp_func_002960d4(u16 key, u32 index, s
         scale = table2[diff - 1];
     }
 
-    const u32 prod = base_val * scale;
-    u32 hi, lo;
-    __asm__("umull %0, %1, %2, %3" : "=&r"(lo), "=&r"(hi) : "r"(0x51EB851Fu), "r"(prod));
-    return hi >> 5;
+    return (base_val * scale) / 100;
 }
 
 // DECOMP_FUNC(0x0029933c, 152)
@@ -2628,30 +2623,32 @@ extern "C" u32 engine_func_002f10dc() {
 // DECOMP_FUNC(0x002f2878, 128)
 extern "C" u32 camp_func_0029ed08(u16 id);
 
-extern "C" s32 camp_func_002f2878(const u16* a, const u16* b) {
-    u32 flags_a = camp_func_0029ed08(*a);
-    u32 flags_b = camp_func_0029ed08(*b);
+extern "C" __attribute__((minsize)) s32 camp_func_002f2878(const u16* a, const u16* b) {
+    const u32 flags_a = camp_func_0029ed08(*a);
+    const u32 flags_b = camp_func_0029ed08(*b);
 
-    s32 res;
-    if (flags_b & ~flags_a) {
-        res = 1;
-    } else if (flags_a & ~flags_b) {
-        res = -1;
-    } else {
-        const u8* rec_a = camp_func_002b9364(*a);
-        const u8* rec_b = camp_func_002b9364(*b);
-
-        res = static_cast<s32>(rec_b[2]) - static_cast<s32>(rec_a[2]);
-        if (res == 0) {
-            res = static_cast<s32>(rec_a[3]) - static_cast<s32>(rec_b[3]);
-            if (res == 0) {
-                res = static_cast<s32>(*reinterpret_cast<const u16*>(rec_b)) -
-                      static_cast<s32>(*reinterpret_cast<const u16*>(rec_a));
-            }
-        }
+    if ((flags_b & ~flags_a) != 0) {
+        return 1;
     }
-    asm volatile("" : "+r"(res));
-    return res;
+    if ((flags_a & ~flags_b) != 0) {
+        return -1;
+    }
+
+    const u8* const rec_a = camp_func_002b9364(*a);
+    const u8* const rec_b = camp_func_002b9364(*b);
+
+    const s32 diff2 = static_cast<s32>(rec_b[2]) - static_cast<s32>(rec_a[2]);
+    if (diff2 != 0) {
+        return diff2;
+    }
+
+    const s32 diff3 = static_cast<s32>(rec_a[3]) - static_cast<s32>(rec_b[3]);
+    if (diff3 != 0) {
+        return diff3;
+    }
+
+    return static_cast<s32>(*reinterpret_cast<const u16*>(rec_b)) -
+           static_cast<s32>(*reinterpret_cast<const u16*>(rec_a));
 }
 
 // DECOMP_FUNC(0x002f6cf0, 148)
