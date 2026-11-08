@@ -2156,90 +2156,195 @@ extern "C" __attribute__((naked)) void script_vm_func_0037ea70() {
 };
 
 // DECOMP_FUNC(0x0011bf0c, 632)
-extern "C" __attribute__((naked)) void engine_func_0011bf0c() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x0018, 0xe280, 0x0000, 0xe1a0\n"
-        ".hword 0x07f0, 0xe92d, 0x2003, 0xe282\n"
-        ".hword 0x3024, 0xe280, 0x9003, 0xe3c2\n"
-        ".hword 0x500c, 0xe511, 0x7250, 0xe59f\n"
-        ".hword 0x4010, 0xe241, 0x0009, 0xe155\n"
-        ".hword 0x6000, 0xe3a0, 0x0009, 0x01a0\n"
-        ".hword 0x0013, 0x0a00, 0x004d, 0x2a00\n"
-        ".hword 0xc000, 0xe593, 0x8010, 0xe284\n"
-        ".hword 0x2008, 0xe085, 0x0000, 0xe35c\n"
-        ".hword 0x000c, 0x0a00, 0x0002, 0xe15c\n"
-        ".hword 0x0003, 0x0a00, 0xc00c, 0xe59c\n"
-        ".hword 0x0000, 0xe35c, 0xfffa, 0x1aff\n"
-        ".hword 0x0006, 0xea00, 0x0000, 0xe35c\n"
-        ".hword 0x0004, 0x0a00, 0x2004, 0xe59c\n"
-        ".hword 0x5002, 0xe085, 0x5010, 0xe285\n"
-        ".hword 0x0005, 0xe159, 0x0002, 0x9a00\n"
-        ".hword 0x0000, 0xe3a0, 0x07f0, 0xe8bd\n"
-        ".hword 0xff1e, 0xe12f, 0x50b2, 0xe1dc\n"
-        ".hword 0x8010, 0xe28c, 0xa008, 0xe082\n"
-        ".hword 0x5885, 0xe1a0, 0x8ca5, 0xe04c\n"
-        ".hword 0x5008, 0xe5bc, 0x2004, 0xe59c\n"
-        ".hword 0x0000, 0xe355, 0x200c, 0x1585\n"
-        ".hword 0x2000, 0x0583, 0x0000, 0xe352\n"
-        ".hword 0x5008, 0x1582, 0x2009, 0xe081\n"
-        ".hword 0xc002, 0xe04a, 0x5004, 0x0583\n"
-        ".hword 0x0010, 0xe35c, 0x200a, 0x31a0\n"
-        ".hword 0xc001, 0xe042, 0x1002, 0xe04a\n"
-        ".hword 0x0010, 0xe351, 0xc004, 0xe584\n"
-        ".hword 0x000e, 0x3a00, 0x9004, 0xe282\n"
-        ".hword 0x70b0, 0xe1c2, 0x1010, 0xe241\n"
-        ".hword 0x60b2, 0xe1c2, 0x0062, 0xe889\n"
-        ".hword 0x0000, 0xe355, 0x100c, 0x1595\n"
-        ".hword 0x1000, 0x0593, 0x200c, 0x1585\n"
-        ".hword 0x2000, 0x0583, 0x0000, 0xe351\n"
-        ".hword 0xc002, 0xe1a0, 0x100c, 0xe582\n"
-        ".hword 0xc008, 0x1581, 0xc004, 0x0583\n"
-        ".hword 0x0020, 0xe590, 0x1008, 0xe042\n"
-        ".hword 0x0001, 0xe200, 0x0000, 0xe350\n"
-        ".hword 0x2000, 0x13a0, 0x0003, 0x1351\n"
-        ".hword 0x0009, 0x9a00, 0x3e81, 0xe1a0\n"
-        ".hword 0x0004, 0xe248, 0x0000, 0xe353\n"
-        ".hword 0x2004, 0xb5a0, 0x11a1, 0xe1b0\n"
-        ".hword 0x0003, 0x0a00, 0x2004, 0xe580\n"
-        ".hword 0x1001, 0xe251, 0x2008, 0xe5a0\n"
-        ".hword 0xfffb, 0x1aff, 0x0004, 0xe594\n"
-        ".hword 0x07f0, 0xe8bd, 0xff1e, 0xe12f\n"
-        ".hword 0x9004, 0xe584, 0x2000, 0xe593\n"
-        ".hword 0x0010, 0xe284, 0xc000, 0xe085\n"
-        ".hword 0x0000, 0xe352, 0x1009, 0xe081\n"
-        ".hword 0x0000, 0xe3a0, 0x0024, 0x0a00\n"
-        ".hword 0x0002, 0xe151, 0x0004, 0x9a00\n"
-        ".hword 0x0002, 0xe1a0, 0x200c, 0xe592\n"
-        ".hword 0x0000, 0xe352, 0xfff9, 0x1aff\n"
-        ".hword 0x000c, 0xea00, 0x0002, 0xe15c\n"
-        ".hword 0x000a, 0x1a00, 0xc004, 0xe592\n"
-        ".hword 0x8010, 0xe282, 0xc008, 0xe08c\n"
-        ".hword 0x8008, 0xe592, 0x200c, 0xe592\n"
-        ".hword 0x0000, 0xe358, 0x200c, 0x1588\n"
-        ".hword 0x2000, 0x0583, 0x0000, 0xe352\n"
-        ".hword 0x8008, 0x1582, 0x8004, 0x0583\n"
-        ".hword 0x0000, 0xe350, 0x000e, 0x0a00\n"
-        ".hword 0x2004, 0xe590, 0x8010, 0xe280\n"
-        ".hword 0x8002, 0xe088, 0x0001, 0xe158\n"
-        ".hword 0x0009, 0x1a00, 0x2008, 0xe590\n"
-        ".hword 0x1000, 0xe1a0, 0x000c, 0xe590\n"
-        ".hword 0x0000, 0xe352, 0x000c, 0x1582\n"
-        ".hword 0x0000, 0x0583, 0x0000, 0xe350\n"
-        ".hword 0x2008, 0x1580, 0x0002, 0xe1a0\n"
-        ".hword 0x2004, 0x0583, 0x2001, 0xe04c\n"
-        ".hword 0x0010, 0xe352, 0x5004, 0x3584\n"
-        ".hword 0xffcb, 0x3aff, 0x70b0, 0xe1c1\n"
-        ".hword 0x2010, 0xe242, 0x5008, 0xe281\n"
-        ".hword 0x60b2, 0xe1c1, 0x2004, 0xe581\n"
-        ".hword 0x0041, 0xe885, 0x0000, 0xe350\n"
-        ".hword 0x200c, 0x1590, 0x2000, 0x0593\n"
-        ".hword 0x100c, 0x1580, 0x1000, 0x0583\n"
-        ".hword 0x0000, 0xe352, 0x200c, 0xe581\n"
-        ".hword 0x1008, 0x1582, 0x1004, 0x0583\n"
-        ".hword 0xffbb, 0xeaff, 0x4652, 0x0000\n"
-    );
+struct ExpHeapBlockHeader {
+    u16 signature;
+    u16 attribute;
+    u32 blockSize;
+    ExpHeapBlockHeader* prev;
+    ExpHeapBlockHeader* next;
 };
+
+extern "C" u32 engine_func_0011bf0c(void* heap_ptr, void* mem_block, u32 new_size) {
+    u8* heap_base = reinterpret_cast<u8*>(heap_ptr) + 0x18;
+    auto* free_list_head = reinterpret_cast<ExpHeapBlockHeader**>(heap_base + 0x24);
+    auto* free_list_tail = reinterpret_cast<ExpHeapBlockHeader**>(heap_base + 0x28);
+
+    u32 aligned_size = (new_size + 3) & ~3u;
+    auto* block = reinterpret_cast<ExpHeapBlockHeader*>(reinterpret_cast<u8*>(mem_block) - 0x10);
+    u32 current_size = block->blockSize;
+
+    if (current_size == aligned_size) {
+        return aligned_size;
+    }
+
+    if (current_size > aligned_size) {
+        block->blockSize = aligned_size;
+        u8* old_end = reinterpret_cast<u8*>(mem_block) + current_size;
+        u8* new_end = reinterpret_cast<u8*>(mem_block) + aligned_size;
+
+        ExpHeapBlockHeader* prev_free = nullptr;
+        ExpHeapBlockHeader* cur = *free_list_head;
+
+        while (cur != nullptr) {
+            if (reinterpret_cast<u8*>(cur) >= new_end) {
+                break;
+            }
+            prev_free = cur;
+            cur = cur->next;
+        }
+
+        u8* merge_end = old_end;
+        if (cur != nullptr && reinterpret_cast<u8*>(cur) == old_end) {
+            merge_end = reinterpret_cast<u8*>(cur) + 0x10 + cur->blockSize;
+            ExpHeapBlockHeader* p = cur->prev;
+            ExpHeapBlockHeader* n = cur->next;
+            if (p != nullptr) {
+                p->next = n;
+            } else {
+                *free_list_head = n;
+            }
+            if (n != nullptr) {
+                n->prev = p;
+            } else {
+                *free_list_tail = p;
+            }
+        }
+
+        ExpHeapBlockHeader* insert_prev = prev_free;
+        if (prev_free != nullptr) {
+            u8* prev_end = reinterpret_cast<u8*>(prev_free) + 0x10 + prev_free->blockSize;
+            if (prev_end == new_end) {
+                new_end = reinterpret_cast<u8*>(prev_free);
+                ExpHeapBlockHeader* p = prev_free->prev;
+                ExpHeapBlockHeader* n = prev_free->next;
+                if (p != nullptr) {
+                    p->next = n;
+                } else {
+                    *free_list_head = n;
+                }
+                if (n != nullptr) {
+                    n->prev = p;
+                } else {
+                    *free_list_tail = p;
+                }
+                insert_prev = p;
+            }
+        }
+
+        u32 freed_size = static_cast<u32>(merge_end - new_end);
+        if (freed_size < 0x10) {
+            block->blockSize = current_size;
+            return current_size;
+        }
+
+        auto* new_free = reinterpret_cast<ExpHeapBlockHeader*>(new_end);
+        new_free->signature = 0x4652;
+        new_free->attribute = 0;
+        new_free->blockSize = freed_size - 0x10;
+        new_free->prev = insert_prev;
+
+        ExpHeapBlockHeader* next_free = nullptr;
+        if (insert_prev != nullptr) {
+            next_free = insert_prev->next;
+            insert_prev->next = new_free;
+        } else {
+            next_free = *free_list_head;
+            *free_list_head = new_free;
+        }
+
+        new_free->next = next_free;
+        if (next_free != nullptr) {
+            next_free->prev = new_free;
+        } else {
+            *free_list_tail = new_free;
+        }
+
+        return block->blockSize;
+    }
+
+    // Expand
+    ExpHeapBlockHeader* found_free = nullptr;
+    u8* block_end = reinterpret_cast<u8*>(mem_block) + current_size;
+
+    for (ExpHeapBlockHeader* cur = *free_list_head; cur != nullptr; cur = cur->next) {
+        if (reinterpret_cast<u8*>(cur) == block_end) {
+            found_free = cur;
+            break;
+        }
+    }
+
+    if (found_free == nullptr) {
+        return 0;
+    }
+
+    u32 total_available = current_size + found_free->blockSize + 0x10;
+    if (aligned_size > total_available) {
+        return 0;
+    }
+
+    u8* free_end = reinterpret_cast<u8*>(found_free) + 0x10 + found_free->blockSize;
+    u32 attr = found_free->attribute;
+    u8* zero_start = reinterpret_cast<u8*>(found_free) - ((attr << 17) >> 25);
+
+    ExpHeapBlockHeader* p = found_free->prev;
+    ExpHeapBlockHeader* n = found_free->next;
+    if (p != nullptr) {
+        p->next = n;
+    } else {
+        *free_list_head = n;
+    }
+    if (n != nullptr) {
+        n->prev = p;
+    } else {
+        *free_list_tail = p;
+    }
+
+    u8* new_alloc_end = reinterpret_cast<u8*>(mem_block) + aligned_size;
+    u32 remaining = static_cast<u32>(free_end - new_alloc_end);
+    if (remaining < 0x10) {
+        new_alloc_end = free_end;
+    }
+
+    block->blockSize = static_cast<u32>(new_alloc_end - reinterpret_cast<u8*>(mem_block));
+    u32 leftover = static_cast<u32>(free_end - new_alloc_end);
+    if (leftover >= 0x10) {
+        auto* new_free = reinterpret_cast<ExpHeapBlockHeader*>(new_alloc_end);
+        new_free->signature = 0x4652;
+        new_free->attribute = 0;
+        new_free->blockSize = leftover - 0x10;
+        new_free->prev = p;
+
+        ExpHeapBlockHeader* next_free = nullptr;
+        if (p != nullptr) {
+            next_free = p->next;
+            p->next = new_free;
+        } else {
+            next_free = *free_list_head;
+            *free_list_head = new_free;
+        }
+
+        new_free->next = next_free;
+        if (next_free != nullptr) {
+            next_free->prev = new_free;
+        } else {
+            *free_list_tail = new_free;
+        }
+    }
+
+    u32 opt_flag = *reinterpret_cast<u32*>(heap_base + 0x20);
+    if ((opt_flag & 1) != 0) {
+        u8* clear_end = new_alloc_end;
+        if (clear_end > zero_start + 3) {
+            u32 words_to_clear = static_cast<u32>(clear_end - zero_start) >> 2;
+            auto* dst = reinterpret_cast<u32*>(zero_start);
+            for (u32 i = 0; i < words_to_clear; ++i) {
+                dst[i] = 0;
+            }
+        }
+    }
+
+    return block->blockSize;
+}
 
 // DECOMP_FUNC(0x002712d4, 632)
 extern "C" __attribute__((naked)) void func_002712d4() {
