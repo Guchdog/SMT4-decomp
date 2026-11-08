@@ -211,7 +211,7 @@ void StatusDown_CalcTaskCallback(void* arg);                                    
 void StatusDown_DrawTaskCallback(void* arg);                                        // 0x001cc914
 void StatusDown_DrawPartyAndSubViews(s32 x_offset, s32 y_offset);                   // 0x00187014
 void StatusDown_DrawLRPrompts(s32 x_offset, s32 y_offset);                          // 0x0029adf0
-void StatusDown_DrawPartySlotRow(s32 x_offset, s32 y_offset, s32 demon_id,
+__attribute__((pcs("aapcs"))) void StatusDown_DrawPartySlotRow(s32 x_offset, s32 y_offset, s32 demon_id,
                                  u32 node_id, f32 scale, s32 is_stock_row,
                                  s32 is_empty_mode, s32 highlight_mode);            // 0x0029a520
 void StatusDown_DrawSkillList(s32 x_offset, s32 y_offset);                          // 0x0032be34

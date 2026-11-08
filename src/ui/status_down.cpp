@@ -141,6 +141,7 @@ extern "C" {
     s32   Party_GetDemonOrderNumber(s32 demon_id, s32 flag);                        // 0x0029ac70
     s32   Party_GetDemonActiveIndex(s32 demon_id);                                  // 0x0029abc0
     const u8* Party_GetDemonWorkPtr(s32 demon_id);                                  // 0x002ae3f0
+    const char* camp_func_002bcff0(s32 demon_id);                                   // 0x002bcff0
     const u8* Camp_GetSortConfig();                                                 // 0x002a0fac
     bool  Flag_CheckEventBit(u32 flag_id);                                          // 0x002c0ba8
     bool  Category_IsUnlocked(u16 category_id);                                     // 0x00262edc
@@ -846,440 +847,7 @@ u32 StatusDown_GetField53C() {
 }
 
 // DECOMP_FUNC(0x0029a520, 1696)
-// Verified ARM-state entry/exit and referenced local literal/table bytes.
-__attribute__((naked)) void StatusDown_DrawPartySlotRow(s32 x_offset, s32 y_offset, s32 demon_id,
-                                 u32 node_id, f32 scale, s32 is_stock_row,
-                                 s32 is_empty_mode, s32 highlight_mode) {
-    asm volatile(
-        ".word 0xe92d4ff0\n"
-        ".word 0xe1a06000\n"
-        ".word 0xed2d8b02\n"
-        ".word 0xe24dd06c\n"
-        ".word 0xe59f040c\n"
-        ".word 0xe1a07001\n"
-        ".word 0xe59da0a0\n"
-        ".word 0xe1a09002\n"
-        ".word 0xe5905000\n"
-        ".word 0xe1a01003\n"
-        ".word 0xed9d8a26\n"
-        ".word 0xe3a0001a\n"
-        ".word 0xeb00945e\n"
-        ".word 0xe1a04000\n"
-        ".word 0xe2850b01\n"
-        ".word 0xe28000d4\n"
-        ".word 0xe58d0064\n"
-        ".word 0xeb001337\n"
-        ".word 0xe58d0060\n"
-        ".word 0xe3a0b000\n"
-        ".word 0xe28500b4\n"
-        ".word 0xed900a08\n"
-        ".word 0xeb009464\n"
-        ".word 0xe1d400fa\n"
-        ".word 0xe3a010bf\n"
-        ".word 0xe3a02008\n"
-        ".word 0xe0800007\n"
-        ".word 0xe1cd00f0\n"
-        ".word 0xe1d400f8\n"
-        ".word 0xe3a0101a\n"
-        ".word 0xe0803006\n"
-        ".word 0xe3a00002\n"
-        ".word 0xeb0093ec\n"
-        ".word 0xeddf8ae7\n"
-        ".word 0xeeb00a68\n"
-        ".word 0xeb009457\n"
-        ".word 0xe1d400fa\n"
-        ".word 0xe3a080c4\n"
-        ".word 0xe59f238c\n"
-        ".word 0xe0800007\n"
-        ".word 0xe88d0101\n"
-        ".word 0xe1d400f8\n"
-        ".word 0xe3a0101a\n"
-        ".word 0xe0803006\n"
-        ".word 0xe3a00002\n"
-        ".word 0xeb0093a1\n"
-        ".word 0xe5950418\n"
-        ".word 0xe3a02e42\n"
-        ".word 0xe3500000\n"
-        ".word 0x0595041c\n"
-        ".word 0x03500000\n"
-        ".word 0x1a000009\n"
-        ".word 0xe5950420\n"
-        ".word 0xe3500000\n"
-        ".word 0x05950424\n"
-        ".word 0x03500000\n"
-        ".word 0x05950428\n"
-        ".word 0x03500000\n"
-        ".word 0x1a000002\n"
-        ".word 0xe5950414\n"
-        ".word 0xe3500000\n"
-        ".word 0xa59f2334\n"
-        ".word 0xe1d400fa\n"
-        ".word 0xe3a010c4\n"
-        ".word 0xe0800007\n"
-        ".word 0xe1cd00f0\n"
-        ".word 0xe1d400f8\n"
-        ".word 0xe3a0101a\n"
-        ".word 0xe0803006\n"
-        ".word 0xe3a00002\n"
-        ".word 0xeb009388\n"
-        ".word 0xe3a01e42\n"
-        ".word 0xe3a0001a\n"
-        ".word 0xeb009421\n"
-        ".word 0xe58d0054\n"
-        ".word 0xe59f0300\n"
-        ".word 0xe5901000\n"
-        ".word 0xe3a00003\n"
-        ".word 0xe2818a01\n"
-        ".word 0xe2888fc3\n"
-        ".word 0xe5981000\n"
-        ".word 0xe0881101\n"
-        ".word 0xe5912008\n"
-        ".word 0xe5810008\n"
-        ".word 0xe5d81018\n"
-        ".word 0xe3510000\n"
-        ".word 0x03520003\n"
-        ".word 0x0a000003\n"
-        ".word 0xe598101c\n"
-        ".word 0xe12fff31\n"
-        ".word 0xe3a00000\n"
-        ".word 0xe5c80018\n"
-        ".word 0xe3a00001\n"
-        ".word 0xe58d0000\n"
-        ".word 0xe59d0054\n"
-        ".word 0xe59d2054\n"
-        ".word 0xe59d3054\n"
-        ".word 0xe1d410fa\n"
-        ".word 0xe590000c\n"
-        ".word 0xe1d220fa\n"
-        ".word 0xe1d380f8\n"
-        ".word 0xe1d4c0f8\n"
-        ".word 0xe1d030f2\n"
-        ".word 0xe0811002\n"
-        ".word 0xe1d000f0\n"
-        ".word 0xe08c2008\n"
-        ".word 0xe082c006\n"
-        ".word 0xe1a02000\n"
-        ".word 0xe0811007\n"
-        ".word 0xe1a0000c\n"
-        ".word 0xebffff4e\n"
-        ".word 0xe2850f73\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb009221\n"
-        ".word 0xe1d410fa\n"
-        ".word 0xe0800007\n"
-        ".word 0xe0808001\n"
-        ".word 0xe2850f73\n"
-        ".word 0xeb00921f\n"
-        ".word 0xe1d410f8\n"
-        ".word 0xe0800006\n"
-        ".word 0xe3a020c9\n"
-        ".word 0xe0803001\n"
-        ".word 0xe58d2004\n"
-        ".word 0xe59f2240\n"
-        ".word 0xe3a0101a\n"
-        ".word 0xe3a00002\n"
-        ".word 0xe58d8000\n"
-        ".word 0xeb00934e\n"
-        ".word 0xe59f0228\n"
-        ".word 0xe5901000\n"
-        ".word 0xe3a00000\n"
-        ".word 0xe2818a01\n"
-        ".word 0xe2888fc3\n"
-        ".word 0xe5981000\n"
-        ".word 0xe0882101\n"
-        ".word 0xe5921008\n"
-        ".word 0xe5820008\n"
-        ".word 0xe5d82018\n"
-        ".word 0xe3520000\n"
-        ".word 0x03510000\n"
-        ".word 0x0a000003\n"
-        ".word 0xe598101c\n"
-        ".word 0xe12fff31\n"
-        ".word 0xe3a00000\n"
-        ".word 0xe5c80018\n"
-        ".word 0xe59d00a4\n"
-        ".word 0xe3e08000\n"
-        ".word 0xe3500001\n"
-        ".word 0x059f81e0\n"
-        ".word 0x0a000001\n"
-        ".word 0xe3500002\n"
-        ".word 0x059f81d8\n"
-        ".word 0xe2850b01\n"
-        ".word 0xe58d000c\n"
-        ".word 0xe5950400\n"
-        ".word 0xe350000b\n"
-        ".word 0x1350000e\n"
-        ".word 0x0a00001b\n"
-        ".word 0xe3500006\n"
-        ".word 0x13500009\n"
-        ".word 0x0a000007\n"
-        ".word 0xe5d50548\n"
-        ".word 0xe3500000\n"
-        ".word 0x0a000004\n"
-        ".word 0xe595154c\n"
-        ".word 0xe59d0060\n"
-        ".word 0xe1510000\n"
-        ".word 0x1a000000\n"
-        ".word 0xe59f8190\n"
-        ".word 0xe59f1194\n"
-        ".word 0xe3a0001a\n"
-        ".word 0xeb0093be\n"
-        ".word 0xe35a0000\n"
-        ".word 0xe1a05000\n"
-        ".word 0x0a000001\n"
-        ".word 0xe3590000\n"
-        ".word 0x0a000014\n"
-        ".word 0xe59d009c\n"
-        ".word 0xe3500000\n"
-        ".word 0x0a000017\n"
-        ".word 0xe28f1f5b\n"
-        ".word 0xe28d0010\n"
-        ".word 0xfa008ffe\n"
-        ".word 0xe320f000\n"
-        ".word 0xe320f000\n"
-        ".word 0xea000017\n"
-        ".word 0xe5951544\n"
-        ".word 0xe59d0060\n"
-        ".word 0xe1510000\n"
-        ".word 0x0affffe9\n"
-        ".word 0xe59d0064\n"
-        ".word 0xeb001233\n"
-        ".word 0xe2401001\n"
-        ".word 0xe59d0060\n"
-        ".word 0xe1510000\n"
-        ".word 0x159f8138\n"
-        ".word 0x0affffe2\n"
-        ".word 0xeaffffe2\n"
-        ".word 0xe28f1e13\n"
-        ".word 0xe28d0010\n"
-        ".word 0xfa008fec\n"
-        ".word 0xe59f8120\n"
-        ".word 0xe320f000\n"
-        ".word 0xea000005\n"
-        ".word 0xe1a00009\n"
-        ".word 0xeb0089e4\n"
-        ".word 0xe1a02000\n"
-        ".word 0xe28f1f51\n"
-        ".word 0xe28d0010\n"
-        ".word 0xfa008fe3\n"
-        ".word 0xe1d400fa\n"
-        ".word 0xe1d510fa\n"
-        ".word 0xe1d420f8\n"
-        ".word 0xe1d530f8\n"
-        ".word 0xe0800001\n"
-        ".word 0xe0800007\n"
-        ".word 0xe0821003\n"
-        ".word 0xe0811006\n"
-        ".word 0xee000a90\n"
-        ".word 0xee001a10\n"
-        ".word 0xeeb02a68\n"
-        ".word 0xe28d2010\n"
-        ".word 0xe1a01008\n"
-        ".word 0xeddf1a42\n"
-        ".word 0xeef80ae0\n"
-        ".word 0xeeb80ac0\n"
-        ".word 0xe3a00003\n"
-        ".word 0xed9f1a3f\n"
-        ".word 0xeb008fb0\n"
-        ".word 0xe35a0000\n"
-        ".word 0xe320f000\n"
-        ".word 0x0a000001\n"
-        ".word 0xe3590000\n"
-        ".word 0x0a00001b\n"
-        ".word 0xe1d410fa\n"
-        ".word 0xe3a000c4\n"
-        ".word 0xe58d0004\n"
-        ".word 0xe0811007\n"
-        ".word 0xe58d1000\n"
-        ".word 0xe1d400f8\n"
-        ".word 0xe59f20cc\n"
-        ".word 0xe3a0101a\n"
-        ".word 0xe0803006\n"
-        ".word 0xe3a00002\n"
-        ".word 0xeb0092d9\n"
-        ".word 0xe59f10bc\n"
-        ".word 0xe3a0001a\n"
-        ".word 0xeb009372\n"
-        ".word 0xe3a01000\n"
-        ".word 0xed8d8a00\n"
-        ".word 0xe58d1004\n"
-        ".word 0xe1d030fa\n"
-        ".word 0xe1d410fa\n"
-        ".word 0xe1d420f8\n"
-        ".word 0xe1d000f8\n"
-        ".word 0xe0811003\n"
-        ".word 0xe3a030c9\n"
-        ".word 0xe0800002\n"
-        ".word 0xe0812007\n"
-        ".word 0xe0801006\n"
-        ".word 0xe6bf0079\n"
-        ".word 0xeb00718d\n"
-        ".word 0xe320f000\n"
-        ".word 0xea00001e\n"
-        ".word 0x0044e190\n"
-        ".word 0x3f800000\n"
-        ".word 0x0000041f\n"
-        ".word 0x00000421\n"
-        ".word 0x0044ea00\n"
-        ".word 0x00000422\n"
-        ".word 0x72e027ff\n"
-        ".word 0xdc0f14ff\n"
-        ".word 0x0000042b\n"
-        ".word 0x48814881\n"
-        ".word 0x00004881\n"
-        ".word 0x5a5a5aff\n"
-        ".word 0x85826d82\n"
-        ".word 0x40819782\n"
-        ".word 0x85829282\n"
-        ".word 0x89828782\n"
-        ".word 0x94829382\n"
-        ".word 0x81829282\n"
-        ".word 0x89829482\n"
-        ".word 0x8e828f82\n"
-        ".word 0x90824081\n"
-        ".word 0x93828f82\n"
-        ".word 0x89829382\n"
-        ".word 0x8c828282\n"
-        ".word 0x49818582\n"
-        ".word 0x00000000\n"
-        ".word 0x00007325\n"
-        ".word 0x00000000\n"
-        ".word 0x3e4ccccd\n"
-        ".word 0x00000425\n"
-        ".word 0x0000042a\n"
-        ".word 0xe59d009c\n"
-        ".word 0xe3500000\n"
-        ".word 0x1a000026\n"
-        ".word 0xe35a0000\n"
-        ".word 0x0a00003c\n"
-        ".word 0xe1d410fa\n"
-        ".word 0xe3a000c4\n"
-        ".word 0xe58d0004\n"
-        ".word 0xe0811007\n"
-        ".word 0xe58d1000\n"
-        ".word 0xe1d400f8\n"
-        ".word 0xe59f21b4\n"
-        ".word 0xe3a0101a\n"
-        ".word 0xe0803006\n"
-        ".word 0xe3a00002\n"
-        ".word 0xeb009297\n"
-        ".word 0xe59f11a4\n"
-        ".word 0xe3a0001a\n"
-        ".word 0xeb009330\n"
-        ".word 0xe3590000\n"
-        ".word 0xe1a05000\n"
-        ".word 0xe3a08008\n"
-        ".word 0x0a000015\n"
-        ".word 0xe1a00009\n"
-        ".word 0xebffca9c\n"
-        ".word 0xe58d000c\n"
-        ".word 0xe28d0004\n"
-        ".word 0xe28f2f5f\n"
-        ".word 0xe3a010c9\n"
-        ".word 0xe58d8000\n"
-        ".word 0xe8800006\n"
-        ".word 0xe1d400fa\n"
-        ".word 0xe1d520fa\n"
-        ".word 0xe1d410f8\n"
-        ".word 0xe1d530f8\n"
-        ".word 0xe0822000\n"
-        ".word 0xe0822007\n"
-        ".word 0xe0810003\n"
-        ".word 0xe0801006\n"
-        ".word 0xe3a03001\n"
-        ".word 0xe3a00000\n"
-        ".word 0xeb008dc0\n"
-        ".word 0xe28dd06c\n"
-        ".word 0xecbd8b02\n"
-        ".word 0xe8bd8ff0\n"
-        ".word 0xe28f1f4e\n"
-        ".word 0xe28d0010\n"
-        ".word 0xfa008f5e\n"
-        ".word 0xe28d1010\n"
-        ".word 0xe3a000c9\n"
-        ".word 0xe58d8000\n"
-        ".word 0xe1cd00f4\n"
-        ".word 0xe1d400fa\n"
-        ".word 0xe1d520fa\n"
-        ".word 0xe1d410f8\n"
-        ".word 0xe1d530f8\n"
-        ".word 0xe0822000\n"
-        ".word 0xe0822007\n"
-        ".word 0xe0810003\n"
-        ".word 0xe0801006\n"
-        ".word 0xe3a03001\n"
-        ".word 0xe3a00000\n"
-        ".word 0xeb008dab\n"
-        ".word 0xe28dd06c\n"
-        ".word 0xecbd8b02\n"
-        ".word 0xe8bd8ff0\n"
-        ".word 0xe1d400fa\n"
-        ".word 0xe59f20e4\n"
-        ".word 0xe0801007\n"
-        ".word 0xe3a000c4\n"
-        ".word 0xe58d0004\n"
-        ".word 0xe58d1000\n"
-        ".word 0xe1d400f8\n"
-        ".word 0xe3a0101a\n"
-        ".word 0xe0803006\n"
-        ".word 0xe3a00002\n"
-        ".word 0xeb00925a\n"
-        ".word 0xe59d000c\n"
-        ".word 0xe1d007fe\n"
-        ".word 0xe3500000\n"
-        ".word 0xaa000005\n"
-        ".word 0xe3a01001\n"
-        ".word 0xe1a00009\n"
-        ".word 0xeb000057\n"
-        ".word 0xe320f000\n"
-        ".word 0xe320f000\n"
-        ".word 0xea000005\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb000102\n"
-        ".word 0xe3500006\n"
-        ".word 0xe1a00009\n"
-        ".word 0x0a000002\n"
-        ".word 0xeb000022\n"
-        ".word 0xe1a0b000\n"
-        ".word 0xea000003\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb004e2a\n"
-        ".word 0xe3500000\n"
-        ".word 0x15d0b022\n"
-        ".word 0xe59f1068\n"
-        ".word 0xe3a0001a\n"
-        ".word 0xeb0092dd\n"
-        ".word 0xe3a03004\n"
-        ".word 0xe28d5004\n"
-        ".word 0xe28f2048\n"
-        ".word 0xe3a010c9\n"
-        ".word 0xe58d3000\n"
-        ".word 0xe8850806\n"
-        ".word 0xe1d030fa\n"
-        ".word 0xe1d410fa\n"
-        ".word 0xe1d420f8\n"
-        ".word 0xe1d000f8\n"
-        ".word 0xe0811003\n"
-        ".word 0xe3a03001\n"
-        ".word 0xe0800002\n"
-        ".word 0xe0812007\n"
-        ".word 0xe0801006\n"
-        ".word 0xe3a00000\n"
-        ".word 0xeb008d73\n"
-        ".word 0xe28dd06c\n"
-        ".word 0xecbd8b02\n"
-        ".word 0xe8bd8ff0\n"
-        ".word 0x00000522\n"
-        ".word 0x0000052a\n"
-        ".word 0x00006425\n"
-        ".word 0x002d2d2d\n"
-        ".word 0x00000423\n"
-        ".word 0x00000429\n"
-    );
-}
-#if 0
-// Partial semantic draft retained for reconstruction; not compiled.
-[[maybe_unused]] static void StatusDown_DrawPartySlotRow_Draft(s32 x_offset, s32 y_offset, s32 demon_id,
+__attribute__((pcs("aapcs"))) void StatusDown_DrawPartySlotRow(s32 x_offset, s32 y_offset, s32 demon_id,
                                  u32 node_id, f32 scale, s32 is_stock_row,
                                  s32 is_empty_mode, s32 highlight_mode) {
     StatusDownWork* work = g_StatusDownWork;
@@ -1302,6 +870,7 @@ __attribute__((naked)) void StatusDown_DrawPartySlotRow(s32 x_offset, s32 y_offs
     UiSprite_DrawNode(2, 0x1A, cursor_frame_node, x_offset + row_node->x, y_offset + row_node->y, 0xC4);
 
     const UiLayoutNode* clip_node = LayoutNode(0x1A, 0x420);
+    GpuModeSlotSet(0x30C, 3);
     UiScissor_SetRect(x_offset + row_node->x + clip_node->x,
                       y_offset + row_node->y + clip_node->y,
                       clip_node->rect->w, clip_node->rect->h, 1);
@@ -1311,6 +880,7 @@ __attribute__((naked)) void StatusDown_DrawPartySlotRow(s32 x_offset, s32 y_offs
     UiSprite_DrawNode(2, 0x1A, 0x422,
                       x_offset + anim_x + row_node->x,
                       y_offset + anim_y + row_node->y, 0xC9);
+    GpuModeSlotSet(0x30C, 0);
 
     u32 text_color = 0xFFFFFFFFu;
     if (highlight_mode == 1) {
@@ -1322,6 +892,13 @@ __attribute__((naked)) void StatusDown_DrawPartySlotRow(s32 x_offset, s32 y_offs
     if (work->state == 11 || work->state == 14) {
         if (work->selected_result == selected_row) {
             text_color = 0x72E027FFu;
+        } else {
+            const s32 row_count = UiListCursor_GetRowCount(&work->list_cursor_main);
+            if (selected_row == row_count - 1) {
+                text_color = 0x72E027FFu;
+            } else {
+                text_color = 0x5A5A5AFFu;
+            }
         }
     } else if (work->state != 6 && work->state != 9) {
         if (work->flag_548 != 0 && work->highlighted_slot_index == selected_row) {
@@ -1330,8 +907,18 @@ __attribute__((naked)) void StatusDown_DrawPartySlotRow(s32 x_offset, s32 y_offs
     }
 
     const UiLayoutNode* name_node = LayoutNode(0x1A, 0x42B);
-    char name_buf[64]{};
-    UiFont_FormatString(name_buf, "%s", "");
+    char name_buf[64];
+    if (is_empty_mode != 0 && demon_id == 0) {
+        UiFont_FormatString(name_buf, "\x82\x6d\x82\x85\x82\x97\x81\x40\x82\x92\x82\x85\x82\x87\x82\x89\x82\x93\x82\x94\x82\x92\x82\x81\x82\x94\x82\x89\x82\x8f\x82\x8e\x81\x40\x82\x90\x82\x8f\x82\x93\x82\x93\x82\x89\x82\x82\x82\x8c\x82\x85\x81\x49");
+        text_color = 0x5A5A5AFFu;
+    } else {
+        if (is_stock_row != 0) {
+            UiFont_FormatString(name_buf, "\x81\x48\x81\x48\x81\x48");
+        } else {
+            const char* dname = camp_func_002bcff0(demon_id);
+            UiFont_FormatString(name_buf, "%s", dname);
+        }
+    }
     UiFont_DrawText(3, text_color, name_buf,
                     static_cast<f32>(x_offset + row_node->x + name_node->x),
                     static_cast<f32>(y_offset + row_node->y + name_node->y),
@@ -1340,13 +927,10 @@ __attribute__((naked)) void StatusDown_DrawPartySlotRow(s32 x_offset, s32 y_offs
     if (is_empty_mode == 0 || demon_id != 0) {
         UiSprite_DrawNode(2, 0x1A, 0x425, x_offset + row_node->x, y_offset + row_node->y, 0xC4);
         const UiLayoutNode* bar_node = LayoutNode(0x1A, 0x42A);
-        // The listing stores the caller's float word (1.0f at every call site)
-        // directly into the callee's integer gate slot (0x0029A908); convert
-        // the reconstructed float parameter to the gate value.
         UiParty_DrawDemonBars(static_cast<s16>(demon_id),
                               x_offset + row_node->x + bar_node->x,
                               y_offset + row_node->y + bar_node->y,
-                              0xC9, static_cast<s32>(scale), 0);
+                              0xC9, *reinterpret_cast<const s32*>(&scale), 0);
     }
 
     if (is_stock_row != 0) {
@@ -1362,11 +946,11 @@ __attribute__((naked)) void StatusDown_DrawPartySlotRow(s32 x_offset, s32 y_offs
                                  y_offset + row_node->y + lv_node->y,
                                  1, 8, 0xC9, "%d", lv);
         } else {
-            char empty_lv[64]{};
+            char empty_lv[64];
             UiFont_FormatString(empty_lv, "---");
             UiFont_DrawFormatted(0, x_offset + row_node->x + lv_node->x,
                                  y_offset + row_node->y + lv_node->y,
-                                 1, 8, 0xC9, "%s", reinterpret_cast<s32>(empty_lv));
+                                 1, 8, 0xC9, empty_lv, 0);
         }
         return;
     }
@@ -1389,7 +973,6 @@ __attribute__((naked)) void StatusDown_DrawPartySlotRow(s32 x_offset, s32 y_offs
                          y_offset + row_node->y + ord_node->y,
                          1, 4, 0xC9, "%d", order_num);
 }
-#endif
 
 // DECOMP_FUNC(0x0029adf0, 320)
 void StatusDown_DrawLRPrompts(s32 x_offset, s32 y_offset) {
