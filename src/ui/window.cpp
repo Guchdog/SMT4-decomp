@@ -43,6 +43,10 @@ extern "C" {
     void  UiWindow_PopContext(void* ptr, s32 mode);                                 // 0x002bef88
     void  UiWindow_SetResult(const s32* value);                                     // 0x002c4244
     void  func_00115b74();                                                          // 0x00115b74
+    void* engine_func_002c54f0(u32 a0, u32 a1, u32 a2, u32 a3, u32 a4);        // 0x002c54f0
+    u32   engine_func_002bdc08(void* voice, u32 release);                       // 0x002bdc08
+    void  engine_func_002bdbcc(void* ptr);                                      // 0x002bdbcc
+    u32   camp_func_002bf030(void* object, u32 selector);                       // 0x002bf030
     void* AsdText_CreateDefault(s32 a0);                                            // 0x002bda1c
     void  AsdText_SetAlpha(void* handle, u32 alpha);                                // 0x002bda10
     void  AsdText_SetColorAndScale(void* handle, s32 a0, u32 color, f32 scale);    // 0x002bda00
@@ -59,37 +63,15 @@ extern "C" {
 // Forward declaration for task callback
 void ComWin_Calc(void* arg);                                                        // 0x0011b094
 
-//
-bool ComWin_SetState_Decompiled() {
-    auto* state_block = reinterpret_cast<u32*>(0x004E3CD4);
+// DECOMP_FUNC(0x0010a70c, 60)
+bool ComWin_SetState() {
+    auto* const state_block = reinterpret_cast<u32*>(0x004E3CD4);
     for (s32 i = 0; i < 6; ++i) {
         state_block[i] = 0;
     }
     state_block[6] = 0x0F;
     state_block[7] = 4;
     return true;
-}
-// DECOMP_FUNC(0x0010a70c, 60)
-
-
-__attribute__((naked)) bool ComWin_SetState() {
-    // Retain the exact ARM sequence and the absolute state-block literal.
-    asm volatile(
-        ".word 0xE59F0030\n"
-        ".word 0xE3A01000\n"
-        ".word 0xE3A02004\n"
-        ".word 0xE5801000\n"
-        ".word 0xE5801004\n"
-        ".word 0xE5801008\n"
-        ".word 0xE580100C\n"
-        ".word 0xE5801010\n"
-        ".word 0xE5801014\n"
-        ".word 0xE2800018\n"
-        ".word 0xE3A0100F\n"
-        ".word 0xE8800006\n"
-        ".word 0xE3A00001\n"
-        ".word 0xE12FFF1E\n"
-        ".word 0x004E3CD4\n");
 }
 
 // DECOMP_FUNC(0x0010a748, 504)
@@ -260,16 +242,8 @@ __attribute__((naked)) void ComWin_Init() {
 #endif
 
 // DECOMP_FUNC(0x0010a940, 20)
-__attribute__((naked)) void* ComWin_GetState(u32, u32, u32, u32) {
-    // The verified ROM body is an ABI-preserving call thunk: it forwards r0-r3
-    // to engine_func_002c54f0 (0x002C54F0), adds stack argument 1, then returns
-    // the helper's r0. Keep the branch displacement literal as in code.bin.
-    asm volatile(
-        ".word 0xE92D4008\n"
-        ".word 0xE3A0C001\n"
-        ".word 0xE58DC000\n"
-        ".word 0xEB06EAE7\n"
-        ".word 0xE8BD8008\n");
+void* ComWin_GetState(u32 a0, u32 a1, u32 a2, u32 a3) {
+    return engine_func_002c54f0(a0, a1, a2, a3, 1);
 }
 
 // DECOMP_FUNC(0x0010a954, 1352)
@@ -656,42 +630,25 @@ void ComWin_GetResult() {
 }
 
 // DECOMP_FUNC(0x0010aed4, 16)
-__attribute__((naked)) s32 func_0010aed4() {
-    asm volatile(
-        ".arm\n"
-        "push {r4, lr}\n"
-        "bl func_00115b74\n"
-        "mov r0, #0\n"
-        "pop {r4, pc}\n");
+s32 func_0010aed4() {
+    func_00115b74();
+    return 0;
 }
 
 // DECOMP_FUNC(0x0010aee4, 84)
-__attribute__((naked)) void ComWin_Reset() {
-    // The eight slots are walked with the original byte-sized index and the
-    // two reset calls intentionally receive different pointers. Keep the ROM
-    // branch displacements and the literal pool as data to preserve that ABI.
-    asm volatile(
-        ".word 0xE59F0048\n" // ldr r0, [pc, #0x48]
-        ".word 0xE92D4070\n" // push {r4, r5, r6, lr}
-        ".word 0xE5906204\n" // ldr r6, [r0, #0x204]
-        ".word 0xE3560000\n" // cmp r6, #0
-        ".word 0x13A04000\n" // movne r4, #0
-        ".word 0x0A00000C\n" // beq return
-        ".word 0xE0865104\n" // add r5, r6, r4, lsl #2
-        ".word 0xE5950020\n" // ldr r0, [r5, #0x20]
-        ".word 0xE3500000\n" // cmp r0, #0
-        ".word 0x0A000004\n" // beq next slot
-        ".word 0xE3A01000\n" // mov r1, #0
-        ".word 0xEB06CB3C\n" // bl engine_func_002bdc08
-        ".word 0xE2850020\n" // add r0, r5, #0x20
-        ".word 0xE320F000\n" // nop
-        ".word 0xEB06CB2A\n" // bl engine_func_002bdbcc
-        ".word 0xE2840001\n" // add r0, r4, #1
-        ".word 0xE20040FF\n" // and r4, r0, #0xff
-        ".word 0xE3540008\n" // cmp r4, #8
-        ".word 0x3AFFFFF2\n" // blo loop
-        ".word 0xE8BD8070\n" // pop {r4, r5, r6, pc}
-        ".word 0x004E2F68\n"); // literal pool
+void ComWin_Reset() {
+    auto* const context = *reinterpret_cast<u8**>(0x004E2F68 + 0x204);
+    if (context == nullptr) {
+        return;
+    }
+    for (u32 i = 0; i < 8; ++i) {
+        auto* const slot = context + (i << 2);
+        void* const entry = *reinterpret_cast<void**>(slot + 0x20);
+        if (entry != nullptr) {
+            engine_func_002bdc08(entry, 0);
+            engine_func_002bdbcc(slot + 0x20);
+        }
+    }
 }
 
 // DECOMP_FUNC(0x0011a354, 1632)
@@ -2405,19 +2362,10 @@ void PlaceWin_SetScale(s32 idx, s32 layer, f32 sx, f32 sy, f32 sz, f32 sw) {
     *reinterpret_cast<void**>(target + 0x100) = engine_func_002c2be8(floats);
 }
 // DECOMP_FUNC(0x002638dc, 32)
-
-
-//
-__attribute__((naked)) void PlaceWin_Dismiss() {
-    asm volatile(
-        ".word 0xE59F0014\n" // ldr r0, [pc, #0x14]
-        ".word 0xE3A01003\n" // mov r1, #3
-        ".word 0xE5900000\n" // ldr r0, [r0]
-        ".word 0xE5801008\n" // str r1, [r0, #8]
-        ".word 0xE3A01001\n" // mov r1, #1
-        ".word 0xE2800034\n" // add r0, r0, #0x34
-        ".word 0xEA016DCD\n" // b camp_func_002bf030
-        ".word 0x0043E140\n"); // original g_PlaceWinWork literal
+void PlaceWin_Dismiss() {
+    auto* const work = *reinterpret_cast<u8**>(0x0043E140);
+    *reinterpret_cast<u32*>(work + 8) = 3;
+    camp_func_002bf030(work + 0x34, 1);
 }
 
 // DECOMP_FUNC(0x002638fc, 20)

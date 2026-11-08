@@ -184,14 +184,14 @@ address,size,status,category,name,src_file
 0x0010a620,128,matching,ui,ui_func_0010a620,src/engine/leaf_batch29_a.cpp
 0x0010a6a0,92,matching,battle,battle_func_0010a6a0,src/engine/leaf_batch40_c.cpp
 0x0010a6fc,16,matching,engine,AsdText_SetCodeField1C,src/engine/asd_text.cpp
-0x0010a70c,60,matching,unknown,ComWin_SetState,src/ui/window.cpp
+0x0010a70c,60,non_matching,unknown,ComWin_SetState,src/ui/window.cpp
 0x0010a748,504,matching,ui,ComWin_Init,src/ui/window.cpp
-0x0010a940,20,matching,engine,ComWin_GetState,src/ui/window.cpp
+0x0010a940,20,non_matching,engine,ComWin_GetState,src/ui/window.cpp
 0x0010a954,1352,matching,ui,ComWin_ProcessDialog,src/ui/window.cpp
 0x0010ae9c,44,non_matching,battle,ComWin_CheckFlag,src/ui/window.cpp
 0x0010aec8,12,non_matching,unknown,ComWin_GetResult,src/ui/window.cpp
-0x0010aed4,16,matching,engine,func_0010aed4,src/ui/window.cpp
-0x0010aee4,84,matching,engine,ComWin_Reset,src/ui/window.cpp
+0x0010aed4,16,non_matching,engine,func_0010aed4,src/ui/window.cpp
+0x0010aee4,84,non_matching,engine,ComWin_Reset,src/ui/window.cpp
 0x0010af38,16,matching,engine,AsdText_SetCodeField14,src/engine/asd_text.cpp
 0x0010af48,60,non_matching,unknown,InfoWin_SetState,src/ui/window.cpp
 0x0010af84,560,matching,ui,InfoWin_Init,src/ui/window.cpp
@@ -4158,7 +4158,7 @@ address,size,status,category,name,src_file
 0x002637b4,168,matching,ui,ui_func_002637b4,src/engine/leaf_batch38_c.cpp
 0x0026385c,64,non_matching,ui,PlaceWin_SetPos,src/ui/window.cpp
 0x0026389c,64,non_matching,ui,PlaceWin_SetScale,src/ui/window.cpp
-0x002638dc,32,matching,ui,PlaceWin_Dismiss,src/ui/window.cpp
+0x002638dc,32,non_matching,ui,PlaceWin_Dismiss,src/ui/window.cpp
 0x002638fc,20,matching,ui,PlaceWin_SetVisible,src/ui/window.cpp
 0x00263910,60,non_matching,ui,PlaceWin_CheckState,src/ui/window.cpp
 0x0026394c,44,non_matching,ui,PlaceWin_IsActive,src/ui/window.cpp
