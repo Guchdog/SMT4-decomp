@@ -4025,7 +4025,7 @@ address,size,status,category,name,src_file
 0x00258020,32,matching,script_vm,script_vm_func_00258020,src/engine/leaf_batch23_b.cpp
 0x00258040,52,matching,script_vm,script_vm_func_00258040,src/engine/leaf_batch24_b.cpp
 0x00258074,52,matching,script_vm,script_vm_func_00258074,src/engine/leaf_batch19_c.cpp
-0x002580a8,576,matching,ui,ui_func_002580a8,src/engine/leaf_batch45_a.cpp
+0x002580a8,576,non_matching,ui,ui_func_002580a8,src/engine/leaf_batch45_a.cpp
 0x002582e8,16,matching,unknown,func_002582e8,src/engine/leaf_batch21_b.cpp
 0x002582f8,16,matching,unknown,func_002582f8,src/engine/leaf_batch38_a.cpp
 0x00258308,156,non_matching,camp,camp_func_00258308,src/engine/leaf_batch31_c.cpp

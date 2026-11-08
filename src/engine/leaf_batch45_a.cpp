@@ -247,83 +247,93 @@ extern "C" __attribute__((naked)) void camp_func_0022e008() {
 };
 
 // DECOMP_FUNC(0x002580a8, 576)
-extern "C" __attribute__((naked)) void ui_func_002580a8() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x41f0, 0xe92d, 0x4000, 0xe1a0\n"
-        ".hword 0x8b06, 0xed2d, 0x01f0, 0xe1d0\n"
-        ".hword 0x11f2, 0xe1d4, 0x0001, 0xe370\n"
-        ".hword 0x000b, 0x0a00, 0x0001, 0xe150\n"
-        ".hword 0x0009, 0xca00, 0x0000, 0xe354\n"
-        ".hword 0x0005, 0x0a00, 0x0000, 0xe3a0\n"
-        ".hword 0x0000, 0xe584, 0x0004, 0xe584\n"
-        ".hword 0x0008, 0xe584, 0x000c, 0xe584\n"
-        ".hword 0x0010, 0xe584, 0x8b06, 0xecbd\n"
-        ".hword 0x81f0, 0xe8bd, 0x8a75, 0xed9f\n"
-        ".hword 0x0000, 0xe351, 0x0005, 0xaa00\n"
-        ".hword 0x0001, 0xe281, 0x01b2, 0xe1c4\n"
-        ".hword 0x8a02, 0xed84, 0x8a03, 0xed84\n"
-        ".hword 0x8b06, 0xecbd, 0x81f0, 0xe8bd\n"
-        ".hword 0x0001, 0xe370, 0x0a00, 0xedd4\n"
-        ".hword 0x8a01, 0xedd4, 0x0003, 0x1350\n"
-        ".hword 0x000a, 0xda00, 0x0001, 0xe040\n"
-        ".hword 0x0a10, 0xee00, 0x0003, 0xe350\n"
-        ".hword 0x0006, 0xca00, 0x1a64, 0xed9f\n"
-        ".hword 0x1ac0, 0xeef8, 0x0ac0, 0xeeb8\n"
-        ".hword 0x0aa0, 0xee61, 0x0a28, 0xee20\n"
-        ".hword 0x0a81, 0xee60, 0x8a01, 0xee60\n"
-        ".hword 0xaa5e, 0xed9f, 0x9a5e, 0xed9f\n"
-        ".hword 0x0a8a, 0xee20, 0x0a89, 0xee60\n"
-        ".hword 0x0a09, 0xee20, 0x0ae0, 0xeefd\n"
-        ".hword 0x0ac0, 0xeebd, 0x1a90, 0xee10\n"
-        ".hword 0x0a10, 0xee10, 0xfba0, 0xeb00\n"
-        ".hword 0x0a10, 0xee00, 0x0a89, 0xee68\n"
-        ".hword 0x9ac0, 0xeef8, 0x0a8a, 0xee28\n"
-        ".hword 0x0ae0, 0xeefd, 0x0a09, 0xee20\n"
-        ".hword 0x1a90, 0xee10, 0x0ac0, 0xeebd\n"
-        ".hword 0x0a10, 0xee10, 0xfb96, 0xeb00\n"
-        ".hword 0x0a10, 0xee00, 0x0a4b, 0xeddf\n"
-        ".hword 0x1001, 0xe3a0, 0x0000, 0xe3a0\n"
-        ".hword 0x8aa0, 0xee69, 0x0ac0, 0xeeb8\n"
-        ".hword 0x9a20, 0xee20, 0xfb8e, 0xeb00\n"
-        ".hword 0x6000, 0xe3e0, 0x5080, 0xe086\n"
-        ".hword 0x1001, 0xe3a0, 0x0000, 0xe3a0\n"
-        ".hword 0xfb89, 0xeb00, 0x0a02, 0xedd4\n"
-        ".hword 0x6080, 0xe086, 0x0ac8, 0xeef4\n"
-        ".hword 0xfa10, 0xeef1, 0x0a03, 0xed94\n"
-        ".hword 0x8001, 0xc3a0, 0x0ac8, 0xeeb4\n"
-        ".hword 0x8000, 0xd3e0, 0xfa10, 0xeef1\n"
-        ".hword 0x0a48, 0xeef4, 0x7001, 0xc3a0\n"
-        ".hword 0x7000, 0xd3e0, 0xfa10, 0xeef1\n"
-        ".hword 0x0a48, 0x0eb4, 0xfa10, 0x0ef1\n"
-        ".hword 0x0008, 0x1a00, 0x6a90, 0xee00\n"
-        ".hword 0x5a10, 0xee00, 0x0008, 0xe284\n"
-        ".hword 0x0ae0, 0xeef8, 0x0ac0, 0xeeb8\n"
-        ".hword 0x0a20, 0xee69, 0x0a80, 0xee28\n"
-        ".hword 0x0a02, 0xec80, 0x0013, 0xea00\n"
-        ".hword 0x0a48, 0xeef4, 0xfa10, 0xeef1\n"
-        ".hword 0x0017, 0x0a00, 0x0a48, 0xeeb4\n"
-        ".hword 0xfa10, 0xeef1, 0x0005, 0x0a00\n"
-        ".hword 0x1001, 0xe3a0, 0x0000, 0xe3a0\n"
-        ".hword 0xfb67, 0xeb00, 0x0000, 0xe350\n"
-        ".hword 0xf000, 0xe320, 0x000e, 0x0a00\n"
-        ".hword 0x6a90, 0xee00, 0x8a10, 0xee00\n"
-        ".hword 0x0008, 0xe284, 0x0ae0, 0xeef8\n"
-        ".hword 0x0ac0, 0xeeb8, 0x0a20, 0xee69\n"
-        ".hword 0x0a80, 0xee28, 0x0a02, 0xec80\n"
-        ".hword 0x01f2, 0xe1d4, 0x1048, 0xe59f\n"
-        ".hword 0x0001, 0xe150, 0x0001, 0xb280\n"
-        ".hword 0x01b2, 0xb1c4, 0x8b06, 0xecbd\n"
-        ".hword 0x81f0, 0xe8bd, 0x7a90, 0xee00\n"
-        ".hword 0x5a10, 0xee00, 0x0008, 0xe284\n"
-        ".hword 0x0ae0, 0xeef8, 0x0ac0, 0xeeb8\n"
-        ".hword 0x0a20, 0xee69, 0x0a80, 0xee28\n"
-        ".hword 0x0a02, 0xec80, 0xffef, 0xeaff\n"
-        ".hword 0x0000, 0x0000, 0x0000, 0x3e80\n"
-        ".hword 0x0000, 0x3f00, 0x0000, 0x42c8\n"
-        ".hword 0xd70a, 0x3c23, 0x7ffe, 0x0000\n"
-    );
+extern "C" s32 ui_func_00297004(s32 min_val, s32 max_val);
+
+struct UiShakeState {
+    float amp_x;
+    float amp_y;
+    float offset_x;
+    float offset_y;
+    s16 max_timer;
+    s16 timer;
 };
+
+extern "C" void ui_func_002580a8(UiShakeState* state) {
+    s16 max_timer = state->max_timer;
+    s16 timer = state->timer;
+
+    if (max_timer != -1 && max_timer <= timer) {
+        if (state != nullptr) {
+            state->amp_x = 0.0f;
+            state->amp_y = 0.0f;
+            state->offset_x = 0.0f;
+            state->offset_y = 0.0f;
+            state->max_timer = 0;
+            state->timer = 0;
+        }
+        return;
+    }
+
+    if (timer < 0) {
+        state->timer = timer + 1;
+        state->offset_x = 0.0f;
+        state->offset_y = 0.0f;
+        return;
+    }
+
+    float amp_x = state->amp_x;
+    float amp_y = state->amp_y;
+
+    if (max_timer != -1 && max_timer > 3) {
+        s32 remaining = max_timer - timer;
+        if (remaining <= 3) {
+            float damping = static_cast<float>(remaining) * 0.25f;
+            amp_x *= damping;
+            amp_y *= damping;
+        }
+    }
+
+    s32 rand_x_int = ui_func_00297004(static_cast<s32>(amp_x * 50.0f), static_cast<s32>(amp_x * 100.0f));
+    s32 rand_y_int = ui_func_00297004(static_cast<s32>(amp_y * 50.0f), static_cast<s32>(amp_y * 100.0f));
+
+    float mag_x = static_cast<float>(rand_x_int) * 0.01f;
+    float mag_y = static_cast<float>(rand_y_int) * 0.01f;
+
+    s32 sign_x = (ui_func_00297004(0, 1) != 0) ? 1 : -1;
+    s32 sign_y = (ui_func_00297004(0, 1) != 0) ? 1 : -1;
+
+    float prev_x = state->offset_x;
+    float prev_y = state->offset_y;
+
+    s32 sign_prev_x = (prev_x > 0.0f) ? 1 : -1;
+    s32 sign_prev_y = (prev_y > 0.0f) ? 1 : -1;
+
+    if (prev_x == 0.0f && prev_y == 0.0f) {
+        state->offset_x = mag_x * static_cast<float>(sign_x);
+        state->offset_y = mag_y * static_cast<float>(sign_y);
+    } else {
+        bool choose_branch_y = false;
+        if (prev_x == 0.0f) {
+            choose_branch_y = true;
+        } else if (prev_y == 0.0f) {
+            choose_branch_y = false;
+        } else {
+            choose_branch_y = (ui_func_00297004(0, 1) == 0);
+        }
+
+        if (choose_branch_y) {
+            state->offset_x = mag_x * static_cast<float>(sign_x);
+            state->offset_y = mag_y * static_cast<float>(sign_prev_y);
+        } else {
+            state->offset_x = mag_x * static_cast<float>(sign_prev_x);
+            state->offset_y = mag_y * static_cast<float>(sign_y);
+        }
+    }
+
+    if (state->timer < 0x7FFE) {
+        state->timer++;
+    }
+}
 
 // DECOMP_FUNC(0x0029dcd4, 576)
 extern "C" __attribute__((naked)) void camp_func_0029dcd4() {
