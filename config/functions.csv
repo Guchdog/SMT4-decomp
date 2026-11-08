@@ -2899,10 +2899,10 @@ address,size,status,category,name,src_file
 0x00215928,16,matching,engine,engine_func_00215928,src/engine/leaf_batch20_b.cpp
 0x00215938,32,matching,battle,battle_func_00215938,src/engine/leaf_batch39_a.cpp
 0x00215958,56,matching,camp,camp_func_00215958,src/engine/leaf_batch32_b.cpp
-0x00215990,180,matching,ui,StatusDown_SetPartyPrompt,src/ui/status_down.cpp
+0x00215990,180,non_matching,ui,StatusDown_SetPartyPrompt,src/ui/status_down.cpp
 0x00215a44,28,non_matching,ui,StatusDown_SetActiveSoundId,src/ui/status_down.cpp
 0x00215a60,8,matching,script_vm,script_vm_func_00215a60,src/engine/leaf_batch36_a.cpp
-0x00215a68,248,matching,ui,StatusDown_SetPartySlots,src/ui/status_down.cpp
+0x00215a68,248,non_matching,ui,StatusDown_SetPartySlots,src/ui/status_down.cpp
 0x00215b60,64,matching,unknown,func_00215b60,src/engine/leaf_batch20_b.cpp
 0x00215ba0,32,matching,script_vm,script_vm_func_00215ba0,src/engine/leaf_batch20_b.cpp
 0x00215bc0,24,matching,camp,camp_func_00215bc0,src/engine/leaf_batch20_b.cpp
@@ -4776,7 +4776,7 @@ address,size,status,category,name,src_file
 0x00292e88,12,matching,script_vm,script_vm_func_00292e88,src/engine/leaf_matching.cpp
 0x00292e94,28,matching,script_vm,script_vm_func_00292e94,src/engine/leaf_batch22_b.cpp
 0x00292eb0,148,matching,script_vm,script_vm_func_00292eb0,src/engine/leaf_batch38_c.cpp
-0x00292f44,304,matching,ui,StatusDown_SetDisplayMode,src/ui/status_down.cpp
+0x00292f44,304,non_matching,ui,StatusDown_SetDisplayMode,src/ui/status_down.cpp
 0x00293074,344,matching,battle,battle_func_00293074,src/engine/leaf_batch43_c.cpp
 0x002931cc,36,matching,battle,battle_func_002931cc,src/engine/leaf_batch18_c.cpp
 0x002931f0,740,matching,camp,camp_func_002931f0,src/engine/leaf_batch45_a.cpp

@@ -622,55 +622,23 @@ s32 StatusDown_ItemSortByIdAsc(const void* a, const void* b) {
 }
 
 // DECOMP_FUNC(0x00215990, 180)
-__attribute__((naked)) void StatusDown_SetPartyPrompt(const StatusDownPartyPrompt*) {
-    asm volatile(
-        "push {r4, r5, r6, lr}\n"
-        "mov r6, r0\n"
-        "ldr r0, .LStatusDownSetPartyPromptGlobal\n"
-        "sub sp, sp, #8\n"
-        "ldr r4, [r0]\n"
-        "add r5, r4, #0x400\n"
-        "ldrsh r0, [r5, #0x7e]\n"
-        "cmp r0, #0\n"
-        "blt .LStatusDownSetPartyPromptNoSound\n"
-        "ldrb r0, [r4, #0x3fc]\n"
-        "cmp r0, #1\n"
-        "bne .LStatusDownSetPartyPromptNoSound\n"
-        ".word 0xeb02155a\n" // bl 0x0029af30: Status_GetMainMenuId
-        "cmp r0, #0xd\n"
-        "beq .LStatusDownSetPartyPromptPlaySound\n"
-        "cmp r0, #6\n"
-        "movne r0, #0x1f\n"
-        "beq .LStatusDownSetPartyPromptPlaySound\n"
-        ".word 0xeb028c66\n" // bl 0x002b8b78: Sound_PlaySE
-        ".LStatusDownSetPartyPromptNoSound:\n"
-        "mvn r1, #0\n"
-        "strh r1, [r5, #0x7e]\n"
-        "ldr r2, [r6]\n"
-        "add r0, r4, #0x500\n"
-        "mov r5, #1\n"
-        "str r2, [r4, #0x554]\n"
-        "ldr r2, [r6, #4]\n"
-        "mov r1, #0\n"
-        "mov r3, r5\n"
-        "str r2, [r4, #0x558]\n"
-        "ldr r2, [r6, #8]\n"
-        "str r2, [r4, #0x55c]\n"
-        "ldrh r2, [r6, #0xc]\n"
-        "strh r2, [r0, #0x60]\n"
-        "mov r2, #7\n"
-        "add r0, r4, #0x400\n"
-        "stm sp, {r1, r5}\n"
-        "mov r1, r2\n"
-        "add r0, r0, #0x164\n"
-        ".word 0xeb02282e\n" // bl 0x0029fae8: UiListCursor_Setup
-        "strb r5, [r4, #0x410]\n"
-        "add sp, sp, #8\n"
-        "pop {r4, r5, r6, pc}\n"
-        ".LStatusDownSetPartyPromptPlaySound:\n"
-        "mov r0, #0x2f\n"
-        ".word 0xeaffffe5\n" // b 0x002159d8: Sound_PlaySE
-        ".LStatusDownSetPartyPromptGlobal: .word 0x0044E190\n");
+void StatusDown_SetPartyPrompt(const StatusDownPartyPrompt* prompt) {
+    auto* work = g_StatusDownWork;
+    if (work->active_sound_id >= 0 && work->active_mode == 1) {
+        s32 menu_id = Status_GetMainMenuId();
+        if (menu_id == 0xD || menu_id == 6) {
+            Sound_PlaySE(0x2F);
+        } else {
+            Sound_PlaySE(0x1F);
+        }
+    }
+    work->active_sound_id = -1;
+    work->prompt_field0 = prompt->field0;
+    work->prompt_field1 = prompt->field1;
+    work->prompt_field2 = prompt->field2;
+    work->prompt_field3 = prompt->field3;
+    UiListCursor_Setup(&work->list_cursor_prompt, 7, 7, 1, 0, 1);
+    work->needs_refresh = 1;
 }
 
 // DECOMP_FUNC(0x00215a44, 28)
@@ -682,75 +650,20 @@ void StatusDown_SetActiveSoundId(s16 id) {
 }
 
 // DECOMP_FUNC(0x00215a68, 248)
-__attribute__((naked)) void StatusDown_SetPartySlots(const u16*, s32) {
-    asm volatile(
-        "push {r4, r5, r6, lr}\n"
-        "mov r5, r1\n"
-        "ldr r1, .LStatusDownSetPartySlotsLiteral\n"
-        "sub sp, sp, #8\n"
-        "mov r6, #0\n"
-        "lsl r2, r5, #1\n"
-        "ldr r4, [r1]\n"
-        "mov r1, r0\n"
-        "add r0, r4, #0x400\n"
-        "str r6, [r4, #0x4c2]\n"
-        "str r6, [r4, #0x4c6]\n"
-        "str r6, [r4, #0x4ca]\n"
-        "str r6, [r4, #0x4ce]\n"
-        "str r6, [r4, #0x482]\n"
-        "str r6, [r4, #0x486]\n"
-        "str r6, [r4, #0x48a]\n"
-        "add r0, r0, #0x82\n"
-        "str r6, [r4, #0x48e]\n"
-        ".word 0xeb02c14f\n" // bl 0x002c5ff4: AsdMem_Copy
-        "cmp r5, #0\n"
-        "andne r0, r5, #1\n"
-        "moveq r0, #0\n"
-        "cmpne r0, #0\n"
-        "mov r1, #0\n"
-        "ble .LStatusDownSetPartySlotsCompareCount\n"
-        ".LStatusDownSetPartySlotsFindFirst:\n"
-        "add r2, r4, r1, lsl #1\n"
-        "add r2, r2, #0x400\n"
-        "ldrh r2, [r2, #0x82]\n"
-        "cmp r2, #0\n"
-        "beq .LStatusDownSetPartySlotsSetup\n"
-        "add r1, r1, #1\n"
-        "cmp r0, r1\n"
-        "bgt .LStatusDownSetPartySlotsFindFirst\n"
-        ".LStatusDownSetPartySlotsCompareCount:\n"
-        "cmp r0, r5\n"
-        "mov r1, r0\n"
-        "bge .LStatusDownSetPartySlotsSetup\n"
-        ".LStatusDownSetPartySlotsCheckNew:\n"
-        "add r0, r4, r1, lsl #1\n"
-        "add r0, r0, #0x400\n"
-        "ldrh r2, [r0, #0x82]\n"
-        "cmp r2, #0\n"
-        "beq .LStatusDownSetPartySlotsSetup\n"
-        "ldrh r0, [r0, #0x84]\n"
-        "cmp r0, #0\n"
-        "beq .LStatusDownSetPartySlotsFound\n"
-        "add r1, r1, #2\n"
-        "cmp r5, r1\n"
-        "bgt .LStatusDownSetPartySlotsCheckNew\n"
-        ".LStatusDownSetPartySlotsSetup:\n"
-        "mov r5, #1\n"
-        "add r0, r4, #0x400\n"
-        "mov r3, r5\n"
-        "mov r2, #8\n"
-        "add r0, r0, #0xd4\n"
-        "str r5, [sp, #4]\n"
-        "str r6, [sp]\n"
-        ".word 0xeb0227e8\n" // bl 0x0029fae8: UiListCursor_Setup
-        "strb r5, [r4, #0x410]\n"
-        "strb r6, [r4, #0x548]\n"
-        "add sp, sp, #8\n"
-        "pop {r4, r5, r6, pc}\n"
-        ".LStatusDownSetPartySlotsFound:\n"
-        "add r1, r1, #1\n"
-        "b .LStatusDownSetPartySlotsSetup\n"
-        ".LStatusDownSetPartySlotsLiteral: .word 0x0044E190\n");
+void StatusDown_SetPartySlots(const u16* party_slots, s32 count) {
+    auto* work = g_StatusDownWork;
+    for (s32 i = 0; i < 4; ++i) {
+        reinterpret_cast<u32*>(work->new_party_flags)[i] = 0;
+        reinterpret_cast<u32*>(work->party_ids)[i] = 0;
+    }
+    AsdMem_Copy(work->party_ids, party_slots, count * sizeof(u16));
+    s32 total_items = 0;
+    while (total_items < count && work->party_ids[total_items] != 0) {
+        total_items++;
+    }
+    UiListCursor_Setup(&work->list_cursor_main, total_items, 8, 1, 0, 1);
+    work->needs_refresh = 1;
+    work->flag_548 = 0;
 }
 
 // DECOMP_FUNC(0x00223b88, 40)
@@ -994,89 +907,44 @@ bool StatusDown_IsInactiveOrState0() {
 }
 
 // DECOMP_FUNC(0x00292f44, 304)
-__attribute__((naked)) void StatusDown_SetDisplayMode(s32) {
-    asm volatile(
-        "push {r4, r5, r6, r7, r8, lr}\n"
-        "mov r7, r0\n"
-        "ldr r8, .LStatusDownSetDisplayModeGlobal\n"
-        "ldr r5, [r8]\n"
-        "ldrb r0, [r5, #0x3fc]\n"
-        "cmp r0, r7\n"
-        "beq .LStatusDownSetDisplayModeReturn\n"
-        "strb r0, [r5, #0x3fd]\n"
-        "strb r7, [r5, #0x3fc]\n"
-        ".word 0xeb002cd0\n" // bl 0x0029e2b0: Camp_GetTransitionDir
-        "cmp r0, #0\n"
-        "bge .LStatusDownSetDisplayModeCheckFadeIn\n"
-        "mov r2, #0\n"
-        "mov r1, #3\n"
-        "add r0, r5, #0x28\n"
-        ".word 0xeb00aace\n" // bl 0x002bdac0: UiAnimSprite_SetAnim
-        "b .LStatusDownSetDisplayModeClearTouches\n"
-        ".LStatusDownSetDisplayModeCheckFadeIn: nop\n"
-        ".word 0xeb002cc7\n" // bl 0x0029e2b0: Camp_GetTransitionDir
-        "cmp r0, #0\n"
-        "nop\n"
-        "ble .LStatusDownSetDisplayModeClearTouches\n"
-        "mov r2, #0\n"
-        "mov r1, #2\n"
-        "add r0, r5, #0x28\n"
-        ".word 0xeb00aac4\n" // bl 0x002bdac0: UiAnimSprite_SetAnim
-        ".LStatusDownSetDisplayModeClearTouches:\n"
-        "ldr r6, [r8]\n"
-        "mov r4, #0\n"
-        "ldrb r0, [r6, #0x480]\n"
-        "cmp r0, #0\n"
-        "ble .LStatusDownSetDisplayModeTouchesDone\n"
-        ".LStatusDownSetDisplayModeTouchLoop: nop\n"
-        ".word 0xeb00980f\n" // bl 0x002b9008: UiTouch_UnregisterLastRegion
-        "ldrb r0, [r6, #0x480]\n"
-        "add r4, r4, #1\n"
-        "cmp r0, r4\n"
-        "bgt .LStatusDownSetDisplayModeTouchLoop\n"
-        ".LStatusDownSetDisplayModeTouchesDone:\n"
-        "mov r4, #0\n"
-        "add r0, r6, #0x400\n"
-        "mvn r2, #0\n"
-        "mov r1, #0x29\n"
-        "add r0, r0, #0x2c\n"
-        "strb r4, [r6, #0x480]\n"
-        ".word 0xeb00c516\n" // bl 0x002c4450: AsdMem_FillBytes
-        "ldr r0, [r8]\n"
-        "mov r1, #2\n"
-        "cmp r7, #0\n"
-        "str r4, [r0, #0x40c]\n"
-        "ldr r2, [r0, #0x400]!\n"
-        "stm r0, {r1, r2}\n"
-        "streq r4, [r5, #0x408]\n"
-        "beq .LStatusDownSetDisplayModeFadeColor\n"
-        "cmp r7, #1\n"
-        "moveq r0, #3\n"
-        "beq .LStatusDownSetDisplayModeStoreSubState\n"
-        "cmp r7, #2\n"
-        "moveq r0, #0x10\n"
-        "beq .LStatusDownSetDisplayModeStoreSubState\n"
-        "cmp r7, #3\n"
-        "moveq r0, #0x11\n"
-        "beq .LStatusDownSetDisplayModeStoreSubState\n"
-        "cmp r7, #4\n"
-        "moveq r0, #0x13\n"
-        "beq .LStatusDownSetDisplayModeStoreSubState\n"
-        "cmp r7, #5\n"
-        "moveq r0, #0x15\n"
-        "streq r0, [r5, #0x408]\n"
-        "b .LStatusDownSetDisplayModeFadeColor\n"
-        ".LStatusDownSetDisplayModeStoreSubState:\n"
-        "str r0, [r5, #0x408]\n"
-        ".LStatusDownSetDisplayModeFadeColor:\n"
-        "pop {r4, r5, r6, r7, r8, lr}\n"
-        "mov r0, #0\n"
-        "ldr r1, .LStatusDownSetDisplayModeColor\n"
-        ".word 0xea003028\n" // b 0x0029f10c: Camp_SetFadeColor
-        ".LStatusDownSetDisplayModeReturn:\n"
-        "pop {r4, r5, r6, r7, r8, pc}\n"
-        ".LStatusDownSetDisplayModeGlobal: .word 0x0044E190\n"
-        ".LStatusDownSetDisplayModeColor: .word 0x323232ff\n");
+void StatusDown_SetDisplayMode(s32 mode) {
+    auto* work = g_StatusDownWork;
+    if (work->active_mode == mode) {
+        return;
+    }
+    work->prev_active_mode = work->active_mode;
+    work->active_mode = static_cast<u8>(mode);
+    s32 dir = Camp_GetTransitionDir();
+    if (dir < 0) {
+        UiAnimSprite_SetAnim(&work->panel_sprites[0], 3, 0);
+    } else if (Camp_GetTransitionDir() > 0) {
+        UiAnimSprite_SetAnim(&work->panel_sprites[0], 2, 0);
+    }
+    const u8 tr_count = static_cast<u8>(work->registered_touch_count);
+    for (s32 i = 0; i < tr_count; ++i) {
+        UiTouch_UnregisterLastRegion();
+    }
+    work->registered_touch_count = 0;
+    AsdMem_FillBytes(work->slot_touch_handles, 0x29, 0xFFFFFFFF);
+    work = g_StatusDownWork;
+    work->state_timer = 0;
+    u32 prev = work->state;
+    work->state = 2;
+    work->prev_state = prev;
+    if (mode == 0) {
+        work->sub_state = 0;
+    } else if (mode == 1) {
+        work->sub_state = 3;
+    } else if (mode == 2) {
+        work->sub_state = 0x10;
+    } else if (mode == 3) {
+        work->sub_state = 0x11;
+    } else if (mode == 4) {
+        work->sub_state = 0x13;
+    } else if (mode == 5) {
+        work->sub_state = 0x15;
+    }
+    Camp_SetFadeColor(0, 0x323232FF);
 }
 // DECOMP_FUNC(0x00293d2c, 36)
 bool StatusDown_IsNotTransitioning() {
