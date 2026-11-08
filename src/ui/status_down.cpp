@@ -53,6 +53,7 @@ extern "C" {
     void* camp_func_002b9364(u32 id);
     s32   func_00257678(s32 cost_raw);
     void  AsdMem_FreeWork(void* ptr);                                               // 0x002c4360
+    void  camp_func_002c4450(void* ptr, u32 size, s32 val);                         // 0x002c4450
 
     void* AsdTask_CreateCalc(const char* name, u32 prio, u32 a2, u32 a3,
                              void (*cb)(void*), u32 a5, u32 a6);                    // 0x002c5978
@@ -1356,209 +1357,11 @@ void StatusDown_UpdateHelpMessage(s32 msg_index) {
 }
 
 // DECOMP_FUNC(0x002d931c, 764)
-// Verified ARM-state entry/exit and referenced local literal/table bytes.
-__attribute__((naked)) void StatusDown_Init() {
-    asm volatile(
-        ".word 0xe92d40f0\n"
-        ".word 0xe3a06001\n"
-        ".word 0xe59f727c\n"
-        ".word 0xe59f527c\n"
-        ".word 0xed2d8b02\n"
-        ".word 0xe24dd01c\n"
-        ".word 0xe5970000\n"
-        ".word 0xe3500000\n"
-        ".word 0x1a000009\n"
-        ".word 0xe59f1268\n"
-        ".word 0xe28f0f9a\n"
-        ".word 0xe1a00000\n"
-        ".word 0xe3a01c01\n"
-        ".word 0xe1a03005\n"
-        ".word 0xe3a02000\n"
-        ".word 0xe1a00001\n"
-        ".word 0xe58d6000\n"
-        ".word 0xebffae07\n"
-        ".word 0xe5870000\n"
-        ".word 0xe1a04000\n"
-        ".word 0xe1a01005\n"
-        ".word 0xebffadee\n"
-        ".word 0xe59f026c\n"
-        ".word 0xe3a05000\n"
-        ".word 0xe1a03005\n"
-        ".word 0xe88d0021\n"
-        ".word 0xe1a02005\n"
-        ".word 0xe3a01002\n"
-        ".word 0xe28f0f96\n"
-        ".word 0xe58d5008\n"
-        ".word 0xebffb177\n"
-        ".word 0xe59f1258\n"
-        ".word 0xe5840000\n"
-        ".word 0xe3a03000\n"
-        ".word 0xe88d0022\n"
-        ".word 0xe58d000c\n"
-        ".word 0xe1a02003\n"
-        ".word 0xe3a010e7\n"
-        ".word 0xe28f0d09\n"
-        ".word 0xe58d5008\n"
-        ".word 0xebffae0f\n"
-        ".word 0xe5840004\n"
-        ".word 0xe5974000\n"
-        ".word 0xe2840008\n"
-        ".word 0xebffa7dc\n"
-        ".word 0xe59f1230\n"
-        ".word 0xe3a0c048\n"
-        ".word 0xe3a00f4d\n"
-        ".word 0xe2413018\n"
-        ".word 0xe58d3004\n"
-        ".word 0xe3a02018\n"
-        ".word 0xe58dc000\n"
-        ".word 0xe2433048\n"
-        ".word 0xe58d2008\n"
-        ".word 0xe58d1014\n"
-        ".word 0xe58d0018\n"
-        ".word 0xe1a0200c\n"
-        ".word 0xe2431048\n"
-        ".word 0xe2840008\n"
-        ".word 0xe58d500c\n"
-        ".word 0xe58d5010\n"
-        ".word 0xebffa7b8\n"
-        ".word 0xed9f8a7c\n"
-        ".word 0xe2843008\n"
-        ".word 0xe3a02ffa\n"
-        ".word 0xeeb00a48\n"
-        ".word 0xe3a0101a\n"
-        ".word 0xe2840028\n"
-        ".word 0xe58d6000\n"
-        ".word 0xebff91bd\n"
-        ".word 0xe3a02000\n"
-        ".word 0xe1a01002\n"
-        ".word 0xe2840028\n"
-        ".word 0xebff919e\n"
-        ".word 0xeeb00a48\n"
-        ".word 0xe2843008\n"
-        ".word 0xe3a02ffa\n"
-        ".word 0xe3a0101a\n"
-        ".word 0xe28400b4\n"
-        ".word 0xe58d6000\n"
-        ".word 0xebff91b2\n"
-        ".word 0xe3a01000\n"
-        ".word 0xe28400b4\n"
-        ".word 0xebff96f0\n"
-        ".word 0xeeb00a48\n"
-        ".word 0xe2843008\n"
-        ".word 0xe3a02ffa\n"
-        ".word 0xe3a0101a\n"
-        ".word 0xe2840d05\n"
-        ".word 0xe58d6000\n"
-        ".word 0xebff91a8\n"
-        ".word 0xe3a01001\n"
-        ".word 0xe2840d05\n"
-        ".word 0xebff96e6\n"
-        ".word 0xeeb00a48\n"
-        ".word 0xe2843008\n"
-        ".word 0xe3a02ffa\n"
-        ".word 0xe3a0101a\n"
-        ".word 0xe2840f73\n"
-        ".word 0xe58d6000\n"
-        ".word 0xebff919e\n"
-        ".word 0xe3a02000\n"
-        ".word 0xe3a01004\n"
-        ".word 0xe2840f73\n"
-        ".word 0xebff917f\n"
-        ".word 0xeeb00a48\n"
-        ".word 0xe2843008\n"
-        ".word 0xe3a02ffa\n"
-        ".word 0xe3a0101a\n"
-        ".word 0xe2840f96\n"
-        ".word 0xe58d6000\n"
-        ".word 0xebff9193\n"
-        ".word 0xe3a02000\n"
-        ".word 0xe3a01005\n"
-        ".word 0xe2840f96\n"
-        ".word 0xebff9174\n"
-        ".word 0xeeb00a48\n"
-        ".word 0xe2843008\n"
-        ".word 0xe3a02ffa\n"
-        ".word 0xe3a0101a\n"
-        ".word 0xe2840fb9\n"
-        ".word 0xe58d6000\n"
-        ".word 0xebff9188\n"
-        ".word 0xe3a02000\n"
-        ".word 0xe1a01002\n"
-        ".word 0xe2840fb9\n"
-        ".word 0xebff9169\n"
-        ".word 0xe3a010c9\n"
-        ".word 0xe2840008\n"
-        ".word 0xeeb00a48\n"
-        ".word 0xe1cd00f0\n"
-        ".word 0xe3a0301c\n"
-        ".word 0xe3e02000\n"
-        ".word 0xe3a0101a\n"
-        ".word 0xe2840e37\n"
-        ".word 0xebff96da\n"
-        ".word 0xe3a01002\n"
-        ".word 0xe2840e37\n"
-        ".word 0xebff96b9\n"
-        ".word 0xe3a01002\n"
-        ".word 0xe2840e37\n"
-        ".word 0xe1c013ba\n"
-        ".word 0xe3a00000\n"
-        ".word 0xe320f000\n"
-        ".word 0xebff912e\n"
-        ".word 0xe2845a02\n"
-        ".word 0xe3a010ff\n"
-        ".word 0xe58502a0\n"
-        ".word 0xebff9127\n"
-        ".word 0xe59502a0\n"
-        ".word 0xe59f2098\n"
-        ".word 0xed9f0a24\n"
-        ".word 0xe3a01000\n"
-        ".word 0xebff911e\n"
-        ".word 0xe2840b01\n"
-        ".word 0xe3e02000\n"
-        ".word 0xe3a01029\n"
-        ".word 0xe280002c\n"
-        ".word 0xebffabad\n"
-        ".word 0xe5c56392\n"
-        ".word 0xe28dd01c\n"
-        ".word 0xecbd8b02\n"
-        ".word 0xe8bd80f0\n"
-        ".word 0x0044e190\n"
-        ".word 0x00002394\n"
-        ".word 0x00000d1d\n"
-        ".word 0x535c3a63\n"
-        ".word 0x5c34544d\n"
-        ".word 0x36445258\n"
-        ".word 0x735c3638\n"
-        ".word 0x34736464\n"
-        ".word 0x6f72705c\n"
-        ".word 0x6d617267\n"
-        ".word 0x6174735c\n"
-        ".word 0x5c737574\n"
-        ".word 0x74617453\n"
-        ".word 0x6f447375\n"
-        ".word 0x632e6e77\n"
-        ".word 0x00007070\n"
-        ".word 0x001ca648\n"
-        ".word 0x20444d54\n"
-        ".word 0x434c4143\n"
-        ".word 0x00000000\n"
-        ".word 0x001cc914\n"
-        ".word 0x20444d54\n"
-        ".word 0x41524444\n"
-        ".word 0x00000057\n"
-        ".word 0x00407d58\n"
-        ".word 0x3f800000\n"
-        ".word 0x00000000\n"
-        ".word 0x646464ff\n"
-    );
-}
-#if 0
-// Partial semantic draft retained for reconstruction; not compiled.
-[[maybe_unused]] static void StatusDown_Init_Draft() {
+void StatusDown_Init() {
     StatusDownWork* work = g_StatusDownWork;
     if (work == nullptr) {
         work = static_cast<StatusDownWork*>(
-            AsdMem_Alloc(0x100, 0xD1D, 0, sizeof(StatusDownWork), 1));
+            AsdMem_Alloc(0x100, 0x100, 0, sizeof(StatusDownWork), 1));
         g_StatusDownWork = work;
     }
 
@@ -1569,47 +1372,43 @@ __attribute__((naked)) void StatusDown_Init() {
     work->draw_task = AsdTask_CreateDraw("TMD DDRAW", 0xE7, 0, 0,
                                          StatusDown_DrawTaskCallback, 0, 0, work->calc_task);
 
-    StatusDownWork* w = g_StatusDownWork;
-    UiSpriteGroup_Init(&w->sprite_group);
-    UiSpriteGroup_BindTable(&w->sprite_group,
+    UiSpriteGroup_Init(&work->sprite_group);
+    UiSpriteGroup_BindTable(&work->sprite_group,
                             SpriteTableWord(g_StatusDownSpriteTable - 0xA8), 0x48,
                             SpriteTableWord(g_StatusDownSpriteTable - 0x60), 0x48,
                             SpriteTableWord(g_StatusDownSpriteTable - 0x18),
                             0x18, 0, 0,
                             SpriteTableWord(g_StatusDownSpriteTable), 0x134);
 
-    UiAnimSprite_Setup(&w->panel_sprites[0], 0x1A, 0x3E8, &w->sprite_group, 1, 1.0f);
-    UiAnimSprite_SetAnim(&w->panel_sprites[0], 0, 0);
+    UiAnimSprite_Setup(&work->panel_sprites[0], 0x1A, 0x3E8, &work->sprite_group, 1, 1.0f);
+    UiAnimSprite_SetAnim(&work->panel_sprites[0], 0, 0);
 
-    UiAnimSprite_Setup(&w->panel_sprites[1], 0x1A, 0x3E8, &w->sprite_group, 1, 1.0f);
-    UiAnimSprite_SetAnim(&w->panel_sprites[1], 0, 0);
-    UiAnimSprite_SetLayer(&w->panel_sprites[1], 1);
+    UiAnimSprite_Setup(&work->panel_sprites[1], 0x1A, 0x3E8, &work->sprite_group, 1, 1.0f);
+    UiAnimSprite_SetLayer(&work->panel_sprites[1], 0);
 
-    UiAnimSprite_Setup(&w->panel_sprites[2], 0x1A, 0x3E8, &w->sprite_group, 1, 1.0f);
-    UiAnimSprite_SetAnim(&w->panel_sprites[2], 0, 0);
-    UiAnimSprite_SetLayer(&w->panel_sprites[2], 1);
+    UiAnimSprite_Setup(&work->panel_sprites[2], 0x1A, 0x3E8, &work->sprite_group, 1, 1.0f);
+    UiAnimSprite_SetLayer(&work->panel_sprites[2], 1);
 
-    UiAnimSprite_Setup(&w->panel_sprites[3], 0x1A, 0x3E8, &w->sprite_group, 1, 1.0f);
-    UiAnimSprite_SetAnim(&w->panel_sprites[3], 4, 0);
+    UiAnimSprite_Setup(&work->panel_sprites[3], 0x1A, 0x3E8, &work->sprite_group, 1, 1.0f);
+    UiAnimSprite_SetAnim(&work->panel_sprites[3], 4, 0);
 
-    UiAnimSprite_Setup(&w->panel_sprites[4], 0x1A, 0x3E8, &w->sprite_group, 1, 1.0f);
-    UiAnimSprite_SetAnim(&w->panel_sprites[4], 5, 0);
+    UiAnimSprite_Setup(&work->panel_sprites[4], 0x1A, 0x3E8, &work->sprite_group, 1, 1.0f);
+    UiAnimSprite_SetAnim(&work->panel_sprites[4], 5, 0);
 
-    UiAnimSprite_Setup(&w->panel_sprites[5], 0x1A, 0x3E8, &w->sprite_group, 1, 1.0f);
-    UiAnimSprite_SetAnim(&w->panel_sprites[5], 0, 0);
+    UiAnimSprite_Setup(&work->panel_sprites[5], 0x1A, 0x3E8, &work->sprite_group, 1, 1.0f);
+    UiAnimSprite_SetAnim(&work->panel_sprites[5], 0, 0);
 
-    UiAnimSprite_SetupEx(&w->panel_sprites[6], 0x1A, -1, 0x1C, &w->sprite_group, 0xC9, 1.0f);
-    UiAnimSprite_SetLayer(&w->panel_sprites[6], 2);
-    *reinterpret_cast<u16*>(&w->panel_sprites[6].raw[0x3A]) = 2;
+    UiAnimSprite_SetupEx(&work->panel_sprites[6], 0x1A, -1, 0x1C, &work->sprite_group, 0xC9, 1.0f);
+    UiAnimSprite_SetLayer(&work->panel_sprites[6], 2);
+    *reinterpret_cast<u16*>(&work->panel_sprites[6].raw[0x3A]) = 2;
 
-    w->text_handle = AsdText_CreateDefault(0);
-    AsdText_SetAlpha(w->text_handle, 0xFF);
-    AsdText_SetColorAndScale(w->text_handle, 0, 0x646464FFu, 0.0f);
+    work->text_handle = AsdText_CreateDefault(0);
+    AsdText_SetAlpha(work->text_handle, 0xFF);
+    AsdText_SetColorAndScale(work->text_handle, 0, 0x646464FFu, 0.0f);
 
-    AsdMem_FillBytes(w->slot_touch_handles, 0x29, -1);
-    w->visibility_flag = 1;
+    camp_func_002c4450(work->slot_touch_handles, 0x29, -1);
+    work->visibility_flag = 1;
 }
-#endif
 
 //
 void StatusDown_EnterState3_Alt_Decompiled() {
