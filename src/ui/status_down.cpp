@@ -117,6 +117,7 @@ extern "C" {
 
     s16   UiTouch_RegisterRegion(u32 group_id, u32 node_id);                        // 0x002b88c4
     s16   UiTouch_RegisterRectRegion(s32 x, s32 y, s32 w, s32 h);                   // 0x0029e2f4
+    const UiLayoutNode* camp_func_002bf6d0(u32 group, u32 node_id);                // 0x002bf6d0
     void  UiTouch_UnregisterLastRegion();                                           // 0x002b9008
     s32   Camp_GetTransitionDir();                                                  // 0x0029e2b0
     void  Camp_SetFadeColor(u32 screen, u32 rgba);                                  // 0x0029f10c
@@ -594,11 +595,133 @@ void StatusDown_PopFirstSubIdA() {
 }
 #endif
 
-// A single state-dispatch routine with its complete 24-entry PC-relative
-// table and literal pool preserved as one verified function span.
 // DECOMP_FUNC(0x0026b0d0, 1636)
-__attribute__((naked)) void StatusDown_SetupTouchRegions() {
-    asm volatile(".incbin \"extracted/exefs/code.bin\", 0x16b0d0, 1636\n");
+void StatusDown_SetupTouchRegions() {
+    auto* work = g_StatusDownWork;
+    const s32 prev_count = static_cast<u8>(work->registered_touch_count);
+    for (s32 i = 0; i < prev_count; ++i) {
+        UiTouch_UnregisterLastRegion();
+    }
+    work->registered_touch_count = 0;
+    camp_func_002c4450(work->slot_touch_handles, 0x29, -1);
+
+    switch (work->state) {
+    case 3: {
+        for (s32 i = 0; i < camp_func_0029f0f4(&work->list_cursor_main); ++i) {
+            work->slot_touch_handles[i] = UiTouch_RegisterRegion(0x1A, 0x414 + i);
+            work->registered_touch_count++;
+        }
+        work->l_btn_touch_handle = UiTouch_RegisterRegion(0x1A, 0x50F);
+        work->r_btn_touch_handle = UiTouch_RegisterRegion(0x1A, 0x50E);
+        work->registered_touch_count += 2;
+        break;
+    }
+    case 4: {
+        for (s32 i = 0; i < camp_func_0029f0f4(&work->list_cursor_main); ++i) {
+            work->slot_touch_handles[i] = UiTouch_RegisterRegion(0x1A, 0x414 + i);
+            work->registered_touch_count++;
+        }
+        break;
+    }
+    case 6: {
+        for (s32 i = 0; i < camp_func_0029f0f4(&work->list_cursor_main); ++i) {
+            work->slot_touch_handles[i] = UiTouch_RegisterRegion(0x1A, 0x414 + i);
+            work->registered_touch_count++;
+        }
+        const s32 last_slot = static_cast<u8>(work->registered_touch_count);
+        work->slot_touch_handles[last_slot] = UiTouch_RegisterRegion(0x1A, 0x4F1);
+        work->registered_touch_count++;
+        break;
+    }
+    case 11: {
+        for (s32 i = 0; i < camp_func_0029f0f4(&work->list_cursor_main) - 1; ++i) {
+            work->slot_touch_handles[i] = UiTouch_RegisterRegion(0x1A, 0x414 + i);
+            work->registered_touch_count++;
+        }
+        const auto* node_a = camp_func_002bf6d0(0x1A, 0x4F1);
+        const auto* node_b = camp_func_002bf6d0(0x1A, 0x41F);
+        const s16 handle = UiTouch_RegisterRectRegion(
+            node_a->x, node_a->y, node_b->rect->w, node_a->rect->h);
+        const s32 last_slot = static_cast<u8>(work->registered_touch_count);
+        work->slot_touch_handles[last_slot] = handle;
+        work->registered_touch_count++;
+        break;
+    }
+    case 16: {
+        for (s32 i = 0; i < 7; ++i) {
+            if (Flag_CheckEventBit(0x410) || (i != 1 && i != 2)) {
+                work->slot_touch_handles[i] = UiTouch_RegisterRegion(0x1A, 0x466 + i);
+            } else {
+                work->slot_touch_handles[i] = 0;
+            }
+            work->registered_touch_count++;
+        }
+        work->l_btn_touch_handle = UiTouch_RegisterRegion(0x1A, 0x50F);
+        work->r_btn_touch_handle = UiTouch_RegisterRegion(0x1A, 0x50E);
+        work->registered_touch_count += 2;
+        break;
+    }
+    case 17: {
+        for (s32 i = 0; i < 11; ++i) {
+            work->slot_touch_handles[i] = UiTouch_RegisterRegion(0x1A, 0x44C + i);
+            work->registered_touch_count++;
+        }
+        work->scroll_up_touch_handle = UiTouch_RegisterRegion(0x1A, 0x4E7);
+        work->scroll_down_touch_handle = UiTouch_RegisterRegion(0x1A, 0x4E8);
+        work->btn_touch_handle = UiTouch_RegisterRegion(0x1A, 0x4E9);
+        work->registered_touch_count += 3;
+        work->l_btn_touch_handle = UiTouch_RegisterRegion(0x1A, 0x50F);
+        work->r_btn_touch_handle = UiTouch_RegisterRegion(0x1A, 0x50E);
+        work->registered_touch_count += 2;
+        break;
+    }
+    case 19: {
+        const s32 total_items = *reinterpret_cast<const s16*>(reinterpret_cast<const u8*>(work) + 0x2232);
+        for (s32 row = 0; row < 9; ++row) {
+            for (s32 col = 0; col < 4; ++col) {
+                const s32 idx = row * 4 + col;
+                if (idx < total_items) {
+                    work->slot_touch_handles[idx] = UiTouch_RegisterRegion(0x1A, 0x4AE + idx);
+                    work->registered_touch_count++;
+                }
+            }
+        }
+        work->scroll_up_touch_handle = UiTouch_RegisterRegion(0x1A, 0x4E7);
+        work->scroll_down_touch_handle = UiTouch_RegisterRegion(0x1A, 0x4E8);
+        work->btn_touch_handle = UiTouch_RegisterRegion(0x1A, 0x4E9);
+        work->registered_touch_count += 3;
+        work->l_btn_touch_handle = UiTouch_RegisterRegion(0x1A, 0x50F);
+        work->r_btn_touch_handle = UiTouch_RegisterRegion(0x1A, 0x50E);
+        work->registered_touch_count += 2;
+        break;
+    }
+    case 21: {
+        work->scroll_up_touch_handle = UiTouch_RegisterRegion(0x1A, 0x4EA);
+        work->scroll_down_touch_handle = UiTouch_RegisterRegion(0x1A, 0x4EB);
+        work->btn_touch_handle = UiTouch_RegisterRegion(0x1A, 0x4EC);
+        work->registered_touch_count += 3;
+        work->l_btn_touch_handle = UiTouch_RegisterRegion(0x1A, 0x50F);
+        work->r_btn_touch_handle = UiTouch_RegisterRegion(0x1A, 0x50E);
+        work->registered_touch_count += 2;
+        break;
+    }
+    case 22:
+    case 23:
+    case 25:
+    case 26: {
+        for (s32 i = 0; i < camp_func_0029f0f4(&work->category_cursor) - 1; ++i) {
+            work->slot_touch_handles[i] = UiTouch_RegisterRegion(0x1A, 0x414 + i);
+            work->registered_touch_count++;
+        }
+        const s16 handle = UiTouch_RegisterRegion(0x1A, 0x54A);
+        const s32 count = camp_func_0029f0f4(&work->category_cursor);
+        work->slot_touch_handles[count - 1] = handle;
+        work->registered_touch_count++;
+        break;
+    }
+    default:
+        break;
+    }
 }
 
 // DECOMP_FUNC(0x0026d8c0, 28)
