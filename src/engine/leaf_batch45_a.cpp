@@ -108,77 +108,64 @@ extern "C" void func_00250108(float* m, const float* v, u32 mode) {
 }
 
 // DECOMP_FUNC(0x0024bfbc, 528)
-extern "C" __attribute__((naked)) void camp_func_0024bfbc() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x2000, 0xe1a0, 0x0000, 0xe351\n"
-        ".hword 0x0000, 0xe3a0, 0x0020, 0x0a00\n"
-        ".hword 0x0001, 0xe351, 0x0021, 0x0a00\n"
-        ".hword 0x0002, 0xe351, 0x0022, 0x0a00\n"
-        ".hword 0x0003, 0xe351, 0x0023, 0x0a00\n"
-        ".hword 0x0004, 0xe351, 0x0024, 0x0a00\n"
-        ".hword 0x0005, 0xe351, 0x0025, 0x0a00\n"
-        ".hword 0x0006, 0xe351, 0x0026, 0x0a00\n"
-        ".hword 0x0007, 0xe351, 0x0027, 0x0a00\n"
-        ".hword 0x000b, 0xe351, 0x0028, 0x0a00\n"
-        ".hword 0x000c, 0xe351, 0x0029, 0x0a00\n"
-        ".hword 0x000d, 0xe351, 0x002a, 0x0a00\n"
-        ".hword 0x000e, 0xe351, 0x002b, 0x0a00\n"
-        ".hword 0x000f, 0xe351, 0x002c, 0x0a00\n"
-        ".hword 0x0010, 0xe351, 0x002d, 0x0a00\n"
-        ".hword 0x0011, 0xe351, 0x002e, 0x0a00\n"
-        ".hword 0x0012, 0xe351, 0x002f, 0x1a00\n"
-        ".hword 0x10bc, 0xe28f, 0x0002, 0xe1a0\n"
-        ".hword 0xc9e8, 0xea01, 0x10bc, 0xe28f\n"
-        ".hword 0x0002, 0xe1a0, 0xc9e5, 0xea01\n"
-        ".hword 0x10bc, 0xe28f, 0x0002, 0xe1a0\n"
-        ".hword 0xc9e2, 0xea01, 0x10b8, 0xe28f\n"
-        ".hword 0x0002, 0xe1a0, 0xc9df, 0xea01\n"
-        ".hword 0x10b8, 0xe28f, 0x0002, 0xe1a0\n"
-        ".hword 0xc9dc, 0xea01, 0x10b4, 0xe28f\n"
-        ".hword 0x0002, 0xe1a0, 0xc9d9, 0xea01\n"
-        ".hword 0x10b4, 0xe28f, 0x0002, 0xe1a0\n"
-        ".hword 0xc9d6, 0xea01, 0x10b4, 0xe28f\n"
-        ".hword 0x0002, 0xe1a0, 0xc9d3, 0xea01\n"
-        ".hword 0x10b4, 0xe28f, 0x0002, 0xe1a0\n"
-        ".hword 0xc9d0, 0xea01, 0x10b4, 0xe28f\n"
-        ".hword 0x0002, 0xe1a0, 0xc9cd, 0xea01\n"
-        ".hword 0x10b8, 0xe28f, 0x0002, 0xe1a0\n"
-        ".hword 0xc9ca, 0xea01, 0x10b8, 0xe28f\n"
-        ".hword 0x0002, 0xe1a0, 0xc9c7, 0xea01\n"
-        ".hword 0x10b8, 0xe28f, 0x0002, 0xe1a0\n"
-        ".hword 0xc9c4, 0xea01, 0x10b8, 0xe28f\n"
-        ".hword 0x0002, 0xe1a0, 0xc9c1, 0xea01\n"
-        ".hword 0x10b8, 0xe28f, 0x0002, 0xe1a0\n"
-        ".hword 0xc9be, 0xea01, 0x10b8, 0xe28f\n"
-        ".hword 0x0002, 0xe1a0, 0xc9bb, 0xea01\n"
-        ".hword 0xff1e, 0xe12f, 0x6782, 0x8582\n"
-        ".hword 0x8182, 0x8c82, 0x0000, 0x0000\n"
-        ".hword 0x6f82, 0x8882, 0x9982, 0x9382\n"
-        ".hword 0x0000, 0x0000, 0x6682, 0x9582\n"
-        ".hword 0x8e82, 0x0000, 0x6582, 0x8982\n"
-        ".hword 0x9282, 0x8582, 0x0000, 0x0000\n"
-        ".hword 0x6882, 0x8382, 0x8582, 0x0000\n"
-        ".hword 0x6482, 0x8c82, 0x8582, 0x8382\n"
-        ".hword 0x0000, 0x0000, 0x6582, 0x8f82\n"
-        ".hword 0x9282, 0x8382, 0x8582, 0x0000\n"
-        ".hword 0x6b82, 0x8982, 0x8782, 0x8882\n"
-        ".hword 0x9482, 0x0000, 0x6382, 0x8182\n"
-        ".hword 0x9282, 0x8b82, 0x0000, 0x0000\n"
-        ".hword 0x6f82, 0x8f82, 0x8982, 0x9382\n"
-        ".hword 0x8f82, 0x8e82, 0x0000, 0x0000\n"
-        ".hword 0x6f82, 0x8182, 0x8e82, 0x8982\n"
-        ".hword 0x8382, 0x0000, 0x7282, 0x8c82\n"
-        ".hword 0x8582, 0x8582, 0x9082, 0x0000\n"
-        ".hword 0x6182, 0x8982, 0x8e82, 0x8482\n"
-        ".hword 0x0000, 0x0000, 0x7282, 0x8982\n"
-        ".hword 0x8382, 0x8b82, 0x0000, 0x0000\n"
-        ".hword 0x6b82, 0x8f82, 0x9382, 0x9482\n"
-        ".hword 0x0000, 0x0000, 0x6082, 0x8c82\n"
-        ".hword 0x8d82, 0x8982, 0x8782, 0x8882\n"
-        ".hword 0x9482, 0x9982, 0x0000, 0x0000\n"
-    );
-};
+extern "C" u32 ui_func_002be7fc(char* dst, const char* fmt, ...);
+
+extern "C" u32 camp_func_0024bfbc(char* out_buf, u32 element_id) {
+    const char* str = nullptr;
+    switch (element_id) {
+    case 0:
+        str = "\x82\x6f\x82\x88\x82\x99\x82\x93"; // Phys
+        break;
+    case 1:
+        str = "\x82\x66\x82\x95\x82\x8e"; // Gun
+        break;
+    case 2:
+        str = "\x82\x65\x82\x89\x82\x92\x82\x85"; // Fire
+        break;
+    case 3:
+        str = "\x82\x68\x82\x83\x82\x85"; // Ice
+        break;
+    case 4:
+        str = "\x82\x64\x82\x8c\x82\x85\x82\x83"; // Elec
+        break;
+    case 5:
+        str = "\x82\x65\x82\x8f\x82\x92\x82\x83\x82\x85"; // Force
+        break;
+    case 6:
+        str = "\x82\x6b\x82\x89\x82\x87\x82\x88\x82\x94"; // Light
+        break;
+    case 7:
+        str = "\x82\x63\x82\x81\x82\x92\x82\x8b"; // Dark
+        break;
+    case 0xB:
+        str = "\x82\x6f\x82\x8f\x82\x89\x82\x93\x82\x8f\x82\x8e"; // Poison
+        break;
+    case 0xC:
+        str = "\x82\x6f\x82\x81\x82\x8e\x82\x89\x82\x83"; // Panic
+        break;
+    case 0xD:
+        str = "\x82\x72\x82\x8c\x82\x85\x82\x85\x82\x90"; // Sleep
+        break;
+    case 0xE:
+        str = "\x82\x61\x82\x89\x82\x8e\x82\x84"; // Bind
+        break;
+    case 0xF:
+        str = "\x82\x72\x82\x89\x82\x83\x82\x8b"; // Sick
+        break;
+    case 0x10:
+        str = "\x82\x6b\x82\x8f\x82\x93\x82\x94"; // Lost
+        break;
+    case 0x11:
+        str = "\x82\x60\x82\x8c\x82\x8d\x82\x89\x82\x87\x82\x88\x82\x94\x82\x99"; // Almighty
+        break;
+    case 0x12:
+        str = "\x82\x67\x82\x85\x82\x81\x82\x8c"; // Heal
+        break;
+    default:
+        return 0;
+    }
+    return ui_func_002be7fc(out_buf, str);
+}
 
 // DECOMP_FUNC(0x0022e008, 572)
 extern "C" __attribute__((naked)) void camp_func_0022e008() {

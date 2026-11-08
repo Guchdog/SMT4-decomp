@@ -3823,7 +3823,7 @@ address,size,status,category,name,src_file
 0x0024bd60,304,matching,unknown,func_0024bd60,src/engine/leaf_batch41_a.cpp
 0x0024be90,28,matching,camp,camp_func_0024be90,src/engine/leaf_matching.cpp
 0x0024beac,272,matching,shop,shop_func_0024beac,src/engine/leaf_batch43_c.cpp
-0x0024bfbc,528,matching,camp,camp_func_0024bfbc,src/engine/leaf_batch45_a.cpp
+0x0024bfbc,528,non_matching,camp,camp_func_0024bfbc,src/engine/leaf_batch45_a.cpp
 0x0024c1cc,556,matching,engine,engine_func_0024c1cc,src/engine/leaf_batch42_b.cpp
 0x0024c3f8,148,non_matching,engine,engine_func_0024c3f8,src/engine/leaf_batch30_c.cpp
 0x0024c48c,48,matching,ui,ui_func_0024c48c,src/engine/leaf_batch19_b.cpp
