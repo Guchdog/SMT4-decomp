@@ -1953,11 +1953,11 @@ address,size,status,category,name,src_file
 0x0017f55c,96,matching,engine,func_0017f55c,src/engine/tex_conv_leaves_17d.cpp
 0x0017f5bc,4,matching_span,raw_span,span_0017f5bc,src/exact_byte_spans.cpp
 0x0017f5c0,12,matching,engine,func_0017f5c0,src/engine/tex_convert_tail_exact.cpp
-0x0017f5cc,20,matching,engine,func_0017f5cc,src/engine/tex_convert_tail_exact.cpp
+0x0017f5cc,20,non_matching,engine,func_0017f5cc,src/engine/tex_convert_tail_exact.cpp
 0x0017f5e0,8,matching_span,raw_span,span_0017f5e0,src/exact_byte_spans.cpp
-0x0017f5e8,16,matching,engine,func_0017f5e8,src/engine/tex_convert_tail_exact.cpp
-0x0017f5f8,16,matching,engine,func_0017f5f8,src/engine/tex_convert_tail_exact.cpp
-0x0017f608,20,matching,engine,func_0017f608,src/engine/tex_convert_tail_exact.cpp
+0x0017f5e8,16,non_matching,engine,func_0017f5e8,src/engine/tex_convert_tail_exact.cpp
+0x0017f5f8,16,non_matching,engine,func_0017f5f8,src/engine/tex_convert_tail_exact.cpp
+0x0017f608,20,non_matching,engine,func_0017f608,src/engine/tex_convert_tail_exact.cpp
 0x0017f61c,8,matching_span,raw_span,span_0017f61c,src/exact_byte_spans.cpp
 0x0017f624,376,matching,ui,ui_func_0017f624,src/engine/leaf_batch34_c.cpp
 0x0017f79c,344,matching,unknown,func_0017f79c,src/engine/leaf_batch34_c.cpp
