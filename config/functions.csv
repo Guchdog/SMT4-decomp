@@ -1992,7 +1992,7 @@ address,size,status,category,name,src_file
 0x0018b354,36,matching,unknown,func_0018b354,src/engine/leaf_batch18_c.cpp
 0x0018b378,36,matching,unknown,func_0018b378,src/engine/leaf_batch18_c.cpp
 0x0018b39c,708,matching,camp,camp_func_0018b39c,src/engine/leaf_batch45_a.cpp
-0x0018b660,536,matching,camp,Config_func_0018b660,src/camp/title_flow.cpp
+0x0018b660,536,non_matching,camp,Config_func_0018b660,src/camp/title_flow.cpp
 0x0018b878,1756,matching,script_vm,script_vm_func_0018b878,src/engine/leaf_batch46_b.cpp
 0x0018bf54,132,matching,ui,ui_func_0018bf54,src/engine/leaf_batch26_a.cpp
 0x0018bfd8,20,matching,unknown,func_0018bfd8,src/engine/leaf_batch21_a.cpp
@@ -2045,7 +2045,7 @@ address,size,status,category,name,src_file
 0x00193e2c,832,matching,unknown,func_00193e2c,src/engine/leaf_batch40_a.cpp
 0x0019416c,2204,matching,script_vm,script_vm_func_0019416c,src/engine/leaf_batch46_c.cpp
 0x00194a08,948,matching,camp,camp_func_00194a08,src/engine/leaf_batch45_b.cpp
-0x00194dbc,648,matching,camp,PlayLog_func_00194dbc,src/camp/title_flow.cpp
+0x00194dbc,648,non_matching,camp,PlayLog_func_00194dbc,src/camp/title_flow.cpp
 0x00195044,868,matching,camp,camp_func_00195044,src/engine/leaf_batch45_b.cpp
 0x001953a8,96,matching,engine,engine_func_001953a8,src/engine/leaf_batch25_a.cpp
 0x00195408,28,matching,script_vm,script_vm_func_00195408,src/engine/leaf_batch21_a.cpp
@@ -2351,7 +2351,7 @@ address,size,status,category,name,src_file
 0x001d3d40,22520,matching,script_vm,FlowScript_ExecuteOpcode,src/script/script_vm.cpp
 0x001d9538,908,matching,shop,shopMain_Proc,src/shop/shop.cpp
 0x001d98c4,5880,matching,ui,Ui_TerminalSceneRender,src/ui/terminal_ui.cpp
-0x001dafbc,668,matching,camp,tmnlMain_func_001dafbc,src/camp/title_flow.cpp
+0x001dafbc,668,non_matching,camp,tmnlMain_func_001dafbc,src/camp/title_flow.cpp
 0x001db258,52,matching,battle,battle_func_001db258,src/engine/leaf_batch22_a.cpp
 0x001db28c,180,matching,ui,ui_func_001db28c,src/engine/leaf_batch27_a.cpp
 0x001db340,256,matching,engine,AsdCec_func_001db340,src/engine/leaf_batch40_b.cpp
@@ -2496,7 +2496,7 @@ address,size,status,category,name,src_file
 0x001ea808,264,non_matching,engine,soundTest_func_001ea808,src/engine/asd_sound.cpp
 0x001ea910,24,matching,unknown,func_001ea910,src/engine/leaf_batch39_a.cpp
 0x001ea928,1796,non_matching,script_vm,script_vm_func_001ea928,src/engine/leaf_batch46_b.cpp
-0x001eb02c,524,matching,camp,titleMain_func_001eb02c,src/camp/title_flow.cpp
+0x001eb02c,524,non_matching,camp,titleMain_func_001eb02c,src/camp/title_flow.cpp
 0x001eb238,24,matching,unknown,func_001eb238,src/engine/leaf_batch39_a.cpp
 0x001eb250,92,matching,battle,battle_func_001eb250,src/engine/leaf_batch29_a.cpp
 0x001eb2ac,156,matching,script_vm,script_vm_func_001eb2ac,src/engine/leaf_batch30_a.cpp
