@@ -2284,7 +2284,7 @@ address,size,status,category,name,src_file
 0x001c3de4,240,matching,script_vm,script_vm_func_001c3de4,src/engine/leaf_batch28_a.cpp
 0x001c3ed4,18660,matching,script_vm,FlowScript_EvalStateControl,src/script/script_exec.cpp
 0x001c87b8,32,matching,unknown,func_001c87b8,src/engine/leaf_batch22_a.cpp
-0x001c87d8,156,matching,ui,Result_DrawDown,src/ui/result.cpp
+0x001c87d8,156,non_matching,ui,Result_DrawDown,src/ui/result.cpp
 0x001c8874,264,matching,ui,func_001c8874,src/ui/result.cpp
 0x001c897c,940,matching,ui,saveLoadUI_DrawMain,src/ui/save_load.cpp
 0x001c8d28,6108,matching,ui,func_001c8d28,src/ui/save_load.cpp
