@@ -15,6 +15,12 @@ extern "C" {
     void* AsdMem_AllocAlign(u32 a0, u32 a1, u32 a2, u32 size, u32 flag);    // 0x002c54f0
     void* AsdWork_Alloc2(u32 a0, u32 a1, u32 a2, u32 size, u32 a4, u32 flag);// 0x002bf798
 
+    // AsdTask helpers
+    void* AsdTask_CreateCalc(const char* name, u32 prio, u32 a2, u32 a3,
+                             void (*cb)(void*), u32 a5, u32 a6);
+    void* AsdTask_CreateDraw(const char* name, u32 prio, u32 a2, u32 a3,
+                             void (*cb)(void*), u32 a5, u32 a6, void* parent);
+
     // soundEffect
     u32   AsdSoundEffect_Configure(void* unit, const void* config);         // 0x00110c60
     u32   AsdSoundEffect_GetBufferSize(const void* unit);                   // 0x00110c44
@@ -102,124 +108,57 @@ AsdSoundFloat3 g_AsdSoundMixLevels{};
 
 // 0x0010368c (184 B): build the first effect unit, then chain into 0x00109524.
 //
-__attribute__((naked)) void soundEffect_func_0010368c()
+void soundEffect_func_0010368c()
 {
-    asm volatile(
-        ".word 0xe92d4038\n" // push {r3, r4, r5, lr}
-        ".word 0xe3a00001\n"
-        ".word 0xeb070868\n" // AsdSound_GetTableEntry (0x002c583c)
-        ".word 0xe3500000\n"
-        ".word 0x1a000020\n" // existing table entry skips setup
-        ".word 0xe59f0084\n" // config A
-        ".word 0xe3a01096\n"
-        ".word 0xed9f0a20\n" // 0.1f
-        ".word 0xeddf0a20\n" // 0.7f
-        ".word 0xe5801000\n"
-        ".word 0xe2801004\n"
-        ".word 0xe3a05001\n"
-        ".word 0xec810a02\n"
-        ".word 0xe2801000\n"
-        ".word 0xe5c0500c\n"
-        ".word 0xe2410060\n" // unit A = config A - 0x60
-        ".word 0xeb003563\n" // AsdSoundEffect_Configure (0x00110c60)
-        ".word 0xe59f0060\n" // unit A
-        ".word 0xeb00355a\n" // AsdSoundEffect_GetBufferSize (0x00110c44)
-        ".word 0xe1a04000\n" // preserve size
-        ".word 0xe59f0058\n" // source path/line metadata
-        ".word 0xe3a01047\n"
-        ".word 0xe1a00000\n"
-        ".word 0xe1a03004\n"
-        ".word 0xe3a02000\n"
-        ".word 0xe3a01c01\n"
-        ".word 0xe3a00801\n" // allocation region 0x10000
-        ".word 0xe58d5000\n" // allocation flag = 1
-        ".word 0xeb07077b\n" // AsdMem_AllocAlign (0x002c54f0)
-        ".word 0xe59f1038\n" // g_AsdSoundEffectBuffers
-        ".word 0xe1a02004\n"
-        ".word 0xe5810000\n"
-        ".word 0xe1a01000\n"
-        ".word 0xe59f0020\n" // unit A
-        ".word 0xeb003544\n" // AsdSoundEffect_SetBuffer (0x00110c2c)
-        ".word 0xe59f1018\n"
-        ".word 0xe3a00000\n"
-        ".word 0xeb00756f\n" // AsdSound_Dispatch (0x00120ce4)
-        ".word 0xe8bd4038\n"
-        ".word 0xea00177d\n" // tail branch to soundEffect_func_00109524
-        ".word 0x004c54e4\n"
-        ".word 0x3dcccccd\n"
-        ".word 0x3f333333\n"
-        ".word 0x004c5484\n"
-        ".word 0x004077b8\n"
-        ".word 0x0044e0e0\n");
+    if (AsdSound_GetTableEntry(1) == nullptr) {
+        g_AsdSoundEffectConfigA.field_00 = 0x96;
+        g_AsdSoundEffectConfigA.field_04 = 0.1f;
+        g_AsdSoundEffectConfigA.field_08 = 0.7f;
+        g_AsdSoundEffectConfigA.field_0c = 1;
+
+        void* unitA = &g_AsdSoundEffectUnitA;
+        AsdSoundEffect_Configure(unitA, &g_AsdSoundEffectConfigA);
+        u32 size = AsdSoundEffect_GetBufferSize(unitA);
+        void* buf = AsdMem_AllocAlign(0x10000, 0x100, 0, size, 1);
+        g_AsdSoundEffectBuffers[0] = buf;
+        AsdSoundEffect_SetBuffer(unitA, buf, size);
+        AsdSound_Dispatch(0, unitA);
+    }
+
+    soundEffect_func_00109524();
 }
 // DECOMP_FUNC(0x00109524, 240)
 
 
 // 0x00109524 (240 B): build the second effect unit and register it.
 //
-__attribute__((naked)) void soundEffect_func_00109524()
+void soundEffect_func_00109524()
 {
-    asm volatile(
-        ".word 0xe92d43f8\n" // push {r3, r4, r5, r6, r7, r8, sb, lr}
-        ".word 0xe3a00001\n"
-        ".word 0xeb06f0c2\n" // AsdSound_GetTableEntry (0x002c583c)
-        ".word 0xe3500000\n"
-        ".word 0x1a00002e\n" // existing table entry exits
-        ".word 0xe59f00bc\n" // config B
-        ".word 0xe3a0605a\n"
-        ".word 0xe3a07e4b\n"
-        ".word 0xe3a0801e\n"
-        ".word 0xe88001c0\n" // config fields +0/+4/+8
-        ".word 0xe280600c\n"
-        ".word 0xeddf0a2a\n" // 0.4f
-        ".word 0xed9f1a2a\n" // 0.5f / 0.8f
-        ".word 0xe2801024\n"
-        ".word 0xecc60a02\n"
-        ".word 0xe3a03ebe\n"
-        ".word 0xe3a04ee6\n"
-        ".word 0xe3a0ce82\n"
-        ".word 0xe8811018\n" // config trailing scalar fields
-        ".word 0xe3a05001\n"
-        ".word 0xed9f0a1f\n"
-        ".word 0xe5801014\n" // config +0x14 points to config +0x24
-        ".word 0xed800a06\n"
-        ".word 0xed800a07\n"
-        ".word 0xe3a02000\n"
-        ".word 0xe5c05021\n"
-        ".word 0xe2801000\n"
-        ".word 0xe5c02020\n"
-        ".word 0xe2410e11\n" // unit B = config B - 0x110
-        ".word 0xeb005f1a\n" // AsdSoundEffect2_Configure (0x00121208)
-        ".word 0xe59f0064\n" // unit B
-        ".word 0xeb005ef0\n" // AsdSoundEffect2_GetBufferSize (0x00121168)
-        ".word 0xe1a04000\n" // preserve buffer size
-        ".word 0xe59f005c\n" // source metadata
-        ".word 0xe3a0106c\n"
-        ".word 0xe1a00000\n"
-        ".word 0xe1a03004\n"
-        ".word 0xe3a02000\n"
-        ".word 0xe3a01c01\n"
-        ".word 0xe3a00801\n" // allocation region 0x10000
-        ".word 0xe58d5000\n"
-        ".word 0xeb06efc8\n" // AsdMem_AllocAlign (0x002c54f0)
-        ".word 0xe59f103c\n" // g_AsdSoundEffectBuffers
-        ".word 0xe1a02004\n"
-        ".word 0xe5810004\n" // buffer slot 1
-        ".word 0xe1a01000\n"
-        ".word 0xe59f0024\n" // unit B
-        ".word 0xeb005eda\n" // AsdSoundEffect2_SetBuffer (0x00121150)
-        ".word 0xe8bd43f8\n"
-        ".word 0xe3a00001\n"
-        ".word 0xe59f1014\n"
-        ".word 0xea005dbb\n" // tail branch to AsdSound_Dispatch (0x00120ce4)
-        ".word 0xe8bd83f8\n" // early return epilogue
-        ".word 0x3ecccccd\n"
-        ".word 0x004c5604\n"
-        ".word 0x3f000000\n"
-        ".word 0x3f4ccccd\n"
-        ".word 0x004c54f4\n"
-        ".word 0x004077b8\n"
-        ".word 0x0044e0e0\n");
+    if (AsdSound_GetTableEntry(1) != nullptr) {
+        return;
+    }
+
+    g_AsdSoundEffectConfigB.field_00 = 0x5a;
+    g_AsdSoundEffectConfigB.field_04 = 0x4b0;
+    g_AsdSoundEffectConfigB.field_08 = 0x1e;
+    g_AsdSoundEffectConfigB.field_0c = 0.5f;
+    g_AsdSoundEffectConfigB.field_10 = 0.8f;
+    g_AsdSoundEffectConfigB.field_24 = 0xbe0;
+    g_AsdSoundEffectConfigB.field_28 = 0xe60;
+    g_AsdSoundEffectConfigB.field_2c = 0x820;
+    g_AsdSoundEffectConfigB.field_14 = reinterpret_cast<uintptr_t>(&g_AsdSoundEffectConfigB.field_24);
+    g_AsdSoundEffectConfigB.field_18 = 0.4f;
+    g_AsdSoundEffectConfigB.field_1c = 0.4f;
+    g_AsdSoundEffectConfigB.field_20 = 0;
+    g_AsdSoundEffectConfigB.field_21 = 1;
+
+    void* unitB = &g_AsdSoundEffectUnitB;
+    AsdSoundEffect2_Configure(unitB, &g_AsdSoundEffectConfigB);
+    u32 size = AsdSoundEffect2_GetBufferSize(unitB);
+    void* buf = AsdMem_AllocAlign(0x10000, 0x100, 0, size, 1);
+    g_AsdSoundEffectBuffers[1] = buf;
+    AsdSoundEffect2_SetBuffer(unitB, buf, size);
+    AsdSound_Dispatch(1, unitB);
 }
 
 // ---------------------------------------------------------------------------
@@ -433,41 +372,20 @@ __attribute__((naked)) u32 AsdSoundSystem_func_00109690(const char* archive, u32
 }
 
 // 0x0010b974 (176 B): lazily load the extra archive buffer.
-void* AsdSoundSystem_func_0010b974_Decompiled()
+void* AsdSoundSystem_func_0010b974()
 {
     AsdSoundSystem& system = g_AsdSoundSystem;
 
-    // 0x0010b980: manager state empty -> hand back the cached buffer.
     if (AsdSound_HasState(&system) == 0) {
-        return system.field_478;                                        // 0x0010b98c
+        return system.field_478;
     }
 
-    u32 size = AsdSound_GetStreamBlockSize(system.container_a);         // 0x0010b998
-    void* buffer = AsdMem_AllocAlign(0x10000, 0x100, 0, size, 1);       // 0x0010b9c4
-    system.field_478 = buffer;                                          // 0x0010b9cc
-    AsdSound_LoadDataPersistent(&system, buffer, size);                 // 0x0010b9d8
+    u32 size = AsdSound_GetStreamBlockSize(system.container_a);
+    void* buffer = AsdMem_AllocAlign(0x10000, 0x100, 0, size, 1);
+    system.field_478 = buffer;
+    AsdSound_LoadDataPersistent(&system, buffer, size);
 
-    return g_AsdSoundSystemHandle;                                      // 0x0010b9dc
-}
-// DECOMP_FUNC(0x0010b974, 176)
-__attribute__((naked)) void* AsdSoundSystem_func_0010b974()
-{
-    // Returns the cached buffer if sound is inactive; otherwise loads the
-    // stream block into an aligned buffer and returns the system handle.
-    // Exact ARM bytes retain the original VFP/register and literal-pool layout.
-    asm volatile(
-        ".byte 0xf8, 0x40, 0x2d, 0xe9, 0x64, 0x40, 0x9f, 0xe5, 0x04, 0x00, 0xa0, 0xe1, 0xb5, 0xcf, 0x06, 0xeb\n"
-        ".byte 0x00, 0x00, 0x50, 0xe3, 0x58, 0x50, 0x9f, 0xe5, 0x78, 0x04, 0x94, 0x05, 0x12, 0x00, 0x00, 0x0a\n"
-        ".byte 0x4b, 0x0f, 0x84, 0xe2, 0x40, 0x9c, 0x00, 0xeb, 0x00, 0x60, 0xa0, 0xe1, 0x44, 0x10, 0x9f, 0xe5\n"
-        ".byte 0x44, 0x00, 0x8f, 0xe2, 0x00, 0x00, 0xa0, 0xe1, 0x01, 0x00, 0xa0, 0xe3, 0x00, 0x00, 0x8d, 0xe5\n"
-        ".byte 0x06, 0x30, 0xa0, 0xe1, 0x00, 0x20, 0xa0, 0xe3, 0x01, 0x1c, 0xa0, 0xe3, 0x01, 0x08, 0xa0, 0xe3\n"
-        ".byte 0xc9, 0xe6, 0x06, 0xeb, 0x00, 0x10, 0xa0, 0xe1, 0x78, 0x04, 0x84, 0xe5, 0x06, 0x20, 0xa0, 0xe1\n"
-        ".byte 0x04, 0x00, 0xa0, 0xe1, 0x2d, 0x57, 0x00, 0xeb, 0x00, 0x00, 0x95, 0xe5, 0xf8, 0x80, 0xbd, 0xe8\n"
-        ".byte 0x68, 0x1f, 0x4e, 0x00, 0xe0, 0x23, 0x4e, 0x00, 0xeb, 0x03, 0x00, 0x00, 0x63, 0x3a, 0x5c, 0x53\n"
-        ".byte 0x4d, 0x54, 0x34, 0x5c, 0x58, 0x52, 0x44, 0x36, 0x38, 0x36, 0x5c, 0x41, 0x73, 0x64, 0x53, 0x44\n"
-        ".byte 0x4b, 0x5c, 0x53, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x5c, 0x53, 0x6e, 0x64, 0x5c, 0x41, 0x73, 0x64\n"
-        ".byte 0x53, 0x6f, 0x75, 0x6e, 0x64, 0x53, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x2e, 0x63, 0x70, 0x70, 0x00\n"
-    );
+    return g_AsdSoundSystemHandle;
 }
 // DECOMP_FUNC(0x0010c078, 380)
 
@@ -589,32 +507,48 @@ __attribute__((naked)) void AsdSoundSystem_func_0010d40c(s32)
 // DECOMP_FUNC(0x002c1df4, 308)
 
 
+static void AsdSoundSystem_SetActiveStream(s32 index)
+{
+    AsdSoundSystem& system = g_AsdSoundSystem;
+    if (index == -1) {
+        system.field_1204 = nullptr;
+    } else if (static_cast<u32>(index) < 4) {
+        if (system.streams[index].field_10 != 0) {
+            system.field_1204 = &system.streams[index];
+            system.streams[index].field_4c = static_cast<u8>(index);
+        }
+    }
+}
+
 // 0x002c1df4 (308 B): open stream slot `index` and publish the active one.
 //
-u32 __attribute__((naked)) AsdSoundSystem_func_002c1df4(u32, u32)
+u32 AsdSoundSystem_func_002c1df4(u32 index, u32 size)
 {
-    asm volatile(
-        ".word 0xE92D40F8, 0xE3500004, 0xE1A06001, 0xE59F40E8\n"
-        ".word 0x2A000006, 0xE0800100, 0xE0840200, 0xE2805B01\n"
-        ".word 0xE59004CC, 0xE28550BC, 0xE3500000, 0x0A000001\n"
-        ".word 0xE3A00000, 0xE8BD80F8, 0xE3A01E4D, 0xE28F00BC\n"
-        ".word 0xE1A00000, 0xE3A00001, 0xE58D0000, 0xE1A03006\n"
-        ".word 0xE3A02000, 0xE3A01C01, 0xE3A00801, 0xEB000DA6\n"
-        ".word 0xE1A01000, 0xE5850040, 0xE1A02006, 0xE1A00005\n"
-        ".word 0xEBF97F0B, 0xE3A00040, 0xE5850048, 0xE1A00005\n"
-        ".word 0xEBF97F35, 0xE5850044, 0xE3A00000, 0xE0801100\n"
-        ".word 0xE0841201, 0xE59114CC, 0xE3510000, 0x0A000011\n"
-        ".word 0xE59F2054, 0xE3700001, 0x03A00000, 0xE2821A01\n"
-        ".word 0x05810204, 0x0A00000E, 0xE3500004, 0x2A00000C\n"
-        ".word 0xE0803100, 0xE0822203, 0xE59234CC, 0xE3530000\n"
-        ".word 0x0A000007, 0xE2822B01, 0xE28220BC, 0xE5812204\n"
-        ".word 0xE5C2004C, 0xEA000002, 0xE2800001, 0xE3500004\n"
-        ".word 0xBAFFFFE5, 0xE3A00001, 0xE8BD80F8, 0x004E1F68\n"
-        ".word 0x535C3A63, 0x5C34544D, 0x36445258, 0x415C3638\n"
-        ".word 0x44536473, 0x6F535C4B, 0x65637275, 0x646E535C\n"
-        ".word 0x6473415C, 0x6E756F53, 0x73795364, 0x2E6D6574\n"
-        ".word 0x00707063\n"
-    );
+    if (index >= 4) {
+        return 0;
+    }
+
+    AsdSoundSystem& system = g_AsdSoundSystem;
+    AsdSoundStream& slot = system.streams[index];
+
+    if (slot.field_10 != 0) {
+        return 0;
+    }
+
+    void* buf = AsdMem_AllocAlign(0x10000, 0x100, 0, size, 1);
+    slot.field_40 = buf;
+    AsdSoundSlot_Attach(&slot, buf, size);
+    slot.field_48 = 0x40;
+    slot.field_44 = AsdSoundSlot_GetHandle(&slot);
+
+    for (s32 i = 0; i < 4; ++i) {
+        if (system.streams[i].field_10 != 0) {
+            AsdSoundSystem_SetActiveStream(i);
+            break;
+        }
+    }
+
+    return 1;
 }
 // DECOMP_FUNC(0x001ea808, 264)
 
@@ -625,75 +559,39 @@ u32 __attribute__((naked)) AsdSoundSystem_func_002c1df4(u32, u32)
 
 // 0x001ea808 (264 B): create the two sound-test UI widgets.
 //
-__attribute__((naked)) void soundTest_func_001ea808()
+void soundTest_func_001ea808()
 {
-    asm volatile(
-        ".word 0xe92d4030\n" // push {r4, r5, lr}
-        ".word 0xe24dd014\n" // reserve task argument area
-        ".word 0xe3a01031\n" // source line metadata
-        ".word 0xe28f009c\n" // source path address
-        ".word 0xe1a00000\n"
-        ".word 0xe3a00001\n"
-        ".word 0xe3a01c01\n"
-        ".word 0xe58d0000\n"
-        ".word 0xe3a03014\n" // allocate 0x14-byte sound-test object
-        ".word 0xe3a02000\n"
-        ".word 0xe1a00001\n"
-        ".word 0xeb0368d2\n" // AsdMem_Alloc (0x002c4b84)
-        ".word 0xe59f10ac\n" // g_SoundTestObject slot
-        ".word 0xe3a05000\n"
-        ".word 0xe59f20ac\n" // draw callback 0x002ca68c
-        ".word 0xe1a04000\n" // preserve object
-        ".word 0xe5810000\n" // publish object
-        ".word 0xe5805008\n"
-        ".word 0xe580500c\n"
-        ".word 0xe5805010\n"
-        ".word 0xe5c05004\n"
-        ".word 0xe59f108c\n" // calc callback 0x001e9518
-        ".word 0xe28d0004\n"
-        ".word 0xe58d2000\n"
-        ".word 0xe8800022\n" // callback stack args and null context
-        ".word 0xe1a03005\n"
-        ".word 0xe1a02005\n"
-        ".word 0xe3a01002\n"
-        ".word 0xe28f0078\n" // "ST C"
-        ".word 0xeb036c3d\n" // AsdTask_CreateCalc (0x002c5978)
-        ".word 0xe59f307c\n" // second task's callback 0x002f4aec
-        ".word 0xe5840000\n" // store first widget
-        ".word 0xe59f2070\n" // draw callback 0x002ca6a4
-        ".word 0xe58d000c\n" // first widget as final draw-task argument
-        ".word 0xe28d0004\n"
-        ".word 0xe58d3000\n"
-        ".word 0xe8800024\n" // callback stack args
-        ".word 0xe3a03000\n"
-        ".word 0xe1a02003\n"
-        ".word 0xe3a010e6\n"
-        ".word 0xe28f0058\n" // "ST D"
-        ".word 0xeb0368d3\n" // AsdTask_CreateDraw (0x002c4c00)
-        ".word 0xe28dd014\n"
-        ".word 0xe8bd8030\n"
-        ".word 0x535c3a63\n" // source-path literal
-        ".word 0x5c34544d\n"
-        ".word 0x36445258\n"
-        ".word 0x735c3638\n"
-        ".word 0x34736464\n"
-        ".word 0x6f72705c\n"
-        ".word 0x6d617267\n"
-        ".word 0x756f735c\n"
-        ".word 0x735c646e\n"
-        ".word 0x646e756f\n"
-        ".word 0x74736554\n"
-        ".word 0x7070632e\n"
-        ".word 0x00000000\n"
-        ".word 0x0044e110\n" // g_SoundTestObject
-        ".word 0x002ca68c\n"
-        ".word 0x001e9518\n"
-        ".word 0x43205453\n" // "ST C"
-        ".word 0x00000000\n"
-        ".word 0x002f4aec\n"
-        ".word 0x002ca6a4\n"
-        ".word 0x44205453\n" // "ST D"
-        ".word 0x00000000\n");
+    AsdSoundTestObject* obj = reinterpret_cast<AsdSoundTestObject*>(
+        AsdMem_Alloc(0x100, 0x100, 0, sizeof(AsdSoundTestObject), 1)
+    );
+    g_SoundTestObject = obj;
+
+    obj->field_08 = 0;
+    obj->field_0c = 0;
+    obj->field_10 = 0;
+    obj->field_04 = 0;
+
+    void* calc_task = AsdTask_CreateCalc(
+        "ST C",
+        2,
+        0,
+        0,
+        reinterpret_cast<void(*)(void*)>(0x001e9518),
+        0x002ca68c,
+        0
+    );
+    obj->ui = calc_task;
+
+    AsdTask_CreateDraw(
+        "ST D",
+        0xe6,
+        0,
+        0,
+        reinterpret_cast<void(*)(void*)>(0x002ca6a4),
+        0x002f4aec,
+        0,
+        calc_task
+    );
 }
 
 } // namespace smt4::engine

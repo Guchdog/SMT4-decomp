@@ -44,7 +44,7 @@ address,size,status,category,name,src_file
 0x001034c8,268,matching,engine,engine_func_001034c8,src/engine/leaf_batch44_b.cpp
 0x001035d4,12,matching,unknown,func_001035d4,src/engine/leaf_batch20_a.cpp
 0x001035e0,172,matching,ui,ui_func_001035e0,src/engine/leaf_batch30_a.cpp
-0x0010368c,184,matching,engine,soundEffect_func_0010368c,src/engine/asd_sound.cpp
+0x0010368c,184,non_matching,engine,soundEffect_func_0010368c,src/engine/asd_sound.cpp
 0x00103744,16,matching,unknown,func_00103744,src/engine/leaf_batch20_a.cpp
 0x00103754,12,matching,unknown,func_00103754,src/engine/leaf_batch20_a.cpp
 0x00103760,12,matching,unknown,func_00103760,src/engine/leaf_batch20_a.cpp
@@ -162,7 +162,7 @@ address,size,status,category,name,src_file
 0x0010938c,180,matching,ui,ui_func_0010938c,src/engine/leaf_batch27_a.cpp
 0x00109440,132,matching,ui,ui_func_00109440,src/engine/leaf_batch26_a.cpp
 0x001094c4,96,matching,ui,ui_func_001094c4,src/engine/leaf_batch20_a.cpp
-0x00109524,240,matching,engine,soundEffect_func_00109524,src/engine/asd_sound.cpp
+0x00109524,240,non_matching,engine,soundEffect_func_00109524,src/engine/asd_sound.cpp
 0x00109614,16,matching,unknown,func_00109614,src/engine/leaf_batch20_a.cpp
 0x00109624,108,matching,engine,engine_func_00109624,src/engine/leaf_batch38_c.cpp
 0x00109690,1040,matching,engine,AsdSoundSystem_func_00109690,src/engine/asd_sound.cpp
@@ -207,7 +207,7 @@ address,size,status,category,name,src_file
 0x0010b7f4,184,matching,engine,engine_func_0010b7f4,src/engine/leaf_batch42_c.cpp
 0x0010b8ac,8,matching,engine,engine_func_0010b8ac,src/engine/leaf_batch36_a.cpp
 0x0010b8b4,192,matching,engine,engine_func_0010b8b4,src/engine/leaf_batch42_c.cpp
-0x0010b974,176,matching,engine,AsdSoundSystem_func_0010b974,src/engine/asd_sound.cpp
+0x0010b974,176,non_matching,engine,AsdSoundSystem_func_0010b974,src/engine/asd_sound.cpp
 0x0010ba24,88,matching,ui,ui_func_0010ba24,src/engine/leaf_batch20_a.cpp
 0x0010ba7c,140,matching,unknown,func_0010ba7c,src/engine/leaf_batch42_a.cpp
 0x0010bb08,556,matching,engine,engine_func_0010bb08,src/engine/leaf_batch42_b.cpp
@@ -2493,7 +2493,7 @@ address,size,status,category,name,src_file
 0x001e9728,372,matching,ui,ui_func_001e9728,src/engine/leaf_batch41_c.cpp
 0x001e989c,3924,non_matching,ui,ui_func_001e989c,src/ui/ui_runtime2.cpp
 0x001ea7f0,24,matching,script_vm,script_vm_func_001ea7f0,src/engine/leaf_batch21_a.cpp
-0x001ea808,264,matching,engine,soundTest_func_001ea808,src/engine/asd_sound.cpp
+0x001ea808,264,non_matching,engine,soundTest_func_001ea808,src/engine/asd_sound.cpp
 0x001ea910,24,matching,unknown,func_001ea910,src/engine/leaf_batch39_a.cpp
 0x001ea928,1796,non_matching,script_vm,script_vm_func_001ea928,src/engine/leaf_batch46_b.cpp
 0x001eb02c,524,matching,camp,titleMain_func_001eb02c,src/camp/title_flow.cpp
@@ -5778,7 +5778,7 @@ address,size,status,category,name,src_file
 0x002c1ca0,156,matching,unknown,func_002c1ca0,src/engine/leaf_batch42_a.cpp
 0x002c1d3c,168,non_matching,ui,ui_func_002c1d3c,src/engine/leaf_batch31_c.cpp
 0x002c1de4,16,matching,script_vm,script_vm_func_002c1de4,src/engine/leaf_batch17_a.cpp
-0x002c1df4,308,matching,engine,AsdSoundSystem_func_002c1df4,src/engine/asd_sound.cpp
+0x002c1df4,308,non_matching,engine,AsdSoundSystem_func_002c1df4,src/engine/asd_sound.cpp
 0x002c1f28,28,non_matching,engine,engine_func_002c1f28,src/engine/leaf_batch22_b.cpp
 0x002c1f44,96,matching,unknown,func_002c1f44,src/engine/leaf_batch28_b.cpp
 0x002c1fa4,88,matching,battle,battle_func_002c1fa4,src/engine/leaf_batch28_b.cpp
