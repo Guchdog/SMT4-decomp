@@ -34,7 +34,7 @@ address,size,status,category,name,src_file
 0x001027c0,80,matching,unknown,func_001027c0,src/engine/leaf_batch20_a.cpp
 0x00102810,56,matching,unknown,func_00102810,src/engine/leaf_batch20_a.cpp
 0x00102848,340,matching,ui,ui_func_00102848,src/engine/leaf_batch43_c.cpp
-0x0010299c,260,matching,ui,IfTouch_Init,src/ui/tbb_loader.cpp
+0x0010299c,260,non_matching,ui,IfTouch_Init,src/ui/tbb_loader.cpp
 0x00102aa0,592,matching,ui,ui_func_00102aa0,src/engine/leaf_batch46_a.cpp
 0x00102cf0,212,matching,engine,GameData_func_00102cf0,src/engine/leaf_batch40_b.cpp
 0x00102dc4,188,matching,engine,engine_func_00102dc4,src/engine/leaf_batch34_c.cpp
@@ -4215,7 +4215,7 @@ address,size,status,category,name,src_file
 0x00269768,396,matching,unknown,func_00269768,src/engine/leaf_batch44_b.cpp
 0x002698f4,964,matching,unknown,func_002698f4,src/engine/leaf_batch40_a.cpp
 0x00269cb8,16,matching,ui,ui_func_00269cb8,src/engine/leaf_batch21_b.cpp
-0x00269cc8,352,matching,unite,bibleMain_Init,src/camp/bible.cpp
+0x00269cc8,352,non_matching,unite,bibleMain_Init,src/camp/bible.cpp
 0x00269e28,12,matching,camp,camp_func_00269e28,src/engine/leaf_matching.cpp
 0x00269e34,32,matching,script_vm,script_vm_func_00269e34,src/engine/leaf_batch18_b.cpp
 0x00269e54,140,non_matching,unknown,func_00269e54,src/engine/leaf_batch30_c.cpp
@@ -6371,7 +6371,7 @@ address,size,status,category,name,src_file
 0x002e30dc,60,matching,camp,camp_func_002e30dc,src/engine/leaf_batch40_c.cpp
 0x002e3118,36,matching,unknown,func_002e3118,src/engine/leaf_batch23_b.cpp
 0x002e313c,32,matching,script_vm,script_vm_func_002e313c,src/engine/leaf_batch22_b.cpp
-0x002e315c,344,matching,camp,UniteEffect_Init,src/camp/unite.cpp
+0x002e315c,344,non_matching,camp,UniteEffect_Init,src/camp/unite.cpp
 0x002e32b4,20,matching,camp,camp_func_002e32b4,src/engine/leaf_batch21_b.cpp
 0x002e32c8,60,matching,unite,unite_func_002e32c8,src/engine/leaf_batch27_b.cpp
 0x002e3304,124,non_matching,camp,camp_func_002e3304,src/engine/leaf_batch30_b.cpp

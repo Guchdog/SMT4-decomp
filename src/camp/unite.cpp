@@ -1,5 +1,12 @@
 #include "camp/unite.h"
 
+extern "C" {
+    void* AsdMem_Alloc(u32, u32, u32, u32, u32); // 0x002c4b84
+    void  btlTalkBustUp_func_002959c4();
+    void  script_vm_func_002c0128();
+    void  camp_func_002976ac(u32);
+}
+
 namespace smt4::camp {
 
 ButtonHelpManager g_ButtonHelpManager = {0, {0, 0, 0}, nullptr}; // 0x0043DA28
@@ -61,46 +68,49 @@ void Unite_Setup_Decompiled(void* arg) {
     work->state = 2; // Configure demon ingredients, search fusion results, calculate heritage skills
 }
 
-//
-void UniteEffect_Init_Decompiled(void* arg) {
-    (void)arg;
-    UniteWork* work = g_UniteWork;
-    if (work == nullptr) {
-        return;
-    }
-
-    // Initialize 3D fusion summoning circle and lightning vortex particle effects
-}
 // DECOMP_FUNC(0x002e315c, 344)
+void UniteEffect_Init(void* arg) {
+    (void)arg;
+    auto** const work_slot = reinterpret_cast<u8**>(0x0043DD90);
+    u8* work = *work_slot;
+    if (work == nullptr) {
+        work = reinterpret_cast<u8*>(
+            AsdMem_Alloc(0x100, 0x100, 0, 0x958, 1)
+        );
+        *work_slot = work;
+    }
+    ui::AsdMem_Zero(work, 0x958);
 
+    using CreateCalc = void* (*)(const char*, u32, u32, u32, void*, void*, void*);
+    using CreateDraw = void* (*)(const char*, u32, u32, u32, void*, u32, void*, void*);
 
-// The readable reconstruction above is still incomplete; retain it for reference
-// while the original ARM body is represented exactly below.
-__attribute__((naked)) void UniteEffect_Init(void*)
-{
-    asm volatile(
-        ".word 0xE92D4030, 0xE24DD014, 0xE59F40E0, 0xE59F50E0\n"
-        ".word 0xE5940000, 0xE3500000, 0x1A00000A, 0xE59F10D4\n"
-        ".word 0xE28F00D4, 0xE1A00000, 0xE3A00001, 0xE3A01C01\n"
-        ".word 0xE58D0000, 0xE1A03005, 0xE3A02000, 0xE1A00001\n"
-        ".word 0xEBFF8678, 0xE5840000, 0xE1A04000, 0xE1A01005\n"
-        ".word 0xEBFF865F, 0xE59F00D8, 0xE3A05000, 0xE1A03005\n"
-        ".word 0xE88D0021, 0xE1A02005, 0xE3A01002, 0xE28F00C4\n"
-        ".word 0xE58D5008, 0xEBFF89E8, 0xE59F10C4, 0xE5840000\n"
-        ".word 0xE3A03000, 0xE88D0022, 0xE58D000C, 0xE1A02003\n"
-        ".word 0xE3A010E7, 0xE28F00AC, 0xE58D5008, 0xEBFF8680\n"
-        ".word 0xE59F10AC, 0xE5940000, 0xE3A03000, 0xE88D0022\n"
-        ".word 0xE58D000C, 0xE1A02003, 0xE3A0106F, 0xE28F0084\n"
-        ".word 0xE58D5008, 0xEBFF8676, 0xE320F000, 0xE320F000\n"
-        ".word 0xEBFEC9E4, 0xE320F000, 0xE320F000, 0xEBFF73BA\n"
-        ".word 0xE28DD014, 0xE3A00025, 0xE8BD4030, 0xEAFED117\n"
-        ".word 0x0043DD90, 0x00000958, 0x000004EF, 0x535C3A63\n"
-        ".word 0x5C34544D, 0x36445258, 0x735C3638, 0x34736464\n"
-        ".word 0x6F72705C, 0x6D617267, 0x6D61635C, 0x6E555C70\n"
-        ".word 0x5C657469, 0x74696E55, 0x66664565, 0x2E746365\n"
-        ".word 0x00707063, 0x00329DA4, 0x20444D54, 0x434C4143\n"
-        ".word 0x00000000, 0x00330CFC, 0x20444D54, 0x41524444\n"
-        ".word 0x00000057, 0x0032B0B4\n");
+    void* const calc_task = reinterpret_cast<CreateCalc>(0x002C5978)(
+        "TMD CALC", 2, 0, 0,
+        reinterpret_cast<void*>(0x00329DA4),
+        nullptr,
+        nullptr
+    );
+    *reinterpret_cast<void**>(work) = calc_task;
+
+    reinterpret_cast<CreateDraw>(0x002C4C00)(
+        "TMD DDRAW", 0xE7, 0, 0,
+        reinterpret_cast<void*>(0x00330CFC),
+        0,
+        nullptr,
+        calc_task
+    );
+
+    reinterpret_cast<CreateDraw>(0x002C4C00)(
+        "TMD DDRAW", 0x6F, 0, 0,
+        reinterpret_cast<void*>(0x0032B0B4),
+        0,
+        nullptr,
+        calc_task
+    );
+
+    btlTalkBustUp_func_002959c4();
+    script_vm_func_002c0128();
+    camp_func_002976ac(0x25);
 }
 
 //
