@@ -75,7 +75,7 @@ address,size,status,category,name,src_file
 0x00104274,24,matching,engine,engine_func_00104274,src/engine/leaf_batch39_a.cpp
 0x0010428c,12,matching,unknown,func_0010428c,src/engine/leaf_batch20_a.cpp
 0x00104298,48,matching,unknown,func_00104298,src/engine/leaf_batch20_a.cpp
-0x001042c8,176,matching,engine,AsdPrim_func_001042c8,src/engine/asd_texture.cpp
+0x001042c8,176,non_matching,engine,AsdPrim_func_001042c8,src/engine/asd_texture.cpp
 0x00104378,1508,matching,camp,FrameTex_func_00104378,src/engine/asd_frame.cpp
 0x0010495c,1108,matching,engine,AsdModel_func_0010495c,src/engine/asd_model.cpp
 0x00104db0,28,matching,unknown,func_00104db0,src/engine/leaf_batch20_a.cpp
@@ -5667,7 +5667,7 @@ address,size,status,category,name,src_file
 0x002bd630,88,matching,engine,engine_func_002bd630,src/engine/leaf_batch39_c.cpp
 0x002bd688,168,matching,engine,engine_func_002bd688,src/engine/leaf_batch38_c.cpp
 0x002bd730,528,matching,engine,AsdTexture_func_002bd730,src/engine/asd_texture.cpp
-0x002bd940,172,matching,engine,AsdTexture_func_002bd940,src/engine/asd_texture.cpp
+0x002bd940,172,non_matching,engine,AsdTexture_func_002bd940,src/engine/asd_texture.cpp
 0x002bd9ec,20,matching,script_vm,script_vm_func_002bd9ec,src/engine/leaf_matching.cpp
 0x002bda00,16,matching,ui,ui_func_002bda00,src/engine/leaf_matching.cpp
 0x002bda10,12,matching,script_vm,script_vm_func_002bda10,src/engine/leaf_matching.cpp
@@ -5786,7 +5786,7 @@ address,size,status,category,name,src_file
 0x002c20a8,360,matching,engine,engine_func_002c20a8,src/engine/leaf_batch38_b.cpp
 0x002c2210,468,matching,engine,engine_func_002c2210,src/engine/leaf_batch41_c.cpp
 0x002c23e4,20,matching,engine,engine_func_002c23e4,src/engine/leaf_batch21_b.cpp
-0x002c23f8,56,matching,engine,AsdMemory_func_002c23f8,src/engine/asd_texture.cpp
+0x002c23f8,56,non_matching,engine,AsdMemory_func_002c23f8,src/engine/asd_texture.cpp
 0x002c2430,180,matching,engine,engine_func_002c2430,src/engine/leaf_batch42_c.cpp
 0x002c24e4,120,matching,engine,engine_func_002c24e4,src/engine/leaf_batch41_b.cpp
 0x002c255c,148,matching,unknown,func_002c255c,src/engine/leaf_batch42_a.cpp

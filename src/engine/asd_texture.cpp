@@ -15,7 +15,7 @@ extern "C" {
 
     // Buffer blocks.  0x002C34A4 and 0x002BF798 are byte-identical 196-byte
     // bodies; they only differ in which arena literal their caller selects.
-    void* AsdWork_Alloc(u32 a0, u32 a1, u32 a2, u32 size, u32 a4, u32 a5);  // 0x002c34a4
+    void* AsdWork_Alloc(u32 a0, u32 a1, u32 a2, void* owner, u32 a4, u32 a5); // 0x002c34a4
     void* AsdWork_Alloc2(u32 a0, u32 a1, u32 a2, u32 size, u32 a4, u32 a5)
         __asm__("engine_func_002bf798"); // 0x002bf798
 
@@ -95,118 +95,44 @@ AsdTMTexTableGlobal g_AsdTMTexTable{};      // 0x0044EA28
 // AsdPrim (c:\SMT4\XRD686\AsdSDK\Source\Gfx\Prim\AsdPrim.cpp)
 // ---------------------------------------------------------------------------
 
-void AsdPrim_func_001042c8_Decompiled(void* owner)
+// DECOMP_FUNC(0x001042c8, 176)
+void AsdPrim_func_001042c8(void* owner)
 {
     for (u32 i = 0; i < 2; ++i) {
-        // 0x00104310: AsdWork_Alloc(0x10000, 0x100, 0, owner, 0x10, 1)
-        g_AsdPrimState.buffers[i] =
-            AsdWork_Alloc(0x10000, 0x100, 0, AsdAddr(owner), 0x10, 1);
-        // 0x00104324: `str r7,[r0,#8]` with r0 = base + i*4 and r7 = 0.
+        g_AsdPrimState.buffers[i] = AsdWork_Alloc(0x10000, 0x100, 0, owner, 0x10, 1);
         reinterpret_cast<void**>(&g_AsdPrimState.field_08)[i] = nullptr;
     }
-
-    g_AsdPrimState.field_10 = nullptr;      // 0x0010432c
-    g_AsdPrimState.owner = owner;           // 0x00104330
+    g_AsdPrimState.field_10 = nullptr;
+    g_AsdPrimState.owner = owner;
 }
-// DECOMP_FUNC(0x001042c8, 176)
-__attribute__((naked)) void AsdPrim_func_001042c8(void* owner)
-{
-    // Two work buffers and three zeroed global fields; exact bytes retain
-    // the original ARM instruction sequence and the source-path literal.
-    asm volatile(
-        ".byte 0xf0, 0x47, 0x2d, 0xe9, 0x00, 0x40, 0xa0, 0xe3, 0x08, 0xd0, 0x4d, 0xe2, 0x00, 0x60, 0xa0, 0xe1\n"
-        ".byte 0x5c, 0x50, 0x9f, 0xe5, 0x5c, 0xa0, 0x9f, 0xe5, 0x04, 0x70, 0xa0, 0xe1, 0x01, 0x80, 0xa0, 0xe3\n"
-        ".byte 0x10, 0x90, 0xa0, 0xe3, 0x0a, 0x10, 0xa0, 0xe1, 0x4c, 0x00, 0x8f, 0xe2, 0x00, 0x00, 0xa0, 0xe1\n"
-        ".byte 0x06, 0x30, 0xa0, 0xe1, 0x00, 0x20, 0xa0, 0xe3, 0x01, 0x1c, 0xa0, 0xe3, 0x01, 0x08, 0xa0, 0xe3\n"
-        ".byte 0x04, 0x80, 0x8d, 0xe5, 0x00, 0x90, 0x8d, 0xe5, 0x63, 0xfc, 0x06, 0xeb, 0x04, 0x01, 0x85, 0xe7\n"
-        ".byte 0x04, 0x01, 0x85, 0xe0, 0x01, 0x40, 0x84, 0xe2, 0x02, 0x00, 0x54, 0xe3, 0x08, 0x70, 0x80, 0xe5\n"
-        ".byte 0xef, 0xff, 0xff, 0xba, 0x10, 0x70, 0xa5, 0xe5, 0x04, 0x60, 0x85, 0xe5, 0x08, 0xd0, 0x8d, 0xe2\n"
-        ".byte 0xf0, 0x87, 0xbd, 0xe8, 0xc0, 0xae, 0x4d, 0x00, 0x83, 0x01, 0x00, 0x00, 0x63, 0x3a, 0x5c, 0x53\n"
-        ".byte 0x4d, 0x54, 0x34, 0x5c, 0x58, 0x52, 0x44, 0x36, 0x38, 0x36, 0x5c, 0x41, 0x73, 0x64, 0x53, 0x44\n"
-        ".byte 0x4b, 0x5c, 0x53, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x5c, 0x47, 0x66, 0x78, 0x5c, 0x50, 0x72, 0x69\n"
-        ".byte 0x6d, 0x5c, 0x41, 0x73, 0x64, 0x50, 0x72, 0x69, 0x6d, 0x2e, 0x63, 0x70, 0x70, 0x00, 0x00, 0x00\n"
-    );
-}
-// DECOMP_FUNC(0x002c23f8, 56)
-
-
 // ---------------------------------------------------------------------------
 // AsdMemory (c:\SMT4\XRD686\AsdSDK\Source\Sys\Mem\AsdMemory.cpp)
 // ---------------------------------------------------------------------------
 
-//
-__attribute__((naked)) void* AsdMemory_func_002c23f8(u32)
+// DECOMP_FUNC(0x002c23f8, 56)
+void* AsdMemory_func_002c23f8(u32 size)
 {
-    asm volatile(
-        "push {r3, r4, r5, lr}\n"
-        "mov r4, r0\n"
-        "ldr r0, [pc, #0x24]\n"
-        "mov r1, #0xac\n"
-        "mov r0, r0\n"
-        "mov r0, #1\n"
-        "mov r1, #0x100\n"
-        "str r0, [sp]\n"
-        "mov r3, r4\n"
-        "mov r2, #0\n"
-        "mov r0, r1\n"
-        ".word 0xeb000c31\n"
-        "pop {r3, r4, r5, pc}\n"
-        ".word 0x00409b24\n");
+    return AsdMem_AllocAlign(0x100, 0x100, 0, size, 1);
 }
-// DECOMP_FUNC(0x002bd940, 172)
-
-
 // ---------------------------------------------------------------------------
 // AsdTexture (c:\SMT4\XRD686\AsdSDK\Source\Gfx\Tex\AsdTexture.cpp)
 // ---------------------------------------------------------------------------
 
-//
-__attribute__((naked)) void* AsdTexture_func_002bd940(u32)
+// DECOMP_FUNC(0x002bd940, 172)
+void* AsdTexture_func_002bd940(u32 flag)
 {
-    asm volatile(
-        "push {r3, r4, r5, lr}\n"
-        "cmp r0, #0\n"
-        "mov r5, #0\n"
-        ".word 0x0a00000a\n" // beq 0x002bd97c
-        "ldr r0, [pc, #0x8c]\n"
-        "mov r1, #0x2b\n"
-        "mov r0, r0\n"
-        "mov r3, #0x48\n"
-        "mov r2, #0\n"
-        "mov r1, #0x100\n"
-        "mov r0, #0x10000\n"
-        "str r5, [sp]\n"
-        ".word 0xeb001ede\n"
-        "mov r4, r0\n"
-        ".word 0xea00000a\n" // b 0x002bd9a8
-        "ldr r0, [pc, #0x60]\n"
-        "mov r1, #0x2f\n"
-        "mov r0, r0\n"
-        "mov r0, #1\n"
-        "str r0, [sp]\n"
-        "mov r3, #0x48\n"
-        "mov r2, #0\n"
-        "mov r1, #0x100\n"
-        "mov r0, #0x10000\n"
-        ".word 0xeb001ed2\n"
-        "mov r4, r0\n"
-        "mov r1, #0x48\n"
-        ".word 0xeb001c5f\n"
-        "ldr r2, [pc, #0x30]\n"
-        "mov r1, #0x10000\n"
-        "add r3, r4, #0x38\n"
-        "str r1, [r4, #8]\n"
-        "mov r0, #2\n"
-        "str r2, [r4, #4]\n"
-        "stm r3, {r0, r5}\n"
-        "str r5, [r4, #0x40]\n"
-        "ldr r0, [r4]\n"
-        "add r0, r0, #1\n"
-        "str r0, [r4]\n"
-        "mov r0, r4\n"
-        "pop {r3, r4, r5, pc}\n"
-        ".word 0x00409554\n" // AsdTexture.cpp source path
-        ".word 0x00000de1\n");
+    const u32 alloc_flag = (flag != 0) ? 0 : 1;
+    auto* const tex = static_cast<AsdTexture*>(
+        AsdMem_AllocAlign(0x10000, 0x100, 0, sizeof(AsdTexture), alloc_flag)
+    );
+    AsdMem_Zero(tex, sizeof(AsdTexture));
+    tex->format = 0xDE1;
+    tex->kind = 0x10000;
+    tex->field_38 = 2;
+    tex->field_3c = 0;
+    tex->field_40 = 0;
+    tex->ref_count = 1;
+    return tex;
 }
 
 // DECOMP_FUNC(0x002bd730, 528)
