@@ -342,83 +342,80 @@ extern "C" void ui_func_002580a8(UiShakeState* state) {
 }
 
 // DECOMP_FUNC(0x0029dcd4, 576)
-extern "C" __attribute__((naked)) void camp_func_0029dcd4() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x47f0, 0xe92d, 0xa1d4, 0xe59f\n"
-        ".hword 0x6000, 0xe1a0, 0xd090, 0xe24d\n"
-        ".hword 0x7001, 0xe1a0, 0x5004, 0xe59a\n"
-        ".hword 0x9003, 0xe1a0, 0x8002, 0xe1a0\n"
-        ".hword 0x0002, 0xe1a0, 0x6d99, 0xeb00\n"
-        ".hword 0x4000, 0xe1b0, 0x04cb, 0x05c5\n"
-        ".hword 0x0068, 0x0a00, 0x0001, 0xe3a0\n"
-        ".hword 0x055c, 0xe5c5, 0x04cb, 0xe5c5\n"
-        ".hword 0x00b8, 0xe1d4, 0x1c00, 0xe1a0\n"
-        ".hword 0x0a80, 0xe1a0, 0x1ea1, 0xe1a0\n"
-        ".hword 0x0ea0, 0xe151, 0x0004, 0x1a00\n"
-        ".hword 0x3000, 0xe3a0, 0x2000, 0xe3e0\n"
-        ".hword 0x0025, 0xe3a0, 0x04d2, 0xeb00\n"
-        ".hword 0x000e, 0xea00, 0x000d, 0xe1a0\n"
-        ".hword 0xcb47, 0xebff, 0x00b8, 0xe1d4\n"
-        ".hword 0x0a80, 0xe1a0, 0x1ea0, 0xe1a0\n"
-        ".hword 0x0008, 0xe28d, 0xcb42, 0xebff\n"
-        ".hword 0x3008, 0xe28d, 0x200d, 0xe1a0\n"
-        ".hword 0x1f53, 0xe28f, 0x0010, 0xe28d\n"
-        ".hword 0x82a2, 0xfa00, 0x1010, 0xe28d\n"
-        ".hword 0x0025, 0xe3a0, 0xdee1, 0xebff\n"
-        ".hword 0x100a, 0xe5d4, 0x0010, 0xe28d\n"
-        ".hword 0xb88c, 0xebfe, 0x1010, 0xe28d\n"
-        ".hword 0x0026, 0xe3a0, 0xdedb, 0xebff\n"
-        ".hword 0x00b8, 0xe1d4, 0x0d80, 0xe1a0\n"
-        ".hword 0x1e20, 0xe1a0, 0x0010, 0xe28d\n"
-        ".hword 0xb840, 0xebfe, 0x1010, 0xe28d\n"
-        ".hword 0x0027, 0xe3a0, 0xded3, 0xebff\n"
-        ".hword 0x000c, 0xe5d4, 0x0000, 0xe350\n"
-        ".hword 0x0002, 0x1a00, 0x10f8, 0xe28f\n"
-        ".hword 0x0010, 0xe28d, 0x828b, 0xfa00\n"
-        ".hword 0x000c, 0xe5d4, 0x0001, 0xe350\n"
-        ".hword 0x0002, 0x1a00, 0x10ec, 0xe28f\n"
-        ".hword 0x0010, 0xe28d, 0x8285, 0xfa00\n"
-        ".hword 0x000c, 0xe5d4, 0x0005, 0xe350\n"
-        ".hword 0x0002, 0x1a00, 0x10dc, 0xe28f\n"
-        ".hword 0x0010, 0xe28d, 0x827f, 0xfa00\n"
-        ".hword 0x000c, 0xe5d4, 0x0006, 0xe350\n"
-        ".hword 0x0002, 0x1a00, 0x10d4, 0xe28f\n"
-        ".hword 0x0010, 0xe28d, 0x8279, 0xfa00\n"
-        ".hword 0x000c, 0xe5d4, 0x0007, 0xe350\n"
-        ".hword 0x0002, 0x1a00, 0x10c8, 0xe28f\n"
-        ".hword 0x0010, 0xe28d, 0x8273, 0xfa00\n"
-        ".hword 0x000c, 0xe5d4, 0x0008, 0xe350\n"
-        ".hword 0x0002, 0x1a00, 0x10bc, 0xe28f\n"
-        ".hword 0x0010, 0xe28d, 0x826d, 0xfa00\n"
-        ".hword 0x000c, 0xe5d4, 0x0009, 0xe350\n"
-        ".hword 0x0002, 0x1a00, 0x10b0, 0xe28f\n"
-        ".hword 0x0010, 0xe28d, 0x8267, 0xfa00\n"
-        ".hword 0x1010, 0xe28d, 0x0028, 0xe3a0\n"
-        ".hword 0xdea6, 0xebff, 0x3010, 0xe28d\n"
-        ".hword 0x2008, 0xe1a0, 0x1009, 0xe1a0\n"
-        ".hword 0x0000, 0xe3a0, 0x5980, 0xebfd\n"
-        ".hword 0x1010, 0xe28d, 0x0029, 0xe3a0\n"
-        ".hword 0xde9e, 0xebff, 0x0000, 0xe356\n"
-        ".hword 0x6008, 0x059a, 0x0003, 0xe3a0\n"
-        ".hword 0x3000, 0xe3a0, 0x00c1, 0xe88d\n"
-        ".hword 0x2000, 0xe3e0, 0x0558, 0xe595\n"
-        ".hword 0x1003, 0xe3a0, 0xe3b7, 0xebff\n"
-        ".hword 0xd090, 0xe28d, 0x87f0, 0xe8bd\n"
-        ".hword 0xda28, 0x0043, 0x7325, 0x6081\n"
-        ".hword 0x7325, 0x0000, 0x6d82, 0x8f82\n"
-        ".hword 0x8e82, 0x8582, 0x0000, 0x0000\n"
-        ".hword 0x6a82, 0x6e82, 0x0000, 0x0000\n"
-        ".hword 0x6f82, 0x8f82, 0x8982, 0x9382\n"
-        ".hword 0x8f82, 0x8e82, 0x0000, 0x0000\n"
-        ".hword 0x6f82, 0x8182, 0x8e82, 0x8982\n"
-        ".hword 0x8382, 0x0000, 0x7282, 0x8c82\n"
-        ".hword 0x8582, 0x8582, 0x9082, 0x0000\n"
-        ".hword 0x6182, 0x8982, 0x8e82, 0x8482\n"
-        ".hword 0x0000, 0x0000, 0x7282, 0x8982\n"
-        ".hword 0x8382, 0x8b82, 0x0000, 0x0000\n"
-    );
-};
+extern "C" u8* camp_func_002b9364(u32 skill_id);
+extern "C" void camp_func_0029f088(u32 widget_id, u32 a1, u32 a2);
+extern "C" void ui_func_00290a68(char* dst, u32 val);
+extern "C" void script_vm_func_00295904(u32 widget_id, const char* str);
+extern "C" void shop_func_0024beac(char* dst, u32 target_scope);
+extern "C" void engine_func_001f4480(u32 a0, u32 a1, u32 a2, char* dst);
+extern "C" void script_vm_func_00296d8c(void* obj, u32 a1, u32 a2, u32 a3, u32 sp0, void* sp1, u32 sp2);
+
+extern "C" void camp_func_0029dcd4(void* target, u32 arg1, u32 skill_id, u32 sub_id) {
+    auto* mgr = reinterpret_cast<void**>(0x0043da28);
+    auto* work = reinterpret_cast<u8*>(mgr[1]);
+
+    u8* skill = camp_func_002b9364(skill_id);
+    if (!skill) {
+        work[0x4cb] = 0;
+        return;
+    }
+
+    work[0x55c] = 1;
+    work[0x4cb] = 1;
+
+    u16 flags = *reinterpret_cast<u16*>(skill + 8);
+    u32 min_hits = (flags >> 5) & 7;
+    u32 max_hits = (flags >> 8) & 7;
+
+    char buf[128];
+    if (min_hits == max_hits) {
+        camp_func_0029f088(0x25, 0xffffffff, 0);
+    } else {
+        char str_min[8];
+        char str_max[8];
+        ui_func_00290a68(str_min, min_hits);
+        ui_func_00290a68(str_max, max_hits);
+        ui_func_002be7fc(buf, "%s\x81\x60%s", str_min, str_max);
+        script_vm_func_00295904(0x25, buf);
+    }
+
+    u8 element_id = skill[0x0a];
+    camp_func_0024bfbc(buf, element_id);
+    script_vm_func_00295904(0x26, buf);
+
+    u32 target_scope = (flags >> 1) & 0xf;
+    shop_func_0024beac(buf, target_scope);
+    script_vm_func_00295904(0x27, buf);
+
+    u8 ailment_id = skill[0x0c];
+    const char* ailment_str = nullptr;
+    if (ailment_id == 0) {
+        ailment_str = "\x82\x6d\x82\x8f\x82\x8e\x82\x85";
+    } else if (ailment_id == 1) {
+        ailment_str = "\x82\x6a\x82\x6e";
+    } else if (ailment_id == 5) {
+        ailment_str = "\x82\x6f\x82\x8f\x82\x89\x82\x93\x82\x8f\x82\x8e";
+    } else if (ailment_id == 6) {
+        ailment_str = "\x82\x6f\x82\x81\x82\x8e\x82\x89\x82\x83";
+    } else if (ailment_id == 7) {
+        ailment_str = "\x82\x72\x82\x8c\x82\x85\x82\x85\x82\x90";
+    } else if (ailment_id == 8) {
+        ailment_str = "\x82\x61\x82\x89\x82\x8e\x82\x84";
+    } else if (ailment_id == 9) {
+        ailment_str = "\x82\x72\x82\x89\x82\x83\x82\x8b";
+    }
+    if (ailment_str != nullptr) {
+        ui_func_002be7fc(buf, ailment_str);
+    }
+    script_vm_func_00295904(0x28, buf);
+
+    engine_func_001f4480(0, sub_id, skill_id, buf);
+    script_vm_func_00295904(0x29, buf);
+
+    void* draw_target = (target != nullptr) ? target : mgr[2];
+    void* render_handle = *reinterpret_cast<void**>(work + 0x558);
+    script_vm_func_00296d8c(render_handle, 3, 0xffffffff, 0, 3, draw_target, arg1);
+}
 
 // DECOMP_FUNC(0x003beb40, 576)
 extern "C" __attribute__((naked)) void ui_func_003beb40() {
