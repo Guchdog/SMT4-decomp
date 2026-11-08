@@ -9986,7 +9986,7 @@ address,size,status,category,name,src_file
 0x003d7338,396,matching,unknown,func_003d7338,src/engine/leaf_batch36_b.cpp
 0x003d74c4,364,matching,unknown,func_003d74c4,src/engine/leaf_batch36_b.cpp
 0x003d7630,4308,matching,ui,ui_func_003d7630,src/ui/ui_scene_extras.cpp
-0x003d8704,456,matching,battle,battle_func_003d8704,src/engine/leaf_batch45_a.cpp
+0x003d8704,456,non_matching,battle,battle_func_003d8704,src/engine/leaf_batch45_a.cpp
 0x003d88cc,404,matching,unknown,func_003d88cc,src/engine/leaf_batch36_b.cpp
 0x003d8a60,108,matching,unknown,func_003d8a60,src/engine/leaf_batch32_a.cpp
 0x003d8acc,60,non_matching,battle,battle_func_003d8acc,src/engine/leaf_batch31_b.cpp
