@@ -609,31 +609,16 @@ void StatusDown_SetVisibility(u8 val) {
 }
 
 // DECOMP_FUNC(0x00288718, 92)
-__attribute__((naked)) bool StatusDown_CanOpenSubScreen() {
-    asm volatile(
-        "push {r4, lr}\n"
-        ".word 0xEBFFFF39\n"
-        "cmp r0, #5\n"
-        "beq 1f\n"
-        ".word 0xEBFFFF36\n"
-        "cmp r0, #6\n"
-        "beq 1f\n"
-        ".word 0xEBFFFF33\n"
-        "cmp r0, #0xA\n"
-        "beq 1f\n"
-        ".word 0xEB0049FA\n"
-        "cmp r0, #7\n"
-        "beq 1f\n"
-        ".word 0xEB0049F7\n"
-        "cmp r0, #8\n"
-        "beq 1f\n"
-        ".word 0xEB0049F4\n"
-        "cmp r0, #3\n"
-        "movne r0, #1\n"
-        "bne 2f\n"
-        "1: mov r0, #0\n"
-        "2: pop {r4, pc}\n"
-        ".word 0x0044E190\n");
+bool StatusDown_CanOpenSubScreen() {
+    if (Status_GetSubMenuState() == 5 ||
+        Status_GetSubMenuState() == 6 ||
+        Status_GetSubMenuState() == 10 ||
+        Status_GetMainMenuId() == 7 ||
+        Status_GetMainMenuId() == 8 ||
+        Status_GetMainMenuId() == 3) {
+        return false;
+    }
+    return true;
 }
 
 // DECOMP_FUNC(0x0028cd5c, 28)
@@ -1270,92 +1255,27 @@ __attribute__((naked)) void StatusDown_DrawPartySlotRow(s32 x_offset, s32 y_offs
 #endif
 
 // DECOMP_FUNC(0x0029adf0, 320)
-__attribute__((naked)) void StatusDown_DrawLRPrompts(s32, s32) {
-    asm volatile(
-        "push {r4, r5, r6, r7, lr}\n"
-        "mov r6, r0\n"
-        "sub sp, sp, #0xc\n"
-        "ldr r0, .LStatusDownDrawLRPool0\n"
-        "mov r4, r1\n"
-        "ldr r5, [r0]\n"
-        ".word 0xebffb63c\n" // bl 0x00288700: Camp_CanShowLRPrompts
-        "cmp r0, #0\n"
-        "beq .LStatusDownDrawLREnd\n"
-        "ldr r0, [r5, #0x424]\n"
-        "mov r7, #0xba\n"
-        "mov r3, r6\n"
-        "cmp r0, #1\n"
-        "cmpne r0, #2\n"
-        "beq .LStatusDownDrawLRLeftActive\n"
-        "ldr r2, .LStatusDownDrawLRPool1\n"
-        "mov r1, #0x1a\n"
-        "mov r0, #2\n"
-        "stm sp, {r4, r7}\n"
-        ".word 0xeb009187\n" // bl 0x002bf460: UiSprite_DrawNode
-        "ldr r2, .LStatusDownDrawLRPool2\n"
-        "mov r3, r6\n"
-        "mov r1, #0x1a\n"
-        "mov r0, #2\n"
-        "stm sp, {r4, r7}\n"
-        ".word 0xeb009181\n" // bl 0x002bf460: UiSprite_DrawNode
-        ".LStatusDownDrawLRRightCheck:\n"
-        "ldr r0, [r5, #0x428]\n"
-        "mov r3, r6\n"
-        "cmp r0, #1\n"
-        "cmpne r0, #2\n"
-        "beq .LStatusDownDrawLRRightActive\n"
-        "ldr r2, .LStatusDownDrawLRPool3\n"
-        "mov r1, #0x1a\n"
-        "mov r0, #2\n"
-        "stm sp, {r4, r7}\n"
-        ".word 0xeb009177\n" // bl 0x002bf460: UiSprite_DrawNode
-        "ldr r2, .LStatusDownDrawLRPool4\n"
-        "mov r3, r6\n"
-        "mov r1, #0x1a\n"
-        "mov r0, #2\n"
-        "stm sp, {r4, r7}\n"
-        ".word 0xeb009171\n" // bl 0x002bf460: UiSprite_DrawNode
-        ".LStatusDownDrawLREnd:\n"
-        "add sp, sp, #0xc\n"
-        "pop {r4, r5, r6, r7, pc}\n"
-        ".LStatusDownDrawLRLeftActive:\n"
-        "ldr r2, .LStatusDownDrawLRPool5\n"
-        "mov r1, #0x1a\n"
-        "mov r0, #2\n"
-        "stm sp, {r4, r7}\n"
-        ".word 0xeb00916a\n" // bl 0x002bf460: UiSprite_DrawNode
-        "ldr r2, .LStatusDownDrawLRPool6\n"
-        "mov r3, r6\n"
-        "mov r1, #0x1a\n"
-        "mov r0, #2\n"
-        "stm sp, {r4, r7}\n"
-        ".word 0xeb009164\n" // bl 0x002bf460: UiSprite_DrawNode
-        "nop\n"
-        "nop\n"
-        "b .LStatusDownDrawLRRightCheck\n"
-        ".LStatusDownDrawLRRightActive:\n"
-        "ldr r2, .LStatusDownDrawLRPool7\n"
-        "mov r1, #0x1a\n"
-        "mov r0, #2\n"
-        "stm sp, {r4, r7}\n"
-        ".word 0xeb00915c\n" // bl 0x002bf460: UiSprite_DrawNode
-        "ldr r2, .LStatusDownDrawLRPool8\n"
-        "mov r3, r6\n"
-        "mov r1, #0x1a\n"
-        "mov r0, #2\n"
-        "stm sp, {r4, r7}\n"
-        ".word 0xeb009156\n" // bl 0x002bf460: UiSprite_DrawNode
-        "add sp, sp, #0xc\n"
-        "pop {r4, r5, r6, r7, pc}\n"
-        ".LStatusDownDrawLRPool0: .word 0x0044E190\n"
-        ".LStatusDownDrawLRPool1: .word 0x000004d3\n"
-        ".LStatusDownDrawLRPool2: .word 0x000004d7\n"
-        ".LStatusDownDrawLRPool3: .word 0x000004d2\n"
-        ".LStatusDownDrawLRPool4: .word 0x000004d6\n"
-        ".LStatusDownDrawLRPool5: .word 0x000004d5\n"
-        ".LStatusDownDrawLRPool6: .word 0x000004d9\n"
-        ".LStatusDownDrawLRPool7: .word 0x000004d4\n"
-        ".LStatusDownDrawLRPool8: .word 0x000004d8\n");
+void StatusDown_DrawLRPrompts(s32 x_offset, s32 y_offset) {
+    auto* work = g_StatusDownWork;
+    if (!Camp_CanShowLRPrompts()) {
+        return;
+    }
+    u32 left = work->lr_state_left;
+    if (left == 1 || left == 2) {
+        UiSprite_DrawNode(2, 0x1A, 0x4D5, x_offset, y_offset, 0xBA);
+        UiSprite_DrawNode(2, 0x1A, 0x4D9, x_offset, y_offset, 0xBA);
+    } else {
+        UiSprite_DrawNode(2, 0x1A, 0x4D3, x_offset, y_offset, 0xBA);
+        UiSprite_DrawNode(2, 0x1A, 0x4D7, x_offset, y_offset, 0xBA);
+    }
+    u32 right = work->lr_state_right;
+    if (right == 1 || right == 2) {
+        UiSprite_DrawNode(2, 0x1A, 0x4D4, x_offset, y_offset, 0xBA);
+        UiSprite_DrawNode(2, 0x1A, 0x4D8, x_offset, y_offset, 0xBA);
+    } else {
+        UiSprite_DrawNode(2, 0x1A, 0x4D2, x_offset, y_offset, 0xBA);
+        UiSprite_DrawNode(2, 0x1A, 0x4D6, x_offset, y_offset, 0xBA);
+    }
 }
 
 // DECOMP_FUNC(0x0029bfec, 152)
