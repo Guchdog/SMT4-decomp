@@ -177,158 +177,14 @@ void StatusDown_OpenDefaultView() {
 }
 
 // DECOMP_FUNC(0x001ee5a4, 548)
-// Verified ARM-state entry/exit and referenced local literal/table bytes.
-__attribute__((naked)) void StatusDown_PopulateSkillList(const u8* skill_bitfield) {
-    asm volatile(
-        ".word 0xe92d47f0\n"
-        ".word 0xe24dd008\n"
-        ".word 0xe1a07000\n"
-        ".word 0xe3a09000\n"
-        ".word 0xe59fa1ec\n"
-        ".word 0xe3a01b02\n"
-        ".word 0xe59a6000\n"
-        ".word 0xe2865c0d\n"
-        ".word 0xe2860b01\n"
-        ".word 0xe1c59cb8\n"
-        ".word 0xe2800f72\n"
-        ".word 0xe1c59cba\n"
-        ".word 0xeb035955\n"
-        ".word 0xe3a04000\n"
-        ".word 0xe3a08001\n"
-        ".word 0xe1a00004\n"
-        ".word 0xeb032b5e\n"
-        ".word 0xe3500000\n"
-        ".word 0xe320f000\n"
-        ".word 0x0a000018\n"
-        ".word 0xe1d010b6\n"
-        ".word 0xe3110001\n"
-        ".word 0x11d013b8\n"
-        ".word 0x13510000\n"
-        ".word 0x0a000013\n"
-        ".word 0xe7d721a1\n"
-        ".word 0xe2011007\n"
-        ".word 0xe1120118\n"
-        ".word 0x0a00000c\n"
-        ".word 0xe1d51cf8\n"
-        ".word 0xe1d020b0\n"
-        ".word 0xe0861101\n"
-        ".word 0xe2811c05\n"
-        ".word 0xe1c12cb8\n"
-        ".word 0xe1d51cf8\n"
-        ".word 0xe1d003b8\n"
-        ".word 0xe0861101\n"
-        ".word 0xe2811c05\n"
-        ".word 0xe1c10cba\n"
-        ".word 0xe1d50cb8\n"
-        ".word 0xe2800001\n"
-        ".word 0xe1c50cb8\n"
-        ".word 0xe1d50cba\n"
-        ".word 0xe2800001\n"
-        ".word 0xe1c50cba\n"
-        ".word 0xe2840001\n"
-        ".word 0xe6ff4070\n"
-        ".word 0xe3540c05\n"
-        ".word 0x3affffdd\n"
-        ".word 0xe2860b03\n"
-        ".word 0xe58d8004\n"
-        ".word 0xe58d9000\n"
-        ".word 0xe1d51cf8\n"
-        ".word 0xe3a03001\n"
-        ".word 0xe3a0200b\n"
-        ".word 0xe2800f73\n"
-        ".word 0xeb02c517\n"
-        ".word 0xe59a4000\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb02ca45\n"
-        ".word 0xe2805015\n"
-        ".word 0xe5d00015\n"
-        ".word 0xe200107f\n"
-        ".word 0xe3510001\n"
-        ".word 0x1a000008\n"
-        ".word 0xe1b003a0\n"
-        ".word 0xe59f00f8\n"
-        ".word 0xe19010f4\n"
-        ".word 0x0a000009\n"
-        ".word 0xe2840b01\n"
-        ".word 0xe59f30ec\n"
-        ".word 0xe3a02004\n"
-        ".word 0xe2800f72\n"
-        ".word 0xfb03260e\n"
-        ".word 0xe5d50000\n"
-        ".word 0xe200107f\n"
-        ".word 0xe3510021\n"
-        ".word 0x0a000008\n"
-        ".word 0xea000010\n"
-        ".word 0xe2840b01\n"
-        ".word 0xe59f30c8\n"
-        ".word 0xe3a02004\n"
-        ".word 0xe2800f72\n"
-        ".word 0xfb032604\n"
-        ".word 0xe320f000\n"
-        ".word 0xe320f000\n"
-        ".word 0xeafffff2\n"
-        ".word 0xe1b003a0\n"
-        ".word 0xe59f00a0\n"
-        ".word 0xe19010f4\n"
-        ".word 0x0a000009\n"
-        ".word 0xe2840b01\n"
-        ".word 0xe59f309c\n"
-        ".word 0xe3a02004\n"
-        ".word 0xe2800f72\n"
-        ".word 0xfb0325f8\n"
-        ".word 0xe5d50000\n"
-        ".word 0xe200107f\n"
-        ".word 0xe3510003\n"
-        ".word 0x0a000008\n"
-        ".word 0xea000010\n"
-        ".word 0xe2840b01\n"
-        ".word 0xe59f3078\n"
-        ".word 0xe3a02004\n"
-        ".word 0xe2800f72\n"
-        ".word 0xfb0325ee\n"
-        ".word 0xe320f000\n"
-        ".word 0xe320f000\n"
-        ".word 0xeafffff2\n"
-        ".word 0xe1b003a0\n"
-        ".word 0xe59f0048\n"
-        ".word 0xe19010f4\n"
-        ".word 0x0a000007\n"
-        ".word 0xe2840b01\n"
-        ".word 0xe59f304c\n"
-        ".word 0xe3a02004\n"
-        ".word 0xe2800f72\n"
-        ".word 0xfb0325e2\n"
-        ".word 0xe5c68410\n"
-        ".word 0xe28dd008\n"
-        ".word 0xe8bd87f0\n"
-        ".word 0xe2840b01\n"
-        ".word 0xe59f3030\n"
-        ".word 0xe3a02004\n"
-        ".word 0xe2800f72\n"
-        ".word 0xfb0325da\n"
-        ".word 0xe320f000\n"
-        ".word 0xe320f000\n"
-        ".word 0xeafffff4\n"
-        ".word 0x0044e190\n"
-        ".word 0x00000dc8\n"
-        ".word 0x002e4534\n"
-        ".word 0x00206be8\n"
-        ".word 0x002dc96c\n"
-        ".word 0x001f60dc\n"
-        ".word 0x002dca04\n"
-        ".word 0x001f6174\n"
-    );
-}
-#if 0
-// Partial semantic draft retained for reconstruction; not compiled.
-[[maybe_unused]] static void StatusDown_PopulateSkillList_Draft(const u8* skill_bitfield) {
-    StatusDownWork* work = g_StatusDownWork;
+void StatusDown_PopulateSkillList(const u8* skill_bitfield) {
+    auto* work = g_StatusDownWork;
     work->skill_count = 0;
     work->skill_total = 0;
     AsdMem_Zero(work->skill_entries, sizeof(work->skill_entries));
 
     for (u16 i = 0; i < 0x500; ++i) {
-        const ItemTableEntry* entry = static_cast<const ItemTableEntry*>(Battle_GetTalkEntry(i));
+        const auto* entry = static_cast<const ItemTableEntry*>(Battle_GetTalkEntry(i));
         if (entry == nullptr) {
             continue;
         }
@@ -347,7 +203,7 @@ __attribute__((naked)) void StatusDown_PopulateSkillList(const u8* skill_bitfiel
 
     UiListCursor_Setup(&work->skill_cursor, work->skill_count, 11, 1, 0, 1);
 
-    StatusDownWork* w = g_StatusDownWork;
+    auto* w = g_StatusDownWork;
     const u8* sort_cfg = Camp_GetSortConfig();
     const u8 skill_sort = sort_cfg[0x15];
     const u8 sort_key = skill_sort & 0x7F;
@@ -356,134 +212,26 @@ __attribute__((naked)) void StatusDown_PopulateSkillList(const u8* skill_bitfiel
     if (sort_key == 1) {
         qsort_arm(w->skill_entries, w->skill_count, sizeof(StatusDownListEntry),
                   desc ? StatusDown_SkillSortByIdDesc : StatusDown_SkillSortByIdAsc);
-    }
-    if ((sort_cfg[0x15] & 0x7F) == 0x21) {
-        const bool d = (sort_cfg[0x15] >> 7) != 0;
+    } else if (sort_key == 0x21) {
         qsort_arm(w->skill_entries, w->skill_count, sizeof(StatusDownListEntry),
-                  d ? StatusDown_SkillSortByCostDesc : StatusDown_SkillSortByCostAsc);
-    }
-    if ((sort_cfg[0x15] & 0x7F) == 3) {
-        const bool d = (sort_cfg[0x15] >> 7) != 0;
+                  desc ? StatusDown_SkillSortByCostDesc : StatusDown_SkillSortByCostAsc);
+    } else if (sort_key == 3) {
         qsort_arm(w->skill_entries, w->skill_count, sizeof(StatusDownListEntry),
-                  d ? SkillSort_ByNameDesc : StatusDown_SkillSortByNameAsc);
+                  desc ? SkillSort_ByNameDesc : StatusDown_SkillSortByNameAsc);
     }
 
     work->needs_refresh = 1;
 }
-#endif
 
 // DECOMP_FUNC(0x001ee7c8, 384)
-// Verified ARM-state entry/exit and referenced local literal/table bytes.
-__attribute__((naked)) void StatusDown_PopulateItemList(const u8* item_counts) {
-    asm volatile(
-        ".word 0xe59f1174\n"
-        ".word 0xe92d40f0\n"
-        ".word 0xe24dd00c\n"
-        ".word 0xe1a07000\n"
-        ".word 0xe5916000\n"
-        ".word 0xe3a00000\n"
-        ".word 0xe3a01b05\n"
-        ".word 0xe2865c22\n"
-        ".word 0xe1c503b0\n"
-        ".word 0xe1c503b2\n"
-        ".word 0xe2860ee3\n"
-        ".word 0xeb0358cd\n"
-        ".word 0xe3a04000\n"
-        ".word 0xe1a00004\n"
-        ".word 0xeb032ad7\n"
-        ".word 0xe3500000\n"
-        ".word 0xe320f000\n"
-        ".word 0x0a000018\n"
-        ".word 0xe1d010b6\n"
-        ".word 0xe3110001\n"
-        ".word 0x0a000015\n"
-        ".word 0xe1d010b0\n"
-        ".word 0xe7d72001\n"
-        ".word 0xe3520000\n"
-        ".word 0x0a000011\n"
-        ".word 0xe1d523f0\n"
-        ".word 0xe0862102\n"
-        ".word 0xe2822c0e\n"
-        ".word 0xe1c213b0\n"
-        ".word 0xe1d000b0\n"
-        ".word 0xe1d513f0\n"
-        ".word 0xe7d70000\n"
-        ".word 0xe0861101\n"
-        ".word 0xe2811c0e\n"
-        ".word 0xe3500000\n"
-        ".word 0xe1c103b2\n"
-        ".word 0xe1d503f0\n"
-        ".word 0x0a000002\n"
-        ".word 0xe1d513b2\n"
-        ".word 0xe2811001\n"
-        ".word 0xe1c513b2\n"
-        ".word 0xe2800001\n"
-        ".word 0xe1c503b0\n"
-        ".word 0xe2840001\n"
-        ".word 0xe6ff4070\n"
-        ".word 0xe3540c05\n"
-        ".word 0x3affffdd\n"
-        ".word 0xe3a07001\n"
-        ".word 0xe2860a02\n"
-        ".word 0xe2800f8f\n"
-        ".word 0xe58d7000\n"
-        ".word 0xe58d7004\n"
-        ".word 0xe1d513f0\n"
-        ".word 0xe3a03004\n"
-        ".word 0xe3a02009\n"
-        ".word 0xe1a04000\n"
-        ".word 0xeb02c48e\n"
-        ".word 0xe1d503f0\n"
-        ".word 0xe3500000\n"
-        ".word 0xda000017\n"
-        ".word 0xe1d513f6\n"
-        ".word 0xe1d523f4\n"
-        ".word 0xe0821101\n"
-        ".word 0xe1500001\n"
-        ".word 0xca000012\n"
-        ".word 0xe2401001\n"
-        ".word 0xe1a02fc1\n"
-        ".word 0xe0811f22\n"
-        ".word 0xe3e02000\n"
-        ".word 0xe1a01141\n"
-        ".word 0xe6bf1071\n"
-        ".word 0xe2613000\n"
-        ".word 0xe1c513b6\n"
-        ".word 0xe0822103\n"
-        ".word 0xe0800002\n"
-        ".word 0xe1c503b4\n"
-        ".word 0xe1a00004\n"
-        ".word 0xeb02c13e\n"
-        ".word 0xe1d513f4\n"
-        ".word 0xe1a00004\n"
-        ".word 0xeb02c092\n"
-        ".word 0xe320f000\n"
-        ".word 0xe320f000\n"
-        ".word 0xea000005\n"
-        ".word 0xe1d513f6\n"
-        ".word 0xe1a00004\n"
-        ".word 0xeb02c135\n"
-        ".word 0xe1d513f4\n"
-        ".word 0xe1a00004\n"
-        ".word 0xeb02c089\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb04f6e0\n"
-        ".word 0xe5c67410\n"
-        ".word 0xe28dd00c\n"
-        ".word 0xe8bd80f0\n"
-        ".word 0x0044e190\n"
-    );
-}
-#if 0
-// Partial semantic draft retained for reconstruction; not compiled.
-[[maybe_unused]] static void StatusDown_PopulateItemList_Draft(const u8* item_counts) {
-    StatusDownWork* work = g_StatusDownWork;
+void StatusDown_PopulateItemList(const u8* item_counts) {
+    auto* work = g_StatusDownWork;
     work->item_count = 0;
     work->item_nonzero_count = 0;
     AsdMem_Zero(work->item_entries, sizeof(work->item_entries));
 
     for (u16 i = 0; i < 0x500; ++i) {
-        const ItemTableEntry* entry = static_cast<const ItemTableEntry*>(Battle_GetTalkEntry(i));
+        const auto* entry = static_cast<const ItemTableEntry*>(Battle_GetTalkEntry(i));
         if (entry == nullptr || (entry->flags & 1) == 0) {
             continue;
         }
@@ -519,7 +267,7 @@ __attribute__((naked)) void StatusDown_PopulateItemList(const u8* item_counts) {
     StatusDown_SortItemList();
     work->needs_refresh = 1;
 }
-#endif
+
 // DECOMP_FUNC(0x001f60dc, 152)
 s32 StatusDown_SkillSortByCostAsc(const void* a, const void* b) {
     const auto* ea = static_cast<const StatusDownListEntry*>(a);
@@ -3217,133 +2965,27 @@ __attribute__((naked)) void StatusDown_DrawSkillList(s32 x_offset, s32 y_offset)
 #endif
 
 // DECOMP_FUNC(0x0032c4bc, 372)
-// Verified ARM-state entry/exit and referenced local literal/table bytes.
-__attribute__((naked)) void StatusDown_SortItemList() {
-    asm volatile(
-        ".word 0xe59f0144\n"
-        ".word 0xe92d4070\n"
-        ".word 0xe5904000\n"
-        ".word 0xebfdd2b7\n"
-        ".word 0xe2805016\n"
-        ".word 0xe5d00016\n"
-        ".word 0xe200107f\n"
-        ".word 0xe3510001\n"
-        ".word 0x1a000007\n"
-        ".word 0xe1b003a0\n"
-        ".word 0xe59f0120\n"
-        ".word 0xe19010f4\n"
-        ".word 0x0a000008\n"
-        ".word 0xe59f3118\n"
-        ".word 0xe3a02004\n"
-        ".word 0xe2840ee3\n"
-        ".word 0xfbfe2e81\n"
-        ".word 0xe5d50000\n"
-        ".word 0xe200107f\n"
-        ".word 0xe3510008\n"
-        ".word 0x0a000007\n"
-        ".word 0xea00000e\n"
-        ".word 0xe59f30f8\n"
-        ".word 0xe3a02004\n"
-        ".word 0xe2840ee3\n"
-        ".word 0xfbfe2e78\n"
-        ".word 0xe320f000\n"
-        ".word 0xe320f000\n"
-        ".word 0xeafffff3\n"
-        ".word 0xe1b003a0\n"
-        ".word 0xe59f00d0\n"
-        ".word 0xe19010f4\n"
-        ".word 0x0a000008\n"
-        ".word 0xe59f30d0\n"
-        ".word 0xe3a02004\n"
-        ".word 0xe2840ee3\n"
-        ".word 0xfbfe2e6d\n"
-        ".word 0xe5d50000\n"
-        ".word 0xe200107f\n"
-        ".word 0xe3510002\n"
-        ".word 0x0a000007\n"
-        ".word 0xea00000e\n"
-        ".word 0xe59f30b0\n"
-        ".word 0xe3a02004\n"
-        ".word 0xe2840ee3\n"
-        ".word 0xfbfe2e64\n"
-        ".word 0xe320f000\n"
-        ".word 0xe320f000\n"
-        ".word 0xeafffff3\n"
-        ".word 0xe1b003a0\n"
-        ".word 0xe59f0080\n"
-        ".word 0xe19010f4\n"
-        ".word 0x0a000010\n"
-        ".word 0xe59f3088\n"
-        ".word 0xe3a02004\n"
-        ".word 0xe2840ee3\n"
-        ".word 0xfbfe2e59\n"
-        ".word 0xe5d50000\n"
-        ".word 0xe200107f\n"
-        ".word 0xe3510003\n"
-        ".word 0x1a000014\n"
-        ".word 0xe1b003a0\n"
-        ".word 0xe59f0050\n"
-        ".word 0xe19010f4\n"
-        ".word 0x0a00000b\n"
-        ".word 0xe2840ee3\n"
-        ".word 0xe8bd4070\n"
-        ".word 0xe3a02004\n"
-        ".word 0xe59f3050\n"
-        ".word 0xeafd4b7f\n"
-        ".word 0xe59f304c\n"
-        ".word 0xe3a02004\n"
-        ".word 0xe2840ee3\n"
-        ".word 0xfbfe2e48\n"
-        ".word 0xe320f000\n"
-        ".word 0xe320f000\n"
-        ".word 0xeaffffeb\n"
-        ".word 0xe2840ee3\n"
-        ".word 0xe8bd4070\n"
-        ".word 0xe3a02004\n"
-        ".word 0xe59f3028\n"
-        ".word 0xeafd4b73\n"
-        ".word 0xe8bd8070\n"
-        ".word 0x0044e190\n"
-        ".word 0x00002230\n"
-        ".word 0x002e4608\n"
-        ".word 0x00206cbc\n"
-        ".word 0x002e4584\n"
-        ".word 0x00206c38\n"
-        ".word 0x002c6d30\n"
-        ".word 0x002dca98\n"
-        ".word 0x001d1bb8\n"
-        ".word 0x001f61a4\n"
-    );
-}
-#if 0
-// Partial semantic draft retained for reconstruction; not compiled.
-[[maybe_unused]] static void StatusDown_SortItemList_Draft() {
-    StatusDownWork* work = g_StatusDownWork;
+void StatusDown_SortItemList() {
+    auto* work = g_StatusDownWork;
     const u8* sort_cfg = Camp_GetSortConfig();
     const u8 item_sort = sort_cfg[0x16];
+    const u8 sort_key = item_sort & 0x7F;
+    const bool desc = (item_sort >> 7) != 0;
 
-    if ((item_sort & 0x7F) == 1) {
-        const bool desc = (item_sort >> 7) != 0;
+    if (sort_key == 1) {
         qsort_arm(work->item_entries, work->item_count, sizeof(StatusDownListEntry),
                   desc ? StatusDown_ItemSortByIdDesc : StatusDown_ItemSortByIdAsc);
-    }
-    if ((sort_cfg[0x16] & 0x7F) == 8) {
-        const bool desc = (sort_cfg[0x16] >> 7) != 0;
+    } else if (sort_key == 8) {
         qsort_arm(work->item_entries, work->item_count, sizeof(StatusDownListEntry),
                   desc ? StatusDown_ItemSortByTypeDesc : StatusDown_ItemSortByTypeAsc);
-    }
-    if ((sort_cfg[0x16] & 0x7F) == 2) {
-        const bool desc = (sort_cfg[0x16] >> 7) != 0;
+    } else if (sort_key == 2) {
         qsort_arm(work->item_entries, work->item_count, sizeof(StatusDownListEntry),
                   desc ? ItemSort_ByCountDesc : ItemSort_ByCountAsc);
-    }
-    if ((sort_cfg[0x16] & 0x7F) == 3) {
-        const bool desc = (sort_cfg[0x16] >> 7) != 0;
+    } else if (sort_key == 3) {
         qsort_arm(work->item_entries, work->item_count, sizeof(StatusDownListEntry),
                   desc ? ItemSort_ByNameDesc : ItemSort_ByNameAsc);
     }
 }
-#endif
 
 // DECOMP_FUNC(0x00187014, 5176)
 __attribute__((naked, used)) void StatusDown_DrawPartyAndSubViews(s32, s32) {
