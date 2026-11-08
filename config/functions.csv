@@ -9486,7 +9486,7 @@ address,size,status,category,name,src_file
 0x003a8ee8,228,matching,unknown,func_003a8ee8,src/engine/leaf_batch27_c.cpp
 0x003a8fcc,288,matching,shop,shop_func_003a8fcc,src/engine/leaf_batch34_a.cpp
 0x003a90ec,276,matching,shop,shop_func_003a90ec,src/engine/leaf_batch43_c.cpp
-0x003a9200,948,matching,unite,bibleAnalyze_Init,src/camp/bible.cpp
+0x003a9200,948,non_matching,unite,bibleAnalyze_Init,src/camp/bible.cpp
 0x003a95b4,144,matching,ui,ui_func_003a95b4,src/engine/leaf_batch33_a.cpp
 0x003a9644,28,matching,unknown,func_003a9644,src/engine/leaf_batch10_a.cpp
 0x003a9660,520,matching,shop,shop_func_003a9660,src/engine/leaf_batch42_b.cpp

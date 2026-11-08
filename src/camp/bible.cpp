@@ -2,8 +2,22 @@
 #include "ui/status_down.h"
 
 extern "C" {
-    u32 engine_func_002c583c(u32);
+    u32   engine_func_002c583c(u32);
     void* AsdMem_Alloc(u32, u32, u32, u32, u32); // 0x002c4b84
+    void  unite_func_0022e490(void*);
+    void  camp_func_0029e01c(u32);
+    void  engine_func_00240e1c(u32);
+    void* AsdMemory_func_002c23f8(u32 size);
+    void  unite_func_002333bc(void*);
+    void  unite_func_00233804(void*, u32, u32, u32);
+    u32   unite_func_0034232c(u32);
+    void  unite_func_003a8cc0(void*);
+    void  unite_func_003aad60(void*);
+    void  unite_func_0022df7c(void*, u32);
+    s32   unite_func_002338ac(void*);
+    void  unite_func_00233600(void*);
+    void  camp_func_002976ac(u32);
+    void  unite_func_00232800(void*, u32, u32, u32);
 }
 
 namespace smt4::camp {
@@ -53,51 +67,128 @@ void bibleMain_Init() {
 }
 
 
-[[maybe_unused]] static void bibleAnalyze_Init_Decompiled(BibleAnalyzeWork* work) {
-    if (work == nullptr) {
-        return;
-    }
-    // Compendium demon analyzer setup:
-    // Unpacks demon affinities, skill heritage, macca summon cost,
-    // and lore descriptions.
-    work->state_flag = 0;
-}
-
-// Exact ARMv6K instruction/literal words for 0x003a9200; readable draft above remains unverified.
 // DECOMP_FUNC(0x003a9200, 948)
-__attribute__((naked)) void bibleAnalyze_Init(BibleAnalyzeWork* work) {
-    asm volatile(
-        ".word 0xE92D4FF0, 0xE1A04000, 0xE24DD014, 0xE3A0A000, 0xE3E00000, 0xE59F32FC, 0xE59F12FC, 0xE5C4A094\n"
-        ".word 0xE18300B4, 0xE7C10004, 0xE2840B01, 0xE2800F6A, 0xE1A07000, 0xEBFA1495, 0xE5940000, 0xE5901020\n"
-        ".word 0xE1A00004, 0xE12FFF31, 0xE3A00006, 0xEBFBD372, 0xE5D405A4, 0xE2849C05, 0xE3500001, 0x03A00000\n"
-        ".word 0x0BFA5EED, 0xE3A010A3, 0xE28F0E2B, 0xE1A00000, 0xE3A0B001, 0xE3A01C01, 0xE3A03004, 0xE3A02000\n"
-        ".word 0xE1A00001, 0xE58DB000, 0xEBFC6E3D, 0xE59F52C0, 0xE59F12C0, 0xE59F22C0, 0xE3A03000, 0xE5850000\n"
-        ".word 0xE5804000, 0xE58D2000, 0xE58D1004, 0xE58D0008, 0xE1A02003, 0xE3A01002, 0xE28F0E2A, 0xEBFC71AD\n"
-        ".word 0xE5840004, 0xE5952000, 0xE59F12A4, 0xE58D000C, 0xE58D2008, 0xE88D0402, 0xE3A03000, 0xE3A02001\n"
-        ".word 0xE3A0106F, 0xE28F0FA3, 0xEBFC6E44, 0xE5840008, 0xE5940004, 0xE5952000, 0xE59F128C, 0xE58D000C\n"
-        ".word 0xE58D2008, 0xE88D0402, 0xE3A03000, 0xE3A02001, 0xE3A010E6, 0xE28F0F9D, 0xEBFC6E38, 0xE584000C\n"
-        ".word 0xE5D900A4, 0xE2848B01, 0xE28450C8, 0xE3500000, 0xE2888F57, 0xE2846E59, 0xE3A00068, 0x0A000050\n"
-        ".word 0xEBFC642C, 0xE3500000, 0x0A000002, 0xEBFA281A, 0xE59F124C, 0xE5801000, 0xE5840590, 0xE5805064\n"
-        ".word 0xE5943028, 0xE59F223C, 0xE3A0101C, 0xE353000A, 0xA3A0300A, 0xE1A00008, 0xEBFA2921, 0xE2846CA6\n"
-        ".word 0xE2848B29, 0xE5C4B56C, 0xE3A05001, 0xE2888F6D, 0xE1C6ABBA, 0xE1A00005, 0xEBFE63E3, 0xE3500000\n"
-        ".word 0xE320F000, 0x0A00000A, 0xE1D60BFA, 0xE0840080, 0xE2800CA5, 0xE1C05BBA, 0xE5980000, 0xE1500005\n"
-        ".word 0x01D60BBA, 0x01C60BBC, 0xE1D60BBA, 0xE2800001, 0xE1C60BBA, 0xE2855001, 0xE355003C, 0xBAFFFFEC\n"
-        ".word 0xE1A00004, 0xEBFFFE35, 0xE2840096, 0xE320F000, 0xEB00065A, 0xE3A01000, 0xE2840096, 0xEBFA12DE\n"
-        ".word 0xE2840020, 0xE320F000, 0xEBFA2927, 0xE2506000, 0xE3A05000, 0xDA000009, 0xE0870285, 0xE1D000F4\n"
-        ".word 0xE3500000, 0x0A000002, 0xE6FF1070, 0xE2840096, 0xEBFA12D1, 0xE2855001, 0xE1550006, 0xBAFFFFF5\n"
-        ".word 0xE28400DC, 0xEBFA286D, 0xE3A00022, 0xE320F000, 0xEBFBB895, 0xE5D900A4, 0xE3500000, 0x0A000025\n"
-        ".word 0xE3A0301C, 0xE3A02000, 0xE3A01D05, 0xE28400C8, 0xEBFA24E2, 0xE584A014, 0xE584A018, 0xE28DD014\n"
-        ".word 0xE8BD8FF0, 0xE320F000, 0xEBFC63DA, 0xE3500000, 0xE320F000, 0x0A000002, 0xEBFA27C7, 0xE59F1108\n"
-        ".word 0xE5801000, 0xE5840590, 0xE5901000, 0xE5912008, 0xE2841020, 0xE12FFF32, 0xE5960000, 0xE59F20EC\n"
-        ".word 0xE1F010B4, 0xE3811A01, 0xE1C010B0, 0xE5940590, 0xE3A0101D, 0xE5805064, 0xE5943028, 0xE1A00008\n"
-        ".word 0xE353000A, 0xA3A0300A, 0xEBFA28C5, 0xE5C4B56C, 0xE320F000, 0xEAFFFFB9, 0xE3A0301D, 0xE3A02000\n"
-        ".word 0xE3A01D05, 0xE28400C8, 0xEBFA24BC, 0xE320F000, 0xE320F000, 0xEAFFFFD6, 0x0000A5B0, 0x0000A6BE\n"
-        ".word 0x535C3A63, 0x5C34544D, 0x36445258, 0x735C3638, 0x34736464, 0x6F72705C, 0x6D617267, 0x6269625C\n"
-        ".word 0x625C656C, 0x656C6269, 0x6C616E41, 0x2E657A79, 0x00707063, 0x0043D990, 0x003AC930, 0x003AC908\n"
-        ".word 0x4C424942, 0x4E412045, 0x5A594C41, 0x41432045, 0x0000434C, 0x003ACC4C, 0x4C424942, 0x4E412045\n"
-        ".word 0x5A594C41, 0x50552045, 0x00000000, 0x003AD00C, 0x4C424942, 0x4E412045, 0x5A594C41, 0x4F442045\n"
-        ".word 0x00004E57, 0x00421FDC, 0x00001030, 0x0042207C, 0x0000040E\n"
+void bibleAnalyze_Init(BibleAnalyzeWork* work) {
+    auto* const bytes = reinterpret_cast<u8*>(work);
+    bytes[0x94] = 0;
+    *reinterpret_cast<u16*>(bytes + 0xa5b0) = 0xFFFF;
+    bytes[0xa6be] = 0xFF;
+
+    unite_func_0022e490(bytes + 0x5a8);
+
+    // Virtual call: work->vtable[8](work)
+    void** vtable = *reinterpret_cast<void***>(work);
+    reinterpret_cast<void(*)(BibleAnalyzeWork*)>(vtable[8])(work);
+
+    camp_func_0029e01c(6);
+
+    const u8 view_mode = bytes[0x5a4];
+    if (view_mode == 1) {
+        engine_func_00240e1c(0);
+    }
+
+    // Task context allocation (4 bytes)
+    void* const ctx = AsdMem_Alloc(0x100, 0x100, 0, 4, 1);
+    *reinterpret_cast<void**>(0x0043D990) = ctx;
+    *reinterpret_cast<BibleAnalyzeWork**>(ctx) = work;
+
+    using CreateCalc = void* (*)(const char*, u32, u32, u32, void*, void*, void*);
+    using CreateDraw = void* (*)(const char*, u32, u32, u32, void*, u32, void*, void*);
+
+    void* const calc_task = reinterpret_cast<CreateCalc>(0x002C5978)(
+        "BIBLE ANALYZE CALC", 2, 0, 0,
+        reinterpret_cast<void*>(0x003AC930),
+        reinterpret_cast<void*>(0x003AC908),
+        ctx
     );
+    *reinterpret_cast<void**>(bytes + 0x04) = calc_task;
+
+    void* const draw_up = reinterpret_cast<CreateDraw>(0x002C4C00)(
+        "BIBLE ANALYZE UP", 0x6F, 1, 0,
+        reinterpret_cast<void*>(0x003ACC4C),
+        0,
+        ctx,
+        calc_task
+    );
+    *reinterpret_cast<void**>(bytes + 0x08) = draw_up;
+
+    void* const draw_down = reinterpret_cast<CreateDraw>(0x002C4C00)(
+        "BIBLE ANALYZE DOWN", 0xE6, 1, 0,
+        reinterpret_cast<void*>(0x003AD00C),
+        0,
+        ctx,
+        calc_task
+    );
+    *reinterpret_cast<void**>(bytes + 0x0C) = draw_down;
+
+    u8* const sub = reinterpret_cast<u8*>(AsdMemory_func_002c23f8(0x68));
+    if (sub != nullptr) {
+        unite_func_002333bc(sub);
+    }
+    *reinterpret_cast<void**>(bytes + 0x590) = sub;
+
+    u32 count_arg = *reinterpret_cast<const u32*>(bytes + 0x28);
+    if (count_arg >= 10) {
+        count_arg = 10;
+    }
+
+    if (view_mode != 0) {
+        if (sub != nullptr) {
+            *reinterpret_cast<void**>(sub) = reinterpret_cast<void*>(0x00421FDC);
+            *reinterpret_cast<void**>(sub + 0x64) = bytes + 0xc8;
+        }
+        unite_func_00233804(bytes + 0x55c, 0x1C, 0x1030, count_arg);
+        bytes[0x56c] = 1;
+
+        u16 match_count = 0;
+        const u32 target_demon = *reinterpret_cast<const u32*>(bytes + 0xa5b4);
+        for (u32 id = 1; id < 60; ++id) {
+            if (unite_func_0034232c(id) != 0) {
+                *reinterpret_cast<u16*>(bytes + 0xa5ba + match_count * 2) = static_cast<u16>(id);
+                if (target_demon == id) {
+                    *reinterpret_cast<u16*>(bytes + 0xa6bc) = match_count;
+                }
+                match_count++;
+            }
+        }
+        *reinterpret_cast<u16*>(bytes + 0xa6ba) = match_count;
+    } else {
+        if (sub != nullptr) {
+            *reinterpret_cast<void**>(sub) = reinterpret_cast<void*>(0x0042207C);
+            void** sub_vtable = *reinterpret_cast<void***>(sub);
+            reinterpret_cast<void(*)(void*, void*)>(sub_vtable[2])(sub, bytes + 0x20);
+
+            u16* flag_ptr = reinterpret_cast<u16*>(sub + 4);
+            *flag_ptr |= 0x1000;
+            *reinterpret_cast<void**>(sub + 0x64) = bytes + 0xc8;
+        }
+        unite_func_00233804(bytes + 0x55c, 0x1D, 0x40E, count_arg);
+        bytes[0x56c] = 1;
+    }
+
+    unite_func_003a8cc0(work);
+    unite_func_003aad60(bytes + 0x96);
+    unite_func_0022df7c(bytes + 0x96, 0);
+
+    const s32 num_items = unite_func_002338ac(bytes + 0x20);
+    for (s32 i = 0; i < num_items; ++i) {
+        const s16 item_id = *reinterpret_cast<const s16*>(bytes + 0x5a8 + i * 32 + 4);
+        if (item_id != 0) {
+            unite_func_0022df7c(bytes + 0x96, static_cast<u16>(item_id));
+        }
+    }
+
+    unite_func_00233600(bytes + 0xdc);
+    camp_func_002976ac(0x22);
+
+    if (view_mode != 0) {
+        unite_func_00232800(bytes + 0xc8, 0x140, 0, 0x1C);
+    } else {
+        unite_func_00232800(bytes + 0xc8, 0x140, 0, 0x1D);
+    }
+
+    *reinterpret_cast<u32*>(bytes + 0x14) = 0;
+    *reinterpret_cast<u32*>(bytes + 0x18) = 0;
 }
 
 } // namespace smt4::camp
