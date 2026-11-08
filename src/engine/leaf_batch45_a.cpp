@@ -2473,91 +2473,100 @@ extern "C" __attribute__((naked)) void engine_func_00392acc() {
 };
 
 // DECOMP_FUNC(0x0033631c, 640)
-extern "C" __attribute__((naked)) void engine_func_0033631c() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x3101, 0xe080, 0x0ff0, 0xe92d\n"
-        ".hword 0x0b12, 0xe283, 0x0f89, 0xe280\n"
-        ".hword 0xcb12, 0xe283, 0x5000, 0xe590\n"
-        ".hword 0x1b12, 0xe283, 0x2b12, 0xe283\n"
-        ".hword 0x4b12, 0xe283, 0x3b12, 0xe283\n"
-        ".hword 0x0007, 0xe355, 0xcf8d, 0xe28c\n"
-        ".hword 0x1f8b, 0xe281, 0x2f83, 0xe282\n"
-        ".hword 0x4f85, 0xe284, 0x3f87, 0xe283\n"
-        ".hword 0xf105, 0x379f, 0x0044, 0xea00\n"
-        ".hword 0x6380, 0x0033, 0x6388, 0x0033\n"
-        ".hword 0x6480, 0x0033, 0x6478, 0x0033\n"
-        ".hword 0x648c, 0x0033, 0x6494, 0x0033\n"
-        ".hword 0x6588, 0x0033, 0x5001, 0xe3a0\n"
-        ".hword 0x5000, 0xe580, 0x8000, 0xe59c\n"
-        ".hword 0x7000, 0xe591, 0x3000, 0xe593\n"
-        ".hword 0x8a90, 0xee00, 0x7a10, 0xee00\n"
-        ".hword 0xc000, 0xe594, 0x44ff, 0xe203\n"
-        ".hword 0x1a7b, 0xed9f, 0x64ff, 0xe20c\n"
-        ".hword 0x2ae0, 0xeeb8, 0x1ac0, 0xeef8\n"
-        ".hword 0xb004, 0xe046, 0xba10, 0xee00\n"
-        ".hword 0x7001, 0xe287, 0x0008, 0xe157\n"
-        ".hword 0x58ff, 0xe203, 0x98ff, 0xe20c\n"
-        ".hword 0x6cff, 0xe203, 0x0a40, 0xeef8\n"
-        ".hword 0xacff, 0xe20c, 0x0a82, 0xee81\n"
-        ".hword 0xb0ff, 0xe203, 0xc0ff, 0xe20c\n"
-        ".hword 0xc00b, 0xe04c, 0x0a40, 0xee31\n"
-        ".hword 0x0a80, 0xee60, 0x0ae0, 0xeefc\n"
-        ".hword 0x8a90, 0xee10, 0x4008, 0xe084\n"
-        ".hword 0x8005, 0xe049, 0x8a90, 0xee00\n"
-        ".hword 0x44ff, 0xe204, 0x0a60, 0xeef8\n"
-        ".hword 0x0a80, 0xee60, 0x0ae0, 0xeefc\n"
-        ".hword 0x8a90, 0xee10, 0x5008, 0xe085\n"
-        ".hword 0x8006, 0xe04a, 0x8a90, 0xee00\n"
-        ".hword 0x58ff, 0xe205, 0x5004, 0xe185\n"
-        ".hword 0x0a60, 0xeef8, 0x0a80, 0xee60\n"
-        ".hword 0x0ae0, 0xeefc, 0x4a90, 0xee10\n"
-        ".hword 0xca90, 0xee00, 0x4006, 0xe084\n"
-        ".hword 0x4cff, 0xe204, 0x4005, 0xe184\n"
-        ".hword 0x0a60, 0xeef8, 0x0a80, 0xee20\n"
-        ".hword 0x0ac0, 0xeebc, 0xca10, 0xee10\n"
-        ".hword 0x3073, 0xe6ec, 0x30ff, 0xe203\n"
-        ".hword 0x3004, 0xe183, 0x3000, 0xe582\n"
-        ".hword 0x7000, 0xe581, 0x1002, 0xa3a0\n"
-        ".hword 0x0040, 0xaa00, 0x0ff0, 0xe8bd\n"
-        ".hword 0xff1e, 0xe12f, 0x3000, 0xe593\n"
-        ".hword 0x1003, 0xe3a0, 0x0040, 0xea00\n"
-        ".hword 0x5005, 0xe3a0, 0x5000, 0xe580\n"
-        ".hword 0x7000, 0xe591, 0x8000, 0xe59c\n"
-        ".hword 0xc000, 0xe593, 0x7a10, 0xee00\n"
-        ".hword 0x8a90, 0xee00, 0x3000, 0xe594\n"
-        ".hword 0x64ff, 0xe20c, 0x98ff, 0xe20c\n"
-        ".hword 0x44ff, 0xe203, 0x1ac0, 0xeeb8\n"
-        ".hword 0xb004, 0xe046, 0x0ae0, 0xeef8\n"
-        ".hword 0xba10, 0xee00, 0x58ff, 0xe203\n"
-        ".hword 0x9005, 0xe049, 0xacff, 0xe20c\n"
-        ".hword 0x6cff, 0xe203, 0x7001, 0xe287\n"
-        ".hword 0x1a40, 0xeef8, 0x0008, 0xe157\n"
-        ".hword 0xc0ff, 0xe20c, 0x0a20, 0xee81\n"
-        ".hword 0x80ff, 0xe203, 0xc008, 0xe04c\n"
-        ".hword 0x0a80, 0xee61, 0x0ae0, 0xeefc\n"
-        ".hword 0xba90, 0xee10, 0x9a90, 0xee00\n"
-        ".hword 0x400b, 0xe084, 0x44ff, 0xe204\n"
-        ".hword 0x0a60, 0xeef8, 0x0a80, 0xee60\n"
-        ".hword 0x0ae0, 0xeefc, 0x9a90, 0xee10\n"
-        ".hword 0x5009, 0xe085, 0x9006, 0xe04a\n"
-        ".hword 0x9a90, 0xee00, 0x58ff, 0xe205\n"
-        ".hword 0x5004, 0xe185, 0x0a60, 0xeef8\n"
-        ".hword 0x0a80, 0xee60, 0x0ae0, 0xeefc\n"
-        ".hword 0x4a90, 0xee10, 0xca90, 0xee00\n"
-        ".hword 0x4006, 0xe084, 0x4cff, 0xe204\n"
-        ".hword 0x4005, 0xe184, 0x0a60, 0xeef8\n"
-        ".hword 0x0a80, 0xee20, 0x0ac0, 0xeebc\n"
-        ".hword 0xca10, 0xee10, 0x3073, 0xe6ec\n"
-        ".hword 0x30ff, 0xe203, 0x3004, 0xe183\n"
-        ".hword 0x3000, 0xe582, 0x7000, 0xe581\n"
-        ".hword 0x1006, 0xa3a0, 0xffbe, 0xbaff\n"
-        ".hword 0x1000, 0xe580, 0x0ff0, 0xe8bd\n"
-        ".hword 0xff1e, 0xe12f, 0x3000, 0xe593\n"
-        ".hword 0x1007, 0xe3a0, 0x3000, 0xe582\n"
-        ".hword 0xfff8, 0xeaff, 0x0000, 0x3f80\n"
-    );
-};
+extern "C" void engine_func_0033631c(void* context, u32 channel_index) {
+    auto* const channel_base = static_cast<u8*>(context) + (channel_index * 4);
+
+    auto* const p_current_color = reinterpret_cast<u32*>(channel_base + 0x4A0C);
+    const u32 start_color = *reinterpret_cast<const u32*>(channel_base + 0x4A14);
+    const u32 end_color = *reinterpret_cast<const u32*>(channel_base + 0x4A1C);
+    auto* const p_state = reinterpret_cast<u32*>(channel_base + 0x4A24);
+    auto* const p_step = reinterpret_cast<s32*>(channel_base + 0x4A2C);
+    const s32 max_steps = *reinterpret_cast<const s32*>(channel_base + 0x4A34);
+
+    u32 state = *p_state;
+    if (state >= 7) {
+        return;
+    }
+
+    if (state == 0) {
+        state = 1;
+        *p_state = 1;
+    }
+
+    if (state == 1) {
+        const s32 cur_step = *p_step;
+        const float t = static_cast<float>(cur_step) / static_cast<float>(max_steps);
+        const float factor = 1.0f - t;
+
+        const u32 diff_a = (start_color & 0xFF000000) - (end_color & 0xFF000000);
+        const u32 cur_a = ((end_color & 0xFF000000) + static_cast<u32>(static_cast<float>(diff_a) * factor)) & 0xFF000000;
+
+        const u32 diff_r = (start_color & 0x00FF0000) - (end_color & 0x00FF0000);
+        const u32 cur_r = ((end_color & 0x00FF0000) + static_cast<u32>(static_cast<float>(diff_r) * factor)) & 0x00FF0000;
+
+        const u32 diff_g = (start_color & 0x0000FF00) - (end_color & 0x0000FF00);
+        const u32 cur_g = ((end_color & 0x0000FF00) + static_cast<u32>(static_cast<float>(diff_g) * factor)) & 0x0000FF00;
+
+        const u32 diff_b = (start_color & 0x000000FF) - (end_color & 0x000000FF);
+        const u32 cur_b = ((end_color & 0x000000FF) + static_cast<u32>(static_cast<float>(diff_b) * factor)) & 0x000000FF;
+
+        *p_current_color = cur_a | cur_r | cur_g | cur_b;
+        const s32 next_step = cur_step + 1;
+        *p_step = next_step;
+
+        if (next_step >= max_steps) {
+            *p_state = 2;
+        }
+        return;
+    }
+
+    if (state == 2) {
+        *p_current_color = end_color;
+        *p_state = 3;
+        return;
+    }
+
+    if (state == 3) {
+        return;
+    }
+
+    if (state == 4) {
+        state = 5;
+        *p_state = 5;
+    }
+
+    if (state == 5) {
+        const s32 cur_step = *p_step;
+        const float factor = static_cast<float>(cur_step) / static_cast<float>(max_steps);
+
+        const u32 diff_a = (end_color & 0xFF000000) - (start_color & 0xFF000000);
+        const u32 cur_a = ((start_color & 0xFF000000) + static_cast<u32>(static_cast<float>(diff_a) * factor)) & 0xFF000000;
+
+        const u32 diff_r = (end_color & 0x00FF0000) - (start_color & 0x00FF0000);
+        const u32 cur_r = ((start_color & 0x00FF0000) + static_cast<u32>(static_cast<float>(diff_r) * factor)) & 0x00FF0000;
+
+        const u32 diff_g = (end_color & 0x0000FF00) - (start_color & 0x0000FF00);
+        const u32 cur_g = ((start_color & 0x0000FF00) + static_cast<u32>(static_cast<float>(diff_g) * factor)) & 0x0000FF00;
+
+        const u32 diff_b = (end_color & 0x000000FF) - (start_color & 0x000000FF);
+        const u32 cur_b = ((start_color & 0x000000FF) + static_cast<u32>(static_cast<float>(diff_b) * factor)) & 0x000000FF;
+
+        *p_current_color = cur_a | cur_r | cur_g | cur_b;
+        const s32 next_step = cur_step + 1;
+        *p_step = next_step;
+
+        if (next_step >= max_steps) {
+            *p_state = 6;
+        }
+        return;
+    }
+
+    if (state == 6) {
+        *p_current_color = end_color;
+        *p_state = 7;
+        return;
+    }
+}
 
 // DECOMP_FUNC(0x00339b18, 640)
 extern "C" __attribute__((naked)) void engine_func_00339b18() {
