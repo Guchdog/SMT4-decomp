@@ -10514,12 +10514,12 @@ address,size,status,category,name,src_file
 0x003ee398,2128,matching,engine,engine_func_003ee398,src/engine/leaf_batch45_c.cpp
 0x003eebe8,2084,matching,engine,engine_func_003eebe8,src/engine/leaf_batch46_b.cpp
 0x003ef40c,1540,matching,battle,battle_func_003ef40c,src/engine/leaf_batch45_c.cpp
-0x003efa10,56,matching,ui,Ui_NkmBaseTableLoad,src/ui/battle_hud.cpp
-0x003efa48,92,matching,ui,func_003efa48,src/ui/battle_hud.cpp
-0x003efaa4,20,matching,ui,func_003efaa4,src/ui/battle_hud.cpp
-0x003efab8,20,matching,ui,func_003efab8,src/ui/battle_hud.cpp
-0x003efacc,64,matching,ui,func_003efacc,src/ui/battle_hud.cpp
-0x003efb0c,44,matching,ui,func_003efb0c,src/ui/battle_hud.cpp
+0x003efa10,56,non_matching,ui,Ui_NkmBaseTableLoad,src/ui/battle_hud.cpp
+0x003efa48,92,non_matching,ui,func_003efa48,src/ui/battle_hud.cpp
+0x003efaa4,20,non_matching,ui,func_003efaa4,src/ui/battle_hud.cpp
+0x003efab8,20,non_matching,ui,func_003efab8,src/ui/battle_hud.cpp
+0x003efacc,64,non_matching,ui,func_003efacc,src/ui/battle_hud.cpp
+0x003efb0c,44,non_matching,ui,func_003efb0c,src/ui/battle_hud.cpp
 0x003efb38,44,matching,ui,func_003efb38,src/ui/battle_hud_reset_batch.cpp
 0x003efb64,44,matching,ui,func_003efb64,src/ui/battle_hud_reset_batch.cpp
 0x003efb90,44,matching,ui,func_003efb90,src/ui/battle_hud_reset_batch.cpp
@@ -10544,7 +10544,7 @@ address,size,status,category,name,src_file
 0x003effd4,44,matching,ui,func_003effd4,src/ui/battle_hud_reset_batch.cpp
 0x003f0000,48,matching,ui,func_003f0000,src/ui/battle_hud_gap_batch.cpp
 0x003f0030,16,matching_span,raw_span,span_003f0030,src/exact_byte_spans.cpp
-0x003f0040,28,matching,ui,func_003f0040,src/ui/battle_hud.cpp
+0x003f0040,28,non_matching,ui,func_003f0040,src/ui/battle_hud.cpp
 0x003f005c,44,matching,ui,func_003f005c,src/ui/battle_hud_reset_batch.cpp
 0x003f0088,44,matching,ui,func_003f0088,src/ui/battle_hud_reset_batch.cpp
 0x003f00b4,44,matching,ui,func_003f00b4,src/ui/battle_hud_reset_batch.cpp
