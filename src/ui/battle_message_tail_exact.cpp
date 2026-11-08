@@ -2,6 +2,10 @@
 
 extern "C" {
 void engine_func_00225e4c(void* ptr, u32 a1, u32 a2);
+void ui_func_002c5f58(void* base, void* func, u32 elem_size, u32 count);
+void func_003772d4(void* ptr);
+void ui_func_0037e2b4(void* ptr);
+void func_003613f4(void* ptr);
 }
 
 // Verified ARM-state BattleMessageWindow tail entries. Each span includes its
@@ -116,8 +120,16 @@ void func_003f3b38() {
     p2[1] = 0;
 }
 // DECOMP_FUNC(0x003f3b64, 120)
-__attribute__((naked, used)) void func_003f3b64() {
-    asm volatile(".incbin \"extracted/exefs/code.bin\", 0x2f3b64, 120\n");
+void func_003f3b64() {
+    *reinterpret_cast<u32*>(0x4720A0) = 0xBF0000;
+    *reinterpret_cast<u32*>(0x4720A8) = 0xFFFFFFFF;
+    *reinterpret_cast<u32*>(0x4720AC) = 0xFFFFFFFF;
+    *reinterpret_cast<u32*>(0x4720B0) = 0;
+    *reinterpret_cast<u32*>(0x4720B4) = 0;
+    ui_func_002c5f58(reinterpret_cast<void*>(0x4E9DC8), reinterpret_cast<void*>(0x17F5C0), 4, 0x18);
+    *reinterpret_cast<u32*>(0x4720BC) = 0x000F0111;
+    *reinterpret_cast<u32*>(0x4720C4) = 0x000F0110;
+    *reinterpret_cast<u32*>(0x4720CC) = 0x803F0112;
 }
 // DECOMP_FUNC(0x003f3bdc, 60)
 void func_003f3bdc() {
@@ -204,8 +216,9 @@ void func_003f3d6c() {
     p2[1] = 0;
 }
 // DECOMP_FUNC(0x003f3d98, 40)
-__attribute__((naked, used)) void func_003f3d98() {
-    asm volatile(".incbin \"extracted/exefs/code.bin\", 0x2f3d98, 40\n");
+void func_003f3d98() {
+    func_003772d4(reinterpret_cast<void*>(0x4EA4B4));
+    engine_func_00225e4c(reinterpret_cast<void*>(0x4EA4B4), 0x37730C, 0x100000);
 }
 // DECOMP_FUNC(0x003f3dc0, 44)
 void func_003f3dc0() {
@@ -248,8 +261,17 @@ void func_003f3e44() {
     p2[1] = 0;
 }
 // DECOMP_FUNC(0x003f3e70, 172)
-__attribute__((naked, used)) void func_003f3e70() {
-    asm volatile(".incbin \"extracted/exefs/code.bin\", 0x2f3e70, 172\n");
+void func_003f3e70() {
+    *reinterpret_cast<u32*>(0x465650) = 0xFFFFFFFF;
+    *reinterpret_cast<u32*>(0x465654) = 0xFFFFFFFF;
+    *reinterpret_cast<u32*>(0x465658) = 0;
+    *reinterpret_cast<u32*>(0x46565C) = 0;
+    ui_func_002c5f58(reinterpret_cast<void*>(0x4E5290), reinterpret_cast<void*>(0x3578DC), 4, 3);
+    *reinterpret_cast<u32*>(0x46563C) = 0;
+    *reinterpret_cast<u8*>(0x465640) = 1;
+    *reinterpret_cast<u32*>(0x465644) = 0;
+    *reinterpret_cast<u32*>(0x465648) = 0;
+    engine_func_00225e4c(reinterpret_cast<void*>(0x465644), 0x3575B0, 0x100000);
 }
 // DECOMP_FUNC(0x003f3f1c, 208)
 void func_003f3f1c() {
@@ -347,8 +369,18 @@ void func_003f4124() {
     p2[1] = 0;
 }
 // DECOMP_FUNC(0x003f4150, 268)
-__attribute__((naked, used)) void func_003f4150() {
-    asm volatile(".incbin \"extracted/exefs/code.bin\", 0x2f4150, 268\n");
+void func_003f4150() {
+    ui_func_002c5f58(reinterpret_cast<void*>(0x4EA428), reinterpret_cast<void*>(0x17F5E8), 8, 7);
+    *reinterpret_cast<u32*>(0x4EA460) = 0;
+    *reinterpret_cast<u32*>(0x4EA464) = 0;
+    *reinterpret_cast<u32*>(0x4EA468) = 0;
+    *reinterpret_cast<u32*>(0x472348) = 0x00421838;
+    *reinterpret_cast<u32*>(0x47234C) = 0x00421824;
+    *reinterpret_cast<u32*>(0x472350) = 0x0042184C;
+    *reinterpret_cast<u32*>(0x472354) = 0x004218FC;
+    *reinterpret_cast<u32*>(0x472358) = 0x00421910;
+    ui_func_0037e2b4(reinterpret_cast<void*>(0x4EA168));
+    engine_func_00225e4c(reinterpret_cast<void*>(0x4EA168), 0x37E3F8, 0x100000);
 }
 // DECOMP_FUNC(0x003f425c, 44)
 void func_003f425c() {
@@ -553,8 +585,8 @@ void func_003f46a8() {
     *reinterpret_cast<u32*>(0X472210) = 0X4732A8;
 }
 // DECOMP_FUNC(0x003f46e4, 12)
-__attribute__((naked, used)) void func_003f46e4() {
-    asm volatile(".incbin \"extracted/exefs/code.bin\", 0x2f46e4, 12\n");
+void func_003f46e4() {
+    func_003613f4(reinterpret_cast<void*>(0x4EF9CC));
 }
 // DECOMP_FUNC(0x003f46f0, 44)
 void func_003f46f0() {

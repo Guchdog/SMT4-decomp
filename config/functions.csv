@@ -10715,7 +10715,7 @@ address,size,status,category,name,src_file
 0x003f3ae0,44,non_matching,ui,func_003f3ae0,src/ui/battle_message_tail_exact.cpp
 0x003f3b0c,44,non_matching,ui,func_003f3b0c,src/ui/battle_message_tail_exact.cpp
 0x003f3b38,44,non_matching,ui,func_003f3b38,src/ui/battle_message_tail_exact.cpp
-0x003f3b64,120,matching,ui,func_003f3b64,src/ui/battle_message_tail_exact.cpp
+0x003f3b64,120,non_matching,ui,func_003f3b64,src/ui/battle_message_tail_exact.cpp
 0x003f3bdc,60,non_matching,ui,func_003f3bdc,src/ui/battle_message_tail_exact.cpp
 0x003f3c18,44,non_matching,ui,func_003f3c18,src/ui/battle_message_tail_exact.cpp
 0x003f3c44,44,non_matching,ui,func_003f3c44,src/ui/battle_message_tail_exact.cpp
@@ -10725,12 +10725,12 @@ address,size,status,category,name,src_file
 0x003f3d14,44,non_matching,ui,func_003f3d14,src/ui/battle_message_tail_exact.cpp
 0x003f3d40,44,non_matching,ui,func_003f3d40,src/ui/battle_message_tail_exact.cpp
 0x003f3d6c,44,non_matching,ui,func_003f3d6c,src/ui/battle_message_tail_exact.cpp
-0x003f3d98,40,matching,ui,func_003f3d98,src/ui/battle_message_tail_exact.cpp
+0x003f3d98,40,non_matching,ui,func_003f3d98,src/ui/battle_message_tail_exact.cpp
 0x003f3dc0,44,non_matching,ui,func_003f3dc0,src/ui/battle_message_tail_exact.cpp
 0x003f3dec,44,non_matching,ui,func_003f3dec,src/ui/battle_message_tail_exact.cpp
 0x003f3e18,44,non_matching,ui,func_003f3e18,src/ui/battle_message_tail_exact.cpp
 0x003f3e44,44,non_matching,ui,func_003f3e44,src/ui/battle_message_tail_exact.cpp
-0x003f3e70,172,matching,ui,func_003f3e70,src/ui/battle_message_tail_exact.cpp
+0x003f3e70,172,non_matching,ui,func_003f3e70,src/ui/battle_message_tail_exact.cpp
 0x003f3f1c,208,non_matching,ui,func_003f3f1c,src/ui/battle_message_tail_exact.cpp
 0x003f3fec,60,non_matching,ui,func_003f3fec,src/ui/battle_message_tail_exact.cpp
 0x003f4028,60,non_matching,ui,func_003f4028,src/ui/battle_message_tail_exact.cpp
@@ -10739,7 +10739,7 @@ address,size,status,category,name,src_file
 0x003f40cc,44,non_matching,ui,func_003f40cc,src/ui/battle_message_tail_exact.cpp
 0x003f40f8,44,non_matching,ui,func_003f40f8,src/ui/battle_message_tail_exact.cpp
 0x003f4124,44,non_matching,ui,func_003f4124,src/ui/battle_message_tail_exact.cpp
-0x003f4150,268,matching,ui,func_003f4150,src/ui/battle_message_tail_exact.cpp
+0x003f4150,268,non_matching,ui,func_003f4150,src/ui/battle_message_tail_exact.cpp
 0x003f425c,44,non_matching,ui,func_003f425c,src/ui/battle_message_tail_exact.cpp
 0x003f4288,44,non_matching,ui,func_003f4288,src/ui/battle_message_tail_exact.cpp
 0x003f42b4,60,non_matching,ui,func_003f42b4,src/ui/battle_message_tail_exact.cpp
@@ -10761,7 +10761,7 @@ address,size,status,category,name,src_file
 0x003f4640,60,non_matching,ui,func_003f4640,src/ui/battle_message_tail_exact.cpp
 0x003f467c,44,non_matching,ui,func_003f467c,src/ui/battle_message_tail_exact.cpp
 0x003f46a8,60,non_matching,ui,func_003f46a8,src/ui/battle_message_tail_exact.cpp
-0x003f46e4,12,matching,ui,func_003f46e4,src/ui/battle_message_tail_exact.cpp
+0x003f46e4,12,non_matching,ui,func_003f46e4,src/ui/battle_message_tail_exact.cpp
 0x003f46f0,44,non_matching,ui,func_003f46f0,src/ui/battle_message_tail_exact.cpp
 0x003f471c,44,non_matching,ui,func_003f471c,src/ui/battle_message_tail_exact.cpp
 0x003f4748,20,non_matching,ui,func_003f4748,src/ui/battle_message_tail_exact.cpp

@@ -12,7 +12,7 @@ import unicorn
 from unicorn import Uc, UC_ARCH_ARM, UC_MODE_ARM, UC_PROT_READ, UC_PROT_WRITE, UC_PROT_EXEC
 from unicorn.arm_const import (
     UC_ARM_REG_R0, UC_ARM_REG_R1, UC_ARM_REG_R2, UC_ARM_REG_R3,
-    UC_ARM_REG_SP, UC_ARM_REG_LR, UC_ARM_REG_PC,
+    UC_ARM_REG_SP, UC_ARM_REG_LR, UC_ARM_REG_PC, UC_ARM_REG_CPSR,
     UC_ARM_REG_C1_C0_2, UC_ARM_REG_FPEXC,
 )
 
@@ -32,13 +32,29 @@ STACK_BASE = 0x0FFFF000
 STACK_SIZE = 0x00010000
 STACK_TOP = STACK_BASE + STACK_SIZE - 0x100
 
-STUB_BASE = 0x004A0000
+STUB_BASE = 0x02000000
 STUB_MAP = {
     'engine_func_00225e4c': STUB_BASE + 0x00,
+    'ui_func_002c5f58': STUB_BASE + 0x10,
+    'func_003772d4': STUB_BASE + 0x20,
+    'ui_func_0037e2b4': STUB_BASE + 0x30,
+    'func_003613f4': STUB_BASE + 0x40,
 }
 
 ORIG_ADDR_MAP = {
     0x00225e4c: 'engine_func_00225e4c',
+    0x002c5f58: 'ui_func_002c5f58',
+    0x003772d4: 'func_003772d4',
+    0x0037e2b4: 'ui_func_0037e2b4',
+    0x003613f4: 'func_003613f4',
+}
+
+ARITY_MAP = {
+    'engine_func_00225e4c': 3,
+    'ui_func_002c5f58': 4,
+    'func_003772d4': 1,
+    'ui_func_0037e2b4': 1,
+    'func_003613f4': 1,
 }
 
 def create_emulator():
@@ -64,9 +80,13 @@ class StubTracker:
             'name': stub_name,
             'r0': r0, 'r1': r1, 'r2': r2, 'r3': r3,
         })
-        uc.reg_write(UC_ARM_REG_R0, 0)
         lr = uc.reg_read(UC_ARM_REG_LR)
-        uc.reg_write(UC_ARM_REG_PC, lr)
+        if lr & 1:
+            uc.reg_write(UC_ARM_REG_CPSR, uc.reg_read(UC_ARM_REG_CPSR) | 0x20)
+            uc.reg_write(UC_ARM_REG_PC, lr & ~1)
+        else:
+            uc.reg_write(UC_ARM_REG_CPSR, uc.reg_read(UC_ARM_REG_CPSR) & ~0x20)
+            uc.reg_write(UC_ARM_REG_PC, lr)
 
 def setup_orig_stubs(uc, tracker):
     for addr, name in ORIG_ADDR_MAP.items():
@@ -110,9 +130,7 @@ def apply_relocations(code_bytes, relocs, target_addr, rodata_addr):
             raise ValueError(f"Unsupported reloc type {rel_type}")
     return bytes(mutable)
 
-EXCLUDE = {
-    0x003f3b64, 0x003f3d98, 0x003f3e70, 0x003f4150, 0x003f46e4
-}
+EXCLUDE = set()
 
 def get_target_functions():
     text = SRC_PATH.read_text(encoding="utf-8")
@@ -148,6 +166,7 @@ def main():
 
     for addr, sz, name in targets:
         total_bytes += sz
+
         # Find compiled function bytes & relocs
         dec_code = None
         dec_relocs = None
@@ -178,6 +197,7 @@ def main():
         # Run decompiled
         uc_dec = create_emulator()
         uc_dec.mem_write(CODE_BASE, ORIG_DATA)
+        uc_dec.mem_map(STUB_BASE, 0x10000, UC_PROT_READ | UC_PROT_WRITE | UC_PROT_EXEC)
         uc_dec.mem_write(TARGET_DECOMP, patched_code)
         tracker_dec = StubTracker(uc_dec)
         setup_stubs(uc_dec, tracker_dec)
@@ -196,9 +216,15 @@ def main():
             c1 = tracker_orig.calls[i]
             c2 = tracker_dec.calls[i]
             assert c1['name'] == c2['name'], f"Call name mismatch for {name}: {c1} vs {c2}"
-            assert c1['r0'] == c2['r0'], f"Call r0 mismatch for {name}: {c1} vs {c2}"
-            assert c1['r1'] == c2['r1'], f"Call r1 mismatch for {name}: {c1} vs {c2}"
-            assert c1['r2'] == c2['r2'], f"Call r2 mismatch for {name}: {c1} vs {c2}"
+            arity = ARITY_MAP.get(c1['name'], 4)
+            if arity >= 1:
+                assert c1['r0'] == c2['r0'], f"Call r0 mismatch for {name}: {c1} vs {c2}"
+            if arity >= 2:
+                assert c1['r1'] == c2['r1'], f"Call r1 mismatch for {name}: {c1} vs {c2}"
+            if arity >= 3:
+                assert c1['r2'] == c2['r2'], f"Call r2 mismatch for {name}: {c1} vs {c2}"
+            if arity >= 4:
+                assert c1['r3'] == c2['r3'], f"Call r3 mismatch for {name}: {c1} vs {c2}"
 
         # Check written memory matches
         all_written_addrs = set(a for a, s, v in writes_orig) | set(a for a, s, v in writes_dec)
