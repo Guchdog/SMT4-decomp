@@ -34,19 +34,19 @@ extern "C" void camp_func_00254840();
 extern "C" void camp_func_0025485c();
 extern "C" void camp_func_00263194();
 extern "C" void camp_func_0026bc28();
-extern "C" void camp_func_0026f474();
-extern "C" void camp_func_0026f9f4();
-extern "C" void camp_func_0026fa70();
-extern "C" void camp_func_002840b8();
+extern "C" void camp_func_0026f474(void* a, void* b, void* c);
+extern "C" u32 camp_func_0026f9f4(void* obj);
+extern "C" void camp_func_0026fa70(void* obj, u32 val);
+extern "C" void* camp_func_002840b8(u32 id);
 extern "C" void camp_func_002883bc();
-extern "C" void camp_func_0028d838();
+extern "C" u32 camp_func_0028d838();
 extern "C" void camp_func_0028dc54();
 extern "C" void camp_func_00293a84();
 extern "C" void camp_func_0029eb58();
 extern "C" u32 camp_func_0029edfc(void* object, u32 index);
 extern "C" void camp_func_0029ee4c();
 extern "C" void camp_func_002a0fac();
-extern "C" void camp_func_002a89e4();
+extern "C" void* camp_func_002a89e4(u32 id);
 extern "C" void camp_func_002a8a08();
 extern "C" void camp_func_002a8a1c();
 extern "C" u32 camp_func_002ae874(u32 enable);
@@ -62,7 +62,7 @@ extern "C" void* camp_func_002bf6d0(u32 group_id, u32 node_id);
 extern "C" void camp_func_002c4450();
 extern "C" void camp_func_002d4e48();
 extern "C" void camp_func_002d4e80();
-extern "C" void camp_func_00316fc4();
+extern "C" void* camp_func_00316fc4(u32 id);
 extern "C" void effGeometry_func_00207334();
 extern "C" void effParts_func_002490e0();
 extern "C" void effParts_func_002a51dc();
@@ -101,7 +101,7 @@ extern "C" void engine_func_002bd688();
 extern "C" void engine_func_002c0bcc();
 extern "C" void engine_func_002c2430();
 extern "C" void engine_func_002c25f4();
-extern "C" void engine_func_002c2b1c();
+extern "C" void* engine_func_002c2b1c();
 extern "C" void engine_func_002c3290();
 extern "C" void engine_func_002c34a4();
 extern "C" void engine_func_002c3a24();
@@ -129,7 +129,7 @@ extern "C" void func_002c3714(s32 code);
 extern "C" void func_0039b054();
 extern "C" void nn_sdk_func_002bce50();
 extern "C" void nn_sdk_func_002bcf34();
-extern "C" void scrScriptProcess_func_002972f8();
+extern "C" void* scrScriptProcess_func_002972f8();
 extern "C" void* script_vm_func_00131548(void* tbl, u32 val0, u32 val1);
 extern "C" u32 script_vm_func_0013851c(u32 enable);
 extern "C" void script_vm_func_00152af8();
@@ -138,17 +138,17 @@ extern "C" void script_vm_func_001edc04();
 extern "C" void script_vm_func_001fc270();
 extern "C" void script_vm_func_00248320();
 extern "C" void script_vm_func_00249c70();
-extern "C" void script_vm_func_0024ecc0();
+extern "C" void script_vm_func_0024ecc0(void* obj, u32 val);
 extern "C" void script_vm_func_0024f7e8();
 extern "C" void script_vm_func_002533cc();
 extern "C" void script_vm_func_002533e4();
 extern "C" void script_vm_func_0025506c();
 extern "C" void script_vm_func_0025b8a8();
-extern "C" void script_vm_func_0026f3f8();
+extern "C" void script_vm_func_0026f3f8(u32 val);
 extern "C" void script_vm_func_0026f460();
-extern "C" void script_vm_func_0027636c();
+extern "C" void* script_vm_func_0027636c(u32 id);
 extern "C" void script_vm_func_0027eb98();
-extern "C" void script_vm_func_00287b10();
+extern "C" void* script_vm_func_00287b10(u32 id);
 extern "C" void script_vm_func_002899c4();
 extern "C" void script_vm_func_00291a5c();
 extern "C" void script_vm_func_00291be8();
@@ -183,9 +183,9 @@ extern "C" void ui_func_002abab0();
 extern "C" void ui_func_002ada98();
 extern "C" void ui_func_002af8d0();
 extern "C" void ui_func_002b0188();
-extern "C" void ui_func_002b1c8c();
-extern "C" void ui_func_002b1dfc();
-extern "C" void ui_func_002b1fc0();
+extern "C" void ui_func_002b1c8c(void* obj);
+extern "C" void ui_func_002b1dfc(void* obj);
+extern "C" void ui_func_002b1fc0(void* obj);
 extern "C" void ui_func_002b85bc(u32 request);
 extern "C" s32 ui_func_002b902c(u32 id);
 extern "C" void ui_func_002bcf58();
@@ -949,80 +949,60 @@ extern "C" void script_vm_func_002b91c4(void* obj) {
 }
 
 // DECOMP_FUNC(0x002b9220, 252)
-extern "C" __attribute__((naked)) void camp_func_002b9220() {
-    asm volatile(
-        "push {r4, r5, r6, lr}\n"
-        "mov r4, r0\n"
-        "ldrsh r2, [r0, #0x52]\n"
-        "cmp r2, #0\n"
-        "bne .L_002b9248\n"
-        "mov r0, #0x140000\n"
-        "cmp r1, #0\n"
-        "str r0, [r4, #0xc]\n"
-        "subne r0, r0, #0x280000\n"
-        "strne r0, [r4, #0xc]\n"
-        ".L_002b9248:\n"
-        "cmp r2, #0\n"
-        "mov r0, #0x37\n"
-        "ble .L_002b9268\n"
-        "rsb r0, r2, #0\n"
-        "add r0, r0, r0, lsl #2\n"
-        "add r0, r0, #0x37\n"
-        "cmp r0, #0\n"
-        "movlt r0, #0\n"
-        ".L_002b9268:\n"
-        "cmp r1, #0\n"
-        "ldr r1, [r4, #0xc]\n"
-        "rsbne r0, r0, #0\n"
-        "mov r5, #0\n"
-        "sub r0, r1, r0, lsl #12\n"
-        "str r0, [r4, #0xc]\n"
-        "mov r6, #1\n"
-        "asr r0, r0, #0xc\n"
-        "beq .L_002b9298\n"
-        "cmp r0, #0\n"
-        "bge .L_002b92a0\n"
-        "b .L_002b92ac\n"
-        ".L_002b9298:\n"
-        "cmp r0, #0\n"
-        "bgt .L_002b92ac\n"
-        ".L_002b92a0:\n"
-        "str r5, [r4, #0xc]\n"
-        "strb r6, [r4, #0x86]\n"
-        "b .L_002b92b0\n"
-        ".L_002b92ac:\n"
-        "strb r5, [r4, #0x8a]\n"
-        ".L_002b92b0:\n"
-        "add r0, r2, #1\n"
-        "strh r0, [r4, #0x52]\n"
-        "mov r0, r4\n"
-        "bl ui_func_002b1fc0\n"
-        "mov r0, r4\n"
-        "nop\n"
-        "bl ui_func_002b1dfc\n"
-        "mov r0, r4\n"
-        "nop\n"
-        "bl ui_func_002b1c8c\n"
-        "ldrb r0, [r4, #0x86]\n"
-        "cmp r0, #0\n"
-        "ldrbne r0, [r4, #0x87]\n"
-        "cmpne r0, #0\n"
-        "beq .L_002b9308\n"
-        "ldrb r0, [r4, #0x88]\n"
-        "cmp r0, #0\n"
-        "ldrbne r0, [r4, #0x89]\n"
-        "cmpne r0, #0\n"
-        "movne r0, r4\n"
-        "strbne r6, [r4, #0x8a]\n"
-        "bne .L_002b9310\n"
-        ".L_002b9308:\n"
-        "mov r0, r4\n"
-        "strb r5, [r4, #0x8a]\n"
-        ".L_002b9310:\n"
-        "strb r6, [r4, #0x85]\n"
-        "ldrsb r0, [r0, #0x8a]\n"
-        "pop {r4, r5, r6, pc}\n"
-    );
+extern "C" s32 camp_func_002b9220(void* obj, s32 flag) {
+    u8* self = reinterpret_cast<u8*>(obj);
+    s16 step = *reinterpret_cast<s16*>(self + 0x52);
+    if (step == 0) {
+        s32 base_val = 0x140000;
+        if (flag != 0) {
+            base_val -= 0x280000;
+        }
+        *reinterpret_cast<s32*>(self + 0x0C) = base_val;
+    }
+    s32 r0 = 0x37;
+    if (step > 0) {
+        s32 inv = -step;
+        r0 = inv + inv * 4 + 0x37;
+        if (r0 < 0) {
+            r0 = 0;
+        }
+    }
+    s32 cur = *reinterpret_cast<s32*>(self + 0x0C);
+    if (flag != 0) {
+        r0 = -r0;
+    }
+    s32 updated = cur - (r0 << 12);
+    *reinterpret_cast<s32*>(self + 0x0C) = updated;
+
+    s32 shifted = updated >> 12;
+    if (flag == 0) {
+        if (shifted <= 0) {
+            *reinterpret_cast<s32*>(self + 0x0C) = 0;
+            self[0x86] = 1;
+        } else {
+            self[0x8A] = 0;
+        }
+    } else {
+        if (shifted >= 0) {
+            *reinterpret_cast<s32*>(self + 0x0C) = 0;
+            self[0x86] = 1;
+        } else {
+            self[0x8A] = 0;
+        }
+    }
+
+    *reinterpret_cast<s16*>(self + 0x52) = step + 1;
+    ui_func_002b1fc0(self);
+    ui_func_002b1dfc(self);
+    ui_func_002b1c8c(self);
+
+    if (self[0x86] != 0 && self[0x87] != 0 && self[0x88] != 0 && self[0x89] != 0) {
+        self[0x8A] = 1;
+    } else {
+        self[0x8A] = 0;
+    }
+    self[0x85] = 1;
+    return static_cast<s8>(self[0x8A]);
 }
 
 // DECOMP_FUNC(0x002ba9d8, 204)
@@ -1264,68 +1244,37 @@ extern "C" __attribute__((naked)) void func_002bc304() {
 }
 
 // DECOMP_FUNC(0x002bc744, 228)
-extern "C" __attribute__((naked)) void engine_func_002bc744() {
-    asm volatile(
-        "push {r4, r5, r6, r7, r8, sb, sl}\n"
-        "cmp r1, #1\n"
-        "movne r4, #1\n"
-        "moveq r4, #2\n"
-        "mov r3, #1\n"
-        "sub r5, r2, #0x500\n"
-        "subs r5, r5, #1\n"
-        "mov ip, r3\n"
-        "moveq r3, #2\n"
-        "beq .L_002bc778\n"
-        "cmp r5, #1\n"
-        "moveq r3, #2\n"
-        "moveq ip, r3\n"
-        ".L_002bc778:\n"
-        "mul r3, r4, r3\n"
-        ".word 0xe59f5094\n"
-        "cmp r1, #1\n"
-        "mov r4, #0x190\n"
-        ".word 0xe59f708c\n"
-        "mul r4, ip, r4\n"
-        "vldr s0, [r5, #0x1f8]\n"
-        "rsb r3, r3, r3, lsl #4\n"
-        "movne r8, #1\n"
-        "moveq r8, #2\n"
-        "mov r1, #1\n"
-        "sub sb, r2, #0x500\n"
-        "subs sb, sb, #1\n"
-        "mov r5, r1\n"
-        "mov r6, #0x20000\n"
-        "lsl ip, r3, #4\n"
-        "moveq r1, #2\n"
-        "beq .L_002bc7cc\n"
-        "cmp sb, #1\n"
-        "moveq r1, #2\n"
-        "moveq r5, r1\n"
-        ".L_002bc7cc:\n"
-        "mul r1, r8, r1\n"
-        ".word 0xe59f8048\n"
-        "mov sb, #0x190\n"
-        "vstr s0, [r0]\n"
-        "add r3, r0, #0x14\n"
-        "str ip, [r0, #4]\n"
-        "mul r5, r5, sb\n"
-        "stm r3, {r2, r8}\n"
-        "rsb r1, r1, r1, lsl #4\n"
-        ".word 0xe59fa02c\n"
-        "add r3, r0, #0x1c\n"
-        "str r2, [r0, #0x2c]\n"
-        "mov sb, #0x30000\n"
-        "lsl r1, r1, #4\n"
-        "stm r3, {r1, r5, sb, sl}\n"
-        "add r0, r0, #8\n"
-        "stm r0, {r4, r6, r7}\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl}\n"
-        "bx lr\n"
-        ".word 0x004e39e0\n"
-        ".word 0x00008ce0\n"
-        ".word 0x000088f0\n"
-        ".word 0x0000821a\n"
-    );
+extern "C" void engine_func_002bc744(void* out, u32 p1, u32 p2) {
+    u8* p = reinterpret_cast<u8*>(out);
+
+    s32 m = (p1 == 1) ? 2 : 1;
+    s32 factor_r3 = 1;
+    s32 factor_400 = 1;
+    s32 diff = static_cast<s32>(p2) - 0x500 - 1;
+    if (diff == 0) {
+        factor_r3 = 2;
+    } else if (diff == 1) {
+        factor_r3 = 2;
+        factor_400 = 2;
+    }
+
+    u32 f_mult = static_cast<u32>(m * factor_r3);
+    u32 f_240 = f_mult * 240;
+    u32 f_400 = static_cast<u32>(factor_400 * 400);
+
+    float f0 = *reinterpret_cast<const float*>(0x004E39E0 + 0x1F8);
+    *reinterpret_cast<float*>(p + 0x00) = f0;
+    *reinterpret_cast<u32*>(p + 0x04) = f_240;
+    *reinterpret_cast<u32*>(p + 0x08) = f_400;
+    *reinterpret_cast<u32*>(p + 0x0C) = 0x20000;
+    *reinterpret_cast<u32*>(p + 0x10) = 0x8CE0;
+    *reinterpret_cast<u32*>(p + 0x14) = p2;
+    *reinterpret_cast<u32*>(p + 0x18) = 0x88F0;
+    *reinterpret_cast<u32*>(p + 0x1C) = f_240;
+    *reinterpret_cast<u32*>(p + 0x20) = f_400;
+    *reinterpret_cast<u32*>(p + 0x24) = 0x30000;
+    *reinterpret_cast<u32*>(p + 0x28) = 0x821A;
+    *reinterpret_cast<u32*>(p + 0x2C) = p2;
 }
 
 // DECOMP_FUNC(0x002bd020, 224)
@@ -5226,78 +5175,59 @@ extern "C" __attribute__((naked)) void ui_func_002dbd58() {
 }
 
 // DECOMP_FUNC(0x002dc5cc, 248)
-extern "C" __attribute__((naked)) void camp_func_002dc5cc() {
-    asm volatile(
-        "push {r4, r5, r6, lr}\n"
-        "sub sp, sp, #0x10\n"
-        "ldrh r0, [r0]\n"
-        "mov r4, r1\n"
-        "bl camp_func_00249a44\n"
-        "mov r5, r0\n"
-        "ldrh r0, [r4]\n"
-        "bl camp_func_00249a44\n"
-        "ldrh r2, [r5, #0x26]\n"
-        "mov r1, r0\n"
-        "mov r0, #0\n"
-        "str r0, [sp, #4]\n"
-        "str r2, [sp]\n"
-        "ldrh r1, [r1, #0x26]\n"
-        "str r0, [sp, #0xc]\n"
-        "mov r5, sp\n"
-        "add r6, sp, #8\n"
-        "mov r0, r2\n"
-        "str r1, [sp, #8]\n"
-        "bl battle_func_002ae464\n"
-        "cmp r0, #0\n"
-        "ldr r0, [sp]\n"
-        "beq .L_002dc634\n"
-        "bl camp_func_002840b8\n"
-        "ldrh r4, [r0, #0x22]\n"
-        "b .L_002dc640\n"
-        ".L_002dc634:\n"
-        "nop\n"
-        "bl battle_func_002ae3f0\n"
-        "ldrh r4, [r0, #0x24]\n"
-        ".L_002dc640:\n"
-        "ldr r0, [sp, #8]\n"
-        "bl battle_func_002ae464\n"
-        "cmp r0, #0\n"
-        "ldr r0, [sp, #8]\n"
-        "beq .L_002dc664\n"
-        "bl camp_func_002840b8\n"
-        "ldrh r0, [r0, #0x22]\n"
-        "nop\n"
-        "b .L_002dc670\n"
-        ".L_002dc664:\n"
-        "nop\n"
-        "bl battle_func_002ae3f0\n"
-        "ldrh r0, [r0, #0x24]\n"
-        ".L_002dc670:\n"
-        "subs r0, r4, r0\n"
-        "bne .L_002dc6bc\n"
-        "ldr r0, [sp, #4]\n"
-        "cmp r0, #0\n"
-        "movlt r4, #0\n"
-        "blt .L_002dc690\n"
-        "bl camp_func_002a89e4\n"
-        "ldrh r4, [r0, #0x46]\n"
-        ".L_002dc690:\n"
-        "ldr r0, [sp, #0xc]\n"
-        "cmp r0, #0\n"
-        "movlt r0, #0\n"
-        "blt .L_002dc6a8\n"
-        "bl camp_func_002a89e4\n"
-        "ldrh r0, [r0, #0x46]\n"
-        ".L_002dc6a8:\n"
-        "subs r0, r4, r0\n"
-        "bne .L_002dc6bc\n"
-        "mov r1, r6\n"
-        "mov r0, r5\n"
-        "bl battle_func_0025779c\n"
-        ".L_002dc6bc:\n"
-        "add sp, sp, #0x10\n"
-        "pop {r4, r5, r6, pc}\n"
-    );
+extern "C" s32 camp_func_002dc5cc(const u16* a, const u16* b) {
+    u32 pair_a[2] = {0, 0};
+    u32 pair_b[2] = {0, 0};
+
+    const u8* ent_a = reinterpret_cast<const u8*>(camp_func_00249a44(*a));
+    const u8* ent_b = reinterpret_cast<const u8*>(camp_func_00249a44(*b));
+
+    u16 id_a = *reinterpret_cast<const u16*>(ent_a + 0x26);
+    u16 id_b = *reinterpret_cast<const u16*>(ent_b + 0x26);
+    pair_a[0] = id_a;
+    pair_b[0] = id_b;
+
+    u16 val_a;
+    if (battle_func_002ae464(id_a) != 0) {
+        const u8* info_a = reinterpret_cast<const u8*>(camp_func_002840b8(id_a));
+        val_a = *reinterpret_cast<const u16*>(info_a + 0x22);
+    } else {
+        const u8* info_a = reinterpret_cast<const u8*>(battle_func_002ae3f0(id_a));
+        val_a = *reinterpret_cast<const u16*>(info_a + 0x24);
+    }
+
+    u16 val_b;
+    if (battle_func_002ae464(id_b) != 0) {
+        const u8* info_b = reinterpret_cast<const u8*>(camp_func_002840b8(id_b));
+        val_b = *reinterpret_cast<const u16*>(info_b + 0x22);
+    } else {
+        const u8* info_b = reinterpret_cast<const u8*>(battle_func_002ae3f0(id_b));
+        val_b = *reinterpret_cast<const u16*>(info_b + 0x24);
+    }
+
+    s32 diff = static_cast<s32>(val_a) - static_cast<s32>(val_b);
+    if (diff != 0) {
+        return diff;
+    }
+
+    s32 sub_a = 0;
+    if (static_cast<s32>(pair_a[1]) >= 0) {
+        const u8* r = reinterpret_cast<const u8*>(camp_func_002a89e4(pair_a[1]));
+        sub_a = *reinterpret_cast<const u16*>(r + 0x46);
+    }
+
+    s32 sub_b = 0;
+    if (static_cast<s32>(pair_b[1]) >= 0) {
+        const u8* r = reinterpret_cast<const u8*>(camp_func_002a89e4(pair_b[1]));
+        sub_b = *reinterpret_cast<const u16*>(r + 0x46);
+    }
+
+    s32 sub_diff = sub_a - sub_b;
+    if (sub_diff != 0) {
+        return sub_diff;
+    }
+
+    return battle_func_0025779c(pair_a, pair_b);
 }
 
 // DECOMP_FUNC(0x002dc738, 264)
@@ -5528,71 +5458,39 @@ extern "C" __attribute__((naked)) void engine_func_002dcd68() {
 }
 
 // DECOMP_FUNC(0x002df7f8, 220)
-extern "C" __attribute__((naked)) void script_vm_func_002df7f8() {
-    asm volatile(
-        "push {r4, lr}\n"
-        "bl engine_func_002c2b1c\n"
-        ".word 0xe59f10c4\n"
-        "mov r4, r0\n"
-        "mov r0, #0\n"
-        "strb r0, [r4, #0x792]\n"
-        "ldr r0, [r1, #0xa4]\n"
-        "cmp r0, #1\n"
-        "beq .L_002df830\n"
-        "cmp r0, #2\n"
-        "beq .L_002df858\n"
-        "cmp r0, #3\n"
-        "bne .L_002df8a4\n"
-        "b .L_002df884\n"
-        ".L_002df830:\n"
-        "ldr r0, [r1, #0xa8]\n"
-        "bl script_vm_func_0027636c\n"
-        "ldrh r1, [r0, #0xc]\n"
-        "strb r1, [r4, #0x3a]\n"
-        "ldrh r1, [r0, #0xe]\n"
-        "strb r1, [r4, #0x3b]\n"
-        "ldrh r1, [r0, #0xa]\n"
-        "strb r1, [r4, #0x791]\n"
-        "ldrh r0, [r0, #0x10]\n"
-        "b .L_002df87c\n"
-        ".L_002df858:\n"
-        "ldr r0, [r1, #0xa8]\n"
-        "bl script_vm_func_00287b10\n"
-        "ldrh r1, [r0, #0xc]\n"
-        "strb r1, [r4, #0x3a]\n"
-        "ldrh r1, [r0, #0xe]\n"
-        "strb r1, [r4, #0x3b]\n"
-        "ldrh r1, [r0, #0xa]\n"
-        "strb r1, [r4, #0x791]\n"
-        "ldrh r0, [r0, #0x16]\n"
-        ".L_002df87c:\n"
-        "strb r0, [r4, #0x792]\n"
-        "b .L_002df8a4\n"
-        ".L_002df884:\n"
-        "ldr r0, [r1, #0xa8]\n"
-        "bl camp_func_00316fc4\n"
-        "ldrh r1, [r0, #0xc]\n"
-        "strb r1, [r4, #0x3a]\n"
-        "ldrh r1, [r0, #0xe]\n"
-        "strb r1, [r4, #0x3b]\n"
-        "ldrh r0, [r0, #8]\n"
-        "strb r0, [r4, #0x791]\n"
-        ".L_002df8a4:\n"
-        ".word 0xe59f0024\n"
-        "ldrsb r0, [r0, r4]\n"
-        "cmp r0, #0\n"
-        "mvneq r0, #0\n"
-        "beq .L_002df8c4\n"
-        "cmp r0, #0xf\n"
-        "movgt r0, #0xf\n"
-        "ble .L_002df8c8\n"
-        ".L_002df8c4:\n"
-        "strb r0, [r4, #0x791]\n"
-        ".L_002df8c8:\n"
-        "pop {r4, pc}\n"
-        ".word 0x0049f91c\n"
-        ".word 0x00000791\n"
-    );
+extern "C" void script_vm_func_002df7f8() {
+    u8* ctx = reinterpret_cast<u8*>(engine_func_002c2b1c());
+    const u8* src = reinterpret_cast<const u8*>(0x0049F91C);
+    ctx[0x792] = 0;
+
+    u32 type = *reinterpret_cast<const u32*>(src + 0xA4);
+    u32 param = *reinterpret_cast<const u32*>(src + 0xA8);
+
+    if (type == 1) {
+        const u8* res = reinterpret_cast<const u8*>(script_vm_func_0027636c(param));
+        ctx[0x3A] = res[0x0C];
+        ctx[0x3B] = res[0x0E];
+        ctx[0x791] = res[0x0A];
+        ctx[0x792] = res[0x10];
+    } else if (type == 2) {
+        const u8* res = reinterpret_cast<const u8*>(script_vm_func_00287b10(param));
+        ctx[0x3A] = res[0x0C];
+        ctx[0x3B] = res[0x0E];
+        ctx[0x791] = res[0x0A];
+        ctx[0x792] = res[0x16];
+    } else if (type == 3) {
+        const u8* res = reinterpret_cast<const u8*>(camp_func_00316fc4(param));
+        ctx[0x3A] = res[0x0C];
+        ctx[0x3B] = res[0x0E];
+        ctx[0x791] = res[0x08];
+    }
+
+    s8 val = static_cast<s8>(ctx[0x791]);
+    if (val == 0) {
+        ctx[0x791] = static_cast<u8>(-1);
+    } else if (val > 15) {
+        ctx[0x791] = 15;
+    }
 }
 
 // DECOMP_FUNC(0x002dfd94, 92)
@@ -5816,67 +5714,45 @@ extern "C" __attribute__((naked)) void engine_func_002e130c() {
 }
 
 // DECOMP_FUNC(0x002e16d0, 216)
-extern "C" __attribute__((naked)) void script_vm_func_002e16d0() {
-    asm volatile(
-        "push {r4, r5, r6, lr}\n"
-        "mov r4, r0\n"
-        "add r6, r0, #0x100\n"
-        "ldrb r0, [r0, #0x124]\n"
-        "mov r5, #0\n"
-        "cmp r0, #0\n"
-        "bne .L_002e17a0\n"
-        "ldr r0, [r4, #4]\n"
-        "bl camp_func_0026f9f4\n"
-        "cmp r0, #0\n"
-        "beq .L_002e17a0\n"
-        "ldr r0, [r4, #0xa4]\n"
-        "cmp r0, #0\n"
-        "ldrne r1, [r4, #0xa8]\n"
-        "cmpne r1, #0\n"
-        "ldrne r2, [r4, #0xac]\n"
-        "cmpne r2, #0\n"
-        "beq .L_002e17a0\n"
-        "ldrb r2, [r4, #0x74]\n"
-        "cmp r2, #1\n"
-        "bne .L_002e1794\n"
-        "bl scrScriptProcess_func_002972f8\n"
-        "mov r1, #2\n"
-        "str r0, [r4, #0xa0]\n"
-        "str r1, [r0, #0x108]\n"
-        "mov r5, #1\n"
-        "strb r5, [r4, #0x124]\n"
-        "ldr r0, [r4, #4]\n"
-        "mov r1, r5\n"
-        "bl camp_func_0026fa70\n"
-        "ldr r0, [r4, #0x10]\n"
-        "ldr r1, [r4, #8]\n"
-        "ldr r2, [r4, #0xac]\n"
-        "bl camp_func_0026f474\n"
-        "bl camp_func_0028d838\n"
-        "cmp r0, #0\n"
-        "bne .L_002e1770\n"
-        "bl script_vm_func_0026f460\n"
-        "mov r1, #0xf\n"
-        "bl script_vm_func_0026f3f8\n"
-        ".L_002e1770:\n"
-        "ldrb r0, [r6, #0x29]\n"
-        "cmp r0, #0\n"
-        "streq r5, [r4, #0x110]\n"
-        "beq .L_002e1790\n"
-        "mov r0, #0xe2\n"
-        "bl script_vm_func_002b8b78\n"
-        "mov r0, #2\n"
-        "str r0, [r4, #0x110]\n"
-        ".L_002e1790:\n"
-        "mov r5, #2\n"
-        ".L_002e1794:\n"
-        "mov r1, #1\n"
-        "mov r0, r4\n"
-        "bl script_vm_func_0024ecc0\n"
-        ".L_002e17a0:\n"
-        "mov r0, r5\n"
-        "pop {r4, r5, r6, pc}\n"
-    );
+extern "C" u32 script_vm_func_002e16d0(void* obj) {
+    u8* self = reinterpret_cast<u8*>(obj);
+    if (self[0x124] != 0) {
+        return 0;
+    }
+    void* sub = *reinterpret_cast<void**>(self + 4);
+    if (camp_func_0026f9f4(sub) == 0) {
+        return 0;
+    }
+    if (*reinterpret_cast<u32*>(self + 0xA4) == 0 ||
+        *reinterpret_cast<u32*>(self + 0xA8) == 0 ||
+        *reinterpret_cast<u32*>(self + 0xAC) == 0) {
+        return 0;
+    }
+
+    u32 ret = 0;
+    if (self[0x74] == 1) {
+        u8* res = reinterpret_cast<u8*>(scrScriptProcess_func_002972f8());
+        *reinterpret_cast<void**>(self + 0xA0) = res;
+        *reinterpret_cast<u32*>(res + 0x108) = 2;
+        self[0x124] = 1;
+        camp_func_0026fa70(*reinterpret_cast<void**>(self + 4), 1);
+        camp_func_0026f474(*reinterpret_cast<void**>(self + 0x10),
+                           *reinterpret_cast<void**>(self + 8),
+                           *reinterpret_cast<void**>(self + 0xAC));
+        if (camp_func_0028d838() == 0) {
+            script_vm_func_0026f460();
+            script_vm_func_0026f3f8(0x0F);
+        }
+        if (self[0x129] == 0) {
+            *reinterpret_cast<u32*>(self + 0x110) = 1;
+        } else {
+            script_vm_func_002b8b78(0xE2);
+            *reinterpret_cast<u32*>(self + 0x110) = 2;
+        }
+        ret = 2;
+    }
+    script_vm_func_0024ecc0(self, 1);
+    return ret;
 }
 
 // DECOMP_FUNC(0x002e198c, 252)
