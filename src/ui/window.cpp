@@ -58,6 +58,12 @@ extern "C" {
     extern u8  g_InfoWinSpriteTable[];                                              // 0x00403AA8
     extern u8  g_GuestWinSpriteTable[];                                             // 0x00403A38
     void* UiEngine_GetContext();                                                    // 0x002c2b1c
+    void* ui_func_002c0ac8();                                                       // 0x002c0ac8
+    u32   func_002c00e8(u32);                                                       // 0x002c00e8
+    u32   func_002bfcb4(u32, void*);                                                // 0x002bfcb4
+    void  func_002bfc88(void*, void*);                                              // 0x002bfc88
+    void* battle_func_002b6e60();                                                   // 0x002b6e60
+    u32   ui_func_002bf9f0(void*);                                                  // 0x002bf9f0
 }
 
 // Forward declaration for task callback
@@ -1319,19 +1325,37 @@ __attribute__((naked)) void InfoWin_Init() {
 
 // The complete ARM body includes a literal pool word at 0x0010B25C.
 // DECOMP_FUNC(0x0010b1b4, 172)
-__attribute__((naked)) void InfoWin_ShowMessage(const char*) {
-    asm volatile(
-        ".word 0xE92D4010, 0xEB06D642, 0xE1A04000, 0xE2800C0F\n"
-        ".word 0xE5D01060, 0xE3510000, 0x0A000002, 0xE5D01063\n"
-        ".word 0xE3510000, 0x0A000001, 0xE3A00000, 0xE8BD8010\n"
-        ".word 0xE5D00099, 0xE3500000, 0x0AFFFFFB, 0xE59F0064\n"
-        ".word 0xE5900000, 0xEB06E26A, 0xE5941004, 0xE3A00C02\n"
-        ".word 0xE5810014, 0xE5941004, 0xE5810018, 0xE5941004\n"
-        ".word 0xE3A00000, 0xEB06D2A5, 0xE5C40F62, 0xE5940004\n"
-        ".word 0xE1A01000, 0xEB06D296, 0xE5940004, 0xE3A01001\n"
-        ".word 0xE5902014, 0xE1A020C2, 0xE5802014, 0xE5940004\n"
-        ".word 0xE5902018, 0xE1A020C2, 0xE5802018, 0xE3A00000\n"
-        ".word 0xE5C41F63, 0xE8BD8010, 0x0044EA00\n");
+void InfoWin_ShowMessage(const char*) {
+    auto* const work = reinterpret_cast<u8*>(ui_func_002c0ac8());
+    auto* const f00 = work + 0xF00;
+
+    const u8 b60 = f00[0x60];
+    if (b60 == 0) {
+        return;
+    }
+    const u8 b63 = f00[0x63];
+    if (b63 != 0) {
+        return;
+    }
+
+    const u8 b99 = f00[0x99];
+    if (b99 == 0) {
+        return;
+    }
+    void* const sound_obj = *reinterpret_cast<void**>(0x0044EA00);
+    UiGpu_BeginPass(sound_obj);
+
+    auto* const obj = *reinterpret_cast<u8**>(work + 4);
+    *reinterpret_cast<u32*>(obj + 0x14) = 0x200;
+    *reinterpret_cast<u32*>(obj + 0x18) = 0x200;
+
+    work[0xF62] = static_cast<u8>(func_002bfcb4(0, obj));
+    func_002bfc88(obj, obj);
+
+    *reinterpret_cast<s32*>(obj + 0x14) >>= 1;
+    *reinterpret_cast<s32*>(obj + 0x18) >>= 1;
+
+    work[0xF63] = 1;
 }
 
 // Incomplete first-pass C++ sketch; the exact body also obtains an object via
@@ -1350,20 +1374,41 @@ __attribute__((naked)) void InfoWin_ShowMessage(const char*) {
 
 // The complete ARM body includes its literal pool word at 0x0010B31C.
 // DECOMP_FUNC(0x0010b260, 192)
-__attribute__((naked)) void InfoWin_UpdateTimer() {
-    asm volatile(
-        ".word 0xE92D4070, 0xEB06D617, 0xE1A04000, 0xE3A00000\n"
-        ".word 0xEB06D39C, 0xE3500000, 0xE3A05001, 0x15C45F65\n"
-        ".word 0x1A000023, 0xE5D41F60, 0xE2840C0F, 0xE3510000\n"
-        ".word 0x0A00001F, 0xE5D01064, 0xE3510000, 0x05D01065\n"
-        ".word 0x03510000, 0x1A00001A, 0xE5D00099, 0xE3500000\n"
-        ".word 0x0A000018, 0xE59F0060, 0xE5900000, 0xEB06E239\n"
-        ".word 0xE5941008, 0xE3A00C02, 0xE5810014, 0xE5941008\n"
-        ".word 0xE5810018, 0xE5941008, 0xE3A00000, 0xEB06D274\n"
-        ".word 0xE5C40F62, 0xE5940008, 0xE1A01000, 0xEB06D265\n"
-        ".word 0xE5940008, 0xE5901014, 0xE1A010C1, 0xE5801014\n"
-        ".word 0xE5940008, 0xE5901018, 0xE1A010C1, 0xE5801018\n"
-        ".word 0xE5C45F64, 0xE3A00000, 0xE8BD8070, 0x0044EA00\n");
+void InfoWin_UpdateTimer() {
+    auto* const work = reinterpret_cast<u8*>(ui_func_002c0ac8());
+    if (func_002c00e8(0) != 0) {
+        work[0xF65] = 1;
+        return;
+    }
+
+    const u8 b60 = work[0xF60];
+    if (b60 == 0) {
+        return;
+    }
+
+    auto* const f00 = work + 0xF00;
+    if (f00[0x64] != 0 || f00[0x65] != 0) {
+        return;
+    }
+
+    const u8 b99 = f00[0x99];
+    if (b99 == 0) {
+        return;
+    }
+    void* const sound_obj = *reinterpret_cast<void**>(0x0044EA00);
+    UiGpu_BeginPass(sound_obj);
+
+    auto* const obj = *reinterpret_cast<u8**>(work + 8);
+    *reinterpret_cast<u32*>(obj + 0x14) = 0x200;
+    *reinterpret_cast<u32*>(obj + 0x18) = 0x200;
+
+    work[0xF62] = static_cast<u8>(func_002bfcb4(0, obj));
+    func_002bfc88(obj, obj);
+
+    *reinterpret_cast<s32*>(obj + 0x14) >>= 1;
+    *reinterpret_cast<s32*>(obj + 0x18) >>= 1;
+
+    work[0xF64] = 1;
 }
 
 // DECOMP_FUNC(0x0010b320, 32)
@@ -1922,37 +1967,24 @@ void GuestWin_HandlePrompt_Decompiled() {
     }
 }
 // DECOMP_FUNC(0x0010b510, 104)
+void GuestWin_HandlePrompt() {
+    auto* const ctx = reinterpret_cast<u8*>(UiEngine_GetContext());
 
-
-__attribute__((naked)) void GuestWin_HandlePrompt() {
-    // The ROM iterates 16 prompt records at 0x14-byte strides.
-    asm volatile(
-        ".word 0xE92D4010\n"
-        ".word 0xEB06DD80\n"
-        ".word 0xE2801B03\n"
-        ".word 0xE3A03010\n"
-        ".word 0xE2802EF2\n"
-        ".word 0xE2811FCA\n"
-        ".word 0xE5D20000\n"
-        ".word 0xE3100001\n"
-        ".word 0x13100004\n"
-        ".word 0x13100002\n"
-        ".word 0x0A000009\n"
-        ".word 0xE3100008\n"
-        ".word 0x1A000007\n"
-        ".word 0xE1D1C0F0\n"
-        ".word 0xE35C0000\n"
-        ".word 0xC24CC001\n"
-        ".word 0xC1C1C0B0\n"
-        ".word 0xE1D1C0B0\n"
-        ".word 0xE35C0000\n"
-        ".word 0x03800008\n"
-        ".word 0x05C20000\n"
-        ".word 0xE2533001\n"
-        ".word 0xE2822014\n"
-        ".word 0xE2811014\n"
-        ".word 0x1AFFFFEC\n"
-        ".word 0xE8BD8010\n");
+    for (s32 i = 0; i < 16; ++i) {
+        auto* const flag_ptr = ctx + 0x3C80 + i * 0x14;
+        const u8 flags = *flag_ptr;
+        if ((flags & 7) == 7 && !(flags & 8)) {
+            auto* const timer_ptr = reinterpret_cast<s16*>(ctx + 0xF28 + i * 0x14);
+            s16 timer = *timer_ptr;
+            if (timer > 0) {
+                timer--;
+                *timer_ptr = timer;
+            }
+            if (timer == 0) {
+                *flag_ptr = flags | 8;
+            }
+        }
+    }
 }
 
 // DECOMP_FUNC(0x0011a9b4, 1116)
@@ -2276,50 +2308,27 @@ __attribute__((naked)) void GuestWin_DrawUp(void* arg) {
 #endif
 
 // DECOMP_FUNC(0x0011b128, 148)
-__attribute__((naked)) void GuestWin_Calc(void*) {
-    // ROM-derived state machine for the callback registered by GuestWin_Init.
-    asm volatile(
-        "push {r4, r5, r6, lr}\n"
-        "bl battle_func_002b6e60\n"
-        "ldrh r0, [r0, #0x46]\n"
-        "cmp r0, #0\n"
-        "beq 3f\n"
-        "ldr r0, [pc, #0x74]\n"
-        "ldr r4, [r0]\n"
-        "ldr r0, [r4, #8]\n"
-        "cmp r0, #0\n"
-        "beq 2f\n"
-        "cmp r0, #1\n"
-        "mov r5, #0\n"
-        "beq 1f\n"
-        "cmp r0, #2\n"
-        "beq 2f\n"
-        "cmp r0, #3\n"
-        "beq 4f\n"
-        "b 2f\n"
-        "1:\n"
-        "add r0, r4, #0x30\n"
-        "bl ui_func_002bf9f0\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "beq 2f\n"
-        "add r1, r4, #8\n"
-        "mov r0, #2\n"
-        "stm r1, {r0, r5}\n"
-        "b 2f\n"
-        "4:\n"
-        "add r0, r4, #0x30\n"
-        "bl ui_func_002bf9f0\n"
-        "cmp r0, #0\n"
-        "strne r5, [r4, #8]\n"
-        "2:\n"
-        "ldr r0, [r4, #0xc]\n"
-        "add r0, r0, #1\n"
-        "str r0, [r4, #0xc]\n"
-        "mov r0, #0\n"
-        "3:\n"
-        "pop {r4, r5, r6, pc}\n"
-        ".word 0x0043E110\n");
+void GuestWin_Calc(void*) {
+    auto* const btl = reinterpret_cast<u8*>(battle_func_002b6e60());
+    const u16 active = *reinterpret_cast<const u16*>(btl + 0x46);
+    if (active == 0) {
+        return;
+    }
+
+    auto* const work = *reinterpret_cast<u8**>(0x0043E110);
+    const u32 state = *reinterpret_cast<const u32*>(work + 8);
+    if (state == 1) {
+        if (ui_func_002bf9f0(work + 0x30) != 0) {
+            *reinterpret_cast<u32*>(work + 8) = 2;
+            *reinterpret_cast<u32*>(work + 0xC) = 0;
+        }
+    } else if (state == 3) {
+        if (ui_func_002bf9f0(work + 0x30) != 0) {
+            *reinterpret_cast<u32*>(work + 8) = 0;
+        }
+    }
+
+    *reinterpret_cast<u32*>(work + 0xC) += 1;
 }
 
 // ============================================================================

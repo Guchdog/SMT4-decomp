@@ -195,12 +195,12 @@ address,size,status,category,name,src_file
 0x0010af38,16,matching,engine,AsdText_SetCodeField14,src/engine/asd_text.cpp
 0x0010af48,60,non_matching,unknown,InfoWin_SetState,src/ui/window.cpp
 0x0010af84,560,matching,ui,InfoWin_Init,src/ui/window.cpp
-0x0010b1b4,172,matching,ui,InfoWin_ShowMessage,src/ui/window.cpp
-0x0010b260,192,matching,ui,InfoWin_UpdateTimer,src/ui/window.cpp
+0x0010b1b4,172,non_matching,ui,InfoWin_ShowMessage,src/ui/window.cpp
+0x0010b260,192,non_matching,ui,InfoWin_UpdateTimer,src/ui/window.cpp
 0x0010b320,32,non_matching,ui,InfoWin_Dismiss,src/ui/window.cpp
 0x0010b340,16,matching,engine,AsdText_SetCodeField30,src/engine/asd_text.cpp
 0x0010b350,448,matching,ui,GuestWin_Init,src/ui/window.cpp
-0x0010b510,104,matching,engine,GuestWin_HandlePrompt,src/ui/window.cpp
+0x0010b510,104,non_matching,engine,GuestWin_HandlePrompt,src/ui/window.cpp
 0x0010b578,604,matching,engine,engine_func_0010b578,src/engine/leaf_batch45_b.cpp
 0x0010b7d4,16,matching,unknown,func_0010b7d4,src/engine/leaf_batch17_a.cpp
 0x0010b7e4,16,matching,unknown,func_0010b7e4,src/engine/leaf_batch17_a.cpp
@@ -394,7 +394,7 @@ address,size,status,category,name,src_file
 0x0011a354,1632,matching,ui,ComWin_DrawUp,src/ui/window.cpp
 0x0011a9b4,1116,matching,ui,GuestWin_DrawUp,src/ui/window.cpp
 0x0011ae10,792,matching,ui,InfoWin_DrawUp,src/ui/window.cpp
-0x0011b128,148,matching,ui,GuestWin_Calc,src/ui/window.cpp
+0x0011b128,148,non_matching,ui,GuestWin_Calc,src/ui/window.cpp
 0x0011b1bc,440,matching,ui,InfoWin_Calc,src/ui/window.cpp
 0x0011b374,20,matching,script_vm,script_vm_func_0011b374,src/engine/leaf_batch17_b.cpp
 0x0011b388,48,matching,engine,engine_func_0011b388,src/engine/leaf_batch22_a.cpp
