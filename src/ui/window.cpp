@@ -643,43 +643,16 @@ __attribute__((naked)) void ComWin_ProcessDialog() {
 }
 #endif
 
-[[maybe_unused]] static void ComWin_CheckFlag_Decompiled() {
+// DECOMP_FUNC(0x0010ae9c, 44)
+void ComWin_CheckFlag() {
     const u32 flag = *reinterpret_cast<const u32*>(0x00465058) ^ 1;
     const u32 selected = reinterpret_cast<const u32*>(0x00465064)[flag];
     engine_func_002c25f4(battle_func_002bf148(selected));
 }
 
-// DECOMP_FUNC(0x0010ae9c, 44)
-__attribute__((naked)) void ComWin_CheckFlag() {
-    // Observed register flow: global word ^ 1 indexes the table, the first
-    // helper's result flows to the common state helper. The two trailing words
-    // are the literal pool, not instructions; branch displacements are fixed.
-    asm volatile(
-        ".word 0xE59F001C\n"
-        ".word 0xE92D4010\n"
-        ".word 0xE59F1018\n"
-        ".word 0xE5900000\n"
-        ".word 0xE2200001\n"
-        ".word 0xE7910100\n"
-        ".word 0xEB06D0A3\n"
-        ".word 0xE8BD4010\n"
-        ".word 0xEA06DDCC\n"
-        ".word 0x00465058\n"
-        ".word 0x00465064\n");
-}
-
-[[maybe_unused]] static void ComWin_GetResult_Decompiled() {
-    UiWindow_SetResult(reinterpret_cast<const s32*>(0x00465024));
-}
-
 // DECOMP_FUNC(0x0010aec8, 12)
-__attribute__((naked)) void ComWin_GetResult() {
-    // ROM loads the address of the global result cell and tail-branches to the
-    // helper, which consumes that cell as an atomic/state object.
-    asm volatile(
-        ".word 0xE59F0000\n"
-        ".word 0xEA06E4DC\n"
-        ".word 0x00465024\n");
+void ComWin_GetResult() {
+    UiWindow_SetResult(reinterpret_cast<const s32*>(0x00465024));
 }
 
 // DECOMP_FUNC(0x0010aed4, 16)
@@ -1180,35 +1153,14 @@ void ComWin_Calc(void* arg) {
 
 InfoWinWork* g_InfoWinWork = nullptr; // 0x0043E128
 
-[[maybe_unused]] static void InfoWin_SetState_Decompiled(u32 state) {
+// DECOMP_FUNC(0x0010af48, 60)
+void InfoWin_SetState(u32 state) {
     auto* context = reinterpret_cast<u8*>(0x004C3B20);
     func_0011b558(*reinterpret_cast<void**>(context + 0x1C0));
     engine_func_0011b5e8(context);
     if (state == 3) {
         *reinterpret_cast<volatile u8*>(0x0044D020) = 1;
     }
-}
-
-// DECOMP_FUNC(0x0010af48, 60)
-__attribute__((naked)) void InfoWin_SetState(u32) {
-    // Preserve both helper calls, the state==3 flag side effect, and the two
-    // global literals with the ROM's original ARM-state encodings.
-    asm volatile(
-        ".word 0xE92D4070\n"
-        ".word 0xE1A05000\n"
-        ".word 0xE59F4024\n"
-        ".word 0xE59401C0\n"
-        ".word 0xEB00417E\n"
-        ".word 0xE1A00004\n"
-        ".word 0xEB0041A0\n"
-        ".word 0xE3550003\n"
-        ".word 0x1A000002\n"
-        ".word 0xE59F100C\n"
-        ".word 0xE3A00001\n"
-        ".word 0xE5C10000\n"
-        ".word 0xE8BD8070\n"
-        ".word 0x004C3B20\n"
-        ".word 0x0044D020\n");
 }
 
 // DECOMP_FUNC(0x0010af84, 560)
@@ -1457,30 +1409,15 @@ __attribute__((naked)) void InfoWin_UpdateTimer() {
         ".word 0xE5C45F64, 0xE3A00000, 0xE8BD8070, 0x0044EA00\n");
 }
 
-[[maybe_unused]] static bool InfoWin_Dismiss_Decompiled(u32 value) {
-    register u32* context asm("r1") = reinterpret_cast<u32*>(0x00464A70);
-    asm volatile("" : "+r"(context));
+// DECOMP_FUNC(0x0010b320, 32)
+bool InfoWin_Dismiss(u32 value) {
+    u32* context = reinterpret_cast<u32*>(0x00464A70);
     const u32 limit = context[1];
     if (value < limit) {
         context[3] = value;
         return true;
     }
     return false;
-}
-
-// DECOMP_FUNC(0x0010b320, 32)
-__attribute__((naked)) bool InfoWin_Dismiss(u32) {
-    // The observed entry conditionally stores the incoming value under the
-    // bound at 0x00464A74 and returns that unsigned comparison as a bool.
-    asm volatile(
-        ".word 0xE59F1014\n"
-        ".word 0xE5912004\n"
-        ".word 0xE1500002\n"
-        ".word 0x3581000C\n"
-        ".word 0x23A00000\n"
-        ".word 0x33A00001\n"
-        ".word 0xE12FFF1E\n"
-        ".word 0x00464A70\n");
 }
 
 // DECOMP_FUNC(0x0011ae10, 792)
@@ -3475,22 +3412,9 @@ __attribute__((naked)) void SearchWin_IsActive() {
         ".word 0x0043E2A8\n");
 }
 
-[[maybe_unused]] static bool SearchWin_Dismiss_Decompiled() {
-    return *reinterpret_cast<const u8*>(0x0043E311) == 0;
-}
-
 // DECOMP_FUNC(0x002ced0c, 28)
-__attribute__((naked)) bool SearchWin_Dismiss() {
-    // The entry's source-level role is unconfirmed; preserve its observed flag
-    // zero-test and the original global-context literal.
-    asm volatile(
-        ".word 0xE59F0010\n"
-        ".word 0xE5D00001\n"
-        ".word 0xE3500000\n"
-        ".word 0x03A00001\n"
-        ".word 0x13A00000\n"
-        ".word 0xE12FFF1E\n"
-        ".word 0x0043E310\n");
+bool SearchWin_Dismiss() {
+    return *reinterpret_cast<const u8*>(0x0043E311) == 0;
 }
 
 // DECOMP_FUNC(0x002ced28, 348)
