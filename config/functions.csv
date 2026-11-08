@@ -2583,8 +2583,8 @@ address,size,status,category,name,src_file
 0x001f5e38,116,matching,unknown,func_001f5e38,src/engine/leaf_batch26_a.cpp
 0x001f5eac,260,matching,camp,camp_func_001f5eac,src/engine/leaf_batch28_a.cpp
 0x001f5fb0,300,matching,camp,camp_func_001f5fb0,src/engine/leaf_batch28_a.cpp
-0x001f60dc,152,matching,ui,StatusDown_SkillSortByCostAsc,src/ui/status_down.cpp
-0x001f6174,48,matching,ui,StatusDown_SkillSortByNameAsc,src/ui/status_down.cpp
+0x001f60dc,152,non_matching,ui,StatusDown_SkillSortByCostAsc,src/ui/status_down.cpp
+0x001f6174,48,non_matching,ui,StatusDown_SkillSortByNameAsc,src/ui/status_down.cpp
 0x001f61a4,96,matching,unknown,func_001f61a4,src/engine/leaf_batch29_a.cpp
 0x001f6204,384,matching,script_vm,script_vm_func_001f6204,src/engine/leaf_batch40_a.cpp
 0x001f6384,84,matching,engine,engine_func_001f6384,src/engine/leaf_batch24_a.cpp
@@ -2736,9 +2736,9 @@ address,size,status,category,name,src_file
 0x00206874,424,matching,camp,camp_func_00206874,src/engine/leaf_batch44_a.cpp
 0x00206a1c,292,matching,ui,ui_func_00206a1c,src/engine/leaf_batch35_c.cpp
 0x00206b40,168,matching,script_vm,script_vm_func_00206b40,src/engine/leaf_batch34_c.cpp
-0x00206be8,80,matching,ui,StatusDown_SkillSortByIdAsc,src/ui/status_down.cpp
-0x00206c38,132,matching,ui,StatusDown_ItemSortByTypeAsc,src/ui/status_down.cpp
-0x00206cbc,124,matching,ui,StatusDown_ItemSortByIdAsc,src/ui/status_down.cpp
+0x00206be8,80,non_matching,ui,StatusDown_SkillSortByIdAsc,src/ui/status_down.cpp
+0x00206c38,132,non_matching,ui,StatusDown_ItemSortByTypeAsc,src/ui/status_down.cpp
+0x00206cbc,124,non_matching,ui,StatusDown_ItemSortByIdAsc,src/ui/status_down.cpp
 0x00206d38,84,matching,engine,engine_func_00206d38,src/engine/leaf_batch25_b.cpp
 0x00206d8c,64,matching,engine,engine_func_00206d8c,src/engine/leaf_batch24_b.cpp
 0x00206dcc,100,matching,engine,engine_func_00206dcc,src/engine/leaf_batch25_b.cpp
@@ -6245,7 +6245,7 @@ address,size,status,category,name,src_file
 0x002dc6c4,116,matching,unknown,func_002dc6c4,src/engine/leaf_batch37_c.cpp
 0x002dc738,264,non_matching,camp,camp_func_002dc738,src/engine/leaf_batch32_c.cpp
 0x002dc840,300,non_matching,camp,camp_func_002dc840,src/engine/leaf_batch32_c.cpp
-0x002dc96c,152,matching,ui,StatusDown_SkillSortByCostDesc,src/ui/status_down.cpp
+0x002dc96c,152,non_matching,ui,StatusDown_SkillSortByCostDesc,src/ui/status_down.cpp
 0x002dca04,60,matching,unknown,func_002dca04,src/engine/leaf_batch29_b.cpp
 0x002dca40,88,matching,camp,camp_func_002dca40,src/engine/leaf_batch25_b.cpp
 0x002dca98,96,non_matching,unknown,func_002dca98,src/engine/leaf_batch30_b.cpp
@@ -6423,9 +6423,9 @@ address,size,status,category,name,src_file
 0x002e43f0,68,matching,ui,ui_func_002e43f0,src/engine/leaf_batch27_b.cpp
 0x002e4434,56,matching,camp,camp_func_002e4434,src/engine/leaf_batch27_b.cpp
 0x002e446c,200,non_matching,battle,battle_func_002e446c,src/engine/leaf_batch32_c.cpp
-0x002e4534,80,matching,ui,StatusDown_SkillSortByIdDesc,src/ui/status_down.cpp
-0x002e4584,132,matching,ui,StatusDown_ItemSortByTypeDesc,src/ui/status_down.cpp
-0x002e4608,124,matching,ui,StatusDown_ItemSortByIdDesc,src/ui/status_down.cpp
+0x002e4534,80,non_matching,ui,StatusDown_SkillSortByIdDesc,src/ui/status_down.cpp
+0x002e4584,132,non_matching,ui,StatusDown_ItemSortByTypeDesc,src/ui/status_down.cpp
+0x002e4608,124,non_matching,ui,StatusDown_ItemSortByIdDesc,src/ui/status_down.cpp
 0x002e4684,76,matching,unknown,func_002e4684,src/engine/leaf_batch25_b.cpp
 0x002e46d0,84,matching,engine,engine_func_002e46d0,src/engine/leaf_batch25_b.cpp
 0x002e4724,64,matching,engine,engine_func_002e4724,src/engine/leaf_batch24_b.cpp

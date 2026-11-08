@@ -49,6 +49,9 @@ extern "C" {
     void  AsdMem_Copy(void* dst, const void* src, u32 size);
     s32   camp_func_0029f0f4(void* cursor);
     s32   camp_func_0029f248(void* cursor);                        // 0x002c5ff4
+    void* camp_func_00257744(u32 id);
+    void* camp_func_002b9364(u32 id);
+    s32   func_00257678(s32 cost_raw);
     void  AsdMem_FreeWork(void* ptr);                                               // 0x002c4360
 
     void* AsdTask_CreateCalc(const char* name, u32 prio, u32 a2, u32 a3,
@@ -528,173 +531,104 @@ __attribute__((naked)) void StatusDown_PopulateItemList(const u8* item_counts) {
 }
 #endif
 // DECOMP_FUNC(0x001f60dc, 152)
-
-
-//
-__attribute__((naked)) s32 StatusDown_SkillSortByCostAsc(const void*, const void*) {
-    asm volatile(
-        "push {r4, r5, r6, r7, r8, lr}\n"
-        "mov r4, r0\n"
-        "mov r5, r1\n"
-        "ldrh r0, [r0, #2]\n"
-        "bl camp_func_00257744\n"
-        "mov r6, r0\n"
-        "ldrh r0, [r5, #2]\n"
-        "bl camp_func_00257744\n"
-        "mov r7, r0\n"
-        "ldrh r0, [r4]\n"
-        "bl camp_func_002b9364\n"
-        "ldrh r0, [r5]\n"
-        "bl camp_func_002b9364\n"
-        "ldrsh r0, [r6, #0x22]\n"
-        "bl func_00257678\n"
-        "mov r6, r0\n"
-        "ldrsh r0, [r7, #0x22]\n"
-        "bl func_00257678\n"
-        "subs r0, r6, r0\n"
-        "bne 1f\n"
-        "ldrh r0, [r4]\n"
-        "bl camp_func_002b9364\n"
-        "mov r4, r0\n"
-        "ldrh r0, [r5]\n"
-        "bl camp_func_002b9364\n"
-        "mov r1, r0\n"
-        "ldrb r2, [r4, #2]\n"
-        "ldrb r0, [r0, #2]\n"
-        "subs r0, r2, r0\n"
-        "bne 1f\n"
-        "ldrb r0, [r1, #3]\n"
-        "ldrb r2, [r4, #3]\n"
-        "subs r0, r0, r2\n"
-        "bne 1f\n"
-        "ldrh r0, [r4]\n"
-        "ldrh r1, [r1]\n"
-        "sub r0, r0, r1\n"
-        "1: pop {r4, r5, r6, r7, r8, pc}\n");
+s32 StatusDown_SkillSortByCostAsc(const void* a, const void* b) {
+    const auto* ea = static_cast<const StatusDownListEntry*>(a);
+    const auto* eb = static_cast<const StatusDownListEntry*>(b);
+    const auto* sa = reinterpret_cast<const SkillTableEntry*>(camp_func_00257744(ea->value));
+    const auto* sb = reinterpret_cast<const SkillTableEntry*>(camp_func_00257744(eb->value));
+    s32 ca = func_00257678(sa->cost_raw);
+    s32 cb = func_00257678(sb->cost_raw);
+    s32 diff = ca - cb;
+    if (diff != 0) {
+        return diff;
+    }
+    const auto* ia = reinterpret_cast<const ItemTableEntry*>(camp_func_002b9364(ea->id));
+    const auto* ib = reinterpret_cast<const ItemTableEntry*>(camp_func_002b9364(eb->id));
+    diff = static_cast<s32>(ia->category) - static_cast<s32>(ib->category);
+    if (diff != 0) {
+        return diff;
+    }
+    diff = static_cast<s32>(ib->rarity) - static_cast<s32>(ia->rarity);
+    if (diff != 0) {
+        return diff;
+    }
+    return static_cast<s32>(ia->id) - static_cast<s32>(ib->id);
 }
 // DECOMP_FUNC(0x001f6174, 48)
-
-
-//
-__attribute__((naked)) s32 StatusDown_SkillSortByNameAsc(const void*, const void*) {
-    asm volatile(
-        "push {r4, r5, r6, lr}\n"
-        "mov r4, r1\n"
-        "ldrh r0, [r0, #2]\n"
-        "bl camp_func_00257744\n"
-        "mov r5, r0\n"
-        "ldrh r0, [r4, #2]\n"
-        "bl camp_func_00257744\n"
-        "mov r1, r0\n"
-        "ldrh r0, [r5, #0x32]\n"
-        "ldrh r1, [r1, #0x32]\n"
-        "sub r0, r0, r1\n"
-        "pop {r4, r5, r6, pc}\n");
+s32 StatusDown_SkillSortByNameAsc(const void* a, const void* b) {
+    const auto* ea = static_cast<const StatusDownListEntry*>(a);
+    const auto* eb = static_cast<const StatusDownListEntry*>(b);
+    const auto* sa = reinterpret_cast<const SkillTableEntry*>(camp_func_00257744(ea->value));
+    const auto* sb = reinterpret_cast<const SkillTableEntry*>(camp_func_00257744(eb->value));
+    return static_cast<s32>(sa->sort_order) - static_cast<s32>(sb->sort_order);
 }
 // DECOMP_FUNC(0x00206be8, 80)
-
-
-//
-__attribute__((naked)) s32 StatusDown_SkillSortByIdAsc(const void*, const void*) {
-    asm volatile(
-        "push {r4, r5, r6, lr}\n"
-        "mov r5, r1\n"
-        "ldrh r0, [r0]\n"
-        "bl camp_func_002b9364\n"
-        "mov r4, r0\n"
-        "ldrh r0, [r5]\n"
-        "bl camp_func_002b9364\n"
-        "mov r1, r0\n"
-        "ldrb r2, [r4, #2]\n"
-        "ldrb r0, [r0, #2]\n"
-        "subs r0, r2, r0\n"
-        "bne 1f\n"
-        "ldrb r0, [r1, #3]\n"
-        "ldrb r2, [r4, #3]\n"
-        "subs r0, r0, r2\n"
-        "bne 1f\n"
-        "ldrh r0, [r4]\n"
-        "ldrh r1, [r1]\n"
-        "sub r0, r0, r1\n"
-        "1: pop {r4, r5, r6, pc}\n");
+s32 StatusDown_SkillSortByIdAsc(const void* a, const void* b) {
+    const auto* ea = static_cast<const StatusDownListEntry*>(a);
+    const auto* eb = static_cast<const StatusDownListEntry*>(b);
+    const auto* ia = reinterpret_cast<const ItemTableEntry*>(camp_func_002b9364(ea->id));
+    const auto* ib = reinterpret_cast<const ItemTableEntry*>(camp_func_002b9364(eb->id));
+    s32 diff = static_cast<s32>(ia->category) - static_cast<s32>(ib->category);
+    if (diff != 0) {
+        return diff;
+    }
+    diff = static_cast<s32>(ib->rarity) - static_cast<s32>(ia->rarity);
+    if (diff != 0) {
+        return diff;
+    }
+    return static_cast<s32>(ia->id) - static_cast<s32>(ib->id);
 }
 // DECOMP_FUNC(0x00206c38, 132)
-
-
-//
-__attribute__((naked)) s32 StatusDown_ItemSortByTypeAsc(const void*, const void*) {
-    asm volatile(
-        "push {r4, r5, r6, lr}\n"
-        "mov r5, r1\n"
-        "ldrh r1, [r0, #2]\n"
-        "mov r2, r0\n"
-        "ldrh r0, [r5, #2]\n"
-        "cmp r1, #0\n"
-        "beq 1f\n"
-        "cmp r0, #0\n"
-        "mvneq r0, #0\n"
-        "beq 2f\n"
-        "subs r0, r1, r0\n"
-        "bne 2f\n"
-        "ldrh r0, [r2]\n"
-        "bl camp_func_002b9364\n"
-        "mov r4, r0\n"
-        "ldrh r0, [r5]\n"
-        "bl camp_func_002b9364\n"
-        "mov r1, r0\n"
-        "ldrb r2, [r4, #2]\n"
-        "ldrb r0, [r0, #2]\n"
-        "subs r0, r2, r0\n"
-        "bne 2f\n"
-        "ldrb r0, [r1, #3]\n"
-        "ldrb r2, [r4, #3]\n"
-        "subs r0, r0, r2\n"
-        "bne 2f\n"
-        "ldrh r0, [r4]\n"
-        "ldrh r1, [r1]\n"
-        "sub r0, r0, r1\n"
-        "2: pop {r4, r5, r6, pc}\n"
-        "1: cmp r0, #0\n"
-        "movne r0, #1\n"
-        "pop {r4, r5, r6, pc}\n");
+s32 StatusDown_ItemSortByTypeAsc(const void* a, const void* b) {
+    const auto* ea = static_cast<const StatusDownListEntry*>(a);
+    const auto* eb = static_cast<const StatusDownListEntry*>(b);
+    u16 va = ea->value;
+    u16 vb = eb->value;
+    if (va == 0) {
+        return vb != 0 ? 1 : 0;
+    }
+    if (vb == 0) {
+        return -1;
+    }
+    s32 diff = static_cast<s32>(va) - static_cast<s32>(vb);
+    if (diff != 0) {
+        return diff;
+    }
+    const auto* ia = reinterpret_cast<const ItemTableEntry*>(camp_func_002b9364(ea->id));
+    const auto* ib = reinterpret_cast<const ItemTableEntry*>(camp_func_002b9364(eb->id));
+    diff = static_cast<s32>(ia->category) - static_cast<s32>(ib->category);
+    if (diff != 0) {
+        return diff;
+    }
+    diff = static_cast<s32>(ib->rarity) - static_cast<s32>(ia->rarity);
+    if (diff != 0) {
+        return diff;
+    }
+    return static_cast<s32>(ia->id) - static_cast<s32>(ib->id);
 }
 // DECOMP_FUNC(0x00206cbc, 124)
-
-
-//
-__attribute__((naked)) s32 StatusDown_ItemSortByIdAsc(const void*, const void*) {
-    asm volatile(
-        "push {r4, r5, r6, lr}\n"
-        "mov r5, r1\n"
-        "ldrh r1, [r0, #2]\n"
-        "cmp r1, #0\n"
-        "ldrh r1, [r5, #2]\n"
-        "beq 1f\n"
-        "cmp r1, #0\n"
-        "mvneq r0, #0\n"
-        "beq 2f\n"
-        "ldrh r0, [r0]\n"
-        "bl camp_func_002b9364\n"
-        "mov r4, r0\n"
-        "ldrh r0, [r5]\n"
-        "bl camp_func_002b9364\n"
-        "mov r1, r0\n"
-        "ldrb r2, [r4, #2]\n"
-        "ldrb r0, [r0, #2]\n"
-        "subs r0, r2, r0\n"
-        "bne 2f\n"
-        "ldrb r0, [r1, #3]\n"
-        "ldrb r2, [r4, #3]\n"
-        "subs r0, r0, r2\n"
-        "bne 2f\n"
-        "ldrh r0, [r4]\n"
-        "ldrh r1, [r1]\n"
-        "sub r0, r0, r1\n"
-        "2: pop {r4, r5, r6, pc}\n"
-        "1: cmp r1, #0\n"
-        "moveq r0, #0\n"
-        "movne r0, #1\n"
-        "pop {r4, r5, r6, pc}\n");
+s32 StatusDown_ItemSortByIdAsc(const void* a, const void* b) {
+    const auto* ea = static_cast<const StatusDownListEntry*>(a);
+    const auto* eb = static_cast<const StatusDownListEntry*>(b);
+    u16 va = ea->value;
+    u16 vb = eb->value;
+    if (va == 0) {
+        return vb != 0 ? 1 : 0;
+    }
+    if (vb == 0) {
+        return -1;
+    }
+    const auto* ia = reinterpret_cast<const ItemTableEntry*>(camp_func_002b9364(ea->id));
+    const auto* ib = reinterpret_cast<const ItemTableEntry*>(camp_func_002b9364(eb->id));
+    s32 diff = static_cast<s32>(ia->category) - static_cast<s32>(ib->category);
+    if (diff != 0) {
+        return diff;
+    }
+    diff = static_cast<s32>(ib->rarity) - static_cast<s32>(ia->rarity);
+    if (diff != 0) {
+        return diff;
+    }
+    return static_cast<s32>(ia->id) - static_cast<s32>(ib->id);
 }
 
 // DECOMP_FUNC(0x00215990, 180)
@@ -2288,49 +2222,28 @@ void StatusDown_EnterState3_Alt() {
     work->prev_state = prev;
 }
 // DECOMP_FUNC(0x002dc96c, 152)
-
-
-//
-__attribute__((naked)) s32 StatusDown_SkillSortByCostDesc(const void*, const void*) {
-    asm volatile(
-        "push {r4, r5, r6, r7, r8, lr}\n"
-        "mov r4, r0\n"
-        "mov r5, r1\n"
-        "ldrh r0, [r0, #2]\n"
-        "bl camp_func_00257744\n"
-        "mov r7, r0\n"
-        "ldrh r0, [r5, #2]\n"
-        "bl camp_func_00257744\n"
-        "mov r6, r0\n"
-        "ldrh r0, [r4]\n"
-        "bl camp_func_002b9364\n"
-        "ldrh r0, [r5]\n"
-        "bl camp_func_002b9364\n"
-        "ldrsh r0, [r6, #0x22]\n"
-        "bl func_00257678\n"
-        "mov r6, r0\n"
-        "ldrsh r0, [r7, #0x22]\n"
-        "bl func_00257678\n"
-        "subs r0, r6, r0\n"
-        "bne 1f\n"
-        "ldrh r0, [r4]\n"
-        "bl camp_func_002b9364\n"
-        "mov r4, r0\n"
-        "ldrh r0, [r5]\n"
-        "bl camp_func_002b9364\n"
-        "mov r1, r0\n"
-        "ldrb r0, [r0, #2]\n"
-        "ldrb r2, [r4, #2]\n"
-        "subs r0, r0, r2\n"
-        "bne 1f\n"
-        "ldrb r0, [r1, #3]\n"
-        "ldrb r2, [r4, #3]\n"
-        "subs r0, r0, r2\n"
-        "bne 1f\n"
-        "ldrh r0, [r4]\n"
-        "ldrh r1, [r1]\n"
-        "sub r0, r0, r1\n"
-        "1: pop {r4, r5, r6, r7, r8, pc}\n");
+s32 StatusDown_SkillSortByCostDesc(const void* a, const void* b) {
+    const auto* ea = static_cast<const StatusDownListEntry*>(a);
+    const auto* eb = static_cast<const StatusDownListEntry*>(b);
+    const auto* sa = reinterpret_cast<const SkillTableEntry*>(camp_func_00257744(ea->value));
+    const auto* sb = reinterpret_cast<const SkillTableEntry*>(camp_func_00257744(eb->value));
+    s32 ca = func_00257678(sa->cost_raw);
+    s32 cb = func_00257678(sb->cost_raw);
+    s32 diff = cb - ca;
+    if (diff != 0) {
+        return diff;
+    }
+    const auto* ia = reinterpret_cast<const ItemTableEntry*>(camp_func_002b9364(ea->id));
+    const auto* ib = reinterpret_cast<const ItemTableEntry*>(camp_func_002b9364(eb->id));
+    diff = static_cast<s32>(ib->category) - static_cast<s32>(ia->category);
+    if (diff != 0) {
+        return diff;
+    }
+    diff = static_cast<s32>(ib->rarity) - static_cast<s32>(ia->rarity);
+    if (diff != 0) {
+        return diff;
+    }
+    return static_cast<s32>(ia->id) - static_cast<s32>(ib->id);
 }
 
 // DECOMP_FUNC(0x002e2f44, 408)
@@ -2478,109 +2391,72 @@ __attribute__((naked)) void StatusDown_UpdatePartySlotsAndDiff(const u16* ids, s
 }
 #endif
 // DECOMP_FUNC(0x002e4534, 80)
-
-
-//
-__attribute__((naked)) s32 StatusDown_SkillSortByIdDesc(const void*, const void*) {
-    asm volatile(
-        "push {r4, r5, r6, lr}\n"
-        "mov r5, r1\n"
-        "ldrh r0, [r0]\n"
-        "bl camp_func_002b9364\n"
-        "mov r4, r0\n"
-        "ldrh r0, [r5]\n"
-        "bl camp_func_002b9364\n"
-        "mov r1, r0\n"
-        "ldrb r0, [r0, #2]\n"
-        "ldrb r2, [r4, #2]\n"
-        "subs r0, r0, r2\n"
-        "bne 1f\n"
-        "ldrb r0, [r1, #3]\n"
-        "ldrb r2, [r4, #3]\n"
-        "subs r0, r0, r2\n"
-        "bne 1f\n"
-        "ldrh r0, [r4]\n"
-        "ldrh r1, [r1]\n"
-        "sub r0, r0, r1\n"
-        "1: pop {r4, r5, r6, pc}\n");
+s32 StatusDown_SkillSortByIdDesc(const void* a, const void* b) {
+    const auto* ea = static_cast<const StatusDownListEntry*>(a);
+    const auto* eb = static_cast<const StatusDownListEntry*>(b);
+    const auto* ia = reinterpret_cast<const ItemTableEntry*>(camp_func_002b9364(ea->id));
+    const auto* ib = reinterpret_cast<const ItemTableEntry*>(camp_func_002b9364(eb->id));
+    s32 diff = static_cast<s32>(ib->category) - static_cast<s32>(ia->category);
+    if (diff != 0) {
+        return diff;
+    }
+    diff = static_cast<s32>(ib->rarity) - static_cast<s32>(ia->rarity);
+    if (diff != 0) {
+        return diff;
+    }
+    return static_cast<s32>(ia->id) - static_cast<s32>(ib->id);
 }
 // DECOMP_FUNC(0x002e4584, 132)
-
-
-//
-__attribute__((naked)) s32 StatusDown_ItemSortByTypeDesc(const void*, const void*) {
-    asm volatile(
-        "push {r4, r5, r6, lr}\n"
-        "mov r5, r1\n"
-        "ldrh r1, [r0, #2]\n"
-        "mov r2, r0\n"
-        "ldrh r0, [r5, #2]\n"
-        "cmp r1, #0\n"
-        "beq 1f\n"
-        "cmp r0, #0\n"
-        "mvneq r0, #0\n"
-        "beq 2f\n"
-        "subs r0, r0, r1\n"
-        "bne 2f\n"
-        "ldrh r0, [r2]\n"
-        "bl camp_func_002b9364\n"
-        "mov r4, r0\n"
-        "ldrh r0, [r5]\n"
-        "bl camp_func_002b9364\n"
-        "mov r1, r0\n"
-        "ldrb r0, [r0, #2]\n"
-        "ldrb r2, [r4, #2]\n"
-        "subs r0, r0, r2\n"
-        "bne 2f\n"
-        "ldrb r0, [r4, #3]\n"
-        "ldrb r2, [r1, #3]\n"
-        "subs r0, r0, r2\n"
-        "bne 2f\n"
-        "ldrh r0, [r1]\n"
-        "ldrh r1, [r4]\n"
-        "sub r0, r0, r1\n"
-        "2: pop {r4, r5, r6, pc}\n"
-        "1: cmp r0, #0\n"
-        "movne r0, #1\n"
-        "pop {r4, r5, r6, pc}\n");
+s32 StatusDown_ItemSortByTypeDesc(const void* a, const void* b) {
+    const auto* ea = static_cast<const StatusDownListEntry*>(a);
+    const auto* eb = static_cast<const StatusDownListEntry*>(b);
+    u16 va = ea->value;
+    u16 vb = eb->value;
+    if (va == 0) {
+        return vb != 0 ? 1 : 0;
+    }
+    if (vb == 0) {
+        return -1;
+    }
+    s32 diff = static_cast<s32>(vb) - static_cast<s32>(va);
+    if (diff != 0) {
+        return diff;
+    }
+    const auto* ia = reinterpret_cast<const ItemTableEntry*>(camp_func_002b9364(ea->id));
+    const auto* ib = reinterpret_cast<const ItemTableEntry*>(camp_func_002b9364(eb->id));
+    diff = static_cast<s32>(ib->category) - static_cast<s32>(ia->category);
+    if (diff != 0) {
+        return diff;
+    }
+    diff = static_cast<s32>(ia->rarity) - static_cast<s32>(ib->rarity);
+    if (diff != 0) {
+        return diff;
+    }
+    return static_cast<s32>(ib->id) - static_cast<s32>(ia->id);
 }
 // DECOMP_FUNC(0x002e4608, 124)
-
-
-//
-__attribute__((naked)) s32 StatusDown_ItemSortByIdDesc(const void*, const void*) {
-    asm volatile(
-        "push {r4, r5, r6, lr}\n"
-        "mov r5, r1\n"
-        "ldrh r1, [r0, #2]\n"
-        "cmp r1, #0\n"
-        "ldrh r1, [r5, #2]\n"
-        "beq 1f\n"
-        "cmp r1, #0\n"
-        "mvneq r0, #0\n"
-        "beq 2f\n"
-        "ldrh r0, [r0]\n"
-        "bl camp_func_002b9364\n"
-        "mov r4, r0\n"
-        "ldrh r0, [r5]\n"
-        "bl camp_func_002b9364\n"
-        "mov r1, r0\n"
-        "ldrb r0, [r0, #2]\n"
-        "ldrb r2, [r4, #2]\n"
-        "subs r0, r0, r2\n"
-        "bne 2f\n"
-        "ldrb r0, [r4, #3]\n"
-        "ldrb r2, [r1, #3]\n"
-        "subs r0, r0, r2\n"
-        "bne 2f\n"
-        "ldrh r0, [r1]\n"
-        "ldrh r1, [r4]\n"
-        "sub r0, r0, r1\n"
-        "2: pop {r4, r5, r6, pc}\n"
-        "1: cmp r1, #0\n"
-        "moveq r0, #0\n"
-        "movne r0, #1\n"
-        "pop {r4, r5, r6, pc}\n");
+s32 StatusDown_ItemSortByIdDesc(const void* a, const void* b) {
+    const auto* ea = static_cast<const StatusDownListEntry*>(a);
+    const auto* eb = static_cast<const StatusDownListEntry*>(b);
+    u16 va = ea->value;
+    u16 vb = eb->value;
+    if (va == 0) {
+        return vb != 0 ? 1 : 0;
+    }
+    if (vb == 0) {
+        return -1;
+    }
+    const auto* ia = reinterpret_cast<const ItemTableEntry*>(camp_func_002b9364(ea->id));
+    const auto* ib = reinterpret_cast<const ItemTableEntry*>(camp_func_002b9364(eb->id));
+    s32 diff = static_cast<s32>(ib->category) - static_cast<s32>(ia->category);
+    if (diff != 0) {
+        return diff;
+    }
+    diff = static_cast<s32>(ia->rarity) - static_cast<s32>(ib->rarity);
+    if (diff != 0) {
+        return diff;
+    }
+    return static_cast<s32>(ib->id) - static_cast<s32>(ia->id);
 }
 
 // DECOMP_FUNC(0x002efde0, 44)
