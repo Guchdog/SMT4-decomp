@@ -93,6 +93,62 @@ def read_config_work(rsp) -> dict:
 
 ADDR_CONFIG_HELPER = 0x00286928
 ADDR_TITLE_CONFIG_READY = 0x002FC0EC
+ADDR_SCRIPT_STEP = 0x0028E974
+ADDR_SCRIPT_DISPATCH = 0x0019DFBC
+ADDR_HANDLER8 = 0x001A07CC
+ADDR_NESTED_CALLBACK = 0x00221168
+
+
+def _valid_ptr(value: int) -> bool:
+    return 0x00400000 <= value < 0x30000000
+
+
+def flat_trace_poll(rsp, max_events: int = 1600) -> dict:
+    """Flat entry trace of the script/readiness path.
+
+    The trace records entries only and single-steps over each stop. READY is
+    the exception: it runs to LR so the return value is observed. Nested calls
+    inside the helper therefore remain visible.
+    """
+    watched = [ADDR_CONFIG_HELPER, ADDR_TITLE_CONFIG_READY, ADDR_SCRIPT_STEP,
+               ADDR_SCRIPT_DISPATCH, ADDR_HANDLER8, ADDR_NESTED_CALLBACK]
+    events: list[dict] = []
+    for index in range(max_events):
+        pc = run_to_any(rsp, watched, "flat trace")
+        rec = {
+            "i": index,
+            "pc": f"0x{pc:08x}",
+            "r0": f"0x{base.decode_r0(rsp.request(b'p00')):08x}",
+            "r1": f"0x{base.decode_r0(rsp.request(b'p01')):08x}",
+            "r2": f"0x{base.decode_r0(rsp.request(b'p02')):08x}",
+            "r3": f"0x{base.decode_r0(rsp.request(b'p03')):08x}",
+            "lr": f"0x{base.decode_r0(rsp.request(b'p0e')):08x}",
+        }
+        if pc in (ADDR_CONFIG_HELPER, ADDR_SCRIPT_STEP, ADDR_NESTED_CALLBACK):
+            r0 = base.decode_r0(rsp.request(b"p00"))
+            if _valid_ptr(r0):
+                try:
+                    rec["object_plus8"] = base.rsp_read_u32(rsp, r0 + 8)
+                    rec["object_plus2e"] = base.rsp_read_mem(rsp, r0 + 0x2E, 1)[0]
+                    rec["object_plus35"] = base.rsp_read_mem(rsp, r0 + 0x35, 1)[0]
+                except Exception as exc:
+                    rec["object_error"] = str(exc)
+        if pc in (ADDR_TITLE_CONFIG_READY, ADDR_HANDLER8, ADDR_NESTED_CALLBACK,
+                  ADDR_SCRIPT_DISPATCH):
+            if pc == ADDR_TITLE_CONFIG_READY:
+                rec["config_work"] = read_config_work(rsp)
+                rec["title"] = read_title(rsp)
+            lr = base.decode_r0(rsp.request(b"p0e"))
+            step_once(rsp)
+            run_to_any(rsp, [lr], "return")
+            rec["return"] = base.decode_r0(rsp.request(b"p00"))
+            step_once(rsp)
+        else:
+            step_once(rsp)
+        events.append(rec)
+        if pc == ADDR_TITLE_CONFIG_READY and rec.get("return") == 1:
+            return {"completed": True, "events": events}
+    return {"completed": False, "events": events}
 
 
 def poll_readiness_with_helper(rsp, max_events: int = 400) -> dict:
@@ -128,6 +184,63 @@ def poll_readiness_with_helper(rsp, max_events: int = 400) -> dict:
     return {"completed": False, "events": events}
 
 
+ADDR_CALLBACK_RET = 0x001A0800
+ADDR_CALLBACK_CONT = 0x002211F0
+
+
+def callback_helper_probe(rsp, max_events: int = 400) -> dict:
+    """Capture helper return on the callback path and the callback return."""
+    events: list[dict] = []
+    for index in range(max_events):
+        pc = run_to_any(rsp, [ADDR_CONFIG_HELPER, ADDR_CALLBACK_RET,
+                              ADDR_TITLE_CONFIG_READY], "callback probe")
+        if pc == ADDR_CONFIG_HELPER:
+            r0 = base.decode_r0(rsp.request(b"p00"))
+            r1 = base.decode_r0(rsp.request(b"p01"))
+            r2 = base.decode_r0(rsp.request(b"p02"))
+            lr = base.decode_r0(rsp.request(b"p0e"))
+            if lr != ADDR_CALLBACK_CONT:
+                step_once(rsp)
+                continue
+            step_once(rsp)
+            run_to_any(rsp, [ADDR_CALLBACK_CONT], "helper return")
+            helper_ret = base.decode_r0(rsp.request(b"p00"))
+            events.append({
+                "i": index, "kind": "helper", "r1": r1, "r2": r2,
+                "helper_ret": helper_ret,
+            })
+            step_once(rsp)
+        elif pc == ADDR_CALLBACK_RET:
+            callback_ret = base.decode_r0(rsp.request(b"p00"))
+            events.append({"i": index, "kind": "callback_ret", "ret": callback_ret})
+            step_once(rsp)
+        else:
+            rec = {"i": index, "kind": "ready", "config": read_config_work(rsp),
+                   "title": read_title(rsp)}
+            lr = base.decode_r0(rsp.request(b"p0e"))
+            step_once(rsp)
+            run_to_any(rsp, [lr], "ready return")
+            rec["ret"] = base.decode_r0(rsp.request(b"p00"))
+            step_once(rsp)
+            events.append(rec)
+            if rec["ret"] == 1:
+                return {"completed": True, "events": events}
+    return {"completed": False, "events": events}
+
+
+def step_calc_with_real_a(rsp, label: str) -> dict:
+    """Run one Calc tick with a real A edge (r0==0) and B clear."""
+    base.run_to_bp(rsp, base.ADDR_TITLE_CONFIG_CALC)
+    lr = base.decode_r0(rsp.request(b"p0e"))
+    original = base.rsp_read_mem(rsp, ADDR_UI_INPUT_TRIGGER2, 8)
+    base.rsp_write_mem(rsp, ADDR_UI_INPUT_TRIGGER2, stub_arm_return_one_if_r0(0))
+    try:
+        base.run_to_bp(rsp, lr)
+    finally:
+        base.rsp_write_mem(rsp, ADDR_UI_INPUT_TRIGGER2, original)
+    return base.snapshot_config_state(rsp, label)
+
+
 def press_and_advance(rsp, stub_addr: int, stub: bytes, anchors: list[int]) -> int:
     original = base.rsp_read_mem(rsp, stub_addr, len(stub))
     base.rsp_write_mem(rsp, stub_addr, stub)
@@ -137,7 +250,8 @@ def press_and_advance(rsp, stub_addr: int, stub: bytes, anchors: list[int]) -> i
         base.rsp_write_mem(rsp, stub_addr, original)
 
 
-def probe(rsp, timeout_s: float, confirm_test: bool = False) -> dict:
+def probe(rsp, timeout_s: float, confirm_test: bool = False, flat_trace: bool = False,
+          callback_probe: bool = False) -> dict:
     events: list[dict] = []
     start = time.monotonic()
 
@@ -155,13 +269,14 @@ def probe(rsp, timeout_s: float, confirm_test: bool = False) -> dict:
     trace_addrs = [0x001E9D08, 0x001E9D0C, 0x001E9D1C, 0x001E9D48, 0x001E9D78,
                    ADDR_TITLE_TOP_READY]
     pc_trace: list[str] = []
-    for _ in range(48):
-        pc = run_to_any(rsp, trace_addrs, "pc trace")
-        pc_trace.append(f"0x{pc:08x}")
-        if pc in (0x001E9D48, 0x001E9D78):
-            pc_trace[-1] += f"(r0={base.decode_r0(rsp.request(b'p00'))})"
-        step_once(rsp)
-    events.append({"step": "pc_trace", "pcs": pc_trace, "title": read_title(rsp)})
+    if not flat_trace:
+        for _ in range(48):
+            pc = run_to_any(rsp, trace_addrs, "pc trace")
+            pc_trace.append(f"0x{pc:08x}")
+            if pc in (0x001E9D48, 0x001E9D78):
+                pc_trace[-1] += f"(r0={base.decode_r0(rsp.request(b'p00'))})"
+            step_once(rsp)
+        events.append({"step": "pc_trace", "pcs": pc_trace, "title": read_title(rsp)})
 
     # Move the title cursor down until row 2 is selected. Step over the
     # current anchor first, then keep the logical Down response installed
@@ -247,16 +362,23 @@ def probe(rsp, timeout_s: float, confirm_test: bool = False) -> dict:
             "g_ConfigBytes_hex": snap["g_ConfigBytes_hex"],
             "state": snap["state_08"],
         })
-    confirm = base.step_calc_with_query(
-        rsp, orig_query, 0, 1, "real_entry_a_confirm", 2, 7
-    )
+    confirm = step_calc_with_real_a(rsp, "real_entry_a_confirm")
     actions.append({
         "label": "a_confirm",
         "values": [confirm["bgm_28"], confirm["se_2c"], confirm["voice_30"]],
         "g_ConfigBytes_hex": confirm["g_ConfigBytes_hex"],
         "state": confirm["state_08"],
     })
-    readiness = poll_readiness_with_helper(rsp, max_events=400)
+    if callback_probe:
+        trace = callback_helper_probe(rsp, max_events=400)
+        readiness = {"completed": trace["completed"], "events": []}
+        result["callback_probe"] = trace
+    elif flat_trace:
+        trace = flat_trace_poll(rsp, max_events=1600)
+        readiness = {"completed": trace["completed"], "events": []}
+        result["flat_trace"] = trace
+    else:
+        readiness = poll_readiness_with_helper(rsp, max_events=400)
     result["confirm_test"] = {
         "actions": actions,
         "readiness": readiness,
@@ -280,6 +402,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--packet-timeout", type=float, default=240.0)
     parser.add_argument("--confirm-test", action="store_true",
                         help="after entry, edit the three options, confirm, and poll readiness")
+    parser.add_argument("--flat-trace", action="store_true",
+                        help="use the script/readiness entry trace instead of the helper poll")
+    parser.add_argument("--callback-probe", action="store_true",
+                        help="capture helper return on the callback path and callback return")
     args = parser.parse_args(argv)
 
     out_dir = args.output_dir.resolve()
@@ -330,7 +456,8 @@ def main(argv: list[str] | None = None) -> int:
                 pid_hex = proc_info.split(b":", 1)[1].split(b";", 1)[0]
                 if not rsp.request(b"vAttach;" + pid_hex).startswith(b"T"):
                     raise RuntimeError("vAttach failed")
-                report["probe"] = probe(rsp, args.packet_timeout, args.confirm_test)
+                report["probe"] = probe(rsp, args.packet_timeout, args.confirm_test,
+                                        args.flat_trace, args.callback_probe)
             finally:
                 try:
                     rsp.request(b"D")
