@@ -228,6 +228,130 @@ def callback_helper_probe(rsp, max_events: int = 400) -> dict:
     return {"completed": False, "events": events}
 
 
+def handler_trace(rsp, max_cycles: int = 160) -> dict:
+    """Map script instruction records and handler returns during state 2."""
+    events: list[dict] = []
+    for index in range(max_cycles):
+        pc = run_to_any(rsp, [ADDR_HANDLER8, ADDR_TITLE_CONFIG_READY], "handler trace")
+        if pc == ADDR_HANDLER8:
+            task = base.decode_r0(rsp.request(b"p00"))
+            rec: dict = {"i": index, "kind": "handler", "task": f"0x{task:08x}"}
+            if _valid_ptr(task):
+                try:
+                    idx = base.rsp_read_u32(rsp, task + 0x18)
+                    table = base.rsp_read_u32(rsp, task + 0xBC)
+                    rec["idx"] = idx
+                    rec["table"] = f"0x{table:08x}"
+                    if _valid_ptr(table):
+                        records = []
+                        for j in range(idx, idx + 8):
+                            handler = int.from_bytes(
+                                base.rsp_read_mem(rsp, table + j * 4, 2), "little")
+                            nested = int.from_bytes(
+                                base.rsp_read_mem(rsp, table + j * 4 + 2, 2), "little")
+                            records.append([j, handler, nested])
+                        rec["records"] = records
+                        current_nested = records[0][2]
+                        row = 0x00406038 + current_nested * 8
+                        rec["nested_row"] = f"0x{row:08x}"
+                        rec["nested_target"] = f"0x{base.rsp_read_u32(rsp, row):08x}"
+                        rec["nested_target_arg"] = base.rsp_read_u32(rsp, row + 4)
+                        global_table = 0x0043E188
+                        default_object = base.rsp_read_u32(rsp, global_table + 4)
+                        special_object = base.rsp_read_u32(rsp, global_table + 8)
+                        rec["default_object"] = f"0x{default_object:08x}"
+                        rec["special_object"] = f"0x{special_object:08x}"
+                        if _valid_ptr(default_object):
+                            rec["default_obj8"] = base.rsp_read_mem(
+                                rsp, default_object + 8, 1)[0]
+                            rec["default_obj2e"] = base.rsp_read_mem(
+                                rsp, default_object + 0x2E, 1)[0]
+                        if _valid_ptr(special_object):
+                            rec["special_obj8"] = base.rsp_read_mem(
+                                rsp, special_object + 8, 1)[0]
+                            rec["special_obj2e"] = base.rsp_read_mem(
+                                rsp, special_object + 0x2E, 1)[0]
+                except Exception as exc:
+                    rec["read_error"] = str(exc)
+            lr = base.decode_r0(rsp.request(b"p0e"))
+            step_once(rsp)
+            run_to_any(rsp, [lr], "handler return")
+            rec["handler_ret"] = base.decode_r0(rsp.request(b"p00"))
+            step_once(rsp)
+            events.append(rec)
+        else:
+            rec = {"i": index, "kind": "ready", "config": read_config_work(rsp),
+                   "title": read_title(rsp)}
+            lr = base.decode_r0(rsp.request(b"p0e"))
+            step_once(rsp)
+            run_to_any(rsp, [lr], "ready return")
+            rec["ret"] = base.decode_r0(rsp.request(b"p00"))
+            step_once(rsp)
+            events.append(rec)
+            if rec["ret"] == 1:
+                return {"completed": True, "events": events}
+    return {"completed": False, "events": events}
+
+
+def patch_runtime_config(exe: Path, throttled: bool, realtime_audio: bool) -> None:
+    """Optionally restore throttled 60 fps/vsync and realtime audio."""
+    user = exe.parent / "user"
+    qt = user / "config" / "qt-config.ini"
+    if qt.is_file():
+        raw = qt.read_bytes()
+        if throttled:
+            raw = raw.replace(b"frame_limit=0", b"frame_limit=60")
+            raw = raw.replace(b"use_vsync=false", b"use_vsync=true")
+        if realtime_audio:
+            raw = raw.replace(b"enable_realtime_audio=false",
+                              b"enable_realtime_audio=true")
+        qt.write_bytes(raw)
+    game = user / "config" / "custom" / "00040000000E5C00.ini"
+    if game.is_file():
+        raw = game.read_bytes()
+        if throttled:
+            raw = raw.replace(b"frame_limit=0", b"frame_limit=60")
+            raw = raw.replace(b"use_vsync=false", b"use_vsync=true")
+        if realtime_audio:
+            raw = raw.replace(b"enable_realtime_audio\\use_global=true",
+                              b"enable_realtime_audio\\use_global=false")
+        game.write_bytes(raw)
+
+
+def free_run_sample(rsp, seconds: float = 5.0) -> dict:
+    """Resume the guest with no breakpoints, then interrupt and sample state."""
+    rsp.sock.sendall(base.frame(b"c"))
+    ack = rsp._exact(1)
+    if ack != b"+":
+        raise RuntimeError(f"unexpected continue ack {ack!r}")
+    time.sleep(seconds)
+    rsp.sock.sendall(b"\x03")
+    reply = rsp._packet()
+    if not reply.startswith(b"T"):
+        raise RuntimeError(f"interrupt returned unexpected stop reply {reply!r}")
+    global_table = 0x0043E188
+    default_object = base.rsp_read_u32(rsp, global_table + 4)
+    special_object = base.rsp_read_u32(rsp, global_table + 8)
+    lock = 0x00431C40
+    sample = {
+        "stop_pc": f"0x{base.decode_r0(rsp.request(b'p0f')):08x}",
+        "lr": f"0x{base.decode_r0(rsp.request(b'p0e')):08x}",
+        "default_object": f"0x{default_object:08x}",
+        "special_object": f"0x{special_object:08x}",
+        "config_work": read_config_work(rsp),
+        "title": read_title(rsp),
+        "lock_words": [base.rsp_read_u32(rsp, lock + off) for off in (0, 4, 8)],
+        "lock_byte_76": base.rsp_read_mem(rsp, lock + 0x76, 1)[0],
+    }
+    if _valid_ptr(default_object):
+        sample["default_obj8"] = base.rsp_read_mem(rsp, default_object + 8, 1)[0]
+        sample["default_obj2e"] = base.rsp_read_mem(rsp, default_object + 0x2E, 1)[0]
+    if _valid_ptr(special_object):
+        sample["special_obj8"] = base.rsp_read_mem(rsp, special_object + 8, 1)[0]
+        sample["special_obj2e"] = base.rsp_read_mem(rsp, special_object + 0x2E, 1)[0]
+    return sample
+
+
 def step_calc_with_real_a(rsp, label: str) -> dict:
     """Run one Calc tick with a real A edge (r0==0) and B clear."""
     base.run_to_bp(rsp, base.ADDR_TITLE_CONFIG_CALC)
@@ -251,7 +375,8 @@ def press_and_advance(rsp, stub_addr: int, stub: bytes, anchors: list[int]) -> i
 
 
 def probe(rsp, timeout_s: float, confirm_test: bool = False, flat_trace: bool = False,
-          callback_probe: bool = False) -> dict:
+          callback_probe: bool = False, handler_trace_mode: bool = False,
+          free_run_mode: bool = False, free_run_seconds: float = 5.0) -> dict:
     events: list[dict] = []
     start = time.monotonic()
 
@@ -369,7 +494,16 @@ def probe(rsp, timeout_s: float, confirm_test: bool = False, flat_trace: bool = 
         "g_ConfigBytes_hex": confirm["g_ConfigBytes_hex"],
         "state": confirm["state_08"],
     })
-    if callback_probe:
+    if free_run_mode:
+        sample = free_run_sample(rsp, free_run_seconds)
+        result["free_run"] = sample
+        readiness = {"completed": sample["config_work"].get("work") == 0,
+                     "events": []}
+    elif handler_trace_mode:
+        trace = handler_trace(rsp, max_cycles=160)
+        readiness = {"completed": trace["completed"], "events": []}
+        result["handler_trace"] = trace
+    elif callback_probe:
         trace = callback_helper_probe(rsp, max_events=400)
         readiness = {"completed": trace["completed"], "events": []}
         result["callback_probe"] = trace
@@ -406,6 +540,16 @@ def main(argv: list[str] | None = None) -> int:
                         help="use the script/readiness entry trace instead of the helper poll")
     parser.add_argument("--callback-probe", action="store_true",
                         help="capture helper return on the callback path and callback return")
+    parser.add_argument("--handler-trace", action="store_true",
+                        help="map script instruction records and handler returns")
+    parser.add_argument("--free-run", action="store_true",
+                        help="after confirm, resume without breakpoints and sample state")
+    parser.add_argument("--free-run-seconds", type=float, default=5.0,
+                        help="seconds to resume without breakpoints in --free-run mode")
+    parser.add_argument("--throttled", action="store_true",
+                        help="use 60 fps/vsync instead of the unthrottled runner config")
+    parser.add_argument("--realtime-audio", action="store_true",
+                        help="enable realtime audio in the disposable profile")
     args = parser.parse_args(argv)
 
     out_dir = args.output_dir.resolve()
@@ -423,6 +567,7 @@ def main(argv: list[str] | None = None) -> int:
         ips_bytes=None,
     )
 
+    patch_runtime_config(exe, args.throttled, args.realtime_audio)
     base.reserve_port(args.base_port)
     log_dir = out_dir / "logs"
     log_dir.mkdir(exist_ok=True)
@@ -457,7 +602,9 @@ def main(argv: list[str] | None = None) -> int:
                 if not rsp.request(b"vAttach;" + pid_hex).startswith(b"T"):
                     raise RuntimeError("vAttach failed")
                 report["probe"] = probe(rsp, args.packet_timeout, args.confirm_test,
-                                        args.flat_trace, args.callback_probe)
+                                        args.flat_trace, args.callback_probe,
+                                        args.handler_trace, args.free_run,
+                                        args.free_run_seconds)
             finally:
                 try:
                     rsp.request(b"D")

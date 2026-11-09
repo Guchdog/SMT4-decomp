@@ -20,7 +20,7 @@ state is not progressing. This is now the H2 blocker, not input entry.
 | Item | Identity |
 |---|---|
 | Semantic checkout | `C:/Users/altair/.codex/worktrees/semantic-equivalence-experiment/SMT4decomp` |
-| Probe | `tools/h2_real_entry_probe.py`, SHA-256 `22f2b0d9427859eff89030893730ab818c6bf3370c0b27280e622d11a5af6496` |
+| Probe | `tools/h2_real_entry_probe.py`, SHA-256 `bdd322fe721af502e086b945c3247d23734e77606eafde56c1edeb9e28cc5ad4` |
 | Report | `build/agent-work/H2-semantic/h2-real-entry-probe/run007/probe-report.json`, SHA-256 `a10f771207f4cead19adcccea8d4dda5204a67c65da829e4bfaeb2530fe2b3fd` |
 | Private Azahar | `build/agent-work/H2-semantic/h2-private-azahar-source/build-clang64/bin/Release/azahar.exe`, SHA-256 `1b3bb3d0822d8c045cf4dc6157d0466f675706727fac3240b6fa3d579de49682` |
 | Pinned original image | `extracted/exefs/code.bin`, SHA-256 `1f98884fe997af22e032a14c51a46c872b05b0e079a0f29e307b0e059cfaa558` |
@@ -138,19 +138,59 @@ New evidence identities:
 | Flat trace report (`run008`) | `build/agent-work/H2-semantic/h2-real-entry-probe/run008/probe-report.json`, SHA-256 `e8296c1a8b3d113d7f6c66a132a82234e8453f9c7ccea79a7847f4da77251113` |
 | Dispatcher return report (`run009`) | `build/agent-work/H2-semantic/h2-real-entry-probe/run009/probe-report.json`, SHA-256 `74cf61455336fcc8261d3c6023dace2e646b2aa0f147458c5d1207488d8db6a5` |
 
+## Third pass: free-run and the sync-wait boundary (2026-11-09)
+
+Two control runs test whether the stall is an artifact of GDB polling or of the
+unthrottled runner config:
+
+- `run015` resumes the guest for 5 seconds with **no breakpoints** after the A
+  confirm, then interrupts. The stop is `PC=0x002A88A8`, `LR=0x001465A8`; the
+  default object remains `[+8]=4`, the special object `[+8]=2`, and
+  `TitleConfigWork[8]=2`. The config-work task is still registered.
+- `run016` repeats the same free run with 60 fps/vsync and realtime audio
+  enabled. The result is identical: same stop, same object states, same config
+  state.
+- `run017` extends the free run to 30 seconds. The stop moves to
+  `PC=0x00153930`, `LR=0x002A4D9C`, but the objects remain 4/2 and the config
+  state remains 2. The lock object at `0x00431C40` reads
+  `0xFFFFFFFF / 0x1FF82000 / 1` with byte `+0x76 = 2`, the same raw signature
+  documented for the earlier startup sync waits.
+
+This rules out GDB polling, frame pacing, and the realtime-audio setting as the
+cause. The title-config thread is parked in the same family of guest
+synchronization waits (`SVC #0x22` arbitration / `SendSyncRequest` paths) that
+blocked the earlier startup captures. The first ComWin wait does complete (the
+callback returns 1 at `r2=39`), but the next wait leaves the default object at
+state 4 and never observes the reset to 0. The remaining blocker is therefore a
+guest/service synchronization lifecycle question, not a missing C++ slice or an
+input-entry shortcut.
+
+New evidence identities:
+
+| Item | Identity |
+|---|---|
+| 5-second free run (`run015`) | `build/agent-work/H2-semantic/h2-real-entry-probe/run015/probe-report.json` |
+| Throttled + realtime free run (`run016`) | `build/agent-work/H2-semantic/h2-real-entry-probe/run016/probe-report.json`, SHA-256 `0a03c86a2bf5c5dcb8bdbe539af7ecf1df796eb06e479f4d8fa7b477ce7fe82c` |
+| 30-second free run (`run017`) | `build/agent-work/H2-semantic/h2-real-entry-probe/run017/probe-report.json`, SHA-256 `bb85a53d0779c07d32395fb48de88bb8e2fe84ec91b3525ed959073b08a74f8a` |
+
 ## Next experiments
 
-1. Breakpoint `0x0028E974` during the 200 polls and capture its arguments,
-   return, and any writes to `object+8`. Determine whether it is called, whether
-   it returns success, and why it leaves the state at 0.
-2. Trace the script dispatcher `0x0019DFBC` and the handler-8 path
-   (`0x001A07CC` / `0x00221168`) during the same polls. Confirm whether handler 8
-   is reached after the real A confirmation, and whether the callback's
-   `raw_r0/raw_r1` values match the historical trace.
-3. Compare the current object layout (`0x086E5D80`) with the historical
-   (`0x086E5700`) at the same script step. Identify whether they are different
-   objects, different scenes, or different initialization paths.
-4. Only after the state-advance contract is understood, repeat the paired
+1. Treat the sync wait as the primary blocker. Identify the thread/service that
+   owns `0x00431C40` at the `0x002A88A8` / `0x00153930` stops, and which event or
+   service callback releases it. The raw signature and caller paths are the same
+   family already documented in the startup captures; do not repeat a generic
+   startup timeout.
+2. Find the writer that resets `default_object + 8` from 4 to 0. The first wait
+   (selector 6, nested 33) completes and leaves the default object at 4; the
+   second wait (selector 11, nested 5 at script index 14) checks
+   `default_object[8]` and blocks while it is nonzero. A breakpoint on writes to
+   `default_object + 8` during free run will identify the draw/update/task path
+   that should perform the reset.
+3. Compare this object lifecycle with the manual run-005 flow, which reached the
+   same menu and reportedly confirmed settings. Determine whether the manual
+   flow produced the reset through a real audio/task callback or a longer idle
+   period that the automated scenario does not reproduce.
+4. Only after the sync/reset lifecycle is understood, repeat the paired
    original-versus-patched scenario and then same-session re-entry and restart.
 
 ## Limits
