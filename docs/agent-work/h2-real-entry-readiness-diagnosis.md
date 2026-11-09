@@ -20,7 +20,7 @@ state is not progressing. This is now the H2 blocker, not input entry.
 | Item | Identity |
 |---|---|
 | Semantic checkout | `C:/Users/altair/.codex/worktrees/semantic-equivalence-experiment/SMT4decomp` |
-| Probe | `tools/h2_real_entry_probe.py`, SHA-256 `bdd322fe721af502e086b945c3247d23734e77606eafde56c1edeb9e28cc5ad4` |
+| Probe | `tools/h2_real_entry_probe.py`, SHA-256 `ff959c00bf340549e02040b70208a56a8dcddd58303b93ab8ff713fe33d90e08` |
 | Report | `build/agent-work/H2-semantic/h2-real-entry-probe/run007/probe-report.json`, SHA-256 `a10f771207f4cead19adcccea8d4dda5204a67c65da829e4bfaeb2530fe2b3fd` |
 | Private Azahar | `build/agent-work/H2-semantic/h2-private-azahar-source/build-clang64/bin/Release/azahar.exe`, SHA-256 `1b3bb3d0822d8c045cf4dc6157d0466f675706727fac3240b6fa3d579de49682` |
 | Pinned original image | `extracted/exefs/code.bin`, SHA-256 `1f98884fe997af22e032a14c51a46c872b05b0e079a0f29e307b0e059cfaa558` |
@@ -156,10 +156,15 @@ unthrottled runner config:
   `0xFFFFFFFF / 0x1FF82000 / 1` with byte `+0x76 = 2`, the same raw signature
   documented for the earlier startup sync waits.
 
-This rules out GDB polling, frame pacing, and the realtime-audio setting as the
-cause. The title-config thread is parked in the same family of guest
-synchronization waits (`SVC #0x22` arbitration / `SendSyncRequest` paths) that
-blocked the earlier startup captures. The first ComWin wait does complete (the
+- `run018` requests LLE DSP in the disposable profile. Azahar cannot load the
+  DSP system module (`AttemptLLE: Service module "DSP" could not be loaded;
+  Defaulting to HLE implementation`) and falls back to HLE; the free-run result
+  is identical (same stop, same 4/2 object states, same lock signature).
+
+This rules out GDB polling, frame pacing, the realtime-audio setting, and an
+available LLE-DSP alternative as the cause. The title-config thread is parked in
+the same family of guest synchronization waits (`SVC #0x22` arbitration /
+`SendSyncRequest` paths) that blocked the earlier startup captures. The first ComWin wait does complete (the
 callback returns 1 at `r2=39`), but the next wait leaves the default object at
 state 4 and never observes the reset to 0. The remaining blocker is therefore a
 guest/service synchronization lifecycle question, not a missing C++ slice or an
@@ -172,6 +177,7 @@ New evidence identities:
 | 5-second free run (`run015`) | `build/agent-work/H2-semantic/h2-real-entry-probe/run015/probe-report.json` |
 | Throttled + realtime free run (`run016`) | `build/agent-work/H2-semantic/h2-real-entry-probe/run016/probe-report.json`, SHA-256 `0a03c86a2bf5c5dcb8bdbe539af7ecf1df796eb06e479f4d8fa7b477ce7fe82c` |
 | 30-second free run (`run017`) | `build/agent-work/H2-semantic/h2-real-entry-probe/run017/probe-report.json`, SHA-256 `bb85a53d0779c07d32395fb48de88bb8e2fe84ec91b3525ed959073b08a74f8a` |
+| LLE-DSP fallback run (`run018`) | `build/agent-work/H2-semantic/h2-real-entry-probe/run018/probe-report.json`, SHA-256 `aa4b505743e5432d5516733c69090e3893458a4f7f9daf2c122ebe427215ee93` |
 
 ## Next experiments
 

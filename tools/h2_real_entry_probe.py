@@ -293,7 +293,8 @@ def handler_trace(rsp, max_cycles: int = 160) -> dict:
     return {"completed": False, "events": events}
 
 
-def patch_runtime_config(exe: Path, throttled: bool, realtime_audio: bool) -> None:
+def patch_runtime_config(exe: Path, throttled: bool, realtime_audio: bool,
+                         lle_dsp: bool = False) -> None:
     """Optionally restore throttled 60 fps/vsync and realtime audio."""
     user = exe.parent / "user"
     qt = user / "config" / "qt-config.ini"
@@ -305,6 +306,9 @@ def patch_runtime_config(exe: Path, throttled: bool, realtime_audio: bool) -> No
         if realtime_audio:
             raw = raw.replace(b"enable_realtime_audio=false",
                               b"enable_realtime_audio=true")
+        if lle_dsp:
+            raw = raw.replace(b"LLE\\DSP\\default=true", b"LLE\\DSP\\default=false")
+            raw = raw.replace(b"LLE\\DSP=false", b"LLE\\DSP=true")
         qt.write_bytes(raw)
     game = user / "config" / "custom" / "00040000000E5C00.ini"
     if game.is_file():
@@ -550,6 +554,8 @@ def main(argv: list[str] | None = None) -> int:
                         help="use 60 fps/vsync instead of the unthrottled runner config")
     parser.add_argument("--realtime-audio", action="store_true",
                         help="enable realtime audio in the disposable profile")
+    parser.add_argument("--lle-dsp", action="store_true",
+                        help="enable LLE DSP in the disposable profile")
     args = parser.parse_args(argv)
 
     out_dir = args.output_dir.resolve()
@@ -567,7 +573,7 @@ def main(argv: list[str] | None = None) -> int:
         ips_bytes=None,
     )
 
-    patch_runtime_config(exe, args.throttled, args.realtime_audio)
+    patch_runtime_config(exe, args.throttled, args.realtime_audio, args.lle_dsp)
     base.reserve_port(args.base_port)
     log_dir = out_dir / "logs"
     log_dir.mkdir(exist_ok=True)
