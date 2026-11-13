@@ -9533,7 +9533,7 @@ address,size,status,category,name,src_file
 0x003abb68,92,matching,unknown,func_003abb68,src/engine/leaf_batch22_c.cpp
 0x003abbc4,304,matching,shop,shop_func_003abbc4,src/engine/leaf_batch22_c.cpp
 0x003abcf4,20,matching,unknown,func_003abcf4,src/engine/leaf_matching.cpp
-0x003abd08,668,matching,camp,camp_func_003abd08,src/engine/leaf_batch45_a.cpp
+0x003abd08,668,non_matching,camp,camp_func_003abd08,src/engine/leaf_batch45_a.cpp
 0x003abfa4,4,matching,unknown,func_003abfa4,src/engine/leaf_batch36_c.cpp
 0x003abfa8,32,matching,unknown,func_003abfa8,src/engine/leaf_batch12_a.cpp
 0x003abfc8,88,matching,unknown,func_003abfc8,src/engine/leaf_batch16_c.cpp

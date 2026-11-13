@@ -6394,95 +6394,181 @@ extern "C" void ui_func_001188d0(u8* panel) {
 }
 
 // DECOMP_FUNC(0x003abd08, 668)
-extern "C" __attribute__((naked)) void camp_func_003abd08() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4ff0, 0xe92d, 0x8b02, 0xed2d\n"
-        ".hword 0xd044, 0xe24d, 0x4000, 0xe1a0\n"
-        ".hword 0x8070, 0xe59d, 0x0a96, 0xeddf\n"
-        ".hword 0xb002, 0xe1a0, 0x0c01, 0xe268\n"
-        ".hword 0x0a10, 0xee00, 0x024c, 0xe59f\n"
-        ".hword 0xa28b, 0xe084, 0x5003, 0xe1b0\n"
-        ".hword 0x9001, 0xe1a0, 0x00ba, 0xe190\n"
-        ".hword 0x0ac0, 0xeeb8, 0x0008, 0xe58d\n"
-        ".hword 0x8a20, 0xee20, 0x0015, 0x0a00\n"
-        ".hword 0x1b01, 0xe289, 0x102f, 0xe281\n"
-        ".hword 0x00c8, 0xe284, 0x4e59, 0xebfc\n"
-        ".hword 0x60f8, 0xe1d0, 0x70fa, 0xe1d0\n"
-        ".hword 0x0000, 0xe355, 0x0014, 0x0a00\n"
-        ".hword 0x0b01, 0xe284, 0x0f57, 0xe280\n"
-        ".hword 0x01d1, 0xe1d0, 0x3000, 0xe1a0\n"
-        ".hword 0x2008, 0xe1a0, 0x1009, 0xe1a0\n"
-        ".hword 0x0004, 0xe1a0, 0x0700, 0xebfa\n"
-        ".hword 0x0003, 0xe3a0, 0x0000, 0xe58d\n"
-        ".hword 0x0e4e, 0xe3a0, 0x9000, 0xe3e0\n"
-        ".hword 0x0004, 0xe58d, 0x000b, 0xea00\n"
-        ".hword 0x1b01, 0xe289, 0x100e, 0xe281\n"
-        ".hword 0x00c8, 0xe284, 0x4e43, 0xebfc\n"
-        ".hword 0xf000, 0xe320, 0xf000, 0xe320\n"
-        ".hword 0xffe6, 0xeaff, 0x0002, 0xe3a0\n"
-        ".hword 0x0000, 0xe58d, 0x01b0, 0xe59f\n"
-        ".hword 0x90ff, 0xe3a0, 0x0004, 0xe58d\n"
-        ".hword 0x0b01, 0xe284, 0x0f6a, 0xe280\n"
-        ".hword 0x028b, 0xe080, 0x00b4, 0xe1d0\n"
-        ".hword 0xdc3b, 0xebfa, 0x0000, 0xe350\n"
-        ".hword 0x9190, 0x159f, 0xb5c8, 0xe59a\n"
-        ".hword 0x1004, 0xe59d, 0x00c8, 0xe284\n"
-        ".hword 0x4e30, 0xebfc, 0x20fa, 0xe1d0\n"
-        ".hword 0x10f8, 0xe1d0, 0x1a48, 0xeeb0\n"
-        ".hword 0x0007, 0xe082, 0x0a10, 0xee00\n"
-        ".hword 0xc006, 0xe081, 0x1000, 0xe59d\n"
-        ".hword 0x300b, 0xe1a0, 0x2a58, 0xed9f\n"
-        ".hword 0x2009, 0xe1a0, 0x0ac0, 0xeef8\n"
-        ".hword 0xca10, 0xee00, 0x1a55, 0xeddf\n"
-        ".hword 0x00c8, 0xe284, 0x0ac0, 0xeeb8\n"
-        ".hword 0x4a3f, 0xebfc, 0x0000, 0xe355\n"
-        ".hword 0x9144, 0x059f, 0x0008, 0x0a00\n"
-        ".hword 0x9140, 0xe59f, 0x0001, 0xe3a0\n"
-        ".hword 0x0004, 0xe58d, 0x3007, 0xe1a0\n"
-        ".hword 0x2006, 0xe1a0, 0x1069, 0xe289\n"
-        ".hword 0x00c8, 0xe284, 0x8000, 0xe58d\n"
-        ".hword 0x17ba, 0xebfa, 0x1009, 0xe1a0\n"
-        ".hword 0x00c8, 0xe284, 0x4e11, 0xebfc\n"
-        ".hword 0x9000, 0xe1a0, 0x1018, 0xe28d\n"
-        ".hword 0x00c8, 0xe284, 0x17ae, 0xebfa\n"
-        ".hword 0x00f8, 0xe1d9, 0x10fa, 0xe1d9\n"
-        ".hword 0x0006, 0xe080, 0x0a10, 0xee00\n"
-        ".hword 0x1007, 0xe081, 0x1a90, 0xee00\n"
-        ".hword 0x0018, 0xe28d, 0x1a02, 0xec90\n"
-        ".hword 0x0ac0, 0xeeb8, 0x0ae0, 0xeef8\n"
-        ".hword 0x0a01, 0xee30, 0x1aa1, 0xee30\n"
-        ".hword 0x0ac0, 0xeefd, 0x0ac1, 0xeebd\n"
-        ".hword 0x0a03, 0xedcd, 0x0008, 0xe59d\n"
-        ".hword 0x9a10, 0xee10, 0x747d, 0xebfb\n"
-        ".hword 0xb000, 0xe3a0, 0x0070, 0xe6bf\n"
-        ".hword 0x100c, 0xe59d, 0x3008, 0xe1a0\n"
-        ".hword 0x2009, 0xe1a0, 0xb000, 0xe58d\n"
-        ".hword 0xb004, 0xe58d, 0x2c1e, 0xebfc\n"
-        ".hword 0x25b4, 0xe59a, 0x1098, 0xe28f\n"
-        ".hword 0x0020, 0xe28d, 0x4a3c, 0xfafc\n"
-        ".hword 0x0000, 0xe355, 0xf000, 0xe320\n"
-        ".hword 0x0013, 0x0a00, 0x1e4f, 0xe3a0\n"
-        ".hword 0x00c8, 0xe284, 0x4de9, 0xebfc\n"
-        ".hword 0x10f8, 0xe1d0, 0x30fa, 0xe1d0\n"
-        ".hword 0x5007, 0xe3a0, 0x9008, 0xe28d\n"
-        ".hword 0x0000, 0xe3e0, 0xc020, 0xe28d\n"
-        ".hword 0x5004, 0xe58d, 0xb000, 0xe58d\n"
-        ".hword 0x2006, 0xe081, 0x1101, 0xe889\n"
-        ".hword 0x3007, 0xe083, 0x1000, 0xe3a0\n"
-        ".hword 0x00c8, 0xe284, 0x1349, 0xebfa\n"
-        ".hword 0xd044, 0xe28d, 0x8b02, 0xecbd\n"
-        ".hword 0x8ff0, 0xe8bd, 0x1034, 0xe59f\n"
-        ".hword 0x00c8, 0xe284, 0x4dd5, 0xebfc\n"
-        ".hword 0xf000, 0xe320, 0xf000, 0xe320\n"
-        ".hword 0xffe8, 0xeaff, 0x0000, 0x3b80\n"
-        ".hword 0x05ac, 0x0000, 0x04ce, 0x0000\n"
-        ".hword 0x5aff, 0x5a5a, 0x0000, 0x3f80\n"
-        ".hword 0x0000, 0x0000, 0x04cd, 0x0000\n"
-        ".hword 0x0476, 0x0000, 0x3825, 0x0064\n"
-        ".hword 0x04de, 0x0000\n"
-    );
-};
+//
+// Camp party-row draw. `ctx` is the camp work object, `work` the layout key
+// base, `index` selects one 0x20-byte record slot at ctx + 0x5A8, `flag`
+// selects the selected (non-zero) or plain (zero) layout/label/constant set,
+// and `arg5` is an opaque row word that is also converted to the
+// (0x100 - arg5) / 0x100 text scale. The slot's u16 id is read twice: the early
+// copy feeds 0x2890D0 and the copy made after 0x22D994 feeds 0x262EDC, so the
+// two loads are kept at their original program points.
+namespace camp_bd08 {
+
+constexpr u32 kLayoutBaseOffset = 0xC8;    // table pointer passed to lookups
+constexpr u32 kLayoutPlainKey = 0x40E;     // work-relative key, flag == 0
+constexpr u32 kLayoutSelectedKey = 0x42F;  // work-relative key, flag != 0
+constexpr u32 kModeByteOffset = 0x56D;     // signed mode selector, flag != 0
+
+constexpr u32 kRowSlotStride = 0x20;       // ctx + 0x5A8 + index*0x20
+constexpr u32 kRowIdOffset = 0x5AC;        // u16 id inside the slot
+constexpr u32 kRowValueOffset = 0x5B4;     // s32 formatted with "%8d"
+constexpr u32 kRowTextOffset = 0x5C8;      // text pointer forwarded to 0x2BE744
+
+constexpr u32 kAnchorXOffset = 8;          // s16 x inside a layout record
+constexpr u32 kAnchorYOffset = 0xA;        // s16 y inside a layout record
+
+constexpr u32 kFrameModePlain = 2;         // r1 for 0x2BE744, flag == 0
+constexpr u32 kFrameModeSelected = 3;      // r1 for 0x2BE744, flag != 0
+constexpr u32 kFrameKeyPlain = 0x4CE;      // lookup key for the frame record
+constexpr u32 kFrameKeySelected = 0x4E0;
+constexpr u32 kBarLabelPlain = 0x4CD;      // 0x2BF6C8 label for the bar row
+constexpr u32 kBarLabelSelected = 0x476;
+constexpr u32 kBarHelperSelected = 0x4DF;  // 0x231D60 id = 0x476 + 0x69
+constexpr u32 kTextLabelPlain = 0x4DE;     // 0x2BF6C8 label for the text
+constexpr u32 kTextLabelSelected = 0x4F0;
+
+constexpr u32 kColorPlain = 0xFF;          // 0x2BE744 rgba, flag == 0
+constexpr u32 kColorSelected = 0xFFFFFFFF; // 0x2BE744 rgba, flag != 0
+constexpr u32 kColorHasItems = 0x5A5A5AFF; // replaces the rgba when 0x262EDC
+constexpr u32 kDrawConstant = 0xFFFFFFFF;  // third stack word for 0x230C80
+
+constexpr f32 kScaleUnit = 0.00390625f;    // 1/256, applied after int convert
+constexpr f32 kZero = 0.0f;
+constexpr f32 kOne = 1.0f;
+
+constexpr s32 kNoBars = 0;                 // 0x2B6F74 draw-bars stack word
+constexpr s32 kNoRowOffset = 0;            // 0x2B6F74 row-offset stack word
+constexpr int kDrawMode = 0;               // 0x230C80 r1
+constexpr int kDrawWidthIndex = 7;         // 0x230C80 second stack word
+
+}  // namespace camp_bd08
+
+extern "C" u8* camp_func_002bf6c8(void* table, u32 key);
+extern "C" void ui_func_0022d994(void* ctx, void* work, u32 frame, int mode);
+extern "C" u32 camp_func_00262edc(u16 target_id);
+extern "C" void func_002be744(const void* rect, int font_id, u32 rgba,
+                              const char* text, f32 x, f32 y, f32 scale_x,
+                              f32 rotation, f32 scale_y);
+// 0x231D60 reads its two trailing arguments from the stack with `vldmia`, so
+// they are architected stack words (raw float bit patterns), not VFP arguments.
+extern "C" void camp_func_00231d60(void* map_state, s32 id, s32 x, s32 y,
+                                   u32 a_bits, u32 b_bits);
+extern "C" void func_00231d4c(const void* src, f32* out);
+extern "C" u32 camp_func_002890d0(u32 id);
+extern "C" void camp_func_002b6f74(s16 demon_id, s32 x, s32 y, s32 prio,
+                                   s32 draw_bars, s32 a5);
+extern "C" u32 ui_func_002be7fc(char* dst, const char* format, ...);
+extern "C" void func_00230c80(void* gfx, int mode, int x, int y, int arg0,
+                              int arg1, u32 constant, u32 frame,
+                              const char* text);
+
+extern "C" void camp_func_003abd08(void* ctx, void* work, u32 index, u32 flag,
+                                   u32 arg5) {
+    using namespace camp_bd08;
+
+    u8* const ctx_bytes = static_cast<u8*>(ctx);
+    u8* const work_bytes = static_cast<u8*>(work);
+
+    // 0x3ABD24..0x3ABD48: (s32)(0x100 - arg5) converted to float, then / 256.
+    const f32 scale =
+        static_cast<f32>(static_cast<s32>(0x100u - arg5)) * kScaleUnit;
+
+    // `sl` in the original: ctx + index*0x20, reused for every slot read.
+    u8* const slot = ctx_bytes + (index * kRowSlotStride);
+
+    // Early id copy, kept in the frame until 0x2890D0 (no reload before it).
+    const u16 early_id = *reinterpret_cast<const u16*>(slot + kRowIdOffset);
+
+    const u8* const layout = camp_func_002bf6c8(
+        ctx_bytes + kLayoutBaseOffset,
+        flag == 0 ? reinterpret_cast<u32>(work_bytes + kLayoutPlainKey)
+                  : reinterpret_cast<u32>(work_bytes + kLayoutSelectedKey));
+    const s32 base_x = *reinterpret_cast<const s16*>(layout + kAnchorXOffset);
+    const s32 base_y = *reinterpret_cast<const s16*>(layout + kAnchorYOffset);
+
+    u32 frame_mode;  // r1 for 0x2BE744 (plain/selected font mode)
+    u32 frame_key;   // lookup key for the frame record
+    u32 color;       // forwarded to 0x2BE744
+    if (flag == 0) {
+        frame_mode = kFrameModePlain;
+        frame_key = kFrameKeyPlain;
+        color = kColorPlain;
+    } else {
+        ui_func_0022d994(
+            ctx, work, arg5,
+            *reinterpret_cast<const s8*>(ctx_bytes + kModeByteOffset));
+        frame_mode = kFrameModeSelected;
+        frame_key = kFrameKeySelected;
+        color = kColorSelected;
+    }
+
+    // Id reload after 0x22D994 (the slot may have changed in between).
+    const u16 current_id =
+        *reinterpret_cast<const u16*>(slot + kRowIdOffset);
+    if (camp_func_00262edc(current_id) != 0) {
+        color = kColorHasItems;
+    }
+
+    const u32 text_word = *reinterpret_cast<const u32*>(slot + kRowTextOffset);
+
+    const u8* const frame_record =
+        camp_func_002bf6c8(ctx_bytes + kLayoutBaseOffset, frame_key);
+    const s32 frame_x =
+        *reinterpret_cast<const s16*>(frame_record + kAnchorXOffset) + base_x;
+    const s32 frame_y =
+        *reinterpret_cast<const s16*>(frame_record + kAnchorYOffset) + base_y;
+
+    func_002be744(ctx_bytes + kLayoutBaseOffset,
+                  static_cast<int>(frame_mode), color,
+                  reinterpret_cast<const char*>(text_word),
+                  static_cast<f32>(frame_x), static_cast<f32>(frame_y), scale,
+                  kZero, kOne);
+
+    u32 bar_label;
+    if (flag == 0) {
+        bar_label = kBarLabelPlain;
+    } else {
+        bar_label = kBarLabelSelected;
+        camp_func_00231d60(ctx_bytes + kLayoutBaseOffset, kBarHelperSelected,
+                           base_x, base_y, arg5, 1u);
+    }
+
+    const u8* const bar_record =
+        camp_func_002bf6c8(ctx_bytes + kLayoutBaseOffset, bar_label);
+    f32 offset[2];
+    func_00231d4c(ctx_bytes + kLayoutBaseOffset, offset);
+    // The integer anchor sums are converted to float, offset by the copied
+    // pair and truncated back with vcvt.s32.f32.
+    const s32 bar_x = static_cast<s32>(
+        static_cast<f32>(*reinterpret_cast<const s16*>(
+                             bar_record + kAnchorXOffset) +
+                         base_x) +
+        offset[0]);
+    const s32 bar_y = static_cast<s32>(
+        static_cast<f32>(*reinterpret_cast<const s16*>(
+                             bar_record + kAnchorYOffset) +
+                         base_y) +
+        offset[1]);
+
+    const s16 bars_id = static_cast<s16>(camp_func_002890d0(early_id));
+    camp_func_002b6f74(bars_id, bar_x, bar_y, static_cast<s32>(arg5), kNoBars,
+                       kNoRowOffset);
+
+    char text[0x20];
+    const s32 row_value =
+        *reinterpret_cast<const s32*>(slot + kRowValueOffset);
+    ui_func_002be7fc(text, "%8d", row_value);
+
+    const u8* const text_record = camp_func_002bf6c8(
+        ctx_bytes + kLayoutBaseOffset,
+        flag == 0 ? kTextLabelPlain : kTextLabelSelected);
+    const s32 text_x =
+        *reinterpret_cast<const s16*>(text_record + kAnchorXOffset) + base_x;
+    const s32 text_y =
+        *reinterpret_cast<const s16*>(text_record + kAnchorYOffset) + base_y;
+    func_00230c80(ctx_bytes + kLayoutBaseOffset, kDrawMode, text_x, text_y, 0,
+                  kDrawWidthIndex, kDrawConstant, arg5, text);
+}
 
 // DECOMP_FUNC(0x0032fc54, 672)
 extern "C" __attribute__((naked)) void func_0032fc54() {
