@@ -3128,90 +3128,228 @@ extern "C" u32 engine_func_00131950(void* self) {
     return notify(sink, current_state);
 }
 
+// ---------------------------------------------------------------------------
+// 0x00256078: commit a script command request into a freshly claimed slot.
+//
+// ABI recovered from the ARM listing:
+//   r0 = owner work area, r1 = 0x18C-byte request record, r2 = mode,
+//   r3 = slot index, [sp] = flag (read as `ldr r9, [sp, #0x20]` after the
+//   0x20-byte `push {r4-r10, lr}`).
+//
+// The routine clears the request's 15-word transfer tail [0x14C, 0x188),
+// claims a unit slot according to `mode`, copies the request to slot+0xCC and
+// resolves the slot payload handle.  All modes then run the same join, which
+//   * echoes the 16-bit index at slot+8 and slot_table[index]+0x62,
+//   * zeroes the 0x3C-byte actor scratch area at slot+0x72, the transfer
+//     fields slot+0xAE..slot+0xBE and slot+0x258..slot+0x274,
+//   * sets slot bit 29 when the stack `flag` is non-zero,
+//   * copies the slot's pre-existing u16 at +0x6E into slot_table[index]+0x60
+//     and writes the 0x281/0x481/0x881 marker at slot_table[index]+0x50,
+// and finally tail-branches to 0x00255318(index, 0xC, 0x003BE980(slot), 0).
+// The original restores r4-r10+lr before that branch, so the return value is
+// whatever 0x00255318 leaves in r0.
+//
+// Modes outside {0, 1, 2} leave the slot pointer at zero and still run the
+// join: the original then stores through addresses 8/0x72/... and takes a data
+// abort when address 0 is unmapped.  The six constant call sites pass 0, 1 or
+// 2; the seventh (0x003C14DC) forwards its own argument, which its caller
+// compares against 0 and 1.  The null-slot path is reproduced verbatim.
+extern "C" u8* battle_func_00256418(void* owner, s32 index, u32 want_occupied);
+extern "C" u8* script_vm_func_0033a7d4(void* owner);
+extern "C" u8* script_vm_func_002b66ec();
+extern "C" u8* camp_func_002a89e4(s32 index);
+extern "C" void engine_func_002c3b48(void* dst, u32 size);
+extern "C" u32 camp_func_003be980(const void* slot);
+extern "C" u32 script_vm_func_00255318(s32 index, u32 kind, u32 value,
+                                        s32 flag);
+
+namespace {
+
+constexpr u32 kRequestSize = 0x18Cu;         // bytes copied into the slot
+constexpr u32 kRequestTailBegin = 0x14Cu;    // transfer tail cleared in place
+constexpr u32 kRequestTailEnd = 0x188u;      // exclusive
+
+constexpr u32 kSlotDataOffset = 0xCCu;       // request copy inside the slot
+constexpr u32 kSlotKindOffset = 0x00u;       // `strd` writes kind + 0
+constexpr u32 kSlotKindAuxOffset = 0x04u;
+constexpr u32 kSlotIndexEchoOffset = 0x08u;  // u16 index echo
+constexpr u32 kSlotRequestIdOffset = 0x6Eu;  // u16 copied to the slot table
+constexpr u32 kSlotScratchOffset = 0x72u;    // 0x3C zeroed bytes
+constexpr u32 kSlotScratchSize = 0x3Cu;
+constexpr u32 kSlotMode0IndexOffset = 0xD4u; // request s16 at +8
+constexpr u32 kSlotMode1IdOffset = 0xCEu;    // request u16 at +2
+constexpr u32 kSlotMode1ByteOffset = 0x1A0u; // request byte 0xD4
+constexpr u32 kSlotHandleMode0Flagged = 0x278u;
+constexpr u32 kSlotHandleMode0Plain = 0x27Cu;
+constexpr u32 kSlotHandleMode2 = 0x280u;
+constexpr u32 kSlotHandleMode1 = 0x284u;
+
+constexpr u32 kSlotTableOffset = 0x1E98u;    // *(owner+0x1E98) -> 0x114 rows
+constexpr u32 kSlotTableStride = 0x114u;
+constexpr u32 kMode0CountOffset = 0x1FC4u;   // u16, wraps modulo 2^16
+constexpr u32 kMode1CountOffset = 0x1FC6u;   // u16, wraps modulo 2^16
+constexpr u32 kMode2FlagOffset = 0x49C4u;    // u8 list-selection flag
+
+constexpr u32 kSlotTableMarkerOffset = 0x50u;
+constexpr u32 kSlotTableRequestIdOffset = 0x60u;
+constexpr u32 kSlotTableIndexOffset = 0x62u;
+
+constexpr u32 kKindMode0Flagged = 7u;
+constexpr u32 kKindMode0Plain = 9u;
+constexpr u32 kKindMode1 = 0x11u;
+constexpr u32 kKindMode2 = 0x21u;
+constexpr u32 kSlotBitMode1 = 0x100u;
+constexpr u32 kSlotBitFlagArgument = 0x20000000u;
+
+constexpr u32 kCampRecordOffset = 0x910Cu;      // from the 0x002A8A08 base
+constexpr u32 kCampRecordStatusOffset = 0x44u;  // u16 selection status
+constexpr u32 kCampModeArgument = 0x21u;        // still in r0 at the call
+
+// The literal pool holds the two upper markers; index < 4 produces 0x281
+// instead (the unconditional 0x81 store is always overwritten).
+constexpr u32 kMarkerLow = 0x281u;
+constexpr u32 kMarkerMiddle = 0x481u;
+constexpr u32 kMarkerHigh = 0x881u;
+constexpr s32 kMarkerLowBoundary = 4;
+constexpr s32 kMarkerHighBoundary = 0x36;
+
+constexpr u32 kTailKind = 0xCu;
+constexpr s32 kTailFlag = 0;
+
+inline u8 LoadU8(const void* base, u32 offset) {
+    return *reinterpret_cast<const u8*>(static_cast<const u8*>(base) + offset);
+}
+
+inline u16 LoadU16(const void* base, u32 offset) {
+    return *reinterpret_cast<const u16*>(static_cast<const u8*>(base) + offset);
+}
+
+inline s16 LoadS16(const void* base, u32 offset) {
+    return *reinterpret_cast<const s16*>(static_cast<const u8*>(base) + offset);
+}
+
+inline u32 LoadU32(const void* base, u32 offset) {
+    return *reinterpret_cast<const u32*>(static_cast<const u8*>(base) + offset);
+}
+
+inline void StoreU8(void* base, u32 offset, u8 value) {
+    *reinterpret_cast<u8*>(static_cast<u8*>(base) + offset) = value;
+}
+
+inline void StoreU16(void* base, u32 offset, u16 value) {
+    *reinterpret_cast<u16*>(static_cast<u8*>(base) + offset) = value;
+}
+
+inline void StoreU32(void* base, u32 offset, u32 value) {
+    *reinterpret_cast<u32*>(static_cast<u8*>(base) + offset) = value;
+}
+
+}  // namespace
+
 // DECOMP_FUNC(0x00256078, 620)
-extern "C" __attribute__((naked)) void script_vm_func_00256078() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x47f0, 0xe92d, 0x0000, 0xe352\n"
-        ".hword 0x7001, 0xe1a0, 0xa000, 0xe3a0\n"
-        ".hword 0x9020, 0xe59d, 0xa184, 0xe581\n"
-        ".hword 0xa14c, 0xe581, 0xa150, 0xe581\n"
-        ".hword 0xa154, 0xe581, 0xa158, 0xe581\n"
-        ".hword 0xa15c, 0xe581, 0xa160, 0xe581\n"
-        ".hword 0xa164, 0xe581, 0xa168, 0xe581\n"
-        ".hword 0xa16c, 0xe581, 0xa170, 0xe581\n"
-        ".hword 0xa174, 0xe587, 0xa178, 0xe587\n"
-        ".hword 0x8000, 0xe1a0, 0xa17c, 0xe587\n"
-        ".hword 0x6003, 0xe1a0, 0x400a, 0xe1a0\n"
-        ".hword 0x5c1f, 0xe288, 0xa180, 0xe587\n"
-        ".hword 0x0004, 0x0a00, 0x0001, 0xe352\n"
-        ".hword 0x001e, 0x0a00, 0x0002, 0xe352\n"
-        ".hword 0x0032, 0x1a00, 0x0063, 0xea00\n"
-        ".hword 0x2000, 0xe3a0, 0x1003, 0xe1a0\n"
-        ".hword 0x00c6, 0xeb00, 0x4000, 0xe1a0\n"
-        ".hword 0x2f63, 0xe3a0, 0x1007, 0xe1a0\n"
-        ".hword 0x00cc, 0xe280, 0x9b91, 0xeb01\n"
-        ".hword 0x00cc, 0xe5d4, 0x0001, 0xe310\n"
-        ".hword 0x0006, 0x0a00, 0x0007, 0xe3a0\n"
-        ".hword 0x1000, 0xe3a0, 0x00f0, 0xe1c4\n"
-        ".hword 0x816f, 0xeb01, 0x0278, 0xe584\n"
-        ".hword 0xf000, 0xe320, 0x0005, 0xea00\n"
-        ".hword 0x0009, 0xe3a0, 0x1000, 0xe3a0\n"
-        ".hword 0x00f0, 0xe1c4, 0x0df4, 0xe1d4\n"
-        ".hword 0x4a25, 0xeb01, 0x027c, 0xe584\n"
-        ".hword 0x0cb4, 0xe1d5, 0x0001, 0xe280\n"
-        ".hword 0x0cb4, 0xe1c5, 0x0015, 0xea00\n"
-        ".hword 0xf000, 0xe320, 0x919a, 0xeb03\n"
-        ".hword 0x4000, 0xe1a0, 0x2f63, 0xe3a0\n"
-        ".hword 0x1007, 0xe1a0, 0x00cc, 0xe280\n"
-        ".hword 0x9b76, 0xeb01, 0x0011, 0xe3a0\n"
-        ".hword 0x1000, 0xe3a0, 0x00f0, 0xe1c4\n"
-        ".hword 0x0cbe, 0xe1d4, 0x69ba, 0xeb01\n"
-        ".hword 0x0284, 0xe584, 0x01a0, 0xe5d4\n"
-        ".hword 0x0001, 0xe350, 0x0002, 0x1a00\n"
-        ".hword 0x1000, 0xe594, 0x1c01, 0xe381\n"
-        ".hword 0x1000, 0xe584, 0x0cb6, 0xe1d5\n"
-        ".hword 0x0001, 0xe280, 0x0cb6, 0xe1c5\n"
-        ".hword 0x5076, 0xe6bf, 0x103c, 0xe3a0\n"
-        ".hword 0x0072, 0xe284, 0x50b8, 0xe1c4\n"
-        ".hword 0xb65e, 0xeb01, 0xa0ae, 0xe584\n"
-        ".hword 0xa0b2, 0xe584, 0xa0b6, 0xe584\n"
-        ".hword 0xa0ba, 0xe584, 0xabbe, 0xe1c4\n"
-        ".hword 0xa258, 0xe584, 0xa25c, 0xe584\n"
-        ".hword 0xa260, 0xe584, 0xa264, 0xe584\n"
-        ".hword 0xa268, 0xe584, 0xa26c, 0xe584\n"
-        ".hword 0xa270, 0xe584, 0x0000, 0xe359\n"
-        ".hword 0xa274, 0xe584, 0x0002, 0x0a00\n"
-        ".hword 0x1000, 0xe594, 0x1202, 0xe381\n"
-        ".hword 0x1000, 0xe584, 0x8b07, 0xe288\n"
-        ".hword 0x8fa6, 0xe288, 0x2106, 0xe086\n"
-        ".hword 0x0000, 0xe598, 0x2306, 0xe082\n"
-        ".hword 0x1081, 0xe3a0, 0x0102, 0xe080\n"
-        ".hword 0x0004, 0xe356, 0x1050, 0xe580\n"
-        ".hword 0x1c02, 0xb281, 0x1050, 0xb580\n"
-        ".hword 0x0003, 0xba00, 0x0036, 0xe356\n"
-        ".hword 0x108c, 0xb59f, 0x108c, 0xa59f\n"
-        ".hword 0x1050, 0xe580, 0x16be, 0xe1d4\n"
-        ".hword 0x16b0, 0xe1c0, 0x56b2, 0xe1c0\n"
-        ".hword 0x0004, 0xe1a0, 0xa1c5, 0xeb05\n"
-        ".hword 0x2000, 0xe1a0, 0x0006, 0xe1a0\n"
-        ".hword 0x47f0, 0xe8bd, 0x3000, 0xe3a0\n"
-        ".hword 0x100c, 0xe3a0, 0xfc25, 0xeaff\n"
-        ".hword 0x2000, 0xe3a0, 0x1003, 0xe1a0\n"
-        ".hword 0x0062, 0xeb00, 0x4000, 0xe1a0\n"
-        ".hword 0x2f63, 0xe3a0, 0x1007, 0xe1a0\n"
-        ".hword 0x00cc, 0xe280, 0x9b2d, 0xeb01\n"
-        ".hword 0x0021, 0xe3a0, 0x1000, 0xe3a0\n"
-        ".hword 0x00f0, 0xe1c4, 0x49d5, 0xeb01\n"
-        ".hword 0x2a09, 0xe280, 0x2f43, 0xe282\n"
-        ".hword 0x2280, 0xe584, 0x04b4, 0xe1d2\n"
-        ".hword 0x1b12, 0xe288, 0x1f71, 0xe281\n"
-        ".hword 0x0002, 0xe310, 0x0001, 0x03a0\n"
-        ".hword 0xa000, 0x15c1, 0x0000, 0x05c1\n"
-        ".hword 0xffb6, 0xeaff, 0x0481, 0x0000\n"
-        ".hword 0x0881, 0x0000\n"
-    );
-};
+extern "C" u32 script_vm_func_00256078(void* owner, u8* request, u32 mode,
+                                        s32 index, u32 flag) {
+    u8* const owner_bytes = static_cast<u8*>(owner);
+
+    for (u32 offset = kRequestTailBegin; offset < kRequestTailEnd; offset += 4) {
+        StoreU32(request, offset, 0);
+    }
+
+    u8* slot = nullptr;
+
+    switch (mode) {
+    case 0: {
+        // Claim the free unit at `index`, then select the payload from the
+        // copied request byte 0.
+        slot = battle_func_00256418(owner, index, 0);
+        ui_func_002bcf58(slot + kSlotDataOffset, request, kRequestSize);
+        if ((LoadU8(slot, kSlotDataOffset) & 1u) != 0) {
+            StoreU32(slot, kSlotKindOffset, kKindMode0Flagged);
+            StoreU32(slot, kSlotKindAuxOffset, 0);
+            StoreU32(slot, kSlotHandleMode0Flagged,
+                     reinterpret_cast<u32>(script_vm_func_002b66ec()));
+        } else {
+            StoreU32(slot, kSlotKindOffset, kKindMode0Plain);
+            StoreU32(slot, kSlotKindAuxOffset, 0);
+            StoreU32(slot, kSlotHandleMode0Plain,
+                     reinterpret_cast<u32>(camp_func_002a89e4(
+                         LoadS16(slot, kSlotMode0IndexOffset))));
+        }
+        StoreU16(owner_bytes, kMode0CountOffset,
+                 static_cast<u16>(LoadU16(owner_bytes, kMode0CountOffset) + 1u));
+        break;
+    }
+    case 1: {
+        // Claim the first free unit from index 4 up to 0x35.
+        slot = script_vm_func_0033a7d4(owner);
+        ui_func_002bcf58(slot + kSlotDataOffset, request, kRequestSize);
+        StoreU32(slot, kSlotKindOffset, kKindMode1);
+        StoreU32(slot, kSlotKindAuxOffset, 0);
+        StoreU32(slot, kSlotHandleMode1,
+                 reinterpret_cast<u32>(
+                     battle_func_002b087c(LoadU16(slot, kSlotMode1IdOffset))));
+        if (LoadU8(slot, kSlotMode1ByteOffset) == 1u) {
+            StoreU32(slot, kSlotKindOffset,
+                     LoadU32(slot, kSlotKindOffset) | kSlotBitMode1);
+        }
+        StoreU16(owner_bytes, kMode1CountOffset,
+                 static_cast<u16>(LoadU16(owner_bytes, kMode1CountOffset) + 1u));
+        break;
+    }
+    case 2: {
+        // Claim the free unit at `index` and bind the current camp list
+        // record; the owner flag mirrors bit 1 of its status.
+        slot = battle_func_00256418(owner, index, 0);
+        ui_func_002bcf58(slot + kSlotDataOffset, request, kRequestSize);
+        StoreU32(slot, kSlotKindOffset, kKindMode2);
+        StoreU32(slot, kSlotKindAuxOffset, 0);
+        u8* const camp_record =
+            camp_func_002a8a08(kCampModeArgument) + kCampRecordOffset;
+        StoreU32(slot, kSlotHandleMode2, reinterpret_cast<u32>(camp_record));
+        StoreU8(owner_bytes, kMode2FlagOffset,
+                (LoadU16(camp_record, kCampRecordStatusOffset) & 2u) != 0 ? 0u
+                                                                         : 1u);
+        break;
+    }
+    default:
+        // The original keeps r4 = 0 here and falls through into the join.
+        break;
+    }
+
+    const u16 index_u16 = static_cast<u16>(index);
+
+    StoreU16(slot, kSlotIndexEchoOffset, index_u16);
+    engine_func_002c3b48(slot + kSlotScratchOffset, kSlotScratchSize);
+    StoreU32(slot, 0xAEu, 0);
+    StoreU32(slot, 0xB2u, 0);
+    StoreU32(slot, 0xB6u, 0);
+    StoreU32(slot, 0xBAu, 0);
+    StoreU16(slot, 0xBEu, 0);
+    for (u32 offset = 0x258u; offset <= 0x274u; offset += 4) {
+        StoreU32(slot, offset, 0);
+    }
+    if (flag != 0) {
+        StoreU32(slot, kSlotKindOffset,
+                 LoadU32(slot, kSlotKindOffset) | kSlotBitFlagArgument);
+    }
+
+    u8* const slot_table =
+        reinterpret_cast<u8*>(LoadU32(owner_bytes, kSlotTableOffset));
+    u8* const entry = slot_table + static_cast<u32>(index) * kSlotTableStride;
+    u32 marker = kMarkerHigh;
+    if (index < kMarkerLowBoundary) {
+        marker = kMarkerLow;
+    } else if (index < kMarkerHighBoundary) {
+        marker = kMarkerMiddle;
+    }
+    StoreU32(entry, kSlotTableMarkerOffset, marker);
+    StoreU16(entry, kSlotTableRequestIdOffset,
+             LoadU16(slot, kSlotRequestIdOffset));
+    StoreU16(entry, kSlotTableIndexOffset, index_u16);
+
+    return script_vm_func_00255318(index, kTailKind, camp_func_003be980(slot),
+                                    kTailFlag);
+}
 
 // DECOMP_FUNC(0x003aa730, 620)
 extern "C" __attribute__((naked)) void shop_func_003aa730() {
