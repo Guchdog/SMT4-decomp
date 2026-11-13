@@ -7024,111 +7024,69 @@ extern "C" void engine_func_001069bc(void* camera, f32 p0, f32 p1, f32 p2,
 }
 
 
+// ---------------------------------------------------------------------------
+// 0x00191B64 -- fold the five signed halfword fields of the interaction table
+// into the selected entry of the 0x3600 table and advance the caller's
+// running accumulator.
+//
+//   r0 / context : object with the selected-entry index at +0xCF78
+//                  (0xCC00 + 0x378), an entry array at +0x3600 with stride
+//                  0x620, and a 32-bit accumulator at +0xCFCC
+//                  (0xCC00 + 0x3CC)
+//
+// For each of the five fields at table+0x12..0x1A the function calls the
+// interaction-table getter (0x002B66EC), reads the signed table value, reads
+// the signed selected-entry value at entry+0x6A..0x72, and adds the difference
+// to a signed sum. It then calls the getter again and copies the (unsigned)
+// entry value over the table value. The index is re-read after every call
+// because the getter and the entry array are writable globals; the ten calls
+// are observable and must not be merged. Finally the signed sum is added to
+// the 32-bit accumulator with wrap-around.
+// ---------------------------------------------------------------------------
+extern "C" void* script_vm_func_002b66ec();   // 0x002B66EC
+
+namespace {
+
+constexpr u32 kEntryArrayOffset = 0x3600;
+constexpr u32 kEntryStride      = 0x620;   // ((index * 49) << 5)
+constexpr u32 kSelectedIndex    = 0xcf78;  // 0xcc00 + 0x378
+constexpr u32 kAccumulator      = 0xcfcc;  // 0xcc00 + 0x3cc
+constexpr u32 kTableFieldBase   = 0x12;
+constexpr u32 kEntryFieldBase   = 0x6a;
+
+inline u8* selectedEntry(u8* context) {
+    const u32 index = *reinterpret_cast<const u32*>(context + kSelectedIndex);
+    return context + kEntryArrayOffset + index * kEntryStride;
+}
+
+}  // namespace
+
 // DECOMP_FUNC(0x00191b64, 400)
-extern "C" __attribute__((naked)) void script_vm_func_00191b64() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe92d4070 @ push {r4, r5, r6, lr}\n"
-        ".inst 0xe1a04000 @ mov r4, r0\n"
-        ".inst 0xeb0492de @ bl #0x2b66ec\n"
-        ".inst 0xe2845b33 @ add r5, r4, #0xcc00\n"
-        ".inst 0xe2855fde @ add r5, r5, #0x378\n"
-        ".inst 0xe1d001f2 @ ldrsh r0, [r0, #0x12]\n"
-        ".inst 0xe5951000 @ ldr r1, [r5]\n"
-        ".inst 0xe0812201 @ add r2, r1, r1, lsl #4\n"
-        ".inst 0xe0821281 @ add r1, r2, r1, lsl #5\n"
-        ".inst 0xe0841281 @ add r1, r4, r1, lsl #5\n"
-        ".inst 0xe2811c36 @ add r1, r1, #0x3600\n"
-        ".inst 0xe1d116fa @ ldrsh r1, [r1, #0x6a]\n"
-        ".inst 0xe0406001 @ sub r6, r0, r1\n"
-        ".inst 0xeb0492d3 @ bl #0x2b66ec\n"
-        ".inst 0xe5951000 @ ldr r1, [r5]\n"
-        ".inst 0xe0812201 @ add r2, r1, r1, lsl #4\n"
-        ".inst 0xe0821281 @ add r1, r2, r1, lsl #5\n"
-        ".inst 0xe0841281 @ add r1, r4, r1, lsl #5\n"
-        ".inst 0xe2811c36 @ add r1, r1, #0x3600\n"
-        ".inst 0xe1d116ba @ ldrh r1, [r1, #0x6a]\n"
-        ".inst 0xe1c011b2 @ strh r1, [r0, #0x12]\n"
-        ".inst 0xeb0492cb @ bl #0x2b66ec\n"
-        ".inst 0xe5951000 @ ldr r1, [r5]\n"
-        ".inst 0xe1d001f4 @ ldrsh r0, [r0, #0x14]\n"
-        ".inst 0xe0812201 @ add r2, r1, r1, lsl #4\n"
-        ".inst 0xe0821281 @ add r1, r2, r1, lsl #5\n"
-        ".inst 0xe0841281 @ add r1, r4, r1, lsl #5\n"
-        ".inst 0xe2811c36 @ add r1, r1, #0x3600\n"
-        ".inst 0xe1d116fc @ ldrsh r1, [r1, #0x6c]\n"
-        ".inst 0xe0400001 @ sub r0, r0, r1\n"
-        ".inst 0xe0866000 @ add r6, r6, r0\n"
-        ".inst 0xeb0492c1 @ bl #0x2b66ec\n"
-        ".inst 0xe5951000 @ ldr r1, [r5]\n"
-        ".inst 0xe0812201 @ add r2, r1, r1, lsl #4\n"
-        ".inst 0xe0821281 @ add r1, r2, r1, lsl #5\n"
-        ".inst 0xe0841281 @ add r1, r4, r1, lsl #5\n"
-        ".inst 0xe2811c36 @ add r1, r1, #0x3600\n"
-        ".inst 0xe1d116bc @ ldrh r1, [r1, #0x6c]\n"
-        ".inst 0xe1c011b4 @ strh r1, [r0, #0x14]\n"
-        ".inst 0xeb0492b9 @ bl #0x2b66ec\n"
-        ".inst 0xe5951000 @ ldr r1, [r5]\n"
-        ".inst 0xe1d001f6 @ ldrsh r0, [r0, #0x16]\n"
-        ".inst 0xe0812201 @ add r2, r1, r1, lsl #4\n"
-        ".inst 0xe0821281 @ add r1, r2, r1, lsl #5\n"
-        ".inst 0xe0841281 @ add r1, r4, r1, lsl #5\n"
-        ".inst 0xe2811c36 @ add r1, r1, #0x3600\n"
-        ".inst 0xe1d116fe @ ldrsh r1, [r1, #0x6e]\n"
-        ".inst 0xe0400001 @ sub r0, r0, r1\n"
-        ".inst 0xe0866000 @ add r6, r6, r0\n"
-        ".inst 0xeb0492af @ bl #0x2b66ec\n"
-        ".inst 0xe5951000 @ ldr r1, [r5]\n"
-        ".inst 0xe0812201 @ add r2, r1, r1, lsl #4\n"
-        ".inst 0xe0821281 @ add r1, r2, r1, lsl #5\n"
-        ".inst 0xe0841281 @ add r1, r4, r1, lsl #5\n"
-        ".inst 0xe2811c36 @ add r1, r1, #0x3600\n"
-        ".inst 0xe1d116be @ ldrh r1, [r1, #0x6e]\n"
-        ".inst 0xe1c011b6 @ strh r1, [r0, #0x16]\n"
-        ".inst 0xeb0492a7 @ bl #0x2b66ec\n"
-        ".inst 0xe5951000 @ ldr r1, [r5]\n"
-        ".inst 0xe1d001f8 @ ldrsh r0, [r0, #0x18]\n"
-        ".inst 0xe0812201 @ add r2, r1, r1, lsl #4\n"
-        ".inst 0xe0821281 @ add r1, r2, r1, lsl #5\n"
-        ".inst 0xe0841281 @ add r1, r4, r1, lsl #5\n"
-        ".inst 0xe2811c36 @ add r1, r1, #0x3600\n"
-        ".inst 0xe1d117f0 @ ldrsh r1, [r1, #0x70]\n"
-        ".inst 0xe0400001 @ sub r0, r0, r1\n"
-        ".inst 0xe0866000 @ add r6, r6, r0\n"
-        ".inst 0xeb04929d @ bl #0x2b66ec\n"
-        ".inst 0xe5951000 @ ldr r1, [r5]\n"
-        ".inst 0xe0812201 @ add r2, r1, r1, lsl #4\n"
-        ".inst 0xe0821281 @ add r1, r2, r1, lsl #5\n"
-        ".inst 0xe0841281 @ add r1, r4, r1, lsl #5\n"
-        ".inst 0xe2811c36 @ add r1, r1, #0x3600\n"
-        ".inst 0xe1d117b0 @ ldrh r1, [r1, #0x70]\n"
-        ".inst 0xe1c011b8 @ strh r1, [r0, #0x18]\n"
-        ".inst 0xeb049295 @ bl #0x2b66ec\n"
-        ".inst 0xe5951000 @ ldr r1, [r5]\n"
-        ".inst 0xe1d001fa @ ldrsh r0, [r0, #0x1a]\n"
-        ".inst 0xe0812201 @ add r2, r1, r1, lsl #4\n"
-        ".inst 0xe0821281 @ add r1, r2, r1, lsl #5\n"
-        ".inst 0xe0841281 @ add r1, r4, r1, lsl #5\n"
-        ".inst 0xe2811c36 @ add r1, r1, #0x3600\n"
-        ".inst 0xe1d117f2 @ ldrsh r1, [r1, #0x72]\n"
-        ".inst 0xe0400001 @ sub r0, r0, r1\n"
-        ".inst 0xe0866000 @ add r6, r6, r0\n"
-        ".inst 0xeb04928b @ bl #0x2b66ec\n"
-        ".inst 0xe5952000 @ ldr r2, [r5]\n"
-        ".inst 0xe1a01000 @ mov r1, r0\n"
-        ".inst 0xe2840b33 @ add r0, r4, #0xcc00\n"
-        ".inst 0xe2800ff3 @ add r0, r0, #0x3cc\n"
-        ".inst 0xe0823202 @ add r3, r2, r2, lsl #4\n"
-        ".inst 0xe0832282 @ add r2, r3, r2, lsl #5\n"
-        ".inst 0xe0842282 @ add r2, r4, r2, lsl #5\n"
-        ".inst 0xe2822c36 @ add r2, r2, #0x3600\n"
-        ".inst 0xe1d227b2 @ ldrh r2, [r2, #0x72]\n"
-        ".inst 0xe1c121ba @ strh r2, [r1, #0x1a]\n"
-        ".inst 0xe5901000 @ ldr r1, [r0]\n"
-        ".inst 0xe0811006 @ add r1, r1, r6\n"
-        ".inst 0xe5801000 @ str r1, [r0]\n"
-        ".inst 0xe8bd8070 @ pop {r4, r5, r6, pc}\n"
-    );
+extern "C" void script_vm_func_00191b64(void* context) {
+    u8* const base = static_cast<u8*>(context);
+    s32 sum = 0;
+
+    for (u32 field = 0; field < 5; ++field) {
+        const u32 tableOffset = kTableFieldBase + field * 2;
+        const u32 entryOffset = kEntryFieldBase + field * 2;
+
+        // Signed difference: table value from this call, entry value from the
+        // index as re-read after the call.
+        u8* const tableForRead = static_cast<u8*>(script_vm_func_002b66ec());
+        const s32 tableValue =
+            *reinterpret_cast<const s16*>(tableForRead + tableOffset);
+        const s32 entryValue =
+            *reinterpret_cast<const s16*>(selectedEntry(base) + entryOffset);
+        sum += tableValue - entryValue;
+
+        // Fresh getter result, then copy the current unsigned entry value.
+        u8* const tableForWrite = static_cast<u8*>(script_vm_func_002b66ec());
+        *reinterpret_cast<u16*>(tableForWrite + tableOffset) =
+            *reinterpret_cast<const u16*>(selectedEntry(base) + entryOffset);
+    }
+
+    u32* const accumulator = reinterpret_cast<u32*>(base + kAccumulator);
+    *accumulator = *accumulator + static_cast<u32>(sum);
 }
 
 // DECOMP_FUNC(0x00140318, 404)
