@@ -4741,38 +4741,233 @@ extern "C" void shop_func_003a8b14(void* work_pointer) {
 }
 
 // DECOMP_FUNC(0x0019f99c, 432)
-// 94 ARM instructions through unconditional pop; 56 trailing data bytes.
-extern "C" __attribute__((naked)) void engine_func_0019f99c() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d5ff0, 0xe3a06000, 0xe1a08000, 0xe1a09006\n"
-        ".word 0xe59f7160, 0xe59fb188, 0xed2d8b0c, 0xeeb08a40\n"
-        ".word 0xe247a024, 0xed9f0a54, 0xed9f9a54, 0xed9fba54\n"
-        ".word 0xee688a00, 0xeddfba53, 0xed9fca53, 0xeddf9a53\n"
-        ".word 0xeddfca53, 0xed9fda53, 0xed9faa53, 0xeddfaa53\n"
-        ".word 0xe5c71000, 0xe59f014c, 0xe0000096, 0xe0875100\n"
-        ".word 0xe2855004, 0xe2852008, 0xe1c580f0, 0xed859a06\n"
-        ".word 0xed859a05, 0xe2850034, 0xec828a02, 0xe285301c\n"
-        ".word 0xed859a04, 0xed859a0c, 0xed859a0b, 0xed85ba0a\n"
-        ".word 0xecc0ba02, 0xe89a0007, 0xe8830007, 0xe3a01001\n"
-        ".word 0xe285003c, 0xeb0489f2, 0xe59f30fc, 0xe2852010\n"
-        ".word 0xe285101c, 0xe285003c, 0xeb048993, 0xe2850034\n"
-        ".word 0xe285403c, 0xec900a02, 0xe2850068, 0xedc59a19\n"
-        ".word 0xe31600ff, 0xec800a02, 0xeeb01a40, 0x0dc4ca0d\n"
-        ".word 0x1d84da0d, 0xeeb00a6a, 0xedd40a0d, 0xedd41a0c\n"
-        ".word 0xe28400a8, 0xeb045ee1, 0xe3a01001, 0xe28400a8\n"
-        ".word 0xeb047184, 0xe28410a8, 0xe2840f56, 0xeb045ffe\n"
-        ".word 0xed940a0a, 0xe284102c, 0xedd40a0d, 0xee200a0a\n"
-        ".word 0xec911a02, 0xe28400e8, 0xeb045ed4, 0xe3a01000\n"
-        ".word 0xe28400e8, 0xeb047177, 0xe5d40000, 0xe3500000\n"
-        ".word 0x0a000002, 0xe28410e8, 0xe2840e4a, 0xeb045ea5\n"
-        ".word 0xe59b1004, 0xe31600ff, 0xe285003c, 0xe2866001\n"
-        ".word 0x05810080, 0x15810084, 0xe3560002, 0xbaffffb8\n"
-        ".word 0xecbd8b0c, 0xe8bd9ff0, 0x004d4948, 0x45610000\n"
-        ".word 0x00000000, 0xbdb2b8c2, 0x41a00000, 0x46c80000\n"
-        ".word 0x419222d1, 0x3fd55555, 0x3faaaaab, 0x3c8efa35\n"
-        ".word 0x3ea33c48, 0x0044ea58, 0x00000151, 0x004d493c\n"
-    );
+//
+// Builds the two AsdCamera default entries used by the camera manager.  The
+// bare-metal body is ARM 0x0019F99C..0x0019FB10 followed by a 56-byte literal
+// pool.  The corresponding fixed constants are the literal words at
+// 0x0019FB14..0x0019FB48.
+//
+// Recovered contract:
+//   * Arguments: r0 (u32 header word), r1 (selector byte), s0 (f32 value).
+//     r2/r3 are not read.  The selector is stored as one byte at 0x004D4948;
+//     the two entries start at 0x004D494C and are 0x544 bytes apart.
+//   * Each entry receives the header pair (r0, 0) and the value plus value *
+//     3600.0f, a zeroed 3-float vector at +0x10, the three default words from
+//     0x004D4924 at +0x1C, -0.08726646f at +0x28, and the 20.0f/25600.0f
+//     near/far pair at +0x34/+0x38.
+//   * The camera sub-object at entry+0x3C is constructed by 0x002C2210(obj, 1)
+//     and configured by 0x002C20A8(obj, entry+0x1C, entry+0x10,
+//     0x004D493C).  Both helpers are called with the exact original argument
+//     order; their contracts are listed below.
+//   * The near/far pair is copied to +0x68/+0x6C, the fixed reference distance
+//     18.267f is stored at +0x64, and the aspect ratio is 5/3 for entry 0 and
+//     4/3 for entry 1.
+//   * Two perspective matrices are built: the first from the literal
+//     0.31881928f angle, the second from 18.267f * pi/180 (0x3EA33C48 and
+//     0x3C8EFA35) evaluated with a single VFP multiply.  Each matrix is passed
+//     through 0x002BC0B4 with mode 1 and 0 respectively.  The first result is
+//     also copied to camera+0x158 by 0x002B7AA8.
+//   * Only when the constructor's byte at entry+0x3C is non-zero does
+//     0x002B7584(camera+0x4A0, camera+0xE8) run.  The original obtains that
+//     byte with `ldrb` after the constructor, so its result is observable.
+//   * Finally the per-entry pointer entry+0x3C is published to the manager
+//     object obtained from `[0x0044EA5C]`: entry 0 to +0x80, entry 1 to +0x84.
+//     Both the manager word and slot selection are re-evaluated per iteration.
+//   * There are no indirect calls.  All six callees are direct BL targets.
+//     The original leaves r0 = entry[1] + 0x3C at the pop, which is returned
+//     here; no caller in this repository consumes it.
+//
+// Direct callees (addresses from config/functions.csv):
+//   0x002C2210  engine_func_002c2210  camera constructor, (this, mode)
+//   0x002C20A8  engine_func_002c20a8  transform/orientation initializer
+//   0x002B761C  ui_func_002b761c      perspective-matrix builder
+//   0x002BC0B4  engine_func_002bc0b4  matrix rotation/transpose selector
+//   0x002B7AA8  ui_func_002b7aa8      0x40-byte matrix copy
+//   0x002B7584  func_002b7584        derived projection from a matrix
+namespace cam_19f99c {
+
+// Global storage observed through the original literal loads.
+constexpr u32 kDefaultVectorAddress = 0x004D4924;  // ldm r7-0x24
+constexpr u32 kExtraDefaultAddress = 0x004D493C;   // r3 for 0x002C20A8
+constexpr u32 kHeaderAddress = 0x004D4948;         // r7; selector byte
+constexpr u32 kManagerGlobal = 0x0044EA58;         // fp; [fp+4] is the table
+constexpr u32 kManagerTableOffset = 0x04;
+
+// `add r5, r7, i*0x151 << 2; add r5, #4`.
+constexpr u32 kEntryArrayOffset = 0x04;
+constexpr u32 kEntryStride = 0x544;
+constexpr s32 kEntryCount = 2;
+
+// Entry fields observed in 0x0019F9F0..0x0019FB00.
+constexpr u32 kHeaderWordOffset = 0x00;       // strd r8, sb
+constexpr u32 kHeaderZeroOffset = 0x04;
+constexpr u32 kValueOffset = 0x08;            // vstmia {s16,s17}
+constexpr u32 kScaledValueOffset = 0x0C;
+constexpr u32 kVectorAOffset = 0x10;          // three zero floats
+constexpr u32 kDefaultVectorOffset = 0x1C;    // three words from 0x004D4924
+constexpr u32 kTiltOffset = 0x28;             // 0xBDB2B8C2
+constexpr u32 kZero2COffset = 0x2C;
+constexpr u32 kZero30Offset = 0x30;
+constexpr u32 kNearOffset = 0x34;             // 20.0f
+constexpr u32 kFarOffset = 0x38;              // 25600.0f
+
+// Camera sub-object and its derived fields, relative to camera (entry+0x3C).
+constexpr u32 kCameraOffset = 0x3C;
+constexpr u32 kConstructorFlagOffset = 0x00;  // `ldrb r0,[r4]`
+constexpr u32 kReferenceDistanceOffset = 0x28;  // entry+0x64
+constexpr u32 kNearCopyOffset = 0x2C;          // entry+0x68
+constexpr u32 kFarCopyOffset = 0x30;           // entry+0x6C
+constexpr u32 kAspectOffset = 0x34;            // entry+0x70
+constexpr u32 kFovMatrixOffset = 0xA8;         // entry+0xE4
+constexpr u32 kProjectionMatrixOffset = 0xE8;  // entry+0x124
+constexpr u32 kProjectionCopyOffset = 0x158;   // entry+0x194
+constexpr u32 kDerivedProjectionOffset = 0x4A0;  // entry+0x4DC
+
+constexpr u32 kManagerFirstSlot = 0x80;
+constexpr u32 kManagerSecondSlot = 0x84;
+
+// Literal-pool values from the original body.
+constexpr f32 kSecondsPerHour = __builtin_bit_cast(f32, 0x45610000u);  // 3600.0f
+constexpr f32 kZero = __builtin_bit_cast(f32, 0x00000000u);            // 0.0f
+constexpr f32 kMinusFiveDegrees =
+    __builtin_bit_cast(f32, 0xBDB2B8C2u);  // -0.08726646f
+constexpr f32 kNearPlane = __builtin_bit_cast(f32, 0x41A00000u);  // 20.0f
+constexpr f32 kFarPlane = __builtin_bit_cast(f32, 0x46C80000u);   // 25600.0f
+constexpr f32 kReferenceDistance =
+    __builtin_bit_cast(f32, 0x419222D1u);  // 18.267f
+constexpr f32 kWideAspect = __builtin_bit_cast(f32, 0x3FD55555u);  // 5/3
+constexpr f32 kTallAspect = __builtin_bit_cast(f32, 0x3FAAAAABu);  // 4/3
+constexpr f32 kDegreesToRadians =
+    __builtin_bit_cast(f32, 0x3C8EFA35u);  // pi/180
+constexpr f32 kInitialFovRadians =
+    __builtin_bit_cast(f32, 0x3EA33C48u);  // 0.31881928f
+
+}  // namespace cam_19f99c
+
+// Direct callees.  Every target is an existing body in this repository.
+// 0x002C2210 also has a raw no-argument definition later in this translation
+// unit, so its call-site signature is expressed as a fixed-address function
+// pointer instead of a conflicting C-linkage declaration.
+using CameraConstructor = void (*)(void* camera, u32 mode);
+constexpr u32 kCameraConstructorAddress = 0x002C2210;
+extern "C" void engine_func_002c20a8(void* camera, const void* vector_a,
+                                     const void* vector_b, const void* extra);
+extern "C" void ui_func_002b761c(void* matrix, f32 fov_radians, f32 aspect,
+                                 f32 near_plane, f32 far_plane);
+extern "C" void engine_func_002bc0b4(void* matrix, u32 mode);
+extern "C" void ui_func_002b7aa8(void* destination, const void* source);
+extern "C" void func_002b7584(void* destination, const void* matrix);
+
+extern "C" void* engine_func_0019f99c(u32 header_word, u32 selector,
+                                       f32 value) {
+    using namespace cam_19f99c;
+
+    // 0x0019F9EC: the selector occupies exactly one byte at the entry header.
+    *reinterpret_cast<u8*>(kHeaderAddress) = static_cast<u8>(selector);
+
+    u8* last_camera = nullptr;
+    for (s32 index = 0; index < kEntryCount; ++index) {
+        // 0x0019F9F0..0x0019FA00: entry = header + 4 + index * 0x544.
+        u8* const entry =
+            reinterpret_cast<u8*>(kHeaderAddress + kEntryArrayOffset) +
+            static_cast<u32>(index) * kEntryStride;
+        u8* const camera = entry + kCameraOffset;
+
+        // 0x0019FA04..0x0019FA2C: header words, value pair, zero vector,
+        // default vector, tilt and near/far pair, in original order.
+        *reinterpret_cast<u32*>(entry + kHeaderWordOffset) = header_word;
+        *reinterpret_cast<u32*>(entry + kHeaderZeroOffset) = 0;
+        *reinterpret_cast<f32*>(entry + kValueOffset) = value;
+        *reinterpret_cast<f32*>(entry + kScaledValueOffset) =
+            value * kSecondsPerHour;
+        *reinterpret_cast<f32*>(entry + kVectorAOffset) = kZero;
+        *reinterpret_cast<f32*>(entry + kVectorAOffset + 4) = kZero;
+        *reinterpret_cast<f32*>(entry + kVectorAOffset + 8) = kZero;
+        *reinterpret_cast<f32*>(entry + kTiltOffset) = kMinusFiveDegrees;
+        *reinterpret_cast<f32*>(entry + kZero2COffset) = kZero;
+        *reinterpret_cast<f32*>(entry + kZero30Offset) = kZero;
+        *reinterpret_cast<f32*>(entry + kNearOffset) = kNearPlane;
+        *reinterpret_cast<f32*>(entry + kFarOffset) = kFarPlane;
+
+        // 0x0019FA30..0x0019FA34: three words copied verbatim.
+        const u32* const defaults =
+            reinterpret_cast<const u32*>(kDefaultVectorAddress);
+        u32* const entry_defaults =
+            reinterpret_cast<u32*>(entry + kDefaultVectorOffset);
+        entry_defaults[0] = defaults[0];
+        entry_defaults[1] = defaults[1];
+        entry_defaults[2] = defaults[2];
+
+        // 0x0019FA38..0x0019FA54: construct and configure the camera.
+        reinterpret_cast<CameraConstructor>(kCameraConstructorAddress)(
+            camera, 1);
+        engine_func_002c20a8(
+            camera, entry + kDefaultVectorOffset, entry + kVectorAOffset,
+            reinterpret_cast<const void*>(kExtraDefaultAddress));
+
+        // 0x0019FA58..0x0019FA7C: copy near/far to +0x68/+0x6C, store the
+        // reference distance, then choose the aspect ratio from the signed
+        // `tst r6,#0xFF` result.
+        const f32 near_value =
+            *reinterpret_cast<const f32*>(entry + kNearOffset);
+        const f32 far_value =
+            *reinterpret_cast<const f32*>(entry + kFarOffset);
+        *reinterpret_cast<f32*>(camera + kReferenceDistanceOffset) =
+            kReferenceDistance;
+        *reinterpret_cast<f32*>(camera + kNearCopyOffset) = near_value;
+        *reinterpret_cast<f32*>(camera + kFarCopyOffset) = far_value;
+
+        const f32 aspect =
+            (index & 0xFF) == 0 ? kWideAspect : kTallAspect;
+        *reinterpret_cast<f32*>(camera + kAspectOffset) = aspect;
+
+        // 0x0019FA80..0x0019FA9C: first perspective matrix from the literal
+        // angle, then matrix selector mode 1.  The caller re-reads the copied
+        // near/far words and the aspect word from memory before the call.
+        ui_func_002b761c(
+            camera + kFovMatrixOffset, kInitialFovRadians,
+            *reinterpret_cast<const f32*>(camera + kAspectOffset),
+            *reinterpret_cast<const f32*>(camera + kNearCopyOffset),
+            *reinterpret_cast<const f32*>(camera + kFarCopyOffset));
+        engine_func_002bc0b4(camera + kFovMatrixOffset, 1);
+
+        // 0x0019FAA0..0x0019FAA8: copy that matrix into camera+0x158.
+        ui_func_002b7aa8(camera + kProjectionCopyOffset,
+                         camera + kFovMatrixOffset);
+
+        // 0x0019FAAC..0x0019FAD0: second perspective matrix from
+        // 18.267f * pi/180, then selector mode 0.
+        ui_func_002b761c(
+            camera + kProjectionMatrixOffset,
+            kReferenceDistance * kDegreesToRadians,
+            *reinterpret_cast<const f32*>(camera + kAspectOffset),
+            *reinterpret_cast<const f32*>(camera + kNearCopyOffset),
+            *reinterpret_cast<const f32*>(camera + kFarCopyOffset));
+        engine_func_002bc0b4(camera + kProjectionMatrixOffset, 0);
+
+        // 0x0019FAD4..0x0019FAE8: the constructor's flag byte gates the
+        // derived projection; the byte is re-read from memory (ldrb).
+        if (camera[kConstructorFlagOffset] != 0) {
+            func_002b7584(camera + kDerivedProjectionOffset,
+                          camera + kProjectionMatrixOffset);
+        }
+
+        // 0x0019FAEC..0x0019FB00: publish the camera pointer in the manager
+        // table.  The manager word and the slot are both re-evaluated for
+        // each entry.
+        u8* const manager = *reinterpret_cast<u8* const*>(
+            kManagerGlobal + kManagerTableOffset);
+        if ((index & 0xFF) == 0) {
+            *reinterpret_cast<u8**>(manager + kManagerFirstSlot) = camera;
+        } else {
+            *reinterpret_cast<u8**>(manager + kManagerSecondSlot) = camera;
+        }
+
+        last_camera = camera;
+    }
+
+    // 0x0019FB10 pop: r0 still holds the final entry's camera pointer.
+    return last_camera;
 }
 
 // DECOMP_FUNC(0x00262498, 432)
