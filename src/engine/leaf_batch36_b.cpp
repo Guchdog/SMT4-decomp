@@ -1112,32 +1112,124 @@ extern "C" __attribute__((naked)) void func_003d88cc() {
 }
 
 // DECOMP_FUNC(0x0038f950, 408)
-extern "C" __attribute__((naked)) void engine_func_0038f950() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x43f0, 0xe92d, 0x5000, 0xe1a0, 0x0fd7, 0xe280, 0x8b02, 0xed2d, 0xd03c, 0xe24d\n"
-        ".hword 0xce76, 0xebfc, 0x7000, 0xe3a0, 0x000c, 0xe3a0, 0x700c, 0xe58d, 0x7010, 0xe58d\n"
-        ".hword 0x7014, 0xe58d, 0x7018, 0xe58d, 0x0081, 0xe88d, 0x313c, 0xe59f, 0x2007, 0xe1a0\n"
-        ".hword 0x1007, 0xe1a0, 0x0fd7, 0xe285, 0x7008, 0xe58d, 0xce56, 0xebfc, 0x8a4a, 0xed9f\n"
-        ".hword 0x0a01, 0xe285, 0x800b, 0xe3a0, 0x0a48, 0xeeb0, 0x009c, 0xe280, 0x3fd7, 0xe285\n"
-        ".hword 0x2e7d, 0xe3a0, 0x101d, 0xe3a0, 0x4000, 0xe1a0, 0x8000, 0xe58d, 0xb858, 0xebfc\n"
-        ".hword 0x2000, 0xe3a0, 0x1002, 0xe1a0, 0x0004, 0xe1a0, 0x7f9e, 0xebfc, 0x40f0, 0xe59f\n"
-        ".hword 0x6020, 0xe28d, 0x9020, 0xe28d, 0x100f, 0xe894, 0x4014, 0xe594, 0x4034, 0xe58d\n"
-        ".hword 0x100f, 0xe886, 0x4000, 0xe3a0, 0x0a48, 0xeeb0, 0x1184, 0xe064, 0x8000, 0xe58d\n"
-        ".hword 0x00d4, 0xe199, 0x1101, 0xe081, 0x3fd7, 0xe285, 0x6101, 0xe085, 0x2c07, 0xe280\n"
-        ".hword 0x20d1, 0xe282, 0x0fdf, 0xe286, 0x101d, 0xe3a0, 0xb840, 0xebfc, 0x2000, 0xe3a0\n"
-        ".hword 0x0fdf, 0xe286, 0x1002, 0xe1a0, 0x7f86, 0xebfc, 0x2c07, 0xe284, 0x0fdf, 0xe286\n"
-        ".hword 0x20d5, 0xe282, 0x101d, 0xe3a0, 0x19c1, 0xebfc, 0x4001, 0xe284, 0x0018, 0xe354\n"
-        ".hword 0xffe7, 0xbaff, 0x0a01, 0xe285, 0x0e1b, 0xe280, 0xac19, 0xebfc, 0x0068, 0xe59f\n"
-        ".hword 0x1000, 0xe3a0, 0x7005, 0xe7c0, 0x0060, 0xe59f, 0x0000, 0xe590, 0x1b81, 0xe5c0\n"
-        ".hword 0x0000, 0xe3a0, 0xf000, 0xe320, 0xb7e4, 0xebfc, 0x4a01, 0xe285, 0x4ec3, 0xe284\n"
-        ".hword 0x1044, 0xe59f, 0x0000, 0xe584, 0xb7dc, 0xebfc, 0x0000, 0xe594, 0x203c, 0xe59f\n"
-        ".hword 0x0a0d, 0xed9f, 0x1000, 0xe3a0, 0xb7d3, 0xebfc, 0x0a01, 0xe285, 0x0e7b, 0xe280\n"
-        ".hword 0x8ed0, 0xebfa, 0xd03c, 0xe28d, 0x8b02, 0xecbd, 0x83f0, 0xe8bd\n"
-        // 32 bytes of bounded trailing literal data
-        ".hword 0xf12c, 0x003f, 0x0000, 0x3f80, 0xf15c, 0x003f, 0x15c5, 0x0000, 0x2fc8, 0x0043\n"
-        ".hword 0x02ff, 0x3202, 0x0000, 0x0000, 0x64ff, 0x6464\n"
-    );
+//
+// Initialises one screen work block (`ctx`).
+//
+// Layout established from the offsets of this body and its helpers:
+//   ctx + 0x035C  0x20-byte sprite-group header (camp_func_002c3344/
+//                 camp_func_002c32f8 write 0x20 bytes here)
+//   ctx + 0x037C  first of 24 animated sprites, stride 0x8C
+//   ctx + 0x109C  one extra sprite, exactly after those 24 entries
+//   ctx + 0x11B0  sub-object reset by engine_func_002baacc; its +0x415
+//                 byte (ctx + 0x15C5) is cleared again later
+//   ctx + 0x17B0  object reset by unite_func_00233600
+//   ctx + 0x1C30  u32 handle returned by AsdText_func_002bda1c
+//
+// The literal pool holds the shared constant block 0x003FF12C (bound into the
+// group by camp_func_002c32f8) and the 24-byte, 0/1-valued label table at
+// 0x003FF15C, which the original copies to its stack before the loop and reads
+// there as signed bytes.
+constexpr u32 kGroupOffset = 0x035C;
+constexpr u32 kSpriteArrayOffset = 0x037C;
+constexpr u32 kSpriteStride = 0x8C;
+constexpr s32 kSpriteCount = 24;
+constexpr u32 kExtraSpriteOffset = 0x109C;
+constexpr u32 kInnerObjectOffset = 0x11B0;
+constexpr u32 kInnerObjectTailByte = 0x415;
+constexpr u32 kUniteObjectOffset = 0x17B0;
+constexpr u32 kTextHandleOffset = 0x1C30;
+constexpr u32 kSharedTableAddress = 0x003FF12C;
+constexpr u32 kLabelTableAddress = 0x003FF15C;
+constexpr u32 kGlobalObjectSlot = 0x00432FC8;
+constexpr u32 kGlobalObjectByte = 0xB81;
+constexpr u32 kSpriteType = 0x1D;
+constexpr u32 kExtraSpriteLabel = 0x7D0;
+constexpr s32 kFirstSpriteLabelDelta = 0x7D1;
+constexpr u32 kPositionLabelBase = 0x7D5;
+constexpr u32 kGroupStackWord = 0x0C;
+constexpr u32 kPanel = 0x0B;
+constexpr u32 kTextFlags = 0x320202FF;
+constexpr u32 kTextColour = 0x646464FF;
+
+extern "C" void camp_func_002c3344(void* group);
+extern "C" u32 camp_func_002c32f8(
+    void* group, u32 table, u32 count, u32 reg_word,
+    u32 stack_0, u32 stack_1, u32 stack_2,
+    u32 stack_3, u32 stack_4, u32 stack_5, u32 stack_6);
+extern "C" u32 camp_func_002bdb2c(
+    u8* sprite, u32 type, u32 index, const u8* group,
+    u32 panel, f32 scale);
+extern "C" u8* battle_func_002af854(u8* sprite, u32 index, u32 mode);
+extern "C" void script_vm_func_00296154(void* dst, u32 arg1, u32 arg2);
+extern "C" void engine_func_002baacc(u8* object);
+extern "C" u8* AsdText_func_002bda1c(u32 arg);
+extern "C" void script_vm_func_002bda10(void* object, u32 value);
+extern "C" void ui_func_002bda00(void* object, u32 v1, u32 v2, f32 value);
+extern "C" void unite_func_00233600(void* object);
+
+extern "C" void engine_func_0038f950(u8* ctx) {
+    camp_func_002c3344(ctx + kGroupOffset);
+
+    camp_func_002c32f8(
+        ctx + kGroupOffset,
+        0,
+        0,
+        kSharedTableAddress,
+        kGroupStackWord,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0);
+
+    camp_func_002bdb2c(
+        ctx + kExtraSpriteOffset,
+        kSpriteType,
+        kExtraSpriteLabel,
+        ctx + kGroupOffset,
+        kPanel,
+        1.0f);
+    battle_func_002af854(ctx + kExtraSpriteOffset, 0, 0);
+
+    // The original copies the six words at 0x003FF15C to its stack once,
+    // before the loop, and then reads that snapshot as signed bytes.
+    u32 label_bytes[6];
+    const u32* const label_source =
+        reinterpret_cast<const u32*>(kLabelTableAddress);
+    for (u32 word = 0; word < 6; ++word) {
+        label_bytes[word] = label_source[word];
+    }
+    const s8* const entry_ids = reinterpret_cast<const s8*>(label_bytes);
+
+    for (s32 i = 0; i < kSpriteCount; ++i) {
+        u8* const sprite = ctx + kSpriteArrayOffset + i * kSpriteStride;
+        camp_func_002bdb2c(
+            sprite,
+            kSpriteType,
+            static_cast<u32>(kFirstSpriteLabelDelta +
+                             static_cast<s32>(entry_ids[i])),
+            ctx + kGroupOffset,
+            kPanel,
+            1.0f);
+        battle_func_002af854(sprite, 0, 0);
+        script_vm_func_00296154(
+            sprite, kSpriteType, kPositionLabelBase + static_cast<u32>(i));
+    }
+
+    engine_func_002baacc(ctx + kInnerObjectOffset);
+
+    ctx[kInnerObjectOffset + kInnerObjectTailByte] = 0;
+
+    u8* const global_object = *reinterpret_cast<u8**>(kGlobalObjectSlot);
+    global_object[kGlobalObjectByte] = 0;
+
+    u8** const text_slot = reinterpret_cast<u8**>(ctx + kTextHandleOffset);
+    *text_slot = AsdText_func_002bda1c(0);
+    script_vm_func_002bda10(*text_slot, kTextFlags);
+    ui_func_002bda00(*text_slot, 0, kTextColour, 0.0f);
+
+    unite_func_00233600(ctx + kUniteObjectOffset);
 }
 
 // DECOMP_FUNC(0x00360cd8, 420)
