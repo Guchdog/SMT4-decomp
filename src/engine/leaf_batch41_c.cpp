@@ -5177,39 +5177,203 @@ extern "C" __attribute__((naked)) void engine_func_002f7f18() {
     );
 }
 
+// Direct callees of func_0036ff14 (addresses from config/functions.csv).
+// 0x003E2594 resolves a name against a table selected by an index and writes
+// a {s32 value, u8 kind} pair through its first argument; 0x003E2EEC computes
+// the byte size of the table record; 0x003E2E40 serializes that record into a
+// caller-provided buffer and returns the number of bytes used.
+extern "C" void engine_func_003e2594(void* out, void* table, u32 index,
+                                     const void* name);
+extern "C" u32 func_003e2eec(void* table, u32 index_a, u32 index_b);
+extern "C" u32 func_003e2e40(void* table, u32 index_a, u32 index_b,
+                             void* destination, u32 size);
+
+namespace func_36ff14 {
+
+// The pc-relative literal at 0x003700C0: address of the fallback allocator
+// interface used when the caller passes a null allocator.
+constexpr u32 kDefaultAllocatorGlobal = 0x00471C40;
+
+// Fields of the entry container (the object behind *self_slot).
+constexpr u32 kEntryCountOffset = 0x14;       // signed loop bound
+constexpr u32 kEntryArrayOffset = 0x18;       // relative pointer to the slots
+constexpr u32 kPrimaryIndexOffset = 0x0C;     // first lookup index
+constexpr u32 kSecondaryIndexOffset = 0x10;   // retry lookup index
+constexpr u32 kTableArrayOffset = 0x84;       // relative pointer to the table
+constexpr u32 kTablePointerOffset = 0x40;     // table pointer inside that block
+constexpr u32 kBlobPointerOffset = 0x7C;      // cached serialized blob
+constexpr u32 kBlobLengthOffset = 0x80;       // cached blob length
+
+// Fields of every entry reached through the relative slot array.
+constexpr u32 kEntryNameOffset = 0x00;        // relative name pointer
+constexpr u32 kEntryKindOffset = 0x05;        // u8: 0 = primary, 1 = retry
+constexpr u32 kEntryValueOffset = 0x08;       // resolved id or -1 sentinel
+
+constexpr u32 kUnresolvedValue = 0xFFFFFFFF;  // cmn r0,#1
+constexpr u32 kLookupFailedFlag = 0x10;       // orrlt sb,sb,#0x10
+constexpr u32 kAllocatorSlot = 2;             // ldr r3,[vtable,#8]
+constexpr u32 kAllocatorAlignment = 4;        // r2 of the indirect call
+
+using AllocateFunction = void* (*)(void* allocator, u32 size, u32 alignment);
+
+// The original resolves every embedded pointer as 32-bit "field address +
+// value" and keeps a zero field as address zero; the later field reads then
+// use that zero base verbatim (`ldr r0,[r0,#8]`, `ldr r0,[r0,#0x40]`).  Doing
+// the arithmetic on 32-bit integers, rather than on pointers, keeps those
+// exact wrap and zero-base semantics visible to the compiler.
+inline u8* byte_offset(u8* address, u32 offset) {
+    return reinterpret_cast<u8*>(reinterpret_cast<u32>(address) + offset);
+}
+
+inline u8* relative_address(u8* field_address, u32 offset) {
+    return offset != 0 ? byte_offset(field_address, offset) : nullptr;
+}
+
+}  // namespace func_36ff14
+
 // DECOMP_FUNC(0x0036ff14, 432)
-// 107 ARM instructions through unconditional pop; 4 trailing data bytes.
-extern "C" __attribute__((naked)) void func_0036ff14() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4ff0, 0xe1a05000, 0xe1b08001, 0xe3a09000\n"
-        ".word 0xe24dd00c, 0x059f0190, 0xe1a0a009, 0xe1a04009\n"
-        ".word 0x05908000, 0xe5950000, 0xe5907014, 0xe3570000\n"
-        ".word 0xc3a0b001, 0xda000036, 0xe5951000, 0xe5b10018\n"
-        ".word 0xe3500000, 0x10800001, 0x01a0000a, 0xe7b01104\n"
-        ".word 0xe3510000, 0x10816000, 0x01a0600a, 0xe5960008\n"
-        ".word 0xe3700001, 0x1a000027, 0xe5961000, 0xe5950000\n"
-        ".word 0xe3510000, 0x10813006, 0xe5902084, 0x03a03000\n"
-        ".word 0xe2801084, 0xe3520000, 0x10811002, 0x01a0100a\n"
-        ".word 0xe590200c, 0xe5911040, 0xe1a0000d, 0xeb01c977\n"
-        ".word 0xe59d0000, 0xe3500000, 0xa5c6a005, 0xaa000014\n"
-        ".word 0xe5960000, 0xe3500000, 0x10803006, 0xe5950000\n"
-        ".word 0x03a03000, 0xe2801084, 0xe5902084, 0xe3520000\n"
-        ".word 0x10811002, 0x01a0100a, 0xe5902010, 0xe5911040\n"
-        ".word 0xe1a0000d, 0xeb01c965, 0xe59d1000, 0xe3510000\n"
-        ".word 0xa5c6b005, 0xb3e00000, 0xb3899010, 0xa5861008\n"
-        ".word 0xaa000000, 0xe5860008, 0xe2844001, 0xe1540007\n"
-        ".word 0xbaffffc8, 0xe5950000, 0xe590107c, 0xe3510000\n"
-        ".word 0x11a00009, 0x1a00001e, 0xe5b01084, 0xe3510000\n"
-        ".word 0x1081a000, 0xe5950000, 0xe59ab040, 0xe280000c\n"
-        ".word 0xe8900480, 0xe1a0000b, 0xe1a01007, 0xe1a0200a\n"
-        ".word 0xeb01cba0, 0xe1a06000, 0xe5980000, 0xe3a02004\n"
-        ".word 0xe1a01006, 0xe5903008, 0xe1a00008, 0xe12fff33\n"
-        ".word 0xe1a04000, 0xe1a03000, 0xe1a0200a, 0xe1a01007\n"
-        ".word 0xe1a0000b, 0xe58d6000, 0xeb01cb67, 0xe1a01000\n"
-        ".word 0xe5950000, 0xe580407c, 0xe5950000, 0xe5801080\n"
-        ".word 0xe1a00009, 0xe28dd00c, 0xe8bd8ff0, 0x00471c40\n"
-    );
+//
+// Lazy name resolver for one entry container.  Every slot whose +0x08 word is
+// still the -1 sentinel is resolved against the table at *(*self_slot+0x84)
+// plus 0x40, first with the index at container+0x0C and then, on failure, with
+// container+0x10.  A primary hit stores value + kind 0; a retry hit stores
+// value + kind 1; a double failure stores -1 and sets bit 4 of the result.
+// Once the loop finishes and container+0x7C is still null, the whole record is
+// sized by 0x003E2EEC, allocated through the allocator's vtable slot 2 with
+// alignment 4, serialized by 0x003E2E40 and cached at +0x7C/+0x80.
+extern "C" s32 func_0036ff14(u8** const self_slot, void* allocator) {
+    using namespace func_36ff14;
+
+    if (allocator == nullptr) {
+        allocator = *reinterpret_cast<void**>(kDefaultAllocatorGlobal);
+    }
+
+    s32 result = 0;
+    const s32 count =
+        *reinterpret_cast<const s32*>(*self_slot + kEntryCountOffset);
+    if (count > 0) {
+        for (s32 index = 0; index < count; ++index) {
+            // 0x0036FF4C..0x0036FF6C: slot array and entry.  Both relative
+            // bases are the addresses of the fields that store the offsets.
+            u8* const container = *self_slot;
+            const u32 array_offset =
+                *reinterpret_cast<const u32*>(container + kEntryArrayOffset);
+            u8* const slot = byte_offset(
+                relative_address(container + kEntryArrayOffset, array_offset),
+                static_cast<u32>(index) * 4);
+            const u32 entry_offset =
+                *reinterpret_cast<const u32*>(slot);
+            u8* const entry = relative_address(slot, entry_offset);
+
+            // 0x0036FF70..0x0036FF78: already-resolved entries are skipped.
+            if (*reinterpret_cast<const u32*>(
+                    byte_offset(entry, kEntryValueOffset)) !=
+                kUnresolvedValue) {
+                continue;
+            }
+
+            // 0x0036FF7C..0x0036FFB0: primary lookup.
+            const u32 name_offset = *reinterpret_cast<const u32*>(
+                byte_offset(entry, kEntryNameOffset));
+            const void* const name =
+                relative_address(byte_offset(entry, kEntryNameOffset),
+                                 name_offset);
+            u8* const primary_container = *self_slot;
+            const u32 primary_table_offset = *reinterpret_cast<const u32*>(
+                primary_container + kTableArrayOffset);
+            u8* const primary_table_base = relative_address(
+                primary_container + kTableArrayOffset, primary_table_offset);
+            const u32 primary_index = *reinterpret_cast<const u32*>(
+                primary_container + kPrimaryIndexOffset);
+            void* const primary_table = *reinterpret_cast<void* const*>(
+                byte_offset(primary_table_base, kTablePointerOffset));
+
+            // The callee always writes the value word and the kind byte.
+            struct LookupOut {
+                s32 value;
+                u8 kind;
+                u8 reserved[7];
+            };
+            LookupOut lookup;
+            engine_func_003e2594(&lookup, primary_table, primary_index, name);
+            if (lookup.value >= 0) {
+                *byte_offset(entry, kEntryKindOffset) = 0;
+                *reinterpret_cast<u32*>(
+                    byte_offset(entry, kEntryValueOffset)) =
+                    static_cast<u32>(lookup.value);
+                continue;
+            }
+
+            // 0x0036FFC4..0x0036FFF8: retry with the container's second index.
+            u8* const retry_container = *self_slot;
+            const u32 retry_name_offset = *reinterpret_cast<const u32*>(
+                byte_offset(entry, kEntryNameOffset));
+            const void* const retry_name =
+                relative_address(byte_offset(entry, kEntryNameOffset),
+                                 retry_name_offset);
+            const u32 retry_table_offset = *reinterpret_cast<const u32*>(
+                retry_container + kTableArrayOffset);
+            u8* const retry_table_base = relative_address(
+                retry_container + kTableArrayOffset, retry_table_offset);
+            const u32 retry_index = *reinterpret_cast<const u32*>(
+                retry_container + kSecondaryIndexOffset);
+            void* const retry_table = *reinterpret_cast<void* const*>(
+                byte_offset(retry_table_base, kTablePointerOffset));
+
+            engine_func_003e2594(&lookup, retry_table, retry_index, retry_name);
+            if (lookup.value >= 0) {
+                *byte_offset(entry, kEntryKindOffset) = 1;
+                *reinterpret_cast<u32*>(
+                    byte_offset(entry, kEntryValueOffset)) =
+                    static_cast<u32>(lookup.value);
+            } else {
+                *reinterpret_cast<u32*>(
+                    byte_offset(entry, kEntryValueOffset)) =
+                    kUnresolvedValue;
+                result |= kLookupFailedFlag;
+            }
+        }
+    }
+
+    // 0x00370028..0x00370038: the cached blob suppresses serialization.
+    u8* container = *self_slot;
+    if (*reinterpret_cast<const u32*>(container + kBlobPointerOffset) != 0) {
+        return result;
+    }
+
+    // 0x0037003C..0x00370054: table plus both indices.  Note that the table
+    // offset is read from the container loaded above, while the indices come
+    // from a fresh load of *self_slot at 0x00370048.
+    const u32 table_offset =
+        *reinterpret_cast<const u32*>(container + kTableArrayOffset);
+    u8* const table_base =
+        relative_address(container + kTableArrayOffset, table_offset);
+    container = *self_slot;
+    void* const table = *reinterpret_cast<void* const*>(
+        byte_offset(table_base, kTablePointerOffset));
+    const u32 index_a =
+        *reinterpret_cast<const u32*>(container + kPrimaryIndexOffset);
+    const u32 index_b =
+        *reinterpret_cast<const u32*>(container + kSecondaryIndexOffset);
+
+    // 0x00370058..0x00370080: size lookup and the vtable allocation.  The
+    // callee is an opaque interface method at vtable slot 2, called with
+    // (allocator, size, alignment 4).
+    const u32 size = func_003e2eec(table, index_a, index_b);
+    void** const vtable = *reinterpret_cast<void***>(allocator);
+    const AllocateFunction allocate =
+        reinterpret_cast<AllocateFunction>(vtable[kAllocatorSlot]);
+    void* const buffer = allocate(allocator, size, kAllocatorAlignment);
+
+    // 0x00370084..0x003700B4: serialize, cache pointer and used length.  The
+    // size is the fifth (architected stack) argument.
+    const u32 used =
+        func_003e2e40(table, index_a, index_b, buffer, size);
+    container = *self_slot;
+    *reinterpret_cast<void**>(container + kBlobPointerOffset) = buffer;
+    container = *self_slot;
+    *reinterpret_cast<u32*>(container + kBlobLengthOffset) = used;
+    return result;
 }
 
 // DECOMP_FUNC(0x002421b0, 436)
