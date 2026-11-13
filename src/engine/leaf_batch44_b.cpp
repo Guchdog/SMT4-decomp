@@ -3687,60 +3687,118 @@ extern "C" __attribute__((naked)) void engine_func_003df874() {
 }
 
 // DECOMP_FUNC(0x00153a58, 400)
-extern "C" __attribute__((naked)) void func_00153a58() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4ff0, 0xe92d, 0x6003, 0xe1a0\n"
-        ".hword 0xd00c, 0xe24d, 0x8002, 0xe1a0\n"
-        ".hword 0x3008, 0xe590, 0x0008, 0xe590\n"
-        ".hword 0xc008, 0xe592, 0x3008, 0xe593\n"
-        ".hword 0x0008, 0xe590, 0x0002, 0xe35c\n"
-        ".hword 0x5001, 0x13a0, 0x5000, 0x03a0\n"
-        ".hword 0x0014, 0xe590, 0x0001, 0xe335\n"
-        ".hword 0x0002, 0x1380, 0x0002, 0x03c0\n"
-        ".hword 0x0000, 0xe355, 0x0014, 0xe583\n"
-        ".hword 0x0004, 0x1380, 0x0004, 0x03c0\n"
-        ".hword 0x0014, 0xe583, 0x4220, 0xe591\n"
-        ".hword 0x0000, 0xe594, 0x7008, 0xe594\n"
-        ".hword 0x101c, 0xe590, 0x0004, 0xe1a0\n"
-        ".hword 0xff31, 0xe12f, 0x0000, 0xe58d\n"
-        ".hword 0x0000, 0xe594, 0x1024, 0xe590\n"
-        ".hword 0x0004, 0xe1a0, 0xff31, 0xe12f\n"
-        ".hword 0xa0fc, 0xe59f, 0x0000, 0xe356\n"
-        ".hword 0x9000, 0xe1a0, 0x4000, 0xe3a0\n"
-        ".hword 0x002c, 0xda00, 0x10ec, 0xe59f\n"
-        ".hword 0x2086, 0xe086, 0x0601, 0xe244\n"
-        ".hword 0x0b02, 0xe080, 0x0001, 0xe180\n"
-        ".hword 0xb000, 0xe3a0, 0x0004, 0xe58d\n"
-        ".hword 0x1004, 0xe598, 0x0004, 0xe288\n"
-        ".hword 0x201c, 0xe597, 0x0000, 0xe351\n"
-        ".hword 0x0001, 0x1080, 0x000b, 0x01a0\n"
-        ".hword 0x0000, 0xe352, 0x101c, 0xe287\n"
-        ".hword 0x0104, 0xe790, 0x1002, 0x1081\n"
-        ".hword 0x100b, 0x01a0, 0x0000, 0xe351\n"
-        ".hword 0x0004, 0x0a00, 0x1200, 0xe081\n"
-        ".hword 0x2028, 0xe5b1, 0x0000, 0xe352\n"
-        ".hword 0x100b, 0x01a0, 0x1002, 0x1081\n"
-        ".hword 0x0080, 0xe080, 0x1004, 0xe591\n"
-        ".hword 0x2084, 0xe084, 0x1c02, 0xe201\n"
-        ".hword 0x14a1, 0xe1a0, 0x1005, 0xe1d1\n"
-        ".hword 0x1000, 0x059d, 0x1009, 0x11a0\n"
-        ".hword 0x0000, 0xe354, 0x1004, 0xe591\n"
-        ".hword 0x1200, 0xe081, 0x000c, 0x0a00\n"
-        ".hword 0x0000, 0xe59a, 0x37c1, 0xeb05\n"
-        ".hword 0x0000, 0xe59a, 0x0030, 0xe280\n"
-        ".hword 0x4001, 0xe284, 0x0006, 0xe154\n"
-        ".hword 0x0000, 0xe58a, 0xffd9, 0xbaff\n"
-        ".hword 0x0000, 0xe59a, 0x0004, 0xe280\n"
-        ".hword 0x0000, 0xe58a, 0xd00c, 0xe28d\n"
-        ".hword 0x8ff0, 0xe8bd, 0x0000, 0xe59a\n"
-        ".hword 0x3024, 0xe59f, 0x2166, 0xe282\n"
-        ".hword 0x20f0, 0xe1c0, 0x2004, 0xe59d\n"
-        ".hword 0x0008, 0xe280, 0x37bd, 0xeb05\n"
-        ".hword 0x0000, 0xe59a, 0x003c, 0xe280\n"
-        ".hword 0xffec, 0xeaff, 0x52a0, 0x0046\n"
-        ".hword 0x02c1, 0x000f, 0x02c0, 0x000f\n"
-    );
+//
+// Appends the matrix block of one draw entry to the GPU command stream.
+// `draw_entry+8` selects between two render-state variants: when it is 2 the
+// render-state word at [render_state+0x14] gets bit 1 set and bit 2 cleared,
+// and per-node flag bit 9 chooses between the two matrix lists returned by the
+// model vtable; any other value sets bit 2 and clears bit 1 and always uses
+// the first matrix list.
+// The first emitted matrix carries a 12-byte header (0x80000019, 0x000f02c0,
+// matrix_count tag) and occupies 0x3c bytes; every following matrix occupies
+// 0x30 bytes.  One trailing word is reserved even when count <= 0.
+extern "C" void func_002a1a90(void* dst, const void* src);          // 0x002a1a90
+extern "C" void func_002a1ac8(void* dst, const void* src, u32 tag); // 0x002a1ac8
+extern u32* g_GpuCommandCursor;                                     // 0x004652a0
+
+namespace {
+
+// Return value of the model vtable slots: word +4 points at the matrix array.
+struct MatrixListView {
+    u32 unknown_00;
+    u8* matrices_04;
+};
+
+// Model object at unit+0x220.
+struct RenderModel {
+    void** vtable_00;
+    u32 unknown_04;
+    u8* chain_root_08;
+};
+
+using GetMatrixList = void* (*)(void*);
+
+// The original dereferences relative tables without a null guard: a zero
+// relative offset falls back to low addresses (0x0 / 0x4) instead of an empty
+// table.  Those loads go through this opaque helper so the compiler keeps the
+// fallback instead of folding it away as undefined behaviour.
+__attribute__((noinline)) u32 LoadUntabled(u32 address) {
+    return *reinterpret_cast<const u32*>(address);
+}
+
+}  // namespace
+
+extern "C" void func_00153a58(void* scene, void* unit, void* draw_entry, s32 count) {
+    u8* const scene_render = *reinterpret_cast<u8**>(static_cast<u8*>(scene) + 0x08);
+    u8* const render_state = *reinterpret_cast<u8**>(scene_render + 0x08);
+    const u32 entry_type = *reinterpret_cast<u32*>(static_cast<u8*>(draw_entry) + 0x08);
+    const bool is_type_two = entry_type == 2u;
+
+    // entry_type == 2 sets bit 1 and clears bit 2; every other type clears
+    // bit 1 and sets bit 2.  The original performs two stores to the same
+    // word; only the second is observable because no call or read happens
+    // between them.
+    const u32 flags = *reinterpret_cast<u32*>(render_state + 0x14);
+    *reinterpret_cast<u32*>(render_state + 0x14) =
+        (flags & ~6u) | (is_type_two ? 2u : 4u);
+
+    RenderModel* const model =
+        *reinterpret_cast<RenderModel**>(static_cast<u8*>(unit) + 0x220);
+    u8* const chain_root = model->chain_root_08;
+
+    // Two vtable slots (offsets 0x1c and 0x24) each return a matrix list view.
+    void** vtable = model->vtable_00;
+    void* const list_one = reinterpret_cast<GetMatrixList>(vtable[0x1c / 4])(model);
+    vtable = model->vtable_00;
+    void* const list_two = reinterpret_cast<GetMatrixList>(vtable[0x24 / 4])(model);
+
+    // When entry_type != 2 the per-node flag is masked away and list_one wins.
+    const u32 list_selector_mask = is_type_two ? 0u : 1u;
+    const u32 tag = (0xfff00000u + ((static_cast<u32>(count) * 3u) << 22)) | 0x000f02c1u;
+
+    for (s32 i = 0; i < count; ++i) {
+        const u32 index_offset =
+            *reinterpret_cast<u32*>(static_cast<u8*>(draw_entry) + 0x04);
+        const u32 element = index_offset != 0
+            ? *reinterpret_cast<u32*>(static_cast<u8*>(draw_entry) + 0x04 +
+                                       index_offset + static_cast<u32>(i) * 4u)
+            : LoadUntabled(static_cast<u32>(i) * 4u);
+
+        // chain_root+0x1c addresses 16-byte records; the word at +0x28 is a
+        // relative offset to the node whose +4 flags choose the matrix list.
+        u32 node_flags;
+        const u32 chain_offset = *reinterpret_cast<u32*>(chain_root + 0x1c);
+        if (chain_offset != 0) {
+            u8* const record = chain_root + 0x1c + chain_offset + element * 16u;
+            const u32 node_offset = *reinterpret_cast<u32*>(record + 0x28);
+            node_flags = node_offset != 0
+                ? *reinterpret_cast<u32*>(record + 0x28 + node_offset + 4)
+                : LoadUntabled(4u);
+        } else {
+            node_flags = LoadUntabled(4u);
+        }
+
+        const u32 node_bit = (node_flags >> 9) & 1u;
+        const u8* const source =
+            reinterpret_cast<MatrixListView*>(
+                (node_bit & ~list_selector_mask) == 0 ? list_one : list_two)
+                ->matrices_04 +
+            ((element * 3u) << 4);
+
+        if (i == 0) {
+            u32* const header = g_GpuCommandCursor;
+            header[0] = 0x80000019u;
+            header[1] = 0x000f02c0u;
+            func_002a1ac8(header + 2, source, tag);
+            g_GpuCommandCursor = g_GpuCommandCursor + (0x3c / 4);
+        } else {
+            func_002a1a90(g_GpuCommandCursor, source);
+            g_GpuCommandCursor = g_GpuCommandCursor + (0x30 / 4);
+        }
+    }
+
+    // Reserve the trailing word (also on the count <= 0 path).
+    g_GpuCommandCursor = g_GpuCommandCursor + 1;
 }
 
 // DECOMP_FUNC(0x002a6e10, 400)
