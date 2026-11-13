@@ -8208,97 +8208,150 @@ extern "C" u32 camp_func_001d00f8(CampUnitSelectionState* state) {
 }
 
 // DECOMP_FUNC(0x0033bdc8, 684)
-extern "C" __attribute__((naked)) void script_vm_func_0033bdc8() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x47f0, 0xe92d, 0xde61, 0xe24d\n"
-        ".hword 0x8002, 0xe1a0, 0xa001, 0xe1a0\n"
-        ".hword 0x7000, 0xe1a0, 0x1000, 0xe1a0\n"
-        ".hword 0x900d, 0xe1a0, 0x2280, 0xe59f\n"
-        ".hword 0x0009, 0xe1a0, 0x0459, 0xebfe\n"
-        ".hword 0xb304, 0xebfd, 0x6000, 0xe1a0\n"
-        ".hword 0x0c91, 0xe280, 0x404a, 0xe5dd\n"
-        ".hword 0x10d8, 0xe1d0, 0x5000, 0xe3e0\n"
-        ".hword 0x0004, 0xe151, 0x5000, 0x03a0\n"
-        ".hword 0x0006, 0x0a00, 0x10d9, 0xe1d0\n"
-        ".hword 0x0004, 0xe151, 0x5001, 0x03a0\n"
-        ".hword 0x0002, 0x0a00, 0x00da, 0xe1d0\n"
-        ".hword 0x0004, 0xe150, 0x5002, 0x03a0\n"
-        ".hword 0x004a, 0xe5d7, 0x800b, 0xebfd\n"
-        ".hword 0x2000, 0xe3a0, 0x100a, 0xe1a0\n"
-        ".hword 0x0004, 0xe1a0, 0x8187, 0xebfd\n"
-        ".hword 0x0004, 0xe1a0, 0xf000, 0xe320\n"
-        ".hword 0xb2e3, 0xebfd, 0x0000, 0xe355\n"
-        ".hword 0x4000, 0xe1a0, 0x0003, 0xba00\n"
-        ".hword 0x004a, 0xe5d4, 0x1005, 0xe086\n"
-        ".hword 0x1a09, 0xe281, 0x0108, 0xe5c1\n"
-        ".hword 0x1000, 0xe3a0, 0x0001, 0xe084\n"
-        ".hword 0x2001, 0xe089, 0x304c, 0xe5d0\n"
-        ".hword 0xc04c, 0xe5d2, 0x1002, 0xe281\n"
-        ".hword 0x0040, 0xe351, 0x300c, 0xe183\n"
-        ".hword 0x304c, 0xe5c0, 0x304d, 0xe5d0\n"
-        ".hword 0x204d, 0xe5d2, 0xa009, 0xe1a0\n"
-        ".hword 0x2003, 0xe182, 0x204d, 0xe5c0\n"
-        ".hword 0xfff1, 0xbaff, 0x0000, 0xe3a0\n"
-        ".hword 0x2000, 0xe084, 0x1000, 0xe08a\n"
-        ".hword 0x308c, 0xe5d2, 0x108c, 0xe5d1\n"
-        ".hword 0x0001, 0xe280, 0x1003, 0xe081\n"
-        ".hword 0x00ff, 0xe351, 0x10ff, 0xc3a0\n"
-        ".hword 0x0c05, 0xe350, 0x108c, 0xe5c2\n"
-        ".hword 0xfff4, 0xbaff, 0x0004, 0xe1a0\n"
-        ".hword 0x8067, 0xebfd, 0x9000, 0xe3a0\n"
-        ".hword 0x6009, 0xe1a0, 0x5009, 0xe1a0\n"
-        ".hword 0x7085, 0xe08a, 0x13b4, 0xe1d7\n"
-        ".hword 0x0000, 0xe351, 0x0006, 0x0a00\n"
-        ".hword 0x0004, 0xe1a0, 0xbeb8, 0xebfc\n"
-        ".hword 0x0000, 0xe350, 0x03b4, 0xe1d7\n"
-        ".hword 0x001a, 0x0a00, 0x0000, 0xe350\n"
-        ".hword 0x9001, 0x1289, 0x5001, 0xe285\n"
-        ".hword 0x0008, 0xe355, 0xfff1, 0xbaff\n"
-        ".hword 0x3140, 0xe59f, 0x2002, 0xe3a0\n"
-        ".hword 0x1008, 0xe3a0, 0x0008, 0xe1a0\n"
-        ".hword 0xeff2, 0xfbfd, 0x0004, 0xe1a0\n"
-        ".hword 0xf000, 0xe320, 0x8312, 0xebfd\n"
-        ".hword 0x2000, 0xe1a0, 0x0008, 0xe266\n"
-        ".hword 0x0000, 0xe350, 0x0002, 0xda00\n"
-        ".hword 0x1086, 0xe088, 0x0000, 0xe3a0\n"
-        ".hword 0x00b0, 0xe1c1, 0x1001, 0xe242\n"
-        ".hword 0x0000, 0xe351, 0x0017, 0xda00\n"
-        ".hword 0x0001, 0xe312, 0x0032, 0xe284\n"
-        ".hword 0x0007, 0x1a00, 0x0003, 0xea00\n"
-        ".hword 0x1086, 0xe088, 0x6001, 0xe286\n"
-        ".hword 0x00b0, 0xe1c1, 0xffe2, 0xeaff\n"
-        ".hword 0x30b2, 0xe1f0, 0x0000, 0xe353\n"
-        ".hword 0x6001, 0x0246, 0xc0b2, 0xe1d0\n"
-        ".hword 0x10c1, 0xe1b0, 0x3000, 0xe3a0\n"
-        ".hword 0x0007, 0x0a00, 0x0000, 0xe35c\n"
-        ".hword 0xc0b4, 0xe1f0, 0x6001, 0x0246\n"
-        ".hword 0x0000, 0xe35c, 0xc0b2, 0xe1d0\n"
-        ".hword 0x3001, 0x0243, 0x1001, 0xe251\n"
-        ".hword 0xfff7, 0x1aff, 0x6003, 0xe086\n"
-        ".hword 0x0001, 0xe252, 0x0003, 0x4a00\n"
-        ".hword 0x0080, 0xe084, 0x03b4, 0xe1d0\n"
-        ".hword 0x0000, 0xe350, 0x6001, 0x0246\n"
-        ".hword 0x0000, 0xe356, 0x2000, 0xd3a0\n"
-        ".hword 0x0018, 0xca00, 0x0082, 0xe088\n"
-        ".hword 0x30b0, 0xe1d0, 0x0000, 0xe353\n"
-        ".hword 0x0009, 0x0a00, 0x0008, 0xe359\n"
-        ".hword 0x0009, 0xe1a0, 0x0006, 0xaa00\n"
-        ".hword 0x1080, 0xe084, 0x13b4, 0xe1d1\n"
-        ".hword 0x0000, 0xe351, 0x000a, 0x0a00\n"
-        ".hword 0x0001, 0xe280, 0x0008, 0xe350\n"
-        ".hword 0xfff8, 0xbaff, 0x2001, 0xe282\n"
-        ".hword 0x0008, 0xe352, 0xffee, 0xbaff\n"
-        ".hword 0x0004, 0xe1a0, 0x8243, 0xebfd\n"
-        ".hword 0xde61, 0xe28d, 0x0000, 0xe3a0\n"
-        ".hword 0x87f0, 0xe8bd, 0x0080, 0xe084\n"
-        ".hword 0x33b4, 0xe1c0, 0xfff4, 0xeaff\n"
-        ".hword 0x0004, 0xe1a0, 0x823b, 0xebfd\n"
-        ".hword 0xde61, 0xe28d, 0x0001, 0xe3a0\n"
-        ".hword 0x87f0, 0xe8bd, 0x0604, 0x0000\n"
-        ".hword 0x13e8, 0x0020\n"
-    );
-};
+//
+// NkmGrowEvent.cpp: merge one 0x604-byte growth record into the live Nkm
+// record selected by its +0x4A index byte.  The flag block at +0x4C is OR-ed
+// in, the 0x500 stat bytes at +0x8C are added with saturation, and skill ids
+// from the growth record's +0x34 array that the live record does not contain
+// yet are collected into the caller's eight-entry array.  That array is sorted
+// with the 0x002013E8 camp comparator; when the capacity returned by
+// 0x0029CB94 covers the new ids they are installed into the live record's
+// first free slots and 0 is returned, otherwise nothing is installed and 1 is
+// returned.
+extern "C" u32 camp_func_0029be68(u32 index);
+extern "C" void camp_func_0029c468(u32 index, u32 table_id, u32 mode);
+extern "C" u32 ui_func_0026b9ec(const void* record, u32 id);
+extern "C" s32 script_vm_func_0029cb94(void* record);
+extern "C" void func_002b7f0a(void* base, s32 count, s32 size, u32 comparator);
+
+namespace {
+
+constexpr u32 kNkmRecordSize = 0x604;          // whole record copied up front
+constexpr u32 kNkmSkillOffset = 0x34;          // eight u16 skill ids
+constexpr u32 kNkmSkillCount = 8;
+constexpr u32 kNkmIndexOffset = 0x4A;          // u8 live-record index
+constexpr u32 kNkmFlagOffset = 0x4C;           // 0x40 bytes OR-ed into the live
+constexpr u32 kNkmFlagSize = 0x40;
+constexpr u32 kNkmStatOffset = 0x8C;           // 0x500 bytes added with clamp
+constexpr u32 kNkmStatSize = 0x500;
+constexpr u32 kNkmManagerListOffset = 0x9108;  // three s8 live indices
+constexpr u32 kNkmManagerListCount = 3;
+constexpr u32 kNkmSkillComparator = 0x002013E8;  // qsort comparator address
+
+inline u16 load_u16(const u8* base, u32 offset) {
+    return *reinterpret_cast<const u16*>(base + offset);
+}
+
+}  // namespace
+
+extern "C" u32 script_vm_func_0033bdc8(void* source, u32 table_id, u16* out) {
+    const u8* const source_bytes = static_cast<const u8*>(source);
+    alignas(4) u8 record[kNkmRecordSize];
+    ui_func_002bcf58(record, source, kNkmRecordSize);
+
+    // The original forwards the memcpy return value (destination + size) in r0;
+    // the 0x002A8A08 getter ignores the argument.
+    u8* const manager = camp_func_002a8a08(
+        static_cast<u32>(reinterpret_cast<uintptr_t>(record) + kNkmRecordSize));
+
+    const u8 record_index = record[kNkmIndexOffset];
+    s32 live_index = -1;
+    for (u32 i = 0; i < kNkmManagerListCount; ++i) {
+        if (static_cast<s32>(static_cast<s8>(manager[kNkmManagerListOffset + i])) ==
+            static_cast<s32>(record_index)) {
+            live_index = static_cast<s32>(i);
+            break;
+        }
+    }
+
+    // 0x0029BE68 clears the live entry's id word and drops the index from the
+    // manager list, then 0x0029C468 rebuilds that live record from the table
+    // entry for `table_id` before the body below reads it back.
+    camp_func_0029be68(static_cast<u32>(
+        *reinterpret_cast<const u8*>(source_bytes + kNkmIndexOffset)));
+    camp_func_0029c468(static_cast<u32>(record_index), table_id, 0);
+
+    u8* const live = camp_func_002a89e4(static_cast<s32>(record_index));
+    if (live_index >= 0) {
+        manager[kNkmManagerListOffset + static_cast<u32>(live_index)] =
+            live[kNkmIndexOffset];
+    }
+
+    for (u32 i = 0; i < kNkmFlagSize; i += 2) {
+        const u32 offset = kNkmFlagOffset + i;
+        live[offset] = static_cast<u8>(live[offset] | record[offset]);
+        live[offset + 1] =
+            static_cast<u8>(live[offset + 1] | record[offset + 1]);
+    }
+
+    for (u32 i = 0; i < kNkmStatSize; ++i) {
+        const u32 offset = kNkmStatOffset + i;
+        const u32 sum =
+            static_cast<u32>(live[offset]) + static_cast<u32>(record[offset]);
+        live[offset] = static_cast<u8>(sum > 0xFFu ? 0xFFu : sum);
+    }
+
+    camp_func_0029c084(live);
+
+    u32 new_count = 0;
+    u32 known_count = 0;
+    for (u32 i = 0; i < kNkmSkillCount; ++i) {
+        const u16 id = load_u16(record, kNkmSkillOffset + i * 2);
+        if (id == 0) {
+            continue;
+        }
+        if (ui_func_0026b9ec(live, id) == 0) {
+            out[new_count] = id;
+            ++new_count;
+        } else {
+            ++known_count;
+        }
+    }
+
+    func_002b7f0a(out, static_cast<s32>(kNkmSkillCount), 2,
+                   kNkmSkillComparator);
+
+    const s32 capacity = script_vm_func_0029cb94(live);
+
+    // Only the next free slot is terminated; entries after it stay whatever the
+    // caller left there and take part in the sort above.
+    if (static_cast<s32>(kNkmSkillCount - new_count) > 0) {
+        out[new_count] = 0;
+    }
+
+    s32 balance = static_cast<s32>(new_count);
+    for (s32 i = 0; i < capacity; ++i) {
+        if (load_u16(live, kNkmSkillOffset + static_cast<u32>(i) * 2) == 0) {
+            --balance;
+        }
+    }
+
+    if (balance > 0) {
+        script_vm_func_0029c950(live);
+        return 1;
+    }
+
+    for (u32 i = 0; i < kNkmSkillCount; ++i) {
+        const u16 id = out[i];
+        if (id == 0) {
+            continue;
+        }
+        if (static_cast<s32>(known_count) >= static_cast<s32>(kNkmSkillCount)) {
+            continue;
+        }
+        u32 slot = known_count;
+        while (slot < kNkmSkillCount &&
+               load_u16(live, kNkmSkillOffset + slot * 2) != 0) {
+            ++slot;
+        }
+        if (slot < kNkmSkillCount) {
+            *reinterpret_cast<u16*>(live + kNkmSkillOffset + slot * 2) = id;
+        }
+    }
+
+    script_vm_func_0029c950(live);
+    return 0;
+}
 
 // DECOMP_FUNC(0x003a3e98, 684)
 extern "C" __attribute__((naked)) void shop_func_003a3e98() {
