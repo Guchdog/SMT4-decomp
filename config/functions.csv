@@ -9496,7 +9496,7 @@ address,size,status,category,name,src_file
 0x003aa014,592,non_matching,battle,battle_func_003aa014,src/engine/leaf_batch45_a.cpp
 0x003aa264,1224,matching,ui,ui_func_003aa264,src/engine/leaf_batch45_c.cpp
 0x003aa72c,4,matching,unknown,func_003aa72c,src/engine/leaf_matching.cpp
-0x003aa730,620,matching,shop,shop_func_003aa730,src/engine/leaf_batch45_a.cpp
+0x003aa730,620,non_matching,shop,shop_func_003aa730,src/engine/leaf_batch45_a.cpp
 0x003aa99c,88,matching,unknown,func_003aa99c,src/engine/leaf_batch16_b.cpp
 0x003aa9f4,76,matching,engine,engine_func_003aa9f4,src/engine/leaf_batch27_c.cpp
 0x003aaa40,44,matching,engine,engine_func_003aaa40,src/engine/leaf_batch27_c.cpp

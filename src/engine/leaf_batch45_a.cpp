@@ -3351,90 +3351,195 @@ extern "C" u32 script_vm_func_00256078(void* owner, u8* request, u32 mode,
                                     kTailFlag);
 }
 
-// DECOMP_FUNC(0x003aa730, 620)
-extern "C" __attribute__((naked)) void shop_func_003aa730() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x41f0, 0xe92d, 0x5000, 0xe1a0\n"
-        ".hword 0x0ca6, 0xe280, 0x00be, 0xe280\n"
-        ".hword 0x10ff, 0xe3a0, 0x1000, 0xe5c0\n"
-        ".hword 0x0014, 0xe595, 0x7ca5, 0xe285\n"
-        ".hword 0x0004, 0xe350, 0x0035, 0x0a00\n"
-        ".hword 0x0005, 0xe1a0, 0xfcdd, 0xebff\n"
-        ".hword 0x0230, 0xe59f, 0x6b01, 0xe285\n"
-        ".hword 0x6f6a, 0xe286, 0x00b5, 0xe190\n"
-        ".hword 0x0000, 0xe350, 0x0082, 0x0a00\n"
-        ".hword 0x0020, 0xe285, 0x2407, 0xebfa\n"
-        ".hword 0x0280, 0xe086, 0x40b4, 0xe1d0\n"
-        ".hword 0x0020, 0xe285, 0x2403, 0xebfa\n"
-        ".hword 0x0280, 0xe086, 0x001c, 0xe5d0\n"
-        ".hword 0x0000, 0xe350, 0x4000, 0x03a0\n"
-        ".hword 0xcefc, 0xebfb, 0x0000, 0xe350\n"
-        ".hword 0x0bb0, 0x11d7, 0x0004, 0x1150\n"
-        ".hword 0x0008, 0x0a00, 0x0000, 0xe354\n"
-        ".hword 0x4bb0, 0xe1c7, 0x0070, 0x0a00\n"
-        ".hword 0x0074, 0xe6bf, 0x1001, 0xe3a0\n"
-        ".hword 0xce73, 0xebfb, 0x0001, 0xe3a0\n"
-        ".hword 0xf000, 0xe320, 0xcc52, 0xebfb\n"
-        ".hword 0x0096, 0xe285, 0x016d, 0xeb00\n"
-        ".hword 0x0020, 0xe285, 0xf000, 0xe320\n"
-        ".hword 0x242f, 0xebfa, 0x7000, 0xe250\n"
-        ".hword 0x4000, 0xe3a0, 0x000a, 0xda00\n"
-        ".hword 0x0020, 0xe285, 0xd0f0, 0xebfb\n"
-        ".hword 0x0004, 0xe080, 0x0280, 0xe086\n"
-        ".hword 0x00b4, 0xe1d0, 0x1070, 0xe6ff\n"
-        ".hword 0x0096, 0xe285, 0x0dd8, 0xebfa\n"
-        ".hword 0x4001, 0xe284, 0x0004, 0xe157\n"
-        ".hword 0xfff4, 0xcaff, 0x0096, 0xe285\n"
-        ".hword 0x41f0, 0xe8bd, 0x015f, 0xea00\n"
-        ".hword 0x1bf2, 0xe1d7, 0x00dc, 0xe285\n"
-        ".hword 0x2326, 0xebfa, 0x0bf2, 0xe1d7\n"
-        ".hword 0x0180, 0xe060, 0x0100, 0xe080\n"
-        ".hword 0x0100, 0xe085, 0x40fc, 0xe280\n"
-        ".hword 0x0004, 0xe1a0, 0x51c5, 0xebfc\n"
-        ".hword 0x6000, 0xe1a0, 0x0004, 0xe1a0\n"
-        ".hword 0x51c5, 0xebfc, 0x1000, 0xe1a0\n"
-        ".hword 0x2006, 0xe1a0, 0x00c8, 0xe285\n"
-        ".hword 0x1ad7, 0xebfa, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0x0809, 0xebfb\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x0003, 0x0a00, 0xa52f, 0xebfb\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x0019, 0x0a00, 0xf000, 0xe320\n"
-        ".hword 0x0800, 0xebfb, 0x0000, 0xe350\n"
-        ".hword 0xf000, 0xe320, 0xffab, 0x1aff\n"
-        ".hword 0x0028, 0xe595, 0x0000, 0xe350\n"
-        ".hword 0xffa8, 0xdaff, 0x0020, 0xe285\n"
-        ".hword 0xd0bf, 0xebfb, 0x4000, 0xe1a0\n"
-        ".hword 0x0020, 0xe285, 0x596e, 0xebfa\n"
-        ".hword 0x6000, 0xe1a0, 0xf000, 0xe320\n"
-        ".hword 0xa554, 0xebfb, 0x0001, 0xe350\n"
-        ".hword 0xf000, 0xe320, 0x0015, 0x0a00\n"
-        ".hword 0xa550, 0xebfb, 0x0001, 0xe370\n"
-        ".hword 0x0020, 0x0285, 0x6166, 0x0b00\n"
-        ".hword 0xf000, 0xe320, 0xf000, 0xe320\n"
-        ".hword 0x0010, 0xea00, 0x0014, 0xe285\n"
-        ".hword 0x4000, 0xe3a0, 0x1005, 0xe3a0\n"
-        ".hword 0x0012, 0xe880, 0xce65, 0xebfb\n"
-        ".hword 0x0001, 0xe350, 0x1004, 0x13a0\n"
-        ".hword 0x4bb2, 0x01c7, 0x1bb2, 0x11c7\n"
-        ".hword 0x1bf2, 0xe1d7, 0x00dc, 0xe285\n"
-        ".hword 0x22a7, 0xebfa, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0xff87, 0xeaff\n"
-        ".hword 0x0020, 0xe285, 0x6114, 0xeb00\n"
-        ".hword 0x0020, 0xe285, 0xd09c, 0xebfb\n"
-        ".hword 0x0004, 0xe150, 0xf000, 0xe320\n"
-        ".hword 0x0004, 0x1a00, 0x0020, 0xe285\n"
-        ".hword 0x5949, 0xebfa, 0x0006, 0xe150\n"
-        ".hword 0xf000, 0xe320, 0xff7b, 0x0aff\n"
-        ".hword 0xf000, 0xe320, 0x2307, 0xebfa\n"
-        ".hword 0xf000, 0xe320, 0xf000, 0xe320\n"
-        ".hword 0xff76, 0xeaff, 0x0000, 0xe3a0\n"
-        ".hword 0xce34, 0xebfb, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0xff8f, 0xeaff\n"
-        ".hword 0x05a8, 0x0000\n"
-    );
-};
+// ---------------------------------------------------------------------------
+// 0x003AA730 (620 B): pick-list selection / cursor update.
+//
+// `work` is the Bible-style screen workspace. The routine marks the pending
+// byte at +0xA6BE, runs the selection pass (state != 4) or the cursor pass
+// (state == 4), and converges on rebuilding the selected-id array at +0x96.
+// The final tail call to 0x003AADB0 leaves r0 at the +0x96 pointer, which is
+// the visible return value of this callback.
+// ---------------------------------------------------------------------------
+
+extern "C" void camp_func_003a9ad8(void* work);               // 0x003A9AD8
+extern "C" u32  shop_func_002337a0(const void* panel);        // 0x002337A0
+extern "C" u32  script_vm_func_0029e398(const void* entry);   // 0x0029E398 (r0 unused)
+extern "C" void camp_func_0029e19c(s32 id, s32 mode);         // 0x0029E19C
+extern "C" void camp_func_0029d924(u32 mode);                 // 0x0029D924
+extern "C" void func_003aad98(void* ids);                     // 0x003AAD98
+extern "C" u32  func_003aadb0(void* ids);                     // 0x003AADB0 (2nd entry in the 0x003AAD98 span)
+extern "C" s32  unite_func_002338ac(const void* panel);       // 0x002338AC
+extern "C" s32  shop_func_0029ebc4(void* panel);              // 0x0029EBC4
+extern "C" void unite_func_0022df7c(void* ids, u32 id);       // 0x0022DF7C
+extern "C" void shop_func_002334d8(void* group, s32 index);   // 0x002334D8
+extern "C" s32  shop_func_002bef70(const void* sprite);       // 0x002BEF70
+extern "C" s32  ui_func_002bef7c(const void* sprite);         // 0x002BEF7C
+extern "C" void shop_func_002313d4(void* dst, s32 x, s32 y);  // 0x002313D4
+extern "C" void shop_func_002333d4(void* group, s32 index);   // 0x002333D4
+extern "C" u32  camp_func_0029e2b0(void);                     // 0x0029E2B0
+extern "C" void camp_func_003c2d9c(void* panel);              // 0x003C2D9C
+extern "C" void camp_func_003c2e94(void* panel);              // 0x003C2E94
+extern "C" void engine_func_00233598(void);                   // 0x00233598
+extern "C" s32  shop_func_00240e8c(void* panel);              // 0x00240E8C
+extern "C" u32  camp_func_0029e260(u32 value);                // 0x0029E260
+extern "C" s8   Status_GetFlag1E63(void);                     // 0x0026C8A8
+extern "C" u8   StatusDown_GetActiveMode(void);               // 0x00293D50
+extern "C" s8   StatusDown_GetStatusMode(void);               // 0x00293E30
+
+namespace shop_3aa730 {
+
+constexpr u32 kByteFlagA6BE = 0xA6BE;   // written to 0xFF on entry
+constexpr u32 kStateField = 0x14;       // compared with 4; reset writes 5
+constexpr u32 kStateAuxField = 0x18;    // reset writes 0
+constexpr u32 kStateCursorMode = 4;
+constexpr u32 kStateResetMode = 5;
+
+constexpr u32 kResultPanel = 0x20;      // 0x2337A0 / 0x29EBC4 / 0x240E8C panel
+constexpr u32 kResultCount = 0x28;      // signed count checked before the input pass
+constexpr u32 kSelectedIds = 0x96;      // 16-entry id array rebuilt by 0x22DF7C
+constexpr u32 kRect = 0xC8;             // receives two s32->f32 coordinates
+constexpr u32 kSpriteGroup = 0xDC;      // passed to 0x2334D8 / 0x2333D4
+constexpr u32 kSlotBase = 0xFC;         // 140-byte cursor sprite records
+constexpr u32 kSlotStride = 140;
+
+constexpr u32 kPickList = 0x5A8;        // u16 count at +0, 0x20-byte entries
+constexpr u32 kPickEntryStride = 0x20;
+constexpr u32 kPickEntryId = 4;         // u16 at list + index*0x20 + 4
+constexpr u32 kPickEntryFlag = 0x1C;    // u8 at list + index*0x20 + 0x1C
+
+constexpr u32 kActiveId = 0xA5B0;       // u16 compared/stored by the selection pass
+constexpr u32 kCursorIndex = 0xA5B2;    // s16 slot index used by the state-4 pass
+
+// All offsets used here are naturally aligned relative to the work pointer,
+// so keep the original halfword/word access widths instead of byte copies.
+static __attribute__((always_inline)) inline u8 load_u8(const void* p) {
+    return *static_cast<const u8*>(p);
+}
+
+static __attribute__((always_inline)) inline u16 load_u16(const void* p) {
+    return *static_cast<const u16*>(p);
+}
+
+static __attribute__((always_inline)) inline s16 load_s16(const void* p) {
+    return *static_cast<const s16*>(p);
+}
+
+static __attribute__((always_inline)) inline u32 load_u32(const void* p) {
+    return *static_cast<const u32*>(p);
+}
+
+static __attribute__((always_inline)) inline void store_u16(void* p, u16 value) {
+    *static_cast<u16*>(p) = value;
+}
+
+static __attribute__((always_inline)) inline void store_u32(void* p, u32 value) {
+    *static_cast<u32*>(p) = value;
+}
+
+}  // namespace shop_3aa730
+
+extern "C" u32 shop_func_003aa730(u8* work) {
+    using namespace shop_3aa730;
+
+    work[kByteFlagA6BE] = 0xFF;
+
+    if (load_u32(work + kStateField) == kStateCursorMode) {
+        goto state4;
+    }
+    camp_func_003a9ad8(work);
+
+loop_head:
+    if (load_u16(work + kPickList) == 0) {
+        camp_func_0029e260(0);
+        goto join;
+    }
+    {
+        // The accessor is called twice and the first id is sampled before the
+        // second call; the entry flag comes from the second lookup.
+        const u32 first_index = shop_func_002337a0(work + kResultPanel);
+        const u16 first_id = load_u16(
+            work + kPickList + first_index * kPickEntryStride + kPickEntryId);
+        const u32 second_index = shop_func_002337a0(work + kResultPanel);
+        const u8 entry_flag = load_u8(
+            work + kPickList + second_index * kPickEntryStride + kPickEntryFlag);
+        const u8* const second_entry =
+            work + kPickList + second_index * kPickEntryStride;
+
+        const u32 id = (entry_flag == 0) ? 0u : static_cast<u32>(first_id);
+        if (script_vm_func_0029e398(second_entry) == 0) goto join;
+        if (load_u16(work + kActiveId) == id) goto join;
+        store_u16(work + kActiveId, static_cast<u16>(id));
+        if (id == 0) {
+            camp_func_0029e260(0);
+            goto join;
+        }
+        camp_func_0029e19c(static_cast<s32>(static_cast<s16>(id)), 1);
+        camp_func_0029d924(1);
+    }
+
+join:
+    func_003aad98(work + kSelectedIds);
+    {
+        const s32 visible = unite_func_002338ac(work + kResultPanel);
+        for (s32 i = 0; i < visible; ++i) {
+            const u32 entry_index =
+                static_cast<u32>(shop_func_0029ebc4(work + kResultPanel)) +
+                static_cast<u32>(i);
+            const u16 id = load_u16(work + kPickList +
+                                    entry_index * kPickEntryStride +
+                                    kPickEntryId);
+            unite_func_0022df7c(work + kSelectedIds, id);
+        }
+    }
+    return func_003aadb0(work + kSelectedIds);
+
+state4:
+    {
+        const s16 cursor = load_s16(work + kCursorIndex);
+        shop_func_002334d8(work + kSpriteGroup, cursor);
+        // The index is sampled again after the helper, as in the original.
+        const s32 stride_index = static_cast<s32>(load_s16(work + kCursorIndex));
+        const u8* const record =
+            work + kSlotBase +
+            static_cast<u32>(stride_index * static_cast<s32>(kSlotStride));
+        const s32 pos_y = shop_func_002bef70(record);
+        const s32 pos_x = ui_func_002bef7c(record);
+        shop_func_002313d4(work + kRect, pos_x, pos_y);
+    }
+
+    if (Status_GetFlag1E63() != 0 && StatusDown_GetActiveMode() == 0) {
+        goto reset;
+    }
+    if (Status_GetFlag1E63() != 0) goto loop_head;
+    if (static_cast<s32>(load_u32(work + kResultCount)) <= 0) goto loop_head;
+    {
+        const s32 first_row = shop_func_0029ebc4(work + kResultPanel);
+        const s32 second_row = shop_func_00240e8c(work + kResultPanel);
+        if (StatusDown_GetStatusMode() == 1) {
+            camp_func_003c2d9c(work + kResultPanel);
+        } else if (StatusDown_GetStatusMode() == -1) {
+            camp_func_003c2e94(work + kResultPanel);
+        }
+        if (shop_func_0029ebc4(work + kResultPanel) != first_row ||
+            shop_func_00240e8c(work + kResultPanel) != second_row) {
+            engine_func_00233598();
+        }
+        goto loop_head;
+    }
+
+reset:
+    store_u32(work + kStateField, kStateResetMode);
+    store_u32(work + kStateAuxField, 0);
+    {
+        const u16 cursor =
+            (camp_func_0029e2b0() == 1) ? static_cast<u16>(0)
+                                        : static_cast<u16>(4);
+        store_u16(work + kCursorIndex, cursor);
+        shop_func_002333d4(work + kSpriteGroup,
+                           static_cast<s32>(static_cast<s16>(cursor)));
+    }
+    goto loop_head;
+}
 
 // DECOMP_FUNC(0x002820a4, 624)
 extern "C" __attribute__((naked)) void ui_func_002820a4() {
