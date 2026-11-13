@@ -337,121 +337,211 @@ extern "C" __attribute__((naked)) void camp_func_00253634() {
     );
 }
 
+// Direct calls made by 0x002565B8.  The untyped declarations at the top of
+// this translation unit cannot describe their arguments or return values.
+extern "C" u8* ScriptVm_GetSharedRecord()
+    __asm__("script_vm_func_002b66ec");                            // 0x002B66EC
+extern "C" u8* Camp_GetIndexedRecord(s32 index)
+    __asm__("camp_func_002a89e4");                                 // 0x002A89E4
+extern "C" u8* Camp_GetRecordListBase()
+    __asm__("camp_func_002a8a08");                                 // 0x002A8A08
+extern "C" s32 Camp_GetRecordListCount()
+    __asm__("camp_func_002a8a1c");                                 // 0x002A8A1C
+
+namespace {
+
+// Record offsets and list offsets recovered from the ARM listing.  The names
+// only describe the observed use; no wider object model is implied.
+constexpr u32 kSharedRecordMaskOffset = 0x72u;  // u16 mask on 0x002B66EC
+constexpr u32 kRecordFlagsOffset = 0x44u;       // u16 mask on 0x002A89E4
+constexpr u32 kRecordLimitOffset = 0x0Eu;       // s16 upper bound
+constexpr u32 kRecordTopOffset = 0x1Cu;         // s16 top value
+constexpr u32 kRecordValueOffset = 0x2Au;       // s16 current value / store
+
+constexpr u32 kRejectFlagOne = 2u;
+constexpr u32 kRejectFlagWide = 0x400u;
+constexpr u32 kRejectFlagTwo = 4u;
+
+// Mode 0/1 walks the counted entries at +0x90F0; modes 2/3 walk the three
+// fixed entries at +0x9108, which follow that counted array.
+constexpr u32 kCountedListOffset = 0x90F0u;
+constexpr u32 kFixedListOffset = 0x9108u;
+constexpr s32 kFixedListCount = 3;
+
+constexpr s32 kPercentDivisor = 100;
+
+inline u8* BytePointer(u8* base, u32 offset) {
+    return reinterpret_cast<u8*>(
+        reinterpret_cast<uintptr_t>(base) + offset);
+}
+
+inline u16 LoadRecordHalf(u8* base, u32 offset) {
+    u16 value;
+    __builtin_memcpy(&value, BytePointer(base, offset), sizeof(value));
+    return value;
+}
+
+inline s16 LoadRecordSignedHalf(u8* base, u32 offset) {
+    s16 value;
+    __builtin_memcpy(&value, BytePointer(base, offset), sizeof(value));
+    return value;
+}
+
+inline void StoreRecordHalf(u8* base, u32 offset, u16 value) {
+    __builtin_memcpy(BytePointer(base, offset), &value, sizeof(value));
+}
+
+// The original multiplies with `mul` and then feeds the low 32-bit product to
+// the signed divide-by-100 sequence, so the product is modular.
+inline s32 WrapMultiply(s32 left, s32 right) {
+    return static_cast<s32>(
+        static_cast<u32>(left) * static_cast<u32>(right));
+}
+
+// The ARM register-shift form of `lsl` uses the low byte of the shift count;
+// counts of 32 or more produce zero.
+inline u32 BitMaskFor(u32 index) {
+    const u32 shift = index & 0xFFu;
+    return shift < 32u ? (1u << shift) : 0u;
+}
+
+}  // namespace
+
+// ---------------------------------------------------------------------------
+// 0x002565B8 -- decay two families of signed s16 values toward a floor of 1.
+//
+// `mode` selects which passes run, `bit` is a register-shift mask index and
+// `scale` is the signed percentage multiplier.  The first pass runs for modes
+// 0, 2 and 3: it fetches 0x002B66EC six times, rejects a record whose u16 mask
+// at +0x72 has bit 1 (0x2) or bit 10 (0x400) set or lacks the
+// `1 << (bit & 0xFF)` bit, then lowers the s16 at +0x2A by
+// trunc((s16[+0x1C] * scale) / 100), saturating the decrement at 1, the result
+// at 1 and the result at the re-read +0x1C, with a final 16-bit truncation
+// before those comparisons.
+//
+// The second pass runs for modes 0/1 (counted list at +0x90F0, length from
+// 0x002A8A1C) or modes 2/3 (three fixed entries at +0x9108).  Each signed-byte
+// entry below zero is skipped; otherwise the indexed record from 0x002A89E4
+// is rejected when its u16 mask at +0x44 has bit 1 (0x2), bit 10 (0x400) or
+// bit 2 (0x4) set, or lacks the shift bit.  Accepted records lower the s16 at
+// +0x2A by trunc((s16[+0x0E] * scale) / 100), saturating the decrement at 1 and
+// the result at 1, then at the +0x0E bound, again after a 16-bit truncation.
+// The helper's null result skips the store.
+//
+// Both masks are read as u16, so a shift bit at index 16..31 (already excluded
+// by the ARM register-shift rule for counts >= 32) can never match.
+//
+// All modes other than 0..3 return without touching the second pass.  The
+// original leaves no defined return value; `r0` on exit is incidental and is
+// not consumed by any recovered caller.
+// ---------------------------------------------------------------------------
 // DECOMP_FUNC(0x002565b8, 408)
-extern "C" __attribute__((naked)) void script_vm_func_002565b8() {
-    asm volatile(
-        "push {r4, r5, r6, r7, r8, sb, sl, lr}\n"
-        "movs r4, r0\n"
-        "mov r0, #1\n"
-        "lsl r7, r0, r1\n"
-        ".word 0xe59f917c\n"
-        "cmpne r4, #2\n"
-        "cmpne r4, #3\n"
-        "mov r8, r2\n"
-        "bne .L_00256664\n"
-        "bl script_vm_func_002b66ec\n"
-        "ldrh r0, [r0, #0x72]\n"
-        "tst r0, #2\n"
-        "bne .L_00256664\n"
-        "bl script_vm_func_002b66ec\n"
-        "ldrh r0, [r0, #0x72]\n"
-        "tst r0, #0x400\n"
-        "bne .L_00256664\n"
-        "bl script_vm_func_002b66ec\n"
-        "ldrh r0, [r0, #0x72]\n"
-        "tst r0, r7\n"
-        "beq .L_00256664\n"
-        "bl script_vm_func_002b66ec\n"
-        "ldrsh r0, [r0, #0x1c]\n"
-        "mul r5, r0, r8\n"
-        "bl script_vm_func_002b66ec\n"
-        "ldrsh r1, [r0, #0x2a]\n"
-        "smull r2, r0, sb, r5\n"
-        "asr r2, r0, #5\n"
-        "sub r0, r2, r0, asr #31\n"
-        "cmp r0, #0\n"
-        "movle r0, #1\n"
-        "sub r0, r1, r0\n"
-        "cmp r0, #0\n"
-        "movle r0, #1\n"
-        "sxth r5, r0\n"
-        "bl script_vm_func_002b66ec\n"
-        "ldrsh r1, [r0, #0x1c]\n"
-        "cmp r5, r1\n"
-        "movgt r5, r1\n"
-        "bgt .L_00256660\n"
-        "cmp r5, #1\n"
-        "movlt r5, #1\n"
-        ".L_00256660:\n"
-        "strh r5, [r0, #0x2a]\n"
-        ".L_00256664:\n"
-        "cmp r4, #0\n"
-        "cmpne r4, #1\n"
-        "beq .L_002566c4\n"
-        "cmp r4, #2\n"
-        "cmpne r4, #3\n"
-        "bne .L_00256748\n"
-        "mov r5, #3\n"
-        "bl camp_func_002a8a08\n"
-        "add r6, r0, #0x9000\n"
-        "add r6, r6, #0x108\n"
-        ".L_0025668c:\n"
-        "cmp r5, #0\n"
-        "mov r4, #0\n"
-        "ble .L_00256748\n"
-        ".L_00256698:\n"
-        "ldrsb r0, [r6, r4]\n"
-        "cmp r0, #0\n"
-        "blt .L_0025673c\n"
-        "bl camp_func_002a89e4\n"
-        "mov r1, r0\n"
-        "ldrh r0, [r0, #0x44]\n"
-        "tst r0, #2\n"
-        "tsteq r0, #0x400\n"
-        "tsteq r0, #4\n"
-        "bne .L_0025673c\n"
-        "b .L_002566e4\n"
-        ".L_002566c4:\n"
-        "nop\n"
-        "bl camp_func_002a8a1c\n"
-        "mov r5, r0\n"
-        "nop\n"
-        "bl camp_func_002a8a08\n"
-        "add r6, r0, #0x9000\n"
-        "add r6, r6, #0xf0\n"
-        "b .L_0025668c\n"
-        ".L_002566e4:\n"
-        "tst r0, r7\n"
-        "beq .L_0025673c\n"
-        "ldrsh r2, [r1, #0xe]\n"
-        "mul r0, r2, r8\n"
-        "smull r3, r0, sb, r0\n"
-        "asr r3, r0, #5\n"
-        "sub r0, r3, r0, asr #31\n"
-        "ldrsh r3, [r1, #0x2a]\n"
-        "cmp r0, #0\n"
-        "movle r0, #1\n"
-        "sub r0, r3, r0\n"
-        "cmp r0, #0\n"
-        "movle r0, #1\n"
-        "cmp r1, #0\n"
-        "sxth r0, r0\n"
-        "beq .L_0025673c\n"
-        "cmp r0, r2\n"
-        "movgt r0, r2\n"
-        "bgt .L_00256738\n"
-        "cmp r0, #1\n"
-        "movlt r0, #1\n"
-        ".L_00256738:\n"
-        "strh r0, [r1, #0x2a]\n"
-        ".L_0025673c:\n"
-        "add r4, r4, #1\n"
-        "cmp r4, r5\n"
-        "blt .L_00256698\n"
-        ".L_00256748:\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, pc}\n"
-        ".word 0x51eb851f\n"
-    );
+extern "C" void script_vm_func_002565b8(u32 mode, u32 bit, s32 scale) {
+    const u32 mask_bit = BitMaskFor(bit);
+
+    if (mode == 0u || mode == 2u || mode == 3u) {
+        u8* record = ScriptVm_GetSharedRecord();
+        const u16 first_mask =
+            LoadRecordHalf(record, kSharedRecordMaskOffset);
+        if ((first_mask & kRejectFlagOne) == 0) {
+            record = ScriptVm_GetSharedRecord();
+            const u16 second_mask =
+                LoadRecordHalf(record, kSharedRecordMaskOffset);
+            if ((second_mask & kRejectFlagWide) == 0) {
+                record = ScriptVm_GetSharedRecord();
+                const u16 third_mask =
+                    LoadRecordHalf(record, kSharedRecordMaskOffset);
+                if ((third_mask & mask_bit) != 0) {
+                    record = ScriptVm_GetSharedRecord();
+                    const s32 top = static_cast<s32>(LoadRecordSignedHalf(
+                        record, kRecordTopOffset));
+                    s32 amount = WrapMultiply(top, scale) / kPercentDivisor;
+
+                    record = ScriptVm_GetSharedRecord();
+                    const s32 current = static_cast<s32>(LoadRecordSignedHalf(
+                        record, kRecordValueOffset));
+
+                    if (amount <= 0) {
+                        amount = 1;
+                    }
+                    s32 value = current - amount;
+                    if (value <= 0) {
+                        value = 1;
+                    }
+                    value = static_cast<s16>(value);
+
+                    record = ScriptVm_GetSharedRecord();
+                    const s32 limit = static_cast<s32>(LoadRecordSignedHalf(
+                        record, kRecordTopOffset));
+                    if (value > limit) {
+                        value = limit;
+                    } else if (value < 1) {
+                        value = 1;
+                    }
+                    StoreRecordHalf(record, kRecordValueOffset,
+                                    static_cast<u16>(value));
+                }
+            }
+        }
+    }
+
+    u8* list;
+    s32 list_count;
+    if (mode == 0u || mode == 1u) {
+        list_count = Camp_GetRecordListCount();
+        list = BytePointer(Camp_GetRecordListBase(), kCountedListOffset);
+    } else if (mode == 2u || mode == 3u) {
+        list_count = kFixedListCount;
+        list = BytePointer(Camp_GetRecordListBase(), kFixedListOffset);
+    } else {
+        return;
+    }
+
+    for (s32 index = 0; index < list_count; ++index) {
+        const s32 category =
+            static_cast<s32>(static_cast<s8>(list[index]));
+        if (category < 0) {
+            continue;
+        }
+
+        u8* const record = Camp_GetIndexedRecord(category);
+        if (record == nullptr) {
+            continue;
+        }
+
+        const u16 flags = LoadRecordHalf(record, kRecordFlagsOffset);
+        if ((flags & kRejectFlagOne) != 0 ||
+            (flags & kRejectFlagWide) != 0 ||
+            (flags & kRejectFlagTwo) != 0) {
+            continue;
+        }
+        if ((flags & mask_bit) == 0) {
+            continue;
+        }
+
+        const s32 limit = static_cast<s32>(
+            LoadRecordSignedHalf(record, kRecordLimitOffset));
+        s32 amount = WrapMultiply(limit, scale) / kPercentDivisor;
+        const s32 current = static_cast<s32>(
+            LoadRecordSignedHalf(record, kRecordValueOffset));
+
+        if (amount <= 0) {
+            amount = 1;
+        }
+        s32 value = current - amount;
+        if (value <= 0) {
+            value = 1;
+        }
+        value = static_cast<s16>(value);
+
+        if (value > limit) {
+            value = limit;
+        } else if (value < 1) {
+            value = 1;
+        }
+        StoreRecordHalf(record, kRecordValueOffset,
+                        static_cast<u16>(value));
+    }
 }
 
 // DECOMP_FUNC(0x00256b80, 108)

@@ -3985,7 +3985,7 @@ address,size,status,category,name,src_file
 0x002564cc,88,matching,battle,battle_func_002564cc,src/engine/leaf_batch29_b.cpp
 0x00256524,140,non_matching,unknown,func_00256524,src/engine/leaf_batch30_c.cpp
 0x002565b0,8,matching,unknown,func_002565b0,src/engine/leaf_batch36_a.cpp
-0x002565b8,408,matching,script_vm,script_vm_func_002565b8,src/engine/leaf_batch33_c.cpp
+0x002565b8,408,non_matching,script_vm,script_vm_func_002565b8,src/engine/leaf_batch33_c.cpp
 0x00256750,48,matching,shop,shop_func_00256750,src/engine/leaf_batch19_b.cpp
 0x00256780,16,matching,unknown,func_00256780,src/engine/leaf_batch21_b.cpp
 0x00256790,236,matching,engine,engine_func_00256790,src/engine/leaf_batch40_b.cpp
