@@ -631,84 +631,181 @@ extern "C" s32 ui_func_003beb40(void* ctx, s32 primary_id, s32 secondary_id,
 }
 
 // DECOMP_FUNC(0x002a72fc, 580)
-extern "C" __attribute__((naked)) void script_vm_func_002a72fc() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x47f0, 0xe92d, 0x5000, 0xe1a0\n"
-        ".hword 0x0232, 0xeb00, 0x4000, 0xe3a0\n"
-        ".hword 0x9004, 0xe1a0, 0x6104, 0xe085\n"
-        ".hword 0x028c, 0xe596, 0x0000, 0xe350\n"
-        ".hword 0x0001, 0x0a00, 0x020a, 0xeb00\n"
-        ".hword 0x928c, 0xe586, 0x4001, 0xe284\n"
-        ".hword 0x0004, 0xe354, 0xfff6, 0x3aff\n"
-        ".hword 0x1000, 0xe3a0, 0x0031, 0xe3a0\n"
-        ".hword 0x1dfa, 0xeb00, 0x0031, 0xe3a0\n"
-        ".hword 0xf000, 0xe320, 0x1dcb, 0xeb00\n"
-        ".hword 0x0020, 0xe285, 0xf000, 0xe320\n"
-        ".hword 0xf586, 0xebff, 0x0020, 0xe285\n"
-        ".hword 0xf000, 0xe320, 0x9580, 0xebfa\n"
-        ".hword 0x0020, 0xe285, 0xf000, 0xe320\n"
-        ".hword 0x957f, 0xebfa, 0x0fac, 0xe595\n"
-        ".hword 0x4b03, 0xe285, 0x4feb, 0xe284\n"
-        ".hword 0x0000, 0xe350, 0x000d, 0x0a00\n"
-        ".hword 0xf6d9, 0xebff, 0x0000, 0xe594\n"
-        ".hword 0xf000, 0xe320, 0x0000, 0xe1a0\n"
-        ".hword 0x0000, 0xe594, 0x0000, 0xe350\n"
-        ".hword 0x0005, 0x0a00, 0x0b01, 0xe280\n"
-        ".hword 0x00cc, 0xe280, 0x0000, 0xe1a0\n"
-        ".hword 0x0b01, 0xe240, 0x00cc, 0xe240\n"
-        ".hword 0x2c59, 0xeb00, 0x9fac, 0xe585\n"
-        ".hword 0x0fb8, 0xe595, 0x4b03, 0xe285\n"
-        ".hword 0x4fee, 0xe284, 0x0000, 0xe350\n"
-        ".hword 0x0006, 0x0a00, 0xadc8, 0xebfa\n"
-        ".hword 0x0000, 0xe594, 0xf000, 0xe320\n"
-        ".hword 0x01af, 0xeb00, 0x0000, 0xe3a0\n"
-        ".hword 0x9000, 0xe584, 0x0085, 0xeb00\n"
-        ".hword 0x4000, 0xe3a0, 0x6104, 0xe085\n"
-        ".hword 0x8006, 0xe1a0, 0x0d10, 0xe5b6\n"
-        ".hword 0xadbd, 0xebfa, 0x0000, 0xe596\n"
-        ".hword 0xf000, 0xe320, 0x01a4, 0xeb00\n"
-        ".hword 0x7b03, 0xe288, 0x9000, 0xe586\n"
-        ".hword 0x0d28, 0xe598, 0x7f4a, 0xe287\n"
-        ".hword 0xadb5, 0xebfa, 0x0000, 0xe597\n"
-        ".hword 0xf000, 0xe320, 0x019c, 0xeb00\n"
-        ".hword 0x4001, 0xe284, 0x0006, 0xe354\n"
-        ".hword 0x9000, 0xe587, 0xffec, 0x3aff\n"
-        ".hword 0x05a8, 0xe595, 0x4b01, 0xe285\n"
-        ".hword 0x4f6a, 0xe284, 0x0000, 0xe350\n"
-        ".hword 0x0001, 0x0a00, 0x0041, 0xeb00\n"
-        ".hword 0x9000, 0xe584, 0x05a0, 0xe595\n"
-        ".hword 0x4e5a, 0xe285, 0x0000, 0xe350\n"
-        ".hword 0x0001, 0x0a00, 0x73bc, 0xeb00\n"
-        ".hword 0x9000, 0xe584, 0x05a4, 0xe595\n"
-        ".hword 0x4b01, 0xe285, 0x4f69, 0xe284\n"
-        ".hword 0x0000, 0xe350, 0x0001, 0x0a00\n"
-        ".hword 0x73b5, 0xeb00, 0x9000, 0xe584\n"
-        ".hword 0x05b4, 0xe595, 0x4b01, 0xe285\n"
-        ".hword 0x4f6d, 0xe284, 0x0000, 0xe350\n"
-        ".hword 0x0001, 0x0a00, 0x002d, 0xeb00\n"
-        ".hword 0x9000, 0xe584, 0x05ac, 0xe595\n"
-        ".hword 0x4b01, 0xe285, 0x4f6b, 0xe284\n"
-        ".hword 0x0000, 0xe350, 0x0001, 0x0a00\n"
-        ".hword 0x73a7, 0xeb00, 0x9000, 0xe584\n"
-        ".hword 0x05b0, 0xe595, 0x4e5b, 0xe285\n"
-        ".hword 0x0000, 0xe350, 0x0001, 0x0a00\n"
-        ".hword 0x73a1, 0xeb00, 0x9000, 0xe584\n"
-        ".hword 0x05c0, 0xe595, 0x4d17, 0xe285\n"
-        ".hword 0x0000, 0xe350, 0x0001, 0x0a00\n"
-        ".hword 0x001a, 0xeb00, 0x9000, 0xe584\n"
-        ".hword 0x05b8, 0xe595, 0x4b01, 0xe285\n"
-        ".hword 0x4f6e, 0xe284, 0x0000, 0xe350\n"
-        ".hword 0x0001, 0x0a00, 0x7394, 0xeb00\n"
-        ".hword 0x9000, 0xe584, 0x05bc, 0xe595\n"
-        ".hword 0x4b01, 0xe285, 0x4f6f, 0xe284\n"
-        ".hword 0x0000, 0xe350, 0x0001, 0x0a00\n"
-        ".hword 0x738d, 0xeb00, 0x9000, 0xe584\n"
-        ".hword 0xf000, 0xe320, 0x62fc, 0xeb00\n"
-        ".hword 0x47f0, 0xe8bd, 0x0001, 0xe3a0\n"
-        ".hword 0x0000, 0xe1a0\n"
-    );
-};
+//
+// Script VM context teardown. Releases every owned object in a fixed order,
+// clears the owning pointer slot, and returns 1. The context is a live work
+// area; the helper functions below perform the actual per-object destruction
+// and are not reconstructed here.
+extern "C" void ui_func_002a7bd4(void* ctx);
+extern "C" void script_vm_func_002a7b50(void* obj);
+extern "C" void script_vm_func_002aeb2c(u32 id, u32 value);
+extern "C" void engine_func_002aea7c(u32 id);
+extern "C" void func_002a4974(void* unused);
+extern "C" void func_0014c968(void* unused);
+extern "C" void func_0014c970(void* unused);
+extern "C" void engine_func_002a4ef0(void* obj);
+extern "C" void engine_func_002b2520(void* obj);
+extern "C" void script_vm_func_00152af8(void* obj);
+extern "C" void script_vm_func_002a7aa0(void* obj);
+extern "C" void script_vm_func_002a7604(u32 value);
+extern "C" void script_vm_func_002a755c(void* obj);
+extern "C" void engine_func_002c4360(void* obj);
+extern "C" void script_vm_func_002c0128();
+extern "C" void ui_func_002a7540(u32 value);
+
+namespace script_vm_2a72fc {
+
+constexpr u32 kObjectLoopBase = 0x28C;   // 4 owned object pointers
+constexpr u32 kObjectLoopCount = 4;
+constexpr u32 kSharedSlotA = 0xFAC;      // primary shared resource
+constexpr u32 kSharedSlotB = 0xFB8;      // secondary shared resource
+constexpr u32 kSubObjectLoopBaseA = 0xD10; // 6 sub-object pointers
+constexpr u32 kSubObjectLoopBaseB = 0xD28; // 6 paired sub-object pointers
+constexpr u32 kSubObjectLoopCount = 6;
+
+inline void*& pointer_at(u8* ctx, u32 offset) {
+    return *reinterpret_cast<void**>(ctx + offset);
+}
+
+}  // namespace script_vm_2a72fc
+
+extern "C" __attribute__((noinline)) u32 script_vm_func_002a72fc(u8* ctx) {
+    using namespace script_vm_2a72fc;
+
+    ui_func_002a7bd4(ctx);
+
+    for (u32 i = 0; i < kObjectLoopCount; ++i) {
+        void*& slot = pointer_at(ctx, kObjectLoopBase + 4 * i);
+        if (slot != nullptr) {
+            script_vm_func_002a7b50(slot);
+            slot = nullptr;
+        }
+    }
+
+    script_vm_func_002aeb2c(0x31, 0);
+    engine_func_002aea7c(0x31);
+
+    func_002a4974(ctx + 0x20);
+    func_0014c968(ctx + 0x20);
+    func_0014c970(ctx + 0x20);
+
+    // 0xFAC: destroy the primary shared resource, then run the secondary
+    // cleanup only if the first helper left the slot populated. The original
+    // reloads the slot between the two calls, so mirror that here.
+    {
+        void*& slot = pointer_at(ctx, kSharedSlotA);
+        if (slot != nullptr) {
+            engine_func_002a4ef0(slot);
+            if (slot != nullptr) {
+                engine_func_002b2520(slot);
+            }
+            slot = nullptr;
+        }
+    }
+
+    // 0xFB8: the second helper receives the reloaded slot value, and the
+    // global 0x2A7604(0) notification is only sent when the slot was
+    // initially populated.
+    {
+        void*& slot = pointer_at(ctx, kSharedSlotB);
+        if (slot != nullptr) {
+            script_vm_func_00152af8(slot);
+            script_vm_func_002a7aa0(pointer_at(ctx, kSharedSlotB));
+            slot = nullptr;
+            script_vm_func_002a7604(0);
+        }
+    }
+
+    // Both six-entry sub-object arrays are drained unconditionally: the
+    // original loop has no null test and passes whatever the slot holds
+    // (including null) to both helpers before clearing it.
+    for (u32 i = 0; i < kSubObjectLoopCount; ++i) {
+        const u32 offset_a = kSubObjectLoopBaseA + 4 * i;
+        const u32 offset_b = kSubObjectLoopBaseB + 4 * i;
+
+        script_vm_func_00152af8(pointer_at(ctx, offset_a));
+        script_vm_func_002a7aa0(pointer_at(ctx, offset_a));
+        pointer_at(ctx, offset_a) = nullptr;
+
+        script_vm_func_00152af8(pointer_at(ctx, offset_b));
+        script_vm_func_002a7aa0(pointer_at(ctx, offset_b));
+        pointer_at(ctx, offset_b) = nullptr;
+    }
+
+    // Nine individually typed object slots. Both the order and the helper
+    // selected for each slot are part of the teardown contract.
+    {
+        void*& slot = pointer_at(ctx, 0x5A8);
+        if (slot != nullptr) {
+            script_vm_func_002a755c(slot);
+            slot = nullptr;
+        }
+    }
+    {
+        void*& slot = pointer_at(ctx, 0x5A0);
+        if (slot != nullptr) {
+            engine_func_002c4360(slot);
+            slot = nullptr;
+        }
+    }
+    {
+        void*& slot = pointer_at(ctx, 0x5A4);
+        if (slot != nullptr) {
+            engine_func_002c4360(slot);
+            slot = nullptr;
+        }
+    }
+    {
+        void*& slot = pointer_at(ctx, 0x5B4);
+        if (slot != nullptr) {
+            script_vm_func_002a755c(slot);
+            slot = nullptr;
+        }
+    }
+    {
+        void*& slot = pointer_at(ctx, 0x5AC);
+        if (slot != nullptr) {
+            engine_func_002c4360(slot);
+            slot = nullptr;
+        }
+    }
+    {
+        void*& slot = pointer_at(ctx, 0x5B0);
+        if (slot != nullptr) {
+            engine_func_002c4360(slot);
+            slot = nullptr;
+        }
+    }
+    {
+        void*& slot = pointer_at(ctx, 0x5C0);
+        if (slot != nullptr) {
+            script_vm_func_002a755c(slot);
+            slot = nullptr;
+        }
+    }
+    {
+        void*& slot = pointer_at(ctx, 0x5B8);
+        if (slot != nullptr) {
+            engine_func_002c4360(slot);
+            slot = nullptr;
+        }
+    }
+    {
+        void*& slot = pointer_at(ctx, 0x5BC);
+        if (slot != nullptr) {
+            engine_func_002c4360(slot);
+            slot = nullptr;
+        }
+    }
+
+    script_vm_func_002c0128();
+
+    // The original tail-calls 0x2A7540(1) from its epilogue (the function is
+    // laid out immediately after this body, so the epilogue falls through
+    // into it) and then returns with r0 still 1.
+    ui_func_002a7540(1);
+    return 1;
+}
 
 // DECOMP_FUNC(0x002a1578, 584)
 extern "C" u32 engine_func_002a1578(const u32* p_val) {
