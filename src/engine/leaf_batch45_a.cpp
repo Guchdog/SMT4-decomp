@@ -3991,90 +3991,280 @@ extern "C" s32 ui_func_002fe600(ui_fe600::OutputRecord* out, s32 capacity,
 }
 
 // DECOMP_FUNC(0x0037ea70, 628)
-extern "C" __attribute__((naked)) void script_vm_func_0037ea70() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x0044, 0xe240, 0x0000, 0xe1a0\n"
-        ".hword 0x41f0, 0xe92d, 0x4000, 0xe1a0\n"
-        ".hword 0xd028, 0xe24d, 0x000d, 0xe5d0\n"
-        ".hword 0x0000, 0xe350, 0x003f, 0x0a00\n"
-        ".hword 0x0248, 0xe59f, 0x0004, 0xe7d0\n"
-        ".hword 0x0000, 0xe350, 0x0108, 0x1594\n"
-        ".hword 0x0000, 0x1350, 0x0039, 0x0a00\n"
-        ".hword 0xa253, 0xeb01, 0x0000, 0xe350\n"
-        ".hword 0x8008, 0x128d, 0x7000, 0x13a0\n"
-        ".hword 0x0034, 0x0a00, 0x0070, 0xe594\n"
-        ".hword 0x0080, 0xe080, 0x0180, 0xe084\n"
-        ".hword 0x111d, 0xe5d0, 0x0003, 0xe351\n"
-        ".hword 0x0030, 0x0a00, 0x0054, 0xe5d4\n"
-        ".hword 0x0000, 0xe350, 0x002b, 0x1a00\n"
-        ".hword 0x0060, 0xe594, 0x104d, 0xe5d0\n"
-        ".hword 0x0000, 0xe351, 0x0027, 0x1a00\n"
-        ".hword 0x0080, 0xe590, 0x0000, 0xe350\n"
-        ".hword 0x0024, 0x0a00, 0x3068, 0xe594\n"
-        ".hword 0x2001, 0xe3a0, 0x0000, 0xe3a0\n"
-        ".hword 0x0000, 0xe353, 0x0008, 0x9a00\n"
-        ".hword 0xc080, 0xe080, 0x118c, 0xe084\n"
-        ".hword 0x111d, 0xe5d1, 0x0002, 0xe351\n"
-        ".hword 0x0001, 0x1351, 0x0019, 0x0a00\n"
-        ".hword 0x0001, 0xe280, 0x0000, 0xe153\n"
-        ".hword 0xfff6, 0x8aff, 0x2056, 0xe5c4\n"
-        ".hword 0x2054, 0xe5c4, 0x0053, 0xe5d4\n"
-        ".hword 0x5004, 0xe1a0, 0x6001, 0xe3a0\n"
-        ".hword 0x0001, 0xe350, 0x000f, 0x0a00\n"
-        ".hword 0x00d0, 0xe595, 0x4000, 0xe3a0\n"
-        ".hword 0x0000, 0xe350, 0x000a, 0x9a00\n"
-        ".hword 0x0104, 0xe084, 0x0184, 0xe080\n"
-        ".hword 0x0300, 0xe085, 0x0108, 0xe590\n"
-        ".hword 0x0000, 0xe350, 0x1006, 0x11a0\n"
-        ".hword 0xdc8f, 0x1bfa, 0x00d0, 0xe595\n"
-        ".hword 0x4001, 0xe284, 0x0004, 0xe150\n"
-        ".hword 0xfff4, 0x8aff, 0x6053, 0xe5c5\n"
-        ".hword 0xd028, 0xe28d, 0x81f0, 0xe8bd\n"
-        ".hword 0x0f43, 0xe280, 0xfa29, 0xebfc\n"
-        ".hword 0x0070, 0xe594, 0x1058, 0xe594\n"
-        ".hword 0x0180, 0xe084, 0x0b06, 0xe280\n"
-        ".hword 0x0fd6, 0xe280, 0x0004, 0xe590\n"
-        ".hword 0x0001, 0xe080, 0x0058, 0xe584\n"
-        ".hword 0x10d0, 0xe594, 0x0000, 0xe3a0\n"
-        ".hword 0x0000, 0xe351, 0x000c, 0x9a00\n"
-        ".hword 0x2094, 0xe594, 0x306c, 0xe594\n"
-        ".hword 0xc100, 0xe080, 0xc180, 0xe08c\n"
-        ".hword 0xc30c, 0xe084, 0x0392, 0xe001\n"
-        ".hword 0x20d8, 0xe59c, 0x1002, 0xe081\n"
-        ".hword 0x1100, 0xe788, 0x10d0, 0xe594\n"
-        ".hword 0x0001, 0xe280, 0x0000, 0xe151\n"
-        ".hword 0xfff2, 0x8aff, 0x0074, 0xe5d4\n"
-        ".hword 0x3000, 0xe3a0, 0x0000, 0xe350\n"
-        ".hword 0x3078, 0x0594, 0x0019, 0x0a00\n"
-        ".hword 0x0001, 0xe350, 0x0017, 0x1a00\n"
-        ".hword 0x5078, 0xe594, 0x6080, 0xe594\n"
-        ".hword 0x1000, 0xe3a0, 0x2fc5, 0xe1a0\n"
-        ".hword 0x0695, 0xe083, 0x3692, 0xe022\n"
-        ".hword 0x3000, 0xe3a0, 0x2195, 0xe021\n"
-        ".hword 0x2ffa, 0xe3a0, 0xae2e, 0xebfc\n"
-        ".hword 0x3000, 0xe3e0, 0x0000, 0xe053\n"
-        ".hword 0x0000, 0xe2f1, 0x0000, 0x33e0\n"
-        ".hword 0x0007, 0x3a00, 0x0695, 0xe083\n"
-        ".hword 0x2fc5, 0xe1a0, 0x1000, 0xe3a0\n"
-        ".hword 0x3692, 0xe022, 0x3000, 0xe3a0\n"
-        ".hword 0x2195, 0xe021, 0x2ffa, 0xe3a0\n"
-        ".hword 0xae21, 0xebfc, 0x3000, 0xe1a0\n"
-        ".hword 0x000d, 0xe5d4, 0x7078, 0xe584\n"
-        ".hword 0x1008, 0xe28d, 0x0000, 0xe350\n"
-        ".hword 0x0002, 0x13a0, 0x0001, 0x03a0\n"
-        ".hword 0x0000, 0xe58d, 0x0060, 0xe594\n"
-        ".hword 0x206c, 0xe594, 0x7599, 0xebf7\n"
-        ".hword 0x1068, 0xe284, 0x0006, 0xe891\n"
-        ".hword 0x0001, 0xe282, 0x2004, 0xe1a0\n"
-        ".hword 0x0001, 0xe150, 0x006c, 0xe584\n"
-        ".hword 0x706c, 0x2582, 0x0070, 0xe594\n"
-        ".hword 0x1068, 0xe594, 0x0001, 0xe280\n"
-        ".hword 0x0001, 0xe150, 0x0070, 0xe584\n"
-        ".hword 0x7070, 0x2584, 0xff76, 0xeaff\n"
-        ".hword 0x1ad8, 0x0000\n"
-    );
+//
+// Virtual thunk: the caller passes the sub-object at +0x44 of the script-VM
+// object and the entry code subtracts 0x44 to recover the base pointer.
+namespace func_0037ea70 {
+
+constexpr u32 kThisAdjust = 0x44;
+
+// Fields below the two strided arrays.  Names are descriptive; only the
+// offsets and access widths come from the ARM evidence.
+struct VmHeader {
+    u8 pad_00[0x0D];
+    u8 gate_0D;                       // 0x00D: must be non-zero
+    u8 pad_0E[0x53 - 0x0E];
+    u8 active_53;                     // 0x053: set once the slot pass ran
+    u8 ready_54;                      // 0x054: set to 1; non-zero -> return
+    u8 pad_55;
+    u8 running_56;                    // 0x056: set to 1
+    u8 pad_57;
+    u32 accumulator_58;               // 0x058: advanced by the time table
+    u8 pad_5C[0x60 - 0x5C];
+    u32 controller_60;                // 0x060: script/Voice controller
+    u8 pad_64[0x68 - 0x64];
+    u32 entry_count_68;               // 0x068: dispatch wrap count
+    u32 entry_index_6C;               // 0x06C: consumer argument / wrap
+    u32 dispatch_index_70;            // 0x070: entry selected by dispatch
+    u8 mode_74;                       // 0x074: mode selector (0/1/other)
+    u8 pad_75[0x78 - 0x75];
+    u32 mode_value_78;                // 0x078: s32, cleared after a pass
+    u8 pad_7C[0x80 - 0x7C];
+    u32 mode_scale_80;                // 0x080: u32 factor for mode 1
+    u8 pad_84[0x94 - 0x84];
+    u32 time_factor_94;               // 0x094
+    u8 pad_98[0xD0 - 0x98];
+    u32 slot_count_D0;                // 0x0D0: slot pass bound
+    u8 pad_D4[0xD8 - 0xD4];
 };
+static_assert(offsetof(VmHeader, gate_0D) == 0x0D);
+static_assert(offsetof(VmHeader, active_53) == 0x53);
+static_assert(offsetof(VmHeader, ready_54) == 0x54);
+static_assert(offsetof(VmHeader, running_56) == 0x56);
+static_assert(offsetof(VmHeader, accumulator_58) == 0x58);
+static_assert(offsetof(VmHeader, controller_60) == 0x60);
+static_assert(offsetof(VmHeader, entry_count_68) == 0x68);
+static_assert(offsetof(VmHeader, entry_index_6C) == 0x6C);
+static_assert(offsetof(VmHeader, dispatch_index_70) == 0x70);
+static_assert(offsetof(VmHeader, mode_74) == 0x74);
+static_assert(offsetof(VmHeader, mode_value_78) == 0x78);
+static_assert(offsetof(VmHeader, mode_scale_80) == 0x80);
+static_assert(offsetof(VmHeader, time_factor_94) == 0x94);
+static_assert(offsetof(VmHeader, slot_count_D0) == 0xD0);
+static_assert(sizeof(VmHeader) == 0xD8);
+
+// One 0x340-byte slot.  Only +0x00 and +0x30 are read here; the +0x30 field
+// is the same word as the direct +0x108 access in the original.
+struct VmSlot {
+    u32 value_00;                     // base + 0xD8 + slot * 0x340
+    u8 pad_04[0x30 - 0x04];
+    u32 link_30;                      // base + 0x108 + slot * 0x340
+    u8 pad_34[0x340 - 0x34];
+};
+static_assert(offsetof(VmSlot, link_30) == 0x30);
+static_assert(sizeof(VmSlot) == 0x340);
+
+// One 0x18-byte dispatch entry; the state byte is at +0x11.
+struct VmEntry {
+    u8 pad_00[0x11];
+    u8 state_11;
+    u8 pad_12[0x06];
+};
+static_assert(offsetof(VmEntry, state_11) == 0x11);
+static_assert(sizeof(VmEntry) == 0x18);
+
+// One 8-byte time-table entry; only the first word is used.
+struct VmTimeEntry {
+    u32 value_00;
+    u32 pad_04;
+};
+static_assert(sizeof(VmTimeEntry) == 0x8);
+
+// The second object reached through VmHeader::controller_60.
+struct VmController {
+    u8 pad_00[0x4D];
+    u8 flag_4D;                       // 0x04D: non-zero -> return controller
+    u8 pad_4E[0x80 - 0x4E];
+    u32 value_80;                     // 0x080: zero -> return 0
+};
+static_assert(offsetof(VmController, flag_4D) == 0x4D);
+static_assert(offsetof(VmController, value_80) == 0x80);
+static_assert(sizeof(VmController) == 0x84);
+
+constexpr u32 kSlotBase = 0xD8;
+constexpr u32 kSlotStride = 0x340;
+constexpr u32 kEntryBase = 0x10C;
+constexpr u32 kEntryStride = 0x18;
+constexpr u32 kTimeTableBase = 0x1B5C;
+constexpr u32 kTimeTableStride = 0x8;
+constexpr u32 kSecondaryGate = 0x1AD8;
+// The original frame only reserves eight words for the gathered values.
+constexpr u32 kValueWords = 8;
+constexpr u32 kDivideBy = 1000;
+constexpr u32 kSaturated = 0xFFFFFFFFu;
+
+inline VmSlot* slot_at(u8* base, u32 index) {
+    return reinterpret_cast<VmSlot*>(base + kSlotBase + index * kSlotStride);
+}
+
+inline VmEntry* entry_at(u8* base, u32 index) {
+    return reinterpret_cast<VmEntry*>(base + kEntryBase + index * kEntryStride);
+}
+
+inline VmTimeEntry* time_entry_at(u8* base, u32 index) {
+    return reinterpret_cast<VmTimeEntry*>(base + kTimeTableBase +
+                                          index * kTimeTableStride);
+}
+
+}  // namespace func_0037ea70
+
+// 0x003E73FC: gate helper.  Dereferences the word at the +0x108 link and
+// returns 1 when that word is non-null and its byte at +0x04 is zero.
+extern "C" u32 func_003e73fc(u32 link_108);
+// 0x002BD448: clears the 0x18-byte entry (six words plus byte +0x11).
+extern "C" void engine_func_002bd448(void* entry);
+// 0x00235DBC: writes the signed selector byte at +0x17 and sets bit 1 of the
+// u16 at +0x20.
+extern "C" void func_00235dbc(u32 object, s32 value);
+// 0x0015C310: consumes the gathered slot values (five arguments; the last is
+// passed on the stack).
+extern "C" void engine_func_0015c310(u32 owner, u32* values, u32 index,
+                                     u32 mode_value, u32 flag);
+// 0x002AA504: unsigned 64-bit divide helper; the u64 return is the quotient
+// (r0:r1) and the remainder is returned in r2:r3.
+extern "C" u64 script_vm_func_002aa504(u64 numerator, u64 divisor);
+
+extern "C" u32 script_vm_func_0037ea70(u32 this_pointer) {
+    using namespace func_0037ea70;
+
+    u8* const base = reinterpret_cast<u8*>(this_pointer - kThisAdjust);
+    VmHeader* const header = reinterpret_cast<VmHeader*>(base);
+
+    // 0x0037EA84..0x0037EAB8: gate chain.  All three checks must pass and the
+    // 0x003E73FC helper must accept the +0x108 link word.  Every failed gate
+    // returns the residue the original leaves in r0 (zero).
+    if (header->gate_0D == 0) {
+        return 0;
+    }
+    if (base[kSecondaryGate] == 0) {
+        return 0;
+    }
+    const u32 link = slot_at(base, 0)->link_30;
+    if (link == 0) {
+        return 0;
+    }
+    if (func_003e73fc(link) == 0) {
+        return 0;
+    }
+
+    u32 values[kValueWords];
+
+    for (;;) {
+        // 0x0037EABC: dispatch on the entry state byte selected by +0x70.
+        VmEntry* const entry = entry_at(base, header->dispatch_index_70);
+
+        if (entry->state_11 == 3) {
+            // 0x0037EB98..0x0037ECDC: reset the entry, advance the time
+            // accumulator, gather one value per slot, hand them to the
+            // consumer, then advance both indices (wrapping at +0x68).
+            engine_func_002bd448(entry);
+
+            // The index is re-read after the reset call.
+            const u32 table_index = header->dispatch_index_70;
+            header->accumulator_58 += time_entry_at(base, table_index)->value_00;
+
+            const u32 slot_count = header->slot_count_D0;
+            const u32 factor = header->time_factor_94;
+            const u32 entry_index = header->entry_index_6C;
+            for (u32 slot = 0; slot < slot_count; ++slot) {
+                values[slot] =
+                    factor * entry_index + slot_at(base, slot)->value_00;
+            }
+
+            // 0x0037EC04..0x0037EC7C: mode 0 uses the stored value; mode 1
+            // multiplies (s64)mode_value_78 by (u32)mode_scale_80, divides the
+            // 64-bit product by 1000 as unsigned and saturates the quotient at
+            // 0xFFFFFFFF; any other mode contributes zero.
+            const u8 mode = header->mode_74;
+            u32 mode_value;
+            if (mode == 0) {
+                mode_value = header->mode_value_78;
+            } else if (mode == 1) {
+                const u64 product = static_cast<u64>(
+                    static_cast<s64>(static_cast<s32>(header->mode_value_78)) *
+                    static_cast<s64>(header->mode_scale_80));
+                const u64 quotient =
+                    script_vm_func_002aa504(product, kDivideBy);
+                if ((quotient >> 32) != 0) {
+                    mode_value = kSaturated;
+                } else {
+                    // The original divides a second time for the in-range
+                    // result; the call is observable and kept.
+                    mode_value = static_cast<u32>(
+                        script_vm_func_002aa504(product, kDivideBy));
+                }
+            } else {
+                mode_value = 0;
+            }
+            header->mode_value_78 = 0;
+
+            // 0x0037EC80..0x0037ECA4: stack flag is 2 while +0x0D is non-zero
+            // and 1 otherwise; +0x6C/+0x60 are re-read for the call.
+            const u32 call_flag = (header->gate_0D != 0) ? 2u : 1u;
+            engine_func_0015c310(header->controller_60, values,
+                                 header->entry_index_6C, mode_value, call_flag);
+
+            // 0x0037ECA8..0x0037ECD8: both indices advance and wrap at +0x68
+            // using an unsigned >= comparison; +0x68 is re-read after the
+            // consumer call.
+            const u32 entry_count = header->entry_count_68;
+            const u32 next_entry_index = header->entry_index_6C + 1;
+            header->entry_index_6C = next_entry_index;
+            if (next_entry_index >= entry_count) {
+                header->entry_index_6C = 0;
+            }
+            const u32 next_dispatch_index = header->dispatch_index_70 + 1;
+            header->dispatch_index_70 = next_dispatch_index;
+            if (next_dispatch_index >= entry_count) {
+                header->dispatch_index_70 = 0;
+            }
+            continue;
+        }
+
+        // 0x0037EAD4..0x0037EB30: normal dispatch.
+        if (header->ready_54 != 0) {
+            return header->ready_54;
+        }
+        const u32 controller_address = header->controller_60;
+        const VmController* const controller =
+            reinterpret_cast<const VmController*>(controller_address);
+        if (controller->flag_4D != 0) {
+            return controller_address;
+        }
+        if (controller->value_80 == 0) {
+            return 0;
+        }
+
+        const u32 entry_count = header->entry_count_68;
+        for (u32 index = 0; index < entry_count; ++index) {
+            const u8 state = entry_at(base, index)->state_11;
+            if (state == 2 || state == 1) {
+                return index;
+            }
+        }
+
+        // 0x0037EB34..0x0037EB8C: enter the running state and update every
+        // non-null slot link.  The bound at +0xD0 is re-read after each call
+        // and the last reading is the residue the original returns.
+        header->running_56 = 1;
+        header->ready_54 = 1;
+        if (header->active_53 == 1) {
+            return 1;
+        }
+        u32 remaining = header->slot_count_D0;
+        u32 slot = 0;
+        while (remaining > slot) {
+            const u32 slot_link = slot_at(base, slot)->link_30;
+            if (slot_link != 0) {
+                func_00235dbc(slot_link, 1);
+            }
+            remaining = header->slot_count_D0;
+            ++slot;
+        }
+        header->active_53 = 1;
+        return remaining;
+    }
+}
 
 // DECOMP_FUNC(0x0011bf0c, 632)
 struct ExpHeapBlockHeader {

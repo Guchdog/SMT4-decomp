@@ -8959,7 +8959,7 @@ address,size,status,category,name,src_file
 0x0037e940,24,matching,unknown,func_0037e940,src/engine/leaf_batch27_c.cpp
 0x0037e958,116,matching,engine,engine_func_0037e958,src/engine/leaf_batch33_a.cpp
 0x0037e9cc,164,matching,unknown,func_0037e9cc,src/engine/leaf_batch33_b.cpp
-0x0037ea70,628,matching,script_vm,script_vm_func_0037ea70,src/engine/leaf_batch45_a.cpp
+0x0037ea70,628,non_matching,script_vm,script_vm_func_0037ea70,src/engine/leaf_batch45_a.cpp
 0x0037ece4,520,matching,unknown,func_0037ece4,src/engine/leaf_batch36_b.cpp
 0x0037eeec,120,matching,unknown,func_0037eeec,src/engine/leaf_batch33_a.cpp
 0x0037ef64,128,matching,unknown,func_0037ef64,src/engine/leaf_batch33_a.cpp
