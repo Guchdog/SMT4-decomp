@@ -3858,61 +3858,106 @@ extern "C" __attribute__((naked)) void func_002a6e10() {
     );
 }
 
+// Configuration table at 0x00439a70.  The selector word at object+0x08 is
+// compared against these values before the generic game-over transition.
+struct BtlGameOverSelectors {
+    u32 selector_00;
+    u32 selector_04;
+    u32 script_slot_value_08;
+    u32 selector_0c;
+    u32 script_slot_value_10;
+    u32 selector_14;
+    u32 message_id_18;
+    u32 message_arg_1c;
+    u32 selector_limit_20;
+};
+
+// Step state used by the 0x003358f4/0x003359f4/0x00335b84 game-over state
+// machine.  Only the fields touched by this function are declared.
+struct BtlGameOverStepWork {
+    u32 state_00;      // written 3 before the loads and 4 before the tail call
+    u32 flags_04;      // bit 0 selects the gameover/level-event asset pair
+    u32 selector_08;   // compared against BtlGameOverSelectors
+    u32 file_bf_0c;    // first load destination
+    u32 field_10;
+    u32 file_mbm_14;   // second load destination
+};
+
+extern "C" const BtlGameOverSelectors g_BtlGameOverSelectors;  // 0x00439a70
+extern "C" void* g_BtlGameOverHookTarget;                      // 0x00439ca8
+
+extern "C" u32 battle_func_00282a90(u32, u32, u32, u32, u32, u32, u32, u32);
+extern "C" void battle_func_00267f68(void* target);
+// The fifth argument is the bit pattern of a float (0.0f) read by the callee
+// from the first stack slot, so every argument after the fourth is passed on
+// the stack.
+extern "C" void battle_func_0023f3d8(u32, u32, u32, u32, u32, s32, s32, s32, s32);
+extern "C" void script_vm_func_0029c660(u32 slot, u32 value, u32 byte_value);
+extern "C" u32 script_vm_func_00297704(const char* name, void* output, u32 flags);
+extern "C" u8* ui_func_002c0b94(void);
+extern "C" u32 battle_func_0023f2f0(void* work);
+
 // DECOMP_FUNC(0x003359f4, 400)
-extern "C" __attribute__((naked)) void script_vm_func_003359f4() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4070, 0xe92d, 0x4000, 0xe1a0\n"
-        ".hword 0x5164, 0xe59f, 0x0008, 0xe590\n"
-        ".hword 0xd018, 0xe24d, 0x6000, 0xe3a0\n"
-        ".hword 0x1000, 0xe595, 0x0001, 0xe150\n"
-        ".hword 0x000c, 0x1a00, 0x1008, 0xe3a0\n"
-        ".hword 0x3000, 0xe3a0, 0xc008, 0xe28d\n"
-        ".hword 0x0042, 0xe88d, 0x000b, 0xe3a0\n"
-        ".hword 0x0041, 0xe88c, 0x2003, 0xe1a0\n"
-        ".hword 0x1003, 0xe1a0, 0x0003, 0xe1a0\n"
-        ".hword 0x3413, 0xebfd, 0x0124, 0xe59f\n"
-        ".hword 0x0000, 0xe590, 0xc946, 0xebfc\n"
-        ".hword 0x0008, 0xe594, 0x1014, 0xe595\n"
-        ".hword 0x0001, 0xe150, 0x000c, 0x1a00\n"
-        ".hword 0x001c, 0xe595, 0x1000, 0xe3e0\n"
-        ".hword 0x2002, 0xe3a0, 0x3004, 0xe28d\n"
-        ".hword 0x1010, 0xe58d, 0x200c, 0xe58d\n"
-        ".hword 0x0041, 0xe883, 0x1000, 0xe3a0\n"
-        ".hword 0x6000, 0xe58d, 0x2018, 0xe595\n"
-        ".hword 0x3010, 0xe3a0, 0x0001, 0xe1a0\n"
-        ".hword 0x2651, 0xebfc, 0x0008, 0xe594\n"
-        ".hword 0x1004, 0xe595, 0x0001, 0xe150\n"
-        ".hword 0x0003, 0x1a00, 0x1008, 0xe595\n"
-        ".hword 0x20ff, 0xe3a0, 0x0000, 0xe3a0\n"
-        ".hword 0x9aeb, 0xebfd, 0x0008, 0xe594\n"
-        ".hword 0x100c, 0xe595, 0x0001, 0xe150\n"
-        ".hword 0x0003, 0x1a00, 0x1010, 0xe595\n"
-        ".hword 0x20ff, 0xe3a0, 0x0001, 0xe3a0\n"
-        ".hword 0x9ae3, 0xebfd, 0x0020, 0xe595\n"
-        ".hword 0x1008, 0xe594, 0x0000, 0xe151\n"
-        ".hword 0x0000, 0x93a0, 0x001e, 0x9a00\n"
-        ".hword 0x0003, 0xe3a0, 0x0000, 0xe584\n"
-        ".hword 0x0004, 0xe594, 0x2000, 0xe3a0\n"
-        ".hword 0x100c, 0xe284, 0x0001, 0xe310\n"
-        ".hword 0x006c, 0x059f, 0x006c, 0x159f\n"
-        ".hword 0x86fe, 0xebfd, 0x0004, 0xe594\n"
-        ".hword 0x2000, 0xe3a0, 0x1014, 0xe284\n"
-        ".hword 0x0001, 0xe310, 0x0058, 0x059f\n"
-        ".hword 0x0058, 0x159f, 0x86f7, 0xebfd\n"
-        ".hword 0xf000, 0xe320, 0xf000, 0xe320\n"
-        ".hword 0x2c18, 0xebfe, 0x1048, 0xe59f\n"
-        ".hword 0x0001, 0xe040, 0x1000, 0xe5d0\n"
-        ".hword 0x00ff, 0xe351, 0x1001, 0x3281\n"
-        ".hword 0x1000, 0x35c0, 0x0004, 0xe3a0\n"
-        ".hword 0x0000, 0xe584, 0xd018, 0xe28d\n"
-        ".hword 0x0004, 0xe1a0, 0x4070, 0xe8bd\n"
-        ".hword 0x25e3, 0xeafc, 0xd018, 0xe28d\n"
-        ".hword 0x8070, 0xe8bd, 0x9a70, 0x0043\n"
-        ".hword 0x9ca8, 0x0043, 0x0a18, 0x0040\n"
-        ".hword 0x0a34, 0x0040, 0x09d8, 0x0040\n"
-        ".hword 0x09f8, 0x0040, 0xb4d7, 0xfffd\n"
-    );
+extern "C" u32 script_vm_func_003359f4(BtlGameOverStepWork* work) {
+    // Every selector comparison reloads work+0x08: each earlier branch may call
+    // a helper that rewrites it.
+    if (work->selector_08 == g_BtlGameOverSelectors.selector_00) {
+        battle_func_00282a90(0, 0, 0, 0, 8, 0, 11, 0);
+        battle_func_00267f68(g_BtlGameOverHookTarget);
+    }
+
+    if (work->selector_08 == g_BtlGameOverSelectors.selector_14) {
+        battle_func_0023f3d8(
+            0, 0, g_BtlGameOverSelectors.message_id_18, 0x10,
+            0 /* 0.0f bit pattern */,
+            static_cast<s32>(g_BtlGameOverSelectors.message_arg_1c),
+            0, 2, -1);
+    }
+
+    if (work->selector_08 == g_BtlGameOverSelectors.selector_04) {
+        script_vm_func_0029c660(
+            0, g_BtlGameOverSelectors.script_slot_value_08, 0xff);
+    }
+
+    if (work->selector_08 == g_BtlGameOverSelectors.selector_0c) {
+        script_vm_func_0029c660(
+            1, g_BtlGameOverSelectors.script_slot_value_10, 0xff);
+    }
+
+    // Selectors at or below the table limit leave the state machine alone.
+    if (work->selector_08 <= g_BtlGameOverSelectors.selector_limit_20) {
+        return 0;
+    }
+
+    work->state_00 = 3;
+
+    // flags_04 is read again for the second load: the first helper may change
+    // it.
+    if ((work->flags_04 & 1u) == 0) {
+        script_vm_func_00297704(
+            "battle/gameover/gameover.bf", &work->file_bf_0c, 0);
+    } else {
+        script_vm_func_00297704(
+            "battle/gameover/level_event.bf", &work->file_bf_0c, 0);
+    }
+    if ((work->flags_04 & 1u) == 0) {
+        script_vm_func_00297704(
+            "battle/gameover/gameover.mbm", &work->file_mbm_14, 0);
+    } else {
+        script_vm_func_00297704(
+            "battle/gameover/level_event.mbm", &work->file_mbm_14, 0);
+    }
+
+    // Saturating byte counter at +0x24B29 inside the work block returned by
+    // 0x002c0b94.
+    u8* const counter = ui_func_002c0b94() + 0x24B29u;
+    const u8 value = *counter;
+    if (value < 0xffu) {
+        *counter = static_cast<u8>(value + 1u);
+    }
+
+    work->state_00 = 4;
+    return battle_func_0023f2f0(work);
 }
 
 // DECOMP_FUNC(0x0034fc14, 400)
