@@ -6891,96 +6891,318 @@ extern "C" void ui_func_001a1954(u8* ctx) {
 }
 
 // DECOMP_FUNC(0x00137730, 680)
-extern "C" __attribute__((naked)) void battle_func_00137730() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x5fff, 0xe92d, 0x4000, 0xe1a0\n"
-        ".hword 0x704c, 0xe28d, 0x0801, 0xe897\n"
-        ".hword 0x1038, 0xe59d, 0x5048, 0xe59d\n"
-        ".hword 0x6044, 0xe59d, 0xa040, 0xe59d\n"
-        ".hword 0x0c05, 0xe350, 0xe000, 0x03a0\n"
-        ".hword 0x0001, 0x03a0, 0x0018, 0x0a00\n"
-        ".hword 0x0c05, 0xe240, 0x0001, 0xe250\n"
-        ".hword 0xe001, 0x03a0, 0x0002, 0x03a0\n"
-        ".hword 0x0013, 0x0a00, 0x0001, 0xe350\n"
-        ".hword 0x000f, 0x1a00, 0xe002, 0xe3a0\n"
-        ".hword 0x000e, 0xe1a0, 0x700e, 0xe1a0\n"
-        ".hword 0xc240, 0xe59f, 0x000c, 0xe151\n"
-        ".hword 0x800c, 0xe041, 0x1003, 0x03a0\n"
-        ".hword 0x0012, 0x0a00, 0x000a, 0xaa00\n"
-        ".hword 0x1902, 0xe241, 0x1051, 0xe251\n"
-        ".hword 0x1001, 0x03a0, 0x000d, 0x0a00\n"
-        ".hword 0x0005, 0xe351, 0x1004, 0x03a0\n"
-        ".hword 0x000a, 0x0a00, 0xd010, 0xe28d\n"
-        ".hword 0x9ff0, 0xe8bd, 0x7001, 0xe3a0\n"
-        ".hword 0xffee, 0xeaff, 0x0001, 0xe358\n"
-        ".hword 0x1000, 0x03a0, 0x0003, 0x0a00\n"
-        ".hword 0x1c0d, 0xe248, 0x100b, 0xe251\n"
-        ".hword 0x1002, 0x03a0, 0xfff4, 0x1aff\n"
-        ".hword 0x000c, 0xe155, 0x8902, 0xe245\n"
-        ".hword 0x8057, 0xe248, 0xc002, 0x03a0\n"
-        ".hword 0x8003, 0x03a0, 0x0014, 0x0a00\n"
-        ".hword 0x000a, 0xaa00, 0xc902, 0xe245\n"
-        ".hword 0xc051, 0xe25c, 0xc003, 0x03a0\n"
-        ".hword 0x8001, 0x03a0, 0x000e, 0x0a00\n"
-        ".hword 0x0005, 0xe35c, 0xc002, 0x03a0\n"
-        ".hword 0x8004, 0x03a0, 0x000a, 0x0a00\n"
-        ".hword 0xd010, 0xe28d, 0x9ff0, 0xe8bd\n"
-        ".hword 0x0001, 0xe358, 0xc004, 0x03a0\n"
-        ".hword 0x8000, 0x03a0, 0x0004, 0x0a00\n"
-        ".hword 0xcc0d, 0xe248, 0xc00b, 0xe25c\n"
-        ".hword 0xc002, 0x03a0, 0x800c, 0x01a0\n"
-        ".hword 0xffd9, 0x1aff, 0x0000, 0xe352\n"
-        ".hword 0x0000, 0x1353, 0xffd6, 0x0aff\n"
-        ".hword 0x0000, 0xe35a, 0x0000, 0x1356\n"
-        ".hword 0xffd3, 0x0aff, 0x9038, 0xe3a0\n"
-        ".hword 0x9188, 0xe009, 0x8007, 0xe201\n"
-        ".hword 0x1020, 0xe594, 0x0000, 0xe35b\n"
-        ".hword 0xb018, 0xe594, 0x5003, 0xe3a0\n"
-        ".hword 0x1181, 0xe061, 0x009a, 0xe00a\n"
-        ".hword 0x1101, 0xe08b, 0x0796, 0xe00b\n"
-        ".hword 0x5000, 0xe5c1, 0x5004, 0xe59d\n"
-        ".hword 0x5004, 0xe581, 0x503c, 0xe59d\n"
-        ".hword 0x5008, 0xe581, 0x7014, 0xe591\n"
-        ".hword 0x7007, 0xe3c7, 0x7008, 0xe187\n"
-        ".hword 0x7038, 0xe3c7, 0x7009, 0xe187\n"
-        ".hword 0x7014, 0xe581, 0x20bc, 0xe1c1\n"
-        ".hword 0x30be, 0xe1c1, 0xa1b0, 0xe1c1\n"
-        ".hword 0x0040, 0x03c7, 0xb1b2, 0xe1c1\n"
-        ".hword 0x001d, 0x0a00, 0x8010, 0xe591\n"
-        ".hword 0x900c, 0xe591, 0x2078, 0xe6ff\n"
-        ".hword 0x3079, 0xe6ff, 0x0003, 0xe152\n"
-        ".hword 0xa828, 0x21a0, 0x0829, 0x215a\n"
-        ".hword 0x0014, 0x2a00, 0x0002, 0xe350\n"
-        ".hword 0x0006, 0x0a00, 0x0000, 0xe3e0\n"
-        ".hword 0x2002, 0xe043, 0x0828, 0xe080\n"
-        ".hword 0x0092, 0xe000, 0x0c90, 0xe000\n"
-        ".hword 0x0000, 0xe045, 0x000a, 0xea00\n"
-        ".hword 0x0003, 0xe35c, 0x0002, 0xe043\n"
-        ".hword 0x8010, 0x03a0, 0x8008, 0x13a0\n"
-        ".hword 0x0008, 0xe110, 0x0008, 0x1040\n"
-        ".hword 0x2001, 0xe246, 0x0290, 0xe000\n"
-        ".hword 0x0c90, 0xe000, 0x0fa0, 0xe080\n"
-        ".hword 0x00c0, 0xe045, 0x0008, 0xe581\n"
-        ".hword 0x0040, 0xe387, 0x2d06, 0xe3a0\n"
-        ".hword 0x0d06, 0xe3c0, 0x238e, 0xe002\n"
-        ".hword 0x0002, 0xe180, 0x2054, 0xe59d\n"
-        ".hword 0x0014, 0xe581, 0x0020, 0xe352\n"
-        ".hword 0x0c02, 0x0380, 0x0c02, 0x13c0\n"
-        ".hword 0x0b03, 0xe3c0, 0x0014, 0xe581\n"
-        ".hword 0x0d7c, 0xeb00, 0x1020, 0xe594\n"
-        ".hword 0x0044, 0xe59f, 0x1001, 0xe281\n"
-        ".hword 0x1020, 0xe584, 0x10a0, 0xe590\n"
-        ".hword 0x0004, 0xe151, 0x0008, 0x1a00\n"
-        ".hword 0x1012, 0xe5d0, 0x0000, 0xe351\n"
-        ".hword 0x0005, 0x0a00, 0x1011, 0xe5d0\n"
-        ".hword 0x0000, 0xe351, 0x0002, 0x1a00\n"
-        ".hword 0x1001, 0xe3a0, 0x1011, 0xe5c0\n"
-        ".hword 0x0b0c, 0xeb06, 0xd010, 0xe28d\n"
-        ".hword 0x5ff0, 0xe8bd, 0x0d6d, 0xea00\n"
-        ".hword 0x8057, 0x0000, 0x6290, 0x004c\n"
-    );
+//
+// Appends one 28-byte replay entry of kind 3 to the active render node's entry
+// array and, after acquiring the engine lock at 0x004E6C5C, bumps the entry
+// count.  When this node is the active owner, the pending-list flush may be
+// requested once.  The lock is released as a tail branch.
+//
+// Recovered contract (ARM 0x00137730..0x001379CC plus the two literal words
+// 0x00008057 at 0x001379D0 and 0x004C6290 at 0x001379D4):
+//
+//   a0   node (r4)                     node->entries_18 + node->count_20 * 28
+//   a1   entry+0x04                    opaque word
+//   a2   entry+0x0C (low 16 bits)
+//   a3   entry+0x0E (low 16 bits)
+//   a4   primary command id            sets entry flags bits 0..2:
+//                                      0x8058 -> 0, 0x8051 -> 1, 0x8D62 -> 2,
+//                                      0x8057 -> 3, 0x8056 -> 4; any other
+//                                      value returns without side effects.
+//   a5   entry+0x08                    adjusted by the blend paths
+//   a6   entry+0x10 = (a6 * multiplier_lo) & 0xFFFF
+//   a7   entry+0x12 = (a7 * multiplier_hi) & 0xFFFF
+//   a8   secondary command id          sets entry flags bits 3..5 with the same
+//                                      five mappings and selects the blend
+//                                      scale 4/3/2/2/2 for ids
+//                                      0x8058/0x8051/0x8D62/0x8057/0x8056.
+//   a9   0x500/0x501/0x502             multiplier_lo = 1 / 2 / 2,
+//                                      multiplier_hi = 1 / 1 / 2, and entry
+//                                      flags bits 7..8 = 0 / 1 / 2.
+//   a10  blend enable                  entry flag bit 6; non-zero also enables
+//                                      the rect/extent adjustment of entry+8.
+//   a11  0x20                          sets entry flag bit 9.
+//
+// Entry flag bits 0..11 are recomputed (bits 10..11 cleared); bits 12..31 keep
+// their previous contents.  The zero checks on a2/a3/a6/a7 happen before any
+// memory access.  r0 is dead for callers but is reproduced exactly: it holds
+// a9-0x501 on the first selector failure, the lo multiplier on the remaining
+// early returns, and the lock-release helper's result on the normal path.
+namespace func_00137730 {
+
+constexpr u32 kRenderStateAddress = 0x004C6290;
+constexpr u32 kEntryStride = 28;
+constexpr u8  kEntryKind = 3;
+
+// Command ids accepted by both selectors (literal 0x00008057 at 0x001379D0).
+constexpr u32 kCommandBase = 0x8057;
+constexpr u32 kCommandFormat0 = 0x8058;
+constexpr u32 kCommandFormat1 = 0x8051;
+constexpr u32 kCommandFormat2 = 0x8D62;
+constexpr u32 kCommandFormat3 = 0x8057;
+constexpr u32 kCommandFormat4 = 0x8056;
+
+// Entry flag word layout (consumer 0x002BA5F8 case 3 decodes it).
+constexpr u32 kFlagFieldMask = 0x7;
+constexpr u32 kFlagFieldBShift = 3;
+constexpr u32 kBlendEnableBit = 0x40;
+constexpr u32 kModeShift = 7;
+constexpr u32 kModeMask = 0x180;
+constexpr u32 kExtraBit = 0x200;
+constexpr u32 kExtraValue = 0x20;
+constexpr u32 kClearedBits = 0xC00;
+
+// 28-byte replay entry written by this routine.  Only kind_00, field_04,
+// field_08, the two 16-bit pairs, flags_14 (and none of untouched_18) are
+// touched.
+struct ReplayEntry {
+    u8  kind_00;
+    u8  pad_01[3];
+    u32 field_04;
+    u32 field_08;
+    u16 pair0_lo_0C;
+    u16 pair0_hi_0E;
+    u16 pair1_lo_10;
+    u16 pair1_hi_12;
+    u32 flags_14;
+    u32 untouched_18;
 };
+static_assert(offsetof(ReplayEntry, field_04) == 0x04);
+static_assert(offsetof(ReplayEntry, field_08) == 0x08);
+static_assert(offsetof(ReplayEntry, pair0_lo_0C) == 0x0C);
+static_assert(offsetof(ReplayEntry, pair0_hi_0E) == 0x0E);
+static_assert(offsetof(ReplayEntry, pair1_lo_10) == 0x10);
+static_assert(offsetof(ReplayEntry, pair1_hi_12) == 0x12);
+static_assert(offsetof(ReplayEntry, flags_14) == 0x14);
+static_assert(sizeof(ReplayEntry) == kEntryStride);
+
+struct RenderNode {
+    u8 pad_00[0x18];
+    ReplayEntry* entries_18;
+    u8 pad_1C[4];
+    u32 count_20;
+};
+static_assert(offsetof(RenderNode, entries_18) == 0x18);
+static_assert(offsetof(RenderNode, count_20) == 0x20);
+
+// Only the bytes this routine observes at 0x004C6290 are modelled.
+struct RenderState {
+    u8 pad_00[0x11];
+    u8 flush_11;
+    u8 gate_12;
+    u8 pad_13[0xA0 - 0x13];
+    RenderNode* owner_A0;
+};
+static_assert(offsetof(RenderState, flush_11) == 0x11);
+static_assert(offsetof(RenderState, gate_12) == 0x12);
+static_assert(offsetof(RenderState, owner_A0) == 0xA0);
+
+// 0x00137788..0x001377B8 mirrors the signed range tests of the original.
+inline bool select_primary(u32 command, u32& field) {
+    if (command == kCommandFormat3) {
+        field = 3;
+        return true;
+    }
+    if (static_cast<s32>(command) > static_cast<s32>(kCommandBase)) {
+        if (command - kCommandBase == 1) {          // 0x8058
+            field = 0;
+            return true;
+        }
+        if (command - kCommandBase == 0xD0B) {      // 0x8D62
+            field = 2;
+            return true;
+        }
+        return false;
+    }
+    if (command - kCommandFormat1 == 0) {           // 0x8051
+        field = 1;
+        return true;
+    }
+    if (command - kCommandFormat1 == 5) {           // 0x8056
+        field = 4;
+        return true;
+    }
+    return false;
+}
+
+// 0x001377E8..0x00137850: same five ids plus the blend scale in `ip`.
+inline bool select_secondary(u32 command, u32& field, u32& scale) {
+    if (command == kCommandFormat3) {
+        scale = 2;
+        field = 3;
+        return true;
+    }
+    if (static_cast<s32>(command) > static_cast<s32>(kCommandBase)) {
+        if (command - kCommandBase == 1) {          // 0x8058
+            scale = 4;
+            field = 0;
+            return true;
+        }
+        if (command - kCommandBase == 0xD0B) {      // 0x8D62
+            scale = 2;
+            field = 2;
+            return true;
+        }
+        return false;
+    }
+    if (command - kCommandFormat1 == 0) {           // 0x8051
+        scale = 3;
+        field = 1;
+        return true;
+    }
+    if (command - kCommandFormat1 == 5) {           // 0x8056
+        scale = 2;
+        field = 4;
+        return true;
+    }
+    return false;
+}
+
+}  // namespace func_00137730
+
+// 0x0013AF78: loads the 0x004E6C5C lock object and tail-branches to the
+// acquire routine 0x002C3AA8; the forwarded r0 is dead.
+extern "C" void battle_func_0013af78(u32 dead_r0);
+// 0x002BA5F8: pending-entry flush; returns in r0 and is forwarded to the
+// release thunk.  Its argument is dead as well.
+extern "C" u32 battle_func_002ba5f8(u32 dead_r0);
+// 0x0013AF88: loads the same lock object and tail-branches to the release
+// routine 0x002C3A24; r0 carries the flush result through.
+extern "C" u32 battle_func_0013af88(u32 dead_r0);
+
+extern "C" u32 battle_func_00137730(u32 node, u32 a1, u32 a2, u32 a3, u32 a4,
+                                    u32 a5, u32 a6, u32 a7, u32 a8, u32 a9,
+                                    u32 a10, u32 a11) {
+    using namespace func_00137730;
+
+    // 0x00137750..0x00137780: a9 selects the two extent multipliers and entry
+    // flag bits 7..8.  Any other value returns r0 = a9 - 0x501 without
+    // touching memory.
+    u32 multiplier_lo;
+    u32 multiplier_hi;
+    u32 mode;
+    if (a9 == 0x500u) {
+        multiplier_lo = 1;
+        multiplier_hi = 1;
+        mode = 0;
+    } else if (a9 - 0x501u == 0u) {
+        multiplier_lo = 2;
+        multiplier_hi = 1;
+        mode = 1;
+    } else if (a9 - 0x501u == 1u) {
+        multiplier_lo = 2;
+        multiplier_hi = 2;
+        mode = 2;
+    } else {
+        return a9 - 0x501u;
+    }
+
+    // 0x00137788..0x00137850: both command ids must be accepted.
+    u32 field_a;
+    if (!select_primary(a4, field_a)) {
+        return multiplier_lo;
+    }
+    u32 field_b;
+    u32 scale;
+    if (!select_secondary(a8, field_b, scale)) {
+        return multiplier_lo;
+    }
+
+    // 0x00137854..0x00137868: four mandatory non-zero arguments.
+    if (a2 == 0 || a3 == 0) {
+        return multiplier_lo;
+    }
+    if (a6 == 0 || a7 == 0) {
+        return multiplier_lo;
+    }
+
+    // 0x0013786C..0x001378D8: entry selection and fixed fields.
+    RenderNode* const render_node = reinterpret_cast<RenderNode*>(node);
+    ReplayEntry* const entry = reinterpret_cast<ReplayEntry*>(
+        reinterpret_cast<u8*>(render_node->entries_18) +
+        render_node->count_20 * kEntryStride);
+
+    entry->kind_00 = kEntryKind;
+    entry->field_04 = a1;
+    entry->field_08 = a5;
+
+    u32 flags = entry->flags_14;
+    flags = (flags & ~kFlagFieldMask) | (field_a & kFlagFieldMask);
+    flags = (flags & ~(kFlagFieldMask << kFlagFieldBShift)) |
+            ((field_b & kFlagFieldMask) << kFlagFieldBShift);
+    // 0x001378C0 stores this intermediate flags value before the rect fields.
+    entry->flags_14 = flags;
+
+    entry->pair0_lo_0C = static_cast<u16>(a2);
+    entry->pair0_hi_0E = static_cast<u16>(a3);
+    entry->pair1_lo_10 = static_cast<u16>(a6 * multiplier_lo);
+    entry->pair1_hi_12 = static_cast<u16>(a7 * multiplier_hi);
+
+    // 0x001378DC..0x00137950: only an enabled blend adjusts entry+0x08, and
+    // only when the stored extent does not already cover the stored rectangle
+    // on both 16-bit axes.
+    if (a10 != 0) {
+        const u32 extent_lo = entry->pair1_lo_10;
+        const u32 rect_lo = entry->pair0_lo_0C;
+        const u32 extent_hi = entry->pair1_hi_12;
+        const u32 rect_hi = entry->pair0_hi_0E;
+        if (extent_lo < rect_lo || extent_hi < rect_hi) {
+            const u32 delta = rect_lo - extent_lo;
+            if (multiplier_lo == 2) {
+                // 0x00137920: align the delta and halve the rounded product.
+                const u32 align = (scale == 3) ? 0x10u : 0x8u;
+                u32 reduced = delta;
+                if ((reduced & align) != 0) {
+                    reduced -= align;
+                }
+                u32 value = reduced * (a7 - 1);
+                value *= scale;
+                value += value >> 31;
+                entry->field_08 =
+                    a5 - static_cast<u32>(static_cast<s32>(value) >> 1);
+            } else {
+                // 0x00137904: single-step product, no rounding.
+                const u32 value = (delta * (extent_hi - 1)) * scale;
+                entry->field_08 = a5 - value;
+            }
+        }
+        flags |= kBlendEnableBit;
+    } else {
+        flags &= ~kBlendEnableBit;
+    }
+
+    // 0x00137954..0x0013797C: mode bits, optional bit 9, clear bits 10..11.
+    flags = (flags & ~kModeMask) | ((mode << kModeShift) & kModeMask);
+    entry->flags_14 = flags;
+    if (a11 == kExtraValue) {
+        flags |= kExtraBit;
+    } else {
+        flags &= ~kExtraBit;
+    }
+    flags &= ~kClearedBits;
+    entry->flags_14 = flags;
+
+    // 0x00137980..0x001379C0: acquire the lock, bump the count, and request a
+    // flush only for the active node when the gate is open and not yet taken.
+    battle_func_0013af78(flags);
+
+    render_node->count_20 = render_node->count_20 + 1;
+
+    RenderState* const state =
+        reinterpret_cast<RenderState*>(kRenderStateAddress);
+    u32 release_r0 = kRenderStateAddress;
+    if (state->owner_A0 == render_node) {
+        if (state->gate_12 != 0) {
+            if (state->flush_11 == 0) {
+                state->flush_11 = 1;
+                release_r0 = battle_func_002ba5f8(kRenderStateAddress);
+            }
+        }
+    }
+
+    // 0x001379C4..0x001379CC: restore the frame and tail-branch into the lock
+    // release, preserving its r0.
+    return battle_func_0013af88(release_r0);
+}
 
 // DECOMP_FUNC(0x0021e3c0, 680)
 extern "C" __attribute__((naked)) void engine_func_0021e3c0() {
