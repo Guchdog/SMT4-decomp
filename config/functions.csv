@@ -1312,7 +1312,7 @@ address,size,status,category,name,src_file
 0x00152790,16,matching,script_vm,script_vm_func_00152790,src/engine/leaf_batch21_a.cpp
 0x001527a0,856,matching,engine,engine_func_001527a0,src/engine/leaf_batch43_b.cpp
 0x00152af8,20,matching,script_vm,script_vm_func_00152af8,src/engine/leaf_batch38_a.cpp
-0x00152b0c,600,matching,engine,engine_func_00152b0c,src/engine/leaf_batch34_c.cpp
+0x00152b0c,600,non_matching,engine,engine_func_00152b0c,src/engine/leaf_batch34_c.cpp
 0x00152d64,24,matching,script_vm,script_vm_func_00152d64,src/engine/leaf_batch21_a.cpp
 0x00152d7c,48,matching,engine,engine_func_00152d7c,src/engine/leaf_batch22_a.cpp
 0x00152dac,56,matching,engine,engine_func_00152dac,src/engine/leaf_batch23_a.cpp

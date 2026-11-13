@@ -9820,177 +9820,289 @@ extern "C" __attribute__((naked)) void engine_func_00151a9c() {
 }
 
 // DECOMP_FUNC(0x00152b0c, 600)
-extern "C" __attribute__((naked)) void engine_func_00152b0c() {
-    asm volatile(
-        "push {r4, r5, r6, r7, r8, sb, sl, fp, ip, lr}\n"
-        "mov r4, r0\n"
-        "mov r6, #0\n"
-        "ldr r0, [r0, #0x14]\n"
-        ".word 0xe59f722c\n"
-        "cmp r0, #0\n"
-        "bne .L_00152cd4\n"
-        "ldr r1, [r4, #0xc]\n"
-        ".word 0xe59f0220\n"
-        "cmp r1, #1\n"
-        "beq .L_00152cd4\n"
-        "cmp r1, #2\n"
-        "ldreq r5, [r7]\n"
-        "moveq r0, #0\n"
-        "beq .L_00152b64\n"
-        "cmp r1, #4\n"
-        "ldreq r5, [r0, #4]\n"
-        "beq .L_00152b68\n"
-        "cmp r1, #5\n"
-        "ldreq r5, [r7, #4]\n"
-        "moveq r0, #1\n"
-        "bne .L_00152d3c\n"
-        ".L_00152b64:\n"
-        "bl battle_func_002a3068\n"
-        ".L_00152b68:\n"
-        "cmp r5, #0\n"
-        "beq .L_00152d3c\n"
-        "ldr r0, [r4, #0x24]\n"
-        "ldr r1, [r7]\n"
-        "mvn r5, #0\n"
-        "ldr r0, [r0]\n"
-        "ldr sb, [r0, #0xc]\n"
-        "cmp r1, sb\n"
-        "moveq r5, #0\n"
-        "beq .L_00152b9c\n"
-        "ldr r0, [r7, #4]\n"
-        "cmp r0, sb\n"
-        "moveq r5, #1\n"
-        ".L_00152b9c:\n"
-        "ldr r0, [r4, #0x28]\n"
-        "mov ip, #0\n"
-        "cmp r0, #0\n"
-        "ble .L_00152c70\n"
-        ".L_00152bac:\n"
-        "ldr r0, [r4, #0x24]\n"
-        "ldr r2, [r0, ip, lsl #2]\n"
-        "ldr r0, [r2, #0xc]\n"
-        "cmp r0, #0\n"
-        "beq .L_00152c60\n"
-        "add r1, r0, #0x18\n"
-        "add r8, r0, #0x14\n"
-        "ldm r1, {r1, r3}\n"
-        ".L_00152bcc:\n"
-        "cmp r1, r3\n"
-        "ldrne r0, [r1]\n"
-        "cmpne r0, r2\n"
-        "addne r1, r1, #4\n"
-        "bne .L_00152bcc\n"
-        "cmp r1, r3\n"
-        "mov r0, r1\n"
-        "beq .L_00152c44\n"
-        "add r1, r0, #4\n"
-        "sub r3, r3, r1\n"
-        "asr sl, r3, #2\n"
-        "cmp sl, #0\n"
-        "ble .L_00152c44\n"
-        "lsls sl, r3, #0x1d\n"
-        "bpl .L_00152c18\n"
-        "ldr sl, [r1]\n"
-        "add r1, r1, #4\n"
-        "cmp sl, r2\n"
-        "strne sl, [r0], #4\n"
-        ".L_00152c18:\n"
-        "asrs r3, r3, #3\n"
-        "beq .L_00152c44\n"
-        ".L_00152c20:\n"
-        "ldr sl, [r1]\n"
-        "cmp sl, r2\n"
-        "strne sl, [r0], #4\n"
-        "ldr sl, [r1, #4]!\n"
-        "add r1, r1, #4\n"
-        "cmp sl, r2\n"
-        "strne sl, [r0], #4\n"
-        "subs r3, r3, #1\n"
-        "bne .L_00152c20\n"
-        ".L_00152c44:\n"
-        "ldr r1, [r8, #8]\n"
-        "str r0, [r8, #8]\n"
-        "cmp r1, r0\n"
-        "movne r3, #1\n"
-        "moveq r3, #0\n"
-        "cmp r3, #0\n"
-        "strne r6, [r2, #0xc]\n"
-        ".L_00152c60:\n"
-        "ldr r0, [r4, #0x28]\n"
-        "add ip, ip, #1\n"
-        "cmp r0, ip\n"
-        "bgt .L_00152bac\n"
-        ".L_00152c70:\n"
-        ".word 0xe59f80e0\n"
-        ".word 0xe59fa0e0\n"
-        ".word 0xe59fb0e0\n"
-        "cmp r5, #0\n"
-        "blt .L_00152cb8\n"
-        "ldrd r0, r1, [sb, #0x18]\n"
-        "cmp r0, r1\n"
-        "bne .L_00152cb8\n"
-        "add r0, r5, r5, lsl #1\n"
-        "add r0, r8, r0, lsl #3\n"
-        "strb r6, [r0, #4]\n"
-        "strb r6, [r0, #5]\n"
-        "ldr r1, [r7, r5, lsl #2]\n"
-        "ldr r0, [sl, r5, lsl #2]\n"
-        "bl engine_func_002c028c\n"
-        "ldr r1, [sl, r5, lsl #2]\n"
-        "ldr r0, [fp, r5, lsl #2]\n"
-        "bl engine_func_002abdb0\n"
-        ".L_00152cb8:\n"
-        "ldr r0, [r4, #0x14]\n"
-        "cmp r0, #0\n"
-        "beq .L_00152cdc\n"
-        "ldr r0, [r0, #8]\n"
-        "cmp r0, #0\n"
-        "beq .L_00152ce8\n"
-        "b .L_00152d04\n"
-        ".L_00152cd4:\n"
-        "ldr r5, [r0]\n"
-        "b .L_00152b68\n"
-        ".L_00152cdc:\n"
-        "ldr r0, [r4, #0xc]\n"
-        "cmp r0, #3\n"
-        "bge .L_00152d04\n"
-        ".L_00152ce8:\n"
-        "ldr r1, [sl]\n"
-        "ldr r0, [fp]\n"
-        "bl engine_func_002abdb0\n"
-        "ldr r0, [r8]\n"
-        "sub r0, r0, #1\n"
-        "str r0, [r8]\n"
-        "b .L_00152d1c\n"
-        ".L_00152d04:\n"
-        "ldr r1, [sl, #4]\n"
-        "ldr r0, [fp, #4]\n"
-        "bl engine_func_002abdb0\n"
-        "ldr r0, [r8, #0x18]\n"
-        "sub r0, r0, #1\n"
-        "str r0, [r8, #0x18]\n"
-        ".L_00152d1c:\n"
-        "ldr r1, [r4, #0x14]\n"
-        "mvn r0, #0\n"
-        "cmp r1, #0\n"
-        "beq .L_00152d40\n"
-        "add r2, r4, #0x10\n"
-        "stm r2, {r0, r6}\n"
-        "str r0, [r4, #0xc]!\n"
-        "str r1, [r4, #0xc]\n"
-        ".L_00152d3c:\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, fp, ip, pc}\n"
-        ".L_00152d40:\n"
-        "ldr r1, [r4, #0xc]\n"
-        "str r6, [r4, #0x18]\n"
-        "strd r0, r1, [r4, #0xc]\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, fp, ip, pc}\n"
-        ".word 0x00464b94\n"
-        ".word 0x00464b8c\n"
-        ".word 0x004dad80\n"
-        ".word 0x00464b84\n"
-        ".word 0x00464b7c\n"
-    );
+//
+// Recovered contract (ARM 0x00152B0C..0x00152D4F plus the five literal words
+// at 0x00152D50..0x00152D63: 0x00464B94, 0x00464B8C, 0x004DAD80, 0x00464B84,
+// 0x00464B7C):
+//
+//   * Teardown/finalisation pass for one engine "task action" record (r0).
+//     The only direct reference is 0x002A7AA0, which calls it as
+//     engine_func_00152b0c(task->field_8) when that record's signed state word
+//     at +0x0C is >= 0; the return value is discarded there.  There are no
+//     stack arguments and r4-r11 are preserved (r12 is preserved as a side
+//     effect of the `push {..., ip, lr}` list).
+//   * The action record carries a signed state at +0x0C, a scratch word at
+//     +0x10, a pending transition record at +0x14, a saved transition at
+//     +0x18, the entry-pointer array at +0x24 and the signed entry count at
+//     +0x28.
+//   * Only the "pending record present" case and states 1/2/4/5 do work:
+//       - pending != 0 -> gate = pending->+0x00, the state is never read;
+//       - state == 2   -> gate = container_table[0], then 0x2A3068(0);
+//       - state == 4   -> gate = token_table[1] (0x00464B90), no helper call;
+//       - state == 5   -> gate = container_table[1], then 0x2A3068(1);
+//       - state == 1   -> gate = token_table[0] (r0 has already been reloaded
+//                         with the 0x00464B8C literal at 0x152B2C, so 0x152CD4
+//                         loads through the token table, not the null pending
+//                         pointer);
+//       - any other state returns at 0x152D3C with 0x00464B8C still in r0.
+//     A zero gate returns at 0x152D3C as well; r0 then holds whatever the
+//     original had left in it (the pending pointer, the 0x2A3068 result, 0 or
+//     the 0x00464B8C literal).
+//   * 0x00464B7C/0x00464B84/0x00464B8C/0x00464B94 are the four parallel
+//     two-entry slot tables (work object, registry object, token, container)
+//     documented by 0x001182DC and 0x00132240.  0x004DAD80 holds their 0x18-byte
+//     frame-sync slots (signed counter at +0x00, gate bytes at +0x04/+0x05).
+//   * Every entry whose +0x0C container pointer is non-null is erased from
+//     that container's pointer vector (begin +0x18, end +0x1C) with
+//     libc++-style compaction; the end word is always written back and the
+//     entry's container word is cleared only when the end actually moved.
+//   * The slot index is the index of the container that owns entry 0
+//     (container_table[0] or [1], otherwise -1).  When it matches and that
+//     container's vector is empty, the frame-sync gate bytes are cleared and
+//     0x2C028C(registry, container) / 0x2ABDB0(work, registry) run; every
+//     table entry is re-read at its own use site.
+//   * Afterwards the sync slot is chosen from the pending record's +0x08 word
+//     (read again after the helpers; non-zero selects slot 1) or, without a
+//     pending record, from the signed `state >= 3` test.  Then
+//     0x2ABDB0(work[slot], registry[slot]) runs and that slot's signed frame
+//     counter is decremented (32-bit wrap).
+//   * Finally the action is reset.  With a pending record: +0x10 = -1,
+//     +0x14 = 0, state = -1, +0x18 = pending.  Without one: +0x18 = 0,
+//     state = -1, +0x10 = the previous state.  Both branches return -1.
+//   * All three helpers are direct BL targets; this body owns no indirect call
+//     (`0x2C028C` and `0x2ABDB0` dispatch through vtables internally, outside
+//     this routine).
+namespace engine_152b0c {
+
+// Per-slot tables and the frame-sync block.
+constexpr u32 kWorkTableAddress = 0x00464B7C;       // slot work objects
+constexpr u32 kRegistryTableAddress = 0x00464B84;   // slot registry objects
+constexpr u32 kTokenTableAddress = 0x00464B8C;      // slot tokens
+constexpr u32 kContainerTableAddress = 0x00464B94;  // slot containers
+constexpr u32 kFrameSyncBaseAddress = 0x004DAD80;   // 0x18-byte sync slots
+constexpr u32 kFrameSyncStride = 0x18;
+
+constexpr u32 kSlotStride = 4;      // u32 per slot in the four tables
+constexpr s32 kStateSlot1Min = 3;   // signed `cmp r0,#3; bge`
+constexpr u32 kResetWord = 0xFFFFFFFFu;  // `mvn r0,#0`
+
+// Container vector embedded at container+0x14 (context, begin, end, capacity).
+struct ContainerVector {
+    u8 pad_00[0x18];
+    u32* begin_18;     // +0x18
+    u32* end_1C;       // +0x1C
+};
+static_assert(offsetof(ContainerVector, begin_18) == 0x18,
+              "container vector begin");
+static_assert(offsetof(ContainerVector, end_1C) == 0x1C,
+              "container vector end");
+
+// One entry of the action; only its container word is touched here.
+struct ActionEntry {
+    u8 pad_00[0x0C];
+    ContainerVector* container_0C;  // +0x0C: owning container, 0 once erased
+};
+static_assert(offsetof(ActionEntry, container_0C) == 0x0C, "entry container");
+
+// Transition record hanging off the action at +0x14.
+struct PendingRecord {
+    u32 gate_00;       // +0x00: only tested against zero
+    u8 pad_04[0x04];
+    u32 side_08;       // +0x08: 0 -> sync slot 0, non-zero -> sync slot 1
+};
+static_assert(offsetof(PendingRecord, side_08) == 0x08, "pending side word");
+
+struct FrameSyncSlot {
+    s32 count_00;      // +0x00: signed counter decremented on the way out
+    u8 registered_04;  // +0x04: cleared by the unregister block
+    u8 inited_05;      // +0x05: cleared by the unregister block
+    u8 pad_06[0x12];
+};
+static_assert(sizeof(FrameSyncSlot) == kFrameSyncStride, "sync slot stride");
+
+struct ActionRecord {
+    u8 pad_00[0x0C];
+    s32 state_0C;               // +0x0C: state selector
+    u32 word_10;                // +0x10: -1 or the previous state
+    PendingRecord* pending_14;  // +0x14: pending transition
+    PendingRecord* saved_18;    // +0x18: pending pointer or 0
+    u8 pad_1C[0x08];
+    ActionEntry** entries_24;   // +0x24: entry pointer array
+    s32 entry_count_28;         // +0x28: signed entry count
+};
+static_assert(offsetof(ActionRecord, state_0C) == 0x0C, "action state");
+static_assert(offsetof(ActionRecord, word_10) == 0x10, "action word 0x10");
+static_assert(offsetof(ActionRecord, pending_14) == 0x14, "action pending");
+static_assert(offsetof(ActionRecord, saved_18) == 0x18, "action saved");
+static_assert(offsetof(ActionRecord, entries_24) == 0x24, "action entries");
+static_assert(offsetof(ActionRecord, entry_count_28) == 0x28,
+              "action entry count");
+
+inline u32 load_word(u32 address) {
+    return *reinterpret_cast<const u32*>(address);
+}
+
+inline u32 slot_entry(u32 table_address, s32 slot) {
+    return load_word(table_address + static_cast<u32>(slot) * kSlotStride);
+}
+
+inline FrameSyncSlot* frame_sync_slot(s32 slot) {
+    return reinterpret_cast<FrameSyncSlot*>(kFrameSyncBaseAddress +
+                                            static_cast<u32>(slot) *
+                                                kFrameSyncStride);
+}
+
+}  // namespace engine_152b0c
+
+// Direct call targets.  The file-wide declarations of these symbols are
+// parameterless, so their recovered prototypes are bound to the pinned symbol
+// names here.
+namespace engine_152b0c_calls {
+
+// 0x002A3068: marks frame-sync slot `slot` as registered/not initialised
+// (bytes +0x04 = 1, +0x05 = 0) and returns the slot block address.
+extern "C" u32 slot_register(u32 slot) __asm__("battle_func_002a3068");
+
+// 0x002C028C: detaches `token` from `registry` (vtable dispatch inside).
+extern "C" void registry_detach(void* registry, u32 token)
+    __asm__("engine_func_002c028c");
+
+// 0x002ABDB0: retires `work` through `registry` (vtable dispatch inside).
+extern "C" void work_retire(void* work, void* registry)
+    __asm__("engine_func_002abdb0");
+
+}  // namespace engine_152b0c_calls
+
+extern "C" u32 engine_func_00152b0c(engine_152b0c::ActionRecord* action) {
+    using namespace engine_152b0c;
+
+    // 0x152B18..0x152B6C: pending pointer first, then the state dispatch.
+    u32 result = kTokenTableAddress;
+    u32 gate;
+    PendingRecord* const pending = action->pending_14;
+    if (pending != nullptr) {
+        result = reinterpret_cast<u32>(pending);
+        gate = pending->gate_00;
+    } else {
+        switch (action->state_0C) {
+            case 1:
+                gate = load_word(kTokenTableAddress);
+                result = kTokenTableAddress;
+                break;
+            case 2:
+                gate = load_word(kContainerTableAddress);
+                result = engine_152b0c_calls::slot_register(0);
+                break;
+            case 4:
+                gate = load_word(kTokenTableAddress + kSlotStride);
+                result = kTokenTableAddress;
+                break;
+            case 5:
+                gate = load_word(kContainerTableAddress + kSlotStride);
+                result = engine_152b0c_calls::slot_register(1);
+                break;
+            default:
+                return result;
+        }
+    }
+    if (gate == 0) {
+        return result;
+    }
+
+    // 0x152B70..0x152B98: the slot of the container that owns entry 0.  The
+    // second container-table word is only read when the first does not match.
+    ActionEntry** const entries = action->entries_24;
+    ContainerVector* const first_container = entries[0]->container_0C;
+    s32 slot = -1;
+    if (load_word(kContainerTableAddress) ==
+        reinterpret_cast<u32>(first_container)) {
+        slot = 0;
+    } else if (load_word(kContainerTableAddress + kSlotStride) ==
+               reinterpret_cast<u32>(first_container)) {
+        slot = 1;
+    }
+
+    // 0x152B9C..0x152C6C: erase every entry with a container from that
+    // container's vector.  The count is re-read per iteration and the loop
+    // bound is signed (`bgt`).
+    for (s32 index = 0; action->entry_count_28 > index; ++index) {
+        ActionEntry* const entry = action->entries_24[index];
+        ContainerVector* const container = entry->container_0C;
+        if (container == nullptr) {
+            continue;
+        }
+        const u32 key = reinterpret_cast<u32>(entry);
+        u32* const end = container->end_1C;
+        u32* found = container->begin_18;
+        while (found != end && *found != key) {
+            ++found;
+        }
+        u32* new_end = found;
+        if (found != end) {
+            // libc++ remove-style forward compaction of [found + 1, end).
+            for (u32* source = found + 1; source != end; ++source) {
+                if (*source != key) {
+                    *new_end++ = *source;
+                }
+            }
+        }
+        // The end word is re-read from the container before it is stored.
+        u32* const previous_end = container->end_1C;
+        container->end_1C = new_end;
+        if (previous_end != new_end) {
+            entry->container_0C = nullptr;
+        }
+    }
+
+    // 0x152C70..0x152CB4: unregister the slot when entry 0's container has an
+    // empty vector.  The table entries are re-read around the first call.
+    if (slot >= 0 && first_container->begin_18 == first_container->end_1C) {
+        FrameSyncSlot* const sync = frame_sync_slot(slot);
+        sync->registered_04 = 0;
+        sync->inited_05 = 0;
+        const u32 container = slot_entry(kContainerTableAddress, slot);
+        const u32 registry = slot_entry(kRegistryTableAddress, slot);
+        engine_152b0c_calls::registry_detach(reinterpret_cast<void*>(registry),
+                                             container);
+        const u32 registry_reloaded = slot_entry(kRegistryTableAddress, slot);
+        const u32 work = slot_entry(kWorkTableAddress, slot);
+        engine_152b0c_calls::work_retire(reinterpret_cast<void*>(work),
+                                         reinterpret_cast<void*>(
+                                             registry_reloaded));
+    }
+
+    // 0x152CB8..0x152D18: sync slot from the pending record (re-read after the
+    // helpers) or, without one, from the signed state test.
+    PendingRecord* const sync_pending = action->pending_14;
+    s32 sync_slot;
+    if (sync_pending != nullptr) {
+        sync_slot = sync_pending->side_08 != 0 ? 1 : 0;
+    } else {
+        sync_slot = action->state_0C >= kStateSlot1Min ? 1 : 0;
+    }
+    const u32 sync_registry = slot_entry(kRegistryTableAddress, sync_slot);
+    const u32 sync_work = slot_entry(kWorkTableAddress, sync_slot);
+    engine_152b0c_calls::work_retire(reinterpret_cast<void*>(sync_work),
+                                     reinterpret_cast<void*>(sync_registry));
+    FrameSyncSlot* const sync = frame_sync_slot(sync_slot);
+    sync->count_00 = sync->count_00 - 1;
+
+    // 0x152D1C..0x152D4C: reset the action.  The pending pointer is re-read
+    // after the last helper; both branches return -1.
+    PendingRecord* const final_pending = action->pending_14;
+    result = kResetWord;
+    if (final_pending != nullptr) {
+        action->word_10 = kResetWord;
+        action->pending_14 = nullptr;
+        action->state_0C = -1;
+        action->saved_18 = final_pending;
+    } else {
+        const u32 previous_state = static_cast<u32>(action->state_0C);
+        action->saved_18 = nullptr;
+        action->state_0C = -1;
+        action->word_10 = previous_state;
+    }
+    return result;
 }
 
 // DECOMP_FUNC(0x00152f5c, 32)
