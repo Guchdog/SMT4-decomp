@@ -8046,98 +8046,166 @@ extern "C" u32 ui_func_003ac908() {
     return 0;
 }
 
-// DECOMP_FUNC(0x001d00f8, 684)
-extern "C" __attribute__((naked)) void camp_func_001d00f8() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x47f0, 0xe92d, 0x4000, 0xe1a0\n"
-        ".hword 0x8000, 0xe3a0, 0x9000, 0xe3e0\n"
-        ".hword 0x8b04, 0xed2d, 0x0008, 0xe590\n"
-        ".hword 0x8aa0, 0xeddf, 0x0000, 0xe350\n"
-        ".hword 0x9a9f, 0xcddf, 0x9a9f, 0xcd9f\n"
-        ".hword 0x0099, 0xda00, 0x0004, 0xe594\n"
-        ".hword 0x0088, 0xe080, 0x00b0, 0xe1d0\n"
-        ".hword 0x0000, 0xe350, 0x0055, 0x0a00\n"
-        ".hword 0x3ab5, 0xeb03, 0x0004, 0xe594\n"
-        ".hword 0x0088, 0xe080, 0x50b0, 0xe1d0\n"
-        ".hword 0x0005, 0xe1a0, 0x3ab0, 0xeb03\n"
-        ".hword 0x6000, 0xe1a0, 0x0003, 0xe5d0\n"
-        ".hword 0x001f, 0xe200, 0x0a10, 0xee00\n"
-        ".hword 0x0005, 0xe1a0, 0x0a40, 0xeeb8\n"
-        ".hword 0x8a40, 0xeeb0, 0x8a29, 0xee00\n"
-        ".hword 0x69e3, 0xeb02, 0x102c, 0xe5d4\n"
-        ".hword 0x7000, 0xe1a0, 0x0005, 0xe1a0\n"
-        ".hword 0x0007, 0xe151, 0x8a09, 0x0e38\n"
-        ".hword 0x7898, 0xeb03, 0xa000, 0xe1b0\n"
-        ".hword 0xf000, 0xe320, 0x0015, 0x0a00\n"
-        ".hword 0x0010, 0xe594, 0x5000, 0xe3a0\n"
-        ".hword 0x0000, 0xe350, 0x0011, 0xda00\n"
-        ".hword 0x000c, 0xe594, 0x0085, 0xe080\n"
-        ".hword 0x00b0, 0xe1d0, 0x0000, 0xe350\n"
-        ".hword 0x0008, 0x0a00, 0xcfbd, 0xeb02\n"
-        ".hword 0x100a, 0xe1a0, 0xf000, 0xe320\n"
-        ".hword 0x69a7, 0xeb02, 0x0000, 0xe350\n"
-        ".hword 0xf000, 0xe320, 0x0001, 0x0a00\n"
-        ".hword 0x8a09, 0xee38, 0x0003, 0xea00\n"
-        ".hword 0x0010, 0xe594, 0x5001, 0xe285\n"
-        ".hword 0x0005, 0xe150, 0xffed, 0xcaff\n"
-        ".hword 0x0020, 0xe594, 0x5000, 0xe3a0\n"
-        ".hword 0x0000, 0xe350, 0x0011, 0xda00\n"
-        ".hword 0x001c, 0xe594, 0x0085, 0xe080\n"
-        ".hword 0x00b0, 0xe1d0, 0x69bc, 0xeb02\n"
-        ".hword 0x0007, 0xe150, 0x8a49, 0x0e38\n"
-        ".hword 0x001c, 0xe594, 0x0085, 0xe080\n"
-        ".hword 0x00b0, 0xe1d0, 0x3a7a, 0xeb03\n"
-        ".hword 0x0002, 0xe5d0, 0x1002, 0xe5d6\n"
-        ".hword 0x5001, 0xe285, 0x0000, 0xe151\n"
-        ".hword 0x8a49, 0x0e38, 0x0020, 0xe594\n"
-        ".hword 0x0005, 0xe150, 0xffed, 0xcaff\n"
-        ".hword 0x0000, 0xe359, 0x0002, 0xaa00\n"
-        ".hword 0x8a48, 0xeef0, 0x9008, 0xe1a0\n"
-        ".hword 0x000c, 0xea00, 0x8ac8, 0xeef4\n"
-        ".hword 0xfa10, 0xeef1, 0x0009, 0xca00\n"
-        ".hword 0x8a48, 0xeef4, 0xfa10, 0xeef1\n"
-        ".hword 0xfff6, 0x1aff, 0x0004, 0xe594\n"
-        ".hword 0x1088, 0xe080, 0x2089, 0xe080\n"
-        ".hword 0x00b0, 0xe1d1, 0x10b0, 0xe1d2\n"
-        ".hword 0x0001, 0xe150, 0xffef, 0x9aff\n"
-        ".hword 0x0008, 0xe594, 0x8001, 0xe288\n"
-        ".hword 0x0008, 0xe150, 0xffa0, 0xcaff\n"
-        ".hword 0x0000, 0xe359, 0x0038, 0xba00\n"
-        ".hword 0x001c, 0xe284, 0x1004, 0xe594\n"
-        ".hword 0x0005, 0xe890, 0x1089, 0xe081\n"
-        ".hword 0x10b0, 0xe1d1, 0x0082, 0xe080\n"
-        ".hword 0x10b0, 0xe1c0, 0x0020, 0xe594\n"
-        ".hword 0x0001, 0xe280, 0x0020, 0xe584\n"
-        ".hword 0x0004, 0xe594, 0x0089, 0xe080\n"
-        ".hword 0x00b0, 0xe1d0, 0x7843, 0xeb03\n"
-        ".hword 0x6000, 0xe1b0, 0x7000, 0xe3a0\n"
-        ".hword 0x0021, 0x0a00, 0x0010, 0xe594\n"
-        ".hword 0x5000, 0xe3a0, 0x0000, 0xe350\n"
-        ".hword 0x001d, 0xda00, 0x000c, 0xe594\n"
-        ".hword 0x0085, 0xe080, 0x00b0, 0xe1d0\n"
-        ".hword 0x0000, 0xe350, 0x0014, 0x0a00\n"
-        ".hword 0xcf68, 0xeb02, 0x1006, 0xe1a0\n"
-        ".hword 0xf000, 0xe320, 0x6952, 0xeb02\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x000d, 0x0a00, 0x001c, 0xe284\n"
-        ".hword 0x100c, 0xe594, 0x0005, 0xe890\n"
-        ".hword 0x1085, 0xe081, 0x10b0, 0xe1d1\n"
-        ".hword 0x0082, 0xe080, 0x10b0, 0xe1c0\n"
-        ".hword 0x0020, 0xe594, 0x0001, 0xe280\n"
-        ".hword 0x0020, 0xe584, 0x000c, 0xe594\n"
-        ".hword 0x0085, 0xe080, 0x70b0, 0xe1c0\n"
-        ".hword 0x0003, 0xea00, 0x0010, 0xe594\n"
-        ".hword 0x5001, 0xe285, 0x0005, 0xe150\n"
-        ".hword 0xffe1, 0xcaff, 0x0004, 0xe594\n"
-        ".hword 0x0089, 0xe080, 0x70b0, 0xe1c0\n"
-        ".hword 0x0001, 0xe3a0, 0x8b04, 0xecbd\n"
-        ".hword 0x87f0, 0xe8bd, 0x8b04, 0xecbd\n"
-        ".hword 0x0000, 0xe3a0, 0x87f0, 0xe8bd\n"
-        ".hword 0x0000, 0x0000, 0xd70a, 0x3c23\n"
-        ".hword 0x0000, 0x3f80\n"
-    );
+// Camp roster unit selection: score every non-zero candidate id and append the
+// best one to the result list.
+//
+// Caller-owned state (only the fields this body touches are named; +0x00,
+// +0x14, +0x18, +0x24 and +0x28 are never read or written here):
+//   +0x04 u16* candidateIds   +0x08 s32 candidateCount
+//   +0x0C u16* partnerIds     +0x10 s32 partnerCount
+//   +0x1C u16* selectedIds    +0x20 s32 selectedCount
+//   +0x2C u8   preferredAffinity
+//
+// Every loop bound is a signed 32-bit compare against the stored count and
+// every id is a 16-bit load.  The winning id is appended to selectedIds and
+// cleared from candidateIds; when the winner has a battle object, the first
+// non-zero partner whose record matches that object is appended too and its
+// partner slot is cleared.  Returns 1 when a candidate was selected and 0 when
+// the state offers none (count <= 0 or every candidate id is 0).
+//
+// Score, in the original operation order:
+//   entry = 0x29EC14(id)            (looked up twice; first result unused)
+//   level = entry[3] & 0x1F, score = level + level * 0.01f
+//   +1.0f when 0x26A904(id) == state[0x2C]
+//   +1.0f when 0x2AE3F0(id) != 0 and some non-zero partner first satisfies
+//         0x26A86C(0x2840B8(partnerId), 0x2AE3F0(id)) != 0
+//   -1.0f per already-selected id whose 0x26A904() value equals 0x26A904(id)
+//   -1.0f per already-selected id whose entry[2] equals the candidate entry[2]
+// The first usable candidate wins ties unless a later candidate's id is not
+// greater than the current winner's id (16-bit unsigned compare), in which
+// case the later candidate replaces it.
+//
+// 0x2AE3F0 is also declared above as taking `void*`; this call site passes the
+// 16-bit unit id in r0, so the alias below carries the recovered type.
+extern "C" u8* camp_unit_entry_0029ec14(u32 id) __asm__("camp_func_0029ec14");
+extern "C" u32 camp_unit_affinity_0026a904(u32 id) __asm__("camp_func_0026a904");
+extern "C" u8* camp_unit_record_002840b8(u32 id) __asm__("camp_func_002840b8");
+extern "C" u32 camp_unit_record_matches_0026a86c(const u8* record,
+                                                 const u8* object)
+    __asm__("camp_func_0026a86c");
+extern "C" u8* camp_unit_object_002ae3f0(u32 id) __asm__("battle_func_002ae3f0");
+
+struct CampUnitSelectionState {
+    u32 reserved00;          // +0x00
+    u16* candidateIds;       // +0x04
+    s32 candidateCount;      // +0x08
+    u16* partnerIds;         // +0x0C
+    s32 partnerCount;        // +0x10
+    u32 reserved14;          // +0x14
+    u32 reserved18;          // +0x18
+    u16* selectedIds;        // +0x1C
+    s32 selectedCount;       // +0x20
+    u32 reserved24;          // +0x24
+    u32 reserved28;          // +0x28
+    u8 preferredAffinity;    // +0x2C
 };
+
+static_assert(offsetof(CampUnitSelectionState, candidateIds) == 0x04);
+static_assert(offsetof(CampUnitSelectionState, candidateCount) == 0x08);
+static_assert(offsetof(CampUnitSelectionState, partnerIds) == 0x0C);
+static_assert(offsetof(CampUnitSelectionState, partnerCount) == 0x10);
+static_assert(offsetof(CampUnitSelectionState, selectedIds) == 0x1C);
+static_assert(offsetof(CampUnitSelectionState, selectedCount) == 0x20);
+static_assert(offsetof(CampUnitSelectionState, preferredAffinity) == 0x2C);
+
+extern "C" u32 camp_func_001d00f8(CampUnitSelectionState* state) {
+    constexpr float kLevelExtra = 0.01f;
+    constexpr float kOne = 1.0f;
+    constexpr u8 kLevelMask = 0x1F;
+
+    float bestScore = 0.0f;
+    s32 bestIndex = -1;
+
+    for (s32 i = 0; i < state->candidateCount; ++i) {
+        const u16 id = state->candidateIds[i];
+        if (id == 0) {
+            continue;
+        }
+
+        // The original resolves the entry twice; the first result is discarded
+        // but the call still happens.
+        (void)camp_unit_entry_0029ec14(id);
+
+        const u8* const entry = camp_unit_entry_0029ec14(id);
+        const float level = static_cast<float>(entry[3] & kLevelMask);
+        float score = level + level * kLevelExtra;
+
+        const u32 affinity = camp_unit_affinity_0026a904(id);
+        if (state->preferredAffinity == affinity) {
+            score += kOne;
+        }
+
+        const u8* const object = camp_unit_object_002ae3f0(id);
+        if (object != nullptr) {
+            for (s32 j = 0; j < state->partnerCount; ++j) {
+                const u16 partnerId = state->partnerIds[j];
+                if (partnerId == 0) {
+                    continue;
+                }
+                const u8* const record = camp_unit_record_002840b8(partnerId);
+                if (camp_unit_record_matches_0026a86c(record, object) != 0) {
+                    score += kOne;
+                    break;
+                }
+            }
+        }
+
+        for (s32 j = 0; j < state->selectedCount; ++j) {
+            const u16 selectedId = state->selectedIds[j];
+            if (camp_unit_affinity_0026a904(selectedId) == affinity) {
+                score -= kOne;
+            }
+            const u8* const selectedEntry =
+                camp_unit_entry_0029ec14(selectedId);
+            if (selectedEntry[2] == entry[2]) {
+                score -= kOne;
+            }
+        }
+
+        if (bestIndex < 0) {
+            bestScore = score;
+            bestIndex = i;
+        } else if (bestScore > score) {
+            // Keep the current winner.
+        } else if (bestScore != score) {
+            bestScore = score;
+            bestIndex = i;
+        } else if (state->candidateIds[i] <= state->candidateIds[bestIndex]) {
+            bestScore = score;
+            bestIndex = i;
+        }
+    }
+
+    if (bestIndex < 0) {
+        return 0;
+    }
+
+    const u16 chosenId = state->candidateIds[bestIndex];
+    state->selectedIds[state->selectedCount] = chosenId;
+    state->selectedCount = state->selectedCount + 1;
+
+    const u8* const object =
+        camp_unit_object_002ae3f0(state->candidateIds[bestIndex]);
+    if (object != nullptr) {
+        for (s32 j = 0; j < state->partnerCount; ++j) {
+            const u16 partnerId = state->partnerIds[j];
+            if (partnerId == 0) {
+                continue;
+            }
+            const u8* const record = camp_unit_record_002840b8(partnerId);
+            if (camp_unit_record_matches_0026a86c(record, object) != 0) {
+                state->selectedIds[state->selectedCount] =
+                    state->partnerIds[j];
+                state->selectedCount = state->selectedCount + 1;
+                state->partnerIds[j] = 0;
+                break;
+            }
+        }
+    }
+
+    state->candidateIds[bestIndex] = 0;
+    return 1;
+}
 
 // DECOMP_FUNC(0x0033bdc8, 684)
 extern "C" __attribute__((naked)) void script_vm_func_0033bdc8() {

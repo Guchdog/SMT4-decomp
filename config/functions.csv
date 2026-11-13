@@ -2299,7 +2299,7 @@ address,size,status,category,name,src_file
 0x001ce3a4,1512,matching,engine,engine_func_001ce3a4,src/engine/leaf_batch46_b.cpp
 0x001ce98c,5444,matching,ui,Ui_StatusScreenSkills,src/ui/status_skills.cpp
 0x001cfed0,552,matching,camp,camp_func_001cfed0,src/engine/leaf_batch44_c.cpp
-0x001d00f8,684,matching,camp,camp_func_001d00f8,src/engine/leaf_batch45_a.cpp
+0x001d00f8,684,non_matching,camp,camp_func_001d00f8,src/engine/leaf_batch45_a.cpp
 0x001d03a4,684,matching,ui,ui_func_001d03a4,src/engine/leaf_batch42_b.cpp
 0x001d0650,3168,matching,camp,camp_func_001d0650,src/engine/leaf_batch46_c.cpp
 0x001d12b0,588,matching,camp,camp_func_001d12b0,src/engine/leaf_batch42_b.cpp
