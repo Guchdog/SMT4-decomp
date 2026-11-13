@@ -8201,219 +8201,209 @@ extern "C" void camp_func_001e034c(u32 slot_id, const u8* primary,
                              nullptr);
 }
 
+// Direct calls made by 0x001e0cdc.  The file already declares these three
+// helpers with empty parameter lists, so the typed calls use local aliases
+// that retain the original external symbol names.
+extern "C" void leaf34_slot_002b90e0(u8* object, u32 value)
+    __asm__("script_vm_func_002b90e0");
+extern "C" u32 leaf34_camp_002bf030(u8* object, u32 selector)
+    __asm__("camp_func_002bf030");
+extern "C" void leaf34_event_002bf9e8(u32 id)
+    __asm__("script_vm_func_002bf9e8");
+
 // DECOMP_FUNC(0x001e0cdc, 804)
-extern "C" __attribute__((naked)) void script_vm_func_001e0cdc() {
-    asm volatile(
-        "push {r4, r5, r6, r7, r8, sb, sl, fp, ip, lr}\n"
-        "mov r5, r0\n"
-        "add r7, r0, #0x2000\n"
-        "add r6, r7, #0x17c\n"
-        "mov r3, #3\n"
-        "mov r0, #0\n"
-        "add r4, r5, #0x2100\n"
-        "stm r6, {r0, r3}\n"
-        "strh r1, [r4, #0x90]\n"
-        "strh r2, [r4, #0x92]\n"
-        "ldrsh r8, [r4, #0x8c]\n"
-        "add r0, r8, r1\n"
-        "cmp r0, #0\n"
-        "rsblt r0, r8, #0\n"
-        "strhlt r0, [r4, #0x90]\n"
-        "ldrsh r0, [r4, #0x90]\n"
-        "add r0, r0, r8\n"
-        "cmp r0, #0xa\n"
-        "rsbgt r0, r8, #0xa\n"
-        "strhgt r0, [r4, #0x90]\n"
-        "cmp r2, #0\n"
-        "ble .L_001e0de4\n"
-        "ldrsh r0, [r4, #0x90]\n"
-        "cmp r0, #0\n"
-        "addgt r8, r8, r0\n"
-        ".word 0xe59f02ac\n"
-        "bl script_vm_func_002bf9e8\n"
-        "ldrsh r0, [r4, #0x92]\n"
-        "mov r6, #0\n"
-        "cmp r0, #0\n"
-        ".word 0xc59fa29c\n"
-        "orrgt fp, sl, sl, asr #9\n"
-        "ble .L_001e0de4\n"
-        ".L_001e0d60:\n"
-        "ldrsh r0, [r4, #0x8e]\n"
-        "ldr r1, [r7, #0x184]\n"
-        "sub r0, r8, r0\n"
-        "sub r0, r0, r6\n"
-        "add r0, r0, #0x13\n"
-        "cmp r1, #0\n"
-        "rsb r0, r0, r0, lsl #3\n"
-        "moveq r1, #7\n"
-        "add r0, r0, r0, lsl #2\n"
-        "movne r1, #8\n"
-        "add r0, r5, r0, lsl #2\n"
-        "add r0, r0, #0x20\n"
-        "bl script_vm_func_002b90e0\n"
-        "ldrsh r0, [r4, #0x8e]\n"
-        "mov r1, #0xa\n"
-        "sub r0, r8, r0\n"
-        "sub r0, r0, r6\n"
-        "add r0, r0, #0x31\n"
-        "rsb r0, r0, r0, lsl #3\n"
-        "add r0, r0, r0, lsl #2\n"
-        "add sb, r5, r0, lsl #2\n"
-        "add r0, sb, #0x20\n"
-        "bl camp_func_002bf030\n"
-        "ldr r0, [r7, #0x184]\n"
-        "cmp r0, #0\n"
-        "add r0, sb, #0x20\n"
-        "moveq r1, sl\n"
-        "movne r1, fp\n"
-        "bl script_vm_func_002b90e0\n"
-        "ldrsh r0, [r4, #0x92]\n"
-        "add r6, r6, #1\n"
-        "cmp r0, r6\n"
-        "bgt .L_001e0d60\n"
-        ".L_001e0de4:\n"
-        "ldrsh r0, [r4, #0x90]\n"
-        "cmp r0, #0\n"
-        ".word 0xc59f8208\n"
-        "movne r6, #0\n"
-        "ble .L_001e0f4c\n"
-        ".L_001e0df8:\n"
-        "ldrsh r0, [r4, #0x8c]\n"
-        "mov r1, #2\n"
-        "add r0, r0, r6\n"
-        "rsb r0, r0, r0, lsl #3\n"
-        "add r0, r0, r0, lsl #2\n"
-        "add r0, r5, r0, lsl #2\n"
-        "add r0, r0, #0x20\n"
-        "bl camp_func_002bf030\n"
-        "ldrsh r0, [r4, #0x8c]\n"
-        "mov r1, #2\n"
-        "add r0, r0, r6\n"
-        "rsb r0, r0, r0, lsl #3\n"
-        "add r0, r0, r0, lsl #2\n"
-        "add r0, r5, r0, lsl #2\n"
-        "add r0, r0, #0x400\n"
-        "add r0, r0, #0x198\n"
-        "bl camp_func_002bf030\n"
-        "ldr r0, [r7, #0x184]\n"
-        "cmp r0, #0\n"
-        "ldrsh r0, [r4, #0x8c]\n"
-        "add r0, r0, r6\n"
-        "rsb r0, r0, r0, lsl #3\n"
-        "add r0, r0, r0, lsl #2\n"
-        "add r0, r5, r0, lsl #2\n"
-        "add r0, r0, #0x20\n"
-        "beq .L_001e0ee0\n"
-        "mov r1, #1\n"
-        "bl script_vm_func_002b90e0\n"
-        "ldrsh r0, [r4, #0x8c]\n"
-        "mov r1, #8\n"
-        "add r0, r0, r6\n"
-        "rsb r0, r0, r0, lsl #3\n"
-        "add r0, r0, r0, lsl #2\n"
-        "add r0, r5, r0, lsl #2\n"
-        "add r0, r0, #0xb10\n"
-        "bl script_vm_func_002b90e0\n"
-        "ldrsh r0, [r4, #0x8c]\n"
-        "mov r1, #3\n"
-        "add r0, r0, r6\n"
-        "rsb r0, r0, r0, lsl #3\n"
-        "add r0, r0, r0, lsl #2\n"
-        "add r0, r5, r0, lsl #2\n"
-        "add r0, r0, #0x1000\n"
-        "add r0, r0, #0x88\n"
-        "bl script_vm_func_002b90e0\n"
-        "ldrsh r0, [r4, #0x8c]\n"
-        "mov r1, r8\n"
-        "add r0, r0, r6\n"
-        "rsb r0, r0, r0, lsl #3\n"
-        "add r0, r0, r0, lsl #2\n"
-        "add r0, r5, r0, lsl #2\n"
-        "add r0, r0, #0x1600\n"
-        ".L_001e0ec8:\n"
-        "bl script_vm_func_002b90e0\n"
-        "ldrsh r0, [r4, #0x90]\n"
-        "add r6, r6, #1\n"
-        "cmp r0, r6\n"
-        "bgt .L_001e0df8\n"
-        ".L_001e0edc:\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, fp, ip, pc}\n"
-        ".L_001e0ee0:\n"
-        "mov r1, #0\n"
-        "bl script_vm_func_002b90e0\n"
-        "ldrsh r0, [r4, #0x8c]\n"
-        "mov r1, #7\n"
-        "add r0, r0, r6\n"
-        "rsb r0, r0, r0, lsl #3\n"
-        "add r0, r0, r0, lsl #2\n"
-        "add r0, r5, r0, lsl #2\n"
-        "add r0, r0, #0xb10\n"
-        "bl script_vm_func_002b90e0\n"
-        "ldrsh r0, [r4, #0x8c]\n"
-        "mov r1, #2\n"
-        "add r0, r0, r6\n"
-        "rsb r0, r0, r0, lsl #3\n"
-        "add r0, r0, r0, lsl #2\n"
-        "add r0, r5, r0, lsl #2\n"
-        "add r0, r0, #0x1000\n"
-        "add r0, r0, #0x88\n"
-        "bl script_vm_func_002b90e0\n"
-        "ldrsh r0, [r4, #0x8c]\n"
-        "mov r1, #0xfa0\n"
-        "add r0, r0, r6\n"
-        "rsb r0, r0, r0, lsl #3\n"
-        "add r0, r0, r0, lsl #2\n"
-        "add r0, r5, r0, lsl #2\n"
-        "add r0, r0, #0x1600\n"
-        "b .L_001e0ec8\n"
-        ".L_001e0f4c:\n"
-        "nop\n"
-        "bge .L_001e0edc\n"
-        ".L_001e0f54:\n"
-        "ldrsh r0, [r4, #0x8c]\n"
-        "mov r1, #8\n"
-        "add r0, r0, r6\n"
-        "rsb r0, r0, r0, lsl #3\n"
-        "add r0, r0, r0, lsl #2\n"
-        "add r0, r5, r0, lsl #2\n"
-        "sub r0, r0, #0x6c\n"
-        "bl camp_func_002bf030\n"
-        "ldrsh r0, [r4, #0x8c]\n"
-        "mov r1, #8\n"
-        "add r0, r0, r6\n"
-        "rsb r0, r0, r0, lsl #3\n"
-        "add r0, r0, r0, lsl #2\n"
-        "add r0, r5, r0, lsl #2\n"
-        "add r0, r0, #0x400\n"
-        "add r0, r0, #0x10c\n"
-        "bl camp_func_002bf030\n"
-        "ldrsh r0, [r4, #0x8c]\n"
-        "mov r1, #9\n"
-        "add r0, r0, r6\n"
-        "rsb r0, r0, r0, lsl #3\n"
-        "add r0, r0, r0, lsl #2\n"
-        "add r0, r5, r0, lsl #2\n"
-        "add r0, r0, #0x800\n"
-        "add r0, r0, #0x284\n"
-        "bl camp_func_002bf030\n"
-        "ldrsh r0, [r4, #0x8c]\n"
-        "mov r1, #8\n"
-        "add r0, r0, r6\n"
-        "rsb r0, r0, r0, lsl #3\n"
-        "add r0, r0, r0, lsl #2\n"
-        "add r0, r5, r0, lsl #2\n"
-        "add r0, r0, #0xc00\n"
-        "add r0, r0, #0x3fc\n"
-        "bl camp_func_002bf030\n"
-        "ldrsh r0, [r4, #0x90]\n"
-        "sub r6, r6, #1\n"
-        "cmp r0, r6\n"
-        "blt .L_001e0f54\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, fp, ip, pc}\n"
-        ".word 0x01000173\n"
-        ".word 0x00000fa6\n"
-        ".word 0x00000fa1\n"
-    );
+//
+// Script-VM slot update for one block of 140-byte (35 * 4) slots.  `self`
+// points at the block base; the fields touched are:
+//   +0x217c u32 cleared to 0, +0x2180 u32 cleared to 3;
+//   +0x2184 u32 mode flag (reloaded before every dependent decision);
+//   +0x218c s16 base coordinate, +0x218e s16 source coordinate;
+//   +0x2190 s16 requested slot count (clamped to 0..10), +0x2192 s16 loop count.
+//
+// Both incoming counts are written as u16 (the original `strh`), while the
+// `second > 0` test uses the full 32-bit argument.  The first clamp mirrors
+// the original halfword round trip: remove below zero, then limit
+// (clamped + base) to 10.
+//
+// With second > 0 the function raises the 0x01000173 script event, then for
+// index 0 .. reloaded-0x2192-1 it:
+//   * writes the mode-selected marker (7/8) to slot(base - 0x218e - index + 0x13),
+//   * issues service selector 10 on slot(base - 0x218e - index + 0x31),
+//   * rewrites that slot with marker 0xfa6 (flag == 0) or 0xfa7 (flag != 0).
+// The next pass walks slots (base + index), index = 0 .. reloaded-0x2190-1:
+// two selector-2 service calls at +0x20 and +0x598, then four marker writes
+// at +0x20, +0xb10, +0x1088, +0x1600 (marker set 1/8/3/0xfa1 when the flag
+// is set, 0/7/2/0xfa0 when clear).  A negative clamped count walks index
+// 0, -1, ... while it stays greater than the reloaded count, issuing
+// selector-8/8/9/8 service calls at -0x6c, +0x50c, +0xa84 and +0xffc.
+//
+// All calls are direct; there are no indirect targets.  The only non-void
+// helper (0x002BF030) has its result discarded.  Counts and coordinates are
+// reloaded exactly where the original reloads them, so helpers that modify
+// the block remain visible.  The return value is the last reloaded +0x2190
+// halfword (0 on the exactly-zero path).
+extern "C" s32 script_vm_func_001e0cdc(u8* self, s32 first, s32 second) {
+    constexpr u32 kSlotStride = 140;  // 35 * 4, matching rsb/add/lsl #2
+    constexpr u32 kResetWord0 = 0x217c;
+    constexpr u32 kResetWord3 = 0x2180;
+    constexpr u32 kModeFlag = 0x2184;
+    constexpr u32 kBaseCoordinate = 0x218c;
+    constexpr u32 kSourceCoordinate = 0x218e;
+    constexpr u32 kSlotCount = 0x2190;
+    constexpr u32 kSecondCount = 0x2192;
+
+    *reinterpret_cast<u32*>(self + kResetWord0) = 0;
+    *reinterpret_cast<u32*>(self + kResetWord3) = 3;
+
+    u16* const slot_count = reinterpret_cast<u16*>(self + kSlotCount);
+    *slot_count = static_cast<u16>(first);
+    *reinterpret_cast<u16*>(self + kSecondCount) = static_cast<u16>(second);
+
+    s32 coordinate = *reinterpret_cast<const s16*>(self + kBaseCoordinate);
+    if (static_cast<s32>(static_cast<u32>(coordinate) +
+                         static_cast<u32>(first)) < 0) {
+        *slot_count = static_cast<u16>(-coordinate);
+    }
+    if (static_cast<s32>(*reinterpret_cast<const s16*>(slot_count)) +
+            coordinate > 10) {
+        *slot_count = static_cast<u16>(10 - coordinate);
+    }
+
+    if (second > 0) {
+        const s32 clamped = *reinterpret_cast<const s16*>(slot_count);
+        if (clamped > 0) {
+            coordinate += clamped;
+        }
+        leaf34_event_002bf9e8(0x01000173u);
+
+        if (*reinterpret_cast<const s16*>(self + kSecondCount) > 0) {
+            constexpr u32 kMarkerLow = 0xfa6u;
+            // The original forms the high marker with `orr sl, sl, sl, asr #9`.
+            constexpr u32 kMarkerHigh =
+                kMarkerLow |
+                static_cast<u32>(static_cast<s32>(kMarkerLow) >> 9);
+            s32 index = 0;
+            for (;;) {
+                const u32 source = static_cast<u32>(
+                    *reinterpret_cast<const s16*>(self + kSourceCoordinate));
+                const u32 mode =
+                    *reinterpret_cast<const u32*>(self + kModeFlag);
+                const u32 slot = static_cast<u32>(coordinate) - source -
+                                 static_cast<u32>(index) + 0x13u;
+                u8* const first_slot = self + slot * kSlotStride + 0x20;
+                leaf34_slot_002b90e0(first_slot, mode != 0 ? 8u : 7u);
+
+                const u32 source2 = static_cast<u32>(
+                    *reinterpret_cast<const s16*>(self + kSourceCoordinate));
+                const u32 slot2 = static_cast<u32>(coordinate) - source2 -
+                                  static_cast<u32>(index) + 0x31u;
+                u8* const second_slot = self + slot2 * kSlotStride + 0x20;
+                leaf34_camp_002bf030(second_slot, 10);
+                leaf34_slot_002b90e0(
+                    second_slot,
+                    *reinterpret_cast<const u32*>(self + kModeFlag) != 0
+                        ? kMarkerHigh : kMarkerLow);
+
+                ++index;
+                if (*reinterpret_cast<const s16*>(self + kSecondCount) <=
+                    index) {
+                    break;
+                }
+            }
+        }
+    }
+
+    const s32 count = *reinterpret_cast<const s16*>(self + kSlotCount);
+    if (count > 0) {
+        constexpr u32 kTailMarkerSet = 0xfa1u;
+        constexpr u32 kTailMarkerClear = 0xfa0u;
+        s32 index = 0;
+        for (;;) {
+            s32 coord = *reinterpret_cast<const s16*>(self + kBaseCoordinate);
+            u8* slot = self + (static_cast<u32>(coord) +
+                               static_cast<u32>(index)) * kSlotStride;
+            leaf34_camp_002bf030(slot + 0x20, 2);
+
+            coord = *reinterpret_cast<const s16*>(self + kBaseCoordinate);
+            slot = self + (static_cast<u32>(coord) +
+                           static_cast<u32>(index)) * kSlotStride;
+            leaf34_camp_002bf030(slot + 0x598, 2);
+
+            const u32 mode = *reinterpret_cast<const u32*>(self + kModeFlag);
+            coord = *reinterpret_cast<const s16*>(self + kBaseCoordinate);
+            slot = self + (static_cast<u32>(coord) +
+                           static_cast<u32>(index)) * kSlotStride;
+
+            if (mode != 0) {
+                leaf34_slot_002b90e0(slot + 0x20, 1);
+                coord = *reinterpret_cast<const s16*>(self + kBaseCoordinate);
+                slot = self + (static_cast<u32>(coord) +
+                               static_cast<u32>(index)) * kSlotStride;
+                leaf34_slot_002b90e0(slot + 0xb10, 8);
+                coord = *reinterpret_cast<const s16*>(self + kBaseCoordinate);
+                slot = self + (static_cast<u32>(coord) +
+                               static_cast<u32>(index)) * kSlotStride;
+                leaf34_slot_002b90e0(slot + 0x1088, 3);
+                coord = *reinterpret_cast<const s16*>(self + kBaseCoordinate);
+                slot = self + (static_cast<u32>(coord) +
+                               static_cast<u32>(index)) * kSlotStride;
+                leaf34_slot_002b90e0(slot + 0x1600, kTailMarkerSet);
+            } else {
+                leaf34_slot_002b90e0(slot + 0x20, 0);
+                coord = *reinterpret_cast<const s16*>(self + kBaseCoordinate);
+                slot = self + (static_cast<u32>(coord) +
+                               static_cast<u32>(index)) * kSlotStride;
+                leaf34_slot_002b90e0(slot + 0xb10, 7);
+                coord = *reinterpret_cast<const s16*>(self + kBaseCoordinate);
+                slot = self + (static_cast<u32>(coord) +
+                               static_cast<u32>(index)) * kSlotStride;
+                leaf34_slot_002b90e0(slot + 0x1088, 2);
+                coord = *reinterpret_cast<const s16*>(self + kBaseCoordinate);
+                slot = self + (static_cast<u32>(coord) +
+                               static_cast<u32>(index)) * kSlotStride;
+                leaf34_slot_002b90e0(slot + 0x1600, kTailMarkerClear);
+            }
+
+            const s32 limit = *reinterpret_cast<const s16*>(self + kSlotCount);
+            ++index;
+            if (!(limit > index)) {
+                return limit;
+            }
+        }
+    }
+
+    if (count == 0) {
+        return 0;
+    }
+
+    s32 index = 0;
+    for (;;) {
+        s32 coord = *reinterpret_cast<const s16*>(self + kBaseCoordinate);
+        u8* slot = self + (static_cast<u32>(coord) +
+                           static_cast<u32>(index)) * kSlotStride;
+        leaf34_camp_002bf030(slot - 0x6c, 8);
+
+        coord = *reinterpret_cast<const s16*>(self + kBaseCoordinate);
+        slot = self + (static_cast<u32>(coord) +
+                       static_cast<u32>(index)) * kSlotStride;
+        leaf34_camp_002bf030(slot + 0x50c, 8);
+
+        coord = *reinterpret_cast<const s16*>(self + kBaseCoordinate);
+        slot = self + (static_cast<u32>(coord) +
+                       static_cast<u32>(index)) * kSlotStride;
+        leaf34_camp_002bf030(slot + 0xa84, 9);
+
+        coord = *reinterpret_cast<const s16*>(self + kBaseCoordinate);
+        slot = self + (static_cast<u32>(coord) +
+                       static_cast<u32>(index)) * kSlotStride;
+        leaf34_camp_002bf030(slot + 0xffc, 8);
+
+        const s32 limit = *reinterpret_cast<const s16*>(self + kSlotCount);
+        --index;
+        if (!(limit < index)) {
+            return limit;
+        }
+    }
 }
 
 // ---------------------------------------------------------------------------
