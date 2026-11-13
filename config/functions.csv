@@ -4029,7 +4029,7 @@ address,size,status,category,name,src_file
 0x002582e8,16,matching,unknown,func_002582e8,src/engine/leaf_batch21_b.cpp
 0x002582f8,16,matching,unknown,func_002582f8,src/engine/leaf_batch38_a.cpp
 0x00258308,156,non_matching,camp,camp_func_00258308,src/engine/leaf_batch31_c.cpp
-0x002583a4,664,matching,camp,camp_func_002583a4,src/engine/leaf_batch45_a.cpp
+0x002583a4,664,non_matching,camp,camp_func_002583a4,src/engine/leaf_batch45_a.cpp
 0x0025863c,528,matching,camp,camp_func_0025863c,src/engine/leaf_batch44_c.cpp
 0x0025884c,1036,matching,camp,camp_func_0025884c,src/engine/leaf_batch40_a.cpp
 0x00258c58,480,matching,ui,ui_func_00258c58,src/engine/leaf_batch41_c.cpp

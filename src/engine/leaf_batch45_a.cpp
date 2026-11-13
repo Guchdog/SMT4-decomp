@@ -6073,6 +6073,207 @@ extern "C" void func_00150f54(void* object) {
     engine_func_002bce38(final_value);
 }
 
+// Direct callees of camp_func_002583a4. 0x00340C30 fills two float pairs for
+// the caller's view record, 0x002A2DDC resolves/mutates one selection slot,
+// and 0x002C25F0 is a 4-byte veneer that tail-branches to func_0014782C.
+extern "C" void camp_func_00340c30(void* object, float* out_pair_a,
+                                   float* out_pair_b);
+extern "C" void camp_func_002a2ddc(void** entry, const u32* key);
+extern "C" void engine_func_002c25f0(void* object, u32 value);
+
+namespace {
+
+constexpr u32 kCampRuntimeGlobal = 0x0043DD90;
+constexpr u32 kObjectRequiredFlags = 0x10000001;
+constexpr u32 kChildActiveFlag = 0x40000000;
+constexpr f32 kHalf = 0.5f;
+
+inline u32 load_u32(const void* base, u32 offset) {
+    return *reinterpret_cast<const u32*>(static_cast<const u8*>(base) + offset);
+}
+
+inline s32 load_s32(const void* base, u32 offset) {
+    return *reinterpret_cast<const s32*>(static_cast<const u8*>(base) + offset);
+}
+
+inline s16 load_s16(const void* base, u32 offset) {
+    return *reinterpret_cast<const s16*>(static_cast<const u8*>(base) + offset);
+}
+
+// Raw reads used where the original unconditionally dereferences an address it
+// may have resolved to null; volatile keeps the load and its fault behaviour.
+inline u32 raw_load_u32(u32 address) {
+    return *reinterpret_cast<const volatile u32*>(
+        static_cast<u32>(address));
+}
+
+inline s32 raw_load_s32(u32 address) {
+    return *reinterpret_cast<const volatile s32*>(
+        static_cast<u32>(address));
+}
+
+// Node fields that hold a relative offset: zero means the node is absent,
+// otherwise the target is the field address plus the offset.
+inline u8* resolve_relative(u32 field_address) {
+    const u32 offset = raw_load_u32(field_address);
+    return offset != 0 ? reinterpret_cast<u8*>(field_address + offset)
+                       : nullptr;
+}
+
+}  // namespace
+
+// DECOMP_FUNC(0x002583a4, 664)
+// Camp-scene transform pass. `self` is the caller's render/view record; every
+// caller passes <camp work> + 0x38. The global at 0x0043DD90 supplies the camp
+// manager, whose +0x194 and +0x298 fields are the two signed entry counts.
+// Phase 1 walks the render object selected by manager[0x94 + 4*i] and adds the
+// 0x00340C30 offset pair to each float pair referenced by the selected child
+// element. Phase 2 re-resolves the manager[0x198 + 4*i] selection, notifies
+// 0x002A2DDC, and clears the +0x2B0 word of its group record. The original
+// leaves the manager's +0x298 load in r0 on every return path.
+extern "C" u32 camp_func_002583a4(void* self) {
+    u8* const manager = *reinterpret_cast<u8**>(kCampRuntimeGlobal);
+
+    float unused_pair[2];
+    float offset_pair[2];
+    camp_func_00340c30(self, unused_pair, offset_pair);
+
+    // Phase 1: manager entries at +0x94 (object selector) and +0x96 (element
+    // key selector), one 4-byte slot per index.
+    for (s32 i = 0; i < load_s32(manager, 0x194); ++i) {
+        u8* const slot = manager + static_cast<u32>(i) * 4;
+
+        u8* object_root = *reinterpret_cast<u8**>(manager + 0x84);
+        object_root = *reinterpret_cast<u8**>(object_root + 8);
+        object_root = *reinterpret_cast<u8**>(object_root + 0x2C);
+        object_root = *reinterpret_cast<u8**>(object_root + 8);
+
+        // ARM relative-offset table at object_root + 0xC8.
+        const u32 table_address = reinterpret_cast<u32>(object_root) + 0xC8;
+        const u32 table_offset = raw_load_u32(table_address);
+        const u32 table_base = table_offset != 0 ? table_address + table_offset
+                                                 : 0u;
+        const u32 object_slot =
+            table_base + static_cast<u32>(load_s16(slot, 0x94)) * 4u;
+        u8* const object = resolve_relative(object_slot);
+
+        // All bits of 0x10000001 must be set; other bits are ignored.
+        if (object == nullptr ||
+            (load_u32(object, 0) & kObjectRequiredFlags) !=
+                kObjectRequiredFlags) {
+            continue;
+        }
+
+        const s32 child_count = load_s32(object, 0x38);
+        for (s32 child_index = 0; child_index < child_count; ++child_index) {
+            const u32 child_table_field = reinterpret_cast<u32>(object) + 0x3C;
+            const u32 child_table_offset = raw_load_u32(child_table_field);
+            const u32 child_table_base =
+                child_table_offset != 0 ? child_table_field + child_table_offset
+                                        : 0u;
+            const u32 child_slot =
+                child_table_base + static_cast<u32>(child_index) * 4u;
+            u8* const child = resolve_relative(child_slot);
+
+            if (child == nullptr ||
+                (load_u32(child, 0) & kChildActiveFlag) == 0) {
+                continue;
+            }
+
+            const u32 data_offset = load_u32(child, 0x18);
+            const u32 element_count = load_u32(child, 0x28);
+            const u32 data_span = load_u32(child, 0x14);
+            const u32 data_base =
+                data_offset != 0
+                    ? reinterpret_cast<u32>(child) + 0x18 + data_offset
+                    : 0u;
+            const s32 match_key = load_s16(slot, 0x96) + 4;
+
+            for (u32 element_index = 0; element_index < element_count;
+                 ++element_index) {
+                const u32 element_table_field =
+                    reinterpret_cast<u32>(child) + 0x2C;
+                const u32 element_table_offset =
+                    raw_load_u32(element_table_field);
+                const u32 element_table_base =
+                    element_table_offset != 0
+                        ? element_table_field + element_table_offset
+                        : 0u;
+                const u32 element_slot =
+                    element_table_base + element_index * 4u;
+                u8* const element = resolve_relative(element_slot);
+
+                // A null element still faults at element + 4 in the original.
+                if (raw_load_s32(reinterpret_cast<u32>(element) + 4) !=
+                    match_key) {
+                    continue;
+                }
+
+                const s32 data_index =
+                    raw_load_s32(reinterpret_cast<u32>(element) + 0x30);
+                if (data_index < 0) {
+                    break;
+                }
+
+                u32 cursor = data_base + static_cast<u32>(data_index);
+                const u32 end = data_base + data_span;
+                if (cursor < end) {
+                    const u32 stride = load_u32(child, 0x24);
+                    do {
+                        f32 x = *reinterpret_cast<const f32*>(cursor);
+                        f32 y = *reinterpret_cast<const f32*>(cursor + 4);
+                        x = x - kHalf;
+                        y = y - kHalf;
+                        x = x + kHalf;
+                        y = y + kHalf;
+                        *reinterpret_cast<f32*>(cursor) = x;
+                        *reinterpret_cast<f32*>(cursor + 4) = y;
+                        x = x + offset_pair[0];
+                        y = y + offset_pair[1];
+                        *reinterpret_cast<f32*>(cursor) = x;
+                        *reinterpret_cast<f32*>(cursor + 4) = y;
+                        cursor += stride;
+                    } while (cursor < end);
+                }
+
+                engine_func_002c25f0(reinterpret_cast<void*>(data_base),
+                                     data_span);
+            }
+        }
+    }
+
+    // Phase 2: manager entries at +0x198 (group/table selector), +0x19A
+    // (relative slot selector) and a 0x2B0 reset on the selected group.
+    for (s32 i = 0; i < load_s32(manager, 0x298); ++i) {
+        u8* chain = *reinterpret_cast<u8**>(manager + 0x84);
+        chain = *reinterpret_cast<u8**>(chain + 8);
+        chain = *reinterpret_cast<u8**>(chain + 0x2C);
+
+        const u8* const slot =
+            manager + 0x100 + static_cast<u32>(i) * 4;
+        const u32 lookup = load_u32(chain, 0x164);
+        const u32 entry =
+            load_u32(reinterpret_cast<const void*>(lookup),
+                     static_cast<u32>(load_s16(slot, 0x98)) * 4u);
+        const u32 group = load_u32(reinterpret_cast<const void*>(entry), 0x3C);
+
+        const u32 group_slot =
+            group + 0x274 + static_cast<u32>(load_s16(slot, 0x9A)) * 4u;
+        u8* selected = resolve_relative(group_slot);
+
+        // The original reads selected + 8 before discarding the value; keep
+        // the read so a null selection faults at address 8 as it did.
+        (void)raw_load_u32(reinterpret_cast<u32>(selected) + 8);
+
+        const u32* const key =
+            reinterpret_cast<const u32*>(load_u32(self, 0xC));
+        camp_func_002a2ddc(reinterpret_cast<void**>(&selected), key);
+        *reinterpret_cast<u32*>(group + 0x2B0) = 0;
+    }
+
+    return load_u32(manager, 0x298);
+}
+
 // 0x001188d0: UI list-panel refresh. The status byte gates the whole body,
 // the kind byte selects one of two 0x2BF6D0 node lists, and a UI command is
 // pushed onto render layer 3 for the duration of the body and popped after it.
