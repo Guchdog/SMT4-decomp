@@ -615,7 +615,7 @@ address,size,status,category,name,src_file
 0x00127220,180,matching,unknown,func_00127220,src/engine/leaf_batch27_a.cpp
 0x001272d4,56,matching,nn_sdk,nn_sdk_func_001272d4,src/engine/leaf_batch23_a.cpp
 0x0012730c,2508,matching,ui,ui_func_0012730c,src/engine/leaf_batch46_c.cpp
-0x00127cd8,420,matching,unknown,func_00127cd8,src/engine/leaf_batch34_c.cpp
+0x00127cd8,420,non_matching,unknown,func_00127cd8,src/engine/leaf_batch34_c.cpp
 0x00127e7c,84,matching,ui,ui_func_00127e7c,src/engine/leaf_batch29_a.cpp
 0x00127ed0,280,matching,nn_sdk,nn_sdk_func_00127ed0,src/engine/leaf_batch34_c.cpp
 0x00127fe8,76,matching,unknown,func_00127fe8,src/engine/leaf_batch11_b.cpp

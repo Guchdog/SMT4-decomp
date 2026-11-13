@@ -1983,125 +1983,168 @@ extern "C" __attribute__((naked)) void engine_func_00126c38() {
     );
 }
 
+// ---------------------------------------------------------------------------
+// func_00127cd8: per-slot descriptor-record stream encoder.
+//
+// The object holds a byte slot count at +0x08, a u32 descriptor-pointer table
+// at +0x0C and 0x928-byte output-buffer regions.  For every slot i the
+// descriptor at *(object + 0x0C + 4*i) selects one of two 32-bit mask words in
+// the object (+0x29C or +0x2A0, by its byte at +0x06) and points at a 20-byte
+// record array (base + *(u32*)(descriptor+0x18), count at +0x1C).  Records are
+// encoded into object + 0x368 + i*0x928; the number of 32-bit words emitted is
+// published in the u32 table at +0x12868 + 4*i.
+//
+// Record layout (all little-endian): u16 opcode, u16 parameter, then four u32
+// fields.  Opcode 0 ORs one bit into the mask word; opcode 1 emits two words;
+// opcode 2 emits six words ending in 0xEAD0FEAD; any other opcode is a no-op.
+//
+// There are no direct or indirect calls.  r0 is never written, so the original
+// returns the object pointer; the C++ signature returns it explicitly.
+//
+// The record array and the output buffers are assumed not to alias each other.
+// Where the original re-reads a record word after a store (opcode 2) the two
+// loads are kept, so even aliasing with a later slot's buffer keeps the same
+// load/store order.
+// ---------------------------------------------------------------------------
+namespace {
+
+// Object offsets.  +0x08 is the u8 slot count; +0x0C and +0x12868 are u32
+// index tables addressed by slot*4.
+constexpr u32 kSlotCountOffset = 0x08;
+constexpr u32 kSlotDescriptorOffset = 0x0C;
+constexpr u32 kMaskWordOffset = 0x29C;
+constexpr u32 kMaskWordAlternateOffset = 0x2A0;
+constexpr u32 kOutputBufferOffset = 0x368;
+constexpr u32 kSlotStrideFactor = 0x125; // literal-pool word at 0x00127E74
+constexpr u32 kOutputSlotStride = kSlotStrideFactor * 8; // 0x928 bytes/slot
+constexpr u32 kOutputWordCountOffset = 0x12868;
+
+// Descriptor fields read by the body.
+constexpr u32 kDescriptorVariantOffset = 0x06;   // u8 selector
+constexpr u32 kDescriptorEntryOffsetField = 0x18; // u32, relative to descriptor
+constexpr u32 kDescriptorEntryCountField = 0x1C;  // u32, re-read each iteration
+
+// 20-byte record: u16 opcode, u16 parameter, four u32 fields.
+constexpr u32 kEntryWords = 5;
+constexpr u32 kEntryOpcodeOffset = 0x00;
+constexpr u32 kEntryParameterOffset = 0x02;
+
+constexpr u32 kOpSetMaskBit = 0;
+constexpr u32 kOpPackWords = 1;
+constexpr u32 kOpStream = 2;
+
+// Literal-pool constants at 0x00127E74 / 0x00127E78 and the immediate forms
+// derived from them.
+constexpr u32 kTagPlain = 0x2C0;
+constexpr u32 kTagVariant = 0x290;
+constexpr u32 kParameterBias = 0xF;     // tag - 0xF is added to the parameter
+constexpr u32 kParameterClass = 0x000F0000; // ORed into the opcode-1 word
+constexpr u32 kStreamModeBits = 0x803F0000; // ORed with the tag in opcode 2
+constexpr u32 kStreamTerminator = 0xEAD0FEAD;
+
+inline u32 LoadU16(const u8* base, u32 offset) {
+    return *reinterpret_cast<const u16*>(base + offset);
+}
+
+// ARM `lsl` by a register uses the low byte of the shift count and produces
+// zero for counts of 32 or more.
+inline u32 ArmLsl(u32 value, u32 shift) {
+    const u32 amount = shift & 0xFFu;
+    return amount < 32u ? value << amount : 0u;
+}
+
+} // namespace
+
 // DECOMP_FUNC(0x00127cd8, 420)
-extern "C" __attribute__((naked)) void func_00127cd8() {
-    asm volatile(
-        "push {r4, r5, r6, r7, r8, sb, sl, fp, lr}\n"
-        "sub sp, sp, #8\n"
-        "mov r5, #0\n"
-        "ldrb r1, [r0, #8]\n"
-        "cmp r1, #0\n"
-        "ble .L_00127e6c\n"
-        ".L_00127cf0:\n"
-        ".word 0xe59f117c\n"
-        "add sb, r0, r5, lsl #2\n"
-        "mov r2, #0x2c0\n"
-        "sub r7, r2, #0xf\n"
-        "mul r1, r5, r1\n"
-        "add r6, r0, #0x29c\n"
-        "add r1, r0, r1, lsl #3\n"
-        "str r1, [sp]\n"
-        "ldr ip, [sb, #0xc]\n"
-        "add r1, r1, #0x368\n"
-        "ldrb r3, [ip, #6]\n"
-        "cmp r3, #0\n"
-        "beq .L_00127d30\n"
-        "mov r2, #0x290\n"
-        "sub r7, r2, #0xf\n"
-        "add r6, r0, #0x2a0\n"
-        ".L_00127d30:\n"
-        "ldr r3, [ip, #0x18]\n"
-        "mov r4, #0\n"
-        "add r8, r3, ip\n"
-        "ldr r3, [ip, #0x1c]\n"
-        "cmp r3, #0\n"
-        "orrhi r2, r2, #0x80000000\n"
-        "orrhi r2, r2, #0x3f0000\n"
-        "strhi r2, [sp, #4]\n"
-        "bls .L_00127e40\n"
-        ".L_00127d54:\n"
-        "add r2, r4, r4, lsl #2\n"
-        "add r3, r8, r2, lsl #2\n"
-        "add r2, r3, #4\n"
-        "ldrh sl, [r3]\n"
-        "cmp sl, #0\n"
-        "beq .L_00127d80\n"
-        "cmp sl, #1\n"
-        "beq .L_00127d9c\n"
-        "cmp sl, #2\n"
-        "bne .L_00127e30\n"
-        "b .L_00127dd0\n"
-        ".L_00127d80:\n"
-        "ldr sl, [r3, #4]\n"
-        "ldrh r2, [r3, #2]\n"
-        "ldr r3, [r6]\n"
-        "and sl, sl, #1\n"
-        "orr r2, r3, sl, lsl r2\n"
-        "str r2, [r6]\n"
-        "b .L_00127e30\n"
-        ".L_00127d9c:\n"
-        "ldm r2, {fp, lr}\n"
-        "ldr sl, [r2, #8]\n"
-        "ldr r2, [r2, #0xc]\n"
-        "orr fp, fp, lr, lsl #8\n"
-        "lsl sl, sl, #0x10\n"
-        "orr r2, sl, r2, lsl #24\n"
-        "orr r2, r2, fp\n"
-        "str r2, [r1], #4\n"
-        "ldrh r2, [r3, #2]\n"
-        "add r2, r2, r7\n"
-        "orr r2, r2, #0xf0000\n"
-        "str r2, [r1]\n"
-        "b .L_00127e2c\n"
-        ".L_00127dd0:\n"
-        "ldrh sl, [r3, #2]\n"
-        ".word 0xe59f309c\n"
-        "str sl, [r1], #4\n"
-        "ldr sl, [sp, #4]\n"
-        "str sl, [r1], #4\n"
-        "ldr fp, [r2, #8]\n"
-        "ldr sl, [r2, #0xc]\n"
-        "lsl fp, fp, #8\n"
-        "lsr fp, fp, #0x18\n"
-        "orr sl, fp, sl, lsl #8\n"
-        "str sl, [r1], #4\n"
-        "ldr sl, [r2, #8]\n"
-        "ldr fp, [r2, #4]\n"
-        "lsl sl, sl, #0x10\n"
-        "lsr fp, fp, #8\n"
-        "pkhbt sl, fp, sl\n"
-        "str sl, [r1], #4\n"
-        "ldr sl, [r2]\n"
-        "ldr r2, [r2, #4]\n"
-        "bic sl, sl, #0xff000000\n"
-        "orr r2, sl, r2, lsl #24\n"
-        "strd r2, r3, [r1]\n"
-        "add r1, r1, #4\n"
-        ".L_00127e2c:\n"
-        "add r1, r1, #4\n"
-        ".L_00127e30:\n"
-        "ldr r2, [ip, #0x1c]\n"
-        "add r4, r4, #1\n"
-        "cmp r2, r4\n"
-        "bhi .L_00127d54\n"
-        ".L_00127e40:\n"
-        "ldr r2, [sp]\n"
-        "add sb, sb, #0x12800\n"
-        "add sb, sb, #0x68\n"
-        "sub r1, r1, r2\n"
-        "sub r1, r1, #0x368\n"
-        "add r5, r5, #1\n"
-        "asr r1, r1, #2\n"
-        "str r1, [sb]\n"
-        "ldrb r1, [r0, #8]\n"
-        "cmp r1, r5\n"
-        "bgt .L_00127cf0\n"
-        ".L_00127e6c:\n"
-        "add sp, sp, #8\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, fp, pc}\n"
-        ".word 0x00000125\n"
-        ".word 0xead0fead\n"
-    );
+extern "C" u8* func_00127cd8(u8* object) {
+    // 0x00127CE4..0x00127CEC and 0x00127E60: the u8 slot count is re-read
+    // after every slot; zero skips the whole body.
+    for (u32 slot = 0; slot < object[kSlotCountOffset]; ++slot) {
+        const u32 slot_base = slot * kOutputSlotStride;
+
+        // 0x00127CF4..0x00127D18: descriptor from the u32 table and the
+        // output cursor for this slot.
+        const u8* const descriptor = reinterpret_cast<const u8*>(
+            LoadU32(object, kSlotDescriptorOffset + slot * 4));
+        u32* const out_begin =
+            reinterpret_cast<u32*>(object + slot_base + kOutputBufferOffset);
+        u32* out = out_begin;
+
+        // 0x00127D10..0x00127D2C: the variant byte picks the masked word and
+        // the tag / parameter bias used by both encoder opcodes.
+        const u32 variant = descriptor[kDescriptorVariantOffset];
+        const u32 tag = variant != 0 ? kTagVariant : kTagPlain;
+        u32* const mask_word = reinterpret_cast<u32*>(
+            object + (variant != 0 ? kMaskWordAlternateOffset
+                                   : kMaskWordOffset));
+        const u32 stream_mode = tag | kStreamModeBits;
+
+        // 0x00127D30..0x00127D50: entry array base and count.  The count word
+        // is also re-read at the bottom of every record iteration
+        // (0x00127E30), so the loop condition below reloads it.
+        const u8* const entries =
+            descriptor + LoadU32(descriptor, kDescriptorEntryOffsetField);
+
+        for (u32 index = 0;
+             index < LoadU32(descriptor, kDescriptorEntryCountField);
+             ++index) {
+            const u8* const record = entries + index * (kEntryWords * 4);
+            switch (LoadU16(record, kEntryOpcodeOffset)) {
+            case kOpSetMaskBit: {
+                // 0x00127D80..0x00127D98: set bit `parameter & 0xFF` of the
+                // mask word from field bit 0.  The word is always re-read and
+                // stored, even when the mask is zero or the bit is clear.
+                const u32 bit = LoadU32(record, 4) & 1u;
+                const u32 bit_index = LoadU16(record, kEntryParameterOffset);
+                *mask_word = *mask_word | ArmLsl(bit, bit_index);
+                break;
+            }
+            case kOpPackWords: {
+                // 0x00127D9C..0x00127DCC: byte-pack fields 1..4 into one word,
+                // then emit parameter + (tag - 0xF), classed with 0xF0000.
+                const u32 field_a = LoadU32(record, 4);
+                const u32 field_b = LoadU32(record, 8);
+                const u32 field_c = LoadU32(record, 0x0C);
+                const u32 field_d = LoadU32(record, 0x10);
+                *out++ = field_a | (field_b << 8) | (field_c << 16) |
+                         (field_d << 24);
+                *out++ = (LoadU16(record, kEntryParameterOffset) +
+                          (tag - kParameterBias)) |
+                         kParameterClass;
+                break;
+            }
+            case kOpStream: {
+                // 0x00127DD0..0x00127E28: parameter, mode word, then the
+                // differently packed field words and the terminator.  Loads
+                // are kept in the original order, including the repeated
+                // field_c / field_b reads.
+                *out++ = LoadU16(record, kEntryParameterOffset);
+                *out++ = stream_mode;
+                const u32 field_c_first = LoadU32(record, 0x0C);
+                const u32 field_d = LoadU32(record, 0x10);
+                *out++ = ((field_c_first >> 16) & 0xFFu) | (field_d << 8);
+                const u32 field_c_second = LoadU32(record, 0x0C);
+                const u32 field_b_first = LoadU32(record, 8);
+                *out++ = ((field_b_first >> 8) & 0xFFFFu) |
+                         (field_c_second << 16);
+                const u32 field_a = LoadU32(record, 4);
+                const u32 field_b_second = LoadU32(record, 8);
+                *out++ = (field_a & 0x00FFFFFFu) | (field_b_second << 24);
+                *out++ = kStreamTerminator;
+                break;
+            }
+            default:
+                // 0x00127E30: unknown opcode leaves the cursor untouched.
+                break;
+            }
+        }
+
+        // 0x00127E40..0x00127E5C: publish the word count for this slot.
+        StoreU32(object, kOutputWordCountOffset + slot * 4,
+                 static_cast<u32>(out - out_begin));
+    }
+
+    return object;
 }
 
 // DECOMP_FUNC(0x00127ed0, 280)
