@@ -3778,90 +3778,217 @@ extern "C" f32 ui_func_002820a4(f32 y, f32 x) {
 }
 
 // DECOMP_FUNC(0x002fe600, 628)
-extern "C" __attribute__((naked)) void ui_func_002fe600() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4fff, 0xe92d, 0x4000, 0xe1a0\n"
-        ".hword 0x8002, 0xe1a0, 0x9001, 0xe1a0\n"
-        ".hword 0x8b08, 0xed2d, 0xd014, 0xe24d\n"
-        ".hword 0x1018, 0xe598, 0x2068, 0xe59d\n"
-        ".hword 0x0000, 0xe351, 0x0066, 0xda00\n"
-        ".hword 0x0000, 0xe352, 0x0000, 0xe3a0\n"
-        ".hword 0x0063, 0xda00, 0x3040, 0xe59d\n"
-        ".hword 0xc180, 0xe080, 0x318c, 0xe083\n"
-        ".hword 0x3004, 0xe593, 0x0001, 0xe153\n"
-        ".hword 0x005a, 0x1a00, 0x1180, 0xe080\n"
-        ".hword 0x50ff, 0xe200, 0x0040, 0xe59d\n"
-        ".hword 0x0181, 0xe090, 0x0058, 0x0a00\n"
-        ".hword 0x7000, 0xe3a0, 0x829b, 0xeb03\n"
-        ".hword 0xaa7c, 0xed9f, 0x8a40, 0xeef0\n"
-        ".hword 0x001c, 0xe598, 0x9a4a, 0xeef0\n"
-        ".hword 0xb000, 0xe3a0, 0x0000, 0xe350\n"
-        ".hword 0x0074, 0xda00, 0x0075, 0xe6af\n"
-        ".hword 0xaa75, 0xeddf, 0xba75, 0xed9f\n"
-        ".hword 0xba75, 0xeddf, 0x9a75, 0xed9f\n"
-        ".hword 0x0004, 0xe58d, 0x010b, 0xe08b\n"
-        ".hword 0x0000, 0xe35b, 0x0100, 0xe088\n"
-        ".hword 0x5028, 0xe280, 0x6000, 0xe3a0\n"
-        ".hword 0x0a02, 0x1d95, 0x00d0, 0xe1c5\n"
-        ".hword 0x9ac0, 0x1e79, 0x2001, 0xe240\n"
-        ".hword 0x0a03, 0xed95, 0x0291, 0xe001\n"
-        ".hword 0x1a2b, 0xee20, 0x0a90, 0xee00\n"
-        ".hword 0x1a10, 0xee00, 0x0000, 0xe350\n"
-        ".hword 0x007b, 0xc6ff, 0x1ae0, 0xeef8\n"
-        ".hword 0x0ac0, 0xeef8, 0x0a04, 0xed95\n"
-        ".hword 0x1ac1, 0xeebc, 0x0008, 0xc58d\n"
-        ".hword 0x0aa1, 0xee48, 0x1a10, 0xee11\n"
-        ".hword 0x1a28, 0xee20, 0x2c01, 0xe1a0\n"
-        ".hword 0x2801, 0xe182, 0x1401, 0xe182\n"
-        ".hword 0x10ff, 0xe381, 0x100c, 0xe58d\n"
-        ".hword 0x0a89, 0xee60, 0x8a0b, 0xee21\n"
-        ".hword 0x0a20, 0xee20, 0x8a6a, 0xee00\n"
-        ".hword 0x0048, 0xda00, 0x0009, 0xe157\n"
-        ".hword 0x0046, 0xaa00, 0x2018, 0xe598\n"
-        ".hword 0x0a4a, 0xeeb0, 0x2000, 0xe584\n"
-        ".hword 0x8a04, 0xed84, 0x0a05, 0xed84\n"
-        ".hword 0x9a06, 0xedc4, 0x0a03, 0xed9d\n"
-        ".hword 0x0a02, 0xed84, 0x0a04, 0xed95\n"
-        ".hword 0x0a09, 0xee20, 0x0a03, 0xed84\n"
-        ".hword 0x0004, 0xe59d, 0x0006, 0xe5c4\n"
-        ".hword 0x1008, 0xe59d, 0x0000, 0xe350\n"
-        ".hword 0x11bc, 0xe1c4, 0x61be, 0xe1c4\n"
-        ".hword 0x3040, 0xe59d, 0xa020, 0xe598\n"
-        ".hword 0x0026, 0xba00, 0x0180, 0xe080\n"
-        ".hword 0x1000, 0xe3a0, 0x0180, 0xe083\n"
-        ".hword 0x5546, 0xebfe, 0x0ac0, 0xeebd\n"
-        ".hword 0x0000, 0xe35a, 0x2000, 0x03a0\n"
-        ".hword 0x0a00, 0xed8d, 0x20b4, 0x01c4\n"
-        ".hword 0x0016, 0x0a00, 0x0001, 0xe35a\n"
-        ".hword 0x000a, 0x0a00, 0x0002, 0xe35a\n"
-        ".hword 0x0012, 0x1a00, 0x000d, 0xea00\n"
-        ".hword 0x0001, 0xe280, 0x0000, 0xe152\n"
-        ".hword 0xff9b, 0xcaff, 0x0000, 0xe3a0\n"
-        ".hword 0xd014, 0xe28d, 0x8b08, 0xecbd\n"
-        ".hword 0xd010, 0xe28d, 0x8ff0, 0xe8bd\n"
-        ".hword 0x1004, 0xe3a0, 0x0000, 0xe3a0\n"
-        ".hword 0x6207, 0xebfe, 0x0100, 0xe1a0\n"
-        ".hword 0xf000, 0xe320, 0x0002, 0xea00\n"
-        ".hword 0x1a10, 0xee10, 0x0000, 0xe3a0\n"
-        ".hword 0x6201, 0xebfe, 0x00b4, 0xe1c4\n"
-        ".hword 0x00f4, 0xe1d4, 0x1000, 0xe59d\n"
-        ".hword 0x0001, 0xe150, 0x0001, 0xba00\n"
-        ".hword 0x1e51, 0xebff, 0x10b4, 0xe1c4\n"
-        ".hword 0x0a01, 0xed95, 0x0a04, 0xedd5\n"
-        ".hword 0x1000, 0xe595, 0x0ac0, 0xeeb8\n"
-        ".hword 0x6001, 0xe286, 0x0001, 0xe156\n"
-        ".hword 0x4020, 0xe284, 0x7001, 0xe287\n"
-        ".hword 0x0a28, 0xee30, 0x0a09, 0xee20\n"
-        ".hword 0x8a80, 0xee00, 0xffb6, 0xbaff\n"
-        ".hword 0x001c, 0xe598, 0xb001, 0xe28b\n"
-        ".hword 0x000b, 0xe150, 0xff90, 0xcaff\n"
-        ".hword 0x0007, 0xe1a0, 0xffd9, 0xeaff\n"
-        ".hword 0x0000, 0x0000, 0x0000, 0x3f00\n"
-        ".hword 0xcccd, 0x3d4c, 0x0000, 0x437f\n"
-        ".hword 0xcccd, 0x3dcc\n"
-    );
+//
+// Builds the draw list for one effect group. The first word of the source
+// descriptor (`source+0x18`) is a positive key that selects a catalog slot;
+// each slot has a 72-byte stride and exposes its key at `+0x04`. The slot then
+// provides a float scale (`0x003df0d8`) and, per emitted element, a signed
+// unit count (`0x00293ca8`).
+//
+// `source+0x1c` is the number of 20-byte group descriptors at `source+0x28`.
+// Every group emits `field_00` 32-byte output records (until the signed output
+// capacity is reached and while the group's count is positive). A record packs
+// the catalog key, a per-element byte, the group's float fields converted to
+// grey/+0x08, and an accumulating vertical offset. `selector` is the signed low
+// byte of the catalog index: when it is negative the entire unit-selection
+// block (mode dispatch, 0x00297004 draws and the 0x002c615c remainder) is
+// skipped; the other record fields are still written.
+//
+// Returns the number of output records written.
+namespace ui_fe600 {
+
+constexpr u32 kSourceKeyOffset = 0x18;         // s32 selected catalog key
+constexpr u32 kSourceGroupCountOffset = 0x1C;  // s32 group descriptor count
+constexpr u32 kSourceModeOffset = 0x20;        // s32 0/1/2 unit-selection mode
+constexpr u32 kSourceGroupsOffset = 0x28;      // SourceGroup array
+
+constexpr u32 kCatalogKeyOffset = 0x04;        // s32 slot key
+constexpr u32 kCatalogStride = 0x48;           // bytes between catalog slots
+
+constexpr f32 kZero = 0.0f;
+constexpr f32 kHalf = 0.5f;
+constexpr f32 kColorScale = 255.0f;            // field_0c -> packed byte
+constexpr f32 kFineStep = 0.1f;                // per-element vertical step
+constexpr f32 kOffsetScale = 0.05f;            // initial vertical offset
+
+// One 32-byte output record. The original stores `+0x04` as one halfword and
+// `+0x06` as one byte, leaving byte +0x07 untouched.
+struct OutputRecord {
+    u32 field_00;  // +0x00 catalog key
+    u16 field_04;  // +0x04 selected unit value (written conditionally)
+    u8 field_06;   // +0x06 low byte of the catalog index
+    u8 pad_07;     // +0x07 never written by this routine
+    f32 field_08;  // +0x08 packed grey byte repeated in every channel
+    f32 field_0C;  // +0x0C group field_10 * 0.1
+    f32 field_10;  // +0x10 accumulating vertical offset
+    f32 field_14;  // +0x14 0.0
+    f32 field_18;  // +0x18 negated sum of preceding group field_08 values
+    u16 field_1C;  // +0x1C group index
+    u16 field_1E;  // +0x1E element index within the group
 };
+static_assert(sizeof(OutputRecord) == 0x20);
+
+// Catalog slot. Only `+0x04` is read here; the helpers consume the rest.
+struct CatalogSlot {
+    u8 unknown_00[4];
+    s32 key_04;
+    u8 unknown_08[0x48 - 8];
+};
+static_assert(sizeof(CatalogSlot) == 0x48);
+
+// Group descriptor; the source holds `group_count` of them back to back.
+struct SourceGroup {
+    s32 field_00;  // +0x00 element count
+    s32 field_04;  // +0x04 per-element step
+    f32 field_08;  // +0x08 vertical offset subtracted from the accumulator
+    f32 field_0C;  // +0x0C grey channel in [0, 1]
+    f32 field_10;  // +0x10 vertical amplitude
+};
+static_assert(sizeof(SourceGroup) == 0x14);
+
+}  // namespace ui_fe600
+
+extern "C" f32 func_003df0d8(const ui_fe600::CatalogSlot* slot);
+extern "C" f32 ui_func_00293ca8(const ui_fe600::CatalogSlot* slot, s32 index);
+extern "C" s32 ui_func_00297004(s32 min_val, s32 max_val);
+extern "C" u64 ui_func_002c615c(s32 numerator, s32 denominator);
+
+extern "C" s32 ui_func_002fe600(ui_fe600::OutputRecord* out, s32 capacity,
+                                const u8* source,
+                                const ui_fe600::CatalogSlot* catalog,
+                                s32 catalog_count) {
+    using namespace ui_fe600;
+
+    const s32 key = *reinterpret_cast<const s32*>(source + kSourceKeyOffset);
+    if (key <= 0) {
+        return 0;
+    }
+    if (catalog_count <= 0) {
+        return 0;
+    }
+
+    // Address arithmetic is kept in u32 so the original's `adds`-based null
+    // test below is preserved even for a wrapping catalog base.
+    const u32 catalog_address = reinterpret_cast<u32>(catalog);
+    s32 catalog_index = 0;
+    while (true) {
+        const u32 slot_address =
+            catalog_address + static_cast<u32>(catalog_index) * kCatalogStride;
+        const s32 slot_key = *reinterpret_cast<const s32*>(
+            static_cast<u32>(slot_address + kCatalogKeyOffset));
+        if (slot_key == key) {
+            break;
+        }
+        ++catalog_index;
+        if (catalog_index >= catalog_count) {
+            return 0;
+        }
+    }
+
+    const u32 entry_address =
+        catalog_address + static_cast<u32>(catalog_index) * kCatalogStride;
+    if (entry_address == 0) {
+        return 0;
+    }
+    const CatalogSlot* const entry =
+        reinterpret_cast<const CatalogSlot*>(entry_address);
+
+    s32 written = 0;
+    const f32 scale = func_003df0d8(entry);
+
+    const s32 group_count =
+        *reinterpret_cast<const s32*>(source + kSourceGroupCountOffset);
+    if (group_count <= 0) {
+        return written;
+    }
+
+    const u8 index_byte = static_cast<u8>(catalog_index);
+    const s32 selector = static_cast<s8>(index_byte);
+
+    f32 accumulated_z = kZero;
+    s32 group_index = 0;
+    do {
+        const SourceGroup* const group = reinterpret_cast<const SourceGroup*>(
+            source + kSourceGroupsOffset + group_index * sizeof(SourceGroup));
+        if (group_index != 0) {
+            accumulated_z -= group->field_08;
+        }
+
+        const s32 repeat = group->field_00;
+        // `field_04 * (repeat - 1)` is a wrapping 32-bit product.
+        const u32 span_bits = static_cast<u32>(group->field_04) *
+                              (static_cast<u32>(repeat) - 1u);
+        const f32 span = static_cast<f32>(static_cast<s32>(span_bits));
+        const u32 grey_byte =
+            static_cast<u32>(group->field_0C * kColorScale);
+        // Byte 0 is 0xFF; bytes 1..3 repeat the converted grey channel.
+        const u32 packed_grey = (grey_byte << 24) | (grey_byte << 16) |
+                                (grey_byte << 8) | 0xFFu;
+
+        f32 denominator = span + scale * static_cast<f32>(repeat);
+        denominator *= kFineStep;
+
+        f32 offset = (group->field_10 * scale) * kOffsetScale;
+        offset -= (group->field_10 * denominator) * kHalf;
+
+        for (s32 element = 0; element < group->field_00; ++element) {
+            if (written >= capacity) {
+                break;
+            }
+
+            out->field_00 = static_cast<u32>(key);
+            out->field_10 = offset;
+            out->field_14 = kZero;
+            out->field_18 = accumulated_z;
+            out->field_08 = __builtin_bit_cast(f32, packed_grey);
+            out->field_0C = group->field_10 * kFineStep;
+            out->field_06 = index_byte;
+            out->field_1C = static_cast<u16>(group_index);
+            out->field_1E = static_cast<u16>(element);
+
+            if (selector >= 0) {
+                const CatalogSlot* const unit_slot =
+                    reinterpret_cast<const CatalogSlot*>(
+                        catalog_address +
+                        static_cast<u32>(selector) * kCatalogStride);
+                const s32 target = static_cast<s32>(
+                    ui_func_00293ca8(unit_slot, 0));
+
+                const s32 mode =
+                    *reinterpret_cast<const s32*>(source + kSourceModeOffset);
+                if (mode == 0) {
+                    out->field_04 = 0;
+                } else if (mode == 1) {
+                    out->field_04 = static_cast<u16>(
+                        static_cast<u32>(ui_func_00297004(0, 4)) << 2);
+                } else if (mode == 2) {
+                    out->field_04 = static_cast<u16>(
+                        static_cast<u32>(ui_func_00297004(0, target)));
+                }
+                // mode >= 3 leaves field_04 at its previous value.
+
+                const s32 current = static_cast<s16>(out->field_04);
+                if (current >= target) {
+                    // 0x002c615c is the signed divide helper: quotient in r0,
+                    // remainder in r1; the original stores the remainder.
+                    const u64 divided = ui_func_002c615c(current, target);
+                    out->field_04 = static_cast<u16>(divided >> 32);
+                }
+            }
+
+            const f32 step = static_cast<f32>(group->field_04);
+            const f32 amplitude = group->field_10;
+            ++out;
+            ++written;
+            offset += amplitude * ((step + scale) * kFineStep);
+        }
+
+        ++group_index;
+    } while (group_index <
+             *reinterpret_cast<const s32*>(source + kSourceGroupCountOffset));
+
+    return written;
+}
 
 // DECOMP_FUNC(0x0037ea70, 628)
 extern "C" __attribute__((naked)) void script_vm_func_0037ea70() {
