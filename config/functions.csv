@@ -550,7 +550,7 @@ address,size,status,category,name,src_file
 0x0012342c,24,matching,unknown,func_0012342c,src/engine/leaf_batch21_a.cpp
 0x00123444,64,matching,unknown,func_00123444,src/engine/leaf_batch23_a.cpp
 0x00123484,88,matching,battle,battle_func_00123484,src/engine/leaf_batch25_a.cpp
-0x001234dc,408,matching,unknown,func_001234dc,src/engine/leaf_batch28_a.cpp
+0x001234dc,408,non_matching,unknown,func_001234dc,src/engine/leaf_batch28_a.cpp
 0x00123674,484,matching,battle,battle_func_00123674,src/engine/leaf_batch28_a.cpp
 0x00123858,160,matching,battle,battle_func_00123858,src/engine/leaf_batch27_a.cpp
 0x001238f8,100,matching,ui,ui_func_001238f8,src/engine/leaf_batch25_a.cpp

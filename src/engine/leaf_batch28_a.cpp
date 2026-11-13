@@ -7197,113 +7197,165 @@ extern "C" __attribute__((naked)) void engine_func_00140318() {
     );
 }
 
+// ---------------------------------------------------------------------------
+// 0x001234DC -- emit one view's two renderer parameters.
+//
+//   r0 / mode : 0x400 selects view 0, 0x401 selects view 1, and 0x402 selects
+//               both; any other value performs no work.  The caller at
+//               0x0010EC6C passes 0x402.
+//
+// State lives at the fixed global 0x004C6290.  The two views are 4-byte
+// oriented records at +i*4:
+//   +0x008/+0x00C  source coordinate for view 0 / view 1
+//   +0x128/+0x12C  scene-node pointer for view 0 / view 1
+//   +0x130         extra scene-node pointer read by the 0x702 path
+//   +0x134..+0x148 per-view scale/bias/extent slots
+//   +0x14C/+0x150 per-view boolean passed to the renderer, then inverted
+//   +0x164         renderer state (0x700, 0x701, 0x702)
+//
+// Scene node:
+//   +0x004 base, +0x008 type id, +0x00C scale, +0x010 extent, +0x014 mode
+//
+// The type id selects the class bits and the scale multiplier:
+//   0x8051 -> class 1, scale x3     0x8056 -> class 4, scale x2
+//   0x8057 -> class 3, scale x2     0x8058 -> class 0, scale x4
+//   0x8D62 -> class 2, scale x2     other   -> class 0, scale x0
+// The comparison against 0x8057 is signed, as in the original `bgt`.
+//
+// func_001376a4 is a 7-argument wrapper (4 register + 3 stack words) around
+// 0x0013AAF0, which stores a draw record into one of two slots.
+// ---------------------------------------------------------------------------
+extern "C" void func_001376a4(u32 slot, u32 value, u32 param_a, u32 param_b,
+                              u32 param_c, u32 flags, u32 value_copy);  // 0x001376A4
+
+namespace {
+
+constexpr u32 kRenderState = 0x004c6290;
+
+constexpr u32 kNodeBase       = 0x04;
+constexpr u32 kNodeType       = 0x08;
+constexpr u32 kNodeScale      = 0x0c;
+constexpr u32 kNodeExtent     = 0x10;
+constexpr u32 kNodeMode       = 0x14;
+
+constexpr u32 kViewNode       = 0x128;  // + i*4
+constexpr u32 kViewSource     = 0x008;  // + i*4
+constexpr u32 kViewBias       = 0x134;  // + i*4
+constexpr u32 kViewLimit      = 0x140;  // + i*4
+constexpr u32 kViewFlag       = 0x14c;  // + i*4
+constexpr u32 kExtraNode      = 0x130;
+constexpr u32 kExtraExtent    = 0x148;
+constexpr u32 kExtraBias      = 0x13c;
+constexpr u32 kRendererState  = 0x164;
+
+inline u32 load32(const u8* base, u32 offset) {
+    return *reinterpret_cast<const u32*>(base + offset);
+}
+
+inline void store32(u8* base, u32 offset, u32 value) {
+    *reinterpret_cast<u32*>(base + offset) = value;
+}
+
+inline u8* loadNode(const u8* base, u32 offset) {
+    return *reinterpret_cast<u8* const*>(base + offset);
+}
+
+// Shape the node type into the class bits and scale multiplier used by the
+// renderer.  The first comparison is signed; the equality tests are exact.
+inline void classifyNodeType(s32 type, u32* nodeClass, u32* nodeScale) {
+    if (type == 0x8057) {
+        *nodeClass = 3;
+        *nodeScale = 2;
+    } else if (type > 0x8057) {
+        const u32 diff = static_cast<u32>(type) - 0x8057u;
+        if (diff == 1) {
+            *nodeClass = 0;
+            *nodeScale = 4;
+        } else if (diff - 0xd00u - 0xbu == 0) {
+            *nodeClass = 2;
+            *nodeScale = 2;
+        } else {
+            *nodeClass = 0;
+            *nodeScale = 0;
+        }
+    } else {
+        u32 diff = static_cast<u32>(type) - 0x8000u;
+        diff -= 0x51u;
+        if (diff == 0) {
+            *nodeClass = 1;
+            *nodeScale = 3;
+        } else if (diff == 5) {
+            *nodeClass = 4;
+            *nodeScale = 2;
+        } else {
+            *nodeClass = 0;
+            *nodeScale = 0;
+        }
+    }
+}
+
+}  // namespace
+
 // DECOMP_FUNC(0x001234dc, 408)
-extern "C" __attribute__((naked)) void func_001234dc() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe92d4ff0 @ push {r4, r5, r6, r7, r8, sb, sl, fp, lr}\n"
-        ".inst 0xe24dd00c @ sub sp, sp, #0xc\n"
-        ".inst 0xe1a07000 @ mov r7, r0\n"
-        ".inst 0xe3a04000 @ mov r4, #0\n"
-        ".inst 0xe59f6178 @ ldr r6, [pc, #0x178]\n"
-        ".inst 0xe2840b01 @ add r0, r4, #0x400\n"
-        ".inst 0xe1570000 @ cmp r7, r0\n"
-        ".inst 0x12470b01 @ subne r0, r7, #0x400\n"
-        ".inst 0x12500002 @ subsne r0, r0, #2\n"
-        ".inst 0xe3a03000 @ mov r3, #0\n"
-        ".inst 0x1a000053 @ bne #0x123658\n"
-        ".inst 0xe0865104 @ add r5, r6, r4, lsl #2\n"
-        ".inst 0xe59f015c @ ldr r0, [pc, #0x15c]\n"
-        ".inst 0xe5952128 @ ldr r2, [r5, #0x128]\n"
-        ".inst 0xe5921008 @ ldr r1, [r2, #8]\n"
-        ".inst 0xe1510000 @ cmp r1, r0\n"
-        ".inst 0xe0410000 @ sub r0, r1, r0\n"
-        ".inst 0x03a01002 @ moveq r1, #2\n"
-        ".inst 0x03a00003 @ moveq r0, #3\n"
-        ".inst 0x0a000015 @ beq #0x123584\n"
-        ".inst 0xca000009 @ bgt #0x123558\n"
-        ".inst 0xe2410902 @ sub r0, r1, #0x8000\n"
-        ".inst 0xe2500051 @ subs r0, r0, #0x51\n"
-        ".inst 0x03a01003 @ moveq r1, #3\n"
-        ".inst 0x03a00001 @ moveq r0, #1\n"
-        ".inst 0x0a00000f @ beq #0x123584\n"
-        ".inst 0xe3500005 @ cmp r0, #5\n"
-        ".inst 0x03a01002 @ moveq r1, #2\n"
-        ".inst 0x03a00004 @ moveq r0, #4\n"
-        ".inst 0x0a00000b @ beq #0x123584\n"
-        ".inst 0xea000008 @ b #0x12357c\n"
-        ".inst 0xe3500001 @ cmp r0, #1\n"
-        ".inst 0x03a01004 @ moveq r1, #4\n"
-        ".inst 0x03a00000 @ moveq r0, #0\n"
-        ".inst 0x0a000006 @ beq #0x123584\n"
-        ".inst 0xe2400c0d @ sub r0, r0, #0xd00\n"
-        ".inst 0xe250000b @ subs r0, r0, #0xb\n"
-        ".inst 0x03a01002 @ moveq r1, #2\n"
-        ".inst 0x01a00001 @ moveq r0, r1\n"
-        ".inst 0x0a000001 @ beq #0x123584\n"
-        ".inst 0xe3a00000 @ mov r0, #0\n"
-        ".inst 0xe1a01000 @ mov r1, r0\n"
-        ".inst 0xe5929010 @ ldr sb, [r2, #0x10]\n"
-        ".inst 0xe595a008 @ ldr sl, [r5, #8]\n"
-        ".inst 0xe595b140 @ ldr fp, [r5, #0x140]\n"
-        ".inst 0xe592800c @ ldr r8, [r2, #0xc]\n"
-        ".inst 0xe049900a @ sub sb, sb, sl\n"
-        ".inst 0xe595e134 @ ldr lr, [r5, #0x134]\n"
-        ".inst 0xe049900b @ sub sb, sb, fp\n"
-        ".inst 0xe592c014 @ ldr ip, [r2, #0x14]\n"
-        ".inst 0xe029e998 @ mla sb, r8, sb, lr\n"
-        ".inst 0xe5922004 @ ldr r2, [r2, #4]\n"
-        ".inst 0xe35c0801 @ cmp ip, #0x10000\n"
-        ".inst 0xe0080198 @ mul r8, r8, r1\n"
-        ".inst 0xe0222991 @ mla r2, r1, sb, r2\n"
-        ".inst 0x03a0cc01 @ moveq ip, #0x100\n"
-        ".inst 0x13a0cc03 @ movne ip, #0x300\n"
-        ".inst 0xe3540000 @ cmp r4, #0\n"
-        ".inst 0xe180000c @ orr r0, r0, ip\n"
-        ".inst 0x1a00000a @ bne #0x1235f8\n"
-        ".inst 0xe596a164 @ ldr sl, [r6, #0x164]\n"
-        ".inst 0xe3809040 @ orr sb, r0, #0x40\n"
-        ".inst 0xe1a0c006 @ mov ip, r6\n"
-        ".inst 0xe35a0c07 @ cmp sl, #0x700\n"
-        ".inst 0x0a000013 @ beq #0x123630\n"
-        ".inst 0xe24aac07 @ sub sl, sl, #0x700\n"
-        ".inst 0xe25aa001 @ subs sl, sl, #1\n"
-        ".inst 0x0a000002 @ beq #0x1235f8\n"
-        ".inst 0xe35a0001 @ cmp sl, #1\n"
-        ".inst 0x1a00000e @ bne #0x123630\n"
-        ".inst 0xea000001 @ b #0x123600\n"
-        ".inst 0xe1a09000 @ mov sb, r0\n"
-        ".inst 0xea00000b @ b #0x123630\n"
-        ".inst 0xe5bc3008 @ ldr r3, [ip, #8]!\n"
-        ".inst 0xe3809020 @ orr sb, r0, #0x20\n"
-        ".inst 0xe5bc0128 @ ldr r0, [ip, #0x128]!\n"
-        ".inst 0xe596b13c @ ldr fp, [r6, #0x13c]\n"
-        ".inst 0xe59ca018 @ ldr sl, [ip, #0x18]\n"
-        ".inst 0xe590c010 @ ldr ip, [r0, #0x10]\n"
-        ".inst 0xe590e00c @ ldr lr, [r0, #0xc]\n"
-        ".inst 0xe5900004 @ ldr r0, [r0, #4]\n"
-        ".inst 0xe04c3003 @ sub r3, ip, r3\n"
-        ".inst 0xe043300a @ sub r3, r3, sl\n"
-        ".inst 0xe023b39e @ mla r3, lr, r3, fp\n"
-        ".inst 0xe0230391 @ mla r3, r1, r3, r0\n"
-        ".inst 0xe595114c @ ldr r1, [r5, #0x14c]\n"
-        ".inst 0xe1a00004 @ mov r0, r4\n"
-        ".inst 0xe1cd80f0 @ strd r8, sb, [sp]\n"
-        ".inst 0xe58d1008 @ str r1, [sp, #8]\n"
-        ".inst 0xeb005017 @ bl #0x1376a4\n"
-        ".inst 0xe595014c @ ldr r0, [r5, #0x14c]\n"
-        ".inst 0xe3500000 @ cmp r0, #0\n"
-        ".inst 0x03a00001 @ moveq r0, #1\n"
-        ".inst 0x13a00000 @ movne r0, #0\n"
-        ".inst 0xe585014c @ str r0, [r5, #0x14c]\n"
-        ".inst 0xe2844001 @ add r4, r4, #1\n"
-        ".inst 0xe3540002 @ cmp r4, #2\n"
-        ".inst 0xbaffffa2 @ blt #0x1234f0\n"
-        ".inst 0xe28dd00c @ add sp, sp, #0xc\n"
-        ".inst 0xe8bd8ff0 @ pop {r4, r5, r6, r7, r8, sb, sl, fp, pc}\n"
-        ".word 0x004c6290 @ bounded tail data\n"
-        ".word 0x00008057 @ bounded tail data\n"
-    );
+extern "C" void func_001234dc(u32 mode) {
+    u8* const state = reinterpret_cast<u8*>(kRenderState);
+
+    for (u32 i = 0; i < 2; ++i) {
+        if (mode != i + 0x400u && mode != 0x402u) {
+            continue;
+        }
+
+        const u32 view = i * 4;
+        u8* const node = loadNode(state, kViewNode + view);
+
+        u32 nodeClass;
+        u32 nodeScale;
+        classifyNodeType(
+            static_cast<s32>(load32(node, kNodeType)), &nodeClass, &nodeScale);
+
+        const u32 extent = load32(node, kNodeExtent) -
+                           load32(state, kViewSource + view) -
+                           load32(state, kViewLimit + view);
+        const u32 nodeScaleValue = load32(node, kNodeScale);
+        u32 scaled = nodeScaleValue * extent +
+                     load32(state, kViewBias + view);
+
+        const u32 nodeMode = load32(node, kNodeMode);
+        const u32 paramC = nodeScaleValue * nodeScale;
+        const u32 paramA = nodeScale * scaled + load32(node, kNodeBase);
+
+        u32 flags = nodeClass |
+                    ((nodeMode == 0x10000u) ? 0x100u : 0x300u);
+        u32 paramB = 0;
+
+        if (i == 0) {
+            const u32 rendererState = load32(state, kRendererState);
+
+            if (rendererState == 0x700u) {
+                flags |= 0x40u;
+            } else if (rendererState - 0x701u == 0) {
+                // 0x701: class/mode bits only, without the 0x40 bit.
+            } else if (rendererState - 0x701u == 1) {
+                // 0x702: merge the extra scene node into the second parameter.
+                flags |= 0x20u;
+                u8* const extra = loadNode(state, kExtraNode);
+                const u32 extraExtent = load32(extra, kNodeExtent) -
+                                        load32(state, kViewSource) -
+                                        load32(state, kExtraExtent);
+                paramB = nodeScale *
+                             (load32(extra, kNodeScale) * extraExtent +
+                              load32(state, kExtraBias)) +
+                         load32(extra, kNodeBase);
+            } else {
+                flags |= 0x40u;
+            }
+        }
+
+        u32* const flag = reinterpret_cast<u32*>(state + kViewFlag + view);
+        const u32 value = *flag;
+        func_001376a4(i, value, paramA, paramB, paramC, flags, value);
+        *flag = (*flag == 0) ? 1u : 0u;
+    }
 }
 
 // DECOMP_FUNC(0x0015b1a4, 408)
