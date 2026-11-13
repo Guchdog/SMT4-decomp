@@ -5471,118 +5471,128 @@ extern "C" __attribute__((naked)) void battle_func_0028ec90() {
     );
 }
 
+// ---------------------------------------------------------------------------
+// 0x0028F15C -- release a script-VM actor from the battle actor tables.
+//
+// `id` indexes a four-byte flag record at [work_a + 0x200 + id*4], where
+// work_a and work_b are two consecutive results of the work-block getter
+// 0x002ADF14.  The early gate loads flag byte 0 and, when bit 0 is clear,
+// returns 0 for every id below the literal limit 0x15E (the literal is the
+// pool word at 0x0028F2E8).  It then reads the actor kind (0x00287AFC returns
+// entity byte +6) and entity flag bit 0 (0x00299224 returns entity byte +7
+// bit 0) twice; when the first flag read is clear, the kind is non-zero and
+// the shared active-id halfword at work_b+0x840 is non-zero, it returns 0.
+//
+// Otherwise it rewrites the flag record (bit 1 set, bit 2 cleared, bit 6
+// copied from flag byte 1, bit 7 cleared, byte 2 bits 0 and 2 cleared) and:
+//   * second entity-flag read set, kind == 1: claims the first free 14-byte
+//     slot of the four-entry table at work_b+0x842, stores the id in the
+//     slot's leading halfword and zeroes the 12-byte payload (0x003EB280);
+//   * second entity-flag read clear, kind != 0: stores the id as the active
+//     id (work_b+0x840), zeroes the 14-byte tail record at work_b+0x87A
+//     (three words, then a halfword at +0x0C) and clears command bits
+//     0x500..0x51F of the work block, refetching the work block and calling
+//     0x0023DF18(bit, 0) for every bit.
+// Returns 1 once the gate has been passed.  `id` is the only argument and
+// nothing is read from the stack.
+// ---------------------------------------------------------------------------
+extern "C" u8* EngineWorkBlock() __asm__("engine_func_002adf14");  // 0x002ADF14
+extern "C" s32 ScriptVmActorKind(u32 id)
+    __asm__("script_vm_func_00287afc");                            // 0x00287AFC
+extern "C" u32 ScriptVmActorGate(u32 id)
+    __asm__("script_vm_func_00299224");                            // 0x00299224
+extern "C" void CampClearSlot(u8* payload)
+    __asm__("camp_func_003eb280");                                 // 0x003EB280
+extern "C" void ScriptVmCommand(u32 bit, u32 clear)
+    __asm__("script_vm_func_0023df18");                            // 0x0023DF18
+
+namespace {
+
+constexpr u32 kActorRecordBase = 0x200;  // flag record: work_a + id*4 + 0x200
+constexpr u32 kActorIdLimit = 0x15e;     // pool literal at 0x0028F2E8
+constexpr u32 kActiveId = 0x840;         // halfword owner id
+constexpr u32 kSlotTable = 0x842;        // four 14-byte slots
+constexpr u32 kSlotStride = 14;
+constexpr u32 kSlotCount = 4;
+constexpr u32 kSlotPayload = 2;          // 12-byte payload after the halfword
+constexpr u32 kTailRecord = 0x87a;       // three words at +0x87A..+0x885
+constexpr u32 kTailField = 0x886;        // trailing halfword
+constexpr u32 kCommandFirstBit = 0x500;  // bit indices 0x500..0x51F
+constexpr u32 kCommandBitCount = 0x20;
+
+inline u16 LoadHalf(const u8* base, u32 offset) {
+    u16 value;
+    __builtin_memcpy(&value, base + offset, sizeof(value));
+    return value;
+}
+
+inline void StoreHalf(u8* base, u32 offset, u16 value) {
+    __builtin_memcpy(base + offset, &value, sizeof(value));
+}
+
+inline void StoreWord(u8* base, u32 offset, u32 value) {
+    __builtin_memcpy(base + offset, &value, sizeof(value));
+}
+
+}  // namespace
+
 // DECOMP_FUNC(0x0028f15c, 400)
-extern "C" __attribute__((naked)) void script_vm_func_0028f15c() {
-    asm volatile(
-        "push {r4, r5, r6, r7, r8, lr}\n"
-        "mov r6, r0\n"
-        "bl engine_func_002adf14\n"
-        "add r4, r0, r6, lsl #2\n"
-        "bl engine_func_002adf14\n"
-        "mov r5, r0\n"
-        "ldrb r0, [r4, #0x200]!\n"
-        "tst r0, #1\n"
-        "bne .L_0028f18c\n"
-        ".word 0xe59f0160\n"
-        "cmp r6, r0\n"
-        "blo .L_0028f1c4\n"
-        ".L_0028f18c:\n"
-        "mov r0, r6\n"
-        "bl script_vm_func_00287afc\n"
-        "mov r7, r0\n"
-        "mov r0, r6\n"
-        "bl script_vm_func_00299224\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "bne .L_0028f1cc\n"
-        "cmp r7, #0\n"
-        "beq .L_0028f1cc\n"
-        "mov r0, #0x840\n"
-        "ldrh r0, [r0, r5]\n"
-        "cmp r0, #0\n"
-        "beq .L_0028f1cc\n"
-        ".L_0028f1c4:\n"
-        "mov r0, #0\n"
-        "pop {r4, r5, r6, r7, r8, pc}\n"
-        ".L_0028f1cc:\n"
-        "ldrb r0, [r4]\n"
-        "ldrb r1, [r4, #1]\n"
-        "bic r0, r0, #4\n"
-        "orr r0, r0, #2\n"
-        "cmp r1, #0\n"
-        "strb r0, [r4]\n"
-        "orrne r0, r0, #0x40\n"
-        "biceq r0, r0, #0x40\n"
-        "strb r0, [r4]\n"
-        "ldrb r1, [r4]\n"
-        "ldrb r0, [r4, #2]\n"
-        "bic r1, r1, #0x80\n"
-        "bic r0, r0, #5\n"
-        "strb r1, [r4]\n"
-        "strb r0, [r4, #2]\n"
-        "mov r0, r6\n"
-        "bl script_vm_func_00299224\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "beq .L_0028f278\n"
-        "cmp r7, #1\n"
-        "moveq r0, #0\n"
-        "bne .L_0028f2e0\n"
-        ".L_0028f228:\n"
-        "rsb r1, r0, r0, lsl #3\n"
-        "add r1, r5, r1, lsl #1\n"
-        "add r1, r1, #0x800\n"
-        "ldrh r1, [r1, #0x42]\n"
-        "cmp r1, #0\n"
-        "beq .L_0028f250\n"
-        "add r0, r0, #1\n"
-        "cmp r0, #4\n"
-        "blt .L_0028f228\n"
-        "b .L_0028f2e0\n"
-        ".L_0028f250:\n"
-        "rsb r0, r0, r0, lsl #3\n"
-        "add r0, r5, r0, lsl #1\n"
-        "add r1, r0, #0x800\n"
-        "add r0, r0, #0x800\n"
-        "add r0, r0, #0x44\n"
-        "strh r6, [r1, #0x42]\n"
-        "bl camp_func_003eb280\n"
-        "nop\n"
-        "nop\n"
-        "b .L_0028f2e0\n"
-        ".L_0028f278:\n"
-        "cmp r7, #0\n"
-        "beq .L_0028f2e0\n"
-        "add r0, r5, #0x800\n"
-        "mov r1, #0\n"
-        "strh r6, [r0, #0x40]\n"
-        "str r1, [r5, #0x87a]\n"
-        "str r1, [r5, #0x87e]\n"
-        "str r1, [r5, #0x882]\n"
-        "mov r4, #0x500\n"
-        "mov r7, #1\n"
-        "strh r1, [r0, #0x86]\n"
-        ".L_0028f2a4:\n"
-        "mov r6, #0\n"
-        "bl engine_func_002adf14\n"
-        "mov r5, r0\n"
-        "mov r1, r6\n"
-        "mov r0, r4\n"
-        "bl script_vm_func_0023df18\n"
-        "and r1, r4, #7\n"
-        "lsr r0, r4, #3\n"
-        "mvn r1, r7, lsl r1\n"
-        "ldrb r2, [r5, r0]\n"
-        "add r4, r4, #1\n"
-        "cmp r4, #0x520\n"
-        "and r1, r1, r2\n"
-        "strb r1, [r5, r0]\n"
-        "blo .L_0028f2a4\n"
-        ".L_0028f2e0:\n"
-        "mov r0, #1\n"
-        "pop {r4, r5, r6, r7, r8, pc}\n"
-        ".word 0x0000015e\n"
-    );
+extern "C" s32 script_vm_func_0028f15c(u32 id) {
+    u8* const actor_work = EngineWorkBlock();
+    u8* const flags = actor_work + kActorRecordBase + id * 4u;
+    u8* const work = EngineWorkBlock();
+
+    if ((flags[0] & 1u) == 0 && id < kActorIdLimit) {
+        return 0;
+    }
+
+    const s32 kind = ScriptVmActorKind(id);
+    const u32 gate = ScriptVmActorGate(id);
+    if (gate == 0 && kind != 0 && LoadHalf(work, kActiveId) != 0) {
+        return 0;
+    }
+
+    const u8 follow = flags[1];
+    u8 value = static_cast<u8>((flags[0] & ~4u) | 2u);
+    flags[0] = value;
+    value = static_cast<u8>(follow != 0 ? (value | 0x40u) : (value & ~0x40u));
+    flags[0] = value;
+    flags[0] = static_cast<u8>(flags[0] & ~0x80u);
+    flags[2] = static_cast<u8>(flags[2] & ~5u);
+
+    if (ScriptVmActorGate(id) != 0) {
+        if (kind != 1) {
+            return 1;
+        }
+        for (u32 index = 0; index < kSlotCount; ++index) {
+            u8* const slot = work + kSlotTable + index * kSlotStride;
+            if (LoadHalf(slot, 0) == 0) {
+                StoreHalf(slot, 0, static_cast<u16>(id));
+                CampClearSlot(slot + kSlotPayload);
+                return 1;
+            }
+        }
+        return 1;
+    }
+
+    if (kind == 0) {
+        return 1;
+    }
+
+    StoreHalf(work, kActiveId, static_cast<u16>(id));
+    StoreWord(work, kTailRecord + 0, 0);
+    StoreWord(work, kTailRecord + 4, 0);
+    StoreWord(work, kTailRecord + 8, 0);
+    StoreHalf(work, kTailField, 0);
+
+    for (u32 bit = kCommandFirstBit;
+         bit < kCommandFirstBit + kCommandBitCount; ++bit) {
+        u8* const block = EngineWorkBlock();
+        ScriptVmCommand(bit, 0);
+        block[bit >> 3] =
+            static_cast<u8>(block[bit >> 3] & ~(1u << (bit & 7u)));
+    }
+    return 1;
 }
 
 // DECOMP_FUNC(0x0028f2ec, 372)
