@@ -2549,7 +2549,7 @@ address,size,status,category,name,src_file
 0x001ee1d0,288,matching,unknown,func_001ee1d0,src/engine/leaf_batch30_a.cpp
 0x001ee2f0,188,matching,unknown,func_001ee2f0,src/engine/leaf_batch16_b.cpp
 0x001ee3ac,76,matching,unknown,func_001ee3ac,src/engine/leaf_batch13_b.cpp
-0x001ee3f8,428,matching,camp,camp_func_001ee3f8,src/engine/leaf_batch34_c.cpp
+0x001ee3f8,428,non_matching,camp,camp_func_001ee3f8,src/engine/leaf_batch34_c.cpp
 0x001ee5a4,548,non_matching,ui,StatusDown_PopulateSkillList,src/ui/status_down.cpp
 0x001ee7c8,384,non_matching,ui,StatusDown_PopulateItemList,src/ui/status_down.cpp
 0x001ee948,52,matching,script_vm,script_vm_func_001ee948,src/engine/leaf_batch23_a.cpp

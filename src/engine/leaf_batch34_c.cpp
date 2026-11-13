@@ -8268,125 +8268,171 @@ extern "C" __attribute__((naked)) void ui_func_001ec8e4() {
     );
 }
 
+// ---------------------------------------------------------------------------
+// 0x001EE3F8 -- camp/battle row message dispatch.
+//
+// Argument registers: r0 = id, r1..r3 are forwarded to the final message
+// helper, and the fifth argument (original [sp+0x48]) is a lookup gate.
+//
+//   * gate == 0: both record lookups and the u8 at battle-record +0xA4 are
+//     skipped, so the row value is the raw signed id, the short count is zero
+//     and the category stays 0x17.
+//   * gate != 0 and id < 0: the row value is forced to zero and the lookups are
+//     skipped as well.
+//   * otherwise 0x002B9364 (camp node) and 0x002B087C (battle record) are
+//     queried twice with the low 16 bits of the id.  Record byte +3 bit 0
+//     selects category 0x23 and the signed word at +0x88; with that bit clear
+//     the category is 0x17 and the value is the u16 at camp-node +0x90 plus
+//     one.  A selected value >= 0x81 or a fallback value >= 0x266 aborts.
+//   * The battle record's u8 at +0xA4 is the short count.
+//
+// After the second lookup 0x002A63F8(category, subindex) gates the tail.  The
+// subindex is not simply the row value: it is the live r1 left by the lookup
+// block (the raw id when the gate is zero, zero for a negative id, the selected
+// signed word or the fallback u16+1 otherwise), which is why the two values are
+// tracked separately.
+//
+// The row setter 0x002AEC20(*(u32*)0x00433158, category, value, 1) then either
+// forwards to 0x00389FEC (set succeeded) or, when the set failed, uses the
+// short count to choose 0x002BF558 (count > 0) or the id*1000 scaled
+// 0x002AEC80.  The bundle pointer at 0x00433158 is reloaded for the 0x00389FEC
+// call, so a setter that rewrites the slot is observed.
+//
+// The return register is not consumed by the recovered caller at 0x001A3744;
+// the reconstruction still mirrors it: the battle-record pointer on the abort
+// paths, zero on the null/empty-resource paths, and the final helper's result
+// otherwise.
+// ---------------------------------------------------------------------------
+extern "C" u8* battle_record_002b087c(u32 index) __asm__("battle_func_002b087c");
+extern "C" u32 camp_row_set_002aec20(u8* bundle, u32 category, u32 value,
+                                      u32 enable) __asm__("ui_func_002aec20");
+extern "C" u32 camp_message_00389fec(u8* bundle, u32 id, u32 mode, u32 value,
+                                     u32 zero, u32 arg1, u32 arg2, u32 arg3)
+    __asm__("func_00389fec");
+extern "C" u32 camp_message_002bf558(u32 group, u32 category, u32 count,
+                                     u32 arg1, u32 arg2, u32 arg3)
+    __asm__("func_002bf558");
+extern "C" u32 camp_message_002aec80(u32 group, u32 category, u32 value,
+                                     u32 arg1, u32 arg2, u32 arg3)
+    __asm__("script_vm_func_002aec80");
+
+namespace {
+
+constexpr u32 kCampCategory = 0x17;             // default resource category
+constexpr u32 kBattleCategory = 0x23;           // category for flag-bit records
+constexpr s32 kSelectedValueMax = 0x81;         // selected branch abort bound
+constexpr s32 kFallbackValueMax = 0x266;        // fallback branch abort bound
+constexpr u32 kBattleFlagByte = 0x03;           // u8, bit 0 is the selector
+constexpr u32 kBattleSelectedValue = 0x88;      // s16
+constexpr u32 kBattleShortCount = 0xA4;         // u8
+constexpr u32 kCampValueCount = 0x90;           // u16, used as count + 1
+constexpr u32 kBundleSlot = 0x00433158;         // u8* used by both tails
+constexpr u32 kMessageGroup = 2;                // first argument of the tails
+constexpr u32 kMillisecondScale = 1000;         // fallback value multiplier
+
+} // namespace
+
 // DECOMP_FUNC(0x001ee3f8, 428)
-extern "C" __attribute__((naked)) void camp_func_001ee3f8() {
-    asm volatile(
-        "push {r0, r1, r2, r3, r4, r5, r6, r7, r8, sb, sl, fp, lr}\n"
-        "sub sp, sp, #0x14\n"
-        "mov r4, r0\n"
-        "mov r5, r0\n"
-        "mov r6, r2\n"
-        "mov r7, r3\n"
-        "mov fp, #0x17\n"
-        "ldr sb, [sp, #0x48]\n"
-        "mov r8, #0\n"
-        "cmp sb, #0\n"
-        "beq .L_001ee484\n"
-        "cmp r5, #0\n"
-        "movlt r4, #0\n"
-        "blt .L_001ee484\n"
-        "uxth r0, r5\n"
-        "bl camp_func_002b9364\n"
-        "mov r4, r0\n"
-        "uxth r0, r5\n"
-        "bl battle_func_002b087c\n"
-        "cmp r4, #0\n"
-        "beq .L_001ee548\n"
-        "ldrb r1, [r0, #3]\n"
-        "tst r1, #1\n"
-        "beq .L_001ee46c\n"
-        "ldrsh r4, [r0, #0x88]\n"
-        "mov fp, #0x23\n"
-        "cmp r4, #0x81\n"
-        "bge .L_001ee548\n"
-        "b .L_001ee480\n"
-        ".L_001ee46c:\n"
-        "ldrh r2, [r4, #0x90]\n"
-        ".word 0xe59f1124\n"
-        "add r4, r2, #1\n"
-        "cmp r4, r1\n"
-        "bge .L_001ee548\n"
-        ".L_001ee480:\n"
-        "ldrb r8, [r0, #0xa4]\n"
-        ".L_001ee484:\n"
-        "cmp sb, #0\n"
-        "mov r1, r5\n"
-        "mov sl, #0x17\n"
-        "beq .L_001ee4f0\n"
-        "cmp r5, #0\n"
-        "movlt r1, #0\n"
-        "blt .L_001ee4f0\n"
-        "uxth r0, r5\n"
-        "bl camp_func_002b9364\n"
-        "movs sb, r0\n"
-        "nop\n"
-        "beq .L_001ee548\n"
-        "uxth r0, r5\n"
-        "bl battle_func_002b087c\n"
-        "ldrb r1, [r0, #3]\n"
-        "tst r1, #1\n"
-        "beq .L_001ee4dc\n"
-        "ldrsh r1, [r0, #0x88]\n"
-        "mov sl, #0x23\n"
-        "cmp r1, #0x81\n"
-        "bge .L_001ee548\n"
-        "b .L_001ee4f0\n"
-        ".L_001ee4dc:\n"
-        "ldrh r1, [sb, #0x90]\n"
-        ".word 0xe59f00b4\n"
-        "add r1, r1, #1\n"
-        "cmp r1, r0\n"
-        "bge .L_001ee548\n"
-        ".L_001ee4f0:\n"
-        "mov r0, sl\n"
-        "bl ui_func_002a63f8\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "beq .L_001ee548\n"
-        ".word 0xe59f9094\n"
-        "mov r3, #1\n"
-        "mov r2, r4\n"
-        "mov r1, fp\n"
-        "ldr r0, [sb]\n"
-        "bl ui_func_002aec20\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "beq .L_001ee550\n"
-        "ldr r1, [sp, #0x18]\n"
-        "mov r0, #0\n"
-        "mov r3, r4\n"
-        "stm sp, {r0, r1, r6, r7}\n"
-        "mov r2, #2\n"
-        "ldr r0, [sb]\n"
-        "mov r1, r5\n"
-        "bl func_00389fec\n"
-        ".L_001ee548:\n"
-        "add sp, sp, #0x24\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, fp, pc}\n"
-        ".L_001ee550:\n"
-        "cmp r8, #0\n"
-        "ble .L_001ee578\n"
-        "strd r6, r7, [sp]\n"
-        "ldr r3, [sp, #0x18]\n"
-        "mov r2, r8\n"
-        "mov r1, fp\n"
-        "mov r0, #2\n"
-        "bl func_002bf558\n"
-        "add sp, sp, #0x24\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, fp, pc}\n"
-        ".L_001ee578:\n"
-        "mov r0, #0x3e8\n"
-        "strd r6, r7, [sp]\n"
-        "mul r2, r4, r0\n"
-        "ldr r3, [sp, #0x18]\n"
-        "mov r1, fp\n"
-        "mov r0, #2\n"
-        "bl script_vm_func_002aec80\n"
-        "add sp, sp, #0x24\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, fp, pc}\n"
-        ".word 0x00000266\n"
-        ".word 0x00433158\n"
-    );
+extern "C" u32 camp_func_001ee3f8(s32 id, u32 arg1, u32 arg2, u32 arg3,
+                                  u32 gate) {
+    s32 value = id;                            // original r4
+    u32 short_count = 0;                       // original r8
+    u32 category = kCampCategory;              // original fp
+
+    // 0x001EE41C..0x001EE480: first lookup block.  The battle lookup is issued
+    // even when the camp lookup returns null; the null test happens afterwards.
+    if (gate != 0) {
+        if (id < 0) {
+            value = 0;
+        } else {
+            const u8* const node = camp_node_002b9364(static_cast<u16>(id));
+            const u8* const record =
+                battle_record_002b087c(static_cast<u16>(id));
+            if (node == nullptr) {
+                return reinterpret_cast<u32>(record);
+            }
+            if ((record[kBattleFlagByte] & 1u) != 0) {
+                value = *reinterpret_cast<const s16*>(
+                    record + kBattleSelectedValue);
+                category = kBattleCategory;
+                if (value >= kSelectedValueMax) {
+                    return reinterpret_cast<u32>(record);
+                }
+            } else {
+                value = static_cast<s32>(*reinterpret_cast<const u16*>(
+                            node + kCampValueCount)) +
+                        1;
+                if (value >= kFallbackValueMax) {
+                    return reinterpret_cast<u32>(record);
+                }
+            }
+            short_count = record[kBattleShortCount];
+        }
+    }
+
+    // 0x001EE484..0x001EE4EC: second lookup block.  r1 is seeded with the raw
+    // id before the gate is tested, so the gate-zero path forwards a negative
+    // id unchanged even though a negative id otherwise maps to zero.
+    u32 subindex = static_cast<u32>(id);       // original r1
+    u32 check_category = kCampCategory;        // original sl
+
+    if (gate != 0) {
+        if (id < 0) {
+            subindex = 0;
+        } else {
+            const u8* const node = camp_node_002b9364(static_cast<u16>(id));
+            if (node == nullptr) {
+                return 0;
+            }
+            // The second block tests the camp node before issuing the battle
+            // lookup; the first block issues both lookups up front.
+            const u8* const record =
+                battle_record_002b087c(static_cast<u16>(id));
+            if ((record[kBattleFlagByte] & 1u) != 0) {
+                subindex = static_cast<u32>(static_cast<s32>(
+                    *reinterpret_cast<const s16*>(
+                        record + kBattleSelectedValue)));
+                check_category = kBattleCategory;
+                if (static_cast<s32>(subindex) >= kSelectedValueMax) {
+                    return reinterpret_cast<u32>(record);
+                }
+            } else {
+                subindex = static_cast<u32>(*reinterpret_cast<const u16*>(
+                                node + kCampValueCount)) +
+                            1;
+                if (static_cast<s32>(subindex) >= kFallbackValueMax) {
+                    // The second block loads the bound into r0, so this abort
+                    // returns 0x266 rather than the battle-record pointer.
+                    return static_cast<u32>(kFallbackValueMax);
+                }
+            }
+        }
+    }
+
+    // 0x001EE4F0: 0x002A63F8(category, subindex).
+    if (ui_func_002a63f8(check_category, subindex) == 0) {
+        return 0;
+    }
+
+    // 0x001EE504..0x001EE544: row setter and the two mutually exclusive tails.
+    u8* const bundle =
+        *reinterpret_cast<u8* const*>(static_cast<u32>(kBundleSlot));
+    if (camp_row_set_002aec20(bundle, category, static_cast<u32>(value), 1) ==
+        0) {
+        if (static_cast<s32>(short_count) <= 0) {
+            return camp_message_002aec80(
+                kMessageGroup, category,
+                static_cast<u32>(value) * kMillisecondScale, arg1, arg2, arg3);
+        }
+        return camp_message_002bf558(kMessageGroup, category, short_count, arg1,
+                                     arg2, arg3);
+    }
+
+    u8* const reloaded_bundle =
+        *reinterpret_cast<u8* const*>(static_cast<u32>(kBundleSlot));
+    return camp_message_00389fec(reloaded_bundle, static_cast<u32>(id),
+                                 kMessageGroup, static_cast<u32>(value), 0,
+                                 arg1, arg2, arg3);
 }
 
 // ---------------------------------------------------------------------------
