@@ -1810,88 +1810,188 @@ copy_records:
     return load_u32(self + kCountOffset);
 }
 
-// DECOMP_FUNC(0x002a399c, 604)
-extern "C" __attribute__((naked)) void engine_func_002a399c() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x43f0, 0xe92d, 0x5000, 0xe1a0\n"
-        ".hword 0x8b02, 0xed2d, 0xd024, 0xe24d\n"
-        ".hword 0x0a1d, 0xedd0, 0x0a18, 0xed80\n"
-        ".hword 0x408c, 0xe590, 0x8a80, 0xee20\n"
-        ".hword 0x0000, 0xe354, 0x0079, 0x0a00\n"
-        ".hword 0x8224, 0xe59f, 0x9224, 0xe59f\n"
-        ".hword 0x8a86, 0xeddf, 0x0068, 0xe594\n"
-        ".hword 0x0c01, 0xe310, 0x0076, 0x0a00\n"
-        ".hword 0x1020, 0xe284, 0x0c01, 0xe289\n"
-        ".hword 0x100e, 0xe891, 0x6010, 0xe28d\n"
-        ".hword 0x100e, 0xe880, 0x0084, 0xe594\n"
-        ".hword 0x0a18, 0xed94, 0x0a40, 0xedd9\n"
-        ".hword 0x0001, 0xe310, 0x0a08, 0x1e20\n"
-        ".hword 0x0c01, 0xe289, 0x0a80, 0xee60\n"
-        ".hword 0x0a40, 0xedc9, 0x0a41, 0xedd9\n"
-        ".hword 0x0a80, 0xee60, 0x0a41, 0xedc9\n"
-        ".hword 0x0a42, 0xedd9, 0x0a80, 0xee60\n"
-        ".hword 0x0a42, 0xedc9, 0x0a43, 0xedd9\n"
-        ".hword 0x0a80, 0xee20, 0x0a43, 0xed89\n"
-        ".hword 0x000e, 0xe890, 0x010c, 0xe599\n"
-        ".hword 0x001c, 0xe58d, 0x000e, 0xe886\n"
-        ".hword 0x1010, 0xe28d, 0x0090, 0xe594\n"
-        ".hword 0x20b4, 0xe1d0, 0x2202, 0xe082\n"
-        ".hword 0x2102, 0xe088, 0x202c, 0xe592\n"
-        ".hword 0x0000, 0xe352, 0x0008, 0x1590\n"
-        ".hword 0xff32, 0x112f, 0x0068, 0xe594\n"
-        ".hword 0x0080, 0xe310, 0x004a, 0x0a00\n"
-        ".hword 0x1040, 0xe285, 0x0c01, 0xe289\n"
-        ".hword 0x100e, 0xe891, 0x7c01, 0xe289\n"
-        ".hword 0x6009, 0xe1a0, 0x100e, 0xe880\n"
-        ".hword 0x1e11, 0xe289, 0x0e11, 0xe289\n"
-        ".hword 0x2040, 0xe284, 0x0a04, 0xec95\n"
-        ".hword 0x0a04, 0xec81, 0x0a40, 0xed99\n"
-        ".hword 0x0a44, 0xedd9, 0x0a20, 0xee30\n"
-        ".hword 0x0a40, 0xed89, 0x0a41, 0xed99\n"
-        ".hword 0x0a45, 0xedd9, 0x0a20, 0xee30\n"
-        ".hword 0x0a41, 0xed89, 0x0a42, 0xed99\n"
-        ".hword 0x0a46, 0xedd9, 0x0a20, 0xee30\n"
-        ".hword 0x0a42, 0xed89, 0x0a43, 0xed99\n"
-        ".hword 0x0a03, 0xedd0, 0x0a20, 0xee30\n"
-        ".hword 0x0a03, 0xed87, 0x0068, 0xe594\n"
-        ".hword 0x0004, 0xe310, 0x8a01, 0x1dc7\n"
-        ".hword 0x108c, 0xe892, 0x0e11, 0xe286\n"
-        ".hword 0x108c, 0xe881, 0x1c01, 0xe286\n"
-        ".hword 0x2e11, 0xe286, 0x0a44, 0xed96\n"
-        ".hword 0x3c01, 0xe286, 0x0a08, 0xee20\n"
-        ".hword 0x0a44, 0xed86, 0x0a45, 0xed96\n"
-        ".hword 0x0a08, 0xee20, 0x0a45, 0xed86\n"
-        ".hword 0x0a46, 0xed96, 0x0a08, 0xee20\n"
-        ".hword 0x0a46, 0xed86, 0x0a47, 0xed96\n"
-        ".hword 0x0a08, 0xee20, 0x0a03, 0xed80\n"
-        ".hword 0x0a40, 0xed96, 0x0a44, 0xedd6\n"
-        ".hword 0x0a20, 0xee30, 0x0a00, 0xed81\n"
-        ".hword 0x0a01, 0xed91, 0x0a01, 0xedd2\n"
-        ".hword 0x0a20, 0xee30, 0x0a01, 0xed81\n"
-        ".hword 0x0a02, 0xed91, 0x0a02, 0xedd2\n"
-        ".hword 0x0a20, 0xee30, 0x0a02, 0xed81\n"
-        ".hword 0x0a03, 0xedd2, 0x0a03, 0xed91\n"
-        ".hword 0x0a20, 0xee30, 0x0a03, 0xed81\n"
-        ".hword 0x000f, 0xe893, 0x000f, 0xe88d\n"
-        ".hword 0x100d, 0xe1a0, 0x0090, 0xe594\n"
-        ".hword 0x20b4, 0xe1d0, 0x2202, 0xe082\n"
-        ".hword 0x2102, 0xe088, 0x2020, 0xe592\n"
-        ".hword 0x0000, 0xe352, 0x0008, 0x1590\n"
-        ".hword 0xff32, 0x112f, 0x40ac, 0xe594\n"
-        ".hword 0x0000, 0xe354, 0xff88, 0x1aff\n"
-        ".hword 0xd024, 0xe28d, 0x8b02, 0xecbd\n"
-        ".hword 0x83f0, 0xe8bd, 0x0084, 0xe594\n"
-        ".hword 0x0a18, 0xed94, 0x0001, 0xe310\n"
-        ".hword 0x0090, 0xe594, 0x0a08, 0x1e20\n"
-        ".hword 0x10b4, 0xe1d0, 0x1201, 0xe081\n"
-        ".hword 0x1101, 0xe088, 0x1028, 0xe591\n"
-        ".hword 0x0000, 0xe351, 0x0008, 0x1590\n"
-        ".hword 0xff31, 0x112f, 0xff9e, 0xeaff\n"
-        ".hword 0x0000, 0x40a0, 0x4110, 0x0046\n"
-        ".hword 0xa81c, 0x004e\n"
-    );
+// ---------------------------------------------------------------------------
+// 0x002A399C -- AsdPart_SetScale(part, scale)
+//
+// Stores the new uniform scale at part+0x60, derives the inherited factor
+// (part+0x74 * scale), then walks the child list at part+0x8C.  Each child
+// dispatches through its instance (child+0x90; 16-bit type at +4) into the
+// 0x00464110 type table, whose entries are 0x44 bytes:
+//   * child flag 0x100: the scaled child quad (+0x20) is handed to hook +0x2C;
+//   * otherwise:        the derived child factor is handed to hook +0x28;
+//   * child flag 0x080: a quad composed from the parent (+0x00/+0x40) and the
+//                       child (+0x40) is handed to hook +0x20.
+// The shared 0x004EA81C render block stages the quads between the arithmetic
+// steps, and every hook receives a pointer to a private stack copy because the
+// +0x2C implementations retain that pointer.
+// ---------------------------------------------------------------------------
+
+namespace asd_part_scale_002a399c {
+
+struct Vec4 {
+    f32 value[4];
 };
+
+/** Effect-part instance hung off a node at +0x90. */
+struct PartInstance {
+    u8  pad_00[0x04];
+    u16 type;                   // +0x04: `ldrh r2,[r0,#4]`
+    u8  pad_06[0x02];
+    void* context;              // +0x08: `ldrne r0,[r0,#8]` (hook argument)
+};
+static_assert(offsetof(PartInstance, type) == 0x04);
+static_assert(offsetof(PartInstance, context) == 0x08);
+
+/** One effect-part child (or the manager header used as `self`). */
+struct PartNode {
+    Vec4 position;              // +0x00: copied to the render block +0x110
+    u8  pad_10[0x10];
+    Vec4 quad_20;               // +0x20: source quad for the +0x2C hook
+    u8  pad_30[0x10];
+    Vec4 quad_40;               // +0x40: parent/child composition quad
+    u8  pad_50[0x10];
+    f32 local_scale;            // +0x60: `vldr s0,[r4,#0x60]`
+    u8  pad_64[0x04];
+    u32 flags;                  // +0x68: tested against 0x100, 0x80 and 4
+    u8  pad_6c[0x08];
+    f32 scale_unit;             // +0x74: `vldr s1,[r0,#0x74]` on `self`
+    u8  pad_78[0x0C];
+    u32 scale_flags;            // +0x84: `tst r0,#1`
+    u8  pad_88[0x04];
+    PartNode* children;         // +0x8C: list head
+    PartInstance* instance;     // +0x90: dispatch object
+    u8  pad_94[0x18];
+    PartNode* next;             // +0xAC: `ldr r4,[r4,#0xac]`
+    u8  pad_b0[0x10];
+};
+static_assert(offsetof(PartNode, position) == 0x00);
+static_assert(offsetof(PartNode, quad_20) == 0x20);
+static_assert(offsetof(PartNode, quad_40) == 0x40);
+static_assert(offsetof(PartNode, local_scale) == 0x60);
+static_assert(offsetof(PartNode, flags) == 0x68);
+static_assert(offsetof(PartNode, scale_unit) == 0x74);
+static_assert(offsetof(PartNode, scale_flags) == 0x84);
+static_assert(offsetof(PartNode, children) == 0x8C);
+static_assert(offsetof(PartNode, instance) == 0x90);
+static_assert(offsetof(PartNode, next) == 0xAC);
+static_assert(sizeof(PartNode) == 0xC0);
+
+/** One 0x44-byte entry of the effect-type table at 0x00464110. */
+struct TypeEntry {
+    u8   pad_00[0x20];
+    void (*set_quad)(void* context, const Vec4* quad);        // +0x20
+    u8   pad_24[0x04];
+    void (*set_scale)(void* context, f32 scale);              // +0x28
+    void (*set_quad_ref)(void* context, const Vec4* quad);    // +0x2C
+    u8   pad_30[0x14];
+};
+static_assert(offsetof(TypeEntry, set_quad) == 0x20);
+static_assert(offsetof(TypeEntry, set_scale) == 0x28);
+static_assert(offsetof(TypeEntry, set_quad_ref) == 0x2C);
+static_assert(sizeof(TypeEntry) == 0x44);
+
+/** Vector/colour quad slots of the 0x004EA81C scratch block. */
+struct RenderState {
+    u8   pad_000[0x100];
+    Vec4 vector;                // +0x100
+    Vec4 color;                 // +0x110
+};
+static_assert(offsetof(RenderState, vector) == 0x100);
+static_assert(offsetof(RenderState, color) == 0x110);
+
+inline RenderState& render_state() {
+    return *reinterpret_cast<RenderState*>(0x004EA81Cu);
+}
+
+inline TypeEntry* type_entries() {
+    return reinterpret_cast<TypeEntry*>(0x00464110u);
+}
+
+constexpr u32 kFlagUseScaledQuad = 0x100u;  // child +0x68 bit 8
+constexpr u32 kFlagComposeQuad   = 0x080u;  // child +0x68 bit 7
+constexpr u32 kFlagOverrideY     = 0x004u;  // child +0x68 bit 2
+constexpr u32 kFlagInheritScale  = 0x001u;  // child +0x84 bit 0
+constexpr f32 kOverriddenY       = 5.0f;   // `vldr s17,[pc,#0x218]`
+
+inline f32 child_factor(const PartNode* node, f32 inherited) {
+    return (node->scale_flags & kFlagInheritScale) != 0
+               ? node->local_scale * inherited
+               : node->local_scale;
+}
+
+inline void scale_quad(Vec4& quad, f32 factor) {
+    quad.value[0] *= factor;
+    quad.value[1] *= factor;
+    quad.value[2] *= factor;
+    quad.value[3] *= factor;
+}
+
+inline void add_quad(Vec4& dst, const Vec4& src) {
+    dst.value[0] += src.value[0];
+    dst.value[1] += src.value[1];
+    dst.value[2] += src.value[2];
+    dst.value[3] += src.value[3];
+}
+
+}  // namespace asd_part_scale_002a399c
+
+// DECOMP_FUNC(0x002a399c, 604)
+extern "C" void engine_func_002a399c(void* part_raw, f32 scale) {
+    using namespace asd_part_scale_002a399c;
+
+    PartNode* const self = static_cast<PartNode*>(part_raw);
+
+    // 0x002A39AC..0x002A39B8: the unit is read before the new scale is stored.
+    const f32 scale_unit = self->scale_unit;
+    self->local_scale = scale;
+    const f32 inherited = scale_unit * scale;
+
+    for (PartNode* node = self->children; node != nullptr; node = node->next) {
+        // 0x002A39D0..0x002A3A00: two mutually exclusive per-child hook paths.
+        if ((node->flags & kFlagUseScaledQuad) != 0) {
+            RenderState& state = render_state();
+            state.vector = node->quad_20;
+            scale_quad(state.vector, child_factor(node, inherited));
+
+            // The +0x2C hook keeps the pointer, so hand it a private copy.
+            Vec4 quad = state.vector;
+            PartInstance* const instance = node->instance;
+            const TypeEntry* const type = &type_entries()[instance->type];
+            if (type->set_quad_ref != nullptr) {
+                type->set_quad_ref(instance->context, &quad);
+            }
+        } else {
+            const f32 factor = child_factor(node, inherited);
+            PartInstance* const instance = node->instance;
+            const TypeEntry* const type = &type_entries()[instance->type];
+            if (type->set_scale != nullptr) {
+                type->set_scale(instance->context, factor);
+            }
+        }
+
+        // 0x002A3A68..0x002A3B9C: compose the parent/child quad and hand it to
+        // the +0x20 hook.  Every field is reloaded after the calls above.
+        if ((node->flags & kFlagComposeQuad) != 0) {
+            RenderState& state = render_state();
+            state.vector = self->quad_40;
+            state.color = self->position;
+            add_quad(state.vector, state.color);
+            if ((node->flags & kFlagOverrideY) != 0) {
+                state.vector.value[1] = kOverriddenY;
+            }
+            state.color = node->quad_40;
+            scale_quad(state.color, inherited);
+            add_quad(state.vector, state.color);
+
+            Vec4 quad = state.vector;
+            PartInstance* const instance = node->instance;
+            const TypeEntry* const type = &type_entries()[instance->type];
+            if (type->set_quad != nullptr) {
+                type->set_quad(instance->context, &quad);
+            }
+        }
+    }
+}
 
 // DECOMP_FUNC(0x002e7e94, 604)
 extern "C" __attribute__((naked)) void engine_func_002e7e94() {
