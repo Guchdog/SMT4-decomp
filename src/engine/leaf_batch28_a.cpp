@@ -7553,114 +7553,140 @@ extern "C" void func_0015b1a4(void* object) {
     g_GpuCommandCursor = g_GpuCommandCursor + kGpuRecordWords;
 }
 
+// ---------------------------------------------------------------------------
+// 0x00155FD0 -- per-frame upkeep loop for the engine object returned by
+// 0x002AD630.
+//
+// The 412-byte symbol contains two textual fragments: a 24-byte entry stub
+// (0x00155FD0..0x00155FE7) that resolves the owning object through 0x002AD630,
+// and the loop body (0x00155FE8..0x00156167) it falls through into.  The stub
+// restores the caller's LR before falling through, so both fragments execute
+// as one function.  The stub's `mov r1, r0` copy of the original argument is
+// dead: the loop body never reads r1.
+//
+// One iteration synchronises through either 0x00159DC4 (when [object+8] is
+// set, which also starts a 64-bit tick measurement) or 0x002A232C, runs the
+// two optional callbacks, releases the two lock objects, and finally stores
+// the frame duration (measured helper interval + wall-clock tick delta) at
+// [object+0..7] when [object+8] is set at the end of the iteration.  The loop
+// continues while [object+0xD] is non-zero, so termination is controlled by
+// the called code.
+// ---------------------------------------------------------------------------
+extern "C" void* func_002ad630(void* argument);              // 0x002AD630
+extern "C" void  func_00159dc4(u64* elapsed_ticks);          // 0x00159DC4
+extern "C" void  func_002a232c();                            // 0x002A232C
+extern "C" void  func_00153268(u8* table, u32 index, u32* first,
+                              u32* second);                  // 0x00153268
+extern "C" void  func_002c4244(void* lock);                  // 0x002C4244
+extern "C" void  func_002c3aa8(void* lock);                  // 0x002C3AA8
+extern "C" void  func_002c3a24(void* lock);                  // 0x002C3A24
+extern "C" void  func_002c3628(void* lock);                  // 0x002C3628
+extern "C" void  func_00159ee4();                            // 0x00159EE4
+
+// `svc #0x28` is nn::os::GetSystemTick; it returns the 64-bit tick in r0:r1.
+namespace nn {
+namespace os {
+u64 GetSystemTick();
+} // namespace os
+} // namespace nn
+
+namespace {
+
+constexpr u32 kProfilerTableAddress = 0x004e6f14u; // literal at 0x00156168
+
+inline u8 LoadU8(const u8* base, u32 offset) {
+    return *reinterpret_cast<const u8*>(base + offset);
+}
+
+inline s8 LoadS8(const u8* base, u32 offset) {
+    return *reinterpret_cast<const s8*>(base + offset);
+}
+
+inline void StoreU32(u8* base, u32 offset, u32 value) {
+    *reinterpret_cast<u32*>(base + offset) = value;
+}
+
+using FrameCallback = void (*)(u32);
+
+} // namespace
+
 // DECOMP_FUNC(0x00155fd0, 412)
-extern "C" __attribute__((naked)) void engine_func_00155fd0() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe92d4010 @ push {r4, lr}\n"
-        ".inst 0xe1a04000 @ mov r4, r0\n"
-        ".inst 0xeb055d94 @ bl #0x2ad630\n"
-        ".inst 0xe1a01004 @ mov r1, r4\n"
-        ".inst 0xe8bd4010 @ pop {r4, lr}\n"
-        ".inst 0xe1a00000 @ mov r0, r0\n"
-        ".inst 0xe92d43f0 @ push {r4, r5, r6, r7, r8, sb, lr}\n"
-        ".inst 0xe1a04000 @ mov r4, r0\n"
-        ".inst 0xe24dd01c @ sub sp, sp, #0x1c\n"
-        ".inst 0xe3a00001 @ mov r0, #1\n"
-        ".inst 0xe3a07000 @ mov r7, #0\n"
-        ".inst 0xe5c4000d @ strb r0, [r4, #0xd]\n"
-        ".inst 0xe3a00000 @ mov r0, #0\n"
-        ".inst 0xe1a01000 @ mov r1, r0\n"
-        ".inst 0xe1a05000 @ mov r5, r0\n"
-        ".inst 0xe1a06000 @ mov r6, r0\n"
-        ".inst 0xe1cd00f8 @ strd r0, r1, [sp, #8]\n"
-        ".inst 0xe5d40008 @ ldrb r0, [r4, #8]\n"
-        ".inst 0xe3500000 @ cmp r0, #0\n"
-        ".inst 0x0a000007 @ beq #0x156040\n"
-        ".inst 0xe28d0008 @ add r0, sp, #8\n"
-        ".inst 0xeb000f66 @ bl #0x159dc4\n"
-        ".inst 0xe320f000 @ nop\n"
-        ".inst 0xe320f000 @ nop\n"
-        ".inst 0xef000028 @ svc #0x28\n"
-        ".inst 0xe1a05000 @ mov r5, r0\n"
-        ".inst 0xe1a06001 @ mov r6, r1\n"
-        ".inst 0xea000001 @ b #0x156048\n"
-        ".inst 0xe320f000 @ nop\n"
-        ".inst 0xeb0530b8 @ bl #0x2a232c\n"
-        ".inst 0xe5940028 @ ldr r0, [r4, #0x28]\n"
-        ".inst 0xe1d480de @ ldrsb r8, [r4, #0xe]\n"
-        ".inst 0xe3500000 @ cmp r0, #0\n"
-        ".inst 0x13a09001 @ movne sb, #1\n"
-        ".inst 0x03a09000 @ moveq sb, #0\n"
-        ".inst 0xe3580000 @ cmp r8, #0\n"
-        ".inst 0xe3a00000 @ mov r0, #0\n"
-        ".inst 0x0a00000c @ beq #0x15609c\n"
-        ".inst 0xe59f00f8 @ ldr r0, [pc, #0xf8]\n"
-        ".inst 0xe28d3010 @ add r3, sp, #0x10\n"
-        ".inst 0xe1a0200d @ mov r2, sp\n"
-        ".inst 0xe3a01000 @ mov r1, #0\n"
-        ".inst 0xebfff47a @ bl #0x153268\n"
-        ".inst 0xe59f00e4 @ ldr r0, [pc, #0xe4]\n"
-        ".inst 0xe28d3014 @ add r3, sp, #0x14\n"
-        ".inst 0xe28d2004 @ add r2, sp, #4\n"
-        ".inst 0xe3a01001 @ mov r1, #1\n"
-        ".inst 0xebfff475 @ bl #0x153268\n"
-        ".inst 0xe1cd00d0 @ ldrd r0, r1, [sp]\n"
-        ".inst 0xe1900001 @ orrs r0, r0, r1\n"
-        ".inst 0x13a00001 @ movne r0, #1\n"
-        ".inst 0xe1800009 @ orr r0, r0, sb\n"
-        ".inst 0xe0188000 @ ands r8, r8, r0\n"
-        ".inst 0x0a000002 @ beq #0x1560b4\n"
-        ".inst 0xee077f9a @ mcr p15, #0, r7, c7, c10, #4\n"
-        ".inst 0xe2840040 @ add r0, r4, #0x40\n"
-        ".inst 0xeb05b863 @ bl #0x2c4244\n"
-        ".inst 0xe5d40030 @ ldrb r0, [r4, #0x30]\n"
-        ".inst 0xe3500000 @ cmp r0, #0\n"
-        ".inst 0x1a000003 @ bne #0x1560d0\n"
-        ".inst 0xe5941028 @ ldr r1, [r4, #0x28]\n"
-        ".inst 0xe3510000 @ cmp r1, #0\n"
-        ".inst 0x1594002c @ ldrne r0, [r4, #0x2c]\n"
-        ".inst 0x112fff31 @ blxne r1\n"
-        ".inst 0xe5940020 @ ldr r0, [r4, #0x20]\n"
-        ".inst 0xe3500000 @ cmp r0, #0\n"
-        ".inst 0x0a000006 @ beq #0x1560f8\n"
-        ".inst 0xe2840034 @ add r0, r4, #0x34\n"
-        ".inst 0xeb05b670 @ bl #0x2c3aa8\n"
-        ".inst 0xe5941020 @ ldr r1, [r4, #0x20]\n"
-        ".inst 0xe5940024 @ ldr r0, [r4, #0x24]\n"
-        ".inst 0xe12fff31 @ blx r1\n"
-        ".inst 0xe2840034 @ add r0, r4, #0x34\n"
-        ".inst 0xeb05b64a @ bl #0x2c3a24\n"
-        ".inst 0xe3580000 @ cmp r8, #0\n"
-        ".inst 0x12840048 @ addne r0, r4, #0x48\n"
-        ".inst 0x1b05b548 @ blne #0x2c3628\n"
-        ".inst 0xe2840034 @ add r0, r4, #0x34\n"
-        ".inst 0xe320f000 @ nop\n"
-        ".inst 0xeb05b665 @ bl #0x2c3aa8\n"
-        ".inst 0xe320f000 @ nop\n"
-        ".inst 0xe320f000 @ nop\n"
-        ".inst 0xeb000f71 @ bl #0x159ee4\n"
-        ".inst 0xe2840034 @ add r0, r4, #0x34\n"
-        ".inst 0xe320f000 @ nop\n"
-        ".inst 0xeb05b63e @ bl #0x2c3a24\n"
-        ".inst 0xe5d40008 @ ldrb r0, [r4, #8]\n"
-        ".inst 0xe3500000 @ cmp r0, #0\n"
-        ".inst 0x0a000007 @ beq #0x156154\n"
-        ".inst 0xef000028 @ svc #0x28\n"
-        ".inst 0xe1cd20d8 @ ldrd r2, r3, [sp, #8]\n"
-        ".inst 0xe0500005 @ subs r0, r0, r5\n"
-        ".inst 0xe0c11006 @ sbc r1, r1, r6\n"
-        ".inst 0xe0922000 @ adds r2, r2, r0\n"
-        ".inst 0xe0a30001 @ adc r0, r3, r1\n"
-        ".inst 0xe5840004 @ str r0, [r4, #4]\n"
-        ".inst 0xe5842000 @ str r2, [r4]\n"
-        ".inst 0xe5d4000d @ ldrb r0, [r4, #0xd]\n"
-        ".inst 0xe3500000 @ cmp r0, #0\n"
-        ".inst 0x1affffa7 @ bne #0x156000\n"
-        ".inst 0xe28dd01c @ add sp, sp, #0x1c\n"
-        ".inst 0xe8bd83f0 @ pop {r4, r5, r6, r7, r8, sb, pc}\n"
-        ".word 0x004e6f14 @ bounded tail data\n"
-    );
+extern "C" void engine_func_00155fd0(void* argument) {
+    u8* const base = static_cast<u8*>(func_002ad630(argument));
+
+    // Original: mov r0,#1 / strb r0,[base+0xD] (0x00155FF4..0x00155FFC).
+    *reinterpret_cast<u8*>(base + 0xd) = 1;
+
+    do {
+        u64 measured_ticks = 0;
+        u64 start_tick = 0;
+
+        if (LoadU8(base, 8) != 0) {
+            func_00159dc4(&measured_ticks);
+            start_tick = nn::os::GetSystemTick();
+        } else {
+            func_002a232c();
+        }
+
+        const bool has_work_callback = LoadU32(base, 0x28) != 0;
+        const s8 cleanup_selector = LoadS8(base, 0xe);
+
+        bool counters_active = false;
+        if (cleanup_selector != 0) {
+            u8* const profiler =
+                reinterpret_cast<u8*>(static_cast<std::uintptr_t>(kProfilerTableAddress));
+            u32 counter_0 = 0;
+            u32 counter_0_aux = 0;
+            u32 counter_1 = 0;
+            u32 counter_1_aux = 0;
+            func_00153268(profiler, 0, &counter_0, &counter_0_aux);
+            func_00153268(profiler, 1, &counter_1, &counter_1_aux);
+            counters_active = (counter_0 | counter_1) != 0;
+        }
+
+        // Only bit 0 of the signed selector survives the final `ands`; the
+        // getter arm is skipped entirely when the byte is zero.
+        const bool cleanup =
+            (cleanup_selector & 1) != 0 && (counters_active || has_work_callback);
+
+        if (cleanup) {
+            // 0x001560A8 issues mcr p15,0,r7,c7,c10,4 (DSB sy).  Clang lowers
+            // __sync_synchronize() to the ARMv6 DMB form (c7,c10,5); both are
+            // full barriers for this single-threaded control flow.
+            __sync_synchronize();
+            func_002c4244(base + 0x40);
+        }
+
+        if (LoadU8(base, 0x30) == 0) {
+            const u32 callback = LoadU32(base, 0x28);
+            if (callback != 0) {
+                reinterpret_cast<FrameCallback>(callback)(LoadU32(base, 0x2c));
+            }
+        }
+
+        if (LoadU32(base, 0x20) != 0) {
+            func_002c3aa8(base + 0x34);
+            // The callback word is re-read after the lock call.
+            reinterpret_cast<FrameCallback>(LoadU32(base, 0x20))(
+                LoadU32(base, 0x24));
+            func_002c3a24(base + 0x34);
+        }
+
+        if (cleanup) {
+            func_002c3628(base + 0x48);
+        }
+
+        func_002c3aa8(base + 0x34);
+        func_00159ee4();
+        func_002c3a24(base + 0x34);
+
+        if (LoadU8(base, 8) != 0) {
+            const u64 end_tick = nn::os::GetSystemTick();
+            const u64 frame_ticks = measured_ticks + (end_tick - start_tick);
+            StoreU32(base, 4, static_cast<u32>(frame_ticks >> 32));
+            StoreU32(base, 0, static_cast<u32>(frame_ticks));
+        }
+    } while (LoadU8(base, 0xd) != 0);
 }
 
 // DECOMP_FUNC(0x001fc004, 416)
