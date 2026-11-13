@@ -3300,7 +3300,7 @@ address,size,status,category,name,src_file
 0x0023088c,516,matching,shop,shop_func_0023088c,src/engine/leaf_batch46_a.cpp
 0x00230a90,24,matching,script_vm,script_vm_func_00230a90,src/engine/leaf_batch39_a.cpp
 0x00230aa8,64,matching,camp,camp_func_00230aa8,src/engine/leaf_batch24_b.cpp
-0x00230ae8,408,matching,shop,shop_func_00230ae8,src/engine/leaf_batch44_b.cpp
+0x00230ae8,408,non_matching,shop,shop_func_00230ae8,src/engine/leaf_batch44_b.cpp
 0x00230c80,164,matching,unknown,func_00230c80,src/engine/leaf_batch42_a.cpp
 0x00230d24,140,matching,shop,shop_func_00230d24,src/engine/leaf_batch38_c.cpp
 0x00230db0,100,non_matching,shop,shop_func_00230db0,src/engine/leaf_batch30_b.cpp

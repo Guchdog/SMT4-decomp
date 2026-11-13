@@ -4588,62 +4588,171 @@ extern "C" s32 ui_func_00195424(u8* self, s32 mirrored) {
     return second;
 }
 
-// DECOMP_FUNC(0x00230ae8, 408)
-extern "C" __attribute__((naked)) void shop_func_00230ae8() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x41f0, 0xe92d, 0x4000, 0xe1a0\n"
-        ".hword 0x6001, 0xe1a0, 0x0004, 0xe590\n"
-        ".hword 0x8000, 0xe3a0, 0x7001, 0xe3a0\n"
-        ".hword 0x0001, 0xe370, 0x0008, 0x1594\n"
-        ".hword 0x0001, 0x1370, 0x000c, 0x1594\n"
-        ".hword 0x0001, 0x1370, 0x0017, 0x0a00\n"
-        ".hword 0x1000, 0xe3e0, 0x11b4, 0xe1c4\n"
-        ".hword 0x8011, 0xe5c4, 0x8012, 0xe5c4\n"
-        ".hword 0x000c, 0xe594, 0x5000, 0xe3a0\n"
-        ".hword 0x0000, 0xe350, 0x000f, 0xda00\n"
-        ".hword 0x0085, 0xe084, 0x01f8, 0xe1d0\n"
-        ".hword 0xb36d, 0xeb01, 0x0001, 0xe350\n"
-        ".hword 0x0002, 0x1350, 0x7011, 0x05c4\n"
-        ".hword 0x51b4, 0x01c4, 0x0006, 0xe350\n"
-        ".hword 0x0002, 0x1a00, 0x8011, 0xe5c4\n"
-        ".hword 0x7012, 0xe5c4, 0x51b4, 0xe1c4\n"
-        ".hword 0x000c, 0xe594, 0x5001, 0xe285\n"
-        ".hword 0x0005, 0xe150, 0xffef, 0xcaff\n"
-        ".hword 0x0011, 0xe5d4, 0x0000, 0xe350\n"
-        ".hword 0x003c, 0x0a00, 0x0000, 0xe5d6\n"
-        ".hword 0x51f4, 0xe1d4, 0x0001, 0xe350\n"
-        ".hword 0x0010, 0xe286, 0x0018, 0x0a00\n"
-        ".hword 0xb9b0, 0xeb01, 0x2008, 0xe596\n"
-        ".hword 0x0005, 0xe080, 0x0000, 0xe152\n"
-        ".hword 0x0032, 0xda00, 0x0000, 0xe5d6\n"
-        ".hword 0x0001, 0xe350, 0x0010, 0xe286\n"
-        ".hword 0x0014, 0x0a00, 0xb5fe, 0xeb01\n"
-        ".hword 0x1010, 0xe5d4, 0x0000, 0xe351\n"
-        ".hword 0x0005, 0x1150, 0x00a8, 0x159f\n"
-        ".hword 0x217b, 0x1b02, 0x0000, 0xe5d6\n"
-        ".hword 0x0001, 0xe350, 0x0010, 0xe286\n"
-        ".hword 0x000f, 0x0a00, 0xb99d, 0xeb01\n"
-        ".hword 0x1000, 0xe5d6, 0x4000, 0xe1a0\n"
-        ".hword 0x0000, 0xe351, 0x0015, 0x1a00\n"
-        ".hword 0x000e, 0xea00, 0xf000, 0xe320\n"
-        ".hword 0xb7f5, 0xeb01, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0xffe2, 0xeaff\n"
-        ".hword 0xf000, 0xe320, 0x40a2, 0xeb00\n"
-        ".hword 0xf000, 0xe320, 0xf000, 0xe320\n"
-        ".hword 0xffe6, 0xeaff, 0xf000, 0xe320\n"
-        ".hword 0xb7eb, 0xeb01, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0xffeb, 0xeaff\n"
-        ".hword 0x1000, 0xe1a0, 0x0010, 0xe286\n"
-        ".hword 0xa0ee, 0xeb01, 0x1005, 0xe1a0\n"
-        ".hword 0x0010, 0xe286, 0xb31b, 0xeb01\n"
-        ".hword 0x0000, 0xe5d6, 0x0001, 0xe350\n"
-        ".hword 0x0006, 0x1a00, 0x1004, 0xe1a0\n"
-        ".hword 0x0010, 0xe286, 0xe668, 0xebff\n"
-        ".hword 0x1005, 0xe1a0, 0x0010, 0xe286\n"
-        ".hword 0x41f0, 0xe8bd, 0xa237, 0xea01\n"
-        ".hword 0x81f0, 0xe8bd, 0x016c, 0x0100\n"
-    );
+// 0x00230ae8: touch-region selection for the shop list cursor.
+//
+// Argument 0 is the touch-region list (+0x18 holds `count` signed 16-bit
+// region handles).  Argument 1 is the shop work block whose byte at +0x00
+// selects one of two cursor layouts and whose +0x10 sub-object is handed to
+// the cursor helpers.  Every registered handle is polled with the UI touch
+// helper; states 1/2 mark the list active and states 6 mark a release, both
+// recording the handle index in the signed halfword at +0x14.  Only an active
+// list updates the selected cursor row, and a row beyond the +0x08 limit is
+// rejected.  The original tail-branches into the type-1 setter (0x00299558)
+// and returns its first argument in r0 on every non-early exit.
+extern "C" s32 ui_func_0029d8fc(s16 handle);                        // 0x0029d8fc
+extern "C" s32 camp_func_0029f260(void* cursor);                    // 0x0029f260
+extern "C" s32 camp_func_0029ebdc(void* cursor);                    // 0x0029ebdc
+extern "C" void* shop_func_00240ea4(const u8* cursor);              // 0x00240ea4
+extern "C" void* camp_func_0029e3bc(const u8* cursor);              // 0x0029e3bc
+extern "C" void script_vm_func_00299000(void* cursor, s32 value);   // 0x00299000
+extern "C" void camp_func_0029d8c0(void* cursor, s32 value);        // 0x0029d8c0
+extern "C" void shop_func_0022a60c(void* cursor, s32 value);        // 0x0022a60c
+extern "C" s32 engine_func_00299558(void* cursor, s32 value);       // 0x00299558
+extern "C" void script_vm_func_002b91c4(void* object);              // 0x002b91c4
+
+namespace {
+
+struct ShopTouchRegionList {
+    u32 unknown_00;        // not accessed by this function
+    s32 region_04;         // -1: not registered, skip the update
+    s32 region_08;         // -1: not registered, skip the update
+    s32 region_count_0c;   // -1: not registered; otherwise signed handle count
+    u8  debug_flags_10;    // non-zero enables the 0x0100016C registration check
+    u8  touch_active_11;   // set by state 1/2, cleared by state 6 or at entry
+    u8  touch_release_12;  // set by state 6, cleared at entry
+    u8  pad_13;
+    s16 active_index_14;   // index stored as a signed halfword
+    u16 pad_16;
+    s16 handles_18[1];     // region_count_0c signed region handles
+};
+
+struct ShopListCursorHost {
+    u8  cursor_kind_00;    // 0: 0x299000/0x29D8C0; 1: 0x22A60C/0x299558
+    u8  pad_01[7];
+    s32 visible_limit_08;  // signed count compared with cursor position + index
+    u32 pad_0c;
+    u8  cursor_10[1];      // opaque cursor object (helpers read up to +0x62)
+};
+
+static_assert(offsetof(ShopTouchRegionList, region_04) == 0x04);
+static_assert(offsetof(ShopTouchRegionList, region_08) == 0x08);
+static_assert(offsetof(ShopTouchRegionList, region_count_0c) == 0x0C);
+static_assert(offsetof(ShopTouchRegionList, debug_flags_10) == 0x10);
+static_assert(offsetof(ShopTouchRegionList, touch_active_11) == 0x11);
+static_assert(offsetof(ShopTouchRegionList, touch_release_12) == 0x12);
+static_assert(offsetof(ShopTouchRegionList, active_index_14) == 0x14);
+static_assert(offsetof(ShopTouchRegionList, handles_18) == 0x18);
+static_assert(offsetof(ShopListCursorHost, visible_limit_08) == 0x08);
+static_assert(offsetof(ShopListCursorHost, cursor_10) == 0x10);
+
+// The original reloads the 32-bit value after every helper call, so the
+// signed conversions below stay explicit instead of being cached.
+inline s32 WrappingAdd32(s32 left, s32 right) {
+    return static_cast<s32>(static_cast<u32>(left) + static_cast<u32>(right));
+}
+
+inline u32 PointerWord(const void* pointer) {
+    return static_cast<u32>(reinterpret_cast<std::uintptr_t>(pointer));
+}
+
+}  // namespace
+
+extern "C" s32 shop_func_00230ae8(void* self_pointer, void* host_pointer) {
+    auto* const self = static_cast<ShopTouchRegionList*>(self_pointer);
+    auto* const host = static_cast<ShopListCursorHost*>(host_pointer);
+    u8* const cursor = host->cursor_10;
+
+    // 0x230B00..0x230B14: any of the three registered-region ids being -1
+    // skips the reset/scan block but still reaches the +0x11 state check, so
+    // the previously stored touch state is reused as-is.
+    const bool registered = self->region_04 != -1 &&
+                            self->region_08 != -1 &&
+                            self->region_count_0c != -1;
+    if (registered) {
+        self->active_index_14 = static_cast<s16>(-1);
+        self->touch_active_11 = 0;
+        self->touch_release_12 = 0;
+
+        const s32 count = self->region_count_0c;
+        if (count > 0) {
+            s32 index = 0;
+            do {
+                // 0x230B38..0x230B3C: signed halfword handle at +0x18 + index*2.
+                const s32 state = ui_func_0029d8fc(self->handles_18[index]);
+                if (state == 1 || state == 2) {
+                    self->touch_active_11 = 1;
+                    self->active_index_14 = static_cast<s16>(index);
+                }
+                if (state == 6) {
+                    self->touch_active_11 = 0;
+                    self->touch_release_12 = 1;
+                    self->active_index_14 = static_cast<s16>(index);
+                }
+                ++index;
+            } while (self->region_count_0c > index);
+        }
+    }
+
+    // 0x230B78: the byte load is also the r0 value of this exit.
+    if (self->touch_active_11 == 0) {
+        return 0;
+    }
+
+    const s32 selected = self->active_index_14;
+
+    // 0x230B84..0x230BA4: cursor position plus the selected index, then the
+    // signed limit test `[+0x08] <= position + index`.
+    s32 cursor_position;
+    if (host->cursor_kind_00 == 1) {
+        cursor_position = camp_func_0029ebdc(cursor);
+    } else {
+        cursor_position = camp_func_0029f260(cursor);
+    }
+    const s32 visible_end = WrappingAdd32(cursor_position, selected);
+    if (host->visible_limit_08 <= visible_end) {
+        // The sum is still in r0 on this exit.
+        return visible_end;
+    }
+
+    // 0x230BAC..0x230BC0: object lookup for the debug registration check.
+    void* cursor_object;
+    if (host->cursor_kind_00 == 1) {
+        cursor_object = shop_func_00240ea4(cursor);
+    } else {
+        cursor_object = camp_func_0029e3bc(cursor);
+    }
+
+    // 0x230BC0..0x230BD0: `cmpne r0, r5` compares the full 32-bit pointer
+    // value with the sign-extended selected index.
+    if (self->debug_flags_10 != 0 &&
+        PointerWord(cursor_object) != static_cast<u32>(selected)) {
+        script_vm_func_002b91c4(reinterpret_cast<void*>(0x0100016Cu));
+    }
+
+    // 0x230BD4..0x230C34: the same getter is used a third time.
+    s32 cursor_value;
+    if (host->cursor_kind_00 == 1) {
+        cursor_value = camp_func_0029ebdc(cursor);
+    } else {
+        cursor_value = camp_func_0029f260(cursor);
+    }
+
+    // 0x230BE8..0x230C4C: kind 0 stores the position through the +0x24 and
+    // +0x20 setters, then falls through to the kind-byte reload at 0x230C50.
+    if (host->cursor_kind_00 == 0) {
+        script_vm_func_00299000(cursor, cursor_value);
+        camp_func_0029d8c0(cursor, selected);
+    }
+
+    // 0x230C50..0x230C74: kind 1 stores through 0x22A60C, then tail-branches
+    // into 0x299558.  That setter returns r0 unchanged (the cursor pointer).
+    if (host->cursor_kind_00 == 1) {
+        shop_func_0022a60c(cursor, cursor_value);
+        return engine_func_00299558(cursor, selected);
+    }
+
+    // Any other kind reloads the selector byte at 0x230C50 and exits with it.
+    return host->cursor_kind_00;
 }
 
 // DECOMP_FUNC(0x00296390, 408)
