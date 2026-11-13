@@ -6759,96 +6759,136 @@ extern "C" s32 func_0032fc54(leaf_fc54::Request* request) {
     return result;
 }
 // DECOMP_FUNC(0x001a1954, 676)
-extern "C" __attribute__((naked)) void ui_func_001a1954() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x41f0, 0xe92d, 0x5000, 0xe1a0\n"
-        ".hword 0x2012, 0xe3a0, 0x726c, 0xe59f\n"
-        ".hword 0x00b0, 0xe1d0, 0x1054, 0xe285\n"
-        ".hword 0x4004, 0xe597, 0x04be, 0xe1c4\n"
-        ".hword 0x0004, 0xe1a0, 0x6d76, 0xeb04\n"
-        ".hword 0x6000, 0xe3a0, 0x6010, 0xe5c4\n"
-        ".hword 0x0008, 0xe595, 0x200e, 0xe3a0\n"
-        ".hword 0x1024, 0xe285, 0x0012, 0xe584\n"
-        ".hword 0x000c, 0xe595, 0x0016, 0xe584\n"
-        ".hword 0x0010, 0xe595, 0x001a, 0xe584\n"
-        ".hword 0x01b4, 0xe1d5, 0x01be, 0xe1c4\n"
-        ".hword 0x0038, 0xe595, 0x0020, 0xe584\n"
-        ".hword 0x03b2, 0xe1d5, 0x02b4, 0xe1c4\n"
-        ".hword 0x03b4, 0xe1d5, 0x02b6, 0xe1c4\n"
-        ".hword 0x0030, 0xe284, 0x6d62, 0xeb04\n"
-        ".hword 0x0016, 0xe595, 0x003e, 0xe584\n"
-        ".hword 0x001a, 0xe595, 0x0042, 0xe584\n"
-        ".hword 0x001e, 0xe595, 0x0046, 0xe584\n"
-        ".hword 0x02b2, 0xe1d5, 0x04ba, 0xe1c4\n"
-        ".hword 0x007e, 0xe5d5, 0x004c, 0xe5c4\n"
-        ".hword 0x01dc, 0xe59f, 0x604d, 0xe5c4\n"
-        ".hword 0x7c69, 0xeb04, 0x0000, 0xe350\n"
-        ".hword 0x0002, 0x0a00, 0x004d, 0xe5d4\n"
-        ".hword 0x0001, 0xe380, 0x004d, 0xe5c4\n"
-        ".hword 0x01c0, 0xe59f, 0x7c62, 0xeb04\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x0002, 0x0a00, 0x004d, 0xe5d4\n"
-        ".hword 0x0002, 0xe380, 0x004d, 0xe5c4\n"
-        ".hword 0x01a4, 0xe59f, 0x7c5a, 0xeb04\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x0002, 0x0a00, 0x004d, 0xe5d4\n"
-        ".hword 0x0004, 0xe380, 0x004d, 0xe5c4\n"
-        ".hword 0x0188, 0xe59f, 0x7c52, 0xeb04\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x0002, 0x0a00, 0x004d, 0xe5d4\n"
-        ".hword 0x0008, 0xe380, 0x004d, 0xe5c4\n"
-        ".hword 0x016c, 0xe59f, 0x3050, 0xe284\n"
-        ".hword 0x1168, 0xe59f, 0x2005, 0xe790\n"
-        ".hword 0x0b2a, 0xe285, 0x0039, 0xe280\n"
-        ".hword 0x0044, 0xe883, 0x2000, 0xe5d0\n"
-        ".hword 0x25b8, 0xe1c4, 0x1005, 0xe7d1\n"
-        ".hword 0x15ba, 0xe1c4, 0x0000, 0xe5d0\n"
-        ".hword 0x9dcd, 0xeb03, 0x0003, 0xe350\n"
-        ".hword 0x0ffa, 0x03a0, 0x05b8, 0x01c4\n"
-        ".hword 0x0134, 0xe59f, 0x0005, 0xe7d0\n"
-        ".hword 0x0000, 0xe350, 0x0008, 0x1a00\n"
-        ".hword 0x15b8, 0xe1d4, 0x0018, 0xe351\n"
-        ".hword 0x0006, 0x1a00, 0x111c, 0xe59f\n"
-        ".hword 0x10d5, 0xe191, 0x0000, 0xe351\n"
-        ".hword 0x0ffa, 0x1281, 0x05b8, 0x11c4\n"
-        ".hword 0x0000, 0x1a00, 0x05ba, 0xe1c4\n"
-        ".hword 0x0004, 0xe597, 0x0909, 0xe280\n"
-        ".hword 0x0ebb, 0xe280, 0x0000, 0xe5d0\n"
-        ".hword 0x0063, 0xe5c4, 0x0e41, 0xe3a0\n"
-        ".hword 0x7c27, 0xeb04, 0x0000, 0xe350\n"
-        ".hword 0x0001, 0x13a0, 0x0064, 0x15c4\n"
-        ".hword 0x6064, 0x05c4, 0x004d, 0xe5d4\n"
-        ".hword 0x0000, 0xe350, 0x66b6, 0x01c4\n"
-        ".hword 0x0002, 0xe5d5, 0x0062, 0xe5c4\n"
-        ".hword 0x0002, 0xe5d5, 0x0002, 0xe350\n"
-        ".hword 0x0022, 0x0a00, 0x0c91, 0xe285\n"
-        ".hword 0x10dc, 0xe1d0, 0x0000, 0xe351\n"
-        ".hword 0x65bc, 0xb1c4, 0x0004, 0xba00\n"
-        ".hword 0x2381, 0xe081, 0x1401, 0xe082\n"
-        ".hword 0x1101, 0xe085, 0x1dba, 0xe1d1\n"
-        ".hword 0x15bc, 0xe1c4, 0x10dd, 0xe1d0\n"
-        ".hword 0x0000, 0xe351, 0x65be, 0xb1c4\n"
-        ".hword 0x0004, 0xba00, 0x2381, 0xe081\n"
-        ".hword 0x1401, 0xe082, 0x1101, 0xe085\n"
-        ".hword 0x1dba, 0xe1d1, 0x15be, 0xe1c4\n"
-        ".hword 0x00de, 0xe1d0, 0x0000, 0xe350\n"
-        ".hword 0x66b0, 0xb1c4, 0x0004, 0xba00\n"
-        ".hword 0x1380, 0xe080, 0x0400, 0xe081\n"
-        ".hword 0x0100, 0xe085, 0x0dba, 0xe1d0\n"
-        ".hword 0x06b0, 0xe1c4, 0x0004, 0xe597\n"
-        ".hword 0x1004, 0xe1a0, 0x41f0, 0xe8bd\n"
-        ".hword 0x0b91, 0xe280, 0x0fe5, 0xe280\n"
-        ".hword 0x2080, 0xe3a0, 0x6ce4, 0xea04\n"
-        ".hword 0x65bc, 0xe1c4, 0x65be, 0xe1c4\n"
-        ".hword 0x66b0, 0xe1c4, 0xfff4, 0xeaff\n"
-        ".hword 0xe2a8, 0x0043, 0x067a, 0x0000\n"
-        ".hword 0x067b, 0x0000, 0x0679, 0x0000\n"
-        ".hword 0x0678, 0x0000, 0xf458, 0x0001\n"
-        ".hword 0xa83a, 0x0000, 0xa83b, 0x0000\n"
-        ".hword 0xafca, 0x0000\n"
-    );
-};
+//
+// Publishes the current camp/UI context into the UI work base held at
+// *(0x0043E2A8 + 4). An 0x80-byte record is assembled at the start of that
+// work base and then copied to work+0x24794.
+extern "C" void ui_func_002bcf58(void* dst, const void* src, u32 size);
+extern "C" bool script_vm_func_002c0ba8(u32 flag_id);
+extern "C" s32 engine_func_002891e0(s32 id);
+
+namespace ui_1a1954 {
+
+constexpr u32 kManagerAddr = 0x0043E2A8;    // UI manager singleton
+constexpr u32 kHandleField = 0x04;          // work base = *(u32*)(kManagerAddr + 4)
+constexpr u32 kPublishOffset = 0x24794;     // snapshot destination inside work base
+constexpr u32 kPublishSize = 0x80;
+constexpr u32 kStatusByteOffset = 0x24BB0;  // work-base flag byte
+
+constexpr u32 kFlagStatus0 = 0x67A;         // status bits 0..3
+constexpr u32 kFlagStatus1 = 0x67B;
+constexpr u32 kFlagStatus2 = 0x679;
+constexpr u32 kFlagStatus3 = 0x678;
+constexpr u32 kFlagExtra = 0x410;           // out[0x64] enable
+
+constexpr u32 kRecordTableOffset = 0x90;      // first 0x604-byte record
+constexpr u32 kRecordStride = 0x604;
+constexpr u32 kRecordFieldOffset = 0x4A;      // u16 field inside a record
+constexpr u32 kRecordSelectorOffset = 0x910C; // three signed record indices
+
+constexpr s32 kEngineStateSpecial = 3;        // result that substitutes 1000
+constexpr u16 kEngineStateOverride = 1000;
+constexpr u16 kEngineStateSentinel = 0x18;    // out[0x58] value re-checked below
+constexpr u8 kRotatedMode = 2;                // ctx[2] value that zeroes rows
+
+inline u8* work_base() {
+    return reinterpret_cast<u8*>(
+        reinterpret_cast<u32*>(kManagerAddr)[kHandleField / 4]);
+}
+
+} // namespace ui_1a1954
+
+extern "C" void ui_func_001a1954(u8* ctx) {
+    using namespace ui_1a1954;
+
+    u8* const out = work_base();
+
+    *reinterpret_cast<u16*>(out + 0x4E) = *reinterpret_cast<u16*>(ctx + 0x00);
+    ui_func_002bcf58(out, ctx + 0x54, 0x12);
+    out[0x10] = 0;
+
+    *reinterpret_cast<u32*>(out + 0x12) = *reinterpret_cast<u32*>(ctx + 0x08);
+    *reinterpret_cast<u32*>(out + 0x16) = *reinterpret_cast<u32*>(ctx + 0x0C);
+    *reinterpret_cast<u32*>(out + 0x1A) = *reinterpret_cast<u32*>(ctx + 0x10);
+    *reinterpret_cast<u16*>(out + 0x1E) = *reinterpret_cast<u16*>(ctx + 0x14);
+    *reinterpret_cast<u32*>(out + 0x20) = *reinterpret_cast<u32*>(ctx + 0x38);
+    *reinterpret_cast<u16*>(out + 0x24) = *reinterpret_cast<u16*>(ctx + 0x32);
+    *reinterpret_cast<u16*>(out + 0x26) = *reinterpret_cast<u16*>(ctx + 0x34);
+
+    ui_func_002bcf58(out + 0x30, ctx + 0x24, 0x0E);
+
+    *reinterpret_cast<u32*>(out + 0x3E) = *reinterpret_cast<u32*>(ctx + 0x16);
+    *reinterpret_cast<u32*>(out + 0x42) = *reinterpret_cast<u32*>(ctx + 0x1A);
+    *reinterpret_cast<u32*>(out + 0x46) = *reinterpret_cast<u32*>(ctx + 0x1E);
+    *reinterpret_cast<u16*>(out + 0x4A) = *reinterpret_cast<u16*>(ctx + 0x22);
+    out[0x4C] = ctx[0x7E];
+
+    out[0x4D] = 0;
+    if (script_vm_func_002c0ba8(kFlagStatus0)) {
+        out[0x4D] |= 0x01;
+    }
+    if (script_vm_func_002c0ba8(kFlagStatus1)) {
+        out[0x4D] |= 0x02;
+    }
+    if (script_vm_func_002c0ba8(kFlagStatus2)) {
+        out[0x4D] |= 0x04;
+    }
+    if (script_vm_func_002c0ba8(kFlagStatus3)) {
+        out[0x4D] |= 0x08;
+    }
+
+    *reinterpret_cast<u32*>(out + 0x50) = *reinterpret_cast<u32*>(ctx + 0x1F458);
+    *reinterpret_cast<u32*>(out + 0x54) = 0;
+
+    *reinterpret_cast<u16*>(out + 0x58) = ctx[0xA839];
+    *reinterpret_cast<u16*>(out + 0x5A) = ctx[0xA83A];
+    if (engine_func_002891e0(ctx[0xA839]) == kEngineStateSpecial) {
+        *reinterpret_cast<u16*>(out + 0x58) = kEngineStateOverride;
+    }
+
+    const u8 alternate = ctx[0xA83B];
+    if (alternate != 0) {
+        *reinterpret_cast<u16*>(out + 0x5A) = alternate;
+    } else if (*reinterpret_cast<u16*>(out + 0x58) == kEngineStateSentinel) {
+        const s8 delta = static_cast<s8>(ctx[0xAFCA]);
+        if (delta != 0) {
+            *reinterpret_cast<u16*>(out + 0x58) =
+                static_cast<u16>(static_cast<s32>(delta) +
+                                 static_cast<s32>(kEngineStateOverride));
+        } else {
+            *reinterpret_cast<u16*>(out + 0x5A) = alternate;
+        }
+    }
+
+    out[0x63] = work_base()[kStatusByteOffset];
+    out[0x64] = script_vm_func_002c0ba8(kFlagExtra) ? 1 : 0;
+    if (out[0x4D] == 0) {
+        *reinterpret_cast<u16*>(out + 0x66) = 0;
+    }
+
+    out[0x62] = ctx[0x02];
+    if (ctx[0x02] == kRotatedMode) {
+        *reinterpret_cast<u16*>(out + 0x5C) = 0;
+        *reinterpret_cast<u16*>(out + 0x5E) = 0;
+        *reinterpret_cast<u16*>(out + 0x60) = 0;
+    } else {
+        for (u32 slot = 0; slot < 3; ++slot) {
+            const s8 index =
+                static_cast<s8>(ctx[kRecordSelectorOffset + slot]);
+            u16 value = 0;
+            if (index >= 0) {
+                const u8* const record =
+                    ctx + kRecordTableOffset +
+                    static_cast<u32>(index) * kRecordStride;
+                value = *reinterpret_cast<const u16*>(
+                    record + kRecordFieldOffset);
+            }
+            *reinterpret_cast<u16*>(out + 0x5C + slot * 2) = value;
+        }
+    }
+
+    ui_func_002bcf58(work_base() + kPublishOffset, out, kPublishSize);
+}
 
 // DECOMP_FUNC(0x00137730, 680)
 extern "C" __attribute__((naked)) void battle_func_00137730() {
