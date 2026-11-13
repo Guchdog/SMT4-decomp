@@ -560,36 +560,163 @@ extern "C" __attribute__((naked)) void script_vm_func_0024f460() {
 }
 
 // DECOMP_FUNC(0x0033b3e0, 400)
-// 98 ARM instructions through unconditional pop; 8 trailing data bytes.
-extern "C" __attribute__((naked)) void ui_func_0033b3e0() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4ff8, 0xe2802b07, 0xe2822fa6, 0xe0813101\n"
-        ".word 0xe1a04000, 0xe5922000, 0xe0833301, 0xe3a00050\n"
-        ".word 0xe0800103, 0xe7920000, 0xe3100001, 0x13100080\n"
-        ".word 0x0a000053, 0xe1a00004, 0xebfd1ddd, 0xe59f1144\n"
-        ".word 0xe1d006fe, 0xe19110f4, 0xe2811001, 0xe351000c\n"
-        ".word 0xe1a02001, 0xaa000046, 0xe0843081, 0xe2833c2f\n"
-        ".word 0xe1d330f6, 0xe3530000, 0xaa00003e, 0xe0841081\n"
-        ".word 0xe2811c2f, 0xe352000b, 0xe1c100b6, 0xb2840d7f\n"
-        ".word 0xb58d0000, 0xaa00003a, 0xe0840082, 0xe280ec2f\n"
-        ".word 0xe1de00f6, 0xe3500000, 0xba00002e, 0xe2821001\n"
-        ".word 0xe351000c, 0xaa00002b, 0xe0840081, 0xe2806c2f\n"
-        ".word 0xe1d6c0f6, 0xe35c0000, 0xba000023, 0xe1de00f6\n"
-        ".word 0xe59d3000, 0xe08c720c, 0xe087830c, 0xe0807200\n"
-        ".word 0xe0877300, 0xe5933000, 0xe3a050cc, 0xe0859187\n"
-        ".word 0xe0855188, 0xe0899003, 0xe0855003, 0xe289ac01\n"
-        ".word 0xe3a0bf62, 0xe1d99fb6, 0xe1daa8b8, 0xe19bb0b5\n"
-        ".word 0xe1d55fb6, 0xe089900a, 0xe085a00b, 0xe6bf5079\n"
-        ".word 0xe6bf907a, 0xe1550009, 0xaa000002, 0xe1cec0b6\n"
-        ".word 0xe1c600b6, 0xea000008, 0xe320f000, 0x1a000006\n"
-        ".word 0xe3a05008, 0xe0857187, 0xe0855188, 0xe19370f7\n"
-        ".word 0xe19330f5, 0xe1570003, 0xcafffff3, 0xe2811001\n"
-        ".word 0xe351000c, 0xbaffffd3, 0xe2822001, 0xe352000b\n"
-        ".word 0xbaffffc8, 0xea000002, 0xe2811001, 0xe351000c\n"
-        ".word 0xbaffffb8, 0xe59f0010, 0xe5900000, 0xe8bd4ff8\n"
-        ".word 0xeafc66c9, 0xe8bd8ff8, 0x00002f1e, 0x00439ca8\n"
-    );
+//
+// Inserts one battle unit into the twelve-slot, key-ordered unit list of the
+// UI context and then forwards the shared UI buffer to 0x0025508c.
+//
+// Recovered contract (ARM 0x0033B3E0..0x0033B564):
+//   * `context` is the UI object, `id` a battle-unit index (s32).
+//   * The unit flag word lives in the 0x114-byte record table whose base
+//     pointer sits at context+0x1E98, at record offset +0x50.  Bits 0x01 and
+//     0x80 must both be set; otherwise the flag word is returned unchanged
+//     (the caller at 0x003BD2EC raises exactly 0x81 in that word first).
+//   * The value to insert is the s16 at +0x6E of the 0x288-byte actor record
+//     that 0x00282b94(context, id) finds.  The helper result is dereferenced
+//     without a null check, exactly like `ldrsh r0,[r0,#0x6e]` (0x0033B420).
+//   * The slot array is twelve s16 at context+0x2F06; context+0x2F1E holds the
+//     cursor (read signed).  Insertion starts at cursor+1, is skipped entirely
+//     when that index is >= 12, and otherwise lands in the first slot whose
+//     value is negative (the scan only advances over slots >= 0).
+//   * When the start index is <= 10 the window [start, 11] is re-ordered by an
+//     exchange pass: for j < i, when both slots are non-negative, slot j and
+//     slot i swap if the primary key of slot j is smaller than the primary key
+//     of slot i; on equal primary keys they swap if the secondary key of slot j
+//     is greater.  The primary key is the s16 truncation of the sum of the two
+//     zero-extended u16 fields at actor+0x1C2 and actor+0x254; the secondary
+//     key is the s16 at actor+0x008.
+//   * Return: the flag word on the early exit, otherwise the value returned by
+//     the tail call 0x0025508c(*0x00439CA8).
+//
+// The sort starts at cursor+1 rather than at the slot the value was written to;
+// both indices are kept separately below because an occupied prefix makes them
+// differ (original `mov r2,r1` at 0x0033B430 versus the scan on r1).
+namespace ui_b3e0 {
+
+// UI context fields (offsets from the r0/`context` register).
+constexpr u32 kFlagTablePointer = 0x1E98;    // 0x0033B3E4..0x0033B3F4
+constexpr u32 kFlagFieldOffset = 0x50;       // 0x0033B3FC..0x0033B404
+constexpr u32 kFlagRecordStride = 0x114;     // 0x0033B3EC/0x0033B3F8/0x0033B400
+constexpr u32 kFlagBit0 = 0x00000001;        // `tst r0,#1` (0x0033B408)
+constexpr u32 kFlagBit7 = 0x00000080;        // `tstne r0,#0x80` (0x0033B40C)
+
+constexpr u32 kActorTablePointer = 0x1FC0;   // 0x0033B45C..0x0033B4B4
+constexpr u32 kSlotArrayOffset = 0x2F06;     // ctx+0x2F00, `ldrsh [.,#6]`
+constexpr u32 kCursorOffset = 0x2F1E;        // literal 0x2F1E + r4 (0x0033B41C)
+constexpr s32 kSlotCount = 12;               // `cmp #0xc` (0x0033B42C/0x0033B530)
+constexpr s32 kSortOuterLimit = 11;          // `cmp r2,#0xb` (0x0033B454/0x0033B53C)
+
+// 0x288-byte actor record reached through context+0x1FC0.
+constexpr u32 kActorStride = 0x288;          // ip*17 + ip*64, then lsl #3
+constexpr u32 kInsertValueOffset = 0x6E;     // 0x0033B420
+constexpr u32 kSecondaryKeyOffset = 0x008;   // `mov r5,#8` (0x0033B510)
+constexpr u32 kPrimaryKeyLowOffset = 0x1C2;  // 0xCC+0xF6 (0x0033B4DC)
+constexpr u32 kPrimaryKeyHighOffset = 0x254; // 0xCC+0x188 (0x0033B4D8)
+
+constexpr u32 kSharedUiBuffer = 0x00439CA8;  // literal 0x00439CA8 (0x0033B554)
+
+}  // namespace ui_b3e0
+
+extern "C" u8* ui_func_00282b94(void* context, s32 id);
+extern "C" u32 script_vm_func_0025508c(void* buffer);
+
+namespace {
+
+// s16 slot accessor; a negative index addresses the words just before the
+// array, which is what the original `add r3,r4,r1,lsl #1` also does.
+s16* SlotAt(u8* ui, s32 index) {
+    return reinterpret_cast<s16*>(ui + ui_b3e0::kSlotArrayOffset) + index;
+}
+
+const u8* ActorAt(const u8* actors, s32 index) {
+    return actors + static_cast<u32>(index) * ui_b3e0::kActorStride;
+}
+
+// `ldrh`/`ldrh`/`add`/`sxth` (0x0033B4D4..0x0033B4F0): both u16 fields are
+// zero-extended, summed modulo 2^32 and truncated to s16.
+s32 PrimaryKey(const u8* actors, s32 index) {
+    const u8* const record = ActorAt(actors, index);
+    const u32 low =
+        *reinterpret_cast<const u16*>(record + ui_b3e0::kPrimaryKeyLowOffset);
+    const u32 high =
+        *reinterpret_cast<const u16*>(record + ui_b3e0::kPrimaryKeyHighOffset);
+    return static_cast<s16>(static_cast<u16>(low + high));
+}
+
+s32 SecondaryKey(const u8* actors, s32 index) {
+    return *reinterpret_cast<const s16*>(
+        ActorAt(actors, index) + ui_b3e0::kSecondaryKeyOffset);
+}
+
+}  // namespace
+
+extern "C" u32 ui_func_0033b3e0(void* context, s32 id) {
+    u8* const ui = static_cast<u8*>(context);
+
+    // 0x0033B3E4..0x0033B410: unit flag gate.
+    const u8* const flag_table =
+        *reinterpret_cast<u8* const*>(ui + ui_b3e0::kFlagTablePointer);
+    const u32 flags = *reinterpret_cast<const u32*>(
+        flag_table + ui_b3e0::kFlagFieldOffset +
+        static_cast<u32>(id) * ui_b3e0::kFlagRecordStride);
+    if ((flags & ui_b3e0::kFlagBit0) == 0 ||
+        (flags & ui_b3e0::kFlagBit7) == 0) {
+        return flags;
+    }
+
+    // 0x0033B414..0x0033B42C: helper result and cursor, in this order.  The
+    // +0x6E read is volatile so it stays on every path after the call, as in
+    // the original: when the cursor already saturates the slot list the value
+    // is still loaded (and a bad helper pointer still faults there).
+    const s32 value = *reinterpret_cast<const volatile s16*>(
+        reinterpret_cast<const u8*>(ui_func_00282b94(context, id)) +
+        ui_b3e0::kInsertValueOffset);
+    const s32 start =
+        static_cast<s32>(*reinterpret_cast<const s16*>(
+            ui + ui_b3e0::kCursorOffset)) + 1;
+
+    // 0x0033B42C..0x0033B460: find the first free (negative) slot.
+    s32 free_index = start;
+    while (free_index < ui_b3e0::kSlotCount &&
+           *SlotAt(ui, free_index) >= 0) {
+        ++free_index;
+    }
+
+    if (free_index < ui_b3e0::kSlotCount) {
+        *SlotAt(ui, free_index) = static_cast<s16>(value);
+
+        // 0x0033B464..0x0033B544: exchange pass over [start, 11].
+        if (start < ui_b3e0::kSortOuterLimit) {
+            const u8* const actors = *reinterpret_cast<u8* const*>(
+                ui + ui_b3e0::kActorTablePointer);
+            for (s32 j = start; j < ui_b3e0::kSortOuterLimit; ++j) {
+                if (*SlotAt(ui, j) < 0) {
+                    continue;
+                }
+                for (s32 i = j + 1; i < ui_b3e0::kSlotCount; ++i) {
+                    const s32 slot_i = *SlotAt(ui, i);
+                    if (slot_i < 0) {
+                        continue;
+                    }
+                    const s32 slot_j = *SlotAt(ui, j);
+                    const s32 key_j = PrimaryKey(actors, slot_j);
+                    const s32 key_i = PrimaryKey(actors, slot_i);
+                    const bool swap =
+                        key_j != key_i
+                            ? key_j < key_i
+                            : SecondaryKey(actors, slot_j) >
+                                  SecondaryKey(actors, slot_i);
+                    if (swap) {
+                        *SlotAt(ui, j) = static_cast<s16>(slot_i);
+                        *SlotAt(ui, i) = static_cast<s16>(slot_j);
+                    }
+                }
+            }
+        }
+    }
+
+    // 0x0033B554..0x0033B560: return 0x0025508c(*0x00439CA8).
+    return script_vm_func_0025508c(
+        *reinterpret_cast<void* const*>(ui_b3e0::kSharedUiBuffer));
 }
 
 // DECOMP_FUNC(0x003d9e10, 400)

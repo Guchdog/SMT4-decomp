@@ -7680,7 +7680,7 @@ address,size,status,category,name,src_file
 0x0033b02c,692,matching,camp,camp_func_0033b02c,src/engine/leaf_batch43_b.cpp
 0x0033b2e0,84,matching,script_vm,script_vm_func_0033b2e0,src/engine/leaf_batch25_c.cpp
 0x0033b334,172,matching,unknown,func_0033b334,src/engine/leaf_batch16_b.cpp
-0x0033b3e0,400,matching,ui,ui_func_0033b3e0,src/engine/leaf_batch41_c.cpp
+0x0033b3e0,400,non_matching,ui,ui_func_0033b3e0,src/engine/leaf_batch41_c.cpp
 0x0033b570,32,matching,unknown,func_0033b570,src/engine/leaf_batch18_b.cpp
 0x0033b590,52,matching,unknown,func_0033b590,src/engine/leaf_batch12_c.cpp
 0x0033b5c4,52,matching,unknown,func_0033b5c4,src/engine/leaf_batch12_c.cpp
