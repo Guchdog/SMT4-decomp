@@ -5143,38 +5143,250 @@ extern "C" s32 camp_func_00262498(u8* const self, u32 arg1, s32 arg2) {
 }
 
 // DECOMP_FUNC(0x002f7f18, 432)
-// 105 ARM instructions through unconditional pop; 12 trailing data bytes.
-extern "C" __attribute__((naked)) void engine_func_002f7f18() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4ff0, 0xe24dd034, 0xe3a00000, 0xebfe7c0d\n"
-        ".word 0xe58d0028, 0xe3a00001, 0xebfe7c0a, 0xe58d002c\n"
-        ".word 0xe3a00002, 0xebfe7c07, 0xe1a04000, 0xe59f0170\n"
-        ".word 0xe5900000, 0xebfe1b11, 0xe59fa168, 0xe3540000\n"
-        ".word 0xe3a06000, 0xe3a09000, 0xc3a09e3e, 0xe1a04006\n"
-        ".word 0xe1a0b006, 0xe58d0024, 0xe320f000, 0xebfe6f47\n"
-        ".word 0xe2800d7f, 0xe0841204, 0xe5900000, 0xe0811304\n"
-        ".word 0xe0805181, 0xe5950000, 0xe3100001, 0x0a000042\n"
-        ".word 0xe3100040, 0x1a000040, 0xe1d500f8, 0xe3500000\n"
-        ".word 0xba00003d, 0xe2850c01, 0xe59dc028, 0xe1d03bf6\n"
-        ".word 0xe1d02cb6, 0xe0030c93, 0xe2021008, 0xe3510000\n"
-        ".word 0xe0c3c39a, 0xe1a012c3, 0xe0417fc3, 0x13570001\n"
-        ".word 0xc3a07001, 0xca000001, 0xe3570000, 0x03e07000\n"
-        ".word 0xe1d00bfa, 0xe59d102c, 0xe2022008, 0xe3520000\n"
-        ".word 0xe0000190, 0xe0c0109a, 0xe1a012c0, 0xe0418fc0\n"
-        ".word 0x13580001, 0xc3a08001, 0xca000001, 0xe3580000\n"
-        ".word 0x03e08000, 0xe320f000, 0xebfe6f1c, 0xe1a01000\n"
-        ".word 0xe1d500f8, 0xe2811b07, 0xe2811fa6, 0xe0865106\n"
-        ".word 0xe5912000, 0xe0803100, 0xe0833300, 0xe28d1018\n"
-        ".word 0xe3a00009, 0xe58d5014, 0xe8810801, 0xe0822103\n"
-        ".word 0xe28d0008, 0xe3e03000, 0xe58d5010, 0xe58db020\n"
-        ".word 0xe8800208, 0xe3a03000, 0xe88d0180, 0xe59d1024\n"
-        ".word 0xe1a00003, 0xebfe1847, 0xe59f203c, 0xe59d1024\n"
-        ".word 0xe3a03000, 0xe1a00005, 0xe58db000, 0xe58db004\n"
-        ".word 0xe58db008, 0xebfd61d7, 0xe2866001, 0xe2844001\n"
-        ".word 0xe3540004, 0xbaffffaf, 0xe28dd034, 0xe3a00001\n"
-        ".word 0xe8bd8ff0, 0x0043427c, 0x51eb851f, 0x010001c1\n"
-    );
+//
+// Recovered contract (ARM 0x002F7F18..0x002F80BB = 105 instructions through
+// the unconditional `pop {r4, r5, r6, r7, r8, sb, sl, fp, pc}`; the three
+// literal words at 0x002F80BC..0x002F80C7 are 0x0043427C, 0x51EB851F and
+// 0x010001C1):
+//
+//   * ABI: r0..r3 are never read; the routine takes no arguments and always
+//     leaves r0 = 1.  The prologue saves {r4-r8, sb, sl, fp, lr} and reserves
+//     0x34 bytes, so every callee-saved register and SP survive unchanged.
+//     [sp+0x00..0x20] are the nine outgoing stack arguments of the 0x0027E1A0
+//     call, [sp+0x24] caches the 0x0027EB98 result and [sp+0x28]/[sp+0x2C]
+//     cache the first two 0x00296F60 results.
+//   * Three selectors are resolved up front, before the +0x1FC0 table:
+//         scale_a        = engine_func_00296f60(0)
+//         scale_b        = engine_func_00296f60(1)
+//         limit_selector = engine_func_00296f60(2)
+//     limit = (s32)limit_selector > 0 ? 0x3E0 : 0   (`cmp r4, #0` / `movgt`).
+//   * The handle is script_vm_func_0027eb98(*0x0043427C); 0x0043427C is the
+//     canonical script::g_ScriptVmContext_43427c slot and 0x0027EB98
+//     dereferences it once more.  It is resolved a single time and the result
+//     is forwarded to both per-actor calls.
+//   * Exactly four actors are visited, i = 0..3 (`cmp r4, #4` / `blt`).  The
+//     actor array base is re-read every iteration as `*[ui_state + 0x1FC0]`,
+//     where ui_state = ui_func_00293c98() = *0x00435D90.  The stride is 648
+//     bytes, built as `i + i<<4 + i<<6` then `<<3` (i.e. i*81*8).
+//   * An actor is skipped when bit0 of [actor+0x00] is clear, bit6 of the same
+//     word is set, or the s16 at [actor+0x08] is negative (signed `ldrsh`).
+//     Otherwise:
+//         raw_a   = (s16)[actor+0x1B6]      (via `add r0, r5, #0x100`)
+//         clamp   = (u16)[actor+0x1C6]      (only bit3 is examined)
+//         raw_b   = (s16)[actor+0x1BA]
+//         v       = (s32)(low32(raw * scale)) / 100      (truncating)
+//         if ((clamp & 8) != 0 && v > 1) v = 1;
+//         if (v == 0) v = -1;
+//     value_a uses raw_a/scale_a, value_b uses raw_b/scale_b.  The
+//     `cmpne r7, #1` / `movgt r7, #1` pair clamps only from above, and the
+//     `cmp r7, #0` / `mvneq r7, #0` pair (0x2F7FE0 and 0x2F8014) rewrites a
+//     zero result to -1 (`mvn`, i.e. bitwise NOT of 0, not `mov`).
+//     `mul` keeps only the low 32-bit word of the product and the following
+//     `smull`/`asr #5`/sign-fixup sequence divides that signed word by 100.
+//   * The record handed to 0x0027E1A0 is `*[ui2 + 0x1E98] + id*276`
+//     (0x1C00+0x298 then `id + id<<2 + id<<6`, `<<2`), where ui2 is a second
+//     ui_func_00293c98() call and id is the same s16 at [actor+0x08].
+//   * Emit per surviving actor, with slot = emitted*5:
+//         0x0027E1A0(0, handle, record, 0, value_a, value_b, -1, limit,
+//                    slot, slot, 9, 0.0f, 0, 0);
+//         0x00250800(slot, handle, 0x010001C1, 0, 0, 0.0f, 0);
+//     Both 0.0f arguments are *stack words* in the original (0x0027E1A0 loads
+//     its copy with `vldr s16, [sp, #0x64]`, 0x00250800 with `vldr s16,
+//     [sp, #0x24]`); the source models them as raw u32 words so a hard-float
+//     build keeps the same outgoing frame (see kZeroFloatBits).
+//     `emitted` starts at 0 and is incremented only after both calls, so the
+//     slot values are 0, 5, 10 and 15.  The second call's third argument is the
+//     literal 0x010001C1 (a constant, not a pointer).
+//   * No static caller exists in the pinned image (`bl` scan), so the return
+//     value's consumer cannot be observed; it is modelled as u32 to keep the
+//     register-level differential exact.
+namespace func_2f7f18 {
+
+// 0x0043427C: the script VM context slot (canonical
+// script::g_ScriptVmContext_43427c).  0x0027EB98 dereferences it again.
+constexpr u32 kScriptVmContextSlot = 0x0043427C;
+
+// [ui_state + 0x1FC0] = actor array base; entries are 648 bytes apart.
+constexpr u32 kActorArrayOffset = 0x1FC0;
+constexpr u32 kActorStride = 648;  // 81 * 8
+constexpr u32 kActorCount = 4;
+
+// [ui_state + 0x1E98] = record array base; entries are 276 bytes apart.
+constexpr u32 kRecordArrayOffset = 0x1E98;  // 0x1C00 + 0x298
+constexpr u32 kRecordStride = 276;          // 0x114
+
+// Actor field offsets reached from the actor pointer.
+constexpr u32 kActorFlagsOffset = 0x000;
+constexpr u32 kActorIdOffset = 0x008;
+constexpr u32 kActorValueAOffset = 0x1B6;
+constexpr u32 kActorValueBOffset = 0x1BA;
+constexpr u32 kActorClampOffset = 0x1C6;
+
+constexpr u32 kActorEnabledBit = 0x01;  // `tst r0, #1` / `beq` skip
+constexpr u32 kActorHiddenBit = 0x40;   // `tst r0, #0x40` / `bne` skip
+constexpr u16 kClampBit = 0x0008;       // bit3 of the u16 at +0x1C6
+
+constexpr s32 kScaleDivisor = 100;      // 0x51EB851F magic division
+constexpr s32 kScaledMaximum = 1;       // `movgt r7, #1`
+constexpr s32 kUnsetValue = -1;         // `mvn r7, #0`
+constexpr s32 kLimitEnabled = 0x3E0;
+constexpr s32 kLimitDisabled = 0;
+constexpr s32 kSlotStride = 5;          // `emitted + emitted<<2`
+constexpr s32 kRowStart = 9;            // 11th argument, `mov r0, #9`
+constexpr u32 kSubCallFlags = 0x010001C1;
+constexpr s32 kUnusedArgument = -1;     // `mvn r3, #0`
+
+// 0.0f as a raw word.  Both float-shaped argument slots of the two callees are
+// passed as *stack words* by the original (`str fp, [sp, ...]`), and the
+// callees load them back with `vldr`.  This translation unit is built with
+// -mfloat-abi=hard, so declaring these parameters as f32 would move them into
+// s0 and shrink the outgoing frame; the integer declaration reproduces the
+// original softfp-style layout.  The payload is still exactly 0.0f.
+constexpr u32 kZeroFloatBits = 0x00000000;
+
+inline s32 load_s16(const u8* base, u32 offset) {
+    return *reinterpret_cast<const s16*>(base + offset);
+}
+
+inline u16 load_u16(const u8* base, u32 offset) {
+    return *reinterpret_cast<const u16*>(base + offset);
+}
+
+inline u32 load_u32(const u8* base, u32 offset) {
+    return *reinterpret_cast<const u32*>(base + offset);
+}
+
+// Reinterpret the low 32-bit product word as signed without relying on an
+// implementation-defined narrowing conversion.
+inline s32 wrap_to_s32(u32 value) {
+    if (value <= 0x7FFFFFFFu) {
+        return static_cast<s32>(value);
+    }
+    return -static_cast<s32>(0xFFFFFFFFu - value) - 1;
+}
+
+// `mul` + `smull 0x51EB851F` + `asr #5` + sign fixup == signed / 100.
+inline s32 hundredths(s32 raw, u32 scale) {
+    return wrap_to_s32(static_cast<u32>(raw) * scale) / kScaleDivisor;
+}
+
+}  // namespace func_2f7f18
+
+// 0x00296F60: reads the script value selected by `selector` (0, 1 and 2 here).
+extern "C" u32 engine_func_00296f60(u32 selector);
+
+// 0x0027EB98: resolves the script context slot to a battle value table.  The
+// argument is the word stored at 0x0043427C; the function loads through it.
+extern "C" void* script_vm_func_0027eb98(void* context);
+
+// 0x00293C98: returns the global UI object base (*0x00435D90).
+extern "C" u32 ui_func_00293c98(void);
+
+// 0x0027E1A0: per-actor battle update.  Thirteen ABI arguments: four in
+// r0..r3 and nine on the stack.  The body is outside this translation unit.
+// The 12th argument is the 0.0f bit pattern passed as a stack word (see
+// kZeroFloatBits), so it is declared u32 here.
+extern "C" void battle_func_0027e1a0(
+    s32 zero_origin,   // r0
+    void* handle,      // r1
+    void* record,      // r2
+    s32 zero,          // r3
+    s32 value_a,       // [sp+0x00]
+    s32 value_b,       // [sp+0x04]
+    s32 unused,        // [sp+0x08] -1
+    s32 limit,         // [sp+0x0C] 0 or 0x3E0
+    s32 slot_a,        // [sp+0x10] emitted*5
+    s32 slot_b,        // [sp+0x14] emitted*5
+    s32 row_start,     // [sp+0x18] 9
+    u32 zero_float,    // [sp+0x1C] 0.0f bit pattern
+    s32 zero_a,        // [sp+0x20] 0
+    s32 zero_b);       // [sp+0x24] 0
+
+// 0x00250800: second per-actor call (seven arguments: four in r0..r3, three on
+// the stack).  Its sixth argument is likewise a 0.0f bit pattern on the stack.
+extern "C" void battle_func_00250800(
+    s32 slot,          // r0
+    void* handle,      // r1
+    u32 flags,         // r2 = 0x010001C1
+    s32 zero,          // r3
+    s32 zero_a,        // [sp+0x00]
+    u32 zero_float,    // [sp+0x04] 0.0f bit pattern
+    s32 zero_b);       // [sp+0x08]
+
+extern "C" u32 engine_func_002f7f18() {
+    using namespace func_2f7f18;
+
+    const u32 scale_a = engine_func_00296f60(0);
+    const u32 scale_b = engine_func_00296f60(1);
+    const s32 limit_selector =
+        static_cast<s32>(engine_func_00296f60(2));
+    const s32 limit =
+        limit_selector > 0 ? kLimitEnabled : kLimitDisabled;
+
+    // The context slot is read once, before any per-actor work.
+    void* const context =
+        *reinterpret_cast<void* const*>(kScriptVmContextSlot);
+    void* const handle = script_vm_func_0027eb98(context);
+
+    s32 emitted = 0;
+    for (u32 index = 0; index < kActorCount; ++index) {
+        const u32 ui_state = ui_func_00293c98();
+        const u8* const ui_base = reinterpret_cast<const u8*>(ui_state);
+        const u8* const actors =
+            reinterpret_cast<const u8*>(load_u32(ui_base, kActorArrayOffset));
+        const u8* const actor = actors + index * kActorStride;
+
+        const u32 flags = load_u32(actor, kActorFlagsOffset);
+        if ((flags & kActorEnabledBit) == 0) {
+            continue;
+        }
+        if ((flags & kActorHiddenBit) != 0) {
+            continue;
+        }
+        const s32 id = load_s16(actor, kActorIdOffset);
+        if (id < 0) {
+            continue;
+        }
+
+        const s32 raw_a = load_s16(actor, kActorValueAOffset);
+        const u16 clamp = load_u16(actor, kActorClampOffset);
+
+        s32 value_a = hundredths(raw_a, scale_a);
+        if ((clamp & kClampBit) != 0 && value_a > kScaledMaximum) {
+            value_a = kScaledMaximum;
+        }
+        if (value_a == 0) {
+            value_a = kUnsetValue;
+        }
+
+        const s32 raw_b = load_s16(actor, kActorValueBOffset);
+        s32 value_b = hundredths(raw_b, scale_b);
+        if ((clamp & kClampBit) != 0 && value_b > kScaledMaximum) {
+            value_b = kScaledMaximum;
+        }
+        if (value_b == 0) {
+            value_b = kUnsetValue;
+        }
+
+        // The record table base and the index are re-read through a fresh
+        // ui_state: the original reloads `ldrsh` at [actor+0x08] at 0x2F8028
+        // after the second ui_func_00293c98() call.
+        const u32 ui_state_2 = ui_func_00293c98();
+        const u8* const ui_base_2 = reinterpret_cast<const u8*>(ui_state_2);
+        u8* const records =
+            reinterpret_cast<u8*>(load_u32(ui_base_2, kRecordArrayOffset));
+        const s32 record_id = load_s16(actor, kActorIdOffset);
+        u8* const record = records + record_id * kRecordStride;
+
+        const s32 slot = emitted * kSlotStride;
+        battle_func_0027e1a0(0, handle, record, 0,
+                             value_a, value_b, kUnusedArgument, limit,
+                             slot, slot, kRowStart, kZeroFloatBits, 0, 0);
+        battle_func_00250800(slot, handle, kSubCallFlags, 0, 0,
+                             kZeroFloatBits, 0);
+        ++emitted;
+    }
+    return 1;
 }
 
 // Direct callees of func_0036ff14 (addresses from config/functions.csv).
