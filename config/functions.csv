@@ -742,7 +742,7 @@ address,size,status,category,name,src_file
 0x00130340,124,matching,engine,engine_func_00130340,src/engine/leaf_batch29_a.cpp
 0x001303bc,124,matching,engine,engine_func_001303bc,src/engine/leaf_batch26_a.cpp
 0x00130438,308,matching,engine,engine_func_00130438,src/engine/leaf_batch28_a.cpp
-0x0013056c,432,matching,engine,engine_func_0013056c,src/engine/leaf_batch34_c.cpp
+0x0013056c,432,non_matching,engine,engine_func_0013056c,src/engine/leaf_batch34_c.cpp
 0x0013071c,228,matching,engine,engine_func_0013071c,src/engine/leaf_batch27_a.cpp
 0x00130800,1304,matching,engine,engine_func_00130800,src/engine/leaf_batch40_a.cpp
 0x00130d18,92,matching,engine,engine_func_00130d18,src/engine/leaf_batch25_a.cpp

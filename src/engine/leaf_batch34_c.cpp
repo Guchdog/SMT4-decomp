@@ -2786,129 +2786,235 @@ extern "C" __attribute__((naked)) void engine_func_0012f954() {
     );
 }
 
+// ---------------------------------------------------------------------------
+// 0x0013056C -- walk one entry range and forward every entry through the
+// engine's record/stream writer chain.
+//
+// ABI (r0-r3 plus one stack word):
+//   r0      self      object whose +0x04 word is an opaque context handle that
+//                     is re-read before every helper call; +0x00 is not read
+//   r1      selector  forwarded to 0x0014D404 as its key argument and reused as
+//                     the alternate selector of the 0x00140318 list path
+//   r2      stream    opaque pointer forwarded unchanged to every writer helper
+//   r3      flags     bit 0 runs the 0x002AC8E4 pre-pass for each index, bits
+//                     2..3 enable the 0x0014D448 record expansion; no other bit
+//                     is tested here and the whole word is forwarded unchanged
+//   [sp+0]  extra     opaque word forwarded to 0x002AC8E4 / 0x0014056C /
+//                     0x00140318
+//
+// Flow (the original keeps three words at [sp+0x08] and a 0x1C-byte record at
+// [sp+0x14]):
+//   info = { -1, -1, 0 };
+//   if (!0x0014D404(self->context, selector, &info)) return 0;
+//   if (info.begin == 0xFFFFFFFF) return 1;                // `cmn r0,#1`
+//   switch (0x00141940(self->context, info.begin)) {
+//   case 1:                                               // id range
+//       if (info.end < info.begin) return 1;              // `blo`, unsigned
+//       for (u32 index = info.begin; index <= info.end; ++index) {
+//           if (flags & 1) {
+//               key = 0x002ACA0C(self->context);
+//               if (!0x002AC8E4(self, key, stream, extra, 0)) return 0;
+//           }
+//           if (flags & 0x0C) {
+//               CandidateSet set;                         // all fields cleared
+//               if (!0x0014D448(self->context, index, &set)) return 0;
+//               for (u32 slot = 0; slot < 4; ++slot) {
+//                   if (set.ids[slot] == 0xFFFFFFFF) continue;
+//                   if (!0x0014056C(self, set.ids[slot], stream, flags, extra))
+//                       return 0;
+//               }
+//           }
+//       }
+//       return 1;
+//   case 3:                                               // forwarded entries
+//       if (info.end < info.begin) return 1;
+//       for (u32 index = info.begin; index <= info.end; ++index) {
+//           if (!0x00140318(self, index, stream, flags, extra, selector))
+//               return 0;
+//       }
+//       return 1;
+//   default:                                              // 0, 2, anything else
+//       return 1;
+//   }
+//
+// The 0x0014D404 record is pre-filled with -1 / -1 / 0 exactly like the
+// original prologue; the callee overwrites all three words whenever it
+// succeeds.  0x00141940 returns 1 for the id-range form and 3 for the forwarded
+// form (0 when the context or the lookup is unusable).
+//
+// 0x0014D448 fills a record whose +0x04..+0x10 slots hold four ids (each slot
+// is -1 when absent, as 0x00151FF4 stores `mvn #0` for the unused slots), plus
+// a word and two bytes at +0x14 / +0x18 / +0x19 that are written but never read
+// back here.  Only the four ids, in ascending slot order, reach 0x0014056C.
+//
+// Every loop bound is an unsigned `bls`/`blo` against a u32 loaded from the
+// stack record, and the original reloads [sp+0x0C] (info.end) before each loop
+// back-edge; nothing inside the loop body can write that slot, so a reload in
+// the source is only documentation.  A range whose end is 0xFFFFFFFF wraps the
+// loop counter and never terminates in the original either.
+// ---------------------------------------------------------------------------
+namespace {
+
+// Object layout read by this function.
+constexpr u32 kContextOffset = 0x04;
+
+// r3 flag bits tested here.
+constexpr u32 kPrePassFlag = 0x01;
+constexpr u32 kRecordFlags = 0x0C;
+
+// 0x0014D448 id slots (32-bit `blo #4` bound) and the empty-slot sentinel
+// produced by `mvn r4, #0`.
+constexpr u32 kIdSlotCount = 4;
+constexpr u32 kEmptyId = 0xFFFFFFFFu;
+
+// 0x00141940 results handled by this body; everything else returns 1.
+constexpr s32 kKindIdRange = 1;
+constexpr s32 kKindForward = 3;
+
+struct EngineObject {
+    void* vtable;   // +0x00: not read by this function
+    void* context;  // +0x04: opaque handle forwarded to the lookup helpers
+};
+
+// Output record of 0x0014D404 (three words at [sp+0x08]).
+struct RangeInfo {
+    u32 begin;      // +0x00: first index of the walk / 0xFFFFFFFF when absent
+    u32 end;        // +0x04: inclusive upper bound of the walk
+    u32 payload;    // +0x08: written by the callee, not read here
+};
+
+// Output record of 0x0014D448 (0x1C bytes at [sp+0x14]).
+struct CandidateSet {
+    u32 value0;                 // +0x00: cleared before the call
+    u32 ids[kIdSlotCount];      // +0x04..+0x10: pre-filled with 0xFFFFFFFF
+    u32 value14;                // +0x14: cleared before the call
+    u8 flag18;                  // +0x18: cleared before the call
+    u8 flag19;                  // +0x19: cleared before the call
+    u8 padding[2];              // +0x1A..+0x1B: never touched
+};
+
+// Typed signatures of the direct calls.  The callees are declared with
+// unprototyped `extern "C" void name();` at the top of this translation unit,
+// so the argument types are applied at each call site.
+using RangeLookupFn = s32 (*)(void* context, u32 selector, RangeInfo* out);
+using KindLookupFn = s32 (*)(void* context, u32 begin);
+using ContextKeyFn = void* (*)(void* context);
+using StreamPrePassFn = s32 (*)(void* self, void* key, void* stream,
+                                void* extra, u32 mode);
+using CandidateLoadFn = s32 (*)(void* context, u32 index, CandidateSet* out);
+using IdWriterFn = s32 (*)(void* self, u32 id, void* stream, u32 flags,
+                           void* extra);
+using ForwardWriterFn = s32 (*)(void* self, u32 index, void* stream, u32 flags,
+                                void* extra, u32 alt_selector);
+
+static_assert(sizeof(RangeInfo) == 0x0C, "range record layout");
+static_assert(sizeof(CandidateSet) == 0x1C, "candidate record layout");
+
+} // namespace
+
 // DECOMP_FUNC(0x0013056c, 432)
-extern "C" __attribute__((naked)) void engine_func_0013056c() {
-    asm volatile(
-        "push {r4, r5, r6, r7, r8, sb, sl, fp, lr}\n"
-        "sub sp, sp, #0x34\n"
-        "mov r8, r0\n"
-        "mvn r4, #0\n"
-        "add r0, sp, #0xc\n"
-        "ldr r5, [sp, #0x58]\n"
-        "mov fp, #0\n"
-        "str r4, [sp, #8]\n"
-        "stm r0, {r4, fp}\n"
-        "mov sl, r2\n"
-        "ldr r0, [r8, #4]\n"
-        "mov r6, r1\n"
-        "mov r7, r3\n"
-        "add r2, sp, #8\n"
-        "bl engine_func_0014d404\n"
-        "cmp r0, #0\n"
-        "beq .L_001306c4\n"
-        "ldr r0, [sp, #8]\n"
-        "cmn r0, #1\n"
-        "beq .L_00130710\n"
-        "mov r1, r0\n"
-        "ldr r0, [r8, #4]\n"
-        "bl engine_func_00141940\n"
-        "cmp r0, #1\n"
-        "beq .L_001305dc\n"
-        "cmp r0, #3\n"
-        "beq .L_001306cc\n"
-        "b .L_00130710\n"
-        ".L_001305dc:\n"
-        "ldr r0, [sp, #0xc]\n"
-        "ldr r6, [sp, #8]\n"
-        "cmp r0, r6\n"
-        "addhs sb, sp, #0x14\n"
-        "blo .L_00130710\n"
-        ".L_001305f0:\n"
-        "tst r7, #1\n"
-        "beq .L_00130628\n"
-        "ldr r0, [r8, #4]\n"
-        "mov r1, r6\n"
-        "bl engine_func_002aca0c\n"
-        "mov r1, r0\n"
-        "mov r3, r5\n"
-        "mov r2, sl\n"
-        "mov r0, r8\n"
-        "str fp, [sp]\n"
-        "bl engine_func_002ac8e4\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "beq .L_001306c0\n"
-        ".L_00130628:\n"
-        "tst r7, #0xc\n"
-        "beq .L_001306ac\n"
-        "mvn r0, #0\n"
-        "strb fp, [sp, #0x2c]\n"
-        "str fp, [sp, #0x14]\n"
-        "strb fp, [sp, #0x2d]\n"
-        "str fp, [sp, #0x28]\n"
-        "str r0, [sp, #0x18]\n"
-        "str r0, [sp, #0x1c]\n"
-        "str r0, [sp, #0x20]\n"
-        "str r0, [sp, #0x24]\n"
-        "ldr r0, [r8, #4]\n"
-        "add r2, sp, #0x14\n"
-        "mov r1, r6\n"
-        "bl engine_func_0014d448\n"
-        "cmp r0, #0\n"
-        "movne r4, #0\n"
-        "beq .L_001306c0\n"
-        ".L_00130670:\n"
-        "add r0, sb, r4, lsl #2\n"
-        "ldr r1, [r0, #4]\n"
-        "cmn r1, #1\n"
-        "beq .L_001306a0\n"
-        "mov r3, r7\n"
-        "mov r2, sl\n"
-        "mov r0, r8\n"
-        "str r5, [sp]\n"
-        "bl engine_func_0014056c\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "beq .L_001306c0\n"
-        ".L_001306a0:\n"
-        "add r4, r4, #1\n"
-        "cmp r4, #4\n"
-        "blo .L_00130670\n"
-        ".L_001306ac:\n"
-        "ldr r0, [sp, #0xc]\n"
-        "add r6, r6, #1\n"
-        "cmp r6, r0\n"
-        "bls .L_001305f0\n"
-        "b .L_00130710\n"
-        ".L_001306c0:\n"
-        "mov r0, #0\n"
-        ".L_001306c4:\n"
-        "add sp, sp, #0x34\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, fp, pc}\n"
-        ".L_001306cc:\n"
-        "ldr r0, [sp, #0xc]\n"
-        "ldr r4, [sp, #8]\n"
-        "cmp r0, r4\n"
-        "blo .L_00130710\n"
-        ".L_001306dc:\n"
-        "mov r3, r7\n"
-        "mov r2, sl\n"
-        "mov r1, r4\n"
-        "mov r0, r8\n"
-        "stm sp, {r5, r6}\n"
-        "bl engine_func_00140318\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "beq .L_001306c4\n"
-        "ldr r0, [sp, #0xc]\n"
-        "add r4, r4, #1\n"
-        "cmp r4, r0\n"
-        "bls .L_001306dc\n"
-        ".L_00130710:\n"
-        "add sp, sp, #0x34\n"
-        "mov r0, #1\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, fp, pc}\n"
-    );
+extern "C" s32 engine_func_0013056c(void* self_pointer, u32 selector,
+                                    void* stream, u32 flags, void* extra) {
+    EngineObject* const self = static_cast<EngineObject*>(self_pointer);
+
+    // 0x00130588..0x0013058C: the record starts as { -1, -1, 0 }.
+    RangeInfo info;
+    info.begin = kEmptyId;
+    info.end = kEmptyId;
+    info.payload = 0;
+
+    // 0x00130594..0x001305A8.
+    const RangeLookupFn range_lookup =
+        reinterpret_cast<RangeLookupFn>(engine_func_0014d404);
+    if (range_lookup(self->context, selector, &info) == 0) {
+        return 0;
+    }
+
+    // 0x001305B0..0x001305B8: no entry to walk.
+    if (info.begin == kEmptyId) {
+        return 1;
+    }
+
+    // 0x001305BC..0x001305C4: the context word is re-read for this call.
+    const KindLookupFn kind_lookup =
+        reinterpret_cast<KindLookupFn>(engine_func_00141940);
+    const s32 kind = kind_lookup(self->context, info.begin);
+
+    if (kind == kKindIdRange) {
+        // 0x001305DC..0x001305E8: unsigned pre-check of the range.
+        if (info.end < info.begin) {
+            return 1;
+        }
+
+        for (u32 index = info.begin; index <= info.end; ++index) {
+            if ((flags & kPrePassFlag) != 0) {
+                // 0x001305F8..0x00130624: key from the context, then the
+                // pre-pass with mode 0 in the stack slot.
+                const ContextKeyFn context_key =
+                    reinterpret_cast<ContextKeyFn>(engine_func_002aca0c);
+                void* const key = context_key(self->context);
+
+                const StreamPrePassFn pre_pass =
+                    reinterpret_cast<StreamPrePassFn>(engine_func_002ac8e4);
+                if (pre_pass(self, key, stream, extra, 0) == 0) {
+                    return 0;
+                }
+            }
+
+            if ((flags & kRecordFlags) != 0) {
+                // 0x00130630..0x00130660: clear the record, expand it, then
+                // forward every id it reported.
+                CandidateSet candidates;
+                candidates.value0 = 0;
+                for (u32 slot = 0; slot < kIdSlotCount; ++slot) {
+                    candidates.ids[slot] = kEmptyId;
+                }
+                candidates.value14 = 0;
+                candidates.flag18 = 0;
+                candidates.flag19 = 0;
+
+                const CandidateLoadFn load_candidates =
+                    reinterpret_cast<CandidateLoadFn>(engine_func_0014d448);
+                if (load_candidates(self->context, index, &candidates) == 0) {
+                    return 0;
+                }
+
+                const IdWriterFn write_id =
+                    reinterpret_cast<IdWriterFn>(engine_func_0014056c);
+                for (u32 slot = 0; slot < kIdSlotCount; ++slot) {
+                    const u32 id = candidates.ids[slot];
+                    if (id == kEmptyId) {
+                        continue;
+                    }
+                    if (write_id(self, id, stream, flags, extra) == 0) {
+                        return 0;
+                    }
+                }
+            }
+        }
+        return 1;
+    }
+
+    if (kind == kKindForward) {
+        // 0x001306CC..0x001306D8: unsigned pre-check of the range.
+        if (info.end < info.begin) {
+            return 1;
+        }
+
+        // 0x001306EC: the second stack word is the original r1 (selector),
+        // because this path is taken before r6 is reloaded with info.begin.
+        const ForwardWriterFn forward =
+            reinterpret_cast<ForwardWriterFn>(engine_func_00140318);
+        for (u32 index = info.begin; index <= info.end; ++index) {
+            if (forward(self, index, stream, flags, extra, selector) == 0) {
+                return 0;
+            }
+        }
+        return 1;
+    }
+
+    // 0x001305D8 / 0x00130710: any other lookup result is a no-op success.
+    return 1;
 }
 
 // DECOMP_FUNC(0x00136fcc, 364)
