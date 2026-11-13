@@ -5376,40 +5376,170 @@ extern "C" s32 func_0036ff14(u8** const self_slot, void* allocator) {
     return result;
 }
 
+// ---------------------------------------------------------------------------
+// 0x002421B0: UI context poll / create step.
+//
+// The routine drives the global UI context block at 0x0044EA80.  Two modes:
+//
+// * Owning context word +0x3C non-null: the active object at +0x40 is polled
+//   (0x002F8270), its state word at +8 is latched, a text payload is rendered
+//   into a 0xC8-byte stack buffer (0x00323660, whose return is a kind code) and
+//   a secondary value is fetched (0x00318DF8).  When the latched state is 1 the
+//   object and then the owner are destroyed (0x002473AC / 0x0024736C) and both
+//   global words are cleared; the latched state is still used by the dispatch.
+// * Owning context word +0x3C null: it is re-cleared, then - only when the
+//   caller passes bit 3 of `flags` - 22 generic entries are registered.  Each
+//   entry name is formatted as "GENERAL %d" for indices 0..21 (0x002BE7FC) and
+//   registered with kind 8 and a zero float payload (0x002DE2A4).  Finally a
+//   fresh object is created (0x0030ED58), published at +0x40 and stamped
+//   {0xBA, 0x1C}.
+//
+// Dispatch on the latched state word:
+//   * 2 -> return 0x00400000,
+//   * 1 -> commit / select the payload and return 0x00400002,
+//   * anything else (including a freshly created object, whose state is 0)
+//     -> return 0x00600001.
+//
+// State 1 with kind 8 commits the fetched 4-byte value through 0x0025CC14
+// (size 4, kind 4).  Any other kind resolves the node at index -value of the
+// container at +0x14 (0x00246A4C; the index is negated with 32-bit unsigned
+// arithmetic) and, when that differs from the node latched at +0x24, releases
+// the latched node (0x00242964) and publishes the new one (0x0025C888); both
+// later calls re-read the global words after the release.
+//
+// ABI: r0 = flags (only bit 3 is tested), status returned in r0.  The second
+// core register of 0x0030ED58 is dead at entry (the callee reads only r0 and
+// the original leaves a path-dependent leftover there), so it is not part of
+// the recovered contract.  The fifth argument of 0x002DE2A4 is a single stack
+// word: the callee loads it with `vldr s16, [sp, #0x28]` after a 0x28-byte
+// frame, so the caller passes the raw f32 bit pattern (always 0 here) instead
+// of a VFP register argument.
+// ---------------------------------------------------------------------------
+extern "C" void func_002f8270(void* context);
+extern "C" u32 func_00323660(void* context, void* out_text);
+extern "C" s32 func_00318df8(void* context);
+extern "C" void* func_0030ed58(void* parent);
+extern "C" void ui_func_002be7fc(char* dst, const char* format, ...);
+extern "C" void func_002de2a4(void* owner, const char* name, u32 kind, u32 index,
+                              u32 value_bits);
+extern "C" void func_002473ac(void* context);
+extern "C" void func_0024736c(void* owner);
+extern "C" void* func_00246a4c(void* container, u32 index);
+extern "C" void func_00242964(void* container, void* node);
+extern "C" void func_0025c888(void* container, void* previous, void* selected);
+extern "C" void func_0025cc14(void* blob, const void* data, u32 size, u32 kind);
+
+// Global UI context block.  Only the words observed by this routine are named;
+// every other offset is left as padding.
+struct UiContextBlock {
+    u8 pad_00[0x14];
+    void* ptr_14;    // +0x14 container walked by 0x00246A4C / 0x00242964
+    u8 pad_18[0x04];
+    void* ptr_1c;    // +0x1C blob owner committed through 0x0025CC14
+    u8 pad_20[0x04];
+    void* ptr_24;    // +0x24 currently selected node
+    u8 pad_28[0x14];
+    void* owner_3c;  // +0x3C owning context; null means "not created yet"
+    void* object_40; // +0x40 active context object
+};
+
+static_assert(offsetof(UiContextBlock, ptr_14) == 0x14);
+static_assert(offsetof(UiContextBlock, ptr_1c) == 0x1C);
+static_assert(offsetof(UiContextBlock, ptr_24) == 0x24);
+static_assert(offsetof(UiContextBlock, owner_3c) == 0x3C);
+static_assert(offsetof(UiContextBlock, object_40) == 0x40);
+
+namespace {
+
+constexpr u32 kUiContextBlock = 0x0044EA80;
+
+// Status words returned through r0.
+constexpr u32 kStatusIdle = 0x00600001;
+constexpr u32 kStatusBusy = 0x00400000;
+constexpr u32 kStatusSelected = 0x00400002;
+
+// Stack buffers: the text payload filled by 0x00323660 is 0xC8 bytes and is
+// immediately followed by the latched locals in the original frame; the name
+// buffer is 0x68 bytes (longest name is "GENERAL 21").
+constexpr u32 kTextBufferSize = 0xC8;
+constexpr u32 kNameBufferSize = 0x68;
+
+constexpr u32 kGenericEntryCount = 0x16; // indices 0..21
+constexpr u32 kGenericEntryKind = 8;
+constexpr u32 kTextCommitKind = 4;
+constexpr u32 kTextCommitSize = 4;
+
+// Fields of the active context object.
+constexpr u32 kObjectStateOffset = 8;
+constexpr u32 kObjectStamp0 = 0xBA;
+constexpr u32 kObjectStamp4 = 0x1C;
+
+} // namespace
+
 // DECOMP_FUNC(0x002421b0, 436)
-// 103 ARM instructions through unconditional pop; 24 trailing data bytes.
-extern "C" __attribute__((naked)) void ui_func_002421b0() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d41f0, 0xe59f7194, 0xe24ddd05, 0xe3a08000\n"
-        ".word 0xe1a04000, 0xe58d80d0, 0xe597003c, 0xe59f6178\n"
-        ".word 0xe28d5004, 0xe3500000, 0x0a00000f, 0xe5970040\n"
-        ".word 0xeb02d822, 0xe5970040, 0xe5900008, 0xe58d00d0\n"
-        ".word 0xe5970040, 0xe1a01005, 0xeb038518, 0xe58d00cc\n"
-        ".word 0xe5970040, 0xeb035afb, 0xe58d00d4, 0xe59d00d0\n"
-        ".word 0xe3500001, 0x0a000020, 0xea000025, 0xe1a01004\n"
-        ".word 0xe3a00000, 0xe3a00000, 0xe3140008, 0xe587003c\n"
-        ".word 0x0a000010, 0xe3a00016, 0xe2505000, 0xe3a04000\n"
-        ".word 0x9a00000c, 0xe1a02004, 0xe28f1f41, 0xe28d00d8\n"
-        ".word 0xfa01f169, 0xe58d8000, 0xe597003c, 0xe1a03004\n"
-        ".word 0xe3a02008, 0xe28d10d8, 0xeb02700d, 0xe2844001\n"
-        ".word 0xe1550004, 0x8afffff2, 0xe597003c, 0xeb0332b5\n"
-        ".word 0xe3a0201c, 0xe3a010ba, 0xe5870040, 0xe8800006\n"
-        ".word 0xe320f000, 0xe320f000, 0xea000005, 0xe5970040\n"
-        ".word 0xeb001441, 0xe5878040, 0xe597003c, 0xeb00142e\n"
-        ".word 0xe587803c, 0xe59d00d0, 0xe3500002, 0x03a06501\n"
-        ".word 0x0a00001e, 0xe3500001, 0x1a00001c, 0xe59d00cc\n"
-        ".word 0xe3500008, 0x0a000010, 0xe59d00d4, 0xe2601000\n"
-        ".word 0xe5970014, 0xeb0011d8, 0xe5971024, 0xe1a04000\n"
-        ".word 0xe1510004, 0x0a000010, 0xe5970014, 0xeb000198\n"
-        ".word 0xe5b70014, 0xe1a02004, 0xe5971010, 0xeb00695d\n"
-        ".word 0xe320f000, 0xe320f000, 0xea000007, 0xe5970014\n"
-        ".word 0xe5971024, 0xeb00018e, 0xe3a03004, 0xe597001c\n"
-        ".word 0xe1a02003, 0xe28d10d4, 0xeb006a35, 0xe59f601c\n"
-        ".word 0xe28ddd05, 0xe1a00006, 0xe8bd81f0, 0x00600001\n"
-        ".word 0x0044ea80, 0x454e4547, 0x204c4152, 0x00006425\n"
-        ".word 0x00400002\n"
-    );
+extern "C" u32 ui_func_002421b0(u32 flags) {
+    UiContextBlock* const glob =
+        reinterpret_cast<UiContextBlock*>(kUiContextBlock);
+
+    u32 state = 0;
+    u32 kind = 0;
+    s32 value = 0;
+    u8 text[kTextBufferSize];
+
+    u32 status = kStatusIdle;
+
+    if (glob->owner_3c != nullptr) {
+        func_002f8270(glob->object_40);
+        state = *reinterpret_cast<u32*>(
+            static_cast<u8*>(glob->object_40) + kObjectStateOffset);
+        kind = func_00323660(glob->object_40, text);
+        value = func_00318df8(glob->object_40);
+
+        if (state == 1) {
+            func_002473ac(glob->object_40);
+            glob->object_40 = nullptr;
+            func_0024736c(glob->owner_3c);
+            glob->owner_3c = nullptr;
+        }
+    } else {
+        glob->owner_3c = nullptr;
+
+        if ((flags & 8u) != 0) {
+            for (u32 index = 0; index < kGenericEntryCount; ++index) {
+                char name[kNameBufferSize];
+                ui_func_002be7fc(name, "GENERAL %d", index);
+                func_002de2a4(glob->owner_3c, name, kGenericEntryKind, index,
+                              0);
+            }
+        }
+
+        void* const created = func_0030ed58(glob->owner_3c);
+        glob->object_40 = created;
+        *reinterpret_cast<u32*>(created) = kObjectStamp0;
+        *reinterpret_cast<u32*>(static_cast<u8*>(created) + 4) = kObjectStamp4;
+    }
+
+    if (state == 2) {
+        status = kStatusBusy;
+    } else if (state == 1) {
+        if (kind == 8) {
+            func_00242964(glob->ptr_14, glob->ptr_24);
+            func_0025cc14(glob->ptr_1c, &value, kTextCommitSize,
+                          kTextCommitKind);
+        } else {
+            void* const container = glob->ptr_14;
+            void* const selected =
+                func_00246a4c(container, 0u - static_cast<u32>(value));
+            void* const previous = glob->ptr_24;
+            if (previous != selected) {
+                func_00242964(glob->ptr_14, previous);
+                func_0025c888(glob->ptr_14, glob->ptr_24, selected);
+            }
+        }
+        status = kStatusSelected;
+    }
+
+    return status;
 }
 
 // DECOMP_FUNC(0x0025f538, 436)

@@ -3662,7 +3662,7 @@ address,size,status,category,name,src_file
 0x0024205c,108,matching,camp,camp_func_0024205c,src/engine/leaf_batch35_a.cpp
 0x002420c8,104,matching,camp,camp_func_002420c8,src/engine/leaf_batch35_a.cpp
 0x00242130,128,matching,camp,camp_func_00242130,src/engine/leaf_batch38_c.cpp
-0x002421b0,436,matching,ui,ui_func_002421b0,src/engine/leaf_batch41_c.cpp
+0x002421b0,436,non_matching,ui,ui_func_002421b0,src/engine/leaf_batch41_c.cpp
 0x00242364,264,matching,engine,engine_func_00242364,src/engine/leaf_batch32_b.cpp
 0x0024246c,1272,matching,engine,EffectEditor_func_0024246c,src/engine/asd_frame.cpp
 0x00242964,284,matching,engine,engine_func_00242964,src/engine/leaf_batch32_b.cpp
