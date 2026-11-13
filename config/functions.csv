@@ -9480,7 +9480,7 @@ address,size,status,category,name,src_file
 0x003a8a70,36,matching,unknown,func_003a8a70,src/engine/leaf_batch37_b.cpp
 0x003a8a94,16,matching,unknown,func_003a8a94,src/engine/leaf_matching.cpp
 0x003a8aa4,112,matching,ui,ui_func_003a8aa4,src/engine/leaf_batch33_a.cpp
-0x003a8b14,428,matching,shop,shop_func_003a8b14,src/engine/leaf_batch41_c.cpp
+0x003a8b14,428,non_matching,shop,shop_func_003a8b14,src/engine/leaf_batch41_c.cpp
 0x003a8cc0,452,matching,unite,unite_func_003a8cc0,src/engine/leaf_batch44_c.cpp
 0x003a8e84,100,matching,script_vm,script_vm_func_003a8e84,src/engine/leaf_batch41_b.cpp
 0x003a8ee8,228,matching,unknown,func_003a8ee8,src/engine/leaf_batch27_c.cpp

@@ -4538,38 +4538,206 @@ extern "C" s32 engine_func_00126774(void* object, u32 level, u32 target) {
 }
 
 // DECOMP_FUNC(0x003a8b14, 428)
-// 100 ARM instructions through unconditional pop; 28 trailing data bytes.
-extern "C" __attribute__((naked)) void shop_func_003a8b14() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d40f0, 0xe2805ca5, 0xe1a04000, 0xe1d51bf2\n"
-        ".word 0xe24dd044, 0xe28000dc, 0xebfa2a69, 0xe1a06000\n"
-        ".word 0xe1d50bf2, 0xe0600180, 0xe0800100, 0xe0840100\n"
-        ".word 0xe28050fc, 0xe1a00005, 0xebfc5907, 0xe1a07000\n"
-        ".word 0xe1a00005, 0xebfc5907, 0xe1a01000, 0xe1a02007\n"
-        ".word 0xe28400c8, 0xebfa2219, 0xe3560000, 0x0a000049\n"
-        ".word 0xe5d405a4, 0xe2845c05, 0xe3500000, 0x03a0002e\n"
-        ".word 0x13a00046, 0xebfc3ffa, 0xe5d500a4, 0xe3500000\n"
-        ".word 0x0a00000f, 0xe59f0108, 0xe59f6100, 0xe7901004\n"
-        ".word 0xe28d0040, 0xebfa1022, 0xe1b02000, 0xe59f00f4\n"
-        ".word 0xe59f10f4, 0x01a02006, 0xe5903008, 0xe1a0000d\n"
-        ".word 0xfafc570c, 0xe59f10e4, 0xe1a0000d, 0xebfbd94d\n"
-        ".word 0xea00000a, 0xe2846b01, 0xe2866f6a, 0xe2840020\n"
-        ".word 0xebfa2aed, 0xe0860280, 0xe3a03000, 0xe1d000b4\n"
-        ".word 0xe3a01001, 0xe6ff2070, 0xe1a00003, 0xebfbd433\n"
-        ".word 0xe3a00000, 0xebfbe0d6, 0xe3a01000, 0xe3a00002\n"
-        ".word 0xe1c401f4, 0xe1a02001, 0xe28400c8, 0xebfa21eb\n"
-        ".word 0xe5940590, 0xe2846e59, 0xe5901000, 0xe5912008\n"
-        ".word 0xe2841020, 0xe12fff32, 0xe5960000, 0xe1f010b4\n"
-        ".word 0xe3811a01, 0xe1c010b0, 0xe5d500a4, 0xe5943028\n"
-        ".word 0xe3500000, 0xe2840b01, 0xe2800f57, 0x0a000006\n"
-        ".word 0xe28dd044, 0xe353000a, 0xe8bd40f0, 0xa3a0300a\n"
-        ".word 0xe3a0101c, 0xe59f2038, 0xeafa2ae0, 0xe28dd044\n"
-        ".word 0xe353000a, 0xe8bd40f0, 0xa3a0300a, 0xe3a0101d\n"
-        ".word 0xe59f2020, 0xeafa2ad9, 0xe28dd044, 0xe8bd80f0\n"
-        ".word 0x004022bc, 0x0000a5b4, 0x0043d990, 0x004022c4\n"
-        ".word 0x323232ff, 0x00001030, 0x0000040e\n"
-    );
+//
+// Camp/shop "counter list" screen update callback.  The object passed in r0 is
+// the screen work page; r1-r3 are unused.  The routine has no explicit result:
+// its only pinned reference is the callback pointer at 0x004022A4 (there is no
+// direct BL/B to this entry), and either path simply leaves the register state
+// produced by the last helper:
+//   * the sprite helper at 0x002334D8 decides whether the update continues;
+//   * the final path is a tail branch to 0x00233804, so its r0 is forwarded.
+//
+// Direct call targets (all BL/BLX in the original):
+//   0x002334D8  shop_func_002334d8    switch the cursor sprite group, returns
+//                                     the gate value (zero means "no update")
+//   0x002BEF70  shop_func_002bef70    record +0x10 as s32 >> 12 (Y)
+//   0x002BEF7C  ui_func_002bef7c      record +0x0C as s32 >> 12 (X)
+//   0x002313D4  shop_func_002313d4    store (X, Y) as two f32 at work+0xC8
+//   0x002B8B78  script_vm_func_002b8b78  fixed sound/profile request
+//   0x0022CC38  func_0022cc38         id -> resource payload (first arg dead)
+//   0x002BE7FC  ui_func_002be7fc      Thumb variadic "%s%s" formatter
+//   0x0029F10C  camp_func_0029f10c    publish the help/message text + colour
+//   0x002337A0  shop_func_002337a0    current list index
+//   0x0029DCD4  camp_func_0029dcd4    skill/info panel formatter
+//   0x002A0F68  camp_func_002a0f68    byte notification (receives 0)
+//   0x00233804  unite_func_00233804  rebuild the result-row list (tail call)
+//
+// The literal pool at 0x003A8CA4 holds the fallback "＞＞＞" string
+// (0x004022BC), the id field displacement 0xA5B4, the label-pointer table at
+// 0x0043D990 whose third word supplies the second "%s" (the
+// "カウンターリスト" label), the "%s%s" format (0x004022C4), the text colour
+// 0x323232FF, and the two 0x00233804 selector pairs (0x001C/0x1030 for
+// mode != 0, 0x001D/0x040E for mode == 0).
+namespace shop_3a8b14 {
+
+// Work-page fields observed in the original body.
+constexpr u32 kStateOffset = 0x14;             // u32 state, then u32 zero
+constexpr u32 kListPanelOffset = 0x20;         // list panel / first virtual arg
+constexpr u32 kRowCountOffset = 0x28;          // s32 visible row count
+constexpr u32 kRowsOffset = 0x55C;             // 0x00233804 result-row header
+constexpr u32 kSubObjectOffset = 0x590;        // sub-object with the vtable
+constexpr u32 kModeOffset = 0x5A4;             // u8 mode byte
+constexpr u32 kEntryBaseOffset = 0x5A8;        // 0x20-byte entry array
+constexpr u32 kEntryStride = 0x20;
+constexpr u32 kEntryIdOffset = 0x04;           // u16 skill/entry id
+constexpr u32 kCursorOffset = 0xA5B2;          // s16 cursor sprite index
+constexpr u32 kTargetIdOffset = 0xA5B4;        // u32/s32 resource id
+constexpr u32 kSpriteGroupOffset = 0xDC;       // cursor sprite group
+constexpr u32 kCursorRecordBaseOffset = 0xFC;  // 140-byte cursor records
+constexpr u32 kCursorRecordStride = 140;       // (idx*7)*5*4 in the original
+constexpr u32 kCoordinateOffset = 0xC8;        // two f32 screen coordinates
+
+// Sub-object at work+0x590.  Its vtable entry 2 refreshes the list; bit 0x1000
+// in the +0x04 halfword is raised afterwards.
+struct SubObject {
+    void** vtable_00;
+    u16 flag_04;
+};
+constexpr u32 kSubFlagOffset = 0x04;
+constexpr u16 kSubFlagBit = 0x1000;
+constexpr u32 kSubRefreshIndex = 2;
+
+// Global label-pointer table at 0x0043D990.  Its third word (absolute
+// 0x0043D998) supplies the second "%s"; the static image points it at
+// 0x00423251, the "カウンターリスト" label.
+constexpr u32 kLabelTableAddress = 0x0043D990;
+constexpr u32 kLabelPointerAddress = kLabelTableAddress + 8;
+
+// Pinned rodata referenced by the original literal pool.
+constexpr char kMissingNameText[] = "\x81\x9b\x81\x9b\x81\x9b";  // "＞＞＞"
+constexpr char kNameFormat[] = "%s%s";
+constexpr u32 kTextColor = 0x323232FF;
+
+constexpr u32 kSoundModeZero = 0x2E;
+constexpr u32 kSoundModeNonZero = 0x46;
+constexpr u32 kRowKindModeZero = 0x040E;
+constexpr u32 kRowKindModeNonZero = 0x1030;
+constexpr u32 kRowTagModeZero = 0x1D;
+constexpr u32 kRowTagModeNonZero = 0x1C;
+constexpr u32 kInfoPanelArg1 = 1;
+constexpr u32 kMaxRowCount = 10;
+constexpr u32 kStateAfterUpdate = 2;
+constexpr u32 kTextBufferSize = 0x44;
+constexpr u32 kResourceScratchOffset = 0x40;
+
+inline const char* text_at(u32 address) {
+    return *reinterpret_cast<const char* const*>(address);
+}
+
+}  // namespace shop_3a8b14
+
+// Direct call declarations.  Names and addresses follow config/functions.csv.
+extern "C" s32 shop_func_002334d8(void* sprite_group, s32 cursor);
+extern "C" s32 shop_func_002bef70(const void* record);
+extern "C" s32 ui_func_002bef7c(const void* record);
+extern "C" void shop_func_002313d4(void* destination, s32 x, s32 y);
+extern "C" u32 script_vm_func_002b8b78(u32 request);
+extern "C" void* func_0022cc38(void* scratch, s32 target_id);
+extern "C" void ui_func_002be7fc(char* destination, const char* format, ...);
+extern "C" void camp_func_0029f10c(const char* text, u32 color);
+extern "C" u32 shop_func_002337a0(const void* panel);
+extern "C" void camp_func_0029dcd4(void* target, u32 arg1, u32 skill_id,
+                                     u32 sub_id);
+extern "C" void camp_func_002a0f68(u8 value);
+extern "C" void unite_func_00233804(void* rows, u32 arg1, u32 arg2,
+                                     s32 count);
+
+extern "C" void shop_func_003a8b14(void* work_pointer) {
+    using namespace shop_3a8b14;
+
+    u8* const work = static_cast<u8*>(work_pointer);
+    char text[kTextBufferSize];
+
+    // 0x003A8B18..0x003A8B68: cursor sprite selection, then the cursor record's
+    // screen coordinates.  The cursor field is deliberately reloaded after
+    // 0x002334D8, which may advance it.
+    const s16 initial_cursor =
+        *reinterpret_cast<const s16*>(work + kCursorOffset);
+    const bool continue_update =
+        shop_func_002334d8(work + kSpriteGroupOffset, initial_cursor) != 0;
+
+    const s16 cursor = *reinterpret_cast<const s16*>(work + kCursorOffset);
+    u8* const record = work + kCursorRecordBaseOffset +
+                       static_cast<u32>(cursor) * kCursorRecordStride;
+
+    const s32 y = shop_func_002bef70(record);
+    const s32 x = ui_func_002bef7c(record);
+    shop_func_002313d4(work + kCoordinateOffset, x, y);
+
+    // 0x003A8B70: zero from the sprite helper ends the update after the
+    // coordinate store (the helper leaves r0 = work+0xC8).
+    if (!continue_update) {
+        return;
+    }
+
+    // 0x003A8B74..0x003A8B94: the mode byte is read before the sound request
+    // and re-read afterwards, so a helper-side change is observed.
+    const u32 request = (work[kModeOffset] == 0) ? kSoundModeZero
+                                                 : kSoundModeNonZero;
+    script_vm_func_002b8b78(request);
+
+    if (work[kModeOffset] == 0) {
+        // 0x003A8BD8..0x003A8C00: mode 0 shows the info panel for the id in
+        // the current 0x20-byte list entry.  The lookup result is shifted by
+        // five and the entry id is a zero-extended halfword.
+        const u32 entry_index = shop_func_002337a0(work + kListPanelOffset);
+        const u16 entry_id = *reinterpret_cast<const u16*>(
+            work + kEntryBaseOffset + entry_index * kEntryStride +
+            kEntryIdOffset);
+        camp_func_0029dcd4(nullptr, kInfoPanelArg1, entry_id, 0);
+    } else {
+        // 0x003A8B98..0x003A8BD4: mode != 0 formats the target resource name
+        // followed by the global list label.  A null resource result uses the
+        // pinned "＞＞＞" fallback.  The first 0x0022CC38 argument is unused by
+        // the callee but is still the scratch tail of the local buffer.
+        const s32 target_id =
+            *reinterpret_cast<const s32*>(work + kTargetIdOffset);
+        void* const resource =
+            func_0022cc38(text + kResourceScratchOffset, target_id);
+        const char* const name =
+            resource != nullptr ? static_cast<const char*>(resource)
+                                : kMissingNameText;
+        const char* const label = text_at(kLabelPointerAddress);
+        ui_func_002be7fc(text, kNameFormat, name, label);
+        camp_func_0029f10c(text, kTextColor);
+    }
+
+    // 0x003A8C04..0x003A8C24: publish the new state and clear the coordinates.
+    camp_func_002a0f68(0);
+    *reinterpret_cast<u32*>(work + kStateOffset) = kStateAfterUpdate;
+    *reinterpret_cast<u32*>(work + kStateOffset + 4) = 0;
+    shop_func_002313d4(work + kCoordinateOffset, 0, 0);
+
+    // 0x003A8C24..0x003A8C48: the refresh virtual is invoked on the sub-object
+    // and the pointer is then reloaded before raising the +0x04 flag bit.
+    SubObject* sub =
+        *reinterpret_cast<SubObject**>(work + kSubObjectOffset);
+    using SubRefresh = void (*)(SubObject*, void*);
+    const SubRefresh refresh =
+        reinterpret_cast<SubRefresh>(sub->vtable_00[kSubRefreshIndex]);
+    refresh(sub, work + kListPanelOffset);
+
+    sub = *reinterpret_cast<SubObject**>(work + kSubObjectOffset);
+    const u16 flags =
+        *reinterpret_cast<const u16*>(
+            reinterpret_cast<u8*>(sub) + kSubFlagOffset);
+    *reinterpret_cast<u16*>(reinterpret_cast<u8*>(sub) + kSubFlagOffset) =
+        static_cast<u16>(flags | kSubFlagBit);
+
+    // 0x003A8C4C..0x003A8C98: select the result-row kind from the re-read mode
+    // byte and clamp the signed row count to ten before the tail call.
+    s32 row_count = *reinterpret_cast<const s32*>(work + kRowCountOffset);
+    if (row_count >= static_cast<s32>(kMaxRowCount)) {
+        row_count = static_cast<s32>(kMaxRowCount);
+    }
+
+    if (work[kModeOffset] == 0) {
+        unite_func_00233804(work + kRowsOffset, kRowTagModeZero,
+                            kRowKindModeZero, row_count);
+    } else {
+        unite_func_00233804(work + kRowsOffset, kRowTagModeNonZero,
+                            kRowKindModeNonZero, row_count);
+    }
 }
 
 // DECOMP_FUNC(0x0019f99c, 432)
