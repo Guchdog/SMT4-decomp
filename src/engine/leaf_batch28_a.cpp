@@ -7089,112 +7089,183 @@ extern "C" void script_vm_func_00191b64(void* context) {
     *accumulator = *accumulator + static_cast<u32>(sum);
 }
 
+// ---------------------------------------------------------------------------
+// 0x00140318 -- forward one selector through the engine lookup/filter chain.
+//
+// ABI (r0-r3 plus two stack words):
+//   r0  self      object; +0x00 = vtable, +0x04 = opaque context that is
+//                 re-read before every helper call
+//   r1  selector  forwarded to 0x0014D390 and used as the default index for
+//                 0x001522DC
+//   r2  stream    opaque pointer forwarded to 0x002AC8E4 / 0x001404AC
+//   r3  flags     bit 1 runs the 0x002AC8E4 pre-pass, bit 3 enables the
+//                 vtable lookup; no other flag bit is read
+//   [sp+0x00] extra   opaque word forwarded to 0x002AC8E4 / 0x001404AC
+//   [sp+0x04] alt     selector for 0x001522DC; 0xFFFFFFFF selects `selector`
+//
+// Flow:
+//   key = 0x002ACA0C(self->context);
+//   if ((flags & 2) != 0 && !0x002AC8E4(self, key, stream, extra, 0))
+//       return 0;
+//   if ((flags & 8) == 0)
+//       return 1;
+//   key = vtable[0x10 / 4](self, key);
+//   if (key != nullptr) {
+//       record.value = 0; record.name[0] = record.name[1] = 0;
+//       if (!0x0014D390(self->context, selector, &record)) return 0;
+//       index = record.id;
+//       0x002AC6D0(&cursor, key);
+//       record.name[0..4] = 0;
+//       if (!0x002AC614(&cursor, &record, index, 0)) return 0;
+//       if (!0x001404AC(self, record.id, record.value, stream, flags, extra))
+//           return 0;
+//       return 1;
+//   }
+//   list = 0x001522DC(self->context, alt == 0xFFFFFFFF ? selector : alt);
+//   if (list[0] == 0) return 1;
+//   for (i = 0; list[0] > i; ++i) {
+//       (void)list[1 + i];                  // loaded, then discarded
+//       key = 0x002ACA0C(self->context);
+//       if (!0x002AC8E4(self, key, stream, extra, 1)) return 0;
+//   }
+//   return 1;
+//
+// The 0x002AC8E4 fifth (stack) argument is 0 for the pre-pass and 1 for every
+// loop iteration.  The 0x001522DC result is dereferenced without a null check,
+// so a null list faults exactly as in the original, and the loop's
+// `tst flags,#8` at 0x00140458 is always true because only the flags&8 path
+// reaches it.  The element load at 0x0014045C is dead: 0x0014046C overwrites
+// r1 with the 0x002ACA0C result before it is used.
+//
+// Record written by 0x0014D390 and 0x002AC614 (0x18 bytes): +0x00/+0x04 words,
+// a five-byte name at +0x08, four flag bytes at +0x0D..+0x10 and a float at
+// +0x14.  Only +0x00/+0x04 are read back here, as the 0x001404AC arguments.
+// ---------------------------------------------------------------------------
+extern "C" void* engine_func_002aca0c(void* context);             // 0x002ACA0C
+extern "C" s32   engine_func_002ac8e4(void* self, void* key, void* stream,
+                                      void* extra, u32 mode);      // 0x002AC8E4
+extern "C" s32   engine_func_0014d390(void* context, u32 selector,
+                                      void* record);               // 0x0014D390
+extern "C" void  engine_func_002ac6d0(void* cursor, void* key);    // 0x002AC6D0
+extern "C" s32   engine_func_002ac614(void* cursor, void* record,
+                                      u32 index, u32 mode);        // 0x002AC614
+extern "C" s32   engine_func_001404ac(void* self, u32 first, u32 second,
+                                      void* stream, u32 flags,
+                                      void* extra);                // 0x001404AC
+extern "C" void* func_001522dc(void* context, u32 selector);       // 0x001522DC
+
+namespace {
+
+constexpr u32 kContextOffset = 0x04;
+constexpr u32 kVtableSlot    = 0x10;
+constexpr u32 kPrePassFlag   = 0x02;
+constexpr u32 kLookupFlag    = 0x08;
+constexpr u32 kNoAlternate   = 0xffffffffu;
+constexpr u32 kNameBytes     = 5;
+constexpr u32 kRecordSize    = 0x18;
+
+struct TargetObject {
+    void** vtable;   // +0x00: slot 0x10 is called with (self, key)
+    void*  context;  // +0x04: opaque, passed to 0x002ACA0C/0x0014D390/0x001522DC
+};
+
+// Layout confirmed by the decompiled 0x002AC614.
+struct CandidateRecord {
+    u32 id;                       // +0x00
+    u32 value;                    // +0x04
+    u8  name[kNameBytes];         // +0x08..+0x0C
+    u8  flag0d;                   // +0x0D
+    u8  flag0e;                   // +0x0E
+    u8  flag0f;                   // +0x0F
+    u8  flag10;                   // +0x10
+    u8  reserved[3];              // +0x11..+0x13
+    f32 scale;                    // +0x14
+};
+
+// 0x002AC6D0 writes both words; this function only forwards the object.
+struct LookupCursor {
+    void* first;                  // +0x00
+    void* second;                 // +0x04
+};
+
+using LookupSlot = void* (*)(void*, void*);
+
+static_assert(sizeof(CandidateRecord) == kRecordSize, "record layout");
+static_assert(sizeof(LookupCursor) == 8, "cursor layout");
+
+}  // namespace
+
 // DECOMP_FUNC(0x00140318, 404)
-extern "C" __attribute__((naked)) void engine_func_00140318() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe92d4ff0 @ push {r4, r5, r6, r7, r8, sb, sl, fp, lr}\n"
-        ".inst 0xe24dd024 @ sub sp, sp, #0x24\n"
-        ".inst 0xe1a06000 @ mov r6, r0\n"
-        ".inst 0xe1a05001 @ mov r5, r1\n"
-        ".inst 0xe1a09002 @ mov sb, r2\n"
-        ".inst 0xe59d404c @ ldr r4, [sp, #0x4c]\n"
-        ".inst 0xe59d8048 @ ldr r8, [sp, #0x48]\n"
-        ".inst 0xe5900004 @ ldr r0, [r0, #4]\n"
-        ".inst 0xe1a07003 @ mov r7, r3\n"
-        ".inst 0xeb05b1b2 @ bl #0x2aca0c\n"
-        ".inst 0xe3170002 @ tst r7, #2\n"
-        ".inst 0xe1a0a000 @ mov sl, r0\n"
-        ".inst 0xe3a0b000 @ mov fp, #0\n"
-        ".inst 0x0a000007 @ beq #0x140370\n"
-        ".inst 0xe1a03008 @ mov r3, r8\n"
-        ".inst 0xe1a02009 @ mov r2, sb\n"
-        ".inst 0xe1a0100a @ mov r1, sl\n"
-        ".inst 0xe1a00006 @ mov r0, r6\n"
-        ".inst 0xe58db000 @ str fp, [sp]\n"
-        ".inst 0xeb05b15e @ bl #0x2ac8e4\n"
-        ".inst 0xe3500000 @ cmp r0, #0\n"
-        ".inst 0x0a00004c @ beq #0x1404a4\n"
-        ".inst 0xe3170008 @ tst r7, #8\n"
-        ".inst 0x0a000049 @ beq #0x1404a0\n"
-        ".inst 0xe5960000 @ ldr r0, [r6]\n"
-        ".inst 0xe1a0100a @ mov r1, sl\n"
-        ".inst 0xe5902010 @ ldr r2, [r0, #0x10]\n"
-        ".inst 0xe1a00006 @ mov r0, r6\n"
-        ".inst 0xe12fff32 @ blx r2\n"
-        ".inst 0xe1b0a000 @ movs sl, r0\n"
-        ".inst 0x0a000024 @ beq #0x140428\n"
-        ".inst 0xe5cdb008 @ strb fp, [sp, #8]\n"
-        ".inst 0xe58db004 @ str fp, [sp, #4]\n"
-        ".inst 0xe5cdb009 @ strb fp, [sp, #9]\n"
-        ".inst 0xe5960004 @ ldr r0, [r6, #4]\n"
-        ".inst 0xe1a0200d @ mov r2, sp\n"
-        ".inst 0xe1a01005 @ mov r1, r5\n"
-        ".inst 0xeb0033f7 @ bl #0x14d390\n"
-        ".inst 0xe3500000 @ cmp r0, #0\n"
-        ".inst 0xe320f000 @ nop\n"
-        ".inst 0x0a000039 @ beq #0x1404a4\n"
-        ".inst 0xe59d4000 @ ldr r4, [sp]\n"
-        ".inst 0xe1a0100a @ mov r1, sl\n"
-        ".inst 0xe28d0018 @ add r0, sp, #0x18\n"
-        ".inst 0xeb05b0c0 @ bl #0x2ac6d0\n"
-        ".inst 0xe3a01000 @ mov r1, #0\n"
-        ".inst 0xe5cd1008 @ strb r1, [sp, #8]\n"
-        ".inst 0xe5cd1009 @ strb r1, [sp, #9]\n"
-        ".inst 0xe5cd100a @ strb r1, [sp, #0xa]\n"
-        ".inst 0xe1a03001 @ mov r3, r1\n"
-        ".inst 0xe5cd100b @ strb r1, [sp, #0xb]\n"
-        ".inst 0xe5cd100c @ strb r1, [sp, #0xc]\n"
-        ".inst 0xe1a02004 @ mov r2, r4\n"
-        ".inst 0xe1a0100d @ mov r1, sp\n"
-        ".inst 0xe28d0018 @ add r0, sp, #0x18\n"
-        ".inst 0xeb05b086 @ bl #0x2ac614\n"
-        ".inst 0xe3500000 @ cmp r0, #0\n"
-        ".inst 0xe320f000 @ nop\n"
-        ".inst 0x0a000027 @ beq #0x1404a4\n"
-        ".inst 0xe89d0006 @ ldm sp, {r1, r2}\n"
-        ".inst 0xe1a03009 @ mov r3, sb\n"
-        ".inst 0xe1a00006 @ mov r0, r6\n"
-        ".inst 0xe88d0180 @ stm sp, {r7, r8}\n"
-        ".inst 0xeb000024 @ bl #0x1404ac\n"
-        ".inst 0xe3500000 @ cmp r0, #0\n"
-        ".inst 0xe320f000 @ nop\n"
-        ".inst 0x0a00001f @ beq #0x1404a4\n"
-        ".inst 0xea00001d @ b #0x1404a0\n"
-        ".inst 0xe3740001 @ cmn r4, #1\n"
-        ".inst 0xe5960004 @ ldr r0, [r6, #4]\n"
-        ".inst 0x11a01004 @ movne r1, r4\n"
-        ".inst 0x01a01005 @ moveq r1, r5\n"
-        ".inst 0xeb0047a7 @ bl #0x1522dc\n"
-        ".inst 0xe1a05000 @ mov r5, r0\n"
-        ".inst 0xe5900000 @ ldr r0, [r0]\n"
-        ".inst 0xe3a04000 @ mov r4, #0\n"
-        ".inst 0xe3500000 @ cmp r0, #0\n"
-        ".inst 0x83a0a001 @ movhi sl, #1\n"
-        ".inst 0x9a000012 @ bls #0x1404a0\n"
-        ".inst 0xe0850104 @ add r0, r5, r4, lsl #2\n"
-        ".inst 0xe3170008 @ tst r7, #8\n"
-        ".inst 0xe5901004 @ ldr r1, [r0, #4]\n"
-        ".inst 0x0a00000a @ beq #0x140490\n"
-        ".inst 0xe5960004 @ ldr r0, [r6, #4]\n"
-        ".inst 0xeb05b167 @ bl #0x2aca0c\n"
-        ".inst 0xe1a01000 @ mov r1, r0\n"
-        ".inst 0xe1a03008 @ mov r3, r8\n"
-        ".inst 0xe1a02009 @ mov r2, sb\n"
-        ".inst 0xe1a00006 @ mov r0, r6\n"
-        ".inst 0xe58da000 @ str sl, [sp]\n"
-        ".inst 0xeb05b117 @ bl #0x2ac8e4\n"
-        ".inst 0xe3500000 @ cmp r0, #0\n"
-        ".inst 0xe320f000 @ nop\n"
-        ".inst 0x0a000004 @ beq #0x1404a4\n"
-        ".inst 0xe5950000 @ ldr r0, [r5]\n"
-        ".inst 0xe2844001 @ add r4, r4, #1\n"
-        ".inst 0xe1500004 @ cmp r0, r4\n"
-        ".inst 0x8affffec @ bhi #0x140454\n"
-        ".inst 0xe3a00001 @ mov r0, #1\n"
-        ".inst 0xe28dd024 @ add sp, sp, #0x24\n"
-        ".inst 0xe8bd8ff0 @ pop {r4, r5, r6, r7, r8, sb, sl, fp, pc}\n"
-    );
+extern "C" s32 engine_func_00140318(TargetObject* self, u32 selector,
+                                    void* stream, u32 flags, void* extra,
+                                    u32 alt_selector) {
+    void* key = engine_func_002aca0c(self->context);
+
+    if ((flags & kPrePassFlag) != 0) {
+        if (engine_func_002ac8e4(self, key, stream, extra, 0) == 0) {
+            return 0;
+        }
+    }
+
+    if ((flags & kLookupFlag) == 0) {
+        return 1;
+    }
+
+    void** const vtable = self->vtable;
+    const LookupSlot lookup =
+        reinterpret_cast<LookupSlot>(vtable[kVtableSlot / 4]);
+    key = lookup(self, key);
+
+    if (key != nullptr) {
+        CandidateRecord record;
+        record.value = 0;      // [sp+0x04]
+        record.name[0] = 0;    // [sp+0x08]
+        record.name[1] = 0;    // [sp+0x09]
+
+        if (engine_func_0014d390(self->context, selector, &record) == 0) {
+            return 0;
+        }
+        const u32 index = record.id;   // [sp+0x00]
+
+        LookupCursor cursor;
+        engine_func_002ac6d0(&cursor, key);
+
+        for (u32 i = 0; i < kNameBytes; ++i) {
+            record.name[i] = 0;        // [sp+0x08..+0x0C]
+        }
+
+        if (engine_func_002ac614(&cursor, &record, index, 0) == 0) {
+            return 0;
+        }
+
+        if (engine_func_001404ac(self, record.id, record.value, stream, flags,
+                                 extra) == 0) {
+            return 0;
+        }
+        return 1;
+    }
+
+    const u32 lookup_selector =
+        (alt_selector == kNoAlternate) ? selector : alt_selector;
+    // The original re-reads the list count at 0x00140490 after every helper
+    // call, so the pointee must not be const-qualified (which would let the
+    // compiler hoist the load out of the loop).
+    u32* const list =
+        static_cast<u32*>(func_001522dc(self->context, lookup_selector));
+    if (list[0] == 0) {
+        return 1;
+    }
+
+    for (u32 i = 0; list[0] > i; ++i) {
+        (void)list[1 + i];   // 0x0014045C loads this element, then discards it
+
+        void* const item = engine_func_002aca0c(self->context);
+        if (engine_func_002ac8e4(self, item, stream, extra, 1) == 0) {
+            return 0;
+        }
+    }
+
+    return 1;
 }
 
 // ---------------------------------------------------------------------------
