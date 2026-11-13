@@ -1217,37 +1217,177 @@ extern "C" __attribute__((naked)) void script_vm_func_00263ee4() {
 }
 
 // DECOMP_FUNC(0x0026a62c, 408)
-// 96 ARM instructions through unconditional pop; 24 trailing data bytes.
-extern "C" __attribute__((naked)) void camp_func_0026a62c() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d43f0, 0xe350000b, 0xe24dd00c, 0xe1a09000\n"
-        ".word 0xe59f0168, 0xe5900000, 0x0a000022, 0xe359000c\n"
-        ".word 0x0a000026, 0xe359000d, 0x1a000052, 0xe59f5150\n"
-        ".word 0xe2806b07, 0xe28660c4, 0xe2857077, 0xe2808f5e\n"
-        ".word 0xe3560000, 0x13580000, 0x0a00004a, 0xe1550007\n"
-        ".word 0xe3a04000, 0xca00000a, 0xe1a00005, 0xeb00917a\n"
-        ".word 0xe3500000, 0xe320f000, 0x0a000002, 0xe0860084\n"
-        ".word 0xe2844001, 0xe1c050b0, 0xe2855001, 0xe1550007\n"
-        ".word 0xdafffff4, 0xe359000c, 0x059f50f8, 0x059f70f8\n"
-        ".word 0x0a000010, 0xe359000d, 0x059f50f0, 0x02857063\n"
-        ".word 0x0a000018, 0xea000027, 0xe2806b05, 0xe3a05001\n"
-        ".word 0xe3a0703c, 0xe286607c, 0xe28080b0, 0xeaffffdf\n"
-        ".word 0xe59f50cc, 0xe2806b05, 0xe28660f4, 0xe28570c7\n"
-        ".word 0xe2808f45, 0xeaffffd9, 0xe1a00005, 0xeb00915a\n"
-        ".word 0xe3500000, 0xe320f000, 0x0a000002, 0xe0860084\n"
-        ".word 0xe2844001, 0xe1c050b0, 0xe2855001, 0xe1550007\n"
-        ".word 0x9afffff4, 0xea00000f, 0xe1a00005, 0xeb00914e\n"
-        ".word 0xe3500000, 0xe320f000, 0x0a000007, 0xe1a00005\n"
-        ".word 0xeb0095a4, 0xe3500000, 0xe320f000, 0xda000002\n"
-        ".word 0xe0860084, 0xe2844001, 0xe1c050b0, 0xe2855001\n"
-        ".word 0xe1550007, 0x9affffef, 0xe3a00001, 0xe1a03000\n"
-        ".word 0xe58d0000, 0xe58d0004, 0xe3a0200b, 0xe1a01004\n"
-        ".word 0xe1a00008, 0xeb00d4d4, 0xe28dd00c, 0xe1a00009\n"
-        ".word 0xe8bd43f0, 0xea006292, 0xe28dd00c, 0xe8bd83f0\n"
-        ".word 0x0043da90, 0x0000033f, 0x0000047f, 0x0000079e\n"
-        ".word 0x0000079f, 0x000003b7\n"
-    );
+//
+// Rebuilds one of the three camp identifier lists selected by `mode` and hands
+// the halfword count to the shared page/cursor setup helper.
+//
+// Recovered contract (ARM 0x0026A62C..0x0026A7AC):
+//   * r0 is `mode`.  Only 0xB, 0xC and 0xD select a list; every other value
+//     jumps to the epilogue at 0x0026A7A4.  r0 then still holds the work
+//     pointer loaded at 0x0026A640, because that epilogue restores only
+//     r4-r8/sb/pc.
+//   * The work pointer is `*(void**)0x0043DA90`, the canonical
+//     smt4::camp::g_CampWork.  The table/page bases are:
+//       0xB: table = work + 0x147C, page = work + 0x00B0
+//       0xC: table = work + 0x14F4, page = work + 0x0114
+//       0xD: table = work + 0x1CC4, page = work + 0x0178
+//   * 0x0026A66C..0x0026A674 rejects the derived pair when either 32-bit
+//     address wrapped to zero (`cmp r6,#0` / `cmpne r8,#0`).
+//   * Entries are zero-extended `strh` stores of the enumerated id at
+//     table[count++], performed only after the mode-specific predicate passes.
+//   * 0xB: ids 1..0x3C inclusive, predicate 0x0028EC78(id) != 0.  The bound is
+//     the signed `ble` at 0x0026A6AC.
+//   * 0xC: ids 0x3B7..0x47E inclusive, then 0x47F..0x79E inclusive.  Both
+//     passes test 0x0028EC78(id) != 0; the first loop uses the signed `ble`
+//     at 0x0026A6AC, the second the unsigned `bls` at 0x0026A72C.
+//   * 0xD: ids 0x33F..0x3B6 inclusive, then 0x79F..0x802 inclusive.  The first
+//     pass tests 0x0028EC78(id) != 0.  The second pass first calls 0x0028EC78
+//     and, only when its result is non-zero, calls 0x0028FDE4(id) and stores
+//     the id when that signed result is > 0 (`ble` at 0x0026A758).  The extra
+//     call is kept even though 0x0028EC78 is normally its >0 normalization.
+//   * A selected list always calls
+//     0x0029FAE8(page, count, 0xB, 1, 1, 1): four register arguments and the
+//     two stack words 1, 1 (0x0026A774..0x0026A790).
+//   * The original then loads r0 = mode and tail-branches to 0x002831F0
+//     (0x0026A798..0x0026A7A0).  We return that callee's r0 so the register
+//     passthrough stays observable; callers of this routine ignore it.
+namespace func_26a62c {
+
+constexpr u32 kModeB = 0x0B;              // `cmp r0,#0xb` (0x0026A630)
+constexpr u32 kModeC = 0x0C;              // `cmp sb,#0xc` (0x0026A648)
+constexpr u32 kModeD = 0x0D;              // `cmp sb,#0xd` (0x0026A650)
+
+constexpr u32 kTableB = 0x147C;           // 0x1400 + 0x7C (0x0026A6D4..E0)
+constexpr u32 kPageB = 0x00B0;            // 0x0026A6E4
+constexpr s32 kFirstB = 0x01;             // `mov r5,#1` (0x0026A6D8)
+constexpr s32 kLastB = 0x3C;              // `mov r7,#0x3c` (0x0026A6DC)
+
+constexpr u32 kTableC = 0x14F4;           // 0x1400 + 0xF4 (0x0026A6F0..F4)
+constexpr u32 kPageC = 0x0114;            // 0x0026A6FC
+constexpr u32 kFirstC = 0x3B7;            // literal 0x3B7 (0x0026A6EC)
+constexpr u32 kLastCFirstPass = 0x47E;    // firstC + 0xC7 (0x0026A6F8)
+constexpr u32 kFirstCSecondPass = 0x47F;  // literal 0x47F (0x0026A6B4)
+constexpr u32 kLastCSecondPass = 0x79E;   // literal 0x79E (0x0026A6B8)
+
+constexpr u32 kTableD = 0x1CC4;           // 0x1C00 + 0xC4 (0x0026A65C..60)
+constexpr u32 kPageD = 0x0178;            // 0x178 (0x0026A668)
+constexpr u32 kFirstD = 0x33F;            // literal 0x33F (0x0026A658)
+constexpr u32 kLastDFirstPass = 0x3B6;    // firstD + 0x77 (0x0026A664)
+constexpr u32 kFirstDSecondPass = 0x79F;  // literal 0x79F (0x0026A6C4)
+constexpr u32 kLastDSecondPass = 0x802;   // firstD + 0x63 (0x0026A6C8)
+
+constexpr s32 kPageRows = 0x0B;           // `mov r2,#0xb` (0x0026A784)
+constexpr s32 kPageColumns = 1;           // `mov r3,#1` / r0=1 (0x0026A774..778)
+constexpr s32 kPageWrapRow = 1;           // `str r0,[sp]` (0x0026A77C)
+constexpr s32 kPageRepeat = 1;            // `str r0,[sp,#4]` (0x0026A780)
+
+}  // namespace func_26a62c
+
+// The canonical work object (defined in src/camp/camp.cpp); only its address
+// is used here.  The forward declaration keeps this translation unit free of
+// the camp header's heavier UI dependencies.
+namespace smt4 {
+namespace camp {
+struct CampWork;
+extern CampWork* g_CampWork;
+}  // namespace camp
+}  // namespace smt4
+
+// Direct calls.  0x0028EC78 returns a normalized non-zero result, 0x0028FDE4
+// is its signed predicate, 0x0029FAE8 is the shared page/cursor setup and
+// 0x002831F0 is the camp layout interpreter (canonically void; its r0 is
+// forwarded by the original tail branch).
+extern "C" u32 battle_func_0028ec78(u32 id);
+extern "C" s32 camp_func_0028fde4(u32 id);
+extern "C" u32 camp_func_0029fae8(volatile u8* cursor, s32 total_items,
+                                  s32 visible_rows, s32 columns,
+                                  s32 wrap_row, s32 repeat);
+extern "C" u32 camp_func_002831f0(u32 layout_opcode);
+
+extern "C" u32 camp_func_0026a62c(u32 mode) {
+    const u32 work_address = reinterpret_cast<u32>(
+        reinterpret_cast<uintptr_t>(smt4::camp::g_CampWork));
+    u8* const work = reinterpret_cast<u8*>(work_address);
+
+    // 0x0026A630..0x0026A654: dispatch.  The derived addresses are compared
+    // before any table access, exactly like the r6/r8 zero test.
+    u32 table_offset;
+    u32 page_offset;
+    switch (mode) {
+    case func_26a62c::kModeB:
+        table_offset = func_26a62c::kTableB;
+        page_offset = func_26a62c::kPageB;
+        break;
+    case func_26a62c::kModeC:
+        table_offset = func_26a62c::kTableC;
+        page_offset = func_26a62c::kPageC;
+        break;
+    case func_26a62c::kModeD:
+        table_offset = func_26a62c::kTableD;
+        page_offset = func_26a62c::kPageD;
+        break;
+    default:
+        return work_address;
+    }
+
+    const u32 table_address = work_address + table_offset;
+    const u32 page_address = work_address + page_offset;
+    if (table_address == 0 || page_address == 0) {
+        return work_address;
+    }
+
+    u16* const table = reinterpret_cast<u16*>(work + table_offset);
+    s32 count = 0;
+
+    // 0x0026A678..0x0026A6AC: first pass.  Signed `ble` bound.
+    if (mode == func_26a62c::kModeB) {
+        for (s32 id = func_26a62c::kFirstB;
+             id <= func_26a62c::kLastB; ++id) {
+            if (battle_func_0028ec78(static_cast<u32>(id)) != 0) {
+                table[count++] = static_cast<u16>(id);
+            }
+        }
+    } else {
+        const s32 first = static_cast<s32>(
+            mode == func_26a62c::kModeC ? func_26a62c::kFirstC
+                                        : func_26a62c::kFirstD);
+        const s32 last = static_cast<s32>(
+            mode == func_26a62c::kModeC ? func_26a62c::kLastCFirstPass
+                                        : func_26a62c::kLastDFirstPass);
+        for (s32 id = first; id <= last; ++id) {
+            if (battle_func_0028ec78(static_cast<u32>(id)) != 0) {
+                table[count++] = static_cast<u16>(id);
+            }
+        }
+    }
+
+    // 0x0026A6B0..0x0026A6D0: select the optional second pass.  0xB has none.
+    if (mode == func_26a62c::kModeC) {
+        // 0x0026A704..0x0026A72C: unsigned `bls` bound.
+        for (u32 id = func_26a62c::kFirstCSecondPass;
+             id <= func_26a62c::kLastCSecondPass; ++id) {
+            if (battle_func_0028ec78(id) != 0) {
+                table[count++] = static_cast<u16>(id);
+            }
+        }
+    } else if (mode == func_26a62c::kModeD) {
+        // 0x0026A734..0x0026A770: second predicate is gated by the first.
+        for (u32 id = func_26a62c::kFirstDSecondPass;
+             id <= func_26a62c::kLastDSecondPass; ++id) {
+            if (battle_func_0028ec78(id) != 0 &&
+                camp_func_0028fde4(id) > 0) {
+                table[count++] = static_cast<u16>(id);
+            }
+        }
+    }
+
+    // 0x0026A774..0x0026A790: page/cursor setup with six arguments.
+    camp_func_0029fae8(reinterpret_cast<volatile u8*>(page_address), count,
+                       func_26a62c::kPageRows, func_26a62c::kPageColumns,
+                       func_26a62c::kPageWrapRow, func_26a62c::kPageRepeat);
+
+    // 0x0026A798..0x0026A7A0: r0 = mode, then tail branch to 0x002831F0.
+    return camp_func_002831f0(mode);
 }
 
 // DECOMP_FUNC(0x00275ca0, 408)

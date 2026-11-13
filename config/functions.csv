@@ -4227,7 +4227,7 @@ address,size,status,category,name,src_file
 0x0026a02c,1412,matching,script_vm,UIQuest_func_0026a02c,src/script/script_extras.cpp
 0x0026a5b0,68,matching,camp,camp_func_0026a5b0,src/engine/leaf_batch27_b.cpp
 0x0026a5f4,56,matching,camp,camp_func_0026a5f4,src/engine/leaf_batch27_b.cpp
-0x0026a62c,408,matching,camp,camp_func_0026a62c,src/engine/leaf_batch41_c.cpp
+0x0026a62c,408,non_matching,camp,camp_func_0026a62c,src/engine/leaf_batch41_c.cpp
 0x0026a7c4,60,matching,camp,camp_func_0026a7c4,src/engine/leaf_batch39_b.cpp
 0x0026a800,108,matching,camp,camp_func_0026a800,src/engine/leaf_batch39_c.cpp
 0x0026a86c,152,matching,camp,camp_func_0026a86c,src/engine/leaf_batch14_b.cpp
