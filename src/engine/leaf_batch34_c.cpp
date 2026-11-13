@@ -9039,225 +9039,297 @@ extern "C" s32 camp_func_001f4e2c(u8* object, u64* flag_mask, s64* result) {
     return 1;
 }
 
-// DECOMP_FUNC(0x001f8d04, 796)
-extern "C" __attribute__((naked)) void script_vm_func_001f8d04() {
-    asm volatile(
-        "push {r0, r1, r2, r3, r4, r5, r6, r7, r8, sb, sl, fp, lr}\n"
-        "sub sp, sp, #0x1cc\n"
-        "mov r6, r3\n"
-        "mov r8, r1\n"
-        "mov fp, r2\n"
-        ".word 0xe59f02dc\n"
-        "ldr r1, [sp, #0x1cc]\n"
-        "ldr r0, [r0]\n"
-        "bl script_vm_func_00389e54\n"
-        "ldr r4, [sp, #0x1cc]\n"
-        "cmp r0, #0\n"
-        "movne sl, r0\n"
-        "add r1, r4, r4, lsl #1\n"
-        "str r1, [sp, #0x194]\n"
-        "beq .L_001f8dd4\n"
-        ".L_001f8d40:\n"
-        "cmp sl, #0\n"
-        "beq .L_001f8fe8\n"
-        "ldrb r5, [sl, #4]\n"
-        "ldrb sb, [sl, #5]\n"
-        "mov r4, #0\n"
-        "mov r0, r5\n"
-        "cmp sb, r5\n"
-        "movlt r5, sb\n"
-        "movlt sb, r0\n"
-        "moveq r0, #0x32\n"
-        "streq r0, [sp, #0x1b8]\n"
-        "beq .L_001f8d98\n"
-        "sub sb, sb, r5\n"
-        "uxth r0, sb\n"
-        "bl engine_func_002c0bcc\n"
-        "mov r7, r0\n"
-        "mov r0, #0x64\n"
-        "mov r1, sb\n"
-        "mul r0, r7, r0\n"
-        "bl ui_func_002c615c\n"
-        "add sb, r5, r7\n"
-        "str r0, [sp, #0x1b8]\n"
-        ".L_001f8d98:\n"
-        "cmp sb, #0\n"
-        "ble .L_001f8fe8\n"
-        "cmp r6, #0\n"
-        "mov r5, #0\n"
-        "strne sb, [r6]\n"
-        ".L_001f8dac:\n"
-        "add r7, sl, r5, lsl #2\n"
-        "ldrh r6, [r7, #8]\n"
-        "cmp r6, #0\n"
-        "ldrbne r0, [r7, #0xb]\n"
-        "cmpne r0, #0\n"
-        "beq .L_001f8e48\n"
-        "ldrb r0, [r7, #0xa]\n"
-        "cmp r0, #0\n"
-        "beq .L_001f8e0c\n"
-        "b .L_001f8e48\n"
-        ".L_001f8dd4:\n"
-        "mov r1, #0\n"
-        "mov r0, #0x21\n"
-        "bl Tbb_GetGlobalSubTable\n"
-        "mov r7, r0\n"
-        "nop\n"
-        "bl Tbb_GetPayloadData\n"
-        "mov r5, r0\n"
-        "mov r0, r7\n"
-        "bl Tbb_GetRowCount\n"
-        "cmp r4, r0\n"
-        "ldrlo r0, [sp, #0x194]\n"
-        "addlo sl, r5, r0, lsl #3\n"
-        "bhs .L_001f8fe8\n"
-        "b .L_001f8d40\n"
-        ".L_001f8e0c:\n"
-        "mov r0, #0x63\n"
-        "bl engine_func_002c0bcc\n"
-        "ldrb r1, [r7, #0xb]\n"
-        "add r0, r0, #1\n"
-        "uxth r0, r0\n"
-        "cmp r0, r1\n"
-        "bhi .L_001f8e48\n"
-        "mov r1, #1\n"
-        "mov r0, r6\n"
-        "bl script_vm_func_00295cbc\n"
-        "cmp r8, #0\n"
-        "strne r6, [r8, r4, lsl #2]\n"
-        "add r4, r4, #1\n"
-        "cmp r4, sb\n"
-        "bge .L_001f8fa4\n"
-        ".L_001f8e48:\n"
-        "add r5, r5, #1\n"
-        "cmp r5, #3\n"
-        "blt .L_001f8dac\n"
-        ".word 0xe59f01a0\n"
-        "ldr r5, [sp, #0x1cc]\n"
-        "str sp, [sp, #0x19c]\n"
-        "ldr r0, [r0]\n"
-        "mov r1, r5\n"
-        "bl script_vm_func_00389e54\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "beq .L_001f8fb0\n"
-        ".L_001f8e78:\n"
-        "ldrb r1, [r0, #0x14]\n"
-        "ldrb r6, [r0, #6]\n"
-        "ldrb r7, [r0, #7]\n"
-        "str r1, [sp, #0x1bc]\n"
-        "ldrb r1, [r0, #0x15]\n"
-        "cmp r6, r7\n"
-        "str r1, [sp, #0x1ac]\n"
-        "ldrb r1, [r0, #0x16]\n"
-        "str r1, [sp, #0x1b0]\n"
-        "ldrb r0, [r0, #0x17]\n"
-        "str r0, [sp, #0x1b4]\n"
-        "bls .L_001f8eb4\n"
-        "mov r0, r6\n"
-        "mov r6, r7\n"
-        "mov r7, r0\n"
-        ".L_001f8eb4:\n"
-        ".word 0xe59f5144\n"
-        "mov sl, #0\n"
-        ".L_001f8ebc:\n"
-        "mov r0, r5\n"
-        "bl camp_func_00256a50\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "beq .L_001f8f2c\n"
-        "ldrb r1, [r0, #0x24]\n"
-        "cmp r6, r1\n"
-        "bhi .L_001f8f2c\n"
-        "cmp r1, r7\n"
-        "bhi .L_001f8f2c\n"
-        "ldrb r1, [r0, #0x25]\n"
-        "ldr r2, [sp, #0x1bc]\n"
-        "cmp r1, r2\n"
-        "beq .L_001f8f18\n"
-        "ldr r3, [sp, #0x1ac]\n"
-        "cmp r1, r3\n"
-        "ldrne r2, [sp, #0x1b0]\n"
-        "cmpne r1, r2\n"
-        "beq .L_001f8f18\n"
-        "mov r3, r1\n"
-        "ldr r1, [sp, #0x1b4]\n"
-        "cmp r3, r1\n"
-        "bne .L_001f8f2c\n"
-        ".L_001f8f18:\n"
-        "ldr r2, [sp, #0x19c]\n"
-        "ldrh r0, [r0, #0x20]\n"
-        "add r2, r2, sl, lsl #1\n"
-        "add sl, sl, #1\n"
-        "strh r0, [r2]\n"
-        ".L_001f8f2c:\n"
-        ".word 0xe59f00d0\n"
-        "add r5, r5, #1\n"
-        "cmp r5, r0\n"
-        "bls .L_001f8ebc\n"
-        "sxth r0, sl\n"
-        "cmp r0, #0\n"
-        "beq .L_001f8fe8\n"
-        "cmp sb, r4\n"
-        "ble .L_001f8fa4\n"
-        "mov sl, sp\n"
-        "mov r7, #0\n"
-        "sub r6, r0, #1\n"
-        ".L_001f8f5c:\n"
-        "uxth r0, r6\n"
-        "bl engine_func_002c0bcc\n"
-        "add r0, sl, r0, lsl #1\n"
-        "ldrsh r5, [r0]\n"
-        "mov r0, r5\n"
-        "bl script_vm_func_0025b920\n"
-        "cmp r0, #0\n"
-        "moveq r0, #1\n"
-        "strbeq r0, [fp, r4]\n"
-        "mov r1, #1\n"
-        "mov r0, r5\n"
-        "strbne r7, [fp, r4]\n"
-        "bl script_vm_func_00295cbc\n"
-        "cmp r8, #0\n"
-        "strne r5, [r8, r4, lsl #2]\n"
-        "add r4, r4, #1\n"
-        "cmp r4, sb\n"
-        "blt .L_001f8f5c\n"
-        ".L_001f8fa4:\n"
-        "ldr r0, [sp, #0x1b8]\n"
-        "add sp, sp, #0x1dc\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, fp, pc}\n"
-        ".L_001f8fb0:\n"
-        "mov r1, #0\n"
-        "mov r0, #0x21\n"
-        "bl Tbb_GetGlobalSubTable\n"
-        "mov r7, r0\n"
-        "nop\n"
-        "bl Tbb_GetPayloadData\n"
-        "mov r6, r0\n"
-        "mov r0, r7\n"
-        "bl Tbb_GetRowCount\n"
-        "cmp r5, r0\n"
-        "ldrlo r0, [sp, #0x194]\n"
-        "movhs r0, #0\n"
-        "addlo r0, r6, r0, lsl #3\n"
-        "b .L_001f8e78\n"
-        ".L_001f8fe8:\n"
-        "mov r0, #0\n"
-        "bl engine_func_002c583c\n"
-        "add sp, sp, #0x1dc\n"
-        "mov r0, #0\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, fp, pc}\n"
-        ".word 0x00433158\n"
-        ".word 0x000003b7\n"
-        ".word 0x0000047e\n"
-        ".word 0xe3a0000a\n"
-        ".word 0xed9f2a01\n"
-        ".word 0xeddf1a01\n"
-        ".word 0xea017636\n"
-        ".word 0x41a00000\n"
-        ".word 0x40a00000\n"
-    );
+// ---------------------------------------------------------------------------
+// 0x001F8D04 -- draw one randomised group of entries for a script record.
+//
+// Sole direct caller: 0x001E5840 inside script_vm_func_001e5448 (0x001E5448).
+//   r0  id     signed 16-bit record id (the caller loads `ldrsh [record+0x24]`)
+//   r1  ids    u32[] output buffer (r8); written only when non-null
+//   r2  flags  u8[] output buffer (fp); written unconditionally
+//   r3  count  u32* output word (r6); written only when non-null
+//   ->  r0     the 0..100 roll value, or 0 when nothing was produced
+//
+// Flow:
+//   * resolve the 24-byte record through the owner at 0x00433158; when the
+//     lookup fails, index the payload of TBB sub-table 0x21/0 directly
+//     (payload + id*24, no bounds check beyond the row count);
+//   * derive a target count from the record's byte pair +4/+5 (min/max, equal
+//     pair means count = the pair and a fixed 50 roll);
+//   * walk the three {u16 id, u8 mode, u8 chance} slots at +0x08/+0x0C/+0x10
+//     and add every slot that passes the mode/chance gates;
+//   * resolve the same record again, collect the camp rows 951..1150 whose
+//     byte +0x24 lies in the record's +6/+7 band and whose byte +0x25 matches
+//     one of the four accepted keys at +0x14..+0x17, then pick uniform random
+//     rows from that stack list until the target count is reached.
+//
+// The "abort" path at 0x001F8FE8 performs a discarded table-slot read of index
+// 0 (0x002C583C) before returning 0; the call is preserved.
+// ---------------------------------------------------------------------------
+namespace {
+
+// 24-byte record returned by 0x00389E54.  The same shape is read out of the
+// 0x002C0EC4 table-0x21 payload, whose stride is 24 bytes (0x001F8D34/0x001F8E00
+// scale the id by three and then by eight).
+struct ScriptDrawSlot {
+    u16 id;      // +0x00: 0 disables the slot
+    u8 mode;     // +0x02: must be 0 for the slot to roll
+    u8 chance;   // +0x03: 1..255 threshold, 0 disables the slot
+};
+
+struct ScriptDrawRecord {
+    u8 unused_00[4];    // +0x00..+0x03: never read by this body
+    u8 count_min;       // +0x04
+    u8 count_max;       // +0x05
+    u8 scan_min;        // +0x06: lower bound of camp row +0x24
+    u8 scan_max;        // +0x07: upper bound of camp row +0x24
+    ScriptDrawSlot slots[3];  // +0x08, +0x0C, +0x10
+    u8 accept[4];       // +0x14..+0x17: accepted camp row +0x25 values
+};
+
+static_assert(sizeof(ScriptDrawSlot) == 4);
+static_assert(sizeof(ScriptDrawRecord) == 24);
+
+// Minimal view of the row returned by 0x00256A50 (only the three fields this
+// body touches; the row itself is much larger and opaque here).
+struct CampScanRow {
+    u8 unused_00[0x20];
+    u16 value;          // +0x20: copied into the local candidate list
+    u8 unused_22[2];
+    u8 band;            // +0x24: compared against the record's +6/+7 band
+    u8 key;             // +0x25: compared against the record's four accept bytes
+};
+
+static_assert(sizeof(CampScanRow) == 0x26);
+
+constexpr u32 kScriptOwnerSlot = 0x00433158;  // *(void**) = 0x00389E54 owner
+constexpr u32 kFallbackSlotId = 0x21;         // Tbb_GetGlobalSubTable(0x21, 0)
+constexpr u32 kFallbackTableIndex = 0;
+constexpr u32 kCampScanFirst = 0x3B7;         // literal at 0x001F9000
+constexpr u32 kCampScanLast = 0x47E;          // literal at 0x001F9004
+constexpr u32 kCampScanCount = kCampScanLast - kCampScanFirst + 1;
+constexpr u32 kItemRollRange = 99;            // `mov r0,#0x63`; draw is 0..99
+constexpr u32 kEqualCountRoll = 50;           // `moveq r0,#0x32`
+
+using ScriptLookupFn = const ScriptDrawRecord* (*)(void* owner, s32 id);
+using GlobalSubTableFn = const void* (*)(u32 slot_id, u32 table_index);
+using PayloadDataFn = const void* (*)(const void* table);
+using RowCountFn = u32 (*)(const void* table);
+using RandomRangeFn = u32 (*)(u32 range_plus_one);
+using DivideModFn = u64 (*)(u32 numerator, u32 denominator);
+using AddItemFn = void (*)(s32 item, s32 flag);
+using CampRowFn = const CampScanRow* (*)(u32 index);
+using FlagTestFn = u32 (*)(s32 id);
+using TableEntryFn = u32 (*)(u32 index);
+
+// Both fallback sites (0x001F8DD4 and 0x001F8FB0) perform the same three calls
+// in the same order and index the table-0x21 payload with payload + (3*id)*8.
+// They differ only in what the caller does with a null result: the first one
+// returns 0, the second one dereferences it.
+const ScriptDrawRecord* FallbackRecord(u32 id, u32 triple) {
+    const GlobalSubTableFn sub_table =
+        reinterpret_cast<GlobalSubTableFn>(Tbb_GetGlobalSubTable);
+    const PayloadDataFn payload_of =
+        reinterpret_cast<PayloadDataFn>(Tbb_GetPayloadData);
+    const RowCountFn row_count_of =
+        reinterpret_cast<RowCountFn>(Tbb_GetRowCount);
+
+    const void* const table = sub_table(kFallbackSlotId, kFallbackTableIndex);
+    const u8* const payload = static_cast<const u8*>(payload_of(table));
+    const u32 rows = row_count_of(table);
+    if (id >= rows) {
+        return nullptr;
+    }
+    return reinterpret_cast<const ScriptDrawRecord*>(payload + triple * 8u);
 }
+
+} // namespace
+
+// DECOMP_FUNC(0x001f8d04, 796)
+extern "C" u32 script_vm_func_001f8d04(s32 id, u32* ids, u8* flags,
+                                        u32* count) {
+    const ScriptLookupFn lookup =
+        reinterpret_cast<ScriptLookupFn>(script_vm_func_00389e54);
+    const RandomRangeFn random_range =
+        reinterpret_cast<RandomRangeFn>(engine_func_002c0bcc);
+    const DivideModFn divide =
+        reinterpret_cast<DivideModFn>(ui_func_002c615c);
+    const AddItemFn add_item =
+        reinterpret_cast<AddItemFn>(script_vm_func_00295cbc);
+    const CampRowFn camp_row =
+        reinterpret_cast<CampRowFn>(camp_func_00256a50);
+    const FlagTestFn flag_test =
+        reinterpret_cast<FlagTestFn>(script_vm_func_0025b920);
+    const TableEntryFn table_entry =
+        reinterpret_cast<TableEntryFn>(engine_func_002c583c);
+
+    // 0x001F8D18..0x001F8D3C: resolve the record through the shared owner, and
+    // pre-scale the id for the table-0x21 fallback (3*id, then *8 = id*24).
+    const ScriptDrawRecord* record =
+        lookup(*reinterpret_cast<void**>(kScriptOwnerSlot), id);
+    const u32 triple = static_cast<u32>(id) * 3u;
+    if (record == nullptr) {
+        record = FallbackRecord(static_cast<u32>(id), triple);
+    }
+    if (record == nullptr) {
+        table_entry(0);  // 0x001F8FEC: discarded slot-0 table read
+        return 0;
+    }
+
+    // 0x001F8D48..0x001F8D94: order the count pair and derive the target.
+    u32 count_min = record->count_min;
+    u32 count_max = record->count_max;
+    if (count_max < count_min) {
+        const u32 swap = count_min;
+        count_min = count_max;
+        count_max = swap;
+    }
+
+    u32 roll_value;
+    u32 target;
+    if (count_min == count_max) {
+        // `moveq r0,#0x32`: an equal pair skips the draw entirely.
+        roll_value = kEqualCountRoll;
+        target = count_min;
+    } else {
+        const u32 span = count_max - count_min;
+        const u32 draw = random_range(span);  // 0x002C0BCC, returns 0..span
+        // 0x002C615C is the ARM unsigned divmod: only the quotient is kept.
+        roll_value = static_cast<u32>(divide(draw * 100u, span));
+        target = count_min + draw;
+    }
+
+    // 0x001F8D98..0x001F8DA8: a zero target aborts before any output.
+    if (static_cast<s32>(target) <= 0) {
+        table_entry(0);
+        return 0;
+    }
+    if (count != nullptr) {
+        *count = target;
+    }
+
+    // 0x001F8DAC..0x001F8E50: the three fixed slots.
+    u32 produced = 0;
+    for (u32 slot = 0; slot < 3; ++slot) {
+        const ScriptDrawSlot& candidate = record->slots[slot];
+        if (candidate.id == 0) {
+            continue;
+        }
+        if (candidate.chance == 0) {
+            continue;
+        }
+        if (candidate.mode != 0) {
+            continue;
+        }
+        // 0x001F8E10..0x001F8E24: draw 0..99 and test `draw + 1 > chance`.
+        const u32 roll = random_range(kItemRollRange);
+        if (static_cast<u16>(roll + 1u) > candidate.chance) {
+            continue;
+        }
+        add_item(static_cast<s32>(candidate.id), 1);
+        if (ids != nullptr) {
+            ids[produced] = candidate.id;
+        }
+        ++produced;
+        if (static_cast<s32>(produced) >= static_cast<s32>(target)) {
+            return roll_value;
+        }
+    }
+
+    // 0x001F8E54..0x001F8E74: resolve the same record a second time.  The
+    // original also stores the (still current) SP in its frame here for the
+    // candidate list below; that is a private stack slot and has no effect.
+    const ScriptDrawRecord* filter =
+        lookup(*reinterpret_cast<void**>(kScriptOwnerSlot), id);
+    if (filter == nullptr) {
+        // 0x001F8FB0..0x001F8FE4: unlike the first site this result is used
+        // without a null test, so a null pointer faults exactly as it does in
+        // the original.
+        filter = FallbackRecord(static_cast<u32>(id), triple);
+    }
+
+    // 0x001F8E78..0x001F8EAC: accepted keys and the camp row band.
+    const u32 accept0 = filter->accept[0];
+    u32 band_low = filter->scan_min;
+    u32 band_high = filter->scan_max;
+    const u32 accept1 = filter->accept[1];
+    const u32 accept2 = filter->accept[2];
+    const u32 accept3 = filter->accept[3];
+    if (band_high < band_low) {
+        const u32 swap = band_low;
+        band_low = band_high;
+        band_high = swap;
+    }
+
+    // 0x001F8EB8..0x001F8F38: collect the matching camp rows.  The bound is
+    // unsigned and inclusive at both ends (0x3B7..0x47E); a null row is skipped.
+    u16 matches[kCampScanCount];
+    u32 match_count = 0;
+    for (u32 index = kCampScanFirst; index <= kCampScanLast; ++index) {
+        const CampScanRow* const row = camp_row(index);
+        if (row == nullptr) {
+            continue;
+        }
+        if (band_low > row->band) {
+            continue;
+        }
+        if (row->band > band_high) {
+            continue;
+        }
+        const u32 key = row->key;
+        if (key != accept0 && key != accept1 && key != accept2 &&
+            key != accept3) {
+            continue;
+        }
+        matches[match_count] = row->value;
+        ++match_count;
+    }
+
+    // 0x001F8F3C..0x001F8F4C
+    const s16 match_total = static_cast<s16>(match_count);
+    if (match_total == 0) {
+        table_entry(0);
+        return 0;
+    }
+    // Retained verbatim: with the guards above this is unreachable, exactly as
+    // in the original.
+    if (static_cast<s32>(target) <= static_cast<s32>(produced)) {
+        return roll_value;
+    }
+
+    // 0x001F8F50..0x001F8FA0: pick uniformly from the collected rows.  The
+    // draw bound is computed once (match_total - 1) and reused every pass.
+    const u32 pick_range = static_cast<u32>(static_cast<u16>(match_total)) - 1u;
+    do {
+        const u32 draw = random_range(pick_range);
+        const s16 picked = static_cast<s16>(matches[draw]);
+        if (flag_test(static_cast<s32>(picked)) == 0) {
+            flags[produced] = 1;
+        } else {
+            flags[produced] = 0;
+        }
+        add_item(static_cast<s32>(picked), 1);
+        if (ids != nullptr) {
+            ids[produced] = static_cast<u32>(static_cast<s32>(picked));
+        }
+        ++produced;
+    } while (static_cast<s32>(produced) < static_cast<s32>(target));
+
+    return roll_value;
+}
+
+// The ledger's 796-byte range for 0x001F8D04 also covers the 24-byte tail stub
+// at 0x001F9008 (mov r0,#0xA; vldr s4,[..]; vldr s3,[..]; b 0x002568F4 with the
+// 20.0f/5.0f constants).  It is not part of this routine and is reached only by
+// the raw `b` at 0x0025C058, so its bytes are preserved verbatim.
+asm(
+    ".text\n"
+    ".word 0xe3a0000a\n"   // 0x001F9008: mov r0, #0xa
+    ".word 0xed9f2a01\n"   // 0x001F900C: vldr s4, [pc, #4]
+    ".word 0xeddf1a01\n"   // 0x001F9010: vldr s3, [pc, #4]
+    ".word 0xea017636\n"   // 0x001F9014: b 0x002568F4
+    ".word 0x41a00000\n"   // 0x001F9018: 20.0f
+    ".word 0x40a00000\n"   // 0x001F901C: 5.0f
+);
 
 // DECOMP_FUNC(0x00206b40, 168)
 extern "C" __attribute__((naked)) void script_vm_func_00206b40() {
