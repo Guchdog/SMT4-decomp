@@ -1391,37 +1391,136 @@ extern "C" u32 camp_func_0026a62c(u32 mode) {
 }
 
 // DECOMP_FUNC(0x00275ca0, 408)
-// 99 ARM instructions through unconditional pop; 12 trailing data bytes.
-extern "C" __attribute__((naked)) void script_vm_func_00275ca0() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4070, 0xe3a05001, 0xe59f417c, 0xe3a06000\n"
-        ".word 0xed2d8b02, 0xed9f8a5d, 0xe5941000, 0xeddf8a5c\n"
-        ".word 0xe591000c, 0xe3500000, 0x0a000026, 0xe5d1100a\n"
-        ".word 0xe3510000, 0xe5901000, 0xe2012002, 0x0a000010\n"
-        ".word 0xe3520000, 0x0a00001f, 0xe3c11002, 0xe5801000\n"
-        ".word 0xe5900008, 0xeeb00a48, 0xe590002c, 0xe5c051f6\n"
-        ".word 0xe5940000, 0xe590000c, 0xe5900008, 0xeb009828\n"
-        ".word 0xe5940000, 0xeeb00a48, 0xe590000c, 0xe5900008\n"
-        ".word 0xea00000f, 0xe3520000, 0x1a00000e, 0xe3811002\n"
-        ".word 0xe5801000, 0xe5900008, 0xeeb00a68, 0xe590002c\n"
-        ".word 0xe5c061f6, 0xe5940000, 0xe590000c, 0xe5900008\n"
-        ".word 0xeb009817, 0xe5940000, 0xeeb00a68, 0xe590000c\n"
-        ".word 0xe5900008, 0xeb005ad9, 0xe5941000, 0xe5910010\n"
-        ".word 0xe3500000, 0x0a00002a, 0xe5d1100a, 0xe3510000\n"
-        ".word 0xe5901000, 0xe2012002, 0x0a000012, 0xe3520000\n"
-        ".word 0x0a000023, 0xe3c11002, 0xe5801000, 0xe5900008\n"
-        ".word 0xeeb00a48, 0xe590002c, 0xe5c051f6, 0xe5940000\n"
-        ".word 0xe5900010, 0xe5900008, 0xeb0097fd, 0xe5940000\n"
-        ".word 0xeeb00a48, 0xe5900010, 0xe5900008, 0xecbd8b02\n"
-        ".word 0xe8bd4070, 0xea005abd, 0xe3520000, 0x1a000010\n"
-        ".word 0xe3811002, 0xe5801000, 0xe5900008, 0xeeb00a68\n"
-        ".word 0xe590002c, 0xe5c061f6, 0xe5940000, 0xe5900010\n"
-        ".word 0xe5900008, 0xeb0097ea, 0xe5940000, 0xeeb00a68\n"
-        ".word 0xe5900010, 0xe5900008, 0xecbd8b02, 0xe8bd4070\n"
-        ".word 0xea005aaa, 0xecbd8b02, 0xe8bd8070, 0x004474d8\n"
-        ".word 0x3f800000, 0x00000000\n"
-    );
+//
+// Applies the map-navi/player target's active flag to its two model slots and
+// forwards the matching volume scale to both audio helpers.
+//
+// Recovered contract (ARM 0x00275CA0..0x00275E2B; the 12 literal bytes
+// 0x004474D8, 1.0f, 0.0f follow at 0x00275E2C):
+//   * `work = *(void**)0x004474D8`.  The global, the model pointer and the
+//     model backend are re-read after every helper call, so a helper that
+//     rewrites the chain is observed by the following accesses.
+//   * For `work->model_0c` (+0x0C) and then `work->model_10` (+0x10):
+//       - null model: nothing happens.
+//       - `work->active` (+0x0A) != 0 and `model->flags` (+0x00) bit 1 set:
+//         clear bit 1, store `model->backend->visual_node->visible` (+0x1F6)
+//         = 1 and call 0x0029BDB4(backend, 1.0f), 0x0028C8D0(backend, 1.0f).
+//       - `work->active` == 0 and bit 1 clear: set bit 1, store visible = 0
+//         and call both helpers with 0.0f.
+//       - a model already in the requested state is skipped without any store
+//         or call (`cmp r2,#0` plus a conditional skip).
+//   * The second model's final helper call is reached after `vpop {d8}` and
+//     `pop {r4,r5,r6,lr}`, i.e. the original tail-branches to 0x0028C8D0.
+//   * No arguments, `void` result.  r0 on return is incidental: all four static
+//     callers overwrite it immediately, so it is not part of the contract.
+namespace func_275ca0 {
+
+constexpr u32 kRootPointerAddress = 0x004474D8;  // literal at 0x00275E2C
+constexpr u32 kActiveOffset = 0x0A;              // `ldrb r1, [r1, #0xa]`
+constexpr u32 kModelAOffset = 0x0C;              // `ldr r0, [r1, #0xc]`
+constexpr u32 kModelBOffset = 0x10;              // `ldr r0, [r1, #0x10]`
+constexpr u32 kModelFlagsOffset = 0x00;          // `ldr r1, [r0]`
+constexpr u32 kModelBackendOffset = 0x08;        // `ldr r0, [r0, #8]`
+constexpr u32 kBackendVisualNodeOffset = 0x2C;   // `ldr r0, [r0, #0x2c]`
+constexpr u32 kVisualNodeVisibleOffset = 0x1F6;  // `strb r5, [r0, #0x1f6]`
+constexpr u32 kHiddenFlag = 2;                   // `and r2, r1, #2`
+constexpr float kShownVolume = 1.0f;             // s16, literal at 0x00275E30
+constexpr float kHiddenVolume = 0.0f;            // s17, literal at 0x00275E34
+
+struct VisualNode {
+    u8 pad_000[kVisualNodeVisibleOffset];
+    u8 visible_1f6;                              // +0x1F6: 1 shown, 0 hidden
+};
+
+struct ModelBackend {
+    u8 pad_000[kBackendVisualNodeOffset];
+    VisualNode* visual_node;                     // +0x2C
+};
+
+struct Model {
+    u32 flags;                                   // +0x00, bit 1 = hidden
+    u8 pad_004[4];
+    ModelBackend* backend;                       // +0x08
+};
+
+struct Work {
+    u8 pad_000[kActiveOffset];
+    u8 active;                                   // +0x0A
+    Model* model_0c;                             // +0x0C
+    Model* model_10;                             // +0x10
+};
+
+inline Work* current_work() {
+    return *reinterpret_cast<Work* const*>(kRootPointerAddress);
+}
+
+}  // namespace func_275ca0
+
+// Direct calls: r0 = model backend, s0 = 1.0f/0.0f; both return void.
+extern "C" void ui_func_0029bdb4(func_275ca0::ModelBackend* backend,
+                                 float volume);
+extern "C" void script_vm_func_0028c8d0(func_275ca0::ModelBackend* backend,
+                                        float volume);
+
+extern "C" void script_vm_func_00275ca0() {
+    using namespace func_275ca0;
+
+    // 0x00275CB8..0x00275D64: first model.
+    {
+        Work* const work = current_work();
+        Model* const model = work->model_0c;
+        if (model != nullptr) {
+            const u8 active = work->active;
+            const u32 flags = model->flags;
+            if (active != 0) {
+                if ((flags & kHiddenFlag) != 0) {
+                    model->flags = flags & ~kHiddenFlag;
+                    model->backend->visual_node->visible_1f6 = 1;
+                    ui_func_0029bdb4(current_work()->model_0c->backend,
+                                     kShownVolume);
+                    script_vm_func_0028c8d0(current_work()->model_0c->backend,
+                                            kShownVolume);
+                }
+            } else if ((flags & kHiddenFlag) == 0) {
+                model->flags = flags | kHiddenFlag;
+                model->backend->visual_node->visible_1f6 = 0;
+                ui_func_0029bdb4(current_work()->model_0c->backend,
+                                 kHiddenVolume);
+                script_vm_func_0028c8d0(current_work()->model_0c->backend,
+                                        kHiddenVolume);
+            }
+        }
+    }
+
+    // 0x00275D68..0x00275E20: second model; its last helper call is a tail
+    // branch in the original.
+    {
+        Work* const work = current_work();
+        Model* const model = work->model_10;
+        if (model != nullptr) {
+            const u8 active = work->active;
+            const u32 flags = model->flags;
+            if (active != 0) {
+                if ((flags & kHiddenFlag) != 0) {
+                    model->flags = flags & ~kHiddenFlag;
+                    model->backend->visual_node->visible_1f6 = 1;
+                    ui_func_0029bdb4(current_work()->model_10->backend,
+                                     kShownVolume);
+                    script_vm_func_0028c8d0(current_work()->model_10->backend,
+                                            kShownVolume);
+                    return;
+                }
+            } else if ((flags & kHiddenFlag) == 0) {
+                model->flags = flags | kHiddenFlag;
+                model->backend->visual_node->visible_1f6 = 0;
+                ui_func_0029bdb4(current_work()->model_10->backend,
+                                 kHiddenVolume);
+                script_vm_func_0028c8d0(current_work()->model_10->backend,
+                                        kHiddenVolume);
+                return;
+            }
+        }
+    }
 }
 
 // DECOMP_FUNC(0x003d58c4, 408)
