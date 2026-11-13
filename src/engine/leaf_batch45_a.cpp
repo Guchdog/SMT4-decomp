@@ -6073,185 +6073,124 @@ extern "C" void func_00150f54(void* object) {
     engine_func_002bce38(final_value);
 }
 
-// DECOMP_FUNC(0x001188d0, 660)
-extern "C" __attribute__((naked)) void ui_func_001188d0() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4ff0, 0xe92d, 0x4000, 0xe1a0\n"
-        ".hword 0x8b02, 0xed2d, 0xd02c, 0xe24d\n"
-        ".hword 0x0008, 0xe5d0, 0x0001, 0xe350\n"
-        ".hword 0x0005, 0x1350, 0x0057, 0x1a00\n"
-        ".hword 0x1000, 0xe3a0, 0x0001, 0xe3a0\n"
-        ".hword 0xb59f, 0xeb06, 0x8248, 0xe59f\n"
-        ".hword 0x2000, 0xe1a0, 0x1003, 0xe3a0\n"
-        ".hword 0x0000, 0xe598, 0x99b2, 0xeb06\n"
-        ".hword 0x0009, 0xe5d4, 0x8a8d, 0xed9f\n"
-        ".hword 0x8a8d, 0xeddf, 0x000b, 0xe350\n"
-        ".hword 0x9006, 0xe3a0, 0x0002, 0x0a00\n"
-        ".hword 0x0013, 0xe350, 0x0044, 0x1a00\n"
-        ".hword 0x0049, 0xea00, 0x021c, 0xe59f\n"
-        ".hword 0xe008, 0xe28d, 0x7000, 0xe3a0\n"
-        ".hword 0x1034, 0xe280, 0x1c6e, 0xe891\n"
-        ".hword 0x1c6e, 0xe88e, 0x0054, 0xe590\n"
-        ".hword 0x0028, 0xe58d, 0x0020, 0xe594\n"
-        ".hword 0x0002, 0xe350, 0x0004, 0x0a00\n"
-        ".hword 0x0003, 0xe350, 0x7002, 0x03a0\n"
-        ".hword 0x0001, 0x0a00, 0x0004, 0xe350\n"
-        ".hword 0x7005, 0x03a0, 0x0000, 0xe350\n"
-        ".hword 0xb1dc, 0xc59f, 0x5000, 0xe3a0\n"
-        ".hword 0xa008, 0xc28d, 0x0026, 0xda00\n"
-        ".hword 0x0005, 0xe087, 0x1100, 0xe79a\n"
-        ".hword 0x000e, 0xe3a0, 0x9b4d, 0xeb06\n"
-        ".hword 0x6000, 0xe1a0, 0x0018, 0xe594\n"
-        ".hword 0x0005, 0xe150, 0x0004, 0xe594\n"
-        ".hword 0x0009, 0x1a00, 0x100a, 0xe3a0\n"
-        ".hword 0x10b0, 0xe580, 0x0a48, 0xeeb0\n"
-        ".hword 0x0004, 0xe594, 0x2000, 0xe3e0\n"
-        ".hword 0x1000, 0xe3a0, 0x940d, 0xeb06\n"
-        ".hword 0xf000, 0xe320, 0xf000, 0xe320\n"
-        ".hword 0x0006, 0xea00, 0x100b, 0xe3a0\n"
-        ".hword 0x10b0, 0xe580, 0x0a48, 0xeeb0\n"
-        ".hword 0x0004, 0xe594, 0x200b, 0xe1a0\n"
-        ".hword 0x1000, 0xe3a0, 0x9403, 0xeb06\n"
-        ".hword 0x5004, 0xe58d, 0x9000, 0xe58d\n"
-        ".hword 0x20fa, 0xe1d6, 0x0a68, 0xeeb0\n"
-        ".hword 0x10f8, 0xe1d6, 0x0004, 0xe594\n"
-        ".hword 0x2004, 0xe242, 0x3033, 0xe3a0\n"
-        ".hword 0x7bc5, 0xeb06, 0x0020, 0xe594\n"
-        ".hword 0x5001, 0xe285, 0x0005, 0xe150\n"
-        ".hword 0xffd8, 0xcaff, 0x0004, 0xe594\n"
-        ".hword 0x1000, 0xe3a0, 0x10b0, 0xe580\n"
-        ".hword 0x0a48, 0xeeb0, 0x0004, 0xe594\n"
-        ".hword 0x2120, 0xe59f, 0x1000, 0xe3a0\n"
-        ".hword 0x93ee, 0xeb06, 0x0000, 0xe598\n"
-        ".hword 0x1003, 0xe3a0, 0x994d, 0xeb06\n"
-        ".hword 0xd02c, 0xe28d, 0x8b02, 0xecbd\n"
-        ".hword 0x8ff0, 0xe8bd, 0x1097, 0xe3a0\n"
-        ".hword 0x003a, 0xe3a0, 0x9b19, 0xeb06\n"
-        ".hword 0x7000, 0xe1a0, 0x0020, 0xe594\n"
-        ".hword 0x5000, 0xe3a0, 0x0000, 0xe350\n"
-        ".hword 0xa00b, 0xc3a0, 0xffe8, 0xdaff\n"
-        ".hword 0x1098, 0xe285, 0x003a, 0xe3a0\n"
-        ".hword 0x9b10, 0xeb06, 0x6000, 0xe1a0\n"
-        ".hword 0x0018, 0xe594, 0x0005, 0xe150\n"
-        ".hword 0x00fa, 0xe1d6, 0x0401, 0xe88d\n"
-        ".hword 0x30f8, 0xe1d6, 0x0006, 0x1a00\n"
-        ".hword 0x2012, 0xe3a0, 0x103a, 0xe3a0\n"
-        ".hword 0x0002, 0xe3a0, 0x9aa7, 0xeb06\n"
-        ".hword 0x0004, 0xe594, 0x100f, 0xe3a0\n"
-        ".hword 0x0005, 0xea00, 0x2011, 0xe3a0\n"
-        ".hword 0x103a, 0xe3a0, 0x0002, 0xe3a0\n"
-        ".hword 0x9aa0, 0xeb06, 0x0004, 0xe594\n"
-        ".hword 0x100e, 0xe3a0, 0x10b0, 0xe580\n"
-        ".hword 0x0004, 0xe594, 0x1005, 0xe1a0\n"
-        ".hword 0x3719, 0xeb00, 0x0ac0, 0xeefd\n"
-        ".hword 0x5004, 0xe58d, 0x9000, 0xe58d\n"
-        ".hword 0x10f8, 0xe1d7, 0xb00c, 0xe597\n"
-        ".hword 0x30f8, 0xe1d6, 0x20fa, 0xe1d7\n"
-        ".hword 0xc004, 0xe594, 0x1003, 0xe081\n"
-        ".hword 0x30f0, 0xe1db, 0x0a90, 0xee10\n"
-        ".hword 0x60fa, 0xe1d6, 0x0a68, 0xeeb0\n"
-        ".hword 0x10c3, 0xe081, 0x10c0, 0xe041\n"
-        ".hword 0x2006, 0xe082, 0x3033, 0xe3a0\n"
-        ".hword 0x000c, 0xe1a0, 0x7b7c, 0xeb06\n"
-        ".hword 0x0020, 0xe594, 0x5001, 0xe285\n"
-        ".hword 0x0005, 0xe150, 0xffcd, 0xcaff\n"
-        ".hword 0xffb5, 0xeaff, 0xea00, 0x0044\n"
-        ".hword 0x0000, 0x0000, 0x0000, 0x3f80\n"
-        ".hword 0x417c, 0x0040, 0x5aff, 0x5a5a\n"
-        ".hword 0x64ff, 0x6464\n"
-    );
-};
+// 0x001188d0: UI list-panel refresh. The status byte gates the whole body,
+// the kind byte selects one of two 0x2BF6D0 node lists, and a UI command is
+// pushed onto render layer 3 for the duration of the body and popped after it.
+extern "C" u32 ui_func_002c5f7c(u32 mode, u32 sub_mode);
+extern "C" void func_002befdc(u8* base, u32 group, u32 value);
+extern "C" u32 func_002bef88(u8* base, u32 group);
+extern "C" u8* camp_func_002bf6d0(u32 group, u32 node_index);
+extern "C" void ui_func_002bda00(u8* render, u32 v1, u32 v2, f32 value);
+extern "C" void func_002b792c(u8* render, s32 x, s32 y, u32 arg3, f32 scale,
+                              u32 arg5, u32 arg6);
+extern "C" u32 func_002bf558(u32 arg0, u32 arg1, u32 arg2, s32 arg3,
+                             s32 arg4, s32 arg5);
+extern "C" f32 func_00126754(u8* render, u32 index);
 
-// DECOMP_FUNC(0x002583a4, 664)
-extern "C" __attribute__((naked)) void camp_func_002583a4() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4ff1, 0xe92d, 0x0284, 0xe59f\n"
-        ".hword 0x8b02, 0xed2d, 0xd018, 0xe24d\n"
-        ".hword 0x7000, 0xe590, 0x0020, 0xe59d\n"
-        ".hword 0x2008, 0xe28d, 0x1010, 0xe28d\n"
-        ".hword 0xa219, 0xeb03, 0x0000, 0xe3a0\n"
-        ".hword 0x0000, 0xe58d, 0x0194, 0xe597\n"
-        ".hword 0x0000, 0xe350, 0x8a96, 0xcd9f\n"
-        ".hword 0x006c, 0xda00, 0x0084, 0xe597\n"
-        ".hword 0x1000, 0xe59d, 0x0008, 0xe590\n"
-        ".hword 0x1101, 0xe087, 0x002c, 0xe590\n"
-        ".hword 0x0008, 0xe590, 0x1004, 0xe58d\n"
-        ".hword 0x29f4, 0xe1d1, 0x10c8, 0xe5b0\n"
-        ".hword 0x0000, 0xe351, 0x0001, 0x1080\n"
-        ".hword 0x0000, 0x03a0, 0x1102, 0xe7b0\n"
-        ".hword 0x0000, 0xe351, 0x5000, 0x1081\n"
-        ".hword 0x5000, 0x03a0, 0x0000, 0xe355\n"
-        ".hword 0x0003, 0x0a00, 0x1000, 0xe595\n"
-        ".hword 0x0211, 0xe3a0, 0x0001, 0xe1d0\n"
-        ".hword 0x5000, 0x13a0, 0x0000, 0xe355\n"
-        ".hword 0x004e, 0x0a00, 0x6038, 0xe595\n"
-        ".hword 0x4000, 0xe3a0, 0x0000, 0xe356\n"
-        ".hword 0x004a, 0xda00, 0x103c, 0xe595\n"
-        ".hword 0x003c, 0xe285, 0x0000, 0xe351\n"
-        ".hword 0x0001, 0x1080, 0x0000, 0x03a0\n"
-        ".hword 0x1104, 0xe7b0, 0x0000, 0xe351\n"
-        ".hword 0x1000, 0x1081, 0x0000, 0xe351\n"
-        ".hword 0x0002, 0x0a00, 0x0000, 0xe591\n"
-        ".hword 0x0101, 0xe310, 0x1000, 0x03a0\n"
-        ".hword 0x0000, 0xe351, 0x0038, 0x0a00\n"
-        ".hword 0x2018, 0xe591, 0x0018, 0xe281\n"
-        ".hword 0x9028, 0xe591, 0x0000, 0xe352\n"
-        ".hword 0xb000, 0x1082, 0x0004, 0xe59d\n"
-        ".hword 0xe014, 0xe591, 0xb000, 0x03a0\n"
-        ".hword 0x0000, 0xe359, 0x09f6, 0xe1d0\n"
-        ".hword 0x2000, 0xe3a0, 0x8004, 0xe280\n"
-        ".hword 0x002b, 0x9a00, 0xc02c, 0xe591\n"
-        ".hword 0x0000, 0xe3a0, 0x302c, 0xe281\n"
-        ".hword 0x0000, 0xe35c, 0x300c, 0x1083\n"
-        ".hword 0x3000, 0x01a0, 0xa102, 0xe7b3\n"
-        ".hword 0x0000, 0xe35a, 0x300a, 0x1083\n"
-        ".hword 0x3000, 0x01a0, 0xa004, 0xe593\n"
-        ".hword 0x0008, 0xe15a, 0x004b, 0x1a00\n"
-        ".hword 0x2030, 0xe593, 0x0000, 0xe352\n"
-        ".hword 0x001b, 0xba00, 0xc024, 0xe591\n"
-        ".hword 0x200b, 0xe082, 0x300e, 0xe08b\n"
-        ".hword 0x0003, 0xe152, 0x0010, 0x2a00\n"
-        ".hword 0x0a00, 0xedd2, 0x0a01, 0xed92\n"
-        ".hword 0x0ac8, 0xee70, 0x0a48, 0xee30\n"
-        ".hword 0x0a88, 0xee70, 0x0a08, 0xee30\n"
-        ".hword 0x0a00, 0xedc2, 0x0a01, 0xed82\n"
-        ".hword 0x1a02, 0xed9d, 0x0a81, 0xee70\n"
-        ".hword 0x0a00, 0xedc2, 0x0a03, 0xeddd\n"
-        ".hword 0x0a20, 0xee30, 0x0a01, 0xed82\n"
-        ".hword 0x200c, 0xe082, 0x0003, 0xe152\n"
-        ".hword 0xffee, 0x3aff, 0x2018, 0xe591\n"
-        ".hword 0x3018, 0xe281, 0x1014, 0xe591\n"
-        ".hword 0x0000, 0xe352, 0x0003, 0x1082\n"
-        ".hword 0xa81f, 0xeb01, 0x4001, 0xe284\n"
-        ".hword 0x0006, 0xe154, 0xffb4, 0xbaff\n"
-        ".hword 0x0000, 0xe59d, 0x1194, 0xe597\n"
-        ".hword 0x0001, 0xe280, 0x0001, 0xe150\n"
-        ".hword 0x0000, 0xe58d, 0xff92, 0xbaff\n"
-        ".hword 0x0298, 0xe597, 0x4000, 0xe3a0\n"
-        ".hword 0x0000, 0xe350, 0x8f9d, 0xc3a0\n"
-        ".hword 0x6000, 0xc3a0, 0x001a, 0xda00\n"
-        ".hword 0x0084, 0xe597, 0x1104, 0xe087\n"
-        ".hword 0x1c01, 0xe281, 0x0008, 0xe590\n"
-        ".hword 0x202c, 0xe590, 0x09f8, 0xe1d1\n"
-        ".hword 0x2164, 0xe592, 0x0100, 0xe792\n"
-        ".hword 0x503c, 0xe590, 0x09fa, 0xe1d1\n"
-        ".hword 0x0100, 0xe088, 0x0005, 0xe080\n"
-        ".hword 0x1000, 0xe590, 0x0000, 0xe351\n"
-        ".hword 0x0001, 0x1080, 0x0006, 0x01a0\n"
-        ".hword 0x0000, 0xe58d, 0x1008, 0xe590\n"
-        ".hword 0x0020, 0xe59d, 0x100c, 0xe590\n"
-        ".hword 0x000d, 0xe1a0, 0x29f5, 0xeb01\n"
-        ".hword 0x62b0, 0xe585, 0x0298, 0xe597\n"
-        ".hword 0x4001, 0xe284, 0x0004, 0xe150\n"
-        ".hword 0xffe4, 0xcaff, 0xd018, 0xe28d\n"
-        ".hword 0x8b02, 0xecbd, 0x8ff8, 0xe8bd\n"
-        ".hword 0x2001, 0xe282, 0x0002, 0xe159\n"
-        ".hword 0xffa5, 0x8aff, 0xffce, 0xeaff\n"
-        ".hword 0xdd90, 0x0043, 0x0000, 0x3f00\n"
-    );
-};
+// DECOMP_FUNC(0x001188d0, 660)
+// Panel layout proven by the ARM: +0x04 render object pointer, +0x08 status
+// byte (1 or 5 accepted), +0x09 kind byte (0x0B list / 0x13 grid), +0x18
+// signed selected row, +0x20 signed row count.
+extern "C" void ui_func_001188d0(u8* panel) {
+    const u8 status = panel[8];
+    if (status != 1 && status != 5) {
+        return;
+    }
+
+    // Push the 0xF10 viewport command on the layer-3 render stack.
+    func_002befdc(*reinterpret_cast<u8**>(0x0044EA00), 3,
+                  ui_func_002c5f7c(1, 0));
+
+    const u8 kind = panel[9];
+    if (kind == 0x0B) {
+        // Nine candidate node ids; the panel count selects the list window.
+        static const s32 kNodeIds[9] = {0xA8, 0xA9, 0x9C, 0x9D, 0x9E,
+                                        0xB0, 0xB1, 0xB2, 0xB3};
+        const s32 count = *reinterpret_cast<const s32*>(panel + 0x20);
+        s32 window = 0;
+        if (count == 3) {
+            window = 2;
+        } else if (count == 4) {
+            window = 5;
+        }
+
+        if (count > 0) {
+            s32 index = 0;
+            do {
+                const u8* const node = camp_func_002bf6d0(
+                    0x0E, static_cast<u32>(kNodeIds[window + index]));
+                u8* const render = *reinterpret_cast<u8**>(panel + 4);
+                if (*reinterpret_cast<const s32*>(panel + 0x18) == index) {
+                    *reinterpret_cast<u32*>(render + 0xB0) = 0x0A;
+                    ui_func_002bda00(render, 0, 0xFFFFFFFFu, 0.0f);
+                } else {
+                    *reinterpret_cast<u32*>(render + 0xB0) = 0x0B;
+                    ui_func_002bda00(render, 0, 0x5A5A5AFFu, 0.0f);
+                }
+                func_002b792c(
+                    *reinterpret_cast<u8**>(panel + 4),
+                    *reinterpret_cast<const s16*>(node + 8),
+                    static_cast<s32>(*reinterpret_cast<const s16*>(node + 0x0A)) - 4,
+                    0x33, 1.0f, 6, static_cast<u32>(index));
+                ++index;
+            } while (*reinterpret_cast<const s32*>(panel + 0x20) > index);
+        }
+
+        // Both handled kinds share the original's post-loop render reset.
+        *reinterpret_cast<u32*>(*reinterpret_cast<u8**>(panel + 4) + 0xB0) = 0;
+        ui_func_002bda00(*reinterpret_cast<u8**>(panel + 4), 0, 0x646464FFu,
+                         0.0f);
+    } else if (kind == 0x13) {
+        const u8* const origin = camp_func_002bf6d0(0x3A, 0x97);
+        if (*reinterpret_cast<const s32*>(panel + 0x20) > 0) {
+            s32 index = 0;
+            do {
+                const u8* const node = camp_func_002bf6d0(
+                    0x3A, static_cast<u32>(index) + 0x98);
+                const s32 node_x = *reinterpret_cast<const s16*>(node + 8);
+                const s32 node_y = *reinterpret_cast<const s16*>(node + 0x0A);
+                if (*reinterpret_cast<const s32*>(panel + 0x18) == index) {
+                    // The fifth and sixth arguments are the row y extent and
+                    // the 0x0B panel kind; 0x2BF558 consumes both.
+                    func_002bf558(2, 0x3A, 0x12, node_x, node_y, 0x0B);
+                    *reinterpret_cast<u32*>(
+                        *reinterpret_cast<u8**>(panel + 4) + 0xB0) = 0x0F;
+                } else {
+                    func_002bf558(2, 0x3A, 0x11, node_x, node_y, 0x0B);
+                    *reinterpret_cast<u32*>(
+                        *reinterpret_cast<u8**>(panel + 4) + 0xB0) = 0x0E;
+                }
+                // 0x126754 returns the row scale as a float. Both the origin
+                // extent and that scale are halved with an arithmetic shift
+                // (round toward -infinity, not truncation).
+                const s32 scale = static_cast<s32>(func_00126754(
+                    *reinterpret_cast<u8**>(panel + 4),
+                    static_cast<u32>(index)));
+                const u8* const anchor =
+                    *reinterpret_cast<u8* const*>(origin + 0x0C);
+                const s32 anchor_x = *reinterpret_cast<const s16*>(anchor);
+                const u32 x =
+                    static_cast<u32>(*reinterpret_cast<const s16*>(origin + 8)) +
+                    static_cast<u32>(node_x) +
+                    static_cast<u32>(anchor_x >> 1) -
+                    static_cast<u32>(scale >> 1);
+                const u32 y =
+                    static_cast<u32>(*reinterpret_cast<const s16*>(origin + 0x0A)) +
+                    static_cast<u32>(node_y);
+                func_002b792c(*reinterpret_cast<u8**>(panel + 4),
+                              static_cast<s32>(x), static_cast<s32>(y),
+                              0x33, 1.0f, 6, static_cast<u32>(index));
+                ++index;
+            } while (*reinterpret_cast<const s32*>(panel + 0x20) > index);
+        }
+
+        *reinterpret_cast<u32*>(*reinterpret_cast<u8**>(panel + 4) + 0xB0) = 0;
+        ui_func_002bda00(*reinterpret_cast<u8**>(panel + 4), 0, 0x646464FFu,
+                         0.0f);
+    }
+
+    func_002bef88(*reinterpret_cast<u8**>(0x0044EA00), 3);
+}
 
 // DECOMP_FUNC(0x003abd08, 668)
 extern "C" __attribute__((naked)) void camp_func_003abd08() {

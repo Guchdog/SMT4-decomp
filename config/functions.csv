@@ -370,7 +370,7 @@ address,size,status,category,name,src_file
 0x001186b4,388,matching,engine,AsdScene_func_001186b4,src/engine/asd_scene.cpp
 0x00118838,16,matching,engine,engine_func_00118838,src/engine/leaf_batch17_a.cpp
 0x00118848,136,matching,engine,engine_func_00118848,src/engine/leaf_batch35_c.cpp
-0x001188d0,660,matching,ui,ui_func_001188d0,src/engine/leaf_batch45_a.cpp
+0x001188d0,660,non_matching,ui,ui_func_001188d0,src/engine/leaf_batch45_a.cpp
 0x00118b64,280,matching,ui,ui_func_00118b64,src/engine/leaf_batch40_b.cpp
 0x00118c7c,448,matching,engine,AsdScene_func_00118c7c,src/engine/asd_scene.cpp
 0x00118e3c,304,matching,battle,battle_func_00118e3c,src/engine/leaf_batch28_a.cpp
