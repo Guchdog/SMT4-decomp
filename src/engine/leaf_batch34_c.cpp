@@ -2752,191 +2752,194 @@ extern "C" __attribute__((naked)) void func_0012e3a0() {
     );
 }
 
-// DECOMP_FUNC(0x0012f954, 672)
-extern "C" __attribute__((naked)) void engine_func_0012f954() {
-    asm volatile(
-        "push {r0, r1, r2, r3, r4, r5, r6, r7, r8, sb, sl, fp, lr}\n"
-        "sub sp, sp, #0x4c\n"
-        "mov r8, r0\n"
-        "mov sl, r2\n"
-        "ldr r0, [sp, #0x58]\n"
-        "str r2, [sp]\n"
-        "ldr r1, [sp, #0x50]\n"
-        "add sb, r2, r0\n"
-        "mov r3, sb\n"
-        "mov r2, sp\n"
-        "mov r0, r8\n"
-        "bl func_0013fe4c\n"
-        "cmp r0, #0\n"
-        "beq .L_0012fbac\n"
-        "ldr r0, [sp, #0x50]\n"
-        "add r1, sp, #0x24\n"
-        "bl engine_func_001419bc\n"
-        "cmp r0, #0\n"
-        "beq .L_0012fbc0\n"
-        "ldr r0, [sp, #0x24]\n"
-        ".word 0xe59f1234\n"
-        "ldr r4, [sp]\n"
-        "mul r0, r0, r1\n"
-        "add r1, r4, r0\n"
-        "add r1, r1, #3\n"
-        "bic fp, r1, #3\n"
-        "sub r1, fp, sb\n"
-        "cmp r1, #0\n"
-        "bgt .L_0012fba8\n"
-        ".word 0xe59f2214\n"
-        "mov r1, #0\n"
-        "add r6, r8, #0x28\n"
-        "mov r5, #0\n"
-        "umlal r2, r1, r0, r2\n"
-        "str r0, [sp, #0xc]\n"
-        "str r4, [sp, #8]\n"
-        "lsr r7, r1, #7\n"
-        "cmp r7, #0\n"
-        "bls .L_0012fa30\n"
-        ".L_0012f9f0:\n"
-        "cmp r4, #0\n"
-        "moveq r2, #0\n"
-        "beq .L_0012fa0c\n"
-        "mov r1, r6\n"
-        "mov r0, r4\n"
-        "bl ui_func_001401cc\n"
-        "mov r2, r0\n"
-        ".L_0012fa0c:\n"
-        "add r0, r6, #0x14\n"
-        "add r1, r6, #0x18\n"
-        "add r2, r2, #0xd4\n"
-        "bl engine_func_002bf774\n"
-        "add r4, r4, #0x400\n"
-        "add r5, r5, #1\n"
-        "cmp r5, r7\n"
-        "add r4, r4, #0x158\n"
-        "blo .L_0012f9f0\n"
-        ".L_0012fa30:\n"
-        "ldr r0, [sp, #8]\n"
-        "mov r1, #0x460\n"
-        "mov r4, fp\n"
-        "str r0, [r6]\n"
-        "ldr r0, [sp, #0xc]\n"
-        "str r0, [r6, #4]\n"
-        "ldr r0, [sp, #0x38]\n"
-        "str fp, [sp]\n"
-        "mul r3, r0, r1\n"
-        "add r0, fp, r3\n"
-        "add r0, r0, #3\n"
-        "bic fp, r0, #3\n"
-        "sub r0, fp, sb\n"
-        "cmp r0, #0\n"
-        "bgt .L_0012fba8\n"
-        ".word 0xe59f1174\n"
-        "mov r0, #0\n"
-        "add r6, r8, #0x48\n"
-        "mov r5, #0\n"
-        "umlal r1, r0, r3, r1\n"
-        "str r3, [sp, #0xc]\n"
-        "str r4, [sp, #8]\n"
-        "lsr r7, r0, #9\n"
-        "cmp r7, #0\n"
-        "bls .L_0012fad0\n"
-        ".L_0012fa94:\n"
-        "cmp r4, #0\n"
-        "moveq r2, #0\n"
-        "beq .L_0012fab0\n"
-        "mov r1, r6\n"
-        "mov r0, r4\n"
-        "bl func_00140ab0\n"
-        "mov r2, r0\n"
-        ".L_0012fab0:\n"
-        "add r0, r6, #0x14\n"
-        "add r1, r6, #0x18\n"
-        "add r2, r2, #0xd4\n"
-        "bl engine_func_002bf774\n"
-        "add r5, r5, #1\n"
-        "cmp r5, r7\n"
-        "add r4, r4, #0x460\n"
-        "blo .L_0012fa94\n"
-        ".L_0012fad0:\n"
-        "ldr r0, [sp, #8]\n"
-        ".word 0xe59f1110\n"
-        "str r0, [r6]\n"
-        "ldr r0, [sp, #0xc]\n"
-        "str r0, [r6, #4]\n"
-        "ldr r0, [sp, #0x2c]\n"
-        "str fp, [sp]\n"
-        "mul r3, r0, r1\n"
-        "add r0, fp, r3\n"
-        "add r0, r0, #3\n"
-        "bic r0, r0, #3\n"
-        "str r0, [sp, #0x14]\n"
-        "sub r0, r0, sb\n"
-        "cmp r0, #0\n"
-        "bgt .L_0012fba8\n"
-        ".word 0xe59f10dc\n"
-        "mov r0, #0\n"
-        "add r6, r8, #0x68\n"
-        "mov r4, fp\n"
-        "umlal r1, r0, r3, r1\n"
-        "mov r5, #0\n"
-        "str r3, [sp, #0xc]\n"
-        "lsr r7, r0, #0xa\n"
-        "cmp r7, #0\n"
-        "bls .L_0012fb70\n"
-        ".L_0012fb34:\n"
-        "movs r0, r4\n"
-        "moveq r2, #0\n"
-        "beq .L_0012fb4c\n"
-        "mov r1, r6\n"
-        "bl ui_func_00140110\n"
-        "mov r2, r0\n"
-        ".L_0012fb4c:\n"
-        "add r0, r6, #0x14\n"
-        "add r1, r6, #0x18\n"
-        "add r2, r2, #0xd4\n"
-        "bl engine_func_002bf774\n"
-        "add r4, r4, #0x2800\n"
-        "add r5, r5, #1\n"
-        "cmp r5, r7\n"
-        "add r4, r4, #0x3d4\n"
-        "blo .L_0012fb34\n"
-        ".L_0012fb70:\n"
-        "str fp, [r6]\n"
-        "ldr r0, [sp, #0xc]\n"
-        "mov r2, #0xcc\n"
-        "str r0, [r6, #4]\n"
-        "ldr r1, [sp, #0x14]\n"
-        "str r1, [sp]\n"
-        "ldr r0, [sp, #0x28]\n"
-        "mul r2, r0, r2\n"
-        "add r0, r1, r2\n"
-        "add r0, r0, #3\n"
-        "bic r4, r0, #3\n"
-        "sub r0, r4, sb\n"
-        "cmp r0, #0\n"
-        "ble .L_0012fbb4\n"
-        ".L_0012fba8:\n"
-        "mov r0, #0\n"
-        ".L_0012fbac:\n"
-        "add sp, sp, #0x5c\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, fp, pc}\n"
-        ".L_0012fbb4:\n"
-        "add r0, r8, #0xa4\n"
-        "bl func_002b5064\n"
-        "str r4, [sp]\n"
-        ".L_0012fbc0:\n"
-        "ldr r0, [sp, #0x50]\n"
-        "str r0, [r8, #4]\n"
-        "str sl, [r8, #0xb4]\n"
-        "ldr r0, [sp, #0x58]\n"
-        "str r0, [r8, #0xb8]\n"
-        "add sp, sp, #0x5c\n"
-        "mov r0, #1\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, fp, pc}\n"
-        ".word 0x00000558\n"
-        ".word 0x17f405fd\n"
-        ".word 0x75075075\n"
-        ".word 0x00002bd4\n"
-        ".word 0x175d2ea3\n"
-    );
+// ---------------------------------------------------------------------------
+// 0x0012F954 -- lay out the four record regions of one parsed layer plan.
+//
+// ABI: r0 = self, r1 = source id, r2 = buffer base, r3 = buffer length.  Only
+// the four register arguments are read; no caller-stack word is touched.
+//
+// [buffer, buffer + length) is the whole working span.  The body seeds a 32-bit
+// cursor with `buffer`, asks 0x0013FE4C to advance it past the plan header (a
+// zero return rejects the layout), then receives seven u32 size words from
+// 0x001419BC.  Size words 0, 5, 2 and 1 own the strided regions recorded at
+// self+0x28, self+0x48, self+0x68 and the single tail span at self+0xA4.
+// For the first three, each aligned region stores {base, byte size} and gets one
+// converted node linked per stride through 0x002BF774.  A region whose aligned
+// end exceeds the buffer end (signed `sub` + `bgt`) aborts with 0; a successful
+// tail check calls 0x002B5064 and then stores the three result words.
+// ---------------------------------------------------------------------------
+namespace {
+
+constexpr u32 kLayerAStride = 0x558;
+constexpr u32 kLayerBStride = 0x460;
+constexpr u32 kLayerCStride = 0x2BD4;
+constexpr u32 kLayerDStride = 0x0CC;
+constexpr u32 kNodeBias = 0xD4;
+constexpr u32 kSizeWordCount = 7;
+
+// One strided region, at self+0x28 / +0x48 / +0x68.  The two leading words are
+// written after the node loop; +0x14 and +0x18 are the 0x002BF774 count/list.
+struct LayerRegion {
+    u32 base;        // +0x00: first byte of the region
+    u32 byte_size;   // +0x04: unaligned size of the whole region
+    u32 pad_08;
+    u32 pad_0c;
+    u32 pad_10;
+    u32 node_count;  // +0x14: incremented by 0x002BF774
+    u32 node_head;   // +0x18: list sentinel maintained by 0x002BF774
+    u32 pad_1c;
+};
+static_assert(sizeof(LayerRegion) == 0x20, "layer region stride");
+
+struct LayerPlanState {
+    u8 pad_00[0x04];
+    u32 source;           // +0x04: written on every success path
+    u8 pad_08[0x20];      // +0x08..+0x27 (0x0013FE4C writes +0x20 / +0x24)
+    LayerRegion layer_a;  // +0x28
+    LayerRegion layer_b;  // +0x48
+    LayerRegion layer_c;  // +0x68
+    u8 pad_88[0x1C];      // +0x88..+0xA3
+    u8 helper_104;        // +0xA4: only its address is passed to 0x002B5064
+    u8 pad_a5[0x0F];      // +0xA5..+0xB3
+    u32 buffer_arg;       // +0xB4: original r2
+    u32 length_arg;       // +0xB8: original r3
+};
+static_assert(offsetof(LayerPlanState, source) == 0x04, "state layout");
+static_assert(offsetof(LayerPlanState, layer_a) == 0x28, "state layout");
+static_assert(offsetof(LayerPlanState, layer_b) == 0x48, "state layout");
+static_assert(offsetof(LayerPlanState, layer_c) == 0x68, "state layout");
+static_assert(offsetof(LayerPlanState, helper_104) == 0xA4, "state layout");
+static_assert(offsetof(LayerPlanState, buffer_arg) == 0xB4, "state layout");
+static_assert(offsetof(LayerPlanState, length_arg) == 0xB8, "state layout");
+static_assert(sizeof(LayerPlanState) == 0xBC, "state layout");
+
+// The seven u32 words stored by 0x001419BC at [sp+0x24].
+struct LayerSizes {
+    u32 word[kSizeWordCount];
+};
+static_assert(sizeof(LayerSizes) == 0x1C, "size record layout");
+
+inline u32 align4(u32 value) {
+    return (value + 3u) & ~u32{3};
+}
+
+}  // namespace
+
+// Typed declarations of the direct calls in this body.  The translation unit
+// already declares the same symbols unprototyped at the top; these aliases give
+// each call site its exact register contract.
+extern "C" s32 plan_parse_0013fe4c(void* self, u32 source, u32* cursor,
+                                   u32 limit) __asm__("func_0013fe4c");
+extern "C" s32 read_layer_sizes_001419bc(u32 source, u32* sizes)
+    __asm__("engine_func_001419bc");
+extern "C" u32 build_layer_a_node_001401cc(u32 record, void* region)
+    __asm__("ui_func_001401cc");
+extern "C" u32 build_layer_b_node_00140ab0(u32 record, void* region)
+    __asm__("func_00140ab0");
+extern "C" u32 build_layer_c_node_00140110(u32 record, void* region)
+    __asm__("ui_func_00140110");
+extern "C" void* link_layer_node_002bf774(u32* count, u32* head, u32 node)
+    __asm__("engine_func_002bf774");
+extern "C" void select_layer_tail_002b5064(void* field)
+    __asm__("func_002b5064");
+
+extern "C" u32 engine_func_0012f954(void* self_pointer, u32 source,
+                                    u32 buffer, u32 length) {
+    auto* const state = static_cast<LayerPlanState*>(self_pointer);
+    const u32 limit = buffer + length;
+
+    // 0x0012F95C..0x0012F988: seed the cursor with r2 and let 0x0013FE4C
+    // reserve the plan header.  It rewrites the cursor word and returns 0 when
+    // its own aligned end would pass `limit`.
+    u32 cursor = buffer;
+    if (plan_parse_0013fe4c(state, source, &cursor, limit) == 0) {
+        return 0;
+    }
+
+    // 0x0012F98C..0x0012F99C: seven u32 size words; a zero result skips all
+    // four region passes and still reports success.
+    LayerSizes sizes;
+    if (read_layer_sizes_001419bc(source, sizes.word) != 0) {
+        // ---- region A: size word 0, stride 0x558 -------------------------
+        const u32 total_a = sizes.word[0] * kLayerAStride;
+        const u32 base_a = cursor;
+        const u32 end_a = align4(base_a + total_a);
+        if (static_cast<s32>(end_a - limit) > 0) {
+            return 0;
+        }
+        const u32 count_a = total_a / kLayerAStride;
+        u32 record = base_a;
+        for (u32 index = 0; index < count_a; ++index) {
+            u32 node = 0;
+            if (record != 0) {
+                node = build_layer_a_node_001401cc(record, &state->layer_a);
+            }
+            link_layer_node_002bf774(&state->layer_a.node_count,
+                                     &state->layer_a.node_head,
+                                     node + kNodeBias);
+            record += kLayerAStride;
+        }
+        state->layer_a.base = base_a;
+        state->layer_a.byte_size = total_a;
+
+        // ---- region B: size word 5, stride 0x460 -------------------------
+        const u32 total_b = sizes.word[5] * kLayerBStride;
+        const u32 base_b = end_a;
+        const u32 end_b = align4(base_b + total_b);
+        if (static_cast<s32>(end_b - limit) > 0) {
+            return 0;
+        }
+        const u32 count_b = total_b / kLayerBStride;
+        record = base_b;
+        for (u32 index = 0; index < count_b; ++index) {
+            u32 node = 0;
+            if (record != 0) {
+                node = build_layer_b_node_00140ab0(record, &state->layer_b);
+            }
+            link_layer_node_002bf774(&state->layer_b.node_count,
+                                     &state->layer_b.node_head,
+                                     node + kNodeBias);
+            record += kLayerBStride;
+        }
+        state->layer_b.base = base_b;
+        state->layer_b.byte_size = total_b;
+
+        // ---- region C: size word 2, stride 0x2BD4 ------------------------
+        const u32 total_c = sizes.word[2] * kLayerCStride;
+        const u32 base_c = end_b;
+        const u32 end_c = align4(base_c + total_c);
+        if (static_cast<s32>(end_c - limit) > 0) {
+            return 0;
+        }
+        const u32 count_c = total_c / kLayerCStride;
+        record = base_c;
+        for (u32 index = 0; index < count_c; ++index) {
+            u32 node = 0;
+            if (record != 0) {
+                node = build_layer_c_node_00140110(record, &state->layer_c);
+            }
+            link_layer_node_002bf774(&state->layer_c.node_count,
+                                     &state->layer_c.node_head,
+                                     node + kNodeBias);
+            record += kLayerCStride;
+        }
+        state->layer_c.base = base_c;
+        state->layer_c.byte_size = total_c;
+
+        // ---- tail: size word 1, stride 0xCC ------------------------------
+        const u32 total_d = sizes.word[1] * kLayerDStride;
+        const u32 end_d = align4(end_c + total_d);
+        if (static_cast<s32>(end_d - limit) > 0) {
+            return 0;
+        }
+        select_layer_tail_002b5064(&state->helper_104);
+    }
+
+    // 0x0012FBC0: shared success exit.
+    state->source = source;
+    state->buffer_arg = buffer;
+    state->length_arg = length;
+    return 1;
 }
 
 // ---------------------------------------------------------------------------
