@@ -3756,38 +3756,227 @@ extern "C" s32 engine_func_00126480(void* object, u32 level, u32 target,
 }
 
 // DECOMP_FUNC(0x002bc3c8, 424)
-// 98 ARM instructions through unconditional pop; 32 trailing data bytes.
-extern "C" __attribute__((naked)) void battle_func_002bc3c8() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d41f0, 0xe59f617c, 0xe59f017c, 0xe596409c\n"
-        ".word 0xe5901000, 0xe5942004, 0xe0412002, 0xe584200c\n"
-        ".word 0xe5943014, 0xe1530002, 0x0a000055, 0xe59f315c\n"
-        ".word 0xe3120008, 0x12821018, 0x1584100c, 0x1a00000a\n"
-        ".word 0xe2822020, 0xe584200c, 0xe5932000, 0xe1510002\n"
-        ".word 0x2a000005, 0xe59f5138, 0xe3a0c000, 0xe2817008\n"
-        ".word 0xe5815004, 0xe581c000, 0xe5807000, 0xe5931000\n"
-        ".word 0xe5902000, 0xe3a07001, 0xe1520001, 0x2a000003\n"
-        ".word 0xe59fc110, 0xe2825008, 0xe8821080, 0xe5805000\n"
-        ".word 0xe5902000, 0xe5931000, 0xe1520001, 0x2a000003\n"
-        ".word 0xe59fc0f4, 0xe2825008, 0xe8821080, 0xe5805000\n"
-        ".word 0xe5931000, 0xe5902000, 0xe1520001, 0x2a000004\n"
-        ".word 0xe59f30d8, 0xe59fc0d8, 0xe2825008, 0xe8821008\n"
-        ".word 0xe5805000, 0xe5941020, 0xe5940018, 0xe0611181\n"
-        ".word 0xe0805101, 0xe5c57000, 0xe5940004, 0xe5941014\n"
-        ".word 0xe0800001, 0xe5850004, 0xe594000c, 0xe5941014\n"
-        ".word 0xe0400001, 0xe5850008, 0xe5940034, 0xe3500000\n"
-        ".word 0x0a000002, 0xe1a01005, 0xe1a00004, 0xebffb8f1\n"
-        ".word 0xe595000c, 0xe3c00002, 0xe585000c, 0xe5d4103d\n"
-        ".word 0xe3510000, 0x13800001, 0x1585000c, 0xe594000c\n"
-        ".word 0xe5840014, 0xebf9fa99, 0xe5940020, 0xe2800001\n"
-        ".word 0xe5840020, 0xe59600a0, 0xe1500004, 0x1a000006\n"
-        ".word 0xe5d60012, 0xe3500000, 0x0a000003, 0xe5d60011\n"
-        ".word 0xe3500000, 0x05c67011, 0x0bfff82c, 0xe8bd41f0\n"
-        ".word 0xeaf9fa8e, 0xe8bd81f0, 0x004c6290, 0x004652a0\n"
-        ".word 0x004652a4, 0x0008025e, 0x000f0111, 0x000f0110\n"
-        ".word 0x12345678, 0x000f0010\n"
-    );
+//
+// Closes the current command-buffer segment of the active render node and
+// appends one 28-byte replay entry for it.
+//
+//   node = *(RenderNode**)(0x004C6290 + 0x9C)   (never null-checked)
+//   offset = g_GpuCommandCursor - node->buffer_04
+//   node->cursor_0C = offset
+//
+// If node->committed_14 already equals offset the routine returns without
+// emitting anything.  Otherwise the segment length is rounded to
+// offset + 0x18 when bit 3 of offset is set, or offset + 0x20 when it is
+// clear.  In the clear case an extra 8-byte marker record is appended first:
+//
+//     {0x00000000, 0x0008025E}   (only when (offset & 8) == 0)
+//     {0x00000001, 0x000F0111}
+//     {0x00000001, 0x000F0110}
+//     {0x12345678, 0x000F0010}
+//
+// Each record is appended only while g_GpuCommandCursor is below
+// g_GpuCommandEnd (unsigned `bhs` on the cursor), and the bound is re-read for
+// every record.
+//
+// The entry at node->entries_18 + node->count_20 * 28 receives:
+//     +0x00 u8   1
+//     +0x04 u32  node->buffer_04 + node->committed_14
+//     +0x08 u32  node->cursor_0C - node->committed_14
+//     +0x0C u32  (existing word & ~2) | (node->enabled_3D ? 1 : 0)
+// node->writer_34, when non-null, is called as writer(node, entry) through
+// 0x002AA8B0 before the flags word is read back, so its update to entry+0x0C
+// is observed.  Afterwards node->committed_14 is reloaded from node->cursor_0C,
+// the 0x004E6C5C lock is acquired (0x0013AF78 -> 0x002C3AA8), the count is
+// re-read from node->count_20 and incremented, and the same lock is released
+// (0x0013AF88 -> 0x002C3A24) as a tail branch.
+//
+// When 0x004C6290+0xA0 equals this node and byte +0x12 is non-zero, byte +0x11
+// is tested: when clear it is set to 1 and 0x002BA5F8 flushes the pending
+// entry list.
+//
+// Direct call targets:
+//   0x002AA8B0  battle_func_002aa8b0  pending-entry writer
+//   0x0013AF78  battle_func_0013af78  lock acquire thunk (r0 overwritten)
+//   0x002BA5F8  battle_func_002ba5f8  pending-entry flush
+//   0x0013AF88  battle_func_0013af88  lock release thunk (r0 overwritten)
+//
+// Both lock thunks load 0x004E6C5C into r0 themselves, so the r0 values at
+// those calls are dead; they are still forwarded so the differential runner can
+// compare the register state exactly.  r0 is equally dead on the early return
+// (the original leaves 0x004652A0 there).
+extern "C" void battle_func_002aa8b0(void* node, void* entry);
+extern "C" void battle_func_0013af78(u32 dead_r0);
+extern "C" u32  battle_func_002ba5f8(u32 dead_r0);
+extern "C" void battle_func_0013af88(u32 dead_r0);
+
+// 0x004652A0 / 0x004652A4: bump-allocated GPU command-stream cursor and end.
+extern u32* g_GpuCommandCursor;
+extern u32* g_GpuCommandEnd;
+
+namespace func_2bc3c8 {
+
+constexpr u32 kRenderStateAddress = 0x004C6290;
+constexpr u32 kNodeSlot = 0x9C;
+constexpr u32 kOwnerSlot = 0xA0;
+constexpr u32 kFlushByte = 0x11;
+constexpr u32 kGateByte = 0x12;
+
+constexpr u32 kEntryStride = 28;
+constexpr u8  kEntryKind = 1;
+constexpr u32 kEntryFlagClearMask = ~2u;
+constexpr u32 kEntryEnabledBit = 1u;
+
+constexpr u32 kAlignmentProbeBit = 8;
+constexpr u32 kOffsetAddAligned = 0x18;
+constexpr u32 kOffsetAddUnaligned = 0x20;
+
+// Literal words at 0x002BC558..0x002BC56C.
+constexpr u32 kMarkerWord = 0x0008025E;
+constexpr u32 kRecordWordA = 0x000F0111;
+constexpr u32 kRecordWordB = 0x000F0110;
+constexpr u32 kRecordLeadC = 0x12345678;
+constexpr u32 kRecordWordC = 0x000F0010;
+
+// 28-byte replay entry.  The final four bytes are not touched by this routine.
+struct RenderEntry {
+    u8  kind_00;        // +0x00
+    u8  pad_01[3];
+    u32 start_04;       // +0x04  absolute command-buffer address
+    u32 length_08;      // +0x08  segment length in bytes
+    u32 flags_0C;       // +0x0C  bit 0 enabled, bit 1 cleared here, bit 2 writer
+    u8  pad_10[0x0C];   // +0x10..+0x1B left untouched
+};
+static_assert(offsetof(RenderEntry, start_04) == 0x04);
+static_assert(offsetof(RenderEntry, length_08) == 0x08);
+static_assert(offsetof(RenderEntry, flags_0C) == 0x0C);
+static_assert(sizeof(RenderEntry) == kEntryStride);
+
+struct RenderNode {
+    u8  pad_00[0x04];
+    u8* buffer_04;      // +0x04  command-buffer base
+    u32 buffer_size_08; // +0x08
+    u32 cursor_0C;      // +0x0C  bytes currently used in the buffer
+    u32 field_10;       // +0x10
+    u32 committed_14;   // +0x14  cursor value of the last committed segment
+    RenderEntry* entries_18;  // +0x18
+    u32 field_1C;       // +0x1C
+    u32 count_20;       // +0x20  number of valid entries
+    u8  pad_24[0x10];
+    void* writer_34;    // +0x34  optional pending-entry writer
+    u32 field_38;       // +0x38
+    u8  field_3C;       // +0x3C
+    u8  enabled_3D;     // +0x3D  copied into the entry flags bit 0
+};
+static_assert(offsetof(RenderNode, buffer_04) == 0x04);
+static_assert(offsetof(RenderNode, cursor_0C) == 0x0C);
+static_assert(offsetof(RenderNode, committed_14) == 0x14);
+static_assert(offsetof(RenderNode, entries_18) == 0x18);
+static_assert(offsetof(RenderNode, count_20) == 0x20);
+static_assert(offsetof(RenderNode, writer_34) == 0x34);
+static_assert(offsetof(RenderNode, enabled_3D) == 0x3D);
+
+struct RenderState {
+    u8 pad_00[kFlushByte];
+    u8 flush_11;        // +0x11  set to 1 once a flush has been requested
+    u8 gate_12;         // +0x12  non-zero enables the flush check
+    u8 pad_13[kNodeSlot - 0x13];
+    RenderNode* node_9C;   // +0x9C active node
+    RenderNode* owner_A0;  // +0xA0 node compared against the active node
+};
+static_assert(offsetof(RenderState, flush_11) == 0x11);
+static_assert(offsetof(RenderState, gate_12) == 0x12);
+static_assert(offsetof(RenderState, node_9C) == kNodeSlot);
+static_assert(offsetof(RenderState, owner_A0) == kOwnerSlot);
+
+// Appends one 8-byte record when the command stream has room.  The original
+// reloads both globals for every record.
+inline void append_record(u32 first, u32 second) {
+    u32* const cursor = g_GpuCommandCursor;
+    if (cursor < g_GpuCommandEnd) {
+        cursor[0] = first;
+        cursor[1] = second;
+        g_GpuCommandCursor = cursor + 2;
+    }
+}
+
+}  // namespace func_2bc3c8
+
+extern "C" void battle_func_002bc3c8() {
+    using namespace func_2bc3c8;
+
+    RenderState* const state =
+        reinterpret_cast<RenderState*>(kRenderStateAddress);
+    RenderNode* const node = state->node_9C;
+
+    // 0x002BC3D4..0x002BC3F0: segment length and the unchanged guard.
+    const u32 offset = reinterpret_cast<u32>(g_GpuCommandCursor) -
+                       reinterpret_cast<u32>(node->buffer_04);
+    node->cursor_0C = offset;
+    if (node->committed_14 == offset) {
+        return;
+    }
+
+    // The original keeps the entry-time cursor in r1 and uses it for the
+    // optional marker record only.
+    u32* const segment_start = g_GpuCommandCursor;
+
+    // 0x002BC3F8..0x002BC434: round the segment and emit the marker.
+    if ((offset & kAlignmentProbeBit) != 0) {
+        node->cursor_0C = offset + kOffsetAddAligned;
+    } else {
+        node->cursor_0C = offset + kOffsetAddUnaligned;
+        if (segment_start < g_GpuCommandEnd) {
+            segment_start[0] = 0;
+            segment_start[1] = kMarkerWord;
+            g_GpuCommandCursor = segment_start + 2;
+        }
+    }
+
+    append_record(1u, kRecordWordA);
+    append_record(1u, kRecordWordB);
+    append_record(kRecordLeadC, kRecordWordC);
+
+    // 0x002BC49C..0x002BC4D0: fill the replay entry.
+    RenderEntry* const entry = reinterpret_cast<RenderEntry*>(
+        reinterpret_cast<u8*>(node->entries_18) +
+        node->count_20 * kEntryStride);
+    entry->kind_00 = kEntryKind;
+    entry->start_04 =
+        reinterpret_cast<u32>(node->buffer_04) + node->committed_14;
+    entry->length_08 = node->cursor_0C - node->committed_14;
+
+    if (node->writer_34 != nullptr) {
+        battle_func_002aa8b0(node, entry);
+    }
+
+    // 0x002BC4E8..0x002BC500: the flags word is re-read after the writer call.
+    u32 flags = entry->flags_0C & kEntryFlagClearMask;
+    if (node->enabled_3D != 0) {
+        flags |= kEntryEnabledBit;
+    }
+    entry->flags_0C = flags;
+
+    // 0x002BC504..0x002BC510: commit, acquire the 0x004E6C5C lock, bump count.
+    const u32 committed = node->cursor_0C;
+    node->committed_14 = committed;
+    battle_func_0013af78(committed);
+    node->count_20 = node->count_20 + 1;
+
+    // 0x002BC51C..0x002BC540: optional flush request for the active node.
+    u32 release_r0;
+    if (state->owner_A0 != node) {
+        release_r0 = reinterpret_cast<u32>(state->owner_A0);
+    } else if (state->gate_12 == 0) {
+        release_r0 = 0;
+    } else if (state->flush_11 != 0) {
+        release_r0 = state->flush_11;
+    } else {
+        state->flush_11 = 1;
+        release_r0 = battle_func_002ba5f8(0);
+    }
+
+    // 0x002BC544..0x002BC548: restore and tail-branch into the lock release.
+    battle_func_0013af88(release_r0);
 }
 
 // DECOMP_FUNC(0x002e03ec, 424)
