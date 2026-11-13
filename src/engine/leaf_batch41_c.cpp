@@ -4156,38 +4156,231 @@ extern "C" u32 ui_func_002e03ec(f32 vertical_offset) {
 }
 
 // DECOMP_FUNC(0x001182dc, 428)
-// 102 ARM instructions through unconditional pop; 20 trailing data bytes.
-extern "C" __attribute__((naked)) void engine_func_001182dc() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4ff0, 0xe24dd00c, 0xe59f7188, 0xe5d70000\n"
-        ".word 0xe3500000, 0x0a00005d, 0xe59f517c, 0xe3a04001\n"
-        ".word 0xe5b50018, 0xe3500000, 0xca000003, 0xe2870084\n"
-        ".word 0xe5900004, 0xe3100001, 0x0a000054, 0xe59fa15c\n"
-        ".word 0xe1a03004, 0xe24a9038, 0xe59a0004, 0xe5901004\n"
-        ".word 0xe58d1004, 0xe5991004, 0xe597202c, 0xeb00686a\n"
-        ".word 0xe5d50004, 0xe24ab028, 0xe24b8008, 0xe3500000\n"
-        ".word 0x0a000020, 0xe5d50005, 0xe3500000, 0x1a00001d\n"
-        ".word 0xe59b0004, 0xe5986004, 0xe1a0300d, 0xe58d0000\n"
-        ".word 0xe1c601d8, 0xe1500001, 0x0a000004, 0xe5902000\n"
-        ".word 0xe59dc000, 0xe152000c, 0x12800004, 0x1afffff8\n"
-        ".word 0xe1500001, 0x0a000002, 0xe1a02000, 0xe2800004\n"
-        ".word 0xeb067d1a, 0xe596101c, 0xe586001c, 0xe1510000\n"
-        ".word 0x13a01001, 0x03a01000, 0xe3510000, 0x0a000002\n"
-        ".word 0xe59d0000, 0xe3a01000, 0xe580100c, 0xe7981104\n"
-        ".word 0xe7990104, 0xeb064e76, 0xe5d50014, 0xe3500000\n"
-        ".word 0x1a000003, 0xe7991104, 0xe79a0104, 0xe1a02004\n"
-        ".word 0xeb0065f2, 0xe5d50004, 0xe3500000, 0x0a000008\n"
-        ".word 0xe5d50005, 0xe3500000, 0x1a000005, 0xe79b1104\n"
-        ".word 0xe7980104, 0xeb069f9d, 0xe7981104, 0xe7990104\n"
-        ".word 0xeb064e63, 0xe79a0104, 0xe597102c, 0xe3a03000\n"
-        ".word 0xe3a02002, 0xeb006782, 0xe59d0004, 0xe320f000\n"
-        ".word 0xeb067cdd, 0xe320f000, 0xe320f000, 0xe3a00000\n"
-        ".word 0xe3500000, 0x159f0028, 0x1b069b9c, 0xe59f0024\n"
-        ".word 0xe5900000, 0xeb06adec, 0xe3a00000, 0xe5870018\n"
-        ".word 0xe28dd00c, 0xe8bd8ff0, 0x00464af0, 0x004dad80\n"
-        ".word 0x00464bb4, 0x00003fff, 0x0044ea00\n"
-    );
+//
+// Recovered contract (ARM 0x001182DC..0x00118473 plus the five literal words
+// at 0x00118474..0x00118487: 0x00464AF0, 0x004DAD80, 0x00464BB4, 0x00003FFF
+// and 0x0044EA00):
+//   * Release/teardown pass for the second render slot (index 1) of the
+//     process-wide model manager.  No arguments; returns a u32.
+//   * 0x00464AF0 is the AsdModel manager (`g_AsdModelManager`).  Its +0x00 byte
+//     is the master enable: zero returns 0 (the loaded byte) before any other
+//     global is touched.
+//   * 0x004DAD80 is an array of 0x18-byte frame-sync slots (`r8 = base +
+//     index * 0x18` in 0x00132240).  This routine owns slot 1, so its base is
+//     0x004DAD98, folded into the `ldr r0,[r5,#0x18]!` pre-index write-back.
+//     A signed `count_00` > 0 enters the body.  Otherwise the word at
+//     manager+0x88 is tested: bit 0 set keeps the routine alive, bit 0 clear
+//     returns the *whole* tested word (`tst`/`beq` leaves it in r0), which is
+//     not necessarily 0.
+//   * Four two-entry tables hold the per-slot pointers, all taken at index 1
+//     (`table + 4`): 0x00464B80 work object, 0x00464B88 registry object,
+//     0x00464B90 token and 0x00464BB8 view object.  0x00117504 / 0x00118848 are
+//     the index-0 counterparts and use the +0 entries.  Every entry is re-read
+//     at each use site; none is cached across a helper call.
+//   * 0x001324E8(view, work, manager+0x2C, 1) registers the slot.  The view's
+//     second word (`*(u32*)(view + 4)`) is captured *before* that call into the
+//     `[sp,#4]` stack word and is handed to 0x002B77B8 at the very end.
+//   * When the slot is registered (`+0x04 != 0`) and not initialised
+//     (`+0x05 == 0`) the token is removed from the pointer vector embedded in
+//     the registry object at +0x14 (begin +0x18 / end +0x1C): the first
+//     occurrence is located, 0x002B780C(found + 1, end, found, &token) compacts
+//     every later duplicate away and returns the new end, the end word is
+//     re-read *after* the helper (`ldr r1,[r6,#0x1c]` at 0x001183A0) and stored,
+//     and when the end moved the token's +0x0C word is cleared to 0.  Then
+//     0x002ABDB0(work, registry) runs inside the same nested block.
+//   * If the slot byte at +0x14 is zero, 0x00131BBC(view, work, 1) runs.
+//   * The registered/not-initialised pair is then re-read from memory and, when
+//     still true, raises 0x002C028C(registry, token) and a second
+//     0x002ABDB0(work, registry).
+//   * Finally 0x00132240(view, manager+0x2C, 2, 0) — inside that helper `r2 == 1`
+//     selects table slot 0 and any other value selects slot 1, so `2` is the
+//     slot-1 selector — then 0x002B77B8(captured view payload), then
+//     0x002C3C18(*0x0044EA00) with the global GPU state block, then
+//     manager+0x18 is set to 0 and the routine returns 0.
+//   * Every call is a direct `bl`; this routine performs no indirect call of
+//     its own (0x002ABDB0 and 0x001324E8 dispatch through vtables internally).
+//     The `mov r0,#0 / cmp r0,#0 / ldrne r0,=0x3FFF / blne 0x002BF2CC` sequence
+//     at 0x00118448..0x00118454 is statically dead in the pinned image (the
+//     guard is a constant zero), so it is documented rather than emitted.
+//   * All four per-slot pointers are dereferenced without null checks; a null
+//     entry faults in the original exactly as it would here.
+namespace engine_1182dc {
+
+// Process-wide AsdModel manager (0x00464AF0).
+constexpr u32 kManagerAddress = 0x00464AF0;
+constexpr u32 kManagerFlag00 = 0x00;        // u8: master enable
+constexpr u32 kManagerReleaseWord18 = 0x18; // u32 cleared at 0x00118468
+constexpr u32 kManagerSlotValue2C = 0x2C;   // u32 handed to 0x001324E8 / 0x00132240
+constexpr u32 kManagerActiveWord88 = 0x88;  // u32, only bit 0 is tested
+constexpr u32 kManagerActiveBit = 0x01;
+
+// Two-entry per-slot pointer tables (0x00117504 / 0x00118848 use index 0).
+constexpr u32 kWorkTableAddress = 0x00464B7C;      // slot work object
+constexpr u32 kRegistryTableAddress = 0x00464B84;  // slot registry object
+constexpr u32 kTokenTableAddress = 0x00464B8C;     // slot token value
+constexpr u32 kViewTableAddress = 0x00464BB4;      // slot view object
+
+// Frame-sync block at 0x004DAD80: 0x18-byte slots, this routine owns slot 1.
+constexpr u32 kFrameSyncBaseAddress = 0x004DAD80;
+constexpr u32 kFrameSyncStride = 0x18;
+constexpr u32 kFrameSyncSlotIndex = 1;
+constexpr u32 kFrameSyncSlotAddress =
+    kFrameSyncBaseAddress + kFrameSyncStride * kFrameSyncSlotIndex;
+
+// Global GPU state block pointer (`g_AsdGpuState`, 0x0044EA00).
+constexpr u32 kGpuStatePointerAddress = 0x0044EA00;
+
+// `mov r4,#1`: doubles as the table index and as the third/fourth argument
+// handed to 0x001324E8 and 0x00131BBC.  `mov r2,#2` is the 0x00132240 selector.
+constexpr u32 kSlotIndex = 1;
+constexpr u32 kSyncSelector = 2;
+constexpr u32 kSyncDumpDisabled = 0;
+
+// Word at token+0x0C cleared when the registry vector shrank.
+constexpr u32 kTokenClearOffset = 0x0C;
+
+// Frame-sync slot layout.  Fields +0x04/+0x05/+0x08/+0x14 are also touched by
+// 0x00132240; +0x00 is the signed count read here.
+struct FrameSyncSlot {
+    s32 count_00;       // +0x00
+    u8 registered_04;   // +0x04
+    u8 inited_05;       // +0x05
+    u8 pad_06[0x02];    // +0x06..+0x08
+    u32 field_08;       // +0x08: lock handle used by 0x002C50D0 / 0x002C52F0
+    u32 field_0c;       // +0x0C
+    u32 field_10;       // +0x10
+    u8 flag_14;         // +0x14
+    u8 pad_15[0x03];    // +0x15..+0x18
+};
+static_assert(sizeof(FrameSyncSlot) == kFrameSyncStride, "frame-sync slot stride");
+
+// Pointer vector embedded at registry+0x14 (context, begin, end, capacity).
+struct RegistryVector {
+    void* context;      // +0x14
+    void** begin_18;    // +0x18
+    void** end_1c;      // +0x1C
+    u32 capacity;       // +0x20
+};
+
+struct RegistryObject {
+    u8 pad_00[0x14];
+    RegistryVector vector_14;
+};
+static_assert(offsetof(RegistryObject, vector_14) == 0x14, "registry vector");
+static_assert(offsetof(RegistryVector, begin_18) == 0x04, "vector begin at +0x18");
+static_assert(offsetof(RegistryVector, end_1c) == 0x08, "vector end at +0x1C");
+
+inline u8 load_byte(u32 address) {
+    return *reinterpret_cast<const u8*>(address);
+}
+
+inline u32 load_word(u32 address) {
+    return *reinterpret_cast<const u32*>(address);
+}
+
+inline void store_word(u32 address, u32 value) {
+    *reinterpret_cast<u32*>(address) = value;
+}
+
+// Word at `table + kSlotIndex * 4`, i.e. `ldr rX,[table, r4, lsl #2]`.
+inline void* slot_entry(u32 table_address) {
+    return reinterpret_cast<void*>(load_word(table_address + kSlotIndex * 4));
+}
+
+inline FrameSyncSlot* frame_slot() {
+    return reinterpret_cast<FrameSyncSlot*>(kFrameSyncSlotAddress);
+}
+
+}  // namespace engine_1182dc
+
+// Direct call targets.  Names and addresses follow config/functions.csv.
+extern "C" void func_001324e8(void* view, void* work, u32 value, u32 index);
+extern "C" void** script_vm_func_002b780c(void** first, void** last,
+                                          void** result, const void* value);
+extern "C" void engine_func_002abdb0(void* work, void* registry);
+extern "C" void func_00131bbc(void* view, void* work, u32 mode);
+extern "C" void engine_func_002c028c(void* registry, u32 token);
+extern "C" void engine_func_00132240(void* view, u32 value, u32 selector,
+                                     u32 dump);
+extern "C" void func_002b77b8(void* payload);
+extern "C" void engine_func_002c3c18(void* gpu_state);
+
+extern "C" u32 engine_func_001182dc() {
+    using namespace engine_1182dc;
+
+    // 0x001182E4..0x001182F0: byte-wide master enable.
+    if (load_byte(kManagerAddress + kManagerFlag00) == 0) {
+        return 0;
+    }
+
+    FrameSyncSlot* const slot = frame_slot();
+
+    // 0x001182FC..0x00118314: signed count, then the activity bit.
+    if (slot->count_00 <= 0) {
+        const u32 active = load_word(kManagerAddress + kManagerActiveWord88);
+        if ((active & kManagerActiveBit) == 0) {
+            return active;
+        }
+    }
+
+    // 0x00118318..0x00118338: register the slot.  The view payload is captured
+    // before the helper runs and lives in the `[sp,#4]` word until 0x0011843C.
+    void* const view = slot_entry(kViewTableAddress);
+    const u32 view_payload = load_word(reinterpret_cast<u32>(view) + 4);
+    func_001324e8(view, slot_entry(kWorkTableAddress),
+                  load_word(kManagerAddress + kManagerSlotValue2C), kSlotIndex);
+
+    // 0x0011833C..0x001183D0: detach the token from the registry vector.
+    if (slot->registered_04 != 0 && slot->inited_05 == 0) {
+        void* const token = slot_entry(kTokenTableAddress);
+        RegistryObject* const registry = static_cast<RegistryObject*>(
+            slot_entry(kRegistryTableAddress));
+        void** const end = registry->vector_14.end_1c;
+        void** found = registry->vector_14.begin_18;
+        while (found != end && *found != token) {
+            ++found;
+        }
+
+        void** new_end = found;
+        if (found != end) {
+            new_end = script_vm_func_002b780c(found + 1, end, found, &token);
+        }
+
+        // The end word is re-read after the helper, exactly like 0x001183A0.
+        void** const previous_end = registry->vector_14.end_1c;
+        registry->vector_14.end_1c = new_end;
+        if (previous_end != new_end) {
+            *reinterpret_cast<u32*>(static_cast<u8*>(token) + kTokenClearOffset) =
+                0;
+        }
+
+        engine_func_002abdb0(slot_entry(kWorkTableAddress),
+                             slot_entry(kRegistryTableAddress));
+    }
+
+    // 0x001183D4..0x001183EC
+    if (slot->flag_14 == 0) {
+        func_00131bbc(slot_entry(kViewTableAddress),
+                      slot_entry(kWorkTableAddress), kSlotIndex);
+    }
+
+    // 0x001183F0..0x0011841C: the gate bytes are read again from memory.
+    if (slot->registered_04 != 0 && slot->inited_05 == 0) {
+        engine_func_002c028c(slot_entry(kRegistryTableAddress),
+                             load_word(kTokenTableAddress + kSlotIndex * 4));
+        engine_func_002abdb0(slot_entry(kWorkTableAddress),
+                             slot_entry(kRegistryTableAddress));
+    }
+
+    // 0x00118420..0x00118468
+    engine_func_00132240(slot_entry(kViewTableAddress),
+                         load_word(kManagerAddress + kManagerSlotValue2C),
+                         kSyncSelector, kSyncDumpDisabled);
+    func_002b77b8(reinterpret_cast<void*>(view_payload));
+    engine_func_002c3c18(
+        reinterpret_cast<void*>(load_word(kGpuStatePointerAddress)));
+    store_word(kManagerAddress + kManagerReleaseWord18, 0);
+    return 0;
 }
 
 // DECOMP_FUNC(0x00126774, 428)
