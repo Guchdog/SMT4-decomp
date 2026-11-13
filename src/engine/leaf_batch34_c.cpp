@@ -7612,143 +7612,154 @@ extern "C" __attribute__((naked)) void engine_func_001db890() {
     );
 }
 
-// DECOMP_FUNC(0x001e034c, 516)
-extern "C" __attribute__((naked)) void camp_func_001e034c() {
-    asm volatile(
-        "push {r4, r5, r6, r7, r8, sb, sl, fp, lr}\n"
-        "sub sp, sp, #0x14\n"
-        "mov r6, r1\n"
-        "mov r7, r2\n"
-        "mov fp, r0\n"
-        ".word 0xe59f01e0\n"
-        "mov sb, #0\n"
-        "ldr r8, [r0]\n"
-        "mov r0, fp\n"
-        "bl camp_func_002b9364\n"
-        "mov sl, r0\n"
-        "mov r0, #0\n"
-        "add r1, r8, #0x9000\n"
-        "mov r4, r0\n"
-        "str r0, [r1, #0x20]\n"
-        "str r0, [r1, #0x24]\n"
-        "str r0, [r1, #0x28]\n"
-        "str r0, [r1, #0x2c]\n"
-        "str r0, [r1, #0x30]\n"
-        "str r0, [r1, #0x34]\n"
-        "str r0, [r1, #0x38]\n"
-        "str r0, [r1, #0x3c]\n"
-        "str r0, [r1, #0x40]\n"
-        "str r0, [r1, #0x44]\n"
-        "str r0, [r1, #0x48]\n"
-        "str r0, [r1, #0x4c]\n"
-        "add r0, r8, #0x9000\n"
-        "add r0, r0, #0x20\n"
-        "str r0, [sp, #0x10]\n"
-        ".L_001e03c0:\n"
-        "add r5, r6, r4, lsl #1\n"
-        "ldrh r0, [r5, #0x34]\n"
-        "cmp r0, #0\n"
-        "beq .L_001e042c\n"
-        "bl camp_func_0029ec14\n"
-        "ldrb r0, [r0, #3]\n"
-        "tst r0, #0x20\n"
-        "beq .L_001e042c\n"
-        "ldrh r2, [r5, #0x34]\n"
-        "ldr r0, [sp, #0x10]\n"
-        "mov r1, #0x18\n"
-        "bl camp_func_0029d080\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "bne .L_001e042c\n"
-        "ldrh r2, [r5, #0x34]\n"
-        "mov r1, #8\n"
-        "add r0, sl, #0x3c\n"
-        "bl camp_func_0029d080\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "bne .L_001e042c\n"
-        "ldrh r0, [r5, #0x34]\n"
-        "add r1, r8, sb, lsl #1\n"
-        "add r1, r1, #0x9000\n"
-        "add sb, sb, #1\n"
-        "strh r0, [r1, #0x20]\n"
-        ".L_001e042c:\n"
-        "add r4, r4, #1\n"
-        "cmp r4, #8\n"
-        "blt .L_001e03c0\n"
-        "mov r4, #0\n"
-        ".L_001e043c:\n"
-        "add r5, r7, r4, lsl #1\n"
-        "ldrh r0, [r5, #0x34]\n"
-        "cmp r0, #0\n"
-        "beq .L_001e04a8\n"
-        "bl camp_func_0029ec14\n"
-        "ldrb r0, [r0, #3]\n"
-        "tst r0, #0x20\n"
-        "beq .L_001e04a8\n"
-        "ldrh r2, [r5, #0x34]\n"
-        "ldr r0, [sp, #0x10]\n"
-        "mov r1, #0x18\n"
-        "bl camp_func_0029d080\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "bne .L_001e04a8\n"
-        "ldrh r2, [r5, #0x34]\n"
-        "mov r1, #8\n"
-        "add r0, sl, #0x3c\n"
-        "bl camp_func_0029d080\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "bne .L_001e04a8\n"
-        "ldrh r0, [r5, #0x34]\n"
-        "add r1, r8, sb, lsl #1\n"
-        "add r1, r1, #0x9000\n"
-        "add sb, sb, #1\n"
-        "strh r0, [r1, #0x20]\n"
-        ".L_001e04a8:\n"
-        "add r4, r4, #1\n"
-        "cmp r4, #8\n"
-        "blt .L_001e043c\n"
-        "mov r0, #1\n"
-        "mov r3, r0\n"
-        "str r0, [sp]\n"
-        "str r0, [sp, #4]\n"
-        "add r0, r8, #0x9000\n"
-        "mov r2, #8\n"
-        "mov r1, sb\n"
-        "add r0, r0, #0x204\n"
-        "bl camp_func_0029fae8\n"
-        "ldr r1, [sp, #8]\n"
-        "ldrh r3, [r6, #0x46]\n"
-        "mvn r0, #0x20000\n"
-        ".word 0xe59fc060\n"
-        "and r1, r1, r0, lsl #15\n"
-        "bic r3, r3, #0x8000\n"
-        "orr r1, r1, r3\n"
-        "ldrh r3, [r7, #0x46]\n"
-        "and r2, r0, fp, lsl #2\n"
-        "ldr r0, [sp, #0xc]\n"
-        "bic r1, r1, #0x3fc00000\n"
-        "bic r1, r1, #0x3f8000\n"
-        "and r3, ip, r3, lsl #15\n"
-        "orr r3, r3, r1\n"
-        "mov r1, r0\n"
-        "and r1, r1, ip, lsl #2\n"
-        "bic r0, r3, #0xc0000000\n"
-        "orr r1, r1, #1\n"
-        "orr r1, r1, r2\n"
-        "orr r0, r0, #0x40000000\n"
-        "strd r0, r1, [sp, #8]\n"
-        "ldr r0, [sp, #0x10]\n"
-        "mov r3, #0\n"
-        "add r2, sp, #8\n"
-        "mov r1, sb\n"
-        "bl Unite_Init\n"
-        "add sp, sp, #0x14\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, fp, pc}\n"
-        ".word 0x0043dd68\n"
-        ".word 0x3fff8000\n"
-    );
+// ---------------------------------------------------------------------------
+// camp_func_001e034c: builds the unite definition for a camp unit slot.
+//
+// The two source records (`primary`, `secondary`) each carry up to eight u16
+// unit ids at +0x34.  A non-zero id is appended to the 24-entry work list at
+// [*(0x0043DD68)+0x9020] only when all of these hold:
+//   * camp_func_0029ec14(id) returns an entry whose flags byte (+3) has bit
+//     0x20 set;
+//   * the work list does not already contain the id (24-entry halfword scan);
+//   * the slot_id record returned by camp_func_002b9364() does not already
+//     list the id in its own eight-entry u16 list at +0x3C.
+// The final count then sizes the list cursor at [work+0x9204] (8 visible rows,
+// 1 column, wrap and repeat enabled) and is passed to Unite_Init() together
+// with the list and an eight-byte descriptor.
+//
+// Original call order: 0x002B9364 is resolved *before* the work list is
+// cleared; 0x0029EC14/0x0029D080 run inside both collection loops; 0x0029FAE8
+// receives the final count and Unite_Init() consumes the list plus descriptor.
+// ---------------------------------------------------------------------------
+extern "C" u8* camp_unite_record_002b9364(u32 id) __asm__("camp_func_002b9364");
+extern "C" u8* camp_unite_entry_0029ec14(u32 id) __asm__("camp_func_0029ec14");
+extern "C" s32 camp_unite_list_contains_0029d080(const u16* list, s32 count,
+                                                u16 value)
+    __asm__("camp_func_0029d080");
+extern "C" void camp_unite_cursor_setup_0029fae8(void* cursor, s32 total,
+                                                s32 visible_rows, s32 cols,
+                                                s32 wrap_row, s32 repeat)
+    __asm__("camp_func_0029fae8");
+extern "C" void camp_unite_init_0029b3cc(const u16* units, s32 count,
+                                        const void* descriptor,
+                                        const u16* fallback)
+    __asm__("Unite_Init");
+
+namespace {
+
+// Camp work block reached through the global pointer at 0x0043DD68.
+constexpr u32 kCampWorkPointer = 0x0043DD68;
+constexpr u32 kCampUnitListBase = 0x9020;    // u16[24]
+constexpr u32 kCampUnitListWords = 12;       // cleared with 32-bit stores
+constexpr s32 kCampUnitListCapacity = 0x18;  // entries scanned by 0x0029D080
+constexpr u32 kCampUnitCursorBase = 0x9204;  // list cursor for 0x0029FAE8
+
+// Source record layout (the ARM only ever loads halfwords).
+constexpr u32 kCampSourceUnitList = 0x34;  // u16[8]
+constexpr u32 kCampSourceUnitCount = 8;
+constexpr u32 kCampSourceUnitId = 0x46;  // u16
+
+// Slot record returned by camp_func_002b9364(slot_id).
+constexpr u32 kCampRecordUnitList = 0x3C;  // u16[8]
+constexpr s32 kCampRecordUnitCount = 8;
+
+// Flag byte (+3) of a camp_func_0029ec14() entry.
+constexpr u8 kCampUnitEntryValid = 0x20;
+
+// Unite descriptor handed to Unite_Init() as two packed words.
+constexpr u32 kCampUniteKind = 0x40000000;  // word0 bits 30..31 == 01
+constexpr u32 kCampUniteIdFieldMask = 0x7FFF;
+constexpr u32 kCampUniteFlag = 0x1;  // word1 bit 0
+constexpr u32 kCampUniteIdShift = 2;
+constexpr u32 kCampUniteIdReservedBit = 0x00020000;  // word1 bit 17
+
+struct CampUniteDescriptor {
+    u32 low;
+    u32 high;
+};
+
+inline u16 CampUniteLoadU16(const u8* base, u32 offset) {
+    return *reinterpret_cast<const u16*>(base + offset);
+}
+
+// Collects the ids of one source record into `units`.  The original re-loads
+// the source halfword before every helper call and before the append store; the
+// value is captured once here because neither helper writes the source record.
+inline u32 CampUniteCollect(const u8* source, u16* units,
+                            const u16* record_units, u32 count) {
+    for (u32 i = 0; i < kCampSourceUnitCount; ++i) {
+        const u16 id =
+            CampUniteLoadU16(source, kCampSourceUnitList + i * sizeof(u16));
+        if (id == 0) {
+            continue;
+        }
+        const u8* const entry = camp_unite_entry_0029ec14(id);
+        if ((entry[3] & kCampUnitEntryValid) == 0) {
+            continue;
+        }
+        if (camp_unite_list_contains_0029d080(units, kCampUnitListCapacity,
+                                              id) != 0) {
+            continue;
+        }
+        if (camp_unite_list_contains_0029d080(record_units,
+                                              kCampRecordUnitCount, id) != 0) {
+            continue;
+        }
+        units[count++] = id;
+    }
+    return count;
+}
+
+} // namespace
+
+extern "C" void camp_func_001e034c(u32 slot_id, const u8* primary,
+                                   const u8* secondary) {
+    u8* const work = reinterpret_cast<u8*>(
+        *reinterpret_cast<const u32*>(kCampWorkPointer));
+
+    // The slot record is resolved before the work list is cleared.
+    const u8* const record = camp_unite_record_002b9364(slot_id);
+
+    // Twelve 32-bit zero stores cover the 24 halfword list entries.
+    u32* const cleared = reinterpret_cast<u32*>(work + kCampUnitListBase);
+    for (u32 i = 0; i < kCampUnitListWords; ++i) {
+        cleared[i] = 0;
+    }
+
+    u16* const units = reinterpret_cast<u16*>(work + kCampUnitListBase);
+    const u16* const record_units =
+        reinterpret_cast<const u16*>(record + kCampRecordUnitList);
+
+    u32 count = 0;
+    count = CampUniteCollect(primary, units, record_units, count);
+    count = CampUniteCollect(secondary, units, record_units, count);
+
+    camp_unite_cursor_setup_0029fae8(work + kCampUnitCursorBase,
+                                     static_cast<s32>(count), 8, 1, 1, 1);
+
+    // Descriptor word 0 packs the two source ids (bits 0..14 from `primary`,
+    // bits 15..29 from `secondary`, each masked to 15 bits) with the constant
+    // kind bits 30..31 = 01.  Word 1 is 0x1 | (slot_id << 2) with bit 17 masked
+    // off.  The original additionally ORs bits 17..31 of word 1 with the stale
+    // contents of its not-yet-initialised stack slot (a read-modify-write of
+    // those bits); that only surfaces stack garbage, so the reconstruction
+    // starts from zero there and the differential harness runs on a zeroed
+    // stack.
+    CampUniteDescriptor descriptor;
+    descriptor.low = (static_cast<u32>(
+                          CampUniteLoadU16(primary, kCampSourceUnitId)) &
+                      kCampUniteIdFieldMask) |
+                     ((static_cast<u32>(
+                           CampUniteLoadU16(secondary, kCampSourceUnitId)) &
+                       kCampUniteIdFieldMask)
+                      << 15) |
+                     kCampUniteKind;
+    descriptor.high =
+        kCampUniteFlag | ((slot_id << kCampUniteIdShift) &
+                          ~kCampUniteIdReservedBit);
+
+    camp_unite_init_0029b3cc(units, static_cast<s32>(count), &descriptor,
+                             nullptr);
 }
 
 // DECOMP_FUNC(0x001e0cdc, 804)

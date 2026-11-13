@@ -2420,7 +2420,7 @@ address,size,status,category,name,src_file
 0x001dfb60,1116,matching,ui,ui_func_001dfb60,src/engine/leaf_batch46_a.cpp
 0x001dffbc,380,matching,ui,ui_func_001dffbc,src/engine/leaf_batch44_b.cpp
 0x001e0138,532,matching,ui,ui_func_001e0138,src/engine/leaf_batch42_b.cpp
-0x001e034c,516,matching,camp,camp_func_001e034c,src/engine/leaf_batch34_c.cpp
+0x001e034c,516,non_matching,camp,camp_func_001e034c,src/engine/leaf_batch34_c.cpp
 0x001e0550,40,matching,engine,engine_func_001e0550,src/engine/leaf_batch39_b.cpp
 0x001e0578,28,matching,camp,camp_func_001e0578,src/engine/leaf_batch39_a.cpp
 0x001e0594,132,matching,battle,battle_func_001e0594,src/engine/leaf_batch26_a.cpp
