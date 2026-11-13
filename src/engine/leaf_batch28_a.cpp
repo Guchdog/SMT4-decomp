@@ -7689,115 +7689,166 @@ extern "C" void engine_func_00155fd0(void* argument) {
     } while (LoadU8(base, 0xd) != 0);
 }
 
+// ---------------------------------------------------------------------------
+// 0x001FC004 -- choose the three nearest ready script/task entries.
+//
+// The table base comes from the global slot 0x0044CD88.  The records are
+// 76 bytes each and start 0x58 bytes into the table, so record `index` lives
+// at table + 0x58 + 76*index (0x002EB0F4 walks the same layout).  Only the
+// three nearest records are copied into the result records at
+// table + 0x9E4 + 76*slot; every other measured record is marked invalid.
+//
+// Record fields used here (all observed by this function, meaning beyond the
+// observed use is unknown):
+//   +0x00 u8   active flag
+//   +0x04 u32  state word (must be non-zero)
+//   +0x0C 3xf32 position
+//   +0x18 u32  payload word 0 (copied to a result record)
+//   +0x1C u32  payload word 1 (copied to a result record)
+//   +0x3C u8   ready flag
+//   +0x40 u32  reset word (cleared to -1 when measured but not selected)
+//   +0x44 f32  distance from the view position (written by pass 1)
+//   +0x48 u32  marker: 999 while pending, then the selected slot 0..2
+// ---------------------------------------------------------------------------
+extern "C" f32 engine_func_00287d54(f32 ax, f32 ay, f32 az,
+                                    f32 bx, f32 by, f32 bz);  // 0x00287D54
+
+namespace {
+
+constexpr u32 kTaskTableSlot = 0x0044cd88;  // script/task table base slot
+constexpr u32 kViewWorkSlot  = 0x00447e88;  // view work slot; +0x1C position
+constexpr u32 kViewPosition  = 0x1c;
+
+constexpr s32 kEntryHeader = 0x58;
+constexpr s32 kTaskEntryStride = 76;
+constexpr s32 kEntryCount  = 32;
+constexpr s32 kSelectedCount = 3;
+
+constexpr s32 kResultBase   = 0x9e4;  // table + 0x9E4 + 76*slot
+constexpr s32 kResultStride = 76;
+
+constexpr s32 kEntryActive       = 0x00;
+constexpr s32 kEntryState        = 0x04;
+constexpr s32 kEntryPosition     = 0x0c;
+constexpr s32 kEntryPayload0     = 0x18;
+constexpr s32 kEntryPayload1     = 0x1c;
+constexpr s32 kEntryReady        = 0x3c;
+constexpr s32 kEntryResetValue   = 0x40;
+constexpr s32 kEntryDistance     = 0x44;
+constexpr s32 kEntryMarker       = 0x48;
+constexpr s32 kResultVec3        = 0x00;
+constexpr s32 kResultPayload0    = 0x0c;
+constexpr s32 kResultPayload1    = 0x10;
+constexpr s32 kResultValid       = 0x14;
+
+constexpr u32 kPendingMarker = 999;       // literal at 0x001FC19C
+constexpr f32 kBestStart     = 90000.0f;  // literal at 0x001FC1A0
+
+}  // namespace
+
 // DECOMP_FUNC(0x001fc004, 416)
-extern "C" __attribute__((naked)) void script_vm_func_001fc004() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe92d41f0 @ push {r4, r5, r6, r7, r8, lr}\n"
-        ".inst 0xe59f7184 @ ldr r7, [pc, #0x184]\n"
-        ".inst 0xe5970000 @ ldr r0, [r7]\n"
-        ".inst 0xe1d000b4 @ ldrh r0, [r0, #4]\n"
-        ".inst 0xe3500065 @ cmp r0, #0x65\n"
-        ".inst 0x1a00005c @ bne #0x1fc190\n"
-        ".inst 0xe59f8174 @ ldr r8, [pc, #0x174]\n"
-        ".inst 0xe59f6174 @ ldr r6, [pc, #0x174]\n"
-        ".inst 0xe3a04000 @ mov r4, #0\n"
-        ".inst 0xe5971000 @ ldr r1, [r7]\n"
-        ".inst 0xe0840084 @ add r0, r4, r4, lsl #1\n"
-        ".inst 0xe0800204 @ add r0, r0, r4, lsl #4\n"
-        ".inst 0xe0815100 @ add r5, r1, r0, lsl #2\n"
-        ".inst 0xe5f50058 @ ldrb r0, [r5, #0x58]!\n"
-        ".inst 0xe3500000 @ cmp r0, #0\n"
-        ".inst 0x15d5003c @ ldrbne r0, [r5, #0x3c]\n"
-        ".inst 0x13500000 @ cmpne r0, #0\n"
-        ".inst 0x0a000007 @ beq #0x1fc06c\n"
-        ".inst 0xe285000c @ add r0, r5, #0xc\n"
-        ".inst 0xecd01a03 @ vldmia r0, {s3, s4, s5}\n"
-        ".inst 0xe5980000 @ ldr r0, [r8]\n"
-        ".inst 0xe280001c @ add r0, r0, #0x1c\n"
-        ".inst 0xec900a03 @ vldmia r0, {s0, s1, s2}\n"
-        ".inst 0xeb022f3b @ bl #0x287d54\n"
-        ".inst 0xed850a11 @ vstr s0, [r5, #0x44]\n"
-        ".inst 0xe5856048 @ str r6, [r5, #0x48]\n"
-        ".inst 0xe2844001 @ add r4, r4, #1\n"
-        ".inst 0xe3540020 @ cmp r4, #0x20\n"
-        ".inst 0xbaffffeb @ blt #0x1fc028\n"
-        ".inst 0xe5973000 @ ldr r3, [r7]\n"
-        ".inst 0xed9f1a47 @ vldr s2, [pc, #0x11c]\n"
-        ".inst 0xe3a02000 @ mov r2, #0\n"
-        ".inst 0xe3a0c001 @ mov ip, #1\n"
-        ".inst 0xeeb00a41 @ vmov.f32 s0, s2\n"
-        ".inst 0xe3e04000 @ mvn r4, #0\n"
-        ".inst 0xe3a00000 @ mov r0, #0\n"
-        ".inst 0xe0801080 @ add r1, r0, r0, lsl #1\n"
-        ".inst 0xe0811200 @ add r1, r1, r0, lsl #4\n"
-        ".inst 0xe0831101 @ add r1, r3, r1, lsl #2\n"
-        ".inst 0xe5f15058 @ ldrb r5, [r1, #0x58]!\n"
-        ".inst 0xe3550000 @ cmp r5, #0\n"
-        ".inst 0x15915004 @ ldrne r5, [r1, #4]\n"
-        ".inst 0x13550000 @ cmpne r5, #0\n"
-        ".inst 0x15d1503c @ ldrbne r5, [r1, #0x3c]\n"
-        ".inst 0x13550000 @ cmpne r5, #0\n"
-        ".inst 0x0a000007 @ beq #0x1fc0dc\n"
-        ".inst 0xe5915048 @ ldr r5, [r1, #0x48]\n"
-        ".inst 0xe1550006 @ cmp r5, r6\n"
-        ".inst 0x1a000004 @ bne #0x1fc0dc\n"
-        ".inst 0xedd10a11 @ vldr s1, [r1, #0x44]\n"
-        ".inst 0xeef40ac0 @ vcmpe.f32 s1, s0\n"
-        ".inst 0xeef1fa10 @ vmrs apsr_nzcv, fpscr\n"
-        ".inst 0x3eb00a60 @ vmovlo.f32 s0, s1\n"
-        ".inst 0x31a04000 @ movlo r4, r0\n"
-        ".inst 0xe2800001 @ add r0, r0, #1\n"
-        ".inst 0xe3500020 @ cmp r0, #0x20\n"
-        ".inst 0xbaffffea @ blt #0x1fc094\n"
-        ".inst 0xe0840084 @ add r0, r4, r4, lsl #1\n"
-        ".inst 0xe0800204 @ add r0, r0, r4, lsl #4\n"
-        ".inst 0xe0821082 @ add r1, r2, r2, lsl #1\n"
-        ".inst 0xe0830100 @ add r0, r3, r0, lsl #2\n"
-        ".inst 0xe0811202 @ add r1, r1, r2, lsl #4\n"
-        ".inst 0xe2805064 @ add r5, r0, #0x64\n"
-        ".inst 0xe58020a0 @ str r2, [r0, #0xa0]\n"
-        ".inst 0xe5802098 @ str r2, [r0, #0x98]\n"
-        ".inst 0xe89500b0 @ ldm r5, {r4, r5, r7}\n"
-        ".inst 0xe0831101 @ add r1, r3, r1, lsl #2\n"
-        ".inst 0xe2818b02 @ add r8, r1, #0x800\n"
-        ".inst 0xe2888f79 @ add r8, r8, #0x1e4\n"
-        ".inst 0xe2822001 @ add r2, r2, #1\n"
-        ".inst 0xe88800b0 @ stm r8, {r4, r5, r7}\n"
-        ".inst 0xe3520003 @ cmp r2, #3\n"
-        ".inst 0xe5904070 @ ldr r4, [r0, #0x70]\n"
-        ".inst 0xe58149f0 @ str r4, [r1, #0x9f0]\n"
-        ".inst 0xe5900074 @ ldr r0, [r0, #0x74]\n"
-        ".inst 0xe58109f4 @ str r0, [r1, #0x9f4]\n"
-        ".inst 0xe5c1c9f8 @ strb ip, [r1, #0x9f8]\n"
-        ".inst 0xbaffffd2 @ blt #0x1fc088\n"
-        ".inst 0xe3a01000 @ mov r1, #0\n"
-        ".inst 0xe3e02000 @ mvn r2, #0\n"
-        ".inst 0xe0810081 @ add r0, r1, r1, lsl #1\n"
-        ".inst 0xe0800201 @ add r0, r0, r1, lsl #4\n"
-        ".inst 0xe0830100 @ add r0, r3, r0, lsl #2\n"
-        ".inst 0xe5f0c058 @ ldrb ip, [r0, #0x58]!\n"
-        ".inst 0xe35c0000 @ cmp ip, #0\n"
-        ".inst 0x1590c004 @ ldrne ip, [r0, #4]\n"
-        ".inst 0x135c0000 @ cmpne ip, #0\n"
-        ".inst 0x15d0c03c @ ldrbne ip, [r0, #0x3c]\n"
-        ".inst 0x135c0000 @ cmpne ip, #0\n"
-        ".inst 0x0a000005 @ beq #0x1fc184\n"
-        ".inst 0xe590c048 @ ldr ip, [r0, #0x48]\n"
-        ".inst 0xe15c0006 @ cmp ip, r6\n"
-        ".inst 0x1a000002 @ bne #0x1fc184\n"
-        ".inst 0xe590c040 @ ldr ip, [r0, #0x40]\n"
-        ".inst 0xe37c0001 @ cmn ip, #1\n"
-        ".inst 0x15802040 @ strne r2, [r0, #0x40]\n"
-        ".inst 0xe2811001 @ add r1, r1, #1\n"
-        ".inst 0xe3510020 @ cmp r1, #0x20\n"
-        ".inst 0xbaffffec @ blt #0x1fc144\n"
-        ".inst 0xe8bd81f0 @ pop {r4, r5, r6, r7, r8, pc}\n"
-        ".word 0x0044cd88 @ bounded tail data\n"
-        ".word 0x00447e88 @ bounded tail data\n"
-        ".word 0x000003e7 @ bounded tail data\n"
-        ".word 0x47afc800 @ bounded tail data\n"
-    );
+extern "C" void script_vm_func_001fc004() {
+    // Header gate: the table's u16 kind word at +4 must be 0x65.
+    const u8* const table_head = *reinterpret_cast<u8* const*>(kTaskTableSlot);
+    if (*reinterpret_cast<const u16*>(table_head + 4) != 0x65) {
+        return;
+    }
+
+    // Pass 1: measure every ready entry from the view position and arm its
+    // marker.  The table pointer is reloaded each iteration because the
+    // distance helper is an opaque call.
+    for (s32 index = 0; index < kEntryCount; ++index) {
+        u8* const table = *reinterpret_cast<u8**>(kTaskTableSlot);
+        u8* const entry = table + kEntryHeader + index * kTaskEntryStride;
+        // Pass 1 checks only the two flag bytes; the state word is consulted
+        // by passes 2 and 3 below.
+        if (entry[kEntryActive] == 0) {
+            continue;
+        }
+        if (entry[kEntryReady] == 0) {
+            continue;
+        }
+
+        const f32 entry_x = *reinterpret_cast<f32*>(entry + kEntryPosition);
+        const f32 entry_y = *reinterpret_cast<f32*>(entry + kEntryPosition + 4);
+        const f32 entry_z = *reinterpret_cast<f32*>(entry + kEntryPosition + 8);
+        const u8* const view = *reinterpret_cast<u8* const*>(kViewWorkSlot);
+        const f32 view_x = *reinterpret_cast<const f32*>(view + kViewPosition);
+        const f32 view_y = *reinterpret_cast<const f32*>(view + kViewPosition + 4);
+        const f32 view_z = *reinterpret_cast<const f32*>(view + kViewPosition + 8);
+
+        *reinterpret_cast<f32*>(entry + kEntryDistance) =
+            engine_func_00287d54(view_x, view_y, view_z,
+                                 entry_x, entry_y, entry_z);
+        *reinterpret_cast<u32*>(entry + kEntryMarker) = kPendingMarker;
+    }
+
+    u8* const table = *reinterpret_cast<u8**>(kTaskTableSlot);
+
+    // Pass 2: three times, take the closest still-pending entry, retire it and
+    // copy its position and payload into the matching result record.
+    for (s32 slot = 0; slot < kSelectedCount; ++slot) {
+        f32 best = kBestStart;
+        s32 best_index = -1;
+        for (s32 index = 0; index < kEntryCount; ++index) {
+            u8* const entry = table + kEntryHeader + index * kTaskEntryStride;
+            if (entry[kEntryActive] == 0) {
+                continue;
+            }
+            if (*reinterpret_cast<u32*>(entry + kEntryState) == 0) {
+                continue;
+            }
+            if (entry[kEntryReady] == 0) {
+                continue;
+            }
+            if (*reinterpret_cast<u32*>(entry + kEntryMarker) != kPendingMarker) {
+                continue;
+            }
+            const f32 distance = *reinterpret_cast<f32*>(entry + kEntryDistance);
+            if (distance < best) {
+                best = distance;
+                best_index = index;
+            }
+        }
+
+        // With no pending candidate left, best_index stays -1 and the original
+        // addresses table + 0x58 - 76, i.e. the tail of the table header.
+        u8* const source = table + kEntryHeader + best_index * kTaskEntryStride;
+        u8* const result = table + kResultBase + slot * kResultStride;
+        *reinterpret_cast<u32*>(source + kEntryMarker) = static_cast<u32>(slot);
+        *reinterpret_cast<u32*>(source + kEntryResetValue) = static_cast<u32>(slot);
+        *reinterpret_cast<u32*>(result + kResultVec3) =
+            *reinterpret_cast<u32*>(source + kEntryPosition);
+        *reinterpret_cast<u32*>(result + kResultVec3 + 4) =
+            *reinterpret_cast<u32*>(source + kEntryPosition + 4);
+        *reinterpret_cast<u32*>(result + kResultVec3 + 8) =
+            *reinterpret_cast<u32*>(source + kEntryPosition + 8);
+        *reinterpret_cast<u32*>(result + kResultPayload0) =
+            *reinterpret_cast<u32*>(source + kEntryPayload0);
+        *reinterpret_cast<u32*>(result + kResultPayload1) =
+            *reinterpret_cast<u32*>(source + kEntryPayload1);
+        result[kResultValid] = 1;
+    }
+
+    // Pass 3: measured entries that were not selected are marked invalid.
+    for (s32 index = 0; index < kEntryCount; ++index) {
+        u8* const entry = table + kEntryHeader + index * kTaskEntryStride;
+        if (entry[kEntryActive] == 0) {
+            continue;
+        }
+        if (*reinterpret_cast<u32*>(entry + kEntryState) == 0) {
+            continue;
+        }
+        if (entry[kEntryReady] == 0) {
+            continue;
+        }
+        if (*reinterpret_cast<u32*>(entry + kEntryMarker) != kPendingMarker) {
+            continue;
+        }
+        if (*reinterpret_cast<u32*>(entry + kEntryResetValue) != 0xffffffffu) {
+            *reinterpret_cast<u32*>(entry + kEntryResetValue) = 0xffffffffu;
+        }
+    }
 }
 
 // DECOMP_FUNC(0x0019de18, 420)
