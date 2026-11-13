@@ -7395,96 +7395,231 @@ extern "C" u32 battle_func_00137730(u32 node, u32 a1, u32 a2, u32 a3, u32 a4,
 }
 
 // DECOMP_FUNC(0x0021e3c0, 680)
-extern "C" __attribute__((naked)) void engine_func_0021e3c0() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4070, 0xe92d, 0x6280, 0xe59f\n"
-        ".hword 0xd080, 0xe24d, 0x0000, 0xe596\n"
-        ".hword 0x10f8, 0xe1d0, 0x000a, 0xe351\n"
-        ".hword 0x0006, 0x0a00, 0x000b, 0xe351\n"
-        ".hword 0x0039, 0x0a00, 0x000c, 0xe351\n"
-        ".hword 0x004e, 0x0a00, 0x0063, 0xe351\n"
-        ".hword 0x0092, 0x1a00, 0x0029, 0xea00\n"
-        ".hword 0x40fa, 0xe1d0, 0xc383, 0xeb00\n"
-        ".hword 0x0004, 0xe150, 0x5063, 0xe3a0\n"
-        ".hword 0x002c, 0xda00, 0x0004, 0xe1a0\n"
-        ".hword 0xf719, 0xeb00, 0x20f0, 0xe1d0\n"
-        ".hword 0x0000, 0xe352, 0x0022, 0xba00\n"
-        ".hword 0x1000, 0xe596, 0x30f4, 0xe1d1\n"
-        ".hword 0x0003, 0xe152, 0x001e, 0x1a00\n"
-        ".hword 0x20f2, 0xe1d0, 0x30f6, 0xe1d1\n"
-        ".hword 0x0003, 0xe152, 0x001a, 0x1a00\n"
-        ".hword 0x00f4, 0xe1d0, 0x0064, 0xe350\n"
-        ".hword 0x0017, 0xaa00, 0x0000, 0xe3a0\n"
-        ".hword 0x40ba, 0xe1c1, 0x2180, 0xe080\n"
-        ".hword 0x2182, 0xe081, 0x2014, 0xe5d2\n"
-        ".hword 0x0000, 0xe352, 0x0003, 0x0a00\n"
-        ".hword 0x0001, 0xe280, 0x0018, 0xe350\n"
-        ".hword 0xfff7, 0xbaff, 0x0000, 0xe3e0\n"
-        ".hword 0x0070, 0xe6bf, 0x0001, 0xe370\n"
-        ".hword 0x00bc, 0xe1c1, 0x50b8, 0x01c1\n"
-        ".hword 0x0004, 0x0a00, 0x000b, 0xe3a0\n"
-        ".hword 0x00b8, 0xe1c1, 0xd080, 0xe28d\n"
-        ".hword 0x0000, 0xe3a0, 0x8070, 0xe8bd\n"
-        ".hword 0xd080, 0xe28d, 0x0001, 0xe3a0\n"
-        ".hword 0x8070, 0xe8bd, 0x4001, 0xe284\n"
-        ".hword 0xc356, 0xeb00, 0x0000, 0xe154\n"
-        ".hword 0xf000, 0xe320, 0xffd2, 0xbaff\n"
-        ".hword 0x0000, 0xe596, 0x50b8, 0xe1c0\n"
-        ".hword 0xfff4, 0xeaff, 0x00fa, 0xe1d0\n"
-        ".hword 0xf6e9, 0xeb00, 0x1000, 0xe596\n"
-        ".hword 0x30f4, 0xe1d0, 0x2000, 0xe3a0\n"
-        ".hword 0xc0fc, 0xe1d1, 0xc18c, 0xe08c\n"
-        ".hword 0x118c, 0xe081, 0x4014, 0xe281\n"
-        ".hword 0x3038, 0xe581, 0x2040, 0xe5c1\n"
-        ".hword 0x20f4, 0xe1d0, 0x1f53, 0xe28f\n"
-        ".hword 0x000d, 0xe1a0, 0x80bc, 0xfa02\n"
-        ".hword 0x1007, 0xe3a0, 0x000d, 0xe1a0\n"
-        ".hword 0xef6e, 0xeb01, 0x0028, 0xe584\n"
-        ".hword 0x1000, 0xe596, 0x000c, 0xe3a0\n"
-        ".hword 0x00b8, 0xe1c1, 0x0045, 0xea00\n"
-        ".hword 0x00fa, 0xe1d0, 0xf6d2, 0xeb00\n"
-        ".hword 0x5000, 0xe1a0, 0x0000, 0xe596\n"
-        ".hword 0x10fc, 0xe1d0, 0x1181, 0xe081\n"
-        ".hword 0x0181, 0xe080, 0x4014, 0xe280\n"
-        ".hword 0x003c, 0xe590, 0x3f06, 0xeb02\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x0038, 0x0a00, 0x0028, 0xe594\n"
-        ".hword 0x1001, 0xe3a0, 0x0857, 0xeb02\n"
-        ".hword 0x00f6, 0xe1d5, 0x0a10, 0xee00\n"
-        ".hword 0x0ac0, 0xeeb8, 0x0a01, 0xed84\n"
-        ".hword 0x00f8, 0xe1d5, 0x0a10, 0xee00\n"
-        ".hword 0x0ac0, 0xeeb8, 0x0a02, 0xed84\n"
-        ".hword 0x00fa, 0xe1d5, 0x0a10, 0xee00\n"
-        ".hword 0x0ac0, 0xeeb8, 0x0a03, 0xed84\n"
-        ".hword 0x00fc, 0xe1d5, 0x0a10, 0xee00\n"
-        ".hword 0x0ac0, 0xeeb8, 0x0a07, 0xed84\n"
-        ".hword 0x00f6, 0xe1d5, 0x0a10, 0xee00\n"
-        ".hword 0x0ac0, 0xeeb8, 0x0a04, 0xed84\n"
-        ".hword 0x0024, 0xe594, 0x0006, 0xe350\n"
-        ".hword 0x00fe, 0x01d5, 0x00f8, 0x11d5\n"
-        ".hword 0x0a10, 0xee00, 0x0ac0, 0xeeb8\n"
-        ".hword 0x0a05, 0xed84, 0x00fa, 0xe1d5\n"
-        ".hword 0x0a10, 0xee00, 0x0001, 0xe3a0\n"
-        ".hword 0x0ac0, 0xeeb8, 0x0a06, 0xed84\n"
-        ".hword 0x1000, 0xe596, 0x2010, 0xe591\n"
-        ".hword 0x2001, 0xe282, 0x2010, 0xe581\n"
-        ".hword 0x0000, 0xe5c4, 0x0001, 0xe5c4\n"
-        ".hword 0x0002, 0xe5c4, 0x0000, 0xe596\n"
-        ".hword 0x00fa, 0xe1d0, 0x0044, 0xe584\n"
-        ".hword 0x0010, 0xe5d5, 0x0000, 0xe350\n"
-        ".hword 0x0002, 0x0a00, 0x1010, 0xe285\n"
-        ".hword 0x002c, 0xe284, 0x8490, 0xeb02\n"
-        ".hword 0x0000, 0xe596, 0x200a, 0xe3a0\n"
-        ".hword 0x10ba, 0xe1d0, 0x1001, 0xe281\n"
-        ".hword 0x10ba, 0xe1c0, 0x20b8, 0xe1c0\n"
-        ".hword 0xd080, 0xe28d, 0x0000, 0xe3a0\n"
-        ".hword 0x8070, 0xe8bd, 0x7e70, 0x0044\n"
-        ".hword 0x616d, 0x2f70, 0x626f, 0x2f6a\n"
-        ".hword 0x626f, 0x5f6a, 0x3025, 0x6432\n"
-        ".hword 0x622e, 0x6d61, 0x0000, 0x0000\n"
-    );
+//
+// Streaming loader for the placed-object table owned by the singleton stored
+// at 0x00447E70. The singleton keeps a 24-entry array of 0x48-byte load slots
+// at +0x14; every slot owns one asynchronously loaded "obj_%02d.bam" model.
+//
+// The function is a script step: 0 means "still busy", 1 means "step done, the
+// caller advances". It walks the placement records (0x0025C07C) from the
+// stored cursor, keeps the ones matching the map ids at context+0x04/+0x06,
+// and loads their model through three states (0x0A scan, 0x0B start load,
+// 0x0C publish). 0x001E3874 re-arms the state/cursor/filter fields, 0x001923D0
+// clears the whole structure, and 0x001D3598 / 0x002754AC / 0x00277E5C read
+// the slot fields written here.
+namespace {
+
+constexpr u32 kObjectLoadContextAddress = 0x00447E70;  // -> ObjectLoadContext*
+constexpr s32 kObjectSlotCount = 0x18;                 // 24 concurrent models
+constexpr s32 kObjectSlotStride = 0x48;                // bytes per slot
+constexpr u32 kSlotsOffset = 0x14;                     // context -> slot[0]
+constexpr s32 kObjectIdLimit = 100;                    // ids >= 100 are skipped
+constexpr u32 kAltHeightObjectId = 6;                  // uses record+0x0E for Y
+constexpr u32 kModelLoadKind = 7;                      // 0x0029A2D0 kind argument
+constexpr u32 kPathBufferSize = 0x80;                  // original stack frame
+constexpr const char* kObjectPathFormat = "map/obj/obj_%02d.bam";
+
+constexpr s16 kObjectStateScan = 0x0A;
+constexpr s16 kObjectStateLoad = 0x0B;
+constexpr s16 kObjectStatePublish = 0x0C;
+constexpr s16 kObjectStateFinished = 0x63;
+
+// One 0x20-byte placement record returned by 0x0025C07C. The first two ids are
+// the placement filter matched against context+0x04/+0x06; object_id selects
+// the model. 0x002C8B40 independently confirms the 0x20 stride and the
+// (id_a, id_b, object_id, x, y, z, angle, alternate) s16 layout.
+struct PlacedObjectRecord {
+    s16 id_a_00;
+    s16 id_b_02;
+    s16 object_id_04;
+    s16 x_06;
+    s16 y_08;
+    s16 z_0A;
+    s16 angle_0C;
+    s16 alternate_y_0E;
+    char name_10[16];
 };
+
+// One 0x48-byte load slot (context + 0x14 + index * 0x48). 0x001923D0 clears
+// every field below; 0x002754AC gates the per-frame update on enabled_00,
+// pushes position_04 as a translation when enabled_01 is set, and pushes
+// angle_1C as a rotation when enabled_02 is set.
+struct ObjectLoadSlot {
+    u8 enabled_00;
+    u8 enabled_01;
+    u8 enabled_02;
+    u8 pad_03;
+    f32 position_04;   // 3-component vector filled from record x/y/z
+    f32 position_08;
+    f32 position_0C;
+    f32 offset_10;     // 3-component vector, record x / [y or alternate] / z
+    f32 offset_14;
+    f32 offset_18;
+    f32 angle_1C;      // record angle, consumed as a rotation by 0x00277E5C
+    u32 field_20;      // compared with model->+8->+0x38; not written here
+    u32 object_id_24;  // record object id; behaviour selector in 0x00277E5C
+    u32 model_28;      // handle from 0x0029A2D0 (treated as a pointer)
+    char name_2C[16];  // record name, copied with the 0x002BF86C strcpy
+    u8 pad_3C[8];
+    u32 record_index_44;  // placement index, sign-extended from the s16 cursor
+};
+
+// Context behind 0x00447E70. The 24 slots start at +0x14; 0x001E38A0 stores a
+// record pointer at +0x6D4, directly past the array.
+struct ObjectLoadContext {
+    u32 field_00;
+    s16 filter_a_04;  // placement filter id A
+    s16 filter_b_06;  // placement filter id B
+    s16 state_08;
+    s16 cursor_0A;    // placement record index being examined
+    s16 slot_0C;      // reserved slot for the current record
+    u16 pad_0E;
+    u32 loaded_count_10;  // models published since 0x001923D0
+    ObjectLoadSlot slots_14[kObjectSlotCount];
+};
+
+static_assert(sizeof(PlacedObjectRecord) == 0x20);
+static_assert(sizeof(ObjectLoadSlot) == 0x48);
+static_assert(sizeof(ObjectLoadContext) == 0x6D4);
+static_assert(__builtin_offsetof(ObjectLoadContext, slots_14) == 0x14);
+static_assert(__builtin_offsetof(ObjectLoadSlot, model_28) == 0x28);
+static_assert(__builtin_offsetof(ObjectLoadSlot, name_2C) == 0x2C);
+static_assert(__builtin_offsetof(ObjectLoadSlot, record_index_44) == 0x44);
+
+}  // namespace
+
+extern "C" s32 engine_func_0024f210();                                 // 0x0024F210 record count
+extern "C" const PlacedObjectRecord* engine_func_0025c07c(s32 index);  // 0x0025C07C record lookup
+extern "C" u32 ui_func_002be7fc(char* dst, const char* format, ...);   // 0x002BE7FC sprintf
+extern "C" void* engine_func_0029a2d0(const char* path, u32 kind);     // 0x0029A2D0 model load
+extern "C" s32 engine_func_002ae16c(void* model);                      // 0x002AE16C model ready
+extern "C" void engine_func_002a06c8(void* model, u32 mode);           // 0x002A06C8 enable model
+extern "C" void engine_func_002bf86c(char* dst, const char* src);      // 0x002BF86C strcpy
+
+extern "C" s32 engine_func_0021e3c0() {
+    auto* const* const context_slot =
+        reinterpret_cast<ObjectLoadContext* const*>(kObjectLoadContextAddress);
+    ObjectLoadContext* const context0 = *context_slot;  // 0x0021E3CC
+
+    switch (context0->state_08) {
+    case kObjectStateScan: {
+        // 0x0021E3F8..0x0021E4C8: walk the placement table from the stored
+        // cursor until a record matches the pending filter and a free slot is
+        // found. The record count is re-queried after every rejected record.
+        s32 cursor = context0->cursor_0A;
+        if (engine_func_0024f210() <= cursor) {
+            (*context_slot)->state_08 = kObjectStateFinished;  // 0x0021E4C0
+            return 1;
+        }
+        for (;;) {
+            const PlacedObjectRecord* const record =
+                engine_func_0025c07c(cursor);
+            ObjectLoadContext* const context = *context_slot;  // 0x0021E420
+            if (record->id_a_00 >= 0 &&
+                record->id_a_00 == context->filter_a_04 &&
+                record->id_b_02 == context->filter_b_06 &&
+                record->object_id_04 < kObjectIdLimit) {
+                context->cursor_0A = static_cast<s16>(cursor);  // 0x0021E450
+                // 0x0021E454..0x0021E474: first slot whose enable byte is 0.
+                s32 slot = 0;
+                while (slot < kObjectSlotCount &&
+                       context->slots_14[slot].enabled_00 != 0) {
+                    slot += 1;
+                }
+                if (slot >= kObjectSlotCount) {
+                    slot = -1;  // 0x0021E474: no slot left
+                }
+                context->slot_0C = static_cast<s16>(slot);
+                if (slot == -1) {
+                    context->state_08 = kObjectStateFinished;  // 0x0021E484
+                    return 1;
+                }
+                context->state_08 = kObjectStateLoad;  // 0x0021E48C
+                return 0;
+            }
+            cursor += 1;
+            if (!(cursor < engine_func_0024f210())) {  // 0x0021E4AC
+                break;
+            }
+        }
+        (*context_slot)->state_08 = kObjectStateFinished;  // 0x0021E4C0
+        return 1;
+    }
+
+    case kObjectStateLoad: {
+        // 0x0021E4CC..0x0021E524: reserve the slot for this record, publish
+        // its object id, then format the model path and start the load.
+        const PlacedObjectRecord* const record =
+            engine_func_0025c07c(context0->cursor_0A);
+        ObjectLoadContext* const context = *context_slot;  // 0x0021E4D4
+        ObjectLoadSlot* const slot = reinterpret_cast<ObjectLoadSlot*>(
+            reinterpret_cast<u8*>(context) + kSlotsOffset +
+            static_cast<s32>(context->slot_0C) * kObjectSlotStride);
+        slot->object_id_24 = static_cast<u32>(record->object_id_04);
+        slot->name_2C[0] = '\0';  // 0x0021E4F4
+        char path[kPathBufferSize];
+        ui_func_002be7fc(path, kObjectPathFormat,
+                         static_cast<s32>(record->object_id_04));
+        slot->model_28 = reinterpret_cast<u32>(
+            engine_func_0029a2d0(path, kModelLoadKind));
+        (*context_slot)->state_08 = kObjectStatePublish;  // 0x0021E518
+        return 0;
+    }
+
+    case kObjectStatePublish: {
+        // 0x0021E528..0x0021E63C: wait for the asynchronous model, enable it,
+        // then publish the record's placement values into the slot.
+        const PlacedObjectRecord* const record =
+            engine_func_0025c07c(context0->cursor_0A);
+        ObjectLoadContext* const context = *context_slot;  // 0x0021E534
+        ObjectLoadSlot* const slot = reinterpret_cast<ObjectLoadSlot*>(
+            reinterpret_cast<u8*>(context) + kSlotsOffset +
+            static_cast<s32>(context->slot_0C) * kObjectSlotStride);
+
+        if (engine_func_002ae16c(reinterpret_cast<void*>(slot->model_28)) == 0) {
+            return 0;  // 0x0021E558: model still loading, stay in this state
+        }
+        engine_func_002a06c8(reinterpret_cast<void*>(slot->model_28), 1);
+
+        slot->position_04 = static_cast<f32>(record->x_06);
+        slot->position_08 = static_cast<f32>(record->y_08);
+        slot->position_0C = static_cast<f32>(record->z_0A);
+        slot->angle_1C = static_cast<f32>(record->angle_0C);
+        slot->offset_10 = static_cast<f32>(record->x_06);
+        // 0x0021E5B8: object 6 substitutes its alternate height; every other
+        // object keeps the record's Y value.
+        slot->offset_14 = static_cast<f32>(
+            slot->object_id_24 == kAltHeightObjectId ? record->alternate_y_0E
+                                                     : record->y_08);
+        slot->offset_18 = static_cast<f32>(record->z_0A);
+
+        (*context_slot)->loaded_count_10 += 1;  // 0x0021E5E8
+        slot->enabled_00 = 1;  // 0x0021E5F8
+        slot->enabled_01 = 1;
+        slot->enabled_02 = 1;
+        slot->record_index_44 = static_cast<u32>(  // 0x0021E604, ldrsh
+            static_cast<s32>((*context_slot)->cursor_0A));
+        if (record->name_10[0] != '\0') {  // 0x0021E610
+            engine_func_002bf86c(slot->name_2C, record->name_10);
+        }
+
+        // 0x0021E628: advance the cursor with the original 16-bit ldrh/add/strh
+        // sequence, then re-arm the scan for the next record.
+        ObjectLoadContext* const final_context = *context_slot;
+        const u16 next_cursor = static_cast<u16>(
+            static_cast<u16>(final_context->cursor_0A) + 1U);
+        final_context->cursor_0A = static_cast<s16>(next_cursor);
+        final_context->state_08 = kObjectStateScan;
+        return 0;
+    }
+
+    case kObjectStateFinished:
+        return 1;  // 0x0021E4A0
+
+    default:
+        return 0;  // 0x0021E640
+    }
+}
 
 // DECOMP_FUNC(0x002fe358, 680)
 extern "C" __attribute__((naked)) void ui_func_002fe358() {
