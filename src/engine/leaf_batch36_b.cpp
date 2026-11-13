@@ -1083,32 +1083,240 @@ extern "C" __attribute__((naked)) void func_003d7338() {
 }
 
 // DECOMP_FUNC(0x003d88cc, 404)
-extern "C" __attribute__((naked)) void func_003d88cc() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x00f0, 0xe92d, 0xcb01, 0xe280, 0x1634, 0xe590, 0xcf8d, 0xe28c, 0x1602, 0xe3c1\n"
-        ".hword 0x0601, 0xe311, 0x1634, 0xe580, 0x0057, 0x1a00, 0x1b01, 0xe280, 0x0a57, 0xed9f\n"
-        ".hword 0x4b01, 0xe280, 0x0aae, 0xed81, 0x3794, 0xe590, 0x4ffa, 0xe284, 0x3798, 0xe580\n"
-        ".hword 0x37ac, 0xe590, 0x37b0, 0xe580, 0x37d0, 0xe590, 0x37d4, 0xe580, 0x37c4, 0xe590\n"
-        ".hword 0x37c8, 0xe580, 0x0070, 0xe894, 0x3b01, 0xe280, 0x3ffd, 0xe283, 0x0070, 0xe883\n"
-        ".hword 0x4b02, 0xe280, 0x4018, 0xe284, 0x3b02, 0xe280, 0x0070, 0xe894, 0x3024, 0xe283\n"
-        ".hword 0x0070, 0xe883, 0x3b02, 0xe280, 0x0ae7, 0xed81, 0x0aed, 0xed81, 0x0af6, 0xed81\n"
-        ".hword 0x0af3, 0xed81, 0x0a02, 0xed83, 0x0a01, 0xed83, 0x0a00, 0xed83, 0x3e83, 0xe280\n"
-        ".hword 0x5b01, 0xe280, 0x0a02, 0xed83, 0x0a01, 0xed83, 0x0a00, 0xed83, 0x3000, 0xe3a0\n"
-        ".hword 0x37a4, 0xe580, 0x37bc, 0xe580, 0x37e0, 0xe580, 0x3810, 0xe580, 0x3840, 0xe580\n"
-        ".hword 0x4298, 0xe591, 0x30b8, 0xe59f, 0x5fb3, 0xe285, 0x4220, 0xe581, 0x4270, 0xe591\n"
-        ".hword 0x402c, 0xe583, 0x42a8, 0xe591, 0x4230, 0xe581, 0x41a4, 0xe591, 0x422c, 0xe581\n"
-        ".hword 0x00e0, 0xe895, 0x4e5f, 0xe280, 0x00e0, 0xe884, 0x5b01, 0xe280, 0x5f96, 0xe285\n"
-        ".hword 0x4084, 0xe59f, 0x00e0, 0xe895, 0x00e0, 0xe884, 0x5b01, 0xe280, 0x5fb9, 0xe285\n"
-        ".hword 0x4018, 0xe284, 0x00e0, 0xe895, 0x00e0, 0xe884, 0x0a77, 0xed81, 0x0a0c, 0xed83\n"
-        ".hword 0x0a7b, 0xed81, 0x0a7a, 0xed81, 0x1b01, 0xe280, 0x1f6b, 0xe281, 0x0a02, 0xed81\n"
-        ".hword 0x0a01, 0xed81, 0x0a00, 0xed81, 0x100c, 0xe244, 0x0a02, 0xed81, 0x0a01, 0xed81\n"
-        ".hword 0x0a00, 0xed81, 0x100c, 0xe284, 0x0a02, 0xed81, 0x0a01, 0xed81, 0x0a00, 0xed81\n"
-        ".hword 0x1001, 0xe3a0, 0x1684, 0xe580, 0x2680, 0xe580, 0x0634, 0xe590, 0x0010, 0xe380\n"
-        ".hword 0x0000, 0xe58c, 0x00f0, 0xe8bd, 0xff1e, 0xe12f\n"
-        // 12 bytes of bounded trailing literal data
-        ".hword 0x0000, 0x0000, 0x42c8, 0x0043, 0x3518, 0x0049\n"
-    );
+//
+// Restart/reset half of the result-panel animation state.
+//
+// The original span is 98 ARM instructions (0x003D88CC..0x003D8A50) followed
+// by the three-word literal pool at 0x003D8A54: { +0.0f, 0x004342C8,
+// 0x00493518 }.  The body is a leaf: no direct or indirect calls, no stack
+// frame beyond `push {r4,r5,r6,r7}` / `pop {r4,r5,r6,r7}`, and no VFP
+// arithmetic.  The only VFP instructions load and store the +0.0f literal.
+//
+// Contract recovered from the instruction stream and both static callers
+// (0x00345F88 and 0x003D0554, which both pass r1 = 0):
+//   * r0 is the work object; r2 is stored verbatim at +0x680.  r1 is never
+//     read (the prologue immediately overwrites it).
+//   * Bit 21 (0x00200000) of +0x634 is cleared on every path, before the
+//     early test.  If bit 20 (0x00100000) is set the routine returns at once,
+//     leaving every other field and both write-once globals untouched.
+//   * Otherwise it snapshots the current animation samples into the
+//     interpolation bases at +0x5F0/+0x620/+0x62C/+0x630 and in .bss, clears
+//     the matching targets, previous-sample slots and phase counters,
+//     publishes one word to 0x004342F4, zeroes 0x004342F8, stores 1 at
+//     +0x684, stores the r2 argument at +0x680 and sets bit 4 (0x10) of
+//     +0x634.
+//   * The final `ldr r0,[r0,#0x634]; orr r0,r0,#0x10; str r0,[ip]` leaves the
+//     new flag word in r0 on the completed path, while the early path leaves
+//     the object pointer in r0.  Neither caller consumes r0, but the
+//     reconstruction preserves it and the differential suite compares it.
+//
+// Offsets are kept as explicit fields because this file has no canonical view
+// of the object.  The +0x634/+0x680/+0x684 roles agree with the ResultWork
+// description in include/ui/ui_scene_extras.h and with the interpolation
+// update at 0x003D58C4; the remaining phase fields are known only by offset.
+namespace func_3d88cc {
+
+constexpr u32 kClearPendingFlag = 0x00200000;  // bit 21, cleared on both paths
+constexpr u32 kBlockedFlag = 0x00100000;       // bit 20, `tst`/`bne` gate
+constexpr u32 kStartedFlag = 0x00000010;       // bit 4, set on completion
+
+// Literal 0x004342C8: the routine writes its +0x2C and +0x30 slots.
+constexpr u32 kGlobalSnapshotAddress = 0x004342F4;
+constexpr u32 kGlobalScalarAddress = 0x004342F8;
+
+// Literal 0x00493518: .bss animation tracks.  Each base is three f32 lanes;
+// the matching target starts 0xC bytes later.
+constexpr u32 kTrackABase = 0x00493518;
+constexpr u32 kTrackATarget = 0x00493524;
+constexpr u32 kTrackBBase = 0x00493530;
+constexpr u32 kTrackBTarget = 0x0049353C;
+
+struct ResultWorkView {
+    u8 pad_000[0x5A4];
+    f32 value_5a4;              // current scalar sample -> +0x62C
+    u8 pad_5a8[0x04];
+    f32 target_5ac[3];          // zeroed
+    u8 pad_5b8[0x24];
+    f32 target_5dc;             // zeroed
+    u8 pad_5e0[0x08];
+    f32 target_5e8;             // zeroed
+    f32 target_5ec;             // zeroed
+    f32 base_5f0[3];            // <- +0x6CC..+0x6D4
+    u8 pad_5fc[0x24];
+    f32 base_620;               // <- +0x698
+    u8 pad_624[0x08];
+    f32 base_62c;               // <- +0x5A4
+    f32 base_630;               // <- +0x6A8
+    u32 flags_634;              // bit 21 cleared, bit 20 gate, bit 4 set
+    u8 pad_638[0x20];
+    f32 value_658[3];           // current sample -> 0x00493518
+    u8 pad_664[0x0C];
+    u32 field_670;              // -> 0x004342F4
+    u8 pad_674[0x0C];
+    s32 field_680;              // <- r2 argument
+    s32 field_684;              // <- 1
+    u8 pad_688[0x10];
+    f32 value_698;              // current sample -> +0x620
+    u8 pad_69c[0x0C];
+    f32 value_6a8;              // current sample -> +0x630
+    u8 pad_6ac[0x0C];
+    f32 field_6b8;              // zeroed
+    u8 pad_6bc[0x10];
+    f32 value_6cc[3];           // current sample -> +0x5F0
+    u8 pad_6d8[0x0C];
+    f32 value_6e4[3];           // current sample -> 0x00493530
+    u8 pad_6f0[0xA4];
+    u32 field_794;              // copied to +0x798
+    u32 field_798;
+    f32 field_79c;              // zeroed
+    u8 pad_7a0[0x04];
+    u32 field_7a4;              // zeroed
+    u8 pad_7a8[0x04];
+    u32 field_7ac;              // copied to +0x7B0
+    u32 field_7b0;
+    f32 field_7b4;              // zeroed
+    u8 pad_7b8[0x04];
+    u32 field_7bc;              // zeroed
+    u8 pad_7c0[0x04];
+    u32 field_7c4;              // copied to +0x7C8
+    u32 field_7c8;
+    f32 field_7cc;              // zeroed
+    u32 field_7d0;              // copied to +0x7D4
+    u32 field_7d4;
+    f32 field_7d8;              // zeroed
+    u8 pad_7dc[0x04];
+    u32 field_7e0;              // zeroed
+    u8 pad_7e4[0x04];
+    u32 field_7e8[3];           // copied to +0x7F4
+    u32 field_7f4[3];
+    f32 field_800;              // zeroed
+    f32 field_804;              // zeroed
+    f32 field_808;              // zeroed
+    u8 pad_80c[0x04];
+    u32 field_810;              // zeroed
+    u8 pad_814[0x04];
+    u32 field_818[3];           // copied to +0x824
+    u32 field_824[3];
+    f32 field_830;              // zeroed
+    f32 field_834;              // zeroed
+    f32 field_838;              // zeroed
+    u8 pad_83c[0x04];
+    u32 field_840;              // zeroed
+};
+
+static_assert(offsetof(ResultWorkView, value_5a4) == 0x5A4);
+static_assert(offsetof(ResultWorkView, base_5f0) == 0x5F0);
+static_assert(offsetof(ResultWorkView, flags_634) == 0x634);
+static_assert(offsetof(ResultWorkView, value_658) == 0x658);
+static_assert(offsetof(ResultWorkView, field_680) == 0x680);
+static_assert(offsetof(ResultWorkView, field_684) == 0x684);
+static_assert(offsetof(ResultWorkView, value_698) == 0x698);
+static_assert(offsetof(ResultWorkView, value_6cc) == 0x6CC);
+static_assert(offsetof(ResultWorkView, value_6e4) == 0x6E4);
+static_assert(offsetof(ResultWorkView, field_794) == 0x794);
+static_assert(offsetof(ResultWorkView, field_840) == 0x840);
+static_assert(sizeof(ResultWorkView) == 0x844);
+
+}  // namespace func_3d88cc
+
+extern "C" u32 func_003d88cc(u8* object, u32 /*unused*/, s32 value) {
+    using namespace func_3d88cc;
+
+    ResultWorkView* const ctx = reinterpret_cast<ResultWorkView*>(object);
+
+    // 0x003D88D4..0x003D88E8: the pending bit is always cleared; the branch
+    // tests bit 20 of the cleared word.
+    const u32 flags = ctx->flags_634 & ~kClearPendingFlag;
+    ctx->flags_634 = flags;
+    if ((flags & kBlockedFlag) != 0) {
+        return reinterpret_cast<u32>(object);
+    }
+
+    // 0x003D88F0..0x003D88F8: reset the scalar sample.
+    ctx->field_6b8 = 0.0f;
+
+    // 0x003D8904..0x003D892C: snapshot the four scalar phase samples.
+    ctx->field_798 = ctx->field_794;
+    ctx->field_7b0 = ctx->field_7ac;
+    ctx->field_7d4 = ctx->field_7d0;
+    ctx->field_7c8 = ctx->field_7c4;
+
+    // 0x003D8930..0x003D8944: snapshot two three-word phase vectors.
+    ctx->field_7f4[0] = ctx->field_7e8[0];
+    ctx->field_7f4[1] = ctx->field_7e8[1];
+    ctx->field_7f4[2] = ctx->field_7e8[2];
+    ctx->field_824[0] = ctx->field_818[0];
+    ctx->field_824[1] = ctx->field_818[1];
+    ctx->field_824[2] = ctx->field_818[2];
+
+    // 0x003D894C..0x003D8978: clear the per-phase timers.
+    ctx->field_79c = 0.0f;
+    ctx->field_7b4 = 0.0f;
+    ctx->field_7d8 = 0.0f;
+    ctx->field_7cc = 0.0f;
+    ctx->field_808 = 0.0f;
+    ctx->field_804 = 0.0f;
+    ctx->field_800 = 0.0f;
+    ctx->field_838 = 0.0f;
+    ctx->field_834 = 0.0f;
+    ctx->field_830 = 0.0f;
+
+    // 0x003D897C..0x003D8990: clear the five phase counters.
+    ctx->field_7a4 = 0;
+    ctx->field_7bc = 0;
+    ctx->field_7e0 = 0;
+    ctx->field_810 = 0;
+    ctx->field_840 = 0;
+
+    // 0x003D8994..0x003D89B8: current samples become the interpolation bases;
+    // one word is published to the global animation state.
+    ctx->base_620 = ctx->value_698;
+    *reinterpret_cast<u32*>(kGlobalSnapshotAddress) = ctx->field_670;
+    ctx->base_630 = ctx->value_6a8;
+    ctx->base_62c = ctx->value_5a4;
+
+    // 0x003D89BC..0x003D89EC: the two three-lane samples become bases.
+    ctx->base_5f0[0] = ctx->value_6cc[0];
+    ctx->base_5f0[1] = ctx->value_6cc[1];
+    ctx->base_5f0[2] = ctx->value_6cc[2];
+
+    f32* const track_a_base = reinterpret_cast<f32*>(kTrackABase);
+    track_a_base[0] = ctx->value_658[0];
+    track_a_base[1] = ctx->value_658[1];
+    track_a_base[2] = ctx->value_658[2];
+
+    f32* const track_b_base = reinterpret_cast<f32*>(kTrackBBase);
+    track_b_base[0] = ctx->value_6e4[0];
+    track_b_base[1] = ctx->value_6e4[1];
+    track_b_base[2] = ctx->value_6e4[2];
+
+    // 0x003D89F0..0x003D8A10: clear the scalar targets and the three-lane
+    // target block, plus the global scalar.
+    ctx->target_5dc = 0.0f;
+    *reinterpret_cast<f32*>(kGlobalScalarAddress) = 0.0f;
+    ctx->target_5ec = 0.0f;
+    ctx->target_5e8 = 0.0f;
+    ctx->target_5ac[0] = 0.0f;
+    ctx->target_5ac[1] = 0.0f;
+    ctx->target_5ac[2] = 0.0f;
+
+    // 0x003D8A14..0x003D8A30: clear both .bss track targets.
+    f32* const track_a_target = reinterpret_cast<f32*>(kTrackATarget);
+    track_a_target[0] = 0.0f;
+    track_a_target[1] = 0.0f;
+    track_a_target[2] = 0.0f;
+
+    f32* const track_b_target = reinterpret_cast<f32*>(kTrackBTarget);
+    track_b_target[0] = 0.0f;
+    track_b_target[1] = 0.0f;
+    track_b_target[2] = 0.0f;
+
+    // 0x003D8A34..0x003D8A48: arm the animation and flag it as started.
+    ctx->field_684 = 1;
+    ctx->field_680 = value;
+    const u32 updated = ctx->flags_634 | kStartedFlag;
+    ctx->flags_634 = updated;
+    return updated;
 }
 
 // DECOMP_FUNC(0x0038f950, 408)
