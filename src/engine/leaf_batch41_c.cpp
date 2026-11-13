@@ -6010,39 +6010,215 @@ extern "C" u32 func_00150654(void* scene_pointer, void* unit_pointer,
 }
 
 // DECOMP_FUNC(0x002f2e54, 440)
-// 106 ARM instructions through unconditional pop; 16 trailing data bytes.
-extern "C" __attribute__((naked)) void ui_func_002f2e54() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d47f0, 0xee000a10, 0xee001a90, 0xe1a07002\n"
-        ".word 0xe59f9194, 0xe3a01001, 0xed2d8b04, 0xe28d2030\n"
-        ".word 0xeeb80ac0, 0xe8920060, 0xeef80ae0, 0xe59f2174\n"
-        ".word 0xe5994000, 0xe1a08003, 0xe1a00001, 0xec921a02\n"
-        ".word 0xee300a01, 0xee700aa1, 0xeebd8ac0, 0xeefd8ae0\n"
-        ".word 0xebff4c34, 0xe2844a01, 0xe2844f93, 0xe3a0a000\n"
-        ".word 0xe5941000, 0xe2812001, 0xe0843101, 0xe5931008\n"
-        ".word 0xe0843102, 0xe5842000, 0xe5830008, 0xe5d42018\n"
-        ".word 0xe3520000, 0x01510000, 0x0a000002, 0xe594101c\n"
-        ".word 0xe12fff31, 0xe5c4a018, 0xe5990000, 0xe3a01000\n"
-        ".word 0xebff3b90, 0xe1a01406, 0xe1a02806, 0xed9f9a3f\n"
-        ".word 0xe1b00c26, 0xe1a01c21, 0xe1a02c22, 0xe20630ff\n"
-        ".word 0x0a00000e, 0xee008a10, 0xe1a03c03, 0xeef80ae8\n"
-        ".word 0xe1832802, 0xe1821401, 0xe1800001, 0xeef81ac0\n"
-        ".word 0xee007a10, 0xeeb02a49, 0xe1a03000, 0xe1a02003\n"
-        ".word 0xe1a01002, 0xeeb81ac0, 0xeeb80ac8, 0xebff36f1\n"
-        ".word 0xe1a02405, 0xe1a01805, 0xe1b00c25, 0xe1a02c22\n"
-        ".word 0xe1a01c21, 0xe20530ff, 0x0a00000f, 0xee008a10\n"
-        ".word 0xe1a03c03, 0xeef80ae8, 0xe1831801, 0xe1811402\n"
-        ".word 0xe1800001, 0xeef81ac0, 0xee007a10, 0xeeb02a49\n"
-        ".word 0xe1a03000, 0xe1a02003, 0xeddf2a19, 0xe1a01002\n"
-        ".word 0xeeb81ac0, 0xeeb80ac8, 0xebfc7451, 0xe5990000\n"
-        ".word 0xe2804a01, 0xe2844f93, 0xe5940000, 0xe0841100\n"
-        ".word 0xe2400001, 0xe5911008, 0xe5840000, 0xe0840100\n"
-        ".word 0xe5d42018, 0xe5900008, 0xe3520000, 0x01510000\n"
-        ".word 0x0a000002, 0xe594101c, 0xe12fff31, 0xe5c4a018\n"
-        ".word 0xecbd8b04, 0xe8bd87f0, 0x004724cc, 0x0044ea00\n"
-        ".word 0x00000000, 0x3f800000\n"
-    );
+//
+// Recovered contract (ARM 0x002F2E54..0x002F2FFB = 106 instructions; the four
+// literal words at 0x002F2FFC..0x002F300B are 0x004724CC, 0x0044EA00, 0.0f and
+// 1.0f):
+//
+//   * ABI: r0 = x, r1 = y, r2 = width, r3 = height, [sp+0] = packed word A,
+//     [sp+4] = packed word B.  The prologue saves {r4-r8, sb, sl, lr} and
+//     vpush {d8, d9} (s16-s19); the epilogue restores exactly those, so r4-r11
+//     and d8-d15 survive and SP is unchanged.  There is no local frame; the
+//     two stack arguments are read from the caller's frame at entry SP
+//     (`add r2, sp, #0x30; ldm r2, {r5, r6}`).
+//   * Before any helper runs the routine reads `*0x0044EA00` (the render-
+//     register base, captured for the push) and the two floats at 0x004724CC /
+//     0x004724D0 (a runtime-written bias pair; 0x002E70B0 stores s0/s1 there).
+//     x and y are converted to single precision, the matching bias is added,
+//     and the result is truncated back to a signed integer (vcvt.f32.s32,
+//     vadd.f32, vcvt.s32.f32).  Those two integers are then widened to float
+//     again for every draw call.
+//   * `ui_func_002c5f7c(1, 1)` builds the viewport command word.  The render
+//     stack node is at captured_base + 0x124C: `previous = slots[count]`,
+//     `count += 1`, `slots[count] = pushed`.  When the node's byte at +0x18 is
+//     non-zero or `previous != pushed`, the function pointer at +0x1C is
+//     invoked with the new value in r0 and the dirty byte is cleared to zero.
+//   * `ui_func_002c1d3c(*0x0044EA00, 0)` selects render mode 0; the global is
+//     re-read here, so a callback that rewrites it is observed.
+//   * The two packed words are handled independently, B first then A.  For
+//     each: if the word's top byte (bits 24..31) is non-zero, the word is
+//     byte-swapped (equivalent to `__builtin_bswap32`, the original builds the
+//     same permutation with `lsl`/`lsr`/`orr`), placed in r0..r3, and drawn:
+//       - B -> ui_func_002c0b1c(swapped x4, s0 = x_f, s1 = y_f,
+//                               s2 = width_f, s3 = height_f, s4 = 0.0f);
+//       - A -> ui_func_002100f8(swapped x4, the same s0..s3,
+//                               s4 = 0.0f, s5 = 1.0f).
+//     A zero top byte skips that draw entirely; nothing else about the word is
+//     tested.
+//   * Pop from the render stack at a freshly re-read `*0x0044EA00 + 0x124C`:
+//     `previous = slots[count]`, `count -= 1`, `new_top = slots[count - 1]`
+//     (flat and unchecked, exactly like the ARM).  The same dirty/difference
+//     rule applies; the callback result, or `new_top` when no callback ran, is
+//     left in r0 and returned.  The only other caller-visible residue is that
+//     return value; the original's callers use it as a u32.
+namespace func_2f2e54 {
+
+// Render-register block at 0x0044EA00; the stack node starts at +0x124C.
+constexpr u32 kRenderStackOffset = 0x124C;
+
+// Runtime float-pair at 0x004724CC written by 0x002E70B0 (`vstmia r0, {s0,s1}`).
+constexpr u32 kBiasAddress = 0x004724CC;
+
+// `mov r0, #1` / `mov r1, #1` before the 0x002C5F7C call, and the `mov r1, #0`
+// before the 0x002C1D3C call.
+constexpr u32 kPushKind = 1;
+constexpr u32 kPushEnabled = 1;
+constexpr u32 kRenderMode = 0;
+
+// Literal pool 0x002F3004 / 0x002F3008.
+constexpr f32 kZero = 0.0f;  // 0x00000000
+constexpr f32 kOne = 1.0f;   // 0x3F800000
+
+// Stack node layout (offsets inside the node at render_base + 0x124C):
+//   +0x00 count
+//   +0x04 unused
+//   +0x08 slots[0] .. slots[3]
+//   +0x18 dirty byte (the low byte of the word at +0x18)
+//   +0x1C flush callback
+// The original addresses the slots as a flat word array (`node + 8 + count*4`)
+// and has no bounds check.  At count == 3 the push store lands on the dirty
+// word, so the dirty byte read by the same push observes the low byte of the
+// pushed value.  The reconstruction must keep that order, therefore it also
+// addresses the node as flat words instead of a bounded struct array.
+constexpr u32 kNodeCountOffset = 0x00;
+constexpr u32 kNodeSlotOffset = 0x08;
+constexpr u32 kNodeDirtyOffset = 0x18;
+constexpr u32 kNodeFlushOffset = 0x1C;
+
+struct RenderStackNode {  // layout documentation only
+    u32 count;      // +0x00
+    u32 pad_004;    // +0x04
+    u32 slots[4];   // +0x08..+0x17
+    u8 dirty;       // +0x18
+    u8 pad_019[3];
+    u32 flush_cb;   // +0x1C, `blx r1` with the new value in r0
+};
+
+static_assert(offsetof(RenderStackNode, count) == kNodeCountOffset);
+static_assert(offsetof(RenderStackNode, slots) == kNodeSlotOffset);
+static_assert(offsetof(RenderStackNode, dirty) == kNodeDirtyOffset);
+static_assert(offsetof(RenderStackNode, flush_cb) == kNodeFlushOffset);
+
+// `blx r1` with no null check: the original requires a non-null callback.
+using FlushCallback = u32 (*)(u32 value);
+
+// Flat word view of the node so the unbounded slot indexes match the ARM.
+inline u32* node_words(void* base) {
+    return reinterpret_cast<u32*>(
+        static_cast<u8*>(base) + kRenderStackOffset);
+}
+
+inline u8* node_dirty(u32* words) {
+    return reinterpret_cast<u8*>(words) + kNodeDirtyOffset;
+}
+
+// One biased int -> float -> int conversion (0x2F2E74..0x2F2EA0).
+inline s32 biased_coordinate(s32 value, f32 bias) {
+    return static_cast<s32>(static_cast<f32>(value) + bias);
+}
+
+}  // namespace func_2f2e54
+
+namespace smt4::engine {
+extern void* g_RenderRegisterBase;  // 0x0044EA00
+}
+
+// 0x002C5F7C: builds the render-stack command word for (1, 1).
+extern "C" u32 ui_func_002c5f7c(u32 kind, u32 enabled);
+
+// 0x002C1D3C: selects the render mode on the render-register block.
+extern "C" void ui_func_002c1d3c(void* base, u32 mode);
+
+// 0x002C0B1C: submits one four-vertex element.  r0..r3 carry the colour word
+// (identical in all four here); s0..s4 carry x, y, width, height and 0.0f.
+extern "C" void ui_func_002c0b1c(u32 color0, u32 color1, u32 color2,
+                                 u32 color3, f32 x, f32 y, f32 width,
+                                 f32 height, f32 depth);
+
+// 0x002100F8: submits four sub-elements.  r0..r3 carry the colour word; s0..s5
+// carry x, y, width, height and the two pass-through floats 0.0f and 1.0f.
+extern "C" void ui_func_002100f8(u32 color0, u32 color1, u32 color2,
+                                 u32 color3, f32 x, f32 y, f32 width,
+                                 f32 height, f32 depth, f32 extra);
+
+extern "C" u32 ui_func_002f2e54(s32 x, s32 y, s32 width, s32 height,
+                                u32 packed_a, u32 packed_b) {
+    using namespace func_2f2e54;
+
+    // 0x2F2E84/0x2F2E90..0x2F2EA0: the render base and the bias pair are read
+    // before the first helper runs, and the biased coordinates are computed
+    // before that call as well.
+    void* const push_base = smt4::engine::g_RenderRegisterBase;
+    const f32 bias_x = *reinterpret_cast<const f32*>(kBiasAddress);
+    const f32 bias_y = *reinterpret_cast<const f32*>(kBiasAddress + 4);
+    const s32 biased_x = biased_coordinate(x, bias_x);
+    const s32 biased_y = biased_coordinate(y, bias_y);
+
+    // 0x2F2E78: the original copies the caller's two stack words into r5/r6
+    // before any helper runs.  The barrier keeps those loads here; a callee may
+    // not legally alias the caller's argument slots, so the compiler would
+    // otherwise defer the loads to their first use after the helper calls.
+    u32 captured_a = packed_a;
+    u32 captured_b = packed_b;
+    asm volatile("" : "+r"(captured_a), "+r"(captured_b));
+
+    // 0x2F2EA4..0x2F2EE8: push onto the captured node.  The dirty byte is
+    // loaded after the slot store, exactly like `ldrb r2, [r4, #0x18]` follows
+    // `str r0, [r3, #8]`; at count == 3 the store rewrites that byte.
+    const u32 pushed = ui_func_002c5f7c(kPushKind, kPushEnabled);
+    u32* const push_node = node_words(push_base);
+    const u32 push_count = push_node[kNodeCountOffset / 4];
+    const u32 push_previous =
+        push_node[kNodeSlotOffset / 4 + push_count];
+    push_node[kNodeCountOffset / 4] = push_count + 1;
+    push_node[kNodeSlotOffset / 4 + push_count + 1] = pushed;
+    if (*node_dirty(push_node) != 0 || push_previous != pushed) {
+        reinterpret_cast<FlushCallback>(
+            push_node[kNodeFlushOffset / 4])(pushed);
+        *node_dirty(push_node) = 0;
+    }
+
+    // 0x2F2EEC..0x2F2EF4: render-mode selection on the re-read global.
+    ui_func_002c1d3c(smt4::engine::g_RenderRegisterBase, kRenderMode);
+
+    // The values forwarded as s0..s3 by both draw calls.
+    const f32 draw_x = static_cast<f32>(biased_x);
+    const f32 draw_y = static_cast<f32>(biased_y);
+    const f32 draw_width = static_cast<f32>(width);
+    const f32 draw_height = static_cast<f32>(height);
+
+    // 0x2F2EF8..0x2F2F50: packed word B (the second stack argument) drives the
+    // first draw.
+    if ((captured_b >> 24) != 0) {
+        const u32 swapped = __builtin_bswap32(captured_b);
+        ui_func_002c0b1c(swapped, swapped, swapped, swapped,
+                         draw_x, draw_y, draw_width, draw_height, kZero);
+    }
+
+    // 0x2F2F54..0x2F2FAC: packed word A (the first stack argument) drives the
+    // second draw, with s5 = 1.0f as an extra pass-through value.
+    if ((captured_a >> 24) != 0) {
+        const u32 swapped = __builtin_bswap32(captured_a);
+        ui_func_002100f8(swapped, swapped, swapped, swapped,
+                         draw_x, draw_y, draw_width, draw_height, kZero, kOne);
+    }
+
+    // 0x2F2FB0..0x2F2FF8: pop from the re-read render base and return the new
+    // top, or the flush callback result when it ran.
+    u32* const pop_node = node_words(smt4::engine::g_RenderRegisterBase);
+    const u32 pop_count = pop_node[kNodeCountOffset / 4];
+    const u32 pop_previous =
+        pop_node[kNodeSlotOffset / 4 + pop_count];
+    pop_node[kNodeCountOffset / 4] = pop_count - 1;
+    const u32 new_top = pop_node[kNodeSlotOffset / 4 + pop_count - 1];
+    if (*node_dirty(pop_node) != 0 || pop_previous != new_top) {
+        const u32 result =
+            reinterpret_cast<FlushCallback>(pop_node[kNodeFlushOffset / 4])(
+                new_top);
+        *node_dirty(pop_node) = 0;
+        return result;
+    }
+    return new_top;
 }
 
 // DECOMP_FUNC(0x003518d0, 440)
