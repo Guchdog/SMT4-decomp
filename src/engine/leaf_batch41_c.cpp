@@ -3156,38 +3156,279 @@ extern "C" u32 ui_func_001f6704(void* object) {
 }
 
 // DECOMP_FUNC(0x002d8fac, 420)
-// 104 ARM instructions through unconditional pop; 4 trailing data bytes.
-extern "C" __attribute__((naked)) void ui_func_002d8fac() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d41f0, 0xe59f7194, 0xe5974004, 0xe5970008\n"
-        ".word 0xe5941018, 0xe1510000, 0x0a00005f, 0xe5d41028\n"
-        ".word 0xe3510000, 0x1a00005c, 0xe5d41355, 0xe3510000\n"
-        ".word 0x1a000059, 0xe5840018, 0xe0800004, 0xe5d0034c\n"
-        ".word 0xe3500000, 0x0a00004c, 0xe3a00001, 0xe5c40355\n"
-        ".word 0xebff1497, 0xe3a00001, 0xebff16c2, 0xe3a00000\n"
-        ".word 0xebff0258, 0xe5970008, 0xe5945350, 0xe3a0200e\n"
-        ".word 0xe0840380, 0xe2806f93, 0xe590025e, 0xe2861030\n"
-        ".word 0xe5850000, 0xe5960016, 0xe5850004, 0xe596001a\n"
-        ".word 0xe5850008, 0xe1d601be, 0xe1c500bc, 0xe596003e\n"
-        ".word 0xe585000e, 0xe5960042, 0xe5850012, 0xe5960046\n"
-        ".word 0xe5850016, 0xe1d604ba, 0xe1c501ba, 0xe285001c\n"
-        ".word 0xebff8fb9, 0xe1d602b4, 0xe1a01006, 0xe1c502ba\n"
-        ".word 0xe1d602b6, 0xe1c502bc, 0xe5960020, 0xe5850030\n"
-        ".word 0xe285004c, 0xebff99f5, 0xe5d6004c, 0xe5c50076\n"
-        ".word 0xebff9ebc, 0xe2800054, 0xe1a01006, 0xebff99ef\n"
-        ".word 0xe5940350, 0xebff04b3, 0xe5970008, 0xe0840380\n"
-        ".word 0xe2900f93, 0x0a000003, 0xe5d00064, 0xe3500000\n"
-        ".word 0x13a00001, 0xebfe49ce, 0xe3a00000, 0xebff0da2\n"
-        ".word 0xe320f000, 0xe320f000, 0xebff7580, 0xe5941350\n"
-        ".word 0xe3a0200e, 0xebff8f98, 0xe5940350, 0xe1d010b8\n"
-        ".word 0xe3a00001, 0xebff01f4, 0xe5940350, 0xe1d010ba\n"
-        ".word 0xe3a00002, 0xebff01f0, 0xe5940350, 0xe1d010b6\n"
-        ".word 0xe8bd41f0, 0xe3a00000, 0xeaff01eb, 0xe3a00000\n"
-        ".word 0xebff144b, 0xe3a00001, 0xe320f000, 0xebff1675\n"
-        ".word 0xe8bd41f0, 0xe3a00000, 0xeaff020a, 0xe8bd81f0\n"
-        ".word 0x0044de28\n"
-    );
+//
+// Recovered contract (ARM 0x002D8FAC..0x002D914F; the last four bytes are the
+// literal 0x0044DE28, the save/load UI manager):
+//   * `manager = (void*)0x0044DE28`; `work = manager->work` is read once and
+//     kept in r4 for the whole body.  `manager->selected` is read three times:
+//     for the equality/active-page test, again after the three state helpers
+//     to address the slot page for the copy block, and a third time after
+//     0x0029A384 to re-address the page for the 0x0026B810 flag test.  The
+//     re-reads are observable: any helper that rewrites the manager field
+//     changes which page is used.
+//   * Three early exits return the initially loaded selection in r0 without
+//     touching the manager: `work->applied_selection_18 == selected`, then a
+//     non-zero `work->busy_28`, then a non-zero `work->transition_355`.
+//   * The active-page byte is `work[selected + 0x34C]` (a byte index, no
+//     stride).  Zero takes the deactivate path: 0x0029E260(0),
+//     0x0029EB14(1), then a tail branch to 0x00299974(0).
+//   * Otherwise the routine sets `work->transition_355 = 1`, calls
+//     0x0029E260(1), 0x0029EB14(1), 0x00299974(0), then copies the selected
+//     0x80-byte page at `work + 0x24C + selected*0x80` into the profile object
+//     addressed by `work->profile_350`.  The page is re-addressed after the
+//     three helpers; the profile pointer is re-loaded before every later use
+//     (`+0x350` is writable by the helpers).
+//   * The copy block is fixed-order and mixes word, halfword and byte
+//     accesses, including unaligned words at page +0x3E and profile +0x0E.
+//     0x002BCF58 copies 14 bytes (page +0x30 -> profile +0x1C), 0x002BF86C
+//     copies the page's NUL-terminated text to profile +0x4C and to
+//     `0x002C0B94() + 0x54`.  The 0x002C0B94 result is `[0x0043E2A8]+4 + 0x88`.
+//   * 0x0029A384(work->profile_350) hands the profile to the status manager
+//     (it copies it to status work +0x1300 and sets status flags).  The page
+//     is re-addressed from the manager; when the resulting pointer is null the
+//     0x0026B810 call is skipped.  Otherwise 0x0026B810 receives 1 when the
+//     page byte at +0x64 is non-zero and 0 otherwise.
+//   * 0x0029C768(0) runs next, then 0x002B66EC() (which returns
+//     `[0x0043E2A8]+4 + 0x90`) is used as the destination of a 14-byte copy
+//     from the current `work->profile_350`.  Finally the halfwords at profile
+//     +8 and +0xA are dispatched through 0x002998D8(1, ...) and
+//     (2, ...), and the halfword at profile +6 is passed to
+//     0x002998D8(0, ...) as the tail branch whose r0 becomes this function's
+//     return value.  All three profile addresses are re-loaded from
+//     `work->profile_350` immediately before use.
+//   * No stack arguments and no indirect calls.  The prologue saves r4-r8 plus
+//     lr (r8 is not otherwise used) and every exit restores the entry SP.  No
+//     helper argument or the profile pointer is null-checked by the original.
+//
+// The state dispatchers 0x00299974 and 0x002998D8 are declared returning u32
+// only so the two tail branches can forward the r0 value the ARM leaves in the
+// caller; the real callers ignore this function's result.
+
+extern "C" void camp_func_0029e260(u32 mode);
+extern "C" void ui_func_0029eb14(u32 mode);
+extern "C" u32 ui_func_00299974(u32 mode);
+extern "C" void ui_func_002bcf58(void* dst, const void* src, u32 count);
+extern "C" void engine_func_002bf86c(char* dst, const char* src);
+extern "C" void* ui_func_002c0b94(void);
+extern "C" void engine_func_0029a384(void* profile);
+extern "C" void script_vm_func_0029c768(u32 mode);
+extern "C" void* script_vm_func_002b66ec(void);
+extern "C" u32 ui_func_002998d8(u32 mode, u32 id);
+
+namespace smt4::ui {
+void Status_SetMode1EB9(u8 mode);  // 0x0026B810
+}
+
+namespace func_2d8fac {
+
+constexpr u32 kManagerAddress = 0x0044DE28;
+
+constexpr u32 kActiveByteOffset = 0x34C;
+constexpr u32 kSlotPageOffset = 0x24C;
+constexpr u32 kSlotPageStride = 0x80;
+constexpr u32 kCopyLength = 0x0E;
+
+struct Work;
+
+struct __attribute__((packed)) Manager {
+    u8 pad_00[0x04];
+    Work* work;       // +0x04: `ldr r4, [r7, #4]`
+    u32 selected;     // +0x08: `ldr r0, [r7, #8]`
+};
+
+struct __attribute__((packed)) Work {
+    u8 pad_00[0x18];
+    u32 applied_selection;  // +0x18: `ldr/str [r4, #0x18]`
+    u8 pad_1c[0x0C];
+    u8 busy;                // +0x28: `ldrb [r4, #0x28]`
+    u8 pad_29[0x323];
+    u8 active[2];           // +0x34C: indexed as work[selected + 0x34C]
+    u8 pad_34e[0x02];
+    u32 profile;            // +0x350: profile object pointer
+    u8 pad_354;
+    u8 transition;          // +0x355: `ldrb/strb [r4, #0x355]`
+    u8 pad_356[0x32];
+};
+
+// One 0x80-byte save/load slot page.  Only the fields this routine touches are
+// named; the text at +0x00 is copied as a NUL-terminated string and the fields
+// from +0x12 onward follow it in memory.
+struct __attribute__((packed, may_alias)) SlotPage {
+    char text_00[0x12];     // +0x00: strcpy source
+    u32 word_12;            // +0x12 -> profile +0x00
+    u32 word_16;            // +0x16 -> profile +0x04
+    u32 word_1a;            // +0x1A -> profile +0x08
+    u16 half_1e;            // +0x1E -> profile +0x0C
+    u32 word_20;            // +0x20 -> profile +0x30
+    u16 half_24;            // +0x24 -> profile +0x2A
+    u16 half_26;            // +0x26 -> profile +0x2C
+    u8 pad_28[0x08];
+    u8 data_30[0x0E];       // +0x30 -> profile +0x1C (0x002BCF58, 14 bytes)
+    u32 word_3e;            // +0x3E -> profile +0x0E (unaligned word)
+    u32 word_42;            // +0x42 -> profile +0x12
+    u32 word_46;            // +0x46 -> profile +0x16
+    u16 half_4a;            // +0x4A -> profile +0x1A
+    u8 byte_4c;             // +0x4C -> profile +0x76
+    u8 pad_4d[0x17];
+    u8 byte_64;             // +0x64: status mode source
+    u8 pad_65[0x1B];
+};
+
+// Profile object addressed by work +0x350.  The original has no null check and
+// no known total size; this view covers every byte the routine reads or writes.
+struct __attribute__((packed, may_alias)) Profile {
+    u32 word_00;            // +0x00
+    u32 word_04;            // +0x04
+    u32 word_08;            // +0x08
+    u16 half_0c;            // +0x0C
+    u32 word_0e;            // +0x0E (unaligned word)
+    u32 word_12;            // +0x12
+    u32 word_16;            // +0x16
+    u16 half_1a;            // +0x1A
+    u8 data_1c[0x0E];       // +0x1C..+0x29
+    u16 half_2a;            // +0x2A
+    u16 half_2c;            // +0x2C
+    u8 pad_2e[0x02];
+    u32 word_30;            // +0x30
+    u8 pad_34[0x18];
+    char text_4c[0x2A];     // +0x4C: strcpy destination
+    u8 byte_76;             // +0x76
+};
+
+static_assert(offsetof(Manager, work) == 0x04);
+static_assert(offsetof(Manager, selected) == 0x08);
+static_assert(offsetof(Work, applied_selection) == 0x18);
+static_assert(offsetof(Work, busy) == 0x28);
+static_assert(offsetof(Work, active) == 0x34C);
+static_assert(offsetof(Work, profile) == 0x350);
+static_assert(offsetof(Work, transition) == 0x355);
+static_assert(sizeof(Work) == 0x388);
+static_assert(offsetof(SlotPage, word_12) == 0x12);
+static_assert(offsetof(SlotPage, word_16) == 0x16);
+static_assert(offsetof(SlotPage, word_1a) == 0x1A);
+static_assert(offsetof(SlotPage, half_1e) == 0x1E);
+static_assert(offsetof(SlotPage, word_20) == 0x20);
+static_assert(offsetof(SlotPage, half_24) == 0x24);
+static_assert(offsetof(SlotPage, half_26) == 0x26);
+static_assert(offsetof(SlotPage, data_30) == 0x30);
+static_assert(offsetof(SlotPage, word_3e) == 0x3E);
+static_assert(offsetof(SlotPage, word_42) == 0x42);
+static_assert(offsetof(SlotPage, word_46) == 0x46);
+static_assert(offsetof(SlotPage, half_4a) == 0x4A);
+static_assert(offsetof(SlotPage, byte_4c) == 0x4C);
+static_assert(offsetof(SlotPage, byte_64) == 0x64);
+static_assert(sizeof(SlotPage) == 0x80);
+static_assert(offsetof(Profile, word_00) == 0x00);
+static_assert(offsetof(Profile, word_04) == 0x04);
+static_assert(offsetof(Profile, word_08) == 0x08);
+static_assert(offsetof(Profile, half_0c) == 0x0C);
+static_assert(offsetof(Profile, word_0e) == 0x0E);
+static_assert(offsetof(Profile, word_12) == 0x12);
+static_assert(offsetof(Profile, word_16) == 0x16);
+static_assert(offsetof(Profile, half_1a) == 0x1A);
+static_assert(offsetof(Profile, data_1c) == 0x1C);
+static_assert(offsetof(Profile, half_2a) == 0x2A);
+static_assert(offsetof(Profile, half_2c) == 0x2C);
+static_assert(offsetof(Profile, word_30) == 0x30);
+static_assert(offsetof(Profile, text_4c) == 0x4C);
+static_assert(offsetof(Profile, byte_76) == 0x76);
+static_assert(sizeof(Profile) == 0x77);
+
+// The ARM forms these addresses with 32-bit adds, so the index arithmetic is
+// kept in u32 and the byte address is computed explicitly.
+inline u8* byte_at(void* base, u32 offset) {
+    return reinterpret_cast<u8*>(reinterpret_cast<u32>(base) + offset);
+}
+
+inline SlotPage* slot_page(Work* work, u32 selected) {
+    return reinterpret_cast<SlotPage*>(
+        byte_at(work, kSlotPageOffset + selected * kSlotPageStride));
+}
+
+inline u8 active_byte(Work* work, u32 selected) {
+    return *byte_at(work, kActiveByteOffset + selected);
+}
+
+inline Profile* profile_view(Work* work) {
+    return reinterpret_cast<Profile*>(work->profile);
+}
+
+}  // namespace func_2d8fac
+
+extern "C" u32 ui_func_002d8fac(void) {
+    using namespace func_2d8fac;
+
+    Manager* const manager = reinterpret_cast<Manager*>(kManagerAddress);
+    Work* const work = manager->work;
+    const u32 selected = manager->selected;
+
+    if (work->applied_selection == selected) {
+        return selected;
+    }
+    if (work->busy != 0) {
+        return selected;
+    }
+    if (work->transition != 0) {
+        return selected;
+    }
+    work->applied_selection = selected;
+
+    if (active_byte(work, selected) == 0) {
+        camp_func_0029e260(0);
+        ui_func_0029eb14(1);
+        return ui_func_00299974(0);
+    }
+
+    work->transition = 1;
+    camp_func_0029e260(1);
+    ui_func_0029eb14(1);
+    ui_func_00299974(0);
+
+    // Re-read the manager: the three helpers may have changed the selection.
+    SlotPage* const page = slot_page(work, manager->selected);
+    Profile* const profile = profile_view(work);
+
+    profile->word_00 = page->word_12;
+    profile->word_04 = page->word_16;
+    profile->word_08 = page->word_1a;
+    profile->half_0c = page->half_1e;
+    profile->word_0e = page->word_3e;
+    profile->word_12 = page->word_42;
+    profile->word_16 = page->word_46;
+    profile->half_1a = page->half_4a;
+
+    ui_func_002bcf58(byte_at(profile, 0x1C), byte_at(page, 0x30),
+                     kCopyLength);
+
+    profile->half_2a = page->half_24;
+    profile->half_2c = page->half_26;
+    profile->word_30 = page->word_20;
+
+    engine_func_002bf86c(profile->text_4c, page->text_00);
+    profile->byte_76 = page->byte_4c;
+
+    u8* const game_work_88 = static_cast<u8*>(ui_func_002c0b94());
+    engine_func_002bf86c(reinterpret_cast<char*>(game_work_88 + 0x54),
+                         page->text_00);
+
+    engine_func_0029a384(reinterpret_cast<void*>(work->profile));
+
+    // The flag test re-addresses the page from the manager after 0x0029A384.
+    SlotPage* const refresh_page = slot_page(work, manager->selected);
+    if (refresh_page != nullptr) {
+        smt4::ui::Status_SetMode1EB9(refresh_page->byte_64 != 0 ? 1 : 0);
+    }
+
+    script_vm_func_0029c768(0);
+
+    void* const game_work_90 = script_vm_func_002b66ec();
+    ui_func_002bcf58(game_work_90,
+                     reinterpret_cast<void*>(work->profile), kCopyLength);
+
+    ui_func_002998d8(1, static_cast<u16>(profile_view(work)->word_08));
+    ui_func_002998d8(2, static_cast<u16>(profile_view(work)->word_08 >> 16));
+    return ui_func_002998d8(
+        0, static_cast<u16>(profile_view(work)->word_04 >> 16));
 }
 
 // DECOMP_FUNC(0x0030f760, 420)
