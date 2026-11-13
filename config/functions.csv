@@ -9413,7 +9413,7 @@ address,size,status,category,name,src_file
 0x003a1594,232,matching,shop,shop_func_003a1594,src/engine/leaf_batch43_a.cpp
 0x003a167c,76,matching,unknown,func_003a167c,src/engine/leaf_batch35_c.cpp
 0x003a16c8,496,matching,script_vm,script_vm_func_003a16c8,src/engine/leaf_batch34_a.cpp
-0x003a18b8,436,matching,shop,shop_func_003a18b8,src/engine/leaf_batch41_c.cpp
+0x003a18b8,436,non_matching,shop,shop_func_003a18b8,src/engine/leaf_batch41_c.cpp
 0x003a1a6c,28,matching,unknown,func_003a1a6c,src/engine/leaf_batch10_a.cpp
 0x003a1a88,52,matching,ui,ui_func_003a1a88,src/engine/leaf_batch19_c.cpp
 0x003a1abc,1124,matching,engine,engine_func_003a1abc,src/engine/leaf_batch40_a.cpp

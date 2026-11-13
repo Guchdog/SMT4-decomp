@@ -5952,39 +5952,208 @@ extern "C" u32 ui_func_0025f538(void* context_pointer) {
 }
 
 // DECOMP_FUNC(0x003a18b8, 436)
-// 102 ARM instructions through unconditional pop; 28 trailing data bytes.
-extern "C" __attribute__((naked)) void shop_func_003a18b8() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4070, 0xe1a04000, 0xebfba0a1, 0xebfba087\n"
-        ".word 0xebfbb0e1, 0xebfbb028, 0xe59f0178, 0xe3a02000\n"
-        ".word 0xe2841e16, 0xebfbd788, 0xe3a0002b, 0xebfc8d4f\n"
-        ".word 0xe3a01000, 0xe3a0002b, 0xebfc9070, 0xe5d40014\n"
-        ".word 0xe3a05000, 0xe1a06005, 0xe3500000, 0x0a000002\n"
-        ".word 0xe3500001, 0x1a000019, 0xea00002f, 0xe5940018\n"
-        ".word 0xe3500008, 0x0a000009, 0xe3500006, 0x13500007\n"
-        ".word 0x0a00000c, 0xe3500009, 0x0a000021, 0xe59f0118\n"
-        ".word 0xe3a0505a, 0xe3a02000, 0xe2841f59, 0xea00000a\n"
-        ".word 0xe59f0108, 0xe3a05058, 0xe3a06019, 0xe3a02000\n"
-        ".word 0xe2841f59, 0xea000004, 0xe59f00f4, 0xe3a0508b\n"
-        ".word 0xe3a06050, 0xe3a02000, 0xe2841f59, 0xebfbd762\n"
-        ".word 0xe1a00005, 0xebfd718d, 0xe59f10d8, 0xe3560000\n"
-        ".word 0xe7810004, 0x0a00002e, 0xe3a02000, 0xe1a01002\n"
-        ".word 0xe1a00006, 0xebfb91c4, 0xe2844b57, 0xe2844f51\n"
-        ".word 0xe3a02000, 0xe5840000, 0xe8bd4070, 0xe1a01002\n"
-        ".word 0xeafa98e9, 0xe59f0090, 0xe3a05088, 0xe3a060a2\n"
-        ".word 0xe3a02000, 0xe2841f59, 0xeaffffe7, 0xe5940018\n"
-        ".word 0xe3500009, 0x0a000008, 0xe3500005, 0x0a00000c\n"
-        ".word 0xe350000a, 0x0a000010, 0xe59f006c, 0xe3a0505b\n"
-        ".word 0xe3a02000, 0xe2841f59, 0xeaffffdb, 0xe59f005c\n"
-        ".word 0xe3a05059, 0xe3a0601a, 0xe3a02000, 0xe2841f59\n"
-        ".word 0xeaffffd5, 0xe59f0040, 0xe3a0508b, 0xe3a06050\n"
-        ".word 0xe3a02000, 0xe2841f59, 0xeaffffcf, 0xe59f0028\n"
-        ".word 0xe3a05089, 0xe3a060a3, 0xe3a02000, 0xe2841f59\n"
-        ".word 0xeaffffc9, 0xe8bd8070, 0x004076b0, 0x004076f0\n"
-        ".word 0x004076c0, 0x004076d8, 0x00015d40, 0x00407720\n"
-        ".word 0x00407708\n"
-    );
+//
+// Shop-scene resource bootstrap.  It runs four shared reset/frame helpers,
+// loads one named resource into the +0x160 status word, brings up texture
+// group 0x2B, then selects a second resource plus one or two sprite ids from
+// the scene state byte and the item type.  The first sprite handle is stored
+// at +0x15D40; when the selection also carries a second id, a second sprite is
+// created, stored at +0x15D44 and handed to the shared continuation 0x00247D64.
+//
+// Recovered contract (ARM 0x003A18B8..0x003A1A50, literal pool 0x003A1A50):
+//   * ABI: r0 = shop object, r1-r3 are not read.  The prologue at 0x003A18B8
+//     saves {r4,r5,r6,lr}; both exits restore exactly those four registers
+//     (0x003A1A4C `pop {r4,r5,r6,pc}`, 0x003A19B0 `pop {r4,r5,r6,lr}`), so SP
+//     and r7-r11 are unchanged and there is no stack frame or stack argument.
+//   * 0x003A18C0..0x003A18D4: four argument-less helpers, in this order
+//     0x00289B4C, 0x00289AE8, 0x0028DC54, 0x0028D974.  Their prologues
+//     overwrite r0 before reading it, so the incoming r0-r3 values are dead.
+//   * 0x003A18D0..0x003A18DC: 0x00297704(name = 0x004076B0, out = object +
+//     0x160, flags = 0).  That helper rewrites r3 to 0 internally, so the
+//     caller's dead r3 is not part of the contract; its return value is
+//     discarded.
+//   * 0x003A18E0..0x003A18F0: 0x002C4E28(0x2B) then 0x002C5AB8(0x2B, 0),
+//     both results discarded.
+//   * 0x003A18F4..0x003A190C: `state = *(u8*)(object + 0x14)` is read once,
+//     after the calls above.  Only 0 and 1 take a selection branch; any other
+//     byte jumps straight to the sprite creation with both ids still 0, and in
+//     that case `*(u32*)(object + 0x18)` (the item type) is never read.
+//   * 0x003A1914..0x003A19D0 (state 0) reads the type word and selects:
+//       type 8      -> name 0x004076C0, first id 0x58, second id 0x19
+//       type 6 or 7 -> name 0x004076D8, first id 0x8B, second id 0x50
+//       type 9      -> name 0x004076F0, first id 0x88, second id 0xA2
+//       otherwise   -> name 0x004076F0, first id 0x5A, no second id
+//   * 0x003A19D4..0x003A1A48 (state 1) reads the type word and selects:
+//       type 9      -> name 0x00407708, first id 0x59, second id 0x1A
+//       type 5      -> name 0x00407720, first id 0x8B, second id 0x50
+//       type 10     -> name 0x00407720, first id 0x89, second id 0xA3
+//       otherwise   -> name 0x00407720, first id 0x5B, no second id
+//     The type is compared with 32-bit equality only; 0x4076F0 and 0x407720
+//     are genuinely shared by more than one selector.  Every selection stores
+//     its name into `object + 0x164` through 0x00297704 and discards the
+//     result.
+//   * 0x003A1978..0x003A198C: 0x002FDFB8(first id) creates the first sprite
+//     (it is called even when the id is the 0 sentinel of an unmatched state)
+//     and its r0 is stored into the 32-bit slot at object + 0x15D40.
+//   * 0x003A1990..0x003A199C: only when the second id is non-zero,
+//     0x002860B4(second id, 0, 0) creates the second sprite, its r0 is stored
+//     into object + 0x15D44, and 0x003A19B8 tail-branches to 0x00247D64 with
+//     (handle, 0, 0), forwarding that helper's r0 to our caller.  Otherwise
+//     the first handle is returned.
+//   * No indirect calls occur in this span.
+namespace shop_3a18b8 {
+
+// Shop-object fields (offsets from the r0/`object` argument).
+constexpr u32 kStateOffset = 0x14;           // `ldrb r0,[r4,#0x14]` (0x003A18F4)
+constexpr u32 kTypeOffset = 0x18;            // `ldr r0,[r4,#0x18]` (0x003A1914/19D4)
+constexpr u32 kPrimaryStatusOffset = 0x160;  // `add r1,r4,#0x160` (0x003A18D8)
+constexpr u32 kSecondaryStatusOffset = 0x164; // `add r1,r4,#0x164` (0x003A1940..1A44)
+constexpr u32 kPrimarySpriteOffset = 0x15D40; // literal 0x00015D40 (0x003A1A60)
+constexpr u32 kSecondarySpriteOffset = 0x15D44; // `add r4,r4,#0x15c00`+0x144
+
+// Named-resource pointers (literal pool 0x003A1A50..0x003A1A68).
+constexpr u32 kPrimaryName = 0x004076B0u;    // 0x003A1A50
+constexpr u32 kState0Type8Name = 0x004076C0u;  // 0x003A1A58
+constexpr u32 kState0Type67Name = 0x004076D8u; // 0x003A1A5C
+constexpr u32 kState0DefaultName = 0x004076F0u; // 0x003A1A54 (type 9 and default)
+constexpr u32 kState1Type9Name = 0x00407708u;  // 0x003A1A68
+constexpr u32 kState1DefaultName = 0x00407720u; // 0x003A1A64 (type 5, 10, default)
+
+// Texture group passed to both texture helpers (`mov r0,#0x2b`).
+constexpr u32 kTextureGroup = 0x2B;
+
+}  // namespace shop_3a18b8
+
+// 0x00297704 loads a named resource: (name, out_status, flags); it ignores its
+// fourth register argument, which is why only three are declared here.
+extern "C" u32 script_vm_func_00297704(
+    const char* name, u32* out_status, u32 flags);
+extern "C" void CommonBg_func_00289b4c();
+extern "C" void script_vm_func_00289ae8();
+extern "C" void camp_func_0028dc54();
+extern "C" void ButtonHelp_Init();
+extern "C" void* AsdTMTexTable_func_002c4e28(u32 group_id);
+extern "C" void engine_func_002c5ab8(u32 arg0, u32 arg1);
+extern "C" void* Npc2d_func_002fdfb8(u32 row_index);
+extern "C" void* Npc2d_func_002860b4(u32 id, u32 arg1, s32 pose);
+// 0x00247D64 is reconstructed as a void function elsewhere; the original
+// tail-branches to it here, so its r0 is what our caller observes.
+extern "C" u32 engine_func_00247d64(u32 handle, s32 duration, s32 reverse_flag);
+
+namespace {
+
+// `str r0,[self + offset]` -- the sprite factories return pointers that the
+// shop object keeps as 32-bit handle words.
+void StoreHandle(u8* self, u32 offset, const void* handle) {
+    *reinterpret_cast<u32*>(self + offset) =
+        reinterpret_cast<u32>(handle);
+}
+
+const char* NameAt(u32 address) {
+    return reinterpret_cast<const char*>(address);
+}
+
+}  // namespace
+
+extern "C" u32 shop_func_003a18b8(void* object) {
+    u8* const self = static_cast<u8*>(object);
+
+    // 0x003A18C0..0x003A18DC: shared helpers and the primary resource load.
+    CommonBg_func_00289b4c();
+    script_vm_func_00289ae8();
+    camp_func_0028dc54();
+    ButtonHelp_Init();
+    (void)script_vm_func_00297704(
+        NameAt(shop_3a18b8::kPrimaryName),
+        reinterpret_cast<u32*>(self + shop_3a18b8::kPrimaryStatusOffset), 0);
+
+    // 0x003A18E0..0x003A18F0: texture group 0x2B.
+    (void)AsdTMTexTable_func_002c4e28(shop_3a18b8::kTextureGroup);
+    engine_func_002c5ab8(shop_3a18b8::kTextureGroup, 0);
+
+    // 0x003A18F4..0x003A190C: state gate; both ids start at zero.
+    const u8 state = self[shop_3a18b8::kStateOffset];
+    u32 first_id = 0;
+    u32 second_id = 0;
+
+    if (state == 0) {
+        const u32 type = *reinterpret_cast<const u32*>(
+            self + shop_3a18b8::kTypeOffset);
+        const char* name;
+        switch (type) {
+        case 8:
+            name = NameAt(shop_3a18b8::kState0Type8Name);
+            first_id = 0x58;
+            second_id = 0x19;
+            break;
+        case 6:
+        case 7:
+            name = NameAt(shop_3a18b8::kState0Type67Name);
+            first_id = 0x8B;
+            second_id = 0x50;
+            break;
+        case 9:
+            name = NameAt(shop_3a18b8::kState0DefaultName);
+            first_id = 0x88;
+            second_id = 0xA2;
+            break;
+        default:
+            name = NameAt(shop_3a18b8::kState0DefaultName);
+            first_id = 0x5A;
+            break;
+        }
+        // 0x003A1974: secondary resource load into object+0x164.
+        (void)script_vm_func_00297704(
+            name,
+            reinterpret_cast<u32*>(
+                self + shop_3a18b8::kSecondaryStatusOffset), 0);
+    } else if (state == 1) {
+        const u32 type = *reinterpret_cast<const u32*>(
+            self + shop_3a18b8::kTypeOffset);
+        const char* name;
+        switch (type) {
+        case 9:
+            name = NameAt(shop_3a18b8::kState1Type9Name);
+            first_id = 0x59;
+            second_id = 0x1A;
+            break;
+        case 5:
+            name = NameAt(shop_3a18b8::kState1DefaultName);
+            first_id = 0x8B;
+            second_id = 0x50;
+            break;
+        case 10:
+            name = NameAt(shop_3a18b8::kState1DefaultName);
+            first_id = 0x89;
+            second_id = 0xA3;
+            break;
+        default:
+            name = NameAt(shop_3a18b8::kState1DefaultName);
+            first_id = 0x5B;
+            break;
+        }
+        (void)script_vm_func_00297704(
+            name,
+            reinterpret_cast<u32*>(
+                self + shop_3a18b8::kSecondaryStatusOffset), 0);
+    }
+
+    // 0x003A1978..0x003A1988: first sprite, handle stored at +0x15D40 (the
+    // address is `0x00015D40 + object` because r1 holds that literal).
+    const void* const first_handle = Npc2d_func_002fdfb8(first_id);
+    StoreHandle(self, shop_3a18b8::kPrimarySpriteOffset, first_handle);
+
+    if (second_id == 0) {
+        return reinterpret_cast<u32>(first_handle);  // 0x003A1A4C
+    }
+
+    // 0x003A1990..0x003A19B8: second sprite, handle stored at +0x15D44, then
+    // the tail branch to 0x00247D64 with (handle, 0, 0).
+    const void* const second_handle =
+        Npc2d_func_002860b4(second_id, 0, 0);
+    StoreHandle(self, shop_3a18b8::kSecondarySpriteOffset, second_handle);
+    return engine_func_00247d64(
+        reinterpret_cast<u32>(second_handle), 0, 0);
 }
 
 // DECOMP_FUNC(0x00150654, 440)
