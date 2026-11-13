@@ -5776,39 +5776,237 @@ extern "C" __attribute__((naked)) void shop_func_003a18b8() {
 }
 
 // DECOMP_FUNC(0x00150654, 440)
-// 105 ARM instructions through unconditional pop; 20 trailing data bytes.
-extern "C" __attribute__((naked)) void func_00150654() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d5ff0, 0xe1a05000, 0xe1b07002, 0xe1a08001\n"
-        ".word 0xe1a09003, 0x0a000061, 0xe59fb188, 0xe59f3180\n"
-        ".word 0xe3a0211a, 0xe2871020, 0xe59b0000, 0xe3a0a000\n"
-        ".word 0xe0c020f8, 0xeb054542, 0xe59b0000, 0xe59f4168\n"
-        ".word 0xe1b06008, 0xe2800018, 0xe58b0000, 0x0a000008\n"
-        ".word 0xe5960000, 0xe5901008, 0xe1a00008, 0xe12fff31\n"
-        ".word 0xe1500004, 0x0a000003, 0xe5900000, 0xe3500000\n"
-        ".word 0x1afffffa, 0xe1a0600a, 0xe5950008, 0xe590101c\n"
-        ".word 0xe1510008, 0x0a000008, 0xe3560000, 0x0a000004\n"
-        ".word 0xe1a01006, 0xeb000dd8, 0xe320f000, 0xe320f000\n"
-        ".word 0xea000001, 0xe1a01008, 0xeb000d98, 0xe5971030\n"
-        ".word 0xe2870030, 0xe3510000, 0x10814000, 0xe597002c\n"
-        ".word 0x01a0400a, 0xe0847100, 0xe1540007, 0x0a000033\n"
-        ".word 0xe5940000, 0xe3500000, 0x10800004, 0x01a0000a\n"
-        ".word 0xe3560000, 0xe5903000, 0x13530000, 0x0a000009\n"
-        ".word 0xe5941000, 0xe1a00005, 0xe3510000, 0x10812004\n"
-        ".word 0x01a0200a, 0xe1a01006, 0xeb000cbd, 0xe320f000\n"
-        ".word 0xe320f000, 0xea00000f, 0xe5950008, 0xe59f308c\n"
-        ".word 0xe3a02166, 0xe288108c, 0xe5900008, 0xe590c014\n"
-        ".word 0xe3ccc006, 0xe580c014, 0xe59b0000, 0xe1c020f0\n"
-        ".word 0xe59f206c, 0xe2800008, 0xeb0544c9, 0xe59b0000\n"
-        ".word 0xe2800040, 0xe58b0000, 0xe5940000, 0xe3500000\n"
-        ".word 0x10800004, 0x01a0000a, 0xe5b01010, 0xe3510000\n"
-        ".word 0x10800001, 0x01a0000a, 0xe0801109, 0xe5910000\n"
-        ".word 0xe3500000, 0x10811000, 0xe5950008, 0x01a0100a\n"
-        ".word 0xeb000d22, 0xe2844004, 0xe1540007, 0x1affffcb\n"
-        ".word 0xe8bd9ff0, 0x804f02c0, 0x004652a0, 0x00472288\n"
-        ".word 0x000f02c0, 0x00bf02c1\n"
-    );
+//
+// Recovered contract (ARM 0x00150654..0x001507F7 = 105 instructions; the five
+// words at 0x001507F8..0x0015080B are the literal pool):
+//
+//   * ABI: r0 = scene, r1 = unit, r2 = draw-group record, r3 = item index.  The
+//     prologue saves {r4-r8, sb, sl, fp, ip, lr} and the epilogue restores the
+//     same ten registers, so r4-r11 survive and SP is unchanged.  There are no
+//     stack arguments and no local frame.
+//   * `movs r7, r2; beq` is the only argument guard: a null draw group returns
+//     immediately with r0 still holding `scene`.  No other pointer is checked.
+//   * g_GpuCommandCursor (0x004652A0) receives a 0x18-byte record:
+//       [0]    0x80000006 (position tag)
+//       [1]    0x804F02C0 (shared second header word, cf. 0x00153A58)
+//       [2..5] the three words at draw_group+0x20/+0x24/+0x28, re-ordered by
+//              0x002A1B98 into {0, src[2], src[1], src[0]}.
+//     The global is reloaded after the helper returns and then advanced by
+//     0x18, so a helper that rewrites the global is observed.
+//   * The unit's type-info chain is resolved against 0x00472288: the vtable
+//     slot at +0x08 returns the first type-info node and the walk follows the
+//     node's first word until it equals 0x00472288 (the unit pointer survives
+//     in r6) or reaches null (r6 = 0).  This is the AsdTypeMatch idiom used by
+//     the engine's other component lookups.
+//   * `[scene+0x08]` is the scene context.  When `[context+0x1C]` (the unit
+//     last bound there by 0x00153D64 / 0x00153E50) is not the incoming unit,
+//     the routine binds it: 0x00153E50(context, component) when the type match
+//     succeeded, otherwise 0x00153D64(context, unit).
+//   * Draw-group layout used here: `[draw_group+0x30]` is a relative offset
+//     from that word to an array of entry slots inside the group and
+//     `[draw_group+0x2C]` is the slot count.  A zero offset resolves to address
+//     0 (a latent low read, not an empty-table fallback) and the end pointer is
+//     a raw 32-bit `+ count*4` add, so an overflowing count wraps; equality
+//     alone terminates the loop.
+//   * Each entry slot holds another relative offset to a draw entry:
+//       entry+0x00  matrix count consumed by 0x00153A58
+//       entry+0x04  relative offset to the matrix index array (0x00153A58)
+//       entry+0x08  entry type (0x00153A58)
+//       entry+0x10  relative offset to a table of item slots, indexed by r3
+//     The slot word and the entry are re-read for every use, so a callee that
+//     rewrites the slot changes the tail lookup.
+//   * When the type match succeeded and `entry[0] != 0`, the draw entry is
+//     handed to 0x00153A58(scene, component, entry, count).  Otherwise the
+//     routine emits the single-matrix variant itself (exactly the count == 1
+//     form of 0x00153A58): it clears bits 1 and 2 of `[render_state+0x14]`
+//     (render_state = [context+0x08]) and appends
+//       header {0x80000019, 0x000F02C0},
+//       0x002A1AC8(cursor+8, unit+0x8C, 0x00BF02C1)  (3x4 matrix plus tag),
+//     advancing the cursor by 0x40 (0x3C used, one word reserved).
+//   * The common tail resolves the item slot at `entry+0x10 + offset`, indexed
+//     by the caller's r3 word, and submits
+//     0x00153C74([scene+0x08], relative item pointer).
+//   * Residual r0 (the only caller, 0x00148748, discards it): `scene` on the
+//     null-group exit, the slot count on the empty-table exit, and the last
+//     0x00153C74 result otherwise.  The reconstruction returns those values so
+//     register-level differential tests stay exact.
+
+// Direct call declarations.  Addresses follow config/functions.csv.
+extern "C" void func_002a1b98(void* destination, const void* source);
+extern "C" void func_002a1ac8(void* destination, const void* source, u32 tag);
+extern "C" void func_00153a58(void* scene, void* unit, void* draw_entry,
+                              u32 matrix_count);
+extern "C" void engine_func_00153d64(void* context, void* unit);
+extern "C" void engine_func_00153e50(void* context, void* component);
+extern "C" u32 ui_func_00153c74(void* render_context, void* item);
+
+namespace func_150654 {
+
+using TypeInfoQuery = void* (*)(void*);
+
+// 0x00472288 is the type-info identity accepted by the draw path.
+constexpr u32 kComponentTypeInfo = 0x00472288;
+
+// Scene -> context -> render-state chain.
+constexpr u32 kContextSlotOffset = 0x08;
+constexpr u32 kContextRenderStateOffset = 0x08;
+constexpr u32 kContextUnitOffset = 0x1C;
+constexpr u32 kRenderStateOffset = 0x14;
+constexpr u32 kRenderStateWord = kRenderStateOffset / 4;
+constexpr u32 kRenderStateMask = 0x06;
+
+// Draw-group record (`arg2`).
+constexpr u32 kGroupPositionOffset = 0x20;
+constexpr u32 kGroupEntryCountOffset = 0x2C;
+constexpr u32 kGroupEntryTableOffset = 0x30;
+
+// Draw entry (`entry`).
+constexpr u32 kDrawEntryItemTableOffset = 0x10;
+
+// Command records.
+constexpr u32 kPositionTag = 0x80000006;
+constexpr u32 kPositionMarker = 0x804F02C0;
+constexpr u32 kPositionRecordSize = 0x18;
+constexpr u32 kSingleMatrixTag = 0x80000019;
+constexpr u32 kSingleMatrixMarker = 0x000F02C0;
+constexpr u32 kSingleMatrixDataTag = 0x00BF02C1;
+constexpr u32 kSingleMatrixRecordSize = 0x40;
+
+// Unit-side 3x4 source matrix for the single-matrix variant.
+constexpr u32 kUnitMatrixOffset = 0x8C;
+
+// The original dereferences the relative tables without a null guard: a zero
+// relative offset falls back to the low addresses instead of an empty table.
+// Those loads go through this opaque helper so the compiler keeps the fallback
+// instead of folding it away as undefined behaviour.
+__attribute__((noinline)) u32 LoadUntabled(u32 address) {
+    return *reinterpret_cast<const u32*>(address);
+}
+
+// `add rN, base, offset` for one relative table: zero resolves to address 0.
+inline u32 Relocate(u32 field_address, u32 offset) {
+    return offset != 0 ? field_address + offset : 0u;
+}
+
+inline u32 Load(u32 address) {
+    return *reinterpret_cast<const u32*>(address);
+}
+
+}  // namespace func_150654
+
+extern "C" u32 func_00150654(void* scene_pointer, void* unit_pointer,
+                             void* draw_group_pointer, u32 item_index) {
+    using namespace func_150654;
+
+    const u32 scene = reinterpret_cast<u32>(scene_pointer);
+    const u32 unit = reinterpret_cast<u32>(unit_pointer);
+    const u32 draw_group = reinterpret_cast<u32>(draw_group_pointer);
+
+    // 0x15065C..0x150668: the only argument check in the routine.
+    if (draw_group == 0) {
+        return scene;
+    }
+
+    // 0x15066C..0x15069C: position record.  The cursor is reloaded from the
+    // global after the copy helper returns.
+    u32* const position = g_GpuCommandCursor;
+    position[0] = kPositionTag;
+    position[1] = kPositionMarker;
+    func_002a1b98(
+        position + 2,
+        reinterpret_cast<const void*>(draw_group + kGroupPositionOffset));
+    g_GpuCommandCursor = reinterpret_cast<u32*>(
+        reinterpret_cast<u32>(g_GpuCommandCursor) + kPositionRecordSize);
+
+    // 0x1506A0..0x1506CC: resolve the unit's type-info chain against
+    // 0x00472288.  A null unit, or a chain that ends in null, leaves no
+    // component to bind.
+    u32 component = 0;
+    if (unit != 0) {
+        void** const vtable = *reinterpret_cast<void***>(unit_pointer);
+        u32 current = reinterpret_cast<u32>(
+            reinterpret_cast<TypeInfoQuery>(vtable[2])(unit_pointer));
+        while (current != kComponentTypeInfo) {
+            current = LoadUntabled(current);
+            if (current == 0) {
+                break;
+            }
+        }
+        component = current != 0 ? unit : 0;
+    }
+
+    // 0x1506CC..0x1506FC: bind the unit into the scene context when it is not
+    // the unit currently recorded there.
+    const u32 context = Load(scene + kContextSlotOffset);
+    if (Load(context + kContextUnitOffset) != unit) {
+        if (component != 0) {
+            engine_func_00153e50(reinterpret_cast<void*>(context),
+                                 reinterpret_cast<void*>(component));
+        } else {
+            engine_func_00153d64(reinterpret_cast<void*>(context),
+                                 reinterpret_cast<void*>(unit));
+        }
+    }
+
+    // 0x150700..0x150720: draw-entry slot table of the group.
+    const u32 table_field = draw_group + kGroupEntryTableOffset;
+    const u32 table = Relocate(table_field, Load(table_field));
+    const u32 slot_count = Load(draw_group + kGroupEntryCountOffset);
+    const u32 table_end = table + (slot_count << 2);
+    if (table == table_end) {
+        return slot_count;
+    }
+
+    u32 result = 0;
+    u32 slot = table;
+    do {
+        // 0x150724..0x15073C
+        const u32 entry = Relocate(slot, LoadUntabled(slot));
+        const u32 matrix_count = LoadUntabled(entry);
+
+        if (component != 0 && matrix_count != 0) {
+            // 0x150744..0x150768: the entry pointer is recomputed from a
+            // second read of the slot word immediately before the call.
+            func_00153a58(
+                reinterpret_cast<void*>(scene),
+                reinterpret_cast<void*>(component),
+                reinterpret_cast<void*>(Relocate(slot, LoadUntabled(slot))),
+                matrix_count);
+        } else {
+            // 0x15076C..0x1507A8: single-matrix variant.
+            u32* const render_state = reinterpret_cast<u32*>(
+                Load(Load(scene + kContextSlotOffset) +
+                     kContextRenderStateOffset));
+            const u32 state = render_state[kRenderStateWord];
+            render_state[kRenderStateWord] = state & ~kRenderStateMask;
+
+            u32* const header = g_GpuCommandCursor;
+            header[0] = kSingleMatrixTag;
+            header[1] = kSingleMatrixMarker;
+            func_002a1ac8(
+                header + 2,
+                reinterpret_cast<const void*>(unit + kUnitMatrixOffset),
+                kSingleMatrixDataTag);
+            g_GpuCommandCursor = reinterpret_cast<u32*>(
+                reinterpret_cast<u32>(g_GpuCommandCursor) +
+                kSingleMatrixRecordSize);
+        }
+
+        // 0x1507AC..0x1507E4: item-slot lookup and submission.
+        const u32 item_table_field =
+            Relocate(slot, LoadUntabled(slot)) + kDrawEntryItemTableOffset;
+        const u32 item_table =
+            Relocate(item_table_field, LoadUntabled(item_table_field));
+        const u32 item_slot = item_table + (item_index << 2);
+        const u32 item = Relocate(item_slot, LoadUntabled(item_slot));
+        result = ui_func_00153c74(
+            reinterpret_cast<void*>(Load(scene + kContextSlotOffset)),
+            reinterpret_cast<void*>(item));
+
+        slot += 4;
+    } while (slot != table_end);
+
+    return result;
 }
 
 // DECOMP_FUNC(0x002f2e54, 440)
