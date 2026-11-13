@@ -2995,89 +2995,138 @@ extern "C" s32 func_0035c754(MsgTreeState* state, u32* out, u32* value) {
 }
 
 // DECOMP_FUNC(0x00131950, 620)
-extern "C" __attribute__((naked)) void engine_func_00131950() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4ff1, 0xe92d, 0xd038, 0xe24d\n"
-        ".hword 0x0038, 0xe59d, 0x0004, 0xe590\n"
-        ".hword 0x00bc, 0xe280, 0x0500, 0xe890\n"
-        ".hword 0x000a, 0xe158, 0x0089, 0x0a00\n"
-        ".hword 0x4008, 0xe04a, 0x100a, 0xe1a0\n"
-        ".hword 0x2144, 0xe1a0, 0x0008, 0xe1a0\n"
-        ".hword 0xc8a7, 0xebff, 0x0010, 0xe3a0\n"
-        ".hword 0x0144, 0xe150, 0x004f, 0xaa00\n"
-        ".hword 0xb040, 0xe288, 0x6004, 0xe288\n"
-        ".hword 0x000b, 0xe156, 0x7008, 0xe1a0\n"
-        ".hword 0x002e, 0x0a00, 0x9000, 0xe596\n"
-        ".hword 0x2000, 0xe597, 0x4006, 0xe1a0\n"
-        ".hword 0x1009, 0xe1a0, 0x002c, 0xe28d\n"
-        ".hword 0x086b, 0xeb06, 0x0000, 0xe350\n"
-        ".hword 0xf000, 0xe320, 0x000f, 0x0a00\n"
-        ".hword 0x1007, 0xe044, 0x2004, 0xe284\n"
-        ".hword 0x0141, 0xe1a0, 0x0000, 0xe350\n"
-        ".hword 0x0000, 0xc3a0, 0x1141, 0xc1a0\n"
-        ".hword 0x0006, 0xda00, 0x3100, 0xe084\n"
-        ".hword 0xc100, 0xe082, 0x3004, 0xe513\n"
-        ".hword 0x1001, 0xe251, 0x0001, 0xe240\n"
-        ".hword 0x3004, 0xe50c, 0xfff8, 0x1aff\n"
-        ".hword 0x9000, 0xe587, 0x0012, 0xea00\n"
-        ".hword 0x5004, 0xe1a0, 0x2004, 0xe534\n"
-        ".hword 0x1009, 0xe1a0, 0x0024, 0xe28d\n"
-        ".hword 0x0853, 0xeb06, 0x0000, 0xe350\n"
-        ".hword 0xf000, 0xe320, 0x0009, 0x0a00\n"
-        ".hword 0x0000, 0xe594, 0x1009, 0xe1a0\n"
-        ".hword 0x0000, 0xe585, 0x5004, 0xe1a0\n"
-        ".hword 0x2004, 0xe534, 0x0024, 0xe28d\n"
-        ".hword 0x0849, 0xeb06, 0x0000, 0xe350\n"
-        ".hword 0xf000, 0xe320, 0xfff5, 0x1aff\n"
-        ".hword 0x9000, 0xe585, 0x6004, 0xe286\n"
-        ".hword 0x000b, 0xe156, 0xffd0, 0x1aff\n"
-        ".hword 0x6040, 0xe288, 0x000a, 0xe156\n"
-        ".hword 0x004a, 0x0a00, 0x7000, 0xe596\n"
-        ".hword 0x2004, 0xe516, 0x5006, 0xe1a0\n"
-        ".hword 0x4004, 0xe246, 0x1007, 0xe1a0\n"
-        ".hword 0x0018, 0xe28d, 0x0838, 0xeb06\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x0009, 0x0a00, 0x0000, 0xe594\n"
-        ".hword 0x1007, 0xe1a0, 0x0000, 0xe585\n"
-        ".hword 0x5004, 0xe1a0, 0x2004, 0xe534\n"
-        ".hword 0x0018, 0xe28d, 0x082e, 0xeb06\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0xfff5, 0x1aff, 0x6004, 0xe286\n"
-        ".hword 0x000a, 0xe156, 0x7000, 0xe585\n"
-        ".hword 0xffe7, 0x1aff, 0x0031, 0xea00\n"
-        ".hword 0x6004, 0xe288, 0x000a, 0xe156\n"
-        ".hword 0x002e, 0x0a00, 0x7000, 0xe596\n"
-        ".hword 0x2000, 0xe598, 0x4006, 0xe1a0\n"
-        ".hword 0x1007, 0xe1a0, 0x0018, 0xe28d\n"
-        ".hword 0x081d, 0xeb06, 0x0000, 0xe350\n"
-        ".hword 0xf000, 0xe320, 0x000f, 0x0a00\n"
-        ".hword 0x1008, 0xe044, 0x2004, 0xe284\n"
-        ".hword 0x0141, 0xe1a0, 0x0000, 0xe350\n"
-        ".hword 0x0000, 0xc3a0, 0x1141, 0xc1a0\n"
-        ".hword 0x0006, 0xda00, 0x3100, 0xe084\n"
-        ".hword 0xc100, 0xe082, 0x3004, 0xe513\n"
-        ".hword 0x1001, 0xe251, 0x0001, 0xe240\n"
-        ".hword 0x3004, 0xe50c, 0xfff8, 0x1aff\n"
-        ".hword 0x7000, 0xe588, 0x0012, 0xea00\n"
-        ".hword 0x5004, 0xe1a0, 0x2004, 0xe534\n"
-        ".hword 0x1007, 0xe1a0, 0x000c, 0xe28d\n"
-        ".hword 0x0805, 0xeb06, 0x0000, 0xe350\n"
-        ".hword 0xf000, 0xe320, 0x0009, 0x0a00\n"
-        ".hword 0x0000, 0xe594, 0x1007, 0xe1a0\n"
-        ".hword 0x0000, 0xe585, 0x5004, 0xe1a0\n"
-        ".hword 0x2004, 0xe534, 0x000c, 0xe28d\n"
-        ".hword 0x07fb, 0xeb06, 0x0000, 0xe350\n"
-        ".hword 0xf000, 0xe320, 0xfff5, 0x1aff\n"
-        ".hword 0x7000, 0xe585, 0x6004, 0xe286\n"
-        ".hword 0x000a, 0xe156, 0xffd0, 0x1aff\n"
-        ".hword 0x0038, 0xe59d, 0x1038, 0xe59d\n"
-        ".hword 0x000c, 0xe590, 0x1004, 0xe591\n"
-        ".hword 0x2000, 0xe590, 0x2014, 0xe592\n"
-        ".hword 0xd03c, 0xe28d, 0x4ff0, 0xe8bd\n"
-        ".hword 0xff12, 0xe12f\n"
-    );
+//
+// Vector commit for the shared engine state.  `self` owns the state at +0x04
+// and a notification sink at +0x0C.  The state holds a pointer array delimited
+// by the begin/end pair at +0xBC/+0xC0; the routine runs the introsort stage
+// over that array (0x123C24), then finishes with the same 16-element
+// insertion-sort split the library sort uses, and finally tail-calls the sink's
+// vtable entry +0x14 with (sink, state), returning its result.
+//
+// Element ordering comes from 0x2B3B6C: it reads element + 8 to reach a key
+// object, applies a `0x40000001` validity-mask test to that object's first
+// word, and compares the key object's u32 at +0x4C; a null element sorts
+// before every non-null element.  That helper ignores its first parameter, so
+// the original could materialise a separate stack scratch object per call site;
+// this reconstruction passes one stateless local for all four sites.
+extern "C" void func_00123c24(void** first, void** last, s32 depth);
+extern "C" s32 battle_func_002b3b6c(const void* comparator, void* left,
+                                    void* right);
+
+namespace engine_131950 {
+
+// The part of `self` this routine reads.
+struct Owner {
+    u8 pad_00[0x04];
+    u8* state;          // +0x04: shared engine state (forwarded to the sink)
+    void* reserved_08;  // +0x08: not read here
+    void* sink;         // +0x0C: object notified through vtable +0x14
 };
+
+// The sorted vector header inside the shared state.
+struct State {
+    u8 pad_00[0xBC];
+    void** begin;       // +0xBC
+    void** end;         // +0xC0
+};
+
+constexpr u32 kNotifySlotOffset = 0x14;  // vtable entry used by the tail call
+constexpr s32 kInsertionThreshold = 16;  // 0x10, compared signed in the original
+
+using NotifyFn = u32 (*)(void* sink, u8* state);
+
+// Stateless comparison object; 0x2B3B6C never reads its first argument.
+struct Comparator {
+    u32 unused;
+};
+
+inline bool less(Comparator& comparator, void* left, void* right) {
+    return battle_func_002b3b6c(&comparator, left, right) != 0;
+}
+
+// 0x1319E4 / 0x131B1C: inlined backward word copy.  Every word of
+// [first, last) moves one slot up, walking from the high end downwards.
+inline void shift_right_one(void** first, void** last) {
+    for (void** dst = last; dst != first; --dst) {
+        dst[0] = dst[-1];
+    }
+}
+
+// 0x131A08 / 0x131B40: walk `key` down while it compares before its
+// predecessor.  Unbounded by design: the caller guarantees *first is not
+// ordered after key.
+inline void unguarded_linear_insert(void** last, void* key,
+                                    Comparator& comparator) {
+    void** prev = last - 1;
+    while (less(comparator, key, prev[0])) {
+        last[0] = prev[0];
+        last = prev;
+        --prev;
+    }
+    last[0] = key;
+}
+
+// 0x131AD0 / 0x131A60: insertion sort with the leading-element fast path.
+inline void insertion_sort(void** first, void** last, Comparator& comparator) {
+    for (void** current = first + 1; current != last; ++current) {
+        void* const key = current[0];
+        if (less(comparator, key, first[0])) {
+            shift_right_one(first, current);
+            first[0] = key;
+        } else {
+            unguarded_linear_insert(current, key, comparator);
+        }
+    }
+}
+
+// 0x131A60: sort the tail of the vector without the leading-element test.
+inline void unguarded_insertion_sort(void** first, void** last,
+                                     Comparator& comparator) {
+    for (void** current = first; current != last; ++current) {
+        unguarded_linear_insert(current, current[0], comparator);
+    }
+}
+
+}  // namespace engine_131950
+
+extern "C" u32 engine_func_00131950(void* self) {
+    using namespace engine_131950;
+
+    Owner* const owner = static_cast<Owner*>(self);
+    State* const state = reinterpret_cast<State*>(owner->state);
+
+    void** const begin = state->begin;
+    void** const end = state->end;
+
+    Comparator comparator;
+
+    if (begin != end) {
+        const s32 count = static_cast<s32>(
+            reinterpret_cast<const u8*>(end) -
+            reinterpret_cast<const u8*>(begin)) >> 2;
+
+        // Introsort stage; the original forwards the element count as the
+        // helper's depth bound (0x131978 `asr r2, r4, #2`).
+        func_00123c24(begin, end, count);
+
+        if (count <= kInsertionThreshold) {
+            insertion_sort(begin, end, comparator);
+        } else {
+            void** const middle = begin + kInsertionThreshold;
+            insertion_sort(begin, middle, comparator);
+            unguarded_insertion_sort(middle, end, comparator);
+        }
+    }
+
+    // Tail call: (sink, state) through the sink's vtable slot 0x14.  The
+    // original re-reads both owner fields here, so keep the reload.
+    void* const sink = owner->sink;
+    u8* const current_state = owner->state;
+    void** const vtable = *reinterpret_cast<void***>(sink);
+    const NotifyFn notify =
+        reinterpret_cast<NotifyFn>(vtable[kNotifySlotOffset / 4]);
+    return notify(sink, current_state);
+}
 
 // DECOMP_FUNC(0x00256078, 620)
 extern "C" __attribute__((naked)) void script_vm_func_00256078() {
