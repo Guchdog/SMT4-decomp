@@ -1652,150 +1652,194 @@ extern "C" __attribute__((naked)) void engine_func_0011cb3c() {
     );
 }
 
+// ---------------------------------------------------------------------------
+// 0x00120AC8 (540 B, "AsdSound_InitEngine"): one-shot sound-engine setup.
+//
+// ABI: r0 = AsdSoundInitConfig*, r1 = work-buffer base, r2 = buffer size.
+// The body never reads r2; the caller (0x0010D40C) passes the size so the
+// interface stays symmetric with AsdSound_CreateEngine.
+//
+// Global state at 0x0044E908:
+//   +0x00  last config->field_1c value copied at the end of a successful run
+//   +0x01  one-shot gate; non-zero returns immediately without touching memory
+//   +0x02  first-pass binding flag; once set the two 0x00130D18 bindings are
+//          skipped and the cursor is taken from the caller-supplied buffer
+//   +0x04  entry count handed to the two region-size helpers (0x001311A0,
+//          0x00130FE8) and to the region initialisers
+// The word pair at 0x0044E910 receives {base, config->field_14} and is passed
+// to the draw helper 0x00130438 as its third argument.
+//
+// All pointer progress is 32-bit address arithmetic.  The two kinds of region
+// are: 0x60 bytes per entry for 0x00131128 and 0x144 bytes per entry (count+1)
+// for 0x00130FA8.  The final two calls (0x00130E6C, 0x00130E18) are gated by
+// unsigned byte tests and, for 0x00130E18, a signed "field_20 > 0" test.
+// The 0x00130E6C call has five stack arguments; 0x00130E6C reads them back as
+// its fifth through ninth arguments (see its body at 0x00130E6C).
+//
+// No indirect calls or branches occur in this function; every callee below is
+// reached with a direct `bl`.  The aliases use the original assembler symbol
+// so the top-of-file unprototyped declarations stay untouched.
+// ---------------------------------------------------------------------------
+namespace {
+
+// Layout used by 0x0010D40C when it builds the descriptor; it matches
+// include/engine/asd_sound.h (same offsets and size).
+struct AsdSoundInitConfig {
+    u32 field_00;  // +0x00
+    u32 field_04;  // +0x04
+    u32 field_08;  // +0x08
+    u32 field_0c;  // +0x0C
+    u32 field_10;  // +0x10
+    u32 field_14;  // +0x14
+    u32 field_18;  // +0x18
+    u8 field_1c;   // +0x1C
+    u8 field_1d;   // +0x1D
+    u8 field_1e;   // +0x1E
+    u8 pad_1f;     // +0x1F
+    u32 field_20;  // +0x20
+};
+static_assert(offsetof(AsdSoundInitConfig, field_0c) == 0x0C);
+static_assert(offsetof(AsdSoundInitConfig, field_14) == 0x14);
+static_assert(offsetof(AsdSoundInitConfig, field_18) == 0x18);
+static_assert(offsetof(AsdSoundInitConfig, field_1c) == 0x1C);
+static_assert(offsetof(AsdSoundInitConfig, field_1d) == 0x1D);
+static_assert(offsetof(AsdSoundInitConfig, field_1e) == 0x1E);
+static_assert(offsetof(AsdSoundInitConfig, field_20) == 0x20);
+static_assert(sizeof(AsdSoundInitConfig) == 0x24);
+
+struct AsdSoundEngineState {
+    u8 last_mode;     // +0x00: last config->field_1c copied out
+    u8 initialised;   // +0x01: one-shot gate
+    u8 bound;         // +0x02: first-pass binding complete
+    u8 pad_03;
+    u32 entry_count;  // +0x04: count for both strided regions
+};
+
+struct AsdSoundBufferWindow {
+    u32 base;         // +0x00: buffer address published to 0x00130438
+    u32 size;         // +0x04: config->field_14
+};
+
+}  // namespace
+
+extern "C" void engine_00130ff8(void* state) __asm__("engine_func_00130ff8");
+extern "C" void* engine_002bb218() __asm__("engine_func_002bb218");
+extern "C" void engine_00130d18(void* self, u32 address, u32 size)
+    __asm__("engine_func_00130d18");
+extern "C" void* engine_002bb1bc() __asm__("engine_func_002bb1bc");
+extern "C" void* engine_002bd630() __asm__("engine_func_002bd630");
+extern "C" void engine_00130e10(void* self) __asm__("engine_func_00130e10");
+extern "C" void* engine_002bb360() __asm__("engine_func_002bb360");
+extern "C" void ui_001441dc(void* self) __asm__("ui_func_001441dc");
+extern "C" void* engine_002bb270() __asm__("engine_func_002bb270");
+extern "C" u32 engine_001311a0(void* self, u32 index)
+    __asm__("engine_func_001311a0");
+extern "C" void* engine_002bb2f0() __asm__("engine_func_002bb2f0");
+extern "C" u32 engine_00130fe8(void* self, u32 index)
+    __asm__("engine_func_00130fe8");
+extern "C" void engine_00131128(void* self, u32 base, u32 size)
+    __asm__("engine_func_00131128");
+extern "C" void engine_00130fa8(void* self, u32 base, u32 size)
+    __asm__("engine_func_00130fa8");
+extern "C" void engine_001311ac() __asm__("engine_func_001311ac");
+extern "C" void* engine_001303bc() __asm__("engine_func_001303bc");
+extern "C" void engine_00130438(void* self, u32 value, const void* window)
+    __asm__("engine_func_00130438");
+extern "C" void engine_00130e6c(void* self, u32 first_window, u32 field_08,
+                                u32 field_00, u32 second_window, u32 stack_1,
+                                u32 stack_2, u32 stack_3, u32 field_1d)
+    __asm__("engine_func_00130e6c");
+extern "C" void engine_00130e18(void* self, u32 address, u32 size)
+    __asm__("engine_func_00130e18");
+
 // DECOMP_FUNC(0x00120ac8, 540)
-extern "C" __attribute__((naked)) void engine_func_00120ac8() {
-    asm volatile(
-        "push {r4, r5, r6, r7, r8, sb, sl, fp, lr}\n"
-        "mov r4, r0\n"
-        "sub sp, sp, #0x14\n"
-        "mov r5, r1\n"
-        ".word 0xe59fa1f8\n"
-        "ldrb r0, [sl, #1]\n"
-        "cmp r0, #0\n"
-        "bne .L_00120cd0\n"
-        ".word 0xe59f01ec\n"
-        "bl engine_func_00130ff8\n"
-        "ldrb r0, [sl, #2]\n"
-        "mov sb, #1\n"
-        "cmp r0, #0\n"
-        "bne .L_00120b3c\n"
-        "ldr r0, [r4, #0xc]\n"
-        "ldr r1, [r4, #0x18]\n"
-        "mov r7, r5\n"
-        "add r8, r0, r7\n"
-        "add r6, r0, r1\n"
-        "bl engine_func_002bb218\n"
-        "ldr r2, [r4, #0xc]\n"
-        "mov r1, r7\n"
-        "bl engine_func_00130d18\n"
-        "bl engine_func_002bb1bc\n"
-        "ldr r2, [r4, #0x18]\n"
-        "mov r1, r8\n"
-        "bl engine_func_00130d18\n"
-        "add r5, r5, r6\n"
-        "strb sb, [sl, #2]\n"
-        ".L_00120b3c:\n"
-        "ldrb r0, [r4, #0x1c]\n"
-        "mov r8, #0\n"
-        "mov r7, r8\n"
-        "cmp r0, #0\n"
-        "beq .L_00120b78\n"
-        "ldr r1, [r4, #4]\n"
-        "ldr r0, [r4, #8]\n"
-        "mov r8, r5\n"
-        "cmp r1, #1\n"
-        "add r5, r0, r8\n"
-        "bne .L_00120b78\n"
-        "ldrb r1, [r4, #0x1e]\n"
-        "cmp r1, #0\n"
-        "movne r7, r5\n"
-        "addne r5, r0, r7\n"
-        ".L_00120b78:\n"
-        "nop\n"
-        "bl engine_func_002bd630\n"
-        "nop\n"
-        "nop\n"
-        "bl engine_func_00130e10\n"
-        "ldr r0, [r4, #0x14]\n"
-        "mov r6, r5\n"
-        "add r5, r0, r6\n"
-        "bl engine_func_002bb360\n"
-        "nop\n"
-        "nop\n"
-        "bl ui_func_001441dc\n"
-        ".word 0xe59f0130\n"
-        "ldr r2, [r4, #0x14]\n"
-        "mov r1, r6\n"
-        "stm r0, {r1, r2}\n"
-        "nop\n"
-        "nop\n"
-        "bl engine_func_002bb270\n"
-        "ldr r1, [sl, #4]\n"
-        "nop\n"
-        "bl engine_func_001311a0\n"
-        "add r6, r0, r5\n"
-        "nop\n"
-        "bl engine_func_002bb270\n"
-        "ldr r1, [sl, #4]\n"
-        "nop\n"
-        "bl engine_func_001311a0\n"
-        "mov fp, r0\n"
-        "nop\n"
-        "bl engine_func_002bb270\n"
-        "mov r2, fp\n"
-        "mov r1, r5\n"
-        "bl engine_func_00131128\n"
-        "nop\n"
-        "nop\n"
-        "bl engine_func_002bb2f0\n"
-        "ldr r1, [sl, #4]\n"
-        "nop\n"
-        "bl engine_func_00130fe8\n"
-        "add r5, r0, r6\n"
-        "nop\n"
-        "bl engine_func_002bb2f0\n"
-        "ldr r1, [sl, #4]\n"
-        "nop\n"
-        "bl engine_func_00130fe8\n"
-        "mov fp, r0\n"
-        "nop\n"
-        "bl engine_func_002bb2f0\n"
-        "mov r2, fp\n"
-        "mov r1, r6\n"
-        "bl engine_func_00130fa8\n"
-        "nop\n"
-        "nop\n"
-        "bl engine_func_001311ac\n"
-        "nop\n"
-        "nop\n"
-        "bl engine_func_001303bc\n"
-        ".word 0xe59f2078\n"
-        "ldr r1, [r4, #0x10]\n"
-        "bl engine_func_00130438\n"
-        "ldrb r0, [r4, #0x1c]\n"
-        "cmp r0, #0\n"
-        "beq .L_00120ca0\n"
-        "bl engine_func_002bd630\n"
-        "ldrsb r1, [r4, #0x1d]\n"
-        "ldm r4, {r3, ip}\n"
-        "add r6, sp, #4\n"
-        "ldr r2, [r4, #8]\n"
-        "str r1, [sp, #0x10]\n"
-        "str r7, [sp]\n"
-        "mov r1, r8\n"
-        "stm r6, {r2, r3, ip}\n"
-        "bl engine_func_00130e6c\n"
-        ".L_00120ca0:\n"
-        "ldrb r0, [r4, #0x1d]\n"
-        "cmp r0, #0\n"
-        "ldrne r0, [r4, #0x20]\n"
-        "cmpne r0, #0\n"
-        "ble .L_00120cc4\n"
-        "bl engine_func_002bd630\n"
-        "ldr r2, [r4, #0x20]\n"
-        "mov r1, r5\n"
-        "bl engine_func_00130e18\n"
-        ".L_00120cc4:\n"
-        "ldrb r0, [r4, #0x1c]\n"
-        "strb r0, [sl]\n"
-        "strb sb, [sl, #1]\n"
-        ".L_00120cd0:\n"
-        "add sp, sp, #0x14\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, fp, pc}\n"
-        ".word 0x0044e908\n"
-        ".word 0x004ea168\n"
-        ".word 0x0044e910\n"
-    );
+extern "C" void engine_func_00120ac8(void* config_pointer, u32 buffer) {
+    auto* const config =
+        static_cast<const AsdSoundInitConfig*>(config_pointer);
+    auto& state = *reinterpret_cast<AsdSoundEngineState*>(0x0044E908u);
+    auto& window = *reinterpret_cast<AsdSoundBufferWindow*>(0x0044E910u);
+
+    if (state.initialised != 0) {
+        return;
+    }
+
+    engine_00130ff8(reinterpret_cast<void*>(0x004EA168u));
+
+    u32 cursor = buffer;
+
+    if (state.bound == 0) {
+        const u32 first_size = config->field_0c;
+        const u32 second_size = config->field_18;
+
+        engine_00130d18(engine_002bb218(), cursor, first_size);
+        engine_00130d18(engine_002bb1bc(), cursor + first_size, second_size);
+        cursor += first_size + second_size;
+        state.bound = 1;
+    }
+
+    u32 first_window = 0;
+    u32 second_window = 0;
+    if (config->field_1c != 0) {
+        first_window = cursor;
+        cursor += config->field_08;
+        if (config->field_04 == 1 && config->field_1e != 0) {
+            second_window = cursor;
+            cursor += config->field_08;
+        }
+    }
+
+    engine_00130e10(engine_002bd630());
+
+    const u32 window_base = cursor;
+    cursor += config->field_14;
+
+    ui_001441dc(engine_002bb360());
+
+    window.base = window_base;
+    window.size = config->field_14;
+
+    // 0x60-byte entries: the first 0x001311A0 result advances the cursor, the
+    // second one is the byte size passed to 0x00131128 together with the
+    // cursor before the advance.  The original reloads state.entry_count after
+    // each getter call, so keep the loads separate from the calls.
+    void* region_object = engine_002bb270();
+    const u32 first_region_size = engine_001311a0(region_object,
+                                                  state.entry_count);
+    const u32 text_base = cursor + first_region_size;
+
+    region_object = engine_002bb270();
+    const u32 second_region_size = engine_001311a0(region_object,
+                                                   state.entry_count);
+    engine_00131128(engine_002bb270(), cursor, second_region_size);
+
+    // 0x144-byte entries, count+1: 0x00130FE8 already applies the +1.
+    void* glyph_object = engine_002bb2f0();
+    const u32 glyph_region_size = engine_00130fe8(glyph_object,
+                                                  state.entry_count);
+    cursor = text_base + glyph_region_size;
+
+    glyph_object = engine_002bb2f0();
+    const u32 glyph_size = engine_00130fe8(glyph_object, state.entry_count);
+    engine_00130fa8(engine_002bb2f0(), text_base, glyph_size);
+
+    engine_001311ac();
+    engine_00130438(engine_001303bc(), config->field_10, &window);
+
+    if (config->field_1c != 0) {
+        engine_00130e6c(
+            engine_002bd630(), first_window, config->field_08,
+            config->field_00, second_window, config->field_08,
+            config->field_00, config->field_04,
+            static_cast<u32>(
+                static_cast<s32>(static_cast<s8>(config->field_1d))));
+    }
+
+    if (config->field_1d != 0 && static_cast<s32>(config->field_20) > 0) {
+        engine_00130e18(engine_002bd630(), cursor, config->field_20);
+    }
+
+    state.last_mode = config->field_1c;
+    state.initialised = 1;
 }
 
 // ---------------------------------------------------------------------------
