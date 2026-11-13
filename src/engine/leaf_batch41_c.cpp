@@ -720,36 +720,230 @@ extern "C" u32 ui_func_0033b3e0(void* context, s32 id) {
 }
 
 // DECOMP_FUNC(0x003d9e10, 400)
-// 97 ARM instructions through unconditional pop; 12 trailing data bytes.
-extern "C" __attribute__((naked)) void script_vm_func_003d9e10() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe59f117c, 0xe92d41f0, 0xe1a06000, 0xe3a07000\n"
-        ".word 0xe7817000, 0xebf934fd, 0xe1a00006, 0xeb000322\n"
-        ".word 0xe3a05000, 0xe3a080ff, 0xe0650185, 0xe3a01080\n"
-        ".word 0xe0800100, 0xe0864100, 0xe2844d97, 0xe2840008\n"
-        ".word 0xe5c48000, 0xebfbab35, 0xe5940004, 0xe3500000\n"
-        ".word 0x0a000001, 0xebfba93d, 0xe5847004, 0xe2855001\n"
-        ".word 0xe355000b, 0xe5c47088, 0xbaffffee, 0xe2864b07\n"
-        ".word 0xe28440f8, 0xe5940000, 0xe3500000, 0x0a000003\n"
-        ".word 0xe5901000, 0xe5911004, 0xe12fff31, 0xe5847000\n"
-        ".word 0xe1a00006, 0xebf93678, 0xe59f00e8, 0xe7807006\n"
-        ".word 0xebf9cff0, 0xe320f000, 0xe320f000, 0xebfa2368\n"
-        ".word 0xe59f00d4, 0xe5900000, 0xe3500000, 0x0a000002\n"
-        ".word 0xe5901634, 0xe3c11302, 0xe5801634, 0xe1a00006\n"
-        ".word 0xebfa906b, 0xe3a05000, 0xe3e08000, 0xe0851105\n"
-        ".word 0xe0860181, 0xe2804e19, 0xe59001b0, 0xe5848004\n"
-        ".word 0xe5847024, 0xe5848008, 0xe3500000, 0xe584701c\n"
-        ".word 0x0a000003, 0xe5901000, 0xe5911004, 0xe12fff31\n"
-        ".word 0xe5847020, 0xe5940000, 0xe3500000, 0x0a000007\n"
-        ".word 0xe5901008, 0xe591100c, 0xe3510000, 0xabf5e2ed\n"
-        ".word 0xe5940000, 0xe320f000, 0xebfb36d4, 0xe5847000\n"
-        ".word 0xe2855001, 0xe3550032, 0xbaffffe3, 0xe3a04000\n"
-        ".word 0xe0840084, 0xe0860200, 0xe2805a01, 0xe2800a01\n"
-        ".word 0xe585739c, 0xe2800e3a, 0xe5858398, 0xebf99fc1\n"
-        ".word 0xe2844001, 0xe3540032, 0xe58573c4, 0xbafffff3\n"
-        ".word 0xe8bd81f0, 0x00003048, 0x00002f98, 0x004342c8\n"
-    );
+//
+// Teardown of the script-VM context object.  It clears two scalar words,
+// drains three fixed arrays of owned subobjects, releases the optional
+// reference-counted subobject at +0x1CF8, drops one global graphics flag and
+// then runs three global cleanup helpers.
+//
+// Recovered contract (ARM 0x003D9E10..0x003D9FA0):
+//   * `object = r0`; r1-r3 and the stack are not read.  The 97 return-path
+//     instructions end in `pop {r4,r5,r6,r7,r8,pc}`; the last 12 bytes are the
+//     literal pool 0x00003048, 0x00002F98, 0x004342C8.
+//   * 0x003D9E10..0x003D9E2C: `*(u32*)(object+0x3048) = 0`, then
+//     0x00227220(object) and 0x003DAABC(object), in that order.
+//   * 0x003D9E30..0x003D9E78: 11 entries of 0x8C bytes at object+0x25C0.
+//     Per entry: byte +0x00 = 0xFF; 0x002C4B30(entry+0x08, 0x80) zeroes the
+//     0x80-byte block; a non-null pointer at +0x04 is passed to 0x002C4360 and
+//     cleared; byte +0x88 = 0.  The bound is signed `cmp r5,#0xb` / `blt`.
+//   * 0x003D9E7C..0x003D9E9C: if object+0x1CF8 is non-null, call its virtual
+//     slot 1 (`*[obj]` is the vtable, `[vtable+4]` the target, receiver = obj)
+//     and clear the slot.  The concrete target is unresolved; the call is
+//     reproduced through the observed vtable offset.
+//   * 0x003D9EA0..0x003D9EE0: 0x0022788C(object),
+//     `*(u32*)(object+0x2F98) = 0`, 0x0024DE78(), 0x00262C64(), then if the
+//     global pointer at 0x004342C8 is non-null clear bit 27 (0x08000000) of
+//     its u32 at +0x634, and finally 0x0027E094(object).
+//     The two no-argument helpers ignore r0: at their call sites r0 still
+//     holds 0x2F98 (0x003D9EAC) and the return of 0x0024DE78 respectively.
+//   * 0x003D9EE4..0x003D9F58: 50 entries of 40 bytes at object+0x190.
+//     Load +0x20 first (virtual object), then store +0x04 = -1,
+//     +0x24 = 0, +0x08 = -1, +0x1C = 0.  If +0x20 is non-null call its
+//     virtual slot 1 and then set +0x20 = 0.  Re-load +0x00 (the virtual call
+//     may have rewritten it); when non-null, read `[[ptr+8]+0x0C]` as a signed
+//     word and, when it is >= 0, call 0x00152AF8(ptr), then re-load +0x00 again
+//     and call 0x002A7AA0(ptr), and finally set +0x00 = 0.
+//   * 0x003D9F5C..0x003D9F90: 50 entries of 48 bytes at object+0x1398.
+//     Store +0x00 = -1, +0x04 = 0, call 0x00241E88(entry+0x08), then store
+//     +0x2C = 0 (the original increments the index before that store, but the
+//     entry base register is unchanged).  Bound 0x32.
+//
+// Return value: none.  The caller (e.g. 0x002C9F7C) frees `object` itself after
+// this body returns, so this is the destructor/clear body, not a deallocator.
+namespace func_3d9e10 {
+
+// Scalar words cleared at the start and in the middle of the teardown.
+constexpr u32 kTopZeroWord = 0x3048;    // literal 0x00003048 (0x003D9F94)
+constexpr u32 kLowZeroWord = 0x2F98;    // literal 0x00002F98 (0x003D9F98)
+
+// First owned array: 11 entries of 0x8C bytes at +0x25C0 (0x003D9E38..E78).
+constexpr u32 kPoolOffset = 0x25C0;     // `add r4,r6,#0x25c0`
+constexpr u32 kPoolStride = 0x8C;       // 7*i + 28*i = 35*i, then lsl #2
+constexpr s32 kPoolCount = 11;          // `cmp r5,#0xb`
+constexpr u32 kPoolStateByte = 0x00;    // `strb r8,[r4]`
+constexpr u8 kPoolStateDead = 0xFF;     // r8 = 0xFF at 0x003D9E34
+constexpr u32 kPoolPointerOffset = 0x04;  // `ldr/str [r4,#4]`
+constexpr u32 kPoolBlockOffset = 0x08;    // `add r0,r4,#8`
+constexpr u32 kPoolBlockSize = 0x80;      // r1 = 0x80 at 0x003D9E3C
+constexpr u32 kPoolTailByte = 0x88;       // `strb r7,[r4,#0x88]`
+
+// Optional reference-counted subobject released through its vtable.
+constexpr u32 kMidSubobjectSlot = 0x1CF8;  // `add r4,r6,#0x1c00; add #0xf8`
+
+// Global graphics pointer and the controlled flag at +0x634 (0x003D9EC0).
+constexpr u32 kGlobalPointer = 0x004342C8;  // literal 0x004342C8 (0x003D9F9C)
+constexpr u32 kGlobalFlagsOffset = 0x634;   // `ldr r1,[r0,#0x634]`
+constexpr u32 kGlobalClearBit = 0x08000000; // `bic r1,r1,#0x8000000`
+
+// Second owned array: 50 entries of 40 bytes at +0x190 (0x003D9EEC..F58).
+constexpr u32 kObjectOffset = 0x190;
+constexpr u32 kObjectStride = 40;        // 5*i, then lsl #3
+constexpr s32 kObjectCount = 50;         // `cmp r5,#0x32`
+constexpr u32 kObjectPrimaryOffset = 0x00;
+constexpr u32 kObjectMinusOneA = 0x04;
+constexpr u32 kObjectMinusOneB = 0x08;
+constexpr u32 kObjectZeroA = 0x1C;
+constexpr u32 kObjectSecondaryOffset = 0x20;  // `ldr r0,[r0,#0x1b0]`
+constexpr u32 kObjectZeroB = 0x24;
+constexpr u32 kObjectLinkOffset = 0x08;       // `ldr r1,[r0,#8]`
+constexpr u32 kObjectLinkStateOffset = 0x0C;  // `ldr r1,[r1,#0xc]`
+constexpr u32 kAllOnes = 0xFFFFFFFF;     // `mvn r8,#0` at 0x003D9EE8
+
+// Third owned array: 50 entries of 48 bytes at +0x1398 (0x003D9F60..F8C).
+constexpr u32 kTailOffset = 0x1398;      // `add r0,r6,#0x1000; add #0x3a0`
+constexpr u32 kTailStride = 48;          // 3*i, then lsl #4
+constexpr s32 kTailCount = 50;           // `cmp r4,#0x32`
+constexpr u32 kTailMinusOne = 0x00;
+constexpr u32 kTailZeroA = 0x04;
+constexpr u32 kTailSubobject = 0x08;     // r0 = entry + 0x13A0 - 0x1398
+constexpr u32 kTailZeroB = 0x2C;         // entry + 0x13C4 - 0x1398
+
+}  // namespace func_3d9e10
+
+// Direct callees.  Every one is an existing raw-ARM body in this repository.
+extern "C" void script_vm_func_00227220(void* object);
+extern "C" void engine_func_003daabc(void* object);
+extern "C" void engine_func_002c4b30(void* destination, u32 size);
+extern "C" void engine_func_002c4360(void* block);
+extern "C" void engine_func_0022788c(void* object);
+extern "C" void engine_func_0024de78(void);
+extern "C" void ui_func_00262c64(void);
+extern "C" void script_vm_func_0027e094(void* object);
+extern "C" void script_vm_func_00152af8(void* object);
+extern "C" void script_vm_func_002a7aa0(void* object);
+extern "C" void camp_func_00241e88(void* object);
+
+namespace {
+
+// `ldr r1,[r0]; ldr r1,[r1,#4]; blx r1` (0x003D9E90 and 0x003D9F14): virtual
+// slot 1.  The concrete target lives in the object's vtable and is not
+// resolvable statically; the test installs a deterministic slot.
+void CallVirtualSlot1(void* object) {
+    using VirtualFn = void (*)(void*);
+    VirtualFn* const vtable = *reinterpret_cast<VirtualFn**>(object);
+    vtable[1](object);
+}
+
+// `ldr r1,[r0,#8]; ldr r1,[r1,#0xc]; cmp r1,#0` (0x003D9F30..F3C): the
+// second-level word is compared as signed.  A null link word faults exactly
+// like the original.
+bool ReleaseStateIsNonNegative(void* object) {
+    const u32* const link = *reinterpret_cast<u32* const*>(
+        static_cast<u8*>(object) + func_3d9e10::kObjectLinkOffset);
+    const s32 state = *reinterpret_cast<const s32*>(
+        reinterpret_cast<const u8*>(link) +
+        func_3d9e10::kObjectLinkStateOffset);
+    return state >= 0;
+}
+
+}  // namespace
+
+extern "C" void script_vm_func_003d9e10(void* object) {
+    u8* const base = static_cast<u8*>(object);
+
+    // 0x003D9E10..0x003D9E2C: top-level word and two context resets.
+    *reinterpret_cast<u32*>(base + func_3d9e10::kTopZeroWord) = 0;
+    script_vm_func_00227220(base);
+    engine_func_003daabc(base);
+
+    // 0x003D9E30..0x003D9E78: 11-entry owned-block array at +0x25C0.
+    for (u32 i = 0; i < static_cast<u32>(func_3d9e10::kPoolCount); ++i) {
+        u8* const entry =
+            base + func_3d9e10::kPoolOffset + i * func_3d9e10::kPoolStride;
+        entry[func_3d9e10::kPoolStateByte] = func_3d9e10::kPoolStateDead;
+        engine_func_002c4b30(entry + func_3d9e10::kPoolBlockOffset,
+                            func_3d9e10::kPoolBlockSize);
+
+        void* const block = *reinterpret_cast<void**>(
+            entry + func_3d9e10::kPoolPointerOffset);
+        if (block != nullptr) {
+            engine_func_002c4360(block);
+            *reinterpret_cast<void**>(
+                entry + func_3d9e10::kPoolPointerOffset) = nullptr;
+        }
+        entry[func_3d9e10::kPoolTailByte] = 0;
+    }
+
+    // 0x003D9E7C..0x003D9E9C: optional virtual subobject at +0x1CF8.
+    u8* const mid_slot = base + func_3d9e10::kMidSubobjectSlot;
+    void* const mid = *reinterpret_cast<void**>(mid_slot);
+    if (mid != nullptr) {
+        CallVirtualSlot1(mid);
+        *reinterpret_cast<void**>(mid_slot) = nullptr;
+    }
+
+    // 0x003D9EA0..0x003D9EE0: context reset, global cleanups, global flag.
+    engine_func_0022788c(base);
+    *reinterpret_cast<u32*>(base + func_3d9e10::kLowZeroWord) = 0;
+    engine_func_0024de78();
+    ui_func_00262c64();
+
+    void* const global =
+        *reinterpret_cast<void* const*>(func_3d9e10::kGlobalPointer);
+    if (global != nullptr) {
+        u32* const flags = reinterpret_cast<u32*>(
+            static_cast<u8*>(global) + func_3d9e10::kGlobalFlagsOffset);
+        *flags &= ~func_3d9e10::kGlobalClearBit;
+    }
+    script_vm_func_0027e094(base);
+
+    // 0x003D9EE4..0x003D9F58: 50-entry 40-byte array at +0x190.  The +0x20
+    // pointer is loaded before the field stores; the +0x00 pointer is loaded
+    // only after the +0x20 virtual call, and re-loaded again after the
+    // conditional 0x00152AF8 call.
+    for (u32 i = 0; i < static_cast<u32>(func_3d9e10::kObjectCount); ++i) {
+        u8* const entry =
+            base + func_3d9e10::kObjectOffset + i * func_3d9e10::kObjectStride;
+        void* const secondary = *reinterpret_cast<void**>(
+            entry + func_3d9e10::kObjectSecondaryOffset);
+
+        *reinterpret_cast<u32*>(entry + func_3d9e10::kObjectMinusOneA) =
+            func_3d9e10::kAllOnes;
+        *reinterpret_cast<u32*>(entry + func_3d9e10::kObjectZeroB) = 0;
+        *reinterpret_cast<u32*>(entry + func_3d9e10::kObjectMinusOneB) =
+            func_3d9e10::kAllOnes;
+        *reinterpret_cast<u32*>(entry + func_3d9e10::kObjectZeroA) = 0;
+
+        if (secondary != nullptr) {
+            CallVirtualSlot1(secondary);
+            *reinterpret_cast<void**>(
+                entry + func_3d9e10::kObjectSecondaryOffset) = nullptr;
+        }
+
+        void* const primary = *reinterpret_cast<void**>(
+            entry + func_3d9e10::kObjectPrimaryOffset);
+        if (primary != nullptr) {
+            if (ReleaseStateIsNonNegative(primary)) {
+                script_vm_func_00152af8(primary);
+            }
+            void* const reloaded = *reinterpret_cast<void**>(
+                entry + func_3d9e10::kObjectPrimaryOffset);
+            script_vm_func_002a7aa0(reloaded);
+            *reinterpret_cast<void**>(
+                entry + func_3d9e10::kObjectPrimaryOffset) = nullptr;
+        }
+    }
+
+    // 0x003D9F5C..0x003D9F90: 50-entry 48-byte array at +0x1398.
+    for (u32 i = 0; i < static_cast<u32>(func_3d9e10::kTailCount); ++i) {
+        u8* const entry =
+            base + func_3d9e10::kTailOffset + i * func_3d9e10::kTailStride;
+        *reinterpret_cast<u32*>(entry + func_3d9e10::kTailMinusOne) =
+            func_3d9e10::kAllOnes;
+        *reinterpret_cast<u32*>(entry + func_3d9e10::kTailZeroA) = 0;
+        camp_func_00241e88(entry + func_3d9e10::kTailSubobject);
+        *reinterpret_cast<u32*>(entry + func_3d9e10::kTailZeroB) = 0;
+    }
 }
 
 // DECOMP_FUNC(0x003dff3c, 400)

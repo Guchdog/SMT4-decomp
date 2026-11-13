@@ -10003,7 +10003,7 @@ address,size,status,category,name,src_file
 0x003d9b0c,536,matching,engine,engine_func_003d9b0c,src/engine/leaf_batch44_c.cpp
 0x003d9d24,168,matching,unknown,func_003d9d24,src/engine/leaf_batch28_c.cpp
 0x003d9dcc,68,matching,unknown,func_003d9dcc,src/engine/leaf_batch16_b.cpp
-0x003d9e10,400,matching,script_vm,script_vm_func_003d9e10,src/engine/leaf_batch41_c.cpp
+0x003d9e10,400,non_matching,script_vm,script_vm_func_003d9e10,src/engine/leaf_batch41_c.cpp
 0x003d9fa0,40,non_matching,engine,engine_func_003d9fa0,src/engine/leaf_batch31_a.cpp
 0x003d9fc8,236,matching,engine,engine_func_003d9fc8,src/engine/leaf_batch37_c.cpp
 0x003da0b4,44,matching,unknown,func_003da0b4,src/engine/leaf_batch28_c.cpp
