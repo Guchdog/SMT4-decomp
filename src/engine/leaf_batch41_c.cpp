@@ -1668,37 +1668,164 @@ extern "C" void script_vm_func_00275ca0() {
 }
 
 // DECOMP_FUNC(0x003d58c4, 408)
-// 100 ARM instructions through unconditional pop; 8 trailing data bytes.
-extern "C" __attribute__((naked)) void func_003d58c4() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d41f0, 0xe1a05000, 0xe1a07001, 0xed2d8b02\n"
-        ".word 0xe5900634, 0xe3100601, 0x1a00005a, 0xe5951680\n"
-        ".word 0xe2856d1a, 0xe1a02007, 0xe3a00000, 0xebf946c7\n"
-        ".word 0xe59f1158, 0xe2854b01, 0xe1a02007, 0xe241000c\n"
-        ".word 0xed911a00, 0xedd00a00, 0xe2851b01, 0xe2811f6b\n"
-        ".word 0xee311a60, 0xe2850e5f, 0xee410a00, 0xedc40a96\n"
-        ".word 0xedd11a00, 0xed903a00, 0xedd10a01, 0xed902a01\n"
-        ".word 0xee711ac3, 0xed911a02, 0xee700ac2, 0xed942a7c\n"
-        ".word 0xedd02a02, 0xe59f1108, 0xee311a62, 0xe241000c\n"
-        ".word 0xee012a80, 0xed842ab3, 0xedd41a7d, 0xee401a80\n"
-        ".word 0xedc41ab4, 0xedd40a7e, 0xee410a00, 0xedc40ab5\n"
-        ".word 0xed912a00, 0xed913a01, 0xedd11a02, 0xedd02a02\n"
-        ".word 0xecd00a02, 0xee711ae2, 0xee322a60, 0xee331a41\n"
-        ".word 0xee420a00, 0xedc40ab9, 0xedd00a01, 0xee410a00\n"
-        ".word 0xedc40aba, 0xedd00a02, 0xe3a00000, 0xee410a80\n"
-        ".word 0xedc40abb, 0xed940a7a, 0xedd40a8b, 0xe5961000\n"
-        ".word 0xee308a60, 0xebf94691, 0xedd40a8b, 0xe1a02007\n"
-        ".word 0xe3a00000, 0xee480a00, 0xedc40a69, 0xed940a7b\n"
-        ".word 0xedd40a8c, 0xe5961000, 0xee308a60, 0xebf94687\n"
-        ".word 0xedd40a8c, 0xe1a02007, 0xe3a00000, 0xee480a00\n"
-        ".word 0xedc40aaa, 0xed940a77, 0xedd40a88, 0xe5961000\n"
-        ".word 0xee308a60, 0xebf9467d, 0xedd40a88, 0xe1a02007\n"
-        ".word 0xe3a00000, 0xee480a00, 0xedc40aa6, 0xe5961000\n"
-        ".word 0xebf94676, 0xecbd8b02, 0xe1a01007, 0xe1a00005\n"
-        ".word 0xe8bd41f0, 0xea00069d, 0xecbd8b02, 0xe8bd81f0\n"
-        ".word 0x00493524, 0x0049353c\n"
-    );
+//
+// Recovered contract (ARM 0x003D58C4..0x003D5A50; the two literal words
+// 0x00493524 and 0x0049353C follow at 0x003D5A54):
+//   * `flags = self->field_634`; bit 20 (0x100000) gates the whole update.
+//     When set the routine returns immediately: no store, no helper call and
+//     no tail call.
+//   * `t = ui_func_00227414(0, self->field_680, value)` (0x003D58E0).
+//     0x00227414 mode 0 returns `(f32)value / (f32)denominator`, or +0.0f
+//     when denominator == 0; the divide is signed 32-bit.  `field_680` is
+//     re-read immediately before every one of the five calls.
+//   * Every write is `base + (target - base) * t`, i.e. VFP `vsub.f32`
+//     followed by `vmla.f32` (non-fused, two roundings), in this order:
+//       0x00493518 -> 0x00493524                    -> self+0x658
+//       self+0x5AC..0x5B4 <- self+0x5F0..0x5F8      -> self+0x6CC..0x6D4
+//       0x00493530..0x00493538 -> 0x0049353C..0x00493544
+//                                                   -> self+0x6E4..0x6EC
+//     then, with a fresh `t` for each triple:
+//       self+0x5E8 <- self+0x62C (base re-read after the call) -> +0x5A4
+//       self+0x5EC <- self+0x630 (base re-read after the call) -> +0x6A8
+//       self+0x5DC <- self+0x620 (base re-read after the call) -> +0x698
+//   * The fifth 0x00227414 result (0x003D5A30) is discarded.
+//   * Epilogue: `vpop {d8}`, `pop {r4,r5,r6,r7,r8,lr}` and an unconditional
+//     tail branch to 0x003D74C4(self, value).  `r8` is saved but unused.
+namespace func_3d58c4 {
+
+constexpr u32 kFlagsOffset = 0x634;        // `ldr r0, [r0, #0x634]`
+constexpr u32 kUpdateBlockedFlag = 0x100000;  // `tst r0, #0x100000`
+constexpr u32 kDenominatorOffset = 0x680;  // `ldr r1, [r5, #0x680]`
+
+// Literal-pool addresses of the four BSS tracks.  The pool words at
+// 0x003D5A54/0x003D5A58 hold 0x00493524 and 0x0049353C; the "from" values
+// are the same pointers minus 0xC.
+constexpr u32 kTrackAScalarFrom = 0x00493518;
+constexpr u32 kTrackAScalarTo = 0x00493524;
+constexpr u32 kTrackBVectorFrom = 0x00493530;
+constexpr u32 kTrackBVectorTo = 0x0049353C;
+
+struct SceneState {
+    u8 pad_000[0x5A4];
+    f32 out_5a4;                 // interpolated from 0x5E8 toward 0x62C
+    u8 pad_5a8[4];
+    f32 from_5ac[3];             // three-lane target of the first vector lerp
+    u8 pad_5b8[0x24];
+    f32 to_5dc;                  // scalar target for +0x698
+    u8 pad_5e0[8];
+    f32 to_5e8;                  // scalar target for +0x5A4
+    f32 to_5ec;                  // scalar target for +0x6A8
+    f32 base_5f0[3];             // base of the first vector lerp
+    u8 pad_5fc[0x24];
+    f32 base_620;                // scalar base for +0x698
+    u8 pad_624[8];
+    f32 base_62c;                // scalar base for +0x5A4
+    f32 base_630;                // scalar base for +0x6A8
+    u32 flags_634;
+    u8 pad_638[0x20];
+    f32 out_658;                 // BSS scalar lerp result
+    u8 pad_65c[0x24];
+    s32 denominator_680;
+    u8 pad_684[0x14];
+    f32 out_698;
+    u8 pad_69c[0xC];
+    f32 out_6a8;
+    u8 pad_6ac[0x20];
+    f32 out_6cc;
+    f32 out_6d0;
+    f32 out_6d4;
+    u8 pad_6d8[0xC];
+    f32 out_6e4;                 // BSS three-lane lerp result
+    f32 out_6e8;
+    f32 out_6ec;
+};
+
+inline f32 read_global_f32(u32 address) {
+    return *reinterpret_cast<const f32*>(address);
+}
+
+// The original uses the non-fused `vmla.f32` (multiply, round, add, round).
+// Clang expands `base + delta * fraction` into `vmul` + `vadd`, which agrees
+// for finite inputs but can select a different NaN payload when a signalling
+// NaN is involved.  Emitting the instruction explicitly keeps the candidate
+// bit-identical for every input, including NaNs.
+__attribute__((always_inline)) inline f32 vmla_f32(f32 base, f32 addend,
+                                                   f32 factor) {
+    __asm__("vmla.f32 %0, %1, %2" : "+t"(base) : "t"(addend), "t"(factor));
+    return base;
+}
+
+}  // namespace func_3d58c4
+
+// 0x00227414: mode 0 computes (f32)value / (f32)denominator as a single
+// precision quotient; a zero denominator yields +0.0f.  The routine also has
+// modes 1 and 2, which this caller never selects.
+extern "C" f32 ui_func_00227414(s32 mode, s32 denominator, s32 value);
+
+// 0x003D74C4: tail continuation of the update.  Its result is not part of the
+// caller-visible contract; the original reaches it with `b` after restoring
+// every callee-saved register.
+extern "C" void func_003d74c4(func_3d58c4::SceneState* self, s32 value);
+
+extern "C" void func_003d58c4(func_3d58c4::SceneState* self, s32 value) {
+    using namespace func_3d58c4;
+
+    // 0x003D58D4..0x003D58DC: blocked updates perform no work at all.
+    if ((self->flags_634 & kUpdateBlockedFlag) != 0) {
+        return;
+    }
+
+    // 0x003D58E0..0x003D5920: BSS scalar track A, single lane.
+    const f32 t0 = ui_func_00227414(0, self->denominator_680, value);
+    const f32 track_a_from = read_global_f32(kTrackAScalarFrom);
+    const f32 track_a_to = read_global_f32(kTrackAScalarTo);
+    self->out_658 = vmla_f32(track_a_from, track_a_to - track_a_from, t0);
+
+    // 0x003D5924..0x003D5970: three-lane lerp from +0x5AC toward +0x5F0.
+    self->out_6cc =
+        vmla_f32(self->base_5f0[0], self->from_5ac[0] - self->base_5f0[0], t0);
+    self->out_6d0 =
+        vmla_f32(self->base_5f0[1], self->from_5ac[1] - self->base_5f0[1], t0);
+    self->out_6d4 =
+        vmla_f32(self->base_5f0[2], self->from_5ac[2] - self->base_5f0[2], t0);
+
+    // 0x003D5974..0x003D59B4: three-lane BSS track B.
+    const f32 track_b_from_x = read_global_f32(kTrackBVectorFrom + 0x0);
+    const f32 track_b_from_y = read_global_f32(kTrackBVectorFrom + 0x4);
+    const f32 track_b_from_z = read_global_f32(kTrackBVectorFrom + 0x8);
+    const f32 track_b_to_x = read_global_f32(kTrackBVectorTo + 0x0);
+    const f32 track_b_to_y = read_global_f32(kTrackBVectorTo + 0x4);
+    const f32 track_b_to_z = read_global_f32(kTrackBVectorTo + 0x8);
+    self->out_6e4 = vmla_f32(track_b_from_x, track_b_to_x - track_b_from_x, t0);
+    self->out_6e8 = vmla_f32(track_b_from_y, track_b_to_y - track_b_from_y, t0);
+    self->out_6ec = vmla_f32(track_b_from_z, track_b_to_z - track_b_from_z, t0);
+
+    // 0x003D59B8..0x003D59DC: the base at +0x62C is loaded after the call.
+    {
+        const f32 delta = self->to_5e8 - self->base_62c;
+        const f32 t = ui_func_00227414(0, self->denominator_680, value);
+        self->out_5a4 = vmla_f32(self->base_62c, delta, t);
+    }
+
+    // 0x003D59E0..0x003D5A04: the base at +0x630 is loaded after the call.
+    {
+        const f32 delta = self->to_5ec - self->base_630;
+        const f32 t = ui_func_00227414(0, self->denominator_680, value);
+        self->out_6a8 = vmla_f32(self->base_630, delta, t);
+    }
+
+    // 0x003D5A08..0x003D5A2C: the base at +0x620 is loaded after the call.
+    {
+        const f32 delta = self->to_5dc - self->base_620;
+        const f32 t = ui_func_00227414(0, self->denominator_680, value);
+        self->out_698 = vmla_f32(self->base_620, delta, t);
+    }
+
+    // 0x003D5A30..0x003D5A34: fifth fraction; the result is discarded.
+    ui_func_00227414(0, self->denominator_680, value);
+
+    // 0x003D5A38..0x003D5A48: restore and tail-branch to 0x003D74C4.
+    func_003d74c4(self, value);
 }
 
 // DECOMP_FUNC(0x0015a620, 416)
