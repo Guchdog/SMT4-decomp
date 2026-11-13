@@ -4875,62 +4875,90 @@ extern "C" s32 shop_func_00230ae8(void* self_pointer, void* host_pointer) {
     return host->cursor_kind_00;
 }
 
+// Direct calls made by 0x00296390.
+extern "C" void script_vm_func_002bf9e8(u32 id);   // 0x002bf9e8
+extern "C" s32 ui_func_002bf9f0(void* object);     // 0x002bf9f0
+
 // DECOMP_FUNC(0x00296390, 408)
-extern "C" __attribute__((naked)) void script_vm_func_00296390() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x47f0, 0xe92d, 0x4000, 0xe1a0\n"
-        ".hword 0x7001, 0xe3a0, 0x5000, 0xe3a0\n"
-        ".hword 0x0000, 0xe355, 0x0008, 0x0a00\n"
-        ".hword 0x0185, 0xe065, 0x0100, 0xe080\n"
-        ".hword 0x0100, 0xe084, 0x0b0b, 0xe280\n"
-        ".hword 0x00f8, 0xe280, 0x08da, 0xe1d0\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x0005, 0x0a00, 0x0185, 0xe065\n"
-        ".hword 0x0100, 0xe080, 0x0100, 0xe084\n"
-        ".hword 0x0b0b, 0xe280, 0x0f61, 0xe280\n"
-        ".hword 0xa582, 0xeb00, 0x5001, 0xe285\n"
-        ".hword 0x0006, 0xe355, 0xffeb, 0xbaff\n"
-        ".hword 0xa12c, 0xe59f, 0x5000, 0xe3a0\n"
-        ".hword 0x9001, 0xe3a0, 0x0185, 0xe065\n"
-        ".hword 0x0100, 0xe080, 0x6100, 0xe084\n"
-        ".hword 0x0b0b, 0xe286, 0x0f61, 0xe280\n"
-        ".hword 0x08da, 0xe1d0, 0x0000, 0xe350\n"
-        ".hword 0xf000, 0xe320, 0x0011, 0x0a00\n"
-        ".hword 0x0105, 0xe084, 0x0b0d, 0xe280\n"
-        ".hword 0x0f86, 0xe280, 0x0000, 0xe590\n"
-        ".hword 0x0000, 0xe350, 0x0008, 0x0a00\n"
-        ".hword 0x8005, 0xe084, 0x8b0d, 0xe288\n"
-        ".hword 0x8f92, 0xe288, 0x0000, 0xe5d8\n"
-        ".hword 0x0000, 0xe350, 0x0002, 0x1a00\n"
-        ".hword 0x000a, 0xe1a0, 0xa563, 0xeb00\n"
-        ".hword 0x9000, 0xe5c8, 0x0a03, 0xe286\n"
-        ".hword 0x0f56, 0xe280, 0xa561, 0xeb00\n"
-        ".hword 0x5001, 0xe285, 0x0006, 0xe355\n"
-        ".hword 0xffe1, 0xbaff, 0x5000, 0xe3a0\n"
-        ".hword 0x0185, 0xe065, 0x0100, 0xe080\n"
-        ".hword 0x6100, 0xe084, 0x0b0b, 0xe286\n"
-        ".hword 0x0f61, 0xe280, 0x08da, 0xe1d0\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x001f, 0x0a00, 0x0a03, 0xe286\n"
-        ".hword 0x0f56, 0xe280, 0x08da, 0xe1d0\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x0019, 0x0a00, 0x5001, 0xe285\n"
-        ".hword 0x0006, 0xe355, 0xffed, 0xbaff\n"
-        ".hword 0x0000, 0xe3a0, 0x2006, 0xe3a0\n"
-        ".hword 0xc000, 0xe1a0, 0x1180, 0xe060\n"
-        ".hword 0x1101, 0xe081, 0x1101, 0xe084\n"
-        ".hword 0x1c31, 0xe281, 0x1bf6, 0xe1d1\n"
-        ".hword 0x000e, 0xe351, 0x0007, 0xba00\n"
-        ".hword 0x1100, 0xe084, 0x1b0d, 0xe281\n"
-        ".hword 0x1f52, 0xe281, 0x3000, 0xe591\n"
-        ".hword 0x3001, 0xe283, 0x0801, 0xe353\n"
-        ".hword 0x3000, 0xe581, 0xc000, 0xa581\n"
-        ".hword 0x2001, 0xe252, 0x0001, 0xe280\n"
-        ".hword 0xffed, 0x1aff, 0x0007, 0xe1a0\n"
-        ".hword 0x87f0, 0xe8bd, 0x7000, 0xe3a0\n"
-        ".hword 0xffe6, 0xeaff, 0x0174, 0x0100\n"
-    );
+//
+// Runs four passes over the six 140-byte slots of a script-VM work block.
+// The slot index is scaled exactly as in the original: `rsb`/`add` produce
+// 35*i and the final `lsl #2` turns that into a 140-byte stride.
+//
+//   1. For i = 0..5: slot 0 is always visited; every later slot is visited
+//      only when its signed byte at +0x2D82 is non-zero.  Each visited slot
+//      passes `slot + 0x2D84` to 0x002BF9F0.
+//   2. For i = 0..5: a slot whose signed byte at +0x2E0E is zero is skipped.
+//      Otherwise, when the per-index word at +0x3618 is non-zero and the
+//      per-index latch byte at +0x3648 is still zero, the fixed id
+//      0x01000174 is forwarded to 0x002BF9E8 and the latch is set to 1.
+//      Every non-skipped slot then passes `slot + 0x3158` to 0x002BF9F0.
+//   3. For i = 0..5: the result is 1 only when the signed bytes at +0x2E0E
+//      and +0x31E2 are non-zero for all six slots; the first zero stops the
+//      scan and makes the result 0.
+//   4. For i = 0..5: when the signed halfword at +0x31B6 is >= 14, the
+//      per-index word at +0x3548 is incremented and reset to zero when the
+//      incremented value is signed-greater-or-equal to 0x10000.  This pass
+//      always runs, including the failure return of pass 3.
+extern "C" s32 script_vm_func_00296390(void* self_pointer) {
+    u8* const self = static_cast<u8*>(self_pointer);
+    constexpr u32 kSlotStride = 140;  // 35 * 4
+    constexpr s32 kSlotCount = 6;
+
+    // Pass 1: reset/update sub-objects.  Slot 0 is unconditional.
+    for (s32 index = 0; index < kSlotCount; ++index) {
+        u8* const slot = self + static_cast<u32>(index) * kSlotStride;
+        if (index != 0 &&
+            *reinterpret_cast<const s8*>(slot + 0x2D82) == 0) {
+            continue;
+        }
+        ui_func_002bf9f0(slot + 0x2D84);
+    }
+
+    // Pass 2: kick sub-objects that are already switched on.
+    for (s32 index = 0; index < kSlotCount; ++index) {
+        u8* const slot = self + static_cast<u32>(index) * kSlotStride;
+        if (*reinterpret_cast<const s8*>(slot + 0x2E0E) == 0) {
+            continue;
+        }
+        if (*reinterpret_cast<const u32*>(
+                self + 0x3618 + static_cast<u32>(index) * 4u) != 0) {
+            u8* const latch = self + 0x3648 + static_cast<u32>(index);
+            if (*latch == 0) {
+                script_vm_func_002bf9e8(0x01000174u);
+                *latch = 1;
+            }
+        }
+        ui_func_002bf9f0(slot + 0x3158);
+    }
+
+    // Pass 3: all six slots must have both gate bytes set.
+    s32 ready = 1;
+    for (s32 index = 0; index < kSlotCount; ++index) {
+        u8* const slot = self + static_cast<u32>(index) * kSlotStride;
+        if (*reinterpret_cast<const s8*>(slot + 0x2E0E) == 0 ||
+            *reinterpret_cast<const s8*>(slot + 0x31E2) == 0) {
+            ready = 0;
+            break;
+        }
+    }
+
+    // Pass 4: advance the per-slot counters whose signed halfword is >= 14.
+    for (s32 index = 0; index < kSlotCount; ++index) {
+        u8* const slot = self + static_cast<u32>(index) * kSlotStride;
+        if (*reinterpret_cast<const s16*>(slot + 0x31B6) < 14) {
+            continue;
+        }
+        u32* const counter = reinterpret_cast<u32*>(
+            self + 0x3548 + static_cast<u32>(index) * 4u);
+        const u32 next = *counter + 1u;
+        *counter = next;
+        if (static_cast<s32>(next) >= 0x10000) {
+            *counter = 0;
+        }
+    }
+
+    return ready;
 }
 
 // DECOMP_FUNC(0x0038d26c, 412)
