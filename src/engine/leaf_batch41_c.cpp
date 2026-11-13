@@ -6126,39 +6126,239 @@ extern "C" u32 engine_func_003518d0(void* object) {
 }
 
 // DECOMP_FUNC(0x001204a4, 444)
-// 106 ARM instructions through unconditional pop; 20 trailing data bytes.
-extern "C" __attribute__((naked)) void engine_func_001204a4() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d47f0, 0xe1a05000, 0xe1a07001, 0xe3a02004\n"
-        ".word 0xe5910000, 0xe3a01048, 0xe5903008, 0xe1a00007\n"
-        ".word 0xe12fff33, 0xe1b04000, 0x13a01048, 0x1b069196\n"
-        ".word 0xe59f0170, 0xe59f1170, 0xe3a02405, 0xe3a09000\n"
-        ".word 0xe8840007, 0xe2843024, 0xe584900c, 0xe5849010\n"
-        ".word 0xe5849014, 0xe5950000, 0xe59f1150, 0xe5840018\n"
-        ".word 0xe5952004, 0xe59f0148, 0xe5841020, 0xe584201c\n"
-        ".word 0xe8830201, 0xe2841030, 0xe584902c, 0xe5950008\n"
-        ".word 0xe3a02004, 0xe8810201, 0xe3a01020, 0xe5970000\n"
-        ".word 0xe5903008, 0xe1a00007, 0xe12fff33, 0xe1b06000\n"
-        ".word 0x0a000007, 0xe5869000, 0xe5869004, 0xe5869008\n"
-        ".word 0xe586900c, 0xe5869010, 0xe5869014, 0xe5869018\n"
-        ".word 0xe586901c, 0xe5867010, 0xe5951000, 0xe3a00020\n"
-        ".word 0xed9f1a38, 0xe5861000, 0xe5951004, 0xe5861004\n"
-        ".word 0xe595100c, 0xe1c601f4, 0xedd50a00, 0xed950a01\n"
-        ".word 0xe5d50018, 0xeef80ae0, 0xeeb80ac0, 0xe3500000\n"
-        ".word 0x0286000c, 0x05869008, 0xee610a20, 0xee200a80\n"
-        ".word 0xeebc0ac0, 0xee108a10, 0x0a000016, 0xe5970000\n"
-        ".word 0xe3a02080, 0xe1a01008, 0xe5903008, 0xe1a00007\n"
-        ".word 0xe12fff33, 0xe5d51010, 0xe1a03000, 0xe3510000\n"
-        ".word 0x0a000006, 0xe1b01008, 0xe3a02000, 0x120220ff\n"
-        ".word 0x0a000002, 0xe2511001, 0xe4c02001, 0x1afffffc\n"
-        ".word 0xe3530000, 0xe286000c, 0x10431000, 0xe5868008\n"
-        ".word 0x15801000, 0x1a000000, 0xe5809000, 0xe3560000\n"
-        ".word 0xe2840038, 0x10461000, 0x05809000, 0x15801000\n"
-        ".word 0xe5d50011, 0xe5c4003c, 0xe5950014, 0xe5840040\n"
-        ".word 0xe1a00004, 0xe8bd87f0, 0x20000021, 0x48535854\n"
-        ".word 0x00006040, 0x00001405, 0x40800000\n"
-    );
+//
+// Recovered contract (ARM 0x001204A4..0x00120647 = 106 instructions through
+// the `pop {r4-r8, sb, sl, pc}`; 0x0012064C..0x0012065F holds the five-word
+// literal pool 0x20000021, 0x48535854, 0x00006040, 0x00001405, 0x40800000):
+//
+//   u8* engine_func_001204a4(const void* descriptor, void* allocator);
+//
+//   * `descriptor` arrives in r0 (r5), `allocator` in r1 (r7).  r2 and r3 are
+//     never read.  The allocator is a context object; its vtable slot +0x08
+//     (index 2) is an allocation routine.  It is reloaded from `[allocator]`
+//     at every one of the three call sites, so a callee that rewrites the
+//     context or its vtable changes the later calls.
+//   * First allocation: (allocator, 0x48, 4) -> r4.  When non-null it is
+//     zeroed with AsdMem_Zero(r4, 0x48) (0x002C4B30).  r4 is then filled as
+//     the 0x48-byte record described by the constants below and returned.
+//   * Second allocation: (allocator, 0x20, 4) -> r6.  When non-null its eight
+//     words are zeroed.  r6 is then filled as the 0x20-byte sub-record.  The
+//     stores are unconditional, so a null r6 writes through address 0 exactly
+//     like the original (the caller's allocator never returns null in the
+//     observed code path).
+//   * The payload size is `(u32)(4.0f * (f32)size_x * (f32)size_y)` using the
+//     VFP single-precision sequence at 0x0012058C..0x001205B8: two
+//     vcvt.f32.s32, two vmul.f32 and one vcvt.u32.f32 (saturating).  It is
+//     computed unconditionally but only consumed when descriptor+0x18 is
+//     non-zero.
+//   * descriptor+0x18 == 0: sub-record size = 0 and payload link = 0.
+//     Otherwise a third allocation (allocator, payload_size, 0x80) runs; when
+//     descriptor+0x10 is non-zero and payload_size is non-zero, exactly
+//     payload_size zero bytes are written to it.  Then sub-record size =
+//     payload_size and sub-record link = buffer - (sub-record + 0x0C), or 0
+//     when the allocation returned null.
+//   * Finally record+0x38 = sub-record - (record + 0x38), or 0 for a null
+//     sub-record; record+0x3C = (u8)descriptor+0x11; record+0x40 =
+//     (u32)descriptor+0x14; return the record pointer.
+//
+// The only caller found in the image is 0x0010BBAC inside
+// engine_func_0010bb08 (AsdList_Init), which builds the 0x1C-byte descriptor
+// on its stack and passes the AsdRes context from 0x002C31BC as allocator.
+// It stores the returned record at [0x00464AF0 + 0x80] (the AsdModel manager)
+// and ignores r2/r3 of this routine.
+namespace engine_1204a4 {
+
+// Input descriptor (r0/r5).  Offsets are the fields the body reads; the only
+// known caller fills a 0x1C-byte structure.
+constexpr u32 kSizeXOffset = 0x00;        // s32, first size factor
+constexpr u32 kSizeYOffset = 0x04;        // s32, second size factor
+constexpr u32 kValue08Offset = 0x08;      // u32, copied to record+0x30
+constexpr u32 kValue0COffset = 0x0C;      // u32, copied to sub-record+0x18
+constexpr u32 kZeroPayloadOffset = 0x10;  // u8, zero the payload buffer
+constexpr u32 kByte11Offset = 0x11;       // u8, copied to record+0x3C
+constexpr u32 kValue14Offset = 0x14;      // u32, copied to record+0x40
+constexpr u32 kPayloadFlagOffset = 0x18;  // u8, allocate the payload
+
+// Record returned to the caller (r4), 0x48 bytes.  Bytes +0x41..+0x47 are
+// only zeroed by AsdMem_Zero; +0x44 has no explicit store.
+constexpr u32 kRecordMagic0Offset = 0x00;
+constexpr u32 kRecordMagic1Offset = 0x04;
+constexpr u32 kRecordMagic2Offset = 0x08;
+constexpr u32 kRecordZero0COffset = 0x0C;
+constexpr u32 kRecordZero10Offset = 0x10;
+constexpr u32 kRecordZero14Offset = 0x14;
+constexpr u32 kRecordSizeXOffset = 0x18;
+constexpr u32 kRecordSizeYOffset = 0x1C;
+constexpr u32 kRecordWord20Offset = 0x20;
+constexpr u32 kRecordWord24Offset = 0x24;
+constexpr u32 kRecordZero28Offset = 0x28;
+constexpr u32 kRecordZero2COffset = 0x2C;
+constexpr u32 kRecordValue30Offset = 0x30;
+constexpr u32 kRecordZero34Offset = 0x34;
+constexpr u32 kRecordSubRecordOffset = 0x38;  // self-relative link
+constexpr u32 kRecordByte3COffset = 0x3C;
+constexpr u32 kRecordValue40Offset = 0x40;
+
+constexpr u32 kRecordMagic0 = 0x20000021;  // ldr literal 0x0012064C
+constexpr u32 kRecordMagic1 = 0x48535854;  // ldr literal 0x00120650
+constexpr u32 kRecordMagic2 = 0x05000000;  // mov r2,#0x05000000
+constexpr u32 kRecordWord20 = 0x00006040;  // ldr literal 0x00120654
+constexpr u32 kRecordWord24 = 0x00001405;  // ldr literal 0x00120658
+
+// Sub-record allocated second (r6), 0x20 bytes.  The zero pass writes every
+// word; the stores that follow overwrite +0x00, +0x04, +0x10, +0x14 and +0x18.
+constexpr u32 kSubWord00Offset = 0x00;     // descriptor+0x00
+constexpr u32 kSubWord04Offset = 0x04;     // descriptor+0x04
+constexpr u32 kSubSizeOffset = 0x08;       // u32 payload byte count
+constexpr u32 kSubPayloadOffset = 0x0C;    // u32 self-relative payload link
+constexpr u32 kSubContextOffset = 0x10;    // allocator context
+constexpr u32 kSubWord14Offset = 0x14;     // 0x20
+constexpr u32 kSubWord18Offset = 0x18;     // descriptor+0x0C
+constexpr u32 kSubWord1COffset = 0x1C;     // zeroed, never rewritten
+
+constexpr u32 kRecordSize = 0x48;          // first allocation size
+constexpr u32 kSubRecordSize = 0x20;       // second allocation size
+constexpr u32 kRecordAlign = 4;            // r2 of the first allocation
+constexpr u32 kSubRecordAlign = 4;         // r2 of the second allocation
+constexpr u32 kPayloadFlags = 0x80;        // r2 of the third allocation
+constexpr u32 kSubWord14Value = 0x20;      // `mov r0,#0x20; strd`
+constexpr u32 kAllocateSlot = 2;           // vtable index for +0x08
+constexpr f32 kPayloadScale = 4.0f;        // literal 0x40800000
+
+using AllocateFn = void* (*)(void* context, u32 size, u32 flags);
+
+inline void** vtable_of(void* object) {
+    return *reinterpret_cast<void***>(object);
+}
+
+// The slot is reloaded at every call site (0x001204B4, 0x00120530 and
+// 0x001205CC all execute `ldr r0,[r7]; ldr r3,[r0,#8]`).
+inline AllocateFn allocate_slot(void* context) {
+    return reinterpret_cast<AllocateFn>(vtable_of(context)[kAllocateSlot]);
+}
+
+template <typename T>
+inline T& field(void* object, u32 offset) {
+    return *reinterpret_cast<T*>(static_cast<u8*>(object) + offset);
+}
+
+template <typename T>
+inline const T& field(const void* object, u32 offset) {
+    return *reinterpret_cast<const T*>(static_cast<const u8*>(object) + offset);
+}
+
+}  // namespace engine_1204a4
+
+namespace engine_1204a4_calls {
+
+// 0x002C4B30: zeroes `size` bytes at `ptr`.  Named AsdMem_Zero in
+// src/engine/asd_file.cpp, src/nn/mobiclip.cpp and the sibling records.
+extern "C" void AsdMem_Zero(void* ptr, u32 size)
+    __asm__("engine_func_002c4b30");
+
+}  // namespace engine_1204a4_calls
+
+extern "C" u8* engine_func_001204a4(const void* descriptor, void* allocator) {
+    using namespace engine_1204a4;
+    using namespace engine_1204a4_calls;
+
+    // 0x001204B0..0x001204D0: 0x48-byte record, zeroed when non-null.
+    u8* const record = static_cast<u8*>(
+        allocate_slot(allocator)(allocator, kRecordSize, kRecordAlign));
+    if (record != nullptr) {
+        AsdMem_Zero(record, kRecordSize);
+    }
+
+    // 0x001204D4..0x001204E4: three literal/constant header words.
+    field<u32>(record, kRecordMagic0Offset) = kRecordMagic0;
+    field<u32>(record, kRecordMagic1Offset) = kRecordMagic1;
+    field<u32>(record, kRecordMagic2Offset) = kRecordMagic2;
+    field<u32>(record, kRecordZero0COffset) = 0;
+    field<u32>(record, kRecordZero10Offset) = 0;
+    field<u32>(record, kRecordZero14Offset) = 0;
+
+    // 0x001204F8..0x00120514: the two size words plus two constant words.
+    field<u32>(record, kRecordSizeXOffset) =
+        field<u32>(descriptor, kSizeXOffset);
+    field<u32>(record, kRecordWord20Offset) = kRecordWord20;
+    field<u32>(record, kRecordSizeYOffset) =
+        field<u32>(descriptor, kSizeYOffset);
+    field<u32>(record, kRecordWord24Offset) = kRecordWord24;
+    field<u32>(record, kRecordZero28Offset) = 0;
+    field<u32>(record, kRecordZero2COffset) = 0;
+    field<u32>(record, kRecordValue30Offset) =
+        field<u32>(descriptor, kValue08Offset);
+    field<u32>(record, kRecordZero34Offset) = 0;
+
+    // 0x00120520..0x0012053C: 0x20-byte sub-record.
+    u8* const sub = static_cast<u8*>(
+        allocate_slot(allocator)(allocator, kSubRecordSize, kSubRecordAlign));
+    if (sub != nullptr) {
+        field<u32>(sub, kSubWord00Offset) = 0;
+        field<u32>(sub, kSubWord04Offset) = 0;
+        field<u32>(sub, kSubSizeOffset) = 0;
+        field<u32>(sub, kSubPayloadOffset) = 0;
+        field<u32>(sub, kSubContextOffset) = 0;
+        field<u32>(sub, kSubWord14Offset) = 0;
+        field<u32>(sub, kSubWord18Offset) = 0;
+        field<u32>(sub, kSubWord1COffset) = 0;
+    }
+
+    // 0x00120568..0x00120588: unconditional stores (also through a null sub).
+    field<void*>(sub, kSubContextOffset) = allocator;
+    field<u32>(sub, kSubWord00Offset) = field<u32>(descriptor, kSizeXOffset);
+    field<u32>(sub, kSubWord04Offset) = field<u32>(descriptor, kSizeYOffset);
+    field<u32>(sub, kSubWord14Offset) = kSubWord14Value;
+    field<u32>(sub, kSubWord18Offset) = field<u32>(descriptor, kValue0COffset);
+
+    // 0x0012058C..0x001205B8: 4.0f * size_x * size_y, then vcvt.u32.f32.
+    const f32 scaled = kPayloadScale *
+                       static_cast<f32>(field<s32>(descriptor, kSizeXOffset)) *
+                       static_cast<f32>(field<s32>(descriptor, kSizeYOffset));
+    const u32 payload_size = static_cast<u32>(scaled);
+
+    if (field<u8>(descriptor, kPayloadFlagOffset) == 0) {
+        // 0x001205A4..0x0012061C: no payload.
+        field<u32>(sub, kSubSizeOffset) = 0;
+        field<u32>(sub, kSubPayloadOffset) = 0;
+    } else {
+        // 0x001205C0..0x001205D4: payload allocation.
+        u8* const payload = static_cast<u8*>(
+            allocate_slot(allocator)(allocator, payload_size, kPayloadFlags));
+
+        // 0x001205E0..0x00120600: byte fill, skipped when the descriptor flag
+        // is clear or the size is zero.
+        if (field<u8>(descriptor, kZeroPayloadOffset) != 0) {
+            u8* cursor = payload;
+            for (u32 remaining = payload_size; remaining != 0; --remaining) {
+                *cursor++ = 0;
+            }
+        }
+
+        // 0x00120604..0x0012061C: size always, link only when non-null.
+        field<u32>(sub, kSubSizeOffset) = payload_size;
+        if (payload != nullptr) {
+            field<u32>(sub, kSubPayloadOffset) = static_cast<u32>(
+                payload - (sub + kSubPayloadOffset));
+        } else {
+            field<u32>(sub, kSubPayloadOffset) = 0;
+        }
+    }
+
+    // 0x00120620..0x00120630: self-relative link to the sub-record.
+    if (sub != nullptr) {
+        field<u32>(record, kRecordSubRecordOffset) = static_cast<u32>(
+            sub - (record + kRecordSubRecordOffset));
+    } else {
+        field<u32>(record, kRecordSubRecordOffset) = 0;
+    }
+
+    // 0x00120634..0x00120640: trailing byte/word copies.
+    field<u8>(record, kRecordByte3COffset) =
+        field<u8>(descriptor, kByte11Offset);
+    field<u32>(record, kRecordValue40Offset) =
+        field<u32>(descriptor, kValue14Offset);
+    return record;
 }
 
 // DECOMP_FUNC(0x002d110c, 444)

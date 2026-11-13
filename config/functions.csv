@@ -492,7 +492,7 @@ address,size,status,category,name,src_file
 0x00120008,76,matching,unknown,func_00120008,src/engine/leaf_batch24_a.cpp
 0x00120054,900,matching,unknown,func_00120054,src/engine/leaf_batch43_b.cpp
 0x001203d8,204,matching,engine,engine_func_001203d8,src/engine/leaf_batch27_a.cpp
-0x001204a4,444,matching,engine,engine_func_001204a4,src/engine/leaf_batch41_c.cpp
+0x001204a4,444,non_matching,engine,engine_func_001204a4,src/engine/leaf_batch41_c.cpp
 0x00120660,172,matching,engine,engine_func_00120660,src/engine/leaf_batch27_a.cpp
 0x0012070c,120,matching,engine,engine_func_0012070c,src/engine/leaf_batch26_a.cpp
 0x00120784,308,matching,engine,engine_func_00120784,src/engine/leaf_batch28_a.cpp
