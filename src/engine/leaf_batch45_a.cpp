@@ -5922,93 +5922,156 @@ extern "C" void engine_func_003e9ba8(void** p_obj, void* target, const float* da
 }
 
 // DECOMP_FUNC(0x00150f54, 656)
-extern "C" __attribute__((naked)) void func_00150f54() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x47f0, 0xe92d, 0x7000, 0xe3a0\n"
-        ".hword 0x8000, 0xe1a0, 0x9007, 0xe1a0\n"
-        ".hword 0x8b02, 0xed2d, 0x8a9b, 0xed9f\n"
-        ".hword 0x8a9b, 0xeddf, 0x6207, 0xe088\n"
-        ".hword 0x1000, 0xe3a0, 0x0050, 0xe596\n"
-        ".hword 0x204c, 0xe596, 0x0002, 0xe150\n"
-        ".hword 0x0002, 0xaa00, 0x0001, 0xe280\n"
-        ".hword 0x1001, 0xe3a0, 0x0050, 0xe586\n"
-        ".hword 0x0030, 0xe596, 0x202c, 0xe596\n"
-        ".hword 0x0002, 0xe150, 0x0002, 0xba00\n"
-        ".hword 0x0000, 0xe351, 0x0008, 0x1a00\n"
-        ".hword 0x003d, 0xea00, 0x0001, 0xe280\n"
-        ".hword 0x0030, 0xe586, 0x102c, 0xe596\n"
-        ".hword 0x0001, 0xe150, 0x0002, 0xba00\n"
-        ".hword 0x10ff, 0xe207, 0x0008, 0xe1a0\n"
-        ".hword 0x8fb9, 0xeb05, 0x104c, 0xe286\n"
-        ".hword 0x0044, 0xe286, 0x0006, 0xe891\n"
-        ".hword 0x0001, 0xe152, 0x1a01, 0xad90\n"
-        ".hword 0x0009, 0xaa00, 0x2a10, 0xee01\n"
-        ".hword 0x1a01, 0xedd0, 0x0a00, 0xed90\n"
-        ".hword 0x1a90, 0xee00, 0x1ac0, 0xee71\n"
-        ".hword 0x1ac1, 0xeeb8, 0x0ae0, 0xeef8\n"
-        ".hword 0x1a81, 0xee61, 0x1aa0, 0xee81\n"
-        ".hword 0x1a00, 0xee31, 0x0a68, 0xeef0\n"
-        ".hword 0x0a48, 0xeeb0, 0x1ae0, 0xeeb4\n"
-        ".hword 0xfa10, 0xeef1, 0x0a60, 0xceb0\n"
-        ".hword 0x0002, 0xca00, 0x1ac0, 0xeeb4\n"
-        ".hword 0xfa10, 0xeef1, 0x0a41, 0x2eb0\n"
-        ".hword 0x1a68, 0xeeb0, 0x102c, 0xe286\n"
-        ".hword 0x0024, 0xe286, 0x0006, 0xe891\n"
-        ".hword 0x1a01, 0xee60, 0x0001, 0xe152\n"
-        ".hword 0x0a01, 0xad90, 0x0009, 0xaa00\n"
-        ".hword 0x2a10, 0xee01, 0x2a01, 0xedd0\n"
-        ".hword 0x0a00, 0xed90, 0x1a10, 0xee02\n"
-        ".hword 0x2ac0, 0xee72, 0x3ac1, 0xeeb8\n"
-        ".hword 0x1ac2, 0xeeb8, 0x2a83, 0xee62\n"
-        ".hword 0x2a81, 0xee82, 0x0a00, 0xee32\n"
-        ".hword 0x1a48, 0xeeb0, 0x0ae0, 0xeeb4\n"
-        ".hword 0xfa10, 0xeef1, 0x0a60, 0xceb0\n"
-        ".hword 0x0002, 0xca00, 0x0ac1, 0xeeb4\n"
-        ".hword 0xfa10, 0xeef1, 0x0a41, 0x3eb0\n"
-        ".hword 0x0077, 0xe6af, 0x0a21, 0xee20\n"
-        ".hword 0x48db, 0xeb05, 0x4000, 0xe3a0\n"
-        ".hword 0x5184, 0xe086, 0x02a0, 0xe5b5\n"
-        ".hword 0x0000, 0xe350, 0x0011, 0x0a00\n"
-        ".hword 0x1004, 0xe5d5, 0x0002, 0xe351\n"
-        ".hword 0x000e, 0x1a00, 0x0000, 0xe354\n"
-        ".hword 0x0002, 0x0a00, 0x0001, 0xe354\n"
-        ".hword 0x000a, 0x1a00, 0x0004, 0xea00\n"
-        ".hword 0xf000, 0xe320, 0x081e, 0xeb00\n"
-        ".hword 0xf000, 0xe320, 0xf000, 0xe320\n"
-        ".hword 0x0001, 0xea00, 0xf000, 0xe320\n"
-        ".hword 0x082c, 0xeb00, 0x0000, 0xe350\n"
-        ".hword 0x9000, 0x0585, 0x9004, 0x05c5\n"
-        ".hword 0x4001, 0xe284, 0x0002, 0xe354\n"
-        ".hword 0xffe6, 0xbaff, 0x7001, 0xe287\n"
-        ".hword 0x0002, 0xe357, 0xff94, 0xbaff\n"
-        ".hword 0x0010, 0xe598, 0x100c, 0xe598\n"
-        ".hword 0x0000, 0xe151, 0x0001, 0xc280\n"
-        ".hword 0x0010, 0xc588, 0x0003, 0xda00\n"
-        ".hword 0xa84d, 0xeb05, 0x1040, 0xe3a0\n"
-        ".hword 0xf000, 0xe320, 0x1a24, 0xeb00\n"
-        ".hword 0x0020, 0xe598, 0x101c, 0xe598\n"
-        ".hword 0x0001, 0xe150, 0x0001, 0xb280\n"
-        ".hword 0x0020, 0xb588, 0x0003, 0xaa00\n"
-        ".hword 0xa843, 0xeb05, 0x1040, 0xe3a0\n"
-        ".hword 0xf000, 0xe320, 0x1a1a, 0xeb00\n"
-        ".hword 0x0020, 0xe598, 0x101c, 0xe598\n"
-        ".hword 0x0001, 0xe150, 0x0a06, 0xad98\n"
-        ".hword 0x0009, 0xaa00, 0x0a10, 0xee01\n"
-        ".hword 0x1a06, 0xedd8, 0x0a05, 0xed98\n"
-        ".hword 0x1a90, 0xee00, 0x1ac0, 0xee71\n"
-        ".hword 0x1ac1, 0xeeb8, 0x0ae0, 0xeef8\n"
-        ".hword 0x1a81, 0xee61, 0x1aa0, 0xee81\n"
-        ".hword 0x0a00, 0xee31, 0x0a68, 0xeef0\n"
-        ".hword 0x1a20, 0xee20, 0x0a48, 0xeeb0\n"
-        ".hword 0x1ae0, 0xeeb4, 0xfa10, 0xeef1\n"
-        ".hword 0x0a60, 0xceb0, 0x0002, 0xca00\n"
-        ".hword 0x1ac0, 0xeeb4, 0xfa10, 0xeef1\n"
-        ".hword 0x0a41, 0x2eb0, 0x8b02, 0xecbd\n"
-        ".hword 0x47f0, 0xe8bd, 0xaf16, 0xea05\n"
-        ".hword 0x0000, 0x0000, 0x0000, 0x3f80\n"
-    );
-};
+//
+// Two-slot blend/effect updater.  The object owns two 0x10-byte slots; each slot
+// has two signed saturating counters (0x4C/0x50 and 0x2C/0x30) and two float
+// ranges (0x44/0x48 and 0x24/0x28).  The counters are advanced, a clamped blend
+// factor is published through 0x002A3418 when either counter moved, the slot's
+// two type-2 elements are retired through 0x00153160 / 0x001531AC, then the
+// object-level counters (0x0C/0x10 and 0x1C/0x20) advance and the final blend
+// factor is published through 0x002BCE38.
+//
+// The callees below are still byte-preserved in their own translation units;
+// these declarations recover the AAPCS contract observed at each call site:
+//   0x002B4EB8  func_002b4eb8(void* obj, u32 slot)    - rearm the slot elements
+//   0x002A3418  func_002a3418(s8 slot, f32 value)     - publish slot blend
+//   0x00153160  func_00153160(void* element) -> u32   - slot 0 element alive?
+//   0x001531AC  func_001531AC(void* element) -> u32   - slot 1 element alive?
+//   0x002BB270  engine_func_002bb270() -> void*       - notification list head
+//   0x001579D8  func_001579d8(void* list, u32 flags)  - OR the flag into entries
+//   0x002BCE38  engine_func_002bce38(f32 value)       - publish object blend
+extern "C" void func_002b4eb8(void* obj, u32 slot);
+extern "C" void func_002a3418(s8 slot, f32 value);
+extern "C" u32 func_00153160(void* element);
+extern "C" u32 func_001531ac(void* element);
+extern "C" void* engine_func_002bb270();
+extern "C" void func_001579d8(void* list, u32 flags);
+extern "C" void engine_func_002bce38(f32 value);
+
+namespace {
+
+constexpr s32 kSlotCount = 2;
+constexpr s32 kElementCount = 2;
+constexpr u32 kSlotStride = 0x10;
+constexpr u32 kElementStride = 8;
+constexpr u32 kFirstElementOffset = 0x2A0;
+constexpr u32 kElementTypeOffset = 4;
+constexpr u8 kActiveElementType = 2;
+constexpr u32 kNotificationFlags = 0x40;
+constexpr f32 kUnitScale = 1.0f;
+constexpr f32 kClampMax = 1.0f;
+
+// 0x151018..0x151034: greater than kClampMax saturates, values that are not
+// less than zero (including unordered/NaN) pass through, otherwise zero.
+inline f32 clamp_high(f32 value) {
+    if (value > kClampMax) {
+        return kClampMax;
+    }
+    if (!(value < 0.0f)) {
+        return value;
+    }
+    return 0.0f;
+}
+
+// 0x151080..0x151098: greater than kClampMax saturates, then negative values
+// become zero (unordered/NaN passes through untouched).
+inline f32 clamp_low(f32 value) {
+    if (value > kClampMax) {
+        value = kClampMax;
+    }
+    if (value < 0.0f) {
+        value = 0.0f;
+    }
+    return value;
+}
+
+// 0x150FD0..0x15100C and 0x151034..0x151078: at or past the limit the range's
+// end value is used, otherwise start + (end - start) * counter / limit.
+inline f32 lerp_counter(const u8* slot, u32 start_offset, u32 end_offset,
+                        u32 counter_offset, u32 limit_offset) {
+    const s32 counter = *reinterpret_cast<const s32*>(slot + counter_offset);
+    const s32 limit = *reinterpret_cast<const s32*>(slot + limit_offset);
+    if (counter >= limit) {
+        return *reinterpret_cast<const f32*>(slot + end_offset);
+    }
+    const f32 start = *reinterpret_cast<const f32*>(slot + start_offset);
+    const f32 end = *reinterpret_cast<const f32*>(slot + end_offset);
+    return start + ((end - start) * static_cast<f32>(counter)) /
+                       static_cast<f32>(limit);
+}
+
+}  // namespace
+
+extern "C" void func_00150f54(void* object) {
+    auto* const obj = static_cast<u8*>(object);
+
+    for (s32 i = 0; i < kSlotCount; ++i) {
+        u8* const slot = obj + static_cast<u32>(i) * kSlotStride;
+
+        bool first_advanced = false;
+        const s32 first_counter = *reinterpret_cast<const s32*>(slot + 0x50);
+        if (first_counter < *reinterpret_cast<const s32*>(slot + 0x4C)) {
+            *reinterpret_cast<s32*>(slot + 0x50) = first_counter + 1;
+            first_advanced = true;
+        }
+
+        bool active;
+        const s32 second_counter = *reinterpret_cast<const s32*>(slot + 0x30);
+        if (second_counter < *reinterpret_cast<const s32*>(slot + 0x2C)) {
+            const s32 advanced_counter = second_counter + 1;
+            *reinterpret_cast<s32*>(slot + 0x30) = advanced_counter;
+            if (advanced_counter >= *reinterpret_cast<const s32*>(slot + 0x2C)) {
+                func_002b4eb8(object, static_cast<u32>(i) & 0xFFu);
+            }
+            active = true;
+        } else {
+            active = first_advanced;
+        }
+
+        if (active) {
+            const f32 first_value = clamp_high(
+                lerp_counter(slot, 0x44, 0x48, 0x50, 0x4C));
+            const f32 second_value = clamp_low(
+                lerp_counter(slot, 0x24, 0x28, 0x30, 0x2C));
+            func_002a3418(static_cast<s8>(i),
+                          second_value * (first_value * kUnitScale));
+        }
+
+        for (s32 j = 0; j < kElementCount; ++j) {
+            u8* const element = slot + static_cast<u32>(j) * kElementStride +
+                                kFirstElementOffset;
+            void* const payload = *reinterpret_cast<void* const*>(element);
+            if (payload == nullptr ||
+                element[kElementTypeOffset] != kActiveElementType) {
+                continue;
+            }
+            const u32 stays_alive = (j == 0) ? func_00153160(payload)
+                                             : func_001531ac(payload);
+            if (stays_alive == 0) {
+                *reinterpret_cast<u32*>(element) = 0;
+                element[kElementTypeOffset] = 0;
+            }
+        }
+    }
+
+    if (*reinterpret_cast<const s32*>(obj + 0x0C) >
+        *reinterpret_cast<const s32*>(obj + 0x10)) {
+        *reinterpret_cast<s32*>(obj + 0x10) =
+            *reinterpret_cast<const s32*>(obj + 0x10) + 1;
+        func_001579d8(engine_func_002bb270(), kNotificationFlags);
+    }
+
+    if (*reinterpret_cast<const s32*>(obj + 0x20) <
+        *reinterpret_cast<const s32*>(obj + 0x1C)) {
+        *reinterpret_cast<s32*>(obj + 0x20) =
+            *reinterpret_cast<const s32*>(obj + 0x20) + 1;
+        func_001579d8(engine_func_002bb270(), kNotificationFlags);
+    }
+
+    const f32 final_value = clamp_high(
+        lerp_counter(obj, 0x14, 0x18, 0x20, 0x1C) * kUnitScale);
+    engine_func_002bce38(final_value);
+}
 
 // DECOMP_FUNC(0x001188d0, 660)
 extern "C" __attribute__((naked)) void ui_func_001188d0() {
