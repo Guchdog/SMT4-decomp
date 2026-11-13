@@ -562,143 +562,167 @@ extern "C" __attribute__((naked)) void engine_func_001076d8() {
     );
 }
 
-// DECOMP_FUNC(0x00108300, 496)
-extern "C" __attribute__((naked)) void ui_func_00108300() {
-    asm volatile(
-        "push {r4, r5, r6, r7, r8, sb, sl, lr}\n"
-        "bl ui_func_002c0ac8\n"
-        "mov sl, #0\n"
-        "mov r5, r0\n"
-        "add r1, r0, #0xe00\n"
-        "strb sl, [r0, #0xe95]\n"
-        "ldrb r0, [r0, #0xe8c]\n"
-        "cmp r0, #0\n"
-        "ldrbne r0, [r1, #0x8d]\n"
-        "cmpne r0, #0\n"
-        "beq .L_001084e8\n"
-        "ldr r0, [r5, #0xfdc]\n"
-        "add sb, r5, #0xc00\n"
-        "add sb, sb, #0x3dc\n"
-        "cmp r0, #0\n"
-        "beq .L_001084e8\n"
-        "ldrb r0, [r5, #0xfd8]\n"
-        "add r4, r5, #0xf00\n"
-        "cmp r0, #0\n"
-        "movne r0, #0\n"
-        "bne .L_001084e8\n"
-        ".word 0xe59f0190\n"
-        "ldr r0, [r0]\n"
-        "bl ui_func_002c3ba8\n"
-        "ldr r1, [r5, #0xfdc]\n"
-        "mov r0, #0x200\n"
-        "str r0, [r1, #0x14]\n"
-        "ldr r1, [sb]\n"
-        "str r0, [r1, #0x18]\n"
-        "ldr r1, [sb]\n"
-        "mov r0, #0\n"
-        "bl func_002bfcb4\n"
-        "strb r0, [r5, #0xe94]\n"
-        "mov r0, #0\n"
-        "bl func_002c00e8\n"
-        "ldr r6, [r5, #0xe90]\n"
-        "cmp r0, #0\n"
-        "bne .L_001083ac\n"
-        "cmp r6, #1\n"
-        "ble .L_001083ac\n"
-        "sub r6, r6, #1\n"
-        "cmp r6, #1\n"
-        "movlt r6, #1\n"
-        ".L_001083ac:\n"
-        "ldrb r0, [r4, #0xe0]\n"
-        "cmp r0, #0\n"
-        "beq .L_00108494\n"
-        "cmp r6, #0\n"
-        "addgt r7, r5, #0xc00\n"
-        "addgt r8, r5, #0xc00\n"
-        "mov r4, #0\n"
-        "addgt r7, r7, #0x3e8\n"
-        "addgt r8, r8, #0x3e4\n"
-        "ble .L_001084d8\n"
-        ".L_001083d4:\n"
-        "ldr r0, [r5, #0xfdc]\n"
-        "ldr r1, [r5, #0xfe4]\n"
-        "bl func_002bfc88\n"
-        "ldr r0, [sb]\n"
-        "ldr r1, [r8]\n"
-        "ldr r0, [r0, #0x14]\n"
-        "asr r0, r0, #1\n"
-        "str r0, [r1, #0x14]\n"
-        "ldr r0, [sb]\n"
-        "ldr r1, [r8]\n"
-        "ldr r0, [r0, #0x18]\n"
-        "asr r0, r0, #1\n"
-        "str r0, [r1, #0x18]\n"
-        "b .L_00108448\n"
-        ".L_0010840c:\n"
-        "cmp r4, #0\n"
-        "beq .L_001083d4\n"
-        "cmp r4, #1\n"
-        "beq .L_00108458\n"
-        "ldr r0, [r5, #0xfe8]\n"
-        "mov r1, r0\n"
-        "bl func_002bfc88\n"
-        "ldr r0, [r7]\n"
-        "ldr r1, [r0, #0x14]\n"
-        "asr r1, r1, #1\n"
-        "str r1, [r0, #0x14]\n"
-        "ldr r0, [r7]\n"
-        "ldr r1, [r0, #0x18]\n"
-        "asr r1, r1, #1\n"
-        "str r1, [r0, #0x18]\n"
-        ".L_00108448:\n"
-        "add r4, r4, #1\n"
-        "cmp r4, r6\n"
-        "blt .L_0010840c\n"
-        "b .L_001084d8\n"
-        ".L_00108458:\n"
-        "add r0, r5, #0xc00\n"
-        "add r0, r0, #0x3e4\n"
-        "ldm r0, {r0, r1}\n"
-        "bl func_002bfc88\n"
-        "ldr r0, [r8]\n"
-        "ldr r1, [r7]\n"
-        "ldr r0, [r0, #0x14]\n"
-        "asr r0, r0, #1\n"
-        "str r0, [r1, #0x14]\n"
-        "ldr r0, [r8]\n"
-        "ldr r1, [r7]\n"
-        "ldr r0, [r0, #0x18]\n"
-        "asr r0, r0, #1\n"
-        "str r0, [r1, #0x18]\n"
-        "b .L_00108448\n"
-        ".L_00108494:\n"
-        "cmp r6, #0\n"
-        "mov r4, #0\n"
-        "ble .L_001084d8\n"
-        ".L_001084a0:\n"
-        "ldr r0, [r5, #0xfdc]\n"
-        "mov r1, r0\n"
-        "bl func_002bfc88\n"
-        "ldr r0, [sb]\n"
-        "add r4, r4, #1\n"
-        "cmp r6, r4\n"
-        "ldr r1, [r0, #0x14]\n"
-        "asr r1, r1, #1\n"
-        "str r1, [r0, #0x14]\n"
-        "ldr r0, [sb]\n"
-        "ldr r1, [r0, #0x18]\n"
-        "asr r1, r1, #1\n"
-        "str r1, [r0, #0x18]\n"
-        "bgt .L_001084a0\n"
-        ".L_001084d8:\n"
-        "mov r0, #1\n"
-        "strb r0, [r5, #0xe95]\n"
-        "mov r0, #0\n"
-        "strb sl, [r5, #0xe96]\n"
-        ".L_001084e8:\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, pc}\n"
-        ".word 0x0044ea00\n"
-    );
+// ---------------------------------------------------------------------------
+// 0x00108300 -- "HDRCL" frame-capture callback.
+//
+// r0 is a packed widget handle; 0x002C0AC8 resolves it to the 0xFEC-byte
+// FrameTex scene (the same layout documented in include/engine/asd_frame.h).
+// The handle lookup happens before any guard, and the returned pointer is used
+// for the +0xE95 store before the first field is read.
+//
+// Behaviour:
+//   * clear scene->+0xE95; return 0 unless +0xE8C, +0xE8D and the primary
+//     texture at +0xFDC are all nonzero and +0xFD8 is zero;
+//   * begin a GPU pass on the render context loaded from g_AsdGpuState
+//     (0x0044EA00), then force both primary texture dimensions to 0x200;
+//   * publish the byte result of 0x002BFCB4(0, primary) at scene->+0xE94;
+//   * read the capture count from +0xE90.  When 0x002C00E8(0) is zero and the
+//     count exceeds 1, use count - 1 (clamped to at least 1);
+//   * if +0xFE0 is nonzero, walk the 0xFDC -> 0xFE4 -> 0xFE8 chain, blitting
+//     each pair with 0x002BFC88 and copying half of the source's +0x14/+0x18
+//     words into the destination; from the third iteration on, 0xFE8 is both
+//     source and destination;
+//   * otherwise blit the primary texture against itself and halve its own
+//     +0x14/+0x18 count times;
+//   * set scene->+0xE95 = 1 and clear scene->+0xE96.  The function always
+//     returns 0.
+//
+// All 0x14/0x18 updates are arithmetic (`asr #1`) 32-bit shifts, and every
+// pointer/field is reloaded from the scene between helper calls.
+// ---------------------------------------------------------------------------
+namespace ui_108300 {
+
+/**
+ * The three capture textures are full `AsdTexture` objects (0x48 bytes,
+ * include/engine/asd_texture.h); this view names only the two words reached
+ * here.  `asr #1` fixes the signed width/height interpretation.
+ */
+struct CaptureTexture {
+    u8  pad_00[0x14];
+    s32 width;                       // +0x14: `ldr` / `asr #1` / `str`
+    s32 height;                      // +0x18: `ldr` / `asr #1` / `str`
+};
+static_assert(offsetof(CaptureTexture, width) == 0x14);
+static_assert(offsetof(CaptureTexture, height) == 0x18);
+
+/**
+ * Offset view over `FrameTexScene` (include/engine/asd_frame.h).  Field names
+ * stay offset-based because the ARM evidence only fixes their role here.
+ */
+struct SceneView {
+    u8  pad_0000[0xE8C];
+    u8  field_e8c;                   // +0xE8C: first enable gate
+    u8  field_e8d;                   // +0xE8D: second enable gate
+    u8  pad_e8e[0x02];
+    s32 field_e90;                   // +0xE90: capture iteration count
+    u8  field_e94;                   // +0xE94: byte result of 0x002BFCB4
+    u8  field_e95;                   // +0xE95: cleared first, set to 1 on success
+    u8  field_e96;                   // +0xE96: cleared on success
+    u8  pad_e97[0x141];              // +0xE97..+0xFD8
+    u8  field_fd8;                   // +0xFD8: nonzero aborts
+    u8  pad_fd9[0x03];
+    CaptureTexture* field_fdc;       // +0xFDC: primary capture texture
+    u8  field_fe0;                   // +0xFE0: selects the trim strategy
+    u8  pad_fe1[0x03];
+    CaptureTexture* field_fe4;       // +0xFE4: second capture texture
+    CaptureTexture* field_fe8;       // +0xFE8: third capture texture
+};
+static_assert(offsetof(SceneView, field_e8c) == 0xE8C);
+static_assert(offsetof(SceneView, field_e8d) == 0xE8D);
+static_assert(offsetof(SceneView, field_e90) == 0xE90);
+static_assert(offsetof(SceneView, field_e94) == 0xE94);
+static_assert(offsetof(SceneView, field_e95) == 0xE95);
+static_assert(offsetof(SceneView, field_e96) == 0xE96);
+static_assert(offsetof(SceneView, field_fd8) == 0xFD8);
+static_assert(offsetof(SceneView, field_fdc) == 0xFDC);
+static_assert(offsetof(SceneView, field_fe0) == 0xFE0);
+static_assert(offsetof(SceneView, field_fe4) == 0xFE4);
+static_assert(offsetof(SceneView, field_fe8) == 0xFE8);
+
+// Precise declarations of the five direct callees.  The `__asm__` labels keep
+// the original symbol names (the top-of-file prototypes are unprototyped
+// `void` forms shared with other naked spans).
+extern "C" void* LookupScene(u32 handle) __asm__("ui_func_002c0ac8");
+extern "C" void BeginGpuPass(void* gpu_state) __asm__("ui_func_002c3ba8");
+extern "C" u32 TrimCapture(u32 mode, void* texture) __asm__("func_002bfcb4");
+extern "C" s32 CaptureMode(u32 mode) __asm__("func_002c00e8");
+extern "C" void BlitTexture(void* source, void* destination)
+    __asm__("func_002bfc88");
+
+// `ldr r0,[pc,#0x190]` loads 0x0044EA00; the following `ldr` reads the
+// g_AsdGpuState pointer stored there.
+constexpr u32 kGpuStateSlot = 0x0044EA00;
+constexpr s32 kCaptureSize = 0x200;   // `mov r0,#0x200`
+
+// `asr #1` on a signed 32-bit word.
+inline s32 Half(s32 value) noexcept {
+    return value >> 1;
+}
+
+}  // namespace ui_108300
+
+extern "C" u32 ui_func_00108300(u32 handle) {
+    using namespace ui_108300;
+
+    SceneView* scene = static_cast<SceneView*>(LookupScene(handle));
+    scene->field_e95 = 0;                        // 0x00108314, before the gates
+    if (scene->field_e8c == 0) {                 // 0x00108318
+        return 0;
+    }
+    if (scene->field_e8d == 0) {                 // 0x00108320
+        return 0;
+    }
+    if (scene->field_fdc == nullptr) {           // 0x0010832C
+        return 0;
+    }
+    if (scene->field_fd8 != 0) {                 // 0x00108340
+        return 0;
+    }
+
+    BeginGpuPass(*reinterpret_cast<void* const*>(kGpuStateSlot));
+
+    scene->field_fdc->width = kCaptureSize;      // 0x00108364
+    scene->field_fdc->height = kCaptureSize;     // 0x00108370
+
+    scene->field_e94 =
+        static_cast<u8>(TrimCapture(0, scene->field_fdc));  // 0x00108380
+
+    const s32 mode = CaptureMode(0);             // 0x00108388
+    s32 count = scene->field_e90;                // 0x0010838C
+    if (mode == 0 && count > 1) {                // 0x00108390..0x001083A8
+        count -= 1;
+        if (count < 1) {
+            count = 1;
+        }
+    }
+
+    if (scene->field_fe0 != 0) {                 // 0x001083AC
+        for (s32 i = 0; i < count; ++i) {        // 0x001083D0 / 0x00108450
+            if (i == 0) {                        // 0x001083D4
+                BlitTexture(scene->field_fdc, scene->field_fe4);
+                scene->field_fe4->width = Half(scene->field_fdc->width);
+                scene->field_fe4->height = Half(scene->field_fdc->height);
+            } else if (i == 1) {                 // 0x00108458
+                BlitTexture(scene->field_fe4, scene->field_fe8);
+                scene->field_fe8->width = Half(scene->field_fe4->width);
+                scene->field_fe8->height = Half(scene->field_fe4->height);
+            } else {                             // 0x0010841C
+                BlitTexture(scene->field_fe8, scene->field_fe8);
+                scene->field_fe8->width = Half(scene->field_fe8->width);
+                scene->field_fe8->height = Half(scene->field_fe8->height);
+            }
+        }
+    } else {                                     // 0x00108494
+        for (s32 i = 0; i < count; ++i) {        // 0x001084A0
+            BlitTexture(scene->field_fdc, scene->field_fdc);
+            scene->field_fdc->width = Half(scene->field_fdc->width);
+            scene->field_fdc->height = Half(scene->field_fdc->height);
+        }
+    }
+
+    scene->field_e95 = 1;                        // 0x001084D8
+    scene->field_e96 = 0;                        // 0x001084E0
+    return 0;
 }
 
 // DECOMP_FUNC(0x001084f0, 520)
