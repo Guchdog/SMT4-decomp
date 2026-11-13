@@ -2597,88 +2597,186 @@ extern "C" s32 engine_func_0014cae4(const char* base_name,
 }
 
 // DECOMP_FUNC(0x0035b364, 616)
-extern "C" __attribute__((naked)) void func_0035b364() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x43f8, 0xe92d, 0x4000, 0xe1a0\n"
-        ".hword 0x0008, 0xe280, 0x6000, 0xe3a0\n"
-        ".hword 0x0006, 0xe880, 0x0014, 0xe284\n"
-        ".hword 0x5006, 0xe1a0, 0x0048, 0xe880\n"
-        ".hword 0x0010, 0xe594, 0x0003, 0xe150\n"
-        ".hword 0x8234, 0x159f, 0x7002, 0x13a0\n"
-        ".hword 0x002e, 0x1a00, 0x0079, 0xea00\n"
-        ".hword 0x0000, 0xe355, 0x002b, 0x0a00\n"
-        ".hword 0x1001, 0xe241, 0x0001, 0xe150\n"
-        ".hword 0x0004, 0x0a00, 0x200c, 0xe594\n"
-        ".hword 0x1080, 0xe082, 0x10b0, 0xe1d1\n"
-        ".hword 0x005c, 0xe351, 0x0006, 0x0a00\n"
-        ".hword 0x100c, 0xe594, 0x1080, 0xe081\n"
-        ".hword 0x10b0, 0xe1d1, 0x0020, 0xe351\n"
-        ".hword 0x0a03, 0x1351, 0x0060, 0x0a00\n"
-        ".hword 0x0005, 0xea00, 0x1080, 0xe087\n"
-        ".hword 0x10b1, 0xe192, 0x0045, 0xe351\n"
-        ".hword 0x0002, 0x0280, 0x5000, 0x03a0\n"
-        ".hword 0x0014, 0x0a00, 0x0008, 0xe594\n"
-        ".hword 0x1001, 0xe3a0, 0x760f, 0xebfb\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x006b, 0x0a00, 0x2000, 0xe594\n"
-        ".hword 0x0014, 0xe880, 0x0000, 0xe584\n"
-        ".hword 0x1000, 0xe590, 0x0004, 0xe581\n"
-        ".hword 0x100c, 0xe284, 0x6008, 0xe5c0\n"
-        ".hword 0x0006, 0xe891, 0x1082, 0xe081\n"
-        ".hword 0x10b0, 0xe1d1, 0x10ba, 0xe1c0\n"
-        ".hword 0x0010, 0xe594, 0x0001, 0xe280\n"
-        ".hword 0x0010, 0xe584, 0x004a, 0xea00\n"
-        ".hword 0x0010, 0xe584, 0x0048, 0xea00\n"
-        ".hword 0x01d0, 0xe1c4, 0x1001, 0xe241\n"
-        ".hword 0x0001, 0xe150, 0x000a, 0x0a00\n"
-        ".hword 0x200c, 0xe594, 0x3080, 0xe082\n"
-        ".hword 0x30b0, 0xe1d3, 0x005c, 0xe353\n"
-        ".hword 0x0005, 0x1a00, 0x3080, 0xe087\n"
-        ".hword 0x20b3, 0xe192, 0x0051, 0xe352\n"
-        ".hword 0x0002, 0x0280, 0x5001, 0x03a0\n"
-        ".hword 0xffee, 0x0aff, 0x0001, 0xe150\n"
-        ".hword 0x0004, 0x0a00, 0x100c, 0xe594\n"
-        ".hword 0x2080, 0xe081, 0x20b0, 0xe1d2\n"
-        ".hword 0x005c, 0xe352, 0x0006, 0x0a00\n"
-        ".hword 0x100c, 0xe594, 0x1080, 0xe081\n"
-        ".hword 0x10b0, 0xe1d1, 0x0020, 0xe351\n"
-        ".hword 0x0a03, 0x1351, 0x0026, 0x0a00\n"
-        ".hword 0x0003, 0xea00, 0x0080, 0xe087\n"
-        ".hword 0x00b0, 0xe191, 0x0045, 0xe350\n"
-        ".hword 0x001f, 0x0a00, 0x0008, 0xe594\n"
-        ".hword 0x1001, 0xe3a0, 0x75d7, 0xebfb\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x0033, 0x0a00, 0x2000, 0xe594\n"
-        ".hword 0x0014, 0xe880, 0x0000, 0xe584\n"
-        ".hword 0x1000, 0xe590, 0x0004, 0xe581\n"
-        ".hword 0x0000, 0xe58d, 0x0004, 0xe1a0\n"
-        ".hword 0x100d, 0xe1a0, 0x20dc, 0xe1c0\n"
-        ".hword 0x2083, 0xe082, 0x20b0, 0xe1d2\n"
-        ".hword 0x3020, 0xe242, 0x005e, 0xe353\n"
-        ".hword 0x000f, 0x8a00, 0x2182, 0xe088\n"
-        ".hword 0x30fc, 0xe512, 0x0001, 0xe313\n"
-        ".hword 0x2100, 0x0512, 0x00c3, 0xe084\n"
-        ".hword 0x0002, 0x0a00, 0x3000, 0xe590\n"
-        ".hword 0x2100, 0xe512, 0x2002, 0xe793\n"
-        ".hword 0xf000, 0xe320, 0xff32, 0xe12f\n"
-        ".hword 0x0005, 0xea00, 0x0002, 0xe3a0\n"
-        ".hword 0x83f8, 0xe8bd, 0x0001, 0xe280\n"
-        ".hword 0xffb8, 0xeaff, 0xf000, 0xe320\n"
-        ".hword 0x0194, 0xeb00, 0x0000, 0xe350\n"
-        ".hword 0xfff8, 0x1aff, 0x01d0, 0xe1c4\n"
-        ".hword 0x0001, 0xe150, 0xff85, 0x1aff\n"
-        ".hword 0x0008, 0xe594, 0x1001, 0xe3a0\n"
-        ".hword 0x75ac, 0xebfb, 0x0000, 0xe350\n"
-        ".hword 0xf000, 0xe320, 0x0008, 0x0a00\n"
-        ".hword 0x1000, 0xe594, 0x0012, 0xe880\n"
-        ".hword 0x0000, 0xe584, 0x1000, 0xe590\n"
-        ".hword 0x0004, 0xe581, 0x1012, 0xe3a0\n"
-        ".hword 0x1008, 0xe5c0, 0x0000, 0xe3a0\n"
-        ".hword 0x83f8, 0xe8bd, 0x0001, 0xe3a0\n"
-        ".hword 0x83f8, 0xe8bd, 0x2c80, 0x0047\n"
-    );
+//
+// UTF-16 message-macro scanner.  The scanned object is also the sentinel of a
+// circular doubly-linked list: its first two words are the list next/prev
+// pointers, and every token becomes a 0x10-byte node taken from `allocator`
+// (0x00238C44 is a 16-byte-unit pool allocator).  Scanning starts at the
+// object's pre-existing `cursor` field, never rewinds, and stops when the
+// cursor reaches `length`.
+//
+// Unquoted text: "\Q" switches to verbatim mode, "\E" outside verbatim mode
+// aborts the scan with 2, the two space characters are dropped, and every other
+// character becomes a node handed to the per-character member-function-pointer
+// table at 0x00472B80 (indexed by character - 0x20, 8 bytes per entry:
+// {handler, this-adjust}).  Every shipped adjust word is zero, so the handler
+// always receives the object itself and the address of the new node.
+//
+// Verbatim text produces one literal type-0 character node per non-space
+// character until "\E" is consumed.
+//
+// Returns 0 after appending the type-0x12 terminator node, 1 when the node
+// allocator returns null, 2 for a stray "\E", otherwise the first non-zero
+// handler result (the scan stops there).
+
+struct MsgNode {
+    MsgNode* next;   // +0x00
+    MsgNode* prev;   // +0x04
+    u8 type;         // +0x08
+    u8 reserved09;   // +0x09
+    u16 character;   // +0x0A
+    u16 value;       // +0x0C
+    u16 reserved0E;  // +0x0E
 };
+
+struct MsgScanner {
+    MsgNode* head;     // +0x00 list head (newest node; the object is the
+                       //        circular list's sentinel)
+    MsgNode* tail;     // +0x04 list tail (oldest node)
+    void* allocator;   // +0x08
+    const u16* text;   // +0x0C
+    u32 cursor;        // +0x10
+    u32 length;        // +0x14
+    s32 depth;         // +0x18
+};
+
+extern "C" void* func_00238c44(void* allocator, u32 units);
+
+// Per-character handlers reached through the 0x00472B80 dispatch table; the
+// table stores no this-adjustment, so they are entered as (this, &node).
+extern "C" s32 func_0035b254(MsgScanner* self, MsgNode** node);  // '.'
+extern "C" s32 func_0035b294(MsgScanner* self, MsgNode** node);  // '+'
+extern "C" s32 func_0035b2d4(MsgScanner* self, MsgNode** node);  // '$'
+extern "C" s32 func_0035b324(MsgScanner* self, MsgNode** node);  // '-'
+extern "C" s32 func_0035bbc4(MsgScanner* self, MsgNode** node);  // any other
+extern "C" s32 func_0035bbf8(MsgScanner* self, MsgNode** node);  // '*'
+extern "C" s32 func_0035bc38(MsgScanner* self, MsgNode** node);  // '?'
+extern "C" s32 func_0035bc78(MsgScanner* self, MsgNode** node);  // '&'
+extern "C" s32 func_0035bcf8(MsgScanner* self, MsgNode** node);  // '\'
+extern "C" s32 func_0035bd64(MsgScanner* self, MsgNode** node);  // '{'
+extern "C" s32 func_0035bf8c(MsgScanner* self, MsgNode** node);  // '^'
+extern "C" s32 func_0035bfcc(MsgScanner* self, MsgNode** node);  // '|'
+extern "C" s32 func_0035c128(MsgScanner* self, MsgNode** node);  // '('
+extern "C" s32 func_0035c168(MsgScanner* self, MsgNode** node);  // ')'
+extern "C" s32 func_0035c1a8(MsgScanner* self, MsgNode** node);  // '['
+extern "C" s32 func_0035c210(MsgScanner* self, MsgNode** node);  // ']'
+
+namespace {
+
+constexpr u16 kEscape = 0x5C;           // '\'
+constexpr u16 kVerbatimStart = 0x51;    // 'Q'
+constexpr u16 kVerbatimEnd = 0x45;      // 'E'
+constexpr u16 kSpace = 0x0020;
+constexpr u16 kIdeographicSpace = 0x3000;
+constexpr u8 kCharacterType = 0x00;
+constexpr u8 kTerminatorType = 0x12;
+
+// 0x00238C44(allocator, 1), prepended to the object's circular list.
+__attribute__((always_inline)) inline MsgNode* append_node(MsgScanner* self) {
+    MsgNode* const node =
+        static_cast<MsgNode*>(func_00238c44(self->allocator, 1));
+    if (node == nullptr) {
+        return nullptr;
+    }
+    node->next = self->head;
+    node->prev = reinterpret_cast<MsgNode*>(self);
+    self->head = node;
+    node->next->prev = node;
+    return node;
+}
+
+// 0x00472B80 member-function-pointer dispatch for the current character.
+__attribute__((always_inline)) inline s32 dispatch_node(MsgScanner* self,
+                                                       MsgNode** node) {
+    switch (self->text[self->cursor]) {
+    case 0x24: return func_0035b2d4(self, node);
+    case 0x26: return func_0035bc78(self, node);
+    case 0x28: return func_0035c128(self, node);
+    case 0x29: return func_0035c168(self, node);
+    case 0x2A: return func_0035bbf8(self, node);
+    case 0x2B: return func_0035b294(self, node);
+    case 0x2D: return func_0035b324(self, node);
+    case 0x2E: return func_0035b254(self, node);
+    case 0x3F: return func_0035bc38(self, node);
+    case 0x5B: return func_0035c1a8(self, node);
+    case 0x5C: return func_0035bcf8(self, node);
+    case 0x5D: return func_0035c210(self, node);
+    case 0x5E: return func_0035bf8c(self, node);
+    case 0x7B: return func_0035bd64(self, node);
+    case 0x7C: return func_0035bfcc(self, node);
+    default: return func_0035bbc4(self, node);
+    }
+}
+
+}  // namespace
+
+extern "C" s32 func_0035b364(MsgScanner* self, void* allocator,
+                             const u16* text, u32 length) {
+    self->allocator = allocator;
+    self->text = text;
+    self->length = length;
+    self->depth = 0;
+
+    bool verbatim = false;
+
+    while (self->cursor != self->length) {
+        const u32 cursor = self->cursor;
+        const u32 last = self->length - 1;
+
+        if (verbatim) {
+            if (cursor != last && self->text[cursor] == kEscape &&
+                self->text[cursor + 1] == kVerbatimEnd) {
+                self->cursor = cursor + 2;
+                verbatim = false;
+            } else if (self->text[cursor] == kSpace ||
+                       self->text[cursor] == kIdeographicSpace) {
+                self->cursor = cursor + 1;
+            } else {
+                MsgNode* const node = append_node(self);
+                if (node == nullptr) {
+                    return 1;
+                }
+                node->type = kCharacterType;
+                node->character = self->text[self->cursor];
+                self->cursor = self->cursor + 1;
+            }
+            continue;
+        }
+
+        if (cursor != last && self->text[cursor] == kEscape &&
+            self->text[cursor + 1] == kVerbatimStart) {
+            self->cursor = cursor + 2;
+            verbatim = true;
+            continue;
+        }
+        if (cursor != last && self->text[cursor] == kEscape &&
+            self->text[cursor + 1] == kVerbatimEnd) {
+            return 2;
+        }
+        if (self->text[cursor] == kSpace ||
+            self->text[cursor] == kIdeographicSpace) {
+            self->cursor = cursor + 1;
+            continue;
+        }
+
+        MsgNode* const node = append_node(self);
+        if (node == nullptr) {
+            return 1;
+        }
+        MsgNode* slot = node;
+        const s32 result = dispatch_node(self, &slot);
+        if (result != 0) {
+            return result;
+        }
+    }
+
+    MsgNode* const terminator = append_node(self);
+    if (terminator == nullptr) {
+        return 1;
+    }
+    terminator->type = kTerminatorType;
+    return 0;
+}
 
 // DECOMP_FUNC(0x0035c754, 616)
 extern "C" __attribute__((naked)) void func_0035c754() {

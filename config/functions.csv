@@ -8300,7 +8300,7 @@ address,size,status,category,name,src_file
 0x0035b294,64,matching,unknown,func_0035b294,src/engine/leaf_batch15_c.cpp
 0x0035b2d4,80,matching,unknown,func_0035b2d4,src/engine/leaf_batch16_c.cpp
 0x0035b324,64,matching,unknown,func_0035b324,src/engine/leaf_batch13_a.cpp
-0x0035b364,616,matching,unknown,func_0035b364,src/engine/leaf_batch45_a.cpp
+0x0035b364,616,non_matching,unknown,func_0035b364,src/engine/leaf_batch45_a.cpp
 0x0035b5cc,304,matching,unknown,func_0035b5cc,src/engine/leaf_batch29_c.cpp
 0x0035b6fc,44,matching,unknown,func_0035b6fc,src/engine/leaf_batch10_c.cpp
 0x0035b728,44,matching,unknown,func_0035b728,src/engine/leaf_batch10_c.cpp
