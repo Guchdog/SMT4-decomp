@@ -8325,39 +8325,225 @@ extern "C" u8* engine_func_0013cf50(void* allocator, const char* name) {
 }
 
 // DECOMP_FUNC(0x00296a18, 448)
-// 110 ARM instructions through unconditional pop; 8 trailing data bytes.
-extern "C" __attribute__((naked)) void script_vm_func_00296a18() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d41f0, 0xe1a06000, 0xe2867b0d, 0xe2877f4b\n"
-        ".word 0xe59f21a0, 0xe5974000, 0xe2800a03, 0xe2800e53\n"
-        ".word 0xe3a08000, 0xe5804000, 0xe2823008, 0xe5871000\n"
-        ".word 0xe282c010, 0xe7828006, 0xe2865c35, 0xe7838006\n"
-        ".word 0xe78c8006, 0xe1d507fc, 0xe1a04008, 0xe3500000\n"
-        ".word 0xda000005, 0xe320f000, 0xeb008964, 0xe1d507fc\n"
-        ".word 0xe2844001, 0xe1500004, 0xcafffff9, 0xe1c587bc\n"
-        ".word 0xe5970000, 0xe350000e, 0x03a040df, 0x0a000019\n"
-        ".word 0xca00000c, 0xe3500001, 0x03a04062, 0x0a000015\n"
-        ".word 0xe350000a, 0x03a0409e, 0x0a000012, 0xe350000b\n"
-        ".word 0x03a04065, 0x0a00000f, 0xe350000d, 0x03a04066\n"
-        ".word 0x0a00000c, 0xea000011, 0xe350000f, 0x03a04068\n"
-        ".word 0x0a000008, 0xe3500010, 0x03a0406a, 0x0a000005\n"
-        ".word 0xe3500011, 0x03a040e1, 0x0a000002, 0xe3500012\n"
-        ".word 0x03a04064, 0x1a000005, 0xe59f10cc, 0xe3a00000\n"
-        ".word 0xeb00217f, 0xe20400ff, 0xe320f000, 0xeb008817\n"
-        ".word 0xe5970000, 0xe3500014, 0x1a000029, 0xe3a00000\n"
-        ".word 0xeb000e25, 0xe3a00000, 0xe320f000, 0xebfff102\n"
-        ".word 0xe3a00000, 0xe320f000, 0xeb001dc6, 0xe3a00000\n"
-        ".word 0xe320f000, 0xeb001ff0, 0xe3a00000, 0xe320f000\n"
-        ".word 0xeb001702, 0xe320f000, 0xe320f000, 0xebfff0d1\n"
-        ".word 0xe320f000, 0xe320f000, 0xebfff0c7, 0xe1b04000\n"
-        ".word 0xe320f000, 0x0a00000d, 0xeb0047a0, 0xe5900000\n"
-        ".word 0xe1540000, 0x8a000009, 0xe3a00013, 0xe5870000\n"
-        ".word 0xe3a00090, 0xeb0087f5, 0xe2866b0d, 0xe2866f5a\n"
-        ".word 0xe3a01005, 0xe5960000, 0xe8bd41f0, 0xea00018a\n"
-        ".word 0xe3a00000, 0xebfffa3d, 0xe8bd41f0, 0xe3a00003\n"
-        ".word 0xea00867b, 0xe8bd81f0, 0x00003534, 0x323232ff\n"
-    );
+//
+// Script VM state/mode transition dispatcher.
+//
+// Contract:
+//   extern "C" u32 script_vm_func_00296a18(u8* ctx, u32 state);
+//   * r0 (`ctx`) is the script/event work object; r1 (`state`) is the new
+//     state word.  r2, r3 and the caller stack are not read.
+//   * The routine snapshots the previous state at `ctx+0x3530`, publishes the
+//     new state at `ctx+0x352c`, clears only `+0x3534`, `+0x353C` and
+//     `+0x3544` (NOT `+0x3538`/`+0x3540`), drains the signed callback count at
+//     `ctx+0x357C`, requests a per-state transition id, and then either returns
+//     the re-read state word or performs the state-0x14 teardown sequence.
+//   * Return value: `r0` holds the re-read state word on the ordinary return
+//     at 0x00296BCC.  The two terminal arms tail-branch (0x00296BB4 and
+//     0x00296BC8), so their callee's `r0` becomes the function result.
+//
+// Recovered behaviour (ARM 0x00296A18..0x00296BCF; 110 instructions, then the
+// literal pool at 0x00296BD0 = 0x00003534 and 0x00296BD4 = 0x323232FF):
+//   1. 0x00296A2C..0x00296A58: `previous = ctx[0x352C]`;
+//      `ctx[0x3530] = previous`; `ctx[0x352C] = state`;
+//      `ctx[0x3534] = ctx[0x353C] = ctx[0x3544] = 0` (store order).
+//   2. 0x00296A5C..0x00296A84: `count = (s16)ctx[0x357C]`; while the signed
+//      count is greater than the zero-based iteration index, call
+//      0x002B9008(count) and re-read the halfword.  The callback receives the
+//      value from the previous loop test (r0 survives the `mov r4,r8` setup);
+//      the exit test is signed (`bgt`) and the count is re-read every time,
+//      so a callback that rewrites `ctx+0x357C` changes both the bound and the
+//      next argument.  After the loop `ctx[0x357C] = 0` unconditionally.
+//   3. 0x00296A88..0x00296AFC: map the state word to a transition id:
+//      0x01->0x62, 0x0A->0x9E, 0x0B->0x65, 0x0D->0x66, 0x0E->0xDF,
+//      0x0F->0x68, 0x10->0x6A, 0x11->0xE1, 0x12->0x64.  The ARM splits the
+//      chain with a signed `bgt` after 0x0E but only equality tests select a
+//      value, so the unreachable values fall through identically.
+//   4. 0x00296B00..0x00296B14: when mapped, call 0x0029F10C(NULL,
+//      0x323232FF) and then 0x002B8B78(id & 0xFF).
+//   5. 0x00296B18..0x00296B20: re-read `ctx[0x352C]`; anything other than
+//      0x14 is returned directly.
+//   6. 0x00296B24..0x00296B7C: for state 0x14 call 0x0029A3C4(0),
+//      0x00292F44(0), 0x0029E260(0), 0x0029EB14(0), 0x0029C768(0),
+//      0x00292EB0(<r0 left by 0x0029C768>) and 0x00292E94(<r0 left by
+//      0x00292EB0>); the last result is compared below.  The pinned
+//      0x0029C768 returns its input, so the dead argument to 0x00292EB0 is 0.
+//   7. 0x00296B7C..0x00296B8C: when the result is zero, or is unsigned above
+//      `*0x002A8A08(result)`, call 0x002954B8(0) and tail-branch to
+//      0x002B85BC(3).  The limit lookup is skipped when the result is zero.
+//   8. 0x00296B90..0x00296BB4: otherwise store state 0x13, call
+//      0x002B8B78(0x90), load `ctx[0x3568]` and tail-branch to
+//      0x002971E4(slot, 5).
+//
+// Unresolved dependencies (all stubbed from their observed contracts in the
+// differential test): 0x002B9008, 0x0029F10C, 0x002B8B78, 0x0029A3C4,
+// 0x00292F44 (`smt4::ui::StatusDown_SetDisplayMode`), 0x0029E260, 0x0029EB14,
+// 0x0029C768, 0x00292EB0, 0x00292E94, 0x002A8A08, 0x002954B8, 0x002971E4 and
+// 0x002B85BC.  There are no indirect calls in this body.
+namespace script_vm_296a18 {
+
+constexpr u32 kStateOffset = 0x352C;              // current state word
+constexpr u32 kPreviousStateOffset = 0x3530;      // old state snapshot
+constexpr u32 kClearedWordAOffset = 0x3534;       // zeroed
+constexpr u32 kClearedWordBOffset = 0x353C;       // zeroed
+constexpr u32 kClearedWordCOffset = 0x3544;       // zeroed
+constexpr u32 kResourceSlotOffset = 0x3568;       // pointer handed to 0x002971E4
+constexpr u32 kCallbackCountOffset = 0x357C;      // signed halfword drain count
+
+constexpr u32 kActiveState = 0x14;                // teardown state
+constexpr u32 kAdvanceState = 0x13;               // state stored on advance
+constexpr u32 kAdvanceSound = 0x90;               // 0x002B8B78 request on advance
+constexpr u32 kAdvanceSelector = 5;               // 0x002971E4 second argument
+constexpr u32 kFinishState = 3;                   // 0x002B85BC request on finish
+constexpr u32 kMessageColor = 0x323232FF;         // 0x0029F10C colour literal
+constexpr const char* kClearedMessage = nullptr;  // 0x0029F10C empty text
+
+constexpr u32 kState01Id = 0x62;
+constexpr u32 kState0AId = 0x9E;
+constexpr u32 kState0BId = 0x65;
+constexpr u32 kState0DId = 0x66;
+constexpr u32 kState0EId = 0xDF;
+constexpr u32 kState0FId = 0x68;
+constexpr u32 kState10Id = 0x6A;
+constexpr u32 kState11Id = 0xE1;
+constexpr u32 kState12Id = 0x64;
+
+}  // namespace script_vm_296a18
+
+namespace script_vm_296a18_calls {
+
+// 0x002B9008: signed callback-count decrement; ignores its argument.
+extern "C" void camp_func_002b9008(s32 count);
+// 0x0029F10C: publish/clear the message text and colour; the text is NULL here.
+extern "C" void camp_func_0029f10c(const char* text, u32 color);
+// 0x002B8B78: six-slot transition request; the return is ignored here.
+extern "C" u32 script_vm_func_002b8b78(u32 request);
+// 0x0029A3C4: mode notification (r0 consumed).
+extern "C" void script_vm_func_0029a3c4(u32 mode);
+// 0x00292F44: smt4::ui::StatusDown_SetDisplayMode (return ignored).
+extern "C" void func_00292f44(s32 mode);
+// 0x0029E260: camp slot command helper (r0 consumed).
+extern "C" void camp_func_0029e260(u32 mode);
+// 0x0029EB14: UI slot byte helper (r0 consumed).
+extern "C" void ui_func_0029eb14(u32 mode);
+// 0x0029C768: stores a byte and leaves r0 equal to its input in the pinned body.
+extern "C" void script_vm_func_0029c768(u32 mode);
+// 0x00292EB0: interface teardown; its r0 is forwarded to 0x00292E94.
+extern "C" u32 script_vm_func_00292eb0(u32 mode);
+// 0x00292E94: manager interface lookup; returns the word compared below.
+extern "C" u32 script_vm_func_00292e94(u32 value);
+// 0x002A8A08: manager pointer provider; ignores its argument, returns
+// `[0x0043E2A8]+4 + 0x8C`, whose first word is the unsigned limit.
+extern "C" const u32* camp_func_002a8a08(u32 value);
+// 0x002954B8: stores the low byte of r0 at manager+0x4CB (return ignored).
+extern "C" void script_vm_func_002954b8(u32 value);
+// 0x002971E4: script-step routine (tail branch).
+extern "C" u32 script_vm_func_002971e4(void* object, s32 index);
+// 0x002B85BC: transition request (tail branch).
+extern "C" u32 ui_func_002b85bc(u32 request);
+
+}  // namespace script_vm_296a18_calls
+
+extern "C" u32 script_vm_func_00296a18(u8* ctx, u32 state) {
+    using namespace script_vm_296a18;
+    using namespace script_vm_296a18_calls;
+
+    // 0x00296A2C..0x00296A58: snapshot the old state, publish the new one and
+    // clear three words.  `+0x3538` and `+0x3540` are deliberately untouched.
+    const u32 previous_state =
+        *reinterpret_cast<const volatile u32*>(ctx + kStateOffset);
+    *reinterpret_cast<volatile u32*>(ctx + kPreviousStateOffset) = previous_state;
+    *reinterpret_cast<volatile u32*>(ctx + kStateOffset) = state;
+    *reinterpret_cast<volatile u32*>(ctx + kClearedWordAOffset) = 0;
+    *reinterpret_cast<volatile u32*>(ctx + kClearedWordBOffset) = 0;
+    *reinterpret_cast<volatile u32*>(ctx + kClearedWordCOffset) = 0;
+
+    // 0x00296A5C..0x00296A84: signed, re-read callback-count drain.  The
+    // callback receives the value from the previous test.
+    s32 count = *reinterpret_cast<const volatile s16*>(ctx + kCallbackCountOffset);
+    if (count > 0) {
+        s32 index = 0;
+        do {
+            camp_func_002b9008(count);
+            count =
+                *reinterpret_cast<const volatile s16*>(ctx + kCallbackCountOffset);
+            ++index;
+        } while (count > index);
+    }
+    *reinterpret_cast<volatile s16*>(ctx + kCallbackCountOffset) = 0;
+
+    // 0x00296A88..0x00296AFC: state -> transition id; equality tests only.
+    u32 transition = 0;
+    bool has_transition = true;
+    switch (state) {
+    case 0x01:
+        transition = kState01Id;
+        break;
+    case 0x0A:
+        transition = kState0AId;
+        break;
+    case 0x0B:
+        transition = kState0BId;
+        break;
+    case 0x0D:
+        transition = kState0DId;
+        break;
+    case 0x0E:
+        transition = kState0EId;
+        break;
+    case 0x0F:
+        transition = kState0FId;
+        break;
+    case 0x10:
+        transition = kState10Id;
+        break;
+    case 0x11:
+        transition = kState11Id;
+        break;
+    case 0x12:
+        transition = kState12Id;
+        break;
+    default:
+        has_transition = false;
+        break;
+    }
+
+    // 0x00296B00..0x00296B14: clear the message with the fixed colour and
+    // request the mapped transition.
+    if (has_transition) {
+        camp_func_0029f10c(kClearedMessage, kMessageColor);
+        script_vm_func_002b8b78(transition & 0xFFu);
+    }
+
+    // 0x00296B18..0x00296B20: re-read the state after those helpers.
+    const u32 current =
+        *reinterpret_cast<const volatile u32*>(ctx + kStateOffset);
+    if (current != kActiveState) {
+        return current;
+    }
+
+    // 0x00296B24..0x00296B7C: teardown sequence for state 0x14.
+    script_vm_func_0029a3c4(0);
+    func_00292f44(0);
+    camp_func_0029e260(0);
+    ui_func_0029eb14(0);
+    script_vm_func_0029c768(0);
+    const u32 service = script_vm_func_00292eb0(0);
+    const u32 value = script_vm_func_00292e94(service);
+
+    // 0x00296B7C..0x00296B8C: zero or above the unsigned manager limit ends
+    // the sequence.  The limit lookup is skipped for a zero result.
+    if (value == 0 || value > *camp_func_002a8a08(value)) {
+        script_vm_func_002954b8(0);
+        return ui_func_002b85bc(kFinishState);
+    }
+
+    // 0x00296B90..0x00296BB4: advance to state 0x13 and hand the slot to the
+    // script-step routine.
+    *reinterpret_cast<volatile u32*>(ctx + kStateOffset) = kAdvanceState;
+    script_vm_func_002b8b78(kAdvanceSound);
+    return script_vm_func_002971e4(
+        *reinterpret_cast<void* volatile*>(ctx + kResourceSlotOffset),
+        kAdvanceSelector);
 }
 
 // DECOMP_FUNC(0x002a043c, 448)
