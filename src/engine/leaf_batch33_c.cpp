@@ -8382,119 +8382,176 @@ extern "C" __attribute__((naked)) void func_0029c958() {
     );
 }
 
+// Direct calls made by 0x0029cee4.  The untyped declarations at the top of
+// this translation unit cannot describe their arguments or return values.
+extern "C" void CampPanel_SetWidgetMode(u8* widget, u32 mode)
+    __asm__("camp_func_002bf030");                                  // 0x002BF030
+extern "C" void BattleActor_ReleaseRow(u8* object, u32 row)
+    __asm__("battle_func_002b8d24");                                // 0x002B8D24
+
+namespace {
+
+// 0x0043E188 is a table of camp-panel object pointers.  Slot +4 holds the
+// default object shared by the panels and slot +8 the object that is currently
+// presented; 0x0029CEE4 advances that object's animation and dismisses it.
+constexpr uintptr_t kCampPanelObjectTable = 0x0043E188u;
+constexpr u32 kDefaultObjectSlot = 4u;
+constexpr u32 kPresentedObjectSlot = 8u;
+
+// Presented-object layout, entirely from the loads and stores of 0x0029CEE4.
+// Byte fields are read with `ldrb`/written with `strb`, word fields with
+// `ldr`/`str`.
+constexpr u32 kStateOffset = 8u;               // u8, 3 = dismissed
+constexpr u32 kRowIndexOffset = 9u;            // u8, row passed to the release helper
+constexpr u32 kHiddenFlagOffset = 0x35u;       // u8, cleared when dismissed
+constexpr u32 kStepTimerOffset = 0x64u;        // u32, written with 10 per step
+constexpr u32 kDisplayedValueOffset = 0x6Cu;   // u32, published value
+constexpr u32 kStepOffset = 0x70u;             // u32, added to the accumulated value
+constexpr u32 kStepResetOffset = 0x74u;        // u32, cleared per step
+constexpr u32 kAccumulatedValueOffset = 0x78u; // u32, running total
+constexpr u32 kPhaseOffset = 0x7Cu;            // u8, 3 = one animation step pending
+constexpr u32 kWideStepFlagOffset = 0x7Du;     // u8, pending step uses the wide limit
+constexpr u32 kNarrowStepFlagOffset = 0x7Eu;   // u8, pending step uses the narrow limit
+constexpr u32 kWidgetModeFlagOffset = 0x7Fu;   // u8, chooses widget mode 2 or 7
+constexpr u32 kWidgetOffset = 0x754u;          // sub-object handed to 0x002BF030
+
+// Values observed at those fields.
+constexpr u8 kPhaseAnimating = 3u;
+constexpr u8 kPhaseRequested = 4u;
+constexpr u8 kRowStateDismissed = 3u;
+constexpr u32 kStepTimerValue = 10u;
+constexpr u32 kClosingRowIndex = 0xBu;
+constexpr s32 kWideValueLimit = 999999999;     // 0x3B9AC9FF
+constexpr s32 kNarrowValueLimit = 99;          // 0x63
+constexpr u32 kWidgetModeWhenFlagSet = 2u;
+constexpr u32 kWidgetModeWhenFlagClear = 7u;
+
+inline u8 LoadPanelByte(const u8* base, u32 offset) {
+    return base[offset];
+}
+
+inline u32 LoadPanelWord(const u8* base, u32 offset) {
+    u32 value;
+    __builtin_memcpy(&value, base + offset, sizeof(value));
+    return value;
+}
+
+// Reinterpret a 32-bit pattern as two's-complement `s32`.
+inline s32 AsSignedPanelWord(u32 bits) {
+    s32 value;
+    __builtin_memcpy(&value, &bits, sizeof(value));
+    return value;
+}
+
+inline void StorePanelWord(u8* base, u32 offset, u32 value) {
+    __builtin_memcpy(base + offset, &value, sizeof(value));
+}
+
+inline u8* LoadPanelObject(u32 slot_offset) {
+    u8* object;
+    __builtin_memcpy(&object,
+                     reinterpret_cast<const void*>(
+                         static_cast<uintptr_t>(kCampPanelObjectTable) +
+                         slot_offset),
+                     sizeof(object));
+    return object;
+}
+
+// One animation step of the presented value: the total at +0x78 gains the step
+// at +0x70 and the sum is first published as-is, then clamped (signed compares,
+// lower bound first) into +0x6C.  The timer at +0x64 becomes 10, +0x74 is
+// cleared, and the phase returns to 0.  The addition is a 32-bit modular sum;
+// the original compares the wrapped result against 0 and the limit.
+inline void StepPanelAnimation(u8* object, s32 upper_bound) {
+    const u32 sum = LoadPanelWord(object, kAccumulatedValueOffset) +
+                    LoadPanelWord(object, kStepOffset);
+    s32 value = AsSignedPanelWord(sum);
+    StorePanelWord(object, kDisplayedValueOffset, sum);
+    StorePanelWord(object, kStepTimerOffset, kStepTimerValue);
+    StorePanelWord(object, kStepResetOffset, 0u);
+    StorePanelWord(object, kAccumulatedValueOffset, sum);
+    if (value <= 0) {
+        value = 0;
+    }
+    StorePanelWord(object, kDisplayedValueOffset, static_cast<u32>(value));
+    if (value > upper_bound) {
+        value = upper_bound;
+    }
+    StorePanelWord(object, kDisplayedValueOffset, static_cast<u32>(value));
+    object[kPhaseOffset] = 0;
+}
+
+// Both dismissal sites release the row recorded in `object[9]` and then mark the
+// object dismissed: state 3 at +8 and a cleared flag at +0x35.
+inline void DismissPanelObject(u8* object) {
+    BattleActor_ReleaseRow(object, LoadPanelByte(object, kRowIndexOffset));
+    object[kStateOffset] = kRowStateDismissed;
+    object[kHiddenFlagOffset] = 0;
+}
+
+// Re-requests the widget mode when the phase is still idle, requested, or
+// waiting (0, 2, or 1).  Phase 3 was handled above and 4 is already pending.
+inline void RequestPanelWidgetMode(u8* widget, u8* object) {
+    const u8 phase = LoadPanelByte(object, kPhaseOffset);
+    if (phase == 0u || phase == 2u || phase == 1u) {
+        object[kPhaseOffset] = kPhaseRequested;
+        CampPanel_SetWidgetMode(
+            widget, LoadPanelByte(object, kWidgetModeFlagOffset) != 0
+                        ? kWidgetModeWhenFlagSet : kWidgetModeWhenFlagClear);
+    }
+}
+
+}  // namespace
+
 // DECOMP_FUNC(0x0029cee4, 412)
-extern "C" __attribute__((naked)) void camp_func_0029cee4() {
-    asm volatile(
-        "push {r4, r5, r6, r7, r8, lr}\n"
-        "mov r6, #0\n"
-        ".word 0xe59f5184\n"
-        "ldr r4, [r5, #8]\n"
-        "ldrb r1, [r4, #0x7c]\n"
-        "cmp r1, #3\n"
-        "bne .L_0029cf90\n"
-        "ldrb r1, [r4, #0x7d]\n"
-        "mov r2, #0xa\n"
-        "cmp r1, #0\n"
-        "beq .L_0029cf4c\n"
-        "ldr r1, [r4, #0x78]\n"
-        "ldr r3, [r4, #0x70]\n"
-        "add r1, r1, r3\n"
-        "str r1, [r4, #0x6c]\n"
-        "str r2, [r4, #0x64]\n"
-        "str r6, [r4, #0x74]\n"
-        ".word 0xe59f314c\n"
-        "cmp r1, #0\n"
-        "str r1, [r4, #0x78]\n"
-        "movle r1, #0\n"
-        "cmp r1, r3\n"
-        "str r1, [r4, #0x6c]\n"
-        "movgt r1, r3\n"
-        "str r1, [r4, #0x6c]\n"
-        "strb r6, [r4, #0x7c]\n"
-        ".L_0029cf4c:\n"
-        "ldrb r1, [r4, #0x7e]\n"
-        "cmp r1, #0\n"
-        "beq .L_0029cf90\n"
-        "ldr r1, [r4, #0x78]\n"
-        "ldr r3, [r4, #0x70]\n"
-        "add r1, r1, r3\n"
-        "str r1, [r4, #0x6c]\n"
-        "str r2, [r4, #0x64]\n"
-        "str r6, [r4, #0x74]\n"
-        "cmp r1, #0\n"
-        "str r1, [r4, #0x78]\n"
-        "movle r1, #0\n"
-        "cmp r1, #0x63\n"
-        "str r1, [r4, #0x6c]\n"
-        "movgt r1, #0x63\n"
-        "str r1, [r4, #0x6c]\n"
-        "strb r6, [r4, #0x7c]\n"
-        ".L_0029cf90:\n"
-        ".word 0xe59f10e0\n"
-        "cmp r0, #0\n"
-        "mov r2, #4\n"
-        "ldr r1, [r1, #8]\n"
-        "add r0, r1, #0x400\n"
-        "add r0, r0, #0x354\n"
-        "beq .L_0029d044\n"
-        "ldrb r1, [r4, #9]\n"
-        "cmp r1, #0xb\n"
-        "bne .L_0029d044\n"
-        "ldrb r1, [r4, #8]\n"
-        "cmp r1, #0\n"
-        "beq .L_0029d044\n"
-        "ldrb r1, [r4, #0x7c]\n"
-        "cmp r1, #0\n"
-        "cmpne r1, #2\n"
-        "bne .L_0029d03c\n"
-        "ldrb r1, [r4, #0x7f]\n"
-        "strb r2, [r4, #0x7c]\n"
-        "cmp r1, #0\n"
-        "movne r1, #2\n"
-        "moveq r1, #7\n"
-        "bl camp_func_002bf030\n"
-        "ldr r5, [r5, #4]\n"
-        "mov r7, #3\n"
-        "cmp r5, #0\n"
-        "ldrbne r0, [r5, #8]\n"
-        "cmpne r0, #0\n"
-        "beq .L_0029d018\n"
-        "ldrb r1, [r5, #9]\n"
-        "mov r0, r5\n"
-        "bl battle_func_002b8d24\n"
-        "strb r7, [r5, #8]\n"
-        "strb r6, [r5, #0x35]\n"
-        ".L_0029d018:\n"
-        "cmp r4, #0\n"
-        "ldrbne r0, [r4, #8]\n"
-        "cmpne r0, #0\n"
-        "beq .L_0029d03c\n"
-        "ldrb r1, [r4, #9]\n"
-        "mov r0, r4\n"
-        "bl battle_func_002b8d24\n"
-        "strb r7, [r4, #8]\n"
-        "strb r6, [r4, #0x35]\n"
-        ".L_0029d03c:\n"
-        "mov r0, #0\n"
-        "pop {r4, r5, r6, r7, r8, pc}\n"
-        ".L_0029d044:\n"
-        "ldrb r1, [r4, #0x7c]\n"
-        "cmp r1, #0\n"
-        "cmpne r1, #2\n"
-        "cmpne r1, #1\n"
-        "bne .L_0029d070\n"
-        "ldrb r1, [r4, #0x7f]\n"
-        "strb r2, [r4, #0x7c]\n"
-        "cmp r1, #0\n"
-        "movne r1, #2\n"
-        "moveq r1, #7\n"
-        "bl camp_func_002bf030\n"
-        ".L_0029d070:\n"
-        "mov r0, #1\n"
-        "pop {r4, r5, r6, r7, r8, pc}\n"
-        ".word 0x0043e188\n"
-        ".word 0x3b9ac9ff\n"
-    );
+extern "C" s32 camp_func_0029cee4(u32 close_request) {
+    u8* const presented = LoadPanelObject(kPresentedObjectSlot);
+
+    // Phase 3 means one animation step is pending.  Two independent flags pick
+    // the limit; each step clears the phase, so only the flags set on entry are
+    // consumed, and the wide flag is always tested first.
+    if (LoadPanelByte(presented, kPhaseOffset) == kPhaseAnimating) {
+        if (LoadPanelByte(presented, kWideStepFlagOffset) != 0) {
+            StepPanelAnimation(presented, kWideValueLimit);
+        }
+        if (LoadPanelByte(presented, kNarrowStepFlagOffset) != 0) {
+            StepPanelAnimation(presented, kNarrowValueLimit);
+        }
+    }
+
+    u8* const widget = presented + kWidgetOffset;
+
+    // Dismissal only applies when the caller asks for it, the presented row is
+    // the closing row (index 11), and the row is still live.
+    if (close_request == 0 ||
+        LoadPanelByte(presented, kRowIndexOffset) != kClosingRowIndex ||
+        LoadPanelByte(presented, kStateOffset) == 0) {
+        // Not a dismissal: request the widget mode when the phase is idle,
+        // waiting, or requested, and report that no close happened.
+        RequestPanelWidgetMode(widget, presented);
+        return 1;
+    }
+
+    const u8 phase = LoadPanelByte(presented, kPhaseOffset);
+    if (phase == 0u || phase == 2u) {
+        presented[kPhaseOffset] = kPhaseRequested;
+        CampPanel_SetWidgetMode(
+            widget, LoadPanelByte(presented, kWidgetModeFlagOffset) != 0
+                        ? kWidgetModeWhenFlagSet : kWidgetModeWhenFlagClear);
+
+        // 0x002BF030 may publish the panel, so the default slot is read after
+        // the call; the presented pointer comes from the entry-time fetch.
+        u8* const default_object = LoadPanelObject(kDefaultObjectSlot);
+        if (default_object != nullptr &&
+            LoadPanelByte(default_object, kStateOffset) != 0) {
+            DismissPanelObject(default_object);
+        }
+        if (presented != nullptr &&
+            LoadPanelByte(presented, kStateOffset) != 0) {
+            DismissPanelObject(presented);
+        }
+    }
+    return 0;
 }
 
 // DECOMP_FUNC(0x0029da10, 304)
