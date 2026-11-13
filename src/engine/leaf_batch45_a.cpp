@@ -1089,86 +1089,164 @@ extern "C" void ui_func_002e1b90() {
 }
 
 // DECOMP_FUNC(0x0037aac4, 596)
-extern "C" __attribute__((naked)) void ui_func_0037aac4() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4ff0, 0xe92d, 0x4000, 0xe1a0\n"
-        ".hword 0xd02c, 0xe24d, 0x9000, 0xe3a0\n"
-        ".hword 0x0038, 0xe590, 0x0000, 0xe350\n"
-        ".hword 0x001d, 0x1a00, 0x5034, 0xe594\n"
-        ".hword 0x0001, 0xe375, 0x001a, 0x0a00\n"
-        ".hword 0x001c, 0xe284, 0x9000, 0xe58d\n"
-        ".hword 0x0005, 0xe890, 0x3001, 0xe3a0\n"
-        ".hword 0x1005, 0xe1a0, 0x000c, 0xe280\n"
-        ".hword 0xd2cf, 0xebfc, 0x0000, 0xe350\n"
-        ".hword 0x000c, 0x1a00, 0xc024, 0xe594\n"
-        ".hword 0x0000, 0xe35c, 0x0009, 0x0a00\n"
-        ".hword 0x0028, 0xe594, 0x3000, 0xe3a0\n"
-        ".hword 0x2003, 0xe1a0, 0x0004, 0xe58d\n"
-        ".hword 0x1003, 0xe1a0, 0x0003, 0xe1a0\n"
-        ".hword 0x9000, 0xe58d, 0xff3c, 0xe12f\n"
-        ".hword 0xd02c, 0xe28d, 0x8ff0, 0xe8bd\n"
-        ".hword 0x001c, 0xe594, 0x1005, 0xe1a0\n"
-        ".hword 0x000c, 0xe280, 0xecac, 0xebfa\n"
-        ".hword 0x0038, 0xe584, 0x11b4, 0xe59f\n"
-        ".hword 0x3004, 0xe3a0, 0x2008, 0xe3a0\n"
-        ".hword 0x0008, 0xe28d, 0x2cfa, 0xfafd\n"
-        ".hword 0x5000, 0xe3a0, 0xb008, 0xe28d\n"
-        ".hword 0xa028, 0xe28d, 0x9028, 0xe58d\n"
-        ".hword 0x6185, 0xe084, 0x0040, 0xe596\n"
-        ".hword 0x0000, 0xe350, 0x001f, 0x1a00\n"
-        ".hword 0x703c, 0xe596, 0x0001, 0xe377\n"
-        ".hword 0x0043, 0x0a00, 0x001c, 0xe284\n"
-        ".hword 0x9000, 0xe58d, 0x0005, 0xe890\n"
-        ".hword 0x3004, 0xe3a0, 0x1007, 0xe1a0\n"
-        ".hword 0x000c, 0xe280, 0xd2a4, 0xebfc\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x000d, 0x1a00, 0x0024, 0xe594\n"
-        ".hword 0x0000, 0xe350, 0x000a, 0x0a00\n"
-        ".hword 0x0028, 0xe594, 0x3000, 0xe3a0\n"
-        ".hword 0x9000, 0xe58d, 0x0004, 0xe58d\n"
-        ".hword 0xc024, 0xe594, 0x2003, 0xe1a0\n"
-        ".hword 0x1003, 0xe1a0, 0x0003, 0xe1a0\n"
-        ".hword 0xff3c, 0xe12f, 0xd02c, 0xe28d\n"
-        ".hword 0x8ff0, 0xe8bd, 0x001c, 0xe594\n"
-        ".hword 0x1007, 0xe1a0, 0x000c, 0xe280\n"
-        ".hword 0xec7f, 0xebfa, 0x0040, 0xe586\n"
-        ".hword 0x003c, 0xe596, 0x0001, 0xe370\n"
-        ".hword 0x0023, 0x0a00, 0x002c, 0xe594\n"
-        ".hword 0x7005, 0xe08a, 0x1007, 0xe1a0\n"
-        ".hword 0x0000, 0xe350, 0x000c, 0x1280\n"
-        ".hword 0x0000, 0xe58d, 0x0185, 0xe08b\n"
-        ".hword 0x3030, 0xe594, 0x2040, 0xe596\n"
-        ".hword 0x8000, 0xe1a0, 0x04fb, 0xeb00\n"
-        ".hword 0x0001, 0xe370, 0xf000, 0xe320\n"
-        ".hword 0x0004, 0x0a00, 0x0000, 0xe350\n"
-        ".hword 0x0001, 0x1350, 0x0012, 0x0a00\n"
-        ".hword 0x0002, 0xe350, 0x0010, 0x1a00\n"
-        ".hword 0x001c, 0xe284, 0x1040, 0xe596\n"
-        ".hword 0x0005, 0xe890, 0x000c, 0xe280\n"
-        ".hword 0x02ec, 0xeb00, 0x0000, 0xe350\n"
-        ".hword 0xf000, 0xe320, 0x0018, 0x0a00\n"
-        ".hword 0x001c, 0xe594, 0x1007, 0xe1a0\n"
-        ".hword 0x0000, 0xe350, 0x000c, 0x1280\n"
-        ".hword 0x0000, 0xe58d, 0x3030, 0xe594\n"
-        ".hword 0x2040, 0xe596, 0x0008, 0xe1a0\n"
-        ".hword 0x04e2, 0xeb00, 0x5001, 0xe285\n"
-        ".hword 0x0004, 0xe355, 0xffb1, 0x3aff\n"
-        ".hword 0xc024, 0xe594, 0x0000, 0xe35c\n"
-        ".hword 0xff9e, 0x0aff, 0x0028, 0xe594\n"
-        ".hword 0x3008, 0xe28d, 0x203c, 0xe284\n"
-        ".hword 0x0004, 0xe58d, 0x1034, 0xe284\n"
-        ".hword 0x0001, 0xe3a0, 0xa000, 0xe58d\n"
-        ".hword 0xff3c, 0xe12f, 0xd02c, 0xe28d\n"
-        ".hword 0x8ff0, 0xe8bd, 0xc024, 0xe594\n"
-        ".hword 0x0000, 0xe35c, 0xff91, 0x0aff\n"
-        ".hword 0x0028, 0xe594, 0x3000, 0xe3a0\n"
-        ".hword 0x2003, 0xe1a0, 0x0004, 0xe58d\n"
-        ".hword 0x1003, 0xe1a0, 0x0003, 0xe1a0\n"
-        ".hword 0x9000, 0xe58d, 0xfff1, 0xeaff\n"
-        ".hword 0xc158, 0x0014\n"
-    );
+//
+// UI resource pass for a virtual UI object. The primary id (key) is resolved
+// once into key_handle, then four pending {id, handle} entries are walked:
+// every entry whose cached handle is zero is requested from the resource owner
+// (0x2AF648) and resolved (0x235E08); every live entry is bound into a local
+// four-element result array (0x37C034) and, when binding reports -1 or 2,
+// committed (0x37B82C) and bound once more against a different owner pointer.
+// The object's callback receives command 0 (failure) on any request/commit
+// failure and command 1 (success) with the key, the raw entry ids, the bound
+// array and the per-entry flags when the pass completes. No-callback exits
+// only restore the callee-saved registers; the value the original leaves in r0
+// there is a leftover of the last helper call (unspecified).
+//
+// `owner` payload starts at +0xC and is dereferenced unconditionally; `extra`
+// is optional and is null-checked before the +0xC adjustment.
+namespace ui_aa_c4 {
+
+// 8-byte pending-entry record (array stride 8).
+struct Entry {
+    s32 id;      // +0x00: resource id; -1 means "unused"
+    u32 handle;  // +0x04: resolved handle; 0 means "not resolved yet"
 };
+
+// Callback commands observed in the original.
+constexpr u32 kCommandError = 0;
+constexpr u32 kCommandSuccess = 1;
+
+// Callback arguments: command, pointer to the primary key, pointer to the
+// object's raw Entry array (ids with stride 8), pointer to the local bound
+// array, pointer to the local per-entry flag bytes, callback context.
+using Callback = u32 (*)(u32 command, const u32* key, const Entry* ids,
+                         const Entry* bound, const u8* flags, u32 context);
+
+// Virtual UI object; only the region touched by this routine is described.
+struct Object {
+    u8 pad_00[0x1C];
+    void* owner;         // +0x1C: resource owner; its payload starts at +0xC
+    u32 owner_param;     // +0x20: forwarded to every owner call
+    Callback callback;   // +0x24: null = no callback
+    u32 callback_ctx;    // +0x28: last callback argument
+    void* extra;         // +0x2C: optional secondary owner
+    u32 aux;             // +0x30: forwarded to 0x37C034
+    u32 key;             // +0x34: primary resource id; -1 means "unused"
+    u32 key_handle;      // +0x38: resolved primary handle; 0 = unresolved
+    Entry entries[4];    // +0x3C: pending entries (id at +0x3C+8*i)
+};
+static_assert(sizeof(Object) == 0x5C);
+
+constexpr u32 kOwnerPayloadOffset = 0xC;
+constexpr u32 kModePrimary = 1;  // 0x2AF648 mode for the primary key
+constexpr u32 kModeEntry = 4;    // 0x2AF648 mode for a pending entry
+constexpr u32 kEntryCount = 4;
+constexpr u32 kNoId = 0xFFFFFFFFu;
+
+// The original adds 0xC to the owner pointer without a null check
+// (`ldm r0, {r0, r2}; add r0, r0, #0xc`).
+static void* owner_payload(void* owner) {
+    return reinterpret_cast<void*>(
+        reinterpret_cast<uintptr_t>(owner) + kOwnerPayloadOffset);
+}
+
+// The bind argument is the only owner pointer that the original null-checks
+// (`cmp r0, #0; addne r0, r0, #0xc`).
+static void* optional_owner_payload(void* owner) {
+    return owner != nullptr ? owner_payload(owner) : nullptr;
+}
+
+}  // namespace ui_aa_c4
+
+extern "C" u32 engine_func_002af648(void* owner, u32 id, u32 param, u32 mode,
+                                     u32 flags);
+extern "C" u32 engine_func_00235e08(void* owner, u32 id);
+extern "C" s32 engine_func_0037c034(ui_aa_c4::Entry* entry, u8* flag,
+                                     u32 handle, u32 aux, void* extra);
+extern "C" u32 engine_func_0037b82c(void* owner, u32 handle, u32 param);
+// Fills `count` records of `stride` bytes by calling `init` with each record.
+extern "C" void ui_func_002c5f58(ui_aa_c4::Entry* entries,
+                                  void (*init)(ui_aa_c4::Entry*), u32 stride,
+                                  u32 count);
+// Writes {-1, 0} into the 8-byte record (ROM routine at 0x0014C158).
+extern "C" void func_0014c158(ui_aa_c4::Entry* entry);
+
+extern "C" void ui_func_0037aac4(void* self) {
+    using namespace ui_aa_c4;
+
+    Object* const obj = static_cast<Object*>(self);
+
+    if (obj->key_handle == 0) {
+        const u32 key = obj->key;  // cached across the whole block
+        if (key != kNoId) {
+            if (engine_func_002af648(owner_payload(obj->owner), key,
+                                     obj->owner_param, kModePrimary, 0) == 0) {
+                if (obj->callback != nullptr) {
+                    obj->callback(kCommandError, nullptr, nullptr, nullptr,
+                                  nullptr, obj->callback_ctx);
+                    return;
+                }
+            }
+            obj->key_handle =
+                engine_func_00235e08(owner_payload(obj->owner), key);
+        }
+    }
+
+    Entry bound[kEntryCount];
+    ui_func_002c5f58(bound, func_0014c158, sizeof(Entry), kEntryCount);
+
+    u8 flags[kEntryCount] = {0, 0, 0, 0};
+
+    for (u32 i = 0; i < kEntryCount; ++i) {
+        Entry* const entry = &bound[i];
+
+        if (obj->entries[i].handle == 0) {
+            const u32 id = obj->entries[i].id;  // cached across the request
+            if (id == kNoId) {
+                continue;
+            }
+            if (engine_func_002af648(owner_payload(obj->owner), id,
+                                     obj->owner_param, kModeEntry, 0) == 0) {
+                if (obj->callback != nullptr) {
+                    obj->callback(kCommandError, nullptr, nullptr, nullptr,
+                                  nullptr, obj->callback_ctx);
+                    return;
+                }
+            }
+            obj->entries[i].handle =
+                engine_func_00235e08(owner_payload(obj->owner), id);
+        }
+
+        // The original re-reads the id here, after the request/resolve calls.
+        if (obj->entries[i].id == kNoId) {
+            continue;
+        }
+
+        s32 result = engine_func_0037c034(entry, &flags[i],
+                                          obj->entries[i].handle, obj->aux,
+                                          optional_owner_payload(obj->extra));
+        if (result == -1 || result == 2) {
+            if (engine_func_0037b82c(owner_payload(obj->owner),
+                                     obj->entries[i].handle,
+                                     obj->owner_param) == 0) {
+                if (obj->callback != nullptr) {
+                    obj->callback(kCommandError, nullptr, nullptr, nullptr,
+                                  nullptr, obj->callback_ctx);
+                }
+                return;
+            }
+            // Retry bind, this time with the owner pointer as the extra
+            // argument. The result is discarded.
+            engine_func_0037c034(entry, &flags[i], obj->entries[i].handle,
+                                 obj->aux, optional_owner_payload(obj->owner));
+        }
+    }
+
+    if (obj->callback != nullptr) {
+        obj->callback(kCommandSuccess, &obj->key, obj->entries, bound, flags,
+                      obj->callback_ctx);
+    }
+}
 
 // DECOMP_FUNC(0x001325d8, 600)
 extern "C" __attribute__((naked)) void engine_func_001325d8() {
