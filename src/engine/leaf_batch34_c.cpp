@@ -10433,131 +10433,220 @@ extern "C" void engine_func_0015e600(AocContentState* out, void* context_pointer
     *out = state;
 }
 
+// ---------------------------------------------------------------------------
+// 0x0015F514 -- derive one channel descriptor end address from a source record
+// and publish it into the per-channel table.
+//
+// Sole direct caller: 0x0015F0B8 at 0x0015F2A4.  It passes
+//   r0  base      the base object at 0x004E6F64 (literal at 0x0015F2B4)
+//   r1  index     low byte of the caller's +0x00 word (0x0015F29C)
+//   r2  record    the caller's node pointer (r5)
+//   r3  flags     the caller's halfword at +0x1E, zero-extended (0x0015F288)
+// and ignores the returned word.
+//
+// Flow:
+//   if (0x002BB5B4() == 0) return 0;                 // global enable byte
+//   address = record->address;                       // ldr   +0x00
+//   stride  = record->stride;                        // ldr   +0x04
+//   value   = record->value;                         // ldrh  +0x12
+//   if ((u32)(address - 0x14000000) >= 0x08000000) return 0;
+//   end = address + <stride count from flags[3:2]:flags[1:0]>;
+//   if (end <= 0x14000000 || end > 0x1C000000) return 0;
+//   descriptor = *(u32*)(base + 0x1000 +
+//                        (*(u16*)(base + 0x131A) & 1) * 0x60 +
+//                        index * 4 + 0xB0);
+//   descriptor->+0xBE = value;
+//   descriptor->+0xB0 = ror(stride, 16);
+//   descriptor->+0xAC = ror(address + 0x0C000000, 16);
+//   descriptor->+0xB4 = (u16)flags;
+//   descriptor->+0xBC = (descriptor->+0xBC & ~2) | ((record->+0x10 & 1) << 1);
+//   if (flags[3:2] == 2) {
+//       if (record->payload != 0) {                  // ldr +0x08
+//           copy 6 bytes at record->payload -> descriptor + 0xB6;
+//           descriptor->+0xBC |= (record->payload != 0);   // re-read +0x08
+//       } else {
+//           descriptor->+0xBC &= ~1;
+//       }
+//   }
+//   descriptor->+0x00 |= 0x40200000;
+//   descriptor->+0xA4 = 0;
+//   return 1;
+//
+// Only bits [15:0] of `flags` are used; the original reads the spilled r3 word
+// three times with `uxth`/`ldrh`, and both `uxth` and `ldrh` zero-extend it.
+// Every store is reproduced at its original width (u32 / u16), in the original
+// order, and +0xBC stays a halfword read-modify-write.
+// ---------------------------------------------------------------------------
+namespace {
+
+// Source record passed in r2 (the caller's node).
+struct ChannelRecord {
+    u32 address;         // +0x00: must fall inside [0x14000000, 0x1C000000)
+    u32 stride;          // +0x04: element stride
+    const u16* payload;  // +0x08: six bytes copied for flags[3:2] == 2
+    u8 pad_0c[4];        // +0x0C: not touched here
+    s8 flag;             // +0x10: bit 0 becomes bit 1 of descriptor +0xBC
+    u8 pad_11;           // +0x11: not touched here
+    u16 value;           // +0x12: copied to descriptor +0xBE
+};
+
+// Descriptor reached through the per-channel table at base + 0x1000; only the
+// fields this function touches are named.
+struct ChannelDescriptor {
+    u32 control;          // +0x00: read-modify-write with 0x40200000
+    u8 pad_04[0xA0];      // +0x04..+0xA3: not touched here
+    u32 field_a4;         // +0xA4: cleared
+    u32 pad_a8;           // +0xA8: not touched here
+    u32 field_ac;         // +0xAC: halfword-rotated start address
+    u32 field_b0;         // +0xB0: halfword-rotated stride
+    u16 field_b4;         // +0xB4: low half of the flags argument
+    u16 payload[3];       // +0xB6..+0xBB: six bytes copied from the record
+    u16 field_bc;         // +0xBC: bit 0 payload present, bit 1 record->flag & 1
+    u16 field_be;         // +0xBE: record->value
+};
+
+constexpr u32 kSelectorOffset = 0x131A;      // literal at 0x0015F6D0 (base-relative)
+constexpr u32 kChannelTableOffset = 0x1000;
+constexpr u32 kChannelStride = 0x60;         // (selector & 1) * 3 * 0x20
+constexpr u32 kSlotPointerOffset = 0xB0;
+constexpr u32 kAddressLow = 0x14000000;
+constexpr u32 kAddressHigh = 0x1C000000;
+constexpr u32 kAddressSpan = 0x08000000;     // [low, low + span)
+constexpr u32 kAddressBias = 0x0C000000;
+constexpr u32 kControlFlags = 0x40200000;
+constexpr u32 kPayloadHalfwords = 3;         // six bytes
+// 0x92492493, the reciprocal of 7 in the literal pool at 0x0015F6CC.
+constexpr s32 kSevenScaleMagic = -1840700269;
+
+static_assert(sizeof(ChannelRecord) == 0x14, "source record layout");
+static_assert(sizeof(ChannelDescriptor) == 0xC0, "descriptor layout");
+
+// `ror #0x10` as emitted for the +0xAC / +0xB0 stores.
+constexpr u32 rotate_halfwords(u32 value) {
+    return (value >> 16) | (value << 16);
+}
+
+using GlobalFlagFn = s32 (*)(void);
+
+} // namespace
+
 // DECOMP_FUNC(0x0015f514, 448)
-extern "C" __attribute__((naked)) void func_0015f514() {
-    asm volatile(
-        "push {r0, r1, r2, r3, r4, r5, r6, r7, r8, sb, sl, lr}\n"
-        "mov r4, r2\n"
-        "mov r6, r0\n"
-        "mov r7, r1\n"
-        "bl func_002bb5b4\n"
-        "cmp r0, #0\n"
-        "beq .L_0015f698\n"
-        "ldr r5, [r4]\n"
-        "ldr r2, [r4, #4]\n"
-        "ldrh r8, [r4, #0x12]\n"
-        "add r0, r5, #0xec000000\n"
-        "cmp r0, #0x8000000\n"
-        "bhs .L_0015f694\n"
-        "ldr r0, [sp, #0xc]\n"
-        "mov r3, r5\n"
-        "uxth ip, r0\n"
-        "tst ip, #0xc\n"
-        "bne .L_0015f570\n"
-        "and r0, ip, #3\n"
-        "cmp r0, #1\n"
-        "addeq r3, r5, r2\n"
-        "cmp r0, #2\n"
-        "addeq r3, r3, r2, lsl #1\n"
-        ".L_0015f570:\n"
-        "lsl r0, ip, #0x1c\n"
-        "mov r1, #1\n"
-        "cmp r1, r0, lsr #30\n"
-        "bne .L_0015f594\n"
-        "and r1, ip, #3\n"
-        "cmp r1, #1\n"
-        "addeq r3, r3, r2, lsl #1\n"
-        "cmp r1, #2\n"
-        "addeq r3, r3, r2, lsl #2\n"
-        ".L_0015f594:\n"
-        "mov r1, #2\n"
-        "cmp r1, r0, lsr #30\n"
-        "andeq r0, ip, #3\n"
-        "cmpeq r0, #1\n"
-        "mov lr, #0\n"
-        "bne .L_0015f5c8\n"
-        ".word 0xe59f9118\n"
-        "add r0, r2, #0xd\n"
-        "mov ip, lr\n"
-        "smlal ip, r0, sb, r0\n"
-        "asr ip, r0, #3\n"
-        "sub r0, ip, r0, asr #31\n"
-        "add r3, r3, r0, lsl #3\n"
-        ".L_0015f5c8:\n"
-        "cmp r3, #0x14000000\n"
-        "bls .L_0015f694\n"
-        "cmp r3, #0x1c000000\n"
-        "bhi .L_0015f694\n"
-        ".word 0xe59f30f0\n"
-        "add r0, r5, #0xc000000\n"
-        "ror r2, r2, #0x10\n"
-        "ldrh r3, [r3, r6]\n"
-        "and r3, r3, #1\n"
-        "add r3, r3, r3, lsl #1\n"
-        "add r3, r6, r3, lsl #5\n"
-        "add r3, r3, r7, lsl #2\n"
-        "add r3, r3, #0x1000\n"
-        "ldr r5, [r3, #0xb0]\n"
-        "ror r3, r0, #0x10\n"
-        "add r0, r5, #0xac\n"
-        "strh r8, [r5, #0xbe]\n"
-        "str r2, [r5, #0xb0]\n"
-        "str r3, [r5, #0xac]\n"
-        "ldrh r2, [sp, #0xc]\n"
-        "strh r2, [r5, #0xb4]\n"
-        "ldrsb r3, [r4, #0x10]\n"
-        "ldrh r2, [r5, #0xbc]\n"
-        "and r3, r1, r3, lsl #1\n"
-        "bic r2, r2, #2\n"
-        "orr r2, r2, r3\n"
-        "strh r2, [r5, #0xbc]\n"
-        "ldrh r2, [sp, #0xc]\n"
-        "lsl r2, r2, #0x1c\n"
-        "cmp r1, r2, lsr #30\n"
-        "bne .L_0015f6ac\n"
-        "ldr r1, [r4, #8]\n"
-        "cmp r1, #0\n"
-        "beq .L_0015f6a0\n"
-        "sub r1, r1, #2\n"
-        "add r3, r0, #0xa\n"
-        "ldrh r2, [r1, #2]!\n"
-        "mov ip, #1\n"
-        "strh r2, [r0, #0xa]\n"
-        ".L_0015f664:\n"
-        "ldrh r2, [r1, #2]\n"
-        "subs ip, ip, #1\n"
-        "strh r2, [r3, #2]\n"
-        "ldrh r2, [r1, #4]!\n"
-        "strh r2, [r3, #4]!\n"
-        "bne .L_0015f664\n"
-        "ldr r1, [r4, #8]\n"
-        "cmp r1, #0\n"
-        "ldrhne r1, [r0, #0x10]\n"
-        "orrne r1, r1, #1\n"
-        "bne .L_0015f6a8\n"
-        "b .L_0015f6a0\n"
-        ".L_0015f694:\n"
-        "mov r0, #0\n"
-        ".L_0015f698:\n"
-        "add sp, sp, #0x10\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, pc}\n"
-        ".L_0015f6a0:\n"
-        "ldrh r1, [r0, #0x10]\n"
-        "bic r1, r1, #1\n"
-        ".L_0015f6a8:\n"
-        "strh r1, [r0, #0x10]\n"
-        ".L_0015f6ac:\n"
-        "ldr r0, [r5]\n"
-        "orr r0, r0, #0x40000000\n"
-        "orr r0, r0, #0x200000\n"
-        "str r0, [r5], #0xa4\n"
-        "mov r0, #1\n"
-        "str lr, [r5]\n"
-        "add sp, sp, #0x10\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, pc}\n"
-        ".word 0x92492493\n"
-        ".word 0x0000131a\n"
-    );
+extern "C" u32 func_0015f514(u8* base, u32 index, const ChannelRecord* record,
+                             u32 flags) {
+    const GlobalFlagFn read_global_flag =
+        reinterpret_cast<GlobalFlagFn>(func_002bb5b4);
+    if (read_global_flag() == 0) {
+        return 0;                                             // 0x0015F52C
+    }
+
+    const u32 address = record->address;                      // 0x0015F530
+    const u32 stride = record->stride;                        // 0x0015F534
+    const u16 value = record->value;                          // 0x0015F538
+
+    // 0x0015F53C..0x0015F544: the start address must be in [0x14000000,
+    // 0x1C000000); the original tests `address - 0x14000000` unsigned.
+    if (static_cast<u32>(address - kAddressLow) >= kAddressSpan) {
+        return 0;
+    }
+
+    // 0x0015F548..0x0015F5C4: flags[1:0] selects how many strides are added to
+    // the start address and flags[3:2] selects the scaling family.
+    const u16 settings = static_cast<u16>(flags);
+    const u32 family = (static_cast<u32>(settings) >> 2) & 3u;
+    const u32 count = static_cast<u32>(settings) & 3u;
+
+    u32 end = address;
+    if (family == 0) {
+        if (count == 1) {
+            end = address + stride;                           // 0x0015F564
+        } else if (count == 2) {
+            end = address + (stride << 1);                    // 0x0015F56C
+        }
+    } else if (family == 1) {
+        if (count == 1) {
+            end = address + (stride << 1);                    // 0x0015F588
+        } else if (count == 2) {
+            end = address + (stride << 2);                    // 0x0015F590
+        }
+    } else if (family == 2 && count == 1) {
+        // 0x0015F5AC..0x0015F5C4: (stride + 0xD) * 4/7 rounded down to eight
+        // byte units.  The original builds the signed 64-bit product of the
+        // numerator and the 0x92492493 reciprocal with the numerator itself
+        // supplied as the high accumulator word (`smlal ip, r0, sb, r0`), keeps
+        // the high word, then rounds it with `asr #3` plus the `asr #31` sign
+        // correction.
+        const u32 numerator = stride + 0x0Du;
+        const s64 signed_product =
+            static_cast<s64>(static_cast<s32>(numerator)) *
+            static_cast<s64>(kSevenScaleMagic);
+        const u64 accumulator =
+            static_cast<u64>(signed_product) +
+            (static_cast<u64>(numerator) << 32);
+        const s32 high = static_cast<s32>(static_cast<u32>(accumulator >> 32));
+        const s32 units = (high >> 3) + (high < 0 ? 1 : 0);
+        end = address + (static_cast<u32>(units) << 3);
+    }
+
+    // 0x0015F5C8..0x0015F5D4: the computed end must stay inside the range, with
+    // the low bound exclusive and the high bound inclusive (`bls` / `bhi`).
+    if (end <= kAddressLow || end > kAddressHigh) {
+        return 0;
+    }
+
+    // 0x0015F5D8..0x0015F5FC: descriptor for this channel; the base object's
+    // one-bit selector picks one of two 0x60-byte slots.
+    const u32 selector =
+        static_cast<u32>(*reinterpret_cast<const u16*>(base + kSelectorOffset)) & 1u;
+    ChannelDescriptor* const descriptor =
+        *reinterpret_cast<ChannelDescriptor* const*>(
+            base + kChannelTableOffset + selector * kChannelStride + index * 4u +
+            kSlotPointerOffset);
+
+    descriptor->field_be = value;                             // 0x0015F608
+    descriptor->field_b0 = rotate_halfwords(stride);           // 0x0015F60C
+    descriptor->field_ac =
+        rotate_halfwords(address + kAddressBias);              // 0x0015F610
+    descriptor->field_b4 = settings;                          // 0x0015F618
+
+    // 0x0015F61C..0x0015F630: bit 1 mirrors the record's signed byte at +0x10
+    // (`and r3, r1, r3, lsl #1` with r1 = 2).  The record and the descriptor may
+    // overlap, so the original's load order (after the +0xBE store) is kept.
+    asm volatile("" ::: "memory");
+    const u16 control_bc = descriptor->field_bc;              // 0x0015F620
+    descriptor->field_bc = static_cast<u16>(
+        (control_bc & static_cast<u16>(~2u)) |
+        ((static_cast<u32>(record->flag) << 1) & 2u));        // 0x0015F630
+
+    // 0x0015F634..0x0015F6A8: the six payload bytes are copied only for the
+    // flags[3:2] == 2 family, and bit 0 records whether a payload is present.
+    // The original re-reads record+0x08 after the copy, so the second test sees
+    // any change the copy made to that word.
+    if (family == 2) {
+        if (record->payload == nullptr) {
+            descriptor->field_bc =                                // 0x0015F6A0
+                static_cast<u16>(descriptor->field_bc &
+                                 static_cast<u16>(~1u));
+        } else {
+            for (u32 word = 0; word < kPayloadHalfwords; ++word) {
+                descriptor->payload[word] = record->payload[word]; // 0x0015F658
+            }
+            // The copy may land on the record's own +0x08 word (descriptor at
+            // record-0xAE), so the second +0x08 read must be a fresh load.
+            asm volatile("" ::: "memory");
+            if (record->payload != nullptr) {                      // 0x0015F67C
+                descriptor->field_bc = static_cast<u16>(descriptor->field_bc | 1u);
+            } else {
+                descriptor->field_bc =
+                    static_cast<u16>(descriptor->field_bc &
+                                     static_cast<u16>(~1u));
+            }
+        }
+    }
+
+    // 0x0015F6AC..0x0015F6C0: mark the descriptor ready and clear +0xA4.
+    descriptor->control |= kControlFlags;
+    descriptor->field_a4 = 0;
+    return 1;
 }
 
 // DECOMP_FUNC(0x0015f7bc, 1000)
