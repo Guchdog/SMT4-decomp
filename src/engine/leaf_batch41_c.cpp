@@ -947,36 +947,180 @@ extern "C" void script_vm_func_003d9e10(void* object) {
 }
 
 // DECOMP_FUNC(0x003dff3c, 400)
-// 92 ARM instructions through unconditional pop; 32 trailing data bytes.
-extern "C" __attribute__((naked)) void func_003dff3c() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe1a0c000, 0xe92d4010, 0xe5d00000, 0xe3500000\n"
-        ".word 0x0a00004d, 0xe59fe154, 0xe59f0154, 0xe3530000\n"
-        ".word 0xe481e004, 0xe4810004, 0xe3a00000, 0x0a000003\n"
-        ".word 0xe59f3140, 0xe8a10009, 0xe4810004, 0xe4810004\n"
-        ".word 0xed9c0a01, 0xeddf0a4c, 0xee103a10, 0xeeb40ae0\n"
-        ".word 0xeef1fa10, 0x9a00000b, 0xe1a03083, 0xe3a0e0ff\n"
-        ".word 0xe15e0c23, 0x0a000007, 0xe59f3114, 0xeddf0a43\n"
-        ".word 0xee200a20, 0xee100a10, 0xe1530000, 0xcebc0ac0\n"
-        ".word 0xd3e004ff, 0xce100a10, 0xe5dc3001, 0xe3530000\n"
-        ".word 0xe1a000a0, 0x03a03001, 0x13a03000, 0xe1833080\n"
-        ".word 0xe59f00e0, 0xe4813004, 0xe4810004, 0xed9c0a04\n"
-        ".word 0xeddc0a03, 0xee300a80, 0xee100a10, 0xe3d03102\n"
-        ".word 0x0a000006, 0xe1a03080, 0xe1a03c23, 0xe2433070\n"
-        ".word 0xe3530000, 0xb1a00fa0, 0xb1a0e780, 0xba000005\n"
-        ".word 0xe3c0e57e, 0xe1a00fa0, 0xe1a0e6ae, 0xe18e3503\n"
-        ".word 0xe1830780, 0xe6ffe070, 0xeeb10a60, 0xee100a10\n"
-        ".word 0xe3d03102, 0x0a000006, 0xe1a03080, 0xe1a03c23\n"
-        ".word 0xe2433070, 0xe3530000, 0xb1a00fa0, 0xb1a00780\n"
-        ".word 0xba000005, 0xe3c0457e, 0xe1a00fa0, 0xe1a046a4\n"
-        ".word 0xe1843503, 0xe1830780, 0xe6ff0070, 0xe18e3800\n"
-        ".word 0xe59f0044, 0xe4813004, 0xe4810004, 0xe3520000\n"
-        ".word 0x01a00001, 0x0a000004, 0xe59c0014, 0xe8bd4010\n"
-        ".word 0xe3a02001, 0xe280007c, 0xeaf919a4, 0xe8bd8010\n"
-        ".word 0x00e40103, 0x00010100, 0x00200080, 0x00000000\n"
-        ".word 0x4b800000, 0x4b800000, 0x000f008b, 0x000f0130\n"
-    );
+//
+// Emits a ten- or fourteen-word rendering record from a small source structure
+// and optionally hands it to the shared continuation at 0x0022673C.
+//
+// Recovered contract (ARM 0x003DFF3C..0x003E00AB, literal pool 0x003E00AC):
+//   * `object` is the source structure (kept in r12 for the whole body),
+//     `out` is the word cursor, `submit` (r2) selects the tail call and
+//     `extra` (r3) selects four additional leading words.
+//   * `object[0]` gates the complete packing block: when zero no word is
+//     written, but the tail call still happens.
+//   * The fixed leading words are 0x00E40103 then 0x00010100.  When
+//     `extra != 0` four more words follow: 0, 0x00200080, 0, 0.
+//   * `object+0x04` is converted to a 24-bit truncating fixed-point value
+//     (see ToFixed24): the original tests `v > 0.0f` with VCMPE, rejects
+//     float exponents of 0xFF (infinity/NaN), scales by 2^24 with VMUL,
+//     saturates to 0x00FFFFFF when the scaled bit pattern is >= 0x4B800000
+//     and otherwise uses VCVT.U32.F32 (round towards zero).  Every rejected
+//     input yields 0.  Bit 0 of the value is then replaced by
+//     `object[1] == 0 ? 1 : 0`; the word 0x000F008B follows.
+//   * The word after that packs two IEEE binary16 halves produced by the
+//     truncating conversion in ToHalf: bits 0..15 hold
+//     `object+0x0C + object+0x10`, bits 16..31 hold `-(object+0x0C)`.
+//     The final word is 0x000F0130.
+//   * `submit == 0` returns the advanced cursor; otherwise the routine tail
+//     calls 0x0022673C with (*(u32*)(object+0x14) + 0x7C, cursor, 1) and
+//     forwards its return value.
+//
+// 0x0022673C is a separate entry point that the ledger folds into
+// func_00226690 (its prologue/`bx lr` pair at 0x22673C/0x22679C is distinct
+// from 0x00226690's own return at 0x226730); it is declared below.
+namespace record_dff3c {
+
+// Source-structure offsets (all reached through the r12 copy of `object`).
+constexpr u32 kGateByte = 0x00;              // ldrb [ip] (0x003DFF44)
+constexpr u32 kHalfFlagByte = 0x01;          // ldrb [ip,#1] (0x003DFFC4)
+constexpr u32 kFixedValue = 0x04;            // vldr s0,[ip,#4] (0x003DFF7C)
+constexpr u32 kSecondValue = 0x0C;           // vldr s1,[ip,#0xc] (0x003DFFEC)
+constexpr u32 kThirdValue = 0x10;            // vldr s0,[ip,#0x10] (0x003DFFE8)
+constexpr u32 kObjectPointer = 0x14;         // ldr r0,[ip,#0x14] (0x003E0094)
+constexpr u32 kTailBias = 0x7C;              // add r0,r0,#0x7c (0x003E00A0)
+
+// Fixed output words (literal pool 0x003E00AC..0x003E00C8).
+constexpr u32 kHeaderWord0 = 0x00E40103;     // 0x003E00AC
+constexpr u32 kHeaderWord1 = 0x00010100;     // 0x003E00B0
+constexpr u32 kExtraWord = 0x00200080;       // 0x003E00B4
+constexpr u32 kFixedWord0 = 0x000F008B;      // 0x003E00C4
+constexpr u32 kFixedWord1 = 0x000F0130;      // 0x003E00C8
+
+// 0x003DFF80/0x003E00B8 compare against +0.0f; 0x003DFFA8/0x003E00BC
+// multiply by 2^24; 0x003DFFA4/0x003E00C0 is the raw bit pattern of 2^24.
+constexpr f32 kPositiveZero = 0.0f;
+constexpr f32 kFixedScale = 16777216.0f;
+constexpr u32 kFixedScaleBits = 0x4B800000u;
+
+// `mvnle r0,#0xff000000` (0x003DFFBC) saturates to the 24-bit maximum.
+constexpr u32 kFixedSaturated = 0x00FFFFFFu;
+
+// ToHalf exponent rebase/bias: `sub r3,r3,#0x70` (0x003E0008/0x003E004C).
+constexpr u32 kHalfBias = 0x70;
+
+// The parenthesised low bit is the only rounding the original performs.
+constexpr u32 kFixedMask = ~1u;
+constexpr u32 kHalfMantissaMask = 0x3FFu;
+
+}  // namespace record_dff3c
+
+// Tail continuation at 0x0022673C (see the comment above).
+extern "C" u32 func_0022673c(u32 object, u32* out, u32 mode);
+
+namespace {
+
+inline u32 FloatBits(f32 value) {
+    u32 bits;
+    __builtin_memcpy(&bits, &value, sizeof(bits));
+    return bits;
+}
+
+inline f32 ReadF32(const u8* base, u32 offset) {
+    f32 value;
+    __builtin_memcpy(&value, base + offset, sizeof(value));
+    return value;
+}
+
+inline u32 ReadU32(const u8* base, u32 offset) {
+    u32 value;
+    __builtin_memcpy(&value, base + offset, sizeof(value));
+    return value;
+}
+
+// 0x003DFF7C..0x003DFFC0: VCMPE/VMUL/VCVT.U32.F32 24-bit conversion.
+u32 ToFixed24(f32 value) {
+    const u32 bits = FloatBits(value);
+
+    // `vcmpe.f32 s0,#0.0` + `bls`: false for every value <= 0 and for NaN,
+    // while the unordered case is caught by the exponent test below.
+    if (!(value > record_dff3c::kPositiveZero)) {
+        return 0;
+    }
+    if (((bits << 1) >> 24) == 0xFFu) {  // `cmp #0xff,r3,lsr #24`
+        return 0;
+    }
+
+    const f32 scaled = value * record_dff3c::kFixedScale;
+    // `cmp r3,r0` is a signed compare of the two raw bit patterns; both
+    // operands are non-negative here, so the ordering is the same.
+    if (!(FloatBits(scaled) < record_dff3c::kFixedScaleBits)) {
+        return record_dff3c::kFixedSaturated;
+    }
+    return static_cast<u32>(scaled);  // VCVT.U32.F32 (round towards zero)
+}
+
+// 0x003DFFDC..0x003E0030 and 0x003E0034..0x003E0074: the shared, unrounded
+// binary16 conversion.  `+/-0` and every value whose biased exponent is below
+// 0x70 collapse to a signed zero; larger values keep the top 10 mantissa bits
+// and lose the excess exponent bits through the final `uxth`.
+u16 ToHalf(f32 value) {
+    const u32 bits = FloatBits(value);
+    const u32 sign = (bits >> 31) << 15;
+    if ((bits & 0x7FFFFFFFu) == 0) {  // `bics r3,r0,#0x80000000`
+        return static_cast<u16>(sign);
+    }
+    const u32 exponent = (bits << 1) >> 24;
+    const s32 rebased = static_cast<s32>(exponent) -
+                        static_cast<s32>(record_dff3c::kHalfBias);
+    if (rebased < 0) {  // `cmp r3,#0` + `blt`
+        return static_cast<u16>(sign);
+    }
+    return static_cast<u16>(
+        (static_cast<u32>(rebased) << 10) |
+        ((bits >> 13) & record_dff3c::kHalfMantissaMask) | sign);
+}
+
+}  // namespace
+
+extern "C" u32 func_003dff3c(const u8* object, u32* out, u32 submit, u32 extra) {
+    u32* cursor = out;
+
+    // 0x003DFF3C..0x003DFF4C: byte-0 gate.
+    if (object[record_dff3c::kGateByte] != 0) {
+        // 0x003DFF50..0x003DFF60: fixed header words.
+        *cursor++ = record_dff3c::kHeaderWord0;
+        *cursor++ = record_dff3c::kHeaderWord1;
+
+        // 0x003DFF64..0x003DFF78: optional four-word extension.
+        if (extra != 0) {
+            *cursor++ = 0;
+            *cursor++ = record_dff3c::kExtraWord;
+            *cursor++ = 0;
+            *cursor++ = 0;
+        }
+
+        // 0x003DFF7C..0x003DFFDC: 24-bit value, flag bit, fixed word.
+        const u32 fixed = ToFixed24(ReadF32(object, record_dff3c::kFixedValue));
+        const u32 low_bit = (object[record_dff3c::kHalfFlagByte] == 0) ? 1u : 0u;
+        *cursor++ = (fixed & record_dff3c::kFixedMask) | low_bit;
+        *cursor++ = record_dff3c::kFixedWord0;
+
+        // 0x003DFFE8..0x003E0084: packed half pair and closing word.  The
+        // two VFP loads happen before the add, exactly as in the original.
+        const f32 second = ReadF32(object, record_dff3c::kSecondValue);
+        const f32 third = ReadF32(object, record_dff3c::kThirdValue);
+        const u32 sum_half = ToHalf(second + third);
+        const u32 negated_half = ToHalf(-second);
+        *cursor++ = sum_half | (negated_half << 16);
+        *cursor++ = record_dff3c::kFixedWord1;
+    }
+
+    // 0x003E0088..0x003E00A8: return the cursor or forward to 0x0022673C.
+    if (submit == 0) {
+        return reinterpret_cast<u32>(cursor);
+    }
+    const u32 continuation =
+        ReadU32(object, record_dff3c::kObjectPointer) + record_dff3c::kTailBias;
+    return func_0022673c(continuation, cursor, 1);
 }
 
 // DECOMP_FUNC(0x00297c9c, 404)
