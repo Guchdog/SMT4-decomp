@@ -5638,92 +5638,187 @@ extern "C" u32 camp_func_001a7cac(void* record, u32 slot, u32 id, u32 mode) {
 }
 
 // DECOMP_FUNC(0x003949e8, 644)
-extern "C" __attribute__((naked)) void engine_func_003949e8() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x47f0, 0xe92d, 0x8b02, 0xed2d\n"
-        ".hword 0x8a40, 0xeeb0, 0x4000, 0xe1a0\n"
-        ".hword 0xd020, 0xe24d, 0x9001, 0xe1a0\n"
-        ".hword 0x6002, 0xe1a0, 0x0001, 0xe3a0\n"
-        ".hword 0xc38b, 0xebfc, 0x0000, 0xe350\n"
-        ".hword 0x0085, 0x1a00, 0x8000, 0xe3a0\n"
-        ".hword 0xa21c, 0xe59f, 0x7004, 0xe1a0\n"
-        ".hword 0x8000, 0xe58d, 0x8004, 0xe58d\n"
-        ".hword 0x8008, 0xe58d, 0x4008, 0xe1a0\n"
-        ".hword 0x800c, 0xe58d, 0x8010, 0xe58d\n"
-        ".hword 0x8014, 0xe58d, 0x8018, 0xe58d\n"
-        ".hword 0x801c, 0xe58d, 0x0184, 0xe084\n"
-        ".hword 0x8000, 0xe58d, 0x5100, 0xe08a\n"
-        ".hword 0x8004, 0xe58d, 0x8008, 0xe58d\n"
-        ".hword 0x2005, 0xe1a0, 0x1f77, 0xe28f\n"
-        ".hword 0x000d, 0xe1a0, 0x800c, 0xe58d\n"
-        ".hword 0x8010, 0xe58d, 0x8014, 0xe58d\n"
-        ".hword 0x8018, 0xe58d, 0x801c, 0xe58d\n"
-        ".hword 0xa75f, 0xfafc, 0x1007, 0xe1a0\n"
-        ".hword 0x000d, 0xe1a0, 0x575a, 0xebfc\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x0003, 0x0a00, 0x4001, 0xe284\n"
-        ".hword 0x0e19, 0xe354, 0xffe8, 0xdaff\n"
-        ".hword 0x5008, 0xe1a0, 0xf000, 0xe320\n"
-        ".hword 0xfc7a, 0xebfb, 0x7000, 0xe1a0\n"
-        ".hword 0x0002, 0xe246, 0x000b, 0xe350\n"
-        ".hword 0xf100, 0x379f, 0x001b, 0xea00\n"
-        ".hword 0x4aec, 0x0039, 0x4b30, 0x0039\n"
-        ".hword 0x4b30, 0x0039, 0x4aec, 0x0039\n"
-        ".hword 0x4bb0, 0x0039, 0x4bb0, 0x0039\n"
-        ".hword 0x4aec, 0x0039, 0x4aec, 0x0039\n"
-        ".hword 0x4b30, 0x0039, 0x4bb0, 0x0039\n"
-        ".hword 0x4aec, 0x0039, 0x0a55, 0xed9f\n"
-        ".hword 0x8ac0, 0xeeb4, 0xfa10, 0xeef1\n"
-        ".hword 0x0015, 0x3a00, 0x0a52, 0xed9f\n"
-        ".hword 0x8ac0, 0xeeb4, 0xfa10, 0xeef1\n"
-        ".hword 0x0018, 0x3a00, 0x0a4f, 0xed9f\n"
-        ".hword 0x8ac0, 0xeeb4, 0xfa10, 0xeef1\n"
-        ".hword 0x001b, 0xca00, 0x0a4c, 0xed9f\n"
-        ".hword 0x8ac0, 0xeeb4, 0xfa10, 0xeef1\n"
-        ".hword 0x001e, 0xca00, 0x001f, 0xea00\n"
-        ".hword 0x0124, 0xe59f, 0x0a47, 0xeddf\n"
-        ".hword 0x0000, 0xe590, 0x0574, 0xe590\n"
-        ".hword 0x0a10, 0xee00, 0x0a20, 0xee70\n"
-        ".hword 0x8ae0, 0xeeb4, 0xfa10, 0xeef1\n"
-        ".hword 0x0001, 0x2a00, 0x4005, 0xe3a0\n"
-        ".hword 0x0015, 0xea00, 0x0a3f, 0xeddf\n"
-        ".hword 0x0a20, 0xee70, 0x8ae0, 0xeeb4\n"
-        ".hword 0xfa10, 0xeef1, 0x0001, 0x2a00\n"
-        ".hword 0x4004, 0xe3a0, 0x000e, 0xea00\n"
-        ".hword 0x0a39, 0xeddf, 0x0a20, 0xee70\n"
-        ".hword 0x8ae0, 0xeeb4, 0xfa10, 0xeef1\n"
-        ".hword 0x0001, 0xda00, 0x4001, 0xe3a0\n"
-        ".hword 0x0007, 0xea00, 0x0a33, 0xeddf\n"
-        ".hword 0x0a20, 0xee30, 0x8ac0, 0xeeb4\n"
-        ".hword 0xfa10, 0xeef1, 0x0001, 0xda00\n"
-        ".hword 0x4002, 0xe3a0, 0x0000, 0xea00\n"
-        ".hword 0x4003, 0xe3a0, 0x0000, 0xe355\n"
-        ".hword 0x001b, 0x0a00, 0x2010, 0xe595\n"
-        ".hword 0x0000, 0xe352, 0x0006, 0x0a00\n"
-        ".hword 0x0004, 0xe28d, 0x8000, 0xe58d\n"
-        ".hword 0x0110, 0xe880, 0x3000, 0xe3a0\n"
-        ".hword 0x01b4, 0xe1d5, 0x1009, 0xe1a0\n"
-        ".hword 0xef06, 0xebfa, 0x2018, 0xe595\n"
-        ".hword 0x0000, 0xe352, 0x0006, 0x0a00\n"
-        ".hword 0x0004, 0xe28d, 0x8000, 0xe58d\n"
-        ".hword 0x0110, 0xe880, 0x3000, 0xe3a0\n"
-        ".hword 0x01bc, 0xe1d5, 0x1009, 0xe1a0\n"
-        ".hword 0xeefc, 0xebfa, 0x0020, 0xe595\n"
-        ".hword 0x7b12, 0xe287, 0x7f79, 0xe287\n"
-        ".hword 0x0000, 0xe587, 0xd020, 0xe28d\n"
-        ".hword 0x0001, 0xe3a0, 0x8b02, 0xecbd\n"
-        ".hword 0x87f0, 0xe8bd, 0xd020, 0xe28d\n"
-        ".hword 0x0000, 0xe3a0, 0x8b02, 0xecbd\n"
-        ".hword 0x87f0, 0xe8bd, 0x6028, 0x0043\n"
-        ".hword 0x7325, 0x652e, 0x7466, 0x0000\n"
-        ".hword 0xc290, 0xc03d, 0x70a4, 0xbf7d\n"
-        ".hword 0x28f6, 0x403c, 0x0a3e, 0x3f77\n"
-        ".hword 0x0000, 0xc188, 0x42c8, 0x0043\n"
-        ".hword 0x0000, 0xc110, 0x0000, 0x4188\n"
-        ".hword 0x0000, 0x4110\n"
-    );
+//
+// Effect-table lookup and effect-command dispatch.  The routine formats each
+// 0x24-byte table entry's 16-byte name as "<name>.eft", compares it with the
+// requested name, and on a match forwards the entry's two command/id pairs to
+// 0x00250800 together with a five-way sector code derived from the float
+// argument.  On success the entry's +0x20 word is copied into the UI/effect
+// singleton and 1 is returned.
+//
+// Sector mapping (`selector` = r2):
+//   * 2, 5, 8, 9, 12 -- thresholds are the absolute constants in the literal
+//     pool at 0x394C48..0x394C54;
+//   * 6, 7, 11       -- sector 3 unconditionally (jump-table targets 0x394BB0);
+//   * 3, 4, 10 and every other selector (including the jump table's default
+//     and selector 13) -- thresholds relative to the float at
+//     *(*(0x004342C8) + 0x574).
+//
+// 0x002BE7FC is Thumb code (reached with `blx`); all other callees are ARM.
+// The jump table at 0x394AC0 has 11 entries; index 11 (selector 13) and
+// selectors outside 2..13 take the default 0x394B30 path.
+namespace engine_3949e8 {
+
+// One effect-table record.  Offsets are exactly the loads/stores in the body:
+// the 16-byte name is the "%s.eft" input, +0x10/+0x18 are the nonzero-checked
+// command words, +0x14/+0x1C their zero-extended 16-bit ids, +0x20 the word
+// copied into the UI singleton.
+struct EffectEntry {
+    char name[0x10];    // +0x00
+    u32 command_a;      // +0x10  `ldr r2,[r5,#0x10]`
+    u16 id_a;           // +0x14  `ldrh r0,[r5,#0x14]`
+    u16 pad_16;         // +0x16
+    u32 command_b;      // +0x18  `ldr r2,[r5,#0x18]`
+    u16 id_b;           // +0x1C  `ldrh r0,[r5,#0x1C]`
+    u16 pad_1E;         // +0x1E
+    u32 state_value;    // +0x20  `ldr r0,[r5,#0x20]`
 };
+static_assert(sizeof(EffectEntry) == 0x24, "effect entry stride is 0x24");
+
+constexpr u32 kEffectTableAddress = 0x00436028;  // `ldr sl,[pc,#0x21C]`
+constexpr u32 kFirstEntryIndex = 0;
+constexpr u32 kLastEntryIndex = 0x190;           // `cmp r4,#0x190; ble`
+constexpr u32 kNameBufferSize = 0x20;            // `sub sp,sp,#0x20`
+constexpr u32 kGlobalConfigAddress = 0x004342C8; // `ldr r0,[pc,#0x124]`
+constexpr u32 kReferenceOffset = 0x574;          // `ldr r0,[r0,#0x574]`
+constexpr u32 kUiResultOffset = 0x49E4;          // 0x4800 + 0x1E4
+
+constexpr f32 F32FromBits(u32 bits) noexcept {
+    return __builtin_bit_cast(f32, bits);
+}
+
+// Absolute sector thresholds (literal pool 0x394C48..0x394C54).
+constexpr f32 kAbsoluteOuterLow = F32FromBits(0xC03DC290u);  // -2.9650002
+constexpr f32 kAbsoluteInnerLow = F32FromBits(0xBF7D70A4u);  // -0.99000001
+constexpr f32 kAbsoluteInnerHigh = F32FromBits(0x403C28F6u); //  2.9400001
+constexpr f32 kAbsoluteOuterHigh = F32FromBits(0x3F770A3Eu); //  0.96500003
+
+// Relative sector offsets (literal pool 0x394C58..0x394C68).
+constexpr f32 kReferenceInner = 9.0f;    // 0x41100000
+constexpr f32 kReferenceOuter = 17.0f;   // 0x41880000
+
+// 0x394AEC..0x394B2C: four ordered comparisons produce sectors 5, 4, 1, 2 and
+// the fall-through sector 3.
+inline s32 AbsoluteSector(f32 angle) noexcept {
+    if (angle < kAbsoluteOuterLow) {
+        return 5;
+    }
+    if (angle < kAbsoluteInnerLow) {
+        return 4;
+    }
+    if (angle > kAbsoluteInnerHigh) {
+        return 1;
+    }
+    if (angle > kAbsoluteOuterHigh) {
+        return 2;
+    }
+    return 3;
+}
+
+// 0x394B30..0x394BAC: the same ordering around the reference angle read from
+// the global config object.
+inline s32 RelativeSector(f32 angle) noexcept {
+    const f32 reference = *reinterpret_cast<const f32*>(
+        *reinterpret_cast<const u8* const*>(kGlobalConfigAddress) +
+        kReferenceOffset);
+    if (angle < reference - kReferenceOuter) {
+        return 5;
+    }
+    if (angle < reference - kReferenceInner) {
+        return 4;
+    }
+    if (angle > reference + kReferenceOuter) {
+        return 1;
+    }
+    if (angle > reference + kReferenceInner) {
+        return 2;
+    }
+    return 3;
+}
+
+}  // namespace engine_3949e8
+
+extern "C" u32 engine_func_002c583c(u32 index);
+extern "C" u32 ui_func_002be7fc(char* dst, const char* format, ...);
+extern "C" s32 engine_func_002aa7f4(const char* a, const char* b);
+extern "C" void* ui_func_00293c98();
+extern "C" s32 battle_func_00250800(s32 a, s32 b, u32 command, s32 d, s32 e,
+                                    s32 f, s32 g);
+
+extern "C" u32 engine_func_003949e8(const char* name, u32 arg1, s32 selector,
+                                    f32 angle) {
+    using namespace engine_3949e8;
+
+    // 0x394A04..0x394A10: the guard returns a word from a global table; any
+    // nonzero value aborts before the lookup.
+    if (engine_func_002c583c(1) != 0) {
+        return 0;
+    }
+
+    // 0x394A14..0x394AA0: linear search over 0x191 entries.
+    const EffectEntry* found = nullptr;
+    for (u32 index = kFirstEntryIndex; index <= kLastEntryIndex; ++index) {
+        char text[kNameBufferSize] = {};
+        const EffectEntry* const entry =
+            reinterpret_cast<const EffectEntry*>(kEffectTableAddress) + index;
+        ui_func_002be7fc(text, "%s.eft", entry->name);
+        if (engine_func_002aa7f4(text, name) == 0) {
+            found = entry;
+            break;
+        }
+    }
+
+    // 0x394AA8..0x394AB8: the UI/effect singleton is fetched before the sector
+    // switch, and the relative path dereferences the config pointer before the
+    // found/not-found test.
+    u8* const ui = static_cast<u8*>(ui_func_00293c98());
+
+    s32 sector;
+    switch (selector) {
+    case 2:
+    case 5:
+    case 8:
+    case 9:
+    case 12:
+        sector = AbsoluteSector(angle);
+        break;
+    case 6:
+    case 7:
+    case 11:
+        sector = 3;
+        break;
+    case 3:
+    case 4:
+    case 10:
+    default:
+        sector = RelativeSector(angle);
+        break;
+    }
+
+    // 0x394BB4..0x394BB8: no entry means no dispatch and no state write.
+    if (found == nullptr) {
+        return 0;
+    }
+
+    // 0x394BBC..0x394BE0: first (id, command) pair; the stack words are
+    // [sp] = 0, [sp+4] = sector, [sp+8] = 0.
+    if (found->command_a != 0) {
+        battle_func_00250800(static_cast<s32>(found->id_a),
+                             static_cast<s32>(arg1), found->command_a, 0, 0,
+                             sector, 0);
+    }
+
+    // 0x394BE4..0x394C08: second pair, identical layout.
+    if (found->command_b != 0) {
+        battle_func_00250800(static_cast<s32>(found->id_b),
+                             static_cast<s32>(arg1), found->command_b, 0, 0,
+                             sector, 0);
+    }
+
+    // 0x394C0C..0x394C18: publish the entry's +0x20 word in the singleton.
+    *reinterpret_cast<u32*>(ui + kUiResultOffset) = found->state_value;
+    return 1;
+}
 
 // DECOMP_FUNC(0x003e9ba8, 652)
 extern "C" u32 engine_func_002c2be8(const float* rgba);

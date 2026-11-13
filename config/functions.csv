@@ -9243,7 +9243,7 @@ address,size,status,category,name,src_file
 0x0039493c,44,non_matching,engine,engine_func_0039493c,src/engine/leaf_batch31_a.cpp
 0x00394968,4,matching,unknown,func_00394968,src/engine/leaf_batch36_c.cpp
 0x0039496c,124,matching,engine,engine_func_0039496c,src/engine/leaf_batch33_a.cpp
-0x003949e8,644,matching,engine,engine_func_003949e8,src/engine/leaf_batch45_a.cpp
+0x003949e8,644,non_matching,engine,engine_func_003949e8,src/engine/leaf_batch45_a.cpp
 0x00394c6c,48,non_matching,battle,battle_func_00394c6c,src/engine/leaf_batch31_a.cpp
 0x00394c9c,140,matching,engine,engine_func_00394c9c,src/engine/leaf_batch37_c.cpp
 0x00394d28,176,matching,script_vm,script_vm_func_00394d28,src/engine/leaf_batch33_b.cpp
