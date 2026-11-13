@@ -2447,87 +2447,154 @@ extern "C" void script_vm_func_00339d98(
 }
 
 // DECOMP_FUNC(0x0014cae4, 608)
-extern "C" __attribute__((naked)) void engine_func_0014cae4() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x41f0, 0xe92d, 0x6000, 0xe1a0\n"
-        ".hword 0x4001, 0xe1a0, 0x0021, 0xe891\n"
-        ".hword 0xde11, 0xe24d, 0x7002, 0xe1a0\n"
-        ".hword 0x100c, 0xe280, 0x0010, 0xe28d\n"
-        ".hword 0xcb58, 0xeb05, 0x1008, 0xe595\n"
-        ".hword 0x0000, 0xe5d1, 0x002d, 0xe350\n"
-        ".hword 0x000b, 0x0a00, 0x0010, 0xe28d\n"
-        ".hword 0xa72f, 0xfa05, 0x0004, 0xe594\n"
-        ".hword 0x000d, 0xe5d0, 0x0000, 0xe350\n"
-        ".hword 0x000e, 0x0a00, 0x1e1f, 0xe28f\n"
-        ".hword 0x0010, 0xe28d, 0xa728, 0xfa05\n"
-        ".hword 0xf000, 0xe320, 0xf000, 0xe320\n"
-        ".hword 0x000b, 0xea00, 0x00d1, 0xe1d1\n"
-        ".hword 0x0280, 0xe044, 0x0604, 0xe590\n"
-        ".hword 0x1008, 0xe590, 0x0010, 0xe28d\n"
-        ".hword 0xa71f, 0xfa05, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0xffec, 0xeaff\n"
-        ".hword 0x1f6f, 0xe28f, 0x0010, 0xe28d\n"
-        ".hword 0xa719, 0xfa05, 0x0008, 0xe595\n"
-        ".hword 0xd9c3, 0xeb05, 0x0000, 0xe350\n"
-        ".hword 0x8000, 0xe3a0, 0x8008, 0x0584\n"
-        ".hword 0x002d, 0x0a00, 0x1006, 0xe1a0\n"
-        ".hword 0x0090, 0xe28d, 0xcb33, 0xeb05\n"
-        ".hword 0x0010, 0xe594, 0x1801, 0xe3d0\n"
-        ".hword 0x0027, 0x1a00, 0x1004, 0xe594\n"
-        ".hword 0x0801, 0xe310, 0x6001, 0xe3a0\n"
-        ".hword 0x6003, 0x13a0, 0x100d, 0xe5d1\n"
-        ".hword 0x0006, 0xe1a0, 0x0000, 0xe351\n"
-        ".hword 0x0002, 0x0a00, 0x0002, 0xe310\n"
-        ".hword 0x0002, 0x13c6, 0x0002, 0x0386\n"
-        ".hword 0x1080, 0xe3a0, 0x0083, 0xe88d\n"
-        ".hword 0x300c, 0xe28d, 0x0150, 0xe59f\n"
-        ".hword 0x2010, 0xe28d, 0x1090, 0xe28d\n"
-        ".hword 0x0000, 0xe590, 0x5f0c, 0xeb05\n"
-        ".hword 0x5000, 0xe1b0, 0xf000, 0xe320\n"
-        ".hword 0x0011, 0x0a00, 0x0004, 0xe594\n"
-        ".hword 0x000d, 0xe5d0, 0x0000, 0xe350\n"
-        ".hword 0x0004, 0x0a00, 0x2080, 0xe3a0\n"
-        ".hword 0x1006, 0xe1a0, 0x0005, 0xe1a0\n"
-        ".hword 0x5e8e, 0xeb05, 0x5000, 0xe1a0\n"
-        ".hword 0x2004, 0xe3a0, 0x1f43, 0xe28f\n"
-        ".hword 0x0005, 0xe1a0, 0xd384, 0xfa05\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x0004, 0x0a00, 0x0005, 0xe1a0\n"
-        ".hword 0xddc5, 0xeb05, 0xde11, 0xe28d\n"
-        ".hword 0x0000, 0xe3a0, 0x81f0, 0xe8bd\n"
-        ".hword 0x0024, 0xe595, 0x0000, 0xe350\n"
-        ".hword 0x8008, 0x1584, 0x0006, 0x0a00\n"
-        ".hword 0x500c, 0xe584, 0x0010, 0xe594\n"
-        ".hword 0x0002, 0xe380, 0x0010, 0xe584\n"
-        ".hword 0xde11, 0xe28d, 0x0001, 0xe3a0\n"
-        ".hword 0x81f0, 0xe8bd, 0x0010, 0xe594\n"
-        ".hword 0x0801, 0xe310, 0x0000, 0xe3a0\n"
-        ".hword 0x0001, 0x13a0, 0xc32a, 0xeb05\n"
-        ".hword 0x0008, 0xe584, 0x1008, 0xe595\n"
-        ".hword 0x1004, 0xe580, 0x1008, 0xe594\n"
-        ".hword 0x000c, 0xe595, 0x0014, 0xe581\n"
-        ".hword 0x1008, 0xe594, 0x0010, 0xe595\n"
-        ".hword 0x0018, 0xe581, 0x1008, 0xe594\n"
-        ".hword 0x0018, 0xe595, 0x001c, 0xe581\n"
-        ".hword 0x1008, 0xe594, 0x0014, 0xe595\n"
-        ".hword 0x0020, 0xe581, 0x0020, 0xe595\n"
-        ".hword 0x1008, 0xe594, 0x200c, 0xe59d\n"
-        ".hword 0x0000, 0xe042, 0x0028, 0xe581\n"
-        ".hword 0x0008, 0xe594, 0x102c, 0xe590\n"
-        ".hword 0x1010, 0xe381, 0x102c, 0xe580\n"
-        ".hword 0x0004, 0xe595, 0x0001, 0xe350\n"
-        ".hword 0x0004, 0x1a00, 0x1008, 0xe594\n"
-        ".hword 0x0001, 0xe3a0, 0x003c, 0xe581\n"
-        ".hword 0x1008, 0xe594, 0x0040, 0xe581\n"
-        ".hword 0x0020, 0xe595, 0x1008, 0xe594\n"
-        ".hword 0x0005, 0xe080, 0x0024, 0xe581\n"
-        ".hword 0xffce, 0xeaff, 0x632e, 0x706d\n"
-        ".hword 0x0000, 0x0000, 0x732e, 0x6574\n"
-        ".hword 0x0078, 0x0000, 0x3130, 0x0043\n"
-        ".hword 0x5453, 0x5845, 0x0000, 0x0000\n"
-    );
+//
+// Resolve one texture slot's on-disk variant name and install the decoded
+// "STEX" texture.  All offsets below come from the original ARM loads; the
+// record at slot+0x604 holds 0x20-byte sibling entries that "-<n>" names
+// refer back to.
+extern "C" void engine_func_002bf86c(char* dst, const char* src);        // 0x002BF86C strcpy
+extern "C" void engine_func_002b67e0(char* dst, const char* src);        // 0x002B67E0 strcat
+extern "C" u32 engine_func_002c3290(const char* text);                   // 0x002C3290 strlen
+extern "C" s32 engine_func_002c1a48(const void* lhs, const void* rhs,
+                                   u32 size);                            // 0x002C1A48 memcmp
+extern "C" void engine_func_002c4360(void* object);                      // 0x002C4360 free
+extern "C" void* engine_func_002a4828(void* manager, const char* name,
+                                      const char* variant_name,
+                                      u32* out_size, u32 mode, u32 size,
+                                      u32 user);                         // 0x002A4828
+
+namespace smt4::engine {
+struct AocTMSpr;
+void* aocTexCtrl_func_002a465c(AocTMSpr* sprite, u32 flags, u32 size);   // 0x002A465C
+void* AsdTexture_func_002bd940(u32 kind);                                // 0x002BD940
+}  // namespace smt4::engine
+
+struct EngineTextureDescriptor {
+    u8 pad_000[0x08];
+    const char* name;                 // +0x08
+    u8 pad_00C;
+    u8 variant;                       // +0x0D, non-zero selects .cmp / alt upload
 };
+
+struct EngineTextureSlot {
+    const u8* source;                 // +0x00, inline path string starts at +0x0C
+    EngineTextureDescriptor* desc;    // +0x04
+    void* texture;                    // +0x08
+    void* loaded;                     // +0x0C
+    u32 flags;                        // +0x10, bit 0x10000 selects the high variant
+};
+
+extern "C" s32 engine_func_0014cae4(const char* base_name,
+                                    EngineTextureSlot* slot, u32 user) {
+    constexpr u32 kBufferSize = 0x80;
+    constexpr u32 kSiblingTableEnd = 0x604;
+    constexpr u32 kSiblingStride = 0x20;
+
+    char variant_name[kBufferSize];
+    char base_path[kBufferSize];
+    u32 asset_size = 0;
+
+    // 0x14CAF0: both record pointers are latched before the first helper call.
+    // The source record carries its path string inline at +0x0C.
+    const u8* const source_record = slot->source;
+    EngineTextureDescriptor* const desc = slot->desc;
+
+    engine_func_002bf86c(
+        variant_name, reinterpret_cast<const char*>(source_record + 0x0C));
+
+    if (desc->name[0] == '-') {
+        // "-<n>" selects the n-th preceding 0x20-byte sibling entry; the
+        // address arithmetic is the original's signed-byte shift.
+        const s32 relative = static_cast<s32>(static_cast<s8>(desc->name[1]));
+        const uintptr_t sibling_address =
+            reinterpret_cast<uintptr_t>(slot) + kSiblingTableEnd
+            - static_cast<uintptr_t>(relative * static_cast<s32>(kSiblingStride));
+        void* const sibling = *reinterpret_cast<void**>(sibling_address);
+        const char* const sibling_name = *reinterpret_cast<const char* const*>(
+            static_cast<u8*>(sibling) + 8);
+        engine_func_002b67e0(variant_name, sibling_name);
+    } else {
+        engine_func_002b67e0(variant_name, desc->name);
+    }
+
+    if (desc->variant != 0) {
+        engine_func_002b67e0(variant_name, ".cmp");
+    } else {
+        engine_func_002b67e0(variant_name, ".stex");
+    }
+
+    if (engine_func_002c3290(desc->name) == 0) {
+        slot->texture = nullptr;
+        return 0;
+    }
+
+    engine_func_002bf86c(base_path, base_name);
+
+    const u32 flags = slot->flags;
+    if ((flags & ~0x10000u) != 0) {
+        return 0;
+    }
+
+    // 0x14CBB0..0x14CBD0: request mode 1 or 3, toggled when variant != 0.
+    const u32 base_mode = (flags & 0x10000u) != 0 ? 3u : 1u;
+    const u32 load_mode = desc->variant != 0 ? (base_mode ^ 2u) : base_mode;
+
+    void* data = engine_func_002a4828(
+        *reinterpret_cast<void**>(0x00433130), base_path, variant_name,
+        &asset_size, load_mode, kBufferSize, user);
+    if (data == nullptr) {
+        return 0;
+    }
+
+    if (desc->variant != 0) {
+        data = smt4::engine::aocTexCtrl_func_002a465c(
+            static_cast<smt4::engine::AocTMSpr*>(data), base_mode, kBufferSize);
+    }
+
+    if (engine_func_002c1a48(data, "STEX", 4) != 0) {
+        engine_func_002c4360(data);
+        return 0;
+    }
+
+    if (*reinterpret_cast<u32*>(static_cast<u8*>(data) + 0x24) != 0) {
+        slot->texture = nullptr;
+    } else {
+        // 0x14CC80..0x14CD24: publish the decoded header into an AsdTexture.
+        void* const texture = smt4::engine::AsdTexture_func_002bd940(
+            (slot->flags & 0x10000u) != 0 ? 1u : 0u);
+        slot->texture = texture;
+
+        u8* const object = static_cast<u8*>(texture);
+        const u8* const header = static_cast<const u8*>(data);
+
+        *reinterpret_cast<u32*>(object + 0x04) =
+            *reinterpret_cast<const u32*>(header + 0x08);
+        *reinterpret_cast<u32*>(object + 0x14) =
+            *reinterpret_cast<const u32*>(header + 0x0C);
+        *reinterpret_cast<u32*>(object + 0x18) =
+            *reinterpret_cast<const u32*>(header + 0x10);
+        *reinterpret_cast<u32*>(object + 0x1C) =
+            *reinterpret_cast<const u32*>(header + 0x18);
+        *reinterpret_cast<u32*>(object + 0x20) =
+            *reinterpret_cast<const u32*>(header + 0x14);
+        *reinterpret_cast<u32*>(object + 0x28) =
+            asset_size - *reinterpret_cast<const u32*>(header + 0x20);
+        *reinterpret_cast<u32*>(object + 0x2C) |= 0x10u;
+
+        if (*reinterpret_cast<const u32*>(header + 0x04) == 1) {
+            *reinterpret_cast<u32*>(object + 0x3C) = 1;
+            *reinterpret_cast<u32*>(object + 0x40) = 1;
+        }
+
+        *reinterpret_cast<u32*>(object + 0x24) =
+            static_cast<u32>(reinterpret_cast<uintptr_t>(data))
+            + *reinterpret_cast<const u32*>(header + 0x20);
+    }
+
+    slot->loaded = data;
+    slot->flags = slot->flags | 2u;
+    return 1;
+}
 
 // DECOMP_FUNC(0x0035b364, 616)
 extern "C" __attribute__((naked)) void func_0035b364() {
