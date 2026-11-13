@@ -5445,93 +5445,197 @@ extern "C" void engine_func_0038e58c(void* context) {
     }
 }
 
-// DECOMP_FUNC(0x001a7cac, 644)
-extern "C" __attribute__((naked)) void camp_func_001a7cac() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x43f0, 0xe92d, 0x5001, 0xe1a0\n"
-        ".hword 0xd034, 0xe24d, 0x6002, 0xe1a0\n"
-        ".hword 0x1268, 0xe59f, 0x7003, 0xe1a0\n"
-        ".hword 0x4000, 0xe1a0, 0x7398, 0xeb04\n"
-        ".hword 0x64b6, 0xe1c4, 0x0003, 0xe357\n"
-        ".hword 0x504a, 0xe5c4, 0x0011, 0x0a00\n"
-        ".hword 0x0349, 0xeb04, 0x1a09, 0xe280\n"
-        ".hword 0x10f0, 0xe281, 0x0000, 0xe3a0\n"
-        ".hword 0x20d0, 0xe191, 0x0000, 0xe352\n"
-        ".hword 0x0001, 0xaa00, 0x5000, 0xe7c1\n"
-        ".hword 0x0002, 0xea00, 0x0001, 0xe280\n"
-        ".hword 0x0018, 0xe350, 0xfff7, 0xbaff\n"
-        ".hword 0x0076, 0xe6ff, 0x1001, 0xe3a0\n"
-        ".hword 0x6d67, 0xeb01, 0x0076, 0xe6ff\n"
-        ".hword 0x1001, 0xe3a0, 0xd733, 0xeb00\n"
-        ".hword 0x0076, 0xe6ff, 0x458d, 0xeb04\n"
-        ".hword 0x0000, 0xe357, 0x5000, 0xe1a0\n"
-        ".hword 0x8000, 0xe3a0, 0x9001, 0xe3a0\n"
-        ".hword 0x0003, 0x0a00, 0x0001, 0xe357\n"
-        ".hword 0x0033, 0x0a00, 0x0003, 0xe357\n"
-        ".hword 0x006c, 0x1a00, 0x0003, 0xe5d5\n"
-        ".hword 0x0048, 0xe5c4, 0x01b4, 0xe1d5\n"
-        ".hword 0x00b0, 0xe1c4, 0x01b6, 0xe1d5\n"
-        ".hword 0x00b2, 0xe1c4, 0x01ba, 0xe1d5\n"
-        ".hword 0x00b4, 0xe1c4, 0x01be, 0xe1d5\n"
-        ".hword 0x00b8, 0xe1c4, 0x02b0, 0xe1d5\n"
-        ".hword 0x00ba, 0xe1c4, 0x02b2, 0xe1d5\n"
-        ".hword 0x00bc, 0xe1c4, 0x01bc, 0xe1d5\n"
-        ".hword 0x00b6, 0xe1c4, 0x81bc, 0xe1c4\n"
-        ".hword 0x81be, 0xe1c4, 0x01ba, 0xe1d5\n"
-        ".hword 0x02b0, 0xe1c4, 0x01be, 0xe1d5\n"
-        ".hword 0x02b4, 0xe1c4, 0x02b0, 0xe1d5\n"
-        ".hword 0x02b6, 0xe1c4, 0x02b2, 0xe1d5\n"
-        ".hword 0x02b8, 0xe1c4, 0x01bc, 0xe1d5\n"
-        ".hword 0x02b2, 0xe1c4, 0x03bc, 0xe1d5\n"
-        ".hword 0x03b4, 0xe1c4, 0x03be, 0xe1d5\n"
-        ".hword 0x03b6, 0xe1c4, 0x04b0, 0xe1d5\n"
-        ".hword 0x03b8, 0xe1c4, 0x04b2, 0xe1d5\n"
-        ".hword 0x03ba, 0xe1c4, 0x04b4, 0xe1d5\n"
-        ".hword 0x03bc, 0xe1c4, 0x04b6, 0xe1d5\n"
-        ".hword 0x03be, 0xe1c4, 0x04b8, 0xe1d5\n"
-        ".hword 0x04b0, 0xe1c4, 0x04ba, 0xe1d5\n"
-        ".hword 0x04b2, 0xe1c4, 0x03b8, 0xe1d5\n"
-        ".hword 0x2007, 0xe200, 0x11a0, 0xe084\n"
-        ".hword 0x004c, 0xe5d1, 0x0219, 0xe180\n"
-        ".hword 0x0039, 0xea00, 0x0076, 0xe6ff\n"
-        ".hword 0x100d, 0xe1a0, 0x8165, 0xeb03\n"
-        ".hword 0x00b0, 0xe1dd, 0x0048, 0xe5c4\n"
-        ".hword 0x01b8, 0xe1dd, 0x00b0, 0xe1c4\n"
-        ".hword 0x01ba, 0xe1dd, 0x00b2, 0xe1c4\n"
-        ".hword 0x00b2, 0xe1dd, 0x00b4, 0xe1c4\n"
-        ".hword 0x00b6, 0xe1dd, 0x00b8, 0xe1c4\n"
-        ".hword 0x00b8, 0xe1dd, 0x00ba, 0xe1c4\n"
-        ".hword 0x00ba, 0xe1dd, 0x00bc, 0xe1c4\n"
-        ".hword 0x00b4, 0xe1dd, 0x00b6, 0xe1c4\n"
-        ".hword 0x81bc, 0xe1c4, 0x81be, 0xe1c4\n"
-        ".hword 0x00bc, 0xe1dd, 0x02b0, 0xe1c4\n"
-        ".hword 0x01b0, 0xe1dd, 0x02b4, 0xe1c4\n"
-        ".hword 0x01b2, 0xe1dd, 0x02b6, 0xe1c4\n"
-        ".hword 0x01b4, 0xe1dd, 0x02b8, 0xe1c4\n"
-        ".hword 0x00be, 0xe1dd, 0x02b2, 0xe1c4\n"
-        ".hword 0x01bc, 0xe1dd, 0x03b4, 0xe1c4\n"
-        ".hword 0x01be, 0xe1dd, 0x03b6, 0xe1c4\n"
-        ".hword 0x02b0, 0xe1dd, 0x03b8, 0xe1c4\n"
-        ".hword 0x02b2, 0xe1dd, 0x03ba, 0xe1c4\n"
-        ".hword 0x02b4, 0xe1dd, 0x03bc, 0xe1c4\n"
-        ".hword 0x02b6, 0xe1dd, 0x03be, 0xe1c4\n"
-        ".hword 0x02b8, 0xe1dd, 0x04b0, 0xe1c4\n"
-        ".hword 0x02ba, 0xe1dd, 0x04b2, 0xe1c4\n"
-        ".hword 0x0030, 0xe59d, 0x0030, 0xe584\n"
-        ".hword 0x0016, 0xe5dd, 0x0d00, 0xe1a0\n"
-        ".hword 0x0e20, 0xe1a0, 0x0601, 0xe5c4\n"
-        ".hword 0x03b8, 0xe1d5, 0x11a0, 0xe084\n"
-        ".hword 0x0007, 0xe200, 0x204c, 0xe5d1\n"
-        ".hword 0x0019, 0xe182, 0x004c, 0xe5c1\n"
-        ".hword 0x0004, 0xe1a0, 0xd290, 0xeb03\n"
-        ".hword 0x00be, 0xe1d4, 0x11b0, 0xe1d4\n"
-        ".hword 0x02ba, 0xe1c4, 0x12bc, 0xe1c4\n"
-        ".hword 0xd034, 0xe28d, 0x0004, 0xe1a0\n"
-        ".hword 0x43f0, 0xe8bd, 0xd055, 0xea03\n"
-        ".hword 0x0604, 0x0000\n"
-    );
-};
+// 0x001A7CAC builds a camp selection record from a table entry (modes 0/3) or
+// from the 0x34-byte detail record (mode 1), then hands the finished record to
+// the camp selection updater.  Mode 3 skips the free-slot scan and id-flag
+// updates; every other mode still refreshes the record.
+extern "C" void engine_func_002c4b30(void* dst, u32 size);
+extern "C" u8* camp_func_002a8a08(u32 sub_mode);
+extern "C" u32 func_002032b8(u32 id, u32 value);
+extern "C" u32 script_vm_func_001dd9f4(u32 id, u32 value);
+extern "C" u8* camp_func_002b9364(u32 id);
+extern "C" u32 camp_func_002883bc(u32 id, void* out);
+extern "C" void script_vm_func_0029c950(void* ctx);
+extern "C" u32 camp_func_0029c084(void* ctx);
+
+namespace {
+
+constexpr u32 k001a7cacZeroFillSize = 0x604;      // full record cleared first
+constexpr u32 k001a7cacSlotListOffset = 0x90F0;   // s8 slot indices in the list
+constexpr u32 k001a7cacSlotListCount = 0x18;
+constexpr u32 k001a7cacIdOffset = 0x46;           // u16
+constexpr u32 k001a7cacArgumentByteOffset = 0x4A; // u8
+constexpr u32 k001a7cacEntryFlagByteOffset = 0x48; // u8
+constexpr u32 k001a7cacDetailBitsOffset = 0x16;   // u8, bits 5..2
+constexpr u32 k001a7cacDetailWordOffset = 0x30;   // u32
+constexpr u32 k001a7cacEntryBitIndexOffset = 0x38; // u16
+constexpr u32 k001a7cacBitMapOffset = 0x4C;
+constexpr u32 k001a7cacBitIndexMask = 7u;
+constexpr u32 k001a7cacBitIndexShift = 3u;
+constexpr u32 k001a7cacDetailNibbleShift = 2u;
+constexpr u32 k001a7cacDetailNibbleMask = 0x0F;
+constexpr u32 k001a7cacModeTableCopy = 0;
+constexpr u32 k001a7cacModeDetail = 1;
+constexpr u32 k001a7cacModeNoScan = 3;
+
+// The original zero-fill helper returns `dst + size`; that leftover value is
+// what the following 0x002A8A08 call receives in r0 (the callee ignores it).
+inline u32 zero_fill_return(const void* dst, u32 size) {
+    return reinterpret_cast<u32>(dst) + size;
+}
+
+}  // namespace
+
+extern "C" u32 camp_func_001a7cac(void* record, u32 slot, u32 id, u32 mode) {
+    u8* const self = static_cast<u8*>(record);
+    const u16 id16 = static_cast<u16>(id);
+
+    engine_func_002c4b30(self, k001a7cacZeroFillSize);
+    *reinterpret_cast<u16*>(self + k001a7cacIdOffset) = id16;
+    *reinterpret_cast<u8*>(self + k001a7cacArgumentByteOffset) =
+        static_cast<u8>(slot);
+
+    if (mode != k001a7cacModeNoScan) {
+        // Replace the first free (negative) slot index; the loop is bounded by
+        // the fixed 24-entry list, not by the separate count byte.
+        u8* const slots = camp_func_002a8a08(
+                              zero_fill_return(self, k001a7cacZeroFillSize)) +
+                          k001a7cacSlotListOffset;
+        for (u32 i = 0; i < k001a7cacSlotListCount; ++i) {
+            if (static_cast<s8>(slots[i]) < 0) {
+                slots[i] = static_cast<u8>(slot);
+                break;
+            }
+        }
+        func_002032b8(id16, 1);
+        script_vm_func_001dd9f4(id16, 1);
+    }
+
+    u8* const entry = camp_func_002b9364(id16);
+
+    if (mode == k001a7cacModeTableCopy || mode == k001a7cacModeNoScan) {
+        *reinterpret_cast<u8*>(self + k001a7cacEntryFlagByteOffset) =
+            *reinterpret_cast<const u8*>(entry + 3);
+        *reinterpret_cast<u16*>(self + 0x00) =
+            *reinterpret_cast<const u16*>(entry + 0x14);
+        *reinterpret_cast<u16*>(self + 0x02) =
+            *reinterpret_cast<const u16*>(entry + 0x16);
+        *reinterpret_cast<u16*>(self + 0x04) =
+            *reinterpret_cast<const u16*>(entry + 0x1A);
+        *reinterpret_cast<u16*>(self + 0x08) =
+            *reinterpret_cast<const u16*>(entry + 0x1E);
+        *reinterpret_cast<u16*>(self + 0x0A) =
+            *reinterpret_cast<const u16*>(entry + 0x20);
+        *reinterpret_cast<u16*>(self + 0x0C) =
+            *reinterpret_cast<const u16*>(entry + 0x22);
+        *reinterpret_cast<u16*>(self + 0x06) =
+            *reinterpret_cast<const u16*>(entry + 0x1C);
+        *reinterpret_cast<u16*>(self + 0x1C) = 0;
+        *reinterpret_cast<u16*>(self + 0x1E) = 0;
+        *reinterpret_cast<u16*>(self + 0x20) =
+            *reinterpret_cast<const u16*>(entry + 0x1A);
+        *reinterpret_cast<u16*>(self + 0x24) =
+            *reinterpret_cast<const u16*>(entry + 0x1E);
+        *reinterpret_cast<u16*>(self + 0x26) =
+            *reinterpret_cast<const u16*>(entry + 0x20);
+        *reinterpret_cast<u16*>(self + 0x28) =
+            *reinterpret_cast<const u16*>(entry + 0x22);
+        *reinterpret_cast<u16*>(self + 0x22) =
+            *reinterpret_cast<const u16*>(entry + 0x1C);
+        *reinterpret_cast<u16*>(self + 0x34) =
+            *reinterpret_cast<const u16*>(entry + 0x3C);
+        *reinterpret_cast<u16*>(self + 0x36) =
+            *reinterpret_cast<const u16*>(entry + 0x3E);
+        *reinterpret_cast<u16*>(self + 0x38) =
+            *reinterpret_cast<const u16*>(entry + 0x40);
+        *reinterpret_cast<u16*>(self + 0x3A) =
+            *reinterpret_cast<const u16*>(entry + 0x42);
+        *reinterpret_cast<u16*>(self + 0x3C) =
+            *reinterpret_cast<const u16*>(entry + 0x44);
+        *reinterpret_cast<u16*>(self + 0x3E) =
+            *reinterpret_cast<const u16*>(entry + 0x46);
+        *reinterpret_cast<u16*>(self + 0x40) =
+            *reinterpret_cast<const u16*>(entry + 0x48);
+        *reinterpret_cast<u16*>(self + 0x42) =
+            *reinterpret_cast<const u16*>(entry + 0x4A);
+
+        const u16 bit_index =
+            *reinterpret_cast<const u16*>(entry + k001a7cacEntryBitIndexOffset);
+        u8* const map_byte =
+            self + k001a7cacBitMapOffset +
+            static_cast<u32>(bit_index >> k001a7cacBitIndexShift);
+        *map_byte = static_cast<u8>(
+            *map_byte | (1u << (bit_index & k001a7cacBitIndexMask)));
+    } else if (mode == k001a7cacModeDetail) {
+        // 0x002883BC expands the 0x34-byte detail record on the stack.
+        u8 detail[0x34];
+        camp_func_002883bc(id16, detail);
+
+        *reinterpret_cast<u8*>(self + k001a7cacEntryFlagByteOffset) = detail[0];
+        *reinterpret_cast<u16*>(self + 0x00) =
+            *reinterpret_cast<const u16*>(detail + 0x18);
+        *reinterpret_cast<u16*>(self + 0x02) =
+            *reinterpret_cast<const u16*>(detail + 0x1A);
+        *reinterpret_cast<u16*>(self + 0x04) =
+            *reinterpret_cast<const u16*>(detail + 0x02);
+        *reinterpret_cast<u16*>(self + 0x08) =
+            *reinterpret_cast<const u16*>(detail + 0x06);
+        *reinterpret_cast<u16*>(self + 0x0A) =
+            *reinterpret_cast<const u16*>(detail + 0x08);
+        *reinterpret_cast<u16*>(self + 0x0C) =
+            *reinterpret_cast<const u16*>(detail + 0x0A);
+        *reinterpret_cast<u16*>(self + 0x06) =
+            *reinterpret_cast<const u16*>(detail + 0x04);
+        *reinterpret_cast<u16*>(self + 0x1C) = 0;
+        *reinterpret_cast<u16*>(self + 0x1E) = 0;
+        *reinterpret_cast<u16*>(self + 0x20) =
+            *reinterpret_cast<const u16*>(detail + 0x0C);
+        *reinterpret_cast<u16*>(self + 0x24) =
+            *reinterpret_cast<const u16*>(detail + 0x10);
+        *reinterpret_cast<u16*>(self + 0x26) =
+            *reinterpret_cast<const u16*>(detail + 0x12);
+        *reinterpret_cast<u16*>(self + 0x28) =
+            *reinterpret_cast<const u16*>(detail + 0x14);
+        *reinterpret_cast<u16*>(self + 0x22) =
+            *reinterpret_cast<const u16*>(detail + 0x0E);
+        *reinterpret_cast<u16*>(self + 0x34) =
+            *reinterpret_cast<const u16*>(detail + 0x1C);
+        *reinterpret_cast<u16*>(self + 0x36) =
+            *reinterpret_cast<const u16*>(detail + 0x1E);
+        *reinterpret_cast<u16*>(self + 0x38) =
+            *reinterpret_cast<const u16*>(detail + 0x20);
+        *reinterpret_cast<u16*>(self + 0x3A) =
+            *reinterpret_cast<const u16*>(detail + 0x22);
+        *reinterpret_cast<u16*>(self + 0x3C) =
+            *reinterpret_cast<const u16*>(detail + 0x24);
+        *reinterpret_cast<u16*>(self + 0x3E) =
+            *reinterpret_cast<const u16*>(detail + 0x26);
+        *reinterpret_cast<u16*>(self + 0x40) =
+            *reinterpret_cast<const u16*>(detail + 0x28);
+        *reinterpret_cast<u16*>(self + 0x42) =
+            *reinterpret_cast<const u16*>(detail + 0x2A);
+        *reinterpret_cast<u32*>(self + 0x30) =
+            *reinterpret_cast<const u32*>(detail + k001a7cacDetailWordOffset);
+        *reinterpret_cast<u8*>(self + 0x601) = static_cast<u8>(
+            (detail[k001a7cacDetailBitsOffset] >> k001a7cacDetailNibbleShift) &
+            k001a7cacDetailNibbleMask);
+
+        const u16 bit_index =
+            *reinterpret_cast<const u16*>(entry + k001a7cacEntryBitIndexOffset);
+        u8* const map_byte =
+            self + k001a7cacBitMapOffset +
+            static_cast<u32>(bit_index >> k001a7cacBitIndexShift);
+        *map_byte = static_cast<u8>(
+            *map_byte | (1u << (bit_index & k001a7cacBitIndexMask)));
+    }
+
+    script_vm_func_0029c950(self);
+    *reinterpret_cast<u16*>(self + 0x2A) =
+        *reinterpret_cast<const u16*>(self + 0x0E);
+    *reinterpret_cast<u16*>(self + 0x2C) =
+        *reinterpret_cast<const u16*>(self + 0x10);
+    return camp_func_0029c084(self);
+}
 
 // DECOMP_FUNC(0x003949e8, 644)
 extern "C" __attribute__((naked)) void engine_func_003949e8() {
