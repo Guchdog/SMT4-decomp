@@ -2226,88 +2226,225 @@ extern "C" void engine_func_002e7e94(void* manager_raw, void* node_raw) {
     engine_func_002c4360(node);
 }
 
-// DECOMP_FUNC(0x00339d98, 604)
-extern "C" __attribute__((naked)) void script_vm_func_00339d98() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x41f0, 0xe92d, 0x5000, 0xe1a0\n"
-        ".hword 0x0c4a, 0xe280, 0x7000, 0xe1a0\n"
-        ".hword 0x273e, 0xebfe, 0x4c49, 0xe285\n"
-        ".hword 0x0fbe, 0xe1d4, 0x000e, 0xe350\n"
-        ".hword 0xf100, 0x379f, 0x0084, 0xea00\n"
-        ".hword 0x9df8, 0x0033, 0x9e0c, 0x0033\n"
-        ".hword 0x9e5c, 0x0033, 0x9e84, 0x0033\n"
-        ".hword 0x9eac, 0x0033, 0x9ed4, 0x0033\n"
-        ".hword 0x9efc, 0x0033, 0x9f24, 0x0033\n"
-        ".hword 0x9f4c, 0x0033, 0x9f68, 0x0033\n"
-        ".hword 0x9f88, 0x0033, 0x9f9c, 0x0033\n"
-        ".hword 0x9fb0, 0x0033, 0x9fbc, 0x0033\n"
-        ".hword 0xf000, 0xe320, 0x6c37, 0xeb01\n"
-        ".hword 0x0fbe, 0xe1d4, 0x0001, 0xe280\n"
-        ".hword 0x0fbe, 0xe1c4, 0xf000, 0xe320\n"
-        ".hword 0x6ac9, 0xeb01, 0x0000, 0xe350\n"
-        ".hword 0xf000, 0xe320, 0x006c, 0x0a00\n"
-        ".hword 0x01c4, 0xe59f, 0x6a02, 0xe285\n"
-        ".hword 0x100c, 0xe590, 0x1248, 0xe586\n"
-        ".hword 0x2010, 0xe590, 0x224c, 0xe586\n"
-        ".hword 0x0014, 0xe590, 0x0250, 0xe586\n"
-        ".hword 0x752c, 0xebfd, 0x1000, 0xe3a0\n"
-        ".hword 0x0254, 0xe586, 0x1108, 0xe580\n"
-        ".hword 0x0fbe, 0xe1d4, 0x0001, 0xe280\n"
-        ".hword 0x0fbe, 0xe1c4, 0x0a02, 0xe285\n"
-        ".hword 0x1250, 0xe590, 0x0000, 0xe351\n"
-        ".hword 0x0059, 0x0a00, 0x1178, 0xe59f\n"
-        ".hword 0x1018, 0xe591, 0x1230, 0xe580\n"
-        ".hword 0x0fbe, 0xe1d4, 0x0001, 0xe280\n"
-        ".hword 0x0fbe, 0xe1c4, 0x0a02, 0xe285\n"
-        ".hword 0x1230, 0xe590, 0x0000, 0xe351\n"
-        ".hword 0x004f, 0x0a00, 0x1150, 0xe59f\n"
-        ".hword 0x101c, 0xe591, 0x1234, 0xe580\n"
-        ".hword 0x0fbe, 0xe1d4, 0x0001, 0xe280\n"
-        ".hword 0x0fbe, 0xe1c4, 0x0a02, 0xe285\n"
-        ".hword 0x1234, 0xe590, 0x0000, 0xe351\n"
-        ".hword 0x0045, 0x0a00, 0x1128, 0xe59f\n"
-        ".hword 0x1020, 0xe591, 0x1238, 0xe580\n"
-        ".hword 0x0fbe, 0xe1d4, 0x0001, 0xe280\n"
-        ".hword 0x0fbe, 0xe1c4, 0x0a02, 0xe285\n"
-        ".hword 0x1238, 0xe590, 0x0000, 0xe351\n"
-        ".hword 0x003b, 0x0a00, 0x1100, 0xe59f\n"
-        ".hword 0x1028, 0xe591, 0x1240, 0xe580\n"
-        ".hword 0x0fbe, 0xe1d4, 0x0001, 0xe280\n"
-        ".hword 0x0fbe, 0xe1c4, 0x0a02, 0xe285\n"
-        ".hword 0x1240, 0xe590, 0x0000, 0xe351\n"
-        ".hword 0x0031, 0x0a00, 0x10d8, 0xe59f\n"
-        ".hword 0x1024, 0xe591, 0x123c, 0xe580\n"
-        ".hword 0x0fbe, 0xe1d4, 0x0001, 0xe280\n"
-        ".hword 0x0fbe, 0xe1c4, 0x0a02, 0xe285\n"
-        ".hword 0x123c, 0xe590, 0x0000, 0xe351\n"
-        ".hword 0x0027, 0x0a00, 0x10b0, 0xe59f\n"
-        ".hword 0x102c, 0xe591, 0x1244, 0xe580\n"
-        ".hword 0x0fbe, 0xe1d4, 0x0001, 0xe280\n"
-        ".hword 0x0fbe, 0xe1c4, 0x009c, 0xe59f\n"
-        ".hword 0x0005, 0xe790, 0x0000, 0xe350\n"
-        ".hword 0x001d, 0x0a00, 0x0fbe, 0xe1d4\n"
-        ".hword 0x0001, 0xe280, 0x0fbe, 0xe1c4\n"
-        ".hword 0x003e, 0xe3a0, 0x1315, 0xebfc\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x0015, 0x0a00, 0x0fbe, 0xe1d4\n"
-        ".hword 0x0001, 0xe280, 0x0fbe, 0xe1c4\n"
-        ".hword 0xf000, 0xe320, 0xbbf3, 0xebff\n"
-        ".hword 0x0fbe, 0xe1d4, 0x0001, 0xe280\n"
-        ".hword 0x0fbe, 0xe1c4, 0xf000, 0xe320\n"
-        ".hword 0xbc8c, 0xebff, 0x0fbe, 0xe1d4\n"
-        ".hword 0x0001, 0xe280, 0x0fbe, 0xe1c4\n"
-        ".hword 0x0070, 0xe6ff, 0x0001, 0xe280\n"
-        ".hword 0x0fbe, 0xe1c4, 0x1fbc, 0xe1d4\n"
-        ".hword 0x0070, 0xe6ff, 0x0001, 0xe280\n"
-        ".hword 0x1001, 0xe381, 0x0fbe, 0xe1c4\n"
-        ".hword 0x1fbc, 0xe1c4, 0x0fbc, 0xe1d4\n"
-        ".hword 0x0001, 0xe310, 0xff73, 0x0aff\n"
-        ".hword 0x0007, 0xe1a0, 0x41f0, 0xe8bd\n"
-        ".hword 0x268d, 0xeafe, 0x5d90, 0x0043\n"
-        ".hword 0x2244, 0x0000\n"
-    );
+// ---------------------------------------------------------------------------
+// 0x00339D98 -- battle-main start/resume state machine (604 B).
+//
+// Entered with the 0x4A58-byte battle main work in r0.  The routine takes the
+// global recursive lock embedded at work+0x4A00 and drives a resumable
+// 14-state dispatch stored at work+0x49FE (halfword):
+//
+//   state 0      : 0x00394EE0(); advance to state 1.
+//   state 1      : poll 0x0039493C().  When it returns non-zero, copy the
+//                  three global pointers at 0x00435D90+0x0C/+0x10/+0x14 to
+//                  work+0x2248/+0x224C/+0x2250, create the script process with
+//                  (script = global+0x14, msg = global+0x0C), store it at
+//                  work+0x2254 and clear process->state (+0x108).  Advance to
+//                  state 2.
+//   state 2..7   : each waits for the pointer stored by the previous state,
+//                  then copies one more global pointer:
+//                    state 2: work+0x2250 != 0 -> work+0x2230 = global+0x18
+//                    state 3: work+0x2230 != 0 -> work+0x2234 = global+0x1C
+//                    state 4: work+0x2234 != 0 -> work+0x2238 = global+0x20
+//                    state 5: work+0x2238 != 0 -> work+0x2240 = global+0x28
+//                    state 6: work+0x2240 != 0 -> work+0x223C = global+0x24
+//                    state 7: work+0x223C != 0 -> work+0x2244 = global+0x2C
+//   state 8      : wait for work+0x2244, then 0x0023EBC8(0x3E).
+//   state 9      : wait for that result, then 0x00328F60().
+//   state 10     : wait for it, then 0x003291D8().
+//   state 11     : wait for it, advance to state 12.
+//   state 12     : advance to state 13.
+//   state 13     : set work+0x49FC bit 0 and advance to state 14.
+//
+// Any failed wait jumps to the halfword at work+0x49FC, whose bit 0 is tested;
+// while it is clear the dispatch repeats from the current state.  When bit 0
+// is set the routine releases the lock with a tail call to 0x002C3A24 and
+// returns.  A dispatch value of 14 or more also reaches that same test, so an
+// entry with such a state and a clear bit 0 never terminates (the original
+// loops forever; the invalidity is caller-provided).
+//
+// `state` at +0x49FE and `flag` at +0x49FC are the only halves of that word;
+// the original reloads both with `ldrh` on every dispatch.  The seven pointers
+// at 0x00435D90+0x0C..+0x2C are read-only here; the +0x4A00 lock belongs to
+// the work object and is never dereferenced by this routine.
+// ---------------------------------------------------------------------------
+
+namespace btl_main_start_00339d98 {
+
+/** Read-only prefix of the global battle-manager block at 0x00435D90. */
+struct BtlMainManagerGlobals {
+    u8 pad_00[0x0C];
+    void* field_0c;                 // +0x0C: `ldr r1,[r0,#0xc]`, msg argument
+    void* field_10;                 // +0x10: `ldr r2,[r0,#0x10]`
+    void* field_14;                 // +0x14: `ldr r0,[r0,#0x14]`, script argument
+    void* field_18;                 // +0x18: stored to work+0x2230
+    void* field_1c;                 // +0x1C: stored to work+0x2234
+    void* field_20;                 // +0x20: stored to work+0x2238
+    void* field_24;                 // +0x24: stored to work+0x223C
+    void* field_28;                 // +0x28: stored to work+0x2240
+    void* field_2c;                 // +0x2C: stored to work+0x2244
 };
+static_assert(offsetof(BtlMainManagerGlobals, field_0c) == 0x0C);
+static_assert(offsetof(BtlMainManagerGlobals, field_14) == 0x14);
+static_assert(offsetof(BtlMainManagerGlobals, field_2c) == 0x2C);
+
+/** Part of a script process returned by 0x002972F8 (state is +0x108). */
+struct ScriptProcessState {
+    u8 pad_00[0x108];
+    u32 state;                      // +0x108: `str r1,[r0,#0x108]` with r1 = 0
+};
+static_assert(offsetof(ScriptProcessState, state) == 0x108);
+
+/** Battle main work prefix touched by this routine (size 0x4A58). */
+struct BtlMainWorkStart {
+    u8 pad_0000[0x2230];
+    void* field_2230;               // +0x2230: `str r1,[r0,#0x230]`
+    void* field_2234;               // +0x2234: `str r1,[r0,#0x234]`
+    void* field_2238;               // +0x2238: `str r1,[r0,#0x238]`
+    void* field_223c;               // +0x223C: `str r1,[r0,#0x23c]`
+    void* field_2240;               // +0x2240: `str r1,[r0,#0x240]`
+    void* field_2244;               // +0x2244: `ldr r0,[r1,r5]`, state-8 gate
+    void* field_2248;               // +0x2248: `str r1,[r6,#0x248]`
+    void* field_224c;               // +0x224C: `str r2,[r6,#0x24c]`
+    void* field_2250;               // +0x2250: `str r0,[r6,#0x250]`
+    ScriptProcessState* field_2254; // +0x2254: `str r0,[r6,#0x254]`
+    u8 pad_2258[0x49FC - 0x2258];
+    u16 flag;                       // +0x49FC: `ldrh r1,[r4,#0xfc]`, bit 0
+    u16 state;                      // +0x49FE: `ldrh r0,[r4,#0xfe]`, dispatch
+    u8 pad_4a00[0x4A58 - 0x4A00];   // +0x4A00..+0x4A58: recursive lock storage
+};
+static_assert(offsetof(BtlMainWorkStart, field_2230) == 0x2230);
+static_assert(offsetof(BtlMainWorkStart, field_2244) == 0x2244);
+static_assert(offsetof(BtlMainWorkStart, field_2254) == 0x2254);
+static_assert(offsetof(BtlMainWorkStart, flag) == 0x49FC);
+static_assert(offsetof(BtlMainWorkStart, state) == 0x49FE);
+static_assert(sizeof(BtlMainWorkStart) == 0x4A58);
+
+constexpr u32 kScriptProcessId = 0x3EU;  // `mov r0,#0x3e` before 0x0023EBC8
+
+inline BtlMainManagerGlobals* globals() {
+    return reinterpret_cast<BtlMainManagerGlobals*>(0x00435D90u);
+}
+
+} // namespace btl_main_start_00339d98
+
+extern "C" void engine_func_002c3aa8(void* lock);
+extern "C" void engine_func_002c3a24(void* lock);
+extern "C" u32 script_vm_func_00394ee0(void);
+extern "C" u32 engine_func_0039493c(void);
+extern "C" btl_main_start_00339d98::ScriptProcessState*
+scrScriptProcess_func_002972f8(void* script, void* msg);
+extern "C" u32 script_vm_func_0023ebc8(u32 id);
+extern "C" void engine_func_00328f60(void);
+extern "C" void engine_func_003291d8(void);
+
+extern "C" void script_vm_func_00339d98(
+    btl_main_start_00339d98::BtlMainWorkStart* work) {
+    using btl_main_start_00339d98::globals;
+    using btl_main_start_00339d98::kScriptProcessId;
+
+    u8* const base = reinterpret_cast<u8*>(work);
+    void* const lock = base + 0x4A00;
+    engine_func_002c3aa8(lock);
+
+    for (;;) {
+        switch (work->state) {
+        case 0:
+            script_vm_func_00394ee0();
+            work->state = 1;
+            [[fallthrough]];
+        case 1:
+            if (engine_func_0039493c() == 0) {
+                goto iteration_done;
+            }
+            work->field_2248 = globals()->field_0c;
+            work->field_224c = globals()->field_10;
+            work->field_2250 = globals()->field_14;
+            work->field_2254 = scrScriptProcess_func_002972f8(
+                globals()->field_14, globals()->field_0c);
+            work->field_2254->state = 0;
+            work->state = 2;
+            [[fallthrough]];
+        case 2:
+            if (work->field_2250 == nullptr) {
+                goto iteration_done;
+            }
+            work->field_2230 = globals()->field_18;
+            work->state = 3;
+            [[fallthrough]];
+        case 3:
+            if (work->field_2230 == nullptr) {
+                goto iteration_done;
+            }
+            work->field_2234 = globals()->field_1c;
+            work->state = 4;
+            [[fallthrough]];
+        case 4:
+            if (work->field_2234 == nullptr) {
+                goto iteration_done;
+            }
+            work->field_2238 = globals()->field_20;
+            work->state = 5;
+            [[fallthrough]];
+        case 5:
+            if (work->field_2238 == nullptr) {
+                goto iteration_done;
+            }
+            work->field_2240 = globals()->field_28;
+            work->state = 6;
+            [[fallthrough]];
+        case 6:
+            if (work->field_2240 == nullptr) {
+                goto iteration_done;
+            }
+            work->field_223c = globals()->field_24;
+            work->state = 7;
+            [[fallthrough]];
+        case 7:
+            if (work->field_223c == nullptr) {
+                goto iteration_done;
+            }
+            work->field_2244 = globals()->field_2c;
+            work->state = 8;
+            [[fallthrough]];
+        case 8:
+            if (work->field_2244 == nullptr) {
+                goto iteration_done;
+            }
+            work->state = 9;
+            [[fallthrough]];
+        case 9:
+            if (script_vm_func_0023ebc8(kScriptProcessId) == 0) {
+                goto iteration_done;
+            }
+            work->state = 10;
+            [[fallthrough]];
+        case 10:
+            engine_func_00328f60();
+            work->state = 11;
+            [[fallthrough]];
+        case 11:
+            engine_func_003291d8();
+            work->state = 12;
+            [[fallthrough]];
+        case 12:
+            work->state = 13;
+            [[fallthrough]];
+        case 13:
+            work->flag = static_cast<u16>(work->flag | 1U);
+            work->state = 14;
+            break;
+        default:
+            break;
+        }
+
+    iteration_done:
+        if ((work->flag & 1U) != 0) {
+            break;
+        }
+    }
+
+    engine_func_002c3a24(lock);
+}
 
 // DECOMP_FUNC(0x0014cae4, 608)
 extern "C" __attribute__((naked)) void engine_func_0014cae4() {
