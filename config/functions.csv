@@ -2295,7 +2295,7 @@ address,size,status,category,name,src_file
 0x001cddf8,516,matching,ui,Status_DrawBackUp,src/ui/status.cpp
 0x001cdffc,296,matching,script_vm,script_vm_func_001cdffc,src/engine/leaf_batch43_c.cpp
 0x001ce124,120,matching,camp,camp_func_001ce124,src/engine/leaf_batch26_a.cpp
-0x001ce19c,520,matching,camp,camp_func_001ce19c,src/engine/leaf_batch34_c.cpp
+0x001ce19c,520,non_matching,camp,camp_func_001ce19c,src/engine/leaf_batch34_c.cpp
 0x001ce3a4,1512,matching,engine,engine_func_001ce3a4,src/engine/leaf_batch46_b.cpp
 0x001ce98c,5444,matching,ui,Ui_StatusScreenSkills,src/ui/status_skills.cpp
 0x001cfed0,552,matching,camp,camp_func_001cfed0,src/engine/leaf_batch44_c.cpp

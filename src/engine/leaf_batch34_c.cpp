@@ -7184,148 +7184,184 @@ extern "C" __attribute__((naked)) void engine_func_001c0944() {
     );
 }
 
+// ---------------------------------------------------------------------------
+// camp_func_001ce19c: advances the camp row-selection state machine for one
+// frame of a menu page.
+//
+// The argument is the camp work block.  It holds a signed row count at +0x5758,
+// 0x2C-byte row records from +0x5700, a signed frame timer at +0x591C and the
+// currently highlighted row cursor at +0x5920.  Every row whose active byte
+// (+0x88) is set is examined in turn; the row count is re-read from the work
+// block at the bottom of every iteration, exactly as the listing does.
+//
+// For an active row with a non-zero option mask (+0x66) and a row id (+0x60)
+// equal to the sign-extended first halfword of the selected actor record, each
+// set mask bit 1..10 is visited.  When the running ordinal of the set bit
+// matches the highlight cursor, the bit's lookup value is published as the
+// current selection and the row is committed into the camp menu unless the
+// mask already equals the actor's +0x14 halfword.  A non-zero mask whose no
+// bit in 1..10 happens to be set still runs the timer block with an ordinal of
+// zero (the original divides by zero; the divisor is passed through
+// unchanged).  Rows with a zero mask, and rows whose mask becomes zero after
+// the ordinal loop, take the shared "clear selection" path.
+// ---------------------------------------------------------------------------
+extern "C" const u16* camp_selected_actor_001ce19c()
+    __asm__("Status_GetSelectedActorPtr");
+extern "C" void camp_set_mode_001ce19c(u8 mode) __asm__("Status_SetMode1E71");
+extern "C" u32 camp_bit_lookup_001ce19c(s16 bit) __asm__("ui_func_002b0788");
+extern "C" void camp_set_selection_001ce19c(u32 value) __asm__("func_00317fa4");
+extern "C" void camp_menu_build_001ce19c(u16 id, void* buffer)
+    __asm__("camp_func_0026aac0");
+extern "C" void camp_menu_commit_001ce19c(void* buffer, u32 mode, u32 arg)
+    __asm__("camp_func_0029db94");
+extern "C" void camp_menu_play_001ce19c(u32 mode) __asm__("camp_func_0029d924");
+
+namespace {
+
+// Camp work block offsets used by this routine (all displacements as listed).
+constexpr u32 kCampRowCount = 0x5758;     // s32 number of 0x2C-byte rows
+constexpr u32 kCampTimer = 0x591c;        // s32 shared frame timer
+constexpr u32 kCampSelection = 0x5920;    // u32 cursor into the enabled rows
+constexpr u32 kCampRowBase = 0x5700;      // first row record
+constexpr s32 kCampRowStride = 0x2c;
+constexpr u32 kCampRowId = 0x60;          // u16 row id
+constexpr u32 kCampRowField62 = 0x62;     // u16 copied into the menu buffer
+constexpr u32 kCampRowField64 = 0x64;     // u16 copied into the menu buffer
+constexpr u32 kCampRowFlags = 0x66;       // u16 enabled-option bit mask
+constexpr u32 kCampRowActive = 0x88;      // u8 row active flag
+constexpr u32 kActorFlags = 0x14;         // u16 in the selected actor record
+
+// Menu buffer handed to 0x0026AAC0 / 0x0029DB94.  0x0026AAC0 clears its first
+// 0x604 bytes; only the three halfword slots below are then overwritten here.
+constexpr u32 kCampMenuBufferSize = 0x610;
+constexpr u32 kCampMenuSlotA = 0x2a;
+constexpr u32 kCampMenuSlotB = 0x2c;
+constexpr u32 kCampMenuSlotC = 0x44;
+
+// Mask bits visited by the ordinal loop: 1 .. 10 inclusive.
+constexpr s32 kCampFirstBit = 1;
+constexpr s32 kCampBitLimit = 0xb;
+// The cursor is recycled once the shared timer reaches 24.
+constexpr s32 kCampTimerLimit = 0x18;
+
+struct CampMenuBuffer {
+    u8 bytes[kCampMenuBufferSize];
+};
+
+inline u16 CampLoadU16(const void* base, u32 offset) {
+    return *reinterpret_cast<const u16*>(
+        static_cast<const u8*>(base) + offset);
+}
+
+inline u32 CampLoadU32(const void* base, u32 offset) {
+    return *reinterpret_cast<const u32*>(
+        static_cast<const u8*>(base) + offset);
+}
+
+inline s32 CampLoadS32(const void* base, u32 offset) {
+    return *reinterpret_cast<const s32*>(
+        static_cast<const u8*>(base) + offset);
+}
+
+inline void CampStoreU16(void* base, u32 offset, u16 value) {
+    *reinterpret_cast<u16*>(static_cast<u8*>(base) + offset) = value;
+}
+
+inline void CampStoreU32(void* base, u32 offset, u32 value) {
+    *reinterpret_cast<u32*>(static_cast<u8*>(base) + offset) = value;
+}
+
+// Re-read the row count; the original loads it again on every iteration.
+inline s32 CampRowCount(const void* work) {
+    return CampLoadS32(work, kCampRowCount);
+}
+
+// Builds and submits the menu buffer for one row.  Both the masked and the
+// cleared paths issue exactly this sequence: build the buffer from the row id,
+// patch the three copied halfwords, commit, set the mode and play the sound.
+inline void CampSubmitRow(const void* entry) {
+    CampMenuBuffer buffer;
+    camp_menu_build_001ce19c(CampLoadU16(entry, kCampRowId), buffer.bytes);
+    CampStoreU16(buffer.bytes, kCampMenuSlotA,
+                 CampLoadU16(entry, kCampRowField62));
+    CampStoreU16(buffer.bytes, kCampMenuSlotB,
+                 CampLoadU16(entry, kCampRowField64));
+    CampStoreU16(buffer.bytes, kCampMenuSlotC,
+                 CampLoadU16(entry, kCampRowFlags));
+    camp_menu_commit_001ce19c(buffer.bytes, 1, 0);
+    camp_set_mode_001ce19c(1);
+    camp_menu_play_001ce19c(1);
+}
+
+} // namespace
+
 // DECOMP_FUNC(0x001ce19c, 520)
-extern "C" __attribute__((naked)) void camp_func_001ce19c() {
-    asm volatile(
-        "push {r4, r5, r6, r7, r8, sb, sl, fp, lr}\n"
-        "sub sp, sp, #0xc00\n"
-        "sub sp, sp, #0x14\n"
-        "mov fp, r0\n"
-        "bl Status_GetSelectedActorPtr\n"
-        "mov sl, r0\n"
-        "add r0, fp, #0x5400\n"
-        "add r0, r0, #0x358\n"
-        "str r0, [sp, #0xc0c]\n"
-        "ldr r0, [r0]\n"
-        "mov r8, #0\n"
-        "cmp r0, #0\n"
-        "ble .L_001ce398\n"
-        "add r0, fp, #0x5800\n"
-        "add r0, r0, #0x11c\n"
-        "add r7, fp, #0x5000\n"
-        "mov sb, #1\n"
-        "add r7, r7, #0x920\n"
-        "str r0, [sp, #0xc08]\n"
-        ".L_001ce1e8:\n"
-        "add r0, r8, r8, lsl #1\n"
-        "add r0, r0, r8, lsl #3\n"
-        "add r0, fp, r0, lsl #2\n"
-        "add r5, r0, #0x5700\n"
-        "ldrb r0, [r5, #0x88]\n"
-        "cmp r0, #0\n"
-        "beq .L_001ce384\n"
-        "ldrh r0, [r5, #0x66]\n"
-        "cmp r0, #0\n"
-        "beq .L_001ce308\n"
-        "ldrsh r0, [sl]\n"
-        "ldrh r1, [r5, #0x60]\n"
-        "cmp r0, r1\n"
-        "moveq r6, #0\n"
-        "moveq r4, #1\n"
-        "bne .L_001ce384\n"
-        ".L_001ce228:\n"
-        "ldrh r0, [r5, #0x66]\n"
-        "tst r0, sb, lsl r4\n"
-        "beq .L_001ce2c0\n"
-        "ldr r0, [r7]\n"
-        "cmp r0, r6\n"
-        "bne .L_001ce2bc\n"
-        "sxth r0, r4\n"
-        "bl ui_func_002b0788\n"
-        "nop\n"
-        "nop\n"
-        "bl func_00317fa4\n"
-        "mov r0, #1\n"
-        "nop\n"
-        "bl Status_SetMode1E71\n"
-        "ldrh r0, [r5, #0x66]\n"
-        "ldrh r1, [sl, #0x14]\n"
-        "cmp r0, r1\n"
-        "beq .L_001ce2bc\n"
-        "ldrh r0, [r5, #0x60]\n"
-        "mov r1, sp\n"
-        "bl camp_func_0026aac0\n"
-        "ldrh r0, [r5, #0x62]\n"
-        "mov r2, #0\n"
-        "mov r1, #1\n"
-        "strh r0, [sp, #0x2a]\n"
-        "ldrh r0, [r5, #0x64]\n"
-        "strh r0, [sp, #0x2c]\n"
-        "ldrh r0, [r5, #0x66]\n"
-        "strh r0, [sp, #0x44]\n"
-        "mov r0, sp\n"
-        "bl camp_func_0029db94\n"
-        "mov r0, #1\n"
-        "nop\n"
-        "bl Status_SetMode1E71\n"
-        "mov r0, #1\n"
-        "nop\n"
-        "bl camp_func_0029d924\n"
-        ".L_001ce2bc:\n"
-        "add r6, r6, #1\n"
-        ".L_001ce2c0:\n"
-        "add r4, r4, #1\n"
-        "cmp r4, #0xb\n"
-        "blt .L_001ce228\n"
-        "ldr r0, [sp, #0xc08]\n"
-        "ldr r0, [r0]\n"
-        "cmp r0, #0x18\n"
-        "blt .L_001ce2fc\n"
-        "ldr r0, [r7]\n"
-        "mov r1, r6\n"
-        "add r0, r0, #1\n"
-        "bl ui_func_002c615c\n"
-        "str r1, [r7]\n"
-        "ldr r1, [sp, #0xc08]\n"
-        "mov r0, #0\n"
-        "str r0, [r1]\n"
-        ".L_001ce2fc:\n"
-        "ldrh r0, [r5, #0x66]\n"
-        "cmp r0, #0\n"
-        "bne .L_001ce384\n"
-        ".L_001ce308:\n"
-        "mov r0, #0\n"
-        "bl ui_func_002b0788\n"
-        "nop\n"
-        "nop\n"
-        "bl func_00317fa4\n"
-        "ldrh r1, [r5, #0x66]\n"
-        "ldrh r0, [sl, #0x14]\n"
-        "cmp r1, r0\n"
-        "beq .L_001ce384\n"
-        "add r4, sp, #0x400\n"
-        "add r4, r4, #0x204\n"
-        "ldrh r0, [r5, #0x60]\n"
-        "mov r1, r4\n"
-        "bl camp_func_0026aac0\n"
-        "ldrh r1, [r5, #0x62]\n"
-        "add r0, sp, #0x600\n"
-        "mov r2, #0\n"
-        "strh r1, [r0, #0x2e]\n"
-        "ldrh r1, [r5, #0x64]\n"
-        "strh r1, [r0, #0x30]\n"
-        "ldrh r1, [r5, #0x66]\n"
-        "strh r1, [r0, #0x48]\n"
-        "mov r1, #1\n"
-        "mov r0, r4\n"
-        "bl camp_func_0029db94\n"
-        "mov r0, #1\n"
-        "nop\n"
-        "bl Status_SetMode1E71\n"
-        "mov r0, #1\n"
-        "nop\n"
-        "bl camp_func_0029d924\n"
-        ".L_001ce384:\n"
-        "ldr r0, [sp, #0xc0c]\n"
-        "add r8, r8, #1\n"
-        "ldr r0, [r0]\n"
-        "cmp r0, r8\n"
-        "bgt .L_001ce1e8\n"
-        ".L_001ce398:\n"
-        "add sp, sp, #0xc00\n"
-        "add sp, sp, #0x14\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, fp, pc}\n"
-    );
+extern "C" void camp_func_001ce19c(u8* work) {
+    const u16* const actor = camp_selected_actor_001ce19c();
+
+    for (s32 row = 0; CampRowCount(work) > row; ++row) {
+        const u8* const entry = work + kCampRowBase + row * kCampRowStride;
+        if (entry[kCampRowActive] == 0) {
+            continue;
+        }
+
+        // Rows with enabled options compare their id against the selected
+        // actor; the actor halfword is sign-extended while the row id is not.
+        if (CampLoadU16(entry, kCampRowFlags) != 0) {
+            const s32 actor_id =
+                static_cast<s32>(static_cast<s16>(CampLoadU16(actor, 0)));
+            if (actor_id != static_cast<s32>(CampLoadU16(entry, kCampRowId))) {
+                continue;
+            }
+
+            // r6 is the ordinal of the enabled option being visited; the row
+            // is acted upon when that ordinal matches the stored cursor.
+            s32 ordinal = 0;
+            for (s32 bit = kCampFirstBit; bit < kCampBitLimit; ++bit) {
+                if ((CampLoadU16(entry, kCampRowFlags) &
+                     (1u << bit)) == 0) {
+                    continue;
+                }
+                if (CampLoadU32(work, kCampSelection) ==
+                    static_cast<u32>(ordinal)) {
+                    camp_set_selection_001ce19c(camp_bit_lookup_001ce19c(
+                        static_cast<s16>(bit)));
+                    camp_set_mode_001ce19c(1);
+                    if (CampLoadU16(entry, kCampRowFlags) !=
+                        CampLoadU16(actor, kActorFlags)) {
+                        CampSubmitRow(entry);
+                    }
+                }
+                ++ordinal;
+            }
+
+            // The cursor advances by one and wraps around the number of
+            // enabled options once the shared timer expires.  0x002C615C
+            // returns the remainder in the high word (r1); a zero divisor is
+            // forwarded unchanged, as in the listing.
+            if (CampLoadS32(work, kCampTimer) >= kCampTimerLimit) {
+                const u32 next = CampLoadU32(work, kCampSelection) + 1;
+                const u64 share =
+                    ui_func_002c615c(next, static_cast<u32>(ordinal));
+                CampStoreU32(work, kCampSelection,
+                             static_cast<u32>(share >> 32));
+                CampStoreU32(work, kCampTimer, 0);
+            }
+
+            if (CampLoadU16(entry, kCampRowFlags) != 0) {
+                continue;
+            }
+        }
+
+        // Shared clear-selection path: bit 0 is looked up with a zero payload,
+        // then the row is committed unless the actor already carries its mask.
+        camp_set_selection_001ce19c(camp_bit_lookup_001ce19c(0));
+        if (CampLoadU16(entry, kCampRowFlags) ==
+            CampLoadU16(actor, kActorFlags)) {
+            continue;
+        }
+        CampSubmitRow(entry);
+    }
 }
 
 // DECOMP_FUNC(0x001d1728, 868)
