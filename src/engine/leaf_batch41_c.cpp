@@ -1356,37 +1356,166 @@ extern "C" u32 script_vm_func_00297c9c() {
 }
 
 // DECOMP_FUNC(0x0032bc14, 404)
-// 98 ARM instructions through unconditional pop; 12 trailing data bytes.
-extern "C" __attribute__((naked)) void engine_func_0032bc14() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d47f0, 0xe3a04000, 0xe1a05004, 0xe59f6174\n"
-        ".word 0xe59f0174, 0xeb008f12, 0xe3500000, 0xe320f000\n"
-        ".word 0x0a00000a, 0xe59f0160, 0xebf7be45, 0xe59f015c\n"
-        ".word 0xe320f000, 0xebf7be66, 0xe59f0150, 0xe320f000\n"
-        ".word 0xebf7be93, 0xe59f0140, 0xe320f000, 0xebf7be4a\n"
-        ".word 0xe59f0138, 0xeb0094ee, 0xe3500000, 0xe320f000\n"
-        ".word 0x1a00000f, 0xe59f0124, 0xeb009561, 0xe1c620d8\n"
-        ".word 0xe0500002, 0xe0d10003, 0xe59f0110, 0xba000003\n"
-        ".word 0xeb009071, 0xe320f000, 0xe320f000, 0xea000004\n"
-        ".word 0xe320f000, 0xeb00947e, 0xe3500000, 0x159f00ec\n"
-        ".word 0x1b0090da, 0xe59f00e4, 0xeb009368, 0xe3500000\n"
-        ".word 0xe320f000, 0x0a00001d, 0xe59f00d0, 0xeb00954c\n"
-        ".word 0xe1c620d8, 0xe3a07006, 0xe3a0c000, 0xe0898792\n"
-        ".word 0xe0239793, 0xe0500008, 0xe0223c92, 0xe0d10002\n"
-        ".word 0xba00000a, 0xe59f00a0, 0xeb008ec1, 0xe59f009c\n"
-        ".word 0xe320f000, 0xeb008fc1, 0xe59f0090, 0xe320f000\n"
-        ".word 0xeb00902f, 0xe320f000, 0xe320f000, 0xea000007\n"
-        ".word 0xe3510000, 0xba000005, 0xe59f0070, 0xe3a05001\n"
-        ".word 0xeb0094c1, 0xe59f0060, 0xe320f000, 0xeb008ebe\n"
-        ".word 0xe5d60000, 0xe3500000, 0xe59f0050, 0x13a04001\n"
-        ".word 0xeb00964f, 0xe59f0044, 0xe320f000, 0xe590000c\n"
-        ".word 0xe1951004, 0xe320f000, 0x1a000003, 0xe3500007\n"
-        ".word 0x0a000001, 0xe3500001, 0x1affffa8, 0xe3550000\n"
-        ".word 0x13a00001, 0x1a000002, 0xe59f0010, 0xeb0091e6\n"
-        ".word 0xe3a00000, 0xe8bd87f0, 0x0044d020, 0x004c3af8\n"
-        ".word 0x004c3b20\n"
-    );
+//
+// Engine wait/step loop over the two global engine objects at 0x004C3AF8 and
+// 0x004C3B20.  Each iteration probes the context object, compares the 64-bit
+// value returned by 0x00351208 with the baseline stored at 0x0044D020+0x08
+// (and with six times that baseline), runs the matching transition helpers,
+// sleeps through 0x00351698 and exits when the accumulated flags are set or
+// the context state is 1 or 7.
+//
+// Recovered contract (ARM 0x0032BC14..0x0032BDA7):
+//   * r0 is caller-supplied and never read: the original overwrites it with
+//     0x004C3AF8 before the first call.  The only caller (0x001DD5A8) passes
+//     an unrelated per-frame counter in r0.
+//   * r4 means "the byte at 0x0044D020 was nonzero in some iteration"; r5
+//     means "the six-times-baseline check took its overdue (non-negative
+//     high-word) path".  Both flags persist across loop iterations, and the
+//     loop ends when either is set or the state word is 1 or 7.
+//   * Return 1 only when r5 is set.  Otherwise 0x00350530 is called and 0 is
+//     returned; r4 alone still forces the 0x00350530 call.
+//   * All callee-saved registers are preserved; there are no stack arguments
+//     and no indirect calls.
+//
+// The 12 trailing bytes at 0x0032BD9C are the literal pool read by `ldr`
+// (0x0044D020, 0x004C3AF8, 0x004C3B20).
+
+namespace engine_0032bc14 {
+
+// Literal-pool constants (0x0032BD9C..0x0032BDA4).
+constexpr u32 kStatusAddress = 0x0044D020;    // `ldrb r0, [r6]`
+constexpr u32 kTaskObjectAddress = 0x004C3AF8;  // first/second stage object
+constexpr u32 kContextAddress = 0x004C3B20;   // engine task context
+constexpr u32 kBaselineOffset = 0x08;         // `ldrd r2, r3, [r6, #8]`
+constexpr u32 kStateOffset = 0x0C;            // `ldr r0, [r0, #0xc]`
+constexpr u32 kBaselineScale = 6;             // `mov r7, #6`
+
+// The two globals are instruction literals, not parameters.
+inline u8* Global(u32 address) {
+    return reinterpret_cast<u8*>(static_cast<std::uintptr_t>(address));
+}
+
+// 64-bit baseline owned by the status block.  The original re-reads it with
+// `ldrd` for each comparison; volatile keeps both loads distinct.
+inline u64 LoadBaseline() {
+    return *reinterpret_cast<const volatile u64*>(
+        Global(kStatusAddress + kBaselineOffset));
+}
+
+// Context state word read after the per-iteration sleep call.
+inline u32 LoadContextState() {
+    return *reinterpret_cast<const volatile u32*>(
+        Global(kContextAddress + kStateOffset));
+}
+
+}  // namespace engine_0032bc14
+
+// Direct calls.  Return types record what the callees produce when the
+// contract is known; results this caller ignores are left as void.
+// 0x0034F878: nonzero when the task object's phase/timestamp state is ready.
+// 0x00351028: nonzero when the context probe says the clock is suspended.
+// 0x00351208: u64 remaining-time value, 0xFFFFFFFFFFFFFFFF when inactive.
+// 0x00350EA8 / 0x00350A64: step-state predicates returning 0 or 1.
+// 0x00351698: 16-byte sleeper wrapper; ignores r0, loads 0x0007A120 and
+//             tail-calls 0x002BB490 with r1 = 0.
+extern "C" s32 func_0034f878(void* object);
+extern "C" void func_0011b558(void* object);
+extern "C" s32 engine_func_0011b5e8(void* object);
+extern "C" s32 engine_func_0011b6a8(void* object);
+extern "C" void func_0011b590(void* object);
+extern "C" s32 func_00351028(void* object);
+extern "C" u64 func_00351208(void* object);
+extern "C" void func_0034fe60(void* object);
+extern "C" s32 func_00350ea8(void* object);
+extern "C" s32 func_00350024(void* object);
+extern "C" s32 func_00350a64(void* object);
+extern "C" void func_0034f808(void* object);
+extern "C" u32 engine_func_0034fc14(void* object);
+extern "C" void engine_func_0034fdd8(void* object);
+extern "C" void camp_func_00351040(void* object);
+extern "C" void func_0034f840(void* object);
+extern "C" void nn_sdk_func_00351698(void* object);
+extern "C" void func_00350530(void* object);
+
+extern "C" s32 engine_func_0032bc14(void) {
+    namespace detail = engine_0032bc14;
+
+    u8* const task_object = detail::Global(detail::kTaskObjectAddress);
+    u8* const context = detail::Global(detail::kContextAddress);
+    volatile u8* const status_byte = reinterpret_cast<volatile u8*>(
+        detail::Global(detail::kStatusAddress));
+
+    // r4 and r5; both survive loop iterations.
+    bool status_seen = false;
+    bool overdue = false;
+
+    for (;;) {
+        // 0x0032BC24..0x0032BC60: one-shot or repeated task-object start.
+        if (func_0034f878(task_object) != 0) {
+            func_0011b558(task_object);
+            engine_func_0011b5e8(context);
+            engine_func_0011b6a8(context);
+            func_0011b590(task_object);
+        }
+
+        // 0x0032BC64..0x0032BCB4: suspended-context handling.  A nonzero
+        // probe result skips the whole clock block.
+        if (func_00351028(context) == 0) {
+            const u64 now = func_00351208(context);
+            const u64 baseline = detail::LoadBaseline();
+
+            // Signed 64-bit `now < baseline` (subs/sbcs + blt).
+            if (static_cast<s64>(now) < static_cast<s64>(baseline)) {
+                if (func_00350ea8(context) != 0) {
+                    func_00350024(context);
+                }
+            } else {
+                func_0034fe60(context);
+            }
+        }
+
+        // 0x0032BCC0..0x0032BD40: overdue check against baseline * 6.
+        if (func_00350a64(context) != 0) {
+            const u64 now = func_00351208(context);
+            const u64 scaled =
+                detail::LoadBaseline() * detail::kBaselineScale;
+
+            // `umull`/`mla` build (baseline * 6) modulo 2^64 and the
+            // following subs/sbcs/blt is a signed 64-bit comparison.
+            if (static_cast<s64>(now) < static_cast<s64>(scaled)) {
+                // 0x0032BD24 still tests r1, the high word of the time
+                // value returned by 0x00351208: `sbcs r0, r1, r2` wrote the
+                // difference into r0, so r1 keeps now's high word.
+                if (static_cast<s32>(static_cast<u32>(now >> 32)) >= 0) {
+                    overdue = true;
+                    camp_func_00351040(context);
+                    func_0034f840(task_object);
+                }
+            } else {
+                func_0034f808(task_object);
+                engine_func_0034fc14(context);
+                engine_func_0034fdd8(context);
+            }
+        }
+
+        // 0x0032BD44..0x0032BD60: latch the status byte, then sleep.
+        if (*status_byte != 0) {
+            status_seen = true;
+        }
+        nn_sdk_func_00351698(context);
+
+        // 0x0032BD60..0x0032BD7C: state read after the sleep.
+        const u32 state = detail::LoadContextState();
+        if (overdue || status_seen || state == 7 || state == 1) {
+            break;
+        }
+    }
+
+    if (overdue) {
+        return 1;
+    }
+    func_00350530(context);
+    return 0;
 }
 
 // DECOMP_FUNC(0x00239dec, 408)

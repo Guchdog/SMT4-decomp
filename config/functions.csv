@@ -7540,7 +7540,7 @@ address,size,status,category,name,src_file
 0x0032b5a0,88,matching,script_vm,script_vm_func_0032b5a0,src/engine/leaf_batch25_c.cpp
 0x0032b5f8,308,matching,nn_sdk,nn_sdk_func_0032b5f8,src/engine/leaf_batch38_b.cpp
 0x0032b72c,1256,matching,ui,ui_func_0032b72c,src/engine/leaf_batch40_a.cpp
-0x0032bc14,404,matching,engine,engine_func_0032bc14,src/engine/leaf_batch41_c.cpp
+0x0032bc14,404,non_matching,engine,engine_func_0032bc14,src/engine/leaf_batch41_c.cpp
 0x0032bda8,140,matching,engine,engine_func_0032bda8,src/engine/leaf_batch35_c.cpp
 0x0032be34,1672,non_matching,ui,StatusDown_DrawSkillList,src/ui/status_down.cpp
 0x0032c4bc,372,non_matching,ui,StatusDown_SortItemList,src/ui/status_down.cpp
