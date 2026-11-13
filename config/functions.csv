@@ -8008,7 +8008,7 @@ address,size,status,category,name,src_file
 0x003513dc,700,matching,engine,engine_func_003513dc,src/engine/leaf_batch43_a.cpp
 0x00351698,16,matching,nn_sdk,nn_sdk_func_00351698,src/engine/leaf_batch37_a.cpp
 0x003516a8,552,matching,nn_sdk,helper_S4Player_func_003516a8,src/nn/mobiclip.cpp
-0x003518d0,440,matching,engine,engine_func_003518d0,src/engine/leaf_batch41_c.cpp
+0x003518d0,440,non_matching,engine,engine_func_003518d0,src/engine/leaf_batch41_c.cpp
 0x00351a88,164,matching,ui,ui_func_00351a88,src/engine/leaf_batch16_b.cpp
 0x00351b2c,80,matching,unknown,func_00351b2c,src/engine/leaf_batch20_c.cpp
 0x00351b7c,76,non_matching,nn_sdk,nn_sdk_func_00351b7c,src/engine/leaf_batch31_b.cpp

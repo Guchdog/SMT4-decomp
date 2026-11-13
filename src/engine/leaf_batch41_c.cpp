@@ -5848,39 +5848,281 @@ extern "C" __attribute__((naked)) void ui_func_002f2e54() {
 }
 
 // DECOMP_FUNC(0x003518d0, 440)
-// 109 ARM instructions through unconditional pop; 4 trailing data bytes.
-extern "C" __attribute__((naked)) void engine_func_003518d0() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d40f0, 0xe1a04000, 0xe24dd014, 0xe5900014\n"
-        ".word 0xe3500000, 0x0a000064, 0xe3a05001, 0xe5c45010\n"
-        ".word 0xe2840020, 0xebfdca52, 0xe5942028, 0xe3e00000\n"
-        ".word 0xe1a01000, 0xe88d0007, 0xe3a03000, 0xe3a02001\n"
-        ".word 0xe28d1008, 0xe28d000c, 0xebfdca77, 0xe1b01fa0\n"
-        ".word 0x1bfdced0, 0xe2840028, 0xe5c4502c, 0xebfdca2d\n"
-        ".word 0xe5940028, 0xe3a07000, 0xe2845028, 0xe3500000\n"
-        ".word 0x0a000001, 0xef000023, 0xe5857000, 0xe59f6130\n"
-        ".word 0xe5960004, 0xebfdca01, 0xe5960004, 0xe3500000\n"
-        ".word 0x0a000004, 0xe1a05000, 0xebfdc9fc, 0xe1a00005\n"
-        ".word 0xe320f000, 0xebfd82e9, 0xe5867004, 0xe5960000\n"
-        ".word 0xebfdca76, 0xe3e00000, 0xe5867000, 0xe5840008\n"
-        ".word 0xe1a00004, 0xebfffb6c, 0xe59402e8, 0xe3a05000\n"
-        ".word 0xe3500000, 0xda00000b, 0xe59401b8, 0xe0846105\n"
-        ".word 0xe5941014, 0xe59622ec, 0xe5903000, 0xe5933004\n"
-        ".word 0xe12fff33, 0xe58672ec, 0xe59402e8, 0xe2855001\n"
-        ".word 0xe1500005, 0xcafffff3, 0xe5940484, 0xe3a05000\n"
-        ".word 0xe3500000, 0xda00000b, 0xe59401b8, 0xe0846105\n"
-        ".word 0xe5941014, 0xe5962488, 0xe5903000, 0xe593300c\n"
-        ".word 0xe12fff33, 0xe5867488, 0xe5940484, 0xe2855001\n"
-        ".word 0xe1500005, 0xcafffff3, 0xe59401c4, 0xe3a05000\n"
-        ".word 0xe3500000, 0xda00000d, 0xe0850085, 0xe0846180\n"
-        ".word 0xe59611d8, 0xe3510000, 0x0a000004, 0xe5940014\n"
-        ".word 0xe5902000, 0xe5922004, 0xe12fff32, 0xe58671d8\n"
-        ".word 0xe59401c4, 0xe2855001, 0xe1500005, 0xcafffff1\n"
-        ".word 0xe2840f56, 0xebfff5fd, 0xe5847014, 0xe5847018\n"
-        ".word 0xe58471b8, 0xe58471bc, 0xe58471c0, 0xe28dd014\n"
-        ".word 0xe8bd80f0, 0x0044d158\n"
-    );
+//
+// Recovered contract (ARM 0x003518D0..0x00351A83 = 109 instructions plus the
+// literal word at 0x00351A84 = 0x0044D158; 0x00351A88 starts the next body):
+//
+//   * `this` arrives in r0; r1..r3 are never read.  The prologue saves
+//     {r4-r7, lr} and reserves 0x14 bytes of stack for the seven-argument call
+//     at 0x00351918.  r8-r11 are untouched.  Every exit leaves r0 = 0.
+//   * [this+0x14] is the lifetime gate: when it is zero the routine returns
+//     immediately (0x003518E4 -> 0x00351A7C) without touching anything else.
+//   * Otherwise it stores the byte [this+0x10] = 1, resets the sync block at
+//     [this+0x20] with 0x002C4244 (AsdSync_Reset), reloads the key/handle from
+//     [this+0x28] and issues the process-wide-key trampoline
+//     0x002C42FC(&out, &key_copy, 1, 0, -1, -1, key).  The project's record in
+//     src/engine/asd_file.cpp names 0x002C42FC AsdKernel_WaitProcessWideKey
+//     (out, key, value, address, timeout_lo, timeout_hi); every game-side call
+//     site also pushes the key/handle value as a seventh stack word, which the
+//     trampoline itself never reads.  A negative Result calls
+//     0x002C5468(result) (AsdKernel_AbortOnFailure, 0x00351920); the out word
+//     left on the stack is dead.
+//   * It stores the byte [this+0x2C] = 1 and calls 0x002C41E8([this+0x28]),
+//     the flag-guarded one-shot key wait on that same block.  The kernel handle
+//     at [this+0x28] is then reloaded; when non-zero it is closed with
+//     `svc #0x23` (svcCloseHandle, 0x00351944) and the slot is zeroed.
+//   * The global pair at 0x0044D158 is torn down:
+//       0x002C4160([0x0044D15C]);
+//       if ([0x0044D15C] != 0) { 0x002C4160(same); 0x002B2520(same); }
+//       [0x0044D15C] = 0; 0x002C4360([0x0044D158]); [0x0044D158] = 0;
+//     The object handed to the second 0x002C4160 and to 0x002B2520 is the word
+//     reloaded after the first call, so a callee that rewrites the global
+//     changes the delete target.  0x002B2520 is the free-if-non-null wrapper
+//     around 0x002C4360 (AsdMem_Free), and this release/delete pair is the same
+//     idiom used by the sibling teardown routines (e.g. 0x0034E3D8, 0x003C81B8).
+//   * [this+0x08] = -1, then 0x0035074C(this) runs the owner-specific reset.
+//   * Three cleanup passes, each driven by a signed count that is reloaded
+//     after every iteration, so a callback that rewrites the count changes the
+//     bound:
+//       - [this+0x2E8] words at [this+0x2EC + 4*i] are forwarded to vtable
+//         slot +0x04 of the object at [this+0x1B8] as
+//         (object, [this+0x14], element); the object and owner words are
+//         reloaded per iteration.  Each element is then zeroed.
+//       - [this+0x484] words at [this+0x488 + 4*i] go to the same object's
+//         vtable slot +0x0C with the same three arguments, then are zeroed.
+//       - [this+0x1C4] records of 0x18 bytes start at [this+0x1D8]; a non-null
+//         first word is forwarded as (owner, element) through vtable slot
+//         +0x04 of the object at [this+0x14], then zeroed.
+//   * Finally 0x0034F260([this+0x158]) releases that container and the words
+//     [this+0x14], [this+0x18], [this+0x1B8], [this+0x1BC] and [this+0x1C0]
+//     are zeroed.  The three cleanup counts are left as they are.
+//   * Callers 0x0032BDC0 and 0x00351B34 pass `this` in r0 and ignore the
+//     result.  0x00351B34 is the delete-style sibling.
+namespace engine_3518d0 {
+
+constexpr u32 kShutdownByteOffset = 0x10;    // u8  set to 1 on the teardown path
+constexpr u32 kOwnerOffset = 0x14;            // u32 owner object (gate + callbacks)
+constexpr u32 kCleared18Offset = 0x18;        // u32 zeroed at the end
+constexpr u32 kState08Offset = 0x08;          // u32 written 0xFFFFFFFF
+constexpr u32 kLockStateOffset = 0x20;        // opaque lock state (0x2C4244)
+constexpr u32 kLockHandleOffset = 0x28;       // u32 kernel handle
+constexpr u32 kLockFlagOffset = 0x2C;         // u8  set to 1 before 0x2C41E8
+constexpr u32 kContainer158Offset = 0x158;    // container released by 0x34F260
+constexpr u32 kSlotObjectOffset = 0x1B8;      // object driving the slot passes
+constexpr u32 kCleared1BCOffset = 0x1BC;      // u32 zeroed at the end
+constexpr u32 kCleared1C0Offset = 0x1C0;      // u32 zeroed at the end
+constexpr u32 kRecordCountOffset = 0x1C4;     // s32 count of 0x18-byte records
+constexpr u32 kRecordBaseOffset = 0x1D8;      // first record word
+constexpr u32 kRecordStride = 0x18;           // bytes per record
+constexpr u32 kElementCountAOffset = 0x2E8;   // s32 count, vtable slot +0x04
+constexpr u32 kElementBaseAOffset = 0x2EC;    // u32 elements, stride 4
+constexpr u32 kElementCountBOffset = 0x484;   // s32 count, vtable slot +0x0C
+constexpr u32 kElementBaseBOffset = 0x488;    // u32 elements, stride 4
+
+constexpr u32 kSdkGlobalAddress = 0x0044D158; // {object +0x00, object +0x04}
+constexpr u32 kNoOperation = 0xFFFFFFFF;      // `mvn r0,#0` stack argument
+constexpr u32 kWaitCount = 1;                 // r2 of the 0x2C42FC call
+constexpr u32 kWaitAll = 0;                   // r3 of the 0x2C42FC call
+constexpr u32 kSlotNotifyIndex = 1;           // vtable +0x04
+constexpr u32 kReleaseNotifyIndex = 3;        // vtable +0x0C
+
+// Callback signatures.  Loop A/B pass the vtable object, the owner word and the
+// element; loop C passes only the owner word and the element.
+using SlotNotify = void (*)(void* object, u32 owner, u32 element);
+using RecordNotify = void (*)(void* owner, u32 element);
+
+// Typed access into the caller-supplied object.  Dynamic arrays are addressed
+// from their recovered base offsets because their lengths live in the object.
+template <typename T>
+inline T& field(void* object, u32 offset) {
+    return *reinterpret_cast<T*>(static_cast<u8*>(object) + offset);
+}
+
+inline void** vtable_of(void* object) {
+    return *reinterpret_cast<void***>(object);
+}
+
+// 0x00351944: the original forks `svc #0x23` directly (no BL, nothing is
+// returned); the kernel closes the handle.  Keep the same register binding and
+// the memory clobber so the surrounding stores cannot move across the syscall.
+inline void svc_close_handle(u32 handle) {
+    register u32 r0 __asm__("r0") = handle;
+    __asm__ volatile("svc #0x23" : "+r"(r0) : : "r1", "r2", "r3", "memory");
+}
+
+}  // namespace engine_3518d0
+
+// Direct call targets.  The file-wide declarations of these symbols are
+// parameterless, so their recovered prototypes are bound to the pinned symbol
+// names here.
+namespace engine_3518d0_calls {
+
+// 0x002C4244: resets the sync/wait block at [this+0x20].  src/nn/mobiclip.cpp
+// names the same target AsdSync_Reset.
+extern "C" void AsdSync_Reset(void* sync) __asm__("nn_sdk_func_002c4244");
+
+// 0x002C42FC: process-wide-key trampoline.  It executes `svc #0x25`, writes the
+// register the kernel leaves in r1 to its first argument and returns the signed
+// Result in r0.  src/engine/asd_file.cpp recovers the first six parameters as
+// (out, key, value, address, timeout_lo, timeout_hi); the seventh word (the key
+// value itself) is pushed by every game-side call site but is not read by the
+// trampoline, so it is kept here only to reproduce the exact stack layout.
+extern "C" s32 AsdKernel_WaitProcessWideKey(u32* out, u32* key, u32 value,
+                                            u32 address, u32 timeout_lo,
+                                            u32 timeout_hi, u32 key_copy)
+    __asm__("engine_func_002c42fc");
+
+// 0x002C5468: reports a negative Result (fatal/assert path); result dropped.
+// src/engine/asd_file.cpp names the same target AsdKernel_AbortOnFailure.
+extern "C" void AsdKernel_AbortOnFailure(s32 result)
+    __asm__("engine_func_002c5468");
+
+// 0x002C41E8: one-shot, flag-guarded key wait on the block at [this+0x28]; it
+// performs the same 0x002C42FC call behind the byte at [block+4] and sets that
+// byte.  The name is descriptive because the body is otherwise unidentified.
+extern "C" void AsdSync_WaitOnce(void* sync) __asm__("engine_func_002c41e8");
+
+// 0x002C4160: queue-node release used by the shared global-object teardown
+// idiom.  It unlinks the node from its list, waits on the fields at +0x08,
+// +0x0C and +0x14 and returns the +0x14 word (dropped here).  The same object
+// is passed to it twice by every sibling teardown routine.
+extern "C" void sdk_object_release(void* object)
+    __asm__("script_vm_func_002c4160");
+
+// 0x002B2520: frees the object when it is non-null (tail call to 0x002C4360).
+extern "C" void AsdMem_FreeIfNotNull(void* object)
+    __asm__("engine_func_002b2520");
+
+// 0x002C4360: heap free (src/engine/asd_file.cpp: AsdMem_Free).
+extern "C" void AsdMem_Free(void* object) __asm__("engine_func_002c4360");
+
+// 0x0035074C: owner-level reset; it inspects [this+0x158] and walks the two
+// 0x46C slot indices and their [this+0x2EC] element arrays.
+extern "C" void owner_reset(void* object) __asm__("func_0035074c");
+
+// 0x0034F260: frees the pointer stored at its argument and clears that word.
+extern "C" void container_release(void* container) __asm__("func_0034f260");
+
+}  // namespace engine_3518d0_calls
+
+extern "C" u32 engine_func_003518d0(void* object) {
+    using namespace engine_3518d0;
+    using namespace engine_3518d0_calls;
+
+    // 0x003518DC: the owner word gates the whole teardown.
+    if (field<u32>(object, kOwnerOffset) == 0) {
+        return 0;
+    }
+
+    field<u8>(object, kShutdownByteOffset) = 1;
+    AsdSync_Reset(static_cast<u8*>(object) + kLockStateOffset);
+
+    // 0x003518F8: the key is read after the sync reset.
+    const u32 handle = field<u32>(object, kLockHandleOffset);
+    u32 handle_copy = handle;
+    u32 status_out;
+    const s32 status =
+        AsdKernel_WaitProcessWideKey(&status_out, &handle_copy, kWaitCount,
+                                     kWaitAll, kNoOperation, kNoOperation,
+                                     handle);
+    if (status < 0) {
+        AsdKernel_AbortOnFailure(status);
+    }
+
+    field<u8>(object, kLockFlagOffset) = 1;
+    AsdSync_WaitOnce(static_cast<u8*>(object) + kLockHandleOffset);
+
+    // 0x00351930: reload; a callee may have replaced the handle.
+    const u32 lock_handle = field<u32>(object, kLockHandleOffset);
+    if (lock_handle != 0) {
+        svc_close_handle(lock_handle);
+        field<u32>(object, kLockHandleOffset) = 0;
+    }
+
+    // 0x0035194C..0x0035198C: the global SDK object pair.
+    sdk_object_release(*reinterpret_cast<void**>(kSdkGlobalAddress + 4));
+    void* const held = *reinterpret_cast<void**>(kSdkGlobalAddress + 4);
+    if (held != nullptr) {
+        sdk_object_release(held);
+        AsdMem_FreeIfNotNull(held);
+    }
+    *reinterpret_cast<u32*>(kSdkGlobalAddress + 4) = 0;
+    AsdMem_Free(*reinterpret_cast<void**>(kSdkGlobalAddress));
+    *reinterpret_cast<u32*>(kSdkGlobalAddress) = 0;
+
+    field<u32>(object, kState08Offset) = 0xFFFFFFFF;
+    owner_reset(object);
+
+    // 0x00351998: word elements notified through vtable slot +0x04.
+    s32 index = 0;
+    s32 count = field<s32>(object, kElementCountAOffset);
+    if (count > 0) {
+        do {
+            void* const slot_object = field<void*>(object, kSlotObjectOffset);
+            const u32 owner = field<u32>(object, kOwnerOffset);
+            const u32 element =
+                field<u32>(object, kElementBaseAOffset +
+                                       static_cast<u32>(index) * 4u);
+            const SlotNotify notify = reinterpret_cast<SlotNotify>(
+                vtable_of(slot_object)[kSlotNotifyIndex]);
+            notify(slot_object, owner, element);
+            field<u32>(object, kElementBaseAOffset +
+                                   static_cast<u32>(index) * 4u) = 0;
+            count = field<s32>(object, kElementCountAOffset);
+            ++index;
+        } while (count > index);
+    }
+
+    // 0x003519D8: word elements notified through vtable slot +0x0C.
+    index = 0;
+    count = field<s32>(object, kElementCountBOffset);
+    if (count > 0) {
+        do {
+            void* const slot_object = field<void*>(object, kSlotObjectOffset);
+            const u32 owner = field<u32>(object, kOwnerOffset);
+            const u32 element =
+                field<u32>(object, kElementBaseBOffset +
+                                       static_cast<u32>(index) * 4u);
+            const SlotNotify notify = reinterpret_cast<SlotNotify>(
+                vtable_of(slot_object)[kReleaseNotifyIndex]);
+            notify(slot_object, owner, element);
+            field<u32>(object, kElementBaseBOffset +
+                                   static_cast<u32>(index) * 4u) = 0;
+            count = field<s32>(object, kElementCountBOffset);
+            ++index;
+        } while (count > index);
+    }
+
+    // 0x00351A18: 0x18-byte records, first word notified through the owner's
+    // vtable slot +0x04 when non-null, then zeroed.
+    index = 0;
+    count = field<s32>(object, kRecordCountOffset);
+    if (count > 0) {
+        do {
+            u8* const record =
+                static_cast<u8*>(object) + kRecordBaseOffset +
+                static_cast<u32>(index) * kRecordStride;
+            const u32 element = *reinterpret_cast<u32*>(record);
+            if (element != 0) {
+                void* const owner = field<void*>(object, kOwnerOffset);
+                const RecordNotify notify = reinterpret_cast<RecordNotify>(
+                    vtable_of(owner)[kSlotNotifyIndex]);
+                notify(owner, element);
+                *reinterpret_cast<u32*>(record) = 0;
+            }
+            count = field<s32>(object, kRecordCountOffset);
+            ++index;
+        } while (count > index);
+    }
+
+    // 0x00351A60: release the container and drop every retained pointer.
+    container_release(static_cast<u8*>(object) + kContainer158Offset);
+    field<u32>(object, kOwnerOffset) = 0;
+    field<u32>(object, kCleared18Offset) = 0;
+    field<u32>(object, kSlotObjectOffset) = 0;
+    field<u32>(object, kCleared1BCOffset) = 0;
+    field<u32>(object, kCleared1C0Offset) = 0;
+    return 0;
 }
 
 // DECOMP_FUNC(0x001204a4, 444)
