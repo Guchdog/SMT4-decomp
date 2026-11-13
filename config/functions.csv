@@ -150,7 +150,7 @@ address,size,status,category,name,src_file
 0x00108254,96,matching,ui,ui_func_00108254,src/engine/leaf_batch20_a.cpp
 0x001082b4,76,matching,script_vm,script_vm_func_001082b4,src/engine/leaf_batch20_a.cpp
 0x00108300,496,non_matching,ui,ui_func_00108300,src/engine/leaf_batch34_c.cpp
-0x001084f0,520,matching,ui,ui_func_001084f0,src/engine/leaf_batch34_c.cpp
+0x001084f0,520,non_matching,ui,ui_func_001084f0,src/engine/leaf_batch34_c.cpp
 0x001086f8,160,matching,ui,ui_func_001086f8,src/engine/leaf_batch30_a.cpp
 0x00108798,168,matching,ui,ui_func_00108798,src/engine/leaf_batch30_a.cpp
 0x00108840,624,matching,ui,ui_func_00108840,src/engine/leaf_batch42_b.cpp
