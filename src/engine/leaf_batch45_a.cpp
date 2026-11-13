@@ -1249,86 +1249,210 @@ extern "C" void ui_func_0037aac4(void* self) {
 }
 
 // DECOMP_FUNC(0x001325d8, 600)
-extern "C" __attribute__((naked)) void engine_func_001325d8() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4fff, 0xe92d, 0xdf43, 0xe24d\n"
-        ".hword 0x4000, 0xe1a0, 0x7228, 0xe59f\n"
-        ".hword 0x9004, 0xe594, 0x0004, 0xe5d7\n"
-        ".hword 0x0000, 0xe350, 0x0038, 0x0a00\n"
-        ".hword 0x0005, 0xe5d7, 0x0000, 0xe350\n"
-        ".hword 0x0035, 0x1a00, 0x820c, 0xe59f\n"
-        ".hword 0xa20c, 0xe59f, 0x0000, 0xe598\n"
-        ".hword 0x1000, 0xe59a, 0x0010, 0xe280\n"
-        ".hword 0xe615, 0xeb05, 0xb1fc, 0xe59f\n"
-        ".hword 0x6000, 0xe598, 0x5000, 0xe59b\n"
-        ".hword 0x0008, 0xe595, 0x1004, 0xe595\n"
-        ".hword 0xe5ef, 0xeb05, 0x0000, 0xe596\n"
-        ".hword 0x1008, 0xe595, 0x2010, 0xe590\n"
-        ".hword 0x0006, 0xe1a0, 0xff32, 0xe12f\n"
-        ".hword 0x0008, 0xe595, 0xe5e5, 0xeb05\n"
-        ".hword 0x0008, 0xe597, 0x4a9d, 0xeb06\n"
-        ".hword 0x01d4, 0xe1c4, 0x3009, 0xe1a0\n"
-        ".hword 0x000c, 0xe280, 0x0005, 0xe890\n"
-        ".hword 0x1000, 0xe58d, 0x1000, 0xe1a0\n"
-        ".hword 0x0008, 0xe28d, 0xe588, 0xeb05\n"
-        ".hword 0x0008, 0xe597, 0x1000, 0xe3a0\n"
-        ".hword 0x4b1a, 0xeb06, 0x1000, 0xe59a\n"
-        ".hword 0x0000, 0xe598, 0x36fe, 0xeb06\n"
-        ".hword 0x118c, 0xe59f, 0x0000, 0xe598\n"
-        ".hword 0x1000, 0xe591, 0x0010, 0xe280\n"
-        ".hword 0xe5f3, 0xeb05, 0x5000, 0xe59b\n"
-        ".hword 0x6000, 0xe598, 0x0008, 0xe595\n"
-        ".hword 0x1004, 0xe595, 0xe5ce, 0xeb05\n"
-        ".hword 0x0000, 0xe596, 0x1008, 0xe595\n"
-        ".hword 0x2010, 0xe590, 0x0006, 0xe1a0\n"
-        ".hword 0xff32, 0xe12f, 0x0008, 0xe595\n"
-        ".hword 0xe5c4, 0xeb05, 0x0001, 0xe3a0\n"
-        ".hword 0x0005, 0xe5c7, 0xf000, 0xe320\n"
-        ".hword 0x1784, 0xeb00, 0x0000, 0xe350\n"
-        ".hword 0x0010, 0x0597, 0xe51d, 0x0b05\n"
-        ".hword 0x0118, 0xe59d, 0x0000, 0xe350\n"
-        ".hword 0x0024, 0x0a00, 0x6124, 0xe59f\n"
-        ".hword 0x8000, 0xe3a0, 0x3009, 0xe1a0\n"
-        ".hword 0x5000, 0xe596, 0x01d4, 0xe1c4\n"
-        ".hword 0x000c, 0xe280, 0x0005, 0xe890\n"
-        ".hword 0x1000, 0xe58d, 0x1000, 0xe1a0\n"
-        ".hword 0x0008, 0xe28d, 0xe55c, 0xeb05\n"
-        ".hword 0x0000, 0xe355, 0x8000, 0x1596\n"
-        ".hword 0x0000, 0x1358, 0x0005, 0x1058\n"
-        ".hword 0x001c, 0x0a00, 0x0005, 0xe158\n"
-        ".hword 0x4000, 0xe3a0, 0x6004, 0xe1a0\n"
-        ".hword 0xa008, 0x828d, 0x0017, 0x9a00\n"
-        ".hword 0x0000, 0xe595, 0x30d0, 0xe59f\n"
-        ".hword 0x20ff, 0xe264, 0x0000, 0xe58d\n"
-        ".hword 0x1c01, 0xe264, 0x0004, 0xe08a\n"
-        ".hword 0x2630, 0xeb00, 0x6001, 0xe286\n"
-        ".hword 0x0004, 0xe356, 0x4000, 0xe084\n"
-        ".hword 0x4000, 0x03a0, 0x5004, 0xe285\n"
-        ".hword 0x6004, 0x01a0, 0x0008, 0xe155\n"
-        ".hword 0xfff0, 0x3aff, 0x0007, 0xea00\n"
-        ".hword 0x01d4, 0xe1c4, 0x3009, 0xe1a0\n"
-        ".hword 0x000c, 0xe280, 0x0005, 0xe890\n"
-        ".hword 0x1000, 0xe58d, 0x1000, 0xe1a0\n"
-        ".hword 0x0008, 0xe28d, 0xe53a, 0xeb05\n"
-        ".hword 0x0010, 0xe597, 0x18ff, 0xeb00\n"
-        ".hword 0x0004, 0xe5d7, 0x0000, 0xe350\n"
-        ".hword 0x0005, 0x15d7, 0x0000, 0x1350\n"
-        ".hword 0x0009, 0x0a00, 0x1110, 0xe59d\n"
-        ".hword 0x2001, 0xe3a0, 0x0009, 0xe1a0\n"
-        ".hword 0xe4f6, 0xeb05, 0x0008, 0xe597\n"
-        ".hword 0xf000, 0xe320, 0x4a2a, 0xeb06\n"
-        ".hword 0x0009, 0xe1a0, 0xf000, 0xe320\n"
-        ".hword 0x13f0, 0xeb06, 0x1110, 0xe59d\n"
-        ".hword 0x2001, 0xe3a0, 0x0009, 0xe1a0\n"
-        ".hword 0xe4ec, 0xeb05, 0x0010, 0xe597\n"
-        ".hword 0xdf47, 0xe28d, 0x4ff0, 0xe8bd\n"
-        ".hword 0xe4ce, 0xea05, 0xad80, 0x004d\n"
-        ".hword 0x4b84, 0x0046, 0x4b8c, 0x0046\n"
-        ".hword 0x4b7c, 0x0046, 0x4b94, 0x0046\n"
-        ".hword 0x52a0, 0x0046, 0x0348, 0x0041\n"
-    );
-};
+//
+// Engine frame/render synchronisation. The routine first runs a one-time
+// registration sequence for the global render registries, then calls the
+// engine readiness probe, optionally dumps the pending command words as
+// "0x%08x," (four per row) and finally releases the per-frame render state.
+// `state` (r1) is forwarded verbatim to 0x2ABBB8; `reserved` (r2) is never
+// read.  The 4th argument (r3) enables the command-word dump.
+namespace engine_1325d8 {
+
+// Static guard/state block at 0x004DAD80 (`r7` in the original).
+constexpr u32 kStateAddr = 0x004DAD80;
+constexpr u32 kStateActiveByte = 0x04;    // u8: subsystem registered
+constexpr u32 kStateInitedByte = 0x05;    // u8: one-time init completed
+constexpr u32 kStateLockHandle = 0x08;    // handle of 0x2C50D0/0x2C52F0/0x2C5094
+constexpr u32 kStateRenderHandle = 0x10;  // handle of 0x2ABB68/0x138BB8/0x2ABB50
+
+// Global registries reached through the 0x00464Bxx pointer table.
+constexpr u32 kRegistryAAddr = 0x00464B84;  // object whose first word is a vtable
+constexpr u32 kRegistryBAddr = 0x00464B8C;  // token for 0x2ABE74 / 0x2C028C
+constexpr u32 kRegistryCAddr = 0x00464B7C;  // object with words at +4 and +8
+constexpr u32 kRegistryDAddr = 0x00464B94;  // second initialisation token
+constexpr u32 kRegistryVtableOffset = 0x10; // indirect-call slot
+constexpr u32 kRegistryValueOffset = 0x08;  // word exchanged with 0x2ABDF4
+constexpr u32 kRegistryOwnerOffset = 0x04;  // word read by 0x2ABDF4
+constexpr u32 kRegistryArgOffset = 0x10;    // bias applied to registry A
+
+// Command-word cursor walked by the optional dump loop.
+constexpr u32 kCommandCursorAddr = 0x004652A0;  // u32 current cursor
+constexpr u32 kCommandWordStride = 4;
+
+// Dump formatting bounds.
+constexpr u32 kDumpColumnLimit = 0x100;  // capacity argument / column base
+constexpr u32 kDumpFieldLimit = 0xFF;    // second bound argument
+constexpr u32 kDumpRowWidth = 4;         // entries per row before the reset
+constexpr u32 kScratchBytes = 0x108;      // scratch at sp+8 in the original
+
+// Object layout: object+0x14 points at the two-word 0x2ABC9C range.
+constexpr u32 kObjContextOffset = 0x04;   // u32 forwarded as the dump context
+constexpr u32 kObjSourceOffset = 0x14;    // u32 pointer to the range source
+constexpr u32 kObjExtraOffset = 0x18;     // u32 fifth 0x2ABC9C argument
+constexpr u32 kSourceBeginOffset = 0x0C;  // u32 first range word
+constexpr u32 kSourceEndOffset = 0x10;    // u32 second range word
+
+}  // namespace engine_1325d8
+
+extern "C" void engine_func_002abe74(void* object, u32 token);
+extern "C" void engine_func_002abdf4(void* object, u32 value);
+extern "C" void func_002abde8(void* object);
+extern "C" void engine_func_002c50d0(void* handle);
+extern "C" void func_002abc9c(void* dst, u32 first, u32 second, u32 context,
+                              u32 extra);
+extern "C" void engine_func_002c52f0(void* handle, u32 flag);
+extern "C" void engine_func_002c028c(void* registry, u32 token);
+extern "C" s32 func_001384f8(void);
+extern "C" void battle_func_002abb68(void* handle);
+extern "C" s32 engine_func_0013c030(char* dst, u32 size, u32 field,
+                                    const char* format, u32 value);
+extern "C" void func_00138bb8(void* handle);
+extern "C" void func_002abbb8(void* object, u32 value, u32 flag);
+extern "C" void battle_func_002c5094(void* handle);
+extern "C" void func_002b77b8(void* object);
+extern "C" void func_002abb50(void* block);
+
+namespace engine_1325d8 {
+
+// 0x132634 / 0x1326B8: indirect call through the registry vtable slot 0x10.
+static __attribute__((always_inline)) inline void
+call_registry_callback(void* registry, u32 value) {
+    u8* const vtable = *reinterpret_cast<u8**>(registry);
+    using Callback = void (*)(void* self, u32 argument);
+    const Callback callback =
+        *reinterpret_cast<const Callback*>(vtable + kRegistryVtableOffset);
+    callback(registry, value);
+}
+
+// 0x132658 / 0x13270C / 0x132790: build the range scratch object.
+static __attribute__((always_inline)) inline void
+build_scratch(void* dst, const void* object, u32 context) {
+    const u8* const bytes = static_cast<const u8*>(object);
+    const u8* const source =
+        *reinterpret_cast<const u8* const*>(bytes + kObjSourceOffset);
+    func_002abc9c(dst,
+                  *reinterpret_cast<const u32*>(source + kSourceBeginOffset),
+                  *reinterpret_cast<const u32*>(source + kSourceEndOffset),
+                  context,
+                  *reinterpret_cast<const u32*>(bytes + kObjExtraOffset));
+}
+
+// 0x132604..0x1326D8: one-time registration of the render registries.  Each
+// registry pointer is re-read after every call because the originals do.
+static __attribute__((always_inline)) inline void
+register_render_registries(const void* object, u32 context, void* scratch) {
+    engine_func_002abe74(
+        reinterpret_cast<u8*>(*reinterpret_cast<u32*>(kRegistryAAddr)) +
+            kRegistryArgOffset,
+        *reinterpret_cast<const u32*>(kRegistryBAddr));
+
+    u8* const registry_c = *reinterpret_cast<u8**>(kRegistryCAddr);
+    u8* const registry_a = *reinterpret_cast<u8**>(kRegistryAAddr);
+    engine_func_002abdf4(
+        *reinterpret_cast<void**>(registry_c + kRegistryValueOffset),
+        *reinterpret_cast<const u32*>(registry_c + kRegistryOwnerOffset));
+    call_registry_callback(
+        registry_a,
+        *reinterpret_cast<const u32*>(registry_c + kRegistryValueOffset));
+    func_002abde8(
+        *reinterpret_cast<void**>(registry_c + kRegistryValueOffset));
+
+    engine_func_002c50d0(
+        *reinterpret_cast<void**>(kStateAddr + kStateLockHandle));
+
+    build_scratch(scratch, object, context);
+
+    engine_func_002c52f0(
+        *reinterpret_cast<void**>(kStateAddr + kStateLockHandle), 0);
+    engine_func_002c028c(*reinterpret_cast<void**>(kRegistryAAddr),
+                         *reinterpret_cast<const u32*>(kRegistryBAddr));
+
+    engine_func_002abe74(
+        reinterpret_cast<u8*>(*reinterpret_cast<u32*>(kRegistryAAddr)) +
+            kRegistryArgOffset,
+        *reinterpret_cast<const u32*>(kRegistryDAddr));
+
+    u8* const registry_c2 = *reinterpret_cast<u8**>(kRegistryCAddr);
+    u8* const registry_a2 = *reinterpret_cast<u8**>(kRegistryAAddr);
+    engine_func_002abdf4(
+        *reinterpret_cast<void**>(registry_c2 + kRegistryValueOffset),
+        *reinterpret_cast<const u32*>(registry_c2 + kRegistryOwnerOffset));
+    call_registry_callback(
+        registry_a2,
+        *reinterpret_cast<const u32*>(registry_c2 + kRegistryValueOffset));
+    func_002abde8(
+        *reinterpret_cast<void**>(registry_c2 + kRegistryValueOffset));
+}
+
+}  // namespace engine_1325d8
+
+extern "C" void engine_func_001325d8(void* obj, u32 state, u32 reserved,
+                                     u32 dump_commands) {
+    using namespace engine_1325d8;
+
+    const u8* const object = static_cast<const u8*>(obj);
+    u8* const static_state = reinterpret_cast<u8*>(kStateAddr);
+    const u32 context =
+        *reinterpret_cast<const u32*>(object + kObjContextOffset);
+    u8 scratch[kScratchBytes];
+
+    if (static_state[kStateActiveByte] != 0 &&
+        static_state[kStateInitedByte] == 0) {
+        register_render_registries(object, context, scratch);
+        static_state[kStateInitedByte] = 1;
+    }
+
+    if (func_001384f8() == 0) {
+        battle_func_002abb68(
+            *reinterpret_cast<void**>(kStateAddr + kStateRenderHandle));
+    }
+
+    if (dump_commands != 0) {
+        // The cursor is snapshotted before the construction call and re-read
+        // afterwards; the loop only runs when the call advanced it.
+        u32 cursor = *reinterpret_cast<const u32*>(kCommandCursorAddr);
+        build_scratch(scratch, object, context);
+
+        u32 end = 0;
+        if (cursor != 0) {
+            end = *reinterpret_cast<const u32*>(kCommandCursorAddr);
+        }
+
+        if (cursor != 0 && end != 0 && cursor < end) {
+            u32 column = 0;
+            u32 row = 0;
+            while (cursor < end) {
+                const u32 word = *reinterpret_cast<const u32*>(cursor);
+                const s32 written = engine_func_0013c030(
+                    reinterpret_cast<char*>(scratch) + column,
+                    kDumpColumnLimit - column, kDumpFieldLimit - column,
+                    "0x%08x,", word);
+                ++row;
+                column += static_cast<u32>(written);
+                if (row == kDumpRowWidth) {
+                    column = 0;
+                    row = 0;
+                }
+                cursor += kCommandWordStride;
+            }
+        }
+    } else {
+        build_scratch(scratch, object, context);
+    }
+
+    func_00138bb8(*reinterpret_cast<void**>(kStateAddr + kStateRenderHandle));
+
+    if (static_state[kStateActiveByte] != 0 &&
+        static_state[kStateInitedByte] != 0) {
+        func_002abbb8(reinterpret_cast<void*>(context), state, 1);
+        battle_func_002c5094(
+            *reinterpret_cast<void**>(kStateAddr + kStateLockHandle));
+        func_002b77b8(reinterpret_cast<void*>(context));
+    }
+
+    func_002abbb8(reinterpret_cast<void*>(context), state, 1);
+    func_002abb50(*reinterpret_cast<void**>(kStateAddr + kStateRenderHandle));
+}
 
 // DECOMP_FUNC(0x0037fd94, 600)
 extern "C" __attribute__((naked)) void engine_func_0037fd94() {
