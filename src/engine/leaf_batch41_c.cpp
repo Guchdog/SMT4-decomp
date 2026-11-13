@@ -1123,38 +1123,236 @@ extern "C" u32 func_003dff3c(const u8* object, u32* out, u32 submit, u32 extra) 
     return func_0022673c(continuation, cursor, 1);
 }
 
+// ---------------------------------------------------------------------------
+// 0x00297C9C -- preset the map-interface record block owned by the object
+// published through 0x00447A78 (`g_MapIfWork` in include/engine/map_runtime.h).
+//
+// ARM 0x00297C9C..0x00297E2F: 92 instructions, 36 trailing constant-pool bytes.
+// No calls, no indirect branches, no stack arguments.
+//
+// Record contract recovered from the addressing (`add r0, r2, r0, lsl #2` after
+// `mul r0, r0, #0x65`, then `strb r1, [r0, #0x1d0]!`):
+//   * 0x00447A78 holds a pointer.  The routine dereferences it once and never
+//     reads the incoming r0, so the caller's argument is dead.
+//   * A record is 0x194 (404) bytes.  Record i of the sweep lives at
+//     base + i*404 + 0x1D0; the `cmp r3,#0x80` / `blt` loop runs i = 0..0x7F,
+//     covering +0x1D0..+0xCBD0.
+//   * The element at +0x03C is also exactly 0x194 bytes long (+0x3C + 0x194 =
+//     +0x1D0) and receives the same field offsets with different values, so the
+//     region is 129 contiguous records whose first element is a distinct preset.
+//   * Widths: +0x00, +0x40, +0x41, +0x42 and +0x4C are byte stores, +0x0C,
+//     +0x28, +0x2A and +0x2C are halfword stores, +0x30/+0x34/+0x38/+0x3C,
+//     +0x48, +0x5C..+0x80 and +0x8C..+0xBC are VFP singles, everything else is
+//     a 32-bit word store.
+//   * The 128 swept records receive 700/300/2500 at +0x34/+0x38/+0x3C,
+//     1150 at +0x5C and +0x68, 150 at +0x60 and +0x6C, 25 at +0x78/+0x7C,
+//     0xFFFFFFFF at +0x18 and +0x80, and 0 everywhere else it touches.
+//   * The +0x3C element instead receives 50 at +0x78/+0x7C, 0 at +0x5C..+0x74
+//     and +0x30, 0xFFFFFFFF at +0x18 and +0x80, and leaves the remaining record
+//     fields at their previous contents (only the listed fields are written).
+//   * The `stm` at 0x00297E00 copies the just-stored zero bits of +0x5C/+0x60
+//     (and a VFP zero) into +0x68/+0x6C/+0x70; the three stores are plain zero.
+//   * Only r4 is callee-saved (`str r4, [sp, #-4]!` / `pop {r4}`).  The final
+//     `ldm r0, {r0, r3}` reloads the zeroed +0x5C word, so the register image
+//     returns r0 = 0; no reconstructed caller consumes that value.
+// ---------------------------------------------------------------------------
+namespace func_297c9c {
+
+constexpr u32 kMapIfWork = 0x00447A78;  // pointer to the host block (0x00297C9C)
+constexpr u32 kRecordCount = 0x80;      // `mov r4,#0x65`, `cmp r3,#0x80`
+constexpr u32 kRecordSize = 0x194;      // 0x65 words; +0x3C + 0x194 = +0x1D0
+constexpr u32 kRecordBase = 0x1D0;      // `strb r1, [r0, #0x1d0]!`
+constexpr u32 kPresetBase = 0x03C;      // `strb r1, [r2, #0x3c]!`
+
+constexpr f32 kZero = 0.0f;             // literal 0x00000000 (0x00297E1C)
+constexpr f32 kValue25 = 25.0f;         // literal 0x41C80000 (0x00297E20)
+constexpr f32 kValue50 = 50.0f;         // literal 0x42480000 (0x00297E2C)
+constexpr f32 kValue150 = 150.0f;       // literal 0x43160000 (0x00297E28)
+constexpr f32 kValue300 = 300.0f;       // literal 0x43960000 (0x00297E14)
+constexpr f32 kValue700 = 700.0f;       // literal 0x442F0000 (0x00297E10)
+constexpr f32 kValue1150 = 1150.0f;     // literal 0x448FC000 (0x00297E24)
+constexpr f32 kValue2500 = 2500.0f;     // literal 0x451C4000 (0x00297E18)
+constexpr u32 kUnset = 0xFFFFFFFFu;     // `mvn ip, #0` (0x00297CCC)
+
+// 0x194-byte record.  Only the offsets the init code proves are named.
+struct MapIfRecord {
+    u8  field_000;           // +0x000: strb 0 (sweep and preset)
+    u8  pad_001[0x03];
+    u32 field_004;           // +0x004: str 0 (sweep only)
+    u32 field_008;           // +0x008: str 0 (sweep only)
+    u16 field_00c;           // +0x00C: strh 0 (sweep only)
+    u8  pad_00e[0x02];
+    u32 field_010;           // +0x010: str 0 (sweep and preset)
+    u32 field_014;           // +0x014: str 0 (sweep and preset)
+    u32 field_018;           // +0x018: str 0xFFFFFFFF (sweep and preset)
+    u32 field_01c;           // +0x01C: str 0 (sweep and preset)
+    u8  pad_020[0x08];
+    u16 field_028;           // +0x028: strh 0 (sweep only)
+    u16 field_02a;           // +0x02A: strh 0 (sweep only)
+    u16 field_02c;           // +0x02C: strh 0 (sweep only)
+    u8  pad_02e[0x02];
+    f32 field_030;           // +0x030: 0 (sweep and preset)
+    f32 field_034;           // +0x034: 700 (sweep only)
+    f32 field_038;           // +0x038: 300 (sweep only)
+    f32 field_03c;           // +0x03C: 2500 (sweep only)
+    u8  field_040;           // +0x040: strb 0 (sweep and preset)
+    u8  field_041;           // +0x041: strb 0 (sweep and preset)
+    u8  field_042;           // +0x042: strb 0 (sweep only)
+    u8  pad_043[0x01];
+    u32 field_044;           // +0x044: str 0 (sweep only)
+    f32 field_048;           // +0x048: 0 (sweep only)
+    u8  field_04c;           // +0x04C: strb 0 (sweep only)
+    u8  pad_04d[0x0f];
+    f32 field_05c;           // +0x05C: 1150 sweep, 0 preset
+    f32 field_060;           // +0x060: 150 sweep, 0 preset
+    f32 field_064;           // +0x064: 0 (sweep and preset)
+    f32 field_068;           // +0x068: 1150 sweep, 0 preset
+    f32 field_06c;           // +0x06C: 150 sweep, 0 preset
+    f32 field_070;           // +0x070: 0 (sweep and preset)
+    f32 field_074;           // +0x074: 0 (sweep and preset)
+    f32 field_078;           // +0x078: 25 sweep, 50 preset
+    f32 field_07c;           // +0x07C: 25 sweep, 50 preset
+    u32 field_080;           // +0x080: 0xFFFFFFFF (sweep and preset)
+    u8  pad_084[0x08];
+    f32 field_08c;           // +0x08C: 0 (sweep only)
+    f32 field_090;           // +0x090: 0 (sweep only)
+    f32 field_094;           // +0x094: 0 (sweep only)
+    f32 field_098;           // +0x098: 0 (sweep only)
+    f32 field_09c;           // +0x09C: 0 (sweep only)
+    f32 field_0a0;           // +0x0A0: 0 (sweep only)
+    f32 field_0a4;           // +0x0A4: 0 (sweep only)
+    f32 field_0a8;           // +0x0A8: 0 (sweep only)
+    f32 field_0ac;           // +0x0AC: 0 (sweep only)
+    f32 field_0b0;           // +0x0B0: 0 (sweep only)
+    f32 field_0b4;           // +0x0B4: 0 (sweep only)
+    f32 field_0b8;           // +0x0B8: 0 (sweep only)
+    f32 field_0bc;           // +0x0BC: 0 (sweep only)
+    u8  pad_0c0[0xc4];
+    u32 field_184;           // +0x184: str 0 (sweep only)
+    u32 field_188;           // +0x188: str 0 (sweep only)
+    u32 field_18c;           // +0x18C: str 0 (sweep only)
+    u32 field_190;           // +0x190: str 0 (sweep and preset)
+};
+static_assert(offsetof(MapIfRecord, field_004) == 0x004);
+static_assert(offsetof(MapIfRecord, field_00c) == 0x00C);
+static_assert(offsetof(MapIfRecord, field_010) == 0x010);
+static_assert(offsetof(MapIfRecord, field_018) == 0x018);
+static_assert(offsetof(MapIfRecord, field_028) == 0x028);
+static_assert(offsetof(MapIfRecord, field_030) == 0x030);
+static_assert(offsetof(MapIfRecord, field_034) == 0x034);
+static_assert(offsetof(MapIfRecord, field_040) == 0x040);
+static_assert(offsetof(MapIfRecord, field_042) == 0x042);
+static_assert(offsetof(MapIfRecord, field_044) == 0x044);
+static_assert(offsetof(MapIfRecord, field_048) == 0x048);
+static_assert(offsetof(MapIfRecord, field_04c) == 0x04C);
+static_assert(offsetof(MapIfRecord, field_05c) == 0x05C);
+static_assert(offsetof(MapIfRecord, field_080) == 0x080);
+static_assert(offsetof(MapIfRecord, field_08c) == 0x08C);
+static_assert(offsetof(MapIfRecord, field_0bc) == 0x0BC);
+static_assert(offsetof(MapIfRecord, field_184) == 0x184);
+static_assert(offsetof(MapIfRecord, field_190) == 0x190);
+static_assert(sizeof(MapIfRecord) == kRecordSize);
+
+// Observed prefix of the host object: one 0x194-byte preset element at +0x3C
+// followed by the 0x80 swept elements at +0x1D0 (ending at +0xCBD0, the
+// `field_cbd0` marker in include/engine/map_runtime.h).
+struct MapIfRecordBlock {
+    u8 pad_000[kPresetBase];
+    MapIfRecord preset;
+    MapIfRecord records[kRecordCount];
+};
+static_assert(offsetof(MapIfRecordBlock, preset) == kPresetBase);
+static_assert(offsetof(MapIfRecordBlock, records) == kRecordBase);
+static_assert(sizeof(MapIfRecordBlock) == 0xCBD0);
+
+}  // namespace func_297c9c
+
 // DECOMP_FUNC(0x00297c9c, 404)
-// 92 ARM instructions through unconditional bx; 36 trailing data bytes.
-extern "C" __attribute__((naked)) void script_vm_func_00297c9c() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe59f0168, 0xe52d4004, 0xe3a03000, 0xed9f1a58\n"
-        ".word 0xe5902000, 0xeddf2a57, 0xed9f3a57, 0xed9f0a57\n"
-        ".word 0xeddf0a57, 0xeddf3a57, 0xed9f4a57, 0xe1a01003\n"
-        ".word 0xe3e0c000, 0xe1a00003, 0xe3a04065, 0xe2833001\n"
-        ".word 0xe0000490, 0xe3530080, 0xe0820100, 0xe5e011d0\n"
-        ".word 0xe2804038, 0xe5801004, 0xe5801008, 0xe1c010bc\n"
-        ".word 0xe1c012b8, 0xe1c012ba, 0xe1c012bc, 0xed801a0d\n"
-        ".word 0xecc42a02, 0xe2804014, 0xe5c01040, 0xe5801010\n"
-        ".word 0xe5801190, 0xe8841002, 0xe580101c, 0xed800a0c\n"
-        ".word 0xedc00a1e, 0xedc00a1f, 0xe580c080, 0xed800a23\n"
-        ".word 0xe5c01041, 0xedc03a17, 0xe5c01042, 0xe5801044\n"
-        ".word 0xed800a12, 0xed804a18, 0xed800a19, 0xe5c0104c\n"
-        ".word 0xed800a1d, 0xed800a24, 0xed800a25, 0xed800a26\n"
-        ".word 0xed800a27, 0xed800a28, 0xed800a29, 0xed800a2a\n"
-        ".word 0xed800a2b, 0xed800a2c, 0xed800a2d, 0xed800a2e\n"
-        ".word 0xed800a2f, 0xedd04a19, 0xe5801184, 0xe5801188\n"
-        ".word 0xe580118c, 0xe2800068, 0xecc03a03, 0xbaffffc8\n"
-        ".word 0xe5e2103c, 0xe282005c, 0xe5c21040, 0xe582c018\n"
-        ".word 0xed820a17, 0xe5821010, 0xe5821190, 0xed820a18\n"
-        ".word 0xed820a19, 0xe8900009, 0xee104a10, 0xe582101c\n"
-        ".word 0xeddf0a12, 0xe5821014, 0xed820a0c, 0xedc20a1e\n"
-        ".word 0xedc20a1f, 0xe582c080, 0xe5c21041, 0xed820a1d\n"
-        ".word 0xe2822068, 0xe8820019, 0xe49d4004, 0xe12fff1e\n"
-        ".word 0x00447a78, 0x442f0000, 0x43960000, 0x451c4000\n"
-        ".word 0x00000000, 0x41c80000, 0x448fc000, 0x43160000\n"
-        ".word 0x42480000\n"
-    );
+extern "C" u32 script_vm_func_00297c9c() {
+    using namespace func_297c9c;
+
+    MapIfRecordBlock* const host =
+        *reinterpret_cast<MapIfRecordBlock**>(kMapIfWork);
+
+    // 0x00297CD0..0x00297DA8: the 0x80 swept records.  Store order follows the
+    // listing; the fields of one record never overlap, so the final image is
+    // independent of that order.
+    for (s32 index = 0; index < static_cast<s32>(kRecordCount); ++index) {
+        MapIfRecord& record = host->records[index];
+        record.field_000 = 0;                    // 0x00297CE8
+        record.field_004 = 0;                    // 0x00297CF0
+        record.field_008 = 0;                    // 0x00297CF4
+        record.field_00c = 0;                    // 0x00297CF8
+        record.field_028 = 0;                    // 0x00297CFC
+        record.field_02a = 0;                    // 0x00297D00
+        record.field_02c = 0;                    // 0x00297D04
+        record.field_034 = kValue700;             // 0x00297D08
+        record.field_038 = kValue300;             // 0x00297D0C
+        record.field_03c = kValue2500;            // 0x00297D10
+        record.field_040 = 0;                    // 0x00297D14
+        record.field_010 = 0;                    // 0x00297D18
+        record.field_190 = 0;                    // 0x00297D1C
+        record.field_014 = 0;                    // 0x00297D20
+        record.field_018 = kUnset;               // 0x00297D20
+        record.field_01c = 0;                    // 0x00297D24
+        record.field_030 = kZero;                // 0x00297D28
+        record.field_078 = kValue25;              // 0x00297D2C
+        record.field_07c = kValue25;              // 0x00297D30
+        record.field_080 = kUnset;               // 0x00297D34
+        record.field_08c = kZero;                // 0x00297D38
+        record.field_041 = 0;                    // 0x00297D3C
+        record.field_05c = kValue1150;            // 0x00297D40
+        record.field_042 = 0;                    // 0x00297D44
+        record.field_044 = 0;                    // 0x00297D48
+        record.field_048 = kZero;                // 0x00297D4C
+        record.field_060 = kValue150;             // 0x00297D50
+        record.field_064 = kZero;                // 0x00297D54
+        record.field_04c = 0;                    // 0x00297D58
+        record.field_074 = kZero;                // 0x00297D5C
+        record.field_090 = kZero;                // 0x00297D60
+        record.field_094 = kZero;                // 0x00297D64
+        record.field_098 = kZero;                // 0x00297D68
+        record.field_09c = kZero;                // 0x00297D6C
+        record.field_0a0 = kZero;                // 0x00297D70
+        record.field_0a4 = kZero;                // 0x00297D74
+        record.field_0a8 = kZero;                // 0x00297D78
+        record.field_0ac = kZero;                // 0x00297D7C
+        record.field_0b0 = kZero;                // 0x00297D80
+        record.field_0b4 = kZero;                // 0x00297D84
+        record.field_0b8 = kZero;                // 0x00297D88
+        record.field_0bc = kZero;                // 0x00297D8C
+        record.field_184 = 0;                    // 0x00297D94
+        record.field_188 = 0;                    // 0x00297D98
+        record.field_18c = 0;                    // 0x00297D9C
+        record.field_068 = kValue1150;            // 0x00297DA4
+        record.field_06c = kValue150;             // 0x00297DA4
+        record.field_070 = kZero;                // 0x00297DA4
+    }
+
+    // 0x00297DAC..0x00297E00: the single +0x3C element.  Only the fields named
+    // here are touched; the rest of the element keeps its prior contents.
+    MapIfRecord& preset = host->preset;
+    preset.field_000 = 0;                        // 0x00297DAC
+    preset.field_040 = 0;                        // 0x00297DB4
+    preset.field_018 = kUnset;                   // 0x00297DB8
+    preset.field_05c = kZero;                    // 0x00297DBC
+    preset.field_010 = 0;                        // 0x00297DC0
+    preset.field_190 = 0;                        // 0x00297DC4
+    preset.field_060 = kZero;                    // 0x00297DC8
+    preset.field_064 = kZero;                    // 0x00297DCC
+    preset.field_01c = 0;                        // 0x00297DD8
+    preset.field_014 = 0;                        // 0x00297DE0
+    preset.field_030 = kZero;                    // 0x00297DE4
+    preset.field_078 = kValue50;                 // 0x00297DE8
+    preset.field_07c = kValue50;                 // 0x00297DEC
+    preset.field_080 = kUnset;                   // 0x00297DF0
+    preset.field_041 = 0;                        // 0x00297DF4
+    preset.field_074 = kZero;                    // 0x00297DF8
+    preset.field_068 = kZero;                    // 0x00297E00
+    preset.field_06c = kZero;                    // 0x00297E00
+    preset.field_070 = kZero;                    // 0x00297E00
+
+    return 0;
 }
 
 // DECOMP_FUNC(0x0032bc14, 404)
