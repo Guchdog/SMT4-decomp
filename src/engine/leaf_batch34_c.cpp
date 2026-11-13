@@ -10079,149 +10079,185 @@ extern "C" __attribute__((naked)) void engine_func_0015b79c() {
     );
 }
 
+namespace {
+
+// 0x0015BCAC appends one 0x70-byte (fourteen value/command word pairs) PICA200
+// command packet for a draw entry to the caller's arena or to the shared GPU
+// command stream.
+constexpr u32 kKindTableAddress = 0x0040B70C;  // {4, 5, 6, ...}, indexed by [entry+0x04]
+constexpr u32 kForcedKind = 0x00006010;        // selected when the third argument is non-zero
+constexpr u32 kSpecialType = 0x00001403;       // type that sets bit 31 and halves [entry+0x08]
+constexpr u32 kPacketSize = 0x70;
+
+// Command words of the fourteen pairs.  A pair is {value, command word}; the
+// same convention is used by the neighbouring func_0023bc5c packet builder.
+constexpr u32 kCmd0227 = 0x000F0227;
+constexpr u32 kCmd0228 = 0x000F0228;
+constexpr u32 kCmd0229 = 0x00020229;
+constexpr u32 kCmd0253 = 0x00020253;
+constexpr u32 kCmd025E = 0x0002025E;
+constexpr u32 kCmd025F = 0x000F025F;
+constexpr u32 kCmd0245 = 0x00010245;
+constexpr u32 kCmd022F = 0x000F022F;
+constexpr u32 kCmd0231 = 0x000F0231;
+constexpr u32 kCmdVtx025E = 0x0008025E;
+constexpr u32 kCmd0111 = 0x000F0111;
+constexpr u32 kCmd0110 = 0x000F0110;
+
+// The caller (0x00156B60) builds this arena on its stack from a draw entry:
+// +0x00 and +0x08 receive [entry+0x18], +0x04 receives the sum of
+// [entry+0x18] and [entry+0x1C], and +0x0C receives [entry+0x1C].
+struct GpuPacketArena {
+    u32 field_00;   // +0x00: buffer start (not read here)
+    u32 limit_04;   // +0x04: one past the writable region
+    u32 cursor_08;  // +0x08: next free byte, 0 selects the shared cursor
+    u32 field_0C;   // +0x0C: buffer size (not read here)
+};
+
+// Draw-entry fields touched by this routine.  Only these offsets are
+// evidenced; the names describe the roles observed here.
+struct GpuDrawEntry {
+    u32 type_00;      // +0x00: 0x00001403 selects the flagged/halved variant
+    u8 kind_04;       // +0x04: index into the word table at 0x0040B70C
+    u8 unknown_05[3];
+    u32 value_08;     // +0x08: second packet value (halved for 0x00001403)
+    u32 relative_0C;  // +0x0C: self-relative offset to the source address
+    u32 unknown_10;   // +0x10
+    u32 unknown_14;   // +0x14
+    u32 unknown_18;   // +0x18
+    u32 unknown_1C;   // +0x1C
+    u32 address_20;   // +0x20: direct source address when non-zero
+};
+
+static_assert(sizeof(GpuPacketArena) == 0x10, "arena layout");
+static_assert(__builtin_offsetof(GpuDrawEntry, kind_04) == 0x04, "entry layout");
+static_assert(__builtin_offsetof(GpuDrawEntry, value_08) == 0x08, "entry layout");
+static_assert(__builtin_offsetof(GpuDrawEntry, relative_0C) == 0x0C, "entry layout");
+static_assert(__builtin_offsetof(GpuDrawEntry, address_20) == 0x20, "entry layout");
+static_assert(sizeof(GpuDrawEntry) == 0x24, "entry layout");
+
+// 0x002C39A4 and 0x002BC300 are declared `void` at the top of this file.  Both
+// take their single argument in R0 and return their result in R0:
+//   0x002C39A4(screen)  -> framebuffer address for 0x20000 / 0x30000
+//   0x002BC300(address) -> physical translation of that address
+using ScreenAddressFn = u32 (*)(u32 screen);
+using PhysicalAddressFn = u32 (*)(u32 address);
+
+} // namespace
+
+// 0x004652A0 / 0x004652A4: shared GPU command-stream cursor and end.
+extern u32* g_GpuCommandCursor;
+extern u32* g_GpuCommandEnd;
+
 // DECOMP_FUNC(0x0015bcac, 520)
-extern "C" __attribute__((naked)) void engine_func_0015bcac() {
-    asm volatile(
-        "push {r4, r5, r6, r7, r8, sb, sl, lr}\n"
-        "mov r6, r0\n"
-        "mov r5, r1\n"
-        "cmp r2, #0\n"
-        "ldrb r0, [r1, #4]\n"
-        ".word 0xe59f11bc\n"
-        ".word 0xe59fa1c0\n"
-        "ldr r4, [r6, #8]\n"
-        "ldr r7, [r1, r0, lsl #2]\n"
-        ".word 0x159f71b0\n"
-        "cmp r4, #0\n"
-        "ldreq r4, [sl]\n"
-        "mov r0, #0x20000\n"
-        "bl engine_func_002c39a4\n"
-        "bl engine_func_002bc300\n"
-        "mov r8, r0\n"
-        "ldr r0, [r5, #0x20]\n"
-        "mov sb, #0\n"
-        "cmp r0, #0\n"
-        "beq .L_0015bd94\n"
-        ".L_0015bcfc:\n"
-        "nop\n"
-        "bl engine_func_002bc300\n"
-        ".word 0xe59f1184\n"
-        "sub r0, r0, r8\n"
-        "add r3, r4, #8\n"
-        "add r2, r1, #1\n"
-        "strd r0, r1, [r4]\n"
-        "ldr r1, [r5, #8]\n"
-        "stm r3, {r1, r2}\n"
-        "ldr r3, [r5]\n"
-        "sub r2, r3, #0x1400\n"
-        "subs r2, r2, #3\n"
-        "bne .L_0015bd40\n"
-        "orr r0, r0, #0x80000000\n"
-        "lsr r1, r1, #1\n"
-        "str r0, [r4]\n"
-        "str r1, [r4, #8]\n"
-        ".L_0015bd40:\n"
-        ".word 0xe59f014c\n"
-        "cmp r7, #4\n"
-        "mov r2, #0x100\n"
-        "add r1, r0, #0x2a\n"
-        "mov r3, #0x300\n"
-        "beq .L_0015bdac\n"
-        "add r5, r4, #0x14\n"
-        "str r1, [r4, #0x1c]\n"
-        "str sb, [r4, #0x10]\n"
-        "stm r5, {r0, sb}\n"
-        "cmp r7, #5\n"
-        "streq r2, [r4, #0x20]\n"
-        "beq .L_0015bdc0\n"
-        "cmp r7, #6\n"
-        "moveq r0, #0x200\n"
-        "streq r0, [r4, #0x20]\n"
-        "beq .L_0015bdc0\n"
-        "sub r0, r7, #0x6000\n"
-        "subs r0, r0, #0x10\n"
-        "beq .L_0015bdbc\n"
-        "b .L_0015bdc0\n"
-        ".L_0015bd94:\n"
-        "ldr r1, [r5, #0xc]\n"
-        "add r0, r5, #0xc\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, sb\n"
-        "b .L_0015bcfc\n"
-        ".L_0015bdac:\n"
-        "add r5, r4, #0x14\n"
-        "str r1, [r4, #0x1c]\n"
-        "str r2, [r4, #0x10]\n"
-        "stm r5, {r0, r2}\n"
-        ".L_0015bdbc:\n"
-        "str r3, [r4, #0x20]\n"
-        ".L_0015bdc0:\n"
-        ".word 0xe59f10d0\n"
-        "mov r0, #1\n"
-        "add r2, r4, #0x2c\n"
-        "str r1, [r4, #0x24]\n"
-        ".word 0xe59f10c4\n"
-        "str r0, [r4, #0x28]\n"
-        "stm r2, {r1, sb}\n"
-        ".word 0xe59f10bc\n"
-        ".word 0xe59f20bc\n"
-        "str r0, [r4, #0x38]\n"
-        "str r1, [r4, #0x34]\n"
-        "strd r0, r1, [r4, #0x40]\n"
-        "add r1, r2, r0, lsl #1\n"
-        "str r2, [r4, #0x3c]\n"
-        "add r2, r4, #0x4c\n"
-        "str r0, [r4, #0x48]\n"
-        "stm r2, {r1, sb}\n"
-        "add r2, r4, #0x54\n"
-        ".word 0xe59f1098\n"
-        "stm r2, {r1, sb}\n"
-        "str r1, [r4, #0x5c]\n"
-        ".word 0xe59f1090\n"
-        "str r0, [r4, #0x60]\n"
-        "str r0, [r4, #0x68]\n"
-        "str r1, [r4, #0x64]!\n"
-        "bic r0, r1, r0\n"
-        "str r0, [r4, #8]\n"
-        "ldr r0, [r6, #8]\n"
-        "mov r1, #0x70\n"
-        "cmp r0, #0\n"
-        "beq .L_0015be64\n"
-        "ldr r2, [r6, #4]\n"
-        "add r3, r0, #0x70\n"
-        "cmp r3, r2\n"
-        "bhi .L_0015be7c\n"
-        ".L_0015be4c:\n"
-        "cmp r0, #0\n"
-        "ldreq r0, [sl]\n"
-        "add r0, r0, #0x70\n"
-        "strne r0, [r6, #8]\n"
-        "streq r0, [sl]\n"
-        "b .L_0015be7c\n"
-        ".L_0015be64:\n"
-        ".word 0xe59f3044\n"
-        "ldr r2, [sl]\n"
-        "ldr r3, [r3]\n"
-        "add r2, r2, #0x70\n"
-        "cmp r2, r3\n"
-        "bls .L_0015be4c\n"
-        ".L_0015be7c:\n"
-        "mov r0, r1\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, pc}\n"
-        ".word 0x0040b70c\n"
-        ".word 0x00006010\n"
-        ".word 0x004652a0\n"
-        ".word 0x000f0227\n"
-        ".word 0x00020229\n"
-        ".word 0x0002025e\n"
-        ".word 0x000f025f\n"
-        ".word 0x00010245\n"
-        ".word 0x000f022f\n"
-        ".word 0x0008025e\n"
-        ".word 0x000f0111\n"
-        ".word 0x004652a4\n"
-    );
+//
+// Reads the entry kind ([entry+0x04] through the table at 0x0040B70C, or the
+// 0x6010 override when the third argument is non-zero), picks the packet
+// destination (arena cursor, else the shared cursor), and writes fourteen
+// value/command pairs.  The first value is the physical source address minus
+// the physically translated 0x20000 framebuffer address; the 0x00001403 type
+// additionally sets bit 31 and halves [entry+0x08].
+//
+// After the packet is written the owning cursor is advanced by 0x70 only when
+// the block fits; both bounds tests are unsigned and wrap modulo 2^32.
+//
+// Returns 0x70 in R0 on every path (R1 still holds 0x70 at the epilogue).
+extern "C" u32 engine_func_0015bcac(GpuPacketArena* arena,
+                                    const GpuDrawEntry* entry,
+                                    u32 force_kind) {
+    // 0x15BCB0..0x15BCD8: read the kind (the table load happens even when the
+    // override is selected) and the destination before either helper call.
+    const u32 table_kind = reinterpret_cast<const u32*>(kKindTableAddress)[static_cast<u32>(entry->kind_04)];
+    const u32 kind = (force_kind != 0) ? kForcedKind : table_kind;
+    u32* const out = (arena->cursor_08 != 0)
+                         ? reinterpret_cast<u32*>(arena->cursor_08)
+                         : g_GpuCommandCursor;
+
+    // 0x15BCDC..0x15BCE8: translate the 0x20000 framebuffer address once.
+    const ScreenAddressFn screen_address =
+        reinterpret_cast<ScreenAddressFn>(engine_func_002c39a4);
+    const PhysicalAddressFn physical_address =
+        reinterpret_cast<PhysicalAddressFn>(engine_func_002bc300);
+    const u32 framebuffer = screen_address(0x20000u);
+    const u32 base = physical_address(framebuffer);
+
+    // 0x15BCEC..0x15BDA8: [entry+0x20] is used directly when non-zero;
+    // otherwise the self-relative field at [entry+0x0C] is resolved, and a
+    // zero offset passes address 0 to the translation helper.
+    u32 source;
+    if (entry->address_20 != 0) {
+        source = entry->address_20;
+    } else if (entry->relative_0C != 0) {
+        source = reinterpret_cast<u32>(entry) + 0x0Cu + entry->relative_0C;
+    } else {
+        source = 0;
+    }
+    const u32 offset = physical_address(source) - base;
+
+    // 0x15BD14..0x15BD3C: first two pairs.
+    u32 first_value = offset;
+    u32 second_value = entry->value_08;
+    if (entry->type_00 == kSpecialType) {
+        first_value |= 0x80000000u;
+        second_value >>= 1;
+    }
+    out[0] = first_value;
+    out[1] = kCmd0227;
+    out[2] = second_value;
+    out[3] = kCmd0228;
+
+    // 0x15BD40..0x15BDC0: kind-selected attributes.  The word at +0x20 is only
+    // written for kinds 4, 5, 6 and 0x6010; every other kind leaves it as was.
+    const u32 attribute = (kind == 4) ? 0x100u : 0u;
+    out[4] = attribute;
+    out[5] = kCmd0229;
+    out[6] = attribute;
+    out[7] = kCmd0253;
+    if (kind == 4 || kind == kForcedKind) {
+        out[8] = 0x300u;
+    } else if (kind == 5) {
+        out[8] = 0x100u;
+    } else if (kind == 6) {
+        out[8] = 0x200u;
+    }
+
+    // 0x15BDC0..0x15BE28: fixed tail of the packet.
+    out[9] = kCmd025E;
+    out[10] = 1;
+    out[11] = kCmd025F;
+    out[12] = 0;
+    out[13] = kCmd0245;
+    out[14] = 1;
+    out[15] = kCmd022F;
+    out[16] = 1;
+    out[17] = kCmd0245;
+    out[18] = 1;
+    out[19] = kCmd0231;
+    out[20] = 0;
+    out[21] = kCmdVtx025E;
+    out[22] = 0;
+    out[23] = kCmdVtx025E;
+    out[24] = 1;
+    out[25] = kCmd0111;
+    out[26] = 1;
+    out[27] = kCmd0110;
+
+    // 0x15BE2C..0x15BE7C: advance the owning cursor by 0x70 when the block
+    // fits.  The arena fields are re-read after the packet stores.
+    const u32 cursor = arena->cursor_08;
+    if (cursor != 0) {
+        if (static_cast<u32>(cursor + kPacketSize) <= arena->limit_04) {
+            arena->cursor_08 = cursor + kPacketSize;
+        }
+    } else {
+        const u32 global_cursor = reinterpret_cast<u32>(g_GpuCommandCursor);
+        const u32 global_end = reinterpret_cast<u32>(g_GpuCommandEnd);
+        if (static_cast<u32>(global_cursor + kPacketSize) <= global_end) {
+            g_GpuCommandCursor = reinterpret_cast<u32*>(global_cursor + kPacketSize);
+        }
+    }
+
+    return kPacketSize;
 }
 
 // DECOMP_FUNC(0x0015bf14, 76)
