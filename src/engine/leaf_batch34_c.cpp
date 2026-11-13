@@ -8268,119 +8268,112 @@ extern "C" __attribute__((naked)) void camp_func_001ee3f8() {
     );
 }
 
+// ---------------------------------------------------------------------------
+// 0x001F4E2C -- camp-work gate.
+//
+// [object+0x3064] is a signed camp phase.  A negative phase aborts with 0 and
+// leaves both caller outputs untouched.  Otherwise the 64-bit outputs are
+// cleared, the camp work base is fetched through 0x002A8A08, and the phase is
+// reloaded (that fetch may publish a new phase).
+//   * phase == 0x270F: accumulate a 64-bit flag mask.  [object+0x345C] adds
+//     one; [object+0x345D..0x345F] gate three work bytes at +0x9108..+0x910A,
+//     each contributing 1 << (byte + 1) as a sign-extended 32-bit value.
+//   * phase == 0: store 1.
+//   * phase > 0: replace the mask with the same shifted byte read from
+//     work+0x9107+phase.
+// Every path then lets 0x0028CDE4 fill two pre-zeroed s16 stack slots from the
+// object; the second slot (the original's sp+0) is sign-extended into the
+// second 64-bit output and the function returns 1.
+//
+// The two output pointers are assumed not to alias the object or the camp work
+// base; aliasing would observe the original's intermediate 64-bit stores.
+// ---------------------------------------------------------------------------
+namespace {
+
+constexpr u32 kCampPhaseOffset = 0x3064;   // s32 phase word in the object
+constexpr s32 kCampPhaseComplete = 0x270F; // completed-phase sentinel (9999)
+constexpr u32 kCampFlagA = 0x345C;         // u8 gates at 0x345C..0x345F
+constexpr u32 kCampFlagB = 0x345D;
+constexpr u32 kCampFlagC = 0x345E;
+constexpr u32 kCampFlagD = 0x345F;
+constexpr u32 kCampPhaseRow = 0x9107;      // u8 row indexed by the phase
+constexpr u32 kCampEntryB = 0x9108;        // three fixed u8 entries
+constexpr u32 kCampEntryC = 0x9109;
+constexpr u32 kCampEntryD = 0x910A;
+
+// 0x002A8A08 is `return *(u32*)0x0043E2A8[1] + 0x8C;`: it reads no argument
+// register.  The original nonetheless leaves the entry phase in r0, the flag
+// output pointer in r1 and zero in r2/r3, so the declaration carries those
+// values and the call reproduces the original register image.
+using CampGetWorkFn = u8* (*)(s32 entry_phase, u64* flag_mask, u32 zero);
+
+// 0x0028CDE4(object, r1, r2) writes one s16 through each output pointer and
+// reads only r0.  The original passes r1 = sp + 4 and r2 = sp, both pre-zeroed;
+// only the r2 slot is consumed below.
+using CampFillResultFn = void (*)(u8* object, s16* aux, s16* value);
+
+// ARM `lsl` by a register uses the low byte of the count and yields zero for
+// counts of 32 or more; the following `asr #31` sign-extends the 32-bit result.
+// The pair therefore adds (s64)(s32)(1u << ((byte + 1) & 0xFF)).
+inline u64 ShiftedFlagValue(u8 encoded) {
+    const u32 shift = (static_cast<u32>(encoded) + 1u) & 0xFFu;
+    const u32 value = shift < 32u ? (1u << shift) : 0u;
+    return static_cast<u64>(static_cast<s64>(static_cast<s32>(value)));
+}
+
+} // namespace
+
 // DECOMP_FUNC(0x001f4e2c, 408)
-extern "C" __attribute__((naked)) void camp_func_001f4e2c() {
-    asm volatile(
-        "push {r4, r5, r6, r7, lr}\n"
-        "mov r5, r0\n"
-        "add r7, r0, #0x3000\n"
-        "sub sp, sp, #0xc\n"
-        "ldr r0, [r7, #0x64]\n"
-        "mov r4, r1\n"
-        "mov r6, r2\n"
-        "cmp r0, #0\n"
-        "movlt r0, #0\n"
-        "blt .L_001f4fa4\n"
-        "mov r2, #0\n"
-        "mov r3, r2\n"
-        "strd r2, r3, [r4]\n"
-        "str r2, [r6]\n"
-        "str r2, [r6, #4]\n"
-        "bl camp_func_002a8a08\n"
-        "ldr r2, [r7, #0x64]\n"
-        "mov r1, #1\n"
-        "sub r3, r2, #0x2700\n"
-        "subs r3, r3, #0xf\n"
-        "bne .L_001f4f48\n"
-        ".word 0xe59f2124\n"
-        "ldrb r2, [r2, r5]\n"
-        "cmp r2, #0\n"
-        "beq .L_001f4ea4\n"
-        "ldrd r2, r3, [r4]\n"
-        "adds ip, r2, #1\n"
-        "adc r2, r3, #0\n"
-        "str r2, [r4, #4]\n"
-        "str ip, [r4]\n"
-        ".L_001f4ea4:\n"
-        ".word 0xe59f2104\n"
-        "ldrb r2, [r2, r5]\n"
-        "cmp r2, #0\n"
-        "beq .L_001f4ed8\n"
-        ".word 0xe59f20f8\n"
-        "ldm r4, {r3, ip}\n"
-        "ldrb r2, [r2, r0]\n"
-        "add r2, r2, #1\n"
-        "lsl r2, r1, r2\n"
-        "asr r7, r2, #0x1f\n"
-        "adds r2, r2, r3\n"
-        "adc r3, ip, r7\n"
-        "strd r2, r3, [r4]\n"
-        ".L_001f4ed8:\n"
-        ".word 0xe59f20d8\n"
-        "ldrb r2, [r2, r5]\n"
-        "cmp r2, #0\n"
-        "beq .L_001f4f10\n"
-        ".word 0xe59f20cc\n"
-        "ldr ip, [r4]\n"
-        "ldr r3, [r4, #4]\n"
-        "ldrb r2, [r2, r0]\n"
-        "add r2, r2, #1\n"
-        "lsl r2, r1, r2\n"
-        "asr r7, r2, #0x1f\n"
-        "adds r2, r2, ip\n"
-        "adc r3, r3, r7\n"
-        "strd r2, r3, [r4]\n"
-        ".L_001f4f10:\n"
-        ".word 0xe59f20a8\n"
-        "ldrb r2, [r2, r5]\n"
-        "cmp r2, #0\n"
-        "beq .L_001f4f78\n"
-        "add r0, r0, #0x9100\n"
-        "ldrb r0, [r0, #0xa]\n"
-        "ldrd r2, r3, [r4]\n"
-        "add r0, r0, #1\n"
-        "lsl r0, r1, r0\n"
-        "asr r1, r0, #0x1f\n"
-        "adds r0, r0, r2\n"
-        "adc r1, r1, r3\n"
-        ".L_001f4f40:\n"
-        "strd r0, r1, [r4]\n"
-        "b .L_001f4f78\n"
-        ".L_001f4f48:\n"
-        "cmp r2, #0\n"
-        "moveq r0, #1\n"
-        "moveq r1, #0\n"
-        "blt .L_001f4f78\n"
-        "beq .L_001f4f40\n"
-        "add r0, r0, #0x9100\n"
-        "add r0, r0, #7\n"
-        "ldrb r0, [r2, r0]\n"
-        "add r0, r0, #1\n"
-        "lsl r0, r1, r0\n"
-        "asr r1, r0, #0x1f\n"
-        "strd r0, r1, [r4]\n"
-        ".L_001f4f78:\n"
-        "mov r0, #0\n"
-        "strh r0, [sp, #4]\n"
-        "strh r0, [sp]\n"
-        "mov r2, sp\n"
-        "add r1, sp, #4\n"
-        "mov r0, r5\n"
-        "bl camp_func_0028cde4\n"
-        "ldrsh r0, [sp]\n"
-        "asr r1, r0, #0x1f\n"
-        "strd r0, r1, [r6]\n"
-        "mov r0, #1\n"
-        ".L_001f4fa4:\n"
-        "add sp, sp, #0xc\n"
-        "pop {r4, r5, r6, r7, pc}\n"
-        ".word 0x0000345c\n"
-        ".word 0x0000345d\n"
-        ".word 0x00009108\n"
-        ".word 0x0000345e\n"
-        ".word 0x00009109\n"
-        ".word 0x0000345f\n"
-    );
+extern "C" s32 camp_func_001f4e2c(u8* object, u64* flag_mask, s64* result) {
+    // 0x001F4E3C..0x001F4E50: signed entry gate.
+    const s32 entry_phase =
+        *reinterpret_cast<const s32*>(object + kCampPhaseOffset);
+    if (entry_phase < 0) {
+        return 0;
+    }
+
+    // 0x001F4E54..0x001F4E64: 64-bit clear of the first output, two 32-bit
+    // clears of the second.
+    *flag_mask = 0;
+    *reinterpret_cast<u32*>(result) = 0;
+    *reinterpret_cast<u32*>(reinterpret_cast<u8*>(result) + 4) = 0;
+
+    // 0x001F4E68: camp work base.  The callee ignores the argument registers;
+    // they are passed to keep the original call image.
+    u8* const camp = reinterpret_cast<CampGetWorkFn>(camp_func_002a8a08)(
+        entry_phase, flag_mask, 0);
+
+    // 0x001F4E6C: reload after the fetch.
+    const s32 phase =
+        *reinterpret_cast<const s32*>(object + kCampPhaseOffset);
+
+    if (phase == kCampPhaseComplete) {
+        if (object[kCampFlagA] != 0) {
+            *flag_mask = *flag_mask + 1u;
+        }
+        if (object[kCampFlagB] != 0) {
+            *flag_mask = *flag_mask + ShiftedFlagValue(camp[kCampEntryB]);
+        }
+        if (object[kCampFlagC] != 0) {
+            *flag_mask = *flag_mask + ShiftedFlagValue(camp[kCampEntryC]);
+        }
+        if (object[kCampFlagD] != 0) {
+            *flag_mask = *flag_mask + ShiftedFlagValue(camp[kCampEntryD]);
+        }
+    } else if (phase == 0) {
+        *flag_mask = 1;
+    } else if (phase > 0) {
+        *flag_mask =
+            ShiftedFlagValue(camp[kCampPhaseRow + static_cast<u32>(phase)]);
+    }
+
+    // 0x001F4F78..0x001F4F9C: the helper may write either s16 slot; only the
+    // value written through r2 (sp+0) is sign-extended into the output.
+    s16 aux = 0;
+    s16 value = 0;
+    reinterpret_cast<CampFillResultFn>(camp_func_0028cde4)(object, &aux, &value);
+    *result = static_cast<s64>(value);
+    return 1;
 }
 
 // DECOMP_FUNC(0x001f8d04, 796)
