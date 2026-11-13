@@ -486,83 +486,149 @@ extern "C" void camp_func_0029dcd4(void* target, u32 arg1, u32 skill_id, u32 sub
 }
 
 // DECOMP_FUNC(0x003beb40, 576)
-extern "C" __attribute__((naked)) void ui_func_003beb40() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4ff0, 0xe92d, 0x6001, 0xe1a0\n"
-        ".hword 0x8002, 0xe1a0, 0x9000, 0xe1a0\n"
-        ".hword 0xa003, 0xe1a0, 0x8b08, 0xed2d\n"
-        ".hword 0xd04c, 0xe24d, 0xab40, 0xeeb0\n"
-        ".hword 0x7090, 0xe59d, 0xba7e, 0xed9f\n"
-        ".hword 0x8a7e, 0xed9f, 0x5449, 0xebfb\n"
-        ".hword 0xb000, 0xe1a0, 0x1006, 0xe1a0\n"
-        ".hword 0xfc48, 0xebfa, 0x4000, 0xe1a0\n"
-        ".hword 0x1008, 0xe1a0, 0x000b, 0xe1a0\n"
-        ".hword 0xfc44, 0xebfa, 0x5000, 0xe1a0\n"
-        ".hword 0x0ff4, 0xe1d4, 0x1000, 0xe5d4\n"
-        ".hword 0x0a10, 0xee00, 0x0004, 0xe311\n"
-        ".hword 0x8a71, 0x1d9f, 0x0008, 0xe3a0\n"
-        ".hword 0x9ac0, 0xeeb8, 0x6a10, 0xee00\n"
-        ".hword 0x0ac0, 0xeeb8, 0xaf1a, 0xebf9\n"
-        ".hword 0x8a40, 0xeef0, 0x8a10, 0xee00\n"
-        ".hword 0x000a, 0xe3a0, 0x0ac0, 0xeeb8\n"
-        ".hword 0xaf15, 0xebf9, 0x9a40, 0xeef0\n"
-        ".hword 0x1008, 0xe1a0, 0x0006, 0xe1a0\n"
-        ".hword 0xff2e, 0xebff, 0x0a40, 0xeef0\n"
-        ".hword 0x0aa9, 0xee28, 0x1006, 0xe1a0\n"
-        ".hword 0x000b, 0xe1a0, 0x8a20, 0xee60\n"
-        ".hword 0x0fe7, 0xebfb, 0x2000, 0xe1a0\n"
-        ".hword 0x100b, 0xe1a0, 0x0024, 0xe28d\n"
-        ".hword 0x2277, 0xebfa, 0x0024, 0xe28d\n"
-        ".hword 0x8000, 0xe3a0, 0x0a08, 0xec90\n"
-        ".hword 0x1048, 0xe28d, 0x0a08, 0xec8d\n"
-        ".hword 0x0044, 0xe59d, 0x0020, 0xe58d\n"
-        ".hword 0x00b2, 0xe1dd, 0x8048, 0xe58d\n"
-        ".hword 0xb01b, 0xebf9, 0x5419, 0xebfb\n"
-        ".hword 0x1006, 0xe1a0, 0x0fd6, 0xebfb\n"
-        ".hword 0x0000, 0xe590, 0x0002, 0xe310\n"
-        ".hword 0x000a, 0x0a00, 0x0009, 0xe1a0\n"
-        ".hword 0xbde8, 0xebfb, 0x6000, 0xe1b0\n"
-        ".hword 0x0006, 0x0a00, 0x0009, 0xe1a0\n"
-        ".hword 0xbdcd, 0xebfb, 0x1000, 0xe1a0\n"
-        ".hword 0x2001, 0xe3a0, 0x0006, 0xe1a0\n"
-        ".hword 0x152f, 0xebfb, 0x8000, 0xe1a0\n"
-        ".hword 0x0a3e, 0xed9f, 0x0a3e, 0xeddf\n"
-        ".hword 0x00b8, 0xe1dd, 0xaa00, 0xee09\n"
-        ".hword 0x1007, 0xe08a, 0x1a10, 0xee01\n"
-        ".hword 0x1a3b, 0xeddf, 0x8a10, 0xee00\n"
-        ".hword 0x9a38, 0xeddf, 0xb901, 0xe28b\n"
-        ".hword 0xbe4a, 0xe28b, 0x2a20, 0xee2a\n"
-        ".hword 0x0a90, 0xee00, 0x0000, 0xe59b\n"
-        ".hword 0x0701, 0xe310, 0x2a60, 0xeef8\n"
-        ".hword 0x0ac1, 0xeef8, 0x1ac0, 0xeeb8\n"
-        ".hword 0x2a2a, 0xee22, 0x0aa9, 0xee22\n"
-        ".hword 0x0aa1, 0xee60, 0x1a28, 0xee62\n"
-        ".hword 0x1a88, 0xee61, 0x1a80, 0xee61\n"
-        ".hword 0x0aa0, 0xee81, 0x0a0b, 0xee30\n"
-        ".hword 0x8a01, 0xee30, 0x000d, 0x1a00\n"
-        ".hword 0x0000, 0xe5d4, 0x0004, 0xe310\n"
-        ".hword 0x0000, 0xe5d5, 0x0004, 0xe200\n"
-        ".hword 0x0002, 0x0a00, 0x0000, 0xe350\n"
-        ".hword 0x0014, 0x0a00, 0x0001, 0xea00\n"
-        ".hword 0x0000, 0xe350, 0x0011, 0x0a00\n"
-        ".hword 0xf000, 0xe320, 0xffb7, 0xebf9\n"
-        ".hword 0x0a00, 0xed90, 0x8a08, 0xee20\n"
-        ".hword 0x014b, 0xe5d5, 0x0000, 0xe08d\n"
-        ".hword 0x000e, 0xe5d0, 0x0000, 0xe350\n"
-        ".hword 0x0003, 0x0a00, 0x0a10, 0xee00\n"
-        ".hword 0x0a40, 0xeeb8, 0x0a29, 0xee20\n"
-        ".hword 0x8a00, 0xee28, 0xd04c, 0xe28d\n"
-        ".hword 0x0ac8, 0xeebd, 0x8b08, 0xecbd\n"
-        ".hword 0x0a10, 0xee10, 0x8ff0, 0xe8bd\n"
-        ".hword 0xf000, 0xe320, 0xffa5, 0xebf9\n"
-        ".hword 0x0a02, 0xed90, 0xf000, 0xe320\n"
-        ".hword 0xffeb, 0xeaff, 0x0000, 0x0000\n"
-        ".hword 0x0000, 0x3f80, 0xcccd, 0x3f4c\n"
-        ".hword 0x0000, 0x4090, 0xaaab, 0x3eaa\n"
-        ".hword 0xd70a, 0x3c23, 0x0000, 0x3f00\n"
-    );
+//
+// Integer percentage-like estimator for a unit pair. It combines the primary
+// record's stat scaled by 4.5 with the caller-supplied base/scale floats, two
+// category multipliers, a status multiplier, a per-record 0.8/1.0 factor, the
+// view builder's percentage, an optional battle-object bonus, the camp
+// modifier table, and an affinity percentage. The result is converted to a
+// signed integer by the FPSCR rounding conversion in the tail.
+extern "C" void* ui_func_00293c98();
+extern "C" u8* ui_func_0027dca0(void* ui, s32 unit_id);
+extern "C" float ui_func_0022a824(s32 category, float unit_id);
+extern "C" float ui_func_003be898(s32 primary_id, s32 secondary_id);
+extern "C" u8* ui_func_00282b94(void* ui, s32 unit_id);
+extern "C" void camp_func_002475e4(void* view, void* ui, const u8* row);
+extern "C" void func_0022ac9c(u16 id, void* out);
+extern "C" void* battle_func_002ae3f0(void* ctx);
+extern "C" s32 script_vm_func_002ae394(void* ctx);
+extern "C" s32 func_0028412c(void* object, s32 count, s32 flag);
+extern "C" u8* camp_func_0023ebf0();
+
+namespace ui_beb40 {
+
+// Offsets inside a primary/secondary record. The record pointers returned by
+// 0x27DCA0 are row + 0xCC, so record + 0xF4 / + 0x14B are row + 0x1C0 /
+// row + 0x217.
+constexpr u32 kRecordFlags = 0x00;        // u8 flags
+constexpr u32 kPrimaryStat = 0xF4;        // s16 stat added as stat * 4.5
+constexpr u32 kSecondaryAffinity = 0x14B; // u8 affinity-table index
+
+constexpr u32 kGlobalFlags = 0x44A0;      // u32 flag word on the UI singleton
+constexpr u32 kGlobalFlagsSuppressCamp = 0x40000; // bit 18 disables the table
+
+constexpr u32 kRowBonusFlag = 0x02;       // row[0] bit 1 gates the bonus lookup
+constexpr u8 kRecordScaledFlag = 0x04;    // record[0] bit 2 selects 0.8
+
+constexpr s32 kCategoryPrimary = 8;       // 0x22A824 category for the primary id
+constexpr s32 kCategorySecondary = 10;    // 0x22A824 category for the secondary id
+
+constexpr float kStatScale = 4.5f;
+constexpr float kOneThird = 1.0f / 3.0f;
+constexpr float kPercentScale = 0.01f;
+constexpr float kHalf = 0.5f;
+constexpr float kUnscaled = 1.0f;
+constexpr float kScaled = 0.8f;
+
+constexpr u32 kViewPercentOffset = 8;     // u16 percentage inside the view
+constexpr u32 kViewAffinityOffset = 0x0E; // indexed affinity byte table
+constexpr u32 kViewSentinelOffset = 2;    // u16 forwarded to 0x22AC9C
+
+struct View {
+    u8 bytes[0x22];
 };
+
+inline u16 load_u16(const u8* p) {
+    return static_cast<u16>(p[0] | (static_cast<u16>(p[1]) << 8));
+}
+
+}  // namespace ui_beb40
+
+extern "C" s32 ui_func_003beb40(void* ctx, s32 primary_id, s32 secondary_id,
+                                s32 range_a, s32 range_b, float base_value,
+                                float scale) {
+    void* const ui = ui_func_00293c98();
+    const u8* const primary_record = ui_func_0027dca0(ui, primary_id);
+    const u8* const secondary_record = ui_func_0027dca0(ui, secondary_id);
+
+    const s16 primary_stat =
+        *reinterpret_cast<const s16*>(primary_record + ui_beb40::kPrimaryStat);
+    const u8 primary_flags = primary_record[ui_beb40::kRecordFlags];
+    const float record_scale =
+        (primary_flags & ui_beb40::kRecordScaledFlag) != 0
+            ? ui_beb40::kScaled
+            : ui_beb40::kUnscaled;
+
+    const float category_primary = ui_func_0022a824(
+        ui_beb40::kCategoryPrimary, static_cast<float>(primary_id));
+    const float category_secondary = ui_func_0022a824(
+        ui_beb40::kCategorySecondary, static_cast<float>(secondary_id));
+    const float status_scale = ui_func_003be898(primary_id, secondary_id);
+    const float combined_scale =
+        category_primary * category_secondary * status_scale;
+
+    ui_beb40::View view;
+    const u8* const primary_row = ui_func_00282b94(ui, primary_id);
+    camp_func_002475e4(&view, ui, primary_row);
+
+    // The original forwards view[2..3] to the id mapper and never reads the
+    // written word, but keeps the call in the sequence.
+    u32 mapped_id = 0;
+    func_0022ac9c(
+        ui_beb40::load_u16(view.bytes + ui_beb40::kViewSentinelOffset),
+        &mapped_id);
+
+    void* const ui_again = ui_func_00293c98();
+    const u8* const bonus_row = ui_func_00282b94(ui_again, primary_id);
+
+    s32 bonus = 0;
+    if ((*reinterpret_cast<const u32*>(bonus_row) & ui_beb40::kRowBonusFlag) != 0) {
+        void* const object = battle_func_002ae3f0(ctx);
+        if (object != nullptr) {
+            bonus = func_0028412c(object, script_vm_func_002ae394(ctx), 1);
+        }
+    }
+
+    const u16 view_percent =
+        ui_beb40::load_u16(view.bytes + ui_beb40::kViewPercentOffset);
+    const s32 range_sum = static_cast<s32>(
+        static_cast<u32>(range_a) + static_cast<u32>(range_b));
+
+    // Same operation order as the original: base, 1/3, caller scale, combined
+    // helper factors, record factor, view percentage, divisor, bonus.
+    float result =
+        (base_value + static_cast<float>(primary_stat) * ui_beb40::kStatScale) *
+        ui_beb40::kOneThird * scale;
+    result = result * combined_scale;
+    result = result * record_scale;
+    result = result *
+             (static_cast<float>(view_percent) * ui_beb40::kPercentScale);
+    result = result / (ui_beb40::kHalf * static_cast<float>(range_sum));
+    result = result + 0.0f;
+    result = result + static_cast<float>(bonus);
+
+    const u32 global_flags = *reinterpret_cast<const u32*>(
+        static_cast<u8*>(ui_again) + ui_beb40::kGlobalFlags);
+    if ((global_flags & ui_beb40::kGlobalFlagsSuppressCamp) == 0) {
+        const u8* const camp = camp_func_0023ebf0();
+        const float multiplier =
+            (secondary_record[ui_beb40::kRecordFlags] &
+             ui_beb40::kRecordScaledFlag) != 0
+                ? *reinterpret_cast<const float*>(camp)
+                : *reinterpret_cast<const float*>(camp + 8);
+        result = result * multiplier;
+    }
+
+    const u8 affinity_index = secondary_record[ui_beb40::kSecondaryAffinity];
+    const u8 affinity =
+        view.bytes[ui_beb40::kViewAffinityOffset + affinity_index];
+    if (affinity != 0) {
+        result = result *
+                 (static_cast<float>(affinity) * ui_beb40::kPercentScale);
+    }
+
+    return static_cast<s32>(result);
+}
 
 // DECOMP_FUNC(0x002a72fc, 580)
 extern "C" __attribute__((naked)) void script_vm_func_002a72fc() {
