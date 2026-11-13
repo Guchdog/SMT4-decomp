@@ -1482,7 +1482,7 @@ address,size,status,category,name,src_file
 0x0015a3f4,44,matching,unknown,func_0015a3f4,src/engine/leaf_batch39_b.cpp
 0x0015a420,108,matching,unknown,func_0015a420,src/engine/leaf_batch25_a.cpp
 0x0015a48c,404,matching,unknown,func_0015a48c,src/engine/leaf_batch14_c.cpp
-0x0015a620,416,matching,unknown,func_0015a620,src/engine/leaf_batch41_c.cpp
+0x0015a620,416,non_matching,unknown,func_0015a620,src/engine/leaf_batch41_c.cpp
 0x0015a7c0,720,matching,ui,ui_func_0015a7c0,src/engine/leaf_batch45_a.cpp
 0x0015aa90,1812,matching,unknown,func_0015aa90,src/engine/leaf_batch45_c.cpp
 0x0015b1a4,408,non_matching,unknown,func_0015b1a4,src/engine/leaf_batch28_a.cpp

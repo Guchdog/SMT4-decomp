@@ -2369,37 +2369,151 @@ extern "C" void func_003d58c4(func_3d58c4::SceneState* self, s32 value) {
 }
 
 // DECOMP_FUNC(0x0015a620, 416)
-// 97 ARM instructions through unconditional pop; 28 trailing data bytes.
-extern "C" __attribute__((naked)) void func_0015a620() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4070, 0xe59000a0, 0xe3500000, 0x0a00005b\n"
-        ".word 0xe5901008, 0xeddf0a5a, 0xe3a00000, 0xe28130c4\n"
-        ".word 0xed911a2d, 0xe591c0c4, 0xed9f0a56, 0xeeb41ae0\n"
-        ".word 0xe35c0000, 0x108c0003, 0xe28130b4, 0xeef1fa10\n"
-        ".word 0xceb01a60, 0xca000003, 0xeef01a40, 0xeeb41ae1\n"
-        ".word 0xeef1fa10, 0x3eb01a40, 0xeddf1a4c, 0xed9f2a4a\n"
-        ".word 0xeef02a61, 0xee412a02, 0xeebc1ae2, 0xee11ca10\n"
-        ".word 0xed931a01, 0xe20cc0ff, 0xeeb41ae0, 0xeef1fa10\n"
-        ".word 0xceb01a60, 0xca000003, 0xeef02a40, 0xeeb41ae2\n"
-        ".word 0xeef1fa10, 0x3eb01a40, 0xeef02a61, 0xee412a02\n"
-        ".word 0xeebc1ae2, 0xee11ea10, 0xed931a02, 0xe20ee0ff\n"
-        ".word 0xeeb41ae0, 0xeef1fa10, 0xceb01a60, 0xca000003\n"
-        ".word 0xeef02a40, 0xeeb41ae2, 0xeef1fa10, 0x3eb01a40\n"
-        ".word 0xeef02a61, 0xee412a02, 0xeebc1ae2, 0xee114a10\n"
-        ".word 0xed931a03, 0xe20440ff, 0xeeb41ae0, 0xeef1fa10\n"
-        ".word 0xceb00a60, 0xca000002, 0xeeb41ac0, 0xeef1fa10\n"
-        ".word 0x2eb00a41, 0xe20c30ff, 0xe3c220ff, 0xe1a0c40e\n"
-        ".word 0xe1822003, 0xe20c3cff, 0xee401a02, 0xe3c2ccff\n"
-        ".word 0xe1a02804, 0xe183300c, 0xe202c8ff, 0xe3c338ff\n"
-        ".word 0xe59f4064, 0xe183300c, 0xe3c334ff, 0xe5911018\n"
-        ".word 0xeebc0ae1, 0xe2111002, 0x13a01801, 0xee102a10\n"
-        ".word 0xe183cc02, 0xe3cce4ff, 0xe594c000, 0xe59f2034\n"
-        ".word 0xe59f302c, 0xe28c5010, 0xe58c200c, 0xe88c400a\n"
-        ".word 0xe3a01017, 0xe5845000, 0xe8bd4070, 0xea051e41\n"
-        ".word 0xe8bd8070, 0x3f800000, 0x00000000, 0x437f0000\n"
-        ".word 0x3f000000, 0x000400e0, 0x000f00e1, 0x004652a0\n"
-    );
+//
+// Recovered contract (ARM 0x0015A620..0x0015A79C plus seven literal words at
+// 0x0015A7A4..0x0015A7BC: 1.0f, 0.0f, 255.0f, 0.5f, 0x000400E0, 0x000F00E1
+// and the address of g_GpuCommandCursor):
+//   * `state = *(GpuState**)(self + 0xA0)`; a null state returns immediately
+//     without reading the entry, writing memory or calling anything.
+//   * `entry = *(Entry**)(state + 0x08)`.  One 16-byte GPU command record is
+//     appended at `g_GpuCommandCursor` (0x004652A0):
+//         +0x0 = (entry->flags_18 & 2) ? 0x00010000 : 0
+//         +0x4 = 0x000400E0
+//         +0x8 = R | G << 8 | B << 16
+//         +0xC = 0x000F00E1
+//     The original stores +0xC first (`str r2, [ip, #0xc]`), then +0x0/+0x4/
+//     +0x8 with one `stm ip, {r1, r3, lr}`, and finally stores cursor+0x10
+//     back to 0x004652A0.  Every source word is loaded before the first store,
+//     so a cursor aliasing the entry still observes the original values.
+//   * The channels at `entry+0xB4/+0xB8/+0xBC/+0xC0` are each clamped to
+//     [0.0f, 1.0f] with NaN passing through unchanged (`vcmpe`, `vmovgt`,
+//     `vmovlo`) and converted by `vcvt.u32.f32` of
+//     `vmla.f32(0.5f, channel, 255.0f)`, i.e. truncation of
+//     `0.5 + 255 * channel`, then masked to a byte.  The fourth channel is
+//     converted the same way but its byte is cleared again
+//     (`bic lr, ip, #0xff000000`), so the record carries only the RGB bytes.
+//     Its conversion is dead apart from VFP status-flag side effects.
+//   * `ui_func_002a20a8(list, 0x17)` is a tail call: the original restores
+//     r4-r6/lr and branches with r0 = `list` and r1 = 0x17.  `list` is the
+//     self-relative pointer held at `entry+0xC4`,
+//     `(u8*)&entry->rel_c4 + entry->rel_c4`, or null when that offset is zero.
+//     0x002A20A8 records the pointer for slot 0x17 in the table at 0x004E9DC8
+//     and appends a call-list command to the same command stream.
+namespace func_15a620 {
+
+constexpr u32 kStateOffset = 0xA0;  // `ldr r0, [r0, #0xa0]`
+constexpr u32 kEntryOffset = 0x08;  // `ldr r1, [r0, #8]`
+
+// Literal pool 0x0015A7A4..0x0015A7B0.
+constexpr f32 kChannelMax = 1.0f;    // 0x3F800000
+constexpr f32 kChannelMin = 0.0f;    // 0x00000000
+constexpr f32 kChannelSpan = 255.0f; // 0x437F0000
+constexpr f32 kRoundBias = 0.5f;     // 0x3F000000
+
+// Literal pool 0x0015A7B4/0x0015A7B8 and the `ands`/`movne` pair at
+// 0x0015A764..0x0015A768.
+constexpr u32 kCommandHeaderRgb = 0x000400E0;
+constexpr u32 kCommandHeaderEnd = 0x000F00E1;
+constexpr u32 kEntryFlagBit = 2;
+constexpr u32 kFlaggedLeadWord = 0x00010000;
+
+// `mov r1, #0x17` before the tail branch.
+constexpr u32 kCommandSlot = 0x17;
+
+// `add r5, ip, #0x10`, stored back to 0x004652A0.
+constexpr u32 kCommandWords = 4;
+
+// `[self+0xA0]` points at a state object whose `+0x08` word is the entry.
+struct GpuState {
+    u8 pad_000[0x08];
+    u8* entry_08;
+};
+
+// The entry fields read by this routine (all other bytes are untouched).
+struct Entry {
+    u8 pad_000[0x18];
+    u32 flags_18;
+    u8 pad_01c[0xB4 - 0x1C];
+    f32 channel_b4;
+    f32 channel_b8;
+    f32 channel_bc;
+    f32 channel_c0;
+    u32 rel_c4;  // self-relative pointer, zero means null
+};
+
+// The object this routine is invoked with; only `+0xA0` is read.
+struct Object {
+    u8 pad_000[0xA0];
+    GpuState* state_a0;
+};
+
+static_assert(offsetof(Object, state_a0) == kStateOffset);
+static_assert(offsetof(GpuState, entry_08) == kEntryOffset);
+static_assert(offsetof(Entry, flags_18) == 0x18);
+static_assert(offsetof(Entry, channel_b4) == 0xB4);
+static_assert(offsetof(Entry, rel_c4) == 0xC4);
+
+// The original converts `0.5f + clamp(entry->channel) * 255.0f` with a single
+// VMLA and `vcvt.u32.f32`.  Clang expands the plain expression into `vmul` +
+// `vadd` (two roundings).  The intermediate value differs in the low bit for
+// some inputs, but an enumeration of every float in the reachable [0, 1]
+// clamp domain (plus the differential boundary cases in the test) shows the
+// truncated byte is identical, so no inline assembly is needed.
+inline u32 channel_to_byte(f32 value) {
+    f32 clamped = value;
+    if (clamped > kChannelMax) {
+        clamped = kChannelMax;
+    } else if (clamped < kChannelMin) {
+        clamped = kChannelMin;
+    }
+    // NaN survives the clamp and converts to zero, exactly like VCVT.
+    return static_cast<u8>(
+        static_cast<u32>(kRoundBias + clamped * kChannelSpan));
+}
+
+}  // namespace func_15a620
+
+// 0x004652A0: bump-allocated GPU command-stream cursor shared with
+// 0x0015B1A4 and 0x002A20A8.
+extern u32* g_GpuCommandCursor;
+
+// 0x002A20A8: registers the command list for a slot and appends the call-list
+// command.  Reached by a tail branch after every callee-saved register has
+// been restored.
+extern "C" void ui_func_002a20a8(void* list, u32 slot);
+
+extern "C" void func_0015a620(void* self) {
+    using namespace func_15a620;
+
+    GpuState* const state = static_cast<Object*>(self)->state_a0;
+    if (state == nullptr) {
+        return;
+    }
+
+    Entry* const entry = reinterpret_cast<Entry*>(state->entry_08);
+
+    // All loads precede the record stores in the original.
+    const u32 lead =
+        (entry->flags_18 & kEntryFlagBit) != 0 ? kFlaggedLeadWord : 0;
+    const u32 red = channel_to_byte(entry->channel_b4);
+    const u32 green = channel_to_byte(entry->channel_b8);
+    const u32 blue = channel_to_byte(entry->channel_bc);
+    const u32 alpha = channel_to_byte(entry->channel_c0);
+    const u32 rgba = red | (green << 8) | (blue << 16) | (alpha << 24);
+    const u32 offset = entry->rel_c4;
+    void* const list =
+        offset != 0
+            ? reinterpret_cast<u8*>(&entry->rel_c4) + offset
+            : nullptr;
+
+    u32* const cursor = g_GpuCommandCursor;
+    cursor[3] = kCommandHeaderEnd;
+    cursor[0] = lead;
+    cursor[1] = kCommandHeaderRgb;
+    cursor[2] = rgba & 0x00FFFFFFu;
+    g_GpuCommandCursor = cursor + kCommandWords;
+
+    ui_func_002a20a8(list, kCommandSlot);
 }
 
 // DECOMP_FUNC(0x002f4804, 416)
