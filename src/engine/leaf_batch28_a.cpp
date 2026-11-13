@@ -7358,113 +7358,128 @@ extern "C" void func_001234dc(u32 mode) {
     }
 }
 
+// ---------------------------------------------------------------------------
+// 0x0015B1A4 -- append three per-draw records to the GPU command stream
+// rooted at g_GpuCommandCursor (0x004652A0).
+//
+//   object+0x08 -> state      (state+0x08 -> u32, bit 2 must be set)
+//   object+0x44 -> node       (null: nothing is emitted)
+//   object+0xA4 -> matrix set (3x4 matrix at +0x148)
+//   node+0x00   -> vtable     (slot 0x14 returns a 3x4 matrix)
+//   node+0x08   -> entry
+//   node+0x0C   -> non-zero enables the vtable transform
+//
+// The first two records (0x80000016 / 0x80000017) copy the 16-byte blocks at
+// entry+0xB8 and entry+0xC8. The third (0x80000018) transforms the entry
+// scale triple at entry+0xD8..+0xE0: when bit 1 of entry+0x18 is set and
+// node+0x0C is non-zero, the scale is first transformed by the vtable matrix
+// and then by the matrix at [object+0xA4]+0x148; the scale triple is re-read
+// after the vtable call. The fourth payload word is the raw word at
+// entry+0xE4 (not converted).
+//
+// Each record is 0x18 bytes: an 8-byte header followed by a 16-byte payload.
+// 0x002A1A08 copies four source words to the destination in reverse order.
+// ---------------------------------------------------------------------------
+extern "C" void func_002a1a08(void* dst, const void* src);  // 0x002A1A08
+extern u32* g_GpuCommandCursor;                             // 0x004652A0
+
+namespace {
+
+constexpr u32 kGpuRecordWords  = 0x18 / 4;      // six words per record
+constexpr u32 kGpuHeaderMarker = 0x804f02c0u;
+constexpr u32 kRenderGateBit   = 4u;            // [object+8] chain, bit 2
+
+inline u8* LoadPointer(const u8* base, u32 offset) {
+    return *reinterpret_cast<u8* const*>(base + offset);
+}
+
+inline u32 LoadU32(const u8* base, u32 offset) {
+    return *reinterpret_cast<const u32*>(base + offset);
+}
+
+inline f32 LoadF32(const u8* base, u32 offset) {
+    return *reinterpret_cast<const f32*>(base + offset);
+}
+
+using GetDrawMatrix = const void* (*)(void*);
+
+}  // namespace
+
 // DECOMP_FUNC(0x0015b1a4, 408)
-extern "C" __attribute__((naked)) void func_0015b1a4() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe92d41f0 @ push {r4, r5, r6, r7, r8, lr}\n"
-        ".inst 0xe24dd010 @ sub sp, sp, #0x10\n"
-        ".inst 0xe1a06000 @ mov r6, r0\n"
-        ".inst 0xe5905044 @ ldr r5, [r0, #0x44]\n"
-        ".inst 0xe3550000 @ cmp r5, #0\n"
-        ".inst 0x0a00005b @ beq #0x15b32c\n"
-        ".inst 0xe5960008 @ ldr r0, [r6, #8]\n"
-        ".inst 0xe3a01004 @ mov r1, #4\n"
-        ".inst 0xe5900008 @ ldr r0, [r0, #8]\n"
-        ".inst 0xe5900000 @ ldr r0, [r0]\n"
-        ".inst 0xe1d10000 @ bics r0, r1, r0\n"
-        ".inst 0x1a000055 @ bne #0x15b32c\n"
-        ".inst 0xe59f715c @ ldr r7, [pc, #0x15c]\n"
-        ".inst 0xe5954008 @ ldr r4, [r5, #8]\n"
-        ".inst 0xe59f8150 @ ldr r8, [pc, #0x150]\n"
-        ".inst 0xe3a0215a @ mov r2, #0x80000016\n"
-        ".inst 0xe5970000 @ ldr r0, [r7]\n"
-        ".inst 0xe28410b8 @ add r1, r4, #0xb8\n"
-        ".inst 0xe8a00104 @ stm r0!, {r2, r8}\n"
-        ".inst 0xeb051a04 @ bl #0x2a1a08\n"
-        ".inst 0xe5970000 @ ldr r0, [r7]\n"
-        ".inst 0xe3a0215e @ mov r2, #0x80000017\n"
-        ".inst 0xe28410c8 @ add r1, r4, #0xc8\n"
-        ".inst 0xe2800018 @ add r0, r0, #0x18\n"
-        ".inst 0xe5870000 @ str r0, [r7]\n"
-        ".inst 0xe8a00104 @ stm r0!, {r2, r8}\n"
-        ".inst 0xeb0519fd @ bl #0x2a1a08\n"
-        ".inst 0xe5970000 @ ldr r0, [r7]\n"
-        ".inst 0xe3a01002 @ mov r1, #2\n"
-        ".inst 0xe2800018 @ add r0, r0, #0x18\n"
-        ".inst 0xe5870000 @ str r0, [r7]\n"
-        ".inst 0xe5940018 @ ldr r0, [r4, #0x18]\n"
-        ".inst 0xed940a36 @ vldr s0, [r4, #0xd8]\n"
-        ".inst 0xed941a37 @ vldr s2, [r4, #0xdc]\n"
-        ".inst 0xedd40a38 @ vldr s1, [r4, #0xe0]\n"
-        ".inst 0xe1d10000 @ bics r0, r1, r0\n"
-        ".inst 0x1a00001b @ bne #0x15b2a8\n"
-        ".inst 0xe595000c @ ldr r0, [r5, #0xc]\n"
-        ".inst 0xe3500000 @ cmp r0, #0\n"
-        ".inst 0x0a000018 @ beq #0x15b2a8\n"
-        ".inst 0xe5950000 @ ldr r0, [r5]\n"
-        ".inst 0xe5901014 @ ldr r1, [r0, #0x14]\n"
-        ".inst 0xe1a00005 @ mov r0, r5\n"
-        ".inst 0xe12fff31 @ blx r1\n"
-        ".inst 0xedd40a36 @ vldr s1, [r4, #0xd8]\n"
-        ".inst 0xed900a00 @ vldr s0, [r0]\n"
-        ".inst 0xed901a04 @ vldr s2, [r0, #0x10]\n"
-        ".inst 0xedd05a08 @ vldr s11, [r0, #0x20]\n"
-        ".inst 0xee200a20 @ vmul.f32 s0, s0, s1\n"
-        ".inst 0xee211a20 @ vmul.f32 s2, s2, s1\n"
-        ".inst 0xee650aa0 @ vmul.f32 s1, s11, s1\n"
-        ".inst 0xed942a37 @ vldr s4, [r4, #0xdc]\n"
-        ".inst 0xed905a01 @ vldr s10, [r0, #4]\n"
-        ".inst 0xedd04a05 @ vldr s9, [r0, #0x14]\n"
-        ".inst 0xed904a09 @ vldr s8, [r0, #0x24]\n"
-        ".inst 0xedd41a38 @ vldr s3, [r4, #0xe0]\n"
-        ".inst 0xedd03a02 @ vldr s7, [r0, #8]\n"
-        ".inst 0xed903a06 @ vldr s6, [r0, #0x18]\n"
-        ".inst 0xee050a02 @ vmla.f32 s0, s10, s4\n"
-        ".inst 0xee041a82 @ vmla.f32 s2, s9, s4\n"
-        ".inst 0xee440a02 @ vmla.f32 s1, s8, s4\n"
-        ".inst 0xedd02a0a @ vldr s5, [r0, #0x28]\n"
-        ".inst 0xee030aa1 @ vmla.f32 s0, s7, s3\n"
-        ".inst 0xee031a21 @ vmla.f32 s2, s6, s3\n"
-        ".inst 0xee420aa1 @ vmla.f32 s1, s5, s3\n"
-        ".inst 0xe59600a4 @ ldr r0, [r6, #0xa4]\n"
-        ".inst 0xe1a0100d @ mov r1, sp\n"
-        ".inst 0xe2800f52 @ add r0, r0, #0x148\n"
-        ".inst 0xedd01a00 @ vldr s3, [r0]\n"
-        ".inst 0xed902a04 @ vldr s4, [r0, #0x10]\n"
-        ".inst 0xedd05a08 @ vldr s11, [r0, #0x20]\n"
-        ".inst 0xee611a80 @ vmul.f32 s3, s3, s0\n"
-        ".inst 0xee222a00 @ vmul.f32 s4, s4, s0\n"
-        ".inst 0xee250a80 @ vmul.f32 s0, s11, s0\n"
-        ".inst 0xed904a09 @ vldr s8, [r0, #0x24]\n"
-        ".inst 0xedd04a05 @ vldr s9, [r0, #0x14]\n"
-        ".inst 0xed905a01 @ vldr s10, [r0, #4]\n"
-        ".inst 0xedd02a0a @ vldr s5, [r0, #0x28]\n"
-        ".inst 0xed903a06 @ vldr s6, [r0, #0x18]\n"
-        ".inst 0xedd03a02 @ vldr s7, [r0, #8]\n"
-        ".inst 0xe59400e4 @ ldr r0, [r4, #0xe4]\n"
-        ".inst 0xee451a01 @ vmla.f32 s3, s10, s2\n"
-        ".inst 0xee042a81 @ vmla.f32 s4, s9, s2\n"
-        ".inst 0xee040a01 @ vmla.f32 s0, s8, s2\n"
-        ".inst 0xee431aa0 @ vmla.f32 s3, s7, s1\n"
-        ".inst 0xee032a20 @ vmla.f32 s4, s6, s1\n"
-        ".inst 0xee020aa0 @ vmla.f32 s0, s5, s1\n"
-        ".inst 0xed8d0a02 @ vstr s0, [sp, #8]\n"
-        ".inst 0xeccd1a02 @ vstmia sp, {s3, s4}\n"
-        ".inst 0xe58d000c @ str r0, [sp, #0xc]\n"
-        ".inst 0xe5972000 @ ldr r2, [r7]\n"
-        ".inst 0xe3a00162 @ mov r0, #0x80000018\n"
-        ".inst 0xe8820101 @ stm r2, {r0, r8}\n"
-        ".inst 0xe2820008 @ add r0, r2, #8\n"
-        ".inst 0xeb0519b9 @ bl #0x2a1a08\n"
-        ".inst 0xe5970000 @ ldr r0, [r7]\n"
-        ".inst 0xe2800018 @ add r0, r0, #0x18\n"
-        ".inst 0xe5870000 @ str r0, [r7]\n"
-        ".inst 0xe28dd010 @ add sp, sp, #0x10\n"
-        ".inst 0xe8bd81f0 @ pop {r4, r5, r6, r7, r8, pc}\n"
-        ".word 0x804f02c0 @ bounded tail data\n"
-        ".word 0x004652a0 @ bounded tail data\n"
-    );
+extern "C" void func_0015b1a4(void* object) {
+    u8* const base = static_cast<u8*>(object);
+
+    u8* const node = LoadPointer(base, 0x44);
+    if (node == nullptr) {
+        return;
+    }
+
+    // Two pointer hops from object+0x08, then a plain word load.
+    u8* const state = LoadPointer(base, 0x08);
+    const u32 render_flags = LoadU32(LoadPointer(state, 0x08), 0);
+    if ((render_flags & kRenderGateBit) == 0) {
+        return;
+    }
+
+    u8* const entry = LoadPointer(node, 0x08);
+
+    u32* const first = g_GpuCommandCursor;
+    first[0] = 0x80000016u;
+    first[1] = kGpuHeaderMarker;
+    func_002a1a08(first + 2, entry + 0xb8);
+    g_GpuCommandCursor = g_GpuCommandCursor + kGpuRecordWords;
+
+    u32* const second = g_GpuCommandCursor;
+    second[0] = 0x80000017u;
+    second[1] = kGpuHeaderMarker;
+    func_002a1a08(second + 2, entry + 0xc8);
+    g_GpuCommandCursor = g_GpuCommandCursor + kGpuRecordWords;
+
+    f32 x = LoadF32(entry, 0xd8);
+    f32 y = LoadF32(entry, 0xdc);
+    f32 z = LoadF32(entry, 0xe0);
+
+    if ((LoadU32(entry, 0x18) & 2u) != 0 && LoadU32(node, 0x0c) != 0) {
+        void** const vtable = *reinterpret_cast<void***>(node);
+        const u8* const matrix = static_cast<const u8*>(
+            reinterpret_cast<GetDrawMatrix>(vtable[0x14 / 4])(node));
+
+        // The original reloads the scale triple after the vtable call, so a
+        // callee that rewrites entry+0xD8..+0xE0 is observed.
+        const f32 a = LoadF32(entry, 0xd8);
+        const f32 b = LoadF32(entry, 0xdc);
+        const f32 c = LoadF32(entry, 0xe0);
+        x = LoadF32(matrix, 0x00) * a +
+            LoadF32(matrix, 0x04) * b +
+            LoadF32(matrix, 0x08) * c;
+        y = LoadF32(matrix, 0x10) * a +
+            LoadF32(matrix, 0x14) * b +
+            LoadF32(matrix, 0x18) * c;
+        z = LoadF32(matrix, 0x20) * a +
+            LoadF32(matrix, 0x24) * b +
+            LoadF32(matrix, 0x28) * c;
+    }
+
+    // Second transform: the 3x4 matrix at [object+0xA4]+0x148.
+    const u8* const matrix_set = LoadPointer(base, 0xa4);
+    const u8* const m = matrix_set + 0x148;
+    f32 payload[4];
+    payload[0] = LoadF32(m, 0x00) * x +
+                 LoadF32(m, 0x04) * y +
+                 LoadF32(m, 0x08) * z;
+    payload[1] = LoadF32(m, 0x10) * x +
+                 LoadF32(m, 0x14) * y +
+                 LoadF32(m, 0x18) * z;
+    payload[2] = LoadF32(m, 0x20) * x +
+                 LoadF32(m, 0x24) * y +
+                 LoadF32(m, 0x28) * z;
+    payload[3] = LoadF32(entry, 0xe4);  // raw word copied verbatim
+
+    u32* const third = g_GpuCommandCursor;
+    third[0] = 0x80000018u;
+    third[1] = kGpuHeaderMarker;
+    func_002a1a08(third + 2, payload);
+    g_GpuCommandCursor = g_GpuCommandCursor + kGpuRecordWords;
 }
 
 // DECOMP_FUNC(0x00155fd0, 412)
