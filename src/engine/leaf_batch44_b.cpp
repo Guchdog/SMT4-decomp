@@ -3960,61 +3960,183 @@ extern "C" u32 script_vm_func_003359f4(BtlGameOverStepWork* work) {
     return battle_func_0023f2f0(work);
 }
 
-// DECOMP_FUNC(0x0034fc14, 400)
-extern "C" __attribute__((naked)) void engine_func_0034fc14() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x43f8, 0xe92d, 0x6000, 0xe1a0\n"
-        ".hword 0x0f56, 0xe280, 0xaad3, 0xebfb\n"
-        ".hword 0x0000, 0xe350, 0x0007, 0x0a00\n"
-        ".hword 0x0f56, 0xe286, 0xaa96, 0xebfb\n"
-        ".hword 0x0000, 0xe350, 0x0001, 0x1a00\n"
-        ".hword 0x1007, 0xe3a0, 0x100c, 0xe586\n"
-        ".hword 0x0006, 0xe1a0, 0x04fc, 0xeb00\n"
-        ".hword 0x000c, 0xe596, 0x0003, 0xe350\n"
-        ".hword 0x000c, 0x1596, 0x0006, 0x1350\n"
-        ".hword 0x0000, 0x13a0, 0x004b, 0x1a00\n"
-        ".hword 0x000c, 0xe596, 0x0001, 0xe350\n"
-        ".hword 0x000f, 0x0a00, 0x000c, 0xe596\n"
-        ".hword 0x0006, 0xe350, 0x0020, 0x0286\n"
-        ".hword 0xd170, 0x0bfd, 0x4002, 0xe3a0\n"
-        ".hword 0x0006, 0xe1a0, 0xcf86, 0xebfd\n"
-        ".hword 0x400c, 0xe586, 0x0006, 0xe1a0\n"
-        ".hword 0xcf62, 0xebfd, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0x0002, 0xea00\n"
-        ".hword 0x00f4, 0xe59f, 0x1000, 0xe3a0\n"
-        ".hword 0xadf7, 0xebfd, 0x000c, 0xe596\n"
-        ".hword 0x0001, 0xe350, 0x000c, 0x1596\n"
-        ".hword 0x0008, 0x1350, 0x000c, 0x1596\n"
-        ".hword 0x0007, 0x1350, 0xfff5, 0x1aff\n"
-        ".hword 0x8000, 0xe3a0, 0x5108, 0xe086\n"
-        ".hword 0x046c, 0xe595, 0x0000, 0xe350\n"
-        ".hword 0x0028, 0xba00, 0x22e8, 0xe596\n"
-        ".hword 0x0000, 0xe152, 0x002a, 0xda00\n"
-        ".hword 0x2100, 0xe080, 0x1182, 0xe086\n"
-        ".hword 0x1fc3, 0xe291, 0x0026, 0x0a00\n"
-        ".hword 0x1008, 0xe591, 0x0000, 0xe351\n"
-        ".hword 0x0001, 0x1351, 0x4002, 0x03a0\n"
-        ".hword 0x4001, 0x13a0, 0x0100, 0xe086\n"
-        ".hword 0x02ec, 0xe590, 0x1000, 0xe590\n"
-        ".hword 0x2010, 0xe591, 0x100d, 0xe1a0\n"
-        ".hword 0xff32, 0xe12f, 0x0000, 0xe59d\n"
-        ".hword 0x1004, 0xe1a0, 0xd909, 0xebfd\n"
-        ".hword 0x0490, 0xe000, 0x4000, 0xe3a0\n"
-        ".hword 0x0000, 0xe350, 0x7b01, 0xc285\n"
-        ".hword 0x707c, 0xc287, 0x0000, 0xe58d\n"
-        ".hword 0x000c, 0xda00, 0x046c, 0xe595\n"
-        ".hword 0x0100, 0xe086, 0x02ec, 0xe590\n"
-        ".hword 0x1000, 0xe590, 0x101c, 0xe591\n"
-        ".hword 0xff31, 0xe12f, 0x047c, 0xe595\n"
-        ".hword 0x4001, 0xe284, 0x0001, 0xe280\n"
-        ".hword 0x0000, 0xe587, 0x0000, 0xe59d\n"
-        ".hword 0x0004, 0xe150, 0xfff2, 0xcaff\n"
-        ".hword 0x8001, 0xe288, 0x0002, 0xe358\n"
-        ".hword 0xffcf, 0xbaff, 0x0001, 0xe3a0\n"
-        ".hword 0x83f8, 0xe8bd, 0x4000, 0xe3a0\n"
-        ".hword 0xffdb, 0xeaff, 0xa120, 0x0007\n"
-    );
+// ---------------------------------------------------------------------------
+// 0x0034fc14 (400 B): step-wait and per-slot counter stage of the action-step
+// object that also drives camp_func_00351040 (0x00351040).  Both functions read
+// the same layout: a signed entry limit at +0x2E8, an array of object pointers
+// at +0x2EC, 40-byte entries at +0x30C, two slot indices at +0x46C and two
+// per-slot counters at +0x47C.
+//
+// ABI: r0 = object (the only argument).  Returns 0 when the step state is
+// neither 3 nor 6, or after the animation subobject at +0x158 reports an
+// incomplete queue; otherwise returns 1 after the two slot counters are
+// serviced.  No other register or stack word is read on entry.
+//
+// The +0x158 subobject is examined through func_0023a774 (remaining count =
+// [p+0x58] - [p+0x5C], C++ linkage in leaf_matching.cpp) and through
+// engine_func_0023a690, whose return value is used only as a zero/non-zero
+// test.  States 1, 7 and 8 all end the wait loop; state 7 is also the abort
+// state written when the animation check fails.
+// ---------------------------------------------------------------------------
+
+// 0x0023A774: signed remaining count of the subobject at object+0x158.
+s32 func_0023a774(u8* sub);
+extern "C" u32 engine_func_0023a690(void* sub);        // 0x0023A690
+extern "C" void camp_func_00351040(void* obj);         // 0x00351040
+extern "C" void nn_sdk_func_002c4244(void* sync);      // 0x002C4244
+extern "C" void engine_func_002c3aa8(void* lock);      // 0x002C3AA8
+extern "C" void engine_func_002c3a24(void* lock);      // 0x002C3A24
+extern "C" void AsdThread_Sleep(u32 lo, u32 hi);       // 0x002BB490
+// 0x002C615C is the signed integer divide/modulo helper (`__aeabi_idivmod`);
+// the quotient is returned in r0 and the remainder in r1, and only r0 is used.
+extern "C" u64 ui_func_002c615c(s32 numerator, s32 denominator);  // 0x002C615C
+
+// Animation subobject at object+0x158; only the two words read by 0x0023A774 /
+// 0x0023A690 are named.
+struct AnimSub34fc14 {
+    u8  unknown_00[0x58];
+    s32 remaining_end_58;     // +0x58  read by 0x0023A774 / 0x0023A690
+    s32 remaining_pos_5c;     // +0x5C  read by 0x0023A774 / 0x0023A690
+    u8  unknown_60[0x130];
+};
+static_assert(sizeof(AnimSub34fc14) == 0x190, "AnimSub34fc14 size");
+
+// 40-byte entry in the table at object+0x30C.  The word at +0x08 selects a
+// two-frame granularity when it is 0 or 1 (the same test and table appear in
+// camp_func_00351040).
+struct StepEntry34fc14 {
+    u32 unknown_00;
+    u32 unknown_04;
+    u32 mode_08;              // +0x08  0/1 -> factor 2, any other value -> 1
+    u8  unknown_0c[0x1C];
+};
+static_assert(sizeof(StepEntry34fc14) == 40, "StepEntry34fc14 size");
+
+struct StepSlotObject34fc14;
+
+// Virtual table of the per-slot objects; the function calls the entries at
+// +0x10 and +0x1C only.
+struct StepSlotVTable34fc14 {
+    void* unknown_00;
+    void* unknown_04;
+    void* unknown_08;
+    void* unknown_0c;
+    void (*read_value_10)(StepSlotObject34fc14* self, u32* out);  // +0x10
+    void* unknown_14;
+    void* unknown_18;
+    void (*advance_1c)(StepSlotObject34fc14* self);               // +0x1C
+};
+
+struct StepSlotObject34fc14 {
+    const StepSlotVTable34fc14* vtable_00;
+};
+
+// Only the offsets touched by this function (and the two neighbours that share
+// the layout) are declared.
+struct EngineStepObject34fc14 {
+    u8  unknown_000[0x0C];
+    u32 state_0c;                 // +0x0C  3/6 start a step, 1/7/8 finish it
+    u8  unknown_010[0x10];
+    u32 sync_state_20;            // +0x20  sync word reset by 0x002C4244
+    u8  unknown_024[0x158 - 0x024];
+    AnimSub34fc14 anim_158;       // +0x158
+    s32 entry_limit_2e8;          // +0x2E8  signed bound for the slot indices
+    StepSlotObject34fc14* slot_object_2ec[8];   // +0x2EC
+    StepEntry34fc14 slot_entry_30c[8];          // +0x30C
+    u8  unknown_44c[0x46C - 0x44C];
+    s32 slot_index_46c[2];        // +0x46C  negative selects nothing
+    u8  unknown_474[0x47C - 0x474];
+    s32 slot_counter_47c[2];      // +0x47C  incremented once per frame
+};
+static_assert(offsetof(EngineStepObject34fc14, state_0c) == 0x00C);
+static_assert(offsetof(EngineStepObject34fc14, sync_state_20) == 0x020);
+static_assert(offsetof(EngineStepObject34fc14, anim_158) == 0x158);
+static_assert(offsetof(EngineStepObject34fc14, entry_limit_2e8) == 0x2E8);
+static_assert(offsetof(EngineStepObject34fc14, slot_object_2ec) == 0x2EC);
+static_assert(offsetof(EngineStepObject34fc14, slot_entry_30c) == 0x30C);
+static_assert(offsetof(EngineStepObject34fc14, slot_index_46c) == 0x46C);
+static_assert(offsetof(EngineStepObject34fc14, slot_counter_47c) == 0x47C);
+
+extern "C" u32 engine_func_0034fc14(EngineStepObject34fc14* obj) {
+    // Only a non-zero remaining count enters the animation bookkeeping block.
+    if (func_0023a774(reinterpret_cast<u8*>(&obj->anim_158)) != 0) {
+        // 0x0023A690 returns 1 once the queued animation records match the
+        // remaining count and 0 when the subobject is not ready; a zero result
+        // aborts the step through state 7.
+        if (engine_func_0023a690(&obj->anim_158) == 0) {
+            obj->state_0c = 7;
+        }
+        camp_func_00351040(obj);
+    }
+
+    // Steps are only serviced in state 3 or 6; everything else returns without
+    // touching the object.
+    if (obj->state_0c != 3 && obj->state_0c != 6) {
+        return 0;
+    }
+
+    // State 1 cannot reach this point (it was filtered above), but the original
+    // keeps the test because the transition block is shared with the sibling
+    // step functions.
+    if (obj->state_0c != 1) {
+        if (obj->state_0c == 6) {
+            nn_sdk_func_002c4244(&obj->sync_state_20);
+        }
+        engine_func_002c3aa8(obj);          // lock the step object
+        obj->state_0c = 2;
+        engine_func_002c3a24(obj);          // unlock
+    }
+
+    // Wait for another task to finish the step.  The original busy-waits with
+    // AsdThread_Sleep(0x0007A120, 0), the same interval used by 0x00351040.
+    while (obj->state_0c != 1 && obj->state_0c != 8 && obj->state_0c != 7) {
+        AsdThread_Sleep(0x0007A120, 0);
+    }
+
+    for (s32 slot = 0; slot < 2; ++slot) {
+        const s32 index = obj->slot_index_46c[slot];
+        if (index < 0) {
+            continue;
+        }
+
+        // Out-of-range indices leave the granularity at zero: the original
+        // compares the signed limit first and then tests the computed entry
+        // address itself against zero before reading entry+0x08.
+        s32 granularity = 0;
+        if (obj->entry_limit_2e8 > index) {
+            const u32 entry_address = reinterpret_cast<u32>(obj)
+                + static_cast<u32>(index) * sizeof(StepEntry34fc14)
+                + 0x30Cu;
+            if (entry_address != 0) {
+                const u32 mode =
+                    *reinterpret_cast<const u32*>(entry_address + 8u);
+                granularity = (mode == 0u || mode == 1u) ? 2 : 1;
+            }
+        }
+
+        // The current value comes from virtual slot +0x10 of the per-index
+        // object; the frame count is the value truncated to a multiple of the
+        // granularity with the signed divide helper.
+        StepSlotObject34fc14* const target = obj->slot_object_2ec[index];
+        u32 value;
+        target->vtable_00->read_value_10(target, &value);
+
+        const s32 quotient = static_cast<s32>(
+            ui_func_002c615c(static_cast<s32>(value), granularity));
+        const s32 frames = quotient * granularity;
+
+        for (s32 frame = 0; frame < frames; ++frame) {
+            // The index and the object pointer are reloaded on every iteration
+            // because the advance call may update them.
+            const s32 current = obj->slot_index_46c[slot];
+            StepSlotObject34fc14* const current_target =
+                obj->slot_object_2ec[current];
+            current_target->vtable_00->advance_1c(current_target);
+            ++obj->slot_counter_47c[slot];
+        }
+    }
+
+    return 1;
 }
 
 // ---------------------------------------------------------------------------
