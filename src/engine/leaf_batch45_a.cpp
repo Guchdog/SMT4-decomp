@@ -863,85 +863,131 @@ extern "C" u32 engine_func_002a1578(const u32* p_val) {
 }
 
 // DECOMP_FUNC(0x003aa014, 592)
-extern "C" __attribute__((naked)) void battle_func_003aa014() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4ff0, 0xe92d, 0x5594, 0xe590\n"
-        ".hword 0x6000, 0xe252, 0xd04c, 0xe24d\n"
-        ".hword 0x4000, 0xe1a0, 0x9001, 0xe1a0\n"
-        ".hword 0x7003, 0xe1a0, 0x5001, 0x1285\n"
-        ".hword 0x0004, 0x1a00, 0x1b01, 0xe289\n"
-        ".hword 0x100e, 0xe281, 0x00c8, 0xe284\n"
-        ".hword 0x559f, 0xebfc, 0x0003, 0xea00\n"
-        ".hword 0x1b01, 0xe289, 0x102f, 0xe281\n"
-        ".hword 0x00c8, 0xe284, 0x559a, 0xebfc\n"
-        ".hword 0xa0f8, 0xe1d0, 0xb0fa, 0xe1d0\n"
-        ".hword 0x0000, 0xe356, 0x0007, 0x0a00\n"
-        ".hword 0x0b01, 0xe284, 0x0f57, 0xe280\n"
-        ".hword 0x01d1, 0xe1d0, 0x3000, 0xe1a0\n"
-        ".hword 0x2005, 0xe1a0, 0x1009, 0xe1a0\n"
-        ".hword 0x0004, 0xe1a0, 0x0e41, 0xebfa\n"
-        ".hword 0x3009, 0xe1a0, 0x2007, 0xe1a0\n"
-        ".hword 0x1001, 0xe3a0, 0x0004, 0xe1a0\n"
-        ".hword 0x5004, 0xe58d, 0x6000, 0xe58d\n"
-        ".hword 0x0f65, 0xebfa, 0x3006, 0xe1a0\n"
-        ".hword 0x2009, 0xe1a0, 0x1007, 0xe1a0\n"
-        ".hword 0x0004, 0xe1a0, 0x5000, 0xe58d\n"
-        ".hword 0x0f19, 0xebfa, 0x3006, 0xe1a0\n"
-        ".hword 0x2009, 0xe1a0, 0x1007, 0xe1a0\n"
-        ".hword 0x0004, 0xe1a0, 0x5000, 0xe58d\n"
-        ".hword 0x0ed9, 0xebfa, 0x0077, 0xe6ff\n"
-        ".hword 0x8000, 0xe3a0, 0x19e5, 0xebfc\n"
-        ".hword 0x0000, 0xe350, 0x8002, 0x15d0\n"
-        ".hword 0x0000, 0xe3e0, 0x0004, 0xe58d\n"
-        ".hword 0x1008, 0xe1a0, 0x3006, 0xe1a0\n"
-        ".hword 0x2009, 0xe1a0, 0x0004, 0xe1a0\n"
-        ".hword 0x5000, 0xe58d, 0x0e93, 0xebfa\n"
-        ".hword 0x0077, 0xe6ff, 0x8000, 0xe3a0\n"
-        ".hword 0x19d8, 0xebfc, 0x0000, 0xe350\n"
-        ".hword 0x8004, 0x1590, 0x0000, 0xe356\n"
-        ".hword 0x003b, 0x0a00, 0x1118, 0xe59f\n"
-        ".hword 0x00c8, 0xe284, 0x5564, 0xebfc\n"
-        ".hword 0x9110, 0xe59f, 0x20f8, 0xe1d0\n"
-        ".hword 0x10fa, 0xe1d0, 0x000a, 0xe082\n"
-        ".hword 0x0018, 0xe58d, 0x000b, 0xe081\n"
-        ".hword 0x001c, 0xe58d, 0x2008, 0xe1a0\n"
-        ".hword 0x10f4, 0xe28f, 0x0020, 0xe28d\n"
-        ".hword 0x51a6, 0xfafc, 0x1009, 0xe1a0\n"
-        ".hword 0x0020, 0xe28d, 0x2007, 0xe3a0\n"
-        ".hword 0x9000, 0xe3a0, 0x3008, 0xe28d\n"
-        ".hword 0x0010, 0xe58d, 0x2004, 0xe58d\n"
-        ".hword 0x9000, 0xe58d, 0x0022, 0xe883\n"
-        ".hword 0x1009, 0xe1a0, 0x00c8, 0xe284\n"
-        ".hword 0x21d8, 0xe1cd, 0x1aba, 0xebfa\n"
-        ".hword 0x0077, 0xe6ff, 0x8000, 0xe3a0\n"
-        ".hword 0x19b6, 0xebfc, 0x0000, 0xe350\n"
-        ".hword 0x8008, 0x1590, 0x0000, 0xe356\n"
-        ".hword 0x001f, 0x0a00, 0x109c, 0xe59f\n"
-        ".hword 0x00c8, 0xe284, 0x5542, 0xebfc\n"
-        ".hword 0x6094, 0xe59f, 0x10f8, 0xe1d0\n"
-        ".hword 0x00fa, 0xe1d0, 0x2008, 0xe1a0\n"
-        ".hword 0xa001, 0xe08a, 0x700b, 0xe080\n"
-        ".hword 0x1074, 0xe28f, 0x0020, 0xe28d\n"
-        ".hword 0x5186, 0xfafc, 0x1020, 0xe28d\n"
-        ".hword 0x3007, 0xe1a0, 0x7004, 0xe28d\n"
-        ".hword 0x1010, 0xe58d, 0x0007, 0xe3a0\n"
-        ".hword 0x500c, 0xe58d, 0x9000, 0xe58d\n"
-        ".hword 0x0041, 0xe887, 0x200a, 0xe1a0\n"
-        ".hword 0x1000, 0xe3a0, 0x00c8, 0xe284\n"
-        ".hword 0x1a9b, 0xebfa, 0xd04c, 0xe28d\n"
-        ".hword 0x8ff0, 0xe8bd, 0x103c, 0xe59f\n"
-        ".hword 0x00c8, 0xe284, 0x5528, 0xebfc\n"
-        ".hword 0x9000, 0xe3e0, 0xf000, 0xe320\n"
-        ".hword 0xffc1, 0xeaff, 0x1028, 0xe59f\n"
-        ".hword 0x00c8, 0xe284, 0x5522, 0xebfc\n"
-        ".hword 0x6000, 0xe3e0, 0xf000, 0xe320\n"
-        ".hword 0xffdd, 0xeaff, 0x049d, 0x0000\n"
-        ".hword 0x39ff, 0xfbeb, 0x3425, 0x0064\n"
-        ".hword 0x04a1, 0x0000, 0x2cff, 0x6bbb\n"
-        ".hword 0x048f, 0x0000, 0x0493, 0x0000\n"
-    );
-};
+//
+// Battle-screen value text. Looks up the screen anchor in the battle layout
+// table, notifies the three per-id draw helpers, formats one record value as
+// "%4d" and emits a positioned draw call; then repeats with a second record
+// field and a second label. `flag` selects the alternate (selected/detail)
+// layout, label set and coordinate set. The 0xFBEB39FF / 0x6BBB2CFF words are
+// forwarded to the draw helper unchanged; their meaning is not established.
+namespace battle_aa014 {
+
+constexpr u32 kFrameCountOffset = 0x594;   // u32 counter bumped for flag != 0
+constexpr u32 kLayoutBaseOffset = 0xC8;    // battle layout table base
+constexpr u32 kModeByteOffset = 0x56D;     // s8 mode selector for 0x22D994
+
+constexpr u32 kLayoutPlain = 0x40E;        // layout record key, flag == 0
+constexpr u32 kLayoutSelected = 0x42F;     // layout record key, flag != 0
+
+constexpr u32 kAnchorXOffset = 8;          // s16 x inside a layout record
+constexpr u32 kAnchorYOffset = 0xA;        // s16 y inside a layout record
+
+constexpr u16 kLabelIdPlainFirst = 0x48F;
+constexpr u16 kLabelIdSelectedFirst = 0x49D;
+constexpr u16 kLabelIdPlainSecond = 0x493;
+constexpr u16 kLabelIdSelectedSecond = 0x4A1;
+
+constexpr u32 kRecordFlagByteOffset = 2;   // u8 forwarded to 0x22DB5C
+constexpr u32 kRecordFirstWordOffset = 4;  // u32 for the first label
+constexpr u32 kRecordSecondWordOffset = 8; // u32 for the second label
+
+constexpr u32 kOpaqueFirst = 0xFBEB39FF;   // forwarded draw argument
+constexpr u32 kOpaqueSecond = 0x6BBB2CFF;  // forwarded draw argument
+constexpr u32 kOpaqueEmpty = 0xFFFFFFFF;   // flag == 0 substitution
+
+constexpr int kTextSize = 0x2C;            // formatted label scratch buffer
+
+}  // namespace battle_aa014
+
+extern "C" u8* camp_func_002bf6c8(void* table, u32 key);
+extern "C" void ui_func_0022d994(void* ctx, void* work, u32 frame, int mode);
+extern "C" void camp_func_0022de40(void* ctx, int mode, int id, void* work,
+                                   int flag, u32 frame);
+extern "C" void script_vm_func_0022dd28(void* ctx, int id, void* work, int flag,
+                                        u32 frame);
+extern "C" void script_vm_func_0022dc40(void* ctx, int id, void* work, int flag,
+                                        u32 frame);
+extern "C" u8* battle_func_002b087c(u32 id);
+extern "C" void ui_func_0022db5c(void* ctx, int value, void* work, int flag,
+                                 u32 frame, int unused);
+extern "C" void func_00230c80(void* gfx, int mode, int x, int y, int arg0,
+                              int arg1, u32 constant, u32 frame,
+                              const char* text);
+
+extern "C" void battle_func_003aa014(void* ctx, void* work, int flag, int id) {
+    using namespace battle_aa014;
+
+    u8* const ctx_bytes = static_cast<u8*>(ctx);
+    u8* const work_bytes = static_cast<u8*>(work);
+    const bool selected = flag != 0;
+
+    const u32 frame =
+        *reinterpret_cast<const u32*>(ctx_bytes + kFrameCountOffset) +
+        (selected ? 1u : 0u);
+
+    const u8* const layout = camp_func_002bf6c8(
+        ctx_bytes + kLayoutBaseOffset,
+        reinterpret_cast<u32>(
+            work_bytes + (selected ? kLayoutSelected : kLayoutPlain)));
+    const s32 base_x =
+        *reinterpret_cast<const s16*>(layout + kAnchorXOffset);
+    const s32 base_y =
+        *reinterpret_cast<const s16*>(layout + kAnchorYOffset);
+
+    if (selected) {
+        ui_func_0022d994(
+            ctx, work, frame,
+            *reinterpret_cast<const s8*>(ctx_bytes + kModeByteOffset));
+    }
+
+    camp_func_0022de40(ctx, 1, id, work, flag, frame);
+    script_vm_func_0022dd28(ctx, id, work, flag, frame);
+    script_vm_func_0022dc40(ctx, id, work, flag, frame);
+
+    const u32 record_id = static_cast<u32>(id) & 0xFFFFu;
+    const u8* record = battle_func_002b087c(record_id);
+    const int record_flag =
+        record != nullptr ? record[kRecordFlagByteOffset] : 0;
+    ui_func_0022db5c(ctx, record_flag, work, flag, frame, -1);
+
+    record = battle_func_002b087c(record_id);
+    const u32 first_value =
+        record != nullptr
+            ? *reinterpret_cast<const u32*>(record + kRecordFirstWordOffset)
+            : 0;
+
+    const u8* const first_label = camp_func_002bf6c8(
+        ctx_bytes + kLayoutBaseOffset,
+        selected ? kLabelIdSelectedFirst : kLabelIdPlainFirst);
+    const s32 first_x =
+        base_x + *reinterpret_cast<const s16*>(first_label + kAnchorXOffset);
+    const s32 first_y =
+        base_y + *reinterpret_cast<const s16*>(first_label + kAnchorYOffset);
+
+    char text[kTextSize];
+    ui_func_002be7fc(text, "%4d", first_value);
+    func_00230c80(ctx_bytes + kLayoutBaseOffset, 0, first_x, first_y, 0, 7,
+                  selected ? kOpaqueFirst : kOpaqueEmpty, frame, text);
+
+    record = battle_func_002b087c(record_id);
+    const u32 second_value =
+        record != nullptr
+            ? *reinterpret_cast<const u32*>(record + kRecordSecondWordOffset)
+            : 0;
+
+    const u8* const second_label = camp_func_002bf6c8(
+        ctx_bytes + kLayoutBaseOffset,
+        static_cast<u32>(selected ? kLabelIdSelectedSecond
+                                  : kLabelIdPlainSecond));
+    const s32 second_x =
+        base_x + *reinterpret_cast<const s16*>(second_label + kAnchorXOffset);
+    const s32 second_y =
+        base_y + *reinterpret_cast<const s16*>(second_label + kAnchorYOffset);
+
+    ui_func_002be7fc(text, "%4d", second_value);
+    func_00230c80(ctx_bytes + kLayoutBaseOffset, 0, second_x, second_y, 0, 7,
+                  selected ? kOpaqueSecond : kOpaqueEmpty, frame, text);
+}
 
 // DECOMP_FUNC(0x002d7f0c, 596)
 extern "C" u32 ui_func_002c5f7c(u32 mode, u32 sub_mode);

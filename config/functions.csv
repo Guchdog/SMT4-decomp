@@ -9493,7 +9493,7 @@ address,size,status,category,name,src_file
 0x003a9868,624,matching,shop,shop_func_003a9868,src/engine/leaf_batch36_b.cpp
 0x003a9ad8,764,matching,camp,camp_func_003a9ad8,src/engine/leaf_batch43_b.cpp
 0x003a9dd4,576,matching,battle,battle_func_003a9dd4,src/engine/leaf_batch29_c.cpp
-0x003aa014,592,matching,battle,battle_func_003aa014,src/engine/leaf_batch45_a.cpp
+0x003aa014,592,non_matching,battle,battle_func_003aa014,src/engine/leaf_batch45_a.cpp
 0x003aa264,1224,matching,ui,ui_func_003aa264,src/engine/leaf_batch45_c.cpp
 0x003aa72c,4,matching,unknown,func_003aa72c,src/engine/leaf_matching.cpp
 0x003aa730,620,matching,shop,shop_func_003aa730,src/engine/leaf_batch45_a.cpp
