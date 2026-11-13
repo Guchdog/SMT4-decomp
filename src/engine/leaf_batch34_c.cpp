@@ -4509,152 +4509,214 @@ extern "C" __attribute__((naked)) void func_0013f3e0() {
     );
 }
 
+// ---------------------------------------------------------------------------
+// func_0013fa8c: emit a six-word header plus one six-word block per counted
+// unit into a bump-allocated word buffer, then advance the allocation cursor.
+//
+// `arena` (r0) is a {limit, cursor} pair: +0x04 ends the free region, +0x08 is
+// the write cursor.  A null cursor selects the shared global arena instead
+// (cursor 0x004652A0, limit 0x004652A4).  `desc` (r1) carries a signed entry
+// count at +0x38 and a self-relative displacement at +0x3C to the first-level
+// word array; each word there is again a self-relative displacement to an
+// object holding a flag word at +0x08 and a repeat count at +0x28.  r2/r3 are
+// not read, and the only caller (0x0012DFD0) discards the returned byte size.
+//
+// Per descriptor entry: flag bit 0 counts one unit and emits nothing, otherwise
+// the pair {0, 0x000F0000 | ((3*k + 0x205) & 0xFFFF)} is emitted with k the
+// number of pairs already emitted, and flag bit 1 adds the object's +0x28 word
+// to the total instead of one.  The header is {0x76543210, 0x801F02BB,
+// 0x0000BA98, 0, packed, 0x000F0202}, packed being
+// (0xFFFE0000 + ((1 << total) << 16)) | ((total << 28) + 0xF0000000); the
+// register shift uses only the low byte of the total and yields zero from 32
+// up.  When the signed total exceeds one, one six-word block
+// {n, 0x803F0232, 0, 0, 0, 0} is emitted per remaining unit with n = 1, 2, ...
+//
+// Every word is written before the arena is checked, so a rejected allocation
+// still leaves the data in memory; the cursor advances only when
+// cursor + size <= limit (unsigned compare).  The original loads through a null
+// pointer when the +0x3C displacement or an array word is zero; that fault is a
+// domain limit, not part of the reproduced contract.
+// ---------------------------------------------------------------------------
+namespace engine_13fa8c {
+
+// Arena header (r0) -- 0x0013FA94 / 0x0013FC20.
+constexpr u32 kArenaLimit = 0x04;
+constexpr u32 kArenaCursor = 0x08;
+
+// Shared fallback arena -- literal pool 0x0013FC78 / 0x0013FC94.
+constexpr u32 kGlobalArenaCursor = 0x004652a0;
+constexpr u32 kGlobalArenaLimit = 0x004652a4;
+
+// Descriptor (r1) -- 0x0013FAAC and 0x0013FAC4.
+constexpr u32 kDescEntryCount = 0x38;
+constexpr u32 kDescArrayAnchor = 0x3c;
+
+// Entry object -- 0x0013FAE4 and 0x0013FB1C.
+constexpr u32 kEntryFlags = 0x08;
+constexpr u32 kEntryRepeat = 0x28;
+
+// Flag bits -- 0x0013FAE8 / 0x0013FAF4.
+constexpr u32 kFlagNoPair = 0x01;
+constexpr u32 kFlagRepeat = 0x02;
+
+// Pair word -- 0x0013FAFC..0x0013FB18.
+constexpr u32 kPairWord0 = 0;
+constexpr u32 kPairWordMask = 0x000f0000;
+constexpr u32 kPairWordBase = 0x00000205;
+constexpr u32 kPairWordStep = 3;
+
+// Header words -- literal pool 0x0013FC7C..0x0013FC90.
+constexpr u32 kHeaderWord0 = 0x76543210;
+constexpr u32 kHeaderWord1 = 0x801f02bb;
+constexpr u32 kHeaderWord2 = 0x0000ba98;
+constexpr u32 kHeaderWord4Base = 0xfffe0000;
+constexpr u32 kHeaderWord4Or = 0xf0000000;
+constexpr u32 kHeaderWord5 = 0x000f0202;
+constexpr u32 kHeaderWordCount = 6;
+
+// Block words -- 0x0013FB88..0x0013FBFC.
+constexpr u32 kBlockWord1 = 0x803f0232;
+constexpr u32 kBlockWordCount = 6;
+
+constexpr u32 kBytesPerWord = 4;
+
+inline u32 LoadOffset(const void* base, u32 offset) {
+    return *reinterpret_cast<const u32*>(
+        static_cast<const u8*>(base) + offset);
+}
+
+inline void StoreOffset(void* base, u32 offset, u32 value) {
+    *reinterpret_cast<u32*>(static_cast<u8*>(base) + offset) = value;
+}
+
+// The listing addresses the destination as `base + (index << 2)` with a 32-bit
+// index, so the byte offset wraps exactly like the ARM shift.
+inline void StoreWord(void* base, u32 index, u32 value) {
+    StoreOffset(base, index * kBytesPerWord, value);
+}
+
+inline u32 LoadGlobal(u32 address) {
+    return *reinterpret_cast<const u32*>(address);
+}
+
+inline void StoreGlobal(u32 address, u32 value) {
+    *reinterpret_cast<u32*>(address) = value;
+}
+
+}  // namespace engine_13fa8c
+
 // DECOMP_FUNC(0x0013fa8c, 524)
-extern "C" __attribute__((naked)) void func_0013fa8c() {
-    asm volatile(
-        "push {r4, r5, r6, r7, r8, sb, sl, fp}\n"
-        "mov r3, #0\n"
-        "mov r7, r3\n"
-        "mov r4, r3\n"
-        ".word 0xe59fb1d4\n"
-        "ldr r2, [r0, #8]\n"
-        "ldr sb, [r1, #0x38]\n"
-        "mov r6, r3\n"
-        "cmp r2, #0\n"
-        "ldreq r2, [fp]\n"
-        "cmp sb, #0\n"
-        "mov r5, r3\n"
-        "ble .L_0013fb64\n"
-        ".L_0013fac0:\n"
-        "ldr r8, [r1, #0x3c]\n"
-        "add ip, r1, #0x3c\n"
-        "cmp r8, #0\n"
-        "addne ip, ip, r8\n"
-        "moveq ip, r6\n"
-        "ldr r8, [ip, r5, lsl #2]!\n"
-        "cmp r8, #0\n"
-        "addne ip, ip, r8\n"
-        "moveq ip, r6\n"
-        "ldr r8, [ip, #8]\n"
-        "tst r8, #1\n"
-        "addne r3, r3, #1\n"
-        "bne .L_0013fb58\n"
-        "tst r8, #2\n"
-        "beq .L_0013fb2c\n"
-        "add r8, r7, r7, lsl #1\n"
-        "add r8, r8, #0x200\n"
-        "add r8, r8, #5\n"
-        "add sl, r2, r4, lsl #2\n"
-        "uxth r8, r8\n"
-        "orr r8, r8, #0xf0000\n"
-        "str r6, [r2, r4, lsl #2]\n"
-        "str r8, [sl, #4]\n"
-        "ldr ip, [ip, #0x28]\n"
-        "add r4, r4, #2\n"
-        "add r3, r3, ip\n"
-        "b .L_0013fb54\n"
-        ".L_0013fb2c:\n"
-        "add ip, r7, r7, lsl #1\n"
-        "add ip, ip, #0x200\n"
-        "add ip, ip, #5\n"
-        "add r8, r2, r4, lsl #2\n"
-        "uxth ip, ip\n"
-        "str r6, [r2, r4, lsl #2]\n"
-        "orr ip, ip, #0xf0000\n"
-        "add r3, r3, #1\n"
-        "add r4, r4, #2\n"
-        "str ip, [r8, #4]\n"
-        ".L_0013fb54:\n"
-        "add r7, r7, #1\n"
-        ".L_0013fb58:\n"
-        "add r5, r5, #1\n"
-        "cmp r5, sb\n"
-        "blt .L_0013fac0\n"
-        ".L_0013fb64:\n"
-        ".word 0xe59f1110\n"
-        ".word 0xe59f5110\n"
-        "mov ip, #1\n"
-        "str r1, [r2, r4, lsl #2]\n"
-        "add r1, r4, #1\n"
-        ".word 0xe59f4104\n"
-        "lsl ip, ip, r3\n"
-        "str r4, [r2, r1, lsl #2]\n"
-        "add r1, r1, #1\n"
-        "lsl r4, r3, #0x1c\n"
-        "str r5, [r2, r1, lsl #2]\n"
-        ".word 0xe59f50f0\n"
-        "add r1, r1, #1\n"
-        "add r4, r4, #0xf0000000\n"
-        "str r6, [r2, r1, lsl #2]\n"
-        "add r1, r1, #1\n"
-        "add ip, r5, ip, lsl #16\n"
-        "orr ip, ip, r4\n"
-        "str ip, [r2, r1, lsl #2]\n"
-        ".word 0xe59fc0d4\n"
-        "add r1, r1, #1\n"
-        ".word 0xe59f70d0\n"
-        "add r4, r1, #1\n"
-        "str ip, [r2, r1, lsl #2]\n"
-        "sub r1, r3, #1\n"
-        "cmp r1, #0\n"
-        "ble .L_0013fc0c\n"
-        "mov r5, r1\n"
-        "mov ip, #1\n"
-        "add r1, r2, r4, lsl #2\n"
-        ".L_0013fbdc:\n"
-        "subs r5, r5, #1\n"
-        "str r6, [r1, #8]\n"
-        "str r7, [r1, #4]\n"
-        "str r6, [r1, #0xc]\n"
-        "str r6, [r1, #0x10]\n"
-        "str ip, [r1], #0x14\n"
-        "add ip, ip, #1\n"
-        "str r6, [r1], #4\n"
-        "bne .L_0013fbdc\n"
-        "add r1, r3, r3, lsl #1\n"
-        "add r1, r4, r1, lsl #1\n"
-        "sub r4, r1, #6\n"
-        ".L_0013fc0c:\n"
-        "ldr r3, [r0, #8]\n"
-        "lsl r2, r4, #2\n"
-        "mov r1, r2\n"
-        "cmp r3, #0\n"
-        "beq .L_0013fc44\n"
-        "ldr r4, [r0, #4]\n"
-        "add ip, r3, r1\n"
-        "cmp ip, r4\n"
-        "bhi .L_0013fc6c\n"
-        ".L_0013fc30:\n"
-        "cmp r3, #0\n"
-        "addne r1, r1, r3\n"
-        "strne r1, [r0, #8]\n"
-        "bne .L_0013fc6c\n"
-        "b .L_0013fc60\n"
-        ".L_0013fc44:\n"
-        ".word 0xe59fc048\n"
-        "ldr r4, [fp]\n"
-        "ldr r5, [ip]\n"
-        "add ip, r4, r1\n"
-        "cmp ip, r5\n"
-        "bhi .L_0013fc6c\n"
-        "b .L_0013fc30\n"
-        ".L_0013fc60:\n"
-        "ldr r0, [fp]\n"
-        "add r0, r0, r1\n"
-        "str r0, [fp]\n"
-        ".L_0013fc6c:\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, fp}\n"
-        "mov r0, r2\n"
-        "bx lr\n"
-        ".word 0x004652a0\n"
-        ".word 0x76543210\n"
-        ".word 0x0000ba98\n"
-        ".word 0x801f02bb\n"
-        ".word 0xfffe0000\n"
-        ".word 0x000f0202\n"
-        ".word 0x803f0232\n"
-        ".word 0x004652a4\n"
-    );
+extern "C" u32 func_0013fa8c(void* arena_arg, const void* desc_arg) {
+    using namespace engine_13fa8c;
+
+    u8* const arena = static_cast<u8*>(arena_arg);
+    const u8* const desc = static_cast<const u8*>(desc_arg);
+
+    // 0x0013FA94..0x0013FABC: the destination is the caller-supplied cursor, or
+    // the shared global cursor when the caller's cursor is null.
+    u8* dst = reinterpret_cast<u8*>(LoadOffset(arena, kArenaCursor));
+    if (dst == nullptr) {
+        dst = reinterpret_cast<u8*>(LoadGlobal(kGlobalArenaCursor));
+    }
+
+    u32 total = 0;       // r3: units that size the block table
+    u32 pair_index = 0;  // r7: pairs already emitted
+    u32 word_index = 0;  // r4: next free destination word
+
+    // 0x0013FAC0..0x0013FB60: descriptor entries.  The count is signed and read
+    // once, so a zero or negative count skips the whole scan.  The self-relative
+    // displacements are followed with 32-bit addresses so that a zero
+    // displacement still dereferences address 0/4*i/8 like the listing instead
+    // of being folded away as a null-pointer load.
+    const s32 entry_count = static_cast<s32>(LoadOffset(desc, kDescEntryCount));
+    if (entry_count > 0) {
+        const u32 array_delta = LoadOffset(desc, kDescArrayAnchor);
+        u32 array_address = 0;
+        if (array_delta != 0) {
+            array_address =
+                static_cast<u32>(reinterpret_cast<std::uintptr_t>(desc) +
+                                 kDescArrayAnchor) +
+                array_delta;
+        }
+        for (s32 index = 0; index < entry_count; ++index) {
+            // `ldr r8,[ip,r5,lsl #2]!` then `addne ip,ip,r8`.
+            const u32 slot_address =
+                array_address + static_cast<u32>(index) * kBytesPerWord;
+            const u32 entry_delta = LoadGlobal(slot_address);
+            const u32 entry_address =
+                entry_delta != 0 ? slot_address + entry_delta : 0u;
+            const u32 flags = LoadGlobal(entry_address + kEntryFlags);
+
+            if ((flags & kFlagNoPair) != 0) {
+                total += 1;
+                continue;
+            }
+            if ((flags & kFlagRepeat) != 0) {
+                total += LoadGlobal(entry_address + kEntryRepeat);
+            } else {
+                total += 1;
+            }
+            StoreWord(dst, word_index, kPairWord0);
+            StoreWord(dst, word_index + 1,
+                      kPairWordMask |
+                          ((pair_index * kPairWordStep + kPairWordBase) &
+                           0xffffu));
+            word_index += 2;
+            ++pair_index;
+        }
+    }
+
+    // 0x0013FB64..0x0013FBC0: six-word header.  `1 << total` is an ARM variable
+    // shift: the amount is total & 0xFF, and 32 or more shifts out every bit.
+    const u32 shift = total & 0xffu;
+    const u32 bit = shift < 32 ? (1u << shift) : 0u;
+    const u32 packed =
+        (kHeaderWord4Base + (bit << 16)) | ((total << 28) + kHeaderWord4Or);
+    StoreWord(dst, word_index + 0, kHeaderWord0);
+    StoreWord(dst, word_index + 1, kHeaderWord1);
+    StoreWord(dst, word_index + 2, kHeaderWord2);
+    StoreWord(dst, word_index + 3, 0);
+    StoreWord(dst, word_index + 4, packed);
+    StoreWord(dst, word_index + 5, kHeaderWord5);
+
+    u32 next_word = word_index + kHeaderWordCount;
+
+    // 0x0013FBC4..0x0013FC08: one block per remaining unit, guarded by the
+    // signed `total - 1 > 0` test.
+    if (static_cast<s32>(total - 1u) > 0) {
+        const u32 block_count = total - 1u;
+        for (u32 block = 0; block < block_count; ++block) {
+            const u32 block_word = next_word + block * kBlockWordCount;
+            StoreWord(dst, block_word + 0, block + 1u);
+            StoreWord(dst, block_word + 1, kBlockWord1);
+            StoreWord(dst, block_word + 2, 0);
+            StoreWord(dst, block_word + 3, 0);
+            StoreWord(dst, block_word + 4, 0);
+            StoreWord(dst, block_word + 5, 0);
+        }
+        next_word += block_count * kBlockWordCount;
+    }
+
+    const u32 size = next_word * kBytesPerWord;
+
+    // 0x0013FC0C..0x0013FC74: commit the size against the same arena.  The
+    // limit test is unsigned, and the global cursor is re-read before the
+    // store, exactly as the listing does.
+    const u32 cursor = LoadOffset(arena, kArenaCursor);
+    if (cursor != 0) {
+        const u32 limit = LoadOffset(arena, kArenaLimit);
+        if (cursor + size <= limit) {
+            StoreOffset(arena, kArenaCursor, cursor + size);
+        }
+    } else {
+        const u32 base = LoadGlobal(kGlobalArenaCursor);
+        const u32 limit = LoadGlobal(kGlobalArenaLimit);
+        if (base + size <= limit) {
+            StoreGlobal(kGlobalArenaCursor,
+                        LoadGlobal(kGlobalArenaCursor) + size);
+        }
+    }
+    return size;
 }
 
 // DECOMP_FUNC(0x00146d20, 56)
