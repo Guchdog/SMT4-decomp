@@ -4115,7 +4115,7 @@ address,size,status,category,name,src_file
 0x0025cee4,1304,matching,ui,ui_func_0025cee4,src/engine/leaf_batch40_a.cpp
 0x0025d3fc,7328,matching,ui,Ui_BattleCommandMenu,src/ui/battle_hud.cpp
 0x0025f09c,1180,matching,ui,ui_func_0025f09c,src/engine/leaf_batch43_a.cpp
-0x0025f538,436,matching,ui,ui_func_0025f538,src/engine/leaf_batch41_c.cpp
+0x0025f538,436,non_matching,ui,ui_func_0025f538,src/engine/leaf_batch41_c.cpp
 0x0025f6ec,516,matching,ui,ui_func_0025f6ec,src/engine/leaf_batch42_b.cpp
 0x0025f8f0,11004,matching,ui,Ui_MiniMapRender,src/ui/minimap.cpp
 0x002623ec,68,matching,battle,battle_func_002623ec,src/engine/leaf_batch24_b.cpp

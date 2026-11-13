@@ -5543,39 +5543,200 @@ extern "C" u32 ui_func_002421b0(u32 flags) {
 }
 
 // DECOMP_FUNC(0x0025f538, 436)
-// 107 ARM instructions through unconditional pop; 8 trailing data bytes.
-extern "C" __attribute__((naked)) void ui_func_0025f538() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d43f0, 0xe2805a03, 0xe1a04000, 0xe24dd00c\n"
-        ".word 0xe5d50084, 0xe3500000, 0x1a000061, 0xe595005c\n"
-        ".word 0xe3500003, 0xca00005e, 0xe2840a01, 0xe2800fae\n"
-        ".word 0xe1a07000, 0xeb017e82, 0xe1a06000, 0xe1a00007\n"
-        ".word 0xeb017e7c, 0xe1a07000, 0xe28400ac, 0xed900a08\n"
-        ".word 0xeb018060, 0xe595005c, 0xe2801052, 0xe3a00015\n"
-        ".word 0xeb01804c, 0xe59f9140, 0xe1a04000, 0xe3a02000\n"
-        ".word 0xe3a01001, 0xe5995000, 0xe3a00006, 0xeb019a7a\n"
-        ".word 0xe2855a01, 0xe2855fab, 0xe3a08000, 0xe5951000\n"
-        ".word 0xe0852101, 0xe5921008, 0xe5820008, 0xe5d52018\n"
-        ".word 0xe3520000, 0x01510000, 0x0a000002, 0xe595101c\n"
-        ".word 0xe12fff31, 0xe5c58018, 0xe1d400fa, 0xe3a05029\n"
-        ".word 0xe3a0204b, 0xe0800007, 0xe88d0021, 0xe1d400f8\n"
-        ".word 0xe3a01015, 0xe0803006, 0xe3a00002, 0xeb017f91\n"
-        ".word 0xe1d400fa, 0xe3a0204a, 0xe3a01015, 0xe0800007\n"
-        ".word 0xe88d0021, 0xe1d400f8, 0xe0803006, 0xe3a00002\n"
-        ".word 0xeb017f88, 0xe1d400fa, 0xe3a0204c, 0xe3a01015\n"
-        ".word 0xe0800007, 0xe88d0021, 0xe1d400f8, 0xe0803006\n"
-        ".word 0xe3a00002, 0xeb017f7f, 0xe1d400fa, 0xe3a0204d\n"
-        ".word 0xe3a01015, 0xe0800007, 0xe88d0021, 0xe1d400f8\n"
-        ".word 0xe0803006, 0xe3a00002, 0xeb017f76, 0xe5994000\n"
-        ".word 0xe3a02000, 0xe3a01007, 0xe3a00006, 0xeb019a42\n"
-        ".word 0xe2844a01, 0xe2844fab, 0xe5941000, 0xe0842101\n"
-        ".word 0xe5921008, 0xe5820008, 0xe5d42018, 0xe3520000\n"
-        ".word 0x01510000, 0x0a000002, 0xe594101c, 0xe12fff31\n"
-        ".word 0xe5c48018, 0xe28dd00c, 0xed9f0a04, 0xe8bd43f0\n"
-        ".word 0xea01800c, 0xe28dd00c, 0xe8bd83f0, 0x0044ea00\n"
-        ".word 0x3f800000\n"
-    );
+//
+// Minimap HUD overlay updater.  Recovered contract from ARM
+// 0x0025F538..0x0025F6E3 plus the two literal words at 0x0025F6E4 (the
+// 0x0044EA00 render-register global) and 0x0025F6E8 (1.0f):
+//
+//   * r0 is the same context object that the three callers at 0x001E07B4 /
+//     0x001E08A4 / 0x001E0BE0 hand to Ui_MiniMapRender (0x0025F8F0) and
+//     0x0025F6EC.  Only the offsets below are observed.
+//   * `ldrb r0,[ctx+0x3084]` is a visibility gate: a non-zero byte returns at
+//     once with that byte still in r0.
+//   * `ldr r0,[ctx+0x305C]; cmp r0,#3; bgt` is a signed state gate: values
+//     4..0x7FFFFFFF return with the raw word in r0, while 0..3 and every
+//     negative word continue.
+//   * 0x002BEF7C / 0x002BEF70 read the signed 20.12 fixed-point words at
+//     ctx+0x12B8 +0x0C / +0x10 and shift them arithmetically right by 12.
+//   * 0x002BF710 receives the f32 at ctx+0xCC in s0 and installs the overlay
+//     scale.  The original also leaves ctx+0xAC in r0, but that helper
+//     overwrites r0 from s0 before reading it, so the value is not part of the
+//     contract.
+//   * `camp_func_002BF6D0(0x15, state + 0x52)` resolves the draw node.  The
+//     state word is reloaded after 0x002BF710 and the index addition is a raw
+//     32-bit add.  The node's signed 16-bit fields +8 / +0x0A are the sprite
+//     offsets and are re-read before every draw (the original is unrolled).
+//   * The overlay render-stack node at `*0x0044EA00 + 0x12AC` receives
+//     `battle_func_002C5FA4(6, 1, 0)` (0x16160000) before the four
+//     `ui_func_002BF460(2, 0x15, 0x4B/0x4A/0x4C/0x4D, x, y, 0x29)` draws and
+//     `battle_func_002C5FA4(6, 7, 0)` (0x76760000) afterwards.  Each store
+//     keeps the slot at `node + 8 + depth*4` (no bounds check), replaces it,
+//     and invokes the node flush callback with the new descriptor in r0 when
+//     the node's dirty byte is non-zero or the value changed.  `blx r1` has no
+//     null check; the dirty byte is cleared after the callback.
+//   * Both render-base reads happen before their corresponding 0x002C5FA4
+//     call, so a helper that rewrites 0x0044EA00 is observed by the next read
+//     rather than by the current store.
+//   * The epilogue is `pop {r4, r5, r6, r7, r8, sb, lr}; b 0x002BF710` with
+//     s0 = 1.0f, i.e. a tail call that restores 1.0 as the overlay scale.
+//
+// Callers discard r0, but the original leaves defined values there: the gate
+// byte / gate word on the two early exits and whatever 0x002BF710 leaves
+// (its 0x004D4680 float-block base) on the main path.  The reconstruction
+// returns them so register-level differential tests are exact.  A null
+// 0x002BF6D0 result is not a domain input: both implementations fault on the
+// first `ldrsh [node,#8]`.
+namespace func_25f538 {
+
+// Context fields observed by this routine.
+constexpr u32 kContextFlagOffset = 0x3084;    // u8 gate: non-zero returns
+constexpr u32 kContextStateOffset = 0x305C;   // s32 gate: > 3 returns
+constexpr u32 kContextScaleOffset = 0xCC;     // f32 forwarded to 0x002BF710
+constexpr u32 kContextAnchorOffset = 0x12B8;  // signed 20.12 source record
+constexpr s32 kStateLimit = 3;                // `cmp r0,#3; bgt`
+
+// Overlay render-stack node at *0x0044EA00 + 0x12AC.  The original addresses
+// its slots as `node + 8 + depth*4` with no bounds check.
+constexpr u32 kOverlayStackOffset = 0x12AC;
+constexpr u32 kSlotBaseOffset = 8;
+constexpr u32 kDirtyOffset = 0x18;
+constexpr u32 kFlushCallbackOffset = 0x1C;
+
+// Node resolver arguments (`mov r0,#0x15`; `add r1,r0,#0x52`).
+constexpr u32 kNodeGroup = 0x15;
+constexpr u32 kNodeIndexBias = 0x52;
+constexpr u32 kNodeXOffset = 8;
+constexpr u32 kNodeYOffset = 0x0A;
+
+// Draw-call arguments: (kind, group, sprite id, x, y, attribute).
+constexpr u32 kDrawKind = 2;
+constexpr u32 kDrawGroup = 0x15;
+constexpr u32 kSpriteIds[4] = {0x4B, 0x4A, 0x4C, 0x4D};
+constexpr u32 kSpriteAttribute = 0x29;
+
+// Constant-layer commands: battle_func_002c5fa4(6, selector, 0).
+constexpr u32 kCommandKind = 6;
+constexpr u32 kCommandFirstSelector = 1;
+constexpr u32 kCommandSecondSelector = 7;
+
+// `vldr s0, [pc,#0x10]` at 0x0025F6D0: literal 0x3F800000.
+constexpr f32 kFinalScale = 1.0f;
+
+struct UiOverlayStackNode {
+    u32 depth;              // +0x00
+    u32 pad_04;             // +0x04
+    u32 slots[4];           // +0x08..+0x14 (flat-indexed by the original)
+    u8 dirty;               // +0x18
+    u8 pad_19[3];
+    u32 flush;              // +0x1C, `blx r1` with the new value in r0
+};
+
+static_assert(offsetof(UiOverlayStackNode, slots) == kSlotBaseOffset);
+static_assert(offsetof(UiOverlayStackNode, dirty) == kDirtyOffset);
+static_assert(offsetof(UiOverlayStackNode, flush) == kFlushCallbackOffset);
+
+// The original computes `node + 8 + depth*4` without validating `depth`.
+inline u32* slot_at(UiOverlayStackNode* node, u32 depth) {
+    return reinterpret_cast<u32*>(
+        reinterpret_cast<u8*>(node) + kSlotBaseOffset + depth * 4);
+}
+
+// Replaces one slot and runs the node callback under the original rule:
+// `dirty != 0 || previous != value`.  The callback sees the new descriptor in
+// r0 and is never null-checked; the dirty byte is cleared afterwards.  The
+// value left in r0 is returned (callback result, or the stored descriptor).
+inline u32 store_slot(UiOverlayStackNode* node, u32 value) {
+    u32* const slot = slot_at(node, node->depth);
+    const u32 previous = *slot;
+    *slot = value;
+    if (node->dirty != 0 || previous != value) {
+        const u32 result =
+            reinterpret_cast<u32 (*)(u32)>(node->flush)(value);
+        node->dirty = 0;
+        return result;
+    }
+    return value;
+}
+
+inline UiOverlayStackNode* overlay_node(u8* render_base) {
+    return reinterpret_cast<UiOverlayStackNode*>(
+        render_base + kOverlayStackOffset);
+}
+
+}  // namespace func_25f538
+
+// Direct call declarations.  Addresses and names follow config/functions.csv.
+extern "C" s32 ui_func_002bef7c(const void* record);    // +0x0C as s32 >> 12
+extern "C" s32 shop_func_002bef70(const void* record);  // +0x10 as s32 >> 12
+extern "C" void ui_func_002bf460(u32 kind, u32 group, u32 sprite, u32 x,
+                                 u32 y, u32 attribute);
+extern "C" u8* camp_func_002bf6d0(u32 group, u32 node_index);
+extern "C" u32 battle_func_002c5fa4(u32 kind, u32 selector, u32 flags);
+extern "C" u32 ui_func_002bf710(f32 value);
+
+extern "C" u32 ui_func_0025f538(void* context_pointer) {
+    using namespace func_25f538;
+
+    u8* const context = static_cast<u8*>(context_pointer);
+
+    const u8 flag = *reinterpret_cast<const u8*>(context + kContextFlagOffset);
+    if (flag != 0) {
+        return flag;
+    }
+
+    const s32 state =
+        *reinterpret_cast<const s32*>(context + kContextStateOffset);
+    if (state > kStateLimit) {
+        return static_cast<u32>(state);
+    }
+
+    // 0x0025F560..0x0025F57C: screen-space origin from the +0x12B8 record.
+    const u8* const record = context + kContextAnchorOffset;
+    const s32 origin_x = ui_func_002bef7c(record);
+    const s32 origin_y = shop_func_002bef70(record);
+
+    ui_func_002bf710(
+        *reinterpret_cast<const f32*>(context + kContextScaleOffset));
+
+    // 0x0025F58C..0x0025F598: the state word is re-read after the scale call
+    // and biased by 0x52 before the resolver lookup.
+    const u32 resolved_index =
+        *reinterpret_cast<const u32*>(context + kContextStateOffset) +
+        kNodeIndexBias;
+    const u8* const node = camp_func_002bf6d0(kNodeGroup, resolved_index);
+
+    // 0x0025F59C..0x0025F5EC: first overlay descriptor.  The render base is
+    // read before the command helper runs.
+    u8* const first_base =
+        static_cast<u8*>(smt4::engine::g_RenderRegisterBase);
+    const u32 first_value =
+        battle_func_002c5fa4(kCommandKind, kCommandFirstSelector, 0);
+    (void)store_slot(overlay_node(first_base), first_value);
+
+    // 0x0025F5F0..0x0025F680: four sprite draws.  The node offsets are
+    // reloaded for every draw because a helper may rewrite the node record.
+    for (u32 sprite : kSpriteIds) {
+        const s16 offset_x =
+            *reinterpret_cast<const s16*>(node + kNodeXOffset);
+        const s16 offset_y =
+            *reinterpret_cast<const s16*>(node + kNodeYOffset);
+        ui_func_002bf460(
+            kDrawKind, kDrawGroup, sprite,
+            static_cast<u32>(origin_x) + static_cast<u32>(offset_x),
+            static_cast<u32>(origin_y) + static_cast<u32>(offset_y),
+            kSpriteAttribute);
+    }
+
+    // 0x0025F684..0x0025F6C8: second overlay descriptor; the render-base
+    // global is re-read after the draws.
+    u8* const second_base =
+        static_cast<u8*>(smt4::engine::g_RenderRegisterBase);
+    const u32 second_value =
+        battle_func_002c5fa4(kCommandKind, kCommandSecondSelector, 0);
+    (void)store_slot(overlay_node(second_base), second_value);
+
+    // 0x0025F6CC..0x0025F6D8: tail call with s0 = 1.0f.
+    return ui_func_002bf710(kFinalScale);
 }
 
 // DECOMP_FUNC(0x003a18b8, 436)
