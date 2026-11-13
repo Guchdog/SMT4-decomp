@@ -1757,142 +1757,210 @@ extern "C" __attribute__((naked)) void engine_func_00120ac8() {
     );
 }
 
+// ---------------------------------------------------------------------------
+// 0x00121B80 -- first pass over a chunked font resource ('CFNT' / 'CFNU').
+//
+// Sole direct caller: 0x002C4710 at 0x002C47F4, which passes the info object
+// made by 0x00121D58 in r0 and the loaded resource in r1, and treats a zero
+// return as "nothing to build".  The resource is a header followed by a table
+// of chunks, each starting with a four-character tag and a byte size that also
+// gives the distance to the next chunk (`ldr [cursor,#4]`).
+//
+// A resource still tagged 'CFNT' is validated by 0x0012AA74, then every chunk
+// pointer the later glyph pass dereferences is rebased onto the resource, and
+// the header magic is rewritten to 'CFNU'.  A resource already tagged 'CFNU'
+// is only searched for its 'FINF' chunk, so a second parse is cheap and never
+// rebases twice.  The rebased chunks are:
+//   FINF  +0x10 unconditionally, +0x14 and +0x18 only when non-zero
+//   CWDH  +0x0C only when non-zero
+//   CMAP  +0x10 only when non-zero
+//   TGLP  +0x1C unconditionally
+//   GLGR  nothing
+// A chunk with any other tag aborts the whole parse with 0, keeping the
+// rebasing stores already performed on the preceding chunks.
+//
+// Success stores the resource at info+0x04 and the FINF chunk at info+0x08
+// through 0x00131414 (a paired word store) and returns 1.  A non-zero info+0x04
+// (already parsed), a rejected header, an unknown chunk tag or a missing FINF
+// chunk returns 0.  The two chunk loops use the original signed `bgt`/`ble`
+// tests; the header halfwords are zero-extended before those tests.
+//
+// Only the tag compares distinguish the two chunk groups, and every
+// non-enumerated tag leaves through the same failure exit, so the signed
+// `bge` that splits the groups has no observable alternative.
+// ---------------------------------------------------------------------------
+namespace {
+
+// Info object created by 0x00121D58 (the constructor at 0x00131420 initialises
+// +0x04, +0x08 and +0x0C to zero); only the words this function touches are
+// named.
+struct AsdFontParseState {
+    u32 type;   // +0x00: object tag; not read here
+    u32 data;   // +0x04: resource; non-zero means "already parsed"
+    u32 chunk;  // +0x08: rebased FINF chunk; written by 0x00131414 only
+};
+
+// Resource header.  The halfword at +0x04 and the words at +0x08 / +0x0C /
+// +0x10 are exactly the fields 0x0012AA74 tests.
+struct FontResourceHeader {
+    u32 magic;         // +0x00: 'CFNT' before the first pass, 'CFNU' after it
+    u16 marker;        // +0x04: must be 0xFEFF
+    u16 chunk_offset;  // +0x06: byte offset of the first chunk
+    u32 version;       // +0x08
+    u32 file_size;     // +0x0C
+    u16 chunk_count;   // +0x10: number of table entries
+};
+
+// Chunk header; the payload follows at +0x08.
+struct FontChunk {
+    u32 tag;   // +0x00
+    u32 size;  // +0x04: distance to the next chunk
+};
+
+constexpr u32 kMagicCfnt = 0x544E4643;  // 'CFNT'
+constexpr u32 kMagicCfnu = 0x554E4643;  // 'CFNU'
+constexpr u32 kChunkFinf = 0x464E4946;  // 'FINF'
+constexpr u32 kChunkCwdh = 0x48445743;  // 'CWDH'
+constexpr u32 kChunkCmap = 0x50414D43;  // 'CMAP'
+constexpr u32 kChunkTglp = 0x504C4754;  // 'TGLP'
+constexpr u32 kChunkGlgr = 0x52474C47;  // 'GLGR'
+
+// Arguments of the 0x0012AA74 header check: the expected magic, the accepted
+// version and the number of chunk words its size test covers (0x14 + 8*2).
+constexpr u32 kExpectedMagic = kMagicCfnt;
+constexpr u32 kAcceptedVersion = 0x03000000;
+constexpr u32 kHeaderChunkWords = 2;
+
+static_assert(sizeof(FontResourceHeader) == 0x14, "font resource header");
+static_assert(sizeof(FontChunk) == 8, "font chunk header");
+
+// Chunk-relative word indices of the pointers that are rebased below.
+constexpr u32 kWordCwdhPointer = 0x0C / 4;
+constexpr u32 kWordCmapPointer = 0x10 / 4;
+constexpr u32 kWordFinfPointer0 = 0x10 / 4;
+constexpr u32 kWordFinfPointer1 = 0x14 / 4;
+constexpr u32 kWordFinfPointer2 = 0x18 / 4;
+constexpr u32 kWordTglpPointer = 0x1C / 4;
+constexpr u32 kWordChunkSize = 0x04 / 4;
+
+} // namespace
+
+// 0x0012AA74: true when `data` starts with `tag`, carries the 0xFEFF marker,
+// has the requested three-byte version (equal high byte, middle byte at most
+// the requested one, low byte at least the requested one) and is large enough
+// for `chunk_words` chunk descriptors.  Declared here with its observed
+// prototype and the original symbol so the call stays direct.
+extern "C" u32 AsdFont_CheckResourceHeader(const void* data, u32 tag,
+                                           u32 version, u32 chunk_words)
+    asm("ui_func_0012aa74");
+
+// 0x00131414: `*(u32*)(p + 4) = a; *(u32*)(p + 8) = b;`, returns p + 4.
+extern "C" void AsdFont_AttachResource(void* info, u32 data, u32 chunk)
+    asm("ui_func_00131414");
+
 // DECOMP_FUNC(0x00121b80, 472)
-extern "C" __attribute__((naked)) void ui_func_00121b80() {
-    asm volatile(
-        "push {r0, r1, r4, r5, r6, r7, r8, sb, sl, fp, ip, lr}\n"
-        "mov r4, r1\n"
-        "ldr r0, [sp]\n"
-        "ldr r0, [r0, #4]\n"
-        "cmp r0, #0\n"
-        "bne .L_00121d2c\n"
-        "ldr r0, [r1]\n"
-        ".word 0xe59f5194\n"
-        "cmp r0, r5\n"
-        "bne .L_00121bf0\n"
-        "ldrh r3, [r4, #6]\n"
-        "ldrh r2, [r4, #0x10]\n"
-        "mov r1, #0\n"
-        "add r0, r3, r4\n"
-        "cmp r2, #0\n"
-        ".word 0xc59f3178\n"
-        "ble .L_00121d2c\n"
-        ".L_00121bc4:\n"
-        "ldr ip, [r0]\n"
-        "cmp ip, r3\n"
-        "bne .L_00121bd8\n"
-        "add r2, r0, #8\n"
-        "b .L_00121d0c\n"
-        ".L_00121bd8:\n"
-        "ldr ip, [r0, #4]\n"
-        "add r1, r1, #1\n"
-        "cmp r2, r1\n"
-        "add r0, r0, ip\n"
-        "bgt .L_00121bc4\n"
-        "b .L_00121d2c\n"
-        ".L_00121bf0:\n"
-        ".word 0xe59f1148\n"
-        "mov r3, #2\n"
-        "mov r2, #0x3000000\n"
-        "mov r0, r4\n"
-        "bl ui_func_0012aa74\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "beq .L_00121d24\n"
-        "ldrh r1, [r4, #6]\n"
-        "ldrh ip, [r4, #0x10]\n"
-        "mov r0, r4\n"
-        "mov r2, #0\n"
-        "cmp ip, #0\n"
-        "mov r3, r2\n"
-        "add r1, r1, r0\n"
-        "ble .L_00121d08\n"
-        ".word 0xe59f710c\n"
-        ".word 0xe59f810c\n"
-        ".word 0xe59fa10c\n"
-        ".word 0xe59f910c\n"
-        ".word 0xe59fb10c\n"
-        ".L_00121c44:\n"
-        "ldr ip, [r1]\n"
-        "cmp ip, r7\n"
-        "sub r6, ip, r7\n"
-        "beq .L_00121cdc\n"
-        "bge .L_00121c6c\n"
-        "adds ip, ip, r8\n"
-        "beq .L_00121c80\n"
-        "subs ip, ip, sl\n"
-        "bne .L_00121d2c\n"
-        "b .L_00121cc4\n"
-        ".L_00121c6c:\n"
-        "adds ip, r6, sb\n"
-        "beq .L_00121cb4\n"
-        "subs ip, ip, fp\n"
-        "bne .L_00121d2c\n"
-        "b .L_00121cf0\n"
-        ".L_00121c80:\n"
-        "ldr ip, [r1, #0x10]\n"
-        "add r2, r1, #8\n"
-        "add ip, ip, r0\n"
-        "str ip, [r1, #0x10]\n"
-        "ldr ip, [r1, #0x14]\n"
-        "cmp ip, #0\n"
-        "addne ip, ip, r0\n"
-        "strne ip, [r2, #0xc]\n"
-        "ldr ip, [r2, #0x10]\n"
-        "cmp ip, #0\n"
-        "addne ip, ip, r0\n"
-        "strne ip, [r2, #0x10]\n"
-        "b .L_00121cf0\n"
-        ".L_00121cb4:\n"
-        "ldr r6, [r1, #0x1c]\n"
-        "add r6, r6, r0\n"
-        "str r6, [r1, #0x1c]\n"
-        "b .L_00121cf0\n"
-        ".L_00121cc4:\n"
-        "ldr r6, [r1, #0xc]\n"
-        "add ip, r1, #8\n"
-        "cmp r6, #0\n"
-        "addne r6, r6, r0\n"
-        "strne r6, [ip, #4]\n"
-        "b .L_00121cf0\n"
-        ".L_00121cdc:\n"
-        "ldr r6, [r1, #0x10]\n"
-        "add ip, r1, #8\n"
-        "cmp r6, #0\n"
-        "addne r6, r6, r0\n"
-        "strne r6, [ip, #8]\n"
-        ".L_00121cf0:\n"
-        "ldrh r6, [r0, #0x10]\n"
-        "ldr ip, [r1, #4]\n"
-        "add r3, r3, #1\n"
-        "cmp r6, r3\n"
-        "add r1, r1, ip\n"
-        "bgt .L_00121c44\n"
-        ".L_00121d08:\n"
-        "str r5, [r4]\n"
-        ".L_00121d0c:\n"
-        "cmp r2, #0\n"
-        "beq .L_00121d2c\n"
-        "ldr r0, [sp]\n"
-        "mov r1, r4\n"
-        "bl ui_func_00131414\n"
-        "mov r0, #1\n"
-        ".L_00121d24:\n"
-        "add sp, sp, #8\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, fp, ip, pc}\n"
-        ".L_00121d2c:\n"
-        "add sp, sp, #8\n"
-        "mov r0, #0\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, fp, ip, pc}\n"
-        ".word 0x554e4643\n"
-        ".word 0x464e4946\n"
-        ".word 0x544e4643\n"
-        ".word 0x50414d43\n"
-        ".word 0xb9b1b6ba\n"
-        ".word 0x01f60dfd\n"
-        ".word 0xfff505ef\n"
-        ".word 0x01fb04f3\n"
-    );
+extern "C" u32 ui_func_00121b80(AsdFontParseState* info, void* resource) {
+    // 0x00121B88..0x00121B94: a non-zero +0x04 means this resource was already
+    // parsed, so the second call is a no-op.
+    if (info->data != 0) {
+        return 0;
+    }
+
+    const u32 base = static_cast<u32>(reinterpret_cast<std::uintptr_t>(resource));
+    FontResourceHeader* const header =
+        static_cast<FontResourceHeader*>(resource);
+    u8* found = nullptr;
+
+    if (header->magic == kMagicCfnu) {
+        // 0x00121B98..0x00121BEC: an already rebased resource is only searched
+        // for its FINF chunk; the cursor advances by each chunk's size word.
+        u8* cursor = static_cast<u8*>(resource) + header->chunk_offset;
+        const u32 count = header->chunk_count;      // loaded once (zero-extended)
+        if (static_cast<s32>(count) <= 0) {
+            return 0;
+        }
+        for (u32 index = 0;;) {
+            if (*reinterpret_cast<const u32*>(cursor) == kChunkFinf) {
+                found = cursor + sizeof(FontChunk); // 0x00121BD0
+                break;
+            }
+            cursor += *reinterpret_cast<const u32*>(cursor + 4);
+            ++index;
+            if (!(static_cast<s32>(count) > static_cast<s32>(index))) {
+                return 0;                           // 0x00121BEC
+            }
+        }
+    } else {
+        // 0x00121BF0..0x00121C0C: only a 'CFNT' container that the header check
+        // accepts enters the rebasing pass.
+        if (AsdFont_CheckResourceHeader(resource, kExpectedMagic,
+                                        kAcceptedVersion,
+                                        kHeaderChunkWords) == 0) {
+            return 0;
+        }
+
+        u8* cursor = static_cast<u8*>(resource) + header->chunk_offset;
+        if (static_cast<s32>(header->chunk_count) > 0) {
+            for (u32 index = 0;;) {
+                u32* const chunk = reinterpret_cast<u32*>(cursor);
+                const u32 tag = chunk[0];           // 0x00121C44
+                if (tag == kChunkCmap) {
+                    // 0x00121CDC..0x00121CEC
+                    if (chunk[kWordCmapPointer] != 0) {
+                        chunk[kWordCmapPointer] += base;
+                    }
+                } else if (static_cast<s32>(tag) >
+                           static_cast<s32>(kChunkCmap)) {
+                    if (tag == kChunkTglp) {
+                        // 0x00121CB4..0x00121CBC
+                        chunk[kWordTglpPointer] += base;
+                    } else if (tag != kChunkGlgr) {
+                        return 0;                   // 0x00121C78
+                    }
+                } else if (tag == kChunkFinf) {
+                    // 0x00121C80..0x00121CB0
+                    chunk[kWordFinfPointer0] += base;
+                    if (chunk[kWordFinfPointer1] != 0) {
+                        chunk[kWordFinfPointer1] += base;
+                    }
+                    if (chunk[kWordFinfPointer2] != 0) {
+                        chunk[kWordFinfPointer2] += base;
+                    }
+                    found = cursor + sizeof(FontChunk);
+                } else if (tag == kChunkCwdh) {
+                    // 0x00121CC4..0x00121CD4
+                    if (chunk[kWordCwdhPointer] != 0) {
+                        chunk[kWordCwdhPointer] += base;
+                    }
+                } else {
+                    return 0;                       // 0x00121C64
+                }
+
+                cursor += chunk[kWordChunkSize];    // 0x00121CF4..0x00121D00
+                ++index;
+                // The original reloads the halfword count every iteration, so
+                // keep the load after the stores above (this also pins the
+                // order for a cursor that overlaps the resource header).
+                asm volatile("" ::: "memory");
+                const u32 count = header->chunk_count;
+                if (!(static_cast<s32>(count) > static_cast<s32>(index))) {
+                    break;
+                }
+            }
+        }
+
+        // 0x00121D08: re-tag the rebased resource so the next call takes the
+        // 'CFNU' path above.  Reached even when the table is empty.
+        header->magic = kMagicCfnu;
+    }
+
+    // 0x00121D0C..0x00121D24
+    if (found == nullptr) {
+        return 0;
+    }
+    AsdFont_AttachResource(
+        info, base, static_cast<u32>(reinterpret_cast<std::uintptr_t>(found)));
+    return 1;
 }
 
 // DECOMP_FUNC(0x00126c38, 328)
