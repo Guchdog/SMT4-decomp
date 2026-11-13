@@ -7768,119 +7768,197 @@ extern "C" __attribute__((naked)) void script_vm_func_001e0cdc() {
     );
 }
 
-// DECOMP_FUNC(0x001e1440, 428)
-extern "C" __attribute__((naked)) void camp_func_001e1440() {
-    asm volatile(
-        "push {r4, r5, r6, r7, r8, sb, sl, lr}\n"
-        "mov r6, r0\n"
-        "mov r7, r1\n"
-        ".word 0xe59f2164\n"
-        "ldrh r0, [r0]\n"
-        "ldrh r1, [r1]\n"
-        "ldr r4, [r2]\n"
-        "add r0, r4, r0, lsl #3\n"
-        "add r1, r4, r1, lsl #3\n"
-        "add r0, r0, #0x1000\n"
-        "add r1, r1, #0x1000\n"
-        "ldr r0, [r0, #0x390]\n"
-        "ldr r1, [r1, #0x390]\n"
-        "lsl r0, r0, #0x11\n"
-        "lsl r8, r1, #0x11\n"
-        "lsr r0, r0, #0x11\n"
-        "lsr r8, r8, #0x11\n"
-        "mov sb, r0\n"
-        "bl camp_func_002b9364\n"
-        "mov r5, r0\n"
-        "mov r0, r8\n"
-        "bl camp_func_002b9364\n"
-        "mov sl, r0\n"
-        "ldrh r0, [r5]\n"
-        "bl camp_func_00288380\n"
-        "mov r5, r0\n"
-        "ldrh r0, [sl]\n"
-        "bl camp_func_00288380\n"
-        "subs r0, r5, r0\n"
-        "bne .L_001e14fc\n"
-        "mov r0, sb\n"
-        "bl camp_func_002b9364\n"
-        "mov r5, r0\n"
-        "mov r0, r8\n"
-        "bl camp_func_002b9364\n"
-        "mov r1, r0\n"
-        "ldrb r2, [r5, #2]\n"
-        "ldrb r0, [r0, #2]\n"
-        "subs r0, r2, r0\n"
-        "bne .L_001e14fc\n"
-        "ldrb r0, [r1, #3]\n"
-        "ldrb r2, [r5, #3]\n"
-        "subs r0, r0, r2\n"
-        "bne .L_001e14fc\n"
-        "ldrh r0, [r5]\n"
-        "ldrh r1, [r1]\n"
-        "sub r0, r0, r1\n"
-        ".L_001e14fc:\n"
-        "cmp r0, #0\n"
-        "bne .L_001e15b4\n"
-        "ldrh r0, [r6]\n"
-        "ldrh r1, [r7]\n"
-        "add r0, r4, r0, lsl #3\n"
-        "add r1, r4, r1, lsl #3\n"
-        "add r0, r0, #0x1000\n"
-        "add r1, r1, #0x1000\n"
-        "ldr r0, [r0, #0x390]\n"
-        "ldr r1, [r1, #0x390]\n"
-        "lsl r0, r0, #2\n"
-        "lsl r1, r1, #2\n"
-        "lsr r0, r0, #0x11\n"
-        "lsr r4, r1, #0x11\n"
-        "mov r6, r4\n"
-        "mov r5, r0\n"
-        "bl camp_func_002b9364\n"
-        "mov r7, r0\n"
-        "mov r0, r4\n"
-        "bl camp_func_002b9364\n"
-        "mov r4, r0\n"
-        "ldrh r0, [r7]\n"
-        "bl camp_func_00288380\n"
-        "mov r7, r0\n"
-        "ldrh r0, [r4]\n"
-        "bl camp_func_00288380\n"
-        "subs r0, r7, r0\n"
-        "nop\n"
-        "bne .L_001e15b4\n"
-        "mov r0, r5\n"
-        "bl camp_func_002b9364\n"
-        "mov r4, r0\n"
-        "mov r0, r6\n"
-        "bl camp_func_002b9364\n"
-        "mov r1, r0\n"
-        "ldrb r2, [r4, #2]\n"
-        "ldrb r0, [r0, #2]\n"
-        "subs r0, r2, r0\n"
-        "bne .L_001e15b4\n"
-        "ldrb r0, [r1, #3]\n"
-        "ldrb r2, [r4, #3]\n"
-        "subs r0, r0, r2\n"
-        "bne .L_001e15b4\n"
-        "ldrh r0, [r4]\n"
-        "ldrh r1, [r1]\n"
-        "sub r0, r0, r1\n"
-        ".L_001e15b4:\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, pc}\n"
-        ".word 0x0043dd68\n"
-        ".word 0xe5900000\n"
-        ".word 0xe5911000\n"
-        ".word 0xe0400001\n"
-        ".word 0xe12fff1e\n"
-        ".word 0xe1a02000\n"
-        ".word 0xe1d000fc\n"
-        ".word 0xe1d130fc\n"
-        ".word 0xe0500003\n"
-        ".word 0x1a000001\n"
-        ".word 0xe1a00002\n"
-        ".word 0xea032482\n"
-        ".word 0xe12fff1e\n"
-    );
+// ---------------------------------------------------------------------------
+// camp_func_001e1440: comparator over two slot-index arrays.
+//
+// The original 428-byte ledger span contains three independently reachable
+// entry points:
+//   * 0x001E1440 camp_func_001e1440 (372 bytes of code + one pool word);
+//   * 0x001E15BC camp_func_001e15bc (16 bytes, bsearch comparator, referenced
+//     by 0x00311D20 and two other tables);
+//   * 0x001E15CC camp_func_001e15cc (32 bytes, s16-field comparator that
+//     tail-calls engine_func_002aa7f4 at 0x002AA7F4).
+//
+// camp_func_001e1440 receives two pointers to u16 slot indices.  It resolves
+// each slot through the slot word table at *(0x0043DD68) + slot*8 + 0x1390 and
+// compares the same record obtained from camp_func_002b9364() for both slots.
+// The first pass uses the low 15 bits of the slot word (mask 0x7FFF); the
+// fallback pass uses bits 15..29 ((word << 2) >> 17 == (word >> 15) & 0x7FFF).
+// Bits 30..31 are unused.  The record fields read are u16 at +0, u8 at +2 and
+// u8 at +3.  A non-zero signed difference is returned immediately; zero means
+// equal.
+//
+// Every camp_func_002b9364 lookup is repeated in the original (the two calls
+// after the 0x00288380 comparison and the two in the fallback pass); the
+// reconstruction preserves that call order and argument width.  The slot
+// indices are re-read from the caller pointers for the fallback pass, and the
+// slot table base pointer is snapshotted once before the first call, exactly
+// like the original's r4.
+// ---------------------------------------------------------------------------
+extern "C" u8* camp_node_002b9364(u32 index) __asm__("camp_func_002b9364");
+extern "C" u16 camp_lookup_00288380(u32 value) __asm__("camp_func_00288380");
+extern "C" s32 camp_strcmp_002aa7f4(const void* a, const void* b)
+    __asm__("engine_func_002aa7f4");
+
+namespace {
+
+constexpr u32 kCampComparatorWorkPointer = 0x0043DD68;
+constexpr u32 kCampComparatorSlotStride = 8;
+constexpr u32 kCampComparatorSlotWordOffset = 0x1390;
+constexpr u32 kCampComparatorPrimaryIdMask = 0x7FFF;
+constexpr u32 kCampComparatorSecondaryIdShift = 15;
+constexpr u32 kCampComparatorSecondaryIdMask = 0x7FFF;
+constexpr u32 kCampComparatorNodeWordOffset = 0x00;
+constexpr u32 kCampComparatorNodeByte2Offset = 0x02;
+constexpr u32 kCampComparatorNodeByte3Offset = 0x03;
+constexpr u32 kCampComparatorNodeS16Offset = 0x0C;
+
+inline u16 CampComparatorLoadU16(const u8* address) {
+    return *reinterpret_cast<const u16*>(address);
+}
+
+inline u8 CampComparatorLoadU8(const u8* address) {
+    return *address;
+}
+
+inline s32 CampComparatorLoadS16(const u8* address) {
+    return *reinterpret_cast<const s16*>(address);
+}
+
+} // namespace
+
+extern "C" s32 camp_func_001e1440(const u8* a, const u8* b) {
+    // The two slot indices are read before the work pointer is dereferenced.
+    u16 slot_a = CampComparatorLoadU16(a);
+    u16 slot_b = CampComparatorLoadU16(b);
+
+    const u8* base =
+        *reinterpret_cast<const u8* const*>(kCampComparatorWorkPointer);
+
+    u32 word_a = *reinterpret_cast<const u32*>(
+        base + slot_a * kCampComparatorSlotStride +
+        kCampComparatorSlotWordOffset);
+    u32 word_b = *reinterpret_cast<const u32*>(
+        base + slot_b * kCampComparatorSlotStride +
+        kCampComparatorSlotWordOffset);
+
+    u32 id_a = word_a & kCampComparatorPrimaryIdMask;
+    u32 id_b = word_b & kCampComparatorPrimaryIdMask;
+
+    const u8* node_a = camp_node_002b9364(id_a);
+    const u8* node_b = camp_node_002b9364(id_b);
+
+    s32 lookup_a =
+        static_cast<s32>(camp_lookup_00288380(CampComparatorLoadU16(node_a)));
+    s32 lookup_b =
+        static_cast<s32>(camp_lookup_00288380(CampComparatorLoadU16(node_b)));
+    s32 diff = lookup_a - lookup_b;
+    if (diff != 0) {
+        return diff;
+    }
+
+    node_a = camp_node_002b9364(id_a);
+    node_b = camp_node_002b9364(id_b);
+
+    diff = static_cast<s32>(
+               CampComparatorLoadU8(node_a + kCampComparatorNodeByte2Offset)) -
+           static_cast<s32>(
+               CampComparatorLoadU8(node_b + kCampComparatorNodeByte2Offset));
+    if (diff != 0) {
+        return diff;
+    }
+
+    diff = static_cast<s32>(
+               CampComparatorLoadU8(node_b + kCampComparatorNodeByte3Offset)) -
+           static_cast<s32>(
+               CampComparatorLoadU8(node_a + kCampComparatorNodeByte3Offset));
+    if (diff != 0) {
+        return diff;
+    }
+
+    diff = static_cast<s32>(
+               CampComparatorLoadU16(node_a + kCampComparatorNodeWordOffset)) -
+           static_cast<s32>(
+               CampComparatorLoadU16(node_b + kCampComparatorNodeWordOffset));
+    if (diff != 0) {
+        return diff;
+    }
+
+    // Fallback pass: re-read the caller's slot indices, then use the second
+    // identifier field of the same slot word.
+    slot_a = CampComparatorLoadU16(a);
+    slot_b = CampComparatorLoadU16(b);
+
+    word_a = *reinterpret_cast<const u32*>(
+        base + slot_a * kCampComparatorSlotStride +
+        kCampComparatorSlotWordOffset);
+    word_b = *reinterpret_cast<const u32*>(
+        base + slot_b * kCampComparatorSlotStride +
+        kCampComparatorSlotWordOffset);
+
+    id_a = (word_a >> kCampComparatorSecondaryIdShift) &
+           kCampComparatorSecondaryIdMask;
+    id_b = (word_b >> kCampComparatorSecondaryIdShift) &
+           kCampComparatorSecondaryIdMask;
+
+    node_a = camp_node_002b9364(id_a);
+    node_b = camp_node_002b9364(id_b);
+
+    lookup_a =
+        static_cast<s32>(camp_lookup_00288380(CampComparatorLoadU16(node_a)));
+    lookup_b =
+        static_cast<s32>(camp_lookup_00288380(CampComparatorLoadU16(node_b)));
+    diff = lookup_a - lookup_b;
+    if (diff != 0) {
+        return diff;
+    }
+
+    node_a = camp_node_002b9364(id_a);
+    node_b = camp_node_002b9364(id_b);
+
+    diff = static_cast<s32>(
+               CampComparatorLoadU8(node_a + kCampComparatorNodeByte2Offset)) -
+           static_cast<s32>(
+               CampComparatorLoadU8(node_b + kCampComparatorNodeByte2Offset));
+    if (diff != 0) {
+        return diff;
+    }
+
+    diff = static_cast<s32>(
+               CampComparatorLoadU8(node_b + kCampComparatorNodeByte3Offset)) -
+           static_cast<s32>(
+               CampComparatorLoadU8(node_a + kCampComparatorNodeByte3Offset));
+    if (diff != 0) {
+        return diff;
+    }
+
+    return static_cast<s32>(
+               CampComparatorLoadU16(node_a + kCampComparatorNodeWordOffset)) -
+           static_cast<s32>(
+               CampComparatorLoadU16(node_b + kCampComparatorNodeWordOffset));
+}
+
+// 0x001E15BC: bsearch comparator over two 32-bit words.  The original loads
+// both words, subtracts them as 32-bit values and returns the wrapped result.
+extern "C" s32 camp_func_001e15bc(const void* a, const void* b) {
+    u32 word_a = *reinterpret_cast<const u32*>(a);
+    u32 word_b = *reinterpret_cast<const u32*>(b);
+    return static_cast<s32>(word_a - word_b);
+}
+
+// 0x001E15CC: comparator that orders the s16 field at +0x0C first and falls
+// back to engine_func_002aa7f4(a, b) (a bounded string compare) on a tie.
+extern "C" s32 camp_func_001e15cc(const void* a, const void* b) {
+    s32 diff = CampComparatorLoadS16(
+                   reinterpret_cast<const u8*>(a) +
+                   kCampComparatorNodeS16Offset) -
+               CampComparatorLoadS16(
+                   reinterpret_cast<const u8*>(b) +
+                   kCampComparatorNodeS16Offset);
+    if (diff != 0) {
+        return diff;
+    }
+    return camp_strcmp_002aa7f4(a, b);
 }
 
 // DECOMP_FUNC(0x001e2704, 324)

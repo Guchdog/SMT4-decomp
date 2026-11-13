@@ -2430,7 +2430,7 @@ address,size,status,category,name,src_file
 0x001e1118,488,matching,script_vm,clearSave_func_001e1118,src/script/script_extras.cpp
 0x001e1300,24,matching,unknown,func_001e1300,src/engine/leaf_batch39_a.cpp
 0x001e1318,296,matching,ui,ui_func_001e1318,src/engine/leaf_batch28_a.cpp
-0x001e1440,428,matching,camp,camp_func_001e1440,src/engine/leaf_batch34_c.cpp
+0x001e1440,428,non_matching,camp,camp_func_001e1440,src/engine/leaf_batch34_c.cpp
 0x001e15ec,60,matching,script_vm,script_vm_func_001e15ec,src/engine/leaf_batch23_a.cpp
 0x001e1628,108,matching,camp,camp_func_001e1628,src/engine/leaf_batch41_b.cpp
 0x001e1694,116,matching,script_vm,script_vm_func_001e1694,src/engine/leaf_batch26_a.cpp
