@@ -2686,38 +2686,231 @@ extern "C" u32 ui_func_002f4804(f32 vertical_offset) {
 }
 
 // DECOMP_FUNC(0x001e2af0, 420)
-// 98 ARM instructions through unconditional pop; 28 trailing data bytes.
-extern "C" __attribute__((naked)) void script_vm_func_001e2af0() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d41f0, 0xeb038008, 0xe1a05000, 0xeb03752a\n"
-        ".word 0xe59f1170, 0xe3807004, 0xe5d11018, 0xe3510000\n"
-        ".word 0x1a000057, 0xe59f8160, 0xe5980000, 0xe5900000\n"
-        ".word 0xe3500000, 0x1a000052, 0xe3a00016, 0xeb03781d\n"
-        ".word 0xe3500000, 0x0a00004e, 0xe59f0140, 0xe19040d5\n"
-        ".word 0xe3540001, 0x0a000008, 0xe3540005, 0x0a00000b\n"
-        ".word 0xe3540006, 0x0a000014, 0xe3540007, 0x0a00001c\n"
-        ".word 0xe3540008, 0x0a000024, 0xea00002b, 0xe320f000\n"
-        ".word 0xeb0317a9, 0xe3500001, 0xb3a04002, 0xea000026\n"
-        ".word 0xe3a00020, 0xeb02b7ab, 0xe3500000, 0xe320f000\n"
-        ".word 0x0a000004, 0xeb01e590, 0xe59f10e4, 0xe0400001\n"
-        ".word 0xe1500001, 0x9a00001c, 0xe3a04006, 0xe3a00020\n"
-        ".word 0xeb02b7a0, 0xe3500000, 0xe320f000, 0x0a000003\n"
-        ".word 0xeb01e585, 0xe2400ee1, 0xe3500ee1, 0x9a000012\n"
-        ".word 0xe3a04007, 0xe3a00020, 0xeb02b796, 0xe3500000\n"
-        ".word 0xe320f000, 0x0a000003, 0xeb01e57b, 0xe59f1094\n"
-        ".word 0xe1510000, 0x9a000008, 0xe3a04008, 0xe320f000\n"
-        ".word 0xeb054599, 0xe1a06000, 0xe320f000, 0xeb02aa68\n"
-        ".word 0xe0862fa6, 0xe15000c2, 0xa3a04000, 0xe5980000\n"
-        ".word 0xe59f1064, 0xe0843084, 0xe3a02002, 0xe0816283\n"
-        ".word 0xe4802004, 0xe3a01000, 0xe4801010, 0xe2863004\n"
-        ".word 0xe5803000, 0xeb0374d4, 0xed9f0a10, 0xe1a02000\n"
-        ".word 0xe5961000, 0xeef00a40, 0xe1a03007, 0xe3a00001\n"
-        ".word 0xeb037465, 0xe2840001, 0xe3500009, 0xa3a00000\n"
-        ".word 0xe5c50d5b, 0xe8bd81f0, 0x0049f91c, 0x00447a98\n"
-        ".word 0x00000d5b, 0x00000708, 0x00001c20, 0x00447ab0\n"
-        ".word 0x3f34fdf4\n"
-    );
+//
+// Recovered contract (ARM 0x001E2AF0..0x001E2C74 plus the seven literal words
+// at 0x001E2C78..0x001E2C90: 0x0049F91C, 0x00447A98, 0x00000D5B, 0x00000708,
+// 0x00001C20, 0x00447AB0 and 0.707f = 0x3F34FDF4):
+//   * `context = engine_func_002c2b1c()` is the engine context; this routine
+//     owns exactly one field of it, the signed advice index at `+0xD5B`.
+//   * `script_vm_func_002bffac()` returns a profile byte.  Its value `| 4` is
+//     forwarded to the final `script_vm_func_002bfdfc` call; the unmodified
+//     byte is what the early-exit path leaves in r0.
+//   * Three gates suppress the update entirely: the byte at
+//     `0x0049F91C + 0x18` must be zero, the word reached through
+//     `*(u32*)0x00447A98` must be zero, and event flag 0x16 must be set.
+//     The first two checks happen before the flag lookup; the second one
+//     re-reads `0x00447A98` later for the command writes, so a helper that
+//     rewrites that global is observed.
+//   * The nine 0x60-byte entries at 0x00447AB0 are `{u32 message_id,
+//     Shift-JIS text[0x5C]}`; `entry[0]` is forwarded as the message id and
+//     `entry+4` is stored into the pending command array.  The selected index
+//     is never bounds-checked, exactly like the original's flat `index*0x60`.
+//   * The index state machine advances one step per invocation, wrapping to 0
+//     after entry 8.  Index 1 stays put while `camp_func_002a8a1c()` (a
+//     populated-entry count) is non-zero.  Indices 5, 6 and 7 are gated by
+//     `func_0025c1dc()` (elapsed seconds) around 1800 s, 3600 s and 7200 s;
+//     the comparisons are unsigned, so a value below a gate wraps and falls
+//     through to the next stage.  Index 8 compares two signed 16-bit record
+//     fields and resets to 0 when the second is at least half the first.
+//   * The pending command array receives `[0] = 2`, `[1] = 0`,
+//     `[5] = entry+4`; words `[2..4]` are left untouched.
+//   * No stack arguments, no indirect calls, no floating-point input.  The
+//     epilogue is `pop {r4, r5, r6, r7, r8, pc}`.
+//
+// Callers ignore r0, but the original leaves a defined value there on every
+// path (the 0x2BFFAC byte, the non-zero pending word, 0, or the next index).
+// The reconstruction returns it so register-level differential tests are
+// exact.
+namespace func_1e2af0 {
+
+// 0x0049F91C: shared map/script word block.  Only `+0x18` is read here.
+constexpr u32 kUiBlockAddress = 0x0049F91C;
+constexpr u32 kUiBlockHoldOffset = 0x18;
+
+// 0x00447A98: pointer to the pending command word array.
+constexpr u32 kCommandArrayPointerAddress = 0x00447A98;
+
+// `str r2, [r0]`; `str r1, [r0, #4]`; `str r3, [r0, #0x14]`.
+constexpr u32 kCommandKindIndex = 0;
+constexpr u32 kCommandKind = 2;
+constexpr u32 kCommandArgumentIndex = 1;
+constexpr u32 kCommandDataIndex = 5;
+
+// 0x00447AB0: nine advice entries, each a u32 message id followed by 0x5C
+// bytes of Shift-JIS text.
+constexpr u32 kAdviceTableAddress = 0x00447AB0;
+constexpr u32 kAdviceEntryStride = 0x60;
+constexpr u32 kAdviceEntryCount = 9;
+constexpr u32 kAdviceTextOffset = 4;
+
+// Engine context field owned by this routine (`ldrsb r4, [context, #0xD5B]`).
+constexpr u32 kAdviceIndexOffset = 0xD5B;
+
+// Elapsed-second gates: `ldr r1, =0x708` + `sub r0, r0, r1` + `cmp r0, r1`
+// (state 5), `sub r0, r0, #0xE10` + `cmp r0, #0xE10` (state 6) and
+// `ldr r1, =0x1C20` + `cmp r1, r0` (state 7).
+constexpr u32 kSaveGateWindow = 0x0708;   // 1800 s
+constexpr u32 kSaveGateSecond = 0x0E10;   // 3600 s
+constexpr u32 kSaveGateThird = 0x1C20;    // 7200 s
+
+// `mov r0, #0x20` before each camp_func_00290a38 call.
+constexpr u32 kSaveDataEntryId = 0x20;
+
+// `mov r0, #0x16` before the event-flag test.
+constexpr u32 kAdviceEventFlag = 0x16;
+
+// `mov r0, #1` before the 0x2BFDFC call.
+constexpr u32 kAdviceMessageKind = 1;
+
+// `orr r7, r0, #4`.
+constexpr u32 kAdviceFlagsOr = 4;
+
+// 0x3F34FDF4, loaded into s0 and copied to s1 for the 0x2BFDFC call.
+constexpr f32 kAdviceCoefficient = 0.707f;
+
+}  // namespace func_1e2af0
+
+// 0x002C2B1C: engine context singleton (`*(*(0x0043E2A8 + 4)) + 0xAC8C`).
+extern "C" u8* engine_func_002c2b1c(void);
+
+// 0x002BFFAC: profile byte at `0x004C5634 + 0x1E4`.
+extern "C" u32 script_vm_func_002bffac(void);
+
+// 0x002BFF9C: profile byte at `0x004C5634 + 0x1E5`.
+extern "C" u32 script_vm_func_002bff9c(void);
+
+// 0x002C0BA8: event-flag test, non-zero when the flag bit is set.
+extern "C" u32 script_vm_func_002c0ba8(u32 flag_id);
+
+// 0x002A8A1C: count of leading non-negative s8 entries in a 24-entry table.
+extern "C" u32 camp_func_002a8a1c(void);
+
+// 0x00290A38: save-data entry word for `id`.
+extern "C" u32 camp_func_00290a38(u32 id);
+
+// 0x0025C1DC: elapsed seconds since the save timestamp (0 when in the future,
+// -1 when no timestamp is armed).
+extern "C" s32 func_0025c1dc(void);
+
+// 0x0033426C: signed 16-bit field at `+0x1C` of the shared record.
+extern "C" s32 script_vm_func_0033426c(void);
+
+// 0x0028D5B4: signed 16-bit field at `+0x2A` of the shared record.
+extern "C" s32 camp_func_0028d5b4(void);
+
+// 0x002BFDFC: queues one script message record (kind, message id, byte, flags,
+// two floats).
+extern "C" u32 script_vm_func_002bfdfc(u32 kind, u32 message_id,
+                                       u32 byte_argument, u32 flags,
+                                       f32 coefficient_a, f32 coefficient_b);
+
+extern "C" u32 script_vm_func_001e2af0(void) {
+    using namespace func_1e2af0;
+
+    u8* const context = engine_func_002c2b1c();
+
+    // The profile byte is read before the suppression checks and its `| 4`
+    // form is kept live across the whole body for the final message call.
+    const u32 profile_byte = script_vm_func_002bffac();
+    const u32 profile_flags = profile_byte | kAdviceFlagsOr;
+
+    if (*reinterpret_cast<const u8*>(kUiBlockAddress + kUiBlockHoldOffset) !=
+        0) {
+        return profile_byte;
+    }
+
+    const u32 command_array_address =
+        *reinterpret_cast<const u32*>(kCommandArrayPointerAddress);
+    const u32 pending_command =
+        *reinterpret_cast<const u32*>(command_array_address);
+    if (pending_command != 0) {
+        return pending_command;
+    }
+
+    if (script_vm_func_002c0ba8(kAdviceEventFlag) == 0) {
+        return 0;
+    }
+
+    s32 index = *reinterpret_cast<const s8*>(context + kAdviceIndexOffset);
+
+    switch (index) {
+    case 1: {
+        // `cmp r0, #1` / `movlt r4, #2`: an empty roster advances to entry 2,
+        // otherwise entry 1 is shown and the state simply moves on.
+        const s32 populated = static_cast<s32>(camp_func_002a8a1c());
+        if (populated < 1) {
+            index = 2;
+        }
+        break;
+    }
+    case 5:
+        // The unsigned window `elapsed - 1800 <= 1800` keeps entry 5.
+        if (camp_func_00290a38(kSaveDataEntryId) != 0) {
+            const u32 elapsed = static_cast<u32>(func_0025c1dc());
+            if (elapsed - kSaveGateWindow <= kSaveGateWindow) {
+                break;
+            }
+        }
+        index = 6;
+        [[fallthrough]];
+    case 6:
+        // The unsigned window `elapsed - 3600 <= 3600` keeps entry 6.
+        if (camp_func_00290a38(kSaveDataEntryId) != 0) {
+            const u32 elapsed = static_cast<u32>(func_0025c1dc());
+            if (elapsed - kSaveGateSecond <= kSaveGateSecond) {
+                break;
+            }
+        }
+        index = 7;
+        [[fallthrough]];
+    case 7:
+        // `cmp r1, r0` with r1 = 0x1C20: entry 7 stays while elapsed >= 7200 s.
+        if (camp_func_00290a38(kSaveDataEntryId) != 0) {
+            const u32 elapsed = static_cast<u32>(func_0025c1dc());
+            if (kSaveGateThird <= elapsed) {
+                break;
+            }
+        }
+        index = 8;
+        [[fallthrough]];
+    case 8: {
+        // `add r2, r6, r6, lsr #31` / `cmp r0, r2, asr #1` is a signed
+        // division of the first field by two, truncated toward zero.
+        const s32 half_value = script_vm_func_0033426c();
+        const s32 current_value = camp_func_0028d5b4();
+        if (current_value >= half_value / 2) {
+            index = 0;
+        }
+        break;
+    }
+    default:
+        // Entries 0, 2, 3, 4 and out-of-range indices are emitted as-is.
+        break;
+    }
+
+    // The pointer is re-read here; the earlier suppression check used a
+    // separate load, so helper side effects on 0x00447A98 are observed.
+    u32* const command_array = reinterpret_cast<u32*>(
+        *reinterpret_cast<const u32*>(kCommandArrayPointerAddress));
+    const u32 entry_address =
+        kAdviceTableAddress + static_cast<u32>(index) * kAdviceEntryStride;
+    const u32* const entry = reinterpret_cast<const u32*>(entry_address);
+
+    command_array[kCommandKindIndex] = kCommandKind;
+    command_array[kCommandArgumentIndex] = 0;
+    command_array[kCommandDataIndex] = entry_address + kAdviceTextOffset;
+
+    const u32 coefficient_argument = script_vm_func_002bff9c();
+    script_vm_func_002bfdfc(kAdviceMessageKind, entry[0], coefficient_argument,
+                            profile_flags, kAdviceCoefficient,
+                            kAdviceCoefficient);
+
+    s32 next_index = index + 1;
+    if (next_index >= static_cast<s32>(kAdviceEntryCount)) {
+        next_index = 0;
+    }
+    context[kAdviceIndexOffset] = static_cast<u8>(next_index);
+    return static_cast<u32>(next_index);
 }
 
 // DECOMP_FUNC(0x001f6704, 420)
