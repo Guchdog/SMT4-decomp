@@ -6571,96 +6571,193 @@ extern "C" void camp_func_003abd08(void* ctx, void* work, u32 index, u32 flag,
 }
 
 // DECOMP_FUNC(0x0032fc54, 672)
-extern "C" __attribute__((naked)) void func_0032fc54() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x41f0, 0xe92d, 0x4000, 0xe1a0\n"
-        ".hword 0xd020, 0xe24d, 0x0034, 0xe590\n"
-        ".hword 0x0000, 0xe350, 0x0000, 0x03e0\n"
-        ".hword 0x000d, 0x0a00, 0x02d0, 0xe1c4\n"
-        ".hword 0x0001, 0xe150, 0x0002, 0x13e0\n"
-        ".hword 0x0009, 0x1a00, 0x2028, 0xe594\n"
-        ".hword 0x000c, 0xe242, 0x0025, 0xe350\n"
-        ".hword 0x0004, 0x2a00, 0x002c, 0xe594\n"
-        ".hword 0x000c, 0xe350, 0x0001, 0x3a00\n"
-        ".hword 0x0030, 0xe350, 0x0002, 0x9a00\n"
-        ".hword 0x0003, 0xe3e0, 0xd020, 0xe28d\n"
-        ".hword 0x81f0, 0xe8bd, 0xc220, 0xe59f\n"
-        ".hword 0x6030, 0xe594, 0x5000, 0xe3a0\n"
-        ".hword 0x3025, 0xe28c, 0x100c, 0xe7d2\n"
-        ".hword 0x0001, 0xe316, 0x2003, 0xe7d2\n"
-        ".hword 0x700c, 0xe7d0, 0x6003, 0xe7d0\n"
-        ".hword 0x8056, 0xe28c, 0x002a, 0x0a00\n"
-        ".hword 0x0000, 0xe351, 0x0000, 0x1352\n"
-        ".hword 0x0027, 0x0a00, 0x0000, 0xe594\n"
-        ".hword 0x300c, 0xe28d, 0x5001, 0xe3a0\n"
-        ".hword 0x0000, 0xe58d, 0x000c, 0xe594\n"
-        ".hword 0x0004, 0xe58d, 0x0018, 0xe594\n"
-        ".hword 0x0008, 0xe58d, 0x001c, 0xe594\n"
-        ".hword 0x0107, 0xe883, 0x0020, 0xe594\n"
-        ".hword 0x0c01, 0xe350, 0x0007, 0x8a00\n"
-        ".hword 0x0034, 0xe594, 0x0001, 0xe350\n"
-        ".hword 0x0017, 0x1a00, 0x11ac, 0xe59f\n"
-        ".hword 0x000d, 0xe1a0, 0x1000, 0xe591\n"
-        ".hword 0xff31, 0xe12f, 0x0012, 0xea00\n"
-        ".hword 0x0c02, 0xe350, 0x0007, 0x8a00\n"
-        ".hword 0x0034, 0xe594, 0x0001, 0xe350\n"
-        ".hword 0x000d, 0x1a00, 0x1188, 0xe59f\n"
-        ".hword 0x000d, 0xe1a0, 0x1000, 0xe591\n"
-        ".hword 0xff31, 0xe12f, 0x0008, 0xea00\n"
-        ".hword 0x0b01, 0xe350, 0x0057, 0x8a00\n"
-        ".hword 0x0034, 0xe594, 0x0001, 0xe350\n"
-        ".hword 0x0003, 0x1a00, 0x1164, 0xe59f\n"
-        ".hword 0x000d, 0xe1a0, 0x1000, 0xe591\n"
-        ".hword 0xff31, 0xe12f, 0x0030, 0xe594\n"
-        ".hword 0x0002, 0xe310, 0x0000, 0x1357\n"
-        ".hword 0x0000, 0x1356, 0x0048, 0x0a00\n"
-        ".hword 0x0004, 0xe594, 0x100c, 0xe28d\n"
-        ".hword 0x5002, 0xe385, 0x0000, 0xe58d\n"
-        ".hword 0x0010, 0xe594, 0x0004, 0xe58d\n"
-        ".hword 0x0018, 0xe594, 0x00a0, 0xe1a0\n"
-        ".hword 0x0008, 0xe58d, 0x001c, 0xe594\n"
-        ".hword 0x00a0, 0xe1a0, 0x0081, 0xe881\n"
-        ".hword 0x0014, 0xe28d, 0x7114, 0xe59f\n"
-        ".hword 0x0140, 0xe880, 0x0020, 0xe594\n"
-        ".hword 0x6104, 0xe59f, 0x8108, 0xe59f\n"
-        ".hword 0x0c01, 0xe350, 0x0006, 0x8a00\n"
-        ".hword 0x0034, 0xe594, 0x0001, 0xe350\n"
-        ".hword 0x0013, 0x1a00, 0x1000, 0xe596\n"
-        ".hword 0x000d, 0xe1a0, 0xff31, 0xe12f\n"
-        ".hword 0x000f, 0xea00, 0x0c02, 0xe350\n"
-        ".hword 0x0005, 0x8a00, 0x0034, 0xe594\n"
-        ".hword 0x0001, 0xe350, 0x1000, 0x0597\n"
-        ".hword 0x000d, 0x01a0, 0x0008, 0x1a00\n"
-        ".hword 0x0006, 0xea00, 0x0b01, 0xe350\n"
-        ".hword 0x0026, 0x8a00, 0x0034, 0xe594\n"
-        ".hword 0x0001, 0xe350, 0x1000, 0x0598\n"
-        ".hword 0x000d, 0x01a0, 0x0000, 0x1a00\n"
-        ".hword 0xff31, 0xe12f, 0x0008, 0xe594\n"
-        ".hword 0x0000, 0xe58d, 0x0014, 0xe594\n"
-        ".hword 0x0004, 0xe58d, 0x0020, 0xe594\n"
-        ".hword 0x0c01, 0xe350, 0x0005, 0x8a00\n"
-        ".hword 0x0034, 0xe594, 0x0001, 0xe350\n"
-        ".hword 0x1000, 0x0596, 0x000d, 0x01a0\n"
-        ".hword 0x0011, 0x1a00, 0x0006, 0xea00\n"
-        ".hword 0x0c02, 0xe350, 0x0006, 0x8a00\n"
-        ".hword 0x0034, 0xe594, 0x0001, 0xe350\n"
-        ".hword 0x1000, 0x0597, 0x000d, 0x01a0\n"
-        ".hword 0x0009, 0x1a00, 0xff31, 0xe12f\n"
-        ".hword 0x0007, 0xea00, 0x0b01, 0xe350\n"
-        ".hword 0x0008, 0x8a00, 0x0034, 0xe594\n"
-        ".hword 0x0001, 0xe350, 0x0002, 0x1a00\n"
-        ".hword 0x1000, 0xe598, 0x000d, 0xe1a0\n"
-        ".hword 0xff31, 0xe12f, 0xd020, 0xe28d\n"
-        ".hword 0x0005, 0xe1a0, 0x81f0, 0xe8bd\n"
-        ".hword 0xd020, 0xe28d, 0x0004, 0xe3e0\n"
-        ".hword 0x81f0, 0xe8bd, 0xb828, 0x0040\n"
-        ".hword 0x72a4, 0x0016, 0xb01c, 0x0016\n"
-        ".hword 0x352c, 0x0016, 0x72a8, 0x0016\n"
-        ".hword 0xb020, 0x0016, 0x3530, 0x0016\n"
-    );
-};
+//
+// Issues one, two or three glyph-run draws from a 0x38-byte request block.
+// The request carries two byte-table indices (0x0C..0x30), two extent words
+// that must match, two flag bits and a helper-ready word (0x34).  Each index
+// selects one byte from each of two 0x25-byte rows of the table at
+// 0x0040B828; a nonzero row pair enables that draw.  Draws are issued through
+// six global function-pointer slots whose pinned image contents are
+//   <= 0x100: func_00167244 (first descriptor) / func_00167274 (next two)
+//   <= 0x200: func_0016AFBC (first)            / func_0016AFEC (next two)
+//   <= 0x400: func_001634CC (first)            / func_001634FC (next two)
+// The slot addresses below are the load targets of the original `ldr/ldr/blx`
+// sequences, so the indirect dispatch is preserved exactly.  Every renderer
+// receives a seven-word descriptor on the stack in r0; its return value is not
+// used by this function (r0 is reloaded before the next observation).
+namespace leaf_fc54 {
 
+// Request block built by the caller at 0x3F5FD0..0x3F60B4 and passed in r0.
+// Every access in the original is a 32-bit load; the block is 0x38 bytes.
+struct Request {
+    u32 word_00;  // descriptor word 0, primary draw
+    u32 word_04;  // descriptor word 0, secondary draw
+    u32 word_08;  // descriptor word 0, third draw
+    u32 word_0C;  // descriptor word 1, primary draw
+    u32 word_10;  // descriptor word 1, secondary draw
+    u32 word_14;  // descriptor word 1, third draw
+    u32 word_18;  // descriptor word 2 (halved for the secondary pair)
+    u32 word_1C;  // descriptor word 3 (halved for the secondary pair)
+    u32 word_20;  // extent, must equal word_24; selects the renderer class
+    u32 word_24;  // extent, must equal word_20
+    u32 word_28;  // first table index, 0x0C..0x30
+    u32 word_2C;  // second table index, 0x0C..0x30
+    u32 word_30;  // flag bits: bit 0 primary draw, bit 1 secondary/third draw
+    u32 word_34;  // 0: not ready; 1: issue renderer calls
+};
+static_assert(sizeof(Request) == 0x38);
+
+// Seven-word argument block placed on the stack and passed in r0.
+struct DrawArgs {
+    u32 word_00;
+    u32 word_04;
+    u32 word_08;
+    u32 word_0C;
+    u32 word_10;
+    u32 word_14;
+    u32 word_18;
+};
+static_assert(sizeof(DrawArgs) == 0x1C);
+
+using DrawFn = void (*)(const DrawArgs*);
+
+// Two 0x25-byte rows indexed by the raw request index (0x0C..0x30), plus the
+// third-row pointer forwarded as the last descriptor word.
+constexpr u32 kTableAddr = 0x0040B828;
+constexpr u32 kTableRowStride = 0x25;
+constexpr u32 kTableExtraOffset = 0x56;
+
+constexpr u32 kIndexMin = 0x0C;
+constexpr u32 kIndexCount = 0x25;  // 0x0C..0x30 inclusive
+
+constexpr u32 kExtentSmallMax = 0x100;
+constexpr u32 kExtentMediumMax = 0x200;
+constexpr u32 kExtentLargeMax = 0x400;
+
+constexpr u32 kModeReady = 1;
+constexpr u32 kFlagPrimary = 1;
+constexpr u32 kFlagSecondary = 2;
+
+// Global function-pointer slots; the pinned image contents are the six
+// renderers listed above.
+constexpr u32 kSlotSmallFirst = 0x001672A4;   // -> func_00167244
+constexpr u32 kSlotSmallNext = 0x001672A8;    // -> func_00167274
+constexpr u32 kSlotMediumFirst = 0x0016B01C;  // -> func_0016AFBC
+constexpr u32 kSlotMediumNext = 0x0016B020;   // -> func_0016AFEC
+constexpr u32 kSlotLargeFirst = 0x0016352C;   // -> func_001634CC
+constexpr u32 kSlotLargeNext = 0x00163530;    // -> func_001634FC
+
+constexpr s32 kErrorNotReady = -1;        // mvn r0,#0
+constexpr s32 kErrorExtentMismatch = -3;  // mvn r0,#2
+constexpr s32 kErrorIndex = -4;           // mvn r0,#3
+constexpr s32 kErrorExtentTooLarge = -5;  // mvn r0,#4
+
+inline void call_slot(u32 slot, const DrawArgs* args) {
+    const DrawFn renderer = *reinterpret_cast<const DrawFn*>(slot);
+    renderer(args);
+}
+
+// Issues one draw through the slot triplet selected by the request extent.
+// The call is skipped unless word_34 == 1; returns false when the extent
+// exceeds 0x400 (the original returns -5 in that case).
+inline bool draw_for_extent(const Request* request, u32 slot_small,
+                            u32 slot_medium, u32 slot_large,
+                            const DrawArgs* args) {
+    const u32 extent = request->word_20;
+    if (extent <= kExtentSmallMax) {
+        if (request->word_34 == kModeReady) {
+            call_slot(slot_small, args);
+        }
+    } else if (extent <= kExtentMediumMax) {
+        if (request->word_34 == kModeReady) {
+            call_slot(slot_medium, args);
+        }
+    } else if (extent <= kExtentLargeMax) {
+        if (request->word_34 == kModeReady) {
+            call_slot(slot_large, args);
+        }
+    } else {
+        return false;
+    }
+    return true;
+}
+
+}  // namespace leaf_fc54
+
+extern "C" s32 func_0032fc54(leaf_fc54::Request* request) {
+    using namespace leaf_fc54;
+
+    if (request->word_34 == 0) {
+        return kErrorNotReady;
+    }
+    if (request->word_20 != request->word_24) {
+        return kErrorExtentMismatch;
+    }
+
+    const u32 first_index = request->word_28;
+    if (first_index - kIndexMin >= kIndexCount) {
+        return kErrorIndex;
+    }
+    const u32 second_index = request->word_2C;
+    if (second_index < kIndexMin || second_index > kIndexMin + kIndexCount - 1) {
+        return kErrorIndex;
+    }
+
+    const u8* const table = reinterpret_cast<const u8*>(kTableAddr);
+    const u32 primary_flags = request->word_30;
+    const u8 first_row0 = table[first_index];
+    const u8 first_row1 = table[first_index + kTableRowStride];
+    const u8 second_row0 = table[second_index];
+    const u8 second_row1 = table[second_index + kTableRowStride];
+    const u32 table_extra = reinterpret_cast<u32>(table + kTableExtraOffset);
+
+    s32 result = 0;
+
+    if ((primary_flags & kFlagPrimary) != 0 && first_row0 != 0 &&
+        first_row1 != 0) {
+        DrawArgs args;
+        args.word_00 = request->word_00;
+        args.word_04 = request->word_0C;
+        args.word_08 = request->word_18;
+        args.word_0C = request->word_1C;
+        args.word_10 = first_row0;
+        args.word_14 = first_row1;
+        args.word_18 = table_extra;
+        result = 1;
+
+        if (!draw_for_extent(request, kSlotSmallFirst, kSlotMediumFirst,
+                             kSlotLargeFirst, &args)) {
+            return kErrorExtentTooLarge;
+        }
+    }
+
+    if ((request->word_30 & kFlagSecondary) != 0 && second_row0 != 0 &&
+        second_row1 != 0) {
+        DrawArgs args;
+        args.word_00 = request->word_04;
+        args.word_04 = request->word_10;
+        args.word_08 = request->word_18 >> 1;
+        args.word_0C = request->word_1C >> 1;
+        args.word_10 = second_row0;
+        args.word_14 = second_row1;
+        args.word_18 = table_extra;
+        result |= 2;
+
+        if (!draw_for_extent(request, kSlotSmallNext, kSlotMediumNext,
+                             kSlotLargeNext, &args)) {
+            return kErrorExtentTooLarge;
+        }
+
+        args.word_00 = request->word_08;
+        args.word_04 = request->word_14;
+        if (!draw_for_extent(request, kSlotSmallNext, kSlotMediumNext,
+                             kSlotLargeNext, &args)) {
+            return kErrorExtentTooLarge;
+        }
+    }
+
+    return result;
+}
 // DECOMP_FUNC(0x001a1954, 676)
 extern "C" __attribute__((naked)) void ui_func_001a1954() {
     asm volatile(

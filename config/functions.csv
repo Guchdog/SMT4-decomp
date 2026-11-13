@@ -7548,7 +7548,7 @@ address,size,status,category,name,src_file
 0x0032c8d0,124,matching,script_vm,script_vm_func_0032c8d0,src/engine/leaf_batch33_a.cpp
 0x0032c94c,444,matching,engine,engine_func_0032c94c,src/engine/leaf_batch25_c.cpp
 0x0032cb08,12620,matching,camp,Camp_SubModeProcess,src/camp/camp_party.cpp
-0x0032fc54,672,matching,unknown,func_0032fc54,src/engine/leaf_batch45_a.cpp
+0x0032fc54,672,non_matching,unknown,func_0032fc54,src/engine/leaf_batch45_a.cpp
 0x0032fef4,88,matching,camp,camp_func_0032fef4,src/engine/leaf_batch37_c.cpp
 0x0032ff4c,92,matching,unknown,func_0032ff4c,src/engine/leaf_batch25_c.cpp
 0x0032ffa8,124,matching,battle,battle_func_0032ffa8,src/engine/leaf_batch25_c.cpp
