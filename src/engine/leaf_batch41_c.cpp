@@ -4384,38 +4384,157 @@ extern "C" u32 engine_func_001182dc() {
 }
 
 // DECOMP_FUNC(0x00126774, 428)
-// 101 ARM instructions through unconditional pop; 24 trailing data bytes.
-extern "C" __attribute__((naked)) void engine_func_00126774() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d47f0, 0xe1a05001, 0xe1a08000, 0xe1a09002\n"
-        ".word 0xe59f717c, 0xed2d8b02, 0xe2870a01, 0xe5900218\n"
-        ".word 0xe1b06000, 0x03e00000, 0x0a000057, 0xe5901020\n"
-        ".word 0xe3e04000, 0xe3510000, 0x03a04000, 0x0a00000b\n"
-        ".word 0xe5901024, 0xe3510000, 0x03a04001, 0x0a000007\n"
-        ".word 0xe5901028, 0xe3510000, 0x03a04002, 0x0a000003\n"
-        ".word 0xe596002c, 0xe3500000, 0x03a04003, 0x1a000045\n"
-        ".word 0xe59fa11c, 0xe1a0000a, 0xeb06641a, 0xe3500000\n"
-        ".word 0xe320f000, 0x0a00003f, 0xe1a01008, 0xe1a0000a\n"
-        ".word 0xeb006c4d, 0xe3500000, 0xe320f000, 0x0a000039\n"
-        ".word 0xe1a01008, 0xe1a00007, 0xeb006c47, 0xe5d6103b\n"
-        ".word 0xe3510000, 0x0a00000a, 0xe3500003, 0x0a000002\n"
-        ".word 0xe3500002, 0x0a00000a, 0xea00002e, 0xe1a00008\n"
-        ".word 0xeb0047ed, 0xe3500000, 0xe320f000, 0x1a000004\n"
-        ".word 0xea000028, 0xe3500003, 0x0a000026, 0xe3500002\n"
-        ".word 0x1a000024, 0xe0866104, 0xe2861020, 0xe3a03000\n"
-        ".word 0xe1a02008, 0xe2870f61, 0xeb06595d, 0xe31000ff\n"
-        ".word 0x03a07001, 0x13a07000, 0xe355007f, 0xed9f0a1d\n"
-        ".word 0x83a0507f, 0x8a000002, 0xe3550000, 0x0eb08a40\n"
-        ".word 0x0a000009, 0xee005a90, 0xeddf1a17, 0xed9f1a17\n"
-        ".word 0xed9f8a17, 0xeef80a60, 0xee700ae1, 0xee008a81\n"
-        ".word 0xee180a10, 0xe3500101, 0xcd9f8a12, 0xe5960020\n"
-        ".word 0xe3a01000, 0xe3500000, 0x1b06592c, 0xeeb00a48\n"
-        ".word 0xe5960020, 0xe1a01009, 0xe3500000, 0x1b065927\n"
-        ".word 0xe3570000, 0x03e04000, 0xe1a00004, 0xecbd8b02\n"
-        ".word 0xe8bd87f0, 0x004e1f68, 0x00000000, 0x42800000\n"
-        ".word 0x3c810204, 0x3f800000, 0x40000000\n"
-    );
+//
+// Starts a voice on the active stream slot: claims the first free entry of the
+// four-pointer voice table, gates the request on the sound-system state, and
+// asks the manager virtual at AsdSoundSystem + 0x184 to publish the voice into
+// that slot.  On success the voice envelope is seeded twice through
+// 0x002BCD94 with the level-derived scale.  Integer arguments arrive in
+// r0/r1/r2 and the s32 result returns in r0.
+//
+// Direct call targets (all BL in the original):
+//   0x002BF85C  engine_func_002bf85c   tests AsdSoundSystem.field_004
+//   0x00141940  engine_func_00141940   nested system/object kind lookup
+//   0x00138800  func_00138800          object-list membership gate
+//   0x002BCDF8  func_002bcdf8          manager virtual -> voice slot
+//   0x002BCD94  func_002bcd94          envelope retarget (r1 mode, s0 target)
+//
+// The single literal at 0x00126908 (0x004E1F68) is loaded into both r7 and sl,
+// so 0x00141940 is issued twice with identical arguments; the second result is
+// the kind that selects the gate.  Kind 2 proceeds directly; kind 3 proceeds
+// only when the stream slot's +0x3B byte is non-zero and 0x00138800(object)
+// returns non-zero.  Every other kind returns the claimed slot index.
+extern "C" u32 engine_func_002bf85c(const void* system);
+extern "C" u32 engine_func_00141940(const void* system, const void* object);
+extern "C" u32 func_00138800(const void* object);
+extern "C" u32 func_002bcdf8(void* registry, void** slot, const void* object,
+                             u32 arg3);
+extern "C" void func_002bcd94(void* voice, u32 mode, f32 target);
+
+namespace func_126774 {
+
+constexpr u32 kSoundSystemAddress = 0x004E1F68;
+constexpr u32 kActiveStreamOffset = 0x1218;  // SoundSystem.field_1218
+constexpr u32 kRegistryOffset = 0x0184;      // manager sub-object for 2BCDF8
+constexpr u32 kLevelBiasBits = 0x42800000;   // 64.0f
+constexpr u32 kLevelStepBits = 0x3C810204;   // 0x1.020408p-6
+constexpr u32 kClampBits = 0x40000000;       // 2.0f
+constexpr u32 kMaxLevel = 0x7F;
+constexpr u32 kVoiceSlotCount = 4;
+constexpr u32 kAllocationSuccessMask = 0xFF;
+constexpr u32 kDirectKind = 2;
+constexpr u32 kForwardKind = 3;
+constexpr u32 kStreamGateOffset = 0x3B;
+
+// The four voice pointers of the active stream slot start at +0x20; the byte
+// at +0x3B gates the kind-3 lookup.  The remaining slot bytes are left opaque.
+struct StreamVoiceTable {
+    u8 pad_00[0x20];
+    void* voices[kVoiceSlotCount];       // +0x20..+0x2C
+    u8 pad_30[kStreamGateOffset - 0x30]; // +0x30..+0x3A
+    u8 gate_3b;                          // +0x3B
+};
+static_assert(offsetof(StreamVoiceTable, voices) == 0x20);
+static_assert(offsetof(StreamVoiceTable, gate_3b) == kStreamGateOffset);
+static_assert(sizeof(StreamVoiceTable) == 0x3C);
+
+struct SoundSystemView {
+    u8 pad_00[kActiveStreamOffset];
+    StreamVoiceTable* active_stream;     // +0x1218
+};
+static_assert(offsetof(SoundSystemView, active_stream) ==
+              kActiveStreamOffset);
+
+// 0x1268A8..0x1268CC.  Level 0 maps to 0.0f; otherwise the unsigned level is
+// converted to float, biased by 64.0f and scaled from 1.0f.  The result is
+// clamped to 2.0f by comparing the *bit pattern* as a signed integer against
+// 0x40000000, not through a floating-point comparison.  Levels above 0x7F are
+// clamped first with an unsigned `bhi`.
+f32 level_scale(u32 level) {
+    u32 value = level;
+    if (value > kMaxLevel) {
+        value = kMaxLevel;
+    }
+    if (value == 0) {
+        return 0.0f;
+    }
+    const f32 bias = __builtin_bit_cast(f32, kLevelBiasBits);
+    const f32 step = __builtin_bit_cast(f32, kLevelStepBits);
+    f32 scale = 1.0f + (static_cast<f32>(value) - bias) * step;
+    const u32 bits = __builtin_bit_cast(u32, scale);
+    if (static_cast<s32>(bits) > static_cast<s32>(kClampBits)) {
+        scale = __builtin_bit_cast(f32, kClampBits);
+    }
+    return scale;
+}
+
+}  // namespace func_126774
+
+extern "C" s32 engine_func_00126774(void* object, u32 level, u32 target) {
+    using namespace func_126774;
+
+    SoundSystemView* const system =
+        reinterpret_cast<SoundSystemView*>(kSoundSystemAddress);
+    StreamVoiceTable* const table = system->active_stream;
+    if (table == nullptr) {
+        return -1;
+    }
+
+    // 0x1267A0..0x1267E0: first free voice pointer, scanned over four slots.
+    // All four occupied returns the -1 sentinel.
+    s32 slot = -1;
+    for (u32 index = 0; index < kVoiceSlotCount; ++index) {
+        if (table->voices[index] == nullptr) {
+            slot = static_cast<s32>(index);
+            break;
+        }
+    }
+    if (slot == -1) {
+        return -1;
+    }
+
+    // 0x1267E4..0x1267F8: the state gate returns the claimed slot on failure.
+    if (engine_func_002bf85c(system) == 0) {
+        return slot;
+    }
+
+    // 0x1267FC..0x126810: the first kind lookup only gates.
+    if (engine_func_00141940(system, object) == 0) {
+        return slot;
+    }
+
+    // 0x126814..0x12681C: identical second lookup; its result is switched on.
+    const u32 kind = engine_func_00141940(system, object);
+
+    // 0x126820..0x126864: keep the gate byte read before the kind tests; only
+    // kind 3 consults 0x00138800, and only when that byte is non-zero.
+    const bool forward_allowed =
+        table->gate_3b != 0 && kind == kForwardKind &&
+        func_00138800(object) != 0;
+    if (kind != kDirectKind && !forward_allowed) {
+        return slot;
+    }
+
+    // 0x126868..0x12687C: publish the voice through the manager virtual.
+    void** const slot_pointer = &table->voices[slot];
+    void* const registry =
+        reinterpret_cast<void*>(kSoundSystemAddress + kRegistryOffset);
+    const u32 allocation = func_002bcdf8(registry, slot_pointer, object, 0);
+    const bool allocated = (allocation & kAllocationSuccessMask) == 0;
+    const f32 scale = level_scale(level);
+
+    // 0x1268D0..0x1268F0: seed with 0.0f (the value vldr'd into s0 at
+    // 0x126890 and never overwritten before the first call), then retarget to
+    // (target, scale) after 0x1268E0 moves the scale into s0.  The slot pointer
+    // is re-read before each retarget.
+    if (table->voices[slot] != nullptr) {
+        func_002bcd94(table->voices[slot], 0, 0.0f);
+    }
+    if (table->voices[slot] != nullptr) {
+        func_002bcd94(table->voices[slot], target, scale);
+    }
+
+    return allocated ? slot : -1;
 }
 
 // DECOMP_FUNC(0x003a8b14, 428)
