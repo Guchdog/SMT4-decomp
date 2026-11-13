@@ -7435,39 +7435,185 @@ extern "C" void battle_func_00336e20(void* owner_argument) {
 }
 
 // DECOMP_FUNC(0x003635f0, 444)
-// 110 ARM instructions through unconditional pop; 4 trailing data bytes.
-extern "C" __attribute__((naked)) void func_003635f0() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d5ff0, 0xe3a06000, 0xe1a09001, 0xe1a0b000\n"
-        ".word 0xe1c94edc, 0xe1540005, 0x0a000006, 0xe5940000\n"
-        ".word 0xe1a01006, 0xe5900028, 0xebfff991, 0xe2844004\n"
-        ".word 0xe1540005, 0x1afffff8, 0xe289800c, 0xe1a06009\n"
-        ".word 0xe8980500, 0xe158000a, 0x0a00001a, 0xe5987000\n"
-        ".word 0xe5970034, 0xe1c040d8, 0xe1540005, 0x0a000008\n"
-        ".word 0xe5940000, 0xe1a02006, 0xe1a01007, 0xe5903000\n"
-        ".word 0xe5933000, 0xe12fff33, 0xe2844004, 0xe1540005\n"
-        ".word 0x1afffff6, 0xe5980000, 0xe5901000, 0xe5911020\n"
-        ".word 0xe12fff31, 0xe5980000, 0xe59b1010, 0xe5902000\n"
-        ".word 0xe592300c, 0xe1a02006, 0xe12fff33, 0xe2888004\n"
-        ".word 0xe158000a, 0x1affffe4, 0xe1c94edc, 0xe3a06001\n"
-        ".word 0xe1540005, 0x0a000006, 0xe5940000, 0xe1a01006\n"
-        ".word 0xe5900028, 0xebfff966, 0xe2844004, 0xe1540005\n"
-        ".word 0x1afffff8, 0xe599003c, 0xe5995040, 0xe3a07001\n"
-        ".word 0xe1a01007, 0xe0452000, 0xe0873142, 0xe3530001\n"
-        ".word 0xc3a0c000, 0xc0873142, 0xda000005, 0xe4902004\n"
-        ".word 0xe2811001, 0xe1530001, 0xe5922220, 0xe5c2c018\n"
-        ".word 0xcafffff9, 0xe599403c, 0xe1540005, 0x0a00000f\n"
-        ".word 0xe5940000, 0xe5d01231, 0xe3510000, 0x1a000008\n"
-        ".word 0xe5906220, 0xe5d60018, 0xe3500000, 0x1a000004\n"
-        ".word 0xe59b0008, 0xe59b2010, 0xe1a01006, 0xeb01f70e\n"
-        ".word 0xe5c67018, 0xe2844004, 0xe1540005, 0x1affffef\n"
-        ".word 0xe59f0040, 0xe28990ec, 0xe8990050, 0xe5905004\n"
-        ".word 0xe5907000, 0xe1540006, 0x0a000009, 0xe5940000\n"
-        ".word 0xe3150001, 0x01a01007, 0xe08000c5, 0x15901000\n"
-        ".word 0x17911007, 0xe12fff31, 0xe2844004, 0xe1540006\n"
-        ".word 0x1afffff5, 0xe8bd9ff0, 0x004105ac\n"
-    );
+//
+// Three manager-owned pointer vectors are walked in four phases:
+//   1. every object registered at manager+0xEC has its +0x28 pointer passed to
+//      0x00361C64 together with mode 0;
+//   2. every owner in manager+0x0C runs its child vector through virtual slot 0
+//      (owner, manager), then slot 8 (bare) and slot 3 (context+0x10, manager);
+//   3. the manager+0xEC list is walked again with mode 1;
+//   4. manager+0x3C entries have (*(entry+0x220))->+0x18 cleared, then every
+//      entry whose +0x231 byte and state +0x18 byte are both zero is passed to
+//      0x003E138C(*(context+8), state, *(context+0x10)) and marked with +0x18=1;
+//   5. manager+0xEC is dispatched one last time through the two-word member
+//      function pointer descriptor at 0x004105AC.
+//
+// The descriptor is {target, adjustment}.  Bit 0 of the adjustment selects the
+// virtual form: the object is advanced by adjustment>>1, its first word is the
+// vtable and `target` is a byte offset into that vtable.  Otherwise `target` is
+// the function address itself and the adjusted object is still passed as r0.
+// The shipped descriptor is {0x00375CC8, 0}, i.e. a direct call to
+// func_00375cc8(entry) for every remaining entry.
+//
+// The routine's source-level return type is void (the caller ignores r0), but
+// the final r0 is the final dispatch result, or 0x004105AC when the last vector
+// is empty.  It is returned explicitly so the dead register stays observable.
+
+extern "C" void func_00361c64(void* object, s32 mode);
+extern "C" void func_003e138c(void* context, void* state, void* argument);
+
+namespace func_003635f0_detail {
+
+constexpr u32 kDispatchDescriptor = 0x004105AC;
+
+constexpr u32 kRegisteredLinkOffset = 0x28;
+constexpr u32 kOwnerChildrenOffset = 0x34;
+constexpr u32 kChildrenBeginOffset = 0x08;
+constexpr u32 kChildrenEndOffset = 0x0C;
+constexpr u32 kStateOffset = 0x220;
+constexpr u32 kSkipFlagOffset = 0x231;
+constexpr u32 kStateFlagOffset = 0x18;
+constexpr u32 kContextFirstOffset = 0x08;
+constexpr u32 kContextSecondOffset = 0x10;
+
+constexpr u32 kSlotFirst = 0;
+constexpr u32 kSlotWithArgument = 3;
+constexpr u32 kSlotBare = 8;
+
+struct __attribute__((may_alias)) Manager {
+    u8 pad_00[0x0C];
+    void** vector_0c_begin;
+    void** vector_0c_end;
+    u8 pad_14[0x28];
+    void** vector_3c_begin;
+    void** vector_3c_end;
+    u8 pad_44[0xA8];
+    void** vector_ec_begin;
+    void** vector_ec_end;
+};
+
+inline u32 load_word(const void* base, u32 offset) {
+    return *reinterpret_cast<const volatile u32*>(
+        static_cast<const u8*>(base) + offset);
+}
+
+inline void* load_pointer(const void* base, u32 offset) {
+    return reinterpret_cast<void*>(
+        static_cast<uintptr_t>(load_word(base, offset)));
+}
+
+inline u8 load_byte(const void* base, u32 offset) {
+    return *reinterpret_cast<const volatile u8*>(
+        static_cast<const u8*>(base) + offset);
+}
+
+inline void store_byte(void* base, u32 offset, u8 value) {
+    *reinterpret_cast<volatile u8*>(static_cast<u8*>(base) + offset) = value;
+}
+
+inline void** load_vtable(void* object) {
+    return *reinterpret_cast<void***>(object);
+}
+
+using SlotFirst = void (*)(void* self, void* owner, void* manager);
+using SlotWithArgument = void (*)(void* self, void* argument, void* manager);
+using SlotBare = void (*)(void* self);
+using Dispatch = u32 (*)(void* self);
+
+}  // namespace func_003635f0_detail
+
+extern "C" u32 func_003635f0(void* context_argument, void* manager_argument) {
+    using namespace func_003635f0_detail;
+
+    void* const context = context_argument;
+    Manager* const manager = static_cast<Manager*>(manager_argument);
+
+    for (void** it = manager->vector_ec_begin; it != manager->vector_ec_end;
+         ++it) {
+        void* const object = *it;
+        func_00361c64(load_pointer(object, kRegisteredLinkOffset), 0);
+    }
+
+    for (void** it = manager->vector_0c_begin; it != manager->vector_0c_end;
+         ++it) {
+        void* const owner = *it;
+        void* const children = load_pointer(owner, kOwnerChildrenOffset);
+        void** const child_begin = static_cast<void**>(
+            load_pointer(children, kChildrenBeginOffset));
+        void** const child_end = static_cast<void**>(
+            load_pointer(children, kChildrenEndOffset));
+
+        for (void** child = child_begin; child != child_end; ++child) {
+            void* const object = *child;
+            void** const vtable = load_vtable(object);
+            reinterpret_cast<SlotFirst>(vtable[kSlotFirst])(
+                object, owner, manager_argument);
+        }
+
+        void** const vtable = load_vtable(owner);
+        reinterpret_cast<SlotBare>(vtable[kSlotBare])(owner);
+        reinterpret_cast<SlotWithArgument>(vtable[kSlotWithArgument])(
+            owner, load_pointer(context, kContextSecondOffset),
+            manager_argument);
+    }
+
+    for (void** it = manager->vector_ec_begin; it != manager->vector_ec_end;
+         ++it) {
+        void* const object = *it;
+        func_00361c64(load_pointer(object, kRegisteredLinkOffset), 1);
+    }
+
+    void** const entry_begin = manager->vector_3c_begin;
+    void** const entry_end = manager->vector_3c_end;
+    const s32 entry_count = static_cast<s32>(
+        static_cast<u32>(reinterpret_cast<uintptr_t>(entry_end)) -
+        static_cast<u32>(reinterpret_cast<uintptr_t>(entry_begin))) >> 2;
+    for (s32 index = 0; index < entry_count; ++index) {
+        void* const entry = entry_begin[index];
+        void* const state = load_pointer(entry, kStateOffset);
+        store_byte(state, kStateFlagOffset, 0);
+    }
+
+    void** it = manager->vector_3c_begin;  // reloaded; end stays cached
+    while (it != entry_end) {
+        void* const entry = *it;
+        if (load_byte(entry, kSkipFlagOffset) == 0) {
+            void* const state = load_pointer(entry, kStateOffset);
+            if (load_byte(state, kStateFlagOffset) == 0) {
+                func_003e138c(load_pointer(context, kContextFirstOffset),
+                              state,
+                              load_pointer(context, kContextSecondOffset));
+                store_byte(state, kStateFlagOffset, 1);
+            }
+        }
+        ++it;
+    }
+
+    const volatile u32* const descriptor =
+        reinterpret_cast<const volatile u32*>(
+            static_cast<uintptr_t>(kDispatchDescriptor));
+    const u32 target = descriptor[0];
+    const s32 adjustment = static_cast<s32>(descriptor[1]);
+
+    u32 result = kDispatchDescriptor;
+    for (void** dispatch = manager->vector_ec_begin;
+         dispatch != manager->vector_ec_end; ++dispatch) {
+        u8* const self = static_cast<u8*>(*dispatch);
+        u8* const adjusted = reinterpret_cast<u8*>(
+            reinterpret_cast<uintptr_t>(self) +
+            static_cast<uintptr_t>(static_cast<u32>(adjustment >> 1)));
+
+        u32 entry;
+        if ((adjustment & 1) != 0) {
+            void** const vtable = load_vtable(adjusted);
+            entry = load_word(vtable, target);
+        } else {
+            entry = target;
+        }
+        result = reinterpret_cast<Dispatch>(
+            static_cast<uintptr_t>(entry))(adjusted);
+    }
+    return result;
 }
 
 // DECOMP_FUNC(0x0012aef4, 448)
