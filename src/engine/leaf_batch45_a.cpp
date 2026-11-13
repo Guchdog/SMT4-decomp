@@ -4830,92 +4830,214 @@ extern "C" void engine_func_0033631c(void* context, u32 channel_index) {
     }
 }
 
-// DECOMP_FUNC(0x00339b18, 640)
-extern "C" __attribute__((naked)) void engine_func_00339b18() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x41f0, 0xe92d, 0x2000, 0xe3a0\n"
-        ".hword 0xd0a8, 0xe24d, 0x5000, 0xe1a0\n"
-        ".hword 0x102a, 0xe3a0, 0x3002, 0xe1a0\n"
-        ".hword 0xc000, 0xe3e0, 0x0182, 0xe085\n"
-        ".hword 0x4b07, 0xe280, 0x4ff9, 0xe284\n"
-        ".hword 0x0b07, 0xe280, 0x0ffa, 0xe280\n"
-        ".hword 0x3000, 0xe584, 0x1001, 0xe251\n"
-        ".hword 0x2001, 0xe282, 0xc000, 0xe580\n"
-        ".hword 0xfff5, 0x1aff, 0x2000, 0xe3e0\n"
-        ".hword 0x10a8, 0xe3a0, 0x000d, 0xe1a0\n"
-        ".hword 0x2a38, 0xebfe, 0x0901, 0xe285\n"
-        ".hword 0x2000, 0xe3e0, 0x10a8, 0xe3a0\n"
-        ".hword 0x0fea, 0xe280, 0x2a33, 0xebfe\n"
-        ".hword 0x0b0d, 0xe285, 0x1ee1, 0xe3a0\n"
-        ".hword 0x0f5f, 0xe280, 0x2be7, 0xebfe\n"
-        ".hword 0x01e8, 0xe59f, 0x7901, 0xe285\n"
-        ".hword 0x800d, 0xe1a0, 0x1005, 0xe790\n"
-        ".hword 0x0b0b, 0xe285, 0x0fcd, 0xe280\n"
-        ".hword 0x0040, 0xe311, 0x0005, 0x1a00\n"
-        ".hword 0x2000, 0xe590, 0x2001, 0xe242\n"
-        ".hword 0x0003, 0xe352, 0x4000, 0x83a0\n"
-        ".hword 0x6004, 0x81a0, 0x002b, 0x8a00\n"
-        ".hword 0x6000, 0xe590, 0x0040, 0xe311\n"
-        ".hword 0x6004, 0x13a0, 0x4000, 0x13a0\n"
-        ".hword 0x0003, 0x1a00, 0x0000, 0xe356\n"
-        ".hword 0x4000, 0xe3a0, 0x0009, 0xca00\n"
-        ".hword 0x0020, 0xea00, 0x0000, 0xe354\n"
-        ".hword 0x0006, 0x0a00, 0x0001, 0xe354\n"
-        ".hword 0x0007, 0x0a00, 0x0002, 0xe354\n"
-        ".hword 0x0009, 0x0a00, 0x0003, 0xe354\n"
-        ".hword 0x000e, 0x1a00, 0x000a, 0xea00\n"
-        ".hword 0x016c, 0xe59f, 0x03a8, 0xe587\n"
-        ".hword 0x000a, 0xea00, 0x1168, 0xe59f\n"
-        ".hword 0x0160, 0xe59f, 0x0005, 0xe781\n"
-        ".hword 0x0006, 0xea00, 0x115c, 0xe59f\n"
-        ".hword 0x0f86, 0xe3a0, 0x0005, 0xe781\n"
-        ".hword 0x0002, 0xea00, 0x1150, 0xe59f\n"
-        ".hword 0x0083, 0xe3a0, 0x0005, 0xe781\n"
-        ".hword 0x0104, 0xe085, 0x0901, 0xe280\n"
-        ".hword 0x03a8, 0xe590, 0x0070, 0xe6ff\n"
-        ".hword 0xdb07, 0xebfd, 0x08f8, 0xe1d0\n"
-        ".hword 0x0104, 0xe788, 0x4001, 0xe284\n"
-        ".hword 0x0006, 0xe154, 0xffde, 0xbaff\n"
-        ".hword 0x6390, 0xe587, 0x0011, 0xea00\n"
-        ".hword 0x0006, 0xe1a0, 0xd576, 0xebfc\n"
-        ".hword 0x04b8, 0xe1d0, 0x0000, 0xe350\n"
-        ".hword 0x0007, 0x0a00, 0x1104, 0xe085\n"
-        ".hword 0x1901, 0xe281, 0x03a8, 0xe581\n"
-        ".hword 0x0070, 0xe6ff, 0xdaf6, 0xebfd\n"
-        ".hword 0x08f8, 0xe1d0, 0x0104, 0xe788\n"
-        ".hword 0x4001, 0xe284, 0x0004, 0xe354\n"
-        ".hword 0x6001, 0xb286, 0x000c, 0xb356\n"
-        ".hword 0xffee, 0xbaff, 0x4390, 0xe587\n"
-        ".hword 0x0390, 0xe597, 0x6000, 0xe3a0\n"
-        ".hword 0x4006, 0xe1a0, 0x0000, 0xe350\n"
-        ".hword 0x0023, 0xda00, 0x2104, 0xe798\n"
-        ".hword 0x0000, 0xe3a0, 0x1100, 0xe085\n"
-        ".hword 0x1a02, 0xe281, 0x1134, 0xe591\n"
-        ".hword 0x0000, 0xe351, 0x0002, 0x0a00\n"
-        ".hword 0x3004, 0xe591, 0x0002, 0xe153\n"
-        ".hword 0x0015, 0x0a00, 0x0001, 0xe280\n"
-        ".hword 0x002a, 0xe350, 0xfff4, 0xbaff\n"
-        ".hword 0x1001, 0xe3a0, 0x0002, 0xe1a0\n"
-        ".hword 0x6987, 0xebfd, 0x2000, 0xe1a0\n"
-        ".hword 0x0000, 0xe3a0, 0x1100, 0xe085\n"
-        ".hword 0x1a02, 0xe281, 0x1134, 0xe591\n"
-        ".hword 0x0000, 0xe351, 0x000f, 0x0a00\n"
-        ".hword 0x0001, 0xe280, 0x002a, 0xe350\n"
-        ".hword 0xfff7, 0xbaff, 0x0186, 0xe085\n"
-        ".hword 0x1104, 0xe798, 0x0b07, 0xe280\n"
-        ".hword 0x0ffa, 0xe280, 0x6001, 0xe286\n"
-        ".hword 0x1000, 0xe580, 0x0390, 0xe597\n"
-        ".hword 0x4001, 0xe284, 0x0004, 0xe150\n"
-        ".hword 0xffdb, 0xcaff, 0x638c, 0xe587\n"
-        ".hword 0xd0a8, 0xe28d, 0x81f0, 0xe8bd\n"
-        ".hword 0x0100, 0xe085, 0x0a02, 0xe280\n"
-        ".hword 0x2134, 0xe580, 0xffee, 0xeaff\n"
-        ".hword 0x44a8, 0x0000, 0x0225, 0x0000\n"
-        ".hword 0x01e1, 0x0000, 0x43ac, 0x0000\n"
-        ".hword 0x43b0, 0x0000, 0x43b4, 0x0000\n"
-    );
+// ---------------------------------------------------------------------------
+// 0x00339B18 -- battle-main unit-slot setup (640 B).
+//
+// Entered with the 0x4A58-byte battle main work in r0.  The routine resets the
+// 42 unit-slot pairs at work+0x1FE4/+0x1FE8, clears the 42-entry id scratch at
+// work+0x43A8 and the 3600-byte block at work+0x357C, then selects up to four
+// source ids:
+//
+//   * work+0x44A8 bit 0x40 set: use the four preset ids 0x225, 0x1E1, 0x218,
+//     0x83 (the count is forced to 4);
+//   * otherwise work+0x2F34 (party count) 1..4: use the first `count` of the
+//     same four preset ids;
+//   * otherwise (party count 0 or > 4): scan the twelve party-slot records
+//     returned by 0x0026F25C, take the first four whose u16 at +0x48 is
+//     non-zero, and copy that id into the next work+0x43A8 word.
+//
+// Every selected id is resolved through 0x002B087C and the s16 at +0x88 is
+// stored in the 42-word stack scratch array.  The collected count is written
+// to work+0x4390.
+//
+// The final pass walks the collected values: a value already present in the
+// 42-entry pointer registry at work+0x2134 (matched against record+4) is
+// skipped; otherwise 0x00294334(value, 1) returns the unit record, which is
+// stored in the first free registry slot when one exists (a full registry is
+// left unchanged) and the value is appended to work+0x1FE8 with stride 8.
+// The number of appended values is written to work+0x438C and also returned
+// in r0; the return value of the routine is therefore the collected count.
+//
+// 0x002B087C and 0x0026F25C are dereferenced without null checks, as in the
+// original.  The original also reloads work+0x2F34 before testing the flag
+// bit; that read is not observable and is omitted here.
+// ---------------------------------------------------------------------------
+
+namespace btl_unit_setup_00339b18 {
+
+/** Unit record prefix shared by the 0x2134 registry (id at +4). */
+struct UnitRecord {
+    u8 pad_00[4];
+    s32 id;                          // +0x04: `ldr r3,[r1,#4]`
 };
+static_assert(offsetof(UnitRecord, id) == 4);
+
+/** One 8-byte unit-slot pair at work+0x1FE4. */
+struct UnitSlot {
+    s32 flag;                        // +0x00: `str r3,[r4]` with r3 = 0
+    s32 id;                          // +0x04: `str ip,[r0]` with ip = -1
+};
+static_assert(sizeof(UnitSlot) == 8);
+
+/** Battle-main work fields touched by this routine. */
+struct BtlUnitSetupWork {
+    u8 pad_0000[0x1fe4];
+    UnitSlot slots[42];              // +0x1FE4: cleared flag/id pairs
+    UnitRecord* registry[42];        // +0x2134: 42-entry unit-record table
+    u8 pad_21dc[0x2f34 - 0x21dc];
+    u32 party_count;                 // +0x2F34: 1..4 selects the preset ids
+    u8 pad_2f38[0x357c - 0x2f38];
+    u8 clear_block[0xe10];           // +0x357C: 3600 bytes zeroed
+    s32 added_count;                 // +0x438C: values appended to slots
+    s32 collected_count;             // +0x4390: selected id count
+    u8 pad_4394[0x43a8 - 0x4394];
+    s32 selected_ids[42];            // +0x43A8: 42-entry id scratch (0xA8 B)
+    u8 pad_4450[0x44a8 - 0x4450];
+    u32 flags;                       // +0x44A8: only bit 0x40 is tested
+};
+static_assert(offsetof(BtlUnitSetupWork, slots) == 0x1fe4);
+static_assert(offsetof(BtlUnitSetupWork, registry) == 0x2134);
+static_assert(offsetof(BtlUnitSetupWork, party_count) == 0x2f34);
+static_assert(offsetof(BtlUnitSetupWork, clear_block) == 0x357c);
+static_assert(offsetof(BtlUnitSetupWork, added_count) == 0x438c);
+static_assert(offsetof(BtlUnitSetupWork, collected_count) == 0x4390);
+static_assert(offsetof(BtlUnitSetupWork, selected_ids) == 0x43a8);
+static_assert(offsetof(BtlUnitSetupWork, flags) == 0x44a8);
+
+constexpr u32 kSlotCount = 42;        // `mov r1,#0x2a`
+constexpr u32 kIdScratchSize = 0xa8;  // 42 * sizeof(s32)
+constexpr u32 kClearSize = 0xe10;     // 3600 bytes at +0x357C
+constexpr u32 kScanCount = 12;        // `cmp r6,#0xc`
+constexpr u32 kMaxSelected = 4;       // `cmp r4,#4`
+constexpr u32 kFlagsPreset = 0x40;    // `tst r1,#0x40`
+constexpr u32 kPartyIdOffset = 0x48;  // u16 inside a 0x26F25C record
+constexpr u32 kLookupValueOffset = 0x88;  // s16 inside a 0x2B087C record
+constexpr u32 kCreateMode = 1;        // second argument of 0x00294334
+
+}  // namespace btl_unit_setup_00339b18
+
+// 0x002C4450 is a byte-fill helper: r0 = destination, r1 = byte count,
+// r2 = fill byte (only the low byte is used).  It tail-calls 0x002C3B4C.
+extern "C" void camp_func_002c4450(void* dst, u32 size, s32 value);
+// 0x0026F25C returns the twelve party-slot records; null for index >= 12.
+extern "C" u8* camp_func_0026f25c(u32 index);
+// 0x00294334 returns the unit record for `id`, creating it when absent.
+extern "C" btl_unit_setup_00339b18::UnitRecord* engine_func_00294334(
+    s32 id, u32 mode);
+
+// 0x002C4B30 (void* dst, u32 size) and 0x002B087C (u32 id) are declared
+// earlier in this translation unit with the signatures used here.
+
+extern "C" u32 engine_func_00339b18(
+    btl_unit_setup_00339b18::BtlUnitSetupWork* work) {
+    using namespace btl_unit_setup_00339b18;
+
+    for (u32 i = 0; i < kSlotCount; ++i) {
+        work->slots[i].flag = 0;
+        work->slots[i].id = -1;
+    }
+
+    s32 values[kSlotCount];
+    camp_func_002c4450(values, kIdScratchSize, -1);
+    camp_func_002c4450(work->selected_ids, kIdScratchSize, -1);
+    engine_func_002c4b30(work->clear_block, kClearSize);
+
+    const u32 flags = work->flags;
+    s32 count;
+    bool auto_scanned = false;
+
+    if ((flags & kFlagsPreset) != 0) {
+        count = static_cast<s32>(kMaxSelected);
+    } else {
+        const u32 party_count = work->party_count;
+        if (party_count - 1u > kMaxSelected - 1u) {
+            // No valid preset count: scan the twelve party-slot records.
+            u32 index = 0;
+            s32 collected = 0;
+            while (collected < static_cast<s32>(kMaxSelected) &&
+                   index < kScanCount) {
+                const u8* const party = camp_func_0026f25c(index);
+                const u16 id =
+                    *reinterpret_cast<const u16*>(party + kPartyIdOffset);
+                if (id != 0) {
+                    work->selected_ids[collected] = id;
+                    const u8* const record =
+                        battle_func_002b087c(static_cast<u32>(id));
+                    values[collected] = *reinterpret_cast<const s16*>(
+                        record + kLookupValueOffset);
+                    ++collected;
+                }
+                ++index;
+            }
+            work->collected_count = collected;
+            count = collected;
+            auto_scanned = true;
+        } else {
+            count = static_cast<s32>(party_count);
+        }
+    }
+
+    if (!auto_scanned) {
+        for (s32 i = 0; i < count; ++i) {
+            switch (i) {
+            case 0:
+                work->selected_ids[0] = 0x225;
+                break;
+            case 1:
+                work->selected_ids[1] = 0x1e1;
+                break;
+            case 2:
+                work->selected_ids[2] = 0x218;
+                break;
+            case 3:
+                work->selected_ids[3] = 0x83;
+                break;
+            default:
+                break;
+            }
+            const u16 id = static_cast<u16>(work->selected_ids[i]);
+            const u8* const record =
+                battle_func_002b087c(static_cast<u32>(id));
+            values[i] =
+                *reinterpret_cast<const s16*>(record + kLookupValueOffset);
+        }
+        work->collected_count = count;
+    }
+
+    const s32 collected = work->collected_count;
+    s32 added = 0;
+    if (collected > 0) {
+        for (s32 i = 0; i < collected; ++i) {
+            const s32 id = values[i];
+            u32 slot = 0;
+            while (slot < kSlotCount) {
+                const UnitRecord* const record = work->registry[slot];
+                if (record != nullptr && record->id == id) {
+                    break;
+                }
+                ++slot;
+            }
+            if (slot == kSlotCount) {
+                UnitRecord* const created =
+                    engine_func_00294334(id, kCreateMode);
+                slot = 0;
+                while (slot < kSlotCount) {
+                    if (work->registry[slot] == nullptr) {
+                        break;
+                    }
+                    ++slot;
+                }
+                if (slot != kSlotCount) {
+                    work->registry[slot] = created;
+                }
+                work->slots[added].id = values[i];
+                ++added;
+            }
+        }
+    }
+    work->added_count = added;
+    return static_cast<u32>(collected);
+}
 
 // DECOMP_FUNC(0x0035532c, 640)
 extern "C" __attribute__((naked)) void camp_func_0035532c() {
