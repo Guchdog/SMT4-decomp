@@ -8873,98 +8873,199 @@ __attribute__((used)) static u32 engine_lookup_003008c8(const u8* object) {
     return 0xFFFFFFFFu;
 }
 
+// ---------------------------------------------------------------------------
+// 0x003D0F48 (688 B): refresh the party-slot records marked as seen.
+//
+// `context` (r0) points at the word holding the battle work object; `flags`
+// (r1) is an output object whose byte array at +0x38 receives a 1 for each of
+// the four table records (work + 0x1FC0 points at them, stride 0x288) whose
+// leading flag word has neither bit 1 nor bit 5 set, provided bit 4 is clear.
+//
+// The routine then fills the three marker bytes at work + 0x1FE0 with 0xFF and
+// rebuilds them from the camp slot list (camp + 0x90F0, count in the byte at
+// camp + 0x910B): a negative slot index is skipped, the record returned by
+// 0x002A89E4 for the index must be non-null, and none of bits 1, 2 and 10 of
+// its +0x44 word may be set.  Each surviving slot contributes a 4-byte scratch
+// entry (slot position, record +0x48 byte, the +2 byte of the 0x002B9364 lookup
+// of the record's +0x46 id).  The scratch list is sorted by 0x002B7F0A with the
+// 0x0032B580 comparator (compare byte +1, then byte +2), the count is clamped
+// to three, and the first entries publish the slot position + 1: bit
+// (position + 1) is OR-ed into the 64-bit mask at work + 0x1FD0 (the high word
+// receives the arithmetic sign fill of the shifted bit, exactly as the ARM
+// `orr r2, ip, r2, asr #31` does) and the byte is stored at
+// work + 0x1FE0 + position.  The scratch list is released through the
+// null-guarded 0x00250FB4 free wrapper as the tail call, so the routine returns
+// void and forwards that callee's r0 (its only caller at 0x003CB32C ignores
+// both).
+// ---------------------------------------------------------------------------
+extern "C" void camp_func_002c4450(void* dst, u32 size, s32 value);
+extern "C" u8* camp_func_002a8a08(u32 sub_mode);
+extern "C" u8* camp_func_002a89e4(s32 index);
+extern "C" u32 camp_func_0029ee4c(const void* record, u32 bit);
+extern "C" u8* camp_func_002b9364(u32 id);
+extern "C" void* AsdMemory_func_002c684c(u32 size);
+extern "C" void func_002b7f0a(void* base, s32 count, s32 size, u32 comparator);
+extern "C" void ui_func_00250fb4(void* pointer);
+
+namespace engine_slot_mark_003d0f48 {
+
+constexpr u32 kContextTableOffset = 0x1FC0u;   // pointer to kTableCount records
+constexpr u32 kContextMaskOffset = 0x1FD0u;    // u64 published slot mask
+constexpr u32 kContextMarkerOffset = 0x1FE0u;  // three published marker bytes
+constexpr u32 kMarkerCount = 3;                // `mov r1,#3` byte fill
+constexpr u32 kTableStride = 0x288u;           // 648-byte table record
+constexpr u32 kTableCount = 4;                 // `cmp r0,#4`
+constexpr u32 kFlagOccupied = 0x02u;           // `tst r2,#2`
+constexpr u32 kFlagHidden = 0x20u;             // `tsteq r2,#0x20`
+constexpr u32 kFlagInactive = 0x10u;           // `tst r2,#0x10`
+constexpr u32 kFlagsWriteOffset = 0x38u;       // `strbeq fp,[r2,#0x38]`
+constexpr u32 kSlotListOffset = 0x90F0u;       // s8 slot record indices
+constexpr u32 kSlotCountOffset = 0x910Bu;      // u8 slot count
+constexpr u32 kRecordFlagOffset = 0x44u;       // u16 predicate word
+constexpr u32 kRecordIdOffset = 0x46u;         // u16 0x002B9364 key
+constexpr u32 kRecordValueOffset = 0x48u;      // u8 sort-key byte
+constexpr u32 kLookupValueOffset = 0x02u;      // u8 copied from the lookup
+constexpr u32 kEntryStride = 4u;               // scratch entry layout below
+constexpr u32 kEntryIndexOffset = 0u;          // filled with loop index / 0xFF
+constexpr u32 kEntryValueOffset = 1u;          // record +0x48
+constexpr u32 kEntryKeyOffset = 2u;            // lookup +2
+constexpr u32 kMarkerLimit = 3;                // `cmp r6,#3`
+constexpr u32 kPredicateFirst = 1u;            // `mov r1,#1`
+constexpr u32 kPredicateSecond = 0xAu;         // `mov r1,#0xa`
+constexpr u32 kPredicateThird = 2u;            // `mov r1,#2`
+constexpr u32 kComparator = 0x0032B580u;       // literal at 0x003D11F4
+constexpr u32 kEntryInitIndex = 0xFFu;         // `mvn r5,#0`
+
+inline u32 load_u32(const u8* base, u32 offset) {
+    return *reinterpret_cast<const u32*>(base + offset);
+}
+
+inline void store_u32(u8* base, u32 offset, u32 value) {
+    *reinterpret_cast<u32*>(base + offset) = value;
+}
+
+// `lsl rd, r1, rs` on ARM shifts by the low byte of Rs and yields zero when
+// that count is 32 or more.
+inline u32 shifted_bit(u32 amount) {
+    const u32 count = amount & 0xFFu;
+    return count < 32u ? (1u << count) : 0u;
+}
+
+// `orr r2, ip, r2, asr #31`: the high mask word receives the sign fill.
+inline u32 sign_fill(u32 bit) {
+    return (bit & 0x80000000u) != 0u ? 0xFFFFFFFFu : 0u;
+}
+
+// One published entry: OR the bit into the 64-bit mask and store the
+// position + 1 byte at the entry's position.  The work pointer is re-read from
+// the context word for the byte store, as the original reloads [r4] there.
+inline void publish_marker(void** context, s32 position, u32 amount) {
+    const u32 bit = shifted_bit(amount);
+    u8* const work = static_cast<u8*>(*context);
+    const u32 low = load_u32(work, kContextMaskOffset);
+    const u32 high = load_u32(work, kContextMaskOffset + 4u);
+    store_u32(work, kContextMaskOffset, low | bit);
+    store_u32(work, kContextMaskOffset + 4u, high | sign_fill(bit));
+    static_cast<u8*>(*context)[kContextMarkerOffset +
+                               static_cast<u32>(position)] =
+        static_cast<u8>(amount);
+}
+
+}  // namespace engine_slot_mark_003d0f48
+
 // DECOMP_FUNC(0x003d0f48, 688)
-extern "C" __attribute__((naked)) void engine_func_003d0f48() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x5ff0, 0xe92d, 0x4000, 0xe1a0\n"
-        ".hword 0x0000, 0xe3a0, 0xb001, 0xe3a0\n"
-        ".hword 0x2000, 0xe594, 0x3200, 0xe080\n"
-        ".hword 0x3300, 0xe083, 0x2d7f, 0xe282\n"
-        ".hword 0x2000, 0xe592, 0x2183, 0xe792\n"
-        ".hword 0x0002, 0xe312, 0x0020, 0x0312\n"
-        ".hword 0x0002, 0x1a00, 0x0010, 0xe312\n"
-        ".hword 0x2000, 0x0081, 0xb038, 0x05c2\n"
-        ".hword 0x0001, 0xe280, 0x0004, 0xe350\n"
-        ".hword 0xfff0, 0xbaff, 0x0000, 0xe594\n"
-        ".hword 0x2000, 0xe3e0, 0x1003, 0xe3a0\n"
-        ".hword 0x0a01, 0xe280, 0x0efe, 0xe280\n"
-        ".hword 0xcd28, 0xebfb, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0x5e93, 0xebfb\n"
-        ".hword 0x0a09, 0xe280, 0x810b, 0xe5d0\n"
-        ".hword 0x0108, 0xe1a0, 0xd620, 0xebfb\n"
-        ".hword 0x0000, 0xe358, 0x7000, 0xe1a0\n"
-        ".hword 0x6000, 0xe3a0, 0x0009, 0xda00\n"
-        ".hword 0x3008, 0xe1a0, 0x1001, 0xe287\n"
-        ".hword 0x2002, 0xe280, 0xc000, 0xe3a0\n"
-        ".hword 0x5000, 0xe3e0, 0x5004, 0xe4c0\n"
-        ".hword 0xc004, 0xe4c1, 0x3001, 0xe253\n"
-        ".hword 0xc004, 0xe4c2, 0xfffa, 0x1aff\n"
-        ".hword 0x0000, 0xe358, 0x5000, 0xe3a0\n"
-        ".hword 0x0076, 0xda00, 0xf000, 0xe320\n"
-        ".hword 0x5e7c, 0xebfb, 0x0005, 0xe080\n"
-        ".hword 0x0a09, 0xe280, 0x0fd0, 0xe1d0\n"
-        ".hword 0x0000, 0xe350, 0x0021, 0xba00\n"
-        ".hword 0x5e76, 0xebfb, 0x0005, 0xe080\n"
-        ".hword 0x0a09, 0xe280, 0x0fd0, 0xe1d0\n"
-        ".hword 0x5e69, 0xebfb, 0x9000, 0xe1b0\n"
-        ".hword 0xf000, 0xe320, 0x0019, 0x0a00\n"
-        ".hword 0x1001, 0xe3a0, 0x377e, 0xebfb\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x0014, 0x1a00, 0x100a, 0xe3a0\n"
-        ".hword 0x0009, 0xe1a0, 0x3778, 0xebfb\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x000e, 0x1a00, 0x1002, 0xe3a0\n"
-        ".hword 0x0009, 0xe1a0, 0x3772, 0xebfb\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x0008, 0x1a00, 0xa106, 0xe087\n"
-        ".hword 0x5000, 0xe5ca, 0x0048, 0xe5d9\n"
-        ".hword 0x0001, 0xe5ca, 0x04b6, 0xe1d9\n"
-        ".hword 0xa0af, 0xebfb, 0x0002, 0xe5d0\n"
-        ".hword 0x6001, 0xe286, 0x0002, 0xe5ca\n"
-        ".hword 0x5001, 0xe285, 0x0005, 0xe158\n"
-        ".hword 0xffd3, 0xcaff, 0x0000, 0xe356\n"
-        ".hword 0x0048, 0x0a00, 0x3128, 0xe59f\n"
-        ".hword 0x2004, 0xe3a0, 0x1006, 0xe1a0\n"
-        ".hword 0x0007, 0xe1a0, 0x9b8b, 0xfbfb\n"
-        ".hword 0x0003, 0xe356, 0x6003, 0xc3a0\n"
-        ".hword 0x0002, 0xca00, 0x0000, 0xe356\n"
-        ".hword 0x0000, 0xd3a0, 0x0013, 0xda00\n"
-        ".hword 0x0001, 0xe206, 0x0001, 0xe350\n"
-        ".hword 0x0010, 0x1a00, 0x1000, 0xe594\n"
-        ".hword 0x2000, 0xe5d7, 0x1a01, 0xe281\n"
-        ".hword 0x1efd, 0xe281, 0x2001, 0xe282\n"
-        ".hword 0x1008, 0xe891, 0x221b, 0xe1a0\n"
-        ".hword 0x3002, 0xe183, 0x2fc2, 0xe18c\n"
-        ".hword 0x2004, 0xe581, 0x3000, 0xe581\n"
-        ".hword 0x1000, 0xe594, 0x2000, 0xe5d7\n"
-        ".hword 0x1a01, 0xe281, 0x1efe, 0xe281\n"
-        ".hword 0x2001, 0xe282, 0x2000, 0xe5c1\n"
-        ".hword 0x0006, 0xe150, 0x0027, 0xaa00\n"
-        ".hword 0x1100, 0xe087, 0x2000, 0xe594\n"
-        ".hword 0x3000, 0xe5d1, 0x9a01, 0xe280\n"
-        ".hword 0x2a01, 0xe282, 0x3001, 0xe283\n"
-        ".hword 0x2efd, 0xe282, 0x331b, 0xe1a0\n"
-        ".hword 0xc000, 0xe592, 0x5004, 0xe592\n"
-        ".hword 0x8fc3, 0xe1a0, 0x300c, 0xe183\n"
-        ".hword 0xc008, 0xe185, 0x1008, 0xe882\n"
-        ".hword 0x9efe, 0xe289, 0x2000, 0xe5d1\n"
-        ".hword 0x3000, 0xe594, 0xac1f, 0xe280\n"
-        ".hword 0x2001, 0xe282, 0x0002, 0xe280\n"
-        ".hword 0x2009, 0xe7c3, 0x3000, 0xe594\n"
-        ".hword 0x2004, 0xe5d1, 0x0006, 0xe150\n"
-        ".hword 0x3a01, 0xe283, 0x2001, 0xe282\n"
-        ".hword 0x3efd, 0xe283, 0x221b, 0xe1a0\n"
-        ".hword 0xc000, 0xe593, 0x5004, 0xe593\n"
-        ".hword 0x8fc2, 0xe1a0, 0x200c, 0xe182\n"
-        ".hword 0xc008, 0xe185, 0x1004, 0xe883\n"
-        ".hword 0xa0e1, 0xe28a, 0x1004, 0xe5d1\n"
-        ".hword 0x2000, 0xe594, 0x1001, 0xe281\n"
-        ".hword 0x100a, 0xe7c2, 0xffd7, 0xbaff\n"
-        ".hword 0x0007, 0xe1a0, 0x5ff0, 0xe8bd\n"
-        ".hword 0xff6f, 0xeaf9, 0xb580, 0x0032\n"
-    );
-};
+extern "C" void engine_func_003d0f48(void** context, u8* flags) {
+    using namespace engine_slot_mark_003d0f48;
+
+    for (u32 i = 0; i < kTableCount; ++i) {
+        const u8* const work = static_cast<const u8*>(*context);
+        const u8* const table = reinterpret_cast<const u8*>(
+            *reinterpret_cast<const u8* const*>(work + kContextTableOffset));
+        const u32 table_flags = load_u32(table, i * kTableStride);
+        if ((table_flags & kFlagOccupied) != 0u ||
+            (table_flags & kFlagHidden) != 0u) {
+            continue;
+        }
+        if ((table_flags & kFlagInactive) == 0u) {
+            flags[kFlagsWriteOffset + i] = 1u;
+        }
+    }
+
+    camp_func_002c4450(static_cast<u8*>(*context) + kContextMarkerOffset,
+                       kMarkerCount, -1);
+
+    const u8* const camp = camp_func_002a8a08(0);
+    const s32 slot_count = camp[kSlotCountOffset];
+    u8* const entries = static_cast<u8*>(
+        AsdMemory_func_002c684c(static_cast<u32>(slot_count) * kEntryStride));
+
+    if (slot_count > 0) {
+        for (s32 slot = 0; slot < slot_count; ++slot) {
+            u8* const entry =
+                entries + static_cast<u32>(slot) * kEntryStride;
+            entry[kEntryIndexOffset] = kEntryInitIndex;
+            entry[kEntryValueOffset] = 0u;
+            entry[kEntryKeyOffset] = 0u;
+        }
+    }
+
+    s32 found = 0;
+    for (s32 slot = 0; slot < slot_count; ++slot) {
+        // The original calls the getter twice per non-negative slot: once for
+        // the sign test and once to re-read the same byte for 0x002A89E4.
+        const u8 slot_byte = camp_func_002a8a08(0)[kSlotListOffset +
+                                                  static_cast<u32>(slot)];
+        if (static_cast<s8>(slot_byte) < 0) {
+            continue;
+        }
+        const u8* const list = camp_func_002a8a08(0) + kSlotListOffset;
+        u8* const record = camp_func_002a89e4(
+            static_cast<s32>(static_cast<s8>(list[static_cast<u32>(slot)])));
+        if (record == nullptr) {
+            continue;
+        }
+        if (camp_func_0029ee4c(record, kPredicateFirst) != 0u ||
+            camp_func_0029ee4c(record, kPredicateSecond) != 0u ||
+            camp_func_0029ee4c(record, kPredicateThird) != 0u) {
+            continue;
+        }
+        u8* const entry = entries + static_cast<u32>(found) * kEntryStride;
+        entry[kEntryIndexOffset] = static_cast<u8>(slot);
+        entry[kEntryValueOffset] = record[kRecordValueOffset];
+        const u16 id = *reinterpret_cast<const u16*>(record + kRecordIdOffset);
+        entry[kEntryKeyOffset] = camp_func_002b9364(id)[kLookupValueOffset];
+        ++found;
+    }
+
+    if (found != 0) {
+        func_002b7f0a(entries, found, static_cast<s32>(kEntryStride),
+                      kComparator);
+
+        s32 count = found;
+        if (count > static_cast<s32>(kMarkerLimit)) {
+            count = static_cast<s32>(kMarkerLimit);
+        }
+
+        // Odd counts publish entry 0 before the two-entry loop.
+        s32 position = count & 1;
+        if (position == 1) {
+            publish_marker(context, 0,
+                           static_cast<u32>(entries[kEntryIndexOffset]) + 1u);
+        }
+        for (; position < count; position += 2) {
+            const u8* const entry =
+                entries + static_cast<u32>(position) * kEntryStride;
+            publish_marker(context, position,
+                           static_cast<u32>(entry[kEntryIndexOffset]) + 1u);
+            publish_marker(context, position + 1,
+                           static_cast<u32>(entry[kEntryStride +
+                                                  kEntryIndexOffset]) +
+                               1u);
+        }
+    }
+
+    ui_func_00250fb4(entries);
+}
 
 // DECOMP_FUNC(0x00204d6c, 692)
 extern "C" __attribute__((naked)) void camp_func_00204d6c() {

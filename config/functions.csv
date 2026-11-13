@@ -9944,7 +9944,7 @@ address,size,status,category,name,src_file
 0x003d0910,996,matching,camp,camp_func_003d0910,src/engine/leaf_batch45_c.cpp
 0x003d0cf4,292,matching,ui,ui_func_003d0cf4,src/engine/leaf_batch28_c.cpp
 0x003d0e18,304,matching,battle,battle_func_003d0e18,src/engine/leaf_batch43_a.cpp
-0x003d0f48,688,matching,engine,engine_func_003d0f48,src/engine/leaf_batch45_a.cpp
+0x003d0f48,688,non_matching,engine,engine_func_003d0f48,src/engine/leaf_batch45_a.cpp
 0x003d11f8,212,matching,script_vm,script_vm_func_003d11f8,src/engine/leaf_batch28_c.cpp
 0x003d12cc,744,matching,script_vm,script_vm_func_003d12cc,src/engine/leaf_batch34_a.cpp
 0x003d15b4,76,matching,script_vm,script_vm_func_003d15b4,src/engine/leaf_batch28_c.cpp
