@@ -2546,215 +2546,218 @@ extern "C" __attribute__((naked)) void func_0012c54c() {
     );
 }
 
-// DECOMP_FUNC(0x0012e3a0, 772)
-extern "C" __attribute__((naked)) void func_0012e3a0() {
-    asm volatile(
-        "push {r0, r1, r2, r3}\n"
-        "push {r4, r5, r6, r7, r8, sb, sl, fp, lr}\n"
-        "sub sp, sp, #0xc\n"
-        "add r4, sp, #0x44\n"
-        "mov r6, r0\n"
-        "mov sl, r3\n"
-        "ldm r4, {r0, r7, sb}\n"
-        "mov r5, r1\n"
-        "ldr ip, [sp, #0x40]\n"
-        "str r0, [sp, #4]\n"
-        "ldr r2, [sp, #0x38]\n"
-        "mov r0, r6\n"
-        "str ip, [sp]\n"
-        "bl func_002b4454\n"
-        "ldm r6, {r2, ip}\n"
-        "cmp sb, #0\n"
-        "ldr r0, [r5, #0xb4]\n"
-        "ldr r1, [r5, #0xcc]\n"
-        "add r2, r2, ip\n"
-        "sub ip, ip, #1\n"
-        "sub r2, r2, #1\n"
-        "bic r2, r2, ip\n"
-        "ldr ip, [r6, #4]\n"
-        "add r2, r2, r0, lsl #2\n"
-        "add r3, r0, r0, lsl #4\n"
-        "add r2, r2, ip\n"
-        "sub ip, ip, #1\n"
-        "sub r2, r2, #1\n"
-        "bic r2, r2, ip\n"
-        "add r2, r2, r3, lsl #3\n"
-        "ldr r3, [r6, #4]\n"
-        "mov fp, #0\n"
-        "add r2, r2, r3\n"
-        "sub r3, r3, #1\n"
-        "sub r2, r2, #1\n"
-        "bic r2, r2, r3\n"
-        "ldr r3, [r6, #4]\n"
-        "add r0, r0, r2\n"
-        "ldr r2, [r6, #4]\n"
-        "add r0, r0, r3\n"
-        "sub r3, r3, #1\n"
-        "sub r0, r0, #1\n"
-        "bic r0, r0, r3\n"
-        "add r0, r0, r1, lsl #3\n"
-        "add r0, r0, r2\n"
-        "sub r2, r2, #1\n"
-        "sub r0, r0, #1\n"
-        "bic r0, r0, r2\n"
-        "add r0, r0, r1\n"
-        "str r0, [r6]\n"
-        "beq .L_0012e4a0\n"
-        "ldr r1, [sb, #0x168]\n"
-        "ldr r2, [sb, #0x164]\n"
-        "sub r1, r1, r2\n"
-        "asr r1, r1, #2\n"
-        "lsl r3, r1, #2\n"
-        "ldr r1, [r6, #4]\n"
-        "add r0, r0, r1\n"
-        "sub r1, r1, #1\n"
-        "sub r0, r0, #1\n"
-        "bic r0, r0, r1\n"
-        "add r0, r0, r3\n"
-        "str r0, [r6]\n"
-        "b .L_0012e52c\n"
-        ".L_0012e4a0:\n"
-        "cmp r7, #0\n"
-        "ldr r8, [r5, #0xbc]\n"
-        "movne r1, #1\n"
-        "moveq r1, #0\n"
-        "str r1, [sp]\n"
-        "ldr r2, [r6, #4]\n"
-        "cmp r8, #0\n"
-        "mov r4, #0\n"
-        "add r0, r0, r2\n"
-        "sub r2, r2, #1\n"
-        "sub r0, r0, #1\n"
-        "bic r0, r0, r2\n"
-        "add r0, r0, r8, lsl #2\n"
-        "str r0, [r6]\n"
-        "ble .L_0012e52c\n"
-        ".L_0012e4dc:\n"
-        "ldr r1, [r5, #0xc0]\n"
-        "add r0, r5, #0xc0\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, fp\n"
-        "cmp r0, #0\n"
-        "moveq r1, #0\n"
-        "beq .L_0012e510\n"
-        "add r0, r0, r4, lsl #4\n"
-        "ldr r1, [r0, #0x28]!\n"
-        "cmp r1, #0\n"
-        "addne r1, r1, r0\n"
-        "moveq r1, fp\n"
-        ".L_0012e510:\n"
-        "ldr r2, [sp]\n"
-        "mov r3, r7\n"
-        "mov r0, r6\n"
-        "bl func_0014b6c0\n"
-        "add r4, r4, #1\n"
-        "cmp r4, r8\n"
-        "blt .L_0012e4dc\n"
-        ".L_0012e52c:\n"
-        "ldr r0, [r6, #4]\n"
-        "ldr r1, [r6]\n"
-        "cmp sl, #0\n"
-        "add r1, r1, r0\n"
-        "sub r0, r0, #1\n"
-        "sub r1, r1, #1\n"
-        "bic r0, r1, r0\n"
-        "add r0, r0, #0x14\n"
-        "str r0, [r6]\n"
-        "beq .L_0012e614\n"
-        "ldr r2, [r6, #4]\n"
-        "lsl r1, sl, #2\n"
-        "add r0, r0, r2\n"
-        "sub r2, r2, #1\n"
-        "sub r0, r0, #1\n"
-        "bic r0, r0, r2\n"
-        "ldr r2, [r6, #4]\n"
-        "add r0, r0, r1\n"
-        "add r0, r0, r2\n"
-        "sub r2, r2, #1\n"
-        "sub r0, r0, #1\n"
-        "bic r0, r0, r2\n"
-        "add r0, r0, #0x14\n"
-        "str r0, [r6]\n"
-        "ldr r2, [r6, #4]\n"
-        "add r0, r0, r2\n"
-        "sub r2, r2, #1\n"
-        "sub r0, r0, #1\n"
-        "bic r0, r0, r2\n"
-        "add r0, r0, r1\n"
-        ".L_0012e5a4:\n"
-        "str r0, [r6]\n"
-        "ldr r0, [sp, #0x38]\n"
-        "lsl r0, r0, #0x10\n"
-        "asrs r0, r0, #0x18\n"
-        "beq .L_0012e670\n"
-        "ldr r8, [r5, #0x28]\n"
-        "mov r4, #0\n"
-        "cmp r8, #0\n"
-        "movgt sl, #1\n"
-        "ble .L_0012e670\n"
-        ".L_0012e5cc:\n"
-        "ldr r1, [r5, #0x2c]\n"
-        "add r0, r5, #0x2c\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, fp\n"
-        "cmp r0, #0\n"
-        "moveq r1, #0\n"
-        "beq .L_0012e600\n"
-        "add r0, r0, r4, lsl #4\n"
-        "ldr r1, [r0, #0x28]!\n"
-        "cmp r1, #0\n"
-        "addne r1, r1, r0\n"
-        "moveq r1, fp\n"
-        ".L_0012e600:\n"
-        "ldr r0, [r1, #0xc]\n"
-        "cmp r0, #2\n"
-        "cmpne r0, #3\n"
-        "bne .L_0012e664\n"
-        "b .L_0012e630\n"
-        ".L_0012e614:\n"
-        "ldr r1, [r6, #4]\n"
-        "add r0, r0, r1\n"
-        "sub r1, r1, #1\n"
-        "sub r0, r0, #1\n"
-        "bic r0, r0, r1\n"
-        "add r0, r0, #0x14\n"
-        "b .L_0012e5a4\n"
-        ".L_0012e630:\n"
-        "bic r3, r0, #0xff\n"
-        "ldr r0, [r6, #4]\n"
-        "ldr r2, [r6]\n"
-        "orr r3, r3, sl\n"
-        "add r2, r2, r0\n"
-        "sub r0, r0, #1\n"
-        "sub r2, r2, #1\n"
-        "bic r0, r2, r0\n"
-        "add r0, r0, #0x68\n"
-        "str r0, [r6]\n"
-        "mov r0, r6\n"
-        "sxtb r2, r3\n"
-        "bl func_002b43b0\n"
-        ".L_0012e664:\n"
-        "add r4, r4, #1\n"
-        "cmp r4, r8\n"
-        "blt .L_0012e5cc\n"
-        ".L_0012e670:\n"
-        "cmp sb, #0\n"
-        "bne .L_0012e698\n"
-        "ldr r0, [r6, #4]\n"
-        "ldr r1, [r6]\n"
-        "add r1, r1, r0\n"
-        "sub r0, r0, #1\n"
-        "sub r1, r1, #1\n"
-        "bic r0, r1, r0\n"
-        "add r0, r0, #8\n"
-        "str r0, [r6]\n"
-        ".L_0012e698:\n"
-        "add sp, sp, #0xc\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, fp}\n"
-        "ldr pc, [sp], #0x14\n"
-    );
+// ---------------------------------------------------------------------------
+// 0x0012E3A0 -- seed and reserve one draw packet's sub-blocks in a stream.
+//
+// ABI (r0-r3 plus four stack words):
+//   r0          stream    allocator state; +0x00 is the byte cursor, +0x04 the
+//                         alignment unit.  Both are re-read from memory after
+//                         every helper call because the callees advance/rewrite
+//                         the cursor.
+//   r1          packed    opaque packet blob.  Only the words at +0x28/+0x2C
+//                         (entry list), +0xB4 (u32 count), +0xBC (s32 count),
+//                         +0xC0 (entry list) and +0xCC (u32 count) are read.
+//   r2          flags     only bits 8..15 are inspected, as a sign-extended s8
+//                         (`lsl #0x10; asrs #0x18`); the whole word is also
+//                         forwarded unchanged to 0x002B4454.
+//   r3          count4    non-zero selects the three-part tail layout.
+//   [sp+0x00]   word0     forwarded to 0x002B4454 as its fifth argument.
+//   [sp+0x04]   word1     forwarded to 0x002B4454 as its sixth argument.
+//   [sp+0x08]   word2     pointer/opaque value; its non-zero-ness becomes the
+//                         0x0014B6C0 marker and the word itself its fourth
+//                         argument.
+//   [sp+0x0C]   range     if non-null, only +0x164/+0x168 are read (a byte
+//                         span); if null, the 0x0014B6C0 entry loop and the
+//                         final +8 tail run instead.  A fifth stack word is
+//                         never touched.
+//
+// The body performs only cursor arithmetic and helper calls; it never writes
+// through any pointer other than the stream cursor.  Every allocation is
+// `align_up(cursor, unit) + size`, exactly as the repeated
+// `add/sub/bic` sequences show.  The initial run of five reservations uses
+// 4*n, 0x88*n, n, 8*m and m bytes for n = packed+0xB4 and m = packed+0xCC.
+//
+// The two entry loops resolve a self-relative owner (packed+0x2C or packed+0xC0,
+// selected by the word stored there), add index*0x10, then follow the second
+// self-relative word at entry+0x28.  A zero relative word yields a null entry,
+// which is still forwarded to 0x0014B6C0.  The second loop keeps only entries
+// whose word at +0x0C is 2 or 3, reserves 0x68 and calls 0x002B43B0 with the
+// sign-extended `(type & ~0xFF) | 1` mode.
+//
+// The function returns nothing of interest: r0 is left holding the last
+// computed cursor, and no caller reads it.
+// ---------------------------------------------------------------------------
+namespace {
+
+constexpr u32 kPackedEntryListA = 0x2C;   // rel word for the 0x0014B6C0 loop
+constexpr u32 kPackedEntryListB = 0xC0;   // rel word for the 0x002B43B0 loop
+constexpr u32 kEntryStride = 0x10;
+constexpr u32 kEntryInner = 0x28;
+constexpr u32 kEntryType = 0x0C;
+
+constexpr u32 kInitialCount4Bytes = 4;
+constexpr u32 kInitialStrideBytes = 0x88;
+constexpr u32 kInitialTailBytes = 8;
+
+constexpr u32 kFlagsByteShift = 8;
+constexpr u32 kTailHeader = 0x14;
+constexpr u32 kTypeHeader = 0x68;
+constexpr u32 kRangeTail = 8;
+
+// Stream allocator state.  Only the two leading words are read here; the
+// helper 0x002B4454 also uses +0x08 for its high-water alignment mark.
+struct DrawStreamState {
+    u32 cursor;  // +0x00: bumped by align_up(unit) + size
+    u32 unit;    // +0x04: alignment mask source
+};
+
+// The packet words this body reads.  Field names describe only their use in
+// this function, not their meaning in the packet.
+struct PacketWords {
+    u8 pad_00[0x28];
+    s32 count_28;   // +0x28: signed entry count for the type loop
+    u32 rel_2c;     // +0x2C: self-relative base for the type loop
+    u8 pad_30[0x84];
+    u32 count_b4;   // +0xB4: u32 count used by the five initial blocks
+    u8 pad_b8[0x04];
+    s32 count_bc;   // +0xBC: signed entry count for the 0x0014B6C0 loop
+    u32 rel_c0;     // +0xC0: self-relative base for that loop
+    u8 pad_c4[0x08];
+    u32 count_cc;   // +0xCC: u32 count used by the last two initial blocks
+};
+static_assert(offsetof(PacketWords, count_28) == 0x28, "packet layout");
+static_assert(offsetof(PacketWords, rel_2c) == 0x2C, "packet layout");
+static_assert(offsetof(PacketWords, count_b4) == 0xB4, "packet layout");
+static_assert(offsetof(PacketWords, count_bc) == 0xBC, "packet layout");
+static_assert(offsetof(PacketWords, rel_c0) == 0xC0, "packet layout");
+static_assert(offsetof(PacketWords, count_cc) == 0xCC, "packet layout");
+
+// The range object at stack argument 3.  Only the two span words are read.
+struct RangeSpan {
+    u8 pad_00[0x164];
+    u32 begin_164;  // +0x164
+    u32 end_168;    // +0x168
+};
+static_assert(offsetof(RangeSpan, begin_164) == 0x164, "range layout");
+static_assert(offsetof(RangeSpan, end_168) == 0x168, "range layout");
+
+constexpr u32 AlignUp(u32 value, u32 unit) {
+    return (value + unit - 1u) & ~(unit - 1u);
+}
+
+// Resolve one entry of the self-relative list at `field_offset`.  The word at
+// entry+0x28 is added to entry+0x28; zero means "no entry" (nullptr), which is
+// still passed on to 0x0014B6C0.
+inline u8* ResolveEntry(u8* owner, u32 field_offset, s32 index) {
+    const u32 relative = *reinterpret_cast<const u32*>(owner + field_offset);
+    u8* base = (relative != 0) ? owner + field_offset + relative : nullptr;
+    if (base == nullptr) {
+        return nullptr;
+    }
+    u8* entry = base + static_cast<u32>(index) * kEntryStride;
+    const u32 inner = *reinterpret_cast<const u32*>(entry + kEntryInner);
+    return (inner != 0) ? entry + kEntryInner + inner : nullptr;
+}
+
+}  // namespace
+
+// Exact register contracts for the three direct calls in this body.  The
+// translation unit also declares the same symbols unprototyped at the top.
+extern "C" void reserve_002b4454(DrawStreamState* stream, void* packed,
+                                 u32 flags, u32 count4, u32 word0, u32 word1)
+    __asm__("func_002b4454");
+extern "C" void emit_0014b6c0(DrawStreamState* stream, void* entry, u32 marker,
+                              u32 value) __asm__("func_0014b6c0");
+extern "C" void emit_002b43b0(DrawStreamState* stream, void* entry, s32 mode,
+                              u32 tagged) __asm__("func_002b43b0");
+
+extern "C" void func_0012e3a0(DrawStreamState* stream, PacketWords* packed,
+                              u32 flags, u32 count4, u32 word0, u32 word1,
+                              u32 word2, RangeSpan* range) {
+    reserve_002b4454(stream, packed, flags, count4, word0, word1);
+
+    // 0x0012E3D8..0x0012E464: five aligned reservations.  The unit is stable
+    // here because no helper runs inside this straight-line sequence.
+    const u32 unit = stream->unit;
+    const u32 count_n = packed->count_b4;
+    const u32 count_m = packed->count_cc;
+    u32 cursor = stream->cursor;
+    cursor = AlignUp(cursor, unit) + kInitialCount4Bytes * count_n;
+    cursor = AlignUp(cursor, unit) + kInitialStrideBytes * count_n;
+    cursor = AlignUp(cursor, unit) + count_n;
+    cursor = AlignUp(cursor, unit) + 8u * count_m;
+    cursor = AlignUp(cursor, unit) + count_m;
+    stream->cursor = cursor;
+
+    u8* const packed_bytes = reinterpret_cast<u8*>(packed);
+
+    if (range != nullptr) {
+        // 0x0012E46C..0x0012E49C: asr #2 then lsl #2, i.e. the signed byte
+        // span rounded down to a multiple of four.
+        const u32 span = (range->end_168 - range->begin_164) & ~u32{3};
+        cursor = AlignUp(cursor, stream->unit) + span;
+        stream->cursor = cursor;
+    } else {
+        // 0x0012E4A0..0x0012E528: reserve 4*count, then forward each entry to
+        // 0x0014B6C0 with marker = (word2 != 0) and the raw word2 as its last
+        // argument.
+        const s32 entries = packed->count_bc;
+        const u32 marker = (word2 != 0) ? 1u : 0u;
+        cursor = AlignUp(cursor, stream->unit) +
+                 static_cast<u32>(entries) * 4u;
+        stream->cursor = cursor;
+        for (s32 index = 0; index < entries; ++index) {
+            emit_0014b6c0(stream, ResolveEntry(packed_bytes, kPackedEntryListB,
+                                               index),
+                          marker, word2);
+        }
+        cursor = stream->cursor;  // the callees advance the shared cursor
+    }
+
+    // 0x0012E52C..0x0012E5A4: common 0x14 header followed by an optional
+    // three-part tail when r3 is non-zero.
+    cursor = AlignUp(cursor, stream->unit) + kTailHeader;
+    stream->cursor = cursor;
+    if (count4 != 0) {
+        cursor = AlignUp(cursor, stream->unit) + 4u * count4;
+        stream->cursor = cursor;
+        cursor = AlignUp(cursor, stream->unit) + kTailHeader;
+        stream->cursor = cursor;
+        cursor = AlignUp(cursor, stream->unit) + 4u * count4;
+    } else {
+        cursor = AlignUp(cursor, stream->unit) + kTailHeader;
+    }
+    stream->cursor = cursor;
+
+    // 0x0012E5A8..0x0012E66C: only a non-zero byte at bits 8..15 runs the
+    // type loop.  The original sign-extends that byte, but only zero/non-zero
+    // is observed.
+    if (static_cast<s8>((flags >> kFlagsByteShift) & 0xFFu) != 0) {
+        const s32 entries = packed->count_28;
+        if (entries > 0) {
+            for (s32 index = 0; index < entries; ++index) {
+                u8* const entry = ResolveEntry(packed_bytes, kPackedEntryListA,
+                                               index);
+                const u32 type =
+                    *reinterpret_cast<const u32*>(entry + kEntryType);
+                if (type == 2u || type == 3u) {
+                    const u32 tagged = (type & ~u32{0xFF}) | 1u;
+                    const s32 mode = static_cast<s8>(tagged);
+                    cursor = AlignUp(stream->cursor, stream->unit) +
+                             kTypeHeader;
+                    stream->cursor = cursor;
+                    emit_002b43b0(stream, entry, mode, tagged);
+                }
+            }
+        }
+    }
+
+    // 0x0012E670..0x0012E694: a final 8-byte reservation only when the range
+    // argument is absent.
+    if (range == nullptr) {
+        cursor = AlignUp(stream->cursor, stream->unit) + kRangeTail;
+        stream->cursor = cursor;
+    }
 }
 
 // ---------------------------------------------------------------------------

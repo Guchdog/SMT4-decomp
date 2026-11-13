@@ -722,7 +722,7 @@ address,size,status,category,name,src_file
 0x0012dcc4,444,matching,engine,engine_func_0012dcc4,src/engine/leaf_batch35_c.cpp
 0x0012de80,1184,matching,engine,engine_func_0012de80,src/engine/leaf_batch43_b.cpp
 0x0012e320,128,matching,engine,engine_func_0012e320,src/engine/leaf_batch26_a.cpp
-0x0012e3a0,772,matching,unknown,func_0012e3a0,src/engine/leaf_batch34_c.cpp
+0x0012e3a0,772,non_matching,unknown,func_0012e3a0,src/engine/leaf_batch34_c.cpp
 0x0012e6a4,992,matching,engine,engine_func_0012e6a4,src/engine/leaf_batch43_b.cpp
 0x0012ea84,600,matching,unknown,func_0012ea84,src/engine/leaf_batch40_a.cpp
 0x0012ecdc,1040,matching,engine,engine_func_0012ecdc,src/engine/leaf_batch40_a.cpp
