@@ -5555,179 +5555,186 @@ extern "C" __attribute__((naked)) void engine_func_001493a0() {
     );
 }
 
-// DECOMP_FUNC(0x0014ad58, 624)
-extern "C" __attribute__((naked)) void func_0014ad58() {
-    asm volatile(
-        "push {r4, r5, r6, r7, r8, sb, sl}\n"
-        "mov r2, r0\n"
-        "mov r5, #0\n"
-        "mov r6, #2\n"
-        "ldr r3, [r2]\n"
-        "ldr r2, [r2]\n"
-        "mov r0, #1\n"
-        "add r3, r3, #0x10\n"
-        "ldr ip, [r2, #0x28]!\n"
-        "cmp ip, #0\n"
-        "addne r2, r2, ip\n"
-        "ldr ip, [r3]\n"
-        "moveq r2, r5\n"
-        "bics r4, r6, ip\n"
-        "bne .L_0014ade0\n"
-        "ldr r7, [r2, #0xc]\n"
-        "add r4, r2, #0xc\n"
-        "cmp r7, #0\n"
-        "addne r4, r4, r7\n"
-        "moveq r4, r5\n"
-        "cmp r4, #0\n"
-        "beq .L_0014add8\n"
-        "cmp r7, #0\n"
-        "add r4, r2, #0xc\n"
-        "moveq r4, r5\n"
-        "addne r4, r4, r7\n"
-        "ldr r7, [r4, #8]!\n"
-        "cmp r7, #0\n"
-        "addne r4, r4, r7\n"
-        "moveq r4, r5\n"
-        "cmp r4, #0\n"
-        "bne .L_0014ade0\n"
-        ".L_0014add8:\n"
-        "bic ip, ip, #2\n"
-        "mov r0, #0\n"
-        ".L_0014ade0:\n"
-        "mov r7, #4\n"
-        "bics r4, r7, ip\n"
-        "bne .L_0014ae38\n"
-        "ldr r8, [r2, #0x10]\n"
-        "add r4, r2, #0x10\n"
-        "cmp r8, #0\n"
-        "addne r4, r4, r8\n"
-        "moveq r4, r5\n"
-        "cmp r4, #0\n"
-        "beq .L_0014ae30\n"
-        "cmp r8, #0\n"
-        "add r4, r2, #0x10\n"
-        "moveq r4, r5\n"
-        "addne r4, r4, r8\n"
-        "ldr r8, [r4, #8]!\n"
-        "cmp r8, #0\n"
-        "addne r4, r4, r8\n"
-        "moveq r4, r5\n"
-        "cmp r4, #0\n"
-        "bne .L_0014ae38\n"
-        ".L_0014ae30:\n"
-        "bic ip, ip, #4\n"
-        "mov r0, #0\n"
-        ".L_0014ae38:\n"
-        "ldr r4, [r3, #8]\n"
-        "tst r4, #0xff\n"
-        "beq .L_0014ae90\n"
-        "ldr r8, [r2, #0x14]\n"
-        "add r4, r2, #0x14\n"
-        "cmp r8, #0\n"
-        "addne r4, r4, r8\n"
-        "moveq r4, r5\n"
-        "cmp r4, #0\n"
-        "beq .L_0014ae88\n"
-        "cmp r8, #0\n"
-        "add r4, r2, #0x14\n"
-        "moveq r4, r5\n"
-        "addne r4, r4, r8\n"
-        "ldr r8, [r4, #8]!\n"
-        "cmp r8, #0\n"
-        "addne r4, r4, r8\n"
-        "moveq r4, r5\n"
-        "cmp r4, #0\n"
-        "bne .L_0014ae90\n"
-        ".L_0014ae88:\n"
-        "mov r0, #0\n"
-        "str r5, [r3, #8]\n"
-        ".L_0014ae90:\n"
-        "mov r4, #0x20\n"
-        "bics r4, r4, ip\n"
-        "bne .L_0014afac\n"
-        "ldr r4, [r3, #4]\n"
-        ".word 0xe59f911c\n"
-        "mov r8, #0\n"
-        "and r4, r4, #0xff\n"
-        "ldrb sb, [sb, r4]\n"
-        "mov r4, #1\n"
-        "bics r4, r4, sb\n"
-        "bne .L_0014af00\n"
-        "ldr r4, [r2]\n"
-        "cmp r4, #0\n"
-        "addne r4, r4, r2\n"
-        "moveq r4, r5\n"
-        "cmp r4, #0\n"
-        "beq .L_0014aefc\n"
-        "ldr r4, [r2]\n"
-        "cmp r4, #0\n"
-        "moveq r4, r5\n"
-        "addne r4, r4, r2\n"
-        "ldr sl, [r4, #8]!\n"
-        "cmp sl, #0\n"
-        "addne r4, r4, sl\n"
-        "moveq r4, r5\n"
-        "cmp r4, #0\n"
-        "bne .L_0014af00\n"
-        ".L_0014aefc:\n"
-        "mov r8, #1\n"
-        ".L_0014af00:\n"
-        "bics r4, r6, sb\n"
-        "bne .L_0014af50\n"
-        "ldr r6, [r2, #4]\n"
-        "add r4, r2, #4\n"
-        "cmp r6, #0\n"
-        "addne r4, r4, r6\n"
-        "moveq r4, r5\n"
-        "cmp r4, #0\n"
-        "beq .L_0014af4c\n"
-        "cmp r6, #0\n"
-        "add r4, r2, #4\n"
-        "moveq r4, r5\n"
-        "addne r4, r4, r6\n"
-        "ldr r6, [r4, #8]!\n"
-        "cmp r6, #0\n"
-        "addne r4, r4, r6\n"
-        "moveq r4, r5\n"
-        "cmp r4, #0\n"
-        "bne .L_0014af50\n"
-        ".L_0014af4c:\n"
-        "mov r8, #1\n"
-        ".L_0014af50:\n"
-        "bics r4, r7, sb\n"
-        "bne .L_0014af9c\n"
-        "ldr r6, [r2, #8]\n"
-        "add r4, r2, #8\n"
-        "cmp r6, #0\n"
-        "addne r4, r4, r6\n"
-        "moveq r4, r5\n"
-        "cmp r4, #0\n"
-        "beq .L_0014afa4\n"
-        "cmp r6, #0\n"
-        "add r2, r2, #8\n"
-        "moveq r2, r5\n"
-        "addne r2, r2, r6\n"
-        "ldr r4, [r2, #8]!\n"
-        "cmp r4, #0\n"
-        "addne r2, r2, r4\n"
-        "moveq r2, r5\n"
-        "cmp r2, #0\n"
-        "beq .L_0014afa4\n"
-        ".L_0014af9c:\n"
-        "cmp r8, #0\n"
-        "beq .L_0014afac\n"
-        ".L_0014afa4:\n"
-        "bic ip, ip, #0x20\n"
-        "mov r0, #0\n"
-        ".L_0014afac:\n"
-        "ldr r2, [r3]\n"
-        "cmp r2, ip\n"
-        "strne ip, [r3]\n"
-        "strne r5, [r1, #0x2bc]\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl}\n"
-        "bx lr\n"
-        ".word 0x004221f8\n"
-    );
+//
+// 0x0014AD58: consistency pass over a node's optional child-object graph.
+//
+// r0 is a node whose first word points at the real object; r1 is the caller
+// context (only +0x2BC is touched).  The object exposes a request/state word at
+// +0x10, a byte kind at +0x14, a presence word at +0x18 and a self-relative
+// offset at +0x28 to a container of six more self-relative child offsets:
+//
+//   container +0x00, +0x04, +0x08   optional children selected by the kind mask
+//   container +0x0C                 child requested by flag bit 0x02
+//   container +0x10                 child requested by flag bit 0x04
+//   container +0x14                 child requested by the +0x18 low byte
+//
+// Every child is resolved exactly as the original does:
+//
+//   rel = *(u32*)(base + offset);            // 0 means "absent"
+//   child = rel ? base + offset + rel : 0;   // a wrapped zero also means absent
+//   next = *(u32*)(child + 8);               // only read when child != 0
+//   present = next != 0 && child + 8 + next != 0;
+//
+// The result is 1 when every requested child is present, 0 otherwise.  A
+// failed request clears its own bit (0x02, 0x04 or 0x20); a failed +0x18
+// request clears the whole +0x18 word but leaves the flag word alone.  When the
+// flag word changed it is written back and the caller's +0x2BC word is zeroed
+// (the 0x0013F68C caller turns a zero result into its own error bit 8).
+//
+// The kind mask is the byte at 0x004221F8 + (kind_14 & 0xFF); only its low
+// three bits are consumed.  The request bits are tested in the original's
+// `bics` order, so each block runs only while its bit is still set.  The body
+// has no calls, no stack arguments, no indirect targets and does not use LR; it
+// saves r4-r11 and restores SP on every path.  A set request bit requires a
+// non-null container/child; the original faults otherwise and so does this
+// reconstruction, so callers keep the invariant.
+namespace func_0014ad58_detail {
+
+constexpr u32 kKindMaskAddress = 0x004221F8;  // .rodata byte, indexed by kind_14
+constexpr u32 kRequestSlot0C = 0x02;          // validates container +0x0C
+constexpr u32 kRequestSlot10 = 0x04;          // validates container +0x10
+constexpr u32 kRequestMasked = 0x20;          // validates container +0x00/+0x04/+0x08
+constexpr u32 kCallerInvalidate = 0x2BC;      // zeroed when the flag word changes
+
+// Node handed to the routine: only the base pointer is read here.
+struct NodeRef {
+    u32 base_00;  // +0x00: pointer to ObjectData
+};
+static_assert(sizeof(NodeRef) == 0x04, "node reference layout");
+
+// Object found through NodeRef::base_00.  Fields are named by role; the names
+// are descriptive only, no higher-level type is claimed.
+struct ObjectData {
+    u8 pad_00[0x10];
+    u32 flags_10;      // +0x10: request bits, written back when a check fails
+    u8 kind_14;        // +0x14: byte index into the mask at 0x004221F8
+    u8 pad_15[0x03];
+    u32 present_18;    // +0x18: only the low byte is tested and then cleared
+    u8 pad_1C[0x0C];
+    u32 container_28;  // +0x28: self-relative offset to SlotContainer
+};
+static_assert(offsetof(ObjectData, flags_10) == 0x10, "object flags");
+static_assert(offsetof(ObjectData, kind_14) == 0x14, "object kind");
+static_assert(offsetof(ObjectData, present_18) == 0x18, "object presence");
+static_assert(offsetof(ObjectData, container_28) == 0x28, "object container");
+static_assert(sizeof(ObjectData) == 0x2C, "object layout");
+
+// Six self-relative offsets to optional children.
+struct SlotContainer {
+    u32 slot_00;  // selected by mask bit 0
+    u32 slot_04;  // selected by mask bit 1
+    u32 slot_08;  // selected by mask bit 2
+    u32 slot_0C;  // selected by flag bit 0x02
+    u32 slot_10;  // selected by flag bit 0x04
+    u32 slot_14;  // selected by the +0x18 low byte
+};
+static_assert(offsetof(SlotContainer, slot_0C) == 0x0C, "container layout");
+static_assert(offsetof(SlotContainer, slot_10) == 0x10, "container layout");
+static_assert(offsetof(SlotContainer, slot_14) == 0x14, "container layout");
+static_assert(sizeof(SlotContainer) == 0x18, "container layout");
+
+// 0x0014AD94..0x0014ADD4 / 0x0014ADEC..0x0014AE2C / 0x0014AE44..0x0014AE84:
+// the original adds the slot offset and the relative displacement with 32-bit
+// wrapping, rejects a zero result before dereferencing, then repeats the same
+// wrapped add for the second hop at child + 0x08.  Returning the second hop
+// keeps the final non-zero test (a wrapped zero is a failure) exact.
+inline u32 resolve_child(u32 container, u32 slot_offset) {
+    const u32 relative = *reinterpret_cast<const u32*>(container + slot_offset);
+    if (relative == 0) {
+        return 0;
+    }
+    const u32 child = container + slot_offset + relative;
+    if (child == 0) {
+        return 0;
+    }
+    const u32 next = *reinterpret_cast<const u32*>(child + 8);
+    if (next == 0) {
+        return 0;
+    }
+    return child + 8 + next;
+}
+
+inline bool child_present(u32 container, u32 slot_offset) {
+    return resolve_child(container, slot_offset) != 0;
+}
+
+}  // namespace func_0014ad58_detail
+
+extern "C" int func_0014ad58(u32 node, u32 context) {
+    using namespace func_0014ad58_detail;
+
+    NodeRef* const ref = reinterpret_cast<NodeRef*>(node);
+    ObjectData* const object = reinterpret_cast<ObjectData*>(ref->base_00);
+
+    // 0x0014AD68..0x0014AD90: resolve the slot container first, then load the
+    // request/state word.  The +0x28 test has no separate wrapped-zero check.
+    const u32 base = static_cast<u32>(reinterpret_cast<std::uintptr_t>(object));
+    const u32 relative = object->container_28;
+    const u32 container = (relative != 0) ? base + 0x28u + relative : 0u;
+
+    u32 flags = object->flags_10;
+    u32 result = 1u;
+
+    // 0x0014AD8C..0x0014ADDC: flag bit 0x02 requests container +0x0C.
+    if ((flags & kRequestSlot0C) != 0) {
+        if (!child_present(container, 0x0C)) {
+            flags &= ~kRequestSlot0C;
+            result = 0u;
+        }
+    }
+
+    // 0x0014ADE0..0x0014AE34: flag bit 0x04 requests container +0x10.
+    if ((flags & kRequestSlot10) != 0) {
+        if (!child_present(container, 0x10)) {
+            flags &= ~kRequestSlot10;
+            result = 0u;
+        }
+    }
+
+    // 0x0014AE38..0x0014AE8C: a non-zero low byte at +0x18 requests
+    // container +0x14.  Failure clears the whole +0x18 word, not a flag bit.
+    if ((object->present_18 & 0xFFu) != 0) {
+        if (!child_present(container, 0x14)) {
+            result = 0u;
+            object->present_18 = 0;
+        }
+    }
+
+    // 0x0014AE90..0x0014AFA8: flag bit 0x20 requests the three children
+    // selected by the low bits of the kind-mask byte.  All selected checks are
+    // evaluated (the original keeps a sticky failure in r8); any failure
+    // clears 0x20.
+    if ((flags & kRequestMasked) != 0) {
+        const u8 mask = reinterpret_cast<const u8*>(kKindMaskAddress)[object->kind_14];
+        bool all_present = true;
+        if ((mask & 0x01) != 0) {
+            if (!child_present(container, 0x00)) {
+                all_present = false;
+            }
+        }
+        if ((mask & 0x02) != 0) {
+            if (!child_present(container, 0x04)) {
+                all_present = false;
+            }
+        }
+        if ((mask & 0x04) != 0) {
+            if (!child_present(container, 0x08)) {
+                all_present = false;
+            }
+        }
+        if (!all_present) {
+            flags &= ~kRequestMasked;
+            result = 0u;
+        }
+    }
+
+    // 0x0014AFAC..0x0014AFB8: publish the surviving flags and invalidate the
+    // caller only when the word actually changed.
+    if (object->flags_10 != flags) {
+        object->flags_10 = flags;
+        *reinterpret_cast<u32*>(context + kCallerInvalidate) = 0;
+    }
+    return static_cast<int>(result);
 }
 
 // DECOMP_FUNC(0x0014b0f0, 984)
