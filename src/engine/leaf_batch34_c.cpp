@@ -7137,137 +7137,196 @@ extern "C" u32 script_vm_func_001b5398(u32 handle) {
 }
 
 // DECOMP_FUNC(0x001c0610, 476)
-extern "C" __attribute__((naked)) void func_001c0610() {
-    asm volatile(
-        "push {r4, r5, r6, lr}\n"
-        "sub sp, sp, #0x48\n"
-        ".word 0xe59f51bc\n"
-        "ldr r2, [r5]\n"
-        "tst r2, #1\n"
-        "beq .L_001c0778\n"
-        "add r2, r5, #0x1000\n"
-        "mov r3, #0\n"
-        "str r0, [r2, #0x48]\n"
-        "add r4, r2, #0xcc\n"
-        "str r3, [r2, #0xd4]\n"
-        "mov ip, #0x10\n"
-        "str r3, [r2, #0xd8]\n"
-        "cmp r1, #0x10\n"
-        "stm r4, {r1, ip}\n"
-        "movgt r4, #0x10\n"
-        "bgt .L_001c0660\n"
-        "rsb r1, r1, #0x10\n"
-        "rsbs r4, r1, #0x10\n"
-        "beq .L_001c0778\n"
-        ".L_001c0660:\n"
-        ".word 0xe59f1178\n"
-        "str r3, [sp, #8]\n"
-        "str r3, [sp, #0xc]\n"
-        "str r3, [sp, #0x10]\n"
-        "str r3, [sp, #0x14]\n"
-        "str r3, [sp, #0x18]\n"
-        "str r3, [sp, #0x1c]\n"
-        "str r3, [sp, #0x20]\n"
-        "str r3, [sp, #0x24]\n"
-        "str r3, [sp, #0x28]\n"
-        "str r3, [sp, #0x2c]\n"
-        "str r3, [sp, #0x30]\n"
-        "str r3, [sp, #0x34]\n"
-        "str r3, [sp, #0x38]\n"
-        "str r3, [sp, #0x3c]\n"
-        "str r3, [sp, #0x40]\n"
-        "str r3, [sp, #0x44]\n"
-        "str r3, [r1, #0x8c]\n"
-        "str r3, [r1, #0x90]\n"
-        "str r3, [r1, #0x94]\n"
-        "str r3, [r1, #0x98]\n"
-        "str r3, [r1, #0x9c]\n"
-        "str r3, [r1, #0xa0]\n"
-        "str r3, [r1, #0xa4]\n"
-        "str r3, [r1, #0xa8]\n"
-        "str r3, [r1, #0xac]\n"
-        "str r3, [r1, #0xb0]\n"
-        "str r3, [r1, #0xb4]\n"
-        "str r3, [r1, #0xb8]\n"
-        "str r3, [r1, #0xbc]\n"
-        "str r3, [r1, #0xc0]\n"
-        "str r3, [r1, #0xc4]\n"
-        "cmp r4, #0\n"
-        "str r3, [r1, #0xc8]\n"
-        "movle r1, #0\n"
-        "ble .L_001c0700\n"
-        "and r1, r4, #1\n"
-        "cmp r1, #1\n"
-        "ldreq r0, [r0]\n"
-        "streq r0, [r2, #0x4c]\n"
-        ".L_001c0700:\n"
-        "cmp r1, r4\n"
-        "movlt r6, #4\n"
-        "bge .L_001c073c\n"
-        ".L_001c070c:\n"
-        "ldr r0, [r2, #0x48]\n"
-        "add r3, r5, r1, lsl #2\n"
-        "ldr ip, [r0, r1, lsl #2]\n"
-        "add r0, r3, #0x1000\n"
-        "add r3, r6, r1, lsl #2\n"
-        "str ip, [r0, #0x4c]\n"
-        "ldr ip, [r2, #0x48]\n"
-        "add r1, r1, #2\n"
-        "cmp r1, r4\n"
-        "ldr r3, [ip, r3]\n"
-        "str r3, [r0, #0x50]\n"
-        "blt .L_001c070c\n"
-        ".L_001c073c:\n"
-        ".word 0xe59f30a0\n"
-        "mov r2, #1\n"
-        "add r1, sp, #8\n"
-        "add r0, r5, #8\n"
-        "str r4, [sp]\n"
-        "bl engine_func_0035efbc\n"
-        "ands r0, r0, #0x80000000\n"
-        "nop\n"
-        "bpl .L_001c0784\n"
-        "ldr r0, [r5, #4]\n"
-        "orr r0, r0, #0x40000\n"
-        "str r0, [r5, #4]\n"
-        "add sp, sp, #0x48\n"
-        "mov r0, #0\n"
-        "pop {r4, r5, r6, pc}\n"
-        ".L_001c0778:\n"
-        "add sp, sp, #0x48\n"
-        "mov r0, #0\n"
-        "pop {r4, r5, r6, pc}\n"
-        ".L_001c0784:\n"
-        "cmp r4, #0\n"
-        "mov r0, #0\n"
-        "addgt r2, sp, #8\n"
-        "ble .L_001c07c4\n"
-        ".L_001c0794:\n"
-        "ldr r1, [r2, r0, lsl #2]\n"
-        "cmp r1, #0\n"
-        "beq .L_001c07b8\n"
-        "ldr r3, [r5, #4]\n"
-        "add ip, r5, r0, lsl #2\n"
-        "add ip, ip, #0x1000\n"
-        "orr r3, r3, #0x20000\n"
-        "str r3, [r5, #4]\n"
-        "str r1, [ip, #0x8c]\n"
-        ".L_001c07b8:\n"
-        "add r0, r0, #1\n"
-        "cmp r0, r4\n"
-        "blt .L_001c0794\n"
-        ".L_001c07c4:\n"
-        "ldr r0, [r5, #4]\n"
-        "orr r0, r0, #0x10000\n"
-        "str r0, [r5, #4]\n"
-        "add sp, sp, #0x48\n"
-        ".word 0xe59f000c\n"
-        "pop {r4, r5, r6, pc}\n"
-        ".word 0x004e0e88\n"
-        ".word 0x004e1e88\n"
-        ".word 0x004e1ed4\n"
-        ".word 0x004e1f14\n"
-    );
+//
+// Recovered contract (ARM 0x001C0610..0x001C07DB plus the literal pool
+// 0x001C07DC..0x001C07EB = {0x004E0E88, 0x004E1E88, 0x004E1ED4, 0x004E1F14};
+// 0x001C07EC starts the next function):
+//
+//   * Submits up to 16 caller-supplied words to the object rooted at
+//     0x004E0E90 (control block + 0x08) through 0x0035EFBC, then latches the
+//     non-zero words of the produced 16-word buffer into a global result table
+//     and returns a pointer to that table.
+//   * The routine is gated by bit 0 of the control word at 0x004E0E88: when it
+//     is clear the body returns 0 without touching anything else (0x001C0624).
+//   * `count` (r1, signed) is clamped from above to 16: a request above 0x10
+//     (signed compare `bgt`) uses 16; otherwise the request itself is the
+//     limit and a request of exactly 0 returns 0 (0x001C065C).  The request as
+//     passed in (not clamped) is stored at work + 0xCC and the constant 16 at
+//     work + 0xD0 before this decision, so both fields are written even on the
+//     zero/early-exit paths.
+//   * `values` is stored at work + 0x48 (0x004E1ED0) and 16 words of scratch at
+//     work + 0x8C (0x004E1F14) plus the 16-word stack buffer are zeroed.  The
+//     clamp limit is copied word by word into work + 0x4C (0x004E1ED4): an odd
+//     limit copies values[0] first, then pairs (index, index + 1) are copied
+//     while index < limit.  The loop reloads the stored source pointer.
+//   * 0x0035EFBC(object, buffer, 1, work + 0x4C, limit) is called with one
+//     stack argument.  A set bit 31 of the result marks failure: bit 18
+//     (0x00040000) is latched into the status word at 0x004E0E8C and the
+//     routine returns 0.  Any other result continues.
+//   * On success every buffer word with index < limit that is non-zero latches
+//     bit 17 (0x00020000) into the status word and is stored at
+//     work + 0x8C + 4 * index; zero words leave the zeroed slot and the status
+//     alone.  Finally bit 16 (0x00010000) is latched and the result table
+//     address 0x004E1F14 is returned.
+//   * Returns 0 on the three exit paths (gate clear, zero request, helper
+//     failure) and 0x004E1F14 otherwise.  r4-r6 and lr are saved; r8-r11 are
+//     untouched.  All stack traffic is the 0x48-byte frame plus the single
+//     stack argument of the helper; the only call is a direct ARM `bl`.
+//   * The only in-image caller found is 0x00220EF4 inside 0x00220EB4, which
+//     passes a stack word array and a signed count and returns this routine's
+//     result unchanged.  That caller's request is 1, so only values[0] is used
+//     there.
+namespace name_entry_1c0610 {
+
+// Literal pool values (0x001C07DC..0x001C07EB).
+constexpr u32 kControlAddress = 0x004E0E88;      // r5; 0x001C07DC
+constexpr u32 kWorkAddress = 0x004E1E88;         // r5 + 0x1000; 0x001C07E0
+constexpr u32 kInputTableAddress = 0x004E1ED4;   // 0x001C07E4 (helper r3)
+constexpr u32 kResultTableAddress = 0x004E1F14;  // 0x001C07E8 (returned)
+
+// Scalar constants taken from the instruction stream.
+constexpr u32 kInitializedBit = 1;       // `tst r2, #1`
+constexpr s32 kMaxWords = 0x10;          // `cmp r1, #0x10` / `mov r2, #0x10`
+constexpr u32 kHelperMode = 1;           // `mov r2, #1` before the call
+constexpr u32 kErrorFlag = 0x00040000;   // helper returned bit 31
+constexpr u32 kResultFlag = 0x00020000;  // one non-zero result word stored
+constexpr u32 kDoneFlag = 0x00010000;    // completion marker
+
+// Control block at 0x004E0E88.  Only the two words this routine touches are
+// named; +0x08 begins the object forwarded to 0x0035EFBC.
+struct Control {
+    u32 state_00;   // +0x0000: bit 0 gates this routine
+    u32 status_04;  // +0x0004: sticky status/error bits, OR-accumulated
+};
+static_assert(offsetof(Control, state_00) == 0x00, "control state");
+static_assert(offsetof(Control, status_04) == 0x04, "control status");
+static_assert(sizeof(Control) == 0x08, "control prefix");
+
+// Scratch block at 0x004E1E88 (control + 0x1000).  Offsets are exact; the
+// padding only preserves them.
+struct WorkArea {
+    u8 pad_00[0x48];
+    u32 source_48;      // +0x48: caller word array, reloaded by the copy loop
+    u32 input_4C[16];   // +0x4C: clamped copy of `values`, ends at +0x8B
+    u32 result_8C[16];  // +0x8C: per-index result words, ends at +0xCB
+    u32 requested_CC;   // +0xCC: request as passed in, before clamping
+    u32 capacity_D0;    // +0xD0: constant 16
+    u32 word_D4;        // +0xD4: cleared
+    u32 word_D8;        // +0xD8: cleared
+};
+static_assert(offsetof(WorkArea, source_48) == 0x48, "work source");
+static_assert(offsetof(WorkArea, input_4C) == 0x4C, "work input table");
+static_assert(offsetof(WorkArea, result_8C) == 0x8C, "work result table");
+static_assert(offsetof(WorkArea, requested_CC) == 0xCC, "work request");
+static_assert(offsetof(WorkArea, capacity_D0) == 0xD0, "work capacity");
+static_assert(offsetof(WorkArea, word_D4) == 0xD4, "work word D4");
+static_assert(offsetof(WorkArea, word_D8) == 0xD8, "work word D8");
+static_assert(sizeof(WorkArea) == 0xDC, "work size");
+static_assert(kWorkAddress + offsetof(WorkArea, input_4C) == kInputTableAddress,
+              "input table literal");
+static_assert(kWorkAddress + offsetof(WorkArea, result_8C) == kResultTableAddress,
+              "result table literal");
+
+inline Control* control() {
+    return reinterpret_cast<Control*>(kControlAddress);
+}
+
+inline WorkArea* work() {
+    return reinterpret_cast<WorkArea*>(kWorkAddress);
+}
+
+inline u8* object() {
+    return reinterpret_cast<u8*>(kControlAddress + 0x08);
+}
+
+}  // namespace name_entry_1c0610
+
+// Direct call target.  The file-wide declaration of 0x0035EFBC is
+// parameterless, so the recovered prototype is bound to the pinned symbol name
+// here.
+namespace name_entry_1c0610_calls {
+
+// 0x0035EFBC: validates the object/table and fills the 0x40-byte buffer from
+// the table; bit 31 of the result marks failure.  The five-argument shape
+// (count on the stack) is the observed ABI.
+extern "C" u32 run_word_table(u8* object, u32* out, u32 mode, u32* words,
+                             s32 count) __asm__("engine_func_0035efbc");
+
+}  // namespace name_entry_1c0610_calls
+
+extern "C" u32 func_001c0610(u32* values, s32 count) {
+    using namespace name_entry_1c0610;
+
+    Control* const block = control();
+    if ((block->state_00 & kInitializedBit) == 0) {
+        // 0x001C0624: subsystem not initialized.
+        return 0;
+    }
+
+    // 0x001C0628..0x001C0648: record the request and clear the tail words.
+    WorkArea* const area = work();
+    area->source_48 = reinterpret_cast<u32>(values);
+    area->word_D4 = 0;
+    area->word_D8 = 0;
+    area->requested_CC = static_cast<u32>(count);
+    area->capacity_D0 = static_cast<u32>(kMaxWords);
+
+    // 0x001C0644..0x001C065C: signed clamp; a zero request exits here.
+    s32 limit;  // r4
+    if (count > kMaxWords) {
+        limit = kMaxWords;
+    } else {
+        limit = count;
+        if (limit == 0) {
+            return 0;
+        }
+    }
+
+    // 0x001C0664..0x001C06A0: 16-word stack buffer handed to the helper.
+    u32 buffer[16] = {0};
+
+    // 0x001C06A4..0x001C06E4: clear the 16-word global result table.
+    for (s32 slot = 0; slot < 16; ++slot) {
+        area->result_8C[slot] = 0;
+    }
+
+    // 0x001C06E8..0x001C0738: copy `limit` words, odd first then pairs.
+    s32 index = 0;
+    if (limit > 0) {
+        index = limit & 1;
+        if (index == 1) {
+            area->input_4C[0] = values[0];
+        }
+    }
+    while (index < limit) {
+        const u32* const source =
+            reinterpret_cast<const u32*>(area->source_48);
+        area->input_4C[index] = source[index];
+        area->input_4C[index + 1] = source[index + 1];
+        index += 2;
+    }
+
+    // 0x001C0740..0x001C075C
+    const u32 result = name_entry_1c0610_calls::run_word_table(
+        object(), buffer, kHelperMode, area->input_4C, limit);
+    if ((result & 0x80000000u) != 0u) {
+        block->status_04 = block->status_04 | kErrorFlag;
+        return 0;
+    }
+
+    // 0x001C0784..0x001C07C0: latch non-zero results, skip zero words.
+    for (s32 slot = 0; slot < limit; ++slot) {
+        const u32 value = buffer[slot];
+        if (value == 0) {
+            continue;
+        }
+        block->status_04 = block->status_04 | kResultFlag;
+        area->result_8C[slot] = value;
+    }
+
+    // 0x001C07C4..0x001C07D8
+    block->status_04 = block->status_04 | kDoneFlag;
+    return kResultTableAddress;
 }
 
 // DECOMP_FUNC(0x001c0898, 172)
