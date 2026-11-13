@@ -2914,38 +2914,245 @@ extern "C" u32 script_vm_func_001e2af0(void) {
 }
 
 // DECOMP_FUNC(0x001f6704, 420)
-// 99 ARM instructions through unconditional pop; 24 trailing data bytes.
-extern "C" __attribute__((naked)) void ui_func_001f6704() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d47f0, 0xe280500c, 0xe59f8180, 0xed2d8b08\n"
-        ".word 0xe590000c, 0xe5d51003, 0xeddfba5b, 0xe6bf0f30\n"
-        ".word 0xe3c000ff, 0xe1806001, 0xe5980000, 0xe3c670ff\n"
-        ".word 0xe3a01000, 0xeb032d7f, 0xe5984000, 0xe3a01000\n"
-        ".word 0xe3a00001, 0xeb033e0b, 0xe2844a01, 0xe2844f93\n"
-        ".word 0xe3a09000, 0xe5941000, 0xe2812001, 0xe0843101\n"
-        ".word 0xe5931008, 0xe0843102, 0xe5842000, 0xe5830008\n"
-        ".word 0xe5d42018, 0xe3520000, 0x01510000, 0x0a000002\n"
-        ".word 0xe594101c, 0xe12fff31, 0xe5c49018, 0xe2850010\n"
-        ".word 0xe2855008, 0xecd00a02, 0xed9f0a3d, 0xec958a02\n"
-        ".word 0xee700ac8, 0xee311a68, 0xee008a80, 0xee418a00\n"
-        ".word 0xee609a80, 0xeb018393, 0xeeb01a6b, 0xeef00a68\n"
-        ".word 0xeeb00a48, 0xe1a00006, 0xeb01838a, 0xeddfaa31\n"
-        ".word 0xed9fba31, 0xed9faa31, 0xe3a04000, 0xee004a10\n"
-        ".word 0xeeb80ac0, 0xee200a2a, 0xee200a0b, 0xee200a0a\n"
-        ".word 0xeb0302ea, 0xeef00a40, 0xee004a10, 0xeeb09a48\n"
-        ".word 0xeeb80ac0, 0xee099aa0, 0xee200a2a, 0xee200a0b\n"
-        ".word 0xee200a0a, 0xeb0302fb, 0xeef00a68, 0xeeb01a6b\n"
-        ".word 0xe1a00007, 0xee490a80, 0xeeb00a49, 0xeb018371\n"
-        ".word 0xe2844001, 0xe3540013, 0xbaffffe7, 0xeb019450\n"
-        ".word 0xe5980000, 0xe2804a01, 0xe2844f93, 0xe5940000\n"
-        ".word 0xe0841100, 0xe2400001, 0xe5911008, 0xe5840000\n"
-        ".word 0xe0840100, 0xe5d42018, 0xe5900008, 0xe3520000\n"
-        ".word 0x01510000, 0x0a000002, 0xe594101c, 0xe12fff31\n"
-        ".word 0xe5c49018, 0xecbd8b08, 0xe8bd87f0, 0x00000000\n"
-        ".word 0x0044ea00, 0x3f000000, 0x40c90fdb, 0x3d638e39\n"
-        ".word 0x4222f983\n"
-    );
+//
+// Recovered contract (ARM 0x001F6704..0x001F688F plus the six literal words at
+// 0x001F6890..0x001F68A7: 0.0f, 0x0044EA00, 0.5f, 2*pi = 0x40C90FDB,
+// 1/18 = 0x3D638E39 and 128/pi = 0x4222F983):
+//   * `object` is the sub-object selected by the only caller (0x002C7288):
+//     `r0 = *(u32*)(parent + 0x24) + 0xC0` when the byte at `+0xCF` is set.
+//     Only five fields are read:
+//       - `+0x0C..+0x0F` is a four-byte RGBA quad.  The word is read with
+//         `ldr`, byte-swapped with `rev`, its low byte cleared and the fourth
+//         byte `l`d`r`b`'d from `+0x0F` OR'd back in.  After `rev` that byte
+//         already *is* the low byte, so the value is `bswap32(word)` =
+//         `R << 24 | G << 16 | B << 8 | A`.  The `bic`+`orr` pair is kept
+//         verbatim below because it is what the caller's producer
+//         (0x002C7090) and this reader agree on.
+//       - `+0x14`/`+0x18` and `+0x1C`/`+0x20` are the two xy endpoints.
+//     The ring uses the same colour with the alpha byte (the low byte of the
+//     byte-swapped value) masked off.
+//   * Three separate reads of the render-register global 0x0044EA00: the value
+//     forwarded to `ui_func_002c1d3c(base, 0)`, the base used for the
+//     render-stack *push* (read after that call and before the
+//     `ui_func_002c5f7c(1, 0)` call) and the base used for the *pop* (read at
+//     the end of the body).
+//   * The push mirrors 0x002F4804: `slots[count]` is captured, `count` is
+//     incremented, `slots[count]` receives the `ui_func_002c5f7c(1, 0)` word,
+//     and when the node's dirty byte is set *or* the captured value differs
+//     from the new one, the node's `+0x1C` callback runs with the new value in
+//     r0 and the dirty byte is cleared.  The callback result is dead here
+//     (r0 is overwritten by the next instruction).
+//   * `dx = to_x - from_x`, `dy = to_y - from_y`, `mid = from + d * 0.5`,
+//     `radius = dx * 0.5` (VSUB/VMLA/VMUL, each rounded separately).
+//   * `func_0025760c()` flushes the queued sprite batch (`mov r0, #2` then a
+//     tail branch to 0x002B03B8); it has no live arguments and its result is
+//     not used.
+//   * `ui_func_002575fc(rgba, x, y, z)` draws one point sprite: r0 carries the
+//     colour and s0..s2 the position (the wrapper supplies s3 = s4 = 0.0f
+//     before its tail branch to 0x002B0208).  The centre point is drawn with
+//     the full colour at the midpoint, then a closed 19-vertex ring
+//     (`i = 0..18`, signed bound 0x13) is drawn with the alpha-cleared colour:
+//     `angle = i * 2*pi * (1/18) * (128/pi)`, x = `mid_x + radius*sin(angle)`,
+//     y = `mid_y + radius*cos(angle)`, z = 0.  `ui_func_002b73a4` is the table
+//     sine and `ui_func_002b740c` the table cosine; both take the angle in
+//     units of one 256-entry table step, which is why the caller multiplies by
+//     128/pi before the call.  The product chain is kept in the original order
+//     (multiply, not a single combined constant) so every intermediate rounds
+//     exactly like the ARM code.
+//   * `ui_func_0025b988()` flushes the batch again (four-byte tail branch to
+//     0x002B80D4 inside ui_func_002b8070); it also takes no arguments and its
+//     result is discarded.
+//   * Pop: `previous = slots[count]`, `count` is decremented, the new top is
+//     `slots[count - 1]` (flat, unchecked like the ARM), and the same callback
+//     rule applies.  The callback result, or the new top when no callback ran,
+//     is left in r0 and returned.
+//
+// No stack arguments, no preserved-register surprises: the prologue saves
+// r4-r8 plus s16-s23 (d8-d11) and the epilogue restores them, so `SP` at the
+// pop is the entry `SP`.  The indirect calls are the render-stack callback
+// (`blx r1`) only; it is never null-checked by the original.
+namespace func_1f6704 {
+
+// Literal pool 0x001F6890..0x001F68A7.
+constexpr f32 kHalf = 0.5f;                 // 0x3F000000
+constexpr f32 kZero = 0.0f;                 // 0x00000000
+constexpr f32 kFullTurn = 6.2831855f;       // 0x40C90FDB, 2*pi
+constexpr f32 kRingFraction = 0.055555556f; // 0x3D638E39, 1/18
+constexpr f32 kTableScale = 40.743664f;     // 0x4222F983, 128/pi
+
+// `cmp r4, #0x13` / `blt`: i = 0..18 closes the 18-segment ring.
+constexpr s32 kRingSegments = 19;
+
+// `add r4, r4, #0x1000` + `add r4, r4, #0x24C`: render-stack node offset.
+constexpr u32 kRenderStackOffset = 0x124C;
+
+// `bic r7, r6, #0xff`: the ring colour drops the alpha byte.
+constexpr u32 kAlphaByteMask = 0xFFFFFF00u;
+
+// `mov r0, #1` / `mov r1, #0` before the 0x002C5F7C call.
+constexpr u32 kPushKind = 1;
+constexpr u32 kPushEnabled = 0;
+
+// `mov r1, #0` before the 0x002C1D3C call.
+constexpr u32 kRenderMode = 0;
+
+// The sub-object handed to this routine by 0x002C7288 (`parent + 0x24`, then
+// `+0xC0`).  Only the fields read below are named.
+struct BillboardParams {
+    u8 pad_000[0x0C];
+    u32 rgba_word_0c;  // `ldr r0, [r0, #0xc]`
+    u8 pad_010[0x04];
+    f32 from_x_14;  // `vldmia r5, {s16, s17}` with r5 = object + 0x14
+    f32 from_y_18;
+    f32 to_x_1c;  // `vldmia r0, {s1, s2}` with r0 = object + 0x1C
+    f32 to_y_20;
+};
+
+static_assert(offsetof(BillboardParams, rgba_word_0c) == 0x0C);
+static_assert(offsetof(BillboardParams, from_x_14) == 0x14);
+static_assert(offsetof(BillboardParams, from_y_18) == 0x18);
+static_assert(offsetof(BillboardParams, to_x_1c) == 0x1C);
+static_assert(offsetof(BillboardParams, to_y_20) == 0x20);
+
+// Render-stack node at 0x0044EA00 + 0x124C, same layout as the node consumed
+// by 0x002F4804.  `slots` is a flat word array (`node + 8 + count*4`); the
+// original has no bounds check, so the reconstruction indexes past the four
+// visible slots exactly like the ARM code.
+struct RenderStackNode {
+    u32 count;       // +0x00
+    u32 pad_004;     // +0x04
+    u32 slots[4];    // +0x08..+0x17
+    u8 dirty;        // +0x18
+    u8 pad_019[3];
+    u32 flush_cb;    // +0x1C, `blx r1` with the new value in r0
+};
+
+static_assert(offsetof(RenderStackNode, count) == 0x00);
+static_assert(offsetof(RenderStackNode, slots) == 0x08);
+static_assert(offsetof(RenderStackNode, dirty) == 0x18);
+static_assert(offsetof(RenderStackNode, flush_cb) == 0x1C);
+
+// `blx r1` with no null check: the original requires a non-null callback.
+using FlushCallback = u32 (*)(u32 value);
+
+inline RenderStackNode* render_stack(void* base) {
+    return reinterpret_cast<RenderStackNode*>(
+        static_cast<u8*>(base) + kRenderStackOffset);
+}
+
+// The closure of the ring in table steps: i * 2*pi * (1/18) * (128/pi).  The
+// three multiplications happen in this order in the original (they appear
+// twice, once before the sine call and once before the cosine call); one
+// variable is enough because the sequence and its rounding are identical.
+inline f32 ring_angle(s32 index) {
+    return ((static_cast<f32>(index) * kFullTurn) * kRingFraction) *
+           kTableScale;
+}
+
+}  // namespace func_1f6704
+
+// 0x002C1D3C: selects the render mode (declared with 0x002F4804 above as
+// `void ui_func_002c1d3c(void* base, u32 mode)`).
+// 0x002C5F7C: builds the render-stack command word (declared above as
+// `u32 ui_func_002c5f7c(u32 kind, u32 enabled)`).
+
+// 0x0025760C: `mov r0, #2` then a tail branch to 0x002B03B8, which builds a
+// 0x34-byte packet (first word = 2 << 8) and submits it through 0x002ADE34.
+// It reads no caller register: r0 is set inside the wrapper and r1 = r0 << 8
+// is derived from that constant, so the prototype takes no arguments.
+extern "C" void func_0025760c(void);
+
+// 0x002575FC: loads s3 = s4 = 0.0f and tail-branches to 0x002B0208 with the
+// caller's r0 and s0..s2.  r0 is the colour, s0..s2 the position.
+extern "C" void ui_func_002575fc(u32 rgba, f32 x, f32 y, f32 z);
+
+// 0x002B73A4: table sine over 256 entries per turn; the argument is the turn
+// angle scaled by 128/pi (one unit per table step).  Returns s0.
+extern "C" f32 ui_func_002b73a4(f32 table_angle);
+
+// 0x002B740C: table cosine with the same argument convention.  Returns s0.
+extern "C" f32 ui_func_002b740c(f32 table_angle);
+
+// 0x0025B988: four-byte tail branch to 0x002B80D4, a no-argument batch
+// submit/flush path inside ui_func_002b8070.
+extern "C" void ui_func_0025b988(void);
+
+extern "C" u32 ui_func_001f6704(void* object) {
+    using namespace func_1f6704;
+
+    BillboardParams* const params =
+        static_cast<BillboardParams*>(object);
+
+    // The colour and the two endpoints are read before any helper runs.  The
+    // byte at +0x0F is fetched separately (`ldrb r1, [r5, #3]`, r5 = object +
+    // 0xC) and merged into the byte-swapped word.
+    const u32 rgba_word = params->rgba_word_0c;
+    const u32 rgba_byte_0f = static_cast<const u8*>(object)[0x0F];
+    const u32 color = (__builtin_bswap32(rgba_word) & kAlphaByteMask) |
+                      rgba_byte_0f;
+    const u32 ring_color = color & kAlphaByteMask;
+
+    ui_func_002c1d3c(smt4::engine::g_RenderRegisterBase, kRenderMode);
+
+    // The push base is captured here, after the render-mode call and before
+    // the command-word helper, which may itself rewrite 0x0044EA00.
+    void* const push_base = smt4::engine::g_RenderRegisterBase;
+    const u32 pushed = ui_func_002c5f7c(kPushKind, kPushEnabled);
+
+    RenderStackNode* const push_node = render_stack(push_base);
+    u32* const push_slots = push_node->slots;
+    const u32 push_previous = push_slots[push_node->count];
+    push_node->count = push_node->count + 1;
+    push_slots[push_node->count] = pushed;
+    if (push_node->dirty != 0 || push_previous != pushed) {
+        reinterpret_cast<FlushCallback>(push_node->flush_cb)(pushed);
+        push_node->dirty = 0;
+    }
+
+    // The two endpoints are only loaded here, after the push callback: a
+    // helper that rewrites the object is observed, exactly like the ARM loads
+    // at 0x001F6798 (`object + 0x1C`) and 0x001F67A0 (`object + 0x14`).
+    const f32 to_x = params->to_x_1c;
+    const f32 to_y = params->to_y_20;
+    const f32 from_x = params->from_x_14;
+    const f32 from_y = params->from_y_18;
+
+    const f32 delta_x = to_x - from_x;
+    const f32 delta_y = to_y - from_y;
+    const f32 mid_x = from_x + delta_x * kHalf;
+    const f32 mid_y = from_y + delta_y * kHalf;
+    const f32 radius = delta_x * kHalf;
+
+    func_0025760c();
+
+    ui_func_002575fc(color, mid_x, mid_y, kZero);
+
+    for (s32 index = 0; index < kRingSegments; ++index) {
+        const f32 angle = ring_angle(index);
+        const f32 sine = ui_func_002b73a4(angle);
+        const f32 cosine = ui_func_002b740c(angle);
+        ui_func_002575fc(ring_color, mid_x + radius * sine,
+                         mid_y + radius * cosine, kZero);
+    }
+
+    ui_func_0025b988();
+
+    // The pop re-reads 0x0044EA00; the node captured for the callback is the
+    // one addressed by *this* read even if the callback switches the global.
+    RenderStackNode* const pop_node =
+        render_stack(smt4::engine::g_RenderRegisterBase);
+    u32* const pop_slots = pop_node->slots;
+    const u32 pop_count = pop_node->count;
+    const u32 pop_previous = pop_slots[pop_count];
+    pop_node->count = pop_count - 1;
+    const u32 new_top = pop_slots[pop_count - 1];
+    if (pop_node->dirty != 0 || pop_previous != new_top) {
+        const u32 result =
+            reinterpret_cast<FlushCallback>(pop_node->flush_cb)(new_top);
+        pop_node->dirty = 0;
+        return result;
+    }
+    return new_top;
 }
 
 // DECOMP_FUNC(0x002d8fac, 420)
