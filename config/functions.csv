@@ -6456,7 +6456,7 @@ address,size,status,category,name,src_file
 0x002e7200,2372,matching,engine,engine_func_002e7200,src/engine/leaf_batch46_c.cpp
 0x002e7b44,236,non_matching,engine,effParticle_func_002e7b44,src/engine/leaf_batch32_c.cpp
 0x002e7c30,612,matching,engine,effParticle_func_002e7c30,src/engine/asd_effect2.cpp
-0x002e7e94,604,matching,engine,engine_func_002e7e94,src/engine/leaf_batch45_a.cpp
+0x002e7e94,604,non_matching,engine,engine_func_002e7e94,src/engine/leaf_batch45_a.cpp
 0x002e80f0,8,matching,unknown,func_002e80f0,src/engine/leaf_matching.cpp
 0x002e80f8,28,matching,unknown,func_002e80f8,src/engine/leaf_batch22_b.cpp
 0x002e8114,16,matching,unknown,func_002e8114,src/engine/leaf_matching.cpp

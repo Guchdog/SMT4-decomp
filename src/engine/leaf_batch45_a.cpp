@@ -1993,88 +1993,238 @@ extern "C" void engine_func_002a399c(void* part_raw, f32 scale) {
     }
 }
 
-// DECOMP_FUNC(0x002e7e94, 604)
-extern "C" __attribute__((naked)) void engine_func_002e7e94() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x41f0, 0xe92d, 0x4001, 0xe1a0\n"
-        ".hword 0x5000, 0xe1a0, 0x0adc, 0xe1c4\n"
-        ".hword 0x0000, 0xe351, 0x00ac, 0x1581\n"
-        ".hword 0x008c, 0x0585, 0x00ac, 0xe594\n"
-        ".hword 0x0000, 0xe350, 0x10b0, 0x1594\n"
-        ".hword 0x10b0, 0x1580, 0x00b0, 0x0594\n"
-        ".hword 0x0088, 0x0585, 0x0080, 0xe595\n"
-        ".hword 0x0001, 0xe240, 0x0080, 0xe585\n"
-        ".hword 0x0098, 0xe594, 0x0001, 0xe310\n"
-        ".hword 0x007f, 0x1a00, 0x108c, 0xe595\n"
-        ".hword 0x0090, 0xe594, 0x7000, 0xe3a0\n"
-        ".hword 0x0000, 0xe351, 0x001e, 0x0a00\n"
-        ".hword 0x2098, 0xe591, 0x0001, 0xe312\n"
-        ".hword 0x0005, 0x0a00, 0x2090, 0xe591\n"
-        ".hword 0x0000, 0xe152, 0x0002, 0x1a00\n"
-        ".hword 0x0000, 0xe351, 0x0016, 0x0a00\n"
-        ".hword 0x0003, 0xea00, 0x10ac, 0xe591\n"
-        ".hword 0x0000, 0xe351, 0xfff3, 0x1aff\n"
-        ".hword 0x0011, 0xea00, 0x0005, 0xe1a0\n"
-        ".hword 0xffd8, 0xebff, 0x108c, 0xe595\n"
-        ".hword 0x0090, 0xe594, 0x0000, 0xe351\n"
-        ".hword 0x000b, 0x0a00, 0x2098, 0xe591\n"
-        ".hword 0x0001, 0xe312, 0x0005, 0x0a00\n"
-        ".hword 0x2090, 0xe591, 0x0000, 0xe152\n"
-        ".hword 0x0002, 0x1a00, 0x0000, 0xe351\n"
-        ".hword 0xfff1, 0x1aff, 0x0002, 0xea00\n"
-        ".hword 0x10ac, 0xe591, 0x0000, 0xe351\n"
-        ".hword 0xfff3, 0x1aff, 0x0098, 0xe594\n"
-        ".hword 0x0002, 0xe310, 0x003b, 0x1a00\n"
-        ".hword 0x608c, 0xe595, 0x0090, 0xe594\n"
-        ".hword 0x0000, 0xe356, 0x0037, 0x0a00\n"
-        ".hword 0x1098, 0xe596, 0x1003, 0xe201\n"
-        ".hword 0x0002, 0xe351, 0x1094, 0x0596\n"
-        ".hword 0x0000, 0x0151, 0x0016, 0x1a00\n"
-        ".hword 0x0000, 0xe356, 0x002f, 0x0a00\n"
-        ".hword 0x0098, 0xe596, 0x2006, 0xe1a0\n"
-        ".hword 0x1002, 0xe1a0, 0x0002, 0xe3c0\n"
-        ".hword 0x0098, 0xe586, 0x0005, 0xe1a0\n"
-        ".hword 0x7094, 0xe586, 0xd22e, 0xebfd\n"
-        ".hword 0x108c, 0xe595, 0x0090, 0xe594\n"
-        ".hword 0x0000, 0xe351, 0x0023, 0x0a00\n"
-        ".hword 0x2098, 0xe591, 0x2003, 0xe202\n"
-        ".hword 0x0002, 0xe352, 0x2094, 0x0591\n"
-        ".hword 0x0000, 0x0152, 0x0006, 0x1a00\n"
-        ".hword 0x0000, 0xe351, 0x0008, 0x1a00\n"
-        ".hword 0x001a, 0xea00, 0x60ac, 0xe596\n"
-        ".hword 0x0000, 0xe356, 0xffdf, 0x1aff\n"
-        ".hword 0x0016, 0xea00, 0x10ac, 0xe591\n"
-        ".hword 0x0000, 0xe351, 0xffef, 0x1aff\n"
-        ".hword 0x0012, 0xea00, 0x2006, 0xe1a0\n"
-        ".hword 0x0005, 0xe1a0, 0xd216, 0xebfd\n"
-        ".hword 0x108c, 0xe595, 0x0090, 0xe594\n"
-        ".hword 0x0000, 0xe351, 0x000b, 0x0a00\n"
-        ".hword 0x2098, 0xe591, 0x2003, 0xe202\n"
-        ".hword 0x0002, 0xe352, 0x2094, 0x0591\n"
-        ".hword 0x0000, 0x0152, 0x0002, 0x1a00\n"
-        ".hword 0x0000, 0xe351, 0xfff0, 0x1aff\n"
-        ".hword 0x0002, 0xea00, 0x10ac, 0xe591\n"
-        ".hword 0x0000, 0xe351, 0xfff3, 0x1aff\n"
-        ".hword 0x0098, 0xe594, 0x0001, 0xe310\n"
-        ".hword 0x0019, 0x1a00, 0x5090, 0xe594\n"
-        ".hword 0x0008, 0xe595, 0x0000, 0xe350\n"
-        ".hword 0x0005, 0x0a00, 0x10b4, 0xe1d5\n"
-        ".hword 0x2058, 0xe59f, 0x1201, 0xe081\n"
-        ".hword 0x1101, 0xe082, 0x1010, 0xe591\n"
-        ".hword 0xff31, 0xe12f, 0x0018, 0xe595\n"
-        ".hword 0x0000, 0xe350, 0x0003, 0x0a00\n"
-        ".hword 0x70ab, 0xebff, 0x7010, 0xe585\n"
-        ".hword 0x7014, 0xe585, 0x7018, 0xe585\n"
-        ".hword 0x0028, 0xe595, 0x0000, 0xe350\n"
-        ".hword 0x0003, 0x0a00, 0x70a4, 0xebff\n"
-        ".hword 0x7020, 0xe585, 0x7024, 0xe585\n"
-        ".hword 0x7028, 0xe585, 0x0005, 0xe1a0\n"
-        ".hword 0x709f, 0xebff, 0x0004, 0xe1a0\n"
-        ".hword 0x41f0, 0xe8bd, 0x709c, 0xeaff\n"
-        ".hword 0x4110, 0x0046\n"
-    );
+// ---------------------------------------------------------------------------
+// 0x002E7E94 -- effParts child-node destroy.
+//
+// Detaches `node` from the manager's doubly linked child list (manager +0x80
+// count, +0x88 tail, +0x8C head; node +0xAC next, +0xB0 prev), then:
+//
+//   1. 0x002E7EA0..0x002E7ED0: unlink and decrement the manager count (no null
+//      checks beyond the two link tests);
+//   2. 0x002E7ED4: a node that carries flag 0x1 is released on its own, with no
+//      further list or particle work;
+//   3. 0x002E7EE0..0x002E7F6C: every remaining member that carries flag 0x1 and
+//      the same particle pointer is destroyed recursively.  Each recursive call
+//      removes a member, so the head-first rescan terminates;
+//   4. 0x002E7F70..0x002E8068: unless the node carries flag 0x2, every member
+//      whose low flag bits are exactly 0x2 and whose +0x94 holds this node's
+//      particle is unbound (flag 0x2 and +0x94 cleared) and re-parented with
+//      0x0025C888(manager, member, firstMember); the first member is
+//      re-parented onto itself and then serves as the anchor for the rest;
+//   5. 0x002E806C..0x002E80DC: unless the node carries flag 0x1, its particle
+//      is destroyed -- the +0x10 type-table callback runs on
+//      particle->instance when that pointer is non-null, the two owned blocks
+//      at +0x18 and +0x28 are freed and their three-word records cleared, and
+//      the particle itself is freed;
+//   6. 0x002E80E0: the node is freed by a tail call to 0x002C4360.
+//
+// Layouts mirror include/engine/asd_effect.h (EffPartsSource, EffPartsNode,
+// EffPartsParticle, EffPartsTypeEntry); only the fields read or written here
+// are named.  The 0x00464110 entry hook at +0x10 is the destructor
+// counterpart of the +0x14 create_instance slot: entry 1's +0x10 target
+// (0x001F7104) frees the object it receives, so only particle->instance is
+// passed to it and the particle is released separately.
+// ---------------------------------------------------------------------------
+
+namespace eff_parts_destroy_002e7e94 {
+
+struct EffPartsNode;
+
+/** Manager/header prefix used by this routine (see EffPartsSource). */
+struct EffPartsSource {
+    u8 pad_00[0x80];
+    u32 count;                  // +0x80: `ldr r0,[r5,#0x80]`
+    u8 pad_84[0x04];
+    EffPartsNode* last;         // +0x88: children.last
+    EffPartsNode* first;        // +0x8C: children.first
 };
+static_assert(offsetof(EffPartsSource, count) == 0x80);
+static_assert(offsetof(EffPartsSource, last) == 0x88);
+static_assert(offsetof(EffPartsSource, first) == 0x8C);
+
+/** One 0x2C-byte per-particle record (see EffPartsParticle). */
+struct EffPartsParticle {
+    u8 pad_00[0x04];
+    u16 type;                   // +0x04: `ldrh r1,[r5,#4]` type-table index
+    u8 pad_06[0x02];
+    void* instance;             // +0x08: argument of the +0x10 table hook
+    u16 field_0c;               // +0x0C: untouched here
+    u8 pad_0e[0x02];
+    u32 data_0;                 // +0x10: cleared with the +0x18 block
+    u32 size_0;                 // +0x14: cleared with the +0x18 block
+    void* alloc_0;              // +0x18: freed when non-null
+    u16 field_1c;               // +0x1C: untouched here
+    u8 pad_1e[0x02];
+    u32 data_1;                 // +0x20: cleared with the +0x28 block
+    u32 size_1;                 // +0x24: cleared with the +0x28 block
+    void* alloc_1;              // +0x28: freed when non-null
+};
+static_assert(offsetof(EffPartsParticle, type) == 0x04);
+static_assert(offsetof(EffPartsParticle, instance) == 0x08);
+static_assert(offsetof(EffPartsParticle, data_0) == 0x10);
+static_assert(offsetof(EffPartsParticle, size_0) == 0x14);
+static_assert(offsetof(EffPartsParticle, alloc_0) == 0x18);
+static_assert(offsetof(EffPartsParticle, data_1) == 0x20);
+static_assert(offsetof(EffPartsParticle, size_1) == 0x24);
+static_assert(offsetof(EffPartsParticle, alloc_1) == 0x28);
+static_assert(sizeof(EffPartsParticle) == 0x2C);
+
+/** One 0xC0-byte child node (see EffPartsNode). */
+struct EffPartsNode {
+    u8 pad_00[0x80];
+    u32 count;                  // +0x80: shared prefix, not read on a member
+    u8 pad_84[0x04];
+    u8 field_88;                // +0x88..+0x8A: byte triplet, untouched here
+    u8 field_89;
+    u8 field_8a;
+    u8 pad_8b;
+    EffPartsNode* first;        // +0x8C: child list head, not read on a member
+    EffPartsParticle* particle;// +0x90: `ldr r5,[r4,#0x90]`
+    u32 field_94;               // +0x94: bound particle pointer / record index
+    u32 flags;                  // +0x98: `tst r0,#1` / `tst r0,#2`
+    u8 pad_9c[0x10];            // +0x9C name[0x10]
+    EffPartsNode* next;         // +0xAC
+    EffPartsNode* prev;         // +0xB0
+};
+static_assert(offsetof(EffPartsNode, count) == 0x80);
+static_assert(offsetof(EffPartsNode, first) == 0x8C);
+static_assert(offsetof(EffPartsNode, particle) == 0x90);
+static_assert(offsetof(EffPartsNode, field_94) == 0x94);
+static_assert(offsetof(EffPartsNode, flags) == 0x98);
+static_assert(offsetof(EffPartsNode, next) == 0xAC);
+static_assert(offsetof(EffPartsNode, prev) == 0xB0);
+
+/** One 0x44-byte entry of the 0x00464110 table (see EffPartsTypeEntry). */
+struct EffPartsTypeEntry {
+    u8 pad_00[0x10];
+    void (*destroy_instance)(void* instance);  // +0x10: `ldr r1,[r1,#0x10]`
+    void* (*create_instance)(void* instance);  // +0x14: not called here
+    u8 pad_18[0x2C];
+};
+static_assert(offsetof(EffPartsTypeEntry, destroy_instance) == 0x10);
+static_assert(offsetof(EffPartsTypeEntry, create_instance) == 0x14);
+static_assert(sizeof(EffPartsTypeEntry) == 0x44);
+
+constexpr u32 kFlagAlias = 0x00000001u;  // node +0x98 bit 0
+constexpr u32 kFlagBound = 0x00000002u;  // node +0x98 bit 1
+constexpr u32 kFlagMask = 0x00000003u;   // `and r2,r2,#3`
+
+inline EffPartsTypeEntry* type_entries() {
+    return reinterpret_cast<EffPartsTypeEntry*>(0x00464110u);
+}
+
+/** First member carrying flag 0x1 and the particle pointer `particle`. */
+inline EffPartsNode* find_alias(EffPartsSource* manager,
+                                EffPartsParticle* particle) {
+    for (EffPartsNode* member = manager->first; member != nullptr;
+         member = member->next) {
+        if ((member->flags & kFlagAlias) != 0 && member->particle == particle) {
+            return member;
+        }
+    }
+    return nullptr;
+}
+
+/** First member whose low flag bits are exactly 0x2 and whose +0x94 holds
+ *  `particle`. */
+inline EffPartsNode* find_bound(EffPartsSource* manager,
+                                EffPartsParticle* particle) {
+    const u32 key = reinterpret_cast<u32>(particle);
+    for (EffPartsNode* member = manager->first; member != nullptr;
+         member = member->next) {
+        if ((member->flags & kFlagMask) == kFlagBound &&
+            member->field_94 == key) {
+            return member;
+        }
+    }
+    return nullptr;
+}
+
+}  // namespace eff_parts_destroy_002e7e94
+
+// 0x0025C888: effParts child re-parenting helper (still a raw block; the
+// manager, current child and anchor are forwarded unchanged).
+extern "C" void engine_func_0025c888(void* manager, void* child, void* parent);
+
+// DECOMP_FUNC(0x002e7e94, 604)
+extern "C" void engine_func_002e7e94(void* manager_raw, void* node_raw) {
+    using namespace eff_parts_destroy_002e7e94;
+
+    EffPartsSource* const manager = static_cast<EffPartsSource*>(manager_raw);
+    EffPartsNode* const node = static_cast<EffPartsNode*>(node_raw);
+
+    // 0x002E7EA0..0x002E7ED0: unlink from the doubly linked child list.
+    EffPartsNode* const next = node->next;
+    EffPartsNode* const prev = node->prev;
+    if (prev != nullptr) {
+        prev->next = next;
+    } else {
+        manager->first = next;
+    }
+    if (next != nullptr) {
+        next->prev = node->prev;
+    } else {
+        manager->last = node->prev;
+    }
+    manager->count = manager->count - 1;
+
+    // 0x002E7ED4: an alias node is released without touching the list.
+    if ((node->flags & kFlagAlias) != 0) {
+        engine_func_002c4360(node);
+        return;
+    }
+
+    // 0x002E7EE0..0x002E7F6C: destroy the remaining aliases of this particle.
+    // Both the head and the particle pointer are reloaded after every call.
+    for (EffPartsNode* member = find_alias(manager, node->particle);
+         member != nullptr;
+         member = find_alias(manager, node->particle)) {
+        engine_func_002e7e94(manager, member);
+    }
+
+    // 0x002E7F70..0x002E8068: move the members bound to this particle over to
+    // the first of them.
+    if ((node->flags & kFlagBound) == 0) {
+        EffPartsNode* const anchor = find_bound(manager, node->particle);
+        if (anchor != nullptr) {
+            anchor->flags &= ~kFlagBound;
+            anchor->field_94 = 0;
+            engine_func_0025c888(manager, anchor, anchor);
+
+            for (EffPartsNode* member = find_bound(manager, node->particle);
+                 member != nullptr;
+                 member = find_bound(manager, node->particle)) {
+                engine_func_0025c888(manager, member, anchor);
+            }
+        }
+    }
+
+    // 0x002E806C..0x002E80DC: release the particle and its owned blocks.
+    if ((node->flags & kFlagAlias) == 0) {
+        EffPartsParticle* const particle = node->particle;
+        if (particle->instance != nullptr) {
+            const EffPartsTypeEntry* const entry =
+                &type_entries()[particle->type];
+            entry->destroy_instance(particle->instance);
+        }
+        if (particle->alloc_0 != nullptr) {
+            engine_func_002c4360(particle->alloc_0);
+            particle->data_0 = 0;
+            particle->size_0 = 0;
+            particle->alloc_0 = nullptr;
+        }
+        if (particle->alloc_1 != nullptr) {
+            engine_func_002c4360(particle->alloc_1);
+            particle->data_1 = 0;
+            particle->size_1 = 0;
+            particle->alloc_1 = nullptr;
+        }
+        engine_func_002c4360(particle);
+    }
+
+    // 0x002E80E0: release the node itself (tail call into 0x002C4360).
+    engine_func_002c4360(node);
+}
 
 // DECOMP_FUNC(0x00339d98, 604)
 extern "C" __attribute__((naked)) void script_vm_func_00339d98() {
