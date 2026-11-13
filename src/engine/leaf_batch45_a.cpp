@@ -8353,98 +8353,219 @@ extern "C" u32 script_vm_func_0033bdc8(void* source, u32 table_id, u16* out) {
     return 0;
 }
 
-// DECOMP_FUNC(0x003a3e98, 684)
-extern "C" __attribute__((naked)) void shop_func_003a3e98() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x41f0, 0xe92d, 0x5000, 0xe1a0\n"
-        ".hword 0x0008, 0xe590, 0x0000, 0xe350\n"
-        ".hword 0x000e, 0x0a00, 0x0001, 0xe350\n"
-        ".hword 0x008d, 0x1a00, 0x0168, 0xe595\n"
-        ".hword 0xe83f, 0xebf7, 0x0002, 0xe350\n"
-        ".hword 0x0089, 0x1a00, 0x0003, 0xe3a0\n"
-        ".hword 0x1000, 0xe3a0, 0x00f4, 0xe1c5\n"
-        ".hword 0x1264, 0xe59f, 0x0000, 0xe3a0\n"
-        ".hword 0xec8b, 0xebfb, 0x41f0, 0xe8bd\n"
-        ".hword 0x0001, 0xe3a0, 0xccff, 0xeafb\n"
-        ".hword 0x0000, 0xe3a0, 0xccfd, 0xebfb\n"
-        ".hword 0x0168, 0xe595, 0xf000, 0xe320\n"
-        ".hword 0xe82f, 0xebf7, 0x1000, 0xe3a0\n"
-        ".hword 0x0001, 0xe1a0, 0xea6d, 0xebfb\n"
-        ".hword 0x0005, 0xe1a0, 0xf000, 0xe320\n"
-        ".hword 0x2f8f, 0xebfa, 0x4000, 0xe1a0\n"
-        ".hword 0x0005, 0xe1a0, 0x2f75, 0xebfa\n"
-        ".hword 0x0860, 0xe595, 0x1080, 0xe080\n"
-        ".hword 0x0280, 0xe061, 0x0100, 0xe085\n"
-        ".hword 0x0888, 0xe590, 0x0000, 0xe350\n"
-        ".hword 0x0002, 0xda00, 0x6c72, 0xebfb\n"
-        ".hword 0x0000, 0xe350, 0x4001, 0x13a0\n"
-        ".hword 0x0860, 0xe595, 0x1580, 0xe080\n"
-        ".hword 0x2080, 0xe080, 0x0280, 0xe062\n"
-        ".hword 0x1081, 0xe085, 0x0100, 0xe085\n"
-        ".hword 0x6b03, 0xe281, 0x6094, 0xe286\n"
-        ".hword 0x0d22, 0xe280, 0x3e0b, 0xebfa\n"
-        ".hword 0x0100, 0xe086, 0x1860, 0xe595\n"
-        ".hword 0x60b0, 0xe1d0, 0x0008, 0xe351\n"
-        ".hword 0x000a, 0x1a00, 0x1006, 0xe1a0\n"
-        ".hword 0x0005, 0xe1a0, 0x3364, 0xebfa\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x0004, 0x0a00, 0x0006, 0xe1a0\n"
-        ".hword 0xaf8e, 0xebfb, 0x0001, 0xe350\n"
-        ".hword 0xf000, 0xe320, 0x0006, 0xda00\n"
-        ".hword 0x0000, 0xe354, 0x0004, 0x0a00\n"
-        ".hword 0x3aa2, 0xebfa, 0x0005, 0xe1a0\n"
-        ".hword 0x41f0, 0xe8bd, 0x100b, 0xe3a0\n"
-        ".hword 0x2a03, 0xeafa, 0xf000, 0xe320\n"
-        ".hword 0x2f3c, 0xebfa, 0x7164, 0xe59f\n"
-        ".hword 0x4b02, 0xe285, 0x0000, 0xe350\n"
-        ".hword 0x4064, 0xe284, 0x000b, 0x1a00\n"
-        ".hword 0x6801, 0xe285, 0x6c5d, 0xe286\n"
-        ".hword 0x04fc, 0xe1d6, 0xe640, 0xebfb\n"
-        ".hword 0x0006, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x0004, 0x0a00, 0x2f23, 0xebfa\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x0036, 0x1a00, 0x0008, 0xea00\n"
-        ".hword 0x0864, 0xe595, 0x1001, 0xe3a0\n"
-        ".hword 0x0180, 0xe797, 0x0000, 0xe584\n"
-        ".hword 0x0005, 0xe1a0, 0x2f86, 0xebfa\n"
-        ".hword 0x41f0, 0xe8bd, 0xf000, 0xe320\n"
-        ".hword 0x2f13, 0xeafa, 0x04fe, 0xe1d6\n"
-        ".hword 0xe62d, 0xebfb, 0x0006, 0xe350\n"
-        ".hword 0xf000, 0xe320, 0x0027, 0x0a00\n"
-        ".hword 0x493e, 0xebfb, 0x0000, 0xe350\n"
-        ".hword 0xf000, 0xe320, 0x002d, 0x0a00\n"
-        ".hword 0x0000, 0xe3a0, 0x33c6, 0xebfa\n"
-        ".hword 0xf000, 0xe320, 0xf000, 0xe320\n"
-        ".hword 0x3a59, 0xebfa, 0x1001, 0xe3a0\n"
-        ".hword 0x0fea, 0xe285, 0x3cd4, 0xebfa\n"
-        ".hword 0xf000, 0xe320, 0xf000, 0xe320\n"
-        ".hword 0xcc26, 0xebfb, 0x1014, 0xe5d5\n"
-        ".hword 0x0a15, 0xe285, 0x0ed6, 0xe280\n"
-        ".hword 0x0001, 0xe351, 0x7001, 0xe3a0\n"
-        ".hword 0x1002, 0x13a0, 0x7000, 0x0580\n"
-        ".hword 0x1000, 0x1580, 0x085c, 0xe595\n"
-        ".hword 0x3e4c, 0xebfa, 0x0b02, 0xe285\n"
-        ".hword 0x0028, 0xe280, 0x3e3a, 0xebfa\n"
-        ".hword 0x05f0, 0xe1d6, 0x4000, 0xe3a0\n"
-        ".hword 0x0000, 0xe350, 0x0005, 0xda00\n"
-        ".hword 0xf000, 0xe320, 0x53cb, 0xebfc\n"
-        ".hword 0x05f0, 0xe1d6, 0x4001, 0xe284\n"
-        ".hword 0x0004, 0xe150, 0xfff9, 0xcaff\n"
-        ".hword 0x7008, 0xe585, 0x81f0, 0xe8bd\n"
-        ".hword 0x0864, 0xe595, 0x1001, 0xe3a0\n"
-        ".hword 0x0180, 0xe087, 0x0004, 0xe590\n"
-        ".hword 0x0000, 0xe584, 0x0005, 0xe1a0\n"
-        ".hword 0x2f4f, 0xebfa, 0x41f0, 0xe8bd\n"
-        ".hword 0xf000, 0xe320, 0x2edc, 0xeafa\n"
-        ".hword 0xf000, 0xe320, 0xc98b, 0xebfa\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0xffef, 0x0aff, 0x3a45, 0xebfa\n"
-        ".hword 0x0005, 0xe1a0, 0x41f0, 0xe8bd\n"
-        ".hword 0x2ea0, 0xeafa, 0x32ff, 0x3232\n"
-        ".hword 0xe020, 0x0044\n"
-    );
-};
+// ---------------------------------------------------------------------------
+// 0x003A3E98 (684 B): shop menu idle/opening update callback.
+//
+// `work` is the shop screen workspace.  State +0x08 selects the phase:
+//
+//   * state 0 (ready): step the opened script once, refresh the live item list,
+//     then branch on the pending-change flag and the list selection.  Selection
+//     moves through the pinned two-column u32 cycle table at 0x0044E020 and
+//     later republishes the panel; the confirm path initialises the next sub
+//     screen and advances the state to 1.
+//   * state 1 (opening): wait for the script to report 2, then set the next
+//     mode at +0x04, reset the state to 0, publish the message colour and
+//     release the UI mode.
+//   * any other state: return untouched.
+//
+// The item id is `u16(work + 0xC94 + list*4098 + accessor*4)`, where `list` is
+// the u32 at +0x860 and the accessor is 0x002337A0 over the 116-byte record at
+// `work + 0x880 + list*116`.  List 8 has an extra equip-item check before the
+// normal pending-change gate.
+// ---------------------------------------------------------------------------
+
+extern "C" s32  script_vm_func_0019dfbc(void* script);         // 0x0019DFBC
+extern "C" u32  ui_func_002972e8(u32 value);                   // 0x002972E8
+extern "C" void camp_func_0029e8c0(u32 value, u32 flag);       // 0x0029E8C0
+extern "C" void camp_func_0029f10c(u32 index, u32 color);      // 0x0029F10C
+extern "C" s32  shop_func_0022fd54(void* work);                // 0x0022FD54
+extern "C" void shop_func_0022fcf8(void* work);                // 0x0022FCF8
+extern "C" s32  script_vm_func_0027f10c(s32 count);            // 0x0027F10C
+extern "C" u32  shop_func_002337a0(const void* panel);         // 0x002337A0
+extern "C" s32  shop_func_00230d24(void* work, u32 item_id);   // 0x00230D24
+extern "C" s32  shop_func_0028fde0(u32 item_id);               // 0x0028FDE0
+extern "C" s32  shop_func_0022fcc8(void);                      // 0x0022FCC8
+extern "C" s32  ui_func_0029d8fc(s16 handle);                  // 0x0029D8FC
+extern "C" s32  shop_func_0022fc98(void);                      // 0x0022FC98
+extern "C" s32  script_vm_func_00276550(void);                 // 0x00276550
+extern "C" s32  shop_func_00256750(void);                      // 0x00256750
+extern "C" void shop_func_00232a48(void);                      // 0x00232A48
+extern "C" u32  camp_func_0022fbc0(void* work);                // 0x0022FBC0
+extern "C" u32  shop_func_0022e7dc(void* work, u32 mode);      // 0x0022E7DC
+extern "C" void shop_func_0022fe4c(void* work, u32 mode);      // 0x0022FE4C
+extern "C" u32  shop_func_0022fc8c(void);                      // 0x0022FC8C
+extern "C" void shop_func_00230f84(u32 value);                 // 0x00230F84
+extern "C" void shop_func_002329dc(void);                      // 0x002329DC
+extern "C" void shop_func_002333d4(void* group, s32 index);    // 0x002333D4
+extern "C" void shop_func_00297128(void);                      // 0x00297128
+extern "C" void shop_func_002339e8(void* object);              // 0x002339E8
+extern "C" void shop_func_002339ac(void* rows);                // 0x002339AC
+extern "C" void camp_func_002b9008(void);                      // 0x002B9008
+
+namespace shop_3a3e98 {
+
+constexpr u32 kState = 0x008;              // u32 phase selector
+constexpr u32 kNextMode = 0x004;           // u32 written with kState == 0
+constexpr u32 kStateReady = 0;             // run the ready/selection pass
+constexpr u32 kStateOpening = 1;           // wait for the script transition
+constexpr u32 kOpeningNextMode = 3;        // value stored at +0x04 on success
+
+constexpr u32 kScriptContext = 0x168;      // pointer passed to 0x0019DFBC
+constexpr s32 kScriptFinished = 2;         // 0x0019DFBC result that ends state 1
+
+constexpr u32 kCurrentList = 0x860;        // u32 live item-list index
+constexpr u32 kSelectedIndex = 0x864;      // u32 selection index
+constexpr u32 kSelectionTable = 0x44E020;  // pinned u32 [4][2] cycle table
+constexpr u32 kSelectedList = 8;           // list that gets the equip check
+
+constexpr u32 kListStride = 116;           // 29 * sizeof(u32): 0x880 record
+constexpr u32 kListBase = 0x880;           // panel passed to 0x002337A0
+constexpr u32 kListCount = 0x888;          // s32 count at panel + 8
+constexpr u32 kItemTableBase = 0xC94;      // u16 id array after list*4098
+constexpr u32 kItemTableStride = 4098;     // 2049 * sizeof(u16)
+constexpr u32 kItemEntryStride = 4;        // u16 id inside each entry
+
+constexpr u32 kSpriteGroup = 0x3A8;        // passed to 0x002333D4
+constexpr u32 kItemPanel = 0x828;          // passed to 0x002339AC
+constexpr u32 kMenuObject = 0x85C;         // pointer passed to 0x002339E8
+constexpr u32 kModeByte = 0x14;            // u8 -> sub-state 1 or 2
+constexpr u32 kSubState = 0x15D60;         // u32 1/2 written on confirm
+
+constexpr u32 kTouchConfirmHandle = 0x15D4C;  // s16, result 6 = confirm/cancel
+constexpr u32 kTouchCancelHandle = 0x15D4E;   // s16, result 6 = cancel
+constexpr u32 kRowCount = 0x15D50;            // s16 pending row calls
+constexpr s32 kTouchConfirmState = 6;
+constexpr u32 kNextListMode = 11;             // forwarded to 0x0022E7DC
+constexpr u32 kTextColor = 0x323232FF;        // forwarded to 0x0029F10C
+
+static __attribute__((always_inline)) inline u8 load_u8(const void* p) {
+    return *static_cast<const u8*>(p);
+}
+
+static __attribute__((always_inline)) inline u16 load_u16(const void* p) {
+    return *static_cast<const u16*>(p);
+}
+
+static __attribute__((always_inline)) inline s16 load_s16(const void* p) {
+    return *static_cast<const s16*>(p);
+}
+
+static __attribute__((always_inline)) inline u32 load_u32(const void* p) {
+    return *static_cast<const u32*>(p);
+}
+
+static __attribute__((always_inline)) inline s32 load_s32(const void* p) {
+    return *static_cast<const s32*>(p);
+}
+
+static __attribute__((always_inline)) inline void store_u32(void* p, u32 value) {
+    *static_cast<u32*>(p) = value;
+}
+
+static __attribute__((always_inline)) inline u32 load_selection_word(
+    u32 selection, u32 column) {
+    const u32 address = kSelectionTable + selection * 8 + column * 4;
+    return *reinterpret_cast<const u32*>(static_cast<uintptr_t>(address));
+}
+
+}  // namespace shop_3a3e98
+
+extern "C" u32 shop_func_003a3e98(u8* work) {
+    using namespace shop_3a3e98;
+
+    const u32 state = load_u32(work + kState);
+    if (state == kStateReady) goto ready;
+    if (state != kStateOpening) return state;
+
+    {
+        const s32 script_state = script_vm_func_0019dfbc(
+            reinterpret_cast<void*>(load_u32(work + kScriptContext)));
+        if (script_state != kScriptFinished) {
+            return static_cast<u32>(script_state);
+        }
+    }
+    store_u32(work + kNextMode, kOpeningNextMode);
+    store_u32(work + kState, kStateReady);
+    camp_func_0029f10c(0, kTextColor);
+    return ui_func_002972e8(1);
+
+ready:
+    ui_func_002972e8(0);
+    script_vm_func_0019dfbc(
+        reinterpret_cast<void*>(load_u32(work + kScriptContext)));
+    camp_func_0029e8c0(0, 0);
+    {
+        s32 changed = shop_func_0022fd54(work);
+        shop_func_0022fcf8(work);
+
+        const u32 list = load_u32(work + kCurrentList);
+        const s32 count = load_s32(work + kListCount + list * kListStride);
+        if (count > 0 && script_vm_func_0027f10c(count) != 0) {
+            changed = 1;
+        }
+
+        const u32 entry_index = shop_func_002337a0(
+            work + kListBase + list * kListStride);
+        const u16 item_id = load_u16(work + kItemTableBase +
+                                     list * kItemTableStride +
+                                     entry_index * kItemEntryStride);
+        if (list == kSelectedList &&
+            shop_func_00230d24(work, item_id) != 0 &&
+            shop_func_0028fde0(item_id) <= 1) {
+            goto select;
+        }
+
+        if (changed != 0) {
+            shop_func_00232a48();
+            return shop_func_0022e7dc(work, kNextListMode);
+        }
+    }
+
+select:
+    if (shop_func_0022fcc8() != 0) goto select_forward;
+    if (ui_func_0029d8fc(load_s16(work + kTouchConfirmHandle)) ==
+        kTouchConfirmState) {
+        goto select_forward;
+    }
+    if (shop_func_0022fc98() != 0) goto select_backward;
+    if (ui_func_0029d8fc(load_s16(work + kTouchCancelHandle)) ==
+        kTouchConfirmState) {
+        goto select_backward;
+    }
+    if (script_vm_func_00276550() != 0) goto activate;
+    if (shop_func_00256750() == 0) return 0;
+    shop_func_00232a48();
+    return camp_func_0022fbc0(work);
+
+select_forward:
+    store_u32(work + kSelectedIndex,
+              load_selection_word(load_u32(work + kSelectedIndex), 0));
+    shop_func_0022fe4c(work, 1);
+    return shop_func_0022fc8c();
+
+select_backward:
+    store_u32(work + kSelectedIndex,
+              load_selection_word(load_u32(work + kSelectedIndex), 1));
+    shop_func_0022fe4c(work, 1);
+    return shop_func_0022fc8c();
+
+activate:
+    shop_func_00230f84(0);
+    shop_func_002329dc();
+    shop_func_002333d4(work + kSpriteGroup, 1);
+    shop_func_00297128();
+    store_u32(work + kSubState,
+              load_u8(work + kModeByte) == 1 ? static_cast<u32>(1)
+                                             : static_cast<u32>(2));
+    shop_func_002339e8(
+        reinterpret_cast<void*>(load_u32(work + kMenuObject)));
+    shop_func_002339ac(work + kItemPanel);
+    for (s32 i = 0; load_s16(work + kRowCount) > i; ++i) {
+        camp_func_002b9008();
+    }
+    store_u32(work + kState, kStateOpening);
+    return static_cast<u32>(load_s16(work + kRowCount));
+}
 
 // DECOMP_FUNC(0x0026bc28, 688)
 extern "C" __attribute__((naked)) void camp_func_0026bc28() {

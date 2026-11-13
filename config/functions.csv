@@ -9429,7 +9429,7 @@ address,size,status,category,name,src_file
 0x003a39f8,312,matching,ui,ui_func_003a39f8,src/engine/leaf_batch38_b.cpp
 0x003a3b30,392,matching,script_vm,script_vm_func_003a3b30,src/engine/leaf_batch44_a.cpp
 0x003a3cb8,480,matching,shop,shop_func_003a3cb8,src/engine/leaf_batch44_c.cpp
-0x003a3e98,684,matching,shop,shop_func_003a3e98,src/engine/leaf_batch45_a.cpp
+0x003a3e98,684,non_matching,shop,shop_func_003a3e98,src/engine/leaf_batch45_a.cpp
 0x003a4144,744,matching,camp,camp_func_003a4144,src/engine/leaf_batch45_a.cpp
 0x003a442c,776,matching,shop,shop_func_003a442c,src/engine/leaf_batch43_b.cpp
 0x003a4734,228,matching,engine,engine_func_003a4734,src/engine/leaf_batch27_c.cpp
