@@ -7843,39 +7843,242 @@ extern "C" u8* engine_func_0012aef4(void* allocator, const char* name) {
 }
 
 // DECOMP_FUNC(0x0012c188, 448)
-// 105 ARM instructions through unconditional pop; 28 trailing data bytes.
-extern "C" __attribute__((naked)) void engine_func_0012c188() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d47f0, 0xe3a060e8, 0xe1a07000, 0xe1a09001\n"
-        ".word 0xe3a05000, 0xed2d8b02, 0xe3a02004, 0xe5901000\n"
-        ".word 0xe5913008, 0xe1a01006, 0xe12fff33, 0xe1a04000\n"
-        ".word 0xe2566001, 0xe4c05001, 0x1afffffc, 0xe59f0164\n"
-        ".word 0xe59f1164, 0xe59f2158, 0xe5840008, 0xe5841004\n"
-        ".word 0xe5842000, 0xe1a08007, 0xe5845010, 0xe3590000\n"
-        ".word 0xe284600c, 0xe3a07c01, 0xe5845014, 0x0a000026\n"
-        ".word 0xe1a00009, 0xeb065c23, 0xe3500c01, 0x31a07000\n"
-        ".word 0xe5980000, 0xe2871001, 0xe3a02004, 0xe5903008\n"
-        ".word 0xe1a00008, 0xe12fff33, 0xe1a08000, 0xe1a02007\n"
-        ".word 0xe1a01009, 0xeb066770, 0xe3580000, 0x10480006\n"
-        ".word 0xe7c85007, 0x15860000, 0x0a000013, 0xe5845020\n"
-        ".word 0xe5845024, 0xeddf8a39, 0xe5845028, 0xe584502c\n"
-        ".word 0xedc48a0c, 0xed9f8a36, 0xedc48a0d, 0xedc48a0e\n"
-        ".word 0xed848a0f, 0xed848a10, 0xe59f00c8, 0xed848a11\n"
-        ".word 0xed848a12, 0xed848a13, 0xed848a14, 0xe5900000\n"
-        ".word 0xe3100001, 0x1a000016, 0xea000001, 0xe5865000\n"
-        ".word 0xeaffffe9, 0xe59f009c, 0xfa064f8b, 0xe3500000\n"
-        ".word 0xe320f000, 0x0a00000e, 0xe59f008c, 0xe2801010\n"
-        ".word 0xedc08a00, 0xed808a01, 0xed808a02, 0xed808a03\n"
-        ".word 0xec818a02, 0xe2801024, 0xed808a06, 0xed808a07\n"
-        ".word 0xed808a08, 0xec818a02, 0xed808a0b, 0xe59f0054\n"
-        ".word 0xe1a00000, 0xe59f0050, 0xe2849084, 0xe89011ee\n"
-        ".word 0xe88911ee, 0xe2801020, 0xe590002c, 0xe891000e\n"
-        ".word 0xe58400b0, 0xe28400a4, 0xe880000e, 0xe1a00004\n"
-        ".word 0xe5941018, 0xe3811001, 0xe5841018, 0xecbd8b02\n"
-        ".word 0xe8bd87f0, 0x40000122, 0x07010000, 0x4e465443\n"
-        ".word 0x3f800000, 0x00000000, 0x00476634, 0x004efd6c\n"
-    );
+// Recovered contract (ARM 0x0012C188..0x0012C347 = 105 instructions through
+// `pop {r4, r5, r6, r7, r8, sb, sl, pc}`; 0x0012C32C..0x0012C347 holds the
+// seven-word literal pool 0x40000122, 0x07010000, 0x4E465443, 1.0f, 0.0f,
+// 0x00476634 and 0x004EFD6C):
+//
+//   u8* engine_func_0012c188(void* allocator, const char* name);
+//
+//   * r0 (`allocator`) is a context object whose vtable pointer sits at +0;
+//     slot +0x08 (index 2) is the allocation entry point
+//     `allocator->vtable[2](allocator, size, flags)`.  The vtable pointer and
+//     the slot are reloaded from `[allocator]` at both request sites
+//     (0x0012C1A4/0x0012C1A8 and 0x0012C208/0x0012C214).
+//   * r1 (`name`) is an optional NUL-terminated string.  Only its null test at
+//     0x0012C1E4 happens before the block is allocated.
+//   * First request (0x0012C1A0..0x0012C1B0): (allocator, 0xE8, 4) -> block
+//     (r4).  The 0xE8 bytes at the returned pointer are then zeroed by a byte
+//     post-increment loop that never tests the result, so a null allocation
+//     stores through address 0.
+//   * Header stores (0x0012C1C4..0x0012C1F0), in store order:
+//     block[8] = 0x07010000, block[4] = 0x4E465443, block[0] = 0x40000122,
+//     block[0x10] = 0, block[0x14] = 0.
+//   * Name copy (0x0012C1F8..0x0012C240 and 0x0012C294..0x0012C298): when
+//     `name` is null, block[0x0C] = 0.  Otherwise `length = strlen(name)`
+//     (0x002C3290) and `kept = length < 0x100 ? length : 0x100` (the unsigned
+//     `movlo` at 0x0012C204); the second request is
+//     (allocator, kept + 1, 4) -> copy; `memcpy(copy, name, kept)` (0x002C5FF4)
+//     runs; `copy[kept] = 0` is stored unconditionally (so a null second
+//     allocation faults at address `kept`); block[0x0C] becomes the
+//     self-relative link `copy - (block + 0x0C)` when `copy` is non-null and 0
+//     when it is null.  The only caller (0x0011FF34) resolves that word as
+//     `block + 0x0C + link` before forwarding the block.
+//   * Fixed image (0x0012C244..0x0012C280): block[0x20..0x2C] = 0,
+//     block[0x30..0x38] = 1.0f (s17), block[0x3C..0x50] = 0.0f (s16).
+//   * 0x00476634 is a lazily-initialised guard word.  When its bit 0 is clear,
+//     0x002C00D4 (Thumb) is called with the word's address; that helper
+//     returns 1 only when it observed a zero word and stored 1, and only then
+//     is the twelve-word 3x4 identity image at 0x004EFD6C rebuilt
+//     (1,0,0,0, 0,1,0,0, 0,0,1,0 through s16/s17, +0x00..+0x2C only).
+//   * Copy (0x0012C2EC..0x0012C310): the twelve words at 0x004EFD6C become
+//     block[0x84..0xB3] (eight words through one ldm/stm pair, then +0x2C,
+//     then +0x20..+0x28).  The block and the shared image never alias in the
+//     allocation domain, so the reconstruction copies in word order.
+//   * Trailer (0x0012C314..0x0012C320): block[0x18] |= 1, then return block.
+//
+// The only caller in the image is 0x0011FF34 inside the constructor at
+// 0x0011FF20, and it always passes r1 = 0 (the null-name path).
+namespace engine_12c188 {
+
+// Block layout: only the offsets this body touches (allocation size 0xE8).
+constexpr u32 kBlockSize = 0xE8;          // `mov r6,#0xE8` (0x0012C18C)
+constexpr u32 kBlockAlign = 4;            // r2 of both allocation requests
+constexpr u32 kAllocateSlot = 2;          // `ldr r3,[vtable,#8]`
+
+constexpr u32 kTagOffset = 0x00;
+constexpr u32 kTag = 0x40000122;          // literal 0x0012C32C
+constexpr u32 kMagicOffset = 0x04;
+constexpr u32 kMagic = 0x4E465443;        // literal 0x0012C334
+constexpr u32 kVersionOffset = 0x08;
+constexpr u32 kVersion = 0x07010000;      // literal 0x0012C330
+constexpr u32 kNameLinkOffset = 0x0C;     // self-relative name link
+constexpr u32 kClear10Offset = 0x10;
+constexpr u32 kClear14Offset = 0x14;
+constexpr u32 kFlagsOffset = 0x18;        // read-modify-write, +0x18 |= 1
+constexpr u32 kFlagReady = 1;
+constexpr u32 kClear20Offset = 0x20;
+constexpr u32 kClear24Offset = 0x24;
+constexpr u32 kClear28Offset = 0x28;
+constexpr u32 kClear2COffset = 0x2C;
+constexpr u32 kOne30Offset = 0x30;        // 1.0f (s17)
+constexpr u32 kOne34Offset = 0x34;        // 1.0f (s17)
+constexpr u32 kOne38Offset = 0x38;        // 1.0f (s17)
+constexpr u32 kZero3COffset = 0x3C;       // 0.0f (s16)
+constexpr u32 kZero40Offset = 0x40;       // 0.0f (s16)
+constexpr u32 kZero44Offset = 0x44;       // 0.0f (s16)
+constexpr u32 kZero48Offset = 0x48;       // 0.0f (s16)
+constexpr u32 kZero4COffset = 0x4C;       // 0.0f (s16)
+constexpr u32 kZero50Offset = 0x50;       // 0.0f (s16)
+constexpr f32 kOne = 1.0f;                // literal 0x3F800000 (s17)
+constexpr f32 kZero = 0.0f;               // literal 0x00000000 (s16)
+
+// Copy of the shared image: block +0x84..+0xB3, twelve words.
+constexpr u32 kMatrixOffset = 0x84;
+constexpr u32 kMatrixWordCount = 12;
+
+// Name copy.
+constexpr u32 kNameCap = 0x100;           // `cmp r0,#0x100` (0x0012C200)
+
+// Absolute-address globals loaded from the literal pool.
+constexpr u32 kGuardWordAddress = 0x00476634;  // literal 0x0012C340
+constexpr u32 kIdentityAddress = 0x004EFD6C;   // literal 0x0012C344
+
+using AllocateFn = void* (*)(void* context, u32 size, u32 flags);
+
+inline void** vtable_of(void* context) {
+    return *reinterpret_cast<void***>(context);
+}
+
+// `ldr r0,[allocator]; ldr r3,[r0,#8]` at both request sites.
+inline AllocateFn allocate_slot(void* context) {
+    return reinterpret_cast<AllocateFn>(vtable_of(context)[kAllocateSlot]);
+}
+
+template <typename T>
+inline T& field(void* object, u32 offset) {
+    return *reinterpret_cast<T*>(static_cast<u8*>(object) + offset);
+}
+
+// 0x0012C238: `strb r5,[r8,r7]` stores the terminator through the copy pointer
+// *before* the following null test.  A null copy therefore faults at address
+// `kept` unless that page happens to be writable, in which case the null arm
+// at 0x0012C294 stores the zero link.  The store is kept out of line so the
+// reconstruction cannot assume the pointer non-null and drop that arm.
+__attribute__((noinline)) inline void store_terminator(u8* base, u32 offset) {
+    *reinterpret_cast<volatile u8*>(base + offset) = 0;
+}
+
+// 0x00476634: one-shot guard word shared with the battle draw image helper.
+inline volatile u32& shared_guard_word() {
+    return *reinterpret_cast<volatile u32*>(
+        static_cast<uintptr_t>(kGuardWordAddress));
+}
+
+// 0x004EFD6C: twelve-word 3x4 identity image, rebuilt once per guard word.
+inline void write_identity_image() {
+    volatile f32* const image = reinterpret_cast<volatile f32*>(
+        static_cast<uintptr_t>(kIdentityAddress));
+    image[0] = kOne;   // +0x00
+    image[1] = kZero;  // +0x04
+    image[2] = kZero;  // +0x08
+    image[3] = kZero;  // +0x0C
+    image[4] = kZero;  // +0x10
+    image[5] = kOne;   // +0x14
+    image[6] = kZero;  // +0x18
+    image[7] = kZero;  // +0x1C
+    image[8] = kZero;  // +0x20
+    image[9] = kZero;  // +0x24
+    image[10] = kOne;  // +0x28
+    image[11] = kZero; // +0x2C
+}
+
+}  // namespace engine_12c188
+
+namespace engine_12c188_calls {
+
+// 0x002C3290: ARM string length; r0 = text, returns the count before the NUL.
+extern "C" u32 engine_func_002c3290(const char* text);
+
+// 0x002C5FF4: ARM byte copy; r0 = destination, r1 = source, r2 = size.
+extern "C" void engine_func_002c5ff4(void* destination, const void* source,
+                                     u32 size);
+
+// 0x002C00D4: Thumb one-shot guard.  Returns 1 only when it observed a zero
+// word and stored 1; a non-zero word returns 0 without writing.
+extern "C" u32 engine_func_002c00d4(volatile u32* word);
+
+}  // namespace engine_12c188_calls
+
+extern "C" u8* engine_func_0012c188(void* allocator, const char* name) {
+    using namespace engine_12c188;
+    using namespace engine_12c188_calls;
+
+    // 0x0012C1A0..0x0012C1B0: 0xE8-byte block through vtable slot +0x08.
+    u8* const block = static_cast<u8*>(
+        allocate_slot(allocator)(allocator, kBlockSize, kBlockAlign));
+
+    // 0x0012C1B8..0x0012C1C0: unconditional zero fill of exactly 0xE8 bytes.
+    for (u32 index = 0; index < kBlockSize; ++index) {
+        block[index] = 0;
+    }
+
+    // 0x0012C1C4..0x0012C1D8: three header words, in store order.
+    field<u32>(block, kVersionOffset) = kVersion;
+    field<u32>(block, kMagicOffset) = kMagic;
+    field<u32>(block, kTagOffset) = kTag;
+
+    // 0x0012C1E0..0x0012C1F0: the two cleared words around the name link.
+    field<u32>(block, kClear10Offset) = 0;
+    field<u32>(block, kClear14Offset) = 0;
+
+    if (name == nullptr) {
+        // 0x0012C294..0x0012C298: no name, no second request.
+        field<u32>(block, kNameLinkOffset) = 0;
+    } else {
+        // 0x0012C1F8..0x0012C204: capped length.
+        const u32 length = engine_func_002c3290(name);
+        const u32 kept = length < kNameCap ? length : kNameCap;
+
+        // 0x0012C208..0x0012C240: copy the capped prefix, terminate it, then
+        // publish the self-relative link (the terminator precedes the test).
+        u8* const copy = static_cast<u8*>(
+            allocate_slot(allocator)(allocator, kept + 1, kBlockAlign));
+        engine_func_002c5ff4(copy, name, kept);
+        store_terminator(copy, kept);
+        if (copy != nullptr) {
+            const uintptr_t copy_address = reinterpret_cast<uintptr_t>(copy);
+            const uintptr_t link_address =
+                reinterpret_cast<uintptr_t>(block) + kNameLinkOffset;
+            field<u32>(block, kNameLinkOffset) =
+                static_cast<u32>(copy_address - link_address);
+        } else {
+            field<u32>(block, kNameLinkOffset) = 0;
+        }
+    }
+
+    // 0x0012C244..0x0012C280: cleared words plus the fixed 1.0f/0.0f image.
+    field<u32>(block, kClear20Offset) = 0;
+    field<u32>(block, kClear24Offset) = 0;
+    field<u32>(block, kClear28Offset) = 0;
+    field<u32>(block, kClear2COffset) = 0;
+    field<f32>(block, kOne30Offset) = kOne;
+    field<f32>(block, kOne34Offset) = kOne;
+    field<f32>(block, kOne38Offset) = kOne;
+    field<f32>(block, kZero3COffset) = kZero;
+    field<f32>(block, kZero40Offset) = kZero;
+    field<f32>(block, kZero44Offset) = kZero;
+    field<f32>(block, kZero48Offset) = kZero;
+    field<f32>(block, kZero4COffset) = kZero;
+    field<f32>(block, kZero50Offset) = kZero;
+
+    // 0x0012C284..0x0012C2E8: one-shot identity image for 0x004EFD6C.
+    if ((shared_guard_word() & kFlagReady) == 0) {
+        if (engine_func_002c00d4(&shared_guard_word()) != 0) {
+            write_identity_image();
+        }
+    }
+
+    // 0x0012C2EC..0x0012C310: twelve-word image copy into the block.
+    const volatile u32* const image = reinterpret_cast<const volatile u32*>(
+        static_cast<uintptr_t>(kIdentityAddress));
+    for (u32 index = 0; index < kMatrixWordCount; ++index) {
+        field<u32>(block, kMatrixOffset + index * 4) = image[index];
+    }
+
+    // 0x0012C314..0x0012C320: set the ready bit and return the block.
+    field<u32>(block, kFlagsOffset) |= kFlagReady;
+    return block;
 }
 
 // DECOMP_FUNC(0x0013cf50, 448)
