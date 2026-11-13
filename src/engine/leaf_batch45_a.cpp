@@ -8690,98 +8690,188 @@ extern "C" u32 camp_func_0026bc28(void) {
     return camp_func_0029edfc(slot_d, slot_d_second);
 }
 
-// DECOMP_FUNC(0x00300710, 688)
-extern "C" __attribute__((naked)) void engine_func_00300710() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4ff0, 0xe92d, 0xd074, 0xe24d\n"
-        ".hword 0x0000, 0xe3a0, 0x5a0f, 0xebfe\n"
-        ".hword 0x0060, 0xe58d, 0x0001, 0xe3a0\n"
-        ".hword 0x5a0c, 0xebfe, 0x0068, 0xe58d\n"
-        ".hword 0x4d58, 0xebfe, 0x8000, 0xe1a0\n"
-        ".hword 0x0178, 0xe59f, 0x0000, 0xe590\n"
-        ".hword 0xf914, 0xebfd, 0x4000, 0xe3a0\n"
-        ".hword 0x9b07, 0xe288, 0xa004, 0xe1a0\n"
-        ".hword 0xb001, 0xe3a0, 0x6d7f, 0xe288\n"
-        ".hword 0x9fa6, 0xe289, 0x0054, 0xe58d\n"
-        ".hword 0x0000, 0xe596, 0x1204, 0xe084\n"
-        ".hword 0x1304, 0xe081, 0x5181, 0xe080\n"
-        ".hword 0x0000, 0xe595, 0x0001, 0xe310\n"
-        ".hword 0x0048, 0x0a00, 0x0040, 0xe310\n"
-        ".hword 0x0046, 0x1a00, 0x00f8, 0xe1d5\n"
-        ".hword 0x0000, 0xe350, 0x0043, 0xba00\n"
-        ".hword 0x0068, 0xe59d, 0x7000, 0xe3a0\n"
-        ".hword 0x0000, 0xe350, 0x0004, 0x0a00\n"
-        ".hword 0x0001, 0xe350, 0x000b, 0x0a00\n"
-        ".hword 0x0002, 0xe350, 0x7060, 0x059d\n"
-        ".hword 0x0010, 0xea00, 0x0100, 0xe59f\n"
-        ".hword 0x1100, 0xe59f, 0x20f5, 0xe190\n"
-        ".hword 0x0060, 0xe59d, 0x0092, 0xe000\n"
-        ".hword 0x1091, 0xe0c0, 0x12c0, 0xe1a0\n"
-        ".hword 0x7fc0, 0xe041, 0x0007, 0xea00\n"
-        ".hword 0x1f6e, 0xe3a0, 0x00dc, 0xe59f\n"
-        ".hword 0x20f5, 0xe191, 0x1060, 0xe59d\n"
-        ".hword 0x0192, 0xe001, 0x1190, 0xe0c0\n"
-        ".hword 0x12c0, 0xe1a0, 0x7fc0, 0xe041\n"
-        ".hword 0x0008, 0xe1a0, 0x4057, 0xebfd\n"
-        ".hword 0x0184, 0xe1a0, 0x0034, 0xe58d\n"
-        ".hword 0xb044, 0xe58d, 0xb048, 0xe58d\n"
-        ".hword 0xa4fc, 0xe1cd, 0x1038, 0xe28d\n"
-        ".hword 0xa040, 0xe58d, 0x0801, 0xe881\n"
-        ".hword 0x2c01, 0xe285, 0x002c, 0xe58d\n"
-        ".hword 0xa028, 0xe58d, 0x0030, 0xe58d\n"
-        ".hword 0xa2f0, 0xe1cd, 0xa014, 0xe58d\n"
-        ".hword 0xa018, 0xe58d, 0xa01c, 0xe58d\n"
-        ".hword 0x3bf4, 0xe1d2, 0x2bf6, 0xe1d2\n"
-        ".hword 0x1008, 0xe28d, 0x0000, 0xe3e0\n"
-        ".hword 0x2010, 0xe58d, 0x0009, 0xe881\n"
-        ".hword 0x3000, 0xe3a0, 0x0081, 0xe88d\n"
-        ".hword 0x00f8, 0xe1d5, 0x1000, 0xe599\n"
-        ".hword 0x2100, 0xe080, 0x0300, 0xe082\n"
-        ".hword 0x2100, 0xe081, 0x1054, 0xe59d\n"
-        ".hword 0x0003, 0xe1a0, 0x52da, 0xebfd\n"
-        ".hword 0x3000, 0xe3a0, 0xa004, 0xe58d\n"
-        ".hword 0x2034, 0xe59f, 0x1054, 0xe59d\n"
-        ".hword 0x0003, 0xe1a0, 0xa000, 0xe58d\n"
-        ".hword 0xa008, 0xe58d, 0x3fd7, 0xebfd\n"
-        ".hword 0x4001, 0xe284, 0x0004, 0xe354\n"
-        ".hword 0xffac, 0xbaff, 0xd074, 0xe28d\n"
-        ".hword 0x0001, 0xe3a0, 0x8ff0, 0xe8bd\n"
-        ".hword 0x427c, 0x0043, 0x01ba, 0x0000\n"
-        ".hword 0x851f, 0x51eb, 0x01b5, 0x0100\n"
-        ".hword 0x10e8, 0xe59f, 0x1000, 0xe7d1\n"
-        ".hword 0x0000, 0xe351, 0x0035, 0x0a00\n"
-        ".hword 0x10dc, 0xe59f, 0x3000, 0xe791\n"
-        ".hword 0x0000, 0xe353, 0x1000, 0xd3a0\n"
-        ".hword 0x0014, 0xda00, 0x1001, 0xe203\n"
-        ".hword 0x0000, 0xe351, 0x2000, 0xe3a0\n"
-        ".hword 0x0010, 0xda00, 0xc082, 0xe082\n"
-        ".hword 0xc182, 0xe08c, 0xc10c, 0xe080\n"
-        ".hword 0xcc57, 0xe28c, 0xc088, 0xe5dc\n"
-        ".hword 0x0000, 0xe35c, 0x0006, 0x0a00\n"
-        ".hword 0x1082, 0xe082, 0x1182, 0xe081\n"
-        ".hword 0x0101, 0xe080, 0x0b15, 0xe280\n"
-        ".hword 0x0fdf, 0xe280, 0x0000, 0xe590\n"
-        ".hword 0xff1e, 0xe12f, 0x2001, 0xe282\n"
-        ".hword 0x0001, 0xe152, 0xffee, 0xbaff\n"
-        ".hword 0x0003, 0xe151, 0x0019, 0xaa00\n"
-        ".hword 0x2081, 0xe081, 0x2181, 0xe082\n"
-        ".hword 0x2102, 0xe080, 0x2c57, 0xe282\n"
-        ".hword 0xc088, 0xe5d2, 0x0000, 0xe35c\n"
-        ".hword 0x0005, 0x0a00, 0x2081, 0xe081\n"
-        ".hword 0x1181, 0xe082, 0x0101, 0xe080\n"
-        ".hword 0x0b15, 0xe280, 0x0fdf, 0xe280\n"
-        ".hword 0x0007, 0xea00, 0x20b4, 0xe5d2\n"
-        ".hword 0x0000, 0xe352, 0x0006, 0x0a00\n"
-        ".hword 0x2081, 0xe081, 0x1181, 0xe082\n"
-        ".hword 0x0101, 0xe080, 0x0b15, 0xe280\n"
-        ".hword 0x0fea, 0xe280, 0x0000, 0xe590\n"
-        ".hword 0xff1e, 0xe12f, 0x1002, 0xe281\n"
-        ".hword 0x0001, 0xe153, 0xffe5, 0xcaff\n"
-        ".hword 0x0000, 0xe3e0, 0xff1e, 0xe12f\n"
-        ".hword 0x575d, 0x0000, 0x5758, 0x0000\n"
-    );
+// ---------------------------------------------------------------------------
+// 0x00300710: rebuild up to four unit-panel rows.
+//
+// 0x00293C98 returns the UI context. Its word at +0x1FC0 points at the
+// 648-byte unit slots and its word at +0x1E98 points at the 276-byte unit
+// records; both pointers are re-read from the context on every iteration. A
+// slot is drawn only when its flags carry bit 0 without bit 6 and its signed
+// index at +8 is non-negative.
+//
+// 0x00296F60(0) supplies the shared multiplier and 0x00296F60(1) selects the
+// scaled stat: 0 -> +0x1BA, 1 -> +0x1B8, 2 -> the multiplier itself, any other
+// value -> 0. Scaling divides the wrapped 32-bit product by 100, which is the
+// 0x51EB851F smull magic at 0x3007C8 and 0x3007EC.
+//
+// The script-VM context stored in the 0x0043427C slot is resolved once through
+// 0x0027EB98 and forwarded as the second argument of both battle helpers. Both
+// helpers take an additional 21-word parameter block on the stack.
+// ---------------------------------------------------------------------------
+
+struct BattleParams21 {
+    u32 words[21];
 };
+
+extern "C" s32 engine_func_00296f60(u32 index);
+extern "C" void* script_vm_func_0027eb98(void* context);
+extern "C" void func_00250960(void* ui);
+extern "C" void battle_func_002553ec(u32 base, void* context, const u8* unit,
+                                     u32 arg3, BattleParams21 params);
+
+namespace panel_00300710 {
+
+constexpr u32 kScriptVmContextSlot = 0x0043427Cu;
+constexpr u32 kUiSlotTable = 0x1FC0u;
+constexpr u32 kUiUnitTable = 0x1E98u;
+constexpr s32 kRowCount = 4;
+constexpr u32 kRowStride = 648u;
+constexpr u32 kUnitStride = 276u;
+constexpr u32 kRowFlagsOffset = 0x00u;
+constexpr u32 kRowIndexOffset = 0x08u;
+constexpr u32 kRowStatFastOffset = 0x1B8u;
+constexpr u32 kRowStatSlowOffset = 0x1BAu;
+constexpr u32 kRowStatB4Offset = 0x1B4u;
+constexpr u32 kRowStatB6Offset = 0x1B6u;
+constexpr u32 kRowLiveFlag = 1u;
+constexpr u32 kRowHiddenFlag = 0x40u;
+constexpr u32 kActionCommand = 0x010001B5u;
+
+// The original multiplies two 32-bit words, keeps the wrapped low word, and
+// divides it by 100 with signed truncation.
+inline s32 ScaleStatByHundred(s32 stat, s32 multiplier) noexcept {
+    const s32 product =
+        static_cast<s32>(static_cast<u32>(stat) * static_cast<u32>(multiplier));
+    return product / 100;
+}
+
+}  // namespace panel_00300710
+
+extern "C" u32 engine_func_00300710(void) {
+    using namespace panel_00300710;
+
+    const s32 multiplier = engine_func_00296f60(0);
+    const s32 selector = engine_func_00296f60(1);
+    u8* const ui = static_cast<u8*>(ui_func_00293c98());
+    void* const context = script_vm_func_0027eb98(
+        *reinterpret_cast<void**>(kScriptVmContextSlot));
+
+    for (s32 i = 0; i < kRowCount; ++i) {
+        u8* const rows = *reinterpret_cast<u8**>(ui + kUiSlotTable);
+        u8* const row = rows + static_cast<u32>(i) * kRowStride;
+        const u32 flags = *reinterpret_cast<const u32*>(row + kRowFlagsOffset);
+        if ((flags & kRowLiveFlag) == 0 || (flags & kRowHiddenFlag) != 0) {
+            continue;
+        }
+        if (*reinterpret_cast<const s16*>(row + kRowIndexOffset) < 0) {
+            continue;
+        }
+
+        s32 scaled = 0;
+        switch (selector) {
+        case 0:
+            scaled = ScaleStatByHundred(
+                *reinterpret_cast<const s16*>(row + kRowStatSlowOffset),
+                multiplier);
+            break;
+        case 1:
+            scaled = ScaleStatByHundred(
+                *reinterpret_cast<const s16*>(row + kRowStatFastOffset),
+                multiplier);
+            break;
+        case 2:
+            scaled = multiplier;
+            break;
+        default:
+            break;
+        }
+
+        func_00250960(ui);
+
+        // The stat words and the index are re-read after the UI notification,
+        // matching the second loads at 0x300840..0x300860.
+        const s16 stat_b4 =
+            *reinterpret_cast<const s16*>(row + kRowStatB4Offset);
+        const s16 stat_b6 =
+            *reinterpret_cast<const s16*>(row + kRowStatB6Offset);
+        const s16 index = *reinterpret_cast<const s16*>(row + kRowIndexOffset);
+
+        BattleParams21 params = {};
+        params.words[0] = 0xFFFFFFFFu;
+        params.words[1] = static_cast<u32>(scaled);
+        params.words[2] = 0xFFFFFFFFu;
+        params.words[3] = static_cast<u32>(stat_b4);
+        params.words[4] = static_cast<u32>(stat_b6);
+        params.words[9] = 1;
+        params.words[11] = static_cast<u32>(i * 8);
+        params.words[12] = static_cast<u32>(i * 8);
+        params.words[13] = static_cast<u32>(i * 8);
+        params.words[14] = static_cast<u32>(i * 8);
+        params.words[15] = 1;
+        params.words[17] = 1;
+        params.words[18] = 1;
+        params.words[20] = 1;
+
+        const u8* const unit_table =
+            *reinterpret_cast<u8* const*>(ui + kUiUnitTable);
+        const u8* const unit =
+            unit_table + static_cast<u32>(index) * kUnitStride;
+
+        battle_func_002553ec(0, context, unit, 0, params);
+        battle_func_00250800(
+            0, static_cast<s32>(reinterpret_cast<uintptr_t>(context)),
+            kActionCommand, 0, 0, 0, 0);
+    }
+
+    return 1;
+}
+
+// 0x003008C8: second entry point inside the 688-byte ledger span. It is not
+// called by 0x00300710, no BL targets it, and no word in the pinned image
+// holds its address, so it is kept here as a readable, unreferenced helper.
+// The object owns a signed count at +0x5758, a guard byte at +0x575D, and
+// 44-byte entries at +0x577C: a u32 value at +0 and a u8 flag at +0xC. Odd
+// counts check entry 0 before the two-entry loop; a zero guard or an exhausted
+// scan returns -1. Entries are inspected in pairs (i, i+1) and the first set
+// flag wins.
+__attribute__((used)) static u32 engine_lookup_003008c8(const u8* object) {
+    constexpr u32 kEntryCountOffset = 0x5758u;
+    constexpr u32 kGuardOffset = 0x575Du;
+    constexpr u32 kEntryValueOffset = 0x577Cu;
+    constexpr u32 kEntryFlagOffset = 0x5788u;
+    constexpr u32 kEntryStride = 44u;
+    constexpr u32 kValueBeforeFlag = 0x0Cu;
+
+    if (object[kGuardOffset] == 0) {
+        return 0xFFFFFFFFu;
+    }
+    const s32 count = *reinterpret_cast<const s32*>(object + kEntryCountOffset);
+    if (count <= 0) {
+        return 0xFFFFFFFFu;
+    }
+
+    s32 index = 0;
+    if ((count & 1) != 0) {
+        if (object[kEntryFlagOffset] != 0) {
+            return *reinterpret_cast<const u32*>(object + kEntryValueOffset);
+        }
+        index = 1;
+    }
+
+    for (; index < count; index += 2) {
+        const u8* const first =
+            object + kEntryFlagOffset + static_cast<u32>(index) * kEntryStride;
+        if (*first != 0) {
+            return *reinterpret_cast<const u32*>(first - kValueBeforeFlag);
+        }
+        const u8* const second = first + kEntryStride;
+        if (*second != 0) {
+            return *reinterpret_cast<const u32*>(second - kValueBeforeFlag);
+        }
+    }
+
+    return 0xFFFFFFFFu;
+}
 
 // DECOMP_FUNC(0x003d0f48, 688)
 extern "C" __attribute__((naked)) void engine_func_003d0f48() {
