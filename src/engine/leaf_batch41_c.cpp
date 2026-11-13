@@ -4970,39 +4970,176 @@ extern "C" void* engine_func_0019f99c(u32 header_word, u32 selector,
     return last_camera;
 }
 
+// Direct callees of camp_func_00262498 (addresses from config/functions.csv).
+// 0x002B66EC returns the script-VM interaction table; 0x002841A0 copies four
+// table words (plus an optional u16) into the caller's entry buffer;
+// 0x002AE394 maps the self u16 id; 0x0028412C sums the matching sub-counts;
+// 0x002A89E4 and 0x002840B8 return indexed records; 0x003BF764 and 0x003BF7AC
+// are the two float scalers.  0x003BF764 reads its operands from s0 and s3,
+// so the declaration keeps all four VFP argument slots explicit.
+extern "C" void* script_vm_func_002b66ec();
+extern "C" void script_vm_func_002841a0(void* destination, s32 flag);
+extern "C" s32 script_vm_func_002ae394(u32 id);
+extern "C" s32 func_0028412c(void* object, s32 count, s32 flag);
+extern "C" void* camp_func_002a89e4(u32 index);
+extern "C" void* camp_func_002840b8(u32 id);
+extern "C" s32 func_003bf764(s32 unused, s32 addend, s32 zero, f32 value,
+                             f32 one_a, f32 one_b, f32 scale);
+extern "C" s32 func_003bf7ac(s32 value, f32 scale);
+
+namespace camp_262498 {
+
+// Self fields observed in 0x002624A8..0x00262620.
+constexpr u32 kStateFlagsOffset = 0x36;  // ldrh self+0x36
+constexpr u32 kStateByteOffset = 0x43;   // ldrb self+0x43
+constexpr u32 kLookupIdOffset = 0x20;    // ldrh self+0x20 -> 0x002AE394
+
+// Indirect records reached through the two pointer helpers.
+constexpr u32 kTableSignOffset = 0x24;    // ldrsh [0x002B66EC()+0x24]
+constexpr u32 kObjectSignOffset = 0x16;   // ldrsh [0x002A89E4(index)+0x16]
+constexpr u32 kObjectWordsOffset = 0x34;  // ldm [object+0x34], four words
+
+// Entry loop bounds and record decoding in 0x00262540..0x002625A0.
+constexpr u32 kEntryCount = 9;         // cmp r4,#9 / blt
+constexpr u32 kEntryWordCount = 5;     // five zeroed words == ten u16 slots
+constexpr u32 kRecordFieldOffset = 0x38;  // ldr r0,[record+0x38]
+constexpr u32 kRecordKindShift = 11;      // (field<<16)>>27
+constexpr u32 kRecordKindMask = 0x1F;
+constexpr u32 kRecordKindValue = 0x14;
+constexpr u32 kRecordSelectShift = 16;  // (field<<12)>>28
+constexpr u32 kRecordSelectMask = 0x0F;
+constexpr u32 kSelectAddOne = 5;
+constexpr u32 kSelectAddTwo = 6;
+
+// Tail dispatch: `lsl #20` keeps only the low twelve state-flag bits, so the
+// 0xFA000000 comparison is (flags & 0xFFF) == 0xFA0.
+constexpr u32 kLowFlagsMask = 0x0FFF;
+constexpr u32 kSpecialLowFlags = 0x0FA0;
+constexpr u32 kScaleTableAddress = 0x00446D30;  // pc-relative literal
+constexpr f32 kOne = 1.0f;
+constexpr f32 kPercentScale =
+    __builtin_bit_cast(f32, 0x3C23D70Au);  // 0.01f
+
+// The original copies four 32-bit words with ldm/stm and reads the buffer as
+// nine little-endian u16 entries; a fifth word stays zero unless 0x002841A0
+// fills its low half.  The union keeps that exact layout.
+union EntryWords {
+    u32 words[kEntryWordCount];
+    u16 halves[kEntryWordCount * 2];
+};
+
+}  // namespace camp_262498
+
 // DECOMP_FUNC(0x00262498, 432)
-// 105 ARM instructions through unconditional pop; 12 trailing data bytes.
-extern "C" __attribute__((naked)) void camp_func_00262498() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4ff7, 0xe24dd018, 0xe1a05000, 0xe1a00002\n"
-        ".word 0xe1d513b6, 0xe1b01a01, 0x05d51043, 0x03510000\n"
-        ".word 0x03a00000, 0x0a00005c, 0xe3a08000, 0xe3500000\n"
-        ".word 0xe1a07008, 0xe1a06008, 0xe58d8000, 0xe58d8004\n"
-        ".word 0xe58d8008, 0xe58d800c, 0xe58d8010, 0xaa00000c\n"
-        ".word 0xeb01507f, 0xe1d092f4, 0xe3a01001, 0xe1a0000d\n"
-        ".word 0xeb008728, 0xe1d502b0, 0xeb012fa3, 0xe1a01000\n"
-        ".word 0xe3a02002, 0xe1a00005, 0xeb008705, 0xe1a08000\n"
-        ".word 0xea000008, 0xe320f000, 0xeb01192f, 0xe3500000\n"
-        ".word 0xe320f000, 0x0a000040, 0xe2801034, 0xe1d091f6\n"
-        ".word 0xe891100e, 0xe88d100e, 0xe3a04000, 0xe1a0a00d\n"
-        ".word 0xe3a0b014, 0xe08a0084, 0xe1d000b0, 0xe3500000\n"
-        ".word 0x0a00000e, 0xeb0086d5, 0xe3500000, 0xe320f000\n"
-        ".word 0x0a00000a, 0xe5900038, 0xe1a01800, 0xe15b0da1\n"
-        ".word 0x1a000006, 0xe1a00600, 0xe1a00e20, 0xe3500005\n"
-        ".word 0x02866001, 0x0a000001, 0xe3500006, 0x02866002\n"
-        ".word 0xe2844001, 0xe3540009, 0xbaffffe9, 0xe1d503b6\n"
-        ".word 0xe3a024fa, 0xe3a01000, 0xe1520a00, 0x059d101c\n"
-        ".word 0x0a00001c, 0xe1b02a00, 0x0a00000e, 0xe3c00a0f\n"
-        ".word 0xee000a10, 0xe59f1068, 0xeddf0a1a, 0xe6ff2077\n"
-        ".word 0xe0811106, 0xeeb01a60, 0xeeb80a40, 0xedd11a00\n"
-        ".word 0xe1a01008, 0xe1a00009, 0xeb05745b, 0xe320f000\n"
-        ".word 0xe320f000, 0xea00000a, 0xe5d50043, 0xe3500000\n"
-        ".word 0x0a000008, 0xee000a10, 0xeddf0a0b, 0xe6ff2077\n"
-        ".word 0xe59d001c, 0xe1a01008, 0xeeb80a40, 0xee200a20\n"
-        ".word 0xeb05745f, 0xe1a01000, 0xe1a00001, 0xe28dd024\n"
-        ".word 0xe8bd8ff0, 0x00446d30, 0x3f800000, 0x3c23d70a\n"
-    );
+//
+// Camp-battle weight selector.  It rejects an inactive self (zero low twelve
+// flag bits and a zero byte at +0x43), gathers up to nine u16 entry ids either
+// from the script-VM interaction table (arg2 < 0) or from an indexed record
+// (arg2 >= 0), decodes a per-entry multiplier from record+0x38, and applies it
+// through one of two float scalers.  A special low-flag value 0xFA0 returns
+// arg1 unchanged.  The 432-byte body is 105 ARM instructions plus three
+// literal words; the final literal pool values are 1.0f and 0.01f.
+extern "C" s32 camp_func_00262498(u8* const self, u32 arg1, s32 arg2) {
+    using namespace camp_262498;
+
+    // 0x002624A8..0x002624BC: inactive self gate.  The shift result and the
+    // conditional byte load are both re-evaluated only when the low bits clear.
+    const u16 initial_flags =
+        *reinterpret_cast<const u16*>(self + kStateFlagsOffset);
+    if ((static_cast<u32>(initial_flags) << 20) == 0 &&
+        self[kStateByteOffset] == 0) {
+        return 0;
+    }
+
+    // 0x002624C0..0x002624E4: five zeroed words and the two accumulators.
+    EntryWords entries = {};
+    s32 sign_value = 0;
+    u32 weight = 0;
+    s32 bonus = 0;
+
+    if (arg2 < 0) {
+        // 0x002624E8..0x00262518: table sign, four copied words, id lookup.
+        const u8* const table =
+            static_cast<const u8*>(script_vm_func_002b66ec());
+        sign_value =
+            *reinterpret_cast<const s16*>(table + kTableSignOffset);
+        script_vm_func_002841a0(entries.halves, 1);
+        bonus = func_0028412c(
+            self,
+            script_vm_func_002ae394(
+                *reinterpret_cast<const u16*>(self + kLookupIdOffset)),
+            2);
+    } else {
+        // 0x0026251C..0x0026253C: indexed object; a null object returns 0 and
+        // the four words at +0x34..+0x40 replace the first four zeroed words.
+        const u8* const object = static_cast<const u8*>(
+            camp_func_002a89e4(static_cast<u32>(arg2)));
+        if (object == nullptr) {
+            return 0;
+        }
+        sign_value =
+            *reinterpret_cast<const s16*>(object + kObjectSignOffset);
+        const u32* const words =
+            reinterpret_cast<const u32*>(object + kObjectWordsOffset);
+        entries.words[0] = words[0];
+        entries.words[1] = words[1];
+        entries.words[2] = words[2];
+        entries.words[3] = words[3];
+    }
+
+    // 0x00262540..0x002625A0: fixed nine-entry scan.  Only records whose
+    // bits 11..15 equal 0x14 contribute; bits 16..19 add one or two.
+    for (u32 index = 0; index < kEntryCount; ++index) {
+        const u16 entry = entries.halves[index];
+        if (entry == 0) {
+            continue;
+        }
+        const u8* const record =
+            static_cast<const u8*>(camp_func_002840b8(entry));
+        if (record == nullptr) {
+            continue;
+        }
+        const u32 field =
+            *reinterpret_cast<const u32*>(record + kRecordFieldOffset);
+        if (((field >> kRecordKindShift) & kRecordKindMask) !=
+            kRecordKindValue) {
+            continue;
+        }
+        const u32 selection =
+            (field >> kRecordSelectShift) & kRecordSelectMask;
+        if (selection == kSelectAddOne) {
+            weight += 1;
+            continue;
+        }
+        if (selection == kSelectAddTwo) {
+            weight += 2;
+        }
+    }
+
+    // 0x002625A4..0x002625B8: the special low-flag value forwards arg1.
+    const u16 flags = *reinterpret_cast<const u16*>(self + kStateFlagsOffset);
+    const u32 low_flags = flags & kLowFlagsMask;
+    if (low_flags == kSpecialLowFlags) {
+        return static_cast<s32>(arg1);
+    }
+
+    if (low_flags != 0) {
+        // 0x002625C4..0x002625F0: scaled weight path.  s0 = float(low flags),
+        // s1 = s2 = 1.0f, s3 = scale_table[weight].
+        const f32 scale =
+            reinterpret_cast<const f32*>(kScaleTableAddress)[weight];
+        return func_003bf764(sign_value, bonus, 0,
+                             static_cast<f32>(low_flags), kOne, kOne, scale);
+    }
+
+    // 0x00262600..0x00262628: percent path, gated by the +0x43 byte.
+    const u8 percent = self[kStateByteOffset];
+    if (percent == 0) {
+        return 0;
+    }
+    return func_003bf7ac(
+        static_cast<s32>(arg1),
+        static_cast<f32>(percent) * kPercentScale);
 }
 
 // DECOMP_FUNC(0x002f7f18, 432)
