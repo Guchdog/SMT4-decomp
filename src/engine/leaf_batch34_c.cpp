@@ -6043,137 +6043,230 @@ extern "C" __attribute__((naked)) void func_0014f42c() {
     );
 }
 
-// DECOMP_FUNC(0x0014f608, 484)
-extern "C" __attribute__((naked)) void func_0014f608() {
-    asm volatile(
-        "push {r4, r5, r6, r7, r8, sb, sl, fp}\n"
-        "add r5, r1, #0x10\n"
-        "sub r6, r2, #0x10\n"
-        "ldr r4, [r1, #4]\n"
-        "ldrh ip, [r1, #2]\n"
-        "ldr r7, [sp, #0x20]\n"
-        "add r8, r4, r5\n"
-        "add r5, r2, r3\n"
-        "lsl ip, ip, #0x11\n"
-        "ldr r3, [r1, #8]\n"
-        "sub r4, r1, ip, lsr #25\n"
-        "ldr r1, [r1, #0xc]\n"
-        "cmp r3, #0\n"
-        ".word 0xe59f91a0\n"
-        "strne r1, [r3, #0xc]\n"
-        "streq r1, [r0]\n"
-        "cmp r1, #0\n"
-        "strne r3, [r1, #8]\n"
-        "sub sl, r6, r4\n"
-        "streq r3, [r0, #4]\n"
-        "cmp sl, #0x14\n"
-        "mov ip, r6\n"
-        "mov r1, #0\n"
-        "blo .L_0014f6bc\n"
-        "cmp r7, #0\n"
-        "ldrbeq fp, [r0, #0x14]\n"
-        "cmpeq fp, #0\n"
-        "beq .L_0014f6bc\n"
-        "strh sb, [r4]\n"
-        "strh r1, [r4, #2]\n"
-        "str r1, [r4, #0xc]\n"
-        "sub sl, sl, #0x10\n"
-        "str r3, [r4, #8]\n"
-        "cmp r3, #0\n"
-        "str sl, [r4, #4]\n"
-        "ldrne sl, [r3, #0xc]\n"
-        "ldreq sl, [r0]\n"
-        "strne r4, [r3, #0xc]\n"
-        "streq r4, [r0]\n"
-        "cmp sl, #0\n"
-        "str sl, [r4, #0xc]\n"
-        "strne r4, [sl, #8]\n"
-        "mov r3, r4\n"
-        "streq r4, [r0, #4]\n"
-        "b .L_0014f6c0\n"
-        ".L_0014f6bc:\n"
-        "mov r6, r4\n"
-        ".L_0014f6c0:\n"
-        "sub r4, r8, r5\n"
-        "cmp r4, #0x14\n"
-        "blo .L_0014f71c\n"
-        "cmp r7, #1\n"
-        "ldrbeq sl, [r0, #0x14]\n"
-        "cmpeq sl, #0\n"
-        "beq .L_0014f71c\n"
-        "strh sb, [r5]\n"
-        "strh r1, [r5, #2]\n"
-        "str r1, [r5, #0xc]\n"
-        "sub r4, r4, #0x10\n"
-        "str r3, [r5, #8]\n"
-        "cmp r3, #0\n"
-        "str r4, [r5, #4]\n"
-        "ldrne r4, [r3, #0xc]\n"
-        "ldreq r4, [r0]\n"
-        "strne r5, [r3, #0xc]\n"
-        "streq r5, [r0]\n"
-        "cmp r4, #0\n"
-        "str r4, [r5, #0xc]\n"
-        "strne r5, [r4, #8]\n"
-        "streq r5, [r0, #4]\n"
-        "b .L_0014f720\n"
-        ".L_0014f71c:\n"
-        "mov r5, r8\n"
-        ".L_0014f720:\n"
-        "ldr r3, [r0, #-4]\n"
-        "sub r4, r5, r6\n"
-        "and r3, r3, #1\n"
-        "cmp r3, #0\n"
-        "movne r8, #0\n"
-        "cmpne r4, #3\n"
-        "bls .L_0014f764\n"
-        "lsl sb, r4, #0x1d\n"
-        "sub r3, r6, #4\n"
-        "cmp sb, #0\n"
-        "strlt r8, [r3, #4]!\n"
-        "lsrs r4, r4, #3\n"
-        "beq .L_0014f764\n"
-        ".L_0014f754:\n"
-        "str r8, [r3, #4]\n"
-        "subs r4, r4, #1\n"
-        "str r8, [r3, #8]!\n"
-        "bne .L_0014f754\n"
-        ".L_0014f764:\n"
-        ".word 0xe59f307c\n"
-        "sub r4, r5, ip\n"
-        "sub r4, r4, #0x10\n"
-        "strh r3, [ip]\n"
-        "str r1, [ip, #8]\n"
-        "str r4, [ip, #4]\n"
-        "sub r3, ip, r6\n"
-        "str r1, [ip, #0xc]\n"
-        "orr r1, r1, r7, lsl #15\n"
-        "and r3, r3, #0x7f\n"
-        "bic r1, r1, #0x7f00\n"
-        "orr r1, r1, r3, lsl #8\n"
-        "strh r1, [ip, #2]\n"
-        "ldrh r3, [r0, #0x10]\n"
-        "bic r1, r1, #0xff\n"
-        "and r3, r3, #0xff\n"
-        "orr r1, r1, r3\n"
-        "strh r1, [ip, #2]\n"
-        "ldr r1, [r0, #0xc]\n"
-        "cmp r1, #0\n"
-        "str r1, [ip, #8]\n"
-        "ldrne r3, [r1, #0xc]\n"
-        "ldreq r3, [r0, #8]\n"
-        "strne ip, [r1, #0xc]\n"
-        "streq ip, [r0, #8]\n"
-        "cmp r3, #0\n"
-        "str r3, [ip, #0xc]\n"
-        "strne ip, [r3, #8]\n"
-        "streq ip, [r0, #0xc]\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, fp}\n"
-        "mov r0, r2\n"
-        "bx lr\n"
-        ".word 0x00004652\n"
-        ".word 0x00005544\n"
-    );
+// ---------------------------------------------------------------------------
+// 0x0014F608 -- expanded-heap split: carve a used block out of one free block
+// that the caller has already selected from the address-ordered free list.
+//
+// The only in-image callers are 0x00146B80 / 0x00146C10 inside
+// 0x00146AD8 (engine_func_00146ad8), which walks the free list, aligns a
+// payload address, and calls
+//
+//     func_0014f608(&heap->blockList, block, payload, size, direction);
+//
+// with r0 = heap + 0x3C (the block list), r1 = the selected free block,
+// r2 = the aligned payload address (returned unchanged), r3 = the
+// 4-byte-rounded request, and the fifth argument on the stack: 0 for the
+// upward-alignment / search-from-head path, 1 for the downward-alignment /
+// search-from-tail path.
+//
+// Recovered behavior (a block header is 16 bytes; the payload follows it):
+//   * `block` (+0x00 signature `0x4652` "FR", +0x02 attribute, +0x04 payload
+//     size, +0x08 prev, +0x0C next, payload at +0x10) is unlinked from the
+//     free list first.  The list keeps its head at +0x00 and its tail at
+//     +0x04; `prev` points toward the head, `next` toward the tail.
+//   * The block's region start is `block - ((attribute >> 8) & 0x7F)`: bits
+//     8..14 of the attribute count bytes that lie before the header but
+//     still belong to the block (alignment padding).  Bit 15 is not part of
+//     that offset: `lsl #0x11` already shifted it out before `lsr #25`.
+//   * A leading free remnant is created at the region start when
+//     `header - regionStart >= 0x14` (unsigned) and
+//     (`direction != 0` or `list->+0x14 != 0`), keeping the selected block's
+//     position in the address-ordered list.
+//   * A trailing free remnant is created at the requested end when
+//     `freeEnd - requestedEnd >= 0x14` (unsigned) and
+//     (`direction != 1` or `list->+0x14 != 0`); otherwise the allocation
+//     absorbs the tail up to the old free-block end.
+//   * When bit 0 of the word at `list - 4` is set, the final span from the
+//     region start to the allocation end is cleared with 32-bit stores,
+//     rounded down to a multiple of four.
+//   * A used header (signature `0x5544` "UD") is written at `payload - 0x10`
+//     with attribute = (direction & 1) << 15 |
+//     ((header - regionStart) & 0x7F) << 8 | (list->+0x10 & 0xFF),
+//     size = usedEnd - header - 0x10 and null prev/next, then the block is
+//     appended to the used list (head at list->+0x08, tail at list->+0x0C).
+//
+// The routine is a leaf: no calls, no indirect branches.  r4-r11 are saved
+// and the fifth argument is read from the incoming stack slot.
+// ---------------------------------------------------------------------------
+namespace heap_split_0014f608 {
+
+// Literal pool at 0x0014F7E4 / 0x0014F7E8.
+constexpr u16 kFreeSignature = 0x4652;  // "FR"
+constexpr u16 kUsedSignature = 0x5544;  // "UD"
+
+constexpr u32 kHeaderSize = 0x10;   // payload follows the header
+constexpr u32 kMinRemnant = 0x14;   // `cmp ...,#0x14` before both remnants
+constexpr u32 kRegionOffsetMask = 0x7F;  // bits 8..14 of the attribute
+constexpr u32 kUsedAttributeLowMask = 0xFF;
+constexpr u32 kDirectionBit = 0x8000;    // attribute bit 15
+constexpr u32 kZeroFillOption = 1;       // `ldr r3,[r0,#-4]` / `and r3,#1`
+
+struct HeapBlock {
+    u16 signature;      // +0x00: 0x4652 free, 0x5544 used
+    u16 attribute;      // +0x02: bit15 direction flag, bits 8..14 preamble
+    u32 size;           // +0x04: payload bytes
+    HeapBlock* prev;    // +0x08: toward the list head
+    HeapBlock* next;    // +0x0C: toward the list tail
+};
+static_assert(offsetof(HeapBlock, attribute) == 0x02, "block attribute");
+static_assert(offsetof(HeapBlock, size) == 0x04, "block size");
+static_assert(offsetof(HeapBlock, prev) == 0x08, "block prev");
+static_assert(offsetof(HeapBlock, next) == 0x0C, "block next");
+static_assert(sizeof(HeapBlock) == 0x10, "block header size");
+
+// Block list passed in r0.  The zero-fill option word is read from `list - 4`
+// (`ldr r3,[r0,#-4]`), so it is not part of this view.
+struct BlockList {
+    HeapBlock* free_head;     // +0x00
+    HeapBlock* free_tail;     // +0x04
+    HeapBlock* used_head;     // +0x08
+    HeapBlock* used_tail;     // +0x0C
+    u16 attribute_source;     // +0x10: low byte copied into a new used block
+    u16 pad_12;               // +0x12: never read
+    u8 split_padding;         // +0x14: non-zero preserves padding remnants
+    u8 pad_15;                // +0x15: never read
+};
+static_assert(offsetof(BlockList, free_head) == 0x00, "free head");
+static_assert(offsetof(BlockList, free_tail) == 0x04, "free tail");
+static_assert(offsetof(BlockList, used_head) == 0x08, "used head");
+static_assert(offsetof(BlockList, used_tail) == 0x0C, "used tail");
+static_assert(offsetof(BlockList, attribute_source) == 0x10, "attribute source");
+static_assert(offsetof(BlockList, split_padding) == 0x14, "split padding flag");
+
+// 0x0014F720: `ldr r3,[r0,#-4]` then `and r3,r3,#1`.
+inline u32 heap_options(const BlockList* list) {
+    return *reinterpret_cast<const u32*>(
+        reinterpret_cast<const u8*>(list) - 4);
+}
+
+// 0x0014F694..0x0014F6B8 and 0x0014F6F8..0x0014F718: insert `block`
+// directly after `anchor` in the address-ordered free list; a null anchor
+// inserts at the head.
+inline void link_free_block(BlockList* list, HeapBlock* anchor, HeapBlock* block) {
+    block->prev = anchor;
+    HeapBlock* const following = (anchor != nullptr) ? anchor->next
+                                                     : list->free_head;
+    if (anchor != nullptr) {
+        anchor->next = block;
+    } else {
+        list->free_head = block;
+    }
+    block->next = following;
+    if (following != nullptr) {
+        following->prev = block;
+    } else {
+        list->free_tail = block;
+    }
+}
+
+}  // namespace heap_split_0014f608
+
+// No direct or indirect call targets: this is a leaf routine.
+extern "C" u8* func_0014f608(heap_split_0014f608::BlockList* list,
+                             heap_split_0014f608::HeapBlock* block,
+                             u8* payload, u32 size, u32 direction) {
+    using namespace heap_split_0014f608;
+
+    const u32 payload_address = reinterpret_cast<u32>(payload);
+    const u32 header_address = payload_address - kHeaderSize;  // r6 / r12
+    const u32 block_address = reinterpret_cast<u32>(block);
+
+    // 0x0014F60C..0x0014F634: snapshot the free block before it is unlinked.
+    const u32 free_payload = block_address + kHeaderSize;
+    const u32 free_end = free_payload + block->size;
+    const u32 free_region =
+        block_address - ((static_cast<u32>(block->attribute) >> 8) &
+                         kRegionOffsetMask);
+    HeapBlock* const free_prev = block->prev;
+    HeapBlock* const free_next = block->next;
+
+    // 0x0014F638..0x0014F654: unlink the selected free block.
+    if (free_prev != nullptr) {
+        free_prev->next = free_next;
+    } else {
+        list->free_head = free_next;
+    }
+    if (free_next != nullptr) {
+        free_next->prev = free_prev;
+    } else {
+        list->free_tail = free_prev;
+    }
+
+    const u32 requested_end = payload_address + size;
+
+    // 0x0014F658..0x0014F6B8: leading remnant (alignment padding).
+    u32 region_start = header_address;
+    HeapBlock* anchor = free_prev;
+    if ((header_address - free_region) >= kMinRemnant &&
+        (direction != 0 || list->split_padding != 0)) {
+        HeapBlock* const remnant =
+            reinterpret_cast<HeapBlock*>(free_region);
+        remnant->signature = kFreeSignature;
+        remnant->attribute = 0;
+        remnant->next = nullptr;
+        remnant->size = (header_address - free_region) - kHeaderSize;
+        link_free_block(list, free_prev, remnant);
+        anchor = remnant;
+    } else {
+        // Too small to stand alone: the used block owns the preamble bytes.
+        region_start = free_region;
+    }
+
+    // 0x0014F6C0..0x0014F718: trailing remnant.
+    u32 used_end = free_end;
+    if ((free_end - requested_end) >= kMinRemnant &&
+        (direction != 1 || list->split_padding != 0)) {
+        HeapBlock* const remnant =
+            reinterpret_cast<HeapBlock*>(requested_end);
+        remnant->signature = kFreeSignature;
+        remnant->attribute = 0;
+        remnant->next = nullptr;
+        remnant->size = (free_end - requested_end) - kHeaderSize;
+        link_free_block(list, anchor, remnant);
+        used_end = requested_end;
+    }
+
+    // 0x0014F720..0x0014F760: optional zero fill of the carved span.
+    const u32 fill_length = used_end - region_start;
+    if ((heap_options(list) & kZeroFillOption) != 0 && fill_length > 3) {
+        u32* const words = reinterpret_cast<u32*>(region_start);
+        const u32 word_count = fill_length >> 2;
+        for (u32 index = 0; index < word_count; ++index) {
+            words[index] = 0;
+        }
+    }
+
+    // 0x0014F764..0x0014F7A8: used block header.
+    HeapBlock* const used = reinterpret_cast<HeapBlock*>(header_address);
+    used->signature = kUsedSignature;
+    used->prev = nullptr;
+    used->size = used_end - header_address - kHeaderSize;
+    used->next = nullptr;
+    u32 attribute = ((direction & 1) != 0) ? kDirectionBit : 0;
+    attribute |= ((header_address - region_start) & kRegionOffsetMask) << 8;
+    attribute |= static_cast<u32>(list->attribute_source) &
+                 kUsedAttributeLowMask;
+    used->attribute = static_cast<u16>(attribute);
+
+    // 0x0014F7AC..0x0014F7D4: append to the used list.
+    HeapBlock* const used_tail = list->used_tail;
+    used->prev = used_tail;
+    HeapBlock* const following = (used_tail != nullptr) ? used_tail->next
+                                                        : list->used_head;
+    if (used_tail != nullptr) {
+        used_tail->next = used;
+    } else {
+        list->used_head = used;
+    }
+    used->next = following;
+    if (following != nullptr) {
+        following->prev = used;
+    } else {
+        list->used_tail = used;
+    }
+
+    // 0x0014F7D8..0x0014F7E0: restore r4-r11, return r2 in r0.
+    return payload;
 }
 
 // DECOMP_FUNC(0x0019296c, 80)
