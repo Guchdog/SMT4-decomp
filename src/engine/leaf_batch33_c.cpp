@@ -698,114 +698,132 @@ extern "C" __attribute__((naked)) void camp_func_00257c84() {
     );
 }
 
+// Direct calls made by 0x0025a0d0.  The untyped declarations at the top of
+// this translation unit cannot describe their arguments or return values.
+extern "C" void UiConfig_FillPair(u8* dst, u32 value)
+    __asm__("camp_func_0027edf8");                                  // 0x0027EDF8
+extern "C" s16 UiTouch_RegisterRectRegion(s32 x, s32 y, s32 w, s32 h)
+    __asm__("camp_func_0029e2f4");                                  // 0x0029E2F4
+extern "C" u8* UiLayout_ResolveNode(u32 group, u32 node_id)
+    __asm__("camp_func_002bf6d0");                                  // 0x002BF6D0
+
+namespace {
+
+// `g_TitleConfigWork`, 0x0044E2D0: pointer to the title-config workspace.
+constexpr uintptr_t kTitleConfigWorkGlobal = 0x0044E2D0u;
+constexpr u32 kNodeGroup = 0x2Fu;
+constexpr u32 kListCursorOffset = 0xE8u;
+constexpr u32 kRegionHandleOffset = 0x1Cu;   // +0x1C, +0x1E, +0x20, +0x22
+constexpr u32 kRegionCountOffset = 0x24u;
+constexpr u32 kCoordinateOffset = 8u;
+constexpr u32 kSecondCoordinateOffset = 0x0Au;
+constexpr u32 kExtentOffset = 4u;
+constexpr u32 kSecondExtentOffset = 6u;
+constexpr u16 kExtentSizeBit = 0x8000u;
+
+inline u16 LoadHalfword(const u8* base, u32 offset) {
+    u16 value;
+    __builtin_memcpy(&value, base + offset, sizeof(value));
+    return value;
+}
+
+inline s16 LoadSignedHalfword(const u8* base, u32 offset) {
+    s16 value;
+    __builtin_memcpy(&value, base + offset, sizeof(value));
+    return value;
+}
+
+inline u32 LoadWord(const u8* base, u32 offset) {
+    u32 value;
+    __builtin_memcpy(&value, base + offset, sizeof(value));
+    return value;
+}
+
+inline void StoreHalfword(u8* base, u32 offset, u16 value) {
+    __builtin_memcpy(base + offset, &value, sizeof(value));
+}
+
+// 0x0029E2F4 call shared by the first three records: the coordinates are the
+// signed 16-bit sums of both records' +8/+0xA halfwords; the extents come from
+// the second record's +4/+6 halfwords with bit 15 removed.
+inline s16 RegisterAnchorRect(const u8* anchor, const u8* node) {
+    const u16 x = static_cast<u16>(
+        LoadHalfword(anchor, kCoordinateOffset) +
+        LoadHalfword(node, kCoordinateOffset));
+    const u16 y = static_cast<u16>(
+        LoadHalfword(anchor, kSecondCoordinateOffset) +
+        LoadHalfword(node, kSecondCoordinateOffset));
+    const u16 width = static_cast<u16>(
+        LoadHalfword(node, kExtentOffset) & ~kExtentSizeBit);
+    const u16 height = static_cast<u16>(
+        LoadHalfword(node, kSecondExtentOffset) & ~kExtentSizeBit);
+    return UiTouch_RegisterRectRegion(
+        static_cast<s16>(x), static_cast<s16>(y), width, height);
+}
+
+// The fourth record stores the signed extents indirectly through [node+0xC].
+inline s16 RegisterTailRect(const u8* anchor, const u8* node) {
+    auto* const extents = reinterpret_cast<const u8*>(
+        static_cast<uintptr_t>(LoadWord(node, 0x0Cu)));
+    const u16 x = static_cast<u16>(
+        LoadHalfword(anchor, kCoordinateOffset) +
+        LoadHalfword(node, kCoordinateOffset));
+    const u16 y = static_cast<u16>(
+        LoadHalfword(anchor, kSecondCoordinateOffset) +
+        LoadHalfword(node, kSecondCoordinateOffset));
+    return UiTouch_RegisterRectRegion(
+        static_cast<s16>(x), static_cast<s16>(y),
+        LoadSignedHalfword(extents, 0u),
+        LoadSignedHalfword(extents, 2u));
+}
+
+}  // namespace
+
 // DECOMP_FUNC(0x0025a0d0, 408)
-extern "C" __attribute__((naked)) void camp_func_0025a0d0() {
-    asm volatile(
-        ".word 0xe59f018c\n"
-        "push {r4, r5, r6, r7, r8, lr}\n"
-        "mov r4, #0\n"
-        "ldr r5, [r0]\n"
-        "ldrsh r0, [r5, #0x24]\n"
-        "cmp r0, #0\n"
-        "ble .L_0025a104\n"
-        ".L_0025a0ec:\n"
-        "nop\n"
-        "bl camp_func_002b9008\n"
-        "ldrsh r0, [r5, #0x24]\n"
-        "add r4, r4, #1\n"
-        "cmp r0, r4\n"
-        "bgt .L_0025a0ec\n"
-        ".L_0025a104:\n"
-        "mvn r1, #0\n"
-        "add r0, r5, #0x1c\n"
-        "bl camp_func_0027edf8\n"
-        "mov r0, #0\n"
-        "strh r0, [r5, #0x24]\n"
-        "add r0, r5, #0xe8\n"
-        "bl camp_func_0029f248\n"
-        "add r1, r0, #0x1f\n"
-        "mov r0, #0x2f\n"
-        "bl camp_func_002bf6d0\n"
-        "mov r4, r0\n"
-        "mov r1, #0x1b\n"
-        "mov r0, #0x2f\n"
-        "bl camp_func_002bf6d0\n"
-        "mov r1, r0\n"
-        "ldrh r0, [r4, #0xa]\n"
-        "ldrh ip, [r1, #0xa]\n"
-        "ldrh r7, [r1, #8]\n"
-        "ldrh r2, [r1, #4]\n"
-        "ldrh r3, [r4, #8]\n"
-        "ldrh r6, [r1, #6]\n"
-        "add r1, r0, ip\n"
-        "add r0, r3, r7\n"
-        "sxth r1, r1\n"
-        "sxth r0, r0\n"
-        "bic r3, r6, #0x8000\n"
-        "bic r2, r2, #0x8000\n"
-        "bl camp_func_0029e2f4\n"
-        "strh r0, [r5, #0x1c]\n"
-        "ldrh r0, [r5, #0x24]\n"
-        "mov r1, #0x34\n"
-        "add r0, r0, #1\n"
-        "strh r0, [r5, #0x24]\n"
-        "mov r0, #0x2f\n"
-        "bl camp_func_002bf6d0\n"
-        "mov r1, r0\n"
-        "ldrh r0, [r4, #0xa]\n"
-        "ldrh r3, [r1, #0xa]\n"
-        "ldrh r6, [r4, #8]\n"
-        "ldrh r7, [r1, #8]\n"
-        "add r0, r0, r3\n"
-        "ldrh r2, [r1, #6]\n"
-        "ldrh ip, [r1, #4]\n"
-        "add r3, r6, r7\n"
-        "sxth r1, r0\n"
-        "sxth r0, r3\n"
-        "bic r3, r2, #0x8000\n"
-        "bic r2, ip, #0x8000\n"
-        "bl camp_func_0029e2f4\n"
-        "strh r0, [r5, #0x1e]\n"
-        "mov r1, #0x38\n"
-        "mov r0, #0x2f\n"
-        "bl camp_func_002bf6d0\n"
-        "mov r1, r0\n"
-        "ldrh r0, [r4, #0xa]\n"
-        "ldrh r6, [r1, #0xa]\n"
-        "ldrh r7, [r1, #8]\n"
-        "ldrh r2, [r1, #4]\n"
-        "ldrh r3, [r4, #8]\n"
-        "ldrh ip, [r1, #6]\n"
-        "add r1, r0, r6\n"
-        "add r0, r3, r7\n"
-        "sxth r1, r1\n"
-        "sxth r0, r0\n"
-        "bic r3, ip, #0x8000\n"
-        "bic r2, r2, #0x8000\n"
-        "bl camp_func_0029e2f4\n"
-        "strh r0, [r5, #0x20]\n"
-        "mov r1, #0x33\n"
-        "mov r0, #0x2f\n"
-        "bl camp_func_002bf6d0\n"
-        "ldrh r6, [r0, #0xa]\n"
-        "ldrh r7, [r0, #8]\n"
-        "ldr r0, [r0, #0xc]\n"
-        "ldrh ip, [r4, #0xa]\n"
-        "ldrh r4, [r4, #8]\n"
-        "ldrsh r3, [r0, #2]\n"
-        "ldrsh r2, [r0]\n"
-        "add r0, ip, r6\n"
-        "add ip, r4, r7\n"
-        "sxth r1, r0\n"
-        "sxth r0, ip\n"
-        "bl camp_func_0029e2f4\n"
-        "strh r0, [r5, #0x22]\n"
-        "ldrh r0, [r5, #0x24]\n"
-        "add r0, r0, #3\n"
-        "strh r0, [r5, #0x24]\n"
-        "pop {r4, r5, r6, r7, r8, pc}\n"
-        ".word 0x0044e2d0\n"
-    );
+extern "C" s32 camp_func_0025a0d0() {
+    auto* const work = *reinterpret_cast<u8**>(
+        static_cast<uintptr_t>(kTitleConfigWorkGlobal));
+
+    // Release the regions recorded by the previous invocation.  The bound is
+    // the signed halfword at +0x24; the helper ignores its incoming argument.
+    const s16 previous_count = LoadSignedHalfword(work, kRegionCountOffset);
+    for (s32 index = 0; index < previous_count; ++index) {
+        camp_func_002b9008();
+    }
+
+    UiConfig_FillPair(work + kRegionHandleOffset, 0xFFFFFFFFu);
+    StoreHalfword(work, kRegionCountOffset, 0);
+
+    // The selected settings row chooses one of the three 0x2F-group records at
+    // node ids 0x1F..0x21; the other records are fixed.
+    const s32 selected_row = camp_func_0029f248(work + kListCursorOffset);
+    u8* const anchor = UiLayout_ResolveNode(
+        kNodeGroup, static_cast<u32>(selected_row) + 0x1Fu);
+
+    u8* const base_node = UiLayout_ResolveNode(kNodeGroup, 0x1Bu);
+    StoreHalfword(work, kRegionHandleOffset,
+                  static_cast<u16>(RegisterAnchorRect(anchor, base_node)));
+
+    StoreHalfword(work, kRegionCountOffset,
+                  static_cast<u16>(LoadHalfword(work, kRegionCountOffset) + 1u));
+
+    u8* const node_34 = UiLayout_ResolveNode(kNodeGroup, 0x34u);
+    StoreHalfword(work, kRegionHandleOffset + 2u,
+                  static_cast<u16>(RegisterAnchorRect(anchor, node_34)));
+
+    u8* const node_38 = UiLayout_ResolveNode(kNodeGroup, 0x38u);
+    StoreHalfword(work, kRegionHandleOffset + 4u,
+                  static_cast<u16>(RegisterAnchorRect(anchor, node_38)));
+
+    u8* const node_33 = UiLayout_ResolveNode(kNodeGroup, 0x33u);
+    StoreHalfword(work, kRegionHandleOffset + 6u,
+                  static_cast<u16>(RegisterTailRect(anchor, node_33)));
+
+    // The original leaves the post-update count in r0; callers ignore it.
+    const u16 region_count =
+        static_cast<u16>(LoadHalfword(work, kRegionCountOffset) + 3u);
+    StoreHalfword(work, kRegionCountOffset, region_count);
+    return region_count;
 }
 
 // DECOMP_FUNC(0x0025c110, 204)
