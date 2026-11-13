@@ -1327,37 +1327,250 @@ extern "C" u32 func_00239dec(u32 context, u32 arg1, u32 arg2,
 }
 
 // DECOMP_FUNC(0x00263ee4, 408)
-// 98 ARM instructions through unconditional pop; 16 trailing data bytes.
-extern "C" __attribute__((naked)) void script_vm_func_00263ee4() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d5fff, 0xe3a01002, 0xe59f9178, 0xe59fb178\n"
-        ".word 0xe3a0e001, 0xed2d0b08, 0xed2d8b04, 0xe28d4070\n"
-        ".word 0xeef08a40, 0xe8941001, 0xe28d4078, 0xeeb08a43\n"
-        ".word 0xe89405e0, 0xe28d4094, 0xeef09a41, 0xed9f0a53\n"
-        ".word 0xeeb09a60, 0xecd43a03, 0xe5994004, 0xe0642184\n"
-        ".word 0xe0822102, 0xe08bb102, 0xe28b2024, 0xe58b1008\n"
-        ".word 0xedcb1a04, 0xed8b2a03, 0xedcb2a05, 0xe58b3028\n"
-        ".word 0xe58be024, 0xedcb3a0b, 0xed8b4a0c, 0xedcb4a0d\n"
-        ".word 0xe5cb0038, 0xe5cbc039, 0xe5cb503a, 0xe5cb603b\n"
-        ".word 0xe5cb703c, 0xe5cb803d, 0xe28b1008, 0xe1cbe3be\n"
-        ".word 0xe58b1040, 0xe28b0044, 0xe58b2070, 0xe58b0068\n"
-        ".word 0xedcb8a11, 0xed8b0a14, 0xed8b8a15, 0xed8b0a16\n"
-        ".word 0xe28b0048, 0xec809a02, 0xe59d0038, 0xe58b0064\n"
-        ".word 0xe28b005c, 0xebfee176, 0xe28db068, 0xeef01a48\n"
-        ".word 0xeeb01a69, 0xeef00a49, 0xeeb00a68, 0xe1a07000\n"
-        ".word 0xe89b0006, 0xe59d0030, 0xe59d30a0, 0xebffb9c5\n"
-        ".word 0xe0671207, 0xe0815287, 0xe59f3084, 0xe0641204\n"
-        ".word 0xe0814284, 0xe59d608c, 0xe0834184, 0xe0833185\n"
-        ".word 0xe3e0c000, 0xe5830124, 0xe5c3a16c, 0xe5c4616d\n"
-        ".word 0xe59d0030, 0xe3a02000, 0xe583012c, 0xe59d0034\n"
-        ".word 0xe5830130, 0xe2830c01, 0xe583c134, 0xe1c025bc\n"
-        ".word 0xe1c0c5be, 0xe5c32164, 0xe59d1090, 0xe5c31128\n"
-        ".word 0xe5c3216e, 0xe1c026b0, 0xe1c026b2, 0xe5990004\n"
-        ".word 0xe2800001, 0xe5890004, 0xe1a00007, 0xecbd8b04\n"
-        ".word 0xe28dd030, 0xe8bd9ff0, 0x00447a28, 0x004afd64\n"
-        ".word 0x00000000, 0x004a1264\n"
-    );
+//
+// Builds one script-effect work record and registers its table slot.  Reached
+// from the battle effect emitter 0x0027B8CC on the "BOX" path (0x0027C1F4)
+// and on the remapped-type "NA" path (0x0027C0EC), and from several battle
+// effect helpers.
+//
+// Recovered contract (ARM 0x00263EE4..0x00264068; the four literal words
+// 0x00447A28, 0x004AFD64, +0.0f and 0x004A1264 follow at 0x0026406C):
+//   * ABI: r0 = id, r1 = handle, r2 = kind pointer, r3 = type, then fifteen
+//     stack words and seven VFP arguments s0..s6.  The prologue spills
+//     r0-r3 and d0-d3, then re-reads r0/r1/r2 from the register save area
+//     (0x00263FAC..0x00263FD8) while r3 is used directly.  Stack word n is
+//     read at the entry value of r13 + 4*n; word 14 is at 0x002640A0.
+//   * The work-record index is the pre-call value of the global count at
+//     0x00447A2C.  Records are 0x8C bytes at 0x004AFD64 (140*index).
+//   * 0x0021C598 (Btl_StatusEffectCalc) receives work+0x5C in r0 and, in the
+//     original register image, work+0x08 in r1 and work+0x24 in r2.  Its body
+//     overwrites r1-r3 before any read, so only r0 is an argument.  Its return
+//     value indexes the 0x178-byte slot array at 0x004A1264 (47*index*8).
+//   * The init order into the work record is exactly the store order below:
+//     +0x08 = 2; +0x10/+0x0C/+0x14 = s3/s4/s5; +0x28 = type; +0x24 = 1;
+//     +0x2C/+0x30/+0x34 = stack words 11/12/13 (raw s7/s8/s9 bits);
+//     +0x38..+0x3D = bytes of stack words 2..7; +0x3E = u16 1;
+//     +0x40 = work+0x08; +0x70 = work+0x24; +0x68 = work+0x44;
+//     +0x44/+0x48/+0x4C = s0/s1/s2; +0x50/+0x58 = +0.0f; +0x54 = s6;
+//     +0x64 = kind.
+//   * 0x002526FC (slot allocator) receives r0 = id, r1 = stack word 0,
+//     r2 = stack word 1, r3 = stack word 14 and s0..s3 = s0,s1,s2,s6.
+//     The original leaves s4..s7 untouched; the callee reads only s0..s3.
+//   * Slot stores, in original order: +0x124 = allocator return;
+//     +0x16C = byte of stack word 8; the *previous* slot's +0x16D = byte of
+//     stack word 9; +0x12C = id; +0x130 = handle; +0x134 = -1 (u32);
+//     +0x15C = u16 0; +0x15E = u16 0xFFFF; +0x164 = 0;
+//     +0x128 = byte of stack word 10; +0x16E = 0; +0x160 = u16 0;
+//     +0x162 = u16 0.
+//   * The global count is re-read after both calls, incremented by one and
+//     stored back (0x00264050..0x00264058).
+//   * Return: the first helper's result, both success and failure (r7).
+namespace func_263ee4 {
+
+constexpr u32 kEffectTable = 0x00447A28;  // literal 0x00447A28 (0x0026406C)
+constexpr u32 kEffectCount = 0x00447A2C;  // `ldr/str [sb,#4]`
+constexpr u32 kWorkBase = 0x004AFD64;     // literal 0x004AFD64 (0x00264070)
+constexpr u32 kSlotBase = 0x004A1264;     // literal 0x004A1264 (0x00264078)
+constexpr u32 kWorkStride = 0x8C;         // 7*index + 28*index, lsl #2
+constexpr u32 kSlotStride = 0x178;        // 15*index + 32*index, lsl #3
+constexpr f32 kZero = 0.0f;               // literal 0x00000000 (0x00264074)
+constexpr u32 kSlotUnset = 0xFFFFFFFFu;   // `mvn ip,#0` (0x00264004)
+
+// 0x8C-byte work record at 0x004AFD64 + 140*index.  Offsets are the only
+// names the ARM evidence supports.
+struct WorkRecord {
+    u8 pad_000[0x08];
+    u32 field_08;        // +0x08: constant 2
+    f32 field_0C;        // +0x0C: s4
+    f32 field_10;        // +0x10: s3
+    f32 field_14;        // +0x14: s5
+    u8 pad_018[0x0C];
+    u32 field_24;        // +0x24: constant 1
+    u32 field_28;        // +0x28: type (r3)
+    f32 field_2C;        // +0x2C: stack word 11 bits
+    f32 field_30;        // +0x30: stack word 12 bits
+    f32 field_34;        // +0x34: stack word 13 bits
+    u8 field_38;         // +0x38..+0x3D: stack words 2..7, one byte each
+    u8 field_39;
+    u8 field_3A;
+    u8 field_3B;
+    u8 field_3C;
+    u8 field_3D;
+    u16 field_3E;        // +0x3E: constant 1
+    u32 field_40;        // +0x40: address of +0x08
+    f32 field_44;        // +0x44: s0
+    f32 field_48;        // +0x48: s1
+    f32 field_4C;        // +0x4C: s2
+    f32 field_50;        // +0x50: +0.0f
+    f32 field_54;        // +0x54: s6
+    f32 field_58;        // +0x58: +0.0f
+    u8 pad_05C[0x08];
+    u32 field_64;        // +0x64: kind (r2)
+    u32 field_68;        // +0x68: address of +0x44
+    u8 pad_06C[0x04];
+    u32 field_70;        // +0x70: address of +0x24
+    u8 pad_074[0x18];
+};
+static_assert(offsetof(WorkRecord, field_08) == 0x08);
+static_assert(offsetof(WorkRecord, field_0C) == 0x0C);
+static_assert(offsetof(WorkRecord, field_10) == 0x10);
+static_assert(offsetof(WorkRecord, field_14) == 0x14);
+static_assert(offsetof(WorkRecord, field_24) == 0x24);
+static_assert(offsetof(WorkRecord, field_2C) == 0x2C);
+static_assert(offsetof(WorkRecord, field_38) == 0x38);
+static_assert(offsetof(WorkRecord, field_3E) == 0x3E);
+static_assert(offsetof(WorkRecord, field_40) == 0x40);
+static_assert(offsetof(WorkRecord, field_44) == 0x44);
+static_assert(offsetof(WorkRecord, field_64) == 0x64);
+static_assert(offsetof(WorkRecord, field_68) == 0x68);
+static_assert(offsetof(WorkRecord, field_70) == 0x70);
+static_assert(sizeof(WorkRecord) == 0x8C);
+
+// 0x178-byte slot at 0x004A1264 + 376*index.
+struct SlotRecord {
+    u8 pad_000[0x124];
+    u32 field_124;       // +0x124: allocator result
+    u8 field_128;        // +0x128: stack word 10, low byte
+    u8 pad_129[0x03];
+    u32 field_12C;       // +0x12C: id
+    u32 field_130;       // +0x130: handle
+    u32 field_134;       // +0x134: 0xFFFFFFFF
+    u8 pad_138[0x24];
+    u16 field_15C;       // +0x15C: 0
+    u16 field_15E;       // +0x15E: 0xFFFF
+    u16 field_160;       // +0x160: 0
+    u16 field_162;       // +0x162: 0
+    u8 field_164;        // +0x164: 0
+    u8 pad_165[0x07];
+    u8 field_16C;        // +0x16C: stack word 8, low byte
+    u8 field_16D;        // +0x16D: stack word 9, low byte (previous slot)
+    u8 field_16E;        // +0x16E: 0
+    u8 pad_16F[0x09];
+};
+static_assert(offsetof(SlotRecord, field_124) == 0x124);
+static_assert(offsetof(SlotRecord, field_128) == 0x128);
+static_assert(offsetof(SlotRecord, field_12C) == 0x12C);
+static_assert(offsetof(SlotRecord, field_134) == 0x134);
+static_assert(offsetof(SlotRecord, field_15C) == 0x15C);
+static_assert(offsetof(SlotRecord, field_164) == 0x164);
+static_assert(offsetof(SlotRecord, field_16C) == 0x16C);
+static_assert(sizeof(SlotRecord) == 0x178);
+
+// 0x00447A28: only the +0x04 count is touched here.
+struct EffectTable {
+    u32 reserved_00;
+    u32 count_04;
+};
+static_assert(offsetof(EffectTable, count_04) == 0x04);
+
+inline WorkRecord* WorkAt(u32 index) {
+    return reinterpret_cast<WorkRecord*>(kWorkBase + index * kWorkStride);
+}
+
+inline SlotRecord* SlotAt(u32 index) {
+    return reinterpret_cast<SlotRecord*>(kSlotBase + index * kSlotStride);
+}
+
+inline EffectTable* Table() {
+    return reinterpret_cast<EffectTable*>(kEffectTable);
+}
+
+inline u32 AddressOf(const void* pointer) {
+    return static_cast<u32>(reinterpret_cast<std::uintptr_t>(pointer));
+}
+
+}  // namespace func_263ee4
+
+// 0x0021C598 = smt4::battle::Btl_StatusEffectCalc.  The established 3-argument
+// declaration is kept so the reference resolves to the reconstructed body in
+// src/battle/battle_ailment.cpp; its ARM body overwrites r1 and r2 before any
+// read, so the two pointer values are register-image fidelity only.
+namespace smt4::battle {
+struct StatusAilmentWork;
+s32 Btl_StatusEffectCalc(StatusAilmentWork* work, u32 incoming_ailment,
+                         u32 luck_stat);
+}  // namespace smt4::battle
+
+// 0x002526FC: slot allocator; four core-register and four VFP arguments.
+extern "C" s32 script_vm_func_002526fc(u32 arg0, u32 arg1, u32 arg2, u32 arg3,
+                                       f32 f0, f32 f1, f32 f2, f32 f3);
+
+extern "C" u32 script_vm_func_00263ee4(
+    u32 id, u32 handle, u32 kind, u32 type,
+    u32 stack0, u32 stack1, u32 stack2, u32 stack3, u32 stack4,
+    u32 stack5, u32 stack6, u32 stack7, u32 stack8, u32 stack9,
+    u32 stack10, u32 stack11, u32 stack12, u32 stack13, u32 stack14,
+    f32 f0, f32 f1, f32 f2, f32 f3, f32 f4, f32 f5, f32 f6) {
+    using namespace func_263ee4;
+
+    // 0x00263F2C..0x00263F38: index the new work record with the count that
+    // was live before either helper ran.
+    const u32 old_count = Table()->count_04;
+    WorkRecord* const work = WorkAt(old_count);
+
+    // 0x00263F3C..0x00263FB0: field initialization, in store order.
+    work->field_08 = 2;
+    work->field_10 = f3;
+    work->field_0C = f4;
+    work->field_14 = f5;
+    work->field_28 = type;
+    work->field_24 = 1;
+    work->field_2C = __builtin_bit_cast(f32, stack11);
+    work->field_30 = __builtin_bit_cast(f32, stack12);
+    work->field_34 = __builtin_bit_cast(f32, stack13);
+    work->field_38 = static_cast<u8>(stack2);
+    work->field_39 = static_cast<u8>(stack3);
+    work->field_3A = static_cast<u8>(stack4);
+    work->field_3B = static_cast<u8>(stack5);
+    work->field_3C = static_cast<u8>(stack6);
+    work->field_3D = static_cast<u8>(stack7);
+    work->field_3E = 1;
+    work->field_40 = AddressOf(&work->field_08);
+    work->field_70 = AddressOf(&work->field_24);
+    work->field_68 = AddressOf(&work->field_44);
+    work->field_44 = f0;
+    work->field_50 = kZero;
+    work->field_54 = f6;
+    work->field_58 = kZero;
+    work->field_48 = f1;
+    work->field_4C = f2;
+    work->field_64 = kind;
+
+    // 0x00263FB4..0x00263FE0: status-effect calculation on work+0x5C.  r1 and
+    // r2 receive work+0x08 and work+0x24 exactly as the original leaves them.
+    u8* const work_bytes = reinterpret_cast<u8*>(work);
+    const s32 slot_index = smt4::battle::Btl_StatusEffectCalc(
+        reinterpret_cast<smt4::battle::StatusAilmentWork*>(work_bytes + 0x5C),
+        AddressOf(work_bytes + 0x08), AddressOf(work_bytes + 0x24));
+
+    // 0x00263FE4..0x00264000: index the new and previous slot records.
+    SlotRecord* const slot = SlotAt(static_cast<u32>(slot_index));
+    SlotRecord* const previous = SlotAt(old_count);
+
+    // 0x00263FD0..0x00263FE0: r0 = id, r1 = stack0, r2 = stack1,
+    // r3 = stack14, s0..s3 = s0,s1,s2,s6.
+    const s32 allocated = script_vm_func_002526fc(
+        id, stack0, stack1, stack14, f0, f1, f2, f6);
+
+    // 0x00264008..0x0026404C: slot stores, in original order.
+    slot->field_124 = static_cast<u32>(allocated);
+    slot->field_16C = static_cast<u8>(stack8);
+    previous->field_16D = static_cast<u8>(stack9);
+    slot->field_12C = id;
+    slot->field_130 = handle;
+    slot->field_134 = kSlotUnset;
+    slot->field_15C = 0;
+    slot->field_15E = 0xFFFFu;
+    slot->field_164 = 0;
+    slot->field_128 = static_cast<u8>(stack10);
+    slot->field_16E = 0;
+    slot->field_160 = 0;
+    slot->field_162 = 0;
+
+    // 0x00264050..0x00264058: re-read the count (a helper may have changed it)
+    // and advance it modulo 2^32.
+    ++Table()->count_04;
+    return static_cast<u32>(slot_index);
 }
 
 // DECOMP_FUNC(0x0026a62c, 408)
