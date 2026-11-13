@@ -8110,7 +8110,7 @@ address,size,status,category,name,src_file
 0x003550f0,112,matching,nn_sdk,nn_sdk_func_003550f0,src/engine/leaf_batch32_a.cpp
 0x00355160,420,matching,engine,engine_func_00355160,src/engine/leaf_batch44_b.cpp
 0x00355304,40,matching,engine,engine_func_00355304,src/engine/leaf_batch19_a.cpp
-0x0035532c,640,matching,camp,camp_func_0035532c,src/engine/leaf_batch45_a.cpp
+0x0035532c,640,non_matching,camp,camp_func_0035532c,src/engine/leaf_batch45_a.cpp
 0x003555ac,12,matching,unknown,func_003555ac,src/engine/leaf_batch25_c.cpp
 0x003555b8,12,matching,unknown,func_003555b8,src/engine/leaf_batch25_c.cpp
 0x003555c4,200,matching,unknown,func_003555c4,src/engine/leaf_batch33_b.cpp

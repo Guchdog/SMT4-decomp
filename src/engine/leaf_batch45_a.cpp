@@ -5039,92 +5039,217 @@ extern "C" u32 engine_func_00339b18(
     return static_cast<u32>(collected);
 }
 
-// DECOMP_FUNC(0x0035532c, 640)
-extern "C" __attribute__((naked)) void camp_func_0035532c() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x40f0, 0xe92d, 0xd05c, 0xe24d\n"
-        ".hword 0x5000, 0xe1a0, 0x7260, 0xe59f\n"
-        ".hword 0x6260, 0xe59f, 0x4000, 0xe3a0\n"
-        ".hword 0x3001, 0xe3a0, 0x102c, 0xe28d\n"
-        ".hword 0x002c, 0xe28d, 0x400c, 0xe58d\n"
-        ".hword 0x7008, 0xe58d, 0x3028, 0xe58d\n"
-        ".hword 0x0009, 0xe881, 0x2003, 0xe3a0\n"
-        ".hword 0x0010, 0xe596, 0x1020, 0xe28d\n"
-        ".hword 0x004c, 0xe58d, 0x002c, 0xe59d\n"
-        ".hword 0x0009, 0xe88d, 0x004c, 0xe28d\n"
-        ".hword 0x6200, 0xebfd, 0x1fa0, 0xe1b0\n"
-        ".hword 0x0012, 0x0a00, 0x6010, 0xe28d\n"
-        ".hword 0x7008, 0xe58d, 0x0006, 0xe896\n"
-        ".hword 0x5000, 0xe1a0, 0x3008, 0xe28d\n"
-        ".hword 0x0002, 0xe191, 0x0007, 0x0a00\n"
-        ".hword 0x0003, 0xe1a0, 0x92f5, 0xebfb\n"
-        ".hword 0x001c, 0xe58d, 0x21d0, 0xe1cd\n"
-        ".hword 0x001c, 0xe28d, 0x61e5, 0xebfd\n"
-        ".hword 0x4010, 0xe58d, 0x4014, 0xe58d\n"
-        ".hword 0x400c, 0xe58d, 0xd05c, 0xe28d\n"
-        ".hword 0x0005, 0xe1a0, 0x80f0, 0xe8bd\n"
-        ".hword 0x3020, 0xe28d, 0x0010, 0xe596\n"
-        ".hword 0x0006, 0xe893, 0x300c, 0xe28d\n"
-        ".hword 0xc04c, 0xe28d, 0x0007, 0xe883\n"
-        ".hword 0x2034, 0xe28d, 0x11b0, 0xe59f\n"
-        ".hword 0x0002, 0xe3a0, 0x3001, 0xe3a0\n"
-        ".hword 0x0013, 0xe882, 0x1034, 0xe28d\n"
-        ".hword 0x200c, 0xe3a0, 0x0007, 0xe88c\n"
-        ".hword 0x204c, 0xe28d, 0x1018, 0xe28d\n"
-        ".hword 0x0008, 0xe28d, 0x044b, 0xeb00\n"
-        ".hword 0x1fa0, 0xe1b0, 0xf000, 0xe320\n"
-        ".hword 0x000f, 0x0a00, 0x6010, 0xe28d\n"
-        ".hword 0x7008, 0xe58d, 0x0006, 0xe896\n"
-        ".hword 0x5000, 0xe1a0, 0x3008, 0xe28d\n"
-        ".hword 0x0002, 0xe191, 0xffdf, 0x0aff\n"
-        ".hword 0x0003, 0xe1a0, 0x92cd, 0xebfb\n"
-        ".hword 0x0040, 0xe58d, 0x21d0, 0xe1cd\n"
-        ".hword 0x0040, 0xe28d, 0x61bd, 0xebfd\n"
-        ".hword 0x4010, 0xe58d, 0x4014, 0xe58d\n"
-        ".hword 0xffd6, 0xeaff, 0x0ddb, 0xe3a0\n"
-        ".hword 0x0004, 0xe58d, 0x0018, 0xe59d\n"
-        ".hword 0x5000, 0xe58d, 0x2000, 0xe3a0\n"
-        ".hword 0x3002, 0xe1a0, 0x1000, 0xe590\n"
-        ".hword 0xc000, 0xe591, 0x1058, 0xe28d\n"
-        ".hword 0xff3c, 0xe12f, 0x5000, 0xe1a0\n"
-        ".hword 0x0fa0, 0xe1b0, 0x0018, 0xe59d\n"
-        ".hword 0x1000, 0xe590, 0x102c, 0xe591\n"
-        ".hword 0x001b, 0x0a00, 0xff31, 0xe12f\n"
-        ".hword 0x01d0, 0xe1cd, 0x2008, 0xe28d\n"
-        ".hword 0x0001, 0xe190, 0x0007, 0x0a00\n"
-        ".hword 0x0002, 0xe1a0, 0x92af, 0xebfb\n"
-        ".hword 0x0044, 0xe58d, 0x21d0, 0xe1cd\n"
-        ".hword 0x0044, 0xe28d, 0x619f, 0xebfd\n"
-        ".hword 0x4010, 0xe58d, 0x4014, 0xe58d\n"
-        ".hword 0x3010, 0xe28d, 0x400c, 0xe58d\n"
-        ".hword 0x7008, 0xe58d, 0x0006, 0xe893\n"
-        ".hword 0x0008, 0xe28d, 0x1002, 0xe191\n"
-        ".hword 0xffb2, 0x0aff, 0x92a1, 0xebfb\n"
-        ".hword 0x0048, 0xe58d, 0x21d0, 0xe1cd\n"
-        ".hword 0x0048, 0xe28d, 0x6191, 0xebfd\n"
-        ".hword 0x4010, 0xe58d, 0x4014, 0xe58d\n"
-        ".hword 0xffaa, 0xeaff, 0xf000, 0xe320\n"
-        ".hword 0xff31, 0xe12f, 0x0010, 0xe28d\n"
-        ".hword 0x0060, 0xe890, 0x0008, 0xe28d\n"
-        ".hword 0x1006, 0xe195, 0x0007, 0x0a00\n"
-        ".hword 0x9292, 0xebfb, 0x0000, 0xe58d\n"
-        ".hword 0x2005, 0xe1a0, 0x3006, 0xe1a0\n"
-        ".hword 0x000d, 0xe1a0, 0x6181, 0xebfd\n"
-        ".hword 0x4010, 0xe58d, 0x4014, 0xe58d\n"
-        ".hword 0x0010, 0xe28d, 0x400c, 0xe58d\n"
-        ".hword 0x7008, 0xe58d, 0x0060, 0xe890\n"
-        ".hword 0x0008, 0xe28d, 0x1006, 0xe195\n"
-        ".hword 0x0007, 0x0a00, 0x9283, 0xebfb\n"
-        ".hword 0x0000, 0xe58d, 0x2005, 0xe1a0\n"
-        ".hword 0x3006, 0xe1a0, 0x000d, 0xe1a0\n"
-        ".hword 0x6172, 0xebfd, 0x4010, 0xe58d\n"
-        ".hword 0x4014, 0xe58d, 0x400c, 0xe58d\n"
-        ".hword 0xd05c, 0xe28d, 0x0004, 0xe1a0\n"
-        ".hword 0x80f0, 0xe8bd, 0x09f8, 0x0042\n"
-        ".hword 0xe650, 0x0044, 0x6369, 0x6e6f\n"
-    );
+// ---------------------------------------------------------------------------
+// 0x0035532C: submit a service request and start its asynchronous operation.
+//
+// The request slot is the 16-byte object whose vtable is 0x004209F8:
+// +0x00 vtable, +0x04 session handle, +0x08/+0x0C two response words.
+// 0x0035654C is vtable slot 0 and builds the operation object (vtable
+// 0x00420998) into its second argument.  0x00239F84 returns the slot handle,
+// lazily creating it when it is zero, and 0x002ADB54 sends the release command
+// with the two response words.
+//
+// The original leaves both response words undefined when 0x002ADB84 fails and
+// still feeds them to the release command.  They are initialized to zero here
+// so that this path is deterministic; see the function record for the limit.
+// The per-return destructor copies (0x003566F8's body) are represented by the
+// two helpers below; each original path's duplicate second copy always finds
+// the response words already zero and is omitted.
+// ---------------------------------------------------------------------------
+
+namespace srv_request_0035532c {
+
+// 0x004209F8 is the request slot's vtable.  The target never dereferences it;
+// it only stores the pointer into the slot.
+constexpr u32 kRequestVtable = 0x004209f8;
+
+// 0x0044E650+0x10 holds the service session handle (`ldr r0,[r6,#0x10]`).
+constexpr u32 kServiceStateAddress = 0x0044e650;
+constexpr u32 kSessionHandleOffset = 0x10;
+
+// 0x002ADB84 arguments: r2 = command, r3 = argument, stack words = submit
+// buffer pointer and count.
+constexpr u32 kSubmitCommand = 3;
+constexpr u32 kSubmitArgument = 1;
+constexpr u32 kSubmitBufferCount = 1;
+
+// Parameter block and descriptor handed to 0x0035654C.  The descriptor's first
+// word and the parameter block's first word are both 2.
+constexpr u32 kDescriptorType = 2;
+constexpr u32 kIconTag = 0x6e6f6369;  // "icon"
+constexpr u32 kDescriptorSize = 0x0c;
+constexpr u32 kCreateFlag = 1;
+
+// Second stack word of the operation's vtable slot 0 call.
+constexpr u32 kStartStackArgument = 0x36c0;
+
+struct RequestObject {
+    u32 vtable;     // +0x00: 0x004209F8, only ever stored
+    u32 handle;     // +0x04: session handle, zero until created
+    u32 response0;  // +0x08: first 0x002ADB84 response word
+    u32 response1;  // +0x0C: second 0x002ADB84 response word
 };
+static_assert(sizeof(RequestObject) == 0x10);
+static_assert(offsetof(RequestObject, handle) == 0x04);
+static_assert(offsetof(RequestObject, response0) == 0x08);
+static_assert(offsetof(RequestObject, response1) == 0x0c);
+
+// [sp+0x2C] = {sp+0x2C, 1}; the first word points at itself.
+struct SubmitBuffer {
+    u32 self;   // +0x00: address of this word
+    u32 count;  // +0x04: 1
+};
+static_assert(sizeof(SubmitBuffer) == 0x08);
+
+struct Descriptor {
+    u32 type;          // +0x00: 2
+    const void* data;  // +0x04: parameter block
+    u32 size;          // +0x08: 0x0C
+};
+static_assert(sizeof(Descriptor) == 0x0c);
+
+struct IconParameter {
+    u32 type;   // +0x00: 2
+    u32 tag;    // +0x04: "icon"
+    u32 value;  // +0x08: 0
+};
+static_assert(sizeof(IconParameter) == 0x0c);
+
+struct OperationObject;
+
+// Only slots 0x00 and 0x2C of the 0x00420998 operation vtable are used.
+struct OperationVtable {
+    s32 (*start)(OperationObject* self, u32* output, u32 arg2, u32 arg3,
+                 u32 stack0, u32 stack1);  // +0x00
+    void* reserved[10];                    // +0x04..0x2B
+    void (*release)(OperationObject* self);  // +0x2C
+};
+static_assert(offsetof(OperationVtable, release) == 0x2c);
+
+struct OperationObject {
+    const OperationVtable* vtable;  // +0x00
+    u32 handle;                     // +0x04
+};
+static_assert(offsetof(OperationObject, vtable) == 0x00);
+
+}  // namespace srv_request_0035532c
+
+// 0x002ADB84 submits one IPC command through the thread-local request buffer.
+// On success it writes the two response words and returns `command`; on failure
+// it returns the negative SVC status and leaves the response buffer untouched.
+extern "C" s32 func_002adb84(const u32* handle, u32* response, u32 command,
+                             u32 argument, const u32* buffer,
+                             u32 buffer_size);
+
+// 0x002ADB54 submits the release command.  Its second argument (r1) is not read
+// by the callee, so the reconstruction passes an explicit zero.
+extern "C" s32 func_002adb54(const u32* handle, u32 unused, u32 value0,
+                             u32 value1);
+
+// 0x00239F84 returns request->handle and creates it when it is zero.
+extern "C" u32 nn_sdk_func_00239f84(
+    srv_request_0035532c::RequestObject* request);
+
+// 0x0035654C is request->vtable[0]; it builds the operation object and stores
+// it through the second argument.
+extern "C" s32 func_0035654c(
+    srv_request_0035532c::RequestObject* request,
+    srv_request_0035532c::OperationObject** operation,
+    const srv_request_0035532c::Descriptor* descriptor, u32 flag);
+
+namespace srv_request_0035532c {
+
+// Inline body of the request-slot destructor (0x003566F8).  Every original
+// return site contains this sequence; the duplicated second copy in each path
+// always finds the response words already zero and is therefore omitted.
+//
+// The failure tails (0x3553A4, 0x3554BC, 0x3554F8) reload both response words
+// after 0x00239F84 returns, while the start-success tail (0x355534) reuses the
+// pair it loaded before the call.  Both forms are kept because the getter is
+// external and the two paths really do differ if it writes the slot.
+static inline void release_request_reloaded(RequestObject* request) {
+    if ((request->response0 | request->response1) != 0) {
+        const u32 handle = nn_sdk_func_00239f84(request);
+        func_002adb54(&handle, 0, request->response0, request->response1);
+        request->response0 = 0;
+        request->response1 = 0;
+    }
+    request->handle = 0;
+}
+
+static inline void release_request_cached(RequestObject* request) {
+    const u32 response0 = request->response0;
+    const u32 response1 = request->response1;
+    if ((response0 | response1) != 0) {
+        const u32 handle = nn_sdk_func_00239f84(request);
+        func_002adb54(&handle, 0, response0, response1);
+        request->response0 = 0;
+        request->response1 = 0;
+    }
+    request->handle = 0;
+}
+
+}  // namespace srv_request_0035532c
+
+// DECOMP_FUNC(0x0035532c, 640)
+extern "C" s32 camp_func_0035532c(u32 argument) {
+    using namespace srv_request_0035532c;
+
+    RequestObject request = {};
+    request.vtable = kRequestVtable;
+
+    u32 handle = *reinterpret_cast<u32*>(kServiceStateAddress +
+                                         kSessionHandleOffset);
+    u32 response[2] = {0, 0};
+
+    SubmitBuffer submit = {};
+    submit.self = reinterpret_cast<u32>(&submit.self);
+    submit.count = kSubmitBufferCount;
+
+    const s32 submit_status =
+        func_002adb84(&handle, response, kSubmitCommand, kSubmitArgument,
+                      &submit.self, kSubmitBufferCount);
+    if (submit_status < 0) {
+        release_request_reloaded(&request);
+        return submit_status;
+    }
+
+    // The original reloads the global handle after the command succeeds.
+    request.handle = *reinterpret_cast<u32*>(kServiceStateAddress +
+                                             kSessionHandleOffset);
+    request.response0 = response[0];
+    request.response1 = response[1];
+
+    IconParameter icon = {};
+    icon.type = kDescriptorType;
+    icon.tag = kIconTag;
+    icon.value = 0;
+
+    Descriptor descriptor = {};
+    descriptor.type = kDescriptorType;
+    descriptor.data = &icon;
+    descriptor.size = kDescriptorSize;
+
+    OperationObject* operation = nullptr;
+    const s32 create_status =
+        func_0035654c(&request, &operation, &descriptor, kCreateFlag);
+    if (create_status < 0) {
+        release_request_reloaded(&request);
+        return create_status;
+    }
+
+    u32 operation_output = 0;
+    const s32 start_status = operation->vtable->start(
+        operation, &operation_output, 0, 0, argument, kStartStackArgument);
+    operation->vtable->release(operation);
+
+    if (start_status < 0) {
+        release_request_reloaded(&request);
+        return start_status;
+    }
+    release_request_cached(&request);
+    return 0;
+}
 
 // DECOMP_FUNC(0x0038e58c, 640)
 extern "C" __attribute__((naked)) void engine_func_0038e58c() {
