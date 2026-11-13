@@ -4367,193 +4367,142 @@ extern "C" __attribute__((naked)) void func_0013d460() {
     );
 }
 
+// ---------------------------------------------------------------------------
+// func_0013f3e0: fold six tagged record references into the owner's stored
+// fingerprint word.
+//
+// `self` (r0) points at the owner word, and every exit returns that owner word.
+// Two self-relative slots (`owner + 0x288`, then `+0x28`) locate the record
+// that supplies the six references.  Each reference is a chain of
+// self-relative displacements: the record slot points at a descriptor, the
+// descriptor's `+0x08` word points at a tagged object, and the object only
+// takes part when its tag word carries bit 30.  The address 0x002A7F94 derives
+// from an accepted tag is rotated right by 0/28/24/20/16/12 and XORed into an
+// accumulator seeded from the owner's `+0x2C4` word; the result is written to
+// `+0x2C0`.
+//
+// A zero displacement means "none" and is skipped without touching memory.
+// The initial `owner + 0x288` step is not guarded, so a zero there makes the
+// next slot load read address 0x28, and a zero `+0x28` slot makes the first
+// reference load read address 0x0C.  Those fault addresses are domain limits
+// kept from the original, not a reproduced contract.  The only call is the
+// direct `bl 0x002A7F94`; it receives the address of a local word holding the
+// object address, and the original stores that word whether or not it is null.
+// ---------------------------------------------------------------------------
+namespace engine_13f3e0 {
+
+// Owner word (r0 -> [r0]) and its self-relative slots.
+constexpr u32 kOwnerSlot = 0x288;             // 0x0013F3F0
+constexpr u32 kRecordSlot = 0x28;             // 0x0013F400
+
+// Accumulator words: previous value in, new value out (0x0013F418/0x0013F684).
+constexpr u32 kPreviousFingerprint = 0x2c4;
+constexpr u32 kFingerprint = 0x2c0;
+
+// Record slots folded into the fingerprint, in listing order
+// (0x0013F414, 0x0013F480, 0x0013F4E8, 0x0013F54C, 0x0013F5B4, 0x0013F61C).
+constexpr u32 kRecordRefA = 0x0c;
+constexpr u32 kRecordRefB = 0x10;
+constexpr u32 kRecordRefC = 0x00;
+constexpr u32 kRecordRefD = 0x04;
+constexpr u32 kRecordRefE = 0x08;
+constexpr u32 kRecordRefF = 0x14;
+
+// Descriptor word that points at the tagged object (0x0013F444 and friends).
+constexpr u32 kObjectSlot = 0x08;
+
+// Object tag word and the bit an accepted object must carry (0x0013F45C).
+constexpr u32 kTagWord = 0x00;
+constexpr u32 kTagPresent = 0x40000000;
+
+// `eor r4, r4, r0, ror #N` amounts, in listing order.
+constexpr u32 kRotateA = 0;
+constexpr u32 kRotateB = 28;
+constexpr u32 kRotateC = 24;
+constexpr u32 kRotateD = 20;
+constexpr u32 kRotateE = 16;
+constexpr u32 kRotateF = 12;
+
+inline u32 LoadWord(u32 address) {
+    return *reinterpret_cast<const u32*>(address);
+}
+
+inline void StoreWord(u32 address, u32 value) {
+    *reinterpret_cast<u32*>(address) = value;
+}
+
+// A self-relative slot: the word at `address` is a displacement from its own
+// address, and zero selects "none" without dereferencing anything.
+inline u32 ResolveSlot(u32 address) {
+    const u32 displacement = LoadWord(address);
+    return displacement != 0 ? address + displacement : 0;
+}
+
+// `record[slot]` -> descriptor -> descriptor[+0x08] -> object, then require the
+// object's tag word to carry bit 30.
+inline u32 ResolveObject(u32 record, u32 slot) {
+    const u32 descriptor = ResolveSlot(record + slot);
+    if (descriptor == 0) {
+        return 0;
+    }
+    const u32 object = ResolveSlot(descriptor + kObjectSlot);
+    if (object == 0) {
+        return 0;
+    }
+    if ((LoadWord(object + kTagWord) & kTagPresent) == 0) {
+        return 0;
+    }
+    return object;
+}
+
+// ARM `ror` of a register by a constant amount.
+constexpr u32 RotateRight(u32 value, u32 amount) {
+    const u32 shift = amount & 0x1f;
+    return shift == 0 ? value : (value >> shift) | (value << (32 - shift));
+}
+
+// 0x002A7F94 dereferences the passed slot and returns a descriptor address:
+// the object itself for tag 0x80000000, the self-relative word at `+0x0C` for
+// tag 0x40000000, and zero for every other tag.  The shared declaration at the
+// top of this file types the callee as returning void, so this alias gives the
+// result a type without touching that declaration.
+extern "C" u32 ResolveTaggedPayload(const u32* slot) __asm__("func_002a7f94");
+
+// Fold one accepted reference into `accumulator`; a skipped reference leaves it
+// untouched and is not passed to the helper.
+inline u32 MixReference(u32 accumulator, u32 record, u32 slot, u32 rotate) {
+    u32 object = ResolveObject(record, slot);
+    if (object == 0) {
+        return accumulator;
+    }
+    const u32 contribution = ResolveTaggedPayload(&object);
+    return accumulator ^ RotateRight(contribution, rotate);
+}
+
+}  // namespace engine_13f3e0
+
 // DECOMP_FUNC(0x0013f3e0, 684)
-extern "C" __attribute__((naked)) void func_0013f3e0() {
-    asm volatile(
-        "push {r3, r4, r5, r6, r7, lr}\n"
-        "mov r6, r0\n"
-        "ldr r0, [r0]\n"
-        "mov r7, #0\n"
-        "ldr r1, [r0, #0x288]!\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r7\n"
-        "ldr r1, [r0, #0x28]!\n"
-        "cmp r1, #0\n"
-        "addne r5, r1, r0\n"
-        "ldr r0, [r6]\n"
-        "moveq r5, r7\n"
-        "ldr r1, [r5, #0xc]\n"
-        "ldr r4, [r0, #0x2c4]\n"
-        "add r0, r5, #0xc\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r7\n"
-        "cmp r0, #0\n"
-        "beq .L_0013f480\n"
-        "cmp r1, #0\n"
-        "add r0, r5, #0xc\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r7\n"
-        "ldr r1, [r0, #8]!\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r7\n"
-        "cmp r0, #0\n"
-        "beq .L_0013f468\n"
-        "ldr r1, [r0]\n"
-        "tst r1, #0x40000000\n"
-        "moveq r0, #0\n"
-        ".L_0013f468:\n"
-        "cmp r0, #0\n"
-        "str r0, [sp]\n"
-        "beq .L_0013f480\n"
-        "mov r0, sp\n"
-        "bl func_002a7f94\n"
-        "eor r4, r4, r0\n"
-        ".L_0013f480:\n"
-        "ldr r1, [r5, #0x10]\n"
-        "add r0, r5, #0x10\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r7\n"
-        "cmp r0, #0\n"
-        "beq .L_0013f4e8\n"
-        "cmp r1, #0\n"
-        "add r0, r5, #0x10\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r7\n"
-        "ldr r1, [r0, #8]!\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r7\n"
-        "cmp r0, #0\n"
-        "beq .L_0013f4d0\n"
-        "ldr r1, [r0]\n"
-        "tst r1, #0x40000000\n"
-        "moveq r0, #0\n"
-        ".L_0013f4d0:\n"
-        "cmp r0, #0\n"
-        "str r0, [sp]\n"
-        "beq .L_0013f4e8\n"
-        "mov r0, sp\n"
-        "bl func_002a7f94\n"
-        "eor r4, r4, r0, ror #28\n"
-        ".L_0013f4e8:\n"
-        "ldr r0, [r5]\n"
-        "cmp r0, #0\n"
-        "addne r0, r0, r5\n"
-        "moveq r0, r7\n"
-        "cmp r0, #0\n"
-        "beq .L_0013f54c\n"
-        "ldr r0, [r5]\n"
-        "cmp r0, #0\n"
-        "addne r0, r0, r5\n"
-        "moveq r0, r7\n"
-        "ldr r1, [r0, #8]!\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r7\n"
-        "cmp r0, #0\n"
-        "beq .L_0013f534\n"
-        "ldr r1, [r0]\n"
-        "tst r1, #0x40000000\n"
-        "moveq r0, #0\n"
-        ".L_0013f534:\n"
-        "cmp r0, #0\n"
-        "str r0, [sp]\n"
-        "beq .L_0013f54c\n"
-        "mov r0, sp\n"
-        "bl func_002a7f94\n"
-        "eor r4, r4, r0, ror #24\n"
-        ".L_0013f54c:\n"
-        "ldr r1, [r5, #4]\n"
-        "add r0, r5, #4\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r7\n"
-        "cmp r0, #0\n"
-        "beq .L_0013f5b4\n"
-        "cmp r1, #0\n"
-        "add r0, r5, #4\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r7\n"
-        "ldr r1, [r0, #8]!\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r7\n"
-        "cmp r0, #0\n"
-        "beq .L_0013f59c\n"
-        "ldr r1, [r0]\n"
-        "tst r1, #0x40000000\n"
-        "moveq r0, #0\n"
-        ".L_0013f59c:\n"
-        "cmp r0, #0\n"
-        "str r0, [sp]\n"
-        "beq .L_0013f5b4\n"
-        "mov r0, sp\n"
-        "bl func_002a7f94\n"
-        "eor r4, r4, r0, ror #20\n"
-        ".L_0013f5b4:\n"
-        "ldr r1, [r5, #8]\n"
-        "add r0, r5, #8\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r7\n"
-        "cmp r0, #0\n"
-        "beq .L_0013f61c\n"
-        "cmp r1, #0\n"
-        "add r0, r5, #8\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r7\n"
-        "ldr r1, [r0, #8]!\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r7\n"
-        "cmp r0, #0\n"
-        "beq .L_0013f604\n"
-        "ldr r1, [r0]\n"
-        "tst r1, #0x40000000\n"
-        "moveq r0, #0\n"
-        ".L_0013f604:\n"
-        "cmp r0, #0\n"
-        "str r0, [sp]\n"
-        "beq .L_0013f61c\n"
-        "mov r0, sp\n"
-        "bl func_002a7f94\n"
-        "eor r4, r4, r0, ror #16\n"
-        ".L_0013f61c:\n"
-        "ldr r1, [r5, #0x14]\n"
-        "add r0, r5, #0x14\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r7\n"
-        "cmp r0, #0\n"
-        "beq .L_0013f680\n"
-        "cmp r1, #0\n"
-        "add r0, r5, #0x14\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r7\n"
-        "ldr r1, [r0, #8]!\n"
-        "cmp r1, #0\n"
-        "addne r7, r1, r0\n"
-        "cmp r7, #0\n"
-        "beq .L_0013f668\n"
-        "ldr r0, [r7]\n"
-        "tst r0, #0x40000000\n"
-        "moveq r7, #0\n"
-        ".L_0013f668:\n"
-        "cmp r7, #0\n"
-        "str r7, [sp]\n"
-        "beq .L_0013f680\n"
-        "mov r0, sp\n"
-        "bl func_002a7f94\n"
-        "eor r4, r4, r0, ror #12\n"
-        ".L_0013f680:\n"
-        "ldr r0, [r6]\n"
-        "str r4, [r0, #0x2c0]\n"
-        "pop {r3, r4, r5, r6, r7, pc}\n"
-    );
+extern "C" u32 func_0013f3e0(void* self_arg) {
+    using namespace engine_13f3e0;
+
+    const u32 self = reinterpret_cast<u32>(self_arg);
+    const u32 owner = LoadWord(self);                        // 0x0013F3E8
+    const u32 table = ResolveSlot(owner + kOwnerSlot);       // 0x0013F3F0
+    const u32 record = ResolveSlot(table + kRecordSlot);     // 0x0013F400
+
+    u32 fingerprint = LoadWord(owner + kPreviousFingerprint);  // 0x0013F418
+    fingerprint = MixReference(fingerprint, record, kRecordRefA, kRotateA);
+    fingerprint = MixReference(fingerprint, record, kRecordRefB, kRotateB);
+    fingerprint = MixReference(fingerprint, record, kRecordRefC, kRotateC);
+    fingerprint = MixReference(fingerprint, record, kRecordRefD, kRotateD);
+    fingerprint = MixReference(fingerprint, record, kRecordRefE, kRotateE);
+    fingerprint = MixReference(fingerprint, record, kRecordRefF, kRotateF);
+
+    // 0x0013F680: the owner word is re-read after the helper calls before the
+    // result is stored and returned.
+    const u32 final_owner = LoadWord(self);
+    StoreWord(final_owner + kFingerprint, fingerprint);
+    return final_owner;
 }
 
 // ---------------------------------------------------------------------------
