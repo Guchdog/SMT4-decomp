@@ -7851,116 +7851,174 @@ extern "C" void script_vm_func_001fc004() {
     }
 }
 
+// ---------------------------------------------------------------------------
+// 0x0019DE18 -- append the source elements that are not already linked into the
+// target list's pointer vector.
+//
+// r0 (source):  +0x24 `Element**` counted array, +0x28 s32 count
+// r1 (target):  +0x0C `Element*` membership-chain head
+//               +0x10 `Element*` owner word copied into a fresh link
+//               +0x14 void* allocator context (its first word is a vtable)
+//               +0x18 `Element**` begin
+//               +0x1C `Element**` end
+//               +0x20 u32 capacity word (top two bits are tag bits)
+//
+// Per item (signed index 0..count-1, the count is re-read every iteration):
+//   1. skip when the item is the chain head itself or is reachable from it
+//      through the +0x0C link (0x002AF604 walks that chain);
+//   2. skip when the item's own +0x0C link is non-zero;
+//   3. otherwise append the item to the begin/end vector.  A full vector grows
+//      through ctx->vtable[2](ctx, bytes, 0x20), moves the old block and
+//      releases it through ctx->vtable[3](ctx, old block).  Growth is only
+//      possible while the capacity word is tagged 0x40000000 and the allocator
+//      context is non-null; every other full case drops the append silently;
+//   4. only after a successful append is the item's +0x0C link overwritten
+//      with the target's +0x10 owner word.
+//
+// Every exit path leaves r0 = source->count; callers in the pinned image
+// ignore that value, so it is preserved as the register-level contract only.
+// ---------------------------------------------------------------------------
+namespace {
+
+struct CollectedElement;
+
+struct CollectedElement {
+    u8 unknown_00[0x0c];
+    CollectedElement* link_0c;  // +0x0C: chain link / "already collected" word
+};
+
+struct CollectionSource {
+    u8 unknown_00[0x24];
+    CollectedElement** items_24;  // +0x24: counted pointer array
+    s32 count_28;                 // +0x28: signed element count
+};
+
+struct CollectionList {
+    u8 unknown_00[0x0c];
+    CollectedElement* chain_head_0c;  // +0x0C: membership-chain head
+    CollectedElement* owner_10;       // +0x10: word copied into a fresh link
+    void* ctx_14;                     // +0x14: allocator context ([0] = vtable)
+    CollectedElement** begin_18;      // +0x18
+    CollectedElement** end_1c;        // +0x1C
+    u32 capacity_20;                  // +0x20: tag bits | element capacity
+};
+
+constexpr u32 kCapacityMask  = 0x3fffffffu;  // `bic ...,#0xc0000000`
+constexpr u32 kCapacityTags  = 0xc0000000u;  // `and ...,#0xc0000000`
+constexpr u32 kGrowableTag   = 0x40000000u;  // tag required by the grow path
+constexpr u32 kGrowAlignment = 0x20u;        // `mov r2,#0x20` before vtable[2]
+
+using CollectionAllocateFn = void* (*)(void* ctx, u32 size, u32 align);
+using CollectionReleaseFn  = void (*)(void* ctx, void* block);
+
+// The original derives the element count with `sub` plus an arithmetic
+// `asr #2`, so mirror that 32-bit arithmetic instead of pointer difference.
+s32 CollectionElementCount(CollectedElement** begin, CollectedElement** end) {
+    return static_cast<s32>(reinterpret_cast<u32>(end) -
+                            reinterpret_cast<u32>(begin)) >> 2;
+}
+
+// 0x0019DF80..0x0019DFA0: store at end (when end is non-null), advance end and
+// publish the owner word in the new element's link slot.
+void AppendCollectedElement(CollectionList* list, CollectedElement* element) {
+    if (list->end_1c != nullptr) {
+        *list->end_1c = element;
+    }
+    list->end_1c = list->end_1c + 1;
+    element->link_0c = list->owner_10;
+}
+
+}  // namespace
+
+// 0x002AF604: returns 1 when `key` is reached by following `node->link_0c`
+// before a null link, otherwise 0 (reconstructed in leaf_batch34_b.cpp).
+extern "C" s32 engine_func_002af604(void* node, void* key);
+
 // DECOMP_FUNC(0x0019de18, 420)
-extern "C" __attribute__((naked)) void engine_func_0019de18() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe92d4ff0 @ push {r4, r5, r6, r7, r8, sb, sl, fp, lr}\n"
-        ".inst 0xe24dd00c @ sub sp, sp, #0xc\n"
-        ".inst 0xe1a07000 @ mov r7, r0\n"
-        ".inst 0xe1a06001 @ mov r6, r1\n"
-        ".inst 0xe3a04000 @ mov r4, #0\n"
-        ".inst 0xe5900028 @ ldr r0, [r0, #0x28]\n"
-        ".inst 0xe3500000 @ cmp r0, #0\n"
-        ".inst 0xc3a0b000 @ movgt fp, #0\n"
-        ".inst 0xda00005d @ ble #0x19dfb4\n"
-        ".inst 0xe5970024 @ ldr r0, [r7, #0x24]\n"
-        ".inst 0xe7905104 @ ldr r5, [r0, r4, lsl #2]\n"
-        ".inst 0xe596000c @ ldr r0, [r6, #0xc]\n"
-        ".inst 0xe1a01005 @ mov r1, r5\n"
-        ".inst 0xe3500000 @ cmp r0, #0\n"
-        ".inst 0x0a000005 @ beq #0x19de6c\n"
-        ".inst 0xe1500001 @ cmp r0, r1\n"
-        ".inst 0x0a000051 @ beq #0x19dfa4\n"
-        ".inst 0xeb0445e8 @ bl #0x2af604\n"
-        ".inst 0xe3500000 @ cmp r0, #0\n"
-        ".inst 0xe320f000 @ nop\n"
-        ".inst 0x1a00004d @ bne #0x19dfa4\n"
-        ".inst 0xe595000c @ ldr r0, [r5, #0xc]\n"
-        ".inst 0xe1a08005 @ mov r8, r5\n"
-        ".inst 0xe2869010 @ add sb, r6, #0x10\n"
-        ".inst 0xe3500000 @ cmp r0, #0\n"
-        ".inst 0x1a000048 @ bne #0x19dfa4\n"
-        ".inst 0xe289000c @ add r0, sb, #0xc\n"
-        ".inst 0xe5993008 @ ldr r3, [sb, #8]\n"
-        ".inst 0xe8900005 @ ldm r0, {r0, r2}\n"
-        ".inst 0xe2895004 @ add r5, sb, #4\n"
-        ".inst 0xe3a01001 @ mov r1, #1\n"
-        ".inst 0xe0403003 @ sub r3, r0, r3\n"
-        ".inst 0xe3c20103 @ bic r0, r2, #0xc0000000\n"
-        ".inst 0xe1500143 @ cmp r0, r3, asr #2\n"
-        ".inst 0xca000036 @ bgt #0x19df80\n"
-        ".inst 0xe3500000 @ cmp r0, #0\n"
-        ".inst 0x11a0a080 @ lslne sl, r0, #1\n"
-        ".inst 0x03a0a001 @ moveq sl, #1\n"
-        ".inst 0xe3c20103 @ bic r0, r2, #0xc0000000\n"
-        ".inst 0xe150000a @ cmp r0, sl\n"
-        ".inst 0xaa000030 @ bge #0x19df80\n"
-        ".inst 0xe5950000 @ ldr r0, [r5]\n"
-        ".inst 0xe3500000 @ cmp r0, #0\n"
-        ".inst 0x0a000002 @ beq #0x19ded4\n"
-        ".inst 0xe2020103 @ and r0, r2, #0xc0000000\n"
-        ".inst 0xe3500101 @ cmp r0, #0x40000000\n"
-        ".inst 0x0a000001 @ beq #0x19dedc\n"
-        ".inst 0xe1a0100b @ mov r1, fp\n"
-        ".inst 0xea00002e @ b #0x19df98\n"
-        ".inst 0xe5950000 @ ldr r0, [r5]\n"
-        ".inst 0xe1a0110a @ lsl r1, sl, #2\n"
-        ".inst 0xe5902000 @ ldr r2, [r0]\n"
-        ".inst 0xe5923008 @ ldr r3, [r2, #8]\n"
-        ".inst 0xe3a02020 @ mov r2, #0x20\n"
-        ".inst 0xe12fff33 @ blx r3\n"
-        ".inst 0xe58d0000 @ str r0, [sp]\n"
-        ".inst 0xe2850004 @ add r0, r5, #4\n"
-        ".inst 0xe3a01000 @ mov r1, #0\n"
-        ".inst 0xe8900005 @ ldm r0, {r0, r2}\n"
-        ".inst 0xe58d1004 @ str r1, [sp, #4]\n"
-        ".inst 0xe1500002 @ cmp r0, r2\n"
-        ".inst 0x159d1000 @ ldrne r1, [sp]\n"
-        ".inst 0x0a00000b @ beq #0x19df44\n"
-        ".inst 0xe3510000 @ cmp r1, #0\n"
-        ".inst 0x1590c000 @ ldrne ip, [r0]\n"
-        ".inst 0xe2800004 @ add r0, r0, #4\n"
-        ".inst 0x1581c000 @ strne ip, [r1]\n"
-        ".inst 0xe1500002 @ cmp r0, r2\n"
-        ".inst 0xe2811004 @ add r1, r1, #4\n"
-        ".inst 0x1afffff8 @ bne #0x19df14\n"
-        ".inst 0xe5950008 @ ldr r0, [r5, #8]\n"
-        ".inst 0xe5951004 @ ldr r1, [r5, #4]\n"
-        ".inst 0xe0400001 @ sub r0, r0, r1\n"
-        ".inst 0xe1a00140 @ asr r0, r0, #2\n"
-        ".inst 0xe58d0004 @ str r0, [sp, #4]\n"
-        ".inst 0xe5951004 @ ldr r1, [r5, #4]\n"
-        ".inst 0xe3510000 @ cmp r1, #0\n"
-        ".inst 0x0a000003 @ beq #0x19df60\n"
-        ".inst 0xe5950000 @ ldr r0, [r5]\n"
-        ".inst 0xe5902000 @ ldr r2, [r0]\n"
-        ".inst 0xe592200c @ ldr r2, [r2, #0xc]\n"
-        ".inst 0xe12fff32 @ blx r2\n"
-        ".inst 0xe1cd00d0 @ ldrd r0, r1, [sp]\n"
-        ".inst 0xe0801101 @ add r1, r0, r1, lsl #2\n"
-        ".inst 0xe1c500f4 @ strd r0, r1, [r5, #4]\n"
-        ".inst 0xe595000c @ ldr r0, [r5, #0xc]\n"
-        ".inst 0xe3a01001 @ mov r1, #1\n"
-        ".inst 0xe2000103 @ and r0, r0, #0xc0000000\n"
-        ".inst 0xe180000a @ orr r0, r0, sl\n"
-        ".inst 0xe585000c @ str r0, [r5, #0xc]\n"
-        ".inst 0xe5950008 @ ldr r0, [r5, #8]\n"
-        ".inst 0xe3500000 @ cmp r0, #0\n"
-        ".inst 0x15808000 @ strne r8, [r0]\n"
-        ".inst 0xe5950008 @ ldr r0, [r5, #8]\n"
-        ".inst 0xe2800004 @ add r0, r0, #4\n"
-        ".inst 0xe5850008 @ str r0, [r5, #8]\n"
-        ".inst 0xe3510000 @ cmp r1, #0\n"
-        ".inst 0x15990000 @ ldrne r0, [sb]\n"
-        ".inst 0x1588000c @ strne r0, [r8, #0xc]\n"
-        ".inst 0xe5970028 @ ldr r0, [r7, #0x28]\n"
-        ".inst 0xe2844001 @ add r4, r4, #1\n"
-        ".inst 0xe1500004 @ cmp r0, r4\n"
-        ".inst 0xcaffffa1 @ bgt #0x19de3c\n"
-        ".inst 0xe28dd00c @ add sp, sp, #0xc\n"
-        ".inst 0xe8bd8ff0 @ pop {r4, r5, r6, r7, r8, sb, sl, fp, pc}\n"
-    );
+extern "C" s32 engine_func_0019de18(CollectionSource* source,
+                                    CollectionList* list) {
+    for (s32 index = 0; index < source->count_28; ++index) {
+        CollectedElement* const element = source->items_24[index];
+
+        CollectedElement* const chain_head = list->chain_head_0c;
+        if (chain_head != nullptr) {
+            if (chain_head == element) {
+                continue;
+            }
+            if (engine_func_002af604(chain_head, element) != 0) {
+                continue;
+            }
+        }
+
+        if (element->link_0c != nullptr) {
+            continue;
+        }
+
+        // The capacity word is read once here and kept for the tag test, like
+        // the original's r2 across the two capacity comparisons.
+        const u32 capacity_word = list->capacity_20;
+        const u32 capacity = capacity_word & kCapacityMask;
+        const s32 used = CollectionElementCount(list->begin_18, list->end_1c);
+        // Signed `bgt` in the original; the capacity is a 30-bit value, so the
+        // cast is exact and keeps a negative `used` from becoming huge.
+        if (static_cast<s32>(capacity) > used) {
+            AppendCollectedElement(list, element);
+            continue;
+        }
+
+        const u32 grown_capacity = capacity != 0 ? capacity * 2 : 1;
+        // Dead guard from the original: capacity is a 30-bit value, so the
+        // signed `capacity >= capacity * 2` test never skips the grow.
+        if (static_cast<s32>(capacity) >= static_cast<s32>(grown_capacity)) {
+            AppendCollectedElement(list, element);
+            continue;
+        }
+
+        void* const ctx = list->ctx_14;
+        if (ctx == nullptr || (capacity_word & kCapacityTags) != kGrowableTag) {
+            continue;  // append reported as failed: no end advance, no link
+        }
+
+        void** const vtable = *reinterpret_cast<void***>(ctx);
+        CollectedElement** const new_begin =
+            static_cast<CollectedElement**>(reinterpret_cast<CollectionAllocateFn>(
+                vtable[2])(ctx, grown_capacity * 4, kGrowAlignment));
+
+        // Begin/end are re-read after the allocation, as the original does with
+        // its second `ldm`.
+        CollectedElement** const old_begin = list->begin_18;
+        CollectedElement** const old_end = list->end_1c;
+        u32 copied = 0;
+        if (old_begin != old_end) {
+            CollectedElement** dst = new_begin;
+            for (CollectedElement** src = old_begin; src != old_end; ++src) {
+                if (dst != nullptr) {
+                    *dst = *src;
+                }
+                ++dst;
+            }
+            // Count again from memory: the original recomputes it after the
+            // copy loop.
+            copied = static_cast<u32>(
+                CollectionElementCount(list->begin_18, list->end_1c));
+        }
+
+        CollectedElement** const release_block = list->begin_18;
+        if (release_block != nullptr) {
+            void* const release_ctx = list->ctx_14;
+            void** const release_vtable = *reinterpret_cast<void***>(release_ctx);
+            reinterpret_cast<CollectionReleaseFn>(
+                release_vtable[3])(release_ctx, release_block);
+        }
+
+        list->begin_18 = new_begin;
+        list->end_1c = reinterpret_cast<CollectedElement**>(
+            reinterpret_cast<u32>(new_begin) + copied * 4);
+        list->capacity_20 = (list->capacity_20 & kCapacityTags) | grown_capacity;
+
+        AppendCollectedElement(list, element);
+    }
+    return source->count_28;
 }
 
 // DECOMP_FUNC(0x0013a024, 432)

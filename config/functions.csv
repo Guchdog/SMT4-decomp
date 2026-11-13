@@ -2077,7 +2077,7 @@ address,size,status,category,name,src_file
 0x0019dce0,196,matching,engine,engine_func_0019dce0,src/engine/leaf_batch40_b.cpp
 0x0019dda4,104,matching,engine,engine_func_0019dda4,src/engine/leaf_batch29_a.cpp
 0x0019de0c,12,matching,ui,ui_func_0019de0c,src/engine/leaf_matching.cpp
-0x0019de18,420,matching,engine,engine_func_0019de18,src/engine/leaf_batch28_a.cpp
+0x0019de18,420,non_matching,engine,engine_func_0019de18,src/engine/leaf_batch28_a.cpp
 0x0019dfbc,120,non_matching,script_vm,script_vm_func_0019dfbc,src/engine/leaf_batch29_a.cpp
 0x0019e034,4772,matching,battle,btlUI_Calc,src/battle/btl_ui.cpp
 0x0019f2d8,1732,matching,script_vm,script_vm_func_0019f2d8,src/engine/leaf_batch40_a.cpp
