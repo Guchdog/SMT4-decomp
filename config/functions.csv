@@ -9542,7 +9542,7 @@ address,size,status,category,name,src_file
 0x003ac42c,88,matching,unknown,func_003ac42c,src/engine/leaf_batch16_a.cpp
 0x003ac484,480,matching,engine,engine_func_003ac484,src/engine/leaf_batch27_c.cpp
 0x003ac664,36,matching,unknown,func_003ac664,src/engine/leaf_batch37_b.cpp
-0x003ac688,680,matching,ui,ui_func_003ac688,src/engine/leaf_batch45_a.cpp
+0x003ac688,680,non_matching,ui,ui_func_003ac688,src/engine/leaf_batch45_a.cpp
 0x003ac930,80,non_matching,engine,engine_func_003ac930,src/engine/leaf_batch31_b.cpp
 0x003ac980,52,matching,unknown,func_003ac980,src/engine/leaf_batch12_c.cpp
 0x003ac9b4,36,matching,unknown,func_003ac9b4,src/engine/leaf_batch12_b.cpp
