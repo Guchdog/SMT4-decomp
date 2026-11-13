@@ -4497,62 +4497,131 @@ extern "C" __attribute__((naked)) void script_vm_func_0033574c() {
     );
 }
 
+// Direct calls made by 0x0038B75C.
+extern "C" void engine_func_00361710(void* object);                       // 0x00361710
+extern "C" void crt_func_00100c74(u16* dst, const u16* src, u32 count);   // 0x00100C74 (Thumb)
+extern "C" s32 func_003617ec(void* object, u32 arg1, u32 arg2);           // 0x003617EC
+extern "C" void camp_func_001472a8(u32 value);                            // 0x001472A8
+extern "C" u32 func_003619cc();                                           // 0x003619CC
+extern "C" u32 func_003619fc();                                           // 0x003619FC
+extern "C" __attribute__((pcs("aapcs"))) u32
+engine_func_00361888(u8* out_byte, void* object, u32 base, u32 size,
+                     f32 value, u32 arg5, u32 arg6, u32 arg7, u32 arg8);  // 0x00361888
+extern "C" s32 func_0035a614(void* dst, u32* inout1, const u16* text,
+                             u32* inout2);                                // 0x0035A614
+extern "C" void engine_func_002bce48(u32 result);                         // 0x002BCE48
+extern "C" void engine_func_002c3b48(void* dst, u32 size);                // 0x002C3B48
+
+// Stack object built by 0x00361710.  Fields are named after their ARM offsets;
+// the constructor writes up to +0x354, so the whole extent is retained.
+struct EngineFunc0038b75cObject {
+    u32 field_00;
+    u32 field_04;
+    u32 field_08;
+    u32 field_0c;
+    u32 field_10;
+    u32 field_14;
+    u32 field_18;
+    u32 field_1c;
+    u16 field_20;
+    u16 field_22;
+    u16 field_24;
+    u8  pad_26[0x66];
+    u32 field_8c;
+    u16 text_90[0x41];
+    u8  byte_112;
+    u8  byte_113;
+    u8  byte_114;
+    u8  byte_115;
+    u8  byte_116;
+    u8  byte_117;
+    u8  byte_118;
+    u8  byte_119;
+    u8  byte_11a;
+    u8  byte_11b;
+    u8  byte_11c;
+    u8  byte_11d;
+    u8  pad_11e[2];
+    u32 field_120;
+    u32 field_124;
+    u32 field_128;
+    u32 field_12c;
+    u32 field_130;
+    u16 field_134;
+    u16 pad_136;
+    u32 field_138;
+    u32 field_13c;
+    u32 field_140;
+    u32 field_144;
+    u16 field_148;
+    u16 pad_14a;
+    u32 field_14c;
+    u8  field_150[0x202];
+    u8  pad_352[2];
+    u8  byte_354;
+    u8  pad_355[3];
+};
+static_assert(sizeof(EngineFunc0038b75cObject) == 0x358);
+
 // DECOMP_FUNC(0x0038b75c, 404)
-extern "C" __attribute__((naked)) void engine_func_0038b75c() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x47f0, 0xe92d, 0x6003, 0xe1a0\n"
-        ".hword 0x7002, 0xe1a0, 0x9001, 0xe1a0\n"
-        ".hword 0x8b02, 0xed2d, 0xde42, 0xe24d\n"
-        ".hword 0x1b01, 0xe28d, 0x0b01, 0xe28d\n"
-        ".hword 0x1048, 0xe281, 0x8a14, 0xed90\n"
-        ".hword 0xa018, 0xe28d, 0x0030, 0xe891\n"
-        ".hword 0x000a, 0xe1a0, 0x57de, 0xebff\n"
-        ".hword 0x8000, 0xe3a0, 0x0001, 0xe3a0\n"
-        ".hword 0x63b8, 0xe1cd, 0x0000, 0xe354\n"
-        ".hword 0x812b, 0xe5cd, 0x1004, 0xe3a0\n"
-        ".hword 0x812d, 0xe5cd, 0x0024, 0x158d\n"
-        ".hword 0x0000, 0xe355, 0x0018, 0xe58d\n"
-        ".hword 0x1020, 0xe58d, 0x012c, 0xe5cd\n"
-        ".hword 0x0002, 0x0a00, 0x002c, 0xe59d\n"
-        ".hword 0x0001, 0xe380, 0x002c, 0xe58d\n"
-        ".hword 0x2041, 0xe3a0, 0x1007, 0xe1a0\n"
-        ".hword 0x500a, 0xe1a0, 0x0090, 0xe28a\n"
-        ".hword 0xd522, 0xfaf5, 0x2000, 0xe3a0\n"
-        ".hword 0x1002, 0xe1a0, 0x0005, 0xe1a0\n"
-        ".hword 0x57fc, 0xebff, 0x4000, 0xe1a0\n"
-        ".hword 0xf000, 0xe320, 0xeea8, 0xebf6\n"
-        ".hword 0xf000, 0xe320, 0xf000, 0xe320\n"
-        ".hword 0x586e, 0xebff, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0x5877, 0xebff\n"
-        ".hword 0x00c8, 0xe59f, 0x3004, 0xe1a0\n"
-        ".hword 0x1005, 0xe1a0, 0x2000, 0xe280\n"
-        ".hword 0x8fff, 0xe5c0, 0x8004, 0xe58d\n"
-        ".hword 0x8008, 0xe58d, 0x800c, 0xe58d\n"
-        ".hword 0x8010, 0xe58d, 0x8a00, 0xed8d\n"
-        ".hword 0x0014, 0xe28d, 0x580e, 0xebff\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x0002, 0x0a00, 0x0150, 0xe59d\n"
-        ".hword 0x0002, 0xe350, 0x0003, 0x0a00\n"
-        ".hword 0xde42, 0xe28d, 0x0000, 0xe3a0\n"
-        ".hword 0x8b02, 0xecbd, 0x87f0, 0xe8bd\n"
-        ".hword 0x0000, 0xe3e0, 0x0000, 0xe58d\n"
-        ".hword 0x015c, 0xe59d, 0x4064, 0xe59f\n"
-        ".hword 0x500d, 0xe1a0, 0x7004, 0xe28d\n"
-        ".hword 0x2080, 0xe084, 0x3005, 0xe1a0\n"
-        ".hword 0x1007, 0xe1a0, 0x0000, 0xe3a0\n"
-        ".hword 0x3b5c, 0xebff, 0x0fa0, 0xe1b0\n"
-        ".hword 0xf000, 0xe320, 0xc566, 0x1bfc\n"
-        ".hword 0x1006, 0xe1a0, 0x0009, 0xe1a0\n"
-        ".hword 0xe0a3, 0xebfc, 0x015c, 0xe59d\n"
-        ".hword 0x3005, 0xe1a0, 0x1007, 0xe1a0\n"
-        ".hword 0x2080, 0xe084, 0x0009, 0xe1a0\n"
-        ".hword 0x3b50, 0xebff, 0x0fa0, 0xe1b0\n"
-        ".hword 0xf000, 0xe320, 0xc55a, 0x1bfc\n"
-        ".hword 0xde42, 0xe28d, 0x0001, 0xe3a0\n"
-        ".hword 0x8b02, 0xecbd, 0x87f0, 0xe8bd\n"
-        ".hword 0x7000, 0x0047\n"
-    );
+extern "C" __attribute__((pcs("aapcs"))) u32
+engine_func_0038b75c([[maybe_unused]] void* context, u8* buffer,
+                     const u16* name, u32 buffer_size, u32 flag_a,
+                     u32 flag_b, f32 value) {
+    alignas(8) EngineFunc0038b75cObject object;
+    engine_func_00361710(&object);
+
+    // Field block issued between the constructor and the name copy.
+    object.field_00 = 1;
+    object.field_08 = 4;
+    if (flag_a != 0) {
+        object.field_0c = 1;
+    }
+    if (flag_b != 0) {
+        object.field_14 |= 1;
+    }
+    object.field_20 = static_cast<u16>(buffer_size);
+    object.byte_113 = 0;
+    object.byte_114 = 1;
+    object.byte_115 = 0;
+
+    crt_func_00100c74(object.text_90, name, 0x41);
+
+    const s32 size = func_003617ec(&object, 0, 0);
+
+    camp_func_001472a8(static_cast<u32>(size));
+    func_003619cc();
+    func_003619fc();
+
+    // __bss_start__; the byte store and the u16 lookup table below live in BSS.
+    constexpr u32 kBssBase = 0x00477000;
+    *reinterpret_cast<volatile u8*>(kBssBase + 0xFFF) = 0;
+
+    u8 result_byte = 0;
+    if (engine_func_00361888(&result_byte, &object, kBssBase,
+                             static_cast<u32>(size), value, 0, 0, 0, 0) == 0) {
+        return 0;
+    }
+    if (object.field_138 != 2) {
+        return 0;
+    }
+
+    u32 inout_a = 0xFFFFFFFFu;
+    u32 inout_b = 0;
+    const u32 index = object.field_144;
+    const u16* entry = reinterpret_cast<const u16*>(kBssBase + index * 2);
+
+    if (func_0035a614(nullptr, &inout_b, entry, &inout_a) < 0) {
+        engine_func_002bce48(1);
+    }
+
+    engine_func_002c3b48(buffer, buffer_size);
+
+    if (func_0035a614(buffer, &inout_b, entry, &inout_a) < 0) {
+        engine_func_002bce48(1);
+    }
+
+    return 1;
 }
 
 // Direct calls made by 0x0015d944.
