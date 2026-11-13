@@ -4267,91 +4267,219 @@ extern "C" u32 engine_func_0011bf0c(void* heap_ptr, void* mem_block, u32 new_siz
     return block->blockSize;
 }
 
-// DECOMP_FUNC(0x002712d4, 632)
-extern "C" __attribute__((naked)) void func_002712d4() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4070, 0xe92d, 0x624c, 0xe59f\n"
-        ".hword 0x8b0a, 0xed2d, 0xd030, 0xe24d\n"
-        ".hword 0x3e10, 0xe592, 0xca90, 0xed9f\n"
-        ".hword 0xba91, 0xeddf, 0x8a8f, 0xed9f\n"
-        ".hword 0x3183, 0xe063, 0x2183, 0xe082\n"
-        ".hword 0x9a48, 0xeeb0, 0x000e, 0xe5c2\n"
-        ".hword 0x1000, 0xe591, 0x0001, 0xe3a0\n"
-        ".hword 0x8a0a, 0xedd2, 0x400c, 0xe282\n"
-        ".hword 0x0e3c, 0xe5c1, 0x001c, 0xe592\n"
-        ".hword 0x9aab, 0xee68, 0x00e0, 0xe586\n"
-        ".hword 0x0a08, 0xed92, 0x0a0c, 0xee30\n"
-        ".hword 0x0a39, 0xed86, 0x0024, 0xe592\n"
-        ".hword 0x0a69, 0xeeb0, 0x00e8, 0xe586\n"
-        ".hword 0x450e, 0xeb00, 0xba7d, 0xed9f\n"
-        ".hword 0x0a04, 0xedd4, 0x0a0b, 0xee40\n"
-        ".hword 0x0a3b, 0xedc6, 0x0a05, 0xed94\n"
-        ".hword 0x0a0c, 0xee30, 0x0a3c, 0xed86\n"
-        ".hword 0x0a69, 0xeeb0, 0x44a6, 0xeb00\n"
-        ".hword 0x0a40, 0xeef0, 0x0a06, 0xed94\n"
-        ".hword 0x0a8b, 0xee00, 0x0a3d, 0xed86\n"
-        ".hword 0x002c, 0xe594, 0x0000, 0xe350\n"
-        ".hword 0x0062, 0x0a00, 0x00e0, 0xe286\n"
-        ".hword 0x3014, 0xe28d, 0x0007, 0xe890\n"
-        ".hword 0x0007, 0xe883, 0x2020, 0xe28d\n"
-        ".hword 0x0edc, 0xe1c6, 0x00f8, 0xe1cd\n"
-        ".hword 0x0a04, 0xed8d, 0x1014, 0xe28d\n"
-        ".hword 0x0008, 0xe28d, 0xd6b6, 0xebff\n"
-        ".hword 0x0001, 0xe370, 0x0055, 0x0a00\n"
-        ".hword 0x0014, 0xe28d, 0x0a03, 0xec90\n"
-        ".hword 0x0008, 0xe28d, 0x1a03, 0xecd0\n"
-        ".hword 0x5a62, 0xeb00, 0x0170, 0xe59f\n"
-        ".hword 0x9a40, 0xeef0, 0xaa5b, 0xed9f\n"
-        ".hword 0x0000, 0xe590, 0x004c, 0xe280\n"
-        ".hword 0x1a03, 0xecd0, 0x0010, 0xe284\n"
-        ".hword 0x0a03, 0xec90, 0x5a97, 0xeb00\n"
-        ".hword 0x0a40, 0xeef0, 0x0a68, 0xeeb0\n"
-        ".hword 0x5a5e, 0xeb00, 0x8ac0, 0xeeb4\n"
-        ".hword 0x5000, 0xe3a0, 0xfa10, 0xeef1\n"
-        ".hword 0xaa4f, 0xcd9f, 0x0a07, 0xed94\n"
-        ".hword 0x0a09, 0xee30, 0x445c, 0xeb00\n"
-        ".hword 0x8a40, 0xeeb0, 0xaa2b, 0xee68\n"
-        ".hword 0x0a6a, 0xeeb0, 0x44d5, 0xeb00\n"
-        ".hword 0x0a04, 0xedd4, 0x0a0b, 0xee40\n"
-        ".hword 0x0a6a, 0xeeb0, 0x0a3b, 0xedc6\n"
-        ".hword 0x4471, 0xeb00, 0x0a40, 0xeef0\n"
-        ".hword 0x0a06, 0xed94, 0x00e0, 0xe286\n"
-        ".hword 0x3014, 0xe28d, 0x0a8b, 0xee00\n"
-        ".hword 0x0a3d, 0xed86, 0x0007, 0xe890\n"
-        ".hword 0x0007, 0xe883, 0x00ec, 0xe286\n"
-        ".hword 0x1008, 0xe28d, 0x0005, 0xe890\n"
-        ".hword 0x0005, 0xe881, 0x2020, 0xe28d\n"
-        ".hword 0x0a04, 0xed8d, 0x1014, 0xe28d\n"
-        ".hword 0x0008, 0xe28d, 0xd682, 0xebff\n"
-        ".hword 0x0001, 0xe370, 0xf000, 0xe320\n"
-        ".hword 0x0023, 0x0a00, 0x0014, 0xe28d\n"
-        ".hword 0x0a03, 0xec90, 0x0008, 0xe28d\n"
-        ".hword 0x1a03, 0xecd0, 0x5a2d, 0xeb00\n"
-        ".hword 0x0ae9, 0xeeb4, 0xfa10, 0xeef1\n"
-        ".hword 0x0006, 0x2a00, 0x0014, 0xe28d\n"
-        ".hword 0x8a48, 0xeef0, 0x0a03, 0xec90\n"
-        ".hword 0x0008, 0xe28d, 0x1a03, 0xecd0\n"
-        ".hword 0x5a24, 0xeb00, 0x9a40, 0xeef0\n"
-        ".hword 0x9a0a, 0xee39, 0x5001, 0xe285\n"
-        ".hword 0x0004, 0xe355, 0xffcc, 0xbaff\n"
-        ".hword 0x8aab, 0xee28, 0x0a48, 0xeeb0\n"
-        ".hword 0x44a6, 0xeb00, 0x0a04, 0xedd4\n"
-        ".hword 0x0a0b, 0xee40, 0x0a3b, 0xedc6\n"
-        ".hword 0x0a05, 0xed94, 0x0a0c, 0xee30\n"
-        ".hword 0x0a3c, 0xed86, 0x0a48, 0xeeb0\n"
-        ".hword 0x443f, 0xeb00, 0x0a06, 0xedd4\n"
-        ".hword 0x0a0b, 0xee40, 0x0a3d, 0xedc6\n"
-        ".hword 0xd030, 0xe28d, 0x8b0a, 0xecbd\n"
-        ".hword 0x8070, 0xe8bd, 0x8a07, 0xed84\n"
-        ".hword 0xd030, 0xe28d, 0x8b0a, 0xecbd\n"
-        ".hword 0x8070, 0xe8bd, 0x7e58, 0x0044\n"
-        ".hword 0xf91c, 0x0049, 0x0000, 0x42c8\n"
-        ".hword 0x0000, 0x0000, 0xfa35, 0x3c8e\n"
-        ".hword 0x0000, 0x43c8, 0x74f4, 0x0044\n"
-        ".hword 0x0000, 0x42b4, 0x0000, 0xc2b4\n"
-    );
+namespace placement_2712d4 {
+
+// 0x00447E58 points at a table of 64 placement rows followed by the header
+// block at 0x0E00.  Each row is 0x38 bytes.  This routine writes the row named
+// by the u32 selector at header+0x10.
+constexpr u32 kRowStride = 0x38;
+constexpr u32 kRowActiveOffset = 0x0C;   // u8: row occupied
+constexpr u32 kRowValueOffset = 0x0E;    // u8: payload byte written here
+constexpr u32 kRowXOffset = 0x1C;        // f32 placement position
+constexpr u32 kRowYOffset = 0x20;
+constexpr u32 kRowZOffset = 0x24;
+constexpr u32 kRowHeadingOffset = 0x28;  // f32 heading in degrees
+// The original tests `ldr r0,[r4,#0x2c]` with r4 = row + 0x0C, i.e. the word at
+// row+0x38.  With the 0x38-byte stride that is the first word of the following
+// row; a zero word skips the whole placement search.
+constexpr u32 kRowLinkOffset = 0x38;
+
+constexpr u32 kTableIndexOffset = 0xE10; // u32 selected row index in the header
+constexpr u32 kOwnerFlagOffset = 0xE3C;  // u8 transient flag set on the owner
+
+// 0x0049F91C: shared map/script runtime block.  The placement is published as
+// an origin Vec3 at +0xE0 and a probe-target Vec3 at +0xEC.
+constexpr u32 kRuntimeStateAddr = 0x0049F91C;
+constexpr u32 kStateOriginOffset = 0xE0;
+constexpr u32 kStateTargetOffset = 0xEC;
+
+// 0x004474F4 -> script camera work object; its blended eye is at +0x4C.
+constexpr u32 kScriptCameraSlotAddr = 0x004474F4;
+constexpr u32 kCameraEyeOffset = 0x4C;
+
+constexpr f32 kDegToRadians = 0.017453292f; // 0x3C8EFA35
+constexpr f32 kProbeDistance = 400.0f;      // 0x43C80000
+constexpr f32 kOriginLift = 100.0f;         // 0x42C80000
+constexpr f32 kStepDegrees = 90.0f;         // 0x42B40000 / 0xC2B40000
+constexpr u32 kSampleCount = 4;
+constexpr u32 kProbeScratchSize = 0x10;     // original sp+0x20 area
+
+struct Vec3 {
+    f32 x;
+    f32 y;
+    f32 z;
 };
+static_assert(sizeof(Vec3) == 0x0C);
+
+}  // namespace placement_2712d4
+
+// 0x00266E88: tests the segment (first argument -> second argument) against the
+// world and reports the hit through the third argument; -1 means no usable
+// result and aborts the placement search.
+extern "C" s32 script_vm_func_00266e88(const placement_2712d4::Vec3* from,
+                                       const placement_2712d4::Vec3* to,
+                                       void* out);
+// 0x00282588: wraps degrees into [0, 360) and snaps them to a 90-degree step.
+extern "C" f32 script_vm_func_00282588(f32 degrees);
+// 0x0028277C: sine of a radian argument.
+extern "C" f32 script_vm_func_0028277c(f32 radians);
+// 0x00282600: cosine of a radian argument.
+extern "C" f32 script_vm_func_00282600(f32 radians);
+// 0x00287D54: Euclidean distance between two Vec3 values (s0-s2, s3-s5).
+extern "C" f32 engine_func_00287d54(placement_2712d4::Vec3 a,
+                                    placement_2712d4::Vec3 b);
+// 0x00287D74: signed angular delta (second degree angle minus first) folded
+// into [-180, 180].
+extern "C" f32 script_vm_func_00287d74(f32 base_degrees, f32 degrees);
+// 0x00287E4C: planar angle in degrees from the first Vec3 to the second,
+// measured as atan2(dx, dz) and wrapped into [0, 360).
+extern "C" f32 script_vm_func_00287e4c(placement_2712d4::Vec3 from,
+                                       placement_2712d4::Vec3 to);
+
+// DECOMP_FUNC(0x002712d4, 632)
+extern "C" void func_002712d4(u8 value, u8* const* owner_slot,
+                              void* manager_ptr) {
+    using namespace placement_2712d4;
+
+    u8* const manager = static_cast<u8*>(manager_ptr);
+    u8* const state = reinterpret_cast<u8*>(kRuntimeStateAddr);
+    const u32 row_index =
+        *reinterpret_cast<const u32*>(manager + kTableIndexOffset);
+    u8* const row = manager + row_index * kRowStride;
+
+    // 0x271300: publish the payload byte into the selected row.
+    row[kRowValueOffset] = value;
+
+    // 0x271304..0x271314: mark the owner object, after sampling the heading.
+    u8* const owner = *owner_slot;
+    const f32 heading = *reinterpret_cast<const f32*>(row + kRowHeadingOffset);
+    owner[kOwnerFlagOffset] = 1;
+
+    // 0x271318..0x271338: origin = row position with a fixed 100-unit lift.
+    const f32 row_x = *reinterpret_cast<const f32*>(row + kRowXOffset);
+    *reinterpret_cast<f32*>(state + kStateOriginOffset) = row_x;
+    const f32 row_y = *reinterpret_cast<const f32*>(row + kRowYOffset);
+    *reinterpret_cast<f32*>(state + kStateOriginOffset + 4) =
+        row_y + kOriginLift;
+    const f32 row_z = *reinterpret_cast<const f32*>(row + kRowZOffset);
+    *reinterpret_cast<f32*>(state + kStateOriginOffset + 8) = row_z;
+
+    // 0x27131C..0x271370: probe target 400 units along the row heading.
+    const f32 heading_radians = heading * kDegToRadians;
+    const f32 initial_sin = script_vm_func_0028277c(heading_radians);
+    *reinterpret_cast<f32*>(state + kStateTargetOffset) =
+        *reinterpret_cast<const f32*>(row + kRowXOffset) +
+        initial_sin * kProbeDistance;
+    *reinterpret_cast<f32*>(state + kStateTargetOffset + 4) =
+        *reinterpret_cast<const f32*>(row + kRowYOffset) + kOriginLift;
+    const f32 initial_cos = script_vm_func_00282600(heading_radians);
+    *reinterpret_cast<f32*>(state + kStateTargetOffset + 8) =
+        *reinterpret_cast<const f32*>(row + kRowZOffset) +
+        initial_cos * kProbeDistance;
+
+    // 0x271374..0x27137C: nothing to search when the link word is clear.
+    if (*reinterpret_cast<const u32*>(row + kRowLinkOffset) == 0) {
+        return;
+    }
+
+    u8 probe_scratch[kProbeScratchSize];
+
+    placement_2712d4::Vec3 origin;
+    origin.x = *reinterpret_cast<const f32*>(state + kStateOriginOffset);
+    origin.y = *reinterpret_cast<const f32*>(state + kStateOriginOffset + 4);
+    origin.z = *reinterpret_cast<const f32*>(state + kStateOriginOffset + 8);
+
+    placement_2712d4::Vec3 target;
+    target.x = *reinterpret_cast<const f32*>(state + kStateTargetOffset);
+    target.y = *reinterpret_cast<const f32*>(state + kStateTargetOffset + 4);
+    target.z = *reinterpret_cast<const f32*>(state + kStateTargetOffset + 8);
+
+    // 0x2713A8..0x2713B0: reject an unusable segment result.
+    if (script_vm_func_00266e88(&target, &origin, probe_scratch) == -1) {
+        return;
+    }
+
+    // 0x2713B4..0x2713C0: the improvement threshold starts at the distance to
+    // the unsnapped probe target.
+    f32 best_distance = engine_func_00287d54(origin, target);
+
+    // 0x2713C8..0x271404: face the camera eye, then pick the 90-degree turn
+    // direction that shortens the planar angular delta.
+    const placement_2712d4::Vec3 camera_eye =
+        *reinterpret_cast<const placement_2712d4::Vec3*>(
+            *reinterpret_cast<u8* const*>(kScriptCameraSlotAddr) +
+            kCameraEyeOffset);
+    const placement_2712d4::Vec3 row_position = {
+        *reinterpret_cast<const f32*>(row + kRowXOffset),
+        *reinterpret_cast<const f32*>(row + kRowYOffset),
+        *reinterpret_cast<const f32*>(row + kRowZOffset),
+    };
+    const f32 camera_angle =
+        script_vm_func_00287e4c(row_position, camera_eye);
+    const f32 angular_delta = script_vm_func_00287d74(heading, camera_angle);
+    const f32 step_degrees =
+        angular_delta < 0.0f ? -kStepDegrees : kStepDegrees;
+
+    // 0x271408..0x2714D0: four probes at 90-degree offsets around the heading.
+    f32 best_heading = heading;
+    f32 offset_degrees = 0.0f;
+    for (u32 sample = 0; sample < kSampleCount; ++sample) {
+        const f32 snapped = script_vm_func_00282588(
+            *reinterpret_cast<const f32*>(row + kRowHeadingOffset) +
+            offset_degrees);
+        const f32 snapped_radians = snapped * kDegToRadians;
+
+        const f32 sin_value = script_vm_func_0028277c(snapped_radians);
+        *reinterpret_cast<f32*>(state + kStateTargetOffset) =
+            *reinterpret_cast<const f32*>(row + kRowXOffset) +
+            sin_value * kProbeDistance;
+        const f32 cos_value = script_vm_func_00282600(snapped_radians);
+        *reinterpret_cast<f32*>(state + kStateTargetOffset + 8) =
+            *reinterpret_cast<const f32*>(row + kRowZOffset) +
+            cos_value * kProbeDistance;
+
+        origin.x = *reinterpret_cast<const f32*>(state + kStateOriginOffset);
+        origin.y =
+            *reinterpret_cast<const f32*>(state + kStateOriginOffset + 4);
+        origin.z =
+            *reinterpret_cast<const f32*>(state + kStateOriginOffset + 8);
+
+        target.x = *reinterpret_cast<const f32*>(state + kStateTargetOffset);
+        target.y =
+            *reinterpret_cast<const f32*>(state + kStateTargetOffset + 4);
+        target.z =
+            *reinterpret_cast<const f32*>(state + kStateTargetOffset + 8);
+
+        // 0x271478..0x271484: a rejected segment stores the snapped heading and
+        // leaves the published target at the rejected sample.
+        if (script_vm_func_00266e88(&target, &origin, probe_scratch) == -1) {
+            *reinterpret_cast<f32*>(row + kRowHeadingOffset) = snapped;
+            return;
+        }
+
+        // 0x271498..0x2714C0: the original measures the candidate twice when it
+        // wins: once for the comparison and once for the new threshold.
+        if (engine_func_00287d54(origin, target) < best_distance) {
+            best_heading = snapped;
+            best_distance = engine_func_00287d54(origin, target);
+        }
+
+        offset_degrees += step_degrees;
+    }
+
+    // 0x2714D4..0x271508: republish the winning probe target.
+    const f32 best_radians = best_heading * kDegToRadians;
+    const f32 final_sin = script_vm_func_0028277c(best_radians);
+    *reinterpret_cast<f32*>(state + kStateTargetOffset) =
+        *reinterpret_cast<const f32*>(row + kRowXOffset) +
+        final_sin * kProbeDistance;
+    *reinterpret_cast<f32*>(state + kStateTargetOffset + 4) =
+        *reinterpret_cast<const f32*>(row + kRowYOffset) + kOriginLift;
+    const f32 final_cos = script_vm_func_00282600(best_radians);
+    *reinterpret_cast<f32*>(state + kStateTargetOffset + 8) =
+        *reinterpret_cast<const f32*>(row + kRowZOffset) +
+        final_cos * kProbeDistance;
+}
 
 // DECOMP_FUNC(0x00392acc, 632)
 extern "C" __attribute__((naked)) void engine_func_00392acc() {

@@ -4339,7 +4339,7 @@ address,size,status,category,name,src_file
 0x002710a4,316,matching,script_vm,script_vm_func_002710a4,src/engine/leaf_batch41_a.cpp
 0x002711e0,160,non_matching,script_vm,script_vm_func_002711e0,src/engine/leaf_batch31_c.cpp
 0x00271280,84,matching,script_vm,script_vm_func_00271280,src/engine/leaf_batch34_b.cpp
-0x002712d4,632,matching,unknown,func_002712d4,src/engine/leaf_batch45_a.cpp
+0x002712d4,632,non_matching,script_vm,func_002712d4,src/engine/leaf_batch45_a.cpp
 0x0027154c,8316,matching,script_vm,FlowScript_OpcodeEvaluator,src/script/script_vm.cpp
 0x002735c8,72,matching,script_vm,script_vm_func_002735c8,src/engine/leaf_batch23_b.cpp
 0x00273610,48,matching,script_vm,script_vm_func_00273610,src/engine/leaf_batch23_b.cpp
