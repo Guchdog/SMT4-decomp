@@ -6836,176 +6836,282 @@ extern "C" __attribute__((naked)) void script_vm_func_001b5054() {
 }
 
 // DECOMP_FUNC(0x001b5398, 600)
-extern "C" __attribute__((naked)) void script_vm_func_001b5398() {
-    asm volatile(
-        "push {r4, r5, r6, r7, lr}\n"
-        "sub sp, sp, #0x64\n"
-        "bl ui_func_002c0ac8\n"
-        ".word 0xe59f723c\n"
-        "ldr r0, [r7]\n"
-        "cmp r0, #0\n"
-        "beq .L_001b5588\n"
-        "ldr r4, [r0]\n"
-        "mov r6, #0\n"
-        "cmp r4, #0\n"
-        "beq .L_001b55dc\n"
-        ".L_001b53c4:\n"
-        ".word 0xe59f0220\n"
-        "ldr r5, [r4, #0x2a4]\n"
-        "ldrsh r0, [r0, r4]\n"
-        "cmp r0, #0\n"
-        "blt .L_001b5590\n"
-        "ldrsh r0, [r4, #2]\n"
-        "mov r5, #1\n"
-        "cmp r0, #0\n"
-        "beq .L_001b53f4\n"
-        "cmp r0, #1\n"
-        "bne .L_001b5568\n"
-        "b .L_001b554c\n"
-        ".L_001b53f4:\n"
-        "nop\n"
-        "bl script_vm_func_002b6e44\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "bne .L_001b5560\n"
-        "bl script_vm_func_00295e74\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "bne .L_001b5560\n"
-        "mov r1, #0x60\n"
-        "mov r0, sp\n"
-        "bl engine_func_002c4b30\n"
-        "ldrsh r0, [r4]\n"
-        "cmp r0, #0\n"
-        "beq .L_001b54a4\n"
-        "cmp r0, #1\n"
-        "beq .L_001b5444\n"
-        "cmp r0, #2\n"
-        "bne .L_001b553c\n"
-        "b .L_001b54d0\n"
-        ".L_001b5444:\n"
-        "ldrd r0, r1, [r4, #0x10]\n"
-        "orrs r0, r0, r1\n"
-        "beq .L_001b54a4\n"
-        "ldr r0, [r4, #0x29c]\n"
-        "cmp r0, #0\n"
-        "blt .L_001b54a4\n"
-        "ldr r0, [r4, #0x10]\n"
-        "tst r0, #2\n"
-        "beq .L_001b5484\n"
-        "bl script_vm_func_002bd3ec\n"
-        "mov r1, r0\n"
-        "mov r0, sp\n"
-        "bl engine_func_002bf86c\n"
-        "nop\n"
-        "nop\n"
-        "b .L_001b5498\n"
-        ".L_001b5484:\n"
-        "ldrh r0, [r4, #0xde]\n"
-        "bl script_vm_func_002bd25c\n"
-        "mov r1, r0\n"
-        "mov r0, sp\n"
-        "bl engine_func_002bf86c\n"
-        ".L_001b5498:\n"
-        "ldr r0, [r4, #0x29c]\n"
-        "mov r1, sp\n"
-        "bl script_vm_func_00295904\n"
-        ".L_001b54a4:\n"
-        "ldr r1, [r4, #8]\n"
-        "ldr r0, [r4, #0xc]\n"
-        "uxth r1, r1\n"
-        "bl script_vm_func_0027ea24\n"
-        "mov r0, #0x298\n"
-        "mov r1, #1\n"
-        "ldrsb r0, [r0, r4]\n"
-        "bl script_vm_func_0027e9e4\n"
-        "nop\n"
-        "nop\n"
-        "b .L_001b553c\n"
-        ".L_001b54d0:\n"
-        "ldr r0, [r4, #0x14]\n"
-        "ldr r1, [r4, #0x10]\n"
-        "orrs r0, r0, r1\n"
-        "beq .L_001b5534\n"
-        "ldr r0, [r4, #0x29c]\n"
-        "cmp r0, #0\n"
-        "blt .L_001b5534\n"
-        "ldr r0, [r4, #0x10]\n"
-        "tst r0, #2\n"
-        "beq .L_001b5514\n"
-        "bl script_vm_func_002bd3ec\n"
-        "mov r1, r0\n"
-        "mov r0, sp\n"
-        "bl engine_func_002bf86c\n"
-        "nop\n"
-        "nop\n"
-        "b .L_001b5528\n"
-        ".L_001b5514:\n"
-        "ldrh r0, [r4, #0xde]\n"
-        "bl script_vm_func_002bd25c\n"
-        "mov r1, r0\n"
-        "mov r0, sp\n"
-        "bl engine_func_002bf86c\n"
-        ".L_001b5528:\n"
-        "ldr r0, [r4, #0x29c]\n"
-        "mov r1, sp\n"
-        "bl script_vm_func_00295904\n"
-        ".L_001b5534:\n"
-        "ldrh r0, [r4, #4]\n"
-        "bl camp_func_00212024\n"
-        ".L_001b553c:\n"
-        ".word 0xe59f00a8\n"
-        "strh r5, [r0, r4]\n"
-        "strh r5, [r4, #2]\n"
-        "b .L_001b5568\n"
-        ".L_001b554c:\n"
-        "nop\n"
-        "bl script_vm_func_002b6e44\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "beq .L_001b5568\n"
-        ".L_001b5560:\n"
-        ".word 0xe59f0084\n"
-        "strh r5, [r0, r4]\n"
-        ".L_001b5568:\n"
-        "add r1, r4, #0x200\n"
-        "mov r0, r6\n"
-        "ldrh r2, [r1, #0xa2]\n"
-        "ldrh ip, [r1, #0xa0]\n"
-        "sub r3, r2, #1\n"
-        "add r2, ip, #1\n"
-        "strh r3, [r1, #0xa2]\n"
-        "strh r2, [r1, #0xa0]\n"
-        ".L_001b5588:\n"
-        "add sp, sp, #0x64\n"
-        "pop {r4, r5, r6, r7, pc}\n"
-        ".L_001b5590:\n"
-        "ldr r2, [r4, #0x2a8]\n"
-        "ldr r1, [r7]\n"
-        "mov r0, r4\n"
-        "cmp r2, #0\n"
-        "streq r5, [r1]\n"
-        "strne r5, [r2, #0x2a4]\n"
-        "ldr r2, [r0, #0x2a4]\n"
-        "cmp r2, #0\n"
-        "ldreq r2, [r0, #0x2a8]\n"
-        "ldrne r3, [r0, #0x2a8]\n"
-        "streq r2, [r1, #4]\n"
-        "strne r3, [r2, #0x2a8]\n"
-        "ldr r2, [r1, #8]\n"
-        "sub r2, r2, #1\n"
-        "str r2, [r1, #8]\n"
-        "bl engine_func_002c4360\n"
-        "movs r4, r5\n"
-        "nop\n"
-        "bne .L_001b53c4\n"
-        ".L_001b55dc:\n"
-        "add sp, sp, #0x64\n"
-        "mov r0, r6\n"
-        "pop {r4, r5, r6, r7, pc}\n"
-        ".word 0x00435d78\n"
-        ".word 0x000002a2\n"
-    );
+//
+// Recovered contract (ARM 0x001B5398..0x001B55E7 plus the two literal words at
+// 0x001B55E8 = 0x00435D78 and 0x001B55EC = 0x000002A2; 0x001B55F0 starts the
+// next function):
+//
+//   * Per-frame update of the "btlHelp Calc" task.  The task trampoline
+//     0x0020EE34 is the only reference to this address (through the static task
+//     descriptor at 0x001D25C0 whose words are 0x0020EE34 / 0x001B5398 /
+//     "btlHelp Calc"); it passes the task handle in r0.  The handle is
+//     immediately forwarded to 0x002C0AC8 and the result is discarded.
+//   * 0x00435D78 holds the manager pointer.  The manager is {head +0x00,
+//     tail +0x04, u32 count +0x08}; nodes form a doubly linked list with the
+//     next pointer at +0x2A4 and the previous pointer at +0x2A8.
+//   * The first node whose signed status halfword at +0x2A2 is non-negative is
+//     processed and the routine returns 0.  Leading nodes with status < 0 are
+//     unlinked, released through 0x002C4360, and the scan continues.  A null
+//     manager, a null head or the end of the list also return 0.
+//   * The processed node's signed 16-bit state at +0x02 selects the work:
+//       - 0: 0x002B6E44() then, only when it returns zero, 0x00295E74().
+//            Either non-zero result just preloads status 1.  Otherwise a
+//            0x60-byte stack frame is zeroed with 0x002C4B30 and the signed
+//            kind at +0x00 runs:
+//              kind 0: 0x0027EA24(+0x0C, +0x08 u16) and
+//                      0x0027E9E4(+0x298 s8, 1);
+//              kind 1: when (+0x10 | +0x14) != 0 and signed +0x29C >= 0, the
+//                      text chosen by bit 1 of +0x10 (0x002BD3EC when set,
+//                      0x002BD25C(+0xDE u16) when clear) is copied into the
+//                      frame with 0x002BF86C and laid out with
+//                      0x00295904(+0x29C, frame); then the kind-0 tail;
+//              kind 2: the same text condition, then 0x00212024(+0x04 u16);
+//              any other kind: no tail call.
+//       - 1: 0x002B6E44() only; a non-zero result preloads status 1.
+//       - any other signed state: no work.
+//     Every processed node then preloads status 1 when selected (0x001B553C
+//     also writes state 1), decrements the unsigned 16-bit status at +0x2A2
+//     and increments the unsigned 16-bit counter at +0x2A0, both modulo 2^16.
+//     The preload followed by the decrement leaves status 0.
+//   * The return value is always 0 (r6 is cleared before the scan and never
+//     written; the null-manager path returns the zero it just loaded).
+//   * All helpers are direct ARM BL targets; this body owns no indirect call.
+//     0x002C0AC8, 0x002BD3EC and 0x002BD25C dispatch internally, outside this
+//     routine.  r4-r7 and lr are saved by the prologue; r8-r11 are untouched.
+namespace script_vm_1b5398 {
+
+constexpr u32 kManagerPointerAddress = 0x00435D78;  // literal 0x001B55E8
+constexpr u32 kFrameZeroSize = 0x60;                // `mov r1,#0x60`
+
+// Signed state at +0x02: 0 runs the node body, 1 re-tests the ready flag.
+constexpr s16 kStateIdle = 0;
+constexpr s16 kStateAdvance = 1;
+
+// Bit 1 of the flags word at +0x10 selects the text source.
+constexpr u32 kTextPathBit = 2;
+
+// Status preload and counter step at 0x001B5560 / 0x001B5568.
+constexpr s16 kStatusPreload = 1;
+constexpr u32 kCounterStep = 1;
+
+// Node of the manager list.  Only the fields touched by this routine are
+// named; the padding keeps every recovered offset exact.
+struct Node {
+    s16 kind_00;         // +0x00: signed selector 0/1/2
+    s16 state_02;        // +0x02: signed state, written 1 after a kind pass
+    u16 id_04;           // +0x04: forwarded to 0x00212024
+    u8 pad_06[0x02];
+    u32 low_08;          // +0x08: loaded as a word, only low 16 forwarded
+    u32 word_0C;         // +0x0C: forwarded to 0x0027EA24
+    u32 flags_10;        // +0x10: bit 1 chooses the text source
+    u32 flags_14;        // +0x14: high half of the zero test
+    u8 pad_18[0xC6];
+    u16 index_DE;        // +0xDE: id forwarded to 0x002BD25C
+    u8 pad_E0[0x1B8];
+    s8 byte_298;         // +0x298: sign-extended to 0x0027E9E4
+    u8 pad_299[0x03];
+    s32 slot_29C;        // +0x29C: signed table slot, negative skips text
+    u16 counter_2A0;     // +0x2A0: unsigned counter, incremented
+    s16 status_2A2;      // +0x2A2: signed removal marker, unsigned decrement
+    Node* next_2A4;      // +0x2A4
+    Node* prev_2A8;      // +0x2A8
+};
+static_assert(offsetof(Node, kind_00) == 0x00, "node kind");
+static_assert(offsetof(Node, state_02) == 0x02, "node state");
+static_assert(offsetof(Node, id_04) == 0x04, "node id");
+static_assert(offsetof(Node, low_08) == 0x08, "node low word");
+static_assert(offsetof(Node, word_0C) == 0x0C, "node word 0x0C");
+static_assert(offsetof(Node, flags_10) == 0x10, "node flags 0x10");
+static_assert(offsetof(Node, flags_14) == 0x14, "node flags 0x14");
+static_assert(offsetof(Node, index_DE) == 0xDE, "node index 0xDE");
+static_assert(offsetof(Node, byte_298) == 0x298, "node byte 0x298");
+static_assert(offsetof(Node, slot_29C) == 0x29C, "node slot 0x29C");
+static_assert(offsetof(Node, counter_2A0) == 0x2A0, "node counter");
+static_assert(offsetof(Node, status_2A2) == 0x2A2, "node status");
+static_assert(offsetof(Node, next_2A4) == 0x2A4, "node next");
+static_assert(offsetof(Node, prev_2A8) == 0x2A8, "node previous");
+static_assert(sizeof(Node) == 0x2AC, "node size");
+
+// Manager block reached through 0x00435D78.
+struct Manager {
+    Node* head_00;  // +0x00
+    Node* tail_04;  // +0x04
+    u32 count_08;   // +0x08
+};
+static_assert(offsetof(Manager, head_00) == 0x00, "manager head");
+static_assert(offsetof(Manager, tail_04) == 0x04, "manager tail");
+static_assert(offsetof(Manager, count_08) == 0x08, "manager count");
+static_assert(sizeof(Manager) == 0x0C, "manager size");
+
+inline Manager* manager() {
+    return *reinterpret_cast<Manager* const*>(kManagerPointerAddress);
+}
+
+}  // namespace script_vm_1b5398
+
+// Direct call targets.  The file-wide declarations of these symbols are
+// parameterless, so their recovered prototypes are bound to the pinned symbol
+// names here.
+namespace script_vm_1b5398_calls {
+
+// 0x002C0AC8: resolves the packed scene handle; result is discarded here.
+extern "C" void* scene_lookup(u32 handle) __asm__("ui_func_002c0ac8");
+
+// 0x002B6E44: returns non-zero while the owning scene is in the ready state.
+extern "C" u32 ready_flag() __asm__("script_vm_func_002b6e44");
+
+// 0x00295E74: returns non-zero for scene modes 1..4.
+extern "C" u32 selection_flag() __asm__("script_vm_func_00295e74");
+
+// 0x002C4B30: fills `size` bytes at `destination` with zero.
+extern "C" void zero_frame(void* destination, u32 size)
+    __asm__("engine_func_002c4b30");
+
+// 0x002BD3EC: returns the active label text (scene + 0x4C).
+extern "C" void* active_label() __asm__("script_vm_func_002bd3ec");
+
+// 0x002BD25C: returns the text for the given id.
+extern "C" void* text_by_id(u32 id) __asm__("script_vm_func_002bd25c");
+
+// 0x002BF86C: copies the NUL-terminated string at `source` to `destination`.
+extern "C" void copy_text(void* destination, const void* source)
+    __asm__("engine_func_002bf86c");
+
+// 0x00295904: lays the given text out in slot `slot`.
+extern "C" void place_text(u32 slot, const char* text)
+    __asm__("script_vm_func_00295904");
+
+// 0x0027EA24: forwards a word and its low 16-bit companion.
+extern "C" void apply_script_pair(u32 word, u32 low)
+    __asm__("script_vm_func_0027ea24");
+
+// 0x0027E9E4: forwards a sign-extended byte and a flag.
+extern "C" void apply_script_byte(s32 value, u32 flag)
+    __asm__("script_vm_func_0027e9e4");
+
+// 0x00212024: forwards the node id.
+extern "C" void apply_camp_id(u32 id) __asm__("camp_func_00212024");
+
+// 0x002C4360: releases a removed node.
+extern "C" void release_node(void* node) __asm__("engine_func_002c4360");
+
+}  // namespace script_vm_1b5398_calls
+
+extern "C" u32 script_vm_func_001b5398(u32 handle) {
+    using namespace script_vm_1b5398;
+
+    // 0x001B53A0: the handle is forwarded and the result dropped.
+    script_vm_1b5398_calls::scene_lookup(handle);
+
+    Manager* const initial_manager = manager();
+    if (initial_manager == nullptr) {
+        return 0;
+    }
+    Node* node = initial_manager->head_00;
+    if (node == nullptr) {
+        return 0;
+    }
+
+    for (;;) {
+        Node* const next = node->next_2A4;  // read before the status test
+
+        // 0x001B53CC..0x001B55D8: discard leading nodes marked for removal.
+        if (node->status_2A2 < 0) {
+            Node* const previous = node->prev_2A8;
+            Manager* const current_manager = manager();  // 0x001B5594 reload
+            if (previous == nullptr) {
+                current_manager->head_00 = next;
+            } else {
+                previous->next_2A4 = next;
+            }
+            Node* const next_reloaded = node->next_2A4;
+            if (next_reloaded == nullptr) {
+                current_manager->tail_04 = node->prev_2A8;
+            } else {
+                next_reloaded->prev_2A8 = node->prev_2A8;
+            }
+            current_manager->count_08 = current_manager->count_08 - 1;
+            script_vm_1b5398_calls::release_node(node);
+            node = next;
+            if (node == nullptr) {
+                return 0;
+            }
+            continue;
+        }
+
+        const s16 state = node->state_02;
+        if (state == kStateIdle) {
+            // 0x001B53F8..0x001B5424: readiness gates.  Either non-zero result
+            // preloads status 1 and skips the node body.
+            if (script_vm_1b5398_calls::ready_flag() != 0 ||
+                script_vm_1b5398_calls::selection_flag() != 0) {
+                node->status_2A2 = kStatusPreload;
+            } else {
+                u8 frame[kFrameZeroSize];
+                script_vm_1b5398_calls::zero_frame(frame, kFrameZeroSize);
+
+                const s16 kind = node->kind_00;
+                if (kind == 0) {
+                    // 0x001B54A4..0x001B54CC
+                    script_vm_1b5398_calls::apply_script_pair(
+                        node->word_0C, static_cast<u16>(node->low_08));
+                    script_vm_1b5398_calls::apply_script_byte(node->byte_298,
+                                                              1);
+                } else if (kind == 1) {
+                    // 0x001B5444..0x001B54CC
+                    if ((node->flags_10 | node->flags_14) != 0 &&
+                        node->slot_29C >= 0) {
+                        void* const source =
+                            (node->flags_10 & kTextPathBit) != 0
+                                ? script_vm_1b5398_calls::active_label()
+                                : script_vm_1b5398_calls::text_by_id(
+                                      node->index_DE);
+                        script_vm_1b5398_calls::copy_text(frame, source);
+                        script_vm_1b5398_calls::place_text(
+                            static_cast<u32>(node->slot_29C),
+                            reinterpret_cast<const char*>(frame));
+                    }
+                    script_vm_1b5398_calls::apply_script_pair(
+                        node->word_0C, static_cast<u16>(node->low_08));
+                    script_vm_1b5398_calls::apply_script_byte(node->byte_298,
+                                                              1);
+                } else if (kind == 2) {
+                    // 0x001B54D0..0x001B5538
+                    if ((node->flags_14 | node->flags_10) != 0 &&
+                        node->slot_29C >= 0) {
+                        void* const source =
+                            (node->flags_10 & kTextPathBit) != 0
+                                ? script_vm_1b5398_calls::active_label()
+                                : script_vm_1b5398_calls::text_by_id(
+                                      node->index_DE);
+                        script_vm_1b5398_calls::copy_text(frame, source);
+                        script_vm_1b5398_calls::place_text(
+                            static_cast<u32>(node->slot_29C),
+                            reinterpret_cast<const char*>(frame));
+                    }
+                    script_vm_1b5398_calls::apply_camp_id(node->id_04);
+                }
+
+                // 0x001B553C: mark the node advanced.
+                node->status_2A2 = kStatusPreload;
+                node->state_02 = kStateAdvance;
+            }
+        } else if (state == kStateAdvance) {
+            // 0x001B554C..0x001B5564
+            if (script_vm_1b5398_calls::ready_flag() != 0) {
+                node->status_2A2 = kStatusPreload;
+            }
+        }
+        // Any other signed state does no work.
+
+        // 0x001B5568..0x001B5584: unsigned 16-bit status decrement and
+        // counter increment, both wrapping modulo 2^16.
+        const u16 status_word = static_cast<u16>(node->status_2A2);
+        const u16 counter_word = node->counter_2A0;
+        node->status_2A2 = static_cast<s16>(static_cast<u16>(status_word - 1u));
+        node->counter_2A0 = static_cast<u16>(counter_word + kCounterStep);
+        return 0;
+    }
 }
 
 // DECOMP_FUNC(0x001c0610, 476)

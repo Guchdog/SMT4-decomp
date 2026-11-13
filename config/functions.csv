@@ -2240,7 +2240,7 @@ address,size,status,category,name,src_file
 0x001b4b98,36,matching,engine,engine_func_001b4b98,src/engine/leaf_batch18_c.cpp
 0x001b4bbc,1176,matching,camp,camp_func_001b4bbc,src/engine/leaf_batch46_b.cpp
 0x001b5054,836,matching,script_vm,script_vm_func_001b5054,src/engine/leaf_batch34_c.cpp
-0x001b5398,600,matching,script_vm,script_vm_func_001b5398,src/engine/leaf_batch34_c.cpp
+0x001b5398,600,non_matching,script_vm,script_vm_func_001b5398,src/engine/leaf_batch34_c.cpp
 0x001b55f0,5288,matching,battle,btlMain_Calc,src/battle/btl_main.cpp
 0x001b6a98,1824,matching,battle,btlMain_Setup,src/battle/btl_main.cpp
 0x001b71b8,40,matching,ui,ui_func_001b71b8,src/engine/leaf_batch22_a.cpp
