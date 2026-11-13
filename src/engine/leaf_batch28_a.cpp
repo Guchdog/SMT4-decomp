@@ -6961,112 +6961,68 @@ extern "C" __attribute__((naked)) void engine_func_001d3410() {
     );
 }
 
-// DECOMP_FUNC(0x001069bc, 400)
-extern "C" __attribute__((naked)) void engine_func_001069bc() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe92d4010 @ push {r4, lr}\n"
-        ".inst 0xe1a04000 @ mov r4, r0\n"
-        ".inst 0xed2d8b08 @ vpush {d8, d9, d10, d11}\n"
-        ".inst 0xeef08a40 @ vmov.f32 s17, s0\n"
-        ".inst 0xeeb0aa60 @ vmov.f32 s20, s1\n"
-        ".inst 0xeef0aa41 @ vmov.f32 s21, s2\n"
-        ".inst 0xeeb09a61 @ vmov.f32 s18, s3\n"
-        ".inst 0xe24dd030 @ sub sp, sp, #0x30\n"
-        ".inst 0xeddf9a58 @ vldr s19, [pc, #0x160]\n"
-        ".inst 0xe3a01001 @ mov r1, #1\n"
-        ".inst 0xeb06ee09 @ bl #0x2c2210\n"
-        ".inst 0xe3a00000 @ mov r0, #0\n"
-        ".inst 0xeb06eb6e @ bl #0x2c17ac\n"
-        ".inst 0xee000a10 @ vmov s0, r0\n"
-        ".inst 0xe3a00000 @ mov r0, #0\n"
-        ".inst 0xeeb8ba40 @ vcvt.f32.u32 s22, s0\n"
-        ".inst 0xeb06eb60 @ bl #0x2c1784\n"
-        ".inst 0xee000a10 @ vmov s0, r0\n"
-        ".inst 0xed9f8a4f @ vldr s16, [pc, #0x13c]\n"
-        ".inst 0xeef02a69 @ vmov.f32 s5, s19\n"
-        ".inst 0xeeb02a69 @ vmov.f32 s4, s19\n"
-        ".inst 0xeef01a48 @ vmov.f32 s3, s16\n"
-        ".inst 0xeeb01a4b @ vmov.f32 s2, s22\n"
-        ".inst 0xeef80a40 @ vcvt.f32.u32 s1, s0\n"
-        ".inst 0xeeb00a48 @ vmov.f32 s0, s16\n"
-        ".inst 0xe1a00004 @ mov r0, r4\n"
-        ".inst 0xeb005974 @ bl #0x11cffc\n"
-        ".inst 0xee380ac8 @ vsub.f32 s0, s17, s16\n"
-        ".inst 0xeef00a48 @ vmov.f32 s1, s16\n"
-        ".inst 0xe2840b01 @ add r0, r4, #0x400\n"
-        ".inst 0xe1a0100d @ mov r1, sp\n"
-        ".inst 0xedc08a42 @ vstr s17, [r0, #0x108]\n"
-        ".inst 0xedc09a46 @ vstr s19, [r0, #0x118]\n"
-        ".inst 0xedc08a45 @ vstr s17, [r0, #0x114]\n"
-        ".inst 0xe2840b01 @ add r0, r4, #0x400\n"
-        ".inst 0xe2800f43 @ add r0, r0, #0x10c\n"
-        ".inst 0xee400a00 @ vmla.f32 s1, s0, s0\n"
-        ".inst 0xec80aa02 @ vstmia r0, {s20, s21}\n"
-        ".inst 0xe1a00004 @ mov r0, r4\n"
-        ".inst 0xeeb11ae0 @ vsqrt.f32 s2, s1\n"
-        ".inst 0xeec90a81 @ vdiv.f32 s1, s19, s2\n"
-        ".inst 0xee201a20 @ vmul.f32 s2, s0, s1\n"
-        ".inst 0xee280a20 @ vmul.f32 s0, s16, s1\n"
-        ".inst 0xee692a81 @ vmul.f32 s5, s19, s2\n"
-        ".inst 0xee680a00 @ vmul.f32 s1, s16, s0\n"
-        ".inst 0xee482a40 @ vmls.f32 s5, s16, s0\n"
-        ".inst 0xeef01a60 @ vmov.f32 s3, s1\n"
-        ".inst 0xee480a41 @ vmls.f32 s1, s16, s2\n"
-        ".inst 0xee623aa2 @ vmul.f32 s7, s5, s5\n"
-        ".inst 0xeeb03a60 @ vmov.f32 s6, s1\n"
-        ".inst 0xeef00a61 @ vmov.f32 s1, s3\n"
-        ".inst 0xee490ac0 @ vmls.f32 s1, s19, s0\n"
-        ".inst 0xee433a03 @ vmla.f32 s7, s6, s6\n"
-        ".inst 0xeeb02a60 @ vmov.f32 s4, s1\n"
-        ".inst 0xee423a02 @ vmla.f32 s7, s4, s4\n"
-        ".inst 0xeef10ae3 @ vsqrt.f32 s1, s7\n"
-        ".inst 0xeec93aa0 @ vdiv.f32 s7, s19, s1\n"
-        ".inst 0xeef00a61 @ vmov.f32 s1, s3\n"
-        ".inst 0xee222a23 @ vmul.f32 s4, s4, s7\n"
-        ".inst 0xee233a23 @ vmul.f32 s6, s6, s7\n"
-        ".inst 0xee622aa3 @ vmul.f32 s5, s5, s7\n"
-        ".inst 0xee480a00 @ vmla.f32 s1, s16, s0\n"
-        ".inst 0xed8d2a02 @ vstr s4, [sp, #8]\n"
-        ".inst 0xee601a02 @ vmul.f32 s3, s0, s4\n"
-        ".inst 0xee603a03 @ vmul.f32 s7, s0, s6\n"
-        ".inst 0xee214a22 @ vmul.f32 s8, s2, s5\n"
-        ".inst 0xee684a22 @ vmul.f32 s9, s16, s5\n"
-        ".inst 0xeccd2a02 @ vstmia sp, {s5, s6}\n"
-        ".inst 0xee580ac1 @ vnmla.f32 s1, s17, s2\n"
-        ".inst 0xee411a43 @ vmls.f32 s3, s2, s6\n"
-        ".inst 0xee403a62 @ vmls.f32 s7, s0, s5\n"
-        ".inst 0xee004a42 @ vmls.f32 s8, s0, s4\n"
-        ".inst 0xee484a03 @ vmla.f32 s9, s16, s6\n"
-        ".inst 0xedcd1a04 @ vstr s3, [sp, #0x10]\n"
-        ".inst 0xee682a21 @ vmul.f32 s5, s16, s3\n"
-        ".inst 0xed8d4a05 @ vstr s8, [sp, #0x14]\n"
-        ".inst 0xedcd3a06 @ vstr s7, [sp, #0x18]\n"
-        ".inst 0xee484a82 @ vmla.f32 s9, s17, s4\n"
-        ".inst 0xed8d0a08 @ vstr s0, [sp, #0x20]\n"
-        ".inst 0xed8d0a09 @ vstr s0, [sp, #0x24]\n"
-        ".inst 0xed8d1a0a @ vstr s2, [sp, #0x28]\n"
-        ".inst 0xee482a04 @ vmla.f32 s5, s16, s8\n"
-        ".inst 0xeeb10a64 @ vneg.f32 s0, s9\n"
-        ".inst 0xed8d0a03 @ vstr s0, [sp, #0xc]\n"
-        ".inst 0xee482aa3 @ vmla.f32 s5, s17, s7\n"
-        ".inst 0xeeb10a62 @ vneg.f32 s0, s5\n"
-        ".inst 0xed8d0a07 @ vstr s0, [sp, #0x1c]\n"
-        ".inst 0xedcd0a0b @ vstr s1, [sp, #0x2c]\n"
-        ".inst 0xeb005920 @ bl #0x11cfa4\n"
-        ".inst 0xeef00a49 @ vmov.f32 s1, s18\n"
-        ".inst 0xeeb00a68 @ vmov.f32 s0, s17\n"
-        ".inst 0xe1a00004 @ mov r0, r4\n"
-        ".inst 0xeb06eb10 @ bl #0x2c1774\n"
-        ".inst 0xe1a00004 @ mov r0, r4\n"
-        ".inst 0xeb06eb01 @ bl #0x2c1740\n"
-        ".inst 0xe28dd030 @ add sp, sp, #0x30\n"
-        ".inst 0xecbd8b08 @ vpop {d8, d9, d10, d11}\n"
-        ".inst 0xe8bd8010 @ pop {r4, pc}\n"
-        ".word 0x3f800000 @ bounded tail data\n"
-        ".word 0x00000000 @ bounded tail data\n"
-    );
+// ---------------------------------------------------------------------------
+// 0x001069BC -- configure the global render camera block.
+//
+//   r0 / camera : 0x508-byte projection block (constructed at 0x002C2210)
+//   s0 / p0     : basis scale and near clip distance
+//   s1 / p1     : stored at camera+0x50C
+//   s2 / p2     : stored at camera+0x510
+//   s3 / p3     : far clip distance
+//
+// Straight-line body: constructor, screen-size query, six floats stored at
+// camera+0x4A0, a 3x4 basis matrix handed to the camera helper, clip range,
+// then global registration.
+// ---------------------------------------------------------------------------
+static inline f32 SqrtF32(f32 value) {
+    f32 result;
+    asm("vsqrt.f32 %0, %1" : "=t"(result) : "t"(value));
+    return result;
 }
+
+extern "C" void engine_func_002c2210(void* camera, u32 mode);    // 0x002C2210
+extern "C" u32  engine_func_002c17ac(u32 index);                 // 0x002C17AC
+extern "C" u32  engine_func_002c1784(u32 index);                 // 0x002C1784
+extern "C" void func_0011cffc(void* camera, f32 s0, f32 s1, f32 s2,
+                              f32 s3, f32 s4, f32 s5);           // 0x0011CFFC
+extern "C" void func_0011cfa4(void* camera, const f32* mtx34);   // 0x0011CFA4
+extern "C" void ui_func_002c1774(void* camera, f32 s0, f32 s1);  // 0x002C1774
+extern "C" void battle_func_002c1740(void* camera);              // 0x002C1740
+
+// DECOMP_FUNC(0x001069bc, 400)
+extern "C" void engine_func_001069bc(void* camera, f32 p0, f32 p1, f32 p2,
+                                     f32 p3) {
+    engine_func_002c2210(camera, 1);
+
+    // Both screen dimensions are queried as unsigned integers (vcvt.f32.u32).
+    const f32 screen_width = static_cast<f32>(engine_func_002c17ac(0));
+    const f32 screen_height = static_cast<f32>(engine_func_002c1784(0));
+
+    func_0011cffc(camera, 0.0f, screen_height, screen_width, 0.0f, 1.0f, 1.0f);
+
+    u8* const base = static_cast<u8*>(camera);
+    *reinterpret_cast<f32*>(base + 0x508) = p0;
+    *reinterpret_cast<f32*>(base + 0x50c) = p1;
+    *reinterpret_cast<f32*>(base + 0x510) = p2;
+    *reinterpret_cast<f32*>(base + 0x514) = p0;
+    *reinterpret_cast<f32*>(base + 0x518) = 1.0f;
+
+    // Basis rows: X and Z are scaled by the sign of p0, Y stays unit length,
+    // and the Z translation is pulled back by |p0|.  Keep the original
+    // reciprocal-then-multiply order so the sign is bit-exact.
+    const f32 length = SqrtF32(p0 * p0);
+    const f32 axis = p0 * (1.0f / length);
+    f32 mtx34[12] = {
+        axis, 0.0f, 0.0f, -0.0f,
+        0.0f, 1.0f, 0.0f, -0.0f,
+        0.0f, 0.0f, axis, -(p0 * axis),
+    };
+    func_0011cfa4(camera, mtx34);
+
+    ui_func_002c1774(camera, p0, p3);
+    battle_func_002c1740(camera);
+}
+
 
 // DECOMP_FUNC(0x00191b64, 400)
 extern "C" __attribute__((naked)) void script_vm_func_00191b64() {
