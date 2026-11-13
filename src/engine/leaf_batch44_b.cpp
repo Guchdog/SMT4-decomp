@@ -3802,60 +3802,80 @@ extern "C" void func_00153a58(void* scene, void* unit, void* draw_entry, s32 cou
 }
 
 // DECOMP_FUNC(0x002a6e10, 400)
-extern "C" __attribute__((naked)) void func_002a6e10() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0xc164, 0xe59f, 0x303c, 0xe243\n"
-        ".hword 0x0ff0, 0xe92d, 0x439c, 0xe0cc\n"
-        ".hword 0x47cc, 0xe1a0, 0x4fcc, 0xe044\n"
-        ".hword 0xc150, 0xe59f, 0x349c, 0xe02c\n"
-        ".hword 0x0000, 0xe35c, 0x0002, 0xaa00\n"
-        ".hword 0x3140, 0xe59f, 0x4001, 0xe244\n"
-        ".hword 0xc003, 0xe04c, 0x6138, 0xe59f\n"
-        ".hword 0xb000, 0xe3a0, 0x500c, 0xe1a0\n"
-        ".hword 0x700b, 0xe1a0, 0x7c96, 0xe0e5\n"
-        ".hword 0x800b, 0xe1a0, 0x300b, 0xe1a0\n"
-        ".hword 0x9003, 0xe1a0, 0x77c5, 0xe1a0\n"
-        ".hword 0x5fc5, 0xe047, 0x700c, 0xe1a0\n"
-        ".hword 0x8c96, 0xe0e7, 0x8118, 0xe59f\n"
-        ".hword 0xa003, 0xe1a0, 0x67c7, 0xe1a0\n"
-        ".hword 0x6fc7, 0xe046, 0x70fc, 0xe59f\n"
-        ".hword 0x0796, 0xe006, 0xc106, 0xe08c\n"
-        ".hword 0x60f4, 0xe59f, 0x7c96, 0xe0c6\n"
-        ".hword 0x73c6, 0xe1a0, 0x6fc6, 0xe047\n"
-        ".hword 0x70e8, 0xe59f, 0xc796, 0xe02c\n"
-        ".hword 0x700c, 0xe1a0, 0x9c98, 0xe0e7\n"
-        ".hword 0x9447, 0xe1a0, 0x7fc7, 0xe049\n"
-        ".hword 0x900c, 0xe1a0, 0xac98, 0xe0e9\n"
-        ".hword 0x0004, 0xe357, 0x0004, 0x1355\n"
-        ".hword 0x8449, 0xe1a0, 0x8fc9, 0xe048\n"
-        ".hword 0x9f5b, 0xe3e0, 0xc998, 0xe028\n"
-        ".hword 0x90b8, 0xe59f, 0xc108, 0xe088\n"
-        ".hword 0xc002, 0xe28c, 0x3c99, 0xe0ec\n"
-        ".hword 0x33cc, 0xe1a0, 0x3fcc, 0xe043\n"
-        ".hword 0xce19, 0xe3a0, 0x0c94, 0xe00c\n"
-        ".hword 0x4185, 0xe085, 0x4205, 0xe084\n"
-        ".hword 0xc104, 0xe08c, 0xc106, 0xe08c\n"
-        ".hword 0x4203, 0xe083, 0x6088, 0xe59f\n"
-        ".hword 0x4184, 0xe084, 0x4002, 0xe284\n"
-        ".hword 0xc007, 0xe08c, 0x6496, 0xe0c4\n"
-        ".hword 0xce7d, 0xe28c, 0x60c4, 0xe1a0\n"
-        ".hword 0x4fc4, 0xe046, 0x4004, 0xe048\n"
-        ".hword 0x4001, 0xe284, 0x0003, 0x0a00\n"
-        ".hword 0x0009, 0xe353, 0x3003, 0xd283\n"
-        ".hword 0x0005, 0xda00, 0x0002, 0xea00\n"
-        ".hword 0x300b, 0xe3a0, 0x401d, 0xe3a0\n"
-        ".hword 0xc001, 0xe24c, 0x3009, 0xe243\n"
-        ".hword 0xc001, 0xe28c, 0x0000, 0xe350\n"
-        ".hword 0xc000, 0x1580, 0x0000, 0xe351\n"
-        ".hword 0x3000, 0x1581, 0x0000, 0xe352\n"
-        ".hword 0x4000, 0x1582, 0x0ff0, 0xe8bd\n"
-        ".hword 0xff1e, 0xe12f, 0x06bd, 0x396b\n"
-        ".hword 0xc54f, 0xfffd, 0x81fb, 0xe5ac\n"
-        ".hword 0xdc55, 0xffff, 0xb073, 0x166d\n"
-        ".hword 0xfa4b, 0xffff, 0xf9b1, 0xb38c\n"
-        ".hword 0x80d7, 0xd62b, 0x6667, 0x6666\n"
-    );
+//
+// Converts a signed whole-day count (days since 2000-01-01) into a calendar
+// date and writes the three fields through optional output pointers:
+//   r0 -> year, r1 -> month (1..12), r2 -> day (1..31).
+// The count is rebased on 2000-03-01 by subtracting the 60 days that precede
+// March in the 2000 leap year, then peeled off in 400-year, 100-year, 4-year
+// and 1-year stages.  The 400-year stage uses truncating signed division and
+// then corrects a negative remainder, i.e. it computes the floor; the later
+// remainders are already non-negative.  The month is derived with the
+// `(5*doy + 2) / 153` March-based index and shifted by three after September.
+// `year_in_quad == 4` is the leap day at the end of a four-year group: the
+// normal month path would report it as March 1 of the following year, so the
+// original forces month 2 / day 29 and leaves the year unchanged.  The second
+// half of the original test (`century == 4`) cannot be reached because the
+// century quotient is bounded by 3.
+//
+// There are no direct calls and no global accesses; only the three optional
+// 32-bit stores are observable.
+extern "C" void func_002a6e10(s32* out_year, s32* out_month, s32* out_day,
+                              s32 day_count) {
+    // The original subtracts 60 with 32-bit wrap-around (`sub r3, r3, #0x3c`).
+    const s32 shifted =
+        __builtin_bit_cast(s32, static_cast<u32>(day_count) - 0x3cu);
+
+    // 400-year era.  Magic-multiply division truncates toward zero, then a
+    // negative remainder decrements the quotient, so the result is the floor.
+    s32 era = shifted / 146097;
+    s32 days_in_era = shifted - era * 146097;
+    if (days_in_era < 0) {
+        era = era - 1;
+        days_in_era = days_in_era + 146097;
+    }
+
+    // 100-year stage (0..3) and 4-year stage (0..24).
+    const s32 century = days_in_era / 36524;
+    days_in_era = days_in_era - century * 36524;
+
+    const s32 quad = days_in_era / 1461;
+    days_in_era = days_in_era - quad * 1461;
+
+    // Year inside the four-year group (0..4) and day of the March-based year.
+    const s32 year_in_quad = days_in_era / 365;
+    const s32 day_of_year = days_in_era - year_in_quad * 365;
+
+    // March-based month index (0 = March .. 11 = February).
+    const s32 month_index = (5 * day_of_year + 2) / 153;
+
+    s32 year = 2000 + 400 * era + 100 * century + 4 * quad + year_in_quad;
+    s32 day = day_of_year - (153 * month_index + 2) / 5 + 1;
+    s32 month;
+
+    if (year_in_quad == 4 || century == 4) {
+        // Leap day: the original writes 0x0B then subtracts 9 (giving 2),
+        // forces the day to 0x1D (29), and its `ip -= 1` / `ip += 1` pair
+        // cancels out.
+        month = 0x0b - 9;
+        day = 0x1d;
+    } else if (month_index <= 9) {
+        month = month_index + 3;
+    } else {
+        month = month_index - 9;
+        year = year + 1;
+    }
+
+    // Each store is guarded by its own pointer (`strne`).
+    if (out_year != nullptr) {
+        *out_year = year;
+    }
+    if (out_month != nullptr) {
+        *out_month = month;
+    }
+    if (out_day != nullptr) {
+        *out_day = day;
+    }
 }
 
 // Configuration table at 0x00439a70.  The selector word at object+0x08 is
