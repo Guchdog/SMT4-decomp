@@ -1416,187 +1416,192 @@ extern "C" __attribute__((naked)) void engine_func_0011be44() {
     );
 }
 
-// DECOMP_FUNC(0x0011c87c, 704)
-extern "C" __attribute__((naked)) void func_0011c87c() {
-    asm volatile(
-        "push {r4, r5, r6, r7, r8, sb, sl, fp, lr}\n"
-        "sub sp, sp, #0x44\n"
-        "mov r4, #0\n"
-        "mov r3, #1\n"
-        "mov r2, r3\n"
-        "mov r1, #0x7d0\n"
-        "add r0, sp, #0x30\n"
-        "str r4, [sp]\n"
-        "str r4, [sp, #4]\n"
-        "str r4, [sp, #8]\n"
-        "str r4, [sp, #0xc]\n"
-        "bl script_vm_func_002b5b94\n"
-        "ldm r0, {r1, r3}\n"
-        "add r6, sp, #0x28\n"
-        ".word 0xe59f0260\n"
-        ".word 0xe59fc260\n"
-        ".word 0xe59f7260\n"
-        ".word 0xe59f8260\n"
-        "ldr r2, [r0]\n"
-        "ldr r0, [r0, #4]\n"
-        "subs r2, r1, r2\n"
-        "sbc r1, r3, r0\n"
-        "umull r0, r5, r2, ip\n"
-        "mov r3, #0\n"
-        "mla r1, r1, ip, r5\n"
-        "mov r5, #0x12\n"
-        "mla r1, r2, r3, r1\n"
-        "str r5, [sp]\n"
-        "mov r2, r7\n"
-        "strd r0, r1, [sp, #0x28]\n"
-        "mov r3, r8\n"
-        "mov r0, r6\n"
-        "bl func_002b5f90\n"
-        "str r4, [sp, #0xc]\n"
-        "strd r0, r1, [sp, #0x20]\n"
-        "mov r3, #1\n"
-        ".word 0xe59f1218\n"
-        "mov r2, r3\n"
-        "add r0, sp, #0x30\n"
-        "str r4, [sp]\n"
-        "str r4, [sp, #4]\n"
-        "str r4, [sp, #8]\n"
-        "bl script_vm_func_002b5b94\n"
-        "mov sb, r0\n"
-        "mov r3, #1\n"
-        "mov r2, r3\n"
-        "mov r1, #0x7d0\n"
-        "add r0, sp, #0x38\n"
-        "str r4, [sp]\n"
-        "str r4, [sp, #4]\n"
-        "str r4, [sp, #8]\n"
-        "str r4, [sp, #0xc]\n"
-        "bl script_vm_func_002b5b94\n"
-        "ldr r2, [sb]\n"
-        "ldm r0, {r3, ip}\n"
-        "ldr r1, [sb, #4]\n"
-        "subs r0, r2, r3\n"
-        "mov r3, #0\n"
-        "sbc r2, r1, ip\n"
-        ".word 0xe59fc1b0\n"
-        "umull r1, sb, r0, ip\n"
-        "mla r2, r2, ip, sb\n"
-        "str r1, [sp, #0x28]\n"
-        "mla r0, r0, r3, r2\n"
-        "mov r2, r7\n"
-        "mov r3, r8\n"
-        "str r0, [sp, #0x2c]\n"
-        "mov r0, r6\n"
-        "str r5, [sp]\n"
-        "bl func_002b5f90\n"
-        ".word 0xe59f9194\n"
-        "strd r0, r1, [sp]\n"
-        ".L_0011c99c:\n"
-        "nop\n"
-        "svc #0x28\n"
-        "ldr r3, [sb]\n"
-        ".word 0xe59f2184\n"
-        "and ip, r3, #1\n"
-        "add sl, r2, ip, lsl #5\n"
-        "ldm sl, {r7, r8, ip}\n"
-        "ldr r2, [sl, #0x10]\n"
-        "ldr r5, [sl, #0x1c]\n"
-        "ldr r6, [sl, #0x18]\n"
-        "ldr sl, [sl, #0xc]\n"
-        "mcr p15, #0, r4, c7, c10, #5\n"
-        "cmp r3, r3\n"
-        "bne .L_0011c99c\n"
-        "subs sb, r0, ip\n"
-        "sbc sl, r1, sl\n"
-        "asr r3, r2, #0x1f\n"
-        "mov r0, #0\n"
-        "mov r1, #0x3e8\n"
-        "bl script_vm_func_002b5b44\n"
-        "umull r3, r2, sb, r0\n"
-        "smull r3, ip, sl, r1\n"
-        "umull ip, lr, sl, r0\n"
-        "asr fp, sl, #0x1f\n"
-        "mov r4, #0\n"
-        "mla r0, fp, r0, lr\n"
-        "umull fp, lr, r1, sb\n"
-        "mla r0, sl, r4, r0\n"
-        "asr sl, r1, #0x1f\n"
-        "mla sb, sl, sb, lr\n"
-        "mla r4, r1, r4, sb\n"
-        "adds r1, ip, fp\n"
-        "add fp, sp, #0x18\n"
-        "adc ip, r0, r4\n"
-        "mov r0, #0\n"
-        "mov r4, r0\n"
-        "adds r0, r0, r2\n"
-        "adc r2, r3, r4\n"
-        "adds r1, r1, r0\n"
-        "adc r0, ip, r2\n"
-        "adds r4, r1, r7\n"
-        ".word 0xe59f20f0\n"
-        "adc sb, r0, r8\n"
-        "subs r0, r4, r7\n"
-        "sbc r1, sb, r8\n"
-        "rsbs r2, r0, r2\n"
-        "rsc r1, r1, #0\n"
-        "mov r0, #0\n"
-        "mov r3, r0\n"
-        "str r2, [sp, #0x10]\n"
-        "str r1, [sp, #0x14]\n"
-        "stm fp, {r0, r3}\n"
-        "mov r2, r0\n"
-        "ldr r1, [sp, #0x10]\n"
-        "ldr r0, [sp, #0x14]\n"
-        "mov r7, #0\n"
-        "subs r1, r2, r1\n"
-        "sbcs r0, r3, r0\n"
-        ".word 0xe59f20ac\n"
-        "add r1, sp, #0x10\n"
-        "add r0, sp, #0x18\n"
-        "movlt r0, r1\n"
-        "asr r3, r2, #0x1f\n"
-        "ldr r1, [r0]\n"
-        "mov r0, r7\n"
-        "bl script_vm_func_002b5b44\n"
-        "umull r3, r2, r6, r0\n"
-        "smull r3, ip, r5, r1\n"
-        "umull ip, fp, r5, r0\n"
-        "asr sl, r5, #0x1f\n"
-        "mov r8, #0\n"
-        "mla r0, sl, r0, fp\n"
-        "umull sl, fp, r1, r6\n"
-        "mla r0, r5, r8, r0\n"
-        "asr r8, r1, #0x1f\n"
-        "mov r5, #0\n"
-        "mla r6, r8, r6, fp\n"
-        "mla r5, r1, r5, r6\n"
-        "adds r1, ip, sl\n"
-        "adc r0, r0, r5\n"
-        "adds r2, r2, r7\n"
-        "adc r3, r3, #0\n"
-        "adds r1, r1, r2\n"
-        "adc r0, r0, r3\n"
-        "adds r2, r1, r4\n"
-        "adc r3, r0, sb\n"
-        "ldrd r0, r1, [sp, #0x20]\n"
-        "subs r0, r2, r0\n"
-        "sbc r1, r3, r1\n"
-        "ldrd r2, r3, [sp]\n"
-        "bl script_vm_func_002b5b44\n"
-        "ldrd r0, r1, [sp, #0x20]\n"
-        "add sp, sp, #0x44\n"
-        "adds r0, r0, r2\n"
-        "adc r1, r1, r3\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, fp, pc}\n"
-        ".word 0x0044e630\n"
-        ".word 0x000f4240\n"
-        ".word 0xd7b634db\n"
-        ".word 0x431bde82\n"
-        ".word 0x00000834\n"
-        ".word 0x1ff81000\n"
-        ".word 0x1ff81020\n"
-        ".word 0x0036ee80\n"
-    );
+// ---------------------------------------------------------------------------
+// DECOMP_FUNC(0x0011C87C, 704)
+//
+// Recovered contract:
+//   * No entry register is read; r0-r3 are caller-clobbered scratch.  The
+//     return value is a signed 64-bit value in r0:r1.  The only direct caller
+//     (`0x002C586C`) treats it as a millisecond delta, scales it by 1,000,000
+//     and adds it to the clock at `0x0044E630` through `0x0011C184`.
+//   * The body builds calendar timestamps with `0x002B5B94`, a wrapper over
+//     `0x002AD714`; the epoch of that helper is 2000-01-01 00:00:00.000 (it
+//     returns 0 for 2000-01-01 and 3,155,760,000,000 for 2100-01-01):
+//       t2000 = make(2000, 1, 1, 0, 0, 0, 0)   (twice)
+//       t2100 = make(2100, 1, 1, 0, 0, 0, 0)
+//     Each helper returns the destination pointer and the original reads the
+//     64-bit result back through r0.
+//   * Two deltas are scaled by 1,000,000 and passed through `0x002B5F90`
+//     (high 64 bits of the signed product with 0x431BDE82D7B634DB, arithmetic
+//     >> 18, plus one for a negative input).  The first delta is
+//     `t2000 - [0x0044E630]`, the second is `t2100 - t2000`; the results are
+//     the signed millisecond values Qfirst and Qspan.
+//   * One `svc #0x28` (nn::os::GetSystemTick) is executed, then the ARM11
+//     shared page is snapshotted.  Bit 0 of `[0x1FF81000]` selects
+//     DATETIME_0 (`0x1FF81020`) or DATETIME_1 (`0x1FF81040`); 3dbrew
+//     "Configuration Memory" defines the 0x20-byte record as
+//       +0x00 u64 milliseconds since 1900-01-01       (N)
+//       +0x08 u64 system tick of the last update     (S)
+//       +0x10 u32 tick frequency, sign-extended      (F)
+//       +0x18 u64 residual tick value                (B; PTM writes 0)
+//     The `cmp r3, r3` retry test at `0x0011C9CC` is a self-comparison, so the
+//     snapshot block runs exactly once.  The reads are kept in the original
+//     order (word offsets 0x00, 0x04, 0x08, 0x10, 0x1C, 0x18, 0x0C).
+//   * Arithmetic (all 64-bit operations wrap):
+//       delta = tick - S
+//       Q1    = (1000 << 32) / F                 (signed 64-bit divide)
+//       H1    = middle64_signed(delta * Q1)      (milliseconds since update)
+//       X     = 3,600,000 - H1
+//       frac  = (X > 0) ? (u32)X : 0
+//       Q2    = (frac << 32) / 3,600,000         (signed 64-bit divide)
+//       H2    = middle64_signed(B * Q2)
+//       D     = H1 + H2 + N - Qfirst
+//       result = Qfirst + (D mod Qspan)          (signed remainder)
+//     `0x002B5B44` is the signed divmod: quotient in r0:r1, remainder in
+//     r2:r3.  The original ignores the first two remainders and the last
+//     quotient.
+//   * Callee-saved r4-r11 and SP are restored; r12 is not preserved (AAPCS).
+// ---------------------------------------------------------------------------
+namespace time_11c87c {
+
+constexpr u64 kMicrosecondsPerUnit = 1000000;
+constexpr s64 kFractionMagic = static_cast<s64>(0x431BDE82D7B634DBull);
+constexpr u32 kFractionShift = 18;
+constexpr u32 kMillisecondsPerHour = 3600000;
+constexpr u32 kTickRateNumerator = 1000;
+constexpr u32 kDateTimeSelector = 0x1FF81000;
+constexpr u32 kDateTime0 = 0x1FF81020;
+constexpr u32 kDateTimeSize = 0x20;
+constexpr u32 kGameClock = 0x0044E630;
+
+// 0x002B5B94: write days(year, month, day) * 86400000 + hour * 3600000 +
+// minute * 60000 + second * 1000 + millisecond to *out and return out.
+extern "C" s64* make_calendar_ms(s64* out, s32 year, s32 month, s32 day,
+                                 s32 hour, s32 minute, s32 second,
+                                 s32 millisecond)
+    __asm__("script_vm_func_002b5b94");
+
+// 0x002B5F90: high 64 bits of the signed product (*value * mul), arithmetic
+// >> shift, plus one when *value is negative (truncation toward zero).
+extern "C" __attribute__((pcs("aapcs")))
+s64 fixed_point_scale(const s64* value, s64 mul, u32 shift)
+    __asm__("func_002b5f90");
+
+struct SignedDivMod {
+    s64 quotient;
+    s64 remainder;
+};
+
+// 0x002B5B44: __aeabi_ldivmod-style signed 64-bit division.  The ABI returns
+// the quotient in r0:r1 and the remainder in r2:r3, which no ordinary C return
+// type can express; the register pairs are bound explicitly and the call stays
+// a single BL so the original call order and both results are preserved.
+inline SignedDivMod signed_divmod_64(s64 numerator, s64 divisor) {
+    register s64 quotient __asm__("r0") = numerator;
+    register s64 remainder __asm__("r2") = divisor;
+    __asm__ volatile("bl script_vm_func_002b5b44"
+                     : "+r"(quotient), "+r"(remainder)
+                     :
+                     : "r12", "lr", "cc", "memory");
+    return SignedDivMod{quotient, remainder};
+}
+
+// Both hand-expanded multiply blocks at 0x0011C9EC and 0x0011CAA4 keep bits
+// 32..95 of the signed 128-bit product (the Q32.32 middle word), not the high
+// 64 bits: the low word is `low64` and the high word is the signed high64.
+inline s64 MultiplyMiddleSigned(u64 a, u64 b) {
+    const u64 low = a * b;
+    const u64 high = MultiplyHighSigned(a, b);
+    return static_cast<s64>((low >> 32) | (high << 32));
+}
+
+inline u32 LoadVolatileU32(u32 address) {
+    return *reinterpret_cast<const volatile u32*>(address);
+}
+
+} // namespace time_11c87c
+
+extern "C" s64 func_0011c87c() {
+    using namespace time_11c87c;
+
+    s64 calendar_storage;
+    s64* calendar = make_calendar_ms(&calendar_storage, 2000, 1, 1, 0, 0, 0, 0);
+    const u64 epoch_2000 = static_cast<u64>(*calendar);
+
+    // 0x0044E630 is read as two 32-bit words, low first.
+    const u32 clock_low = LoadVolatileU32(kGameClock);
+    const u32 clock_high = LoadVolatileU32(kGameClock + 4);
+    const u64 clock = (static_cast<u64>(clock_high) << 32) | clock_low;
+
+    u64 scale_arg = epoch_2000 - clock;
+    scale_arg *= kMicrosecondsPerUnit;
+    s64 scale_value = static_cast<s64>(scale_arg);
+    const s64 first_q =
+        fixed_point_scale(&scale_value, kFractionMagic, kFractionShift);
+
+    calendar = make_calendar_ms(&calendar_storage, 2100, 1, 1, 0, 0, 0, 0);
+    const u64 epoch_2100 = static_cast<u64>(*calendar);
+
+    s64 calendar_storage_second;
+    calendar =
+        make_calendar_ms(&calendar_storage_second, 2000, 1, 1, 0, 0, 0, 0);
+    const u64 epoch_2000_again = static_cast<u64>(*calendar);
+
+    scale_arg = epoch_2100 - epoch_2000_again;
+    scale_arg *= kMicrosecondsPerUnit;
+    scale_value = static_cast<s64>(scale_arg);
+    const s64 span_q =
+        fixed_point_scale(&scale_value, kFractionMagic, kFractionShift);
+
+    // 0x0011C99C..0x0011C9D0: one svc #0x28 and a shared-page snapshot.
+    const u64 tick = nn::os::GetSystemTick();
+    const u32 selector = LoadVolatileU32(kDateTimeSelector);
+    const u32 record = kDateTime0 + ((selector & 1u) * kDateTimeSize);
+
+    const u32 now_low = LoadVolatileU32(record + 0x00);
+    const u32 now_high = LoadVolatileU32(record + 0x04);
+    const u32 snapshot_tick_low = LoadVolatileU32(record + 0x08);
+    const s32 tick_rate = static_cast<s32>(LoadVolatileU32(record + 0x10));
+    const u32 residual_high = LoadVolatileU32(record + 0x1C);
+    const u32 residual_low = LoadVolatileU32(record + 0x18);
+    const u32 snapshot_tick_high = LoadVolatileU32(record + 0x0C);
+    asm volatile("mcr p15, 0, %0, c7, c10, 5" : : "r"(0u) : "memory");
+
+    const u64 snapshot_now =
+        (static_cast<u64>(now_high) << 32) | now_low;
+    const u64 snapshot_tick =
+        (static_cast<u64>(snapshot_tick_high) << 32) | snapshot_tick_low;
+    const u64 snapshot_residual =
+        (static_cast<u64>(residual_high) << 32) | residual_low;
+
+    const u64 tick_delta = tick - snapshot_tick;
+    const s64 tick_scale =
+        signed_divmod_64(
+            static_cast<s64>(static_cast<u64>(kTickRateNumerator) << 32),
+            tick_rate).quotient;
+    const s64 elapsed_ms =
+        MultiplyMiddleSigned(tick_delta, static_cast<u64>(tick_scale));
+
+    const u64 hour_remainder_bits =
+        static_cast<u64>(kMillisecondsPerHour) -
+        static_cast<u64>(elapsed_ms);
+    const s64 hour_remainder = static_cast<s64>(hour_remainder_bits);
+    const u32 hour_fraction =
+        (hour_remainder > 0) ? static_cast<u32>(hour_remainder) : 0u;
+    const s64 hour_scale =
+        signed_divmod_64(
+            static_cast<s64>(static_cast<u64>(hour_fraction) << 32),
+            static_cast<s64>(kMillisecondsPerHour)).quotient;
+    const s64 residual_ms = MultiplyMiddleSigned(
+        snapshot_residual, static_cast<u64>(hour_scale));
+
+    u64 combined = static_cast<u64>(elapsed_ms) +
+                   static_cast<u64>(residual_ms) + snapshot_now;
+    combined -= static_cast<u64>(first_q);
+    const s64 wrapped =
+        signed_divmod_64(static_cast<s64>(combined), span_q).remainder;
+    return static_cast<s64>(static_cast<u64>(first_q) +
+                            static_cast<u64>(wrapped));
 }
 
 // DECOMP_FUNC(0x0011cb3c, 184)
