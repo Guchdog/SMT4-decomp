@@ -8567,98 +8567,128 @@ activate:
     return static_cast<u32>(load_s16(work + kRowCount));
 }
 
+// 0x0026BC28 rebuilds the camp status panels.  It counts the 24 live-slot
+// entries whose signed byte is non-negative, publishes a 1/2 layout mode from
+// the byte at +0x910B, copies the slot list into the sparse dword array at
+// +0x738 (stride 8), refreshes the camp row helper, then configures four widget
+// slots (0x940/0xA08 and 0x9A4/0xA6C).  Each slot's recovered layout values are
+// applied after configuration; the last update is a tail call whose result is
+// returned in r0.
+extern "C" u8* camp_func_002a8a08(u32 sub_mode);
+extern "C" void camp_func_0026bed8(void);
+extern "C" u32 engine_func_0029eba8(void* slot);
+extern "C" s32 camp_func_0029f248(void* slot);
+extern "C" u32 camp_func_0029fae8(volatile u8* cursor, s32 total_items,
+                                   s32 visible_rows, s32 columns,
+                                   s32 wrap_row, s32 repeat);
+extern "C" void camp_func_0029eb58(void* slot, u32 value);
+extern "C" u32 camp_func_0029edfc(void* slot, u32 value);
+
+namespace {
+
+constexpr u32 kCampStateGlobal = 0x0043DCF0u;  // camp state pointer slot
+constexpr u32 kLiveSlotOffset = 0x90F0u;       // 24 signed-byte slot ids
+constexpr u32 kModeByteOffset = 0x910Bu;       // mode/row-count byte
+constexpr s32 kLiveSlotCount = 24;
+constexpr u32 kSparseSlotBase = 0x738u;        // dword store, stride 8
+constexpr u32 kSparseSlotStride = 8u;
+constexpr u32 kCountOffset = 0x28u;
+constexpr u32 kModeWordOffset = 0x30u;
+constexpr u32 kFlagOffset = 0x2Cu;
+constexpr u32 kSlotA = 0x940u;
+constexpr u32 kSlotB = 0xA08u;
+constexpr u32 kSlotC = 0x9A4u;
+constexpr u32 kSlotD = 0xA6Cu;
+constexpr u8 kModeByteSplit = 0x0Cu;  // 12: switch to the wrapped range
+constexpr s32 kColumnCount = 4;       // fourth register argument
+constexpr s32 kStackFlag = 1;         // both architected stack arguments
+
+}  // namespace
+
 // DECOMP_FUNC(0x0026bc28, 688)
-extern "C" __attribute__((naked)) void camp_func_0026bc28() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4ff0, 0xe92d, 0x0000, 0xe3a0\n"
-        ".hword 0xd00c, 0xe24d, 0x4000, 0xe1a0\n"
-        ".hword 0x1294, 0xe59f, 0x5000, 0xe591\n"
-        ".hword 0x0028, 0xe585, 0xf000, 0xe320\n"
-        ".hword 0xf36e, 0xeb00, 0x0004, 0xe080\n"
-        ".hword 0x0a09, 0xe280, 0x0fd0, 0xe1d0\n"
-        ".hword 0x0000, 0xe350, 0x0002, 0xba00\n"
-        ".hword 0x0028, 0xe595, 0x0001, 0xe280\n"
-        ".hword 0x0028, 0xe585, 0x4001, 0xe284\n"
-        ".hword 0x0018, 0xe354, 0xfff2, 0xbaff\n"
-        ".hword 0xf362, 0xeb00, 0x0a09, 0xe280\n"
-        ".hword 0x010b, 0xe5d0, 0x000c, 0xe350\n"
-        ".hword 0x0002, 0x83a0, 0x0001, 0x93a0\n"
-        ".hword 0x0030, 0xe585, 0xf35b, 0xeb00\n"
-        ".hword 0x4000, 0xe1a0, 0x0a09, 0xe280\n"
-        ".hword 0x1000, 0xe3a0, 0x2018, 0xe3a0\n"
-        ".hword 0x00f0, 0xe280, 0xc181, 0xe085\n"
-        ".hword 0x30d1, 0xe0d0, 0x2001, 0xe252\n"
-        ".hword 0x1001, 0xe281, 0x3738, 0xe58c\n"
-        ".hword 0xfff9, 0x1aff, 0x0083, 0xeb00\n"
-        ".hword 0x4a09, 0xe284, 0x010b, 0xe5d4\n"
-        ".hword 0x0003, 0xe310, 0x6120, 0xe1a0\n"
-        ".hword 0x6001, 0x1286, 0x0d25, 0xe285\n"
-        ".hword 0xcbb0, 0xeb00, 0x7000, 0xe1a0\n"
-        ".hword 0x0d25, 0xe285, 0xcd55, 0xeb00\n"
-        ".hword 0xb000, 0xe1a0, 0x0b02, 0xe285\n"
-        ".hword 0x0f82, 0xe280, 0x8000, 0xe1a0\n"
-        ".hword 0x0008, 0xe58d, 0xcba7, 0xeb00\n"
-        ".hword 0xa000, 0xe1a0, 0x0008, 0xe1a0\n"
-        ".hword 0xcd4c, 0xeb00, 0x110b, 0xe5d4\n"
-        ".hword 0x8000, 0xe1a0, 0x9001, 0xe3a0\n"
-        ".hword 0x000c, 0xe351, 0x0010, 0x2a00\n"
-        ".hword 0x3004, 0xe3a0, 0x2006, 0xe1a0\n"
-        ".hword 0x0d25, 0xe285, 0x9000, 0xe58d\n"
-        ".hword 0x9004, 0xe58d, 0xcf69, 0xeb00\n"
-        ".hword 0x9000, 0xe58d, 0x9004, 0xe58d\n"
-        ".hword 0x010b, 0xe5d4, 0x3004, 0xe3a0\n"
-        ".hword 0x2001, 0xe286, 0x1004, 0xe280\n"
-        ".hword 0x0008, 0xe59d, 0xcf61, 0xeb00\n"
-        ".hword 0xf000, 0xe320, 0xf000, 0xe320\n"
-        ".hword 0x0011, 0xea00, 0x002c, 0xe595\n"
-        ".hword 0x9000, 0xe58d, 0x9004, 0xe58d\n"
-        ".hword 0x0000, 0xe350, 0x0045, 0x0a00\n"
-        ".hword 0x100c, 0xe241, 0x3004, 0xe3a0\n"
-        ".hword 0x2003, 0xe3a0, 0x0d25, 0xe285\n"
-        ".hword 0xcf54, 0xeb00, 0x9000, 0xe58d\n"
-        ".hword 0x9004, 0xe58d, 0x010b, 0xe5d4\n"
-        ".hword 0x3004, 0xe3a0, 0x2003, 0xe1a0\n"
-        ".hword 0x1008, 0xe240, 0x0008, 0xe59d\n"
-        ".hword 0xcf4c, 0xeb00, 0x1007, 0xe1a0\n"
-        ".hword 0x0d25, 0xe285, 0xcb65, 0xeb00\n"
-        ".hword 0x100b, 0xe1a0, 0x0d25, 0xe285\n"
-        ".hword 0xcc0b, 0xeb00, 0x0008, 0xe59d\n"
-        ".hword 0x100a, 0xe1a0, 0xcb5f, 0xeb00\n"
-        ".hword 0x0008, 0xe59d, 0x1008, 0xe1a0\n"
-        ".hword 0xcc05, 0xeb00, 0x0b02, 0xe285\n"
-        ".hword 0x0f69, 0xe280, 0x0008, 0xe58d\n"
-        ".hword 0xcb6c, 0xeb00, 0x7000, 0xe1a0\n"
-        ".hword 0x0008, 0xe59d, 0xcd11, 0xeb00\n"
-        ".hword 0xa000, 0xe1a0, 0x0b02, 0xe285\n"
-        ".hword 0x0f9b, 0xe280, 0xb000, 0xe1a0\n"
-        ".hword 0xcb64, 0xeb00, 0x5000, 0xe1a0\n"
-        ".hword 0x000b, 0xe1a0, 0xcd09, 0xeb00\n"
-        ".hword 0x8000, 0xe1a0, 0x9000, 0xe58d\n"
-        ".hword 0x9004, 0xe58d, 0x110b, 0xe5d4\n"
-        ".hword 0x0008, 0xe59d, 0x3004, 0xe3a0\n"
-        ".hword 0x2006, 0xe1a0, 0xcf29, 0xeb00\n"
-        ".hword 0x9000, 0xe58d, 0x9004, 0xe58d\n"
-        ".hword 0x010b, 0xe5d4, 0x3004, 0xe3a0\n"
-        ".hword 0x2001, 0xe286, 0x1004, 0xe280\n"
-        ".hword 0x000b, 0xe1a0, 0xcf21, 0xeb00\n"
-        ".hword 0x0008, 0xe59d, 0x1007, 0xe1a0\n"
-        ".hword 0xcb3a, 0xeb00, 0x0008, 0xe59d\n"
-        ".hword 0x100a, 0xe1a0, 0xcbe0, 0xeb00\n"
-        ".hword 0x1005, 0xe1a0, 0x000b, 0xe1a0\n"
-        ".hword 0xcb34, 0xeb00, 0xd00c, 0xe28d\n"
-        ".hword 0x1008, 0xe1a0, 0x000b, 0xe1a0\n"
-        ".hword 0x4ff0, 0xe8bd, 0xcbd8, 0xea00\n"
-        ".hword 0x3004, 0xe3a0, 0x2003, 0xe3a0\n"
-        ".hword 0x100c, 0xe3a0, 0x0d25, 0xe285\n"
-        ".hword 0xcf0e, 0xeb00, 0x3004, 0xe3a0\n"
-        ".hword 0x0008, 0xe59d, 0x2003, 0xe1a0\n"
-        ".hword 0x1010, 0xe3a0, 0x9000, 0xe58d\n"
-        ".hword 0x9004, 0xe58d, 0xcf07, 0xeb00\n"
-        ".hword 0xf000, 0xe320, 0xf000, 0xe320\n"
-        ".hword 0xffb7, 0xeaff, 0xdcf0, 0x0043\n"
-    );
-};
+extern "C" u32 camp_func_0026bc28(void) {
+    u8* const manager = *reinterpret_cast<u8**>(kCampStateGlobal);
+
+    *reinterpret_cast<u32*>(manager + kCountOffset) = 0;
+
+    // Count non-negative entries; the getter is called once per iteration.
+    for (s32 i = 0; i < kLiveSlotCount; ++i) {
+        const u8* const base = camp_func_002a8a08(0);
+        if (static_cast<s8>(base[kLiveSlotOffset + static_cast<u32>(i)]) >= 0) {
+            const u32 count = *reinterpret_cast<u32*>(manager + kCountOffset);
+            *reinterpret_cast<u32*>(manager + kCountOffset) = count + 1;
+        }
+    }
+
+    const u8 initial_mode = camp_func_002a8a08(0)[kModeByteOffset];
+    *reinterpret_cast<u32*>(manager + kModeWordOffset) =
+        initial_mode > kModeByteSplit ? 2u : 1u;
+
+    u8* const base = camp_func_002a8a08(0);
+#pragma clang loop unroll(disable)
+    for (s32 i = 0; i < kLiveSlotCount; ++i) {
+        *reinterpret_cast<s32*>(
+            manager + kSparseSlotBase +
+            static_cast<u32>(i) * kSparseSlotStride) =
+            static_cast<s32>(
+                static_cast<s8>(base[kLiveSlotOffset + static_cast<u32>(i)]));
+    }
+
+    camp_func_0026bed8();
+
+    const u8 count_byte = base[kModeByteOffset];
+    const s32 columns = static_cast<s32>(count_byte >> 2) +
+                        ((count_byte & 3u) != 0 ? 1 : 0);
+
+    u8* const slot_a = manager + kSlotA;
+    const u32 slot_a_first = engine_func_0029eba8(slot_a);
+    const u32 slot_a_second = camp_func_0029f248(slot_a);
+    u8* const slot_b = manager + kSlotB;
+    const u32 slot_b_first = engine_func_0029eba8(slot_b);
+    const u32 slot_b_second = camp_func_0029f248(slot_b);
+
+    if (count_byte < kModeByteSplit) {
+        camp_func_0029fae8(slot_a, count_byte, columns, kColumnCount,
+                           kStackFlag, kStackFlag);
+        camp_func_0029fae8(slot_b,
+                           base[kModeByteOffset] + 4,
+                           columns + 1, kColumnCount,
+                           kStackFlag, kStackFlag);
+    } else if (*reinterpret_cast<u32*>(manager + kFlagOffset) != 0) {
+        camp_func_0029fae8(slot_a, count_byte - kModeByteSplit, 3,
+                           kColumnCount, kStackFlag, kStackFlag);
+        camp_func_0029fae8(slot_b, base[kModeByteOffset] - 8, kColumnCount,
+                           kColumnCount, kStackFlag, kStackFlag);
+    } else {
+        camp_func_0029fae8(slot_a, kModeByteSplit, 3, kColumnCount,
+                           kStackFlag, kStackFlag);
+        camp_func_0029fae8(slot_b, 0x10, kColumnCount, kColumnCount,
+                           kStackFlag, kStackFlag);
+    }
+
+    camp_func_0029eb58(slot_a, slot_a_first);
+    camp_func_0029edfc(slot_a, slot_a_second);
+    camp_func_0029eb58(slot_b, slot_b_first);
+    camp_func_0029edfc(slot_b, slot_b_second);
+
+    u8* const slot_c = manager + kSlotC;
+    const u32 slot_c_first = engine_func_0029eba8(slot_c);
+    const u32 slot_c_second = camp_func_0029f248(slot_c);
+    u8* const slot_d = manager + kSlotD;
+    const u32 slot_d_first = engine_func_0029eba8(slot_d);
+    const u32 slot_d_second = camp_func_0029f248(slot_d);
+
+    camp_func_0029fae8(slot_c, base[kModeByteOffset], columns, kColumnCount,
+                       kStackFlag, kStackFlag);
+    camp_func_0029fae8(slot_d, base[kModeByteOffset] + 4, columns + 1,
+                       kColumnCount, kStackFlag, kStackFlag);
+
+    camp_func_0029eb58(slot_c, slot_c_first);
+    camp_func_0029edfc(slot_c, slot_c_second);
+    camp_func_0029eb58(slot_d, slot_d_first);
+
+    return camp_func_0029edfc(slot_d, slot_d_second);
+}
 
 // DECOMP_FUNC(0x00300710, 688)
 extern "C" __attribute__((naked)) void engine_func_00300710() {
