@@ -4482,90 +4482,257 @@ extern "C" void func_002712d4(u8 value, u8* const* owner_slot,
 }
 
 // DECOMP_FUNC(0x00392acc, 632)
-extern "C" __attribute__((naked)) void engine_func_00392acc() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x43f0, 0xe92d, 0xd03c, 0xe24d\n"
-        ".hword 0x4000, 0xe1a0, 0x000d, 0xe1a0\n"
-        ".hword 0x85e5, 0xebfa, 0x1250, 0xe59f\n"
-        ".hword 0x0008, 0xe594, 0x9244, 0xe59f\n"
-        ".hword 0x7003, 0xe3a0, 0x6000, 0xe591\n"
-        ".hword 0x0003, 0xe350, 0x8004, 0xe3a0\n"
-        ".hword 0x5000, 0xe3a0, 0x005a, 0x0a00\n"
-        ".hword 0x001c, 0xaa00, 0x0000, 0xe350\n"
-        ".hword 0x0025, 0x0a00, 0x0001, 0xe350\n"
-        ".hword 0x002b, 0x0a00, 0x0002, 0xe350\n"
-        ".hword 0x0014, 0x1a00, 0x0208, 0xe594\n"
-        ".hword 0x0000, 0xe350, 0x0002, 0x0a00\n"
-        ".hword 0x1000, 0xe590, 0x1004, 0xe591\n"
-        ".hword 0xff31, 0xe12f, 0x1004, 0xe3a0\n"
-        ".hword 0x0f83, 0xe284, 0x8586, 0xebfa\n"
-        ".hword 0x5000, 0xe1a0, 0x0208, 0xe584\n"
-        ".hword 0x0d09, 0xe284, 0x8312, 0xebfa\n"
-        ".hword 0x21e0, 0xe59f, 0x1678, 0xe596\n"
-        ".hword 0x0290, 0xe000, 0x21d8, 0xe59f\n"
-        ".hword 0x0180, 0xe082, 0x00b0, 0xe191\n"
-        ".hword 0x0014, 0xe585, 0x7008, 0xe584\n"
-        ".hword 0xd03c, 0xe28d, 0x83f0, 0xe8bd\n"
-        ".hword 0x0004, 0xe350, 0x005a, 0x0a00\n"
-        ".hword 0x0c27, 0xe240, 0x000f, 0xe250\n"
-        ".hword 0xfff8, 0x1aff, 0x2003, 0xe3a0\n"
-        ".hword 0x1005, 0xe3a0, 0x0004, 0xe1a0\n"
-        ".hword 0x8518, 0xebfa, 0xd03c, 0xe28d\n"
-        ".hword 0x83f0, 0xe8bd, 0x1000, 0xe3a0\n"
-        ".hword 0x0f83, 0xe284, 0x856a, 0xebfa\n"
-        ".hword 0x1001, 0xe3a0, 0x1008, 0xe5a4\n"
-        ".hword 0x0200, 0xe584, 0xd03c, 0xe28d\n"
-        ".hword 0x83f0, 0xe8bd, 0x1208, 0xe594\n"
-        ".hword 0x0000, 0xe591, 0x200c, 0xe590\n"
-        ".hword 0x0014, 0xe28d, 0xff32, 0xe12f\n"
-        ".hword 0x5014, 0xe28d, 0x100f, 0xe895\n"
-        ".hword 0x100f, 0xe88d, 0x000d, 0xe1a0\n"
-        ".hword 0xb024, 0xebfb, 0x0000, 0xe350\n"
-        ".hword 0x0002, 0x13a0, 0x0008, 0x1584\n"
-        ".hword 0xffdc, 0x1aff, 0x000d, 0xe1a0\n"
-        ".hword 0x3aed, 0xebfc, 0x0000, 0xe350\n"
-        ".hword 0xf000, 0xe320, 0xffd7, 0x0aff\n"
-        ".hword 0x0000, 0xe5dd, 0x0066, 0xe350\n"
-        ".hword 0x0005, 0x0a00, 0x0067, 0xe350\n"
-        ".hword 0x000b, 0x1a00, 0x8008, 0xe5a4\n"
-        ".hword 0x7004, 0xe584, 0xd03c, 0xe28d\n"
-        ".hword 0x83f0, 0xe8bd, 0x100f, 0xe89d\n"
-        ".hword 0x5028, 0xe28d, 0x100f, 0xe885\n"
-        ".hword 0x1028, 0xe28d, 0x0004, 0xe1a0\n"
-        ".hword 0x8599, 0xebfa, 0xd03c, 0xe28d\n"
-        ".hword 0x83f0, 0xe8bd, 0x100f, 0xe89d\n"
-        ".hword 0x9008, 0xe5a4, 0x4f82, 0xe284\n"
-        ".hword 0x100f, 0xe884, 0xd03c, 0xe28d\n"
-        ".hword 0x83f0, 0xe8bd, 0x1208, 0xe594\n"
-        ".hword 0x0000, 0xe591, 0x200c, 0xe590\n"
-        ".hword 0x0014, 0xe28d, 0xff32, 0xe12f\n"
-        ".hword 0x6014, 0xe28d, 0x100f, 0xe896\n"
-        ".hword 0x100f, 0xe88d, 0x000d, 0xe1a0\n"
-        ".hword 0xaffa, 0xebfb, 0x0000, 0xe350\n"
-        ".hword 0xf000, 0xe320, 0x0007, 0x0a00\n"
-        ".hword 0x0208, 0xe594, 0x2004, 0xe284\n"
-        ".hword 0x100a, 0xe3a0, 0x0022, 0xe882\n"
-        ".hword 0x0000, 0xe350, 0x0017, 0x1a00\n"
-        ".hword 0xd03c, 0xe28d, 0x83f0, 0xe8bd\n"
-        ".hword 0x000d, 0xe1a0, 0x3abc, 0xebfc\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0xffa6, 0x0aff, 0x0000, 0xe5dd\n"
-        ".hword 0x0066, 0xe350, 0xffd4, 0x0aff\n"
-        ".hword 0x0067, 0xe350, 0xffda, 0x1aff\n"
-        ".hword 0xffcd, 0xeaff, 0x000c, 0xe594\n"
-        ".hword 0x0001, 0xe240, 0x0000, 0xe350\n"
-        ".hword 0x000c, 0xe584, 0xff9b, 0xcaff\n"
-        ".hword 0x0208, 0xe594, 0x2004, 0xe284\n"
-        ".hword 0x1006, 0xe3a0, 0x0022, 0xe882\n"
-        ".hword 0x0000, 0xe350, 0xff95, 0x0aff\n"
-        ".hword 0x1000, 0xe590, 0x1004, 0xe591\n"
-        ".hword 0xff31, 0xe12f, 0x5208, 0xe584\n"
-        ".hword 0xd03c, 0xe28d, 0x83f0, 0xe8bd\n"
-        ".hword 0x270f, 0x0000, 0x2fc8, 0x0043\n"
-        ".hword 0x0139, 0x0000, 0x09aa, 0x0000\n"
-    );
+// ---------------------------------------------------------------------------
+// 0x00392ACC (632 B): message-source state machine.
+//
+// The routine drives a 32-bit state word at +0x08 while it owns a polymorphic
+// message source at +0x208:
+//   0 -> 1 -> {2, 3, 4, 0x270F}
+// State 0/2 create a source through 0x00234160 (kind 0 and 4 respectively);
+// states 1/3 query the source through vtable slot +0x0C, which returns a
+// 20-byte message by value; state 4 runs a signed three-tick countdown. The
+// deleting destructor (vtable slot +0x04) releases the source before +0x208 is
+// cleared. The last 20-byte message is staged at +0x210, and the new source's
+// u16 table id is stored at +0x14 of the object created in state 2.
+//
+// The body is ARM up to 0x00392D30. The 16 bytes at 0x00392D34..0x00392D40 are
+// its literal pool: 0x0000270F, 0x00432FC8, 0x00000139 and 0x000009AA.
+// The only reference to the entry point in the pinned image is the handler
+// table word at 0x003FF0A4; no static caller exists.
+// ---------------------------------------------------------------------------
+
+// 20-byte message moved by value through the helper ABI. Only the first byte
+// has recovered meaning: 0, 0x66 ('f') and 0x67 ('g') select distinct tails.
+struct Message00392acc {
+    u8 opcode;    // +0x00
+    u8 pad[3];
+    u32 field_04; // +0x04
+    u32 field_08; // +0x08
+    u32 field_0c; // +0x0C
+    u32 field_10; // +0x10
 };
+
+static_assert(sizeof(Message00392acc) == 0x14,
+              "0x00392ACC messages are 20 bytes");
+
+struct MessageSource00392acc;
+
+// Only the three slots touched by this routine are named. Slot 3 returns a
+// 20-byte value; the ARM ABI passes the hidden return slot in r0 and `this` in
+// r1, so it is modelled with those two leading parameters.
+struct MessageSourceVtable00392acc {
+    void (*full_destructor)(MessageSource00392acc*);                   // +0x00
+    void (*deleting_destructor)(MessageSource00392acc*);               // +0x04
+    void (*unobserved)(MessageSource00392acc*);                        // +0x08
+    void (*read_message)(Message00392acc* out,
+                         MessageSource00392acc* source);               // +0x0C
+};
+
+struct MessageSource00392acc {
+    const MessageSourceVtable00392acc* vtable;  // +0x00
+};
+
+extern "C" void  engine_func_00234278(void* storage);                   // 0x00234278
+extern "C" void* engine_func_00234160(void* owner, u32 kind);           // 0x00234160
+extern "C" u32   shop_func_002337a0(const void* list);                  // 0x002337A0
+extern "C" u32   camp_func_0027ec84(const void* message);               // 0x0027EC84
+extern "C" u32   engine_func_002a17c0(const void* message);             // 0x002A17C0
+extern "C" void  func_002342b8(void* context,
+                               const Message00392acc* message);        // 0x002342B8
+extern "C" void  engine_func_00234004(void* context, u32 arg1, u32 arg2); // 0x00234004
+
+namespace engine_392acc {
+
+// Caller-context offsets (ARM access widths in parentheses).
+constexpr u32 kResult        = 0x004;  // u32 result code
+constexpr u32 kState         = 0x008;  // u32 state selector
+constexpr u32 kCounter       = 0x00C;  // s32 countdown used by state 4
+constexpr u32 kSource        = 0x208;  // Source* owned pointer
+constexpr u32 kFactoryOwner  = 0x20C;  // passed to 0x00234160 (unread there)
+constexpr u32 kStagedMessage = 0x210;  // 20-byte staged message
+constexpr u32 kList          = 0x240;  // passed to 0x002337A0
+constexpr u32 kCreatedId     = 0x014;  // u32 id stored in the new source
+
+// The root pointer is sampled once, after the entry constructor, and only its
+// +0x678 table base is reloaded later.
+constexpr u32 kGlobalRootAddress = 0x00432FC8;
+constexpr u32 kGlobalTable       = 0x678;
+constexpr u32 kTableLead         = 0x9AA;  // halfword offset into the table
+constexpr u32 kTableStride       = 0x139;  // scale: (index * 0x139) << 3
+
+constexpr u32 kStateStart       = 0;
+constexpr u32 kStateRead        = 1;
+constexpr u32 kStateCreate      = 2;
+constexpr u32 kStateReadCreated = 3;
+constexpr u32 kStateCountdown   = 4;
+constexpr u32 kStateSignal      = 0x270F;
+
+constexpr u32 kResultAfterCountdown = 6;   // state-4 expiry result
+constexpr u32 kResultAfterMessage   = 10;  // zero-opcode result in state 3
+constexpr u32 kSignalArg0           = 5;
+constexpr u32 kSignalArg1           = 3;
+constexpr u32 kFactoryStartKind     = 0;
+constexpr u32 kFactoryCreateKind    = 4;
+constexpr s32 kInitialCountdown     = 3;
+
+constexpr u8 kOpcodeF = 0x66;  // 'f' literal byte comparison
+constexpr u8 kOpcodeG = 0x67;  // 'g' literal byte comparison
+
+static __attribute__((always_inline)) inline u32 load_u32(const void* p) {
+    return *static_cast<const u32*>(p);
+}
+
+static __attribute__((always_inline)) inline void store_u32(void* p, u32 value) {
+    *static_cast<u32*>(p) = value;
+}
+
+static __attribute__((always_inline)) inline void store_s32(void* p, s32 value) {
+    *static_cast<s32*>(p) = value;
+}
+
+// 0x00392BD8/0x00392C80: vtable slot 0x0C writes the message into a temporary
+// slot, then the routine copies all five words onto its own message object.
+static __attribute__((always_inline)) inline void read_source_message(
+    MessageSource00392acc* source, Message00392acc* message) {
+    Message00392acc slot;
+    source->vtable->read_message(&slot, source);
+    *message = slot;
+}
+
+// Shared opcode tail of states 1 and 3 (0x00392C14..0x00392C68). It is reached
+// only after 0x002A17C0 reports opcode >= 0x64.
+static void dispatch_message(u8* self, const Message00392acc& message) {
+    switch (message.opcode) {
+    case kOpcodeF: {
+        // 0x00392C38..0x00392C4C: the 20-byte value is copied to a private
+        // stack slot and the callee receives a pointer to that copy. Clang's
+        // ARM aggregate convention would split a by-value 20-byte parameter
+        // across r1-r3 and the stack, so the recovered invisible-reference
+        // argument is declared explicitly.
+        Message00392acc forwarded = message;
+        func_002342b8(self, &forwarded);
+        return;
+    }
+    case kOpcodeG:
+        store_u32(self + kState, kStateCountdown);
+        store_s32(self + kCounter, kInitialCountdown);
+        return;
+    default:
+        store_u32(self + kState, kStateSignal);
+        *reinterpret_cast<Message00392acc*>(self + kStagedMessage) = message;
+        return;
+    }
+}
+
+}  // namespace engine_392acc
+
+extern "C" void engine_func_00392acc(void* context) {
+    using namespace engine_392acc;
+
+    u8* const self = static_cast<u8*>(context);
+
+    // The entry constructor runs before the global root is sampled.
+    Message00392acc message;
+    engine_func_00234278(&message);
+
+    const u8* const root =
+        *reinterpret_cast<const u8* const*>(kGlobalRootAddress);
+
+    switch (load_u32(self + kState)) {
+    case kStateStart: {
+        MessageSource00392acc* const created =
+            static_cast<MessageSource00392acc*>(
+                engine_func_00234160(self + kFactoryOwner,
+                                     kFactoryStartKind));
+        store_u32(self + kState, kStateRead);
+        *reinterpret_cast<MessageSource00392acc**>(self + kSource) = created;
+        return;
+    }
+
+    case kStateRead: {
+        // The original dereferences +0x208 without a null check.
+        read_source_message(
+            *reinterpret_cast<MessageSource00392acc**>(self + kSource),
+            &message);
+        if (camp_func_0027ec84(&message) != 0) {
+            store_u32(self + kState, kStateCreate);
+            return;
+        }
+        if (engine_func_002a17c0(&message) == 0) return;
+        dispatch_message(self, message);
+        return;
+    }
+
+    case kStateCreate: {
+        MessageSource00392acc* const previous =
+            *reinterpret_cast<MessageSource00392acc**>(self + kSource);
+        if (previous != nullptr) {
+            previous->vtable->deleting_destructor(previous);
+        }
+        MessageSource00392acc* const created =
+            static_cast<MessageSource00392acc*>(
+                engine_func_00234160(self + kFactoryOwner,
+                                     kFactoryCreateKind));
+        *reinterpret_cast<MessageSource00392acc**>(self + kSource) = created;
+
+        const u32 index = shop_func_002337a0(self + kList);
+        const u8* const table =
+            *reinterpret_cast<const u8* const*>(root + kGlobalTable);
+        const u32 table_offset = kTableLead + ((index * kTableStride) << 3);
+        *reinterpret_cast<u32*>(
+            reinterpret_cast<u8*>(created) + kCreatedId) =
+            *reinterpret_cast<const u16*>(table + table_offset);
+
+        store_u32(self + kState, kStateReadCreated);
+        return;
+    }
+
+    case kStateReadCreated: {
+        read_source_message(
+            *reinterpret_cast<MessageSource00392acc**>(self + kSource),
+            &message);
+        if (camp_func_0027ec84(&message) != 0) {
+            MessageSource00392acc* const previous =
+                *reinterpret_cast<MessageSource00392acc**>(self + kSource);
+            store_u32(self + kResult, kResultAfterMessage);
+            store_u32(self + kState, kStateStart);
+            if (previous != nullptr) {
+                previous->vtable->deleting_destructor(previous);
+                *reinterpret_cast<MessageSource00392acc**>(self + kSource) =
+                    nullptr;
+            }
+            return;
+        }
+        if (engine_func_002a17c0(&message) == 0) return;
+        dispatch_message(self, message);
+        return;
+    }
+
+    case kStateCountdown: {
+        // SUBS + BGT: the subtraction wraps in 32 bits and the wrapped result
+        // is interpreted as signed, so keep the arithmetic unsigned.
+        const u32 decremented = load_u32(self + kCounter) - 1u;
+        store_u32(self + kCounter, decremented);
+        if (static_cast<s32>(decremented) > 0) return;
+        MessageSource00392acc* const previous =
+            *reinterpret_cast<MessageSource00392acc**>(self + kSource);
+        store_u32(self + kResult, kResultAfterCountdown);
+        store_u32(self + kState, kStateStart);
+        if (previous != nullptr) {
+            previous->vtable->deleting_destructor(previous);
+            *reinterpret_cast<MessageSource00392acc**>(self + kSource) = nullptr;
+        }
+        return;
+    }
+
+    case kStateSignal:
+        engine_func_00234004(self, kSignalArg0, kSignalArg1);
+        return;
+
+    default:
+        return;
+    }
+}
 
 // DECOMP_FUNC(0x0033631c, 640)
 extern "C" void engine_func_0033631c(void* context, u32 channel_index) {
