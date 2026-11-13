@@ -4491,62 +4491,101 @@ extern "C" __attribute__((naked)) void engine_func_0015d944() {
     );
 }
 
+// Direct calls made by 0x00195424.
+extern "C" u32 func_00360f48(f32 y, f32 x);                       // 0x00360f48
+extern "C" u64 ui_func_002c615c(s32 numerator, s32 denominator);  // 0x002c615c
+
+namespace {
+
+f32 LoadF32(const u8* self, u32 offset) {
+    return *reinterpret_cast<const f32*>(self + offset);
+}
+
+void StoreS32(u8* self, u32 offset, s32 value) {
+    *reinterpret_cast<s32*>(self + offset) = value;
+}
+
+// 0x002C615C is the signed integer divide/modulo helper (`__aeabi_idivmod`):
+// the quotient is returned in r0 and the remainder in r1.  Only r0 is used.
+s32 DivideQuotient(s32 numerator, s32 denominator) {
+    return static_cast<s32>(ui_func_002c615c(numerator, denominator));
+}
+
+}  // namespace
+
 // DECOMP_FUNC(0x00195424, 408)
-extern "C" __attribute__((naked)) void ui_func_00195424() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4070, 0xe92d, 0x4000, 0xe1a0\n"
-        ".hword 0x5001, 0xe1a0, 0x8b02, 0xed2d\n"
-        ".hword 0x01d8, 0xe5d0, 0x0000, 0xe350\n"
-        ".hword 0x0013, 0x0a00, 0x0001, 0xe350\n"
-        ".hword 0x0013, 0x0a00, 0x0002, 0xe350\n"
-        ".hword 0x000f, 0x1a00, 0x0fb5, 0xe284\n"
-        ".hword 0x0a49, 0xed94, 0x0a48, 0xedd4\n"
-        ".hword 0x1a02, 0xec90, 0x0ac1, 0xee70\n"
-        ".hword 0x0a61, 0xee30, 0x2eb6, 0xeb07\n"
-        ".hword 0x0901, 0xe240, 0x1f5a, 0xe3a0\n"
-        ".hword 0x0070, 0xe6ff, 0x0000, 0xe355\n"
-        ".hword 0x0190, 0xe000, 0x0820, 0xe1a0\n"
-        ".hword 0x000c, 0xe584, 0x0000, 0x1260\n"
-        ".hword 0x000c, 0x1584, 0x8b02, 0xecbd\n"
-        ".hword 0x8070, 0xe8bd, 0x8a49, 0xedd4\n"
-        ".hword 0x8a45, 0xed9f, 0x8ac8, 0xeef4\n"
-        ".hword 0xfa10, 0xeef1, 0x0a48, 0xed94\n"
-        ".hword 0x000f, 0xda00, 0x0ac8, 0xeeb4\n"
-        ".hword 0xfa10, 0xeef1, 0x0ad3, 0xed94\n"
-        ".hword 0x0ac0, 0xeebd, 0x1a10, 0xee10\n"
-        ".hword 0x0004, 0xda00, 0x005a, 0xe3a0\n"
-        ".hword 0xc322, 0xeb04, 0x000c, 0xe584\n"
-        ".hword 0xf000, 0xe320, 0x0013, 0xea00\n"
-        ".hword 0x0059, 0xe3e0, 0xc31d, 0xeb04\n"
-        ".hword 0x000c, 0xe584, 0xf000, 0xe320\n"
-        ".hword 0x000e, 0xea00, 0x0ac8, 0xeeb4\n"
-        ".hword 0xfa10, 0xeef1, 0x0ad3, 0xed94\n"
-        ".hword 0x0ac0, 0xeebd, 0x1a10, 0xee10\n"
-        ".hword 0x0004, 0xda00, 0x005a, 0xe3a0\n"
-        ".hword 0xc312, 0xeb04, 0x005a, 0xe280\n"
-        ".hword 0xf000, 0xe320, 0x0002, 0xea00\n"
-        ".hword 0x0059, 0xe3e0, 0xc30d, 0xeb04\n"
-        ".hword 0x005a, 0xe240, 0x000c, 0xe584\n"
-        ".hword 0x0130, 0xe5d4, 0x0001, 0xe310\n"
-        ".hword 0xffd5, 0x0aff, 0x8ac8, 0xeef4\n"
-        ".hword 0xfa10, 0xeef1, 0x0a4a, 0xed94\n"
-        ".hword 0x000a, 0xda00, 0x0ac8, 0xeeb4\n"
-        ".hword 0xfa10, 0xeef1, 0x0ad3, 0xed94\n"
-        ".hword 0x0059, 0xc3e0, 0x0ac0, 0xeebd\n"
-        ".hword 0x005a, 0xd3a0, 0x1a10, 0xee10\n"
-        ".hword 0xc2fc, 0xeb04, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0x000d, 0xea00\n"
-        ".hword 0x0ac8, 0xeeb4, 0xfa10, 0xeef1\n"
-        ".hword 0x0ad3, 0xed94, 0x0ac0, 0xeebd\n"
-        ".hword 0x1a10, 0xee10, 0x0004, 0xda00\n"
-        ".hword 0x0059, 0xe3e0, 0xc2f1, 0xeb04\n"
-        ".hword 0x005a, 0xe240, 0xf000, 0xe320\n"
-        ".hword 0x0002, 0xea00, 0x005a, 0xe3a0\n"
-        ".hword 0xc2ec, 0xeb04, 0x005a, 0xe280\n"
-        ".hword 0x0004, 0xe584, 0x8b02, 0xecbd\n"
-        ".hword 0x8070, 0xe8bd, 0x0000, 0x0000\n"
-    );
+//
+// Heading updater for a UI object.  The state byte at +0x1D8 selects the work:
+//   0        - nothing (r0 is left holding the state byte)
+//   1        - derive the +0x0C angle, and the +0x04 angle when +0x130 bit 0
+//              is set, from the signs of the +0x124/+0x120 angles and the
+//              +0x128 offset divided by +0x34C
+//   2        - derive a heading in whole degrees from the vector between the
+//              +0x120/+0x124 pair and the +0x2D4/+0x2D8 pair
+//   other    - nothing (r0 is left holding the state byte)
+// `mirrored` (r1) negates the state-2 heading; the two callers at 0x001AA7DC
+// and 0x001AAFF8 pass 0 and 1.  The original leaves an incidental value in r0
+// on exit (the state byte, the flags byte, or one of the stored angles); both
+// callers reload r0 immediately, but that value is reproduced here so the
+// register-level differential is exact.
+extern "C" s32 ui_func_00195424(u8* self, s32 mirrored) {
+    const u8 state = self[0x1D8];
+
+    if (state == 2) {
+        // 0x00360F48 is the 16-bit-units atan2 (0x10000 is one full turn).
+        // Removing the quarter-turn offset and scaling by 360/0x10000 yields
+        // a whole-degree heading before the optional mirroring.
+        const f32 delta_x = LoadF32(self, 0x120) - LoadF32(self, 0x2D4);
+        const f32 delta_y = LoadF32(self, 0x124) - LoadF32(self, 0x2D8);
+        const u32 angle = func_00360f48(delta_y, delta_x);
+        const u32 turn = static_cast<u16>(angle - 0x4000u);
+        const s32 degrees = static_cast<s32>((turn * 0x168u) >> 16);
+        const s32 heading = mirrored != 0 ? -degrees : degrees;
+        StoreS32(self, 0x0C, heading);
+        return heading;
+    }
+
+    if (state != 1) {
+        return state;
+    }
+
+    // State 1.  +0x124 (vertical) and +0x120 (horizontal) are compared with
+    // `vcmpe.f32 ..., #0` followed by `ble`, so an unordered (NaN) result takes
+    // the same less-or-equal arm as a negative value.
+    const f32 field_124 = LoadF32(self, 0x124);
+    const f32 field_120 = LoadF32(self, 0x120);
+
+    s32 step;
+    if (field_124 > 0.0f) {
+        const s32 divisor = static_cast<s32>(LoadF32(self, 0x34C));
+        step = DivideQuotient(field_120 > 0.0f ? 90 : -90, divisor);
+    } else {
+        const s32 divisor = static_cast<s32>(LoadF32(self, 0x34C));
+        step = field_120 > 0.0f
+            ? DivideQuotient(90, divisor) + 90
+            : DivideQuotient(-90, divisor) - 90;
+    }
+    StoreS32(self, 0x0C, step);
+
+    // The +0x04 heading is only updated when bit 0 of the flag byte is set.
+    const u8 flags = self[0x130];
+    if ((flags & 1u) == 0) {
+        return flags;
+    }
+
+    s32 second;
+    if (field_124 > 0.0f) {
+        // `mvngt`/`movle`: positive +0x128 selects -90, otherwise +90.
+        const s32 numerator = LoadF32(self, 0x128) > 0.0f ? -90 : 90;
+        second = DivideQuotient(numerator,
+                                static_cast<s32>(LoadF32(self, 0x34C)));
+    } else if (LoadF32(self, 0x128) > 0.0f) {
+        second = DivideQuotient(-90, static_cast<s32>(LoadF32(self, 0x34C))) - 90;
+    } else {
+        second = DivideQuotient(90, static_cast<s32>(LoadF32(self, 0x34C))) + 90;
+    }
+    StoreS32(self, 0x04, second);
+    return second;
 }
 
 // DECOMP_FUNC(0x00230ae8, 408)
