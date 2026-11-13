@@ -916,7 +916,7 @@ address,size,status,category,name,src_file
 0x0013b3f0,68,matching,unknown,func_0013b3f0,src/engine/leaf_batch24_a.cpp
 0x0013b434,56,matching,engine,engine_func_0013b434,src/engine/leaf_batch23_a.cpp
 0x0013b46c,156,matching,unknown,func_0013b46c,src/engine/leaf_batch26_a.cpp
-0x0013b508,704,matching,camp,camp_func_0013b508,src/engine/leaf_batch34_c.cpp
+0x0013b508,704,non_matching,camp,camp_func_0013b508,src/engine/leaf_batch34_c.cpp
 0x0013b7c8,64,matching,unknown,func_0013b7c8,src/engine/leaf_batch23_a.cpp
 0x0013b808,60,matching,unknown,func_0013b808,src/engine/leaf_batch23_a.cpp
 0x0013b844,60,matching,unknown,func_0013b844,src/engine/leaf_batch23_a.cpp

@@ -3850,194 +3850,249 @@ extern "C" __attribute__((naked)) void func_0013a1d4() {
     );
 }
 
+// ---------------------------------------------------------------------------
+// 0x0013B508 (704 B) -- bounded retry loop around the engine's shared
+// thread-descriptor query.
+//
+// Recovered contract (every access is 32-bit unless noted):
+//   * r0/r1/r2 are optional output pointers, r3 is a count that only applies
+//     together with r2, the first two stack words are further optional output
+//     pointers, and the last two stack words hold one 64-bit value in
+//     nanoseconds that bounds the retry loop.
+//   * The entry issues one 64-bit read (`ldrd`) of 0x0044E370.  When the
+//     64-bit argument equals that word, the routine forwards the whole
+//     argument list to 0x0013B014 as
+//     `0x0013B014(r0, r1, r2, r3, stack0, stack1, 0)` and returns that
+//     callee's result without polling.
+//   * Otherwise the argument is compared with the 64-bit words at 0x0044E378
+//     (two 32-bit loads) and 0x0044E370.  Equality with either leaves the tick
+//     baseline at zero; any other value stores nn::os::GetSystemTick()
+//     (`svc #0x28`, 64-bit tick in r0:r1) once, before the first poll.
+//   * Every poll iteration re-loads r3 and calls 0x0013B1E0, the non-blocking
+//     claim on the shared word at 0x00465644.  A failed claim stores
+//     0xC8A0CFEF, the claim-failure code.
+//   * A successful claim branches on 0x002A84DC, which reads the shared 32-bit
+//     word at 0x0044E390:
+//       - non-zero: 0x002A84DC is sampled once for the comparison and a second
+//         time for the value stored through r1 (unconditionally, no null
+//         check); 0x002AD45C(0) clears the shared word, 0x002A84D0 releases
+//         the claim, r0 receives 0, the +0x00 pointer receives 0 and the
+//         +0x04 pointer receives the 32-bit word at 0x0044E368.  Result 0.
+//       - zero: 0x002BB6B8 takes the engine object lock, 0x002BB440 returns
+//         [0x0044E394], 0x0013B364 fills the descriptor outputs, 0x002BB648
+//         drops the lock, and the descriptor result is used.  Every null
+//         output is replaced by a private stack dummy; r2 is only used as a
+//         descriptor buffer when r3 is also non-zero (`r2 && r3`), and the
+//         count forwarded with it is cleared to 0 otherwise.  When the caller
+//         passed no sixth output the descriptor's handle lands in a private
+//         slot and is released with `svc #0x23` (`svcCloseHandle`) if the
+//         callee left it non-zero.
+//     Both arms then call 0x002A84D0 once more before the result is tested.
+//   * Non-negative results return immediately.  Negative results other than
+//     0xC8A0CFEF retry at once.  0xC8A0CFEF returns when the 64-bit argument
+//     equals the freshly loaded secondary marker word, retries when it equals
+//     the freshly loaded primary marker word, and otherwise retries only while
+//     the elapsed ticks -- converted to nanoseconds by bits 32..95 of the
+//     signed 64x34 product with 0x3BAD34AEE, the same stage 0x0011B6A8 uses --
+//     do not exceed it (signed 64-bit `blt`).  Every retry sleeps
+//     10 * 1,000,000 ns through 0x002BB490 and polls again.
+//   * All exits restore sp from the 0x34-byte register save plus the 0x44-byte
+//     frame and pop r4-r11, so only r0 carries a result.
+// ---------------------------------------------------------------------------
+namespace {
+
+// Literal pool at 0x0013B7B0..0x0013B7C7.
+constexpr u32 kPrimaryMarkerAddress = 0x0044E370u;   // ldrd at 0x0013B528
+constexpr u32 kSecondaryMarkerAddress = 0x0044E378u; // ldr/ldr pair
+constexpr u32 kClaimFailureCode = 0xC8A0CFEFu;
+constexpr u32 kSharedTableAddress = 0x0044E360u;
+constexpr u32 kSharedTableWordOffset = 0x08;
+constexpr u32 kRetrySleepNanosecondsUnit = 0x000F4240u; // 1,000,000 ns
+constexpr u32 kRetrySleepUnits = 10;
+constexpr u64 kRetrySleepNanoseconds =
+    static_cast<u64>(kRetrySleepUnits) * kRetrySleepNanosecondsUnit;
+
+// The original re-reads both marker words whenever a helper may have changed
+// them.  0x0044E370 is one 64-bit `ldrd`; 0x0044E378 is read as two
+// independent 32-bit words (`ldr`/`ldr` at the entry, `ldm` in the retry
+// path), which is what LoadMarkerPair reproduces.
+inline u64 LoadMarkerWord(u32 address) {
+    return *reinterpret_cast<const u64*>(address);
+}
+
+inline u64 LoadMarkerPair(u32 address) {
+    const u32 low = *reinterpret_cast<const u32*>(address);
+    const u32 high = *reinterpret_cast<const u32*>(address + 4);
+    return (static_cast<u64>(high) << 32) | low;
+}
+
+inline u32 LoadSharedWord(u32 address) {
+    return *reinterpret_cast<const u32*>(address);
+}
+
+// `svc #0x28` returns the 64-bit 268,111,856 Hz system tick in r0:r1.
+inline u64 ReadSystemTick() {
+    register u32 low asm("r0");
+    register u32 high asm("r1");
+    asm volatile("svc #0x28" : "=r"(low), "=r"(high));
+    return (static_cast<u64>(high) << 32) | low;
+}
+
+// `svc #0x23` is svcCloseHandle; the result in r0 is not used here.
+inline void CloseHandle(u32 handle) {
+    register u32 value asm("r0") = handle;
+    asm volatile("svc #0x23" : "+r"(value) : : "memory");
+}
+
+// Bits 32..95 of (s64)tick * 0x3BAD34AEE: ARMv6K has no 128-bit integer type,
+// so the high half comes from the 32-bit partial products the original uses
+// (the helpers belong to the 0x0011B6A8 reconstruction in this file).
+inline u64 TickToNanoseconds(u64 tick) {
+    return (tick * kTickNanosecondsMagic >> 32) +
+           (MultiplyHighSigned(tick, kTickNanosecondsMagic) << 32);
+}
+
+// Direct calls.  The callees carry unprototyped `extern "C" void name();`
+// declarations at the top of this translation unit, so the recovered argument
+// lists are applied through these aliases.
+using ClaimSharedWordFn = s32 (*)();                  // 0x0013B1E0
+using SharedWordReadFn = u32 (*)();                   // 0x002A84DC
+using SharedWordWriteFn = void (*)(u32 value);        // 0x002AD45C
+using SharedWordReleaseFn = void (*)();               // 0x002A84D0
+using EngineObjectLockFn = void (*)();                // 0x002BB6B8
+using EngineObjectValueFn = u32 (*)();                // 0x002BB440
+using EngineObjectUnlockFn = void (*)();              // 0x002BB648
+using ThreadDescriptorFn = s32 (*)(u32* out_a, u32 value, u32* out_b,
+                                   u32* buffer, u32 count, u32* out_d,
+                                   u32* out_e);       // 0x0013B364
+using ForwardedQueryFn = s32 (*)(u32* first, u32* second, u32* buffer,
+                                 u32 count, u32* fifth, u32* sixth,
+                                 u32 seventh);        // 0x0013B014
+
+} // namespace
+
 // DECOMP_FUNC(0x0013b508, 704)
-extern "C" __attribute__((naked)) void camp_func_0013b508() {
-    asm volatile(
-        "push {r0, r1, r2, r3, r4, r5, r6, r7, r8, sb, sl, fp, lr}\n"
-        "sub sp, sp, #0x44\n"
-        "mov r6, r0\n"
-        "mov r7, r1\n"
-        "mov r8, r2\n"
-        ".word 0xe59fb28c\n"
-        "ldrd r0, r1, [sp, #0x80]\n"
-        "ldrd r4, r5, [sp, #0x78]\n"
-        "ldrd r2, r3, [fp]\n"
-        "eor ip, r0, r2\n"
-        "eor sb, r1, r3\n"
-        "orrs ip, ip, sb\n"
-        "bne .L_0013b564\n"
-        "mov r0, #0\n"
-        "strd r4, r5, [sp]\n"
-        "str r0, [sp, #8]\n"
-        "ldr r3, [sp, #0x50]\n"
-        "mov r2, r8\n"
-        "mov r1, r7\n"
-        "mov r0, r6\n"
-        "bl func_0013b014\n"
-        "add sp, sp, #0x54\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, fp, pc}\n"
-        ".L_0013b564:\n"
-        ".word 0xe59f9248\n"
-        "strd r0, r1, [sp, #0x20]\n"
-        "ldr sl, [sb, #4]\n"
-        "ldr ip, [sb]\n"
-        "eor sl, sl, r1\n"
-        "eor ip, ip, r0\n"
-        "orrs ip, ip, sl\n"
-        "beq .L_0013b5a4\n"
-        "eor r0, r0, r2\n"
-        "eor r1, r1, r3\n"
-        "orrs r0, r0, r1\n"
-        "beq .L_0013b5a4\n"
-        "svc #0x28\n"
-        "str r0, [sp, #0x28]\n"
-        "str r1, [sp, #0x18]\n"
-        "b .L_0013b5b0\n"
-        ".L_0013b5a4:\n"
-        "mov r0, #0\n"
-        "str r0, [sp, #0x28]\n"
-        "str r0, [sp, #0x18]\n"
-        ".L_0013b5b0:\n"
-        "ldr sb, [sp, #0x50]\n"
-        "bl func_0013b1e0\n"
-        "cmp r0, #0\n"
-        ".word 0x059f91f4\n"
-        "beq .L_0013b6b4\n"
-        "bl func_002a84dc\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "beq .L_0013b624\n"
-        "bl func_002a84dc\n"
-        "str r0, [r7]\n"
-        "mov r0, #0\n"
-        "bl func_002ad45c\n"
-        "nop\n"
-        "nop\n"
-        "bl func_002a84d0\n"
-        "cmp r6, #0\n"
-        "movne r0, #0\n"
-        "strne r0, [r6]\n"
-        "cmp r4, #0\n"
-        "movne r0, #0\n"
-        "strne r0, [r4]\n"
-        "cmp r5, #0\n"
-        "mov sb, #0\n"
-        "beq .L_0013b6ac\n"
-        ".word 0xe59f01a0\n"
-        "ldr r1, [r0, #8]\n"
-        "str r1, [r5]\n"
-        "b .L_0013b6ac\n"
-        ".L_0013b624:\n"
-        "movs r0, r6\n"
-        "addeq r0, sp, #0x30\n"
-        "str r0, [sp, #0xc]\n"
-        "movs r0, r7\n"
-        "addeq r0, sp, #0x34\n"
-        "str r0, [sp, #0x10]\n"
-        "movs r0, r8\n"
-        "moveq sb, #0\n"
-        "cmpne sb, #0\n"
-        "addeq r0, sp, #0x38\n"
-        "str r0, [sp, #0x14]\n"
-        "movs r0, r4\n"
-        "movne sl, r0\n"
-        "mov r0, #0\n"
-        "addeq sl, sp, #0x3c\n"
-        "str r0, [sp, #0x2c]\n"
-        "movs r0, r5\n"
-        "addeq fp, sp, #0x2c\n"
-        "movne fp, r0\n"
-        "bl engine_func_002bb6b8\n"
-        "nop\n"
-        "nop\n"
-        "bl func_002bb440\n"
-        "add ip, sp, #0xc\n"
-        "stm sp, {sb, sl, fp}\n"
-        "mov r1, r0\n"
-        "ldm ip, {r0, r2, r3}\n"
-        "bl func_0013b364\n"
-        "mov sb, r0\n"
-        "nop\n"
-        "bl engine_func_002bb648\n"
-        "ldr r0, [sp, #0x2c]\n"
-        "cmp r0, #0\n"
-        "svcne #0x23\n"
-        ".L_0013b6ac:\n"
-        "nop\n"
-        "bl func_002a84d0\n"
-        ".L_0013b6b4:\n"
-        "ands r0, sb, #0x80000000\n"
-        "str sb, [sp, #4]\n"
-        "bpl .L_0013b7a4\n"
-        ".word 0xe59f00f0\n"
-        "cmp sb, r0\n"
-        "bne .L_0013b778\n"
-        ".word 0xe59f00e0\n"
-        "ldr r1, [sp, #0x20]\n"
-        "ldm r0, {r2, ip}\n"
-        "ldr r0, [sp, #0x24]\n"
-        "eor r3, r1, r2\n"
-        "eor r2, r0, ip\n"
-        "orrs r2, r2, r3\n"
-        "beq .L_0013b7a4\n"
-        ".word 0xe59f30bc\n"
-        "ldrd r2, r3, [r3]\n"
-        "eor r1, r1, r2\n"
-        "eor r0, r0, r3\n"
-        "orrs r0, r0, r1\n"
-        "beq .L_0013b778\n"
-        "svc #0x28\n"
-        "ldr ip, [sp, #0x28]\n"
-        "ldr r3, [sp, #0x18]\n"
-        "mov r2, r1\n"
-        "subs r1, r0, ip\n"
-        "sbc r0, r2, r3\n"
-        ".word 0xe59f309c\n"
-        "mov r2, #3\n"
-        "mov fp, #0\n"
-        "str fp, [sp, #0x10]\n"
-        "umull sl, ip, r1, r3\n"
-        "umull sl, lr, r0, r2\n"
-        "ldr lr, [sp, #0x10]\n"
-        "mov sb, fp\n"
-        "adds ip, ip, sb\n"
-        "adc sl, sl, lr\n"
-        "umull sb, lr, r0, r3\n"
-        "str fp, [sp, #8]\n"
-        "asr fp, r0, #0x1f\n"
-        "mla r3, fp, r3, lr\n"
-        "ldr fp, [sp, #8]\n"
-        "mla r3, r0, fp, r3\n"
-        "umlal sb, r3, r2, r1\n"
-        "adds r0, sb, ip\n"
-        "adc r1, r3, sl\n"
-        "ldrd r2, r3, [sp, #0x20]\n"
-        "subs r0, r2, r0\n"
-        "sbcs r0, r3, r1\n"
-        "blt .L_0013b7a4\n"
-        ".L_0013b778:\n"
-        ".word 0xe59fc044\n"
-        "mov r1, #0xa\n"
-        "mov r3, #0\n"
-        "asr r2, r1, #0x1f\n"
-        "umull r0, sb, r1, ip\n"
-        "mla r2, r2, ip, sb\n"
-        "mla r1, r1, r3, r2\n"
-        "bl camp_func_002bb490\n"
-        "nop\n"
-        "nop\n"
-        "b .L_0013b5b0\n"
-        ".L_0013b7a4:\n"
-        "ldr r0, [sp, #4]\n"
-        "add sp, sp, #0x54\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, fp, pc}\n"
-        ".word 0x0044e370\n"
-        ".word 0x0044e378\n"
-        ".word 0xc8a0cfef\n"
-        ".word 0x0044e360\n"
-        ".word 0xbad34aee\n"
-        ".word 0x000f4240\n"
-    );
+extern "C" s32 camp_func_0013b508(u32* first_output, u32* second_output,
+                                  u32* descriptor_buffer, u32 descriptor_count,
+                                  u32* fifth_output, u32* sixth_output,
+                                  u64 timeout_nanoseconds) {
+    // 0x0013B51C..0x0013B538: the unchanged primary marker short-circuits the
+    // whole routine into the 0x0013B014 sibling with a zero seventh argument.
+    if (timeout_nanoseconds == LoadMarkerWord(kPrimaryMarkerAddress)) {
+        const ForwardedQueryFn query =
+            reinterpret_cast<ForwardedQueryFn>(func_0013b014);
+        return query(first_output, second_output, descriptor_buffer,
+                     descriptor_count, fifth_output, sixth_output, 0);
+    }
+
+    // 0x0013B564..0x0013B5AC: a timeout equal to either marker word skips the
+    // tick snapshot; everything else records it exactly once.
+    u64 tick_baseline = 0;
+    if (timeout_nanoseconds != LoadMarkerPair(kSecondaryMarkerAddress) &&
+        timeout_nanoseconds != LoadMarkerWord(kPrimaryMarkerAddress)) {
+        tick_baseline = ReadSystemTick();
+    }
+
+    const ClaimSharedWordFn claim =
+        reinterpret_cast<ClaimSharedWordFn>(func_0013b1e0);
+    const SharedWordReadFn read_shared_word =
+        reinterpret_cast<SharedWordReadFn>(func_002a84dc);
+    const SharedWordWriteFn write_shared_word =
+        reinterpret_cast<SharedWordWriteFn>(func_002ad45c);
+    const SharedWordReleaseFn release_shared_word =
+        reinterpret_cast<SharedWordReleaseFn>(func_002a84d0);
+
+    for (;;) {
+        // 0x0013B5B0..0x0013B5C0: the claim is attempted again on every pass.
+        s32 result;
+        if (claim() == 0) {
+            result = static_cast<s32>(kClaimFailureCode);
+        } else {
+            if (read_shared_word() != 0) {
+                // 0x0013B5D4..0x0013B620: second sample stored through r1,
+                // shared word cleared, release, then the output words.  The
+                // store through r1 has no null check in the original.
+                *second_output = read_shared_word();
+                write_shared_word(0);
+                release_shared_word();
+                if (first_output != nullptr) {
+                    *first_output = 0;
+                }
+                if (fifth_output != nullptr) {
+                    *fifth_output = 0;
+                }
+                if (sixth_output != nullptr) {
+                    *sixth_output = LoadSharedWord(
+                        kSharedTableAddress + kSharedTableWordOffset);
+                }
+                result = 0;
+            } else {
+                // 0x0013B624..0x0013B6A8: descriptor fill.  Dummies live in
+                // this frame; `handle` is the seventh output checked below.
+                u32 dummy_first;
+                u32 dummy_second;
+                u32 dummy_buffer;
+                u32 dummy_fourth;
+                u32 handle = 0;
+
+                const bool has_buffer =
+                    descriptor_buffer != nullptr && descriptor_count != 0;
+                u32* const buffer =
+                    has_buffer ? descriptor_buffer : &dummy_buffer;
+                const u32 count = has_buffer ? descriptor_count : 0;
+                u32* const fourth_output =
+                    fifth_output != nullptr ? fifth_output : &dummy_fourth;
+                u32* const handle_output =
+                    sixth_output != nullptr ? sixth_output : &handle;
+
+                reinterpret_cast<EngineObjectLockFn>(engine_func_002bb6b8)();
+                const EngineObjectValueFn engine_value =
+                    reinterpret_cast<EngineObjectValueFn>(func_002bb440);
+                const u32 value = engine_value();
+                const ThreadDescriptorFn descriptor =
+                    reinterpret_cast<ThreadDescriptorFn>(func_0013b364);
+                result = descriptor(
+                    first_output != nullptr ? first_output : &dummy_first,
+                    value,
+                    second_output != nullptr ? second_output : &dummy_second,
+                    buffer, count, fourth_output, handle_output);
+                reinterpret_cast<EngineObjectUnlockFn>(engine_func_002bb648)();
+                if (handle != 0) {
+                    CloseHandle(handle);
+                }
+            }
+            // 0x0013B6AC..0x0013B6B0: single release on the success path.
+            release_shared_word();
+        }
+
+        // 0x0013B6B4..0x0013B6BC: non-negative results return at once.
+        if (result >= 0) {
+            return result;
+        }
+
+        if (result == static_cast<s32>(kClaimFailureCode)) {
+            // 0x0013B6CC..0x0013B774: equality with the secondary marker word
+            // ends the loop; equality with a freshly published primary marker
+            // retries without consulting the clock.  Otherwise the signed
+            // comparison aborts the loop once the elapsed nanoseconds exceed
+            // the timeout.
+            if (timeout_nanoseconds == LoadMarkerPair(kSecondaryMarkerAddress)) {
+                return result;
+            }
+            if (timeout_nanoseconds != LoadMarkerWord(kPrimaryMarkerAddress)) {
+                const u64 elapsed_nanoseconds =
+                    TickToNanoseconds(ReadSystemTick() - tick_baseline);
+                if (static_cast<s64>(timeout_nanoseconds) <
+                    static_cast<s64>(elapsed_nanoseconds)) {
+                    return result;
+                }
+            }
+        }
+
+        // 0x0013B778..0x0013B7A0: 10 * 1,000,000 ns, then poll again.
+        reinterpret_cast<void (*)(u64)>(camp_func_002bb490)(
+            kRetrySleepNanoseconds);
+    }
 }
 
 // DECOMP_FUNC(0x0013d460, 1240)
