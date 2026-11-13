@@ -6506,39 +6506,177 @@ extern "C" void func_002d110c(func_2d110c::Owner* owner) {
 }
 
 // DECOMP_FUNC(0x00336e20, 444)
-// 107 ARM instructions through unconditional pop; 16 trailing data bytes.
-extern "C" __attribute__((naked)) void battle_func_00336e20() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4ff1, 0xe24dd0d8, 0xe59f019c, 0xe5900000\n"
-        ".word 0xe5901634, 0xe3811901, 0xe5801634, 0xe59f018c\n"
-        ".word 0xe5900000, 0xebfc263e, 0xe59d10d8, 0xe3a06000\n"
-        ".word 0xe3a00004, 0xe2812b07, 0xe28db008, 0xe2822fa6\n"
-        ".word 0xe0801100, 0xe5923000, 0xe0811300, 0xe2800001\n"
-        ".word 0xe0831101, 0xe5913050, 0xe3130001, 0x13130002\n"
-        ".word 0x178b1106, 0x12866001, 0xe3500036, 0xbafffff3\n"
-        ".word 0xe59f313c, 0xe3a02004, 0xe1a01006, 0xe1a0000b\n"
-        ".word 0xfbfe0418, 0xe3a0a000, 0xe3560000, 0xe1a0700a\n"
-        ".word 0xe1a0400a, 0xda00003e, 0xe79b5104, 0xe5950050\n"
-        ".word 0xe3100001, 0x13100002, 0x0a000036, 0xe1d505b8\n"
-        ".word 0xe3100b02, 0x1a000033, 0xe5951050, 0xe3800b02\n"
-        ".word 0xe1c505b8, 0xe59f00ec, 0xe3110010, 0x0a000007\n"
-        ".word 0xe280000c, 0xe890100e, 0xe6bf9071, 0xe6bf0072\n"
-        ".word 0xe58d00d0, 0xe6bf807c, 0xe6bf0073, 0xea000008\n"
-        ".word 0xe4903004, 0xe4902004, 0xe4901010, 0xe6bf9073\n"
-        ".word 0xe590c000, 0xe6bf0072, 0xe58d00d0, 0xe6bf0071\n"
-        ".word 0xe6bf807c, 0xe3a03000, 0xe58d0000, 0xe59d00d8\n"
-        ".word 0xe1a02003, 0xe1a01005, 0xebfc25d7, 0xe3a00000\n"
-        ".word 0xe58d0004, 0xe59d00d0, 0xe3a030ff, 0xe1a02005\n"
-        ".word 0xe0800008, 0xe1000987, 0xe3a01000, 0xebfc38ef\n"
-        ".word 0xe5950050, 0xe3a03006, 0xe1a02005, 0xe3100010\n"
-        ".word 0xe3a0000d, 0xe58d0000, 0x13a03007, 0xe1008987\n"
-        ".word 0xe3a01000, 0xebfc25b1, 0xe2870001, 0xe35a0000\n"
-        ".word 0xe6bf7070, 0x03a0a001, 0xe2844001, 0xe1540006\n"
-        ".word 0xbaffffc0, 0xe59f0010, 0xe3a01078, 0xe5900000\n"
-        ".word 0xebfc2665, 0xe28dd0dc, 0xe8bd8ff0, 0x004342c8\n"
-        ".word 0x00435d18, 0x0019d76c, 0x00439a20\n"
-    );
+//
+// Recovered contract (ARM 0x00336E20..0x00336FCB; the last 16 bytes are the
+// literal pool):
+//   * `owner` (r0) owns the battle entry table at `*(u32*)(owner + 0x1E98)`.
+//     The global slot 0x004342C8 holds the shared battle context; bit 14
+//     (0x4000) is set in its `flags_634` word before the table scan, and the
+//     slot is dereferenced again for the final 0x0024095C call (so the
+//     pointer is reloaded after the helper calls).  The global slot
+//     0x00435D18 is dereferenced once and passed to 0x00240744.
+//   * Scan: entries 4..0x35 (50 total) lie at a 0x114-byte stride from the
+//     array base.  An entry is queued when `flags_50` has both bit 0 and
+//     bit 1 set.  The queue is a 50-pointer local array.
+//   * 0x002B7F08 (Thumb entry 0x002B7F0A) sorts the queue in place with
+//     element size 4 and the distance comparator at 0x0019D76C.
+//   * For each queued entry, in sorted order, the scan conditions are tested
+//     again (both queue bits still set, then the 0x0800 "done" bit in
+//     `state_58` clear).  The done bit is then set and three effect helpers
+//     run with a processed-row counter `row` (s16, starts at zero and
+//     increments once per dispatched entry):
+//       0x002406AC(owner, entry, 0, 0)
+//       0x00245330(t2 + t3 + (s16)row * t0, 0, entry, 0xFF, (s32)t4, 0)
+//       0x00240660((s16)row * t0 + t3, 0, entry,
+//                  flags_50 & 0x10 ? 7 : 6, 0x0D)
+//   * `flags_50 & 0x10` selects one of two signed-16 coordinate sets from the
+//     table at 0x00439A20: clear selects offsets 0x00/0x04/0x08, set selects
+//     0x0C/0x10/0x14, and t3 always comes from 0x18.  The helpers receive the
+//     coordinates in t0, t2 and t4 order as shown above; 0x00245330 also gets
+//     t4 as its first stack argument and zero as its second, while 0x00240660
+//     gets 0x0D as its stack argument.
+//   * Finally 0x0024095C(*(u32*)0x004342C8, 0x78) runs; the routine itself
+//     returns void, but r0 is whatever that last call leaves behind.
+//   * The original keeps a dead "processed anything" flag in sl (written but
+//     never read); it is not part of the observable contract.
+
+extern "C" void func_00240744(void* owner);
+extern "C" void func_002406ac(void* self, void* entry, s32 value, s32 flags);
+extern "C" void func_00245330(s32 value, s32 arg1, void* entry, s32 kind,
+                              s32 stack0, s32 stack1);
+extern "C" void func_00240660(s32 value, s32 arg1, void* entry, s32 kind,
+                              s32 stack0);
+extern "C" void func_0024095c(void* context, s32 value);
+// Thumb routine at 0x002B7F0A (ledger name camp_func_002b7f08).
+extern "C" void camp_func_002b7f08(void* base, s32 count, s32 element_size,
+                                   void* compare);
+
+namespace func_336e20 {
+
+// 0x004342C8 holds the shared battle-context pointer.
+constexpr u32 kBattleContextSlot = 0x004342C8;
+// 0x00435D18 holds the owner pointer consumed by 0x00240744.
+constexpr u32 kRecordOwnerSlot = 0x00435D18;
+// 0x00439A20 is the base of the signed-16 layout coordinate table.
+constexpr u32 kLayoutTable = 0x00439A20;
+// 0x0019D76C is the distance comparator entry inside 0x0019D650.
+constexpr u32 kDistanceComparator = 0x0019D76C;
+
+constexpr u32 kEntryArrayOffset = 0x1E98;
+constexpr s32 kFirstEntry = 4;
+constexpr s32 kEntryLimit = 0x36;
+constexpr u32 kEntryStride = 0x114;
+constexpr u32 kEntryFlagA = 0x0001;
+constexpr u32 kEntryFlagB = 0x0002;
+constexpr u32 kEntryFlagMask = kEntryFlagA | kEntryFlagB;
+constexpr u16 kEntryDone = 0x0800;
+constexpr u32 kEntrySelectedBit = 0x10;
+constexpr u32 kContextStartBit = 0x4000;
+constexpr s32 kExitValue = 0x78;
+constexpr s32 kElementSize = 4;
+constexpr s32 kStackValue = 0x0D;
+constexpr s32 kQueueCapacity = kEntryLimit - kFirstEntry;
+
+struct __attribute__((may_alias)) Context {
+    u8 pad_000[0x634];
+    // 32-bit read/modify/write in the original (ldr/orr/str at +0x634).
+    volatile u32 flags_634;
+};
+
+struct __attribute__((may_alias)) Entry {
+    u8 pad_00[0x50];
+    // 32-bit accesses in the original (ldr at +0x50).
+    volatile u32 flags_50;
+    u8 pad_54[0x04];
+    // 16-bit accesses in the original (ldrh/strh at +0x58).
+    volatile u16 state_58;
+    u8 pad_5a[kEntryStride - 0x5A];
+};
+
+inline s16 table_s16(u32 offset) {
+    // The original loads 32-bit words (ldm/ldr) and sign-extends the low
+    // halfword with sxth; keep both the word access and the sign extension.
+    const u32 word =
+        *reinterpret_cast<const volatile u32*>(kLayoutTable + offset);
+    return static_cast<s16>(word);
+}
+
+inline Context* battle_context() {
+    return *reinterpret_cast<Context* const*>(kBattleContextSlot);
+}
+
+}  // namespace func_336e20
+
+extern "C" void battle_func_00336e20(void* owner_argument) {
+    using namespace func_336e20;
+
+    u8* const owner = static_cast<u8*>(owner_argument);
+
+    battle_context()->flags_634 |= kContextStartBit;
+    func_00240744(*reinterpret_cast<void* const*>(kRecordOwnerSlot));
+
+    Entry* const table_base =
+        *reinterpret_cast<Entry* const*>(owner + kEntryArrayOffset);
+    Entry* queue[kQueueCapacity];
+    s32 queued = 0;
+
+    for (s32 index = kFirstEntry; index < kEntryLimit; ++index) {
+        Entry* const entry = reinterpret_cast<Entry*>(
+            reinterpret_cast<u8*>(table_base) + kEntryStride * index);
+        if ((entry->flags_50 & kEntryFlagMask) == kEntryFlagMask) {
+            queue[queued] = entry;
+            ++queued;
+        }
+    }
+
+    camp_func_002b7f08(queue, queued, kElementSize,
+                       reinterpret_cast<void*>(kDistanceComparator));
+
+    s32 row = 0;
+    for (s32 index = 0; index < queued; ++index) {
+        Entry* const entry = queue[index];
+        if ((entry->flags_50 & kEntryFlagMask) != kEntryFlagMask) {
+            continue;
+        }
+        const u16 state = entry->state_58;
+        if ((state & kEntryDone) != 0) {
+            continue;
+        }
+
+        const u32 flags = entry->flags_50;
+        entry->state_58 = static_cast<u16>(state | kEntryDone);
+
+        s16 coordinate0;
+        s16 coordinate2;
+        s16 coordinate4;
+        if ((flags & kEntrySelectedBit) != 0) {
+            coordinate0 = table_s16(0x0C);
+            coordinate2 = table_s16(0x10);
+            coordinate4 = table_s16(0x14);
+        } else {
+            coordinate0 = table_s16(0x00);
+            coordinate2 = table_s16(0x04);
+            coordinate4 = table_s16(0x08);
+        }
+        const s16 coordinate3 = table_s16(0x18);
+
+        const s32 row16 = static_cast<s16>(row);
+        const s32 product = row16 * static_cast<s32>(coordinate0);
+
+        func_002406ac(owner_argument, entry, 0, 0);
+
+        func_00245330(static_cast<s32>(coordinate2) +
+                          static_cast<s32>(coordinate3) + product,
+                      0, entry, 0xFF, static_cast<s32>(coordinate4), 0);
+
+        func_00240660(product + static_cast<s32>(coordinate3), 0, entry,
+                      (entry->flags_50 & kEntrySelectedBit) != 0 ? 7 : 6,
+                      kStackValue);
+
+        row = static_cast<s16>(row + 1);
+    }
+
+    func_0024095c(battle_context(), kExitValue);
 }
 
 // DECOMP_FUNC(0x003635f0, 444)

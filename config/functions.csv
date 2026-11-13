@@ -7608,7 +7608,7 @@ address,size,status,category,name,src_file
 0x00336ca4,20,matching,unknown,func_00336ca4,src/engine/leaf_matching.cpp
 0x00336cb8,276,matching,script_vm,script_vm_func_00336cb8,src/engine/leaf_batch22_c.cpp
 0x00336dcc,84,matching,unknown,func_00336dcc,src/engine/leaf_batch29_c.cpp
-0x00336e20,444,matching,battle,battle_func_00336e20,src/engine/leaf_batch41_c.cpp
+0x00336e20,444,non_matching,battle,battle_func_00336e20,src/engine/leaf_batch41_c.cpp
 0x00336fdc,68,matching,unknown,func_00336fdc,src/engine/leaf_batch13_a.cpp
 0x00337020,88,matching,unknown,func_00337020,src/engine/leaf_batch16_a.cpp
 0x00337078,140,matching,ui,ui_func_00337078,src/engine/leaf_batch22_c.cpp
