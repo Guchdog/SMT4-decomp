@@ -1633,88 +1633,182 @@ extern "C" u32 engine_func_0037fd94(u8* self, const u8* desc, u32 span) {
     return static_cast<u32>(count);
 }
 
-// DECOMP_FUNC(0x002392e0, 604)
-extern "C" __attribute__((naked)) void ui_func_002392e0() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4ff0, 0xe92d, 0xd014, 0xe24d\n"
-        ".hword 0x4000, 0xe1a0, 0x1004, 0xe590\n"
-        ".hword 0x0000, 0xe351, 0x0055, 0x0a00\n"
-        ".hword 0x5000, 0xe3a0, 0x000c, 0xe28d\n"
-        ".hword 0x5010, 0xe58d, 0x0000, 0xe58d\n"
-        ".hword 0x500c, 0xe58d, 0x0000, 0xe594\n"
-        ".hword 0x3002, 0xe3a0, 0x2005, 0xe3a0\n"
-        ".hword 0xc008, 0xe590, 0x0004, 0xe1a0\n"
-        ".hword 0xff3c, 0xe12f, 0x1509, 0xe245\n"
-        ".hword 0x0b00, 0xe151, 0x0047, 0x0a00\n"
-        ".hword 0x100c, 0xe59d, 0x0000, 0xe351\n"
-        ".hword 0x0009, 0x0a00, 0x1bff, 0xe200\n"
-        ".hword 0x1521, 0xe1a0, 0x0011, 0xe351\n"
-        ".hword 0x000f, 0x1a00, 0x0b00, 0xe1a0\n"
-        ".hword 0x0b20, 0xe1a0, 0x0064, 0xe350\n"
-        ".hword 0x000b, 0xba00, 0x00b3, 0xe350\n"
-        ".hword 0x0009, 0xca00, 0x5000, 0xe58d\n"
-        ".hword 0x0000, 0xe594, 0x3000, 0xe3a0\n"
-        ".hword 0x1004, 0xe594, 0x2003, 0xe1a0\n"
-        ".hword 0xc028, 0xe590, 0x0004, 0xe1a0\n"
-        ".hword 0xff3c, 0xe12f, 0x0102, 0xe210\n"
-        ".hword 0x0030, 0x4a00, 0x1004, 0xe3a0\n"
-        ".hword 0x0e32, 0xe3a0, 0x01ee, 0xeb00\n"
-        ".hword 0x6000, 0xe1b0, 0x5560, 0x0584\n"
-        ".hword 0x002a, 0x0a00, 0x0004, 0xe594\n"
-        ".hword 0x9012, 0xe3a0, 0xb005, 0xe3a0\n"
-        ".hword 0x9008, 0xe58d, 0x0801, 0xe88d\n"
-        ".hword 0x0000, 0xe594, 0x200c, 0xe59d\n"
-        ".hword 0x3010, 0xe28d, 0x1006, 0xe1a0\n"
-        ".hword 0xc034, 0xe590, 0x0004, 0xe1a0\n"
-        ".hword 0xff3c, 0xe12f, 0x0102, 0xe210\n"
-        ".hword 0x001a, 0x4a00, 0x0010, 0xe59d\n"
-        ".hword 0x7b01, 0xe284, 0x7f57, 0xe287\n"
-        ".hword 0x0000, 0xe350, 0x0002, 0x0a00\n"
-        ".hword 0x1006, 0xe1a0, 0x0007, 0xe1a0\n"
-        ".hword 0xd1d0, 0xeb01, 0x8c05, 0xe284\n"
-        ".hword 0xa130, 0xe59f, 0x05bc, 0xe1d8\n"
-        ".hword 0x000a, 0xe150, 0x0004, 0x1a00\n"
-        ".hword 0x100c, 0xe59d, 0x0560, 0xe594\n"
-        ".hword 0x1008, 0xe241, 0x01a1, 0xe150\n"
-        ".hword 0x0030, 0x0a00, 0x5000, 0xe58d\n"
-        ".hword 0x00d0, 0xe1c4, 0x3000, 0xe3a0\n"
-        ".hword 0x2003, 0xe1a0, 0xc028, 0xe590\n"
-        ".hword 0x0004, 0xe1a0, 0xff3c, 0xe12f\n"
-        ".hword 0x0102, 0xe210, 0x0004, 0x5a00\n"
-        ".hword 0x0006, 0xe1a0, 0x01cc, 0xeb00\n"
-        ".hword 0xd014, 0xe28d, 0x0000, 0xe3a0\n"
-        ".hword 0x8ff0, 0xe8bd, 0x000c, 0xe28d\n"
-        ".hword 0x0000, 0xe58d, 0x00d0, 0xe1c4\n"
-        ".hword 0x3002, 0xe3a0, 0x2005, 0xe3a0\n"
-        ".hword 0xc008, 0xe590, 0x0004, 0xe1a0\n"
-        ".hword 0xff3c, 0xe12f, 0x0102, 0xe210\n"
-        ".hword 0x0016, 0x4a00, 0x0004, 0xe594\n"
-        ".hword 0x9008, 0xe58d, 0x3010, 0xe28d\n"
-        ".hword 0x0801, 0xe88d, 0x0000, 0xe594\n"
-        ".hword 0x200c, 0xe59d, 0x1006, 0xe1a0\n"
-        ".hword 0xc034, 0xe590, 0x0004, 0xe1a0\n"
-        ".hword 0xff3c, 0xe12f, 0x0102, 0xe210\n"
-        ".hword 0x000a, 0x4a00, 0x1006, 0xe1a0\n"
-        ".hword 0x0007, 0xe1a0, 0xd19f, 0xeb01\n"
-        ".hword 0x05bc, 0xe1d8, 0x000a, 0xe150\n"
-        ".hword 0x0004, 0x1a00, 0x100c, 0xe59d\n"
-        ".hword 0x0560, 0xe594, 0x1008, 0xe241\n"
-        ".hword 0x01a1, 0xe150, 0x0001, 0x0a00\n"
-        ".hword 0x5560, 0xe584, 0xffd7, 0xeaff\n"
-        ".hword 0x0560, 0xe594, 0x7008, 0xe286\n"
-        ".hword 0x5000, 0xe3a0, 0x0000, 0xe350\n"
-        ".hword 0x0009, 0x9a00, 0x0185, 0xe084\n"
-        ".hword 0x0b01, 0xe280, 0x1007, 0xe1a0\n"
-        ".hword 0x0f59, 0xe280, 0xd18b, 0xeb01\n"
-        ".hword 0x0560, 0xe594, 0x5001, 0xe285\n"
-        ".hword 0x7008, 0xe287, 0x0005, 0xe150\n"
-        ".hword 0xfff5, 0x8aff, 0x0006, 0xe1a0\n"
-        ".hword 0x0195, 0xeb00, 0x0560, 0xe594\n"
-        ".hword 0xd014, 0xe28d, 0x8ff0, 0xe8bd\n"
-        ".hword 0x6767, 0x0000\n"
-    );
-};
+// 0x002392e0 loads the record list stored at self+0x55C.  The object at
+// self[0] is a dispatch table; slot +0x08 returns the payload size/status,
+// slot +0x28 resets/prepares the record source and slot +0x34 reads the
+// payload into the caller buffer.  The payload starts with an 8-byte header
+// (marker 0x6767 at +0, record count at +4) followed by that many 8-byte
+// records.  self+0x560 is the count field inside the copied header and
+// self+0x564 is the first destination record.  The original retries the whole
+// read once and commits the records only after the marker and the derived
+// count ((payload_size - 8) / 8) validate.
+extern "C" u32 ui_func_002adb40(void* destination, const void* source);
+extern "C" void* func_00239b54(u32 size, u32 alignment);
+extern "C" void func_00239b84(void* ptr);
+
+namespace ui_2392e0 {
+
+constexpr u32 kDispatchOffset = 0x00;
+constexpr u32 kHandleOffset = 0x04;
+constexpr u32 kHeaderOffset = 0x55C;
+constexpr u32 kCountOffset = 0x560;
+constexpr u32 kRecordsOffset = 0x564;
+
+constexpr u32 kOpenSlot = 0x08;
+constexpr u32 kResetSlot = 0x28;
+constexpr u32 kReadSlot = 0x34;
+
+constexpr u32 kStagingCapacity = 0x320;
+constexpr u32 kStagingAlignment = 4;
+constexpr u32 kHeaderBytes = 8;
+constexpr u16 kHeaderMarker = 0x6767;
+
+constexpr u32 kOpenOperation = 5;
+constexpr u32 kOpenArgument = 2;
+constexpr u32 kReadSelector = 5;
+constexpr u32 kReadFlag = 0x12;
+
+constexpr u32 kStatusLowMask = 0x3FF;
+constexpr u32 kStatusErrorValue = 0x3F7;
+constexpr u32 kStatusKindMask = 0x3FC00;
+constexpr u32 kStatusKindShift = 10;
+constexpr u32 kAcceptedKind = 0x11;
+constexpr u32 kMinimumLow = 0x64;
+constexpr u32 kMaximumLow = 0xB3;
+
+static __attribute__((always_inline)) inline u16 load_u16(const void* p) {
+    u16 value;
+    __builtin_memcpy(&value, p, sizeof(value));
+    return value;
+}
+
+static __attribute__((always_inline)) inline u32 load_u32(const void* p) {
+    u32 value;
+    __builtin_memcpy(&value, p, sizeof(value));
+    return value;
+}
+
+static __attribute__((always_inline)) inline void store_u32(void* p, u32 value) {
+    __builtin_memcpy(p, &value, sizeof(value));
+}
+
+using OpenFn = s32 (*)(void* self, u32 handle, u32 operation, u32 argument,
+                       u32* size);
+using ResetFn = s32 (*)(void* self, u32 handle, u32 first, u32 second,
+                        u32 third);
+using ReadFn = s32 (*)(void* self, void* buffer, u32 size, u32* written,
+                       u32 handle, u32 selector, u32 flag);
+
+template <typename Fn>
+static __attribute__((always_inline)) inline Fn load_table_entry(
+    const u8* self, u32 slot) {
+    const u8* const table =
+        reinterpret_cast<const u8*>(load_u32(self + kDispatchOffset));
+    Fn entry;
+    __builtin_memcpy(&entry, table + slot, sizeof(entry));
+    return entry;
+}
+
+}  // namespace ui_2392e0
+
+extern "C" u32 ui_func_002392e0(void* self_raw) {
+    using namespace ui_2392e0;
+    u8* const self = static_cast<u8*>(self_raw);
+
+    if (load_u32(self + kHandleOffset) == 0) {
+        return 0;
+    }
+
+    u32 size = 0;
+    u32 written = 0;
+
+    s32 status = load_table_entry<OpenFn>(self, kOpenSlot)(
+        self, load_u32(self + kHandleOffset), kOpenOperation, kOpenArgument,
+        &size);
+    if ((static_cast<u32>(status) & kStatusLowMask) == kStatusErrorValue) {
+        return 0;
+    }
+
+    bool prepare_source;
+    if (size == 0) {
+        prepare_source = true;
+    } else {
+        const u32 status_bits = static_cast<u32>(status);
+        const u32 kind = (status_bits & kStatusKindMask) >> kStatusKindShift;
+        const u32 low = status_bits & kStatusLowMask;
+        prepare_source = kind == kAcceptedKind && low >= kMinimumLow &&
+                         low <= kMaximumLow;
+    }
+    if (prepare_source) {
+        if (load_table_entry<ResetFn>(self, kResetSlot)(
+                self, load_u32(self + kHandleOffset), 0, 0, 0) < 0) {
+            return 0;
+        }
+    }
+
+    void* const buffer = func_00239b54(kStagingCapacity, kStagingAlignment);
+    if (buffer == nullptr) {
+        store_u32(self + kCountOffset, 0);
+        return 0;
+    }
+
+    const auto payload_is_valid = [&]() {
+        return load_u16(self + kHeaderOffset) == kHeaderMarker &&
+               load_u32(self + kCountOffset) == (size - kHeaderBytes) >> 3;
+    };
+
+    status = load_table_entry<ReadFn>(self, kReadSlot)(
+        self, buffer, size, &written, load_u32(self + kHandleOffset),
+        kReadSelector, kReadFlag);
+    if (status < 0) {
+        goto fail_free;
+    }
+
+    if (written != 0) {
+        ui_func_002adb40(self + kHeaderOffset, buffer);
+    }
+
+    if (payload_is_valid()) {
+        goto copy_records;
+    }
+
+    if (load_table_entry<ResetFn>(self, kResetSlot)(
+            self, load_u32(self + kHandleOffset), 0, 0, 0) < 0) {
+        goto fail_free;
+    }
+    status = load_table_entry<OpenFn>(self, kOpenSlot)(
+        self, load_u32(self + kHandleOffset), kOpenOperation, kOpenArgument,
+        &size);
+    if (status < 0) {
+        goto fail_zero_count;
+    }
+    status = load_table_entry<ReadFn>(self, kReadSlot)(
+        self, buffer, size, &written, load_u32(self + kHandleOffset),
+        kReadSelector, kReadFlag);
+    if (status < 0) {
+        goto fail_zero_count;
+    }
+
+    ui_func_002adb40(self + kHeaderOffset, buffer);
+    if (payload_is_valid()) {
+        goto copy_records;
+    }
+
+fail_zero_count:
+    store_u32(self + kCountOffset, 0);
+fail_free:
+    func_00239b84(buffer);
+    return 0;
+
+copy_records:
+    for (u32 index = 0; index < load_u32(self + kCountOffset); ++index) {
+        ui_func_002adb40(self + kRecordsOffset + index * 8u,
+                         static_cast<const u8*>(buffer) + kHeaderBytes +
+                             index * 8u);
+    }
+    func_00239b84(buffer);
+    return load_u32(self + kCountOffset);
+}
 
 // DECOMP_FUNC(0x002a399c, 604)
 extern "C" __attribute__((naked)) void engine_func_002a399c() {
