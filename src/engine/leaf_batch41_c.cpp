@@ -854,37 +854,138 @@ extern "C" __attribute__((naked)) void engine_func_0032bc14() {
 }
 
 // DECOMP_FUNC(0x00239dec, 408)
-// 99 ARM instructions through unconditional pop; 12 trailing data bytes.
-extern "C" __attribute__((naked)) void func_00239dec() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4ff0, 0xe24dd024, 0xe1a07003, 0xe1a0a000\n"
-        ".word 0xe3e08000, 0xe5936008, 0xe8934008, 0xe59f9168\n"
-        ".word 0xe086008e, 0xe040b006, 0xe023c009, 0xe08800cb\n"
-        ".word 0xe3500000, 0xda00000d, 0xe1b03f0b, 0xe2464002\n"
-        ".word 0x4a000001, 0xe1f430b2, 0xe023c2ec, 0xe1b050c0\n"
-        ".word 0xe1d400b2, 0x0a000005, 0xe1f430b4, 0xe020c2ec\n"
-        ".word 0xe1d400b2, 0xe2555001, 0xe023c2ec, 0x1afffff9\n"
-        ".word 0xe09800cb, 0x4a000002, 0xe0860080, 0xe1d000b0\n"
-        ".word 0xe020c2ec, 0xe1a0008e, 0xe58d0008, 0xe1a03007\n"
-        ".word 0xe1a0000a, 0xe58d6004, 0xe58dc000, 0xeb07091c\n"
-        ".word 0xe2101102, 0xe320f000, 0x5a000035, 0xe2001bff\n"
-        ".word 0xe1a01521, 0xe3510011, 0x01a01b00, 0x01a01b21\n"
-        ".word 0x0351006f, 0x1a00002e, 0xe8970021, 0xe5973008\n"
-        ".word 0xe0200009, 0xe0831085, 0xe0416003, 0xe08820c6\n"
-        ".word 0xe3520000, 0xda00000d, 0xe1b0cf06, 0xe2431002\n"
-        ".word 0x4a000001, 0xe1f1c0b2, 0xe02c02e0, 0xe1d1c0b2\n"
-        ".word 0xe1b020c2, 0x0a000005, 0xe1f140b4, 0xe02c02e0\n"
-        ".word 0xe1d1c0b2, 0xe2522001, 0xe02402e0, 0x1afffff9\n"
-        ".word 0xe09810c6, 0x4a000002, 0xe0831081, 0xe1d110b0\n"
-        ".word 0xe02102e0, 0xe1a01085, 0xe58d1008, 0xe88d0009\n"
-        ".word 0xe1a03007, 0xe28d200c, 0xe28d1020, 0xe28a0028\n"
-        ".word 0xeb07094a, 0xe2001102, 0xe3510000, 0xa59f002c\n"
-        ".word 0xaa000007, 0xe2001bff, 0xe1a01521, 0xe3510011\n"
-        ".word 0x01a01b00, 0x01a01b21, 0x0351006f, 0x059f0010\n"
-        ".word 0x1affffff, 0xe28dd024, 0xe8bd8ff0, 0x075bcd15\n"
-        ".word 0xe0c04702, 0xc8804471\n"
-    );
+//
+// Hashes a halfword-keyed record and submits the hash with the record to two
+// UI lookup helpers.  The record at r3 holds {u32 seed; u32 count;
+// const u16* values}: the hash starts at `seed ^ 0x075BCD15` and then mixes
+// every halfword in ascending order with `hash = value ^ ror(hash, 5)`.
+//
+// Recovered contract (ARM 0x00239DEC..0x00239F77):
+//   * r0-r2 are forwarded unchanged to 0x003FC300; r3 is the record pointer.
+//   * The element count is materialised as `(s32)(count << 1) >> 1`: the
+//     original computes `values + count*2 - values` at 0x00239E0C..0x00239E18
+//     and then keeps that doubled value in r11/fp.  A non-positive derived
+//     count mixes no elements; a positive count c mixes values[0..c-1].
+//   * Each element is a zero-extended `ldrh`.  The halfword buffer and
+//     `count*2` (the byte length) are passed in stack arguments 5 and 6, the
+//     hash in stack argument 7 (r0-r3 stay context, arg1, arg2, record).
+//   * A first-call result whose bit 31 is clear is returned unchanged.  A
+//     negative result is returned unchanged unless its bits 10..17 equal 0x11
+//     and its bits 0..9 equal 0x6F (the 0xC880446F status: level bit 31,
+//     module 0x11, description 0x6F).
+//   * Only for that distinguished status is the record hashed again (the
+//     fields are re-read after the first call) and 0x003FC46C called with
+//     context+0x28, a u32 scratch output, a 0x14-byte scratch output, the
+//     record, and the same three stack arguments.
+//   * Second-call result bit 31 clear => return 0xE0C04702.  Otherwise the
+//     distinguished status => return 0xC8804471, and any other result is
+//     returned unchanged.
+namespace func_239dec {
+
+constexpr u32 kSeedXor = 0x075BCD15;          // literal at 0x00239F78
+constexpr u32 kContextOffset = 0x28;          // `add r0, sl, #0x28`
+constexpr u32 kResultAfterSecondSuccess = 0xE0C04702;  // 0x00239F7C
+constexpr u32 kResultAfterSecondFailure = 0xC8804471;  // 0x00239F80
+
+// Status layout tested at 0x00239E98..0x00239EB0 and 0x00239F50..0x00239F68.
+constexpr u32 kFailureLevel = 0x80000000;     // `ands r1, r0, #0x80000000`
+constexpr u32 kModuleMask = 0x0003FC00;       // `and r1, r0, #0x3FC00`
+constexpr u32 kModule11 = 0x00004400;         // `cmp r1, #0x11` after `lsr #0xA`
+constexpr u32 kDescriptionMask = 0x000003FF;  // lsl #22 / lsr #22
+constexpr u32 kDescription6F = 0x0000006F;    // `cmp r1, #0x6F`
+
+// 12-byte record reached through r3 (0x00239E00..0x00239E0C).
+struct Record {
+    u32 seed;          // +0x00 (r3 from `ldm r3, {r3, lr}`)
+    u32 count;         // +0x04 (lr / r5 on the second pass)
+    const u16* values; // +0x08 (`ldr r6, [r3, #8]`)
+};
+
+}  // namespace func_239dec
+
+// Direct calls; the callees are existing raw-ARM leaf bodies
+// (src/engine/leaf_batch38_b.cpp).  Both take seven arguments: the three stack
+// words are the hash, the halfword buffer and the byte length.
+extern "C" u32 ui_func_003fc300(u32 context, u32 arg1, u32 arg2,
+                                func_239dec::Record* record, u32 hash,
+                                const u16* values, u32 byte_length);
+extern "C" u32 ui_func_003fc46c(u32 context, u32* out_word, void* out_block,
+                                func_239dec::Record* record, u32 hash,
+                                const u16* values, u32 byte_length);
+
+namespace {
+
+// `add r0, r6, lr, lsl #1; sub fp, r0, r6; add/asr r0, r8, fp, asr #1`
+// (0x00239E0C..0x00239E20 and 0x00239E5C): the doubled count is kept modulo
+// 2^32 and then sign-shifted back, so only the low 31 bits of `count` decide
+// how many elements are mixed.
+s32 ElementCount(u32 count) {
+    return static_cast<s32>(count << 1) >> 1;
+}
+
+// `lsl r0, lr, #1` / `lsl r1, r5, #1` (0x00239E70 and 0x00239F20).
+u32 RecordByteLength(const func_239dec::Record& record) {
+    return record.count << 1;
+}
+
+// Mix loop at 0x00239E24..0x00239E6C (first pass) and
+// 0x00239ED4..0x00239F1C (second pass).  `ror #5` is `hash >> 5 | hash << 27`.
+u32 HashRecord(const func_239dec::Record& record) {
+    u32 hash = record.seed ^ func_239dec::kSeedXor;
+    const s32 count = ElementCount(record.count);
+    for (s32 i = 0; i < count; ++i) {
+        const u32 value = record.values[i];  // zero-extended ldrh
+        hash = value ^ ((hash >> 5) | (hash << 27));
+    }
+    return hash;
+}
+
+// Status test: `(r0 >> 10) & 0xFF == 0x11` followed by
+// `(r0 << 22) >> 22 == 0x6F`, reached only when bit 31 is set.
+bool IsDistinguishedFailure(u32 status) {
+    return (status & func_239dec::kFailureLevel) != 0 &&
+           (status & func_239dec::kModuleMask) == func_239dec::kModule11 &&
+           (status & func_239dec::kDescriptionMask) ==
+               func_239dec::kDescription6F;
+}
+
+}  // namespace
+
+extern "C" u32 func_00239dec(u32 context, u32 arg1, u32 arg2,
+                             func_239dec::Record* record) {
+    // 0x00239E00..0x00239E8C: hash, then report context/arg1/arg2 plus the
+    // record and the three stack arguments.
+    const u32 first_hash = HashRecord(*record);
+    const u32 first = ui_func_003fc300(
+        context, arg1, arg2, record, first_hash, record->values,
+        RecordByteLength(*record));
+
+    // 0x00239E8C..0x00239EB0: success and every non-distinguished failure
+    // return the helper result unchanged.
+    if ((first & func_239dec::kFailureLevel) == 0) {
+        return first;
+    }
+    if (!IsDistinguishedFailure(first)) {
+        return first;
+    }
+
+    // 0x00239EB4..0x00239F3C: re-read the record, hash it again and call the
+    // second helper with context+0x28 and two stack scratch outputs.
+    const u32 second_hash = HashRecord(*record);
+    u32 scratch_word;
+    u32 scratch_block[5];
+    const u32 second = ui_func_003fc46c(
+        context + func_239dec::kContextOffset, &scratch_word, scratch_block,
+        record, second_hash, record->values, RecordByteLength(*record));
+
+    // 0x00239F40..0x00239F6C.
+    if ((second & func_239dec::kFailureLevel) == 0) {
+        return func_239dec::kResultAfterSecondSuccess;
+    }
+    if (!IsDistinguishedFailure(second)) {
+        return second;
+    }
+    return func_239dec::kResultAfterSecondFailure;
 }
 
 // DECOMP_FUNC(0x00263ee4, 408)

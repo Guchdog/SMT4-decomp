@@ -3494,7 +3494,7 @@ address,size,status,category,name,src_file
 0x00239c50,40,matching,nn_sdk,nn_sdk_func_00239c50,src/engine/leaf_batch39_b.cpp
 0x00239c78,180,matching,engine,engine_func_00239c78,src/engine/leaf_batch42_c.cpp
 0x00239d2c,192,matching,unknown,func_00239d2c,src/engine/leaf_batch32_b.cpp
-0x00239dec,408,matching,unknown,func_00239dec,src/engine/leaf_batch41_c.cpp
+0x00239dec,408,non_matching,unknown,func_00239dec,src/engine/leaf_batch41_c.cpp
 0x00239f84,40,matching,nn_sdk,nn_sdk_func_00239f84,src/engine/leaf_batch39_b.cpp
 0x00239fac,188,matching,unknown,func_00239fac,src/engine/leaf_batch40_b.cpp
 0x0023a068,180,matching,unknown,func_0023a068,src/engine/leaf_batch42_c.cpp
