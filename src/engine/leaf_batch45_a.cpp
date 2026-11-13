@@ -174,83 +174,151 @@ extern "C" u32 camp_func_0024bfbc(char* out_buf, u32 element_id) {
 }
 
 // DECOMP_FUNC(0x0022e008, 572)
-extern "C" __attribute__((naked)) void camp_func_0022e008() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x47f0, 0xe92d, 0x6c05, 0xe280\n"
-        ".hword 0x7000, 0xe1a0, 0xde61, 0xe24d\n"
-        ".hword 0x0ab8, 0xe1d6, 0x0000, 0xe350\n"
-        ".hword 0x0018, 0x0a00, 0x4b01, 0xe287\n"
-        ".hword 0x4f6a, 0xe284, 0x0020, 0xe287\n"
-        ".hword 0x15da, 0xeb00, 0x0280, 0xe084\n"
-        ".hword 0x50b4, 0xe1d0, 0xc0d5, 0xeb01\n"
-        ".hword 0x0000, 0xe350, 0x000d, 0x0a00\n"
-        ".hword 0x00a4, 0xe5d6, 0x8ca5, 0xe287\n"
-        ".hword 0x0001, 0xe350, 0x000f, 0x0a00\n"
-        ".hword 0x0bb2, 0xe1d8, 0x0005, 0xe150\n"
-        ".hword 0x0006, 0x0a00, 0x0005, 0xe1a0\n"
-        ".hword 0xbeb4, 0xeb01, 0x0001, 0xe3a0\n"
-        ".hword 0xbe2b, 0xeb01, 0x0007, 0xe1a0\n"
-        ".hword 0xfcaf, 0xebff, 0x5bb2, 0xe1c8\n"
-        ".hword 0xde61, 0xe28d, 0x87f0, 0xe8bd\n"
-        ".hword 0xde61, 0xe28d, 0x0000, 0xe3a0\n"
-        ".hword 0x47f0, 0xe8bd, 0xc071, 0xea01\n"
-        ".hword 0x00a7, 0xe5d6, 0x0000, 0xe350\n"
-        ".hword 0x0bb2, 0x01d8, 0x0005, 0x0150\n"
-        ".hword 0xfff4, 0x0aff, 0x00a5, 0xe5d6\n"
-        ".hword 0x9000, 0xe3a0, 0x0001, 0xe350\n"
-        ".hword 0x000f, 0x0a00, 0x0005, 0xe1a0\n"
-        ".hword 0xbe9e, 0xeb01, 0x0000, 0xe3a0\n"
-        ".hword 0xf000, 0xe320, 0xb9a5, 0xeb01\n"
-        ".hword 0x00a7, 0xe5d6, 0x0000, 0xe350\n"
-        ".hword 0x0000, 0x13a0, 0x0052, 0x0a00\n"
-        ".hword 0xaadc, 0xeb00, 0x0007, 0xe1a0\n"
-        ".hword 0x95a7, 0xe5c7, 0xfc92, 0xebff\n"
-        ".hword 0xf000, 0xe320, 0xf000, 0xe320\n"
-        ".hword 0xffdf, 0xeaff, 0xf000, 0xe320\n"
-        ".hword 0xea40, 0xeb01, 0x1000, 0xe1a0\n"
-        ".hword 0x0a09, 0xe280, 0x4000, 0xe3a0\n"
-        ".hword 0x210b, 0xe5d0, 0x0004, 0xe1a0\n"
-        ".hword 0x0000, 0xe352, 0x000f, 0x9a00\n"
-        ".hword 0x3000, 0xe081, 0x3a09, 0xe283\n"
-        ".hword 0x3fd0, 0xe1d3, 0x0000, 0xe353\n"
-        ".hword 0x0006, 0xba00, 0xc383, 0xe083\n"
-        ".hword 0x3403, 0xe08c, 0x3103, 0xe081\n"
-        ".hword 0x4090, 0xe283, 0x3db6, 0xe1d3\n"
-        ".hword 0x0005, 0xe153, 0x0003, 0x0a00\n"
-        ".hword 0x0001, 0xe280, 0x0070, 0xe6ff\n"
-        ".hword 0x0000, 0xe152, 0xffef, 0x8aff\n"
-        ".hword 0x0005, 0xe1a0, 0xbe75, 0xeb01\n"
-        ".hword 0x0005, 0xe1a0, 0xf000, 0xe320\n"
-        ".hword 0x2c7b, 0xeb02, 0x1004, 0xe1a0\n"
-        ".hword 0xa000, 0xe1a0, 0x400d, 0xe1a0\n"
-        ".hword 0x20b8, 0xe59f, 0x0004, 0xe1a0\n"
-        ".hword 0x3b72, 0xeb02, 0x904c, 0xe58d\n"
-        ".hword 0x9050, 0xe58d, 0x9054, 0xe58d\n"
-        ".hword 0x9058, 0xe58d, 0x905c, 0xe58d\n"
-        ".hword 0x9060, 0xe58d, 0x9064, 0xe58d\n"
-        ".hword 0x9068, 0xe58d, 0x906c, 0xe58d\n"
-        ".hword 0x9070, 0xe58d, 0x9074, 0xe58d\n"
-        ".hword 0x1c05, 0xe3a0, 0x008c, 0xe284\n"
-        ".hword 0x9078, 0xe58d, 0x907c, 0xe58d\n"
-        ".hword 0x9080, 0xe58d, 0x9084, 0xe58d\n"
-        ".hword 0x9088, 0xe58d, 0x5a55, 0xeb02\n"
-        ".hword 0x13b8, 0xe1da, 0x0004, 0xe1a0\n"
-        ".hword 0x772a, 0xeb00, 0x0004, 0xe1a0\n"
-        ".hword 0xf000, 0xe320, 0xb9d7, 0xeb01\n"
-        ".hword 0x00be, 0xe1dd, 0x1000, 0xe3a0\n"
-        ".hword 0x94b4, 0xe1cd, 0x02ba, 0xe1cd\n"
-        ".hword 0x01b0, 0xe1dd, 0x02bc, 0xe1cd\n"
-        ".hword 0x0004, 0xe1a0, 0xb95c, 0xeb01\n"
-        ".hword 0x0001, 0xe3a0, 0xf000, 0xe320\n"
-        ".hword 0xb952, 0xeb01, 0x00a7, 0xe5d6\n"
-        ".hword 0x0000, 0xe350, 0x0001, 0x13a0\n"
-        ".hword 0xffac, 0x1aff, 0x0001, 0xe3a0\n"
-        ".hword 0xbdbb, 0xeb01, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0xffa8, 0xeaff\n"
-        ".hword 0x0604, 0x0000\n"
-    );
-};
+//
+// Camp menu selection-change dispatcher. The incoming r0 points at the camp
+// work area. The function resolves the current list entry, compares its id
+// against the selected id stored in the work area, and (depending on the menu
+// mode / animation sub-mode) rebinds the selection, builds the per-selection
+// scratch record on the stack, and refreshes the menu.
+extern "C" u32 shop_func_002337a0(const void* list);
+extern "C" u32 script_vm_func_0029e398(const void* entry);
+extern "C" void camp_func_0029db40(u32 id);
+extern "C" void camp_func_0029d924(u32 enable);
+extern "C" u32 camp_func_0022d33c(u8* work);
+extern "C" u8* camp_func_002a8a08(u32 sub_mode);
+extern "C" u8* camp_func_002b9364(u32 id);
+extern "C" void ui_func_002bcf58(void* dst, const void* src, u32 size);
+extern "C" void engine_func_002c4b30(void* dst, u32 size);
+extern "C" void camp_func_0024be90(u8* base, u32 bit_index);
+extern "C" void script_vm_func_0029c950(void* ctx);
+extern "C" void script_vm_func_0029c784(void* ctx, u32 keep_scroll);
+extern "C" void script_vm_func_0029c768(u32 value);
+extern "C" void ui_func_00258c58(u32 value);
+extern "C" u32 camp_func_0029e260(u32 value);
+
+namespace {
+
+constexpr u32 kEntryTableOffset = 0x5A8;      // u16 count / start of 0x20-byte entries
+constexpr u32 kModeOffset = 0x5A4;            // 0 = plain selection path, 1 = menu mode
+constexpr u32 kSubModeOffset = 0x5A5;         // animation sub-mode for kModeOffset == 1
+constexpr u32 kDirtyOffset = 0x5A7;           // pending-refresh flag
+constexpr u32 kSelectedIdOffset = 0xA5B2;     // u16 currently selected list id
+constexpr u32 kEntrySize = 0x20;
+constexpr u32 kEntryIdOffset = 4;             // u16 id inside a list entry
+
+constexpr u32 kSelectRecordSize = 0x604;      // per-selection record copied to scratch
+constexpr u32 kScratchSize = 0x610;           // stack scratch area used by the original
+constexpr u32 kScratchZeroBegin = 0x4C;
+constexpr u32 kScratchZeroEnd = 0x88;
+constexpr u32 kScratchClearOffset = 0x8C;
+constexpr u32 kScratchClearSize = 0x500;
+
+constexpr u32 kCampListCountOffset = 0x910B;  // u8 number of list slots
+constexpr u32 kCampListIndexOffset = 0x90F0;  // s8 slot indices, one per list position
+constexpr u32 kCampListRecordBase = 0x90;     // record + 0x90 is the copy source
+constexpr u32 kCampListIdOffset = 0xD6;       // u16 id inside a slot record
+constexpr u32 kCampListRecordStride = 0x604;  // 1540-byte list records
+
+inline u8& byte_at(void* base, u32 offset) {
+    return *reinterpret_cast<u8*>(static_cast<u8*>(base) + offset);
+}
+
+inline u16& half_at(void* base, u32 offset) {
+    return *reinterpret_cast<u16*>(static_cast<u8*>(base) + offset);
+}
+
+}  // namespace
+
+extern "C" u32 camp_func_0022e008(u8* work) {
+    if (half_at(work, kEntryTableOffset) == 0) {
+        // Empty list: forward the disabled-state notification as a tail call.
+        return camp_func_0029e260(0);
+    }
+
+    const u32 index = shop_func_002337a0(work + 0x20);
+    u8* const entry = work + kEntryTableOffset + index * kEntrySize;
+    const u16 id = half_at(entry, kEntryIdOffset);
+
+    if (script_vm_func_0029e398(entry) == 0) {
+        return 0;
+    }
+
+    u16* const selected_id = reinterpret_cast<u16*>(work + kSelectedIdOffset);
+
+    if (byte_at(work, kModeOffset) != 1) {
+        if (*selected_id == id) {
+            return *selected_id;
+        }
+        camp_func_0029db40(id);
+        camp_func_0029d924(1);
+        const u32 result = camp_func_0022d33c(work);
+        *selected_id = id;
+        return result;
+    }
+
+    // Menu mode. With no pending refresh, reselecting the same id is a no-op.
+    if (byte_at(work, kDirtyOffset) == 0 && *selected_id == id) {
+        return *selected_id;
+    }
+
+    if (byte_at(work, kSubModeOffset) != 1) {
+        camp_func_0029db40(id);
+        script_vm_func_0029c768(0);
+        if (byte_at(work, kDirtyOffset) != 0) {
+            ui_func_00258c58(0);
+        } else {
+            camp_func_0029d924(1);
+        }
+    } else {
+        // Animation sub-mode: locate the slot record backing the selection.
+        u8* const list = camp_func_002a8a08(1);
+        u8* record_base = nullptr;
+        const u32 count = byte_at(list, kCampListCountOffset);
+        for (u32 i = 0; i < count; ++i) {
+            const s8 slot = static_cast<s8>(byte_at(list, kCampListIndexOffset + i));
+            if (slot < 0) {
+                continue;
+            }
+            u8* const record = list + static_cast<u32>(slot) * kCampListRecordStride;
+            record_base = record + kCampListRecordBase;
+            if (half_at(record, kCampListIdOffset) == id) {
+                break;
+            }
+        }
+
+        camp_func_0029db40(id);
+        u8* const info = camp_func_002b9364(id);
+
+        u8 scratch[kScratchSize];
+        ui_func_002bcf58(scratch, record_base, kSelectRecordSize);
+
+        for (u32 offset = kScratchZeroBegin; offset <= kScratchZeroEnd; offset += 4) {
+            *reinterpret_cast<u32*>(scratch + offset) = 0;
+        }
+        engine_func_002c4b30(scratch + kScratchClearOffset, kScratchClearSize);
+
+        camp_func_0024be90(scratch, half_at(info, 0x38));
+        script_vm_func_0029c950(scratch);
+
+        half_at(scratch, 0x44) = 0;
+        half_at(scratch, 0x2A) = half_at(scratch, 0x0E);
+        half_at(scratch, 0x2C) = half_at(scratch, 0x10);
+
+        script_vm_func_0029c784(scratch, 0);
+        script_vm_func_0029c768(1);
+
+        if (byte_at(work, kDirtyOffset) != 0) {
+            ui_func_00258c58(1);
+        } else {
+            camp_func_0029d924(1);
+        }
+    }
+
+    byte_at(work, kDirtyOffset) = 0;
+    const u32 result = camp_func_0022d33c(work);
+    *selected_id = id;
+    return result;
+}
 
 // DECOMP_FUNC(0x002580a8, 576)
 extern "C" s32 ui_func_00297004(s32 min_val, s32 max_val);

@@ -3259,7 +3259,7 @@ address,size,status,category,name,src_file
 0x0022de40,292,matching,camp,camp_func_0022de40,src/engine/leaf_batch32_b.cpp
 0x0022df64,24,matching,script_vm,script_vm_func_0022df64,src/engine/leaf_batch15_a.cpp
 0x0022df7c,140,non_matching,unite,unite_func_0022df7c,src/engine/leaf_batch30_c.cpp
-0x0022e008,572,matching,camp,camp_func_0022e008,src/engine/leaf_batch45_a.cpp
+0x0022e008,572,non_matching,camp,camp_func_0022e008,src/engine/leaf_batch45_a.cpp
 0x0022e244,76,matching,unite,unite_func_0022e244,src/engine/leaf_batch29_b.cpp
 0x0022e290,92,matching,unite,unite_func_0022e290,src/engine/leaf_batch35_a.cpp
 0x0022e2ec,36,matching,unite,unite_func_0022e2ec,src/engine/leaf_batch10_b.cpp
