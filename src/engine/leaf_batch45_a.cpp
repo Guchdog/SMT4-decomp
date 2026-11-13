@@ -7622,96 +7622,239 @@ extern "C" s32 engine_func_0021e3c0() {
 }
 
 // DECOMP_FUNC(0x002fe358, 680)
-extern "C" __attribute__((naked)) void ui_func_002fe358() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4ff0, 0xe92d, 0x4003, 0xe1a0\n"
-        ".hword 0x7000, 0xe1a0, 0x9001, 0xe1a0\n"
-        ".hword 0x0ffa, 0xe3a0, 0x1f4b, 0xe280\n"
-        ".hword 0x8b02, 0xed2d, 0xd0fc, 0xe24d\n"
-        ".hword 0x30d4, 0xe1d2, 0x80d5, 0xe1d2\n"
-        ".hword 0x60d6, 0xe1d2, 0xa030, 0xe243\n"
-        ".hword 0xc0d7, 0xe1d2, 0x008a, 0xe160\n"
-        ".hword 0xa188, 0xe088, 0x8208, 0xe08a\n"
-        ".hword 0x6106, 0xe086, 0x0108, 0xe080\n"
-        ".hword 0x300a, 0xe5d2, 0x0d4b, 0xe240\n"
-        ".hword 0x5128, 0xe59d, 0x0086, 0xe080\n"
-        ".hword 0x8a8d, 0xed9f, 0x0e21, 0xe240\n"
-        ".hword 0x0000, 0xe353, 0xb000, 0xe3a0\n"
-        ".hword 0x8000, 0xe08c, 0x001c, 0x0a00\n"
-        ".hword 0x0001, 0xe353, 0x0000, 0x13a0\n"
-        ".hword 0x0022, 0x1a00, 0x00b8, 0xe1d2\n"
-        ".hword 0x0001, 0xe158, 0x0002, 0xe080\n"
-        ".hword 0x200c, 0xe592, 0xa020, 0xa590\n"
-        ".hword 0xa008, 0xb590, 0x10f0, 0xa280\n"
-        ".hword 0x10d8, 0xb280, 0x01f4, 0xe59f\n"
-        ".hword 0x20f0, 0xa242, 0x20d8, 0xb242\n"
-        ".hword 0x0000, 0xe158, 0x0002, 0xba00\n"
-        ".hword 0x0e4b, 0xe358, 0x1004, 0xe281\n"
-        ".hword 0x2004, 0xa242, 0x0007, 0xe1a0\n"
-        ".hword 0x62a2, 0xe1a0, 0x0009, 0xe156\n"
-        ".hword 0x6009, 0xc1a0, 0x2286, 0xe1a0\n"
-        ".hword 0xfaca, 0xebfe, 0x0e4b, 0xe358\n"
-        ".hword 0xf000, 0xe320, 0x0041, 0x1a00\n"
-        ".hword 0x0033, 0xea00, 0x00b8, 0xe1d2\n"
-        ".hword 0x0001, 0xe158, 0x0008, 0xba00\n"
-        ".hword 0x2000, 0xe082, 0x3004, 0xe1a0\n"
-        ".hword 0x1009, 0xe1a0, 0x0007, 0xe1a0\n"
-        ".hword 0x5000, 0xe58d, 0x0067, 0xeb00\n"
-        ".hword 0xd0fc, 0xe28d, 0x8b02, 0xecbd\n"
-        ".hword 0x8ff0, 0xe8bd, 0x6002, 0xe080\n"
-        ".hword 0x0001, 0xe3a0, 0x0024, 0xe58d\n"
-        ".hword 0x0028, 0xe58d, 0x002c, 0xe58d\n"
-        ".hword 0x116c, 0xe59f, 0x300a, 0xe3a0\n"
-        ".hword 0x2014, 0xe3a0, 0x0030, 0xe28d\n"
-        ".hword 0xb020, 0xe58d, 0x1eaf, 0xfaff\n"
-        ".hword 0x1000, 0xe596, 0x20c8, 0xe3a0\n"
-        ".hword 0x0030, 0xe28d, 0x1020, 0xe58d\n"
-        ".hword 0x1004, 0xe596, 0x1024, 0xe58d\n"
-        ".hword 0x1008, 0xe596, 0x1028, 0xe58d\n"
-        ".hword 0x100c, 0xe596, 0x102c, 0xe58d\n"
-        ".hword 0x1010, 0xe286, 0xfaa3, 0xebfe\n"
-        ".hword 0x8a02, 0xed8d, 0x8a05, 0xed8d\n"
-        ".hword 0x0a48, 0xeddf, 0x0a48, 0xed9f\n"
-        ".hword 0x8a06, 0xed8d, 0x000c, 0xe28d\n"
-        ".hword 0x3004, 0xe1a0, 0x0a02, 0xec80\n"
-        ".hword 0x2008, 0xe28d, 0x0a07, 0xedcd\n"
-        ".hword 0x1009, 0xe1a0, 0x0007, 0xe1a0\n"
-        ".hword 0x5000, 0xe58d, 0x003f, 0xeb00\n"
-        ".hword 0xd0fc, 0xe28d, 0x8b02, 0xecbd\n"
-        ".hword 0x8ff0, 0xe8bd, 0x0000, 0xe356\n"
-        ".hword 0x000a, 0xda00, 0x0001, 0xe316\n"
-        ".hword 0x000c, 0xe247, 0x0020, 0x1280\n"
-        ".hword 0x8a00, 0x1d80, 0x10c6, 0xe1b0\n"
-        ".hword 0x0004, 0x0a00, 0x8a08, 0xed80\n"
-        ".hword 0x0040, 0xe280, 0x1001, 0xe251\n"
-        ".hword 0x8a00, 0xed80, 0xfffa, 0x1aff\n"
-        ".hword 0x1006, 0xe049, 0x0000, 0xe351\n"
-        ".hword 0x0008, 0xda00, 0x0286, 0xe087\n"
-        ".hword 0x3006, 0xe280, 0x2004, 0xe280\n"
-        ".hword 0xc000, 0xe3e0, 0xc020, 0xe480\n"
-        ".hword 0xc020, 0xe4c3, 0x1001, 0xe251\n"
-        ".hword 0xb2b0, 0xe0c2, 0xfffa, 0x1aff\n"
-        ".hword 0x0000, 0xe356, 0x3000, 0xe3a0\n"
-        ".hword 0x0011, 0xda00, 0x0000, 0xe355\n"
-        ".hword 0xc283, 0xc087, 0x0000, 0xe3a0\n"
-        ".hword 0x1000, 0xc59c, 0x0009, 0xda00\n"
-        ".hword 0x2180, 0xe080, 0x2182, 0xe084\n"
-        ".hword 0x2004, 0xe592, 0x0001, 0xe152\n"
-        ".hword 0x0001, 0x1a00, 0x0006, 0xe5cc\n"
-        ".hword 0x0002, 0xea00, 0x0001, 0xe280\n"
-        ".hword 0x0000, 0xe155, 0xfff5, 0xcaff\n"
-        ".hword 0x3001, 0xe283, 0x0003, 0xe156\n"
-        ".hword 0xffed, 0xcaff, 0x3004, 0xe1a0\n"
-        ".hword 0x200a, 0xe1a0, 0x1006, 0xe1a0\n"
-        ".hword 0x0007, 0xe1a0, 0x5000, 0xe58d\n"
-        ".hword 0x905c, 0xebff, 0xd0fc, 0xe28d\n"
-        ".hword 0x0006, 0xe1a0, 0x8b02, 0xecbd\n"
-        ".hword 0x8ff0, 0xe8bd, 0x0000, 0x0000\n"
-        ".hword 0x044c, 0x0000, 0x3fec, 0x0033\n"
-        ".hword 0x0000, 0x4040, 0x0000, 0x40a0\n"
-    );
+//
+// Prepares the 0x20-byte UI record array consumed by the caller at 0x00334498
+// (out = work + 0x3F4, capacity = 50, catalog = work + 0x1074).
+//
+// The descriptor's type byte at +0x0A selects one of two builders:
+//   * 0: `ui_func_002fe600` emits records from a catalog-selected descriptor.
+//        Below 1300 units the descriptor sub-block is copied into a stack-local
+//        source (six header floats, four copied words, then ten 20-byte
+//        groups); at or above 1300 the descriptor sub-block is forwarded
+//        unchanged.
+//   * 1: a pre-baked 0x20-byte record block is copied out of the descriptor.
+//        The derived time selects the block offset (0xD8/0xDC/0xF4) and the
+//        mode word consumed by `ui_func_002e2750`. Records past the copied
+//        count receive the {-1, 0, 0xFF} sentinel, matching catalog keys are
+//        re-indexed into byte +6, and 0x002E2750 post-processes the copies.
+//   * anything else: return 0 without calling a helper.
+//
+// The "time" is assembled from four signed bytes at descriptor +4..+7. Only the
+// first byte has the ASCII '0' bias subtracted (0x30), matching the original
+// add/smulbb sequence exactly.
+namespace ui_fe358 {
+
+using ui_fe600::OutputRecord;
+
+constexpr u32 kRecordStride = 0x20;
+constexpr u32 kCatalogStride = 0x48;
+constexpr u32 kCatalogKeyOffset = 0x04;
+
+// Descriptor header.
+constexpr u32 kDescriptorOffsetOffset = 0x08;  // u16 sub-block offset
+constexpr u32 kDescriptorTypeOffset = 0x0A;    // u8 selector
+constexpr u32 kDescriptorSpanOffset = 0x0C;    // u32 byte span
+
+// Sub-block header addressed by `descriptor + u16@descriptor+8`.
+constexpr u32 kSubKeyOffset = 0x00;        // s32 catalog key
+constexpr u32 kSubGroupCountOffset = 0x04; // s32 group count
+constexpr u32 kSubModeWordOffset = 0x08;    // s32 unit-selection mode
+constexpr u32 kSubExtraOffset = 0x0C;      // s32 copied to source +0x24
+constexpr u32 kSubGroupsOffset = 0x10;     // 10 * 20-byte groups
+constexpr u32 kGroupStride = 0x14;
+constexpr u32 kGroupCount = 10;
+constexpr u32 kGroupBytes = kGroupStride * kGroupCount;  // 0xC8
+
+// Time thresholds. 1300 selects the forwarded descriptor; 1100 and 1200 shift
+// the pre-baked block start by four bytes; exactly 1200 also clears +0x14 of
+// every copied record.
+constexpr s32 kTimeForward = 1300;
+constexpr s32 kTimeShift4 = 1100;
+constexpr s32 kTimeShift8 = 1200;
+
+constexpr u32 kBlockBaseShort = 0xD8;
+constexpr u32 kBlockBaseShifted = 0xDC;
+constexpr u32 kBlockBaseForward = 0xF4;
+
+constexpr s32 kTimeThousands = 1000;
+constexpr s32 kAsciiZero = 0x30;
+constexpr s32 kTimeHundredsBias = 0x12C0;
+constexpr s32 kTimeUnitBias = 0x210;
+
+constexpr u32 kSentinelKey = 0xFFFFFFFFu;
+constexpr u16 kSentinelUnit = 0;
+constexpr u8 kSentinelIndex = 0xFF;
+
+// Stack source handed to 0x002FE600 below the 1300-unit threshold.
+struct LocalSource {
+    f32 field_00;  // 0.0f
+    f32 field_04;  // 5.0f
+    f32 field_08;  // 3.0f
+    f32 field_0C;  // 0.0f
+    f32 field_10;  // 0.0f
+    f32 field_14;  // 3.0f
+    s32 key_18;
+    s32 group_count_1C;
+    s32 mode_20;
+    s32 extra_24;
+    u8 groups_28[kGroupBytes];
 };
+static_assert(sizeof(LocalSource) == 0xF0);
+
+inline s32 descriptor_time(const u8* descriptor) {
+    const s32 thousands =
+        (static_cast<s32>(static_cast<s8>(descriptor[4])) - kAsciiZero) *
+        kTimeThousands;
+    const s32 hundreds =
+        static_cast<s32>(static_cast<s8>(descriptor[5])) * 100;
+    const s32 tens = static_cast<s32>(static_cast<s8>(descriptor[6])) * 10;
+    const s32 ones = static_cast<s32>(static_cast<s8>(descriptor[7]));
+    return thousands + hundreds + tens + ones - kTimeHundredsBias -
+           kTimeUnitBias;
+}
+
+}  // namespace ui_fe358
+
+// Direct calls. 0x002BCF58 (memcpy) and 0x002FE600 are already declared with
+// these exact prototypes above; 0x002C5F58's prototype is shared with
+// ui_func_0037aac4 (stride-sized initialiser loop).
+extern "C" void ui_func_002bcf58(void* dst, const void* src, u32 size);
+extern "C" void ui_func_002c5f58(ui_aa_c4::Entry* entries,
+                                 void (*init)(ui_aa_c4::Entry*), u32 stride,
+                                 u32 count);
+extern "C" s32 ui_func_002fe600(ui_fe600::OutputRecord* out, s32 capacity,
+                                const u8* source,
+                                const ui_fe600::CatalogSlot* catalog,
+                                s32 catalog_count);
+extern "C" void ui_func_002e2750(void* records, s32 count, u32 mode,
+                                 void* catalog);
+
+extern "C" s32 ui_func_002fe358(ui_fe600::OutputRecord* out, s32 capacity,
+                                const u8* descriptor,
+                                const ui_fe600::CatalogSlot* catalog,
+                                s32 catalog_count) {
+    using namespace ui_fe358;
+
+    const s32 time = descriptor_time(descriptor);
+
+    switch (descriptor[kDescriptorTypeOffset]) {
+    case 0: {
+        const u8* const sub =
+            descriptor + *reinterpret_cast<const u16*>(
+                             descriptor + kDescriptorOffsetOffset);
+
+        if (time >= kTimeForward) {
+            return ui_func_002fe600(out, capacity, sub, catalog,
+                                    catalog_count);
+        }
+
+        LocalSource source;
+        // The original defaults four stack header words and then runs the
+        // record initialiser over ten 20-byte groups. Both are overwritten
+        // immediately below, but the call remains observable.
+        source.key_18 = 0;
+        source.group_count_1C = 1;
+        source.mode_20 = 1;
+        source.extra_24 = 1;
+        ui_func_002c5f58(
+            reinterpret_cast<ui_aa_c4::Entry*>(source.groups_28),
+            reinterpret_cast<void (*)(ui_aa_c4::Entry*)>(0x00333FECu),
+            kGroupStride, kGroupCount);
+
+        source.key_18 = *reinterpret_cast<const s32*>(sub + kSubKeyOffset);
+        source.group_count_1C =
+            *reinterpret_cast<const s32*>(sub + kSubGroupCountOffset);
+        source.mode_20 =
+            *reinterpret_cast<const s32*>(sub + kSubModeWordOffset);
+        source.extra_24 =
+            *reinterpret_cast<const s32*>(sub + kSubExtraOffset);
+        ui_func_002bcf58(source.groups_28, sub + kSubGroupsOffset,
+                         kGroupBytes);
+
+        source.field_00 = 0.0f;
+        source.field_04 = 5.0f;
+        source.field_08 = 3.0f;
+        source.field_0C = 0.0f;
+        source.field_10 = 0.0f;
+        source.field_14 = 3.0f;
+
+        return ui_func_002fe600(
+            out, capacity, reinterpret_cast<const u8*>(&source), catalog,
+            catalog_count);
+    }
+
+    case 1: {
+        const u8* const sub =
+            descriptor + *reinterpret_cast<const u16*>(
+                             descriptor + kDescriptorOffsetOffset);
+        const u32 span =
+            *reinterpret_cast<const u32*>(descriptor + kDescriptorSpanOffset);
+
+        s32 mode;
+        u32 block_base;
+        if (time >= kTimeForward) {
+            mode = *reinterpret_cast<const s32*>(sub + 0x20);
+            block_base = kBlockBaseForward;
+        } else {
+            mode = *reinterpret_cast<const s32*>(sub + kSubModeWordOffset);
+            block_base =
+                time >= kTimeShift4 ? kBlockBaseShifted : kBlockBaseShort;
+        }
+
+        // `lsr` on the wrapped span difference; the signed comparison caps the
+        // logical count at the caller's capacity.
+        s32 count = static_cast<s32>((span - block_base) >> 5);
+        if (count > capacity) {
+            count = capacity;
+        }
+
+        ui_func_002bcf58(out, sub + block_base,
+                         static_cast<u32>(count) * kRecordStride);
+
+        if (time == kTimeShift8) {
+            for (s32 index = 0; index < count; ++index) {
+                out[index].field_14 = 0.0f;
+            }
+        }
+
+        const s32 remaining = capacity - count;
+        if (remaining > 0) {
+            OutputRecord* slot = out + count;
+            for (s32 index = 0; index < remaining; ++index, ++slot) {
+                slot->field_00 = kSentinelKey;
+                slot->field_04 = kSentinelUnit;
+                slot->field_06 = kSentinelIndex;
+            }
+        }
+
+        for (s32 index = 0; index < count; ++index) {
+            const u32 key = out[index].field_00;
+            if (catalog_count > 0) {
+                for (s32 catalog_index = 0; catalog_index < catalog_count;
+                     ++catalog_index) {
+                    const u8* const slot =
+                        reinterpret_cast<const u8*>(catalog) +
+                        static_cast<u32>(catalog_index) * kCatalogStride;
+                    const s32 slot_key = *reinterpret_cast<const s32*>(
+                        slot + kCatalogKeyOffset);
+                    if (slot_key == static_cast<s32>(key)) {
+                        out[index].field_06 =
+                            static_cast<u8>(catalog_index);
+                        break;
+                    }
+                }
+            }
+        }
+
+        ui_func_002e2750(out, count, static_cast<u32>(mode),
+                         const_cast<ui_fe600::CatalogSlot*>(catalog));
+        return count;
+    }
+
+    default:
+        return 0;
+    }
+}
 
 // DECOMP_FUNC(0x003ac688, 680)
 extern "C" __attribute__((naked)) void ui_func_003ac688() {
