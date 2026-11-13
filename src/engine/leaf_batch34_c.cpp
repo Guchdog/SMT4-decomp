@@ -1113,113 +1113,169 @@ extern "C" __attribute__((naked)) void engine_func_0011b5e8() {
     );
 }
 
+// ---------------------------------------------------------------------------
+// 0x0011B6A8 (400 B) -- state wait plus elapsed-time accounting for an engine
+// task object.
+//
+// Recovered contract:
+//   * r0 is the object base and is the only register input.
+//   * [object+0x0C] is a 32-bit state word.  Any value other than 6 returns 0
+//     without touching memory.
+//   * In state 6 the body enters the object lock (0x002C3AA8), publishes state
+//     5, leaves the lock (0x002C3A24) and releases the nnSdk lock at
+//     object+0x20 (0x002C4244).
+//   * It then polls [object+0x0C].  State 3 finishes the wait, states 7 and 1
+//     abort with 0, and any other value sleeps 500,000 ns (0x002BB490) before
+//     polling again.  The original reloads the state word before each test.
+//   * On the state-3 path it reads nn::os::GetSystemTick() (`svc #0x28`,
+//     64-bit tick in r0:r1), reduces the tick to the object's microsecond time
+//     base with the two fixed-point stages below, subtracts the 64-bit
+//     baseline at object+0x150, then adds that wrapping 64-bit delta to the
+//     two 64-bit counters at object+0x138 and object+0x140.  It returns 1.
+//   * Both exits restore every callee-saved register (r4-r11) and the stack;
+//     the original also saves r12, which the ABI does not require.
+// ---------------------------------------------------------------------------
+namespace nn {
+namespace os {
+u64 GetSystemTick();
+} // namespace os
+} // namespace nn
+
+namespace {
+
+// Literal pool at 0x0011B828..0x0011B834.
+constexpr u64 kWaitNanoseconds = 0x0007A120u;           // 500,000 ns
+constexpr u64 kTickNanosecondsMagic = 0x3BAD34AEEu;     // 3 << 32 | 0xBAD34AEE
+constexpr u64 kMicrosecondsMagic = 0x20C49BA5E353F7CFu; // 0xE353F7CF, 0x20C49BA5
+
+// Object offsets accessed by the original (all 32-bit accesses unless noted).
+constexpr u32 kStateOffset = 0x0C;
+constexpr u32 kNnSdkLockOffset = 0x20;
+constexpr u32 kCounterAOffset = 0x138;    // 64-bit, words at 0x138 / 0x13C
+constexpr u32 kCounterBOffset = 0x140;    // 64-bit, words at 0x140 / 0x144
+constexpr u32 kBaselineOffset = 0x150;    // 64-bit, words at 0x150 / 0x154
+
+inline u32 LoadU32(const u8* base, u32 offset) {
+    return *reinterpret_cast<const u32*>(base + offset);
+}
+
+inline void StoreU32(u8* base, u32 offset, u32 value) {
+    *reinterpret_cast<u32*>(base + offset) = value;
+}
+
+// 0x0011B71C..0x0011B7E4: the original casts the system tick to s64, scales it
+// to nanoseconds by taking bits 32..95 of the signed 64x34 product with
+// 0x3BAD34AEE, then divides by 1000 with the signed 64-bit magic
+// 0x20C49BA5E353F7CF (bits 64..127 of the product, arithmetic >>7 and the
+// round-toward-zero adjustment the ARM sequence performs with the sign bit).
+// Both stages keep the original wrap-around behaviour for every 64-bit input.
+// ARMv6K has no 128-bit integer type, so the 128-bit products are recovered
+// from the same 32-bit partial products the instruction sequence uses.
+inline u64 MultiplyHighUnsigned(u64 a, u64 b) {
+    const u64 a_low = static_cast<u32>(a);
+    const u64 a_high = a >> 32;
+    const u64 b_low = static_cast<u32>(b);
+    const u64 b_high = b >> 32;
+    const u64 low_low = a_low * b_low;
+    const u64 low_high = a_low * b_high;
+    const u64 high_low = a_high * b_low;
+    const u64 high_high = a_high * b_high;
+    const u64 middle = (low_low >> 32) + static_cast<u32>(low_high) +
+                       static_cast<u32>(high_low);
+    return high_high + (low_high >> 32) + (high_low >> 32) + (middle >> 32);
+}
+
+// High 64 bits of the signed product; the multipliers used here are positive,
+// but the correction keeps the helper honest for any pair of operands.
+inline u64 MultiplyHighSigned(u64 a, u64 b) {
+    u64 high = MultiplyHighUnsigned(a, b);
+    if (static_cast<s64>(a) < 0) {
+        high -= b;
+    }
+    if (static_cast<s64>(b) < 0) {
+        high -= a;
+    }
+    return high;
+}
+
+u64 TickToMicroseconds(u64 tick) {
+    // Bits 32..95 of (s64)tick * 0x3BAD34AEE.
+    const u64 nanoseconds = (tick * kTickNanosecondsMagic >> 32) +
+                            (MultiplyHighSigned(tick, kTickNanosecondsMagic)
+                             << 32);
+
+    // Bits 64..127 of (s64)nanoseconds * 0x20C49BA5E353F7CF, then >>7.
+    const s64 scaled =
+        static_cast<s64>(MultiplyHighSigned(nanoseconds, kMicrosecondsMagic));
+    s64 microseconds = scaled >> 7;
+    if (scaled < 0) {
+        ++microseconds;
+    }
+    return static_cast<u64>(microseconds);
+}
+
+} // namespace
+
 // DECOMP_FUNC(0x0011b6a8, 400)
-extern "C" __attribute__((naked)) void engine_func_0011b6a8() {
-    asm volatile(
-        "push {r4, r5, r6, r7, r8, sb, sl, fp, ip, lr}\n"
-        "mov r4, r0\n"
-        "ldr r0, [r0, #0xc]\n"
-        "cmp r0, #6\n"
-        "bne .L_0011b820\n"
-        "mov r5, #5\n"
-        "mov r0, r4\n"
-        "bl engine_func_002c3aa8\n"
-        "str r5, [r4, #0xc]\n"
-        "mov r0, r4\n"
-        "bl engine_func_002c3a24\n"
-        "add r0, r4, #0x20\n"
-        "bl nn_sdk_func_002c4244\n"
-        ".L_0011b6dc:\n"
-        "ldr r0, [r4, #0xc]\n"
-        "cmp r0, #3\n"
-        "beq .L_0011b714\n"
-        "ldr r0, [r4, #0xc]\n"
-        "cmp r0, #7\n"
-        "ldrne r0, [r4, #0xc]\n"
-        "cmpne r0, #1\n"
-        "beq .L_0011b820\n"
-        ".word 0xe59f0124\n"
-        "mov r1, #0\n"
-        "bl camp_func_002bb490\n"
-        "nop\n"
-        "nop\n"
-        "b .L_0011b6dc\n"
-        ".L_0011b714:\n"
-        "nop\n"
-        "svc #0x28\n"
-        ".word 0xe59f2108\n"
-        "mov r3, #3\n"
-        "mov ip, #0\n"
-        "asr r6, r1, #0x1f\n"
-        "umull r8, r7, r0, r2\n"
-        "umull r8, sb, r1, r3\n"
-        "adds r5, ip, r7\n"
-        "adc r7, r8, ip\n"
-        "umull lr, r8, r1, r2\n"
-        "mla r2, r6, r2, r8\n"
-        "mla r1, r1, ip, r2\n"
-        ".word 0xe59fc0e0\n"
-        "umlal lr, r1, r3, r0\n"
-        "mov r3, #0\n"
-        "adds r0, lr, r5\n"
-        "adc r1, r1, r7\n"
-        "umull r8, r7, r0, ip\n"
-        "umull r8, sl, r1, ip\n"
-        "mla r7, r3, ip, r7\n"
-        "asr r2, r1, #0x1f\n"
-        "mov r5, r3\n"
-        "mla ip, r2, ip, sl\n"
-        "mla r7, r0, r5, r7\n"
-        ".word 0xe59fe0b4\n"
-        "mla r5, r1, r3, ip\n"
-        "adds ip, r8, r7\n"
-        "umull r6, r7, r0, lr\n"
-        "adc r5, r5, r3\n"
-        "mov sb, r3\n"
-        "mov fp, r3\n"
-        "mla r3, r3, lr, r7\n"
-        "adds ip, ip, r6\n"
-        "mla r0, r0, sb, r3\n"
-        "umull r3, r7, r1, lr\n"
-        "adc r0, r0, fp\n"
-        "mla r2, r2, lr, r7\n"
-        "asr ip, r0, #0x1f\n"
-        "mla lr, r1, sb, r2\n"
-        "adds r0, r0, r5\n"
-        "adc r2, ip, r5, asr #31\n"
-        "adds r0, r0, r3\n"
-        "adc r2, r2, lr\n"
-        "lsr r6, r1, #0x1f\n"
-        "lsr r1, r0, #7\n"
-        "orr r1, r1, r2, lsl #25\n"
-        "ldr ip, [r4, #0x150]\n"
-        "asr r0, r2, #7\n"
-        "ldr r8, [r4, #0x154]\n"
-        "adds r6, r6, r1\n"
-        "ldr r3, [r4, #0x140]\n"
-        "adc r1, r0, #0\n"
-        "ldr r2, [r4, #0x144]\n"
-        "subs r0, r6, ip\n"
-        "add r5, r4, #0x138\n"
-        "sbc r1, r1, r8\n"
-        "adds r3, r3, r0\n"
-        "ldm r5, {r5, lr}\n"
-        "adc r2, r2, r1\n"
-        "str r2, [r4, #0x144]\n"
-        "adds r0, r0, r5\n"
-        "add r4, r4, #0x138\n"
-        "adc r1, r1, lr\n"
-        "stm r4, {r0, r1, r3}\n"
-        "mov r0, #1\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, fp, ip, pc}\n"
-        ".L_0011b820:\n"
-        "mov r0, #0\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, fp, ip, pc}\n"
-        ".word 0x0007a120\n"
-        ".word 0xbad34aee\n"
-        ".word 0xe353f7cf\n"
-        ".word 0x20c49ba5\n"
-    );
+extern "C" s32 engine_func_0011b6a8(void* self) {
+    u8* const object = static_cast<u8*>(self);
+
+    if (LoadU32(object, kStateOffset) != 6) {
+        return 0;
+    }
+
+    // 0x0011B6C0..0x0011B6D8: lock, publish state 5, unlock, release the
+    // nnSdk lock embedded at object+0x20.
+    reinterpret_cast<void (*)(void*)>(engine_func_002c3aa8)(object);
+    StoreU32(object, kStateOffset, 5);
+    reinterpret_cast<void (*)(void*)>(engine_func_002c3a24)(object);
+    reinterpret_cast<void (*)(void*)>(nn_sdk_func_002c4244)(object +
+                                                           kNnSdkLockOffset);
+
+    // 0x0011B6DC..0x0011B710: poll loop.  Each iteration reloads the state word
+    // once for the `== 3` test and once for the `7` / `1` abort tests.
+    for (;;) {
+        if (LoadU32(object, kStateOffset) == 3) {
+            break;
+        }
+        const u32 state = LoadU32(object, kStateOffset);
+        if (state == 7 || state == 1) {
+            return 0;
+        }
+        reinterpret_cast<void (*)(u64)>(camp_func_002bb490)(
+            kWaitNanoseconds);
+    }
+
+    // 0x0011B714..0x0011B818: reduce the current tick, subtract the 64-bit
+    // baseline and accumulate the wrapping delta into both 64-bit counters.
+    const u32 baseline_low = LoadU32(object, kBaselineOffset);
+    const u32 baseline_high = LoadU32(object, kBaselineOffset + 4);
+    const u32 counter_b_low = LoadU32(object, kCounterBOffset);
+    const u32 counter_b_high = LoadU32(object, kCounterBOffset + 4);
+
+    const u64 now = TickToMicroseconds(nn::os::GetSystemTick());
+    const u64 baseline = (static_cast<u64>(baseline_high) << 32) | baseline_low;
+    const u64 elapsed = now - baseline;
+    const u32 delta_low = static_cast<u32>(elapsed);
+    const u32 delta_high = static_cast<u32>(elapsed >> 32);
+
+    // The original stores the high word of the second counter before it loads
+    // and stores the first counter; the intermediate accesses are independent.
+    const u32 counter_b_low_sum = counter_b_low + delta_low;
+    const u32 counter_b_high_sum = counter_b_high + delta_high +
+                                   (counter_b_low_sum < counter_b_low ? 1u : 0u);
+    StoreU32(object, kCounterBOffset + 4, counter_b_high_sum);
+
+    const u32 counter_a_low = LoadU32(object, kCounterAOffset);
+    const u32 counter_a_high = LoadU32(object, kCounterAOffset + 4);
+    const u32 counter_a_low_sum = counter_a_low + delta_low;
+    const u32 counter_a_high_sum = counter_a_high + delta_high +
+                                   (counter_a_low_sum < counter_a_low ? 1u : 0u);
+    StoreU32(object, kCounterAOffset, counter_a_low_sum);
+    StoreU32(object, kCounterAOffset + 4, counter_a_high_sum);
+    StoreU32(object, kCounterBOffset, counter_b_low_sum);
+
+    return 1;
 }
 
 // DECOMP_FUNC(0x0011bd78, 204)
