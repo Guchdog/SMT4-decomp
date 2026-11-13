@@ -8344,7 +8344,7 @@ address,size,status,category,name,src_file
 0x0035c32c,800,matching,ui,ui_func_0035c32c,src/engine/leaf_batch34_a.cpp
 0x0035c64c,16,matching,unknown,func_0035c64c,src/engine/leaf_matching.cpp
 0x0035c65c,248,matching,unknown,func_0035c65c,src/engine/leaf_batch37_c.cpp
-0x0035c754,616,matching,unknown,func_0035c754,src/engine/leaf_batch45_a.cpp
+0x0035c754,616,non_matching,unknown,func_0035c754,src/engine/leaf_batch45_a.cpp
 0x0035c9bc,840,matching,unknown,func_0035c9bc,src/engine/leaf_batch34_a.cpp
 0x0035cd04,120,matching,unknown,func_0035cd04,src/engine/leaf_batch22_c.cpp
 0x0035cd7c,16,matching,unknown,func_0035cd7c,src/engine/leaf_matching.cpp

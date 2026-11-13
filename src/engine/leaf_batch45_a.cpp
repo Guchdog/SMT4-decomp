@@ -2778,89 +2778,221 @@ extern "C" s32 func_0035b364(MsgScanner* self, void* allocator,
     return 0;
 }
 
-// DECOMP_FUNC(0x0035c754, 616)
-extern "C" __attribute__((naked)) void func_0035c754() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4ff7, 0xe92d, 0xd038, 0xe24d\n"
-        ".hword 0x5000, 0xe3a0, 0x4000, 0xe1a0\n"
-        ".hword 0x9002, 0xe1a0, 0x2024, 0xe28d\n"
-        ".hword 0x5020, 0xe58d, 0x0000, 0xe599\n"
-        ".hword 0x1020, 0xe28d, 0x0024, 0xe58d\n"
-        ".hword 0x0004, 0xe1a0, 0xffb5, 0xebff\n"
-        ".hword 0x0000, 0xe350, 0x0038, 0x1a00\n"
-        ".hword 0x0000, 0xe594, 0x0008, 0xe5d0\n"
-        ".hword 0x0001, 0xe350, 0x0003, 0x0a00\n"
-        ".hword 0x003c, 0xe59d, 0x1020, 0xe59d\n"
-        ".hword 0x1000, 0xe580, 0x002f, 0xea00\n"
-        ".hword 0x000c, 0xe594, 0x6004, 0xe284\n"
-        ".hword 0x1002, 0xe3a0, 0x7121, 0xebfb\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x0078, 0x0a00, 0x1008, 0xe290\n"
-        ".hword 0x0003, 0x0a00, 0x5008, 0xe581\n"
-        ".hword 0x1000, 0xe581, 0x500c, 0xe581\n"
-        ".hword 0x1004, 0xe581, 0x1000, 0xe596\n"
-        ".hword 0x8000, 0xe1a0, 0x0042, 0xe880\n"
-        ".hword 0x0000, 0xe586, 0x1000, 0xe590\n"
-        ".hword 0x0004, 0xe581, 0x1014, 0xe594\n"
-        ".hword 0x1010, 0xe580, 0x0020, 0xe59d\n"
-        ".hword 0x1002, 0xe3a0, 0x7008, 0xe280\n"
-        ".hword 0x0010, 0xe590, 0x710b, 0xebfb\n"
-        ".hword 0x6000, 0xe1b0, 0xf000, 0xe320\n"
-        ".hword 0x0062, 0x0a00, 0x0008, 0xe296\n"
-        ".hword 0x6db9, 0x1bfb, 0x0000, 0xe597\n"
-        ".hword 0x1010, 0xe28d, 0x0081, 0xe886\n"
-        ".hword 0x6000, 0xe587, 0x0000, 0xe596\n"
-        ".hword 0x6004, 0xe580, 0x0008, 0xe286\n"
-        ".hword 0x8010, 0xe58d, 0x6dab, 0xebfb\n"
-        ".hword 0x6164, 0xe59f, 0x7098, 0xe286\n"
-        ".hword 0x0000, 0xe594, 0x1008, 0xe5d0\n"
-        ".hword 0x0001, 0xe351, 0x0004, 0x0a00\n"
-        ".hword 0x003c, 0xe59d, 0x8000, 0xe580\n"
-        ".hword 0x0000, 0xe3a0, 0xd044, 0xe28d\n"
-        ".hword 0x8ff0, 0xe8bd, 0x0004, 0xe590\n"
-        ".hword 0x0000, 0xe584, 0x0000, 0xe599\n"
-        ".hword 0x5030, 0xe58d, 0x0018, 0xe58d\n"
-        ".hword 0x502c, 0xe58d, 0x0000, 0xe594\n"
-        ".hword 0x0008, 0xe5d0, 0x1180, 0xe086\n"
-        ".hword 0x0004, 0xe591, 0x0001, 0xe310\n"
-        ".hword 0x3000, 0x0591, 0x00c0, 0xe084\n"
-        ".hword 0x0002, 0x0a00, 0x2000, 0xe590\n"
-        ".hword 0x1000, 0xe591, 0x3001, 0xe792\n"
-        ".hword 0x1018, 0xe59d, 0x2004, 0xe28d\n"
-        ".hword 0x1004, 0xe58d, 0x1030, 0xe28d\n"
-        ".hword 0xff33, 0xe12f, 0x0001, 0xe350\n"
-        ".hword 0x001b, 0x0a00, 0x0000, 0xe350\n"
-        ".hword 0xffe3, 0x1aff, 0x0000, 0xe594\n"
-        ".hword 0x0008, 0xe5d0, 0x1180, 0xe087\n"
-        ".hword 0x0004, 0xe591, 0x0001, 0xe310\n"
-        ".hword 0xc000, 0x0591, 0x00c0, 0xe084\n"
-        ".hword 0x0002, 0x0a00, 0x2000, 0xe590\n"
-        ".hword 0x1000, 0xe591, 0xc001, 0xe792\n"
-        ".hword 0x1018, 0xe59d, 0x2004, 0xe28d\n"
-        ".hword 0x3034, 0xe28d, 0x1004, 0xe58d\n"
-        ".hword 0x1030, 0xe59d, 0x1034, 0xe58d\n"
-        ".hword 0x102c, 0xe28d, 0xff3c, 0xe12f\n"
-        ".hword 0x0001, 0xe350, 0x0000, 0x1350\n"
-        ".hword 0x002c, 0x059d, 0x0018, 0x058d\n"
-        ".hword 0xffd3, 0x0aff, 0xd044, 0xe28d\n"
-        ".hword 0x8ff0, 0xe8bd, 0x0018, 0xe59d\n"
-        ".hword 0x1002, 0xe3a0, 0xb008, 0xe280\n"
-        ".hword 0x0020, 0xe58d, 0x0010, 0xe590\n"
-        ".hword 0x70b8, 0xebfb, 0xa000, 0xe1b0\n"
-        ".hword 0xa005, 0x01a0, 0x0006, 0x0a00\n"
-        ".hword 0x0008, 0xe29a, 0x6d66, 0x1bfb\n"
-        ".hword 0x0000, 0xe59b, 0x0801, 0xe88a\n"
-        ".hword 0xa000, 0xe58b, 0x0000, 0xe59a\n"
-        ".hword 0xa004, 0xe580, 0x0000, 0xe35a\n"
-        ".hword 0x0006, 0x0a00, 0x1018, 0xe28d\n"
-        ".hword 0x0008, 0xe28a, 0x8018, 0xe58d\n"
-        ".hword 0x6d56, 0xebfb, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0xffa9, 0xeaff\n"
-        ".hword 0xd044, 0xe28d, 0x0002, 0xe3a0\n"
-        ".hword 0x8ff0, 0xe8bd, 0x2b40, 0x0047\n"
-    );
+// ---------------------------------------------------------------------------
+// Message-macro tree builder.
+//
+// 0x0035C754 continues the token walk started by 0x0035C65C and turns the
+// token chain into 0x20-byte container nodes handed to the message macro
+// callbacks.  The parse state initialised by 0x0035D9D0 / 0x0035D914 has:
+//   +0x00 node        current scanner node (token type byte at node + 0x08)
+//   +0x04 head        circular result-list sentinel next (sentinel = state + 4)
+//   +0x08 tail        circular result-list sentinel prev
+//   +0x0C pool        allocator passed to 0x00238C44 for containers
+//   +0x10 reserved
+//   +0x14 child_pool  copied into every new container's +0x10
+//   +0x18 depth       (not touched here; 0x0035D6AC maintains it)
+//
+// A token type selects two handlers from the shipped tables at 0x00472B40
+// (first) and 0x00472BD8 (second), eight bytes per entry {handler, adjust}:
+//   * adjust even: call handler with `state` as `this`;
+//   * adjust odd: `this` is state + (adjust >> 1) and the callee is
+//     *(u32*)(*(u32*)this + handler), the ARM member-function-pointer form.
+//     Every shipped entry has adjust == 0; the odd form is kept because the
+//     binary implements it and the table lives in writable data.
+//
+// First handler: 1 opens a nested container, 0 runs the second handler,
+// anything else is returned to the caller.  Second handler: 0 and 1 continue
+// the loop with the value it stored (the original compares against 1 with a
+// conditional compare against 0), anything else is returned.
+
+struct MsgTreeState {
+    u32 node;         // +0x00
+    u32 head;         // +0x04
+    u32 tail;         // +0x08
+    u32 pool;         // +0x0C
+    u32 reserved10;   // +0x10
+    u32 child_pool;   // +0x14
+    u32 depth;        // +0x18
 };
+
+// Two 16-byte units from 0x00238C44.  +0x00/+0x04 are list links; a nested
+// reference stores the container it points at in +0x08 and the byte 1 in
+// +0x0C, a container stores the empty nested list header in +0x08..+0x14.
+struct MsgTreeNode {
+    u32 next;    // +0x00
+    u32 prev;    // +0x04
+    u32 inner0;  // +0x08
+    u32 inner1;  // +0x0C
+    u32 pool;    // +0x10
+    u32 inner2;  // +0x14
+    u32 inner3;  // +0x18
+};
+
+struct MsgHandlerSlot {
+    u32 handler;  // +0x00
+    u32 adjust;   // +0x04
+};
+
+extern "C" s32 func_0035c65c(MsgTreeState* state, u32* value_out, u32* value);
+extern "C" void* func_00238c44(void* pool, u32 units);
+extern "C" void func_00237f10(u8* payload);
+extern "C" void func_00237efc(u8* payload, const u32* value);
+
+namespace {
+
+constexpr u32 kMsgHandlerTable = 0x00472B40;
+constexpr u32 kMsgSecondHandlerOffset = 0x98;
+constexpr u32 kMsgNodeUnits = 2;
+constexpr u32 kMsgNestedType = 1;
+
+__attribute__((always_inline)) inline u8 msg_token_type(const MsgTreeState* state) {
+    return *reinterpret_cast<const u8*>(state->node + 8);
+}
+
+// Insert `node` at the front of the circular list whose sentinel lives at
+// `head` (the sentinel's own address is stored in node->prev).
+__attribute__((always_inline)) inline void link_msg_node(u32* head,
+                                                         MsgTreeNode* node) {
+    node->next = *head;
+    node->prev = reinterpret_cast<u32>(head);
+    *head = reinterpret_cast<u32>(node);
+    reinterpret_cast<MsgTreeNode*>(node->next)->prev =
+        reinterpret_cast<u32>(node);
+}
+
+typedef s32 (*MsgFirstHandler)(MsgTreeState*, u32*, u32*);
+typedef s32 (*MsgSecondHandler)(MsgTreeState*, u32*, u32*, u32*);
+
+struct MsgHandlerCall {
+    MsgTreeState* self;  // r0
+    u32 fn;              // blx target
+};
+
+// Resolve one {handler, adjust} slot exactly as the ARM call sequence does.
+__attribute__((always_inline)) inline MsgHandlerCall resolve_msg_handler(
+    u32 table, MsgTreeState* state, u32 type) {
+    const MsgHandlerSlot* const slot = reinterpret_cast<const MsgHandlerSlot*>(
+        table + type * sizeof(MsgHandlerSlot));
+    const u32 adjust = slot->adjust;
+    MsgHandlerCall call;
+    // `add r0, r4, r0, asr #1`: the adjust word is shifted arithmetically.
+    call.self = reinterpret_cast<MsgTreeState*>(
+        reinterpret_cast<u32>(state) + (static_cast<s32>(adjust) >> 1));
+    if (adjust & 1) {
+        const u32* const object = reinterpret_cast<const u32*>(call.self);
+        call.fn = *reinterpret_cast<const u32*>(*object + slot->handler);
+    } else {
+        call.fn = slot->handler;
+    }
+    return call;
+}
+
+// Allocate a container from the state pool and push it onto the result list.
+__attribute__((always_inline)) inline MsgTreeNode* make_msg_container(
+    MsgTreeState* state) {
+    MsgTreeNode* const node = static_cast<MsgTreeNode*>(
+        func_00238c44(reinterpret_cast<void*>(state->pool), kMsgNodeUnits));
+    if (node == nullptr) {
+        return nullptr;
+    }
+    // Empty nested-list header at +0x08; +0x10 is cleared by the header
+    // constructor and then loaded with the pool copy.
+    node->pool = 0;
+    node->inner0 = reinterpret_cast<u32>(node) + 8;
+    node->inner2 = 0;
+    node->inner1 = reinterpret_cast<u32>(node) + 8;
+    link_msg_node(&state->head, node);
+    node->pool = state->child_pool;
+    return node;
+}
+
+// Allocate a reference node inside `parent`'s nested list pointing at
+// `container`.  Returns false when the parent's pool is exhausted.
+__attribute__((always_inline)) inline bool link_nested_container(
+    u32 parent, MsgTreeNode* container) {
+    MsgTreeNode* const node = static_cast<MsgTreeNode*>(func_00238c44(
+        reinterpret_cast<void*>(
+            *reinterpret_cast<const u32*>(parent + 0x10)),
+        kMsgNodeUnits));
+    if (node == nullptr) {
+        return false;
+    }
+    func_00237f10(reinterpret_cast<u8*>(node) + 8);
+    link_msg_node(reinterpret_cast<u32*>(parent + 8), node);
+    u32 value = reinterpret_cast<u32>(container);
+    func_00237efc(reinterpret_cast<u8*>(node) + 8, &value);
+    return true;
+}
+
+}  // namespace
+
+// DECOMP_FUNC(0x0035c754, 616)
+extern "C" s32 func_0035c754(MsgTreeState* state, u32* out, u32* value) {
+    u32 parsed = 0;
+    u32 initial = *value;
+    s32 result = func_0035c65c(state, &parsed, &initial);
+    if (result != 0) {
+        return result;
+    }
+
+    if (msg_token_type(state) != kMsgNestedType) {
+        *out = parsed;
+        return 0;
+    }
+
+    MsgTreeNode* const container = make_msg_container(state);
+    if (container == nullptr) {
+        return 2;
+    }
+    if (!link_nested_container(parsed, container)) {
+        return 2;
+    }
+
+    for (;;) {
+        if (msg_token_type(state) != kMsgNestedType) {
+            *out = reinterpret_cast<u32>(container);
+            return 0;
+        }
+        state->node = *reinterpret_cast<const u32*>(state->node + 4);
+
+        u32 inner_value = *value;
+        u32 first_out = 0;
+        u32 second_out = 0;
+
+        for (;;) {
+            const MsgHandlerCall first =
+                resolve_msg_handler(kMsgHandlerTable, state,
+                                    msg_token_type(state));
+            u32 first_value = inner_value;
+            result = reinterpret_cast<MsgFirstHandler>(first.fn)(
+                first.self, &first_out, &first_value);
+            if (result == 1) {
+                if (!link_nested_container(inner_value, container)) {
+                    return 2;
+                }
+                break;
+            }
+            if (result != 0) {
+                return result;
+            }
+
+            const MsgHandlerCall second = resolve_msg_handler(
+                kMsgHandlerTable + kMsgSecondHandlerOffset, state,
+                msg_token_type(state));
+            u32 second_value = inner_value;
+            u32 previous = first_out;
+            result = reinterpret_cast<MsgSecondHandler>(second.fn)(
+                second.self, &second_out, &second_value, &previous);
+            // 0x35C92C compares against 1 and then conditionally against 0, so
+            // both 0 and 1 continue the loop with the second handler's value;
+            // any other result is returned.
+            if (result != 0 && result != 1) {
+                return result;
+            }
+            inner_value = second_out;
+        }
+    }
+}
 
 // DECOMP_FUNC(0x00131950, 620)
 extern "C" __attribute__((naked)) void engine_func_00131950() {
