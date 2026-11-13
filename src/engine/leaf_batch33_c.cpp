@@ -7345,122 +7345,202 @@ extern "C" __attribute__((naked)) void script_vm_func_00296cbc() {
     );
 }
 
+// Direct calls made by 0x00298bdc.  The untyped declarations at the top of
+// this translation unit cannot describe their arguments or return values.
+extern "C" s32 QuestList_GetRowCount(void* cursor)
+    __asm__("camp_func_0029f0f4");                                  // 0x0029F0F4
+extern "C" s32 QuestList_GetSelectedRow(void* cursor)
+    __asm__("camp_func_0029f248");                                  // 0x0029F248
+extern "C" s32 QuestList_GetScrollOffset(void* cursor)
+    __asm__("camp_func_0029f260");                                  // 0x0029F260
+extern "C" void QuestList_ZeroBytes(void* dst, u32 count)
+    __asm__("engine_func_002c4b30");                                // 0x002C4B30
+extern "C" u8* QuestCategory_GetFallbackRecord()
+    __asm__("script_vm_func_002b66ec");                             // 0x002B66EC
+extern "C" u8* QuestCategory_GetRecord(s32 category)
+    __asm__("camp_func_002a89e4");                                  // 0x002A89E4
+extern "C" u32 QuestCategory_GetBitWord(s16 bit)
+    __asm__("ui_func_002b0788");                                    // 0x002B0788
+// Quotient in r0 and remainder in r1 (0x002C615C; see the helper record).
+extern "C" u64 QuestList_DivMod(u32 numerator, u32 denominator)
+    __asm__("ui_func_002c615c");                                    // 0x002C615C
+extern "C" u32 QuestList_CommitValue(u32 value)
+    __asm__("script_vm_func_0026dd68");                             // 0x0026DD68
+
+namespace {
+
+// `g_QuestManagerWork`, 0x0043DA90: pointer to the camp work block.
+constexpr uintptr_t kQuestWorkGlobal = 0x0043DA90u;
+constexpr u32 kQuestListCursorOffset = 0x1DCu;
+
+// Visible-row table: a signed category word per row, eight bytes apart.
+constexpr u32 kVisibleCategoryBase = 0xE40u;
+constexpr u32 kVisibleRowStride = 8u;
+
+// Per-category words, four bytes apart.
+constexpr u32 kFrameCounterBase = 0x2494u;
+constexpr u32 kRollingIndexBase = 0x24F8u;
+constexpr u32 kSelectedValueBase = 0x255Cu;
+constexpr u32 kCategoryStride = 4u;
+
+constexpr u32 kRecordMaskOffset = 0x44u;    // category record, u16
+constexpr u32 kFallbackMaskOffset = 0x72u;  // 0x002B66EC record, u16
+constexpr s32 kFrameWrapLimit = 0x18;       // signed 32-bit limit
+constexpr s32 kFirstMaskBit = 1;            // tst mask, 1 << bit
+constexpr s32 kMaskBitEnd = 0xBu;           // bit < 11
+
+// Four bytes of leading marker space, then one word per category.
+constexpr u32 kMarkerFirstWord = 4u;
+constexpr u32 kMarkerWordCount = 25u;       // 0x64 bytes, as the original
+constexpr u32 kMarkerBytes = kMarkerWordCount * 4u;
+
+inline u32 QuestLoadWord(const void* address) {
+    u32 value;
+    __builtin_memcpy(&value, address, sizeof(value));
+    return value;
+}
+
+inline u16 QuestLoadHalfword(const void* address) {
+    u16 value;
+    __builtin_memcpy(&value, address, sizeof(value));
+    return value;
+}
+
+inline void QuestStoreWord(void* address, u32 value) {
+    __builtin_memcpy(address, &value, sizeof(value));
+}
+
+// The original adds the 32-bit offset to the base register directly, so the
+// arithmetic is modular even for negative indices.
+inline u8* QuestPointer(u8* base, u32 offset) {
+    return reinterpret_cast<u8*>(
+        reinterpret_cast<uintptr_t>(base) + offset);
+}
+
+inline u8* QuestIndexed(u8* base, u32 base_offset, u32 index, u32 stride) {
+    return QuestPointer(base,
+                        static_cast<u32>(base_offset + index * stride));
+}
+
+}  // namespace
+
+// ---------------------------------------------------------------------------
+// 0x00298BDC -- advance the per-category quest-list animation state.
+//
+// `g_QuestManagerWork` (0x0043DA90) points at the camp work block.  The UI
+// list cursor at work+0x1DC provides the row count; it is read three times and
+// the first result is replaced by the third only when the second is smaller
+// (signed).  A non-positive count skips the per-category pass.
+//
+// Every visible row stores a signed category at work+0xE40+row*8.  For the
+// first row of each category (a 25-word stack marker array, indexed by the
+// category, suppresses repeats) a 16-bit mask is taken from the category
+// record at +0x44 (0x002A89E4) or, for a negative category, from the fallback
+// record (0x002B66EC) at +0x72:
+//   * mask == 0 writes 0xFFFFFFFF to work+0x255C+category*4;
+//   * otherwise the loop walks bits 1..10 and accepts the first set bit whose
+//     ordinal (number of earlier set bits that did not match) equals the word
+//     at work+0x24F8+category*4; 0x002B0788(bit) supplies the word stored at
+//     work+0x255C+category*4.  No match leaves that word untouched.
+// The per-category frame counter at work+0x2494+category*4 then increments;
+// when the signed result reaches 0x18 the unsigned remainder of
+// (work+0x24F8 word + 1) / ordinal is stored back there and the counter is
+// cleared.
+//
+// Finally the scroll offset and selected row read the work+0xE40 table, the
+// selected category word at work+0x255C+category*4 goes to 0x0026DD68, and
+// that helper's r0 is returned.  All three original callers ignore it.
+// ---------------------------------------------------------------------------
 // DECOMP_FUNC(0x00298bdc, 408)
-extern "C" __attribute__((naked)) void camp_func_00298bdc() {
-    asm volatile(
-        "push {r4, r5, r6, r7, r8, sb, sl, fp, lr}\n"
-        "sub sp, sp, #0x64\n"
-        ".word 0xe59f0184\n"
-        "ldr r7, [r0]\n"
-        "add r0, r7, #0x1dc\n"
-        "bl camp_func_0029f0f4\n"
-        "mov r8, r0\n"
-        "add r0, r7, #0x1dc\n"
-        "bl camp_func_0029f0f4\n"
-        "cmp r0, r8\n"
-        "bge .L_00298c14\n"
-        "add r0, r7, #0x1dc\n"
-        "bl camp_func_0029f0f4\n"
-        "mov r8, r0\n"
-        ".L_00298c14:\n"
-        "mov r1, #0x64\n"
-        "mov r0, sp\n"
-        "bl engine_func_002c4b30\n"
-        "cmp r8, #0\n"
-        "mov r5, #0\n"
-        "movgt sl, sp\n"
-        "movgt fp, #1\n"
-        "ble .L_00298d34\n"
-        ".L_00298c34:\n"
-        "add r0, r7, r5, lsl #3\n"
-        "ldr r6, [r0, #0xe40]\n"
-        "add r0, sl, r6, lsl #2\n"
-        "ldr r1, [r0, #4]\n"
-        "cmp r1, #0\n"
-        "bne .L_00298d28\n"
-        "cmp r6, #0\n"
-        "str fp, [r0, #4]\n"
-        "bge .L_00298c68\n"
-        "bl script_vm_func_002b66ec\n"
-        "ldrh r1, [r0, #0x72]\n"
-        "nop\n"
-        "b .L_00298c74\n"
-        ".L_00298c68:\n"
-        "mov r0, r6\n"
-        "bl camp_func_002a89e4\n"
-        "ldrh r1, [r0, #0x44]\n"
-        ".L_00298c74:\n"
-        "mov r4, #0\n"
-        "cmp r1, #0\n"
-        "beq .L_00298cc0\n"
-        "add sb, r7, r6, lsl #2\n"
-        "add r2, sb, #0x2400\n"
-        "mov r0, #1\n"
-        "add r2, r2, #0xf8\n"
-        ".L_00298c90:\n"
-        "tst r1, fp, lsl r0\n"
-        "beq .L_00298cd8\n"
-        "ldr r3, [r2]\n"
-        "cmp r3, r4\n"
-        "addne r4, r4, #1\n"
-        "bne .L_00298cd8\n"
-        "sxth r0, r0\n"
-        "bl ui_func_002b0788\n"
-        "add sb, sb, #0x2400\n"
-        "add sb, sb, #0x15c\n"
-        "str r0, [sb]\n"
-        "b .L_00298ce4\n"
-        ".L_00298cc0:\n"
-        "add r1, r7, r6, lsl #2\n"
-        "add r1, r1, #0x2400\n"
-        "add r1, r1, #0x15c\n"
-        "mvn r0, #0\n"
-        "str r0, [r1]\n"
-        "b .L_00298ce4\n"
-        ".L_00298cd8:\n"
-        "add r0, r0, #1\n"
-        "cmp r0, #0xb\n"
-        "blt .L_00298c90\n"
-        ".L_00298ce4:\n"
-        "add sb, r7, r6, lsl #2\n"
-        "add r6, sb, #0x2400\n"
-        "add r6, r6, #0x94\n"
-        "ldr r0, [r6]\n"
-        "add r0, r0, #1\n"
-        "cmp r0, #0x18\n"
-        "str r0, [r6]\n"
-        "blt .L_00298d28\n"
-        "add sb, sb, #0x2400\n"
-        "add sb, sb, #0xf8\n"
-        "mov r1, r4\n"
-        "ldr r0, [sb]\n"
-        "add r0, r0, #1\n"
-        "bl ui_func_002c615c\n"
-        "mov r0, #0\n"
-        "str r1, [sb]\n"
-        "str r0, [r6]\n"
-        ".L_00298d28:\n"
-        "add r5, r5, #1\n"
-        "cmp r5, r8\n"
-        "blt .L_00298c34\n"
-        ".L_00298d34:\n"
-        "add r0, r7, #0x1dc\n"
-        "bl camp_func_0029f260\n"
-        "mov r4, r0\n"
-        "add r0, r7, #0x1dc\n"
-        "bl camp_func_0029f248\n"
-        "add r0, r0, r4\n"
-        "add r0, r7, r0, lsl #3\n"
-        "ldr r0, [r0, #0xe40]\n"
-        "add r0, r7, r0, lsl #2\n"
-        "add r0, r0, #0x2400\n"
-        "add r0, r0, #0x15c\n"
-        "ldr r0, [r0]\n"
-        "bl script_vm_func_0026dd68\n"
-        "add sp, sp, #0x64\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, fp, pc}\n"
-        ".word 0x0043da90\n"
-    );
+extern "C" u32 camp_func_00298bdc(void) {
+    u8* const work = reinterpret_cast<u8*>(
+        static_cast<uintptr_t>(QuestLoadWord(reinterpret_cast<const void*>(
+            static_cast<uintptr_t>(kQuestWorkGlobal)))));
+    u8* const cursor = QuestPointer(work, kQuestListCursorOffset);
+
+    s32 row_count = QuestList_GetRowCount(cursor);
+    const s32 second_count = QuestList_GetRowCount(cursor);
+    if (second_count < row_count) {
+        row_count = QuestList_GetRowCount(cursor);
+    }
+
+    u32 marker_words[kMarkerWordCount];
+    u8* const markers = reinterpret_cast<u8*>(marker_words);
+    QuestList_ZeroBytes(markers, kMarkerBytes);
+
+    for (s32 row = 0; row < row_count; ++row) {
+        const s32 category = static_cast<s32>(QuestLoadWord(
+            QuestIndexed(work, kVisibleCategoryBase, static_cast<u32>(row),
+                         kVisibleRowStride)));
+
+        u8* const marker = QuestIndexed(
+            markers, kMarkerFirstWord, static_cast<u32>(category),
+            kCategoryStride);
+        if (QuestLoadWord(marker) != 0) {
+            continue;
+        }
+        QuestStoreWord(marker, 1);
+
+        u16 mask;
+        if (category < 0) {
+            mask = QuestLoadHalfword(QuestPointer(
+                QuestCategory_GetFallbackRecord(), kFallbackMaskOffset));
+        } else {
+            mask = QuestLoadHalfword(QuestPointer(
+                QuestCategory_GetRecord(category), kRecordMaskOffset));
+        }
+
+        u8* const index_field =
+            QuestIndexed(work, kRollingIndexBase,
+                         static_cast<u32>(category), kCategoryStride);
+        u8* const value_field =
+            QuestIndexed(work, kSelectedValueBase,
+                         static_cast<u32>(category), kCategoryStride);
+
+        u32 ordinal = 0;
+        if (mask == 0) {
+            QuestStoreWord(value_field, 0xFFFFFFFFu);
+        } else {
+            for (s32 bit = kFirstMaskBit; bit < kMaskBitEnd; ++bit) {
+                if ((mask & (1u << bit)) == 0) {
+                    continue;
+                }
+                if (QuestLoadWord(index_field) != ordinal) {
+                    ++ordinal;
+                    continue;
+                }
+                QuestStoreWord(
+                    value_field,
+                    QuestCategory_GetBitWord(static_cast<s16>(bit)));
+                break;
+            }
+        }
+
+        u8* const frame_field =
+            QuestIndexed(work, kFrameCounterBase,
+                         static_cast<u32>(category), kCategoryStride);
+        const u32 next_frame = QuestLoadWord(frame_field) + 1u;
+        QuestStoreWord(frame_field, next_frame);
+        if (static_cast<s32>(next_frame) >= kFrameWrapLimit) {
+            const u32 remainder = static_cast<u32>(
+                QuestList_DivMod(QuestLoadWord(index_field) + 1u, ordinal) >>
+                32);
+            QuestStoreWord(index_field, remainder);
+            QuestStoreWord(frame_field, 0u);
+        }
+    }
+
+    const s32 scroll_offset = QuestList_GetScrollOffset(cursor);
+    const s32 selected_row = QuestList_GetSelectedRow(cursor);
+    const u32 selected_index =
+        static_cast<u32>(scroll_offset + selected_row);
+    const s32 selected_category = static_cast<s32>(QuestLoadWord(
+        QuestIndexed(work, kVisibleCategoryBase, selected_index,
+                     kVisibleRowStride)));
+    const u32 selected_value = QuestLoadWord(
+        QuestIndexed(work, kSelectedValueBase,
+                     static_cast<u32>(selected_category), kCategoryStride));
+    return QuestList_CommitValue(selected_value);
 }
 
 // DECOMP_FUNC(0x002999e8, 436)
