@@ -1454,87 +1454,184 @@ extern "C" void engine_func_001325d8(void* obj, u32 state, u32 reserved,
     func_002abb50(*reinterpret_cast<void**>(kStateAddr + kStateRenderHandle));
 }
 
-// DECOMP_FUNC(0x0037fd94, 600)
-extern "C" __attribute__((naked)) void engine_func_0037fd94() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4ff0, 0xe92d, 0x5000, 0xe1a0\n"
-        ".hword 0xd04c, 0xe24d, 0xa002, 0xe1b0\n"
-        ".hword 0x4001, 0xe1a0, 0x0001, 0xe5d1\n"
-        ".hword 0x007c, 0xe5c5, 0x000c, 0xe591\n"
-        ".hword 0x0078, 0xe585, 0x0008, 0x0a00\n"
-        ".hword 0x1000, 0xe5d4, 0x0003, 0xe351\n"
-        ".hword 0x0005, 0x1a00, 0x2218, 0xe59f\n"
-        ".hword 0x1000, 0xe3a0, 0x229a, 0xe0a1\n"
-        ".hword 0x1121, 0xe1a0, 0x1181, 0xe061\n"
-        ".hword 0xa081, 0xe1a0, 0x1000, 0xe5d4\n"
-        ".hword 0x88f3, 0xebfc, 0x0040, 0xe58d\n"
-        ".hword 0x1000, 0xe5d4, 0x0010, 0xe594\n"
-        ".hword 0x88ef, 0xebfc, 0x0134, 0xe595\n"
-        ".hword 0x7000, 0xe3a0, 0x0008, 0xe590\n"
-        ".hword 0x0000, 0xe350, 0x0014, 0xe58d\n"
-        ".hword 0x0069, 0xda00, 0x6087, 0xe087\n"
-        ".hword 0x0000, 0xe35a, 0xb206, 0xe084\n"
-        ".hword 0x8014, 0xe59b, 0x8018, 0xe58d\n"
-        ".hword 0x0004, 0x0a00, 0x1000, 0xe5d4\n"
-        ".hword 0x000a, 0xe1a0, 0x88e0, 0xebfc\n"
-        ".hword 0x0008, 0xe080, 0x0018, 0xe58d\n"
-        ".hword 0x0000, 0xe5d4, 0x1086, 0xe085\n"
-        ".hword 0x206c, 0xe281, 0x0003, 0xe350\n"
-        ".hword 0x9060, 0xe281, 0x2010, 0xe58d\n"
-        ".hword 0x0026, 0x1a00, 0x0018, 0xe28b\n"
-        ".hword 0x1000, 0xe1a0, 0x0000, 0xe58d\n"
-        ".hword 0x2020, 0xe3a0, 0x0020, 0xe28d\n"
-        ".hword 0x1860, 0xebfd, 0x0000, 0xe35a\n"
-        ".hword 0xf000, 0xe320, 0x0050, 0x0a00\n"
-        ".hword 0x0018, 0xe59d, 0x3008, 0xe1a0\n"
-        ".hword 0x200a, 0xe1a0, 0x1020, 0xe28d\n"
-        ".hword 0x00b0, 0xe1d0, 0x00b0, 0xe1c9\n"
-        ".hword 0x0000, 0xe59d, 0x02b2, 0xe1d0\n"
-        ".hword 0x00b2, 0xe1c9, 0x0000, 0xe59d\n"
-        ".hword 0x02b4, 0xe1d0, 0x00b4, 0xe1c9\n"
-        ".hword 0x0009, 0xe1a0, 0xf12d, 0xebff\n"
-        ".hword 0x0001, 0xe5d4, 0x0000, 0xe350\n"
-        ".hword 0x0008, 0x0a00, 0x0010, 0xe59d\n"
-        ".hword 0x13be, 0xe1db, 0x10b0, 0xe1c0\n"
-        ".hword 0x0010, 0xe59d, 0x14b0, 0xe1db\n"
-        ".hword 0x10b2, 0xe1c0, 0x0010, 0xe59d\n"
-        ".hword 0x14b2, 0xe1db, 0x10b4, 0xe1c0\n"
-        ".hword 0x0134, 0xe595, 0x2020, 0xe28d\n"
-        ".hword 0x1007, 0xe1a0, 0x7495, 0xebf7\n"
-        ".hword 0x6206, 0xe085, 0xb018, 0xe286\n"
-        ".hword 0x0006, 0xe1a0, 0xf550, 0xebfc\n"
-        ".hword 0x0018, 0xe59d, 0x2006, 0xe1a0\n"
-        ".hword 0x0000, 0xe586, 0x0010, 0xe594\n"
-        ".hword 0x100a, 0xe040, 0x0000, 0xe3a0\n"
-        ".hword 0x1004, 0xe586, 0x0010, 0xe5c6\n"
-        ".hword 0x0000, 0xe5d4, 0x1007, 0xe1a0\n"
-        ".hword 0x0003, 0xe350, 0x9008, 0x0586\n"
-        ".hword 0x0001, 0xe5d4, 0x0000, 0xe350\n"
-        ".hword 0x0134, 0xe595, 0x3001, 0x03a0\n"
-        ".hword 0x3000, 0x13a0, 0x7673, 0xebf7\n"
-        ".hword 0x0001, 0xe5d4, 0x0000, 0xe350\n"
-        ".hword 0x0013, 0x0a00, 0x000b, 0xe1a0\n"
-        ".hword 0xf539, 0xebfc, 0x0040, 0xe59d\n"
-        ".hword 0x1001, 0xe3a0, 0x3001, 0xe3a0\n"
-        ".hword 0x0008, 0xe080, 0x0000, 0xe58b\n"
-        ".hword 0x0078, 0xe595, 0x2010, 0xe594\n"
-        ".hword 0x0000, 0xe042, 0x0004, 0xe58b\n"
-        ".hword 0x1010, 0xe5cb, 0x0000, 0xe5d4\n"
-        ".hword 0x200b, 0xe1a0, 0x1007, 0xe1a0\n"
-        ".hword 0x0003, 0xe350, 0x0010, 0x059d\n"
-        ".hword 0x0008, 0x058b, 0x0134, 0xe595\n"
-        ".hword 0x765c, 0xebf7, 0x0014, 0xe59d\n"
-        ".hword 0x7001, 0xe287, 0x0000, 0xe157\n"
-        ".hword 0xff95, 0xbaff, 0xd04c, 0xe28d\n"
-        ".hword 0x8ff0, 0xe8bd, 0x0000, 0xe59d\n"
-        ".hword 0x02b0, 0xe1d0, 0x00b0, 0xe1c9\n"
-        ".hword 0x0000, 0xe59d, 0x02b2, 0xe1d0\n"
-        ".hword 0x00b2, 0xe1c9, 0x0000, 0xe59d\n"
-        ".hword 0x02b4, 0xe1d0, 0x00b4, 0xe1c9\n"
-        ".hword 0xffb2, 0xeaff, 0x9249, 0x4924\n"
-    );
-};
+// Helpers called by engine_func_0037fd94.  Declarations are kept next to the
+// reconstruction so the recovered argument widths and order stay explicit.
+extern "C" u32 func_002a21b8(u32 value, u32 layout_mode);           // 0x002a21b8
+extern "C" void engine_func_002c5ff4(void* dst, const void* src, u32 size);  // memcpy
+extern "C" void func_0037c36c(u16* anchor, const void* layout, u32 count,
+                              u32 base);                            // 0x0037c36c
+extern "C" void func_0015d14c(u32* slot_list, s32 index,
+                              const void* entry);                   // 0x0015d14c
+extern "C" void engine_func_002bd448(void* entry);                  // 0x002bd448
+extern "C" void func_0015d91c(u32* slot_list, s32 index, void* entry,
+                              u32 bind);                            // 0x0015d91c
+
+namespace engine_37fd94 {
+
+// Byte offsets recovered from the ARM body.  `self` is the receiver; `desc`
+// points at a header whose first 0x30 bytes also form descriptor 0.  Later
+// descriptors are at desc + 0x30 * index, so the +0x3E/+0x40/+0x42 tail reads
+// intentionally reach into the bytes that follow the 0x30-byte descriptor.
+constexpr u32 kSelfFlagByte = 0x7C;
+constexpr u32 kSelfWord = 0x78;
+constexpr u32 kSelfSlotList = 0x134;
+constexpr u32 kSelfAnchorArray = 0x60;
+constexpr u32 kSelfTailArray = 0x6C;
+
+constexpr u32 kDescriptorStride = 0x30;
+constexpr u32 kDescModeByte = 0x00;
+constexpr u32 kDescFlagByte = 0x01;
+constexpr u32 kDescWord = 0x0C;
+constexpr u32 kDescSpanWord = 0x10;
+constexpr u32 kDescBaseWord = 0x14;
+constexpr u32 kDescLayout = 0x18;
+constexpr u32 kDescTail = 0x3E;
+constexpr u32 kLayoutBytes = 0x20;
+
+constexpr u32 kSlotCountOffset = 0x08;
+constexpr u32 kEntryStride = 0x30;
+constexpr u32 kEntrySecond = 0x18;
+constexpr u32 kEntryWord0 = 0x00;
+constexpr u32 kEntryWord1 = 0x04;
+constexpr u32 kEntryAnchor = 0x08;
+constexpr u32 kEntryFlag = 0x10;
+
+// The original rounds a non-zero span down to a multiple of 14 by multiplying
+// with 0x49249249 and keeping bits [63:34].
+constexpr u64 kSpanDivisorMagic = 0x49249249ull;
+constexpr u32 kSpanDivisorShift = 34;
+constexpr u32 kSpanGranule = 14;
+
+static __attribute__((always_inline)) inline u16 load_u16(const void* p) {
+    u16 value;
+    __builtin_memcpy(&value, p, sizeof(value));
+    return value;
+}
+
+static __attribute__((always_inline)) inline void store_u16(void* p, u16 value) {
+    __builtin_memcpy(p, &value, sizeof(value));
+}
+
+static __attribute__((always_inline)) inline u32 load_u32(const void* p) {
+    u32 value;
+    __builtin_memcpy(&value, p, sizeof(value));
+    return value;
+}
+
+static __attribute__((always_inline)) inline void store_u32(void* p, u32 value) {
+    __builtin_memcpy(p, &value, sizeof(value));
+}
+
+}  // namespace engine_37fd94
+
+// Rebuilds the two 0x30-byte layout records for every descriptor entry.  The
+// original returns the loop bound in r0 on both the early and normal exits.
+// When descriptor byte 0 is not 3, the layout buffer handed to 0x0015D14C was
+// never initialised by the original either; its contents are not part of the
+// recovered contract.
+extern "C" u32 engine_func_0037fd94(u8* self, const u8* desc, u32 span) {
+    using namespace engine_37fd94;
+
+    self[kSelfFlagByte] = desc[kDescFlagByte];
+    store_u32(self + kSelfWord, load_u32(desc + kDescWord));
+
+    if (span != 0 && desc[kDescModeByte] == 3) {
+        const u64 product =
+            (static_cast<u64>(span) + 1) * kSpanDivisorMagic;
+        span = kSpanGranule *
+               static_cast<u32>(product >> kSpanDivisorShift);
+    }
+
+    const u32 primary =
+        func_002a21b8(load_u32(desc + kDescWord), desc[kDescModeByte]);
+    // The original also evaluates the span word through the same scaler, but
+    // discards the result; the call itself remains observable.
+    (void)func_002a21b8(load_u32(desc + kDescSpanWord), desc[kDescModeByte]);
+
+    u8* const slot_list =
+        reinterpret_cast<u8*>(load_u32(self + kSelfSlotList));
+    const s32 count = static_cast<s32>(load_u32(slot_list + kSlotCountOffset));
+    if (count <= 0) {
+        return static_cast<u32>(count);
+    }
+
+    u8 layout[kLayoutBytes];
+
+    for (s32 index = 0; index < count; ++index) {
+        const u32 scaled_index = static_cast<u32>(index) * 3u;  // index * 0x30
+        const u8* const desc_entry = desc + scaled_index * 16u;
+        const u32 base = load_u32(desc_entry + kDescBaseWord);
+
+        const u8* primary_bytes = reinterpret_cast<const u8*>(base);
+        if (span != 0) {
+            primary_bytes = reinterpret_cast<const u8*>(
+                base + func_002a21b8(span, desc[kDescModeByte]));
+        }
+
+        const u8 layout_mode = desc[kDescModeByte];
+        u8* const anchor = self + scaled_index * 2u + kSelfAnchorArray;
+        u8* const tail = self + scaled_index * 2u + kSelfTailArray;
+
+        if (layout_mode == 3) {
+            const u8* const layout_src = desc_entry + kDescLayout;
+            engine_func_002c5ff4(layout, layout_src, kLayoutBytes);
+            if (span == 0) {
+                store_u16(anchor + 0, load_u16(layout_src + 0x20));
+                store_u16(anchor + 2, load_u16(layout_src + 0x22));
+                store_u16(anchor + 4, load_u16(layout_src + 0x24));
+            } else {
+                store_u16(anchor + 0, load_u16(primary_bytes));
+                store_u16(anchor + 2, load_u16(layout_src + 0x22));
+                store_u16(anchor + 4, load_u16(layout_src + 0x24));
+                func_0037c36c(reinterpret_cast<u16*>(anchor), layout, span,
+                              base);
+            }
+
+            if (desc[kDescFlagByte] != 0) {
+                store_u16(tail + 0, load_u16(desc_entry + kDescTail + 0x00));
+                store_u16(tail + 2, load_u16(desc_entry + kDescTail + 0x02));
+                store_u16(tail + 4, load_u16(desc_entry + kDescTail + 0x04));
+            }
+
+            func_0015d14c(
+                reinterpret_cast<u32*>(load_u32(self + kSelfSlotList)), index,
+                layout);
+        }
+
+        u8* const entry = self + scaled_index * 16u;
+        u8* const entry_second = entry + kEntrySecond;
+
+        engine_func_002bd448(entry);
+        store_u32(entry + kEntryWord0, reinterpret_cast<u32>(primary_bytes));
+        store_u32(entry + kEntryWord1,
+                  load_u32(desc + kDescSpanWord) - span);
+        entry[kEntryFlag] = 0;
+        if (desc[kDescModeByte] == 3) {
+            store_u32(entry + kEntryAnchor, reinterpret_cast<u32>(anchor));
+        }
+        func_0015d91c(
+            reinterpret_cast<u32*>(load_u32(self + kSelfSlotList)), index,
+            entry, desc[kDescFlagByte] == 0 ? 1u : 0u);
+
+        if (desc[kDescFlagByte] != 0) {
+            engine_func_002bd448(entry_second);
+            store_u32(entry_second + kEntryWord0, primary + base);
+            store_u32(entry_second + kEntryWord1,
+                      load_u32(desc + kDescSpanWord) -
+                          load_u32(self + kSelfWord));
+            entry_second[kEntryFlag] = 1;
+            if (desc[kDescModeByte] == 3) {
+                store_u32(entry_second + kEntryAnchor,
+                          reinterpret_cast<u32>(tail));
+            }
+            func_0015d91c(
+                reinterpret_cast<u32*>(load_u32(self + kSelfSlotList)), index,
+                entry_second, 1);
+        }
+    }
+
+    return static_cast<u32>(count);
+}
 
 // DECOMP_FUNC(0x002392e0, 604)
 extern "C" __attribute__((naked)) void ui_func_002392e0() {
