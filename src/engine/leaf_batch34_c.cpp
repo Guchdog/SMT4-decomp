@@ -10199,126 +10199,238 @@ extern "C" __attribute__((naked)) void func_0015cfe4() {
     );
 }
 
+// ---------------------------------------------------------------------------
+// 0x0015E600 -- mount one add-on content entry and fill the caller's 20-byte
+// status/result object (the same object shape as `AocFileContentState`).
+//
+// Sole direct caller: 0x0015DB38 (the AOC path builder).  It resolves the
+// requested path to one table record and then calls here with
+//   r0      out         20-byte status/result object
+//   r1      context     path-root object; only +0x330 and +0x331..+0x340
+//   r2      mount_name  record->mount (16-byte "aoc..." name, from record+0x24)
+//   r3      word20      record+0x20 (opaque here; forwarded to 0x0015E7D0)
+//   [sp+0]  value34     record+0x34 (32-bit word; the original copies it through
+//                       the VFP register `s16` without arithmetic and stores it
+//                       in the 0x0015E7D0 stack slot, so it is carried here as a
+//                       u32 to preserve the stack-slot ABI)
+//   [sp+4]  index       record+0x08 (halfword, zero-extended by the caller)
+//
+// Flow:
+//   if (0x002AA7F4(context->name, mount_name) == 0) {   // strings equal
+//       *out = AocFileContentState(0);                  // 0x2A13D0(out, 0)
+//       return;                                         // 0x0015E6A0
+//   }
+//   if (context->mounted != 0) {                        // ldrb +0x330
+//       u32 code = 0x002C4000(context->name);           // release old mount
+//       context->mounted = 0;
+//       if ((s32)code < 0) {                            // `ands r0,#0x80000000`
+//           AocFileContentState state;                  // status stays 0
+//           init(&state, 0);                            // 0x2A13D0(state, 0)
+//           state.result = *0x002BAD80(&tmp, code);     // 8-byte copy
+//           *out = state;
+//           return;                                     // 0x0015E7A8
+//       }
+//   }
+//   for (word = 0; word < 4; ++word) {                  // 0x0015E6B8..0x0015E6D4
+//       name_word[word] = mount_word[word];             // four 4-byte copies
+//   }
+//   pair_init(&pair);                       // dead slot later reused by `result`
+//   u32 code = 0x0015E7D0(context->name, 0x0E5C, index, 2, 2, word20,
+//                         value34, 0);
+//   SdkResult result = *0x002BAD80(&tmp, code);
+//   if ((s32)0x002A1578(&result) >= 0) {                // `lsrs r0,#0x1f; beq`
+//       context->mounted = 1;
+//       *out = AocFileContentState(0);
+//       return;
+//   }
+//   AocFileContentState state;
+//   init(&state, 0);                                    // 0x0015E730
+//   if ((s32)0x002A1578(&result) < 0) {                 // same test, repeated
+//       state.status = 0x64;
+//       state.result = result;
+//       0x002C583C(0);                                  // table[0], unused
+//       if (0x002AD46C(&g_AocAppletState->field_98) != 0) {
+//           g_AocAppletState->flags_754 &= ~0x10000;    // global re-read
+//           state.status = 0xC8;
+//       }
+//   }
+//   *out = state;
+//
+// The `>= 0` / `< 0` pair is emitted twice by the original (`lsrs r0,r0,#31`
+// after each of the two 0x002A1578 calls).  With a pure result helper the
+// second test cannot differ from the first, but both calls and both tests are
+// preserved.  `pair_init` targets a stack slot the compiler reuses for
+// `result`; its only observable effect is the call itself.
+// ---------------------------------------------------------------------------
+namespace {
+
+// The 20-byte object written through r0.  `status` is the only byte the
+// 0x2A13D0 initialiser stores; +0x01..+0x03 are alignment padding that is
+// copied to the caller but never written here.
+struct AocContentState {
+    u8 status;          // +0x00: 0x00 ready, 0x64 pending, 0xC8 retry
+    u8 pad_01[3];       // +0x01: not written by 0x2A13D0
+    u32 result[2];      // +0x04 / +0x08: nn::Result words
+    u32 field_0c;       // +0x0C: cleared by 0x2A13D0
+    u32 field_10;       // +0x10: cleared by 0x2A13D0
+};
+
+// Two-word nn::Result (0x002BAD80 stores the code and a module descriptor).
+struct SdkResult {
+    u32 code;           // +0x00
+    u32 module;         // +0x04
+};
+
+// Eight-byte pair initialised by 0x002BB09C (`str r1,[r0]` / `str #0,[r0,#4]`).
+struct AocPair {
+    u32 magic;
+    u32 zero;
+};
+
+// Path-root fields touched here; the rest of the object belongs to the caller.
+struct AocPathContext {
+    u8 reserved[0x330];
+    u8 mounted;         // +0x330: set on a successful request, cleared on release
+    char name[0x10];    // +0x331: current mount name, copied verbatim
+};
+
+constexpr u32 kContentId = 0x00000E5C;   // literal at 0x0015E7B8
+constexpr u32 kRequestMode = 2;          // r3 and the first stack word
+constexpr u32 kRequestZero = 0;          // last stack word
+constexpr u32 kStatusPending = 0x64;
+constexpr u32 kStatusRetry = 0xC8;
+constexpr u32 kAppletLockOffset = 0x98;
+constexpr u32 kAppletFlagsOffset = 0x754;
+constexpr u32 kAppletFlagMask = 0x00010000;
+constexpr u32 kAocAppletStateSlot = 0x00432FC8;  // literal at 0x0015E7BC
+
+using NameCompareFn = s32 (*)(const char* left, const char* right);
+using ContentReleaseFn = u32 (*)(const char* name);
+using StateInitFn = AocContentState* (*)(AocContentState* out, u32 status);
+using PairInitFn = AocPair* (*)(AocPair* pair);
+using ContentRequestFn = u32 (*)(const char* name, u32 content_id, u32 index,
+                                 u32 mode_a, u32 mode_b, u32 word20,
+                                 u32 value34, u32 zero);
+using ResultConstructFn = SdkResult* (*)(SdkResult* out, u32 code);
+using ResultValueFn = u32 (*)(const SdkResult* result);
+using TableEntryFn = u32 (*)(u32 index);
+using AppletLockFn = u32 (*)(void* field);
+
+static_assert(sizeof(AocContentState) == 0x14, "state layout");
+static_assert(sizeof(SdkResult) == 0x08, "result layout");
+static_assert(sizeof(AocPair) == 0x08, "pair layout");
+static_assert(sizeof(AocPathContext) == 0x341, "path-root field offsets");
+
+} // namespace
+
 // DECOMP_FUNC(0x0015e600, 448)
-extern "C" __attribute__((naked)) void engine_func_0015e600() {
-    asm volatile(
-        "push {r4, r5, r6, r7, r8, sb, sl, fp, lr}\n"
-        "mov r4, r1\n"
-        "mov r5, r0\n"
-        "add r0, r4, #0x300\n"
-        "add r0, r0, #0x31\n"
-        "mov r6, r2\n"
-        "vpush {d8}\n"
-        "sub sp, sp, #0x54\n"
-        "mov r7, r3\n"
-        "ldr sb, [sp, #0x84]\n"
-        "vldr s16, [sp, #0x80]\n"
-        "mov r1, r2\n"
-        "mov sl, r0\n"
-        "bl engine_func_002aa7f4\n"
-        "cmp r0, #0\n"
-        "beq .L_0015e6a0\n"
-        "ldrb r0, [r4, #0x330]\n"
-        "mov fp, #0\n"
-        "cmp r0, #0\n"
-        "beq .L_0015e6b8\n"
-        "mov r0, sl\n"
-        "bl engine_func_002c4000\n"
-        "mov r8, r0\n"
-        "ands r0, r0, #0x80000000\n"
-        "strb fp, [r4, #0x330]\n"
-        "bpl .L_0015e6b8\n"
-        "mov r1, #0\n"
-        "add r0, sp, #0x30\n"
-        "bl engine_func_002a13d0\n"
-        "mov r1, r8\n"
-        "mov r0, sp\n"
-        "bl engine_func_002bad80\n"
-        "ldr r1, [r0]\n"
-        "ldr r0, [r0, #4]\n"
-        "add r4, sp, #0x38\n"
-        "str r1, [sp, #0x34]\n"
-        "str r0, [sp, #0x38]\n"
-        "ldm r4, {r2, r3, ip}\n"
-        "ldr r0, [sp, #0x30]\n"
-        "b .L_0015e7a8\n"
-        ".L_0015e6a0:\n"
-        "mov r1, #0\n"
-        "mov r0, r5\n"
-        "bl engine_func_002a13d0\n"
-        "add sp, sp, #0x54\n"
-        "vpop {d8}\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, fp, pc}\n"
-        ".L_0015e6b8:\n"
-        "ldr r0, [r6]\n"
-        "str r0, [r4, #0x331]\n"
-        "ldr r0, [r6, #4]\n"
-        "str r0, [r4, #0x335]\n"
-        "ldr r0, [r6, #8]\n"
-        "str r0, [r4, #0x339]\n"
-        "ldr r0, [r6, #0xc]\n"
-        "str r0, [r4, #0x33d]\n"
-        "add r0, sp, #0x28\n"
-        "bl engine_func_002bb09c\n"
-        "mov r0, #2\n"
-        "stm sp, {r0, r7}\n"
-        "vstr s16, [sp, #8]\n"
-        "mov r3, r0\n"
-        ".word 0xe59f10c0\n"
-        "mov r2, sb\n"
-        "mov r0, sl\n"
-        "str fp, [sp, #0xc]\n"
-        "bl func_0015e7d0\n"
-        "mov r1, r0\n"
-        "add r0, sp, #0x48\n"
-        "bl engine_func_002bad80\n"
-        "ldrd r0, r1, [r0]\n"
-        "strd r0, r1, [sp, #0x28]\n"
-        "add r0, sp, #0x28\n"
-        "bl engine_func_002a1578\n"
-        "lsrs r0, r0, #0x1f\n"
-        "moveq r0, #1\n"
-        "strbeq r0, [r4, #0x330]\n"
-        "beq .L_0015e6a0\n"
-        "mov r1, #0\n"
-        "add r0, sp, #0x10\n"
-        "bl engine_func_002a13d0\n"
-        "add r0, sp, #0x28\n"
-        "nop\n"
-        "bl engine_func_002a1578\n"
-        "lsrs r0, r0, #0x1f\n"
-        "nop\n"
-        "beq .L_0015e7a0\n"
-        "ldrd r0, r1, [sp, #0x28]\n"
-        "mov r2, #0x64\n"
-        "strb r2, [sp, #0x10]\n"
-        "strd r0, r1, [sp, #0x14]\n"
-        "mov r0, #0\n"
-        "bl engine_func_002c583c\n"
-        ".word 0xe59f4048\n"
-        "ldr r0, [r4]\n"
-        "add r0, r0, #0x98\n"
-        "bl engine_func_002ad46c\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "beq .L_0015e7a0\n"
-        "ldr r0, [r4]\n"
-        "ldr r1, [r0, #0x754]\n"
-        "bic r1, r1, #0x10000\n"
-        "str r1, [r0, #0x754]\n"
-        "mov r0, #0xc8\n"
-        "strb r0, [sp, #0x10]\n"
-        ".L_0015e7a0:\n"
-        "add r4, sp, #0x10\n"
-        "ldm r4, {r0, r1, r2, r3, ip}\n"
-        ".L_0015e7a8:\n"
-        "stm r5, {r0, r1, r2, r3, ip}\n"
-        "add sp, sp, #0x54\n"
-        "vpop {d8}\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, fp, pc}\n"
-        ".word 0x00000e5c\n"
-        ".word 0x00432fc8\n"
-    );
+extern "C" void engine_func_0015e600(AocContentState* out, void* context_pointer,
+                                     const char* mount_name, u32 word20,
+                                     u32 value34, u32 index) {
+    AocPathContext* const context = static_cast<AocPathContext*>(context_pointer);
+
+    const StateInitFn init_state =
+        reinterpret_cast<StateInitFn>(engine_func_002a13d0);
+    const ResultConstructFn construct_result =
+        reinterpret_cast<ResultConstructFn>(engine_func_002bad80);
+    const ResultValueFn result_value =
+        reinterpret_cast<ResultValueFn>(engine_func_002a1578);
+
+    // 0x0015E62C..0x0015E63C: nothing to do when the requested mount is the
+    // one already stored.
+    const NameCompareFn compare_names =
+        reinterpret_cast<NameCompareFn>(engine_func_002aa7f4);
+    if (compare_names(context->name, mount_name) == 0) {
+        init_state(out, 0);
+        return;
+    }
+
+    // 0x0015E640..0x0015E664: a mounted previous content is released first;
+    // its recorded name is still the old one here.
+    if (context->mounted != 0) {
+        const ContentReleaseFn release =
+            reinterpret_cast<ContentReleaseFn>(engine_func_002c4000);
+        const u32 release_code = release(context->name);
+        context->mounted = 0;
+        if (static_cast<s32>(release_code) < 0) {
+            // 0x0015E668..0x0015E69C: a ready state object carrying the
+            // release result; the status byte stays 0.
+            AocContentState failed;
+            init_state(&failed, 0);
+            SdkResult constructed;
+            const SdkResult* const built =
+                construct_result(&constructed, release_code);
+            failed.result[0] = built->code;
+            failed.result[1] = built->module;
+            *out = failed;
+            return;
+        }
+    }
+
+    // 0x0015E6B8..0x0015E6D4: remember the new mount name, four word copies
+    // (the field is 16 bytes wide and need not be aligned).
+    for (u32 word = 0; word < 4; ++word) {
+        u32 value;
+        __builtin_memcpy(&value, mount_name + word * 4, sizeof(value));
+        __builtin_memcpy(context->name + word * 4, &value, sizeof(value));
+    }
+
+    // 0x0015E6D8..0x0015E6DC: default-initialise the pair whose stack slot the
+    // result below reuses (dead store in the original, kept for the call).
+    AocPair pair;
+    const PairInitFn init_pair = reinterpret_cast<PairInitFn>(engine_func_002bb09c);
+    init_pair(&pair);
+
+    // 0x0015E6E0..0x0015E714: query the content size for this mount name.
+    const ContentRequestFn request =
+        reinterpret_cast<ContentRequestFn>(func_0015e7d0);
+    const u32 request_code =
+        request(context->name, kContentId, index, kRequestMode, kRequestMode,
+                word20, value34, kRequestZero);
+    SdkResult constructed;
+    const SdkResult* const built = construct_result(&constructed, request_code);
+    SdkResult result;
+    result.code = built->code;
+    result.module = built->module;
+
+    // 0x0015E718..0x0015E72C: a non-negative result code marks the content as
+    // mounted and reports a ready state.
+    if (static_cast<s32>(result_value(&result)) >= 0) {
+        context->mounted = 1;
+        init_state(out, 0);
+        return;
+    }
+
+    // 0x0015E730..0x0015E750: the failure state starts as a ready object and
+    // is filled only when the repeated test still reports an error.
+    AocContentState state;
+    init_state(&state, 0);
+    if (static_cast<s32>(result_value(&result)) < 0) {
+        // 0x0015E754..0x0015E764: pending status and the request result.
+        state.status = static_cast<u8>(kStatusPending);
+        state.result[0] = result.code;
+        state.result[1] = result.module;
+
+        const TableEntryFn table_entry =
+            reinterpret_cast<TableEntryFn>(engine_func_002c583c);
+        table_entry(0);
+
+        // 0x0015E76C..0x0015E798: the applet lock decides whether the pending
+        // state becomes a retry state.  The global pointer is read once for the
+        // argument and re-read for the flag update.
+        const AppletLockFn applet_lock =
+            reinterpret_cast<AppletLockFn>(engine_func_002ad46c);
+        u8* const applet = *reinterpret_cast<u8**>(kAocAppletStateSlot);
+        if (applet_lock(applet + kAppletLockOffset) != 0) {
+            u8* const locked_applet = *reinterpret_cast<u8**>(kAocAppletStateSlot);
+            u32* const flags = reinterpret_cast<u32*>(locked_applet + kAppletFlagsOffset);
+            *flags &= ~kAppletFlagMask;
+            state.status = static_cast<u8>(kStatusRetry);
+        }
+    }
+
+    // 0x0015E7A0..0x0015E7A8: copy the whole 20-byte state object.
+    *out = state;
 }
 
 // DECOMP_FUNC(0x0015f514, 448)
