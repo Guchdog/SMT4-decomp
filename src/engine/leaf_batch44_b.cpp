@@ -4017,61 +4017,188 @@ extern "C" __attribute__((naked)) void engine_func_0034fc14() {
     );
 }
 
+// ---------------------------------------------------------------------------
+// 0x0037a8d8 (400 B): initializer for the engine object class whose first
+// vftable is 0x00421774 (its virtual slots point into the 0x0037a5dc..0x0037b404
+// family).  The object embeds an AsdFileObject-style base subobject at +0x14,
+// set up through the 0x00420870 vtable-table entry: the table's vftable word is
+// copied to +0x14 and the table's complete-object pointer is stored at
+// `+0x14 + vftable[-0x30]` (the MSVC virtual-base offset also used by the
+// AsdFile constructor, see src/engine/asd_file.cpp).
+//
+// ABI: r0 = object (returned), r1 = resource block, r2 -> +0x40, r3 -> +0x44,
+// then the error callback and its argument as two stack words.  The original
+// copies those two words with `vldmia`/`vstmia`.
+// ---------------------------------------------------------------------------
+
+// 0x00420870: {vftable = 0x004208B0, 0x003FF29C, 0x003FF29C, self = 0x004208B0}.
+// Only the words read here are named; the vftable pointer is also the base for
+// the `[-0x30]` virtual-base offset lookup.
+struct VTableTableEntry37a8d8 {
+    void* vftable_00;   // +0x00  copied to object+0x14
+    u32 field_04;       // +0x04  not read here
+    u32 field_08;       // +0x08  not read here
+    void* self_0c;      // +0x0C  complete-object pointer
+};
+static_assert(offsetof(VTableTableEntry37a8d8, self_0c) == 0x0C);
+
+// Resource block passed in r1.  0x002bb88c is handed `&handle_04` and treats it
+// as {handle@0x00, outputs at +0x0C/+0x10}.
+struct Resource37a8d8 {
+    u32 field_00;       // +0x00
+    u32 handle_04;      // +0x04  tagged handle read by 0x002bb88c
+    u32 field_08;       // +0x08
+    u32 field_0c;       // +0x0C  rewritten by 0x002bb88c
+    u32 field_10;       // +0x10  rewritten by 0x002bb88c
+    u32 field_14;       // +0x14
+    s32 status_18;      // +0x18  status returned by 0x002bb88c
+    u8  quiet_1c;       // +0x1C  nonzero suppresses the 0x002bbd10 report
+};
+static_assert(offsetof(Resource37a8d8, status_18) == 0x18);
+static_assert(offsetof(Resource37a8d8, quiet_1c) == 0x1C);
+
+using ErrorCallback37a8d8 = void (*)(u32 code, u32 arg);
+
+struct EngineObject37a8d8 {
+    void* vftable_00;                 // +0x00  0x00421774
+    u8  byte_04;                      // +0x04  cleared
+    u8  pad_05[0x07];                 // +0x05..+0x0B untouched
+    u32 field_0c;                     // +0x0C  cleared
+    u32 field_10;                     // +0x10  cleared
+    void* base_vftable_14;            // +0x14  embedded AsdFileObject-style vfptr
+    u32 base_18;                      // +0x18  cleared
+    u32 base_1c;                      // +0x1C  cleared
+    u32 base_20;                      // +0x20  cleared
+    u32 base_24;                      // +0x24  cleared
+    u32 base_28;                      // +0x28  cleared
+    u32 status_2c;                    // +0x2C  0xE7E3FFFF initial status
+    u32 field_30;                     // +0x30  untouched
+    Resource37a8d8* resource_34;      // +0x34  r1
+    u32 range_38;                     // +0x38  view start / low helper output
+    u32 range_3c;                     // +0x3C  view length, cleared
+    u32 field_40;                     // +0x40  r2
+    u32 field_44;                     // +0x44  r3, or helper output when r3 == 0
+    ErrorCallback37a8d8 callback_48;  // +0x48  first stack word
+    u32 callback_arg_4c;              // +0x4C  second stack word
+    u8  active_50;                    // +0x50  0 at entry, 1 on the success path
+    u8  flag_51;                      // +0x51  cleared
+    u8  initialized_52;               // +0x52  previous-state byte, cleared on success
+};
+static_assert(offsetof(EngineObject37a8d8, base_vftable_14) == 0x14);
+static_assert(offsetof(EngineObject37a8d8, status_2c) == 0x2C);
+static_assert(offsetof(EngineObject37a8d8, resource_34) == 0x34);
+static_assert(offsetof(EngineObject37a8d8, range_38) == 0x38);
+static_assert(offsetof(EngineObject37a8d8, field_40) == 0x40);
+static_assert(offsetof(EngineObject37a8d8, callback_48) == 0x48);
+static_assert(offsetof(EngineObject37a8d8, active_50) == 0x50);
+static_assert(offsetof(EngineObject37a8d8, initialized_52) == 0x52);
+
+extern "C" const VTableTableEntry37a8d8 g_AsdFileVTableTable;      // 0x00420870
+// 0x002bb88c: queries `handle_block` (handle at +0x00) and copies the 8-byte
+// result to handle_block+0x0C and *out_pair only when the status is >= 0.
+extern "C" s32 engine_func_002bb88c(void* handle_block, u32* out_pair);
+// 0x002bbd10: records a negative status together with the report site.
+extern "C" void nn_sdk_func_002bbd10(s32 status, const void* site, u32 kind);
+// 0x00235eec: sets the second word of the two-word range at `range`.
+extern "C" void func_00235eec(void* range, s32 offset, s32 mode);
+// 0x002b93f0: virtual release dispatch.  Only reachable from the
+// statically-unreachable cleanup block described below.
+extern "C" void engine_func_002b93f0(void* object);
+
 // DECOMP_FUNC(0x0037a8d8, 400)
-extern "C" __attribute__((naked)) void engine_func_0037a8d8() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x41f0, 0xe92d, 0xd008, 0xe24d\n"
-        ".hword 0x4000, 0xe1a0, 0x0020, 0xe28d\n"
-        ".hword 0x8000, 0xe3a0, 0x0a02, 0xec90\n"
-        ".hword 0x7003, 0xe1a0, 0x0160, 0xe59f\n"
-        ".hword 0x8004, 0xe5c4, 0x800c, 0xe584\n"
-        ".hword 0x0000, 0xe584, 0x8010, 0xe584\n"
-        ".hword 0x8018, 0xe584, 0x514c, 0xe59f\n"
-        ".hword 0x801c, 0xe584, 0x8020, 0xe584\n"
-        ".hword 0x8024, 0xe584, 0x8028, 0xe584\n"
-        ".hword 0x0000, 0xe595, 0x3014, 0xe284\n"
-        ".hword 0x6034, 0xe284, 0x0014, 0xe584\n"
-        ".hword 0xc00c, 0xe595, 0x5030, 0xe510\n"
-        ".hword 0x0124, 0xe59f, 0xc005, 0xe783\n"
-        ".hword 0x002c, 0xe584, 0x0102, 0xe886\n"
-        ".hword 0x0040, 0xe284, 0x803c, 0xe584\n"
-        ".hword 0x0084, 0xe880, 0x0048, 0xe284\n"
-        ".hword 0x0a02, 0xec80, 0x8050, 0xe5c4\n"
-        ".hword 0x8051, 0xe5c4, 0x0052, 0xe5d4\n"
-        ".hword 0x0000, 0xe350, 0x0000, 0x1358\n"
-        ".hword 0x0050, 0x15d4, 0x0000, 0x1350\n"
-        ".hword 0x0007, 0x0a00, 0x5034, 0xe594\n"
-        ".hword 0x0004, 0xe595, 0x1001, 0xe3d0\n"
-        ".hword 0x0002, 0x0a00, 0x0001, 0xe3c0\n"
-        ".hword 0xfa96, 0xebfc, 0x8004, 0xe585\n"
-        ".hword 0x8050, 0xe5c4, 0x6034, 0xe594\n"
-        ".hword 0x5000, 0xe3a0, 0x001c, 0xe5d6\n"
-        ".hword 0x0000, 0xe350, 0x000d, 0x0a00\n"
-        ".hword 0x0000, 0xe3a0, 0x1000, 0xe1a0\n"
-        ".hword 0x00f0, 0xe1cd, 0x100d, 0xe1a0\n"
-        ".hword 0x0004, 0xe286, 0x03b0, 0xebfd\n"
-        ".hword 0x1102, 0xe200, 0x0000, 0xe351\n"
-        ".hword 0x0018, 0xe586, 0x5000, 0xa59d\n"
-        ".hword 0x0fc0, 0xe1a0, 0x0001, 0xe290\n"
-        ".hword 0x0014, 0x0a00, 0x0006, 0xea00\n"
-        ".hword 0x0004, 0xe286, 0x100d, 0xe1a0\n"
-        ".hword 0x03a5, 0xebfd, 0x100f, 0xe1a0\n"
-        ".hword 0x2fa0, 0xe1b0, 0x04c3, 0x1bfd\n"
-        ".hword 0x5000, 0xe59d, 0x0000, 0xe357\n"
-        ".hword 0x2000, 0xe3a0, 0x5044, 0x0584\n"
-        ".hword 0x1002, 0xe1a0, 0x0038, 0xe284\n"
-        ".hword 0x5038, 0xe584, 0xed32, 0xebfa\n"
-        ".hword 0x0001, 0xe3a0, 0x8052, 0xe5c4\n"
-        ".hword 0x0050, 0xe5c4, 0xd008, 0xe28d\n"
-        ".hword 0x0004, 0xe1a0, 0x81f0, 0xe8bd\n"
-        ".hword 0x2048, 0xe594, 0x0034, 0xe594\n"
-        ".hword 0x0000, 0xe352, 0x104c, 0x1594\n"
-        ".hword 0x0018, 0xe590, 0xff32, 0x112f\n"
-        ".hword 0xd008, 0xe28d, 0x0004, 0xe1a0\n"
-        ".hword 0x81f0, 0xe8bd, 0x1774, 0x0042\n"
-        ".hword 0x0870, 0x0042, 0xffff, 0xe7e3\n"
-    );
+extern "C" EngineObject37a8d8* engine_func_0037a8d8(
+    EngineObject37a8d8* self, Resource37a8d8* resource, u32 field_40,
+    u32 field_44, ErrorCallback37a8d8 callback, u32 callback_arg) {
+    u8* const bytes = reinterpret_cast<u8*>(self);
+
+    // Header: +0x05..+0x0B and +0x30..+0x33 are deliberately not written.
+    self->byte_04 = 0;
+    self->field_0c = 0;
+    self->vftable_00 = reinterpret_cast<void*>(0x00421774);
+    self->field_10 = 0;
+    self->base_18 = 0;
+    self->base_1c = 0;
+    self->base_20 = 0;
+    self->base_24 = 0;
+    self->base_28 = 0;
+
+    // Embedded base subobject: copy the vftable, then apply the MSVC
+    // virtual-base complete-object store.
+    void* const base_vftable = g_AsdFileVTableTable.vftable_00;
+    self->base_vftable_14 = base_vftable;
+    const u32 virtual_base_offset = *reinterpret_cast<const u32*>(
+        static_cast<const u8*>(base_vftable) - 0x30);
+    *reinterpret_cast<void**>(bytes + 0x14 + virtual_base_offset) =
+        g_AsdFileVTableTable.self_0c;
+
+    self->status_2c = 0xE7E3FFFFu;
+    self->resource_34 = resource;
+    self->range_38 = 0;
+    self->range_3c = 0;
+    self->field_40 = field_40;
+    self->field_44 = field_44;
+    self->callback_48 = callback;
+    self->callback_arg_4c = callback_arg;
+    self->active_50 = 0;
+    self->flag_51 = 0;
+
+    // The original reads the previous-state byte here and tests it with a
+    // compile-time-zero operand (the hard-wired zero in r8) and with +0x50,
+    // which was just cleared.  The guarded release is therefore unreachable;
+    // its shape (0x002b93f0 on `handle_04 & ~1`, then two clears) is kept in
+    // source for documentation and folded away by the compiler.
+    const u8 was_initialized = self->initialized_52;
+    if (was_initialized != 0 && false && self->active_50 != 0) {
+        const u32 tagged = self->resource_34->handle_04;
+        if ((tagged & ~1u) != 0) {
+            engine_func_002b93f0(reinterpret_cast<void*>(tagged & ~1u));
+            self->resource_34->handle_04 = 0;
+        }
+        self->active_50 = 0;
+    }
+
+    // 0x002bb88c writes an 8-byte result pair; only the low word is used.
+    // quiet_1c selects between "record the status" (negative status returns
+    // through the error callback) and "report and continue".
+    u32 result[2];
+    if (resource->quiet_1c == 0) {
+        // This path does not pre-clear the output pair; the helper leaves it
+        // untouched when it reports a negative status.
+        const s32 status = engine_func_002bb88c(&resource->handle_04, result);
+        if (status < 0) {
+            // The original passes the address of the failing call itself
+            // (`mov r1, pc`) as the report site.
+            nn_sdk_func_002bbd10(status, &&report_site, 1);
+        report_site:
+            (void)0;
+        }
+    } else {
+        result[0] = 0;
+        result[1] = 0;
+        const s32 status = engine_func_002bb88c(&resource->handle_04, result);
+        resource->status_18 = status;
+        if (status < 0) {
+            // Error callback: the code is re-read from the resource block and
+            // the callback argument from +0x4C.  The load is performed even
+            // when the callback is null.
+            ErrorCallback37a8d8 const error_callback = self->callback_48;
+            const u32 code = self->resource_34->status_18;
+            if (error_callback != nullptr) {
+                error_callback(code, self->callback_arg_4c);
+            }
+            return self;
+        }
+    }
+
+    const u32 value = result[0];
+    if (field_44 == 0) {
+        self->field_44 = value;
+    }
+    self->range_38 = value;
+    func_00235eec(&self->range_38, 0, 0);
+    self->initialized_52 = 0;
+    self->active_50 = 1;
+    return self;
 }
 
 // DECOMP_FUNC(0x001b48c0, 404)
