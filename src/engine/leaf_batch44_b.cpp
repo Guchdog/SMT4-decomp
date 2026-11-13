@@ -4433,62 +4433,182 @@ extern "C" __attribute__((naked)) void engine_func_0038b75c() {
     );
 }
 
+// Direct calls made by 0x0015d944.
+extern "C" void* engine_func_002bd48c(u32 id, void* factory, void* owner); // 0x002bd48c
+extern "C" void* engine_func_002bb270();                                   // 0x002bb270
+extern "C" u32 engine_func_0015e590(void* manager, u32 id);                // 0x0015e590
+extern "C" void engine_func_002bd620(void* entry);                         // 0x002bd620
+
+namespace {
+
+// Factory callbacks handed to 0x002BD48C.  The single-slot form initialises
+// an object differently from the multi-slot form, so the two addresses are
+// kept distinct.  They are only passed as data here, never called.
+constexpr u32 kSingleSlotFactory = 0x0015e458;
+constexpr u32 kMultiSlotFactory = 0x0015e4a8;
+
+// Fields touched by this function.  The two leading words are the entries
+// written by the creation loop; +0x08 is the entry count, +0x0C a caller word
+// and +0x10 a float value copied from the fifth (stack) argument.
+struct EngineSlotSet {
+    void* slots_00[2];
+    s32 count_08;
+    u32 value_0c;
+    f32 value_10;
+    u8 flag_14;
+    u8 unknown_15;
+    u8 flag_16;
+    u8 flag_17;
+    u8 flag_18;
+    u8 unknown_19;
+    u8 active_1a;
+    u8 failed_1b;
+    u32 word_1c;
+    u16 half_20;
+    u8 flag_22;
+    u8 pad_23;
+    f32 value_24;
+    f32 value_28;
+    u8 flag_2c;
+    u8 flag_2d;
+    u8 pad_2e[2];
+    f32 value_30;
+    f32 value_34;
+    f32 value_38;
+    f32 value_3c;
+    u32 pad_40;
+    f32 value_44;
+    f32 value_48;
+    f32 value_4c;
+};
+
+static_assert(offsetof(EngineSlotSet, count_08) == 0x08);
+static_assert(offsetof(EngineSlotSet, value_0c) == 0x0c);
+static_assert(offsetof(EngineSlotSet, value_10) == 0x10);
+static_assert(offsetof(EngineSlotSet, flag_14) == 0x14);
+static_assert(offsetof(EngineSlotSet, flag_16) == 0x16);
+static_assert(offsetof(EngineSlotSet, flag_17) == 0x17);
+static_assert(offsetof(EngineSlotSet, flag_18) == 0x18);
+static_assert(offsetof(EngineSlotSet, active_1a) == 0x1a);
+static_assert(offsetof(EngineSlotSet, failed_1b) == 0x1b);
+static_assert(offsetof(EngineSlotSet, word_1c) == 0x1c);
+static_assert(offsetof(EngineSlotSet, half_20) == 0x20);
+static_assert(offsetof(EngineSlotSet, flag_22) == 0x22);
+static_assert(offsetof(EngineSlotSet, value_24) == 0x24);
+static_assert(offsetof(EngineSlotSet, value_28) == 0x28);
+static_assert(offsetof(EngineSlotSet, flag_2c) == 0x2c);
+static_assert(offsetof(EngineSlotSet, flag_2d) == 0x2d);
+static_assert(offsetof(EngineSlotSet, value_30) == 0x30);
+static_assert(offsetof(EngineSlotSet, value_34) == 0x34);
+static_assert(offsetof(EngineSlotSet, value_38) == 0x38);
+static_assert(offsetof(EngineSlotSet, value_3c) == 0x3c);
+static_assert(offsetof(EngineSlotSet, value_44) == 0x44);
+static_assert(offsetof(EngineSlotSet, value_48) == 0x48);
+static_assert(offsetof(EngineSlotSet, value_4c) == 0x4c);
+
+}  // namespace
+
 // DECOMP_FUNC(0x0015d944, 408)
-extern "C" __attribute__((naked)) void engine_func_0015d944() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x5ff0, 0xe92d, 0x0002, 0xe351\n"
-        ".hword 0x4000, 0xe1a0, 0x8003, 0xe1a0\n"
-        ".hword 0x7002, 0xc3a0, 0x8b02, 0xed2d\n"
-        ".hword 0x8a0c, 0xed9d, 0x0002, 0xca00\n"
-        ".hword 0x0001, 0xe351, 0x7001, 0xb3a0\n"
-        ".hword 0x7001, 0xa1a0, 0xb001, 0xe3a0\n"
-        ".hword 0xa000, 0xe3a0, 0xb01a, 0xe5c4\n"
-        ".hword 0x9012, 0xe6ef, 0xa008, 0xe584\n"
-        ".hword 0x0001, 0xe357, 0xa01b, 0xe5c4\n"
-        ".hword 0x000a, 0x0a00, 0x0000, 0xe357\n"
-        ".hword 0x6000, 0xe3a0, 0x0020, 0xda00\n"
-        ".hword 0x1128, 0xe59f, 0x2004, 0xe1a0\n"
-        ".hword 0x0009, 0xe1a0, 0x7eb7, 0xeb05\n"
-        ".hword 0x5000, 0xe1b0, 0xf000, 0xe320\n"
-        ".hword 0x0009, 0x0a00, 0x0011, 0xea00\n"
-        ".hword 0x2000, 0xe1a0, 0x1108, 0xe59f\n"
-        ".hword 0x0009, 0xe1a0, 0x7eaf, 0xeb05\n"
-        ".hword 0x0000, 0xe350, 0x0000, 0x1584\n"
-        ".hword 0xb008, 0x1584, 0x001f, 0x0a00\n"
-        ".hword 0x0020, 0xea00, 0xf000, 0xe320\n"
-        ".hword 0x7621, 0xeb05, 0x1009, 0xe1a0\n"
-        ".hword 0xf000, 0xe320, 0x02e6, 0xeb00\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0xffe6, 0x1aff, 0xb01b, 0xe5c4\n"
-        ".hword 0x5106, 0xe784, 0x0008, 0xe594\n"
-        ".hword 0x6001, 0xe286, 0x0007, 0xe156\n"
-        ".hword 0x0001, 0xe280, 0x0008, 0xe584\n"
-        ".hword 0xffde, 0xbaff, 0x001b, 0xe5d4\n"
-        ".hword 0x0000, 0xe350, 0x000d, 0x0a00\n"
-        ".hword 0x0008, 0xe594, 0x5000, 0xe3a0\n"
-        ".hword 0x0000, 0xe350, 0x0006, 0xda00\n"
-        ".hword 0x0105, 0xe794, 0x0000, 0xe350\n"
-        ".hword 0x7ef5, 0x1b05, 0x0008, 0xe594\n"
-        ".hword 0x5001, 0xe285, 0x0005, 0xe150\n"
-        ".hword 0xfff8, 0xcaff, 0x0000, 0xe3a0\n"
-        ".hword 0x8b02, 0xecbd, 0x9ff0, 0xe8bd\n"
-        ".hword 0xa01a, 0xe5c4, 0xa2b0, 0xe1c4\n"
-        ".hword 0xa017, 0xe5c4, 0xa018, 0xe5c4\n"
-        ".hword 0x0a16, 0xed9f, 0xa016, 0xe5c4\n"
-        ".hword 0xa01c, 0xe584, 0x0a09, 0xed84\n"
-        ".hword 0x0a13, 0xeddf, 0x0a0e, 0xed84\n"
-        ".hword 0xa022, 0xe5c4, 0x0a0f, 0xedc4\n"
-        ".hword 0x0a0c, 0xedc4, 0x0a0d, 0xedc4\n"
-        ".hword 0x0a11, 0xed84, 0x800c, 0xe584\n"
-        ".hword 0x8a04, 0xed84, 0x0a12, 0xedc4\n"
-        ".hword 0x0a13, 0xedc4, 0x0a0a, 0xed84\n"
-        ".hword 0xa02c, 0xe5c4, 0xa02d, 0xe5c4\n"
-        ".hword 0xb014, 0xe5c4, 0x0001, 0xe3a0\n"
-        ".hword 0x8b02, 0xecbd, 0x9ff0, 0xe8bd\n"
-        ".hword 0xe4a8, 0x0015, 0xe458, 0x0015\n"
-        ".hword 0x0000, 0x3f80, 0x0000, 0x0000\n"
-    );
+//
+// Initialises a one- or two-slot engine object set and fills it with entries
+// created through 0x002BD48C:
+//   * the requested count is clamped to [1, 2] with a signed comparison;
+//   * the id is unsigned-saturated to 15 bits (negative -> 0, >= 0x8000 ->
+//     0x7FFF), matching the `usat r11, #15, r2` instruction;
+//   * count == 1 creates one entry with the single-slot factory and stores it
+//     at +0x00; count == 2 creates up to two entries with the multi-slot
+//     factory and stores them at +0x00/+0x04;
+//   * a null creation is retried while 0x002BB270/0x0015E590 report that an
+//     object with the same id already exists; otherwise +0x1B records the
+//     failure and the partial set is released through 0x002BD620.
+// The success path initialises the remaining flag/float block (+0x14 through
+// +0x4C) plus +0x0C/+0x10 and returns 1; every failure path returns 0.  The
+// fifth argument is the bit pattern of a float passed in the first stack slot
+// by the soft-float callers.
+extern "C" u32 engine_func_0015d944(void* self_pointer, s32 requested_count,
+                                    s32 raw_id, u32 arg_0c,
+                                    u32 stack_float_bits) {
+    auto* const self = static_cast<EngineSlotSet*>(self_pointer);
+
+    s32 count = requested_count;
+    if (count > 2) {
+        count = 2;
+    } else if (count < 1) {
+        count = 1;
+    }
+
+    u32 id;
+    if (raw_id < 0) {
+        id = 0;
+    } else if (raw_id > 0x7FFF) {
+        id = 0x7FFF;
+    } else {
+        id = static_cast<u32>(raw_id);
+    }
+
+    self->active_1a = 1;
+    self->count_08 = 0;
+    self->failed_1b = 0;
+
+    if (count == 1) {
+        void* const entry = engine_func_002bd48c(
+            id, reinterpret_cast<void*>(kSingleSlotFactory), self);
+        if (entry == nullptr) {
+            return 0;
+        }
+        self->slots_00[0] = entry;
+        self->count_08 = 1;
+    } else {
+        s32 index = 0;
+        while (index < count) {
+            void* const entry = engine_func_002bd48c(
+                id, reinterpret_cast<void*>(kMultiSlotFactory), self);
+            if (entry == nullptr) {
+                // A pre-existing object with this id makes the creation retry
+                // the same slot rather than counting a failure.
+                if (engine_func_0015e590(engine_func_002bb270(), id) != 0) {
+                    continue;
+                }
+                self->failed_1b = 1;
+            }
+            self->slots_00[index] = entry;
+            self->count_08 = self->count_08 + 1;
+            ++index;
+        }
+
+        if (self->failed_1b != 0) {
+            for (s32 slot = 0; slot < self->count_08; ++slot) {
+                void* const entry = self->slots_00[slot];
+                if (entry != nullptr) {
+                    engine_func_002bd620(entry);
+                }
+            }
+            return 0;
+        }
+    }
+
+    self->active_1a = 0;
+    self->half_20 = 0;
+    self->flag_17 = 0;
+    self->flag_18 = 0;
+    self->value_24 = 1.0f;
+    self->flag_16 = 0;
+    self->word_1c = 0;
+    self->value_38 = 1.0f;
+    self->flag_22 = 0;
+    self->value_3c = 0.0f;
+    self->value_30 = 0.0f;
+    self->value_34 = 0.0f;
+    self->value_44 = 1.0f;
+    self->value_0c = arg_0c;
+    self->value_10 = __builtin_bit_cast(f32, stack_float_bits);
+    self->value_48 = 0.0f;
+    self->value_4c = 0.0f;
+    self->value_28 = 1.0f;
+    self->flag_2c = 0;
+    self->flag_2d = 0;
+    self->flag_14 = 1;
+    return 1;
 }
 
 // Direct calls made by 0x00195424.
