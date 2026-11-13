@@ -3541,90 +3541,241 @@ reset:
     goto loop_head;
 }
 
+// ---------------------------------------------------------------------------
+// 0x002820A4 (624 B) -- single-precision full-quadrant atan2(y, x), radians.
+//
+// s0 = y and s1 = x on entry; the result is returned in s0.  The routine keeps
+// the raw IEEE-754 bit patterns in r0/r1 alongside the VFP values in s0/s1 and
+// funnels every non-special case into one shared tail:
+//
+//   * both operands with a biased exponent in 24..252 go straight to the tail
+//     (0x002820A4..0x002820C8);
+//   * a NaN operand returns `y + x` (ARM VFP default-NaN addition);
+//   * +-0/+-0 becomes +-0/+-inf (so the delta exit yields +-0 for +0 and +-pi
+//     for -0), +-inf/+-inf becomes +-1/+-1, and +-inf/finite becomes
+//     +-inf/+-0.  Every other fall-through case, including finite/+-inf, is
+//     rescaled by 2^32 or 2^-32 when the two exponent-MSB bits agree; the
+//     quotient is unchanged but the exponent-window selection is not;
+//   * the tail compares biased exponents: y more than 27 binades above x
+//     returns +-pi/2, y more than 26 binades below x returns +-pi for negative
+//     x and the quotient y/x otherwise (a subnormal quotient is passed through
+//     0x002A4600/0x002A462C as an underflow probe);
+//   * otherwise |y| > |x| reduces r = x/-y around +-pi/2, while |y| <= |x|
+//     reduces r = y/x around 0 (x >= 0) or +-pi (x < 0).  When the raw
+//     denominator/numerator patterns satisfy (den - num) << 1 < 0x01000000 the
+//     quotient is computed through tan(atan(r) +- atan(1/2)) --
+//     r' = (r +- 1/2)/(1 -+ r/2) -- and the angle offset is adjusted by the
+//     same split atan(1/2) constant;
+//   * the offsets keep their coarse/fine halves separate (+-1.5703125 with
+//     +-0.0004838268, +-3.140625 with +-0.0009676536) and the final tail is
+//     ((fine + r^3 * P(r^2)) + r) + coarse with the odd minimax polynomial P.
+//
+// The 96-byte literal pool at 0x002822B4 (the ledger's 624-byte extent runs to
+// 0x00282314) is expressed as named f32 constants below.
+// ---------------------------------------------------------------------------
+namespace ui_2820a4 {
+
+constexpr f32 F32FromBits(u32 bits) noexcept {
+    return __builtin_bit_cast(f32, bits);
+}
+constexpr u32 F32ToBits(f32 value) noexcept {
+    return __builtin_bit_cast(u32, value);
+}
+
+constexpr u32 kSignBit = 0x80000000u;
+constexpr u32 kInfinityBit = 0x40000000u;                 // `bic ...,#0x40000000`
+constexpr u32 kQuietBits = 0x40000000u | 0x3F800000u;     // the `orr` pair
+
+// Fast normal-value window tested as `0xE8000000 + (bits << 1) < 0xE5000000`.
+constexpr u32 kRangeBias = 0xE8000000u;
+constexpr u32 kRangeLimit = 0xE5000000u;
+constexpr u32 kInfinityShift = 0xFF000000u;
+
+// atan(1/2) split into coarse and fine halves; pi/2 and pi are split the same
+// way so the offset halves stay independently rounded.
+constexpr f32 kAtanHalfCoarse = 0.463623046875f;          // 0x3EED6000
+constexpr f32 kAtanHalfFine = 2.4562124963267706e-05f;    // 0x37CE0AC3
+constexpr f32 kHalfPiCoarse = 1.5703125f;                 // 0x3FC90000
+constexpr f32 kHalfPiFine = 0.0004838267923332751f;       // 0x39FDAA22
+constexpr f32 kPiCoarse = 3.140625f;                      // 0x40490000
+constexpr f32 kPiFine = 0.0009676535846665502f;           // 0x3A7DAA22
+
+// Full-precision answers used by the exponent-window early exits.
+constexpr f32 kPiOverTwo = 1.5707963705062866f;           // 0x3FC90FDB
+constexpr f32 kPi = 3.1415927410125732f;                  // 0x40490FDB
+
+// Odd minimax coefficients for atan(r) = r + r^3 * P(r^2), lowest first.
+constexpr f32 kPolyC0 = -0.05607335641980171f;            // 0xBD65AD2D
+constexpr f32 kPolyC1 = 0.10435592383146286f;             // 0x3DD5B88F
+constexpr f32 kPolyC2 = -0.14229224622249603f;            // 0xBE11B50F
+constexpr f32 kPolyC3 = 0.1999831348657608f;              // 0x3E4CC861
+constexpr f32 kPolyC4 = -0.33333325386047363f;            // 0xBEAAAAA8
+
+// 0x002822B4..0x002822B8: the finite/infinity rescale pair 2^32 and 2^-32.
+constexpr f32 kScaleUp = 4294967296.0f;                   // 0x4F800000
+constexpr f32 kScaleDown = 2.3283064365386963e-10f;       // 0x2F800000
+
+static_assert(F32ToBits(kAtanHalfCoarse) == 0x3EED6000u);
+static_assert(F32ToBits(kAtanHalfFine) == 0x37CE0AC3u);
+static_assert(F32ToBits(kHalfPiCoarse) == 0x3FC90000u);
+static_assert(F32ToBits(kHalfPiFine) == 0x39FDAA22u);
+static_assert(F32ToBits(kPiCoarse) == 0x40490000u);
+static_assert(F32ToBits(kPiFine) == 0x3A7DAA22u);
+static_assert(F32ToBits(kPiOverTwo) == 0x3FC90FDBu);
+static_assert(F32ToBits(kPi) == 0x40490FDBu);
+static_assert(F32ToBits(kPolyC0) == 0xBD65AD2Du);
+static_assert(F32ToBits(kPolyC1) == 0x3DD5B88Fu);
+static_assert(F32ToBits(kPolyC2) == 0xBE11B50Fu);
+static_assert(F32ToBits(kPolyC3) == 0x3E4CC861u);
+static_assert(F32ToBits(kPolyC4) == 0xBEAAAAA8u);
+static_assert(F32ToBits(kScaleUp) == 0x4F800000u);
+static_assert(F32ToBits(kScaleDown) == 0x2F800000u);
+
+}  // namespace ui_2820a4
+
+// 0x002A4600 (44 B): classifies the single-precision bit pattern in r0 (the
+// argument is an integer register, not an s0 float).  Returns 0 for zero, 3
+// for infinity, 4 for a subnormal, 5 for a finite normal and 7 for NaN; the
+// constant 1 is remapped to 5 and never leaves the routine.
+extern "C" u32 ui_func_002a4600(u32 bits);
+
+// 0x002A462C (16 B): evaluates 0x10000000f * 0x10000000f and returns it.  This
+// caller discards the result; the call is only an underflow probe, so its
+// incoming s0 is the pre-quotient numerator y.
+extern "C" f32 ui_func_002a462c(f32 value);
+
 // DECOMP_FUNC(0x002820a4, 624)
-extern "C" __attribute__((naked)) void ui_func_002820a4() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x0a10, 0xee10, 0x1a90, 0xee10\n"
-        ".hword 0x233a, 0xe3a0, 0x4010, 0xe92d\n"
-        ".hword 0x3080, 0xe082, 0x04e5, 0xe353\n"
-        ".hword 0x8b02, 0xed2d, 0x2081, 0x3082\n"
-        ".hword 0x04e5, 0x3352, 0x0022, 0x3a00\n"
-        ".hword 0x24ff, 0xe3a0, 0x0080, 0xe152\n"
-        ".hword 0x0081, 0x2152, 0x0a20, 0x3e30\n"
-        ".hword 0x8b02, 0x3cbd, 0x8010, 0x38bd\n"
-        ".hword 0x3001, 0xe180, 0x3083, 0xe1b0\n"
-        ".hword 0x1101, 0x0381, 0x15fe, 0x0381\n"
-        ".hword 0x0005, 0x0a00, 0x0080, 0xe152\n"
-        ".hword 0x0081, 0x0152, 0x0004, 0x1a00\n"
-        ".hword 0x0101, 0xe3c0, 0x0a10, 0xee00\n"
-        ".hword 0x1101, 0xe3c1, 0x1a90, 0xee00\n"
-        ".hword 0x000f, 0xea00, 0x0080, 0xe152\n"
-        ".hword 0x2081, 0x11b0, 0x0101, 0x0380\n"
-        ".hword 0x05fe, 0x0380, 0x1102, 0x0201\n"
-        ".hword 0x0009, 0x0a00, 0x2081, 0xe1a0\n"
-        ".hword 0x3080, 0xe032, 0x0006, 0x4a00\n"
-        ".hword 0x0000, 0xe352, 0x1a5b, 0xad9f\n"
-        ".hword 0x1a5b, 0xbd9f, 0x0a01, 0xee20\n"
-        ".hword 0x0a81, 0xee60, 0x0a10, 0xee10\n"
-        ".hword 0x1a90, 0xee10, 0x3080, 0xe1a0\n"
-        ".hword 0x2081, 0xe1a0, 0xcc23, 0xe1a0\n"
-        ".hword 0x2c22, 0xe04c, 0x001b, 0xe352\n"
-        ".hword 0x0004, 0xda00, 0x8b02, 0xecbd\n"
-        ".hword 0x0102, 0xe310, 0x0a4f, 0x1d9f\n"
-        ".hword 0x0a4f, 0x0d9f, 0x8010, 0xe8bd\n"
-        ".hword 0x001a, 0xe372, 0x000e, 0xaa00\n"
-        ".hword 0x0102, 0xe311, 0x0004, 0x0a00\n"
-        ".hword 0x8b02, 0xecbd, 0x0102, 0xe310\n"
-        ".hword 0x0a48, 0x1d9f, 0x0a48, 0x0d9f\n"
-        ".hword 0x8010, 0xe8bd, 0x8a20, 0xee80\n"
-        ".hword 0x0a10, 0xee18, 0x8912, 0xeb00\n"
-        ".hword 0x0004, 0xe350, 0x891b, 0x0b00\n"
-        ".hword 0x0a48, 0xeeb0, 0x8b02, 0xecbd\n"
-        ".hword 0x8010, 0xe8bd, 0x0081, 0xe153\n"
-        ".hword 0x001d, 0x9a00, 0x2a60, 0xeeb0\n"
-        ".hword 0x2001, 0xe1a0, 0x0a40, 0xeef1\n"
-        ".hword 0x0102, 0xe310, 0x1a39, 0x1ddf\n"
-        ".hword 0x1102, 0xe220, 0x0002, 0xe1a0\n"
-        ".hword 0x0a42, 0xeeb0, 0x1a36, 0x1d9f\n"
-        ".hword 0x1a36, 0x0ddf, 0x1a36, 0x0d9f\n"
-        ".hword 0x2000, 0xe041, 0x2082, 0xe1a0\n"
-        ".hword 0x0401, 0xe352, 0x0018, 0x2a00\n"
-        ".hword 0x0001, 0xe020, 0x2a32, 0xeddf\n"
-        ".hword 0x0102, 0xe310, 0x2a31, 0x1d9f\n"
-        ".hword 0x2a31, 0x0d9f, 0x1a62, 0x1e31\n"
-        ".hword 0x3a2c, 0xed9f, 0x1ac3, 0x1e71\n"
-        ".hword 0x1a22, 0x0e31, 0x2a40, 0xeef0\n"
-        ".hword 0x1a83, 0x0e71, 0x2a60, 0xee42\n"
-        ".hword 0x0a02, 0xee40, 0x2aa0, 0xee82\n"
-        ".hword 0x000a, 0xea00, 0x0102, 0xe311\n"
-        ".hword 0x1a26, 0x0d9f, 0x1a41, 0x0ef0\n"
-        ".hword 0xffe8, 0x0aff, 0x0102, 0xe310\n"
-        ".hword 0x1a23, 0x1ddf, 0x1a23, 0x1d9f\n"
-        ".hword 0x1a23, 0x0ddf, 0x1a23, 0x0d9f\n"
-        ".hword 0xffe2, 0xeaff, 0x2a20, 0xee80\n"
-        ".hword 0x0a21, 0xeddf, 0x2a21, 0xeddf\n"
-        ".hword 0x3a21, 0xeddf, 0x3a21, 0xed9f\n"
-        ".hword 0x0a02, 0xee22, 0x8b02, 0xecbd\n"
-        ".hword 0x2a20, 0xee40, 0x0a1e, 0xeddf\n"
-        ".hword 0x4a00, 0xee22, 0x3a22, 0xee40\n"
-        ".hword 0x3a23, 0xee00, 0x0a03, 0xee40\n"
-        ".hword 0x1a20, 0xee04, 0x0a02, 0xee31\n"
-        ".hword 0x0a21, 0xee30, 0x8010, 0xe8bd\n"
-        ".hword 0x0000, 0x4f80, 0x0000, 0x2f80\n"
-        ".hword 0x0fdb, 0xbfc9, 0x0fdb, 0x3fc9\n"
-        ".hword 0x0fdb, 0xc049, 0x0fdb, 0x4049\n"
-        ".hword 0x0000, 0xbfc9, 0xaa22, 0xb9fd\n"
-        ".hword 0x0000, 0x3fc9, 0xaa22, 0x39fd\n"
-        ".hword 0x6000, 0x3eed, 0x0ac3, 0x37ce\n"
-        ".hword 0x0000, 0xbf00, 0x0000, 0x3f00\n"
-        ".hword 0x0000, 0x0000, 0x0000, 0xc049\n"
-        ".hword 0xaa22, 0xba7d, 0x0000, 0x4049\n"
-        ".hword 0xaa22, 0x3a7d, 0xad2d, 0xbd65\n"
-        ".hword 0xb88f, 0x3dd5, 0xb50f, 0xbe11\n"
-        ".hword 0xc861, 0x3e4c, 0xaaa8, 0xbeaa\n"
-    );
-};
+extern "C" f32 ui_func_002820a4(f32 y, f32 x) {
+    using namespace ui_2820a4;
+
+    u32 y_bits = F32ToBits(y);
+    u32 x_bits = F32ToBits(x);
+    const u32 y_shift = y_bits << 1;
+    const u32 x_shift = x_bits << 1;
+
+    // Both biased exponents in 24..252 skip every special-value rewrite.
+    const bool both_normal_window = (kRangeBias + y_shift) < kRangeLimit &&
+                                    (kRangeBias + x_shift) < kRangeLimit;
+
+    if (!both_normal_window) {
+        if (y_shift > kInfinityShift || x_shift > kInfinityShift) {
+            return y + x;                       // NaN propagates through VADD
+        }
+
+        if (((y_bits | x_bits) << 1) == 0) {
+            // +-0 / +-0: make the divisor +-inf so the tail's delta exit handles
+            // the case (+-0 for +0, +-pi for -0).
+            x_bits |= kQuietBits;
+            x = F32FromBits(x_bits);
+        } else if (y_shift == kInfinityShift && x_shift == kInfinityShift) {
+            // +-inf / +-inf: clear the infinity marker so both become +-1.
+            y_bits &= ~kInfinityBit;
+            x_bits &= ~kInfinityBit;
+            y = F32FromBits(y_bits);
+            x = F32FromBits(x_bits);
+        } else if (y_shift == kInfinityShift || x_shift == 0) {
+            // +-inf / finite and finite / +-0: the +-inf rewrite steers the
+            // tail's exponent delta to the +-pi/2 exit.
+            y_bits |= kQuietBits;
+            x_bits &= kSignBit;
+        } else if (((y_shift ^ x_shift) & kSignBit) == 0) {
+            // Equal exponent-MSB parity: scale both operands by 2^32 (when x
+            // is below 2.0) or 2^-32 (when x is at least 2.0).  The quotient
+            // is unchanged but the exponent window selection is not.
+            const f32 scale = (x_shift & kSignBit) ? kScaleDown : kScaleUp;
+            y *= scale;
+            x *= scale;
+            y_bits = F32ToBits(y);
+            x_bits = F32ToBits(x);
+        }
+    }
+
+    const u32 y_window = y_bits << 1;
+    const u32 x_window = x_bits << 1;
+    const s32 exponent_delta =
+        static_cast<s32>(y_window >> 24) - static_cast<s32>(x_window >> 24);
+
+    if (exponent_delta > 27) {
+        return (y_bits & kSignBit) ? -kPiOverTwo : kPiOverTwo;
+    }
+
+    if (exponent_delta < -26) {
+        if ((x_bits & kSignBit) == 0) {
+            const f32 quotient = y / x;
+            if (ui_func_002a4600(F32ToBits(quotient)) == 4u) {
+                (void)ui_func_002a462c(y);
+            }
+            return quotient;
+        }
+        return (y_bits & kSignBit) ? -kPi : kPi;
+    }
+
+    f32 angle_fine;
+    f32 angle_coarse;
+    f32 ratio;
+    const bool y_negative = (y_bits & kSignBit) != 0;
+
+    if (y_window > x_window) {
+        // |y| > |x|: reduce r = x / -y and centre the result on +-pi/2.
+        angle_coarse = y_negative ? -kHalfPiCoarse : kHalfPiCoarse;
+        angle_fine = y_negative ? -kHalfPiFine : kHalfPiFine;
+
+        const u32 numerator_bits = x_bits;
+        const u32 denominator_bits = y_bits ^ kSignBit;   // -y
+        const f32 negated_y = -y;
+        if (((denominator_bits - numerator_bits) << 1) < 0x01000000u) {
+            const bool negative_ratio =
+                ((numerator_bits ^ denominator_bits) & kSignBit) != 0;
+            const f32 half = negative_ratio ? -0.5f : 0.5f;
+            ratio = (x - half * negated_y) / (negated_y + half * x);
+            if (negative_ratio) {
+                angle_fine -= kAtanHalfFine;
+                angle_coarse -= kAtanHalfCoarse;
+            } else {
+                angle_fine += kAtanHalfFine;
+                angle_coarse += kAtanHalfCoarse;
+            }
+        } else {
+            ratio = x / negated_y;
+        }
+    } else {
+        // |y| <= |x|: reduce r = y / x around 0 or +-pi.
+        if ((x_bits & kSignBit) != 0) {
+            angle_coarse = y_negative ? -kPiCoarse : kPiCoarse;
+            angle_fine = y_negative ? -kPiFine : kPiFine;
+        } else {
+            angle_coarse = 0.0f;
+            angle_fine = 0.0f;
+        }
+
+        if (((x_bits - y_bits) << 1) < 0x01000000u) {
+            const bool negative_ratio = ((y_bits ^ x_bits) & kSignBit) != 0;
+            const f32 half = negative_ratio ? -0.5f : 0.5f;
+            ratio = (y - half * x) / (x + half * y);
+            if (negative_ratio) {
+                angle_fine -= kAtanHalfFine;
+                angle_coarse -= kAtanHalfCoarse;
+            } else {
+                angle_fine += kAtanHalfFine;
+                angle_coarse += kAtanHalfCoarse;
+            }
+        } else {
+            ratio = y / x;
+        }
+    }
+
+    const f32 square = ratio * ratio;
+    const f32 cube = ratio * square;
+    f32 polynomial = kPolyC1 + square * kPolyC0;
+    polynomial = kPolyC2 + square * polynomial;
+    polynomial = kPolyC3 + square * polynomial;
+    polynomial = kPolyC4 + square * polynomial;
+
+    f32 result = angle_fine + cube * polynomial;
+    result += ratio;
+    result += angle_coarse;
+    return result;
+}
 
 // DECOMP_FUNC(0x002fe600, 628)
 extern "C" __attribute__((naked)) void ui_func_002fe600() {
