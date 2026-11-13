@@ -3432,38 +3432,179 @@ extern "C" u32 ui_func_002d8fac(void) {
 }
 
 // DECOMP_FUNC(0x0030f760, 420)
-// 100 ARM instructions through unconditional pop; 20 trailing data bytes.
-extern "C" __attribute__((naked)) void ui_func_0030f760() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d43f0, 0xe59f0188, 0xe59f5180, 0xe2801090\n"
-        ".word 0xed2d8b02, 0xe24dd034, 0xe89111de, 0xeeb08a40\n"
-        ".word 0xe88d11de, 0xe28010b0, 0xe59000bc, 0xe891000e\n"
-        ".word 0xe58d002c, 0xe28d0020, 0xe880000e, 0xe5950e00\n"
-        ".word 0xe3500000, 0x0a00004e, 0xe59f6148, 0xe3a01001\n"
-        ".word 0xe3a00005, 0xe5964000, 0xebfed9ef, 0xe2844a01\n"
-        ".word 0xe2844f93, 0xe3a07000, 0xe5941000, 0xe2812001\n"
-        ".word 0xe0843101, 0xe5931008, 0xe0843102, 0xe5842000\n"
-        ".word 0xe5830008, 0xe5d42018, 0xe3520000, 0x01510000\n"
-        ".word 0x0a000002, 0xe594101c, 0xe12fff31, 0xe5c47018\n"
-        ".word 0xe5960000, 0xe3a01000, 0xebfec94b, 0xe5950e00\n"
-        ".word 0xe3a04000, 0xe3500000, 0xda000020, 0xe59f90dc\n"
-        ".word 0xed9f0a35, 0xe1a0800d, 0xee388a00, 0xe0640184\n"
-        ".word 0xe0850100, 0xed900a00, 0xed901a02, 0xedd02a05\n"
-        ".word 0xed903a03, 0xe0c01499, 0xeef05a62, 0xeeb05a48\n"
-        ".word 0xeef04a43, 0xe1a010c0, 0xe0410fc0, 0xeeb04a41\n"
-        ".word 0xe0400100, 0xeef03a48, 0xe0840100, 0xeeb02a48\n"
-        ".word 0xe7980100, 0xeef01a40, 0xeef00a48, 0xe3800070\n"
-        ".word 0xe1a03000, 0xe1a02003, 0xe1a01002, 0xebfe1df2\n"
-        ".word 0xe5950e00, 0xe2844001, 0xe1500004, 0xcaffffe2\n"
-        ".word 0xe5960000, 0xe2804a01, 0xe2844f93, 0xe5940000\n"
-        ".word 0xe0841100, 0xe2400001, 0xe5911008, 0xe5840000\n"
-        ".word 0xe0840100, 0xe5d42018, 0xe5900008, 0xe3520000\n"
-        ".word 0x01510000, 0x0a000002, 0xe594101c, 0xe12fff31\n"
-        ".word 0xe5c47018, 0xe28dd034, 0xecbd8b02, 0xe8bd83f0\n"
-        ".word 0x004c2424, 0x004049b4, 0x0044ea00, 0x42c80000\n"
-        ".word 0x2aaaaaab\n"
-    );
+//
+// Recovered contract (ARM 0x0030F760..0x0030F8EC plus the five literal words
+// at 0x0030F8F0..0x0030F900: record base 0x004C2424, base 0x004049B4, the
+// render-register global 0x0044EA00, 100.0f and the divide-by-twelve magic
+// 0x2AAAAAAB):
+//   * The twelve words at 0x004049B4 + 0x90 = 0x00404A44 (the second copy of
+//     the 12-entry color table) are copied to the stack before anything else.
+//     `ldm r1, {r1,r2,r3,r4,r6,r7,r8,ip}` plus
+//     `add r1, r0, #0xB0; ldm r1, {r1,r2,r3}` and `ldr r0, [r0, #0xBC]` read
+//     the contiguous words 0x00404A44..0x00404A70.
+//   * `count = *(s32*)0x004C3224` (0x004C2424 + 0xE00).  Exactly zero returns
+//     0 without touching the render stack; a negative count still pushes and
+//     pops and draws nothing (the loop bound is `bgt`).
+//   * Push a viewport command onto the render stack node at
+//     `*0x0044EA00 + 0x124C`: `slot[count]` is the previous top, `count` is
+//     incremented and `slot[count]` receives `ui_func_002c5f7c(5, 1)`.  If the
+//     node's dirty byte is non-zero, or the previous top differs from the new
+//     value, the node's flush callback at `+0x1C` is invoked with the new value
+//     in r0 and the dirty byte is cleared.  The base is captured before the
+//     helper runs.
+//   * `ui_func_002c1d3c(*0x0044EA00, 0)` selects the render mode (the global is
+//     re-read here).
+//   * For every 0x1C-byte record `i` while `i < *(s32*)0x004C3224` (signed
+//     bound, re-read every iteration) draw one element with func_0029705c:
+//       - the color word is `table[i % 12] | 0x70`, passed in r0..r3;
+//       - the four vec3 arguments are
+//         (rec+0x00, s16, rec+0x08), (rec+0x00, s16, rec+0x14),
+//         (rec+0x0C, s16, rec+0x08), (rec+0x0C, s16, rec+0x14)
+//         with `s16 = incoming_s0 + 100.0f`.
+//   * Pop the render stack node (the global is re-read a third time): the same
+//     callback rule applies, and the function returns the popped value or the
+//     callback result.
+// Only the incoming float register s0 is live; r0..r3 are ignored.  The table
+// is read through its absolute address, so a modified global table is honoured
+// exactly like the original copy.  The record layout matches the documented
+// 0x1C-byte entries of func_002d4ef4 (+0x00/+0x08/+0x0C/+0x14 are the four
+// bounding-box floats).
+namespace func_30f760 {
+
+constexpr u32 kRecordBase = 0x004C2424;
+constexpr u32 kRecordCountAddress = 0x004C3224;  // kRecordBase + 0xE00
+constexpr u32 kRecordStride = 0x1C;
+
+// 0x004049B4 + 0x90: the twelve color/format words copied to the stack.
+constexpr u32 kColorTableAddress = 0x00404A44;
+constexpr u32 kColorCount = 12;
+constexpr u32 kColorCommandBits = 0x70;
+
+constexpr u32 kRenderStackOffset = 0x124C;  // *0x0044EA00 + 0x124C
+constexpr f32 kVerticalStep = 100.0f;       // 0x42C80000
+
+// `mov r0, #5` / `mov r1, #1` before the 0x002C5F7C call and `mov r1, #0`
+// before the 0x002C1D3C call.
+constexpr u32 kViewportCommand = 5;
+constexpr u32 kViewportEnabled = 1;
+constexpr u32 kRenderMode = 0;
+
+// Render-stack node at render_base + 0x124C.  `slots` is addressed as a flat
+// word array (`node + 8 + count*4`); the original has no bounds check, so the
+// reconstruction indexes past the four visible slots exactly like the ARM.
+struct RenderStackNode {
+    u32 count;      // +0x00
+    u32 pad_004;    // +0x04
+    u32 slots[4];   // +0x08..+0x17
+    u8 dirty;       // +0x18
+    u8 pad_019[3];
+    u32 flush_cb;   // +0x1C, `blx r1` with the new value in r0
+};
+
+static_assert(offsetof(RenderStackNode, count) == 0x00);
+static_assert(offsetof(RenderStackNode, slots) == 0x08);
+static_assert(offsetof(RenderStackNode, dirty) == 0x18);
+static_assert(offsetof(RenderStackNode, flush_cb) == 0x1C);
+
+// `blx r1` with no null check: the original requires a non-null callback.
+using FlushCallback = u32 (*)(u32 value);
+
+inline RenderStackNode* render_stack(void* base) {
+    return reinterpret_cast<RenderStackNode*>(
+        static_cast<u8*>(base) + kRenderStackOffset);
+}
+
+inline s32 load_record_count() {
+    return *reinterpret_cast<const s32*>(kRecordCountAddress);
+}
+
+}  // namespace func_30f760
+
+// 0x002C5F7C: builds the 0x1F51 viewport command word for (5, 1).
+extern "C" u32 ui_func_002c5f7c(u32 kind, u32 enabled);
+
+// 0x002C1D3C: selects the render mode on the render-register block.
+extern "C" void ui_func_002c1d3c(void* base, u32 mode);
+
+// 0x0029705C: submits one four-corner element.  r0..r3 carry the same color
+// word; s0..s11 carry four vec3 corners.
+extern "C" void func_0029705c(u32 color_a, u32 color_b, u32 color_c,
+                              u32 color_d, f32 x0, f32 y0, f32 z0, f32 x1,
+                              f32 y1, f32 z1, f32 x2, f32 y2, f32 z2, f32 x3,
+                              f32 y3, f32 z3);
+
+extern "C" u32 ui_func_0030f760(f32 vertical_offset) {
+    using namespace func_30f760;
+
+    // The twelve words are copied before any helper runs and the loop reads the
+    // copy, so a helper that rewrites 0x00404A44 cannot affect this call.
+    u32 color_table[kColorCount];
+    {
+        const u32* const source =
+            reinterpret_cast<const u32*>(kColorTableAddress);
+        for (u32 index = 0; index < kColorCount; ++index) {
+            color_table[index] = source[index];
+        }
+    }
+
+    if (load_record_count() == 0) {
+        return 0;
+    }
+
+    // The original captures the base before the viewport-command helper runs,
+    // then re-reads the global for the render-mode call and again for the pop.
+    void* const push_base = smt4::engine::g_RenderRegisterBase;
+    const u32 pushed = ui_func_002c5f7c(kViewportCommand, kViewportEnabled);
+    RenderStackNode* const push_node = render_stack(push_base);
+    u32* const push_slots = push_node->slots;
+    const u32 push_count = push_node->count;
+    const u32 push_previous = push_slots[push_count];
+    push_node->count = push_count + 1;
+    push_slots[push_count + 1] = pushed;
+    if (push_node->dirty != 0 || push_previous != pushed) {
+        reinterpret_cast<FlushCallback>(push_node->flush_cb)(pushed);
+        push_node->dirty = 0;
+    }
+
+    ui_func_002c1d3c(smt4::engine::g_RenderRegisterBase, kRenderMode);
+
+    const f32 draw_y = vertical_offset + kVerticalStep;
+
+    // The count is re-read from 0x004C3224 every iteration, exactly like the
+    // `ldr r0, [r5, #0xE00]` in the loop tail, so a helper that grows or
+    // shrinks the record list changes the trip count.
+    for (s32 index = 0; index < load_record_count(); ++index) {
+        const u8* const record = reinterpret_cast<const u8*>(
+            kRecordBase + static_cast<u32>(index) * kRecordStride);
+        const f32 value_00 = *reinterpret_cast<const f32*>(record + 0x00);
+        const f32 value_08 = *reinterpret_cast<const f32*>(record + 0x08);
+        const f32 value_0c = *reinterpret_cast<const f32*>(record + 0x0C);
+        const f32 value_14 = *reinterpret_cast<const f32*>(record + 0x14);
+        const u32 color =
+            color_table[static_cast<u32>(index) % kColorCount] |
+            kColorCommandBits;
+
+        func_0029705c(color, color, color, color,
+                      value_00, draw_y, value_08,
+                      value_00, draw_y, value_14,
+                      value_0c, draw_y, value_08,
+                      value_0c, draw_y, value_14);
+    }
+
+    RenderStackNode* const pop_node =
+        render_stack(smt4::engine::g_RenderRegisterBase);
+    u32* const pop_slots = pop_node->slots;
+    const u32 pop_count = pop_node->count;
+    const u32 pop_previous = pop_slots[pop_count];
+    pop_node->count = pop_count - 1;
+    const u32 new_top = pop_slots[pop_count - 1];
+    if (pop_node->dirty != 0 || pop_previous != new_top) {
+        const u32 result =
+            reinterpret_cast<FlushCallback>(pop_node->flush_cb)(new_top);
+        pop_node->dirty = 0;
+        return result;
+    }
+    return new_top;
 }
 
 // DECOMP_FUNC(0x00126480, 424)
