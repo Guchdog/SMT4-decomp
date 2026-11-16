@@ -560,1402 +560,7990 @@ extern "C" __attribute__((naked)) void script_vm_func_0024f460() {
 }
 
 // DECOMP_FUNC(0x0033b3e0, 400)
-// 98 ARM instructions through unconditional pop; 8 trailing data bytes.
-extern "C" __attribute__((naked)) void ui_func_0033b3e0() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4ff8, 0xe2802b07, 0xe2822fa6, 0xe0813101\n"
-        ".word 0xe1a04000, 0xe5922000, 0xe0833301, 0xe3a00050\n"
-        ".word 0xe0800103, 0xe7920000, 0xe3100001, 0x13100080\n"
-        ".word 0x0a000053, 0xe1a00004, 0xebfd1ddd, 0xe59f1144\n"
-        ".word 0xe1d006fe, 0xe19110f4, 0xe2811001, 0xe351000c\n"
-        ".word 0xe1a02001, 0xaa000046, 0xe0843081, 0xe2833c2f\n"
-        ".word 0xe1d330f6, 0xe3530000, 0xaa00003e, 0xe0841081\n"
-        ".word 0xe2811c2f, 0xe352000b, 0xe1c100b6, 0xb2840d7f\n"
-        ".word 0xb58d0000, 0xaa00003a, 0xe0840082, 0xe280ec2f\n"
-        ".word 0xe1de00f6, 0xe3500000, 0xba00002e, 0xe2821001\n"
-        ".word 0xe351000c, 0xaa00002b, 0xe0840081, 0xe2806c2f\n"
-        ".word 0xe1d6c0f6, 0xe35c0000, 0xba000023, 0xe1de00f6\n"
-        ".word 0xe59d3000, 0xe08c720c, 0xe087830c, 0xe0807200\n"
-        ".word 0xe0877300, 0xe5933000, 0xe3a050cc, 0xe0859187\n"
-        ".word 0xe0855188, 0xe0899003, 0xe0855003, 0xe289ac01\n"
-        ".word 0xe3a0bf62, 0xe1d99fb6, 0xe1daa8b8, 0xe19bb0b5\n"
-        ".word 0xe1d55fb6, 0xe089900a, 0xe085a00b, 0xe6bf5079\n"
-        ".word 0xe6bf907a, 0xe1550009, 0xaa000002, 0xe1cec0b6\n"
-        ".word 0xe1c600b6, 0xea000008, 0xe320f000, 0x1a000006\n"
-        ".word 0xe3a05008, 0xe0857187, 0xe0855188, 0xe19370f7\n"
-        ".word 0xe19330f5, 0xe1570003, 0xcafffff3, 0xe2811001\n"
-        ".word 0xe351000c, 0xbaffffd3, 0xe2822001, 0xe352000b\n"
-        ".word 0xbaffffc8, 0xea000002, 0xe2811001, 0xe351000c\n"
-        ".word 0xbaffffb8, 0xe59f0010, 0xe5900000, 0xe8bd4ff8\n"
-        ".word 0xeafc66c9, 0xe8bd8ff8, 0x00002f1e, 0x00439ca8\n"
-    );
+//
+// Inserts one battle unit into the twelve-slot, key-ordered unit list of the
+// UI context and then forwards the shared UI buffer to 0x0025508c.
+//
+// Recovered contract (ARM 0x0033B3E0..0x0033B564):
+//   * `context` is the UI object, `id` a battle-unit index (s32).
+//   * The unit flag word lives in the 0x114-byte record table whose base
+//     pointer sits at context+0x1E98, at record offset +0x50.  Bits 0x01 and
+//     0x80 must both be set; otherwise the flag word is returned unchanged
+//     (the caller at 0x003BD2EC raises exactly 0x81 in that word first).
+//   * The value to insert is the s16 at +0x6E of the 0x288-byte actor record
+//     that 0x00282b94(context, id) finds.  The helper result is dereferenced
+//     without a null check, exactly like `ldrsh r0,[r0,#0x6e]` (0x0033B420).
+//   * The slot array is twelve s16 at context+0x2F06; context+0x2F1E holds the
+//     cursor (read signed).  Insertion starts at cursor+1, is skipped entirely
+//     when that index is >= 12, and otherwise lands in the first slot whose
+//     value is negative (the scan only advances over slots >= 0).
+//   * When the start index is <= 10 the window [start, 11] is re-ordered by an
+//     exchange pass: for j < i, when both slots are non-negative, slot j and
+//     slot i swap if the primary key of slot j is smaller than the primary key
+//     of slot i; on equal primary keys they swap if the secondary key of slot j
+//     is greater.  The primary key is the s16 truncation of the sum of the two
+//     zero-extended u16 fields at actor+0x1C2 and actor+0x254; the secondary
+//     key is the s16 at actor+0x008.
+//   * Return: the flag word on the early exit, otherwise the value returned by
+//     the tail call 0x0025508c(*0x00439CA8).
+//
+// The sort starts at cursor+1 rather than at the slot the value was written to;
+// both indices are kept separately below because an occupied prefix makes them
+// differ (original `mov r2,r1` at 0x0033B430 versus the scan on r1).
+namespace ui_b3e0 {
+
+// UI context fields (offsets from the r0/`context` register).
+constexpr u32 kFlagTablePointer = 0x1E98;    // 0x0033B3E4..0x0033B3F4
+constexpr u32 kFlagFieldOffset = 0x50;       // 0x0033B3FC..0x0033B404
+constexpr u32 kFlagRecordStride = 0x114;     // 0x0033B3EC/0x0033B3F8/0x0033B400
+constexpr u32 kFlagBit0 = 0x00000001;        // `tst r0,#1` (0x0033B408)
+constexpr u32 kFlagBit7 = 0x00000080;        // `tstne r0,#0x80` (0x0033B40C)
+
+constexpr u32 kActorTablePointer = 0x1FC0;   // 0x0033B45C..0x0033B4B4
+constexpr u32 kSlotArrayOffset = 0x2F06;     // ctx+0x2F00, `ldrsh [.,#6]`
+constexpr u32 kCursorOffset = 0x2F1E;        // literal 0x2F1E + r4 (0x0033B41C)
+constexpr s32 kSlotCount = 12;               // `cmp #0xc` (0x0033B42C/0x0033B530)
+constexpr s32 kSortOuterLimit = 11;          // `cmp r2,#0xb` (0x0033B454/0x0033B53C)
+
+// 0x288-byte actor record reached through context+0x1FC0.
+constexpr u32 kActorStride = 0x288;          // ip*17 + ip*64, then lsl #3
+constexpr u32 kInsertValueOffset = 0x6E;     // 0x0033B420
+constexpr u32 kSecondaryKeyOffset = 0x008;   // `mov r5,#8` (0x0033B510)
+constexpr u32 kPrimaryKeyLowOffset = 0x1C2;  // 0xCC+0xF6 (0x0033B4DC)
+constexpr u32 kPrimaryKeyHighOffset = 0x254; // 0xCC+0x188 (0x0033B4D8)
+
+constexpr u32 kSharedUiBuffer = 0x00439CA8;  // literal 0x00439CA8 (0x0033B554)
+
+}  // namespace ui_b3e0
+
+extern "C" u8* ui_func_00282b94(void* context, s32 id);
+extern "C" u32 script_vm_func_0025508c(void* buffer);
+
+namespace {
+
+// s16 slot accessor; a negative index addresses the words just before the
+// array, which is what the original `add r3,r4,r1,lsl #1` also does.
+s16* SlotAt(u8* ui, s32 index) {
+    return reinterpret_cast<s16*>(ui + ui_b3e0::kSlotArrayOffset) + index;
+}
+
+const u8* ActorAt(const u8* actors, s32 index) {
+    return actors + static_cast<u32>(index) * ui_b3e0::kActorStride;
+}
+
+// `ldrh`/`ldrh`/`add`/`sxth` (0x0033B4D4..0x0033B4F0): both u16 fields are
+// zero-extended, summed modulo 2^32 and truncated to s16.
+s32 PrimaryKey(const u8* actors, s32 index) {
+    const u8* const record = ActorAt(actors, index);
+    const u32 low =
+        *reinterpret_cast<const u16*>(record + ui_b3e0::kPrimaryKeyLowOffset);
+    const u32 high =
+        *reinterpret_cast<const u16*>(record + ui_b3e0::kPrimaryKeyHighOffset);
+    return static_cast<s16>(static_cast<u16>(low + high));
+}
+
+s32 SecondaryKey(const u8* actors, s32 index) {
+    return *reinterpret_cast<const s16*>(
+        ActorAt(actors, index) + ui_b3e0::kSecondaryKeyOffset);
+}
+
+}  // namespace
+
+extern "C" u32 ui_func_0033b3e0(void* context, s32 id) {
+    u8* const ui = static_cast<u8*>(context);
+
+    // 0x0033B3E4..0x0033B410: unit flag gate.
+    const u8* const flag_table =
+        *reinterpret_cast<u8* const*>(ui + ui_b3e0::kFlagTablePointer);
+    const u32 flags = *reinterpret_cast<const u32*>(
+        flag_table + ui_b3e0::kFlagFieldOffset +
+        static_cast<u32>(id) * ui_b3e0::kFlagRecordStride);
+    if ((flags & ui_b3e0::kFlagBit0) == 0 ||
+        (flags & ui_b3e0::kFlagBit7) == 0) {
+        return flags;
+    }
+
+    // 0x0033B414..0x0033B42C: helper result and cursor, in this order.  The
+    // +0x6E read is volatile so it stays on every path after the call, as in
+    // the original: when the cursor already saturates the slot list the value
+    // is still loaded (and a bad helper pointer still faults there).
+    const s32 value = *reinterpret_cast<const volatile s16*>(
+        reinterpret_cast<const u8*>(ui_func_00282b94(context, id)) +
+        ui_b3e0::kInsertValueOffset);
+    const s32 start =
+        static_cast<s32>(*reinterpret_cast<const s16*>(
+            ui + ui_b3e0::kCursorOffset)) + 1;
+
+    // 0x0033B42C..0x0033B460: find the first free (negative) slot.
+    s32 free_index = start;
+    while (free_index < ui_b3e0::kSlotCount &&
+           *SlotAt(ui, free_index) >= 0) {
+        ++free_index;
+    }
+
+    if (free_index < ui_b3e0::kSlotCount) {
+        *SlotAt(ui, free_index) = static_cast<s16>(value);
+
+        // 0x0033B464..0x0033B544: exchange pass over [start, 11].
+        if (start < ui_b3e0::kSortOuterLimit) {
+            const u8* const actors = *reinterpret_cast<u8* const*>(
+                ui + ui_b3e0::kActorTablePointer);
+            for (s32 j = start; j < ui_b3e0::kSortOuterLimit; ++j) {
+                if (*SlotAt(ui, j) < 0) {
+                    continue;
+                }
+                for (s32 i = j + 1; i < ui_b3e0::kSlotCount; ++i) {
+                    const s32 slot_i = *SlotAt(ui, i);
+                    if (slot_i < 0) {
+                        continue;
+                    }
+                    const s32 slot_j = *SlotAt(ui, j);
+                    const s32 key_j = PrimaryKey(actors, slot_j);
+                    const s32 key_i = PrimaryKey(actors, slot_i);
+                    const bool swap =
+                        key_j != key_i
+                            ? key_j < key_i
+                            : SecondaryKey(actors, slot_j) >
+                                  SecondaryKey(actors, slot_i);
+                    if (swap) {
+                        *SlotAt(ui, j) = static_cast<s16>(slot_i);
+                        *SlotAt(ui, i) = static_cast<s16>(slot_j);
+                    }
+                }
+            }
+        }
+    }
+
+    // 0x0033B554..0x0033B560: return 0x0025508c(*0x00439CA8).
+    return script_vm_func_0025508c(
+        *reinterpret_cast<void* const*>(ui_b3e0::kSharedUiBuffer));
 }
 
 // DECOMP_FUNC(0x003d9e10, 400)
-// 97 ARM instructions through unconditional pop; 12 trailing data bytes.
-extern "C" __attribute__((naked)) void script_vm_func_003d9e10() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe59f117c, 0xe92d41f0, 0xe1a06000, 0xe3a07000\n"
-        ".word 0xe7817000, 0xebf934fd, 0xe1a00006, 0xeb000322\n"
-        ".word 0xe3a05000, 0xe3a080ff, 0xe0650185, 0xe3a01080\n"
-        ".word 0xe0800100, 0xe0864100, 0xe2844d97, 0xe2840008\n"
-        ".word 0xe5c48000, 0xebfbab35, 0xe5940004, 0xe3500000\n"
-        ".word 0x0a000001, 0xebfba93d, 0xe5847004, 0xe2855001\n"
-        ".word 0xe355000b, 0xe5c47088, 0xbaffffee, 0xe2864b07\n"
-        ".word 0xe28440f8, 0xe5940000, 0xe3500000, 0x0a000003\n"
-        ".word 0xe5901000, 0xe5911004, 0xe12fff31, 0xe5847000\n"
-        ".word 0xe1a00006, 0xebf93678, 0xe59f00e8, 0xe7807006\n"
-        ".word 0xebf9cff0, 0xe320f000, 0xe320f000, 0xebfa2368\n"
-        ".word 0xe59f00d4, 0xe5900000, 0xe3500000, 0x0a000002\n"
-        ".word 0xe5901634, 0xe3c11302, 0xe5801634, 0xe1a00006\n"
-        ".word 0xebfa906b, 0xe3a05000, 0xe3e08000, 0xe0851105\n"
-        ".word 0xe0860181, 0xe2804e19, 0xe59001b0, 0xe5848004\n"
-        ".word 0xe5847024, 0xe5848008, 0xe3500000, 0xe584701c\n"
-        ".word 0x0a000003, 0xe5901000, 0xe5911004, 0xe12fff31\n"
-        ".word 0xe5847020, 0xe5940000, 0xe3500000, 0x0a000007\n"
-        ".word 0xe5901008, 0xe591100c, 0xe3510000, 0xabf5e2ed\n"
-        ".word 0xe5940000, 0xe320f000, 0xebfb36d4, 0xe5847000\n"
-        ".word 0xe2855001, 0xe3550032, 0xbaffffe3, 0xe3a04000\n"
-        ".word 0xe0840084, 0xe0860200, 0xe2805a01, 0xe2800a01\n"
-        ".word 0xe585739c, 0xe2800e3a, 0xe5858398, 0xebf99fc1\n"
-        ".word 0xe2844001, 0xe3540032, 0xe58573c4, 0xbafffff3\n"
-        ".word 0xe8bd81f0, 0x00003048, 0x00002f98, 0x004342c8\n"
-    );
+//
+// Teardown of the script-VM context object.  It clears two scalar words,
+// drains three fixed arrays of owned subobjects, releases the optional
+// reference-counted subobject at +0x1CF8, drops one global graphics flag and
+// then runs three global cleanup helpers.
+//
+// Recovered contract (ARM 0x003D9E10..0x003D9FA0):
+//   * `object = r0`; r1-r3 and the stack are not read.  The 97 return-path
+//     instructions end in `pop {r4,r5,r6,r7,r8,pc}`; the last 12 bytes are the
+//     literal pool 0x00003048, 0x00002F98, 0x004342C8.
+//   * 0x003D9E10..0x003D9E2C: `*(u32*)(object+0x3048) = 0`, then
+//     0x00227220(object) and 0x003DAABC(object), in that order.
+//   * 0x003D9E30..0x003D9E78: 11 entries of 0x8C bytes at object+0x25C0.
+//     Per entry: byte +0x00 = 0xFF; 0x002C4B30(entry+0x08, 0x80) zeroes the
+//     0x80-byte block; a non-null pointer at +0x04 is passed to 0x002C4360 and
+//     cleared; byte +0x88 = 0.  The bound is signed `cmp r5,#0xb` / `blt`.
+//   * 0x003D9E7C..0x003D9E9C: if object+0x1CF8 is non-null, call its virtual
+//     slot 1 (`*[obj]` is the vtable, `[vtable+4]` the target, receiver = obj)
+//     and clear the slot.  The concrete target is unresolved; the call is
+//     reproduced through the observed vtable offset.
+//   * 0x003D9EA0..0x003D9EE0: 0x0022788C(object),
+//     `*(u32*)(object+0x2F98) = 0`, 0x0024DE78(), 0x00262C64(), then if the
+//     global pointer at 0x004342C8 is non-null clear bit 27 (0x08000000) of
+//     its u32 at +0x634, and finally 0x0027E094(object).
+//     The two no-argument helpers ignore r0: at their call sites r0 still
+//     holds 0x2F98 (0x003D9EAC) and the return of 0x0024DE78 respectively.
+//   * 0x003D9EE4..0x003D9F58: 50 entries of 40 bytes at object+0x190.
+//     Load +0x20 first (virtual object), then store +0x04 = -1,
+//     +0x24 = 0, +0x08 = -1, +0x1C = 0.  If +0x20 is non-null call its
+//     virtual slot 1 and then set +0x20 = 0.  Re-load +0x00 (the virtual call
+//     may have rewritten it); when non-null, read `[[ptr+8]+0x0C]` as a signed
+//     word and, when it is >= 0, call 0x00152AF8(ptr), then re-load +0x00 again
+//     and call 0x002A7AA0(ptr), and finally set +0x00 = 0.
+//   * 0x003D9F5C..0x003D9F90: 50 entries of 48 bytes at object+0x1398.
+//     Store +0x00 = -1, +0x04 = 0, call 0x00241E88(entry+0x08), then store
+//     +0x2C = 0 (the original increments the index before that store, but the
+//     entry base register is unchanged).  Bound 0x32.
+//
+// Return value: none.  The caller (e.g. 0x002C9F7C) frees `object` itself after
+// this body returns, so this is the destructor/clear body, not a deallocator.
+namespace func_3d9e10 {
+
+// Scalar words cleared at the start and in the middle of the teardown.
+constexpr u32 kTopZeroWord = 0x3048;    // literal 0x00003048 (0x003D9F94)
+constexpr u32 kLowZeroWord = 0x2F98;    // literal 0x00002F98 (0x003D9F98)
+
+// First owned array: 11 entries of 0x8C bytes at +0x25C0 (0x003D9E38..E78).
+constexpr u32 kPoolOffset = 0x25C0;     // `add r4,r6,#0x25c0`
+constexpr u32 kPoolStride = 0x8C;       // 7*i + 28*i = 35*i, then lsl #2
+constexpr s32 kPoolCount = 11;          // `cmp r5,#0xb`
+constexpr u32 kPoolStateByte = 0x00;    // `strb r8,[r4]`
+constexpr u8 kPoolStateDead = 0xFF;     // r8 = 0xFF at 0x003D9E34
+constexpr u32 kPoolPointerOffset = 0x04;  // `ldr/str [r4,#4]`
+constexpr u32 kPoolBlockOffset = 0x08;    // `add r0,r4,#8`
+constexpr u32 kPoolBlockSize = 0x80;      // r1 = 0x80 at 0x003D9E3C
+constexpr u32 kPoolTailByte = 0x88;       // `strb r7,[r4,#0x88]`
+
+// Optional reference-counted subobject released through its vtable.
+constexpr u32 kMidSubobjectSlot = 0x1CF8;  // `add r4,r6,#0x1c00; add #0xf8`
+
+// Global graphics pointer and the controlled flag at +0x634 (0x003D9EC0).
+constexpr u32 kGlobalPointer = 0x004342C8;  // literal 0x004342C8 (0x003D9F9C)
+constexpr u32 kGlobalFlagsOffset = 0x634;   // `ldr r1,[r0,#0x634]`
+constexpr u32 kGlobalClearBit = 0x08000000; // `bic r1,r1,#0x8000000`
+
+// Second owned array: 50 entries of 40 bytes at +0x190 (0x003D9EEC..F58).
+constexpr u32 kObjectOffset = 0x190;
+constexpr u32 kObjectStride = 40;        // 5*i, then lsl #3
+constexpr s32 kObjectCount = 50;         // `cmp r5,#0x32`
+constexpr u32 kObjectPrimaryOffset = 0x00;
+constexpr u32 kObjectMinusOneA = 0x04;
+constexpr u32 kObjectMinusOneB = 0x08;
+constexpr u32 kObjectZeroA = 0x1C;
+constexpr u32 kObjectSecondaryOffset = 0x20;  // `ldr r0,[r0,#0x1b0]`
+constexpr u32 kObjectZeroB = 0x24;
+constexpr u32 kObjectLinkOffset = 0x08;       // `ldr r1,[r0,#8]`
+constexpr u32 kObjectLinkStateOffset = 0x0C;  // `ldr r1,[r1,#0xc]`
+constexpr u32 kAllOnes = 0xFFFFFFFF;     // `mvn r8,#0` at 0x003D9EE8
+
+// Third owned array: 50 entries of 48 bytes at +0x1398 (0x003D9F60..F8C).
+constexpr u32 kTailOffset = 0x1398;      // `add r0,r6,#0x1000; add #0x3a0`
+constexpr u32 kTailStride = 48;          // 3*i, then lsl #4
+constexpr s32 kTailCount = 50;           // `cmp r4,#0x32`
+constexpr u32 kTailMinusOne = 0x00;
+constexpr u32 kTailZeroA = 0x04;
+constexpr u32 kTailSubobject = 0x08;     // r0 = entry + 0x13A0 - 0x1398
+constexpr u32 kTailZeroB = 0x2C;         // entry + 0x13C4 - 0x1398
+
+}  // namespace func_3d9e10
+
+// Direct callees.  Every one is an existing raw-ARM body in this repository.
+extern "C" void script_vm_func_00227220(void* object);
+extern "C" void engine_func_003daabc(void* object);
+extern "C" void engine_func_002c4b30(void* destination, u32 size);
+extern "C" void engine_func_002c4360(void* block);
+extern "C" void engine_func_0022788c(void* object);
+extern "C" void engine_func_0024de78(void);
+extern "C" void ui_func_00262c64(void);
+extern "C" void script_vm_func_0027e094(void* object);
+extern "C" void script_vm_func_00152af8(void* object);
+extern "C" void script_vm_func_002a7aa0(void* object);
+extern "C" void camp_func_00241e88(void* object);
+
+namespace {
+
+// `ldr r1,[r0]; ldr r1,[r1,#4]; blx r1` (0x003D9E90 and 0x003D9F14): virtual
+// slot 1.  The concrete target lives in the object's vtable and is not
+// resolvable statically; the test installs a deterministic slot.
+void CallVirtualSlot1(void* object) {
+    using VirtualFn = void (*)(void*);
+    VirtualFn* const vtable = *reinterpret_cast<VirtualFn**>(object);
+    vtable[1](object);
+}
+
+// `ldr r1,[r0,#8]; ldr r1,[r1,#0xc]; cmp r1,#0` (0x003D9F30..F3C): the
+// second-level word is compared as signed.  A null link word faults exactly
+// like the original.
+bool ReleaseStateIsNonNegative(void* object) {
+    const u32* const link = *reinterpret_cast<u32* const*>(
+        static_cast<u8*>(object) + func_3d9e10::kObjectLinkOffset);
+    const s32 state = *reinterpret_cast<const s32*>(
+        reinterpret_cast<const u8*>(link) +
+        func_3d9e10::kObjectLinkStateOffset);
+    return state >= 0;
+}
+
+}  // namespace
+
+extern "C" void script_vm_func_003d9e10(void* object) {
+    u8* const base = static_cast<u8*>(object);
+
+    // 0x003D9E10..0x003D9E2C: top-level word and two context resets.
+    *reinterpret_cast<u32*>(base + func_3d9e10::kTopZeroWord) = 0;
+    script_vm_func_00227220(base);
+    engine_func_003daabc(base);
+
+    // 0x003D9E30..0x003D9E78: 11-entry owned-block array at +0x25C0.
+    for (u32 i = 0; i < static_cast<u32>(func_3d9e10::kPoolCount); ++i) {
+        u8* const entry =
+            base + func_3d9e10::kPoolOffset + i * func_3d9e10::kPoolStride;
+        entry[func_3d9e10::kPoolStateByte] = func_3d9e10::kPoolStateDead;
+        engine_func_002c4b30(entry + func_3d9e10::kPoolBlockOffset,
+                            func_3d9e10::kPoolBlockSize);
+
+        void* const block = *reinterpret_cast<void**>(
+            entry + func_3d9e10::kPoolPointerOffset);
+        if (block != nullptr) {
+            engine_func_002c4360(block);
+            *reinterpret_cast<void**>(
+                entry + func_3d9e10::kPoolPointerOffset) = nullptr;
+        }
+        entry[func_3d9e10::kPoolTailByte] = 0;
+    }
+
+    // 0x003D9E7C..0x003D9E9C: optional virtual subobject at +0x1CF8.
+    u8* const mid_slot = base + func_3d9e10::kMidSubobjectSlot;
+    void* const mid = *reinterpret_cast<void**>(mid_slot);
+    if (mid != nullptr) {
+        CallVirtualSlot1(mid);
+        *reinterpret_cast<void**>(mid_slot) = nullptr;
+    }
+
+    // 0x003D9EA0..0x003D9EE0: context reset, global cleanups, global flag.
+    engine_func_0022788c(base);
+    *reinterpret_cast<u32*>(base + func_3d9e10::kLowZeroWord) = 0;
+    engine_func_0024de78();
+    ui_func_00262c64();
+
+    void* const global =
+        *reinterpret_cast<void* const*>(func_3d9e10::kGlobalPointer);
+    if (global != nullptr) {
+        u32* const flags = reinterpret_cast<u32*>(
+            static_cast<u8*>(global) + func_3d9e10::kGlobalFlagsOffset);
+        *flags &= ~func_3d9e10::kGlobalClearBit;
+    }
+    script_vm_func_0027e094(base);
+
+    // 0x003D9EE4..0x003D9F58: 50-entry 40-byte array at +0x190.  The +0x20
+    // pointer is loaded before the field stores; the +0x00 pointer is loaded
+    // only after the +0x20 virtual call, and re-loaded again after the
+    // conditional 0x00152AF8 call.
+    for (u32 i = 0; i < static_cast<u32>(func_3d9e10::kObjectCount); ++i) {
+        u8* const entry =
+            base + func_3d9e10::kObjectOffset + i * func_3d9e10::kObjectStride;
+        void* const secondary = *reinterpret_cast<void**>(
+            entry + func_3d9e10::kObjectSecondaryOffset);
+
+        *reinterpret_cast<u32*>(entry + func_3d9e10::kObjectMinusOneA) =
+            func_3d9e10::kAllOnes;
+        *reinterpret_cast<u32*>(entry + func_3d9e10::kObjectZeroB) = 0;
+        *reinterpret_cast<u32*>(entry + func_3d9e10::kObjectMinusOneB) =
+            func_3d9e10::kAllOnes;
+        *reinterpret_cast<u32*>(entry + func_3d9e10::kObjectZeroA) = 0;
+
+        if (secondary != nullptr) {
+            CallVirtualSlot1(secondary);
+            *reinterpret_cast<void**>(
+                entry + func_3d9e10::kObjectSecondaryOffset) = nullptr;
+        }
+
+        void* const primary = *reinterpret_cast<void**>(
+            entry + func_3d9e10::kObjectPrimaryOffset);
+        if (primary != nullptr) {
+            if (ReleaseStateIsNonNegative(primary)) {
+                script_vm_func_00152af8(primary);
+            }
+            void* const reloaded = *reinterpret_cast<void**>(
+                entry + func_3d9e10::kObjectPrimaryOffset);
+            script_vm_func_002a7aa0(reloaded);
+            *reinterpret_cast<void**>(
+                entry + func_3d9e10::kObjectPrimaryOffset) = nullptr;
+        }
+    }
+
+    // 0x003D9F5C..0x003D9F90: 50-entry 48-byte array at +0x1398.
+    for (u32 i = 0; i < static_cast<u32>(func_3d9e10::kTailCount); ++i) {
+        u8* const entry =
+            base + func_3d9e10::kTailOffset + i * func_3d9e10::kTailStride;
+        *reinterpret_cast<u32*>(entry + func_3d9e10::kTailMinusOne) =
+            func_3d9e10::kAllOnes;
+        *reinterpret_cast<u32*>(entry + func_3d9e10::kTailZeroA) = 0;
+        camp_func_00241e88(entry + func_3d9e10::kTailSubobject);
+        *reinterpret_cast<u32*>(entry + func_3d9e10::kTailZeroB) = 0;
+    }
 }
 
 // DECOMP_FUNC(0x003dff3c, 400)
-// 92 ARM instructions through unconditional pop; 32 trailing data bytes.
-extern "C" __attribute__((naked)) void func_003dff3c() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe1a0c000, 0xe92d4010, 0xe5d00000, 0xe3500000\n"
-        ".word 0x0a00004d, 0xe59fe154, 0xe59f0154, 0xe3530000\n"
-        ".word 0xe481e004, 0xe4810004, 0xe3a00000, 0x0a000003\n"
-        ".word 0xe59f3140, 0xe8a10009, 0xe4810004, 0xe4810004\n"
-        ".word 0xed9c0a01, 0xeddf0a4c, 0xee103a10, 0xeeb40ae0\n"
-        ".word 0xeef1fa10, 0x9a00000b, 0xe1a03083, 0xe3a0e0ff\n"
-        ".word 0xe15e0c23, 0x0a000007, 0xe59f3114, 0xeddf0a43\n"
-        ".word 0xee200a20, 0xee100a10, 0xe1530000, 0xcebc0ac0\n"
-        ".word 0xd3e004ff, 0xce100a10, 0xe5dc3001, 0xe3530000\n"
-        ".word 0xe1a000a0, 0x03a03001, 0x13a03000, 0xe1833080\n"
-        ".word 0xe59f00e0, 0xe4813004, 0xe4810004, 0xed9c0a04\n"
-        ".word 0xeddc0a03, 0xee300a80, 0xee100a10, 0xe3d03102\n"
-        ".word 0x0a000006, 0xe1a03080, 0xe1a03c23, 0xe2433070\n"
-        ".word 0xe3530000, 0xb1a00fa0, 0xb1a0e780, 0xba000005\n"
-        ".word 0xe3c0e57e, 0xe1a00fa0, 0xe1a0e6ae, 0xe18e3503\n"
-        ".word 0xe1830780, 0xe6ffe070, 0xeeb10a60, 0xee100a10\n"
-        ".word 0xe3d03102, 0x0a000006, 0xe1a03080, 0xe1a03c23\n"
-        ".word 0xe2433070, 0xe3530000, 0xb1a00fa0, 0xb1a00780\n"
-        ".word 0xba000005, 0xe3c0457e, 0xe1a00fa0, 0xe1a046a4\n"
-        ".word 0xe1843503, 0xe1830780, 0xe6ff0070, 0xe18e3800\n"
-        ".word 0xe59f0044, 0xe4813004, 0xe4810004, 0xe3520000\n"
-        ".word 0x01a00001, 0x0a000004, 0xe59c0014, 0xe8bd4010\n"
-        ".word 0xe3a02001, 0xe280007c, 0xeaf919a4, 0xe8bd8010\n"
-        ".word 0x00e40103, 0x00010100, 0x00200080, 0x00000000\n"
-        ".word 0x4b800000, 0x4b800000, 0x000f008b, 0x000f0130\n"
-    );
+//
+// Emits a ten- or fourteen-word rendering record from a small source structure
+// and optionally hands it to the shared continuation at 0x0022673C.
+//
+// Recovered contract (ARM 0x003DFF3C..0x003E00AB, literal pool 0x003E00AC):
+//   * `object` is the source structure (kept in r12 for the whole body),
+//     `out` is the word cursor, `submit` (r2) selects the tail call and
+//     `extra` (r3) selects four additional leading words.
+//   * `object[0]` gates the complete packing block: when zero no word is
+//     written, but the tail call still happens.
+//   * The fixed leading words are 0x00E40103 then 0x00010100.  When
+//     `extra != 0` four more words follow: 0, 0x00200080, 0, 0.
+//   * `object+0x04` is converted to a 24-bit truncating fixed-point value
+//     (see ToFixed24): the original tests `v > 0.0f` with VCMPE, rejects
+//     float exponents of 0xFF (infinity/NaN), scales by 2^24 with VMUL,
+//     saturates to 0x00FFFFFF when the scaled bit pattern is >= 0x4B800000
+//     and otherwise uses VCVT.U32.F32 (round towards zero).  Every rejected
+//     input yields 0.  Bit 0 of the value is then replaced by
+//     `object[1] == 0 ? 1 : 0`; the word 0x000F008B follows.
+//   * The word after that packs two IEEE binary16 halves produced by the
+//     truncating conversion in ToHalf: bits 0..15 hold
+//     `object+0x0C + object+0x10`, bits 16..31 hold `-(object+0x0C)`.
+//     The final word is 0x000F0130.
+//   * `submit == 0` returns the advanced cursor; otherwise the routine tail
+//     calls 0x0022673C with (*(u32*)(object+0x14) + 0x7C, cursor, 1) and
+//     forwards its return value.
+//
+// 0x0022673C is a separate entry point that the ledger folds into
+// func_00226690 (its prologue/`bx lr` pair at 0x22673C/0x22679C is distinct
+// from 0x00226690's own return at 0x226730); it is declared below.
+namespace record_dff3c {
+
+// Source-structure offsets (all reached through the r12 copy of `object`).
+constexpr u32 kGateByte = 0x00;              // ldrb [ip] (0x003DFF44)
+constexpr u32 kHalfFlagByte = 0x01;          // ldrb [ip,#1] (0x003DFFC4)
+constexpr u32 kFixedValue = 0x04;            // vldr s0,[ip,#4] (0x003DFF7C)
+constexpr u32 kSecondValue = 0x0C;           // vldr s1,[ip,#0xc] (0x003DFFEC)
+constexpr u32 kThirdValue = 0x10;            // vldr s0,[ip,#0x10] (0x003DFFE8)
+constexpr u32 kObjectPointer = 0x14;         // ldr r0,[ip,#0x14] (0x003E0094)
+constexpr u32 kTailBias = 0x7C;              // add r0,r0,#0x7c (0x003E00A0)
+
+// Fixed output words (literal pool 0x003E00AC..0x003E00C8).
+constexpr u32 kHeaderWord0 = 0x00E40103;     // 0x003E00AC
+constexpr u32 kHeaderWord1 = 0x00010100;     // 0x003E00B0
+constexpr u32 kExtraWord = 0x00200080;       // 0x003E00B4
+constexpr u32 kFixedWord0 = 0x000F008B;      // 0x003E00C4
+constexpr u32 kFixedWord1 = 0x000F0130;      // 0x003E00C8
+
+// 0x003DFF80/0x003E00B8 compare against +0.0f; 0x003DFFA8/0x003E00BC
+// multiply by 2^24; 0x003DFFA4/0x003E00C0 is the raw bit pattern of 2^24.
+constexpr f32 kPositiveZero = 0.0f;
+constexpr f32 kFixedScale = 16777216.0f;
+constexpr u32 kFixedScaleBits = 0x4B800000u;
+
+// `mvnle r0,#0xff000000` (0x003DFFBC) saturates to the 24-bit maximum.
+constexpr u32 kFixedSaturated = 0x00FFFFFFu;
+
+// ToHalf exponent rebase/bias: `sub r3,r3,#0x70` (0x003E0008/0x003E004C).
+constexpr u32 kHalfBias = 0x70;
+
+// The parenthesised low bit is the only rounding the original performs.
+constexpr u32 kFixedMask = ~1u;
+constexpr u32 kHalfMantissaMask = 0x3FFu;
+
+}  // namespace record_dff3c
+
+// Tail continuation at 0x0022673C (see the comment above).
+extern "C" u32 func_0022673c(u32 object, u32* out, u32 mode);
+
+namespace {
+
+inline u32 FloatBits(f32 value) {
+    u32 bits;
+    __builtin_memcpy(&bits, &value, sizeof(bits));
+    return bits;
 }
 
+inline f32 ReadF32(const u8* base, u32 offset) {
+    f32 value;
+    __builtin_memcpy(&value, base + offset, sizeof(value));
+    return value;
+}
+
+inline u32 ReadU32(const u8* base, u32 offset) {
+    u32 value;
+    __builtin_memcpy(&value, base + offset, sizeof(value));
+    return value;
+}
+
+// 0x003DFF7C..0x003DFFC0: VCMPE/VMUL/VCVT.U32.F32 24-bit conversion.
+u32 ToFixed24(f32 value) {
+    const u32 bits = FloatBits(value);
+
+    // `vcmpe.f32 s0,#0.0` + `bls`: false for every value <= 0 and for NaN,
+    // while the unordered case is caught by the exponent test below.
+    if (!(value > record_dff3c::kPositiveZero)) {
+        return 0;
+    }
+    if (((bits << 1) >> 24) == 0xFFu) {  // `cmp #0xff,r3,lsr #24`
+        return 0;
+    }
+
+    const f32 scaled = value * record_dff3c::kFixedScale;
+    // `cmp r3,r0` is a signed compare of the two raw bit patterns; both
+    // operands are non-negative here, so the ordering is the same.
+    if (!(FloatBits(scaled) < record_dff3c::kFixedScaleBits)) {
+        return record_dff3c::kFixedSaturated;
+    }
+    return static_cast<u32>(scaled);  // VCVT.U32.F32 (round towards zero)
+}
+
+// 0x003DFFDC..0x003E0030 and 0x003E0034..0x003E0074: the shared, unrounded
+// binary16 conversion.  `+/-0` and every value whose biased exponent is below
+// 0x70 collapse to a signed zero; larger values keep the top 10 mantissa bits
+// and lose the excess exponent bits through the final `uxth`.
+u16 ToHalf(f32 value) {
+    const u32 bits = FloatBits(value);
+    const u32 sign = (bits >> 31) << 15;
+    if ((bits & 0x7FFFFFFFu) == 0) {  // `bics r3,r0,#0x80000000`
+        return static_cast<u16>(sign);
+    }
+    const u32 exponent = (bits << 1) >> 24;
+    const s32 rebased = static_cast<s32>(exponent) -
+                        static_cast<s32>(record_dff3c::kHalfBias);
+    if (rebased < 0) {  // `cmp r3,#0` + `blt`
+        return static_cast<u16>(sign);
+    }
+    return static_cast<u16>(
+        (static_cast<u32>(rebased) << 10) |
+        ((bits >> 13) & record_dff3c::kHalfMantissaMask) | sign);
+}
+
+}  // namespace
+
+extern "C" u32 func_003dff3c(const u8* object, u32* out, u32 submit, u32 extra) {
+    u32* cursor = out;
+
+    // 0x003DFF3C..0x003DFF4C: byte-0 gate.
+    if (object[record_dff3c::kGateByte] != 0) {
+        // 0x003DFF50..0x003DFF60: fixed header words.
+        *cursor++ = record_dff3c::kHeaderWord0;
+        *cursor++ = record_dff3c::kHeaderWord1;
+
+        // 0x003DFF64..0x003DFF78: optional four-word extension.
+        if (extra != 0) {
+            *cursor++ = 0;
+            *cursor++ = record_dff3c::kExtraWord;
+            *cursor++ = 0;
+            *cursor++ = 0;
+        }
+
+        // 0x003DFF7C..0x003DFFDC: 24-bit value, flag bit, fixed word.
+        const u32 fixed = ToFixed24(ReadF32(object, record_dff3c::kFixedValue));
+        const u32 low_bit = (object[record_dff3c::kHalfFlagByte] == 0) ? 1u : 0u;
+        *cursor++ = (fixed & record_dff3c::kFixedMask) | low_bit;
+        *cursor++ = record_dff3c::kFixedWord0;
+
+        // 0x003DFFE8..0x003E0084: packed half pair and closing word.  The
+        // two VFP loads happen before the add, exactly as in the original.
+        const f32 second = ReadF32(object, record_dff3c::kSecondValue);
+        const f32 third = ReadF32(object, record_dff3c::kThirdValue);
+        const u32 sum_half = ToHalf(second + third);
+        const u32 negated_half = ToHalf(-second);
+        *cursor++ = sum_half | (negated_half << 16);
+        *cursor++ = record_dff3c::kFixedWord1;
+    }
+
+    // 0x003E0088..0x003E00A8: return the cursor or forward to 0x0022673C.
+    if (submit == 0) {
+        return reinterpret_cast<u32>(cursor);
+    }
+    const u32 continuation =
+        ReadU32(object, record_dff3c::kObjectPointer) + record_dff3c::kTailBias;
+    return func_0022673c(continuation, cursor, 1);
+}
+
+// ---------------------------------------------------------------------------
+// 0x00297C9C -- preset the map-interface record block owned by the object
+// published through 0x00447A78 (`g_MapIfWork` in include/engine/map_runtime.h).
+//
+// ARM 0x00297C9C..0x00297E2F: 92 instructions, 36 trailing constant-pool bytes.
+// No calls, no indirect branches, no stack arguments.
+//
+// Record contract recovered from the addressing (`add r0, r2, r0, lsl #2` after
+// `mul r0, r0, #0x65`, then `strb r1, [r0, #0x1d0]!`):
+//   * 0x00447A78 holds a pointer.  The routine dereferences it once and never
+//     reads the incoming r0, so the caller's argument is dead.
+//   * A record is 0x194 (404) bytes.  Record i of the sweep lives at
+//     base + i*404 + 0x1D0; the `cmp r3,#0x80` / `blt` loop runs i = 0..0x7F,
+//     covering +0x1D0..+0xCBD0.
+//   * The element at +0x03C is also exactly 0x194 bytes long (+0x3C + 0x194 =
+//     +0x1D0) and receives the same field offsets with different values, so the
+//     region is 129 contiguous records whose first element is a distinct preset.
+//   * Widths: +0x00, +0x40, +0x41, +0x42 and +0x4C are byte stores, +0x0C,
+//     +0x28, +0x2A and +0x2C are halfword stores, +0x30/+0x34/+0x38/+0x3C,
+//     +0x48, +0x5C..+0x80 and +0x8C..+0xBC are VFP singles, everything else is
+//     a 32-bit word store.
+//   * The 128 swept records receive 700/300/2500 at +0x34/+0x38/+0x3C,
+//     1150 at +0x5C and +0x68, 150 at +0x60 and +0x6C, 25 at +0x78/+0x7C,
+//     0xFFFFFFFF at +0x18 and +0x80, and 0 everywhere else it touches.
+//   * The +0x3C element instead receives 50 at +0x78/+0x7C, 0 at +0x5C..+0x74
+//     and +0x30, 0xFFFFFFFF at +0x18 and +0x80, and leaves the remaining record
+//     fields at their previous contents (only the listed fields are written).
+//   * The `stm` at 0x00297E00 copies the just-stored zero bits of +0x5C/+0x60
+//     (and a VFP zero) into +0x68/+0x6C/+0x70; the three stores are plain zero.
+//   * Only r4 is callee-saved (`str r4, [sp, #-4]!` / `pop {r4}`).  The final
+//     `ldm r0, {r0, r3}` reloads the zeroed +0x5C word, so the register image
+//     returns r0 = 0; no reconstructed caller consumes that value.
+// ---------------------------------------------------------------------------
+namespace func_297c9c {
+
+constexpr u32 kMapIfWork = 0x00447A78;  // pointer to the host block (0x00297C9C)
+constexpr u32 kRecordCount = 0x80;      // `mov r4,#0x65`, `cmp r3,#0x80`
+constexpr u32 kRecordSize = 0x194;      // 0x65 words; +0x3C + 0x194 = +0x1D0
+constexpr u32 kRecordBase = 0x1D0;      // `strb r1, [r0, #0x1d0]!`
+constexpr u32 kPresetBase = 0x03C;      // `strb r1, [r2, #0x3c]!`
+
+constexpr f32 kZero = 0.0f;             // literal 0x00000000 (0x00297E1C)
+constexpr f32 kValue25 = 25.0f;         // literal 0x41C80000 (0x00297E20)
+constexpr f32 kValue50 = 50.0f;         // literal 0x42480000 (0x00297E2C)
+constexpr f32 kValue150 = 150.0f;       // literal 0x43160000 (0x00297E28)
+constexpr f32 kValue300 = 300.0f;       // literal 0x43960000 (0x00297E14)
+constexpr f32 kValue700 = 700.0f;       // literal 0x442F0000 (0x00297E10)
+constexpr f32 kValue1150 = 1150.0f;     // literal 0x448FC000 (0x00297E24)
+constexpr f32 kValue2500 = 2500.0f;     // literal 0x451C4000 (0x00297E18)
+constexpr u32 kUnset = 0xFFFFFFFFu;     // `mvn ip, #0` (0x00297CCC)
+
+// 0x194-byte record.  Only the offsets the init code proves are named.
+struct MapIfRecord {
+    u8  field_000;           // +0x000: strb 0 (sweep and preset)
+    u8  pad_001[0x03];
+    u32 field_004;           // +0x004: str 0 (sweep only)
+    u32 field_008;           // +0x008: str 0 (sweep only)
+    u16 field_00c;           // +0x00C: strh 0 (sweep only)
+    u8  pad_00e[0x02];
+    u32 field_010;           // +0x010: str 0 (sweep and preset)
+    u32 field_014;           // +0x014: str 0 (sweep and preset)
+    u32 field_018;           // +0x018: str 0xFFFFFFFF (sweep and preset)
+    u32 field_01c;           // +0x01C: str 0 (sweep and preset)
+    u8  pad_020[0x08];
+    u16 field_028;           // +0x028: strh 0 (sweep only)
+    u16 field_02a;           // +0x02A: strh 0 (sweep only)
+    u16 field_02c;           // +0x02C: strh 0 (sweep only)
+    u8  pad_02e[0x02];
+    f32 field_030;           // +0x030: 0 (sweep and preset)
+    f32 field_034;           // +0x034: 700 (sweep only)
+    f32 field_038;           // +0x038: 300 (sweep only)
+    f32 field_03c;           // +0x03C: 2500 (sweep only)
+    u8  field_040;           // +0x040: strb 0 (sweep and preset)
+    u8  field_041;           // +0x041: strb 0 (sweep and preset)
+    u8  field_042;           // +0x042: strb 0 (sweep only)
+    u8  pad_043[0x01];
+    u32 field_044;           // +0x044: str 0 (sweep only)
+    f32 field_048;           // +0x048: 0 (sweep only)
+    u8  field_04c;           // +0x04C: strb 0 (sweep only)
+    u8  pad_04d[0x0f];
+    f32 field_05c;           // +0x05C: 1150 sweep, 0 preset
+    f32 field_060;           // +0x060: 150 sweep, 0 preset
+    f32 field_064;           // +0x064: 0 (sweep and preset)
+    f32 field_068;           // +0x068: 1150 sweep, 0 preset
+    f32 field_06c;           // +0x06C: 150 sweep, 0 preset
+    f32 field_070;           // +0x070: 0 (sweep and preset)
+    f32 field_074;           // +0x074: 0 (sweep and preset)
+    f32 field_078;           // +0x078: 25 sweep, 50 preset
+    f32 field_07c;           // +0x07C: 25 sweep, 50 preset
+    u32 field_080;           // +0x080: 0xFFFFFFFF (sweep and preset)
+    u8  pad_084[0x08];
+    f32 field_08c;           // +0x08C: 0 (sweep only)
+    f32 field_090;           // +0x090: 0 (sweep only)
+    f32 field_094;           // +0x094: 0 (sweep only)
+    f32 field_098;           // +0x098: 0 (sweep only)
+    f32 field_09c;           // +0x09C: 0 (sweep only)
+    f32 field_0a0;           // +0x0A0: 0 (sweep only)
+    f32 field_0a4;           // +0x0A4: 0 (sweep only)
+    f32 field_0a8;           // +0x0A8: 0 (sweep only)
+    f32 field_0ac;           // +0x0AC: 0 (sweep only)
+    f32 field_0b0;           // +0x0B0: 0 (sweep only)
+    f32 field_0b4;           // +0x0B4: 0 (sweep only)
+    f32 field_0b8;           // +0x0B8: 0 (sweep only)
+    f32 field_0bc;           // +0x0BC: 0 (sweep only)
+    u8  pad_0c0[0xc4];
+    u32 field_184;           // +0x184: str 0 (sweep only)
+    u32 field_188;           // +0x188: str 0 (sweep only)
+    u32 field_18c;           // +0x18C: str 0 (sweep only)
+    u32 field_190;           // +0x190: str 0 (sweep and preset)
+};
+static_assert(offsetof(MapIfRecord, field_004) == 0x004);
+static_assert(offsetof(MapIfRecord, field_00c) == 0x00C);
+static_assert(offsetof(MapIfRecord, field_010) == 0x010);
+static_assert(offsetof(MapIfRecord, field_018) == 0x018);
+static_assert(offsetof(MapIfRecord, field_028) == 0x028);
+static_assert(offsetof(MapIfRecord, field_030) == 0x030);
+static_assert(offsetof(MapIfRecord, field_034) == 0x034);
+static_assert(offsetof(MapIfRecord, field_040) == 0x040);
+static_assert(offsetof(MapIfRecord, field_042) == 0x042);
+static_assert(offsetof(MapIfRecord, field_044) == 0x044);
+static_assert(offsetof(MapIfRecord, field_048) == 0x048);
+static_assert(offsetof(MapIfRecord, field_04c) == 0x04C);
+static_assert(offsetof(MapIfRecord, field_05c) == 0x05C);
+static_assert(offsetof(MapIfRecord, field_080) == 0x080);
+static_assert(offsetof(MapIfRecord, field_08c) == 0x08C);
+static_assert(offsetof(MapIfRecord, field_0bc) == 0x0BC);
+static_assert(offsetof(MapIfRecord, field_184) == 0x184);
+static_assert(offsetof(MapIfRecord, field_190) == 0x190);
+static_assert(sizeof(MapIfRecord) == kRecordSize);
+
+// Observed prefix of the host object: one 0x194-byte preset element at +0x3C
+// followed by the 0x80 swept elements at +0x1D0 (ending at +0xCBD0, the
+// `field_cbd0` marker in include/engine/map_runtime.h).
+struct MapIfRecordBlock {
+    u8 pad_000[kPresetBase];
+    MapIfRecord preset;
+    MapIfRecord records[kRecordCount];
+};
+static_assert(offsetof(MapIfRecordBlock, preset) == kPresetBase);
+static_assert(offsetof(MapIfRecordBlock, records) == kRecordBase);
+static_assert(sizeof(MapIfRecordBlock) == 0xCBD0);
+
+}  // namespace func_297c9c
+
 // DECOMP_FUNC(0x00297c9c, 404)
-// 92 ARM instructions through unconditional bx; 36 trailing data bytes.
-extern "C" __attribute__((naked)) void script_vm_func_00297c9c() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe59f0168, 0xe52d4004, 0xe3a03000, 0xed9f1a58\n"
-        ".word 0xe5902000, 0xeddf2a57, 0xed9f3a57, 0xed9f0a57\n"
-        ".word 0xeddf0a57, 0xeddf3a57, 0xed9f4a57, 0xe1a01003\n"
-        ".word 0xe3e0c000, 0xe1a00003, 0xe3a04065, 0xe2833001\n"
-        ".word 0xe0000490, 0xe3530080, 0xe0820100, 0xe5e011d0\n"
-        ".word 0xe2804038, 0xe5801004, 0xe5801008, 0xe1c010bc\n"
-        ".word 0xe1c012b8, 0xe1c012ba, 0xe1c012bc, 0xed801a0d\n"
-        ".word 0xecc42a02, 0xe2804014, 0xe5c01040, 0xe5801010\n"
-        ".word 0xe5801190, 0xe8841002, 0xe580101c, 0xed800a0c\n"
-        ".word 0xedc00a1e, 0xedc00a1f, 0xe580c080, 0xed800a23\n"
-        ".word 0xe5c01041, 0xedc03a17, 0xe5c01042, 0xe5801044\n"
-        ".word 0xed800a12, 0xed804a18, 0xed800a19, 0xe5c0104c\n"
-        ".word 0xed800a1d, 0xed800a24, 0xed800a25, 0xed800a26\n"
-        ".word 0xed800a27, 0xed800a28, 0xed800a29, 0xed800a2a\n"
-        ".word 0xed800a2b, 0xed800a2c, 0xed800a2d, 0xed800a2e\n"
-        ".word 0xed800a2f, 0xedd04a19, 0xe5801184, 0xe5801188\n"
-        ".word 0xe580118c, 0xe2800068, 0xecc03a03, 0xbaffffc8\n"
-        ".word 0xe5e2103c, 0xe282005c, 0xe5c21040, 0xe582c018\n"
-        ".word 0xed820a17, 0xe5821010, 0xe5821190, 0xed820a18\n"
-        ".word 0xed820a19, 0xe8900009, 0xee104a10, 0xe582101c\n"
-        ".word 0xeddf0a12, 0xe5821014, 0xed820a0c, 0xedc20a1e\n"
-        ".word 0xedc20a1f, 0xe582c080, 0xe5c21041, 0xed820a1d\n"
-        ".word 0xe2822068, 0xe8820019, 0xe49d4004, 0xe12fff1e\n"
-        ".word 0x00447a78, 0x442f0000, 0x43960000, 0x451c4000\n"
-        ".word 0x00000000, 0x41c80000, 0x448fc000, 0x43160000\n"
-        ".word 0x42480000\n"
-    );
+extern "C" u32 script_vm_func_00297c9c() {
+    using namespace func_297c9c;
+
+    MapIfRecordBlock* const host =
+        *reinterpret_cast<MapIfRecordBlock**>(kMapIfWork);
+
+    // 0x00297CD0..0x00297DA8: the 0x80 swept records.  Store order follows the
+    // listing; the fields of one record never overlap, so the final image is
+    // independent of that order.
+    for (s32 index = 0; index < static_cast<s32>(kRecordCount); ++index) {
+        MapIfRecord& record = host->records[index];
+        record.field_000 = 0;                    // 0x00297CE8
+        record.field_004 = 0;                    // 0x00297CF0
+        record.field_008 = 0;                    // 0x00297CF4
+        record.field_00c = 0;                    // 0x00297CF8
+        record.field_028 = 0;                    // 0x00297CFC
+        record.field_02a = 0;                    // 0x00297D00
+        record.field_02c = 0;                    // 0x00297D04
+        record.field_034 = kValue700;             // 0x00297D08
+        record.field_038 = kValue300;             // 0x00297D0C
+        record.field_03c = kValue2500;            // 0x00297D10
+        record.field_040 = 0;                    // 0x00297D14
+        record.field_010 = 0;                    // 0x00297D18
+        record.field_190 = 0;                    // 0x00297D1C
+        record.field_014 = 0;                    // 0x00297D20
+        record.field_018 = kUnset;               // 0x00297D20
+        record.field_01c = 0;                    // 0x00297D24
+        record.field_030 = kZero;                // 0x00297D28
+        record.field_078 = kValue25;              // 0x00297D2C
+        record.field_07c = kValue25;              // 0x00297D30
+        record.field_080 = kUnset;               // 0x00297D34
+        record.field_08c = kZero;                // 0x00297D38
+        record.field_041 = 0;                    // 0x00297D3C
+        record.field_05c = kValue1150;            // 0x00297D40
+        record.field_042 = 0;                    // 0x00297D44
+        record.field_044 = 0;                    // 0x00297D48
+        record.field_048 = kZero;                // 0x00297D4C
+        record.field_060 = kValue150;             // 0x00297D50
+        record.field_064 = kZero;                // 0x00297D54
+        record.field_04c = 0;                    // 0x00297D58
+        record.field_074 = kZero;                // 0x00297D5C
+        record.field_090 = kZero;                // 0x00297D60
+        record.field_094 = kZero;                // 0x00297D64
+        record.field_098 = kZero;                // 0x00297D68
+        record.field_09c = kZero;                // 0x00297D6C
+        record.field_0a0 = kZero;                // 0x00297D70
+        record.field_0a4 = kZero;                // 0x00297D74
+        record.field_0a8 = kZero;                // 0x00297D78
+        record.field_0ac = kZero;                // 0x00297D7C
+        record.field_0b0 = kZero;                // 0x00297D80
+        record.field_0b4 = kZero;                // 0x00297D84
+        record.field_0b8 = kZero;                // 0x00297D88
+        record.field_0bc = kZero;                // 0x00297D8C
+        record.field_184 = 0;                    // 0x00297D94
+        record.field_188 = 0;                    // 0x00297D98
+        record.field_18c = 0;                    // 0x00297D9C
+        record.field_068 = kValue1150;            // 0x00297DA4
+        record.field_06c = kValue150;             // 0x00297DA4
+        record.field_070 = kZero;                // 0x00297DA4
+    }
+
+    // 0x00297DAC..0x00297E00: the single +0x3C element.  Only the fields named
+    // here are touched; the rest of the element keeps its prior contents.
+    MapIfRecord& preset = host->preset;
+    preset.field_000 = 0;                        // 0x00297DAC
+    preset.field_040 = 0;                        // 0x00297DB4
+    preset.field_018 = kUnset;                   // 0x00297DB8
+    preset.field_05c = kZero;                    // 0x00297DBC
+    preset.field_010 = 0;                        // 0x00297DC0
+    preset.field_190 = 0;                        // 0x00297DC4
+    preset.field_060 = kZero;                    // 0x00297DC8
+    preset.field_064 = kZero;                    // 0x00297DCC
+    preset.field_01c = 0;                        // 0x00297DD8
+    preset.field_014 = 0;                        // 0x00297DE0
+    preset.field_030 = kZero;                    // 0x00297DE4
+    preset.field_078 = kValue50;                 // 0x00297DE8
+    preset.field_07c = kValue50;                 // 0x00297DEC
+    preset.field_080 = kUnset;                   // 0x00297DF0
+    preset.field_041 = 0;                        // 0x00297DF4
+    preset.field_074 = kZero;                    // 0x00297DF8
+    preset.field_068 = kZero;                    // 0x00297E00
+    preset.field_06c = kZero;                    // 0x00297E00
+    preset.field_070 = kZero;                    // 0x00297E00
+
+    return 0;
 }
 
 // DECOMP_FUNC(0x0032bc14, 404)
-// 98 ARM instructions through unconditional pop; 12 trailing data bytes.
-extern "C" __attribute__((naked)) void engine_func_0032bc14() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d47f0, 0xe3a04000, 0xe1a05004, 0xe59f6174\n"
-        ".word 0xe59f0174, 0xeb008f12, 0xe3500000, 0xe320f000\n"
-        ".word 0x0a00000a, 0xe59f0160, 0xebf7be45, 0xe59f015c\n"
-        ".word 0xe320f000, 0xebf7be66, 0xe59f0150, 0xe320f000\n"
-        ".word 0xebf7be93, 0xe59f0140, 0xe320f000, 0xebf7be4a\n"
-        ".word 0xe59f0138, 0xeb0094ee, 0xe3500000, 0xe320f000\n"
-        ".word 0x1a00000f, 0xe59f0124, 0xeb009561, 0xe1c620d8\n"
-        ".word 0xe0500002, 0xe0d10003, 0xe59f0110, 0xba000003\n"
-        ".word 0xeb009071, 0xe320f000, 0xe320f000, 0xea000004\n"
-        ".word 0xe320f000, 0xeb00947e, 0xe3500000, 0x159f00ec\n"
-        ".word 0x1b0090da, 0xe59f00e4, 0xeb009368, 0xe3500000\n"
-        ".word 0xe320f000, 0x0a00001d, 0xe59f00d0, 0xeb00954c\n"
-        ".word 0xe1c620d8, 0xe3a07006, 0xe3a0c000, 0xe0898792\n"
-        ".word 0xe0239793, 0xe0500008, 0xe0223c92, 0xe0d10002\n"
-        ".word 0xba00000a, 0xe59f00a0, 0xeb008ec1, 0xe59f009c\n"
-        ".word 0xe320f000, 0xeb008fc1, 0xe59f0090, 0xe320f000\n"
-        ".word 0xeb00902f, 0xe320f000, 0xe320f000, 0xea000007\n"
-        ".word 0xe3510000, 0xba000005, 0xe59f0070, 0xe3a05001\n"
-        ".word 0xeb0094c1, 0xe59f0060, 0xe320f000, 0xeb008ebe\n"
-        ".word 0xe5d60000, 0xe3500000, 0xe59f0050, 0x13a04001\n"
-        ".word 0xeb00964f, 0xe59f0044, 0xe320f000, 0xe590000c\n"
-        ".word 0xe1951004, 0xe320f000, 0x1a000003, 0xe3500007\n"
-        ".word 0x0a000001, 0xe3500001, 0x1affffa8, 0xe3550000\n"
-        ".word 0x13a00001, 0x1a000002, 0xe59f0010, 0xeb0091e6\n"
-        ".word 0xe3a00000, 0xe8bd87f0, 0x0044d020, 0x004c3af8\n"
-        ".word 0x004c3b20\n"
-    );
+//
+// Engine wait/step loop over the two global engine objects at 0x004C3AF8 and
+// 0x004C3B20.  Each iteration probes the context object, compares the 64-bit
+// value returned by 0x00351208 with the baseline stored at 0x0044D020+0x08
+// (and with six times that baseline), runs the matching transition helpers,
+// sleeps through 0x00351698 and exits when the accumulated flags are set or
+// the context state is 1 or 7.
+//
+// Recovered contract (ARM 0x0032BC14..0x0032BDA7):
+//   * r0 is caller-supplied and never read: the original overwrites it with
+//     0x004C3AF8 before the first call.  The only caller (0x001DD5A8) passes
+//     an unrelated per-frame counter in r0.
+//   * r4 means "the byte at 0x0044D020 was nonzero in some iteration"; r5
+//     means "the six-times-baseline check took its overdue (non-negative
+//     high-word) path".  Both flags persist across loop iterations, and the
+//     loop ends when either is set or the state word is 1 or 7.
+//   * Return 1 only when r5 is set.  Otherwise 0x00350530 is called and 0 is
+//     returned; r4 alone still forces the 0x00350530 call.
+//   * All callee-saved registers are preserved; there are no stack arguments
+//     and no indirect calls.
+//
+// The 12 trailing bytes at 0x0032BD9C are the literal pool read by `ldr`
+// (0x0044D020, 0x004C3AF8, 0x004C3B20).
+
+namespace engine_0032bc14 {
+
+// Literal-pool constants (0x0032BD9C..0x0032BDA4).
+constexpr u32 kStatusAddress = 0x0044D020;    // `ldrb r0, [r6]`
+constexpr u32 kTaskObjectAddress = 0x004C3AF8;  // first/second stage object
+constexpr u32 kContextAddress = 0x004C3B20;   // engine task context
+constexpr u32 kBaselineOffset = 0x08;         // `ldrd r2, r3, [r6, #8]`
+constexpr u32 kStateOffset = 0x0C;            // `ldr r0, [r0, #0xc]`
+constexpr u32 kBaselineScale = 6;             // `mov r7, #6`
+
+// The two globals are instruction literals, not parameters.
+inline u8* Global(u32 address) {
+    return reinterpret_cast<u8*>(static_cast<std::uintptr_t>(address));
+}
+
+// 64-bit baseline owned by the status block.  The original re-reads it with
+// `ldrd` for each comparison; volatile keeps both loads distinct.
+inline u64 LoadBaseline() {
+    return *reinterpret_cast<const volatile u64*>(
+        Global(kStatusAddress + kBaselineOffset));
+}
+
+// Context state word read after the per-iteration sleep call.
+inline u32 LoadContextState() {
+    return *reinterpret_cast<const volatile u32*>(
+        Global(kContextAddress + kStateOffset));
+}
+
+}  // namespace engine_0032bc14
+
+// Direct calls.  Return types record what the callees produce when the
+// contract is known; results this caller ignores are left as void.
+// 0x0034F878: nonzero when the task object's phase/timestamp state is ready.
+// 0x00351028: nonzero when the context probe says the clock is suspended.
+// 0x00351208: u64 remaining-time value, 0xFFFFFFFFFFFFFFFF when inactive.
+// 0x00350EA8 / 0x00350A64: step-state predicates returning 0 or 1.
+// 0x00351698: 16-byte sleeper wrapper; ignores r0, loads 0x0007A120 and
+//             tail-calls 0x002BB490 with r1 = 0.
+extern "C" s32 func_0034f878(void* object);
+extern "C" void func_0011b558(void* object);
+extern "C" s32 engine_func_0011b5e8(void* object);
+extern "C" s32 engine_func_0011b6a8(void* object);
+extern "C" void func_0011b590(void* object);
+extern "C" s32 func_00351028(void* object);
+extern "C" u64 func_00351208(void* object);
+extern "C" void func_0034fe60(void* object);
+extern "C" s32 func_00350ea8(void* object);
+extern "C" s32 func_00350024(void* object);
+extern "C" s32 func_00350a64(void* object);
+extern "C" void func_0034f808(void* object);
+extern "C" u32 engine_func_0034fc14(void* object);
+extern "C" void engine_func_0034fdd8(void* object);
+extern "C" void camp_func_00351040(void* object);
+extern "C" void func_0034f840(void* object);
+extern "C" void nn_sdk_func_00351698(void* object);
+extern "C" void func_00350530(void* object);
+
+extern "C" s32 engine_func_0032bc14(void) {
+    namespace detail = engine_0032bc14;
+
+    u8* const task_object = detail::Global(detail::kTaskObjectAddress);
+    u8* const context = detail::Global(detail::kContextAddress);
+    volatile u8* const status_byte = reinterpret_cast<volatile u8*>(
+        detail::Global(detail::kStatusAddress));
+
+    // r4 and r5; both survive loop iterations.
+    bool status_seen = false;
+    bool overdue = false;
+
+    for (;;) {
+        // 0x0032BC24..0x0032BC60: one-shot or repeated task-object start.
+        if (func_0034f878(task_object) != 0) {
+            func_0011b558(task_object);
+            engine_func_0011b5e8(context);
+            engine_func_0011b6a8(context);
+            func_0011b590(task_object);
+        }
+
+        // 0x0032BC64..0x0032BCB4: suspended-context handling.  A nonzero
+        // probe result skips the whole clock block.
+        if (func_00351028(context) == 0) {
+            const u64 now = func_00351208(context);
+            const u64 baseline = detail::LoadBaseline();
+
+            // Signed 64-bit `now < baseline` (subs/sbcs + blt).
+            if (static_cast<s64>(now) < static_cast<s64>(baseline)) {
+                if (func_00350ea8(context) != 0) {
+                    func_00350024(context);
+                }
+            } else {
+                func_0034fe60(context);
+            }
+        }
+
+        // 0x0032BCC0..0x0032BD40: overdue check against baseline * 6.
+        if (func_00350a64(context) != 0) {
+            const u64 now = func_00351208(context);
+            const u64 scaled =
+                detail::LoadBaseline() * detail::kBaselineScale;
+
+            // `umull`/`mla` build (baseline * 6) modulo 2^64 and the
+            // following subs/sbcs/blt is a signed 64-bit comparison.
+            if (static_cast<s64>(now) < static_cast<s64>(scaled)) {
+                // 0x0032BD24 still tests r1, the high word of the time
+                // value returned by 0x00351208: `sbcs r0, r1, r2` wrote the
+                // difference into r0, so r1 keeps now's high word.
+                if (static_cast<s32>(static_cast<u32>(now >> 32)) >= 0) {
+                    overdue = true;
+                    camp_func_00351040(context);
+                    func_0034f840(task_object);
+                }
+            } else {
+                func_0034f808(task_object);
+                engine_func_0034fc14(context);
+                engine_func_0034fdd8(context);
+            }
+        }
+
+        // 0x0032BD44..0x0032BD60: latch the status byte, then sleep.
+        if (*status_byte != 0) {
+            status_seen = true;
+        }
+        nn_sdk_func_00351698(context);
+
+        // 0x0032BD60..0x0032BD7C: state read after the sleep.
+        const u32 state = detail::LoadContextState();
+        if (overdue || status_seen || state == 7 || state == 1) {
+            break;
+        }
+    }
+
+    if (overdue) {
+        return 1;
+    }
+    func_00350530(context);
+    return 0;
 }
 
 // DECOMP_FUNC(0x00239dec, 408)
-// 99 ARM instructions through unconditional pop; 12 trailing data bytes.
-extern "C" __attribute__((naked)) void func_00239dec() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4ff0, 0xe24dd024, 0xe1a07003, 0xe1a0a000\n"
-        ".word 0xe3e08000, 0xe5936008, 0xe8934008, 0xe59f9168\n"
-        ".word 0xe086008e, 0xe040b006, 0xe023c009, 0xe08800cb\n"
-        ".word 0xe3500000, 0xda00000d, 0xe1b03f0b, 0xe2464002\n"
-        ".word 0x4a000001, 0xe1f430b2, 0xe023c2ec, 0xe1b050c0\n"
-        ".word 0xe1d400b2, 0x0a000005, 0xe1f430b4, 0xe020c2ec\n"
-        ".word 0xe1d400b2, 0xe2555001, 0xe023c2ec, 0x1afffff9\n"
-        ".word 0xe09800cb, 0x4a000002, 0xe0860080, 0xe1d000b0\n"
-        ".word 0xe020c2ec, 0xe1a0008e, 0xe58d0008, 0xe1a03007\n"
-        ".word 0xe1a0000a, 0xe58d6004, 0xe58dc000, 0xeb07091c\n"
-        ".word 0xe2101102, 0xe320f000, 0x5a000035, 0xe2001bff\n"
-        ".word 0xe1a01521, 0xe3510011, 0x01a01b00, 0x01a01b21\n"
-        ".word 0x0351006f, 0x1a00002e, 0xe8970021, 0xe5973008\n"
-        ".word 0xe0200009, 0xe0831085, 0xe0416003, 0xe08820c6\n"
-        ".word 0xe3520000, 0xda00000d, 0xe1b0cf06, 0xe2431002\n"
-        ".word 0x4a000001, 0xe1f1c0b2, 0xe02c02e0, 0xe1d1c0b2\n"
-        ".word 0xe1b020c2, 0x0a000005, 0xe1f140b4, 0xe02c02e0\n"
-        ".word 0xe1d1c0b2, 0xe2522001, 0xe02402e0, 0x1afffff9\n"
-        ".word 0xe09810c6, 0x4a000002, 0xe0831081, 0xe1d110b0\n"
-        ".word 0xe02102e0, 0xe1a01085, 0xe58d1008, 0xe88d0009\n"
-        ".word 0xe1a03007, 0xe28d200c, 0xe28d1020, 0xe28a0028\n"
-        ".word 0xeb07094a, 0xe2001102, 0xe3510000, 0xa59f002c\n"
-        ".word 0xaa000007, 0xe2001bff, 0xe1a01521, 0xe3510011\n"
-        ".word 0x01a01b00, 0x01a01b21, 0x0351006f, 0x059f0010\n"
-        ".word 0x1affffff, 0xe28dd024, 0xe8bd8ff0, 0x075bcd15\n"
-        ".word 0xe0c04702, 0xc8804471\n"
-    );
+//
+// Hashes a halfword-keyed record and submits the hash with the record to two
+// UI lookup helpers.  The record at r3 holds {u32 seed; u32 count;
+// const u16* values}: the hash starts at `seed ^ 0x075BCD15` and then mixes
+// every halfword in ascending order with `hash = value ^ ror(hash, 5)`.
+//
+// Recovered contract (ARM 0x00239DEC..0x00239F77):
+//   * r0-r2 are forwarded unchanged to 0x003FC300; r3 is the record pointer.
+//   * The element count is materialised as `(s32)(count << 1) >> 1`: the
+//     original computes `values + count*2 - values` at 0x00239E0C..0x00239E18
+//     and then keeps that doubled value in r11/fp.  A non-positive derived
+//     count mixes no elements; a positive count c mixes values[0..c-1].
+//   * Each element is a zero-extended `ldrh`.  The halfword buffer and
+//     `count*2` (the byte length) are passed in stack arguments 5 and 6, the
+//     hash in stack argument 7 (r0-r3 stay context, arg1, arg2, record).
+//   * A first-call result whose bit 31 is clear is returned unchanged.  A
+//     negative result is returned unchanged unless its bits 10..17 equal 0x11
+//     and its bits 0..9 equal 0x6F (the 0xC880446F status: level bit 31,
+//     module 0x11, description 0x6F).
+//   * Only for that distinguished status is the record hashed again (the
+//     fields are re-read after the first call) and 0x003FC46C called with
+//     context+0x28, a u32 scratch output, a 0x14-byte scratch output, the
+//     record, and the same three stack arguments.
+//   * Second-call result bit 31 clear => return 0xE0C04702.  Otherwise the
+//     distinguished status => return 0xC8804471, and any other result is
+//     returned unchanged.
+namespace func_239dec {
+
+constexpr u32 kSeedXor = 0x075BCD15;          // literal at 0x00239F78
+constexpr u32 kContextOffset = 0x28;          // `add r0, sl, #0x28`
+constexpr u32 kResultAfterSecondSuccess = 0xE0C04702;  // 0x00239F7C
+constexpr u32 kResultAfterSecondFailure = 0xC8804471;  // 0x00239F80
+
+// Status layout tested at 0x00239E98..0x00239EB0 and 0x00239F50..0x00239F68.
+constexpr u32 kFailureLevel = 0x80000000;     // `ands r1, r0, #0x80000000`
+constexpr u32 kModuleMask = 0x0003FC00;       // `and r1, r0, #0x3FC00`
+constexpr u32 kModule11 = 0x00004400;         // `cmp r1, #0x11` after `lsr #0xA`
+constexpr u32 kDescriptionMask = 0x000003FF;  // lsl #22 / lsr #22
+constexpr u32 kDescription6F = 0x0000006F;    // `cmp r1, #0x6F`
+
+// 12-byte record reached through r3 (0x00239E00..0x00239E0C).
+struct Record {
+    u32 seed;          // +0x00 (r3 from `ldm r3, {r3, lr}`)
+    u32 count;         // +0x04 (lr / r5 on the second pass)
+    const u16* values; // +0x08 (`ldr r6, [r3, #8]`)
+};
+
+}  // namespace func_239dec
+
+// Direct calls; the callees are existing raw-ARM leaf bodies
+// (src/engine/leaf_batch38_b.cpp).  Both take seven arguments: the three stack
+// words are the hash, the halfword buffer and the byte length.
+extern "C" u32 ui_func_003fc300(u32 context, u32 arg1, u32 arg2,
+                                func_239dec::Record* record, u32 hash,
+                                const u16* values, u32 byte_length);
+extern "C" u32 ui_func_003fc46c(u32 context, u32* out_word, void* out_block,
+                                func_239dec::Record* record, u32 hash,
+                                const u16* values, u32 byte_length);
+
+namespace {
+
+// `add r0, r6, lr, lsl #1; sub fp, r0, r6; add/asr r0, r8, fp, asr #1`
+// (0x00239E0C..0x00239E20 and 0x00239E5C): the doubled count is kept modulo
+// 2^32 and then sign-shifted back, so only the low 31 bits of `count` decide
+// how many elements are mixed.
+s32 ElementCount(u32 count) {
+    return static_cast<s32>(count << 1) >> 1;
+}
+
+// `lsl r0, lr, #1` / `lsl r1, r5, #1` (0x00239E70 and 0x00239F20).
+u32 RecordByteLength(const func_239dec::Record& record) {
+    return record.count << 1;
+}
+
+// Mix loop at 0x00239E24..0x00239E6C (first pass) and
+// 0x00239ED4..0x00239F1C (second pass).  `ror #5` is `hash >> 5 | hash << 27`.
+u32 HashRecord(const func_239dec::Record& record) {
+    u32 hash = record.seed ^ func_239dec::kSeedXor;
+    const s32 count = ElementCount(record.count);
+    for (s32 i = 0; i < count; ++i) {
+        const u32 value = record.values[i];  // zero-extended ldrh
+        hash = value ^ ((hash >> 5) | (hash << 27));
+    }
+    return hash;
+}
+
+// Status test: `(r0 >> 10) & 0xFF == 0x11` followed by
+// `(r0 << 22) >> 22 == 0x6F`, reached only when bit 31 is set.
+bool IsDistinguishedFailure(u32 status) {
+    return (status & func_239dec::kFailureLevel) != 0 &&
+           (status & func_239dec::kModuleMask) == func_239dec::kModule11 &&
+           (status & func_239dec::kDescriptionMask) ==
+               func_239dec::kDescription6F;
+}
+
+}  // namespace
+
+extern "C" u32 func_00239dec(u32 context, u32 arg1, u32 arg2,
+                             func_239dec::Record* record) {
+    // 0x00239E00..0x00239E8C: hash, then report context/arg1/arg2 plus the
+    // record and the three stack arguments.
+    const u32 first_hash = HashRecord(*record);
+    const u32 first = ui_func_003fc300(
+        context, arg1, arg2, record, first_hash, record->values,
+        RecordByteLength(*record));
+
+    // 0x00239E8C..0x00239EB0: success and every non-distinguished failure
+    // return the helper result unchanged.
+    if ((first & func_239dec::kFailureLevel) == 0) {
+        return first;
+    }
+    if (!IsDistinguishedFailure(first)) {
+        return first;
+    }
+
+    // 0x00239EB4..0x00239F3C: re-read the record, hash it again and call the
+    // second helper with context+0x28 and two stack scratch outputs.
+    const u32 second_hash = HashRecord(*record);
+    u32 scratch_word;
+    u32 scratch_block[5];
+    const u32 second = ui_func_003fc46c(
+        context + func_239dec::kContextOffset, &scratch_word, scratch_block,
+        record, second_hash, record->values, RecordByteLength(*record));
+
+    // 0x00239F40..0x00239F6C.
+    if ((second & func_239dec::kFailureLevel) == 0) {
+        return func_239dec::kResultAfterSecondSuccess;
+    }
+    if (!IsDistinguishedFailure(second)) {
+        return second;
+    }
+    return func_239dec::kResultAfterSecondFailure;
 }
 
 // DECOMP_FUNC(0x00263ee4, 408)
-// 98 ARM instructions through unconditional pop; 16 trailing data bytes.
-extern "C" __attribute__((naked)) void script_vm_func_00263ee4() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d5fff, 0xe3a01002, 0xe59f9178, 0xe59fb178\n"
-        ".word 0xe3a0e001, 0xed2d0b08, 0xed2d8b04, 0xe28d4070\n"
-        ".word 0xeef08a40, 0xe8941001, 0xe28d4078, 0xeeb08a43\n"
-        ".word 0xe89405e0, 0xe28d4094, 0xeef09a41, 0xed9f0a53\n"
-        ".word 0xeeb09a60, 0xecd43a03, 0xe5994004, 0xe0642184\n"
-        ".word 0xe0822102, 0xe08bb102, 0xe28b2024, 0xe58b1008\n"
-        ".word 0xedcb1a04, 0xed8b2a03, 0xedcb2a05, 0xe58b3028\n"
-        ".word 0xe58be024, 0xedcb3a0b, 0xed8b4a0c, 0xedcb4a0d\n"
-        ".word 0xe5cb0038, 0xe5cbc039, 0xe5cb503a, 0xe5cb603b\n"
-        ".word 0xe5cb703c, 0xe5cb803d, 0xe28b1008, 0xe1cbe3be\n"
-        ".word 0xe58b1040, 0xe28b0044, 0xe58b2070, 0xe58b0068\n"
-        ".word 0xedcb8a11, 0xed8b0a14, 0xed8b8a15, 0xed8b0a16\n"
-        ".word 0xe28b0048, 0xec809a02, 0xe59d0038, 0xe58b0064\n"
-        ".word 0xe28b005c, 0xebfee176, 0xe28db068, 0xeef01a48\n"
-        ".word 0xeeb01a69, 0xeef00a49, 0xeeb00a68, 0xe1a07000\n"
-        ".word 0xe89b0006, 0xe59d0030, 0xe59d30a0, 0xebffb9c5\n"
-        ".word 0xe0671207, 0xe0815287, 0xe59f3084, 0xe0641204\n"
-        ".word 0xe0814284, 0xe59d608c, 0xe0834184, 0xe0833185\n"
-        ".word 0xe3e0c000, 0xe5830124, 0xe5c3a16c, 0xe5c4616d\n"
-        ".word 0xe59d0030, 0xe3a02000, 0xe583012c, 0xe59d0034\n"
-        ".word 0xe5830130, 0xe2830c01, 0xe583c134, 0xe1c025bc\n"
-        ".word 0xe1c0c5be, 0xe5c32164, 0xe59d1090, 0xe5c31128\n"
-        ".word 0xe5c3216e, 0xe1c026b0, 0xe1c026b2, 0xe5990004\n"
-        ".word 0xe2800001, 0xe5890004, 0xe1a00007, 0xecbd8b04\n"
-        ".word 0xe28dd030, 0xe8bd9ff0, 0x00447a28, 0x004afd64\n"
-        ".word 0x00000000, 0x004a1264\n"
-    );
+//
+// Builds one script-effect work record and registers its table slot.  Reached
+// from the battle effect emitter 0x0027B8CC on the "BOX" path (0x0027C1F4)
+// and on the remapped-type "NA" path (0x0027C0EC), and from several battle
+// effect helpers.
+//
+// Recovered contract (ARM 0x00263EE4..0x00264068; the four literal words
+// 0x00447A28, 0x004AFD64, +0.0f and 0x004A1264 follow at 0x0026406C):
+//   * ABI: r0 = id, r1 = handle, r2 = kind pointer, r3 = type, then fifteen
+//     stack words and seven VFP arguments s0..s6.  The prologue spills
+//     r0-r3 and d0-d3, then re-reads r0/r1/r2 from the register save area
+//     (0x00263FAC..0x00263FD8) while r3 is used directly.  Stack word n is
+//     read at the entry value of r13 + 4*n; word 14 is at 0x002640A0.
+//   * The work-record index is the pre-call value of the global count at
+//     0x00447A2C.  Records are 0x8C bytes at 0x004AFD64 (140*index).
+//   * 0x0021C598 (Btl_StatusEffectCalc) receives work+0x5C in r0 and, in the
+//     original register image, work+0x08 in r1 and work+0x24 in r2.  Its body
+//     overwrites r1-r3 before any read, so only r0 is an argument.  Its return
+//     value indexes the 0x178-byte slot array at 0x004A1264 (47*index*8).
+//   * The init order into the work record is exactly the store order below:
+//     +0x08 = 2; +0x10/+0x0C/+0x14 = s3/s4/s5; +0x28 = type; +0x24 = 1;
+//     +0x2C/+0x30/+0x34 = stack words 11/12/13 (raw s7/s8/s9 bits);
+//     +0x38..+0x3D = bytes of stack words 2..7; +0x3E = u16 1;
+//     +0x40 = work+0x08; +0x70 = work+0x24; +0x68 = work+0x44;
+//     +0x44/+0x48/+0x4C = s0/s1/s2; +0x50/+0x58 = +0.0f; +0x54 = s6;
+//     +0x64 = kind.
+//   * 0x002526FC (slot allocator) receives r0 = id, r1 = stack word 0,
+//     r2 = stack word 1, r3 = stack word 14 and s0..s3 = s0,s1,s2,s6.
+//     The original leaves s4..s7 untouched; the callee reads only s0..s3.
+//   * Slot stores, in original order: +0x124 = allocator return;
+//     +0x16C = byte of stack word 8; the *previous* slot's +0x16D = byte of
+//     stack word 9; +0x12C = id; +0x130 = handle; +0x134 = -1 (u32);
+//     +0x15C = u16 0; +0x15E = u16 0xFFFF; +0x164 = 0;
+//     +0x128 = byte of stack word 10; +0x16E = 0; +0x160 = u16 0;
+//     +0x162 = u16 0.
+//   * The global count is re-read after both calls, incremented by one and
+//     stored back (0x00264050..0x00264058).
+//   * Return: the first helper's result, both success and failure (r7).
+namespace func_263ee4 {
+
+constexpr u32 kEffectTable = 0x00447A28;  // literal 0x00447A28 (0x0026406C)
+constexpr u32 kEffectCount = 0x00447A2C;  // `ldr/str [sb,#4]`
+constexpr u32 kWorkBase = 0x004AFD64;     // literal 0x004AFD64 (0x00264070)
+constexpr u32 kSlotBase = 0x004A1264;     // literal 0x004A1264 (0x00264078)
+constexpr u32 kWorkStride = 0x8C;         // 7*index + 28*index, lsl #2
+constexpr u32 kSlotStride = 0x178;        // 15*index + 32*index, lsl #3
+constexpr f32 kZero = 0.0f;               // literal 0x00000000 (0x00264074)
+constexpr u32 kSlotUnset = 0xFFFFFFFFu;   // `mvn ip,#0` (0x00264004)
+
+// 0x8C-byte work record at 0x004AFD64 + 140*index.  Offsets are the only
+// names the ARM evidence supports.
+struct WorkRecord {
+    u8 pad_000[0x08];
+    u32 field_08;        // +0x08: constant 2
+    f32 field_0C;        // +0x0C: s4
+    f32 field_10;        // +0x10: s3
+    f32 field_14;        // +0x14: s5
+    u8 pad_018[0x0C];
+    u32 field_24;        // +0x24: constant 1
+    u32 field_28;        // +0x28: type (r3)
+    f32 field_2C;        // +0x2C: stack word 11 bits
+    f32 field_30;        // +0x30: stack word 12 bits
+    f32 field_34;        // +0x34: stack word 13 bits
+    u8 field_38;         // +0x38..+0x3D: stack words 2..7, one byte each
+    u8 field_39;
+    u8 field_3A;
+    u8 field_3B;
+    u8 field_3C;
+    u8 field_3D;
+    u16 field_3E;        // +0x3E: constant 1
+    u32 field_40;        // +0x40: address of +0x08
+    f32 field_44;        // +0x44: s0
+    f32 field_48;        // +0x48: s1
+    f32 field_4C;        // +0x4C: s2
+    f32 field_50;        // +0x50: +0.0f
+    f32 field_54;        // +0x54: s6
+    f32 field_58;        // +0x58: +0.0f
+    u8 pad_05C[0x08];
+    u32 field_64;        // +0x64: kind (r2)
+    u32 field_68;        // +0x68: address of +0x44
+    u8 pad_06C[0x04];
+    u32 field_70;        // +0x70: address of +0x24
+    u8 pad_074[0x18];
+};
+static_assert(offsetof(WorkRecord, field_08) == 0x08);
+static_assert(offsetof(WorkRecord, field_0C) == 0x0C);
+static_assert(offsetof(WorkRecord, field_10) == 0x10);
+static_assert(offsetof(WorkRecord, field_14) == 0x14);
+static_assert(offsetof(WorkRecord, field_24) == 0x24);
+static_assert(offsetof(WorkRecord, field_2C) == 0x2C);
+static_assert(offsetof(WorkRecord, field_38) == 0x38);
+static_assert(offsetof(WorkRecord, field_3E) == 0x3E);
+static_assert(offsetof(WorkRecord, field_40) == 0x40);
+static_assert(offsetof(WorkRecord, field_44) == 0x44);
+static_assert(offsetof(WorkRecord, field_64) == 0x64);
+static_assert(offsetof(WorkRecord, field_68) == 0x68);
+static_assert(offsetof(WorkRecord, field_70) == 0x70);
+static_assert(sizeof(WorkRecord) == 0x8C);
+
+// 0x178-byte slot at 0x004A1264 + 376*index.
+struct SlotRecord {
+    u8 pad_000[0x124];
+    u32 field_124;       // +0x124: allocator result
+    u8 field_128;        // +0x128: stack word 10, low byte
+    u8 pad_129[0x03];
+    u32 field_12C;       // +0x12C: id
+    u32 field_130;       // +0x130: handle
+    u32 field_134;       // +0x134: 0xFFFFFFFF
+    u8 pad_138[0x24];
+    u16 field_15C;       // +0x15C: 0
+    u16 field_15E;       // +0x15E: 0xFFFF
+    u16 field_160;       // +0x160: 0
+    u16 field_162;       // +0x162: 0
+    u8 field_164;        // +0x164: 0
+    u8 pad_165[0x07];
+    u8 field_16C;        // +0x16C: stack word 8, low byte
+    u8 field_16D;        // +0x16D: stack word 9, low byte (previous slot)
+    u8 field_16E;        // +0x16E: 0
+    u8 pad_16F[0x09];
+};
+static_assert(offsetof(SlotRecord, field_124) == 0x124);
+static_assert(offsetof(SlotRecord, field_128) == 0x128);
+static_assert(offsetof(SlotRecord, field_12C) == 0x12C);
+static_assert(offsetof(SlotRecord, field_134) == 0x134);
+static_assert(offsetof(SlotRecord, field_15C) == 0x15C);
+static_assert(offsetof(SlotRecord, field_164) == 0x164);
+static_assert(offsetof(SlotRecord, field_16C) == 0x16C);
+static_assert(sizeof(SlotRecord) == 0x178);
+
+// 0x00447A28: only the +0x04 count is touched here.
+struct EffectTable {
+    u32 reserved_00;
+    u32 count_04;
+};
+static_assert(offsetof(EffectTable, count_04) == 0x04);
+
+inline WorkRecord* WorkAt(u32 index) {
+    return reinterpret_cast<WorkRecord*>(kWorkBase + index * kWorkStride);
+}
+
+inline SlotRecord* SlotAt(u32 index) {
+    return reinterpret_cast<SlotRecord*>(kSlotBase + index * kSlotStride);
+}
+
+inline EffectTable* Table() {
+    return reinterpret_cast<EffectTable*>(kEffectTable);
+}
+
+inline u32 AddressOf(const void* pointer) {
+    return static_cast<u32>(reinterpret_cast<std::uintptr_t>(pointer));
+}
+
+}  // namespace func_263ee4
+
+// 0x0021C598 = smt4::battle::Btl_StatusEffectCalc.  The established 3-argument
+// declaration is kept so the reference resolves to the reconstructed body in
+// src/battle/battle_ailment.cpp; its ARM body overwrites r1 and r2 before any
+// read, so the two pointer values are register-image fidelity only.
+namespace smt4::battle {
+struct StatusAilmentWork;
+s32 Btl_StatusEffectCalc(StatusAilmentWork* work, u32 incoming_ailment,
+                         u32 luck_stat);
+}  // namespace smt4::battle
+
+// 0x002526FC: slot allocator; four core-register and four VFP arguments.
+extern "C" s32 script_vm_func_002526fc(u32 arg0, u32 arg1, u32 arg2, u32 arg3,
+                                       f32 f0, f32 f1, f32 f2, f32 f3);
+
+extern "C" u32 script_vm_func_00263ee4(
+    u32 id, u32 handle, u32 kind, u32 type,
+    u32 stack0, u32 stack1, u32 stack2, u32 stack3, u32 stack4,
+    u32 stack5, u32 stack6, u32 stack7, u32 stack8, u32 stack9,
+    u32 stack10, u32 stack11, u32 stack12, u32 stack13, u32 stack14,
+    f32 f0, f32 f1, f32 f2, f32 f3, f32 f4, f32 f5, f32 f6) {
+    using namespace func_263ee4;
+
+    // 0x00263F2C..0x00263F38: index the new work record with the count that
+    // was live before either helper ran.
+    const u32 old_count = Table()->count_04;
+    WorkRecord* const work = WorkAt(old_count);
+
+    // 0x00263F3C..0x00263FB0: field initialization, in store order.
+    work->field_08 = 2;
+    work->field_10 = f3;
+    work->field_0C = f4;
+    work->field_14 = f5;
+    work->field_28 = type;
+    work->field_24 = 1;
+    work->field_2C = __builtin_bit_cast(f32, stack11);
+    work->field_30 = __builtin_bit_cast(f32, stack12);
+    work->field_34 = __builtin_bit_cast(f32, stack13);
+    work->field_38 = static_cast<u8>(stack2);
+    work->field_39 = static_cast<u8>(stack3);
+    work->field_3A = static_cast<u8>(stack4);
+    work->field_3B = static_cast<u8>(stack5);
+    work->field_3C = static_cast<u8>(stack6);
+    work->field_3D = static_cast<u8>(stack7);
+    work->field_3E = 1;
+    work->field_40 = AddressOf(&work->field_08);
+    work->field_70 = AddressOf(&work->field_24);
+    work->field_68 = AddressOf(&work->field_44);
+    work->field_44 = f0;
+    work->field_50 = kZero;
+    work->field_54 = f6;
+    work->field_58 = kZero;
+    work->field_48 = f1;
+    work->field_4C = f2;
+    work->field_64 = kind;
+
+    // 0x00263FB4..0x00263FE0: status-effect calculation on work+0x5C.  r1 and
+    // r2 receive work+0x08 and work+0x24 exactly as the original leaves them.
+    u8* const work_bytes = reinterpret_cast<u8*>(work);
+    const s32 slot_index = smt4::battle::Btl_StatusEffectCalc(
+        reinterpret_cast<smt4::battle::StatusAilmentWork*>(work_bytes + 0x5C),
+        AddressOf(work_bytes + 0x08), AddressOf(work_bytes + 0x24));
+
+    // 0x00263FE4..0x00264000: index the new and previous slot records.
+    SlotRecord* const slot = SlotAt(static_cast<u32>(slot_index));
+    SlotRecord* const previous = SlotAt(old_count);
+
+    // 0x00263FD0..0x00263FE0: r0 = id, r1 = stack0, r2 = stack1,
+    // r3 = stack14, s0..s3 = s0,s1,s2,s6.
+    const s32 allocated = script_vm_func_002526fc(
+        id, stack0, stack1, stack14, f0, f1, f2, f6);
+
+    // 0x00264008..0x0026404C: slot stores, in original order.
+    slot->field_124 = static_cast<u32>(allocated);
+    slot->field_16C = static_cast<u8>(stack8);
+    previous->field_16D = static_cast<u8>(stack9);
+    slot->field_12C = id;
+    slot->field_130 = handle;
+    slot->field_134 = kSlotUnset;
+    slot->field_15C = 0;
+    slot->field_15E = 0xFFFFu;
+    slot->field_164 = 0;
+    slot->field_128 = static_cast<u8>(stack10);
+    slot->field_16E = 0;
+    slot->field_160 = 0;
+    slot->field_162 = 0;
+
+    // 0x00264050..0x00264058: re-read the count (a helper may have changed it)
+    // and advance it modulo 2^32.
+    ++Table()->count_04;
+    return static_cast<u32>(slot_index);
 }
 
 // DECOMP_FUNC(0x0026a62c, 408)
-// 96 ARM instructions through unconditional pop; 24 trailing data bytes.
-extern "C" __attribute__((naked)) void camp_func_0026a62c() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d43f0, 0xe350000b, 0xe24dd00c, 0xe1a09000\n"
-        ".word 0xe59f0168, 0xe5900000, 0x0a000022, 0xe359000c\n"
-        ".word 0x0a000026, 0xe359000d, 0x1a000052, 0xe59f5150\n"
-        ".word 0xe2806b07, 0xe28660c4, 0xe2857077, 0xe2808f5e\n"
-        ".word 0xe3560000, 0x13580000, 0x0a00004a, 0xe1550007\n"
-        ".word 0xe3a04000, 0xca00000a, 0xe1a00005, 0xeb00917a\n"
-        ".word 0xe3500000, 0xe320f000, 0x0a000002, 0xe0860084\n"
-        ".word 0xe2844001, 0xe1c050b0, 0xe2855001, 0xe1550007\n"
-        ".word 0xdafffff4, 0xe359000c, 0x059f50f8, 0x059f70f8\n"
-        ".word 0x0a000010, 0xe359000d, 0x059f50f0, 0x02857063\n"
-        ".word 0x0a000018, 0xea000027, 0xe2806b05, 0xe3a05001\n"
-        ".word 0xe3a0703c, 0xe286607c, 0xe28080b0, 0xeaffffdf\n"
-        ".word 0xe59f50cc, 0xe2806b05, 0xe28660f4, 0xe28570c7\n"
-        ".word 0xe2808f45, 0xeaffffd9, 0xe1a00005, 0xeb00915a\n"
-        ".word 0xe3500000, 0xe320f000, 0x0a000002, 0xe0860084\n"
-        ".word 0xe2844001, 0xe1c050b0, 0xe2855001, 0xe1550007\n"
-        ".word 0x9afffff4, 0xea00000f, 0xe1a00005, 0xeb00914e\n"
-        ".word 0xe3500000, 0xe320f000, 0x0a000007, 0xe1a00005\n"
-        ".word 0xeb0095a4, 0xe3500000, 0xe320f000, 0xda000002\n"
-        ".word 0xe0860084, 0xe2844001, 0xe1c050b0, 0xe2855001\n"
-        ".word 0xe1550007, 0x9affffef, 0xe3a00001, 0xe1a03000\n"
-        ".word 0xe58d0000, 0xe58d0004, 0xe3a0200b, 0xe1a01004\n"
-        ".word 0xe1a00008, 0xeb00d4d4, 0xe28dd00c, 0xe1a00009\n"
-        ".word 0xe8bd43f0, 0xea006292, 0xe28dd00c, 0xe8bd83f0\n"
-        ".word 0x0043da90, 0x0000033f, 0x0000047f, 0x0000079e\n"
-        ".word 0x0000079f, 0x000003b7\n"
-    );
+//
+// Rebuilds one of the three camp identifier lists selected by `mode` and hands
+// the halfword count to the shared page/cursor setup helper.
+//
+// Recovered contract (ARM 0x0026A62C..0x0026A7AC):
+//   * r0 is `mode`.  Only 0xB, 0xC and 0xD select a list; every other value
+//     jumps to the epilogue at 0x0026A7A4.  r0 then still holds the work
+//     pointer loaded at 0x0026A640, because that epilogue restores only
+//     r4-r8/sb/pc.
+//   * The work pointer is `*(void**)0x0043DA90`, the canonical
+//     smt4::camp::g_CampWork.  The table/page bases are:
+//       0xB: table = work + 0x147C, page = work + 0x00B0
+//       0xC: table = work + 0x14F4, page = work + 0x0114
+//       0xD: table = work + 0x1CC4, page = work + 0x0178
+//   * 0x0026A66C..0x0026A674 rejects the derived pair when either 32-bit
+//     address wrapped to zero (`cmp r6,#0` / `cmpne r8,#0`).
+//   * Entries are zero-extended `strh` stores of the enumerated id at
+//     table[count++], performed only after the mode-specific predicate passes.
+//   * 0xB: ids 1..0x3C inclusive, predicate 0x0028EC78(id) != 0.  The bound is
+//     the signed `ble` at 0x0026A6AC.
+//   * 0xC: ids 0x3B7..0x47E inclusive, then 0x47F..0x79E inclusive.  Both
+//     passes test 0x0028EC78(id) != 0; the first loop uses the signed `ble`
+//     at 0x0026A6AC, the second the unsigned `bls` at 0x0026A72C.
+//   * 0xD: ids 0x33F..0x3B6 inclusive, then 0x79F..0x802 inclusive.  The first
+//     pass tests 0x0028EC78(id) != 0.  The second pass first calls 0x0028EC78
+//     and, only when its result is non-zero, calls 0x0028FDE4(id) and stores
+//     the id when that signed result is > 0 (`ble` at 0x0026A758).  The extra
+//     call is kept even though 0x0028EC78 is normally its >0 normalization.
+//   * A selected list always calls
+//     0x0029FAE8(page, count, 0xB, 1, 1, 1): four register arguments and the
+//     two stack words 1, 1 (0x0026A774..0x0026A790).
+//   * The original then loads r0 = mode and tail-branches to 0x002831F0
+//     (0x0026A798..0x0026A7A0).  We return that callee's r0 so the register
+//     passthrough stays observable; callers of this routine ignore it.
+namespace func_26a62c {
+
+constexpr u32 kModeB = 0x0B;              // `cmp r0,#0xb` (0x0026A630)
+constexpr u32 kModeC = 0x0C;              // `cmp sb,#0xc` (0x0026A648)
+constexpr u32 kModeD = 0x0D;              // `cmp sb,#0xd` (0x0026A650)
+
+constexpr u32 kTableB = 0x147C;           // 0x1400 + 0x7C (0x0026A6D4..E0)
+constexpr u32 kPageB = 0x00B0;            // 0x0026A6E4
+constexpr s32 kFirstB = 0x01;             // `mov r5,#1` (0x0026A6D8)
+constexpr s32 kLastB = 0x3C;              // `mov r7,#0x3c` (0x0026A6DC)
+
+constexpr u32 kTableC = 0x14F4;           // 0x1400 + 0xF4 (0x0026A6F0..F4)
+constexpr u32 kPageC = 0x0114;            // 0x0026A6FC
+constexpr u32 kFirstC = 0x3B7;            // literal 0x3B7 (0x0026A6EC)
+constexpr u32 kLastCFirstPass = 0x47E;    // firstC + 0xC7 (0x0026A6F8)
+constexpr u32 kFirstCSecondPass = 0x47F;  // literal 0x47F (0x0026A6B4)
+constexpr u32 kLastCSecondPass = 0x79E;   // literal 0x79E (0x0026A6B8)
+
+constexpr u32 kTableD = 0x1CC4;           // 0x1C00 + 0xC4 (0x0026A65C..60)
+constexpr u32 kPageD = 0x0178;            // 0x178 (0x0026A668)
+constexpr u32 kFirstD = 0x33F;            // literal 0x33F (0x0026A658)
+constexpr u32 kLastDFirstPass = 0x3B6;    // firstD + 0x77 (0x0026A664)
+constexpr u32 kFirstDSecondPass = 0x79F;  // literal 0x79F (0x0026A6C4)
+constexpr u32 kLastDSecondPass = 0x802;   // firstD + 0x63 (0x0026A6C8)
+
+constexpr s32 kPageRows = 0x0B;           // `mov r2,#0xb` (0x0026A784)
+constexpr s32 kPageColumns = 1;           // `mov r3,#1` / r0=1 (0x0026A774..778)
+constexpr s32 kPageWrapRow = 1;           // `str r0,[sp]` (0x0026A77C)
+constexpr s32 kPageRepeat = 1;            // `str r0,[sp,#4]` (0x0026A780)
+
+}  // namespace func_26a62c
+
+// The canonical work object (defined in src/camp/camp.cpp); only its address
+// is used here.  The forward declaration keeps this translation unit free of
+// the camp header's heavier UI dependencies.
+namespace smt4 {
+namespace camp {
+struct CampWork;
+extern CampWork* g_CampWork;
+}  // namespace camp
+}  // namespace smt4
+
+// Direct calls.  0x0028EC78 returns a normalized non-zero result, 0x0028FDE4
+// is its signed predicate, 0x0029FAE8 is the shared page/cursor setup and
+// 0x002831F0 is the camp layout interpreter (canonically void; its r0 is
+// forwarded by the original tail branch).
+extern "C" u32 battle_func_0028ec78(u32 id);
+extern "C" s32 camp_func_0028fde4(u32 id);
+extern "C" u32 camp_func_0029fae8(volatile u8* cursor, s32 total_items,
+                                  s32 visible_rows, s32 columns,
+                                  s32 wrap_row, s32 repeat);
+extern "C" u32 camp_func_002831f0(u32 layout_opcode);
+
+extern "C" u32 camp_func_0026a62c(u32 mode) {
+    const u32 work_address = reinterpret_cast<u32>(
+        reinterpret_cast<uintptr_t>(smt4::camp::g_CampWork));
+    u8* const work = reinterpret_cast<u8*>(work_address);
+
+    // 0x0026A630..0x0026A654: dispatch.  The derived addresses are compared
+    // before any table access, exactly like the r6/r8 zero test.
+    u32 table_offset;
+    u32 page_offset;
+    switch (mode) {
+    case func_26a62c::kModeB:
+        table_offset = func_26a62c::kTableB;
+        page_offset = func_26a62c::kPageB;
+        break;
+    case func_26a62c::kModeC:
+        table_offset = func_26a62c::kTableC;
+        page_offset = func_26a62c::kPageC;
+        break;
+    case func_26a62c::kModeD:
+        table_offset = func_26a62c::kTableD;
+        page_offset = func_26a62c::kPageD;
+        break;
+    default:
+        return work_address;
+    }
+
+    const u32 table_address = work_address + table_offset;
+    const u32 page_address = work_address + page_offset;
+    if (table_address == 0 || page_address == 0) {
+        return work_address;
+    }
+
+    u16* const table = reinterpret_cast<u16*>(work + table_offset);
+    s32 count = 0;
+
+    // 0x0026A678..0x0026A6AC: first pass.  Signed `ble` bound.
+    if (mode == func_26a62c::kModeB) {
+        for (s32 id = func_26a62c::kFirstB;
+             id <= func_26a62c::kLastB; ++id) {
+            if (battle_func_0028ec78(static_cast<u32>(id)) != 0) {
+                table[count++] = static_cast<u16>(id);
+            }
+        }
+    } else {
+        const s32 first = static_cast<s32>(
+            mode == func_26a62c::kModeC ? func_26a62c::kFirstC
+                                        : func_26a62c::kFirstD);
+        const s32 last = static_cast<s32>(
+            mode == func_26a62c::kModeC ? func_26a62c::kLastCFirstPass
+                                        : func_26a62c::kLastDFirstPass);
+        for (s32 id = first; id <= last; ++id) {
+            if (battle_func_0028ec78(static_cast<u32>(id)) != 0) {
+                table[count++] = static_cast<u16>(id);
+            }
+        }
+    }
+
+    // 0x0026A6B0..0x0026A6D0: select the optional second pass.  0xB has none.
+    if (mode == func_26a62c::kModeC) {
+        // 0x0026A704..0x0026A72C: unsigned `bls` bound.
+        for (u32 id = func_26a62c::kFirstCSecondPass;
+             id <= func_26a62c::kLastCSecondPass; ++id) {
+            if (battle_func_0028ec78(id) != 0) {
+                table[count++] = static_cast<u16>(id);
+            }
+        }
+    } else if (mode == func_26a62c::kModeD) {
+        // 0x0026A734..0x0026A770: second predicate is gated by the first.
+        for (u32 id = func_26a62c::kFirstDSecondPass;
+             id <= func_26a62c::kLastDSecondPass; ++id) {
+            if (battle_func_0028ec78(id) != 0 &&
+                camp_func_0028fde4(id) > 0) {
+                table[count++] = static_cast<u16>(id);
+            }
+        }
+    }
+
+    // 0x0026A774..0x0026A790: page/cursor setup with six arguments.
+    camp_func_0029fae8(reinterpret_cast<volatile u8*>(page_address), count,
+                       func_26a62c::kPageRows, func_26a62c::kPageColumns,
+                       func_26a62c::kPageWrapRow, func_26a62c::kPageRepeat);
+
+    // 0x0026A798..0x0026A7A0: r0 = mode, then tail branch to 0x002831F0.
+    return camp_func_002831f0(mode);
 }
 
 // DECOMP_FUNC(0x00275ca0, 408)
-// 99 ARM instructions through unconditional pop; 12 trailing data bytes.
-extern "C" __attribute__((naked)) void script_vm_func_00275ca0() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4070, 0xe3a05001, 0xe59f417c, 0xe3a06000\n"
-        ".word 0xed2d8b02, 0xed9f8a5d, 0xe5941000, 0xeddf8a5c\n"
-        ".word 0xe591000c, 0xe3500000, 0x0a000026, 0xe5d1100a\n"
-        ".word 0xe3510000, 0xe5901000, 0xe2012002, 0x0a000010\n"
-        ".word 0xe3520000, 0x0a00001f, 0xe3c11002, 0xe5801000\n"
-        ".word 0xe5900008, 0xeeb00a48, 0xe590002c, 0xe5c051f6\n"
-        ".word 0xe5940000, 0xe590000c, 0xe5900008, 0xeb009828\n"
-        ".word 0xe5940000, 0xeeb00a48, 0xe590000c, 0xe5900008\n"
-        ".word 0xea00000f, 0xe3520000, 0x1a00000e, 0xe3811002\n"
-        ".word 0xe5801000, 0xe5900008, 0xeeb00a68, 0xe590002c\n"
-        ".word 0xe5c061f6, 0xe5940000, 0xe590000c, 0xe5900008\n"
-        ".word 0xeb009817, 0xe5940000, 0xeeb00a68, 0xe590000c\n"
-        ".word 0xe5900008, 0xeb005ad9, 0xe5941000, 0xe5910010\n"
-        ".word 0xe3500000, 0x0a00002a, 0xe5d1100a, 0xe3510000\n"
-        ".word 0xe5901000, 0xe2012002, 0x0a000012, 0xe3520000\n"
-        ".word 0x0a000023, 0xe3c11002, 0xe5801000, 0xe5900008\n"
-        ".word 0xeeb00a48, 0xe590002c, 0xe5c051f6, 0xe5940000\n"
-        ".word 0xe5900010, 0xe5900008, 0xeb0097fd, 0xe5940000\n"
-        ".word 0xeeb00a48, 0xe5900010, 0xe5900008, 0xecbd8b02\n"
-        ".word 0xe8bd4070, 0xea005abd, 0xe3520000, 0x1a000010\n"
-        ".word 0xe3811002, 0xe5801000, 0xe5900008, 0xeeb00a68\n"
-        ".word 0xe590002c, 0xe5c061f6, 0xe5940000, 0xe5900010\n"
-        ".word 0xe5900008, 0xeb0097ea, 0xe5940000, 0xeeb00a68\n"
-        ".word 0xe5900010, 0xe5900008, 0xecbd8b02, 0xe8bd4070\n"
-        ".word 0xea005aaa, 0xecbd8b02, 0xe8bd8070, 0x004474d8\n"
-        ".word 0x3f800000, 0x00000000\n"
-    );
+//
+// Applies the map-navi/player target's active flag to its two model slots and
+// forwards the matching volume scale to both audio helpers.
+//
+// Recovered contract (ARM 0x00275CA0..0x00275E2B; the 12 literal bytes
+// 0x004474D8, 1.0f, 0.0f follow at 0x00275E2C):
+//   * `work = *(void**)0x004474D8`.  The global, the model pointer and the
+//     model backend are re-read after every helper call, so a helper that
+//     rewrites the chain is observed by the following accesses.
+//   * For `work->model_0c` (+0x0C) and then `work->model_10` (+0x10):
+//       - null model: nothing happens.
+//       - `work->active` (+0x0A) != 0 and `model->flags` (+0x00) bit 1 set:
+//         clear bit 1, store `model->backend->visual_node->visible` (+0x1F6)
+//         = 1 and call 0x0029BDB4(backend, 1.0f), 0x0028C8D0(backend, 1.0f).
+//       - `work->active` == 0 and bit 1 clear: set bit 1, store visible = 0
+//         and call both helpers with 0.0f.
+//       - a model already in the requested state is skipped without any store
+//         or call (`cmp r2,#0` plus a conditional skip).
+//   * The second model's final helper call is reached after `vpop {d8}` and
+//     `pop {r4,r5,r6,lr}`, i.e. the original tail-branches to 0x0028C8D0.
+//   * No arguments, `void` result.  r0 on return is incidental: all four static
+//     callers overwrite it immediately, so it is not part of the contract.
+namespace func_275ca0 {
+
+constexpr u32 kRootPointerAddress = 0x004474D8;  // literal at 0x00275E2C
+constexpr u32 kActiveOffset = 0x0A;              // `ldrb r1, [r1, #0xa]`
+constexpr u32 kModelAOffset = 0x0C;              // `ldr r0, [r1, #0xc]`
+constexpr u32 kModelBOffset = 0x10;              // `ldr r0, [r1, #0x10]`
+constexpr u32 kModelFlagsOffset = 0x00;          // `ldr r1, [r0]`
+constexpr u32 kModelBackendOffset = 0x08;        // `ldr r0, [r0, #8]`
+constexpr u32 kBackendVisualNodeOffset = 0x2C;   // `ldr r0, [r0, #0x2c]`
+constexpr u32 kVisualNodeVisibleOffset = 0x1F6;  // `strb r5, [r0, #0x1f6]`
+constexpr u32 kHiddenFlag = 2;                   // `and r2, r1, #2`
+constexpr float kShownVolume = 1.0f;             // s16, literal at 0x00275E30
+constexpr float kHiddenVolume = 0.0f;            // s17, literal at 0x00275E34
+
+struct VisualNode {
+    u8 pad_000[kVisualNodeVisibleOffset];
+    u8 visible_1f6;                              // +0x1F6: 1 shown, 0 hidden
+};
+
+struct ModelBackend {
+    u8 pad_000[kBackendVisualNodeOffset];
+    VisualNode* visual_node;                     // +0x2C
+};
+
+struct Model {
+    u32 flags;                                   // +0x00, bit 1 = hidden
+    u8 pad_004[4];
+    ModelBackend* backend;                       // +0x08
+};
+
+struct Work {
+    u8 pad_000[kActiveOffset];
+    u8 active;                                   // +0x0A
+    Model* model_0c;                             // +0x0C
+    Model* model_10;                             // +0x10
+};
+
+inline Work* current_work() {
+    return *reinterpret_cast<Work* const*>(kRootPointerAddress);
+}
+
+}  // namespace func_275ca0
+
+// Direct calls: r0 = model backend, s0 = 1.0f/0.0f; both return void.
+extern "C" void ui_func_0029bdb4(func_275ca0::ModelBackend* backend,
+                                 float volume);
+extern "C" void script_vm_func_0028c8d0(func_275ca0::ModelBackend* backend,
+                                        float volume);
+
+extern "C" void script_vm_func_00275ca0() {
+    using namespace func_275ca0;
+
+    // 0x00275CB8..0x00275D64: first model.
+    {
+        Work* const work = current_work();
+        Model* const model = work->model_0c;
+        if (model != nullptr) {
+            const u8 active = work->active;
+            const u32 flags = model->flags;
+            if (active != 0) {
+                if ((flags & kHiddenFlag) != 0) {
+                    model->flags = flags & ~kHiddenFlag;
+                    model->backend->visual_node->visible_1f6 = 1;
+                    ui_func_0029bdb4(current_work()->model_0c->backend,
+                                     kShownVolume);
+                    script_vm_func_0028c8d0(current_work()->model_0c->backend,
+                                            kShownVolume);
+                }
+            } else if ((flags & kHiddenFlag) == 0) {
+                model->flags = flags | kHiddenFlag;
+                model->backend->visual_node->visible_1f6 = 0;
+                ui_func_0029bdb4(current_work()->model_0c->backend,
+                                 kHiddenVolume);
+                script_vm_func_0028c8d0(current_work()->model_0c->backend,
+                                        kHiddenVolume);
+            }
+        }
+    }
+
+    // 0x00275D68..0x00275E20: second model; its last helper call is a tail
+    // branch in the original.
+    {
+        Work* const work = current_work();
+        Model* const model = work->model_10;
+        if (model != nullptr) {
+            const u8 active = work->active;
+            const u32 flags = model->flags;
+            if (active != 0) {
+                if ((flags & kHiddenFlag) != 0) {
+                    model->flags = flags & ~kHiddenFlag;
+                    model->backend->visual_node->visible_1f6 = 1;
+                    ui_func_0029bdb4(current_work()->model_10->backend,
+                                     kShownVolume);
+                    script_vm_func_0028c8d0(current_work()->model_10->backend,
+                                            kShownVolume);
+                    return;
+                }
+            } else if ((flags & kHiddenFlag) == 0) {
+                model->flags = flags | kHiddenFlag;
+                model->backend->visual_node->visible_1f6 = 0;
+                ui_func_0029bdb4(current_work()->model_10->backend,
+                                 kHiddenVolume);
+                script_vm_func_0028c8d0(current_work()->model_10->backend,
+                                        kHiddenVolume);
+                return;
+            }
+        }
+    }
 }
 
 // DECOMP_FUNC(0x003d58c4, 408)
-// 100 ARM instructions through unconditional pop; 8 trailing data bytes.
-extern "C" __attribute__((naked)) void func_003d58c4() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d41f0, 0xe1a05000, 0xe1a07001, 0xed2d8b02\n"
-        ".word 0xe5900634, 0xe3100601, 0x1a00005a, 0xe5951680\n"
-        ".word 0xe2856d1a, 0xe1a02007, 0xe3a00000, 0xebf946c7\n"
-        ".word 0xe59f1158, 0xe2854b01, 0xe1a02007, 0xe241000c\n"
-        ".word 0xed911a00, 0xedd00a00, 0xe2851b01, 0xe2811f6b\n"
-        ".word 0xee311a60, 0xe2850e5f, 0xee410a00, 0xedc40a96\n"
-        ".word 0xedd11a00, 0xed903a00, 0xedd10a01, 0xed902a01\n"
-        ".word 0xee711ac3, 0xed911a02, 0xee700ac2, 0xed942a7c\n"
-        ".word 0xedd02a02, 0xe59f1108, 0xee311a62, 0xe241000c\n"
-        ".word 0xee012a80, 0xed842ab3, 0xedd41a7d, 0xee401a80\n"
-        ".word 0xedc41ab4, 0xedd40a7e, 0xee410a00, 0xedc40ab5\n"
-        ".word 0xed912a00, 0xed913a01, 0xedd11a02, 0xedd02a02\n"
-        ".word 0xecd00a02, 0xee711ae2, 0xee322a60, 0xee331a41\n"
-        ".word 0xee420a00, 0xedc40ab9, 0xedd00a01, 0xee410a00\n"
-        ".word 0xedc40aba, 0xedd00a02, 0xe3a00000, 0xee410a80\n"
-        ".word 0xedc40abb, 0xed940a7a, 0xedd40a8b, 0xe5961000\n"
-        ".word 0xee308a60, 0xebf94691, 0xedd40a8b, 0xe1a02007\n"
-        ".word 0xe3a00000, 0xee480a00, 0xedc40a69, 0xed940a7b\n"
-        ".word 0xedd40a8c, 0xe5961000, 0xee308a60, 0xebf94687\n"
-        ".word 0xedd40a8c, 0xe1a02007, 0xe3a00000, 0xee480a00\n"
-        ".word 0xedc40aaa, 0xed940a77, 0xedd40a88, 0xe5961000\n"
-        ".word 0xee308a60, 0xebf9467d, 0xedd40a88, 0xe1a02007\n"
-        ".word 0xe3a00000, 0xee480a00, 0xedc40aa6, 0xe5961000\n"
-        ".word 0xebf94676, 0xecbd8b02, 0xe1a01007, 0xe1a00005\n"
-        ".word 0xe8bd41f0, 0xea00069d, 0xecbd8b02, 0xe8bd81f0\n"
-        ".word 0x00493524, 0x0049353c\n"
-    );
+//
+// Recovered contract (ARM 0x003D58C4..0x003D5A50; the two literal words
+// 0x00493524 and 0x0049353C follow at 0x003D5A54):
+//   * `flags = self->field_634`; bit 20 (0x100000) gates the whole update.
+//     When set the routine returns immediately: no store, no helper call and
+//     no tail call.
+//   * `t = ui_func_00227414(0, self->field_680, value)` (0x003D58E0).
+//     0x00227414 mode 0 returns `(f32)value / (f32)denominator`, or +0.0f
+//     when denominator == 0; the divide is signed 32-bit.  `field_680` is
+//     re-read immediately before every one of the five calls.
+//   * Every write is `base + (target - base) * t`, i.e. VFP `vsub.f32`
+//     followed by `vmla.f32` (non-fused, two roundings), in this order:
+//       0x00493518 -> 0x00493524                    -> self+0x658
+//       self+0x5AC..0x5B4 <- self+0x5F0..0x5F8      -> self+0x6CC..0x6D4
+//       0x00493530..0x00493538 -> 0x0049353C..0x00493544
+//                                                   -> self+0x6E4..0x6EC
+//     then, with a fresh `t` for each triple:
+//       self+0x5E8 <- self+0x62C (base re-read after the call) -> +0x5A4
+//       self+0x5EC <- self+0x630 (base re-read after the call) -> +0x6A8
+//       self+0x5DC <- self+0x620 (base re-read after the call) -> +0x698
+//   * The fifth 0x00227414 result (0x003D5A30) is discarded.
+//   * Epilogue: `vpop {d8}`, `pop {r4,r5,r6,r7,r8,lr}` and an unconditional
+//     tail branch to 0x003D74C4(self, value).  `r8` is saved but unused.
+namespace func_3d58c4 {
+
+constexpr u32 kFlagsOffset = 0x634;        // `ldr r0, [r0, #0x634]`
+constexpr u32 kUpdateBlockedFlag = 0x100000;  // `tst r0, #0x100000`
+constexpr u32 kDenominatorOffset = 0x680;  // `ldr r1, [r5, #0x680]`
+
+// Literal-pool addresses of the four BSS tracks.  The pool words at
+// 0x003D5A54/0x003D5A58 hold 0x00493524 and 0x0049353C; the "from" values
+// are the same pointers minus 0xC.
+constexpr u32 kTrackAScalarFrom = 0x00493518;
+constexpr u32 kTrackAScalarTo = 0x00493524;
+constexpr u32 kTrackBVectorFrom = 0x00493530;
+constexpr u32 kTrackBVectorTo = 0x0049353C;
+
+struct SceneState {
+    u8 pad_000[0x5A4];
+    f32 out_5a4;                 // interpolated from 0x5E8 toward 0x62C
+    u8 pad_5a8[4];
+    f32 from_5ac[3];             // three-lane target of the first vector lerp
+    u8 pad_5b8[0x24];
+    f32 to_5dc;                  // scalar target for +0x698
+    u8 pad_5e0[8];
+    f32 to_5e8;                  // scalar target for +0x5A4
+    f32 to_5ec;                  // scalar target for +0x6A8
+    f32 base_5f0[3];             // base of the first vector lerp
+    u8 pad_5fc[0x24];
+    f32 base_620;                // scalar base for +0x698
+    u8 pad_624[8];
+    f32 base_62c;                // scalar base for +0x5A4
+    f32 base_630;                // scalar base for +0x6A8
+    u32 flags_634;
+    u8 pad_638[0x20];
+    f32 out_658;                 // BSS scalar lerp result
+    u8 pad_65c[0x24];
+    s32 denominator_680;
+    u8 pad_684[0x14];
+    f32 out_698;
+    u8 pad_69c[0xC];
+    f32 out_6a8;
+    u8 pad_6ac[0x20];
+    f32 out_6cc;
+    f32 out_6d0;
+    f32 out_6d4;
+    u8 pad_6d8[0xC];
+    f32 out_6e4;                 // BSS three-lane lerp result
+    f32 out_6e8;
+    f32 out_6ec;
+};
+
+inline f32 read_global_f32(u32 address) {
+    return *reinterpret_cast<const f32*>(address);
+}
+
+// The original uses the non-fused `vmla.f32` (multiply, round, add, round).
+// Clang expands `base + delta * fraction` into `vmul` + `vadd`, which agrees
+// for finite inputs but can select a different NaN payload when a signalling
+// NaN is involved.  Emitting the instruction explicitly keeps the candidate
+// bit-identical for every input, including NaNs.
+__attribute__((always_inline)) inline f32 vmla_f32(f32 base, f32 addend,
+                                                   f32 factor) {
+    __asm__("vmla.f32 %0, %1, %2" : "+t"(base) : "t"(addend), "t"(factor));
+    return base;
+}
+
+}  // namespace func_3d58c4
+
+// 0x00227414: mode 0 computes (f32)value / (f32)denominator as a single
+// precision quotient; a zero denominator yields +0.0f.  The routine also has
+// modes 1 and 2, which this caller never selects.
+extern "C" f32 ui_func_00227414(s32 mode, s32 denominator, s32 value);
+
+// 0x003D74C4: tail continuation of the update.  Its result is not part of the
+// caller-visible contract; the original reaches it with `b` after restoring
+// every callee-saved register.
+extern "C" void func_003d74c4(func_3d58c4::SceneState* self, s32 value);
+
+extern "C" void func_003d58c4(func_3d58c4::SceneState* self, s32 value) {
+    using namespace func_3d58c4;
+
+    // 0x003D58D4..0x003D58DC: blocked updates perform no work at all.
+    if ((self->flags_634 & kUpdateBlockedFlag) != 0) {
+        return;
+    }
+
+    // 0x003D58E0..0x003D5920: BSS scalar track A, single lane.
+    const f32 t0 = ui_func_00227414(0, self->denominator_680, value);
+    const f32 track_a_from = read_global_f32(kTrackAScalarFrom);
+    const f32 track_a_to = read_global_f32(kTrackAScalarTo);
+    self->out_658 = vmla_f32(track_a_from, track_a_to - track_a_from, t0);
+
+    // 0x003D5924..0x003D5970: three-lane lerp from +0x5AC toward +0x5F0.
+    self->out_6cc =
+        vmla_f32(self->base_5f0[0], self->from_5ac[0] - self->base_5f0[0], t0);
+    self->out_6d0 =
+        vmla_f32(self->base_5f0[1], self->from_5ac[1] - self->base_5f0[1], t0);
+    self->out_6d4 =
+        vmla_f32(self->base_5f0[2], self->from_5ac[2] - self->base_5f0[2], t0);
+
+    // 0x003D5974..0x003D59B4: three-lane BSS track B.
+    const f32 track_b_from_x = read_global_f32(kTrackBVectorFrom + 0x0);
+    const f32 track_b_from_y = read_global_f32(kTrackBVectorFrom + 0x4);
+    const f32 track_b_from_z = read_global_f32(kTrackBVectorFrom + 0x8);
+    const f32 track_b_to_x = read_global_f32(kTrackBVectorTo + 0x0);
+    const f32 track_b_to_y = read_global_f32(kTrackBVectorTo + 0x4);
+    const f32 track_b_to_z = read_global_f32(kTrackBVectorTo + 0x8);
+    self->out_6e4 = vmla_f32(track_b_from_x, track_b_to_x - track_b_from_x, t0);
+    self->out_6e8 = vmla_f32(track_b_from_y, track_b_to_y - track_b_from_y, t0);
+    self->out_6ec = vmla_f32(track_b_from_z, track_b_to_z - track_b_from_z, t0);
+
+    // 0x003D59B8..0x003D59DC: the base at +0x62C is loaded after the call.
+    {
+        const f32 delta = self->to_5e8 - self->base_62c;
+        const f32 t = ui_func_00227414(0, self->denominator_680, value);
+        self->out_5a4 = vmla_f32(self->base_62c, delta, t);
+    }
+
+    // 0x003D59E0..0x003D5A04: the base at +0x630 is loaded after the call.
+    {
+        const f32 delta = self->to_5ec - self->base_630;
+        const f32 t = ui_func_00227414(0, self->denominator_680, value);
+        self->out_6a8 = vmla_f32(self->base_630, delta, t);
+    }
+
+    // 0x003D5A08..0x003D5A2C: the base at +0x620 is loaded after the call.
+    {
+        const f32 delta = self->to_5dc - self->base_620;
+        const f32 t = ui_func_00227414(0, self->denominator_680, value);
+        self->out_698 = vmla_f32(self->base_620, delta, t);
+    }
+
+    // 0x003D5A30..0x003D5A34: fifth fraction; the result is discarded.
+    ui_func_00227414(0, self->denominator_680, value);
+
+    // 0x003D5A38..0x003D5A48: restore and tail-branch to 0x003D74C4.
+    func_003d74c4(self, value);
 }
 
 // DECOMP_FUNC(0x0015a620, 416)
-// 97 ARM instructions through unconditional pop; 28 trailing data bytes.
-extern "C" __attribute__((naked)) void func_0015a620() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4070, 0xe59000a0, 0xe3500000, 0x0a00005b\n"
-        ".word 0xe5901008, 0xeddf0a5a, 0xe3a00000, 0xe28130c4\n"
-        ".word 0xed911a2d, 0xe591c0c4, 0xed9f0a56, 0xeeb41ae0\n"
-        ".word 0xe35c0000, 0x108c0003, 0xe28130b4, 0xeef1fa10\n"
-        ".word 0xceb01a60, 0xca000003, 0xeef01a40, 0xeeb41ae1\n"
-        ".word 0xeef1fa10, 0x3eb01a40, 0xeddf1a4c, 0xed9f2a4a\n"
-        ".word 0xeef02a61, 0xee412a02, 0xeebc1ae2, 0xee11ca10\n"
-        ".word 0xed931a01, 0xe20cc0ff, 0xeeb41ae0, 0xeef1fa10\n"
-        ".word 0xceb01a60, 0xca000003, 0xeef02a40, 0xeeb41ae2\n"
-        ".word 0xeef1fa10, 0x3eb01a40, 0xeef02a61, 0xee412a02\n"
-        ".word 0xeebc1ae2, 0xee11ea10, 0xed931a02, 0xe20ee0ff\n"
-        ".word 0xeeb41ae0, 0xeef1fa10, 0xceb01a60, 0xca000003\n"
-        ".word 0xeef02a40, 0xeeb41ae2, 0xeef1fa10, 0x3eb01a40\n"
-        ".word 0xeef02a61, 0xee412a02, 0xeebc1ae2, 0xee114a10\n"
-        ".word 0xed931a03, 0xe20440ff, 0xeeb41ae0, 0xeef1fa10\n"
-        ".word 0xceb00a60, 0xca000002, 0xeeb41ac0, 0xeef1fa10\n"
-        ".word 0x2eb00a41, 0xe20c30ff, 0xe3c220ff, 0xe1a0c40e\n"
-        ".word 0xe1822003, 0xe20c3cff, 0xee401a02, 0xe3c2ccff\n"
-        ".word 0xe1a02804, 0xe183300c, 0xe202c8ff, 0xe3c338ff\n"
-        ".word 0xe59f4064, 0xe183300c, 0xe3c334ff, 0xe5911018\n"
-        ".word 0xeebc0ae1, 0xe2111002, 0x13a01801, 0xee102a10\n"
-        ".word 0xe183cc02, 0xe3cce4ff, 0xe594c000, 0xe59f2034\n"
-        ".word 0xe59f302c, 0xe28c5010, 0xe58c200c, 0xe88c400a\n"
-        ".word 0xe3a01017, 0xe5845000, 0xe8bd4070, 0xea051e41\n"
-        ".word 0xe8bd8070, 0x3f800000, 0x00000000, 0x437f0000\n"
-        ".word 0x3f000000, 0x000400e0, 0x000f00e1, 0x004652a0\n"
-    );
+//
+// Recovered contract (ARM 0x0015A620..0x0015A79C plus seven literal words at
+// 0x0015A7A4..0x0015A7BC: 1.0f, 0.0f, 255.0f, 0.5f, 0x000400E0, 0x000F00E1
+// and the address of g_GpuCommandCursor):
+//   * `state = *(GpuState**)(self + 0xA0)`; a null state returns immediately
+//     without reading the entry, writing memory or calling anything.
+//   * `entry = *(Entry**)(state + 0x08)`.  One 16-byte GPU command record is
+//     appended at `g_GpuCommandCursor` (0x004652A0):
+//         +0x0 = (entry->flags_18 & 2) ? 0x00010000 : 0
+//         +0x4 = 0x000400E0
+//         +0x8 = R | G << 8 | B << 16
+//         +0xC = 0x000F00E1
+//     The original stores +0xC first (`str r2, [ip, #0xc]`), then +0x0/+0x4/
+//     +0x8 with one `stm ip, {r1, r3, lr}`, and finally stores cursor+0x10
+//     back to 0x004652A0.  Every source word is loaded before the first store,
+//     so a cursor aliasing the entry still observes the original values.
+//   * The channels at `entry+0xB4/+0xB8/+0xBC/+0xC0` are each clamped to
+//     [0.0f, 1.0f] with NaN passing through unchanged (`vcmpe`, `vmovgt`,
+//     `vmovlo`) and converted by `vcvt.u32.f32` of
+//     `vmla.f32(0.5f, channel, 255.0f)`, i.e. truncation of
+//     `0.5 + 255 * channel`, then masked to a byte.  The fourth channel is
+//     converted the same way but its byte is cleared again
+//     (`bic lr, ip, #0xff000000`), so the record carries only the RGB bytes.
+//     Its conversion is dead apart from VFP status-flag side effects.
+//   * `ui_func_002a20a8(list, 0x17)` is a tail call: the original restores
+//     r4-r6/lr and branches with r0 = `list` and r1 = 0x17.  `list` is the
+//     self-relative pointer held at `entry+0xC4`,
+//     `(u8*)&entry->rel_c4 + entry->rel_c4`, or null when that offset is zero.
+//     0x002A20A8 records the pointer for slot 0x17 in the table at 0x004E9DC8
+//     and appends a call-list command to the same command stream.
+namespace func_15a620 {
+
+constexpr u32 kStateOffset = 0xA0;  // `ldr r0, [r0, #0xa0]`
+constexpr u32 kEntryOffset = 0x08;  // `ldr r1, [r0, #8]`
+
+// Literal pool 0x0015A7A4..0x0015A7B0.
+constexpr f32 kChannelMax = 1.0f;    // 0x3F800000
+constexpr f32 kChannelMin = 0.0f;    // 0x00000000
+constexpr f32 kChannelSpan = 255.0f; // 0x437F0000
+constexpr f32 kRoundBias = 0.5f;     // 0x3F000000
+
+// Literal pool 0x0015A7B4/0x0015A7B8 and the `ands`/`movne` pair at
+// 0x0015A764..0x0015A768.
+constexpr u32 kCommandHeaderRgb = 0x000400E0;
+constexpr u32 kCommandHeaderEnd = 0x000F00E1;
+constexpr u32 kEntryFlagBit = 2;
+constexpr u32 kFlaggedLeadWord = 0x00010000;
+
+// `mov r1, #0x17` before the tail branch.
+constexpr u32 kCommandSlot = 0x17;
+
+// `add r5, ip, #0x10`, stored back to 0x004652A0.
+constexpr u32 kCommandWords = 4;
+
+// `[self+0xA0]` points at a state object whose `+0x08` word is the entry.
+struct GpuState {
+    u8 pad_000[0x08];
+    u8* entry_08;
+};
+
+// The entry fields read by this routine (all other bytes are untouched).
+struct Entry {
+    u8 pad_000[0x18];
+    u32 flags_18;
+    u8 pad_01c[0xB4 - 0x1C];
+    f32 channel_b4;
+    f32 channel_b8;
+    f32 channel_bc;
+    f32 channel_c0;
+    u32 rel_c4;  // self-relative pointer, zero means null
+};
+
+// The object this routine is invoked with; only `+0xA0` is read.
+struct Object {
+    u8 pad_000[0xA0];
+    GpuState* state_a0;
+};
+
+static_assert(offsetof(Object, state_a0) == kStateOffset);
+static_assert(offsetof(GpuState, entry_08) == kEntryOffset);
+static_assert(offsetof(Entry, flags_18) == 0x18);
+static_assert(offsetof(Entry, channel_b4) == 0xB4);
+static_assert(offsetof(Entry, rel_c4) == 0xC4);
+
+// The original converts `0.5f + clamp(entry->channel) * 255.0f` with a single
+// VMLA and `vcvt.u32.f32`.  Clang expands the plain expression into `vmul` +
+// `vadd` (two roundings).  The intermediate value differs in the low bit for
+// some inputs, but an enumeration of every float in the reachable [0, 1]
+// clamp domain (plus the differential boundary cases in the test) shows the
+// truncated byte is identical, so no inline assembly is needed.
+inline u32 channel_to_byte(f32 value) {
+    f32 clamped = value;
+    if (clamped > kChannelMax) {
+        clamped = kChannelMax;
+    } else if (clamped < kChannelMin) {
+        clamped = kChannelMin;
+    }
+    // NaN survives the clamp and converts to zero, exactly like VCVT.
+    return static_cast<u8>(
+        static_cast<u32>(kRoundBias + clamped * kChannelSpan));
+}
+
+}  // namespace func_15a620
+
+// 0x004652A0: bump-allocated GPU command-stream cursor shared with
+// 0x0015B1A4 and 0x002A20A8.
+extern u32* g_GpuCommandCursor;
+
+// 0x002A20A8: registers the command list for a slot and appends the call-list
+// command.  Reached by a tail branch after every callee-saved register has
+// been restored.
+extern "C" void ui_func_002a20a8(void* list, u32 slot);
+
+extern "C" void func_0015a620(void* self) {
+    using namespace func_15a620;
+
+    GpuState* const state = static_cast<Object*>(self)->state_a0;
+    if (state == nullptr) {
+        return;
+    }
+
+    Entry* const entry = reinterpret_cast<Entry*>(state->entry_08);
+
+    // All loads precede the record stores in the original.
+    const u32 lead =
+        (entry->flags_18 & kEntryFlagBit) != 0 ? kFlaggedLeadWord : 0;
+    const u32 red = channel_to_byte(entry->channel_b4);
+    const u32 green = channel_to_byte(entry->channel_b8);
+    const u32 blue = channel_to_byte(entry->channel_bc);
+    const u32 alpha = channel_to_byte(entry->channel_c0);
+    const u32 rgba = red | (green << 8) | (blue << 16) | (alpha << 24);
+    const u32 offset = entry->rel_c4;
+    void* const list =
+        offset != 0
+            ? reinterpret_cast<u8*>(&entry->rel_c4) + offset
+            : nullptr;
+
+    u32* const cursor = g_GpuCommandCursor;
+    cursor[3] = kCommandHeaderEnd;
+    cursor[0] = lead;
+    cursor[1] = kCommandHeaderRgb;
+    cursor[2] = rgba & 0x00FFFFFFu;
+    g_GpuCommandCursor = cursor + kCommandWords;
+
+    ui_func_002a20a8(list, kCommandSlot);
 }
 
 // DECOMP_FUNC(0x002f4804, 416)
-// 99 ARM instructions through unconditional pop; 20 trailing data bytes.
-extern "C" __attribute__((naked)) void ui_func_002f4804() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d47f0, 0xe59f0184, 0xe59f517c, 0xed2d8b02\n"
-        ".word 0xe24dd030, 0xe890139e, 0xe2856a01, 0xeeb08a40\n"
-        ".word 0xe88d139e, 0xe2801020, 0xe590002c, 0xe891000e\n"
-        ".word 0xe58d002c, 0xe28d0020, 0xe880000e, 0xe5960200\n"
-        ".word 0xe3500000, 0x0a00004d, 0xe59f7144, 0xe3a01001\n"
-        ".word 0xe3a00005, 0xe5974000, 0xebff45c6, 0xe2844a01\n"
-        ".word 0xe2844f93, 0xe3a08000, 0xe5941000, 0xe2812001\n"
-        ".word 0xe0843101, 0xe5931008, 0xe0843102, 0xe5842000\n"
-        ".word 0xe5830008, 0xe5d42018, 0xe3520000, 0x01510000\n"
-        ".word 0x0a000002, 0xe594101c, 0xe12fff31, 0xe5c48018\n"
-        ".word 0xe5970000, 0xe3a01000, 0xebff3522, 0xe5960200\n"
-        ".word 0xe3a04000, 0xe3500000, 0xda00001f, 0xe59fa0d8\n"
-        ".word 0xed9f0a34, 0xe1a0900d, 0xee388a00, 0xe0850284\n"
-        ".word 0xed900a00, 0xed901a02, 0xedd02a05, 0xed903a03\n"
-        ".word 0xe0c0149a, 0xeef05a62, 0xeeb05a48, 0xeef04a43\n"
-        ".word 0xe1a010c0, 0xe0410fc0, 0xeeb04a41, 0xe0400100\n"
-        ".word 0xeef03a48, 0xe0840100, 0xeeb02a48, 0xe7990100\n"
-        ".word 0xeef01a40, 0xeef00a48, 0xe3800070, 0xe1a03000\n"
-        ".word 0xe1a02003, 0xe1a01002, 0xebfe89ca, 0xe5960200\n"
-        ".word 0xe2844001, 0xe1500004, 0xcaffffe3, 0xe5970000\n"
-        ".word 0xe2804a01, 0xe2844f93, 0xe5940000, 0xe0841100\n"
-        ".word 0xe2400001, 0xe5911008, 0xe5840000, 0xe0840100\n"
-        ".word 0xe5d42018, 0xe5900008, 0xe3520000, 0x01510000\n"
-        ".word 0x0a000002, 0xe594101c, 0xe12fff31, 0xe5c48018\n"
-        ".word 0xe28dd030, 0xecbd8b02, 0xe8bd87f0, 0x004be698\n"
-        ".word 0x004049b4, 0x0044ea00, 0x42c80000, 0x2aaaaaab\n"
-    );
+//
+// Recovered contract (ARM 0x002F4804..0x002F498C plus the five literal words
+// at 0x002F4990..0x002F49A0: record base 0x004BE698, the twelve-entry color
+// table 0x004049B4, the render-register global 0x0044EA00, 100.0f and the
+// divide-by-twelve magic 0x2AAAAAAB):
+//   * `count = *(s32*)0x004BF898` (base + 0x1200, the producer at 0x00277F9C
+//     appends 0x20-byte records at 0x004BE698 and increments this counter).
+//     A zero count returns without touching the render stack or calling
+//     anything.
+//   * Push a viewport command onto the render stack node at
+//     `*0x0044EA00 + 0x124C`: `slot[count]` is the previous top, `count` is
+//     incremented and `slot[count]` receives `ui_func_002c5f7c(5, 1)`
+//     (0x1F51).  If the node's dirty byte is non-zero, or the previous top
+//     differs from the new value, the node's flush callback at `+0x1C` is
+//     invoked with the new value in r0 and the dirty byte is cleared.
+//   * `ui_func_002c1d3c(*0x0044EA00, 0)` selects the render mode.
+//   * For every record `i` while `i < *(s32*)0x004BF898` (signed bound,
+//     re-read every iteration) draw one element with `func_0029705c`:
+//       - the color word is `kColorTable[i % 12] | 0x70`, passed in r0..r3;
+//       - the four vec3 arguments are
+//         (rec+0x00, s16, rec+0x08), (rec+0x00, s16, rec+0x14),
+//         (rec+0x0C, s16, rec+0x08), (rec+0x0C, s16, rec+0x14)
+//         with `s16 = incoming_s0 + 100.0f`.
+//   * Pop the render stack node: the same callback rule applies, and the
+//     function leaves the popped value (or the callback result) in r0.
+// Only the incoming float register s0 is live; r0..r3 are overwritten before
+// they are read.  The single caller at 0x001FDD98 reaches this routine from a
+// dispatcher with `s0 = *(f32*)(*r6 + 0x20)`.
+namespace func_2f4804 {
+
+// Absolute addresses in the pinned image.
+constexpr u32 kRecordBaseAddress = 0x004BE698;   // 0x20-byte draw records
+constexpr u32 kRecordCountAddress = 0x004BF898;  // kRecordBaseAddress + 0x1200
+constexpr u32 kRecordStride = 0x20;
+
+// 0x0044EA00 points at the render-register block; the viewport stack node
+// starts at +0x124C.
+constexpr u32 kRenderStackOffset = 0x124C;
+
+// Literal pool 0x002F499C/0x002F49A0 and the `orr r0, r0, #0x70`.
+constexpr f32 kVerticalStep = 100.0f;  // 0x42C80000
+constexpr u32 kColorCommandBits = 0x70;
+
+// 0x004049B4..0x004049E0: one color/format word per draw slot.
+constexpr u32 kColorCount = 12;
+constexpr u32 kColorTable[kColorCount] = {
+    0xFF000000, 0x00FF0000, 0xFFFF0000, 0x0000FF00,
+    0xFF00FF00, 0x00FFFF00, 0x80000000, 0x00800000,
+    0xFF800000, 0x00008000, 0xFF008000, 0x00FF8000,
+};
+
+// `mov r0, #5` / `mov r1, #1` before the 0x002C5F7C call.
+constexpr u32 kViewportCommand = 5;
+constexpr u32 kViewportEnabled = 1;
+
+// `mov r1, #0` before the 0x002C1D3C call.
+constexpr u32 kRenderMode = 0;
+
+// Render-stack node at render_base + 0x124C.  `slots` is addressed as a flat
+// word array (`node + 8 + count*4`); the original has no bounds check, so the
+// reconstruction indexes past the four visible slots exactly like the ARM code.
+struct RenderStackNode {
+    u32 count;          // +0x00
+    u32 pad_004;        // +0x04
+    u32 slots[4];       // +0x08..+0x17
+    u8 dirty;           // +0x18
+    u8 pad_019[3];
+    u32 flush_cb;       // +0x1C, `blx r1` with the new value in r0
+};
+
+static_assert(offsetof(RenderStackNode, count) == 0x00);
+static_assert(offsetof(RenderStackNode, slots) == 0x08);
+static_assert(offsetof(RenderStackNode, dirty) == 0x18);
+static_assert(offsetof(RenderStackNode, flush_cb) == 0x1C);
+
+// `blx r1` with no null check: the original requires a non-null callback.
+using FlushCallback = u32 (*)(u32 value);
+
+inline RenderStackNode* render_stack(void* base) {
+    return reinterpret_cast<RenderStackNode*>(
+        static_cast<u8*>(base) + kRenderStackOffset);
+}
+
+inline s32 load_record_count() {
+    return *reinterpret_cast<const s32*>(kRecordCountAddress);
+}
+
+}  // namespace func_2f4804
+
+namespace smt4::engine {
+extern void* g_RenderRegisterBase;  // 0x0044EA00
+}
+
+// 0x002C5F7C: builds the 0x1F51 viewport command word for (5, 1).
+extern "C" u32 ui_func_002c5f7c(u32 kind, u32 enabled);
+
+// 0x002C1D3C: selects the render mode on the render-register block.
+extern "C" void ui_func_002c1d3c(void* base, u32 mode);
+
+// 0x0029705C: submits one four-corner element.  r0..r3 carry the same color
+// word; s0..s11 carry four vec3 corners.
+extern "C" void func_0029705c(u32 color_a, u32 color_b, u32 color_c,
+                              u32 color_d, f32 x0, f32 y0, f32 z0, f32 x1,
+                              f32 y1, f32 z1, f32 x2, f32 y2, f32 z2, f32 x3,
+                              f32 y3, f32 z3);
+
+extern "C" u32 ui_func_002f4804(f32 vertical_offset) {
+    using namespace func_2f4804;
+
+    if (load_record_count() == 0) {
+        return 0;
+    }
+
+    // The original captures the base before the viewport-command helper runs,
+    // then re-reads the global for the render-mode call and again for the pop.
+    void* const push_base = smt4::engine::g_RenderRegisterBase;
+    const u32 pushed = ui_func_002c5f7c(kViewportCommand, kViewportEnabled);
+    RenderStackNode* const push_node = render_stack(push_base);
+    u32* const push_slots = push_node->slots;
+    const u32 push_previous = push_slots[push_node->count];
+    push_node->count = push_node->count + 1;
+    push_slots[push_node->count] = pushed;
+    if (push_node->dirty != 0 || push_previous != pushed) {
+        reinterpret_cast<FlushCallback>(push_node->flush_cb)(pushed);
+        push_node->dirty = 0;
+    }
+
+    ui_func_002c1d3c(smt4::engine::g_RenderRegisterBase, kRenderMode);
+
+    const f32 draw_y = vertical_offset + kVerticalStep;
+
+    // The count is re-read from 0x004BF898 every iteration, exactly like the
+    // `ldr r0, [r6, #0x200]` in the loop tail, so a helper that grows the
+    // record list extends the loop.
+    for (s32 index = 0; index < load_record_count(); ++index) {
+        const u8* const record = reinterpret_cast<const u8*>(
+            kRecordBaseAddress + static_cast<u32>(index) * kRecordStride);
+        const f32 x_lo = *reinterpret_cast<const f32*>(record + 0x00);
+        const f32 z_lo = *reinterpret_cast<const f32*>(record + 0x08);
+        const f32 z_hi = *reinterpret_cast<const f32*>(record + 0x0C);
+        const f32 x_hi = *reinterpret_cast<const f32*>(record + 0x14);
+        const u32 color =
+            kColorTable[static_cast<u32>(index) % kColorCount] |
+            kColorCommandBits;
+
+        func_0029705c(color, color, color, color,
+                      x_lo, draw_y, z_lo,
+                      x_lo, draw_y, x_hi,
+                      z_hi, draw_y, z_lo,
+                      z_hi, draw_y, x_hi);
+    }
+
+    RenderStackNode* const pop_node =
+        render_stack(smt4::engine::g_RenderRegisterBase);
+    u32* const pop_slots = pop_node->slots;
+    const u32 pop_count = pop_node->count;
+    const u32 pop_previous = pop_slots[pop_count];
+    pop_node->count = pop_count - 1;
+    const u32 new_top = pop_slots[pop_count - 1];
+    if (pop_node->dirty != 0 || pop_previous != new_top) {
+        const u32 result =
+            reinterpret_cast<FlushCallback>(pop_node->flush_cb)(new_top);
+        pop_node->dirty = 0;
+        return result;
+    }
+    return new_top;
 }
 
 // DECOMP_FUNC(0x001e2af0, 420)
-// 98 ARM instructions through unconditional pop; 28 trailing data bytes.
-extern "C" __attribute__((naked)) void script_vm_func_001e2af0() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d41f0, 0xeb038008, 0xe1a05000, 0xeb03752a\n"
-        ".word 0xe59f1170, 0xe3807004, 0xe5d11018, 0xe3510000\n"
-        ".word 0x1a000057, 0xe59f8160, 0xe5980000, 0xe5900000\n"
-        ".word 0xe3500000, 0x1a000052, 0xe3a00016, 0xeb03781d\n"
-        ".word 0xe3500000, 0x0a00004e, 0xe59f0140, 0xe19040d5\n"
-        ".word 0xe3540001, 0x0a000008, 0xe3540005, 0x0a00000b\n"
-        ".word 0xe3540006, 0x0a000014, 0xe3540007, 0x0a00001c\n"
-        ".word 0xe3540008, 0x0a000024, 0xea00002b, 0xe320f000\n"
-        ".word 0xeb0317a9, 0xe3500001, 0xb3a04002, 0xea000026\n"
-        ".word 0xe3a00020, 0xeb02b7ab, 0xe3500000, 0xe320f000\n"
-        ".word 0x0a000004, 0xeb01e590, 0xe59f10e4, 0xe0400001\n"
-        ".word 0xe1500001, 0x9a00001c, 0xe3a04006, 0xe3a00020\n"
-        ".word 0xeb02b7a0, 0xe3500000, 0xe320f000, 0x0a000003\n"
-        ".word 0xeb01e585, 0xe2400ee1, 0xe3500ee1, 0x9a000012\n"
-        ".word 0xe3a04007, 0xe3a00020, 0xeb02b796, 0xe3500000\n"
-        ".word 0xe320f000, 0x0a000003, 0xeb01e57b, 0xe59f1094\n"
-        ".word 0xe1510000, 0x9a000008, 0xe3a04008, 0xe320f000\n"
-        ".word 0xeb054599, 0xe1a06000, 0xe320f000, 0xeb02aa68\n"
-        ".word 0xe0862fa6, 0xe15000c2, 0xa3a04000, 0xe5980000\n"
-        ".word 0xe59f1064, 0xe0843084, 0xe3a02002, 0xe0816283\n"
-        ".word 0xe4802004, 0xe3a01000, 0xe4801010, 0xe2863004\n"
-        ".word 0xe5803000, 0xeb0374d4, 0xed9f0a10, 0xe1a02000\n"
-        ".word 0xe5961000, 0xeef00a40, 0xe1a03007, 0xe3a00001\n"
-        ".word 0xeb037465, 0xe2840001, 0xe3500009, 0xa3a00000\n"
-        ".word 0xe5c50d5b, 0xe8bd81f0, 0x0049f91c, 0x00447a98\n"
-        ".word 0x00000d5b, 0x00000708, 0x00001c20, 0x00447ab0\n"
-        ".word 0x3f34fdf4\n"
-    );
+//
+// Recovered contract (ARM 0x001E2AF0..0x001E2C74 plus the seven literal words
+// at 0x001E2C78..0x001E2C90: 0x0049F91C, 0x00447A98, 0x00000D5B, 0x00000708,
+// 0x00001C20, 0x00447AB0 and 0.707f = 0x3F34FDF4):
+//   * `context = engine_func_002c2b1c()` is the engine context; this routine
+//     owns exactly one field of it, the signed advice index at `+0xD5B`.
+//   * `script_vm_func_002bffac()` returns a profile byte.  Its value `| 4` is
+//     forwarded to the final `script_vm_func_002bfdfc` call; the unmodified
+//     byte is what the early-exit path leaves in r0.
+//   * Three gates suppress the update entirely: the byte at
+//     `0x0049F91C + 0x18` must be zero, the word reached through
+//     `*(u32*)0x00447A98` must be zero, and event flag 0x16 must be set.
+//     The first two checks happen before the flag lookup; the second one
+//     re-reads `0x00447A98` later for the command writes, so a helper that
+//     rewrites that global is observed.
+//   * The nine 0x60-byte entries at 0x00447AB0 are `{u32 message_id,
+//     Shift-JIS text[0x5C]}`; `entry[0]` is forwarded as the message id and
+//     `entry+4` is stored into the pending command array.  The selected index
+//     is never bounds-checked, exactly like the original's flat `index*0x60`.
+//   * The index state machine advances one step per invocation, wrapping to 0
+//     after entry 8.  Index 1 stays put while `camp_func_002a8a1c()` (a
+//     populated-entry count) is non-zero.  Indices 5, 6 and 7 are gated by
+//     `func_0025c1dc()` (elapsed seconds) around 1800 s, 3600 s and 7200 s;
+//     the comparisons are unsigned, so a value below a gate wraps and falls
+//     through to the next stage.  Index 8 compares two signed 16-bit record
+//     fields and resets to 0 when the second is at least half the first.
+//   * The pending command array receives `[0] = 2`, `[1] = 0`,
+//     `[5] = entry+4`; words `[2..4]` are left untouched.
+//   * No stack arguments, no indirect calls, no floating-point input.  The
+//     epilogue is `pop {r4, r5, r6, r7, r8, pc}`.
+//
+// Callers ignore r0, but the original leaves a defined value there on every
+// path (the 0x2BFFAC byte, the non-zero pending word, 0, or the next index).
+// The reconstruction returns it so register-level differential tests are
+// exact.
+namespace func_1e2af0 {
+
+// 0x0049F91C: shared map/script word block.  Only `+0x18` is read here.
+constexpr u32 kUiBlockAddress = 0x0049F91C;
+constexpr u32 kUiBlockHoldOffset = 0x18;
+
+// 0x00447A98: pointer to the pending command word array.
+constexpr u32 kCommandArrayPointerAddress = 0x00447A98;
+
+// `str r2, [r0]`; `str r1, [r0, #4]`; `str r3, [r0, #0x14]`.
+constexpr u32 kCommandKindIndex = 0;
+constexpr u32 kCommandKind = 2;
+constexpr u32 kCommandArgumentIndex = 1;
+constexpr u32 kCommandDataIndex = 5;
+
+// 0x00447AB0: nine advice entries, each a u32 message id followed by 0x5C
+// bytes of Shift-JIS text.
+constexpr u32 kAdviceTableAddress = 0x00447AB0;
+constexpr u32 kAdviceEntryStride = 0x60;
+constexpr u32 kAdviceEntryCount = 9;
+constexpr u32 kAdviceTextOffset = 4;
+
+// Engine context field owned by this routine (`ldrsb r4, [context, #0xD5B]`).
+constexpr u32 kAdviceIndexOffset = 0xD5B;
+
+// Elapsed-second gates: `ldr r1, =0x708` + `sub r0, r0, r1` + `cmp r0, r1`
+// (state 5), `sub r0, r0, #0xE10` + `cmp r0, #0xE10` (state 6) and
+// `ldr r1, =0x1C20` + `cmp r1, r0` (state 7).
+constexpr u32 kSaveGateWindow = 0x0708;   // 1800 s
+constexpr u32 kSaveGateSecond = 0x0E10;   // 3600 s
+constexpr u32 kSaveGateThird = 0x1C20;    // 7200 s
+
+// `mov r0, #0x20` before each camp_func_00290a38 call.
+constexpr u32 kSaveDataEntryId = 0x20;
+
+// `mov r0, #0x16` before the event-flag test.
+constexpr u32 kAdviceEventFlag = 0x16;
+
+// `mov r0, #1` before the 0x2BFDFC call.
+constexpr u32 kAdviceMessageKind = 1;
+
+// `orr r7, r0, #4`.
+constexpr u32 kAdviceFlagsOr = 4;
+
+// 0x3F34FDF4, loaded into s0 and copied to s1 for the 0x2BFDFC call.
+constexpr f32 kAdviceCoefficient = 0.707f;
+
+}  // namespace func_1e2af0
+
+// 0x002C2B1C: engine context singleton (`*(*(0x0043E2A8 + 4)) + 0xAC8C`).
+extern "C" u8* engine_func_002c2b1c(void);
+
+// 0x002BFFAC: profile byte at `0x004C5634 + 0x1E4`.
+extern "C" u32 script_vm_func_002bffac(void);
+
+// 0x002BFF9C: profile byte at `0x004C5634 + 0x1E5`.
+extern "C" u32 script_vm_func_002bff9c(void);
+
+// 0x002C0BA8: event-flag test, non-zero when the flag bit is set.
+extern "C" u32 script_vm_func_002c0ba8(u32 flag_id);
+
+// 0x002A8A1C: count of leading non-negative s8 entries in a 24-entry table.
+extern "C" u32 camp_func_002a8a1c(void);
+
+// 0x00290A38: save-data entry word for `id`.
+extern "C" u32 camp_func_00290a38(u32 id);
+
+// 0x0025C1DC: elapsed seconds since the save timestamp (0 when in the future,
+// -1 when no timestamp is armed).
+extern "C" s32 func_0025c1dc(void);
+
+// 0x0033426C: signed 16-bit field at `+0x1C` of the shared record.
+extern "C" s32 script_vm_func_0033426c(void);
+
+// 0x0028D5B4: signed 16-bit field at `+0x2A` of the shared record.
+extern "C" s32 camp_func_0028d5b4(void);
+
+// 0x002BFDFC: queues one script message record (kind, message id, byte, flags,
+// two floats).
+extern "C" u32 script_vm_func_002bfdfc(u32 kind, u32 message_id,
+                                       u32 byte_argument, u32 flags,
+                                       f32 coefficient_a, f32 coefficient_b);
+
+extern "C" u32 script_vm_func_001e2af0(void) {
+    using namespace func_1e2af0;
+
+    u8* const context = engine_func_002c2b1c();
+
+    // The profile byte is read before the suppression checks and its `| 4`
+    // form is kept live across the whole body for the final message call.
+    const u32 profile_byte = script_vm_func_002bffac();
+    const u32 profile_flags = profile_byte | kAdviceFlagsOr;
+
+    if (*reinterpret_cast<const u8*>(kUiBlockAddress + kUiBlockHoldOffset) !=
+        0) {
+        return profile_byte;
+    }
+
+    const u32 command_array_address =
+        *reinterpret_cast<const u32*>(kCommandArrayPointerAddress);
+    const u32 pending_command =
+        *reinterpret_cast<const u32*>(command_array_address);
+    if (pending_command != 0) {
+        return pending_command;
+    }
+
+    if (script_vm_func_002c0ba8(kAdviceEventFlag) == 0) {
+        return 0;
+    }
+
+    s32 index = *reinterpret_cast<const s8*>(context + kAdviceIndexOffset);
+
+    switch (index) {
+    case 1: {
+        // `cmp r0, #1` / `movlt r4, #2`: an empty roster advances to entry 2,
+        // otherwise entry 1 is shown and the state simply moves on.
+        const s32 populated = static_cast<s32>(camp_func_002a8a1c());
+        if (populated < 1) {
+            index = 2;
+        }
+        break;
+    }
+    case 5:
+        // The unsigned window `elapsed - 1800 <= 1800` keeps entry 5.
+        if (camp_func_00290a38(kSaveDataEntryId) != 0) {
+            const u32 elapsed = static_cast<u32>(func_0025c1dc());
+            if (elapsed - kSaveGateWindow <= kSaveGateWindow) {
+                break;
+            }
+        }
+        index = 6;
+        [[fallthrough]];
+    case 6:
+        // The unsigned window `elapsed - 3600 <= 3600` keeps entry 6.
+        if (camp_func_00290a38(kSaveDataEntryId) != 0) {
+            const u32 elapsed = static_cast<u32>(func_0025c1dc());
+            if (elapsed - kSaveGateSecond <= kSaveGateSecond) {
+                break;
+            }
+        }
+        index = 7;
+        [[fallthrough]];
+    case 7:
+        // `cmp r1, r0` with r1 = 0x1C20: entry 7 stays while elapsed >= 7200 s.
+        if (camp_func_00290a38(kSaveDataEntryId) != 0) {
+            const u32 elapsed = static_cast<u32>(func_0025c1dc());
+            if (kSaveGateThird <= elapsed) {
+                break;
+            }
+        }
+        index = 8;
+        [[fallthrough]];
+    case 8: {
+        // `add r2, r6, r6, lsr #31` / `cmp r0, r2, asr #1` is a signed
+        // division of the first field by two, truncated toward zero.
+        const s32 half_value = script_vm_func_0033426c();
+        const s32 current_value = camp_func_0028d5b4();
+        if (current_value >= half_value / 2) {
+            index = 0;
+        }
+        break;
+    }
+    default:
+        // Entries 0, 2, 3, 4 and out-of-range indices are emitted as-is.
+        break;
+    }
+
+    // The pointer is re-read here; the earlier suppression check used a
+    // separate load, so helper side effects on 0x00447A98 are observed.
+    u32* const command_array = reinterpret_cast<u32*>(
+        *reinterpret_cast<const u32*>(kCommandArrayPointerAddress));
+    const u32 entry_address =
+        kAdviceTableAddress + static_cast<u32>(index) * kAdviceEntryStride;
+    const u32* const entry = reinterpret_cast<const u32*>(entry_address);
+
+    command_array[kCommandKindIndex] = kCommandKind;
+    command_array[kCommandArgumentIndex] = 0;
+    command_array[kCommandDataIndex] = entry_address + kAdviceTextOffset;
+
+    const u32 coefficient_argument = script_vm_func_002bff9c();
+    script_vm_func_002bfdfc(kAdviceMessageKind, entry[0], coefficient_argument,
+                            profile_flags, kAdviceCoefficient,
+                            kAdviceCoefficient);
+
+    s32 next_index = index + 1;
+    if (next_index >= static_cast<s32>(kAdviceEntryCount)) {
+        next_index = 0;
+    }
+    context[kAdviceIndexOffset] = static_cast<u8>(next_index);
+    return static_cast<u32>(next_index);
 }
 
 // DECOMP_FUNC(0x001f6704, 420)
-// 99 ARM instructions through unconditional pop; 24 trailing data bytes.
-extern "C" __attribute__((naked)) void ui_func_001f6704() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d47f0, 0xe280500c, 0xe59f8180, 0xed2d8b08\n"
-        ".word 0xe590000c, 0xe5d51003, 0xeddfba5b, 0xe6bf0f30\n"
-        ".word 0xe3c000ff, 0xe1806001, 0xe5980000, 0xe3c670ff\n"
-        ".word 0xe3a01000, 0xeb032d7f, 0xe5984000, 0xe3a01000\n"
-        ".word 0xe3a00001, 0xeb033e0b, 0xe2844a01, 0xe2844f93\n"
-        ".word 0xe3a09000, 0xe5941000, 0xe2812001, 0xe0843101\n"
-        ".word 0xe5931008, 0xe0843102, 0xe5842000, 0xe5830008\n"
-        ".word 0xe5d42018, 0xe3520000, 0x01510000, 0x0a000002\n"
-        ".word 0xe594101c, 0xe12fff31, 0xe5c49018, 0xe2850010\n"
-        ".word 0xe2855008, 0xecd00a02, 0xed9f0a3d, 0xec958a02\n"
-        ".word 0xee700ac8, 0xee311a68, 0xee008a80, 0xee418a00\n"
-        ".word 0xee609a80, 0xeb018393, 0xeeb01a6b, 0xeef00a68\n"
-        ".word 0xeeb00a48, 0xe1a00006, 0xeb01838a, 0xeddfaa31\n"
-        ".word 0xed9fba31, 0xed9faa31, 0xe3a04000, 0xee004a10\n"
-        ".word 0xeeb80ac0, 0xee200a2a, 0xee200a0b, 0xee200a0a\n"
-        ".word 0xeb0302ea, 0xeef00a40, 0xee004a10, 0xeeb09a48\n"
-        ".word 0xeeb80ac0, 0xee099aa0, 0xee200a2a, 0xee200a0b\n"
-        ".word 0xee200a0a, 0xeb0302fb, 0xeef00a68, 0xeeb01a6b\n"
-        ".word 0xe1a00007, 0xee490a80, 0xeeb00a49, 0xeb018371\n"
-        ".word 0xe2844001, 0xe3540013, 0xbaffffe7, 0xeb019450\n"
-        ".word 0xe5980000, 0xe2804a01, 0xe2844f93, 0xe5940000\n"
-        ".word 0xe0841100, 0xe2400001, 0xe5911008, 0xe5840000\n"
-        ".word 0xe0840100, 0xe5d42018, 0xe5900008, 0xe3520000\n"
-        ".word 0x01510000, 0x0a000002, 0xe594101c, 0xe12fff31\n"
-        ".word 0xe5c49018, 0xecbd8b08, 0xe8bd87f0, 0x00000000\n"
-        ".word 0x0044ea00, 0x3f000000, 0x40c90fdb, 0x3d638e39\n"
-        ".word 0x4222f983\n"
-    );
+//
+// Recovered contract (ARM 0x001F6704..0x001F688F plus the six literal words at
+// 0x001F6890..0x001F68A7: 0.0f, 0x0044EA00, 0.5f, 2*pi = 0x40C90FDB,
+// 1/18 = 0x3D638E39 and 128/pi = 0x4222F983):
+//   * `object` is the sub-object selected by the only caller (0x002C7288):
+//     `r0 = *(u32*)(parent + 0x24) + 0xC0` when the byte at `+0xCF` is set.
+//     Only five fields are read:
+//       - `+0x0C..+0x0F` is a four-byte RGBA quad.  The word is read with
+//         `ldr`, byte-swapped with `rev`, its low byte cleared and the fourth
+//         byte `l`d`r`b`'d from `+0x0F` OR'd back in.  After `rev` that byte
+//         already *is* the low byte, so the value is `bswap32(word)` =
+//         `R << 24 | G << 16 | B << 8 | A`.  The `bic`+`orr` pair is kept
+//         verbatim below because it is what the caller's producer
+//         (0x002C7090) and this reader agree on.
+//       - `+0x14`/`+0x18` and `+0x1C`/`+0x20` are the two xy endpoints.
+//     The ring uses the same colour with the alpha byte (the low byte of the
+//     byte-swapped value) masked off.
+//   * Three separate reads of the render-register global 0x0044EA00: the value
+//     forwarded to `ui_func_002c1d3c(base, 0)`, the base used for the
+//     render-stack *push* (read after that call and before the
+//     `ui_func_002c5f7c(1, 0)` call) and the base used for the *pop* (read at
+//     the end of the body).
+//   * The push mirrors 0x002F4804: `slots[count]` is captured, `count` is
+//     incremented, `slots[count]` receives the `ui_func_002c5f7c(1, 0)` word,
+//     and when the node's dirty byte is set *or* the captured value differs
+//     from the new one, the node's `+0x1C` callback runs with the new value in
+//     r0 and the dirty byte is cleared.  The callback result is dead here
+//     (r0 is overwritten by the next instruction).
+//   * `dx = to_x - from_x`, `dy = to_y - from_y`, `mid = from + d * 0.5`,
+//     `radius = dx * 0.5` (VSUB/VMLA/VMUL, each rounded separately).
+//   * `func_0025760c()` flushes the queued sprite batch (`mov r0, #2` then a
+//     tail branch to 0x002B03B8); it has no live arguments and its result is
+//     not used.
+//   * `ui_func_002575fc(rgba, x, y, z)` draws one point sprite: r0 carries the
+//     colour and s0..s2 the position (the wrapper supplies s3 = s4 = 0.0f
+//     before its tail branch to 0x002B0208).  The centre point is drawn with
+//     the full colour at the midpoint, then a closed 19-vertex ring
+//     (`i = 0..18`, signed bound 0x13) is drawn with the alpha-cleared colour:
+//     `angle = i * 2*pi * (1/18) * (128/pi)`, x = `mid_x + radius*sin(angle)`,
+//     y = `mid_y + radius*cos(angle)`, z = 0.  `ui_func_002b73a4` is the table
+//     sine and `ui_func_002b740c` the table cosine; both take the angle in
+//     units of one 256-entry table step, which is why the caller multiplies by
+//     128/pi before the call.  The product chain is kept in the original order
+//     (multiply, not a single combined constant) so every intermediate rounds
+//     exactly like the ARM code.
+//   * `ui_func_0025b988()` flushes the batch again (four-byte tail branch to
+//     0x002B80D4 inside ui_func_002b8070); it also takes no arguments and its
+//     result is discarded.
+//   * Pop: `previous = slots[count]`, `count` is decremented, the new top is
+//     `slots[count - 1]` (flat, unchecked like the ARM), and the same callback
+//     rule applies.  The callback result, or the new top when no callback ran,
+//     is left in r0 and returned.
+//
+// No stack arguments, no preserved-register surprises: the prologue saves
+// r4-r8 plus s16-s23 (d8-d11) and the epilogue restores them, so `SP` at the
+// pop is the entry `SP`.  The indirect calls are the render-stack callback
+// (`blx r1`) only; it is never null-checked by the original.
+namespace func_1f6704 {
+
+// Literal pool 0x001F6890..0x001F68A7.
+constexpr f32 kHalf = 0.5f;                 // 0x3F000000
+constexpr f32 kZero = 0.0f;                 // 0x00000000
+constexpr f32 kFullTurn = 6.2831855f;       // 0x40C90FDB, 2*pi
+constexpr f32 kRingFraction = 0.055555556f; // 0x3D638E39, 1/18
+constexpr f32 kTableScale = 40.743664f;     // 0x4222F983, 128/pi
+
+// `cmp r4, #0x13` / `blt`: i = 0..18 closes the 18-segment ring.
+constexpr s32 kRingSegments = 19;
+
+// `add r4, r4, #0x1000` + `add r4, r4, #0x24C`: render-stack node offset.
+constexpr u32 kRenderStackOffset = 0x124C;
+
+// `bic r7, r6, #0xff`: the ring colour drops the alpha byte.
+constexpr u32 kAlphaByteMask = 0xFFFFFF00u;
+
+// `mov r0, #1` / `mov r1, #0` before the 0x002C5F7C call.
+constexpr u32 kPushKind = 1;
+constexpr u32 kPushEnabled = 0;
+
+// `mov r1, #0` before the 0x002C1D3C call.
+constexpr u32 kRenderMode = 0;
+
+// The sub-object handed to this routine by 0x002C7288 (`parent + 0x24`, then
+// `+0xC0`).  Only the fields read below are named.
+struct BillboardParams {
+    u8 pad_000[0x0C];
+    u32 rgba_word_0c;  // `ldr r0, [r0, #0xc]`
+    u8 pad_010[0x04];
+    f32 from_x_14;  // `vldmia r5, {s16, s17}` with r5 = object + 0x14
+    f32 from_y_18;
+    f32 to_x_1c;  // `vldmia r0, {s1, s2}` with r0 = object + 0x1C
+    f32 to_y_20;
+};
+
+static_assert(offsetof(BillboardParams, rgba_word_0c) == 0x0C);
+static_assert(offsetof(BillboardParams, from_x_14) == 0x14);
+static_assert(offsetof(BillboardParams, from_y_18) == 0x18);
+static_assert(offsetof(BillboardParams, to_x_1c) == 0x1C);
+static_assert(offsetof(BillboardParams, to_y_20) == 0x20);
+
+// Render-stack node at 0x0044EA00 + 0x124C, same layout as the node consumed
+// by 0x002F4804.  `slots` is a flat word array (`node + 8 + count*4`); the
+// original has no bounds check, so the reconstruction indexes past the four
+// visible slots exactly like the ARM code.
+struct RenderStackNode {
+    u32 count;       // +0x00
+    u32 pad_004;     // +0x04
+    u32 slots[4];    // +0x08..+0x17
+    u8 dirty;        // +0x18
+    u8 pad_019[3];
+    u32 flush_cb;    // +0x1C, `blx r1` with the new value in r0
+};
+
+static_assert(offsetof(RenderStackNode, count) == 0x00);
+static_assert(offsetof(RenderStackNode, slots) == 0x08);
+static_assert(offsetof(RenderStackNode, dirty) == 0x18);
+static_assert(offsetof(RenderStackNode, flush_cb) == 0x1C);
+
+// `blx r1` with no null check: the original requires a non-null callback.
+using FlushCallback = u32 (*)(u32 value);
+
+inline RenderStackNode* render_stack(void* base) {
+    return reinterpret_cast<RenderStackNode*>(
+        static_cast<u8*>(base) + kRenderStackOffset);
+}
+
+// The closure of the ring in table steps: i * 2*pi * (1/18) * (128/pi).  The
+// three multiplications happen in this order in the original (they appear
+// twice, once before the sine call and once before the cosine call); one
+// variable is enough because the sequence and its rounding are identical.
+inline f32 ring_angle(s32 index) {
+    return ((static_cast<f32>(index) * kFullTurn) * kRingFraction) *
+           kTableScale;
+}
+
+}  // namespace func_1f6704
+
+// 0x002C1D3C: selects the render mode (declared with 0x002F4804 above as
+// `void ui_func_002c1d3c(void* base, u32 mode)`).
+// 0x002C5F7C: builds the render-stack command word (declared above as
+// `u32 ui_func_002c5f7c(u32 kind, u32 enabled)`).
+
+// 0x0025760C: `mov r0, #2` then a tail branch to 0x002B03B8, which builds a
+// 0x34-byte packet (first word = 2 << 8) and submits it through 0x002ADE34.
+// It reads no caller register: r0 is set inside the wrapper and r1 = r0 << 8
+// is derived from that constant, so the prototype takes no arguments.
+extern "C" void func_0025760c(void);
+
+// 0x002575FC: loads s3 = s4 = 0.0f and tail-branches to 0x002B0208 with the
+// caller's r0 and s0..s2.  r0 is the colour, s0..s2 the position.
+extern "C" void ui_func_002575fc(u32 rgba, f32 x, f32 y, f32 z);
+
+// 0x002B73A4: table sine over 256 entries per turn; the argument is the turn
+// angle scaled by 128/pi (one unit per table step).  Returns s0.
+extern "C" f32 ui_func_002b73a4(f32 table_angle);
+
+// 0x002B740C: table cosine with the same argument convention.  Returns s0.
+extern "C" f32 ui_func_002b740c(f32 table_angle);
+
+// 0x0025B988: four-byte tail branch to 0x002B80D4, a no-argument batch
+// submit/flush path inside ui_func_002b8070.
+extern "C" void ui_func_0025b988(void);
+
+extern "C" u32 ui_func_001f6704(void* object) {
+    using namespace func_1f6704;
+
+    BillboardParams* const params =
+        static_cast<BillboardParams*>(object);
+
+    // The colour and the two endpoints are read before any helper runs.  The
+    // byte at +0x0F is fetched separately (`ldrb r1, [r5, #3]`, r5 = object +
+    // 0xC) and merged into the byte-swapped word.
+    const u32 rgba_word = params->rgba_word_0c;
+    const u32 rgba_byte_0f = static_cast<const u8*>(object)[0x0F];
+    const u32 color = (__builtin_bswap32(rgba_word) & kAlphaByteMask) |
+                      rgba_byte_0f;
+    const u32 ring_color = color & kAlphaByteMask;
+
+    ui_func_002c1d3c(smt4::engine::g_RenderRegisterBase, kRenderMode);
+
+    // The push base is captured here, after the render-mode call and before
+    // the command-word helper, which may itself rewrite 0x0044EA00.
+    void* const push_base = smt4::engine::g_RenderRegisterBase;
+    const u32 pushed = ui_func_002c5f7c(kPushKind, kPushEnabled);
+
+    RenderStackNode* const push_node = render_stack(push_base);
+    u32* const push_slots = push_node->slots;
+    const u32 push_previous = push_slots[push_node->count];
+    push_node->count = push_node->count + 1;
+    push_slots[push_node->count] = pushed;
+    if (push_node->dirty != 0 || push_previous != pushed) {
+        reinterpret_cast<FlushCallback>(push_node->flush_cb)(pushed);
+        push_node->dirty = 0;
+    }
+
+    // The two endpoints are only loaded here, after the push callback: a
+    // helper that rewrites the object is observed, exactly like the ARM loads
+    // at 0x001F6798 (`object + 0x1C`) and 0x001F67A0 (`object + 0x14`).
+    const f32 to_x = params->to_x_1c;
+    const f32 to_y = params->to_y_20;
+    const f32 from_x = params->from_x_14;
+    const f32 from_y = params->from_y_18;
+
+    const f32 delta_x = to_x - from_x;
+    const f32 delta_y = to_y - from_y;
+    const f32 mid_x = from_x + delta_x * kHalf;
+    const f32 mid_y = from_y + delta_y * kHalf;
+    const f32 radius = delta_x * kHalf;
+
+    func_0025760c();
+
+    ui_func_002575fc(color, mid_x, mid_y, kZero);
+
+    for (s32 index = 0; index < kRingSegments; ++index) {
+        const f32 angle = ring_angle(index);
+        const f32 sine = ui_func_002b73a4(angle);
+        const f32 cosine = ui_func_002b740c(angle);
+        ui_func_002575fc(ring_color, mid_x + radius * sine,
+                         mid_y + radius * cosine, kZero);
+    }
+
+    ui_func_0025b988();
+
+    // The pop re-reads 0x0044EA00; the node captured for the callback is the
+    // one addressed by *this* read even if the callback switches the global.
+    RenderStackNode* const pop_node =
+        render_stack(smt4::engine::g_RenderRegisterBase);
+    u32* const pop_slots = pop_node->slots;
+    const u32 pop_count = pop_node->count;
+    const u32 pop_previous = pop_slots[pop_count];
+    pop_node->count = pop_count - 1;
+    const u32 new_top = pop_slots[pop_count - 1];
+    if (pop_node->dirty != 0 || pop_previous != new_top) {
+        const u32 result =
+            reinterpret_cast<FlushCallback>(pop_node->flush_cb)(new_top);
+        pop_node->dirty = 0;
+        return result;
+    }
+    return new_top;
 }
 
 // DECOMP_FUNC(0x002d8fac, 420)
-// 104 ARM instructions through unconditional pop; 4 trailing data bytes.
-extern "C" __attribute__((naked)) void ui_func_002d8fac() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d41f0, 0xe59f7194, 0xe5974004, 0xe5970008\n"
-        ".word 0xe5941018, 0xe1510000, 0x0a00005f, 0xe5d41028\n"
-        ".word 0xe3510000, 0x1a00005c, 0xe5d41355, 0xe3510000\n"
-        ".word 0x1a000059, 0xe5840018, 0xe0800004, 0xe5d0034c\n"
-        ".word 0xe3500000, 0x0a00004c, 0xe3a00001, 0xe5c40355\n"
-        ".word 0xebff1497, 0xe3a00001, 0xebff16c2, 0xe3a00000\n"
-        ".word 0xebff0258, 0xe5970008, 0xe5945350, 0xe3a0200e\n"
-        ".word 0xe0840380, 0xe2806f93, 0xe590025e, 0xe2861030\n"
-        ".word 0xe5850000, 0xe5960016, 0xe5850004, 0xe596001a\n"
-        ".word 0xe5850008, 0xe1d601be, 0xe1c500bc, 0xe596003e\n"
-        ".word 0xe585000e, 0xe5960042, 0xe5850012, 0xe5960046\n"
-        ".word 0xe5850016, 0xe1d604ba, 0xe1c501ba, 0xe285001c\n"
-        ".word 0xebff8fb9, 0xe1d602b4, 0xe1a01006, 0xe1c502ba\n"
-        ".word 0xe1d602b6, 0xe1c502bc, 0xe5960020, 0xe5850030\n"
-        ".word 0xe285004c, 0xebff99f5, 0xe5d6004c, 0xe5c50076\n"
-        ".word 0xebff9ebc, 0xe2800054, 0xe1a01006, 0xebff99ef\n"
-        ".word 0xe5940350, 0xebff04b3, 0xe5970008, 0xe0840380\n"
-        ".word 0xe2900f93, 0x0a000003, 0xe5d00064, 0xe3500000\n"
-        ".word 0x13a00001, 0xebfe49ce, 0xe3a00000, 0xebff0da2\n"
-        ".word 0xe320f000, 0xe320f000, 0xebff7580, 0xe5941350\n"
-        ".word 0xe3a0200e, 0xebff8f98, 0xe5940350, 0xe1d010b8\n"
-        ".word 0xe3a00001, 0xebff01f4, 0xe5940350, 0xe1d010ba\n"
-        ".word 0xe3a00002, 0xebff01f0, 0xe5940350, 0xe1d010b6\n"
-        ".word 0xe8bd41f0, 0xe3a00000, 0xeaff01eb, 0xe3a00000\n"
-        ".word 0xebff144b, 0xe3a00001, 0xe320f000, 0xebff1675\n"
-        ".word 0xe8bd41f0, 0xe3a00000, 0xeaff020a, 0xe8bd81f0\n"
-        ".word 0x0044de28\n"
-    );
+//
+// Recovered contract (ARM 0x002D8FAC..0x002D914F; the last four bytes are the
+// literal 0x0044DE28, the save/load UI manager):
+//   * `manager = (void*)0x0044DE28`; `work = manager->work` is read once and
+//     kept in r4 for the whole body.  `manager->selected` is read three times:
+//     for the equality/active-page test, again after the three state helpers
+//     to address the slot page for the copy block, and a third time after
+//     0x0029A384 to re-address the page for the 0x0026B810 flag test.  The
+//     re-reads are observable: any helper that rewrites the manager field
+//     changes which page is used.
+//   * Three early exits return the initially loaded selection in r0 without
+//     touching the manager: `work->applied_selection_18 == selected`, then a
+//     non-zero `work->busy_28`, then a non-zero `work->transition_355`.
+//   * The active-page byte is `work[selected + 0x34C]` (a byte index, no
+//     stride).  Zero takes the deactivate path: 0x0029E260(0),
+//     0x0029EB14(1), then a tail branch to 0x00299974(0).
+//   * Otherwise the routine sets `work->transition_355 = 1`, calls
+//     0x0029E260(1), 0x0029EB14(1), 0x00299974(0), then copies the selected
+//     0x80-byte page at `work + 0x24C + selected*0x80` into the profile object
+//     addressed by `work->profile_350`.  The page is re-addressed after the
+//     three helpers; the profile pointer is re-loaded before every later use
+//     (`+0x350` is writable by the helpers).
+//   * The copy block is fixed-order and mixes word, halfword and byte
+//     accesses, including unaligned words at page +0x3E and profile +0x0E.
+//     0x002BCF58 copies 14 bytes (page +0x30 -> profile +0x1C), 0x002BF86C
+//     copies the page's NUL-terminated text to profile +0x4C and to
+//     `0x002C0B94() + 0x54`.  The 0x002C0B94 result is `[0x0043E2A8]+4 + 0x88`.
+//   * 0x0029A384(work->profile_350) hands the profile to the status manager
+//     (it copies it to status work +0x1300 and sets status flags).  The page
+//     is re-addressed from the manager; when the resulting pointer is null the
+//     0x0026B810 call is skipped.  Otherwise 0x0026B810 receives 1 when the
+//     page byte at +0x64 is non-zero and 0 otherwise.
+//   * 0x0029C768(0) runs next, then 0x002B66EC() (which returns
+//     `[0x0043E2A8]+4 + 0x90`) is used as the destination of a 14-byte copy
+//     from the current `work->profile_350`.  Finally the halfwords at profile
+//     +8 and +0xA are dispatched through 0x002998D8(1, ...) and
+//     (2, ...), and the halfword at profile +6 is passed to
+//     0x002998D8(0, ...) as the tail branch whose r0 becomes this function's
+//     return value.  All three profile addresses are re-loaded from
+//     `work->profile_350` immediately before use.
+//   * No stack arguments and no indirect calls.  The prologue saves r4-r8 plus
+//     lr (r8 is not otherwise used) and every exit restores the entry SP.  No
+//     helper argument or the profile pointer is null-checked by the original.
+//
+// The state dispatchers 0x00299974 and 0x002998D8 are declared returning u32
+// only so the two tail branches can forward the r0 value the ARM leaves in the
+// caller; the real callers ignore this function's result.
+
+extern "C" void camp_func_0029e260(u32 mode);
+extern "C" void ui_func_0029eb14(u32 mode);
+extern "C" u32 ui_func_00299974(u32 mode);
+extern "C" void ui_func_002bcf58(void* dst, const void* src, u32 count);
+extern "C" void engine_func_002bf86c(char* dst, const char* src);
+extern "C" void* ui_func_002c0b94(void);
+extern "C" void engine_func_0029a384(void* profile);
+extern "C" void script_vm_func_0029c768(u32 mode);
+extern "C" void* script_vm_func_002b66ec(void);
+extern "C" u32 ui_func_002998d8(u32 mode, u32 id);
+
+namespace smt4::ui {
+void Status_SetMode1EB9(u8 mode);  // 0x0026B810
+}
+
+namespace func_2d8fac {
+
+constexpr u32 kManagerAddress = 0x0044DE28;
+
+constexpr u32 kActiveByteOffset = 0x34C;
+constexpr u32 kSlotPageOffset = 0x24C;
+constexpr u32 kSlotPageStride = 0x80;
+constexpr u32 kCopyLength = 0x0E;
+
+struct Work;
+
+struct __attribute__((packed)) Manager {
+    u8 pad_00[0x04];
+    Work* work;       // +0x04: `ldr r4, [r7, #4]`
+    u32 selected;     // +0x08: `ldr r0, [r7, #8]`
+};
+
+struct __attribute__((packed)) Work {
+    u8 pad_00[0x18];
+    u32 applied_selection;  // +0x18: `ldr/str [r4, #0x18]`
+    u8 pad_1c[0x0C];
+    u8 busy;                // +0x28: `ldrb [r4, #0x28]`
+    u8 pad_29[0x323];
+    u8 active[2];           // +0x34C: indexed as work[selected + 0x34C]
+    u8 pad_34e[0x02];
+    u32 profile;            // +0x350: profile object pointer
+    u8 pad_354;
+    u8 transition;          // +0x355: `ldrb/strb [r4, #0x355]`
+    u8 pad_356[0x32];
+};
+
+// One 0x80-byte save/load slot page.  Only the fields this routine touches are
+// named; the text at +0x00 is copied as a NUL-terminated string and the fields
+// from +0x12 onward follow it in memory.
+struct __attribute__((packed, may_alias)) SlotPage {
+    char text_00[0x12];     // +0x00: strcpy source
+    u32 word_12;            // +0x12 -> profile +0x00
+    u32 word_16;            // +0x16 -> profile +0x04
+    u32 word_1a;            // +0x1A -> profile +0x08
+    u16 half_1e;            // +0x1E -> profile +0x0C
+    u32 word_20;            // +0x20 -> profile +0x30
+    u16 half_24;            // +0x24 -> profile +0x2A
+    u16 half_26;            // +0x26 -> profile +0x2C
+    u8 pad_28[0x08];
+    u8 data_30[0x0E];       // +0x30 -> profile +0x1C (0x002BCF58, 14 bytes)
+    u32 word_3e;            // +0x3E -> profile +0x0E (unaligned word)
+    u32 word_42;            // +0x42 -> profile +0x12
+    u32 word_46;            // +0x46 -> profile +0x16
+    u16 half_4a;            // +0x4A -> profile +0x1A
+    u8 byte_4c;             // +0x4C -> profile +0x76
+    u8 pad_4d[0x17];
+    u8 byte_64;             // +0x64: status mode source
+    u8 pad_65[0x1B];
+};
+
+// Profile object addressed by work +0x350.  The original has no null check and
+// no known total size; this view covers every byte the routine reads or writes.
+struct __attribute__((packed, may_alias)) Profile {
+    u32 word_00;            // +0x00
+    u32 word_04;            // +0x04
+    u32 word_08;            // +0x08
+    u16 half_0c;            // +0x0C
+    u32 word_0e;            // +0x0E (unaligned word)
+    u32 word_12;            // +0x12
+    u32 word_16;            // +0x16
+    u16 half_1a;            // +0x1A
+    u8 data_1c[0x0E];       // +0x1C..+0x29
+    u16 half_2a;            // +0x2A
+    u16 half_2c;            // +0x2C
+    u8 pad_2e[0x02];
+    u32 word_30;            // +0x30
+    u8 pad_34[0x18];
+    char text_4c[0x2A];     // +0x4C: strcpy destination
+    u8 byte_76;             // +0x76
+};
+
+static_assert(offsetof(Manager, work) == 0x04);
+static_assert(offsetof(Manager, selected) == 0x08);
+static_assert(offsetof(Work, applied_selection) == 0x18);
+static_assert(offsetof(Work, busy) == 0x28);
+static_assert(offsetof(Work, active) == 0x34C);
+static_assert(offsetof(Work, profile) == 0x350);
+static_assert(offsetof(Work, transition) == 0x355);
+static_assert(sizeof(Work) == 0x388);
+static_assert(offsetof(SlotPage, word_12) == 0x12);
+static_assert(offsetof(SlotPage, word_16) == 0x16);
+static_assert(offsetof(SlotPage, word_1a) == 0x1A);
+static_assert(offsetof(SlotPage, half_1e) == 0x1E);
+static_assert(offsetof(SlotPage, word_20) == 0x20);
+static_assert(offsetof(SlotPage, half_24) == 0x24);
+static_assert(offsetof(SlotPage, half_26) == 0x26);
+static_assert(offsetof(SlotPage, data_30) == 0x30);
+static_assert(offsetof(SlotPage, word_3e) == 0x3E);
+static_assert(offsetof(SlotPage, word_42) == 0x42);
+static_assert(offsetof(SlotPage, word_46) == 0x46);
+static_assert(offsetof(SlotPage, half_4a) == 0x4A);
+static_assert(offsetof(SlotPage, byte_4c) == 0x4C);
+static_assert(offsetof(SlotPage, byte_64) == 0x64);
+static_assert(sizeof(SlotPage) == 0x80);
+static_assert(offsetof(Profile, word_00) == 0x00);
+static_assert(offsetof(Profile, word_04) == 0x04);
+static_assert(offsetof(Profile, word_08) == 0x08);
+static_assert(offsetof(Profile, half_0c) == 0x0C);
+static_assert(offsetof(Profile, word_0e) == 0x0E);
+static_assert(offsetof(Profile, word_12) == 0x12);
+static_assert(offsetof(Profile, word_16) == 0x16);
+static_assert(offsetof(Profile, half_1a) == 0x1A);
+static_assert(offsetof(Profile, data_1c) == 0x1C);
+static_assert(offsetof(Profile, half_2a) == 0x2A);
+static_assert(offsetof(Profile, half_2c) == 0x2C);
+static_assert(offsetof(Profile, word_30) == 0x30);
+static_assert(offsetof(Profile, text_4c) == 0x4C);
+static_assert(offsetof(Profile, byte_76) == 0x76);
+static_assert(sizeof(Profile) == 0x77);
+
+// The ARM forms these addresses with 32-bit adds, so the index arithmetic is
+// kept in u32 and the byte address is computed explicitly.
+inline u8* byte_at(void* base, u32 offset) {
+    return reinterpret_cast<u8*>(reinterpret_cast<u32>(base) + offset);
+}
+
+inline SlotPage* slot_page(Work* work, u32 selected) {
+    return reinterpret_cast<SlotPage*>(
+        byte_at(work, kSlotPageOffset + selected * kSlotPageStride));
+}
+
+inline u8 active_byte(Work* work, u32 selected) {
+    return *byte_at(work, kActiveByteOffset + selected);
+}
+
+inline Profile* profile_view(Work* work) {
+    return reinterpret_cast<Profile*>(work->profile);
+}
+
+}  // namespace func_2d8fac
+
+extern "C" u32 ui_func_002d8fac(void) {
+    using namespace func_2d8fac;
+
+    Manager* const manager = reinterpret_cast<Manager*>(kManagerAddress);
+    Work* const work = manager->work;
+    const u32 selected = manager->selected;
+
+    if (work->applied_selection == selected) {
+        return selected;
+    }
+    if (work->busy != 0) {
+        return selected;
+    }
+    if (work->transition != 0) {
+        return selected;
+    }
+    work->applied_selection = selected;
+
+    if (active_byte(work, selected) == 0) {
+        camp_func_0029e260(0);
+        ui_func_0029eb14(1);
+        return ui_func_00299974(0);
+    }
+
+    work->transition = 1;
+    camp_func_0029e260(1);
+    ui_func_0029eb14(1);
+    ui_func_00299974(0);
+
+    // Re-read the manager: the three helpers may have changed the selection.
+    SlotPage* const page = slot_page(work, manager->selected);
+    Profile* const profile = profile_view(work);
+
+    profile->word_00 = page->word_12;
+    profile->word_04 = page->word_16;
+    profile->word_08 = page->word_1a;
+    profile->half_0c = page->half_1e;
+    profile->word_0e = page->word_3e;
+    profile->word_12 = page->word_42;
+    profile->word_16 = page->word_46;
+    profile->half_1a = page->half_4a;
+
+    ui_func_002bcf58(byte_at(profile, 0x1C), byte_at(page, 0x30),
+                     kCopyLength);
+
+    profile->half_2a = page->half_24;
+    profile->half_2c = page->half_26;
+    profile->word_30 = page->word_20;
+
+    engine_func_002bf86c(profile->text_4c, page->text_00);
+    profile->byte_76 = page->byte_4c;
+
+    u8* const game_work_88 = static_cast<u8*>(ui_func_002c0b94());
+    engine_func_002bf86c(reinterpret_cast<char*>(game_work_88 + 0x54),
+                         page->text_00);
+
+    engine_func_0029a384(reinterpret_cast<void*>(work->profile));
+
+    // The flag test re-addresses the page from the manager after 0x0029A384.
+    SlotPage* const refresh_page = slot_page(work, manager->selected);
+    if (refresh_page != nullptr) {
+        smt4::ui::Status_SetMode1EB9(refresh_page->byte_64 != 0 ? 1 : 0);
+    }
+
+    script_vm_func_0029c768(0);
+
+    void* const game_work_90 = script_vm_func_002b66ec();
+    ui_func_002bcf58(game_work_90,
+                     reinterpret_cast<void*>(work->profile), kCopyLength);
+
+    ui_func_002998d8(1, static_cast<u16>(profile_view(work)->word_08));
+    ui_func_002998d8(2, static_cast<u16>(profile_view(work)->word_08 >> 16));
+    return ui_func_002998d8(
+        0, static_cast<u16>(profile_view(work)->word_04 >> 16));
 }
 
 // DECOMP_FUNC(0x0030f760, 420)
-// 100 ARM instructions through unconditional pop; 20 trailing data bytes.
-extern "C" __attribute__((naked)) void ui_func_0030f760() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d43f0, 0xe59f0188, 0xe59f5180, 0xe2801090\n"
-        ".word 0xed2d8b02, 0xe24dd034, 0xe89111de, 0xeeb08a40\n"
-        ".word 0xe88d11de, 0xe28010b0, 0xe59000bc, 0xe891000e\n"
-        ".word 0xe58d002c, 0xe28d0020, 0xe880000e, 0xe5950e00\n"
-        ".word 0xe3500000, 0x0a00004e, 0xe59f6148, 0xe3a01001\n"
-        ".word 0xe3a00005, 0xe5964000, 0xebfed9ef, 0xe2844a01\n"
-        ".word 0xe2844f93, 0xe3a07000, 0xe5941000, 0xe2812001\n"
-        ".word 0xe0843101, 0xe5931008, 0xe0843102, 0xe5842000\n"
-        ".word 0xe5830008, 0xe5d42018, 0xe3520000, 0x01510000\n"
-        ".word 0x0a000002, 0xe594101c, 0xe12fff31, 0xe5c47018\n"
-        ".word 0xe5960000, 0xe3a01000, 0xebfec94b, 0xe5950e00\n"
-        ".word 0xe3a04000, 0xe3500000, 0xda000020, 0xe59f90dc\n"
-        ".word 0xed9f0a35, 0xe1a0800d, 0xee388a00, 0xe0640184\n"
-        ".word 0xe0850100, 0xed900a00, 0xed901a02, 0xedd02a05\n"
-        ".word 0xed903a03, 0xe0c01499, 0xeef05a62, 0xeeb05a48\n"
-        ".word 0xeef04a43, 0xe1a010c0, 0xe0410fc0, 0xeeb04a41\n"
-        ".word 0xe0400100, 0xeef03a48, 0xe0840100, 0xeeb02a48\n"
-        ".word 0xe7980100, 0xeef01a40, 0xeef00a48, 0xe3800070\n"
-        ".word 0xe1a03000, 0xe1a02003, 0xe1a01002, 0xebfe1df2\n"
-        ".word 0xe5950e00, 0xe2844001, 0xe1500004, 0xcaffffe2\n"
-        ".word 0xe5960000, 0xe2804a01, 0xe2844f93, 0xe5940000\n"
-        ".word 0xe0841100, 0xe2400001, 0xe5911008, 0xe5840000\n"
-        ".word 0xe0840100, 0xe5d42018, 0xe5900008, 0xe3520000\n"
-        ".word 0x01510000, 0x0a000002, 0xe594101c, 0xe12fff31\n"
-        ".word 0xe5c47018, 0xe28dd034, 0xecbd8b02, 0xe8bd83f0\n"
-        ".word 0x004c2424, 0x004049b4, 0x0044ea00, 0x42c80000\n"
-        ".word 0x2aaaaaab\n"
-    );
+//
+// Recovered contract (ARM 0x0030F760..0x0030F8EC plus the five literal words
+// at 0x0030F8F0..0x0030F900: record base 0x004C2424, base 0x004049B4, the
+// render-register global 0x0044EA00, 100.0f and the divide-by-twelve magic
+// 0x2AAAAAAB):
+//   * The twelve words at 0x004049B4 + 0x90 = 0x00404A44 (the second copy of
+//     the 12-entry color table) are copied to the stack before anything else.
+//     `ldm r1, {r1,r2,r3,r4,r6,r7,r8,ip}` plus
+//     `add r1, r0, #0xB0; ldm r1, {r1,r2,r3}` and `ldr r0, [r0, #0xBC]` read
+//     the contiguous words 0x00404A44..0x00404A70.
+//   * `count = *(s32*)0x004C3224` (0x004C2424 + 0xE00).  Exactly zero returns
+//     0 without touching the render stack; a negative count still pushes and
+//     pops and draws nothing (the loop bound is `bgt`).
+//   * Push a viewport command onto the render stack node at
+//     `*0x0044EA00 + 0x124C`: `slot[count]` is the previous top, `count` is
+//     incremented and `slot[count]` receives `ui_func_002c5f7c(5, 1)`.  If the
+//     node's dirty byte is non-zero, or the previous top differs from the new
+//     value, the node's flush callback at `+0x1C` is invoked with the new value
+//     in r0 and the dirty byte is cleared.  The base is captured before the
+//     helper runs.
+//   * `ui_func_002c1d3c(*0x0044EA00, 0)` selects the render mode (the global is
+//     re-read here).
+//   * For every 0x1C-byte record `i` while `i < *(s32*)0x004C3224` (signed
+//     bound, re-read every iteration) draw one element with func_0029705c:
+//       - the color word is `table[i % 12] | 0x70`, passed in r0..r3;
+//       - the four vec3 arguments are
+//         (rec+0x00, s16, rec+0x08), (rec+0x00, s16, rec+0x14),
+//         (rec+0x0C, s16, rec+0x08), (rec+0x0C, s16, rec+0x14)
+//         with `s16 = incoming_s0 + 100.0f`.
+//   * Pop the render stack node (the global is re-read a third time): the same
+//     callback rule applies, and the function returns the popped value or the
+//     callback result.
+// Only the incoming float register s0 is live; r0..r3 are ignored.  The table
+// is read through its absolute address, so a modified global table is honoured
+// exactly like the original copy.  The record layout matches the documented
+// 0x1C-byte entries of func_002d4ef4 (+0x00/+0x08/+0x0C/+0x14 are the four
+// bounding-box floats).
+namespace func_30f760 {
+
+constexpr u32 kRecordBase = 0x004C2424;
+constexpr u32 kRecordCountAddress = 0x004C3224;  // kRecordBase + 0xE00
+constexpr u32 kRecordStride = 0x1C;
+
+// 0x004049B4 + 0x90: the twelve color/format words copied to the stack.
+constexpr u32 kColorTableAddress = 0x00404A44;
+constexpr u32 kColorCount = 12;
+constexpr u32 kColorCommandBits = 0x70;
+
+constexpr u32 kRenderStackOffset = 0x124C;  // *0x0044EA00 + 0x124C
+constexpr f32 kVerticalStep = 100.0f;       // 0x42C80000
+
+// `mov r0, #5` / `mov r1, #1` before the 0x002C5F7C call and `mov r1, #0`
+// before the 0x002C1D3C call.
+constexpr u32 kViewportCommand = 5;
+constexpr u32 kViewportEnabled = 1;
+constexpr u32 kRenderMode = 0;
+
+// Render-stack node at render_base + 0x124C.  `slots` is addressed as a flat
+// word array (`node + 8 + count*4`); the original has no bounds check, so the
+// reconstruction indexes past the four visible slots exactly like the ARM.
+struct RenderStackNode {
+    u32 count;      // +0x00
+    u32 pad_004;    // +0x04
+    u32 slots[4];   // +0x08..+0x17
+    u8 dirty;       // +0x18
+    u8 pad_019[3];
+    u32 flush_cb;   // +0x1C, `blx r1` with the new value in r0
+};
+
+static_assert(offsetof(RenderStackNode, count) == 0x00);
+static_assert(offsetof(RenderStackNode, slots) == 0x08);
+static_assert(offsetof(RenderStackNode, dirty) == 0x18);
+static_assert(offsetof(RenderStackNode, flush_cb) == 0x1C);
+
+// `blx r1` with no null check: the original requires a non-null callback.
+using FlushCallback = u32 (*)(u32 value);
+
+inline RenderStackNode* render_stack(void* base) {
+    return reinterpret_cast<RenderStackNode*>(
+        static_cast<u8*>(base) + kRenderStackOffset);
+}
+
+inline s32 load_record_count() {
+    return *reinterpret_cast<const s32*>(kRecordCountAddress);
+}
+
+}  // namespace func_30f760
+
+// 0x002C5F7C: builds the 0x1F51 viewport command word for (5, 1).
+extern "C" u32 ui_func_002c5f7c(u32 kind, u32 enabled);
+
+// 0x002C1D3C: selects the render mode on the render-register block.
+extern "C" void ui_func_002c1d3c(void* base, u32 mode);
+
+// 0x0029705C: submits one four-corner element.  r0..r3 carry the same color
+// word; s0..s11 carry four vec3 corners.
+extern "C" void func_0029705c(u32 color_a, u32 color_b, u32 color_c,
+                              u32 color_d, f32 x0, f32 y0, f32 z0, f32 x1,
+                              f32 y1, f32 z1, f32 x2, f32 y2, f32 z2, f32 x3,
+                              f32 y3, f32 z3);
+
+extern "C" u32 ui_func_0030f760(f32 vertical_offset) {
+    using namespace func_30f760;
+
+    // The twelve words are copied before any helper runs and the loop reads the
+    // copy, so a helper that rewrites 0x00404A44 cannot affect this call.
+    u32 color_table[kColorCount];
+    {
+        const u32* const source =
+            reinterpret_cast<const u32*>(kColorTableAddress);
+        for (u32 index = 0; index < kColorCount; ++index) {
+            color_table[index] = source[index];
+        }
+    }
+
+    if (load_record_count() == 0) {
+        return 0;
+    }
+
+    // The original captures the base before the viewport-command helper runs,
+    // then re-reads the global for the render-mode call and again for the pop.
+    void* const push_base = smt4::engine::g_RenderRegisterBase;
+    const u32 pushed = ui_func_002c5f7c(kViewportCommand, kViewportEnabled);
+    RenderStackNode* const push_node = render_stack(push_base);
+    u32* const push_slots = push_node->slots;
+    const u32 push_count = push_node->count;
+    const u32 push_previous = push_slots[push_count];
+    push_node->count = push_count + 1;
+    push_slots[push_count + 1] = pushed;
+    if (push_node->dirty != 0 || push_previous != pushed) {
+        reinterpret_cast<FlushCallback>(push_node->flush_cb)(pushed);
+        push_node->dirty = 0;
+    }
+
+    ui_func_002c1d3c(smt4::engine::g_RenderRegisterBase, kRenderMode);
+
+    const f32 draw_y = vertical_offset + kVerticalStep;
+
+    // The count is re-read from 0x004C3224 every iteration, exactly like the
+    // `ldr r0, [r5, #0xE00]` in the loop tail, so a helper that grows or
+    // shrinks the record list changes the trip count.
+    for (s32 index = 0; index < load_record_count(); ++index) {
+        const u8* const record = reinterpret_cast<const u8*>(
+            kRecordBase + static_cast<u32>(index) * kRecordStride);
+        const f32 value_00 = *reinterpret_cast<const f32*>(record + 0x00);
+        const f32 value_08 = *reinterpret_cast<const f32*>(record + 0x08);
+        const f32 value_0c = *reinterpret_cast<const f32*>(record + 0x0C);
+        const f32 value_14 = *reinterpret_cast<const f32*>(record + 0x14);
+        const u32 color =
+            color_table[static_cast<u32>(index) % kColorCount] |
+            kColorCommandBits;
+
+        func_0029705c(color, color, color, color,
+                      value_00, draw_y, value_08,
+                      value_00, draw_y, value_14,
+                      value_0c, draw_y, value_08,
+                      value_0c, draw_y, value_14);
+    }
+
+    RenderStackNode* const pop_node =
+        render_stack(smt4::engine::g_RenderRegisterBase);
+    u32* const pop_slots = pop_node->slots;
+    const u32 pop_count = pop_node->count;
+    const u32 pop_previous = pop_slots[pop_count];
+    pop_node->count = pop_count - 1;
+    const u32 new_top = pop_slots[pop_count - 1];
+    if (pop_node->dirty != 0 || pop_previous != new_top) {
+        const u32 result =
+            reinterpret_cast<FlushCallback>(pop_node->flush_cb)(new_top);
+        pop_node->dirty = 0;
+        return result;
+    }
+    return new_top;
 }
 
 // DECOMP_FUNC(0x00126480, 424)
-// 100 ARM instructions through unconditional pop; 24 trailing data bytes.
-extern "C" __attribute__((naked)) void engine_func_00126480() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d47f0, 0xe3e05000, 0xe1a08000, 0xe1a09002\n"
-        ".word 0xe59f7178, 0xe1a06001, 0xed2d8b06, 0xe2870a01\n"
-        ".word 0xeef08a40, 0xeeb08a60, 0xe5900204, 0xe1b04000\n"
-        ".word 0x13e02000, 0x13a05000, 0x0a000051, 0xe0801105\n"
-        ".word 0xe5911020, 0xe3510000, 0x0a000004, 0xe2855001\n"
-        ".word 0xe3550008, 0xbafffff8, 0xe1a05002, 0xea000048\n"
-        ".word 0xe3750001, 0x0a000046, 0xe59fa120, 0xe1a0000a\n"
-        ".word 0xeb0664d9, 0xe3500000, 0xe320f000, 0x0a000040\n"
-        ".word 0xe1a01008, 0xe1a0000a, 0xeb006d0c, 0xe3500000\n"
-        ".word 0xe320f000, 0x0a00003a, 0xe1a00008, 0xeb066e88\n"
-        ".word 0xe3500000, 0xe320f000, 0x0a000034, 0xe0844105\n"
-        ".word 0xe2841020, 0xe3a03000, 0xe1a02008, 0xe2870f61\n"
-        ".word 0xeb065a2c, 0xe31000ff, 0xeddf9a32, 0x03a07001\n"
-        ".word 0x13a07000, 0xe3560000, 0x0eb09a69, 0xed9faa2c\n"
-        ".word 0x0a000009, 0xee006a10, 0xed9f1a2b, 0xeeb09a4a\n"
-        ".word 0xeddf0a2a, 0xeeb80a40, 0xee300a41, 0xee009a20\n"
-        ".word 0xee190a10, 0xe3500101, 0xcd9f9a25, 0xeeb00a69\n"
-        ".word 0xe5940020, 0xe3a01000, 0xe3500000, 0x1b0659fc\n"
-        ".word 0xeeb00a4a, 0xe5940020, 0xe3500000, 0x1d800a2e\n"
-        ".word 0xeeb00a69, 0xe5940020, 0xe3500000, 0x1d800a2d\n"
-        ".word 0xe5940020, 0xeeb00a49, 0xe3500000, 0x11a01009\n"
-        ".word 0x1b0659ef, 0xeeb00a68, 0xe5940020, 0xe3500000\n"
-        ".word 0x1d800a2e, 0xeeb00a48, 0xe5940020, 0xe3500000\n"
-        ".word 0x1d800a2d, 0xe3570000, 0xe320f000, 0x1a000000\n"
-        ".word 0xe3e05000, 0xecbd8b06, 0xe1a00005, 0xe8bd87f0\n"
-        ".word 0x004e1f68, 0x3f800000, 0x00000000, 0x42800000\n"
-        ".word 0x3c810204, 0x40000000\n"
-    );
+//
+// Claims the first free voice pointer in the active stream slot, asks the
+// +0x184 manager virtual to allocate the voice, then seeds and retargets its
+// envelope.  Integer arguments arrive in r0/r1/r2 and the two float arguments
+// in s0/s1; the s32 result is returned in r0.
+//
+// Direct call targets (all BL in the original):
+//   0x002BF85C  engine_func_002bf85c   tests AsdSoundSystem.field_004
+//   0x00141940  engine_func_00141940   nested system/object state test
+//   0x002C1F44  func_002c1f44          registers the object with +0x250
+//   0x002BCDF8  func_002bcdf8          manager virtual -> voice slot
+//   0x002BCD94  func_002bcd94          envelope retarget (r1 mode, s0 target)
+extern "C" u32 engine_func_002bf85c(const void* system);
+extern "C" u32 engine_func_00141940(const void* system, const void* object);
+extern "C" u32 func_002c1f44(const void* object);
+extern "C" u32 func_002bcdf8(void* registry, void** slot, const void* object,
+                             u32 arg3);
+extern "C" void func_002bcd94(void* voice, u32 mode, f32 target);
+
+namespace func_126480 {
+
+constexpr u32 kSoundSystemAddress = 0x004E1F68;
+constexpr u32 kActiveStreamOffset = 0x1204;  // SoundSystem.field_1204
+constexpr u32 kRegistryOffset = 0x0184;      // manager sub-object for 2BCDF8
+constexpr u32 kLevelBiasBits = 0x42800000;   // 64.0f
+constexpr u32 kLevelStepBits = 0x3C810204;   // 0x1.020408p-6
+constexpr u32 kClampBits = 0x40000000;       // 2.0f
+constexpr u32 kVoiceSlotCount = 8;
+constexpr u32 kAllocationSuccessMask = 0xFF;
+
+// The eight voice pointers of the active stream slot start at +0x20.  The rest
+// of the slot belongs to other routines and is not modelled here.
+struct StreamVoiceTable {
+    u8 pad_00[0x20];
+    void* voices[kVoiceSlotCount];      // +0x20..+0x3C
+};
+static_assert(offsetof(StreamVoiceTable, voices) == 0x20);
+static_assert(sizeof(StreamVoiceTable) == 0x40);
+
+struct SoundSystemView {
+    u8 pad_00[kActiveStreamOffset];
+    StreamVoiceTable* active_stream;    // +0x1204
+};
+static_assert(offsetof(SoundSystemView, active_stream) ==
+              kActiveStreamOffset);
+
+// Voice fields written here; 0x002BCD94 also rewrites +0xA0..+0xAC.
+struct VoiceView {
+    u8 pad_00[0xB4];
+    f32 field_b4;                       // +0xB4
+    f32 field_b8;                       // +0xB8
+};
+static_assert(offsetof(VoiceView, field_b4) == 0xB4);
+static_assert(offsetof(VoiceView, field_b8) == 0xB8);
+
+inline VoiceView* voice_at(StreamVoiceTable* table, s32 slot) {
+    return reinterpret_cast<VoiceView*>(table->voices[slot]);
+}
+
+// 0x126554..0x126588.  Level 0 maps to 0.0f; otherwise the unsigned level is
+// converted to float, biased by 64.0f and scaled.  The default is 1.0f and the
+// result is clamped to 2.0f by comparing the *bit pattern* as a signed integer
+// against 0x40000000, not by a floating-point comparison.
+f32 level_scale(u32 level) {
+    if (level == 0) {
+        return 0.0f;
+    }
+    const f32 bias = __builtin_bit_cast(f32, kLevelBiasBits);
+    const f32 step = __builtin_bit_cast(f32, kLevelStepBits);
+    f32 scale = 1.0f + (static_cast<f32>(level) - bias) * step;
+    const u32 bits = __builtin_bit_cast(u32, scale);
+    if (static_cast<s32>(bits) > static_cast<s32>(kClampBits)) {
+        scale = __builtin_bit_cast(f32, kClampBits);
+    }
+    return scale;
+}
+
+}  // namespace func_126480
+
+extern "C" s32 engine_func_00126480(void* object, u32 level, u32 target,
+                                    f32 fade_a, f32 fade_b) {
+    using namespace func_126480;
+
+    SoundSystemView* const system =
+        reinterpret_cast<SoundSystemView*>(kSoundSystemAddress);
+    StreamVoiceTable* const table = system->active_stream;
+    if (table == nullptr) {
+        return -1;
+    }
+
+    // 0x1264B8..0x1264DC: first free slot, scanned 0..7.  All eight occupied
+    // returns the -1 sentinel.
+    s32 slot = -1;
+    for (u32 index = 0; index < kVoiceSlotCount; ++index) {
+        if (table->voices[index] == nullptr) {
+            slot = static_cast<s32>(index);
+            break;
+        }
+    }
+    if (slot == -1) {
+        return -1;
+    }
+
+    // 0x1264E8..0x126528: manager gates.  The first two return the claimed slot
+    // index directly; the third returns -1.
+    if (engine_func_002bf85c(system) == 0) {
+        return slot;
+    }
+    if (engine_func_00141940(system, object) == 0) {
+        return slot;
+    }
+    if (func_002c1f44(object) == 0) {
+        return -1;
+    }
+
+    // 0x12652C..0x126544: the manager virtual receives the slot address and is
+    // expected to publish the allocated voice through it.
+    void** const slot_pointer = &table->voices[slot];
+    void* const registry = reinterpret_cast<void*>(
+        kSoundSystemAddress + kRegistryOffset);
+    const u32 allocation = func_002bcdf8(registry, slot_pointer, object, 0);
+    const bool allocated = (allocation & kAllocationSuccessMask) == 0;
+    const f32 scale = level_scale(level);
+
+    // 0x12658C..0x1265BC: seed the voice, then write the 0.0f/1.0f endpoints.
+    if (voice_at(table, slot) != nullptr) {
+        func_002bcd94(voice_at(table, slot), 0, 0.0f);
+        voice_at(table, slot)->field_b8 = 1.0f;
+        voice_at(table, slot)->field_b4 = 0.0f;
+    }
+
+    // 0x1265C0..0x1265D0: retarget to the requested mode with the level scale.
+    if (voice_at(table, slot) != nullptr) {
+        func_002bcd94(voice_at(table, slot), target, scale);
+    }
+
+    // 0x1265D4..0x1265F0: final endpoints from the two float arguments.
+    if (voice_at(table, slot) != nullptr) {
+        voice_at(table, slot)->field_b8 = fade_a;
+    }
+    if (voice_at(table, slot) != nullptr) {
+        voice_at(table, slot)->field_b4 = fade_b;
+    }
+
+    return allocated ? slot : -1;
 }
 
 // DECOMP_FUNC(0x002bc3c8, 424)
-// 98 ARM instructions through unconditional pop; 32 trailing data bytes.
-extern "C" __attribute__((naked)) void battle_func_002bc3c8() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d41f0, 0xe59f617c, 0xe59f017c, 0xe596409c\n"
-        ".word 0xe5901000, 0xe5942004, 0xe0412002, 0xe584200c\n"
-        ".word 0xe5943014, 0xe1530002, 0x0a000055, 0xe59f315c\n"
-        ".word 0xe3120008, 0x12821018, 0x1584100c, 0x1a00000a\n"
-        ".word 0xe2822020, 0xe584200c, 0xe5932000, 0xe1510002\n"
-        ".word 0x2a000005, 0xe59f5138, 0xe3a0c000, 0xe2817008\n"
-        ".word 0xe5815004, 0xe581c000, 0xe5807000, 0xe5931000\n"
-        ".word 0xe5902000, 0xe3a07001, 0xe1520001, 0x2a000003\n"
-        ".word 0xe59fc110, 0xe2825008, 0xe8821080, 0xe5805000\n"
-        ".word 0xe5902000, 0xe5931000, 0xe1520001, 0x2a000003\n"
-        ".word 0xe59fc0f4, 0xe2825008, 0xe8821080, 0xe5805000\n"
-        ".word 0xe5931000, 0xe5902000, 0xe1520001, 0x2a000004\n"
-        ".word 0xe59f30d8, 0xe59fc0d8, 0xe2825008, 0xe8821008\n"
-        ".word 0xe5805000, 0xe5941020, 0xe5940018, 0xe0611181\n"
-        ".word 0xe0805101, 0xe5c57000, 0xe5940004, 0xe5941014\n"
-        ".word 0xe0800001, 0xe5850004, 0xe594000c, 0xe5941014\n"
-        ".word 0xe0400001, 0xe5850008, 0xe5940034, 0xe3500000\n"
-        ".word 0x0a000002, 0xe1a01005, 0xe1a00004, 0xebffb8f1\n"
-        ".word 0xe595000c, 0xe3c00002, 0xe585000c, 0xe5d4103d\n"
-        ".word 0xe3510000, 0x13800001, 0x1585000c, 0xe594000c\n"
-        ".word 0xe5840014, 0xebf9fa99, 0xe5940020, 0xe2800001\n"
-        ".word 0xe5840020, 0xe59600a0, 0xe1500004, 0x1a000006\n"
-        ".word 0xe5d60012, 0xe3500000, 0x0a000003, 0xe5d60011\n"
-        ".word 0xe3500000, 0x05c67011, 0x0bfff82c, 0xe8bd41f0\n"
-        ".word 0xeaf9fa8e, 0xe8bd81f0, 0x004c6290, 0x004652a0\n"
-        ".word 0x004652a4, 0x0008025e, 0x000f0111, 0x000f0110\n"
-        ".word 0x12345678, 0x000f0010\n"
-    );
+//
+// Closes the current command-buffer segment of the active render node and
+// appends one 28-byte replay entry for it.
+//
+//   node = *(RenderNode**)(0x004C6290 + 0x9C)   (never null-checked)
+//   offset = g_GpuCommandCursor - node->buffer_04
+//   node->cursor_0C = offset
+//
+// If node->committed_14 already equals offset the routine returns without
+// emitting anything.  Otherwise the segment length is rounded to
+// offset + 0x18 when bit 3 of offset is set, or offset + 0x20 when it is
+// clear.  In the clear case an extra 8-byte marker record is appended first:
+//
+//     {0x00000000, 0x0008025E}   (only when (offset & 8) == 0)
+//     {0x00000001, 0x000F0111}
+//     {0x00000001, 0x000F0110}
+//     {0x12345678, 0x000F0010}
+//
+// Each record is appended only while g_GpuCommandCursor is below
+// g_GpuCommandEnd (unsigned `bhs` on the cursor), and the bound is re-read for
+// every record.
+//
+// The entry at node->entries_18 + node->count_20 * 28 receives:
+//     +0x00 u8   1
+//     +0x04 u32  node->buffer_04 + node->committed_14
+//     +0x08 u32  node->cursor_0C - node->committed_14
+//     +0x0C u32  (existing word & ~2) | (node->enabled_3D ? 1 : 0)
+// node->writer_34, when non-null, is called as writer(node, entry) through
+// 0x002AA8B0 before the flags word is read back, so its update to entry+0x0C
+// is observed.  Afterwards node->committed_14 is reloaded from node->cursor_0C,
+// the 0x004E6C5C lock is acquired (0x0013AF78 -> 0x002C3AA8), the count is
+// re-read from node->count_20 and incremented, and the same lock is released
+// (0x0013AF88 -> 0x002C3A24) as a tail branch.
+//
+// When 0x004C6290+0xA0 equals this node and byte +0x12 is non-zero, byte +0x11
+// is tested: when clear it is set to 1 and 0x002BA5F8 flushes the pending
+// entry list.
+//
+// Direct call targets:
+//   0x002AA8B0  battle_func_002aa8b0  pending-entry writer
+//   0x0013AF78  battle_func_0013af78  lock acquire thunk (r0 overwritten)
+//   0x002BA5F8  battle_func_002ba5f8  pending-entry flush
+//   0x0013AF88  battle_func_0013af88  lock release thunk (r0 overwritten)
+//
+// Both lock thunks load 0x004E6C5C into r0 themselves, so the r0 values at
+// those calls are dead; they are still forwarded so the differential runner can
+// compare the register state exactly.  r0 is equally dead on the early return
+// (the original leaves 0x004652A0 there).
+extern "C" void battle_func_002aa8b0(void* node, void* entry);
+extern "C" void battle_func_0013af78(u32 dead_r0);
+extern "C" u32  battle_func_002ba5f8(u32 dead_r0);
+extern "C" void battle_func_0013af88(u32 dead_r0);
+
+// 0x004652A0 / 0x004652A4: bump-allocated GPU command-stream cursor and end.
+extern u32* g_GpuCommandCursor;
+extern u32* g_GpuCommandEnd;
+
+namespace func_2bc3c8 {
+
+constexpr u32 kRenderStateAddress = 0x004C6290;
+constexpr u32 kNodeSlot = 0x9C;
+constexpr u32 kOwnerSlot = 0xA0;
+constexpr u32 kFlushByte = 0x11;
+constexpr u32 kGateByte = 0x12;
+
+constexpr u32 kEntryStride = 28;
+constexpr u8  kEntryKind = 1;
+constexpr u32 kEntryFlagClearMask = ~2u;
+constexpr u32 kEntryEnabledBit = 1u;
+
+constexpr u32 kAlignmentProbeBit = 8;
+constexpr u32 kOffsetAddAligned = 0x18;
+constexpr u32 kOffsetAddUnaligned = 0x20;
+
+// Literal words at 0x002BC558..0x002BC56C.
+constexpr u32 kMarkerWord = 0x0008025E;
+constexpr u32 kRecordWordA = 0x000F0111;
+constexpr u32 kRecordWordB = 0x000F0110;
+constexpr u32 kRecordLeadC = 0x12345678;
+constexpr u32 kRecordWordC = 0x000F0010;
+
+// 28-byte replay entry.  The final four bytes are not touched by this routine.
+struct RenderEntry {
+    u8  kind_00;        // +0x00
+    u8  pad_01[3];
+    u32 start_04;       // +0x04  absolute command-buffer address
+    u32 length_08;      // +0x08  segment length in bytes
+    u32 flags_0C;       // +0x0C  bit 0 enabled, bit 1 cleared here, bit 2 writer
+    u8  pad_10[0x0C];   // +0x10..+0x1B left untouched
+};
+static_assert(offsetof(RenderEntry, start_04) == 0x04);
+static_assert(offsetof(RenderEntry, length_08) == 0x08);
+static_assert(offsetof(RenderEntry, flags_0C) == 0x0C);
+static_assert(sizeof(RenderEntry) == kEntryStride);
+
+struct RenderNode {
+    u8  pad_00[0x04];
+    u8* buffer_04;      // +0x04  command-buffer base
+    u32 buffer_size_08; // +0x08
+    u32 cursor_0C;      // +0x0C  bytes currently used in the buffer
+    u32 field_10;       // +0x10
+    u32 committed_14;   // +0x14  cursor value of the last committed segment
+    RenderEntry* entries_18;  // +0x18
+    u32 field_1C;       // +0x1C
+    u32 count_20;       // +0x20  number of valid entries
+    u8  pad_24[0x10];
+    void* writer_34;    // +0x34  optional pending-entry writer
+    u32 field_38;       // +0x38
+    u8  field_3C;       // +0x3C
+    u8  enabled_3D;     // +0x3D  copied into the entry flags bit 0
+};
+static_assert(offsetof(RenderNode, buffer_04) == 0x04);
+static_assert(offsetof(RenderNode, cursor_0C) == 0x0C);
+static_assert(offsetof(RenderNode, committed_14) == 0x14);
+static_assert(offsetof(RenderNode, entries_18) == 0x18);
+static_assert(offsetof(RenderNode, count_20) == 0x20);
+static_assert(offsetof(RenderNode, writer_34) == 0x34);
+static_assert(offsetof(RenderNode, enabled_3D) == 0x3D);
+
+struct RenderState {
+    u8 pad_00[kFlushByte];
+    u8 flush_11;        // +0x11  set to 1 once a flush has been requested
+    u8 gate_12;         // +0x12  non-zero enables the flush check
+    u8 pad_13[kNodeSlot - 0x13];
+    RenderNode* node_9C;   // +0x9C active node
+    RenderNode* owner_A0;  // +0xA0 node compared against the active node
+};
+static_assert(offsetof(RenderState, flush_11) == 0x11);
+static_assert(offsetof(RenderState, gate_12) == 0x12);
+static_assert(offsetof(RenderState, node_9C) == kNodeSlot);
+static_assert(offsetof(RenderState, owner_A0) == kOwnerSlot);
+
+// Appends one 8-byte record when the command stream has room.  The original
+// reloads both globals for every record.
+inline void append_record(u32 first, u32 second) {
+    u32* const cursor = g_GpuCommandCursor;
+    if (cursor < g_GpuCommandEnd) {
+        cursor[0] = first;
+        cursor[1] = second;
+        g_GpuCommandCursor = cursor + 2;
+    }
+}
+
+}  // namespace func_2bc3c8
+
+extern "C" void battle_func_002bc3c8() {
+    using namespace func_2bc3c8;
+
+    RenderState* const state =
+        reinterpret_cast<RenderState*>(kRenderStateAddress);
+    RenderNode* const node = state->node_9C;
+
+    // 0x002BC3D4..0x002BC3F0: segment length and the unchanged guard.
+    const u32 offset = reinterpret_cast<u32>(g_GpuCommandCursor) -
+                       reinterpret_cast<u32>(node->buffer_04);
+    node->cursor_0C = offset;
+    if (node->committed_14 == offset) {
+        return;
+    }
+
+    // The original keeps the entry-time cursor in r1 and uses it for the
+    // optional marker record only.
+    u32* const segment_start = g_GpuCommandCursor;
+
+    // 0x002BC3F8..0x002BC434: round the segment and emit the marker.
+    if ((offset & kAlignmentProbeBit) != 0) {
+        node->cursor_0C = offset + kOffsetAddAligned;
+    } else {
+        node->cursor_0C = offset + kOffsetAddUnaligned;
+        if (segment_start < g_GpuCommandEnd) {
+            segment_start[0] = 0;
+            segment_start[1] = kMarkerWord;
+            g_GpuCommandCursor = segment_start + 2;
+        }
+    }
+
+    append_record(1u, kRecordWordA);
+    append_record(1u, kRecordWordB);
+    append_record(kRecordLeadC, kRecordWordC);
+
+    // 0x002BC49C..0x002BC4D0: fill the replay entry.
+    RenderEntry* const entry = reinterpret_cast<RenderEntry*>(
+        reinterpret_cast<u8*>(node->entries_18) +
+        node->count_20 * kEntryStride);
+    entry->kind_00 = kEntryKind;
+    entry->start_04 =
+        reinterpret_cast<u32>(node->buffer_04) + node->committed_14;
+    entry->length_08 = node->cursor_0C - node->committed_14;
+
+    if (node->writer_34 != nullptr) {
+        battle_func_002aa8b0(node, entry);
+    }
+
+    // 0x002BC4E8..0x002BC500: the flags word is re-read after the writer call.
+    u32 flags = entry->flags_0C & kEntryFlagClearMask;
+    if (node->enabled_3D != 0) {
+        flags |= kEntryEnabledBit;
+    }
+    entry->flags_0C = flags;
+
+    // 0x002BC504..0x002BC510: commit, acquire the 0x004E6C5C lock, bump count.
+    const u32 committed = node->cursor_0C;
+    node->committed_14 = committed;
+    battle_func_0013af78(committed);
+    node->count_20 = node->count_20 + 1;
+
+    // 0x002BC51C..0x002BC540: optional flush request for the active node.
+    u32 release_r0;
+    if (state->owner_A0 != node) {
+        release_r0 = reinterpret_cast<u32>(state->owner_A0);
+    } else if (state->gate_12 == 0) {
+        release_r0 = 0;
+    } else if (state->flush_11 != 0) {
+        release_r0 = state->flush_11;
+    } else {
+        state->flush_11 = 1;
+        release_r0 = battle_func_002ba5f8(0);
+    }
+
+    // 0x002BC544..0x002BC548: restore and tail-branch into the lock release.
+    battle_func_0013af88(release_r0);
 }
 
 // DECOMP_FUNC(0x002e03ec, 424)
-// 101 ARM instructions through unconditional pop; 20 trailing data bytes.
-extern "C" __attribute__((naked)) void ui_func_002e03ec() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d47f0, 0xe59f018c, 0xe59f6184, 0xe2801030\n"
-        ".word 0xed2d8b02, 0xe24dd030, 0xe891139e, 0xe2865b07\n"
-        ".word 0xeeb08a40, 0xe88d139e, 0xe2801050, 0xe590005c\n"
-        ".word 0xe891000e, 0xe58d002c, 0xe28d0020, 0xe880000e\n"
-        ".word 0xe5950000, 0xe3500000, 0x0a00004e, 0xe59f7148\n"
-        ".word 0xe3a01001, 0xe3a00005, 0xe5974000, 0xebff96cb\n"
-        ".word 0xe2844a01, 0xe2844f93, 0xe3a08000, 0xe5941000\n"
-        ".word 0xe2812001, 0xe0843101, 0xe5931008, 0xe0843102\n"
-        ".word 0xe5842000, 0xe5830008, 0xe5d42018, 0xe3520000\n"
-        ".word 0x01510000, 0x0a000002, 0xe594101c, 0xe12fff31\n"
-        ".word 0xe5c48018, 0xe5970000, 0xe3a01000, 0xebff8627\n"
-        ".word 0xe5950000, 0xe3a04000, 0xe3500000, 0xda000020\n"
-        ".word 0xe59fa0dc, 0xed9f0a35, 0xe1a0900d, 0xee388a00\n"
-        ".word 0xe0640184, 0xe0860100, 0xed900a00, 0xed901a02\n"
-        ".word 0xedd02a05, 0xed903a03, 0xe0c0149a, 0xeef05a62\n"
-        ".word 0xeeb05a48, 0xeef04a43, 0xe1a010c0, 0xe0410fc0\n"
-        ".word 0xeeb04a41, 0xe0400100, 0xeef03a48, 0xe0840100\n"
-        ".word 0xeeb02a48, 0xe7990100, 0xeef01a40, 0xeef00a48\n"
-        ".word 0xe3800070, 0xe1a03000, 0xe1a02003, 0xe1a01002\n"
-        ".word 0xebfedace, 0xe5950000, 0xe2844001, 0xe1500004\n"
-        ".word 0xcaffffe2, 0xe5970000, 0xe2804a01, 0xe2844f93\n"
-        ".word 0xe5940000, 0xe0841100, 0xe2400001, 0xe5911008\n"
-        ".word 0xe5840000, 0xe0840100, 0xe5d42018, 0xe5900008\n"
-        ".word 0xe3520000, 0x01510000, 0x0a000002, 0xe594101c\n"
-        ".word 0xe12fff31, 0xe5c48018, 0xe28dd030, 0xecbd8b02\n"
-        ".word 0xe8bd87f0, 0x004bf89c, 0x004049b4, 0x0044ea00\n"
-        ".word 0x42c80000, 0x2aaaaaab\n"
-    );
+//
+// Recovered contract (ARM 0x002E03EC..0x002E0580 plus the five literal words
+// at 0x002E0584..0x002E0594: 0x004BF89C, 0x004049B4, 0x0044EA00, 100.0f and
+// the divide-by-twelve magic 0x2AAAAAAB):
+//   * The twelve words at 0x004049B4 + 0x30 = 0x004049E4 (a copy of the 12-entry
+//     color table) are copied to the private stack frame before anything else;
+//     the loop reads that copy, so a helper that rewrites the global table
+//     cannot affect this invocation.
+//   * `count = *(s32*)0x004C149C` (0x004BF89C + 0x1C00, the type-7 record count
+//     seeded by FlowScript_InitRuntimeMemory at 0x00277F9C).  Only an exactly
+//     zero count returns immediately (with 0); a negative count still pushes,
+//     pops, and draws nothing because the loop bound uses `bgt`.
+//   * Push a viewport command onto the render stack node at
+//     `*0x0044EA00 + 0x124C`: `slot[count]` is the previous top, `count` is
+//     incremented, and `slot[count]` receives `ui_func_002c5f7c(5, 1)`.  If the
+//     node's dirty byte at +0x18 is non-zero, or the previous top differs from
+//     the new value, the flush callback at +0x1C is invoked with the new value
+//     in r0 and the dirty byte is cleared.  The base is captured before the
+//     helper runs.
+//   * `ui_func_002c1d3c(*0x0044EA00, 0)` selects the render mode (the global is
+//     re-read here).
+//   * For every 0x1C-byte record `i` while `i < *(s32*)0x004C149C` (signed
+//     bound, re-read every iteration) draw one element with func_0029705c:
+//       - the color word is `table[i % 12] | 0x70`, passed identically in r0..r3;
+//       - s0..s11 carry the four vec3 corners
+//         (rec+0x00, s16, rec+0x08), (rec+0x00, s16, rec+0x14),
+//         (rec+0x0C, s16, rec+0x08), (rec+0x0C, s16, rec+0x14)
+//         with `s16 = incoming_s0 + 100.0f`.
+//   * Pop the render stack node (the global is re-read a third time): the same
+//     dirty/previous rule applies and the function returns the popped value or
+//     the callback result.
+// Only the incoming float register s0 is live; r0..r3 are overwritten before
+// they are read.  Direct call targets: 0x002C5F7C, 0x002C1D3C, 0x0029705C.
+namespace func_2e03ec {
+
+constexpr u32 kType7RecordBase = 0x004BF89C;         // 0x1C-byte records
+constexpr u32 kType7RecordCountAddress = 0x004C149C; // kType7RecordBase + 0x1C00
+constexpr u32 kType7RecordStride = 0x1C;
+
+// 0x004049B4 + 0x30: the twelve color/format words copied to the stack.
+constexpr u32 kPaletteAddress = 0x004049E4;
+constexpr u32 kPaletteEntryCount = 12;
+constexpr u32 kPaletteCommandBits = 0x70;
+
+constexpr u32 kRenderStackNodeOffset = 0x124C;  // *0x0044EA00 + 0x124C
+constexpr f32 kPaletteVerticalStep = 100.0f;    // 0x42C80000
+
+// `mov r0, #5` / `mov r1, #1` before the 0x002C5F7C call and `mov r1, #0`
+// before the 0x002C1D3C call.
+constexpr u32 kViewportPushCommand = 5;
+constexpr u32 kViewportPushEnabled = 1;
+constexpr u32 kRenderModeSelect = 0;
+
+// Render-stack node at render_base + 0x124C.  `slots` is addressed as a flat
+// word array (`node + 8 + count*4`); the original has no bounds check, so the
+// reconstruction indexes past the four visible slots exactly like the ARM.
+struct RenderStackNode {
+    u32 count_00;      // +0x00
+    u32 pad_004;       // +0x04
+    u32 slots_08[4];   // +0x08..+0x17
+    u8 dirty_18;       // +0x18
+    u8 pad_019[3];
+    u32 flush_cb_1C;   // +0x1C, `blx r1` with the new value in r0
+};
+
+static_assert(offsetof(RenderStackNode, count_00) == 0x00);
+static_assert(offsetof(RenderStackNode, slots_08) == 0x08);
+static_assert(offsetof(RenderStackNode, dirty_18) == 0x18);
+static_assert(offsetof(RenderStackNode, flush_cb_1C) == 0x1C);
+
+// `blx r1` with no null check: the original requires a non-null callback.
+using FlushCallback = u32 (*)(u32 value);
+
+inline RenderStackNode* render_stack(void* base) {
+    return reinterpret_cast<RenderStackNode*>(
+        static_cast<u8*>(base) + kRenderStackNodeOffset);
+}
+
+inline s32 load_record_count() {
+    return *reinterpret_cast<const s32*>(kType7RecordCountAddress);
+}
+
+}  // namespace func_2e03ec
+
+namespace smt4::engine {
+extern void* g_RenderRegisterBase;  // 0x0044EA00
+}
+
+// 0x002C5F7C: builds the 0x1F51 viewport command word for (5, 1).
+extern "C" u32 ui_func_002c5f7c(u32 kind, u32 enabled);
+
+// 0x002C1D3C: selects the render mode on the render-register block.
+extern "C" void ui_func_002c1d3c(void* base, u32 mode);
+
+// 0x0029705C: submits one four-corner element.  r0..r3 carry the same color
+// word; s0..s11 carry four vec3 corners.
+extern "C" void func_0029705c(u32 color_a, u32 color_b, u32 color_c,
+                              u32 color_d, f32 x0, f32 y0, f32 z0, f32 x1,
+                              f32 y1, f32 z1, f32 x2, f32 y2, f32 z2, f32 x3,
+                              f32 y3, f32 z3);
+
+extern "C" u32 ui_func_002e03ec(f32 vertical_offset) {
+    using namespace func_2e03ec;
+
+    // The twelve words are copied before any helper runs and the loop reads the
+    // copy, so a helper that rewrites 0x004049E4 cannot affect this call.
+    u32 palette[kPaletteEntryCount];
+    {
+        const u32* const source = reinterpret_cast<const u32*>(kPaletteAddress);
+        for (u32 index = 0; index < kPaletteEntryCount; ++index) {
+            palette[index] = source[index];
+        }
+    }
+
+    if (load_record_count() == 0) {
+        return 0;
+    }
+
+    // The original captures the base before the viewport-command helper runs,
+    // then re-reads the global for the render-mode call and again for the pop.
+    void* const push_base = smt4::engine::g_RenderRegisterBase;
+    const u32 pushed =
+        ui_func_002c5f7c(kViewportPushCommand, kViewportPushEnabled);
+    RenderStackNode* const push_node = render_stack(push_base);
+    u32* const push_slots = push_node->slots_08;
+    const u32 push_count = push_node->count_00;
+    const u32 push_previous = push_slots[push_count];
+    push_node->count_00 = push_count + 1;
+    push_slots[push_count + 1] = pushed;
+    if (push_node->dirty_18 != 0 || push_previous != pushed) {
+        reinterpret_cast<FlushCallback>(push_node->flush_cb_1C)(pushed);
+        push_node->dirty_18 = 0;
+    }
+
+    ui_func_002c1d3c(smt4::engine::g_RenderRegisterBase, kRenderModeSelect);
+
+    const f32 draw_y = vertical_offset + kPaletteVerticalStep;
+
+    // The count is re-read from 0x004C149C every iteration, exactly like the
+    // `ldr r0, [r5]` in the loop tail, so a helper that grows or shrinks the
+    // record list changes the trip count.
+    for (s32 index = 0; index < load_record_count(); ++index) {
+        const u8* const record = reinterpret_cast<const u8*>(
+            kType7RecordBase + static_cast<u32>(index) * kType7RecordStride);
+        const f32 value_00 = *reinterpret_cast<const f32*>(record + 0x00);
+        const f32 value_08 = *reinterpret_cast<const f32*>(record + 0x08);
+        const f32 value_0c = *reinterpret_cast<const f32*>(record + 0x0C);
+        const f32 value_14 = *reinterpret_cast<const f32*>(record + 0x14);
+        const u32 color =
+            palette[static_cast<u32>(index) % kPaletteEntryCount] |
+            kPaletteCommandBits;
+
+        func_0029705c(color, color, color, color,
+                      value_00, draw_y, value_08,
+                      value_00, draw_y, value_14,
+                      value_0c, draw_y, value_08,
+                      value_0c, draw_y, value_14);
+    }
+
+    RenderStackNode* const pop_node =
+        render_stack(smt4::engine::g_RenderRegisterBase);
+    u32* const pop_slots = pop_node->slots_08;
+    const u32 pop_count = pop_node->count_00;
+    const u32 pop_previous = pop_slots[pop_count];
+    pop_node->count_00 = pop_count - 1;
+    const u32 new_top = pop_slots[pop_count - 1];
+    if (pop_node->dirty_18 != 0 || pop_previous != new_top) {
+        const u32 result =
+            reinterpret_cast<FlushCallback>(pop_node->flush_cb_1C)(new_top);
+        pop_node->dirty_18 = 0;
+        return result;
+    }
+    return new_top;
 }
 
 // DECOMP_FUNC(0x001182dc, 428)
-// 102 ARM instructions through unconditional pop; 20 trailing data bytes.
-extern "C" __attribute__((naked)) void engine_func_001182dc() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4ff0, 0xe24dd00c, 0xe59f7188, 0xe5d70000\n"
-        ".word 0xe3500000, 0x0a00005d, 0xe59f517c, 0xe3a04001\n"
-        ".word 0xe5b50018, 0xe3500000, 0xca000003, 0xe2870084\n"
-        ".word 0xe5900004, 0xe3100001, 0x0a000054, 0xe59fa15c\n"
-        ".word 0xe1a03004, 0xe24a9038, 0xe59a0004, 0xe5901004\n"
-        ".word 0xe58d1004, 0xe5991004, 0xe597202c, 0xeb00686a\n"
-        ".word 0xe5d50004, 0xe24ab028, 0xe24b8008, 0xe3500000\n"
-        ".word 0x0a000020, 0xe5d50005, 0xe3500000, 0x1a00001d\n"
-        ".word 0xe59b0004, 0xe5986004, 0xe1a0300d, 0xe58d0000\n"
-        ".word 0xe1c601d8, 0xe1500001, 0x0a000004, 0xe5902000\n"
-        ".word 0xe59dc000, 0xe152000c, 0x12800004, 0x1afffff8\n"
-        ".word 0xe1500001, 0x0a000002, 0xe1a02000, 0xe2800004\n"
-        ".word 0xeb067d1a, 0xe596101c, 0xe586001c, 0xe1510000\n"
-        ".word 0x13a01001, 0x03a01000, 0xe3510000, 0x0a000002\n"
-        ".word 0xe59d0000, 0xe3a01000, 0xe580100c, 0xe7981104\n"
-        ".word 0xe7990104, 0xeb064e76, 0xe5d50014, 0xe3500000\n"
-        ".word 0x1a000003, 0xe7991104, 0xe79a0104, 0xe1a02004\n"
-        ".word 0xeb0065f2, 0xe5d50004, 0xe3500000, 0x0a000008\n"
-        ".word 0xe5d50005, 0xe3500000, 0x1a000005, 0xe79b1104\n"
-        ".word 0xe7980104, 0xeb069f9d, 0xe7981104, 0xe7990104\n"
-        ".word 0xeb064e63, 0xe79a0104, 0xe597102c, 0xe3a03000\n"
-        ".word 0xe3a02002, 0xeb006782, 0xe59d0004, 0xe320f000\n"
-        ".word 0xeb067cdd, 0xe320f000, 0xe320f000, 0xe3a00000\n"
-        ".word 0xe3500000, 0x159f0028, 0x1b069b9c, 0xe59f0024\n"
-        ".word 0xe5900000, 0xeb06adec, 0xe3a00000, 0xe5870018\n"
-        ".word 0xe28dd00c, 0xe8bd8ff0, 0x00464af0, 0x004dad80\n"
-        ".word 0x00464bb4, 0x00003fff, 0x0044ea00\n"
-    );
+//
+// Recovered contract (ARM 0x001182DC..0x00118473 plus the five literal words
+// at 0x00118474..0x00118487: 0x00464AF0, 0x004DAD80, 0x00464BB4, 0x00003FFF
+// and 0x0044EA00):
+//   * Release/teardown pass for the second render slot (index 1) of the
+//     process-wide model manager.  No arguments; returns a u32.
+//   * 0x00464AF0 is the AsdModel manager (`g_AsdModelManager`).  Its +0x00 byte
+//     is the master enable: zero returns 0 (the loaded byte) before any other
+//     global is touched.
+//   * 0x004DAD80 is an array of 0x18-byte frame-sync slots (`r8 = base +
+//     index * 0x18` in 0x00132240).  This routine owns slot 1, so its base is
+//     0x004DAD98, folded into the `ldr r0,[r5,#0x18]!` pre-index write-back.
+//     A signed `count_00` > 0 enters the body.  Otherwise the word at
+//     manager+0x88 is tested: bit 0 set keeps the routine alive, bit 0 clear
+//     returns the *whole* tested word (`tst`/`beq` leaves it in r0), which is
+//     not necessarily 0.
+//   * Four two-entry tables hold the per-slot pointers, all taken at index 1
+//     (`table + 4`): 0x00464B80 work object, 0x00464B88 registry object,
+//     0x00464B90 token and 0x00464BB8 view object.  0x00117504 / 0x00118848 are
+//     the index-0 counterparts and use the +0 entries.  Every entry is re-read
+//     at each use site; none is cached across a helper call.
+//   * 0x001324E8(view, work, manager+0x2C, 1) registers the slot.  The view's
+//     second word (`*(u32*)(view + 4)`) is captured *before* that call into the
+//     `[sp,#4]` stack word and is handed to 0x002B77B8 at the very end.
+//   * When the slot is registered (`+0x04 != 0`) and not initialised
+//     (`+0x05 == 0`) the token is removed from the pointer vector embedded in
+//     the registry object at +0x14 (begin +0x18 / end +0x1C): the first
+//     occurrence is located, 0x002B780C(found + 1, end, found, &token) compacts
+//     every later duplicate away and returns the new end, the end word is
+//     re-read *after* the helper (`ldr r1,[r6,#0x1c]` at 0x001183A0) and stored,
+//     and when the end moved the token's +0x0C word is cleared to 0.  Then
+//     0x002ABDB0(work, registry) runs inside the same nested block.
+//   * If the slot byte at +0x14 is zero, 0x00131BBC(view, work, 1) runs.
+//   * The registered/not-initialised pair is then re-read from memory and, when
+//     still true, raises 0x002C028C(registry, token) and a second
+//     0x002ABDB0(work, registry).
+//   * Finally 0x00132240(view, manager+0x2C, 2, 0) — inside that helper `r2 == 1`
+//     selects table slot 0 and any other value selects slot 1, so `2` is the
+//     slot-1 selector — then 0x002B77B8(captured view payload), then
+//     0x002C3C18(*0x0044EA00) with the global GPU state block, then
+//     manager+0x18 is set to 0 and the routine returns 0.
+//   * Every call is a direct `bl`; this routine performs no indirect call of
+//     its own (0x002ABDB0 and 0x001324E8 dispatch through vtables internally).
+//     The `mov r0,#0 / cmp r0,#0 / ldrne r0,=0x3FFF / blne 0x002BF2CC` sequence
+//     at 0x00118448..0x00118454 is statically dead in the pinned image (the
+//     guard is a constant zero), so it is documented rather than emitted.
+//   * All four per-slot pointers are dereferenced without null checks; a null
+//     entry faults in the original exactly as it would here.
+namespace engine_1182dc {
+
+// Process-wide AsdModel manager (0x00464AF0).
+constexpr u32 kManagerAddress = 0x00464AF0;
+constexpr u32 kManagerFlag00 = 0x00;        // u8: master enable
+constexpr u32 kManagerReleaseWord18 = 0x18; // u32 cleared at 0x00118468
+constexpr u32 kManagerSlotValue2C = 0x2C;   // u32 handed to 0x001324E8 / 0x00132240
+constexpr u32 kManagerActiveWord88 = 0x88;  // u32, only bit 0 is tested
+constexpr u32 kManagerActiveBit = 0x01;
+
+// Two-entry per-slot pointer tables (0x00117504 / 0x00118848 use index 0).
+constexpr u32 kWorkTableAddress = 0x00464B7C;      // slot work object
+constexpr u32 kRegistryTableAddress = 0x00464B84;  // slot registry object
+constexpr u32 kTokenTableAddress = 0x00464B8C;     // slot token value
+constexpr u32 kViewTableAddress = 0x00464BB4;      // slot view object
+
+// Frame-sync block at 0x004DAD80: 0x18-byte slots, this routine owns slot 1.
+constexpr u32 kFrameSyncBaseAddress = 0x004DAD80;
+constexpr u32 kFrameSyncStride = 0x18;
+constexpr u32 kFrameSyncSlotIndex = 1;
+constexpr u32 kFrameSyncSlotAddress =
+    kFrameSyncBaseAddress + kFrameSyncStride * kFrameSyncSlotIndex;
+
+// Global GPU state block pointer (`g_AsdGpuState`, 0x0044EA00).
+constexpr u32 kGpuStatePointerAddress = 0x0044EA00;
+
+// `mov r4,#1`: doubles as the table index and as the third/fourth argument
+// handed to 0x001324E8 and 0x00131BBC.  `mov r2,#2` is the 0x00132240 selector.
+constexpr u32 kSlotIndex = 1;
+constexpr u32 kSyncSelector = 2;
+constexpr u32 kSyncDumpDisabled = 0;
+
+// Word at token+0x0C cleared when the registry vector shrank.
+constexpr u32 kTokenClearOffset = 0x0C;
+
+// Frame-sync slot layout.  Fields +0x04/+0x05/+0x08/+0x14 are also touched by
+// 0x00132240; +0x00 is the signed count read here.
+struct FrameSyncSlot {
+    s32 count_00;       // +0x00
+    u8 registered_04;   // +0x04
+    u8 inited_05;       // +0x05
+    u8 pad_06[0x02];    // +0x06..+0x08
+    u32 field_08;       // +0x08: lock handle used by 0x002C50D0 / 0x002C52F0
+    u32 field_0c;       // +0x0C
+    u32 field_10;       // +0x10
+    u8 flag_14;         // +0x14
+    u8 pad_15[0x03];    // +0x15..+0x18
+};
+static_assert(sizeof(FrameSyncSlot) == kFrameSyncStride, "frame-sync slot stride");
+
+// Pointer vector embedded at registry+0x14 (context, begin, end, capacity).
+struct RegistryVector {
+    void* context;      // +0x14
+    void** begin_18;    // +0x18
+    void** end_1c;      // +0x1C
+    u32 capacity;       // +0x20
+};
+
+struct RegistryObject {
+    u8 pad_00[0x14];
+    RegistryVector vector_14;
+};
+static_assert(offsetof(RegistryObject, vector_14) == 0x14, "registry vector");
+static_assert(offsetof(RegistryVector, begin_18) == 0x04, "vector begin at +0x18");
+static_assert(offsetof(RegistryVector, end_1c) == 0x08, "vector end at +0x1C");
+
+inline u8 load_byte(u32 address) {
+    return *reinterpret_cast<const u8*>(address);
+}
+
+inline u32 load_word(u32 address) {
+    return *reinterpret_cast<const u32*>(address);
+}
+
+inline void store_word(u32 address, u32 value) {
+    *reinterpret_cast<u32*>(address) = value;
+}
+
+// Word at `table + kSlotIndex * 4`, i.e. `ldr rX,[table, r4, lsl #2]`.
+inline void* slot_entry(u32 table_address) {
+    return reinterpret_cast<void*>(load_word(table_address + kSlotIndex * 4));
+}
+
+inline FrameSyncSlot* frame_slot() {
+    return reinterpret_cast<FrameSyncSlot*>(kFrameSyncSlotAddress);
+}
+
+}  // namespace engine_1182dc
+
+// Direct call targets.  Names and addresses follow config/functions.csv.
+extern "C" void func_001324e8(void* view, void* work, u32 value, u32 index);
+extern "C" void** script_vm_func_002b780c(void** first, void** last,
+                                          void** result, const void* value);
+extern "C" void engine_func_002abdb0(void* work, void* registry);
+extern "C" void func_00131bbc(void* view, void* work, u32 mode);
+extern "C" void engine_func_002c028c(void* registry, u32 token);
+extern "C" void engine_func_00132240(void* view, u32 value, u32 selector,
+                                     u32 dump);
+extern "C" void func_002b77b8(void* payload);
+extern "C" void engine_func_002c3c18(void* gpu_state);
+
+extern "C" u32 engine_func_001182dc() {
+    using namespace engine_1182dc;
+
+    // 0x001182E4..0x001182F0: byte-wide master enable.
+    if (load_byte(kManagerAddress + kManagerFlag00) == 0) {
+        return 0;
+    }
+
+    FrameSyncSlot* const slot = frame_slot();
+
+    // 0x001182FC..0x00118314: signed count, then the activity bit.
+    if (slot->count_00 <= 0) {
+        const u32 active = load_word(kManagerAddress + kManagerActiveWord88);
+        if ((active & kManagerActiveBit) == 0) {
+            return active;
+        }
+    }
+
+    // 0x00118318..0x00118338: register the slot.  The view payload is captured
+    // before the helper runs and lives in the `[sp,#4]` word until 0x0011843C.
+    void* const view = slot_entry(kViewTableAddress);
+    const u32 view_payload = load_word(reinterpret_cast<u32>(view) + 4);
+    func_001324e8(view, slot_entry(kWorkTableAddress),
+                  load_word(kManagerAddress + kManagerSlotValue2C), kSlotIndex);
+
+    // 0x0011833C..0x001183D0: detach the token from the registry vector.
+    if (slot->registered_04 != 0 && slot->inited_05 == 0) {
+        void* const token = slot_entry(kTokenTableAddress);
+        RegistryObject* const registry = static_cast<RegistryObject*>(
+            slot_entry(kRegistryTableAddress));
+        void** const end = registry->vector_14.end_1c;
+        void** found = registry->vector_14.begin_18;
+        while (found != end && *found != token) {
+            ++found;
+        }
+
+        void** new_end = found;
+        if (found != end) {
+            new_end = script_vm_func_002b780c(found + 1, end, found, &token);
+        }
+
+        // The end word is re-read after the helper, exactly like 0x001183A0.
+        void** const previous_end = registry->vector_14.end_1c;
+        registry->vector_14.end_1c = new_end;
+        if (previous_end != new_end) {
+            *reinterpret_cast<u32*>(static_cast<u8*>(token) + kTokenClearOffset) =
+                0;
+        }
+
+        engine_func_002abdb0(slot_entry(kWorkTableAddress),
+                             slot_entry(kRegistryTableAddress));
+    }
+
+    // 0x001183D4..0x001183EC
+    if (slot->flag_14 == 0) {
+        func_00131bbc(slot_entry(kViewTableAddress),
+                      slot_entry(kWorkTableAddress), kSlotIndex);
+    }
+
+    // 0x001183F0..0x0011841C: the gate bytes are read again from memory.
+    if (slot->registered_04 != 0 && slot->inited_05 == 0) {
+        engine_func_002c028c(slot_entry(kRegistryTableAddress),
+                             load_word(kTokenTableAddress + kSlotIndex * 4));
+        engine_func_002abdb0(slot_entry(kWorkTableAddress),
+                             slot_entry(kRegistryTableAddress));
+    }
+
+    // 0x00118420..0x00118468
+    engine_func_00132240(slot_entry(kViewTableAddress),
+                         load_word(kManagerAddress + kManagerSlotValue2C),
+                         kSyncSelector, kSyncDumpDisabled);
+    func_002b77b8(reinterpret_cast<void*>(view_payload));
+    engine_func_002c3c18(
+        reinterpret_cast<void*>(load_word(kGpuStatePointerAddress)));
+    store_word(kManagerAddress + kManagerReleaseWord18, 0);
+    return 0;
 }
 
 // DECOMP_FUNC(0x00126774, 428)
-// 101 ARM instructions through unconditional pop; 24 trailing data bytes.
-extern "C" __attribute__((naked)) void engine_func_00126774() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d47f0, 0xe1a05001, 0xe1a08000, 0xe1a09002\n"
-        ".word 0xe59f717c, 0xed2d8b02, 0xe2870a01, 0xe5900218\n"
-        ".word 0xe1b06000, 0x03e00000, 0x0a000057, 0xe5901020\n"
-        ".word 0xe3e04000, 0xe3510000, 0x03a04000, 0x0a00000b\n"
-        ".word 0xe5901024, 0xe3510000, 0x03a04001, 0x0a000007\n"
-        ".word 0xe5901028, 0xe3510000, 0x03a04002, 0x0a000003\n"
-        ".word 0xe596002c, 0xe3500000, 0x03a04003, 0x1a000045\n"
-        ".word 0xe59fa11c, 0xe1a0000a, 0xeb06641a, 0xe3500000\n"
-        ".word 0xe320f000, 0x0a00003f, 0xe1a01008, 0xe1a0000a\n"
-        ".word 0xeb006c4d, 0xe3500000, 0xe320f000, 0x0a000039\n"
-        ".word 0xe1a01008, 0xe1a00007, 0xeb006c47, 0xe5d6103b\n"
-        ".word 0xe3510000, 0x0a00000a, 0xe3500003, 0x0a000002\n"
-        ".word 0xe3500002, 0x0a00000a, 0xea00002e, 0xe1a00008\n"
-        ".word 0xeb0047ed, 0xe3500000, 0xe320f000, 0x1a000004\n"
-        ".word 0xea000028, 0xe3500003, 0x0a000026, 0xe3500002\n"
-        ".word 0x1a000024, 0xe0866104, 0xe2861020, 0xe3a03000\n"
-        ".word 0xe1a02008, 0xe2870f61, 0xeb06595d, 0xe31000ff\n"
-        ".word 0x03a07001, 0x13a07000, 0xe355007f, 0xed9f0a1d\n"
-        ".word 0x83a0507f, 0x8a000002, 0xe3550000, 0x0eb08a40\n"
-        ".word 0x0a000009, 0xee005a90, 0xeddf1a17, 0xed9f1a17\n"
-        ".word 0xed9f8a17, 0xeef80a60, 0xee700ae1, 0xee008a81\n"
-        ".word 0xee180a10, 0xe3500101, 0xcd9f8a12, 0xe5960020\n"
-        ".word 0xe3a01000, 0xe3500000, 0x1b06592c, 0xeeb00a48\n"
-        ".word 0xe5960020, 0xe1a01009, 0xe3500000, 0x1b065927\n"
-        ".word 0xe3570000, 0x03e04000, 0xe1a00004, 0xecbd8b02\n"
-        ".word 0xe8bd87f0, 0x004e1f68, 0x00000000, 0x42800000\n"
-        ".word 0x3c810204, 0x3f800000, 0x40000000\n"
-    );
+//
+// Starts a voice on the active stream slot: claims the first free entry of the
+// four-pointer voice table, gates the request on the sound-system state, and
+// asks the manager virtual at AsdSoundSystem + 0x184 to publish the voice into
+// that slot.  On success the voice envelope is seeded twice through
+// 0x002BCD94 with the level-derived scale.  Integer arguments arrive in
+// r0/r1/r2 and the s32 result returns in r0.
+//
+// Direct call targets (all BL in the original):
+//   0x002BF85C  engine_func_002bf85c   tests AsdSoundSystem.field_004
+//   0x00141940  engine_func_00141940   nested system/object kind lookup
+//   0x00138800  func_00138800          object-list membership gate
+//   0x002BCDF8  func_002bcdf8          manager virtual -> voice slot
+//   0x002BCD94  func_002bcd94          envelope retarget (r1 mode, s0 target)
+//
+// The single literal at 0x00126908 (0x004E1F68) is loaded into both r7 and sl,
+// so 0x00141940 is issued twice with identical arguments; the second result is
+// the kind that selects the gate.  Kind 2 proceeds directly; kind 3 proceeds
+// only when the stream slot's +0x3B byte is non-zero and 0x00138800(object)
+// returns non-zero.  Every other kind returns the claimed slot index.
+extern "C" u32 engine_func_002bf85c(const void* system);
+extern "C" u32 engine_func_00141940(const void* system, const void* object);
+extern "C" u32 func_00138800(const void* object);
+extern "C" u32 func_002bcdf8(void* registry, void** slot, const void* object,
+                             u32 arg3);
+extern "C" void func_002bcd94(void* voice, u32 mode, f32 target);
+
+namespace func_126774 {
+
+constexpr u32 kSoundSystemAddress = 0x004E1F68;
+constexpr u32 kActiveStreamOffset = 0x1218;  // SoundSystem.field_1218
+constexpr u32 kRegistryOffset = 0x0184;      // manager sub-object for 2BCDF8
+constexpr u32 kLevelBiasBits = 0x42800000;   // 64.0f
+constexpr u32 kLevelStepBits = 0x3C810204;   // 0x1.020408p-6
+constexpr u32 kClampBits = 0x40000000;       // 2.0f
+constexpr u32 kMaxLevel = 0x7F;
+constexpr u32 kVoiceSlotCount = 4;
+constexpr u32 kAllocationSuccessMask = 0xFF;
+constexpr u32 kDirectKind = 2;
+constexpr u32 kForwardKind = 3;
+constexpr u32 kStreamGateOffset = 0x3B;
+
+// The four voice pointers of the active stream slot start at +0x20; the byte
+// at +0x3B gates the kind-3 lookup.  The remaining slot bytes are left opaque.
+struct StreamVoiceTable {
+    u8 pad_00[0x20];
+    void* voices[kVoiceSlotCount];       // +0x20..+0x2C
+    u8 pad_30[kStreamGateOffset - 0x30]; // +0x30..+0x3A
+    u8 gate_3b;                          // +0x3B
+};
+static_assert(offsetof(StreamVoiceTable, voices) == 0x20);
+static_assert(offsetof(StreamVoiceTable, gate_3b) == kStreamGateOffset);
+static_assert(sizeof(StreamVoiceTable) == 0x3C);
+
+struct SoundSystemView {
+    u8 pad_00[kActiveStreamOffset];
+    StreamVoiceTable* active_stream;     // +0x1218
+};
+static_assert(offsetof(SoundSystemView, active_stream) ==
+              kActiveStreamOffset);
+
+// 0x1268A8..0x1268CC.  Level 0 maps to 0.0f; otherwise the unsigned level is
+// converted to float, biased by 64.0f and scaled from 1.0f.  The result is
+// clamped to 2.0f by comparing the *bit pattern* as a signed integer against
+// 0x40000000, not through a floating-point comparison.  Levels above 0x7F are
+// clamped first with an unsigned `bhi`.
+f32 level_scale(u32 level) {
+    u32 value = level;
+    if (value > kMaxLevel) {
+        value = kMaxLevel;
+    }
+    if (value == 0) {
+        return 0.0f;
+    }
+    const f32 bias = __builtin_bit_cast(f32, kLevelBiasBits);
+    const f32 step = __builtin_bit_cast(f32, kLevelStepBits);
+    f32 scale = 1.0f + (static_cast<f32>(value) - bias) * step;
+    const u32 bits = __builtin_bit_cast(u32, scale);
+    if (static_cast<s32>(bits) > static_cast<s32>(kClampBits)) {
+        scale = __builtin_bit_cast(f32, kClampBits);
+    }
+    return scale;
+}
+
+}  // namespace func_126774
+
+extern "C" s32 engine_func_00126774(void* object, u32 level, u32 target) {
+    using namespace func_126774;
+
+    SoundSystemView* const system =
+        reinterpret_cast<SoundSystemView*>(kSoundSystemAddress);
+    StreamVoiceTable* const table = system->active_stream;
+    if (table == nullptr) {
+        return -1;
+    }
+
+    // 0x1267A0..0x1267E0: first free voice pointer, scanned over four slots.
+    // All four occupied returns the -1 sentinel.
+    s32 slot = -1;
+    for (u32 index = 0; index < kVoiceSlotCount; ++index) {
+        if (table->voices[index] == nullptr) {
+            slot = static_cast<s32>(index);
+            break;
+        }
+    }
+    if (slot == -1) {
+        return -1;
+    }
+
+    // 0x1267E4..0x1267F8: the state gate returns the claimed slot on failure.
+    if (engine_func_002bf85c(system) == 0) {
+        return slot;
+    }
+
+    // 0x1267FC..0x126810: the first kind lookup only gates.
+    if (engine_func_00141940(system, object) == 0) {
+        return slot;
+    }
+
+    // 0x126814..0x12681C: identical second lookup; its result is switched on.
+    const u32 kind = engine_func_00141940(system, object);
+
+    // 0x126820..0x126864: keep the gate byte read before the kind tests; only
+    // kind 3 consults 0x00138800, and only when that byte is non-zero.
+    const bool forward_allowed =
+        table->gate_3b != 0 && kind == kForwardKind &&
+        func_00138800(object) != 0;
+    if (kind != kDirectKind && !forward_allowed) {
+        return slot;
+    }
+
+    // 0x126868..0x12687C: publish the voice through the manager virtual.
+    void** const slot_pointer = &table->voices[slot];
+    void* const registry =
+        reinterpret_cast<void*>(kSoundSystemAddress + kRegistryOffset);
+    const u32 allocation = func_002bcdf8(registry, slot_pointer, object, 0);
+    const bool allocated = (allocation & kAllocationSuccessMask) == 0;
+    const f32 scale = level_scale(level);
+
+    // 0x1268D0..0x1268F0: seed with 0.0f (the value vldr'd into s0 at
+    // 0x126890 and never overwritten before the first call), then retarget to
+    // (target, scale) after 0x1268E0 moves the scale into s0.  The slot pointer
+    // is re-read before each retarget.
+    if (table->voices[slot] != nullptr) {
+        func_002bcd94(table->voices[slot], 0, 0.0f);
+    }
+    if (table->voices[slot] != nullptr) {
+        func_002bcd94(table->voices[slot], target, scale);
+    }
+
+    return allocated ? slot : -1;
 }
 
 // DECOMP_FUNC(0x003a8b14, 428)
-// 100 ARM instructions through unconditional pop; 28 trailing data bytes.
-extern "C" __attribute__((naked)) void shop_func_003a8b14() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d40f0, 0xe2805ca5, 0xe1a04000, 0xe1d51bf2\n"
-        ".word 0xe24dd044, 0xe28000dc, 0xebfa2a69, 0xe1a06000\n"
-        ".word 0xe1d50bf2, 0xe0600180, 0xe0800100, 0xe0840100\n"
-        ".word 0xe28050fc, 0xe1a00005, 0xebfc5907, 0xe1a07000\n"
-        ".word 0xe1a00005, 0xebfc5907, 0xe1a01000, 0xe1a02007\n"
-        ".word 0xe28400c8, 0xebfa2219, 0xe3560000, 0x0a000049\n"
-        ".word 0xe5d405a4, 0xe2845c05, 0xe3500000, 0x03a0002e\n"
-        ".word 0x13a00046, 0xebfc3ffa, 0xe5d500a4, 0xe3500000\n"
-        ".word 0x0a00000f, 0xe59f0108, 0xe59f6100, 0xe7901004\n"
-        ".word 0xe28d0040, 0xebfa1022, 0xe1b02000, 0xe59f00f4\n"
-        ".word 0xe59f10f4, 0x01a02006, 0xe5903008, 0xe1a0000d\n"
-        ".word 0xfafc570c, 0xe59f10e4, 0xe1a0000d, 0xebfbd94d\n"
-        ".word 0xea00000a, 0xe2846b01, 0xe2866f6a, 0xe2840020\n"
-        ".word 0xebfa2aed, 0xe0860280, 0xe3a03000, 0xe1d000b4\n"
-        ".word 0xe3a01001, 0xe6ff2070, 0xe1a00003, 0xebfbd433\n"
-        ".word 0xe3a00000, 0xebfbe0d6, 0xe3a01000, 0xe3a00002\n"
-        ".word 0xe1c401f4, 0xe1a02001, 0xe28400c8, 0xebfa21eb\n"
-        ".word 0xe5940590, 0xe2846e59, 0xe5901000, 0xe5912008\n"
-        ".word 0xe2841020, 0xe12fff32, 0xe5960000, 0xe1f010b4\n"
-        ".word 0xe3811a01, 0xe1c010b0, 0xe5d500a4, 0xe5943028\n"
-        ".word 0xe3500000, 0xe2840b01, 0xe2800f57, 0x0a000006\n"
-        ".word 0xe28dd044, 0xe353000a, 0xe8bd40f0, 0xa3a0300a\n"
-        ".word 0xe3a0101c, 0xe59f2038, 0xeafa2ae0, 0xe28dd044\n"
-        ".word 0xe353000a, 0xe8bd40f0, 0xa3a0300a, 0xe3a0101d\n"
-        ".word 0xe59f2020, 0xeafa2ad9, 0xe28dd044, 0xe8bd80f0\n"
-        ".word 0x004022bc, 0x0000a5b4, 0x0043d990, 0x004022c4\n"
-        ".word 0x323232ff, 0x00001030, 0x0000040e\n"
-    );
+//
+// Camp/shop "counter list" screen update callback.  The object passed in r0 is
+// the screen work page; r1-r3 are unused.  The routine has no explicit result:
+// its only pinned reference is the callback pointer at 0x004022A4 (there is no
+// direct BL/B to this entry), and either path simply leaves the register state
+// produced by the last helper:
+//   * the sprite helper at 0x002334D8 decides whether the update continues;
+//   * the final path is a tail branch to 0x00233804, so its r0 is forwarded.
+//
+// Direct call targets (all BL/BLX in the original):
+//   0x002334D8  shop_func_002334d8    switch the cursor sprite group, returns
+//                                     the gate value (zero means "no update")
+//   0x002BEF70  shop_func_002bef70    record +0x10 as s32 >> 12 (Y)
+//   0x002BEF7C  ui_func_002bef7c      record +0x0C as s32 >> 12 (X)
+//   0x002313D4  shop_func_002313d4    store (X, Y) as two f32 at work+0xC8
+//   0x002B8B78  script_vm_func_002b8b78  fixed sound/profile request
+//   0x0022CC38  func_0022cc38         id -> resource payload (first arg dead)
+//   0x002BE7FC  ui_func_002be7fc      Thumb variadic "%s%s" formatter
+//   0x0029F10C  camp_func_0029f10c    publish the help/message text + colour
+//   0x002337A0  shop_func_002337a0    current list index
+//   0x0029DCD4  camp_func_0029dcd4    skill/info panel formatter
+//   0x002A0F68  camp_func_002a0f68    byte notification (receives 0)
+//   0x00233804  unite_func_00233804  rebuild the result-row list (tail call)
+//
+// The literal pool at 0x003A8CA4 holds the fallback "＞＞＞" string
+// (0x004022BC), the id field displacement 0xA5B4, the label-pointer table at
+// 0x0043D990 whose third word supplies the second "%s" (the
+// "カウンターリスト" label), the "%s%s" format (0x004022C4), the text colour
+// 0x323232FF, and the two 0x00233804 selector pairs (0x001C/0x1030 for
+// mode != 0, 0x001D/0x040E for mode == 0).
+namespace shop_3a8b14 {
+
+// Work-page fields observed in the original body.
+constexpr u32 kStateOffset = 0x14;             // u32 state, then u32 zero
+constexpr u32 kListPanelOffset = 0x20;         // list panel / first virtual arg
+constexpr u32 kRowCountOffset = 0x28;          // s32 visible row count
+constexpr u32 kRowsOffset = 0x55C;             // 0x00233804 result-row header
+constexpr u32 kSubObjectOffset = 0x590;        // sub-object with the vtable
+constexpr u32 kModeOffset = 0x5A4;             // u8 mode byte
+constexpr u32 kEntryBaseOffset = 0x5A8;        // 0x20-byte entry array
+constexpr u32 kEntryStride = 0x20;
+constexpr u32 kEntryIdOffset = 0x04;           // u16 skill/entry id
+constexpr u32 kCursorOffset = 0xA5B2;          // s16 cursor sprite index
+constexpr u32 kTargetIdOffset = 0xA5B4;        // u32/s32 resource id
+constexpr u32 kSpriteGroupOffset = 0xDC;       // cursor sprite group
+constexpr u32 kCursorRecordBaseOffset = 0xFC;  // 140-byte cursor records
+constexpr u32 kCursorRecordStride = 140;       // (idx*7)*5*4 in the original
+constexpr u32 kCoordinateOffset = 0xC8;        // two f32 screen coordinates
+
+// Sub-object at work+0x590.  Its vtable entry 2 refreshes the list; bit 0x1000
+// in the +0x04 halfword is raised afterwards.
+struct SubObject {
+    void** vtable_00;
+    u16 flag_04;
+};
+constexpr u32 kSubFlagOffset = 0x04;
+constexpr u16 kSubFlagBit = 0x1000;
+constexpr u32 kSubRefreshIndex = 2;
+
+// Global label-pointer table at 0x0043D990.  Its third word (absolute
+// 0x0043D998) supplies the second "%s"; the static image points it at
+// 0x00423251, the "カウンターリスト" label.
+constexpr u32 kLabelTableAddress = 0x0043D990;
+constexpr u32 kLabelPointerAddress = kLabelTableAddress + 8;
+
+// Pinned rodata referenced by the original literal pool.
+constexpr char kMissingNameText[] = "\x81\x9b\x81\x9b\x81\x9b";  // "＞＞＞"
+constexpr char kNameFormat[] = "%s%s";
+constexpr u32 kTextColor = 0x323232FF;
+
+constexpr u32 kSoundModeZero = 0x2E;
+constexpr u32 kSoundModeNonZero = 0x46;
+constexpr u32 kRowKindModeZero = 0x040E;
+constexpr u32 kRowKindModeNonZero = 0x1030;
+constexpr u32 kRowTagModeZero = 0x1D;
+constexpr u32 kRowTagModeNonZero = 0x1C;
+constexpr u32 kInfoPanelArg1 = 1;
+constexpr u32 kMaxRowCount = 10;
+constexpr u32 kStateAfterUpdate = 2;
+constexpr u32 kTextBufferSize = 0x44;
+constexpr u32 kResourceScratchOffset = 0x40;
+
+inline const char* text_at(u32 address) {
+    return *reinterpret_cast<const char* const*>(address);
+}
+
+}  // namespace shop_3a8b14
+
+// Direct call declarations.  Names and addresses follow config/functions.csv.
+extern "C" s32 shop_func_002334d8(void* sprite_group, s32 cursor);
+extern "C" s32 shop_func_002bef70(const void* record);
+extern "C" s32 ui_func_002bef7c(const void* record);
+extern "C" void shop_func_002313d4(void* destination, s32 x, s32 y);
+extern "C" u32 script_vm_func_002b8b78(u32 request);
+extern "C" void* func_0022cc38(void* scratch, s32 target_id);
+extern "C" void ui_func_002be7fc(char* destination, const char* format, ...);
+extern "C" void camp_func_0029f10c(const char* text, u32 color);
+extern "C" u32 shop_func_002337a0(const void* panel);
+extern "C" void camp_func_0029dcd4(void* target, u32 arg1, u32 skill_id,
+                                     u32 sub_id);
+extern "C" void camp_func_002a0f68(u8 value);
+extern "C" void unite_func_00233804(void* rows, u32 arg1, u32 arg2,
+                                     s32 count);
+
+extern "C" void shop_func_003a8b14(void* work_pointer) {
+    using namespace shop_3a8b14;
+
+    u8* const work = static_cast<u8*>(work_pointer);
+    char text[kTextBufferSize];
+
+    // 0x003A8B18..0x003A8B68: cursor sprite selection, then the cursor record's
+    // screen coordinates.  The cursor field is deliberately reloaded after
+    // 0x002334D8, which may advance it.
+    const s16 initial_cursor =
+        *reinterpret_cast<const s16*>(work + kCursorOffset);
+    const bool continue_update =
+        shop_func_002334d8(work + kSpriteGroupOffset, initial_cursor) != 0;
+
+    const s16 cursor = *reinterpret_cast<const s16*>(work + kCursorOffset);
+    u8* const record = work + kCursorRecordBaseOffset +
+                       static_cast<u32>(cursor) * kCursorRecordStride;
+
+    const s32 y = shop_func_002bef70(record);
+    const s32 x = ui_func_002bef7c(record);
+    shop_func_002313d4(work + kCoordinateOffset, x, y);
+
+    // 0x003A8B70: zero from the sprite helper ends the update after the
+    // coordinate store (the helper leaves r0 = work+0xC8).
+    if (!continue_update) {
+        return;
+    }
+
+    // 0x003A8B74..0x003A8B94: the mode byte is read before the sound request
+    // and re-read afterwards, so a helper-side change is observed.
+    const u32 request = (work[kModeOffset] == 0) ? kSoundModeZero
+                                                 : kSoundModeNonZero;
+    script_vm_func_002b8b78(request);
+
+    if (work[kModeOffset] == 0) {
+        // 0x003A8BD8..0x003A8C00: mode 0 shows the info panel for the id in
+        // the current 0x20-byte list entry.  The lookup result is shifted by
+        // five and the entry id is a zero-extended halfword.
+        const u32 entry_index = shop_func_002337a0(work + kListPanelOffset);
+        const u16 entry_id = *reinterpret_cast<const u16*>(
+            work + kEntryBaseOffset + entry_index * kEntryStride +
+            kEntryIdOffset);
+        camp_func_0029dcd4(nullptr, kInfoPanelArg1, entry_id, 0);
+    } else {
+        // 0x003A8B98..0x003A8BD4: mode != 0 formats the target resource name
+        // followed by the global list label.  A null resource result uses the
+        // pinned "＞＞＞" fallback.  The first 0x0022CC38 argument is unused by
+        // the callee but is still the scratch tail of the local buffer.
+        const s32 target_id =
+            *reinterpret_cast<const s32*>(work + kTargetIdOffset);
+        void* const resource =
+            func_0022cc38(text + kResourceScratchOffset, target_id);
+        const char* const name =
+            resource != nullptr ? static_cast<const char*>(resource)
+                                : kMissingNameText;
+        const char* const label = text_at(kLabelPointerAddress);
+        ui_func_002be7fc(text, kNameFormat, name, label);
+        camp_func_0029f10c(text, kTextColor);
+    }
+
+    // 0x003A8C04..0x003A8C24: publish the new state and clear the coordinates.
+    camp_func_002a0f68(0);
+    *reinterpret_cast<u32*>(work + kStateOffset) = kStateAfterUpdate;
+    *reinterpret_cast<u32*>(work + kStateOffset + 4) = 0;
+    shop_func_002313d4(work + kCoordinateOffset, 0, 0);
+
+    // 0x003A8C24..0x003A8C48: the refresh virtual is invoked on the sub-object
+    // and the pointer is then reloaded before raising the +0x04 flag bit.
+    SubObject* sub =
+        *reinterpret_cast<SubObject**>(work + kSubObjectOffset);
+    using SubRefresh = void (*)(SubObject*, void*);
+    const SubRefresh refresh =
+        reinterpret_cast<SubRefresh>(sub->vtable_00[kSubRefreshIndex]);
+    refresh(sub, work + kListPanelOffset);
+
+    sub = *reinterpret_cast<SubObject**>(work + kSubObjectOffset);
+    const u16 flags =
+        *reinterpret_cast<const u16*>(
+            reinterpret_cast<u8*>(sub) + kSubFlagOffset);
+    *reinterpret_cast<u16*>(reinterpret_cast<u8*>(sub) + kSubFlagOffset) =
+        static_cast<u16>(flags | kSubFlagBit);
+
+    // 0x003A8C4C..0x003A8C98: select the result-row kind from the re-read mode
+    // byte and clamp the signed row count to ten before the tail call.
+    s32 row_count = *reinterpret_cast<const s32*>(work + kRowCountOffset);
+    if (row_count >= static_cast<s32>(kMaxRowCount)) {
+        row_count = static_cast<s32>(kMaxRowCount);
+    }
+
+    if (work[kModeOffset] == 0) {
+        unite_func_00233804(work + kRowsOffset, kRowTagModeZero,
+                            kRowKindModeZero, row_count);
+    } else {
+        unite_func_00233804(work + kRowsOffset, kRowTagModeNonZero,
+                            kRowKindModeNonZero, row_count);
+    }
 }
 
 // DECOMP_FUNC(0x0019f99c, 432)
-// 94 ARM instructions through unconditional pop; 56 trailing data bytes.
-extern "C" __attribute__((naked)) void engine_func_0019f99c() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d5ff0, 0xe3a06000, 0xe1a08000, 0xe1a09006\n"
-        ".word 0xe59f7160, 0xe59fb188, 0xed2d8b0c, 0xeeb08a40\n"
-        ".word 0xe247a024, 0xed9f0a54, 0xed9f9a54, 0xed9fba54\n"
-        ".word 0xee688a00, 0xeddfba53, 0xed9fca53, 0xeddf9a53\n"
-        ".word 0xeddfca53, 0xed9fda53, 0xed9faa53, 0xeddfaa53\n"
-        ".word 0xe5c71000, 0xe59f014c, 0xe0000096, 0xe0875100\n"
-        ".word 0xe2855004, 0xe2852008, 0xe1c580f0, 0xed859a06\n"
-        ".word 0xed859a05, 0xe2850034, 0xec828a02, 0xe285301c\n"
-        ".word 0xed859a04, 0xed859a0c, 0xed859a0b, 0xed85ba0a\n"
-        ".word 0xecc0ba02, 0xe89a0007, 0xe8830007, 0xe3a01001\n"
-        ".word 0xe285003c, 0xeb0489f2, 0xe59f30fc, 0xe2852010\n"
-        ".word 0xe285101c, 0xe285003c, 0xeb048993, 0xe2850034\n"
-        ".word 0xe285403c, 0xec900a02, 0xe2850068, 0xedc59a19\n"
-        ".word 0xe31600ff, 0xec800a02, 0xeeb01a40, 0x0dc4ca0d\n"
-        ".word 0x1d84da0d, 0xeeb00a6a, 0xedd40a0d, 0xedd41a0c\n"
-        ".word 0xe28400a8, 0xeb045ee1, 0xe3a01001, 0xe28400a8\n"
-        ".word 0xeb047184, 0xe28410a8, 0xe2840f56, 0xeb045ffe\n"
-        ".word 0xed940a0a, 0xe284102c, 0xedd40a0d, 0xee200a0a\n"
-        ".word 0xec911a02, 0xe28400e8, 0xeb045ed4, 0xe3a01000\n"
-        ".word 0xe28400e8, 0xeb047177, 0xe5d40000, 0xe3500000\n"
-        ".word 0x0a000002, 0xe28410e8, 0xe2840e4a, 0xeb045ea5\n"
-        ".word 0xe59b1004, 0xe31600ff, 0xe285003c, 0xe2866001\n"
-        ".word 0x05810080, 0x15810084, 0xe3560002, 0xbaffffb8\n"
-        ".word 0xecbd8b0c, 0xe8bd9ff0, 0x004d4948, 0x45610000\n"
-        ".word 0x00000000, 0xbdb2b8c2, 0x41a00000, 0x46c80000\n"
-        ".word 0x419222d1, 0x3fd55555, 0x3faaaaab, 0x3c8efa35\n"
-        ".word 0x3ea33c48, 0x0044ea58, 0x00000151, 0x004d493c\n"
-    );
+//
+// Builds the two AsdCamera default entries used by the camera manager.  The
+// bare-metal body is ARM 0x0019F99C..0x0019FB10 followed by a 56-byte literal
+// pool.  The corresponding fixed constants are the literal words at
+// 0x0019FB14..0x0019FB48.
+//
+// Recovered contract:
+//   * Arguments: r0 (u32 header word), r1 (selector byte), s0 (f32 value).
+//     r2/r3 are not read.  The selector is stored as one byte at 0x004D4948;
+//     the two entries start at 0x004D494C and are 0x544 bytes apart.
+//   * Each entry receives the header pair (r0, 0) and the value plus value *
+//     3600.0f, a zeroed 3-float vector at +0x10, the three default words from
+//     0x004D4924 at +0x1C, -0.08726646f at +0x28, and the 20.0f/25600.0f
+//     near/far pair at +0x34/+0x38.
+//   * The camera sub-object at entry+0x3C is constructed by 0x002C2210(obj, 1)
+//     and configured by 0x002C20A8(obj, entry+0x1C, entry+0x10,
+//     0x004D493C).  Both helpers are called with the exact original argument
+//     order; their contracts are listed below.
+//   * The near/far pair is copied to +0x68/+0x6C, the fixed reference distance
+//     18.267f is stored at +0x64, and the aspect ratio is 5/3 for entry 0 and
+//     4/3 for entry 1.
+//   * Two perspective matrices are built: the first from the literal
+//     0.31881928f angle, the second from 18.267f * pi/180 (0x3EA33C48 and
+//     0x3C8EFA35) evaluated with a single VFP multiply.  Each matrix is passed
+//     through 0x002BC0B4 with mode 1 and 0 respectively.  The first result is
+//     also copied to camera+0x158 by 0x002B7AA8.
+//   * Only when the constructor's byte at entry+0x3C is non-zero does
+//     0x002B7584(camera+0x4A0, camera+0xE8) run.  The original obtains that
+//     byte with `ldrb` after the constructor, so its result is observable.
+//   * Finally the per-entry pointer entry+0x3C is published to the manager
+//     object obtained from `[0x0044EA5C]`: entry 0 to +0x80, entry 1 to +0x84.
+//     Both the manager word and slot selection are re-evaluated per iteration.
+//   * There are no indirect calls.  All six callees are direct BL targets.
+//     The original leaves r0 = entry[1] + 0x3C at the pop, which is returned
+//     here; no caller in this repository consumes it.
+//
+// Direct callees (addresses from config/functions.csv):
+//   0x002C2210  engine_func_002c2210  camera constructor, (this, mode)
+//   0x002C20A8  engine_func_002c20a8  transform/orientation initializer
+//   0x002B761C  ui_func_002b761c      perspective-matrix builder
+//   0x002BC0B4  engine_func_002bc0b4  matrix rotation/transpose selector
+//   0x002B7AA8  ui_func_002b7aa8      0x40-byte matrix copy
+//   0x002B7584  func_002b7584        derived projection from a matrix
+namespace cam_19f99c {
+
+// Global storage observed through the original literal loads.
+constexpr u32 kDefaultVectorAddress = 0x004D4924;  // ldm r7-0x24
+constexpr u32 kExtraDefaultAddress = 0x004D493C;   // r3 for 0x002C20A8
+constexpr u32 kHeaderAddress = 0x004D4948;         // r7; selector byte
+constexpr u32 kManagerGlobal = 0x0044EA58;         // fp; [fp+4] is the table
+constexpr u32 kManagerTableOffset = 0x04;
+
+// `add r5, r7, i*0x151 << 2; add r5, #4`.
+constexpr u32 kEntryArrayOffset = 0x04;
+constexpr u32 kEntryStride = 0x544;
+constexpr s32 kEntryCount = 2;
+
+// Entry fields observed in 0x0019F9F0..0x0019FB00.
+constexpr u32 kHeaderWordOffset = 0x00;       // strd r8, sb
+constexpr u32 kHeaderZeroOffset = 0x04;
+constexpr u32 kValueOffset = 0x08;            // vstmia {s16,s17}
+constexpr u32 kScaledValueOffset = 0x0C;
+constexpr u32 kVectorAOffset = 0x10;          // three zero floats
+constexpr u32 kDefaultVectorOffset = 0x1C;    // three words from 0x004D4924
+constexpr u32 kTiltOffset = 0x28;             // 0xBDB2B8C2
+constexpr u32 kZero2COffset = 0x2C;
+constexpr u32 kZero30Offset = 0x30;
+constexpr u32 kNearOffset = 0x34;             // 20.0f
+constexpr u32 kFarOffset = 0x38;              // 25600.0f
+
+// Camera sub-object and its derived fields, relative to camera (entry+0x3C).
+constexpr u32 kCameraOffset = 0x3C;
+constexpr u32 kConstructorFlagOffset = 0x00;  // `ldrb r0,[r4]`
+constexpr u32 kReferenceDistanceOffset = 0x28;  // entry+0x64
+constexpr u32 kNearCopyOffset = 0x2C;          // entry+0x68
+constexpr u32 kFarCopyOffset = 0x30;           // entry+0x6C
+constexpr u32 kAspectOffset = 0x34;            // entry+0x70
+constexpr u32 kFovMatrixOffset = 0xA8;         // entry+0xE4
+constexpr u32 kProjectionMatrixOffset = 0xE8;  // entry+0x124
+constexpr u32 kProjectionCopyOffset = 0x158;   // entry+0x194
+constexpr u32 kDerivedProjectionOffset = 0x4A0;  // entry+0x4DC
+
+constexpr u32 kManagerFirstSlot = 0x80;
+constexpr u32 kManagerSecondSlot = 0x84;
+
+// Literal-pool values from the original body.
+constexpr f32 kSecondsPerHour = __builtin_bit_cast(f32, 0x45610000u);  // 3600.0f
+constexpr f32 kZero = __builtin_bit_cast(f32, 0x00000000u);            // 0.0f
+constexpr f32 kMinusFiveDegrees =
+    __builtin_bit_cast(f32, 0xBDB2B8C2u);  // -0.08726646f
+constexpr f32 kNearPlane = __builtin_bit_cast(f32, 0x41A00000u);  // 20.0f
+constexpr f32 kFarPlane = __builtin_bit_cast(f32, 0x46C80000u);   // 25600.0f
+constexpr f32 kReferenceDistance =
+    __builtin_bit_cast(f32, 0x419222D1u);  // 18.267f
+constexpr f32 kWideAspect = __builtin_bit_cast(f32, 0x3FD55555u);  // 5/3
+constexpr f32 kTallAspect = __builtin_bit_cast(f32, 0x3FAAAAABu);  // 4/3
+constexpr f32 kDegreesToRadians =
+    __builtin_bit_cast(f32, 0x3C8EFA35u);  // pi/180
+constexpr f32 kInitialFovRadians =
+    __builtin_bit_cast(f32, 0x3EA33C48u);  // 0.31881928f
+
+}  // namespace cam_19f99c
+
+// Direct callees.  Every target is an existing body in this repository.
+// 0x002C2210 also has a raw no-argument definition later in this translation
+// unit, so its call-site signature is expressed as a fixed-address function
+// pointer instead of a conflicting C-linkage declaration.
+using CameraConstructor = void (*)(void* camera, u32 mode);
+constexpr u32 kCameraConstructorAddress = 0x002C2210;
+extern "C" void engine_func_002c20a8(void* camera, const void* vector_a,
+                                     const void* vector_b, const void* extra);
+extern "C" void ui_func_002b761c(void* matrix, f32 fov_radians, f32 aspect,
+                                 f32 near_plane, f32 far_plane);
+extern "C" void engine_func_002bc0b4(void* matrix, u32 mode);
+extern "C" void ui_func_002b7aa8(void* destination, const void* source);
+extern "C" void func_002b7584(void* destination, const void* matrix);
+
+extern "C" void* engine_func_0019f99c(u32 header_word, u32 selector,
+                                       f32 value) {
+    using namespace cam_19f99c;
+
+    // 0x0019F9EC: the selector occupies exactly one byte at the entry header.
+    *reinterpret_cast<u8*>(kHeaderAddress) = static_cast<u8>(selector);
+
+    u8* last_camera = nullptr;
+    for (s32 index = 0; index < kEntryCount; ++index) {
+        // 0x0019F9F0..0x0019FA00: entry = header + 4 + index * 0x544.
+        u8* const entry =
+            reinterpret_cast<u8*>(kHeaderAddress + kEntryArrayOffset) +
+            static_cast<u32>(index) * kEntryStride;
+        u8* const camera = entry + kCameraOffset;
+
+        // 0x0019FA04..0x0019FA2C: header words, value pair, zero vector,
+        // default vector, tilt and near/far pair, in original order.
+        *reinterpret_cast<u32*>(entry + kHeaderWordOffset) = header_word;
+        *reinterpret_cast<u32*>(entry + kHeaderZeroOffset) = 0;
+        *reinterpret_cast<f32*>(entry + kValueOffset) = value;
+        *reinterpret_cast<f32*>(entry + kScaledValueOffset) =
+            value * kSecondsPerHour;
+        *reinterpret_cast<f32*>(entry + kVectorAOffset) = kZero;
+        *reinterpret_cast<f32*>(entry + kVectorAOffset + 4) = kZero;
+        *reinterpret_cast<f32*>(entry + kVectorAOffset + 8) = kZero;
+        *reinterpret_cast<f32*>(entry + kTiltOffset) = kMinusFiveDegrees;
+        *reinterpret_cast<f32*>(entry + kZero2COffset) = kZero;
+        *reinterpret_cast<f32*>(entry + kZero30Offset) = kZero;
+        *reinterpret_cast<f32*>(entry + kNearOffset) = kNearPlane;
+        *reinterpret_cast<f32*>(entry + kFarOffset) = kFarPlane;
+
+        // 0x0019FA30..0x0019FA34: three words copied verbatim.
+        const u32* const defaults =
+            reinterpret_cast<const u32*>(kDefaultVectorAddress);
+        u32* const entry_defaults =
+            reinterpret_cast<u32*>(entry + kDefaultVectorOffset);
+        entry_defaults[0] = defaults[0];
+        entry_defaults[1] = defaults[1];
+        entry_defaults[2] = defaults[2];
+
+        // 0x0019FA38..0x0019FA54: construct and configure the camera.
+        reinterpret_cast<CameraConstructor>(kCameraConstructorAddress)(
+            camera, 1);
+        engine_func_002c20a8(
+            camera, entry + kDefaultVectorOffset, entry + kVectorAOffset,
+            reinterpret_cast<const void*>(kExtraDefaultAddress));
+
+        // 0x0019FA58..0x0019FA7C: copy near/far to +0x68/+0x6C, store the
+        // reference distance, then choose the aspect ratio from the signed
+        // `tst r6,#0xFF` result.
+        const f32 near_value =
+            *reinterpret_cast<const f32*>(entry + kNearOffset);
+        const f32 far_value =
+            *reinterpret_cast<const f32*>(entry + kFarOffset);
+        *reinterpret_cast<f32*>(camera + kReferenceDistanceOffset) =
+            kReferenceDistance;
+        *reinterpret_cast<f32*>(camera + kNearCopyOffset) = near_value;
+        *reinterpret_cast<f32*>(camera + kFarCopyOffset) = far_value;
+
+        const f32 aspect =
+            (index & 0xFF) == 0 ? kWideAspect : kTallAspect;
+        *reinterpret_cast<f32*>(camera + kAspectOffset) = aspect;
+
+        // 0x0019FA80..0x0019FA9C: first perspective matrix from the literal
+        // angle, then matrix selector mode 1.  The caller re-reads the copied
+        // near/far words and the aspect word from memory before the call.
+        ui_func_002b761c(
+            camera + kFovMatrixOffset, kInitialFovRadians,
+            *reinterpret_cast<const f32*>(camera + kAspectOffset),
+            *reinterpret_cast<const f32*>(camera + kNearCopyOffset),
+            *reinterpret_cast<const f32*>(camera + kFarCopyOffset));
+        engine_func_002bc0b4(camera + kFovMatrixOffset, 1);
+
+        // 0x0019FAA0..0x0019FAA8: copy that matrix into camera+0x158.
+        ui_func_002b7aa8(camera + kProjectionCopyOffset,
+                         camera + kFovMatrixOffset);
+
+        // 0x0019FAAC..0x0019FAD0: second perspective matrix from
+        // 18.267f * pi/180, then selector mode 0.
+        ui_func_002b761c(
+            camera + kProjectionMatrixOffset,
+            kReferenceDistance * kDegreesToRadians,
+            *reinterpret_cast<const f32*>(camera + kAspectOffset),
+            *reinterpret_cast<const f32*>(camera + kNearCopyOffset),
+            *reinterpret_cast<const f32*>(camera + kFarCopyOffset));
+        engine_func_002bc0b4(camera + kProjectionMatrixOffset, 0);
+
+        // 0x0019FAD4..0x0019FAE8: the constructor's flag byte gates the
+        // derived projection; the byte is re-read from memory (ldrb).
+        if (camera[kConstructorFlagOffset] != 0) {
+            func_002b7584(camera + kDerivedProjectionOffset,
+                          camera + kProjectionMatrixOffset);
+        }
+
+        // 0x0019FAEC..0x0019FB00: publish the camera pointer in the manager
+        // table.  The manager word and the slot are both re-evaluated for
+        // each entry.
+        u8* const manager = *reinterpret_cast<u8* const*>(
+            kManagerGlobal + kManagerTableOffset);
+        if ((index & 0xFF) == 0) {
+            *reinterpret_cast<u8**>(manager + kManagerFirstSlot) = camera;
+        } else {
+            *reinterpret_cast<u8**>(manager + kManagerSecondSlot) = camera;
+        }
+
+        last_camera = camera;
+    }
+
+    // 0x0019FB10 pop: r0 still holds the final entry's camera pointer.
+    return last_camera;
 }
 
+// Direct callees of camp_func_00262498 (addresses from config/functions.csv).
+// 0x002B66EC returns the script-VM interaction table; 0x002841A0 copies four
+// table words (plus an optional u16) into the caller's entry buffer;
+// 0x002AE394 maps the self u16 id; 0x0028412C sums the matching sub-counts;
+// 0x002A89E4 and 0x002840B8 return indexed records; 0x003BF764 and 0x003BF7AC
+// are the two float scalers.  0x003BF764 reads its operands from s0 and s3,
+// so the declaration keeps all four VFP argument slots explicit.
+extern "C" void* script_vm_func_002b66ec();
+extern "C" void script_vm_func_002841a0(void* destination, s32 flag);
+extern "C" s32 script_vm_func_002ae394(u32 id);
+extern "C" s32 func_0028412c(void* object, s32 count, s32 flag);
+extern "C" void* camp_func_002a89e4(u32 index);
+extern "C" void* camp_func_002840b8(u32 id);
+extern "C" s32 func_003bf764(s32 unused, s32 addend, s32 zero, f32 value,
+                             f32 one_a, f32 one_b, f32 scale);
+extern "C" s32 func_003bf7ac(s32 value, f32 scale);
+
+namespace camp_262498 {
+
+// Self fields observed in 0x002624A8..0x00262620.
+constexpr u32 kStateFlagsOffset = 0x36;  // ldrh self+0x36
+constexpr u32 kStateByteOffset = 0x43;   // ldrb self+0x43
+constexpr u32 kLookupIdOffset = 0x20;    // ldrh self+0x20 -> 0x002AE394
+
+// Indirect records reached through the two pointer helpers.
+constexpr u32 kTableSignOffset = 0x24;    // ldrsh [0x002B66EC()+0x24]
+constexpr u32 kObjectSignOffset = 0x16;   // ldrsh [0x002A89E4(index)+0x16]
+constexpr u32 kObjectWordsOffset = 0x34;  // ldm [object+0x34], four words
+
+// Entry loop bounds and record decoding in 0x00262540..0x002625A0.
+constexpr u32 kEntryCount = 9;         // cmp r4,#9 / blt
+constexpr u32 kEntryWordCount = 5;     // five zeroed words == ten u16 slots
+constexpr u32 kRecordFieldOffset = 0x38;  // ldr r0,[record+0x38]
+constexpr u32 kRecordKindShift = 11;      // (field<<16)>>27
+constexpr u32 kRecordKindMask = 0x1F;
+constexpr u32 kRecordKindValue = 0x14;
+constexpr u32 kRecordSelectShift = 16;  // (field<<12)>>28
+constexpr u32 kRecordSelectMask = 0x0F;
+constexpr u32 kSelectAddOne = 5;
+constexpr u32 kSelectAddTwo = 6;
+
+// Tail dispatch: `lsl #20` keeps only the low twelve state-flag bits, so the
+// 0xFA000000 comparison is (flags & 0xFFF) == 0xFA0.
+constexpr u32 kLowFlagsMask = 0x0FFF;
+constexpr u32 kSpecialLowFlags = 0x0FA0;
+constexpr u32 kScaleTableAddress = 0x00446D30;  // pc-relative literal
+constexpr f32 kOne = 1.0f;
+constexpr f32 kPercentScale =
+    __builtin_bit_cast(f32, 0x3C23D70Au);  // 0.01f
+
+// The original copies four 32-bit words with ldm/stm and reads the buffer as
+// nine little-endian u16 entries; a fifth word stays zero unless 0x002841A0
+// fills its low half.  The union keeps that exact layout.
+union EntryWords {
+    u32 words[kEntryWordCount];
+    u16 halves[kEntryWordCount * 2];
+};
+
+}  // namespace camp_262498
+
 // DECOMP_FUNC(0x00262498, 432)
-// 105 ARM instructions through unconditional pop; 12 trailing data bytes.
-extern "C" __attribute__((naked)) void camp_func_00262498() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4ff7, 0xe24dd018, 0xe1a05000, 0xe1a00002\n"
-        ".word 0xe1d513b6, 0xe1b01a01, 0x05d51043, 0x03510000\n"
-        ".word 0x03a00000, 0x0a00005c, 0xe3a08000, 0xe3500000\n"
-        ".word 0xe1a07008, 0xe1a06008, 0xe58d8000, 0xe58d8004\n"
-        ".word 0xe58d8008, 0xe58d800c, 0xe58d8010, 0xaa00000c\n"
-        ".word 0xeb01507f, 0xe1d092f4, 0xe3a01001, 0xe1a0000d\n"
-        ".word 0xeb008728, 0xe1d502b0, 0xeb012fa3, 0xe1a01000\n"
-        ".word 0xe3a02002, 0xe1a00005, 0xeb008705, 0xe1a08000\n"
-        ".word 0xea000008, 0xe320f000, 0xeb01192f, 0xe3500000\n"
-        ".word 0xe320f000, 0x0a000040, 0xe2801034, 0xe1d091f6\n"
-        ".word 0xe891100e, 0xe88d100e, 0xe3a04000, 0xe1a0a00d\n"
-        ".word 0xe3a0b014, 0xe08a0084, 0xe1d000b0, 0xe3500000\n"
-        ".word 0x0a00000e, 0xeb0086d5, 0xe3500000, 0xe320f000\n"
-        ".word 0x0a00000a, 0xe5900038, 0xe1a01800, 0xe15b0da1\n"
-        ".word 0x1a000006, 0xe1a00600, 0xe1a00e20, 0xe3500005\n"
-        ".word 0x02866001, 0x0a000001, 0xe3500006, 0x02866002\n"
-        ".word 0xe2844001, 0xe3540009, 0xbaffffe9, 0xe1d503b6\n"
-        ".word 0xe3a024fa, 0xe3a01000, 0xe1520a00, 0x059d101c\n"
-        ".word 0x0a00001c, 0xe1b02a00, 0x0a00000e, 0xe3c00a0f\n"
-        ".word 0xee000a10, 0xe59f1068, 0xeddf0a1a, 0xe6ff2077\n"
-        ".word 0xe0811106, 0xeeb01a60, 0xeeb80a40, 0xedd11a00\n"
-        ".word 0xe1a01008, 0xe1a00009, 0xeb05745b, 0xe320f000\n"
-        ".word 0xe320f000, 0xea00000a, 0xe5d50043, 0xe3500000\n"
-        ".word 0x0a000008, 0xee000a10, 0xeddf0a0b, 0xe6ff2077\n"
-        ".word 0xe59d001c, 0xe1a01008, 0xeeb80a40, 0xee200a20\n"
-        ".word 0xeb05745f, 0xe1a01000, 0xe1a00001, 0xe28dd024\n"
-        ".word 0xe8bd8ff0, 0x00446d30, 0x3f800000, 0x3c23d70a\n"
-    );
+//
+// Camp-battle weight selector.  It rejects an inactive self (zero low twelve
+// flag bits and a zero byte at +0x43), gathers up to nine u16 entry ids either
+// from the script-VM interaction table (arg2 < 0) or from an indexed record
+// (arg2 >= 0), decodes a per-entry multiplier from record+0x38, and applies it
+// through one of two float scalers.  A special low-flag value 0xFA0 returns
+// arg1 unchanged.  The 432-byte body is 105 ARM instructions plus three
+// literal words; the final literal pool values are 1.0f and 0.01f.
+extern "C" s32 camp_func_00262498(u8* const self, u32 arg1, s32 arg2) {
+    using namespace camp_262498;
+
+    // 0x002624A8..0x002624BC: inactive self gate.  The shift result and the
+    // conditional byte load are both re-evaluated only when the low bits clear.
+    const u16 initial_flags =
+        *reinterpret_cast<const u16*>(self + kStateFlagsOffset);
+    if ((static_cast<u32>(initial_flags) << 20) == 0 &&
+        self[kStateByteOffset] == 0) {
+        return 0;
+    }
+
+    // 0x002624C0..0x002624E4: five zeroed words and the two accumulators.
+    EntryWords entries = {};
+    s32 sign_value = 0;
+    u32 weight = 0;
+    s32 bonus = 0;
+
+    if (arg2 < 0) {
+        // 0x002624E8..0x00262518: table sign, four copied words, id lookup.
+        const u8* const table =
+            static_cast<const u8*>(script_vm_func_002b66ec());
+        sign_value =
+            *reinterpret_cast<const s16*>(table + kTableSignOffset);
+        script_vm_func_002841a0(entries.halves, 1);
+        bonus = func_0028412c(
+            self,
+            script_vm_func_002ae394(
+                *reinterpret_cast<const u16*>(self + kLookupIdOffset)),
+            2);
+    } else {
+        // 0x0026251C..0x0026253C: indexed object; a null object returns 0 and
+        // the four words at +0x34..+0x40 replace the first four zeroed words.
+        const u8* const object = static_cast<const u8*>(
+            camp_func_002a89e4(static_cast<u32>(arg2)));
+        if (object == nullptr) {
+            return 0;
+        }
+        sign_value =
+            *reinterpret_cast<const s16*>(object + kObjectSignOffset);
+        const u32* const words =
+            reinterpret_cast<const u32*>(object + kObjectWordsOffset);
+        entries.words[0] = words[0];
+        entries.words[1] = words[1];
+        entries.words[2] = words[2];
+        entries.words[3] = words[3];
+    }
+
+    // 0x00262540..0x002625A0: fixed nine-entry scan.  Only records whose
+    // bits 11..15 equal 0x14 contribute; bits 16..19 add one or two.
+    for (u32 index = 0; index < kEntryCount; ++index) {
+        const u16 entry = entries.halves[index];
+        if (entry == 0) {
+            continue;
+        }
+        const u8* const record =
+            static_cast<const u8*>(camp_func_002840b8(entry));
+        if (record == nullptr) {
+            continue;
+        }
+        const u32 field =
+            *reinterpret_cast<const u32*>(record + kRecordFieldOffset);
+        if (((field >> kRecordKindShift) & kRecordKindMask) !=
+            kRecordKindValue) {
+            continue;
+        }
+        const u32 selection =
+            (field >> kRecordSelectShift) & kRecordSelectMask;
+        if (selection == kSelectAddOne) {
+            weight += 1;
+            continue;
+        }
+        if (selection == kSelectAddTwo) {
+            weight += 2;
+        }
+    }
+
+    // 0x002625A4..0x002625B8: the special low-flag value forwards arg1.
+    const u16 flags = *reinterpret_cast<const u16*>(self + kStateFlagsOffset);
+    const u32 low_flags = flags & kLowFlagsMask;
+    if (low_flags == kSpecialLowFlags) {
+        return static_cast<s32>(arg1);
+    }
+
+    if (low_flags != 0) {
+        // 0x002625C4..0x002625F0: scaled weight path.  s0 = float(low flags),
+        // s1 = s2 = 1.0f, s3 = scale_table[weight].
+        const f32 scale =
+            reinterpret_cast<const f32*>(kScaleTableAddress)[weight];
+        return func_003bf764(sign_value, bonus, 0,
+                             static_cast<f32>(low_flags), kOne, kOne, scale);
+    }
+
+    // 0x00262600..0x00262628: percent path, gated by the +0x43 byte.
+    const u8 percent = self[kStateByteOffset];
+    if (percent == 0) {
+        return 0;
+    }
+    return func_003bf7ac(
+        static_cast<s32>(arg1),
+        static_cast<f32>(percent) * kPercentScale);
 }
 
 // DECOMP_FUNC(0x002f7f18, 432)
-// 105 ARM instructions through unconditional pop; 12 trailing data bytes.
-extern "C" __attribute__((naked)) void engine_func_002f7f18() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4ff0, 0xe24dd034, 0xe3a00000, 0xebfe7c0d\n"
-        ".word 0xe58d0028, 0xe3a00001, 0xebfe7c0a, 0xe58d002c\n"
-        ".word 0xe3a00002, 0xebfe7c07, 0xe1a04000, 0xe59f0170\n"
-        ".word 0xe5900000, 0xebfe1b11, 0xe59fa168, 0xe3540000\n"
-        ".word 0xe3a06000, 0xe3a09000, 0xc3a09e3e, 0xe1a04006\n"
-        ".word 0xe1a0b006, 0xe58d0024, 0xe320f000, 0xebfe6f47\n"
-        ".word 0xe2800d7f, 0xe0841204, 0xe5900000, 0xe0811304\n"
-        ".word 0xe0805181, 0xe5950000, 0xe3100001, 0x0a000042\n"
-        ".word 0xe3100040, 0x1a000040, 0xe1d500f8, 0xe3500000\n"
-        ".word 0xba00003d, 0xe2850c01, 0xe59dc028, 0xe1d03bf6\n"
-        ".word 0xe1d02cb6, 0xe0030c93, 0xe2021008, 0xe3510000\n"
-        ".word 0xe0c3c39a, 0xe1a012c3, 0xe0417fc3, 0x13570001\n"
-        ".word 0xc3a07001, 0xca000001, 0xe3570000, 0x03e07000\n"
-        ".word 0xe1d00bfa, 0xe59d102c, 0xe2022008, 0xe3520000\n"
-        ".word 0xe0000190, 0xe0c0109a, 0xe1a012c0, 0xe0418fc0\n"
-        ".word 0x13580001, 0xc3a08001, 0xca000001, 0xe3580000\n"
-        ".word 0x03e08000, 0xe320f000, 0xebfe6f1c, 0xe1a01000\n"
-        ".word 0xe1d500f8, 0xe2811b07, 0xe2811fa6, 0xe0865106\n"
-        ".word 0xe5912000, 0xe0803100, 0xe0833300, 0xe28d1018\n"
-        ".word 0xe3a00009, 0xe58d5014, 0xe8810801, 0xe0822103\n"
-        ".word 0xe28d0008, 0xe3e03000, 0xe58d5010, 0xe58db020\n"
-        ".word 0xe8800208, 0xe3a03000, 0xe88d0180, 0xe59d1024\n"
-        ".word 0xe1a00003, 0xebfe1847, 0xe59f203c, 0xe59d1024\n"
-        ".word 0xe3a03000, 0xe1a00005, 0xe58db000, 0xe58db004\n"
-        ".word 0xe58db008, 0xebfd61d7, 0xe2866001, 0xe2844001\n"
-        ".word 0xe3540004, 0xbaffffaf, 0xe28dd034, 0xe3a00001\n"
-        ".word 0xe8bd8ff0, 0x0043427c, 0x51eb851f, 0x010001c1\n"
-    );
+//
+// Recovered contract (ARM 0x002F7F18..0x002F80BB = 105 instructions through
+// the unconditional `pop {r4, r5, r6, r7, r8, sb, sl, fp, pc}`; the three
+// literal words at 0x002F80BC..0x002F80C7 are 0x0043427C, 0x51EB851F and
+// 0x010001C1):
+//
+//   * ABI: r0..r3 are never read; the routine takes no arguments and always
+//     leaves r0 = 1.  The prologue saves {r4-r8, sb, sl, fp, lr} and reserves
+//     0x34 bytes, so every callee-saved register and SP survive unchanged.
+//     [sp+0x00..0x20] are the nine outgoing stack arguments of the 0x0027E1A0
+//     call, [sp+0x24] caches the 0x0027EB98 result and [sp+0x28]/[sp+0x2C]
+//     cache the first two 0x00296F60 results.
+//   * Three selectors are resolved up front, before the +0x1FC0 table:
+//         scale_a        = engine_func_00296f60(0)
+//         scale_b        = engine_func_00296f60(1)
+//         limit_selector = engine_func_00296f60(2)
+//     limit = (s32)limit_selector > 0 ? 0x3E0 : 0   (`cmp r4, #0` / `movgt`).
+//   * The handle is script_vm_func_0027eb98(*0x0043427C); 0x0043427C is the
+//     canonical script::g_ScriptVmContext_43427c slot and 0x0027EB98
+//     dereferences it once more.  It is resolved a single time and the result
+//     is forwarded to both per-actor calls.
+//   * Exactly four actors are visited, i = 0..3 (`cmp r4, #4` / `blt`).  The
+//     actor array base is re-read every iteration as `*[ui_state + 0x1FC0]`,
+//     where ui_state = ui_func_00293c98() = *0x00435D90.  The stride is 648
+//     bytes, built as `i + i<<4 + i<<6` then `<<3` (i.e. i*81*8).
+//   * An actor is skipped when bit0 of [actor+0x00] is clear, bit6 of the same
+//     word is set, or the s16 at [actor+0x08] is negative (signed `ldrsh`).
+//     Otherwise:
+//         raw_a   = (s16)[actor+0x1B6]      (via `add r0, r5, #0x100`)
+//         clamp   = (u16)[actor+0x1C6]      (only bit3 is examined)
+//         raw_b   = (s16)[actor+0x1BA]
+//         v       = (s32)(low32(raw * scale)) / 100      (truncating)
+//         if ((clamp & 8) != 0 && v > 1) v = 1;
+//         if (v == 0) v = -1;
+//     value_a uses raw_a/scale_a, value_b uses raw_b/scale_b.  The
+//     `cmpne r7, #1` / `movgt r7, #1` pair clamps only from above, and the
+//     `cmp r7, #0` / `mvneq r7, #0` pair (0x2F7FE0 and 0x2F8014) rewrites a
+//     zero result to -1 (`mvn`, i.e. bitwise NOT of 0, not `mov`).
+//     `mul` keeps only the low 32-bit word of the product and the following
+//     `smull`/`asr #5`/sign-fixup sequence divides that signed word by 100.
+//   * The record handed to 0x0027E1A0 is `*[ui2 + 0x1E98] + id*276`
+//     (0x1C00+0x298 then `id + id<<2 + id<<6`, `<<2`), where ui2 is a second
+//     ui_func_00293c98() call and id is the same s16 at [actor+0x08].
+//   * Emit per surviving actor, with slot = emitted*5:
+//         0x0027E1A0(0, handle, record, 0, value_a, value_b, -1, limit,
+//                    slot, slot, 9, 0.0f, 0, 0);
+//         0x00250800(slot, handle, 0x010001C1, 0, 0, 0.0f, 0);
+//     Both 0.0f arguments are *stack words* in the original (0x0027E1A0 loads
+//     its copy with `vldr s16, [sp, #0x64]`, 0x00250800 with `vldr s16,
+//     [sp, #0x24]`); the source models them as raw u32 words so a hard-float
+//     build keeps the same outgoing frame (see kZeroFloatBits).
+//     `emitted` starts at 0 and is incremented only after both calls, so the
+//     slot values are 0, 5, 10 and 15.  The second call's third argument is the
+//     literal 0x010001C1 (a constant, not a pointer).
+//   * No static caller exists in the pinned image (`bl` scan), so the return
+//     value's consumer cannot be observed; it is modelled as u32 to keep the
+//     register-level differential exact.
+namespace func_2f7f18 {
+
+// 0x0043427C: the script VM context slot (canonical
+// script::g_ScriptVmContext_43427c).  0x0027EB98 dereferences it again.
+constexpr u32 kScriptVmContextSlot = 0x0043427C;
+
+// [ui_state + 0x1FC0] = actor array base; entries are 648 bytes apart.
+constexpr u32 kActorArrayOffset = 0x1FC0;
+constexpr u32 kActorStride = 648;  // 81 * 8
+constexpr u32 kActorCount = 4;
+
+// [ui_state + 0x1E98] = record array base; entries are 276 bytes apart.
+constexpr u32 kRecordArrayOffset = 0x1E98;  // 0x1C00 + 0x298
+constexpr u32 kRecordStride = 276;          // 0x114
+
+// Actor field offsets reached from the actor pointer.
+constexpr u32 kActorFlagsOffset = 0x000;
+constexpr u32 kActorIdOffset = 0x008;
+constexpr u32 kActorValueAOffset = 0x1B6;
+constexpr u32 kActorValueBOffset = 0x1BA;
+constexpr u32 kActorClampOffset = 0x1C6;
+
+constexpr u32 kActorEnabledBit = 0x01;  // `tst r0, #1` / `beq` skip
+constexpr u32 kActorHiddenBit = 0x40;   // `tst r0, #0x40` / `bne` skip
+constexpr u16 kClampBit = 0x0008;       // bit3 of the u16 at +0x1C6
+
+constexpr s32 kScaleDivisor = 100;      // 0x51EB851F magic division
+constexpr s32 kScaledMaximum = 1;       // `movgt r7, #1`
+constexpr s32 kUnsetValue = -1;         // `mvn r7, #0`
+constexpr s32 kLimitEnabled = 0x3E0;
+constexpr s32 kLimitDisabled = 0;
+constexpr s32 kSlotStride = 5;          // `emitted + emitted<<2`
+constexpr s32 kRowStart = 9;            // 11th argument, `mov r0, #9`
+constexpr u32 kSubCallFlags = 0x010001C1;
+constexpr s32 kUnusedArgument = -1;     // `mvn r3, #0`
+
+// 0.0f as a raw word.  Both float-shaped argument slots of the two callees are
+// passed as *stack words* by the original (`str fp, [sp, ...]`), and the
+// callees load them back with `vldr`.  This translation unit is built with
+// -mfloat-abi=hard, so declaring these parameters as f32 would move them into
+// s0 and shrink the outgoing frame; the integer declaration reproduces the
+// original softfp-style layout.  The payload is still exactly 0.0f.
+constexpr u32 kZeroFloatBits = 0x00000000;
+
+inline s32 load_s16(const u8* base, u32 offset) {
+    return *reinterpret_cast<const s16*>(base + offset);
 }
+
+inline u16 load_u16(const u8* base, u32 offset) {
+    return *reinterpret_cast<const u16*>(base + offset);
+}
+
+inline u32 load_u32(const u8* base, u32 offset) {
+    return *reinterpret_cast<const u32*>(base + offset);
+}
+
+// Reinterpret the low 32-bit product word as signed without relying on an
+// implementation-defined narrowing conversion.
+inline s32 wrap_to_s32(u32 value) {
+    if (value <= 0x7FFFFFFFu) {
+        return static_cast<s32>(value);
+    }
+    return -static_cast<s32>(0xFFFFFFFFu - value) - 1;
+}
+
+// `mul` + `smull 0x51EB851F` + `asr #5` + sign fixup == signed / 100.
+inline s32 hundredths(s32 raw, u32 scale) {
+    return wrap_to_s32(static_cast<u32>(raw) * scale) / kScaleDivisor;
+}
+
+}  // namespace func_2f7f18
+
+// 0x00296F60: reads the script value selected by `selector` (0, 1 and 2 here).
+extern "C" u32 engine_func_00296f60(u32 selector);
+
+// 0x0027EB98: resolves the script context slot to a battle value table.  The
+// argument is the word stored at 0x0043427C; the function loads through it.
+extern "C" void* script_vm_func_0027eb98(void* context);
+
+// 0x00293C98: returns the global UI object base (*0x00435D90).
+extern "C" u32 ui_func_00293c98(void);
+
+// 0x0027E1A0: per-actor battle update.  Thirteen ABI arguments: four in
+// r0..r3 and nine on the stack.  The body is outside this translation unit.
+// The 12th argument is the 0.0f bit pattern passed as a stack word (see
+// kZeroFloatBits), so it is declared u32 here.
+extern "C" void battle_func_0027e1a0(
+    s32 zero_origin,   // r0
+    void* handle,      // r1
+    void* record,      // r2
+    s32 zero,          // r3
+    s32 value_a,       // [sp+0x00]
+    s32 value_b,       // [sp+0x04]
+    s32 unused,        // [sp+0x08] -1
+    s32 limit,         // [sp+0x0C] 0 or 0x3E0
+    s32 slot_a,        // [sp+0x10] emitted*5
+    s32 slot_b,        // [sp+0x14] emitted*5
+    s32 row_start,     // [sp+0x18] 9
+    u32 zero_float,    // [sp+0x1C] 0.0f bit pattern
+    s32 zero_a,        // [sp+0x20] 0
+    s32 zero_b);       // [sp+0x24] 0
+
+// 0x00250800: second per-actor call (seven arguments: four in r0..r3, three on
+// the stack).  Its sixth argument is likewise a 0.0f bit pattern on the stack.
+extern "C" void battle_func_00250800(
+    s32 slot,          // r0
+    void* handle,      // r1
+    u32 flags,         // r2 = 0x010001C1
+    s32 zero,          // r3
+    s32 zero_a,        // [sp+0x00]
+    u32 zero_float,    // [sp+0x04] 0.0f bit pattern
+    s32 zero_b);       // [sp+0x08]
+
+extern "C" u32 engine_func_002f7f18() {
+    using namespace func_2f7f18;
+
+    const u32 scale_a = engine_func_00296f60(0);
+    const u32 scale_b = engine_func_00296f60(1);
+    const s32 limit_selector =
+        static_cast<s32>(engine_func_00296f60(2));
+    const s32 limit =
+        limit_selector > 0 ? kLimitEnabled : kLimitDisabled;
+
+    // The context slot is read once, before any per-actor work.
+    void* const context =
+        *reinterpret_cast<void* const*>(kScriptVmContextSlot);
+    void* const handle = script_vm_func_0027eb98(context);
+
+    s32 emitted = 0;
+    for (u32 index = 0; index < kActorCount; ++index) {
+        const u32 ui_state = ui_func_00293c98();
+        const u8* const ui_base = reinterpret_cast<const u8*>(ui_state);
+        const u8* const actors =
+            reinterpret_cast<const u8*>(load_u32(ui_base, kActorArrayOffset));
+        const u8* const actor = actors + index * kActorStride;
+
+        const u32 flags = load_u32(actor, kActorFlagsOffset);
+        if ((flags & kActorEnabledBit) == 0) {
+            continue;
+        }
+        if ((flags & kActorHiddenBit) != 0) {
+            continue;
+        }
+        const s32 id = load_s16(actor, kActorIdOffset);
+        if (id < 0) {
+            continue;
+        }
+
+        const s32 raw_a = load_s16(actor, kActorValueAOffset);
+        const u16 clamp = load_u16(actor, kActorClampOffset);
+
+        s32 value_a = hundredths(raw_a, scale_a);
+        if ((clamp & kClampBit) != 0 && value_a > kScaledMaximum) {
+            value_a = kScaledMaximum;
+        }
+        if (value_a == 0) {
+            value_a = kUnsetValue;
+        }
+
+        const s32 raw_b = load_s16(actor, kActorValueBOffset);
+        s32 value_b = hundredths(raw_b, scale_b);
+        if ((clamp & kClampBit) != 0 && value_b > kScaledMaximum) {
+            value_b = kScaledMaximum;
+        }
+        if (value_b == 0) {
+            value_b = kUnsetValue;
+        }
+
+        // The record table base and the index are re-read through a fresh
+        // ui_state: the original reloads `ldrsh` at [actor+0x08] at 0x2F8028
+        // after the second ui_func_00293c98() call.
+        const u32 ui_state_2 = ui_func_00293c98();
+        const u8* const ui_base_2 = reinterpret_cast<const u8*>(ui_state_2);
+        u8* const records =
+            reinterpret_cast<u8*>(load_u32(ui_base_2, kRecordArrayOffset));
+        const s32 record_id = load_s16(actor, kActorIdOffset);
+        u8* const record = records + record_id * kRecordStride;
+
+        const s32 slot = emitted * kSlotStride;
+        battle_func_0027e1a0(0, handle, record, 0,
+                             value_a, value_b, kUnusedArgument, limit,
+                             slot, slot, kRowStart, kZeroFloatBits, 0, 0);
+        battle_func_00250800(slot, handle, kSubCallFlags, 0, 0,
+                             kZeroFloatBits, 0);
+        ++emitted;
+    }
+    return 1;
+}
+
+// Direct callees of func_0036ff14 (addresses from config/functions.csv).
+// 0x003E2594 resolves a name against a table selected by an index and writes
+// a {s32 value, u8 kind} pair through its first argument; 0x003E2EEC computes
+// the byte size of the table record; 0x003E2E40 serializes that record into a
+// caller-provided buffer and returns the number of bytes used.
+extern "C" void engine_func_003e2594(void* out, void* table, u32 index,
+                                     const void* name);
+extern "C" u32 func_003e2eec(void* table, u32 index_a, u32 index_b);
+extern "C" u32 func_003e2e40(void* table, u32 index_a, u32 index_b,
+                             void* destination, u32 size);
+
+namespace func_36ff14 {
+
+// The pc-relative literal at 0x003700C0: address of the fallback allocator
+// interface used when the caller passes a null allocator.
+constexpr u32 kDefaultAllocatorGlobal = 0x00471C40;
+
+// Fields of the entry container (the object behind *self_slot).
+constexpr u32 kEntryCountOffset = 0x14;       // signed loop bound
+constexpr u32 kEntryArrayOffset = 0x18;       // relative pointer to the slots
+constexpr u32 kPrimaryIndexOffset = 0x0C;     // first lookup index
+constexpr u32 kSecondaryIndexOffset = 0x10;   // retry lookup index
+constexpr u32 kTableArrayOffset = 0x84;       // relative pointer to the table
+constexpr u32 kTablePointerOffset = 0x40;     // table pointer inside that block
+constexpr u32 kBlobPointerOffset = 0x7C;      // cached serialized blob
+constexpr u32 kBlobLengthOffset = 0x80;       // cached blob length
+
+// Fields of every entry reached through the relative slot array.
+constexpr u32 kEntryNameOffset = 0x00;        // relative name pointer
+constexpr u32 kEntryKindOffset = 0x05;        // u8: 0 = primary, 1 = retry
+constexpr u32 kEntryValueOffset = 0x08;       // resolved id or -1 sentinel
+
+constexpr u32 kUnresolvedValue = 0xFFFFFFFF;  // cmn r0,#1
+constexpr u32 kLookupFailedFlag = 0x10;       // orrlt sb,sb,#0x10
+constexpr u32 kAllocatorSlot = 2;             // ldr r3,[vtable,#8]
+constexpr u32 kAllocatorAlignment = 4;        // r2 of the indirect call
+
+using AllocateFunction = void* (*)(void* allocator, u32 size, u32 alignment);
+
+// The original resolves every embedded pointer as 32-bit "field address +
+// value" and keeps a zero field as address zero; the later field reads then
+// use that zero base verbatim (`ldr r0,[r0,#8]`, `ldr r0,[r0,#0x40]`).  Doing
+// the arithmetic on 32-bit integers, rather than on pointers, keeps those
+// exact wrap and zero-base semantics visible to the compiler.
+inline u8* byte_offset(u8* address, u32 offset) {
+    return reinterpret_cast<u8*>(reinterpret_cast<u32>(address) + offset);
+}
+
+inline u8* relative_address(u8* field_address, u32 offset) {
+    return offset != 0 ? byte_offset(field_address, offset) : nullptr;
+}
+
+}  // namespace func_36ff14
 
 // DECOMP_FUNC(0x0036ff14, 432)
-// 107 ARM instructions through unconditional pop; 4 trailing data bytes.
-extern "C" __attribute__((naked)) void func_0036ff14() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4ff0, 0xe1a05000, 0xe1b08001, 0xe3a09000\n"
-        ".word 0xe24dd00c, 0x059f0190, 0xe1a0a009, 0xe1a04009\n"
-        ".word 0x05908000, 0xe5950000, 0xe5907014, 0xe3570000\n"
-        ".word 0xc3a0b001, 0xda000036, 0xe5951000, 0xe5b10018\n"
-        ".word 0xe3500000, 0x10800001, 0x01a0000a, 0xe7b01104\n"
-        ".word 0xe3510000, 0x10816000, 0x01a0600a, 0xe5960008\n"
-        ".word 0xe3700001, 0x1a000027, 0xe5961000, 0xe5950000\n"
-        ".word 0xe3510000, 0x10813006, 0xe5902084, 0x03a03000\n"
-        ".word 0xe2801084, 0xe3520000, 0x10811002, 0x01a0100a\n"
-        ".word 0xe590200c, 0xe5911040, 0xe1a0000d, 0xeb01c977\n"
-        ".word 0xe59d0000, 0xe3500000, 0xa5c6a005, 0xaa000014\n"
-        ".word 0xe5960000, 0xe3500000, 0x10803006, 0xe5950000\n"
-        ".word 0x03a03000, 0xe2801084, 0xe5902084, 0xe3520000\n"
-        ".word 0x10811002, 0x01a0100a, 0xe5902010, 0xe5911040\n"
-        ".word 0xe1a0000d, 0xeb01c965, 0xe59d1000, 0xe3510000\n"
-        ".word 0xa5c6b005, 0xb3e00000, 0xb3899010, 0xa5861008\n"
-        ".word 0xaa000000, 0xe5860008, 0xe2844001, 0xe1540007\n"
-        ".word 0xbaffffc8, 0xe5950000, 0xe590107c, 0xe3510000\n"
-        ".word 0x11a00009, 0x1a00001e, 0xe5b01084, 0xe3510000\n"
-        ".word 0x1081a000, 0xe5950000, 0xe59ab040, 0xe280000c\n"
-        ".word 0xe8900480, 0xe1a0000b, 0xe1a01007, 0xe1a0200a\n"
-        ".word 0xeb01cba0, 0xe1a06000, 0xe5980000, 0xe3a02004\n"
-        ".word 0xe1a01006, 0xe5903008, 0xe1a00008, 0xe12fff33\n"
-        ".word 0xe1a04000, 0xe1a03000, 0xe1a0200a, 0xe1a01007\n"
-        ".word 0xe1a0000b, 0xe58d6000, 0xeb01cb67, 0xe1a01000\n"
-        ".word 0xe5950000, 0xe580407c, 0xe5950000, 0xe5801080\n"
-        ".word 0xe1a00009, 0xe28dd00c, 0xe8bd8ff0, 0x00471c40\n"
-    );
+//
+// Lazy name resolver for one entry container.  Every slot whose +0x08 word is
+// still the -1 sentinel is resolved against the table at *(*self_slot+0x84)
+// plus 0x40, first with the index at container+0x0C and then, on failure, with
+// container+0x10.  A primary hit stores value + kind 0; a retry hit stores
+// value + kind 1; a double failure stores -1 and sets bit 4 of the result.
+// Once the loop finishes and container+0x7C is still null, the whole record is
+// sized by 0x003E2EEC, allocated through the allocator's vtable slot 2 with
+// alignment 4, serialized by 0x003E2E40 and cached at +0x7C/+0x80.
+extern "C" s32 func_0036ff14(u8** const self_slot, void* allocator) {
+    using namespace func_36ff14;
+
+    if (allocator == nullptr) {
+        allocator = *reinterpret_cast<void**>(kDefaultAllocatorGlobal);
+    }
+
+    s32 result = 0;
+    const s32 count =
+        *reinterpret_cast<const s32*>(*self_slot + kEntryCountOffset);
+    if (count > 0) {
+        for (s32 index = 0; index < count; ++index) {
+            // 0x0036FF4C..0x0036FF6C: slot array and entry.  Both relative
+            // bases are the addresses of the fields that store the offsets.
+            u8* const container = *self_slot;
+            const u32 array_offset =
+                *reinterpret_cast<const u32*>(container + kEntryArrayOffset);
+            u8* const slot = byte_offset(
+                relative_address(container + kEntryArrayOffset, array_offset),
+                static_cast<u32>(index) * 4);
+            const u32 entry_offset =
+                *reinterpret_cast<const u32*>(slot);
+            u8* const entry = relative_address(slot, entry_offset);
+
+            // 0x0036FF70..0x0036FF78: already-resolved entries are skipped.
+            if (*reinterpret_cast<const u32*>(
+                    byte_offset(entry, kEntryValueOffset)) !=
+                kUnresolvedValue) {
+                continue;
+            }
+
+            // 0x0036FF7C..0x0036FFB0: primary lookup.
+            const u32 name_offset = *reinterpret_cast<const u32*>(
+                byte_offset(entry, kEntryNameOffset));
+            const void* const name =
+                relative_address(byte_offset(entry, kEntryNameOffset),
+                                 name_offset);
+            u8* const primary_container = *self_slot;
+            const u32 primary_table_offset = *reinterpret_cast<const u32*>(
+                primary_container + kTableArrayOffset);
+            u8* const primary_table_base = relative_address(
+                primary_container + kTableArrayOffset, primary_table_offset);
+            const u32 primary_index = *reinterpret_cast<const u32*>(
+                primary_container + kPrimaryIndexOffset);
+            void* const primary_table = *reinterpret_cast<void* const*>(
+                byte_offset(primary_table_base, kTablePointerOffset));
+
+            // The callee always writes the value word and the kind byte.
+            struct LookupOut {
+                s32 value;
+                u8 kind;
+                u8 reserved[7];
+            };
+            LookupOut lookup;
+            engine_func_003e2594(&lookup, primary_table, primary_index, name);
+            if (lookup.value >= 0) {
+                *byte_offset(entry, kEntryKindOffset) = 0;
+                *reinterpret_cast<u32*>(
+                    byte_offset(entry, kEntryValueOffset)) =
+                    static_cast<u32>(lookup.value);
+                continue;
+            }
+
+            // 0x0036FFC4..0x0036FFF8: retry with the container's second index.
+            u8* const retry_container = *self_slot;
+            const u32 retry_name_offset = *reinterpret_cast<const u32*>(
+                byte_offset(entry, kEntryNameOffset));
+            const void* const retry_name =
+                relative_address(byte_offset(entry, kEntryNameOffset),
+                                 retry_name_offset);
+            const u32 retry_table_offset = *reinterpret_cast<const u32*>(
+                retry_container + kTableArrayOffset);
+            u8* const retry_table_base = relative_address(
+                retry_container + kTableArrayOffset, retry_table_offset);
+            const u32 retry_index = *reinterpret_cast<const u32*>(
+                retry_container + kSecondaryIndexOffset);
+            void* const retry_table = *reinterpret_cast<void* const*>(
+                byte_offset(retry_table_base, kTablePointerOffset));
+
+            engine_func_003e2594(&lookup, retry_table, retry_index, retry_name);
+            if (lookup.value >= 0) {
+                *byte_offset(entry, kEntryKindOffset) = 1;
+                *reinterpret_cast<u32*>(
+                    byte_offset(entry, kEntryValueOffset)) =
+                    static_cast<u32>(lookup.value);
+            } else {
+                *reinterpret_cast<u32*>(
+                    byte_offset(entry, kEntryValueOffset)) =
+                    kUnresolvedValue;
+                result |= kLookupFailedFlag;
+            }
+        }
+    }
+
+    // 0x00370028..0x00370038: the cached blob suppresses serialization.
+    u8* container = *self_slot;
+    if (*reinterpret_cast<const u32*>(container + kBlobPointerOffset) != 0) {
+        return result;
+    }
+
+    // 0x0037003C..0x00370054: table plus both indices.  Note that the table
+    // offset is read from the container loaded above, while the indices come
+    // from a fresh load of *self_slot at 0x00370048.
+    const u32 table_offset =
+        *reinterpret_cast<const u32*>(container + kTableArrayOffset);
+    u8* const table_base =
+        relative_address(container + kTableArrayOffset, table_offset);
+    container = *self_slot;
+    void* const table = *reinterpret_cast<void* const*>(
+        byte_offset(table_base, kTablePointerOffset));
+    const u32 index_a =
+        *reinterpret_cast<const u32*>(container + kPrimaryIndexOffset);
+    const u32 index_b =
+        *reinterpret_cast<const u32*>(container + kSecondaryIndexOffset);
+
+    // 0x00370058..0x00370080: size lookup and the vtable allocation.  The
+    // callee is an opaque interface method at vtable slot 2, called with
+    // (allocator, size, alignment 4).
+    const u32 size = func_003e2eec(table, index_a, index_b);
+    void** const vtable = *reinterpret_cast<void***>(allocator);
+    const AllocateFunction allocate =
+        reinterpret_cast<AllocateFunction>(vtable[kAllocatorSlot]);
+    void* const buffer = allocate(allocator, size, kAllocatorAlignment);
+
+    // 0x00370084..0x003700B4: serialize, cache pointer and used length.  The
+    // size is the fifth (architected stack) argument.
+    const u32 used =
+        func_003e2e40(table, index_a, index_b, buffer, size);
+    container = *self_slot;
+    *reinterpret_cast<void**>(container + kBlobPointerOffset) = buffer;
+    container = *self_slot;
+    *reinterpret_cast<u32*>(container + kBlobLengthOffset) = used;
+    return result;
 }
 
+// ---------------------------------------------------------------------------
+// 0x002421B0: UI context poll / create step.
+//
+// The routine drives the global UI context block at 0x0044EA80.  Two modes:
+//
+// * Owning context word +0x3C non-null: the active object at +0x40 is polled
+//   (0x002F8270), its state word at +8 is latched, a text payload is rendered
+//   into a 0xC8-byte stack buffer (0x00323660, whose return is a kind code) and
+//   a secondary value is fetched (0x00318DF8).  When the latched state is 1 the
+//   object and then the owner are destroyed (0x002473AC / 0x0024736C) and both
+//   global words are cleared; the latched state is still used by the dispatch.
+// * Owning context word +0x3C null: it is re-cleared, then - only when the
+//   caller passes bit 3 of `flags` - 22 generic entries are registered.  Each
+//   entry name is formatted as "GENERAL %d" for indices 0..21 (0x002BE7FC) and
+//   registered with kind 8 and a zero float payload (0x002DE2A4).  Finally a
+//   fresh object is created (0x0030ED58), published at +0x40 and stamped
+//   {0xBA, 0x1C}.
+//
+// Dispatch on the latched state word:
+//   * 2 -> return 0x00400000,
+//   * 1 -> commit / select the payload and return 0x00400002,
+//   * anything else (including a freshly created object, whose state is 0)
+//     -> return 0x00600001.
+//
+// State 1 with kind 8 commits the fetched 4-byte value through 0x0025CC14
+// (size 4, kind 4).  Any other kind resolves the node at index -value of the
+// container at +0x14 (0x00246A4C; the index is negated with 32-bit unsigned
+// arithmetic) and, when that differs from the node latched at +0x24, releases
+// the latched node (0x00242964) and publishes the new one (0x0025C888); both
+// later calls re-read the global words after the release.
+//
+// ABI: r0 = flags (only bit 3 is tested), status returned in r0.  The second
+// core register of 0x0030ED58 is dead at entry (the callee reads only r0 and
+// the original leaves a path-dependent leftover there), so it is not part of
+// the recovered contract.  The fifth argument of 0x002DE2A4 is a single stack
+// word: the callee loads it with `vldr s16, [sp, #0x28]` after a 0x28-byte
+// frame, so the caller passes the raw f32 bit pattern (always 0 here) instead
+// of a VFP register argument.
+// ---------------------------------------------------------------------------
+extern "C" void func_002f8270(void* context);
+extern "C" u32 func_00323660(void* context, void* out_text);
+extern "C" s32 func_00318df8(void* context);
+extern "C" void* func_0030ed58(void* parent);
+extern "C" void ui_func_002be7fc(char* dst, const char* format, ...);
+extern "C" void func_002de2a4(void* owner, const char* name, u32 kind, u32 index,
+                              u32 value_bits);
+extern "C" void func_002473ac(void* context);
+extern "C" void func_0024736c(void* owner);
+extern "C" void* func_00246a4c(void* container, u32 index);
+extern "C" void func_00242964(void* container, void* node);
+extern "C" void func_0025c888(void* container, void* previous, void* selected);
+extern "C" void func_0025cc14(void* blob, const void* data, u32 size, u32 kind);
+
+// Global UI context block.  Only the words observed by this routine are named;
+// every other offset is left as padding.
+struct UiContextBlock {
+    u8 pad_00[0x14];
+    void* ptr_14;    // +0x14 container walked by 0x00246A4C / 0x00242964
+    u8 pad_18[0x04];
+    void* ptr_1c;    // +0x1C blob owner committed through 0x0025CC14
+    u8 pad_20[0x04];
+    void* ptr_24;    // +0x24 currently selected node
+    u8 pad_28[0x14];
+    void* owner_3c;  // +0x3C owning context; null means "not created yet"
+    void* object_40; // +0x40 active context object
+};
+
+static_assert(offsetof(UiContextBlock, ptr_14) == 0x14);
+static_assert(offsetof(UiContextBlock, ptr_1c) == 0x1C);
+static_assert(offsetof(UiContextBlock, ptr_24) == 0x24);
+static_assert(offsetof(UiContextBlock, owner_3c) == 0x3C);
+static_assert(offsetof(UiContextBlock, object_40) == 0x40);
+
+namespace {
+
+constexpr u32 kUiContextBlock = 0x0044EA80;
+
+// Status words returned through r0.
+constexpr u32 kStatusIdle = 0x00600001;
+constexpr u32 kStatusBusy = 0x00400000;
+constexpr u32 kStatusSelected = 0x00400002;
+
+// Stack buffers: the text payload filled by 0x00323660 is 0xC8 bytes and is
+// immediately followed by the latched locals in the original frame; the name
+// buffer is 0x68 bytes (longest name is "GENERAL 21").
+constexpr u32 kTextBufferSize = 0xC8;
+constexpr u32 kNameBufferSize = 0x68;
+
+constexpr u32 kGenericEntryCount = 0x16; // indices 0..21
+constexpr u32 kGenericEntryKind = 8;
+constexpr u32 kTextCommitKind = 4;
+constexpr u32 kTextCommitSize = 4;
+
+// Fields of the active context object.
+constexpr u32 kObjectStateOffset = 8;
+constexpr u32 kObjectStamp0 = 0xBA;
+constexpr u32 kObjectStamp4 = 0x1C;
+
+} // namespace
+
 // DECOMP_FUNC(0x002421b0, 436)
-// 103 ARM instructions through unconditional pop; 24 trailing data bytes.
-extern "C" __attribute__((naked)) void ui_func_002421b0() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d41f0, 0xe59f7194, 0xe24ddd05, 0xe3a08000\n"
-        ".word 0xe1a04000, 0xe58d80d0, 0xe597003c, 0xe59f6178\n"
-        ".word 0xe28d5004, 0xe3500000, 0x0a00000f, 0xe5970040\n"
-        ".word 0xeb02d822, 0xe5970040, 0xe5900008, 0xe58d00d0\n"
-        ".word 0xe5970040, 0xe1a01005, 0xeb038518, 0xe58d00cc\n"
-        ".word 0xe5970040, 0xeb035afb, 0xe58d00d4, 0xe59d00d0\n"
-        ".word 0xe3500001, 0x0a000020, 0xea000025, 0xe1a01004\n"
-        ".word 0xe3a00000, 0xe3a00000, 0xe3140008, 0xe587003c\n"
-        ".word 0x0a000010, 0xe3a00016, 0xe2505000, 0xe3a04000\n"
-        ".word 0x9a00000c, 0xe1a02004, 0xe28f1f41, 0xe28d00d8\n"
-        ".word 0xfa01f169, 0xe58d8000, 0xe597003c, 0xe1a03004\n"
-        ".word 0xe3a02008, 0xe28d10d8, 0xeb02700d, 0xe2844001\n"
-        ".word 0xe1550004, 0x8afffff2, 0xe597003c, 0xeb0332b5\n"
-        ".word 0xe3a0201c, 0xe3a010ba, 0xe5870040, 0xe8800006\n"
-        ".word 0xe320f000, 0xe320f000, 0xea000005, 0xe5970040\n"
-        ".word 0xeb001441, 0xe5878040, 0xe597003c, 0xeb00142e\n"
-        ".word 0xe587803c, 0xe59d00d0, 0xe3500002, 0x03a06501\n"
-        ".word 0x0a00001e, 0xe3500001, 0x1a00001c, 0xe59d00cc\n"
-        ".word 0xe3500008, 0x0a000010, 0xe59d00d4, 0xe2601000\n"
-        ".word 0xe5970014, 0xeb0011d8, 0xe5971024, 0xe1a04000\n"
-        ".word 0xe1510004, 0x0a000010, 0xe5970014, 0xeb000198\n"
-        ".word 0xe5b70014, 0xe1a02004, 0xe5971010, 0xeb00695d\n"
-        ".word 0xe320f000, 0xe320f000, 0xea000007, 0xe5970014\n"
-        ".word 0xe5971024, 0xeb00018e, 0xe3a03004, 0xe597001c\n"
-        ".word 0xe1a02003, 0xe28d10d4, 0xeb006a35, 0xe59f601c\n"
-        ".word 0xe28ddd05, 0xe1a00006, 0xe8bd81f0, 0x00600001\n"
-        ".word 0x0044ea80, 0x454e4547, 0x204c4152, 0x00006425\n"
-        ".word 0x00400002\n"
-    );
+extern "C" u32 ui_func_002421b0(u32 flags) {
+    UiContextBlock* const glob =
+        reinterpret_cast<UiContextBlock*>(kUiContextBlock);
+
+    u32 state = 0;
+    u32 kind = 0;
+    s32 value = 0;
+    u8 text[kTextBufferSize];
+
+    u32 status = kStatusIdle;
+
+    if (glob->owner_3c != nullptr) {
+        func_002f8270(glob->object_40);
+        state = *reinterpret_cast<u32*>(
+            static_cast<u8*>(glob->object_40) + kObjectStateOffset);
+        kind = func_00323660(glob->object_40, text);
+        value = func_00318df8(glob->object_40);
+
+        if (state == 1) {
+            func_002473ac(glob->object_40);
+            glob->object_40 = nullptr;
+            func_0024736c(glob->owner_3c);
+            glob->owner_3c = nullptr;
+        }
+    } else {
+        glob->owner_3c = nullptr;
+
+        if ((flags & 8u) != 0) {
+            for (u32 index = 0; index < kGenericEntryCount; ++index) {
+                char name[kNameBufferSize];
+                ui_func_002be7fc(name, "GENERAL %d", index);
+                func_002de2a4(glob->owner_3c, name, kGenericEntryKind, index,
+                              0);
+            }
+        }
+
+        void* const created = func_0030ed58(glob->owner_3c);
+        glob->object_40 = created;
+        *reinterpret_cast<u32*>(created) = kObjectStamp0;
+        *reinterpret_cast<u32*>(static_cast<u8*>(created) + 4) = kObjectStamp4;
+    }
+
+    if (state == 2) {
+        status = kStatusBusy;
+    } else if (state == 1) {
+        if (kind == 8) {
+            func_00242964(glob->ptr_14, glob->ptr_24);
+            func_0025cc14(glob->ptr_1c, &value, kTextCommitSize,
+                          kTextCommitKind);
+        } else {
+            void* const container = glob->ptr_14;
+            void* const selected =
+                func_00246a4c(container, 0u - static_cast<u32>(value));
+            void* const previous = glob->ptr_24;
+            if (previous != selected) {
+                func_00242964(glob->ptr_14, previous);
+                func_0025c888(glob->ptr_14, glob->ptr_24, selected);
+            }
+        }
+        status = kStatusSelected;
+    }
+
+    return status;
 }
 
 // DECOMP_FUNC(0x0025f538, 436)
-// 107 ARM instructions through unconditional pop; 8 trailing data bytes.
-extern "C" __attribute__((naked)) void ui_func_0025f538() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d43f0, 0xe2805a03, 0xe1a04000, 0xe24dd00c\n"
-        ".word 0xe5d50084, 0xe3500000, 0x1a000061, 0xe595005c\n"
-        ".word 0xe3500003, 0xca00005e, 0xe2840a01, 0xe2800fae\n"
-        ".word 0xe1a07000, 0xeb017e82, 0xe1a06000, 0xe1a00007\n"
-        ".word 0xeb017e7c, 0xe1a07000, 0xe28400ac, 0xed900a08\n"
-        ".word 0xeb018060, 0xe595005c, 0xe2801052, 0xe3a00015\n"
-        ".word 0xeb01804c, 0xe59f9140, 0xe1a04000, 0xe3a02000\n"
-        ".word 0xe3a01001, 0xe5995000, 0xe3a00006, 0xeb019a7a\n"
-        ".word 0xe2855a01, 0xe2855fab, 0xe3a08000, 0xe5951000\n"
-        ".word 0xe0852101, 0xe5921008, 0xe5820008, 0xe5d52018\n"
-        ".word 0xe3520000, 0x01510000, 0x0a000002, 0xe595101c\n"
-        ".word 0xe12fff31, 0xe5c58018, 0xe1d400fa, 0xe3a05029\n"
-        ".word 0xe3a0204b, 0xe0800007, 0xe88d0021, 0xe1d400f8\n"
-        ".word 0xe3a01015, 0xe0803006, 0xe3a00002, 0xeb017f91\n"
-        ".word 0xe1d400fa, 0xe3a0204a, 0xe3a01015, 0xe0800007\n"
-        ".word 0xe88d0021, 0xe1d400f8, 0xe0803006, 0xe3a00002\n"
-        ".word 0xeb017f88, 0xe1d400fa, 0xe3a0204c, 0xe3a01015\n"
-        ".word 0xe0800007, 0xe88d0021, 0xe1d400f8, 0xe0803006\n"
-        ".word 0xe3a00002, 0xeb017f7f, 0xe1d400fa, 0xe3a0204d\n"
-        ".word 0xe3a01015, 0xe0800007, 0xe88d0021, 0xe1d400f8\n"
-        ".word 0xe0803006, 0xe3a00002, 0xeb017f76, 0xe5994000\n"
-        ".word 0xe3a02000, 0xe3a01007, 0xe3a00006, 0xeb019a42\n"
-        ".word 0xe2844a01, 0xe2844fab, 0xe5941000, 0xe0842101\n"
-        ".word 0xe5921008, 0xe5820008, 0xe5d42018, 0xe3520000\n"
-        ".word 0x01510000, 0x0a000002, 0xe594101c, 0xe12fff31\n"
-        ".word 0xe5c48018, 0xe28dd00c, 0xed9f0a04, 0xe8bd43f0\n"
-        ".word 0xea01800c, 0xe28dd00c, 0xe8bd83f0, 0x0044ea00\n"
-        ".word 0x3f800000\n"
-    );
+//
+// Minimap HUD overlay updater.  Recovered contract from ARM
+// 0x0025F538..0x0025F6E3 plus the two literal words at 0x0025F6E4 (the
+// 0x0044EA00 render-register global) and 0x0025F6E8 (1.0f):
+//
+//   * r0 is the same context object that the three callers at 0x001E07B4 /
+//     0x001E08A4 / 0x001E0BE0 hand to Ui_MiniMapRender (0x0025F8F0) and
+//     0x0025F6EC.  Only the offsets below are observed.
+//   * `ldrb r0,[ctx+0x3084]` is a visibility gate: a non-zero byte returns at
+//     once with that byte still in r0.
+//   * `ldr r0,[ctx+0x305C]; cmp r0,#3; bgt` is a signed state gate: values
+//     4..0x7FFFFFFF return with the raw word in r0, while 0..3 and every
+//     negative word continue.
+//   * 0x002BEF7C / 0x002BEF70 read the signed 20.12 fixed-point words at
+//     ctx+0x12B8 +0x0C / +0x10 and shift them arithmetically right by 12.
+//   * 0x002BF710 receives the f32 at ctx+0xCC in s0 and installs the overlay
+//     scale.  The original also leaves ctx+0xAC in r0, but that helper
+//     overwrites r0 from s0 before reading it, so the value is not part of the
+//     contract.
+//   * `camp_func_002BF6D0(0x15, state + 0x52)` resolves the draw node.  The
+//     state word is reloaded after 0x002BF710 and the index addition is a raw
+//     32-bit add.  The node's signed 16-bit fields +8 / +0x0A are the sprite
+//     offsets and are re-read before every draw (the original is unrolled).
+//   * The overlay render-stack node at `*0x0044EA00 + 0x12AC` receives
+//     `battle_func_002C5FA4(6, 1, 0)` (0x16160000) before the four
+//     `ui_func_002BF460(2, 0x15, 0x4B/0x4A/0x4C/0x4D, x, y, 0x29)` draws and
+//     `battle_func_002C5FA4(6, 7, 0)` (0x76760000) afterwards.  Each store
+//     keeps the slot at `node + 8 + depth*4` (no bounds check), replaces it,
+//     and invokes the node flush callback with the new descriptor in r0 when
+//     the node's dirty byte is non-zero or the value changed.  `blx r1` has no
+//     null check; the dirty byte is cleared after the callback.
+//   * Both render-base reads happen before their corresponding 0x002C5FA4
+//     call, so a helper that rewrites 0x0044EA00 is observed by the next read
+//     rather than by the current store.
+//   * The epilogue is `pop {r4, r5, r6, r7, r8, sb, lr}; b 0x002BF710` with
+//     s0 = 1.0f, i.e. a tail call that restores 1.0 as the overlay scale.
+//
+// Callers discard r0, but the original leaves defined values there: the gate
+// byte / gate word on the two early exits and whatever 0x002BF710 leaves
+// (its 0x004D4680 float-block base) on the main path.  The reconstruction
+// returns them so register-level differential tests are exact.  A null
+// 0x002BF6D0 result is not a domain input: both implementations fault on the
+// first `ldrsh [node,#8]`.
+namespace func_25f538 {
+
+// Context fields observed by this routine.
+constexpr u32 kContextFlagOffset = 0x3084;    // u8 gate: non-zero returns
+constexpr u32 kContextStateOffset = 0x305C;   // s32 gate: > 3 returns
+constexpr u32 kContextScaleOffset = 0xCC;     // f32 forwarded to 0x002BF710
+constexpr u32 kContextAnchorOffset = 0x12B8;  // signed 20.12 source record
+constexpr s32 kStateLimit = 3;                // `cmp r0,#3; bgt`
+
+// Overlay render-stack node at *0x0044EA00 + 0x12AC.  The original addresses
+// its slots as `node + 8 + depth*4` with no bounds check.
+constexpr u32 kOverlayStackOffset = 0x12AC;
+constexpr u32 kSlotBaseOffset = 8;
+constexpr u32 kDirtyOffset = 0x18;
+constexpr u32 kFlushCallbackOffset = 0x1C;
+
+// Node resolver arguments (`mov r0,#0x15`; `add r1,r0,#0x52`).
+constexpr u32 kNodeGroup = 0x15;
+constexpr u32 kNodeIndexBias = 0x52;
+constexpr u32 kNodeXOffset = 8;
+constexpr u32 kNodeYOffset = 0x0A;
+
+// Draw-call arguments: (kind, group, sprite id, x, y, attribute).
+constexpr u32 kDrawKind = 2;
+constexpr u32 kDrawGroup = 0x15;
+constexpr u32 kSpriteIds[4] = {0x4B, 0x4A, 0x4C, 0x4D};
+constexpr u32 kSpriteAttribute = 0x29;
+
+// Constant-layer commands: battle_func_002c5fa4(6, selector, 0).
+constexpr u32 kCommandKind = 6;
+constexpr u32 kCommandFirstSelector = 1;
+constexpr u32 kCommandSecondSelector = 7;
+
+// `vldr s0, [pc,#0x10]` at 0x0025F6D0: literal 0x3F800000.
+constexpr f32 kFinalScale = 1.0f;
+
+struct UiOverlayStackNode {
+    u32 depth;              // +0x00
+    u32 pad_04;             // +0x04
+    u32 slots[4];           // +0x08..+0x14 (flat-indexed by the original)
+    u8 dirty;               // +0x18
+    u8 pad_19[3];
+    u32 flush;              // +0x1C, `blx r1` with the new value in r0
+};
+
+static_assert(offsetof(UiOverlayStackNode, slots) == kSlotBaseOffset);
+static_assert(offsetof(UiOverlayStackNode, dirty) == kDirtyOffset);
+static_assert(offsetof(UiOverlayStackNode, flush) == kFlushCallbackOffset);
+
+// The original computes `node + 8 + depth*4` without validating `depth`.
+inline u32* slot_at(UiOverlayStackNode* node, u32 depth) {
+    return reinterpret_cast<u32*>(
+        reinterpret_cast<u8*>(node) + kSlotBaseOffset + depth * 4);
+}
+
+// Replaces one slot and runs the node callback under the original rule:
+// `dirty != 0 || previous != value`.  The callback sees the new descriptor in
+// r0 and is never null-checked; the dirty byte is cleared afterwards.  The
+// value left in r0 is returned (callback result, or the stored descriptor).
+inline u32 store_slot(UiOverlayStackNode* node, u32 value) {
+    u32* const slot = slot_at(node, node->depth);
+    const u32 previous = *slot;
+    *slot = value;
+    if (node->dirty != 0 || previous != value) {
+        const u32 result =
+            reinterpret_cast<u32 (*)(u32)>(node->flush)(value);
+        node->dirty = 0;
+        return result;
+    }
+    return value;
+}
+
+inline UiOverlayStackNode* overlay_node(u8* render_base) {
+    return reinterpret_cast<UiOverlayStackNode*>(
+        render_base + kOverlayStackOffset);
+}
+
+}  // namespace func_25f538
+
+// Direct call declarations.  Addresses and names follow config/functions.csv.
+extern "C" s32 ui_func_002bef7c(const void* record);    // +0x0C as s32 >> 12
+extern "C" s32 shop_func_002bef70(const void* record);  // +0x10 as s32 >> 12
+extern "C" void ui_func_002bf460(u32 kind, u32 group, u32 sprite, u32 x,
+                                 u32 y, u32 attribute);
+extern "C" u8* camp_func_002bf6d0(u32 group, u32 node_index);
+extern "C" u32 battle_func_002c5fa4(u32 kind, u32 selector, u32 flags);
+extern "C" u32 ui_func_002bf710(f32 value);
+
+extern "C" u32 ui_func_0025f538(void* context_pointer) {
+    using namespace func_25f538;
+
+    u8* const context = static_cast<u8*>(context_pointer);
+
+    const u8 flag = *reinterpret_cast<const u8*>(context + kContextFlagOffset);
+    if (flag != 0) {
+        return flag;
+    }
+
+    const s32 state =
+        *reinterpret_cast<const s32*>(context + kContextStateOffset);
+    if (state > kStateLimit) {
+        return static_cast<u32>(state);
+    }
+
+    // 0x0025F560..0x0025F57C: screen-space origin from the +0x12B8 record.
+    const u8* const record = context + kContextAnchorOffset;
+    const s32 origin_x = ui_func_002bef7c(record);
+    const s32 origin_y = shop_func_002bef70(record);
+
+    ui_func_002bf710(
+        *reinterpret_cast<const f32*>(context + kContextScaleOffset));
+
+    // 0x0025F58C..0x0025F598: the state word is re-read after the scale call
+    // and biased by 0x52 before the resolver lookup.
+    const u32 resolved_index =
+        *reinterpret_cast<const u32*>(context + kContextStateOffset) +
+        kNodeIndexBias;
+    const u8* const node = camp_func_002bf6d0(kNodeGroup, resolved_index);
+
+    // 0x0025F59C..0x0025F5EC: first overlay descriptor.  The render base is
+    // read before the command helper runs.
+    u8* const first_base =
+        static_cast<u8*>(smt4::engine::g_RenderRegisterBase);
+    const u32 first_value =
+        battle_func_002c5fa4(kCommandKind, kCommandFirstSelector, 0);
+    (void)store_slot(overlay_node(first_base), first_value);
+
+    // 0x0025F5F0..0x0025F680: four sprite draws.  The node offsets are
+    // reloaded for every draw because a helper may rewrite the node record.
+    for (u32 sprite : kSpriteIds) {
+        const s16 offset_x =
+            *reinterpret_cast<const s16*>(node + kNodeXOffset);
+        const s16 offset_y =
+            *reinterpret_cast<const s16*>(node + kNodeYOffset);
+        ui_func_002bf460(
+            kDrawKind, kDrawGroup, sprite,
+            static_cast<u32>(origin_x) + static_cast<u32>(offset_x),
+            static_cast<u32>(origin_y) + static_cast<u32>(offset_y),
+            kSpriteAttribute);
+    }
+
+    // 0x0025F684..0x0025F6C8: second overlay descriptor; the render-base
+    // global is re-read after the draws.
+    u8* const second_base =
+        static_cast<u8*>(smt4::engine::g_RenderRegisterBase);
+    const u32 second_value =
+        battle_func_002c5fa4(kCommandKind, kCommandSecondSelector, 0);
+    (void)store_slot(overlay_node(second_base), second_value);
+
+    // 0x0025F6CC..0x0025F6D8: tail call with s0 = 1.0f.
+    return ui_func_002bf710(kFinalScale);
 }
 
 // DECOMP_FUNC(0x003a18b8, 436)
-// 102 ARM instructions through unconditional pop; 28 trailing data bytes.
-extern "C" __attribute__((naked)) void shop_func_003a18b8() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4070, 0xe1a04000, 0xebfba0a1, 0xebfba087\n"
-        ".word 0xebfbb0e1, 0xebfbb028, 0xe59f0178, 0xe3a02000\n"
-        ".word 0xe2841e16, 0xebfbd788, 0xe3a0002b, 0xebfc8d4f\n"
-        ".word 0xe3a01000, 0xe3a0002b, 0xebfc9070, 0xe5d40014\n"
-        ".word 0xe3a05000, 0xe1a06005, 0xe3500000, 0x0a000002\n"
-        ".word 0xe3500001, 0x1a000019, 0xea00002f, 0xe5940018\n"
-        ".word 0xe3500008, 0x0a000009, 0xe3500006, 0x13500007\n"
-        ".word 0x0a00000c, 0xe3500009, 0x0a000021, 0xe59f0118\n"
-        ".word 0xe3a0505a, 0xe3a02000, 0xe2841f59, 0xea00000a\n"
-        ".word 0xe59f0108, 0xe3a05058, 0xe3a06019, 0xe3a02000\n"
-        ".word 0xe2841f59, 0xea000004, 0xe59f00f4, 0xe3a0508b\n"
-        ".word 0xe3a06050, 0xe3a02000, 0xe2841f59, 0xebfbd762\n"
-        ".word 0xe1a00005, 0xebfd718d, 0xe59f10d8, 0xe3560000\n"
-        ".word 0xe7810004, 0x0a00002e, 0xe3a02000, 0xe1a01002\n"
-        ".word 0xe1a00006, 0xebfb91c4, 0xe2844b57, 0xe2844f51\n"
-        ".word 0xe3a02000, 0xe5840000, 0xe8bd4070, 0xe1a01002\n"
-        ".word 0xeafa98e9, 0xe59f0090, 0xe3a05088, 0xe3a060a2\n"
-        ".word 0xe3a02000, 0xe2841f59, 0xeaffffe7, 0xe5940018\n"
-        ".word 0xe3500009, 0x0a000008, 0xe3500005, 0x0a00000c\n"
-        ".word 0xe350000a, 0x0a000010, 0xe59f006c, 0xe3a0505b\n"
-        ".word 0xe3a02000, 0xe2841f59, 0xeaffffdb, 0xe59f005c\n"
-        ".word 0xe3a05059, 0xe3a0601a, 0xe3a02000, 0xe2841f59\n"
-        ".word 0xeaffffd5, 0xe59f0040, 0xe3a0508b, 0xe3a06050\n"
-        ".word 0xe3a02000, 0xe2841f59, 0xeaffffcf, 0xe59f0028\n"
-        ".word 0xe3a05089, 0xe3a060a3, 0xe3a02000, 0xe2841f59\n"
-        ".word 0xeaffffc9, 0xe8bd8070, 0x004076b0, 0x004076f0\n"
-        ".word 0x004076c0, 0x004076d8, 0x00015d40, 0x00407720\n"
-        ".word 0x00407708\n"
-    );
+//
+// Shop-scene resource bootstrap.  It runs four shared reset/frame helpers,
+// loads one named resource into the +0x160 status word, brings up texture
+// group 0x2B, then selects a second resource plus one or two sprite ids from
+// the scene state byte and the item type.  The first sprite handle is stored
+// at +0x15D40; when the selection also carries a second id, a second sprite is
+// created, stored at +0x15D44 and handed to the shared continuation 0x00247D64.
+//
+// Recovered contract (ARM 0x003A18B8..0x003A1A50, literal pool 0x003A1A50):
+//   * ABI: r0 = shop object, r1-r3 are not read.  The prologue at 0x003A18B8
+//     saves {r4,r5,r6,lr}; both exits restore exactly those four registers
+//     (0x003A1A4C `pop {r4,r5,r6,pc}`, 0x003A19B0 `pop {r4,r5,r6,lr}`), so SP
+//     and r7-r11 are unchanged and there is no stack frame or stack argument.
+//   * 0x003A18C0..0x003A18D4: four argument-less helpers, in this order
+//     0x00289B4C, 0x00289AE8, 0x0028DC54, 0x0028D974.  Their prologues
+//     overwrite r0 before reading it, so the incoming r0-r3 values are dead.
+//   * 0x003A18D0..0x003A18DC: 0x00297704(name = 0x004076B0, out = object +
+//     0x160, flags = 0).  That helper rewrites r3 to 0 internally, so the
+//     caller's dead r3 is not part of the contract; its return value is
+//     discarded.
+//   * 0x003A18E0..0x003A18F0: 0x002C4E28(0x2B) then 0x002C5AB8(0x2B, 0),
+//     both results discarded.
+//   * 0x003A18F4..0x003A190C: `state = *(u8*)(object + 0x14)` is read once,
+//     after the calls above.  Only 0 and 1 take a selection branch; any other
+//     byte jumps straight to the sprite creation with both ids still 0, and in
+//     that case `*(u32*)(object + 0x18)` (the item type) is never read.
+//   * 0x003A1914..0x003A19D0 (state 0) reads the type word and selects:
+//       type 8      -> name 0x004076C0, first id 0x58, second id 0x19
+//       type 6 or 7 -> name 0x004076D8, first id 0x8B, second id 0x50
+//       type 9      -> name 0x004076F0, first id 0x88, second id 0xA2
+//       otherwise   -> name 0x004076F0, first id 0x5A, no second id
+//   * 0x003A19D4..0x003A1A48 (state 1) reads the type word and selects:
+//       type 9      -> name 0x00407708, first id 0x59, second id 0x1A
+//       type 5      -> name 0x00407720, first id 0x8B, second id 0x50
+//       type 10     -> name 0x00407720, first id 0x89, second id 0xA3
+//       otherwise   -> name 0x00407720, first id 0x5B, no second id
+//     The type is compared with 32-bit equality only; 0x4076F0 and 0x407720
+//     are genuinely shared by more than one selector.  Every selection stores
+//     its name into `object + 0x164` through 0x00297704 and discards the
+//     result.
+//   * 0x003A1978..0x003A198C: 0x002FDFB8(first id) creates the first sprite
+//     (it is called even when the id is the 0 sentinel of an unmatched state)
+//     and its r0 is stored into the 32-bit slot at object + 0x15D40.
+//   * 0x003A1990..0x003A199C: only when the second id is non-zero,
+//     0x002860B4(second id, 0, 0) creates the second sprite, its r0 is stored
+//     into object + 0x15D44, and 0x003A19B8 tail-branches to 0x00247D64 with
+//     (handle, 0, 0), forwarding that helper's r0 to our caller.  Otherwise
+//     the first handle is returned.
+//   * No indirect calls occur in this span.
+namespace shop_3a18b8 {
+
+// Shop-object fields (offsets from the r0/`object` argument).
+constexpr u32 kStateOffset = 0x14;           // `ldrb r0,[r4,#0x14]` (0x003A18F4)
+constexpr u32 kTypeOffset = 0x18;            // `ldr r0,[r4,#0x18]` (0x003A1914/19D4)
+constexpr u32 kPrimaryStatusOffset = 0x160;  // `add r1,r4,#0x160` (0x003A18D8)
+constexpr u32 kSecondaryStatusOffset = 0x164; // `add r1,r4,#0x164` (0x003A1940..1A44)
+constexpr u32 kPrimarySpriteOffset = 0x15D40; // literal 0x00015D40 (0x003A1A60)
+constexpr u32 kSecondarySpriteOffset = 0x15D44; // `add r4,r4,#0x15c00`+0x144
+
+// Named-resource pointers (literal pool 0x003A1A50..0x003A1A68).
+constexpr u32 kPrimaryName = 0x004076B0u;    // 0x003A1A50
+constexpr u32 kState0Type8Name = 0x004076C0u;  // 0x003A1A58
+constexpr u32 kState0Type67Name = 0x004076D8u; // 0x003A1A5C
+constexpr u32 kState0DefaultName = 0x004076F0u; // 0x003A1A54 (type 9 and default)
+constexpr u32 kState1Type9Name = 0x00407708u;  // 0x003A1A68
+constexpr u32 kState1DefaultName = 0x00407720u; // 0x003A1A64 (type 5, 10, default)
+
+// Texture group passed to both texture helpers (`mov r0,#0x2b`).
+constexpr u32 kTextureGroup = 0x2B;
+
+}  // namespace shop_3a18b8
+
+// 0x00297704 loads a named resource: (name, out_status, flags); it ignores its
+// fourth register argument, which is why only three are declared here.
+extern "C" u32 script_vm_func_00297704(
+    const char* name, u32* out_status, u32 flags);
+extern "C" void CommonBg_func_00289b4c();
+extern "C" void script_vm_func_00289ae8();
+extern "C" void camp_func_0028dc54();
+extern "C" void ButtonHelp_Init();
+extern "C" void* AsdTMTexTable_func_002c4e28(u32 group_id);
+extern "C" void engine_func_002c5ab8(u32 arg0, u32 arg1);
+extern "C" void* Npc2d_func_002fdfb8(u32 row_index);
+extern "C" void* Npc2d_func_002860b4(u32 id, u32 arg1, s32 pose);
+// 0x00247D64 is reconstructed as a void function elsewhere; the original
+// tail-branches to it here, so its r0 is what our caller observes.
+extern "C" u32 engine_func_00247d64(u32 handle, s32 duration, s32 reverse_flag);
+
+namespace {
+
+// `str r0,[self + offset]` -- the sprite factories return pointers that the
+// shop object keeps as 32-bit handle words.
+void StoreHandle(u8* self, u32 offset, const void* handle) {
+    *reinterpret_cast<u32*>(self + offset) =
+        reinterpret_cast<u32>(handle);
+}
+
+const char* NameAt(u32 address) {
+    return reinterpret_cast<const char*>(address);
+}
+
+}  // namespace
+
+extern "C" u32 shop_func_003a18b8(void* object) {
+    u8* const self = static_cast<u8*>(object);
+
+    // 0x003A18C0..0x003A18DC: shared helpers and the primary resource load.
+    CommonBg_func_00289b4c();
+    script_vm_func_00289ae8();
+    camp_func_0028dc54();
+    ButtonHelp_Init();
+    (void)script_vm_func_00297704(
+        NameAt(shop_3a18b8::kPrimaryName),
+        reinterpret_cast<u32*>(self + shop_3a18b8::kPrimaryStatusOffset), 0);
+
+    // 0x003A18E0..0x003A18F0: texture group 0x2B.
+    (void)AsdTMTexTable_func_002c4e28(shop_3a18b8::kTextureGroup);
+    engine_func_002c5ab8(shop_3a18b8::kTextureGroup, 0);
+
+    // 0x003A18F4..0x003A190C: state gate; both ids start at zero.
+    const u8 state = self[shop_3a18b8::kStateOffset];
+    u32 first_id = 0;
+    u32 second_id = 0;
+
+    if (state == 0) {
+        const u32 type = *reinterpret_cast<const u32*>(
+            self + shop_3a18b8::kTypeOffset);
+        const char* name;
+        switch (type) {
+        case 8:
+            name = NameAt(shop_3a18b8::kState0Type8Name);
+            first_id = 0x58;
+            second_id = 0x19;
+            break;
+        case 6:
+        case 7:
+            name = NameAt(shop_3a18b8::kState0Type67Name);
+            first_id = 0x8B;
+            second_id = 0x50;
+            break;
+        case 9:
+            name = NameAt(shop_3a18b8::kState0DefaultName);
+            first_id = 0x88;
+            second_id = 0xA2;
+            break;
+        default:
+            name = NameAt(shop_3a18b8::kState0DefaultName);
+            first_id = 0x5A;
+            break;
+        }
+        // 0x003A1974: secondary resource load into object+0x164.
+        (void)script_vm_func_00297704(
+            name,
+            reinterpret_cast<u32*>(
+                self + shop_3a18b8::kSecondaryStatusOffset), 0);
+    } else if (state == 1) {
+        const u32 type = *reinterpret_cast<const u32*>(
+            self + shop_3a18b8::kTypeOffset);
+        const char* name;
+        switch (type) {
+        case 9:
+            name = NameAt(shop_3a18b8::kState1Type9Name);
+            first_id = 0x59;
+            second_id = 0x1A;
+            break;
+        case 5:
+            name = NameAt(shop_3a18b8::kState1DefaultName);
+            first_id = 0x8B;
+            second_id = 0x50;
+            break;
+        case 10:
+            name = NameAt(shop_3a18b8::kState1DefaultName);
+            first_id = 0x89;
+            second_id = 0xA3;
+            break;
+        default:
+            name = NameAt(shop_3a18b8::kState1DefaultName);
+            first_id = 0x5B;
+            break;
+        }
+        (void)script_vm_func_00297704(
+            name,
+            reinterpret_cast<u32*>(
+                self + shop_3a18b8::kSecondaryStatusOffset), 0);
+    }
+
+    // 0x003A1978..0x003A1988: first sprite, handle stored at +0x15D40 (the
+    // address is `0x00015D40 + object` because r1 holds that literal).
+    const void* const first_handle = Npc2d_func_002fdfb8(first_id);
+    StoreHandle(self, shop_3a18b8::kPrimarySpriteOffset, first_handle);
+
+    if (second_id == 0) {
+        return reinterpret_cast<u32>(first_handle);  // 0x003A1A4C
+    }
+
+    // 0x003A1990..0x003A19B8: second sprite, handle stored at +0x15D44, then
+    // the tail branch to 0x00247D64 with (handle, 0, 0).
+    const void* const second_handle =
+        Npc2d_func_002860b4(second_id, 0, 0);
+    StoreHandle(self, shop_3a18b8::kSecondarySpriteOffset, second_handle);
+    return engine_func_00247d64(
+        reinterpret_cast<u32>(second_handle), 0, 0);
 }
 
 // DECOMP_FUNC(0x00150654, 440)
-// 105 ARM instructions through unconditional pop; 20 trailing data bytes.
-extern "C" __attribute__((naked)) void func_00150654() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d5ff0, 0xe1a05000, 0xe1b07002, 0xe1a08001\n"
-        ".word 0xe1a09003, 0x0a000061, 0xe59fb188, 0xe59f3180\n"
-        ".word 0xe3a0211a, 0xe2871020, 0xe59b0000, 0xe3a0a000\n"
-        ".word 0xe0c020f8, 0xeb054542, 0xe59b0000, 0xe59f4168\n"
-        ".word 0xe1b06008, 0xe2800018, 0xe58b0000, 0x0a000008\n"
-        ".word 0xe5960000, 0xe5901008, 0xe1a00008, 0xe12fff31\n"
-        ".word 0xe1500004, 0x0a000003, 0xe5900000, 0xe3500000\n"
-        ".word 0x1afffffa, 0xe1a0600a, 0xe5950008, 0xe590101c\n"
-        ".word 0xe1510008, 0x0a000008, 0xe3560000, 0x0a000004\n"
-        ".word 0xe1a01006, 0xeb000dd8, 0xe320f000, 0xe320f000\n"
-        ".word 0xea000001, 0xe1a01008, 0xeb000d98, 0xe5971030\n"
-        ".word 0xe2870030, 0xe3510000, 0x10814000, 0xe597002c\n"
-        ".word 0x01a0400a, 0xe0847100, 0xe1540007, 0x0a000033\n"
-        ".word 0xe5940000, 0xe3500000, 0x10800004, 0x01a0000a\n"
-        ".word 0xe3560000, 0xe5903000, 0x13530000, 0x0a000009\n"
-        ".word 0xe5941000, 0xe1a00005, 0xe3510000, 0x10812004\n"
-        ".word 0x01a0200a, 0xe1a01006, 0xeb000cbd, 0xe320f000\n"
-        ".word 0xe320f000, 0xea00000f, 0xe5950008, 0xe59f308c\n"
-        ".word 0xe3a02166, 0xe288108c, 0xe5900008, 0xe590c014\n"
-        ".word 0xe3ccc006, 0xe580c014, 0xe59b0000, 0xe1c020f0\n"
-        ".word 0xe59f206c, 0xe2800008, 0xeb0544c9, 0xe59b0000\n"
-        ".word 0xe2800040, 0xe58b0000, 0xe5940000, 0xe3500000\n"
-        ".word 0x10800004, 0x01a0000a, 0xe5b01010, 0xe3510000\n"
-        ".word 0x10800001, 0x01a0000a, 0xe0801109, 0xe5910000\n"
-        ".word 0xe3500000, 0x10811000, 0xe5950008, 0x01a0100a\n"
-        ".word 0xeb000d22, 0xe2844004, 0xe1540007, 0x1affffcb\n"
-        ".word 0xe8bd9ff0, 0x804f02c0, 0x004652a0, 0x00472288\n"
-        ".word 0x000f02c0, 0x00bf02c1\n"
-    );
+//
+// Recovered contract (ARM 0x00150654..0x001507F7 = 105 instructions; the five
+// words at 0x001507F8..0x0015080B are the literal pool):
+//
+//   * ABI: r0 = scene, r1 = unit, r2 = draw-group record, r3 = item index.  The
+//     prologue saves {r4-r8, sb, sl, fp, ip, lr} and the epilogue restores the
+//     same ten registers, so r4-r11 survive and SP is unchanged.  There are no
+//     stack arguments and no local frame.
+//   * `movs r7, r2; beq` is the only argument guard: a null draw group returns
+//     immediately with r0 still holding `scene`.  No other pointer is checked.
+//   * g_GpuCommandCursor (0x004652A0) receives a 0x18-byte record:
+//       [0]    0x80000006 (position tag)
+//       [1]    0x804F02C0 (shared second header word, cf. 0x00153A58)
+//       [2..5] the three words at draw_group+0x20/+0x24/+0x28, re-ordered by
+//              0x002A1B98 into {0, src[2], src[1], src[0]}.
+//     The global is reloaded after the helper returns and then advanced by
+//     0x18, so a helper that rewrites the global is observed.
+//   * The unit's type-info chain is resolved against 0x00472288: the vtable
+//     slot at +0x08 returns the first type-info node and the walk follows the
+//     node's first word until it equals 0x00472288 (the unit pointer survives
+//     in r6) or reaches null (r6 = 0).  This is the AsdTypeMatch idiom used by
+//     the engine's other component lookups.
+//   * `[scene+0x08]` is the scene context.  When `[context+0x1C]` (the unit
+//     last bound there by 0x00153D64 / 0x00153E50) is not the incoming unit,
+//     the routine binds it: 0x00153E50(context, component) when the type match
+//     succeeded, otherwise 0x00153D64(context, unit).
+//   * Draw-group layout used here: `[draw_group+0x30]` is a relative offset
+//     from that word to an array of entry slots inside the group and
+//     `[draw_group+0x2C]` is the slot count.  A zero offset resolves to address
+//     0 (a latent low read, not an empty-table fallback) and the end pointer is
+//     a raw 32-bit `+ count*4` add, so an overflowing count wraps; equality
+//     alone terminates the loop.
+//   * Each entry slot holds another relative offset to a draw entry:
+//       entry+0x00  matrix count consumed by 0x00153A58
+//       entry+0x04  relative offset to the matrix index array (0x00153A58)
+//       entry+0x08  entry type (0x00153A58)
+//       entry+0x10  relative offset to a table of item slots, indexed by r3
+//     The slot word and the entry are re-read for every use, so a callee that
+//     rewrites the slot changes the tail lookup.
+//   * When the type match succeeded and `entry[0] != 0`, the draw entry is
+//     handed to 0x00153A58(scene, component, entry, count).  Otherwise the
+//     routine emits the single-matrix variant itself (exactly the count == 1
+//     form of 0x00153A58): it clears bits 1 and 2 of `[render_state+0x14]`
+//     (render_state = [context+0x08]) and appends
+//       header {0x80000019, 0x000F02C0},
+//       0x002A1AC8(cursor+8, unit+0x8C, 0x00BF02C1)  (3x4 matrix plus tag),
+//     advancing the cursor by 0x40 (0x3C used, one word reserved).
+//   * The common tail resolves the item slot at `entry+0x10 + offset`, indexed
+//     by the caller's r3 word, and submits
+//     0x00153C74([scene+0x08], relative item pointer).
+//   * Residual r0 (the only caller, 0x00148748, discards it): `scene` on the
+//     null-group exit, the slot count on the empty-table exit, and the last
+//     0x00153C74 result otherwise.  The reconstruction returns those values so
+//     register-level differential tests stay exact.
+
+// Direct call declarations.  Addresses follow config/functions.csv.
+extern "C" void func_002a1b98(void* destination, const void* source);
+extern "C" void func_002a1ac8(void* destination, const void* source, u32 tag);
+extern "C" void func_00153a58(void* scene, void* unit, void* draw_entry,
+                              u32 matrix_count);
+extern "C" void engine_func_00153d64(void* context, void* unit);
+extern "C" void engine_func_00153e50(void* context, void* component);
+extern "C" u32 ui_func_00153c74(void* render_context, void* item);
+
+namespace func_150654 {
+
+using TypeInfoQuery = void* (*)(void*);
+
+// 0x00472288 is the type-info identity accepted by the draw path.
+constexpr u32 kComponentTypeInfo = 0x00472288;
+
+// Scene -> context -> render-state chain.
+constexpr u32 kContextSlotOffset = 0x08;
+constexpr u32 kContextRenderStateOffset = 0x08;
+constexpr u32 kContextUnitOffset = 0x1C;
+constexpr u32 kRenderStateOffset = 0x14;
+constexpr u32 kRenderStateWord = kRenderStateOffset / 4;
+constexpr u32 kRenderStateMask = 0x06;
+
+// Draw-group record (`arg2`).
+constexpr u32 kGroupPositionOffset = 0x20;
+constexpr u32 kGroupEntryCountOffset = 0x2C;
+constexpr u32 kGroupEntryTableOffset = 0x30;
+
+// Draw entry (`entry`).
+constexpr u32 kDrawEntryItemTableOffset = 0x10;
+
+// Command records.
+constexpr u32 kPositionTag = 0x80000006;
+constexpr u32 kPositionMarker = 0x804F02C0;
+constexpr u32 kPositionRecordSize = 0x18;
+constexpr u32 kSingleMatrixTag = 0x80000019;
+constexpr u32 kSingleMatrixMarker = 0x000F02C0;
+constexpr u32 kSingleMatrixDataTag = 0x00BF02C1;
+constexpr u32 kSingleMatrixRecordSize = 0x40;
+
+// Unit-side 3x4 source matrix for the single-matrix variant.
+constexpr u32 kUnitMatrixOffset = 0x8C;
+
+// The original dereferences the relative tables without a null guard: a zero
+// relative offset falls back to the low addresses instead of an empty table.
+// Those loads go through this opaque helper so the compiler keeps the fallback
+// instead of folding it away as undefined behaviour.
+__attribute__((noinline)) u32 LoadUntabled(u32 address) {
+    return *reinterpret_cast<const u32*>(address);
+}
+
+// `add rN, base, offset` for one relative table: zero resolves to address 0.
+inline u32 Relocate(u32 field_address, u32 offset) {
+    return offset != 0 ? field_address + offset : 0u;
+}
+
+inline u32 Load(u32 address) {
+    return *reinterpret_cast<const u32*>(address);
+}
+
+}  // namespace func_150654
+
+extern "C" u32 func_00150654(void* scene_pointer, void* unit_pointer,
+                             void* draw_group_pointer, u32 item_index) {
+    using namespace func_150654;
+
+    const u32 scene = reinterpret_cast<u32>(scene_pointer);
+    const u32 unit = reinterpret_cast<u32>(unit_pointer);
+    const u32 draw_group = reinterpret_cast<u32>(draw_group_pointer);
+
+    // 0x15065C..0x150668: the only argument check in the routine.
+    if (draw_group == 0) {
+        return scene;
+    }
+
+    // 0x15066C..0x15069C: position record.  The cursor is reloaded from the
+    // global after the copy helper returns.
+    u32* const position = g_GpuCommandCursor;
+    position[0] = kPositionTag;
+    position[1] = kPositionMarker;
+    func_002a1b98(
+        position + 2,
+        reinterpret_cast<const void*>(draw_group + kGroupPositionOffset));
+    g_GpuCommandCursor = reinterpret_cast<u32*>(
+        reinterpret_cast<u32>(g_GpuCommandCursor) + kPositionRecordSize);
+
+    // 0x1506A0..0x1506CC: resolve the unit's type-info chain against
+    // 0x00472288.  A null unit, or a chain that ends in null, leaves no
+    // component to bind.
+    u32 component = 0;
+    if (unit != 0) {
+        void** const vtable = *reinterpret_cast<void***>(unit_pointer);
+        u32 current = reinterpret_cast<u32>(
+            reinterpret_cast<TypeInfoQuery>(vtable[2])(unit_pointer));
+        while (current != kComponentTypeInfo) {
+            current = LoadUntabled(current);
+            if (current == 0) {
+                break;
+            }
+        }
+        component = current != 0 ? unit : 0;
+    }
+
+    // 0x1506CC..0x1506FC: bind the unit into the scene context when it is not
+    // the unit currently recorded there.
+    const u32 context = Load(scene + kContextSlotOffset);
+    if (Load(context + kContextUnitOffset) != unit) {
+        if (component != 0) {
+            engine_func_00153e50(reinterpret_cast<void*>(context),
+                                 reinterpret_cast<void*>(component));
+        } else {
+            engine_func_00153d64(reinterpret_cast<void*>(context),
+                                 reinterpret_cast<void*>(unit));
+        }
+    }
+
+    // 0x150700..0x150720: draw-entry slot table of the group.
+    const u32 table_field = draw_group + kGroupEntryTableOffset;
+    const u32 table = Relocate(table_field, Load(table_field));
+    const u32 slot_count = Load(draw_group + kGroupEntryCountOffset);
+    const u32 table_end = table + (slot_count << 2);
+    if (table == table_end) {
+        return slot_count;
+    }
+
+    u32 result = 0;
+    u32 slot = table;
+    do {
+        // 0x150724..0x15073C
+        const u32 entry = Relocate(slot, LoadUntabled(slot));
+        const u32 matrix_count = LoadUntabled(entry);
+
+        if (component != 0 && matrix_count != 0) {
+            // 0x150744..0x150768: the entry pointer is recomputed from a
+            // second read of the slot word immediately before the call.
+            func_00153a58(
+                reinterpret_cast<void*>(scene),
+                reinterpret_cast<void*>(component),
+                reinterpret_cast<void*>(Relocate(slot, LoadUntabled(slot))),
+                matrix_count);
+        } else {
+            // 0x15076C..0x1507A8: single-matrix variant.
+            u32* const render_state = reinterpret_cast<u32*>(
+                Load(Load(scene + kContextSlotOffset) +
+                     kContextRenderStateOffset));
+            const u32 state = render_state[kRenderStateWord];
+            render_state[kRenderStateWord] = state & ~kRenderStateMask;
+
+            u32* const header = g_GpuCommandCursor;
+            header[0] = kSingleMatrixTag;
+            header[1] = kSingleMatrixMarker;
+            func_002a1ac8(
+                header + 2,
+                reinterpret_cast<const void*>(unit + kUnitMatrixOffset),
+                kSingleMatrixDataTag);
+            g_GpuCommandCursor = reinterpret_cast<u32*>(
+                reinterpret_cast<u32>(g_GpuCommandCursor) +
+                kSingleMatrixRecordSize);
+        }
+
+        // 0x1507AC..0x1507E4: item-slot lookup and submission.
+        const u32 item_table_field =
+            Relocate(slot, LoadUntabled(slot)) + kDrawEntryItemTableOffset;
+        const u32 item_table =
+            Relocate(item_table_field, LoadUntabled(item_table_field));
+        const u32 item_slot = item_table + (item_index << 2);
+        const u32 item = Relocate(item_slot, LoadUntabled(item_slot));
+        result = ui_func_00153c74(
+            reinterpret_cast<void*>(Load(scene + kContextSlotOffset)),
+            reinterpret_cast<void*>(item));
+
+        slot += 4;
+    } while (slot != table_end);
+
+    return result;
 }
 
 // DECOMP_FUNC(0x002f2e54, 440)
-// 106 ARM instructions through unconditional pop; 16 trailing data bytes.
-extern "C" __attribute__((naked)) void ui_func_002f2e54() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d47f0, 0xee000a10, 0xee001a90, 0xe1a07002\n"
-        ".word 0xe59f9194, 0xe3a01001, 0xed2d8b04, 0xe28d2030\n"
-        ".word 0xeeb80ac0, 0xe8920060, 0xeef80ae0, 0xe59f2174\n"
-        ".word 0xe5994000, 0xe1a08003, 0xe1a00001, 0xec921a02\n"
-        ".word 0xee300a01, 0xee700aa1, 0xeebd8ac0, 0xeefd8ae0\n"
-        ".word 0xebff4c34, 0xe2844a01, 0xe2844f93, 0xe3a0a000\n"
-        ".word 0xe5941000, 0xe2812001, 0xe0843101, 0xe5931008\n"
-        ".word 0xe0843102, 0xe5842000, 0xe5830008, 0xe5d42018\n"
-        ".word 0xe3520000, 0x01510000, 0x0a000002, 0xe594101c\n"
-        ".word 0xe12fff31, 0xe5c4a018, 0xe5990000, 0xe3a01000\n"
-        ".word 0xebff3b90, 0xe1a01406, 0xe1a02806, 0xed9f9a3f\n"
-        ".word 0xe1b00c26, 0xe1a01c21, 0xe1a02c22, 0xe20630ff\n"
-        ".word 0x0a00000e, 0xee008a10, 0xe1a03c03, 0xeef80ae8\n"
-        ".word 0xe1832802, 0xe1821401, 0xe1800001, 0xeef81ac0\n"
-        ".word 0xee007a10, 0xeeb02a49, 0xe1a03000, 0xe1a02003\n"
-        ".word 0xe1a01002, 0xeeb81ac0, 0xeeb80ac8, 0xebff36f1\n"
-        ".word 0xe1a02405, 0xe1a01805, 0xe1b00c25, 0xe1a02c22\n"
-        ".word 0xe1a01c21, 0xe20530ff, 0x0a00000f, 0xee008a10\n"
-        ".word 0xe1a03c03, 0xeef80ae8, 0xe1831801, 0xe1811402\n"
-        ".word 0xe1800001, 0xeef81ac0, 0xee007a10, 0xeeb02a49\n"
-        ".word 0xe1a03000, 0xe1a02003, 0xeddf2a19, 0xe1a01002\n"
-        ".word 0xeeb81ac0, 0xeeb80ac8, 0xebfc7451, 0xe5990000\n"
-        ".word 0xe2804a01, 0xe2844f93, 0xe5940000, 0xe0841100\n"
-        ".word 0xe2400001, 0xe5911008, 0xe5840000, 0xe0840100\n"
-        ".word 0xe5d42018, 0xe5900008, 0xe3520000, 0x01510000\n"
-        ".word 0x0a000002, 0xe594101c, 0xe12fff31, 0xe5c4a018\n"
-        ".word 0xecbd8b04, 0xe8bd87f0, 0x004724cc, 0x0044ea00\n"
-        ".word 0x00000000, 0x3f800000\n"
-    );
+//
+// Recovered contract (ARM 0x002F2E54..0x002F2FFB = 106 instructions; the four
+// literal words at 0x002F2FFC..0x002F300B are 0x004724CC, 0x0044EA00, 0.0f and
+// 1.0f):
+//
+//   * ABI: r0 = x, r1 = y, r2 = width, r3 = height, [sp+0] = packed word A,
+//     [sp+4] = packed word B.  The prologue saves {r4-r8, sb, sl, lr} and
+//     vpush {d8, d9} (s16-s19); the epilogue restores exactly those, so r4-r11
+//     and d8-d15 survive and SP is unchanged.  There is no local frame; the
+//     two stack arguments are read from the caller's frame at entry SP
+//     (`add r2, sp, #0x30; ldm r2, {r5, r6}`).
+//   * Before any helper runs the routine reads `*0x0044EA00` (the render-
+//     register base, captured for the push) and the two floats at 0x004724CC /
+//     0x004724D0 (a runtime-written bias pair; 0x002E70B0 stores s0/s1 there).
+//     x and y are converted to single precision, the matching bias is added,
+//     and the result is truncated back to a signed integer (vcvt.f32.s32,
+//     vadd.f32, vcvt.s32.f32).  Those two integers are then widened to float
+//     again for every draw call.
+//   * `ui_func_002c5f7c(1, 1)` builds the viewport command word.  The render
+//     stack node is at captured_base + 0x124C: `previous = slots[count]`,
+//     `count += 1`, `slots[count] = pushed`.  When the node's byte at +0x18 is
+//     non-zero or `previous != pushed`, the function pointer at +0x1C is
+//     invoked with the new value in r0 and the dirty byte is cleared to zero.
+//   * `ui_func_002c1d3c(*0x0044EA00, 0)` selects render mode 0; the global is
+//     re-read here, so a callback that rewrites it is observed.
+//   * The two packed words are handled independently, B first then A.  For
+//     each: if the word's top byte (bits 24..31) is non-zero, the word is
+//     byte-swapped (equivalent to `__builtin_bswap32`, the original builds the
+//     same permutation with `lsl`/`lsr`/`orr`), placed in r0..r3, and drawn:
+//       - B -> ui_func_002c0b1c(swapped x4, s0 = x_f, s1 = y_f,
+//                               s2 = width_f, s3 = height_f, s4 = 0.0f);
+//       - A -> ui_func_002100f8(swapped x4, the same s0..s3,
+//                               s4 = 0.0f, s5 = 1.0f).
+//     A zero top byte skips that draw entirely; nothing else about the word is
+//     tested.
+//   * Pop from the render stack at a freshly re-read `*0x0044EA00 + 0x124C`:
+//     `previous = slots[count]`, `count -= 1`, `new_top = slots[count - 1]`
+//     (flat and unchecked, exactly like the ARM).  The same dirty/difference
+//     rule applies; the callback result, or `new_top` when no callback ran, is
+//     left in r0 and returned.  The only other caller-visible residue is that
+//     return value; the original's callers use it as a u32.
+namespace func_2f2e54 {
+
+// Render-register block at 0x0044EA00; the stack node starts at +0x124C.
+constexpr u32 kRenderStackOffset = 0x124C;
+
+// Runtime float-pair at 0x004724CC written by 0x002E70B0 (`vstmia r0, {s0,s1}`).
+constexpr u32 kBiasAddress = 0x004724CC;
+
+// `mov r0, #1` / `mov r1, #1` before the 0x002C5F7C call, and the `mov r1, #0`
+// before the 0x002C1D3C call.
+constexpr u32 kPushKind = 1;
+constexpr u32 kPushEnabled = 1;
+constexpr u32 kRenderMode = 0;
+
+// Literal pool 0x002F3004 / 0x002F3008.
+constexpr f32 kZero = 0.0f;  // 0x00000000
+constexpr f32 kOne = 1.0f;   // 0x3F800000
+
+// Stack node layout (offsets inside the node at render_base + 0x124C):
+//   +0x00 count
+//   +0x04 unused
+//   +0x08 slots[0] .. slots[3]
+//   +0x18 dirty byte (the low byte of the word at +0x18)
+//   +0x1C flush callback
+// The original addresses the slots as a flat word array (`node + 8 + count*4`)
+// and has no bounds check.  At count == 3 the push store lands on the dirty
+// word, so the dirty byte read by the same push observes the low byte of the
+// pushed value.  The reconstruction must keep that order, therefore it also
+// addresses the node as flat words instead of a bounded struct array.
+constexpr u32 kNodeCountOffset = 0x00;
+constexpr u32 kNodeSlotOffset = 0x08;
+constexpr u32 kNodeDirtyOffset = 0x18;
+constexpr u32 kNodeFlushOffset = 0x1C;
+
+struct RenderStackNode {  // layout documentation only
+    u32 count;      // +0x00
+    u32 pad_004;    // +0x04
+    u32 slots[4];   // +0x08..+0x17
+    u8 dirty;       // +0x18
+    u8 pad_019[3];
+    u32 flush_cb;   // +0x1C, `blx r1` with the new value in r0
+};
+
+static_assert(offsetof(RenderStackNode, count) == kNodeCountOffset);
+static_assert(offsetof(RenderStackNode, slots) == kNodeSlotOffset);
+static_assert(offsetof(RenderStackNode, dirty) == kNodeDirtyOffset);
+static_assert(offsetof(RenderStackNode, flush_cb) == kNodeFlushOffset);
+
+// `blx r1` with no null check: the original requires a non-null callback.
+using FlushCallback = u32 (*)(u32 value);
+
+// Flat word view of the node so the unbounded slot indexes match the ARM.
+inline u32* node_words(void* base) {
+    return reinterpret_cast<u32*>(
+        static_cast<u8*>(base) + kRenderStackOffset);
+}
+
+inline u8* node_dirty(u32* words) {
+    return reinterpret_cast<u8*>(words) + kNodeDirtyOffset;
+}
+
+// One biased int -> float -> int conversion (0x2F2E74..0x2F2EA0).
+inline s32 biased_coordinate(s32 value, f32 bias) {
+    return static_cast<s32>(static_cast<f32>(value) + bias);
+}
+
+}  // namespace func_2f2e54
+
+namespace smt4::engine {
+extern void* g_RenderRegisterBase;  // 0x0044EA00
+}
+
+// 0x002C5F7C: builds the render-stack command word for (1, 1).
+extern "C" u32 ui_func_002c5f7c(u32 kind, u32 enabled);
+
+// 0x002C1D3C: selects the render mode on the render-register block.
+extern "C" void ui_func_002c1d3c(void* base, u32 mode);
+
+// 0x002C0B1C: submits one four-vertex element.  r0..r3 carry the colour word
+// (identical in all four here); s0..s4 carry x, y, width, height and 0.0f.
+extern "C" void ui_func_002c0b1c(u32 color0, u32 color1, u32 color2,
+                                 u32 color3, f32 x, f32 y, f32 width,
+                                 f32 height, f32 depth);
+
+// 0x002100F8: submits four sub-elements.  r0..r3 carry the colour word; s0..s5
+// carry x, y, width, height and the two pass-through floats 0.0f and 1.0f.
+extern "C" void ui_func_002100f8(u32 color0, u32 color1, u32 color2,
+                                 u32 color3, f32 x, f32 y, f32 width,
+                                 f32 height, f32 depth, f32 extra);
+
+extern "C" u32 ui_func_002f2e54(s32 x, s32 y, s32 width, s32 height,
+                                u32 packed_a, u32 packed_b) {
+    using namespace func_2f2e54;
+
+    // 0x2F2E84/0x2F2E90..0x2F2EA0: the render base and the bias pair are read
+    // before the first helper runs, and the biased coordinates are computed
+    // before that call as well.
+    void* const push_base = smt4::engine::g_RenderRegisterBase;
+    const f32 bias_x = *reinterpret_cast<const f32*>(kBiasAddress);
+    const f32 bias_y = *reinterpret_cast<const f32*>(kBiasAddress + 4);
+    const s32 biased_x = biased_coordinate(x, bias_x);
+    const s32 biased_y = biased_coordinate(y, bias_y);
+
+    // 0x2F2E78: the original copies the caller's two stack words into r5/r6
+    // before any helper runs.  The barrier keeps those loads here; a callee may
+    // not legally alias the caller's argument slots, so the compiler would
+    // otherwise defer the loads to their first use after the helper calls.
+    u32 captured_a = packed_a;
+    u32 captured_b = packed_b;
+    asm volatile("" : "+r"(captured_a), "+r"(captured_b));
+
+    // 0x2F2EA4..0x2F2EE8: push onto the captured node.  The dirty byte is
+    // loaded after the slot store, exactly like `ldrb r2, [r4, #0x18]` follows
+    // `str r0, [r3, #8]`; at count == 3 the store rewrites that byte.
+    const u32 pushed = ui_func_002c5f7c(kPushKind, kPushEnabled);
+    u32* const push_node = node_words(push_base);
+    const u32 push_count = push_node[kNodeCountOffset / 4];
+    const u32 push_previous =
+        push_node[kNodeSlotOffset / 4 + push_count];
+    push_node[kNodeCountOffset / 4] = push_count + 1;
+    push_node[kNodeSlotOffset / 4 + push_count + 1] = pushed;
+    if (*node_dirty(push_node) != 0 || push_previous != pushed) {
+        reinterpret_cast<FlushCallback>(
+            push_node[kNodeFlushOffset / 4])(pushed);
+        *node_dirty(push_node) = 0;
+    }
+
+    // 0x2F2EEC..0x2F2EF4: render-mode selection on the re-read global.
+    ui_func_002c1d3c(smt4::engine::g_RenderRegisterBase, kRenderMode);
+
+    // The values forwarded as s0..s3 by both draw calls.
+    const f32 draw_x = static_cast<f32>(biased_x);
+    const f32 draw_y = static_cast<f32>(biased_y);
+    const f32 draw_width = static_cast<f32>(width);
+    const f32 draw_height = static_cast<f32>(height);
+
+    // 0x2F2EF8..0x2F2F50: packed word B (the second stack argument) drives the
+    // first draw.
+    if ((captured_b >> 24) != 0) {
+        const u32 swapped = __builtin_bswap32(captured_b);
+        ui_func_002c0b1c(swapped, swapped, swapped, swapped,
+                         draw_x, draw_y, draw_width, draw_height, kZero);
+    }
+
+    // 0x2F2F54..0x2F2FAC: packed word A (the first stack argument) drives the
+    // second draw, with s5 = 1.0f as an extra pass-through value.
+    if ((captured_a >> 24) != 0) {
+        const u32 swapped = __builtin_bswap32(captured_a);
+        ui_func_002100f8(swapped, swapped, swapped, swapped,
+                         draw_x, draw_y, draw_width, draw_height, kZero, kOne);
+    }
+
+    // 0x2F2FB0..0x2F2FF8: pop from the re-read render base and return the new
+    // top, or the flush callback result when it ran.
+    u32* const pop_node = node_words(smt4::engine::g_RenderRegisterBase);
+    const u32 pop_count = pop_node[kNodeCountOffset / 4];
+    const u32 pop_previous =
+        pop_node[kNodeSlotOffset / 4 + pop_count];
+    pop_node[kNodeCountOffset / 4] = pop_count - 1;
+    const u32 new_top = pop_node[kNodeSlotOffset / 4 + pop_count - 1];
+    if (*node_dirty(pop_node) != 0 || pop_previous != new_top) {
+        const u32 result =
+            reinterpret_cast<FlushCallback>(pop_node[kNodeFlushOffset / 4])(
+                new_top);
+        *node_dirty(pop_node) = 0;
+        return result;
+    }
+    return new_top;
 }
 
 // DECOMP_FUNC(0x003518d0, 440)
-// 109 ARM instructions through unconditional pop; 4 trailing data bytes.
-extern "C" __attribute__((naked)) void engine_func_003518d0() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d40f0, 0xe1a04000, 0xe24dd014, 0xe5900014\n"
-        ".word 0xe3500000, 0x0a000064, 0xe3a05001, 0xe5c45010\n"
-        ".word 0xe2840020, 0xebfdca52, 0xe5942028, 0xe3e00000\n"
-        ".word 0xe1a01000, 0xe88d0007, 0xe3a03000, 0xe3a02001\n"
-        ".word 0xe28d1008, 0xe28d000c, 0xebfdca77, 0xe1b01fa0\n"
-        ".word 0x1bfdced0, 0xe2840028, 0xe5c4502c, 0xebfdca2d\n"
-        ".word 0xe5940028, 0xe3a07000, 0xe2845028, 0xe3500000\n"
-        ".word 0x0a000001, 0xef000023, 0xe5857000, 0xe59f6130\n"
-        ".word 0xe5960004, 0xebfdca01, 0xe5960004, 0xe3500000\n"
-        ".word 0x0a000004, 0xe1a05000, 0xebfdc9fc, 0xe1a00005\n"
-        ".word 0xe320f000, 0xebfd82e9, 0xe5867004, 0xe5960000\n"
-        ".word 0xebfdca76, 0xe3e00000, 0xe5867000, 0xe5840008\n"
-        ".word 0xe1a00004, 0xebfffb6c, 0xe59402e8, 0xe3a05000\n"
-        ".word 0xe3500000, 0xda00000b, 0xe59401b8, 0xe0846105\n"
-        ".word 0xe5941014, 0xe59622ec, 0xe5903000, 0xe5933004\n"
-        ".word 0xe12fff33, 0xe58672ec, 0xe59402e8, 0xe2855001\n"
-        ".word 0xe1500005, 0xcafffff3, 0xe5940484, 0xe3a05000\n"
-        ".word 0xe3500000, 0xda00000b, 0xe59401b8, 0xe0846105\n"
-        ".word 0xe5941014, 0xe5962488, 0xe5903000, 0xe593300c\n"
-        ".word 0xe12fff33, 0xe5867488, 0xe5940484, 0xe2855001\n"
-        ".word 0xe1500005, 0xcafffff3, 0xe59401c4, 0xe3a05000\n"
-        ".word 0xe3500000, 0xda00000d, 0xe0850085, 0xe0846180\n"
-        ".word 0xe59611d8, 0xe3510000, 0x0a000004, 0xe5940014\n"
-        ".word 0xe5902000, 0xe5922004, 0xe12fff32, 0xe58671d8\n"
-        ".word 0xe59401c4, 0xe2855001, 0xe1500005, 0xcafffff1\n"
-        ".word 0xe2840f56, 0xebfff5fd, 0xe5847014, 0xe5847018\n"
-        ".word 0xe58471b8, 0xe58471bc, 0xe58471c0, 0xe28dd014\n"
-        ".word 0xe8bd80f0, 0x0044d158\n"
-    );
+//
+// Recovered contract (ARM 0x003518D0..0x00351A83 = 109 instructions plus the
+// literal word at 0x00351A84 = 0x0044D158; 0x00351A88 starts the next body):
+//
+//   * `this` arrives in r0; r1..r3 are never read.  The prologue saves
+//     {r4-r7, lr} and reserves 0x14 bytes of stack for the seven-argument call
+//     at 0x00351918.  r8-r11 are untouched.  Every exit leaves r0 = 0.
+//   * [this+0x14] is the lifetime gate: when it is zero the routine returns
+//     immediately (0x003518E4 -> 0x00351A7C) without touching anything else.
+//   * Otherwise it stores the byte [this+0x10] = 1, resets the sync block at
+//     [this+0x20] with 0x002C4244 (AsdSync_Reset), reloads the key/handle from
+//     [this+0x28] and issues the process-wide-key trampoline
+//     0x002C42FC(&out, &key_copy, 1, 0, -1, -1, key).  The project's record in
+//     src/engine/asd_file.cpp names 0x002C42FC AsdKernel_WaitProcessWideKey
+//     (out, key, value, address, timeout_lo, timeout_hi); every game-side call
+//     site also pushes the key/handle value as a seventh stack word, which the
+//     trampoline itself never reads.  A negative Result calls
+//     0x002C5468(result) (AsdKernel_AbortOnFailure, 0x00351920); the out word
+//     left on the stack is dead.
+//   * It stores the byte [this+0x2C] = 1 and calls 0x002C41E8([this+0x28]),
+//     the flag-guarded one-shot key wait on that same block.  The kernel handle
+//     at [this+0x28] is then reloaded; when non-zero it is closed with
+//     `svc #0x23` (svcCloseHandle, 0x00351944) and the slot is zeroed.
+//   * The global pair at 0x0044D158 is torn down:
+//       0x002C4160([0x0044D15C]);
+//       if ([0x0044D15C] != 0) { 0x002C4160(same); 0x002B2520(same); }
+//       [0x0044D15C] = 0; 0x002C4360([0x0044D158]); [0x0044D158] = 0;
+//     The object handed to the second 0x002C4160 and to 0x002B2520 is the word
+//     reloaded after the first call, so a callee that rewrites the global
+//     changes the delete target.  0x002B2520 is the free-if-non-null wrapper
+//     around 0x002C4360 (AsdMem_Free), and this release/delete pair is the same
+//     idiom used by the sibling teardown routines (e.g. 0x0034E3D8, 0x003C81B8).
+//   * [this+0x08] = -1, then 0x0035074C(this) runs the owner-specific reset.
+//   * Three cleanup passes, each driven by a signed count that is reloaded
+//     after every iteration, so a callback that rewrites the count changes the
+//     bound:
+//       - [this+0x2E8] words at [this+0x2EC + 4*i] are forwarded to vtable
+//         slot +0x04 of the object at [this+0x1B8] as
+//         (object, [this+0x14], element); the object and owner words are
+//         reloaded per iteration.  Each element is then zeroed.
+//       - [this+0x484] words at [this+0x488 + 4*i] go to the same object's
+//         vtable slot +0x0C with the same three arguments, then are zeroed.
+//       - [this+0x1C4] records of 0x18 bytes start at [this+0x1D8]; a non-null
+//         first word is forwarded as (owner, element) through vtable slot
+//         +0x04 of the object at [this+0x14], then zeroed.
+//   * Finally 0x0034F260([this+0x158]) releases that container and the words
+//     [this+0x14], [this+0x18], [this+0x1B8], [this+0x1BC] and [this+0x1C0]
+//     are zeroed.  The three cleanup counts are left as they are.
+//   * Callers 0x0032BDC0 and 0x00351B34 pass `this` in r0 and ignore the
+//     result.  0x00351B34 is the delete-style sibling.
+namespace engine_3518d0 {
+
+constexpr u32 kShutdownByteOffset = 0x10;    // u8  set to 1 on the teardown path
+constexpr u32 kOwnerOffset = 0x14;            // u32 owner object (gate + callbacks)
+constexpr u32 kCleared18Offset = 0x18;        // u32 zeroed at the end
+constexpr u32 kState08Offset = 0x08;          // u32 written 0xFFFFFFFF
+constexpr u32 kLockStateOffset = 0x20;        // opaque lock state (0x2C4244)
+constexpr u32 kLockHandleOffset = 0x28;       // u32 kernel handle
+constexpr u32 kLockFlagOffset = 0x2C;         // u8  set to 1 before 0x2C41E8
+constexpr u32 kContainer158Offset = 0x158;    // container released by 0x34F260
+constexpr u32 kSlotObjectOffset = 0x1B8;      // object driving the slot passes
+constexpr u32 kCleared1BCOffset = 0x1BC;      // u32 zeroed at the end
+constexpr u32 kCleared1C0Offset = 0x1C0;      // u32 zeroed at the end
+constexpr u32 kRecordCountOffset = 0x1C4;     // s32 count of 0x18-byte records
+constexpr u32 kRecordBaseOffset = 0x1D8;      // first record word
+constexpr u32 kRecordStride = 0x18;           // bytes per record
+constexpr u32 kElementCountAOffset = 0x2E8;   // s32 count, vtable slot +0x04
+constexpr u32 kElementBaseAOffset = 0x2EC;    // u32 elements, stride 4
+constexpr u32 kElementCountBOffset = 0x484;   // s32 count, vtable slot +0x0C
+constexpr u32 kElementBaseBOffset = 0x488;    // u32 elements, stride 4
+
+constexpr u32 kSdkGlobalAddress = 0x0044D158; // {object +0x00, object +0x04}
+constexpr u32 kNoOperation = 0xFFFFFFFF;      // `mvn r0,#0` stack argument
+constexpr u32 kWaitCount = 1;                 // r2 of the 0x2C42FC call
+constexpr u32 kWaitAll = 0;                   // r3 of the 0x2C42FC call
+constexpr u32 kSlotNotifyIndex = 1;           // vtable +0x04
+constexpr u32 kReleaseNotifyIndex = 3;        // vtable +0x0C
+
+// Callback signatures.  Loop A/B pass the vtable object, the owner word and the
+// element; loop C passes only the owner word and the element.
+using SlotNotify = void (*)(void* object, u32 owner, u32 element);
+using RecordNotify = void (*)(void* owner, u32 element);
+
+// Typed access into the caller-supplied object.  Dynamic arrays are addressed
+// from their recovered base offsets because their lengths live in the object.
+template <typename T>
+inline T& field(void* object, u32 offset) {
+    return *reinterpret_cast<T*>(static_cast<u8*>(object) + offset);
+}
+
+inline void** vtable_of(void* object) {
+    return *reinterpret_cast<void***>(object);
+}
+
+// 0x00351944: the original forks `svc #0x23` directly (no BL, nothing is
+// returned); the kernel closes the handle.  Keep the same register binding and
+// the memory clobber so the surrounding stores cannot move across the syscall.
+inline void svc_close_handle(u32 handle) {
+    register u32 r0 __asm__("r0") = handle;
+    __asm__ volatile("svc #0x23" : "+r"(r0) : : "r1", "r2", "r3", "memory");
+}
+
+}  // namespace engine_3518d0
+
+// Direct call targets.  The file-wide declarations of these symbols are
+// parameterless, so their recovered prototypes are bound to the pinned symbol
+// names here.
+namespace engine_3518d0_calls {
+
+// 0x002C4244: resets the sync/wait block at [this+0x20].  src/nn/mobiclip.cpp
+// names the same target AsdSync_Reset.
+extern "C" void AsdSync_Reset(void* sync) __asm__("nn_sdk_func_002c4244");
+
+// 0x002C42FC: process-wide-key trampoline.  It executes `svc #0x25`, writes the
+// register the kernel leaves in r1 to its first argument and returns the signed
+// Result in r0.  src/engine/asd_file.cpp recovers the first six parameters as
+// (out, key, value, address, timeout_lo, timeout_hi); the seventh word (the key
+// value itself) is pushed by every game-side call site but is not read by the
+// trampoline, so it is kept here only to reproduce the exact stack layout.
+extern "C" s32 AsdKernel_WaitProcessWideKey(u32* out, u32* key, u32 value,
+                                            u32 address, u32 timeout_lo,
+                                            u32 timeout_hi, u32 key_copy)
+    __asm__("engine_func_002c42fc");
+
+// 0x002C5468: reports a negative Result (fatal/assert path); result dropped.
+// src/engine/asd_file.cpp names the same target AsdKernel_AbortOnFailure.
+extern "C" void AsdKernel_AbortOnFailure(s32 result)
+    __asm__("engine_func_002c5468");
+
+// 0x002C41E8: one-shot, flag-guarded key wait on the block at [this+0x28]; it
+// performs the same 0x002C42FC call behind the byte at [block+4] and sets that
+// byte.  The name is descriptive because the body is otherwise unidentified.
+extern "C" void AsdSync_WaitOnce(void* sync) __asm__("engine_func_002c41e8");
+
+// 0x002C4160: queue-node release used by the shared global-object teardown
+// idiom.  It unlinks the node from its list, waits on the fields at +0x08,
+// +0x0C and +0x14 and returns the +0x14 word (dropped here).  The same object
+// is passed to it twice by every sibling teardown routine.
+extern "C" void sdk_object_release(void* object)
+    __asm__("script_vm_func_002c4160");
+
+// 0x002B2520: frees the object when it is non-null (tail call to 0x002C4360).
+extern "C" void AsdMem_FreeIfNotNull(void* object)
+    __asm__("engine_func_002b2520");
+
+// 0x002C4360: heap free (src/engine/asd_file.cpp: AsdMem_Free).
+extern "C" void AsdMem_Free(void* object) __asm__("engine_func_002c4360");
+
+// 0x0035074C: owner-level reset; it inspects [this+0x158] and walks the two
+// 0x46C slot indices and their [this+0x2EC] element arrays.
+extern "C" void owner_reset(void* object) __asm__("func_0035074c");
+
+// 0x0034F260: frees the pointer stored at its argument and clears that word.
+extern "C" void container_release(void* container) __asm__("func_0034f260");
+
+}  // namespace engine_3518d0_calls
+
+extern "C" u32 engine_func_003518d0(void* object) {
+    using namespace engine_3518d0;
+    using namespace engine_3518d0_calls;
+
+    // 0x003518DC: the owner word gates the whole teardown.
+    if (field<u32>(object, kOwnerOffset) == 0) {
+        return 0;
+    }
+
+    field<u8>(object, kShutdownByteOffset) = 1;
+    AsdSync_Reset(static_cast<u8*>(object) + kLockStateOffset);
+
+    // 0x003518F8: the key is read after the sync reset.
+    const u32 handle = field<u32>(object, kLockHandleOffset);
+    u32 handle_copy = handle;
+    u32 status_out;
+    const s32 status =
+        AsdKernel_WaitProcessWideKey(&status_out, &handle_copy, kWaitCount,
+                                     kWaitAll, kNoOperation, kNoOperation,
+                                     handle);
+    if (status < 0) {
+        AsdKernel_AbortOnFailure(status);
+    }
+
+    field<u8>(object, kLockFlagOffset) = 1;
+    AsdSync_WaitOnce(static_cast<u8*>(object) + kLockHandleOffset);
+
+    // 0x00351930: reload; a callee may have replaced the handle.
+    const u32 lock_handle = field<u32>(object, kLockHandleOffset);
+    if (lock_handle != 0) {
+        svc_close_handle(lock_handle);
+        field<u32>(object, kLockHandleOffset) = 0;
+    }
+
+    // 0x0035194C..0x0035198C: the global SDK object pair.
+    sdk_object_release(*reinterpret_cast<void**>(kSdkGlobalAddress + 4));
+    void* const held = *reinterpret_cast<void**>(kSdkGlobalAddress + 4);
+    if (held != nullptr) {
+        sdk_object_release(held);
+        AsdMem_FreeIfNotNull(held);
+    }
+    *reinterpret_cast<u32*>(kSdkGlobalAddress + 4) = 0;
+    AsdMem_Free(*reinterpret_cast<void**>(kSdkGlobalAddress));
+    *reinterpret_cast<u32*>(kSdkGlobalAddress) = 0;
+
+    field<u32>(object, kState08Offset) = 0xFFFFFFFF;
+    owner_reset(object);
+
+    // 0x00351998: word elements notified through vtable slot +0x04.
+    s32 index = 0;
+    s32 count = field<s32>(object, kElementCountAOffset);
+    if (count > 0) {
+        do {
+            void* const slot_object = field<void*>(object, kSlotObjectOffset);
+            const u32 owner = field<u32>(object, kOwnerOffset);
+            const u32 element =
+                field<u32>(object, kElementBaseAOffset +
+                                       static_cast<u32>(index) * 4u);
+            const SlotNotify notify = reinterpret_cast<SlotNotify>(
+                vtable_of(slot_object)[kSlotNotifyIndex]);
+            notify(slot_object, owner, element);
+            field<u32>(object, kElementBaseAOffset +
+                                   static_cast<u32>(index) * 4u) = 0;
+            count = field<s32>(object, kElementCountAOffset);
+            ++index;
+        } while (count > index);
+    }
+
+    // 0x003519D8: word elements notified through vtable slot +0x0C.
+    index = 0;
+    count = field<s32>(object, kElementCountBOffset);
+    if (count > 0) {
+        do {
+            void* const slot_object = field<void*>(object, kSlotObjectOffset);
+            const u32 owner = field<u32>(object, kOwnerOffset);
+            const u32 element =
+                field<u32>(object, kElementBaseBOffset +
+                                       static_cast<u32>(index) * 4u);
+            const SlotNotify notify = reinterpret_cast<SlotNotify>(
+                vtable_of(slot_object)[kReleaseNotifyIndex]);
+            notify(slot_object, owner, element);
+            field<u32>(object, kElementBaseBOffset +
+                                   static_cast<u32>(index) * 4u) = 0;
+            count = field<s32>(object, kElementCountBOffset);
+            ++index;
+        } while (count > index);
+    }
+
+    // 0x00351A18: 0x18-byte records, first word notified through the owner's
+    // vtable slot +0x04 when non-null, then zeroed.
+    index = 0;
+    count = field<s32>(object, kRecordCountOffset);
+    if (count > 0) {
+        do {
+            u8* const record =
+                static_cast<u8*>(object) + kRecordBaseOffset +
+                static_cast<u32>(index) * kRecordStride;
+            const u32 element = *reinterpret_cast<u32*>(record);
+            if (element != 0) {
+                void* const owner = field<void*>(object, kOwnerOffset);
+                const RecordNotify notify = reinterpret_cast<RecordNotify>(
+                    vtable_of(owner)[kSlotNotifyIndex]);
+                notify(owner, element);
+                *reinterpret_cast<u32*>(record) = 0;
+            }
+            count = field<s32>(object, kRecordCountOffset);
+            ++index;
+        } while (count > index);
+    }
+
+    // 0x00351A60: release the container and drop every retained pointer.
+    container_release(static_cast<u8*>(object) + kContainer158Offset);
+    field<u32>(object, kOwnerOffset) = 0;
+    field<u32>(object, kCleared18Offset) = 0;
+    field<u32>(object, kSlotObjectOffset) = 0;
+    field<u32>(object, kCleared1BCOffset) = 0;
+    field<u32>(object, kCleared1C0Offset) = 0;
+    return 0;
 }
 
 // DECOMP_FUNC(0x001204a4, 444)
-// 106 ARM instructions through unconditional pop; 20 trailing data bytes.
-extern "C" __attribute__((naked)) void engine_func_001204a4() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d47f0, 0xe1a05000, 0xe1a07001, 0xe3a02004\n"
-        ".word 0xe5910000, 0xe3a01048, 0xe5903008, 0xe1a00007\n"
-        ".word 0xe12fff33, 0xe1b04000, 0x13a01048, 0x1b069196\n"
-        ".word 0xe59f0170, 0xe59f1170, 0xe3a02405, 0xe3a09000\n"
-        ".word 0xe8840007, 0xe2843024, 0xe584900c, 0xe5849010\n"
-        ".word 0xe5849014, 0xe5950000, 0xe59f1150, 0xe5840018\n"
-        ".word 0xe5952004, 0xe59f0148, 0xe5841020, 0xe584201c\n"
-        ".word 0xe8830201, 0xe2841030, 0xe584902c, 0xe5950008\n"
-        ".word 0xe3a02004, 0xe8810201, 0xe3a01020, 0xe5970000\n"
-        ".word 0xe5903008, 0xe1a00007, 0xe12fff33, 0xe1b06000\n"
-        ".word 0x0a000007, 0xe5869000, 0xe5869004, 0xe5869008\n"
-        ".word 0xe586900c, 0xe5869010, 0xe5869014, 0xe5869018\n"
-        ".word 0xe586901c, 0xe5867010, 0xe5951000, 0xe3a00020\n"
-        ".word 0xed9f1a38, 0xe5861000, 0xe5951004, 0xe5861004\n"
-        ".word 0xe595100c, 0xe1c601f4, 0xedd50a00, 0xed950a01\n"
-        ".word 0xe5d50018, 0xeef80ae0, 0xeeb80ac0, 0xe3500000\n"
-        ".word 0x0286000c, 0x05869008, 0xee610a20, 0xee200a80\n"
-        ".word 0xeebc0ac0, 0xee108a10, 0x0a000016, 0xe5970000\n"
-        ".word 0xe3a02080, 0xe1a01008, 0xe5903008, 0xe1a00007\n"
-        ".word 0xe12fff33, 0xe5d51010, 0xe1a03000, 0xe3510000\n"
-        ".word 0x0a000006, 0xe1b01008, 0xe3a02000, 0x120220ff\n"
-        ".word 0x0a000002, 0xe2511001, 0xe4c02001, 0x1afffffc\n"
-        ".word 0xe3530000, 0xe286000c, 0x10431000, 0xe5868008\n"
-        ".word 0x15801000, 0x1a000000, 0xe5809000, 0xe3560000\n"
-        ".word 0xe2840038, 0x10461000, 0x05809000, 0x15801000\n"
-        ".word 0xe5d50011, 0xe5c4003c, 0xe5950014, 0xe5840040\n"
-        ".word 0xe1a00004, 0xe8bd87f0, 0x20000021, 0x48535854\n"
-        ".word 0x00006040, 0x00001405, 0x40800000\n"
-    );
+//
+// Recovered contract (ARM 0x001204A4..0x00120647 = 106 instructions through
+// the `pop {r4-r8, sb, sl, pc}`; 0x0012064C..0x0012065F holds the five-word
+// literal pool 0x20000021, 0x48535854, 0x00006040, 0x00001405, 0x40800000):
+//
+//   u8* engine_func_001204a4(const void* descriptor, void* allocator);
+//
+//   * `descriptor` arrives in r0 (r5), `allocator` in r1 (r7).  r2 and r3 are
+//     never read.  The allocator is a context object; its vtable slot +0x08
+//     (index 2) is an allocation routine.  It is reloaded from `[allocator]`
+//     at every one of the three call sites, so a callee that rewrites the
+//     context or its vtable changes the later calls.
+//   * First allocation: (allocator, 0x48, 4) -> r4.  When non-null it is
+//     zeroed with AsdMem_Zero(r4, 0x48) (0x002C4B30).  r4 is then filled as
+//     the 0x48-byte record described by the constants below and returned.
+//   * Second allocation: (allocator, 0x20, 4) -> r6.  When non-null its eight
+//     words are zeroed.  r6 is then filled as the 0x20-byte sub-record.  The
+//     stores are unconditional, so a null r6 writes through address 0 exactly
+//     like the original (the caller's allocator never returns null in the
+//     observed code path).
+//   * The payload size is `(u32)(4.0f * (f32)size_x * (f32)size_y)` using the
+//     VFP single-precision sequence at 0x0012058C..0x001205B8: two
+//     vcvt.f32.s32, two vmul.f32 and one vcvt.u32.f32 (saturating).  It is
+//     computed unconditionally but only consumed when descriptor+0x18 is
+//     non-zero.
+//   * descriptor+0x18 == 0: sub-record size = 0 and payload link = 0.
+//     Otherwise a third allocation (allocator, payload_size, 0x80) runs; when
+//     descriptor+0x10 is non-zero and payload_size is non-zero, exactly
+//     payload_size zero bytes are written to it.  Then sub-record size =
+//     payload_size and sub-record link = buffer - (sub-record + 0x0C), or 0
+//     when the allocation returned null.
+//   * Finally record+0x38 = sub-record - (record + 0x38), or 0 for a null
+//     sub-record; record+0x3C = (u8)descriptor+0x11; record+0x40 =
+//     (u32)descriptor+0x14; return the record pointer.
+//
+// The only caller found in the image is 0x0010BBAC inside
+// engine_func_0010bb08 (AsdList_Init), which builds the 0x1C-byte descriptor
+// on its stack and passes the AsdRes context from 0x002C31BC as allocator.
+// It stores the returned record at [0x00464AF0 + 0x80] (the AsdModel manager)
+// and ignores r2/r3 of this routine.
+namespace engine_1204a4 {
+
+// Input descriptor (r0/r5).  Offsets are the fields the body reads; the only
+// known caller fills a 0x1C-byte structure.
+constexpr u32 kSizeXOffset = 0x00;        // s32, first size factor
+constexpr u32 kSizeYOffset = 0x04;        // s32, second size factor
+constexpr u32 kValue08Offset = 0x08;      // u32, copied to record+0x30
+constexpr u32 kValue0COffset = 0x0C;      // u32, copied to sub-record+0x18
+constexpr u32 kZeroPayloadOffset = 0x10;  // u8, zero the payload buffer
+constexpr u32 kByte11Offset = 0x11;       // u8, copied to record+0x3C
+constexpr u32 kValue14Offset = 0x14;      // u32, copied to record+0x40
+constexpr u32 kPayloadFlagOffset = 0x18;  // u8, allocate the payload
+
+// Record returned to the caller (r4), 0x48 bytes.  Bytes +0x41..+0x47 are
+// only zeroed by AsdMem_Zero; +0x44 has no explicit store.
+constexpr u32 kRecordMagic0Offset = 0x00;
+constexpr u32 kRecordMagic1Offset = 0x04;
+constexpr u32 kRecordMagic2Offset = 0x08;
+constexpr u32 kRecordZero0COffset = 0x0C;
+constexpr u32 kRecordZero10Offset = 0x10;
+constexpr u32 kRecordZero14Offset = 0x14;
+constexpr u32 kRecordSizeXOffset = 0x18;
+constexpr u32 kRecordSizeYOffset = 0x1C;
+constexpr u32 kRecordWord20Offset = 0x20;
+constexpr u32 kRecordWord24Offset = 0x24;
+constexpr u32 kRecordZero28Offset = 0x28;
+constexpr u32 kRecordZero2COffset = 0x2C;
+constexpr u32 kRecordValue30Offset = 0x30;
+constexpr u32 kRecordZero34Offset = 0x34;
+constexpr u32 kRecordSubRecordOffset = 0x38;  // self-relative link
+constexpr u32 kRecordByte3COffset = 0x3C;
+constexpr u32 kRecordValue40Offset = 0x40;
+
+constexpr u32 kRecordMagic0 = 0x20000021;  // ldr literal 0x0012064C
+constexpr u32 kRecordMagic1 = 0x48535854;  // ldr literal 0x00120650
+constexpr u32 kRecordMagic2 = 0x05000000;  // mov r2,#0x05000000
+constexpr u32 kRecordWord20 = 0x00006040;  // ldr literal 0x00120654
+constexpr u32 kRecordWord24 = 0x00001405;  // ldr literal 0x00120658
+
+// Sub-record allocated second (r6), 0x20 bytes.  The zero pass writes every
+// word; the stores that follow overwrite +0x00, +0x04, +0x10, +0x14 and +0x18.
+constexpr u32 kSubWord00Offset = 0x00;     // descriptor+0x00
+constexpr u32 kSubWord04Offset = 0x04;     // descriptor+0x04
+constexpr u32 kSubSizeOffset = 0x08;       // u32 payload byte count
+constexpr u32 kSubPayloadOffset = 0x0C;    // u32 self-relative payload link
+constexpr u32 kSubContextOffset = 0x10;    // allocator context
+constexpr u32 kSubWord14Offset = 0x14;     // 0x20
+constexpr u32 kSubWord18Offset = 0x18;     // descriptor+0x0C
+constexpr u32 kSubWord1COffset = 0x1C;     // zeroed, never rewritten
+
+constexpr u32 kRecordSize = 0x48;          // first allocation size
+constexpr u32 kSubRecordSize = 0x20;       // second allocation size
+constexpr u32 kRecordAlign = 4;            // r2 of the first allocation
+constexpr u32 kSubRecordAlign = 4;         // r2 of the second allocation
+constexpr u32 kPayloadFlags = 0x80;        // r2 of the third allocation
+constexpr u32 kSubWord14Value = 0x20;      // `mov r0,#0x20; strd`
+constexpr u32 kAllocateSlot = 2;           // vtable index for +0x08
+constexpr f32 kPayloadScale = 4.0f;        // literal 0x40800000
+
+using AllocateFn = void* (*)(void* context, u32 size, u32 flags);
+
+inline void** vtable_of(void* object) {
+    return *reinterpret_cast<void***>(object);
+}
+
+// The slot is reloaded at every call site (0x001204B4, 0x00120530 and
+// 0x001205CC all execute `ldr r0,[r7]; ldr r3,[r0,#8]`).
+inline AllocateFn allocate_slot(void* context) {
+    return reinterpret_cast<AllocateFn>(vtable_of(context)[kAllocateSlot]);
+}
+
+template <typename T>
+inline T& field(void* object, u32 offset) {
+    return *reinterpret_cast<T*>(static_cast<u8*>(object) + offset);
+}
+
+template <typename T>
+inline const T& field(const void* object, u32 offset) {
+    return *reinterpret_cast<const T*>(static_cast<const u8*>(object) + offset);
+}
+
+}  // namespace engine_1204a4
+
+namespace engine_1204a4_calls {
+
+// 0x002C4B30: zeroes `size` bytes at `ptr`.  Named AsdMem_Zero in
+// src/engine/asd_file.cpp, src/nn/mobiclip.cpp and the sibling records.
+extern "C" void AsdMem_Zero(void* ptr, u32 size)
+    __asm__("engine_func_002c4b30");
+
+}  // namespace engine_1204a4_calls
+
+extern "C" u8* engine_func_001204a4(const void* descriptor, void* allocator) {
+    using namespace engine_1204a4;
+    using namespace engine_1204a4_calls;
+
+    // 0x001204B0..0x001204D0: 0x48-byte record, zeroed when non-null.
+    u8* const record = static_cast<u8*>(
+        allocate_slot(allocator)(allocator, kRecordSize, kRecordAlign));
+    if (record != nullptr) {
+        AsdMem_Zero(record, kRecordSize);
+    }
+
+    // 0x001204D4..0x001204E4: three literal/constant header words.
+    field<u32>(record, kRecordMagic0Offset) = kRecordMagic0;
+    field<u32>(record, kRecordMagic1Offset) = kRecordMagic1;
+    field<u32>(record, kRecordMagic2Offset) = kRecordMagic2;
+    field<u32>(record, kRecordZero0COffset) = 0;
+    field<u32>(record, kRecordZero10Offset) = 0;
+    field<u32>(record, kRecordZero14Offset) = 0;
+
+    // 0x001204F8..0x00120514: the two size words plus two constant words.
+    field<u32>(record, kRecordSizeXOffset) =
+        field<u32>(descriptor, kSizeXOffset);
+    field<u32>(record, kRecordWord20Offset) = kRecordWord20;
+    field<u32>(record, kRecordSizeYOffset) =
+        field<u32>(descriptor, kSizeYOffset);
+    field<u32>(record, kRecordWord24Offset) = kRecordWord24;
+    field<u32>(record, kRecordZero28Offset) = 0;
+    field<u32>(record, kRecordZero2COffset) = 0;
+    field<u32>(record, kRecordValue30Offset) =
+        field<u32>(descriptor, kValue08Offset);
+    field<u32>(record, kRecordZero34Offset) = 0;
+
+    // 0x00120520..0x0012053C: 0x20-byte sub-record.
+    u8* const sub = static_cast<u8*>(
+        allocate_slot(allocator)(allocator, kSubRecordSize, kSubRecordAlign));
+    if (sub != nullptr) {
+        field<u32>(sub, kSubWord00Offset) = 0;
+        field<u32>(sub, kSubWord04Offset) = 0;
+        field<u32>(sub, kSubSizeOffset) = 0;
+        field<u32>(sub, kSubPayloadOffset) = 0;
+        field<u32>(sub, kSubContextOffset) = 0;
+        field<u32>(sub, kSubWord14Offset) = 0;
+        field<u32>(sub, kSubWord18Offset) = 0;
+        field<u32>(sub, kSubWord1COffset) = 0;
+    }
+
+    // 0x00120568..0x00120588: unconditional stores (also through a null sub).
+    field<void*>(sub, kSubContextOffset) = allocator;
+    field<u32>(sub, kSubWord00Offset) = field<u32>(descriptor, kSizeXOffset);
+    field<u32>(sub, kSubWord04Offset) = field<u32>(descriptor, kSizeYOffset);
+    field<u32>(sub, kSubWord14Offset) = kSubWord14Value;
+    field<u32>(sub, kSubWord18Offset) = field<u32>(descriptor, kValue0COffset);
+
+    // 0x0012058C..0x001205B8: 4.0f * size_x * size_y, then vcvt.u32.f32.
+    const f32 scaled = kPayloadScale *
+                       static_cast<f32>(field<s32>(descriptor, kSizeXOffset)) *
+                       static_cast<f32>(field<s32>(descriptor, kSizeYOffset));
+    const u32 payload_size = static_cast<u32>(scaled);
+
+    if (field<u8>(descriptor, kPayloadFlagOffset) == 0) {
+        // 0x001205A4..0x0012061C: no payload.
+        field<u32>(sub, kSubSizeOffset) = 0;
+        field<u32>(sub, kSubPayloadOffset) = 0;
+    } else {
+        // 0x001205C0..0x001205D4: payload allocation.
+        u8* const payload = static_cast<u8*>(
+            allocate_slot(allocator)(allocator, payload_size, kPayloadFlags));
+
+        // 0x001205E0..0x00120600: byte fill, skipped when the descriptor flag
+        // is clear or the size is zero.
+        if (field<u8>(descriptor, kZeroPayloadOffset) != 0) {
+            u8* cursor = payload;
+            for (u32 remaining = payload_size; remaining != 0; --remaining) {
+                *cursor++ = 0;
+            }
+        }
+
+        // 0x00120604..0x0012061C: size always, link only when non-null.
+        field<u32>(sub, kSubSizeOffset) = payload_size;
+        if (payload != nullptr) {
+            field<u32>(sub, kSubPayloadOffset) = static_cast<u32>(
+                payload - (sub + kSubPayloadOffset));
+        } else {
+            field<u32>(sub, kSubPayloadOffset) = 0;
+        }
+    }
+
+    // 0x00120620..0x00120630: self-relative link to the sub-record.
+    if (sub != nullptr) {
+        field<u32>(record, kRecordSubRecordOffset) = static_cast<u32>(
+            sub - (record + kRecordSubRecordOffset));
+    } else {
+        field<u32>(record, kRecordSubRecordOffset) = 0;
+    }
+
+    // 0x00120634..0x00120640: trailing byte/word copies.
+    field<u8>(record, kRecordByte3COffset) =
+        field<u8>(descriptor, kByte11Offset);
+    field<u32>(record, kRecordValue40Offset) =
+        field<u32>(descriptor, kValue14Offset);
+    return record;
 }
 
 // DECOMP_FUNC(0x002d110c, 444)
-// 103 ARM instructions through unconditional pop; 32 trailing data bytes.
-extern "C" __attribute__((naked)) void func_002d110c() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d47f0, 0xe1a07000, 0xe5905024, 0xe28540c0\n"
-        ".word 0xe59580b8, 0xe2986000, 0x1597601c, 0x13560000\n"
-        ".word 0x1a00000c, 0xe2840010, 0xed9f0a5b, 0xeddf0a5b\n"
-        ".word 0xed840a06, 0xed9f1a5a, 0xed840a07, 0xeddf1a59\n"
-        ".word 0xed9f2a59, 0xecc00a02, 0xe2840020, 0xecc01a02\n"
-        ".word 0xe5950028, 0xe5840004, 0xe1580006, 0xb3a00000\n"
-        ".word 0xb5c40003, 0xba00004b, 0xe1a03008, 0xe1a02006\n"
-        ".word 0xe2851024, 0xe1a00005, 0xebfe61da, 0xe1a09000\n"
-        ".word 0xe5970010, 0xebfe191f, 0xe59f7120, 0xe2871c01\n"
-        ".word 0xe2870e11, 0xec910a04, 0xec800a04, 0xe1a00009\n"
-        ".word 0xebfe1918, 0xed970a40, 0xedd70a44, 0xe2870c01\n"
-        ".word 0xee200a20, 0xed870a40, 0xed970a41, 0xedd70a45\n"
-        ".word 0xee200a20, 0xed870a41, 0xed970a42, 0xedd70a46\n"
-        ".word 0xee200a20, 0xed870a42, 0xedd70a47, 0xed970a43\n"
-        ".word 0xee200a20, 0xed870a43, 0xed9f0a31, 0xecd00a04\n"
-        ".word 0xee600a80, 0xee211a00, 0xee611a80, 0xee222a00\n"
-        ".word 0xeefc0ae0, 0xeebc0ac1, 0xee100a90, 0xeefc0ae1\n"
-        ".word 0xee101a10, 0xeebc0ac2, 0xe1a00c00, 0xe20130ff\n"
-        ".word 0xe1800803, 0xee102a90, 0xee101a10, 0xe20220ff\n"
-        ".word 0xe20110ff, 0xe1800402, 0xe1800001, 0xe6bf1f30\n"
-        ".word 0xe6bf3f30, 0xe1a02821, 0xe1a01423, 0xe6bf3f30\n"
-        ".word 0xe6bf0f30, 0xe1a03c23, 0xe5c43000, 0xe5c42001\n"
-        ".word 0xe5c41002, 0xe5c40003, 0xe1a02008, 0xe1a01006\n"
-        ".word 0xe2850034, 0xebfe6138, 0xeddf0a0e, 0xe1a02008\n"
-        ".word 0xe1a01006, 0xee300a20, 0xe2850060, 0xed840a03\n"
-        ".word 0xebfe6131, 0xed840a02, 0xe8bd87f0, 0x00000000\n"
-        ".word 0x43480000, 0x42f00000, 0x43c80000, 0x43700000\n"
-        ".word 0x004ea81c, 0x437f0000, 0x3f800000\n"
-    );
+//
+// Recovered contract (ARM 0x002D110C..0x002D12A4; the last 0x20 bytes are the
+// literal pool):
+//   * `owner` (r0) supplies `state = owner->state_24`; the display record is
+//     `state + 0xC0`.  `count = state->count_b8` and the frame value is
+//     `owner->frame_1c`, but the frame is only read when `count != 0`; a zero
+//     count keeps it at zero and takes the default-initialisation branch.
+//   * That branch runs when `count == 0 || owner->frame_1c == 0`.  It writes
+//     the four defaults 200.0f, 120.0f, 400.0f, 240.0f to display +0x10,
+//     +0x14, +0x20 and +0x24, clears the floats at +0x18/+0x1C, and copies
+//     `state->value_28` to display +4.
+//   * A signed `count < frame` test then zeroes display byte +3 and returns.
+//   * Normal path: 0x002698F4(state, state+0x24, frame, count) returns a packed
+//     colour.  0x00257614 converts `owner->color_10` into four normalized
+//     floats at 0x004EA91C; those are copied to 0x004EA92C, the sample colour
+//     is converted into 0x004EA91C by a second 0x00257614 call, and the two
+//     vectors are multiplied in place.  Each product is scaled by 255.0f,
+//     truncated to u32, and the low bytes are written in reverse order to
+//     display +0..+3 (display[0] = component3, display[3] = component0).
+//   * Finally 0x00269768 samples `state+0x34` and `state+0x60`: the first
+//     result plus 1.0f is stored at display +0xC and the second result at
+//     display +8.  All calls are direct; there are no indirect calls, stack
+//     arguments, loops, or callee-saved results.
+
+extern "C" u32 func_002698f4(void* source, void* palette, s32 frame,
+                             s32 count);
+extern "C" void func_00257614(u32 color);
+extern "C" f32 func_00269768(void* curve, s32 frame, s32 count);
+
+namespace func_2d110c {
+
+// Literal pool at 0x002D12A8..0x002D12C4.
+constexpr u32 kColorBlockAddress = 0x004EA81C;  // 0x002D12BC
+constexpr u32 kColorCurrentOffset = 0x100;      // -> 0x004EA91C
+constexpr u32 kColorPreviousOffset = 0x110;     // -> 0x004EA92C
+
+constexpr f32 kInitValue10 = 200.0f;   // 0x43480000
+constexpr f32 kInitValue14 = 120.0f;   // 0x42F00000
+constexpr f32 kInitValue20 = 400.0f;   // 0x43C80000
+constexpr f32 kInitValue24 = 240.0f;   // 0x43700000
+constexpr f32 kColorScale = 255.0f;    // 0x437F0000
+constexpr f32 kCurveBias = 1.0f;       // 0x3F800000
+
+struct __attribute__((packed, may_alias)) Display {
+    u8 color_00[4];  // +0x00: packed bytes [component3, 2, 1, 0]
+    u32 value_04;    // +0x04: copied from state->value_28 on init
+    f32 value_08;    // +0x08: second 0x00269768 sample
+    f32 value_0c;    // +0x0C: first 0x00269768 sample + 1.0f
+    f32 value_10;    // +0x10: default 200.0f
+    f32 value_14;    // +0x14: default 120.0f
+    f32 value_18;    // +0x18: cleared on init
+    f32 value_1c;    // +0x1C: cleared on init
+    f32 value_20;    // +0x20: default 400.0f
+    f32 value_24;    // +0x24: default 240.0f
+};
+
+struct __attribute__((packed, may_alias)) State {
+    u8 pad_00[0x24];
+    u8 palette_24[0x04];  // +0x24: first word handed to 0x002698F4
+    u32 value_28;         // +0x28: copied to display +4 on init
+    u8 pad_2c[0x08];
+    u8 curve_34[0x2C];    // +0x34: first 0x00269768 sampling record
+    u8 curve_60[0x58];    // +0x60: second 0x00269768 sampling record
+    s32 count_b8;         // +0xB8: signed record count
+    u8 pad_bc[0x04];
+    Display display_c0;   // +0xC0
+};
+
+struct __attribute__((packed, may_alias)) Owner {
+    u8 pad_00[0x10];
+    u32 color_10;     // +0x10: packed colour converted by 0x00257614
+    u8 pad_14[0x08];
+    s32 frame_1c;     // +0x1C: read only when count != 0
+    u8 pad_20[0x04];
+    State* state_24;  // +0x24
+};
+
+}  // namespace func_2d110c
+
+extern "C" void func_002d110c(func_2d110c::Owner* owner) {
+    using namespace func_2d110c;
+
+    State* const state = owner->state_24;
+    Display* const display = &state->display_c0;
+
+    const s32 count = state->count_b8;
+    s32 frame = 0;
+    bool initialize = true;
+    if (count != 0) {
+        frame = owner->frame_1c;
+        initialize = frame == 0;
+    }
+
+    if (initialize) {
+        display->value_18 = 0.0f;
+        display->value_1c = 0.0f;
+        display->value_10 = kInitValue10;
+        display->value_14 = kInitValue14;
+        display->value_20 = kInitValue20;
+        display->value_24 = kInitValue24;
+        display->value_04 = state->value_28;
+    }
+
+    if (count < frame) {
+        display->color_00[3] = 0;
+        return;
+    }
+
+    const u32 sampled = func_002698f4(state, state->palette_24, frame, count);
+
+    func_00257614(owner->color_10);
+
+    f32* const current = reinterpret_cast<f32*>(
+        kColorBlockAddress + kColorCurrentOffset);
+    f32* const previous = reinterpret_cast<f32*>(
+        kColorBlockAddress + kColorPreviousOffset);
+    previous[0] = current[0];
+    previous[1] = current[1];
+    previous[2] = current[2];
+    previous[3] = current[3];
+
+    func_00257614(sampled);
+
+    current[0] = current[0] * previous[0];
+    current[1] = current[1] * previous[1];
+    current[2] = current[2] * previous[2];
+    current[3] = current[3] * previous[3];
+
+    const u32 scaled0 = static_cast<u32>(current[0] * kColorScale);
+    const u32 scaled1 = static_cast<u32>(current[1] * kColorScale);
+    const u32 scaled2 = static_cast<u32>(current[2] * kColorScale);
+    const u32 scaled3 = static_cast<u32>(current[3] * kColorScale);
+
+    display->color_00[0] = static_cast<u8>(scaled3);
+    display->color_00[1] = static_cast<u8>(scaled2);
+    display->color_00[2] = static_cast<u8>(scaled1);
+    display->color_00[3] = static_cast<u8>(scaled0);
+
+    display->value_0c =
+        func_00269768(state->curve_34, frame, count) + kCurveBias;
+    display->value_08 = func_00269768(state->curve_60, frame, count);
 }
 
 // DECOMP_FUNC(0x00336e20, 444)
-// 107 ARM instructions through unconditional pop; 16 trailing data bytes.
-extern "C" __attribute__((naked)) void battle_func_00336e20() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4ff1, 0xe24dd0d8, 0xe59f019c, 0xe5900000\n"
-        ".word 0xe5901634, 0xe3811901, 0xe5801634, 0xe59f018c\n"
-        ".word 0xe5900000, 0xebfc263e, 0xe59d10d8, 0xe3a06000\n"
-        ".word 0xe3a00004, 0xe2812b07, 0xe28db008, 0xe2822fa6\n"
-        ".word 0xe0801100, 0xe5923000, 0xe0811300, 0xe2800001\n"
-        ".word 0xe0831101, 0xe5913050, 0xe3130001, 0x13130002\n"
-        ".word 0x178b1106, 0x12866001, 0xe3500036, 0xbafffff3\n"
-        ".word 0xe59f313c, 0xe3a02004, 0xe1a01006, 0xe1a0000b\n"
-        ".word 0xfbfe0418, 0xe3a0a000, 0xe3560000, 0xe1a0700a\n"
-        ".word 0xe1a0400a, 0xda00003e, 0xe79b5104, 0xe5950050\n"
-        ".word 0xe3100001, 0x13100002, 0x0a000036, 0xe1d505b8\n"
-        ".word 0xe3100b02, 0x1a000033, 0xe5951050, 0xe3800b02\n"
-        ".word 0xe1c505b8, 0xe59f00ec, 0xe3110010, 0x0a000007\n"
-        ".word 0xe280000c, 0xe890100e, 0xe6bf9071, 0xe6bf0072\n"
-        ".word 0xe58d00d0, 0xe6bf807c, 0xe6bf0073, 0xea000008\n"
-        ".word 0xe4903004, 0xe4902004, 0xe4901010, 0xe6bf9073\n"
-        ".word 0xe590c000, 0xe6bf0072, 0xe58d00d0, 0xe6bf0071\n"
-        ".word 0xe6bf807c, 0xe3a03000, 0xe58d0000, 0xe59d00d8\n"
-        ".word 0xe1a02003, 0xe1a01005, 0xebfc25d7, 0xe3a00000\n"
-        ".word 0xe58d0004, 0xe59d00d0, 0xe3a030ff, 0xe1a02005\n"
-        ".word 0xe0800008, 0xe1000987, 0xe3a01000, 0xebfc38ef\n"
-        ".word 0xe5950050, 0xe3a03006, 0xe1a02005, 0xe3100010\n"
-        ".word 0xe3a0000d, 0xe58d0000, 0x13a03007, 0xe1008987\n"
-        ".word 0xe3a01000, 0xebfc25b1, 0xe2870001, 0xe35a0000\n"
-        ".word 0xe6bf7070, 0x03a0a001, 0xe2844001, 0xe1540006\n"
-        ".word 0xbaffffc0, 0xe59f0010, 0xe3a01078, 0xe5900000\n"
-        ".word 0xebfc2665, 0xe28dd0dc, 0xe8bd8ff0, 0x004342c8\n"
-        ".word 0x00435d18, 0x0019d76c, 0x00439a20\n"
-    );
+//
+// Recovered contract (ARM 0x00336E20..0x00336FCB; the last 16 bytes are the
+// literal pool):
+//   * `owner` (r0) owns the battle entry table at `*(u32*)(owner + 0x1E98)`.
+//     The global slot 0x004342C8 holds the shared battle context; bit 14
+//     (0x4000) is set in its `flags_634` word before the table scan, and the
+//     slot is dereferenced again for the final 0x0024095C call (so the
+//     pointer is reloaded after the helper calls).  The global slot
+//     0x00435D18 is dereferenced once and passed to 0x00240744.
+//   * Scan: entries 4..0x35 (50 total) lie at a 0x114-byte stride from the
+//     array base.  An entry is queued when `flags_50` has both bit 0 and
+//     bit 1 set.  The queue is a 50-pointer local array.
+//   * 0x002B7F08 (Thumb entry 0x002B7F0A) sorts the queue in place with
+//     element size 4 and the distance comparator at 0x0019D76C.
+//   * For each queued entry, in sorted order, the scan conditions are tested
+//     again (both queue bits still set, then the 0x0800 "done" bit in
+//     `state_58` clear).  The done bit is then set and three effect helpers
+//     run with a processed-row counter `row` (s16, starts at zero and
+//     increments once per dispatched entry):
+//       0x002406AC(owner, entry, 0, 0)
+//       0x00245330(t2 + t3 + (s16)row * t0, 0, entry, 0xFF, (s32)t4, 0)
+//       0x00240660((s16)row * t0 + t3, 0, entry,
+//                  flags_50 & 0x10 ? 7 : 6, 0x0D)
+//   * `flags_50 & 0x10` selects one of two signed-16 coordinate sets from the
+//     table at 0x00439A20: clear selects offsets 0x00/0x04/0x08, set selects
+//     0x0C/0x10/0x14, and t3 always comes from 0x18.  The helpers receive the
+//     coordinates in t0, t2 and t4 order as shown above; 0x00245330 also gets
+//     t4 as its first stack argument and zero as its second, while 0x00240660
+//     gets 0x0D as its stack argument.
+//   * Finally 0x0024095C(*(u32*)0x004342C8, 0x78) runs; the routine itself
+//     returns void, but r0 is whatever that last call leaves behind.
+//   * The original keeps a dead "processed anything" flag in sl (written but
+//     never read); it is not part of the observable contract.
+
+extern "C" void func_00240744(void* owner);
+extern "C" void func_002406ac(void* self, void* entry, s32 value, s32 flags);
+extern "C" void func_00245330(s32 value, s32 arg1, void* entry, s32 kind,
+                              s32 stack0, s32 stack1);
+extern "C" void func_00240660(s32 value, s32 arg1, void* entry, s32 kind,
+                              s32 stack0);
+extern "C" void func_0024095c(void* context, s32 value);
+// Thumb routine at 0x002B7F0A (ledger name camp_func_002b7f08).
+extern "C" void camp_func_002b7f08(void* base, s32 count, s32 element_size,
+                                   void* compare);
+
+namespace func_336e20 {
+
+// 0x004342C8 holds the shared battle-context pointer.
+constexpr u32 kBattleContextSlot = 0x004342C8;
+// 0x00435D18 holds the owner pointer consumed by 0x00240744.
+constexpr u32 kRecordOwnerSlot = 0x00435D18;
+// 0x00439A20 is the base of the signed-16 layout coordinate table.
+constexpr u32 kLayoutTable = 0x00439A20;
+// 0x0019D76C is the distance comparator entry inside 0x0019D650.
+constexpr u32 kDistanceComparator = 0x0019D76C;
+
+constexpr u32 kEntryArrayOffset = 0x1E98;
+constexpr s32 kFirstEntry = 4;
+constexpr s32 kEntryLimit = 0x36;
+constexpr u32 kEntryStride = 0x114;
+constexpr u32 kEntryFlagA = 0x0001;
+constexpr u32 kEntryFlagB = 0x0002;
+constexpr u32 kEntryFlagMask = kEntryFlagA | kEntryFlagB;
+constexpr u16 kEntryDone = 0x0800;
+constexpr u32 kEntrySelectedBit = 0x10;
+constexpr u32 kContextStartBit = 0x4000;
+constexpr s32 kExitValue = 0x78;
+constexpr s32 kElementSize = 4;
+constexpr s32 kStackValue = 0x0D;
+constexpr s32 kQueueCapacity = kEntryLimit - kFirstEntry;
+
+struct __attribute__((may_alias)) Context {
+    u8 pad_000[0x634];
+    // 32-bit read/modify/write in the original (ldr/orr/str at +0x634).
+    volatile u32 flags_634;
+};
+
+struct __attribute__((may_alias)) Entry {
+    u8 pad_00[0x50];
+    // 32-bit accesses in the original (ldr at +0x50).
+    volatile u32 flags_50;
+    u8 pad_54[0x04];
+    // 16-bit accesses in the original (ldrh/strh at +0x58).
+    volatile u16 state_58;
+    u8 pad_5a[kEntryStride - 0x5A];
+};
+
+inline s16 table_s16(u32 offset) {
+    // The original loads 32-bit words (ldm/ldr) and sign-extends the low
+    // halfword with sxth; keep both the word access and the sign extension.
+    const u32 word =
+        *reinterpret_cast<const volatile u32*>(kLayoutTable + offset);
+    return static_cast<s16>(word);
+}
+
+inline Context* battle_context() {
+    return *reinterpret_cast<Context* const*>(kBattleContextSlot);
+}
+
+}  // namespace func_336e20
+
+extern "C" void battle_func_00336e20(void* owner_argument) {
+    using namespace func_336e20;
+
+    u8* const owner = static_cast<u8*>(owner_argument);
+
+    battle_context()->flags_634 |= kContextStartBit;
+    func_00240744(*reinterpret_cast<void* const*>(kRecordOwnerSlot));
+
+    Entry* const table_base =
+        *reinterpret_cast<Entry* const*>(owner + kEntryArrayOffset);
+    Entry* queue[kQueueCapacity];
+    s32 queued = 0;
+
+    for (s32 index = kFirstEntry; index < kEntryLimit; ++index) {
+        Entry* const entry = reinterpret_cast<Entry*>(
+            reinterpret_cast<u8*>(table_base) + kEntryStride * index);
+        if ((entry->flags_50 & kEntryFlagMask) == kEntryFlagMask) {
+            queue[queued] = entry;
+            ++queued;
+        }
+    }
+
+    camp_func_002b7f08(queue, queued, kElementSize,
+                       reinterpret_cast<void*>(kDistanceComparator));
+
+    s32 row = 0;
+    for (s32 index = 0; index < queued; ++index) {
+        Entry* const entry = queue[index];
+        if ((entry->flags_50 & kEntryFlagMask) != kEntryFlagMask) {
+            continue;
+        }
+        const u16 state = entry->state_58;
+        if ((state & kEntryDone) != 0) {
+            continue;
+        }
+
+        const u32 flags = entry->flags_50;
+        entry->state_58 = static_cast<u16>(state | kEntryDone);
+
+        s16 coordinate0;
+        s16 coordinate2;
+        s16 coordinate4;
+        if ((flags & kEntrySelectedBit) != 0) {
+            coordinate0 = table_s16(0x0C);
+            coordinate2 = table_s16(0x10);
+            coordinate4 = table_s16(0x14);
+        } else {
+            coordinate0 = table_s16(0x00);
+            coordinate2 = table_s16(0x04);
+            coordinate4 = table_s16(0x08);
+        }
+        const s16 coordinate3 = table_s16(0x18);
+
+        const s32 row16 = static_cast<s16>(row);
+        const s32 product = row16 * static_cast<s32>(coordinate0);
+
+        func_002406ac(owner_argument, entry, 0, 0);
+
+        func_00245330(static_cast<s32>(coordinate2) +
+                          static_cast<s32>(coordinate3) + product,
+                      0, entry, 0xFF, static_cast<s32>(coordinate4), 0);
+
+        func_00240660(product + static_cast<s32>(coordinate3), 0, entry,
+                      (entry->flags_50 & kEntrySelectedBit) != 0 ? 7 : 6,
+                      kStackValue);
+
+        row = static_cast<s16>(row + 1);
+    }
+
+    func_0024095c(battle_context(), kExitValue);
 }
 
 // DECOMP_FUNC(0x003635f0, 444)
-// 110 ARM instructions through unconditional pop; 4 trailing data bytes.
-extern "C" __attribute__((naked)) void func_003635f0() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d5ff0, 0xe3a06000, 0xe1a09001, 0xe1a0b000\n"
-        ".word 0xe1c94edc, 0xe1540005, 0x0a000006, 0xe5940000\n"
-        ".word 0xe1a01006, 0xe5900028, 0xebfff991, 0xe2844004\n"
-        ".word 0xe1540005, 0x1afffff8, 0xe289800c, 0xe1a06009\n"
-        ".word 0xe8980500, 0xe158000a, 0x0a00001a, 0xe5987000\n"
-        ".word 0xe5970034, 0xe1c040d8, 0xe1540005, 0x0a000008\n"
-        ".word 0xe5940000, 0xe1a02006, 0xe1a01007, 0xe5903000\n"
-        ".word 0xe5933000, 0xe12fff33, 0xe2844004, 0xe1540005\n"
-        ".word 0x1afffff6, 0xe5980000, 0xe5901000, 0xe5911020\n"
-        ".word 0xe12fff31, 0xe5980000, 0xe59b1010, 0xe5902000\n"
-        ".word 0xe592300c, 0xe1a02006, 0xe12fff33, 0xe2888004\n"
-        ".word 0xe158000a, 0x1affffe4, 0xe1c94edc, 0xe3a06001\n"
-        ".word 0xe1540005, 0x0a000006, 0xe5940000, 0xe1a01006\n"
-        ".word 0xe5900028, 0xebfff966, 0xe2844004, 0xe1540005\n"
-        ".word 0x1afffff8, 0xe599003c, 0xe5995040, 0xe3a07001\n"
-        ".word 0xe1a01007, 0xe0452000, 0xe0873142, 0xe3530001\n"
-        ".word 0xc3a0c000, 0xc0873142, 0xda000005, 0xe4902004\n"
-        ".word 0xe2811001, 0xe1530001, 0xe5922220, 0xe5c2c018\n"
-        ".word 0xcafffff9, 0xe599403c, 0xe1540005, 0x0a00000f\n"
-        ".word 0xe5940000, 0xe5d01231, 0xe3510000, 0x1a000008\n"
-        ".word 0xe5906220, 0xe5d60018, 0xe3500000, 0x1a000004\n"
-        ".word 0xe59b0008, 0xe59b2010, 0xe1a01006, 0xeb01f70e\n"
-        ".word 0xe5c67018, 0xe2844004, 0xe1540005, 0x1affffef\n"
-        ".word 0xe59f0040, 0xe28990ec, 0xe8990050, 0xe5905004\n"
-        ".word 0xe5907000, 0xe1540006, 0x0a000009, 0xe5940000\n"
-        ".word 0xe3150001, 0x01a01007, 0xe08000c5, 0x15901000\n"
-        ".word 0x17911007, 0xe12fff31, 0xe2844004, 0xe1540006\n"
-        ".word 0x1afffff5, 0xe8bd9ff0, 0x004105ac\n"
-    );
+//
+// Three manager-owned pointer vectors are walked in four phases:
+//   1. every object registered at manager+0xEC has its +0x28 pointer passed to
+//      0x00361C64 together with mode 0;
+//   2. every owner in manager+0x0C runs its child vector through virtual slot 0
+//      (owner, manager), then slot 8 (bare) and slot 3 (context+0x10, manager);
+//   3. the manager+0xEC list is walked again with mode 1;
+//   4. manager+0x3C entries have (*(entry+0x220))->+0x18 cleared, then every
+//      entry whose +0x231 byte and state +0x18 byte are both zero is passed to
+//      0x003E138C(*(context+8), state, *(context+0x10)) and marked with +0x18=1;
+//   5. manager+0xEC is dispatched one last time through the two-word member
+//      function pointer descriptor at 0x004105AC.
+//
+// The descriptor is {target, adjustment}.  Bit 0 of the adjustment selects the
+// virtual form: the object is advanced by adjustment>>1, its first word is the
+// vtable and `target` is a byte offset into that vtable.  Otherwise `target` is
+// the function address itself and the adjusted object is still passed as r0.
+// The shipped descriptor is {0x00375CC8, 0}, i.e. a direct call to
+// func_00375cc8(entry) for every remaining entry.
+//
+// The routine's source-level return type is void (the caller ignores r0), but
+// the final r0 is the final dispatch result, or 0x004105AC when the last vector
+// is empty.  It is returned explicitly so the dead register stays observable.
+
+extern "C" void func_00361c64(void* object, s32 mode);
+extern "C" void func_003e138c(void* context, void* state, void* argument);
+
+namespace func_003635f0_detail {
+
+constexpr u32 kDispatchDescriptor = 0x004105AC;
+
+constexpr u32 kRegisteredLinkOffset = 0x28;
+constexpr u32 kOwnerChildrenOffset = 0x34;
+constexpr u32 kChildrenBeginOffset = 0x08;
+constexpr u32 kChildrenEndOffset = 0x0C;
+constexpr u32 kStateOffset = 0x220;
+constexpr u32 kSkipFlagOffset = 0x231;
+constexpr u32 kStateFlagOffset = 0x18;
+constexpr u32 kContextFirstOffset = 0x08;
+constexpr u32 kContextSecondOffset = 0x10;
+
+constexpr u32 kSlotFirst = 0;
+constexpr u32 kSlotWithArgument = 3;
+constexpr u32 kSlotBare = 8;
+
+struct __attribute__((may_alias)) Manager {
+    u8 pad_00[0x0C];
+    void** vector_0c_begin;
+    void** vector_0c_end;
+    u8 pad_14[0x28];
+    void** vector_3c_begin;
+    void** vector_3c_end;
+    u8 pad_44[0xA8];
+    void** vector_ec_begin;
+    void** vector_ec_end;
+};
+
+inline u32 load_word(const void* base, u32 offset) {
+    return *reinterpret_cast<const volatile u32*>(
+        static_cast<const u8*>(base) + offset);
+}
+
+inline void* load_pointer(const void* base, u32 offset) {
+    return reinterpret_cast<void*>(
+        static_cast<uintptr_t>(load_word(base, offset)));
+}
+
+inline u8 load_byte(const void* base, u32 offset) {
+    return *reinterpret_cast<const volatile u8*>(
+        static_cast<const u8*>(base) + offset);
+}
+
+inline void store_byte(void* base, u32 offset, u8 value) {
+    *reinterpret_cast<volatile u8*>(static_cast<u8*>(base) + offset) = value;
+}
+
+inline void** load_vtable(void* object) {
+    return *reinterpret_cast<void***>(object);
+}
+
+using SlotFirst = void (*)(void* self, void* owner, void* manager);
+using SlotWithArgument = void (*)(void* self, void* argument, void* manager);
+using SlotBare = void (*)(void* self);
+using Dispatch = u32 (*)(void* self);
+
+}  // namespace func_003635f0_detail
+
+extern "C" u32 func_003635f0(void* context_argument, void* manager_argument) {
+    using namespace func_003635f0_detail;
+
+    void* const context = context_argument;
+    Manager* const manager = static_cast<Manager*>(manager_argument);
+
+    for (void** it = manager->vector_ec_begin; it != manager->vector_ec_end;
+         ++it) {
+        void* const object = *it;
+        func_00361c64(load_pointer(object, kRegisteredLinkOffset), 0);
+    }
+
+    for (void** it = manager->vector_0c_begin; it != manager->vector_0c_end;
+         ++it) {
+        void* const owner = *it;
+        void* const children = load_pointer(owner, kOwnerChildrenOffset);
+        void** const child_begin = static_cast<void**>(
+            load_pointer(children, kChildrenBeginOffset));
+        void** const child_end = static_cast<void**>(
+            load_pointer(children, kChildrenEndOffset));
+
+        for (void** child = child_begin; child != child_end; ++child) {
+            void* const object = *child;
+            void** const vtable = load_vtable(object);
+            reinterpret_cast<SlotFirst>(vtable[kSlotFirst])(
+                object, owner, manager_argument);
+        }
+
+        void** const vtable = load_vtable(owner);
+        reinterpret_cast<SlotBare>(vtable[kSlotBare])(owner);
+        reinterpret_cast<SlotWithArgument>(vtable[kSlotWithArgument])(
+            owner, load_pointer(context, kContextSecondOffset),
+            manager_argument);
+    }
+
+    for (void** it = manager->vector_ec_begin; it != manager->vector_ec_end;
+         ++it) {
+        void* const object = *it;
+        func_00361c64(load_pointer(object, kRegisteredLinkOffset), 1);
+    }
+
+    void** const entry_begin = manager->vector_3c_begin;
+    void** const entry_end = manager->vector_3c_end;
+    const s32 entry_count = static_cast<s32>(
+        static_cast<u32>(reinterpret_cast<uintptr_t>(entry_end)) -
+        static_cast<u32>(reinterpret_cast<uintptr_t>(entry_begin))) >> 2;
+    for (s32 index = 0; index < entry_count; ++index) {
+        void* const entry = entry_begin[index];
+        void* const state = load_pointer(entry, kStateOffset);
+        store_byte(state, kStateFlagOffset, 0);
+    }
+
+    void** it = manager->vector_3c_begin;  // reloaded; end stays cached
+    while (it != entry_end) {
+        void* const entry = *it;
+        if (load_byte(entry, kSkipFlagOffset) == 0) {
+            void* const state = load_pointer(entry, kStateOffset);
+            if (load_byte(state, kStateFlagOffset) == 0) {
+                func_003e138c(load_pointer(context, kContextFirstOffset),
+                              state,
+                              load_pointer(context, kContextSecondOffset));
+                store_byte(state, kStateFlagOffset, 1);
+            }
+        }
+        ++it;
+    }
+
+    const volatile u32* const descriptor =
+        reinterpret_cast<const volatile u32*>(
+            static_cast<uintptr_t>(kDispatchDescriptor));
+    const u32 target = descriptor[0];
+    const s32 adjustment = static_cast<s32>(descriptor[1]);
+
+    u32 result = kDispatchDescriptor;
+    for (void** dispatch = manager->vector_ec_begin;
+         dispatch != manager->vector_ec_end; ++dispatch) {
+        u8* const self = static_cast<u8*>(*dispatch);
+        u8* const adjusted = reinterpret_cast<u8*>(
+            reinterpret_cast<uintptr_t>(self) +
+            static_cast<uintptr_t>(static_cast<u32>(adjustment >> 1)));
+
+        u32 entry;
+        if ((adjustment & 1) != 0) {
+            void** const vtable = load_vtable(adjusted);
+            entry = load_word(vtable, target);
+        } else {
+            entry = target;
+        }
+        result = reinterpret_cast<Dispatch>(
+            static_cast<uintptr_t>(entry))(adjusted);
+    }
+    return result;
 }
 
 // DECOMP_FUNC(0x0012aef4, 448)
-// 105 ARM instructions through unconditional pop; 28 trailing data bytes.
-extern "C" __attribute__((naked)) void engine_func_0012aef4() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d47f0, 0xe3a060d0, 0xe1a07000, 0xe1a09001\n"
-        ".word 0xe3a05000, 0xed2d8b02, 0xe3a02004, 0xe5901000\n"
-        ".word 0xe5913008, 0xe1a01006, 0xe12fff33, 0xe1a04000\n"
-        ".word 0xe2566001, 0xe4c05001, 0x1afffffc, 0xe59f0164\n"
-        ".word 0xe59f1164, 0xe59f2158, 0xe5840008, 0xe5841004\n"
-        ".word 0xe5842000, 0xe1a08007, 0xe5845010, 0xe3590000\n"
-        ".word 0xe284600c, 0xe3a07c01, 0xe5845014, 0x0a000026\n"
-        ".word 0xe1a00009, 0xeb0660c8, 0xe3500c01, 0x31a07000\n"
-        ".word 0xe5980000, 0xe2871001, 0xe3a02004, 0xe5903008\n"
-        ".word 0xe1a00008, 0xe12fff33, 0xe1a08000, 0xe1a02007\n"
-        ".word 0xe1a01009, 0xeb066c15, 0xe3580000, 0x10480006\n"
-        ".word 0xe7c85007, 0x15860000, 0x0a000013, 0xe5845020\n"
-        ".word 0xe5845024, 0xeddf8a39, 0xe5845028, 0xe584502c\n"
-        ".word 0xedc48a0c, 0xed9f8a36, 0xedc48a0d, 0xedc48a0e\n"
-        ".word 0xed848a0f, 0xed848a10, 0xe59f00c8, 0xed848a11\n"
-        ".word 0xed848a12, 0xed848a13, 0xed848a14, 0xe5900000\n"
-        ".word 0xe3100001, 0x1a000016, 0xea000001, 0xe5865000\n"
-        ".word 0xeaffffe9, 0xe59f009c, 0xfa065430, 0xe3500000\n"
-        ".word 0xe320f000, 0x0a00000e, 0xe59f008c, 0xe2801010\n"
-        ".word 0xedc08a00, 0xed808a01, 0xed808a02, 0xed808a03\n"
-        ".word 0xec818a02, 0xe2801024, 0xed808a06, 0xed808a07\n"
-        ".word 0xed808a08, 0xec818a02, 0xed808a0b, 0xe59f0054\n"
-        ".word 0xe1a00000, 0xe59f0050, 0xe2849084, 0xe89011ee\n"
-        ".word 0xe88911ee, 0xe2801020, 0xe590002c, 0xe891000e\n"
-        ".word 0xe58400b0, 0xe28400a4, 0xe880000e, 0xe1a00004\n"
-        ".word 0xe5941018, 0xe3811001, 0xe5841018, 0xecbd8b02\n"
-        ".word 0xe8bd87f0, 0x40000422, 0x07010000, 0x4e465443\n"
-        ".word 0x3f800000, 0x00000000, 0x00476634, 0x004efd6c\n"
-    );
+//
+// Recovered contract (ARM 0x0012AEF4..0x0012B097 = 105 instructions through
+// `pop {r4, r5, r6, r7, r8, sb, sl, pc}`; 0x0012B098..0x0012B0B3 holds the
+// seven-word literal pool 0x40000422, 0x07010000, 0x4E465443, 1.0f, 0.0f,
+// 0x00476634 and 0x004EFD6C):
+//
+//   u8* engine_func_0012aef4(void* allocator, const char* name);
+//
+//   * r0 (`allocator`) is a context object whose vtable pointer sits at +0;
+//     slot +0x08 (index 2) is the allocation entry point
+//     `allocator->vtable[2](allocator, size, flags)`.  The vtable pointer and
+//     the slot are reloaded from `[allocator]` at both request sites
+//     (0x0012AF10/0x0012AF14 and 0x0012AF74/0x0012AF80).
+//   * r1 (`name`) is an optional NUL-terminated string.  Only the null test at
+//     0x0012AF50 happens before the block is allocated.
+//   * First request (0x0012AF0C..0x0012AF1C): (allocator, 0xD0, 4) -> block
+//     (r4).  The 0xD0 bytes at the returned pointer are then zeroed by a byte
+//     post-increment loop that never tests the result, so a null allocation
+//     stores through address 0.
+//   * Header stores (0x0012AF30..0x0012AF5C), in store order:
+//     block[8] = 0x07010000, block[4] = 0x4E465443, block[0] = 0x40000422,
+//     block[0x10] = 0, block[0x14] = 0.
+//   * Name copy (0x0012AF64..0x0012AFAC and 0x0012B000..0x0012B004): when
+//     `name` is null, block[0x0C] = 0.  Otherwise `length = strlen(name)`
+//     (0x002C3290) and `kept = length < 0x100 ? length : 0x100` (the unsigned
+//     `movlo` at 0x0012AF70); the second request is
+//     (allocator, kept + 1, 4) -> copy; `memcpy(copy, name, kept)` (0x002C5FF4)
+//     runs; `copy[kept] = 0` is stored unconditionally (so a null second
+//     allocation faults at address `kept`); block[0x0C] becomes the
+//     self-relative link `copy - (block + 0x0C)` when `copy` is non-null and 0
+//     when it is null.
+//   * Fixed image (0x0012AFB0..0x0012AFEC): block[0x20..0x2C] = 0,
+//     block[0x30..0x38] = 1.0f (s17), block[0x3C..0x50] = 0.0f (s16).
+//   * 0x00476634 is a lazily-initialised guard word.  When its bit 0 is clear,
+//     0x002C00D4 (Thumb) is called with the word's address; that helper
+//     returns 1 only when it observed a zero word and stored 1, and only then
+//     is the twelve-word 3x4 identity image at 0x004EFD6C rebuilt
+//     (1,0,0,0, 0,1,0,0, 0,0,1,0 through s16/s17, +0x00..+0x2C only).
+//   * Copy (0x0012B058..0x0012B07C): the twelve words at 0x004EFD6C become
+//     block[0x84..0xB3] (eight words, then +0x2C, then +0x20..+0x28).
+//   * Trailer (0x0012B080..0x0012B08C): block[0x18] |= 1, then return block.
+//
+// The only caller in the image is 0x0011D8F8 inside the constructor at
+// 0x0011D8E4, and it always passes r1 = 0 (the null-name path).  It resolves
+// block+0x0C as a self-relative pointer before handing the block on.
+namespace engine_12aef4 {
+
+// Block layout: only the offsets this body touches (allocation size 0xD0).
+constexpr u32 kBlockSize = 0xD0;          // `mov r6,#0xD0` (0x0012AEF8)
+constexpr u32 kBlockAlign = 4;            // r2 of both allocation requests
+constexpr u32 kAllocateSlot = 2;          // `ldr r3,[vtable,#8]`
+
+constexpr u32 kTagOffset = 0x00;
+constexpr u32 kTag = 0x40000422;          // literal 0x0012B098
+constexpr u32 kMagicOffset = 0x04;
+constexpr u32 kMagic = 0x4E465443;        // literal 0x0012B0A0
+constexpr u32 kVersionOffset = 0x08;
+constexpr u32 kVersion = 0x07010000;      // literal 0x0012B09C
+constexpr u32 kNameLinkOffset = 0x0C;     // self-relative name link
+constexpr u32 kClear10Offset = 0x10;
+constexpr u32 kClear14Offset = 0x14;
+constexpr u32 kFlagsOffset = 0x18;        // read-modify-write, +0x18 |= 1
+constexpr u32 kFlagReady = 1;
+constexpr u32 kClear20Offset = 0x20;
+constexpr u32 kClear24Offset = 0x24;
+constexpr u32 kClear28Offset = 0x28;
+constexpr u32 kClear2COffset = 0x2C;
+constexpr u32 kOne30Offset = 0x30;        // 1.0f (s17)
+constexpr u32 kOne34Offset = 0x34;        // 1.0f (s17)
+constexpr u32 kOne38Offset = 0x38;        // 1.0f (s17)
+constexpr u32 kZero3COffset = 0x3C;       // 0.0f (s16)
+constexpr u32 kZero40Offset = 0x40;       // 0.0f (s16)
+constexpr u32 kZero44Offset = 0x44;       // 0.0f (s16)
+constexpr u32 kZero48Offset = 0x48;       // 0.0f (s16)
+constexpr u32 kZero4COffset = 0x4C;       // 0.0f (s16)
+constexpr u32 kZero50Offset = 0x50;       // 0.0f (s16)
+constexpr f32 kOne = 1.0f;                // literal 0x3F800000 (s17)
+constexpr f32 kZero = 0.0f;               // literal 0x00000000 (s16)
+
+// Copy of the shared image: block +0x84..+0xB3, twelve words.
+constexpr u32 kMatrixOffset = 0x84;
+constexpr u32 kMatrixWords = 12;
+
+// Name copy.
+constexpr u32 kMaxNameLength = 0x100;     // `cmp r0,#0x100` (0x0012AF6C)
+
+// Absolute-address globals loaded from the literal pool.
+constexpr u32 kGuardWordAddress = 0x00476634;  // literal 0x0012B0AC
+constexpr u32 kIdentityAddress = 0x004EFD6C;   // literal 0x0012B0B0
+
+using AllocateFn = void* (*)(void* context, u32 size, u32 flags);
+
+inline void** vtable_of(void* context) {
+    return *reinterpret_cast<void***>(context);
+}
+
+// `ldr r0,[allocator]; ldr r3,[r0,#8]` at both request sites.
+inline AllocateFn allocate_slot(void* context) {
+    return reinterpret_cast<AllocateFn>(vtable_of(context)[kAllocateSlot]);
+}
+
+template <typename T>
+inline T& field(void* object, u32 offset) {
+    return *reinterpret_cast<T*>(static_cast<u8*>(object) + offset);
+}
+
+// 0x00476634: one-shot guard word (observed as `g_EnemyDrawFlags` by the
+// battle draw code, which rebuilds the same image from 0x0033EF30).
+inline volatile u32& guard_word() {
+    return *reinterpret_cast<volatile u32*>(
+        static_cast<uintptr_t>(kGuardWordAddress));
+}
+
+// 0x004EFD6C: twelve-word 3x4 identity image, rebuilt once per guard word.
+inline void write_identity_image() {
+    volatile f32* const image = reinterpret_cast<volatile f32*>(
+        static_cast<uintptr_t>(kIdentityAddress));
+    image[0] = kOne;   // +0x00
+    image[1] = kZero;  // +0x04
+    image[2] = kZero;  // +0x08
+    image[3] = kZero;  // +0x0C
+    image[4] = kZero;  // +0x10
+    image[5] = kOne;   // +0x14
+    image[6] = kZero;  // +0x18
+    image[7] = kZero;  // +0x1C
+    image[8] = kZero;  // +0x20
+    image[9] = kZero;  // +0x24
+    image[10] = kOne;  // +0x28
+    image[11] = kZero; // +0x2C
+}
+
+}  // namespace engine_12aef4
+
+namespace engine_12aef4_calls {
+
+// 0x002C3290: ARM string length; r0 = text, returns the count before the NUL.
+extern "C" u32 engine_func_002c3290(const char* text);
+
+// 0x002C5FF4: ARM byte copy; r0 = destination, r1 = source, r2 = size.
+extern "C" void engine_func_002c5ff4(void* destination, const void* source,
+                                     u32 size);
+
+// 0x002C00D4: Thumb one-shot guard.  Returns 1 only when it observed a zero
+// word and stored 1; a non-zero word returns 0 without writing.
+extern "C" u32 engine_func_002c00d4(volatile u32* word);
+
+}  // namespace engine_12aef4_calls
+
+extern "C" u8* engine_func_0012aef4(void* allocator, const char* name) {
+    using namespace engine_12aef4;
+    using namespace engine_12aef4_calls;
+
+    // 0x0012AF10..0x0012AF1C: 0xD0-byte block through vtable slot +0x08.
+    u8* const block = static_cast<u8*>(
+        allocate_slot(allocator)(allocator, kBlockSize, kBlockAlign));
+
+    // 0x0012AF24..0x0012AF2C: unconditional zero fill of exactly 0xD0 bytes.
+    for (u32 index = 0; index < kBlockSize; ++index) {
+        block[index] = 0;
+    }
+
+    // 0x0012AF30..0x0012AF44: three header words, in store order.
+    field<u32>(block, kVersionOffset) = kVersion;
+    field<u32>(block, kMagicOffset) = kMagic;
+    field<u32>(block, kTagOffset) = kTag;
+
+    // 0x0012AF4C..0x0012AF5C: the two cleared words around the name link.
+    field<u32>(block, kClear10Offset) = 0;
+    field<u32>(block, kClear14Offset) = 0;
+
+    if (name == nullptr) {
+        // 0x0012B000..0x0012B004: no name, no second request.
+        field<u32>(block, kNameLinkOffset) = 0;
+    } else {
+        // 0x0012AF64..0x0012AF70: capped length.
+        const u32 length = engine_func_002c3290(name);
+        const u32 kept = length < kMaxNameLength ? length : kMaxNameLength;
+
+        // 0x0012AF74..0x0012AFAC: copy the capped prefix and terminate it.
+        u8* const copy = static_cast<u8*>(
+            allocate_slot(allocator)(allocator, kept + 1, kBlockAlign));
+        engine_func_002c5ff4(copy, name, kept);
+        copy[kept] = 0;
+        if (copy != nullptr) {
+            field<u32>(block, kNameLinkOffset) = static_cast<u32>(
+                copy - (block + kNameLinkOffset));
+        } else {
+            field<u32>(block, kNameLinkOffset) = 0;
+        }
+    }
+
+    // 0x0012AFB0..0x0012AFEC: cleared words plus the fixed 1.0f/0.0f image.
+    field<u32>(block, kClear20Offset) = 0;
+    field<u32>(block, kClear24Offset) = 0;
+    field<u32>(block, kClear28Offset) = 0;
+    field<u32>(block, kClear2COffset) = 0;
+    field<f32>(block, kOne30Offset) = kOne;
+    field<f32>(block, kOne34Offset) = kOne;
+    field<f32>(block, kOne38Offset) = kOne;
+    field<f32>(block, kZero3COffset) = kZero;
+    field<f32>(block, kZero40Offset) = kZero;
+    field<f32>(block, kZero44Offset) = kZero;
+    field<f32>(block, kZero48Offset) = kZero;
+    field<f32>(block, kZero4COffset) = kZero;
+    field<f32>(block, kZero50Offset) = kZero;
+
+    // 0x0012AFF0..0x0012B018: one-shot identity image for 0x004EFD6C.
+    if ((guard_word() & kFlagReady) == 0) {
+        if (engine_func_002c00d4(&guard_word()) != 0) {
+            write_identity_image();
+        }
+    }
+
+    // 0x0012B058..0x0012B07C: twelve-word image copy into the block.
+    const volatile u32* const image = reinterpret_cast<const volatile u32*>(
+        static_cast<uintptr_t>(kIdentityAddress));
+    for (u32 index = 0; index < kMatrixWords; ++index) {
+        field<u32>(block, kMatrixOffset + index * 4) = image[index];
+    }
+
+    // 0x0012B080..0x0012B08C: set the ready bit and return the block.
+    field<u32>(block, kFlagsOffset) |= kFlagReady;
+    return block;
 }
 
 // DECOMP_FUNC(0x0012c188, 448)
-// 105 ARM instructions through unconditional pop; 28 trailing data bytes.
-extern "C" __attribute__((naked)) void engine_func_0012c188() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d47f0, 0xe3a060e8, 0xe1a07000, 0xe1a09001\n"
-        ".word 0xe3a05000, 0xed2d8b02, 0xe3a02004, 0xe5901000\n"
-        ".word 0xe5913008, 0xe1a01006, 0xe12fff33, 0xe1a04000\n"
-        ".word 0xe2566001, 0xe4c05001, 0x1afffffc, 0xe59f0164\n"
-        ".word 0xe59f1164, 0xe59f2158, 0xe5840008, 0xe5841004\n"
-        ".word 0xe5842000, 0xe1a08007, 0xe5845010, 0xe3590000\n"
-        ".word 0xe284600c, 0xe3a07c01, 0xe5845014, 0x0a000026\n"
-        ".word 0xe1a00009, 0xeb065c23, 0xe3500c01, 0x31a07000\n"
-        ".word 0xe5980000, 0xe2871001, 0xe3a02004, 0xe5903008\n"
-        ".word 0xe1a00008, 0xe12fff33, 0xe1a08000, 0xe1a02007\n"
-        ".word 0xe1a01009, 0xeb066770, 0xe3580000, 0x10480006\n"
-        ".word 0xe7c85007, 0x15860000, 0x0a000013, 0xe5845020\n"
-        ".word 0xe5845024, 0xeddf8a39, 0xe5845028, 0xe584502c\n"
-        ".word 0xedc48a0c, 0xed9f8a36, 0xedc48a0d, 0xedc48a0e\n"
-        ".word 0xed848a0f, 0xed848a10, 0xe59f00c8, 0xed848a11\n"
-        ".word 0xed848a12, 0xed848a13, 0xed848a14, 0xe5900000\n"
-        ".word 0xe3100001, 0x1a000016, 0xea000001, 0xe5865000\n"
-        ".word 0xeaffffe9, 0xe59f009c, 0xfa064f8b, 0xe3500000\n"
-        ".word 0xe320f000, 0x0a00000e, 0xe59f008c, 0xe2801010\n"
-        ".word 0xedc08a00, 0xed808a01, 0xed808a02, 0xed808a03\n"
-        ".word 0xec818a02, 0xe2801024, 0xed808a06, 0xed808a07\n"
-        ".word 0xed808a08, 0xec818a02, 0xed808a0b, 0xe59f0054\n"
-        ".word 0xe1a00000, 0xe59f0050, 0xe2849084, 0xe89011ee\n"
-        ".word 0xe88911ee, 0xe2801020, 0xe590002c, 0xe891000e\n"
-        ".word 0xe58400b0, 0xe28400a4, 0xe880000e, 0xe1a00004\n"
-        ".word 0xe5941018, 0xe3811001, 0xe5841018, 0xecbd8b02\n"
-        ".word 0xe8bd87f0, 0x40000122, 0x07010000, 0x4e465443\n"
-        ".word 0x3f800000, 0x00000000, 0x00476634, 0x004efd6c\n"
-    );
+// Recovered contract (ARM 0x0012C188..0x0012C347 = 105 instructions through
+// `pop {r4, r5, r6, r7, r8, sb, sl, pc}`; 0x0012C32C..0x0012C347 holds the
+// seven-word literal pool 0x40000122, 0x07010000, 0x4E465443, 1.0f, 0.0f,
+// 0x00476634 and 0x004EFD6C):
+//
+//   u8* engine_func_0012c188(void* allocator, const char* name);
+//
+//   * r0 (`allocator`) is a context object whose vtable pointer sits at +0;
+//     slot +0x08 (index 2) is the allocation entry point
+//     `allocator->vtable[2](allocator, size, flags)`.  The vtable pointer and
+//     the slot are reloaded from `[allocator]` at both request sites
+//     (0x0012C1A4/0x0012C1A8 and 0x0012C208/0x0012C214).
+//   * r1 (`name`) is an optional NUL-terminated string.  Only its null test at
+//     0x0012C1E4 happens before the block is allocated.
+//   * First request (0x0012C1A0..0x0012C1B0): (allocator, 0xE8, 4) -> block
+//     (r4).  The 0xE8 bytes at the returned pointer are then zeroed by a byte
+//     post-increment loop that never tests the result, so a null allocation
+//     stores through address 0.
+//   * Header stores (0x0012C1C4..0x0012C1F0), in store order:
+//     block[8] = 0x07010000, block[4] = 0x4E465443, block[0] = 0x40000122,
+//     block[0x10] = 0, block[0x14] = 0.
+//   * Name copy (0x0012C1F8..0x0012C240 and 0x0012C294..0x0012C298): when
+//     `name` is null, block[0x0C] = 0.  Otherwise `length = strlen(name)`
+//     (0x002C3290) and `kept = length < 0x100 ? length : 0x100` (the unsigned
+//     `movlo` at 0x0012C204); the second request is
+//     (allocator, kept + 1, 4) -> copy; `memcpy(copy, name, kept)` (0x002C5FF4)
+//     runs; `copy[kept] = 0` is stored unconditionally (so a null second
+//     allocation faults at address `kept`); block[0x0C] becomes the
+//     self-relative link `copy - (block + 0x0C)` when `copy` is non-null and 0
+//     when it is null.  The only caller (0x0011FF34) resolves that word as
+//     `block + 0x0C + link` before forwarding the block.
+//   * Fixed image (0x0012C244..0x0012C280): block[0x20..0x2C] = 0,
+//     block[0x30..0x38] = 1.0f (s17), block[0x3C..0x50] = 0.0f (s16).
+//   * 0x00476634 is a lazily-initialised guard word.  When its bit 0 is clear,
+//     0x002C00D4 (Thumb) is called with the word's address; that helper
+//     returns 1 only when it observed a zero word and stored 1, and only then
+//     is the twelve-word 3x4 identity image at 0x004EFD6C rebuilt
+//     (1,0,0,0, 0,1,0,0, 0,0,1,0 through s16/s17, +0x00..+0x2C only).
+//   * Copy (0x0012C2EC..0x0012C310): the twelve words at 0x004EFD6C become
+//     block[0x84..0xB3] (eight words through one ldm/stm pair, then +0x2C,
+//     then +0x20..+0x28).  The block and the shared image never alias in the
+//     allocation domain, so the reconstruction copies in word order.
+//   * Trailer (0x0012C314..0x0012C320): block[0x18] |= 1, then return block.
+//
+// The only caller in the image is 0x0011FF34 inside the constructor at
+// 0x0011FF20, and it always passes r1 = 0 (the null-name path).
+namespace engine_12c188 {
+
+// Block layout: only the offsets this body touches (allocation size 0xE8).
+constexpr u32 kBlockSize = 0xE8;          // `mov r6,#0xE8` (0x0012C18C)
+constexpr u32 kBlockAlign = 4;            // r2 of both allocation requests
+constexpr u32 kAllocateSlot = 2;          // `ldr r3,[vtable,#8]`
+
+constexpr u32 kTagOffset = 0x00;
+constexpr u32 kTag = 0x40000122;          // literal 0x0012C32C
+constexpr u32 kMagicOffset = 0x04;
+constexpr u32 kMagic = 0x4E465443;        // literal 0x0012C334
+constexpr u32 kVersionOffset = 0x08;
+constexpr u32 kVersion = 0x07010000;      // literal 0x0012C330
+constexpr u32 kNameLinkOffset = 0x0C;     // self-relative name link
+constexpr u32 kClear10Offset = 0x10;
+constexpr u32 kClear14Offset = 0x14;
+constexpr u32 kFlagsOffset = 0x18;        // read-modify-write, +0x18 |= 1
+constexpr u32 kFlagReady = 1;
+constexpr u32 kClear20Offset = 0x20;
+constexpr u32 kClear24Offset = 0x24;
+constexpr u32 kClear28Offset = 0x28;
+constexpr u32 kClear2COffset = 0x2C;
+constexpr u32 kOne30Offset = 0x30;        // 1.0f (s17)
+constexpr u32 kOne34Offset = 0x34;        // 1.0f (s17)
+constexpr u32 kOne38Offset = 0x38;        // 1.0f (s17)
+constexpr u32 kZero3COffset = 0x3C;       // 0.0f (s16)
+constexpr u32 kZero40Offset = 0x40;       // 0.0f (s16)
+constexpr u32 kZero44Offset = 0x44;       // 0.0f (s16)
+constexpr u32 kZero48Offset = 0x48;       // 0.0f (s16)
+constexpr u32 kZero4COffset = 0x4C;       // 0.0f (s16)
+constexpr u32 kZero50Offset = 0x50;       // 0.0f (s16)
+constexpr f32 kOne = 1.0f;                // literal 0x3F800000 (s17)
+constexpr f32 kZero = 0.0f;               // literal 0x00000000 (s16)
+
+// Copy of the shared image: block +0x84..+0xB3, twelve words.
+constexpr u32 kMatrixOffset = 0x84;
+constexpr u32 kMatrixWordCount = 12;
+
+// Name copy.
+constexpr u32 kNameCap = 0x100;           // `cmp r0,#0x100` (0x0012C200)
+
+// Absolute-address globals loaded from the literal pool.
+constexpr u32 kGuardWordAddress = 0x00476634;  // literal 0x0012C340
+constexpr u32 kIdentityAddress = 0x004EFD6C;   // literal 0x0012C344
+
+using AllocateFn = void* (*)(void* context, u32 size, u32 flags);
+
+inline void** vtable_of(void* context) {
+    return *reinterpret_cast<void***>(context);
+}
+
+// `ldr r0,[allocator]; ldr r3,[r0,#8]` at both request sites.
+inline AllocateFn allocate_slot(void* context) {
+    return reinterpret_cast<AllocateFn>(vtable_of(context)[kAllocateSlot]);
+}
+
+template <typename T>
+inline T& field(void* object, u32 offset) {
+    return *reinterpret_cast<T*>(static_cast<u8*>(object) + offset);
+}
+
+// 0x0012C238: `strb r5,[r8,r7]` stores the terminator through the copy pointer
+// *before* the following null test.  A null copy therefore faults at address
+// `kept` unless that page happens to be writable, in which case the null arm
+// at 0x0012C294 stores the zero link.  The store is kept out of line so the
+// reconstruction cannot assume the pointer non-null and drop that arm.
+__attribute__((noinline)) inline void store_terminator(u8* base, u32 offset) {
+    *reinterpret_cast<volatile u8*>(base + offset) = 0;
+}
+
+// 0x00476634: one-shot guard word shared with the battle draw image helper.
+inline volatile u32& shared_guard_word() {
+    return *reinterpret_cast<volatile u32*>(
+        static_cast<uintptr_t>(kGuardWordAddress));
+}
+
+// 0x004EFD6C: twelve-word 3x4 identity image, rebuilt once per guard word.
+inline void write_identity_image() {
+    volatile f32* const image = reinterpret_cast<volatile f32*>(
+        static_cast<uintptr_t>(kIdentityAddress));
+    image[0] = kOne;   // +0x00
+    image[1] = kZero;  // +0x04
+    image[2] = kZero;  // +0x08
+    image[3] = kZero;  // +0x0C
+    image[4] = kZero;  // +0x10
+    image[5] = kOne;   // +0x14
+    image[6] = kZero;  // +0x18
+    image[7] = kZero;  // +0x1C
+    image[8] = kZero;  // +0x20
+    image[9] = kZero;  // +0x24
+    image[10] = kOne;  // +0x28
+    image[11] = kZero; // +0x2C
+}
+
+}  // namespace engine_12c188
+
+namespace engine_12c188_calls {
+
+// 0x002C3290: ARM string length; r0 = text, returns the count before the NUL.
+extern "C" u32 engine_func_002c3290(const char* text);
+
+// 0x002C5FF4: ARM byte copy; r0 = destination, r1 = source, r2 = size.
+extern "C" void engine_func_002c5ff4(void* destination, const void* source,
+                                     u32 size);
+
+// 0x002C00D4: Thumb one-shot guard.  Returns 1 only when it observed a zero
+// word and stored 1; a non-zero word returns 0 without writing.
+extern "C" u32 engine_func_002c00d4(volatile u32* word);
+
+}  // namespace engine_12c188_calls
+
+extern "C" u8* engine_func_0012c188(void* allocator, const char* name) {
+    using namespace engine_12c188;
+    using namespace engine_12c188_calls;
+
+    // 0x0012C1A0..0x0012C1B0: 0xE8-byte block through vtable slot +0x08.
+    u8* const block = static_cast<u8*>(
+        allocate_slot(allocator)(allocator, kBlockSize, kBlockAlign));
+
+    // 0x0012C1B8..0x0012C1C0: unconditional zero fill of exactly 0xE8 bytes.
+    for (u32 index = 0; index < kBlockSize; ++index) {
+        block[index] = 0;
+    }
+
+    // 0x0012C1C4..0x0012C1D8: three header words, in store order.
+    field<u32>(block, kVersionOffset) = kVersion;
+    field<u32>(block, kMagicOffset) = kMagic;
+    field<u32>(block, kTagOffset) = kTag;
+
+    // 0x0012C1E0..0x0012C1F0: the two cleared words around the name link.
+    field<u32>(block, kClear10Offset) = 0;
+    field<u32>(block, kClear14Offset) = 0;
+
+    if (name == nullptr) {
+        // 0x0012C294..0x0012C298: no name, no second request.
+        field<u32>(block, kNameLinkOffset) = 0;
+    } else {
+        // 0x0012C1F8..0x0012C204: capped length.
+        const u32 length = engine_func_002c3290(name);
+        const u32 kept = length < kNameCap ? length : kNameCap;
+
+        // 0x0012C208..0x0012C240: copy the capped prefix, terminate it, then
+        // publish the self-relative link (the terminator precedes the test).
+        u8* const copy = static_cast<u8*>(
+            allocate_slot(allocator)(allocator, kept + 1, kBlockAlign));
+        engine_func_002c5ff4(copy, name, kept);
+        store_terminator(copy, kept);
+        if (copy != nullptr) {
+            const uintptr_t copy_address = reinterpret_cast<uintptr_t>(copy);
+            const uintptr_t link_address =
+                reinterpret_cast<uintptr_t>(block) + kNameLinkOffset;
+            field<u32>(block, kNameLinkOffset) =
+                static_cast<u32>(copy_address - link_address);
+        } else {
+            field<u32>(block, kNameLinkOffset) = 0;
+        }
+    }
+
+    // 0x0012C244..0x0012C280: cleared words plus the fixed 1.0f/0.0f image.
+    field<u32>(block, kClear20Offset) = 0;
+    field<u32>(block, kClear24Offset) = 0;
+    field<u32>(block, kClear28Offset) = 0;
+    field<u32>(block, kClear2COffset) = 0;
+    field<f32>(block, kOne30Offset) = kOne;
+    field<f32>(block, kOne34Offset) = kOne;
+    field<f32>(block, kOne38Offset) = kOne;
+    field<f32>(block, kZero3COffset) = kZero;
+    field<f32>(block, kZero40Offset) = kZero;
+    field<f32>(block, kZero44Offset) = kZero;
+    field<f32>(block, kZero48Offset) = kZero;
+    field<f32>(block, kZero4COffset) = kZero;
+    field<f32>(block, kZero50Offset) = kZero;
+
+    // 0x0012C284..0x0012C2E8: one-shot identity image for 0x004EFD6C.
+    if ((shared_guard_word() & kFlagReady) == 0) {
+        if (engine_func_002c00d4(&shared_guard_word()) != 0) {
+            write_identity_image();
+        }
+    }
+
+    // 0x0012C2EC..0x0012C310: twelve-word image copy into the block.
+    const volatile u32* const image = reinterpret_cast<const volatile u32*>(
+        static_cast<uintptr_t>(kIdentityAddress));
+    for (u32 index = 0; index < kMatrixWordCount; ++index) {
+        field<u32>(block, kMatrixOffset + index * 4) = image[index];
+    }
+
+    // 0x0012C314..0x0012C320: set the ready bit and return the block.
+    field<u32>(block, kFlagsOffset) |= kFlagReady;
+    return block;
 }
 
 // DECOMP_FUNC(0x0013cf50, 448)
-// 105 ARM instructions through unconditional pop; 28 trailing data bytes.
-extern "C" __attribute__((naked)) void engine_func_0013cf50() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d47f0, 0xe3a06c01, 0xe1a07000, 0xe1a09001\n"
-        ".word 0xe3a05000, 0xed2d8b02, 0xe3a02004, 0xe5901000\n"
-        ".word 0xe5913008, 0xe1a01006, 0xe12fff33, 0xe1a04000\n"
-        ".word 0xe2566001, 0xe4c05001, 0x1afffffc, 0xe59f0164\n"
-        ".word 0xe59f1164, 0xe59f2158, 0xe5840008, 0xe5841004\n"
-        ".word 0xe5842000, 0xe1a08007, 0xe5845010, 0xe3590000\n"
-        ".word 0xe284600c, 0xe3a07c01, 0xe5845014, 0x0a000026\n"
-        ".word 0xe1a00009, 0xeb0618b1, 0xe3500c01, 0x31a07000\n"
-        ".word 0xe5980000, 0xe2871001, 0xe3a02004, 0xe5903008\n"
-        ".word 0xe1a00008, 0xe12fff33, 0xe1a08000, 0xe1a02007\n"
-        ".word 0xe1a01009, 0xeb0623fe, 0xe3580000, 0x10480006\n"
-        ".word 0xe7c85007, 0x15860000, 0x0a000013, 0xe5845020\n"
-        ".word 0xe5845024, 0xeddf8a39, 0xe5845028, 0xe584502c\n"
-        ".word 0xedc48a0c, 0xed9f8a36, 0xedc48a0d, 0xedc48a0e\n"
-        ".word 0xed848a0f, 0xed848a10, 0xe59f00c8, 0xed848a11\n"
-        ".word 0xed848a12, 0xed848a13, 0xed848a14, 0xe5900000\n"
-        ".word 0xe3100001, 0x1a000016, 0xea000001, 0xe5865000\n"
-        ".word 0xeaffffe9, 0xe59f009c, 0xfa060c19, 0xe3500000\n"
-        ".word 0xe320f000, 0x0a00000e, 0xe59f008c, 0xe2801010\n"
-        ".word 0xedc08a00, 0xed808a01, 0xed808a02, 0xed808a03\n"
-        ".word 0xec818a02, 0xe2801024, 0xed808a06, 0xed808a07\n"
-        ".word 0xed808a08, 0xec818a02, 0xed808a0b, 0xe59f0054\n"
-        ".word 0xe1a00000, 0xe59f0050, 0xe2849084, 0xe89011ee\n"
-        ".word 0xe88911ee, 0xe2801020, 0xe590002c, 0xe891000e\n"
-        ".word 0xe58400b0, 0xe28400a4, 0xe880000e, 0xe1a00004\n"
-        ".word 0xe5941018, 0xe3811001, 0xe5841018, 0xecbd8b02\n"
-        ".word 0xe8bd87f0, 0x40000222, 0x07010000, 0x4e465443\n"
-        ".word 0x3f800000, 0x00000000, 0x00476634, 0x004efd6c\n"
-    );
+// Recovered contract (ARM 0x0013CF50..0x0013D10F = 105 instructions through
+// `pop {r4, r5, r6, r7, r8, sb, sl, pc}`; 0x0013D0F4..0x0013D10F holds the
+// seven-word literal pool 0x40000222, 0x07010000, 0x4E465443, 1.0f, 0.0f,
+// 0x00476634 and 0x004EFD6C):
+//
+//   u8* engine_func_0013cf50(void* allocator, const char* name);
+//
+//   * r0 (`allocator`) is a context object whose first word is a vtable pointer;
+//     slot +0x08 (index 2) is called as
+//     `allocator->vtable[2](allocator, size, 4)`.  The pointer and slot are
+//     re-loaded from `[allocator]` before each request
+//     (0x0013CF6C/0x0013CF70 and 0x0013CFD0/0x0013CFDC), so the first call may
+//     replace the allocation entry point used by the second.
+//   * r1 (`name`) is an optional NUL-terminated string; only its null test at
+//     0x0013CFAC happens before the block header stores.
+//   * First request (0x0013CF68..0x0013CF78): (allocator, 0x100, 4) -> block
+//     (r4).  The 0x100 bytes at the returned pointer are zeroed by a `strb`
+//     post-increment loop that never tests the result, so a null allocation
+//     stores through address 0.
+//   * Header stores (0x0013CF8C..0x0013CFA0), in store order:
+//     block[8] = 0x07010000, block[4] = 0x4E465443, block[0] = 0x40000222.
+//     block[0x10] and block[0x14] are then cleared.
+//   * Name path (0x0013CFC0..0x0013D008 and the null arm 0x0013D05C..0x0013D060):
+//     `length = strlen(name)` (0x002C3290) and
+//     `kept = length < 0x100 ? length : 0x100` (unsigned `movlo` at
+//     0x0013CFCC); `copy = allocator->vtable[2](allocator, kept + 1, 4)`;
+//     `memcpy(copy, name, kept)` (0x002C5FF4); `copy[kept] = 0` is stored
+//     unconditionally *before* the null test (0x0013D000), so a null second
+//     allocation faults at address `kept` unless that page is writable;
+//     block[0x0C] becomes the self-relative link `copy - (block + 0x0C)` when
+//     `copy` is non-null and 0 otherwise.  A null `name` stores a zero link and
+//     skips the second request entirely.
+//   * Fixed image (0x0013D00C..0x0013D050): block[0x20..0x2C] = 0,
+//     block[0x30..0x38] = 1.0f (s17), block[0x3C..0x50] = 0.0f (s16).
+//   * Guard (0x0013D04C..0x0013D074): 0x00476634 is a lazily-initialised guard
+//     word.  When its bit 0 is clear, the Thumb helper 0x002C00D4 (called with
+//     `blx`) receives the word's address; it returns 1 only when it observed a
+//     zero word and stored 1, and only then is the twelve-word 3x4 identity
+//     image at 0x004EFD6C rebuilt (1,0,0,0, 0,1,0,0, 0,0,1,0 through s16/s17).
+//   * Image copy (0x0013D0B4..0x0013D0D8): the twelve words at 0x004EFD6C
+//     become block[0x84..0xB3] (one eight-word ldm/stm pair, then +0x2C, then
+//     +0x20..+0x28).  The block and the shared image never alias in the
+//     allocation domain, so the reconstruction copies in word order.
+//   * Trailer (0x0013D0DC..0x0013D0E8): block[0x18] |= 1, then return block.
+//
+// The only caller in the image is 0x0012AB08 inside engine_func_0012aaf4, which
+// passes r1 = 0 (the null-name path).  The literal reload of 0x00476634 into r0
+// at 0x0013D0AC..0x0013D0B0 is dead (r0 is overwritten at 0x0013D0B4), so it is
+// not reproduced.
+namespace engine_13cf50 {
+
+// Block layout: only the offsets this body touches (allocation size 0x100).
+constexpr u32 kBlockSize = 0x100;          // `mov r6,#0x100` (0x0013CF54)
+constexpr u32 kBlockAlign = 4;             // r2 of both allocation requests
+constexpr u32 kAllocateSlot = 2;           // `ldr r3,[vtable,#8]`
+
+constexpr u32 kTagOffset = 0x00;
+constexpr u32 kTag = 0x40000222;           // literal 0x0013D0F4
+constexpr u32 kMagicOffset = 0x04;
+constexpr u32 kMagic = 0x4E465443;         // literal 0x0013D0FC
+constexpr u32 kVersionOffset = 0x08;
+constexpr u32 kVersion = 0x07010000;       // literal 0x0013D0F8
+constexpr u32 kNameLinkOffset = 0x0C;      // self-relative name link
+constexpr u32 kClear10Offset = 0x10;
+constexpr u32 kClear14Offset = 0x14;
+constexpr u32 kFlagsOffset = 0x18;         // read-modify-write, +0x18 |= 1
+constexpr u32 kFlagReady = 1;
+constexpr u32 kClear20Offset = 0x20;
+constexpr u32 kClear24Offset = 0x24;
+constexpr u32 kClear28Offset = 0x28;
+constexpr u32 kClear2COffset = 0x2C;
+constexpr u32 kOne30Offset = 0x30;         // 1.0f (s17)
+constexpr u32 kOne34Offset = 0x34;         // 1.0f (s17)
+constexpr u32 kOne38Offset = 0x38;         // 1.0f (s17)
+constexpr u32 kZero3COffset = 0x3C;        // 0.0f (s16)
+constexpr u32 kZero40Offset = 0x40;        // 0.0f (s16)
+constexpr u32 kZero44Offset = 0x44;        // 0.0f (s16)
+constexpr u32 kZero48Offset = 0x48;        // 0.0f (s16)
+constexpr u32 kZero4COffset = 0x4C;        // 0.0f (s16)
+constexpr u32 kZero50Offset = 0x50;        // 0.0f (s16)
+constexpr f32 kOne = 1.0f;                 // literal 0x3F800000 (s17)
+constexpr f32 kZero = 0.0f;                // literal 0x00000000 (s16)
+
+// Copy of the shared image: block +0x84..+0xB3, twelve words.
+constexpr u32 kMatrixOffset = 0x84;
+constexpr u32 kMatrixWordCount = 12;       // 3x4 identity image (0x0013D0B4)
+
+// Name copy.
+constexpr u32 kNameCap = 0x100;            // `cmp r0,#0x100` (0x0013CFC8)
+
+// Absolute-address globals loaded from the literal pool.
+constexpr u32 kGuardWordAddress = 0x00476634;  // literal 0x0013D108
+constexpr u32 kIdentityAddress = 0x004EFD6C;   // literal 0x0013D10C
+
+using AllocateFn = void* (*)(void* context, u32 size, u32 flags);
+
+inline void** vtable_of(void* context) {
+    return *reinterpret_cast<void***>(context);
+}
+
+// `ldr r0,[allocator]; ldr r3,[r0,#8]` at both request sites.
+inline AllocateFn allocate_slot(void* context) {
+    return reinterpret_cast<AllocateFn>(vtable_of(context)[kAllocateSlot]);
+}
+
+template <typename T>
+inline T& field(void* object, u32 offset) {
+    return *reinterpret_cast<T*>(static_cast<u8*>(object) + offset);
+}
+
+// 0x0013D000: `strb r5,[r8,r7]` stores the terminator through the copy pointer
+// *before* the following null test.  A null copy therefore faults at address
+// `kept` unless that page happens to be writable, in which case the null arm at
+// 0x0013D05C stores the zero link.  The store is kept out of line so the
+// reconstruction cannot assume the pointer non-null and drop that arm.
+__attribute__((noinline)) inline void store_terminator_13cf50(u8* base,
+                                                             u32 offset) {
+    *reinterpret_cast<volatile u8*>(base + offset) = 0;
+}
+
+// 0x00476634: one-shot guard word shared with the battle draw image helper.
+inline volatile u32& shared_guard_word() {
+    return *reinterpret_cast<volatile u32*>(
+        static_cast<uintptr_t>(kGuardWordAddress));
+}
+
+// 0x004EFD6C: twelve-word 3x4 identity image, rebuilt once per guard word.
+inline void write_identity_image() {
+    volatile f32* const image = reinterpret_cast<volatile f32*>(
+        static_cast<uintptr_t>(kIdentityAddress));
+    image[0] = kOne;   // +0x00
+    image[1] = kZero;  // +0x04
+    image[2] = kZero;  // +0x08
+    image[3] = kZero;  // +0x0C
+    image[4] = kZero;  // +0x10
+    image[5] = kOne;   // +0x14
+    image[6] = kZero;  // +0x18
+    image[7] = kZero;  // +0x1C
+    image[8] = kZero;  // +0x20
+    image[9] = kZero;  // +0x24
+    image[10] = kOne;  // +0x28
+    image[11] = kZero; // +0x2C
+}
+
+}  // namespace engine_13cf50
+
+namespace engine_13cf50_calls {
+
+// 0x002C3290: ARM string length; r0 = text, returns the count before the NUL.
+extern "C" u32 engine_func_002c3290(const char* text);
+
+// 0x002C5FF4: ARM byte copy; r0 = destination, r1 = source, r2 = size.
+extern "C" void engine_func_002c5ff4(void* destination, const void* source,
+                                     u32 size);
+
+// 0x002C00D4: Thumb one-shot guard.  Returns 1 only when it observed a zero
+// word and stored 1; a non-zero word returns 0 without writing.
+extern "C" u32 engine_func_002c00d4(volatile u32* word);
+
+}  // namespace engine_13cf50_calls
+
+extern "C" u8* engine_func_0013cf50(void* allocator, const char* name) {
+    using namespace engine_13cf50;
+    using namespace engine_13cf50_calls;
+
+    // 0x0013CF68..0x0013CF78: 0x100-byte block through vtable slot +0x08.
+    u8* const block = static_cast<u8*>(
+        allocate_slot(allocator)(allocator, kBlockSize, kBlockAlign));
+
+    // 0x0013CF80..0x0013CF88: unconditional zero fill of exactly 0x100 bytes.
+    for (u32 index = 0; index < kBlockSize; ++index) {
+        block[index] = 0;
+    }
+
+    // 0x0013CF8C..0x0013CFA0: three header words, in store order.
+    field<u32>(block, kVersionOffset) = kVersion;
+    field<u32>(block, kMagicOffset) = kMagic;
+    field<u32>(block, kTagOffset) = kTag;
+
+    // 0x0013CFA8..0x0013CFB8: the two cleared words around the name link.
+    field<u32>(block, kClear10Offset) = 0;
+    field<u32>(block, kClear14Offset) = 0;
+
+    if (name == nullptr) {
+        // 0x0013D05C..0x0013D060: no name, no second request.
+        field<u32>(block, kNameLinkOffset) = 0;
+    } else {
+        // 0x0013CFC4..0x0013CFCC: capped length.
+        const u32 length = engine_func_002c3290(name);
+        const u32 kept = length < kNameCap ? length : kNameCap;
+
+        // 0x0013CFD0..0x0013D004: copy the capped prefix, terminate it, then
+        // publish the self-relative link (the terminator precedes the test).
+        u8* const copy = static_cast<u8*>(
+            allocate_slot(allocator)(allocator, kept + 1, kBlockAlign));
+        engine_func_002c5ff4(copy, name, kept);
+        store_terminator_13cf50(copy, kept);
+        if (copy != nullptr) {
+            const uintptr_t copy_address = reinterpret_cast<uintptr_t>(copy);
+            const uintptr_t link_address =
+                reinterpret_cast<uintptr_t>(block) + kNameLinkOffset;
+            field<u32>(block, kNameLinkOffset) =
+                static_cast<u32>(copy_address - link_address);
+        } else {
+            field<u32>(block, kNameLinkOffset) = 0;
+        }
+    }
+
+    // 0x0013D00C..0x0013D050: cleared words plus the fixed 1.0f/0.0f image.
+    field<u32>(block, kClear20Offset) = 0;
+    field<u32>(block, kClear24Offset) = 0;
+    field<u32>(block, kClear28Offset) = 0;
+    field<u32>(block, kClear2COffset) = 0;
+    field<f32>(block, kOne30Offset) = kOne;
+    field<f32>(block, kOne34Offset) = kOne;
+    field<f32>(block, kOne38Offset) = kOne;
+    field<f32>(block, kZero3COffset) = kZero;
+    field<f32>(block, kZero40Offset) = kZero;
+    field<f32>(block, kZero44Offset) = kZero;
+    field<f32>(block, kZero48Offset) = kZero;
+    field<f32>(block, kZero4COffset) = kZero;
+    field<f32>(block, kZero50Offset) = kZero;
+
+    // 0x0013D054..0x0013D0AC: one-shot identity image for 0x004EFD6C.
+    if ((shared_guard_word() & kFlagReady) == 0) {
+        if (engine_func_002c00d4(&shared_guard_word()) != 0) {
+            write_identity_image();
+        }
+    }
+
+    // 0x0013D0B4..0x0013D0D8: twelve-word image copy into the block.
+    const volatile u32* const image = reinterpret_cast<const volatile u32*>(
+        static_cast<uintptr_t>(kIdentityAddress));
+    for (u32 index = 0; index < kMatrixWordCount; ++index) {
+        field<u32>(block, kMatrixOffset + index * 4) = image[index];
+    }
+
+    // 0x0013D0DC..0x0013D0E8: set the ready bit and return the block.
+    field<u32>(block, kFlagsOffset) |= kFlagReady;
+    return block;
 }
 
 // DECOMP_FUNC(0x00296a18, 448)
-// 110 ARM instructions through unconditional pop; 8 trailing data bytes.
-extern "C" __attribute__((naked)) void script_vm_func_00296a18() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d41f0, 0xe1a06000, 0xe2867b0d, 0xe2877f4b\n"
-        ".word 0xe59f21a0, 0xe5974000, 0xe2800a03, 0xe2800e53\n"
-        ".word 0xe3a08000, 0xe5804000, 0xe2823008, 0xe5871000\n"
-        ".word 0xe282c010, 0xe7828006, 0xe2865c35, 0xe7838006\n"
-        ".word 0xe78c8006, 0xe1d507fc, 0xe1a04008, 0xe3500000\n"
-        ".word 0xda000005, 0xe320f000, 0xeb008964, 0xe1d507fc\n"
-        ".word 0xe2844001, 0xe1500004, 0xcafffff9, 0xe1c587bc\n"
-        ".word 0xe5970000, 0xe350000e, 0x03a040df, 0x0a000019\n"
-        ".word 0xca00000c, 0xe3500001, 0x03a04062, 0x0a000015\n"
-        ".word 0xe350000a, 0x03a0409e, 0x0a000012, 0xe350000b\n"
-        ".word 0x03a04065, 0x0a00000f, 0xe350000d, 0x03a04066\n"
-        ".word 0x0a00000c, 0xea000011, 0xe350000f, 0x03a04068\n"
-        ".word 0x0a000008, 0xe3500010, 0x03a0406a, 0x0a000005\n"
-        ".word 0xe3500011, 0x03a040e1, 0x0a000002, 0xe3500012\n"
-        ".word 0x03a04064, 0x1a000005, 0xe59f10cc, 0xe3a00000\n"
-        ".word 0xeb00217f, 0xe20400ff, 0xe320f000, 0xeb008817\n"
-        ".word 0xe5970000, 0xe3500014, 0x1a000029, 0xe3a00000\n"
-        ".word 0xeb000e25, 0xe3a00000, 0xe320f000, 0xebfff102\n"
-        ".word 0xe3a00000, 0xe320f000, 0xeb001dc6, 0xe3a00000\n"
-        ".word 0xe320f000, 0xeb001ff0, 0xe3a00000, 0xe320f000\n"
-        ".word 0xeb001702, 0xe320f000, 0xe320f000, 0xebfff0d1\n"
-        ".word 0xe320f000, 0xe320f000, 0xebfff0c7, 0xe1b04000\n"
-        ".word 0xe320f000, 0x0a00000d, 0xeb0047a0, 0xe5900000\n"
-        ".word 0xe1540000, 0x8a000009, 0xe3a00013, 0xe5870000\n"
-        ".word 0xe3a00090, 0xeb0087f5, 0xe2866b0d, 0xe2866f5a\n"
-        ".word 0xe3a01005, 0xe5960000, 0xe8bd41f0, 0xea00018a\n"
-        ".word 0xe3a00000, 0xebfffa3d, 0xe8bd41f0, 0xe3a00003\n"
-        ".word 0xea00867b, 0xe8bd81f0, 0x00003534, 0x323232ff\n"
-    );
+//
+// Script VM state/mode transition dispatcher.
+//
+// Contract:
+//   extern "C" u32 script_vm_func_00296a18(u8* ctx, u32 state);
+//   * r0 (`ctx`) is the script/event work object; r1 (`state`) is the new
+//     state word.  r2, r3 and the caller stack are not read.
+//   * The routine snapshots the previous state at `ctx+0x3530`, publishes the
+//     new state at `ctx+0x352c`, clears only `+0x3534`, `+0x353C` and
+//     `+0x3544` (NOT `+0x3538`/`+0x3540`), drains the signed callback count at
+//     `ctx+0x357C`, requests a per-state transition id, and then either returns
+//     the re-read state word or performs the state-0x14 teardown sequence.
+//   * Return value: `r0` holds the re-read state word on the ordinary return
+//     at 0x00296BCC.  The two terminal arms tail-branch (0x00296BB4 and
+//     0x00296BC8), so their callee's `r0` becomes the function result.
+//
+// Recovered behaviour (ARM 0x00296A18..0x00296BCF; 110 instructions, then the
+// literal pool at 0x00296BD0 = 0x00003534 and 0x00296BD4 = 0x323232FF):
+//   1. 0x00296A2C..0x00296A58: `previous = ctx[0x352C]`;
+//      `ctx[0x3530] = previous`; `ctx[0x352C] = state`;
+//      `ctx[0x3534] = ctx[0x353C] = ctx[0x3544] = 0` (store order).
+//   2. 0x00296A5C..0x00296A84: `count = (s16)ctx[0x357C]`; while the signed
+//      count is greater than the zero-based iteration index, call
+//      0x002B9008(count) and re-read the halfword.  The callback receives the
+//      value from the previous loop test (r0 survives the `mov r4,r8` setup);
+//      the exit test is signed (`bgt`) and the count is re-read every time,
+//      so a callback that rewrites `ctx+0x357C` changes both the bound and the
+//      next argument.  After the loop `ctx[0x357C] = 0` unconditionally.
+//   3. 0x00296A88..0x00296AFC: map the state word to a transition id:
+//      0x01->0x62, 0x0A->0x9E, 0x0B->0x65, 0x0D->0x66, 0x0E->0xDF,
+//      0x0F->0x68, 0x10->0x6A, 0x11->0xE1, 0x12->0x64.  The ARM splits the
+//      chain with a signed `bgt` after 0x0E but only equality tests select a
+//      value, so the unreachable values fall through identically.
+//   4. 0x00296B00..0x00296B14: when mapped, call 0x0029F10C(NULL,
+//      0x323232FF) and then 0x002B8B78(id & 0xFF).
+//   5. 0x00296B18..0x00296B20: re-read `ctx[0x352C]`; anything other than
+//      0x14 is returned directly.
+//   6. 0x00296B24..0x00296B7C: for state 0x14 call 0x0029A3C4(0),
+//      0x00292F44(0), 0x0029E260(0), 0x0029EB14(0), 0x0029C768(0),
+//      0x00292EB0(<r0 left by 0x0029C768>) and 0x00292E94(<r0 left by
+//      0x00292EB0>); the last result is compared below.  The pinned
+//      0x0029C768 returns its input, so the dead argument to 0x00292EB0 is 0.
+//   7. 0x00296B7C..0x00296B8C: when the result is zero, or is unsigned above
+//      `*0x002A8A08(result)`, call 0x002954B8(0) and tail-branch to
+//      0x002B85BC(3).  The limit lookup is skipped when the result is zero.
+//   8. 0x00296B90..0x00296BB4: otherwise store state 0x13, call
+//      0x002B8B78(0x90), load `ctx[0x3568]` and tail-branch to
+//      0x002971E4(slot, 5).
+//
+// Unresolved dependencies (all stubbed from their observed contracts in the
+// differential test): 0x002B9008, 0x0029F10C, 0x002B8B78, 0x0029A3C4,
+// 0x00292F44 (`smt4::ui::StatusDown_SetDisplayMode`), 0x0029E260, 0x0029EB14,
+// 0x0029C768, 0x00292EB0, 0x00292E94, 0x002A8A08, 0x002954B8, 0x002971E4 and
+// 0x002B85BC.  There are no indirect calls in this body.
+namespace script_vm_296a18 {
+
+constexpr u32 kStateOffset = 0x352C;              // current state word
+constexpr u32 kPreviousStateOffset = 0x3530;      // old state snapshot
+constexpr u32 kClearedWordAOffset = 0x3534;       // zeroed
+constexpr u32 kClearedWordBOffset = 0x353C;       // zeroed
+constexpr u32 kClearedWordCOffset = 0x3544;       // zeroed
+constexpr u32 kResourceSlotOffset = 0x3568;       // pointer handed to 0x002971E4
+constexpr u32 kCallbackCountOffset = 0x357C;      // signed halfword drain count
+
+constexpr u32 kActiveState = 0x14;                // teardown state
+constexpr u32 kAdvanceState = 0x13;               // state stored on advance
+constexpr u32 kAdvanceSound = 0x90;               // 0x002B8B78 request on advance
+constexpr u32 kAdvanceSelector = 5;               // 0x002971E4 second argument
+constexpr u32 kFinishState = 3;                   // 0x002B85BC request on finish
+constexpr u32 kMessageColor = 0x323232FF;         // 0x0029F10C colour literal
+constexpr const char* kClearedMessage = nullptr;  // 0x0029F10C empty text
+
+constexpr u32 kState01Id = 0x62;
+constexpr u32 kState0AId = 0x9E;
+constexpr u32 kState0BId = 0x65;
+constexpr u32 kState0DId = 0x66;
+constexpr u32 kState0EId = 0xDF;
+constexpr u32 kState0FId = 0x68;
+constexpr u32 kState10Id = 0x6A;
+constexpr u32 kState11Id = 0xE1;
+constexpr u32 kState12Id = 0x64;
+
+}  // namespace script_vm_296a18
+
+namespace script_vm_296a18_calls {
+
+// 0x002B9008: signed callback-count decrement; ignores its argument.
+extern "C" void camp_func_002b9008(s32 count);
+// 0x0029F10C: publish/clear the message text and colour; the text is NULL here.
+extern "C" void camp_func_0029f10c(const char* text, u32 color);
+// 0x002B8B78: six-slot transition request; the return is ignored here.
+extern "C" u32 script_vm_func_002b8b78(u32 request);
+// 0x0029A3C4: mode notification (r0 consumed).
+extern "C" void script_vm_func_0029a3c4(u32 mode);
+// 0x00292F44: smt4::ui::StatusDown_SetDisplayMode (return ignored).
+extern "C" void func_00292f44(s32 mode);
+// 0x0029E260: camp slot command helper (r0 consumed).
+extern "C" void camp_func_0029e260(u32 mode);
+// 0x0029EB14: UI slot byte helper (r0 consumed).
+extern "C" void ui_func_0029eb14(u32 mode);
+// 0x0029C768: stores a byte and leaves r0 equal to its input in the pinned body.
+extern "C" void script_vm_func_0029c768(u32 mode);
+// 0x00292EB0: interface teardown; its r0 is forwarded to 0x00292E94.
+extern "C" u32 script_vm_func_00292eb0(u32 mode);
+// 0x00292E94: manager interface lookup; returns the word compared below.
+extern "C" u32 script_vm_func_00292e94(u32 value);
+// 0x002A8A08: manager pointer provider; ignores its argument, returns
+// `[0x0043E2A8]+4 + 0x8C`, whose first word is the unsigned limit.
+extern "C" const u32* camp_func_002a8a08(u32 value);
+// 0x002954B8: stores the low byte of r0 at manager+0x4CB (return ignored).
+extern "C" void script_vm_func_002954b8(u32 value);
+// 0x002971E4: script-step routine (tail branch).
+extern "C" u32 script_vm_func_002971e4(void* object, s32 index);
+// 0x002B85BC: transition request (tail branch).
+extern "C" u32 ui_func_002b85bc(u32 request);
+
+}  // namespace script_vm_296a18_calls
+
+extern "C" u32 script_vm_func_00296a18(u8* ctx, u32 state) {
+    using namespace script_vm_296a18;
+    using namespace script_vm_296a18_calls;
+
+    // 0x00296A2C..0x00296A58: snapshot the old state, publish the new one and
+    // clear three words.  `+0x3538` and `+0x3540` are deliberately untouched.
+    const u32 previous_state =
+        *reinterpret_cast<const volatile u32*>(ctx + kStateOffset);
+    *reinterpret_cast<volatile u32*>(ctx + kPreviousStateOffset) = previous_state;
+    *reinterpret_cast<volatile u32*>(ctx + kStateOffset) = state;
+    *reinterpret_cast<volatile u32*>(ctx + kClearedWordAOffset) = 0;
+    *reinterpret_cast<volatile u32*>(ctx + kClearedWordBOffset) = 0;
+    *reinterpret_cast<volatile u32*>(ctx + kClearedWordCOffset) = 0;
+
+    // 0x00296A5C..0x00296A84: signed, re-read callback-count drain.  The
+    // callback receives the value from the previous test.
+    s32 count = *reinterpret_cast<const volatile s16*>(ctx + kCallbackCountOffset);
+    if (count > 0) {
+        s32 index = 0;
+        do {
+            camp_func_002b9008(count);
+            count =
+                *reinterpret_cast<const volatile s16*>(ctx + kCallbackCountOffset);
+            ++index;
+        } while (count > index);
+    }
+    *reinterpret_cast<volatile s16*>(ctx + kCallbackCountOffset) = 0;
+
+    // 0x00296A88..0x00296AFC: state -> transition id; equality tests only.
+    u32 transition = 0;
+    bool has_transition = true;
+    switch (state) {
+    case 0x01:
+        transition = kState01Id;
+        break;
+    case 0x0A:
+        transition = kState0AId;
+        break;
+    case 0x0B:
+        transition = kState0BId;
+        break;
+    case 0x0D:
+        transition = kState0DId;
+        break;
+    case 0x0E:
+        transition = kState0EId;
+        break;
+    case 0x0F:
+        transition = kState0FId;
+        break;
+    case 0x10:
+        transition = kState10Id;
+        break;
+    case 0x11:
+        transition = kState11Id;
+        break;
+    case 0x12:
+        transition = kState12Id;
+        break;
+    default:
+        has_transition = false;
+        break;
+    }
+
+    // 0x00296B00..0x00296B14: clear the message with the fixed colour and
+    // request the mapped transition.
+    if (has_transition) {
+        camp_func_0029f10c(kClearedMessage, kMessageColor);
+        script_vm_func_002b8b78(transition & 0xFFu);
+    }
+
+    // 0x00296B18..0x00296B20: re-read the state after those helpers.
+    const u32 current =
+        *reinterpret_cast<const volatile u32*>(ctx + kStateOffset);
+    if (current != kActiveState) {
+        return current;
+    }
+
+    // 0x00296B24..0x00296B7C: teardown sequence for state 0x14.
+    script_vm_func_0029a3c4(0);
+    func_00292f44(0);
+    camp_func_0029e260(0);
+    ui_func_0029eb14(0);
+    script_vm_func_0029c768(0);
+    const u32 service = script_vm_func_00292eb0(0);
+    const u32 value = script_vm_func_00292e94(service);
+
+    // 0x00296B7C..0x00296B8C: zero or above the unsigned manager limit ends
+    // the sequence.  The limit lookup is skipped for a zero result.
+    if (value == 0 || value > *camp_func_002a8a08(value)) {
+        script_vm_func_002954b8(0);
+        return ui_func_002b85bc(kFinishState);
+    }
+
+    // 0x00296B90..0x00296BB4: advance to state 0x13 and hand the slot to the
+    // script-step routine.
+    *reinterpret_cast<volatile u32*>(ctx + kStateOffset) = kAdvanceState;
+    script_vm_func_002b8b78(kAdvanceSound);
+    return script_vm_func_002971e4(
+        *reinterpret_cast<void* volatile*>(ctx + kResourceSlotOffset),
+        kAdvanceSelector);
 }
 
 // DECOMP_FUNC(0x002a043c, 448)

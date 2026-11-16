@@ -337,121 +337,211 @@ extern "C" __attribute__((naked)) void camp_func_00253634() {
     );
 }
 
+// Direct calls made by 0x002565B8.  The untyped declarations at the top of
+// this translation unit cannot describe their arguments or return values.
+extern "C" u8* ScriptVm_GetSharedRecord()
+    __asm__("script_vm_func_002b66ec");                            // 0x002B66EC
+extern "C" u8* Camp_GetIndexedRecord(s32 index)
+    __asm__("camp_func_002a89e4");                                 // 0x002A89E4
+extern "C" u8* Camp_GetRecordListBase()
+    __asm__("camp_func_002a8a08");                                 // 0x002A8A08
+extern "C" s32 Camp_GetRecordListCount()
+    __asm__("camp_func_002a8a1c");                                 // 0x002A8A1C
+
+namespace {
+
+// Record offsets and list offsets recovered from the ARM listing.  The names
+// only describe the observed use; no wider object model is implied.
+constexpr u32 kSharedRecordMaskOffset = 0x72u;  // u16 mask on 0x002B66EC
+constexpr u32 kRecordFlagsOffset = 0x44u;       // u16 mask on 0x002A89E4
+constexpr u32 kRecordLimitOffset = 0x0Eu;       // s16 upper bound
+constexpr u32 kRecordTopOffset = 0x1Cu;         // s16 top value
+constexpr u32 kRecordValueOffset = 0x2Au;       // s16 current value / store
+
+constexpr u32 kRejectFlagOne = 2u;
+constexpr u32 kRejectFlagWide = 0x400u;
+constexpr u32 kRejectFlagTwo = 4u;
+
+// Mode 0/1 walks the counted entries at +0x90F0; modes 2/3 walk the three
+// fixed entries at +0x9108, which follow that counted array.
+constexpr u32 kCountedListOffset = 0x90F0u;
+constexpr u32 kFixedListOffset = 0x9108u;
+constexpr s32 kFixedListCount = 3;
+
+constexpr s32 kPercentDivisor = 100;
+
+inline u8* BytePointer(u8* base, u32 offset) {
+    return reinterpret_cast<u8*>(
+        reinterpret_cast<uintptr_t>(base) + offset);
+}
+
+inline u16 LoadRecordHalf(u8* base, u32 offset) {
+    u16 value;
+    __builtin_memcpy(&value, BytePointer(base, offset), sizeof(value));
+    return value;
+}
+
+inline s16 LoadRecordSignedHalf(u8* base, u32 offset) {
+    s16 value;
+    __builtin_memcpy(&value, BytePointer(base, offset), sizeof(value));
+    return value;
+}
+
+inline void StoreRecordHalf(u8* base, u32 offset, u16 value) {
+    __builtin_memcpy(BytePointer(base, offset), &value, sizeof(value));
+}
+
+// The original multiplies with `mul` and then feeds the low 32-bit product to
+// the signed divide-by-100 sequence, so the product is modular.
+inline s32 WrapMultiply(s32 left, s32 right) {
+    return static_cast<s32>(
+        static_cast<u32>(left) * static_cast<u32>(right));
+}
+
+// The ARM register-shift form of `lsl` uses the low byte of the shift count;
+// counts of 32 or more produce zero.
+inline u32 BitMaskFor(u32 index) {
+    const u32 shift = index & 0xFFu;
+    return shift < 32u ? (1u << shift) : 0u;
+}
+
+}  // namespace
+
+// ---------------------------------------------------------------------------
+// 0x002565B8 -- decay two families of signed s16 values toward a floor of 1.
+//
+// `mode` selects which passes run, `bit` is a register-shift mask index and
+// `scale` is the signed percentage multiplier.  The first pass runs for modes
+// 0, 2 and 3: it fetches 0x002B66EC six times, rejects a record whose u16 mask
+// at +0x72 has bit 1 (0x2) or bit 10 (0x400) set or lacks the
+// `1 << (bit & 0xFF)` bit, then lowers the s16 at +0x2A by
+// trunc((s16[+0x1C] * scale) / 100), saturating the decrement at 1, the result
+// at 1 and the result at the re-read +0x1C, with a final 16-bit truncation
+// before those comparisons.
+//
+// The second pass runs for modes 0/1 (counted list at +0x90F0, length from
+// 0x002A8A1C) or modes 2/3 (three fixed entries at +0x9108).  Each signed-byte
+// entry below zero is skipped; otherwise the indexed record from 0x002A89E4
+// is rejected when its u16 mask at +0x44 has bit 1 (0x2), bit 10 (0x400) or
+// bit 2 (0x4) set, or lacks the shift bit.  Accepted records lower the s16 at
+// +0x2A by trunc((s16[+0x0E] * scale) / 100), saturating the decrement at 1 and
+// the result at 1, then at the +0x0E bound, again after a 16-bit truncation.
+// The helper's null result skips the store.
+//
+// Both masks are read as u16, so a shift bit at index 16..31 (already excluded
+// by the ARM register-shift rule for counts >= 32) can never match.
+//
+// All modes other than 0..3 return without touching the second pass.  The
+// original leaves no defined return value; `r0` on exit is incidental and is
+// not consumed by any recovered caller.
+// ---------------------------------------------------------------------------
 // DECOMP_FUNC(0x002565b8, 408)
-extern "C" __attribute__((naked)) void script_vm_func_002565b8() {
-    asm volatile(
-        "push {r4, r5, r6, r7, r8, sb, sl, lr}\n"
-        "movs r4, r0\n"
-        "mov r0, #1\n"
-        "lsl r7, r0, r1\n"
-        ".word 0xe59f917c\n"
-        "cmpne r4, #2\n"
-        "cmpne r4, #3\n"
-        "mov r8, r2\n"
-        "bne .L_00256664\n"
-        "bl script_vm_func_002b66ec\n"
-        "ldrh r0, [r0, #0x72]\n"
-        "tst r0, #2\n"
-        "bne .L_00256664\n"
-        "bl script_vm_func_002b66ec\n"
-        "ldrh r0, [r0, #0x72]\n"
-        "tst r0, #0x400\n"
-        "bne .L_00256664\n"
-        "bl script_vm_func_002b66ec\n"
-        "ldrh r0, [r0, #0x72]\n"
-        "tst r0, r7\n"
-        "beq .L_00256664\n"
-        "bl script_vm_func_002b66ec\n"
-        "ldrsh r0, [r0, #0x1c]\n"
-        "mul r5, r0, r8\n"
-        "bl script_vm_func_002b66ec\n"
-        "ldrsh r1, [r0, #0x2a]\n"
-        "smull r2, r0, sb, r5\n"
-        "asr r2, r0, #5\n"
-        "sub r0, r2, r0, asr #31\n"
-        "cmp r0, #0\n"
-        "movle r0, #1\n"
-        "sub r0, r1, r0\n"
-        "cmp r0, #0\n"
-        "movle r0, #1\n"
-        "sxth r5, r0\n"
-        "bl script_vm_func_002b66ec\n"
-        "ldrsh r1, [r0, #0x1c]\n"
-        "cmp r5, r1\n"
-        "movgt r5, r1\n"
-        "bgt .L_00256660\n"
-        "cmp r5, #1\n"
-        "movlt r5, #1\n"
-        ".L_00256660:\n"
-        "strh r5, [r0, #0x2a]\n"
-        ".L_00256664:\n"
-        "cmp r4, #0\n"
-        "cmpne r4, #1\n"
-        "beq .L_002566c4\n"
-        "cmp r4, #2\n"
-        "cmpne r4, #3\n"
-        "bne .L_00256748\n"
-        "mov r5, #3\n"
-        "bl camp_func_002a8a08\n"
-        "add r6, r0, #0x9000\n"
-        "add r6, r6, #0x108\n"
-        ".L_0025668c:\n"
-        "cmp r5, #0\n"
-        "mov r4, #0\n"
-        "ble .L_00256748\n"
-        ".L_00256698:\n"
-        "ldrsb r0, [r6, r4]\n"
-        "cmp r0, #0\n"
-        "blt .L_0025673c\n"
-        "bl camp_func_002a89e4\n"
-        "mov r1, r0\n"
-        "ldrh r0, [r0, #0x44]\n"
-        "tst r0, #2\n"
-        "tsteq r0, #0x400\n"
-        "tsteq r0, #4\n"
-        "bne .L_0025673c\n"
-        "b .L_002566e4\n"
-        ".L_002566c4:\n"
-        "nop\n"
-        "bl camp_func_002a8a1c\n"
-        "mov r5, r0\n"
-        "nop\n"
-        "bl camp_func_002a8a08\n"
-        "add r6, r0, #0x9000\n"
-        "add r6, r6, #0xf0\n"
-        "b .L_0025668c\n"
-        ".L_002566e4:\n"
-        "tst r0, r7\n"
-        "beq .L_0025673c\n"
-        "ldrsh r2, [r1, #0xe]\n"
-        "mul r0, r2, r8\n"
-        "smull r3, r0, sb, r0\n"
-        "asr r3, r0, #5\n"
-        "sub r0, r3, r0, asr #31\n"
-        "ldrsh r3, [r1, #0x2a]\n"
-        "cmp r0, #0\n"
-        "movle r0, #1\n"
-        "sub r0, r3, r0\n"
-        "cmp r0, #0\n"
-        "movle r0, #1\n"
-        "cmp r1, #0\n"
-        "sxth r0, r0\n"
-        "beq .L_0025673c\n"
-        "cmp r0, r2\n"
-        "movgt r0, r2\n"
-        "bgt .L_00256738\n"
-        "cmp r0, #1\n"
-        "movlt r0, #1\n"
-        ".L_00256738:\n"
-        "strh r0, [r1, #0x2a]\n"
-        ".L_0025673c:\n"
-        "add r4, r4, #1\n"
-        "cmp r4, r5\n"
-        "blt .L_00256698\n"
-        ".L_00256748:\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, pc}\n"
-        ".word 0x51eb851f\n"
-    );
+extern "C" void script_vm_func_002565b8(u32 mode, u32 bit, s32 scale) {
+    const u32 mask_bit = BitMaskFor(bit);
+
+    if (mode == 0u || mode == 2u || mode == 3u) {
+        u8* record = ScriptVm_GetSharedRecord();
+        const u16 first_mask =
+            LoadRecordHalf(record, kSharedRecordMaskOffset);
+        if ((first_mask & kRejectFlagOne) == 0) {
+            record = ScriptVm_GetSharedRecord();
+            const u16 second_mask =
+                LoadRecordHalf(record, kSharedRecordMaskOffset);
+            if ((second_mask & kRejectFlagWide) == 0) {
+                record = ScriptVm_GetSharedRecord();
+                const u16 third_mask =
+                    LoadRecordHalf(record, kSharedRecordMaskOffset);
+                if ((third_mask & mask_bit) != 0) {
+                    record = ScriptVm_GetSharedRecord();
+                    const s32 top = static_cast<s32>(LoadRecordSignedHalf(
+                        record, kRecordTopOffset));
+                    s32 amount = WrapMultiply(top, scale) / kPercentDivisor;
+
+                    record = ScriptVm_GetSharedRecord();
+                    const s32 current = static_cast<s32>(LoadRecordSignedHalf(
+                        record, kRecordValueOffset));
+
+                    if (amount <= 0) {
+                        amount = 1;
+                    }
+                    s32 value = current - amount;
+                    if (value <= 0) {
+                        value = 1;
+                    }
+                    value = static_cast<s16>(value);
+
+                    record = ScriptVm_GetSharedRecord();
+                    const s32 limit = static_cast<s32>(LoadRecordSignedHalf(
+                        record, kRecordTopOffset));
+                    if (value > limit) {
+                        value = limit;
+                    } else if (value < 1) {
+                        value = 1;
+                    }
+                    StoreRecordHalf(record, kRecordValueOffset,
+                                    static_cast<u16>(value));
+                }
+            }
+        }
+    }
+
+    u8* list;
+    s32 list_count;
+    if (mode == 0u || mode == 1u) {
+        list_count = Camp_GetRecordListCount();
+        list = BytePointer(Camp_GetRecordListBase(), kCountedListOffset);
+    } else if (mode == 2u || mode == 3u) {
+        list_count = kFixedListCount;
+        list = BytePointer(Camp_GetRecordListBase(), kFixedListOffset);
+    } else {
+        return;
+    }
+
+    for (s32 index = 0; index < list_count; ++index) {
+        const s32 category =
+            static_cast<s32>(static_cast<s8>(list[index]));
+        if (category < 0) {
+            continue;
+        }
+
+        u8* const record = Camp_GetIndexedRecord(category);
+        if (record == nullptr) {
+            continue;
+        }
+
+        const u16 flags = LoadRecordHalf(record, kRecordFlagsOffset);
+        if ((flags & kRejectFlagOne) != 0 ||
+            (flags & kRejectFlagWide) != 0 ||
+            (flags & kRejectFlagTwo) != 0) {
+            continue;
+        }
+        if ((flags & mask_bit) == 0) {
+            continue;
+        }
+
+        const s32 limit = static_cast<s32>(
+            LoadRecordSignedHalf(record, kRecordLimitOffset));
+        s32 amount = WrapMultiply(limit, scale) / kPercentDivisor;
+        const s32 current = static_cast<s32>(
+            LoadRecordSignedHalf(record, kRecordValueOffset));
+
+        if (amount <= 0) {
+            amount = 1;
+        }
+        s32 value = current - amount;
+        if (value <= 0) {
+            value = 1;
+        }
+        value = static_cast<s16>(value);
+
+        if (value > limit) {
+            value = limit;
+        } else if (value < 1) {
+            value = 1;
+        }
+        StoreRecordHalf(record, kRecordValueOffset,
+                        static_cast<u16>(value));
+    }
 }
 
 // DECOMP_FUNC(0x00256b80, 108)
@@ -698,114 +788,132 @@ extern "C" __attribute__((naked)) void camp_func_00257c84() {
     );
 }
 
+// Direct calls made by 0x0025a0d0.  The untyped declarations at the top of
+// this translation unit cannot describe their arguments or return values.
+extern "C" void UiConfig_FillPair(u8* dst, u32 value)
+    __asm__("camp_func_0027edf8");                                  // 0x0027EDF8
+extern "C" s16 UiTouch_RegisterRectRegion(s32 x, s32 y, s32 w, s32 h)
+    __asm__("camp_func_0029e2f4");                                  // 0x0029E2F4
+extern "C" u8* UiLayout_ResolveNode(u32 group, u32 node_id)
+    __asm__("camp_func_002bf6d0");                                  // 0x002BF6D0
+
+namespace {
+
+// `g_TitleConfigWork`, 0x0044E2D0: pointer to the title-config workspace.
+constexpr uintptr_t kTitleConfigWorkGlobal = 0x0044E2D0u;
+constexpr u32 kNodeGroup = 0x2Fu;
+constexpr u32 kListCursorOffset = 0xE8u;
+constexpr u32 kRegionHandleOffset = 0x1Cu;   // +0x1C, +0x1E, +0x20, +0x22
+constexpr u32 kRegionCountOffset = 0x24u;
+constexpr u32 kCoordinateOffset = 8u;
+constexpr u32 kSecondCoordinateOffset = 0x0Au;
+constexpr u32 kExtentOffset = 4u;
+constexpr u32 kSecondExtentOffset = 6u;
+constexpr u16 kExtentSizeBit = 0x8000u;
+
+inline u16 LoadHalfword(const u8* base, u32 offset) {
+    u16 value;
+    __builtin_memcpy(&value, base + offset, sizeof(value));
+    return value;
+}
+
+inline s16 LoadSignedHalfword(const u8* base, u32 offset) {
+    s16 value;
+    __builtin_memcpy(&value, base + offset, sizeof(value));
+    return value;
+}
+
+inline u32 LoadWord(const u8* base, u32 offset) {
+    u32 value;
+    __builtin_memcpy(&value, base + offset, sizeof(value));
+    return value;
+}
+
+inline void StoreHalfword(u8* base, u32 offset, u16 value) {
+    __builtin_memcpy(base + offset, &value, sizeof(value));
+}
+
+// 0x0029E2F4 call shared by the first three records: the coordinates are the
+// signed 16-bit sums of both records' +8/+0xA halfwords; the extents come from
+// the second record's +4/+6 halfwords with bit 15 removed.
+inline s16 RegisterAnchorRect(const u8* anchor, const u8* node) {
+    const u16 x = static_cast<u16>(
+        LoadHalfword(anchor, kCoordinateOffset) +
+        LoadHalfword(node, kCoordinateOffset));
+    const u16 y = static_cast<u16>(
+        LoadHalfword(anchor, kSecondCoordinateOffset) +
+        LoadHalfword(node, kSecondCoordinateOffset));
+    const u16 width = static_cast<u16>(
+        LoadHalfword(node, kExtentOffset) & ~kExtentSizeBit);
+    const u16 height = static_cast<u16>(
+        LoadHalfword(node, kSecondExtentOffset) & ~kExtentSizeBit);
+    return UiTouch_RegisterRectRegion(
+        static_cast<s16>(x), static_cast<s16>(y), width, height);
+}
+
+// The fourth record stores the signed extents indirectly through [node+0xC].
+inline s16 RegisterTailRect(const u8* anchor, const u8* node) {
+    auto* const extents = reinterpret_cast<const u8*>(
+        static_cast<uintptr_t>(LoadWord(node, 0x0Cu)));
+    const u16 x = static_cast<u16>(
+        LoadHalfword(anchor, kCoordinateOffset) +
+        LoadHalfword(node, kCoordinateOffset));
+    const u16 y = static_cast<u16>(
+        LoadHalfword(anchor, kSecondCoordinateOffset) +
+        LoadHalfword(node, kSecondCoordinateOffset));
+    return UiTouch_RegisterRectRegion(
+        static_cast<s16>(x), static_cast<s16>(y),
+        LoadSignedHalfword(extents, 0u),
+        LoadSignedHalfword(extents, 2u));
+}
+
+}  // namespace
+
 // DECOMP_FUNC(0x0025a0d0, 408)
-extern "C" __attribute__((naked)) void camp_func_0025a0d0() {
-    asm volatile(
-        ".word 0xe59f018c\n"
-        "push {r4, r5, r6, r7, r8, lr}\n"
-        "mov r4, #0\n"
-        "ldr r5, [r0]\n"
-        "ldrsh r0, [r5, #0x24]\n"
-        "cmp r0, #0\n"
-        "ble .L_0025a104\n"
-        ".L_0025a0ec:\n"
-        "nop\n"
-        "bl camp_func_002b9008\n"
-        "ldrsh r0, [r5, #0x24]\n"
-        "add r4, r4, #1\n"
-        "cmp r0, r4\n"
-        "bgt .L_0025a0ec\n"
-        ".L_0025a104:\n"
-        "mvn r1, #0\n"
-        "add r0, r5, #0x1c\n"
-        "bl camp_func_0027edf8\n"
-        "mov r0, #0\n"
-        "strh r0, [r5, #0x24]\n"
-        "add r0, r5, #0xe8\n"
-        "bl camp_func_0029f248\n"
-        "add r1, r0, #0x1f\n"
-        "mov r0, #0x2f\n"
-        "bl camp_func_002bf6d0\n"
-        "mov r4, r0\n"
-        "mov r1, #0x1b\n"
-        "mov r0, #0x2f\n"
-        "bl camp_func_002bf6d0\n"
-        "mov r1, r0\n"
-        "ldrh r0, [r4, #0xa]\n"
-        "ldrh ip, [r1, #0xa]\n"
-        "ldrh r7, [r1, #8]\n"
-        "ldrh r2, [r1, #4]\n"
-        "ldrh r3, [r4, #8]\n"
-        "ldrh r6, [r1, #6]\n"
-        "add r1, r0, ip\n"
-        "add r0, r3, r7\n"
-        "sxth r1, r1\n"
-        "sxth r0, r0\n"
-        "bic r3, r6, #0x8000\n"
-        "bic r2, r2, #0x8000\n"
-        "bl camp_func_0029e2f4\n"
-        "strh r0, [r5, #0x1c]\n"
-        "ldrh r0, [r5, #0x24]\n"
-        "mov r1, #0x34\n"
-        "add r0, r0, #1\n"
-        "strh r0, [r5, #0x24]\n"
-        "mov r0, #0x2f\n"
-        "bl camp_func_002bf6d0\n"
-        "mov r1, r0\n"
-        "ldrh r0, [r4, #0xa]\n"
-        "ldrh r3, [r1, #0xa]\n"
-        "ldrh r6, [r4, #8]\n"
-        "ldrh r7, [r1, #8]\n"
-        "add r0, r0, r3\n"
-        "ldrh r2, [r1, #6]\n"
-        "ldrh ip, [r1, #4]\n"
-        "add r3, r6, r7\n"
-        "sxth r1, r0\n"
-        "sxth r0, r3\n"
-        "bic r3, r2, #0x8000\n"
-        "bic r2, ip, #0x8000\n"
-        "bl camp_func_0029e2f4\n"
-        "strh r0, [r5, #0x1e]\n"
-        "mov r1, #0x38\n"
-        "mov r0, #0x2f\n"
-        "bl camp_func_002bf6d0\n"
-        "mov r1, r0\n"
-        "ldrh r0, [r4, #0xa]\n"
-        "ldrh r6, [r1, #0xa]\n"
-        "ldrh r7, [r1, #8]\n"
-        "ldrh r2, [r1, #4]\n"
-        "ldrh r3, [r4, #8]\n"
-        "ldrh ip, [r1, #6]\n"
-        "add r1, r0, r6\n"
-        "add r0, r3, r7\n"
-        "sxth r1, r1\n"
-        "sxth r0, r0\n"
-        "bic r3, ip, #0x8000\n"
-        "bic r2, r2, #0x8000\n"
-        "bl camp_func_0029e2f4\n"
-        "strh r0, [r5, #0x20]\n"
-        "mov r1, #0x33\n"
-        "mov r0, #0x2f\n"
-        "bl camp_func_002bf6d0\n"
-        "ldrh r6, [r0, #0xa]\n"
-        "ldrh r7, [r0, #8]\n"
-        "ldr r0, [r0, #0xc]\n"
-        "ldrh ip, [r4, #0xa]\n"
-        "ldrh r4, [r4, #8]\n"
-        "ldrsh r3, [r0, #2]\n"
-        "ldrsh r2, [r0]\n"
-        "add r0, ip, r6\n"
-        "add ip, r4, r7\n"
-        "sxth r1, r0\n"
-        "sxth r0, ip\n"
-        "bl camp_func_0029e2f4\n"
-        "strh r0, [r5, #0x22]\n"
-        "ldrh r0, [r5, #0x24]\n"
-        "add r0, r0, #3\n"
-        "strh r0, [r5, #0x24]\n"
-        "pop {r4, r5, r6, r7, r8, pc}\n"
-        ".word 0x0044e2d0\n"
-    );
+extern "C" s32 camp_func_0025a0d0() {
+    auto* const work = *reinterpret_cast<u8**>(
+        static_cast<uintptr_t>(kTitleConfigWorkGlobal));
+
+    // Release the regions recorded by the previous invocation.  The bound is
+    // the signed halfword at +0x24; the helper ignores its incoming argument.
+    const s16 previous_count = LoadSignedHalfword(work, kRegionCountOffset);
+    for (s32 index = 0; index < previous_count; ++index) {
+        camp_func_002b9008();
+    }
+
+    UiConfig_FillPair(work + kRegionHandleOffset, 0xFFFFFFFFu);
+    StoreHalfword(work, kRegionCountOffset, 0);
+
+    // The selected settings row chooses one of the three 0x2F-group records at
+    // node ids 0x1F..0x21; the other records are fixed.
+    const s32 selected_row = camp_func_0029f248(work + kListCursorOffset);
+    u8* const anchor = UiLayout_ResolveNode(
+        kNodeGroup, static_cast<u32>(selected_row) + 0x1Fu);
+
+    u8* const base_node = UiLayout_ResolveNode(kNodeGroup, 0x1Bu);
+    StoreHalfword(work, kRegionHandleOffset,
+                  static_cast<u16>(RegisterAnchorRect(anchor, base_node)));
+
+    StoreHalfword(work, kRegionCountOffset,
+                  static_cast<u16>(LoadHalfword(work, kRegionCountOffset) + 1u));
+
+    u8* const node_34 = UiLayout_ResolveNode(kNodeGroup, 0x34u);
+    StoreHalfword(work, kRegionHandleOffset + 2u,
+                  static_cast<u16>(RegisterAnchorRect(anchor, node_34)));
+
+    u8* const node_38 = UiLayout_ResolveNode(kNodeGroup, 0x38u);
+    StoreHalfword(work, kRegionHandleOffset + 4u,
+                  static_cast<u16>(RegisterAnchorRect(anchor, node_38)));
+
+    u8* const node_33 = UiLayout_ResolveNode(kNodeGroup, 0x33u);
+    StoreHalfword(work, kRegionHandleOffset + 6u,
+                  static_cast<u16>(RegisterTailRect(anchor, node_33)));
+
+    // The original leaves the post-update count in r0; callers ignore it.
+    const u16 region_count =
+        static_cast<u16>(LoadHalfword(work, kRegionCountOffset) + 3u);
+    StoreHalfword(work, kRegionCountOffset, region_count);
+    return region_count;
 }
 
 // DECOMP_FUNC(0x0025c110, 204)
@@ -5471,118 +5579,128 @@ extern "C" __attribute__((naked)) void battle_func_0028ec90() {
     );
 }
 
+// ---------------------------------------------------------------------------
+// 0x0028F15C -- release a script-VM actor from the battle actor tables.
+//
+// `id` indexes a four-byte flag record at [work_a + 0x200 + id*4], where
+// work_a and work_b are two consecutive results of the work-block getter
+// 0x002ADF14.  The early gate loads flag byte 0 and, when bit 0 is clear,
+// returns 0 for every id below the literal limit 0x15E (the literal is the
+// pool word at 0x0028F2E8).  It then reads the actor kind (0x00287AFC returns
+// entity byte +6) and entity flag bit 0 (0x00299224 returns entity byte +7
+// bit 0) twice; when the first flag read is clear, the kind is non-zero and
+// the shared active-id halfword at work_b+0x840 is non-zero, it returns 0.
+//
+// Otherwise it rewrites the flag record (bit 1 set, bit 2 cleared, bit 6
+// copied from flag byte 1, bit 7 cleared, byte 2 bits 0 and 2 cleared) and:
+//   * second entity-flag read set, kind == 1: claims the first free 14-byte
+//     slot of the four-entry table at work_b+0x842, stores the id in the
+//     slot's leading halfword and zeroes the 12-byte payload (0x003EB280);
+//   * second entity-flag read clear, kind != 0: stores the id as the active
+//     id (work_b+0x840), zeroes the 14-byte tail record at work_b+0x87A
+//     (three words, then a halfword at +0x0C) and clears command bits
+//     0x500..0x51F of the work block, refetching the work block and calling
+//     0x0023DF18(bit, 0) for every bit.
+// Returns 1 once the gate has been passed.  `id` is the only argument and
+// nothing is read from the stack.
+// ---------------------------------------------------------------------------
+extern "C" u8* EngineWorkBlock() __asm__("engine_func_002adf14");  // 0x002ADF14
+extern "C" s32 ScriptVmActorKind(u32 id)
+    __asm__("script_vm_func_00287afc");                            // 0x00287AFC
+extern "C" u32 ScriptVmActorGate(u32 id)
+    __asm__("script_vm_func_00299224");                            // 0x00299224
+extern "C" void CampClearSlot(u8* payload)
+    __asm__("camp_func_003eb280");                                 // 0x003EB280
+extern "C" void ScriptVmCommand(u32 bit, u32 clear)
+    __asm__("script_vm_func_0023df18");                            // 0x0023DF18
+
+namespace {
+
+constexpr u32 kActorRecordBase = 0x200;  // flag record: work_a + id*4 + 0x200
+constexpr u32 kActorIdLimit = 0x15e;     // pool literal at 0x0028F2E8
+constexpr u32 kActiveId = 0x840;         // halfword owner id
+constexpr u32 kSlotTable = 0x842;        // four 14-byte slots
+constexpr u32 kSlotStride = 14;
+constexpr u32 kSlotCount = 4;
+constexpr u32 kSlotPayload = 2;          // 12-byte payload after the halfword
+constexpr u32 kTailRecord = 0x87a;       // three words at +0x87A..+0x885
+constexpr u32 kTailField = 0x886;        // trailing halfword
+constexpr u32 kCommandFirstBit = 0x500;  // bit indices 0x500..0x51F
+constexpr u32 kCommandBitCount = 0x20;
+
+inline u16 LoadHalf(const u8* base, u32 offset) {
+    u16 value;
+    __builtin_memcpy(&value, base + offset, sizeof(value));
+    return value;
+}
+
+inline void StoreHalf(u8* base, u32 offset, u16 value) {
+    __builtin_memcpy(base + offset, &value, sizeof(value));
+}
+
+inline void StoreWord(u8* base, u32 offset, u32 value) {
+    __builtin_memcpy(base + offset, &value, sizeof(value));
+}
+
+}  // namespace
+
 // DECOMP_FUNC(0x0028f15c, 400)
-extern "C" __attribute__((naked)) void script_vm_func_0028f15c() {
-    asm volatile(
-        "push {r4, r5, r6, r7, r8, lr}\n"
-        "mov r6, r0\n"
-        "bl engine_func_002adf14\n"
-        "add r4, r0, r6, lsl #2\n"
-        "bl engine_func_002adf14\n"
-        "mov r5, r0\n"
-        "ldrb r0, [r4, #0x200]!\n"
-        "tst r0, #1\n"
-        "bne .L_0028f18c\n"
-        ".word 0xe59f0160\n"
-        "cmp r6, r0\n"
-        "blo .L_0028f1c4\n"
-        ".L_0028f18c:\n"
-        "mov r0, r6\n"
-        "bl script_vm_func_00287afc\n"
-        "mov r7, r0\n"
-        "mov r0, r6\n"
-        "bl script_vm_func_00299224\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "bne .L_0028f1cc\n"
-        "cmp r7, #0\n"
-        "beq .L_0028f1cc\n"
-        "mov r0, #0x840\n"
-        "ldrh r0, [r0, r5]\n"
-        "cmp r0, #0\n"
-        "beq .L_0028f1cc\n"
-        ".L_0028f1c4:\n"
-        "mov r0, #0\n"
-        "pop {r4, r5, r6, r7, r8, pc}\n"
-        ".L_0028f1cc:\n"
-        "ldrb r0, [r4]\n"
-        "ldrb r1, [r4, #1]\n"
-        "bic r0, r0, #4\n"
-        "orr r0, r0, #2\n"
-        "cmp r1, #0\n"
-        "strb r0, [r4]\n"
-        "orrne r0, r0, #0x40\n"
-        "biceq r0, r0, #0x40\n"
-        "strb r0, [r4]\n"
-        "ldrb r1, [r4]\n"
-        "ldrb r0, [r4, #2]\n"
-        "bic r1, r1, #0x80\n"
-        "bic r0, r0, #5\n"
-        "strb r1, [r4]\n"
-        "strb r0, [r4, #2]\n"
-        "mov r0, r6\n"
-        "bl script_vm_func_00299224\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "beq .L_0028f278\n"
-        "cmp r7, #1\n"
-        "moveq r0, #0\n"
-        "bne .L_0028f2e0\n"
-        ".L_0028f228:\n"
-        "rsb r1, r0, r0, lsl #3\n"
-        "add r1, r5, r1, lsl #1\n"
-        "add r1, r1, #0x800\n"
-        "ldrh r1, [r1, #0x42]\n"
-        "cmp r1, #0\n"
-        "beq .L_0028f250\n"
-        "add r0, r0, #1\n"
-        "cmp r0, #4\n"
-        "blt .L_0028f228\n"
-        "b .L_0028f2e0\n"
-        ".L_0028f250:\n"
-        "rsb r0, r0, r0, lsl #3\n"
-        "add r0, r5, r0, lsl #1\n"
-        "add r1, r0, #0x800\n"
-        "add r0, r0, #0x800\n"
-        "add r0, r0, #0x44\n"
-        "strh r6, [r1, #0x42]\n"
-        "bl camp_func_003eb280\n"
-        "nop\n"
-        "nop\n"
-        "b .L_0028f2e0\n"
-        ".L_0028f278:\n"
-        "cmp r7, #0\n"
-        "beq .L_0028f2e0\n"
-        "add r0, r5, #0x800\n"
-        "mov r1, #0\n"
-        "strh r6, [r0, #0x40]\n"
-        "str r1, [r5, #0x87a]\n"
-        "str r1, [r5, #0x87e]\n"
-        "str r1, [r5, #0x882]\n"
-        "mov r4, #0x500\n"
-        "mov r7, #1\n"
-        "strh r1, [r0, #0x86]\n"
-        ".L_0028f2a4:\n"
-        "mov r6, #0\n"
-        "bl engine_func_002adf14\n"
-        "mov r5, r0\n"
-        "mov r1, r6\n"
-        "mov r0, r4\n"
-        "bl script_vm_func_0023df18\n"
-        "and r1, r4, #7\n"
-        "lsr r0, r4, #3\n"
-        "mvn r1, r7, lsl r1\n"
-        "ldrb r2, [r5, r0]\n"
-        "add r4, r4, #1\n"
-        "cmp r4, #0x520\n"
-        "and r1, r1, r2\n"
-        "strb r1, [r5, r0]\n"
-        "blo .L_0028f2a4\n"
-        ".L_0028f2e0:\n"
-        "mov r0, #1\n"
-        "pop {r4, r5, r6, r7, r8, pc}\n"
-        ".word 0x0000015e\n"
-    );
+extern "C" s32 script_vm_func_0028f15c(u32 id) {
+    u8* const actor_work = EngineWorkBlock();
+    u8* const flags = actor_work + kActorRecordBase + id * 4u;
+    u8* const work = EngineWorkBlock();
+
+    if ((flags[0] & 1u) == 0 && id < kActorIdLimit) {
+        return 0;
+    }
+
+    const s32 kind = ScriptVmActorKind(id);
+    const u32 gate = ScriptVmActorGate(id);
+    if (gate == 0 && kind != 0 && LoadHalf(work, kActiveId) != 0) {
+        return 0;
+    }
+
+    const u8 follow = flags[1];
+    u8 value = static_cast<u8>((flags[0] & ~4u) | 2u);
+    flags[0] = value;
+    value = static_cast<u8>(follow != 0 ? (value | 0x40u) : (value & ~0x40u));
+    flags[0] = value;
+    flags[0] = static_cast<u8>(flags[0] & ~0x80u);
+    flags[2] = static_cast<u8>(flags[2] & ~5u);
+
+    if (ScriptVmActorGate(id) != 0) {
+        if (kind != 1) {
+            return 1;
+        }
+        for (u32 index = 0; index < kSlotCount; ++index) {
+            u8* const slot = work + kSlotTable + index * kSlotStride;
+            if (LoadHalf(slot, 0) == 0) {
+                StoreHalf(slot, 0, static_cast<u16>(id));
+                CampClearSlot(slot + kSlotPayload);
+                return 1;
+            }
+        }
+        return 1;
+    }
+
+    if (kind == 0) {
+        return 1;
+    }
+
+    StoreHalf(work, kActiveId, static_cast<u16>(id));
+    StoreWord(work, kTailRecord + 0, 0);
+    StoreWord(work, kTailRecord + 4, 0);
+    StoreWord(work, kTailRecord + 8, 0);
+    StoreHalf(work, kTailField, 0);
+
+    for (u32 bit = kCommandFirstBit;
+         bit < kCommandFirstBit + kCommandBitCount; ++bit) {
+        u8* const block = EngineWorkBlock();
+        ScriptVmCommand(bit, 0);
+        block[bit >> 3] =
+            static_cast<u8>(block[bit >> 3] & ~(1u << (bit & 7u)));
+    }
+    return 1;
 }
 
 // DECOMP_FUNC(0x0028f2ec, 372)
@@ -7317,122 +7435,202 @@ extern "C" __attribute__((naked)) void script_vm_func_00296cbc() {
     );
 }
 
+// Direct calls made by 0x00298bdc.  The untyped declarations at the top of
+// this translation unit cannot describe their arguments or return values.
+extern "C" s32 QuestList_GetRowCount(void* cursor)
+    __asm__("camp_func_0029f0f4");                                  // 0x0029F0F4
+extern "C" s32 QuestList_GetSelectedRow(void* cursor)
+    __asm__("camp_func_0029f248");                                  // 0x0029F248
+extern "C" s32 QuestList_GetScrollOffset(void* cursor)
+    __asm__("camp_func_0029f260");                                  // 0x0029F260
+extern "C" void QuestList_ZeroBytes(void* dst, u32 count)
+    __asm__("engine_func_002c4b30");                                // 0x002C4B30
+extern "C" u8* QuestCategory_GetFallbackRecord()
+    __asm__("script_vm_func_002b66ec");                             // 0x002B66EC
+extern "C" u8* QuestCategory_GetRecord(s32 category)
+    __asm__("camp_func_002a89e4");                                  // 0x002A89E4
+extern "C" u32 QuestCategory_GetBitWord(s16 bit)
+    __asm__("ui_func_002b0788");                                    // 0x002B0788
+// Quotient in r0 and remainder in r1 (0x002C615C; see the helper record).
+extern "C" u64 QuestList_DivMod(u32 numerator, u32 denominator)
+    __asm__("ui_func_002c615c");                                    // 0x002C615C
+extern "C" u32 QuestList_CommitValue(u32 value)
+    __asm__("script_vm_func_0026dd68");                             // 0x0026DD68
+
+namespace {
+
+// `g_QuestManagerWork`, 0x0043DA90: pointer to the camp work block.
+constexpr uintptr_t kQuestWorkGlobal = 0x0043DA90u;
+constexpr u32 kQuestListCursorOffset = 0x1DCu;
+
+// Visible-row table: a signed category word per row, eight bytes apart.
+constexpr u32 kVisibleCategoryBase = 0xE40u;
+constexpr u32 kVisibleRowStride = 8u;
+
+// Per-category words, four bytes apart.
+constexpr u32 kFrameCounterBase = 0x2494u;
+constexpr u32 kRollingIndexBase = 0x24F8u;
+constexpr u32 kSelectedValueBase = 0x255Cu;
+constexpr u32 kCategoryStride = 4u;
+
+constexpr u32 kRecordMaskOffset = 0x44u;    // category record, u16
+constexpr u32 kFallbackMaskOffset = 0x72u;  // 0x002B66EC record, u16
+constexpr s32 kFrameWrapLimit = 0x18;       // signed 32-bit limit
+constexpr s32 kFirstMaskBit = 1;            // tst mask, 1 << bit
+constexpr s32 kMaskBitEnd = 0xBu;           // bit < 11
+
+// Four bytes of leading marker space, then one word per category.
+constexpr u32 kMarkerFirstWord = 4u;
+constexpr u32 kMarkerWordCount = 25u;       // 0x64 bytes, as the original
+constexpr u32 kMarkerBytes = kMarkerWordCount * 4u;
+
+inline u32 QuestLoadWord(const void* address) {
+    u32 value;
+    __builtin_memcpy(&value, address, sizeof(value));
+    return value;
+}
+
+inline u16 QuestLoadHalfword(const void* address) {
+    u16 value;
+    __builtin_memcpy(&value, address, sizeof(value));
+    return value;
+}
+
+inline void QuestStoreWord(void* address, u32 value) {
+    __builtin_memcpy(address, &value, sizeof(value));
+}
+
+// The original adds the 32-bit offset to the base register directly, so the
+// arithmetic is modular even for negative indices.
+inline u8* QuestPointer(u8* base, u32 offset) {
+    return reinterpret_cast<u8*>(
+        reinterpret_cast<uintptr_t>(base) + offset);
+}
+
+inline u8* QuestIndexed(u8* base, u32 base_offset, u32 index, u32 stride) {
+    return QuestPointer(base,
+                        static_cast<u32>(base_offset + index * stride));
+}
+
+}  // namespace
+
+// ---------------------------------------------------------------------------
+// 0x00298BDC -- advance the per-category quest-list animation state.
+//
+// `g_QuestManagerWork` (0x0043DA90) points at the camp work block.  The UI
+// list cursor at work+0x1DC provides the row count; it is read three times and
+// the first result is replaced by the third only when the second is smaller
+// (signed).  A non-positive count skips the per-category pass.
+//
+// Every visible row stores a signed category at work+0xE40+row*8.  For the
+// first row of each category (a 25-word stack marker array, indexed by the
+// category, suppresses repeats) a 16-bit mask is taken from the category
+// record at +0x44 (0x002A89E4) or, for a negative category, from the fallback
+// record (0x002B66EC) at +0x72:
+//   * mask == 0 writes 0xFFFFFFFF to work+0x255C+category*4;
+//   * otherwise the loop walks bits 1..10 and accepts the first set bit whose
+//     ordinal (number of earlier set bits that did not match) equals the word
+//     at work+0x24F8+category*4; 0x002B0788(bit) supplies the word stored at
+//     work+0x255C+category*4.  No match leaves that word untouched.
+// The per-category frame counter at work+0x2494+category*4 then increments;
+// when the signed result reaches 0x18 the unsigned remainder of
+// (work+0x24F8 word + 1) / ordinal is stored back there and the counter is
+// cleared.
+//
+// Finally the scroll offset and selected row read the work+0xE40 table, the
+// selected category word at work+0x255C+category*4 goes to 0x0026DD68, and
+// that helper's r0 is returned.  All three original callers ignore it.
+// ---------------------------------------------------------------------------
 // DECOMP_FUNC(0x00298bdc, 408)
-extern "C" __attribute__((naked)) void camp_func_00298bdc() {
-    asm volatile(
-        "push {r4, r5, r6, r7, r8, sb, sl, fp, lr}\n"
-        "sub sp, sp, #0x64\n"
-        ".word 0xe59f0184\n"
-        "ldr r7, [r0]\n"
-        "add r0, r7, #0x1dc\n"
-        "bl camp_func_0029f0f4\n"
-        "mov r8, r0\n"
-        "add r0, r7, #0x1dc\n"
-        "bl camp_func_0029f0f4\n"
-        "cmp r0, r8\n"
-        "bge .L_00298c14\n"
-        "add r0, r7, #0x1dc\n"
-        "bl camp_func_0029f0f4\n"
-        "mov r8, r0\n"
-        ".L_00298c14:\n"
-        "mov r1, #0x64\n"
-        "mov r0, sp\n"
-        "bl engine_func_002c4b30\n"
-        "cmp r8, #0\n"
-        "mov r5, #0\n"
-        "movgt sl, sp\n"
-        "movgt fp, #1\n"
-        "ble .L_00298d34\n"
-        ".L_00298c34:\n"
-        "add r0, r7, r5, lsl #3\n"
-        "ldr r6, [r0, #0xe40]\n"
-        "add r0, sl, r6, lsl #2\n"
-        "ldr r1, [r0, #4]\n"
-        "cmp r1, #0\n"
-        "bne .L_00298d28\n"
-        "cmp r6, #0\n"
-        "str fp, [r0, #4]\n"
-        "bge .L_00298c68\n"
-        "bl script_vm_func_002b66ec\n"
-        "ldrh r1, [r0, #0x72]\n"
-        "nop\n"
-        "b .L_00298c74\n"
-        ".L_00298c68:\n"
-        "mov r0, r6\n"
-        "bl camp_func_002a89e4\n"
-        "ldrh r1, [r0, #0x44]\n"
-        ".L_00298c74:\n"
-        "mov r4, #0\n"
-        "cmp r1, #0\n"
-        "beq .L_00298cc0\n"
-        "add sb, r7, r6, lsl #2\n"
-        "add r2, sb, #0x2400\n"
-        "mov r0, #1\n"
-        "add r2, r2, #0xf8\n"
-        ".L_00298c90:\n"
-        "tst r1, fp, lsl r0\n"
-        "beq .L_00298cd8\n"
-        "ldr r3, [r2]\n"
-        "cmp r3, r4\n"
-        "addne r4, r4, #1\n"
-        "bne .L_00298cd8\n"
-        "sxth r0, r0\n"
-        "bl ui_func_002b0788\n"
-        "add sb, sb, #0x2400\n"
-        "add sb, sb, #0x15c\n"
-        "str r0, [sb]\n"
-        "b .L_00298ce4\n"
-        ".L_00298cc0:\n"
-        "add r1, r7, r6, lsl #2\n"
-        "add r1, r1, #0x2400\n"
-        "add r1, r1, #0x15c\n"
-        "mvn r0, #0\n"
-        "str r0, [r1]\n"
-        "b .L_00298ce4\n"
-        ".L_00298cd8:\n"
-        "add r0, r0, #1\n"
-        "cmp r0, #0xb\n"
-        "blt .L_00298c90\n"
-        ".L_00298ce4:\n"
-        "add sb, r7, r6, lsl #2\n"
-        "add r6, sb, #0x2400\n"
-        "add r6, r6, #0x94\n"
-        "ldr r0, [r6]\n"
-        "add r0, r0, #1\n"
-        "cmp r0, #0x18\n"
-        "str r0, [r6]\n"
-        "blt .L_00298d28\n"
-        "add sb, sb, #0x2400\n"
-        "add sb, sb, #0xf8\n"
-        "mov r1, r4\n"
-        "ldr r0, [sb]\n"
-        "add r0, r0, #1\n"
-        "bl ui_func_002c615c\n"
-        "mov r0, #0\n"
-        "str r1, [sb]\n"
-        "str r0, [r6]\n"
-        ".L_00298d28:\n"
-        "add r5, r5, #1\n"
-        "cmp r5, r8\n"
-        "blt .L_00298c34\n"
-        ".L_00298d34:\n"
-        "add r0, r7, #0x1dc\n"
-        "bl camp_func_0029f260\n"
-        "mov r4, r0\n"
-        "add r0, r7, #0x1dc\n"
-        "bl camp_func_0029f248\n"
-        "add r0, r0, r4\n"
-        "add r0, r7, r0, lsl #3\n"
-        "ldr r0, [r0, #0xe40]\n"
-        "add r0, r7, r0, lsl #2\n"
-        "add r0, r0, #0x2400\n"
-        "add r0, r0, #0x15c\n"
-        "ldr r0, [r0]\n"
-        "bl script_vm_func_0026dd68\n"
-        "add sp, sp, #0x64\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, fp, pc}\n"
-        ".word 0x0043da90\n"
-    );
+extern "C" u32 camp_func_00298bdc(void) {
+    u8* const work = reinterpret_cast<u8*>(
+        static_cast<uintptr_t>(QuestLoadWord(reinterpret_cast<const void*>(
+            static_cast<uintptr_t>(kQuestWorkGlobal)))));
+    u8* const cursor = QuestPointer(work, kQuestListCursorOffset);
+
+    s32 row_count = QuestList_GetRowCount(cursor);
+    const s32 second_count = QuestList_GetRowCount(cursor);
+    if (second_count < row_count) {
+        row_count = QuestList_GetRowCount(cursor);
+    }
+
+    u32 marker_words[kMarkerWordCount];
+    u8* const markers = reinterpret_cast<u8*>(marker_words);
+    QuestList_ZeroBytes(markers, kMarkerBytes);
+
+    for (s32 row = 0; row < row_count; ++row) {
+        const s32 category = static_cast<s32>(QuestLoadWord(
+            QuestIndexed(work, kVisibleCategoryBase, static_cast<u32>(row),
+                         kVisibleRowStride)));
+
+        u8* const marker = QuestIndexed(
+            markers, kMarkerFirstWord, static_cast<u32>(category),
+            kCategoryStride);
+        if (QuestLoadWord(marker) != 0) {
+            continue;
+        }
+        QuestStoreWord(marker, 1);
+
+        u16 mask;
+        if (category < 0) {
+            mask = QuestLoadHalfword(QuestPointer(
+                QuestCategory_GetFallbackRecord(), kFallbackMaskOffset));
+        } else {
+            mask = QuestLoadHalfword(QuestPointer(
+                QuestCategory_GetRecord(category), kRecordMaskOffset));
+        }
+
+        u8* const index_field =
+            QuestIndexed(work, kRollingIndexBase,
+                         static_cast<u32>(category), kCategoryStride);
+        u8* const value_field =
+            QuestIndexed(work, kSelectedValueBase,
+                         static_cast<u32>(category), kCategoryStride);
+
+        u32 ordinal = 0;
+        if (mask == 0) {
+            QuestStoreWord(value_field, 0xFFFFFFFFu);
+        } else {
+            for (s32 bit = kFirstMaskBit; bit < kMaskBitEnd; ++bit) {
+                if ((mask & (1u << bit)) == 0) {
+                    continue;
+                }
+                if (QuestLoadWord(index_field) != ordinal) {
+                    ++ordinal;
+                    continue;
+                }
+                QuestStoreWord(
+                    value_field,
+                    QuestCategory_GetBitWord(static_cast<s16>(bit)));
+                break;
+            }
+        }
+
+        u8* const frame_field =
+            QuestIndexed(work, kFrameCounterBase,
+                         static_cast<u32>(category), kCategoryStride);
+        const u32 next_frame = QuestLoadWord(frame_field) + 1u;
+        QuestStoreWord(frame_field, next_frame);
+        if (static_cast<s32>(next_frame) >= kFrameWrapLimit) {
+            const u32 remainder = static_cast<u32>(
+                QuestList_DivMod(QuestLoadWord(index_field) + 1u, ordinal) >>
+                32);
+            QuestStoreWord(index_field, remainder);
+            QuestStoreWord(frame_field, 0u);
+        }
+    }
+
+    const s32 scroll_offset = QuestList_GetScrollOffset(cursor);
+    const s32 selected_row = QuestList_GetSelectedRow(cursor);
+    const u32 selected_index =
+        static_cast<u32>(scroll_offset + selected_row);
+    const s32 selected_category = static_cast<s32>(QuestLoadWord(
+        QuestIndexed(work, kVisibleCategoryBase, selected_index,
+                     kVisibleRowStride)));
+    const u32 selected_value = QuestLoadWord(
+        QuestIndexed(work, kSelectedValueBase,
+                     static_cast<u32>(selected_category), kCategoryStride));
+    return QuestList_CommitValue(selected_value);
 }
 
 // DECOMP_FUNC(0x002999e8, 436)
@@ -8274,119 +8472,176 @@ extern "C" __attribute__((naked)) void func_0029c958() {
     );
 }
 
+// Direct calls made by 0x0029cee4.  The untyped declarations at the top of
+// this translation unit cannot describe their arguments or return values.
+extern "C" void CampPanel_SetWidgetMode(u8* widget, u32 mode)
+    __asm__("camp_func_002bf030");                                  // 0x002BF030
+extern "C" void BattleActor_ReleaseRow(u8* object, u32 row)
+    __asm__("battle_func_002b8d24");                                // 0x002B8D24
+
+namespace {
+
+// 0x0043E188 is a table of camp-panel object pointers.  Slot +4 holds the
+// default object shared by the panels and slot +8 the object that is currently
+// presented; 0x0029CEE4 advances that object's animation and dismisses it.
+constexpr uintptr_t kCampPanelObjectTable = 0x0043E188u;
+constexpr u32 kDefaultObjectSlot = 4u;
+constexpr u32 kPresentedObjectSlot = 8u;
+
+// Presented-object layout, entirely from the loads and stores of 0x0029CEE4.
+// Byte fields are read with `ldrb`/written with `strb`, word fields with
+// `ldr`/`str`.
+constexpr u32 kStateOffset = 8u;               // u8, 3 = dismissed
+constexpr u32 kRowIndexOffset = 9u;            // u8, row passed to the release helper
+constexpr u32 kHiddenFlagOffset = 0x35u;       // u8, cleared when dismissed
+constexpr u32 kStepTimerOffset = 0x64u;        // u32, written with 10 per step
+constexpr u32 kDisplayedValueOffset = 0x6Cu;   // u32, published value
+constexpr u32 kStepOffset = 0x70u;             // u32, added to the accumulated value
+constexpr u32 kStepResetOffset = 0x74u;        // u32, cleared per step
+constexpr u32 kAccumulatedValueOffset = 0x78u; // u32, running total
+constexpr u32 kPhaseOffset = 0x7Cu;            // u8, 3 = one animation step pending
+constexpr u32 kWideStepFlagOffset = 0x7Du;     // u8, pending step uses the wide limit
+constexpr u32 kNarrowStepFlagOffset = 0x7Eu;   // u8, pending step uses the narrow limit
+constexpr u32 kWidgetModeFlagOffset = 0x7Fu;   // u8, chooses widget mode 2 or 7
+constexpr u32 kWidgetOffset = 0x754u;          // sub-object handed to 0x002BF030
+
+// Values observed at those fields.
+constexpr u8 kPhaseAnimating = 3u;
+constexpr u8 kPhaseRequested = 4u;
+constexpr u8 kRowStateDismissed = 3u;
+constexpr u32 kStepTimerValue = 10u;
+constexpr u32 kClosingRowIndex = 0xBu;
+constexpr s32 kWideValueLimit = 999999999;     // 0x3B9AC9FF
+constexpr s32 kNarrowValueLimit = 99;          // 0x63
+constexpr u32 kWidgetModeWhenFlagSet = 2u;
+constexpr u32 kWidgetModeWhenFlagClear = 7u;
+
+inline u8 LoadPanelByte(const u8* base, u32 offset) {
+    return base[offset];
+}
+
+inline u32 LoadPanelWord(const u8* base, u32 offset) {
+    u32 value;
+    __builtin_memcpy(&value, base + offset, sizeof(value));
+    return value;
+}
+
+// Reinterpret a 32-bit pattern as two's-complement `s32`.
+inline s32 AsSignedPanelWord(u32 bits) {
+    s32 value;
+    __builtin_memcpy(&value, &bits, sizeof(value));
+    return value;
+}
+
+inline void StorePanelWord(u8* base, u32 offset, u32 value) {
+    __builtin_memcpy(base + offset, &value, sizeof(value));
+}
+
+inline u8* LoadPanelObject(u32 slot_offset) {
+    u8* object;
+    __builtin_memcpy(&object,
+                     reinterpret_cast<const void*>(
+                         static_cast<uintptr_t>(kCampPanelObjectTable) +
+                         slot_offset),
+                     sizeof(object));
+    return object;
+}
+
+// One animation step of the presented value: the total at +0x78 gains the step
+// at +0x70 and the sum is first published as-is, then clamped (signed compares,
+// lower bound first) into +0x6C.  The timer at +0x64 becomes 10, +0x74 is
+// cleared, and the phase returns to 0.  The addition is a 32-bit modular sum;
+// the original compares the wrapped result against 0 and the limit.
+inline void StepPanelAnimation(u8* object, s32 upper_bound) {
+    const u32 sum = LoadPanelWord(object, kAccumulatedValueOffset) +
+                    LoadPanelWord(object, kStepOffset);
+    s32 value = AsSignedPanelWord(sum);
+    StorePanelWord(object, kDisplayedValueOffset, sum);
+    StorePanelWord(object, kStepTimerOffset, kStepTimerValue);
+    StorePanelWord(object, kStepResetOffset, 0u);
+    StorePanelWord(object, kAccumulatedValueOffset, sum);
+    if (value <= 0) {
+        value = 0;
+    }
+    StorePanelWord(object, kDisplayedValueOffset, static_cast<u32>(value));
+    if (value > upper_bound) {
+        value = upper_bound;
+    }
+    StorePanelWord(object, kDisplayedValueOffset, static_cast<u32>(value));
+    object[kPhaseOffset] = 0;
+}
+
+// Both dismissal sites release the row recorded in `object[9]` and then mark the
+// object dismissed: state 3 at +8 and a cleared flag at +0x35.
+inline void DismissPanelObject(u8* object) {
+    BattleActor_ReleaseRow(object, LoadPanelByte(object, kRowIndexOffset));
+    object[kStateOffset] = kRowStateDismissed;
+    object[kHiddenFlagOffset] = 0;
+}
+
+// Re-requests the widget mode when the phase is still idle, requested, or
+// waiting (0, 2, or 1).  Phase 3 was handled above and 4 is already pending.
+inline void RequestPanelWidgetMode(u8* widget, u8* object) {
+    const u8 phase = LoadPanelByte(object, kPhaseOffset);
+    if (phase == 0u || phase == 2u || phase == 1u) {
+        object[kPhaseOffset] = kPhaseRequested;
+        CampPanel_SetWidgetMode(
+            widget, LoadPanelByte(object, kWidgetModeFlagOffset) != 0
+                        ? kWidgetModeWhenFlagSet : kWidgetModeWhenFlagClear);
+    }
+}
+
+}  // namespace
+
 // DECOMP_FUNC(0x0029cee4, 412)
-extern "C" __attribute__((naked)) void camp_func_0029cee4() {
-    asm volatile(
-        "push {r4, r5, r6, r7, r8, lr}\n"
-        "mov r6, #0\n"
-        ".word 0xe59f5184\n"
-        "ldr r4, [r5, #8]\n"
-        "ldrb r1, [r4, #0x7c]\n"
-        "cmp r1, #3\n"
-        "bne .L_0029cf90\n"
-        "ldrb r1, [r4, #0x7d]\n"
-        "mov r2, #0xa\n"
-        "cmp r1, #0\n"
-        "beq .L_0029cf4c\n"
-        "ldr r1, [r4, #0x78]\n"
-        "ldr r3, [r4, #0x70]\n"
-        "add r1, r1, r3\n"
-        "str r1, [r4, #0x6c]\n"
-        "str r2, [r4, #0x64]\n"
-        "str r6, [r4, #0x74]\n"
-        ".word 0xe59f314c\n"
-        "cmp r1, #0\n"
-        "str r1, [r4, #0x78]\n"
-        "movle r1, #0\n"
-        "cmp r1, r3\n"
-        "str r1, [r4, #0x6c]\n"
-        "movgt r1, r3\n"
-        "str r1, [r4, #0x6c]\n"
-        "strb r6, [r4, #0x7c]\n"
-        ".L_0029cf4c:\n"
-        "ldrb r1, [r4, #0x7e]\n"
-        "cmp r1, #0\n"
-        "beq .L_0029cf90\n"
-        "ldr r1, [r4, #0x78]\n"
-        "ldr r3, [r4, #0x70]\n"
-        "add r1, r1, r3\n"
-        "str r1, [r4, #0x6c]\n"
-        "str r2, [r4, #0x64]\n"
-        "str r6, [r4, #0x74]\n"
-        "cmp r1, #0\n"
-        "str r1, [r4, #0x78]\n"
-        "movle r1, #0\n"
-        "cmp r1, #0x63\n"
-        "str r1, [r4, #0x6c]\n"
-        "movgt r1, #0x63\n"
-        "str r1, [r4, #0x6c]\n"
-        "strb r6, [r4, #0x7c]\n"
-        ".L_0029cf90:\n"
-        ".word 0xe59f10e0\n"
-        "cmp r0, #0\n"
-        "mov r2, #4\n"
-        "ldr r1, [r1, #8]\n"
-        "add r0, r1, #0x400\n"
-        "add r0, r0, #0x354\n"
-        "beq .L_0029d044\n"
-        "ldrb r1, [r4, #9]\n"
-        "cmp r1, #0xb\n"
-        "bne .L_0029d044\n"
-        "ldrb r1, [r4, #8]\n"
-        "cmp r1, #0\n"
-        "beq .L_0029d044\n"
-        "ldrb r1, [r4, #0x7c]\n"
-        "cmp r1, #0\n"
-        "cmpne r1, #2\n"
-        "bne .L_0029d03c\n"
-        "ldrb r1, [r4, #0x7f]\n"
-        "strb r2, [r4, #0x7c]\n"
-        "cmp r1, #0\n"
-        "movne r1, #2\n"
-        "moveq r1, #7\n"
-        "bl camp_func_002bf030\n"
-        "ldr r5, [r5, #4]\n"
-        "mov r7, #3\n"
-        "cmp r5, #0\n"
-        "ldrbne r0, [r5, #8]\n"
-        "cmpne r0, #0\n"
-        "beq .L_0029d018\n"
-        "ldrb r1, [r5, #9]\n"
-        "mov r0, r5\n"
-        "bl battle_func_002b8d24\n"
-        "strb r7, [r5, #8]\n"
-        "strb r6, [r5, #0x35]\n"
-        ".L_0029d018:\n"
-        "cmp r4, #0\n"
-        "ldrbne r0, [r4, #8]\n"
-        "cmpne r0, #0\n"
-        "beq .L_0029d03c\n"
-        "ldrb r1, [r4, #9]\n"
-        "mov r0, r4\n"
-        "bl battle_func_002b8d24\n"
-        "strb r7, [r4, #8]\n"
-        "strb r6, [r4, #0x35]\n"
-        ".L_0029d03c:\n"
-        "mov r0, #0\n"
-        "pop {r4, r5, r6, r7, r8, pc}\n"
-        ".L_0029d044:\n"
-        "ldrb r1, [r4, #0x7c]\n"
-        "cmp r1, #0\n"
-        "cmpne r1, #2\n"
-        "cmpne r1, #1\n"
-        "bne .L_0029d070\n"
-        "ldrb r1, [r4, #0x7f]\n"
-        "strb r2, [r4, #0x7c]\n"
-        "cmp r1, #0\n"
-        "movne r1, #2\n"
-        "moveq r1, #7\n"
-        "bl camp_func_002bf030\n"
-        ".L_0029d070:\n"
-        "mov r0, #1\n"
-        "pop {r4, r5, r6, r7, r8, pc}\n"
-        ".word 0x0043e188\n"
-        ".word 0x3b9ac9ff\n"
-    );
+extern "C" s32 camp_func_0029cee4(u32 close_request) {
+    u8* const presented = LoadPanelObject(kPresentedObjectSlot);
+
+    // Phase 3 means one animation step is pending.  Two independent flags pick
+    // the limit; each step clears the phase, so only the flags set on entry are
+    // consumed, and the wide flag is always tested first.
+    if (LoadPanelByte(presented, kPhaseOffset) == kPhaseAnimating) {
+        if (LoadPanelByte(presented, kWideStepFlagOffset) != 0) {
+            StepPanelAnimation(presented, kWideValueLimit);
+        }
+        if (LoadPanelByte(presented, kNarrowStepFlagOffset) != 0) {
+            StepPanelAnimation(presented, kNarrowValueLimit);
+        }
+    }
+
+    u8* const widget = presented + kWidgetOffset;
+
+    // Dismissal only applies when the caller asks for it, the presented row is
+    // the closing row (index 11), and the row is still live.
+    if (close_request == 0 ||
+        LoadPanelByte(presented, kRowIndexOffset) != kClosingRowIndex ||
+        LoadPanelByte(presented, kStateOffset) == 0) {
+        // Not a dismissal: request the widget mode when the phase is idle,
+        // waiting, or requested, and report that no close happened.
+        RequestPanelWidgetMode(widget, presented);
+        return 1;
+    }
+
+    const u8 phase = LoadPanelByte(presented, kPhaseOffset);
+    if (phase == 0u || phase == 2u) {
+        presented[kPhaseOffset] = kPhaseRequested;
+        CampPanel_SetWidgetMode(
+            widget, LoadPanelByte(presented, kWidgetModeFlagOffset) != 0
+                        ? kWidgetModeWhenFlagSet : kWidgetModeWhenFlagClear);
+
+        // 0x002BF030 may publish the panel, so the default slot is read after
+        // the call; the presented pointer comes from the entry-time fetch.
+        u8* const default_object = LoadPanelObject(kDefaultObjectSlot);
+        if (default_object != nullptr &&
+            LoadPanelByte(default_object, kStateOffset) != 0) {
+            DismissPanelObject(default_object);
+        }
+        if (presented != nullptr &&
+            LoadPanelByte(presented, kStateOffset) != 0) {
+            DismissPanelObject(presented);
+        }
+    }
+    return 0;
 }
 
 // DECOMP_FUNC(0x0029da10, 304)

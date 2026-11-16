@@ -46,8 +46,14 @@ struct UiLayoutNode {
 extern "C" {
     void* AsdMem_Alloc(u32 align, u32 line, u32 zero_flag, u32 size, u32 flag);     // 0x002c4b84
     void  AsdMem_Zero(void* ptr, u32 size);                                         // 0x002c4b30
-    void  AsdMem_Copy(void* dst, const void* src, u32 size);                        // 0x002c5ff4
+    void  AsdMem_Copy(void* dst, const void* src, u32 size);
+    s32   camp_func_0029f0f4(void* cursor);
+    s32   camp_func_0029f248(void* cursor);                        // 0x002c5ff4
+    void* camp_func_00257744(u32 id);
+    void* camp_func_002b9364(u32 id);
+    s32   func_00257678(s32 cost_raw);
     void  AsdMem_FreeWork(void* ptr);                                               // 0x002c4360
+    void  camp_func_002c4450(void* ptr, u32 size, s32 val);                         // 0x002c4450
 
     void* AsdTask_CreateCalc(const char* name, u32 prio, u32 a2, u32 a3,
                              void (*cb)(void*), u32 a5, u32 a6);                    // 0x002c5978
@@ -111,6 +117,7 @@ extern "C" {
 
     s16   UiTouch_RegisterRegion(u32 group_id, u32 node_id);                        // 0x002b88c4
     s16   UiTouch_RegisterRectRegion(s32 x, s32 y, s32 w, s32 h);                   // 0x0029e2f4
+    const UiLayoutNode* camp_func_002bf6d0(u32 group, u32 node_id);                // 0x002bf6d0
     void  UiTouch_UnregisterLastRegion();                                           // 0x002b9008
     s32   Camp_GetTransitionDir();                                                  // 0x0029e2b0
     void  Camp_SetFadeColor(u32 screen, u32 rgba);                                  // 0x0029f10c
@@ -134,6 +141,7 @@ extern "C" {
     s32   Party_GetDemonOrderNumber(s32 demon_id, s32 flag);                        // 0x0029ac70
     s32   Party_GetDemonActiveIndex(s32 demon_id);                                  // 0x0029abc0
     const u8* Party_GetDemonWorkPtr(s32 demon_id);                                  // 0x002ae3f0
+    const char* camp_func_002bcff0(s32 demon_id);                                   // 0x002bcff0
     const u8* Camp_GetSortConfig();                                                 // 0x002a0fac
     bool  Flag_CheckEventBit(u32 flag_id);                                          // 0x002c0ba8
     bool  Category_IsUnlocked(u16 category_id);                                     // 0x00262edc
@@ -159,181 +167,40 @@ static inline const UiLayoutNode* LayoutNode(u32 group_id, u32 node_id) {
     return static_cast<const UiLayoutNode*>(UiLayout_GetNode(group_id, node_id));
 }
 
+static inline void GpuModeSlotSet(u32 slot_offset, u32 value) {
+    u8* slot = g_AsdGpuState + 0x1000 + slot_offset;
+    const u32 index = *reinterpret_cast<u32*>(slot);
+    u32* entry = reinterpret_cast<u32*>(slot + 8 + index * 4);
+    const u32 old = *entry;
+    *entry = value;
+    if (*reinterpret_cast<u8*>(slot + 0x18) != 0 || old != value) {
+        reinterpret_cast<void (*)()>(
+            *reinterpret_cast<u32*>(slot + 0x1C))();
+        *reinterpret_cast<u8*>(slot + 0x18) = 0;
+    }
+}
+
 // DECOMP_FUNC(0x001ddab4, 68)
-__attribute__((naked)) void StatusDown_OpenDefaultView() {
-    asm volatile(
-        "push {r4, r5, r6, lr}\n"
-        "mov r2, #0\n"
-        "ldr r5, [pc, #0x30]\n"
-        "mov r1, #1\n"
-        "ldr r4, [r5]\n"
-        "add r0, r4, #0x28\n"
-        ".word 0xEB037FFB\n"
-        "ldr r0, [r5]\n"
-        "mov r2, #0\n"
-        "mov r1, #1\n"
-        "str r2, [r0, #0x40C]\n"
-        "ldr r2, [r0, #0x400]!\n"
-        "stm r0, {r1, r2}\n"
-        "mov r0, #3\n"
-        "str r0, [r4, #0x408]\n"
-        "pop {r4, r5, r6, pc}\n"
-        ".word 0x0044E190\n");
+void StatusDown_OpenDefaultView() {
+    auto* work = g_StatusDownWork;
+    UiAnimSprite_SetAnim(&work->panel_sprites[0], 1, 0);
+    work = g_StatusDownWork;
+    work->state_timer = 0;
+    u32 prev = work->state;
+    work->state = 1;
+    work->prev_state = prev;
+    work->sub_state = 3;
 }
 
 // DECOMP_FUNC(0x001ee5a4, 548)
-// Verified ARM-state entry/exit and referenced local literal/table bytes.
-__attribute__((naked)) void StatusDown_PopulateSkillList(const u8* skill_bitfield) {
-    asm volatile(
-        ".word 0xe92d47f0\n"
-        ".word 0xe24dd008\n"
-        ".word 0xe1a07000\n"
-        ".word 0xe3a09000\n"
-        ".word 0xe59fa1ec\n"
-        ".word 0xe3a01b02\n"
-        ".word 0xe59a6000\n"
-        ".word 0xe2865c0d\n"
-        ".word 0xe2860b01\n"
-        ".word 0xe1c59cb8\n"
-        ".word 0xe2800f72\n"
-        ".word 0xe1c59cba\n"
-        ".word 0xeb035955\n"
-        ".word 0xe3a04000\n"
-        ".word 0xe3a08001\n"
-        ".word 0xe1a00004\n"
-        ".word 0xeb032b5e\n"
-        ".word 0xe3500000\n"
-        ".word 0xe320f000\n"
-        ".word 0x0a000018\n"
-        ".word 0xe1d010b6\n"
-        ".word 0xe3110001\n"
-        ".word 0x11d013b8\n"
-        ".word 0x13510000\n"
-        ".word 0x0a000013\n"
-        ".word 0xe7d721a1\n"
-        ".word 0xe2011007\n"
-        ".word 0xe1120118\n"
-        ".word 0x0a00000c\n"
-        ".word 0xe1d51cf8\n"
-        ".word 0xe1d020b0\n"
-        ".word 0xe0861101\n"
-        ".word 0xe2811c05\n"
-        ".word 0xe1c12cb8\n"
-        ".word 0xe1d51cf8\n"
-        ".word 0xe1d003b8\n"
-        ".word 0xe0861101\n"
-        ".word 0xe2811c05\n"
-        ".word 0xe1c10cba\n"
-        ".word 0xe1d50cb8\n"
-        ".word 0xe2800001\n"
-        ".word 0xe1c50cb8\n"
-        ".word 0xe1d50cba\n"
-        ".word 0xe2800001\n"
-        ".word 0xe1c50cba\n"
-        ".word 0xe2840001\n"
-        ".word 0xe6ff4070\n"
-        ".word 0xe3540c05\n"
-        ".word 0x3affffdd\n"
-        ".word 0xe2860b03\n"
-        ".word 0xe58d8004\n"
-        ".word 0xe58d9000\n"
-        ".word 0xe1d51cf8\n"
-        ".word 0xe3a03001\n"
-        ".word 0xe3a0200b\n"
-        ".word 0xe2800f73\n"
-        ".word 0xeb02c517\n"
-        ".word 0xe59a4000\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb02ca45\n"
-        ".word 0xe2805015\n"
-        ".word 0xe5d00015\n"
-        ".word 0xe200107f\n"
-        ".word 0xe3510001\n"
-        ".word 0x1a000008\n"
-        ".word 0xe1b003a0\n"
-        ".word 0xe59f00f8\n"
-        ".word 0xe19010f4\n"
-        ".word 0x0a000009\n"
-        ".word 0xe2840b01\n"
-        ".word 0xe59f30ec\n"
-        ".word 0xe3a02004\n"
-        ".word 0xe2800f72\n"
-        ".word 0xfb03260e\n"
-        ".word 0xe5d50000\n"
-        ".word 0xe200107f\n"
-        ".word 0xe3510021\n"
-        ".word 0x0a000008\n"
-        ".word 0xea000010\n"
-        ".word 0xe2840b01\n"
-        ".word 0xe59f30c8\n"
-        ".word 0xe3a02004\n"
-        ".word 0xe2800f72\n"
-        ".word 0xfb032604\n"
-        ".word 0xe320f000\n"
-        ".word 0xe320f000\n"
-        ".word 0xeafffff2\n"
-        ".word 0xe1b003a0\n"
-        ".word 0xe59f00a0\n"
-        ".word 0xe19010f4\n"
-        ".word 0x0a000009\n"
-        ".word 0xe2840b01\n"
-        ".word 0xe59f309c\n"
-        ".word 0xe3a02004\n"
-        ".word 0xe2800f72\n"
-        ".word 0xfb0325f8\n"
-        ".word 0xe5d50000\n"
-        ".word 0xe200107f\n"
-        ".word 0xe3510003\n"
-        ".word 0x0a000008\n"
-        ".word 0xea000010\n"
-        ".word 0xe2840b01\n"
-        ".word 0xe59f3078\n"
-        ".word 0xe3a02004\n"
-        ".word 0xe2800f72\n"
-        ".word 0xfb0325ee\n"
-        ".word 0xe320f000\n"
-        ".word 0xe320f000\n"
-        ".word 0xeafffff2\n"
-        ".word 0xe1b003a0\n"
-        ".word 0xe59f0048\n"
-        ".word 0xe19010f4\n"
-        ".word 0x0a000007\n"
-        ".word 0xe2840b01\n"
-        ".word 0xe59f304c\n"
-        ".word 0xe3a02004\n"
-        ".word 0xe2800f72\n"
-        ".word 0xfb0325e2\n"
-        ".word 0xe5c68410\n"
-        ".word 0xe28dd008\n"
-        ".word 0xe8bd87f0\n"
-        ".word 0xe2840b01\n"
-        ".word 0xe59f3030\n"
-        ".word 0xe3a02004\n"
-        ".word 0xe2800f72\n"
-        ".word 0xfb0325da\n"
-        ".word 0xe320f000\n"
-        ".word 0xe320f000\n"
-        ".word 0xeafffff4\n"
-        ".word 0x0044e190\n"
-        ".word 0x00000dc8\n"
-        ".word 0x002e4534\n"
-        ".word 0x00206be8\n"
-        ".word 0x002dc96c\n"
-        ".word 0x001f60dc\n"
-        ".word 0x002dca04\n"
-        ".word 0x001f6174\n"
-    );
-}
-#if 0
-// Partial semantic draft retained for reconstruction; not compiled.
-[[maybe_unused]] static void StatusDown_PopulateSkillList_Draft(const u8* skill_bitfield) {
-    StatusDownWork* work = g_StatusDownWork;
+void StatusDown_PopulateSkillList(const u8* skill_bitfield) {
+    auto* work = g_StatusDownWork;
     work->skill_count = 0;
     work->skill_total = 0;
     AsdMem_Zero(work->skill_entries, sizeof(work->skill_entries));
 
     for (u16 i = 0; i < 0x500; ++i) {
-        const ItemTableEntry* entry = static_cast<const ItemTableEntry*>(Battle_GetTalkEntry(i));
+        const auto* entry = static_cast<const ItemTableEntry*>(Battle_GetTalkEntry(i));
         if (entry == nullptr) {
             continue;
         }
@@ -352,7 +219,7 @@ __attribute__((naked)) void StatusDown_PopulateSkillList(const u8* skill_bitfiel
 
     UiListCursor_Setup(&work->skill_cursor, work->skill_count, 11, 1, 0, 1);
 
-    StatusDownWork* w = g_StatusDownWork;
+    auto* w = g_StatusDownWork;
     const u8* sort_cfg = Camp_GetSortConfig();
     const u8 skill_sort = sort_cfg[0x15];
     const u8 sort_key = skill_sort & 0x7F;
@@ -361,134 +228,26 @@ __attribute__((naked)) void StatusDown_PopulateSkillList(const u8* skill_bitfiel
     if (sort_key == 1) {
         qsort_arm(w->skill_entries, w->skill_count, sizeof(StatusDownListEntry),
                   desc ? StatusDown_SkillSortByIdDesc : StatusDown_SkillSortByIdAsc);
-    }
-    if ((sort_cfg[0x15] & 0x7F) == 0x21) {
-        const bool d = (sort_cfg[0x15] >> 7) != 0;
+    } else if (sort_key == 0x21) {
         qsort_arm(w->skill_entries, w->skill_count, sizeof(StatusDownListEntry),
-                  d ? StatusDown_SkillSortByCostDesc : StatusDown_SkillSortByCostAsc);
-    }
-    if ((sort_cfg[0x15] & 0x7F) == 3) {
-        const bool d = (sort_cfg[0x15] >> 7) != 0;
+                  desc ? StatusDown_SkillSortByCostDesc : StatusDown_SkillSortByCostAsc);
+    } else if (sort_key == 3) {
         qsort_arm(w->skill_entries, w->skill_count, sizeof(StatusDownListEntry),
-                  d ? SkillSort_ByNameDesc : StatusDown_SkillSortByNameAsc);
+                  desc ? SkillSort_ByNameDesc : StatusDown_SkillSortByNameAsc);
     }
 
     work->needs_refresh = 1;
 }
-#endif
 
 // DECOMP_FUNC(0x001ee7c8, 384)
-// Verified ARM-state entry/exit and referenced local literal/table bytes.
-__attribute__((naked)) void StatusDown_PopulateItemList(const u8* item_counts) {
-    asm volatile(
-        ".word 0xe59f1174\n"
-        ".word 0xe92d40f0\n"
-        ".word 0xe24dd00c\n"
-        ".word 0xe1a07000\n"
-        ".word 0xe5916000\n"
-        ".word 0xe3a00000\n"
-        ".word 0xe3a01b05\n"
-        ".word 0xe2865c22\n"
-        ".word 0xe1c503b0\n"
-        ".word 0xe1c503b2\n"
-        ".word 0xe2860ee3\n"
-        ".word 0xeb0358cd\n"
-        ".word 0xe3a04000\n"
-        ".word 0xe1a00004\n"
-        ".word 0xeb032ad7\n"
-        ".word 0xe3500000\n"
-        ".word 0xe320f000\n"
-        ".word 0x0a000018\n"
-        ".word 0xe1d010b6\n"
-        ".word 0xe3110001\n"
-        ".word 0x0a000015\n"
-        ".word 0xe1d010b0\n"
-        ".word 0xe7d72001\n"
-        ".word 0xe3520000\n"
-        ".word 0x0a000011\n"
-        ".word 0xe1d523f0\n"
-        ".word 0xe0862102\n"
-        ".word 0xe2822c0e\n"
-        ".word 0xe1c213b0\n"
-        ".word 0xe1d000b0\n"
-        ".word 0xe1d513f0\n"
-        ".word 0xe7d70000\n"
-        ".word 0xe0861101\n"
-        ".word 0xe2811c0e\n"
-        ".word 0xe3500000\n"
-        ".word 0xe1c103b2\n"
-        ".word 0xe1d503f0\n"
-        ".word 0x0a000002\n"
-        ".word 0xe1d513b2\n"
-        ".word 0xe2811001\n"
-        ".word 0xe1c513b2\n"
-        ".word 0xe2800001\n"
-        ".word 0xe1c503b0\n"
-        ".word 0xe2840001\n"
-        ".word 0xe6ff4070\n"
-        ".word 0xe3540c05\n"
-        ".word 0x3affffdd\n"
-        ".word 0xe3a07001\n"
-        ".word 0xe2860a02\n"
-        ".word 0xe2800f8f\n"
-        ".word 0xe58d7000\n"
-        ".word 0xe58d7004\n"
-        ".word 0xe1d513f0\n"
-        ".word 0xe3a03004\n"
-        ".word 0xe3a02009\n"
-        ".word 0xe1a04000\n"
-        ".word 0xeb02c48e\n"
-        ".word 0xe1d503f0\n"
-        ".word 0xe3500000\n"
-        ".word 0xda000017\n"
-        ".word 0xe1d513f6\n"
-        ".word 0xe1d523f4\n"
-        ".word 0xe0821101\n"
-        ".word 0xe1500001\n"
-        ".word 0xca000012\n"
-        ".word 0xe2401001\n"
-        ".word 0xe1a02fc1\n"
-        ".word 0xe0811f22\n"
-        ".word 0xe3e02000\n"
-        ".word 0xe1a01141\n"
-        ".word 0xe6bf1071\n"
-        ".word 0xe2613000\n"
-        ".word 0xe1c513b6\n"
-        ".word 0xe0822103\n"
-        ".word 0xe0800002\n"
-        ".word 0xe1c503b4\n"
-        ".word 0xe1a00004\n"
-        ".word 0xeb02c13e\n"
-        ".word 0xe1d513f4\n"
-        ".word 0xe1a00004\n"
-        ".word 0xeb02c092\n"
-        ".word 0xe320f000\n"
-        ".word 0xe320f000\n"
-        ".word 0xea000005\n"
-        ".word 0xe1d513f6\n"
-        ".word 0xe1a00004\n"
-        ".word 0xeb02c135\n"
-        ".word 0xe1d513f4\n"
-        ".word 0xe1a00004\n"
-        ".word 0xeb02c089\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb04f6e0\n"
-        ".word 0xe5c67410\n"
-        ".word 0xe28dd00c\n"
-        ".word 0xe8bd80f0\n"
-        ".word 0x0044e190\n"
-    );
-}
-#if 0
-// Partial semantic draft retained for reconstruction; not compiled.
-[[maybe_unused]] static void StatusDown_PopulateItemList_Draft(const u8* item_counts) {
-    StatusDownWork* work = g_StatusDownWork;
+void StatusDown_PopulateItemList(const u8* item_counts) {
+    auto* work = g_StatusDownWork;
     work->item_count = 0;
     work->item_nonzero_count = 0;
     AsdMem_Zero(work->item_entries, sizeof(work->item_entries));
 
     for (u16 i = 0; i < 0x500; ++i) {
-        const ItemTableEntry* entry = static_cast<const ItemTableEntry*>(Battle_GetTalkEntry(i));
+        const auto* entry = static_cast<const ItemTableEntry*>(Battle_GetTalkEntry(i));
         if (entry == nullptr || (entry->flags & 1) == 0) {
             continue;
         }
@@ -524,402 +283,197 @@ __attribute__((naked)) void StatusDown_PopulateItemList(const u8* item_counts) {
     StatusDown_SortItemList();
     work->needs_refresh = 1;
 }
-#endif
+
 // DECOMP_FUNC(0x001f60dc, 152)
-
-
-//
-__attribute__((naked)) s32 StatusDown_SkillSortByCostAsc(const void*, const void*) {
-    asm volatile(
-        "push {r4, r5, r6, r7, r8, lr}\n"
-        "mov r4, r0\n"
-        "mov r5, r1\n"
-        "ldrh r0, [r0, #2]\n"
-        "bl camp_func_00257744\n"
-        "mov r6, r0\n"
-        "ldrh r0, [r5, #2]\n"
-        "bl camp_func_00257744\n"
-        "mov r7, r0\n"
-        "ldrh r0, [r4]\n"
-        "bl camp_func_002b9364\n"
-        "ldrh r0, [r5]\n"
-        "bl camp_func_002b9364\n"
-        "ldrsh r0, [r6, #0x22]\n"
-        "bl func_00257678\n"
-        "mov r6, r0\n"
-        "ldrsh r0, [r7, #0x22]\n"
-        "bl func_00257678\n"
-        "subs r0, r6, r0\n"
-        "bne 1f\n"
-        "ldrh r0, [r4]\n"
-        "bl camp_func_002b9364\n"
-        "mov r4, r0\n"
-        "ldrh r0, [r5]\n"
-        "bl camp_func_002b9364\n"
-        "mov r1, r0\n"
-        "ldrb r2, [r4, #2]\n"
-        "ldrb r0, [r0, #2]\n"
-        "subs r0, r2, r0\n"
-        "bne 1f\n"
-        "ldrb r0, [r1, #3]\n"
-        "ldrb r2, [r4, #3]\n"
-        "subs r0, r0, r2\n"
-        "bne 1f\n"
-        "ldrh r0, [r4]\n"
-        "ldrh r1, [r1]\n"
-        "sub r0, r0, r1\n"
-        "1: pop {r4, r5, r6, r7, r8, pc}\n");
+s32 StatusDown_SkillSortByCostAsc(const void* a, const void* b) {
+    const auto* ea = static_cast<const StatusDownListEntry*>(a);
+    const auto* eb = static_cast<const StatusDownListEntry*>(b);
+    const auto* sa = reinterpret_cast<const SkillTableEntry*>(camp_func_00257744(ea->value));
+    const auto* sb = reinterpret_cast<const SkillTableEntry*>(camp_func_00257744(eb->value));
+    s32 ca = func_00257678(sa->cost_raw);
+    s32 cb = func_00257678(sb->cost_raw);
+    s32 diff = ca - cb;
+    if (diff != 0) {
+        return diff;
+    }
+    const auto* ia = reinterpret_cast<const ItemTableEntry*>(camp_func_002b9364(ea->id));
+    const auto* ib = reinterpret_cast<const ItemTableEntry*>(camp_func_002b9364(eb->id));
+    diff = static_cast<s32>(ia->category) - static_cast<s32>(ib->category);
+    if (diff != 0) {
+        return diff;
+    }
+    diff = static_cast<s32>(ib->rarity) - static_cast<s32>(ia->rarity);
+    if (diff != 0) {
+        return diff;
+    }
+    return static_cast<s32>(ia->id) - static_cast<s32>(ib->id);
 }
 // DECOMP_FUNC(0x001f6174, 48)
-
-
-//
-__attribute__((naked)) s32 StatusDown_SkillSortByNameAsc(const void*, const void*) {
-    asm volatile(
-        "push {r4, r5, r6, lr}\n"
-        "mov r4, r1\n"
-        "ldrh r0, [r0, #2]\n"
-        "bl camp_func_00257744\n"
-        "mov r5, r0\n"
-        "ldrh r0, [r4, #2]\n"
-        "bl camp_func_00257744\n"
-        "mov r1, r0\n"
-        "ldrh r0, [r5, #0x32]\n"
-        "ldrh r1, [r1, #0x32]\n"
-        "sub r0, r0, r1\n"
-        "pop {r4, r5, r6, pc}\n");
+s32 StatusDown_SkillSortByNameAsc(const void* a, const void* b) {
+    const auto* ea = static_cast<const StatusDownListEntry*>(a);
+    const auto* eb = static_cast<const StatusDownListEntry*>(b);
+    const auto* sa = reinterpret_cast<const SkillTableEntry*>(camp_func_00257744(ea->value));
+    const auto* sb = reinterpret_cast<const SkillTableEntry*>(camp_func_00257744(eb->value));
+    return static_cast<s32>(sa->sort_order) - static_cast<s32>(sb->sort_order);
 }
 // DECOMP_FUNC(0x00206be8, 80)
-
-
-//
-__attribute__((naked)) s32 StatusDown_SkillSortByIdAsc(const void*, const void*) {
-    asm volatile(
-        "push {r4, r5, r6, lr}\n"
-        "mov r5, r1\n"
-        "ldrh r0, [r0]\n"
-        "bl camp_func_002b9364\n"
-        "mov r4, r0\n"
-        "ldrh r0, [r5]\n"
-        "bl camp_func_002b9364\n"
-        "mov r1, r0\n"
-        "ldrb r2, [r4, #2]\n"
-        "ldrb r0, [r0, #2]\n"
-        "subs r0, r2, r0\n"
-        "bne 1f\n"
-        "ldrb r0, [r1, #3]\n"
-        "ldrb r2, [r4, #3]\n"
-        "subs r0, r0, r2\n"
-        "bne 1f\n"
-        "ldrh r0, [r4]\n"
-        "ldrh r1, [r1]\n"
-        "sub r0, r0, r1\n"
-        "1: pop {r4, r5, r6, pc}\n");
+s32 StatusDown_SkillSortByIdAsc(const void* a, const void* b) {
+    const auto* ea = static_cast<const StatusDownListEntry*>(a);
+    const auto* eb = static_cast<const StatusDownListEntry*>(b);
+    const auto* ia = reinterpret_cast<const ItemTableEntry*>(camp_func_002b9364(ea->id));
+    const auto* ib = reinterpret_cast<const ItemTableEntry*>(camp_func_002b9364(eb->id));
+    s32 diff = static_cast<s32>(ia->category) - static_cast<s32>(ib->category);
+    if (diff != 0) {
+        return diff;
+    }
+    diff = static_cast<s32>(ib->rarity) - static_cast<s32>(ia->rarity);
+    if (diff != 0) {
+        return diff;
+    }
+    return static_cast<s32>(ia->id) - static_cast<s32>(ib->id);
 }
 // DECOMP_FUNC(0x00206c38, 132)
-
-
-//
-__attribute__((naked)) s32 StatusDown_ItemSortByTypeAsc(const void*, const void*) {
-    asm volatile(
-        "push {r4, r5, r6, lr}\n"
-        "mov r5, r1\n"
-        "ldrh r1, [r0, #2]\n"
-        "mov r2, r0\n"
-        "ldrh r0, [r5, #2]\n"
-        "cmp r1, #0\n"
-        "beq 1f\n"
-        "cmp r0, #0\n"
-        "mvneq r0, #0\n"
-        "beq 2f\n"
-        "subs r0, r1, r0\n"
-        "bne 2f\n"
-        "ldrh r0, [r2]\n"
-        "bl camp_func_002b9364\n"
-        "mov r4, r0\n"
-        "ldrh r0, [r5]\n"
-        "bl camp_func_002b9364\n"
-        "mov r1, r0\n"
-        "ldrb r2, [r4, #2]\n"
-        "ldrb r0, [r0, #2]\n"
-        "subs r0, r2, r0\n"
-        "bne 2f\n"
-        "ldrb r0, [r1, #3]\n"
-        "ldrb r2, [r4, #3]\n"
-        "subs r0, r0, r2\n"
-        "bne 2f\n"
-        "ldrh r0, [r4]\n"
-        "ldrh r1, [r1]\n"
-        "sub r0, r0, r1\n"
-        "2: pop {r4, r5, r6, pc}\n"
-        "1: cmp r0, #0\n"
-        "movne r0, #1\n"
-        "pop {r4, r5, r6, pc}\n");
+s32 StatusDown_ItemSortByTypeAsc(const void* a, const void* b) {
+    const auto* ea = static_cast<const StatusDownListEntry*>(a);
+    const auto* eb = static_cast<const StatusDownListEntry*>(b);
+    u16 va = ea->value;
+    u16 vb = eb->value;
+    if (va == 0) {
+        return vb != 0 ? 1 : 0;
+    }
+    if (vb == 0) {
+        return -1;
+    }
+    s32 diff = static_cast<s32>(va) - static_cast<s32>(vb);
+    if (diff != 0) {
+        return diff;
+    }
+    const auto* ia = reinterpret_cast<const ItemTableEntry*>(camp_func_002b9364(ea->id));
+    const auto* ib = reinterpret_cast<const ItemTableEntry*>(camp_func_002b9364(eb->id));
+    diff = static_cast<s32>(ia->category) - static_cast<s32>(ib->category);
+    if (diff != 0) {
+        return diff;
+    }
+    diff = static_cast<s32>(ib->rarity) - static_cast<s32>(ia->rarity);
+    if (diff != 0) {
+        return diff;
+    }
+    return static_cast<s32>(ia->id) - static_cast<s32>(ib->id);
 }
 // DECOMP_FUNC(0x00206cbc, 124)
-
-
-//
-__attribute__((naked)) s32 StatusDown_ItemSortByIdAsc(const void*, const void*) {
-    asm volatile(
-        "push {r4, r5, r6, lr}\n"
-        "mov r5, r1\n"
-        "ldrh r1, [r0, #2]\n"
-        "cmp r1, #0\n"
-        "ldrh r1, [r5, #2]\n"
-        "beq 1f\n"
-        "cmp r1, #0\n"
-        "mvneq r0, #0\n"
-        "beq 2f\n"
-        "ldrh r0, [r0]\n"
-        "bl camp_func_002b9364\n"
-        "mov r4, r0\n"
-        "ldrh r0, [r5]\n"
-        "bl camp_func_002b9364\n"
-        "mov r1, r0\n"
-        "ldrb r2, [r4, #2]\n"
-        "ldrb r0, [r0, #2]\n"
-        "subs r0, r2, r0\n"
-        "bne 2f\n"
-        "ldrb r0, [r1, #3]\n"
-        "ldrb r2, [r4, #3]\n"
-        "subs r0, r0, r2\n"
-        "bne 2f\n"
-        "ldrh r0, [r4]\n"
-        "ldrh r1, [r1]\n"
-        "sub r0, r0, r1\n"
-        "2: pop {r4, r5, r6, pc}\n"
-        "1: cmp r1, #0\n"
-        "moveq r0, #0\n"
-        "movne r0, #1\n"
-        "pop {r4, r5, r6, pc}\n");
+s32 StatusDown_ItemSortByIdAsc(const void* a, const void* b) {
+    const auto* ea = static_cast<const StatusDownListEntry*>(a);
+    const auto* eb = static_cast<const StatusDownListEntry*>(b);
+    u16 va = ea->value;
+    u16 vb = eb->value;
+    if (va == 0) {
+        return vb != 0 ? 1 : 0;
+    }
+    if (vb == 0) {
+        return -1;
+    }
+    const auto* ia = reinterpret_cast<const ItemTableEntry*>(camp_func_002b9364(ea->id));
+    const auto* ib = reinterpret_cast<const ItemTableEntry*>(camp_func_002b9364(eb->id));
+    s32 diff = static_cast<s32>(ia->category) - static_cast<s32>(ib->category);
+    if (diff != 0) {
+        return diff;
+    }
+    diff = static_cast<s32>(ib->rarity) - static_cast<s32>(ia->rarity);
+    if (diff != 0) {
+        return diff;
+    }
+    return static_cast<s32>(ia->id) - static_cast<s32>(ib->id);
 }
 
 // DECOMP_FUNC(0x00215990, 180)
-__attribute__((naked)) void StatusDown_SetPartyPrompt(const StatusDownPartyPrompt*) {
-    asm volatile(
-        "push {r4, r5, r6, lr}\n"
-        "mov r6, r0\n"
-        "ldr r0, .LStatusDownSetPartyPromptGlobal\n"
-        "sub sp, sp, #8\n"
-        "ldr r4, [r0]\n"
-        "add r5, r4, #0x400\n"
-        "ldrsh r0, [r5, #0x7e]\n"
-        "cmp r0, #0\n"
-        "blt .LStatusDownSetPartyPromptNoSound\n"
-        "ldrb r0, [r4, #0x3fc]\n"
-        "cmp r0, #1\n"
-        "bne .LStatusDownSetPartyPromptNoSound\n"
-        ".word 0xeb02155a\n" // bl 0x0029af30: Status_GetMainMenuId
-        "cmp r0, #0xd\n"
-        "beq .LStatusDownSetPartyPromptPlaySound\n"
-        "cmp r0, #6\n"
-        "movne r0, #0x1f\n"
-        "beq .LStatusDownSetPartyPromptPlaySound\n"
-        ".word 0xeb028c66\n" // bl 0x002b8b78: Sound_PlaySE
-        ".LStatusDownSetPartyPromptNoSound:\n"
-        "mvn r1, #0\n"
-        "strh r1, [r5, #0x7e]\n"
-        "ldr r2, [r6]\n"
-        "add r0, r4, #0x500\n"
-        "mov r5, #1\n"
-        "str r2, [r4, #0x554]\n"
-        "ldr r2, [r6, #4]\n"
-        "mov r1, #0\n"
-        "mov r3, r5\n"
-        "str r2, [r4, #0x558]\n"
-        "ldr r2, [r6, #8]\n"
-        "str r2, [r4, #0x55c]\n"
-        "ldrh r2, [r6, #0xc]\n"
-        "strh r2, [r0, #0x60]\n"
-        "mov r2, #7\n"
-        "add r0, r4, #0x400\n"
-        "stm sp, {r1, r5}\n"
-        "mov r1, r2\n"
-        "add r0, r0, #0x164\n"
-        ".word 0xeb02282e\n" // bl 0x0029fae8: UiListCursor_Setup
-        "strb r5, [r4, #0x410]\n"
-        "add sp, sp, #8\n"
-        "pop {r4, r5, r6, pc}\n"
-        ".LStatusDownSetPartyPromptPlaySound:\n"
-        "mov r0, #0x2f\n"
-        ".word 0xeaffffe5\n" // b 0x002159d8: Sound_PlaySE
-        ".LStatusDownSetPartyPromptGlobal: .word 0x0044E190\n");
+void StatusDown_SetPartyPrompt(const StatusDownPartyPrompt* prompt) {
+    auto* work = g_StatusDownWork;
+    if (work->active_sound_id >= 0 && work->active_mode == 1) {
+        s32 menu_id = Status_GetMainMenuId();
+        if (menu_id == 0xD || menu_id == 6) {
+            Sound_PlaySE(0x2F);
+        } else {
+            Sound_PlaySE(0x1F);
+        }
+    }
+    work->active_sound_id = -1;
+    work->prompt_field0 = prompt->field0;
+    work->prompt_field1 = prompt->field1;
+    work->prompt_field2 = prompt->field2;
+    work->prompt_field3 = prompt->field3;
+    UiListCursor_Setup(&work->list_cursor_prompt, 7, 7, 1, 0, 1);
+    work->needs_refresh = 1;
 }
 
 // DECOMP_FUNC(0x00215a44, 28)
-__attribute__((naked)) void StatusDown_SetActiveSoundId(s16) {
-    // The ROM uses a predicated region add followed by a predicated halfword store.
-    asm volatile(
-        "ldr r1, [pc, #0x10]\n"
-        "ldr r1, [r1]\n"
-        "cmp r1, #0\n"
-        "addne r1, r1, #0x400\n"
-        "strhne r0, [r1, #0x7E]\n"
-        "bx lr\n"
-        ".word 0x0044E190\n");
+void StatusDown_SetActiveSoundId(s16 id) {
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    if (work != nullptr) {
+        work->active_sound_id = id;
+    }
 }
 
 // DECOMP_FUNC(0x00215a68, 248)
-__attribute__((naked)) void StatusDown_SetPartySlots(const u16*, s32) {
-    asm volatile(
-        "push {r4, r5, r6, lr}\n"
-        "mov r5, r1\n"
-        "ldr r1, .LStatusDownSetPartySlotsLiteral\n"
-        "sub sp, sp, #8\n"
-        "mov r6, #0\n"
-        "lsl r2, r5, #1\n"
-        "ldr r4, [r1]\n"
-        "mov r1, r0\n"
-        "add r0, r4, #0x400\n"
-        "str r6, [r4, #0x4c2]\n"
-        "str r6, [r4, #0x4c6]\n"
-        "str r6, [r4, #0x4ca]\n"
-        "str r6, [r4, #0x4ce]\n"
-        "str r6, [r4, #0x482]\n"
-        "str r6, [r4, #0x486]\n"
-        "str r6, [r4, #0x48a]\n"
-        "add r0, r0, #0x82\n"
-        "str r6, [r4, #0x48e]\n"
-        ".word 0xeb02c14f\n" // bl 0x002c5ff4: AsdMem_Copy
-        "cmp r5, #0\n"
-        "andne r0, r5, #1\n"
-        "moveq r0, #0\n"
-        "cmpne r0, #0\n"
-        "mov r1, #0\n"
-        "ble .LStatusDownSetPartySlotsCompareCount\n"
-        ".LStatusDownSetPartySlotsFindFirst:\n"
-        "add r2, r4, r1, lsl #1\n"
-        "add r2, r2, #0x400\n"
-        "ldrh r2, [r2, #0x82]\n"
-        "cmp r2, #0\n"
-        "beq .LStatusDownSetPartySlotsSetup\n"
-        "add r1, r1, #1\n"
-        "cmp r0, r1\n"
-        "bgt .LStatusDownSetPartySlotsFindFirst\n"
-        ".LStatusDownSetPartySlotsCompareCount:\n"
-        "cmp r0, r5\n"
-        "mov r1, r0\n"
-        "bge .LStatusDownSetPartySlotsSetup\n"
-        ".LStatusDownSetPartySlotsCheckNew:\n"
-        "add r0, r4, r1, lsl #1\n"
-        "add r0, r0, #0x400\n"
-        "ldrh r2, [r0, #0x82]\n"
-        "cmp r2, #0\n"
-        "beq .LStatusDownSetPartySlotsSetup\n"
-        "ldrh r0, [r0, #0x84]\n"
-        "cmp r0, #0\n"
-        "beq .LStatusDownSetPartySlotsFound\n"
-        "add r1, r1, #2\n"
-        "cmp r5, r1\n"
-        "bgt .LStatusDownSetPartySlotsCheckNew\n"
-        ".LStatusDownSetPartySlotsSetup:\n"
-        "mov r5, #1\n"
-        "add r0, r4, #0x400\n"
-        "mov r3, r5\n"
-        "mov r2, #8\n"
-        "add r0, r0, #0xd4\n"
-        "str r5, [sp, #4]\n"
-        "str r6, [sp]\n"
-        ".word 0xeb0227e8\n" // bl 0x0029fae8: UiListCursor_Setup
-        "strb r5, [r4, #0x410]\n"
-        "strb r6, [r4, #0x548]\n"
-        "add sp, sp, #8\n"
-        "pop {r4, r5, r6, pc}\n"
-        ".LStatusDownSetPartySlotsFound:\n"
-        "add r1, r1, #1\n"
-        "b .LStatusDownSetPartySlotsSetup\n"
-        ".LStatusDownSetPartySlotsLiteral: .word 0x0044E190\n");
+void StatusDown_SetPartySlots(const u16* party_slots, s32 count) {
+    auto* work = g_StatusDownWork;
+    for (s32 i = 0; i < 4; ++i) {
+        reinterpret_cast<u32*>(work->new_party_flags)[i] = 0;
+        reinterpret_cast<u32*>(work->party_ids)[i] = 0;
+    }
+    AsdMem_Copy(work->party_ids, party_slots, count * sizeof(u16));
+    s32 total_items = 0;
+    while (total_items < count && work->party_ids[total_items] != 0) {
+        total_items++;
+    }
+    UiListCursor_Setup(&work->list_cursor_main, total_items, 8, 1, 0, 1);
+    work->needs_refresh = 1;
+    work->flag_548 = 0;
 }
 
 // DECOMP_FUNC(0x00223b88, 40)
-__attribute__((naked)) bool StatusDown_IsState20() {
-    asm volatile(
-        "ldr r0, [pc, #0x1C]\n"
-        "ldr r1, [r0]\n"
-        "mov r0, #0\n"
-        "cmp r1, #0\n"
-        "beq 1f\n"
-        "ldr r1, [r1, #0x400]\n"
-        "cmp r1, #0x14\n"
-        "moveq r0, #1\n"
-        "1: bx lr\n"
-        ".word 0x0044E190\n");
+bool StatusDown_IsState20() {
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    if (work == nullptr) {
+        return false;
+    }
+    return work->state == 0x14;
 }
 
 // DECOMP_FUNC(0x0026abe0, 84)
-__attribute__((naked)) void StatusDown_SetSubIdsA(const u16*, s32) {
-    asm volatile(
-        "cmp r1, #8\n"
-        "bgt 1f\n"
-        "ldr r2, [pc, #0x40]\n"
-        "cmp r1, #0\n"
-        "ldr r3, [r2]\n"
-        "mov r2, #0\n"
-        "str r2, [r3, #0x4A2]\n"
-        "str r2, [r3, #0x4A6]\n"
-        "str r2, [r3, #0x4AA]\n"
-        "str r2, [r3, #0x4AE]\n"
-        "strblt r2, [r3, #0x538]\n"
-        "blt 1f\n"
-        "mov r2, #1\n"
-        "strb r2, [r3, #0x538]\n"
-        "lsl r2, r1, #1\n"
-        "mov r1, r0\n"
-        "add r0, r3, #0x400\n"
-        "add r0, r0, #0xA2\n"
-        ".word 0xEA016CF1\n"
-        "1: bx lr\n"
-        ".word 0x0044E190\n");
+void StatusDown_SetSubIdsA(const u16* ids, s32 count) {
+    if (count > 8) {
+        return;
+    }
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    for (int i = 0; i < 8; i++) {
+        work->sub_ids_a[i] = 0;
+    }
+    if (count < 0) {
+        work->has_sub_ids_a = 0;
+        return;
+    }
+    work->has_sub_ids_a = 1;
+    AsdMem_Copy(work->sub_ids_a, ids, count * sizeof(u16));
 }
 
 // DECOMP_FUNC(0x0026b01c, 176)
-__attribute__((naked)) void StatusDown_PopFirstSubIdA() {
-    asm volatile(
-        "ldr r0, .LStatusDownPopFirstSubIdAGlobal\n"
-        "push {r4, r5, r6}\n"
-        "mov r1, #8\n"
-        "ldr ip, [r0]\n"
-        "mov r0, #0\n"
-        "mov r3, r0\n"
-        "add r2, ip, #0x400\n"
-        "2: add r4, ip, r0, lsl #1\n"
-        "add r4, r4, #0x400\n"
-        "ldrh r5, [r4, #0xb2]\n"
-        "cmp r5, #0\n"
-        "beq 1f\n"
-        "ldrh r6, [r2, #0xa2]\n"
-        "cmp r5, r6\n"
-        "strheq r3, [r4, #0xb2]\n"
-        "1: subs r1, r1, #1\n"
-        "add r0, r0, #1\n"
-        "bne 2b\n"
-        "mov r0, #0\n"
-        "strh r3, [r2, #0xa2]\n"
-        "3: rsb r1, r0, #7\n"
-        "cmp r1, #0\n"
-        "movgt r1, #0\n"
-        "rsbgt r4, r0, #7\n"
-        "ble 5f\n"
-        "4: add r2, r0, r1\n"
-        "add r2, ip, r2, lsl #1\n"
-        "add r2, r2, #0x400\n"
-        "ldrh r5, [r2, #0xa2]\n"
-        "cmp r5, #0\n"
-        "bne 6f\n"
-        "ldrh r5, [r2, #0xa4]\n"
-        "cmp r5, #0\n"
-        "strhne r5, [r2, #0xa2]\n"
-        "strhne r3, [r2, #0xa4]\n"
-        "6: subs r4, r4, #1\n"
-        "add r1, r1, #1\n"
-        "bne 4b\n"
-        "5: add r0, r0, #1\n"
-        "cmp r0, #7\n"
-        "blt 3b\n"
-        "pop {r4, r5, r6}\n"
-        "bx lr\n"
-        ".LStatusDownPopFirstSubIdAGlobal: .word 0x0044E190\n");
+void StatusDown_PopFirstSubIdA() {
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    u16 first_a = work->sub_ids_a[0];
+    for (int i = 0; i < 8; i++) {
+        if (work->sub_ids_b[i] != 0 && work->sub_ids_b[i] == first_a) {
+            work->sub_ids_b[i] = 0;
+        }
+    }
+    work->sub_ids_a[0] = 0;
+    for (int i = 0; i < 7; i++) {
+        for (int j = i; j < 7; j++) {
+            if (work->sub_ids_a[j] == 0 && work->sub_ids_a[j + 1] != 0) {
+                work->sub_ids_a[j] = work->sub_ids_a[j + 1];
+                work->sub_ids_a[j + 1] = 0;
+            }
+        }
+    }
 }
 
 #if 0 // Unverified behavioral reconstruction; retained for reference only.
@@ -1055,181 +609,218 @@ __attribute__((naked)) void StatusDown_PopFirstSubIdA() {
 }
 #endif
 
-// A single state-dispatch routine with its complete 24-entry PC-relative
-// table and literal pool preserved as one verified function span.
 // DECOMP_FUNC(0x0026b0d0, 1636)
-__attribute__((naked)) void StatusDown_SetupTouchRegions() {
-    asm volatile(".incbin \"extracted/exefs/code.bin\", 0x16b0d0, 1636\n");
+void StatusDown_SetupTouchRegions() {
+    auto* work = g_StatusDownWork;
+    const s32 prev_count = static_cast<u8>(work->registered_touch_count);
+    for (s32 i = 0; i < prev_count; ++i) {
+        UiTouch_UnregisterLastRegion();
+    }
+    work->registered_touch_count = 0;
+    camp_func_002c4450(work->slot_touch_handles, 0x29, -1);
+
+    switch (work->state) {
+    case 3: {
+        for (s32 i = 0; i < camp_func_0029f0f4(&work->list_cursor_main); ++i) {
+            work->slot_touch_handles[i] = UiTouch_RegisterRegion(0x1A, 0x414 + i);
+            work->registered_touch_count++;
+        }
+        work->l_btn_touch_handle = UiTouch_RegisterRegion(0x1A, 0x50F);
+        work->r_btn_touch_handle = UiTouch_RegisterRegion(0x1A, 0x50E);
+        work->registered_touch_count += 2;
+        break;
+    }
+    case 4: {
+        for (s32 i = 0; i < camp_func_0029f0f4(&work->list_cursor_main); ++i) {
+            work->slot_touch_handles[i] = UiTouch_RegisterRegion(0x1A, 0x414 + i);
+            work->registered_touch_count++;
+        }
+        break;
+    }
+    case 6: {
+        for (s32 i = 0; i < camp_func_0029f0f4(&work->list_cursor_main); ++i) {
+            work->slot_touch_handles[i] = UiTouch_RegisterRegion(0x1A, 0x414 + i);
+            work->registered_touch_count++;
+        }
+        const s32 last_slot = static_cast<u8>(work->registered_touch_count);
+        work->slot_touch_handles[last_slot] = UiTouch_RegisterRegion(0x1A, 0x4F1);
+        work->registered_touch_count++;
+        break;
+    }
+    case 11: {
+        for (s32 i = 0; i < camp_func_0029f0f4(&work->list_cursor_main) - 1; ++i) {
+            work->slot_touch_handles[i] = UiTouch_RegisterRegion(0x1A, 0x414 + i);
+            work->registered_touch_count++;
+        }
+        const auto* node_a = camp_func_002bf6d0(0x1A, 0x4F1);
+        const auto* node_b = camp_func_002bf6d0(0x1A, 0x41F);
+        const s16 handle = UiTouch_RegisterRectRegion(
+            node_a->x, node_a->y, node_b->rect->w, node_a->rect->h);
+        const s32 last_slot = static_cast<u8>(work->registered_touch_count);
+        work->slot_touch_handles[last_slot] = handle;
+        work->registered_touch_count++;
+        break;
+    }
+    case 16: {
+        for (s32 i = 0; i < 7; ++i) {
+            if (Flag_CheckEventBit(0x410) || (i != 1 && i != 2)) {
+                work->slot_touch_handles[i] = UiTouch_RegisterRegion(0x1A, 0x466 + i);
+            } else {
+                work->slot_touch_handles[i] = 0;
+            }
+            work->registered_touch_count++;
+        }
+        work->l_btn_touch_handle = UiTouch_RegisterRegion(0x1A, 0x50F);
+        work->r_btn_touch_handle = UiTouch_RegisterRegion(0x1A, 0x50E);
+        work->registered_touch_count += 2;
+        break;
+    }
+    case 17: {
+        for (s32 i = 0; i < 11; ++i) {
+            work->slot_touch_handles[i] = UiTouch_RegisterRegion(0x1A, 0x44C + i);
+            work->registered_touch_count++;
+        }
+        work->scroll_up_touch_handle = UiTouch_RegisterRegion(0x1A, 0x4E7);
+        work->scroll_down_touch_handle = UiTouch_RegisterRegion(0x1A, 0x4E8);
+        work->btn_touch_handle = UiTouch_RegisterRegion(0x1A, 0x4E9);
+        work->registered_touch_count += 3;
+        work->l_btn_touch_handle = UiTouch_RegisterRegion(0x1A, 0x50F);
+        work->r_btn_touch_handle = UiTouch_RegisterRegion(0x1A, 0x50E);
+        work->registered_touch_count += 2;
+        break;
+    }
+    case 19: {
+        const s32 total_items = *reinterpret_cast<const s16*>(reinterpret_cast<const u8*>(work) + 0x2232);
+        for (s32 row = 0; row < 9; ++row) {
+            for (s32 col = 0; col < 4; ++col) {
+                const s32 idx = row * 4 + col;
+                if (idx < total_items) {
+                    work->slot_touch_handles[idx] = UiTouch_RegisterRegion(0x1A, 0x4AE + idx);
+                    work->registered_touch_count++;
+                }
+            }
+        }
+        work->scroll_up_touch_handle = UiTouch_RegisterRegion(0x1A, 0x4E7);
+        work->scroll_down_touch_handle = UiTouch_RegisterRegion(0x1A, 0x4E8);
+        work->btn_touch_handle = UiTouch_RegisterRegion(0x1A, 0x4E9);
+        work->registered_touch_count += 3;
+        work->l_btn_touch_handle = UiTouch_RegisterRegion(0x1A, 0x50F);
+        work->r_btn_touch_handle = UiTouch_RegisterRegion(0x1A, 0x50E);
+        work->registered_touch_count += 2;
+        break;
+    }
+    case 21: {
+        work->scroll_up_touch_handle = UiTouch_RegisterRegion(0x1A, 0x4EA);
+        work->scroll_down_touch_handle = UiTouch_RegisterRegion(0x1A, 0x4EB);
+        work->btn_touch_handle = UiTouch_RegisterRegion(0x1A, 0x4EC);
+        work->registered_touch_count += 3;
+        work->l_btn_touch_handle = UiTouch_RegisterRegion(0x1A, 0x50F);
+        work->r_btn_touch_handle = UiTouch_RegisterRegion(0x1A, 0x50E);
+        work->registered_touch_count += 2;
+        break;
+    }
+    case 22:
+    case 23:
+    case 25:
+    case 26: {
+        for (s32 i = 0; i < camp_func_0029f0f4(&work->category_cursor) - 1; ++i) {
+            work->slot_touch_handles[i] = UiTouch_RegisterRegion(0x1A, 0x414 + i);
+            work->registered_touch_count++;
+        }
+        const s16 handle = UiTouch_RegisterRegion(0x1A, 0x54A);
+        const s32 count = camp_func_0029f0f4(&work->category_cursor);
+        work->slot_touch_handles[count - 1] = handle;
+        work->registered_touch_count++;
+        break;
+    }
+    default:
+        break;
+    }
 }
 
 // DECOMP_FUNC(0x0026d8c0, 28)
-__attribute__((naked)) void StatusDown_SetVisibility(u8) {
-    // Preserve the ROM's conditional region adjustment and byte-store encoding.
-    asm volatile(
-        "ldr r1, [pc, #0x10]\n"
-        "ldr r1, [r1]\n"
-        "cmp r1, #0\n"
-        "addne r1, r1, #0x2000\n"
-        "strbne r0, [r1, #0x392]\n"
-        "bx lr\n"
-        ".word 0x0044E190\n");
+void StatusDown_SetVisibility(u8 val) {
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    if (work != nullptr) {
+        work->visibility_flag = val;
+    }
 }
 
 // DECOMP_FUNC(0x00288718, 92)
-__attribute__((naked)) bool StatusDown_CanOpenSubScreen() {
-    asm volatile(
-        "push {r4, lr}\n"
-        ".word 0xEBFFFF39\n"
-        "cmp r0, #5\n"
-        "beq 1f\n"
-        ".word 0xEBFFFF36\n"
-        "cmp r0, #6\n"
-        "beq 1f\n"
-        ".word 0xEBFFFF33\n"
-        "cmp r0, #0xA\n"
-        "beq 1f\n"
-        ".word 0xEB0049FA\n"
-        "cmp r0, #7\n"
-        "beq 1f\n"
-        ".word 0xEB0049F7\n"
-        "cmp r0, #8\n"
-        "beq 1f\n"
-        ".word 0xEB0049F4\n"
-        "cmp r0, #3\n"
-        "movne r0, #1\n"
-        "bne 2f\n"
-        "1: mov r0, #0\n"
-        "2: pop {r4, pc}\n"
-        ".word 0x0044E190\n");
+bool StatusDown_CanOpenSubScreen() {
+    if (Status_GetSubMenuState() == 5 ||
+        Status_GetSubMenuState() == 6 ||
+        Status_GetSubMenuState() == 10 ||
+        Status_GetMainMenuId() == 7 ||
+        Status_GetMainMenuId() == 8 ||
+        Status_GetMainMenuId() == 3) {
+        return false;
+    }
+    return true;
 }
 
 // DECOMP_FUNC(0x0028cd5c, 28)
-__attribute__((naked)) u32 StatusDown_GetField2384() {
-    // A null work pointer is already the zero return value in the ROM sequence.
-    asm volatile(
-        "ldr r0, [pc, #0x10]\n"
-        "ldr r0, [r0]\n"
-        "cmp r0, #0\n"
-        "addne r0, r0, #0x2000\n"
-        "ldrne r0, [r0, #0x384]\n"
-        "bx lr\n"
-        ".word 0x0044E190\n");
+u32 StatusDown_GetField2384() {
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    if (work == nullptr) {
+        return 0;
+    }
+    return work->field_2384;
 }
 
 // DECOMP_FUNC(0x0028cd78, 36)
-__attribute__((naked)) bool StatusDown_IsInactiveOrState0() {
-    asm volatile(
-        "ldr r0, [pc, #0x18]\n"
-        "ldr r0, [r0]\n"
-        "cmp r0, #0\n"
-        "ldrne r0, [r0, #0x400]\n"
-        "cmpne r0, #0\n"
-        "moveq r0, #1\n"
-        "movne r0, #0\n"
-        "bx lr\n"
-        ".word 0x0044E190\n");
+bool StatusDown_IsInactiveOrState0() {
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    if (work == nullptr) {
+        return true;
+    }
+    return work->state == 0;
 }
 
 // DECOMP_FUNC(0x00292f44, 304)
-__attribute__((naked)) void StatusDown_SetDisplayMode(s32) {
-    asm volatile(
-        "push {r4, r5, r6, r7, r8, lr}\n"
-        "mov r7, r0\n"
-        "ldr r8, .LStatusDownSetDisplayModeGlobal\n"
-        "ldr r5, [r8]\n"
-        "ldrb r0, [r5, #0x3fc]\n"
-        "cmp r0, r7\n"
-        "beq .LStatusDownSetDisplayModeReturn\n"
-        "strb r0, [r5, #0x3fd]\n"
-        "strb r7, [r5, #0x3fc]\n"
-        ".word 0xeb002cd0\n" // bl 0x0029e2b0: Camp_GetTransitionDir
-        "cmp r0, #0\n"
-        "bge .LStatusDownSetDisplayModeCheckFadeIn\n"
-        "mov r2, #0\n"
-        "mov r1, #3\n"
-        "add r0, r5, #0x28\n"
-        ".word 0xeb00aace\n" // bl 0x002bdac0: UiAnimSprite_SetAnim
-        "b .LStatusDownSetDisplayModeClearTouches\n"
-        ".LStatusDownSetDisplayModeCheckFadeIn: nop\n"
-        ".word 0xeb002cc7\n" // bl 0x0029e2b0: Camp_GetTransitionDir
-        "cmp r0, #0\n"
-        "nop\n"
-        "ble .LStatusDownSetDisplayModeClearTouches\n"
-        "mov r2, #0\n"
-        "mov r1, #2\n"
-        "add r0, r5, #0x28\n"
-        ".word 0xeb00aac4\n" // bl 0x002bdac0: UiAnimSprite_SetAnim
-        ".LStatusDownSetDisplayModeClearTouches:\n"
-        "ldr r6, [r8]\n"
-        "mov r4, #0\n"
-        "ldrb r0, [r6, #0x480]\n"
-        "cmp r0, #0\n"
-        "ble .LStatusDownSetDisplayModeTouchesDone\n"
-        ".LStatusDownSetDisplayModeTouchLoop: nop\n"
-        ".word 0xeb00980f\n" // bl 0x002b9008: UiTouch_UnregisterLastRegion
-        "ldrb r0, [r6, #0x480]\n"
-        "add r4, r4, #1\n"
-        "cmp r0, r4\n"
-        "bgt .LStatusDownSetDisplayModeTouchLoop\n"
-        ".LStatusDownSetDisplayModeTouchesDone:\n"
-        "mov r4, #0\n"
-        "add r0, r6, #0x400\n"
-        "mvn r2, #0\n"
-        "mov r1, #0x29\n"
-        "add r0, r0, #0x2c\n"
-        "strb r4, [r6, #0x480]\n"
-        ".word 0xeb00c516\n" // bl 0x002c4450: AsdMem_FillBytes
-        "ldr r0, [r8]\n"
-        "mov r1, #2\n"
-        "cmp r7, #0\n"
-        "str r4, [r0, #0x40c]\n"
-        "ldr r2, [r0, #0x400]!\n"
-        "stm r0, {r1, r2}\n"
-        "streq r4, [r5, #0x408]\n"
-        "beq .LStatusDownSetDisplayModeFadeColor\n"
-        "cmp r7, #1\n"
-        "moveq r0, #3\n"
-        "beq .LStatusDownSetDisplayModeStoreSubState\n"
-        "cmp r7, #2\n"
-        "moveq r0, #0x10\n"
-        "beq .LStatusDownSetDisplayModeStoreSubState\n"
-        "cmp r7, #3\n"
-        "moveq r0, #0x11\n"
-        "beq .LStatusDownSetDisplayModeStoreSubState\n"
-        "cmp r7, #4\n"
-        "moveq r0, #0x13\n"
-        "beq .LStatusDownSetDisplayModeStoreSubState\n"
-        "cmp r7, #5\n"
-        "moveq r0, #0x15\n"
-        "streq r0, [r5, #0x408]\n"
-        "b .LStatusDownSetDisplayModeFadeColor\n"
-        ".LStatusDownSetDisplayModeStoreSubState:\n"
-        "str r0, [r5, #0x408]\n"
-        ".LStatusDownSetDisplayModeFadeColor:\n"
-        "pop {r4, r5, r6, r7, r8, lr}\n"
-        "mov r0, #0\n"
-        "ldr r1, .LStatusDownSetDisplayModeColor\n"
-        ".word 0xea003028\n" // b 0x0029f10c: Camp_SetFadeColor
-        ".LStatusDownSetDisplayModeReturn:\n"
-        "pop {r4, r5, r6, r7, r8, pc}\n"
-        ".LStatusDownSetDisplayModeGlobal: .word 0x0044E190\n"
-        ".LStatusDownSetDisplayModeColor: .word 0x323232ff\n");
+void StatusDown_SetDisplayMode(s32 mode) {
+    auto* work = g_StatusDownWork;
+    if (work->active_mode == mode) {
+        return;
+    }
+    work->prev_active_mode = work->active_mode;
+    work->active_mode = static_cast<u8>(mode);
+    s32 dir = Camp_GetTransitionDir();
+    if (dir < 0) {
+        UiAnimSprite_SetAnim(&work->panel_sprites[0], 3, 0);
+    } else if (Camp_GetTransitionDir() > 0) {
+        UiAnimSprite_SetAnim(&work->panel_sprites[0], 2, 0);
+    }
+    const u8 tr_count = static_cast<u8>(work->registered_touch_count);
+    for (s32 i = 0; i < tr_count; ++i) {
+        UiTouch_UnregisterLastRegion();
+    }
+    work->registered_touch_count = 0;
+    AsdMem_FillBytes(work->slot_touch_handles, 0x29, 0xFFFFFFFF);
+    work = g_StatusDownWork;
+    work->state_timer = 0;
+    u32 prev = work->state;
+    work->state = 2;
+    work->prev_state = prev;
+    if (mode == 0) {
+        work->sub_state = 0;
+    } else if (mode == 1) {
+        work->sub_state = 3;
+    } else if (mode == 2) {
+        work->sub_state = 0x10;
+    } else if (mode == 3) {
+        work->sub_state = 0x11;
+    } else if (mode == 4) {
+        work->sub_state = 0x13;
+    } else if (mode == 5) {
+        work->sub_state = 0x15;
+    }
+    Camp_SetFadeColor(0, 0x323232FF);
 }
 // DECOMP_FUNC(0x00293d2c, 36)
-
-
-//
-__attribute__((naked)) bool StatusDown_IsNotTransitioning() {
-    asm volatile(
-        "ldr r0, [pc, #0x18]\n"
-        "ldr r0, [r0]\n"
-        "ldr r0, [r0, #0x400]\n"
-        "cmp r0, #0x12\n"
-        "cmpne r0, #0x14\n"
-        "moveq r0, #0\n"
-        "movne r0, #1\n"
-        "bx lr\n"
-        ".word 0x0044E190\n");
+bool StatusDown_IsNotTransitioning() {
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    return (work->state != 0x12 && work->state != 0x14);
 }
 
 // DECOMP_FUNC(0x00293d50, 20)
@@ -1240,15 +831,12 @@ u8 StatusDown_GetActiveMode() {
 }
 
 // DECOMP_FUNC(0x00293e30, 28)
-__attribute__((naked)) s8 StatusDown_GetStatusMode() {
-    asm volatile(
-        "ldr r0, [pc, #0x10]\n"
-        "ldr r0, [r0]\n"
-        "cmp r0, #0\n"
-        "addne r0, r0, #0x400\n"
-        "ldrsbne r0, [r0, #0x81]\n"
-        "bx lr\n"
-        ".word 0x0044E190\n");
+s8 StatusDown_GetStatusMode() {
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    if (work == nullptr) {
+        return 0;
+    }
+    return work->status_mode;
 }
 
 // DECOMP_FUNC(0x002956ac, 20)
@@ -1259,440 +847,7 @@ u32 StatusDown_GetField53C() {
 }
 
 // DECOMP_FUNC(0x0029a520, 1696)
-// Verified ARM-state entry/exit and referenced local literal/table bytes.
-__attribute__((naked)) void StatusDown_DrawPartySlotRow(s32 x_offset, s32 y_offset, s32 demon_id,
-                                 u32 node_id, f32 scale, s32 is_stock_row,
-                                 s32 is_empty_mode, s32 highlight_mode) {
-    asm volatile(
-        ".word 0xe92d4ff0\n"
-        ".word 0xe1a06000\n"
-        ".word 0xed2d8b02\n"
-        ".word 0xe24dd06c\n"
-        ".word 0xe59f040c\n"
-        ".word 0xe1a07001\n"
-        ".word 0xe59da0a0\n"
-        ".word 0xe1a09002\n"
-        ".word 0xe5905000\n"
-        ".word 0xe1a01003\n"
-        ".word 0xed9d8a26\n"
-        ".word 0xe3a0001a\n"
-        ".word 0xeb00945e\n"
-        ".word 0xe1a04000\n"
-        ".word 0xe2850b01\n"
-        ".word 0xe28000d4\n"
-        ".word 0xe58d0064\n"
-        ".word 0xeb001337\n"
-        ".word 0xe58d0060\n"
-        ".word 0xe3a0b000\n"
-        ".word 0xe28500b4\n"
-        ".word 0xed900a08\n"
-        ".word 0xeb009464\n"
-        ".word 0xe1d400fa\n"
-        ".word 0xe3a010bf\n"
-        ".word 0xe3a02008\n"
-        ".word 0xe0800007\n"
-        ".word 0xe1cd00f0\n"
-        ".word 0xe1d400f8\n"
-        ".word 0xe3a0101a\n"
-        ".word 0xe0803006\n"
-        ".word 0xe3a00002\n"
-        ".word 0xeb0093ec\n"
-        ".word 0xeddf8ae7\n"
-        ".word 0xeeb00a68\n"
-        ".word 0xeb009457\n"
-        ".word 0xe1d400fa\n"
-        ".word 0xe3a080c4\n"
-        ".word 0xe59f238c\n"
-        ".word 0xe0800007\n"
-        ".word 0xe88d0101\n"
-        ".word 0xe1d400f8\n"
-        ".word 0xe3a0101a\n"
-        ".word 0xe0803006\n"
-        ".word 0xe3a00002\n"
-        ".word 0xeb0093a1\n"
-        ".word 0xe5950418\n"
-        ".word 0xe3a02e42\n"
-        ".word 0xe3500000\n"
-        ".word 0x0595041c\n"
-        ".word 0x03500000\n"
-        ".word 0x1a000009\n"
-        ".word 0xe5950420\n"
-        ".word 0xe3500000\n"
-        ".word 0x05950424\n"
-        ".word 0x03500000\n"
-        ".word 0x05950428\n"
-        ".word 0x03500000\n"
-        ".word 0x1a000002\n"
-        ".word 0xe5950414\n"
-        ".word 0xe3500000\n"
-        ".word 0xa59f2334\n"
-        ".word 0xe1d400fa\n"
-        ".word 0xe3a010c4\n"
-        ".word 0xe0800007\n"
-        ".word 0xe1cd00f0\n"
-        ".word 0xe1d400f8\n"
-        ".word 0xe3a0101a\n"
-        ".word 0xe0803006\n"
-        ".word 0xe3a00002\n"
-        ".word 0xeb009388\n"
-        ".word 0xe3a01e42\n"
-        ".word 0xe3a0001a\n"
-        ".word 0xeb009421\n"
-        ".word 0xe58d0054\n"
-        ".word 0xe59f0300\n"
-        ".word 0xe5901000\n"
-        ".word 0xe3a00003\n"
-        ".word 0xe2818a01\n"
-        ".word 0xe2888fc3\n"
-        ".word 0xe5981000\n"
-        ".word 0xe0881101\n"
-        ".word 0xe5912008\n"
-        ".word 0xe5810008\n"
-        ".word 0xe5d81018\n"
-        ".word 0xe3510000\n"
-        ".word 0x03520003\n"
-        ".word 0x0a000003\n"
-        ".word 0xe598101c\n"
-        ".word 0xe12fff31\n"
-        ".word 0xe3a00000\n"
-        ".word 0xe5c80018\n"
-        ".word 0xe3a00001\n"
-        ".word 0xe58d0000\n"
-        ".word 0xe59d0054\n"
-        ".word 0xe59d2054\n"
-        ".word 0xe59d3054\n"
-        ".word 0xe1d410fa\n"
-        ".word 0xe590000c\n"
-        ".word 0xe1d220fa\n"
-        ".word 0xe1d380f8\n"
-        ".word 0xe1d4c0f8\n"
-        ".word 0xe1d030f2\n"
-        ".word 0xe0811002\n"
-        ".word 0xe1d000f0\n"
-        ".word 0xe08c2008\n"
-        ".word 0xe082c006\n"
-        ".word 0xe1a02000\n"
-        ".word 0xe0811007\n"
-        ".word 0xe1a0000c\n"
-        ".word 0xebffff4e\n"
-        ".word 0xe2850f73\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb009221\n"
-        ".word 0xe1d410fa\n"
-        ".word 0xe0800007\n"
-        ".word 0xe0808001\n"
-        ".word 0xe2850f73\n"
-        ".word 0xeb00921f\n"
-        ".word 0xe1d410f8\n"
-        ".word 0xe0800006\n"
-        ".word 0xe3a020c9\n"
-        ".word 0xe0803001\n"
-        ".word 0xe58d2004\n"
-        ".word 0xe59f2240\n"
-        ".word 0xe3a0101a\n"
-        ".word 0xe3a00002\n"
-        ".word 0xe58d8000\n"
-        ".word 0xeb00934e\n"
-        ".word 0xe59f0228\n"
-        ".word 0xe5901000\n"
-        ".word 0xe3a00000\n"
-        ".word 0xe2818a01\n"
-        ".word 0xe2888fc3\n"
-        ".word 0xe5981000\n"
-        ".word 0xe0882101\n"
-        ".word 0xe5921008\n"
-        ".word 0xe5820008\n"
-        ".word 0xe5d82018\n"
-        ".word 0xe3520000\n"
-        ".word 0x03510000\n"
-        ".word 0x0a000003\n"
-        ".word 0xe598101c\n"
-        ".word 0xe12fff31\n"
-        ".word 0xe3a00000\n"
-        ".word 0xe5c80018\n"
-        ".word 0xe59d00a4\n"
-        ".word 0xe3e08000\n"
-        ".word 0xe3500001\n"
-        ".word 0x059f81e0\n"
-        ".word 0x0a000001\n"
-        ".word 0xe3500002\n"
-        ".word 0x059f81d8\n"
-        ".word 0xe2850b01\n"
-        ".word 0xe58d000c\n"
-        ".word 0xe5950400\n"
-        ".word 0xe350000b\n"
-        ".word 0x1350000e\n"
-        ".word 0x0a00001b\n"
-        ".word 0xe3500006\n"
-        ".word 0x13500009\n"
-        ".word 0x0a000007\n"
-        ".word 0xe5d50548\n"
-        ".word 0xe3500000\n"
-        ".word 0x0a000004\n"
-        ".word 0xe595154c\n"
-        ".word 0xe59d0060\n"
-        ".word 0xe1510000\n"
-        ".word 0x1a000000\n"
-        ".word 0xe59f8190\n"
-        ".word 0xe59f1194\n"
-        ".word 0xe3a0001a\n"
-        ".word 0xeb0093be\n"
-        ".word 0xe35a0000\n"
-        ".word 0xe1a05000\n"
-        ".word 0x0a000001\n"
-        ".word 0xe3590000\n"
-        ".word 0x0a000014\n"
-        ".word 0xe59d009c\n"
-        ".word 0xe3500000\n"
-        ".word 0x0a000017\n"
-        ".word 0xe28f1f5b\n"
-        ".word 0xe28d0010\n"
-        ".word 0xfa008ffe\n"
-        ".word 0xe320f000\n"
-        ".word 0xe320f000\n"
-        ".word 0xea000017\n"
-        ".word 0xe5951544\n"
-        ".word 0xe59d0060\n"
-        ".word 0xe1510000\n"
-        ".word 0x0affffe9\n"
-        ".word 0xe59d0064\n"
-        ".word 0xeb001233\n"
-        ".word 0xe2401001\n"
-        ".word 0xe59d0060\n"
-        ".word 0xe1510000\n"
-        ".word 0x159f8138\n"
-        ".word 0x0affffe2\n"
-        ".word 0xeaffffe2\n"
-        ".word 0xe28f1e13\n"
-        ".word 0xe28d0010\n"
-        ".word 0xfa008fec\n"
-        ".word 0xe59f8120\n"
-        ".word 0xe320f000\n"
-        ".word 0xea000005\n"
-        ".word 0xe1a00009\n"
-        ".word 0xeb0089e4\n"
-        ".word 0xe1a02000\n"
-        ".word 0xe28f1f51\n"
-        ".word 0xe28d0010\n"
-        ".word 0xfa008fe3\n"
-        ".word 0xe1d400fa\n"
-        ".word 0xe1d510fa\n"
-        ".word 0xe1d420f8\n"
-        ".word 0xe1d530f8\n"
-        ".word 0xe0800001\n"
-        ".word 0xe0800007\n"
-        ".word 0xe0821003\n"
-        ".word 0xe0811006\n"
-        ".word 0xee000a90\n"
-        ".word 0xee001a10\n"
-        ".word 0xeeb02a68\n"
-        ".word 0xe28d2010\n"
-        ".word 0xe1a01008\n"
-        ".word 0xeddf1a42\n"
-        ".word 0xeef80ae0\n"
-        ".word 0xeeb80ac0\n"
-        ".word 0xe3a00003\n"
-        ".word 0xed9f1a3f\n"
-        ".word 0xeb008fb0\n"
-        ".word 0xe35a0000\n"
-        ".word 0xe320f000\n"
-        ".word 0x0a000001\n"
-        ".word 0xe3590000\n"
-        ".word 0x0a00001b\n"
-        ".word 0xe1d410fa\n"
-        ".word 0xe3a000c4\n"
-        ".word 0xe58d0004\n"
-        ".word 0xe0811007\n"
-        ".word 0xe58d1000\n"
-        ".word 0xe1d400f8\n"
-        ".word 0xe59f20cc\n"
-        ".word 0xe3a0101a\n"
-        ".word 0xe0803006\n"
-        ".word 0xe3a00002\n"
-        ".word 0xeb0092d9\n"
-        ".word 0xe59f10bc\n"
-        ".word 0xe3a0001a\n"
-        ".word 0xeb009372\n"
-        ".word 0xe3a01000\n"
-        ".word 0xed8d8a00\n"
-        ".word 0xe58d1004\n"
-        ".word 0xe1d030fa\n"
-        ".word 0xe1d410fa\n"
-        ".word 0xe1d420f8\n"
-        ".word 0xe1d000f8\n"
-        ".word 0xe0811003\n"
-        ".word 0xe3a030c9\n"
-        ".word 0xe0800002\n"
-        ".word 0xe0812007\n"
-        ".word 0xe0801006\n"
-        ".word 0xe6bf0079\n"
-        ".word 0xeb00718d\n"
-        ".word 0xe320f000\n"
-        ".word 0xea00001e\n"
-        ".word 0x0044e190\n"
-        ".word 0x3f800000\n"
-        ".word 0x0000041f\n"
-        ".word 0x00000421\n"
-        ".word 0x0044ea00\n"
-        ".word 0x00000422\n"
-        ".word 0x72e027ff\n"
-        ".word 0xdc0f14ff\n"
-        ".word 0x0000042b\n"
-        ".word 0x48814881\n"
-        ".word 0x00004881\n"
-        ".word 0x5a5a5aff\n"
-        ".word 0x85826d82\n"
-        ".word 0x40819782\n"
-        ".word 0x85829282\n"
-        ".word 0x89828782\n"
-        ".word 0x94829382\n"
-        ".word 0x81829282\n"
-        ".word 0x89829482\n"
-        ".word 0x8e828f82\n"
-        ".word 0x90824081\n"
-        ".word 0x93828f82\n"
-        ".word 0x89829382\n"
-        ".word 0x8c828282\n"
-        ".word 0x49818582\n"
-        ".word 0x00000000\n"
-        ".word 0x00007325\n"
-        ".word 0x00000000\n"
-        ".word 0x3e4ccccd\n"
-        ".word 0x00000425\n"
-        ".word 0x0000042a\n"
-        ".word 0xe59d009c\n"
-        ".word 0xe3500000\n"
-        ".word 0x1a000026\n"
-        ".word 0xe35a0000\n"
-        ".word 0x0a00003c\n"
-        ".word 0xe1d410fa\n"
-        ".word 0xe3a000c4\n"
-        ".word 0xe58d0004\n"
-        ".word 0xe0811007\n"
-        ".word 0xe58d1000\n"
-        ".word 0xe1d400f8\n"
-        ".word 0xe59f21b4\n"
-        ".word 0xe3a0101a\n"
-        ".word 0xe0803006\n"
-        ".word 0xe3a00002\n"
-        ".word 0xeb009297\n"
-        ".word 0xe59f11a4\n"
-        ".word 0xe3a0001a\n"
-        ".word 0xeb009330\n"
-        ".word 0xe3590000\n"
-        ".word 0xe1a05000\n"
-        ".word 0xe3a08008\n"
-        ".word 0x0a000015\n"
-        ".word 0xe1a00009\n"
-        ".word 0xebffca9c\n"
-        ".word 0xe58d000c\n"
-        ".word 0xe28d0004\n"
-        ".word 0xe28f2f5f\n"
-        ".word 0xe3a010c9\n"
-        ".word 0xe58d8000\n"
-        ".word 0xe8800006\n"
-        ".word 0xe1d400fa\n"
-        ".word 0xe1d520fa\n"
-        ".word 0xe1d410f8\n"
-        ".word 0xe1d530f8\n"
-        ".word 0xe0822000\n"
-        ".word 0xe0822007\n"
-        ".word 0xe0810003\n"
-        ".word 0xe0801006\n"
-        ".word 0xe3a03001\n"
-        ".word 0xe3a00000\n"
-        ".word 0xeb008dc0\n"
-        ".word 0xe28dd06c\n"
-        ".word 0xecbd8b02\n"
-        ".word 0xe8bd8ff0\n"
-        ".word 0xe28f1f4e\n"
-        ".word 0xe28d0010\n"
-        ".word 0xfa008f5e\n"
-        ".word 0xe28d1010\n"
-        ".word 0xe3a000c9\n"
-        ".word 0xe58d8000\n"
-        ".word 0xe1cd00f4\n"
-        ".word 0xe1d400fa\n"
-        ".word 0xe1d520fa\n"
-        ".word 0xe1d410f8\n"
-        ".word 0xe1d530f8\n"
-        ".word 0xe0822000\n"
-        ".word 0xe0822007\n"
-        ".word 0xe0810003\n"
-        ".word 0xe0801006\n"
-        ".word 0xe3a03001\n"
-        ".word 0xe3a00000\n"
-        ".word 0xeb008dab\n"
-        ".word 0xe28dd06c\n"
-        ".word 0xecbd8b02\n"
-        ".word 0xe8bd8ff0\n"
-        ".word 0xe1d400fa\n"
-        ".word 0xe59f20e4\n"
-        ".word 0xe0801007\n"
-        ".word 0xe3a000c4\n"
-        ".word 0xe58d0004\n"
-        ".word 0xe58d1000\n"
-        ".word 0xe1d400f8\n"
-        ".word 0xe3a0101a\n"
-        ".word 0xe0803006\n"
-        ".word 0xe3a00002\n"
-        ".word 0xeb00925a\n"
-        ".word 0xe59d000c\n"
-        ".word 0xe1d007fe\n"
-        ".word 0xe3500000\n"
-        ".word 0xaa000005\n"
-        ".word 0xe3a01001\n"
-        ".word 0xe1a00009\n"
-        ".word 0xeb000057\n"
-        ".word 0xe320f000\n"
-        ".word 0xe320f000\n"
-        ".word 0xea000005\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb000102\n"
-        ".word 0xe3500006\n"
-        ".word 0xe1a00009\n"
-        ".word 0x0a000002\n"
-        ".word 0xeb000022\n"
-        ".word 0xe1a0b000\n"
-        ".word 0xea000003\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb004e2a\n"
-        ".word 0xe3500000\n"
-        ".word 0x15d0b022\n"
-        ".word 0xe59f1068\n"
-        ".word 0xe3a0001a\n"
-        ".word 0xeb0092dd\n"
-        ".word 0xe3a03004\n"
-        ".word 0xe28d5004\n"
-        ".word 0xe28f2048\n"
-        ".word 0xe3a010c9\n"
-        ".word 0xe58d3000\n"
-        ".word 0xe8850806\n"
-        ".word 0xe1d030fa\n"
-        ".word 0xe1d410fa\n"
-        ".word 0xe1d420f8\n"
-        ".word 0xe1d000f8\n"
-        ".word 0xe0811003\n"
-        ".word 0xe3a03001\n"
-        ".word 0xe0800002\n"
-        ".word 0xe0812007\n"
-        ".word 0xe0801006\n"
-        ".word 0xe3a00000\n"
-        ".word 0xeb008d73\n"
-        ".word 0xe28dd06c\n"
-        ".word 0xecbd8b02\n"
-        ".word 0xe8bd8ff0\n"
-        ".word 0x00000522\n"
-        ".word 0x0000052a\n"
-        ".word 0x00006425\n"
-        ".word 0x002d2d2d\n"
-        ".word 0x00000423\n"
-        ".word 0x00000429\n"
-    );
-}
-#if 0
-// Partial semantic draft retained for reconstruction; not compiled.
-[[maybe_unused]] static void StatusDown_DrawPartySlotRow_Draft(s32 x_offset, s32 y_offset, s32 demon_id,
+__attribute__((pcs("aapcs"))) void StatusDown_DrawPartySlotRow(s32 x_offset, s32 y_offset, s32 demon_id,
                                  u32 node_id, f32 scale, s32 is_stock_row,
                                  s32 is_empty_mode, s32 highlight_mode) {
     StatusDownWork* work = g_StatusDownWork;
@@ -1715,6 +870,7 @@ __attribute__((naked)) void StatusDown_DrawPartySlotRow(s32 x_offset, s32 y_offs
     UiSprite_DrawNode(2, 0x1A, cursor_frame_node, x_offset + row_node->x, y_offset + row_node->y, 0xC4);
 
     const UiLayoutNode* clip_node = LayoutNode(0x1A, 0x420);
+    GpuModeSlotSet(0x30C, 3);
     UiScissor_SetRect(x_offset + row_node->x + clip_node->x,
                       y_offset + row_node->y + clip_node->y,
                       clip_node->rect->w, clip_node->rect->h, 1);
@@ -1724,6 +880,7 @@ __attribute__((naked)) void StatusDown_DrawPartySlotRow(s32 x_offset, s32 y_offs
     UiSprite_DrawNode(2, 0x1A, 0x422,
                       x_offset + anim_x + row_node->x,
                       y_offset + anim_y + row_node->y, 0xC9);
+    GpuModeSlotSet(0x30C, 0);
 
     u32 text_color = 0xFFFFFFFFu;
     if (highlight_mode == 1) {
@@ -1735,6 +892,13 @@ __attribute__((naked)) void StatusDown_DrawPartySlotRow(s32 x_offset, s32 y_offs
     if (work->state == 11 || work->state == 14) {
         if (work->selected_result == selected_row) {
             text_color = 0x72E027FFu;
+        } else {
+            const s32 row_count = UiListCursor_GetRowCount(&work->list_cursor_main);
+            if (selected_row == row_count - 1) {
+                text_color = 0x72E027FFu;
+            } else {
+                text_color = 0x5A5A5AFFu;
+            }
         }
     } else if (work->state != 6 && work->state != 9) {
         if (work->flag_548 != 0 && work->highlighted_slot_index == selected_row) {
@@ -1743,8 +907,18 @@ __attribute__((naked)) void StatusDown_DrawPartySlotRow(s32 x_offset, s32 y_offs
     }
 
     const UiLayoutNode* name_node = LayoutNode(0x1A, 0x42B);
-    char name_buf[64]{};
-    UiFont_FormatString(name_buf, "%s", "");
+    char name_buf[64];
+    if (is_empty_mode != 0 && demon_id == 0) {
+        UiFont_FormatString(name_buf, "\x82\x6d\x82\x85\x82\x97\x81\x40\x82\x92\x82\x85\x82\x87\x82\x89\x82\x93\x82\x94\x82\x92\x82\x81\x82\x94\x82\x89\x82\x8f\x82\x8e\x81\x40\x82\x90\x82\x8f\x82\x93\x82\x93\x82\x89\x82\x82\x82\x8c\x82\x85\x81\x49");
+        text_color = 0x5A5A5AFFu;
+    } else {
+        if (is_stock_row != 0) {
+            UiFont_FormatString(name_buf, "\x81\x48\x81\x48\x81\x48");
+        } else {
+            const char* dname = camp_func_002bcff0(demon_id);
+            UiFont_FormatString(name_buf, "%s", dname);
+        }
+    }
     UiFont_DrawText(3, text_color, name_buf,
                     static_cast<f32>(x_offset + row_node->x + name_node->x),
                     static_cast<f32>(y_offset + row_node->y + name_node->y),
@@ -1753,13 +927,10 @@ __attribute__((naked)) void StatusDown_DrawPartySlotRow(s32 x_offset, s32 y_offs
     if (is_empty_mode == 0 || demon_id != 0) {
         UiSprite_DrawNode(2, 0x1A, 0x425, x_offset + row_node->x, y_offset + row_node->y, 0xC4);
         const UiLayoutNode* bar_node = LayoutNode(0x1A, 0x42A);
-        // The listing stores the caller's float word (1.0f at every call site)
-        // directly into the callee's integer gate slot (0x0029A908); convert
-        // the reconstructed float parameter to the gate value.
         UiParty_DrawDemonBars(static_cast<s16>(demon_id),
                               x_offset + row_node->x + bar_node->x,
                               y_offset + row_node->y + bar_node->y,
-                              0xC9, static_cast<s32>(scale), 0);
+                              0xC9, *reinterpret_cast<const s32*>(&scale), 0);
     }
 
     if (is_stock_row != 0) {
@@ -1775,11 +946,11 @@ __attribute__((naked)) void StatusDown_DrawPartySlotRow(s32 x_offset, s32 y_offs
                                  y_offset + row_node->y + lv_node->y,
                                  1, 8, 0xC9, "%d", lv);
         } else {
-            char empty_lv[64]{};
+            char empty_lv[64];
             UiFont_FormatString(empty_lv, "---");
             UiFont_DrawFormatted(0, x_offset + row_node->x + lv_node->x,
                                  y_offset + row_node->y + lv_node->y,
-                                 1, 8, 0xC9, "%s", reinterpret_cast<s32>(empty_lv));
+                                 1, 8, 0xC9, empty_lv, 0);
         }
         return;
     }
@@ -1802,138 +973,51 @@ __attribute__((naked)) void StatusDown_DrawPartySlotRow(s32 x_offset, s32 y_offs
                          y_offset + row_node->y + ord_node->y,
                          1, 4, 0xC9, "%d", order_num);
 }
-#endif
 
 // DECOMP_FUNC(0x0029adf0, 320)
-__attribute__((naked)) void StatusDown_DrawLRPrompts(s32, s32) {
-    asm volatile(
-        "push {r4, r5, r6, r7, lr}\n"
-        "mov r6, r0\n"
-        "sub sp, sp, #0xc\n"
-        "ldr r0, .LStatusDownDrawLRPool0\n"
-        "mov r4, r1\n"
-        "ldr r5, [r0]\n"
-        ".word 0xebffb63c\n" // bl 0x00288700: Camp_CanShowLRPrompts
-        "cmp r0, #0\n"
-        "beq .LStatusDownDrawLREnd\n"
-        "ldr r0, [r5, #0x424]\n"
-        "mov r7, #0xba\n"
-        "mov r3, r6\n"
-        "cmp r0, #1\n"
-        "cmpne r0, #2\n"
-        "beq .LStatusDownDrawLRLeftActive\n"
-        "ldr r2, .LStatusDownDrawLRPool1\n"
-        "mov r1, #0x1a\n"
-        "mov r0, #2\n"
-        "stm sp, {r4, r7}\n"
-        ".word 0xeb009187\n" // bl 0x002bf460: UiSprite_DrawNode
-        "ldr r2, .LStatusDownDrawLRPool2\n"
-        "mov r3, r6\n"
-        "mov r1, #0x1a\n"
-        "mov r0, #2\n"
-        "stm sp, {r4, r7}\n"
-        ".word 0xeb009181\n" // bl 0x002bf460: UiSprite_DrawNode
-        ".LStatusDownDrawLRRightCheck:\n"
-        "ldr r0, [r5, #0x428]\n"
-        "mov r3, r6\n"
-        "cmp r0, #1\n"
-        "cmpne r0, #2\n"
-        "beq .LStatusDownDrawLRRightActive\n"
-        "ldr r2, .LStatusDownDrawLRPool3\n"
-        "mov r1, #0x1a\n"
-        "mov r0, #2\n"
-        "stm sp, {r4, r7}\n"
-        ".word 0xeb009177\n" // bl 0x002bf460: UiSprite_DrawNode
-        "ldr r2, .LStatusDownDrawLRPool4\n"
-        "mov r3, r6\n"
-        "mov r1, #0x1a\n"
-        "mov r0, #2\n"
-        "stm sp, {r4, r7}\n"
-        ".word 0xeb009171\n" // bl 0x002bf460: UiSprite_DrawNode
-        ".LStatusDownDrawLREnd:\n"
-        "add sp, sp, #0xc\n"
-        "pop {r4, r5, r6, r7, pc}\n"
-        ".LStatusDownDrawLRLeftActive:\n"
-        "ldr r2, .LStatusDownDrawLRPool5\n"
-        "mov r1, #0x1a\n"
-        "mov r0, #2\n"
-        "stm sp, {r4, r7}\n"
-        ".word 0xeb00916a\n" // bl 0x002bf460: UiSprite_DrawNode
-        "ldr r2, .LStatusDownDrawLRPool6\n"
-        "mov r3, r6\n"
-        "mov r1, #0x1a\n"
-        "mov r0, #2\n"
-        "stm sp, {r4, r7}\n"
-        ".word 0xeb009164\n" // bl 0x002bf460: UiSprite_DrawNode
-        "nop\n"
-        "nop\n"
-        "b .LStatusDownDrawLRRightCheck\n"
-        ".LStatusDownDrawLRRightActive:\n"
-        "ldr r2, .LStatusDownDrawLRPool7\n"
-        "mov r1, #0x1a\n"
-        "mov r0, #2\n"
-        "stm sp, {r4, r7}\n"
-        ".word 0xeb00915c\n" // bl 0x002bf460: UiSprite_DrawNode
-        "ldr r2, .LStatusDownDrawLRPool8\n"
-        "mov r3, r6\n"
-        "mov r1, #0x1a\n"
-        "mov r0, #2\n"
-        "stm sp, {r4, r7}\n"
-        ".word 0xeb009156\n" // bl 0x002bf460: UiSprite_DrawNode
-        "add sp, sp, #0xc\n"
-        "pop {r4, r5, r6, r7, pc}\n"
-        ".LStatusDownDrawLRPool0: .word 0x0044E190\n"
-        ".LStatusDownDrawLRPool1: .word 0x000004d3\n"
-        ".LStatusDownDrawLRPool2: .word 0x000004d7\n"
-        ".LStatusDownDrawLRPool3: .word 0x000004d2\n"
-        ".LStatusDownDrawLRPool4: .word 0x000004d6\n"
-        ".LStatusDownDrawLRPool5: .word 0x000004d5\n"
-        ".LStatusDownDrawLRPool6: .word 0x000004d9\n"
-        ".LStatusDownDrawLRPool7: .word 0x000004d4\n"
-        ".LStatusDownDrawLRPool8: .word 0x000004d8\n");
+void StatusDown_DrawLRPrompts(s32 x_offset, s32 y_offset) {
+    auto* work = g_StatusDownWork;
+    if (!Camp_CanShowLRPrompts()) {
+        return;
+    }
+    u32 left = work->lr_state_left;
+    if (left == 1 || left == 2) {
+        UiSprite_DrawNode(2, 0x1A, 0x4D5, x_offset, y_offset, 0xBA);
+        UiSprite_DrawNode(2, 0x1A, 0x4D9, x_offset, y_offset, 0xBA);
+    } else {
+        UiSprite_DrawNode(2, 0x1A, 0x4D3, x_offset, y_offset, 0xBA);
+        UiSprite_DrawNode(2, 0x1A, 0x4D7, x_offset, y_offset, 0xBA);
+    }
+    u32 right = work->lr_state_right;
+    if (right == 1 || right == 2) {
+        UiSprite_DrawNode(2, 0x1A, 0x4D4, x_offset, y_offset, 0xBA);
+        UiSprite_DrawNode(2, 0x1A, 0x4D8, x_offset, y_offset, 0xBA);
+    } else {
+        UiSprite_DrawNode(2, 0x1A, 0x4D2, x_offset, y_offset, 0xBA);
+        UiSprite_DrawNode(2, 0x1A, 0x4D6, x_offset, y_offset, 0xBA);
+    }
 }
 
 // DECOMP_FUNC(0x0029bfec, 152)
-__attribute__((naked)) void StatusDown_Close() {
-    asm volatile(
-        "push {r4, r5, r6, lr}\n"
-        "ldr r5, .LStatusDownCloseLiteral\n"
-        "ldr r4, [r5]\n"
-        "ldr r0, [r4, #0x400]\n"
-        "cmp r0, #0\n"
-        "beq 3f\n"
-        "mov r2, #0\n"
-        "mov r1, #2\n"
-        "add r0, r4, #0x28\n"
-        ".word 0xeb0086aa\n" // bl 0x002bdac0: UiAnimSprite_SetAnim
-        "ldr r5, [r5]\n"
-        "mov r6, #0\n"
-        "mov r0, #2\n"
-        "add r2, r5, #0x400\n"
-        "str r6, [r5, #0x40c]\n"
-        "ldr r1, [r5, #0x400]\n"
-        "stm r2, {r0, r1}\n"
-        "str r6, [r4, #0x408]\n"
-        "strb r6, [r4, #0x3fc]\n"
-        "ldrb r0, [r5, #0x480]\n"
-        "mov r4, r6\n"
-        "cmp r0, #0\n"
-        "ble 1f\n"
-        "2: nop\n"
-        ".word 0xeb0073ed\n" // bl 0x002b9008: UiTouch_UnregisterLastRegion
-        "ldrb r0, [r5, #0x480]\n"
-        "add r4, r4, #1\n"
-        "cmp r0, r4\n"
-        "bgt 2b\n"
-        "1: add r0, r5, #0x400\n"
-        "strb r6, [r5, #0x480]\n"
-        "pop {r4, r5, r6, lr}\n"
-        "mvn r2, #0\n"
-        "mov r1, #0x29\n"
-        "add r0, r0, #0x2c\n"
-        ".word 0xea00a0f4\n" // b 0x002c4450: AsdMem_FillBytes
-        "3: pop {r4, r5, r6, pc}\n"
-        ".LStatusDownCloseLiteral: .word 0x0044E190\n");
+void StatusDown_Close() {
+    auto* work = g_StatusDownWork;
+    if (work->state == 0) {
+        return;
+    }
+    UiAnimSprite_SetAnim(&work->panel_sprites[0], 2, 0);
+    work = g_StatusDownWork;
+    work->state_timer = 0;
+    u32 prev = work->state;
+    work->state = 2;
+    work->prev_state = prev;
+    work->sub_state = 0;
+    work->active_mode = 0;
+    const u8 tr_count = static_cast<u8>(work->registered_touch_count);
+    for (s32 i = 0; i < tr_count; ++i) {
+        UiTouch_UnregisterLastRegion();
+    }
+    work->registered_touch_count = 0;
+    AsdMem_FillBytes(work->slot_touch_handles, 0x29, 0xFFFFFFFF);
 }
 
 // DECOMP_FUNC(0x0029c6c4, 24)
@@ -1946,131 +1030,22 @@ void StatusDown_SetFlag412(u8 val) {
 }
 
 // DECOMP_FUNC(0x0029c70c, 32)
-__attribute__((naked)) bool StatusDown_IsNotState1() {
-    asm volatile(
-        "ldr r0, [pc, #0x14]\n"
-        "ldr r0, [r0]\n"
-        "ldr r0, [r0, #0x400]\n"
-        "cmp r0, #1\n"
-        "moveq r0, #0\n"
-        "movne r0, #1\n"
-        "bx lr\n"
-        ".word 0x0044E190\n");
+bool StatusDown_IsNotState1() {
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    return work->state != 1;
 }
 
 // DECOMP_FUNC(0x0029c72c, 32)
-__attribute__((naked)) bool StatusDown_IsNotState2() {
-    asm volatile(
-        "ldr r0, [pc, #0x14]\n"
-        "ldr r0, [r0]\n"
-        "ldr r0, [r0, #0x400]\n"
-        "cmp r0, #2\n"
-        "moveq r0, #0\n"
-        "movne r0, #1\n"
-        "bx lr\n"
-        ".word 0x0044E190\n");
+bool StatusDown_IsNotState2() {
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    return work->state != 2;
 }
 
 // DECOMP_FUNC(0x002cf4e0, 352)
-// Verified ARM-state entry/exit and referenced local literal/table bytes.
-__attribute__((naked)) void StatusDown_UpdateHelpMessage(s32 msg_index) {
-    asm volatile(
-        ".word 0xe92d41f0\n"
-        ".word 0xe1a05000\n"
-        ".word 0xe24dd010\n"
-        ".word 0xe59f0140\n"
-        ".word 0xe5904000\n"
-        ".word 0xe2846b01\n"
-        ".word 0xe1d607fe\n"
-        ".word 0xe3500000\n"
-        ".word 0xaa000013\n"
-        ".word 0xe3550000\n"
-        ".word 0xba000011\n"
-        ".word 0xe5d403fc\n"
-        ".word 0xe3500001\n"
-        ".word 0x1a00000e\n"
-        ".word 0xebff2e84\n"
-        ".word 0xe350000d\n"
-        ".word 0x13500006\n"
-        ".word 0x03a00031\n"
-        ".word 0x0a000008\n"
-        ".word 0xe3500008\n"
-        ".word 0x13500009\n"
-        ".word 0x0a000019\n"
-        ".word 0xe350000b\n"
-        ".word 0x13500007\n"
-        ".word 0x0a000016\n"
-        ".word 0xe3500002\n"
-        ".word 0x03a00027\n"
-        ".word 0x13a0002b\n"
-        ".word 0xebffa588\n"
-        ".word 0xe3550000\n"
-        ".word 0xe3a07003\n"
-        ".word 0xe3a08000\n"
-        ".word 0xe1c657be\n"
-        ".word 0xaa00000f\n"
-        ".word 0xe3a00040\n"
-        ".word 0xebff9519\n"
-        ".word 0xe28d1004\n"
-        ".word 0xe58d7000\n"
-        ".word 0xe8810101\n"
-        ".word 0xe3a03000\n"
-        ".word 0xe59f00b0\n"
-        ".word 0xe3e02000\n"
-        ".word 0xe3a01003\n"
-        ".word 0xe7900004\n"
-        ".word 0xebff1dfd\n"
-        ".word 0xe320f000\n"
-        ".word 0xe320f000\n"
-        ".word 0xea000011\n"
-        ".word 0xe3a00060\n"
-        ".word 0xeaffffe9\n"
-        ".word 0xe59f008c\n"
-        ".word 0xe1a01005\n"
-        ".word 0xe5900000\n"
-        ".word 0xeb02e736\n"
-        ".word 0xe3500000\n"
-        ".word 0x03a00040\n"
-        ".word 0x0bff9504\n"
-        ".word 0xe28d1004\n"
-        ".word 0xe58d7000\n"
-        ".word 0xe8810021\n"
-        ".word 0xe3a03000\n"
-        ".word 0xe59f005c\n"
-        ".word 0xe3e02000\n"
-        ".word 0xe3a01003\n"
-        ".word 0xe7900004\n"
-        ".word 0xebff1de8\n"
-        ".word 0xe59f0048\n"
-        ".word 0xe7900004\n"
-        ".word 0xebffa0a1\n"
-        ".word 0xe1a01000\n"
-        ".word 0xe3a06001\n"
-        ".word 0xe2840a02\n"
-        ".word 0xe2800faa\n"
-        ".word 0xe1a03006\n"
-        ".word 0xe3a02008\n"
-        ".word 0xe1a05000\n"
-        ".word 0xe58d6004\n"
-        ".word 0xe58d8000\n"
-        ".word 0xebff4132\n"
-        ".word 0xe3a01000\n"
-        ".word 0xe1a00005\n"
-        ".word 0xebfd01fe\n"
-        ".word 0xe5c46410\n"
-        ".word 0xe28dd010\n"
-        ".word 0xe8bd81f0\n"
-        ".word 0x0044e190\n"
-        ".word 0x000022a0\n"
-        ".word 0x00433158\n"
-    );
-}
-#if 0
-// Partial semantic draft retained for reconstruction; not compiled.
-[[maybe_unused]] static void StatusDown_UpdateHelpMessage_Draft(s32 msg_index) {
-    StatusDownWork* work = g_StatusDownWork;
+void StatusDown_UpdateHelpMessage(s32 msg_index) {
+    auto* work = g_StatusDownWork;
     if (work->active_sound_id < 0 && msg_index >= 0 && work->active_mode == 1) {
-        const s32 menu_id = Camp_GetMainMenuId();
+        const s32 menu_id = Status_GetMainMenuId();
         s32 se_id = 0x2B;
         if (menu_id == 0xD || menu_id == 6) {
             se_id = 0x31;
@@ -2099,212 +1074,13 @@ __attribute__((naked)) void StatusDown_UpdateHelpMessage(s32 msg_index) {
     UiListCursor_ResetScroll(&work->list_cursor_help, 0);
     work->needs_refresh = 1;
 }
-#endif
 
 // DECOMP_FUNC(0x002d931c, 764)
-// Verified ARM-state entry/exit and referenced local literal/table bytes.
-__attribute__((naked)) void StatusDown_Init() {
-    asm volatile(
-        ".word 0xe92d40f0\n"
-        ".word 0xe3a06001\n"
-        ".word 0xe59f727c\n"
-        ".word 0xe59f527c\n"
-        ".word 0xed2d8b02\n"
-        ".word 0xe24dd01c\n"
-        ".word 0xe5970000\n"
-        ".word 0xe3500000\n"
-        ".word 0x1a000009\n"
-        ".word 0xe59f1268\n"
-        ".word 0xe28f0f9a\n"
-        ".word 0xe1a00000\n"
-        ".word 0xe3a01c01\n"
-        ".word 0xe1a03005\n"
-        ".word 0xe3a02000\n"
-        ".word 0xe1a00001\n"
-        ".word 0xe58d6000\n"
-        ".word 0xebffae07\n"
-        ".word 0xe5870000\n"
-        ".word 0xe1a04000\n"
-        ".word 0xe1a01005\n"
-        ".word 0xebffadee\n"
-        ".word 0xe59f026c\n"
-        ".word 0xe3a05000\n"
-        ".word 0xe1a03005\n"
-        ".word 0xe88d0021\n"
-        ".word 0xe1a02005\n"
-        ".word 0xe3a01002\n"
-        ".word 0xe28f0f96\n"
-        ".word 0xe58d5008\n"
-        ".word 0xebffb177\n"
-        ".word 0xe59f1258\n"
-        ".word 0xe5840000\n"
-        ".word 0xe3a03000\n"
-        ".word 0xe88d0022\n"
-        ".word 0xe58d000c\n"
-        ".word 0xe1a02003\n"
-        ".word 0xe3a010e7\n"
-        ".word 0xe28f0d09\n"
-        ".word 0xe58d5008\n"
-        ".word 0xebffae0f\n"
-        ".word 0xe5840004\n"
-        ".word 0xe5974000\n"
-        ".word 0xe2840008\n"
-        ".word 0xebffa7dc\n"
-        ".word 0xe59f1230\n"
-        ".word 0xe3a0c048\n"
-        ".word 0xe3a00f4d\n"
-        ".word 0xe2413018\n"
-        ".word 0xe58d3004\n"
-        ".word 0xe3a02018\n"
-        ".word 0xe58dc000\n"
-        ".word 0xe2433048\n"
-        ".word 0xe58d2008\n"
-        ".word 0xe58d1014\n"
-        ".word 0xe58d0018\n"
-        ".word 0xe1a0200c\n"
-        ".word 0xe2431048\n"
-        ".word 0xe2840008\n"
-        ".word 0xe58d500c\n"
-        ".word 0xe58d5010\n"
-        ".word 0xebffa7b8\n"
-        ".word 0xed9f8a7c\n"
-        ".word 0xe2843008\n"
-        ".word 0xe3a02ffa\n"
-        ".word 0xeeb00a48\n"
-        ".word 0xe3a0101a\n"
-        ".word 0xe2840028\n"
-        ".word 0xe58d6000\n"
-        ".word 0xebff91bd\n"
-        ".word 0xe3a02000\n"
-        ".word 0xe1a01002\n"
-        ".word 0xe2840028\n"
-        ".word 0xebff919e\n"
-        ".word 0xeeb00a48\n"
-        ".word 0xe2843008\n"
-        ".word 0xe3a02ffa\n"
-        ".word 0xe3a0101a\n"
-        ".word 0xe28400b4\n"
-        ".word 0xe58d6000\n"
-        ".word 0xebff91b2\n"
-        ".word 0xe3a01000\n"
-        ".word 0xe28400b4\n"
-        ".word 0xebff96f0\n"
-        ".word 0xeeb00a48\n"
-        ".word 0xe2843008\n"
-        ".word 0xe3a02ffa\n"
-        ".word 0xe3a0101a\n"
-        ".word 0xe2840d05\n"
-        ".word 0xe58d6000\n"
-        ".word 0xebff91a8\n"
-        ".word 0xe3a01001\n"
-        ".word 0xe2840d05\n"
-        ".word 0xebff96e6\n"
-        ".word 0xeeb00a48\n"
-        ".word 0xe2843008\n"
-        ".word 0xe3a02ffa\n"
-        ".word 0xe3a0101a\n"
-        ".word 0xe2840f73\n"
-        ".word 0xe58d6000\n"
-        ".word 0xebff919e\n"
-        ".word 0xe3a02000\n"
-        ".word 0xe3a01004\n"
-        ".word 0xe2840f73\n"
-        ".word 0xebff917f\n"
-        ".word 0xeeb00a48\n"
-        ".word 0xe2843008\n"
-        ".word 0xe3a02ffa\n"
-        ".word 0xe3a0101a\n"
-        ".word 0xe2840f96\n"
-        ".word 0xe58d6000\n"
-        ".word 0xebff9193\n"
-        ".word 0xe3a02000\n"
-        ".word 0xe3a01005\n"
-        ".word 0xe2840f96\n"
-        ".word 0xebff9174\n"
-        ".word 0xeeb00a48\n"
-        ".word 0xe2843008\n"
-        ".word 0xe3a02ffa\n"
-        ".word 0xe3a0101a\n"
-        ".word 0xe2840fb9\n"
-        ".word 0xe58d6000\n"
-        ".word 0xebff9188\n"
-        ".word 0xe3a02000\n"
-        ".word 0xe1a01002\n"
-        ".word 0xe2840fb9\n"
-        ".word 0xebff9169\n"
-        ".word 0xe3a010c9\n"
-        ".word 0xe2840008\n"
-        ".word 0xeeb00a48\n"
-        ".word 0xe1cd00f0\n"
-        ".word 0xe3a0301c\n"
-        ".word 0xe3e02000\n"
-        ".word 0xe3a0101a\n"
-        ".word 0xe2840e37\n"
-        ".word 0xebff96da\n"
-        ".word 0xe3a01002\n"
-        ".word 0xe2840e37\n"
-        ".word 0xebff96b9\n"
-        ".word 0xe3a01002\n"
-        ".word 0xe2840e37\n"
-        ".word 0xe1c013ba\n"
-        ".word 0xe3a00000\n"
-        ".word 0xe320f000\n"
-        ".word 0xebff912e\n"
-        ".word 0xe2845a02\n"
-        ".word 0xe3a010ff\n"
-        ".word 0xe58502a0\n"
-        ".word 0xebff9127\n"
-        ".word 0xe59502a0\n"
-        ".word 0xe59f2098\n"
-        ".word 0xed9f0a24\n"
-        ".word 0xe3a01000\n"
-        ".word 0xebff911e\n"
-        ".word 0xe2840b01\n"
-        ".word 0xe3e02000\n"
-        ".word 0xe3a01029\n"
-        ".word 0xe280002c\n"
-        ".word 0xebffabad\n"
-        ".word 0xe5c56392\n"
-        ".word 0xe28dd01c\n"
-        ".word 0xecbd8b02\n"
-        ".word 0xe8bd80f0\n"
-        ".word 0x0044e190\n"
-        ".word 0x00002394\n"
-        ".word 0x00000d1d\n"
-        ".word 0x535c3a63\n"
-        ".word 0x5c34544d\n"
-        ".word 0x36445258\n"
-        ".word 0x735c3638\n"
-        ".word 0x34736464\n"
-        ".word 0x6f72705c\n"
-        ".word 0x6d617267\n"
-        ".word 0x6174735c\n"
-        ".word 0x5c737574\n"
-        ".word 0x74617453\n"
-        ".word 0x6f447375\n"
-        ".word 0x632e6e77\n"
-        ".word 0x00007070\n"
-        ".word 0x001ca648\n"
-        ".word 0x20444d54\n"
-        ".word 0x434c4143\n"
-        ".word 0x00000000\n"
-        ".word 0x001cc914\n"
-        ".word 0x20444d54\n"
-        ".word 0x41524444\n"
-        ".word 0x00000057\n"
-        ".word 0x00407d58\n"
-        ".word 0x3f800000\n"
-        ".word 0x00000000\n"
-        ".word 0x646464ff\n"
-    );
-}
-#if 0
-// Partial semantic draft retained for reconstruction; not compiled.
-[[maybe_unused]] static void StatusDown_Init_Draft() {
+void StatusDown_Init() {
     StatusDownWork* work = g_StatusDownWork;
     if (work == nullptr) {
         work = static_cast<StatusDownWork*>(
-            AsdMem_Alloc(0x100, 0xD1D, 0, sizeof(StatusDownWork), 1));
+            AsdMem_Alloc(0x100, 0x100, 0, sizeof(StatusDownWork), 1));
         g_StatusDownWork = work;
     }
 
@@ -2315,47 +1091,43 @@ __attribute__((naked)) void StatusDown_Init() {
     work->draw_task = AsdTask_CreateDraw("TMD DDRAW", 0xE7, 0, 0,
                                          StatusDown_DrawTaskCallback, 0, 0, work->calc_task);
 
-    StatusDownWork* w = g_StatusDownWork;
-    UiSpriteGroup_Init(&w->sprite_group);
-    UiSpriteGroup_BindTable(&w->sprite_group,
+    UiSpriteGroup_Init(&work->sprite_group);
+    UiSpriteGroup_BindTable(&work->sprite_group,
                             SpriteTableWord(g_StatusDownSpriteTable - 0xA8), 0x48,
                             SpriteTableWord(g_StatusDownSpriteTable - 0x60), 0x48,
                             SpriteTableWord(g_StatusDownSpriteTable - 0x18),
                             0x18, 0, 0,
                             SpriteTableWord(g_StatusDownSpriteTable), 0x134);
 
-    UiAnimSprite_Setup(&w->panel_sprites[0], 0x1A, 0x3E8, &w->sprite_group, 1, 1.0f);
-    UiAnimSprite_SetAnim(&w->panel_sprites[0], 0, 0);
+    UiAnimSprite_Setup(&work->panel_sprites[0], 0x1A, 0x3E8, &work->sprite_group, 1, 1.0f);
+    UiAnimSprite_SetAnim(&work->panel_sprites[0], 0, 0);
 
-    UiAnimSprite_Setup(&w->panel_sprites[1], 0x1A, 0x3E8, &w->sprite_group, 1, 1.0f);
-    UiAnimSprite_SetAnim(&w->panel_sprites[1], 0, 0);
-    UiAnimSprite_SetLayer(&w->panel_sprites[1], 1);
+    UiAnimSprite_Setup(&work->panel_sprites[1], 0x1A, 0x3E8, &work->sprite_group, 1, 1.0f);
+    UiAnimSprite_SetLayer(&work->panel_sprites[1], 0);
 
-    UiAnimSprite_Setup(&w->panel_sprites[2], 0x1A, 0x3E8, &w->sprite_group, 1, 1.0f);
-    UiAnimSprite_SetAnim(&w->panel_sprites[2], 0, 0);
-    UiAnimSprite_SetLayer(&w->panel_sprites[2], 1);
+    UiAnimSprite_Setup(&work->panel_sprites[2], 0x1A, 0x3E8, &work->sprite_group, 1, 1.0f);
+    UiAnimSprite_SetLayer(&work->panel_sprites[2], 1);
 
-    UiAnimSprite_Setup(&w->panel_sprites[3], 0x1A, 0x3E8, &w->sprite_group, 1, 1.0f);
-    UiAnimSprite_SetAnim(&w->panel_sprites[3], 4, 0);
+    UiAnimSprite_Setup(&work->panel_sprites[3], 0x1A, 0x3E8, &work->sprite_group, 1, 1.0f);
+    UiAnimSprite_SetAnim(&work->panel_sprites[3], 4, 0);
 
-    UiAnimSprite_Setup(&w->panel_sprites[4], 0x1A, 0x3E8, &w->sprite_group, 1, 1.0f);
-    UiAnimSprite_SetAnim(&w->panel_sprites[4], 5, 0);
+    UiAnimSprite_Setup(&work->panel_sprites[4], 0x1A, 0x3E8, &work->sprite_group, 1, 1.0f);
+    UiAnimSprite_SetAnim(&work->panel_sprites[4], 5, 0);
 
-    UiAnimSprite_Setup(&w->panel_sprites[5], 0x1A, 0x3E8, &w->sprite_group, 1, 1.0f);
-    UiAnimSprite_SetAnim(&w->panel_sprites[5], 0, 0);
+    UiAnimSprite_Setup(&work->panel_sprites[5], 0x1A, 0x3E8, &work->sprite_group, 1, 1.0f);
+    UiAnimSprite_SetAnim(&work->panel_sprites[5], 0, 0);
 
-    UiAnimSprite_SetupEx(&w->panel_sprites[6], 0x1A, -1, 0x1C, &w->sprite_group, 0xC9, 1.0f);
-    UiAnimSprite_SetLayer(&w->panel_sprites[6], 2);
-    *reinterpret_cast<u16*>(&w->panel_sprites[6].raw[0x3A]) = 2;
+    UiAnimSprite_SetupEx(&work->panel_sprites[6], 0x1A, -1, 0x1C, &work->sprite_group, 0xC9, 1.0f);
+    UiAnimSprite_SetLayer(&work->panel_sprites[6], 2);
+    *reinterpret_cast<u16*>(&work->panel_sprites[6].raw[0x3A]) = 2;
 
-    w->text_handle = AsdText_CreateDefault(0);
-    AsdText_SetAlpha(w->text_handle, 0xFF);
-    AsdText_SetColorAndScale(w->text_handle, 0, 0x646464FFu, 0.0f);
+    work->text_handle = AsdText_CreateDefault(0);
+    AsdText_SetAlpha(work->text_handle, 0xFF);
+    AsdText_SetColorAndScale(work->text_handle, 0, 0x646464FFu, 0.0f);
 
-    AsdMem_FillBytes(w->slot_touch_handles, 0x29, -1);
-    w->visibility_flag = 1;
+    camp_func_002c4450(work->slot_touch_handles, 0x29, -1);
+    work->visibility_flag = 1;
 }
-#endif
 
 //
 void StatusDown_EnterState3_Alt_Decompiled() {
@@ -2369,182 +1141,49 @@ void StatusDown_EnterState3_Alt_Decompiled() {
     }
 }
 // DECOMP_FUNC(0x002d9618, 36)
-
-
-__attribute__((naked)) void StatusDown_EnterState3_Alt() {
-    asm volatile(
-        ".word 0xE59F0018\n"
-        ".word 0xE3A02000\n"
-        ".word 0xE3A01003\n"
-        ".word 0xE5900000\n"
-        ".word 0xE580240C\n"
-        ".word 0xE5B02400\n"
-        ".word 0xE8800006\n"
-        ".word 0xE12FFF1E\n"
-        ".word 0x0044E190\n");
+void StatusDown_EnterState3_Alt() {
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    work->state_timer = 0;
+    u32 prev = work->state;
+    work->state = 3;
+    work->prev_state = prev;
 }
 // DECOMP_FUNC(0x002dc96c, 152)
-
-
-//
-__attribute__((naked)) s32 StatusDown_SkillSortByCostDesc(const void*, const void*) {
-    asm volatile(
-        "push {r4, r5, r6, r7, r8, lr}\n"
-        "mov r4, r0\n"
-        "mov r5, r1\n"
-        "ldrh r0, [r0, #2]\n"
-        "bl camp_func_00257744\n"
-        "mov r7, r0\n"
-        "ldrh r0, [r5, #2]\n"
-        "bl camp_func_00257744\n"
-        "mov r6, r0\n"
-        "ldrh r0, [r4]\n"
-        "bl camp_func_002b9364\n"
-        "ldrh r0, [r5]\n"
-        "bl camp_func_002b9364\n"
-        "ldrsh r0, [r6, #0x22]\n"
-        "bl func_00257678\n"
-        "mov r6, r0\n"
-        "ldrsh r0, [r7, #0x22]\n"
-        "bl func_00257678\n"
-        "subs r0, r6, r0\n"
-        "bne 1f\n"
-        "ldrh r0, [r4]\n"
-        "bl camp_func_002b9364\n"
-        "mov r4, r0\n"
-        "ldrh r0, [r5]\n"
-        "bl camp_func_002b9364\n"
-        "mov r1, r0\n"
-        "ldrb r0, [r0, #2]\n"
-        "ldrb r2, [r4, #2]\n"
-        "subs r0, r0, r2\n"
-        "bne 1f\n"
-        "ldrb r0, [r1, #3]\n"
-        "ldrb r2, [r4, #3]\n"
-        "subs r0, r0, r2\n"
-        "bne 1f\n"
-        "ldrh r0, [r4]\n"
-        "ldrh r1, [r1]\n"
-        "sub r0, r0, r1\n"
-        "1: pop {r4, r5, r6, r7, r8, pc}\n");
+s32 StatusDown_SkillSortByCostDesc(const void* a, const void* b) {
+    const auto* ea = static_cast<const StatusDownListEntry*>(a);
+    const auto* eb = static_cast<const StatusDownListEntry*>(b);
+    const auto* sa = reinterpret_cast<const SkillTableEntry*>(camp_func_00257744(ea->value));
+    const auto* sb = reinterpret_cast<const SkillTableEntry*>(camp_func_00257744(eb->value));
+    s32 ca = func_00257678(sa->cost_raw);
+    s32 cb = func_00257678(sb->cost_raw);
+    s32 diff = cb - ca;
+    if (diff != 0) {
+        return diff;
+    }
+    const auto* ia = reinterpret_cast<const ItemTableEntry*>(camp_func_002b9364(ea->id));
+    const auto* ib = reinterpret_cast<const ItemTableEntry*>(camp_func_002b9364(eb->id));
+    diff = static_cast<s32>(ib->category) - static_cast<s32>(ia->category);
+    if (diff != 0) {
+        return diff;
+    }
+    diff = static_cast<s32>(ib->rarity) - static_cast<s32>(ia->rarity);
+    if (diff != 0) {
+        return diff;
+    }
+    return static_cast<s32>(ia->id) - static_cast<s32>(ib->id);
 }
 
 // DECOMP_FUNC(0x002e2f44, 408)
-// Verified ARM-state entry/exit and referenced local literal/table bytes.
-__attribute__((naked)) void StatusDown_UpdatePartySlotsAndDiff(const u16* ids, s32 count) {
-    asm volatile(
-        ".word 0xe92d41f0\n"
-        ".word 0xe1a06001\n"
-        ".word 0xe24dd018\n"
-        ".word 0xe59f1180\n"
-        ".word 0xe3a08000\n"
-        ".word 0xe1a02086\n"
-        ".word 0xe5915000\n"
-        ".word 0xe1a04005\n"
-        ".word 0xe5951482\n"
-        ".word 0xe58d1008\n"
-        ".word 0xe5951486\n"
-        ".word 0xe58d100c\n"
-        ".word 0xe595148a\n"
-        ".word 0xe58d1010\n"
-        ".word 0xe595148e\n"
-        ".word 0xe58d1014\n"
-        ".word 0xe58584c2\n"
-        ".word 0xe58584c6\n"
-        ".word 0xe58584ca\n"
-        ".word 0xe58584ce\n"
-        ".word 0xe5858482\n"
-        ".word 0xe1a01000\n"
-        ".word 0xe5848486\n"
-        ".word 0xe2840b01\n"
-        ".word 0xe584848a\n"
-        ".word 0xe2800082\n"
-        ".word 0xe584848e\n"
-        ".word 0xebff8c0f\n"
-        ".word 0xe2560000\n"
-        ".word 0x12060001\n"
-        ".word 0x13500000\n"
-        ".word 0xe3a01000\n"
-        ".word 0xda000007\n"
-        ".word 0xe0842081\n"
-        ".word 0xe2822b01\n"
-        ".word 0xe1d228b2\n"
-        ".word 0xe3520000\n"
-        ".word 0x0a000010\n"
-        ".word 0xe2811001\n"
-        ".word 0xe1500001\n"
-        ".word 0xcafffff7\n"
-        ".word 0xe1500006\n"
-        ".word 0xe1a01000\n"
-        ".word 0xaa00000a\n"
-        ".word 0xe0840081\n"
-        ".word 0xe2800b01\n"
-        ".word 0xe1d028b2\n"
-        ".word 0xe3520000\n"
-        ".word 0x0a000005\n"
-        ".word 0xe1d008b4\n"
-        ".word 0xe3500000\n"
-        ".word 0x0a000023\n"
-        ".word 0xe2811002\n"
-        ".word 0xe1560001\n"
-        ".word 0xcafffff4\n"
-        ".word 0xe3a07001\n"
-        ".word 0xe2840b01\n"
-        ".word 0xe1a03007\n"
-        ".word 0xe3a02008\n"
-        ".word 0xe28000d4\n"
-        ".word 0xe58d7004\n"
-        ".word 0xe58d8000\n"
-        ".word 0xebfef2a9\n"
-        ".word 0xe3560000\n"
-        ".word 0xe5c47410\n"
-        ".word 0xe3a01000\n"
-        ".word 0xc28d2008\n"
-        ".word 0xe5c48548\n"
-        ".word 0xda00001d\n"
-        ".word 0xe0850081\n"
-        ".word 0xe2800b01\n"
-        ".word 0xe1d038b2\n"
-        ".word 0xe3530000\n"
-        ".word 0x13a00000\n"
-        ".word 0x0a000014\n"
-        ".word 0xe082c080\n"
-        ".word 0xe1dc40b0\n"
-        ".word 0xe3540000\n"
-        ".word 0x0a000001\n"
-        ".word 0xe1540003\n"
-        ".word 0x0a00000b\n"
-        ".word 0xe1dcc0b2\n"
-        ".word 0xe35c0000\n"
-        ".word 0x0a000005\n"
-        ".word 0xe15c0003\n"
-        ".word 0x1a000003\n"
-        ".word 0xe2800001\n"
-        ".word 0xea000004\n"
-        ".word 0xe2811001\n"
-        ".word 0xeaffffdc\n"
-        ".word 0xe2800002\n"
-        ".word 0xe3500008\n"
-        ".word 0xbaffffed\n"
-        ".word 0xe3500008\n"
-        ".word 0xa0850001\n"
-        ".word 0xa5c074c2\n"
-        ".word 0xe2811001\n"
-        ".word 0xe1510006\n"
-        ".word 0xbaffffe1\n"
-        ".word 0xe28dd018\n"
-        ".word 0xe8bd81f0\n"
-        ".word 0x0044e190\n"
-    );
-}
-#if 0
-// Partial semantic draft retained for reconstruction; not compiled.
-[[maybe_unused]] static void StatusDown_UpdatePartySlotsAndDiff_Draft(const u16* ids, s32 count) {
-    StatusDownWork* work = g_StatusDownWork;
+void StatusDown_UpdatePartySlotsAndDiff(const u16* ids, s32 count) {
+    auto* work = g_StatusDownWork;
     u16 prev_ids[8];
-    std::memcpy(prev_ids, work->party_ids, sizeof(prev_ids));
-    std::memset(work->new_party_flags, 0, sizeof(work->new_party_flags));
-    std::memset(work->party_ids, 0, sizeof(work->party_ids));
+    for (s32 i = 0; i < 8; ++i) {
+        prev_ids[i] = work->party_ids[i];
+    }
+    for (s32 i = 0; i < 4; ++i) {
+        reinterpret_cast<u32*>(work->new_party_flags)[i] = 0;
+        reinterpret_cast<u32*>(work->party_ids)[i] = 0;
+    }
     AsdMem_Copy(work->party_ids, ids, static_cast<u32>(count << 1));
 
     s32 valid_count = 0;
@@ -2572,175 +1211,109 @@ __attribute__((naked)) void StatusDown_UpdatePartySlotsAndDiff(const u16* ids, s
         }
     }
 }
-#endif
 // DECOMP_FUNC(0x002e4534, 80)
-
-
-//
-__attribute__((naked)) s32 StatusDown_SkillSortByIdDesc(const void*, const void*) {
-    asm volatile(
-        "push {r4, r5, r6, lr}\n"
-        "mov r5, r1\n"
-        "ldrh r0, [r0]\n"
-        "bl camp_func_002b9364\n"
-        "mov r4, r0\n"
-        "ldrh r0, [r5]\n"
-        "bl camp_func_002b9364\n"
-        "mov r1, r0\n"
-        "ldrb r0, [r0, #2]\n"
-        "ldrb r2, [r4, #2]\n"
-        "subs r0, r0, r2\n"
-        "bne 1f\n"
-        "ldrb r0, [r1, #3]\n"
-        "ldrb r2, [r4, #3]\n"
-        "subs r0, r0, r2\n"
-        "bne 1f\n"
-        "ldrh r0, [r4]\n"
-        "ldrh r1, [r1]\n"
-        "sub r0, r0, r1\n"
-        "1: pop {r4, r5, r6, pc}\n");
+s32 StatusDown_SkillSortByIdDesc(const void* a, const void* b) {
+    const auto* ea = static_cast<const StatusDownListEntry*>(a);
+    const auto* eb = static_cast<const StatusDownListEntry*>(b);
+    const auto* ia = reinterpret_cast<const ItemTableEntry*>(camp_func_002b9364(ea->id));
+    const auto* ib = reinterpret_cast<const ItemTableEntry*>(camp_func_002b9364(eb->id));
+    s32 diff = static_cast<s32>(ib->category) - static_cast<s32>(ia->category);
+    if (diff != 0) {
+        return diff;
+    }
+    diff = static_cast<s32>(ib->rarity) - static_cast<s32>(ia->rarity);
+    if (diff != 0) {
+        return diff;
+    }
+    return static_cast<s32>(ia->id) - static_cast<s32>(ib->id);
 }
 // DECOMP_FUNC(0x002e4584, 132)
-
-
-//
-__attribute__((naked)) s32 StatusDown_ItemSortByTypeDesc(const void*, const void*) {
-    asm volatile(
-        "push {r4, r5, r6, lr}\n"
-        "mov r5, r1\n"
-        "ldrh r1, [r0, #2]\n"
-        "mov r2, r0\n"
-        "ldrh r0, [r5, #2]\n"
-        "cmp r1, #0\n"
-        "beq 1f\n"
-        "cmp r0, #0\n"
-        "mvneq r0, #0\n"
-        "beq 2f\n"
-        "subs r0, r0, r1\n"
-        "bne 2f\n"
-        "ldrh r0, [r2]\n"
-        "bl camp_func_002b9364\n"
-        "mov r4, r0\n"
-        "ldrh r0, [r5]\n"
-        "bl camp_func_002b9364\n"
-        "mov r1, r0\n"
-        "ldrb r0, [r0, #2]\n"
-        "ldrb r2, [r4, #2]\n"
-        "subs r0, r0, r2\n"
-        "bne 2f\n"
-        "ldrb r0, [r4, #3]\n"
-        "ldrb r2, [r1, #3]\n"
-        "subs r0, r0, r2\n"
-        "bne 2f\n"
-        "ldrh r0, [r1]\n"
-        "ldrh r1, [r4]\n"
-        "sub r0, r0, r1\n"
-        "2: pop {r4, r5, r6, pc}\n"
-        "1: cmp r0, #0\n"
-        "movne r0, #1\n"
-        "pop {r4, r5, r6, pc}\n");
+s32 StatusDown_ItemSortByTypeDesc(const void* a, const void* b) {
+    const auto* ea = static_cast<const StatusDownListEntry*>(a);
+    const auto* eb = static_cast<const StatusDownListEntry*>(b);
+    u16 va = ea->value;
+    u16 vb = eb->value;
+    if (va == 0) {
+        return vb != 0 ? 1 : 0;
+    }
+    if (vb == 0) {
+        return -1;
+    }
+    s32 diff = static_cast<s32>(vb) - static_cast<s32>(va);
+    if (diff != 0) {
+        return diff;
+    }
+    const auto* ia = reinterpret_cast<const ItemTableEntry*>(camp_func_002b9364(ea->id));
+    const auto* ib = reinterpret_cast<const ItemTableEntry*>(camp_func_002b9364(eb->id));
+    diff = static_cast<s32>(ib->category) - static_cast<s32>(ia->category);
+    if (diff != 0) {
+        return diff;
+    }
+    diff = static_cast<s32>(ia->rarity) - static_cast<s32>(ib->rarity);
+    if (diff != 0) {
+        return diff;
+    }
+    return static_cast<s32>(ib->id) - static_cast<s32>(ia->id);
 }
 // DECOMP_FUNC(0x002e4608, 124)
-
-
-//
-__attribute__((naked)) s32 StatusDown_ItemSortByIdDesc(const void*, const void*) {
-    asm volatile(
-        "push {r4, r5, r6, lr}\n"
-        "mov r5, r1\n"
-        "ldrh r1, [r0, #2]\n"
-        "cmp r1, #0\n"
-        "ldrh r1, [r5, #2]\n"
-        "beq 1f\n"
-        "cmp r1, #0\n"
-        "mvneq r0, #0\n"
-        "beq 2f\n"
-        "ldrh r0, [r0]\n"
-        "bl camp_func_002b9364\n"
-        "mov r4, r0\n"
-        "ldrh r0, [r5]\n"
-        "bl camp_func_002b9364\n"
-        "mov r1, r0\n"
-        "ldrb r0, [r0, #2]\n"
-        "ldrb r2, [r4, #2]\n"
-        "subs r0, r0, r2\n"
-        "bne 2f\n"
-        "ldrb r0, [r4, #3]\n"
-        "ldrb r2, [r1, #3]\n"
-        "subs r0, r0, r2\n"
-        "bne 2f\n"
-        "ldrh r0, [r1]\n"
-        "ldrh r1, [r4]\n"
-        "sub r0, r0, r1\n"
-        "2: pop {r4, r5, r6, pc}\n"
-        "1: cmp r1, #0\n"
-        "moveq r0, #0\n"
-        "movne r0, #1\n"
-        "pop {r4, r5, r6, pc}\n");
+s32 StatusDown_ItemSortByIdDesc(const void* a, const void* b) {
+    const auto* ea = static_cast<const StatusDownListEntry*>(a);
+    const auto* eb = static_cast<const StatusDownListEntry*>(b);
+    u16 va = ea->value;
+    u16 vb = eb->value;
+    if (va == 0) {
+        return vb != 0 ? 1 : 0;
+    }
+    if (vb == 0) {
+        return -1;
+    }
+    const auto* ia = reinterpret_cast<const ItemTableEntry*>(camp_func_002b9364(ea->id));
+    const auto* ib = reinterpret_cast<const ItemTableEntry*>(camp_func_002b9364(eb->id));
+    s32 diff = static_cast<s32>(ib->category) - static_cast<s32>(ia->category);
+    if (diff != 0) {
+        return diff;
+    }
+    diff = static_cast<s32>(ia->rarity) - static_cast<s32>(ib->rarity);
+    if (diff != 0) {
+        return diff;
+    }
+    return static_cast<s32>(ib->id) - static_cast<s32>(ia->id);
 }
 
 // DECOMP_FUNC(0x002efde0, 44)
-__attribute__((naked)) s32 StatusDown_GetPartyMaxIndex() {
-    asm volatile(
-        "ldr r0, [pc, #0x20]\n"
-        "ldr r0, [r0]\n"
-        "cmp r0, #0\n"
-        "bxeq lr\n"
-        "add r0, r0, #0x400\n"
-        "add r0, r0, #0xD4\n"
-        "push {r4, lr}\n"
-        ".word 0xEBFEBCBC\n"
-        "sub r0, r0, #1\n"
-        "pop {r4, pc}\n"
-        ".word 0x0044E190\n");
+s32 StatusDown_GetPartyMaxIndex() {
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    if (work == nullptr) {
+        return 0;
+    }
+    return camp_func_0029f0f4(&work->list_cursor_main) - 1;
 }
 
 // DECOMP_FUNC(0x002efe0c, 32)
-__attribute__((naked)) bool StatusDown_IsNotState4() {
-    asm volatile(
-        "ldr r0, [pc, #0x14]\n"
-        "ldr r0, [r0]\n"
-        "ldr r0, [r0, #0x400]\n"
-        "cmp r0, #4\n"
-        "movne r0, #1\n"
-        "moveq r0, #0\n"
-        "bx lr\n"
-        ".word 0x0044E190\n");
+bool StatusDown_IsNotState4() {
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    return work->state != 4;
 }
 
 // DECOMP_FUNC(0x002efe2c, 28)
-__attribute__((naked)) s8 StatusDown_GetField2388() {
-    // Preserve the ROM's signed conditional load and null-to-zero behavior.
-    asm volatile(
-        "ldr r0, [pc, #0x10]\n"
-        "ldr r0, [r0]\n"
-        "cmp r0, #0\n"
-        "addne r0, r0, #0x2300\n"
-        "ldrsbne r0, [r0, #0x88]\n"
-        "bx lr\n"
-        ".word 0x0044E190\n");
+s8 StatusDown_GetField2388() {
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    if (work == nullptr) {
+        return 0;
+    }
+    return work->field_2388;
 }
 
 // DECOMP_FUNC(0x002efe48, 68)
-__attribute__((naked)) void StatusDown_SetSubIdsB(const u16*, s32) {
-    asm volatile(
-        "mov r0, r0\n"
-        "cmp r1, #8\n"
-        "bgt 1f\n"
-        "ldr r2, [pc, #0x2C]\n"
-        "ldr r3, [r2]\n"
-        "mov r2, #0\n"
-        "str r2, [r3, #0x4B2]\n"
-        "str r2, [r3, #0x4B6]\n"
-        "str r2, [r3, #0x4BA]\n"
-        "str r2, [r3, #0x4BE]\n"
-        "lsl r2, r1, #1\n"
-        "mov r1, r0\n"
-        "add r0, r3, #0x400\n"
-        "add r0, r0, #0xB2\n"
-        ".word 0xEAFF585B\n"
-        "1: bx lr\n"
-        ".word 0x0044E190\n");
+void StatusDown_SetSubIdsB(const u16* ids, s32 count) {
+    if (count > 8) {
+        return;
+    }
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    for (int i = 0; i < 8; i++) {
+        work->sub_ids_b[i] = 0;
+    }
+    AsdMem_Copy(work->sub_ids_b, ids, count * sizeof(u16));
 }
 
 // DECOMP_FUNC(0x002efe8c, 24)
@@ -2764,171 +1337,74 @@ void StatusDown_EnterState4_Decompiled() {
     }
 }
 // DECOMP_FUNC(0x002efea4, 36)
-
-
-__attribute__((naked)) void StatusDown_EnterState4() {
-    asm volatile(
-        ".word 0xE59F0018\n"
-        ".word 0xE3A02000\n"
-        ".word 0xE3A01004\n"
-        ".word 0xE5900000\n"
-        ".word 0xE580240C\n"
-        ".word 0xE5B02400\n"
-        ".word 0xE8800006\n"
-        ".word 0xEAFDEC82\n"
-        ".word 0x0044E190\n");
+void StatusDown_EnterState4() {
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    work->state_timer = 0;
+    u32 prev = work->state;
+    work->state = 4;
+    work->prev_state = prev;
+    StatusDown_SetupTouchRegions();
 }
 
 // DECOMP_FUNC(0x002f6524, 44)
-__attribute__((naked)) bool StatusDown_IsState7() {
-    asm volatile(
-        "ldr r0, [pc, #0x20]\n"
-        "ldr r0, [r0]\n"
-        "cmp r0, #0\n"
-        "beq 1f\n"
-        "ldr r0, [r0, #0x400]\n"
-        "cmp r0, #7\n"
-        "moveq r0, #1\n"
-        "beq 2f\n"
-        "1: mov r0, #0\n"
-        "2: bx lr\n"
-        ".word 0x0044E190\n");
+bool StatusDown_IsState7() {
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    if (work == nullptr) {
+        return false;
+    }
+    return work->state == 7;
 }
 
 // DECOMP_FUNC(0x002f6550, 132)
-__attribute__((naked)) void StatusDown_Destroy() {
-    asm volatile(
-        ".word 0xe92d4070\n"
-        ".word 0xe3a04000\n"
-        ".word 0xe59f606c\n"
-        ".word 0xe5965000\n"
-        ".word 0xe5d50480\n"
-        ".word 0xe3500000\n"
-        ".word 0xda000005\n"
-        ".word 0xe320f000\n"
-        ".word 0xebff0aa4\n"
-        ".word 0xe5d50480\n"
-        ".word 0xe2844001\n"
-        ".word 0xe1500004\n"
-        ".word 0xcafffff9\n"
-        ".word 0xe3a04000\n"
-        ".word 0xe2850b01\n"
-        ".word 0xe3e02000\n"
-        ".word 0xe3a01029\n"
-        ".word 0xe280002c\n"
-        ".word 0xe5c54480\n"
-        ".word 0xebff37ab\n"
-        ".word 0xe59f0028\n"
-        ".word 0xe7900005\n"
-        ".word 0xebfec568\n"
-        ".word 0xe5950000\n"
-        ".word 0xe3a01000\n"
-        ".word 0xebff37ff\n"
-        ".word 0xe1a00005\n"
-        ".word 0xe320f000\n"
-        ".word 0xebff3766\n"
-        ".word 0xe5864000\n"
-        ".word 0xe8bd8070\n"
-        ".word 0x0044e190\n"
-        ".word 0x000022a0\n");
-}
-
-// Semantic reconstruction retained for analysis.  The exported function
-// above is the currently verified exact ARMv6K implementation; this C++ form
-// remains a readable account of its observable cleanup work.
-[[maybe_unused]] static void StatusDown_Destroy_Decompiled() {
-    StatusDownWork* work = g_StatusDownWork;
-    const volatile u8* registered_touch_count =
-        reinterpret_cast<const volatile u8*>(work) + 0x480;
-    for (s32 i = 0; i < *registered_touch_count; ++i) {
+void StatusDown_Destroy() {
+    auto* work = g_StatusDownWork;
+    const u8 tr_count = static_cast<u8>(work->registered_touch_count);
+    for (s32 i = 0; i < tr_count; ++i) {
         UiTouch_UnregisterLastRegion();
     }
     work->registered_touch_count = 0;
-    AsdMem_FillBytes(work->slot_touch_handles, 0x29, -1);
+    AsdMem_FillBytes(work->slot_touch_handles, 0x29, 0xFFFFFFFF);
     AsdText_DestroyHandle(work->text_handle);
     AsdTask_DestroyPair(work->calc_task, 0);
     AsdMem_FreeWork(work);
     g_StatusDownWork = nullptr;
 }
 
+
 // DECOMP_FUNC(0x002f65d4, 76)
-__attribute__((naked)) bool StatusDown_IsCursorAtLastPartySlot() {
-    asm volatile(
-        "ldr r0, [pc, #0x40]\n"
-        "push {r4, r5, r6, lr}\n"
-        "ldr r0, [r0]\n"
-        "cmp r0, #0\n"
-        "beq 1f\n"
-        "add r0, r0, #0x400\n"
-        "add r0, r0, #0xD4\n"
-        "mov r4, r0\n"
-        ".word 0xEBFEA313\n"
-        "mov r5, r0\n"
-        "mov r0, r4\n"
-        ".word 0xEBFEA2BB\n"
-        "sub r0, r0, #1\n"
-        "cmp r5, r0\n"
-        "moveq r0, #1\n"
-        "beq 2f\n"
-        "1: mov r0, #0\n"
-        "2: pop {r4, r5, r6, pc}\n"
-        ".word 0x0044E190\n");
+bool StatusDown_IsCursorAtLastPartySlot() {
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    if (work == nullptr) {
+        return false;
+    }
+    s32 cur = camp_func_0029f248(&work->list_cursor_main);
+    s32 max = camp_func_0029f0f4(&work->list_cursor_main) - 1;
+    return cur == max;
 }
 
 // DECOMP_FUNC(0x002f6620, 200)
-__attribute__((naked)) void StatusDown_SelectLastPartySlotAndEnterState11(s32, u32) {
-    asm volatile(
-        "push {r4, r5, r6, r7, r8, lr}\n"
-        "sub sp, sp, #8\n"
-        "ldr r7, .LStatusDownSelectLiteral\n"
-        "ldr r4, [r7]\n"
-        "str r0, [r4, #0x544]\n"
-        "add r0, r4, #0x400\n"
-        "add r0, r0, #0xd4\n"
-        "mov r5, r0\n"
-        "str r1, [r4, #0x540]\n"
-        ".word 0xebfea2aa\n" // bl 0x0029f0f4: UiListCursor_GetRowCount
-        "mov r8, #1\n"
-        "mov r6, #0\n"
-        "add r1, r0, #1\n"
-        "mov r3, r8\n"
-        "mov r2, #9\n"
-        "mov r0, r5\n"
-        "stm sp, {r6, r8}\n"
-        ".word 0xebfea51f\n" // bl 0x0029fae8: UiListCursor_Setup
-        "mov r0, r5\n"
-        ".word 0xebfea2a0\n" // bl 0x0029f0f4: UiListCursor_GetRowCount
-        "sub r1, r0, #1\n"
-        "mov r0, r5\n"
-        ".word 0xebfea1df\n" // bl 0x0029edfc: UiListCursor_SetSelectedRow
-        "strb r8, [r4, #0x410]\n"
-        "ldr r5, [r7]\n"
-        "mov r4, #0\n"
-        "ldrb r0, [r5, #0x480]\n"
-        "cmp r0, #0\n"
-        "ble .LStatusDownSelectCleanup\n"
-        ".LStatusDownSelectTouchLoop: nop\n"
-        ".word 0xebff0a5a\n" // bl 0x002b9008: UiTouch_UnregisterLastRegion
-        "ldrb r0, [r5, #0x480]\n"
-        "add r4, r4, #1\n"
-        "cmp r0, r4\n"
-        "bgt .LStatusDownSelectTouchLoop\n"
-        ".LStatusDownSelectCleanup:\n"
-        "add r0, r5, #0x400\n"
-        "mvn r2, #0\n"
-        "mov r1, #0x29\n"
-        "add r0, r0, #0x2c\n"
-        "strb r6, [r5, #0x480]\n"
-        ".word 0xebff3762\n" // bl 0x002c4450: AsdMem_FillBytes
-        "ldr r0, [r7]\n"
-        "mov r1, #0xb\n"
-        "str r6, [r0, #0x40c]\n"
-        "ldr r2, [r0, #0x400]!\n"
-        "stm r0, {r1, r2}\n"
-        "add sp, sp, #8\n"
-        "pop {r4, r5, r6, r7, r8, lr}\n"
-        ".word 0xeafdd27a\n" // b 0x0026b0d0: StatusDown_SetupTouchRegions
-        ".LStatusDownSelectLiteral: .word 0x0044E190\n");
+void StatusDown_SelectLastPartySlotAndEnterState11(s32 a0, u32 a1) {
+    auto* work = g_StatusDownWork;
+    work->selected_result = a0;
+    work->callback_arg1 = a1;
+    s32 count = UiListCursor_GetRowCount(&work->list_cursor_main);
+    UiListCursor_Setup(&work->list_cursor_main, count + 1, 9, 1, 0, 1);
+    s32 new_count = UiListCursor_GetRowCount(&work->list_cursor_main);
+    UiListCursor_SetSelectedRow(&work->list_cursor_main, new_count - 1);
+    work->needs_refresh = 1;
+    work = g_StatusDownWork;
+    const u8 tr_count = static_cast<u8>(work->registered_touch_count);
+    for (s32 i = 0; i < tr_count; ++i) {
+        UiTouch_UnregisterLastRegion();
+    }
+    work->registered_touch_count = 0;
+    AsdMem_FillBytes(work->slot_touch_handles, 0x29, 0xFFFFFFFF);
+    work = g_StatusDownWork;
+    work->state_timer = 0;
+    u32 prev = work->state;
+    work->state = 0x0B;
+    work->prev_state = prev;
+    StatusDown_SetupTouchRegions();
 }
 
 //
@@ -2943,19 +1419,12 @@ void StatusDown_EnterState3_Decompiled() {
     }
 }
 // DECOMP_FUNC(0x002f66e8, 36)
-
-
-__attribute__((naked)) void StatusDown_EnterState3() {
-    asm volatile(
-        ".word 0xE59F0018\n"
-        ".word 0xE3A02000\n"
-        ".word 0xE3A01003\n"
-        ".word 0xE5900000\n"
-        ".word 0xE580240C\n"
-        ".word 0xE5B02400\n"
-        ".word 0xE8800006\n"
-        ".word 0xE12FFF1E\n"
-        ".word 0x0044E190\n");
+void StatusDown_EnterState3() {
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    work->state_timer = 0;
+    u32 prev = work->state;
+    work->state = 3;
+    work->prev_state = prev;
 }
 
 //
@@ -2970,46 +1439,25 @@ void StatusDown_EnterState6_Simple_Decompiled() {
     }
 }
 // DECOMP_FUNC(0x0030aa98, 40)
-
-
-__attribute__((naked)) void StatusDown_EnterState6_Simple() {
-    asm volatile(
-        ".word 0xE59F001C\n"
-        ".word 0xE5900000\n"
-        ".word 0xE3500000\n"
-        ".word 0x0A000003\n"
-        ".word 0xE5903400\n"
-        ".word 0xE3A02006\n"
-        ".word 0xE5802400\n"
-        ".word 0xE5803404\n"
-        ".word 0xE12FFF1E\n"
-        ".word 0x0044E190\n");
+void StatusDown_EnterState6_Simple() {
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    if (work != nullptr) {
+        u32 prev = work->state;
+        work->state = 6;
+        work->prev_state = prev;
+    }
 }
 
 // DECOMP_FUNC(0x0030aac0, 32)
-__attribute__((naked)) bool StatusDown_IsState15() {
-    asm volatile(
-        "ldr r0, [pc, #0x14]\n"
-        "ldr r0, [r0]\n"
-        "ldr r0, [r0, #0x400]\n"
-        "cmp r0, #0xF\n"
-        "moveq r0, #1\n"
-        "movne r0, #0\n"
-        "bx lr\n"
-        ".word 0x0044E190\n");
+bool StatusDown_IsState15() {
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    return work->state == 0xF;
 }
 
 // DECOMP_FUNC(0x0030aae0, 32)
-__attribute__((naked)) bool StatusDown_IsState10() {
-    asm volatile(
-        "ldr r0, [pc, #0x14]\n"
-        "ldr r0, [r0]\n"
-        "ldr r0, [r0, #0x400]\n"
-        "cmp r0, #0xA\n"
-        "moveq r0, #1\n"
-        "movne r0, #0\n"
-        "bx lr\n"
-        ".word 0x0044E190\n");
+bool StatusDown_IsState10() {
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    return work->state == 0xA;
 }
 
 //
@@ -3025,150 +1473,36 @@ void StatusDown_EnterState14_Decompiled(s32 selected_result) {
     }
 }
 // DECOMP_FUNC(0x0030ab00, 52)
-
-
-__attribute__((naked)) void StatusDown_EnterState14(s32) {
-    asm volatile(
-        ".word 0xE59F1028\n"
-        ".word 0xE3500000\n"
-        ".word 0x03E02000\n"
-        ".word 0xE3A03000\n"
-        ".word 0xE5910000\n"
-        ".word 0xE3A0100E\n"
-        ".word 0x05802544\n"
-        ".word 0xE5902400\n"
-        ".word 0xE580340C\n"
-        ".word 0xE2800B01\n"
-        ".word 0xE8800006\n"
-        ".word 0xE12FFF1E\n"
-        ".word 0x0044E190\n");
+void StatusDown_EnterState14(s32 selected_result) {
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    if (selected_result == 0) {
+        work->selected_result = -1;
+    }
+    work->state_timer = 0;
+    u32 prev = work->state;
+    work->state = 0xE;
+    work->prev_state = prev;
 }
 
 // DECOMP_FUNC(0x0030ab34, 60)
-__attribute__((naked)) void StatusDown_EnterState6() {
-    // This short state-entry routine uses the ROM's literal pool and tail-independent
-    // call sequence: snapshot state, enter state 6, rebuild touch regions, then clear
-    // request_close_flag. Keep the final two words as data, not ARM instructions.
-    asm volatile(
-        "ldr r0, [pc, #0x2c]\n"
-        "push {r4, r5, r6, lr}\n"
-        "mov r5, #0\n"
-        "ldr r4, [r0]\n"
-        "mov r0, #6\n"
-        "add r2, r4, #0x400\n"
-        "str r5, [r4, #0x40c]\n"
-        "ldr r1, [r4, #0x400]\n"
-        "stm r2, {r0, r1}\n"
-        ".word 0xebfd815c\n" // bl StatusDown_SetupTouchRegions (0x0026b0d0)
-        "ldr r0, [pc, #8]\n"
-        "strb r5, [r0, r4]\n"
-        "pop {r4, r5, r6, pc}\n"
-        ".word 0x0044e190\n" // g_StatusDownWork pointer slot
-        ".word 0x00002391\n"); // request_close_flag offset from StatusDownWork
+void StatusDown_EnterState6() {
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    work->state_timer = 0;
+    u32 prev = work->state;
+    work->state = 6;
+    work->prev_state = prev;
+    StatusDown_SetupTouchRegions();
+    work->request_close_flag = 0;
 }
 
 // DECOMP_FUNC(0x00311494, 356)
-// Verified ARM-state entry/exit and referenced local literal/table bytes.
-__attribute__((naked)) void StatusDown_OpenCategorySelect(u16 arg0, u8 flag_413) {
-    asm volatile(
-        ".word 0xe92d43f0\n"
-        ".word 0xe3a03d8e\n"
-        ".word 0xe24dd00c\n"
-        ".word 0xe3a07000\n"
-        ".word 0xe59f8144\n"
-        ".word 0xe59f9144\n"
-        ".word 0xe1a06007\n"
-        ".word 0xe5985000\n"
-        ".word 0xe2494063\n"
-        ".word 0xe2852a02\n"
-        ".word 0xe18300b5\n"
-        ".word 0xe5c51413\n"
-        ".word 0xe5827370\n"
-        ".word 0xe5827374\n"
-        ".word 0xe5827378\n"
-        ".word 0xe582737c\n"
-        ".word 0xea000002\n"
-        ".word 0xe3540000\n"
-        ".word 0x03a04001\n"
-        ".word 0x0afffffc\n"
-        ".word 0xe6ff0074\n"
-        ".word 0xebfd467b\n"
-        ".word 0xe3500000\n"
-        ".word 0xe320f000\n"
-        ".word 0x0a000008\n"
-        ".word 0xe1a00004\n"
-        ".word 0xebfddef3\n"
-        ".word 0xe3500000\n"
-        ".word 0xe320f000\n"
-        ".word 0x0a000003\n"
-        ".word 0xe0850086\n"
-        ".word 0xe2800c23\n"
-        ".word 0xe2866001\n"
-        ".word 0xe1c047b0\n"
-        ".word 0xe2844001\n"
-        ".word 0xe1540009\n"
-        ".word 0x9affffeb\n"
-        ".word 0xe3a0000e\n"
-        ".word 0xebfe3e5d\n"
-        ".word 0xe3a00005\n"
-        ".word 0xe320f000\n"
-        ".word 0xebfe9d8e\n"
-        ".word 0xe3a02000\n"
-        ".word 0xe3a01001\n"
-        ".word 0xe2850028\n"
-        ".word 0xebfeb15c\n"
-        ".word 0xe320f000\n"
-        ".word 0xe320f000\n"
-        ".word 0xebfd65e1\n"
-        ".word 0xe1500006\n"
-        ".word 0xe3a04001\n"
-        ".word 0xca00000b\n"
-        ".word 0xebfd65dd\n"
-        ".word 0xe2801001\n"
-        ".word 0xe2850a02\n"
-        ".word 0xe3a03001\n"
-        ".word 0xe3a02009\n"
-        ".word 0xe2800fc3\n"
-        ".word 0xe58d4000\n"
-        ".word 0xe58d4004\n"
-        ".word 0xebfe3957\n"
-        ".word 0xe3a00019\n"
-        ".word 0xe320f000\n"
-        ".word 0xea00000e\n"
-        ".word 0xe320f000\n"
-        ".word 0xebfd65d0\n"
-        ".word 0xe1a01000\n"
-        ".word 0xe2850a02\n"
-        ".word 0xe2800fc3\n"
-        ".word 0xe58d4000\n"
-        ".word 0xe58d4004\n"
-        ".word 0xe3a03001\n"
-        ".word 0xe3a02009\n"
-        ".word 0xe1a04000\n"
-        ".word 0xebfe3949\n"
-        ".word 0xe1a01006\n"
-        ".word 0xe1a00004\n"
-        ".word 0xebfe360b\n"
-        ".word 0xe3a00016\n"
-        ".word 0xe5850408\n"
-        ".word 0xe5980000\n"
-        ".word 0xe3a01001\n"
-        ".word 0xe580740c\n"
-        ".word 0xe5b02400\n"
-        ".word 0xe8800006\n"
-        ".word 0xe28dd00c\n"
-        ".word 0xe8bd83f0\n"
-        ".word 0x0044e190\n"
-        ".word 0x00000802\n"
-    );
-}
-#if 0
-// Partial semantic draft retained for reconstruction; not compiled.
-[[maybe_unused]] static void StatusDown_OpenCategorySelect_Draft(u16 arg0, u8 flag_413) {
-    StatusDownWork* work = g_StatusDownWork;
+void StatusDown_OpenCategorySelect(u16 arg0, u8 flag_413) {
+    auto* work = g_StatusDownWork;
     work->category_arg0 = arg0;
     work->flag_413 = flag_413;
-    std::memset(work->category_ids, 0, sizeof(work->category_ids));
+    for (s32 i = 0; i < 4; ++i) {
+        reinterpret_cast<u32*>(work->category_ids)[i] = 0;
+    }
 
     s32 matched_count = 0;
     for (u32 id = 0x79F; id <= 0x802; ++id) {
@@ -3195,13 +1529,12 @@ __attribute__((naked)) void StatusDown_OpenCategorySelect(u16 arg0, u8 flag_413)
         work->sub_state = 0x16;
     }
 
-    StatusDownWork* w = g_StatusDownWork;
+    auto* w = g_StatusDownWork;
     w->state_timer = 0;
     const u32 old_state = w->state;
     w->state = 1;
     w->prev_state = old_state;
 }
-#endif
 
 //
 void StatusDown_RequestClose_Decompiled() {
@@ -3211,463 +1544,24 @@ void StatusDown_RequestClose_Decompiled() {
     }
 }
 // DECOMP_FUNC(0x00317f80, 36)
-
-
-__attribute__((naked)) void StatusDown_RequestClose() {
-    asm volatile(
-        ".word 0xE59F0018\n"
-        ".word 0xE5900000\n"
-        ".word 0xE3500000\n"
-        ".word 0x0A000002\n"
-        ".word 0xE2801A02\n"
-        ".word 0xE3A00001\n"
-        ".word 0xE5C10391\n"
-        ".word 0xE12FFF1E\n"
-        ".word 0x0044E190\n");
+void StatusDown_RequestClose() {
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    if (work != nullptr) {
+        work->request_close_flag = 1;
+    }
 }
 
 // DECOMP_FUNC(0x0032303c, 40)
-__attribute__((naked)) s32 StatusDown_GetSelectedPartyIndex() {
-    asm volatile(
-        "ldr r0, [pc, #0x1C]\n"
-        "ldr r0, [r0]\n"
-        "cmp r0, #0\n"
-        "mvneq r0, #0\n"
-        "beq 1f\n"
-        "add r0, r0, #0x400\n"
-        "add r0, r0, #0xD4\n"
-        ".word 0xEAFDF07A\n"
-        "1: bx lr\n"
-        ".word 0x0044E190\n");
+s32 StatusDown_GetSelectedPartyIndex() {
+    auto* work = *reinterpret_cast<StatusDownWork* volatile*>(0x0044E190);
+    if (work == nullptr) {
+        return -1;
+    }
+    return camp_func_0029f248(&work->list_cursor_main);
 }
 
 // DECOMP_FUNC(0x0032be34, 1672)
-// Verified ARM-state entry/exit and referenced local literal/table bytes.
-__attribute__((naked)) void StatusDown_DrawSkillList(s32 x_offset, s32 y_offset) {
-    asm volatile(
-        ".word 0xe92d4ff0\n"
-        ".word 0xe1a05001\n"
-        ".word 0xe1a08000\n"
-        ".word 0xe59f03d8\n"
-        ".word 0xed2d8b04\n"
-        ".word 0xe24dd074\n"
-        ".word 0xe5907000\n"
-        ".word 0xed9f8af1\n"
-        ".word 0xe2870b03\n"
-        ".word 0xe2800f73\n"
-        ".word 0xe1a04000\n"
-        ".word 0xe58d0070\n"
-        ".word 0xebfdccfd\n"
-        ".word 0xe1a0b000\n"
-        ".word 0xe1a00004\n"
-        ".word 0xebfdccf4\n"
-        ".word 0xe3a0a000\n"
-        ".word 0xe58d000c\n"
-        ".word 0xebfdbc2b\n"
-        ".word 0xe350000d\n"
-        ".word 0x0a000006\n"
-        ".word 0xe3500006\n"
-        ".word 0x1a000005\n"
-        ".word 0xebfdbc2d\n"
-        ".word 0xe1d000b0\n"
-        ".word 0xebfdcb73\n"
-        ".word 0xe3500000\n"
-        ".word 0x1a000000\n"
-        ".word 0xe3a0a001\n"
-        ".word 0xe3a000b3\n"
-        ".word 0xe58d0004\n"
-        ".word 0xe1a03008\n"
-        ".word 0xe3a02005\n"
-        ".word 0xe3a0101a\n"
-        ".word 0xe3a00002\n"
-        ".word 0xe58d5000\n"
-        ".word 0xebfe4da3\n"
-        ".word 0xe3a000b5\n"
-        ".word 0xe58d0004\n"
-        ".word 0xe1a03008\n"
-        ".word 0xe3a0200b\n"
-        ".word 0xe3a0101a\n"
-        ".word 0xe3a00002\n"
-        ".word 0xe58d5000\n"
-        ".word 0xebfe4d9b\n"
-        ".word 0xe1a01005\n"
-        ".word 0xe1a00008\n"
-        ".word 0xebfdbbbe\n"
-        ".word 0xeddf8aca\n"
-        ".word 0xed9f9aca\n"
-        ".word 0xe3a04000\n"
-        ".word 0xe08b0004\n"
-        ".word 0xe0870100\n"
-        ".word 0xe2809c05\n"
-        ".word 0xe1d90cba\n"
-        ".word 0xe3500000\n"
-        ".word 0x0a000068\n"
-        ".word 0xe2841b01\n"
-        ".word 0xe281104c\n"
-        ".word 0xe3a0001a\n"
-        ".word 0xebfe4de9\n"
-        ".word 0xe1a06000\n"
-        ".word 0xe59f12f8\n"
-        ".word 0xe3a0001a\n"
-        ".word 0xebfe4de5\n"
-        ".word 0xe35a0000\n"
-        ".word 0xe58d0000\n"
-        ".word 0x0a00001a\n"
-        ".word 0xe28f1fb9\n"
-        ".word 0xe28d0030\n"
-        ".word 0xfafe4a2a\n"
-        ".word 0xe59d1000\n"
-        ".word 0xe59d3000\n"
-        ".word 0xe1d600fa\n"
-        ".word 0xe1d620f8\n"
-        ".word 0xe1d110fa\n"
-        ".word 0xe1d330f8\n"
-        ".word 0xeeb02a48\n"
-        ".word 0xe0800001\n"
-        ".word 0xe0821003\n"
-        ".word 0xe0800005\n"
-        ".word 0xe0811008\n"
-        ".word 0xee000a90\n"
-        ".word 0xee001a10\n"
-        ".word 0xeef01a68\n"
-        ".word 0xeeb01a49\n"
-        ".word 0xe28d2030\n"
-        ".word 0xe3a010ff\n"
-        ".word 0xeef80ae0\n"
-        ".word 0xeeb80ac0\n"
-        ".word 0xe3a00002\n"
-        ".word 0xebfe49f5\n"
-        ".word 0xe320f000\n"
-        ".word 0xe320f000\n"
-        ".word 0xea000018\n"
-        ".word 0xe1d90cba\n"
-        ".word 0xebfcfb65\n"
-        ".word 0xe1b02000\n"
-        ".word 0xe320f000\n"
-        ".word 0x0a000013\n"
-        ".word 0xe59d1000\n"
-        ".word 0xe59dc000\n"
-        ".word 0xe1d600fa\n"
-        ".word 0xe1d630f8\n"
-        ".word 0xe1d110fa\n"
-        ".word 0xe1dcc0f8\n"
-        ".word 0xeeb02a48\n"
-        ".word 0xe0800001\n"
-        ".word 0xe083100c\n"
-        ".word 0xe0800005\n"
-        ".word 0xe0811008\n"
-        ".word 0xee000a90\n"
-        ".word 0xee001a10\n"
-        ".word 0xeef01a68\n"
-        ".word 0xeeb01a49\n"
-        ".word 0xe3a010ff\n"
-        ".word 0xe3a00002\n"
-        ".word 0xeef80ae0\n"
-        ".word 0xeeb80ac0\n"
-        ".word 0xebfe49d9\n"
-        ".word 0xe59f121c\n"
-        ".word 0xe3a0001a\n"
-        ".word 0xebfe4dab\n"
-        ".word 0xe3a01000\n"
-        ".word 0xe58d1000\n"
-        ".word 0xe1d610fa\n"
-        ".word 0xe35a0000\n"
-        ".word 0x0a000009\n"
-        ".word 0xe1d020fa\n"
-        ".word 0xe1d630f8\n"
-        ".word 0xe1d000f8\n"
-        ".word 0xe0811002\n"
-        ".word 0xe0812005\n"
-        ".word 0xe0800003\n"
-        ".word 0xe0801008\n"
-        ".word 0xe3a030b5\n"
-        ".word 0xe3a00000\n"
-        ".word 0xea000008\n"
-        ".word 0xe1d020fa\n"
-        ".word 0xe1d630f8\n"
-        ".word 0xe1d0c0f8\n"
-        ".word 0xe0811002\n"
-        ".word 0xe0812005\n"
-        ".word 0xe083300c\n"
-        ".word 0xe0831008\n"
-        ".word 0xe1d90cf8\n"
-        ".word 0xe3a030b5\n"
-        ".word 0xebfe2a84\n"
-        ".word 0xe59f11b0\n"
-        ".word 0xe3a0001a\n"
-        ".word 0xebfe4d8f\n"
-        ".word 0xe1d610fa\n"
-        ".word 0xe1d020fa\n"
-        ".word 0xe1d630f8\n"
-        ".word 0xe1d0c0f8\n"
-        ".word 0xe0811002\n"
-        ".word 0xe0812005\n"
-        ".word 0xe083300c\n"
-        ".word 0xe0831008\n"
-        ".word 0xe1d90cba\n"
-        ".word 0xe3a030b5\n"
-        ".word 0xebfed768\n"
-        ".word 0xe2844001\n"
-        ".word 0xe354000b\n"
-        ".word 0xbaffff8d\n"
-        ".word 0xe5970400\n"
-        ".word 0xe2879b01\n"
-        ".word 0xe3500011\n"
-        ".word 0x1a0000ca\n"
-        ".word 0xe59d000c\n"
-        ".word 0xe080000b\n"
-        ".word 0xe0870100\n"
-        ".word 0xe2800c05\n"
-        ".word 0xe58d0008\n"
-        ".word 0xe1d00cba\n"
-        ".word 0xe3500000\n"
-        ".word 0x0a0000c2\n"
-        ".word 0xe59d000c\n"
-        ".word 0xe2801b01\n"
-        ".word 0xe281102c\n"
-        ".word 0xe3a0001a\n"
-        ".word 0xebfe4d70\n"
-        ".word 0xe1a04000\n"
-        ".word 0xe28700b4\n"
-        ".word 0xed900a08\n"
-        ".word 0xe320f000\n"
-        ".word 0xe320f000\n"
-        ".word 0xebfe4d7a\n"
-        ".word 0xe1d400fa\n"
-        ".word 0xe3a010bf\n"
-        ".word 0xe3a02008\n"
-        ".word 0xe0800005\n"
-        ".word 0xe1cd00f0\n"
-        ".word 0xe1d400f8\n"
-        ".word 0xe3a0101a\n"
-        ".word 0xe0803008\n"
-        ".word 0xe3a00002\n"
-        ".word 0xebfe4d02\n"
-        ".word 0xeeb00a48\n"
-        ".word 0xe320f000\n"
-        ".word 0xebfe4d6d\n"
-        ".word 0xe1d400fa\n"
-        ".word 0xe3a060c4\n"
-        ".word 0xe59f20d8\n"
-        ".word 0xe0800005\n"
-        ".word 0xe88d0041\n"
-        ".word 0xe1d400f8\n"
-        ".word 0xe3a0101a\n"
-        ".word 0xe0803008\n"
-        ".word 0xe3a00002\n"
-        ".word 0xebfe4cb7\n"
-        ".word 0xe5970418\n"
-        ".word 0xe3a02e42\n"
-        ".word 0xe3500000\n"
-        ".word 0x0597041c\n"
-        ".word 0x03500000\n"
-        ".word 0x1a000009\n"
-        ".word 0xe5970420\n"
-        ".word 0xe3500000\n"
-        ".word 0x05970424\n"
-        ".word 0x03500000\n"
-        ".word 0x05970428\n"
-        ".word 0x03500000\n"
-        ".word 0x1a000002\n"
-        ".word 0xe5970414\n"
-        ".word 0xe3500000\n"
-        ".word 0xa59f2080\n"
-        ".word 0xe1d400fa\n"
-        ".word 0xe3a0101a\n"
-        ".word 0xe0800005\n"
-        ".word 0xe88d0041\n"
-        ".word 0xe1d400f8\n"
-        ".word 0xe0803008\n"
-        ".word 0xe3a00002\n"
-        ".word 0xebfe4c9f\n"
-        ".word 0xe1d400fa\n"
-        ".word 0xe59f205c\n"
-        ".word 0xe3a0101a\n"
-        ".word 0xe0800005\n"
-        ".word 0xe88d0041\n"
-        ".word 0xe1d400f8\n"
-        ".word 0xe0803008\n"
-        ".word 0xe3a00002\n"
-        ".word 0xebfe4c96\n"
-        ".word 0xe3a01e42\n"
-        ".word 0xe3a0001a\n"
-        ".word 0xebfe4d2f\n"
-        ".word 0xe1a0b000\n"
-        ".word 0xe59f0030\n"
-        ".word 0xea00000c\n"
-        ".word 0x3f800000\n"
-        ".word 0x0044e190\n"
-        ".word 0x00000000\n"
-        ".word 0x3e8f5c29\n"
-        ".word 0x0000044b\n"
-        ".word 0x48814881\n"
-        ".word 0x00004881\n"
-        ".word 0x00000449\n"
-        ".word 0x0000044a\n"
-        ".word 0x0000041f\n"
-        ".word 0x00000421\n"
-        ".word 0x00000457\n"
-        ".word 0x0044ea00\n"
-        ".word 0xe5901000\n"
-        ".word 0xe3a00003\n"
-        ".word 0xe2816a01\n"
-        ".word 0xe2866fc3\n"
-        ".word 0xe5961000\n"
-        ".word 0xe0862101\n"
-        ".word 0xe5921008\n"
-        ".word 0xe5820008\n"
-        ".word 0xe5d62018\n"
-        ".word 0xe3520000\n"
-        ".word 0x03510003\n"
-        ".word 0x0a000003\n"
-        ".word 0xe596101c\n"
-        ".word 0xe12fff31\n"
-        ".word 0xe3a00000\n"
-        ".word 0xe5c60018\n"
-        ".word 0xe3a00001\n"
-        ".word 0xe58d0000\n"
-        ".word 0xe59b000c\n"
-        ".word 0xe1dbc0fa\n"
-        ".word 0xe1d410fa\n"
-        ".word 0xe1dbb0f8\n"
-        ".word 0xe1d460f8\n"
-        ".word 0xe1d030f2\n"
-        ".word 0xe1d020f0\n"
-        ".word 0xe081100c\n"
-        ".word 0xe086000b\n"
-        ".word 0xe0811005\n"
-        ".word 0xe0800008\n"
-        ".word 0xebfdb853\n"
-        ".word 0xe2870f73\n"
-        ".word 0xe320f000\n"
-        ".word 0xebfe4b26\n"
-        ".word 0xe1d410fa\n"
-        ".word 0xe0800005\n"
-        ".word 0xe0806001\n"
-        ".word 0xe2870f73\n"
-        ".word 0xebfe4b24\n"
-        ".word 0xe1d410f8\n"
-        ".word 0xe0802008\n"
-        ".word 0xe3a000c9\n"
-        ".word 0xe0823001\n"
-        ".word 0xe58d0004\n"
-        ".word 0xe59f21a8\n"
-        ".word 0xe3a0101a\n"
-        ".word 0xe3a00002\n"
-        ".word 0xe58d6000\n"
-        ".word 0xebfe4c53\n"
-        ".word 0xe51f00cc\n"
-        ".word 0xe5901000\n"
-        ".word 0xe3a00000\n"
-        ".word 0xe2816a01\n"
-        ".word 0xe2866fc3\n"
-        ".word 0xe5961000\n"
-        ".word 0xe0862101\n"
-        ".word 0xe5921008\n"
-        ".word 0xe5820008\n"
-        ".word 0xe5d62018\n"
-        ".word 0xe3520000\n"
-        ".word 0x03510000\n"
-        ".word 0x0a000003\n"
-        ".word 0xe596101c\n"
-        ".word 0xe12fff31\n"
-        ".word 0xe3a00000\n"
-        ".word 0xe5c60018\n"
-        ".word 0xe59f1154\n"
-        ".word 0xe3a0001a\n"
-        ".word 0xebfe4cdb\n"
-        ".word 0xe3a01000\n"
-        ".word 0xe58d1000\n"
-        ".word 0xe1d410fa\n"
-        ".word 0xe35a0000\n"
-        ".word 0x0a000009\n"
-        ".word 0xe1d020fa\n"
-        ".word 0xe1d430f8\n"
-        ".word 0xe1d000f8\n"
-        ".word 0xe0811002\n"
-        ".word 0xe0812005\n"
-        ".word 0xe0800003\n"
-        ".word 0xe0801008\n"
-        ".word 0xe3a030c9\n"
-        ".word 0xe3a00000\n"
-        ".word 0xea000009\n"
-        ".word 0xe1d030fa\n"
-        ".word 0xe1d0c0f8\n"
-        ".word 0xe1d420f8\n"
-        ".word 0xe59d0008\n"
-        ".word 0xe0833001\n"
-        ".word 0xe082100c\n"
-        ".word 0xe0832005\n"
-        ".word 0xe1d00cf8\n"
-        ".word 0xe0811008\n"
-        ".word 0xe3a030c9\n"
-        ".word 0xebfe29b3\n"
-        ".word 0xe59f10e4\n"
-        ".word 0xe3a0001a\n"
-        ".word 0xebfe4cbe\n"
-        ".word 0xe1d030fa\n"
-        ".word 0xe1d410fa\n"
-        ".word 0xe1d0c0f8\n"
-        ".word 0xe1d420f8\n"
-        ".word 0xe59d0008\n"
-        ".word 0xe0833001\n"
-        ".word 0xe082100c\n"
-        ".word 0xe0832005\n"
-        ".word 0xe1d00cba\n"
-        ".word 0xe0811008\n"
-        ".word 0xe3a030c9\n"
-        ".word 0xebfed696\n"
-        ".word 0xe59d0070\n"
-        ".word 0xebfdcb39\n"
-        ".word 0xe3500000\n"
-        ".word 0xe320f000\n"
-        ".word 0xca000007\n"
-        ".word 0xe3a000dd\n"
-        ".word 0xe58d0004\n"
-        ".word 0xe1a03008\n"
-        ".word 0xe3a0201b\n"
-        ".word 0xe3a0101a\n"
-        ".word 0xe3a00002\n"
-        ".word 0xe58d5000\n"
-        ".word 0xebfe4c47\n"
-        ".word 0xe1d917f8\n"
-        ".word 0xe1d907f6\n"
-        ".word 0xe3a020c4\n"
-        ".word 0xe28d6020\n"
-        ".word 0xe3a03000\n"
-        ".word 0xe59fc064\n"
-        ".word 0xe886000f\n"
-        ".word 0xe28da010\n"
-        ".word 0xe1cc1142\n"
-        ".word 0xe1d907f4\n"
-        ".word 0xe1cc40c2\n"
-        ".word 0xe1813441\n"
-        ".word 0xe3a02b01\n"
-        ".word 0xe58d3008\n"
-        ".word 0xe2816003\n"
-        ".word 0xe2817002\n"
-        ".word 0xe58d200c\n"
-        ".word 0xe58d001c\n"
-        ".word 0xe58d6004\n"
-        ".word 0xe58d7000\n"
-        ".word 0xe88a1012\n"
-        ".word 0xe3a0301a\n"
-        ".word 0xe59d0070\n"
-        ".word 0xe1a02005\n"
-        ".word 0xe1a01008\n"
-        ".word 0xebfd91e5\n"
-        ".word 0xe28dd074\n"
-        ".word 0xecbd8b04\n"
-        ".word 0xe8bd8ff0\n"
-        ".word 0x00000422\n"
-        ".word 0x00000458\n"
-        ".word 0x00000459\n"
-        ".word 0x00000403\n"
-    );
-}
-#if 0
-// Partial semantic draft retained for reconstruction; not compiled.
-[[maybe_unused]] static void StatusDown_DrawSkillList_Draft(s32 x_offset, s32 y_offset) {
+void StatusDown_DrawSkillList(s32 x_offset, s32 y_offset) {
     StatusDownWork* work = g_StatusDownWork;
     UiListCursor* cursor = &work->skill_cursor;
     const s32 scroll_offset = UiListCursor_GetScrollOffset(cursor);
@@ -3698,8 +1592,8 @@ __attribute__((naked)) void StatusDown_DrawSkillList(s32 x_offset, s32 y_offset)
         const UiLayoutNode* name_node = LayoutNode(0x1A, 0x44B);
 
         if (hide_names) {
-            char buf[64]{};
-            UiFont_FormatString(buf, "???");
+            char buf[64];
+            UiFont_FormatString(buf, "\x81\x48\x81\x48\x81\x48");
             UiFont_DrawText(2, 0xFF, buf,
                             static_cast<f32>(x_offset + row_node->x + name_node->x),
                             static_cast<f32>(y_offset + row_node->y + name_node->y),
@@ -3749,6 +1643,7 @@ __attribute__((naked)) void StatusDown_DrawSkillList(s32 x_offset, s32 y_offset)
             UiSprite_DrawNode(2, 0x1A, 0x457, x_offset + sel_node->x, y_offset + sel_node->y, 0xC4);
 
             const UiLayoutNode* clip_node = LayoutNode(0x1A, 0x420);
+            GpuModeSlotSet(0x30C, 3);
             UiScissor_SetRect(x_offset + sel_node->x + clip_node->x,
                               y_offset + sel_node->y + clip_node->y,
                               clip_node->rect->w, clip_node->rect->h, 1);
@@ -3758,6 +1653,8 @@ __attribute__((naked)) void StatusDown_DrawSkillList(s32 x_offset, s32 y_offset)
             UiSprite_DrawNode(2, 0x1A, 0x422,
                               x_offset + anim_x + sel_node->x,
                               y_offset + anim_y + sel_node->y, 0xC9);
+
+            GpuModeSlotSet(0x30C, 0);
 
             const UiLayoutNode* icon_node = LayoutNode(0x1A, 0x458);
             const s32 item_id_arg = hide_names ? 0 : static_cast<s16>(sel_entry.id);
@@ -3784,136 +1681,29 @@ __attribute__((naked)) void StatusDown_DrawSkillList(s32 x_offset, s32 y_offset)
                      work->scroll_up_touch_handle, work->scroll_down_touch_handle,
                      0xC4, 0);
 }
-#endif
 
 // DECOMP_FUNC(0x0032c4bc, 372)
-// Verified ARM-state entry/exit and referenced local literal/table bytes.
-__attribute__((naked)) void StatusDown_SortItemList() {
-    asm volatile(
-        ".word 0xe59f0144\n"
-        ".word 0xe92d4070\n"
-        ".word 0xe5904000\n"
-        ".word 0xebfdd2b7\n"
-        ".word 0xe2805016\n"
-        ".word 0xe5d00016\n"
-        ".word 0xe200107f\n"
-        ".word 0xe3510001\n"
-        ".word 0x1a000007\n"
-        ".word 0xe1b003a0\n"
-        ".word 0xe59f0120\n"
-        ".word 0xe19010f4\n"
-        ".word 0x0a000008\n"
-        ".word 0xe59f3118\n"
-        ".word 0xe3a02004\n"
-        ".word 0xe2840ee3\n"
-        ".word 0xfbfe2e81\n"
-        ".word 0xe5d50000\n"
-        ".word 0xe200107f\n"
-        ".word 0xe3510008\n"
-        ".word 0x0a000007\n"
-        ".word 0xea00000e\n"
-        ".word 0xe59f30f8\n"
-        ".word 0xe3a02004\n"
-        ".word 0xe2840ee3\n"
-        ".word 0xfbfe2e78\n"
-        ".word 0xe320f000\n"
-        ".word 0xe320f000\n"
-        ".word 0xeafffff3\n"
-        ".word 0xe1b003a0\n"
-        ".word 0xe59f00d0\n"
-        ".word 0xe19010f4\n"
-        ".word 0x0a000008\n"
-        ".word 0xe59f30d0\n"
-        ".word 0xe3a02004\n"
-        ".word 0xe2840ee3\n"
-        ".word 0xfbfe2e6d\n"
-        ".word 0xe5d50000\n"
-        ".word 0xe200107f\n"
-        ".word 0xe3510002\n"
-        ".word 0x0a000007\n"
-        ".word 0xea00000e\n"
-        ".word 0xe59f30b0\n"
-        ".word 0xe3a02004\n"
-        ".word 0xe2840ee3\n"
-        ".word 0xfbfe2e64\n"
-        ".word 0xe320f000\n"
-        ".word 0xe320f000\n"
-        ".word 0xeafffff3\n"
-        ".word 0xe1b003a0\n"
-        ".word 0xe59f0080\n"
-        ".word 0xe19010f4\n"
-        ".word 0x0a000010\n"
-        ".word 0xe59f3088\n"
-        ".word 0xe3a02004\n"
-        ".word 0xe2840ee3\n"
-        ".word 0xfbfe2e59\n"
-        ".word 0xe5d50000\n"
-        ".word 0xe200107f\n"
-        ".word 0xe3510003\n"
-        ".word 0x1a000014\n"
-        ".word 0xe1b003a0\n"
-        ".word 0xe59f0050\n"
-        ".word 0xe19010f4\n"
-        ".word 0x0a00000b\n"
-        ".word 0xe2840ee3\n"
-        ".word 0xe8bd4070\n"
-        ".word 0xe3a02004\n"
-        ".word 0xe59f3050\n"
-        ".word 0xeafd4b7f\n"
-        ".word 0xe59f304c\n"
-        ".word 0xe3a02004\n"
-        ".word 0xe2840ee3\n"
-        ".word 0xfbfe2e48\n"
-        ".word 0xe320f000\n"
-        ".word 0xe320f000\n"
-        ".word 0xeaffffeb\n"
-        ".word 0xe2840ee3\n"
-        ".word 0xe8bd4070\n"
-        ".word 0xe3a02004\n"
-        ".word 0xe59f3028\n"
-        ".word 0xeafd4b73\n"
-        ".word 0xe8bd8070\n"
-        ".word 0x0044e190\n"
-        ".word 0x00002230\n"
-        ".word 0x002e4608\n"
-        ".word 0x00206cbc\n"
-        ".word 0x002e4584\n"
-        ".word 0x00206c38\n"
-        ".word 0x002c6d30\n"
-        ".word 0x002dca98\n"
-        ".word 0x001d1bb8\n"
-        ".word 0x001f61a4\n"
-    );
-}
-#if 0
-// Partial semantic draft retained for reconstruction; not compiled.
-[[maybe_unused]] static void StatusDown_SortItemList_Draft() {
-    StatusDownWork* work = g_StatusDownWork;
+void StatusDown_SortItemList() {
+    auto* work = g_StatusDownWork;
     const u8* sort_cfg = Camp_GetSortConfig();
     const u8 item_sort = sort_cfg[0x16];
+    const u8 sort_key = item_sort & 0x7F;
+    const bool desc = (item_sort >> 7) != 0;
 
-    if ((item_sort & 0x7F) == 1) {
-        const bool desc = (item_sort >> 7) != 0;
+    if (sort_key == 1) {
         qsort_arm(work->item_entries, work->item_count, sizeof(StatusDownListEntry),
                   desc ? StatusDown_ItemSortByIdDesc : StatusDown_ItemSortByIdAsc);
-    }
-    if ((sort_cfg[0x16] & 0x7F) == 8) {
-        const bool desc = (sort_cfg[0x16] >> 7) != 0;
+    } else if (sort_key == 8) {
         qsort_arm(work->item_entries, work->item_count, sizeof(StatusDownListEntry),
                   desc ? StatusDown_ItemSortByTypeDesc : StatusDown_ItemSortByTypeAsc);
-    }
-    if ((sort_cfg[0x16] & 0x7F) == 2) {
-        const bool desc = (sort_cfg[0x16] >> 7) != 0;
+    } else if (sort_key == 2) {
         qsort_arm(work->item_entries, work->item_count, sizeof(StatusDownListEntry),
                   desc ? ItemSort_ByCountDesc : ItemSort_ByCountAsc);
-    }
-    if ((sort_cfg[0x16] & 0x7F) == 3) {
-        const bool desc = (sort_cfg[0x16] >> 7) != 0;
+    } else if (sort_key == 3) {
         qsort_arm(work->item_entries, work->item_count, sizeof(StatusDownListEntry),
                   desc ? ItemSort_ByNameDesc : ItemSort_ByNameAsc);
     }
 }
-#endif
 
 // DECOMP_FUNC(0x00187014, 5176)
 __attribute__((naked, used)) void StatusDown_DrawPartyAndSubViews(s32, s32) {

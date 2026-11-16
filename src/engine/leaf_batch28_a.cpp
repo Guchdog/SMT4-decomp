@@ -6961,877 +6961,1064 @@ extern "C" __attribute__((naked)) void engine_func_001d3410() {
     );
 }
 
-// DECOMP_FUNC(0x001069bc, 400)
-extern "C" __attribute__((naked)) void engine_func_001069bc() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe92d4010 @ push {r4, lr}\n"
-        ".inst 0xe1a04000 @ mov r4, r0\n"
-        ".inst 0xed2d8b08 @ vpush {d8, d9, d10, d11}\n"
-        ".inst 0xeef08a40 @ vmov.f32 s17, s0\n"
-        ".inst 0xeeb0aa60 @ vmov.f32 s20, s1\n"
-        ".inst 0xeef0aa41 @ vmov.f32 s21, s2\n"
-        ".inst 0xeeb09a61 @ vmov.f32 s18, s3\n"
-        ".inst 0xe24dd030 @ sub sp, sp, #0x30\n"
-        ".inst 0xeddf9a58 @ vldr s19, [pc, #0x160]\n"
-        ".inst 0xe3a01001 @ mov r1, #1\n"
-        ".inst 0xeb06ee09 @ bl #0x2c2210\n"
-        ".inst 0xe3a00000 @ mov r0, #0\n"
-        ".inst 0xeb06eb6e @ bl #0x2c17ac\n"
-        ".inst 0xee000a10 @ vmov s0, r0\n"
-        ".inst 0xe3a00000 @ mov r0, #0\n"
-        ".inst 0xeeb8ba40 @ vcvt.f32.u32 s22, s0\n"
-        ".inst 0xeb06eb60 @ bl #0x2c1784\n"
-        ".inst 0xee000a10 @ vmov s0, r0\n"
-        ".inst 0xed9f8a4f @ vldr s16, [pc, #0x13c]\n"
-        ".inst 0xeef02a69 @ vmov.f32 s5, s19\n"
-        ".inst 0xeeb02a69 @ vmov.f32 s4, s19\n"
-        ".inst 0xeef01a48 @ vmov.f32 s3, s16\n"
-        ".inst 0xeeb01a4b @ vmov.f32 s2, s22\n"
-        ".inst 0xeef80a40 @ vcvt.f32.u32 s1, s0\n"
-        ".inst 0xeeb00a48 @ vmov.f32 s0, s16\n"
-        ".inst 0xe1a00004 @ mov r0, r4\n"
-        ".inst 0xeb005974 @ bl #0x11cffc\n"
-        ".inst 0xee380ac8 @ vsub.f32 s0, s17, s16\n"
-        ".inst 0xeef00a48 @ vmov.f32 s1, s16\n"
-        ".inst 0xe2840b01 @ add r0, r4, #0x400\n"
-        ".inst 0xe1a0100d @ mov r1, sp\n"
-        ".inst 0xedc08a42 @ vstr s17, [r0, #0x108]\n"
-        ".inst 0xedc09a46 @ vstr s19, [r0, #0x118]\n"
-        ".inst 0xedc08a45 @ vstr s17, [r0, #0x114]\n"
-        ".inst 0xe2840b01 @ add r0, r4, #0x400\n"
-        ".inst 0xe2800f43 @ add r0, r0, #0x10c\n"
-        ".inst 0xee400a00 @ vmla.f32 s1, s0, s0\n"
-        ".inst 0xec80aa02 @ vstmia r0, {s20, s21}\n"
-        ".inst 0xe1a00004 @ mov r0, r4\n"
-        ".inst 0xeeb11ae0 @ vsqrt.f32 s2, s1\n"
-        ".inst 0xeec90a81 @ vdiv.f32 s1, s19, s2\n"
-        ".inst 0xee201a20 @ vmul.f32 s2, s0, s1\n"
-        ".inst 0xee280a20 @ vmul.f32 s0, s16, s1\n"
-        ".inst 0xee692a81 @ vmul.f32 s5, s19, s2\n"
-        ".inst 0xee680a00 @ vmul.f32 s1, s16, s0\n"
-        ".inst 0xee482a40 @ vmls.f32 s5, s16, s0\n"
-        ".inst 0xeef01a60 @ vmov.f32 s3, s1\n"
-        ".inst 0xee480a41 @ vmls.f32 s1, s16, s2\n"
-        ".inst 0xee623aa2 @ vmul.f32 s7, s5, s5\n"
-        ".inst 0xeeb03a60 @ vmov.f32 s6, s1\n"
-        ".inst 0xeef00a61 @ vmov.f32 s1, s3\n"
-        ".inst 0xee490ac0 @ vmls.f32 s1, s19, s0\n"
-        ".inst 0xee433a03 @ vmla.f32 s7, s6, s6\n"
-        ".inst 0xeeb02a60 @ vmov.f32 s4, s1\n"
-        ".inst 0xee423a02 @ vmla.f32 s7, s4, s4\n"
-        ".inst 0xeef10ae3 @ vsqrt.f32 s1, s7\n"
-        ".inst 0xeec93aa0 @ vdiv.f32 s7, s19, s1\n"
-        ".inst 0xeef00a61 @ vmov.f32 s1, s3\n"
-        ".inst 0xee222a23 @ vmul.f32 s4, s4, s7\n"
-        ".inst 0xee233a23 @ vmul.f32 s6, s6, s7\n"
-        ".inst 0xee622aa3 @ vmul.f32 s5, s5, s7\n"
-        ".inst 0xee480a00 @ vmla.f32 s1, s16, s0\n"
-        ".inst 0xed8d2a02 @ vstr s4, [sp, #8]\n"
-        ".inst 0xee601a02 @ vmul.f32 s3, s0, s4\n"
-        ".inst 0xee603a03 @ vmul.f32 s7, s0, s6\n"
-        ".inst 0xee214a22 @ vmul.f32 s8, s2, s5\n"
-        ".inst 0xee684a22 @ vmul.f32 s9, s16, s5\n"
-        ".inst 0xeccd2a02 @ vstmia sp, {s5, s6}\n"
-        ".inst 0xee580ac1 @ vnmla.f32 s1, s17, s2\n"
-        ".inst 0xee411a43 @ vmls.f32 s3, s2, s6\n"
-        ".inst 0xee403a62 @ vmls.f32 s7, s0, s5\n"
-        ".inst 0xee004a42 @ vmls.f32 s8, s0, s4\n"
-        ".inst 0xee484a03 @ vmla.f32 s9, s16, s6\n"
-        ".inst 0xedcd1a04 @ vstr s3, [sp, #0x10]\n"
-        ".inst 0xee682a21 @ vmul.f32 s5, s16, s3\n"
-        ".inst 0xed8d4a05 @ vstr s8, [sp, #0x14]\n"
-        ".inst 0xedcd3a06 @ vstr s7, [sp, #0x18]\n"
-        ".inst 0xee484a82 @ vmla.f32 s9, s17, s4\n"
-        ".inst 0xed8d0a08 @ vstr s0, [sp, #0x20]\n"
-        ".inst 0xed8d0a09 @ vstr s0, [sp, #0x24]\n"
-        ".inst 0xed8d1a0a @ vstr s2, [sp, #0x28]\n"
-        ".inst 0xee482a04 @ vmla.f32 s5, s16, s8\n"
-        ".inst 0xeeb10a64 @ vneg.f32 s0, s9\n"
-        ".inst 0xed8d0a03 @ vstr s0, [sp, #0xc]\n"
-        ".inst 0xee482aa3 @ vmla.f32 s5, s17, s7\n"
-        ".inst 0xeeb10a62 @ vneg.f32 s0, s5\n"
-        ".inst 0xed8d0a07 @ vstr s0, [sp, #0x1c]\n"
-        ".inst 0xedcd0a0b @ vstr s1, [sp, #0x2c]\n"
-        ".inst 0xeb005920 @ bl #0x11cfa4\n"
-        ".inst 0xeef00a49 @ vmov.f32 s1, s18\n"
-        ".inst 0xeeb00a68 @ vmov.f32 s0, s17\n"
-        ".inst 0xe1a00004 @ mov r0, r4\n"
-        ".inst 0xeb06eb10 @ bl #0x2c1774\n"
-        ".inst 0xe1a00004 @ mov r0, r4\n"
-        ".inst 0xeb06eb01 @ bl #0x2c1740\n"
-        ".inst 0xe28dd030 @ add sp, sp, #0x30\n"
-        ".inst 0xecbd8b08 @ vpop {d8, d9, d10, d11}\n"
-        ".inst 0xe8bd8010 @ pop {r4, pc}\n"
-        ".word 0x3f800000 @ bounded tail data\n"
-        ".word 0x00000000 @ bounded tail data\n"
-    );
+// ---------------------------------------------------------------------------
+// 0x001069BC -- configure the global render camera block.
+//
+//   r0 / camera : 0x508-byte projection block (constructed at 0x002C2210)
+//   s0 / p0     : basis scale and near clip distance
+//   s1 / p1     : stored at camera+0x50C
+//   s2 / p2     : stored at camera+0x510
+//   s3 / p3     : far clip distance
+//
+// Straight-line body: constructor, screen-size query, six floats stored at
+// camera+0x4A0, a 3x4 basis matrix handed to the camera helper, clip range,
+// then global registration.
+// ---------------------------------------------------------------------------
+static inline f32 SqrtF32(f32 value) {
+    f32 result;
+    asm("vsqrt.f32 %0, %1" : "=t"(result) : "t"(value));
+    return result;
 }
+
+extern "C" void engine_func_002c2210(void* camera, u32 mode);    // 0x002C2210
+extern "C" u32  engine_func_002c17ac(u32 index);                 // 0x002C17AC
+extern "C" u32  engine_func_002c1784(u32 index);                 // 0x002C1784
+extern "C" void func_0011cffc(void* camera, f32 s0, f32 s1, f32 s2,
+                              f32 s3, f32 s4, f32 s5);           // 0x0011CFFC
+extern "C" void func_0011cfa4(void* camera, const f32* mtx34);   // 0x0011CFA4
+extern "C" void ui_func_002c1774(void* camera, f32 s0, f32 s1);  // 0x002C1774
+extern "C" void battle_func_002c1740(void* camera);              // 0x002C1740
+
+// DECOMP_FUNC(0x001069bc, 400)
+extern "C" void engine_func_001069bc(void* camera, f32 p0, f32 p1, f32 p2,
+                                     f32 p3) {
+    engine_func_002c2210(camera, 1);
+
+    // Both screen dimensions are queried as unsigned integers (vcvt.f32.u32).
+    const f32 screen_width = static_cast<f32>(engine_func_002c17ac(0));
+    const f32 screen_height = static_cast<f32>(engine_func_002c1784(0));
+
+    func_0011cffc(camera, 0.0f, screen_height, screen_width, 0.0f, 1.0f, 1.0f);
+
+    u8* const base = static_cast<u8*>(camera);
+    *reinterpret_cast<f32*>(base + 0x508) = p0;
+    *reinterpret_cast<f32*>(base + 0x50c) = p1;
+    *reinterpret_cast<f32*>(base + 0x510) = p2;
+    *reinterpret_cast<f32*>(base + 0x514) = p0;
+    *reinterpret_cast<f32*>(base + 0x518) = 1.0f;
+
+    // Basis rows: X and Z are scaled by the sign of p0, Y stays unit length,
+    // and the Z translation is pulled back by |p0|.  Keep the original
+    // reciprocal-then-multiply order so the sign is bit-exact.
+    const f32 length = SqrtF32(p0 * p0);
+    const f32 axis = p0 * (1.0f / length);
+    f32 mtx34[12] = {
+        axis, 0.0f, 0.0f, -0.0f,
+        0.0f, 1.0f, 0.0f, -0.0f,
+        0.0f, 0.0f, axis, -(p0 * axis),
+    };
+    func_0011cfa4(camera, mtx34);
+
+    ui_func_002c1774(camera, p0, p3);
+    battle_func_002c1740(camera);
+}
+
+
+// ---------------------------------------------------------------------------
+// 0x00191B64 -- fold the five signed halfword fields of the interaction table
+// into the selected entry of the 0x3600 table and advance the caller's
+// running accumulator.
+//
+//   r0 / context : object with the selected-entry index at +0xCF78
+//                  (0xCC00 + 0x378), an entry array at +0x3600 with stride
+//                  0x620, and a 32-bit accumulator at +0xCFCC
+//                  (0xCC00 + 0x3CC)
+//
+// For each of the five fields at table+0x12..0x1A the function calls the
+// interaction-table getter (0x002B66EC), reads the signed table value, reads
+// the signed selected-entry value at entry+0x6A..0x72, and adds the difference
+// to a signed sum. It then calls the getter again and copies the (unsigned)
+// entry value over the table value. The index is re-read after every call
+// because the getter and the entry array are writable globals; the ten calls
+// are observable and must not be merged. Finally the signed sum is added to
+// the 32-bit accumulator with wrap-around.
+// ---------------------------------------------------------------------------
+extern "C" void* script_vm_func_002b66ec();   // 0x002B66EC
+
+namespace {
+
+constexpr u32 kEntryArrayOffset = 0x3600;
+constexpr u32 kEntryStride      = 0x620;   // ((index * 49) << 5)
+constexpr u32 kSelectedIndex    = 0xcf78;  // 0xcc00 + 0x378
+constexpr u32 kAccumulator      = 0xcfcc;  // 0xcc00 + 0x3cc
+constexpr u32 kTableFieldBase   = 0x12;
+constexpr u32 kEntryFieldBase   = 0x6a;
+
+inline u8* selectedEntry(u8* context) {
+    const u32 index = *reinterpret_cast<const u32*>(context + kSelectedIndex);
+    return context + kEntryArrayOffset + index * kEntryStride;
+}
+
+}  // namespace
 
 // DECOMP_FUNC(0x00191b64, 400)
-extern "C" __attribute__((naked)) void script_vm_func_00191b64() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe92d4070 @ push {r4, r5, r6, lr}\n"
-        ".inst 0xe1a04000 @ mov r4, r0\n"
-        ".inst 0xeb0492de @ bl #0x2b66ec\n"
-        ".inst 0xe2845b33 @ add r5, r4, #0xcc00\n"
-        ".inst 0xe2855fde @ add r5, r5, #0x378\n"
-        ".inst 0xe1d001f2 @ ldrsh r0, [r0, #0x12]\n"
-        ".inst 0xe5951000 @ ldr r1, [r5]\n"
-        ".inst 0xe0812201 @ add r2, r1, r1, lsl #4\n"
-        ".inst 0xe0821281 @ add r1, r2, r1, lsl #5\n"
-        ".inst 0xe0841281 @ add r1, r4, r1, lsl #5\n"
-        ".inst 0xe2811c36 @ add r1, r1, #0x3600\n"
-        ".inst 0xe1d116fa @ ldrsh r1, [r1, #0x6a]\n"
-        ".inst 0xe0406001 @ sub r6, r0, r1\n"
-        ".inst 0xeb0492d3 @ bl #0x2b66ec\n"
-        ".inst 0xe5951000 @ ldr r1, [r5]\n"
-        ".inst 0xe0812201 @ add r2, r1, r1, lsl #4\n"
-        ".inst 0xe0821281 @ add r1, r2, r1, lsl #5\n"
-        ".inst 0xe0841281 @ add r1, r4, r1, lsl #5\n"
-        ".inst 0xe2811c36 @ add r1, r1, #0x3600\n"
-        ".inst 0xe1d116ba @ ldrh r1, [r1, #0x6a]\n"
-        ".inst 0xe1c011b2 @ strh r1, [r0, #0x12]\n"
-        ".inst 0xeb0492cb @ bl #0x2b66ec\n"
-        ".inst 0xe5951000 @ ldr r1, [r5]\n"
-        ".inst 0xe1d001f4 @ ldrsh r0, [r0, #0x14]\n"
-        ".inst 0xe0812201 @ add r2, r1, r1, lsl #4\n"
-        ".inst 0xe0821281 @ add r1, r2, r1, lsl #5\n"
-        ".inst 0xe0841281 @ add r1, r4, r1, lsl #5\n"
-        ".inst 0xe2811c36 @ add r1, r1, #0x3600\n"
-        ".inst 0xe1d116fc @ ldrsh r1, [r1, #0x6c]\n"
-        ".inst 0xe0400001 @ sub r0, r0, r1\n"
-        ".inst 0xe0866000 @ add r6, r6, r0\n"
-        ".inst 0xeb0492c1 @ bl #0x2b66ec\n"
-        ".inst 0xe5951000 @ ldr r1, [r5]\n"
-        ".inst 0xe0812201 @ add r2, r1, r1, lsl #4\n"
-        ".inst 0xe0821281 @ add r1, r2, r1, lsl #5\n"
-        ".inst 0xe0841281 @ add r1, r4, r1, lsl #5\n"
-        ".inst 0xe2811c36 @ add r1, r1, #0x3600\n"
-        ".inst 0xe1d116bc @ ldrh r1, [r1, #0x6c]\n"
-        ".inst 0xe1c011b4 @ strh r1, [r0, #0x14]\n"
-        ".inst 0xeb0492b9 @ bl #0x2b66ec\n"
-        ".inst 0xe5951000 @ ldr r1, [r5]\n"
-        ".inst 0xe1d001f6 @ ldrsh r0, [r0, #0x16]\n"
-        ".inst 0xe0812201 @ add r2, r1, r1, lsl #4\n"
-        ".inst 0xe0821281 @ add r1, r2, r1, lsl #5\n"
-        ".inst 0xe0841281 @ add r1, r4, r1, lsl #5\n"
-        ".inst 0xe2811c36 @ add r1, r1, #0x3600\n"
-        ".inst 0xe1d116fe @ ldrsh r1, [r1, #0x6e]\n"
-        ".inst 0xe0400001 @ sub r0, r0, r1\n"
-        ".inst 0xe0866000 @ add r6, r6, r0\n"
-        ".inst 0xeb0492af @ bl #0x2b66ec\n"
-        ".inst 0xe5951000 @ ldr r1, [r5]\n"
-        ".inst 0xe0812201 @ add r2, r1, r1, lsl #4\n"
-        ".inst 0xe0821281 @ add r1, r2, r1, lsl #5\n"
-        ".inst 0xe0841281 @ add r1, r4, r1, lsl #5\n"
-        ".inst 0xe2811c36 @ add r1, r1, #0x3600\n"
-        ".inst 0xe1d116be @ ldrh r1, [r1, #0x6e]\n"
-        ".inst 0xe1c011b6 @ strh r1, [r0, #0x16]\n"
-        ".inst 0xeb0492a7 @ bl #0x2b66ec\n"
-        ".inst 0xe5951000 @ ldr r1, [r5]\n"
-        ".inst 0xe1d001f8 @ ldrsh r0, [r0, #0x18]\n"
-        ".inst 0xe0812201 @ add r2, r1, r1, lsl #4\n"
-        ".inst 0xe0821281 @ add r1, r2, r1, lsl #5\n"
-        ".inst 0xe0841281 @ add r1, r4, r1, lsl #5\n"
-        ".inst 0xe2811c36 @ add r1, r1, #0x3600\n"
-        ".inst 0xe1d117f0 @ ldrsh r1, [r1, #0x70]\n"
-        ".inst 0xe0400001 @ sub r0, r0, r1\n"
-        ".inst 0xe0866000 @ add r6, r6, r0\n"
-        ".inst 0xeb04929d @ bl #0x2b66ec\n"
-        ".inst 0xe5951000 @ ldr r1, [r5]\n"
-        ".inst 0xe0812201 @ add r2, r1, r1, lsl #4\n"
-        ".inst 0xe0821281 @ add r1, r2, r1, lsl #5\n"
-        ".inst 0xe0841281 @ add r1, r4, r1, lsl #5\n"
-        ".inst 0xe2811c36 @ add r1, r1, #0x3600\n"
-        ".inst 0xe1d117b0 @ ldrh r1, [r1, #0x70]\n"
-        ".inst 0xe1c011b8 @ strh r1, [r0, #0x18]\n"
-        ".inst 0xeb049295 @ bl #0x2b66ec\n"
-        ".inst 0xe5951000 @ ldr r1, [r5]\n"
-        ".inst 0xe1d001fa @ ldrsh r0, [r0, #0x1a]\n"
-        ".inst 0xe0812201 @ add r2, r1, r1, lsl #4\n"
-        ".inst 0xe0821281 @ add r1, r2, r1, lsl #5\n"
-        ".inst 0xe0841281 @ add r1, r4, r1, lsl #5\n"
-        ".inst 0xe2811c36 @ add r1, r1, #0x3600\n"
-        ".inst 0xe1d117f2 @ ldrsh r1, [r1, #0x72]\n"
-        ".inst 0xe0400001 @ sub r0, r0, r1\n"
-        ".inst 0xe0866000 @ add r6, r6, r0\n"
-        ".inst 0xeb04928b @ bl #0x2b66ec\n"
-        ".inst 0xe5952000 @ ldr r2, [r5]\n"
-        ".inst 0xe1a01000 @ mov r1, r0\n"
-        ".inst 0xe2840b33 @ add r0, r4, #0xcc00\n"
-        ".inst 0xe2800ff3 @ add r0, r0, #0x3cc\n"
-        ".inst 0xe0823202 @ add r3, r2, r2, lsl #4\n"
-        ".inst 0xe0832282 @ add r2, r3, r2, lsl #5\n"
-        ".inst 0xe0842282 @ add r2, r4, r2, lsl #5\n"
-        ".inst 0xe2822c36 @ add r2, r2, #0x3600\n"
-        ".inst 0xe1d227b2 @ ldrh r2, [r2, #0x72]\n"
-        ".inst 0xe1c121ba @ strh r2, [r1, #0x1a]\n"
-        ".inst 0xe5901000 @ ldr r1, [r0]\n"
-        ".inst 0xe0811006 @ add r1, r1, r6\n"
-        ".inst 0xe5801000 @ str r1, [r0]\n"
-        ".inst 0xe8bd8070 @ pop {r4, r5, r6, pc}\n"
-    );
+extern "C" void script_vm_func_00191b64(void* context) {
+    u8* const base = static_cast<u8*>(context);
+    s32 sum = 0;
+
+    for (u32 field = 0; field < 5; ++field) {
+        const u32 tableOffset = kTableFieldBase + field * 2;
+        const u32 entryOffset = kEntryFieldBase + field * 2;
+
+        // Signed difference: table value from this call, entry value from the
+        // index as re-read after the call.
+        u8* const tableForRead = static_cast<u8*>(script_vm_func_002b66ec());
+        const s32 tableValue =
+            *reinterpret_cast<const s16*>(tableForRead + tableOffset);
+        const s32 entryValue =
+            *reinterpret_cast<const s16*>(selectedEntry(base) + entryOffset);
+        sum += tableValue - entryValue;
+
+        // Fresh getter result, then copy the current unsigned entry value.
+        u8* const tableForWrite = static_cast<u8*>(script_vm_func_002b66ec());
+        *reinterpret_cast<u16*>(tableForWrite + tableOffset) =
+            *reinterpret_cast<const u16*>(selectedEntry(base) + entryOffset);
+    }
+
+    u32* const accumulator = reinterpret_cast<u32*>(base + kAccumulator);
+    *accumulator = *accumulator + static_cast<u32>(sum);
 }
+
+// ---------------------------------------------------------------------------
+// 0x00140318 -- forward one selector through the engine lookup/filter chain.
+//
+// ABI (r0-r3 plus two stack words):
+//   r0  self      object; +0x00 = vtable, +0x04 = opaque context that is
+//                 re-read before every helper call
+//   r1  selector  forwarded to 0x0014D390 and used as the default index for
+//                 0x001522DC
+//   r2  stream    opaque pointer forwarded to 0x002AC8E4 / 0x001404AC
+//   r3  flags     bit 1 runs the 0x002AC8E4 pre-pass, bit 3 enables the
+//                 vtable lookup; no other flag bit is read
+//   [sp+0x00] extra   opaque word forwarded to 0x002AC8E4 / 0x001404AC
+//   [sp+0x04] alt     selector for 0x001522DC; 0xFFFFFFFF selects `selector`
+//
+// Flow:
+//   key = 0x002ACA0C(self->context);
+//   if ((flags & 2) != 0 && !0x002AC8E4(self, key, stream, extra, 0))
+//       return 0;
+//   if ((flags & 8) == 0)
+//       return 1;
+//   key = vtable[0x10 / 4](self, key);
+//   if (key != nullptr) {
+//       record.value = 0; record.name[0] = record.name[1] = 0;
+//       if (!0x0014D390(self->context, selector, &record)) return 0;
+//       index = record.id;
+//       0x002AC6D0(&cursor, key);
+//       record.name[0..4] = 0;
+//       if (!0x002AC614(&cursor, &record, index, 0)) return 0;
+//       if (!0x001404AC(self, record.id, record.value, stream, flags, extra))
+//           return 0;
+//       return 1;
+//   }
+//   list = 0x001522DC(self->context, alt == 0xFFFFFFFF ? selector : alt);
+//   if (list[0] == 0) return 1;
+//   for (i = 0; list[0] > i; ++i) {
+//       (void)list[1 + i];                  // loaded, then discarded
+//       key = 0x002ACA0C(self->context);
+//       if (!0x002AC8E4(self, key, stream, extra, 1)) return 0;
+//   }
+//   return 1;
+//
+// The 0x002AC8E4 fifth (stack) argument is 0 for the pre-pass and 1 for every
+// loop iteration.  The 0x001522DC result is dereferenced without a null check,
+// so a null list faults exactly as in the original, and the loop's
+// `tst flags,#8` at 0x00140458 is always true because only the flags&8 path
+// reaches it.  The element load at 0x0014045C is dead: 0x0014046C overwrites
+// r1 with the 0x002ACA0C result before it is used.
+//
+// Record written by 0x0014D390 and 0x002AC614 (0x18 bytes): +0x00/+0x04 words,
+// a five-byte name at +0x08, four flag bytes at +0x0D..+0x10 and a float at
+// +0x14.  Only +0x00/+0x04 are read back here, as the 0x001404AC arguments.
+// ---------------------------------------------------------------------------
+extern "C" void* engine_func_002aca0c(void* context);             // 0x002ACA0C
+extern "C" s32   engine_func_002ac8e4(void* self, void* key, void* stream,
+                                      void* extra, u32 mode);      // 0x002AC8E4
+extern "C" s32   engine_func_0014d390(void* context, u32 selector,
+                                      void* record);               // 0x0014D390
+extern "C" void  engine_func_002ac6d0(void* cursor, void* key);    // 0x002AC6D0
+extern "C" s32   engine_func_002ac614(void* cursor, void* record,
+                                      u32 index, u32 mode);        // 0x002AC614
+extern "C" s32   engine_func_001404ac(void* self, u32 first, u32 second,
+                                      void* stream, u32 flags,
+                                      void* extra);                // 0x001404AC
+extern "C" void* func_001522dc(void* context, u32 selector);       // 0x001522DC
+
+namespace {
+
+constexpr u32 kContextOffset = 0x04;
+constexpr u32 kVtableSlot    = 0x10;
+constexpr u32 kPrePassFlag   = 0x02;
+constexpr u32 kLookupFlag    = 0x08;
+constexpr u32 kNoAlternate   = 0xffffffffu;
+constexpr u32 kNameBytes     = 5;
+constexpr u32 kRecordSize    = 0x18;
+
+struct TargetObject {
+    void** vtable;   // +0x00: slot 0x10 is called with (self, key)
+    void*  context;  // +0x04: opaque, passed to 0x002ACA0C/0x0014D390/0x001522DC
+};
+
+// Layout confirmed by the decompiled 0x002AC614.
+struct CandidateRecord {
+    u32 id;                       // +0x00
+    u32 value;                    // +0x04
+    u8  name[kNameBytes];         // +0x08..+0x0C
+    u8  flag0d;                   // +0x0D
+    u8  flag0e;                   // +0x0E
+    u8  flag0f;                   // +0x0F
+    u8  flag10;                   // +0x10
+    u8  reserved[3];              // +0x11..+0x13
+    f32 scale;                    // +0x14
+};
+
+// 0x002AC6D0 writes both words; this function only forwards the object.
+struct LookupCursor {
+    void* first;                  // +0x00
+    void* second;                 // +0x04
+};
+
+using LookupSlot = void* (*)(void*, void*);
+
+static_assert(sizeof(CandidateRecord) == kRecordSize, "record layout");
+static_assert(sizeof(LookupCursor) == 8, "cursor layout");
+
+}  // namespace
 
 // DECOMP_FUNC(0x00140318, 404)
-extern "C" __attribute__((naked)) void engine_func_00140318() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe92d4ff0 @ push {r4, r5, r6, r7, r8, sb, sl, fp, lr}\n"
-        ".inst 0xe24dd024 @ sub sp, sp, #0x24\n"
-        ".inst 0xe1a06000 @ mov r6, r0\n"
-        ".inst 0xe1a05001 @ mov r5, r1\n"
-        ".inst 0xe1a09002 @ mov sb, r2\n"
-        ".inst 0xe59d404c @ ldr r4, [sp, #0x4c]\n"
-        ".inst 0xe59d8048 @ ldr r8, [sp, #0x48]\n"
-        ".inst 0xe5900004 @ ldr r0, [r0, #4]\n"
-        ".inst 0xe1a07003 @ mov r7, r3\n"
-        ".inst 0xeb05b1b2 @ bl #0x2aca0c\n"
-        ".inst 0xe3170002 @ tst r7, #2\n"
-        ".inst 0xe1a0a000 @ mov sl, r0\n"
-        ".inst 0xe3a0b000 @ mov fp, #0\n"
-        ".inst 0x0a000007 @ beq #0x140370\n"
-        ".inst 0xe1a03008 @ mov r3, r8\n"
-        ".inst 0xe1a02009 @ mov r2, sb\n"
-        ".inst 0xe1a0100a @ mov r1, sl\n"
-        ".inst 0xe1a00006 @ mov r0, r6\n"
-        ".inst 0xe58db000 @ str fp, [sp]\n"
-        ".inst 0xeb05b15e @ bl #0x2ac8e4\n"
-        ".inst 0xe3500000 @ cmp r0, #0\n"
-        ".inst 0x0a00004c @ beq #0x1404a4\n"
-        ".inst 0xe3170008 @ tst r7, #8\n"
-        ".inst 0x0a000049 @ beq #0x1404a0\n"
-        ".inst 0xe5960000 @ ldr r0, [r6]\n"
-        ".inst 0xe1a0100a @ mov r1, sl\n"
-        ".inst 0xe5902010 @ ldr r2, [r0, #0x10]\n"
-        ".inst 0xe1a00006 @ mov r0, r6\n"
-        ".inst 0xe12fff32 @ blx r2\n"
-        ".inst 0xe1b0a000 @ movs sl, r0\n"
-        ".inst 0x0a000024 @ beq #0x140428\n"
-        ".inst 0xe5cdb008 @ strb fp, [sp, #8]\n"
-        ".inst 0xe58db004 @ str fp, [sp, #4]\n"
-        ".inst 0xe5cdb009 @ strb fp, [sp, #9]\n"
-        ".inst 0xe5960004 @ ldr r0, [r6, #4]\n"
-        ".inst 0xe1a0200d @ mov r2, sp\n"
-        ".inst 0xe1a01005 @ mov r1, r5\n"
-        ".inst 0xeb0033f7 @ bl #0x14d390\n"
-        ".inst 0xe3500000 @ cmp r0, #0\n"
-        ".inst 0xe320f000 @ nop\n"
-        ".inst 0x0a000039 @ beq #0x1404a4\n"
-        ".inst 0xe59d4000 @ ldr r4, [sp]\n"
-        ".inst 0xe1a0100a @ mov r1, sl\n"
-        ".inst 0xe28d0018 @ add r0, sp, #0x18\n"
-        ".inst 0xeb05b0c0 @ bl #0x2ac6d0\n"
-        ".inst 0xe3a01000 @ mov r1, #0\n"
-        ".inst 0xe5cd1008 @ strb r1, [sp, #8]\n"
-        ".inst 0xe5cd1009 @ strb r1, [sp, #9]\n"
-        ".inst 0xe5cd100a @ strb r1, [sp, #0xa]\n"
-        ".inst 0xe1a03001 @ mov r3, r1\n"
-        ".inst 0xe5cd100b @ strb r1, [sp, #0xb]\n"
-        ".inst 0xe5cd100c @ strb r1, [sp, #0xc]\n"
-        ".inst 0xe1a02004 @ mov r2, r4\n"
-        ".inst 0xe1a0100d @ mov r1, sp\n"
-        ".inst 0xe28d0018 @ add r0, sp, #0x18\n"
-        ".inst 0xeb05b086 @ bl #0x2ac614\n"
-        ".inst 0xe3500000 @ cmp r0, #0\n"
-        ".inst 0xe320f000 @ nop\n"
-        ".inst 0x0a000027 @ beq #0x1404a4\n"
-        ".inst 0xe89d0006 @ ldm sp, {r1, r2}\n"
-        ".inst 0xe1a03009 @ mov r3, sb\n"
-        ".inst 0xe1a00006 @ mov r0, r6\n"
-        ".inst 0xe88d0180 @ stm sp, {r7, r8}\n"
-        ".inst 0xeb000024 @ bl #0x1404ac\n"
-        ".inst 0xe3500000 @ cmp r0, #0\n"
-        ".inst 0xe320f000 @ nop\n"
-        ".inst 0x0a00001f @ beq #0x1404a4\n"
-        ".inst 0xea00001d @ b #0x1404a0\n"
-        ".inst 0xe3740001 @ cmn r4, #1\n"
-        ".inst 0xe5960004 @ ldr r0, [r6, #4]\n"
-        ".inst 0x11a01004 @ movne r1, r4\n"
-        ".inst 0x01a01005 @ moveq r1, r5\n"
-        ".inst 0xeb0047a7 @ bl #0x1522dc\n"
-        ".inst 0xe1a05000 @ mov r5, r0\n"
-        ".inst 0xe5900000 @ ldr r0, [r0]\n"
-        ".inst 0xe3a04000 @ mov r4, #0\n"
-        ".inst 0xe3500000 @ cmp r0, #0\n"
-        ".inst 0x83a0a001 @ movhi sl, #1\n"
-        ".inst 0x9a000012 @ bls #0x1404a0\n"
-        ".inst 0xe0850104 @ add r0, r5, r4, lsl #2\n"
-        ".inst 0xe3170008 @ tst r7, #8\n"
-        ".inst 0xe5901004 @ ldr r1, [r0, #4]\n"
-        ".inst 0x0a00000a @ beq #0x140490\n"
-        ".inst 0xe5960004 @ ldr r0, [r6, #4]\n"
-        ".inst 0xeb05b167 @ bl #0x2aca0c\n"
-        ".inst 0xe1a01000 @ mov r1, r0\n"
-        ".inst 0xe1a03008 @ mov r3, r8\n"
-        ".inst 0xe1a02009 @ mov r2, sb\n"
-        ".inst 0xe1a00006 @ mov r0, r6\n"
-        ".inst 0xe58da000 @ str sl, [sp]\n"
-        ".inst 0xeb05b117 @ bl #0x2ac8e4\n"
-        ".inst 0xe3500000 @ cmp r0, #0\n"
-        ".inst 0xe320f000 @ nop\n"
-        ".inst 0x0a000004 @ beq #0x1404a4\n"
-        ".inst 0xe5950000 @ ldr r0, [r5]\n"
-        ".inst 0xe2844001 @ add r4, r4, #1\n"
-        ".inst 0xe1500004 @ cmp r0, r4\n"
-        ".inst 0x8affffec @ bhi #0x140454\n"
-        ".inst 0xe3a00001 @ mov r0, #1\n"
-        ".inst 0xe28dd024 @ add sp, sp, #0x24\n"
-        ".inst 0xe8bd8ff0 @ pop {r4, r5, r6, r7, r8, sb, sl, fp, pc}\n"
-    );
+extern "C" s32 engine_func_00140318(TargetObject* self, u32 selector,
+                                    void* stream, u32 flags, void* extra,
+                                    u32 alt_selector) {
+    void* key = engine_func_002aca0c(self->context);
+
+    if ((flags & kPrePassFlag) != 0) {
+        if (engine_func_002ac8e4(self, key, stream, extra, 0) == 0) {
+            return 0;
+        }
+    }
+
+    if ((flags & kLookupFlag) == 0) {
+        return 1;
+    }
+
+    void** const vtable = self->vtable;
+    const LookupSlot lookup =
+        reinterpret_cast<LookupSlot>(vtable[kVtableSlot / 4]);
+    key = lookup(self, key);
+
+    if (key != nullptr) {
+        CandidateRecord record;
+        record.value = 0;      // [sp+0x04]
+        record.name[0] = 0;    // [sp+0x08]
+        record.name[1] = 0;    // [sp+0x09]
+
+        if (engine_func_0014d390(self->context, selector, &record) == 0) {
+            return 0;
+        }
+        const u32 index = record.id;   // [sp+0x00]
+
+        LookupCursor cursor;
+        engine_func_002ac6d0(&cursor, key);
+
+        for (u32 i = 0; i < kNameBytes; ++i) {
+            record.name[i] = 0;        // [sp+0x08..+0x0C]
+        }
+
+        if (engine_func_002ac614(&cursor, &record, index, 0) == 0) {
+            return 0;
+        }
+
+        if (engine_func_001404ac(self, record.id, record.value, stream, flags,
+                                 extra) == 0) {
+            return 0;
+        }
+        return 1;
+    }
+
+    const u32 lookup_selector =
+        (alt_selector == kNoAlternate) ? selector : alt_selector;
+    // The original re-reads the list count at 0x00140490 after every helper
+    // call, so the pointee must not be const-qualified (which would let the
+    // compiler hoist the load out of the loop).
+    u32* const list =
+        static_cast<u32*>(func_001522dc(self->context, lookup_selector));
+    if (list[0] == 0) {
+        return 1;
+    }
+
+    for (u32 i = 0; list[0] > i; ++i) {
+        (void)list[1 + i];   // 0x0014045C loads this element, then discards it
+
+        void* const item = engine_func_002aca0c(self->context);
+        if (engine_func_002ac8e4(self, item, stream, extra, 1) == 0) {
+            return 0;
+        }
+    }
+
+    return 1;
 }
+
+// ---------------------------------------------------------------------------
+// 0x001234DC -- emit one view's two renderer parameters.
+//
+//   r0 / mode : 0x400 selects view 0, 0x401 selects view 1, and 0x402 selects
+//               both; any other value performs no work.  The caller at
+//               0x0010EC6C passes 0x402.
+//
+// State lives at the fixed global 0x004C6290.  The two views are 4-byte
+// oriented records at +i*4:
+//   +0x008/+0x00C  source coordinate for view 0 / view 1
+//   +0x128/+0x12C  scene-node pointer for view 0 / view 1
+//   +0x130         extra scene-node pointer read by the 0x702 path
+//   +0x134..+0x148 per-view scale/bias/extent slots
+//   +0x14C/+0x150 per-view boolean passed to the renderer, then inverted
+//   +0x164         renderer state (0x700, 0x701, 0x702)
+//
+// Scene node:
+//   +0x004 base, +0x008 type id, +0x00C scale, +0x010 extent, +0x014 mode
+//
+// The type id selects the class bits and the scale multiplier:
+//   0x8051 -> class 1, scale x3     0x8056 -> class 4, scale x2
+//   0x8057 -> class 3, scale x2     0x8058 -> class 0, scale x4
+//   0x8D62 -> class 2, scale x2     other   -> class 0, scale x0
+// The comparison against 0x8057 is signed, as in the original `bgt`.
+//
+// func_001376a4 is a 7-argument wrapper (4 register + 3 stack words) around
+// 0x0013AAF0, which stores a draw record into one of two slots.
+// ---------------------------------------------------------------------------
+extern "C" void func_001376a4(u32 slot, u32 value, u32 param_a, u32 param_b,
+                              u32 param_c, u32 flags, u32 value_copy);  // 0x001376A4
+
+namespace {
+
+constexpr u32 kRenderState = 0x004c6290;
+
+constexpr u32 kNodeBase       = 0x04;
+constexpr u32 kNodeType       = 0x08;
+constexpr u32 kNodeScale      = 0x0c;
+constexpr u32 kNodeExtent     = 0x10;
+constexpr u32 kNodeMode       = 0x14;
+
+constexpr u32 kViewNode       = 0x128;  // + i*4
+constexpr u32 kViewSource     = 0x008;  // + i*4
+constexpr u32 kViewBias       = 0x134;  // + i*4
+constexpr u32 kViewLimit      = 0x140;  // + i*4
+constexpr u32 kViewFlag       = 0x14c;  // + i*4
+constexpr u32 kExtraNode      = 0x130;
+constexpr u32 kExtraExtent    = 0x148;
+constexpr u32 kExtraBias      = 0x13c;
+constexpr u32 kRendererState  = 0x164;
+
+inline u32 load32(const u8* base, u32 offset) {
+    return *reinterpret_cast<const u32*>(base + offset);
+}
+
+inline void store32(u8* base, u32 offset, u32 value) {
+    *reinterpret_cast<u32*>(base + offset) = value;
+}
+
+inline u8* loadNode(const u8* base, u32 offset) {
+    return *reinterpret_cast<u8* const*>(base + offset);
+}
+
+// Shape the node type into the class bits and scale multiplier used by the
+// renderer.  The first comparison is signed; the equality tests are exact.
+inline void classifyNodeType(s32 type, u32* nodeClass, u32* nodeScale) {
+    if (type == 0x8057) {
+        *nodeClass = 3;
+        *nodeScale = 2;
+    } else if (type > 0x8057) {
+        const u32 diff = static_cast<u32>(type) - 0x8057u;
+        if (diff == 1) {
+            *nodeClass = 0;
+            *nodeScale = 4;
+        } else if (diff - 0xd00u - 0xbu == 0) {
+            *nodeClass = 2;
+            *nodeScale = 2;
+        } else {
+            *nodeClass = 0;
+            *nodeScale = 0;
+        }
+    } else {
+        u32 diff = static_cast<u32>(type) - 0x8000u;
+        diff -= 0x51u;
+        if (diff == 0) {
+            *nodeClass = 1;
+            *nodeScale = 3;
+        } else if (diff == 5) {
+            *nodeClass = 4;
+            *nodeScale = 2;
+        } else {
+            *nodeClass = 0;
+            *nodeScale = 0;
+        }
+    }
+}
+
+}  // namespace
 
 // DECOMP_FUNC(0x001234dc, 408)
-extern "C" __attribute__((naked)) void func_001234dc() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe92d4ff0 @ push {r4, r5, r6, r7, r8, sb, sl, fp, lr}\n"
-        ".inst 0xe24dd00c @ sub sp, sp, #0xc\n"
-        ".inst 0xe1a07000 @ mov r7, r0\n"
-        ".inst 0xe3a04000 @ mov r4, #0\n"
-        ".inst 0xe59f6178 @ ldr r6, [pc, #0x178]\n"
-        ".inst 0xe2840b01 @ add r0, r4, #0x400\n"
-        ".inst 0xe1570000 @ cmp r7, r0\n"
-        ".inst 0x12470b01 @ subne r0, r7, #0x400\n"
-        ".inst 0x12500002 @ subsne r0, r0, #2\n"
-        ".inst 0xe3a03000 @ mov r3, #0\n"
-        ".inst 0x1a000053 @ bne #0x123658\n"
-        ".inst 0xe0865104 @ add r5, r6, r4, lsl #2\n"
-        ".inst 0xe59f015c @ ldr r0, [pc, #0x15c]\n"
-        ".inst 0xe5952128 @ ldr r2, [r5, #0x128]\n"
-        ".inst 0xe5921008 @ ldr r1, [r2, #8]\n"
-        ".inst 0xe1510000 @ cmp r1, r0\n"
-        ".inst 0xe0410000 @ sub r0, r1, r0\n"
-        ".inst 0x03a01002 @ moveq r1, #2\n"
-        ".inst 0x03a00003 @ moveq r0, #3\n"
-        ".inst 0x0a000015 @ beq #0x123584\n"
-        ".inst 0xca000009 @ bgt #0x123558\n"
-        ".inst 0xe2410902 @ sub r0, r1, #0x8000\n"
-        ".inst 0xe2500051 @ subs r0, r0, #0x51\n"
-        ".inst 0x03a01003 @ moveq r1, #3\n"
-        ".inst 0x03a00001 @ moveq r0, #1\n"
-        ".inst 0x0a00000f @ beq #0x123584\n"
-        ".inst 0xe3500005 @ cmp r0, #5\n"
-        ".inst 0x03a01002 @ moveq r1, #2\n"
-        ".inst 0x03a00004 @ moveq r0, #4\n"
-        ".inst 0x0a00000b @ beq #0x123584\n"
-        ".inst 0xea000008 @ b #0x12357c\n"
-        ".inst 0xe3500001 @ cmp r0, #1\n"
-        ".inst 0x03a01004 @ moveq r1, #4\n"
-        ".inst 0x03a00000 @ moveq r0, #0\n"
-        ".inst 0x0a000006 @ beq #0x123584\n"
-        ".inst 0xe2400c0d @ sub r0, r0, #0xd00\n"
-        ".inst 0xe250000b @ subs r0, r0, #0xb\n"
-        ".inst 0x03a01002 @ moveq r1, #2\n"
-        ".inst 0x01a00001 @ moveq r0, r1\n"
-        ".inst 0x0a000001 @ beq #0x123584\n"
-        ".inst 0xe3a00000 @ mov r0, #0\n"
-        ".inst 0xe1a01000 @ mov r1, r0\n"
-        ".inst 0xe5929010 @ ldr sb, [r2, #0x10]\n"
-        ".inst 0xe595a008 @ ldr sl, [r5, #8]\n"
-        ".inst 0xe595b140 @ ldr fp, [r5, #0x140]\n"
-        ".inst 0xe592800c @ ldr r8, [r2, #0xc]\n"
-        ".inst 0xe049900a @ sub sb, sb, sl\n"
-        ".inst 0xe595e134 @ ldr lr, [r5, #0x134]\n"
-        ".inst 0xe049900b @ sub sb, sb, fp\n"
-        ".inst 0xe592c014 @ ldr ip, [r2, #0x14]\n"
-        ".inst 0xe029e998 @ mla sb, r8, sb, lr\n"
-        ".inst 0xe5922004 @ ldr r2, [r2, #4]\n"
-        ".inst 0xe35c0801 @ cmp ip, #0x10000\n"
-        ".inst 0xe0080198 @ mul r8, r8, r1\n"
-        ".inst 0xe0222991 @ mla r2, r1, sb, r2\n"
-        ".inst 0x03a0cc01 @ moveq ip, #0x100\n"
-        ".inst 0x13a0cc03 @ movne ip, #0x300\n"
-        ".inst 0xe3540000 @ cmp r4, #0\n"
-        ".inst 0xe180000c @ orr r0, r0, ip\n"
-        ".inst 0x1a00000a @ bne #0x1235f8\n"
-        ".inst 0xe596a164 @ ldr sl, [r6, #0x164]\n"
-        ".inst 0xe3809040 @ orr sb, r0, #0x40\n"
-        ".inst 0xe1a0c006 @ mov ip, r6\n"
-        ".inst 0xe35a0c07 @ cmp sl, #0x700\n"
-        ".inst 0x0a000013 @ beq #0x123630\n"
-        ".inst 0xe24aac07 @ sub sl, sl, #0x700\n"
-        ".inst 0xe25aa001 @ subs sl, sl, #1\n"
-        ".inst 0x0a000002 @ beq #0x1235f8\n"
-        ".inst 0xe35a0001 @ cmp sl, #1\n"
-        ".inst 0x1a00000e @ bne #0x123630\n"
-        ".inst 0xea000001 @ b #0x123600\n"
-        ".inst 0xe1a09000 @ mov sb, r0\n"
-        ".inst 0xea00000b @ b #0x123630\n"
-        ".inst 0xe5bc3008 @ ldr r3, [ip, #8]!\n"
-        ".inst 0xe3809020 @ orr sb, r0, #0x20\n"
-        ".inst 0xe5bc0128 @ ldr r0, [ip, #0x128]!\n"
-        ".inst 0xe596b13c @ ldr fp, [r6, #0x13c]\n"
-        ".inst 0xe59ca018 @ ldr sl, [ip, #0x18]\n"
-        ".inst 0xe590c010 @ ldr ip, [r0, #0x10]\n"
-        ".inst 0xe590e00c @ ldr lr, [r0, #0xc]\n"
-        ".inst 0xe5900004 @ ldr r0, [r0, #4]\n"
-        ".inst 0xe04c3003 @ sub r3, ip, r3\n"
-        ".inst 0xe043300a @ sub r3, r3, sl\n"
-        ".inst 0xe023b39e @ mla r3, lr, r3, fp\n"
-        ".inst 0xe0230391 @ mla r3, r1, r3, r0\n"
-        ".inst 0xe595114c @ ldr r1, [r5, #0x14c]\n"
-        ".inst 0xe1a00004 @ mov r0, r4\n"
-        ".inst 0xe1cd80f0 @ strd r8, sb, [sp]\n"
-        ".inst 0xe58d1008 @ str r1, [sp, #8]\n"
-        ".inst 0xeb005017 @ bl #0x1376a4\n"
-        ".inst 0xe595014c @ ldr r0, [r5, #0x14c]\n"
-        ".inst 0xe3500000 @ cmp r0, #0\n"
-        ".inst 0x03a00001 @ moveq r0, #1\n"
-        ".inst 0x13a00000 @ movne r0, #0\n"
-        ".inst 0xe585014c @ str r0, [r5, #0x14c]\n"
-        ".inst 0xe2844001 @ add r4, r4, #1\n"
-        ".inst 0xe3540002 @ cmp r4, #2\n"
-        ".inst 0xbaffffa2 @ blt #0x1234f0\n"
-        ".inst 0xe28dd00c @ add sp, sp, #0xc\n"
-        ".inst 0xe8bd8ff0 @ pop {r4, r5, r6, r7, r8, sb, sl, fp, pc}\n"
-        ".word 0x004c6290 @ bounded tail data\n"
-        ".word 0x00008057 @ bounded tail data\n"
-    );
+extern "C" void func_001234dc(u32 mode) {
+    u8* const state = reinterpret_cast<u8*>(kRenderState);
+
+    for (u32 i = 0; i < 2; ++i) {
+        if (mode != i + 0x400u && mode != 0x402u) {
+            continue;
+        }
+
+        const u32 view = i * 4;
+        u8* const node = loadNode(state, kViewNode + view);
+
+        u32 nodeClass;
+        u32 nodeScale;
+        classifyNodeType(
+            static_cast<s32>(load32(node, kNodeType)), &nodeClass, &nodeScale);
+
+        const u32 extent = load32(node, kNodeExtent) -
+                           load32(state, kViewSource + view) -
+                           load32(state, kViewLimit + view);
+        const u32 nodeScaleValue = load32(node, kNodeScale);
+        u32 scaled = nodeScaleValue * extent +
+                     load32(state, kViewBias + view);
+
+        const u32 nodeMode = load32(node, kNodeMode);
+        const u32 paramC = nodeScaleValue * nodeScale;
+        const u32 paramA = nodeScale * scaled + load32(node, kNodeBase);
+
+        u32 flags = nodeClass |
+                    ((nodeMode == 0x10000u) ? 0x100u : 0x300u);
+        u32 paramB = 0;
+
+        if (i == 0) {
+            const u32 rendererState = load32(state, kRendererState);
+
+            if (rendererState == 0x700u) {
+                flags |= 0x40u;
+            } else if (rendererState - 0x701u == 0) {
+                // 0x701: class/mode bits only, without the 0x40 bit.
+            } else if (rendererState - 0x701u == 1) {
+                // 0x702: merge the extra scene node into the second parameter.
+                flags |= 0x20u;
+                u8* const extra = loadNode(state, kExtraNode);
+                const u32 extraExtent = load32(extra, kNodeExtent) -
+                                        load32(state, kViewSource) -
+                                        load32(state, kExtraExtent);
+                paramB = nodeScale *
+                             (load32(extra, kNodeScale) * extraExtent +
+                              load32(state, kExtraBias)) +
+                         load32(extra, kNodeBase);
+            } else {
+                flags |= 0x40u;
+            }
+        }
+
+        u32* const flag = reinterpret_cast<u32*>(state + kViewFlag + view);
+        const u32 value = *flag;
+        func_001376a4(i, value, paramA, paramB, paramC, flags, value);
+        *flag = (*flag == 0) ? 1u : 0u;
+    }
 }
+
+// ---------------------------------------------------------------------------
+// 0x0015B1A4 -- append three per-draw records to the GPU command stream
+// rooted at g_GpuCommandCursor (0x004652A0).
+//
+//   object+0x08 -> state      (state+0x08 -> u32, bit 2 must be set)
+//   object+0x44 -> node       (null: nothing is emitted)
+//   object+0xA4 -> matrix set (3x4 matrix at +0x148)
+//   node+0x00   -> vtable     (slot 0x14 returns a 3x4 matrix)
+//   node+0x08   -> entry
+//   node+0x0C   -> non-zero enables the vtable transform
+//
+// The first two records (0x80000016 / 0x80000017) copy the 16-byte blocks at
+// entry+0xB8 and entry+0xC8. The third (0x80000018) transforms the entry
+// scale triple at entry+0xD8..+0xE0: when bit 1 of entry+0x18 is set and
+// node+0x0C is non-zero, the scale is first transformed by the vtable matrix
+// and then by the matrix at [object+0xA4]+0x148; the scale triple is re-read
+// after the vtable call. The fourth payload word is the raw word at
+// entry+0xE4 (not converted).
+//
+// Each record is 0x18 bytes: an 8-byte header followed by a 16-byte payload.
+// 0x002A1A08 copies four source words to the destination in reverse order.
+// ---------------------------------------------------------------------------
+extern "C" void func_002a1a08(void* dst, const void* src);  // 0x002A1A08
+extern u32* g_GpuCommandCursor;                             // 0x004652A0
+
+namespace {
+
+constexpr u32 kGpuRecordWords  = 0x18 / 4;      // six words per record
+constexpr u32 kGpuHeaderMarker = 0x804f02c0u;
+constexpr u32 kRenderGateBit   = 4u;            // [object+8] chain, bit 2
+
+inline u8* LoadPointer(const u8* base, u32 offset) {
+    return *reinterpret_cast<u8* const*>(base + offset);
+}
+
+inline u32 LoadU32(const u8* base, u32 offset) {
+    return *reinterpret_cast<const u32*>(base + offset);
+}
+
+inline f32 LoadF32(const u8* base, u32 offset) {
+    return *reinterpret_cast<const f32*>(base + offset);
+}
+
+using GetDrawMatrix = const void* (*)(void*);
+
+}  // namespace
 
 // DECOMP_FUNC(0x0015b1a4, 408)
-extern "C" __attribute__((naked)) void func_0015b1a4() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe92d41f0 @ push {r4, r5, r6, r7, r8, lr}\n"
-        ".inst 0xe24dd010 @ sub sp, sp, #0x10\n"
-        ".inst 0xe1a06000 @ mov r6, r0\n"
-        ".inst 0xe5905044 @ ldr r5, [r0, #0x44]\n"
-        ".inst 0xe3550000 @ cmp r5, #0\n"
-        ".inst 0x0a00005b @ beq #0x15b32c\n"
-        ".inst 0xe5960008 @ ldr r0, [r6, #8]\n"
-        ".inst 0xe3a01004 @ mov r1, #4\n"
-        ".inst 0xe5900008 @ ldr r0, [r0, #8]\n"
-        ".inst 0xe5900000 @ ldr r0, [r0]\n"
-        ".inst 0xe1d10000 @ bics r0, r1, r0\n"
-        ".inst 0x1a000055 @ bne #0x15b32c\n"
-        ".inst 0xe59f715c @ ldr r7, [pc, #0x15c]\n"
-        ".inst 0xe5954008 @ ldr r4, [r5, #8]\n"
-        ".inst 0xe59f8150 @ ldr r8, [pc, #0x150]\n"
-        ".inst 0xe3a0215a @ mov r2, #0x80000016\n"
-        ".inst 0xe5970000 @ ldr r0, [r7]\n"
-        ".inst 0xe28410b8 @ add r1, r4, #0xb8\n"
-        ".inst 0xe8a00104 @ stm r0!, {r2, r8}\n"
-        ".inst 0xeb051a04 @ bl #0x2a1a08\n"
-        ".inst 0xe5970000 @ ldr r0, [r7]\n"
-        ".inst 0xe3a0215e @ mov r2, #0x80000017\n"
-        ".inst 0xe28410c8 @ add r1, r4, #0xc8\n"
-        ".inst 0xe2800018 @ add r0, r0, #0x18\n"
-        ".inst 0xe5870000 @ str r0, [r7]\n"
-        ".inst 0xe8a00104 @ stm r0!, {r2, r8}\n"
-        ".inst 0xeb0519fd @ bl #0x2a1a08\n"
-        ".inst 0xe5970000 @ ldr r0, [r7]\n"
-        ".inst 0xe3a01002 @ mov r1, #2\n"
-        ".inst 0xe2800018 @ add r0, r0, #0x18\n"
-        ".inst 0xe5870000 @ str r0, [r7]\n"
-        ".inst 0xe5940018 @ ldr r0, [r4, #0x18]\n"
-        ".inst 0xed940a36 @ vldr s0, [r4, #0xd8]\n"
-        ".inst 0xed941a37 @ vldr s2, [r4, #0xdc]\n"
-        ".inst 0xedd40a38 @ vldr s1, [r4, #0xe0]\n"
-        ".inst 0xe1d10000 @ bics r0, r1, r0\n"
-        ".inst 0x1a00001b @ bne #0x15b2a8\n"
-        ".inst 0xe595000c @ ldr r0, [r5, #0xc]\n"
-        ".inst 0xe3500000 @ cmp r0, #0\n"
-        ".inst 0x0a000018 @ beq #0x15b2a8\n"
-        ".inst 0xe5950000 @ ldr r0, [r5]\n"
-        ".inst 0xe5901014 @ ldr r1, [r0, #0x14]\n"
-        ".inst 0xe1a00005 @ mov r0, r5\n"
-        ".inst 0xe12fff31 @ blx r1\n"
-        ".inst 0xedd40a36 @ vldr s1, [r4, #0xd8]\n"
-        ".inst 0xed900a00 @ vldr s0, [r0]\n"
-        ".inst 0xed901a04 @ vldr s2, [r0, #0x10]\n"
-        ".inst 0xedd05a08 @ vldr s11, [r0, #0x20]\n"
-        ".inst 0xee200a20 @ vmul.f32 s0, s0, s1\n"
-        ".inst 0xee211a20 @ vmul.f32 s2, s2, s1\n"
-        ".inst 0xee650aa0 @ vmul.f32 s1, s11, s1\n"
-        ".inst 0xed942a37 @ vldr s4, [r4, #0xdc]\n"
-        ".inst 0xed905a01 @ vldr s10, [r0, #4]\n"
-        ".inst 0xedd04a05 @ vldr s9, [r0, #0x14]\n"
-        ".inst 0xed904a09 @ vldr s8, [r0, #0x24]\n"
-        ".inst 0xedd41a38 @ vldr s3, [r4, #0xe0]\n"
-        ".inst 0xedd03a02 @ vldr s7, [r0, #8]\n"
-        ".inst 0xed903a06 @ vldr s6, [r0, #0x18]\n"
-        ".inst 0xee050a02 @ vmla.f32 s0, s10, s4\n"
-        ".inst 0xee041a82 @ vmla.f32 s2, s9, s4\n"
-        ".inst 0xee440a02 @ vmla.f32 s1, s8, s4\n"
-        ".inst 0xedd02a0a @ vldr s5, [r0, #0x28]\n"
-        ".inst 0xee030aa1 @ vmla.f32 s0, s7, s3\n"
-        ".inst 0xee031a21 @ vmla.f32 s2, s6, s3\n"
-        ".inst 0xee420aa1 @ vmla.f32 s1, s5, s3\n"
-        ".inst 0xe59600a4 @ ldr r0, [r6, #0xa4]\n"
-        ".inst 0xe1a0100d @ mov r1, sp\n"
-        ".inst 0xe2800f52 @ add r0, r0, #0x148\n"
-        ".inst 0xedd01a00 @ vldr s3, [r0]\n"
-        ".inst 0xed902a04 @ vldr s4, [r0, #0x10]\n"
-        ".inst 0xedd05a08 @ vldr s11, [r0, #0x20]\n"
-        ".inst 0xee611a80 @ vmul.f32 s3, s3, s0\n"
-        ".inst 0xee222a00 @ vmul.f32 s4, s4, s0\n"
-        ".inst 0xee250a80 @ vmul.f32 s0, s11, s0\n"
-        ".inst 0xed904a09 @ vldr s8, [r0, #0x24]\n"
-        ".inst 0xedd04a05 @ vldr s9, [r0, #0x14]\n"
-        ".inst 0xed905a01 @ vldr s10, [r0, #4]\n"
-        ".inst 0xedd02a0a @ vldr s5, [r0, #0x28]\n"
-        ".inst 0xed903a06 @ vldr s6, [r0, #0x18]\n"
-        ".inst 0xedd03a02 @ vldr s7, [r0, #8]\n"
-        ".inst 0xe59400e4 @ ldr r0, [r4, #0xe4]\n"
-        ".inst 0xee451a01 @ vmla.f32 s3, s10, s2\n"
-        ".inst 0xee042a81 @ vmla.f32 s4, s9, s2\n"
-        ".inst 0xee040a01 @ vmla.f32 s0, s8, s2\n"
-        ".inst 0xee431aa0 @ vmla.f32 s3, s7, s1\n"
-        ".inst 0xee032a20 @ vmla.f32 s4, s6, s1\n"
-        ".inst 0xee020aa0 @ vmla.f32 s0, s5, s1\n"
-        ".inst 0xed8d0a02 @ vstr s0, [sp, #8]\n"
-        ".inst 0xeccd1a02 @ vstmia sp, {s3, s4}\n"
-        ".inst 0xe58d000c @ str r0, [sp, #0xc]\n"
-        ".inst 0xe5972000 @ ldr r2, [r7]\n"
-        ".inst 0xe3a00162 @ mov r0, #0x80000018\n"
-        ".inst 0xe8820101 @ stm r2, {r0, r8}\n"
-        ".inst 0xe2820008 @ add r0, r2, #8\n"
-        ".inst 0xeb0519b9 @ bl #0x2a1a08\n"
-        ".inst 0xe5970000 @ ldr r0, [r7]\n"
-        ".inst 0xe2800018 @ add r0, r0, #0x18\n"
-        ".inst 0xe5870000 @ str r0, [r7]\n"
-        ".inst 0xe28dd010 @ add sp, sp, #0x10\n"
-        ".inst 0xe8bd81f0 @ pop {r4, r5, r6, r7, r8, pc}\n"
-        ".word 0x804f02c0 @ bounded tail data\n"
-        ".word 0x004652a0 @ bounded tail data\n"
-    );
+extern "C" void func_0015b1a4(void* object) {
+    u8* const base = static_cast<u8*>(object);
+
+    u8* const node = LoadPointer(base, 0x44);
+    if (node == nullptr) {
+        return;
+    }
+
+    // Two pointer hops from object+0x08, then a plain word load.
+    u8* const state = LoadPointer(base, 0x08);
+    const u32 render_flags = LoadU32(LoadPointer(state, 0x08), 0);
+    if ((render_flags & kRenderGateBit) == 0) {
+        return;
+    }
+
+    u8* const entry = LoadPointer(node, 0x08);
+
+    u32* const first = g_GpuCommandCursor;
+    first[0] = 0x80000016u;
+    first[1] = kGpuHeaderMarker;
+    func_002a1a08(first + 2, entry + 0xb8);
+    g_GpuCommandCursor = g_GpuCommandCursor + kGpuRecordWords;
+
+    u32* const second = g_GpuCommandCursor;
+    second[0] = 0x80000017u;
+    second[1] = kGpuHeaderMarker;
+    func_002a1a08(second + 2, entry + 0xc8);
+    g_GpuCommandCursor = g_GpuCommandCursor + kGpuRecordWords;
+
+    f32 x = LoadF32(entry, 0xd8);
+    f32 y = LoadF32(entry, 0xdc);
+    f32 z = LoadF32(entry, 0xe0);
+
+    if ((LoadU32(entry, 0x18) & 2u) != 0 && LoadU32(node, 0x0c) != 0) {
+        void** const vtable = *reinterpret_cast<void***>(node);
+        const u8* const matrix = static_cast<const u8*>(
+            reinterpret_cast<GetDrawMatrix>(vtable[0x14 / 4])(node));
+
+        // The original reloads the scale triple after the vtable call, so a
+        // callee that rewrites entry+0xD8..+0xE0 is observed.
+        const f32 a = LoadF32(entry, 0xd8);
+        const f32 b = LoadF32(entry, 0xdc);
+        const f32 c = LoadF32(entry, 0xe0);
+        x = LoadF32(matrix, 0x00) * a +
+            LoadF32(matrix, 0x04) * b +
+            LoadF32(matrix, 0x08) * c;
+        y = LoadF32(matrix, 0x10) * a +
+            LoadF32(matrix, 0x14) * b +
+            LoadF32(matrix, 0x18) * c;
+        z = LoadF32(matrix, 0x20) * a +
+            LoadF32(matrix, 0x24) * b +
+            LoadF32(matrix, 0x28) * c;
+    }
+
+    // Second transform: the 3x4 matrix at [object+0xA4]+0x148.
+    const u8* const matrix_set = LoadPointer(base, 0xa4);
+    const u8* const m = matrix_set + 0x148;
+    f32 payload[4];
+    payload[0] = LoadF32(m, 0x00) * x +
+                 LoadF32(m, 0x04) * y +
+                 LoadF32(m, 0x08) * z;
+    payload[1] = LoadF32(m, 0x10) * x +
+                 LoadF32(m, 0x14) * y +
+                 LoadF32(m, 0x18) * z;
+    payload[2] = LoadF32(m, 0x20) * x +
+                 LoadF32(m, 0x24) * y +
+                 LoadF32(m, 0x28) * z;
+    payload[3] = LoadF32(entry, 0xe4);  // raw word copied verbatim
+
+    u32* const third = g_GpuCommandCursor;
+    third[0] = 0x80000018u;
+    third[1] = kGpuHeaderMarker;
+    func_002a1a08(third + 2, payload);
+    g_GpuCommandCursor = g_GpuCommandCursor + kGpuRecordWords;
 }
+
+// ---------------------------------------------------------------------------
+// 0x00155FD0 -- per-frame upkeep loop for the engine object returned by
+// 0x002AD630.
+//
+// The 412-byte symbol contains two textual fragments: a 24-byte entry stub
+// (0x00155FD0..0x00155FE7) that resolves the owning object through 0x002AD630,
+// and the loop body (0x00155FE8..0x00156167) it falls through into.  The stub
+// restores the caller's LR before falling through, so both fragments execute
+// as one function.  The stub's `mov r1, r0` copy of the original argument is
+// dead: the loop body never reads r1.
+//
+// One iteration synchronises through either 0x00159DC4 (when [object+8] is
+// set, which also starts a 64-bit tick measurement) or 0x002A232C, runs the
+// two optional callbacks, releases the two lock objects, and finally stores
+// the frame duration (measured helper interval + wall-clock tick delta) at
+// [object+0..7] when [object+8] is set at the end of the iteration.  The loop
+// continues while [object+0xD] is non-zero, so termination is controlled by
+// the called code.
+// ---------------------------------------------------------------------------
+extern "C" void* func_002ad630(void* argument);              // 0x002AD630
+extern "C" void  func_00159dc4(u64* elapsed_ticks);          // 0x00159DC4
+extern "C" void  func_002a232c();                            // 0x002A232C
+extern "C" void  func_00153268(u8* table, u32 index, u32* first,
+                              u32* second);                  // 0x00153268
+extern "C" void  func_002c4244(void* lock);                  // 0x002C4244
+extern "C" void  func_002c3aa8(void* lock);                  // 0x002C3AA8
+extern "C" void  func_002c3a24(void* lock);                  // 0x002C3A24
+extern "C" void  func_002c3628(void* lock);                  // 0x002C3628
+extern "C" void  func_00159ee4();                            // 0x00159EE4
+
+// `svc #0x28` is nn::os::GetSystemTick; it returns the 64-bit tick in r0:r1.
+namespace nn {
+namespace os {
+u64 GetSystemTick();
+} // namespace os
+} // namespace nn
+
+namespace {
+
+constexpr u32 kProfilerTableAddress = 0x004e6f14u; // literal at 0x00156168
+
+inline u8 LoadU8(const u8* base, u32 offset) {
+    return *reinterpret_cast<const u8*>(base + offset);
+}
+
+inline s8 LoadS8(const u8* base, u32 offset) {
+    return *reinterpret_cast<const s8*>(base + offset);
+}
+
+inline void StoreU32(u8* base, u32 offset, u32 value) {
+    *reinterpret_cast<u32*>(base + offset) = value;
+}
+
+using FrameCallback = void (*)(u32);
+
+} // namespace
 
 // DECOMP_FUNC(0x00155fd0, 412)
-extern "C" __attribute__((naked)) void engine_func_00155fd0() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe92d4010 @ push {r4, lr}\n"
-        ".inst 0xe1a04000 @ mov r4, r0\n"
-        ".inst 0xeb055d94 @ bl #0x2ad630\n"
-        ".inst 0xe1a01004 @ mov r1, r4\n"
-        ".inst 0xe8bd4010 @ pop {r4, lr}\n"
-        ".inst 0xe1a00000 @ mov r0, r0\n"
-        ".inst 0xe92d43f0 @ push {r4, r5, r6, r7, r8, sb, lr}\n"
-        ".inst 0xe1a04000 @ mov r4, r0\n"
-        ".inst 0xe24dd01c @ sub sp, sp, #0x1c\n"
-        ".inst 0xe3a00001 @ mov r0, #1\n"
-        ".inst 0xe3a07000 @ mov r7, #0\n"
-        ".inst 0xe5c4000d @ strb r0, [r4, #0xd]\n"
-        ".inst 0xe3a00000 @ mov r0, #0\n"
-        ".inst 0xe1a01000 @ mov r1, r0\n"
-        ".inst 0xe1a05000 @ mov r5, r0\n"
-        ".inst 0xe1a06000 @ mov r6, r0\n"
-        ".inst 0xe1cd00f8 @ strd r0, r1, [sp, #8]\n"
-        ".inst 0xe5d40008 @ ldrb r0, [r4, #8]\n"
-        ".inst 0xe3500000 @ cmp r0, #0\n"
-        ".inst 0x0a000007 @ beq #0x156040\n"
-        ".inst 0xe28d0008 @ add r0, sp, #8\n"
-        ".inst 0xeb000f66 @ bl #0x159dc4\n"
-        ".inst 0xe320f000 @ nop\n"
-        ".inst 0xe320f000 @ nop\n"
-        ".inst 0xef000028 @ svc #0x28\n"
-        ".inst 0xe1a05000 @ mov r5, r0\n"
-        ".inst 0xe1a06001 @ mov r6, r1\n"
-        ".inst 0xea000001 @ b #0x156048\n"
-        ".inst 0xe320f000 @ nop\n"
-        ".inst 0xeb0530b8 @ bl #0x2a232c\n"
-        ".inst 0xe5940028 @ ldr r0, [r4, #0x28]\n"
-        ".inst 0xe1d480de @ ldrsb r8, [r4, #0xe]\n"
-        ".inst 0xe3500000 @ cmp r0, #0\n"
-        ".inst 0x13a09001 @ movne sb, #1\n"
-        ".inst 0x03a09000 @ moveq sb, #0\n"
-        ".inst 0xe3580000 @ cmp r8, #0\n"
-        ".inst 0xe3a00000 @ mov r0, #0\n"
-        ".inst 0x0a00000c @ beq #0x15609c\n"
-        ".inst 0xe59f00f8 @ ldr r0, [pc, #0xf8]\n"
-        ".inst 0xe28d3010 @ add r3, sp, #0x10\n"
-        ".inst 0xe1a0200d @ mov r2, sp\n"
-        ".inst 0xe3a01000 @ mov r1, #0\n"
-        ".inst 0xebfff47a @ bl #0x153268\n"
-        ".inst 0xe59f00e4 @ ldr r0, [pc, #0xe4]\n"
-        ".inst 0xe28d3014 @ add r3, sp, #0x14\n"
-        ".inst 0xe28d2004 @ add r2, sp, #4\n"
-        ".inst 0xe3a01001 @ mov r1, #1\n"
-        ".inst 0xebfff475 @ bl #0x153268\n"
-        ".inst 0xe1cd00d0 @ ldrd r0, r1, [sp]\n"
-        ".inst 0xe1900001 @ orrs r0, r0, r1\n"
-        ".inst 0x13a00001 @ movne r0, #1\n"
-        ".inst 0xe1800009 @ orr r0, r0, sb\n"
-        ".inst 0xe0188000 @ ands r8, r8, r0\n"
-        ".inst 0x0a000002 @ beq #0x1560b4\n"
-        ".inst 0xee077f9a @ mcr p15, #0, r7, c7, c10, #4\n"
-        ".inst 0xe2840040 @ add r0, r4, #0x40\n"
-        ".inst 0xeb05b863 @ bl #0x2c4244\n"
-        ".inst 0xe5d40030 @ ldrb r0, [r4, #0x30]\n"
-        ".inst 0xe3500000 @ cmp r0, #0\n"
-        ".inst 0x1a000003 @ bne #0x1560d0\n"
-        ".inst 0xe5941028 @ ldr r1, [r4, #0x28]\n"
-        ".inst 0xe3510000 @ cmp r1, #0\n"
-        ".inst 0x1594002c @ ldrne r0, [r4, #0x2c]\n"
-        ".inst 0x112fff31 @ blxne r1\n"
-        ".inst 0xe5940020 @ ldr r0, [r4, #0x20]\n"
-        ".inst 0xe3500000 @ cmp r0, #0\n"
-        ".inst 0x0a000006 @ beq #0x1560f8\n"
-        ".inst 0xe2840034 @ add r0, r4, #0x34\n"
-        ".inst 0xeb05b670 @ bl #0x2c3aa8\n"
-        ".inst 0xe5941020 @ ldr r1, [r4, #0x20]\n"
-        ".inst 0xe5940024 @ ldr r0, [r4, #0x24]\n"
-        ".inst 0xe12fff31 @ blx r1\n"
-        ".inst 0xe2840034 @ add r0, r4, #0x34\n"
-        ".inst 0xeb05b64a @ bl #0x2c3a24\n"
-        ".inst 0xe3580000 @ cmp r8, #0\n"
-        ".inst 0x12840048 @ addne r0, r4, #0x48\n"
-        ".inst 0x1b05b548 @ blne #0x2c3628\n"
-        ".inst 0xe2840034 @ add r0, r4, #0x34\n"
-        ".inst 0xe320f000 @ nop\n"
-        ".inst 0xeb05b665 @ bl #0x2c3aa8\n"
-        ".inst 0xe320f000 @ nop\n"
-        ".inst 0xe320f000 @ nop\n"
-        ".inst 0xeb000f71 @ bl #0x159ee4\n"
-        ".inst 0xe2840034 @ add r0, r4, #0x34\n"
-        ".inst 0xe320f000 @ nop\n"
-        ".inst 0xeb05b63e @ bl #0x2c3a24\n"
-        ".inst 0xe5d40008 @ ldrb r0, [r4, #8]\n"
-        ".inst 0xe3500000 @ cmp r0, #0\n"
-        ".inst 0x0a000007 @ beq #0x156154\n"
-        ".inst 0xef000028 @ svc #0x28\n"
-        ".inst 0xe1cd20d8 @ ldrd r2, r3, [sp, #8]\n"
-        ".inst 0xe0500005 @ subs r0, r0, r5\n"
-        ".inst 0xe0c11006 @ sbc r1, r1, r6\n"
-        ".inst 0xe0922000 @ adds r2, r2, r0\n"
-        ".inst 0xe0a30001 @ adc r0, r3, r1\n"
-        ".inst 0xe5840004 @ str r0, [r4, #4]\n"
-        ".inst 0xe5842000 @ str r2, [r4]\n"
-        ".inst 0xe5d4000d @ ldrb r0, [r4, #0xd]\n"
-        ".inst 0xe3500000 @ cmp r0, #0\n"
-        ".inst 0x1affffa7 @ bne #0x156000\n"
-        ".inst 0xe28dd01c @ add sp, sp, #0x1c\n"
-        ".inst 0xe8bd83f0 @ pop {r4, r5, r6, r7, r8, sb, pc}\n"
-        ".word 0x004e6f14 @ bounded tail data\n"
-    );
+extern "C" void engine_func_00155fd0(void* argument) {
+    u8* const base = static_cast<u8*>(func_002ad630(argument));
+
+    // Original: mov r0,#1 / strb r0,[base+0xD] (0x00155FF4..0x00155FFC).
+    *reinterpret_cast<u8*>(base + 0xd) = 1;
+
+    do {
+        u64 measured_ticks = 0;
+        u64 start_tick = 0;
+
+        if (LoadU8(base, 8) != 0) {
+            func_00159dc4(&measured_ticks);
+            start_tick = nn::os::GetSystemTick();
+        } else {
+            func_002a232c();
+        }
+
+        const bool has_work_callback = LoadU32(base, 0x28) != 0;
+        const s8 cleanup_selector = LoadS8(base, 0xe);
+
+        bool counters_active = false;
+        if (cleanup_selector != 0) {
+            u8* const profiler =
+                reinterpret_cast<u8*>(static_cast<std::uintptr_t>(kProfilerTableAddress));
+            u32 counter_0 = 0;
+            u32 counter_0_aux = 0;
+            u32 counter_1 = 0;
+            u32 counter_1_aux = 0;
+            func_00153268(profiler, 0, &counter_0, &counter_0_aux);
+            func_00153268(profiler, 1, &counter_1, &counter_1_aux);
+            counters_active = (counter_0 | counter_1) != 0;
+        }
+
+        // Only bit 0 of the signed selector survives the final `ands`; the
+        // getter arm is skipped entirely when the byte is zero.
+        const bool cleanup =
+            (cleanup_selector & 1) != 0 && (counters_active || has_work_callback);
+
+        if (cleanup) {
+            // 0x001560A8 issues mcr p15,0,r7,c7,c10,4 (DSB sy).  Clang lowers
+            // __sync_synchronize() to the ARMv6 DMB form (c7,c10,5); both are
+            // full barriers for this single-threaded control flow.
+            __sync_synchronize();
+            func_002c4244(base + 0x40);
+        }
+
+        if (LoadU8(base, 0x30) == 0) {
+            const u32 callback = LoadU32(base, 0x28);
+            if (callback != 0) {
+                reinterpret_cast<FrameCallback>(callback)(LoadU32(base, 0x2c));
+            }
+        }
+
+        if (LoadU32(base, 0x20) != 0) {
+            func_002c3aa8(base + 0x34);
+            // The callback word is re-read after the lock call.
+            reinterpret_cast<FrameCallback>(LoadU32(base, 0x20))(
+                LoadU32(base, 0x24));
+            func_002c3a24(base + 0x34);
+        }
+
+        if (cleanup) {
+            func_002c3628(base + 0x48);
+        }
+
+        func_002c3aa8(base + 0x34);
+        func_00159ee4();
+        func_002c3a24(base + 0x34);
+
+        if (LoadU8(base, 8) != 0) {
+            const u64 end_tick = nn::os::GetSystemTick();
+            const u64 frame_ticks = measured_ticks + (end_tick - start_tick);
+            StoreU32(base, 4, static_cast<u32>(frame_ticks >> 32));
+            StoreU32(base, 0, static_cast<u32>(frame_ticks));
+        }
+    } while (LoadU8(base, 0xd) != 0);
 }
+
+// ---------------------------------------------------------------------------
+// 0x001FC004 -- choose the three nearest ready script/task entries.
+//
+// The table base comes from the global slot 0x0044CD88.  The records are
+// 76 bytes each and start 0x58 bytes into the table, so record `index` lives
+// at table + 0x58 + 76*index (0x002EB0F4 walks the same layout).  Only the
+// three nearest records are copied into the result records at
+// table + 0x9E4 + 76*slot; every other measured record is marked invalid.
+//
+// Record fields used here (all observed by this function, meaning beyond the
+// observed use is unknown):
+//   +0x00 u8   active flag
+//   +0x04 u32  state word (must be non-zero)
+//   +0x0C 3xf32 position
+//   +0x18 u32  payload word 0 (copied to a result record)
+//   +0x1C u32  payload word 1 (copied to a result record)
+//   +0x3C u8   ready flag
+//   +0x40 u32  reset word (cleared to -1 when measured but not selected)
+//   +0x44 f32  distance from the view position (written by pass 1)
+//   +0x48 u32  marker: 999 while pending, then the selected slot 0..2
+// ---------------------------------------------------------------------------
+extern "C" f32 engine_func_00287d54(f32 ax, f32 ay, f32 az,
+                                    f32 bx, f32 by, f32 bz);  // 0x00287D54
+
+namespace {
+
+constexpr u32 kTaskTableSlot = 0x0044cd88;  // script/task table base slot
+constexpr u32 kViewWorkSlot  = 0x00447e88;  // view work slot; +0x1C position
+constexpr u32 kViewPosition  = 0x1c;
+
+constexpr s32 kEntryHeader = 0x58;
+constexpr s32 kTaskEntryStride = 76;
+constexpr s32 kEntryCount  = 32;
+constexpr s32 kSelectedCount = 3;
+
+constexpr s32 kResultBase   = 0x9e4;  // table + 0x9E4 + 76*slot
+constexpr s32 kResultStride = 76;
+
+constexpr s32 kEntryActive       = 0x00;
+constexpr s32 kEntryState        = 0x04;
+constexpr s32 kEntryPosition     = 0x0c;
+constexpr s32 kEntryPayload0     = 0x18;
+constexpr s32 kEntryPayload1     = 0x1c;
+constexpr s32 kEntryReady        = 0x3c;
+constexpr s32 kEntryResetValue   = 0x40;
+constexpr s32 kEntryDistance     = 0x44;
+constexpr s32 kEntryMarker       = 0x48;
+constexpr s32 kResultVec3        = 0x00;
+constexpr s32 kResultPayload0    = 0x0c;
+constexpr s32 kResultPayload1    = 0x10;
+constexpr s32 kResultValid       = 0x14;
+
+constexpr u32 kPendingMarker = 999;       // literal at 0x001FC19C
+constexpr f32 kBestStart     = 90000.0f;  // literal at 0x001FC1A0
+
+}  // namespace
 
 // DECOMP_FUNC(0x001fc004, 416)
-extern "C" __attribute__((naked)) void script_vm_func_001fc004() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe92d41f0 @ push {r4, r5, r6, r7, r8, lr}\n"
-        ".inst 0xe59f7184 @ ldr r7, [pc, #0x184]\n"
-        ".inst 0xe5970000 @ ldr r0, [r7]\n"
-        ".inst 0xe1d000b4 @ ldrh r0, [r0, #4]\n"
-        ".inst 0xe3500065 @ cmp r0, #0x65\n"
-        ".inst 0x1a00005c @ bne #0x1fc190\n"
-        ".inst 0xe59f8174 @ ldr r8, [pc, #0x174]\n"
-        ".inst 0xe59f6174 @ ldr r6, [pc, #0x174]\n"
-        ".inst 0xe3a04000 @ mov r4, #0\n"
-        ".inst 0xe5971000 @ ldr r1, [r7]\n"
-        ".inst 0xe0840084 @ add r0, r4, r4, lsl #1\n"
-        ".inst 0xe0800204 @ add r0, r0, r4, lsl #4\n"
-        ".inst 0xe0815100 @ add r5, r1, r0, lsl #2\n"
-        ".inst 0xe5f50058 @ ldrb r0, [r5, #0x58]!\n"
-        ".inst 0xe3500000 @ cmp r0, #0\n"
-        ".inst 0x15d5003c @ ldrbne r0, [r5, #0x3c]\n"
-        ".inst 0x13500000 @ cmpne r0, #0\n"
-        ".inst 0x0a000007 @ beq #0x1fc06c\n"
-        ".inst 0xe285000c @ add r0, r5, #0xc\n"
-        ".inst 0xecd01a03 @ vldmia r0, {s3, s4, s5}\n"
-        ".inst 0xe5980000 @ ldr r0, [r8]\n"
-        ".inst 0xe280001c @ add r0, r0, #0x1c\n"
-        ".inst 0xec900a03 @ vldmia r0, {s0, s1, s2}\n"
-        ".inst 0xeb022f3b @ bl #0x287d54\n"
-        ".inst 0xed850a11 @ vstr s0, [r5, #0x44]\n"
-        ".inst 0xe5856048 @ str r6, [r5, #0x48]\n"
-        ".inst 0xe2844001 @ add r4, r4, #1\n"
-        ".inst 0xe3540020 @ cmp r4, #0x20\n"
-        ".inst 0xbaffffeb @ blt #0x1fc028\n"
-        ".inst 0xe5973000 @ ldr r3, [r7]\n"
-        ".inst 0xed9f1a47 @ vldr s2, [pc, #0x11c]\n"
-        ".inst 0xe3a02000 @ mov r2, #0\n"
-        ".inst 0xe3a0c001 @ mov ip, #1\n"
-        ".inst 0xeeb00a41 @ vmov.f32 s0, s2\n"
-        ".inst 0xe3e04000 @ mvn r4, #0\n"
-        ".inst 0xe3a00000 @ mov r0, #0\n"
-        ".inst 0xe0801080 @ add r1, r0, r0, lsl #1\n"
-        ".inst 0xe0811200 @ add r1, r1, r0, lsl #4\n"
-        ".inst 0xe0831101 @ add r1, r3, r1, lsl #2\n"
-        ".inst 0xe5f15058 @ ldrb r5, [r1, #0x58]!\n"
-        ".inst 0xe3550000 @ cmp r5, #0\n"
-        ".inst 0x15915004 @ ldrne r5, [r1, #4]\n"
-        ".inst 0x13550000 @ cmpne r5, #0\n"
-        ".inst 0x15d1503c @ ldrbne r5, [r1, #0x3c]\n"
-        ".inst 0x13550000 @ cmpne r5, #0\n"
-        ".inst 0x0a000007 @ beq #0x1fc0dc\n"
-        ".inst 0xe5915048 @ ldr r5, [r1, #0x48]\n"
-        ".inst 0xe1550006 @ cmp r5, r6\n"
-        ".inst 0x1a000004 @ bne #0x1fc0dc\n"
-        ".inst 0xedd10a11 @ vldr s1, [r1, #0x44]\n"
-        ".inst 0xeef40ac0 @ vcmpe.f32 s1, s0\n"
-        ".inst 0xeef1fa10 @ vmrs apsr_nzcv, fpscr\n"
-        ".inst 0x3eb00a60 @ vmovlo.f32 s0, s1\n"
-        ".inst 0x31a04000 @ movlo r4, r0\n"
-        ".inst 0xe2800001 @ add r0, r0, #1\n"
-        ".inst 0xe3500020 @ cmp r0, #0x20\n"
-        ".inst 0xbaffffea @ blt #0x1fc094\n"
-        ".inst 0xe0840084 @ add r0, r4, r4, lsl #1\n"
-        ".inst 0xe0800204 @ add r0, r0, r4, lsl #4\n"
-        ".inst 0xe0821082 @ add r1, r2, r2, lsl #1\n"
-        ".inst 0xe0830100 @ add r0, r3, r0, lsl #2\n"
-        ".inst 0xe0811202 @ add r1, r1, r2, lsl #4\n"
-        ".inst 0xe2805064 @ add r5, r0, #0x64\n"
-        ".inst 0xe58020a0 @ str r2, [r0, #0xa0]\n"
-        ".inst 0xe5802098 @ str r2, [r0, #0x98]\n"
-        ".inst 0xe89500b0 @ ldm r5, {r4, r5, r7}\n"
-        ".inst 0xe0831101 @ add r1, r3, r1, lsl #2\n"
-        ".inst 0xe2818b02 @ add r8, r1, #0x800\n"
-        ".inst 0xe2888f79 @ add r8, r8, #0x1e4\n"
-        ".inst 0xe2822001 @ add r2, r2, #1\n"
-        ".inst 0xe88800b0 @ stm r8, {r4, r5, r7}\n"
-        ".inst 0xe3520003 @ cmp r2, #3\n"
-        ".inst 0xe5904070 @ ldr r4, [r0, #0x70]\n"
-        ".inst 0xe58149f0 @ str r4, [r1, #0x9f0]\n"
-        ".inst 0xe5900074 @ ldr r0, [r0, #0x74]\n"
-        ".inst 0xe58109f4 @ str r0, [r1, #0x9f4]\n"
-        ".inst 0xe5c1c9f8 @ strb ip, [r1, #0x9f8]\n"
-        ".inst 0xbaffffd2 @ blt #0x1fc088\n"
-        ".inst 0xe3a01000 @ mov r1, #0\n"
-        ".inst 0xe3e02000 @ mvn r2, #0\n"
-        ".inst 0xe0810081 @ add r0, r1, r1, lsl #1\n"
-        ".inst 0xe0800201 @ add r0, r0, r1, lsl #4\n"
-        ".inst 0xe0830100 @ add r0, r3, r0, lsl #2\n"
-        ".inst 0xe5f0c058 @ ldrb ip, [r0, #0x58]!\n"
-        ".inst 0xe35c0000 @ cmp ip, #0\n"
-        ".inst 0x1590c004 @ ldrne ip, [r0, #4]\n"
-        ".inst 0x135c0000 @ cmpne ip, #0\n"
-        ".inst 0x15d0c03c @ ldrbne ip, [r0, #0x3c]\n"
-        ".inst 0x135c0000 @ cmpne ip, #0\n"
-        ".inst 0x0a000005 @ beq #0x1fc184\n"
-        ".inst 0xe590c048 @ ldr ip, [r0, #0x48]\n"
-        ".inst 0xe15c0006 @ cmp ip, r6\n"
-        ".inst 0x1a000002 @ bne #0x1fc184\n"
-        ".inst 0xe590c040 @ ldr ip, [r0, #0x40]\n"
-        ".inst 0xe37c0001 @ cmn ip, #1\n"
-        ".inst 0x15802040 @ strne r2, [r0, #0x40]\n"
-        ".inst 0xe2811001 @ add r1, r1, #1\n"
-        ".inst 0xe3510020 @ cmp r1, #0x20\n"
-        ".inst 0xbaffffec @ blt #0x1fc144\n"
-        ".inst 0xe8bd81f0 @ pop {r4, r5, r6, r7, r8, pc}\n"
-        ".word 0x0044cd88 @ bounded tail data\n"
-        ".word 0x00447e88 @ bounded tail data\n"
-        ".word 0x000003e7 @ bounded tail data\n"
-        ".word 0x47afc800 @ bounded tail data\n"
-    );
+extern "C" void script_vm_func_001fc004() {
+    // Header gate: the table's u16 kind word at +4 must be 0x65.
+    const u8* const table_head = *reinterpret_cast<u8* const*>(kTaskTableSlot);
+    if (*reinterpret_cast<const u16*>(table_head + 4) != 0x65) {
+        return;
+    }
+
+    // Pass 1: measure every ready entry from the view position and arm its
+    // marker.  The table pointer is reloaded each iteration because the
+    // distance helper is an opaque call.
+    for (s32 index = 0; index < kEntryCount; ++index) {
+        u8* const table = *reinterpret_cast<u8**>(kTaskTableSlot);
+        u8* const entry = table + kEntryHeader + index * kTaskEntryStride;
+        // Pass 1 checks only the two flag bytes; the state word is consulted
+        // by passes 2 and 3 below.
+        if (entry[kEntryActive] == 0) {
+            continue;
+        }
+        if (entry[kEntryReady] == 0) {
+            continue;
+        }
+
+        const f32 entry_x = *reinterpret_cast<f32*>(entry + kEntryPosition);
+        const f32 entry_y = *reinterpret_cast<f32*>(entry + kEntryPosition + 4);
+        const f32 entry_z = *reinterpret_cast<f32*>(entry + kEntryPosition + 8);
+        const u8* const view = *reinterpret_cast<u8* const*>(kViewWorkSlot);
+        const f32 view_x = *reinterpret_cast<const f32*>(view + kViewPosition);
+        const f32 view_y = *reinterpret_cast<const f32*>(view + kViewPosition + 4);
+        const f32 view_z = *reinterpret_cast<const f32*>(view + kViewPosition + 8);
+
+        *reinterpret_cast<f32*>(entry + kEntryDistance) =
+            engine_func_00287d54(view_x, view_y, view_z,
+                                 entry_x, entry_y, entry_z);
+        *reinterpret_cast<u32*>(entry + kEntryMarker) = kPendingMarker;
+    }
+
+    u8* const table = *reinterpret_cast<u8**>(kTaskTableSlot);
+
+    // Pass 2: three times, take the closest still-pending entry, retire it and
+    // copy its position and payload into the matching result record.
+    for (s32 slot = 0; slot < kSelectedCount; ++slot) {
+        f32 best = kBestStart;
+        s32 best_index = -1;
+        for (s32 index = 0; index < kEntryCount; ++index) {
+            u8* const entry = table + kEntryHeader + index * kTaskEntryStride;
+            if (entry[kEntryActive] == 0) {
+                continue;
+            }
+            if (*reinterpret_cast<u32*>(entry + kEntryState) == 0) {
+                continue;
+            }
+            if (entry[kEntryReady] == 0) {
+                continue;
+            }
+            if (*reinterpret_cast<u32*>(entry + kEntryMarker) != kPendingMarker) {
+                continue;
+            }
+            const f32 distance = *reinterpret_cast<f32*>(entry + kEntryDistance);
+            if (distance < best) {
+                best = distance;
+                best_index = index;
+            }
+        }
+
+        // With no pending candidate left, best_index stays -1 and the original
+        // addresses table + 0x58 - 76, i.e. the tail of the table header.
+        u8* const source = table + kEntryHeader + best_index * kTaskEntryStride;
+        u8* const result = table + kResultBase + slot * kResultStride;
+        *reinterpret_cast<u32*>(source + kEntryMarker) = static_cast<u32>(slot);
+        *reinterpret_cast<u32*>(source + kEntryResetValue) = static_cast<u32>(slot);
+        *reinterpret_cast<u32*>(result + kResultVec3) =
+            *reinterpret_cast<u32*>(source + kEntryPosition);
+        *reinterpret_cast<u32*>(result + kResultVec3 + 4) =
+            *reinterpret_cast<u32*>(source + kEntryPosition + 4);
+        *reinterpret_cast<u32*>(result + kResultVec3 + 8) =
+            *reinterpret_cast<u32*>(source + kEntryPosition + 8);
+        *reinterpret_cast<u32*>(result + kResultPayload0) =
+            *reinterpret_cast<u32*>(source + kEntryPayload0);
+        *reinterpret_cast<u32*>(result + kResultPayload1) =
+            *reinterpret_cast<u32*>(source + kEntryPayload1);
+        result[kResultValid] = 1;
+    }
+
+    // Pass 3: measured entries that were not selected are marked invalid.
+    for (s32 index = 0; index < kEntryCount; ++index) {
+        u8* const entry = table + kEntryHeader + index * kTaskEntryStride;
+        if (entry[kEntryActive] == 0) {
+            continue;
+        }
+        if (*reinterpret_cast<u32*>(entry + kEntryState) == 0) {
+            continue;
+        }
+        if (entry[kEntryReady] == 0) {
+            continue;
+        }
+        if (*reinterpret_cast<u32*>(entry + kEntryMarker) != kPendingMarker) {
+            continue;
+        }
+        if (*reinterpret_cast<u32*>(entry + kEntryResetValue) != 0xffffffffu) {
+            *reinterpret_cast<u32*>(entry + kEntryResetValue) = 0xffffffffu;
+        }
+    }
 }
 
+// ---------------------------------------------------------------------------
+// 0x0019DE18 -- append the source elements that are not already linked into the
+// target list's pointer vector.
+//
+// r0 (source):  +0x24 `Element**` counted array, +0x28 s32 count
+// r1 (target):  +0x0C `Element*` membership-chain head
+//               +0x10 `Element*` owner word copied into a fresh link
+//               +0x14 void* allocator context (its first word is a vtable)
+//               +0x18 `Element**` begin
+//               +0x1C `Element**` end
+//               +0x20 u32 capacity word (top two bits are tag bits)
+//
+// Per item (signed index 0..count-1, the count is re-read every iteration):
+//   1. skip when the item is the chain head itself or is reachable from it
+//      through the +0x0C link (0x002AF604 walks that chain);
+//   2. skip when the item's own +0x0C link is non-zero;
+//   3. otherwise append the item to the begin/end vector.  A full vector grows
+//      through ctx->vtable[2](ctx, bytes, 0x20), moves the old block and
+//      releases it through ctx->vtable[3](ctx, old block).  Growth is only
+//      possible while the capacity word is tagged 0x40000000 and the allocator
+//      context is non-null; every other full case drops the append silently;
+//   4. only after a successful append is the item's +0x0C link overwritten
+//      with the target's +0x10 owner word.
+//
+// Every exit path leaves r0 = source->count; callers in the pinned image
+// ignore that value, so it is preserved as the register-level contract only.
+// ---------------------------------------------------------------------------
+namespace {
+
+struct CollectedElement;
+
+struct CollectedElement {
+    u8 unknown_00[0x0c];
+    CollectedElement* link_0c;  // +0x0C: chain link / "already collected" word
+};
+
+struct CollectionSource {
+    u8 unknown_00[0x24];
+    CollectedElement** items_24;  // +0x24: counted pointer array
+    s32 count_28;                 // +0x28: signed element count
+};
+
+struct CollectionList {
+    u8 unknown_00[0x0c];
+    CollectedElement* chain_head_0c;  // +0x0C: membership-chain head
+    CollectedElement* owner_10;       // +0x10: word copied into a fresh link
+    void* ctx_14;                     // +0x14: allocator context ([0] = vtable)
+    CollectedElement** begin_18;      // +0x18
+    CollectedElement** end_1c;        // +0x1C
+    u32 capacity_20;                  // +0x20: tag bits | element capacity
+};
+
+constexpr u32 kCapacityMask  = 0x3fffffffu;  // `bic ...,#0xc0000000`
+constexpr u32 kCapacityTags  = 0xc0000000u;  // `and ...,#0xc0000000`
+constexpr u32 kGrowableTag   = 0x40000000u;  // tag required by the grow path
+constexpr u32 kGrowAlignment = 0x20u;        // `mov r2,#0x20` before vtable[2]
+
+using CollectionAllocateFn = void* (*)(void* ctx, u32 size, u32 align);
+using CollectionReleaseFn  = void (*)(void* ctx, void* block);
+
+// The original derives the element count with `sub` plus an arithmetic
+// `asr #2`, so mirror that 32-bit arithmetic instead of pointer difference.
+s32 CollectionElementCount(CollectedElement** begin, CollectedElement** end) {
+    return static_cast<s32>(reinterpret_cast<u32>(end) -
+                            reinterpret_cast<u32>(begin)) >> 2;
+}
+
+// 0x0019DF80..0x0019DFA0: store at end (when end is non-null), advance end and
+// publish the owner word in the new element's link slot.
+void AppendCollectedElement(CollectionList* list, CollectedElement* element) {
+    if (list->end_1c != nullptr) {
+        *list->end_1c = element;
+    }
+    list->end_1c = list->end_1c + 1;
+    element->link_0c = list->owner_10;
+}
+
+}  // namespace
+
+// 0x002AF604: returns 1 when `key` is reached by following `node->link_0c`
+// before a null link, otherwise 0 (reconstructed in leaf_batch34_b.cpp).
+extern "C" s32 engine_func_002af604(void* node, void* key);
+
 // DECOMP_FUNC(0x0019de18, 420)
-extern "C" __attribute__((naked)) void engine_func_0019de18() {
-    asm volatile(
-        ".arm\n"
-        ".inst 0xe92d4ff0 @ push {r4, r5, r6, r7, r8, sb, sl, fp, lr}\n"
-        ".inst 0xe24dd00c @ sub sp, sp, #0xc\n"
-        ".inst 0xe1a07000 @ mov r7, r0\n"
-        ".inst 0xe1a06001 @ mov r6, r1\n"
-        ".inst 0xe3a04000 @ mov r4, #0\n"
-        ".inst 0xe5900028 @ ldr r0, [r0, #0x28]\n"
-        ".inst 0xe3500000 @ cmp r0, #0\n"
-        ".inst 0xc3a0b000 @ movgt fp, #0\n"
-        ".inst 0xda00005d @ ble #0x19dfb4\n"
-        ".inst 0xe5970024 @ ldr r0, [r7, #0x24]\n"
-        ".inst 0xe7905104 @ ldr r5, [r0, r4, lsl #2]\n"
-        ".inst 0xe596000c @ ldr r0, [r6, #0xc]\n"
-        ".inst 0xe1a01005 @ mov r1, r5\n"
-        ".inst 0xe3500000 @ cmp r0, #0\n"
-        ".inst 0x0a000005 @ beq #0x19de6c\n"
-        ".inst 0xe1500001 @ cmp r0, r1\n"
-        ".inst 0x0a000051 @ beq #0x19dfa4\n"
-        ".inst 0xeb0445e8 @ bl #0x2af604\n"
-        ".inst 0xe3500000 @ cmp r0, #0\n"
-        ".inst 0xe320f000 @ nop\n"
-        ".inst 0x1a00004d @ bne #0x19dfa4\n"
-        ".inst 0xe595000c @ ldr r0, [r5, #0xc]\n"
-        ".inst 0xe1a08005 @ mov r8, r5\n"
-        ".inst 0xe2869010 @ add sb, r6, #0x10\n"
-        ".inst 0xe3500000 @ cmp r0, #0\n"
-        ".inst 0x1a000048 @ bne #0x19dfa4\n"
-        ".inst 0xe289000c @ add r0, sb, #0xc\n"
-        ".inst 0xe5993008 @ ldr r3, [sb, #8]\n"
-        ".inst 0xe8900005 @ ldm r0, {r0, r2}\n"
-        ".inst 0xe2895004 @ add r5, sb, #4\n"
-        ".inst 0xe3a01001 @ mov r1, #1\n"
-        ".inst 0xe0403003 @ sub r3, r0, r3\n"
-        ".inst 0xe3c20103 @ bic r0, r2, #0xc0000000\n"
-        ".inst 0xe1500143 @ cmp r0, r3, asr #2\n"
-        ".inst 0xca000036 @ bgt #0x19df80\n"
-        ".inst 0xe3500000 @ cmp r0, #0\n"
-        ".inst 0x11a0a080 @ lslne sl, r0, #1\n"
-        ".inst 0x03a0a001 @ moveq sl, #1\n"
-        ".inst 0xe3c20103 @ bic r0, r2, #0xc0000000\n"
-        ".inst 0xe150000a @ cmp r0, sl\n"
-        ".inst 0xaa000030 @ bge #0x19df80\n"
-        ".inst 0xe5950000 @ ldr r0, [r5]\n"
-        ".inst 0xe3500000 @ cmp r0, #0\n"
-        ".inst 0x0a000002 @ beq #0x19ded4\n"
-        ".inst 0xe2020103 @ and r0, r2, #0xc0000000\n"
-        ".inst 0xe3500101 @ cmp r0, #0x40000000\n"
-        ".inst 0x0a000001 @ beq #0x19dedc\n"
-        ".inst 0xe1a0100b @ mov r1, fp\n"
-        ".inst 0xea00002e @ b #0x19df98\n"
-        ".inst 0xe5950000 @ ldr r0, [r5]\n"
-        ".inst 0xe1a0110a @ lsl r1, sl, #2\n"
-        ".inst 0xe5902000 @ ldr r2, [r0]\n"
-        ".inst 0xe5923008 @ ldr r3, [r2, #8]\n"
-        ".inst 0xe3a02020 @ mov r2, #0x20\n"
-        ".inst 0xe12fff33 @ blx r3\n"
-        ".inst 0xe58d0000 @ str r0, [sp]\n"
-        ".inst 0xe2850004 @ add r0, r5, #4\n"
-        ".inst 0xe3a01000 @ mov r1, #0\n"
-        ".inst 0xe8900005 @ ldm r0, {r0, r2}\n"
-        ".inst 0xe58d1004 @ str r1, [sp, #4]\n"
-        ".inst 0xe1500002 @ cmp r0, r2\n"
-        ".inst 0x159d1000 @ ldrne r1, [sp]\n"
-        ".inst 0x0a00000b @ beq #0x19df44\n"
-        ".inst 0xe3510000 @ cmp r1, #0\n"
-        ".inst 0x1590c000 @ ldrne ip, [r0]\n"
-        ".inst 0xe2800004 @ add r0, r0, #4\n"
-        ".inst 0x1581c000 @ strne ip, [r1]\n"
-        ".inst 0xe1500002 @ cmp r0, r2\n"
-        ".inst 0xe2811004 @ add r1, r1, #4\n"
-        ".inst 0x1afffff8 @ bne #0x19df14\n"
-        ".inst 0xe5950008 @ ldr r0, [r5, #8]\n"
-        ".inst 0xe5951004 @ ldr r1, [r5, #4]\n"
-        ".inst 0xe0400001 @ sub r0, r0, r1\n"
-        ".inst 0xe1a00140 @ asr r0, r0, #2\n"
-        ".inst 0xe58d0004 @ str r0, [sp, #4]\n"
-        ".inst 0xe5951004 @ ldr r1, [r5, #4]\n"
-        ".inst 0xe3510000 @ cmp r1, #0\n"
-        ".inst 0x0a000003 @ beq #0x19df60\n"
-        ".inst 0xe5950000 @ ldr r0, [r5]\n"
-        ".inst 0xe5902000 @ ldr r2, [r0]\n"
-        ".inst 0xe592200c @ ldr r2, [r2, #0xc]\n"
-        ".inst 0xe12fff32 @ blx r2\n"
-        ".inst 0xe1cd00d0 @ ldrd r0, r1, [sp]\n"
-        ".inst 0xe0801101 @ add r1, r0, r1, lsl #2\n"
-        ".inst 0xe1c500f4 @ strd r0, r1, [r5, #4]\n"
-        ".inst 0xe595000c @ ldr r0, [r5, #0xc]\n"
-        ".inst 0xe3a01001 @ mov r1, #1\n"
-        ".inst 0xe2000103 @ and r0, r0, #0xc0000000\n"
-        ".inst 0xe180000a @ orr r0, r0, sl\n"
-        ".inst 0xe585000c @ str r0, [r5, #0xc]\n"
-        ".inst 0xe5950008 @ ldr r0, [r5, #8]\n"
-        ".inst 0xe3500000 @ cmp r0, #0\n"
-        ".inst 0x15808000 @ strne r8, [r0]\n"
-        ".inst 0xe5950008 @ ldr r0, [r5, #8]\n"
-        ".inst 0xe2800004 @ add r0, r0, #4\n"
-        ".inst 0xe5850008 @ str r0, [r5, #8]\n"
-        ".inst 0xe3510000 @ cmp r1, #0\n"
-        ".inst 0x15990000 @ ldrne r0, [sb]\n"
-        ".inst 0x1588000c @ strne r0, [r8, #0xc]\n"
-        ".inst 0xe5970028 @ ldr r0, [r7, #0x28]\n"
-        ".inst 0xe2844001 @ add r4, r4, #1\n"
-        ".inst 0xe1500004 @ cmp r0, r4\n"
-        ".inst 0xcaffffa1 @ bgt #0x19de3c\n"
-        ".inst 0xe28dd00c @ add sp, sp, #0xc\n"
-        ".inst 0xe8bd8ff0 @ pop {r4, r5, r6, r7, r8, sb, sl, fp, pc}\n"
-    );
+extern "C" s32 engine_func_0019de18(CollectionSource* source,
+                                    CollectionList* list) {
+    for (s32 index = 0; index < source->count_28; ++index) {
+        CollectedElement* const element = source->items_24[index];
+
+        CollectedElement* const chain_head = list->chain_head_0c;
+        if (chain_head != nullptr) {
+            if (chain_head == element) {
+                continue;
+            }
+            if (engine_func_002af604(chain_head, element) != 0) {
+                continue;
+            }
+        }
+
+        if (element->link_0c != nullptr) {
+            continue;
+        }
+
+        // The capacity word is read once here and kept for the tag test, like
+        // the original's r2 across the two capacity comparisons.
+        const u32 capacity_word = list->capacity_20;
+        const u32 capacity = capacity_word & kCapacityMask;
+        const s32 used = CollectionElementCount(list->begin_18, list->end_1c);
+        // Signed `bgt` in the original; the capacity is a 30-bit value, so the
+        // cast is exact and keeps a negative `used` from becoming huge.
+        if (static_cast<s32>(capacity) > used) {
+            AppendCollectedElement(list, element);
+            continue;
+        }
+
+        const u32 grown_capacity = capacity != 0 ? capacity * 2 : 1;
+        // Dead guard from the original: capacity is a 30-bit value, so the
+        // signed `capacity >= capacity * 2` test never skips the grow.
+        if (static_cast<s32>(capacity) >= static_cast<s32>(grown_capacity)) {
+            AppendCollectedElement(list, element);
+            continue;
+        }
+
+        void* const ctx = list->ctx_14;
+        if (ctx == nullptr || (capacity_word & kCapacityTags) != kGrowableTag) {
+            continue;  // append reported as failed: no end advance, no link
+        }
+
+        void** const vtable = *reinterpret_cast<void***>(ctx);
+        CollectedElement** const new_begin =
+            static_cast<CollectedElement**>(reinterpret_cast<CollectionAllocateFn>(
+                vtable[2])(ctx, grown_capacity * 4, kGrowAlignment));
+
+        // Begin/end are re-read after the allocation, as the original does with
+        // its second `ldm`.
+        CollectedElement** const old_begin = list->begin_18;
+        CollectedElement** const old_end = list->end_1c;
+        u32 copied = 0;
+        if (old_begin != old_end) {
+            CollectedElement** dst = new_begin;
+            for (CollectedElement** src = old_begin; src != old_end; ++src) {
+                if (dst != nullptr) {
+                    *dst = *src;
+                }
+                ++dst;
+            }
+            // Count again from memory: the original recomputes it after the
+            // copy loop.
+            copied = static_cast<u32>(
+                CollectionElementCount(list->begin_18, list->end_1c));
+        }
+
+        CollectedElement** const release_block = list->begin_18;
+        if (release_block != nullptr) {
+            void* const release_ctx = list->ctx_14;
+            void** const release_vtable = *reinterpret_cast<void***>(release_ctx);
+            reinterpret_cast<CollectionReleaseFn>(
+                release_vtable[3])(release_ctx, release_block);
+        }
+
+        list->begin_18 = new_begin;
+        list->end_1c = reinterpret_cast<CollectedElement**>(
+            reinterpret_cast<u32>(new_begin) + copied * 4);
+        list->capacity_20 = (list->capacity_20 & kCapacityTags) | grown_capacity;
+
+        AppendCollectedElement(list, element);
+    }
+    return source->count_28;
 }
 
 // DECOMP_FUNC(0x0013a024, 432)

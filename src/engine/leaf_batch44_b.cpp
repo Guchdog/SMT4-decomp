@@ -3687,288 +3687,660 @@ extern "C" __attribute__((naked)) void engine_func_003df874() {
 }
 
 // DECOMP_FUNC(0x00153a58, 400)
-extern "C" __attribute__((naked)) void func_00153a58() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4ff0, 0xe92d, 0x6003, 0xe1a0\n"
-        ".hword 0xd00c, 0xe24d, 0x8002, 0xe1a0\n"
-        ".hword 0x3008, 0xe590, 0x0008, 0xe590\n"
-        ".hword 0xc008, 0xe592, 0x3008, 0xe593\n"
-        ".hword 0x0008, 0xe590, 0x0002, 0xe35c\n"
-        ".hword 0x5001, 0x13a0, 0x5000, 0x03a0\n"
-        ".hword 0x0014, 0xe590, 0x0001, 0xe335\n"
-        ".hword 0x0002, 0x1380, 0x0002, 0x03c0\n"
-        ".hword 0x0000, 0xe355, 0x0014, 0xe583\n"
-        ".hword 0x0004, 0x1380, 0x0004, 0x03c0\n"
-        ".hword 0x0014, 0xe583, 0x4220, 0xe591\n"
-        ".hword 0x0000, 0xe594, 0x7008, 0xe594\n"
-        ".hword 0x101c, 0xe590, 0x0004, 0xe1a0\n"
-        ".hword 0xff31, 0xe12f, 0x0000, 0xe58d\n"
-        ".hword 0x0000, 0xe594, 0x1024, 0xe590\n"
-        ".hword 0x0004, 0xe1a0, 0xff31, 0xe12f\n"
-        ".hword 0xa0fc, 0xe59f, 0x0000, 0xe356\n"
-        ".hword 0x9000, 0xe1a0, 0x4000, 0xe3a0\n"
-        ".hword 0x002c, 0xda00, 0x10ec, 0xe59f\n"
-        ".hword 0x2086, 0xe086, 0x0601, 0xe244\n"
-        ".hword 0x0b02, 0xe080, 0x0001, 0xe180\n"
-        ".hword 0xb000, 0xe3a0, 0x0004, 0xe58d\n"
-        ".hword 0x1004, 0xe598, 0x0004, 0xe288\n"
-        ".hword 0x201c, 0xe597, 0x0000, 0xe351\n"
-        ".hword 0x0001, 0x1080, 0x000b, 0x01a0\n"
-        ".hword 0x0000, 0xe352, 0x101c, 0xe287\n"
-        ".hword 0x0104, 0xe790, 0x1002, 0x1081\n"
-        ".hword 0x100b, 0x01a0, 0x0000, 0xe351\n"
-        ".hword 0x0004, 0x0a00, 0x1200, 0xe081\n"
-        ".hword 0x2028, 0xe5b1, 0x0000, 0xe352\n"
-        ".hword 0x100b, 0x01a0, 0x1002, 0x1081\n"
-        ".hword 0x0080, 0xe080, 0x1004, 0xe591\n"
-        ".hword 0x2084, 0xe084, 0x1c02, 0xe201\n"
-        ".hword 0x14a1, 0xe1a0, 0x1005, 0xe1d1\n"
-        ".hword 0x1000, 0x059d, 0x1009, 0x11a0\n"
-        ".hword 0x0000, 0xe354, 0x1004, 0xe591\n"
-        ".hword 0x1200, 0xe081, 0x000c, 0x0a00\n"
-        ".hword 0x0000, 0xe59a, 0x37c1, 0xeb05\n"
-        ".hword 0x0000, 0xe59a, 0x0030, 0xe280\n"
-        ".hword 0x4001, 0xe284, 0x0006, 0xe154\n"
-        ".hword 0x0000, 0xe58a, 0xffd9, 0xbaff\n"
-        ".hword 0x0000, 0xe59a, 0x0004, 0xe280\n"
-        ".hword 0x0000, 0xe58a, 0xd00c, 0xe28d\n"
-        ".hword 0x8ff0, 0xe8bd, 0x0000, 0xe59a\n"
-        ".hword 0x3024, 0xe59f, 0x2166, 0xe282\n"
-        ".hword 0x20f0, 0xe1c0, 0x2004, 0xe59d\n"
-        ".hword 0x0008, 0xe280, 0x37bd, 0xeb05\n"
-        ".hword 0x0000, 0xe59a, 0x003c, 0xe280\n"
-        ".hword 0xffec, 0xeaff, 0x52a0, 0x0046\n"
-        ".hword 0x02c1, 0x000f, 0x02c0, 0x000f\n"
-    );
+//
+// Appends the matrix block of one draw entry to the GPU command stream.
+// `draw_entry+8` selects between two render-state variants: when it is 2 the
+// render-state word at [render_state+0x14] gets bit 1 set and bit 2 cleared,
+// and per-node flag bit 9 chooses between the two matrix lists returned by the
+// model vtable; any other value sets bit 2 and clears bit 1 and always uses
+// the first matrix list.
+// The first emitted matrix carries a 12-byte header (0x80000019, 0x000f02c0,
+// matrix_count tag) and occupies 0x3c bytes; every following matrix occupies
+// 0x30 bytes.  One trailing word is reserved even when count <= 0.
+extern "C" void func_002a1a90(void* dst, const void* src);          // 0x002a1a90
+extern "C" void func_002a1ac8(void* dst, const void* src, u32 tag); // 0x002a1ac8
+extern u32* g_GpuCommandCursor;                                     // 0x004652a0
+
+namespace {
+
+// Return value of the model vtable slots: word +4 points at the matrix array.
+struct MatrixListView {
+    u32 unknown_00;
+    u8* matrices_04;
+};
+
+// Model object at unit+0x220.
+struct RenderModel {
+    void** vtable_00;
+    u32 unknown_04;
+    u8* chain_root_08;
+};
+
+using GetMatrixList = void* (*)(void*);
+
+// The original dereferences relative tables without a null guard: a zero
+// relative offset falls back to low addresses (0x0 / 0x4) instead of an empty
+// table.  Those loads go through this opaque helper so the compiler keeps the
+// fallback instead of folding it away as undefined behaviour.
+__attribute__((noinline)) u32 LoadUntabled(u32 address) {
+    return *reinterpret_cast<const u32*>(address);
+}
+
+}  // namespace
+
+extern "C" void func_00153a58(void* scene, void* unit, void* draw_entry, s32 count) {
+    u8* const scene_render = *reinterpret_cast<u8**>(static_cast<u8*>(scene) + 0x08);
+    u8* const render_state = *reinterpret_cast<u8**>(scene_render + 0x08);
+    const u32 entry_type = *reinterpret_cast<u32*>(static_cast<u8*>(draw_entry) + 0x08);
+    const bool is_type_two = entry_type == 2u;
+
+    // entry_type == 2 sets bit 1 and clears bit 2; every other type clears
+    // bit 1 and sets bit 2.  The original performs two stores to the same
+    // word; only the second is observable because no call or read happens
+    // between them.
+    const u32 flags = *reinterpret_cast<u32*>(render_state + 0x14);
+    *reinterpret_cast<u32*>(render_state + 0x14) =
+        (flags & ~6u) | (is_type_two ? 2u : 4u);
+
+    RenderModel* const model =
+        *reinterpret_cast<RenderModel**>(static_cast<u8*>(unit) + 0x220);
+    u8* const chain_root = model->chain_root_08;
+
+    // Two vtable slots (offsets 0x1c and 0x24) each return a matrix list view.
+    void** vtable = model->vtable_00;
+    void* const list_one = reinterpret_cast<GetMatrixList>(vtable[0x1c / 4])(model);
+    vtable = model->vtable_00;
+    void* const list_two = reinterpret_cast<GetMatrixList>(vtable[0x24 / 4])(model);
+
+    // When entry_type != 2 the per-node flag is masked away and list_one wins.
+    const u32 list_selector_mask = is_type_two ? 0u : 1u;
+    const u32 tag = (0xfff00000u + ((static_cast<u32>(count) * 3u) << 22)) | 0x000f02c1u;
+
+    for (s32 i = 0; i < count; ++i) {
+        const u32 index_offset =
+            *reinterpret_cast<u32*>(static_cast<u8*>(draw_entry) + 0x04);
+        const u32 element = index_offset != 0
+            ? *reinterpret_cast<u32*>(static_cast<u8*>(draw_entry) + 0x04 +
+                                       index_offset + static_cast<u32>(i) * 4u)
+            : LoadUntabled(static_cast<u32>(i) * 4u);
+
+        // chain_root+0x1c addresses 16-byte records; the word at +0x28 is a
+        // relative offset to the node whose +4 flags choose the matrix list.
+        u32 node_flags;
+        const u32 chain_offset = *reinterpret_cast<u32*>(chain_root + 0x1c);
+        if (chain_offset != 0) {
+            u8* const record = chain_root + 0x1c + chain_offset + element * 16u;
+            const u32 node_offset = *reinterpret_cast<u32*>(record + 0x28);
+            node_flags = node_offset != 0
+                ? *reinterpret_cast<u32*>(record + 0x28 + node_offset + 4)
+                : LoadUntabled(4u);
+        } else {
+            node_flags = LoadUntabled(4u);
+        }
+
+        const u32 node_bit = (node_flags >> 9) & 1u;
+        const u8* const source =
+            reinterpret_cast<MatrixListView*>(
+                (node_bit & ~list_selector_mask) == 0 ? list_one : list_two)
+                ->matrices_04 +
+            ((element * 3u) << 4);
+
+        if (i == 0) {
+            u32* const header = g_GpuCommandCursor;
+            header[0] = 0x80000019u;
+            header[1] = 0x000f02c0u;
+            func_002a1ac8(header + 2, source, tag);
+            g_GpuCommandCursor = g_GpuCommandCursor + (0x3c / 4);
+        } else {
+            func_002a1a90(g_GpuCommandCursor, source);
+            g_GpuCommandCursor = g_GpuCommandCursor + (0x30 / 4);
+        }
+    }
+
+    // Reserve the trailing word (also on the count <= 0 path).
+    g_GpuCommandCursor = g_GpuCommandCursor + 1;
 }
 
 // DECOMP_FUNC(0x002a6e10, 400)
-extern "C" __attribute__((naked)) void func_002a6e10() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0xc164, 0xe59f, 0x303c, 0xe243\n"
-        ".hword 0x0ff0, 0xe92d, 0x439c, 0xe0cc\n"
-        ".hword 0x47cc, 0xe1a0, 0x4fcc, 0xe044\n"
-        ".hword 0xc150, 0xe59f, 0x349c, 0xe02c\n"
-        ".hword 0x0000, 0xe35c, 0x0002, 0xaa00\n"
-        ".hword 0x3140, 0xe59f, 0x4001, 0xe244\n"
-        ".hword 0xc003, 0xe04c, 0x6138, 0xe59f\n"
-        ".hword 0xb000, 0xe3a0, 0x500c, 0xe1a0\n"
-        ".hword 0x700b, 0xe1a0, 0x7c96, 0xe0e5\n"
-        ".hword 0x800b, 0xe1a0, 0x300b, 0xe1a0\n"
-        ".hword 0x9003, 0xe1a0, 0x77c5, 0xe1a0\n"
-        ".hword 0x5fc5, 0xe047, 0x700c, 0xe1a0\n"
-        ".hword 0x8c96, 0xe0e7, 0x8118, 0xe59f\n"
-        ".hword 0xa003, 0xe1a0, 0x67c7, 0xe1a0\n"
-        ".hword 0x6fc7, 0xe046, 0x70fc, 0xe59f\n"
-        ".hword 0x0796, 0xe006, 0xc106, 0xe08c\n"
-        ".hword 0x60f4, 0xe59f, 0x7c96, 0xe0c6\n"
-        ".hword 0x73c6, 0xe1a0, 0x6fc6, 0xe047\n"
-        ".hword 0x70e8, 0xe59f, 0xc796, 0xe02c\n"
-        ".hword 0x700c, 0xe1a0, 0x9c98, 0xe0e7\n"
-        ".hword 0x9447, 0xe1a0, 0x7fc7, 0xe049\n"
-        ".hword 0x900c, 0xe1a0, 0xac98, 0xe0e9\n"
-        ".hword 0x0004, 0xe357, 0x0004, 0x1355\n"
-        ".hword 0x8449, 0xe1a0, 0x8fc9, 0xe048\n"
-        ".hword 0x9f5b, 0xe3e0, 0xc998, 0xe028\n"
-        ".hword 0x90b8, 0xe59f, 0xc108, 0xe088\n"
-        ".hword 0xc002, 0xe28c, 0x3c99, 0xe0ec\n"
-        ".hword 0x33cc, 0xe1a0, 0x3fcc, 0xe043\n"
-        ".hword 0xce19, 0xe3a0, 0x0c94, 0xe00c\n"
-        ".hword 0x4185, 0xe085, 0x4205, 0xe084\n"
-        ".hword 0xc104, 0xe08c, 0xc106, 0xe08c\n"
-        ".hword 0x4203, 0xe083, 0x6088, 0xe59f\n"
-        ".hword 0x4184, 0xe084, 0x4002, 0xe284\n"
-        ".hword 0xc007, 0xe08c, 0x6496, 0xe0c4\n"
-        ".hword 0xce7d, 0xe28c, 0x60c4, 0xe1a0\n"
-        ".hword 0x4fc4, 0xe046, 0x4004, 0xe048\n"
-        ".hword 0x4001, 0xe284, 0x0003, 0x0a00\n"
-        ".hword 0x0009, 0xe353, 0x3003, 0xd283\n"
-        ".hword 0x0005, 0xda00, 0x0002, 0xea00\n"
-        ".hword 0x300b, 0xe3a0, 0x401d, 0xe3a0\n"
-        ".hword 0xc001, 0xe24c, 0x3009, 0xe243\n"
-        ".hword 0xc001, 0xe28c, 0x0000, 0xe350\n"
-        ".hword 0xc000, 0x1580, 0x0000, 0xe351\n"
-        ".hword 0x3000, 0x1581, 0x0000, 0xe352\n"
-        ".hword 0x4000, 0x1582, 0x0ff0, 0xe8bd\n"
-        ".hword 0xff1e, 0xe12f, 0x06bd, 0x396b\n"
-        ".hword 0xc54f, 0xfffd, 0x81fb, 0xe5ac\n"
-        ".hword 0xdc55, 0xffff, 0xb073, 0x166d\n"
-        ".hword 0xfa4b, 0xffff, 0xf9b1, 0xb38c\n"
-        ".hword 0x80d7, 0xd62b, 0x6667, 0x6666\n"
-    );
+//
+// Converts a signed whole-day count (days since 2000-01-01) into a calendar
+// date and writes the three fields through optional output pointers:
+//   r0 -> year, r1 -> month (1..12), r2 -> day (1..31).
+// The count is rebased on 2000-03-01 by subtracting the 60 days that precede
+// March in the 2000 leap year, then peeled off in 400-year, 100-year, 4-year
+// and 1-year stages.  The 400-year stage uses truncating signed division and
+// then corrects a negative remainder, i.e. it computes the floor; the later
+// remainders are already non-negative.  The month is derived with the
+// `(5*doy + 2) / 153` March-based index and shifted by three after September.
+// `year_in_quad == 4` is the leap day at the end of a four-year group: the
+// normal month path would report it as March 1 of the following year, so the
+// original forces month 2 / day 29 and leaves the year unchanged.  The second
+// half of the original test (`century == 4`) cannot be reached because the
+// century quotient is bounded by 3.
+//
+// There are no direct calls and no global accesses; only the three optional
+// 32-bit stores are observable.
+extern "C" void func_002a6e10(s32* out_year, s32* out_month, s32* out_day,
+                              s32 day_count) {
+    // The original subtracts 60 with 32-bit wrap-around (`sub r3, r3, #0x3c`).
+    const s32 shifted =
+        __builtin_bit_cast(s32, static_cast<u32>(day_count) - 0x3cu);
+
+    // 400-year era.  Magic-multiply division truncates toward zero, then a
+    // negative remainder decrements the quotient, so the result is the floor.
+    s32 era = shifted / 146097;
+    s32 days_in_era = shifted - era * 146097;
+    if (days_in_era < 0) {
+        era = era - 1;
+        days_in_era = days_in_era + 146097;
+    }
+
+    // 100-year stage (0..3) and 4-year stage (0..24).
+    const s32 century = days_in_era / 36524;
+    days_in_era = days_in_era - century * 36524;
+
+    const s32 quad = days_in_era / 1461;
+    days_in_era = days_in_era - quad * 1461;
+
+    // Year inside the four-year group (0..4) and day of the March-based year.
+    const s32 year_in_quad = days_in_era / 365;
+    const s32 day_of_year = days_in_era - year_in_quad * 365;
+
+    // March-based month index (0 = March .. 11 = February).
+    const s32 month_index = (5 * day_of_year + 2) / 153;
+
+    s32 year = 2000 + 400 * era + 100 * century + 4 * quad + year_in_quad;
+    s32 day = day_of_year - (153 * month_index + 2) / 5 + 1;
+    s32 month;
+
+    if (year_in_quad == 4 || century == 4) {
+        // Leap day: the original writes 0x0B then subtracts 9 (giving 2),
+        // forces the day to 0x1D (29), and its `ip -= 1` / `ip += 1` pair
+        // cancels out.
+        month = 0x0b - 9;
+        day = 0x1d;
+    } else if (month_index <= 9) {
+        month = month_index + 3;
+    } else {
+        month = month_index - 9;
+        year = year + 1;
+    }
+
+    // Each store is guarded by its own pointer (`strne`).
+    if (out_year != nullptr) {
+        *out_year = year;
+    }
+    if (out_month != nullptr) {
+        *out_month = month;
+    }
+    if (out_day != nullptr) {
+        *out_day = day;
+    }
 }
+
+// Configuration table at 0x00439a70.  The selector word at object+0x08 is
+// compared against these values before the generic game-over transition.
+struct BtlGameOverSelectors {
+    u32 selector_00;
+    u32 selector_04;
+    u32 script_slot_value_08;
+    u32 selector_0c;
+    u32 script_slot_value_10;
+    u32 selector_14;
+    u32 message_id_18;
+    u32 message_arg_1c;
+    u32 selector_limit_20;
+};
+
+// Step state used by the 0x003358f4/0x003359f4/0x00335b84 game-over state
+// machine.  Only the fields touched by this function are declared.
+struct BtlGameOverStepWork {
+    u32 state_00;      // written 3 before the loads and 4 before the tail call
+    u32 flags_04;      // bit 0 selects the gameover/level-event asset pair
+    u32 selector_08;   // compared against BtlGameOverSelectors
+    u32 file_bf_0c;    // first load destination
+    u32 field_10;
+    u32 file_mbm_14;   // second load destination
+};
+
+extern "C" const BtlGameOverSelectors g_BtlGameOverSelectors;  // 0x00439a70
+extern "C" void* g_BtlGameOverHookTarget;                      // 0x00439ca8
+
+extern "C" u32 battle_func_00282a90(u32, u32, u32, u32, u32, u32, u32, u32);
+extern "C" void battle_func_00267f68(void* target);
+// The fifth argument is the bit pattern of a float (0.0f) read by the callee
+// from the first stack slot, so every argument after the fourth is passed on
+// the stack.
+extern "C" void battle_func_0023f3d8(u32, u32, u32, u32, u32, s32, s32, s32, s32);
+extern "C" void script_vm_func_0029c660(u32 slot, u32 value, u32 byte_value);
+extern "C" u32 script_vm_func_00297704(const char* name, void* output, u32 flags);
+extern "C" u8* ui_func_002c0b94(void);
+extern "C" u32 battle_func_0023f2f0(void* work);
 
 // DECOMP_FUNC(0x003359f4, 400)
-extern "C" __attribute__((naked)) void script_vm_func_003359f4() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4070, 0xe92d, 0x4000, 0xe1a0\n"
-        ".hword 0x5164, 0xe59f, 0x0008, 0xe590\n"
-        ".hword 0xd018, 0xe24d, 0x6000, 0xe3a0\n"
-        ".hword 0x1000, 0xe595, 0x0001, 0xe150\n"
-        ".hword 0x000c, 0x1a00, 0x1008, 0xe3a0\n"
-        ".hword 0x3000, 0xe3a0, 0xc008, 0xe28d\n"
-        ".hword 0x0042, 0xe88d, 0x000b, 0xe3a0\n"
-        ".hword 0x0041, 0xe88c, 0x2003, 0xe1a0\n"
-        ".hword 0x1003, 0xe1a0, 0x0003, 0xe1a0\n"
-        ".hword 0x3413, 0xebfd, 0x0124, 0xe59f\n"
-        ".hword 0x0000, 0xe590, 0xc946, 0xebfc\n"
-        ".hword 0x0008, 0xe594, 0x1014, 0xe595\n"
-        ".hword 0x0001, 0xe150, 0x000c, 0x1a00\n"
-        ".hword 0x001c, 0xe595, 0x1000, 0xe3e0\n"
-        ".hword 0x2002, 0xe3a0, 0x3004, 0xe28d\n"
-        ".hword 0x1010, 0xe58d, 0x200c, 0xe58d\n"
-        ".hword 0x0041, 0xe883, 0x1000, 0xe3a0\n"
-        ".hword 0x6000, 0xe58d, 0x2018, 0xe595\n"
-        ".hword 0x3010, 0xe3a0, 0x0001, 0xe1a0\n"
-        ".hword 0x2651, 0xebfc, 0x0008, 0xe594\n"
-        ".hword 0x1004, 0xe595, 0x0001, 0xe150\n"
-        ".hword 0x0003, 0x1a00, 0x1008, 0xe595\n"
-        ".hword 0x20ff, 0xe3a0, 0x0000, 0xe3a0\n"
-        ".hword 0x9aeb, 0xebfd, 0x0008, 0xe594\n"
-        ".hword 0x100c, 0xe595, 0x0001, 0xe150\n"
-        ".hword 0x0003, 0x1a00, 0x1010, 0xe595\n"
-        ".hword 0x20ff, 0xe3a0, 0x0001, 0xe3a0\n"
-        ".hword 0x9ae3, 0xebfd, 0x0020, 0xe595\n"
-        ".hword 0x1008, 0xe594, 0x0000, 0xe151\n"
-        ".hword 0x0000, 0x93a0, 0x001e, 0x9a00\n"
-        ".hword 0x0003, 0xe3a0, 0x0000, 0xe584\n"
-        ".hword 0x0004, 0xe594, 0x2000, 0xe3a0\n"
-        ".hword 0x100c, 0xe284, 0x0001, 0xe310\n"
-        ".hword 0x006c, 0x059f, 0x006c, 0x159f\n"
-        ".hword 0x86fe, 0xebfd, 0x0004, 0xe594\n"
-        ".hword 0x2000, 0xe3a0, 0x1014, 0xe284\n"
-        ".hword 0x0001, 0xe310, 0x0058, 0x059f\n"
-        ".hword 0x0058, 0x159f, 0x86f7, 0xebfd\n"
-        ".hword 0xf000, 0xe320, 0xf000, 0xe320\n"
-        ".hword 0x2c18, 0xebfe, 0x1048, 0xe59f\n"
-        ".hword 0x0001, 0xe040, 0x1000, 0xe5d0\n"
-        ".hword 0x00ff, 0xe351, 0x1001, 0x3281\n"
-        ".hword 0x1000, 0x35c0, 0x0004, 0xe3a0\n"
-        ".hword 0x0000, 0xe584, 0xd018, 0xe28d\n"
-        ".hword 0x0004, 0xe1a0, 0x4070, 0xe8bd\n"
-        ".hword 0x25e3, 0xeafc, 0xd018, 0xe28d\n"
-        ".hword 0x8070, 0xe8bd, 0x9a70, 0x0043\n"
-        ".hword 0x9ca8, 0x0043, 0x0a18, 0x0040\n"
-        ".hword 0x0a34, 0x0040, 0x09d8, 0x0040\n"
-        ".hword 0x09f8, 0x0040, 0xb4d7, 0xfffd\n"
-    );
+extern "C" u32 script_vm_func_003359f4(BtlGameOverStepWork* work) {
+    // Every selector comparison reloads work+0x08: each earlier branch may call
+    // a helper that rewrites it.
+    if (work->selector_08 == g_BtlGameOverSelectors.selector_00) {
+        battle_func_00282a90(0, 0, 0, 0, 8, 0, 11, 0);
+        battle_func_00267f68(g_BtlGameOverHookTarget);
+    }
+
+    if (work->selector_08 == g_BtlGameOverSelectors.selector_14) {
+        battle_func_0023f3d8(
+            0, 0, g_BtlGameOverSelectors.message_id_18, 0x10,
+            0 /* 0.0f bit pattern */,
+            static_cast<s32>(g_BtlGameOverSelectors.message_arg_1c),
+            0, 2, -1);
+    }
+
+    if (work->selector_08 == g_BtlGameOverSelectors.selector_04) {
+        script_vm_func_0029c660(
+            0, g_BtlGameOverSelectors.script_slot_value_08, 0xff);
+    }
+
+    if (work->selector_08 == g_BtlGameOverSelectors.selector_0c) {
+        script_vm_func_0029c660(
+            1, g_BtlGameOverSelectors.script_slot_value_10, 0xff);
+    }
+
+    // Selectors at or below the table limit leave the state machine alone.
+    if (work->selector_08 <= g_BtlGameOverSelectors.selector_limit_20) {
+        return 0;
+    }
+
+    work->state_00 = 3;
+
+    // flags_04 is read again for the second load: the first helper may change
+    // it.
+    if ((work->flags_04 & 1u) == 0) {
+        script_vm_func_00297704(
+            "battle/gameover/gameover.bf", &work->file_bf_0c, 0);
+    } else {
+        script_vm_func_00297704(
+            "battle/gameover/level_event.bf", &work->file_bf_0c, 0);
+    }
+    if ((work->flags_04 & 1u) == 0) {
+        script_vm_func_00297704(
+            "battle/gameover/gameover.mbm", &work->file_mbm_14, 0);
+    } else {
+        script_vm_func_00297704(
+            "battle/gameover/level_event.mbm", &work->file_mbm_14, 0);
+    }
+
+    // Saturating byte counter at +0x24B29 inside the work block returned by
+    // 0x002c0b94.
+    u8* const counter = ui_func_002c0b94() + 0x24B29u;
+    const u8 value = *counter;
+    if (value < 0xffu) {
+        *counter = static_cast<u8>(value + 1u);
+    }
+
+    work->state_00 = 4;
+    return battle_func_0023f2f0(work);
 }
 
-// DECOMP_FUNC(0x0034fc14, 400)
-extern "C" __attribute__((naked)) void engine_func_0034fc14() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x43f8, 0xe92d, 0x6000, 0xe1a0\n"
-        ".hword 0x0f56, 0xe280, 0xaad3, 0xebfb\n"
-        ".hword 0x0000, 0xe350, 0x0007, 0x0a00\n"
-        ".hword 0x0f56, 0xe286, 0xaa96, 0xebfb\n"
-        ".hword 0x0000, 0xe350, 0x0001, 0x1a00\n"
-        ".hword 0x1007, 0xe3a0, 0x100c, 0xe586\n"
-        ".hword 0x0006, 0xe1a0, 0x04fc, 0xeb00\n"
-        ".hword 0x000c, 0xe596, 0x0003, 0xe350\n"
-        ".hword 0x000c, 0x1596, 0x0006, 0x1350\n"
-        ".hword 0x0000, 0x13a0, 0x004b, 0x1a00\n"
-        ".hword 0x000c, 0xe596, 0x0001, 0xe350\n"
-        ".hword 0x000f, 0x0a00, 0x000c, 0xe596\n"
-        ".hword 0x0006, 0xe350, 0x0020, 0x0286\n"
-        ".hword 0xd170, 0x0bfd, 0x4002, 0xe3a0\n"
-        ".hword 0x0006, 0xe1a0, 0xcf86, 0xebfd\n"
-        ".hword 0x400c, 0xe586, 0x0006, 0xe1a0\n"
-        ".hword 0xcf62, 0xebfd, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0x0002, 0xea00\n"
-        ".hword 0x00f4, 0xe59f, 0x1000, 0xe3a0\n"
-        ".hword 0xadf7, 0xebfd, 0x000c, 0xe596\n"
-        ".hword 0x0001, 0xe350, 0x000c, 0x1596\n"
-        ".hword 0x0008, 0x1350, 0x000c, 0x1596\n"
-        ".hword 0x0007, 0x1350, 0xfff5, 0x1aff\n"
-        ".hword 0x8000, 0xe3a0, 0x5108, 0xe086\n"
-        ".hword 0x046c, 0xe595, 0x0000, 0xe350\n"
-        ".hword 0x0028, 0xba00, 0x22e8, 0xe596\n"
-        ".hword 0x0000, 0xe152, 0x002a, 0xda00\n"
-        ".hword 0x2100, 0xe080, 0x1182, 0xe086\n"
-        ".hword 0x1fc3, 0xe291, 0x0026, 0x0a00\n"
-        ".hword 0x1008, 0xe591, 0x0000, 0xe351\n"
-        ".hword 0x0001, 0x1351, 0x4002, 0x03a0\n"
-        ".hword 0x4001, 0x13a0, 0x0100, 0xe086\n"
-        ".hword 0x02ec, 0xe590, 0x1000, 0xe590\n"
-        ".hword 0x2010, 0xe591, 0x100d, 0xe1a0\n"
-        ".hword 0xff32, 0xe12f, 0x0000, 0xe59d\n"
-        ".hword 0x1004, 0xe1a0, 0xd909, 0xebfd\n"
-        ".hword 0x0490, 0xe000, 0x4000, 0xe3a0\n"
-        ".hword 0x0000, 0xe350, 0x7b01, 0xc285\n"
-        ".hword 0x707c, 0xc287, 0x0000, 0xe58d\n"
-        ".hword 0x000c, 0xda00, 0x046c, 0xe595\n"
-        ".hword 0x0100, 0xe086, 0x02ec, 0xe590\n"
-        ".hword 0x1000, 0xe590, 0x101c, 0xe591\n"
-        ".hword 0xff31, 0xe12f, 0x047c, 0xe595\n"
-        ".hword 0x4001, 0xe284, 0x0001, 0xe280\n"
-        ".hword 0x0000, 0xe587, 0x0000, 0xe59d\n"
-        ".hword 0x0004, 0xe150, 0xfff2, 0xcaff\n"
-        ".hword 0x8001, 0xe288, 0x0002, 0xe358\n"
-        ".hword 0xffcf, 0xbaff, 0x0001, 0xe3a0\n"
-        ".hword 0x83f8, 0xe8bd, 0x4000, 0xe3a0\n"
-        ".hword 0xffdb, 0xeaff, 0xa120, 0x0007\n"
-    );
+// ---------------------------------------------------------------------------
+// 0x0034fc14 (400 B): step-wait and per-slot counter stage of the action-step
+// object that also drives camp_func_00351040 (0x00351040).  Both functions read
+// the same layout: a signed entry limit at +0x2E8, an array of object pointers
+// at +0x2EC, 40-byte entries at +0x30C, two slot indices at +0x46C and two
+// per-slot counters at +0x47C.
+//
+// ABI: r0 = object (the only argument).  Returns 0 when the step state is
+// neither 3 nor 6, or after the animation subobject at +0x158 reports an
+// incomplete queue; otherwise returns 1 after the two slot counters are
+// serviced.  No other register or stack word is read on entry.
+//
+// The +0x158 subobject is examined through func_0023a774 (remaining count =
+// [p+0x58] - [p+0x5C], C++ linkage in leaf_matching.cpp) and through
+// engine_func_0023a690, whose return value is used only as a zero/non-zero
+// test.  States 1, 7 and 8 all end the wait loop; state 7 is also the abort
+// state written when the animation check fails.
+// ---------------------------------------------------------------------------
+
+// 0x0023A774: signed remaining count of the subobject at object+0x158.
+s32 func_0023a774(u8* sub);
+extern "C" u32 engine_func_0023a690(void* sub);        // 0x0023A690
+extern "C" void camp_func_00351040(void* obj);         // 0x00351040
+extern "C" void nn_sdk_func_002c4244(void* sync);      // 0x002C4244
+extern "C" void engine_func_002c3aa8(void* lock);      // 0x002C3AA8
+extern "C" void engine_func_002c3a24(void* lock);      // 0x002C3A24
+extern "C" void AsdThread_Sleep(u32 lo, u32 hi);       // 0x002BB490
+// 0x002C615C is the signed integer divide/modulo helper (`__aeabi_idivmod`);
+// the quotient is returned in r0 and the remainder in r1, and only r0 is used.
+extern "C" u64 ui_func_002c615c(s32 numerator, s32 denominator);  // 0x002C615C
+
+// Animation subobject at object+0x158; only the two words read by 0x0023A774 /
+// 0x0023A690 are named.
+struct AnimSub34fc14 {
+    u8  unknown_00[0x58];
+    s32 remaining_end_58;     // +0x58  read by 0x0023A774 / 0x0023A690
+    s32 remaining_pos_5c;     // +0x5C  read by 0x0023A774 / 0x0023A690
+    u8  unknown_60[0x130];
+};
+static_assert(sizeof(AnimSub34fc14) == 0x190, "AnimSub34fc14 size");
+
+// 40-byte entry in the table at object+0x30C.  The word at +0x08 selects a
+// two-frame granularity when it is 0 or 1 (the same test and table appear in
+// camp_func_00351040).
+struct StepEntry34fc14 {
+    u32 unknown_00;
+    u32 unknown_04;
+    u32 mode_08;              // +0x08  0/1 -> factor 2, any other value -> 1
+    u8  unknown_0c[0x1C];
+};
+static_assert(sizeof(StepEntry34fc14) == 40, "StepEntry34fc14 size");
+
+struct StepSlotObject34fc14;
+
+// Virtual table of the per-slot objects; the function calls the entries at
+// +0x10 and +0x1C only.
+struct StepSlotVTable34fc14 {
+    void* unknown_00;
+    void* unknown_04;
+    void* unknown_08;
+    void* unknown_0c;
+    void (*read_value_10)(StepSlotObject34fc14* self, u32* out);  // +0x10
+    void* unknown_14;
+    void* unknown_18;
+    void (*advance_1c)(StepSlotObject34fc14* self);               // +0x1C
+};
+
+struct StepSlotObject34fc14 {
+    const StepSlotVTable34fc14* vtable_00;
+};
+
+// Only the offsets touched by this function (and the two neighbours that share
+// the layout) are declared.
+struct EngineStepObject34fc14 {
+    u8  unknown_000[0x0C];
+    u32 state_0c;                 // +0x0C  3/6 start a step, 1/7/8 finish it
+    u8  unknown_010[0x10];
+    u32 sync_state_20;            // +0x20  sync word reset by 0x002C4244
+    u8  unknown_024[0x158 - 0x024];
+    AnimSub34fc14 anim_158;       // +0x158
+    s32 entry_limit_2e8;          // +0x2E8  signed bound for the slot indices
+    StepSlotObject34fc14* slot_object_2ec[8];   // +0x2EC
+    StepEntry34fc14 slot_entry_30c[8];          // +0x30C
+    u8  unknown_44c[0x46C - 0x44C];
+    s32 slot_index_46c[2];        // +0x46C  negative selects nothing
+    u8  unknown_474[0x47C - 0x474];
+    s32 slot_counter_47c[2];      // +0x47C  incremented once per frame
+};
+static_assert(offsetof(EngineStepObject34fc14, state_0c) == 0x00C);
+static_assert(offsetof(EngineStepObject34fc14, sync_state_20) == 0x020);
+static_assert(offsetof(EngineStepObject34fc14, anim_158) == 0x158);
+static_assert(offsetof(EngineStepObject34fc14, entry_limit_2e8) == 0x2E8);
+static_assert(offsetof(EngineStepObject34fc14, slot_object_2ec) == 0x2EC);
+static_assert(offsetof(EngineStepObject34fc14, slot_entry_30c) == 0x30C);
+static_assert(offsetof(EngineStepObject34fc14, slot_index_46c) == 0x46C);
+static_assert(offsetof(EngineStepObject34fc14, slot_counter_47c) == 0x47C);
+
+extern "C" u32 engine_func_0034fc14(EngineStepObject34fc14* obj) {
+    // Only a non-zero remaining count enters the animation bookkeeping block.
+    if (func_0023a774(reinterpret_cast<u8*>(&obj->anim_158)) != 0) {
+        // 0x0023A690 returns 1 once the queued animation records match the
+        // remaining count and 0 when the subobject is not ready; a zero result
+        // aborts the step through state 7.
+        if (engine_func_0023a690(&obj->anim_158) == 0) {
+            obj->state_0c = 7;
+        }
+        camp_func_00351040(obj);
+    }
+
+    // Steps are only serviced in state 3 or 6; everything else returns without
+    // touching the object.
+    if (obj->state_0c != 3 && obj->state_0c != 6) {
+        return 0;
+    }
+
+    // State 1 cannot reach this point (it was filtered above), but the original
+    // keeps the test because the transition block is shared with the sibling
+    // step functions.
+    if (obj->state_0c != 1) {
+        if (obj->state_0c == 6) {
+            nn_sdk_func_002c4244(&obj->sync_state_20);
+        }
+        engine_func_002c3aa8(obj);          // lock the step object
+        obj->state_0c = 2;
+        engine_func_002c3a24(obj);          // unlock
+    }
+
+    // Wait for another task to finish the step.  The original busy-waits with
+    // AsdThread_Sleep(0x0007A120, 0), the same interval used by 0x00351040.
+    while (obj->state_0c != 1 && obj->state_0c != 8 && obj->state_0c != 7) {
+        AsdThread_Sleep(0x0007A120, 0);
+    }
+
+    for (s32 slot = 0; slot < 2; ++slot) {
+        const s32 index = obj->slot_index_46c[slot];
+        if (index < 0) {
+            continue;
+        }
+
+        // Out-of-range indices leave the granularity at zero: the original
+        // compares the signed limit first and then tests the computed entry
+        // address itself against zero before reading entry+0x08.
+        s32 granularity = 0;
+        if (obj->entry_limit_2e8 > index) {
+            const u32 entry_address = reinterpret_cast<u32>(obj)
+                + static_cast<u32>(index) * sizeof(StepEntry34fc14)
+                + 0x30Cu;
+            if (entry_address != 0) {
+                const u32 mode =
+                    *reinterpret_cast<const u32*>(entry_address + 8u);
+                granularity = (mode == 0u || mode == 1u) ? 2 : 1;
+            }
+        }
+
+        // The current value comes from virtual slot +0x10 of the per-index
+        // object; the frame count is the value truncated to a multiple of the
+        // granularity with the signed divide helper.
+        StepSlotObject34fc14* const target = obj->slot_object_2ec[index];
+        u32 value;
+        target->vtable_00->read_value_10(target, &value);
+
+        const s32 quotient = static_cast<s32>(
+            ui_func_002c615c(static_cast<s32>(value), granularity));
+        const s32 frames = quotient * granularity;
+
+        for (s32 frame = 0; frame < frames; ++frame) {
+            // The index and the object pointer are reloaded on every iteration
+            // because the advance call may update them.
+            const s32 current = obj->slot_index_46c[slot];
+            StepSlotObject34fc14* const current_target =
+                obj->slot_object_2ec[current];
+            current_target->vtable_00->advance_1c(current_target);
+            ++obj->slot_counter_47c[slot];
+        }
+    }
+
+    return 1;
 }
+
+// ---------------------------------------------------------------------------
+// 0x0037a8d8 (400 B): initializer for the engine object class whose first
+// vftable is 0x00421774 (its virtual slots point into the 0x0037a5dc..0x0037b404
+// family).  The object embeds an AsdFileObject-style base subobject at +0x14,
+// set up through the 0x00420870 vtable-table entry: the table's vftable word is
+// copied to +0x14 and the table's complete-object pointer is stored at
+// `+0x14 + vftable[-0x30]` (the MSVC virtual-base offset also used by the
+// AsdFile constructor, see src/engine/asd_file.cpp).
+//
+// ABI: r0 = object (returned), r1 = resource block, r2 -> +0x40, r3 -> +0x44,
+// then the error callback and its argument as two stack words.  The original
+// copies those two words with `vldmia`/`vstmia`.
+// ---------------------------------------------------------------------------
+
+// 0x00420870: {vftable = 0x004208B0, 0x003FF29C, 0x003FF29C, self = 0x004208B0}.
+// Only the words read here are named; the vftable pointer is also the base for
+// the `[-0x30]` virtual-base offset lookup.
+struct VTableTableEntry37a8d8 {
+    void* vftable_00;   // +0x00  copied to object+0x14
+    u32 field_04;       // +0x04  not read here
+    u32 field_08;       // +0x08  not read here
+    void* self_0c;      // +0x0C  complete-object pointer
+};
+static_assert(offsetof(VTableTableEntry37a8d8, self_0c) == 0x0C);
+
+// Resource block passed in r1.  0x002bb88c is handed `&handle_04` and treats it
+// as {handle@0x00, outputs at +0x0C/+0x10}.
+struct Resource37a8d8 {
+    u32 field_00;       // +0x00
+    u32 handle_04;      // +0x04  tagged handle read by 0x002bb88c
+    u32 field_08;       // +0x08
+    u32 field_0c;       // +0x0C  rewritten by 0x002bb88c
+    u32 field_10;       // +0x10  rewritten by 0x002bb88c
+    u32 field_14;       // +0x14
+    s32 status_18;      // +0x18  status returned by 0x002bb88c
+    u8  quiet_1c;       // +0x1C  nonzero suppresses the 0x002bbd10 report
+};
+static_assert(offsetof(Resource37a8d8, status_18) == 0x18);
+static_assert(offsetof(Resource37a8d8, quiet_1c) == 0x1C);
+
+using ErrorCallback37a8d8 = void (*)(u32 code, u32 arg);
+
+struct EngineObject37a8d8 {
+    void* vftable_00;                 // +0x00  0x00421774
+    u8  byte_04;                      // +0x04  cleared
+    u8  pad_05[0x07];                 // +0x05..+0x0B untouched
+    u32 field_0c;                     // +0x0C  cleared
+    u32 field_10;                     // +0x10  cleared
+    void* base_vftable_14;            // +0x14  embedded AsdFileObject-style vfptr
+    u32 base_18;                      // +0x18  cleared
+    u32 base_1c;                      // +0x1C  cleared
+    u32 base_20;                      // +0x20  cleared
+    u32 base_24;                      // +0x24  cleared
+    u32 base_28;                      // +0x28  cleared
+    u32 status_2c;                    // +0x2C  0xE7E3FFFF initial status
+    u32 field_30;                     // +0x30  untouched
+    Resource37a8d8* resource_34;      // +0x34  r1
+    u32 range_38;                     // +0x38  view start / low helper output
+    u32 range_3c;                     // +0x3C  view length, cleared
+    u32 field_40;                     // +0x40  r2
+    u32 field_44;                     // +0x44  r3, or helper output when r3 == 0
+    ErrorCallback37a8d8 callback_48;  // +0x48  first stack word
+    u32 callback_arg_4c;              // +0x4C  second stack word
+    u8  active_50;                    // +0x50  0 at entry, 1 on the success path
+    u8  flag_51;                      // +0x51  cleared
+    u8  initialized_52;               // +0x52  previous-state byte, cleared on success
+};
+static_assert(offsetof(EngineObject37a8d8, base_vftable_14) == 0x14);
+static_assert(offsetof(EngineObject37a8d8, status_2c) == 0x2C);
+static_assert(offsetof(EngineObject37a8d8, resource_34) == 0x34);
+static_assert(offsetof(EngineObject37a8d8, range_38) == 0x38);
+static_assert(offsetof(EngineObject37a8d8, field_40) == 0x40);
+static_assert(offsetof(EngineObject37a8d8, callback_48) == 0x48);
+static_assert(offsetof(EngineObject37a8d8, active_50) == 0x50);
+static_assert(offsetof(EngineObject37a8d8, initialized_52) == 0x52);
+
+extern "C" const VTableTableEntry37a8d8 g_AsdFileVTableTable;      // 0x00420870
+// 0x002bb88c: queries `handle_block` (handle at +0x00) and copies the 8-byte
+// result to handle_block+0x0C and *out_pair only when the status is >= 0.
+extern "C" s32 engine_func_002bb88c(void* handle_block, u32* out_pair);
+// 0x002bbd10: records a negative status together with the report site.
+extern "C" void nn_sdk_func_002bbd10(s32 status, const void* site, u32 kind);
+// 0x00235eec: sets the second word of the two-word range at `range`.
+extern "C" void func_00235eec(void* range, s32 offset, s32 mode);
+// 0x002b93f0: virtual release dispatch.  Only reachable from the
+// statically-unreachable cleanup block described below.
+extern "C" void engine_func_002b93f0(void* object);
 
 // DECOMP_FUNC(0x0037a8d8, 400)
-extern "C" __attribute__((naked)) void engine_func_0037a8d8() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x41f0, 0xe92d, 0xd008, 0xe24d\n"
-        ".hword 0x4000, 0xe1a0, 0x0020, 0xe28d\n"
-        ".hword 0x8000, 0xe3a0, 0x0a02, 0xec90\n"
-        ".hword 0x7003, 0xe1a0, 0x0160, 0xe59f\n"
-        ".hword 0x8004, 0xe5c4, 0x800c, 0xe584\n"
-        ".hword 0x0000, 0xe584, 0x8010, 0xe584\n"
-        ".hword 0x8018, 0xe584, 0x514c, 0xe59f\n"
-        ".hword 0x801c, 0xe584, 0x8020, 0xe584\n"
-        ".hword 0x8024, 0xe584, 0x8028, 0xe584\n"
-        ".hword 0x0000, 0xe595, 0x3014, 0xe284\n"
-        ".hword 0x6034, 0xe284, 0x0014, 0xe584\n"
-        ".hword 0xc00c, 0xe595, 0x5030, 0xe510\n"
-        ".hword 0x0124, 0xe59f, 0xc005, 0xe783\n"
-        ".hword 0x002c, 0xe584, 0x0102, 0xe886\n"
-        ".hword 0x0040, 0xe284, 0x803c, 0xe584\n"
-        ".hword 0x0084, 0xe880, 0x0048, 0xe284\n"
-        ".hword 0x0a02, 0xec80, 0x8050, 0xe5c4\n"
-        ".hword 0x8051, 0xe5c4, 0x0052, 0xe5d4\n"
-        ".hword 0x0000, 0xe350, 0x0000, 0x1358\n"
-        ".hword 0x0050, 0x15d4, 0x0000, 0x1350\n"
-        ".hword 0x0007, 0x0a00, 0x5034, 0xe594\n"
-        ".hword 0x0004, 0xe595, 0x1001, 0xe3d0\n"
-        ".hword 0x0002, 0x0a00, 0x0001, 0xe3c0\n"
-        ".hword 0xfa96, 0xebfc, 0x8004, 0xe585\n"
-        ".hword 0x8050, 0xe5c4, 0x6034, 0xe594\n"
-        ".hword 0x5000, 0xe3a0, 0x001c, 0xe5d6\n"
-        ".hword 0x0000, 0xe350, 0x000d, 0x0a00\n"
-        ".hword 0x0000, 0xe3a0, 0x1000, 0xe1a0\n"
-        ".hword 0x00f0, 0xe1cd, 0x100d, 0xe1a0\n"
-        ".hword 0x0004, 0xe286, 0x03b0, 0xebfd\n"
-        ".hword 0x1102, 0xe200, 0x0000, 0xe351\n"
-        ".hword 0x0018, 0xe586, 0x5000, 0xa59d\n"
-        ".hword 0x0fc0, 0xe1a0, 0x0001, 0xe290\n"
-        ".hword 0x0014, 0x0a00, 0x0006, 0xea00\n"
-        ".hword 0x0004, 0xe286, 0x100d, 0xe1a0\n"
-        ".hword 0x03a5, 0xebfd, 0x100f, 0xe1a0\n"
-        ".hword 0x2fa0, 0xe1b0, 0x04c3, 0x1bfd\n"
-        ".hword 0x5000, 0xe59d, 0x0000, 0xe357\n"
-        ".hword 0x2000, 0xe3a0, 0x5044, 0x0584\n"
-        ".hword 0x1002, 0xe1a0, 0x0038, 0xe284\n"
-        ".hword 0x5038, 0xe584, 0xed32, 0xebfa\n"
-        ".hword 0x0001, 0xe3a0, 0x8052, 0xe5c4\n"
-        ".hword 0x0050, 0xe5c4, 0xd008, 0xe28d\n"
-        ".hword 0x0004, 0xe1a0, 0x81f0, 0xe8bd\n"
-        ".hword 0x2048, 0xe594, 0x0034, 0xe594\n"
-        ".hword 0x0000, 0xe352, 0x104c, 0x1594\n"
-        ".hword 0x0018, 0xe590, 0xff32, 0x112f\n"
-        ".hword 0xd008, 0xe28d, 0x0004, 0xe1a0\n"
-        ".hword 0x81f0, 0xe8bd, 0x1774, 0x0042\n"
-        ".hword 0x0870, 0x0042, 0xffff, 0xe7e3\n"
-    );
+extern "C" EngineObject37a8d8* engine_func_0037a8d8(
+    EngineObject37a8d8* self, Resource37a8d8* resource, u32 field_40,
+    u32 field_44, ErrorCallback37a8d8 callback, u32 callback_arg) {
+    u8* const bytes = reinterpret_cast<u8*>(self);
+
+    // Header: +0x05..+0x0B and +0x30..+0x33 are deliberately not written.
+    self->byte_04 = 0;
+    self->field_0c = 0;
+    self->vftable_00 = reinterpret_cast<void*>(0x00421774);
+    self->field_10 = 0;
+    self->base_18 = 0;
+    self->base_1c = 0;
+    self->base_20 = 0;
+    self->base_24 = 0;
+    self->base_28 = 0;
+
+    // Embedded base subobject: copy the vftable, then apply the MSVC
+    // virtual-base complete-object store.
+    void* const base_vftable = g_AsdFileVTableTable.vftable_00;
+    self->base_vftable_14 = base_vftable;
+    const u32 virtual_base_offset = *reinterpret_cast<const u32*>(
+        static_cast<const u8*>(base_vftable) - 0x30);
+    *reinterpret_cast<void**>(bytes + 0x14 + virtual_base_offset) =
+        g_AsdFileVTableTable.self_0c;
+
+    self->status_2c = 0xE7E3FFFFu;
+    self->resource_34 = resource;
+    self->range_38 = 0;
+    self->range_3c = 0;
+    self->field_40 = field_40;
+    self->field_44 = field_44;
+    self->callback_48 = callback;
+    self->callback_arg_4c = callback_arg;
+    self->active_50 = 0;
+    self->flag_51 = 0;
+
+    // The original reads the previous-state byte here and tests it with a
+    // compile-time-zero operand (the hard-wired zero in r8) and with +0x50,
+    // which was just cleared.  The guarded release is therefore unreachable;
+    // its shape (0x002b93f0 on `handle_04 & ~1`, then two clears) is kept in
+    // source for documentation and folded away by the compiler.
+    const u8 was_initialized = self->initialized_52;
+    if (was_initialized != 0 && false && self->active_50 != 0) {
+        const u32 tagged = self->resource_34->handle_04;
+        if ((tagged & ~1u) != 0) {
+            engine_func_002b93f0(reinterpret_cast<void*>(tagged & ~1u));
+            self->resource_34->handle_04 = 0;
+        }
+        self->active_50 = 0;
+    }
+
+    // 0x002bb88c writes an 8-byte result pair; only the low word is used.
+    // quiet_1c selects between "record the status" (negative status returns
+    // through the error callback) and "report and continue".
+    u32 result[2];
+    if (resource->quiet_1c == 0) {
+        // This path does not pre-clear the output pair; the helper leaves it
+        // untouched when it reports a negative status.
+        const s32 status = engine_func_002bb88c(&resource->handle_04, result);
+        if (status < 0) {
+            // The original passes the address of the failing call itself
+            // (`mov r1, pc`) as the report site.
+            nn_sdk_func_002bbd10(status, &&report_site, 1);
+        report_site:
+            (void)0;
+        }
+    } else {
+        result[0] = 0;
+        result[1] = 0;
+        const s32 status = engine_func_002bb88c(&resource->handle_04, result);
+        resource->status_18 = status;
+        if (status < 0) {
+            // Error callback: the code is re-read from the resource block and
+            // the callback argument from +0x4C.  The load is performed even
+            // when the callback is null.
+            ErrorCallback37a8d8 const error_callback = self->callback_48;
+            const u32 code = self->resource_34->status_18;
+            if (error_callback != nullptr) {
+                error_callback(code, self->callback_arg_4c);
+            }
+            return self;
+        }
+    }
+
+    const u32 value = result[0];
+    if (field_44 == 0) {
+        self->field_44 = value;
+    }
+    self->range_38 = value;
+    func_00235eec(&self->range_38, 0, 0);
+    self->initialized_52 = 0;
+    self->active_50 = 1;
+    return self;
 }
 
 // DECOMP_FUNC(0x001b48c0, 404)
@@ -4145,294 +4517,659 @@ extern "C" __attribute__((naked)) void script_vm_func_0033574c() {
     );
 }
 
+// Direct calls made by 0x0038B75C.
+extern "C" void engine_func_00361710(void* object);                       // 0x00361710
+extern "C" void crt_func_00100c74(u16* dst, const u16* src, u32 count);   // 0x00100C74 (Thumb)
+extern "C" s32 func_003617ec(void* object, u32 arg1, u32 arg2);           // 0x003617EC
+extern "C" void camp_func_001472a8(u32 value);                            // 0x001472A8
+extern "C" u32 func_003619cc();                                           // 0x003619CC
+extern "C" u32 func_003619fc();                                           // 0x003619FC
+extern "C" __attribute__((pcs("aapcs"))) u32
+engine_func_00361888(u8* out_byte, void* object, u32 base, u32 size,
+                     f32 value, u32 arg5, u32 arg6, u32 arg7, u32 arg8);  // 0x00361888
+extern "C" s32 func_0035a614(void* dst, u32* inout1, const u16* text,
+                             u32* inout2);                                // 0x0035A614
+extern "C" void engine_func_002bce48(u32 result);                         // 0x002BCE48
+extern "C" void engine_func_002c3b48(void* dst, u32 size);                // 0x002C3B48
+
+// Stack object built by 0x00361710.  Fields are named after their ARM offsets;
+// the constructor writes up to +0x354, so the whole extent is retained.
+struct EngineFunc0038b75cObject {
+    u32 field_00;
+    u32 field_04;
+    u32 field_08;
+    u32 field_0c;
+    u32 field_10;
+    u32 field_14;
+    u32 field_18;
+    u32 field_1c;
+    u16 field_20;
+    u16 field_22;
+    u16 field_24;
+    u8  pad_26[0x66];
+    u32 field_8c;
+    u16 text_90[0x41];
+    u8  byte_112;
+    u8  byte_113;
+    u8  byte_114;
+    u8  byte_115;
+    u8  byte_116;
+    u8  byte_117;
+    u8  byte_118;
+    u8  byte_119;
+    u8  byte_11a;
+    u8  byte_11b;
+    u8  byte_11c;
+    u8  byte_11d;
+    u8  pad_11e[2];
+    u32 field_120;
+    u32 field_124;
+    u32 field_128;
+    u32 field_12c;
+    u32 field_130;
+    u16 field_134;
+    u16 pad_136;
+    u32 field_138;
+    u32 field_13c;
+    u32 field_140;
+    u32 field_144;
+    u16 field_148;
+    u16 pad_14a;
+    u32 field_14c;
+    u8  field_150[0x202];
+    u8  pad_352[2];
+    u8  byte_354;
+    u8  pad_355[3];
+};
+static_assert(sizeof(EngineFunc0038b75cObject) == 0x358);
+
 // DECOMP_FUNC(0x0038b75c, 404)
-extern "C" __attribute__((naked)) void engine_func_0038b75c() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x47f0, 0xe92d, 0x6003, 0xe1a0\n"
-        ".hword 0x7002, 0xe1a0, 0x9001, 0xe1a0\n"
-        ".hword 0x8b02, 0xed2d, 0xde42, 0xe24d\n"
-        ".hword 0x1b01, 0xe28d, 0x0b01, 0xe28d\n"
-        ".hword 0x1048, 0xe281, 0x8a14, 0xed90\n"
-        ".hword 0xa018, 0xe28d, 0x0030, 0xe891\n"
-        ".hword 0x000a, 0xe1a0, 0x57de, 0xebff\n"
-        ".hword 0x8000, 0xe3a0, 0x0001, 0xe3a0\n"
-        ".hword 0x63b8, 0xe1cd, 0x0000, 0xe354\n"
-        ".hword 0x812b, 0xe5cd, 0x1004, 0xe3a0\n"
-        ".hword 0x812d, 0xe5cd, 0x0024, 0x158d\n"
-        ".hword 0x0000, 0xe355, 0x0018, 0xe58d\n"
-        ".hword 0x1020, 0xe58d, 0x012c, 0xe5cd\n"
-        ".hword 0x0002, 0x0a00, 0x002c, 0xe59d\n"
-        ".hword 0x0001, 0xe380, 0x002c, 0xe58d\n"
-        ".hword 0x2041, 0xe3a0, 0x1007, 0xe1a0\n"
-        ".hword 0x500a, 0xe1a0, 0x0090, 0xe28a\n"
-        ".hword 0xd522, 0xfaf5, 0x2000, 0xe3a0\n"
-        ".hword 0x1002, 0xe1a0, 0x0005, 0xe1a0\n"
-        ".hword 0x57fc, 0xebff, 0x4000, 0xe1a0\n"
-        ".hword 0xf000, 0xe320, 0xeea8, 0xebf6\n"
-        ".hword 0xf000, 0xe320, 0xf000, 0xe320\n"
-        ".hword 0x586e, 0xebff, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0x5877, 0xebff\n"
-        ".hword 0x00c8, 0xe59f, 0x3004, 0xe1a0\n"
-        ".hword 0x1005, 0xe1a0, 0x2000, 0xe280\n"
-        ".hword 0x8fff, 0xe5c0, 0x8004, 0xe58d\n"
-        ".hword 0x8008, 0xe58d, 0x800c, 0xe58d\n"
-        ".hword 0x8010, 0xe58d, 0x8a00, 0xed8d\n"
-        ".hword 0x0014, 0xe28d, 0x580e, 0xebff\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x0002, 0x0a00, 0x0150, 0xe59d\n"
-        ".hword 0x0002, 0xe350, 0x0003, 0x0a00\n"
-        ".hword 0xde42, 0xe28d, 0x0000, 0xe3a0\n"
-        ".hword 0x8b02, 0xecbd, 0x87f0, 0xe8bd\n"
-        ".hword 0x0000, 0xe3e0, 0x0000, 0xe58d\n"
-        ".hword 0x015c, 0xe59d, 0x4064, 0xe59f\n"
-        ".hword 0x500d, 0xe1a0, 0x7004, 0xe28d\n"
-        ".hword 0x2080, 0xe084, 0x3005, 0xe1a0\n"
-        ".hword 0x1007, 0xe1a0, 0x0000, 0xe3a0\n"
-        ".hword 0x3b5c, 0xebff, 0x0fa0, 0xe1b0\n"
-        ".hword 0xf000, 0xe320, 0xc566, 0x1bfc\n"
-        ".hword 0x1006, 0xe1a0, 0x0009, 0xe1a0\n"
-        ".hword 0xe0a3, 0xebfc, 0x015c, 0xe59d\n"
-        ".hword 0x3005, 0xe1a0, 0x1007, 0xe1a0\n"
-        ".hword 0x2080, 0xe084, 0x0009, 0xe1a0\n"
-        ".hword 0x3b50, 0xebff, 0x0fa0, 0xe1b0\n"
-        ".hword 0xf000, 0xe320, 0xc55a, 0x1bfc\n"
-        ".hword 0xde42, 0xe28d, 0x0001, 0xe3a0\n"
-        ".hword 0x8b02, 0xecbd, 0x87f0, 0xe8bd\n"
-        ".hword 0x7000, 0x0047\n"
-    );
+extern "C" __attribute__((pcs("aapcs"))) u32
+engine_func_0038b75c([[maybe_unused]] void* context, u8* buffer,
+                     const u16* name, u32 buffer_size, u32 flag_a,
+                     u32 flag_b, f32 value) {
+    alignas(8) EngineFunc0038b75cObject object;
+    engine_func_00361710(&object);
+
+    // Field block issued between the constructor and the name copy.
+    object.field_00 = 1;
+    object.field_08 = 4;
+    if (flag_a != 0) {
+        object.field_0c = 1;
+    }
+    if (flag_b != 0) {
+        object.field_14 |= 1;
+    }
+    object.field_20 = static_cast<u16>(buffer_size);
+    object.byte_113 = 0;
+    object.byte_114 = 1;
+    object.byte_115 = 0;
+
+    crt_func_00100c74(object.text_90, name, 0x41);
+
+    const s32 size = func_003617ec(&object, 0, 0);
+
+    camp_func_001472a8(static_cast<u32>(size));
+    func_003619cc();
+    func_003619fc();
+
+    // __bss_start__; the byte store and the u16 lookup table below live in BSS.
+    constexpr u32 kBssBase = 0x00477000;
+    *reinterpret_cast<volatile u8*>(kBssBase + 0xFFF) = 0;
+
+    u8 result_byte = 0;
+    if (engine_func_00361888(&result_byte, &object, kBssBase,
+                             static_cast<u32>(size), value, 0, 0, 0, 0) == 0) {
+        return 0;
+    }
+    if (object.field_138 != 2) {
+        return 0;
+    }
+
+    u32 inout_a = 0xFFFFFFFFu;
+    u32 inout_b = 0;
+    const u32 index = object.field_144;
+    const u16* entry = reinterpret_cast<const u16*>(kBssBase + index * 2);
+
+    if (func_0035a614(nullptr, &inout_b, entry, &inout_a) < 0) {
+        engine_func_002bce48(1);
+    }
+
+    engine_func_002c3b48(buffer, buffer_size);
+
+    if (func_0035a614(buffer, &inout_b, entry, &inout_a) < 0) {
+        engine_func_002bce48(1);
+    }
+
+    return 1;
 }
+
+// Direct calls made by 0x0015d944.
+extern "C" void* engine_func_002bd48c(u32 id, void* factory, void* owner); // 0x002bd48c
+extern "C" void* engine_func_002bb270();                                   // 0x002bb270
+extern "C" u32 engine_func_0015e590(void* manager, u32 id);                // 0x0015e590
+extern "C" void engine_func_002bd620(void* entry);                         // 0x002bd620
+
+namespace {
+
+// Factory callbacks handed to 0x002BD48C.  The single-slot form initialises
+// an object differently from the multi-slot form, so the two addresses are
+// kept distinct.  They are only passed as data here, never called.
+constexpr u32 kSingleSlotFactory = 0x0015e458;
+constexpr u32 kMultiSlotFactory = 0x0015e4a8;
+
+// Fields touched by this function.  The two leading words are the entries
+// written by the creation loop; +0x08 is the entry count, +0x0C a caller word
+// and +0x10 a float value copied from the fifth (stack) argument.
+struct EngineSlotSet {
+    void* slots_00[2];
+    s32 count_08;
+    u32 value_0c;
+    f32 value_10;
+    u8 flag_14;
+    u8 unknown_15;
+    u8 flag_16;
+    u8 flag_17;
+    u8 flag_18;
+    u8 unknown_19;
+    u8 active_1a;
+    u8 failed_1b;
+    u32 word_1c;
+    u16 half_20;
+    u8 flag_22;
+    u8 pad_23;
+    f32 value_24;
+    f32 value_28;
+    u8 flag_2c;
+    u8 flag_2d;
+    u8 pad_2e[2];
+    f32 value_30;
+    f32 value_34;
+    f32 value_38;
+    f32 value_3c;
+    u32 pad_40;
+    f32 value_44;
+    f32 value_48;
+    f32 value_4c;
+};
+
+static_assert(offsetof(EngineSlotSet, count_08) == 0x08);
+static_assert(offsetof(EngineSlotSet, value_0c) == 0x0c);
+static_assert(offsetof(EngineSlotSet, value_10) == 0x10);
+static_assert(offsetof(EngineSlotSet, flag_14) == 0x14);
+static_assert(offsetof(EngineSlotSet, flag_16) == 0x16);
+static_assert(offsetof(EngineSlotSet, flag_17) == 0x17);
+static_assert(offsetof(EngineSlotSet, flag_18) == 0x18);
+static_assert(offsetof(EngineSlotSet, active_1a) == 0x1a);
+static_assert(offsetof(EngineSlotSet, failed_1b) == 0x1b);
+static_assert(offsetof(EngineSlotSet, word_1c) == 0x1c);
+static_assert(offsetof(EngineSlotSet, half_20) == 0x20);
+static_assert(offsetof(EngineSlotSet, flag_22) == 0x22);
+static_assert(offsetof(EngineSlotSet, value_24) == 0x24);
+static_assert(offsetof(EngineSlotSet, value_28) == 0x28);
+static_assert(offsetof(EngineSlotSet, flag_2c) == 0x2c);
+static_assert(offsetof(EngineSlotSet, flag_2d) == 0x2d);
+static_assert(offsetof(EngineSlotSet, value_30) == 0x30);
+static_assert(offsetof(EngineSlotSet, value_34) == 0x34);
+static_assert(offsetof(EngineSlotSet, value_38) == 0x38);
+static_assert(offsetof(EngineSlotSet, value_3c) == 0x3c);
+static_assert(offsetof(EngineSlotSet, value_44) == 0x44);
+static_assert(offsetof(EngineSlotSet, value_48) == 0x48);
+static_assert(offsetof(EngineSlotSet, value_4c) == 0x4c);
+
+}  // namespace
 
 // DECOMP_FUNC(0x0015d944, 408)
-extern "C" __attribute__((naked)) void engine_func_0015d944() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x5ff0, 0xe92d, 0x0002, 0xe351\n"
-        ".hword 0x4000, 0xe1a0, 0x8003, 0xe1a0\n"
-        ".hword 0x7002, 0xc3a0, 0x8b02, 0xed2d\n"
-        ".hword 0x8a0c, 0xed9d, 0x0002, 0xca00\n"
-        ".hword 0x0001, 0xe351, 0x7001, 0xb3a0\n"
-        ".hword 0x7001, 0xa1a0, 0xb001, 0xe3a0\n"
-        ".hword 0xa000, 0xe3a0, 0xb01a, 0xe5c4\n"
-        ".hword 0x9012, 0xe6ef, 0xa008, 0xe584\n"
-        ".hword 0x0001, 0xe357, 0xa01b, 0xe5c4\n"
-        ".hword 0x000a, 0x0a00, 0x0000, 0xe357\n"
-        ".hword 0x6000, 0xe3a0, 0x0020, 0xda00\n"
-        ".hword 0x1128, 0xe59f, 0x2004, 0xe1a0\n"
-        ".hword 0x0009, 0xe1a0, 0x7eb7, 0xeb05\n"
-        ".hword 0x5000, 0xe1b0, 0xf000, 0xe320\n"
-        ".hword 0x0009, 0x0a00, 0x0011, 0xea00\n"
-        ".hword 0x2000, 0xe1a0, 0x1108, 0xe59f\n"
-        ".hword 0x0009, 0xe1a0, 0x7eaf, 0xeb05\n"
-        ".hword 0x0000, 0xe350, 0x0000, 0x1584\n"
-        ".hword 0xb008, 0x1584, 0x001f, 0x0a00\n"
-        ".hword 0x0020, 0xea00, 0xf000, 0xe320\n"
-        ".hword 0x7621, 0xeb05, 0x1009, 0xe1a0\n"
-        ".hword 0xf000, 0xe320, 0x02e6, 0xeb00\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0xffe6, 0x1aff, 0xb01b, 0xe5c4\n"
-        ".hword 0x5106, 0xe784, 0x0008, 0xe594\n"
-        ".hword 0x6001, 0xe286, 0x0007, 0xe156\n"
-        ".hword 0x0001, 0xe280, 0x0008, 0xe584\n"
-        ".hword 0xffde, 0xbaff, 0x001b, 0xe5d4\n"
-        ".hword 0x0000, 0xe350, 0x000d, 0x0a00\n"
-        ".hword 0x0008, 0xe594, 0x5000, 0xe3a0\n"
-        ".hword 0x0000, 0xe350, 0x0006, 0xda00\n"
-        ".hword 0x0105, 0xe794, 0x0000, 0xe350\n"
-        ".hword 0x7ef5, 0x1b05, 0x0008, 0xe594\n"
-        ".hword 0x5001, 0xe285, 0x0005, 0xe150\n"
-        ".hword 0xfff8, 0xcaff, 0x0000, 0xe3a0\n"
-        ".hword 0x8b02, 0xecbd, 0x9ff0, 0xe8bd\n"
-        ".hword 0xa01a, 0xe5c4, 0xa2b0, 0xe1c4\n"
-        ".hword 0xa017, 0xe5c4, 0xa018, 0xe5c4\n"
-        ".hword 0x0a16, 0xed9f, 0xa016, 0xe5c4\n"
-        ".hword 0xa01c, 0xe584, 0x0a09, 0xed84\n"
-        ".hword 0x0a13, 0xeddf, 0x0a0e, 0xed84\n"
-        ".hword 0xa022, 0xe5c4, 0x0a0f, 0xedc4\n"
-        ".hword 0x0a0c, 0xedc4, 0x0a0d, 0xedc4\n"
-        ".hword 0x0a11, 0xed84, 0x800c, 0xe584\n"
-        ".hword 0x8a04, 0xed84, 0x0a12, 0xedc4\n"
-        ".hword 0x0a13, 0xedc4, 0x0a0a, 0xed84\n"
-        ".hword 0xa02c, 0xe5c4, 0xa02d, 0xe5c4\n"
-        ".hword 0xb014, 0xe5c4, 0x0001, 0xe3a0\n"
-        ".hword 0x8b02, 0xecbd, 0x9ff0, 0xe8bd\n"
-        ".hword 0xe4a8, 0x0015, 0xe458, 0x0015\n"
-        ".hword 0x0000, 0x3f80, 0x0000, 0x0000\n"
-    );
+//
+// Initialises a one- or two-slot engine object set and fills it with entries
+// created through 0x002BD48C:
+//   * the requested count is clamped to [1, 2] with a signed comparison;
+//   * the id is unsigned-saturated to 15 bits (negative -> 0, >= 0x8000 ->
+//     0x7FFF), matching the `usat r11, #15, r2` instruction;
+//   * count == 1 creates one entry with the single-slot factory and stores it
+//     at +0x00; count == 2 creates up to two entries with the multi-slot
+//     factory and stores them at +0x00/+0x04;
+//   * a null creation is retried while 0x002BB270/0x0015E590 report that an
+//     object with the same id already exists; otherwise +0x1B records the
+//     failure and the partial set is released through 0x002BD620.
+// The success path initialises the remaining flag/float block (+0x14 through
+// +0x4C) plus +0x0C/+0x10 and returns 1; every failure path returns 0.  The
+// fifth argument is the bit pattern of a float passed in the first stack slot
+// by the soft-float callers.
+extern "C" u32 engine_func_0015d944(void* self_pointer, s32 requested_count,
+                                    s32 raw_id, u32 arg_0c,
+                                    u32 stack_float_bits) {
+    auto* const self = static_cast<EngineSlotSet*>(self_pointer);
+
+    s32 count = requested_count;
+    if (count > 2) {
+        count = 2;
+    } else if (count < 1) {
+        count = 1;
+    }
+
+    u32 id;
+    if (raw_id < 0) {
+        id = 0;
+    } else if (raw_id > 0x7FFF) {
+        id = 0x7FFF;
+    } else {
+        id = static_cast<u32>(raw_id);
+    }
+
+    self->active_1a = 1;
+    self->count_08 = 0;
+    self->failed_1b = 0;
+
+    if (count == 1) {
+        void* const entry = engine_func_002bd48c(
+            id, reinterpret_cast<void*>(kSingleSlotFactory), self);
+        if (entry == nullptr) {
+            return 0;
+        }
+        self->slots_00[0] = entry;
+        self->count_08 = 1;
+    } else {
+        s32 index = 0;
+        while (index < count) {
+            void* const entry = engine_func_002bd48c(
+                id, reinterpret_cast<void*>(kMultiSlotFactory), self);
+            if (entry == nullptr) {
+                // A pre-existing object with this id makes the creation retry
+                // the same slot rather than counting a failure.
+                if (engine_func_0015e590(engine_func_002bb270(), id) != 0) {
+                    continue;
+                }
+                self->failed_1b = 1;
+            }
+            self->slots_00[index] = entry;
+            self->count_08 = self->count_08 + 1;
+            ++index;
+        }
+
+        if (self->failed_1b != 0) {
+            for (s32 slot = 0; slot < self->count_08; ++slot) {
+                void* const entry = self->slots_00[slot];
+                if (entry != nullptr) {
+                    engine_func_002bd620(entry);
+                }
+            }
+            return 0;
+        }
+    }
+
+    self->active_1a = 0;
+    self->half_20 = 0;
+    self->flag_17 = 0;
+    self->flag_18 = 0;
+    self->value_24 = 1.0f;
+    self->flag_16 = 0;
+    self->word_1c = 0;
+    self->value_38 = 1.0f;
+    self->flag_22 = 0;
+    self->value_3c = 0.0f;
+    self->value_30 = 0.0f;
+    self->value_34 = 0.0f;
+    self->value_44 = 1.0f;
+    self->value_0c = arg_0c;
+    self->value_10 = __builtin_bit_cast(f32, stack_float_bits);
+    self->value_48 = 0.0f;
+    self->value_4c = 0.0f;
+    self->value_28 = 1.0f;
+    self->flag_2c = 0;
+    self->flag_2d = 0;
+    self->flag_14 = 1;
+    return 1;
 }
+
+// Direct calls made by 0x00195424.
+extern "C" u32 func_00360f48(f32 y, f32 x);                       // 0x00360f48
+extern "C" u64 ui_func_002c615c(s32 numerator, s32 denominator);  // 0x002c615c
+
+namespace {
+
+f32 LoadF32(const u8* self, u32 offset) {
+    return *reinterpret_cast<const f32*>(self + offset);
+}
+
+void StoreS32(u8* self, u32 offset, s32 value) {
+    *reinterpret_cast<s32*>(self + offset) = value;
+}
+
+// 0x002C615C is the signed integer divide/modulo helper (`__aeabi_idivmod`):
+// the quotient is returned in r0 and the remainder in r1.  Only r0 is used.
+s32 DivideQuotient(s32 numerator, s32 denominator) {
+    return static_cast<s32>(ui_func_002c615c(numerator, denominator));
+}
+
+}  // namespace
 
 // DECOMP_FUNC(0x00195424, 408)
-extern "C" __attribute__((naked)) void ui_func_00195424() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4070, 0xe92d, 0x4000, 0xe1a0\n"
-        ".hword 0x5001, 0xe1a0, 0x8b02, 0xed2d\n"
-        ".hword 0x01d8, 0xe5d0, 0x0000, 0xe350\n"
-        ".hword 0x0013, 0x0a00, 0x0001, 0xe350\n"
-        ".hword 0x0013, 0x0a00, 0x0002, 0xe350\n"
-        ".hword 0x000f, 0x1a00, 0x0fb5, 0xe284\n"
-        ".hword 0x0a49, 0xed94, 0x0a48, 0xedd4\n"
-        ".hword 0x1a02, 0xec90, 0x0ac1, 0xee70\n"
-        ".hword 0x0a61, 0xee30, 0x2eb6, 0xeb07\n"
-        ".hword 0x0901, 0xe240, 0x1f5a, 0xe3a0\n"
-        ".hword 0x0070, 0xe6ff, 0x0000, 0xe355\n"
-        ".hword 0x0190, 0xe000, 0x0820, 0xe1a0\n"
-        ".hword 0x000c, 0xe584, 0x0000, 0x1260\n"
-        ".hword 0x000c, 0x1584, 0x8b02, 0xecbd\n"
-        ".hword 0x8070, 0xe8bd, 0x8a49, 0xedd4\n"
-        ".hword 0x8a45, 0xed9f, 0x8ac8, 0xeef4\n"
-        ".hword 0xfa10, 0xeef1, 0x0a48, 0xed94\n"
-        ".hword 0x000f, 0xda00, 0x0ac8, 0xeeb4\n"
-        ".hword 0xfa10, 0xeef1, 0x0ad3, 0xed94\n"
-        ".hword 0x0ac0, 0xeebd, 0x1a10, 0xee10\n"
-        ".hword 0x0004, 0xda00, 0x005a, 0xe3a0\n"
-        ".hword 0xc322, 0xeb04, 0x000c, 0xe584\n"
-        ".hword 0xf000, 0xe320, 0x0013, 0xea00\n"
-        ".hword 0x0059, 0xe3e0, 0xc31d, 0xeb04\n"
-        ".hword 0x000c, 0xe584, 0xf000, 0xe320\n"
-        ".hword 0x000e, 0xea00, 0x0ac8, 0xeeb4\n"
-        ".hword 0xfa10, 0xeef1, 0x0ad3, 0xed94\n"
-        ".hword 0x0ac0, 0xeebd, 0x1a10, 0xee10\n"
-        ".hword 0x0004, 0xda00, 0x005a, 0xe3a0\n"
-        ".hword 0xc312, 0xeb04, 0x005a, 0xe280\n"
-        ".hword 0xf000, 0xe320, 0x0002, 0xea00\n"
-        ".hword 0x0059, 0xe3e0, 0xc30d, 0xeb04\n"
-        ".hword 0x005a, 0xe240, 0x000c, 0xe584\n"
-        ".hword 0x0130, 0xe5d4, 0x0001, 0xe310\n"
-        ".hword 0xffd5, 0x0aff, 0x8ac8, 0xeef4\n"
-        ".hword 0xfa10, 0xeef1, 0x0a4a, 0xed94\n"
-        ".hword 0x000a, 0xda00, 0x0ac8, 0xeeb4\n"
-        ".hword 0xfa10, 0xeef1, 0x0ad3, 0xed94\n"
-        ".hword 0x0059, 0xc3e0, 0x0ac0, 0xeebd\n"
-        ".hword 0x005a, 0xd3a0, 0x1a10, 0xee10\n"
-        ".hword 0xc2fc, 0xeb04, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0x000d, 0xea00\n"
-        ".hword 0x0ac8, 0xeeb4, 0xfa10, 0xeef1\n"
-        ".hword 0x0ad3, 0xed94, 0x0ac0, 0xeebd\n"
-        ".hword 0x1a10, 0xee10, 0x0004, 0xda00\n"
-        ".hword 0x0059, 0xe3e0, 0xc2f1, 0xeb04\n"
-        ".hword 0x005a, 0xe240, 0xf000, 0xe320\n"
-        ".hword 0x0002, 0xea00, 0x005a, 0xe3a0\n"
-        ".hword 0xc2ec, 0xeb04, 0x005a, 0xe280\n"
-        ".hword 0x0004, 0xe584, 0x8b02, 0xecbd\n"
-        ".hword 0x8070, 0xe8bd, 0x0000, 0x0000\n"
-    );
+//
+// Heading updater for a UI object.  The state byte at +0x1D8 selects the work:
+//   0        - nothing (r0 is left holding the state byte)
+//   1        - derive the +0x0C angle, and the +0x04 angle when +0x130 bit 0
+//              is set, from the signs of the +0x124/+0x120 angles and the
+//              +0x128 offset divided by +0x34C
+//   2        - derive a heading in whole degrees from the vector between the
+//              +0x120/+0x124 pair and the +0x2D4/+0x2D8 pair
+//   other    - nothing (r0 is left holding the state byte)
+// `mirrored` (r1) negates the state-2 heading; the two callers at 0x001AA7DC
+// and 0x001AAFF8 pass 0 and 1.  The original leaves an incidental value in r0
+// on exit (the state byte, the flags byte, or one of the stored angles); both
+// callers reload r0 immediately, but that value is reproduced here so the
+// register-level differential is exact.
+extern "C" s32 ui_func_00195424(u8* self, s32 mirrored) {
+    const u8 state = self[0x1D8];
+
+    if (state == 2) {
+        // 0x00360F48 is the 16-bit-units atan2 (0x10000 is one full turn).
+        // Removing the quarter-turn offset and scaling by 360/0x10000 yields
+        // a whole-degree heading before the optional mirroring.
+        const f32 delta_x = LoadF32(self, 0x120) - LoadF32(self, 0x2D4);
+        const f32 delta_y = LoadF32(self, 0x124) - LoadF32(self, 0x2D8);
+        const u32 angle = func_00360f48(delta_y, delta_x);
+        const u32 turn = static_cast<u16>(angle - 0x4000u);
+        const s32 degrees = static_cast<s32>((turn * 0x168u) >> 16);
+        const s32 heading = mirrored != 0 ? -degrees : degrees;
+        StoreS32(self, 0x0C, heading);
+        return heading;
+    }
+
+    if (state != 1) {
+        return state;
+    }
+
+    // State 1.  +0x124 (vertical) and +0x120 (horizontal) are compared with
+    // `vcmpe.f32 ..., #0` followed by `ble`, so an unordered (NaN) result takes
+    // the same less-or-equal arm as a negative value.
+    const f32 field_124 = LoadF32(self, 0x124);
+    const f32 field_120 = LoadF32(self, 0x120);
+
+    s32 step;
+    if (field_124 > 0.0f) {
+        const s32 divisor = static_cast<s32>(LoadF32(self, 0x34C));
+        step = DivideQuotient(field_120 > 0.0f ? 90 : -90, divisor);
+    } else {
+        const s32 divisor = static_cast<s32>(LoadF32(self, 0x34C));
+        step = field_120 > 0.0f
+            ? DivideQuotient(90, divisor) + 90
+            : DivideQuotient(-90, divisor) - 90;
+    }
+    StoreS32(self, 0x0C, step);
+
+    // The +0x04 heading is only updated when bit 0 of the flag byte is set.
+    const u8 flags = self[0x130];
+    if ((flags & 1u) == 0) {
+        return flags;
+    }
+
+    s32 second;
+    if (field_124 > 0.0f) {
+        // `mvngt`/`movle`: positive +0x128 selects -90, otherwise +90.
+        const s32 numerator = LoadF32(self, 0x128) > 0.0f ? -90 : 90;
+        second = DivideQuotient(numerator,
+                                static_cast<s32>(LoadF32(self, 0x34C)));
+    } else if (LoadF32(self, 0x128) > 0.0f) {
+        second = DivideQuotient(-90, static_cast<s32>(LoadF32(self, 0x34C))) - 90;
+    } else {
+        second = DivideQuotient(90, static_cast<s32>(LoadF32(self, 0x34C))) + 90;
+    }
+    StoreS32(self, 0x04, second);
+    return second;
 }
 
-// DECOMP_FUNC(0x00230ae8, 408)
-extern "C" __attribute__((naked)) void shop_func_00230ae8() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x41f0, 0xe92d, 0x4000, 0xe1a0\n"
-        ".hword 0x6001, 0xe1a0, 0x0004, 0xe590\n"
-        ".hword 0x8000, 0xe3a0, 0x7001, 0xe3a0\n"
-        ".hword 0x0001, 0xe370, 0x0008, 0x1594\n"
-        ".hword 0x0001, 0x1370, 0x000c, 0x1594\n"
-        ".hword 0x0001, 0x1370, 0x0017, 0x0a00\n"
-        ".hword 0x1000, 0xe3e0, 0x11b4, 0xe1c4\n"
-        ".hword 0x8011, 0xe5c4, 0x8012, 0xe5c4\n"
-        ".hword 0x000c, 0xe594, 0x5000, 0xe3a0\n"
-        ".hword 0x0000, 0xe350, 0x000f, 0xda00\n"
-        ".hword 0x0085, 0xe084, 0x01f8, 0xe1d0\n"
-        ".hword 0xb36d, 0xeb01, 0x0001, 0xe350\n"
-        ".hword 0x0002, 0x1350, 0x7011, 0x05c4\n"
-        ".hword 0x51b4, 0x01c4, 0x0006, 0xe350\n"
-        ".hword 0x0002, 0x1a00, 0x8011, 0xe5c4\n"
-        ".hword 0x7012, 0xe5c4, 0x51b4, 0xe1c4\n"
-        ".hword 0x000c, 0xe594, 0x5001, 0xe285\n"
-        ".hword 0x0005, 0xe150, 0xffef, 0xcaff\n"
-        ".hword 0x0011, 0xe5d4, 0x0000, 0xe350\n"
-        ".hword 0x003c, 0x0a00, 0x0000, 0xe5d6\n"
-        ".hword 0x51f4, 0xe1d4, 0x0001, 0xe350\n"
-        ".hword 0x0010, 0xe286, 0x0018, 0x0a00\n"
-        ".hword 0xb9b0, 0xeb01, 0x2008, 0xe596\n"
-        ".hword 0x0005, 0xe080, 0x0000, 0xe152\n"
-        ".hword 0x0032, 0xda00, 0x0000, 0xe5d6\n"
-        ".hword 0x0001, 0xe350, 0x0010, 0xe286\n"
-        ".hword 0x0014, 0x0a00, 0xb5fe, 0xeb01\n"
-        ".hword 0x1010, 0xe5d4, 0x0000, 0xe351\n"
-        ".hword 0x0005, 0x1150, 0x00a8, 0x159f\n"
-        ".hword 0x217b, 0x1b02, 0x0000, 0xe5d6\n"
-        ".hword 0x0001, 0xe350, 0x0010, 0xe286\n"
-        ".hword 0x000f, 0x0a00, 0xb99d, 0xeb01\n"
-        ".hword 0x1000, 0xe5d6, 0x4000, 0xe1a0\n"
-        ".hword 0x0000, 0xe351, 0x0015, 0x1a00\n"
-        ".hword 0x000e, 0xea00, 0xf000, 0xe320\n"
-        ".hword 0xb7f5, 0xeb01, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0xffe2, 0xeaff\n"
-        ".hword 0xf000, 0xe320, 0x40a2, 0xeb00\n"
-        ".hword 0xf000, 0xe320, 0xf000, 0xe320\n"
-        ".hword 0xffe6, 0xeaff, 0xf000, 0xe320\n"
-        ".hword 0xb7eb, 0xeb01, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0xffeb, 0xeaff\n"
-        ".hword 0x1000, 0xe1a0, 0x0010, 0xe286\n"
-        ".hword 0xa0ee, 0xeb01, 0x1005, 0xe1a0\n"
-        ".hword 0x0010, 0xe286, 0xb31b, 0xeb01\n"
-        ".hword 0x0000, 0xe5d6, 0x0001, 0xe350\n"
-        ".hword 0x0006, 0x1a00, 0x1004, 0xe1a0\n"
-        ".hword 0x0010, 0xe286, 0xe668, 0xebff\n"
-        ".hword 0x1005, 0xe1a0, 0x0010, 0xe286\n"
-        ".hword 0x41f0, 0xe8bd, 0xa237, 0xea01\n"
-        ".hword 0x81f0, 0xe8bd, 0x016c, 0x0100\n"
-    );
+// 0x00230ae8: touch-region selection for the shop list cursor.
+//
+// Argument 0 is the touch-region list (+0x18 holds `count` signed 16-bit
+// region handles).  Argument 1 is the shop work block whose byte at +0x00
+// selects one of two cursor layouts and whose +0x10 sub-object is handed to
+// the cursor helpers.  Every registered handle is polled with the UI touch
+// helper; states 1/2 mark the list active and states 6 mark a release, both
+// recording the handle index in the signed halfword at +0x14.  Only an active
+// list updates the selected cursor row, and a row beyond the +0x08 limit is
+// rejected.  The original tail-branches into the type-1 setter (0x00299558)
+// and returns its first argument in r0 on every non-early exit.
+extern "C" s32 ui_func_0029d8fc(s16 handle);                        // 0x0029d8fc
+extern "C" s32 camp_func_0029f260(void* cursor);                    // 0x0029f260
+extern "C" s32 camp_func_0029ebdc(void* cursor);                    // 0x0029ebdc
+extern "C" void* shop_func_00240ea4(const u8* cursor);              // 0x00240ea4
+extern "C" void* camp_func_0029e3bc(const u8* cursor);              // 0x0029e3bc
+extern "C" void script_vm_func_00299000(void* cursor, s32 value);   // 0x00299000
+extern "C" void camp_func_0029d8c0(void* cursor, s32 value);        // 0x0029d8c0
+extern "C" void shop_func_0022a60c(void* cursor, s32 value);        // 0x0022a60c
+extern "C" s32 engine_func_00299558(void* cursor, s32 value);       // 0x00299558
+extern "C" void script_vm_func_002b91c4(void* object);              // 0x002b91c4
+
+namespace {
+
+struct ShopTouchRegionList {
+    u32 unknown_00;        // not accessed by this function
+    s32 region_04;         // -1: not registered, skip the update
+    s32 region_08;         // -1: not registered, skip the update
+    s32 region_count_0c;   // -1: not registered; otherwise signed handle count
+    u8  debug_flags_10;    // non-zero enables the 0x0100016C registration check
+    u8  touch_active_11;   // set by state 1/2, cleared by state 6 or at entry
+    u8  touch_release_12;  // set by state 6, cleared at entry
+    u8  pad_13;
+    s16 active_index_14;   // index stored as a signed halfword
+    u16 pad_16;
+    s16 handles_18[1];     // region_count_0c signed region handles
+};
+
+struct ShopListCursorHost {
+    u8  cursor_kind_00;    // 0: 0x299000/0x29D8C0; 1: 0x22A60C/0x299558
+    u8  pad_01[7];
+    s32 visible_limit_08;  // signed count compared with cursor position + index
+    u32 pad_0c;
+    u8  cursor_10[1];      // opaque cursor object (helpers read up to +0x62)
+};
+
+static_assert(offsetof(ShopTouchRegionList, region_04) == 0x04);
+static_assert(offsetof(ShopTouchRegionList, region_08) == 0x08);
+static_assert(offsetof(ShopTouchRegionList, region_count_0c) == 0x0C);
+static_assert(offsetof(ShopTouchRegionList, debug_flags_10) == 0x10);
+static_assert(offsetof(ShopTouchRegionList, touch_active_11) == 0x11);
+static_assert(offsetof(ShopTouchRegionList, touch_release_12) == 0x12);
+static_assert(offsetof(ShopTouchRegionList, active_index_14) == 0x14);
+static_assert(offsetof(ShopTouchRegionList, handles_18) == 0x18);
+static_assert(offsetof(ShopListCursorHost, visible_limit_08) == 0x08);
+static_assert(offsetof(ShopListCursorHost, cursor_10) == 0x10);
+
+// The original reloads the 32-bit value after every helper call, so the
+// signed conversions below stay explicit instead of being cached.
+inline s32 WrappingAdd32(s32 left, s32 right) {
+    return static_cast<s32>(static_cast<u32>(left) + static_cast<u32>(right));
 }
+
+inline u32 PointerWord(const void* pointer) {
+    return static_cast<u32>(reinterpret_cast<std::uintptr_t>(pointer));
+}
+
+}  // namespace
+
+extern "C" s32 shop_func_00230ae8(void* self_pointer, void* host_pointer) {
+    auto* const self = static_cast<ShopTouchRegionList*>(self_pointer);
+    auto* const host = static_cast<ShopListCursorHost*>(host_pointer);
+    u8* const cursor = host->cursor_10;
+
+    // 0x230B00..0x230B14: any of the three registered-region ids being -1
+    // skips the reset/scan block but still reaches the +0x11 state check, so
+    // the previously stored touch state is reused as-is.
+    const bool registered = self->region_04 != -1 &&
+                            self->region_08 != -1 &&
+                            self->region_count_0c != -1;
+    if (registered) {
+        self->active_index_14 = static_cast<s16>(-1);
+        self->touch_active_11 = 0;
+        self->touch_release_12 = 0;
+
+        const s32 count = self->region_count_0c;
+        if (count > 0) {
+            s32 index = 0;
+            do {
+                // 0x230B38..0x230B3C: signed halfword handle at +0x18 + index*2.
+                const s32 state = ui_func_0029d8fc(self->handles_18[index]);
+                if (state == 1 || state == 2) {
+                    self->touch_active_11 = 1;
+                    self->active_index_14 = static_cast<s16>(index);
+                }
+                if (state == 6) {
+                    self->touch_active_11 = 0;
+                    self->touch_release_12 = 1;
+                    self->active_index_14 = static_cast<s16>(index);
+                }
+                ++index;
+            } while (self->region_count_0c > index);
+        }
+    }
+
+    // 0x230B78: the byte load is also the r0 value of this exit.
+    if (self->touch_active_11 == 0) {
+        return 0;
+    }
+
+    const s32 selected = self->active_index_14;
+
+    // 0x230B84..0x230BA4: cursor position plus the selected index, then the
+    // signed limit test `[+0x08] <= position + index`.
+    s32 cursor_position;
+    if (host->cursor_kind_00 == 1) {
+        cursor_position = camp_func_0029ebdc(cursor);
+    } else {
+        cursor_position = camp_func_0029f260(cursor);
+    }
+    const s32 visible_end = WrappingAdd32(cursor_position, selected);
+    if (host->visible_limit_08 <= visible_end) {
+        // The sum is still in r0 on this exit.
+        return visible_end;
+    }
+
+    // 0x230BAC..0x230BC0: object lookup for the debug registration check.
+    void* cursor_object;
+    if (host->cursor_kind_00 == 1) {
+        cursor_object = shop_func_00240ea4(cursor);
+    } else {
+        cursor_object = camp_func_0029e3bc(cursor);
+    }
+
+    // 0x230BC0..0x230BD0: `cmpne r0, r5` compares the full 32-bit pointer
+    // value with the sign-extended selected index.
+    if (self->debug_flags_10 != 0 &&
+        PointerWord(cursor_object) != static_cast<u32>(selected)) {
+        script_vm_func_002b91c4(reinterpret_cast<void*>(0x0100016Cu));
+    }
+
+    // 0x230BD4..0x230C34: the same getter is used a third time.
+    s32 cursor_value;
+    if (host->cursor_kind_00 == 1) {
+        cursor_value = camp_func_0029ebdc(cursor);
+    } else {
+        cursor_value = camp_func_0029f260(cursor);
+    }
+
+    // 0x230BE8..0x230C4C: kind 0 stores the position through the +0x24 and
+    // +0x20 setters, then falls through to the kind-byte reload at 0x230C50.
+    if (host->cursor_kind_00 == 0) {
+        script_vm_func_00299000(cursor, cursor_value);
+        camp_func_0029d8c0(cursor, selected);
+    }
+
+    // 0x230C50..0x230C74: kind 1 stores through 0x22A60C, then tail-branches
+    // into 0x299558.  That setter returns r0 unchanged (the cursor pointer).
+    if (host->cursor_kind_00 == 1) {
+        shop_func_0022a60c(cursor, cursor_value);
+        return engine_func_00299558(cursor, selected);
+    }
+
+    // Any other kind reloads the selector byte at 0x230C50 and exits with it.
+    return host->cursor_kind_00;
+}
+
+// Direct calls made by 0x00296390.
+extern "C" void script_vm_func_002bf9e8(u32 id);   // 0x002bf9e8
+extern "C" s32 ui_func_002bf9f0(void* object);     // 0x002bf9f0
 
 // DECOMP_FUNC(0x00296390, 408)
-extern "C" __attribute__((naked)) void script_vm_func_00296390() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x47f0, 0xe92d, 0x4000, 0xe1a0\n"
-        ".hword 0x7001, 0xe3a0, 0x5000, 0xe3a0\n"
-        ".hword 0x0000, 0xe355, 0x0008, 0x0a00\n"
-        ".hword 0x0185, 0xe065, 0x0100, 0xe080\n"
-        ".hword 0x0100, 0xe084, 0x0b0b, 0xe280\n"
-        ".hword 0x00f8, 0xe280, 0x08da, 0xe1d0\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x0005, 0x0a00, 0x0185, 0xe065\n"
-        ".hword 0x0100, 0xe080, 0x0100, 0xe084\n"
-        ".hword 0x0b0b, 0xe280, 0x0f61, 0xe280\n"
-        ".hword 0xa582, 0xeb00, 0x5001, 0xe285\n"
-        ".hword 0x0006, 0xe355, 0xffeb, 0xbaff\n"
-        ".hword 0xa12c, 0xe59f, 0x5000, 0xe3a0\n"
-        ".hword 0x9001, 0xe3a0, 0x0185, 0xe065\n"
-        ".hword 0x0100, 0xe080, 0x6100, 0xe084\n"
-        ".hword 0x0b0b, 0xe286, 0x0f61, 0xe280\n"
-        ".hword 0x08da, 0xe1d0, 0x0000, 0xe350\n"
-        ".hword 0xf000, 0xe320, 0x0011, 0x0a00\n"
-        ".hword 0x0105, 0xe084, 0x0b0d, 0xe280\n"
-        ".hword 0x0f86, 0xe280, 0x0000, 0xe590\n"
-        ".hword 0x0000, 0xe350, 0x0008, 0x0a00\n"
-        ".hword 0x8005, 0xe084, 0x8b0d, 0xe288\n"
-        ".hword 0x8f92, 0xe288, 0x0000, 0xe5d8\n"
-        ".hword 0x0000, 0xe350, 0x0002, 0x1a00\n"
-        ".hword 0x000a, 0xe1a0, 0xa563, 0xeb00\n"
-        ".hword 0x9000, 0xe5c8, 0x0a03, 0xe286\n"
-        ".hword 0x0f56, 0xe280, 0xa561, 0xeb00\n"
-        ".hword 0x5001, 0xe285, 0x0006, 0xe355\n"
-        ".hword 0xffe1, 0xbaff, 0x5000, 0xe3a0\n"
-        ".hword 0x0185, 0xe065, 0x0100, 0xe080\n"
-        ".hword 0x6100, 0xe084, 0x0b0b, 0xe286\n"
-        ".hword 0x0f61, 0xe280, 0x08da, 0xe1d0\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x001f, 0x0a00, 0x0a03, 0xe286\n"
-        ".hword 0x0f56, 0xe280, 0x08da, 0xe1d0\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x0019, 0x0a00, 0x5001, 0xe285\n"
-        ".hword 0x0006, 0xe355, 0xffed, 0xbaff\n"
-        ".hword 0x0000, 0xe3a0, 0x2006, 0xe3a0\n"
-        ".hword 0xc000, 0xe1a0, 0x1180, 0xe060\n"
-        ".hword 0x1101, 0xe081, 0x1101, 0xe084\n"
-        ".hword 0x1c31, 0xe281, 0x1bf6, 0xe1d1\n"
-        ".hword 0x000e, 0xe351, 0x0007, 0xba00\n"
-        ".hword 0x1100, 0xe084, 0x1b0d, 0xe281\n"
-        ".hword 0x1f52, 0xe281, 0x3000, 0xe591\n"
-        ".hword 0x3001, 0xe283, 0x0801, 0xe353\n"
-        ".hword 0x3000, 0xe581, 0xc000, 0xa581\n"
-        ".hword 0x2001, 0xe252, 0x0001, 0xe280\n"
-        ".hword 0xffed, 0x1aff, 0x0007, 0xe1a0\n"
-        ".hword 0x87f0, 0xe8bd, 0x7000, 0xe3a0\n"
-        ".hword 0xffe6, 0xeaff, 0x0174, 0x0100\n"
-    );
+//
+// Runs four passes over the six 140-byte slots of a script-VM work block.
+// The slot index is scaled exactly as in the original: `rsb`/`add` produce
+// 35*i and the final `lsl #2` turns that into a 140-byte stride.
+//
+//   1. For i = 0..5: slot 0 is always visited; every later slot is visited
+//      only when its signed byte at +0x2D82 is non-zero.  Each visited slot
+//      passes `slot + 0x2D84` to 0x002BF9F0.
+//   2. For i = 0..5: a slot whose signed byte at +0x2E0E is zero is skipped.
+//      Otherwise, when the per-index word at +0x3618 is non-zero and the
+//      per-index latch byte at +0x3648 is still zero, the fixed id
+//      0x01000174 is forwarded to 0x002BF9E8 and the latch is set to 1.
+//      Every non-skipped slot then passes `slot + 0x3158` to 0x002BF9F0.
+//   3. For i = 0..5: the result is 1 only when the signed bytes at +0x2E0E
+//      and +0x31E2 are non-zero for all six slots; the first zero stops the
+//      scan and makes the result 0.
+//   4. For i = 0..5: when the signed halfword at +0x31B6 is >= 14, the
+//      per-index word at +0x3548 is incremented and reset to zero when the
+//      incremented value is signed-greater-or-equal to 0x10000.  This pass
+//      always runs, including the failure return of pass 3.
+extern "C" s32 script_vm_func_00296390(void* self_pointer) {
+    u8* const self = static_cast<u8*>(self_pointer);
+    constexpr u32 kSlotStride = 140;  // 35 * 4
+    constexpr s32 kSlotCount = 6;
+
+    // Pass 1: reset/update sub-objects.  Slot 0 is unconditional.
+    for (s32 index = 0; index < kSlotCount; ++index) {
+        u8* const slot = self + static_cast<u32>(index) * kSlotStride;
+        if (index != 0 &&
+            *reinterpret_cast<const s8*>(slot + 0x2D82) == 0) {
+            continue;
+        }
+        ui_func_002bf9f0(slot + 0x2D84);
+    }
+
+    // Pass 2: kick sub-objects that are already switched on.
+    for (s32 index = 0; index < kSlotCount; ++index) {
+        u8* const slot = self + static_cast<u32>(index) * kSlotStride;
+        if (*reinterpret_cast<const s8*>(slot + 0x2E0E) == 0) {
+            continue;
+        }
+        if (*reinterpret_cast<const u32*>(
+                self + 0x3618 + static_cast<u32>(index) * 4u) != 0) {
+            u8* const latch = self + 0x3648 + static_cast<u32>(index);
+            if (*latch == 0) {
+                script_vm_func_002bf9e8(0x01000174u);
+                *latch = 1;
+            }
+        }
+        ui_func_002bf9f0(slot + 0x3158);
+    }
+
+    // Pass 3: all six slots must have both gate bytes set.
+    s32 ready = 1;
+    for (s32 index = 0; index < kSlotCount; ++index) {
+        u8* const slot = self + static_cast<u32>(index) * kSlotStride;
+        if (*reinterpret_cast<const s8*>(slot + 0x2E0E) == 0 ||
+            *reinterpret_cast<const s8*>(slot + 0x31E2) == 0) {
+            ready = 0;
+            break;
+        }
+    }
+
+    // Pass 4: advance the per-slot counters whose signed halfword is >= 14.
+    for (s32 index = 0; index < kSlotCount; ++index) {
+        u8* const slot = self + static_cast<u32>(index) * kSlotStride;
+        if (*reinterpret_cast<const s16*>(slot + 0x31B6) < 14) {
+            continue;
+        }
+        u32* const counter = reinterpret_cast<u32*>(
+            self + 0x3548 + static_cast<u32>(index) * 4u);
+        const u32 next = *counter + 1u;
+        *counter = next;
+        if (static_cast<s32>(next) >= 0x10000) {
+            *counter = 0;
+        }
+    }
+
+    return ready;
 }
 
 // DECOMP_FUNC(0x0038d26c, 412)

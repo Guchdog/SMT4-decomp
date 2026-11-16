@@ -2,6 +2,14 @@
 #include "ui/status_down.h"
 #include "engine/asd_symbols.h"
 
+extern "C" {
+    void script_vm_func_002a755c(void*);
+    void engine_func_002c4360(void*);
+    void script_vm_func_002c0128();
+    void script_vm_func_002a497c(u32);
+    void script_vm_func_002aeb2c(u32, u32);
+}
+
 namespace smt4::ui {
 
 ResultManager g_ResultManager = {nullptr};
@@ -379,20 +387,29 @@ __attribute__((naked)) void Result_DrawUp(void* task_ctx) {
     // Numerical EXP counter tickers, Macca tally summary, and acquired item list.
 }
 
-// The terminal return is followed by four literal-pool words at 0x001C8864.
 // DECOMP_FUNC(0x001c87d8, 156)
-__attribute__((naked)) void Result_DrawDown(void*) {
-    asm volatile(
-        ".word 0xE92D4070, 0xE59F5080, 0xE5954000, 0xE3540000\n"
-        ".word 0x0A00001C, 0xE59F0074, 0xE7900004, 0xEB037B58\n"
-        ".word 0xE59F006C, 0xE7900004, 0xEB03EED6, 0xE59F0064\n"
-        ".word 0xE7900004, 0xEB03EED3, 0xEB03DE44, 0xE2844A03\n"
-        ".word 0xE2844E57, 0xE5940000, 0xEB03EECE, 0xE3A00014\n"
-        ".word 0xEB037053, 0xE3A00025, 0xEB037051, 0xE3A04000\n"
-        ".word 0xE1A01004, 0xE3A00028, 0xEB0398B9, 0xE2844001\n"
-        ".word 0xE3540002, 0xBAFFFFF9, 0xE5950000, 0xEB03EEC1\n"
-        ".word 0xE3A00000, 0xE5850000, 0xE8BD8070, 0x0044DC20\n"
-        ".word 0x00003568, 0x00003564, 0x0000356C\n");
+void Result_DrawDown(void*) {
+    auto* const work = reinterpret_cast<u8*>(g_ResultManager.work);
+    if (work == nullptr) {
+        return;
+    }
+
+    script_vm_func_002a755c(*reinterpret_cast<void**>(work + 0x3568));
+    engine_func_002c4360(*reinterpret_cast<void**>(work + 0x3564));
+    engine_func_002c4360(*reinterpret_cast<void**>(work + 0x356C));
+    script_vm_func_002c0128();
+
+    engine_func_002c4360(*reinterpret_cast<void**>(work + 0x3570));
+
+    script_vm_func_002a497c(0x14);
+    script_vm_func_002a497c(0x25);
+
+    for (s32 i = 0; i < 2; ++i) {
+        script_vm_func_002aeb2c(0x28, static_cast<u32>(i));
+    }
+
+    engine_func_002c4360(work);
+    g_ResultManager.work = nullptr;
 }
 
 // DECOMP_FUNC(0x001c8874, 264)

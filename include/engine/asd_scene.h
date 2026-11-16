@@ -643,7 +643,7 @@ void* AsdScene_func_002cb788();
 
 // AsdProcess.cpp
 void* AsdProcess_func_00102e80(u32 count);
-u32   AsdProcess_func_00118488(const char* name, u32 bucket, u16 field_34,
+__attribute__((pcs("aapcs"))) u32 AsdProcess_func_00118488(const char* name, u32 bucket, u16 field_34,
                                u16 field_36, f32 field_38, f32 field_3c,
                                f32 field_40, f32 field_48, u32 parent);
 

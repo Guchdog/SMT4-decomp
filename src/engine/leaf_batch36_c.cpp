@@ -2,12 +2,16 @@
 
 // Batch 36 C: exact raw byte encodings in ARM mode; semantics are not reconstructed.
 
+// Tail veneer at 0x00147830: reloads the global word at 0x0040B5AC, asks
+// 0x002AD4F0 for the process/thread request base (returns 0x00471A84), then
+// tail-branches to 0x00147C0C with (request_base, *0x0040B5AC, address, size).
+// 0x00147C0C stores the pair in the CP15 TLS block and issues SVC 0x32; the
+// kernel service behind that SVC is not recovered here.
+extern "C" s32 func_00147830(void* address, u32 size);
+
 // DECOMP_FUNC(0x002c25f0, 4)
-extern "C" __attribute__((naked)) void engine_func_002c25f0() {
-    asm volatile(
-        ".arm\n"
-        ".byte 0x8e, 0x14, 0xfa, 0xea\n"
-    );
+extern "C" s32 engine_func_002c25f0(void* address, u32 size) {
+    return func_00147830(address, size);
 }
 
 // DECOMP_FUNC(0x002c3b44, 4)
