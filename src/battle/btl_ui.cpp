@@ -5,28 +5,41 @@ namespace smt4::battle {
 
 BtlHelpManager g_BtlHelpManager = {nullptr};
 BtlTalkBuffer* g_pBtlTalkBuffer = nullptr;
+extern "C" {
+s32 battle_func_002bf41c(void* task);
+void* camp_func_002c4c00(const char* name, s32 tag, u32 unk2, u32 unk3, const void* calc_fn, const void* dtor_fn, void* work, void* parent_work);
+void* engine_func_002c4b84(u32 size_a, u32 size_b, u32 unk2, u32 struct_size, u32 count);
+void script_vm_func_001b5398();
+void engine_func_0020ee34();
+}
+
 // DECOMP_FUNC(0x001d2528, 232)
+void btlHelp_Init(BtlHelpWork* work) {
+    static constexpr s32 kTaskTag = 2;
+    static constexpr u32 kAllocSize = 0x100;
+    static constexpr u32 kBufferBytes = 0xC;
+    static constexpr u32 kAllocCount = 1;
 
+    if (battle_func_002bf41c(work->calc_task) != 0) {
+        return;
+    }
 
-//
-__attribute__((naked)) void btlHelp_Init(BtlHelpWork*) {
-    asm volatile(
-        ".word 0xE92D4010, 0xE1A04000, 0xE590004C, 0xE24DD010\n"
-        ".word 0xEB03B3B7, 0xE3500000, 0x1A00001C, 0xE59F2078\n"
-        ".word 0xE5940000, 0xE59F106C, 0xE28DC004, 0xE58D2000\n"
-        ".word 0xE58D000C, 0xE3A03000, 0xE88C0012, 0xE1A02003\n"
-        ".word 0xE3A01002, 0xE28F0054, 0xEB03C9A2, 0xE584004C\n"
-        ".word 0xE59F1058, 0xE28F0058, 0xE1A00000, 0xE3A00001\n"
-        ".word 0xE3A01C01, 0xE58D0000, 0xE3A0300C, 0xE3A02000\n"
-        ".word 0xE1A00001, 0xEB03C978, 0xE59F1064, 0xE5810000\n"
-        ".word 0xE3A01000, 0xE5801000, 0xE5801004, 0xE5801008\n"
-        ".word 0xE28DD010, 0xE8BD8010, 0x0020EE34, 0x001B5398\n"
-        ".word 0x486C7462, 0x20706C65, 0x636C6143, 0x00000000\n"
-        ".word 0x00000305, 0x535C3A63, 0x5C34544D, 0x36445258\n"
-        ".word 0x735C3638, 0x34736464, 0x6F72705C, 0x6D617267\n"
-        ".word 0x7461625C, 0x5C656C74, 0x486C7462, 0x2E706C65\n"
-        ".word 0x00707063, 0x00435D78\n"
-    );
+    work->calc_task = camp_func_002c4c00(
+        "btlHelp Calc",
+        kTaskTag,
+        0,
+        0,
+        reinterpret_cast<const void*>(&script_vm_func_001b5398),
+        reinterpret_cast<const void*>(&engine_func_0020ee34),
+        work,
+        work->parent_work);
+
+    u32* buffer = static_cast<u32*>(
+        engine_func_002c4b84(kAllocSize, kAllocSize, 0, kBufferBytes, kAllocCount));
+    g_BtlHelpManager.buffer = buffer;
+    buffer[0] = 0;
+    buffer[1] = 0;
+    buffer[2] = 0;
 }
 // DECOMP_FUNC(0x001d2610, 308)
 
