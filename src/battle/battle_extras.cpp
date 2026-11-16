@@ -1336,142 +1336,85 @@ __attribute__((naked)) s32 btlTalkCommand_func_00318770() {
         ".word 0x00707063\n"
         ".word 0x00000962\n");
 }
+extern "C" {
+    void* camp_func_002c4c00(const char* name, s32 tag, u32 unk2, u32 unk3, const void* calc_fn, const void* dtor_fn, void* work, void* parent_work); // 0x002c4c00
+    void* engine_func_002c4b84(u32 size_a, u32 size_b, u32 unk2, u32 struct_size, u32 count); // 0x002c4b84
+    void  func_0021eb38();                                                                    // 0x0021eb38
+    void  func_001d3ca4();                                                                    // 0x001d3ca4
+    void  func_001fc51c();                                                                    // 0x001fc51c
+    void  func_0021ebe0();                                                                    // 0x0021ebe0
+    void* battle_func_0025c7c4(void* task, s32 tag, u32 a2, u32 a3);                          // 0x0025c7c4
+    void  AsdListBox_func_0025c550(void* list, const void* items, u32 count);                 // 0x0025c550
+    void  battle_func_0025c524(void* list, s32 mode);                                         // 0x0025c524
+    void  battle_func_00262b40(void* list, const void* title);                                // 0x00262b40
+    void  battle_func_003c5378(void* dbg_work, BtlDebugWork* work);                           // 0x003c5378
+    void  func_0025c508(void* proc, s32 flag);                                                // 0x0025c508
+    extern const u8 g_DebugMenuItems_00434588;                                                // 0x00434588
+    extern const u8 g_DebugMenuTitle_00400534;                                                // 0x00400534
+    extern void* g_BtlGameOverHookTarget;                                                     // 0x00439ca8
+}
+
 // DECOMP_FUNC(0x001e1f4c, 504)
+void btlDebug_func_001e1f4c(BtlDebugWork* work, void* arg) {
+    static constexpr s32 kCalcTag = 2;
+    static constexpr s32 kDrawUpTag = 0x73;
+    static constexpr s32 kDrawDownTag = 0xE6;
+    static constexpr u32 kAllocSize = 0x100;
+    static constexpr u32 kDebugBlockSize = 0x20;
+    static constexpr u32 kListCount = 0xB;
 
+    work->flags |= 1u;
 
-// ---------------------------------------------------------------------------
-// btlDebug.cpp
-// ---------------------------------------------------------------------------
+    work->calc_task = camp_func_002c4c00(
+        "btlDebug Calc",
+        kCalcTag,
+        0,
+        0,
+        reinterpret_cast<const void*>(&func_001d3ca4),
+        reinterpret_cast<const void*>(&func_0021eb38),
+        work,
+        work->parent);
 
-//
-__attribute__((naked)) void btlDebug_func_001e1f4c(BtlDebugWork*, void*) {
-    asm volatile(
-        ".word 0xE92D40F0\n"
-        ".word 0xE1A06001\n"
-        ".word 0xE2801B11\n"
-        ".word 0xE28110A8\n"
-        ".word 0xE24DD014\n"
-        ".word 0xE5912000\n"
-        ".word 0xE1A04000\n"
-        ".word 0xE28DC004\n"
-        ".word 0xE3822001\n"
-        ".word 0xE5812000\n"
-        ".word 0xE5900000\n"
-        ".word 0xE59F213C\n"
-        ".word 0xE59F1134\n"
-        ".word 0xE58D000C\n"
-        ".word 0xE58D2000\n"
-        ".word 0xE3A07000\n"
-        ".word 0xE88C0012\n"
-        ".word 0xE3A05001\n"
-        ".word 0xE1A03007\n"
-        ".word 0xE1A02007\n"
-        ".word 0xE3A01002\n"
-        ".word 0xE28F0F46\n"
-        ".word 0xEB038B15\n" // AsdTask_CreateDraw (0x002C4C00)
-        ".word 0xE584005C\n"
-        ".word 0xE59F111C\n"
-        ".word 0xE58D000C\n"
-        ".word 0xE58D4008\n"
-        ".word 0xE3A03000\n"
-        ".word 0xE88D0082\n"
-        ".word 0xE1A02003\n"
-        ".word 0xE3A01073\n"
-        ".word 0xE28F0F41\n"
-        ".word 0xEB038B0B\n" // AsdTask_CreateDraw (0x002C4C00)
-        ".word 0xE594005C\n"
-        ".word 0xE59F1108\n"
-        ".word 0xE58D4008\n"
-        ".word 0xE58D000C\n"
-        ".word 0xE3A03000\n"
-        ".word 0xE88D0082\n"
-        ".word 0xE1A02003\n"
-        ".word 0xE3A010E6\n"
-        ".word 0xE28F00F0\n"
-        ".word 0xEB038B01\n" // AsdTask_CreateDraw (0x002C4C00)
-        ".word 0xE59F10FC\n"
-        ".word 0xE28F00FC\n"
-        ".word 0xE1A00000\n"
-        ".word 0xE3A01C01\n"
-        ".word 0xE3A03020\n"
-        ".word 0xE3A02000\n"
-        ".word 0xE1A00001\n"
-        ".word 0xE58D5000\n"
-        ".word 0xEB038AD9\n" // AsdMem_Alloc (0x002C4B84)
-        ".word 0xE59F2110\n"
-        ".word 0xE3560000\n"
-        ".word 0xE1A01004\n"
-        ".word 0xE1A05000\n"
-        ".word 0xE5820008\n"
-        ".word 0xE5806004\n"
-        ".word 0xE5807000\n"
-        ".word 0xE1C270B2\n"
-        ".word 0x0A000016\n"
-        ".word 0xE3A03000\n"
-        ".word 0xE594005C\n"
-        ".word 0xE1A02003\n"
-        ".word 0xE3A01073\n"
-        ".word 0xEB01E9DB\n" // AsdList_Create (0x0025C7C4)
-        ".word 0xE59F10DC\n"
-        ".word 0xE3A0200B\n"
-        ".word 0xE5850010\n"
-        ".word 0xEB01E93A\n" // AsdListBox_Setup (0x0025C550)
-        ".word 0xE5950010\n"
-        ".word 0xE3A01001\n"
-        ".word 0xEB01E92C\n" // AsdListBox_SetMode (0x0025C524)
-        ".word 0xE59F10C4\n"
-        ".word 0xE5950010\n"
-        ".word 0xEB0202B0\n" // AsdListBox_SetTitle (0x00262B40)
-        ".word 0xE59F00BC\n"
-        ".word 0xE5900000\n"
-        ".word 0xE3500000\n"
-        ".word 0x0A000008\n"
-        ".word 0xE28DD014\n"
-        ".word 0xE3A01001\n"
-        ".word 0xE8BD40F0\n"
-        ".word 0xEA01E91A\n" // AsdProc_Destroy (0x0025C508), tail branch
-        ".word 0xE320F000\n"
-        ".word 0xEB078CB4\n" // Battle_DebugReset (0x003C5378)
-        ".word 0xE320F000\n"
-        ".word 0xE320F000\n"
-        ".word 0xEAFFFFF2\n"
-        ".word 0xE28DD014\n"
-        ".word 0xE8BD80F0\n"
-        ".word 0x0021EB38\n"
-        ".word 0x001D3CA4\n"
-        ".word 0x446C7462\n"
-        ".word 0x67756265\n"
-        ".word 0x6C614320\n"
-        ".word 0x00000063\n"
-        ".word 0x001FC51C\n"
-        ".word 0x446C7462\n"
-        ".word 0x67756265\n"
-        ".word 0x61724420\n"
-        ".word 0x00705577\n"
-        ".word 0x0021EBE0\n"
-        ".word 0x446C7462\n"
-        ".word 0x67756265\n"
-        ".word 0x61724420\n"
-        ".word 0x776F4477\n"
-        ".word 0x0000006E\n"
-        ".word 0x00000E5C\n"
-        ".word 0x535C3A63\n"
-        ".word 0x5C34544D\n"
-        ".word 0x36445258\n"
-        ".word 0x735C3638\n"
-        ".word 0x34736464\n"
-        ".word 0x6F72705C\n"
-        ".word 0x6D617267\n"
-        ".word 0x7461625C\n"
-        ".word 0x5C656C74\n"
-        ".word 0x446C7462\n"
-        ".word 0x67756265\n"
-        ".word 0x7070632E\n"
-        ".word 0x00000000\n"
-        ".word 0x00434388\n"
-        ".word 0x00434588\n"
-        ".word 0x00400534\n"
-        ".word 0x00439CA8\n");
+    camp_func_002c4c00(
+        "btlDebug DrawUp",
+        kDrawUpTag,
+        0,
+        0,
+        reinterpret_cast<const void*>(&func_001fc51c),
+        nullptr,
+        work,
+        work->calc_task);
+
+    camp_func_002c4c00(
+        "btlDebug DrawDown",
+        kDrawDownTag,
+        0,
+        0,
+        reinterpret_cast<const void*>(&func_0021ebe0),
+        nullptr,
+        work,
+        work->calc_task);
+
+    u8* const dbg_work = static_cast<u8*>(
+        engine_func_002c4b84(kAllocSize, kAllocSize, 0, kDebugBlockSize, 1));
+    g_BtlDebugState.work = dbg_work;
+    *reinterpret_cast<void**>(dbg_work + 0x04) = arg;
+    *reinterpret_cast<u32*>(dbg_work + 0x00) = 0;
+    g_BtlDebugState.field_02 = 0;
+
+    if (arg != nullptr) {
+        void* const list = battle_func_0025c7c4(work->calc_task, kDrawUpTag, 0, 0);
+        *reinterpret_cast<void**>(dbg_work + 0x10) = list;
+        AsdListBox_func_0025c550(list, &g_DebugMenuItems_00434588, kListCount);
+        battle_func_0025c524(*reinterpret_cast<void**>(dbg_work + 0x10), 1);
+        battle_func_00262b40(*reinterpret_cast<void**>(dbg_work + 0x10), &g_DebugMenuTitle_00400534);
+    } else {
+        battle_func_003c5378(dbg_work, work);
+    }
+
+    if (g_BtlGameOverHookTarget != nullptr) {
+        func_0025c508(g_BtlGameOverHookTarget, 1);
+    }
 }
 extern "C" {
     void* camp_func_002c4c00(const char* name, s32 tag, u32 unk2, u32 unk3, const void* calc_fn, const void* dtor_fn, void* work, void* parent_work); // 0x002c4c00
