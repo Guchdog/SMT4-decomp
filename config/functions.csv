@@ -7208,7 +7208,7 @@ address,size,status,category,name,src_file
 0x00318700,44,matching,battle,battle_func_00318700,src/engine/leaf_batch19_b.cpp
 0x0031872c,32,matching,engine,engine_func_0031872c,src/engine/leaf_batch18_b.cpp
 0x0031874c,36,matching,battle,battle_func_0031874c,src/engine/leaf_batch18_c.cpp
-0x00318770,516,matching,battle,btlTalkCommand_func_00318770,src/battle/battle_extras.cpp
+0x00318770,516,non_matching,battle,btlTalkCommand_func_00318770,src/battle/battle_extras.cpp
 0x00318974,36,matching,battle,battle_func_00318974,src/engine/leaf_batch18_c.cpp
 0x00318998,44,matching,battle,battle_func_00318998,src/engine/leaf_batch19_b.cpp
 0x003189c4,36,matching,engine,engine_func_003189c4,src/engine/leaf_batch18_c.cpp

@@ -1196,145 +1196,92 @@ __attribute__((naked)) void* EffectProcess_func_002217d8(u8) {
         ".word 0x00004433\n"
         ".word 0x001DC954\n");
 }
+extern "C" {
+    u32   script_vm_func_00296f60(u32 idx);                                                   // 0x00296f60
+    const u8* battle_func_002b087c(u32 unit_id);                                              // 0x002b087c
+    const u8* camp_func_002b9364(u32 entry_id);                                               // 0x002b9364
+    const u8* script_vm_func_002b66ec();                                                      // 0x002b66ec
+    s32   battle_func_0024ec64(u32 unit_id);                                                  // 0x0024ec64
+    void  camp_func_0028df54(s32 choice);                                                     // 0x0028df54
+    void* engine_func_002c4b84(u32 size_a, u32 size_b, u32 unk2, u32 struct_size, u32 count); // 0x002c4b84
+    s32   script_vm_func_00297004(s32 min_lv);                                                // 0x00297004
+    void  camp_func_002bd25c(u32 unit_id);                                                    // 0x002bd25c
+    s32   engine_func_002c0bcc(u32 max_val);                                                  // 0x002c0bcc
+    void  engine_func_002c4360(void* ptr);                                                    // 0x002c4360
+}
+
 // DECOMP_FUNC(0x00318770, 516)
+s32 btlTalkCommand_func_00318770() {
+    static constexpr u32 kUnitFlagMask = 0x400;
+    static constexpr u32 kMaxEntryId = 0x4B0;
+    static constexpr u32 kCandidateBufSize = 0x962;
 
+    const u16 base_id = static_cast<u16>(script_vm_func_00296f60(0));
+    const u8* const base_unit = battle_func_002b087c(base_id);
+    const u16 target_id = *reinterpret_cast<const u16*>(base_unit + 0x82);
+    const u8* const target_unit = battle_func_002b087c(target_id);
+    camp_func_002b9364(target_id);
 
-// ---------------------------------------------------------------------------
-// btlTalkCommand.cpp
-// ---------------------------------------------------------------------------
+    if (target_id != 0 && target_unit != nullptr &&
+        (*reinterpret_cast<const u16*>(target_unit + 0x16) & kUnitFlagMask) != 0) {
+        const u8* const talk_state = script_vm_func_002b66ec();
+        if (target_unit[2] <= talk_state[0x76] && battle_func_0024ec64(target_id) == 0) {
+            camp_func_0028df54(target_id);
+            return 1;
+        }
+    }
 
-//
-__attribute__((naked)) s32 btlTalkCommand_func_00318770() {
-    asm volatile(
-        ".word 0xE92D43F8\n"
-        ".word 0xE3A00000\n"
-        ".word 0xEBFDF9F8\n" // Talk_GetSelectedIndex (0x00296F60)
-        ".word 0xE6FF0070\n"
-        ".word 0xEBFE603D\n" // Battle_GetTalkUnit (0x002B087C)
-        ".word 0xE1D048B2\n"
-        ".word 0xE1A06000\n"
-        ".word 0xE1A00004\n"
-        ".word 0xEBFE6039\n" // Battle_GetTalkUnit (0x002B087C)
-        ".word 0xE1A05000\n"
-        ".word 0xE1A00004\n"
-        ".word 0xEBFE82F0\n" // Battle_GetTalkEntry (0x002B9364)
-        ".word 0xE3540000\n"
-        ".word 0x13550000\n"
-        ".word 0x0A00000B\n"
-        ".word 0xE1D501B6\n"
-        ".word 0xE3100B01\n"
-        ".word 0x0A000008\n"
-        ".word 0xEBFE77CB\n" // ScriptVm_GetTalkState (0x002B66EC)
-        ".word 0xE5D00076\n"
-        ".word 0xE5D51002\n"
-        ".word 0xE1510000\n"
-        ".word 0x8A000003\n"
-        ".word 0xE1A00004\n"
-        ".word 0xEBFCD923\n" // Talk_CheckUnit (0x0024EC64)
-        ".word 0xE3500000\n"
-        ".word 0x0A000023\n"
-        ".word 0xE59F114C\n"
-        ".word 0xE28F0F53\n"
-        ".word 0xE1A00000\n"
-        ".word 0xE3A00001\n"
-        ".word 0xE3A01C01\n"
-        ".word 0xE58D0000\n"
-        ".word 0xE59F3174\n"
-        ".word 0xE3A02000\n"
-        ".word 0xE1A00001\n"
-        ".word 0xEBFEB0DF\n" // AsdMem_Alloc (0x002C4B84)
-        ".word 0xE1A09000\n"
-        ".word 0xE3A08000\n"
-        ".word 0xEBFE77B6\n" // ScriptVm_GetTalkState (0x002B66EC)
-        ".word 0xE5D00076\n"
-        ".word 0xE5D67002\n"
-        ".word 0xE1500007\n"
-        ".word 0x8A000001\n"
-        ".word 0xEBFE77B1\n" // ScriptVm_GetTalkState (0x002B66EC)
-        ".word 0xE5D07076\n"
-        ".word 0xE1A01007\n"
-        ".word 0xE0870FA7\n"
-        ".word 0xE1A000C0\n"
-        ".word 0xE350000A\n"
-        ".word 0xB3A0000A\n"
-        ".word 0xE0470000\n"
-        ".word 0xE6BF6070\n"
-        ".word 0xE1A00006\n"
-        ".word 0xEBFDF9ED\n" // Talk_CheckVisible (0x00297004)
-        ".word 0xE3500000\n"
-        ".word 0xE320F000\n"
-        ".word 0xCA000009\n"
-        ".word 0xE3E00000\n"
-        ".word 0xEBFDD5BC\n" // Talk_CommitChoice (0x0028DF54)
-        ".word 0xE320F000\n"
-        ".word 0xE320F000\n"
-        ".word 0xEA00002C\n"
-        ".word 0xE1A00004\n"
-        ".word 0xEBFDD5B7\n" // Talk_CommitChoice (0x0028DF54)
-        ".word 0xE320F000\n"
-        ".word 0xE320F000\n"
-        ".word 0xEA000029\n"
-        ".word 0xE3560000\n"
-        ".word 0xD3A06001\n"
-        ".word 0xE3A04001\n"
-        ".word 0xE6FF0074\n"
-        ".word 0xEBFE82B3\n" // Battle_GetTalkEntry (0x002B9364)
-        ".word 0xE1A05000\n"
-        ".word 0xE6FF0074\n"
-        ".word 0xEBFE5FF6\n" // Battle_GetTalkUnit (0x002B087C)
-        ".word 0xE5D51003\n"
-        ".word 0xE1510006\n"
-        ".word 0xA1570001\n"
-        ".word 0xBA00000E\n"
-        ".word 0xE1D001B6\n"
-        ".word 0xE3100B01\n"
-        ".word 0x0A00000B\n"
-        ".word 0xE1D500B0\n"
-        ".word 0xEBFCD8E7\n" // Talk_CheckUnit (0x0024EC64)
-        ".word 0xE3500000\n"
-        ".word 0xE320F000\n"
-        ".word 0x1A000006\n"
-        ".word 0xE1D500B0\n"
-        ".word 0xEBFE9260\n" // Talk_SelectUnit (0x002BD25C)
-        ".word 0xE1D500B0\n"
-        ".word 0xE2881001\n"
-        ".word 0xE0892088\n"
-        ".word 0xE6FF8071\n"
-        ".word 0xE1C200B0\n"
-        ".word 0xE2844001\n"
-        ".word 0xE3540E4B\n"
-        ".word 0x9AFFFFE4\n"
-        ".word 0xE3580000\n"
-        ".word 0x03E00000\n"
-        ".word 0x0A000005\n"
-        ".word 0xE2480001\n"
-        ".word 0xE6FF0070\n"
-        ".word 0xEBFEA0AE\n" // Random_Range (0x002C0BCC)
-        ".word 0xE6BF0070\n"
-        ".word 0xE0890080\n"
-        ".word 0xE1D000F0\n"
-        ".word 0xEBFDD58C\n" // Talk_CommitChoice (0x0028DF54)
-        ".word 0xE1A00009\n"
-        ".word 0xEBFEAE8D\n" // AsdMem_Free (0x002C4360)
-        ".word 0xE3A00001\n"
-        ".word 0xE8BD83F8\n"
-        ".word 0x00000387\n"
-        ".word 0x535C3A63\n"
-        ".word 0x5C34544D\n"
-        ".word 0x36445258\n"
-        ".word 0x735C3638\n"
-        ".word 0x34736464\n"
-        ".word 0x6F72705C\n"
-        ".word 0x6D617267\n"
-        ".word 0x7461625C\n"
-        ".word 0x5C656C74\n"
-        ".word 0x6B6C6154\n"
-        ".word 0x6C74625C\n"
-        ".word 0x6B6C6154\n"
-        ".word 0x6D6D6F43\n"
-        ".word 0x2E646E61\n"
-        ".word 0x00707063\n"
-        ".word 0x00000962\n");
+    u16* const candidates = static_cast<u16*>(
+        engine_func_002c4b84(0x100, 0x100, 0, kCandidateBufSize, 1));
+    u16 count = 0;
+
+    const u8* const state_a = script_vm_func_002b66ec();
+    s32 max_lv = base_unit[2];
+    if (state_a[0x76] <= max_lv) {
+        max_lv = script_vm_func_002b66ec()[0x76];
+    }
+
+    s32 half = max_lv / 2;
+    if (half < 10) {
+        half = 10;
+    }
+    s16 min_lv = static_cast<s16>(max_lv - half);
+
+    if (script_vm_func_00297004(min_lv) <= 0) {
+        camp_func_0028df54(-1);
+        engine_func_002c4360(candidates);
+        return 1;
+    }
+
+    if (min_lv <= 0) {
+        min_lv = 1;
+    }
+
+    for (u32 id = 1; id <= kMaxEntryId; ++id) {
+        const u16 id16 = static_cast<u16>(id);
+        const u8* const entry = camp_func_002b9364(id16);
+        const u8* const unit = battle_func_002b087c(id16);
+        const s32 entry_lv = entry[3];
+        if (entry_lv >= min_lv && max_lv >= entry_lv &&
+            (*reinterpret_cast<const u16*>(unit + 0x16) & kUnitFlagMask) != 0) {
+            const u16 cand_id = *reinterpret_cast<const u16*>(entry);
+            if (battle_func_0024ec64(cand_id) == 0) {
+                camp_func_002bd25c(cand_id);
+                candidates[count] = *reinterpret_cast<const u16*>(entry);
+                count = static_cast<u16>(count + 1);
+            }
+        }
+    }
+
+    s32 chosen = -1;
+    if (count != 0) {
+        const s16 idx = static_cast<s16>(engine_func_002c0bcc(static_cast<u16>(count - 1)));
+        chosen = static_cast<s16>(candidates[idx]);
+    }
+
+    camp_func_0028df54(chosen);
+    engine_func_002c4360(candidates);
+    return 1;
 }
 extern "C" {
     void* camp_func_002c4c00(const char* name, s32 tag, u32 unk2, u32 unk3, const void* calc_fn, const void* dtor_fn, void* work, void* parent_work); // 0x002c4c00
