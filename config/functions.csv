@@ -2608,7 +2608,7 @@ address,size,status,category,name,src_file
 0x001f7bc8,216,matching,script_vm,script_vm_func_001f7bc8,src/engine/leaf_batch40_b.cpp
 0x001f7ca0,380,matching,script_vm,script_vm_func_001f7ca0,src/engine/leaf_batch44_b.cpp
 0x001f7e1c,228,matching,battle,btlCamera_func_001f7e1c,src/engine/leaf_batch44_b.cpp
-0x001f7f00,432,matching,battle,btlEditor_func_001f7f00,src/battle/battle_extras.cpp
+0x001f7f00,432,non_matching,battle,btlEditor_func_001f7f00,src/battle/battle_extras.cpp
 0x001f80b0,316,matching,battle,btlEffect_func_001f80b0,src/engine/leaf_batch44_b.cpp
 0x001f81ec,192,matching,script_vm,script_vm_func_001f81ec,src/engine/leaf_batch42_c.cpp
 0x001f82ac,1156,matching,script_vm,script_vm_func_001f82ac,src/engine/leaf_batch46_b.cpp

@@ -1602,124 +1602,72 @@ __attribute__((naked)) void btlTalkBustUp_func_002959c4() {
         ".word 0x000009BC\n"
         ".word 0x003FFAB8\n");
 }
+extern "C" {
+    void* camp_func_002c4c00(const char* name, s32 tag, u32 unk2, u32 unk3, const void* calc_fn, const void* dtor_fn, void* work, void* parent_work); // 0x002c4c00
+    void* engine_func_002c4b84(u32 size_a, u32 size_b, u32 unk2, u32 struct_size, u32 count); // 0x002c4b84
+    void  func_001e495c();                                                                    // 0x001e495c
+    void  func_002c9e88();                                                                    // 0x002c9e88
+    void  func_0020ec74();                                                                    // 0x0020ec74
+    s32   battle_func_00256b80(u8* ctx, BtlEditorWork* work, s32 flag);                       // 0x00256b80
+    void  battle_func_00256b04(u32 a0, u32 a1);                                               // 0x00256b04
+    void  battle_func_00256ad8(u32 a0, u32 a1);                                               // 0x00256ad8
+    void  func_0025c508(void* proc, s32 flag);                                                // 0x0025c508
+    extern u8* g_BtlEditorSub_004342c8;                                                       // 0x004342c8
+    extern void* g_BtlGameOverHookTarget;                                                     // 0x00439ca8
+}
+
 // DECOMP_FUNC(0x001f7f00, 432)
+void btlEditor_func_001f7f00(BtlEditorWork* work) {
+    static constexpr s32 kCalcTag = 2;
+    static constexpr s32 kDrawUpTag = 0x73;
+    static constexpr u32 kAllocSize = 0x100;
+    static constexpr u32 kStateSize = sizeof(BtlEditorState);
+    static constexpr u32 kWorkByteOffset = 0x1E9D;
+    static constexpr u32 kSubCheckOffset = 0x760;
 
+    work->calc_task = camp_func_002c4c00(
+        "btlEditor Calc",
+        kCalcTag,
+        0,
+        0,
+        reinterpret_cast<const void*>(&func_001e495c),
+        reinterpret_cast<const void*>(&func_002c9e88),
+        work,
+        work->parent);
 
-// ---------------------------------------------------------------------------
-// btlEditor.cpp
-// ---------------------------------------------------------------------------
+    camp_func_002c4c00(
+        "btlEditor DrawUp",
+        kDrawUpTag,
+        0,
+        0,
+        reinterpret_cast<const void*>(&func_0020ec74),
+        nullptr,
+        work,
+        work->calc_task);
 
-//
-__attribute__((naked)) void btlEditor_func_001f7f00(BtlEditorWork*) {
-    asm volatile(
-        ".word 0xE92D4030\n"
-        ".word 0xE24DD014\n"
-        ".word 0xE1A04000\n"
-        ".word 0xE5900000\n"
-        ".word 0xE59F2128\n"
-        ".word 0xE59F1120\n"
-        ".word 0xE28D5004\n"
-        ".word 0xE58D2000\n"
-        ".word 0xE58D000C\n"
-        ".word 0xE3A03000\n"
-        ".word 0xE8850012\n"
-        ".word 0xE1A02003\n"
-        ".word 0xE3A01002\n"
-        ".word 0xE28F0F42\n"
-        ".word 0xEB033330\n" // AsdTask_CreateDraw (0x002C4C00)
-        ".word 0xE5840058\n"
-        ".word 0xE59F110C\n"
-        ".word 0xE3A05000\n"
-        ".word 0xE58D000C\n"
-        ".word 0xE58D4008\n"
-        ".word 0xE88D0022\n"
-        ".word 0xE1A03005\n"
-        ".word 0xE1A02005\n"
-        ".word 0xE3A01073\n"
-        ".word 0xE28F00F0\n"
-        ".word 0xEB033325\n" // AsdTask_CreateDraw (0x002C4C00)
-        ".word 0xE3A01FF3\n"
-        ".word 0xE28F00F8\n"
-        ".word 0xE1A00000\n"
-        ".word 0xE3A00001\n"
-        ".word 0xE3A01C01\n"
-        ".word 0xE58D0000\n"
-        ".word 0xE3A03018\n"
-        ".word 0xE3A02000\n"
-        ".word 0xE1A00001\n"
-        ".word 0xEB0332FC\n" // AsdMem_Alloc (0x002C4B84)
-        ".word 0xE59F1108\n"
-        ".word 0xE59F3108\n"
-        ".word 0xE59F2108\n"
-        ".word 0xE5810000\n"
-        ".word 0xE5805000\n"
-        ".word 0xE7D33004\n"
-        ".word 0xE3E01000\n"
-        ".word 0xE5803004\n"
-        ".word 0xE1C011B0\n"
-        ".word 0xE5C01012\n"
-        ".word 0xE5C01013\n"
-        ".word 0xE5920000\n"
-        ".word 0xE3500000\n"
-        ".word 0x0A00000D\n"
-        ".word 0xE5901760\n"
-        ".word 0xE3510000\n"
-        ".word 0xBA000007\n"
-        ".word 0xE3A02001\n"
-        ".word 0xE1A01004\n"
-        ".word 0xEB017AE7\n" // Battle_EditorCheck (0x00256B80)
-        ".word 0xE3500000\n"
-        ".word 0x0A000002\n"
-        ".word 0xE3A01000\n"
-        ".word 0xE1A00001\n"
-        ".word 0xEB017AC3\n" // Battle_EditorStart (0x00256B04)
-        ".word 0xE3A01000\n"
-        ".word 0xE3A00001\n"
-        ".word 0xEB017AB5\n" // Battle_EditorSetMode (0x00256AD8)
-        ".word 0xE2841B11\n"
-        ".word 0xE28110A8\n"
-        ".word 0xE59F009C\n"
-        ".word 0xE5912000\n"
-        ".word 0xE3822702\n"
-        ".word 0xE5812000\n"
-        ".word 0xE5900000\n"
-        ".word 0xE3500000\n"
-        ".word 0x0A000003\n"
-        ".word 0xE28DD014\n"
-        ".word 0xE3A01001\n"
-        ".word 0xE8BD4030\n"
-        ".word 0xEA019134\n" // AsdProc_Destroy (0x0025C508), tail branch
-        ".word 0xE28DD014\n"
-        ".word 0xE8BD8030\n"
-        ".word 0x002C9E88\n"
-        ".word 0x001E495C\n"
-        ".word 0x456C7462\n"
-        ".word 0x6F746964\n"
-        ".word 0x61432072\n"
-        ".word 0x0000636C\n"
-        ".word 0x0020EC74\n"
-        ".word 0x456C7462\n"
-        ".word 0x6F746964\n"
-        ".word 0x72442072\n"
-        ".word 0x70557761\n"
-        ".word 0x00000000\n"
-        ".word 0x535C3A63\n"
-        ".word 0x5C34544D\n"
-        ".word 0x36445258\n"
-        ".word 0x735C3638\n"
-        ".word 0x34736464\n"
-        ".word 0x6F72705C\n"
-        ".word 0x6D617267\n"
-        ".word 0x7461625C\n"
-        ".word 0x5C656C74\n"
-        ".word 0x456C7462\n"
-        ".word 0x6F746964\n"
-        ".word 0x70632E72\n"
-        ".word 0x00000070\n"
-        ".word 0x00435CE8\n"
-        ".word 0x00001E9D\n"
-        ".word 0x004342C8\n"
-        ".word 0x00439CA8\n");
+    BtlEditorState* const state = static_cast<BtlEditorState*>(
+        engine_func_002c4b84(kAllocSize, kAllocSize, 0, kStateSize, 1));
+    g_BtlEditorState = state;
+    state->field_00 = 0;
+    state->field_04 = reinterpret_cast<const u8*>(work)[kWorkByteOffset];
+    state->field_10 = 0xFFFF;
+    state->field_12 = 0xFF;
+    state->field_13 = 0xFF;
+
+    u8* const sub = g_BtlEditorSub_004342c8;
+    if (sub != nullptr) {
+        if (*reinterpret_cast<const s32*>(sub + kSubCheckOffset) >= 0) {
+            if (battle_func_00256b80(sub, work, 1) != 0) {
+                battle_func_00256b04(0, 0);
+            }
+        }
+        battle_func_00256ad8(1, 0);
+    }
+
+    work->flags |= 0x80000u;
+    if (g_BtlGameOverHookTarget != nullptr) {
+        func_0025c508(g_BtlGameOverHookTarget, 1);
+    }
 }
 extern "C" {
     void* camp_func_002c4c00(const char* name, s32 tag, u32 unk2, u32 unk3, const void* calc_fn, const void* dtor_fn, void* work, void* parent_work); // 0x002c4c00
