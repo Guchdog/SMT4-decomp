@@ -6039,7 +6039,7 @@ address,size,status,category,name,src_file
 0x002ceca8,48,matching,battle,battle_func_002ceca8,src/engine/leaf_batch26_b.cpp
 0x002cecd8,52,non_matching,ui,SearchWin_IsActive,src/ui/window.cpp
 0x002ced0c,28,non_matching,ui,SearchWin_Dismiss,src/ui/window.cpp
-0x002ced28,348,matching,ui,SearchWin_Init,src/ui/window.cpp
+0x002ced28,348,non_matching,ui,SearchWin_Init,src/ui/window.cpp
 0x002cee84,256,matching,camp,camp_func_002cee84,src/engine/leaf_batch43_c.cpp
 0x002cef84,232,matching,engine,engine_func_002cef84,src/engine/leaf_batch35_c.cpp
 0x002cf06c,8,matching,unknown,func_002cf06c,src/engine/leaf_batch36_c.cpp

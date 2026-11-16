@@ -3233,98 +3233,87 @@ bool SearchWin_Dismiss() {
     return *reinterpret_cast<const u8*>(0x0043E311) == 0;
 }
 
+extern "C" {
+    void SearchWin_Calc_001ad07c(void*);                                                    // 0x001ad07c
+    extern const u8 g_SearchWinSpriteTable_00403c24;                                        // 0x00403c24
+    extern const u8 g_SearchWinSpriteTable_00403c48;                                        // 0x00403c48
+    extern const u8 g_SearchWinSpriteTable_00403c6c;                                        // 0x00403c6c
+}
+
 // DECOMP_FUNC(0x002ced28, 348)
-// Boundary-verified ARM-state span; includes its PC-relative literal pool.
-__attribute__((naked)) void SearchWin_Init() {
-    asm volatile(
-        ".word 0xe92d40f0\n"
-        ".word 0xe24dd01c\n"
-        ".word 0xe3a06001\n"
-        ".word 0xe59f4124\n"
-        ".word 0xe5940000\n"
-        ".word 0xe3500000\n"
-        ".word 0x1a000009\n"
-        ".word 0xe59f0118\n"
-        ".word 0xe3a01085\n"
-        ".word 0xe1a00000\n"
-        ".word 0xe3a01c01\n"
-        ".word 0xe3a030e4\n"
-        ".word 0xe3a02000\n"
-        ".word 0xe1a00001\n"
-        ".word 0xe58d6000\n"
-        ".word 0xebffd786\n"
-        ".word 0xe5840000\n"
-        ".word 0xe1a04000\n"
-        ".word 0xe3a010e4\n"
-        ".word 0xebffd76d\n"
-        ".word 0xe59f00e8\n"
-        ".word 0xe3a05000\n"
-        ".word 0xe1a03005\n"
-        ".word 0xe88d0021\n"
-        ".word 0xe59f00dc\n"
-        ".word 0xe1a02005\n"
-        ".word 0xe3a01001\n"
-        ".word 0xe58d5008\n"
-        ".word 0xebffdaf6\n"
-        ".word 0xe5840000\n"
-        ".word 0xe59f70c8\n"
-        ".word 0xe3a03000\n"
-        ".word 0xe58d000c\n"
-        ".word 0xe59f00c0\n"
-        ".word 0xe1a02003\n"
-        ".word 0xe3a01081\n"
-        ".word 0xe58d5004\n"
-        ".word 0xe58d7000\n"
-        ".word 0xe58d5008\n"
-        ".word 0xebffd78d\n"
-        ".word 0xe5940000\n"
-        ".word 0xe3a03000\n"
-        ".word 0xe1a02003\n"
-        ".word 0xe58d000c\n"
-        ".word 0xe59f0098\n"
-        ".word 0xe3a010df\n"
-        ".word 0xe58d5004\n"
-        ".word 0xe58d7000\n"
-        ".word 0xe58d5008\n"
-        ".word 0xebffd783\n"
-        ".word 0xe2840018\n"
-        ".word 0xe320f000\n"
-        ".word 0xebffd151\n"
-        ".word 0xe59f1078\n"
-        ".word 0xe3a00070\n"
-        ".word 0xe58d0018\n"
-        ".word 0xe58d1014\n"
-        ".word 0xe3a02024\n"
-        ".word 0xe58d500c\n"
-        ".word 0xe58d5010\n"
-        ".word 0xe2413024\n"
-        ".word 0xe88d0024\n"
-        ".word 0xe2431024\n"
-        ".word 0xe2840018\n"
-        ".word 0xe58d5008\n"
-        ".word 0xebffd131\n"
-        ".word 0xed9f0a12\n"
-        ".word 0xe2843018\n"
-        ".word 0xe3a02087\n"
-        ".word 0xe3a0100e\n"
-        ".word 0xe2840038\n"
-        ".word 0xe58d6000\n"
-        ".word 0xebffbb37\n"
-        ".word 0xe28dd01c\n"
-        ".word 0xe2840038\n"
-        ".word 0xe8bd40f0\n"
-        ".word 0xe3a01000\n"
-        ".word 0xeaffc073\n"
-        ".word 0x0043e170\n"
-        ".word 0x00403cdc\n"
-        ".word 0x001ad07c\n"
-        ".word 0x00403d48\n"
-        ".word 0x001accd4\n"
-        ".word 0x00403d30\n"
-        ".word 0x00403d18\n"
-        ".word 0x00403c6c\n"
-        ".word 0x3f800000\n"
-    );
+void SearchWin_Init() {
+    static constexpr u32 kWorkSize = sizeof(SearchWinWork);
+    static constexpr u32 kCalcTag = 1;
+    static constexpr u32 kDrawUpLeftTag = 0x81;
+    static constexpr u32 kDrawUpRightTag = 0xDF;
+    static constexpr s32 kSpriteType = 0x0E;
+    static constexpr s32 kSpriteId = 0x87;
+
+    SearchWinWork* work = g_SearchWinWork;
+    if (work == nullptr) {
+        work = static_cast<SearchWinWork*>(
+            AsdMem_Alloc(0x100, 0x100, 0, kWorkSize, 1));
+        g_SearchWinWork = work;
+    }
+
+    AsdMem_Zero(work, kWorkSize);
+
+    work->calc_task = AsdTask_CreateCalc(
+        "SearchWin Calc",
+        kCalcTag,
+        0,
+        0,
+        SearchWin_Calc_001ad07c,
+        0,
+        0);
+
+    AsdTask_CreateDraw(
+        "SearchWin DrawUpLeft",
+        kDrawUpLeftTag,
+        0,
+        0,
+        SearchWin_DrawUpAndCalc,
+        0,
+        0,
+        work->calc_task);
+
+    AsdTask_CreateDraw(
+        "SearchWin DrawUpRight",
+        kDrawUpRightTag,
+        0,
+        0,
+        SearchWin_DrawUpAndCalc,
+        0,
+        0,
+        work->calc_task);
+
+    UiSpriteGroup_Init(&work->sprite_group);
+    UiSpriteGroup_BindTable(
+        &work->sprite_group,
+        SpriteTableWord(&g_SearchWinSpriteTable_00403c24),
+        0x24,
+        SpriteTableWord(&g_SearchWinSpriteTable_00403c48),
+        0x24,
+        0,
+        0,
+        0,
+        0,
+        SpriteTableWord(&g_SearchWinSpriteTable_00403c6c),
+        0x70);
+
+    using SearchWinSetupEx = void (*)(UiAnimSprite*, s32, s32, UiSpriteGroup*, u32, f32);
+    reinterpret_cast<SearchWinSetupEx>(UiAnimSprite_SetupEx)(
+        &work->panel_sprite,
+        kSpriteType,
+        kSpriteId,
+        &work->sprite_group,
+        1,
+        1.0f);
+
+    using SearchWinSetAnim = void (*)(UiAnimSprite*, s32);
+    reinterpret_cast<SearchWinSetAnim>(UiAnimSprite_SetAnim)(
+        &work->panel_sprite,
+        0);
 }
 #if 0
 // Partial semantic draft retained for reconstruction; not compiled.
