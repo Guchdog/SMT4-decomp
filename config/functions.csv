@@ -9214,7 +9214,7 @@ address,size,status,category,name,src_file
 0x003914b8,600,matching,ui,ui_func_003914b8,src/engine/leaf_batch42_b.cpp
 0x00391710,2384,matching,ui,ui_func_00391710,src/engine/leaf_batch46_c.cpp
 0x00392060,656,matching,script_vm,script_vm_func_00392060,src/engine/leaf_batch45_b.cpp
-0x003922f0,728,matching,engine,engine_func_003922f0,src/engine/leaf_batch45_a.cpp
+0x003922f0,728,non_matching,engine,engine_func_003922f0,src/engine/leaf_batch45_a.cpp
 0x003925c8,1280,matching,camp,camp_func_003925c8,src/engine/leaf_batch46_b.cpp
 0x00392ac8,4,matching,unknown,func_00392ac8,src/engine/leaf_matching.cpp
 0x00392acc,632,non_matching,engine,engine_func_00392acc,src/engine/leaf_batch45_a.cpp
