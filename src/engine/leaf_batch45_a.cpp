@@ -9966,101 +9966,102 @@ extern "C" void func_003e4ebc(const u8* node, u8* out, const u8* anim,
 }
 
 // DECOMP_FUNC(0x0015a7c0, 720)
-extern "C" __attribute__((naked)) void ui_func_0015a7c0() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x47f0, 0xe92d, 0x4002, 0xe1a0\n"
-        ".hword 0x7000, 0xe1a0, 0x8b02, 0xed2d\n"
-        ".hword 0xd048, 0xe24d, 0x0008, 0xe590\n"
-        ".hword 0x0008, 0xe590, 0x2068, 0xe590\n"
-        ".hword 0x0001, 0xe152, 0x0085, 0xda00\n"
-        ".hword 0x20a4, 0xe597, 0x006c, 0xe590\n"
-        ".hword 0x9280, 0xe59f, 0x8f52, 0xe282\n"
-        ".hword 0x2101, 0xe041, 0x6008, 0xe594\n"
-        ".hword 0x5082, 0xe080, 0x0000, 0xe599\n"
-        ".hword 0xa264, 0xe59f, 0x214e, 0xe285\n"
-        ".hword 0x8a95, 0xed9f, 0x8a95, 0xeddf\n"
-        ".hword 0x10bc, 0xe286, 0x0404, 0xe8a0\n"
-        ".hword 0x1c78, 0xeb05, 0x0000, 0xe599\n"
-        ".hword 0x2152, 0xe285, 0x10cc, 0xe286\n"
-        ".hword 0x0018, 0xe280, 0x0000, 0xe589\n"
-        ".hword 0x0404, 0xe8a0, 0x1c71, 0xeb05\n"
-        ".hword 0x0000, 0xe599, 0x0018, 0xe280\n"
-        ".hword 0x0000, 0xe589, 0x00b8, 0xe596\n"
-        ".hword 0x0000, 0xe350, 0x0022, 0x0a00\n"
-        ".hword 0x0a26, 0xed94, 0x0a2a, 0xedd4\n"
-        ".hword 0x1a2e, 0xed94, 0x8a11, 0xedcd\n"
-        ".hword 0xc038, 0xe28d, 0x3038, 0xe28d\n"
-        ".hword 0x2008, 0xe1a0, 0x1003, 0xe1a0\n"
-        ".hword 0x0007, 0xe1a0, 0x0a03, 0xec8c\n"
-        ".hword 0x1c41, 0xeb05, 0x0000, 0xe599\n"
-        ".hword 0x2156, 0xe285, 0x1038, 0xe28d\n"
-        ".hword 0x0404, 0xe8a0, 0x1c5b, 0xeb05\n"
-        ".hword 0x0000, 0xe599, 0x215e, 0xe285\n"
-        ".hword 0x10e8, 0xe286, 0x0018, 0xe280\n"
-        ".hword 0x0000, 0xe589, 0x0404, 0xe8a0\n"
-        ".hword 0x1c54, 0xeb05, 0x0000, 0xe599\n"
-        ".hword 0x0018, 0xe280, 0x0000, 0xe589\n"
-        ".hword 0x00b8, 0xe596, 0x0002, 0xe350\n"
-        ".hword 0x001e, 0x0a00, 0x01a8, 0xe59f\n"
-        ".hword 0x4003, 0xe245, 0x0000, 0xe590\n"
-        ".hword 0x0001, 0xe310, 0x0051, 0x0a00\n"
-        ".hword 0x005c, 0xea00, 0x017c, 0xe594\n"
-        ".hword 0x300d, 0xe1a0, 0x2008, 0xe1a0\n"
-        ".hword 0x0000, 0xe58d, 0x0180, 0xe594\n"
-        ".hword 0x1003, 0xe1a0, 0x0004, 0xe58d\n"
-        ".hword 0x0184, 0xe594, 0x0008, 0xe58d\n"
-        ".hword 0x8a03, 0xed8d, 0x0007, 0xe1a0\n"
-        ".hword 0x1c1d, 0xeb05, 0x1004, 0xe28d\n"
-        ".hword 0x1a00, 0xeddd, 0x201c, 0xe28d\n"
-        ".hword 0x0a03, 0xec91, 0x1a61, 0xeef1\n"
-        ".hword 0x1018, 0xe28d, 0x0015, 0xe285\n"
-        ".hword 0x0a40, 0xeeb1, 0x1a41, 0xeeb1\n"
-        ".hword 0x0a60, 0xeef1, 0x1a06, 0xedcd\n"
-        ".hword 0x0a03, 0xec82, 0x0045, 0xea00\n"
-        ".hword 0x017c, 0xe594, 0x3028, 0xe28d\n"
-        ".hword 0x2008, 0xe1a0, 0x0028, 0xe58d\n"
-        ".hword 0x0180, 0xe594, 0x1003, 0xe1a0\n"
-        ".hword 0x002c, 0xe58d, 0x0184, 0xe594\n"
-        ".hword 0x0030, 0xe58d, 0x8a0d, 0xed8d\n"
-        ".hword 0x0007, 0xe1a0, 0x1c04, 0xeb05\n"
-        ".hword 0x10f8, 0xe596, 0x20fc, 0xe596\n"
-        ".hword 0x3018, 0xe28d, 0x0006, 0xe883\n"
-        ".hword 0x8a08, 0xed8d, 0x8a09, 0xed8d\n"
-        ".hword 0x0a3f, 0xed96, 0x0ac8, 0xeeb4\n"
-        ".hword 0xfa10, 0xeef1, 0x001a, 0xda00\n"
-        ".hword 0x10d8, 0xe59f, 0x0a10, 0xee10\n"
-        ".hword 0x0000, 0xe151, 0x0016, 0xda00\n"
-        ".hword 0x0a33, 0xeddf, 0x0a20, 0xee20\n"
-        ".hword 0x7279, 0xeb05, 0x0a07, 0xed8d\n"
-        ".hword 0x8a0d, 0xedcd, 0x0000, 0xe599\n"
-        ".hword 0x215a, 0xe285, 0x1028, 0xe28d\n"
-        ".hword 0x0404, 0xe8a0, 0x1c0b, 0xeb05\n"
-        ".hword 0x0000, 0xe599, 0x1018, 0xe28d\n"
-        ".hword 0x2162, 0xe285, 0x0018, 0xe280\n"
-        ".hword 0x0000, 0xe589, 0x0404, 0xe8a0\n"
-        ".hword 0x1c04, 0xeb05, 0x0000, 0xe599\n"
-        ".hword 0x0018, 0xe280, 0x0000, 0xe589\n"
-        ".hword 0xd048, 0xe28d, 0x8b02, 0xecbd\n"
-        ".hword 0x87f0, 0xe8bd, 0x0a48, 0xeeb4\n"
-        ".hword 0xfa10, 0xeef1, 0x0a1b, 0x0d9f\n"
-        ".hword 0x0a07, 0x0d8d, 0x8a0d, 0x0dcd\n"
-        ".hword 0x8a0d, 0x1d8d, 0xffe6, 0xeaff\n"
-        ".hword 0x004c, 0xe59f, 0x95a8, 0xfa05\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x0006, 0x0a00, 0x0048, 0xe59f\n"
-        ".hword 0x8a00, 0xed80, 0x8a01, 0xed80\n"
-        ".hword 0x8a02, 0xed80, 0x8a03, 0xed80\n"
-        ".hword 0x0024, 0xe59f, 0x0000, 0xe1a0\n"
-        ".hword 0x102c, 0xe59f, 0x0019, 0xe284\n"
-        ".hword 0x2102, 0xe280, 0x0000, 0xe599\n"
-        ".hword 0xffdf, 0xeaff, 0x0000, 0x0000\n"
-        ".hword 0x0000, 0x3f80, 0x02c0, 0x804f\n"
-        ".hword 0x52a0, 0x0046, 0x662c, 0x0047\n"
-        ".hword 0x0fdb, 0x4049, 0xf983, 0x4222\n"
-        ".hword 0x0054, 0x3f80, 0xfd38, 0x004e\n"
-    );
-};
+extern "C" void func_002a1a08(void* dst, const void* vec4);
+extern "C" void func_002a198c(u8* ctx, float* dst_vec4, const void* mat,
+                              const float* src_vec4);
+extern "C" float ui_func_002b73a4(float x);
+extern "C" u32 engine_func_002c00d4(void* ptr);
+
+namespace {
+inline void emit_pica_uniform_0015a7c0(u32 reg, const void* vec4) {
+    u32*& cmd = *reinterpret_cast<u32**>(0x004652A0u);
+    cmd[0] = reg | 0x80000000u;
+    cmd[1] = 0x804F02C0u;
+    func_002a1a08(cmd + 2, vec4);
+    cmd += 6;
+}
+}  // namespace
+
+extern "C" void ui_func_0015a7c0(u8* ctx, s32 index, const u8* src) {
+    const u8* const sub = *reinterpret_cast<const u8* const*>(
+        *reinterpret_cast<const u8* const*>(ctx + 0x08) + 0x08);
+    if (*reinterpret_cast<const s32*>(sub + 0x68) <= index) {
+        return;
+    }
+
+    const u8* const mat = *reinterpret_cast<const u8* const*>(ctx + 0xA4) + 0x148;
+    const u32 base_reg =
+        *reinterpret_cast<const u32*>(sub + 0x6C) - static_cast<u32>(index * 6);
+    const u8* const data = *reinterpret_cast<const u8* const*>(src + 0x08);
+
+    emit_pica_uniform_0015a7c0(base_reg + 0x13, data + 0xBC);
+    emit_pica_uniform_0015a7c0(base_reg + 0x14, data + 0xCC);
+
+    const u32 mode = *reinterpret_cast<const u32*>(data + 0xB8);
+    if (mode == 0) {
+        float vec[4] = {
+            *reinterpret_cast<const float*>(src + 0x17C),
+            *reinterpret_cast<const float*>(src + 0x180),
+            *reinterpret_cast<const float*>(src + 0x184),
+            0.0f,
+        };
+        func_002a198c(ctx, vec, mat, vec);
+        float neg_vec[4] = {-vec[0], -vec[1], -vec[2], -vec[3]};
+        emit_pica_uniform_0015a7c0(base_reg + 0x15, neg_vec);
+        return;
+    }
+
+    float vec[4] = {
+        *reinterpret_cast<const float*>(src + 0x98),
+        *reinterpret_cast<const float*>(src + 0xA8),
+        *reinterpret_cast<const float*>(src + 0xB8),
+        1.0f,
+    };
+    func_002a198c(ctx, vec, mat, vec);
+    emit_pica_uniform_0015a7c0(base_reg + 0x15, vec);
+    emit_pica_uniform_0015a7c0(base_reg + 0x17, data + 0xE8);
+
+    if (mode == 2) {
+        float dir[4] = {
+            *reinterpret_cast<const float*>(src + 0x17C),
+            *reinterpret_cast<const float*>(src + 0x180),
+            *reinterpret_cast<const float*>(src + 0x184),
+            0.0f,
+        };
+        func_002a198c(ctx, dir, mat, dir);
+
+        const float f_fc = *reinterpret_cast<const float*>(data + 0xFC);
+        float spot[4] = {
+            *reinterpret_cast<const float*>(data + 0xF8),
+            f_fc,
+            0.0f,
+            0.0f,
+        };
+        if (f_fc > 0.0f && f_fc < 3.14159274f) {
+            spot[1] = ui_func_002b73a4(f_fc * 40.7436638f);
+            dir[3] = 1.0f;
+        } else if (f_fc == 0.0f) {
+            spot[1] = 1.00001001f;
+            dir[3] = 1.0f;
+        } else {
+            dir[3] = 0.0f;
+        }
+        emit_pica_uniform_0015a7c0(base_reg + 0x16, dir);
+        emit_pica_uniform_0015a7c0(base_reg + 0x18, spot);
+        return;
+    }
+
+    u32* const g_47662c = reinterpret_cast<u32*>(0x0047662Cu);
+    if ((*g_47662c & 1u) == 0 && engine_func_002c00d4(g_47662c) != 0) {
+        float* const g_4efd38 = reinterpret_cast<float*>(0x004EFD38u);
+        g_4efd38[0] = 0.0f;
+        g_4efd38[1] = 0.0f;
+        g_4efd38[2] = 0.0f;
+        g_4efd38[3] = 0.0f;
+    }
+    emit_pica_uniform_0015a7c0(base_reg + 0x16,
+                               reinterpret_cast<const void*>(0x004EFD38u));
+}
 
 // DECOMP_FUNC(0x00349c64, 720)
 extern "C" __attribute__((naked)) void engine_func_00349c64() {
