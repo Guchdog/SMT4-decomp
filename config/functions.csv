@@ -1991,7 +1991,7 @@ address,size,status,category,name,src_file
 0x0018b330,36,matching,unknown,func_0018b330,src/engine/leaf_batch18_c.cpp
 0x0018b354,36,matching,unknown,func_0018b354,src/engine/leaf_batch18_c.cpp
 0x0018b378,36,matching,unknown,func_0018b378,src/engine/leaf_batch18_c.cpp
-0x0018b39c,708,matching,camp,camp_func_0018b39c,src/engine/leaf_batch45_a.cpp
+0x0018b39c,708,non_matching,camp,camp_func_0018b39c,src/engine/leaf_batch45_a.cpp
 0x0018b660,536,non_matching,camp,Config_func_0018b660,src/camp/title_flow.cpp
 0x0018b878,1756,matching,script_vm,script_vm_func_0018b878,src/engine/leaf_batch46_b.cpp
 0x0018bf54,132,matching,ui,ui_func_0018bf54,src/engine/leaf_batch26_a.cpp
