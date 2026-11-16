@@ -9453,7 +9453,7 @@ address,size,status,category,name,src_file
 0x003a6e68,396,matching,unknown,func_003a6e68,src/engine/leaf_batch27_c.cpp
 0x003a6ff4,144,matching,ui,ui_func_003a6ff4,src/engine/leaf_batch42_a.cpp
 0x003a7084,280,matching,shop,shop_func_003a7084,src/engine/leaf_batch38_b.cpp
-0x003a719c,724,matching,script_vm,script_vm_func_003a719c,src/engine/leaf_batch45_a.cpp
+0x003a719c,724,non_matching,script_vm,script_vm_func_003a719c,src/engine/leaf_batch45_a.cpp
 0x003a7470,80,matching,unknown,func_003a7470,src/engine/leaf_batch40_c.cpp
 0x003a74c0,652,matching,shop,shop_func_003a74c0,src/engine/leaf_batch42_b.cpp
 0x003a774c,392,matching,camp,camp_func_003a774c,src/engine/leaf_batch43_a.cpp
