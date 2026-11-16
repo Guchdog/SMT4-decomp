@@ -41,33 +41,60 @@ void btlHelp_Init(BtlHelpWork* work) {
     buffer[1] = 0;
     buffer[2] = 0;
 }
+extern "C" {
+void ui_func_001b71b8();
+void camp_func_002c4450(void* dst, u32 size, s32 value);
+void battle_func_00267f68(void* target);
+extern void* g_BtlGameOverHookTarget;
+}
+
+void btlUI_DrawNumber(void*);
+
 // DECOMP_FUNC(0x001d2610, 308)
+void btlTalk_Init(BtlTalkWork* work, void* ctx, s32 arg2, s32 arg3) {
+    static constexpr s32 kTaskTag = 2;
+    static constexpr u32 kAllocSize = 0x100;
+    static constexpr u32 kBufferSize = sizeof(BtlTalkBuffer);
+    static constexpr u32 kAllocCount = 1;
+    static constexpr u32 kRawFillSize = 0x80;
+    static constexpr s32 kRawFillValue = -1;
+    static constexpr u32 kCtxInfoPtrOffset = 0x28;
+    static constexpr u32 kSpeakerIdOffset = 0x14E;
 
+    battle_func_002bf41c(work->talk_task);
 
-//
-__attribute__((naked)) void btlTalk_Init(BtlTalkWork*, void*, s32, s32) {
-    asm volatile(
-        ".word 0xE92D43F0, 0xE1A05000, 0xE24DD014, 0xE1A06001\n"
-        ".word 0xE5900020, 0xE1A07002, 0xE1A08003, 0xEB03B37A\n"
-        ".word 0xE59F10B8, 0xE28F00B8, 0xE1A00000, 0xE3A00001\n"
-        ".word 0xE3A01C01, 0xE58D0000, 0xE3A030CC, 0xE3A02000\n"
-        ".word 0xE1A00001, 0xEB03C94A, 0xE59F40C4, 0xE59F20C8\n"
-        ".word 0xE59F10C0, 0xE28D9004, 0xE5840000, 0xE5950000\n"
-        ".word 0xE58D2000, 0xE3A03000, 0xE58D000C, 0xE8890022\n"
-        ".word 0xE1A02003, 0xE3A01002, 0xE28F00A0, 0xEB03C95B\n"
-        ".word 0xE5850020, 0xE5944000, 0xE3A09000, 0xE3E00000\n"
-        ".word 0xE284101C, 0xE8840060, 0xE3E02000, 0xE8810180\n"
-        ".word 0xE3A01080, 0xE5C490C4, 0xE5C490C5, 0xE58400C8\n"
-        ".word 0xE5960028, 0xE2800C01, 0xE1D004FE, 0xE5840030\n"
-        ".word 0xE2840034, 0xEB03C75D, 0xE59F0060, 0xE5900000\n"
-        ".word 0xEB025620, 0xE5849018, 0xE28DD014, 0xE8BD83F0\n"
-        ".word 0x0000029F, 0x535C3A63, 0x5C34544D, 0x36445258\n"
-        ".word 0x735C3638, 0x34736464, 0x6F72705C, 0x6D617267\n"
-        ".word 0x7461625C, 0x5C656C74, 0x546C7462, 0x2E6B6C61\n"
-        ".word 0x00707063, 0x00439B58, 0x0020F35C, 0x001B71B8\n"
-        ".word 0x546C7462, 0x206B6C61, 0x636C6143, 0x00000000\n"
-        ".word 0x00439CA8\n"
-    );
+    BtlTalkBuffer* buffer = static_cast<BtlTalkBuffer*>(
+        engine_func_002c4b84(kAllocSize, kAllocSize, 0, kBufferSize, kAllocCount));
+    g_pBtlTalkBuffer = buffer;
+
+    work->talk_task = camp_func_002c4c00(
+        "btlTalk Calc",
+        kTaskTag,
+        0,
+        0,
+        reinterpret_cast<const void*>(&ui_func_001b71b8),
+        reinterpret_cast<const void*>(&btlUI_DrawNumber),
+        work,
+        work->parent_work);
+
+    buffer = g_pBtlTalkBuffer;
+    buffer->parent = work;
+    buffer->ctx = ctx;
+    buffer->arg2 = arg2;
+    buffer->arg3 = arg3;
+
+    u8* raw_bytes = reinterpret_cast<u8*>(buffer);
+    raw_bytes[0xC4] = 0;
+    raw_bytes[0xC5] = 0;
+    *reinterpret_cast<s32*>(raw_bytes + 0xC8) = -1;
+
+    const u8* ctx_info = *reinterpret_cast<const u8* const*>(
+        static_cast<const u8*>(ctx) + kCtxInfoPtrOffset);
+    buffer->speaker_id = *reinterpret_cast<const s16*>(ctx_info + kSpeakerIdOffset);
+
+    camp_func_002c4450(buffer->raw, kRawFillSize, kRawFillValue);
+    battle_func_00267f68(g_BtlGameOverHookTarget);
+    buffer->state = 0;
 }
 
 // Incomplete readable sketch. The extracted body additionally allocates and
