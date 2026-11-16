@@ -2719,7 +2719,7 @@ address,size,status,category,name,src_file
 0x00203b64,52,matching,engine,engine_func_00203b64,src/engine/leaf_batch26_b.cpp
 0x00203b98,1628,matching,ui,ui_func_00203b98,src/engine/leaf_batch46_b.cpp
 0x002041f4,2936,matching,script_vm,script_vm_func_002041f4,src/engine/leaf_batch46_c.cpp
-0x00204d6c,692,matching,camp,camp_func_00204d6c,src/engine/leaf_batch45_a.cpp
+0x00204d6c,692,non_matching,camp,camp_func_00204d6c,src/engine/leaf_batch45_a.cpp
 0x00205020,996,matching,engine,engine_func_00205020,src/engine/leaf_batch40_a.cpp
 0x00205404,548,matching,camp,camp_func_00205404,src/engine/leaf_batch32_b.cpp
 0x00205628,772,matching,engine,engine_func_00205628,src/engine/leaf_batch45_a.cpp
