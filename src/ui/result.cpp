@@ -412,77 +412,65 @@ void Result_DrawDown(void*) {
     g_ResultManager.work = nullptr;
 }
 
+extern "C" {
+    s32  script_vm_func_00296cbc(void* work);                                 // 0x00296cbc
+    void ui_func_003b6150(void* work, u32 a1, u32 a2);                        // 0x003b6150
+    u32  ui_func_002bef7c(void* slot);                                        // 0x002bef7c
+    u32  shop_func_002bef70(void* slot);                                      // 0x002bef70
+    void ui_func_003b72a4(void* work, u32 a1, u32 a2);                        // 0x003b72a4
+    void ui_func_003b6c7c(void* work, u32 a1, u32 a2);                        // 0x003b6c7c
+    void Ui_DemonCompendiumSearch(void* work, u32 a1, u32 a2);                // 0x003b4bc0
+}
+
 // DECOMP_FUNC(0x001c8874, 264)
-// Verified ARM-state entry/exit and referenced local literal/table bytes.
-__attribute__((naked)) void func_001c8874(void* task_ctx) {
-    asm volatile(
-        ".word 0xe59f00fc\n"
-        ".word 0xe92d4070\n"
-        ".word 0xe5904000\n"
-        ".word 0xe3540000\n"
-        ".word 0x0a000039\n"
-        ".word 0xe1a00004\n"
-        ".word 0xeb03390a\n"
-        ".word 0xe3500000\n"
-        ".word 0x0a000036\n"
-        ".word 0xe2845b0d\n"
-        ".word 0xe2855f4b\n"
-        ".word 0xe5950000\n"
-        ".word 0xe3500007\n"
-        ".word 0xca000003\n"
-        ".word 0xe3a02000\n"
-        ".word 0xe1a01002\n"
-        ".word 0xe1a00004\n"
-        ".word 0xeb07b624\n"
-        ".word 0xe5950000\n"
-        ".word 0xe350000a\n"
-        ".word 0x0a000004\n"
-        ".word 0xe3500011\n"
-        ".word 0x0a00001e\n"
-        ".word 0xe3500012\n"
-        ".word 0x1a000025\n"
-        ".word 0xea00000d\n"
-        ".word 0xe2840b01\n"
-        ".word 0xe2800f43\n"
-        ".word 0xe1a06000\n"
-        ".word 0xeb03d9a3\n"
-        ".word 0xe1a05000\n"
-        ".word 0xe1a00006\n"
-        ".word 0xeb03d99d\n"
-        ".word 0xe1a02000\n"
-        ".word 0xe1a01005\n"
-        ".word 0xe1a00004\n"
-        ".word 0xeb07ba66\n"
-        ".word 0xe320f000\n"
-        ".word 0xe320f000\n"
-        ".word 0xea000016\n"
-        ".word 0xe2840b01\n"
-        ".word 0xe2800f66\n"
-        ".word 0xe1a06000\n"
-        ".word 0xeb03d995\n"
-        ".word 0xe1a05000\n"
-        ".word 0xe1a00006\n"
-        ".word 0xeb03d98f\n"
-        ".word 0xe1a02000\n"
-        ".word 0xe1a01005\n"
-        ".word 0xe1a00004\n"
-        ".word 0xeb07b8ce\n"
-        ".word 0xe320f000\n"
-        ".word 0xe320f000\n"
-        ".word 0xea000008\n"
-        ".word 0xe28400ac\n"
-        ".word 0xeb03d989\n"
-        ".word 0xe1a05000\n"
-        ".word 0xe28400ac\n"
-        ".word 0xeb03d983\n"
-        ".word 0xe1a02000\n"
-        ".word 0xe1a01005\n"
-        ".word 0xe1a00004\n"
-        ".word 0xeb07b093\n"
-        ".word 0xe3a00000\n"
-        ".word 0xe8bd8070\n"
-        ".word 0x0044dc20\n"
-    );
+void func_001c8874(void*) {
+    static constexpr u32 kStateOffset = 0x352C;
+    static constexpr s32 kPreStepMaxState = 7;
+    static constexpr s32 kModeA = 0x0A;
+    static constexpr s32 kModeB = 0x11;
+    static constexpr s32 kModeC = 0x12;
+    static constexpr u32 kSlotAOffset = 0x50C;
+    static constexpr u32 kSlotBOffset = 0xAC;
+    static constexpr u32 kSlotCOffset = 0x598;
+
+    auto* const work = reinterpret_cast<u8*>(g_ResultManager.work);
+    if (work == nullptr) {
+        return;
+    }
+    if (script_vm_func_00296cbc(work) == 0) {
+        return;
+    }
+
+    auto* const state_ptr = reinterpret_cast<s32*>(work + kStateOffset);
+    if (*state_ptr <= kPreStepMaxState) {
+        ui_func_003b6150(work, 0, 0);
+    }
+
+    switch (*state_ptr) {
+    case kModeA: {
+        void* const slot = work + kSlotAOffset;
+        const u32 a = ui_func_002bef7c(slot);
+        const u32 b = shop_func_002bef70(slot);
+        ui_func_003b72a4(work, a, b);
+        break;
+    }
+    case kModeB: {
+        void* const slot = work + kSlotBOffset;
+        const u32 a = ui_func_002bef7c(slot);
+        const u32 b = shop_func_002bef70(slot);
+        Ui_DemonCompendiumSearch(work, a, b);
+        break;
+    }
+    case kModeC: {
+        void* const slot = work + kSlotCOffset;
+        const u32 a = ui_func_002bef7c(slot);
+        const u32 b = shop_func_002bef70(slot);
+        ui_func_003b6c7c(work, a, b);
+        break;
+    }
+    default:
+        break;
+    }
 }
 #if 0
 // Partial semantic draft retained for reconstruction; not compiled.
