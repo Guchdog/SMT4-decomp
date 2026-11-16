@@ -80,137 +80,98 @@ bool ComWin_SetState() {
     return true;
 }
 
+extern "C" {
+    extern const u8 g_ComWinSpriteTable_00403890;                                          // 0x00403890
+    extern const u8 g_ComWinSpriteTable_004038c0;                                          // 0x004038c0
+}
+
 // DECOMP_FUNC(0x0010a748, 504)
-// Boundary-verified ARM-state span; includes its PC-relative literal pool.
-__attribute__((naked)) void ComWin_Init() {
-    asm volatile(
-        ".word 0xe92d41f0\n"
-        ".word 0xe3a06001\n"
-        ".word 0xe59f7168\n"
-        ".word 0xed2d8b02\n"
-        ".word 0xe24dd020\n"
-        ".word 0xe5970000\n"
-        ".word 0xe3500000\n"
-        ".word 0x1a000009\n"
-        ".word 0xe59f1154\n"
-        ".word 0xe28f0f55\n"
-        ".word 0xe1a00000\n"
-        ".word 0xe3a01c01\n"
-        ".word 0xe3a03f62\n"
-        ".word 0xe3a02000\n"
-        ".word 0xe1a00001\n"
-        ".word 0xe58d6000\n"
-        ".word 0xeb06e8fd\n"
-        ".word 0xe5870000\n"
-        ".word 0xe1a04000\n"
-        ".word 0xe3a01f62\n"
-        ".word 0xeb06e8e4\n"
-        ".word 0xe59f0158\n"
-        ".word 0xe3a05000\n"
-        ".word 0xe1a03005\n"
-        ".word 0xe88d0021\n"
-        ".word 0xe1a02005\n"
-        ".word 0xe3a01001\n"
-        ".word 0xe28f0f51\n"
-        ".word 0xe58d5008\n"
-        ".word 0xeb06ec6d\n"
-        ".word 0xe5840000\n"
-        ".word 0xe59f8140\n"
-        ".word 0xe3a03000\n"
-        ".word 0xe58d000c\n"
-        ".word 0xe1a02003\n"
-        ".word 0xe3a01081\n"
-        ".word 0xe28f0e13\n"
-        ".word 0xe58d5004\n"
-        ".word 0xe58d8000\n"
-        ".word 0xe58d5008\n"
-        ".word 0xeb06e904\n"
-        ".word 0xe5940000\n"
-        ".word 0xe3a03000\n"
-        ".word 0xe1a02003\n"
-        ".word 0xe58d000c\n"
-        ".word 0xe3a010df\n"
-        ".word 0xe28f0f47\n"
-        ".word 0xe58d5004\n"
-        ".word 0xe58d8000\n"
-        ".word 0xe58d5008\n"
-        ".word 0xeb06e8fa\n"
-        ".word 0xe5974000\n"
-        ".word 0xe284001c\n"
-        ".word 0xeb06e2c8\n"
-        ".word 0xe59f2110\n"
-        ".word 0xe3a01f46\n"
-        ".word 0xe58d1018\n"
-        ".word 0xe2423030\n"
-        ".word 0xe58d2014\n"
-        ".word 0xe3a00030\n"
-        ".word 0xe58d500c\n"
-        ".word 0xe58d5010\n"
-        ".word 0xe88d0009\n"
-        ".word 0xe3a02000\n"
-        ".word 0xe58d0008\n"
-        ".word 0xe2433030\n"
-        ".word 0xe1a01002\n"
-        ".word 0xe284001c\n"
-        ".word 0xeb06e2a6\n"
-        ".word 0xed9f8a36\n"
-        ".word 0xe284501c\n"
-        ".word 0xe3a03002\n"
-        ".word 0xeeb00a48\n"
-        ".word 0xe3e02000\n"
-        ".word 0xe3a0100e\n"
-        ".word 0xe284003c\n"
-        ".word 0xe88d0060\n"
-        ".word 0xeb06d209\n"
-        ".word 0xe3a01000\n"
-        ".word 0xe284003c\n"
-        ".word 0xeb06d1e8\n"
-        ".word 0xeeb00a48\n"
-        ".word 0xe3a03003\n"
-        ".word 0xe3e02000\n"
-        ".word 0xe3a0100e\n"
-        ".word 0xe28400c8\n"
-        ".word 0xe88d0060\n"
-        ".word 0xeb06d1ff\n"
-        ".word 0xe28dd020\n"
-        ".word 0xe28400c8\n"
-        ".word 0xecbd8b02\n"
-        ".word 0xe3a01002\n"
-        ".word 0xe8bd41f0\n"
-        ".word 0xea06d1db\n"
-        ".word 0x0043e0f8\n"
-        ".word 0x00000122\n"
-        ".word 0x535c3a63\n"
-        ".word 0x5c34544d\n"
-        ".word 0x36445258\n"
-        ".word 0x735c3638\n"
-        ".word 0x34736464\n"
-        ".word 0x6f72705c\n"
-        ".word 0x6d617267\n"
-        ".word 0x6e6f665c\n"
-        ".word 0x6f435c74\n"
-        ".word 0x6e69576d\n"
-        ".word 0x6d6f435c\n"
-        ".word 0x2e6e6957\n"
-        ".word 0x00707063\n"
-        ".word 0x0011b094\n"
-        ".word 0x576d6f43\n"
-        ".word 0x43206e69\n"
-        ".word 0x00636c61\n"
-        ".word 0x0011a354\n"
-        ".word 0x576d6f43\n"
-        ".word 0x44206e69\n"
-        ".word 0x55776172\n"
-        ".word 0x66654c70\n"
-        ".word 0x00000074\n"
-        ".word 0x576d6f43\n"
-        ".word 0x44206e69\n"
-        ".word 0x55776172\n"
-        ".word 0x67695270\n"
-        ".word 0x00007468\n"
-        ".word 0x004038f0\n"
-        ".word 0x3f800000\n"
-    );
+void ComWin_Init() {
+    static constexpr u32 kWorkSize = 0x188;
+    static constexpr u32 kCalcTag = 1;
+    static constexpr u32 kDrawUpLeftTag = 0x81;
+    static constexpr u32 kDrawUpRightTag = 0xDF;
+    static constexpr s32 kSpriteType = 0x0E;
+
+    u8* work = reinterpret_cast<u8*>(g_ComWinWork);
+    if (work == nullptr) {
+        work = static_cast<u8*>(AsdMem_Alloc(0x100, 0x100, 0, kWorkSize, 1));
+        g_ComWinWork = reinterpret_cast<ComWinWork*>(work);
+    }
+
+    AsdMem_Zero(work, kWorkSize);
+
+    void* const calc_task = AsdTask_CreateCalc(
+        "ComWin Calc",
+        kCalcTag,
+        0,
+        0,
+        ComWin_Calc,
+        0,
+        0);
+    *reinterpret_cast<void**>(work) = calc_task;
+
+    AsdTask_CreateDraw(
+        "ComWin DrawUpLeft",
+        kDrawUpLeftTag,
+        0,
+        0,
+        ComWin_DrawUp,
+        0,
+        0,
+        calc_task);
+
+    AsdTask_CreateDraw(
+        "ComWin DrawUpRight",
+        kDrawUpRightTag,
+        0,
+        0,
+        ComWin_DrawUp,
+        0,
+        0,
+        calc_task);
+
+    u8* const bound_work = reinterpret_cast<u8*>(g_ComWinWork);
+    UiSpriteGroup* const sprite_group = reinterpret_cast<UiSpriteGroup*>(bound_work + 0x1C);
+    UiAnimSprite* const panel_sprite = reinterpret_cast<UiAnimSprite*>(bound_work + 0x3C);
+    UiAnimSprite* const cursor_sprite = reinterpret_cast<UiAnimSprite*>(bound_work + 0xC8);
+
+    UiSpriteGroup_Init(sprite_group);
+    UiSpriteGroup_BindTable(
+        sprite_group,
+        0,
+        0,
+        SpriteTableWord(&g_ComWinSpriteTable_00403890),
+        0x30,
+        SpriteTableWord(&g_ComWinSpriteTable_004038c0),
+        0x30,
+        0,
+        0,
+        SpriteTableWord(g_ComWinSpriteTable),
+        0x118);
+
+    using ComWinSetup = void (*)(UiAnimSprite*, s32, s32, s32, UiSpriteGroup*, u32, f32);
+    using ComWinSetAnim = void (*)(UiAnimSprite*, s32);
+
+    reinterpret_cast<ComWinSetup>(UiAnimSprite_Setup)(
+        panel_sprite,
+        kSpriteType,
+        -1,
+        2,
+        sprite_group,
+        1,
+        1.0f);
+    reinterpret_cast<ComWinSetAnim>(UiAnimSprite_SetAnim)(panel_sprite, 0);
+
+    reinterpret_cast<ComWinSetup>(UiAnimSprite_Setup)(
+        cursor_sprite,
+        kSpriteType,
+        -1,
+        3,
+        sprite_group,
+        1,
+        1.0f);
+    reinterpret_cast<ComWinSetAnim>(UiAnimSprite_SetAnim)(cursor_sprite, 2);
 }
 #if 0
 // Partial semantic draft retained for reconstruction; not compiled.
