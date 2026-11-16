@@ -487,37 +487,13 @@ u8 Status_GetSubMenuState() {
 
 
 //
-__attribute__((naked)) void Status_Destroy(s32*, s32*, s32, f32) {
-    asm volatile(
-        ".arm\n"
-        "push {r4, r5, r6, r7, r8, lr}\n"
-        "mov r5, r0\n"
-        "mov r6, r1\n"
-        "ldr r0, [pc, #0x54]\n"
-        "rsb r1, r2, r2, lsl #3\n"
-        "vpush {d8}\n"
-        "add r1, r1, r1, lsl #2\n"
-        "ldr r0, [r0, #4]\n"
-        "vmov.f32 s16, s0\n"
-        "add r4, r0, r1, lsl #2\n"
-        "add r0, r4, #0x44\n"
-        ".word 0xeb00d77c\n" // bl 0x002bef7c: ui_func_002bef7c
-        "mov r7, r0\n"
-        "ldr r0, [pc, #0x30]\n"
-        "vmov.f32 s0, s16\n"
-        "ldr r0, [r0]\n"
-        ".word 0xeb00c4b3\n" // bl 0x002ba46c: ui_func_002ba46c
-        "vcvt.s32.f32 s0, s0\n"
-        "vmov r0, s0\n"
-        "add r0, r0, r7\n"
-        "str r0, [r5]\n"
-        "add r0, r4, #0x44\n"
-        ".word 0xeb00d76e\n" // bl 0x002bef70: shop_func_002bef70
-        "str r0, [r6]\n"
-        "vpop {d8}\n"
-        "pop {r4, r5, r6, r7, r8, pc}\n"
-        ".word 0x0044e140\n"
-        ".word 0x0044ea00\n");
+void Status_Destroy(s32* out_x, s32* out_y, s32 panel_idx, f32 scale) {
+    const auto* sprite = reinterpret_cast<const UiAnimSprite*>(
+        &g_StatusManager.work->raw_panels[(0x44 - 0x18) + panel_idx * 0x8C]);
+    const s32 pos_x = UiAnimSprite_GetPosX(sprite);
+    const f32 offset_x = UiGpu_TransformCoord(g_AsdGpuState, scale);
+    *out_x = static_cast<s32>(offset_x) + pos_x;
+    *out_y = UiAnimSprite_GetPosY(sprite);
 }
 
 // DECOMP_FUNC(0x0028c2a8, 1448)
