@@ -6466,7 +6466,7 @@ address,size,status,category,name,src_file
 0x002e825c,28,matching,unknown,func_002e825c,src/engine/leaf_batch34_b.cpp
 0x002e8278,12,matching,unknown,func_002e8278,src/engine/leaf_batch36_c.cpp
 0x002e8284,16,matching,unknown,func_002e8284,src/engine/leaf_matching.cpp
-0x002e8294,604,matching,battle,btlTargetSelect_Init,src/battle/btl_target_select.cpp
+0x002e8294,604,non_matching,battle,btlTargetSelect_Init,src/battle/btl_target_select.cpp
 0x002e84f0,32,matching,engine,engine_func_002e84f0,src/engine/leaf_batch37_b.cpp
 0x002e8510,72,matching,engine,engine_func_002e8510,src/engine/leaf_batch29_b.cpp
 0x002e8558,532,matching,script_vm,script_vm_func_002e8558,src/engine/leaf_batch46_a.cpp
