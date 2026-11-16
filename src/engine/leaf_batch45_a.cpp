@@ -9863,100 +9863,107 @@ extern "C" void battle_func_00193b64(u8* dst, const u8* src) {
 }
 
 // DECOMP_FUNC(0x003e4ebc, 712)
-extern "C" __attribute__((naked)) void func_003e4ebc() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x47f0, 0xe92d, 0x4001, 0xe1a0\n"
-        ".hword 0x8000, 0xe1a0, 0xa000, 0xe3a0\n"
-        ".hword 0x5003, 0xe1a0, 0x8b02, 0xed2d\n"
-        ".hword 0xd008, 0xe24d, 0x7000, 0xe592\n"
-        ".hword 0x9030, 0xe59d, 0xa000, 0xe58d\n"
-        ".hword 0x8a40, 0xeef0, 0x0000, 0xe359\n"
-        ".hword 0x003c, 0x0594, 0x8aa2, 0xed9f\n"
-        ".hword 0x6002, 0xe1a0, 0x0000, 0x058d\n"
-        ".hword 0x0010, 0xe317, 0x0011, 0x1a00\n"
-        ".hword 0x0000, 0xe59d, 0x0080, 0xe3c0\n"
-        ".hword 0x0000, 0xe58d, 0x0000, 0xe596\n"
-        ".hword 0x100c, 0xe592, 0x0002, 0xe310\n"
-        ".hword 0x0a48, 0x1eb0, 0x0a68, 0x0eb0\n"
-        ".hword 0x0000, 0xe351, 0x000c, 0xe282\n"
-        ".hword 0x2000, 0x1081, 0x200a, 0x01a0\n"
-        ".hword 0x100d, 0xe1a0, 0x0004, 0xe1a0\n"
-        ".hword 0x6f7e, 0xebfe, 0x003c, 0xe594\n"
-        ".hword 0x0b02, 0xe380, 0x003c, 0xe584\n"
-        ".hword 0x0008, 0xe317, 0x0011, 0x1a00\n"
-        ".hword 0x0000, 0xe59d, 0x0c01, 0xe3c0\n"
-        ".hword 0x0000, 0xe58d, 0x0000, 0xe596\n"
-        ".hword 0x1010, 0xe596, 0x0001, 0xe310\n"
-        ".hword 0x0a48, 0x1eb0, 0x0a68, 0x0eb0\n"
-        ".hword 0x0000, 0xe351, 0x0010, 0xe286\n"
-        ".hword 0x2000, 0x1081, 0x200a, 0x01a0\n"
-        ".hword 0x100d, 0xe1a0, 0x0004, 0xe1a0\n"
-        ".hword 0x703c, 0xebfe, 0x003c, 0xe594\n"
-        ".hword 0x0b02, 0xe380, 0x003c, 0xe584\n"
-        ".hword 0x0020, 0xe317, 0x005f, 0x0a00\n"
-        ".hword 0x0000, 0xe359, 0x0042, 0x0a00\n"
-        ".hword 0x0010, 0xe317, 0x0011, 0x0a00\n"
-        ".hword 0x100c, 0xe285, 0x0004, 0xe1a0\n"
-        ".hword 0x0a03, 0xec91, 0x9c81, 0xebf9\n"
-        ".hword 0x0a03, 0xed95, 0x0a48, 0xeeb4\n"
-        ".hword 0xfa10, 0xeef1, 0x0009, 0x1a00\n"
-        ".hword 0x0a04, 0xed95, 0x0a48, 0xeeb4\n"
-        ".hword 0xfa10, 0xeef1, 0x0a05, 0x0d95\n"
-        ".hword 0x0a48, 0x0eb4, 0xfa10, 0x0ef1\n"
-        ".hword 0x0002, 0x1a00, 0x0000, 0xe59d\n"
-        ".hword 0x0080, 0xe380, 0x0000, 0xe58d\n"
-        ".hword 0x0008, 0xe317, 0x0015, 0x0a00\n"
-        ".hword 0x0018, 0xe285, 0x0007, 0xe890\n"
-        ".hword 0x000c, 0xe584, 0x101c, 0xe584\n"
-        ".hword 0x202c, 0xe584, 0x003c, 0xe594\n"
-        ".hword 0x0b02, 0xe380, 0x003c, 0xe584\n"
-        ".hword 0x0a06, 0xed95, 0x0a48, 0xeeb4\n"
-        ".hword 0xfa10, 0xeef1, 0x0009, 0x1a00\n"
-        ".hword 0x0a07, 0xed95, 0x0a48, 0xeeb4\n"
-        ".hword 0xfa10, 0xeef1, 0x0a08, 0x0d95\n"
-        ".hword 0x0a48, 0x0eb4, 0xfa10, 0x0ef1\n"
-        ".hword 0x0002, 0x1a00, 0x0000, 0xe59d\n"
-        ".hword 0x0c01, 0xe380, 0x0000, 0xe58d\n"
-        ".hword 0x0020, 0xe317, 0x0014, 0x0a00\n"
-        ".hword 0x0007, 0xe895, 0x3030, 0xe284\n"
-        ".hword 0x0007, 0xe883, 0x003c, 0xe594\n"
-        ".hword 0x0b02, 0xe380, 0x003c, 0xe584\n"
-        ".hword 0x0a02, 0xec95, 0x0a60, 0xeeb4\n"
-        ".hword 0xfa10, 0xeef1, 0x000a, 0x1a00\n"
-        ".hword 0x0a02, 0xedd5, 0x0a60, 0xeeb4\n"
-        ".hword 0xfa10, 0xeef1, 0x0006, 0x1a00\n"
-        ".hword 0x0000, 0xe59d, 0x0b01, 0xe380\n"
-        ".hword 0x0000, 0xe58d, 0x1000, 0xe595\n"
-        ".hword 0x05fe, 0xe351, 0x0c02, 0x0380\n"
-        ".hword 0x0000, 0x058d, 0x103c, 0xe594\n"
-        ".hword 0x2000, 0xe59d, 0x0004, 0xe1a0\n"
-        ".hword 0x1101, 0xe3c1, 0x103c, 0xe584\n"
-        ".hword 0x305b, 0xe5d8, 0x0000, 0xe353\n"
-        ".hword 0x1008, 0x1381, 0x1008, 0x03c1\n"
-        ".hword 0x103c, 0xe580, 0x105c, 0xe5d8\n"
-        ".hword 0x0000, 0xe351, 0x103c, 0xe590\n"
-        ".hword 0x1010, 0x1381, 0x1010, 0x03c1\n"
-        ".hword 0x103c, 0xe580, 0x105d, 0xe5d8\n"
-        ".hword 0x0000, 0xe351, 0x103c, 0xe590\n"
-        ".hword 0x1004, 0x1381, 0x1004, 0x03c1\n"
-        ".hword 0x103c, 0xe580, 0x1002, 0xe1a0\n"
-        ".hword 0x702c, 0xebfe, 0xd008, 0xe28d\n"
-        ".hword 0x8b02, 0xecbd, 0x87f0, 0xe8bd\n"
-        ".hword 0x0000, 0xe59d, 0x0a68, 0xeeb0\n"
-        ".hword 0x100d, 0xe1a0, 0x0c06, 0xe3c0\n"
-        ".hword 0x0000, 0xe58d, 0x2000, 0xe596\n"
-        ".hword 0x0030, 0xe284, 0x0004, 0xe312\n"
-        ".hword 0x2014, 0xe5b6, 0x0004, 0x0a00\n"
-        ".hword 0x0000, 0xe352, 0x0a48, 0xeeb0\n"
-        ".hword 0xa006, 0x1082, 0x200a, 0xe1a0\n"
-        ".hword 0x0002, 0xea00, 0x0000, 0xe352\n"
-        ".hword 0xa006, 0x1082, 0x200a, 0xe1a0\n"
-        ".hword 0x6f68, 0xebfe, 0x003c, 0xe594\n"
-        ".hword 0x0b02, 0xe380, 0x003c, 0xe584\n"
-        ".hword 0xff88, 0xeaff, 0x0000, 0x0000\n"
-    );
-};
+extern "C" void func_00380d3c(u8* out, u32* flags, const void* track,
+                              float time);
+extern "C" void func_00381084(u8* out, u32* flags, const void* track,
+                              float time);
+extern "C" void func_00380f14(u8* scale_out, u32* flags, const void* track,
+                              float time);
+extern "C" void engine_func_0024c1cc(u8* out, float rx, float ry, float rz);
+extern "C" void func_003811cc(u8* out, u32 flags);
+
+extern "C" void func_003e4ebc(const u8* node, u8* out, const u8* anim,
+                              const u8* fallback, float time, s32 reset) {
+    const u32 anim_flags = *reinterpret_cast<const u32*>(anim);
+    u32 local_flags =
+        (reset == 0) ? *reinterpret_cast<const u32*>(out + 0x3C) : 0u;
+
+    if ((anim_flags & 0x10u) == 0) {
+        local_flags &= ~0x80u;
+        const float t = (anim_flags & 2u) != 0 ? 0.0f : time;
+        const s32 rel = *reinterpret_cast<const s32*>(anim + 0x0C);
+        const void* const track = (rel != 0) ? (anim + 0x0C + rel) : nullptr;
+        func_00380d3c(out, &local_flags, track, t);
+        *reinterpret_cast<u32*>(out + 0x3C) |= 0x800u;
+    }
+
+    if ((anim_flags & 0x08u) == 0) {
+        local_flags &= ~0x100u;
+        const float t = (anim_flags & 1u) != 0 ? 0.0f : time;
+        const s32 rel = *reinterpret_cast<const s32*>(anim + 0x10);
+        const void* const track = (rel != 0) ? (anim + 0x10 + rel) : nullptr;
+        func_00381084(out, &local_flags, track, t);
+        *reinterpret_cast<u32*>(out + 0x3C) |= 0x800u;
+    }
+
+    if ((anim_flags & 0x20u) == 0) {
+        local_flags &= ~0x600u;
+        const float t = (anim_flags & 4u) != 0 ? 0.0f : time;
+        const s32 rel = *reinterpret_cast<const s32*>(anim + 0x14);
+        const void* const track = (rel != 0) ? (anim + 0x14 + rel) : nullptr;
+        func_00380f14(out + 0x30, &local_flags, track, t);
+        *reinterpret_cast<u32*>(out + 0x3C) |= 0x800u;
+    } else if (reset != 0) {
+        if ((anim_flags & 0x10u) != 0) {
+            const float* const rot =
+                reinterpret_cast<const float*>(fallback + 0x0C);
+            engine_func_0024c1cc(out, rot[0], rot[1], rot[2]);
+            if (rot[0] == 0.0f && rot[1] == 0.0f && rot[2] == 0.0f) {
+                local_flags |= 0x80u;
+            }
+        }
+        if ((anim_flags & 0x08u) != 0) {
+            const u32* const trans_u =
+                reinterpret_cast<const u32*>(fallback + 0x18);
+            *reinterpret_cast<u32*>(out + 0x0C) = trans_u[0];
+            *reinterpret_cast<u32*>(out + 0x1C) = trans_u[1];
+            *reinterpret_cast<u32*>(out + 0x2C) = trans_u[2];
+            *reinterpret_cast<u32*>(out + 0x3C) |= 0x800u;
+            const float* const trans_f =
+                reinterpret_cast<const float*>(fallback + 0x18);
+            if (trans_f[0] == 0.0f && trans_f[1] == 0.0f &&
+                trans_f[2] == 0.0f) {
+                local_flags |= 0x100u;
+            }
+        }
+        if ((anim_flags & 0x20u) != 0) {
+            const u32* const scale_u =
+                reinterpret_cast<const u32*>(fallback);
+            *reinterpret_cast<u32*>(out + 0x30) = scale_u[0];
+            *reinterpret_cast<u32*>(out + 0x34) = scale_u[1];
+            *reinterpret_cast<u32*>(out + 0x38) = scale_u[2];
+            *reinterpret_cast<u32*>(out + 0x3C) |= 0x800u;
+            const float* const scale_f =
+                reinterpret_cast<const float*>(fallback);
+            if (scale_f[0] == scale_f[1] && scale_f[0] == scale_f[2]) {
+                local_flags |= 0x400u;
+                if (scale_u[0] == 0x3F800000u) {
+                    local_flags |= 0x200u;
+                }
+            }
+        }
+    }
+
+    u32 out_flags = *reinterpret_cast<const u32*>(out + 0x3C) & ~0x40000000u;
+    if (node[0x5B] != 0) {
+        out_flags |= 8u;
+    } else {
+        out_flags &= ~8u;
+    }
+    if (node[0x5C] != 0) {
+        out_flags |= 0x10u;
+    } else {
+        out_flags &= ~0x10u;
+    }
+    if (node[0x5D] != 0) {
+        out_flags |= 4u;
+    } else {
+        out_flags &= ~4u;
+    }
+    *reinterpret_cast<u32*>(out + 0x3C) = out_flags;
+
+    func_003811cc(out, local_flags);
+}
 
 // DECOMP_FUNC(0x0015a7c0, 720)
 extern "C" __attribute__((naked)) void ui_func_0015a7c0() {
