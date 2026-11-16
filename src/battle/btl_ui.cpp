@@ -209,44 +209,90 @@ s32 btlUnit_CheckPartyActive(BtlUnitWork* work) {
 // ============================================================================
 
 BtlUIManager g_BtlUIManager = {nullptr, {0}, nullptr};
+extern "C" {
+void CommonBg_func_00289b4c(void* work);
+void battle_func_003ad98c(void* buffer, BtlUIWork* work);
+}
+
+void btlUI_Calc(void*);
+void btlUI_DrawUp(void*);
+void btlUI_DrawDown(void*);
+
 // DECOMP_FUNC(0x001a83c8, 488)
+void btlUI_Init(BtlUIWork* work) {
+    static constexpr u32 kAllocSize = 0x100;
+    static constexpr u32 kBufferSize = 0xF040;
+    static constexpr u32 kAllocCount = 1;
+    static constexpr s32 kCalcTag = 2;
+    static constexpr s32 kDrawUpLeftTag = 0x7A;
+    static constexpr s32 kDrawUpRightTag = 0xD8;
+    static constexpr s32 kDrawDownTag = 0xE7;
+    static constexpr s32 kDrawNumberTag = 0xE9;
 
+    CommonBg_func_00289b4c(work);
 
-//
-__attribute__((naked)) void btlUI_Init(BtlUIWork*) {
-    asm volatile(
-        ".word 0xE92D40F0, 0xE24DD014, 0xE1A04000, 0xEB0385DC\n"
-        ".word 0xE59F5128, 0xE5950020, 0xE3500000, 0x1A00000A\n"
-        ".word 0xE59F111C, 0xE28F0F47, 0xE1A00000, 0xE3A00001\n"
-        ".word 0xE3A01C01, 0xE58D0000, 0xE59F3138, 0xE3A02000\n"
-        ".word 0xE1A00001, 0xEB0471DC, 0xE5850020, 0xE59F212C\n"
-        ".word 0xE5940000, 0xE5955020, 0xE59F111C, 0xE28D6004\n"
-        ".word 0xE58D2000, 0xE58D000C, 0xE3A03000, 0xE8860012\n"
-        ".word 0xE1A02003, 0xE3A01002, 0xE28F0F41, 0xEB0471ED\n"
-        ".word 0xE5840054, 0xE59F7104, 0xE3A06000, 0xE58D000C\n"
-        ".word 0xE1A03006, 0xE1A02006, 0xE3A0107A, 0xE28F00F0\n"
-        ".word 0xE58D6004, 0xE58D4008, 0xE58D7000, 0xEB0471E1\n"
-        ".word 0xE5940054, 0xE3A03000, 0xE1A02003, 0xE58D000C\n"
-        ".word 0xE3A010D8, 0xE28F00DC, 0xE58D4008, 0xE58D6004\n"
-        ".word 0xE58D7000, 0xEB0471D7, 0xE5940054, 0xE59F10D8\n"
-        ".word 0xE58D4008, 0xE58D000C, 0xE3A03000, 0xE88D0042\n"
-        ".word 0xE1A02003, 0xE3A010E7, 0xE28F00C0, 0xEB0471CD\n"
-        ".word 0xE5940054, 0xE59F10C4, 0xE58D4008, 0xE58D000C\n"
-        ".word 0xE3A03000, 0xE88D0042, 0xE1A02003, 0xE3A010E9\n"
-        ".word 0xE28F00AC, 0xEB0471C3, 0xE1A01004, 0xE1A00005\n"
-        ".word 0xEB081523, 0xE5854000, 0xE28DD014, 0xE8BD80F0\n"
-        ".word 0x00439C88, 0x00000B52, 0x535C3A63, 0x5C34544D\n"
-        ".word 0x36445258, 0x735C3638, 0x34736464, 0x6F72705C\n"
-        ".word 0x6D617267, 0x7461625C, 0x5C656C74, 0x556C7462\n"
-        ".word 0x70632E49, 0x00000070, 0x0000F040, 0x001E4AF8\n"
-        ".word 0x0019E034, 0x556C7462, 0x61432049, 0x0000636C\n"
-        ".word 0x001B71E0, 0x556C7462, 0x72442049, 0x70557761\n"
-        ".word 0x7466654C, 0x00000000, 0x556C7462, 0x72442049\n"
-        ".word 0x70557761, 0x68676952, 0x00000074, 0x001E4AFC\n"
-        ".word 0x556C7462, 0x72442049, 0x6F447761, 0x00006E77\n"
-        ".word 0x0020F3FC, 0x556C7462, 0x72442049, 0x754E7761\n"
-        ".word 0x7265626D, 0x00000000\n"
-    );
+    if (g_BtlUIManager.buffer == nullptr) {
+        g_BtlUIManager.buffer = engine_func_002c4b84(
+            kAllocSize, kAllocSize, 0, kBufferSize, kAllocCount);
+    }
+
+    void* buffer = g_BtlUIManager.buffer;
+
+    const u8* draw_down_bytes = reinterpret_cast<const u8*>(&btlUI_DrawDown);
+    const u8* draw_number_bytes = reinterpret_cast<const u8*>(&btlUI_DrawNumber);
+
+    work->calc_task = camp_func_002c4c00(
+        "btlUI Calc",
+        kCalcTag,
+        0,
+        0,
+        reinterpret_cast<const void*>(&btlUI_Calc),
+        draw_down_bytes + 0x14,
+        work,
+        work->parent_work);
+
+    camp_func_002c4c00(
+        "btlUI DrawUpLeft",
+        kDrawUpLeftTag,
+        0,
+        0,
+        reinterpret_cast<const void*>(&btlUI_DrawUp),
+        nullptr,
+        work,
+        work->calc_task);
+
+    camp_func_002c4c00(
+        "btlUI DrawUpRight",
+        kDrawUpRightTag,
+        0,
+        0,
+        reinterpret_cast<const void*>(&btlUI_DrawUp),
+        nullptr,
+        work,
+        work->calc_task);
+
+    camp_func_002c4c00(
+        "btlUI DrawDown",
+        kDrawDownTag,
+        0,
+        0,
+        draw_down_bytes + 0x18,
+        nullptr,
+        work,
+        work->calc_task);
+
+    camp_func_002c4c00(
+        "btlUI DrawNumber",
+        kDrawNumberTag,
+        0,
+        0,
+        draw_number_bytes + 0xA0,
+        nullptr,
+        work,
+        work->calc_task);
+
+    battle_func_003ad98c(buffer, work);
+    *reinterpret_cast<BtlUIWork**>(buffer) = work;
 }
 
 

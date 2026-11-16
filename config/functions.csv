@@ -2130,7 +2130,7 @@ address,size,status,category,name,src_file
 0x001a82a4,96,matching,engine,engine_func_001a82a4,src/engine/leaf_batch25_a.cpp
 0x001a8304,152,matching,ui,ui_func_001a8304,src/engine/leaf_batch26_a.cpp
 0x001a839c,44,matching,unknown,func_001a839c,src/engine/leaf_batch22_a.cpp
-0x001a83c8,488,matching,battle,btlUI_Init,src/battle/btl_ui.cpp
+0x001a83c8,488,non_matching,battle,btlUI_Init,src/battle/btl_ui.cpp
 0x001a85b0,140,matching,script_vm,script_vm_func_001a85b0,src/engine/leaf_batch26_a.cpp
 0x001a863c,744,matching,engine,engine_func_001a863c,src/engine/leaf_batch46_a.cpp
 0x001a8924,552,matching,engine,mapEnemy_func_001a8924,src/engine/map_runtime.cpp
