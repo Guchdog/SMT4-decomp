@@ -9297,98 +9297,101 @@ extern "C" void script_vm_func_00338f30(u8* state, s32 mode) {
 }
 
 // DECOMP_FUNC(0x003a211c, 696)
-extern "C" __attribute__((naked)) void shop_func_003a211c() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4ff0, 0xe92d, 0x5000, 0xe1a0\n"
-        ".hword 0xd02c, 0xe24d, 0x2860, 0xe590\n"
-        ".hword 0x037c, 0xe590, 0x0009, 0xe352\n"
-        ".hword 0xf102, 0x379f, 0x0013, 0xea00\n"
-        ".hword 0x2160, 0x003a, 0x2168, 0x003a\n"
-        ".hword 0x2168, 0x003a, 0x2170, 0x003a\n"
-        ".hword 0x2170, 0x003a, 0x2170, 0x003a\n"
-        ".hword 0x2178, 0x003a, 0x2180, 0x003a\n"
-        ".hword 0x2188, 0x003a, 0x1000, 0xe3a0\n"
-        ".hword 0x0008, 0xea00, 0x1001, 0xe3a0\n"
-        ".hword 0x0006, 0xea00, 0x1002, 0xe3a0\n"
-        ".hword 0x0004, 0xea00, 0x100b, 0xe3a0\n"
-        ".hword 0x0002, 0xea00, 0x1003, 0xe3a0\n"
-        ".hword 0x0000, 0xea00, 0x1004, 0xe3a0\n"
-        ".hword 0x3000, 0xe3a0, 0x0000, 0xe58d\n"
-        ".hword 0x2003, 0xe1a0, 0x0d0e, 0xe285\n"
-        ".hword 0x3b2c, 0xebfa, 0x937c, 0xe595\n"
-        ".hword 0x6001, 0xe3a0, 0x6004, 0xe58d\n"
-        ".hword 0x9000, 0xe58d, 0x0864, 0xe595\n"
-        ".hword 0x4b02, 0xe285, 0x3000, 0xe3a0\n"
-        ".hword 0x1061, 0xe280, 0x4064, 0xe284\n"
-        ".hword 0x2003, 0xe1a0, 0x0d0e, 0xe285\n"
-        ".hword 0x3ee3, 0xebfa, 0x3000, 0xe3a0\n"
-        ".hword 0x2003, 0xe1a0, 0x1065, 0xe3a0\n"
-        ".hword 0x0d0e, 0xe285, 0x6004, 0xe58d\n"
-        ".hword 0x9000, 0xe58d, 0x3edc, 0xebfa\n"
-        ".hword 0x3000, 0xe3a0, 0x2003, 0xe1a0\n"
-        ".hword 0x1066, 0xe3a0, 0x0d0e, 0xe285\n"
-        ".hword 0x6004, 0xe58d, 0x9000, 0xe58d\n"
-        ".hword 0x3ed5, 0xebfa, 0x11bc, 0xe59f\n"
-        ".hword 0x2000, 0xe594, 0x01b8, 0xe59f\n"
-        ".hword 0x30e4, 0xe281, 0xa008, 0xe28d\n"
-        ".hword 0x1188, 0xe893, 0x0182, 0xe080\n"
-        ".hword 0x0014, 0xe890, 0x1188, 0xe88a\n"
-        ".hword 0x30f4, 0xe281, 0x7018, 0xe28d\n"
-        ".hword 0x1009, 0xe893, 0x1100, 0xe591\n"
-        ".hword 0x6004, 0xe58d, 0x9000, 0xe58d\n"
-        ".hword 0x1024, 0xe58d, 0x1009, 0xe887\n"
-        ".hword 0x0008, 0xe28d, 0x3000, 0xe3a0\n"
-        ".hword 0x1102, 0xe790, 0x2003, 0xe1a0\n"
-        ".hword 0x0d0e, 0xe285, 0x3ebe, 0xebfa\n"
-        ".hword 0x0018, 0xe28d, 0x6004, 0xe58d\n"
-        ".hword 0x9000, 0xe58d, 0x1104, 0xe790\n"
-        ".hword 0x3000, 0xe3a0, 0x2003, 0xe1a0\n"
-        ".hword 0x0d0e, 0xe285, 0x3eb6, 0xebfa\n"
-        ".hword 0x0004, 0xe595, 0x0005, 0xe350\n"
-        ".hword 0x0009, 0x1350, 0x004b, 0x0a00\n"
-        ".hword 0x0006, 0xe350, 0x000a, 0x1350\n"
-        ".hword 0x0048, 0x0a00, 0x0007, 0xe350\n"
-        ".hword 0x000b, 0x1350, 0x0045, 0x0a00\n"
-        ".hword 0x000f, 0xe350, 0x0010, 0x1350\n"
-        ".hword 0x6000, 0x13a0, 0x0041, 0x0a00\n"
-        ".hword 0x0860, 0xe595, 0x1580, 0xe080\n"
-        ".hword 0x2080, 0xe080, 0x0280, 0xe062\n"
-        ".hword 0x1081, 0xe085, 0x0100, 0xe085\n"
-        ".hword 0x8b03, 0xe281, 0xbd22, 0xe280\n"
-        ".hword 0x8094, 0xe288, 0x000b, 0xe1a0\n"
-        ".hword 0xf236, 0xebfb, 0xa000, 0xe1a0\n"
-        ".hword 0x000b, 0xe1a0, 0x456d, 0xebfa\n"
-        ".hword 0x7000, 0xe250, 0x4000, 0xe3a0\n"
-        ".hword 0x000f, 0xda00, 0x0000, 0xe356\n"
-        ".hword 0x0004, 0x0a00, 0x000b, 0xe1a0\n"
-        ".hword 0x7ade, 0xebfa, 0x0004, 0xe150\n"
-        ".hword 0xf000, 0xe320, 0x0005, 0x0a00\n"
-        ".hword 0x0004, 0xe08a, 0x2000, 0xe3a0\n"
-        ".hword 0x3100, 0xe088, 0x1001, 0xe284\n"
-        ".hword 0x0005, 0xe1a0, 0x340b, 0xebfa\n"
-        ".hword 0x4001, 0xe284, 0x0007, 0xe154\n"
-        ".hword 0xffef, 0xbaff, 0x0000, 0xe356\n"
-        ".hword 0x0008, 0x159b, 0x0000, 0x1350\n"
-        ".hword 0x0009, 0xda00, 0x000b, 0xe1a0\n"
-        ".hword 0x4511, 0xebfa, 0x4100, 0xe088\n"
-        ".hword 0x000b, 0xe1a0, 0x7ac9, 0xebfa\n"
-        ".hword 0x1001, 0xe280, 0x3004, 0xe1a0\n"
-        ".hword 0x2001, 0xe3a0, 0x0005, 0xe1a0\n"
-        ".hword 0x33fa, 0xebfa, 0x000b, 0xe1a0\n"
-        ".hword 0x7ac2, 0xebfa, 0x6000, 0xe1a0\n"
-        ".hword 0x000b, 0xe1a0, 0xf20d, 0xebfb\n"
-        ".hword 0x385c, 0xe595, 0x4b02, 0xe285\n"
-        ".hword 0x1000, 0xe1a0, 0x405c, 0xe284\n"
-        ".hword 0x2006, 0xe1a0, 0x0003, 0xe1a0\n"
-        ".hword 0x4434, 0xebfa, 0x0000, 0xe594\n"
-        ".hword 0x1000, 0xe590, 0x2010, 0xe591\n"
-        ".hword 0x1009, 0xe1a0, 0xff32, 0xe12f\n"
-        ".hword 0xd02c, 0xe28d, 0x8ff0, 0xe8bd\n"
-        ".hword 0x6001, 0xe3a0, 0xffbb, 0xeaff\n"
-        ".hword 0x7594, 0x0040, 0xe020, 0x0044\n"
-    );
-};
+extern "C" void func_00230e54(void* map_state, u32 tab_kind, s32 x, s32 y,
+                              u32 prio);
+extern "C" void shop_func_0022f364(u8* work, s32 row, s32 selected,
+                                   const void* entry);
+extern "C" void func_0023347c(void* scroll_obj, s32 top, s32 row);
+
+extern "C" void shop_func_003a211c(u8* work) {
+    constexpr u32 kTableA[4] = {0x6F, 0x6E, 0x71, 0x70};
+    constexpr u32 kTableB[4] = {0x7A, 0x79, 0x7C, 0x7B};
+    constexpr u32 kSubIndices[4][2] = {
+        {3, 1},
+        {0, 2},
+        {1, 3},
+        {2, 0},
+    };
+
+    const u32 tab = *reinterpret_cast<const u32*>(work + 0x860);
+    u32 tab_kind = 0;
+    switch (tab) {
+    case 0:
+        tab_kind = 0;
+        break;
+    case 1:
+    case 2:
+        tab_kind = 1;
+        break;
+    case 3:
+    case 4:
+    case 5:
+        tab_kind = 2;
+        break;
+    case 6:
+        tab_kind = 0x0B;
+        break;
+    case 7:
+        tab_kind = 3;
+        break;
+    case 8:
+        tab_kind = 4;
+        break;
+    default:
+        break;
+    }
+
+    u8* const map_state = work + 0x380;
+    func_00230e54(map_state, tab_kind, 0, 0,
+                  *reinterpret_cast<const u32*>(work + 0x37C));
+
+    const u32 prio = *reinterpret_cast<const u32*>(work + 0x37C);
+    const u32 sub = *reinterpret_cast<const u32*>(work + 0x864);
+    camp_func_00231d60(map_state, static_cast<s32>(sub + 0x61), 0, 0, prio, 1);
+    camp_func_00231d60(map_state, 0x65, 0, 0, prio, 1);
+    camp_func_00231d60(map_state, 0x66, 0, 0, prio, 1);
+
+    const u32 idx_a = kSubIndices[sub][0];
+    const u32 idx_b = kSubIndices[sub][1];
+    camp_func_00231d60(map_state, static_cast<s32>(kTableA[idx_a]), 0, 0, prio,
+                       1);
+    camp_func_00231d60(map_state, static_cast<s32>(kTableB[idx_b]), 0, 0, prio,
+                       1);
+
+    const u32 state = *reinterpret_cast<const u32*>(work + 0x04);
+    const bool highlight =
+        (state == 5 || state == 9 || state == 6 || state == 0xA || state == 7 ||
+         state == 0xB || state == 0xF || state == 0x10);
+
+    const u32 cur_tab = *reinterpret_cast<const u32*>(work + 0x860);
+    const u8* const entries = work + 0xC94 + cur_tab * 0x1002;
+    void* const panel = work + 0x880 + cur_tab * 0x74;
+
+    const s32 base_idx = shop_func_0029ebc4(panel);
+    const s32 visible = unite_func_002338ac(panel);
+    for (s32 i = 0; i < visible; ++i) {
+        if (highlight && shop_func_00240e8c(panel) == i) {
+            continue;
+        }
+        shop_func_0022f364(work, i + 1, 0, entries + (base_idx + i) * 4);
+    }
+
+    if (highlight && *reinterpret_cast<const s32*>(
+                         static_cast<const u8*>(panel) + 0x08) > 0) {
+        const u32 sel_idx = shop_func_002337a0(panel);
+        const s32 row = shop_func_00240e8c(panel);
+        shop_func_0022f364(work, row + 1, 1, entries + sel_idx * 4);
+    }
+
+    const s32 cur_row = shop_func_00240e8c(panel);
+    const s32 cur_top = shop_func_0029ebc4(panel);
+    void* const scroll_obj = *reinterpret_cast<void**>(work + 0x85C);
+    func_0023347c(scroll_obj, cur_top, cur_row);
+
+    void* const vobj = *reinterpret_cast<void**>(work + 0x85C);
+    void** const vtbl = *reinterpret_cast<void***>(vobj);
+    reinterpret_cast<void (*)(void*, u32)>(vtbl[4])(vobj, prio);
+}
 
 // DECOMP_FUNC(0x0023187c, 700)
 extern "C" __attribute__((naked)) void script_vm_func_0023187c() {
