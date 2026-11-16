@@ -115,28 +115,53 @@ __attribute__((naked)) void btlUnit_Init(BtlUnitWork*) {
         ".word 0x7461625C, 0x5C656C74, 0x556C7462, 0x2E74696E\n"
         ".word 0x00707063\n");
 }
+extern "C" {
+const u8* battle_func_002ae3f0(u32 unit_id);
+const u8* camp_func_002b9364(u32 sub_party_id);
+}
+
 // DECOMP_FUNC(0x001d29c8, 240)
+s32 btlUnit_CheckPartyActive(BtlUnitWork* work) {
+    static constexpr u32 kSlotCount = 8;
+    static constexpr u32 kPartySlotArrayOffset = 0x34;
+    static constexpr u32 kSubPartySlotArrayOffset = 0x3C;
+    static constexpr u32 kUnitStatusOffset = 0x23;
+    static constexpr u8 kActiveStatus = 3;
 
+    if (work->party_slots != nullptr) {
+        for (u32 i = 0; i < kSlotCount; ++i) {
+            const u8* slots = reinterpret_cast<const u8*>(work->party_slots);
+            const u16 unit_id = *reinterpret_cast<const u16*>(slots + kPartySlotArrayOffset + i * 2);
+            const u8* unit = battle_func_002ae3f0(unit_id);
+            if (unit != nullptr && unit[kUnitStatusOffset] == kActiveStatus) {
+                return 1;
+            }
+        }
+    }
 
-//
-s32 __attribute__((naked)) btlUnit_CheckPartyActive(BtlUnitWork*) {
-    asm volatile(
-        ".word 0xE92D4070, 0xE1A05000, 0xE5900278, 0xE3A06034\n"
-        ".word 0xE3500000, 0x13A04000, 0x0A00000C, 0xE5951278\n"
-        ".word 0xE0860084, 0xE19100B0, 0xEB036E7E, 0xE3500000\n"
-        ".word 0xE320F000, 0x0A000002, 0xE5D00023, 0xE3500003\n"
-        ".word 0x0A000028, 0xE2844001, 0xE3540008, 0xBAFFFFF2\n"
-        ".word 0xE595027C, 0xE3500000, 0x13A04000, 0x0A00000C\n"
-        ".word 0xE595027C, 0xE0861084, 0xE19000B1, 0xEB036E6D\n"
-        ".word 0xE3500000, 0xE320F000, 0x0A000002, 0xE5D00023\n"
-        ".word 0xE3500003, 0x0A000017, 0xE2844001, 0xE3540008\n"
-        ".word 0xBAFFFFF2, 0xE5950284, 0xE3500000, 0x0A00000F\n"
-        ".word 0xE1D50CBE, 0xEB039A3C, 0xE1A05000, 0xE3A04000\n"
-        ".word 0xE0850084, 0xE1D003BC, 0xEB036E5A, 0xE3500000\n"
-        ".word 0xE320F000, 0x0A000002, 0xE5D00023, 0xE3500003\n"
-        ".word 0x0A000004, 0xE2844001, 0xE3540008, 0xBAFFFFF3\n"
-        ".word 0xE3A00000, 0xE8BD8070, 0xE3A00001, 0xE8BD8070\n"
-    );
+    if (work->reserve_slots != nullptr) {
+        for (u32 i = 0; i < kSlotCount; ++i) {
+            const u8* slots = reinterpret_cast<const u8*>(work->reserve_slots);
+            const u16 unit_id = *reinterpret_cast<const u16*>(slots + kPartySlotArrayOffset + i * 2);
+            const u8* unit = battle_func_002ae3f0(unit_id);
+            if (unit != nullptr && unit[kUnitStatusOffset] == kActiveStatus) {
+                return 1;
+            }
+        }
+    }
+
+    if (work->guest_unit != nullptr) {
+        const u8* sub_party = camp_func_002b9364(work->sub_party_id);
+        for (u32 i = 0; i < kSlotCount; ++i) {
+            const u16 unit_id = *reinterpret_cast<const u16*>(sub_party + kSubPartySlotArrayOffset + i * 2);
+            const u8* unit = battle_func_002ae3f0(unit_id);
+            if (unit != nullptr && unit[kUnitStatusOffset] == kActiveStatus) {
+                return 1;
+            }
+        }
+    }
+
+    return 0;
 }
 
 // ============================================================================

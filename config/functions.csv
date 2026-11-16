@@ -2325,7 +2325,7 @@ address,size,status,category,name,src_file
 0x001d2528,232,matching,battle,btlHelp_Init,src/battle/btl_ui.cpp
 0x001d2610,308,matching,battle,btlTalk_Init,src/battle/btl_ui.cpp
 0x001d2744,644,matching,battle,btlUnit_Init,src/battle/btl_ui.cpp
-0x001d29c8,240,matching,battle,btlUnit_CheckPartyActive,src/battle/btl_ui.cpp
+0x001d29c8,240,non_matching,battle,btlUnit_CheckPartyActive,src/battle/btl_ui.cpp
 0x001d2ab8,92,matching,engine,engine_func_001d2ab8,src/engine/leaf_batch29_a.cpp
 0x001d2b14,760,matching,engine,lmapMain_func_001d2b14,src/engine/map_runtime.cpp
 0x001d2e0c,24,matching,unknown,func_001d2e0c,src/engine/leaf_batch39_a.cpp
