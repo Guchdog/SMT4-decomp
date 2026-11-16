@@ -1793,123 +1793,90 @@ GuestWinWork* g_GuestWinWork = nullptr; // 0x0043E110
 
 void GuestWin_Calc(void* arg);                                                      // 0x0011b128
 
+extern "C" {
+    void GuestWin_Calc_0011b128(void*);                                                     // 0x0011b128
+    extern const u8 g_GuestWinSpriteTable_00403a08;                                         // 0x00403a08
+    extern const u8 g_GuestWinSpriteTable_00403a20;                                         // 0x00403a20
+}
+
 // DECOMP_FUNC(0x0010b350, 448)
-// Boundary-verified ARM-state span; includes its PC-relative literal pool.
-__attribute__((naked)) void GuestWin_Init() {
-    asm volatile(
-        ".word 0xe92d41f0\n"
-        ".word 0xe24dd020\n"
-        ".word 0xe3a07001\n"
-        ".word 0xe59f6124\n"
-        ".word 0xe5960000\n"
-        ".word 0xe3500000\n"
-        ".word 0x1a000009\n"
-        ".word 0xe3a010f5\n"
-        ".word 0xe28f0f45\n"
-        ".word 0xe1a00000\n"
-        ".word 0xe3a01c01\n"
-        ".word 0xe3a030bc\n"
-        ".word 0xe3a02000\n"
-        ".word 0xe1a00001\n"
-        ".word 0xe58d7000\n"
-        ".word 0xeb06e5fc\n"
-        ".word 0xe5860000\n"
-        ".word 0xe1a04000\n"
-        ".word 0xe3a010bc\n"
-        ".word 0xeb06e5e3\n"
-        ".word 0xe59f011c\n"
-        ".word 0xe3a05000\n"
-        ".word 0xe1a03005\n"
-        ".word 0xe88d0021\n"
-        ".word 0xe1a02005\n"
-        ".word 0xe3a01001\n"
-        ".word 0xe28f0f42\n"
-        ".word 0xe58d5008\n"
-        ".word 0xeb06e96c\n"
-        ".word 0xe5840000\n"
-        ".word 0xe59f8108\n"
-        ".word 0xe3a03000\n"
-        ".word 0xe58d000c\n"
-        ".word 0xe1a02003\n"
-        ".word 0xe3a01081\n"
-        ".word 0xe28f00f8\n"
-        ".word 0xe58d5004\n"
-        ".word 0xe58d8000\n"
-        ".word 0xe58d5008\n"
-        ".word 0xeb06e603\n"
-        ".word 0xe5940000\n"
-        ".word 0xe3a03000\n"
-        ".word 0xe1a02003\n"
-        ".word 0xe58d000c\n"
-        ".word 0xe3a010df\n"
-        ".word 0xe28f00e4\n"
-        ".word 0xe58d5004\n"
-        ".word 0xe58d8000\n"
-        ".word 0xe58d5008\n"
-        ".word 0xeb06e5f9\n"
-        ".word 0xe5964000\n"
-        ".word 0xe2840010\n"
-        ".word 0xeb06dfc7\n"
-        ".word 0xe59f10dc\n"
-        ".word 0xe3a00070\n"
-        ".word 0xe58d0018\n"
-        ".word 0xe58d1014\n"
-        ".word 0xe3a02018\n"
-        ".word 0xe58d500c\n"
-        ".word 0xe58d5010\n"
-        ".word 0xe2413018\n"
-        ".word 0xe88d0024\n"
-        ".word 0xe2431018\n"
-        ".word 0xe2840010\n"
-        ".word 0xe58d5008\n"
-        ".word 0xeb06dfa7\n"
-        ".word 0xed9f0a2b\n"
-        ".word 0xe2843010\n"
-        ".word 0xe3a02087\n"
-        ".word 0xe3a0100e\n"
-        ".word 0xe2840030\n"
-        ".word 0xe58d7000\n"
-        ".word 0xeb06c9ad\n"
-        ".word 0xe28dd020\n"
-        ".word 0xe2840030\n"
-        ".word 0xe8bd41f0\n"
-        ".word 0xe3a01000\n"
-        ".word 0xea06cee9\n"
-        ".word 0x0043e110\n"
-        ".word 0x535c3a63\n"
-        ".word 0x5c34544d\n"
-        ".word 0x36445258\n"
-        ".word 0x735c3638\n"
-        ".word 0x34736464\n"
-        ".word 0x6f72705c\n"
-        ".word 0x6d617267\n"
-        ".word 0x6e6f665c\n"
-        ".word 0x75475c74\n"
-        ".word 0x57747365\n"
-        ".word 0x475c6e69\n"
-        ".word 0x74736575\n"
-        ".word 0x2e6e6957\n"
-        ".word 0x00707063\n"
-        ".word 0x0011b128\n"
-        ".word 0x73657547\n"
-        ".word 0x6e695774\n"
-        ".word 0x6c614320\n"
-        ".word 0x00000063\n"
-        ".word 0x0011a9b4\n"
-        ".word 0x73657547\n"
-        ".word 0x6e695774\n"
-        ".word 0x61724420\n"
-        ".word 0x4c705577\n"
-        ".word 0x00746665\n"
-        ".word 0x73657547\n"
-        ".word 0x6e695774\n"
-        ".word 0x61724420\n"
-        ".word 0x52705577\n"
-        ".word 0x74686769\n"
-        ".word 0x00000000\n"
-        ".word 0x00403a38\n"
-        ".word 0x3f800000\n"
-    );
+void GuestWin_Init() {
+    static constexpr u32 kWorkSize = 0xBC;
+    static constexpr u32 kCalcTag = 1;
+    static constexpr u32 kDrawUpLeftTag = 0x81;
+    static constexpr u32 kDrawUpRightTag = 0xDF;
+    static constexpr s32 kSpriteType = 0x0E;
+    static constexpr s32 kSpriteId = 0x87;
+
+    u8* work = reinterpret_cast<u8*>(g_GuestWinWork);
+    if (work == nullptr) {
+        work = static_cast<u8*>(AsdMem_Alloc(0x100, 0x100, 0, kWorkSize, 1));
+        g_GuestWinWork = reinterpret_cast<GuestWinWork*>(work);
+    }
+
+    AsdMem_Zero(work, kWorkSize);
+
+    void* const calc_task = AsdTask_CreateCalc(
+        "GuestWin Calc",
+        kCalcTag,
+        0,
+        0,
+        GuestWin_Calc_0011b128,
+        0,
+        0);
+    *reinterpret_cast<void**>(work) = calc_task;
+
+    AsdTask_CreateDraw(
+        "GuestWin DrawUpLeft",
+        kDrawUpLeftTag,
+        0,
+        0,
+        GuestWin_DrawUp,
+        0,
+        0,
+        calc_task);
+
+    AsdTask_CreateDraw(
+        "GuestWin DrawUpRight",
+        kDrawUpRightTag,
+        0,
+        0,
+        GuestWin_DrawUp,
+        0,
+        0,
+        calc_task);
+
+    u8* const bound_work = reinterpret_cast<u8*>(g_GuestWinWork);
+    UiSpriteGroup* const sprite_group = reinterpret_cast<UiSpriteGroup*>(bound_work + 0x10);
+    UiAnimSprite* const panel_sprite = reinterpret_cast<UiAnimSprite*>(bound_work + 0x30);
+
+    UiSpriteGroup_Init(sprite_group);
+    UiSpriteGroup_BindTable(
+        sprite_group,
+        SpriteTableWord(&g_GuestWinSpriteTable_00403a08),
+        0x18,
+        SpriteTableWord(&g_GuestWinSpriteTable_00403a20),
+        0x18,
+        0,
+        0,
+        0,
+        0,
+        SpriteTableWord(g_GuestWinSpriteTable),
+        0x70);
+
+    using GuestWinSetupEx = void (*)(UiAnimSprite*, s32, s32, UiSpriteGroup*, u32, f32);
+    reinterpret_cast<GuestWinSetupEx>(UiAnimSprite_SetupEx)(
+        panel_sprite,
+        kSpriteType,
+        kSpriteId,
+        sprite_group,
+        1,
+        1.0f);
+
+    using GuestWinSetAnim = void (*)(UiAnimSprite*, s32);
+    reinterpret_cast<GuestWinSetAnim>(UiAnimSprite_SetAnim)(
+        panel_sprite,
+        0);
 }
 #if 0
 // Partial semantic draft retained for reconstruction; not compiled.
