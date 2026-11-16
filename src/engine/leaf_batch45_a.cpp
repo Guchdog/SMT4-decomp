@@ -10161,102 +10161,111 @@ extern "C" __attribute__((naked)) void engine_func_00349c64() {
 };
 
 // DECOMP_FUNC(0x00107208, 724)
-extern "C" __attribute__((naked)) void engine_func_00107208() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4ff0, 0xe92d, 0xd00c, 0xe24d\n"
-        ".hword 0xe71b, 0xeb06, 0x7000, 0xe1a0\n"
-        ".hword 0xe705, 0xeb06, 0x0000, 0xe350\n"
-        ".hword 0x5000, 0xe3a0, 0x0004, 0xe58d\n"
-        ".hword 0x0027, 0xda00, 0x0105, 0xe085\n"
-        ".hword 0x0285, 0xe080, 0x1100, 0xe087\n"
-        ".hword 0x0100, 0xe7d7, 0xb001, 0xe5d1\n"
-        ".hword 0x60b2, 0xe1d1, 0x0000, 0xe35b\n"
-        ".hword 0x0005, 0x0a00, 0x0006, 0xe356\n"
-        ".hword 0x6000, 0x03a0, 0x0004, 0x0a00\n"
-        ".hword 0x0007, 0xe356, 0x6001, 0x03a0\n"
-        ".hword 0x0001, 0xea00, 0x0007, 0xe356\n"
-        ".hword 0x6006, 0x03a0, 0x0000, 0xe58d\n"
-        ".hword 0xe679, 0xeb06, 0x8000, 0xe1a0\n"
-        ".hword 0x1000, 0xe59d, 0x2006, 0xe1a0\n"
-        ".hword 0x000b, 0xe1a0, 0xe65e, 0xeb06\n"
-        ".hword 0x0000, 0xe358, 0x4000, 0xe1a0\n"
-        ".hword 0x0000, 0x03a0, 0x0002, 0x05c4\n"
-        ".hword 0x0003, 0xe5d4, 0x101f, 0xe200\n"
-        ".hword 0x0001, 0xe351, 0x000a, 0x9a00\n"
-        ".hword 0x1001, 0xe240, 0x001f, 0xe3c0\n"
-        ".hword 0x101f, 0xe201, 0x0001, 0xe180\n"
-        ".hword 0x0003, 0xe5c4, 0x0004, 0xe59d\n"
-        ".hword 0x5001, 0xe285, 0x0000, 0xe155\n"
-        ".hword 0xffd7, 0xbaff, 0xd00c, 0xe28d\n"
-        ".hword 0x8ff0, 0xe8bd, 0x001f, 0xe3c0\n"
-        ".hword 0x0003, 0xe5c4, 0x1000, 0xe59d\n"
-        ".hword 0x2006, 0xe1a0, 0x000b, 0xe1a0\n"
-        ".hword 0x299e, 0xeb00, 0x1088, 0xe088\n"
-        ".hword 0x90b0, 0xe1d4, 0x1081, 0xe080\n"
-        ".hword 0xa004, 0xe281, 0x10b6, 0xe1d1\n"
-        ".hword 0x0000, 0xe351, 0x9000, 0x03a0\n"
-        ".hword 0x0036, 0x0a00, 0x0ffa, 0xe351\n"
-        ".hword 0x0008, 0x2a00, 0x0063, 0xe3a0\n"
-        ".hword 0xe62b, 0xeb06, 0x10b2, 0xe1da\n"
-        ".hword 0x0000, 0xe151, 0x002f, 0x9a00\n"
-        ".hword 0x00b0, 0xe1da, 0x0000, 0xe350\n"
-        ".hword 0x9000, 0x11a0, 0x002b, 0xea00\n"
-        ".hword 0x3190, 0xe59f, 0x2002, 0xe5d4\n"
-        ".hword 0x0391, 0xe003, 0x1001, 0xe3a0\n"
-        ".hword 0x3c41, 0xe283, 0x3089, 0xe283\n"
-        ".hword 0x3c23, 0xe1a0, 0xc001, 0xe243\n"
-        ".hword 0x1c11, 0xe1a0, 0x0002, 0xe111\n"
-        ".hword 0x1008, 0xe58d, 0x001f, 0x1a00\n"
-        ".hword 0x1001, 0xe288, 0x0000, 0xe351\n"
-        ".hword 0x6000, 0xe3a0, 0x0011, 0xda00\n"
-        ".hword 0xe07c, 0xe3e0, 0x8001, 0xe283\n"
-        ".hword 0x0e93, 0xe00e, 0x2001, 0xe1a0\n"
-        ".hword 0x1088, 0xe088, 0xc083, 0xe083\n"
-        ".hword 0x0006, 0xe280, 0x8388, 0xe061\n"
-        ".hword 0xc383, 0xe06c, 0x30b0, 0xe1d0\n"
-        ".hword 0x018c, 0xe153, 0x0002, 0xda00\n"
-        ".hword 0x0188, 0xe153, 0x618e, 0xb086\n"
-        ".hword 0x6003, 0xb086, 0x2001, 0xe252\n"
-        ".hword 0x0006, 0xe280, 0xfff6, 0x1aff\n"
-        ".hword 0x0063, 0xe3a0, 0xe600, 0xeb06\n"
-        ".hword 0x0006, 0xe150, 0xf000, 0xe320\n"
-        ".hword 0x0004, 0x2a00, 0x1002, 0xe5d4\n"
-        ".hword 0x0008, 0xe59d, 0x90b0, 0xe1da\n"
-        ".hword 0x0001, 0xe180, 0x0002, 0xe5c4\n"
-        ".hword 0x00e4, 0xe59f, 0xe5ed, 0xeb06\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x0010, 0x0a00, 0x00d4, 0xe59f\n"
-        ".hword 0xe5e8, 0xeb06, 0x0000, 0xe350\n"
-        ".hword 0xf000, 0xe320, 0x000b, 0x1a00\n"
-        ".hword 0x0000, 0xe35b, 0x0002, 0x0a00\n"
-        ".hword 0x0001, 0xe35b, 0x0004, 0x0a00\n"
-        ".hword 0x0006, 0xea00, 0x0000, 0xe59d\n"
-        ".hword 0x0008, 0xe350, 0x0009, 0x0a00\n"
-        ".hword 0x0002, 0xea00, 0x0000, 0xe59d\n"
-        ".hword 0x0009, 0xe350, 0x0005, 0x0a00\n"
-        ".hword 0x00b0, 0xe1d4, 0x0000, 0xe350\n"
-        ".hword 0x0009, 0x0a00, 0x0000, 0xe359\n"
-        ".hword 0x0009, 0x0a00, 0xff98, 0xeaff\n"
-        ".hword 0x1003, 0xe5d4, 0x0000, 0xe3a0\n"
-        ".hword 0x00b0, 0xe1c4, 0x103f, 0xe3c1\n"
-        ".hword 0x0002, 0xe5c4, 0x1003, 0xe5c4\n"
-        ".hword 0xff91, 0xeaff, 0x0000, 0xe359\n"
-        ".hword 0xff8f, 0x0aff, 0x90b0, 0xe1c4\n"
-        ".hword 0x00b4, 0xe1da, 0x1003, 0xe5d4\n"
-        ".hword 0x0000, 0xe35b, 0x001f, 0xe200\n"
-        ".hword 0x101f, 0xe3c1, 0x0001, 0xe180\n"
-        ".hword 0x0003, 0xe5c4, 0x0000, 0xe59d\n"
-        ".hword 0x0005, 0x0a00, 0x1ff2, 0xeb00\n"
-        ".hword 0x0000, 0xe350, 0x0003, 0x15d4\n"
-        ".hword 0x0020, 0x1380, 0xff80, 0x0aff\n"
-        ".hword 0xff7e, 0xeaff, 0xf000, 0xe320\n"
-        ".hword 0x1ffa, 0xeb00, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0xfff5, 0xeaff\n"
-        ".hword 0x4189, 0x0000, 0x0668, 0x0000\n"
-        ".hword 0x01d7, 0x0000\n"
-    );
-};
+extern "C" const u8* Tbb_GetDefaultTable18Payload();
+extern "C" s32 camp_func_002c0e34();
+extern "C" s32 ui_func_002c0c5c();
+extern "C" u8* engine_func_002c0c04(u8 is_demon, u8 slot_id, u16 sub_idx);
+extern "C" const u8* camp_func_00111968(u8 is_demon, u8 slot_id, u16 sub_idx);
+extern "C" u32 engine_func_002c0bcc(s32 max_val);
+extern "C" u32 func_0010f474(u32 slot_id);
+extern "C" u32 func_0010f4b0(u32 slot_id);
+
+extern "C" void engine_func_00107208() {
+    constexpr u32 kTableEntryStride = 0x94;
+    constexpr u32 kWeightGroupThreshold = 0x3E8;
+    constexpr u32 kFlagGateA = 0x668;
+    constexpr u32 kFlagGateB = 0x1D7;
+
+    const u8* const table = Tbb_GetDefaultTable18Payload();
+    const s32 count = camp_func_002c0e34();
+
+    for (s32 i = 0; i < count; ++i) {
+        const u8* const entry = table + i * kTableEntryStride;
+        const u8 slot_id = entry[0];
+        const u8 is_demon = entry[1];
+        u16 sub_idx = *reinterpret_cast<const u16*>(entry + 2);
+        if (is_demon != 0) {
+            if (sub_idx == 6) {
+                sub_idx = 0;
+            } else if (sub_idx == 7) {
+                sub_idx = 1;
+            }
+        } else if (sub_idx == 7) {
+            sub_idx = 6;
+        }
+
+        const s32 state_val = ui_func_002c0c5c();
+        u8* const slot = engine_func_002c0c04(is_demon, slot_id, sub_idx);
+        if (state_val == 0) {
+            slot[2] = 0;
+        }
+
+        const u8 b3 = slot[3];
+        if ((b3 & 0x1Fu) > 1u) {
+            slot[3] = static_cast<u8>((b3 & ~0x1Fu) | ((b3 - 1u) & 0x1Fu));
+            continue;
+        }
+        slot[3] = static_cast<u8>(b3 & ~0x1Fu);
+
+        const u8* const tbl = camp_func_00111968(is_demon, slot_id, sub_idx);
+        u16 cur_id = *reinterpret_cast<const u16*>(slot);
+        const u8* const cur_rec = tbl + state_val * 6 + 4;
+        const u16 key = *reinterpret_cast<const u16*>(cur_rec + 2);
+
+        if (key == 0) {
+            cur_id = 0;
+        } else if (key < kWeightGroupThreshold) {
+            if (*reinterpret_cast<const u16*>(cur_rec + 2) >
+                engine_func_002c0bcc(0x63)) {
+                const u16 cand = *reinterpret_cast<const u16*>(cur_rec);
+                if (cand != 0) {
+                    cur_id = cand;
+                }
+            }
+        } else {
+            const u32 group = (key * 0x4189u + 0x4189u) >> 24;
+            const u32 bit = 1u << (group - 1u);
+            if ((slot[2] & bit) == 0) {
+                const s32 lo = static_cast<s32>(group * 1000u);
+                const s32 hi = static_cast<s32>((group + 1u) * 1000u);
+                s32 weight_sum = 0;
+                for (s32 k = 0; k < state_val + 1; ++k) {
+                    const s32 w = static_cast<s32>(
+                        *reinterpret_cast<const u16*>(tbl + 6 + k * 6));
+                    if (w > lo && w < hi) {
+                        weight_sum += (w - lo);
+                    }
+                }
+                if (static_cast<s32>(engine_func_002c0bcc(0x63)) < weight_sum) {
+                    cur_id = *reinterpret_cast<const u16*>(cur_rec);
+                    slot[2] |= static_cast<u8>(bit);
+                }
+            }
+        }
+
+        if (script_vm_func_002c0ba8(kFlagGateA) &&
+            !script_vm_func_002c0ba8(kFlagGateB)) {
+            if ((is_demon == 0 && slot_id == 8) ||
+                (is_demon == 1 && slot_id == 9)) {
+                *reinterpret_cast<u16*>(slot) = 0;
+                slot[2] = 0;
+                slot[3] &= ~0x3Fu;
+                continue;
+            }
+        }
+
+        if ((*reinterpret_cast<const u16*>(slot) == 0) != (cur_id == 0)) {
+            *reinterpret_cast<u16*>(slot) = cur_id;
+            const u16 dur = *reinterpret_cast<const u16*>(cur_rec + 4);
+            slot[3] = static_cast<u8>((slot[3] & ~0x1Fu) | (dur & 0x1Fu));
+            const u32 flag = (is_demon != 0) ? func_0010f474(slot_id)
+                                             : func_0010f4b0(slot_id);
+            if (flag != 0) {
+                slot[3] |= 0x20u;
+            }
+        }
+    }
+}
 
 // DECOMP_FUNC(0x002e0dd0, 724)
 extern "C" __attribute__((naked)) void engine_func_002e0dd0() {
