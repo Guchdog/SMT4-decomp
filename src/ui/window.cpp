@@ -2782,104 +2782,76 @@ __attribute__((naked)) void PlaceWin_Calc(void* arg) {
 RunWinWork* g_RunWinWork = nullptr; // 0x0043E158
 static const u8 g_RunWinSpriteTable[0x20] = {0};
 
+extern "C" {
+    void RunWin_Calc_0018f4ac(void*);                                                       // 0x0018f4ac
+    extern const u8 g_RunWinSpriteTable_00403b6c;                                           // 0x00403b6c
+    extern const u8 g_RunWinSpriteTable_00403b90;                                           // 0x00403b90
+    extern const u8 g_RunWinSpriteTable_00403bb4;                                           // 0x00403bb4
+}
+
 // DECOMP_FUNC(0x002027dc, 372)
-// Boundary-verified ARM-state span; includes its PC-relative literal pool.
-__attribute__((naked)) void RunWin_Init() {
-    asm volatile(
-        ".word 0xe92d4070\n"
-        ".word 0xe24dd020\n"
-        ".word 0xe59f40fc\n"
-        ".word 0xe3a06001\n"
-        ".word 0xe5940000\n"
-        ".word 0xe3500000\n"
-        ".word 0x1a000009\n"
-        ".word 0xe3a01086\n"
-        ".word 0xe28f00e8\n"
-        ".word 0xe1a00000\n"
-        ".word 0xe3a01c01\n"
-        ".word 0xe3a030e4\n"
-        ".word 0xe3a02000\n"
-        ".word 0xe1a00001\n"
-        ".word 0xe58d6000\n"
-        ".word 0xeb0308d9\n"
-        ".word 0xe5840000\n"
-        ".word 0xe1a04000\n"
-        ".word 0xe3a010e4\n"
-        ".word 0xeb0308c0\n"
-        ".word 0xe59f00f0\n"
-        ".word 0xe3a05000\n"
-        ".word 0xe1a03005\n"
-        ".word 0xe88d0021\n"
-        ".word 0xe1a02005\n"
-        ".word 0xe3a01001\n"
-        ".word 0xe28f00dc\n"
-        ".word 0xe58d5008\n"
-        ".word 0xeb030c49\n"
-        ".word 0xe59f10dc\n"
-        ".word 0xe5840000\n"
-        ".word 0xe3a03000\n"
-        ".word 0xe88d0022\n"
-        ".word 0xe58d000c\n"
-        ".word 0xe1a02003\n"
-        ".word 0xe3a010e9\n"
-        ".word 0xe28f00c4\n"
-        ".word 0xe58d5008\n"
-        ".word 0xeb0308e1\n"
-        ".word 0xe2840018\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb0302af\n"
-        ".word 0xe59f10bc\n"
-        ".word 0xe3a00070\n"
-        ".word 0xe58d0018\n"
-        ".word 0xe58d1014\n"
-        ".word 0xe3a02024\n"
-        ".word 0xe58d500c\n"
-        ".word 0xe58d5010\n"
-        ".word 0xe2413024\n"
-        ".word 0xe88d0024\n"
-        ".word 0xe2431024\n"
-        ".word 0xe2840018\n"
-        ".word 0xe58d5008\n"
-        ".word 0xeb03028f\n"
-        ".word 0xed9f0a23\n"
-        ".word 0xe2843018\n"
-        ".word 0xe3a02087\n"
-        ".word 0xe3a0100e\n"
-        ".word 0xe2840038\n"
-        ".word 0xe58d6000\n"
-        ".word 0xeb02ec95\n"
-        ".word 0xe28dd020\n"
-        ".word 0xe2840038\n"
-        ".word 0xe8bd4070\n"
-        ".word 0xe3a01000\n"
-        ".word 0xea02f1d1\n"
-        ".word 0x0043e158\n"
-        ".word 0x535c3a63\n"
-        ".word 0x5c34544d\n"
-        ".word 0x36445258\n"
-        ".word 0x735c3638\n"
-        ".word 0x34736464\n"
-        ".word 0x6f72705c\n"
-        ".word 0x6d617267\n"
-        ".word 0x6e6f665c\n"
-        ".word 0x65535c74\n"
-        ".word 0x68637261\n"
-        ".word 0x5c6e6957\n"
-        ".word 0x576e7552\n"
-        ".word 0x632e6e69\n"
-        ".word 0x00007070\n"
-        ".word 0x0018f4ac\n"
-        ".word 0x576e7552\n"
-        ".word 0x43206e69\n"
-        ".word 0x00636c61\n"
-        ".word 0x0018f178\n"
-        ".word 0x576e7552\n"
-        ".word 0x44206e69\n"
-        ".word 0x44776172\n"
-        ".word 0x006e776f\n"
-        ".word 0x00403bb4\n"
-        ".word 0x3f800000\n"
-    );
+void RunWin_Init() {
+    static constexpr u32 kWorkSize = sizeof(RunWinWork);
+    static constexpr u32 kCalcTag = 1;
+    static constexpr u32 kDrawDownTag = 0xE9;
+    static constexpr s32 kSpriteType = 0x0E;
+    static constexpr s32 kSpriteId = 0x87;
+
+    RunWinWork* work = g_RunWinWork;
+    if (work == nullptr) {
+        work = static_cast<RunWinWork*>(
+            AsdMem_Alloc(0x100, 0x100, 0, kWorkSize, 1));
+        g_RunWinWork = work;
+    }
+
+    AsdMem_Zero(work, kWorkSize);
+
+    work->calc_task = AsdTask_CreateCalc(
+        "RunWin Calc",
+        kCalcTag,
+        0,
+        0,
+        RunWin_Calc_0018f4ac,
+        0,
+        0);
+
+    AsdTask_CreateDraw(
+        "RunWin DrawDown",
+        kDrawDownTag,
+        0,
+        0,
+        RunWin_DrawDownAndCalc,
+        0,
+        0,
+        work->calc_task);
+
+    UiSpriteGroup_Init(&work->sprite_group);
+    UiSpriteGroup_BindTable(
+        &work->sprite_group,
+        SpriteTableWord(&g_RunWinSpriteTable_00403b6c),
+        0x24,
+        SpriteTableWord(&g_RunWinSpriteTable_00403b90),
+        0x24,
+        0,
+        0,
+        0,
+        0,
+        SpriteTableWord(&g_RunWinSpriteTable_00403bb4),
+        0x70);
+
+    using RunWinSetupEx = void (*)(UiAnimSprite*, s32, s32, UiSpriteGroup*, u32, f32);
+    reinterpret_cast<RunWinSetupEx>(UiAnimSprite_SetupEx)(
+        &work->panel_sprite,
+        kSpriteType,
+        kSpriteId,
+        &work->sprite_group,
+        1,
+        1.0f);
+
+    using RunWinSetAnim = void (*)(UiAnimSprite*, s32);
+    reinterpret_cast<RunWinSetAnim>(UiAnimSprite_SetAnim)(
+        &work->panel_sprite,
+        0);
 }
 #if 0
 // Partial semantic draft retained for reconstruction; not compiled.
