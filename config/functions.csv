@@ -4833,7 +4833,7 @@ address,size,status,category,name,src_file
 0x002958bc,36,matching,script_vm,script_vm_func_002958bc,src/engine/leaf_batch23_b.cpp
 0x002958e0,36,matching,script_vm,script_vm_func_002958e0,src/engine/leaf_batch23_b.cpp
 0x00295904,192,matching,script_vm,script_vm_func_00295904,src/engine/leaf_batch42_c.cpp
-0x002959c4,472,matching,ui,btlTalkBustUp_func_002959c4,src/battle/battle_extras.cpp
+0x002959c4,472,non_matching,ui,btlTalkBustUp_func_002959c4,src/battle/battle_extras.cpp
 0x00295b9c,288,matching,script_vm,script_vm_func_00295b9c,src/engine/leaf_batch33_c.cpp
 0x00295cbc,8,matching,script_vm,script_vm_func_00295cbc,src/engine/leaf_batch36_a.cpp
 0x00295cc4,388,matching,battle,battle_func_00295cc4,src/engine/leaf_batch43_a.cpp

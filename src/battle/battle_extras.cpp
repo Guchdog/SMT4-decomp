@@ -1473,134 +1473,88 @@ __attribute__((naked)) void btlDebug_func_001e1f4c(BtlDebugWork*, void*) {
         ".word 0x00400534\n"
         ".word 0x00439CA8\n");
 }
+extern "C" {
+    void* camp_func_002c4c00(const char* name, s32 tag, u32 unk2, u32 unk3, const void* calc_fn, const void* dtor_fn, void* work, void* parent_work); // 0x002c4c00
+    void* engine_func_002c4b84(u32 size_a, u32 size_b, u32 unk2, u32 struct_size, u32 count); // 0x002c4b84
+    void  engine_func_002c4b30(void* dst, u32 size);                                                        // 0x002c4b30
+    void* engine_func_002c5978(const char* name, s32 tag, u32 unk2, u32 unk3, const void* calc_fn, const void* dtor_fn, void* work); // 0x002c5978
+    void  engine_func_002c3344(void* obj);                                                                    // 0x002c3344
+    void  engine_func_002c32f8(void* obj, const void* a1, u32 a2, const void* a3, u32 a4, const void* a5, u32 a6, u32 a7, u32 a8, const void* a9, u32 a10); // 0x002c32f8
+    void  func_002063c4();                                                                                    // 0x002063c4
+    void  func_00225270();                                                                                    // 0x00225270
+    extern const u8 g_BustUpTable_003ff884;                                                                   // 0x003ff884
+    extern const u8 g_BustUpTable_003ff8e4;                                                                   // 0x003ff8e4
+    extern const u8 g_BustUpTable_003ffa28;                                                                   // 0x003ffa28
+    extern const u8 g_BustUpTable_003ffab8;                                                                   // 0x003ffab8
+}
+
 // DECOMP_FUNC(0x002959c4, 472)
+void btlTalkBustUp_func_002959c4() {
+    static constexpr u32 kAllocSize = 0x100;
+    static constexpr u32 kWorkSize = sizeof(BtlTalkBustUpWork);
+    static constexpr s32 kCalcTag = 2;
+    static constexpr s32 kDrawLeftTag = 0x7D;
+    static constexpr s32 kDrawRightTag = 0xDB;
 
+    if (g_BtlTalkBustUpWork != nullptr) {
+        return;
+    }
 
-// ---------------------------------------------------------------------------
-// btlTalkBustUp.cpp
-// ---------------------------------------------------------------------------
+    BtlTalkBustUpWork* const work = static_cast<BtlTalkBustUpWork*>(
+        engine_func_002c4b84(kAllocSize, kAllocSize, 0, kWorkSize, 1));
+    g_BtlTalkBustUpWork = work;
 
-//
-__attribute__((naked)) void btlTalkBustUp_func_002959c4() {
-    asm volatile(
-        ".word 0xE92D4070\n"
-        ".word 0xE24DD020\n"
-        ".word 0xE59F4134\n"
-        ".word 0xE5940000\n"
-        ".word 0xE3500000\n"
-        ".word 0x1A000048\n"
-        ".word 0xE59F1128\n"
-        ".word 0xE28F0F4A\n"
-        ".word 0xE1A00000\n"
-        ".word 0xE3A00001\n"
-        ".word 0xE3A01C01\n"
-        ".word 0xE58D0000\n"
-        ".word 0xE3A03FC3\n"
-        ".word 0xE3A02000\n"
-        ".word 0xE1A00001\n"
-        ".word 0xEB00BC5F\n" // AsdMem_Alloc (0x002C4B84)
-        ".word 0xE5840000\n"
-        ".word 0xE1A04000\n"
-        ".word 0xE3A01FC3\n"
-        ".word 0xEB00BC46\n" // AsdMem_Zero (0x002C4B30)
-        ".word 0xE3E01000\n"
-        ".word 0xE3A05000\n"
-        ".word 0xE58412F8\n"
-        ".word 0xED9F0A49\n"
-        ".word 0xE5845308\n"
-        ".word 0xEDDF0A48\n"
-        ".word 0xED840ABF\n"
-        ".word 0xE2840C03\n"
-        ".word 0xE1A03005\n"
-        ".word 0xEC800A02\n"
-        ".word 0xE1A02005\n"
-        ".word 0xE59F010C\n"
-        ".word 0xE58452E8\n"
-        ".word 0xE58452EC\n"
-        ".word 0xE88D0021\n"
-        ".word 0xE3A01002\n"
-        ".word 0xE28F00FC\n"
-        ".word 0xE58D5008\n"
-        ".word 0xEB00BFC5\n" // AsdTask_CreateCalc (0x002C5978)
-        ".word 0xE58402E4\n"
-        ".word 0xE59F60F8\n"
-        ".word 0xE3A03000\n"
-        ".word 0xE58D000C\n"
-        ".word 0xE1A02003\n"
-        ".word 0xE3A0107D\n"
-        ".word 0xE28F00E8\n"
-        ".word 0xE58D5004\n"
-        ".word 0xE58D6000\n"
-        ".word 0xE58D5008\n"
-        ".word 0xEB00BC5C\n" // AsdTask_CreateDraw (0x002C4C00)
-        ".word 0xE59402E4\n"
-        ".word 0xE3A03000\n"
-        ".word 0xE1A02003\n"
-        ".word 0xE58D000C\n"
-        ".word 0xE3A010DB\n"
-        ".word 0xE28F00D4\n"
-        ".word 0xE58D5004\n"
-        ".word 0xE58D6000\n"
-        ".word 0xE58D5008\n"
-        ".word 0xEB00BC52\n" // AsdTask_CreateDraw (0x002C4C00)
-        ".word 0xE1A00004\n"
-        ".word 0xEB00B621\n" // UiSpriteGroup_Init (0x002C3344)
-        ".word 0xE59F10D4\n"
-        ".word 0xE59F00CC\n"
-        ".word 0xE3A02090\n"
-        ".word 0xE2413090\n"
-        ".word 0xE58D3004\n"
-        ".word 0xE58D1014\n"
-        ".word 0xE3A0CF51\n"
-        ".word 0xE2433F51\n"
-        ".word 0xE58D2008\n"
-        ".word 0xE58D0018\n"
-        ".word 0xE3A02060\n"
-        ".word 0xE2431060\n"
-        ".word 0xE1A00004\n"
-        ".word 0xE58D500C\n"
-        ".word 0xE58D5010\n"
-        ".word 0xE58DC000\n"
-        ".word 0xEB00B5FD\n" // UiSpriteGroup_BindTable (0x002C32F8)
-        ".word 0xE28DD020\n"
-        ".word 0xE8BD8070\n"
-        ".word 0x00434210\n"
-        ".word 0x000003D5\n"
-        ".word 0x535C3A63\n"
-        ".word 0x5C34544D\n"
-        ".word 0x36445258\n"
-        ".word 0x735C3638\n"
-        ".word 0x34736464\n"
-        ".word 0x6F72705C\n"
-        ".word 0x6D617267\n"
-        ".word 0x7461625C\n"
-        ".word 0x5C656C74\n"
-        ".word 0x6B6C6154\n"
-        ".word 0x6C74625C\n"
-        ".word 0x6B6C6154\n"
-        ".word 0x74737542\n"
-        ".word 0x632E7055\n"
-        ".word 0x00007070\n"
-        ".word 0x3F800000\n"
-        ".word 0x00000000\n"
-        ".word 0x002063C4\n"
-        ".word 0x20444D54\n"
-        ".word 0x434C4143\n"
-        ".word 0x00000000\n"
-        ".word 0x00225270\n"
-        ".word 0x6B6C6154\n"
-        ".word 0x74737542\n"
-        ".word 0x44207055\n"
-        ".word 0x4C776172\n"
-        ".word 0x00746665\n"
-        ".word 0x6B6C6154\n"
-        ".word 0x74737542\n"
-        ".word 0x44207055\n"
-        ".word 0x52776172\n"
-        ".word 0x74686769\n"
-        ".word 0x00000000\n"
-        ".word 0x000009BC\n"
-        ".word 0x003FFAB8\n");
+    engine_func_002c4b30(work, kWorkSize);
+    work->field_2f8 = -1;
+    work->field_308 = 0;
+    work->field_2fc = 1.0f;
+    work->field_300 = 1.0f;
+    work->field_304 = 0.0f;
+    work->field_2e8 = 0;
+    work->field_2ec = 0;
+
+    work->calc_task = engine_func_002c5978(
+        "TMD CALC",
+        kCalcTag,
+        0,
+        0,
+        reinterpret_cast<const void*>(&func_002063c4),
+        nullptr,
+        nullptr);
+
+    camp_func_002c4c00(
+        "TalkBustUp DrawLeft",
+        kDrawLeftTag,
+        0,
+        0,
+        reinterpret_cast<const void*>(&func_00225270),
+        nullptr,
+        nullptr,
+        work->calc_task);
+
+    camp_func_002c4c00(
+        "TalkBustUp DrawRight",
+        kDrawRightTag,
+        0,
+        0,
+        reinterpret_cast<const void*>(&func_00225270),
+        nullptr,
+        nullptr,
+        work->calc_task);
+
+    engine_func_002c3344(work);
+    engine_func_002c32f8(
+        work,
+        &g_BustUpTable_003ff884,
+        0x60,
+        &g_BustUpTable_003ff8e4,
+        0x144,
+        &g_BustUpTable_003ffa28,
+        0x90,
+        0,
+        0,
+        &g_BustUpTable_003ffab8,
+        0x9BC);
 }
 extern "C" {
     void* camp_func_002c4c00(const char* name, s32 tag, u32 unk2, u32 unk3, const void* calc_fn, const void* dtor_fn, void* work, void* parent_work); // 0x002c4c00
