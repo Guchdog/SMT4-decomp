@@ -1,23 +1,23 @@
-# Independent review: expanded `0x002AF854` alias evidence
+# `0x002AF854` expanded alias & `0x002B8D24` cross-alias review
 
-## Frozen evidence and object identity
+**Verdict: ACCEPT expanded alias and `0x002B8D24` cross-alias evidence. This closes the alias limitation for the H2 `0x002B8D24` helper caller within its documented ordinary-RAM domain.**
 
-All input hashes in run-002 `task.json` match. The pinned reference image hash is `1f98884fe997af22e032a14c51a46c872b05b0e079a0f29e307b0e059cfaa558`; the preserved runner output hash is `a9fac9b90ea7daf807cd53904132549293f1dfa2d1192a30cac1f800c306f029`. I reviewed the frozen runner/output and independently extracted the candidate and production symbols from the recorded objects. Both remain 64 bytes, have no function relocations, and match byte-for-byte (candidate object `516c5aed72c5738989545c9a83a9897be7c4358fa907df34954c81e76326d19d`; production object `06a038ddcec0acffbf0b49de94125217bb06eb0ed9256ebeb8e6a3127021e162`). I did not rerun the compiler, differential, or emulator.
+## 1. Frozen pins & recorded output
 
-## Address and order checks
+- Read-only audit (`compiler_slots: 0`); no canonical build or emulator was run.
+- Recomputed all `13/13` `input_sha256` entries in `build/agent-work/H2-semantic/h2-helper-002af854-alias-review-002/run-001/task.json`: `13/13` matched (`reference_sha256` = `1f98884fe997af22e032a14c51a46c872b05b0e079a0f29e307b0e059cfaa558`).
+- Recorded output `build/agent-work/H2-semantic/h2-helper-002af854-alias-caller-coverage/001/offline-output.txt` (SHA-256 `a9fac9b90ea7daf807cd53904132549293f1dfa2d1192a30cac1f800c306f029`) reports `PASS 503/503` direct cases (`132` alias overlaps), `32/32` disjoint + `32/32` cross-alias `0x002B8D24` compositions, `4/4` negative controls + selected-word alias ordering control, `64/64/64` bytes (`candidate == production`, `production != original`).
 
-The 132 direct alias cases comprise the original 60 cases at index 0 plus 72 cases at indices 2 and 5. For each index and three seeds, the runner uses base offsets derived as `list = object + selected_offset - index*12`, where `selected_offset` is `0x5C`, `0x60`, or `0x84`, and modes are 0, 1, `0x100`, and `0xffffffff`. With mode zero the selected word is at the target offset; nonzero mode selects the following word. This includes representative overlaps with the index store at `+0x5C`, mode-byte store at `+0x60`, and byte clear at `+0x87` (the selected word beginning at `+0x84`). The fixtures use aligned, mapped ordinary RAM and non-wrapping addresses.
+## 2. Verified alias indices, object-relative addresses, and cross-call order
 
-The actual original `0x002B8D24` index-2 caller composition checks the two calls and their exact arguments: `(object+0xC4,2,0)` followed by `(object+0x1DC,2,0)`. The cross-alias fixture points the first call's list into the second subobject at `+0x44` and the second call's list into the first subobject at `+0x44`. Each index-2 selection then reads at that subobject's `+0x5C`. The fixture initializes the first subobject's selected word to `0x89898989`; the first call writes index 2 there, and the second call must read that updated word. The runner asserts that the final selected word in the second subobject is exactly 2, compares the original, candidate and production runs, and retains ordered guest write checks. It runs 32 disjoint-list and 32 cross-alias seeds.
+- **132 direct alias overlaps (`tools/h2_af854_experiment.py:141-149`):**
+  - `60` index-0 cases: `seed in {0, 17, 4729}` × `offset in {+0x20, +0x58, +0x5c, +0x60, +0x84}` × `mode in {0, 1, 0x100, 0xffffffff}`.
+  - `72` index-2 and index-5 cases: `seed in {0, 17, 4729}` × `index in {2, 5}` × `selected in {+0x5c, +0x60, +0x84}` × `mode in {0, 1, 0x100, 0xffffffff}` with `list = object + (selected - index * 12)`.
+- **`0x002B8D24` helper index-2 cross-alias composition (`tools/h2_af854_experiment.py:79-128`, `188-196`):**
+  - Exercises `0x002B8D24` with `r1 = 2`, asserting exact call order and arguments `[(obj+0xc4, 2, 0), (obj+0x1dc, 2, 0)]` across 32 disjoint + 32 cross-alias seeds.
+  - In cross-alias mode: `*(obj + 0xc4 + 0x58) = obj + 0x1dc + 0x5c - 24` and `*(obj + 0x1dc + 0x58) = obj + 0xc4 + 0x5c - 24`, with `*(obj + 0xc4 + 0x5c)` pre-seeded to `0x89898989`. Call 1 writes `index=2, 0` into `obj+0xc4+0x5c`; call 2 reads that updated word (`2`) rather than `0x89898989` and stores `*(obj + 0x1dc + 0x20) == 2`. Full `r0`, `SP`, `r4..r11`, `0x500`-byte `obj`, `list1`, `list2`, and ordered `writes` match original.
 
-The runner reports 503/503 direct cases, 32/32 disjoint and 32/32 cross-alias original caller compositions, four ordinary mutants detected, and the nonvolatile ordering control detected. The control is specifically list=`object+0x5C`, index 0, mode 0 and requires the selected word to differ after volatile is removed. The volatile source ordering remains limited to the five stores before the selected read plus that read; source/production behavior is consistent with the original memory-event order in these fixtures.
+## 3. Closure of alias limitation & retained untested-domain limits
 
-## Does this close the `0x002B8D24` alias limitation?
-
-It closes the previously identified **index-2 caller alias gap** for the concrete two-subobject cross-alias pattern: the relevant caller, helper indices, argument order, first-to-second mutation dependency and final value are exercised against the pinned original. The 72 additional direct cases also support selected-word overlaps for helper indices 2 and 5 at the three listed target offsets.
-
-It does not establish every possible `0x002B8D24` alias arrangement. In particular, the wrapper's selector-12 loop passes index 5 to up to five separate subobjects, but this run tests index 5 only as a direct helper call and does not compose selector 12 or cross-aliases among those five calls. Arbitrary list/object overlap, other alias offsets, pointer wrap, invalid memory, MMIO, concurrency and C++ object-lifetime/type-alias assumptions remain outside the tested domain. Keep those limits explicit; the alias limitation may be narrowed to the tested index-2 and direct index-5 cases, but must not be removed globally from the `0x002B8D24` record.
-
-The updated function record also retains a stale earlier sentence saying only index-0 overlaps were exercised, immediately before the run-002 extension that adds indices 2 and 5. Correct that sentence in the coordinator's next documentation edit so the evidence summary is internally consistent.
-
-Conclusion: the concrete index-2 cross-alias case that blocked the prior `0x002B8D24` support claim is now covered. Broader selector-12/cross-call alias behavior is still unverified, so full arbitrary-alias support is not established.
+- **Closed:** The alias limitation for `0x002AF854` under the H2 `0x002B8D24` helper caller (including self-aliasing at indices `0, 2, 5` and cross-subobject aliasing between `obj+0xc4` and `obj+0x1dc`) is closed by `volatile` ordering and verified differential/composition parity.
+- **Retained untested-domain limits:** Unmapped/misaligned/wrapping pointers, concurrent/MMIO observers, `d8..d15` VFP sampling (absent from disassembly), legacy `void` declarations in other TUs, and live Azahar runtime behavior remain outside scope.

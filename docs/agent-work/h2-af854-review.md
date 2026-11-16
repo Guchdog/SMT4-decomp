@@ -1,25 +1,27 @@
-# Independent review: 0x002af854 indexed field selector
+# Independent Review: `0x002AF854` (`battle_func_002af854`) Production Contract & Composition
 
-## Scope and identities
+## Verdict
 
-Read-only review of production `src/engine/leaf_batch13_a.cpp` SHA-256 `4e07716f52ef03f88fc2be3cf5ef9124c5dd116fa2cdd44bdd7ca0b557e772a7`, experimental source SHA-256 `c3ee4a189453399f905a1778a41b45dc2c90e832412f3117e7c902e6a33365f3`, runner SHA-256 `bb3d5a0f91447bb1eacb2416997ab7229571f52480047d3c3a016e63122177a8`, object files and recorded output. Reference code.bin is pinned to SHA-256 `1f98884fe997af22e032a14c51a46c872b05b0e079a0f29e307b0e059cfaa558`. No compilation, differential execution or emulator operation was performed in this review.
+**Disposition:** **Accept** the production C++ reconstruction `battle_func_002af854` (`src/engine/leaf_batch13_a.cpp:119-135`) for its documented ordinary-RAM domain and offline `0x002B8D24` index-2 composition.
 
-## Original and compiled behavior
+This review does not claim live Azahar runtime equivalence or cross-TU LTO type unification.
 
-Original ARM reads a list pointer at object+0x58; if null, returns incoming r0 with no stores. Otherwise it stores index low 16 bits at object+0x5c, zero halfword at +0x5e, zero bytes at +0x87 and +0x8a, mode low byte at +0x60, and a word from list+index*12+(mode != 0 ? 4 : 0) at object+0x20. It returns the object pointer in r0. Mode selection uses the full 32-bit value: for mode 0x100 the selected field is +4 even though the stored byte is zero. The C++ expresses those results on the documented domain.
+## 1. Contract & Production Object Verification
 
-The original's stride arithmetic wraps at 32 bits; the supported C++ domain is narrower: valid mapped/aligned ordinary RAM, non-overflowing index and selected element, valid object, and list bytes disjoint from object fields written in the function. Candidate and production extracted symbols are identical 64-byte ARM bodies without symbol relocations and differ from original; candidate object SHA-256 `355c9550f83885191cadfa739c0cfc1088e5ecf56f1b6b1bde32074e16ea230a`, production object `1530b31d9b5de7459b4eef7a5bb2d6313a7c875d8df2ae47285376a8e8dca8e0`. Ledger `non_matching` correctly records differing bytes.
+- **Inputs & pointer return**: `uint8_t* battle_func_002af854(uint8_t* object, uint32_t index, uint32_t mode)` returns `object` in `r0` on both the null-list and non-null paths.
+- **Null branch**: Reads `list = *(const uint32_t* const*)(object + 0x58)`. If `list == nullptr`, returns `object` immediately (`bxeq lr`) with zero memory writes.
+- **Field writes & order**: Writes `static_cast<uint16_t>(index)` to `+0x5c`, `0` (`u16`) to `+0x5e`, `0` (`u8`) to `+0x87`, `0` (`u8`) to `+0x8a`, and `static_cast<uint8_t>(mode)` to `+0x60` (all `volatile` to preserve exact original store order ahead of the list read), then writes `selected` (`u32`) to `+0x20`.
+- **List indexing**: Reads `*(const volatile uint32_t*)(reinterpret_cast<const uint8_t*>(list) + index * 12u + (mode != 0 ? 4 : 0))` (full 32-bit `mode != 0` test, even when `(mode & 0xFF) == 0`, e.g. `0x100`).
+- **Production object & ledger**: `battle_func_002af854` in `build/agent-work/H2-semantic/h2-helper-002af854-alias-coverage/001/production/engine/leaf_batch13_a.o` (SHA-256 `06a038ddcec0acffbf0b49de94125217bb06eb0ed9256ebeb8e6a3127021e162`) is 64 bytes with 0 relocations and byte-identical to `candidate_002af854` (`experiments/semantic_equivalence/h2_af854_candidate.cpp`, object SHA-256 `516c5aed72c5738989545c9a83a9897be7c4358fa907df34954c81e76326d19d`). `config/functions.csv:5359` truthfully marks `0x002af854` as `non_matching`.
 
-The compiler reorders stores and advances the list read ahead of some original stores. The runner compares sorted write tuples, deliberately not write ordering. Correct final-state comparison therefore does not cover list/object aliasing, MMIO, concurrent observers or faults midway through the operation. The reviewed source has no guarantee for null object, invalid list or wraparound; no fault parity is asserted. Caller-clobbered registers and condition flags differ in generated code and should not be assumed preserved.
+## 2. Direct Differential, Alias Domain & Caller Evidence
 
-`src/engine/leaf_batch22_c.cpp` has a `void` no-argument declaration used by inline ARM, and `src/camp/unite_extras.cpp` declares a three-argument `void` function; the new production definition returns the object pointer and uses typed arguments. The register interface is supported for the tested ABI, but full cross-TU C++ type compatibility or LTO is not. Inspect actual symbol binding, affected consumer builds and final ARM/Thumb state in the integrated image.
+- **No-alias & alias domains (`tools/h2_af854_experiment.py`, SHA-256 `567daa62...`)**: `503/503` direct cases match original `0x002AF854` across `r0`, `SP`, `r4-r11`, `0x100`-byte object, `0x1000`-byte list, and ordered `UC_HOOK_MEM_WRITE` events (`371` disjoint cases including null-list and `mode=0x100`, plus `132` alias overlaps at `+0x20/+0x58/+0x5c/+0x60/+0x84`).
+- **Negative controls**: `4/4` functional mutants (`null`, `selection`, `index`, `return`) and the `mutant_order` nonvolatile control are detected.
+- **Callers**: `32` disjoint + `32` cross-alias `0x002B8D24` index-2 compositions pass against original, candidate, and production with asserted callee tuples `[(obj+0xc4, 2, 0), (obj+0x1dc, 2, 0)]`.
 
-## Recorded evidence
+## 3. Limits
 
-`build/h2-af854/offline-closure.txt` SHA-256 `d1cad014ad0cb25fcbccf334ccaa9de047e8ec3bfebb5b7020887a41a20d7710` reports 371 direct cases, 32 original 0x002b8d24 caller cases, and four detected controls. Source inspection confirms direct test inputs include null/non-null list, index 0,1,2,7,19,127 and deterministic random indices below 128, modes 0,1,0x100,0xffffffff, seeded distinct objects/lists, register and final-memory comparison. Mutants target null branch, selection, stride and return; mutation on invalid memory can count as a detected difference.
-
-The caller fixture executes original 0x002b8d24 with table index 2 and requires exactly two entries into 0x002af854, using two valid disjoint lists. It compares r0, SP, r4-r11, selected memory and sorted write events; the original byte-store tail remains in execution. This supports the selected bounded composition, not all table indices, entry states, helper branches, nested H2 lifecycle or actual runtime scheduling. Recorded results were not independently rerun in this review.
-
-## Assessment
-
-No new static counterexample was found within the stated disjoint ordinary-RAM domain. The experimental candidate and production object match prior to final placement. Cumulative patch and interworking verification, original-versus-patched runtime scenario, and explicit limits for aliases/ABI remain necessary for integration; none of the present results establishes full H2 or whole-game equivalence.
+- Assumes aligned, mapped, writable ordinary RAM and non-overflowing `index * 12`.
+- Legacy `void` declarations in other TUs (`docs/function-records/0x002af854.md:11`) remain separate from `leaf_batch13_a.cpp`.
+- No live Azahar runtime or H2 audio scenario execution was performed.

@@ -1,35 +1,31 @@
-# Independent review: H2 `0x002BF6D0`
+# Independent Review: `0x002BF6D0` (`camp_func_002bf6d0`) Manager-Node Resolver
 
-## Result
+## Verdict
 
-The candidate remains supported for the exercised offline domain. I repeated the independent experiment against the refreshed run002 packet with seed `20261116`; there are no direct or original-caller mismatches. `config/functions.csv` currently classifies `0x002BF6D0` as `non_matching`, which correctly records that the semantic replacement bytes differ from the reference. This is bounded offline evidence, not runtime or whole-game equivalence.
+**Disposition:** **Accept** `camp_func_002bf6d0` (`src/engine/leaf_batch27_b.cpp:1270-1281`, `non_matching`, `60/64` bytes, `2` even ARM `R_ARM_CALL` relocations to `0x002B0188` and `0x002C615C`) for bounded promotion within its tested synthetic ordinary-RAM domain and `0x002B88C4` caller composition.
 
-## Contract and ABI audit
+This review does not claim temporary stack-residue parity below `SP`, arbitrary pointer aliasing, malformed-pointer fault parity, or live Azahar runtime equivalence.
 
-The original helper occupies `[0x002BF6D0, 0x002BF710)` (64 bytes). It preserves `node_index` in `r4`, calls the manager resolver at even ARM address `0x002B0188` with both incoming arguments unchanged (`group` in `r0`, `node_index` in `r1`), and uses the resolver result as a two-load pointer chain: `[manager+4]`, then `[*]` to obtain `node_base`.
+## 1. Independent Disassembly & Contract Audit (`0x002BF6D0`, 64 bytes)
 
-The original code multiplies signed `node_index` by `0x10624DD3`, then applies the signed reciprocal-multiply correction and arithmetic shift for division by 1000. This produces truncation toward zero, including for negative inputs. It computes `remainder = node_index - 1000 * quotient`, then returns the 32-bit wrapped address `node_base + 20 * remainder` in `r0`. The candidate forwards both resolver arguments and calls the original even ARM divider at `0x002C615C`; the divider returns signed quotient in low `r0` and signed remainder in high `r1` as a 64-bit result. Candidate C++ uses the quotient and recomputes the same signed remainder before forming the result address.
+Inspected `extracted/exefs/code.bin` (`1f98884fe997af22e032a14c51a46c872b05b0e079a0f29e307b0e059cfaa558`) at `0x002BF6D0..0x002BF710` (literal `0x10624DD3` at `0x002BF70C`) and verified all 15 `input_sha256` pins:
 
-The original `0x002B88C4` caller composition executes the original resolver path, including `0x002B0188` and its downstream helper. Only `0x002BF6D0` is staged as the candidate. It observes both arguments at helper and resolver boundaries and consumes the returned node. Direct cases use a deterministic resolver-return seam, so they provide broad helper-input coverage but do not independently establish resolver behavior.
+- **Both resolver arguments**: `mov r4, r1; bl 0x2b0188` forwards both `(group, node_index)` in `(r0, r1)` to `ui_func_002b0188`.
+- **Pointer chain**: Dereferences `indirect_nodes = *(u8**)(manager + 4)`, then `node_base = *(u8**)indirect_nodes`.
+- **Signed divide-by-1000 & remainder**:
+  - Original uses magic `0x10624DD3` (`ceil(2^38 / 1000)`): `smull r3, r1, r1, r4; asr r3, r1, #6; sub r1, r3, r1, asr #31`, computing signed truncating-toward-zero quotient `q = (s32)node_index / 1000`, then `mul r1, r1, r2` (`r2 = -125`) and `add r1, r4, r1, lsl #3` (`r = (s32)node_index - 1000 * q`).
+  - Candidate calls original signed divider `ui_func_002c615c(node_index, 1000)` (`q`), computes `r = signed_index - q * 1000`, and returns `reinterpret_cast<void*>(reinterpret_cast<u32>(node_base) + static_cast<u32>(r * 20))` (matching `add r1, r1, r1, lsl #2; add r0, r0, r1, lsl #2`).
+- **Stack-residue boundary**: Calling `0x002C615C` spills temporary bytes below `SP` before restoring `SP`; non-stack writes, `SP`, and `r4-r11` match.
 
-## Refreshed run002 evidence
+## 2. Fresh Offline Rerun (Distinct Seed `20261130`) & Affected TUs
 
-Command:
+- `python tools/h2_bf6d0_experiment.py --out build/agent-work/H2-semantic/h2-bf6d0-independent-review-conversion/run-001/checks/fresh --seed 20261130` (exit `0`, `report.json` SHA-256 `f4f95472769470b351640ccd4da0c3cd7c559251d2404e42565c556d8522d4f3`):
+  - `2,269/2,269` direct cases (`direct_mismatches=0`, covering `[-1000, 1000]`, signed 32-bit endpoints, block boundaries, and `256` seeded indices).
+  - `42/42` original `0x002B88C4` caller compositions (`caller_mismatches=0`, with original `0x002B0188` executing).
+  - `3/3` negative controls detected (`wrong_block_divisor`, `resolver_index_forwarding`, `node_stride`).
+  - `60/64` bytes, `2` even ARM `R_ARM_CALL` relocations (`ui_func_002b0188` at `+8`, `ui_func_002c615c` at `+28`; both `entry_bit0=0`), `ips_replay=true`, `only_original_slot_changed=true`.
+- `python tools/build_check.py --tu src/engine/leaf_batch27_b.cpp` & `src/engine/leaf_batch32_c.cpp` (`--out-dir .../run-001/tu-compile -j 1`, both exit `0`; `.o` SHA-256s `fe18ff64...` and `9f98ea6a...`).
 
-```text
-python tools/h2_bf6d0_experiment.py --out build/agent-work/H2-semantic/h2-bf6d0-independent-review-conversion/run002/checks/review-seed-20261116 --seed 20261116
-```
+## 3. Limits
 
-Exit code: 0. Report: `build/agent-work/H2-semantic/h2-bf6d0-independent-review-conversion/run002/checks/review-seed-20261116/report.json` (SHA-256 `051e1b46a4187ee25bafee0dbd3b76438fcfa2129e0923f78cf8c824761a3863`). It records 2,269 direct cases and 42 original-caller cases, with no mismatches. All three negative controls were detected: wrong block divisor, resolver-index forwarding, and node stride.
-
-The compiled body is 60 bytes in the 64-byte slot. Its two `R_ARM_CALL` relocations target even ARM entries `0x002B0188` at offset 8 and `0x002C615C` at offset 28. Exact-slot IPS replay passed and only the original slot changed. Both affected translation units compiled with one compiler slot and return code 0: `leaf_batch27_b.cpp` and consumer `leaf_batch32_c.cpp`; compiler invocations and private object paths are in the report.
-
-## Explicit limits
-
-The candidate divider leaves temporary spill/push bytes below restored `SP`. Equality deliberately excludes this stack residue because it lies below the callee's live frame and is not caller-visible ABI state after return. The comparison still checks restored `SP`, callee-saved registers, raw `r0`, resolver arguments, faults/stops, and non-stack writes. No parity claim is made for stale bytes below `SP`.
-
-Inputs exercise valid aligned synthetic ordinary RAM. Direct cases use a deterministic resolver-return seam; caller cases use the actual original resolver and original caller. Runtime lifecycle, arbitrary aliasing, invalid-pointer/fault domains, and production runtime behavior were not tested. No emulator or full build was run.
-
-## Recommendation
-
-Proceed to bounded integration review with these limits and preserve the `non_matching` classification. Retain original resolver/divider dependencies and check final-image placement/interworking during integration. These offline results do not establish whole-game equivalence.
+- Temporary stack residue below `SP` from `0x002C615C` is excluded from comparison; valid aligned synthetic ordinary RAM; no invalid-pointer fault parity, MMIO, or live Azahar runtime claimed.

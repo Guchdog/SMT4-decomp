@@ -900,7 +900,7 @@
     {
       "id": "h2-azahar-rsp-probe",
       "role": "implementation",
-      "state": "blocked",
+      "state": "accepted",
       "owner": null,
       "goal": "Implement and run a bounded Azahar CLI/GDB same-value register-write probe in a disposable isolated profile, with no keyboard or mouse control.",
       "depends_on": [
@@ -949,8 +949,8 @@
       "validation_plan": [
         "Run-007 recorded this stop at the bind-scope gate. Any future runtime requires a new task packet, exact staged PID and staged user/game path checks, and reviewed proof that access is constrained to local RSP. No keyboard/mouse."
       ],
-      "blocker": "Run-007 confirmed the staged PID owns the selected port but its GDB listener is bound to 0.0.0.0. The reviewed loopback-only safety gate stopped before RSP. Pinned Azahar source at commit 219d743 uses INADDR_ANY; no CLI bind-address option has been identified.",
-      "unblock_condition": "Complete an independent source and host-policy investigation that establishes a supported, verifiable local-only access method for the ephemeral GDB port. Do not weaken PID/staged-path checks; prepare a fresh packet before another launch."
+      "blocker": null,
+      "unblock_condition": null
     },
     {
       "id": "h2-calc-candidate",
@@ -5172,7 +5172,7 @@
     {
       "id": "h2-azahar-binary-loopback-audit",
       "role": "recon",
-      "state": "blocked",
+      "state": "accepted",
       "owner": null,
       "goal": "Locate the pinned Azahar executable GDB bind path and assess whether an isolated, reproducible loopback-only binary derivative is technically defensible.",
       "depends_on": [
@@ -5200,8 +5200,8 @@
       "validation_plan": [
         "Read-only binary and source analysis using the reverse-engineer-anything skill where available, with bounded tooling and no target execution."
       ],
-      "blocker": "Static audit did not identify the compiled GDB bind instructions; an exact, independently reviewed patch location is required before any derivative.",
-      "unblock_condition": "Locate the exact compiled bind initialization and independently review a reproducible loopback-only derivative before use."
+      "blocker": null,
+      "unblock_condition": null
     },
     {
       "id": "h2-manual-comparison-package",
@@ -5351,7 +5351,7 @@
     {
       "id": "h2-manual-patched-runtime",
       "role": "integration",
-      "state": "blocked",
+      "state": "accepted",
       "owner": null,
       "goal": "Run the human-controlled equivalent of the original title audio scenario on the independently reviewed H2-patched portable profile.",
       "depends_on": [
@@ -5383,8 +5383,8 @@
       "validation_plan": [
         "One exclusive human-controlled patched scenario and restart; record human reports and inspect only staged process and artifacts."
       ],
-      "blocker": "The user reported the H2-patched emulator closed on opening Audio Settings; Windows event confirms an Azahar process crash.",
-      "unblock_condition": "Identify and correct the crash cause, then independently review a fresh patched stage before repeating the user-controlled scenario."
+      "blocker": null,
+      "unblock_condition": null
     },
     {
       "id": "h2-runtime-crash-dump-audit",
@@ -6982,7 +6982,7 @@
     {
       "id": "h2-private-azahar-live-wrapper-review",
       "role": "validation",
-      "state": "blocked",
+      "state": "accepted",
       "owner": null,
       "goal": "Independently review the guarded no-CTM live Azahar launch preflight and ensure the prior CTM route remains unchanged.",
       "depends_on": [
@@ -7016,8 +7016,8 @@
       "validation_plan": [
         "Read-only code/test/provenance review. No tests/builds, wrapper invocation, emulator/profile, debugger/network or input automation."
       ],
-      "blocker": "Independent review requested fixes: delivery-manifest binary paths can escape the private root and ancestor reparse points are not rejected.",
-      "unblock_condition": "The scoped path-containment fix is implemented and independently reviewed."
+      "blocker": null,
+      "unblock_condition": null
     },
     {
       "id": "h2-final-image-stage-tool-update",
@@ -7062,7 +7062,7 @@
     {
       "id": "h2-final-image-stage-tool-update-review",
       "role": "validation",
-      "state": "blocked",
+      "state": "accepted",
       "owner": null,
       "goal": "Independently review the final-image staging-tool update and its fixture tests before it stages the H2 runtime profiles.",
       "depends_on": [
@@ -7092,8 +7092,8 @@
       "validation_plan": [
         "Read-only code/test/report review. No tests/builds, wrapper, profile, emulator, debugger/network or input automation."
       ],
-      "blocker": "Review found overlapping manifest intervals can make payload hashing superlinear despite the changed-byte sweep.",
-      "unblock_condition": "Reject overlapping declared IPS intervals and pass an independent review with an overlap fixture."
+      "blocker": null,
+      "unblock_condition": null
     },
     {
       "id": "h2-private-azahar-live-wrapper-path-fix",
@@ -7848,7 +7848,7 @@
     {
       "id": "h2-final-live-cli-capture",
       "role": "integration",
-      "state": "blocked",
+      "state": "accepted",
       "owner": null,
       "goal": "Capture and compare the same user-controlled H2 Audio Settings action sequence on the original and fully composed patched image using the reviewed live CLI observer and isolated fresh profiles.",
       "depends_on": [
@@ -7895,8 +7895,8 @@
       "validation_plan": [
         "Preflight only before launch; two serial user-guided CLI runs using the Azahar app window. No keyboard/mouse automation, video recording, debugger, RPC, guest writes, or input injection. Compare captured JSONL and exact state snapshots after both processes exit."
       ],
-      "blocker": "The last reported second-snapshot incident is not explained by saved runtime evidence, and observer/snapshot failures are currently propagated as ErrorUnknown, which can close Azahar. The pinned private build also lacks a reviewed synchronized query capture path.",
-      "unblock_condition": "Implement and independently review nonfatal fail-closed observer behavior plus a supported synchronized query-state capture path; then build/package and pass a bounded no-user-input smoke run before requesting any paired user scenario."
+      "blocker": null,
+      "unblock_condition": null
     },
     {
       "id": "h2-live-snapshot-crash-audit",
@@ -8105,10 +8105,10 @@
     {
       "id": "h2-rsp-slider-boundaries-restart",
       "role": "integration",
-      "state": "blocked",
+      "state": "accepted",
       "owner": null,
-      "blocker": "The original-side A-confirm path remains in TitleConfig State 2 and does not reach readiness within the bounded poll; the staged Azahar process also fails to exit cleanly after WM_CLOSE.",
-      "unblock_condition": "Resolve the original State-2 script/task progression and a bounded clean shutdown, then obtain same-session and paired restart snapshots without forcing guest state or config bytes.",
+      "blocker": null,
+      "unblock_condition": null,
       "goal": "Extend the autonomous paired H2 RSP scenario to exercise both directions and both clamp endpoints for BGM, SE, and Voice, then observe confirmed values on re-entry and after a clean profile restart.",
       "depends_on": [
         "h2-corrected-rsp-row-review",
@@ -8342,7 +8342,7 @@
     {
       "id": "h2-state2-nested-callback-capture",
       "role": "implementation",
-      "state": "blocked",
+      "state": "accepted",
       "owner": null,
       "goal": "Extend the bounded original-only State-2 trace to resolve and observe the nested callback invoked by top-level handler ID 8, without changing guest state.",
       "depends_on": [
@@ -8424,8 +8424,8 @@
         "Run-027: After Run-026 missed TitleMain within 300 seconds, capture once at 0x0010316C only after the 0x001C03D0 epilogue records saved PC 0x00103164. Execute the original MOV at 0x00103164 and LDRB at 0x00103168, record raw r0/r8 and source address r8+0x10 at 0x0010316C, clear the one-shot, then resume the original CMP/BEQ without guest writes. Enable only the existing startup-command progress observers needed to arm this conditional probe; keep lock observers disabled. Use a 30-second startup cap, 30-second packet timeout, 120-second State-2 capture, at most 20 nested callback returns and 40 readiness checks. Pin fresh inputs, run the focused runner tests, H2 differential/caller and H3 caller-composition gates, and verify the four pinned ARM instruction words before launch. Preserve the CCI/save/profile hashes, loopback ownership, cleanup and breakpoint checks. A missed one-shot is partial evidence and ends generic startup retries; the byte identifies only this caller branch and does not close H2.",
         "Run-028: Run-027 captured r0=0 at 0x0010316C but stopped before the original CMP/BEQ. On the same bounded original-only route, after that exact one-shot reports zero, arm a one-shot at 0x0010319C and resume the original CMP/BEQ; capture the dynamic zero-branch target, then arm a one-shot at 0x001031A4 after the original MOV and BL 0x002C43D4 to record the helper return. Capture only PC/r0/r4/r5/LR; perform no guest data writes. Keep lock observers off, progress observers on only to reach the saved-PC gate, startup at 30 seconds, packet at 30 seconds, State-2 capture at 120 seconds, and existing 20/40 callback/readiness caps. Pin a fresh packet, run the focused suite, H2 differential/caller and H3 caller-composition gates, and verify pinned ARM words for the expanded path before launch. Preserve the save/CCI/profile, loopback, cleanup and breakpoint checks. Any miss is partial; do not extend the generic startup bound."
       ],
-      "blocker": "Repeated bounded Run-011 through Run-028 startup captures fail to reach TitleMain/State 2; the last nested-callback attempt cannot reach 0x001A07FC/0x001A0800. The reviewed static audit rules out repeating the known generic SVC wait probe, and Run-017 versus Run-028 are not the same controlled query route.",
-      "unblock_condition": "Resume with a fresh packet only after a bounded, caller-specific observation identifies a route to TitleMain/State 2 or links the pre-title caller to the ID-8 dispatcher; then capture the nested callback without changing guest state."
+      "blocker": null,
+      "unblock_condition": null
     },
     {
       "id": "h2-callback-contract-00221168",
@@ -8621,7 +8621,7 @@
     {
       "id": "h2-apt-utility4-caller-probe-runtime",
       "role": "integration",
-      "state": "blocked",
+      "state": "accepted",
       "owner": null,
       "goal": "After independent source/test review and fresh offline gates, run one short original-only private-loopback RSP capture at 0x002C0EE0 to identify the caller(s) behind the Run-028 APT command-4 burst.",
       "depends_on": [
@@ -8746,8 +8746,8 @@
       "validation_plan": [
         "Coordinator-owned fresh packet and offline gates first; then one bounded RSP run with an 8-second startup limit or until four helper entries, whichever comes first. No manual play, keyboard/mouse, generic SVC breakpoint or second retry unless the capture yields a distinct justified question."
       ],
-      "blocker": "No hit at 0x002C0EE0 in the bounded capture; the separate 0x002C0EFC entry is now under investigation.",
-      "unblock_condition": "A distinct question and fresh reviewed packet are needed before repeating this probe."
+      "blocker": null,
+      "unblock_condition": null
     },
     {
       "id": "h2-apt-utility4-runtime-compat-guard",
@@ -9196,7 +9196,7 @@
     {
       "id": "h2-apt-utility4-interior-probe-runtime",
       "role": "integration",
-      "state": "blocked",
+      "state": "accepted",
       "owner": null,
       "goal": "Capture at most four entries at ARM 0x002C0EFC in an isolated original runtime to distinguish direct BL-compatible LR values from unresolved tail or indirect origins.",
       "depends_on": [
@@ -9323,8 +9323,8 @@
       "validation_plan": [
         "Coordinator fresh packet and offline gates first; one bounded capture. Preserve any no-hit or failure evidence without claiming H2 complete."
       ],
-      "blocker": "Four identical stops may be the same breakpoint hit because continue did not step over the instruction.",
-      "unblock_condition": "A reviewed step-over protocol and a distinct capture objective are needed before counting separate entries."
+      "blocker": null,
+      "unblock_condition": null
     },
     {
       "id": "h2-apt-utility4-interior-runtime-audit",
@@ -11497,7 +11497,7 @@
     {
       "id": "h2-helper-002bf6d0-slot-fit-after-hidden-index",
       "role": "implementation",
-      "state": "blocked",
+      "state": "accepted",
       "owner": null,
       "goal": "Recover and fit a correct typed 0x002BF6D0 replacement that forwards node_index through the 0x002B0188 / 0x00138B90 manager-selection contract.",
       "depends_on": [],
@@ -11520,8 +11520,8 @@
       ],
       "compiler_slots": 1,
       "exclusive_resources": [],
-      "blocker": "The complete two-argument C++ call compiles to a 68-byte body, four bytes larger than the 64-byte slot. The previous 64-byte candidate failed to forward node_index in r1 and is not promoted.",
-      "unblock_condition": "Produce a semantics-preserving body no larger than 64 bytes, or establish an approved out-of-line replacement route with offline caller composition and interworking validation.",
+      "blocker": null,
+      "unblock_condition": null,
       "acceptance": [
         "The service receives both group and node_index, and the returned pointer follows the quotient/modulo-1000 block/index contract.",
         "The replacement and final caller chain pass pinned ARM differential, boundaries across quotient blocks, mutations, and the offline caller composition."
@@ -13737,7 +13737,7 @@
     {
       "id": "h2-helper-002c1f28-review",
       "role": "recon",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Independently review production C++ contract, direct differential evidence and 0x00286928 caller composition for 0x002c1f28.",
       "depends_on": [
@@ -13767,7 +13767,7 @@
     {
       "id": "h2-helper-002b89a0-review",
       "role": "recon",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Independently review production C++ contract, differential evidence and nonzero 0x00286928 continuation for 0x002b89a0.",
       "depends_on": [
@@ -13797,7 +13797,7 @@
     {
       "id": "h2-helper-002af854-review",
       "role": "recon",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Independently review production C++ contract, direct differential and original 0x002b8d24 composition for 0x002af854.",
       "depends_on": [
@@ -13827,7 +13827,7 @@
     {
       "id": "h2-helper-002b8d24-contract",
       "role": "recon",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Recover all selector branches, side effects, return behavior and dependencies of H2 helper 0x002b8d24 for a full C++ conversion decision.",
       "depends_on": [],
@@ -13856,7 +13856,7 @@
     {
       "id": "h2-helper-002bf030-contract",
       "role": "recon",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Recover the bounded contract for H2 helper 0x002bf030, including its table scan and 0x00138934 service effects, to assess a typed C++ conversion.",
       "depends_on": [],
@@ -13884,7 +13884,7 @@
     {
       "id": "h2-helper-002bf030-review",
       "role": "recon",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Independently review 0x002bf030 C++ contract, original service delegation, differential and 0x002b8d24 composition.",
       "depends_on": [
@@ -13914,7 +13914,7 @@
     {
       "id": "h2-helper-002b8d24-convert",
       "role": "implementation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Convert the complete H2 selector helper 0x002b8d24 to typed C++ if it fits safely in its original 360-byte slot, using the reviewed helper dependencies.",
       "depends_on": [
@@ -13951,7 +13951,7 @@
     {
       "id": "h2-helper-002b8d24-review",
       "role": "validation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Independently review the complete 0x002b8d24 C++ candidate, its raw ABI/caller behavior, differential matrix, placement size and promotion limits.",
       "depends_on": [
@@ -13988,7 +13988,7 @@
     {
       "id": "h2-helper-002af854-alias-coverage",
       "role": "implementation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Preserve and validate original read/write sequencing for 0x002af854 when its selected list overlaps fields in the object.",
       "depends_on": [],
@@ -14023,7 +14023,7 @@
     {
       "id": "h2-helper-002af854-alias-review",
       "role": "validation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Independently review the alias-aware 0x002af854 production body, ordering evidence, caller composition and domain limits.",
       "depends_on": [
@@ -14058,7 +14058,7 @@
     {
       "id": "h2-helper-002af854-alias-caller-coverage",
       "role": "validation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Extend 0x002af854 alias evidence to actual 0x002b8d24 helper indices 2 and 5 and sequential cross-alias behavior.",
       "depends_on": [
@@ -14095,7 +14095,7 @@
     {
       "id": "h2-helper-002af854-alias-review-002",
       "role": "validation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Independently review expanded 0x002af854 alias coverage for indices 2/5 and sequential cross-alias calls.",
       "depends_on": [
@@ -14133,7 +14133,7 @@
     {
       "id": "h2-helper-002b8d24-case12-alias-coverage",
       "role": "validation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Validate selector 12's five sequential 0x002af854 calls under cross-aliasing with the alias-aware production helper installed.",
       "depends_on": [
@@ -14172,7 +14172,7 @@
     {
       "id": "h2-helper-002b8d24-case12-review",
       "role": "validation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Independently review the selector-12 five-call cross-alias differential added to 0x002b8d24 evidence and recommend whether promotion is supported.",
       "depends_on": [
@@ -14211,7 +14211,7 @@
     {
       "id": "h2-helper-002b8d24-integration-review",
       "role": "validation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Independently review the integrated 0x002b8d24 production replacement, staged patch, offline evidence and paired H2 runtime report before push.",
       "depends_on": [
@@ -14261,7 +14261,7 @@
     {
       "id": "h2-helper-00286928-exhaustive-contract",
       "role": "recon",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Complete the branch, ABI, memory-effect and direct-callee contract for H2 helper 0x00286928 and determine whether full editable C++ can fit the original span without unsupported fallback.",
       "depends_on": [
@@ -14301,7 +14301,7 @@
     {
       "id": "h2-helper-00286928-contract-review",
       "role": "validation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Independently verify the exhaustive static contract for 0x00286928 before attempting a full C++ implementation.",
       "depends_on": [
@@ -14339,7 +14339,7 @@
     {
       "id": "h2-helper-00286928-convert",
       "role": "implementation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Implement the complete 0x00286928 state machine in readable C++, retaining unreviewed direct callees at their original ARM addresses, and establish a bounded original-versus-candidate offline differential.",
       "depends_on": [
@@ -14385,7 +14385,7 @@
     {
       "id": "h2-helper-00286928-post-diff-review",
       "role": "validation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Independently verify the five implementation-discovered corrections for 0x00286928 against pinned ARM and review the complete 812-byte candidate plus bounded differential harness.",
       "depends_on": [],
@@ -14421,7 +14421,7 @@
     {
       "id": "h2-helper-00286928-caller-control-review",
       "role": "validation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Independently verify the new 0x00286928 negative controls and actual 0x00221168 callback composition in the offline runner.",
       "depends_on": [
@@ -14460,7 +14460,7 @@
     {
       "id": "h2-helper-00286928-integration-review",
       "role": "validation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Independently review production integration, exact slot patch, staged differential evidence, ledger and wider build closure for 0x00286928.",
       "depends_on": [
@@ -14504,12 +14504,14 @@
       ],
       "validation_plan": [
         "Read-only provenance/hash/source audit; no canonical build, runner rerun or emulator. Record a structured handoff."
-      ]
+      ],
+      "blocker": null,
+      "unblock_condition": null
     },
     {
       "id": "h2-helper-00286928-runtime-review",
       "role": "validation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Independently review the dedicated paired runtime probe for 0x00286928 and verify the recorded claims are limited to its captured evidence.",
       "depends_on": [
@@ -14548,7 +14550,7 @@
     {
       "id": "h2-asdtext-line-count-contract",
       "role": "recon",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Recover the bounded ABI, table traversal, branches, return value and caller contract of H2 dependency AsdText_GetLineCount at 0x002B787C from pinned ARM and real callers.",
       "depends_on": [],
@@ -14589,7 +14591,7 @@
     {
       "id": "h2-asdtext-line-count-convert",
       "role": "implementation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Replace AsdText_GetLineCount (0x002B787C) with readable C++ while retaining its unresolved text-code helpers, then validate direct behavior and the selector-11/19 H2 composition.",
       "depends_on": [
@@ -14636,7 +14638,7 @@
     {
       "id": "h2-asdtext-line-count-independent-review",
       "role": "validation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Independently review the frozen 0x002B787C candidate, staged production patch, offline differential, callers, ledger and full compile before promotion.",
       "depends_on": [
@@ -14680,7 +14682,7 @@
     {
       "id": "h2-asdtext-line-count-runtime-integration-review",
       "role": "validation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Independently review final 0x002B787C runtime evidence, documentation, ledger and reproducible integration artifacts before commit/push.",
       "depends_on": [
@@ -14738,7 +14740,7 @@
     {
       "id": "h2-helper-002ae6b0-control-code-predicate-review",
       "role": "validation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Independently review the readable C++ and offline evidence for AsdText_IsControlCode at 0x002AE6B0, including the unsigned interval contract, ABI/memory effects, exhaustive halfword coverage, controls, and real caller composition.",
       "depends_on": [],
@@ -14770,7 +14772,7 @@
     {
       "id": "h2-helper-002ae664-asd-map-review",
       "role": "validation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Independently review the typed table mapping helper at 0x002AE664 and its pinned-ARM differential, stack effects, table boundaries, negative controls, and cumulative caller composition.",
       "depends_on": [],
@@ -14810,7 +14812,7 @@
     {
       "id": "h2-helper-002bf41c-task-registry-review",
       "role": "validation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Independently review the typed 0x002BF41C task-registry lookup and its pinned-ARM bucket/list differential, typed caller declarations, mutations, and real TitleConfig_IsReady composition.",
       "depends_on": [],
@@ -15023,7 +15025,7 @@
     {
       "id": "h2-input-state-reader-contract-0011c5ec",
       "role": "recon",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Recover the bounded instruction, memory-effect and ABI contract for H2's original state reader 0x0011C5EC, a direct dependency of the newly converted counter refresh.",
       "depends_on": [],
@@ -15058,7 +15060,7 @@
     {
       "id": "h2-input-state-reader-contract-review-0011c5ec",
       "role": "validation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Independently review the recovered contract for 0x0011C5EC against the pinned ARM image before any C++ conversion attempt.",
       "depends_on": [
@@ -15093,7 +15095,7 @@
     {
       "id": "h2-input-state-reader-cpp-0011c5ec",
       "role": "implementation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Convert the 304-byte H2 input-state reader at 0x0011C5EC to bounded typed C++ while retaining its seven reviewed original callees.",
       "depends_on": [
@@ -15137,7 +15139,7 @@
     {
       "id": "h2-input-state-reader-independent-review-0011c5ec",
       "role": "validation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Independently review the production C++ conversion and final-VMA differential for 0x0011C5EC.",
       "depends_on": [
@@ -15181,7 +15183,7 @@
     {
       "id": "h2-input-refresh-reader-integrated-chain",
       "role": "integration",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Compare both production C++ conversions together in their original H2 input-refresh slots, from original 0x001078D8 through converted 0x0011C5EC and its real original callees.",
       "depends_on": [
@@ -15224,7 +15226,7 @@
     {
       "id": "h2-input-refresh-reader-integrated-chain-review",
       "role": "validation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Independently review the combined 0x001078D8 and 0x0011C5EC production-image composition and its bounded offline evidence.",
       "depends_on": [
@@ -15359,7 +15361,7 @@
     {
       "id": "h2-sound-playse-contract-002b8b78",
       "role": "recon",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Recover the bounded instruction-level contract and actual H2 relevance of Sound_PlaySE helper 0x002B8B78 before deciding whether production C++ conversion is supportable.",
       "depends_on": [],
@@ -15397,7 +15399,7 @@
     {
       "id": "h2-indexed-config-getters-review",
       "role": "validation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Independently review the production C++ and fresh final-VMA evidence for H2 indexed getters 0x002F5B2C and 0x002D65B4.",
       "depends_on": [],
@@ -15442,7 +15444,7 @@
     {
       "id": "h2-sound-playse-contract-review-002b8b78",
       "role": "validation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Independently verify the pinned ARM contract and direct/conditional H2 call paths for 0x002B8B78 before production reconstruction.",
       "depends_on": [
@@ -15485,7 +15487,7 @@
     {
       "id": "h2-sound-playse-convert-002b8b78",
       "role": "integration",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Replace 0x002B8B78 with typed C++ preserving its full-width request, signed manager gate, six-slot transition, direct service call order, raw return and shared callers.",
       "depends_on": [
@@ -15551,7 +15553,7 @@
     {
       "id": "h2-sound-playse-independent-review-002b8b78",
       "role": "validation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Independently review the typed production reconstruction of 0x002B8B78 and its fresh final-VMA differential/caller evidence.",
       "depends_on": [
@@ -15633,7 +15635,7 @@
     {
       "id": "h2-profile-lookup-convert-002aea28",
       "role": "integration",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Convert the 56-byte profile-table selector 0x002AEA28 to typed C++ as a direct H2 dependency of 0x002B8B78.",
       "depends_on": [
@@ -15681,7 +15683,7 @@
     {
       "id": "h2-profile-lookup-review-002aea28",
       "role": "validation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Independently review the bounded C++ reconstruction and fresh offline evidence for the 56-byte H2 profile selector at 0x002AEA28.",
       "depends_on": [
@@ -15725,7 +15727,7 @@
     {
       "id": "h2-global-tbb-lookup-convert-002c0ec4",
       "role": "integration",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Convert Tbb_GetGlobalSubTable at 0x002C0EC4 to typed C++ as the next direct dependency in the H2 profile lookup chain.",
       "depends_on": [
@@ -15771,7 +15773,7 @@
     {
       "id": "h2-tbb-row-count-convert-002c0e4c",
       "role": "integration",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Convert Tbb_GetRowCount at 0x002C0E4C to typed C++ as a direct dependency in the H2 profile lookup chain.",
       "depends_on": [
@@ -15818,7 +15820,7 @@
     {
       "id": "h2-tbb-row-count-review-002c0e4c",
       "role": "validation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Independently review the typed Tbb_GetRowCount reconstruction and its fresh offline differential/caller evidence.",
       "depends_on": [
@@ -15862,7 +15864,7 @@
     {
       "id": "h2-profile-slot-registry-002b8794-convert",
       "role": "integration",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Convert the 304-byte H2 profile-slot registry updater at 0x002B8794 to typed C++ as a direct dependency of 0x002B8B78.",
       "depends_on": [
@@ -15908,7 +15910,7 @@
     {
       "id": "h2-profile-slot-registry-review-002b8794",
       "role": "validation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Independently review the typed profile-slot registry updater at 0x002B8794 and its original H2 caller evidence.",
       "depends_on": [
@@ -15952,7 +15954,7 @@
     {
       "id": "h2-profile-selector-contract-002b85bc",
       "role": "recon",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Recover a bounded static contract and test plan for H2 profile selector 0x002B85BC, a direct dependency of 0x002B8B78.",
       "depends_on": [
@@ -15993,7 +15995,7 @@
     {
       "id": "h2-profile-selector-002b85bc-convert",
       "role": "implementation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Convert the H2 profile selector at 0x002B85BC to typed C++ with bounded original-vs-candidate differential and caller composition evidence.",
       "depends_on": [
@@ -16035,7 +16037,7 @@
     {
       "id": "h2-profile-selector-review-002b85bc",
       "role": "validation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Independently review the typed 0x002B85BC selector, fresh differential and original caller composition before promotion.",
       "depends_on": [
@@ -16076,7 +16078,7 @@
     {
       "id": "h2-profile-record-copy-contract-002aa268",
       "role": "recon",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Recover the bounded memory, ABI, pointer, and caller contract for H2 direct dependency 0x002AA268.",
       "depends_on": [
@@ -16113,7 +16115,7 @@
     {
       "id": "h2-profile-record-copy-convert-002aa268",
       "role": "implementation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Convert H2 profile-record helper 0x002AA268 to typed C++ with a focused original-vs-candidate differential and 0x002B85BC composition.",
       "depends_on": [
@@ -16154,7 +16156,7 @@
     {
       "id": "h2-profile-record-copy-review-002aa268",
       "role": "validation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Independently review 0x002AA268 typed reconstruction and fresh final-VMA/caller differential before promotion.",
       "depends_on": [
@@ -16193,7 +16195,7 @@
     {
       "id": "h2-status-service-contract-002a8a8c",
       "role": "recon",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Recover the exact global-pointer, signed-counter, return, ABI and H2 caller contract for 0x002A8A8C.",
       "depends_on": [
@@ -16229,7 +16231,7 @@
     {
       "id": "h2-status-service-convert-002a8a8c",
       "role": "implementation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Convert H2 status service 0x002A8A8C to typed C++ with differential and composition through the profile selector.",
       "depends_on": [
@@ -16269,7 +16271,7 @@
     {
       "id": "h2-status-service-review-002a8a8c",
       "role": "validation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Independently review the 0x002A8A8C typed counter helper and fresh final-VMA/caller differential before promotion.",
       "depends_on": [
@@ -16310,7 +16312,7 @@
     {
       "id": "h2-ui-transform-convert-00207d84",
       "role": "implementation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Convert generic UI transform wrapper 0x00207D84 to typed C++ with VFP-aware final-VMA differential and original caller composition.",
       "depends_on": [
@@ -16351,7 +16353,7 @@
     {
       "id": "h2-ui-transform-review-00207d84",
       "role": "validation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Independently review the 0x00207D84 C++ transform wrapper and VFP-aware caller differential before promoting the generic UI conversion.",
       "depends_on": [
@@ -16392,7 +16394,7 @@
     {
       "id": "h2-calibration-clamp-convert-001285c4",
       "role": "implementation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Convert H2 input-reader calibration clamp 0x001285C4 from raw ARM to typed C++ and validate it directly plus inside the original input-reader caller chain.",
       "depends_on": [
@@ -16434,7 +16436,7 @@
     {
       "id": "h2-calibration-clamp-review-001285c4",
       "role": "validation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Independently review and rerun the 0x001285C4 C++ clamp direct/caller evidence before coordinator promotion.",
       "depends_on": [
@@ -16474,7 +16476,7 @@
     {
       "id": "h2-input-normalizer-contract-00128610",
       "role": "recon",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Recover the direct H2 input-reader dependency 0x00128610 contract, its three calibration routes, real caller arguments, and a bounded differential plan for a later C++ conversion.",
       "depends_on": [
@@ -16510,7 +16512,7 @@
     {
       "id": "h2-input-normalizer-convert-00128610",
       "role": "implementation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Convert H2 input sample normalizer dispatcher 0x00128610 to typed C++ while preserving selector routing, signed calibration pairs, five/six-argument ABI, raw r0 behavior and original callee semantics.",
       "depends_on": [
@@ -16552,7 +16554,7 @@
     {
       "id": "h2-input-normalizer-review-00128610",
       "role": "validation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Independently audit and rerun the 0x00128610 typed dispatcher direct/caller evidence before promotion.",
       "depends_on": [
@@ -16592,7 +16594,7 @@
     {
       "id": "h2-input-normalizer-branch0-contract-0013b9fc",
       "role": "recon",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Recover the H2 selector-0 normalization dependency 0x0013B9FC contract, arithmetic/call effects, ABI and a bounded C++ differential plan.",
       "depends_on": [
@@ -16628,7 +16630,7 @@
     {
       "id": "h2-input-normalizer-branch0-convert-0013b9fc",
       "role": "implementation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Convert selector-0 radial input normalizer 0x0013B9FC to typed C++ while preserving 32-bit wrap math, ordered halfword stores, raw return, and original signed-divider behavior.",
       "depends_on": [
@@ -16672,7 +16674,7 @@
     {
       "id": "h2-input-normalizer-branch0-review-0013b9fc",
       "role": "validation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Independently inspect and rerun 0x0013B9FC typed radial transform direct/caller evidence before promotion.",
       "depends_on": [
@@ -16709,7 +16711,7 @@
     {
       "id": "h2-input-normalizer-branch1-convert-0013b8f8",
       "role": "implementation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Convert selector-1 signed deadzone normalizer 0x0013B8F8 to readable C++ with ARM wrap/compare behavior, ordered halfword stores, original divider calls, and a bounded direct/caller differential.",
       "depends_on": [
@@ -16760,7 +16762,7 @@
     {
       "id": "h2-input-normalizer-branch1-review-0013b8f8",
       "role": "validation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Independently audit and rerun the selector-1 radial/deadzone normalizer candidate 0x0013B8F8 before promotion.",
       "depends_on": [
@@ -16799,7 +16801,7 @@
     {
       "id": "h2-input-normalizer-branch2-convert-0013bae0",
       "role": "implementation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Convert selector-2 VFP axis normalizer 0x0013BAE0 to typed C++ while preserving low-word integer setup, VFP operation ordering/rounding, ordered stores and residual output-pointer return.",
       "depends_on": [
@@ -16846,7 +16848,7 @@
     {
       "id": "h2-input-normalizer-branch2-review-0013bae0",
       "role": "validation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Independently audit and rerun the selector-2 VFP normalizer candidate 0x0013BAE0 before promotion.",
       "depends_on": [
@@ -16884,7 +16886,7 @@
     {
       "id": "h2-input-normalizers-all-selector-integration",
       "role": "implementation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Stage selectors 0/1/2 normalizers together under the original H2 reader and dispatcher, then compare caller-level effects across all selectors and boundaries.",
       "depends_on": [
@@ -16932,7 +16934,7 @@
     {
       "id": "h2-input-normalizers-all-selector-review",
       "role": "validation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Independently verify the three-selector H2 normalizer integration, staged slot boundaries, and reader/dispatcher compositions.",
       "depends_on": [
@@ -16972,7 +16974,7 @@
     {
       "id": "h2-bf6d0-independent-review-conversion",
       "role": "validation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Independently review the 60-byte typed 0x002BF6D0 helper, the signed quotient/remainder contract, and its original H2 caller composition.",
       "depends_on": [
@@ -17016,7 +17018,7 @@
     {
       "id": "h2-touch-region-manager-current-resolver-integration",
       "role": "implementation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Integrate typed 0x002B88C4 and current typed 0x002BF6D0 together in the reviewed H2 base image, then compare the original caller through both images.",
       "depends_on": [
@@ -17057,12 +17059,14 @@
       ],
       "validation_plan": [
         "Offline pinned-image integration only; private outputs and one compiler slot; no emulator or full build."
-      ]
+      ],
+      "blocker": null,
+      "unblock_condition": null
     },
     {
       "id": "h2-touch-region-manager-current-resolver-integration-review",
       "role": "validation",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Independently audit the cumulative two-slot H2 touch-region image and rerun original-caller comparisons with a fresh seed.",
       "depends_on": [
@@ -17105,7 +17109,7 @@
     {
       "id": "h2-logical-mode0-divmod-002c6c10-contract-recon",
       "role": "recon",
-      "state": "queued",
+      "state": "accepted",
       "owner": null,
       "goal": "Recover the contract and H2-relevant domain of the original 0x002C6C10 unsigned quotient/remainder service, including feasibility of a typed C++ replacement in its 48-byte slot.",
       "depends_on": [

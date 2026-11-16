@@ -20,31 +20,29 @@ extern "C" void ui_func_0026330c(float* output, u32 index, u32 context,
                                   const float* input);
 
 extern "C" __attribute__((minsize)) float ui_func_00207d84() {
+    struct Vec4Words {
+        u32 x;
+        u32 y;
+        u32 z;
+        u32 w;
+    };
     constexpr u32 kVectorAddress = 0x004EA91Cu;
     constexpr u32 kScratchAddress = 0x00472550u;
-    auto* const vector = reinterpret_cast<volatile u32*>(kVectorAddress);
-    auto* const scratch = reinterpret_cast<volatile u32*>(kScratchAddress);
+    auto* const vector = reinterpret_cast<Vec4Words*>(kVectorAddress);
+    auto* const scratch = reinterpret_cast<Vec4Words*>(kScratchAddress);
     const u32 context = ui_func_002c5218();
 
-    for (u32 word = 0; word < 4; ++word) {
-        scratch[word] = vector[word];
-    }
+    const Vec4Words input = *vector;
+    *scratch = input;
 
-    alignas(8) u32 frame[8];
-    auto* const input_words = reinterpret_cast<volatile u32*>(frame + 4);
-    input_words[0] = scratch[0];
-    input_words[1] = scratch[1];
-    input_words[2] = scratch[2];
+    Vec4Words output;
+    const u32 input_xyz[3] = {input.x, input.y, input.z};
+    ui_func_0026330c(reinterpret_cast<float*>(&output), 0, context,
+                     reinterpret_cast<const float*>(input_xyz));
+    output.w = 0;
+    *vector = output;
 
-    ui_func_0026330c(reinterpret_cast<float*>(frame), 0, context,
-                     reinterpret_cast<const float*>(frame + 4));
-    frame[3] = 0;
-    vector[0] = frame[0];
-    vector[1] = frame[1];
-    vector[2] = frame[2];
-    vector[3] = frame[3];
-
-    return return_vector_r0(kVectorAddress, *reinterpret_cast<float*>(&frame[2]));
+    return return_vector_r0(kVectorAddress, *reinterpret_cast<const float*>(&output.z));
 }
 
 // DECOMP_FUNC(0x0020e9ac, 152)

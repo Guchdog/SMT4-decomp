@@ -9,11 +9,11 @@ The original `0x002B88C4` entry was run on the run-013 base and two-slot image f
 ## Reproduction and artifacts
 
 ```powershell
-python tools/h2_b88c4_bf6d0_staged_image.py --output build/agent-work/H2-semantic/h2-touch-region-manager-current-resolver-integration/run001/staging
-python tools/h2_b88c4_bf6d0_staged_validation.py --base build/agent-work/H2-semantic/h2-init-ready-final-image/run-013/combined-build-final/code.combined.bin --staged build/agent-work/H2-semantic/h2-touch-region-manager-current-resolver-integration/run001/staging/code.h2-touch-region-bf6d0.bin --manifest build/agent-work/H2-semantic/h2-touch-region-manager-current-resolver-integration/run001/staging/manifest.json --out build/agent-work/H2-semantic/h2-touch-region-manager-current-resolver-integration/run001/checks/caller-seed-20261119 --seed 20261119
+python tools/h2_b88c4_bf6d0_staged_image.py --output build/agent-work/H2-semantic/h2-touch-region-manager-current-resolver-integration/run-001/staging
+python tools/h2_b88c4_bf6d0_staged_validation.py --base build/agent-work/H2-semantic/h2-init-ready-final-image/run-013/combined-build-final/code.combined.bin --staged build/agent-work/H2-semantic/h2-touch-region-manager-current-resolver-integration/run-001/staging/code.h2-touch-region-bf6d0.bin --manifest build/agent-work/H2-semantic/h2-touch-region-manager-current-resolver-integration/run-001/staging/manifest.json --out build/agent-work/H2-semantic/h2-touch-region-manager-current-resolver-integration/run-001/checks/caller-seed-20261119 --seed 20261119
 ```
 
-Base SHA-256: `7b2bc2983a890e1c4cf1ae71beca9f574260d98d6cfcdffb3bbb34bd3eb2b291`. Staged image SHA-256: `e643173a604c331e6b333086d7df227ec9a684baa92e91b476851b433d1bb369`. IPS SHA-256: `1204c568d38245efbb93bb7e12252019a27a8e7156fb574948f71204a1a6e280`. Validation report SHA-256: `5bcfb15a4c4b05ad0901f995824884c44ed9a26fafd2316ca36616e7e4a0f524`.
+Base SHA-256: `7b2bc2983a890e1c4cf1ae71beca9f574260d98d6cfcdffb3bbb34bd3eb2b291`. Staged image SHA-256: `e643173a604c331e6b333086d7df227ec9a684baa92e91b476851b433d1bb369`. IPS SHA-256: `1204c568d38245efbb93bb7e12252019a27a8e7156fb574948f71204a1a6e280`. Manifest SHA-256: `e093fe639466c442a915a5f9edd9c87a17b6284cb96eb41f579255a3b0d00bfc`. Validation report SHA-256: `e282552adfec510bc6c7a52b20f1ec866c4edcb730f26c3062ff0002731c0e67`.
 
 ## Limits
 

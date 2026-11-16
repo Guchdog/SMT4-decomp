@@ -1,29 +1,41 @@
-# Independent review: alias-aware `0x002AF854`
+# Independent Review: `0x002AF854` (`battle_func_002af854`) Alias-Aware Ordering & Caller Composition
 
-## Scope and frozen evidence
+## Verdict
 
-Read-only review of the alias-coverage packet, production/candidate sources, runner, function record, original pinned function and preserved output. All `input_sha256` entries in run-001 match. Reference `code.bin` SHA-256 is `1f98884fe997af22e032a14c51a46c872b05b0e079a0f29e307b0e059cfaa558`; preserved output SHA-256 is `d155919fa8b23b2f6be5c099cbb4bddf1999bd3508b3715bd193f2d04d5b86a7`. I inspected the runner output and existing objects but did not independently rerun either build or differential.
+**Disposition:** **Accept** the alias-aware `battle_func_002af854` production body (`src/engine/leaf_batch13_a.cpp:119-135`) and its offline differential, alias-ordering control, and `0x002B8D24` index-2 caller-composition evidence. **Yes**, it supports `0x002B8D24`'s documented ordinary-RAM domain (valid aligned writable subobjects and mapped list arrays without pointer wraparound).
 
-## Ordering counterexample and volatile scope
+This review does not claim thread synchronization, MMIO semantics, arbitrary unmapped-pointer fault parity, or live Azahar runtime equivalence.
 
-The pinned ARM sequence loads the list pointer, checks null, stores halfword `index` at `object+0x5C`, clears halfword `+0x5E`, clears bytes `+0x87` and `+0x8A`, stores the low byte of `mode` at `+0x60`, then loads the selected word and stores it at `+0x20`. The production C++ uses volatile for exactly those five pre-read stores and the selected word load. It leaves the initial pointer load and final value-dependent store ordinary. Source and compiled order therefore preserve the original read-after-write behavior while keeping volatile limited to the events that can overlap the list read.
+## 1. Independent Disassembly & Volatile Ordering Verification
 
-The strongest demonstrated counterexample is `list == object+0x5C`, `index=0`, `mode=0`: the ARM code first writes zero to the low halfword at `+0x5C`, then reads the selected word from the same address, so the selected value is zero. The runner's all-nonvolatile ordering mutant is uniquely generated and must produce a different selected word for this fixture; this directly demonstrates why the ordered accesses need a compiler-visible sequencing constraint. The other tested list bases are `object+0x20`, `+0x58`, `+0x60`, and `+0x84`. Across those five bases, seeds 0, 17 and 4729 and modes 0, 1, `0x100` and `0xffffffff` produce 60 alias cases, all with index 0. The mode cases correctly distinguish full-word nonzero mode from the low byte stored at `+0x60`.
+Inspected `extracted/exefs/code.bin` (`1f98884fe997af22e032a14c51a46c872b05b0e079a0f29e307b0e059cfaa558`) at `0x002AF854..0x002AF894` (64 bytes) and compared against the compiled 64-byte bodies in:
+- `build/agent-work/H2-semantic/h2-helper-002af854-alias-coverage/001/production/engine/leaf_batch13_a.o` (`battle_func_002af854`, SHA-256 `06a038ddcec0acffbf0b49de94125217bb06eb0ed9256ebeb8e6a3127021e162`)
+- `build/agent-work/H2-semantic/h2-helper-002af854-alias-caller-coverage/001/candidate.o` (`candidate_002af854`, SHA-256 `516c5aed72c5738989545c9a83a9897be7c4358fa907df34954c81e76326d19d`)
 
-This volatile use does not supply thread synchronization, MMIO guarantees, invalid-memory/fault equivalence, or C++ object-lifetime/type-alias guarantees for overlapping typed views. The available ARMv6K O2 object and Unicorn evidence demonstrate this compiler's target behavior for the tested ordinary-RAM fixtures; they do not establish portable host semantics for arbitrary overlapping C++ subobjects.
+- **Candidate/production identity**: Both 64-byte machine-code bodies are byte-for-byte identical (`0` relocations).
+- **Alias counterexample & exact volatile ordering**: Without `volatile`, the compiler can hoist the list-element load ahead of the object stores; for `list = object + 0x5c`, `index = 0`, `mode = 0`, that reads stale memory instead of the newly written `((uint32_t)0 << 16) | (uint16_t)index`. Using `volatile` on the five stores (`+0x5c`, `+0x5e`, `+0x87`, `+0x8a`, `+0x60`) and the selected-word load (`entry + (mode != 0 ? 4 : 0)`) produces the exact same 10-step memory-event sequence as the original:
+  1. `ldr ip, [r0, #0x58]` (if `0`, `bxeq lr`)
+  2. `strh r1, [r0, #0x5c]`
+  3. `strh r1, [r0, #0x5e]` (`r1 = 0`)
+  4. `strb r1, [r0, #0x87]`
+  5. `strb r1, [r0, #0x8a]`
+  6. `strb r2, [r0, #0x60]`
+  7. `ldr r1, [r3]` (`r3 = ip + index * 12 + (mode != 0 ? 4 : 0)`)
+  8. `str r1, [r0, #0x20]`
+- **Mutated nonvolatile control**: `tools/h2_af854_experiment.py:181-187` strips `volatile` from those six accesses and confirms `order_ref != order_got` and a different `+0x20` selected word on `(seed=0, is_null=False, index=0, mode=0, alias=0x5c)`.
 
-## Object identity and test review
+## 2. Exact Tested Alias Set & Caller Evidence
 
-I independently extracted `candidate_002af854` from candidate object SHA-256 `516c5aed72c5738989545c9a83a9897be7c4358fa907df34954c81e76326d19d` and `battle_func_002af854` from production object SHA-256 `06a038ddcec0acffbf0b49de94125217bb06eb0ed9256ebeb8e6a3127021e162`. Both are 64 bytes, have no function relocations, and their bytes are identical. The original ARM body is also 64 bytes; candidate/production are intentionally `non_matching` relative to it.
+Inspected `tools/h2_af854_experiment.py` (SHA-256 `567daa627d1dfb373d20b8ad63b0f3d0bb9c07f719437ef98d9ea5bef6ee10c1`) and `build/agent-work/H2-semantic/h2-helper-002af854-alias-caller-coverage/001/offline-output.txt`:
 
-The preserved runner reports 431/431 direct cases, 32/32 compositions through original `0x002B8D24` index 2 with two asserted calls, four standard mutants and the selected-word ordering control detected. The direct comparison observes raw `r0`, SP, `r4-r11`, object/list bytes and ordered writes. The direct alias matrix is narrow and reproducible; the wrapper composition uses disjoint external lists. The standard controls detect null-path inversion, mode selection, stride and return changes. The ordering mutant strips the volatile qualifiers and asserts both a behavioral mismatch and a changed selected word for `list=object+0x5C`, index 0, mode 0.
+- **503/503 direct cases** (original vs candidate vs production), including **132 alias overlaps**:
+  - **60 index-0 cases**: seeds `{0, 17, 4729}` x offsets `{+0x20, +0x58, +0x5c, +0x60, +0x84}` x modes `{0, 1, 0x100, 0xffffffff}`.
+  - **72 index-2 and index-5 cases**: seeds `{0, 17, 4729}` x indices `{2, 5}` x selected-word offsets `{+0x5c, +0x60, +0x84}` x modes `{0, 1, 0x100, 0xffffffff}` (`list = object + selected_offset - index * 12`).
+- **4/4 functional mutants + alias-order mutant detected**: `null`, `selection`, `index`, `return`, and `mutant_order`.
+- **0x002B8D24 index-2 caller composition**: `32` disjoint + `32` cross-alias seeds (`obj+0xc4+0x58 -> obj+0x1dc+0x5c-24`, `obj+0x1dc+0x58 -> obj+0xc4+0x5c-24`), asserting both callee entry tuples `[(obj+0xc4, 2, 0), (obj+0x1dc, 2, 0)]`, matching `r0`, `SP`, `r4-r11`, `0x500`-byte object, `list1`/`list2`, ordered `writes`, and `*(obj+0x1dc+0x20) == 2` in cross-alias mode.
 
-The raw ABI is three AAPCS words: object pointer, full 32-bit index, full 32-bit mode; raw return is the original object pointer. The runner exercises indices 0, 1, 2, 7, 19 and 127 plus seeded values below 128, and null list; it does not exercise wrapping indices, invalid pointers or every possible alias. Existing cross-TU legacy `void` declarations remain a separate ABI/type-consistency concern.
+## 3. ABI & Domain Limitations
 
-## Relation to `0x002B8D24`
-
-The implementation now emits its ordered stores before its volatile selected load for any ordinary mapped address chosen by the list pointer; that source structure could preserve index-2/index-5 alias reads as well. The existing evidence, however, tests aliases only at index 0. `0x002B8D24` calls this helper with index 2 in its common cases and index 5 in case 12; its 32 caller compositions use disjoint lists. Thus the *measured supported alias set* does not yet establish that the documented `0x002B8D24` domain has widened.
-
-For a concrete index-2 overlap, list base `subobject+0x44` makes the selected word `subobject+0x5C`, which the helper writes before reading it. For an index-5 overlap, list base `subobject+0x20` makes the selected word `subobject+0x5C`. Add these and other relevant offset-derived aliases through the real index-2/index-5 caller paths, including any cross-alias between the two sequential subobject calls, before removing the alias limitation from the `0x002B8D24` record. The C++ ordering appears designed to handle them, but those cases and their support domain have not been demonstrated yet.
-
-Conclusion: the focused alias-aware `0x002AF854` change is sound for the tested fixtures, and the selected use of volatile is justified by the instruction order and detected nonvolatile control. It strengthens the helper's implementation-level alias handling but does not yet provide caller-specific index-2/index-5 evidence to widen `0x002B8D24`'s supported domain. Runtime, cumulative integration, invalid-memory, concurrency/MMIO, and portable object-model claims remain open.
+- Touches `r0-r3, ip` only; no stack frame, no VFP/NEON instructions, preserves `r4-r11` and `SP` (`d8-d15` not explicitly sampled by `run_direct`/`run_real_caller`, though absent from disassembly).
+- `src/engine/leaf_batch13_a.cpp:119` uses `uint8_t* battle_func_002af854(uint8_t*, uint32_t, uint32_t)`, whereas `docs/function-records/0x002af854.md:11` notes legacy `void` declarations in other TUs; cross-TU declaration cleanup/LTO remains separate.
+- Tested domain assumes valid aligned writable ordinary RAM and non-overflowing `index * 12`; concurrency, MMIO, invalid-pointer faults, and live Azahar execution remain outside scope.
