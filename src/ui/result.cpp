@@ -13,106 +13,86 @@ extern "C" {
 namespace smt4::ui {
 
 ResultManager g_ResultManager = {nullptr};
+extern "C" {
+    void  CommonBg_func_00289b4c(void* work);                                                     // 0x00289b4c
+    void* engine_func_002c4b84(u32 size_a, u32 size_b, u32 unk2, u32 struct_size, u32 count);     // 0x002c4b84
+    void* engine_func_002c5978(const char* name, s32 tag, u32 unk2, u32 unk3, const void* calc_fn, const void* dtor_fn, void* work); // 0x002c5978
+    void* camp_func_002c4c00(const char* name, s32 tag, u32 unk2, u32 unk3, const void* calc_fn, const void* dtor_fn, void* work, void* parent_work); // 0x002c4c00
+    void  ui_func_003b7d78(void* work);                                                           // 0x003b7d78
+    void  script_vm_func_00296a18(void* ctx, u32 state);                                          // 0x00296a18
+}
+
+void Result_Calc(void*);
+void Result_DrawUp(void*);
+void Result_DrawDown(void*);
+void func_001c8874(void*);
+
 // DECOMP_FUNC(0x0029bc38, 368)
+void Result_Init(s32 mode) {
+    static constexpr u32 kAllocSize = 0x100;
+    static constexpr u32 kWorkSize = 0xD658;
+    static constexpr s32 kCalcTag = 2;
+    static constexpr s32 kDrawUpLeftTag = 0x80;
+    static constexpr s32 kDrawUpRightTag = 0xDE;
+    static constexpr s32 kDrawDownTag = 0xE6;
+    static constexpr u32 kCalcTaskOffset = 0xD644;
+    static constexpr u32 kDdrawTaskOffset = 0xD64C;
+    static constexpr u32 kModeOffset = 0x3560;
 
+    if (g_ResultManager.work != nullptr) {
+        return;
+    }
 
-//
-__attribute__((naked)) void Result_Init(s32 mode) {
-    __asm__ volatile(
-        ".word 0xe92d41f0\n"
-        ".word 0xe1a06000\n"
-        ".word 0xe24dd010\n"
-        ".word 0xe59f4124\n"
-        ".word 0xe5940000\n"
-        ".word 0xe3500000\n"
-        ".word 0x1a000044\n"
-        ".word 0xebffb7bc\n"
-        ".word 0xe59f1114\n"
-        ".word 0xe59f0114\n"
-        ".word 0xe1a00000\n"
-        ".word 0xe3a00001\n"
-        ".word 0xe3a01c01\n"
-        ".word 0xe58d0000\n"
-        ".word 0xe59f3104\n"
-        ".word 0xe3a02000\n"
-        ".word 0xe1a00001\n"
-        ".word 0xeb00a3c0\n"
-        ".word 0xe59f20fc\n"
-        ".word 0xe5840000\n"
-        ".word 0xe59f10f0\n"
-        ".word 0xe3a07000\n"
-        ".word 0xe1a04000\n"
-        ".word 0xe28d0004\n"
-        ".word 0xe58d2000\n"
-        ".word 0xe8800082\n"
-        ".word 0xe1a03007\n"
-        ".word 0xe59f00dc\n"
-        ".word 0xe1a02007\n"
-        ".word 0xe3a01002\n"
-        ".word 0xeb00a730\n"
-        ".word 0xe2845b35\n"
-        ".word 0xe2855f91\n"
-        ".word 0xe59f80c8\n"
-        ".word 0xe5850000\n"
-        ".word 0xe3a03000\n"
-        ".word 0xe58d000c\n"
-        ".word 0xe59f00bc\n"
-        ".word 0xe1a02003\n"
-        ".word 0xe3a01080\n"
-        ".word 0xe58d7004\n"
-        ".word 0xe58d8000\n"
-        ".word 0xe58d7008\n"
-        ".word 0xeb00a3c5\n"
-        ".word 0xe5950000\n"
-        ".word 0xe3a03000\n"
-        ".word 0xe1a02003\n"
-        ".word 0xe58d000c\n"
-        ".word 0xe59f0094\n"
-        ".word 0xe3a010de\n"
-        ".word 0xe58d7004\n"
-        ".word 0xe58d8000\n"
-        ".word 0xe58d7008\n"
-        ".word 0xeb00a3bb\n"
-        ".word 0xe59f1080\n"
-        ".word 0xe5950000\n"
-        ".word 0xe3a03000\n"
-        ".word 0xe88d0082\n"
-        ".word 0xe58d000c\n"
-        ".word 0xe59f0070\n"
-        ".word 0xe1a02003\n"
-        ".word 0xe3a010e6\n"
-        ".word 0xe58d7008\n"
-        ".word 0xeb00a3b1\n"
-        ".word 0xe1a01000\n"
-        ".word 0xe59f005c\n"
-        ".word 0xe7801004\n"
-        ".word 0xe1a00004\n"
-        ".word 0xeb04700a\n"
-        ".word 0xe59f0050\n"
-        ".word 0xe3a01001\n"
-        ".word 0xe7c06004\n"
-        ".word 0xe28dd010\n"
-        ".word 0xe1a00004\n"
-        ".word 0xe8bd41f0\n"
-        ".word 0xeaffeb2b\n"
-        ".word 0xe28dd010\n"
-        ".word 0xe8bd81f0\n"
-        // Literal pool at 0x0029bd78.
-        ".word 0x0044dc20\n"
-        ".word 0x00001264\n"
-        ".word 0x00405eec\n"
-        ".word 0x0000d658\n"
-        ".word 0x001c87d8\n"
-        ".word 0x0018bfec\n"
-        ".word 0x00405ee0\n"
-        ".word 0x001a15b0\n"
-        ".word 0x00405ecc\n"
-        ".word 0x00405eb8\n"
-        ".word 0x001c8874\n"
-        ".word 0x00405ea8\n"
-        ".word 0x0000d64c\n"
-        ".word 0x00003560\n"
-    );
+    CommonBg_func_00289b4c(nullptr);
+
+    u8* const work = static_cast<u8*>(
+        engine_func_002c4b84(kAllocSize, kAllocSize, 0, kWorkSize, 1));
+    g_ResultManager.work = reinterpret_cast<ResultWork*>(work);
+
+    void* const calc_task = engine_func_002c5978(
+        "Result CALC",
+        kCalcTag,
+        0,
+        0,
+        reinterpret_cast<const void*>(&Result_Calc),
+        reinterpret_cast<const void*>(&Result_DrawDown),
+        nullptr);
+    *reinterpret_cast<void**>(work + kCalcTaskOffset) = calc_task;
+
+    camp_func_002c4c00(
+        "Result DrawUpLeft",
+        kDrawUpLeftTag,
+        0,
+        0,
+        reinterpret_cast<const void*>(&Result_DrawUp),
+        nullptr,
+        nullptr,
+        calc_task);
+
+    camp_func_002c4c00(
+        "Result DrawUpRight",
+        kDrawUpRightTag,
+        0,
+        0,
+        reinterpret_cast<const void*>(&Result_DrawUp),
+        nullptr,
+        nullptr,
+        calc_task);
+
+    *reinterpret_cast<void**>(work + kDdrawTaskOffset) = camp_func_002c4c00(
+        "Result DDRAW",
+        kDrawDownTag,
+        0,
+        0,
+        reinterpret_cast<const void*>(&func_001c8874),
+        nullptr,
+        nullptr,
+        calc_task);
+
+    ui_func_003b7d78(work);
+    work[kModeOffset] = static_cast<u8>(mode);
+
+    script_vm_func_00296a18(work, 1);
 }
 
 #if 0 // Unverified behavioral sketch; not byte-equivalent.

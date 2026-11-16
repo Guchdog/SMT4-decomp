@@ -4945,7 +4945,7 @@ address,size,status,category,name,src_file
 0x0029bb8c,144,matching,ui,ui_func_0029bb8c,src/engine/leaf_batch14_b.cpp
 0x0029bc1c,20,matching,camp,camp_func_0029bc1c,src/engine/leaf_batch21_b.cpp
 0x0029bc30,8,matching,script_vm,script_vm_func_0029bc30,src/engine/leaf_batch36_a.cpp
-0x0029bc38,368,matching,ui,Result_Init,src/ui/result.cpp
+0x0029bc38,368,non_matching,ui,Result_Init,src/ui/result.cpp
 0x0029bda8,12,matching,ui,ui_func_0029bda8,src/engine/leaf_batch38_a.cpp
 0x0029bdb4,40,matching,ui,ui_func_0029bdb4,src/engine/leaf_batch15_b.cpp
 0x0029bddc,140,non_matching,engine,engine_func_0029bddc,src/engine/leaf_batch30_c.cpp
