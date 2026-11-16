@@ -1721,123 +1721,65 @@ __attribute__((naked)) void btlEditor_func_001f7f00(BtlEditorWork*) {
         ".word 0x004342C8\n"
         ".word 0x00439CA8\n");
 }
+extern "C" {
+    void* camp_func_002c4c00(const char* name, s32 tag, u32 unk2, u32 unk3, const void* calc_fn, const void* dtor_fn, void* work, void* parent_work); // 0x002c4c00
+    void* engine_func_002c4b84(u32 size_a, u32 size_b, u32 unk2, u32 struct_size, u32 count); // 0x002c4b84
+    void  func_0020edb0();                                                                    // 0x0020edb0
+    void  func_002e0640();                                                                    // 0x002e0640
+    void  func_002c9fdc();                                                                    // 0x002c9fdc
+    extern BtlGameOverState* g_pBtlGameOverState_00435d60;                                    // 0x00435d60
+}
+
 // DECOMP_FUNC(0x0021ae48, 428)
+void btlGameOver_func_0021ae48(BtlGameOverWork* work) {
+    static constexpr s32 kCalcTag = 2;
+    static constexpr s32 kDrawUpLeftTag = 0x7A;
+    static constexpr s32 kDrawUpRightTag = 0xD8;
+    static constexpr u32 kAllocSize = 0x100;
+    static constexpr u32 kStateSize = sizeof(BtlGameOverState);
+    static constexpr u32 kSaveFlagOffset = 0x24B29;
+    static constexpr u32 kEventBitId = 0x557;
 
+    work->calc_task = camp_func_002c4c00(
+        "btlGameOver Calc",
+        kCalcTag,
+        0,
+        0,
+        reinterpret_cast<const void*>(&func_0020edb0),
+        reinterpret_cast<const void*>(&func_002e0640),
+        work,
+        work->parent);
 
-// ---------------------------------------------------------------------------
-// btlGameOver.cpp
-// ---------------------------------------------------------------------------
+    camp_func_002c4c00(
+        "btlGameOver DrawUpLeft",
+        kDrawUpLeftTag,
+        0,
+        0,
+        reinterpret_cast<const void*>(&func_002c9fdc),
+        nullptr,
+        work,
+        work->calc_task);
 
-//
-__attribute__((naked)) void btlGameOver_func_0021ae48(BtlGameOverWork*) {
-    asm volatile(
-        ".word 0xE92D4070\n"
-        ".word 0xE24DD010\n"
-        ".word 0xE1A04000\n"
-        ".word 0xE5900000\n"
-        ".word 0xE59F2104\n"
-        ".word 0xE59F10FC\n"
-        ".word 0xE28D5004\n"
-        ".word 0xE58D2000\n"
-        ".word 0xE58D000C\n"
-        ".word 0xE3A03000\n"
-        ".word 0xE8850012\n"
-        ".word 0xE1A02003\n"
-        ".word 0xE3A01002\n"
-        ".word 0xE28F00E4\n"
-        ".word 0xEB02A75E\n" // AsdTask_CreateDraw (0x002C4C00)
-        ".word 0xE584002C\n"
-        ".word 0xE59F60EC\n"
-        ".word 0xE3A05000\n"
-        ".word 0xE58D000C\n"
-        ".word 0xE1A03005\n"
-        ".word 0xE1A02005\n"
-        ".word 0xE3A0107A\n"
-        ".word 0xE28F00D8\n"
-        ".word 0xE58D5004\n"
-        ".word 0xE58D4008\n"
-        ".word 0xE58D6000\n"
-        ".word 0xEB02A752\n" // AsdTask_CreateDraw (0x002C4C00)
-        ".word 0xE594002C\n"
-        ".word 0xE3A03000\n"
-        ".word 0xE1A02003\n"
-        ".word 0xE58D000C\n"
-        ".word 0xE3A010D8\n"
-        ".word 0xE28F00C8\n"
-        ".word 0xE58D4008\n"
-        ".word 0xE58D5004\n"
-        ".word 0xE58D6000\n"
-        ".word 0xEB02A748\n" // AsdTask_CreateDraw (0x002C4C00)
-        ".word 0xE59F10CC\n"
-        ".word 0xE28F00CC\n"
-        ".word 0xE1A00000\n"
-        ".word 0xE3A00001\n"
-        ".word 0xE3A01C01\n"
-        ".word 0xE58D0000\n"
-        ".word 0xE3A03040\n"
-        ".word 0xE3A02000\n"
-        ".word 0xE1A00001\n"
-        ".word 0xEB02A71F\n" // AsdMem_Alloc (0x002C4B84)
-        ".word 0xE59F10DC\n"
-        ".word 0xE1A05000\n"
-        ".word 0xE5810000\n"
-        ".word 0xEB02971F\n" // Save_GetGameOverStateIndex (0x002C0B94)
-        ".word 0xE59F10D0\n"
-        ".word 0xE0400001\n"
-        ".word 0xE5D00000\n"
-        ".word 0xE3500000\n"
-        ".word 0x0A00000B\n"
-        ".word 0xE59F00C0\n"
-        ".word 0xEB02971D\n" // Flag_CheckEventBit (0x002C0BA8)
-        ".word 0xE3500000\n"
-        ".word 0x1A000007\n"
-        ".word 0xE5950004\n"
-        ".word 0xE2841901\n"
-        ".word 0xE2811E4A\n"
-        ".word 0xE3800001\n"
-        ".word 0xE5850004\n"
-        ".word 0xE5912000\n"
-        ".word 0xE3822102\n"
-        ".word 0xE5812000\n"
-        ".word 0xE28DD010\n"
-        ".word 0xE8BD8070\n"
-        ".word 0x002E0640\n"
-        ".word 0x0020EDB0\n"
-        ".word 0x476C7462\n"
-        ".word 0x4F656D61\n"
-        ".word 0x20726576\n"
-        ".word 0x636C6143\n"
-        ".word 0x00000000\n"
-        ".word 0x002C9FDC\n"
-        ".word 0x476C7462\n"
-        ".word 0x4F656D61\n"
-        ".word 0x20726576\n"
-        ".word 0x77617244\n"
-        ".word 0x654C7055\n"
-        ".word 0x00007466\n"
-        ".word 0x476C7462\n"
-        ".word 0x4F656D61\n"
-        ".word 0x20726576\n"
-        ".word 0x77617244\n"
-        ".word 0x69527055\n"
-        ".word 0x00746867\n"
-        ".word 0x0000039D\n"
-        ".word 0x535C3A63\n"
-        ".word 0x5C34544D\n"
-        ".word 0x36445258\n"
-        ".word 0x735C3638\n"
-        ".word 0x34736464\n"
-        ".word 0x6F72705C\n"
-        ".word 0x6D617267\n"
-        ".word 0x7461625C\n"
-        ".word 0x5C656C74\n"
-        ".word 0x476C7462\n"
-        ".word 0x4F656D61\n"
-        ".word 0x2E726576\n"
-        ".word 0x00707063\n"
-        ".word 0x00435D60\n"
-        ".word 0xFFFDB4D7\n"
-        ".word 0x00000557\n");
+    camp_func_002c4c00(
+        "btlGameOver DrawUpRight",
+        kDrawUpRightTag,
+        0,
+        0,
+        reinterpret_cast<const void*>(&func_002c9fdc),
+        nullptr,
+        work,
+        work->calc_task);
+
+    BtlGameOverState* const state = static_cast<BtlGameOverState*>(
+        engine_func_002c4b84(kAllocSize, kAllocSize, 0, kStateSize, 1));
+    g_pBtlGameOverState_00435d60 = state;
+
+    const u8* const save_base = reinterpret_cast<const u8*>(
+        static_cast<uintptr_t>(Save_GetGameOverStateIndex()));
+    if (save_base[kSaveFlagOffset] != 0 && !Flag_CheckEventBit(kEventBitId)) {
+        state->field_04 |= 1u;
+        work->flags |= 0x80000000u;
+    }
 }
 
 } // namespace smt4::battle

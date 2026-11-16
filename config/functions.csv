@@ -2967,7 +2967,7 @@ address,size,status,category,name,src_file
 0x0021ac44,208,matching,unknown,func_0021ac44,src/engine/leaf_batch35_b.cpp
 0x0021ad14,48,matching,unknown,func_0021ad14,src/engine/leaf_batch35_a.cpp
 0x0021ad44,260,matching,battle,btlAIScript_func_0021ad44,src/engine/leaf_batch44_b.cpp
-0x0021ae48,428,matching,battle,btlGameOver_func_0021ae48,src/battle/battle_extras.cpp
+0x0021ae48,428,non_matching,battle,btlGameOver_func_0021ae48,src/battle/battle_extras.cpp
 0x0021aff4,508,matching,engine,engine_func_0021aff4,src/engine/leaf_batch42_b.cpp
 0x0021b1f0,2056,matching,script_vm,script_vm_func_0021b1f0,src/engine/leaf_batch46_b.cpp
 0x0021b9f8,272,matching,script_vm,script_vm_func_0021b9f8,src/engine/leaf_batch40_b.cpp
