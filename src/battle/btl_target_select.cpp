@@ -96,20 +96,70 @@ void btlTargetSelect_Calc(void* task_ctx) {
 void eventView_DrawUp(void*) {
 }
 
+extern "C" {
+    void script_vm_func_002bef14();                 // 0x002bef14
+    void ui_func_002c3ba8(void* gpu_state);         // 0x002c3ba8
+    u32  ui_func_002c5f7c(s32 mode, s32 sub_mode);  // 0x002c5f7c
+    void ui_func_002bf460(s32 type, s32 id, s32 sub_id, s32 x, s32 y, s32 flag); // 0x002bf460
+    void ui_func_002bf710(f32 alpha);               // 0x002bf710
+    extern const u8* g_StaffRollEntryTable;         // 0x00432cc8
+    extern u8* g_AsdGpuState;                       // 0x0044ea00
+}
+
 // DECOMP_FUNC(0x002e07ac, 296)
-__attribute__((naked)) void StaffRoll_U_UR_Draw(void*) {
-    asm volatile(
-        ".word 0xE59F0114, 0xE92D41F0, 0xE24DD008, 0xE5905000, 0xEBFF79D4, 0xE59F6104, 0xE5960000, 0xEBFF8CF6\n"
-        ".word 0xE5964000, 0xE3A01000, 0xE3A00001, 0xEBFF95E7, 0xE2844A01, 0xE2844F93, 0xE3A07000, 0xE5941000\n"
-        ".word 0xE0842101, 0xE2811001, 0xE5922008, 0xE0843101, 0xE5841000, 0xE5830008, 0xE5D41018, 0xE3510000\n"
-        ".word 0x01520000, 0x0A000002, 0xE594101C, 0xE12FFF31, 0xE5C47018, 0xE3A04000, 0xE3A08002, 0xE0850184\n"
-        ".word 0xE3A01034, 0xED900A03, 0xEDD00A02, 0xE3A00FFA, 0xEEBD0AC0, 0xEEFD0AE0, 0xE0020094, 0xE3A00002\n"
-        ".word 0xED8D0A00, 0xEE103A90, 0xE58D8004, 0xEBFF7B00, 0xE2844001, 0xE354000C, 0x3AFFFFEF, 0xEBFF79A9\n"
-        ".word 0xED9F0A17, 0xE320F000, 0xEBFF7BA5, 0xE5960000, 0xE2804A01, 0xE2844F93, 0xE5940000, 0xE0841100\n"
-        ".word 0xE2400001, 0xE5911008, 0xE5840000, 0xE0840100, 0xE5D42018, 0xE5900008, 0xE3520000, 0x01510000\n"
-        ".word 0x0A000002, 0xE594101C, 0xE12FFF31, 0xE5C47018, 0xE28DD008, 0xE3A00000, 0xE8BD81F0, 0x00432CC8\n"
-        ".word 0x0044EA00, 0x3F800000\n"
-    );
+void StaffRoll_U_UR_Draw(void*) {
+    static constexpr u32 kGpuStackOffset = 0x124C;
+    static constexpr u32 kEntryCount = 12;
+    static constexpr s32 kPanelType = 2;
+    static constexpr s32 kPanelId = 0x34;
+    static constexpr s32 kSubIdStep = 1000;
+    static constexpr s32 kPanelFlag = 2;
+
+    const u8* const entries = g_StaffRollEntryTable;
+    script_vm_func_002bef14();
+
+    ui_func_002c3ba8(g_AsdGpuState);
+    const u32 val = ui_func_002c5f7c(1, 0);
+
+    u8* const stack = g_AsdGpuState + kGpuStackOffset;
+    u32 count = *reinterpret_cast<u32*>(stack);
+    const u32 prev = *reinterpret_cast<const u32*>(stack + 8 + count * 4);
+    ++count;
+    *reinterpret_cast<u32*>(stack) = count;
+    *reinterpret_cast<u32*>(stack + 8 + count * 4) = val;
+    if (stack[0x18] != 0 || prev != val) {
+        using FlushFn = void (*)(u32);
+        reinterpret_cast<FlushFn>(*reinterpret_cast<const uintptr_t*>(stack + 0x1C))(val);
+        stack[0x18] = 0;
+    }
+
+    for (u32 i = 0; i < kEntryCount; ++i) {
+        const u8* const entry = entries + i * 8;
+        const s32 x = static_cast<s32>(*reinterpret_cast<const f32*>(entry + 0x08));
+        const s32 y = static_cast<s32>(*reinterpret_cast<const f32*>(entry + 0x0C));
+        ui_func_002bf460(
+            kPanelType,
+            kPanelId,
+            static_cast<s32>(i * kSubIdStep),
+            x,
+            y,
+            kPanelFlag);
+    }
+
+    script_vm_func_002bef14();
+    ui_func_002bf710(1.0f);
+
+    u8* const pop_stack = g_AsdGpuState + kGpuStackOffset;
+    u32 pop_count = *reinterpret_cast<u32*>(pop_stack);
+    const u32 popped = *reinterpret_cast<const u32*>(pop_stack + 8 + pop_count * 4);
+    --pop_count;
+    *reinterpret_cast<u32*>(pop_stack) = pop_count;
+    const u32 top = *reinterpret_cast<const u32*>(pop_stack + 8 + pop_count * 4);
+    if (pop_stack[0x18] != 0 || popped != top) {
+        using FlushFn = void (*)(u32);
+        reinterpret_cast<FlushFn>(*reinterpret_cast<const uintptr_t*>(pop_stack + 0x1C))(top);
+        pop_stack[0x18] = 0;
+    }
 }
 
 // DECOMP_FUNC(0x002e08d4, 544)
