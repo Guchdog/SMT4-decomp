@@ -1574,121 +1574,86 @@ __attribute__((naked)) void InfoWin_DrawUp(void* arg) {
 }
 #endif
 
+extern "C" {
+    void engine_func_002b9220(void* sprite, u32 a1);                                        // 0x002b9220
+    s32  ui_func_002bef7c(void* sprite);                                                    // 0x002bef7c
+}
+
 // DECOMP_FUNC(0x0011b1bc, 440)
-// Boundary-verified ARM-state span; includes its PC-relative literal pool.
-__attribute__((naked)) void InfoWin_Calc(void* arg) {
-    asm volatile(
-        ".word 0xe59f01ac\n"
-        ".word 0xe92d4070\n"
-        ".word 0xe3a05000\n"
-        ".word 0xe5904000\n"
-        ".word 0xe5940008\n"
-        ".word 0xe3500006\n"
-        ".word 0x379ff100\n"
-        ".word 0xea00005f\n"
-        ".word 0x0011b35c\n"
-        ".word 0x0011b1f4\n"
-        ".word 0x0011b23c\n"
-        ".word 0x0011b288\n"
-        ".word 0x0011b2fc\n"
-        ".word 0x0011b33c\n"
-        ".word 0xe2840044\n"
-        ".word 0xeb0691fc\n"
-        ".word 0xe3500000\n"
-        ".word 0xe320f000\n"
-        ".word 0x0a000054\n"
-        ".word 0xe5d40023\n"
-        ".word 0xe3500000\n"
-        ".word 0x13a00004\n"
-        ".word 0x15840008\n"
-        ".word 0x1a000005\n"
-        ".word 0xe3a00002\n"
-        ".word 0xe1a01000\n"
-        ".word 0xe5840008\n"
-        ".word 0xe3a02000\n"
-        ".word 0xe28400d0\n"
-        ".word 0xeb068a22\n"
-        ".word 0xe584500c\n"
-        ".word 0xea000047\n"
-        ".word 0xe3a01000\n"
-        ".word 0xe28400d0\n"
-        ".word 0xeb0677f5\n"
-        ".word 0xe28400d0\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb068f49\n"
-        ".word 0xe3500000\n"
-        ".word 0xe5840018\n"
-        ".word 0xca000003\n"
-        ".word 0xe2841008\n"
-        ".word 0xe3a00003\n"
-        ".word 0xe5845018\n"
-        ".word 0xe8810021\n"
-        ".word 0xe5940018\n"
-        ".word 0xe5941014\n"
-        ".word 0xe0800001\n"
-        ".word 0xe280002a\n"
-        ".word 0xe584001c\n"
-        ".word 0xea000034\n"
-        ".word 0xe594000c\n"
-        ".word 0xe350001e\n"
-        ".word 0xda000031\n"
-        ".word 0xe5d40022\n"
-        ".word 0xe3500000\n"
-        ".word 0x0a00002e\n"
-        ".word 0xe5940018\n"
-        ".word 0xe5941014\n"
-        ".word 0xe2400001\n"
-        ".word 0xe2612000\n"
-        ".word 0xe1520000\n"
-        ".word 0xe5840018\n"
-        ".word 0xda000003\n"
-        ".word 0xe594001c\n"
-        ".word 0xe0800001\n"
-        ".word 0xe280002a\n"
-        ".word 0xe5840018\n"
-        ".word 0xe594101c\n"
-        ".word 0xe5940014\n"
-        ".word 0xe2411001\n"
-        ".word 0xe2602000\n"
-        ".word 0xe1510002\n"
-        ".word 0xe584101c\n"
-        ".word 0xaa00001c\n"
-        ".word 0xe5941018\n"
-        ".word 0xe0800001\n"
-        ".word 0xe280002a\n"
-        ".word 0xe584001c\n"
-        ".word 0xea000017\n"
-        ".word 0xe5940010\n"
-        ".word 0xe3500000\n"
-        ".word 0xa594100c\n"
-        ".word 0xa1510000\n"
-        ".word 0xda000012\n"
-        ".word 0xe3a02005\n"
-        ".word 0xe5842008\n"
-        ".word 0xe3a0101e\n"
-        ".word 0xe5841010\n"
-        ".word 0xe3a02000\n"
-        ".word 0xe3a01001\n"
-        ".word 0xe2840044\n"
-        ".word 0xeb0689e3\n"
-        ".word 0xe320f000\n"
-        ".word 0xe320f000\n"
-        ".word 0xea000007\n"
-        ".word 0xe2840044\n"
-        ".word 0xeb0691aa\n"
-        ".word 0xe3500000\n"
-        ".word 0xe320f000\n"
-        ".word 0x0a000002\n"
-        ".word 0xe5c45023\n"
-        ".word 0xe5845008\n"
-        ".word 0xe584500c\n"
-        ".word 0xe594000c\n"
-        ".word 0xe2800001\n"
-        ".word 0xe584000c\n"
-        ".word 0xe3a00000\n"
-        ".word 0xe8bd8070\n"
-        ".word 0x0043e128\n"
-    );
+void InfoWin_Calc(void*) {
+    static constexpr s32 kScrollGap = 0x2A;
+    static constexpr s32 kScrollDelayFrames = 0x1E;
+    static constexpr s32 kCloseTimer = 0x1E;
+
+    u8* const work = reinterpret_cast<u8*>(g_InfoWinWork);
+    const u32 state = *reinterpret_cast<const u32*>(work + 0x08);
+
+    switch (state) {
+    case 1:
+        if (ui_func_002bf9f0(work + 0x44) != 0) {
+            if (work[0x23] != 0) {
+                *reinterpret_cast<u32*>(work + 0x08) = 4;
+            } else {
+                *reinterpret_cast<u32*>(work + 0x08) = 2;
+                UiAnimSprite_SetMode(reinterpret_cast<UiAnimSprite*>(work + 0xD0), 2, 0);
+            }
+            *reinterpret_cast<u32*>(work + 0x0C) = 0;
+        }
+        break;
+    case 2: {
+        engine_func_002b9220(work + 0xD0, 0);
+        const s32 width = ui_func_002bef7c(work + 0xD0);
+        *reinterpret_cast<s32*>(work + 0x18) = width;
+        if (width <= 0) {
+            *reinterpret_cast<s32*>(work + 0x18) = 0;
+            *reinterpret_cast<u32*>(work + 0x08) = 3;
+            *reinterpret_cast<u32*>(work + 0x0C) = 0;
+        }
+        *reinterpret_cast<s32*>(work + 0x1C) =
+            *reinterpret_cast<const s32*>(work + 0x18) +
+            *reinterpret_cast<const s32*>(work + 0x14) +
+            kScrollGap;
+        break;
+    }
+    case 3:
+        if (*reinterpret_cast<const s32*>(work + 0x0C) > kScrollDelayFrames && work[0x22] != 0) {
+            const s32 span = *reinterpret_cast<const s32*>(work + 0x14);
+            const s32 x0 = *reinterpret_cast<const s32*>(work + 0x18) - 1;
+            *reinterpret_cast<s32*>(work + 0x18) = x0;
+            if (x0 < -span) {
+                *reinterpret_cast<s32*>(work + 0x18) =
+                    *reinterpret_cast<const s32*>(work + 0x1C) + span + kScrollGap;
+            }
+            const s32 span2 = *reinterpret_cast<const s32*>(work + 0x14);
+            const s32 x1 = *reinterpret_cast<const s32*>(work + 0x1C) - 1;
+            *reinterpret_cast<s32*>(work + 0x1C) = x1;
+            if (x1 < -span2) {
+                *reinterpret_cast<s32*>(work + 0x1C) =
+                    *reinterpret_cast<const s32*>(work + 0x18) + span2 + kScrollGap;
+            }
+        }
+        break;
+    case 4: {
+        const s32 timer = *reinterpret_cast<const s32*>(work + 0x10);
+        if (timer >= 0 && *reinterpret_cast<const s32*>(work + 0x0C) > timer) {
+            *reinterpret_cast<u32*>(work + 0x08) = 5;
+            *reinterpret_cast<s32*>(work + 0x10) = kCloseTimer;
+            UiAnimSprite_SetMode(reinterpret_cast<UiAnimSprite*>(work + 0x44), 1, 0);
+        }
+        break;
+    }
+    case 5:
+        if (ui_func_002bf9f0(work + 0x44) != 0) {
+            work[0x23] = 0;
+            *reinterpret_cast<u32*>(work + 0x08) = 0;
+            *reinterpret_cast<u32*>(work + 0x0C) = 0;
+        }
+        break;
+    default:
+        break;
+    }
+
+    *reinterpret_cast<s32*>(work + 0x0C) += 1;
 }
 #if 0
 // Partial semantic draft retained for reconstruction; not compiled.
