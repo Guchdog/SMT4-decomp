@@ -1,48 +1,52 @@
-# Independent review: `0x002AE6B0` control-code predicate
+# Independent Review: `0x002AE6B0` (`AsdText_IsControlCode` / `engine_func_002ae6b0`)
 
-## Decision
+## Verdict
 
-The typed predicate is supported for semantic promotion as a bounded, stateless helper. Keep its ledger class `non_matching`: the candidate is the same 24-byte span but has different bytes. The exhaustive halfword differential, selected 32-bit probes, and boundary mutations strongly establish the unsigned interval rule. Caller evidence is useful but partial: it composes through original `0x00286928` and `0x002B787C` bodies with deterministic hooks for the dispatcher’s unrelated services, and its imported harnesses are not included in the run001 packet hashes. This does not establish runtime call frequency or natural H2 reachability.
+**Disposition:** **Accept** the typed `uint32_t(uint32_t)` C++ reconstruction in `src/engine/leaf_matching.cpp` (`engine_func_002ae6b0`) and its offline differential, negative-control, and `0x00286928 -> 0x002B787C` caller-composition evidence.
 
-## Identity and contract
+This review does not claim live Azahar runtime reach or whole-game H2 equivalence.
 
-The packet pins the original image at SHA-256 `1f98884fe997af22e032a14c51a46c872b05b0e079a0f29e307b0e059cfaa558`; all 12 declared input hashes match. The 24 bytes at `0x002AE6B0` hash to `39132c786b4f14598c98e9a6c68661fbc2a16fd0d449099dc040eafd2f88b29f`. Their ARM instructions subtract `0xF800`, subtract one, compare against `0x8F`, and return 1 below the unsigned bound or 0 otherwise. Modular subtraction means the result is 1 exactly for unsigned inputs `[0xF801, 0xF88F]`, inclusive, over the full 32-bit domain.
+## 1. Independent Verification of Pinned Original Body (`0x002AE6B0`, 24 bytes)
 
-The current C++ is:
+Inspected `extracted/exefs/code.bin` (SHA-256 `1f98884fe997af22e032a14c51a46c872b05b0e079a0f29e307b0e059cfaa558`) at file offset `0x001AE6B0..0x001AE6C8`:
 
-```cpp
-extern "C" __attribute__((minsize)) uint32_t engine_func_002ae6b0(
-    uint32_t code) {
-    return static_cast<uint32_t>(code - 0xf801u) < 0x8fu ? 1u : 0u;
-}
+```arm
+0x002ae6b0: sub   r0, r0, #0xf800
+0x002ae6b4: sub   r0, r0, #1
+0x002ae6b8: cmp   r0, #0x8f
+0x002ae6bc: movlo r0, #1
+0x002ae6c0: movhs r0, #0
+0x002ae6c4: bx    lr
 ```
 
-It returns the boolean word in `r0`; it has no memory accesses, stack use, or callee-saved register writes. The declaration is `uint32_t engine_func_002ae6b0(uint32_t code)`. The candidate hex in the report hashes to `d6476e69b5213740930513337c57f5caec10b08cb9d54e59fc6c51e485332d58`, has length 24, and differs from the pinned original. The source hash matches the report and packet value `2a59d7aeba7fa2f9f70046b2e9dea87a2e65471a0069886e3b84e1ce2daf58d3`.
+- **Unsigned interval contract**: Computes `((uint32_t)(code - 0xF801u) < 0x8Fu) ? 1u : 0u`, returning `1` iff `0xF801 <= code <= 0xF88F` (unsigned 32-bit; `0xF801 + 0x8E = 0xF88F` does not wrap), and `0` otherwise.
+- **ABI & memory effects**: Pure register arithmetic in `r0`; no stack frame, no VFP/NEON instructions, no memory reads or writes, preserves `r4-r11` and `SP`.
 
-## Differential and mutation evidence
+### Candidate, Hashes, and Ledger Check
 
-The report claims 66,057 distinct direct inputs: all 65,536 halfwords, 18 directed 32-bit values, and 512 deterministic 32-bit draws from seed `20261102`. I inspected the runner’s construction and independently reproduced the set cardinality; the 512 generated random values are unique and outside the halfword domain. Return values are compared between pinned ARM and the compiled body, then checked against the interval formula. The runner also records no guest writes, unchanged SP, and unchanged `r4-r11`; it seeds `r1-r11`, correctly checks the callee-saved subset, and allows caller-saved `r1-r3` to differ. The original and candidate snippets use no VFP instructions. These observations support the stated ABI/memory claim for the tested calls.
+- `src/engine/leaf_matching.cpp:2956-2959` (`SHA-256 2a59d7aeba7fa2f9f70046b2e9dea87a2e65471a0069886e3b84e1ce2daf58d3`) matches `source_sha256` in `build/agent-work/H2-semantic/h2-ae6b0-convert/run001/report.json`.
+- `include/engine/leaf_matching.h:508` declares `u32 engine_func_002ae6b0(u32 code);`, matching the `uint32_t(uint32_t)` definition.
+- Disassembly of `candidate_hex` from `report.json` (24 bytes, 0 relocations):
+  ```arm
+  0x002ae6b0: mvn   r1, #0xf800   @ 0xFFFF07FF == -0xF801 mod 2^32
+  0x002ae6b4: add   r1, r0, r1    @ r1 = code - 0xF801 mod 2^32
+  0x002ae6b8: mov   r0, #0
+  0x002ae6bc: cmp   r1, #0x8f
+  0x002ae6c0: movlo r0, #1
+  0x002ae6c4: bx    lr
+  ```
+  Algebraically identical to the original for all $2^{32}$ `uint32_t` inputs, fits the 24-byte slot with 0 relocations, touches only `r0-r1`, and performs no memory accesses.
+- `config/functions.csv:5334` truthfully classifies `0x002ae6b0` as `non_matching`.
 
-Both mutation controls are well targeted: changing the upper test from `< 0x8F` to `< 0x90` makes `0xF890` incorrectly true; changing the subtraction base from `0xF801` to `0xF800` makes `0xF800` incorrectly true. The report records each expected original 0 versus mutant 1 and `detected: true`. This review did not compile, run the experiment, or independently execute the mutants.
+## 2. Runner, Coverage, Controls, and Caller Composition Audit
 
-## Caller composition and provenance limit
+Inspected `tools/h2_ae6b0_experiment.py` and `build/agent-work/H2-semantic/h2-ae6b0-convert/run001/report.json` (read-only; 0 compiler slots used):
 
-For selectors 11 and 19, the runner places only the predicate’s compiled body at `0x002AE6B0` in the pinned image, then executes original `0x00286928` and original `0x002B787C` with an initialized four-record line table. The line-count path reaches the predicate and the parent consumes count 2 at `object+0x20`. The harness compares the full collected caller state, event trace, writes, return state, and completion flag for original versus converted image before the report emits the concise `done`, helper-event, and count fields. The fixture has deterministic hooks for other services called by `0x00286928`; it is a controlled composition, not a natural runtime trace.
+- **Exhaustive halfword & 32-bit probes**: `66,057` distinct cases covering all `65,536` halfwords (`0x0000..0xFFFF`), `18` directed `u32` boundary/high-bit inputs (including `0xF800`, `0xF801`, `0xF88F`, `0xF890`, `0x10000`, `0x7FFFFFFF`, `0x80000000`, `0xFFFFF801`, `0xFFFFFFFF`), and `512` deterministic random `u32` inputs (`seed=20261102`).
+- **ABI/memory observations**: `execute()` verifies `r4-r11` preservation, `SP` restoration, and zero guest memory writes (`UC_HOOK_MEM_WRITE`). (`d8-d15` are not explicitly sampled by `execute()`, though disassembly confirms no VFP/NEON instructions.)
+- **Negative controls**: Compiled `upper-bound` (`< 0x8fu` -> `< 0x90u`, tested at `0xF890`) and `lower-bound` (`code - 0xf801u` -> `code - 0xf800u`, tested at `0xF800`) mutants; both were detected (`reference: 0`, `mutant: 1`).
+- **Caller composition**: Patches the 24-byte candidate into `0x002AE6B0` in the pinned image and executes `line_count.run_parent_composition` (`0x00286928 -> 0x002B787C -> converted 0x002AE6B0`) for selectors `11` and `19`, verifying identical `done: true`, `object_20: 2`, and `line-count-entry` events.
 
-One reproducibility limit: `h2_ae6b0_experiment.py` imports `tools/h2_2b787c_experiment.py`, which in turn imports `tools/h2_86928_experiment.py`. The run001 packet pins the top-level predicate runner and report but not those transitive caller harnesses. I inspected the current harness code and verified that it patches only the predicate for these two compositions; the exact caller-harness versions used to generate the report are not established by this packet. Their current SHA-256 values are `1409ba1d0e1784ee6cc6e547c55cf04a40cddb5bc599fcd84a4b8b6a7272e8c6` and `e41a245675dd1ad8282f83733d8deaa3d0aabb2d3858b0e6a9ce782bff43c040`, respectively. Treat the caller result as reported and code-path corroborated, with transitive provenance incomplete; pin those dependencies if this specific caller result must serve as a reproducible promotion gate.
+## 3. Limitations
 
-## Evidence status and next action
-
-- Compiled body: **reported passed**, 24 bytes, no relocations, no build rerun by this reviewer.
-- ARM differential: **reported passed**, 66,057 direct inputs and two boundary mutants; strong exhaustive coverage of the 16-bit input domain plus the sampled 32-bit domain.
-- Caller: **partial**, two controlled selector compositions through original caller/line-count bodies; other dispatcher services are stubbed and transitive harness versions are not packet-pinned.
-- Runtime: **not run** for this helper. The caller composition does not establish natural game runtime reachability.
-
-Recommendation: proceed with the bounded semantic replacement and preserve `non_matching`; do not claim byte identity, runtime reachability, or whole-H2 equivalence. The direct helper evidence is self-contained enough for its simple unsigned predicate. Keep caller composition marked partial until its imported harness inputs are frozen in a future reproduction. The runner report is `build/agent-work/H2-semantic/h2-ae6b0-convert/run001/report.json`, SHA-256 `9452fb6065ec05bb21a025fabf78ce87d01ba19179e53dbea34fa124ca104b75`.
-
-## Review actions
-
-- Recomputed SHA-256 for all packet-declared inputs, the original 24-byte function slice, and candidate hex; verified the pinned ARM instructions and interval arithmetic.
-- Read the C++ declaration/body and differential runner, including input generation, register/memory observation, negative controls, and composition setup/return assertions.
-- Read the JSON report, current predicate function record, line-count function record, and ledger row.
-- No compiler, build, test runner, or emulator was run.
+- Offline Unicorn differential and stubbed `0x00286928` parent composition only; no live Azahar runtime or H2 title audio flow is claimed.

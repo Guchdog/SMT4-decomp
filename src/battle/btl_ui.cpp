@@ -5,56 +5,96 @@ namespace smt4::battle {
 
 BtlHelpManager g_BtlHelpManager = {nullptr};
 BtlTalkBuffer* g_pBtlTalkBuffer = nullptr;
-// DECOMP_FUNC(0x001d2528, 232)
-
-
-//
-__attribute__((naked)) void btlHelp_Init(BtlHelpWork*) {
-    asm volatile(
-        ".word 0xE92D4010, 0xE1A04000, 0xE590004C, 0xE24DD010\n"
-        ".word 0xEB03B3B7, 0xE3500000, 0x1A00001C, 0xE59F2078\n"
-        ".word 0xE5940000, 0xE59F106C, 0xE28DC004, 0xE58D2000\n"
-        ".word 0xE58D000C, 0xE3A03000, 0xE88C0012, 0xE1A02003\n"
-        ".word 0xE3A01002, 0xE28F0054, 0xEB03C9A2, 0xE584004C\n"
-        ".word 0xE59F1058, 0xE28F0058, 0xE1A00000, 0xE3A00001\n"
-        ".word 0xE3A01C01, 0xE58D0000, 0xE3A0300C, 0xE3A02000\n"
-        ".word 0xE1A00001, 0xEB03C978, 0xE59F1064, 0xE5810000\n"
-        ".word 0xE3A01000, 0xE5801000, 0xE5801004, 0xE5801008\n"
-        ".word 0xE28DD010, 0xE8BD8010, 0x0020EE34, 0x001B5398\n"
-        ".word 0x486C7462, 0x20706C65, 0x636C6143, 0x00000000\n"
-        ".word 0x00000305, 0x535C3A63, 0x5C34544D, 0x36445258\n"
-        ".word 0x735C3638, 0x34736464, 0x6F72705C, 0x6D617267\n"
-        ".word 0x7461625C, 0x5C656C74, 0x486C7462, 0x2E706C65\n"
-        ".word 0x00707063, 0x00435D78\n"
-    );
+extern "C" {
+s32 battle_func_002bf41c(void* task);
+void* camp_func_002c4c00(const char* name, s32 tag, u32 unk2, u32 unk3, const void* calc_fn, const void* dtor_fn, void* work, void* parent_work);
+void* engine_func_002c4b84(u32 size_a, u32 size_b, u32 unk2, u32 struct_size, u32 count);
+void script_vm_func_001b5398();
+void engine_func_0020ee34();
 }
+
+// DECOMP_FUNC(0x001d2528, 232)
+void btlHelp_Init(BtlHelpWork* work) {
+    static constexpr s32 kTaskTag = 2;
+    static constexpr u32 kAllocSize = 0x100;
+    static constexpr u32 kBufferBytes = 0xC;
+    static constexpr u32 kAllocCount = 1;
+
+    if (battle_func_002bf41c(work->calc_task) != 0) {
+        return;
+    }
+
+    work->calc_task = camp_func_002c4c00(
+        "btlHelp Calc",
+        kTaskTag,
+        0,
+        0,
+        reinterpret_cast<const void*>(&script_vm_func_001b5398),
+        reinterpret_cast<const void*>(&engine_func_0020ee34),
+        work,
+        work->parent_work);
+
+    u32* buffer = static_cast<u32*>(
+        engine_func_002c4b84(kAllocSize, kAllocSize, 0, kBufferBytes, kAllocCount));
+    g_BtlHelpManager.buffer = buffer;
+    buffer[0] = 0;
+    buffer[1] = 0;
+    buffer[2] = 0;
+}
+extern "C" {
+void ui_func_001b71b8();
+void camp_func_002c4450(void* dst, u32 size, s32 value);
+void battle_func_00267f68(void* target);
+extern void* g_BtlGameOverHookTarget;
+}
+
+void btlUI_DrawNumber(void*);
+
 // DECOMP_FUNC(0x001d2610, 308)
+void btlTalk_Init(BtlTalkWork* work, void* ctx, s32 arg2, s32 arg3) {
+    static constexpr s32 kTaskTag = 2;
+    static constexpr u32 kAllocSize = 0x100;
+    static constexpr u32 kBufferSize = sizeof(BtlTalkBuffer);
+    static constexpr u32 kAllocCount = 1;
+    static constexpr u32 kRawFillSize = 0x80;
+    static constexpr s32 kRawFillValue = -1;
+    static constexpr u32 kCtxInfoPtrOffset = 0x28;
+    static constexpr u32 kSpeakerIdOffset = 0x14E;
 
+    battle_func_002bf41c(work->talk_task);
 
-//
-__attribute__((naked)) void btlTalk_Init(BtlTalkWork*, void*, s32, s32) {
-    asm volatile(
-        ".word 0xE92D43F0, 0xE1A05000, 0xE24DD014, 0xE1A06001\n"
-        ".word 0xE5900020, 0xE1A07002, 0xE1A08003, 0xEB03B37A\n"
-        ".word 0xE59F10B8, 0xE28F00B8, 0xE1A00000, 0xE3A00001\n"
-        ".word 0xE3A01C01, 0xE58D0000, 0xE3A030CC, 0xE3A02000\n"
-        ".word 0xE1A00001, 0xEB03C94A, 0xE59F40C4, 0xE59F20C8\n"
-        ".word 0xE59F10C0, 0xE28D9004, 0xE5840000, 0xE5950000\n"
-        ".word 0xE58D2000, 0xE3A03000, 0xE58D000C, 0xE8890022\n"
-        ".word 0xE1A02003, 0xE3A01002, 0xE28F00A0, 0xEB03C95B\n"
-        ".word 0xE5850020, 0xE5944000, 0xE3A09000, 0xE3E00000\n"
-        ".word 0xE284101C, 0xE8840060, 0xE3E02000, 0xE8810180\n"
-        ".word 0xE3A01080, 0xE5C490C4, 0xE5C490C5, 0xE58400C8\n"
-        ".word 0xE5960028, 0xE2800C01, 0xE1D004FE, 0xE5840030\n"
-        ".word 0xE2840034, 0xEB03C75D, 0xE59F0060, 0xE5900000\n"
-        ".word 0xEB025620, 0xE5849018, 0xE28DD014, 0xE8BD83F0\n"
-        ".word 0x0000029F, 0x535C3A63, 0x5C34544D, 0x36445258\n"
-        ".word 0x735C3638, 0x34736464, 0x6F72705C, 0x6D617267\n"
-        ".word 0x7461625C, 0x5C656C74, 0x546C7462, 0x2E6B6C61\n"
-        ".word 0x00707063, 0x00439B58, 0x0020F35C, 0x001B71B8\n"
-        ".word 0x546C7462, 0x206B6C61, 0x636C6143, 0x00000000\n"
-        ".word 0x00439CA8\n"
-    );
+    BtlTalkBuffer* buffer = static_cast<BtlTalkBuffer*>(
+        engine_func_002c4b84(kAllocSize, kAllocSize, 0, kBufferSize, kAllocCount));
+    g_pBtlTalkBuffer = buffer;
+
+    work->talk_task = camp_func_002c4c00(
+        "btlTalk Calc",
+        kTaskTag,
+        0,
+        0,
+        reinterpret_cast<const void*>(&ui_func_001b71b8),
+        reinterpret_cast<const void*>(&btlUI_DrawNumber),
+        work,
+        work->parent_work);
+
+    buffer = g_pBtlTalkBuffer;
+    buffer->parent = work;
+    buffer->ctx = ctx;
+    buffer->arg2 = arg2;
+    buffer->arg3 = arg3;
+
+    u8* raw_bytes = reinterpret_cast<u8*>(buffer);
+    raw_bytes[0xC4] = 0;
+    raw_bytes[0xC5] = 0;
+    *reinterpret_cast<s32*>(raw_bytes + 0xC8) = -1;
+
+    const u8* ctx_info = *reinterpret_cast<const u8* const*>(
+        static_cast<const u8*>(ctx) + kCtxInfoPtrOffset);
+    buffer->speaker_id = *reinterpret_cast<const s16*>(ctx_info + kSpeakerIdOffset);
+
+    camp_func_002c4450(buffer->raw, kRawFillSize, kRawFillValue);
+    battle_func_00267f68(g_BtlGameOverHookTarget);
+    buffer->state = 0;
 }
 
 // Incomplete readable sketch. The extracted body additionally allocates and
@@ -115,28 +155,53 @@ __attribute__((naked)) void btlUnit_Init(BtlUnitWork*) {
         ".word 0x7461625C, 0x5C656C74, 0x556C7462, 0x2E74696E\n"
         ".word 0x00707063\n");
 }
+extern "C" {
+const u8* battle_func_002ae3f0(u32 unit_id);
+const u8* camp_func_002b9364(u32 sub_party_id);
+}
+
 // DECOMP_FUNC(0x001d29c8, 240)
+s32 btlUnit_CheckPartyActive(BtlUnitWork* work) {
+    static constexpr u32 kSlotCount = 8;
+    static constexpr u32 kPartySlotArrayOffset = 0x34;
+    static constexpr u32 kSubPartySlotArrayOffset = 0x3C;
+    static constexpr u32 kUnitStatusOffset = 0x23;
+    static constexpr u8 kActiveStatus = 3;
 
+    if (work->party_slots != nullptr) {
+        for (u32 i = 0; i < kSlotCount; ++i) {
+            const u8* slots = reinterpret_cast<const u8*>(work->party_slots);
+            const u16 unit_id = *reinterpret_cast<const u16*>(slots + kPartySlotArrayOffset + i * 2);
+            const u8* unit = battle_func_002ae3f0(unit_id);
+            if (unit != nullptr && unit[kUnitStatusOffset] == kActiveStatus) {
+                return 1;
+            }
+        }
+    }
 
-//
-s32 __attribute__((naked)) btlUnit_CheckPartyActive(BtlUnitWork*) {
-    asm volatile(
-        ".word 0xE92D4070, 0xE1A05000, 0xE5900278, 0xE3A06034\n"
-        ".word 0xE3500000, 0x13A04000, 0x0A00000C, 0xE5951278\n"
-        ".word 0xE0860084, 0xE19100B0, 0xEB036E7E, 0xE3500000\n"
-        ".word 0xE320F000, 0x0A000002, 0xE5D00023, 0xE3500003\n"
-        ".word 0x0A000028, 0xE2844001, 0xE3540008, 0xBAFFFFF2\n"
-        ".word 0xE595027C, 0xE3500000, 0x13A04000, 0x0A00000C\n"
-        ".word 0xE595027C, 0xE0861084, 0xE19000B1, 0xEB036E6D\n"
-        ".word 0xE3500000, 0xE320F000, 0x0A000002, 0xE5D00023\n"
-        ".word 0xE3500003, 0x0A000017, 0xE2844001, 0xE3540008\n"
-        ".word 0xBAFFFFF2, 0xE5950284, 0xE3500000, 0x0A00000F\n"
-        ".word 0xE1D50CBE, 0xEB039A3C, 0xE1A05000, 0xE3A04000\n"
-        ".word 0xE0850084, 0xE1D003BC, 0xEB036E5A, 0xE3500000\n"
-        ".word 0xE320F000, 0x0A000002, 0xE5D00023, 0xE3500003\n"
-        ".word 0x0A000004, 0xE2844001, 0xE3540008, 0xBAFFFFF3\n"
-        ".word 0xE3A00000, 0xE8BD8070, 0xE3A00001, 0xE8BD8070\n"
-    );
+    if (work->reserve_slots != nullptr) {
+        for (u32 i = 0; i < kSlotCount; ++i) {
+            const u8* slots = reinterpret_cast<const u8*>(work->reserve_slots);
+            const u16 unit_id = *reinterpret_cast<const u16*>(slots + kPartySlotArrayOffset + i * 2);
+            const u8* unit = battle_func_002ae3f0(unit_id);
+            if (unit != nullptr && unit[kUnitStatusOffset] == kActiveStatus) {
+                return 1;
+            }
+        }
+    }
+
+    if (work->guest_unit != nullptr) {
+        const u8* sub_party = camp_func_002b9364(work->sub_party_id);
+        for (u32 i = 0; i < kSlotCount; ++i) {
+            const u16 unit_id = *reinterpret_cast<const u16*>(sub_party + kSubPartySlotArrayOffset + i * 2);
+            const u8* unit = battle_func_002ae3f0(unit_id);
+            if (unit != nullptr && unit[kUnitStatusOffset] == kActiveStatus) {
+                return 1;
+            }
+        }
+    }
+
+    return 0;
 }
 
 // ============================================================================
@@ -144,44 +209,90 @@ s32 __attribute__((naked)) btlUnit_CheckPartyActive(BtlUnitWork*) {
 // ============================================================================
 
 BtlUIManager g_BtlUIManager = {nullptr, {0}, nullptr};
+extern "C" {
+void CommonBg_func_00289b4c(void* work);
+void battle_func_003ad98c(void* buffer, BtlUIWork* work);
+}
+
+void btlUI_Calc(void*);
+void btlUI_DrawUp(void*);
+void btlUI_DrawDown(void*);
+
 // DECOMP_FUNC(0x001a83c8, 488)
+void btlUI_Init(BtlUIWork* work) {
+    static constexpr u32 kAllocSize = 0x100;
+    static constexpr u32 kBufferSize = 0xF040;
+    static constexpr u32 kAllocCount = 1;
+    static constexpr s32 kCalcTag = 2;
+    static constexpr s32 kDrawUpLeftTag = 0x7A;
+    static constexpr s32 kDrawUpRightTag = 0xD8;
+    static constexpr s32 kDrawDownTag = 0xE7;
+    static constexpr s32 kDrawNumberTag = 0xE9;
 
+    CommonBg_func_00289b4c(work);
 
-//
-__attribute__((naked)) void btlUI_Init(BtlUIWork*) {
-    asm volatile(
-        ".word 0xE92D40F0, 0xE24DD014, 0xE1A04000, 0xEB0385DC\n"
-        ".word 0xE59F5128, 0xE5950020, 0xE3500000, 0x1A00000A\n"
-        ".word 0xE59F111C, 0xE28F0F47, 0xE1A00000, 0xE3A00001\n"
-        ".word 0xE3A01C01, 0xE58D0000, 0xE59F3138, 0xE3A02000\n"
-        ".word 0xE1A00001, 0xEB0471DC, 0xE5850020, 0xE59F212C\n"
-        ".word 0xE5940000, 0xE5955020, 0xE59F111C, 0xE28D6004\n"
-        ".word 0xE58D2000, 0xE58D000C, 0xE3A03000, 0xE8860012\n"
-        ".word 0xE1A02003, 0xE3A01002, 0xE28F0F41, 0xEB0471ED\n"
-        ".word 0xE5840054, 0xE59F7104, 0xE3A06000, 0xE58D000C\n"
-        ".word 0xE1A03006, 0xE1A02006, 0xE3A0107A, 0xE28F00F0\n"
-        ".word 0xE58D6004, 0xE58D4008, 0xE58D7000, 0xEB0471E1\n"
-        ".word 0xE5940054, 0xE3A03000, 0xE1A02003, 0xE58D000C\n"
-        ".word 0xE3A010D8, 0xE28F00DC, 0xE58D4008, 0xE58D6004\n"
-        ".word 0xE58D7000, 0xEB0471D7, 0xE5940054, 0xE59F10D8\n"
-        ".word 0xE58D4008, 0xE58D000C, 0xE3A03000, 0xE88D0042\n"
-        ".word 0xE1A02003, 0xE3A010E7, 0xE28F00C0, 0xEB0471CD\n"
-        ".word 0xE5940054, 0xE59F10C4, 0xE58D4008, 0xE58D000C\n"
-        ".word 0xE3A03000, 0xE88D0042, 0xE1A02003, 0xE3A010E9\n"
-        ".word 0xE28F00AC, 0xEB0471C3, 0xE1A01004, 0xE1A00005\n"
-        ".word 0xEB081523, 0xE5854000, 0xE28DD014, 0xE8BD80F0\n"
-        ".word 0x00439C88, 0x00000B52, 0x535C3A63, 0x5C34544D\n"
-        ".word 0x36445258, 0x735C3638, 0x34736464, 0x6F72705C\n"
-        ".word 0x6D617267, 0x7461625C, 0x5C656C74, 0x556C7462\n"
-        ".word 0x70632E49, 0x00000070, 0x0000F040, 0x001E4AF8\n"
-        ".word 0x0019E034, 0x556C7462, 0x61432049, 0x0000636C\n"
-        ".word 0x001B71E0, 0x556C7462, 0x72442049, 0x70557761\n"
-        ".word 0x7466654C, 0x00000000, 0x556C7462, 0x72442049\n"
-        ".word 0x70557761, 0x68676952, 0x00000074, 0x001E4AFC\n"
-        ".word 0x556C7462, 0x72442049, 0x6F447761, 0x00006E77\n"
-        ".word 0x0020F3FC, 0x556C7462, 0x72442049, 0x754E7761\n"
-        ".word 0x7265626D, 0x00000000\n"
-    );
+    if (g_BtlUIManager.buffer == nullptr) {
+        g_BtlUIManager.buffer = engine_func_002c4b84(
+            kAllocSize, kAllocSize, 0, kBufferSize, kAllocCount);
+    }
+
+    void* buffer = g_BtlUIManager.buffer;
+
+    const u8* draw_down_bytes = reinterpret_cast<const u8*>(&btlUI_DrawDown);
+    const u8* draw_number_bytes = reinterpret_cast<const u8*>(&btlUI_DrawNumber);
+
+    work->calc_task = camp_func_002c4c00(
+        "btlUI Calc",
+        kCalcTag,
+        0,
+        0,
+        reinterpret_cast<const void*>(&btlUI_Calc),
+        draw_down_bytes + 0x14,
+        work,
+        work->parent_work);
+
+    camp_func_002c4c00(
+        "btlUI DrawUpLeft",
+        kDrawUpLeftTag,
+        0,
+        0,
+        reinterpret_cast<const void*>(&btlUI_DrawUp),
+        nullptr,
+        work,
+        work->calc_task);
+
+    camp_func_002c4c00(
+        "btlUI DrawUpRight",
+        kDrawUpRightTag,
+        0,
+        0,
+        reinterpret_cast<const void*>(&btlUI_DrawUp),
+        nullptr,
+        work,
+        work->calc_task);
+
+    camp_func_002c4c00(
+        "btlUI DrawDown",
+        kDrawDownTag,
+        0,
+        0,
+        draw_down_bytes + 0x18,
+        nullptr,
+        work,
+        work->calc_task);
+
+    camp_func_002c4c00(
+        "btlUI DrawNumber",
+        kDrawNumberTag,
+        0,
+        0,
+        draw_number_bytes + 0xA0,
+        nullptr,
+        work,
+        work->calc_task);
+
+    battle_func_003ad98c(buffer, work);
+    *reinterpret_cast<BtlUIWork**>(buffer) = work;
 }
 
 

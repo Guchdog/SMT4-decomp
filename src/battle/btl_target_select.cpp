@@ -14,48 +14,124 @@ extern "C" {
     void camp_func_003428a4(void* object);           // 0x003428a4
 }
 
+extern "C" {
+    void* engine_func_002c54f0(u32 size_a, u32 size_b, u32 unk2, u32 struct_size, u32 count); // 0x002c54f0
+    void* engine_func_002c23f8(u32 size, void* parent);                                       // 0x002c23f8
+    void* ui_func_003431f4(void* reticle);                                                    // 0x003431f4
+    void* __aeabi_vec_ctor_nocookie_nodtor(void* ptr, const void* ctor, u32 stride, u32 count); // 0x002c5f58
+    void* camp_func_002c4c00(const char* name, s32 tag, u32 unk2, u32 unk3, const void* calc_fn, const void* dtor_fn, void* work, void* parent_work); // 0x002c4c00
+    void  engine_func_002c3344(void* obj);                                                    // 0x002c3344
+    void  engine_func_002c32f8(void* obj, u32 a1, u32 a2, u32 a3, u32 a4, u32 a5, u32 a6, const void* a7, u32 a8, u32 a9, u32 a10); // 0x002c32f8
+    void  engine_func_002bdb2c(void* list, u32 a1, u32 a2, void* a3, u32 a4, f32 a5);         // 0x002bdb2c
+    void  engine_func_002eb72c(void* list, u32 a1);                                           // 0x002eb72c
+    void  ui_func_003093e8();                                                                 // 0x003093e8
+    void  ui_func_00349468();                                                                 // 0x00349468
+    extern const u32 g_CursorAnimVtable_00420504;                                             // 0x00420504
+    extern const u32 g_TargetSelectDesc_00401844;                                             // 0x00401844
+}
+
+void btlTargetSelect_Calc(void*);
+void btlTargetSelect_DrawUp(void*);
+
 // DECOMP_FUNC(0x002e8294, 604)
-__attribute__((naked)) void btlTargetSelect_Init(void*) {
-    asm volatile(
-        ".word 0xE92D41F0, 0xE1A05000, 0xE24DD020, 0xE59F119C\n"
-        ".word 0xE28F0F67, 0xE1A00000, 0xE3A06001, 0xE3A01C01\n"
-        ".word 0xE3A030B8, 0xE3A02000, 0xE1A00001, 0xE58D6000\n"
-        ".word 0xEBFF7489, 0xE1A04000, 0xE59F01AC, 0xE1A01005\n"
-        ".word 0xE5804000, 0xE3A00F4B, 0xEBFF6845, 0xE3500000\n"
-        ".word 0x1B016BC2, 0xE5840000, 0xE1A01005, 0xE3A00060\n"
-        ".word 0xEBFF683F, 0xE3500000, 0xE3A07000, 0x0A00000F\n"
-        ".word 0xE59F1178, 0xE3A03005, 0xE3A02010, 0xE4801004\n"
-        ".word 0xE59F116C, 0xFAFF770E, 0xE2400004, 0xED9F0A59\n"
-        ".word 0xE5C07013, 0xE5C07023, 0xE5C07033, 0xE5C07043\n"
-        ".word 0xEDDF0A55, 0xE2801058, 0xE5C07053, 0xEC810A02\n"
-        ".word 0xE28D8004, 0xE5840004, 0xE5C47008, 0xE59F2140\n"
-        ".word 0xE5950000, 0xE59F1134, 0xE58D2000, 0xE58D000C\n"
-        ".word 0xE3A03000, 0xE8880012, 0xE1A02003, 0xE3A01002\n"
-        ".word 0xE28F0E12, 0xEBFF7220, 0xE585001C, 0xE59F812C\n"
-        ".word 0xE3A03000, 0xE58D000C, 0xE1A02003, 0xE3A0107A\n"
-        ".word 0xE28F0F47, 0xE58D4008, 0xE58D7004, 0xE58D8000\n"
-        ".word 0xEBFF7215, 0xE595001C, 0xE3A03000, 0xE1A02003\n"
-        ".word 0xE58D000C, 0xE3A010D8, 0xE28F0F43, 0xE58D4008\n"
-        ".word 0xE58D7004, 0xE58D8000, 0xEBFF720B, 0xE284000C\n"
-        ".word 0xE320F000, 0xEBFF6BD9, 0xE59F1104, 0xE28D2010\n"
-        ".word 0xE3A00010, 0xE58D100C, 0xE8820081, 0xE3A03000\n"
-        ".word 0xE58D7018, 0xE1A02003, 0xE1A01003, 0xE284000C\n"
-        ".word 0xE58D7000, 0xE58D7004, 0xE58D7008, 0xEBFF6BB8\n"
-        ".word 0xED9F0A34, 0xE284300C, 0xE3A02071, 0xE3A01014\n"
-        ".word 0xE284002C, 0xE58D6000, 0xEBFF55BE, 0xE28DD020\n"
-        ".word 0xE284002C, 0xE8BD41F0, 0xE3A01000, 0xEA000CB9\n"
-        ".word 0x00000422, 0x535C3A63, 0x5C34544D, 0x36445258\n"
-        ".word 0x735C3638, 0x34736464, 0x6F72705C, 0x6D617267\n"
-        ".word 0x7461625C, 0x5C656C74, 0x546C7462, 0x65677261\n"
-        ".word 0x6C655374, 0x2E746365, 0x00707063, 0x00439C60\n"
-        ".word 0x00420504, 0x00349468, 0x00000000, 0x42200000\n"
-        ".word 0x003093E8, 0x002E06BC, 0x546C7462, 0x65677261\n"
-        ".word 0x6C655374, 0x20746365, 0x636C6143, 0x00000000\n"
-        ".word 0x002F4AA4, 0x546C7462, 0x65677261, 0x6C655374\n"
-        ".word 0x20746365, 0x77617244, 0x004C7055, 0x546C7462\n"
-        ".word 0x65677261, 0x6C655374, 0x20746365, 0x77617244\n"
-        ".word 0x00527055, 0x00401844, 0x3F800000\n"
-    );
+void btlTargetSelect_Init(void* parent_work) {
+    static constexpr u32 kAllocSize = 0x100;
+    static constexpr u32 kReticleSize = 0x12C;
+    static constexpr u32 kCursorSize = 0x60;
+    static constexpr u32 kCursorElemStride = 0x10;
+    static constexpr u32 kCursorElemCount = 5;
+    static constexpr f32 kCursorInitY = 40.0f;
+    static constexpr s32 kCalcTag = 2;
+    static constexpr s32 kDrawUpLeftTag = 0x7A;
+    static constexpr s32 kDrawUpRightTag = 0xD8;
+    static constexpr u32 kListType = 0x14;
+    static constexpr u32 kListTag = 0x71;
+
+    BtlTargetSelectWork* const work = static_cast<BtlTargetSelectWork*>(
+        engine_func_002c54f0(kAllocSize, kAllocSize, 0, sizeof(BtlTargetSelectWork), 1));
+    g_pBtlTargetSelectWork = work;
+
+    void* reticle = engine_func_002c23f8(kReticleSize, parent_work);
+    if (reticle != nullptr) {
+        reticle = ui_func_003431f4(reticle);
+    }
+    work->reticle_data = reticle;
+
+    u8* cursor = static_cast<u8*>(engine_func_002c23f8(kCursorSize, parent_work));
+    if (cursor != nullptr) {
+        *reinterpret_cast<const void**>(cursor) = &g_CursorAnimVtable_00420504;
+        u8* const elems = static_cast<u8*>(__aeabi_vec_ctor_nocookie_nodtor(
+            cursor + 4,
+            reinterpret_cast<const void*>(&ui_func_00349468),
+            kCursorElemStride,
+            kCursorElemCount));
+        cursor = elems - 4;
+        cursor[0x13] = 0;
+        cursor[0x23] = 0;
+        cursor[0x33] = 0;
+        cursor[0x43] = 0;
+        cursor[0x53] = 0;
+        *reinterpret_cast<f32*>(cursor + 0x58) = 0.0f;
+        *reinterpret_cast<f32*>(cursor + 0x5C) = kCursorInitY;
+    }
+    work->cursor_anim = cursor;
+    work->flag_08 = 0;
+
+    void* const root_parent = *static_cast<void* const*>(parent_work);
+    void* const calc_task = camp_func_002c4c00(
+        "btlTargetSelect Calc",
+        kCalcTag,
+        0,
+        0,
+        reinterpret_cast<const void*>(&btlTargetSelect_Calc),
+        reinterpret_cast<const void*>(&ui_func_003093e8),
+        work,
+        root_parent);
+    *reinterpret_cast<void**>(static_cast<u8*>(parent_work) + 0x1C) = calc_task;
+
+    camp_func_002c4c00(
+        "btlTargetSelect DrawUpL",
+        kDrawUpLeftTag,
+        0,
+        0,
+        reinterpret_cast<const void*>(&btlTargetSelect_DrawUp),
+        nullptr,
+        work,
+        calc_task);
+
+    camp_func_002c4c00(
+        "btlTargetSelect DrawUpR",
+        kDrawUpRightTag,
+        0,
+        0,
+        reinterpret_cast<const void*>(&btlTargetSelect_DrawUp),
+        nullptr,
+        work,
+        *reinterpret_cast<void**>(static_cast<u8*>(parent_work) + 0x1C));
+
+    engine_func_002c3344(work->pad_0C);
+    engine_func_002c32f8(
+        work->pad_0C,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        &g_TargetSelectDesc_00401844,
+        0x10,
+        0,
+        0);
+
+    engine_func_002bdb2c(
+        &work->target_list,
+        kListType,
+        kListTag,
+        work->pad_0C,
+        1,
+        1.0f);
+
+    engine_func_002eb72c(&work->target_list, 0);
 }
 
 // DECOMP_FUNC(0x002e06bc, 236)
@@ -96,20 +172,70 @@ void btlTargetSelect_Calc(void* task_ctx) {
 void eventView_DrawUp(void*) {
 }
 
+extern "C" {
+    void script_vm_func_002bef14();                 // 0x002bef14
+    void ui_func_002c3ba8(void* gpu_state);         // 0x002c3ba8
+    u32  ui_func_002c5f7c(s32 mode, s32 sub_mode);  // 0x002c5f7c
+    void ui_func_002bf460(s32 type, s32 id, s32 sub_id, s32 x, s32 y, s32 flag); // 0x002bf460
+    void ui_func_002bf710(f32 alpha);               // 0x002bf710
+    extern const u8* g_StaffRollEntryTable;         // 0x00432cc8
+    extern u8* g_AsdGpuState;                       // 0x0044ea00
+}
+
 // DECOMP_FUNC(0x002e07ac, 296)
-__attribute__((naked)) void StaffRoll_U_UR_Draw(void*) {
-    asm volatile(
-        ".word 0xE59F0114, 0xE92D41F0, 0xE24DD008, 0xE5905000, 0xEBFF79D4, 0xE59F6104, 0xE5960000, 0xEBFF8CF6\n"
-        ".word 0xE5964000, 0xE3A01000, 0xE3A00001, 0xEBFF95E7, 0xE2844A01, 0xE2844F93, 0xE3A07000, 0xE5941000\n"
-        ".word 0xE0842101, 0xE2811001, 0xE5922008, 0xE0843101, 0xE5841000, 0xE5830008, 0xE5D41018, 0xE3510000\n"
-        ".word 0x01520000, 0x0A000002, 0xE594101C, 0xE12FFF31, 0xE5C47018, 0xE3A04000, 0xE3A08002, 0xE0850184\n"
-        ".word 0xE3A01034, 0xED900A03, 0xEDD00A02, 0xE3A00FFA, 0xEEBD0AC0, 0xEEFD0AE0, 0xE0020094, 0xE3A00002\n"
-        ".word 0xED8D0A00, 0xEE103A90, 0xE58D8004, 0xEBFF7B00, 0xE2844001, 0xE354000C, 0x3AFFFFEF, 0xEBFF79A9\n"
-        ".word 0xED9F0A17, 0xE320F000, 0xEBFF7BA5, 0xE5960000, 0xE2804A01, 0xE2844F93, 0xE5940000, 0xE0841100\n"
-        ".word 0xE2400001, 0xE5911008, 0xE5840000, 0xE0840100, 0xE5D42018, 0xE5900008, 0xE3520000, 0x01510000\n"
-        ".word 0x0A000002, 0xE594101C, 0xE12FFF31, 0xE5C47018, 0xE28DD008, 0xE3A00000, 0xE8BD81F0, 0x00432CC8\n"
-        ".word 0x0044EA00, 0x3F800000\n"
-    );
+void StaffRoll_U_UR_Draw(void*) {
+    static constexpr u32 kGpuStackOffset = 0x124C;
+    static constexpr u32 kEntryCount = 12;
+    static constexpr s32 kPanelType = 2;
+    static constexpr s32 kPanelId = 0x34;
+    static constexpr s32 kSubIdStep = 1000;
+    static constexpr s32 kPanelFlag = 2;
+
+    const u8* const entries = g_StaffRollEntryTable;
+    script_vm_func_002bef14();
+
+    ui_func_002c3ba8(g_AsdGpuState);
+    const u32 val = ui_func_002c5f7c(1, 0);
+
+    u8* const stack = g_AsdGpuState + kGpuStackOffset;
+    u32 count = *reinterpret_cast<u32*>(stack);
+    const u32 prev = *reinterpret_cast<const u32*>(stack + 8 + count * 4);
+    ++count;
+    *reinterpret_cast<u32*>(stack) = count;
+    *reinterpret_cast<u32*>(stack + 8 + count * 4) = val;
+    if (stack[0x18] != 0 || prev != val) {
+        using FlushFn = void (*)(u32);
+        reinterpret_cast<FlushFn>(*reinterpret_cast<const uintptr_t*>(stack + 0x1C))(val);
+        stack[0x18] = 0;
+    }
+
+    for (u32 i = 0; i < kEntryCount; ++i) {
+        const u8* const entry = entries + i * 8;
+        const s32 x = static_cast<s32>(*reinterpret_cast<const f32*>(entry + 0x08));
+        const s32 y = static_cast<s32>(*reinterpret_cast<const f32*>(entry + 0x0C));
+        ui_func_002bf460(
+            kPanelType,
+            kPanelId,
+            static_cast<s32>(i * kSubIdStep),
+            x,
+            y,
+            kPanelFlag);
+    }
+
+    script_vm_func_002bef14();
+    ui_func_002bf710(1.0f);
+
+    u8* const pop_stack = g_AsdGpuState + kGpuStackOffset;
+    u32 pop_count = *reinterpret_cast<u32*>(pop_stack);
+    const u32 popped = *reinterpret_cast<const u32*>(pop_stack + 8 + pop_count * 4);
+    --pop_count;
+    *reinterpret_cast<u32*>(pop_stack) = pop_count;
+    const u32 top = *reinterpret_cast<const u32*>(pop_stack + 8 + pop_count * 4);
+    if (pop_stack[0x18] != 0 || popped != top) {
+        using FlushFn = void (*)(u32);
+        reinterpret_cast<FlushFn>(*reinterpret_cast<const uintptr_t*>(pop_stack + 0x1C))(top);
+        pop_stack[0x18] = 0;
+    }
 }
 
 // DECOMP_FUNC(0x002e08d4, 544)

@@ -1,6 +1,6 @@
 {
   "primary_goal": "Recover editable C++ with supported semantic behavior; byte identity is optional.",
-  "active_milestone": "H2",
+  "active_milestone": "H18",
   "priority_sources": [
     "src/engine/leaf_batch30_c.cpp",
     "src/engine/leaf_batch45_a.cpp"
@@ -15,5 +15,5 @@
       "reason": "H2 nested callback direct dependency; recover bounded contract"
     }
   ],
-  "agent_workflow_board": "config/agent-workflows/h2.json"
+  "agent_workflow_board": "config/agent-workflows/h18.json"
 }

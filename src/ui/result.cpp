@@ -13,106 +13,86 @@ extern "C" {
 namespace smt4::ui {
 
 ResultManager g_ResultManager = {nullptr};
+extern "C" {
+    void  CommonBg_func_00289b4c(void* work);                                                     // 0x00289b4c
+    void* engine_func_002c4b84(u32 size_a, u32 size_b, u32 unk2, u32 struct_size, u32 count);     // 0x002c4b84
+    void* engine_func_002c5978(const char* name, s32 tag, u32 unk2, u32 unk3, const void* calc_fn, const void* dtor_fn, void* work); // 0x002c5978
+    void* camp_func_002c4c00(const char* name, s32 tag, u32 unk2, u32 unk3, const void* calc_fn, const void* dtor_fn, void* work, void* parent_work); // 0x002c4c00
+    void  ui_func_003b7d78(void* work);                                                           // 0x003b7d78
+    void  script_vm_func_00296a18(void* ctx, u32 state);                                          // 0x00296a18
+}
+
+void Result_Calc(void*);
+void Result_DrawUp(void*);
+void Result_DrawDown(void*);
+void func_001c8874(void*);
+
 // DECOMP_FUNC(0x0029bc38, 368)
+void Result_Init(s32 mode) {
+    static constexpr u32 kAllocSize = 0x100;
+    static constexpr u32 kWorkSize = 0xD658;
+    static constexpr s32 kCalcTag = 2;
+    static constexpr s32 kDrawUpLeftTag = 0x80;
+    static constexpr s32 kDrawUpRightTag = 0xDE;
+    static constexpr s32 kDrawDownTag = 0xE6;
+    static constexpr u32 kCalcTaskOffset = 0xD644;
+    static constexpr u32 kDdrawTaskOffset = 0xD64C;
+    static constexpr u32 kModeOffset = 0x3560;
 
+    if (g_ResultManager.work != nullptr) {
+        return;
+    }
 
-//
-__attribute__((naked)) void Result_Init(s32 mode) {
-    __asm__ volatile(
-        ".word 0xe92d41f0\n"
-        ".word 0xe1a06000\n"
-        ".word 0xe24dd010\n"
-        ".word 0xe59f4124\n"
-        ".word 0xe5940000\n"
-        ".word 0xe3500000\n"
-        ".word 0x1a000044\n"
-        ".word 0xebffb7bc\n"
-        ".word 0xe59f1114\n"
-        ".word 0xe59f0114\n"
-        ".word 0xe1a00000\n"
-        ".word 0xe3a00001\n"
-        ".word 0xe3a01c01\n"
-        ".word 0xe58d0000\n"
-        ".word 0xe59f3104\n"
-        ".word 0xe3a02000\n"
-        ".word 0xe1a00001\n"
-        ".word 0xeb00a3c0\n"
-        ".word 0xe59f20fc\n"
-        ".word 0xe5840000\n"
-        ".word 0xe59f10f0\n"
-        ".word 0xe3a07000\n"
-        ".word 0xe1a04000\n"
-        ".word 0xe28d0004\n"
-        ".word 0xe58d2000\n"
-        ".word 0xe8800082\n"
-        ".word 0xe1a03007\n"
-        ".word 0xe59f00dc\n"
-        ".word 0xe1a02007\n"
-        ".word 0xe3a01002\n"
-        ".word 0xeb00a730\n"
-        ".word 0xe2845b35\n"
-        ".word 0xe2855f91\n"
-        ".word 0xe59f80c8\n"
-        ".word 0xe5850000\n"
-        ".word 0xe3a03000\n"
-        ".word 0xe58d000c\n"
-        ".word 0xe59f00bc\n"
-        ".word 0xe1a02003\n"
-        ".word 0xe3a01080\n"
-        ".word 0xe58d7004\n"
-        ".word 0xe58d8000\n"
-        ".word 0xe58d7008\n"
-        ".word 0xeb00a3c5\n"
-        ".word 0xe5950000\n"
-        ".word 0xe3a03000\n"
-        ".word 0xe1a02003\n"
-        ".word 0xe58d000c\n"
-        ".word 0xe59f0094\n"
-        ".word 0xe3a010de\n"
-        ".word 0xe58d7004\n"
-        ".word 0xe58d8000\n"
-        ".word 0xe58d7008\n"
-        ".word 0xeb00a3bb\n"
-        ".word 0xe59f1080\n"
-        ".word 0xe5950000\n"
-        ".word 0xe3a03000\n"
-        ".word 0xe88d0082\n"
-        ".word 0xe58d000c\n"
-        ".word 0xe59f0070\n"
-        ".word 0xe1a02003\n"
-        ".word 0xe3a010e6\n"
-        ".word 0xe58d7008\n"
-        ".word 0xeb00a3b1\n"
-        ".word 0xe1a01000\n"
-        ".word 0xe59f005c\n"
-        ".word 0xe7801004\n"
-        ".word 0xe1a00004\n"
-        ".word 0xeb04700a\n"
-        ".word 0xe59f0050\n"
-        ".word 0xe3a01001\n"
-        ".word 0xe7c06004\n"
-        ".word 0xe28dd010\n"
-        ".word 0xe1a00004\n"
-        ".word 0xe8bd41f0\n"
-        ".word 0xeaffeb2b\n"
-        ".word 0xe28dd010\n"
-        ".word 0xe8bd81f0\n"
-        // Literal pool at 0x0029bd78.
-        ".word 0x0044dc20\n"
-        ".word 0x00001264\n"
-        ".word 0x00405eec\n"
-        ".word 0x0000d658\n"
-        ".word 0x001c87d8\n"
-        ".word 0x0018bfec\n"
-        ".word 0x00405ee0\n"
-        ".word 0x001a15b0\n"
-        ".word 0x00405ecc\n"
-        ".word 0x00405eb8\n"
-        ".word 0x001c8874\n"
-        ".word 0x00405ea8\n"
-        ".word 0x0000d64c\n"
-        ".word 0x00003560\n"
-    );
+    CommonBg_func_00289b4c(nullptr);
+
+    u8* const work = static_cast<u8*>(
+        engine_func_002c4b84(kAllocSize, kAllocSize, 0, kWorkSize, 1));
+    g_ResultManager.work = reinterpret_cast<ResultWork*>(work);
+
+    void* const calc_task = engine_func_002c5978(
+        "Result CALC",
+        kCalcTag,
+        0,
+        0,
+        reinterpret_cast<const void*>(&Result_Calc),
+        reinterpret_cast<const void*>(&Result_DrawDown),
+        nullptr);
+    *reinterpret_cast<void**>(work + kCalcTaskOffset) = calc_task;
+
+    camp_func_002c4c00(
+        "Result DrawUpLeft",
+        kDrawUpLeftTag,
+        0,
+        0,
+        reinterpret_cast<const void*>(&Result_DrawUp),
+        nullptr,
+        nullptr,
+        calc_task);
+
+    camp_func_002c4c00(
+        "Result DrawUpRight",
+        kDrawUpRightTag,
+        0,
+        0,
+        reinterpret_cast<const void*>(&Result_DrawUp),
+        nullptr,
+        nullptr,
+        calc_task);
+
+    *reinterpret_cast<void**>(work + kDdrawTaskOffset) = camp_func_002c4c00(
+        "Result DDRAW",
+        kDrawDownTag,
+        0,
+        0,
+        reinterpret_cast<const void*>(&func_001c8874),
+        nullptr,
+        nullptr,
+        calc_task);
+
+    ui_func_003b7d78(work);
+    work[kModeOffset] = static_cast<u8>(mode);
+
+    script_vm_func_00296a18(work, 1);
 }
 
 #if 0 // Unverified behavioral sketch; not byte-equivalent.
@@ -412,77 +392,65 @@ void Result_DrawDown(void*) {
     g_ResultManager.work = nullptr;
 }
 
+extern "C" {
+    s32  script_vm_func_00296cbc(void* work);                                 // 0x00296cbc
+    void ui_func_003b6150(void* work, u32 a1, u32 a2);                        // 0x003b6150
+    u32  ui_func_002bef7c(void* slot);                                        // 0x002bef7c
+    u32  shop_func_002bef70(void* slot);                                      // 0x002bef70
+    void ui_func_003b72a4(void* work, u32 a1, u32 a2);                        // 0x003b72a4
+    void ui_func_003b6c7c(void* work, u32 a1, u32 a2);                        // 0x003b6c7c
+    void Ui_DemonCompendiumSearch(void* work, u32 a1, u32 a2);                // 0x003b4bc0
+}
+
 // DECOMP_FUNC(0x001c8874, 264)
-// Verified ARM-state entry/exit and referenced local literal/table bytes.
-__attribute__((naked)) void func_001c8874(void* task_ctx) {
-    asm volatile(
-        ".word 0xe59f00fc\n"
-        ".word 0xe92d4070\n"
-        ".word 0xe5904000\n"
-        ".word 0xe3540000\n"
-        ".word 0x0a000039\n"
-        ".word 0xe1a00004\n"
-        ".word 0xeb03390a\n"
-        ".word 0xe3500000\n"
-        ".word 0x0a000036\n"
-        ".word 0xe2845b0d\n"
-        ".word 0xe2855f4b\n"
-        ".word 0xe5950000\n"
-        ".word 0xe3500007\n"
-        ".word 0xca000003\n"
-        ".word 0xe3a02000\n"
-        ".word 0xe1a01002\n"
-        ".word 0xe1a00004\n"
-        ".word 0xeb07b624\n"
-        ".word 0xe5950000\n"
-        ".word 0xe350000a\n"
-        ".word 0x0a000004\n"
-        ".word 0xe3500011\n"
-        ".word 0x0a00001e\n"
-        ".word 0xe3500012\n"
-        ".word 0x1a000025\n"
-        ".word 0xea00000d\n"
-        ".word 0xe2840b01\n"
-        ".word 0xe2800f43\n"
-        ".word 0xe1a06000\n"
-        ".word 0xeb03d9a3\n"
-        ".word 0xe1a05000\n"
-        ".word 0xe1a00006\n"
-        ".word 0xeb03d99d\n"
-        ".word 0xe1a02000\n"
-        ".word 0xe1a01005\n"
-        ".word 0xe1a00004\n"
-        ".word 0xeb07ba66\n"
-        ".word 0xe320f000\n"
-        ".word 0xe320f000\n"
-        ".word 0xea000016\n"
-        ".word 0xe2840b01\n"
-        ".word 0xe2800f66\n"
-        ".word 0xe1a06000\n"
-        ".word 0xeb03d995\n"
-        ".word 0xe1a05000\n"
-        ".word 0xe1a00006\n"
-        ".word 0xeb03d98f\n"
-        ".word 0xe1a02000\n"
-        ".word 0xe1a01005\n"
-        ".word 0xe1a00004\n"
-        ".word 0xeb07b8ce\n"
-        ".word 0xe320f000\n"
-        ".word 0xe320f000\n"
-        ".word 0xea000008\n"
-        ".word 0xe28400ac\n"
-        ".word 0xeb03d989\n"
-        ".word 0xe1a05000\n"
-        ".word 0xe28400ac\n"
-        ".word 0xeb03d983\n"
-        ".word 0xe1a02000\n"
-        ".word 0xe1a01005\n"
-        ".word 0xe1a00004\n"
-        ".word 0xeb07b093\n"
-        ".word 0xe3a00000\n"
-        ".word 0xe8bd8070\n"
-        ".word 0x0044dc20\n"
-    );
+void func_001c8874(void*) {
+    static constexpr u32 kStateOffset = 0x352C;
+    static constexpr s32 kPreStepMaxState = 7;
+    static constexpr s32 kModeA = 0x0A;
+    static constexpr s32 kModeB = 0x11;
+    static constexpr s32 kModeC = 0x12;
+    static constexpr u32 kSlotAOffset = 0x50C;
+    static constexpr u32 kSlotBOffset = 0xAC;
+    static constexpr u32 kSlotCOffset = 0x598;
+
+    auto* const work = reinterpret_cast<u8*>(g_ResultManager.work);
+    if (work == nullptr) {
+        return;
+    }
+    if (script_vm_func_00296cbc(work) == 0) {
+        return;
+    }
+
+    auto* const state_ptr = reinterpret_cast<s32*>(work + kStateOffset);
+    if (*state_ptr <= kPreStepMaxState) {
+        ui_func_003b6150(work, 0, 0);
+    }
+
+    switch (*state_ptr) {
+    case kModeA: {
+        void* const slot = work + kSlotAOffset;
+        const u32 a = ui_func_002bef7c(slot);
+        const u32 b = shop_func_002bef70(slot);
+        ui_func_003b72a4(work, a, b);
+        break;
+    }
+    case kModeB: {
+        void* const slot = work + kSlotBOffset;
+        const u32 a = ui_func_002bef7c(slot);
+        const u32 b = shop_func_002bef70(slot);
+        Ui_DemonCompendiumSearch(work, a, b);
+        break;
+    }
+    case kModeC: {
+        void* const slot = work + kSlotCOffset;
+        const u32 a = ui_func_002bef7c(slot);
+        const u32 b = shop_func_002bef70(slot);
+        ui_func_003b6c7c(work, a, b);
+        break;
+    }
+    default:
+        break;
+    }
 }
 #if 0
 // Partial semantic draft retained for reconstruction; not compiled.

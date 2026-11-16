@@ -1,33 +1,28 @@
-# Independent review: 0x002c1f28 signed global predicate
+# `0x002C1F28` H2 signed global predicate — independent read-only review
 
-## Scope and identity
+**Verdict: ACCEPT bounded typed `int32_t()` C++ reconstruction (`engine_func_002c1f28` at `src/engine/leaf_batch22_b.cpp:865-872`) and recorded offline differential + zero-path `0x00286928` caller composition evidence.**
 
-Static review of production `src/engine/leaf_batch22_b.cpp` SHA-256 `902411a9c78afc3b78b800943037f2a101de4c7798acf93feb129e72e3055167`, candidate SHA-256 `bc00297eb9669b628d09e4ff70f5da57293d470008e539bf18fda001e71785dc`, runner SHA-256 `022411380c15e1219619e946a32d12716a88637593f29e39e782f9f3787aabb3`, and recorded objects/output. Reference code.bin SHA-256 is pinned to `1f98884fe997af22e032a14c51a46c872b05b0e079a0f29e307b0e059cfaa558`. No build, runner execution or emulator operation was performed during this review.
+## 1. Frozen pins & original ARM disassembly
 
-## Semantics, object and ABI
+- Recomputed all 9 `input_sha256` entries in `build/agent-work/H2-semantic/h2-helper-002c1f28-review/run-001/task.json`: `9/9` matched (`reference_sha256` = `1f98884fe997af22e032a14c51a46c872b05b0e079a0f29e307b0e059cfaa558`).
+- Independently disassembled pinned `0x002C1F28` (28 bytes: 24 bytes of ARM instructions + 4-byte literal `0x0043E0B8` at `0x002C1F40`) from `extracted/exefs/code.bin`:
+  - `0x002c1f28`: `ldr r0, [pc, #0x10]` (`0x0043E0B8`)
+  - `0x002c1f2c`: `ldr r1, [r0, #4]` (signed 32-bit word at `0x0043E0BC`)
+  - `0x002c1f30`: `cmp r1, #0`
+  - `0x002c1f34`: `ldrsblt r0, [r0]` (if `< 0`, sign-extended byte at `0x0043E0B8` into `r0`)
+  - `0x002c1f38`: `movge r0, #0` (if `>= 0`, `r0 = 0`)
+  - `0x002c1f3c`: `bx lr`
+- `engine_func_002c1f28` (`src/engine/leaf_batch22_b.cpp:865-872`) and `candidate_002c1f28` (`experiments/semantic_equivalence/h2_c1f28_candidate.cpp:3-10`) share the exact same C++ body: signed `int32_t` read at `0x0043E0BC`, signed `int8_t` read at `0x0043E0B8` when negative, `0` otherwise, `int32_t` return in `r0`, and zero memory writes.
+- `config/functions.csv:5782` truthfully classifies `0x002c1f28` (`28` bytes, `engine`, `engine_func_002c1f28`, `src/engine/leaf_batch22_b.cpp`) as `non_matching`.
 
-The pinned original loads signed word at 0x0043e0bc and returns zero if nonnegative; otherwise it sign-extends the signed byte at 0x0043e0b8 into r0. It performs no explicit memory writes. Production C++ expresses this contract for readable ordinary memory with a valid aligned signed word. No null or unmapped-memory fault equivalence is claimed. Candidate and production extracted symbol bodies are identical 28-byte ARM code with no function relocations; they differ from the original 28 bytes. Candidate object SHA-256 `6ec0e53404cf06159a27f251127a7384f2e8705ffc002de784fbad71fcab9ff8`, production object SHA-256 `e121e25a0dfe49c6dee8b41e4abaa2a24ac00f58c024fd4c6972f767a29daffc`; production manifest pins the reviewed source and object. The ledger classification `non_matching` is correct for the observed difference.
+## 2. Audit of `tools/h2_c1f28_experiment.py` & `docs/function-records/0x002c1f28.md`
 
-The produced ARM uses `cmn r2,#1; ldrsble` to implement signed word <0 and preserves r4-r11 by inspection. It may leave CPSR condition flags different from the original `cmp r1,#0`; the differential runner does not compare flags. AAPCS treats flags as caller-clobbered, but inline-assembly callers should be checked for reliance on flags across BL rather than assuming all legacy code follows the convention. Original and replacement may also change caller-clobbered r1/r2 differently. Four source translation units (`leaf_batch20_c.cpp`, `leaf_batch25_c.cpp`, `leaf_batch32_b.cpp`, `leaf_batch33_c.cpp`) declare the symbol as `extern "C" void ...()` while the new definition returns int32_t. Keep target ABI and non-LTO assumptions explicit and verify affected consumers; full C++ cross-TU type compatibility is not established.
+- **Direct differential (153 cases):** Covers all 25 `(threshold, flag)` boundary pairs (`{-0x80000000, -1, 0, 1, 0x7fffffff}` × `{-128, -1, 0, 1, 127}`) plus 128 seeded random pairs (`random.Random(0x2c1f28)`), asserting `r0`, `sp`, `r4..r11`, unchanged `0x43E0B8..0x43E0F8` bytes, and `UC_HOOK_MEM_WRITE` zero writes for original, candidate, and production (`build/h2-c1f28/production/engine/leaf_batch22_b.o`, present in worktree).
+- **Negative controls (3 compiled mutants):** Source-level mutations for predicate (`< 0` → `>= 0`), sign extension (`int8_t` → `uint8_t`), and return value (`*int8_t` → `0`) are compiled and verified to diverge from original.
+- **Caller composition (`0x00286928`, 32 seeds):** Exercises `0x00286928` with `obj[8] = 1` and `obj[0x2e] = 7` across 32 seeds for `threshold=0` (candidate) and `threshold=1` (production), verifying `r0`, `sp`, `r4..r11`, `obj`, `state`, `0x43E0B8..0x43E0F8`, and ordered memory writes.
 
-## Evidence and limitations
+## 3. Documented limits & audit notes
 
-Recorded `build/h2-c1f28/offline-closure.txt` SHA-256 `76642ab9518adccc6a82ff46ce04f67dd839dd45a9fdca625aa03ba7655fbeb5` reports 153/153 direct cases, 32/32 original 0x00286928 compositions and detection of three mutants (threshold direction, byte sign extension and return). Inspection confirms 25 boundary combinations and 128 seeded random pairs; direct runner compares r0, SP, r4-r11, and 0x40 bytes around the globals. These snapshots cannot independently detect writes outside that region, although the reviewed compiled function instructions contain no stores. The runner uses valid mapped fixed globals and does not test faults, concurrent/MMIO behavior, CPSR flags or all caller-clobbered registers.
-
-For caller composition, the original 0x00286928 takes selector 6, nonzero r2 and state 1; the global byte is always zero, so the queried result is zero for both tested threshold choices. Candidate is compared at threshold 0, production at threshold 1. This exercises the zero-result early-return path only; it does not test continuation when the predicate returns nonzero or all callers. Original helper remains original code in this fixture. The report result is preserved output and was not rerun independently in this review.
-
-## Assessment
-
-No counterexample was found to the documented bounded ordinary-memory contract. Accept the review for the inspected source and object, subject to the stated ABI, flags, memory-observation and caller coverage limits. A reproducible cumulative image, static interworking checks, offline composition and original-versus-patched H2 runtime scenario are separate integration evidence; the present direct/caller checks do not establish full helper, H2 or whole-game equivalence.
-
-## Updated runner and caller audit
-
-Runner SHA-256 `444dffbe716787966b4f66479213b3904502800518cb8a977055ece3183950da` adds a Unicorn memory-write hook for direct execution, and compares its complete observed guest write sequence in addition to the selected global snapshot. This supersedes the earlier statement that direct tests only detect writes within the 0x40-byte snapshot. The original reviewed direct instructions have no stores, so a passing equality comparison supports no guest writes in the exercised direct cases. The helper-composition function itself does not register this write hook. The output `build/h2-c1f28/offline-closure.txt` now has SHA-256 `bb4225378dc2c1edf127c170bd6fda64ce6dd3df45ca6b7412ab54036a80ccbd` and reports 153 direct cases, 32 zero-result compositions and three mutants; I did not run it independently.
-
-A text search of named raw `bl engine_func_002c1f28` calls finds **six** sites across the four previously named translation units: one each in leaf_batch20_c and leaf_batch25_c, three in leaf_batch32_b, and one in leaf_batch33_c. Each is followed immediately by `cmp r0,#0`, so these sites do not consume the callee CPSR flags across the call. The search does not enumerate calls embedded as `.inst`/`.hword` or computed indirectly; 0x00286928 is one such known caller from disassembly. Full cross-TU C++ type and LTO assumptions, other raw call sites, nonzero-result helper continuation and final integrated runtime remain separately bounded. Inspect the frozen function record's callsite count before accepting its wording.
-
-## Final runner and record, packet 004
-
-The frozen runner is SHA-256 `b749d96774460fb00971c850839db359f313e1e8a00b78ad0efb73e27785e466`; the function record now correctly states six named raw source callsites. Its direct-case loop explicitly requires empty observed Unicorn guest-write lists for original, candidate and production. Caller composition now records and compares ordered guest writes as well as register/memory snapshots; each original/replacement pair uses the same threshold and seeded bytes. Candidate pairs use threshold 0 and production pairs threshold 1, while flag byte is zero in both, so all remain in the zero-result path. The six named calls and immediate `cmp r0,#0` were inspected separately; this is not an exhaustive inventory of raw encoded or computed calls.
-
-The current preserved stdout SHA-256 `bb4225378dc2c1edf127c170bd6fda64ce6dd3df45ca6b7412ab54036a80ccbd` reports the same 153 direct cases and 32 caller seeds, with three controls detected. The review did not rerun the changed runner and this stdout does not itself pin runner/toolchain hashes; the frozen packet supplies the source identity, while independent execution provenance remains limited. The revised composition input and write-hook details supersede the earlier packet observations; ordinary-memory, ABI, untested nonzero continuation and runtime-scenario limitations continue to apply.
+- Read-only audit (`compiler_slots: 0`): no compiler or emulator was run during this review.
+- `0x00286928` caller composition exercises only the `enabled >= 0` (zero-return) path; nonzero return (`enabled < 0`) in `0x00286928` and other callers is not exercised (documented in `docs/function-records/0x002c1f28.md`).
+- Valid domain is readable ordinary memory at `0x0043E0B8` and `0x0043E0BC`; no unmapped fault equivalence, cross-TU LTO type compatibility for `extern "C" void` raw-asm caller declarations, or live Azahar runtime behavior is claimed.

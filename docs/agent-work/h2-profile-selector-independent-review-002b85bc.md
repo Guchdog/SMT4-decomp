@@ -1,48 +1,31 @@
-# Independent review: `ui_func_002b85bc` (`0x002B85BC`)
+# Independent Review: `0x002B85BC` (`ui_func_002b85bc`) Profile Selector
 
-## Recommendation
+## Verdict
 
-Approve the typed selector for the bounded fixture and caller contract. The fresh differential passed all nine direct cases and both original caller slices; all five mutation controls were detected. The corrected status behavior is represented correctly: unchanged status 8 causes three service calls; unchanged 7/9 causes two total; when the first 7/9 call changes status to 8, it causes four calls total (the initial call plus the three-call status-8 block). Hook calls, arguments, and order match the original in the observed cases.
+**Disposition:** **Accept** `ui_func_002b85bc` (`src/engine/leaf_batch44_c.cpp:1232-1290`, `non_matching`, `372/472` bytes, `11` even ARM `R_ARM_CALL` relocations) for its bounded hook-modeled domain and both exercised caller slices (`0x99`, `0xDC`).
 
-There is a separate exact-classification issue to fix during integration: the fresh body is 372/472 bytes, uses 11 relocated calls, and `exact_matching=false`, while the current CSV row remains `matching` and README omits `0x002B85BC` from the non-matching list. The behavior review approves the candidate, but its production classification must become `non_matching` before promotion. I did not edit the ledger or README.
+This review does not claim transitive service equivalence, live TBB/profile data, or Azahar audio/runtime equivalence.
 
-## Frozen inputs and fresh run
+## 1. Independent Disassembly & Contract Audit (`0x002B85BC`, 472 bytes)
 
-Recomputed all 16 SHA-256 pins from the run001 packet; all matched. Pinned original image SHA-256 is `1f98884fe997af22e032a14c51a46c872b05b0e079a0f29e307b0e059cfaa558`; candidate source SHA-256 is `b3e09dd3cb90e8b9b4a21e113fbcf361dd8ee096675f2d22a48fee9d644578c1`.
+Inspected `extracted/exefs/code.bin` (`1f98884fe997af22e032a14c51a46c872b05b0e079a0f29e307b0e059cfaa558`) at `0x002B85BC..0x002B8794` (literal `0x0043DA28` at `0x002B8790`) and verified all 16 `input_sha256` pins:
 
-Ran the assigned fresh final-VMA experiment:
+- **Profile lookups & early return**: Reads `O = *(u32*)(0x0043DA28 + 4)`, calls `0x002AEA28(O[0x4C9])` then `0x002AEA28(request)`. If either returns `0`, returns `r0` of the second lookup (`0x002B85E0..0x002B85E8`).
+- **Three profile-flag branches & status-8 multiplicity**:
+  - `old_profile[0x0C] == 0 && new_profile[0x0C] != 0`: reloads `O` from `0x0043DA28 + 4`, loops `i = 0..5` calling `0x002BF030(O + 0x34 + 0x8C*i, 1)`, clears nonzero `O[0x494 + 4*i]` to `0` and calls `0x002A8A8C()` once; then loops `j = 0..1` on `O + 0x37C + 0x8C*j`, rereading `O[0x4C8]` (`== 1 -> 0x002BDAC0(slot, 3, 0)`, else `0x002AA268(slot, 0, 1)`).
+  - Otherwise (`old[0x0C] != 0` or `new[0x0C] == 0`): reloads `O`, loops `i = 0..5` calling `0x002BF030(O + 0x34 + 0x8C*i, 1)`; skips `0`, calls `0x002A8A8C()` once if `7` or `9`, reloads `O[0x494 + 4*i]`, and calls `0x002A8A8C()` `3` times if `8` else `1` time.
+- **Cleanup & return**: Reloads `O` from `0x0043DA28 + 4`, writes `*(u32*)(O + 0x0C) = 0`, `*(u32*)(O + 0x10) = 3`, returns `O + 0x0C`.
+- **Ledger**: `config/functions.csv` truthfully classifies `0x002b85bc` as `non_matching`.
 
-```text
-python -B tools/h2_profile_selector_experiment.py --out build/agent-work/H2-semantic/h2-profile-selector-review-002b85bc/run001/checks/fresh
-exit: 0
-```
+## 2. Fresh Offline Rerun & Affected TUs
 
-Fresh `report.json` SHA-256 is `a6a9d9a8bb2d61a85a3cf206b596c13c1dffb51385c0e4f391a88c24d768f645`.
+- `python tools/h2_profile_selector_experiment.py --out build/agent-work/H2-semantic/h2-profile-selector-review-002b85bc/run-001/checks/fresh` (exit `0`, `report.json` SHA-256 `398a1b757ddfdc1a2776b362705c4968a0adf516a8a4186861193276ba73405a`):
+  - `9/9` direct cases (`mismatch_count=0`, including `old_profile_null`, `new_profile_null`, `old_active_status_matrix`, `status_7_mutates_to_8_then_three_call_block`, `new_active_status_clear_mode_1`, `new_active_status_clear_mode_2`, `both_profile_flags_zero`, `manager_pointer_reload`, `null_object_fault` at `0x4C9`).
+  - `2/2` original `0x002B8B78` caller slices (`title_config_init_request_0x99`, `nested_callback_request_0xDC`, `equal=true`).
+  - `5/5` negative controls detected (`loop_bound`, `status_clear`, `service_multiplicity`, `two_slot_args`, `cleanup_value`).
+  - `372/472` bytes, `11` even ARM `R_ARM_CALL` relocations (`0x002AEA28` x2, `0x002A8A8C` x4, `0x002BF030`, `0x002BDAC0` x2, `0x002AA268` x2; all `target_bit0_clear=true`), `ips_replay=true`, `changed_outside_slot=false`.
+- `python tools/build_check.py --tu src/engine/leaf_batch32_c.cpp --out-dir .../run-001/tu-compile -j 1` (exit `0`, `.o` SHA-256 `9f98ea6a7f0f7c96644e6a2fb4b6503390c66d80f78e14ab1a33b7e926d63b1e`) and `src/engine/leaf_batch44_c.cpp` (exit `0`, `.o` SHA-256 `f46154067a8aca79e270014fc7a26b5e16d5e41f49e5573c34fce34eed8fd7eb`).
 
-## Contract and branch audit
+## 3. Limits
 
-The candidate accepts the full 32-bit request in `r0`, loads the selected old ID from object byte `+0x4C9`, and calls the original `camp_func_002aea28` first with that old ID and then with the request. The lookup order is preserved even if the old lookup returns null. If either result is null it returns the new lookup's raw result without entering profile loops or cleanup. The null-object case faults on the same unmapped read at `0x4C9` as the original; this is an explicit fault case, not a supported valid-object path.
-
-For non-null profiles, the candidate preserves the old/new profile `+0x0C` branches, six slot iterations at stride `0x8C`, service arguments, status-byte accesses, cleanup reload, ordered stores of 0 then 3 at the reloaded object's `+0x0C/+0x10`, and raw return pointer. Each six-slot iteration calls `camp_func_002bf030(object+0x34+0x8C*i, 1)` before status handling. In the clear-status branch, nonzero status is cleared before one `ui_func_002a8a8c()` call; the two extra records call either `camp_func_002bdac0(record,3,0)` for object byte `+0x4C8 == 1`, or `camp_func_002aa268(record,0,1)` otherwise.
-
-The status matrix covers 0, 1, 7, 8, 9 and another nonzero value. Its `ui_func_002a8a8c` counts are respectively 0, 1, 2, 3, 2 and 1, totaling nine calls. The dedicated service-mutated fixture starts at status 7; the first no-argument hook changes it to 8, then the reloaded 8 executes three additional calls. The trace therefore contains four ordered service calls for that slot. This confirms the correction to the prior static contract's 7/9→8 accounting.
-
-## Fresh differential, hooks, callers and controls
-
-Fresh report: nine direct cases, two caller cases, zero mismatches. Direct cases include both lookup-null paths, the old-active status matrix, the status-7 mutation to 8, both new-active two-slot modes, both profile flags zero, manager-pointer reload before cleanup, and the null-object read fault. The normal-return comparisons include `r0`, SP, callee-saved state, fixture memory, ordered writes, dependency events/arguments and fault state.
-
-Both original caller slices match: TitleConfig initializer request `0x99` and nested callback request `0xDC`. Each reaches the selector dependencies with aligned SP. The traces show ordered old/request lookups `(3, request)`; six manager-service calls `(object+0x34+0x8C*i,1)` in index order; status helper calls interleaved according to each fixture; and in the clear-status cases two final calls with exact argument tuples `(record,3,0)` or `(record,0,1)`. Both caller slices report final raw `r0=0xAE874001`. Other wrapper services are controlled hooks, so the tests establish the modeled call slice rather than those callees' transitive effects or natural runtime reachability.
-
-All five controls were detected: loop-bound/slot mapping, wrong status clear, status-service multiplicity, altered two-slot arguments, and cleanup value. The fresh output records 11 `R_ARM_CALL`-class relocations (type 28) at offsets 24, 36, 116, 144, 208, 216, 228, 268, 284, 316 and 332. Every rebased target is an even ARM address: `0x002AEA28`, `0x002A8A8C`, `0x002BF030`, `0x002BDAC0`, and `0x002AA268`. Each observed dependency call reports aligned SP.
-
-The candidate body is 372 bytes in the 472-byte slot. Staging preserves the original slot suffix, IPS replay succeeds, and `changed_outside_slot=false`. Fresh staged image SHA-256 is `1c90f45173a6847abf88f87ea2495de60c6ed2be64e3bbb571822c65b29e7904`; IPS SHA-256 is `15ad28afb4e943e9adc9f1664c7c72bd811869f89746e0f6d453e74f5f73a676`; object SHA-256 is `ab280f5c40c573ae14a4b648a91a190608e5fbcd76967bff1340845fbb2aea91`. The object identity agrees with the pinned focused ARMv6K compile report. This is a focused TU compile, not a full build.
-
-## Ledger arithmetic and classification correction
-
-The current ledger says `0x002B85BC` is `matching`, despite the candidate's different 372-byte body and `exact_matching=false`; the conversion note also records that ledger reconciliation was deferred. Current totals are 10,907 matching functions / 3,120,504 bytes, 52 non-matching functions / 18,120 bytes, and 8 matching spans / 484 bytes. The totals are 10,959 functions plus 8 spans and 3,139,108 bytes. README currently reports 3,120,988 exact bytes including spans (99.4228%) and 18,120 non-matching bytes.
-
-After coordinator changes the 472-byte function row to `non_matching`, expected totals become 10,906 matching functions / 3,120,032 bytes; 53 non-matching functions / 18,592 bytes; and 8 matching spans / 484 bytes. Exact matching coverage including spans becomes 3,120,516 / 3,139,108 = 99.4077%. README must add `0x002B85BC` to its non-matching reconstruction list. These are arithmetic consequences of the current ledger and the pinned 472-byte function size; no accounting file was modified in this review.
-
-## Limits
-
-The scenarios use explicit mapped profile/manager fixtures and deterministic hooks for the selector's service callees and remaining wrapper helpers. They do not validate those dependencies' transitive state changes, live TBB/profile population, manager lifecycle/concurrency, persistence, audible output, or natural callback reachability. Only the documented direct cases and two caller slices are covered. The null-object fault matches, but arbitrary invalid mappings, pointer aliasing and concurrent mutation remain outside the supported domain. No emulator or runtime test was run.
+- Deterministic hooks for all 5 direct callees and wrapper helpers; valid non-aliased ordinary RAM (plus the single explicit `null_object_fault` read at `0x4C9`); live TBB/audio/runtime remain unverified.

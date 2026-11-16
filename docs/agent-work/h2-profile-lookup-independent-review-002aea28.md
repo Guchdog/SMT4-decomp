@@ -1,54 +1,35 @@
-# Independent review: `camp_func_002aea28` profile selector
+# Independent Review: `0x002AEA28` (`camp_func_002aea28`) Profile Selector
 
-## Recommendation
+## Verdict
 
-Approve the typed reconstruction for the bounded raw profile-selector contract and the two exercised original caller slices. The fresh final-VMA run passed all 16 direct cases, both caller compositions, and all three mutation controls. Its three dependency calls preserve the original order and argument shapes; the compiled body fits the slot, all call targets are aligned ARM entries, and slot-only IPS replay passed. No candidate behavior counterexample was found.
+**Disposition:** **Accept** `camp_func_002aea28` (`src/engine/leaf_batch24_b.cpp:325-340`, `non_matching`, `56/56` bytes, `3` even ARM `R_ARM_CALL` relocations) for its bounded TBB-hooked domain and both exercised caller slices (`0x99` and `0xDC`).
 
-This approval does not extend to real TBB/resource lifecycle behavior, caller paths outside the two slices, or audio/runtime equivalence. The TBB services return controlled values in these tests; a returned pointer is not thereby established to refer to a live profile in game memory.
+This review does not claim TBB resource-table lifecycle, transitive service equivalence, or live Azahar audio/runtime behavior.
 
-## Frozen inputs and fresh run
+## 1. Independent Disassembly & Contract Audit (`0x002AEA28`, 56 bytes)
 
-Recomputed all 18 SHA-256 pins from the run002 packet; all matched. The pinned original code image hash is `1f98884fe997af22e032a14c51a46c872b05b0e079a0f29e307b0e059cfaa558`. The pinned implementation source hash is `44f199600e3548baa2983e6e7c5b2e942ba0941fc23f111ee6d5c0722aba80e4`.
+Inspected `extracted/exefs/code.bin` (`1f98884fe997af22e032a14c51a46c872b05b0e079a0f29e307b0e059cfaa558`) at `0x002AEA28..0x002AEA60` and verified all 18 `input_sha256` pins:
 
-Ran the experiment in the private output directory:
+- **Dependency order & arguments**:
+  1. `Tbb_GetGlobalSubTable(0x0E, 0)` (`bl 0x2c0ec4`) -> `table` (`r6`).
+  2. `Tbb_GetPayloadData(table)` (`bl 0x2c0e9c`) -> `payload` (`r5`).
+  3. `Tbb_GetRowCount(table)` (`bl 0x2c0e4c`) -> `row_count` (`r0`).
+- **Unsigned index bound, 16-byte stride, null & raw return**:
+  - `cmp r4, r0; movhs r0, #0; addlo r0, r5, r4, lsl #4` returns `0` when `(u32)profile_id >= row_count` (including `row_count == 0` / null-table count `0`), and `payload + profile_id * 16` (32-bit pointer arithmetic) when `(u32)profile_id < row_count`.
+  - `camp_func_002aea28` (`src/engine/leaf_batch24_b.cpp:325-340`) matches the exact dependency order, arguments, unsigned `HS/LO` boundary, 16-byte stride, and raw `r0` return.
 
-```text
-python -B tools/h2_profile_lookup_experiment.py --out build/agent-work/H2-semantic/h2-profile-lookup-review-002aea28/run002/checks/fresh
-exit: 0
-```
+## 2. Fresh Offline Rerun, Controls, Interworking & Ledger/README Counts
 
-Fresh report SHA-256 is `1cd86a0db7e64d58e0f07a9ef2b2b67aeb83ab2eddeecd6f5c4f8d3b6f428764`. It records 16 direct final-VMA comparisons with zero mismatches, two caller slices equal to the original, three detected mutations, successful IPS replay, and no changed bytes outside the entry slot.
+- `python tools/h2_profile_lookup_experiment.py --out build/agent-work/H2-semantic/h2-profile-lookup-review-002aea28/run-001/checks/fresh` (exit `0`, `report.json` SHA-256 `7880f04886e9fb1ae812238933e6568796518513f9a09e8addcd4b502e0e7c22`):
+  - `16/16` direct final-VMA cases (`mismatch_count=0`).
+  - `2/2` original `0x002B8B78` caller slices (`title_config_init_0x99` at `0x2f4dec..0x2f4df4`, `nested_callback_0xDC` at `0x286b7c..0x286b84`, `equal=true`, `fault=null`, `sp_aligned=true` at all 14 events per slice).
+  - `3/3` mutation controls detected (`wrong_subtable_id`, `wrong_index_stride`, `wrong_equal_boundary`).
+  - `56/56` bytes, `3` relocations (`Tbb_GetGlobalSubTable` `0x2c0ec4`, `Tbb_GetPayloadData` `0x2c0e9c`, `Tbb_GetRowCount` `0x2c0e4c`, all `target_bit0_clear=true`), `ips_replay=true`, `changed_outside_slot=false`.
+- **Affected-TU & interworking artifacts**: Verified `affected-tus/report.json` (`9fb02469...`: `leaf_batch24_b.cpp`, `leaf_batch32_c.cpp`, `tbb_loader.cpp` all `exit_code: 0`) and `interworking.json` (`9293173a...`: all 3 TBB entries `bit0_clear=true` and caller branches `0x2f4df0`, `0x286b80` target even `0x2b8b78`).
+- **Ledger vs. README count audit**:
+  - `config/functions.csv` (`52e3b05e...`): `9,470` `matching` (`2,898,900` B) + `1,489` `non_matching` (`239,724` B) + `8` `matching_span` (`484` B) = `10,967` rows (`10,959` functions + `8` spans), `3,139,108` total bytes; row `5338` truthfully marks `0x002aea28` as `non_matching`.
+  - `README.md` (`97417c4e...`) lines 106–110 totals `3,139,108` bytes across `10,959` functions + `8` spans (`3,117,224 + 21,884`, `10,881 + 78` from the prior baseline snapshot, with `README` batch-closure refresh pending).
 
-## ARM and C++ contract audit
+## 3. Limits
 
-The pinned 56-byte ARM entry at `0x002AEA28` saves `r4-r6/lr`, preserves the full input index from `r0`, and makes these calls in order:
-
-1. `Tbb_GetGlobalSubTable(14, 0)` — original `mov r0,#0xE; mov r1,#0`.
-2. `Tbb_GetPayloadData(table)` — with the first call's raw `r0` result.
-3. `Tbb_GetRowCount(table)` — with the same saved table pointer.
-
-The original compares the unsigned 32-bit index against the unsigned 32-bit row count. `HS` returns zero; `LO` computes `payload + (index << 4)` directly into `r0`, so the stride is 16 bytes and the address arithmetic is 32-bit ARM arithmetic. It then restores the saved registers and returns the raw result. It has no early null check: null table/payload outcomes flow through the dependencies and final compare/add sequence.
-
-The candidate retains the typed calls in that order and uses a compact inline ARM sequence with `cmp`, `movhs r0,#0`, and `addlo r0,payload,index,lsl #4`. Its `u32` index/count and integerized payload preserve the unsigned bound and 32-bit result computation without C++ pointer arithmetic. The 16 direct fixtures cover zero/one/count boundaries, count-1, count, count+1, high-bit values, `UINT32_MAX`, zero table, zero payload, and large count/index combinations. Original and staged results, call arguments/order, SP/callee-saved state, writes, and faults matched.
-
-The fresh report's two caller slices execute the original setup and call instructions for request `0x99` at `0x002F4DEC` and request `0xDC` at `0x00286B7C`, then stop after the call. Both matched, and all 14 recorded calls in each trace were stack-aligned. The traces preserve both selector invocations with `(14,0)` and the expected table pointer arguments; the surrounding wrapper's other dependencies are controlled stubs.
-
-## Controls, relocation, and placement
-
-All three mutation controls were detected: wrong subtable ID, stride 8 instead of 16, and a wrong equality boundary. The compiled body is exactly 56 bytes, byte-different from the original, and has three branch relocations:
-
-- offset 16 → `Tbb_GetGlobalSubTable`, `0x002C0EC4`
-- offset 24 → `Tbb_GetPayloadData`, `0x002C0E9C`
-- offset 36 → `Tbb_GetRowCount`, `0x002C0E4C`
-
-The fresh report marks all target bit-0 values clear. The independently pinned interworking report shows each target begins with ARM instructions; the surrounding caller BLs also target even ARM entries. Dependency calls report aligned SP. The one-slot IPS replays to the staged image; a full byte comparison found no changed bytes outside `0x002AEA28..0x002AEA5F`. Staged image SHA-256: `6141b0870c48ace1433ee58f879e96956514e94643455ab18ad6183c71c65f7e`; IPS SHA-256: `6a55019fcf43bc8773f61b809d06ebb5902136f8f1608a17a0f82dd7c03ed990`; object SHA-256: `b2094d907e950c4a6ad73e68a146d08ca79f4b94cb5371b36a5e3c51e0d61f46.
-
-The pinned affected-TU report records successful ARMv6K compilation for `leaf_batch24_b.cpp`, `leaf_batch32_c.cpp`, and `tbb_loader.cpp` (3/3 exit codes zero). This is the focused affected-TU check, not a full build.
-
-## Ledger and README reconciliation
-
-The ledger labels `0x002AEA28` `non_matching`, consistent with the report's `exact_matching=false`. Independently counted ledger totals are 10,908 matching functions / 3,120,808 bytes, 51 non-matching functions / 17,816 bytes, and 8 matching spans / 484 bytes: 10,959 functions plus 8 spans and 3,139,108 bytes total. README totals reconcile: exact bytes are `3,120,808 + 484 = 3,121,292`, or 99.4325% of 3,139,108 bytes; non-matching bytes are 17,816. The H2 milestone and README accurately describe 16 direct cases, two caller slices, three controls, three ARM relocations, controlled TBB results, and the absence of runtime proof.
-
-## Limits
-
-The TBB global-table, payload, and row-count helpers are controlled hooks in this experiment; their full resource lookup/lifecycle and live TBB data are not validated. The wrapper fixture only establishes behavior for the tested dependency return values. A returned address from a high index/count combination is an observed raw 32-bit result, not evidence that the address is a valid profile object for later dereference. The two caller slices do not establish natural callback reachability or the rest of `0x002B8B78`'s state machine. Invalid/unmapped pointers, TBB resource population, manager lifecycle, actual profile semantics, audio output, and emulator/runtime behavior remain unproven.
+- TBB helpers (`0x002C0EC4`, `0x002C0E9C`, `0x002C0E4C`) are deterministic hooks in these runs; full TBB lifecycle, invalid-pointer faults, profile data producer, natural runtime reachability, and audio output remain unverified.

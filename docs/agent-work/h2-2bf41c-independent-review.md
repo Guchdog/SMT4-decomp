@@ -1,66 +1,45 @@
-# Independent review: `0x002BF41C` task-registry lookup
+# Independent Review: `0x002BF41C` (`battle_func_002bf41c`) Task-Registry Lookup
 
-## Decision
+## Verdict
 
-The C++ implementation is supported for the documented readable-registry domain. The original and candidate agree on bucket selection, row stride, node fields, equality, null termination, and the no-match result. The direct differential covers all 4,096 buckets plus boundary/list cases and detects both targeted mutations. The original `TitleConfig_IsReady` body is also exercised with the converted helper installed at the final address for five controlled states.
+**Disposition:** **Accept** the typed `u32(void*)` C++ reconstruction in `src/engine/leaf_batch32_c.cpp` (`battle_func_002bf41c`) and its bounded offline differential + `TitleConfig_IsReady` (`0x002FC0EC`) composition evidence, **with one provenance caveat**: `report.json` (`run001`) records `source_sha256` `f31e0469aae82b0e2bffacf9d4ad59647308257943dd28ec81f43781b685cff3`, whereas `src/engine/leaf_batch32_c.cpp` at HEAD `7e9db4d10fb1fa0a64fc4fa85875311c122f17a4` has SHA-256 `c793ee3c037bca075d7947d5a0bfcb95792795b3039a55bac0cb7a1b995e2fe5`.
 
-Recommend bounded semantic promotion with the current `non_matching` ledger status. The task-list fixtures are synthetic and acyclic; no scheduler lifecycle, mutation ordering, natural runtime frequency, or H2 runtime acceptance is established.
+This review does not claim whole-game or H2 runtime equivalence.
 
-## Frozen identity and original algorithm
+## 1. Independent Verification of Pinned Original Body (`0x002BF41C`, 68 bytes)
 
-All 20 run001 packet input hashes match. The pinned `code.bin` SHA-256 is `1f98884fe997af22e032a14c51a46c872b05b0e079a0f29e307b0e059cfaa558`. The 68-byte original span at `0x002BF41C` hashes to `abc87f735e4d84f179da2ad9d7349c4913956be1b7e3d153004a0f785898447a`.
+Inspected `extracted/exefs/code.bin` (SHA-256 `1f98884fe997af22e032a14c51a46c872b05b0e079a0f29e307b0e059cfaa558`) at file offset `0x001BF41C..0x001BF460`:
 
-Pinned ARM decoding shows:
+- **Registry global**: `0x002BF41C: ldr r1, [pc, #0x38]` loads literal `0x004E3CF4` from `0x002BF45C`, then `ldr r2, [r1]` dereferences the bucket table base.
+- **Bucket index & table stride**: `0x002BF424: lsr r1, r0, #0x14` computes `handle >> 20` (4,096 buckets); `0x002BF428: ldr r1, [r2, r1, lsl #3]` indexes an 8-byte-stride table and reads the bucket head pointer at offset `+0`.
+- **Node offsets**: `0x002BF434: ldr r2, [r1, #0x28]` reads the stored handle at `+0x28`; `0x002BF448: ldr r1, [r1, #0x4c]` advances to the next node at `+0x4C`.
+- **Match / miss / null-handle behavior**:
+  - Empty bucket (`node == 0`) or list exhaustion (`next == 0`) branches to `mov r0, #0; bx lr`.
+  - First node with `node_handle == handle` returns `mov r0, #1; bx lr`.
+  - Null handle (`r0 == 0`) is not special-cased: it selects bucket `0` (`0 >> 20 == 0`) and returns `1` if any node in bucket `0` stores `0` at `+0x28`, else `0`.
+- **ABI**: Read-only; touches `r0-r2` only; no stack frame, no VFP/NEON instructions, preserves `r4-r11` and `SP`.
 
-1. Load the registry-table global pointer from `0x004E3CF4`.
-2. Compute `bucket_index = handle >> 20`, then load the bucket head from `table + bucket_index*8`.
-3. While the node pointer is nonzero, compare the word at `node+0x28` with the original `r0` handle. Return 1 immediately on equality; otherwise follow the word at `node+0x4C`.
-4. Return 0 after an empty bucket or a null next pointer.
+### Candidate & Ledger Check
 
-The unsigned 32-bit shift yields indices 0 through 4095 for every possible handle. The table is indexed with an 8-byte stride though only the first word is read. The candidate C++ follows that layout, preserves the raw `u32` task bits via `uintptr_t` conversion, and uses `u32(void*)` / `u32` return. It has no explicit null-handle special case: handle zero selects bucket zero and can match a node whose stored handle is also zero. A null registry pointer, unreadable table/node, malformed node, or cyclic chain can fault or fail to terminate; those are correctly excluded from the claimed contract.
+- `src/engine/leaf_batch32_c.cpp:1032-1046` implements the exact `u32 battle_func_002bf41c(void* task)` contract.
+- Disassembly of `body_hex` in `build/agent-work/H2-semantic/h2-bf41c-task-registry-convert/run001/report.json` (68 bytes, 0 relocations) uses `mvn r2, #7; and r2, r2, r1, lsr #17` to compute `((u32)handle >> 20) << 3` identically for all 32-bit `u32` inputs, preserves `r4-r11` and `SP`, and performs no writes or VFP operations.
+- `config/functions.csv:5704` classifies `0x002bf41c` as `non_matching`, matching `byte_identical: false`.
 
-The candidate report body is 68 bytes, SHA-256 `c6f7dce448693f282f4b7fec497998560bd9610a0b91cbbc746673fe47a948bc`, with no relocations. It differs from original bytes, matching the ledger’s `non_matching` label. It uses only caller-saved registers `r0-r3` and no stack. The original likewise only clobbers caller-saved registers, uses no stack, and performs loads only; both preserve the tested callee-saved registers and SP and issue no writes.
+## 2. Typed Caller Declarations & `TitleConfig_IsReady` Composition
 
-## Direct differential and controls
+- **Typed declarations**: `leaf_batch19_b.cpp:16`, `leaf_batch19_c.cpp:15`, `leaf_batch20_c.cpp:18`, `leaf_batch24_c.cpp:25`, `leaf_batch26_b.cpp:1773`, `leaf_batch29_c.cpp:24`, `leaf_batch32_c.cpp:26`, and `leaf_batch34_c.cpp:17` all declare `extern "C" u32 battle_func_002bf41c(void* task);`. `asd_render_ui.cpp:47` and `asd_text.cpp:40` declare `u32 AsdUi_IsRegistered(void* handle);`. (`leaf_batch32_c.cpp:2065` still calls `0x002BF41Cu` via raw function-pointer cast.)
+- **Original `TitleConfig_IsReady` (`0x002FC0EC`, 52 bytes)**: Verified in `extracted/exefs/code.bin` (`0x001FC0EC..0x001FC120`): loads `g_TitleConfigWork` from `0x0044E2D0`, returns `1` immediately if null, otherwise loads `*(u32*)work`, calls `bl 0x002BF41C`, and returns `0` if nonzero or `1` if zero. Matches `src/engine/leaf_batch26_b.cpp:1775-1783` and `docs/function-records/0x002fc0ec.md`.
 
-The report exercises 4,096 matching lookups, one for each bucket index, using handles of the form `(index << 20) | 0x54321`. It then tests nine empty/boundary handles, five first/middle/tail/miss chain queries, and 64 deterministic 8-node random chains (seed `20261104`). The fixture maps 4,096 8-byte buckets and nodes at `+0x28` / `+0x4C`; the chain tail is null. The direct comparator checks `r0`, `r4-r11`, SP, all guest writes, completion, and faults. The two mutation controls detect a shifted bucket calculation (`>>19`) and a shifted stored-handle field (`+0x2C`), both on input `0x00100001`.
+## 3. Fixture, Mutation, ABI, and Composition Audit
 
-This establishes the tested bucket and list logic for well-formed readable registries. It does not test cycles, invalid pointers, null registry-global contents, concurrent registry changes, or allocator/task lifetime. Null-task behavior is tested in the ready-gate composition rather than the direct bucket sweep.
+Inspected `tools/h2_bf41c_experiment.py` and `build/agent-work/H2-semantic/h2-bf41c-task-registry-convert/run001/report.json` (read-only; 0 compiler slots used):
 
-## Caller signatures and ready-gate composition
+- **Direct coverage**: All 4,096 bucket indices (`0..4095`) hit; 9 empty/boundary handles (`0`, `1`, `0xfffff`, `0x100000`, `0x100001`, `0x7fffffff`, `0x80000000`, `0xfff00000`, `0xffffffff`); 5 chain probes on a 4-node list (head, middle, tail, miss); 64 deterministic 8-node random chains.
+- **Negative controls**: Compiled mutations for `bucket-index` (`handle >> 20` -> `handle >> 19`) and `handle-offset` (`node + 0x28` -> `node + 0x2c`) were both detected (`original: 1`, `mutant: 0`).
+- **ABI/memory**: `execute()` verifies `r4-r11`, `SP`, normal return to `LR`, zero faults, and zero memory writes (`UC_HOOK_MEM_WRITE`).
+- **Caller composition**: Patches the compiled 68-byte candidate into `0x002BF41C` in the pinned image and executes original `0x002FC0EC` across 5 fixtures (`null-work`, `registered`, `unregistered`, `null-task-absent`, `null-task-present`), verifying identical return values, zero faults, and `UC_HOOK_CODE` call-argument traces.
 
-The packet-declared caller translation units declare `extern "C" u32 battle_func_002bf41c(void* task)`. The `TitleConfig_IsReady` C++ body uses this prototype and passes the first word of `TitleConfigWork` as the task pointer. The pinned original ready body at `0x002FC0EC` loads `g_TitleConfigWork` from `0x0044E2D0`; if null it returns 1 without the registry call. Otherwise it loads `work[0]`, calls `0x002BF41C`, returns 0 for a nonzero registry result, and returns 1 for zero.
+## 4. Limitations & Next Action
 
-`run_ready_composition()` compares that original ready-gate body on the pinned image and with only the helper replaced at its final address. Its five cases are consistent with the algorithm:
-
-- null work: returns ready (1), no registry call;
-- registered nonzero task: helper receives `0x00123456`, returns 1, ready returns 0;
-- unregistered nonzero task: helper receives `0x00123456`, returns 0, ready returns 1;
-- null task absent from bucket zero: helper receives 0, returns 0, ready returns 1;
-- null task stored in bucket zero: helper receives 0, matches the zero node key, returns 1, ready returns 0.
-
-Both images produce matching full execution observations and helper-entry traces. This is direct composition with the real original ready gate, not a TitleMain outer state transition or runtime scheduler test. Fixture memory is separated from the code mapping: bucket table `0x00900000`, nodes from `0x00910000`, work area `0x00990000`; the globals remain at their pinned absolute addresses.
-
-Outside the packet-declared caller TUs, I found legacy aliases `int AsdUi_IsRegistered(void*)` in `asd_text.cpp` and `asd_render_ui.cpp` for address `0x002BF41C`. The integer and `u32` return both use a 32-bit AAPCS result register, and these aliases consume the result as a boolean, so I found no ABI counterexample. Those two files were not declared packet inputs; they are not covered by the frozen caller-signature audit above. If a broad source-level type-consistency claim is made, preserve or normalize those aliases deliberately.
-
-## Evidence status and limitations
-
-- Compiled body: **reported passed**, 68 bytes and zero relocations; this reviewer did not compile.
-- ARM differential: **reported passed** for 4,096 buckets, nine empty/boundary inputs, five chain positions, 64 random chains, and two detected controls. This reviewer did not rerun it.
-- Caller: **partial but strong for the ready gate**; five controlled cases execute the original `TitleConfig_IsReady` body with the helper at its final address. The task scheduler and outer TitleMain state machine are not exercised.
-- Runtime: **not run**. No natural call frequency, task-list mutation/order, task lifetime, or H2 acceptance is established.
-
-No implementation counterexample found. Keep the `non_matching` classification and the readable acyclic-registry preconditions. The report is `build/agent-work/H2-semantic/h2-bf41c-task-registry-convert/run001/report.json`, SHA-256 `73e74da3493e29ff3278194b4c36000b51d915ed28f74075d6c90a0407a9007f`.
-
-## Review actions
-
-- Recomputed all 20 packet-declared input hashes and the original 68-byte function-span hash.
-- Decoded original helper and ready-gate instructions; read the C++ body/prototypes, runner, function records, and controlled ready-composition logic.
-- Parsed the pinned report and checked the case matrix, negative controls, and final-address helper events.
-- No compiler, test runner, build, or emulator was run.
-
-## Run002 addendum — legacy alias declarations
-
-Run002 pins 22 inputs; independently recomputing every `input_sha256` entry found no missing files or hash mismatches. The two newly pinned caller translation units now both declare `u32 AsdUi_IsRegistered(void* handle)` for `0x002BF41C`: `src/engine/asd_text.cpp` and `src/engine/asd_render_ui.cpp`. This agrees with the candidate's raw `u32(void*)` helper signature and with the packet's typed `extern "C" u32 battle_func_002bf41c(void*)` declarations. The inspected uses are truth tests: the inline assembly in `asd_text.cpp` moves the handle into `r0`, calls the helper, then compares `r0` with zero; the two C++ call sites in `asd_render_ui.cpp` use `if (!AsdUi_IsRegistered(...))`. Both are consistent with the helper's 0/1 result and are unchanged in behavior by the declaration normalization.
-
-Therefore the run001 alias concern is resolved as a source-level type-consistency issue. I found no caller-signature or result-consumption counterexample. The coordinator reports that the full 204-TU ARMv6K build passed after normalization; I did not rerun it. The pinned offline report remains the basis for the helper differential and `TitleConfig_IsReady` composition claims. Recommendation remains bounded semantic acceptance with ledger status `non_matching`; the tested registry shape and synthetic caller fixture do not establish scheduler lifecycle, natural call frequency, or H2 runtime acceptance.
+1. **Stale `source_sha256` in `report.json`**: `report.json` was generated against an earlier `leaf_batch32_c.cpp` (`f31e0469...`) before later batch-32 edits (`c793ee3c...`). Re-run `python tools/h2_bf41c_experiment.py` during coordinator batch closure (or under an assigned compiler slot) to refresh `report.json`'s `source_sha256` against HEAD.
+2. **Offline synthetic domain**: Lists are acyclic and null-terminated; cycles, unreadable pointers, concurrent scheduler mutation, and live Azahar execution remain outside the tested domain.
