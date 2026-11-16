@@ -3040,7 +3040,7 @@ address,size,status,category,name,src_file
 0x00221660,24,matching,unknown,func_00221660,src/engine/leaf_batch32_b.cpp
 0x00221678,72,matching,unknown,func_00221678,src/engine/leaf_batch20_b.cpp
 0x002216c0,280,matching,engine,engine_func_002216c0,src/engine/leaf_batch32_b.cpp
-0x002217d8,648,matching,battle,EffectProcess_func_002217d8,src/battle/battle_extras.cpp
+0x002217d8,648,non_matching,battle,EffectProcess_func_002217d8,src/battle/battle_extras.cpp
 0x00221a60,24,matching,unknown,func_00221a60,src/engine/leaf_batch20_b.cpp
 0x00221a78,56,matching,unknown,func_00221a78,src/engine/leaf_batch27_b.cpp
 0x00221ab0,104,matching,battle,battle_func_00221ab0,src/engine/leaf_batch28_b.cpp

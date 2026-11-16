@@ -1023,178 +1023,116 @@ void FilterXPoly_func_00348548(FilterXPolyWork* self, void* source, s32 arg) {
 __attribute__((naked)) void FilterXPoly_func_00348548(FilterXPolyWork* self, void* source, s32 arg) {
     asm volatile(".incbin \"extracted/exefs/code.bin\", 0x248548, 1032\n");
 }
+extern "C" {
+    void* engine_func_002c4b84(u32 size_a, u32 size_b, u32 unk2, u32 struct_size, u32 count); // 0x002c4b84
+    void  engine_func_002c4b30(void* dst, u32 size);                                          // 0x002c4b30
+    void* engine_func_002c5978(const char* name, s32 tag, u32 unk2, u32 unk3, const void* calc_fn, const void* dtor_fn, void* work); // 0x002c5978
+    void* camp_func_002c4c00(const char* name, s32 tag, u32 unk2, u32 unk3, const void* calc_fn, const void* dtor_fn, void* work, void* parent_work); // 0x002c4c00
+    void  battle_func_0032ffa8();                                                             // 0x0032ffa8
+    void  battle_func_002009ac(u32 a0);                                                       // 0x002009ac
+    void  battle_func_00317bd8(u32 a0);                                                       // 0x00317bd8
+    void  battle_func_00221ab0();                                                             // 0x00221ab0
+    void  engine_func_002c2210(void* work, u32 a1);                                           // 0x002c2210
+    void  engine_func_002c1774(void* work, f32 a1, f32 a2);                                   // 0x002c1774
+    void  engine_func_002c20a8(void* work, const f32* eye, const f32* target, const f32* up); // 0x002c20a8
+    void  engine_func_002c1ffc(void* work, u32 a1, f32 fov, f32 near_z, f32 far_z, f32 aspect); // 0x002c1ffc
+    void  func_0017fae4();                                                                    // 0x0017fae4
+    void  func_001dc8c8();                                                                    // 0x001dc8c8
+    void  func_001aa19c();                                                                    // 0x001aa19c
+    void  func_001aa3a4();                                                                    // 0x001aa3a4
+    void  func_001dc954();                                                                    // 0x001dc954
+    extern void* g_EffectProcessWork_00433260;                                                // 0x00433260
+}
+
 // DECOMP_FUNC(0x002217d8, 648)
+void* EffectProcess_func_002217d8(u8 mode) {
+    static constexpr u32 kAllocSize = 0x100;
+    static constexpr u32 kWorkSize = 0x534;
+    static constexpr f32 kAspectRatio = 1.6666666f; // 0x3FD55555
+    static constexpr f32 kFarZ = 25600.0f;
+    static constexpr f32 kNearZ = 0.1f;
+    static constexpr s32 kCalcTag = 2;
+    static constexpr s32 kDrawUp3dTag = 0x70;
+    static constexpr s32 kDrawDown2dAltTag = 0x84;
+    static constexpr s32 kDrawDown2dTag = 0xE8;
 
+    u8* const work = static_cast<u8*>(
+        engine_func_002c4b84(kAllocSize, kAllocSize, 0, kWorkSize, 1));
+    g_EffectProcessWork_00433260 = work;
+    engine_func_002c4b30(work, kWorkSize);
 
-// ---------------------------------------------------------------------------
-// EffectProcess.cpp
-// ---------------------------------------------------------------------------
+    work[0x530] = mode;
+    battle_func_0032ffa8();
+    battle_func_002009ac(0);
+    if (work[0x530] == 0) {
+        battle_func_00317bd8(0);
+    }
+    battle_func_00221ab0();
 
-//
-__attribute__((naked)) void* EffectProcess_func_002217d8(u8) {
-    asm volatile(
-        ".word 0xE92D41F0\n"
-        ".word 0xE1A05000\n"
-        ".word 0xE3A01093\n"
-        ".word 0xE28F0F73\n"
-        ".word 0xED2D8B02\n"
-        ".word 0xE24DD020\n"
-        ".word 0xE1A00000\n"
-        ".word 0xE59F61FC\n"
-        ".word 0xE3A00001\n"
-        ".word 0xE3A01C01\n"
-        ".word 0xE58D0000\n"
-        ".word 0xE1A03006\n"
-        ".word 0xE3A02000\n"
-        ".word 0xE1A00001\n"
-        ".word 0xEB028CDB\n" // AsdMem_Alloc (0x002C4B84)
-        ".word 0xE59F11E0\n"
-        ".word 0xE1A04000\n"
-        ".word 0xE5810000\n"
-        ".word 0xE1A01006\n"
-        ".word 0xEB028CC1\n" // AsdMem_Zero (0x002C4B30)
-        ".word 0xE5C45530\n"
-        ".word 0xEB0439DD\n" // Effect_InitA (0x0032FFA8)
-        ".word 0xE3A00000\n"
-        ".word 0xEBFF7C5C\n" // Effect_InitB (0x002009AC)
-        ".word 0xE5D40530\n"
-        ".word 0xE2846C05\n"
-        ".word 0xE3500000\n"
-        ".word 0x0B03D8E3\n" // Effect_InitC (0x00317BD8)
-        ".word 0xEB000098\n" // Effect_InitD (0x00221AB0)
-        ".word 0xED9F1A6B\n"
-        ".word 0xED9F8A6B\n"
-        ".word 0xED8D1A04\n"
-        ".word 0xE2848B01\n"
-        ".word 0xED8D8A05\n"
-        ".word 0xE2888F42\n"
-        ".word 0xED8D1A06\n"
-        ".word 0xEDDF8A66\n"
-        ".word 0xED881A00\n"
-        ".word 0xE2847B01\n"
-        ".word 0xED881A01\n"
-        ".word 0xE2877F45\n"
-        ".word 0xEDC88A02\n"
-        ".word 0xED871A00\n"
-        ".word 0xED871A01\n"
-        ".word 0xED9F0A5F\n"
-        ".word 0xE2845B01\n"
-        ".word 0xED871A02\n"
-        ".word 0xED850A48\n"
-        ".word 0xE3A01001\n"
-        ".word 0xE1A00004\n"
-        ".word 0xEB02825A\n" // Effect_Setup (0x002C2210)
-        ".word 0xEEF00A48\n"
-        ".word 0xEEB00A68\n"
-        ".word 0xE1A00004\n"
-        ".word 0xEB027FAF\n" // Effect_SetScale (0x002C1774)
-        ".word 0xE28D3010\n"
-        ".word 0xE1A02007\n"
-        ".word 0xE1A01008\n"
-        ".word 0xE1A00004\n"
-        ".word 0xEB0281F7\n" // Effect_SetVectors (0x002C20A8)
-        ".word 0xED950A48\n"
-        ".word 0xEDDF1A4F\n"
-        ".word 0xE3A01001\n"
-        ".word 0xED9F1A4E\n"
-        ".word 0xEDDF0A4E\n"
-        ".word 0xE1A00004\n"
-        ".word 0xEB0281C5\n" // Effect_SetDrawParams (0x002C1FFC)
-        ".word 0xE59F1134\n"
-        ".word 0xE59F012C\n"
-        ".word 0xE28D5004\n"
-        ".word 0xE58D1000\n"
-        ".word 0xE3A03000\n"
-        ".word 0xE8850011\n"
-        ".word 0xE1A02003\n"
-        ".word 0xE3A01002\n"
-        ".word 0xE28F0F46\n"
-        ".word 0xEB02901A\n" // AsdTask_CreateCalc (0x002C5978)
-        ".word 0xE5840524\n"
-        ".word 0xE5D61030\n"
-        ".word 0xE2845B01\n"
-        ".word 0xE3A07000\n"
-        ".word 0xE3510000\n"
-        ".word 0xE2855F49\n"
-        ".word 0x0A00000A\n"
-        ".word 0xE59F1100\n"
-        ".word 0xE58D000C\n"
-        ".word 0xE58D4008\n"
-        ".word 0xE3A03000\n"
-        ".word 0xE88D0082\n"
-        ".word 0xE1A02003\n"
-        ".word 0xE3A01084\n"
-        ".word 0xE28F00E8\n"
-        ".word 0xEB028CAC\n" // AsdTask_CreateDraw (0x002C4C00)
-        ".word 0xE584052C\n"
-        ".word 0xEA000014\n"
-        ".word 0xE59F10EC\n"
-        ".word 0xE58D000C\n"
-        ".word 0xE58D4008\n"
-        ".word 0xE3A03000\n"
-        ".word 0xE88D0082\n"
-        ".word 0xE1A02003\n"
-        ".word 0xE3A01070\n"
-        ".word 0xE28F00D4\n"
-        ".word 0xEB028CA1\n" // AsdTask_CreateDraw (0x002C4C00)
-        ".word 0xE5840528\n"
-        ".word 0xE5950000\n"
-        ".word 0xE59F10D4\n"
-        ".word 0xE58D4008\n"
-        ".word 0xE58D000C\n"
-        ".word 0xE3A03000\n"
-        ".word 0xE88D0082\n"
-        ".word 0xE1A02003\n"
-        ".word 0xE3A010E8\n"
-        ".word 0xE28F0090\n"
-        ".word 0xEB028C96\n" // AsdTask_CreateDraw (0x002C4C00)
-        ".word 0xE584052C\n"
-        ".word 0xE5940524\n"
-        ".word 0xE28DD020\n"
-        ".word 0xECBD8B02\n"
-        ".word 0xE8BD81F0\n"
-        ".word 0x535C3A63\n"
-        ".word 0x5C34544D\n"
-        ".word 0x36445258\n"
-        ".word 0x735C3638\n"
-        ".word 0x34736464\n"
-        ".word 0x6F72705C\n"
-        ".word 0x6D617267\n"
-        ".word 0x7461625C\n"
-        ".word 0x5C656C74\n"
-        ".word 0x65666645\n"
-        ".word 0x455C7463\n"
-        ".word 0x63656666\n"
-        ".word 0x6F725074\n"
-        ".word 0x73736563\n"
-        ".word 0x7070632E\n"
-        ".word 0x00000000\n"
-        ".word 0x00000534\n"
-        ".word 0x00433260\n"
-        ".word 0x00000000\n"
-        ".word 0x3F800000\n"
-        ".word 0x40A00000\n"
-        ".word 0x42700000\n"
-        ".word 0x3FD55555\n"
-        ".word 0x46C80000\n"
-        ".word 0x3DCCCCCD\n"
-        ".word 0x001DC8C8\n"
-        ".word 0x0017FAE4\n"
-        ".word 0x65666645\n"
-        ".word 0x72507463\n"
-        ".word 0x0000636F\n"
-        ".word 0x001AA19C\n"
-        ".word 0x65666645\n"
-        ".word 0x72447463\n"
-        ".word 0x6F447761\n"
-        ".word 0x44326E77\n"
-        ".word 0x00000000\n"
-        ".word 0x001AA3A4\n"
-        ".word 0x65666645\n"
-        ".word 0x72447463\n"
-        ".word 0x70557761\n"
-        ".word 0x00004433\n"
-        ".word 0x001DC954\n");
+    f32 up[3] = {0.0f, 1.0f, 0.0f};
+    f32* const eye = reinterpret_cast<f32*>(work + 0x508);
+    f32* const target = reinterpret_cast<f32*>(work + 0x514);
+    eye[0] = 0.0f;
+    eye[1] = 0.0f;
+    eye[2] = 5.0f;
+    target[0] = 0.0f;
+    target[1] = 0.0f;
+    target[2] = 0.0f;
+    *reinterpret_cast<f32*>(work + 0x520) = 60.0f;
+
+    engine_func_002c2210(work, 1);
+    engine_func_002c1774(work, 5.0f, 1.0f);
+    engine_func_002c20a8(work, eye, target, up);
+    engine_func_002c1ffc(
+        work,
+        1,
+        *reinterpret_cast<const f32*>(work + 0x520),
+        kNearZ,
+        kFarZ,
+        kAspectRatio);
+
+    void* const calc_task = engine_func_002c5978(
+        "EffectProc",
+        kCalcTag,
+        0,
+        0,
+        reinterpret_cast<const void*>(&func_0017fae4),
+        reinterpret_cast<const void*>(&func_001dc8c8),
+        work);
+    *reinterpret_cast<void**>(work + 0x524) = calc_task;
+
+    if (work[0x530] != 0) {
+        *reinterpret_cast<void**>(work + 0x52C) = camp_func_002c4c00(
+            "EffectDrawDown2D",
+            kDrawDown2dAltTag,
+            0,
+            0,
+            reinterpret_cast<const void*>(&func_001aa19c),
+            nullptr,
+            work,
+            calc_task);
+    } else {
+        *reinterpret_cast<void**>(work + 0x528) = camp_func_002c4c00(
+            "EffectDrawUp3D",
+            kDrawUp3dTag,
+            0,
+            0,
+            reinterpret_cast<const void*>(&func_001aa3a4),
+            nullptr,
+            work,
+            calc_task);
+        *reinterpret_cast<void**>(work + 0x52C) = camp_func_002c4c00(
+            "EffectDrawDown2D",
+            kDrawDown2dTag,
+            0,
+            0,
+            reinterpret_cast<const void*>(&func_001dc954),
+            nullptr,
+            work,
+            *reinterpret_cast<void**>(work + 0x524));
+    }
+
+    return *reinterpret_cast<void**>(work + 0x524);
 }
 extern "C" {
     u32   script_vm_func_00296f60(u32 idx);                                                   // 0x00296f60
