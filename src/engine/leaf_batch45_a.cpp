@@ -9499,99 +9499,103 @@ extern "C" void script_vm_func_0023187c(u8* work, s32 map_id) {
 }
 
 // DECOMP_FUNC(0x003bedd0, 700)
-extern "C" __attribute__((naked)) void ui_func_003bedd0() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4ff0, 0xe92d, 0x6002, 0xe1a0\n"
-        ".hword 0x7000, 0xe1a0, 0x8003, 0xe1a0\n"
-        ".hword 0xb001, 0xe1a0, 0x8b0a, 0xed2d\n"
-        ".hword 0xd054, 0xe24d, 0x00a4, 0xe28d\n"
-        ".hword 0x8a40, 0xeef0, 0x9a60, 0xeef0\n"
-        ".hword 0x0600, 0xe890, 0xaa28, 0xeddd\n"
-        ".hword 0xca9a, 0xed9f, 0x8a9a, 0xed9f\n"
-        ".hword 0x53a2, 0xebfb, 0x1006, 0xe1a0\n"
-        ".hword 0x0000, 0xe58d, 0xfba1, 0xebfa\n"
-        ".hword 0x4000, 0xe1a0, 0x0000, 0xe59d\n"
-        ".hword 0x1008, 0xe1a0, 0xfb9d, 0xebfa\n"
-        ".hword 0x5000, 0xe1a0, 0x0ff2, 0xe1d4\n"
-        ".hword 0x1ff0, 0xe1d4, 0x2000, 0xe5d4\n"
-        ".hword 0x0a10, 0xee00, 0x1a90, 0xee00\n"
-        ".hword 0x0004, 0xe312, 0x8a8b, 0x1d9f\n"
-        ".hword 0x0007, 0xe3a0, 0xaac0, 0xeeb8\n"
-        ".hword 0x6a10, 0xee00, 0xbae0, 0xeeb8\n"
-        ".hword 0x0ac0, 0xeeb8, 0xae70, 0xebf9\n"
-        ".hword 0x9a40, 0xeeb0, 0x8a10, 0xee00\n"
-        ".hword 0x000a, 0xe3a0, 0x0ac0, 0xeeb8\n"
-        ".hword 0xae6b, 0xebf9, 0xba40, 0xeef0\n"
-        ".hword 0x1008, 0xe1a0, 0x0006, 0xe1a0\n"
-        ".hword 0xfe84, 0xebff, 0x0a40, 0xeef0\n"
-        ".hword 0x0a2b, 0xee29, 0x0000, 0xe59d\n"
-        ".hword 0x1006, 0xe1a0, 0x9a20, 0xee20\n"
-        ".hword 0x0f3d, 0xebfb, 0x2000, 0xe1a0\n"
-        ".hword 0x1000, 0xe59d, 0x0028, 0xe28d\n"
-        ".hword 0x21cd, 0xebfa, 0x0028, 0xe28d\n"
-        ".hword 0x8000, 0xe3a0, 0x0a08, 0xec90\n"
-        ".hword 0x0004, 0xe28d, 0x104c, 0xe28d\n"
-        ".hword 0x0a08, 0xec80, 0x0048, 0xe59d\n"
-        ".hword 0x0024, 0xe58d, 0x00b6, 0xe1dd\n"
-        ".hword 0x804c, 0xe58d, 0xaf70, 0xebf9\n"
-        ".hword 0x536e, 0xebfb, 0x1006, 0xe1a0\n"
-        ".hword 0x0f2b, 0xebfb, 0x0000, 0xe590\n"
-        ".hword 0x0002, 0xe310, 0x000a, 0x0a00\n"
-        ".hword 0x0007, 0xe1a0, 0xbd3d, 0xebfb\n"
-        ".hword 0x6000, 0xe1b0, 0x0006, 0x0a00\n"
-        ".hword 0x0007, 0xe1a0, 0xbd22, 0xebfb\n"
-        ".hword 0x1000, 0xe1a0, 0x2001, 0xe3a0\n"
-        ".hword 0x0006, 0xe1a0, 0x1484, 0xebfb\n"
-        ".hword 0x8000, 0xe1a0, 0x00bc, 0xe1dd\n"
-        ".hword 0x100a, 0xe089, 0x1a10, 0xee01\n"
-        ".hword 0x0a10, 0xee00, 0xba52, 0xeddf\n"
-        ".hword 0x1a52, 0xeddf, 0x0a52, 0xeddf\n"
-        ".hword 0x0000, 0xe357, 0x1ac1, 0xeeb8\n"
-        ".hword 0x0a40, 0xeeb8, 0x1a21, 0xee21\n"
-        ".hword 0x0a2b, 0xee20, 0x0012, 0xca00\n"
-        ".hword 0x1aea, 0xeeb8, 0x0001, 0xe35b\n"
-        ".hword 0x0007, 0x0a00, 0x1a01, 0xee3a\n"
-        ".hword 0x0a20, 0xee61, 0x0aa8, 0xee60\n"
-        ".hword 0x0aa9, 0xee60, 0x0a89, 0xee60\n"
-        ".hword 0x0a88, 0xee60, 0x0a80, 0xee20\n"
-        ".hword 0x0010, 0xea00, 0x1a01, 0xee3b\n"
-        ".hword 0x0a20, 0xee61, 0x0aa8, 0xee60\n"
-        ".hword 0x0aa9, 0xee60, 0x0a89, 0xee60\n"
-        ".hword 0x0a88, 0xee60, 0x0a80, 0xee20\n"
-        ".hword 0x0008, 0xea00, 0xaa21, 0xee0b\n"
-        ".hword 0x2a38, 0xed9f, 0x8a02, 0xee4a\n"
-        ".hword 0x0aa0, 0xee68, 0x0aa9, 0xee60\n"
-        ".hword 0x0a89, 0xee60, 0x0a88, 0xee60\n"
-        ".hword 0x0a80, 0xee60, 0x0a81, 0xee80\n"
-        ".hword 0x8a90, 0xee00, 0x0000, 0xe59d\n"
-        ".hword 0x0901, 0xe280, 0x0a0c, 0xee30\n"
-        ".hword 0x0ae0, 0xeef8, 0x0e4a, 0xe280\n"
-        ".hword 0x0000, 0xe590, 0x0701, 0xe310\n"
-        ".hword 0x8a20, 0xee30, 0x000d, 0x1a00\n"
-        ".hword 0x0000, 0xe5d4, 0x0004, 0xe310\n"
-        ".hword 0x0000, 0xe5d5, 0x0004, 0xe200\n"
-        ".hword 0x0002, 0x0a00, 0x0000, 0xe350\n"
-        ".hword 0x0015, 0x0a00, 0x0001, 0xea00\n"
-        ".hword 0x0000, 0xe350, 0x0012, 0x0a00\n"
-        ".hword 0xf000, 0xe320, 0xfef5, 0xebf9\n"
-        ".hword 0x0a00, 0xed90, 0x8a08, 0xee20\n"
-        ".hword 0x014b, 0xe5d5, 0x1004, 0xe28d\n"
-        ".hword 0x0001, 0xe080, 0x000e, 0xe5d0\n"
-        ".hword 0x0a10, 0xee00, 0x0000, 0xe350\n"
-        ".hword 0x0002, 0x0a00, 0x0a40, 0xeeb8\n"
-        ".hword 0x0a2b, 0xee20, 0x8a00, 0xee28\n"
-        ".hword 0xd054, 0xe28d, 0x0ac8, 0xeebd\n"
-        ".hword 0x8b0a, 0xecbd, 0x0a10, 0xee10\n"
-        ".hword 0x8ff0, 0xe8bd, 0xf000, 0xe320\n"
-        ".hword 0xfee2, 0xebf9, 0x0a02, 0xed90\n"
-        ".hword 0xf000, 0xe320, 0xffea, 0xeaff\n"
-        ".hword 0x0000, 0x0000, 0x0000, 0x3f80\n"
-        ".hword 0xcccd, 0x3f4c, 0xd70a, 0x3c23\n"
-        ".hword 0x0000, 0x3f00, 0xaaab, 0x3eaa\n"
-        ".hword 0x0000, 0x4090\n"
-    );
-};
+extern "C" s32 ui_func_003bedd0(void* ctx, s32 mode, s32 primary_id,
+                                s32 secondary_id, float scale_a, float scale_b,
+                                s32 base_int, s32 range_a, s32 range_b) {
+    constexpr float kDivisorHalf = 0.5f;
+    constexpr float kOneThird = 0.333333343f;  // 0x3EAAAAAB
+    constexpr float kStatMixScale = 4.5f;
+
+    void* const ui = ui_func_00293c98();
+    const u8* const primary_record = ui_func_0027dca0(ui, primary_id);
+    const u8* const secondary_record = ui_func_0027dca0(ui, secondary_id);
+
+    const s16 stat_f2 =
+        *reinterpret_cast<const s16*>(primary_record + 0xF2);
+    const s16 stat_f0 =
+        *reinterpret_cast<const s16*>(primary_record + 0xF0);
+    const float record_scale =
+        (primary_record[ui_beb40::kRecordFlags] & ui_beb40::kRecordScaledFlag) != 0
+            ? ui_beb40::kScaled
+            : ui_beb40::kUnscaled;
+
+    const float category_primary =
+        ui_func_0022a824(7, static_cast<float>(primary_id));
+    const float category_secondary = ui_func_0022a824(
+        ui_beb40::kCategorySecondary, static_cast<float>(secondary_id));
+    const float status_scale = ui_func_003be898(primary_id, secondary_id);
+    const float combined_scale =
+        category_primary * category_secondary * status_scale;
+
+    ui_beb40::View view;
+    const u8* const primary_row = ui_func_00282b94(ui, primary_id);
+    camp_func_002475e4(&view, ui, primary_row);
+
+    u32 mapped_id = 0;
+    func_0022ac9c(
+        ui_beb40::load_u16(view.bytes + ui_beb40::kViewSentinelOffset),
+        &mapped_id);
+
+    void* const ui_again = ui_func_00293c98();
+    const u8* const bonus_row = ui_func_00282b94(ui_again, primary_id);
+
+    s32 bonus = 0;
+    if ((*reinterpret_cast<const u32*>(bonus_row) & ui_beb40::kRowBonusFlag) != 0) {
+        void* const object = battle_func_002ae3f0(ctx);
+        if (object != nullptr) {
+            bonus = func_0028412c(object, script_vm_func_002ae394(ctx), 1);
+        }
+    }
+
+    const u16 view_percent =
+        ui_beb40::load_u16(view.bytes + ui_beb40::kViewPercentOffset);
+    const float percent_scale =
+        static_cast<float>(view_percent) * ui_beb40::kPercentScale;
+    const s32 range_sum = static_cast<s32>(
+        static_cast<u32>(range_a) + static_cast<u32>(range_b));
+    const float half_range = static_cast<float>(range_sum) * kDivisorHalf;
+
+    float result;
+    if (reinterpret_cast<s32>(ctx) > 0) {
+        const float stat_mix =
+            static_cast<float>(stat_f2) +
+            static_cast<float>(stat_f0) * kDivisorHalf;
+        const float scaled = scale_a + stat_mix * kStatMixScale;
+        result = (scaled * kOneThird * scale_b * combined_scale * record_scale *
+                  percent_scale) /
+                 half_range;
+    } else {
+        const s16 active_stat = (mode == 1) ? stat_f0 : stat_f2;
+        const float sum =
+            static_cast<float>(active_stat) + static_cast<float>(base_int);
+        result = sum * kOneThird * scale_a * scale_b * combined_scale *
+                 record_scale * percent_scale;
+    }
+
+    result = (result + 0.0f) + static_cast<float>(bonus);
+
+    const u32 global_flags = *reinterpret_cast<const u32*>(
+        static_cast<u8*>(ui_again) + ui_beb40::kGlobalFlags);
+    if ((global_flags & ui_beb40::kGlobalFlagsSuppressCamp) == 0) {
+        const u8* const camp = camp_func_0023ebf0();
+        const float multiplier =
+            (secondary_record[ui_beb40::kRecordFlags] &
+             ui_beb40::kRecordScaledFlag) != 0
+                ? *reinterpret_cast<const float*>(camp)
+                : *reinterpret_cast<const float*>(camp + 8);
+        result = result * multiplier;
+    }
+
+    const u8 affinity_index = secondary_record[ui_beb40::kSecondaryAffinity];
+    const u8 affinity =
+        view.bytes[ui_beb40::kViewAffinityOffset + affinity_index];
+    if (affinity != 0) {
+        result = result *
+                 (static_cast<float>(affinity) * ui_beb40::kPercentScale);
+    }
+
+    return static_cast<s32>(result);
+}
 
 // DECOMP_FUNC(0x002080e0, 704)
 extern "C" __attribute__((naked)) void engine_func_002080e0() {
