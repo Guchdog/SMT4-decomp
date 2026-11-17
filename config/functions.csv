@@ -187,7 +187,7 @@ address,size,status,category,name,src_file
 0x0010a70c,60,non_matching,unknown,ComWin_SetState,src/ui/window.cpp
 0x0010a748,504,non_matching,ui,ComWin_Init,src/ui/window.cpp
 0x0010a940,20,non_matching,engine,ComWin_GetState,src/ui/window.cpp
-0x0010a954,1352,matching,ui,ComWin_ProcessDialog,src/ui/window.cpp
+0x0010a954,1352,non_matching,ui,ComWin_ProcessDialog,src/ui/window.cpp
 0x0010ae9c,44,non_matching,battle,ComWin_CheckFlag,src/ui/window.cpp
 0x0010aec8,12,non_matching,unknown,ComWin_GetResult,src/ui/window.cpp
 0x0010aed4,16,non_matching,engine,func_0010aed4,src/ui/window.cpp
