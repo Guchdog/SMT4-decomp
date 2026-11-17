@@ -7326,7 +7326,7 @@ address,size,status,category,name,src_file
 0x0031f6a0,24,matching,unknown,func_0031f6a0,src/engine/leaf_matching.cpp
 0x0031f6b8,12,matching,unknown,func_0031f6b8,src/engine/leaf_matching.cpp
 0x0031f6c4,12,matching,unknown,func_0031f6c4,src/engine/leaf_matching.cpp
-0x0031f6d0,768,matching,ui,ui_func_0031f6d0,src/engine/leaf_batch45_a.cpp
+0x0031f6d0,768,non_matching,ui,ui_func_0031f6d0,src/engine/leaf_batch45_a.cpp
 0x0031f9d0,196,matching,engine,effPolygonFlash_func_0031f9d0,src/engine/leaf_batch42_c.cpp
 0x0031fa94,28,matching,unknown,func_0031fa94,src/engine/leaf_batch37_b.cpp
 0x0031fab0,2288,matching,engine,engine_func_0031fab0,src/engine/leaf_batch44_a.cpp
