@@ -487,37 +487,13 @@ u8 Status_GetSubMenuState() {
 
 
 //
-__attribute__((naked)) void Status_Destroy(s32*, s32*, s32, f32) {
-    asm volatile(
-        ".arm\n"
-        "push {r4, r5, r6, r7, r8, lr}\n"
-        "mov r5, r0\n"
-        "mov r6, r1\n"
-        "ldr r0, [pc, #0x54]\n"
-        "rsb r1, r2, r2, lsl #3\n"
-        "vpush {d8}\n"
-        "add r1, r1, r1, lsl #2\n"
-        "ldr r0, [r0, #4]\n"
-        "vmov.f32 s16, s0\n"
-        "add r4, r0, r1, lsl #2\n"
-        "add r0, r4, #0x44\n"
-        ".word 0xeb00d77c\n" // bl 0x002bef7c: ui_func_002bef7c
-        "mov r7, r0\n"
-        "ldr r0, [pc, #0x30]\n"
-        "vmov.f32 s0, s16\n"
-        "ldr r0, [r0]\n"
-        ".word 0xeb00c4b3\n" // bl 0x002ba46c: ui_func_002ba46c
-        "vcvt.s32.f32 s0, s0\n"
-        "vmov r0, s0\n"
-        "add r0, r0, r7\n"
-        "str r0, [r5]\n"
-        "add r0, r4, #0x44\n"
-        ".word 0xeb00d76e\n" // bl 0x002bef70: shop_func_002bef70
-        "str r0, [r6]\n"
-        "vpop {d8}\n"
-        "pop {r4, r5, r6, r7, r8, pc}\n"
-        ".word 0x0044e140\n"
-        ".word 0x0044ea00\n");
+void Status_Destroy(s32* out_x, s32* out_y, s32 panel_idx, f32 scale) {
+    const auto* sprite = reinterpret_cast<const UiAnimSprite*>(
+        &g_StatusManager.work->raw_panels[(0x44 - 0x18) + panel_idx * 0x8C]);
+    const s32 pos_x = UiAnimSprite_GetPosX(sprite);
+    const f32 offset_x = UiGpu_TransformCoord(g_AsdGpuState, scale);
+    *out_x = static_cast<s32>(offset_x) + pos_x;
+    *out_y = UiAnimSprite_GetPosY(sprite);
 }
 
 // DECOMP_FUNC(0x0028c2a8, 1448)
@@ -924,12 +900,9 @@ __attribute__((naked)) void Status_Init() {
 }
 #endif
 
-[[maybe_unused]] static s32 Status_HandleLRPrompt_Decompiled() {
-    StatusWork* work = g_StatusManager.work;
-    if (work == nullptr) {
-        return 1;
-    }
-
+// DECOMP_FUNC(0x00293d64, 204)
+s32 Status_HandleLRPrompt() {
+    const StatusWork* work = g_StatusManager.work;
     const u8 state = work->sub_menu_state;
     if (state == 3 || state == 5 || state == 6 || state == 8 || state == 9) {
         return 1;
@@ -944,32 +917,10 @@ __attribute__((naked)) void Status_Init() {
     }
     const u8 prompt_flag = *reinterpret_cast<const u8*>(
         reinterpret_cast<const u8*>(work) + 0x12F1);
-    if (mode == 13 && prompt_flag == 0) {
-        return 4;
+    if (mode == 0) {
+        return prompt_flag == 0 ? 3 : 2;
     }
-    return prompt_flag == 0 ? 3 : 2;
-}
-
-// Exact ARM-state restoration of Status.cpp's four-way L/R prompt selector.
-// The literal words are the verified 0x00293d64..0x00293e30 span; retaining
-// the disassembly here also preserves its branch and literal-pool placement.
-// DECOMP_FUNC(0x00293d64, 204)
-__attribute__((naked)) s32 Status_HandleLRPrompt() {
-    asm volatile(
-        ".word 0xE59F00BC, 0xE5901004, 0xE59F00B8, 0xE7D00001\n"
-        ".word 0xE3500003, 0x13500005, 0x0A00001C, 0xE3500006\n"
-        ".word 0x13500008, 0x13500009, 0x0A000018, 0xE59F0090\n"
-        ".word 0xE2811C1E, 0xE2811066, 0xE5902004, 0xE5D10000\n"
-        ".word 0xE2821C12, 0xE3500000, 0x0A000012, 0xE3500006\n"
-        ".word 0x13500008, 0x0A000014, 0xE3500009, 0x1350000A\n"
-        ".word 0x0A000011, 0xE350000B, 0x13500007, 0x0A00000E\n"
-        ".word 0xE350000E, 0x0A000005, 0xE350000D, 0xE5D100F1\n"
-        ".word 0x0A00000B, 0xE3500000, 0x0A00000B, 0xEA000004\n"
-        ".word 0xE3A00001, 0xE12FFF1E, 0xE5D100F1, 0xE3500000\n"
-        ".word 0x0A000001, 0xE3A00002, 0xE12FFF1E, 0xE3A00003\n"
-        ".word 0xE12FFF1E, 0xE3500000, 0x1AFFFFF9, 0xE3A00004\n"
-        ".word 0xE12FFF1E, 0x0044E140, 0x00001E67\n"
-    );
+    return prompt_flag == 0 ? 4 : 2;
 }
 
 // Readable reconstruction retained alongside the byte-exact ARM entry below.

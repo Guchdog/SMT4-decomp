@@ -159,7 +159,7 @@ bool PlaceWin_CheckState(const void* context);                                  
 bool PlaceWin_IsActive(const void* context);                                        // 0x0026394c
 void PlaceWin_ShowMessage(const char* msg);                                         // 0x00263978
 void PlaceWin_Init();                                                               // 0x002639f4
-void PlaceWin_Calc(void* arg);                                                      // 0x00263bb4
+void PlaceWin_Calc(void* arg, s32 mode);                                            // 0x00263bb4
 
 /**
  * Running / Escape Prompt Window workspace (0xE4 bytes).
