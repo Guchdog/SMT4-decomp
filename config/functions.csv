@@ -2349,7 +2349,7 @@ address,size,status,category,name,src_file
 0x001d3cd8,52,matching,ui,ui_func_001d3cd8,src/engine/leaf_batch22_a.cpp
 0x001d3d0c,52,matching,ui,ui_func_001d3d0c,src/engine/leaf_batch22_a.cpp
 0x001d3d40,22520,matching,script_vm,FlowScript_ExecuteOpcode,src/script/script_vm.cpp
-0x001d9538,908,matching,shop,shopMain_Proc,src/shop/shop.cpp
+0x001d9538,908,non_matching,shop,shopMain_Proc,src/shop/shop.cpp
 0x001d98c4,5880,matching,ui,Ui_TerminalSceneRender,src/ui/terminal_ui.cpp
 0x001dafbc,668,non_matching,camp,tmnlMain_func_001dafbc,src/camp/title_flow.cpp
 0x001db258,52,matching,battle,battle_func_001db258,src/engine/leaf_batch22_a.cpp

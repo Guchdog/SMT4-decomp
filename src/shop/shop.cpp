@@ -9,6 +9,25 @@ extern "C" {
     void func_0021f1ec(void*);                                                  // 0x0021f1ec
     void func_001fe15c(void*);                                                  // 0x001fe15c
     void func_0021f204(void*);                                                  // 0x0021f204
+    s32  battle_func_003a6528();                                                // 0x003a6528
+    s32  engine_func_00343d28();                                                // 0x00343d28
+    void engine_func_00343d80();                                                // 0x00343d80
+    void camp_func_003a65e4(void*);                                             // 0x003a65e4
+    void* AsdMemory_func_002c23f8(u32 size);                                    // 0x002c23f8
+    void* engine_func_003a604c(u32 a0, s32 type, s32 flag, s32 mode);           // 0x003a604c
+    void engine_func_003a0bb0(void*);                                           // 0x003a0bb0
+    void script_vm_func_003a16c8(void*);                                        // 0x003a16c8
+    void script_vm_func_003a3b30(void*);                                        // 0x003a3b30
+    void* engine_func_00263e60(void*);                                          // 0x00263e60
+    void engine_func_002b2520(void*);                                           // 0x002b2520
+    void engine_func_003a6614(void*);                                           // 0x003a6614
+    void ui_func_002be7fc(char* dst, const char* fmt, s32 a2, s32 a3,
+                          s32 a4, s32 a5);                                      // 0x002be7fc
+    void AsdSequence_func_002c59b8(s32 cmd, void* buf, u32 size);               // 0x002c59b8
+    s32  engine_func_0028756c();                                                // 0x0028756c
+    s32  engine_func_0028753c();                                                // 0x0028753c
+    void ui_func_002a0678(s32 a0, s32 a1);                                      // 0x002a0678
+    void script_vm_func_0029c650(s32 a0);                                       // 0x0029c650
 }
 
 ShopMainManager g_ShopMainManager = {nullptr};
@@ -37,7 +56,8 @@ void shopMain_Init(void* arg0, s32 arg1) {
     }
 
     work->proc_task = ::AsdTask_CreateCalc(
-        "ShopMainProc", 2, 0, 0, shopMain_Proc,
+        "ShopMainProc", 2, 0, 0,
+        reinterpret_cast<void (*)(void*)>(shopMain_Proc),
         reinterpret_cast<void*>(func_0021f1ec),
         static_cast<u32>(reinterpret_cast<std::uintptr_t>(work)));
 
@@ -52,57 +72,122 @@ void shopMain_Init(void* arg0, s32 arg1) {
 }
 
 
-[[maybe_unused]] static void shopMain_Proc_Decompiled(void* task_ctx) {
-    (void)task_ctx;
-    // Shop logic processor: handles Macca transaction verification,
-    // item/relic count limits, equipment preview stat comparison,
-    // and prompt confirmations.
-}
-
-// Exact ARMv6K instruction/literal words for 0x001d9538; readable draft above remains unverified.
 // DECOMP_FUNC(0x001d9538, 908)
-__attribute__((naked)) void shopMain_Proc(void* task_ctx) {
-    asm volatile(
-        ".word 0xE92D41F0, 0xE59F0364, 0xE24DD020, 0xE3A07001, 0xE3A05003, 0xE5904000, 0xE5D40005, 0xE3500000\n"
-        ".word 0x0A000006, 0xE3500001, 0x0A000050, 0xE3500002, 0x0A00005A, 0xE3500003, 0x1A000068, 0xEA00006A\n"
-        ".word 0xE320F000, 0xEB0733E9, 0xE3500000, 0xE320F000, 0x0A00001A, 0xEB05A9E5, 0xE3500000, 0xE320F000\n"
-        ".word 0x1A000016, 0xE5940008, 0xE3500006, 0x0A000013, 0xE3500007, 0x13500009, 0x0A000010, 0xE350000A\n"
-        ".word 0x1350000B, 0x0A00000D, 0xE350000C, 0x13500069, 0x0A00000A, 0xE350006E, 0x1350006F, 0x0A000007\n"
-        ".word 0xE3500070, 0x13500071, 0x0A000004, 0xE5C47014, 0xEB05A9E4, 0xE5C45005, 0xE320F000, 0xEA000047\n"
-        ".word 0xE1A0000D, 0xEB0733F8, 0xE5945008, 0xE5D41006, 0xE59F029C, 0xE3550064, 0xE3A06000, 0xA3A06001\n"
-        ".word 0xA2455064, 0xE3510000, 0x0A000002, 0xE3510001, 0x1A00000A, 0xEA00000E, 0xE320F000, 0xEB03A36F\n"
-        ".word 0xE3500000, 0xE320F000, 0x0A000003, 0xE1A03005, 0xE1A02006, 0xE3A01000, 0xEB07327D, 0xE5840018\n"
-        ".word 0xE5940018, 0xEB071D53, 0xE5C47005, 0xE320F000, 0xEA00002A, 0xE320F000, 0xEB03A360, 0xE3500000\n"
-        ".word 0xE320F000, 0x0A000003, 0xE1A03005, 0xE1A02006, 0xE3A01001, 0xEB07326E, 0xE5941010, 0xE5840018\n"
-        ".word 0xE3510008, 0x03A01008, 0xE5801860, 0xEAFFFFEB, 0xE3540000, 0x0A000019, 0xE5940018, 0xE3500000\n"
-        ".word 0x0A000016, 0xEB072001, 0xE5940018, 0xE5900000, 0xE3100001, 0x13A00002, 0x15C40005, 0xEA00000F\n"
-        ".word 0xE5940018, 0xE3500000, 0x0A00000B, 0xEB072911, 0xE5940018, 0xE3500000, 0x0A000005, 0xE2800B02\n"
-        ".word 0xE2800028, 0xEB0229D7, 0xE2400B02, 0xE2400028, 0xEB036384, 0xE1A0000D, 0xEB0733BF, 0xE5C45005\n"
-        ".word 0xE28DD020, 0xE3A00000, 0xE8BD81F0, 0xE5D40014, 0xE3500000, 0x0A000030, 0xE5940008, 0xE3500064\n"
-        ".word 0xBA000008, 0xE350006D, 0x03A05002, 0x13A05004, 0xE59F6160, 0xE3A08000, 0xE5960000, 0xE3500000\n"
-        ".word 0x0A000004, 0xEA000009, 0xE3500008, 0x03A05001, 0x13A05003, 0xEAFFFFF5, 0xE3A00008, 0xEB03A31F\n"
-        ".word 0xE3500000, 0x15C08000, 0x15808004, 0xE5860000, 0xE5941008, 0xE3500000, 0xE5801004, 0x15960000\n"
-        ".word 0x1A000005, 0xE3A00008, 0xEB03A314, 0xE3500000, 0x15C08000, 0x15808004, 0xE5860000, 0xE5C07000\n"
-        ".word 0xE3E01000, 0xE3A0204B, 0xE58D1004, 0xE1A03005, 0xE28F10E4, 0xE28D0008, 0xE58D2000, 0xFA039408\n"
-        ".word 0xE3A02020, 0xE1A0100D, 0xE3A00004, 0xEB03B073, 0xE320F000, 0xE320F000, 0xEA000029, 0xE320F000\n"
-        ".word 0xEB02B75B, 0xE3500000, 0xE320F000, 0x0A000010, 0xEB02B74B, 0xE3500000, 0xE320F000, 0x0A000007\n"
-        ".word 0xE59F00A0, 0xE3A02004, 0xE1A0100D, 0xE59002FC, 0xE24000C8, 0xE58D0000, 0xE3A0000E, 0xEA000002\n"
-        ".word 0xE3A02000, 0xE1A01002, 0xE3A00006, 0xEB03B05B, 0xEA000013, 0xE5D4000C, 0xE3A01001, 0xE3500000\n"
-        ".word 0xE3A00000, 0x0A000006, 0xEB031B84, 0xE3A01001, 0xE1A00001, 0xEB031B81, 0xE320F000, 0xE320F000\n"
-        ".word 0xEA000007, 0xE320F000, 0xEB031B7C, 0xE3A01001, 0xE1A00001, 0xEB031B79, 0xE3A0000F, 0xE320F000\n"
-        ".word 0xEB030B6C, 0xE28DD020, 0xE3E00000, 0xE8BD81F0, 0x0044E050, 0x00015D6C, 0x0044DF80, 0x33302565\n"
-        ".word 0x30255F64, 0x00006432, 0x0049F91C\n"
-    );
-}
-
-
-[[maybe_unused]] static void shopMain_DrawUp_Decompiled(void* task_ctx) {
+s32 shopMain_Proc(void* task_ctx) {
     (void)task_ctx;
-    // Upper screen 3D shopkeeper bustup, shop banner, item description window,
-    // and party stat delta preview.
+    u8 stack_buf[0x20];
+    ShopMainWork* const work = g_ShopMainManager.work;
+
+    switch (work->flag_05) {
+    case 0: {
+        if (battle_func_003a6528() != 0 && engine_func_00343d28() == 0) {
+            const s32 mode = work->shop_mode;
+            if (mode != 6 && mode != 7 && mode != 9 &&
+                mode != 10 && mode != 11 && mode != 12 &&
+                mode != 0x69 && mode != 0x6E && mode != 0x6F &&
+                mode != 0x70 && mode != 0x71) {
+                work->flag_14 = 1;
+                engine_func_00343d80();
+                work->flag_05 = 3;
+                return 0;
+            }
+        }
+        camp_func_003a65e4(stack_buf);
+        s32 mode = work->shop_mode;
+        s32 flag = 0;
+        if (mode >= 0x64) {
+            flag = 1;
+            mode -= 0x64;
+        }
+        if (work->shop_type == 0) {
+            void* data = AsdMemory_func_002c23f8(0x15D6C);
+            if (data != nullptr) {
+                data = engine_func_003a604c(reinterpret_cast<u32>(data), 0, flag, mode);
+            }
+            work->shop_data = data;
+        } else if (work->shop_type == 1) {
+            void* data = AsdMemory_func_002c23f8(0x15D6C);
+            if (data != nullptr) {
+                data = engine_func_003a604c(reinterpret_cast<u32>(data), 1, flag, mode);
+            }
+            work->shop_data = data;
+            *reinterpret_cast<u32*>(static_cast<u8*>(data) + 0x860) =
+                *reinterpret_cast<const u32*>(reinterpret_cast<const u8*>(work) + 0x10);
+        }
+        engine_func_003a0bb0(work->shop_data);
+        work->flag_05 = 1;
+        return 0;
+    }
+    case 1:
+        if (work != nullptr && work->shop_data != nullptr) {
+            script_vm_func_003a16c8(work->shop_data);
+            if ((*static_cast<const u32*>(work->shop_data) & 1) != 0) {
+                work->flag_05 = 2;
+            }
+        }
+        return 0;
+    case 2:
+        if (work->shop_data != nullptr) {
+            script_vm_func_003a3b30(work->shop_data);
+            if (work->shop_data != nullptr) {
+                engine_func_002b2520(
+                    static_cast<u8*>(engine_func_00263e60(
+                        static_cast<u8*>(work->shop_data) + 0x828)) - 0x828);
+            }
+            engine_func_003a6614(stack_buf);
+        }
+        work->flag_05 = 3;
+        return 0;
+    case 3: {
+        if (work->flag_14 != 0) {
+            const s32 m = work->shop_mode;
+            const s32 mode_val = (m >= 0x64) ? ((m == 0x6D) ? 2 : 4)
+                                             : ((m == 8) ? 1 : 3);
+            auto** const g_slot = reinterpret_cast<u8**>(0x0044DF80);
+            u8* ptr = *g_slot;
+            if (ptr == nullptr) {
+                ptr = static_cast<u8*>(AsdMemory_func_002c23f8(8));
+                if (ptr != nullptr) {
+                    ptr[0] = 0;
+                    *reinterpret_cast<u32*>(ptr + 4) = 0;
+                }
+                *g_slot = ptr;
+            }
+            *reinterpret_cast<s32*>(ptr + 4) = work->shop_mode;
+            if (ptr == nullptr) {
+                ptr = static_cast<u8*>(AsdMemory_func_002c23f8(8));
+                if (ptr != nullptr) {
+                    ptr[0] = 0;
+                    *reinterpret_cast<u32*>(ptr + 4) = 0;
+                }
+                *g_slot = ptr;
+            }
+            ptr[0] = 1;
+            ui_func_002be7fc(reinterpret_cast<char*>(stack_buf + 8),
+                             "e%03d_%02d", 0x4B, mode_val, 0x4B, -1);
+            AsdSequence_func_002c59b8(4, stack_buf, 0x20);
+        } else if (engine_func_0028756c() != 0) {
+            if (engine_func_0028753c() != 0) {
+                const u32 val = *reinterpret_cast<const u32*>(0x0049F91C + 0x2FC) - 0xC8;
+                *reinterpret_cast<u32*>(stack_buf) = val;
+                AsdSequence_func_002c59b8(0x0E, stack_buf, 4);
+            } else {
+                AsdSequence_func_002c59b8(6, nullptr, 0);
+            }
+        } else {
+            ui_func_002a0678(0, 1);
+            ui_func_002a0678(1, 1);
+            if (work->flag_0c == 0) {
+                script_vm_func_0029c650(0x0F);
+            }
+        }
+        return -1;
+    }
+    default:
+        return 0;
+    }
 }
 
-// Exact ARMv6K instruction/literal words for 0x001fdf4c; readable draft above remains unverified.
 // DECOMP_FUNC(0x001fdf4c, 1132)
 __attribute__((naked)) void shopMain_DrawUp(void* task_ctx) {
     asm volatile(

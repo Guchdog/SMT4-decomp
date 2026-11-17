@@ -32,7 +32,7 @@ struct ShopMainManager {
 extern ShopMainManager g_ShopMainManager; // 0x0044E050
 
 void shopMain_Init(void* arg0, s32 arg1);                                           // 0x001d3b10
-void shopMain_Proc(void* task_ctx);                                                 // 0x001d9538
+s32  shopMain_Proc(void* task_ctx);                                                 // 0x001d9538
 void shopMain_DrawUp(void* task_ctx);                                               // 0x001fdf4c
 void shopMain_DrawDown(void* task_ctx);                                             // 0x0021ee14
 
