@@ -3084,7 +3084,7 @@ address,size,status,category,name,src_file
 0x002237a0,632,matching,engine,SaveLoad_Thread_func_002237a0,src/engine/leaf_batch45_b.cpp
 0x00223a18,28,matching,unknown,func_00223a18,src/engine/leaf_batch20_b.cpp
 0x00223a34,92,matching,script_vm,script_vm_func_00223a34,src/engine/leaf_batch28_b.cpp
-0x00223a90,248,matching,ui,StatusBustUp_Init,src/ui/status.cpp
+0x00223a90,248,non_matching,ui,StatusBustUp_Init,src/ui/status.cpp
 0x00223b88,40,non_matching,ui,StatusDown_IsState20,src/ui/status_down.cpp
 0x00223bb0,56,matching,camp,camp_func_00223bb0,src/engine/leaf_batch27_b.cpp
 0x00223be8,24,matching,camp,camp_func_00223be8,src/engine/leaf_batch20_b.cpp

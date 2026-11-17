@@ -32,6 +32,7 @@ extern "C" {
     f32   UiStatus_CalcScaleRatio(s32 a0, s32 a1);                                  // 0x00293ca8
     s32   UiMath_ClampVal(s32 a0, s32 a1);                                          // 0x002c6c10
     f32   ui_func_00282f00(f32 a0, f32 a1, f32 a2);                                 // 0x00282f00
+    void  engine_func_002c3b48(void* ptr, u32 size);                                // 0x002c3b48
     extern u8* g_AsdGpuState;                                                       // 0x0044ea00
 }
 
@@ -1083,46 +1084,25 @@ __attribute__((naked)) s8 Status_GetSubState() {
 
 StatusBustUpManager g_StatusBustUpManager = {0, {0, 0, 0}, nullptr, nullptr}; // 0x0044E158
 
-[[maybe_unused]] static void StatusBustUp_Init_Decompiled() {
-    StatusBustUpManager* mgr = &g_StatusBustUpManager;
-    engine::AsdTMTexTable_func_002c4e28(0x17);
-    engine::AsdTMTexTable_func_002c5b04(0x23, 0);
+// DECOMP_FUNC(0x00223a90, 248)
+void StatusBustUp_Init() {
+    static constexpr u32 kBuffer1Size = 0x266;
+    static constexpr u32 kBuffer2Size = 0x81;
+
+    StatusBustUpManager* const mgr = &g_StatusBustUpManager;
     if (mgr->ref_count <= 0) {
+        engine::AsdTMTexTable_func_002c4e28(0x17);
+        engine::AsdTMTexTable_func_002c5b04(0x23, 0);
         if (mgr->buffer1 == nullptr) {
-            mgr->buffer1 = AsdMem_Alloc(0x266, 1);
-            AsdMem_Zero(mgr->buffer1, 0x266);
+            mgr->buffer1 = AsdMem_Alloc(0x100, 0x100, 0, kBuffer1Size, 1);
+            engine_func_002c3b48(mgr->buffer1, kBuffer1Size);
         }
         if (mgr->buffer2 == nullptr) {
-            mgr->buffer2 = AsdMem_Alloc(0x81, 0x100);
-            AsdMem_Zero(mgr->buffer2, 0x81);
+            mgr->buffer2 = AsdMem_Alloc(0x100, 0x100, 0, kBuffer2Size, 1);
+            engine_func_002c3b48(mgr->buffer2, kBuffer2Size);
         }
     }
-    mgr->ref_count++;
-}
-
-// Exact ARM-state restoration of StatusBustUp.cpp's lazy allocator path. The
-// two arrays are 0x266 and 0x81 bytes; the routine also initializes the shared
-// texture-table state before checking its signed reference count.
-// DECOMP_FUNC(0x00223a90, 248)
-__attribute__((naked)) void StatusBustUp_Init() {
-    asm volatile(
-        ".word 0xE92D40F8, 0xE59F40AC, 0xE1D400D0, 0xE3500000\n"
-        ".word 0xCA000024, 0xE3A00017, 0xEB0284DE, 0xE3A01000\n"
-        ".word 0xE3A00023, 0xEB028812, 0xE5940004, 0xE3A05001\n"
-        ".word 0xE3500000, 0x1A00000C, 0xE3A0101A, 0xE28F0078\n"
-        ".word 0xE1A00000, 0xE59F60A8, 0xE3A01C01, 0xE3A02000\n"
-        ".word 0xE1A03006, 0xE1A00001, 0xE58D5000, 0xEB028424\n"
-        ".word 0xE1A01006, 0xE5840004, 0xEB028012, 0xE5940008\n"
-        ".word 0xE3500000, 0x1A00000B, 0xE3A0101E, 0xE28F0038\n"
-        ".word 0xE1A00000, 0xE3A01C01, 0xE3A03081, 0xE3A02000\n"
-        ".word 0xE1A00001, 0xE58D5000, 0xEB028415, 0xE3A01081\n"
-        ".word 0xE5840008, 0xEB028003, 0xE5D40000, 0xE2800001\n"
-        ".word 0xE5C40000, 0xE8BD80F8, 0x0044E158, 0x535C3A63\n"
-        ".word 0x5C34544D, 0x36445258, 0x735C3638, 0x34736464\n"
-        ".word 0x6F72705C, 0x6D617267, 0x6174735C, 0x5C737574\n"
-        ".word 0x74617453, 0x75427375, 0x70557473, 0x7070632E\n"
-        ".word 0x00000000, 0x00000266\n"
-    );
+    ++mgr->ref_count;
 }
 
 // ============================================================================
