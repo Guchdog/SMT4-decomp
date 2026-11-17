@@ -14,6 +14,1567 @@
   ],
   "tasks": [
     {
+      "id": "h18-0014ec5c-review",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review independently production nullable getter 0x0014ec5c and its offline evidence before commit.",
+      "depends_on": [
+        "h18-0014ec5c-convert"
+      ],
+      "function_claims": [
+        "0x0014ec5c"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "src/engine/leaf_matching.cpp",
+        "include/engine/leaf_matching.h",
+        "config/functions.csv",
+        "docs/function-records/0x0014ec5c.md",
+        "docs/agent-work/h18-nullable-getter-conversion.md",
+        "tools/h18_nullable_getter_production.py",
+        "tests/test_h18_nullable_getter_production.py",
+        "build/agent-work/batch-h18-001/h18-0014ec5c-convert/run-001/handoff.json",
+        "build/agent-work/batch-h18-001/h18-0014ec5c-convert/run-001/seed-7/report.json",
+        "build/agent-work/batch-h18-001/h18-0014ec5c-convert/run-001/seed-20261024/report.json"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-nullable-getter-review.md",
+        "build/agent-work/batch-h18-001/h18-0014ec5c-review/run-001/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Review C++ pointer representation, null path, reports, callers, controls, ledger and slot size; report defects and limits."
+      ],
+      "validation_plan": [
+        "Read-only independent review and handoff."
+      ],
+      "blocker": null,
+      "unblock_condition": null
+    },
+    {
+      "id": "h18-getters-trigger-recon",
+      "role": "recon",
+      "state": "queued",
+      "owner": null,
+      "goal": "Identify a deterministic autonomous scenario that reaches script getters from their real game caller.",
+      "depends_on": [
+        "h18-getters-runtime-driver"
+      ],
+      "function_claims": [
+        "0x002345f0",
+        "0x002345fc"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/emulator-testing-guide.md",
+        "docs/agent-work/h18-script-getters-runtime-plan.md",
+        "docs/agent-work/h18-script-getters-runtime-driver.md",
+        "tools/h18_script_getters_runtime.py",
+        "config/functions.csv",
+        "config/game_info.json",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-script-trigger-recon.md",
+        "build/agent-work/batch-h18-001/h18-getters-trigger-recon/run-001/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Trace caller ancestry and identify a concrete script/game trigger or safe autonomous approach; document evidence and limits. No emulator or source edits."
+      ],
+      "validation_plan": [
+        "Read-only analysis with handoff."
+      ],
+      "blocker": null,
+      "unblock_condition": null
+    },
+    {
+      "id": "h18-0014ec5c-convert",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Convert nullable field getter 0x0014ec5c from assembly to readable C++ and validate source and caller behavior.",
+      "depends_on": [],
+      "function_claims": [
+        "0x0014ec5c"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/function-reconstruction-workflow.md",
+        "docs/function-records/0x0014ec5c.md",
+        "src/engine/leaf_matching.cpp",
+        "include/engine/leaf_matching.h",
+        "config/functions.csv",
+        "config/game_info.json",
+        "extracted/exefs/code.bin",
+        "experiments/semantic_equivalence/candidates.cpp",
+        "tools/semantic_experiment.py"
+      ],
+      "write_paths": [
+        "src/engine/leaf_matching.cpp",
+        "include/engine/leaf_matching.h",
+        "config/functions.csv",
+        "docs/function-records/0x0014ec5c.md",
+        "tools/h18_nullable_getter_production.py",
+        "tests/test_h18_nullable_getter_production.py",
+        "docs/agent-work/h18-nullable-getter-conversion.md",
+        "build/agent-work/batch-h18-001/h18-0014ec5c-convert/run-001/handoff.json"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "src/engine/leaf_matching.cpp",
+        "config/functions.csv"
+      ],
+      "acceptance": [
+        "Recover callers and field type/object lifetime; replace assembly with typed C++ only when supported. Validate null and aligned ordinary-RAM non-null cases, exact production TU, real caller composition and negative controls, ABI/return/side effects. Classify ledger truthfully. Report slot size and limitations. Preserve existing edits."
+      ],
+      "validation_plan": [
+        "Focused offline original versus actual compiled source, two seeds and representative real caller. No emulator or full build. Handoff."
+      ],
+      "blocker": null,
+      "unblock_condition": null
+    },
+    {
+      "id": "h18-review-signed-stage",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review signed-byte staged image placement, veneer, reference audit and offline caller evidence.",
+      "depends_on": [
+        "h18-signed-stage"
+      ],
+      "function_claims": [
+        "0x00121d70"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "config/game_info.json",
+        "config/functions.csv",
+        "extracted/exefs/code.bin",
+        "tools/h18_signed_byte_stage.py",
+        "tools/h18_signed_byte_production.py",
+        "docs/agent-work/h18-signed-byte-stage.md",
+        "build/agent-work/batch-h18-001/h18-signed-stage/run-001/handoff.json",
+        "build/agent-work/batch-h18-001/h18-signed-stage/run-001/seed-7/report.json",
+        "build/agent-work/batch-h18-001/h18-signed-stage/run-001/seed-20261024/report.json"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-signed-stage-review.md",
+        "build/agent-work/batch-h18-001/h18-review-signed-stage/run-001/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify cave executable mapping assumptions, collisions, veneer state/target/LR, actual patched-image evidence, IPS correctness, and limits. No modifications to stage or production."
+      ],
+      "validation_plan": [
+        "Independent read-only review with handoff."
+      ],
+      "blocker": null,
+      "unblock_condition": null
+    },
+    {
+      "id": "h18-getters-runtime-driver",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Prepare a reproducible autonomous original-versus-patched Azahar GDB scenario for the two staged script getters.",
+      "depends_on": [
+        "h18-getters-stage"
+      ],
+      "function_claims": [
+        "0x002345f0",
+        "0x002345fc"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/emulator-testing-guide.md",
+        "docs/agent-work/h18-script-getters-runtime-plan.md",
+        "docs/agent-work/h18-script-getters-stage.md",
+        "tools/h18_script_getters_stage.py",
+        "tools/h2_autonomous_gdb_verify.py",
+        "config/game_info.json",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "tools/h18_script_getters_runtime.py",
+        "docs/agent-work/h18-script-getters-runtime-driver.md",
+        "build/agent-work/batch-h18-001/h18-getters-runtime-driver/run-001/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Prepare getter-specific loopback RSP driver and isolated profiles: detect actual getter hit, capture caller/input and return, compare original/patched, treat no hit as inconclusive. Inspect offline gates and ARM bits. Do not launch emulator; coordinator owns runtime."
+      ],
+      "validation_plan": [
+        "Offline script checks and documented exact commands, no emulator. Handoff hashes."
+      ],
+      "blocker": null,
+      "unblock_condition": null
+    },
+    {
+      "id": "h18-signed-stage",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Integrate production signed-byte getter 0x00121d70 into a reproducible patched image using safe verified placement.",
+      "depends_on": [
+        "h18-review-production-00121d70"
+      ],
+      "function_claims": [
+        "0x00121d70"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/function-reconstruction-workflow.md",
+        "docs/agent-work/h18-00121d70-production-review.md",
+        "docs/function-records/0x00121d70.md",
+        "src/engine/leaf_matching.cpp",
+        "tools/h18_signed_byte_production.py",
+        "config/functions.csv",
+        "config/game_info.json",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "tools/h18_signed_byte_stage.py",
+        "docs/agent-work/h18-signed-byte-stage.md",
+        "build/agent-work/batch-h18-001/h18-signed-stage/run-001/handoff.json"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Stage exact production object through proven executable placement and ARM branch veneer if necessary; verify placement occupancy and no entry/interior collisions, IPS roundtrip, interworking, actual patched-entry original differential and caller composition. If no safe location prove limitation, do not overwrite adjacent code."
+      ],
+      "validation_plan": [
+        "Offline only, unique outputs and compiler budget 1; handoff hashes and limits."
+      ],
+      "blocker": null,
+      "unblock_condition": null
+    },
+    {
+      "id": "h18-review-production-00121d70",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review production signed-byte getter and its caller/differential evidence independently.",
+      "depends_on": [
+        "h18-integrate-00121d70"
+      ],
+      "function_claims": [
+        "0x00121d70"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "src/engine/leaf_matching.cpp",
+        "include/engine/leaf_matching.h",
+        "config/functions.csv",
+        "tools/h18_signed_byte_production.py",
+        "tests/test_h18_signed_byte_production.py",
+        "docs/function-records/0x00121d70.md",
+        "docs/agent-work/h18-00121d70-integration.md",
+        "build/agent-work/batch-h18-001/h18-integrate-00121d70/run-001/handoff.json",
+        "build/agent-work/batch-h18-001/h18-integrate-00121d70/run-001/seed-7/report.json",
+        "build/agent-work/batch-h18-001/h18-integrate-00121d70/run-001/seed-20261024/report.json"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-00121d70-production-review.md",
+        "build/agent-work/batch-h18-001/h18-review-production-00121d70/run-001/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Review source semantics, ABI, signed conversion, actual object code size versus slot, ledger, both reports and caller composition. Identify integration and runtime limitations."
+      ],
+      "validation_plan": [
+        "Read-only independent review, report and handoff."
+      ],
+      "blocker": null,
+      "unblock_condition": null
+    },
+    {
+      "id": "h18-integrate-00121d70",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Convert the signed-byte getter 0x00121d70 to production C++ and validate real caller composition.",
+      "depends_on": [
+        "h18-121d70-promotion-plan"
+      ],
+      "function_claims": [
+        "0x00121d70"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/function-reconstruction-workflow.md",
+        "docs/agent-work/h18-00121d70-promotion-plan.md",
+        "docs/function-records/0x00121d70.md",
+        "src/engine/leaf_matching.cpp",
+        "include/engine/leaf_matching.h",
+        "config/functions.csv",
+        "config/game_info.json",
+        "extracted/exefs/code.bin",
+        "tools/semantic_experiment.py"
+      ],
+      "write_paths": [
+        "src/engine/leaf_matching.cpp",
+        "include/engine/leaf_matching.h",
+        "config/functions.csv",
+        "docs/function-records/0x00121d70.md",
+        "tools/h18_signed_byte_production.py",
+        "tests/test_h18_signed_byte_production.py",
+        "docs/agent-work/h18-00121d70-integration.md",
+        "build/agent-work/batch-h18-001/h18-integrate-00121d70/run-001/handoff.json"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "src/engine/leaf_matching.cpp",
+        "config/functions.csv"
+      ],
+      "acceptance": [
+        "Replace assembly with alias-safe byte load and explicit sign extension at +0x330, preserve ABI and ledger truth. Compile actual production TU; differential boundary/all 256 bytes, negative controls, pinned reference and meaningful real caller composition starting before global pointer load. Record limits and no runtime claim."
+      ],
+      "validation_plan": [
+        "Fresh output, two seeds and focused tests. No emulator; independent review required."
+      ],
+      "blocker": null,
+      "unblock_condition": null
+    },
+    {
+      "id": "h18-121d70-promotion-plan",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review existing semantic candidate 0x00121d70 and its real caller for direct production conversion readiness.",
+      "depends_on": [],
+      "function_claims": [
+        "0x00121d70"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/function-records/0x00121d70.md",
+        "experiments/semantic_equivalence/candidates.cpp",
+        "tools/semantic_experiment.py",
+        "config/functions.csv",
+        "config/game_info.json",
+        "extracted/exefs/code.bin",
+        "src/engine/leaf_matching.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-00121d70-promotion-plan.md",
+        "build/agent-work/batch-h18-001/h18-121d70-promotion-plan/run-001/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Independently review existing original/candidate and actual caller evidence, object lifetime, alignment, ABI, interior references, and concrete production changes/verification needed. Do not modify source."
+      ],
+      "validation_plan": [
+        "Read-only inspection with provenance handoff."
+      ],
+      "blocker": null,
+      "unblock_condition": null
+    },
+    {
+      "id": "h18-getters-stage",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Create a reproducible offline staged patch for the two production script getters and validate original versus patched caller compositions.",
+      "depends_on": [
+        "h18-runtime-getters-plan"
+      ],
+      "function_claims": [
+        "0x002345f0",
+        "0x002345fc"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/emulator-testing-guide.md",
+        "docs/agent-work/h18-script-getters-runtime-plan.md",
+        "tools/h18_script_word_getters_production.py",
+        "src/engine/leaf_matching.cpp",
+        "config/functions.csv",
+        "config/game_info.json",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "tools/h18_script_getters_stage.py",
+        "docs/agent-work/h18-script-getters-stage.md",
+        "build/agent-work/batch-h18-001/h18-getters-stage/run-001/handoff.json"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Compile actual production getters, check ARM entry/return and original window safety, construct pinned original and patched image/IPS with roundtrip, run offline differential and caller composition on actual patched entry. Document paths/hashes and limits. No emulator launch."
+      ],
+      "validation_plan": [
+        "Use unique run output and compiler budget 1; handoff evidence and exact checks."
+      ],
+      "blocker": null,
+      "unblock_condition": null
+    },
+    {
+      "id": "h18-review-pair-store-fix",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Review the paired-store pointer arithmetic fix and fresh production evidence.",
+      "depends_on": [
+        "h18-fix-pair-store-alias"
+      ],
+      "function_claims": [
+        "0x00131414"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "src/engine/leaf_matching.cpp",
+        "src/engine/leaf_batch34_c.cpp",
+        "docs/agent-work/h18-paired-store-production-review.md",
+        "docs/agent-work/h18-pair-store-fix.md",
+        "tools/h18_paired_store_integration.py",
+        "tests/test_h18_paired_store_integration.py",
+        "docs/function-records/0x00131414.md",
+        "build/agent-work/batch-h18-001/h18-fix-pair-store-alias/run-002/handoff.json"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-pair-store-fix-review.md",
+        "build/agent-work/batch-h18-001/h18-review-pair-store-fix/run-001/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Verify the earlier scalar pointer arithmetic issue is resolved, source matches caller object layout and focused evidence remains valid. Report residual limits."
+      ],
+      "validation_plan": [
+        "Read-only independent review and structured handoff."
+      ],
+      "blocker": null,
+      "unblock_condition": null
+    },
+    {
+      "id": "h18-fix-pair-store-alias",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Correct pointer arithmetic UB in production 0x00131414 and revalidate its compiled semantics.",
+      "depends_on": [
+        "h18-review-production-00131414"
+      ],
+      "function_claims": [
+        "0x00131414"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "src/engine/leaf_matching.cpp",
+        "config/functions.csv",
+        "docs/agent-work/h18-paired-store-production-review.md",
+        "tools/h18_paired_store_integration.py",
+        "tests/test_h18_paired_store_integration.py",
+        "docs/function-records/0x00131414.md"
+      ],
+      "write_paths": [
+        "src/engine/leaf_matching.cpp",
+        "docs/function-records/0x00131414.md",
+        "docs/agent-work/h18-pair-store-fix.md",
+        "build/agent-work/batch-h18-001/h18-fix-pair-store-alias/run-002/handoff.json",
+        "tools/h18_paired_store_integration.py",
+        "tests/test_h18_paired_store_integration.py"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "src/engine/leaf_matching.cpp"
+      ],
+      "acceptance": [
+        "Use independent typed stores at p+4 and p+8 (no array arithmetic across scalar members), preserve p+4 return and non_matching ledger. Rerun pinned differential and caller tests on exact production source; report remaining type/domain limits."
+      ],
+      "validation_plan": [
+        "Focused tests and two seeds with unique output; structured handoff; no emulator."
+      ],
+      "blocker": null,
+      "unblock_condition": null
+    },
+    {
+      "id": "h18-review-production-00131414",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the production paired-store conversion, ABI, caller and differential evidence.",
+      "depends_on": [
+        "h18-integrate-00131414-paired-store"
+      ],
+      "function_claims": [
+        "0x00131414"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "src/engine/leaf_matching.cpp",
+        "src/engine/leaf_batch34_c.cpp",
+        "include/engine/leaf_matching.h",
+        "config/functions.csv",
+        "docs/function-records/0x00131414.md",
+        "docs/agent-work/h18-00131414-cpp-integration.md",
+        "tools/h18_paired_store_integration.py",
+        "tests/test_h18_paired_store_integration.py",
+        "build/agent-work/batch-h18-001/h18-integrate-00131414-paired-store/run-001/handoff.json",
+        "build/agent-work/batch-h18-001/h18-integrate-00131414-paired-store/run-001/seed-7/report.json",
+        "build/agent-work/batch-h18-001/h18-integrate-00131414-paired-store/run-001/seed-20261024/report.json"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-paired-store-production-review.md",
+        "build/agent-work/batch-h18-001/h18-review-production-00131414/run-001/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Review actual source, declarations, pointer alias/lifetime, ledger, output, caller, both differential reports and negative control; identify concrete issues and domain limits. No source edits."
+      ],
+      "validation_plan": [
+        "Inspect frozen artifacts and produce independent structured review/handoff."
+      ],
+      "blocker": null,
+      "unblock_condition": null
+    },
+    {
+      "id": "h18-runtime-getters-plan",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Identify a reproducible original-versus-patched runtime scenario and offline gates for the two converted script getters.",
+      "depends_on": [
+        "h18-review-production-002345f0"
+      ],
+      "function_claims": [
+        "0x002345f0",
+        "0x002345fc"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/emulator-testing-guide.md",
+        "docs/agent-work/h18-script-word-getters-promotion.md",
+        "docs/agent-work/h18-script-production-review.md",
+        "tools/h18_script_word_getters_production.py",
+        "config/game_info.json",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-script-getters-runtime-plan.md",
+        "build/agent-work/batch-h18-001/h18-runtime-getters-plan/run-001/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Identify existing patch/runtime tooling, caller trigger and concrete offline/interworking and runtime steps; distinguish unproven setup. No emulator or production edits."
+      ],
+      "validation_plan": [
+        "Read-only inspection; report exact commands and limitations with structured handoff."
+      ],
+      "blocker": null,
+      "unblock_condition": null
+    },
+    {
+      "id": "h18-review-production-002345f0",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review production conversion and differential evidence for 0x002345f0 and 0x002345fc.",
+      "depends_on": [
+        "h18-integrate-002345f0-fields"
+      ],
+      "function_claims": [
+        "0x002345f0",
+        "0x002345fc"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "src/engine/leaf_matching.cpp",
+        "config/functions.csv",
+        "tools/h18_script_word_getters_production.py",
+        "tests/test_h18_script_word_getters_production.py",
+        "docs/agent-work/h18-script-word-getters-promotion.md",
+        "docs/function-records/0x002345f0.md",
+        "docs/function-records/0x002345fc.md",
+        "build/agent-work/batch-h18-001/h18-integrate-002345f0-fields/run-001/handoff.json",
+        "build/agent-work/batch-h18-001/h18-integrate-002345f0-fields/run-001/checks/seed-7/report.json",
+        "build/agent-work/batch-h18-001/h18-integrate-002345f0-fields/run-001/checks/seed-20261024/report.json"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-script-production-review.md",
+        "build/agent-work/batch-h18-001/h18-review-production-002345f0/run-001/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Review source, ledger, production differential and four caller windows, address read-width limitation and report actionable faults. No edits to source or tests."
+      ],
+      "validation_plan": [
+        "Review frozen artifacts and report; handoff with hashes and limitations."
+      ],
+      "blocker": null,
+      "unblock_condition": null
+    },
+    {
+      "id": "h18-review-002b5c2c",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review Thumb C++ candidate 0x002b5c2c, its 15 direct BLX callers, differential/caller evidence and code-size/integration feasibility.",
+      "depends_on": [
+        "h18-candidate-002b5c2c"
+      ],
+      "function_claims": [
+        "0x002b5c2c"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/function-reconstruction-workflow.md",
+        "src/engine/leaf_batch39_a.cpp",
+        "config/functions.csv",
+        "experiments/semantic_equivalence/h18_002b5c2c_candidate.cpp",
+        "tools/h18_002b5c2c_experiment.py",
+        "tests/test_h18_002b5c2c_experiment.py",
+        "docs/function-records/0x002b5c2c.md",
+        "docs/agent-work/h18-002b5c2c-candidate.md",
+        "docs/agent-work/h18-002b5c2c-contract.md",
+        "build/agent-work/batch-h18-001/h18-candidate-002b5c2c/run-001/task.json",
+        "build/agent-work/batch-h18-001/h18-candidate-002b5c2c/run-001/handoff.json",
+        "build/agent-work/batch-h18-001/h18-candidate-002b5c2c/run-001/checks/seed-17/report.json",
+        "build/agent-work/batch-h18-001/h18-candidate-002b5c2c/run-001/checks/seed-17/h18_002b5c2c_candidate.o",
+        "build/agent-work/batch-h18-001/h18-candidate-002b5c2c/run-001/checks/seed-20261116/report.json",
+        "build/agent-work/batch-h18-001/h18-candidate-002b5c2c/run-001/checks/seed-20261116/h18_002b5c2c_candidate.o"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-002b5c2c-independent-review.md",
+        "build/agent-work/batch-h18-001/h18-review-002b5c2c/run-001/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Inspect frozen C++/Thumb emission, original span and ISA, both reports, flags/read footprint/memory/ABI, all 15 callsite inventory and representative compositions, controls, declared domain, and production integration risks. Specifically determine whether 32-byte candidate can fit the 20-byte slot and list any compression/trampoline requirements. Recommend isolated acceptance versus promotion. No production, candidate, runner or test edits."
+      ],
+      "validation_plan": [
+        "Check frozen input hashes from the producer task and handoff, inspect exact objects/reports independently; run only selected checks with distinct output. Provide structured report/handoff and limits."
+      ],
+      "blocker": null,
+      "unblock_condition": null
+    },
+    {
+      "id": "h18-integrate-002345f0-fields",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Replace the asm-backed 0x002345f0/0x002345fc leaves with alias-safe C++ low-byte getters, preserve their script callers, and truthfully record non-identical output.",
+      "depends_on": [
+        "h18-review-002345f0-fields"
+      ],
+      "function_claims": [
+        "0x002345f0",
+        "0x002345fc"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/function-reconstruction-workflow.md",
+        "docs/agent-work/h18-script-word-getters.md",
+        "docs/agent-work/h18-script-word-getters-review.md",
+        "docs/function-records/0x002345f0.md",
+        "docs/function-records/0x002345fc.md",
+        "src/engine/leaf_matching.cpp",
+        "include/engine/leaf_matching.h",
+        "config/functions.csv",
+        "config/game_info.json",
+        "extracted/exefs/code.bin",
+        "experiments/semantic_equivalence/h18_script_word_getters.cpp",
+        "tools/h18_script_word_getters_experiment.py",
+        "tests/test_h18_script_word_getters_experiment.py",
+        "build/agent-work/batch-h18-001/h18-word-fields-002345f0/run-001/checks/seed-7/report.json",
+        "build/agent-work/batch-h18-001/h18-word-fields-002345f0/run-001/checks/seed-20261024/report.json"
+      ],
+      "write_paths": [
+        "src/engine/leaf_matching.cpp",
+        "config/functions.csv",
+        "docs/function-records/0x002345f0.md",
+        "docs/function-records/0x002345fc.md",
+        "tools/h18_script_word_getters_production.py",
+        "tests/test_h18_script_word_getters_production.py",
+        "docs/agent-work/h18-script-word-getters-promotion.md",
+        "build/agent-work/batch-h18-001/h18-integrate-002345f0-fields/run-001/handoff.json"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "src/engine/leaf_matching.cpp",
+        "config/functions.csv"
+      ],
+      "acceptance": [
+        "Promote the two getters into leaf_matching.cpp using byte-safe returns p[0x48] and p[0x4a] under the already-declared const u8* -> u32 interface, with no inline asm and no uint16_t alias/lifetime assumption. Before editing, audit external refs into each original window. Update both ledger rows from matching to non_matching because compiled code is 8 bytes vs 12; keep the original size/address and document truthfully. Add an offline production-source differential runner that compiles/extracts these exact production symbols; preserve the supported ordinary-RAM domain and demonstrate return, continuation, NZCV, writes, read footprint limitation, and negative controls. Compose caller windows across all four caller functions or justify any omitted call family. No MMIO or runtime equivalence claim."
+      ],
+      "validation_plan": [
+        "Respect existing source freeze until previous worker is terminal (producer/review packets now accepted). Use test-first for new production runner/tests, distinct build output and compiler budget 1. Run two pinned-image seeds and focused tests, then affected TU build check. Do not use canonical full build/emulator. Handoff source/reference hashes and exact commands."
+      ],
+      "blocker": null,
+      "unblock_condition": null
+    },
+    {
+      "id": "h18-integrate-00131414-paired-store",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Replace the inline-assembly body at 0x00131414 with readable C++ using the truthful u8* interface and observed p+4 return, with caller and production-object validation.",
+      "depends_on": [
+        "h18-review-00131414-pair-store"
+      ],
+      "function_claims": [
+        "0x00131414"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/function-reconstruction-workflow.md",
+        "docs/agent-work/h18-00131414-independent-review.md",
+        "docs/function-records/0x00131414.md",
+        "docs/function-records/00121b80.md",
+        "src/engine/leaf_matching.cpp",
+        "include/engine/leaf_matching.h",
+        "src/engine/leaf_batch34_c.cpp",
+        "config/functions.csv",
+        "config/game_info.json",
+        "extracted/exefs/code.bin",
+        "experiments/semantic_equivalence/candidates.cpp",
+        "experiments/semantic_equivalence/paired_store_candidates.cpp",
+        "tools/semantic_experiment.py",
+        "tools/semantic_experiment_support.py",
+        "tools/build_check.py",
+        "tools/test_leaf_00121b80.py"
+      ],
+      "write_paths": [
+        "src/engine/leaf_matching.cpp",
+        "include/engine/leaf_matching.h",
+        "src/engine/leaf_batch34_c.cpp",
+        "config/functions.csv",
+        "docs/function-records/0x00131414.md",
+        "tools/h18_paired_store_integration.py",
+        "tests/test_h18_paired_store_integration.py",
+        "docs/agent-work/h18-00131414-cpp-integration.md",
+        "build/agent-work/batch-h18-001/h18-integrate-00131414-paired-store/run-001/handoff.json"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [
+        "src/engine/leaf_matching.cpp",
+        "include/engine/leaf_matching.h",
+        "src/engine/leaf_batch34_c.cpp",
+        "config/functions.csv"
+      ],
+      "acceptance": [
+        "Convert the body to readable C++ without an invented record type: writes u32 fields at p+4/p+8 and returns a byte pointer p+4. Align the header and AsdFont_AttachResource declarations across translation units. Use the recovered AsdFontParseState caller layout for the contract; preserve the existing parser caller behavior. Update the ledger to non_matching if output bytes differ, never report differing bytes as matching. Add a production-source differential test that compiles/extracts this exact source function and a caller-composition check; preserve test scope to aligned writable ordinary RAM and note no loader runtime claim. Keep generated outputs under this run and do not run a canonical full build."
+      ],
+      "validation_plan": [
+        "Before implementation, ensure the current owner of leaf_matching.cpp has completed and source is frozen. Test first; compile affected translation units with one compiler slot and distinct output. Run focused offline original-vs-production-source comparison, representative 0x00121d1c caller composition and affected build checks. After handoff, coordinator runs one batch closure and independent reviewer checks promotion."
+      ],
+      "blocker": null,
+      "unblock_condition": null
+    },
+    {
+      "id": "h18-review-002345f0-fields",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review C++ candidates for 0x002345f0 and 0x002345fc, their halfword/byte memory contract, direct callers and differential evidence.",
+      "depends_on": [
+        "h18-word-fields-002345f0"
+      ],
+      "function_claims": [
+        "0x002345f0",
+        "0x002345fc"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/function-reconstruction-workflow.md",
+        "src/engine/leaf_matching.cpp",
+        "include/engine/leaf_matching.h",
+        "config/functions.csv",
+        "experiments/semantic_equivalence/h18_script_word_getters.cpp",
+        "tools/h18_script_word_getters_experiment.py",
+        "tests/test_h18_script_word_getters_experiment.py",
+        "docs/function-records/0x002345f0.md",
+        "docs/function-records/0x002345fc.md",
+        "docs/agent-work/h18-script-word-getters.md",
+        "build/agent-work/batch-h18-001/h18-word-fields-002345f0/run-001/task.json",
+        "build/agent-work/batch-h18-001/h18-word-fields-002345f0/run-001/handoff.json",
+        "build/agent-work/batch-h18-001/h18-word-fields-002345f0/run-001/checks/seed-7/report.json",
+        "build/agent-work/batch-h18-001/h18-word-fields-002345f0/run-001/checks/seed-20261024/report.json",
+        "build/agent-work/batch-h18-001/h18-word-fields-002345f0/run-001/checks/seed-7/h18_script_word_getters.o",
+        "build/agent-work/batch-h18-001/h18-word-fields-002345f0/run-001/checks/seed-7/h18_script_word_getters.o.json",
+        "build/agent-work/batch-h18-001/h18-word-fields-002345f0/run-001/checks/seed-20261024/h18_script_word_getters.o",
+        "build/agent-work/batch-h18-001/h18-word-fields-002345f0/run-001/checks/seed-20261024/h18_script_word_getters.o.json"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-script-word-getters-review.md",
+        "build/agent-work/batch-h18-001/h18-review-002345f0-fields/run-002/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Independently verify entry boundaries/ISA, exact original halfword reads and output truncation, C++ behavior and compiled bytes, ABI/memory/read-footprint observables, directed/random coverage and controls, the two caller windows and limitations. Decide if ordinary-RAM domain is supported and list any production migration requirements. No production, candidate or test edits."
+      ],
+      "validation_plan": [
+        "Check producer provenance and frozen hashes, inspect source/reports/caller windows; run only selected checks with distinct output. Write independent review and structured handoff."
+      ],
+      "blocker": null,
+      "unblock_condition": null
+    },
+    {
+      "id": "h18-review-00131414-pair-store",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the existing C++ paired-store candidate 0x00131414, its differential and caller evidence, and its readiness for production integration.",
+      "depends_on": [],
+      "function_claims": [
+        "0x00131414"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/function-reconstruction-workflow.md",
+        "src/engine/leaf_matching.cpp",
+        "include/engine/leaf_matching.h",
+        "config/functions.csv",
+        "experiments/semantic_equivalence/candidates.cpp",
+        "tools/paired_store_experiment.py",
+        "tools/semantic_experiment.py",
+        "tools/semantic_experiment_support.py",
+        "tests/test_semantic_experiment.py",
+        "docs/function-records/0x00131414.md",
+        "docs/function-records/00121b80.md",
+        "experiments/semantic_equivalence/README.md",
+        "tools/test_leaf_00121b80.py",
+        "extracted/exefs/code.bin",
+        "experiments/semantic_equivalence/paired_store_candidates.cpp"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-00131414-independent-review.md",
+        "build/agent-work/batch-h18-001/h18-review-00131414-pair-store/run-002/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Independently inspect exact 12-byte original, candidate source/object and reports; verify that the return pointer p+4 is modeled despite current void production signature, inspect real caller window and pointer/layout domain, test/negative-control coverage, old patch destination/status, and whether replacing production asm with supported typed C++ is safe. State any migration requirements, ledger classification, semantic and runtime limits. Do not edit production, candidate or shared tests."
+      ],
+      "validation_plan": [
+        "Read-only review and verify existing focused outputs/hashes. Run selected checks only in a distinct output if needed; provide structured report/handoff and explicit integration recommendation."
+      ],
+      "blocker": null,
+      "unblock_condition": null
+    },
+    {
+      "id": "h18-candidate-002b5c2c",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Implement and validate 0x002b5c2c as readable C++ that counts nonzero halfwords to the terminator, with representative caller-composition checks.",
+      "depends_on": [
+        "h18-contract-002b5c2c"
+      ],
+      "function_claims": [
+        "0x002b5c2c"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/function-reconstruction-workflow.md",
+        "docs/templates/function-reconstruction.md",
+        "docs/agent-work/h18-002b5c2c-contract.md",
+        "src/engine/leaf_batch39_a.cpp",
+        "config/functions.csv",
+        "config/game_info.json",
+        "extracted/exefs/code.bin",
+        "tools/semantic_experiment.py",
+        "tools/semantic_experiment_support.py"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h18_002b5c2c_candidate.cpp",
+        "tools/h18_002b5c2c_experiment.py",
+        "tests/test_h18_002b5c2c_experiment.py",
+        "docs/function-records/0x002b5c2c.md",
+        "docs/agent-work/h18-002b5c2c-candidate.md",
+        "build/agent-work/batch-h18-001/h18-candidate-002b5c2c/run-001/handoff.json"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Test first. Implement the bounded contract for aligned readable uint16_t sequences terminated by zero, preserving the Thumb-callable ABI and returning count excluding the terminator. Cover empty, one, multi-element, varied nonzero halfwords, exact read footprint through the terminator, no writes, continuation/register and flags behavior, seeded cases and negative controls for byte scanning, inclusive terminator and wrong count. Inspect all 15 direct caller contexts; compose at least representative count*2 and (count+1)*2 caller windows plus 0x002e0dd0 forwarded byte length if harness supports. Do not modify production source or ledger."
+      ],
+      "validation_plan": [
+        "Use fresh unique output children under this run, respect compiler budget 1, test-first red then offline pinned-image original-versus-C++ differential with two seeds. Confirm ARM/Thumb interworking and caller windows before handoff. No emulator."
+      ],
+      "blocker": null,
+      "unblock_condition": null
+    },
+    {
+      "id": "h18-word-fields-002345f0",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Reconstruct the paired 12-byte script VM getters 0x002345f0 and 0x002345fc as typed C++ candidates and validate their shared record-field contract offline.",
+      "depends_on": [],
+      "function_claims": [
+        "0x002345f0",
+        "0x002345fc"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/function-reconstruction-workflow.md",
+        "docs/templates/function-reconstruction.md",
+        "src/engine/leaf_matching.cpp",
+        "include/engine/leaf_matching.h",
+        "config/functions.csv",
+        "config/game_info.json",
+        "extracted/exefs/code.bin",
+        "tools/semantic_experiment.py",
+        "tools/semantic_experiment_support.py",
+        "tools/nop_leaf_experiment.py"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h18_script_word_getters.cpp",
+        "tools/h18_script_word_getters_experiment.py",
+        "tests/test_h18_script_word_getters_experiment.py",
+        "docs/function-records/0x002345f0.md",
+        "docs/function-records/0x002345fc.md",
+        "docs/agent-work/h18-script-word-getters.md",
+        "build/agent-work/batch-h18-001/h18-word-fields-002345f0/run-001/handoff.json"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Test first. Confirm complete original instruction sequences and typed source interface. Reconstruct both as u32 returns of the low byte from aligned halfwords at p+0x48 and p+0x4a using the production-compatible const u8* interface. Cover unsigned high-byte masking, boundary values, different aligned buffers, return/continuation, all GPR/NZCV/memory observables; include negative controls for wrong offset, signed extension, omitted mask and memory write. Map 16 direct callers per entry and test representative real caller windows for both if feasible, stating exact limitations. Do not touch production source or ledger."
+      ],
+      "validation_plan": [
+        "Run focused offline original-versus-C++ ARM differential with seeds 7 and 20261024 using unique child outputs. Inspect object instructions/interworking and compare caller setup/post-call use at representative callsites. Handoff hashes, exits, evidence levels and limits."
+      ],
+      "blocker": null,
+      "unblock_condition": null
+    },
+    {
+      "id": "h18-contract-002b5c2c",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover the 20-byte helper contract for 0x002b5c2c, called by 0x002e0dd0 success flow, including its returned value semantics and real caller use.",
+      "depends_on": [
+        "h18-contract-002e0dd0"
+      ],
+      "function_claims": [
+        "0x002b5c2c"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/function-reconstruction-workflow.md",
+        "docs/agent-work/h18-002e0dd0-contract.md",
+        "src/engine/leaf_batch39_a.cpp",
+        "src/engine/leaf_batch45_a.cpp",
+        "src/engine/leaf_batch29_c.cpp",
+        "config/functions.csv",
+        "config/game_info.json",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-002b5c2c-contract.md",
+        "build/agent-work/batch-h18-001/h18-contract-002b5c2c/run-001/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover exact boundary/ISA, arguments/return, memory/register/flag effects, branches and direct callers, especially 0x002e0dd0. Determine whether return is a simple arithmetic value or depends on global/helper state. Separate facts/inference; give narrow C++ and differential cases."
+      ],
+      "validation_plan": [
+        "Read-only static disassembly and source/caller inspection. No compilation, runtime, emulator, production or ledger edits. Hash all evidence and pass handoff provenance check."
+      ],
+      "blocker": null,
+      "unblock_condition": null
+    },
+    {
+      "id": "h18-recon-getter-tables",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Resolve whether the four pointer-like rodata entries for 0x003f5a68/5e34/635c/6800 are dispatched as callbacks, and identify consumer/caller context for safe production conversion.",
+      "depends_on": [
+        "h18-review-word-getters-batch"
+      ],
+      "function_claims": [
+        "0x003f5a68",
+        "0x003f5e34",
+        "0x003f635c",
+        "0x003f6800"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/function-reconstruction-workflow.md",
+        "docs/agent-work/h18-word-getters-independent-review.md",
+        "docs/agent-work/h18-word-getters-batch.md",
+        "experiments/semantic_equivalence/h18_word_getters_candidates.cpp",
+        "tools/h18_word_getters_experiment.py",
+        "src/engine/leaf_matching.cpp",
+        "include/engine/leaf_matching.h",
+        "config/functions.csv",
+        "config/game_info.json",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-word-getter-table-recon.md",
+        "build/agent-work/batch-h18-001/h18-recon-getter-tables/run-001/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Search the four aligned pointer sites and surrounding tables for owning data structures, discover code refs to table start/interior (including ARM PC-relative literals, ADR/add chains, other modes where supported), identify any indirect-call pattern and caller preconditions/results. Report positive evidence or narrow absence with explicit scan limits. Do not change source, ledger or experiment."
+      ],
+      "validation_plan": [
+        "Read-only static analysis of pinned image and source, with exact addresses/disassembly and hashes; no compilation, runtime or emulator. Run provenance handoff validation."
+      ],
+      "blocker": null,
+      "unblock_condition": null
+    },
+    {
+      "id": "h18-contract-00263534",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover helper contract 0x00263534, a key bit31 gate for 0x002e0dd0, to unlock a truthful bounded C++ reconstruction of the caller-observed return behavior.",
+      "depends_on": [
+        "h18-contract-002e0dd0"
+      ],
+      "function_claims": [
+        "0x00263534"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/function-reconstruction-workflow.md",
+        "docs/agent-work/h18-002e0dd0-contract.md",
+        "src/engine/leaf_batch35_c.cpp",
+        "src/engine/leaf_batch45_a.cpp",
+        "src/engine/leaf_batch29_c.cpp",
+        "src/engine/leaf_batch37_c.cpp",
+        "config/functions.csv",
+        "config/game_info.json",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-00263534-contract.md",
+        "build/agent-work/batch-h18-001/h18-contract-00263534/run-001/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover the helper exact ARM/Thumb boundary, arguments/return, branches, memory/global effects, callees and caller use, especially output bit31 provenance at 0x002e0dd0. Separate observed fact from inference and define a minimal C++ slice and focused differential cases."
+      ],
+      "validation_plan": [
+        "Read-only disassembly/source/caller inspection; no compile/runtime/emulator or production edits. Record source/reference hashes, xref coverage and unresolved dependencies in report/handoff."
+      ],
+      "blocker": null,
+      "unblock_condition": null
+    },
+    {
+      "id": "h18-contract-002a34a4",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover the semantic contract, helper calls and real caller behavior for engine function 0x002a34a4; recommend a bounded C++ reconstruction slice.",
+      "depends_on": [],
+      "function_claims": [
+        "0x002a34a4"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/function-reconstruction-workflow.md",
+        "src/engine/leaf_batch45_a.cpp",
+        "config/functions.csv",
+        "config/game_info.json",
+        "extracted/exefs/code.bin",
+        "include/engine/leaf_matching.h"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-002a34a4-contract.md",
+        "build/agent-work/batch-h18-001/h18-contract-002a34a4/run-001/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover ARM/Thumb state and entry/return boundaries, args/return, memory effects, meaningful branches, dependencies/helpers and unresolved calls; find actual direct callers and post-call use. Separate fact/inference and propose the narrowest C++ slice with offline differential and caller validation."
+      ],
+      "validation_plan": [
+        "Read-only original disassembly and source/caller inspection; no compilation, runtime, emulator or production edits. Hash inputs and report xrefs/scan limits in handoff."
+      ],
+      "blocker": null,
+      "unblock_condition": null
+    },
+    {
+      "id": "h18-review-word-getters-batch",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the four complete word getter C++ candidates and offline differential evidence before any production promotion.",
+      "depends_on": [
+        "h18-word-getters-batch"
+      ],
+      "function_claims": [
+        "0x003f5a68",
+        "0x003f5e34",
+        "0x003f635c",
+        "0x003f6800"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/function-reconstruction-workflow.md",
+        "src/engine/leaf_matching.cpp",
+        "include/engine/leaf_matching.h",
+        "config/functions.csv",
+        "experiments/semantic_equivalence/h18_word_getters_candidates.cpp",
+        "tools/h18_word_getters_experiment.py",
+        "tests/test_h18_word_getters_experiment.py",
+        "docs/function-records/0x003f5a68.md",
+        "docs/function-records/0x003f5e34.md",
+        "docs/function-records/0x003f635c.md",
+        "docs/function-records/0x003f6800.md",
+        "docs/agent-work/h18-word-getters-batch.md",
+        "build/agent-work/batch-h18-001/h18-word-getters-batch/run-001/task.json",
+        "build/agent-work/batch-h18-001/h18-word-getters-batch/run-001/handoff.json",
+        "build/agent-work/batch-h18-001/h18-word-getters-batch/run-001/checks/final-seed-7/report.json",
+        "build/agent-work/batch-h18-001/h18-word-getters-batch/run-001/checks/final-seed-20261024/report.json"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-word-getters-independent-review.md",
+        "build/agent-work/batch-h18-001/h18-review-word-getters-batch/run-004/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Independently check exact original boundaries and memory contract, compiled candidate machine behavior, typed C++/ABI safety, test observables and negative controls, caller and ledger claims, and promotion risks. Identify concrete gaps/counterexamples. Do not edit production, ledger, candidate or shared test code."
+      ],
+      "validation_plan": [
+        "Review frozen artifacts and hashes; inspect reports and source. Run only selected focused checks if needed, with distinct output; hand off review and limitations."
+      ],
+      "blocker": null,
+      "unblock_condition": null
+    },
+    {
+      "id": "h18-contract-002e0dd0",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover the semantic contract, helpers and real caller behavior for the 724-byte engine function at 0x002e0dd0; recommend a bounded C++ reconstruction slice.",
+      "depends_on": [],
+      "function_claims": [
+        "0x002e0dd0"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/function-reconstruction-workflow.md",
+        "src/engine/leaf_batch45_a.cpp",
+        "src/engine/leaf_batch29_c.cpp",
+        "include/engine/leaf_matching.h",
+        "config/functions.csv",
+        "config/game_info.json",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-002e0dd0-contract.md",
+        "build/agent-work/batch-h18-001/h18-contract-002e0dd0/run-001/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Recover exact ARM/Thumb state and entry/return boundaries, arguments/return, memory effects, meaningful branches, helper calls and unresolved dependencies; inspect actual caller setup and post-call use. Separate fact from inference and identify a testable C++ slice plus concrete differential/caller validation."
+      ],
+      "validation_plan": [
+        "Read-only disassembly and source/caller inspection only; no compile, runtime, emulator or production edits. Record source/reference hashes, exact evidence and scan limitations in the handoff."
+      ],
+      "blocker": null,
+      "unblock_condition": null
+    },
+    {
+      "id": "h18-contract-003570a0",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover the callback/ABI contract, memory effects and caller behavior for the command-buffer initializer at 0x003570a0 and adjacent body 0x003570a4; define a feasible C++ slice.",
+      "depends_on": [
+        "h18-leaf36c-nop-batch"
+      ],
+      "function_claims": [
+        "0x003570a0",
+        "0x003570a4"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/function-reconstruction-workflow.md",
+        "docs/agent-work/h18-leaf36c-boundary-audit.md",
+        "src/engine/leaf_batch36_c.cpp",
+        "src/engine/leaf_batch29_c.cpp",
+        "src/engine/block_batch.cpp",
+        "include/engine/block_batch.h",
+        "config/functions.csv",
+        "config/game_info.json",
+        "extracted/exefs/code.bin"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-003570a0-contract.md",
+        "build/agent-work/batch-h18-001/h18-contract-003570a0/run-001/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Map the real C++ caller and direct assembly callers, entry fallthrough, input/output contract, memory writes, stack/ABI, helper call arguments/effects, and unresolved callees. Separate observed facts from inference. Propose the narrowest C++ unit that can be differentially/caller tested with existing support; identify any runner support needed."
+      ],
+      "validation_plan": [
+        "Read-only disassembly and source/caller inspection; no compilation, runtime, emulator or production edits. Handoff with exact commands, hashes, direct caller evidence and limits."
+      ],
+      "blocker": null,
+      "unblock_condition": null
+    },
+    {
+      "id": "h18-word-getters-batch",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Reconstruct four complete 12-byte word getters in leaf_matching.cpp as readable C++ and validate their return/memory/ABI behavior offline.",
+      "depends_on": [],
+      "function_claims": [
+        "0x003f5a68",
+        "0x003f5e34",
+        "0x003f635c",
+        "0x003f6800"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/function-reconstruction-workflow.md",
+        "docs/templates/function-reconstruction.md",
+        "src/engine/leaf_matching.cpp",
+        "include/engine/leaf_matching.h",
+        "config/functions.csv",
+        "config/game_info.json",
+        "extracted/exefs/code.bin",
+        "tools/nop_leaf_experiment.py",
+        "tools/semantic_experiment.py",
+        "tools/semantic_experiment_support.py"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h18_word_getters_candidates.cpp",
+        "tools/h18_word_getters_experiment.py",
+        "tests/test_h18_word_getters_experiment.py",
+        "docs/function-records/0x003f5a68.md",
+        "docs/function-records/0x003f5e34.md",
+        "docs/function-records/0x003f635c.md",
+        "docs/function-records/0x003f6800.md",
+        "docs/agent-work/h18-word-getters-batch.md",
+        "build/agent-work/batch-h18-001/h18-word-getters-batch/run-001/handoff.json"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Test first. Validate each pinned original is a complete 12-byte leaf that loads the 32-bit word at p+4 and returns it; candidate C++ may omit the inert MOV. Test valid aligned ordinary RAM, return value, GPRs/NZCV, memory footprint and continuation. Add boundary values, two seeds, negative controls, source/reference hashes and per-address records. Recover direct caller evidence and limits. Do not touch production source or ledger."
+      ],
+      "validation_plan": [
+        "Write focused test before candidate and observe expected failure. Then run offline ARM original-vs-candidate differential under seeds 7 and 20261024 and focused unittest; use fresh run-001 child outputs and compiler budget 1."
+      ],
+      "blocker": null,
+      "unblock_condition": null
+    },
+    {
+      "id": "h18-review-00349c64",
+      "role": "validation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Independently review the bounded C++ candidate and ARM differential evidence for 0x00349c64, including compound-span safety and pointer-table claims.",
+      "depends_on": [
+        "h18-candidate-00349c64"
+      ],
+      "function_claims": [
+        "0x00349c64"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/function-reconstruction-workflow.md",
+        "experiments/semantic_equivalence/h18_00349c64_candidate.cpp",
+        "tools/h18_00349c64_experiment.py",
+        "tests/test_h18_00349c64_experiment.py",
+        "docs/function-records/0x00349c64.md",
+        "docs/agent-work/h18-00349c64-candidate.md",
+        "build/agent-work/batch-h18-001/h18-candidate-00349c64/run-001/task.json",
+        "build/agent-work/batch-h18-001/h18-candidate-00349c64/run-001/handoff.json",
+        "build/agent-work/batch-h18-001/h18-candidate-00349c64/run-001/checks/seed-7/report.json",
+        "build/agent-work/batch-h18-001/h18-candidate-00349c64/run-001/checks/seed-20261024/report.json",
+        "src/engine/leaf_batch45_a.cpp",
+        "config/functions.csv"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-00349c64-independent-review.md",
+        "build/agent-work/batch-h18-001/h18-review-00349c64/run-002/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Review independently whether the candidate matches the original 8-byte entry, whether the runner covers relevant observables and negatives, and whether caller/table evidence supports the bounded contract. Report any counterexample or integration blocker; the review must not claim whole 720-byte span or runtime equivalence."
+      ],
+      "validation_plan": [
+        "Read-only source/report review; rerun only selected focused checks if needed, with no candidate or shared-file edits."
+      ],
+      "blocker": null,
+      "unblock_condition": null
+    },
+    {
+      "id": "h18-candidate-00349c64",
+      "role": "implementation",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover and differentially validate the complete constant-true entry at 0x00349c64 as editable C++, keeping the adjacent 0x00349c70 routine and compound source span intact.",
+      "depends_on": [],
+      "function_claims": [
+        "0x00349c64"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/function-reconstruction-workflow.md",
+        "src/engine/leaf_batch45_a.cpp",
+        "config/functions.csv",
+        "config/game_info.json",
+        "extracted/exefs/code.bin",
+        "tools/semantic_experiment_support.py",
+        "tools/semantic_experiment.py"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h18_00349c64_candidate.cpp",
+        "tools/h18_00349c64_experiment.py",
+        "tests/test_h18_00349c64_experiment.py",
+        "docs/function-records/0x00349c64.md",
+        "docs/agent-work/h18-00349c64-candidate.md",
+        "build/agent-work/batch-h18-001/h18-candidate-00349c64/run-001/handoff.json"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Confirm the exact 8-byte entry returns r0=1, returns through LR, leaves all other GPRs/NZCV/memory unchanged, and does not fall through. Implement only a typed C++ candidate for this entry. Identify its compound-span/interior-entry context and direct caller evidence limits; do not alter production source or ledger."
+      ],
+      "validation_plan": [
+        "Run offline original-versus-candidate ARM differential cases with two seeds, varied GPRs/flags/memory, and negative controls for return value, flags, and memory. Inspect compiled bytes/interworking. Record direct and indirect caller search limits."
+      ],
+      "blocker": null,
+      "unblock_condition": null
+    },
+    {
+      "id": "h18-leaf36c-nop-batch",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Audit the four leaf_batch36_c MOV r0,r0 rows for entry boundary, fall-through, adjacent bodies and caller evidence; recommend whether any is a complete function suitable for C++.",
+      "depends_on": [],
+      "function_claims": [
+        "0x002c3b44",
+        "0x003570a0",
+        "0x00363a8c",
+        "0x0037f76c"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/function-reconstruction-workflow.md",
+        "src/engine/leaf_batch36_c.cpp",
+        "config/functions.csv",
+        "config/game_info.json",
+        "extracted/exefs/code.bin",
+        "tools/nop_leaf_experiment.py",
+        "tools/semantic_experiment_support.py",
+        "tools/semantic_experiment.py"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-leaf36c-boundary-audit.md",
+        "build/agent-work/batch-h18-001/h18-leaf36c-nop-batch/run-002/handoff.json"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "For each address, report exact instruction, next catalogued entry and bytes, likely entry-boundary interpretation, direct BL/BLX and aligned-pointer xrefs with scan limitations, and one concrete C++ reconstruction route if supported. Do not write candidate code or edit production/ledger."
+      ],
+      "validation_plan": [
+        "Read-only original-image disassembly and caller/reference audit; no compile/runtime."
+      ],
+      "blocker": null,
+      "unblock_condition": null
+    },
+    {
+      "id": "h18-leaf36-nop-batch",
+      "role": "implementation",
+      "state": "blocked",
+      "owner": null,
+      "goal": "Reconstruct and differentially validate all 21 four-byte MOV r0,r0 no-op callbacks in leaf_batch36_a as isolated editable C++ candidates, without changing production source or shared ledgers.",
+      "depends_on": [],
+      "function_claims": [
+        "0x00235df4",
+        "0x0023de14",
+        "0x0026b0cc",
+        "0x0027375c",
+        "0x002767ac",
+        "0x002819f4",
+        "0x0028ec74",
+        "0x0028fde0",
+        "0x00295ea8",
+        "0x002a4db0",
+        "0x002ad46c",
+        "0x002ae64c",
+        "0x002b0204",
+        "0x002b6e40",
+        "0x002bac24",
+        "0x002bbb28",
+        "0x002bce44",
+        "0x002bd258",
+        "0x002bdd1c",
+        "0x002bf2b0",
+        "0x002bf9e4"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "docs/function-reconstruction-workflow.md",
+        "src/engine/leaf_batch36_a.cpp",
+        "config/functions.csv",
+        "config/game_info.json",
+        "extracted/exefs/code.bin",
+        "tools/nop_leaf_experiment.py",
+        "tools/semantic_experiment_support.py",
+        "tools/semantic_experiment.py"
+      ],
+      "write_paths": [
+        "experiments/semantic_equivalence/h18_nop_stub_candidates.cpp",
+        "tools/h18_nop_stub_experiment.py",
+        "tests/test_h18_nop_stub_experiment.py",
+        "docs/function-records/0x00235df4.md",
+        "docs/function-records/0x0023de14.md",
+        "docs/function-records/0x0026b0cc.md",
+        "docs/function-records/0x0027375c.md",
+        "docs/function-records/0x002767ac.md",
+        "docs/function-records/0x002819f4.md",
+        "docs/function-records/0x0028ec74.md",
+        "docs/function-records/0x0028fde0.md",
+        "docs/function-records/0x00295ea8.md",
+        "docs/function-records/0x002a4db0.md",
+        "docs/function-records/0x002ad46c.md",
+        "docs/function-records/0x002ae64c.md",
+        "docs/function-records/0x002b0204.md",
+        "docs/function-records/0x002b6e40.md",
+        "docs/function-records/0x002bac24.md",
+        "docs/function-records/0x002bbb28.md",
+        "docs/function-records/0x002bce44.md",
+        "docs/function-records/0x002bd258.md",
+        "docs/function-records/0x002bdd1c.md",
+        "docs/function-records/0x002bf2b0.md",
+        "docs/function-records/0x002bf9e4.md",
+        "docs/agent-work/h18-leaf36-nop-batch.md",
+        "build/agent-work/batch-h18-001/h18-leaf36-nop-batch/run-001/handoff.json"
+      ],
+      "compiler_slots": 1,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Use typed empty C++ functions only after confirming that each original is exactly the same single MOV r0,r0 instruction and caller behavior is compatible with a no-op. Preserve the observable identity of all GPRs, NZCV, memory and continuation in the offline ARM runner. Add tailored negative controls and per-function records; no byte-matching claim for differing outputs."
+      ],
+      "validation_plan": [
+        "Run the new isolated original-versus-compiled-C++ differential runner with two seeds, varied registers/NZCV/memory, and controls that mutate r0, a caller-saved register, flags, or memory. Run focused unittest and verify the compiler output/interworking and source/reference hashes."
+      ],
+      "blocker": "All 21 MOV r0,r0 ledger rows fall through into meaningful adjacent ARM code; isolated BX-LR candidates are not whole-function replacements, and callers/boundaries remain unresolved.",
+      "unblock_condition": "Resolve each entry boundary and actual caller/dispatch contract, or replace this batch with independently bounded complete functions. Do not promote isolated no-op bodies."
+    },
+    {
+      "id": "h18-contract-003ac688",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover the caller contract and semantic behavior of 0x003ac688, identifying a bounded editable C++ slice and validation plan.",
+      "depends_on": [],
+      "function_claims": [
+        "0x003ac688"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "src/engine/leaf_batch45_a.cpp",
+        "config/functions.csv",
+        "docs/function-reconstruction-workflow.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-003ac688-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Map ABI, memory effects, branches, callers, original dependencies and the feasible C++ behavior; distinguish observed facts from inference."
+      ],
+      "validation_plan": [
+        "Read-only disassembly and caller/source inspection; no compilation or runtime."
+      ],
+      "blocker": null,
+      "unblock_condition": null
+    },
+    {
+      "id": "h18-contract-002080e0",
+      "role": "recon",
+      "state": "accepted",
+      "owner": null,
+      "goal": "Recover the caller contract and semantic behavior of 0x002080e0, identifying a bounded editable C++ slice and validation plan.",
+      "depends_on": [],
+      "function_claims": [
+        "0x002080e0"
+      ],
+      "read_paths": [
+        "AGENTS.md",
+        "docs/agent-workflow.md",
+        "src/engine/leaf_batch45_a.cpp",
+        "config/functions.csv",
+        "docs/function-reconstruction-workflow.md"
+      ],
+      "write_paths": [
+        "docs/agent-work/h18-002080e0-contract.md"
+      ],
+      "compiler_slots": 0,
+      "exclusive_resources": [],
+      "acceptance": [
+        "Map ABI, memory effects, branches, callers, original dependencies and the feasible C++ behavior; distinguish observed facts from inference."
+      ],
+      "validation_plan": [
+        "Read-only disassembly and caller/source inspection; no compilation or runtime."
+      ],
+      "blocker": null,
+      "unblock_condition": null
+    },
+    {
       "id": "h18-module-promotion-recon",
       "role": "recon",
       "state": "accepted",

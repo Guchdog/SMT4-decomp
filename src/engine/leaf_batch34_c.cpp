@@ -230,7 +230,6 @@ extern "C" void script_vm_func_0033851c();
 extern "C" void script_vm_func_00389e54();
 extern "C" void script_vm_func_003adcd8();
 extern "C" void ui_func_0012aa74();
-extern "C" void ui_func_00131414();
 extern "C" void ui_func_00140110();
 extern "C" void ui_func_001401cc();
 extern "C" void ui_func_001441dc();
@@ -1890,6 +1889,15 @@ struct AsdFontParseState {
     u32 chunk;  // +0x08: rebased FINF chunk; written by 0x00131414 only
 };
 
+static_assert(offsetof(AsdFontParseState, type) == 0x00,
+              "font parser state type offset");
+static_assert(offsetof(AsdFontParseState, data) == 0x04,
+              "font parser state data offset");
+static_assert(offsetof(AsdFontParseState, chunk) == 0x08,
+              "font parser state chunk offset");
+static_assert(sizeof(AsdFontParseState) == 0x0C,
+              "font parser state size");
+
 // Resource header.  The halfword at +0x04 and the words at +0x08 / +0x0C /
 // +0x10 are exactly the fields 0x0012AA74 tests.
 struct FontResourceHeader {
@@ -1945,7 +1953,7 @@ extern "C" u32 AsdFont_CheckResourceHeader(const void* data, u32 tag,
     asm("ui_func_0012aa74");
 
 // 0x00131414: `*(u32*)(p + 4) = a; *(u32*)(p + 8) = b;`, returns p + 4.
-extern "C" void AsdFont_AttachResource(void* info, u32 data, u32 chunk)
+extern "C" u8* AsdFont_AttachResource(u8* info, u32 data, u32 chunk)
     asm("ui_func_00131414");
 
 // DECOMP_FUNC(0x00121b80, 472)
@@ -2049,7 +2057,8 @@ extern "C" u32 ui_func_00121b80(AsdFontParseState* info, void* resource) {
         return 0;
     }
     AsdFont_AttachResource(
-        info, base, static_cast<u32>(reinterpret_cast<std::uintptr_t>(found)));
+        reinterpret_cast<u8*>(info), base,
+        static_cast<u32>(reinterpret_cast<std::uintptr_t>(found)));
     return 1;
 }
 

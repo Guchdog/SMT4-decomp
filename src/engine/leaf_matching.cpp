@@ -1,4 +1,5 @@
 #include "engine/leaf_matching.h"
+#include <cstdint>
 
 extern "C" {
 
@@ -1288,8 +1289,10 @@ void func_00158784(u8* p, u32 a, u32 b) {
 }
 
 // DECOMP_FUNC(0x00131414, 12)
-void ui_func_00131414(u8* p, u32 a, u32 b) {
-    asm volatile("add r0, r0, #4\nstm r0, {r1, r2}\n" : : "r"(p), "r"(a), "r"(b) : "memory");
+u8* ui_func_00131414(u8* p, u32 a, u32 b) {
+    *reinterpret_cast<u32*>(p + 4) = a;
+    *reinterpret_cast<u32*>(p + 8) = b;
+    return p + 4;
 }
 
 // DECOMP_FUNC(0x0023347c, 12)
@@ -1597,12 +1600,8 @@ void func_00396250(u8* p) {
 
 // DECOMP_FUNC(0x00121d70, 12)
 extern "C" s32 func_00121d70(const u8* p) {
-    asm volatile(
-        "add %0, %0, #0x300\n"
-        "ldrsb %0, [%0, #0x30]\n"
-        : "+r"(p) : :
-    );
-    return (s32)(intptr_t)p;
+    const unsigned char byte = reinterpret_cast<const unsigned char*>(p)[0x330];
+    return byte < 0x80u ? static_cast<s32>(byte) : static_cast<s32>(byte) - 0x100;
 }
 
 // DECOMP_FUNC(0x00144ea0, 12)
@@ -1616,12 +1615,12 @@ extern "C" __attribute__((naked)) void func_00144ea0() {
 
 // DECOMP_FUNC(0x0014ec5c, 12)
 extern "C" void* engine_func_0014ec5c(void* p) {
-    asm volatile(
-        "cmp %0, #0\n"
-        "ldrne %0, [%0, #0x1c]\n"
-        : "+r"(p) : : "cc"
-    );
-    return p;
+    if (p == nullptr) return nullptr;
+    static_assert(sizeof(void*) == sizeof(u32), "ARM target pointers are 32-bit");
+    const unsigned char* field = reinterpret_cast<const unsigned char*>(p) + 0x1c;
+    u32 field_bits = 0;
+    __builtin_memcpy_inline(&field_bits, field, sizeof(field_bits));
+    return reinterpret_cast<void*>(static_cast<std::uintptr_t>(field_bits));
 }
 
 // DECOMP_FUNC(0x001575c0, 12)
@@ -1646,22 +1645,12 @@ extern "C" void* func_0018f554(void* p) {
 
 // DECOMP_FUNC(0x002345f0, 12)
 extern "C" u32 script_vm_func_002345f0(const u8* p) {
-    asm volatile(
-        "ldrh %0, [%0, #0x48]\n"
-        "and %0, %0, #0xff\n"
-        : "+r"(p) : :
-    );
-    return (u32)(uintptr_t)p;
+    return p[0x48];
 }
 
 // DECOMP_FUNC(0x002345fc, 12)
 extern "C" u32 script_vm_func_002345fc(const u8* p) {
-    asm volatile(
-        "ldrh %0, [%0, #0x4a]\n"
-        "and %0, %0, #0xff\n"
-        : "+r"(p) : :
-    );
-    return (u32)(uintptr_t)p;
+    return p[0x4a];
 }
 
 // DECOMP_FUNC(0x002355ac, 12)

@@ -278,7 +278,7 @@ void func_0031ab34(void* dst, const void* src);
 s32 func_001328f8(u8* p);
 void func_001579c0(u8* p, u8 b, f32 f);
 void func_00158784(u8* p, u32 a, u32 b);
-void ui_func_00131414(u8* p, u32 a, u32 b);
+u8* ui_func_00131414(u8* p, u32 a, u32 b);
 void func_0023347c(u8* p, u32 a, u32 b);
 void script_vm_func_00292e88(u8* p, u32 a, u32 b);
 u32 func_0031b9a0(u32 a, u32 b, u32 c);
