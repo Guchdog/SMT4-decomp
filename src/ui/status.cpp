@@ -31,6 +31,7 @@ extern "C" {
     void  UiStatus_SetPanelMode(void* ptr, s32 a1, s32 a2);                         // 0x00296528
     f32   UiStatus_CalcScaleRatio(s32 a0, s32 a1);                                  // 0x00293ca8
     s32   UiMath_ClampVal(s32 a0, s32 a1);                                          // 0x002c6c10
+    f32   ui_func_00282f00(f32 a0, f32 a1, f32 a2);                                 // 0x00282f00
     extern u8* g_AsdGpuState;                                                       // 0x0044ea00
 }
 
@@ -1023,35 +1024,24 @@ void Status_UpdateAffinityTable() {
     }
 }
 
-[[maybe_unused]] static f32 Status_GetCalculatedScale_Decompiled() {
-    StatusWork* work = g_StatusManager.work;
-    if (work == nullptr || work->scale_calc_val <= 0) {
-        return 6.3f;
-    }
-
-    const f32 factor = work->unk_1ea4[0] == 0 ? 0.08f :
-                       work->unk_1ea4[0] == 1 ? 0.105f :
-                       work->unk_1ea4[0] == 2 ? 0.01f : 0.0f;
-    return 6.3f + (static_cast<f32>(work->scale_calc_val) * factor);
-}
-
-// Exact ARM-state restoration. The mode byte at +0x1EA4 selects one of three
-// scale coefficients; unsupported modes and non-positive values keep 6.3f.
 // DECOMP_FUNC(0x00295010, 172)
-__attribute__((naked)) f32 Status_GetCalculatedScale() {
-    asm volatile(
-        ".word 0xE59F0090, 0xEDDF0A20, 0xED9F0A20, 0xED9F1A20\n"
-        ".word 0xE5901004, 0xE59F0080, 0xE7900001, 0xE3500000\n"
-        ".word 0xDA000017, 0xE2811B07, 0xE2811FA9, 0xE5D11000\n"
-        ".word 0xE3510000, 0x0A000004, 0xE3510001, 0x0A000007\n"
-        ".word 0xE3510002, 0x1A00000E, 0xEA000009, 0xEE010A90\n"
-        ".word 0xED9F2A12, 0xEEF81AE1, 0xEE410A82, 0xEA000008\n"
-        ".word 0xEE010A90, 0xED9F2A0E, 0xEEF81AE1, 0xEE410A82\n"
-        ".word 0xEA000003, 0xEE010A90, 0xED9F2A0A, 0xEEF81AE1\n"
-        ".word 0xEE410A82, 0xE320F000, 0xEAFFB798, 0x40C9999A\n"
-        ".word 0x00000000, 0x40900000, 0x0044E140, 0x00001EA0\n"
-        ".word 0x3DA3D70A, 0x3DD70A3D, 0x3C23D70A\n"
-    );
+f32 Status_GetCalculatedScale() {
+    static constexpr f32 kBaseScale = 6.3f;
+    static constexpr f32 kMaxScale = 4.5f;
+
+    const StatusWork* work = g_StatusManager.work;
+    f32 scale = kBaseScale;
+    if (work->scale_calc_val > 0) {
+        const u8 mode = work->unk_1ea4[0];
+        if (mode == 0) {
+            scale += static_cast<f32>(work->scale_calc_val) * 0.08f;
+        } else if (mode == 1) {
+            scale += static_cast<f32>(work->scale_calc_val) * 0.105f;
+        } else if (mode == 2) {
+            scale += static_cast<f32>(work->scale_calc_val) * 0.01f;
+        }
+    }
+    return ui_func_00282f00(0.0f, scale, kMaxScale);
 }
 
 // DECOMP_FUNC(0x0029af30, 28)
