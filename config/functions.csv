@@ -7963,7 +7963,7 @@ address,size,status,category,name,src_file
 0x0034f0a8,440,matching,unknown,func_0034f0a8,src/engine/leaf_batch34_a.cpp
 0x0034f260,28,matching,unknown,func_0034f260,src/engine/leaf_batch18_a.cpp
 0x0034f27c,144,matching,unknown,func_0034f27c,src/engine/leaf_batch33_a.cpp
-0x0034f30c,772,matching,engine,engine_func_0034f30c,src/engine/leaf_batch45_a.cpp
+0x0034f30c,772,non_matching,engine,engine_func_0034f30c,src/engine/leaf_batch45_a.cpp
 0x0034f610,12,matching,unknown,func_0034f610,src/engine/leaf_matching.cpp
 0x0034f61c,44,non_matching,unknown,func_0034f61c,src/engine/leaf_batch31_a.cpp
 0x0034f648,80,non_matching,ui,ui_func_0034f648,src/engine/leaf_batch31_b.cpp
