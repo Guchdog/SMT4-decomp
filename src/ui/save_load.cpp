@@ -203,43 +203,40 @@ __attribute__((naked)) void saveLoadUI_Calc(void*) {
 // SaveLoadProcess: Threaded Save/Load I/O Stream Manager
 // ============================================================================
 
-//
-__attribute__((naked)) void SaveLoadProcess_Init(void*) {
-    // Preserve the ROM's ARM instructions and in-function literal pool exactly.
-    asm volatile(
-        ".word 0xE92D40F0, 0xE1A05000, 0xE24DD00C, 0xE59F10C8\n"
-        ".word 0xE28F00C8, 0xE1A00000, 0xE3A07001, 0xE3A01C01\n"
-        ".word 0xE3A03018, 0xE3A02000, 0xE1A00001, 0xE58D7000\n"
-        ".word 0xEB0164B6, 0xE1A04000, 0xE3A00001, 0xEBFFFFCD\n"
-        ".word 0xE3A00001, 0xEBFFB703, 0xE3A00001, 0xEBFFB6F9\n"
-        ".word 0xE3A06000, 0xE5846008, 0xEB0154B0, 0xE5D01003\n"
-        ".word 0xE59F00B8, 0xE28DC004, 0xE3510000, 0xE5841010\n"
-        ".word 0x05847010, 0xE59F70A0, 0xE59F10A4, 0xE3A03000\n"
-        ".word 0xE1A02003, 0xE5C76003, 0xE5C76004, 0xE5876008\n"
-        ".word 0xE1C760B6, 0xE58D1000, 0xE88C0011, 0xE3A01002\n"
-        ".word 0xE28F0080, 0xEB016816, 0xE3A02000, 0xE3A01702\n"
-        ".word 0xE5840000, 0xEBFE03ED, 0xE5845010, 0xE5C76000\n"
-        ".word 0xE5C76001, 0xE3A00004, 0xE5C76002, 0xE5840004\n"
-        ".word 0xE5940000, 0xE28DD00C, 0xE8BD80F0, 0x0000011B\n"
-        ".word 0x535C3A63, 0x5C34544D, 0x36445258, 0x735C3638\n"
-        ".word 0x34736464, 0x6F72705C, 0x6D617267, 0x6D61675C\n"
-        ".word 0x74616465, 0x61535C61, 0x6F4C6576, 0x72506461\n"
-        ".word 0x7365636F, 0x70632E73, 0x00000070, 0x0043E2F0\n"
-        ".word 0x00324D6C, 0x002EF9AC, 0x64616F4C, 0x00000000\n"
-    );
-}
+void* SaveLoadProcess_Init(void* arg) {
+    u8* const proc = static_cast<u8*>(AsdMem_Alloc(0x100, 0x100, 0, 0x18, 1));
+    ui_func_0026b7ec(1);
+    camp_func_002594cc(1);
+    ui_func_002594ac(1);
+    *reinterpret_cast<u32*>(proc + 0x08) = 0;
 
-// Higher-level approximation retained while semantic recovery continues.
-void SaveLoadProcess_Init_Decompiled(void* arg) {
-    auto* proc = reinterpret_cast<SaveLoadProcess*>(arg);
-    if (proc == nullptr) {
-        return;
-    }
-    proc->operation = 0;
-    proc->status = 0;
-    proc->slot_index = 0;
-    proc->file_size = 0;
-    proc->bytes_transferred = 0;
+    const u8* const sys_work = ui_func_002c0b94();
+    const u8 sys_flag = sys_work[0x03];
+    *reinterpret_cast<u32*>(proc + 0x10) = (sys_flag == 0) ? 1u : static_cast<u32>(sys_flag);
+
+    auto* const mgr = reinterpret_cast<u8*>(0x0043E2F0);
+    mgr[0x03] = 0;
+    mgr[0x04] = 0;
+    *reinterpret_cast<u32*>(mgr + 0x08) = 0;
+    *reinterpret_cast<u16*>(mgr + 0x06) = 0;
+
+    void* const task = AsdTask_CreateCalc(
+        "Load",
+        2,
+        0,
+        0,
+        reinterpret_cast<void (*)(void*)>(&SaveLoadProcess_Step),
+        reinterpret_cast<void*>(&ui_func_00324d6c),
+        static_cast<u32>(reinterpret_cast<uintptr_t>(proc)));
+    *reinterpret_cast<void**>(proc + 0x00) = task;
+    ui_func_001ec8e4(task, 0x80000, 0);
+
+    *reinterpret_cast<u32*>(proc + 0x10) = static_cast<u32>(reinterpret_cast<uintptr_t>(arg));
+    mgr[0x00] = 0;
+    mgr[0x01] = 0;
+    mgr[0x02] = 0;
+    *reinterpret_cast<s32*>(proc + 0x04) = 4;
+    return *reinterpret_cast<void**>(proc + 0x00);
 }
 // DECOMP_FUNC(0x002ef9ac, 420)
 
