@@ -319,7 +319,7 @@ address,size,status,category,name,src_file
 0x00110744,172,matching,unknown,func_00110744,src/engine/leaf_batch27_a.cpp
 0x001107f0,148,matching,script_vm,script_vm_func_001107f0,src/engine/leaf_batch16_a.cpp
 0x00110884,140,matching,unknown,func_00110884,src/engine/leaf_batch26_a.cpp
-0x00110910,796,matching,engine,engine_func_00110910,src/engine/leaf_batch45_a.cpp
+0x00110910,796,non_matching,engine,engine_func_00110910,src/engine/leaf_batch45_a.cpp
 0x00110c2c,24,matching,engine,engine_func_00110c2c,src/engine/leaf_matching.cpp
 0x00110c44,28,matching,engine,engine_func_00110c44,src/engine/leaf_matching.cpp
 0x00110c60,296,matching,engine,engine_func_00110c60,src/engine/leaf_batch41_a.cpp
