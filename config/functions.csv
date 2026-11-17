@@ -2722,7 +2722,7 @@ address,size,status,category,name,src_file
 0x00204d6c,692,non_matching,camp,camp_func_00204d6c,src/engine/leaf_batch45_a.cpp
 0x00205020,996,matching,engine,engine_func_00205020,src/engine/leaf_batch40_a.cpp
 0x00205404,548,matching,camp,camp_func_00205404,src/engine/leaf_batch32_b.cpp
-0x00205628,772,matching,engine,engine_func_00205628,src/engine/leaf_batch45_a.cpp
+0x00205628,772,non_matching,engine,engine_func_00205628,src/engine/leaf_batch45_a.cpp
 0x0020592c,356,matching,camp,camp_func_0020592c,src/engine/leaf_batch32_b.cpp
 0x00205a90,8,matching,unknown,func_00205a90,src/engine/leaf_batch36_a.cpp
 0x00205a98,88,matching,engine,engine_func_00205a98,src/engine/leaf_batch28_b.cpp
