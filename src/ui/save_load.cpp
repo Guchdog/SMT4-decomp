@@ -27,6 +27,13 @@ extern "C" {
     void  ui_func_002e0c54();                                                   // 0x002e0c54
     void  engine_func_002c5ff4(void*, const void*, u32);                        // 0x002c5ff4
     void  engine_func_002c4360(void*);                                          // 0x002c4360
+    void  ui_func_0026b7ec(s32);                                                // 0x0026b7ec
+    void  camp_func_002594cc(s32);                                              // 0x002594cc
+    void  ui_func_002594ac(s32);                                                // 0x002594ac
+    void  ui_func_001ec8e4(void*, u32, u32);                                    // 0x001ec8e4
+    void  camp_func_002ef890(void*);                                            // 0x002ef890
+    void  ui_func_00324d6c(void*);                                              // 0x00324d6c
+    void  ui_func_00311350(void*);                                              // 0x00311350
     extern u8* g_AsdGpuState;                                                   // 0x0044EA00
 }
 
@@ -341,50 +348,42 @@ s32 SaveLoadProcess_Write(void*) {
     }
 }
 // DECOMP_FUNC(0x00322d70, 412)
+void* SaveLoadProcess_Read(void*) {
+    auto* const proc = static_cast<u8*>(
+        AsdMem_Alloc(0x100, 0x100, 0, sizeof(SaveLoadProcess), 1));
+    ui_func_0026b7ec(1);
+    camp_func_002594cc(1);
+    ui_func_002594ac(1);
+    *reinterpret_cast<void**>(proc + 0x08) = nullptr;
 
+    const u32 slot = ui_func_002c0b94()[3];
+    *reinterpret_cast<u32*>(proc + 0x10) = (slot == 0) ? 1u : slot;
 
-//
-__attribute__((naked)) void SaveLoadProcess_Read(void*) {
-    // Preserve the ROM's ARM instructions and in-function literal pool exactly.
-    asm volatile(
-        ".word 0xE92D4070, 0xE24DD010, 0xE59F1118, 0xE28F0F46\n"
-        ".word 0xE1A00000, 0xE3A06001, 0xE3A01C01, 0xE3A03018\n"
-        ".word 0xE3A02000, 0xE1A00001, 0xE58D6000, 0xEBFE8778\n"
-        ".word 0xE1A04000, 0xE3A00001, 0xEBFD228F, 0xE3A00001\n"
-        ".word 0xEBFCD9C5, 0xE3A00001, 0xEBFCD9BB, 0xE3A05000\n"
-        ".word 0xE5845008, 0xEBFE7772, 0xE5D01003, 0xE59F0104\n"
-        ".word 0xE59F2108, 0xE3510000, 0xE5841010, 0x05846010\n"
-        ".word 0xE5C05003, 0xE5C05004, 0xE5805008, 0xE1C050B6\n"
-        ".word 0xE5C05000, 0xE5C05001, 0xE5C05002, 0xE59F10D8\n"
-        ".word 0xE28D0004, 0xE58D2000, 0xE8800012, 0xE3A03000\n"
-        ".word 0xE1A02003, 0xE3A01002, 0xE28F00C4, 0xEBFE8AD5\n"
-        ".word 0xE3A02000, 0xE3A01702, 0xE5840000, 0xEBFB26AC\n"
-        ".word 0xE5940000, 0xE59F60B0, 0xE3A03000, 0xE58D000C\n"
-        ".word 0xE1A02003, 0xE3A01081, 0xE28F00A0, 0xE58D5004\n"
-        ".word 0xE58D6000, 0xE58D5008, 0xEBFE8768, 0xE5940000\n"
-        ".word 0xE3A03000, 0xE1A02003, 0xE58D000C, 0xE3A010DF\n"
-        ".word 0xE28F0084, 0xE58D5004, 0xE58D6000, 0xE58D5008\n"
-        ".word 0xEBFE875E, 0xE3A00008, 0xE5840004, 0xE5940000\n"
-        ".word 0xE28DD010, 0xE8BD8070, 0x0000019B, 0x535C3A63\n"
-        ".word 0x5C34544D, 0x36445258, 0x735C3638, 0x34736464\n"
-        ".word 0x6F72705C, 0x6D617267, 0x6D61675C, 0x74616465\n"
-        ".word 0x61535C61, 0x6F4C6576, 0x72506461, 0x7365636F\n"
-        ".word 0x70632E73, 0x00000070, 0x0043E2F0, 0x00324D6C\n"
-        ".word 0x002EF890, 0x746F6F42, 0x00000000, 0x00311350\n"
-        ".word 0x746F6F42, 0x44705520, 0x00776172, 0x746F6F42\n"
-        ".word 0x44705520, 0x5F776172, 0x00000052\n"
-    );
-}
+    auto* const mgr = reinterpret_cast<u8*>(0x0043E2F0);
+    mgr[3] = 0;
+    mgr[4] = 0;
+    *reinterpret_cast<u32*>(mgr + 8) = 0;
+    *reinterpret_cast<u16*>(mgr + 6) = 0;
+    mgr[0] = 0;
+    mgr[1] = 0;
+    mgr[2] = 0;
 
-// Higher-level approximation retained while semantic recovery continues.
-void SaveLoadProcess_Read_Decompiled(void* arg) {
-    auto* proc = reinterpret_cast<SaveLoadProcess*>(arg);
-    if (proc == nullptr) {
-        return;
-    }
-    proc->operation = 2; // Load
-    proc->status = 0;
-    proc->bytes_transferred = 0;
+    void* const task = AsdTask_CreateCalc(
+        "Boot", 2, 0, 0, camp_func_002ef890,
+        reinterpret_cast<void*>(&ui_func_00324d6c),
+        static_cast<u32>(reinterpret_cast<std::uintptr_t>(proc)));
+    *reinterpret_cast<void**>(proc + 0x00) = task;
+    ui_func_001ec8e4(task, 0x80000, 0);
+
+    AsdTask_CreateDraw(
+        "Boot UpDraw", 0x81, 0, 0, ui_func_00311350, 0, 0,
+        *reinterpret_cast<void**>(proc + 0x00));
+    AsdTask_CreateDraw(
+        "Boot UpDraw_R", 0xDF, 0, 0, ui_func_00311350, 0, 0,
+        *reinterpret_cast<void**>(proc + 0x00));
+
+    *reinterpret_cast<u32*>(proc + 0x04) = 8;
+    return *reinterpret_cast<void**>(proc + 0x00);
 }
 // DECOMP_FUNC(0x00322f0c, 304)
 
