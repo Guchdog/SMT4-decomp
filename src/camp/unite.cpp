@@ -12,17 +12,7 @@ namespace smt4::camp {
 ButtonHelpManager g_ButtonHelpManager = {0, {0, 0, 0}, nullptr}; // 0x0043DA28
 SortMenuManager g_SortMenuManager = {0, {0, 0, 0}, nullptr};     // 0x0043DD20
 
-//
-void ButtonHelp_Init_Decompiled() {
-    ButtonHelpManager* mgr = &g_ButtonHelpManager;
-    if (mgr->ref_count <= 0) {
-        if (mgr->work == nullptr) {
-            mgr->work = reinterpret_cast<ButtonHelpWork*>(ui::AsdMem_Alloc(sizeof(ButtonHelpWork), 0x100));
-        }
-        ui::AsdMem_Zero(mgr->work, sizeof(ButtonHelpWork));
-    }
-    mgr->ref_count++;
-}
+// DECOMP_FUNC(0x0028d974, 736)
 
 //
 void SortMenu_Init_Decompiled(s32 mode) {
@@ -154,60 +144,105 @@ void Unite_DrawAndCalc_Decompiled(void* arg) {
         *layer = *layer - 1;
     }
 }
-// DECOMP_FUNC(0x0028d974, 736)
-
-
-//
-__attribute__((naked)) void ButtonHelp_Init()
-{
-    asm volatile(
-        ".word 0xE92D4FF0, 0xE59F924C, 0xED2D8B02, 0xE24DD01C\n"
-        ".word 0xE1D900D0, 0xE3500000, 0xCA000088, 0xE5990004\n"
-        ".word 0xE59F4234, 0xE3A0B001, 0xE3500000, 0x1A000009\n"
-        ".word 0xE3A01D0D, 0xE28F0F89, 0xE1A00000, 0xE3A01C01\n"
-        ".word 0xE1A03004, 0xE3A02000, 0xE1A00001, 0xE58DB000\n"
-        ".word 0xEB00DC6E, 0xE5890004, 0xE1A08000, 0xE1A01004\n"
-        ".word 0xEB00DC55, 0xE59F1234, 0xE59F022C, 0xE3A0A000\n"
-        ".word 0xE28D5004, 0xE58D1000, 0xE8850401, 0xE1A0300A\n"
-        ".word 0xE1A0200A, 0xE3A01001, 0xE28F0F85, 0xEB00DFDC\n"
-        ".word 0xE59F121C, 0xE5880000, 0xE3A03000, 0xE88D0402\n"
-        ".word 0xE58D000C, 0xE1A02003, 0xE3A010E6, 0xE28F0F81\n"
-        ".word 0xE58DA008, 0xEB00DC74, 0xE5880008, 0xE5996004\n"
-        ".word 0xE2860014, 0xEB00D641, 0xE59F21FC, 0xE3A010A8\n"
-        ".word 0xE3A0000C, 0xE242300C, 0xE58D2014, 0xE58DA00C\n"
-        ".word 0xE58D1018, 0xE58DA010, 0xE88D0009, 0xE243300C\n"
-        ".word 0xE58D0008, 0xE3A02030, 0xE2431032, 0xE2860014\n"
-        ".word 0xEB00D61F, 0xED9F8A71, 0xE3A04000, 0xE3A07010\n"
-        ".word 0xE0640184, 0xEEB00A48, 0xE0800100, 0xE2863014\n"
-        ".word 0xE0865100, 0xE2850034, 0xE3A02003, 0xE3A01012\n"
-        ".word 0xE58D7000, 0xEB00C01F, 0xE2850034, 0xE3A03003\n"
-        ".word 0xE2842011, 0xE3A01012, 0xEBFF5261, 0xE2844001\n"
-        ".word 0xE3540006, 0xBAFFFFED, 0xEEB00A48, 0xE2863014\n"
-        ".word 0xE3A02000, 0xE3A01012, 0xE2860FDF, 0xE58D7000\n"
-        ".word 0xEB00C010, 0xEEB00A48, 0xE2860B01, 0xE2863014\n"
-        ".word 0xE3A02001, 0xE3A01012, 0xE2800008, 0xE58D7000\n"
-        ".word 0xEB00C008, 0xE5997004, 0xE3A00000, 0xE1A05000\n"
-        ".word 0xE5C704C8, 0xE0650185, 0xE3A01002, 0xE0800100\n"
-        ".word 0xE0874100, 0xE2840FDF, 0xE1C013BA, 0xE2840FDF\n"
-        ".word 0xE3A02000, 0xE3A01012, 0xEB002184, 0xE2840FDF\n"
-        ".word 0xE3A01001, 0xE5C0103C, 0xE584A388, 0xE2855001\n"
-        ".word 0xE584A38C, 0xE3550002, 0xE584A390, 0xBAFFFFEC\n"
-        ".word 0xE5C6A4C5, 0xE5C6B4C6, 0xE5C6B4C4, 0xE3A00000\n"
-        ".word 0xE5C6A4C7, 0xEB00BFA7, 0xE2884B01, 0xE59F10C0\n"
-        ".word 0xE2844F56, 0xE5880558, 0xEB00BF9F, 0xE5940000\n"
-        ".word 0xE59F20B4, 0xED9F0A2B, 0xE3A01000, 0xEB00BF96\n"
-        ".word 0xE599000C, 0xE5991008, 0xEB0025D1, 0xE5880560\n"
-        ".word 0xE5D90000, 0xE2800001, 0xE5C90000, 0xE28DD01C\n"
-        ".word 0xECBD8B02, 0xE8BD8FF0, 0x0043DA28, 0x00000564\n"
-        ".word 0x535C3A63, 0x5C34544D, 0x36445258, 0x735C3638\n"
-        ".word 0x34736464, 0x6F72705C, 0x6D617267, 0x6D61635C\n"
-        ".word 0x75425C70, 0x6E6F7474, 0x706C6548, 0x7475425C\n"
-        ".word 0x486E6F74, 0x2E706C65, 0x00707063, 0x002108CC\n"
-        ".word 0x001C0B38, 0x74747542, 0x65486E6F, 0x4320706C\n"
-        ".word 0x00434C41, 0x002108D0, 0x74747542, 0x65486E6F\n"
-        ".word 0x4420706C, 0x57415244, 0x00000000, 0x004025A0\n"
-        ".word 0x3F800000, 0x323232FF, 0x00000000, 0x646464FF\n");
+extern "C" {
+    void  func_002c3344(void* slot);                                            // 0x002c3344
+    void  func_002c32f8(void* slot, u32 a1, u32 a2, u32 a3, u32 a4, u32 a5,
+                        u32 a6, u32 a7, u32 a8, u32 a9, u32 a10);               // 0x002c32f8
+    void  func_002bdb2c(void* obj, s32 a1, s32 a2, void* slot, s32 a4, f32 f);  // 0x002bdb2c
+    void  func_00262448(void* obj, s32 a1, s32 a2, s32 a3);                     // 0x00262448
+    void  func_00296154(void* obj, s32 a1, s32 a2);                             // 0x00296154
+    u32   func_002bda1c(u32 a0);                                                // 0x002bda1c
+    void  func_002bda10(u32 handle, u32 color);                                 // 0x002bda10
+    void  func_002bda00(u32 handle, s32 a1, u32 color, f32 a3);                 // 0x002bda00
+    u32   func_002972f8(u32 a0, u32 a1);                                        // 0x002972f8
 }
+
+// DECOMP_FUNC(0x0028d974, 736)
+void ButtonHelp_Init() {
+    static constexpr u32 kStride = 0x8C;
+    static constexpr u32 kTargetW = 0x004025A0;
+
+    auto* const mgr = reinterpret_cast<u8*>(0x0043DA28);
+    if (static_cast<s8>(mgr[0]) <= 0) {
+        auto* work = *reinterpret_cast<u8**>(mgr + 0x04);
+        if (work == nullptr) {
+            work = static_cast<u8*>(AsdMem_Alloc(0x100, 0x100, 0, sizeof(ButtonHelpWork), 1));
+            *reinterpret_cast<u8**>(mgr + 0x04) = work;
+        }
+        AsdMem_Zero(work, sizeof(ButtonHelpWork));
+
+        void* const calc_task = AsdTask_CreateCalc(
+            "ButtonHelp CALC",
+            1,
+            0,
+            0,
+            reinterpret_cast<void (*)(void*)>(0x001C0B38),
+            0x002108CCu,
+            0);
+        *reinterpret_cast<void**>(work + 0x00) = calc_task;
+        *reinterpret_cast<void**>(work + 0x08) = AsdTask_CreateDraw(
+            "ButtonHelp DDRAW",
+            0xE6,
+            0,
+            0,
+            reinterpret_cast<void (*)(void*)>(0x002108D0),
+            0,
+            0,
+            calc_task);
+
+        auto* const w2 = *reinterpret_cast<u8**>(mgr + 0x04);
+        func_002c3344(w2 + 0x14);
+        func_002c32f8(
+            w2 + 0x14,
+            kTargetW - 0x4A,
+            0x30,
+            kTargetW - 0x18,
+            0x0C,
+            kTargetW - 0x0C,
+            0x0C,
+            0,
+            0,
+            kTargetW,
+            0xA8);
+
+        for (s32 i = 0; i < 6; ++i) {
+            u8* const entry = w2 + 0x34 + (i * kStride);
+            func_002bdb2c(entry, 0x12, 3, w2 + 0x14, 0x10, 1.0f);
+            func_00262448(entry, 0x12, 0x11 + i, 3);
+        }
+
+        func_002bdb2c(w2 + 0x37C, 0x12, 0, w2 + 0x14, 0x10, 1.0f);
+        func_002bdb2c(w2 + 0x408, 0x12, 1, w2 + 0x14, 0x10, 1.0f);
+
+        auto* const w3 = *reinterpret_cast<u8**>(mgr + 0x04);
+        w3[0x4C8] = 0;
+        for (s32 i = 0; i < 2; ++i) {
+            u8* const entry = w3 + 0x37C + (i * kStride);
+            *reinterpret_cast<u16*>(entry + 0x3A) = 2;
+            func_00296154(entry, 0x12, 0);
+            entry[0x3C] = 1;
+            *reinterpret_cast<u32*>(entry + 0x0C) = 0;
+            *reinterpret_cast<u32*>(entry + 0x10) = 0;
+            *reinterpret_cast<u32*>(entry + 0x14) = 0;
+        }
+
+        w2[0x4C5] = 0;
+        w2[0x4C6] = 1;
+        w2[0x4C4] = 1;
+        w2[0x4C7] = 0;
+
+        const u32 h = func_002bda1c(0);
+        *reinterpret_cast<u32*>(work + 0x558) = h;
+        func_002bda10(h, 0x323232FF);
+        func_002bda00(*reinterpret_cast<u32*>(work + 0x558), 0, 0x646464FF, 0.0f);
+        *reinterpret_cast<u32*>(work + 0x560) = func_002972f8(
+            *reinterpret_cast<const u32*>(mgr + 0x0C),
+            *reinterpret_cast<const u32*>(mgr + 0x08));
+    }
+
+    mgr[0] = static_cast<u8>(mgr[0] + 1);
+}
+
 // DECOMP_FUNC(0x0029e63c, 644)
 
 

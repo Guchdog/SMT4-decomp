@@ -2,6 +2,29 @@
 
 namespace smt4::camp {
 
+extern "C" {
+    void  engine_func_00330024(void*);                                          // 0x00330024
+    void  func_00329410(void*);                                                 // 0x00329410
+    void  ui_func_0032b070(void*);                                              // 0x0032b070
+    s32   script_vm_func_002c0ba8(u32 id);                                      // 0x002c0ba8
+    void  camp_func_002488a8(void* work, s32 a1);                               // 0x002488a8
+    void  camp_func_002976ac(s32 a0);                                           // 0x002976ac
+    void* Tbb_GetGlobalSubTable(s32 a0, s32 a1);                                // 0x002c0ec4
+    void* Tbb_GetPayloadData(void* tbl);                                        // 0x002c0e9c
+    u32   Tbb_GetRowCount(void* tbl);                                           // 0x002c0e4c
+    void  camp_func_002c3344(void* group);                                      // 0x002c3344
+    void  camp_func_002c32f8(void* group, u32 a1, u32 a2, u32 a3,
+                             u32 a4, u32 a5, u32 a6, u32 a7,
+                             u32 a8, u32 a9, u32 a10);                          // 0x002c32f8
+    void  camp_func_002bdb2c(void* sprite, s32 type, s32 id,
+                             void* group, u32 a4, f32 scale);                   // 0x002bdb2c
+    void  camp_func_002bdac0(void* sprite, s32 anim, s32 a2);                   // 0x002bdac0
+    void  camp_func_002bf030(void* sprite, s32 anim);                           // 0x002bf030
+    void* script_vm_func_002c5e2c(const char* path);                            // 0x002c5e2c
+    void* scrScriptProcess_func_002972f8(void* bf, void* mbm);                  // 0x002972f8
+    extern const u8 g_GauntletAppMenuTable_00402994;                            // 0x00402994
+}
+
 CampWork* g_CampWork = nullptr;                         // 0x0043DA90
 GauntletAppMenuWork* g_GauntletAppMenuWork = nullptr;   // 0x0043DC88
 
@@ -71,17 +94,6 @@ void PartyPanel_DrawAndCalc_Decompiled(void* arg) {
     }
 }
 
-//
-void GauntletAppMenu_Init_Decompiled() {
-    GauntletAppMenuWork* work = g_GauntletAppMenuWork;
-    if (work == nullptr) {
-        work = reinterpret_cast<GauntletAppMenuWork*>(ui::AsdMem_Alloc(sizeof(GauntletAppMenuWork), 0x100));
-        g_GauntletAppMenuWork = work;
-    }
-
-    ui::AsdMem_Zero(work, sizeof(GauntletAppMenuWork));
-    work->state = 1;
-}
 // DECOMP_FUNC(0x0028a688, 1284)
 
 
@@ -527,60 +539,62 @@ __attribute__((naked)) void PartyPanel_DrawAndCalc(void*)
         ".word 0xEAFFFFCE, 0x000006BC\n");
 }
 // DECOMP_FUNC(0x002e2454, 764)
+void* GauntletAppMenu_Init() {
+    static constexpr u32 kWorkSize = 0x534;
+    static constexpr u32 kFlagIds[4] = {0x520, 0x521, 0x526, 0x527};
 
+    GauntletAppMenuWork* work = g_GauntletAppMenuWork;
+    if (work == nullptr) {
+        work = static_cast<GauntletAppMenuWork*>(
+            ui::AsdMem_Alloc(0x100, 0x100, 0, kWorkSize, 1));
+        g_GauntletAppMenuWork = work;
+    }
+    ui::AsdMem_Zero(work, kWorkSize);
 
-//
-__attribute__((naked)) void GauntletAppMenu_Init()
-{
-    asm volatile(
-        ".word 0xE92D4070, 0xE3A05001, 0xE59F4268, 0xE59F6268\n"
-        ".word 0xED2D8B02, 0xE24DD020, 0xE5940000, 0xE3500000\n"
-        ".word 0x1A000009, 0xE59F0254, 0xE2861F41, 0xE1A00000\n"
-        ".word 0xE3A01C01, 0xE1A03006, 0xE3A02000, 0xE1A00001\n"
-        ".word 0xE58D5000, 0xEBFF89B9, 0xE5840000, 0xE1A04000\n"
-        ".word 0xE1A01006, 0xEBFF89A0, 0xE59F1228, 0xE59F0220\n"
-        ".word 0xE3A06000, 0xE28DC004, 0xE58D1000, 0xE88C0041\n"
-        ".word 0xE1A03006, 0xE1A02006, 0xE3A01001, 0xE28F0F82\n"
-        ".word 0xEBFF8D27, 0xE59F1214, 0xE5840000, 0xE3A03000\n"
-        ".word 0xE88D0042, 0xE58D000C, 0xE1A02003, 0xE3A010E6\n"
-        ".word 0xE28F0F7F, 0xE58D6008, 0xEBFF89BF, 0xE5840004\n"
-        ".word 0xE3A00E52, 0xEBFF79A6, 0xE3500000, 0xE59F01F4\n"
-        ".word 0x15C452B4, 0xEBFF79A2, 0xE3500000, 0xE59F01E8\n"
-        ".word 0x15C452B5, 0xEBFF799E, 0xE3500000, 0xE59F01DC\n"
-        ".word 0x15C452B6, 0xEBFF799A, 0xE3500000, 0xE3A01000\n"
-        ".word 0xE1A00004, 0x15C452B7, 0xEBFD98D5, 0xE3A0000D\n"
-        ".word 0xE320F000, 0xEBFED453, 0xE3A01000, 0xE3A0000D\n"
-        ".word 0xEBFF7A56, 0xE1A05000, 0xE320F000, 0xEBFF7A49\n"
-        ".word 0xE58402AC, 0xE1A00005, 0xEBFF7A32, 0xE58402B0\n"
-        ".word 0xE2840FAE, 0xEBFF836D, 0xE59F1184, 0xE3A000C4\n"
-        ".word 0xE58D0018, 0xE58D1014, 0xE3A02030, 0xE58D600C\n"
-        ".word 0xE58D6010, 0xE88D0044, 0xE2413030, 0xE3A02024\n"
-        ".word 0xE2431024, 0xE2840FAE, 0xE58D6008, 0xEBFF834C\n"
-        ".word 0xED9F8A54, 0xE3A050C9, 0xE2843FAE, 0xEEB00A48\n"
-        ".word 0xE3A02000, 0xE3A0101D, 0xE2840FB6, 0xE58D5000\n"
-        ".word 0xEBFF6D50, 0xE3A02000, 0xE1A01002, 0xE2840FB6\n"
-        ".word 0xEBFF6D31, 0xEEB00A48, 0xE2843FAE, 0xE3A02000\n"
-        ".word 0xE3A0101D, 0xE2840FD9, 0xE58D5000, 0xEBFF6D45\n"
-        ".word 0xE3A01000, 0xE2840FD9, 0xEBFF7283, 0xEEB00A48\n"
-        ".word 0xE2843FAE, 0xE3A02000, 0xE3A0101D, 0xE2840E3F\n"
-        ".word 0xE58D5000, 0xEBFF6D3B, 0xE3A02000, 0xE3A01002\n"
-        ".word 0xE2840E3F, 0xEBFF6D1C, 0xE3A000B5, 0xE58D0000\n"
-        ".word 0xEEB00A48, 0xE2840B01, 0xE280007C, 0xE59F20B8\n"
-        ".word 0xE2843FAE, 0xE3A0101D, 0xE1A05000, 0xEBFF6D2D\n"
-        ".word 0xE3A01002, 0xE1A00005, 0xE1C013BA, 0xE3A01001\n"
-        ".word 0xE1A00005, 0xEBFF7268, 0xE28F0090, 0xE320F000\n"
-        ".word 0xEBFF8DE4, 0xE2845B01, 0xE5840528, 0xE2855F4A\n"
-        ".word 0xE28F0090, 0xEBFF8DDF, 0xE584052C, 0xE5951000\n"
-        ".word 0xEBFED30F, 0xE5840530, 0xE5940000, 0xE28DD020\n"
-        ".word 0xECBD8B02, 0xE8BD8070, 0x0043DC88, 0x00000534\n"
-        ".word 0x00402A58, 0x00330024, 0x00329410, 0x6E756147\n"
-        ".word 0x74656C74, 0x20707041, 0x434C4143, 0x00000000\n"
-        ".word 0x0032B070, 0x6E756147, 0x74656C74, 0x20707041\n"
-        ".word 0x41524444, 0x00000057, 0x00000521, 0x00000526\n"
-        ".word 0x00000527, 0x00402994, 0x3F800000, 0x0000059F\n"
-        ".word 0x706D6163, 0x7561672F, 0x656C746E, 0x70704174\n"
-        ".word 0x6D626D2E, 0x00000000, 0x706D6163, 0x7561672F\n"
-        ".word 0x656C746E, 0x70704174, 0x0066622E\n");
+    auto* const raw = reinterpret_cast<u8*>(work);
+    void* const calc_task = ui::AsdTask_CreateCalc(
+        "GauntletApp CALC", 1, 0, 0, func_00329410,
+        reinterpret_cast<void*>(&engine_func_00330024), 0);
+    *reinterpret_cast<void**>(raw + 0x00) = calc_task;
+    *reinterpret_cast<void**>(raw + 0x04) = ui::AsdTask_CreateDraw(
+        "GauntletApp DDRAW", 0xE6, 0, 0, ui_func_0032b070, 0, 0, calc_task);
+
+    for (s32 idx = 0; idx < 4; ++idx) {
+        if (script_vm_func_002c0ba8(kFlagIds[idx]) != 0) {
+            raw[0x2B4 + idx] = 1;
+        }
+    }
+
+    camp_func_002488a8(work, 0);
+    camp_func_002976ac(0x0D);
+    void* const tbl = Tbb_GetGlobalSubTable(0x0D, 0);
+    *reinterpret_cast<void**>(raw + 0x2AC) = Tbb_GetPayloadData(tbl);
+    *reinterpret_cast<u32*>(raw + 0x2B0) = Tbb_GetRowCount(tbl);
+
+    void* const group = raw + 0x2B8;
+    camp_func_002c3344(group);
+    const u32 tbl_addr =
+        static_cast<u32>(reinterpret_cast<std::uintptr_t>(&g_GauntletAppMenuTable_00402994));
+    camp_func_002c32f8(group, tbl_addr - 0x54, 0x24, tbl_addr - 0x30,
+                       0x30, 0, 0, 0, 0, tbl_addr, 0xC4);
+
+    camp_func_002bdb2c(raw + 0x2D8, 0x1D, 0, group, 0xC9, 1.0f);
+    camp_func_002bdac0(raw + 0x2D8, 0, 0);
+    camp_func_002bdb2c(raw + 0x364, 0x1D, 0, group, 0xC9, 1.0f);
+    camp_func_002bf030(raw + 0x364, 0);
+    camp_func_002bdb2c(raw + 0x3F0, 0x1D, 0, group, 0xC9, 1.0f);
+    camp_func_002bdac0(raw + 0x3F0, 2, 0);
+    camp_func_002bdb2c(raw + 0x47C, 0x1D, 0x59F, group, 0xB5, 1.0f);
+    *reinterpret_cast<u16*>(raw + 0x47C + 0x3A) = 2;
+    camp_func_002bf030(raw + 0x47C, 1);
+
+    void* const mbm = script_vm_func_002c5e2c("camp/gauntletApp.mbm");
+    *reinterpret_cast<void**>(raw + 0x528) = mbm;
+    void* const bf = script_vm_func_002c5e2c("camp/gauntletApp.bf");
+    *reinterpret_cast<void**>(raw + 0x52C) = bf;
+    *reinterpret_cast<void**>(raw + 0x530) = scrScriptProcess_func_002972f8(bf, mbm);
+
+    return *reinterpret_cast<void**>(raw + 0x00);
 }
 
 } // namespace smt4::camp

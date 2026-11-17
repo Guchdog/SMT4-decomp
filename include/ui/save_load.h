@@ -116,7 +116,7 @@ extern SaveLoadUIManager g_SaveLoadUIManager; // 0x0044DE28
 
 // saveLoadUI API
 void saveLoadUI_Init();                                                             // 0x00191eac
-void saveLoadUI_DrawMain(void* arg);                                                // 0x001c897c
+void saveLoadUI_DrawMain(void* work_arg, u32 record_arg, void* src_arg, s32 skip_idx); // 0x001c897c
 void func_001c8d28(void* arg);                                                      // 0x001c8d28
 void saveLoadUI_Calc(void* arg);                                                    // 0x00202950
 
@@ -136,10 +136,10 @@ struct SaveLoadProcess {
 static_assert(sizeof(SaveLoadProcess) == 0x18);
 
 // SaveLoadProcess API
-void SaveLoadProcess_Init(void* arg);                                               // 0x0026b874
-void SaveLoadProcess_Step(void* arg);                                               // 0x002ef9ac
-void SaveLoadProcess_Write(void* arg);                                              // 0x002efb50
-void SaveLoadProcess_Read(void* arg);                                               // 0x00322d70
-void SaveLoadProcess_Close(void* arg);                                              // 0x00322f0c
+void* SaveLoadProcess_Init(void* arg);                                              // 0x0026b874
+s32  SaveLoadProcess_Step(void* arg);                                               // 0x002ef9ac
+s32  SaveLoadProcess_Write(void* arg);                                             // 0x002efb50
+void* SaveLoadProcess_Read(void* arg);                                              // 0x00322d70
+void* SaveLoadProcess_Close(u32 slot, u8 flag);                                     // 0x00322f0c
 
 } // namespace smt4::ui

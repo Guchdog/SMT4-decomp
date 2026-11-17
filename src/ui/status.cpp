@@ -31,6 +31,17 @@ extern "C" {
     void  UiStatus_SetPanelMode(void* ptr, s32 a1, s32 a2);                         // 0x00296528
     f32   UiStatus_CalcScaleRatio(s32 a0, s32 a1);                                  // 0x00293ca8
     s32   UiMath_ClampVal(s32 a0, s32 a1);                                          // 0x002c6c10
+    f32   ui_func_00282f00(f32 a0, f32 a1, f32 a2);                                 // 0x00282f00
+    void  engine_func_002c3b48(void* ptr, u32 size);                                // 0x002c3b48
+    void  engine_func_002bc828(s32 a0, s32 a1, s32 a2, s32 a3);                     // 0x002bc828
+    void  engine_func_002c2210(void* cam, s32 a1);                                  // 0x002c2210
+    void  engine_func_002c20a8(void* cam, const f32* pos,
+                               const f32* look_at, const f32* up);                  // 0x002c20a8
+    void  ui_func_002c1ffc(void* cam, s32 a1, f32 near_z,
+                           f32 fov, f32 aspect, f32 ratio);                         // 0x002c1ffc
+    void  ui_func_00298fec(void* cam);                                              // 0x00298fec
+    void  battle_func_002c1740(void* cam);                                          // 0x002c1740
+    void  ui_func_002c1774(void* cam, f32 scale, f32 one);                          // 0x002c1774
     extern u8* g_AsdGpuState;                                                       // 0x0044ea00
 }
 
@@ -135,145 +146,67 @@ void Status_CalcTaskCallback(void* arg) {
 #endif
 
 // DECOMP_FUNC(0x001cddf8, 516)
+void Status_DrawBackUp(void*) {
+    struct BackPanelSpec {
+        s32 panel_idx;
+        u32 alpha_offset;
+        s32 sub_id;
+    };
+    static constexpr BackPanelSpec kPanels[3] = {
+        {9, 0x550, 0},
+        {7, 0x438, 1},
+        {8, 0x4C4, 2},
+    };
+    static constexpr f32 kScale = 0.35f;
 
+    const StatusWork* const work = g_StatusManager.work;
+    if (work->flag_1e61 == 0) {
+        return;
+    }
+    if (work->sub_menu_state != 3 && work->sub_menu_state != 9) {
+        return;
+    }
 
-//
-__attribute__((naked)) void Status_DrawBackUp(void*) {
-    asm volatile(
-        ".arm\n"
-        "push {r4, r5, r6, r7, lr}\n"
-        "mov r6, #0\n"
-        "ldr r0, [pc, #0x1dc]\n"
-        "vpush {d8}\n"
-        "sub sp, sp, #0x14\n"
-        "ldr r5, [r0, #4]\n"
-        "ldr r0, [pc, #0x1d0]\n"
-        "str r6, [sp, #8]\n"
-        "str r6, [sp, #0xc]\n"
-        "ldrb r0, [r0, r5]\n"
-        "cmp r0, #0\n"
-        "beq .Lstatus_backup_exit\n"
-        "ldr r0, [pc, #0x1bc]\n"
-        "ldrb r0, [r0, r5]\n"
-        "cmp r0, #3\n"
-        "cmpne r0, #9\n"
-        "bne .Lstatus_backup_draw_done\n"
-        "ldr r7, [pc, #0x1ac]\n"
-        "ldr r0, [r7]\n"
-        ".word 0xeb03d757\n" // bl 0x002c3ba8
-        "ldr r4, [r7]\n"
-        "mov r1, #0\n"
-        "mov r0, #1\n"
-        ".word 0xeb03e048\n" // bl 0x002c5f7c
-        "add r4, r4, #0x1000\n"
-        "add r4, r4, #0x24c\n"
-        "ldr r1, [r4]\n"
-        "add r2, r1, #1\n"
-        "add r3, r4, r1, lsl #2\n"
-        "ldr r1, [r3, #8]\n"
-        "add r3, r4, r2, lsl #2\n"
-        "str r2, [r4]\n"
-        "str r0, [r3, #8]\n"
-        "ldrb r2, [r4, #0x18]\n"
-        "cmp r2, #0\n"
-        "cmpeq r1, r0\n"
-        "beq .Lstatus_backup_after_callback\n"
-        "ldr r1, [r4, #0x1c]\n"
-        "blx r1\n"
-        "strb r6, [r4, #0x18]\n"
-        ".Lstatus_backup_after_callback:\n"
-        "vldr s16, [pc, #0x154]\n"
-        "mov r2, #9\n"
-        "add r1, sp, #0xc\n"
-        "vmov.f32 s0, s16\n"
-        "add r0, sp, #8\n"
-        ".word 0xeb02eca9\n" // bl 0x00289158: Status_Destroy
-        "add r0, r5, #0x530\n"
-        "nop\n"
-        "vldr s0, [r0, #0x20]\n"
-        "nop\n"
-        "nop\n"
-        ".word 0xeb03c611\n" // bl 0x002bf710: UiGpu_SetAlphaBlend
-        "ldr r0, [sp, #0xc]\n"
-        "mov r4, #1\n"
-        "mov r2, #0\n"
-        "stm sp, {r0, r4}\n"
-        "ldr r3, [sp, #8]\n"
-        "mov r1, #0x1a\n"
-        "mov r0, #2\n"
-        ".word 0xeb03c55d\n" // bl 0x002bf460: UiSprite_DrawPanelDirect
-        "vldr s17, [pc, #0x108]\n"
-        "vmov.f32 s0, s17\n"
-        ".word 0xeb03c606\n" // bl 0x002bf710: UiGpu_SetAlphaBlend
-        "vmov.f32 s0, s16\n"
-        "mov r2, #7\n"
-        "add r1, sp, #0xc\n"
-        "add r0, sp, #8\n"
-        ".word 0xeb02ec93\n" // bl 0x00289158: Status_Destroy
-        "add r0, r5, #0x400\n"
-        "add r0, r0, #0x18\n"
-        "vldr s0, [r0, #0x20]\n"
-        "nop\n"
-        "nop\n"
-        ".word 0xeb03c5fb\n" // bl 0x002bf710: UiGpu_SetAlphaBlend
-        "ldr r0, [sp, #0xc]\n"
-        "mov r2, #1\n"
-        "mov r1, #0x1a\n"
-        "stm sp, {r0, r4}\n"
-        "ldr r3, [sp, #8]\n"
-        "mov r0, #2\n"
-        ".word 0xeb03c548\n" // bl 0x002bf460: UiSprite_DrawPanelDirect
-        "vmov.f32 s0, s17\n"
-        "nop\n"
-        ".word 0xeb03c5f1\n" // bl 0x002bf710: UiGpu_SetAlphaBlend
-        "vmov.f32 s0, s16\n"
-        "mov r2, #8\n"
-        "add r1, sp, #0xc\n"
-        "add r0, sp, #8\n"
-        ".word 0xeb02ec7e\n" // bl 0x00289158: Status_Destroy
-        "add r0, r5, #0x400\n"
-        "add r0, r0, #0xa4\n"
-        "vldr s0, [r0, #0x20]\n"
-        "nop\n"
-        "nop\n"
-        ".word 0xeb03c5e6\n" // bl 0x002bf710: UiGpu_SetAlphaBlend
-        "ldr r0, [sp, #0xc]\n"
-        "mov r2, #2\n"
-        "mov r1, #0x1a\n"
-        "stm sp, {r0, r4}\n"
-        "ldr r3, [sp, #8]\n"
-        "mov r0, r2\n"
-        ".word 0xeb03c533\n" // bl 0x002bf460: UiSprite_DrawPanelDirect
-        "ldr r0, [r7]\n"
-        "add r4, r0, #0x1000\n"
-        "add r4, r4, #0x24c\n"
-        "ldr r0, [r4]\n"
-        "add r1, r4, r0, lsl #2\n"
-        "sub r0, r0, #1\n"
-        "ldr r1, [r1, #8]\n"
-        "str r0, [r4]\n"
-        "add r0, r4, r0, lsl #2\n"
-        "ldrb r2, [r4, #0x18]\n"
-        "ldr r0, [r0, #8]\n"
-        "cmp r2, #0\n"
-        "cmpeq r1, r0\n"
-        "beq .Lstatus_backup_draw_done\n"
-        "ldr r1, [r4, #0x1c]\n"
-        "blx r1\n"
-        "strb r6, [r4, #0x18]\n"
-        ".Lstatus_backup_draw_done:\n"
-        "mov r0, #0\n"
-        ".Lstatus_backup_exit:\n"
-        "add sp, sp, #0x14\n"
-        "vpop {d8}\n"
-        "pop {r4, r5, r6, r7, pc}\n"
-        ".word 0x0044e140\n"
-        ".word 0x00001e61\n"
-        ".word 0x00001e67\n"
-        ".word 0x0044ea00\n"
-        ".word 0x3eb33333\n"
-        ".word 0x3f800000\n"
-    );
+    auto sync_viewport = [](u8* vp_stack, void* old_vp, void* target_vp) {
+        if (vp_stack[0x18] != 0 || old_vp != target_vp) {
+            using ViewportCb = void (*)(void*);
+            (*reinterpret_cast<const ViewportCb*>(vp_stack + 0x1C))(target_vp);
+            vp_stack[0x18] = 0;
+        }
+    };
+
+    UiGpu_BeginPass(g_AsdGpuState);
+
+    void* const new_vp = UiGpu_SetViewportParams(1, 0);
+    auto* const vp_stack = g_AsdGpuState + 0x124C;
+    auto* const vp_idx = reinterpret_cast<s32*>(vp_stack);
+    auto* const vp_slots = reinterpret_cast<void**>(vp_stack + 0x08);
+    const s32 push_idx = *vp_idx;
+    void* const prev_vp = vp_slots[push_idx];
+    *vp_idx = push_idx + 1;
+    vp_slots[push_idx + 1] = new_vp;
+    sync_viewport(vp_stack, prev_vp, new_vp);
+
+    const auto* const work_bytes = reinterpret_cast<const u8*>(work);
+    for (s32 i = 0; i < 3; ++i) {
+        if (i > 0) {
+            UiGpu_SetAlphaBlend(1.0f);
+        }
+        s32 x = 0;
+        s32 y = 0;
+        Status_Destroy(&x, &y, kPanels[i].panel_idx, kScale);
+        UiGpu_SetAlphaBlend(*reinterpret_cast<const f32*>(work_bytes + kPanels[i].alpha_offset));
+        UiSprite_DrawPanelDirect(2, 0x1A, kPanels[i].sub_id, x, y, 1);
+    }
+
+    auto* const pop_stack = g_AsdGpuState + 0x124C;
+    auto* const pop_idx = reinterpret_cast<s32*>(pop_stack);
+    auto* const pop_slots = reinterpret_cast<void**>(pop_stack + 0x08);
+    const s32 cur_idx = *pop_idx;
+    void* const popped_vp = pop_slots[cur_idx];
+    *pop_idx = cur_idx - 1;
+    void* const restored_vp = pop_slots[cur_idx - 1];
+    sync_viewport(pop_stack, popped_vp, restored_vp);
 }
 
 // DECOMP_FUNC(0x001a310c, 15148)
@@ -923,8 +856,8 @@ s32 Status_HandleLRPrompt() {
     return prompt_flag == 0 ? 4 : 2;
 }
 
-// Readable reconstruction retained alongside the byte-exact ARM entry below.
-[[maybe_unused]] static void Status_UpdateAffinityTable_Decompiled() {
+// DECOMP_FUNC(0x00293e4c, 520)
+void Status_UpdateAffinityTable() {
     StatusWork* work = g_StatusManager.work;
     work->field_14 = 0;
     work->flag_1e63 = 1;
@@ -943,9 +876,6 @@ s32 Status_HandleLRPrompt() {
         }
         if (*affinity_lock == 0 && *display_state == 2) {
             StatusDown_SetDisplayMode(2);
-        }
-        if (*display_state == 3) {
-            StatusDown_SetDisplayMode(5);
         }
         return;
     }
@@ -1026,77 +956,24 @@ s32 Status_HandleLRPrompt() {
     }
 }
 
-// Exact ARM-state body, including the four-word literal pool at 0x00294044.
-// The readable version above records the branch cases and mode mapping.
-// DECOMP_FUNC(0x00293e4c, 520)
-__attribute__((naked)) void Status_UpdateAffinityTable() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xE59F01F0, 0xE92D4070, 0xE3A01000, 0xE3A02001\n"
-        ".word 0xE5904004, 0xE59F01E0, 0xE5841014, 0xE2801003\n"
-        ".word 0xE7C02004, 0xE7D10004, 0xE59F11C8, 0xE3500000\n"
-        ".word 0xE5911004, 0xE2815A01, 0x0A000026, 0xE3500006\n"
-        ".word 0x0A000035, 0xE3500008, 0x13500009, 0x0A00003E\n"
-        ".word 0xE350000A, 0x1350000B, 0x13500007, 0x0A00003A\n"
-        ".word 0xE350000E, 0x0A000044, 0xE350000D, 0x0A000048\n"
-        ".word 0xE59F0188, 0xE7D00004, 0xE3500006, 0xE59502E4\n"
-        ".word 0x0A000057, 0xE3500000, 0x03A00000, 0x0BFFFC19\n"
-        ".word 0xE59502E4, 0xE3500001, 0x03A00001, 0x0BFFFC15\n"
-        ".word 0xE59F015C, 0xE7D00004, 0xE3500000, 0x1A000025\n"
-        ".word 0xE59502E4, 0xE3500002, 0x03A00004, 0x0BFFFC0D\n"
-        ".word 0xE59502E4, 0xE3500003, 0x1A00001E, 0xE8BD4070\n"
-        ".word 0xE3A00005, 0xEAFFFC07, 0xE59502E4, 0xE3500000\n"
-        ".word 0x03A00000, 0x0BFFFC03, 0xE59502E4, 0xE3500001\n"
-        ".word 0x03A00001, 0x0BFFFBFF, 0xE59F0104, 0xE7D00004\n"
-        ".word 0xE3500000, 0x059502E4, 0x03500002, 0x1A00000D\n"
-        ".word 0xE8BD4070, 0xE3A00002, 0xEAFFFBF6, 0xE59502E4\n"
-        ".word 0xE3500000, 0x03A00000, 0x0BFFFBF2, 0xE59502E4\n"
-        ".word 0xE3500001, 0x03A00001, 0x0BFFFBEE, 0xE59502E4\n"
-        ".word 0xE3500002, 0x0AFFFFE0, 0xE8BD8070, 0xE59502E4\n"
-        ".word 0xE3500000, 0x03A00001, 0x0BFFFBE6, 0xE59502E4\n"
-        ".word 0xE3500001, 0x03A00004, 0x0BFFFBE2, 0xE59502E4\n"
-        ".word 0xE3500002, 0x0AFFFFD4, 0xE8BD8070, 0xE59502E4\n"
-        ".word 0xE3500000, 0x1AFFFFEF, 0xE8BD4070, 0xE3A00000\n"
-        ".word 0xEAFFFBD8, 0xE59502E4, 0xE3500000, 0x03A00000\n"
-        ".word 0x0BFFFBD4, 0xE59502E4, 0xE3500001, 0x03A00001\n"
-        ".word 0x0BFFFBD0, 0xE59F0048, 0xE7D00004, 0xE3500000\n"
-        ".word 0x1AFFFFE0, 0xE59502E4, 0xE3500002, 0x03A00004\n"
-        ".word 0x0BFFFBC8, 0xE59502E4, 0xE3500003, 0x0AFFFFBA\n"
-        ".word 0xE8BD8070, 0xE3500000, 0x1AFFFFD6, 0xE8BD4070\n"
-        ".word 0xE3A00001, 0xEAFFFBBF, 0x0044E140, 0x00001E63\n"
-        ".word 0x00001E67, 0x000012F1\n"
-    );
-}
-
-[[maybe_unused]] static f32 Status_GetCalculatedScale_Decompiled() {
-    StatusWork* work = g_StatusManager.work;
-    if (work == nullptr || work->scale_calc_val <= 0) {
-        return 6.3f;
-    }
-
-    const f32 factor = work->unk_1ea4[0] == 0 ? 0.08f :
-                       work->unk_1ea4[0] == 1 ? 0.105f :
-                       work->unk_1ea4[0] == 2 ? 0.01f : 0.0f;
-    return 6.3f + (static_cast<f32>(work->scale_calc_val) * factor);
-}
-
-// Exact ARM-state restoration. The mode byte at +0x1EA4 selects one of three
-// scale coefficients; unsupported modes and non-positive values keep 6.3f.
 // DECOMP_FUNC(0x00295010, 172)
-__attribute__((naked)) f32 Status_GetCalculatedScale() {
-    asm volatile(
-        ".word 0xE59F0090, 0xEDDF0A20, 0xED9F0A20, 0xED9F1A20\n"
-        ".word 0xE5901004, 0xE59F0080, 0xE7900001, 0xE3500000\n"
-        ".word 0xDA000017, 0xE2811B07, 0xE2811FA9, 0xE5D11000\n"
-        ".word 0xE3510000, 0x0A000004, 0xE3510001, 0x0A000007\n"
-        ".word 0xE3510002, 0x1A00000E, 0xEA000009, 0xEE010A90\n"
-        ".word 0xED9F2A12, 0xEEF81AE1, 0xEE410A82, 0xEA000008\n"
-        ".word 0xEE010A90, 0xED9F2A0E, 0xEEF81AE1, 0xEE410A82\n"
-        ".word 0xEA000003, 0xEE010A90, 0xED9F2A0A, 0xEEF81AE1\n"
-        ".word 0xEE410A82, 0xE320F000, 0xEAFFB798, 0x40C9999A\n"
-        ".word 0x00000000, 0x40900000, 0x0044E140, 0x00001EA0\n"
-        ".word 0x3DA3D70A, 0x3DD70A3D, 0x3C23D70A\n"
-    );
+f32 Status_GetCalculatedScale() {
+    static constexpr f32 kBaseScale = 6.3f;
+    static constexpr f32 kMaxScale = 4.5f;
+
+    const StatusWork* work = g_StatusManager.work;
+    f32 scale = kBaseScale;
+    if (work->scale_calc_val > 0) {
+        const u8 mode = work->unk_1ea4[0];
+        if (mode == 0) {
+            scale += static_cast<f32>(work->scale_calc_val) * 0.08f;
+        } else if (mode == 1) {
+            scale += static_cast<f32>(work->scale_calc_val) * 0.105f;
+        } else if (mode == 2) {
+            scale += static_cast<f32>(work->scale_calc_val) * 0.01f;
+        }
+    }
+    return ui_func_00282f00(0.0f, scale, kMaxScale);
 }
 
 // DECOMP_FUNC(0x0029af30, 28)
@@ -1138,46 +1015,25 @@ __attribute__((naked)) s8 Status_GetSubState() {
 
 StatusBustUpManager g_StatusBustUpManager = {0, {0, 0, 0}, nullptr, nullptr}; // 0x0044E158
 
-[[maybe_unused]] static void StatusBustUp_Init_Decompiled() {
-    StatusBustUpManager* mgr = &g_StatusBustUpManager;
-    engine::AsdTMTexTable_func_002c4e28(0x17);
-    engine::AsdTMTexTable_func_002c5b04(0x23, 0);
+// DECOMP_FUNC(0x00223a90, 248)
+void StatusBustUp_Init() {
+    static constexpr u32 kBuffer1Size = 0x266;
+    static constexpr u32 kBuffer2Size = 0x81;
+
+    StatusBustUpManager* const mgr = &g_StatusBustUpManager;
     if (mgr->ref_count <= 0) {
+        engine::AsdTMTexTable_func_002c4e28(0x17);
+        engine::AsdTMTexTable_func_002c5b04(0x23, 0);
         if (mgr->buffer1 == nullptr) {
-            mgr->buffer1 = AsdMem_Alloc(0x266, 1);
-            AsdMem_Zero(mgr->buffer1, 0x266);
+            mgr->buffer1 = AsdMem_Alloc(0x100, 0x100, 0, kBuffer1Size, 1);
+            engine_func_002c3b48(mgr->buffer1, kBuffer1Size);
         }
         if (mgr->buffer2 == nullptr) {
-            mgr->buffer2 = AsdMem_Alloc(0x81, 0x100);
-            AsdMem_Zero(mgr->buffer2, 0x81);
+            mgr->buffer2 = AsdMem_Alloc(0x100, 0x100, 0, kBuffer2Size, 1);
+            engine_func_002c3b48(mgr->buffer2, kBuffer2Size);
         }
     }
-    mgr->ref_count++;
-}
-
-// Exact ARM-state restoration of StatusBustUp.cpp's lazy allocator path. The
-// two arrays are 0x266 and 0x81 bytes; the routine also initializes the shared
-// texture-table state before checking its signed reference count.
-// DECOMP_FUNC(0x00223a90, 248)
-__attribute__((naked)) void StatusBustUp_Init() {
-    asm volatile(
-        ".word 0xE92D40F8, 0xE59F40AC, 0xE1D400D0, 0xE3500000\n"
-        ".word 0xCA000024, 0xE3A00017, 0xEB0284DE, 0xE3A01000\n"
-        ".word 0xE3A00023, 0xEB028812, 0xE5940004, 0xE3A05001\n"
-        ".word 0xE3500000, 0x1A00000C, 0xE3A0101A, 0xE28F0078\n"
-        ".word 0xE1A00000, 0xE59F60A8, 0xE3A01C01, 0xE3A02000\n"
-        ".word 0xE1A03006, 0xE1A00001, 0xE58D5000, 0xEB028424\n"
-        ".word 0xE1A01006, 0xE5840004, 0xEB028012, 0xE5940008\n"
-        ".word 0xE3500000, 0x1A00000B, 0xE3A0101E, 0xE28F0038\n"
-        ".word 0xE1A00000, 0xE3A01C01, 0xE3A03081, 0xE3A02000\n"
-        ".word 0xE1A00001, 0xE58D5000, 0xEB028415, 0xE3A01081\n"
-        ".word 0xE5840008, 0xEB028003, 0xE5D40000, 0xE2800001\n"
-        ".word 0xE5C40000, 0xE8BD80F8, 0x0044E158, 0x535C3A63\n"
-        ".word 0x5C34544D, 0x36445258, 0x735C3638, 0x34736464\n"
-        ".word 0x6F72705C, 0x6D617267, 0x6174735C, 0x5C737574\n"
-        ".word 0x74617453, 0x75427375, 0x70557473, 0x7070632E\n"
-        ".word 0x00000000, 0x00000266\n"
-    );
+    ++mgr->ref_count;
 }
 
 // ============================================================================
@@ -1187,144 +1043,48 @@ __attribute__((naked)) void StatusBustUp_Init() {
 StatusCameraWork* g_StatusCamera = nullptr; // 0x0044E178
 
 // DECOMP_FUNC(0x00258e38, 480)
-// Verified ARM-state entry/exit and referenced local literal/table bytes.
-__attribute__((naked)) void StatusCamera_Init(const f32* pos, const f32* target, const f32* up,
+void StatusCamera_Init(const f32* pos, const f32* target, const f32* up,
                        f32 fov, f32 aspect, f32 near_z, f32 far_z, f32 scale) {
-    asm volatile(
-        ".word 0xe92d47f0\n"
-        ".word 0xe1a06000\n"
-        ".word 0xe1a07001\n"
-        ".word 0xe1a08002\n"
-        ".word 0xe59f417c\n"
-        ".word 0xe59fa17c\n"
-        ".word 0xed2d8b06\n"
-        ".word 0xeef08a40\n"
-        ".word 0xeeb09a60\n"
-        ".word 0xeef09a41\n"
-        ".word 0xeeb08a61\n"
-        ".word 0xeeb0aa42\n"
-        ".word 0xe5940000\n"
-        ".word 0xe24dd020\n"
-        ".word 0xe3500000\n"
-        ".word 0x1a00000a\n"
-        ".word 0xe3a0106d\n"
-        ".word 0xe28f0e15\n"
-        ".word 0xe1a00000\n"
-        ".word 0xe3a00001\n"
-        ".word 0xe3a01c01\n"
-        ".word 0xe58d0000\n"
-        ".word 0xe1a0300a\n"
-        ".word 0xe3a02000\n"
-        ".word 0xe1a00001\n"
-        ".word 0xeb01af38\n"
-        ".word 0xe5840000\n"
-        ".word 0xe1a05000\n"
-        ".word 0xe1a0100a\n"
-        ".word 0xeb01af1f\n"
-        ".word 0xe2854b01\n"
-        ".word 0xe2851b01\n"
-        ".word 0xedc49a4c\n"
-        ".word 0xe2811f4d\n"
-        ".word 0xe2850b01\n"
-        ".word 0xecc18a02\n"
-        ".word 0xe2800f45\n"
-        ".word 0xe897000e\n"
-        ".word 0xe2859b01\n"
-        ".word 0xe2899f42\n"
-        ".word 0xed9f0a4b\n"
-        ".word 0xe880000e\n"
-        ".word 0xe896000e\n"
-        ".word 0xe889000e\n"
-        ".word 0xe2851e52\n"
-        ".word 0xe898100c\n"
-        ".word 0xe881100c\n"
-        ".word 0xe28dc004\n"
-        ".word 0xed848a4b\n"
-        ".word 0xed9f8a43\n"
-        ".word 0xed8d0a04\n"
-        ".word 0xed8d8a05\n"
-        ".word 0xed8d0a06\n"
-        ".word 0xe899000e\n"
-        ".word 0xe88c000e\n"
-        ".word 0xed940a4b\n"
-        ".word 0xecd00a03\n"
-        ".word 0xee600a80\n"
-        ".word 0xee211a00\n"
-        ".word 0xee210a80\n"
-        ".word 0xee011a90\n"
-        ".word 0xe3a01000\n"
-        ".word 0xee710aa0\n"
-        ".word 0xedcd0a01\n"
-        ".word 0xee002a90\n"
-        ".word 0xe3a020c8\n"
-        ".word 0xe1a00002\n"
-        ".word 0xee700a81\n"
-        ".word 0xedcd0a02\n"
-        ".word 0xee003a90\n"
-        ".word 0xe3a030f0\n"
-        ".word 0xee300a80\n"
-        ".word 0xed8d0a03\n"
-        ".word 0xeb018e31\n"
-        ".word 0xe3a01001\n"
-        ".word 0xe1a00005\n"
-        ".word 0xeb01a4a8\n"
-        ".word 0xe28d3010\n"
-        ".word 0xe28d2004\n"
-        ".word 0xe1a01009\n"
-        ".word 0xe1a00005\n"
-        ".word 0xeb01a449\n"
-        ".word 0xe2844e13\n"
-        ".word 0xeddf1a22\n"
-        ".word 0xe3a01001\n"
-        ".word 0xec940a03\n"
-        ".word 0xe1a00005\n"
-        ".word 0xeb01a418\n"
-        ".word 0xe1a00005\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb010011\n"
-        ".word 0xe1a00005\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb01a1e3\n"
-        ".word 0xeef00a48\n"
-        ".word 0xeeb00a4a\n"
-        ".word 0xe1a00005\n"
-        ".word 0xeb01a1ec\n"
-        ".word 0xe28dd020\n"
-        ".word 0xecbd8b06\n"
-        ".word 0xe8bd87f0\n"
-        ".word 0x0044e178\n"
-        ".word 0x0000053c\n"
-        ".word 0x535c3a63\n"
-        ".word 0x5c34544d\n"
-        ".word 0x36445258\n"
-        ".word 0x735c3638\n"
-        ".word 0x34736464\n"
-        ".word 0x6f72705c\n"
-        ".word 0x6d617267\n"
-        ".word 0x6174735c\n"
-        ".word 0x5c737574\n"
-        ".word 0x74617453\n"
-        ".word 0x61437375\n"
-        ".word 0x6172656d\n"
-        ".word 0x7070632e\n"
-        ".word 0x00000000\n"
-        ".word 0x00000000\n"
-        ".word 0x3f800000\n"
-        ".word 0x3fd55555\n"
-    );
-}
-#if 0
-// Partial semantic draft retained for reconstruction; not compiled.
-[[maybe_unused]] static void StatusCamera_Init_Draft(const f32* pos, const f32* target, const f32* up,
-                       f32 fov, f32 aspect, f32 near_z, f32 far_z, f32 scale) {
-    (void)pos; (void)target; (void)up; (void)fov; (void)aspect; (void)near_z; (void)far_z; (void)scale;
+    static constexpr f32 kDefaultRatio = 5.0f / 3.0f;
+
     StatusCameraWork* cam = g_StatusCamera;
     if (cam == nullptr) {
-        cam = reinterpret_cast<StatusCameraWork*>(AsdMem_Alloc(sizeof(StatusCameraWork), 0x100));
+        cam = static_cast<StatusCameraWork*>(
+            AsdMem_Alloc(0x100, 0x100, 0, sizeof(StatusCameraWork), 1));
         g_StatusCamera = cam;
     }
     AsdMem_Zero(cam, sizeof(StatusCameraWork));
+
+    auto* const raw = cam->raw;
+    auto* const pos_dst = reinterpret_cast<f32*>(raw + 0x508);
+    auto* const target_dst = reinterpret_cast<f32*>(raw + 0x514);
+    auto* const up_dst = reinterpret_cast<f32*>(raw + 0x520);
+
+    for (s32 i = 0; i < 3; ++i) {
+        pos_dst[i] = pos[i];
+        target_dst[i] = target[i];
+        up_dst[i] = up[i];
+    }
+
+    *reinterpret_cast<f32*>(raw + 0x52C) = far_z;
+    *reinterpret_cast<f32*>(raw + 0x530) = near_z;
+    *reinterpret_cast<f32*>(raw + 0x534) = fov;
+    *reinterpret_cast<f32*>(raw + 0x538) = aspect;
+
+    const f32 look_at[3] = {
+        pos_dst[0] + target_dst[0] * far_z,
+        pos_dst[1] + target_dst[1] * far_z,
+        pos_dst[2] + target_dst[2] * far_z,
+    };
+    const f32 up_axis[3] = {0.0f, 1.0f, 0.0f};
+
+    engine_func_002bc828(0xC8, 0, 0xC8, 0xF0);
+    engine_func_002c2210(cam, 1);
+    engine_func_002c20a8(cam, pos_dst, look_at, up_axis);
+    ui_func_002c1ffc(cam, 1, near_z, fov, aspect, kDefaultRatio);
+    ui_func_00298fec(cam);
+    battle_func_002c1740(cam);
+    ui_func_002c1774(cam, scale, 1.0f);
 }
-#endif
 
 } // namespace smt4::ui

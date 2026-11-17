@@ -49,7 +49,7 @@ void ComWin_Init();                                                             
 // The ROM body at this address forwards its four ABI register arguments to
 // engine_func_002c54f0 with a final argument of 1 and returns the helper result.
 void* ComWin_GetState(u32 a0, u32 a1, u32 a2, u32 a3);                              // 0x0010a940
-void ComWin_ProcessDialog();                                                        // 0x0010a954
+s32 ComWin_ProcessDialog();                                                         // 0x0010a954
 void ComWin_CheckFlag();                                                            // 0x0010ae9c
 void ComWin_GetResult();                                                            // 0x0010aec8
 void ComWin_Reset();                                                                // 0x0010aee4

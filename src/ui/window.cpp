@@ -39,7 +39,7 @@ extern "C" {
     void  UiGpu_SetAlphaBlend(f32 alpha);                                           // 0x002bf710
     f32   UiGpu_TransformCoord(void* gpu_state, f32 scale);                         // 0x002ba46c
     void  UiSprite_DrawPanelDirect(s32 type, s32 id, s32 sub_id, s32 x, s32 y, s32 flag); // 0x002bf460
-    void  UiWindow_PushContext(void* ptr, s32 mode);                                // 0x002befdc
+    void  UiWindow_PushContext(void* ptr, s32 mode, void* vp_handle);               // 0x002befdc
     void  UiWindow_PopContext(void* ptr, s32 mode);                                 // 0x002bef88
     void  UiWindow_SetResult(const s32* value);                                     // 0x002c4244
     void  func_00115b74();                                                          // 0x00115b74
@@ -214,375 +214,168 @@ void* ComWin_GetState(u32 a0, u32 a1, u32 a2, u32 a3) {
 }
 
 // DECOMP_FUNC(0x0010a954, 1352)
-// Boundary-verified ARM-state span; includes its PC-relative literal pool.
-__attribute__((naked)) void ComWin_ProcessDialog() {
-    asm volatile(
-        ".word 0xe92d4ff0\n"
-        ".word 0xe59fa3cc\n"
-        ".word 0xed2d8b02\n"
-        ".word 0xe24dd054\n"
-        ".word 0xe59a4008\n"
-        ".word 0xe5d40083\n"
-        ".word 0xe3500000\n"
-        ".word 0x1a000143\n"
-        ".word 0xe5d40009\n"
-        ".word 0xe59f83b4\n"
-        ".word 0xed9f8aeb\n"
-        ".word 0xe350000b\n"
-        ".word 0xe3a05006\n"
-        ".word 0xe3a07000\n"
-        ".word 0x0a000002\n"
-        ".word 0xe3500013\n"
-        ".word 0x0a00001f\n"
-        ".word 0xea00003f\n"
-        ".word 0xe5d40008\n"
-        ".word 0xe3500000\n"
-        ".word 0x0a000037\n"
-        ".word 0xe28400c4\n"
-        ".word 0xed900a08\n"
-        ".word 0xe320f000\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb06d354\n"
-        ".word 0xe3a01000\n"
-        ".word 0xe3a00001\n"
-        ".word 0xeb06ed6c\n"
-        ".word 0xe1a02000\n"
-        ".word 0xe5980000\n"
-        ".word 0xe3a01003\n"
-        ".word 0xeb06d180\n"
-        ".word 0xe59f2358\n"
-        ".word 0xe3a03000\n"
-        ".word 0xe3a0100e\n"
-        ".word 0xe3a00002\n"
-        ".word 0xe58d5004\n"
-        ".word 0xe58d7000\n"
-        ".word 0xeb06d29a\n"
-        ".word 0xe5980000\n"
-        ".word 0xe3a01003\n"
-        ".word 0xeb06d161\n"
-        ".word 0xeeb00a48\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb06d340\n"
-        ".word 0xe320f000\n"
-        ".word 0xe320f000\n"
-        ".word 0xea00001b\n"
-        ".word 0xe5d40008\n"
-        ".word 0xe3500000\n"
-        ".word 0x0a000018\n"
-        ".word 0xe28400c4\n"
-        ".word 0xed900a08\n"
-        ".word 0xe320f000\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb06d335\n"
-        ".word 0xe3a01000\n"
-        ".word 0xe3a00001\n"
-        ".word 0xeb06ed4d\n"
-        ".word 0xe1a02000\n"
-        ".word 0xe5980000\n"
-        ".word 0xe3a01003\n"
-        ".word 0xeb06d161\n"
-        ".word 0xe3a03000\n"
-        ".word 0xe3a0208d\n"
-        ".word 0xe3a0103a\n"
-        ".word 0xe3a00002\n"
-        ".word 0xe58d5004\n"
-        ".word 0xe58d7000\n"
-        ".word 0xeb06d27b\n"
-        ".word 0xe5980000\n"
-        ".word 0xe3a01003\n"
-        ".word 0xeb06d142\n"
-        ".word 0xeeb00a48\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb06d321\n"
-        ".word 0xe1a00004\n"
-        ".word 0xeb006d89\n"
-        ".word 0xe59a0008\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb00378c\n"
-        ".word 0xe59a0008\n"
-        ".word 0xe5d0107d\n"
-        ".word 0xe3510000\n"
-        ".word 0x0a000003\n"
-        ".word 0xe5d0007f\n"
-        ".word 0xe3500000\n"
-        ".word 0x03a00000\n"
-        ".word 0x0b006862\n"
-        ".word 0xe59a0008\n"
-        ".word 0xe3a0b00b\n"
-        ".word 0xe3a09010\n"
-        ".word 0xe5d0107e\n"
-        ".word 0xe3510000\n"
-        ".word 0x0a000083\n"
-        ".word 0xe2800b01\n"
-        ".word 0xe2800fd5\n"
-        ".word 0xeb06d126\n"
-        ".word 0xe1a05000\n"
-        ".word 0xe59a0008\n"
-        ".word 0xe2800b01\n"
-        ".word 0xe2800fd5\n"
-        ".word 0xeb06d11e\n"
-        ".word 0xe1a06000\n"
-        ".word 0xe3a01000\n"
-        ".word 0xe3a00001\n"
-        ".word 0xeb06ed1d\n"
-        ".word 0xe1a02000\n"
-        ".word 0xe5980000\n"
-        ".word 0xe3a01003\n"
-        ".word 0xeb06d131\n"
-        ".word 0xeeb00a48\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb06d2fb\n"
-        ".word 0xe320f000\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb06d0f9\n"
-        ".word 0xe3a010c8\n"
-        ".word 0xe3a0000e\n"
-        ".word 0xeb06d2e5\n"
-        ".word 0xe1d010fa\n"
-        ".word 0xe1a04000\n"
-        ".word 0xe3a0200a\n"
-        ".word 0xe0810006\n"
-        ".word 0xe88d0801\n"
-        ".word 0xe1d400f8\n"
-        ".word 0xe3a0100e\n"
-        ".word 0xe0803005\n"
-        ".word 0xe3a00002\n"
-        ".word 0xeb06d27d\n"
-        ".word 0xe59a0008\n"
-        ".word 0xe3a01000\n"
-        ".word 0xe5900068\n"
-        ".word 0xeb06cf2d\n"
-        ".word 0xe1a02000\n"
-        ".word 0xe28f1d07\n"
-        ".word 0xe28d0010\n"
-        ".word 0xfa06cf1e\n"
-        ".word 0xe3a010c2\n"
-        ".word 0xe3a0000e\n"
-        ".word 0xeb06d2d0\n"
-        ".word 0xe1d030fa\n"
-        ".word 0xe1d420fa\n"
-        ".word 0xe1d4c0f8\n"
-        ".word 0xe1d000f8\n"
-        ".word 0xe0821003\n"
-        ".word 0xe0811006\n"
-        ".word 0xe080000c\n"
-        ".word 0xe0800005\n"
-        ".word 0xee001a90\n"
-        ".word 0xee000a10\n"
-        ".word 0xed9f1a61\n"
-        ".word 0xeeb02a48\n"
-        ".word 0xe28d2010\n"
-        ".word 0xeef01a41\n"
-        ".word 0xeef80ae0\n"
-        ".word 0xeeb80ac0\n"
-        ".word 0xe3a010ff\n"
-        ".word 0xe3a00002\n"
-        ".word 0xeb06cee8\n"
-        ".word 0xe3a010c1\n"
-        ".word 0xe3a0000e\n"
-        ".word 0xeb06d2ba\n"
-        ".word 0xe58d7000\n"
-        ".word 0xe59ac008\n"
-        ".word 0xe1d420fa\n"
-        ".word 0xe1d030fa\n"
-        ".word 0xe1d470f8\n"
-        ".word 0xe1d000f8\n"
-        ".word 0xe59c1068\n"
-        ".word 0xe0822003\n"
-        ".word 0xe0873000\n"
-        ".word 0xe0822006\n"
-        ".word 0xe6bf0071\n"
-        ".word 0xe0831005\n"
-        ".word 0xe3a03010\n"
-        ".word 0xeb06ce4a\n"
-        ".word 0xe3a000ff\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb06ce2c\n"
-        ".word 0xe3a010c6\n"
-        ".word 0xe3a0000e\n"
-        ".word 0xeb06d2a6\n"
-        ".word 0xe1a01000\n"
-        ".word 0xe59a0008\n"
-        ".word 0xe28f2c01\n"
-        ".word 0xe3a03004\n"
-        ".word 0xe590006c\n"
-        ".word 0xe58d2008\n"
-        ".word 0xe58d000c\n"
-        ".word 0xe88d0208\n"
-        ".word 0xe1d120fa\n"
-        ".word 0xe1d400fa\n"
-        ".word 0xe1d430f8\n"
-        ".word 0xe1d110f8\n"
-        ".word 0xe0822000\n"
-        ".word 0xe0822006\n"
-        ".word 0xe0811003\n"
-        ".word 0xe0811005\n"
-        ".word 0xe3a03001\n"
-        ".word 0xe3a00000\n"
-        ".word 0xeb06cd3a\n"
-        ".word 0xe3a010c7\n"
-        ".word 0xe3a0000e\n"
-        ".word 0xeb06d290\n"
-        ".word 0xe1a01000\n"
-        ".word 0xe28f00b0\n"
-        ".word 0xe3a02001\n"
-        ".word 0xe58d0008\n"
-        ".word 0xe88d0204\n"
-        ".word 0xe1d100fa\n"
-        ".word 0xe1d430f8\n"
-        ".word 0xe1d110f8\n"
-        ".word 0xe1d420fa\n"
-        ".word 0xe0811003\n"
-        ".word 0xe0822000\n"
-        ".word 0xe3a03000\n"
-        ".word 0xe0822006\n"
-        ".word 0xe0811005\n"
-        ".word 0xe1a00003\n"
-        ".word 0xeb06cd27\n"
-        ".word 0xe320f000\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb06d08e\n"
-        ".word 0xe5980000\n"
-        ".word 0xe3a01003\n"
-        ".word 0xeb06d0a8\n"
-        ".word 0xe59a5008\n"
-        ".word 0xe595008c\n"
-        ".word 0xe3500000\n"
-        ".word 0x0a000063\n"
-        ".word 0xe2850b02\n"
-        ".word 0xe2800f61\n"
-        ".word 0xe1a04000\n"
-        ".word 0xeb06d09d\n"
-        ".word 0xe1a06000\n"
-        ".word 0xe1a00004\n"
-        ".word 0xeb06d097\n"
-        ".word 0xe1a07000\n"
-        ".word 0xe3a01000\n"
-        ".word 0xe3a00001\n"
-        ".word 0xeb06ec96\n"
-        ".word 0xe1a02000\n"
-        ".word 0xe3a01003\n"
-        ".word 0xea000007\n"
-        ".word 0x0043e188\n"
-        ".word 0x3f800000\n"
-        ".word 0x0044ea00\n"
-        ".word 0x00000101\n"
-        ".word 0x00007325\n"
-        ".word 0x00000000\n"
-        ".word 0x00006425\n"
-        ".word 0x0000002a\n"
-        ".word 0xe5980000\n"
-        ".word 0xeb06d0a1\n"
-        ".word 0xeeb00a48\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb06d26b\n"
-        ".word 0xe320f000\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb06d069\n"
-        ".word 0xe3a010c0\n"
-        ".word 0xe3a0000e\n"
-        ".word 0xeb06d255\n"
-        ".word 0xe1a04000\n"
-        ".word 0xe1d000fa\n"
-        ".word 0xe3a02011\n"
-        ".word 0xe3a0100e\n"
-        ".word 0xe0800007\n"
-        ".word 0xe88d0801\n"
-        ".word 0xe1d400f8\n"
-        ".word 0xe0803006\n"
-        ".word 0xe3a00002\n"
-        ".word 0xeb06d1ed\n"
-        ".word 0xe1d400fa\n"
-        ".word 0xe1d410f8\n"
-        ".word 0xe1d5c9b0\n"
-        ".word 0xe0802007\n"
-        ".word 0xe0811006\n"
-        ".word 0xe3a03000\n"
-        ".word 0xe1a0000c\n"
-        ".word 0xeb06cc3d\n"
-        ".word 0xe59f10cc\n"
-        ".word 0xe59fc0cc\n"
-        ".word 0xe1d539b0\n"
-        ".word 0xe3e02000\n"
-        ".word 0xe3a00000\n"
-        ".word 0xe1510003\n"
-        ".word 0xe0c1519c\n"
-        ".word 0xd3520000\n"
-        ".word 0xb1a02000\n"
-        ".word 0xe2800001\n"
-        ".word 0xe1a05141\n"
-        ".word 0xe0451fc1\n"
-        ".word 0xe3510000\n"
-        ".word 0xcafffff6\n"
-        ".word 0xe3520000\n"
-        ".word 0xba000005\n"
-        ".word 0xe2621065\n"
-        ".word 0xe3a0000e\n"
-        ".word 0xeb06d230\n"
-        ".word 0xe1a05000\n"
-        ".word 0xe320f000\n"
-        ".word 0xea000003\n"
-        ".word 0xe3a0105d\n"
-        ".word 0xe3a0000e\n"
-        ".word 0xeb06d22a\n"
-        ".word 0xe1a05000\n"
-        ".word 0xe3a000ff\n"
-        ".word 0xeb06cdaa\n"
-        ".word 0xe24f00f0\n"
-        ".word 0xe3a0100f\n"
-        ".word 0xe58d0008\n"
-        ".word 0xe88d0202\n"
-        ".word 0xe1d400fa\n"
-        ".word 0xe1d510fa\n"
-        ".word 0xe1d420f8\n"
-        ".word 0xe1d530f8\n"
-        ".word 0xe0811000\n"
-        ".word 0xe0820003\n"
-        ".word 0xe0812007\n"
-        ".word 0xe0801006\n"
-        ".word 0xe3a03000\n"
-        ".word 0xe1a00003\n"
-        ".word 0xeb06ccbf\n"
-        ".word 0xe320f000\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb06d026\n"
-        ".word 0xe5980000\n"
-        ".word 0xe3a01003\n"
-        ".word 0xeb06d040\n"
-        ".word 0xe28dd054\n"
-        ".word 0xe3a00000\n"
-        ".word 0xecbd8b02\n"
-        ".word 0xe8bd8ff0\n"
-        ".word 0x05f5e100\n"
-        ".word 0x66666667\n"
-    );
+extern "C" {
+    void        func_001260b8(void* ctx);                                       // 0x001260b8
+    void        func_001188d0(void* ctx);                                       // 0x001188d0
+    void        func_00124c48(void* arg);                                       // 0x00124c48
+    const char* ui_func_002be828(u32 id, s32 mode);                             // 0x002be828
+    void        ui_func_002be548(s32 val, s32 x, s32 y, s32 a3, s32 a4);        // 0x002be548
+    void        ui_func_002be4dc(s32 a0);                                       // 0x002be4dc
+    void        ui_func_002be16c(s32 a0, s32 x, s32 y, s32 a3, s32 a4, s32 a5,
+                                 const char* fmt, ...);                         // 0x002be16c
+    void        ui_func_002bdeb8(u32 val, s32 x, s32 y, s32 a3);                // 0x002bdeb8
+    s32         ui_func_002bef7c(void* sprite);                                   // 0x002bef7c
+    s32         ui_func_002bef70(void* sprite);                                   // 0x002bef70
+    void        script_vm_func_002bef14();                                      // 0x002bef14
+    const u8*   camp_func_002bf6d0(s32 type, s32 id);                           // 0x002bf6d0
+    void        func_002bf558(s32 type, s32 id, s32 sub_id,
+                              s32 x, s32 y, s32 flag);                          // 0x002bf558
+    void        ui_func_002be7fc(char* dst, const char* fmt, ...);              // 0x002be7fc
+    void        ui_func_002be77c(s32 align, u32 color, const char* text,
+                                 f32 x, f32 y, f32 scale, f32 z, f32 alpha);    // 0x002be77c
 }
-#if 0
-// Partial semantic draft retained for reconstruction; not compiled.
-[[maybe_unused]] static void ComWin_ProcessDialog_Draft() {
-    auto* ctx = *reinterpret_cast<u8**>(0x0043E188 + 8);
-    if (ctx == nullptr || ctx[0x83] != 0) {
-        return;
+
+s32 ComWin_ProcessDialog() {
+    auto* const ctx = *reinterpret_cast<u8**>(0x0043E188 + 0x08);
+    if (ctx[0x83] != 0) {
+        return 0;
     }
 
-    const u8 type = ctx[9];
-    if (type == 0x0B) {
-        if (ctx[8] != 0) {
-            const f32 alpha = *reinterpret_cast<const f32*>(&ctx[0xC4 + 0x20]);
+    const u8 mode = ctx[0x09];
+    if (mode == 0x0B) {
+        if (ctx[0x08] != 0) {
+            const f32 alpha = *reinterpret_cast<const f32*>(ctx + 0xC4 + 0x20);
             UiGpu_SetAlphaBlend(alpha);
-            UiGpu_SetViewportParams(1, 0);
-            UiWindow_PushContext(g_AsdGpuState, 3);
-            UiSprite_DrawPanelDirect(2, 0x0E, 0x101, 0, 6, 0);
+            void* const vp = UiGpu_SetViewportParams(1, 0);
+            UiWindow_PushContext(g_AsdGpuState, 3, vp);
+            UiSprite_DrawPanelDirect(2, 0x0E, 0x101, 0, 0, 6);
             UiWindow_PopContext(g_AsdGpuState, 3);
             UiGpu_SetAlphaBlend(1.0f);
         }
-    } else if (type == 0x13) {
-        // Mode 0x13 dialog processing
-        UiGpu_SetAlphaBlend(1.0f);
-        UiSprite_DrawPanelDirect(2, 0x0E, 0x102, 0, 6, 0);
+        func_001260b8(ctx);
+        func_001188d0(*reinterpret_cast<u8**>(0x0043E188 + 0x08));
+    } else if (mode == 0x13) {
+        if (ctx[0x08] != 0) {
+            const f32 alpha = *reinterpret_cast<const f32*>(ctx + 0xC4 + 0x20);
+            UiGpu_SetAlphaBlend(alpha);
+            void* const vp = UiGpu_SetViewportParams(1, 0);
+            UiWindow_PushContext(g_AsdGpuState, 3, vp);
+            UiSprite_DrawPanelDirect(2, 0x3A, 0x8D, 0, 0, 6);
+            UiWindow_PopContext(g_AsdGpuState, 3);
+            UiGpu_SetAlphaBlend(1.0f);
+        }
+        func_001260b8(ctx);
+        func_001188d0(*reinterpret_cast<u8**>(0x0043E188 + 0x08));
     }
+
+    auto* const cur = *reinterpret_cast<u8**>(0x0043E188 + 0x08);
+    if (cur[0x7D] != 0 && cur[0x7F] == 0) {
+        func_00124c48(nullptr);
+    }
+
+    auto* const cur2 = *reinterpret_cast<u8**>(0x0043E188 + 0x08);
+    if (cur2[0x7E] != 0) {
+        const s32 base_x = ui_func_002bef7c(cur2 + 0x754);
+        const s32 base_y = ui_func_002bef70(cur2 + 0x754);
+        void* const vp = UiGpu_SetViewportParams(1, 0);
+        UiWindow_PushContext(g_AsdGpuState, 3, vp);
+        UiGpu_SetAlphaBlend(1.0f);
+        script_vm_func_002bef14();
+
+        const u8* const panel = camp_func_002bf6d0(0x0E, 0xC8);
+        func_002bf558(
+            2,
+            0x0E,
+            0x0A,
+            *reinterpret_cast<const s16*>(panel + 0x08) + base_x,
+            *reinterpret_cast<const s16*>(panel + 0x0A) + base_y,
+            0x0B);
+
+        char text_buf[0x40];
+        const char* const name_str = ui_func_002be828(
+            *reinterpret_cast<const u32*>((*reinterpret_cast<u8**>(0x0043E188 + 0x08)) + 0x68),
+            0);
+        ui_func_002be7fc(text_buf, "%s", name_str);
+
+        const u8* const name_layout = camp_func_002bf6d0(0x0E, 0xC2);
+        const s32 name_x = *reinterpret_cast<const s16*>(name_layout + 0x08) + *reinterpret_cast<const s16*>(panel + 0x08) + base_x;
+        const s32 name_y = *reinterpret_cast<const s16*>(name_layout + 0x0A) + *reinterpret_cast<const s16*>(panel + 0x0A) + base_y;
+        ui_func_002be77c(
+            2,
+            0xFF,
+            text_buf,
+            static_cast<f32>(name_x),
+            static_cast<f32>(name_y),
+            0.0f,
+            0.0f,
+            1.0f);
+
+        const u8* const icon_layout = camp_func_002bf6d0(0x0E, 0xC1);
+        const s32 icon_x = *reinterpret_cast<const s16*>(panel + 0x08) + *reinterpret_cast<const s16*>(icon_layout + 0x08) + base_x;
+        const s32 icon_y = *reinterpret_cast<const s16*>(panel + 0x0A) + *reinterpret_cast<const s16*>(icon_layout + 0x0A) + base_y;
+        const s16 item_id = static_cast<s16>(*reinterpret_cast<const u32*>((*reinterpret_cast<u8**>(0x0043E188 + 0x08)) + 0x68));
+        ui_func_002be548(item_id, icon_x, icon_y, 0x10, 0);
+
+        ui_func_002be4dc(0xFF);
+        const u8* const count_layout = camp_func_002bf6d0(0x0E, 0xC6);
+        const s32 count_x = *reinterpret_cast<const s16*>(count_layout + 0x08) + *reinterpret_cast<const s16*>(panel + 0x08) + base_x;
+        const s32 count_y = *reinterpret_cast<const s16*>(count_layout + 0x0A) + *reinterpret_cast<const s16*>(panel + 0x0A) + base_y;
+        const u32 count_val = *reinterpret_cast<const u32*>((*reinterpret_cast<u8**>(0x0043E188 + 0x08)) + 0x6C);
+        ui_func_002be16c(0, count_x, count_y, 1, 4, 0x10, "%d", count_val);
+
+        const u8* const mul_layout = camp_func_002bf6d0(0x0E, 0xC7);
+        const s32 mul_x = *reinterpret_cast<const s16*>(mul_layout + 0x08) + *reinterpret_cast<const s16*>(panel + 0x08) + base_x;
+        const s32 mul_y = *reinterpret_cast<const s16*>(mul_layout + 0x0A) + *reinterpret_cast<const s16*>(panel + 0x0A) + base_y;
+        ui_func_002be16c(0, mul_x, mul_y, 0, 1, 0x10, "*");
+
+        script_vm_func_002bef14();
+        UiWindow_PopContext(g_AsdGpuState, 3);
+    }
+
+    auto* const cur3 = *reinterpret_cast<u8**>(0x0043E188 + 0x08);
+    if (*reinterpret_cast<const u32*>(cur3 + 0x8C) != 0) {
+        const s32 base_x = ui_func_002bef7c(cur3 + 0x984);
+        const s32 base_y = ui_func_002bef70(cur3 + 0x984);
+        void* const vp = UiGpu_SetViewportParams(1, 0);
+        UiWindow_PushContext(g_AsdGpuState, 3, vp);
+        UiGpu_SetAlphaBlend(1.0f);
+        script_vm_func_002bef14();
+
+        const u8* const panel = camp_func_002bf6d0(0x0E, 0xC0);
+        func_002bf558(
+            2,
+            0x0E,
+            0x11,
+            *reinterpret_cast<const s16*>(panel + 0x08) + base_x,
+            *reinterpret_cast<const s16*>(panel + 0x0A) + base_y,
+            0x0B);
+
+        const u16 val = *reinterpret_cast<const u16*>(cur3 + 0x90);
+        ui_func_002bdeb8(
+            val,
+            *reinterpret_cast<const s16*>(panel + 0x08) + base_x,
+            *reinterpret_cast<const s16*>(panel + 0x0A) + base_y,
+            0);
+
+        s32 idx = -1;
+        s32 i = 0;
+        for (s32 threshold = 100000000; threshold > 0; threshold /= 10, ++i) {
+            if (threshold <= static_cast<s32>(val) && idx < 0) {
+                idx = i;
+            }
+        }
+        const u8* const star_layout = camp_func_002bf6d0(0x0E, idx < 0 ? 0x5D : (0x65 - idx));
+        ui_func_002be4dc(0xFF);
+        const s32 star_x = *reinterpret_cast<const s16*>(panel + 0x08) + *reinterpret_cast<const s16*>(star_layout + 0x08) + base_x;
+        const s32 star_y = *reinterpret_cast<const s16*>(panel + 0x0A) + *reinterpret_cast<const s16*>(star_layout + 0x0A) + base_y;
+        ui_func_002be16c(0, star_x, star_y, 0, 0x0F, 0x10, "*");
+
+        script_vm_func_002bef14();
+        UiWindow_PopContext(g_AsdGpuState, 3);
+    }
+
+    return 0;
 }
-#endif
 
 // DECOMP_FUNC(0x0010ae9c, 44)
 void ComWin_CheckFlag() {
@@ -619,457 +412,182 @@ void ComWin_Reset() {
 }
 
 // DECOMP_FUNC(0x0011a354, 1632)
-// Boundary-verified ARM-state span; includes its PC-relative literal pool.
-__attribute__((naked)) void ComWin_DrawUp(void* arg) {
-    asm volatile(
-        ".word 0xe92d43f0\n"
-        ".word 0xe59f0418\n"
-        ".word 0xed2d8b04\n"
-        ".word 0xe24dd08c\n"
-        ".word 0xe5904000\n"
-        ".word 0xe5940008\n"
-        ".word 0xe3500000\n"
-        ".word 0x0a00018a\n"
-        ".word 0xe59f8400\n"
-        ".word 0xe5980000\n"
-        ".word 0xeb06a609\n"
-        ".word 0xe5985000\n"
-        ".word 0xe3a01000\n"
-        ".word 0xe3a00001\n"
-        ".word 0xeb06aefa\n"
-        ".word 0xe2855a01\n"
-        ".word 0xe2855f93\n"
-        ".word 0xe3a07000\n"
-        ".word 0xe5951000\n"
-        ".word 0xe2812001\n"
-        ".word 0xe0853101\n"
-        ".word 0xe5931008\n"
-        ".word 0xe0853102\n"
-        ".word 0xe5852000\n"
-        ".word 0xe5830008\n"
-        ".word 0xe5d52018\n"
-        ".word 0xe3520000\n"
-        ".word 0x01510000\n"
-        ".word 0x0a000002\n"
-        ".word 0xe595101c\n"
-        ".word 0xe12fff31\n"
-        ".word 0xe5c57018\n"
-        ".word 0xe5980000\n"
-        ".word 0xed9f0ae8\n"
-        ".word 0xeb068022\n"
-        ".word 0xeebd0ac0\n"
-        ".word 0xe284003c\n"
-        ".word 0xee105a10\n"
-        ".word 0xed900a08\n"
-        ".word 0xe320f000\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb0694c4\n"
-        ".word 0xe59f9380\n"
-        ".word 0xed949a18\n"
-        ".word 0xeddf8adf\n"
-        ".word 0xed9f8adf\n"
-        ".word 0xe5990000\n"
-        ".word 0xe3100001\n"
-        ".word 0x1a000017\n"
-        ".word 0xe2890000\n"
-        ".word 0xfa06972c\n"
-        ".word 0xe3500000\n"
-        ".word 0xe320f000\n"
-        ".word 0x0a000012\n"
-        ".word 0xe59f035c\n"
-        ".word 0xe2801010\n"
-        ".word 0xedc08a00\n"
-        ".word 0xed808a01\n"
-        ".word 0xed808a02\n"
-        ".word 0xed808a03\n"
-        ".word 0xec818a02\n"
-        ".word 0xe2801024\n"
-        ".word 0xed808a06\n"
-        ".word 0xed808a07\n"
-        ".word 0xed808a08\n"
-        ".word 0xec818a02\n"
-        ".word 0xed808a0b\n"
-        ".word 0xed808a0c\n"
-        ".word 0xed808a0d\n"
-        ".word 0xe2800038\n"
-        ".word 0xec808a02\n"
-        ".word 0xe2890000\n"
-        ".word 0xe1a00000\n"
-        ".word 0xe59f1310\n"
-        ".word 0xe28d0048\n"
-        ".word 0xeb0696de\n"
-        ".word 0xe5990000\n"
-        ".word 0xe3100001\n"
-        ".word 0x1a000017\n"
-        ".word 0xe59f02ec\n"
-        ".word 0xfa06970e\n"
-        ".word 0xe3500000\n"
-        ".word 0xe320f000\n"
-        ".word 0x0a000012\n"
-        ".word 0xe59f02e4\n"
-        ".word 0xe2801010\n"
-        ".word 0xedc08a00\n"
-        ".word 0xed808a01\n"
-        ".word 0xed808a02\n"
-        ".word 0xed808a03\n"
-        ".word 0xec818a02\n"
-        ".word 0xe2801024\n"
-        ".word 0xed808a06\n"
-        ".word 0xed808a07\n"
-        ".word 0xed808a08\n"
-        ".word 0xec818a02\n"
-        ".word 0xed808a0b\n"
-        ".word 0xed808a0c\n"
-        ".word 0xed808a0d\n"
-        ".word 0xe2800038\n"
-        ".word 0xec808a02\n"
-        ".word 0xe59f0294\n"
-        ".word 0xe1a00000\n"
-        ".word 0xe59f1298\n"
-        ".word 0xe28d0008\n"
-        ".word 0xeb0696c0\n"
-        ".word 0xe5d40012\n"
-        ".word 0xe3500000\n"
-        ".word 0x1a000003\n"
-        ".word 0xe3a010dc\n"
-        ".word 0xe3a0000e\n"
-        ".word 0xeb06946e\n"
-        ".word 0xe1a06000\n"
-        ".word 0xe5d40012\n"
-        ".word 0xe3500001\n"
-        ".word 0x1a000003\n"
-        ".word 0xe3a010dd\n"
-        ".word 0xe3a0000e\n"
-        ".word 0xeb069467\n"
-        ".word 0xe1a06000\n"
-        ".word 0xe596100c\n"
-        ".word 0xe1d630fa\n"
-        ".word 0xe1d620f8\n"
-        ".word 0xe1d100f0\n"
-        ".word 0xe1d110f2\n"
-        ".word 0xe0800fa0\n"
-        ".word 0xe0811fa1\n"
-        ".word 0xe085c0c0\n"
-        ".word 0xe08300c1\n"
-        ".word 0xe082100c\n"
-        ".word 0xee001a10\n"
-        ".word 0xee000a90\n"
-        ".word 0xe3a00000\n"
-        ".word 0xe3a015fe\n"
-        ".word 0xe58d000c\n"
-        ".word 0xe58d1008\n"
-        ".word 0xeeb80ac0\n"
-        ".word 0xeef80ae0\n"
-        ".word 0xe58d0010\n"
-        ".word 0xe28d2008\n"
-        ".word 0xed8d0a05\n"
-        ".word 0xe1cd01f8\n"
-        ".word 0xe58d0020\n"
-        ".word 0xedcd0a09\n"
-        ".word 0xe58d0028\n"
-        ".word 0xe1cd02fc\n"
-        ".word 0xed8d8a0d\n"
-        ".word 0xe1cd04f0\n"
-        ".word 0xe28d1048\n"
-        ".word 0xe58d0038\n"
-        ".word 0xe58d003c\n"
-        ".word 0xe1a00001\n"
-        ".word 0xeb06730f\n"
-        ".word 0xeeb00a49\n"
-        ".word 0xe3a00000\n"
-        ".word 0xe3a015fe\n"
-        ".word 0xe28d2008\n"
-        ".word 0xed8d0a02\n"
-        ".word 0xe58d000c\n"
-        ".word 0xe58d0010\n"
-        ".word 0xe58d0014\n"
-        ".word 0xe58d0018\n"
-        ".word 0xed8d0a07\n"
-        ".word 0xe58d0020\n"
-        ".word 0xe58d0024\n"
-        ".word 0xe58d0028\n"
-        ".word 0xe58d002c\n"
-        ".word 0xed8d9a0c\n"
-        ".word 0xe1cd04f0\n"
-        ".word 0xe28d1048\n"
-        ".word 0xe58d0034\n"
-        ".word 0xe58d0038\n"
-        ".word 0xe58d003c\n"
-        ".word 0xe1a00001\n"
-        ".word 0xeb0672f9\n"
-        ".word 0xe3a01015\n"
-        ".word 0xe3a0000e\n"
-        ".word 0xeb06942c\n"
-        ".word 0xe1a06000\n"
-        ".word 0xe590000c\n"
-        ".word 0xe3a02004\n"
-        ".word 0xe1d010f0\n"
-        ".word 0xe1d000f2\n"
-        ".word 0xe0811fa1\n"
-        ".word 0xe0800fa0\n"
-        ".word 0xe08210c1\n"
-        ".word 0xe08220c0\n"
-        ".word 0xe2610000\n"
-        ".word 0xee000a90\n"
-        ".word 0xe2621000\n"
-        ".word 0xee001a10\n"
-        ".word 0xe3a00000\n"
-        ".word 0xe3a015fe\n"
-        ".word 0xe58d000c\n"
-        ".word 0xeef80ae0\n"
-        ".word 0xe58d1008\n"
-        ".word 0xeeb80ac0\n"
-        ".word 0xe58d0010\n"
-        ".word 0xe28d2008\n"
-        ".word 0xedcd0a05\n"
-        ".word 0xe1cd01f8\n"
-        ".word 0xe58d0020\n"
-        ".word 0xed8d0a09\n"
-        ".word 0xe58d0028\n"
-        ".word 0xe1cd02fc\n"
-        ".word 0xed8d8a0d\n"
-        ".word 0xe1cd04f0\n"
-        ".word 0xe28d1048\n"
-        ".word 0xe58d0038\n"
-        ".word 0xe58d003c\n"
-        ".word 0xe1a00001\n"
-        ".word 0xeb0672d4\n"
-        ".word 0xe5980000\n"
-        ".word 0xe28d1048\n"
-        ".word 0xeb067b61\n"
-        ".word 0xe5940008\n"
-        ".word 0xe3500002\n"
-        ".word 0x1a000004\n"
-        ".word 0xe28400c8\n"
-        ".word 0xed900a08\n"
-        ".word 0xe320f000\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb06940f\n"
-        ".word 0xe5985000\n"
-        ".word 0xe3a02000\n"
-        ".word 0xe3a01001\n"
-        ".word 0xe3a00006\n"
-        ".word 0xeb06ae2f\n"
-        ".word 0xe2855a01\n"
-        ".word 0xe2855fab\n"
-        ".word 0xe5951000\n"
-        ".word 0xe0852101\n"
-        ".word 0xe5921008\n"
-        ".word 0xe5820008\n"
-        ".word 0xe5d52018\n"
-        ".word 0xe3520000\n"
-        ".word 0x01510000\n"
-        ".word 0x0a000002\n"
-        ".word 0xe595101c\n"
-        ".word 0xe12fff31\n"
-        ".word 0xe5c57018\n"
-        ".word 0xe3a00065\n"
-        ".word 0xe58d0004\n"
-        ".word 0xe3a03000\n"
-        ".word 0xe3a02003\n"
-        ".word 0xe3a0100e\n"
-        ".word 0xe3a00002\n"
-        ".word 0xe58d7000\n"
-        ".word 0xeb069387\n"
-        ".word 0xe5985000\n"
-        ".word 0xe3a02000\n"
-        ".word 0xe3a01007\n"
-        ".word 0xe3a00006\n"
-        ".word 0xeb06ae15\n"
-        ".word 0xe2855a01\n"
-        ".word 0xe2855fab\n"
-        ".word 0xe5951000\n"
-        ".word 0xe0852101\n"
-        ".word 0xe5921008\n"
-        ".word 0xe5820008\n"
-        ".word 0xe5d52018\n"
-        ".word 0xe3520000\n"
-        ".word 0x01510000\n"
-        ".word 0x0a00000a\n"
-        ".word 0xea000006\n"
-        ".word 0x0043e0f8\n"
-        ".word 0x0044ea00\n"
-        ".word 0x3e947ae1\n"
-        ".word 0x00476638\n"
-        ".word 0x3f800000\n"
-        ".word 0x00000000\n"
-        ".word 0x004efd9c\n"
-        ".word 0xe595101c\n"
-        ".word 0xe12fff31\n"
-        ".word 0xe5c57018\n"
-        ".word 0xe284003c\n"
-        ".word 0xed900a08\n"
-        ".word 0xe320f000\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb0693d6\n"
-        ".word 0xe3a0006a\n"
-        ".word 0xe3a02002\n"
-        ".word 0xe58d0004\n"
-        ".word 0xe3a03000\n"
-        ".word 0xe3a0100e\n"
-        ".word 0xe1a00002\n"
-        ".word 0xe58d7000\n"
-        ".word 0xeb069360\n"
-        ".word 0xe5d40010\n"
-        ".word 0xe3500000\n"
-        ".word 0x0a000058\n"
-        ".word 0xe5d40012\n"
-        ".word 0xe3500000\n"
-        ".word 0x1a000003\n"
-        ".word 0xe3a010dc\n"
-        ".word 0xe3a0000e\n"
-        ".word 0xeb0693b5\n"
-        ".word 0xe1a06000\n"
-        ".word 0xe5d40012\n"
-        ".word 0xe3500001\n"
-        ".word 0x1a000003\n"
-        ".word 0xe3a010dd\n"
-        ".word 0xe3a0000e\n"
-        ".word 0xeb0693ae\n"
-        ".word 0xe1a06000\n"
-        ".word 0xe3a01004\n"
-        ".word 0xe2840f55\n"
-        ".word 0xeb06723c\n"
-        ".word 0xe596100c\n"
-        ".word 0xe1d110f0\n"
-        ".word 0xe0410000\n"
-        ".word 0xe0800fa0\n"
-        ".word 0xe1a050c0\n"
-        ".word 0xe284003c\n"
-        ".word 0xed900a08\n"
-        ".word 0xeeb02a40\n"
-        ".word 0xee005a10\n"
-        ".word 0xeef01a48\n"
-        ".word 0xe2842f55\n"
-        ".word 0xe3a010ff\n"
-        ".word 0xe3a00004\n"
-        ".word 0xed9f1a53\n"
-        ".word 0xeeb80ac0\n"
-        ".word 0xeddf0a52\n"
-        ".word 0xeb068fc4\n"
-        ".word 0xe5940014\n"
-        ".word 0xe3500001\n"
-        ".word 0x1a000010\n"
-        ".word 0xe3a0006f\n"
-        ".word 0xe3a06007\n"
-        ".word 0xe58d0004\n"
-        ".word 0xe245300d\n"
-        ".word 0xe3a020df\n"
-        ".word 0xe3a0100e\n"
-        ".word 0xe3a00002\n"
-        ".word 0xe58d6000\n"
-        ".word 0xeb0692f1\n"
-        ".word 0xe3a00074\n"
-        ".word 0xe58d0004\n"
-        ".word 0xe245300d\n"
-        ".word 0xe3a020de\n"
-        ".word 0xe3a0100e\n"
-        ".word 0xe3a00002\n"
-        ".word 0xe58d6000\n"
-        ".word 0xeb0692e9\n"
-        ".word 0xe5940014\n"
-        ".word 0xe3500004\n"
-        ".word 0x1a000004\n"
-        ".word 0xe1d401f8\n"
-        ".word 0xe3a03079\n"
-        ".word 0xe3a02008\n"
-        ".word 0xe245100d\n"
-        ".word 0xeb067205\n"
-        ".word 0xe5940014\n"
-        ".word 0xe3500002\n"
-        ".word 0x1a000006\n"
-        ".word 0xe1d401d1\n"
-        ".word 0xe3a03079\n"
-        ".word 0xe3a02008\n"
-        ".word 0xe88d0081\n"
-        ".word 0xe1d401f8\n"
-        ".word 0xe245100d\n"
-        ".word 0xeb06719c\n"
-        ".word 0xe5940014\n"
-        ".word 0xe3500003\n"
-        ".word 0x1a000005\n"
-        ".word 0xe58d7000\n"
-        ".word 0xe1d401f8\n"
-        ".word 0xe3a03079\n"
-        ".word 0xe3a02008\n"
-        ".word 0xe245100d\n"
-        ".word 0xeb068f08\n"
-        ".word 0xe5940014\n"
-        ".word 0xe3500005\n"
-        ".word 0x1a000004\n"
-        ".word 0xe1d401b8\n"
-        ".word 0xe3a03079\n"
-        ".word 0xe3a02008\n"
-        ".word 0xe245100d\n"
-        ".word 0xeb067161\n"
-        ".word 0xe5980000\n"
-        ".word 0xeb069c85\n"
-        ".word 0xeeb00a68\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb06936d\n"
-        ".word 0xe5980000\n"
-        ".word 0xe2804a01\n"
-        ".word 0xe2844f93\n"
-        ".word 0xe5940000\n"
-        ".word 0xe0841100\n"
-        ".word 0xe2400001\n"
-        ".word 0xe5911008\n"
-        ".word 0xe5840000\n"
-        ".word 0xe0840100\n"
-        ".word 0xe5d42018\n"
-        ".word 0xe5900008\n"
-        ".word 0xe3520000\n"
-        ".word 0x01510000\n"
-        ".word 0x0a000002\n"
-        ".word 0xe594101c\n"
-        ".word 0xe12fff31\n"
-        ".word 0xe5c47018\n"
-        ".word 0xe3a00000\n"
-        ".word 0xe28dd08c\n"
-        ".word 0xecbd8b04\n"
-        ".word 0xe8bd83f0\n"
-        ".word 0x3f11eb85\n"
-        ".word 0x40c00000\n"
-    );
+extern "C" {
+    void engine_func_002c0000(void* dst, const void* src);                       // 0x002c0000
+    void ui_func_002b71f8(void* dst, const void* a, const void* b);             // 0x002b71f8
+    void ui_func_002b9438(void* gpu_state, const void* mtx);                    // 0x002b9438
+    s32  ui_func_002b7118(const char* text, s32 a1);                            // 0x002b7118
+    void ui_func_002b70f0(s32 id, s32 x, s32 y, s32 z);                         // 0x002b70f0
+    void ui_func_002b6f74(s32 id, s32 x, s32 y, s32 z, s32 flag, s32 zero);     // 0x002b6f74
+    void ui_func_002b6ecc(u32 id, s32 x, s32 y, s32 z);                         // 0x002b6ecc
+    void ui_func_002c1b64(void* gpu_state);                                     // 0x002c1b64
+    f32  ui_func_002ba46c(void* gpu_state, f32 scale);                          // 0x002ba46c
+    void* battle_func_002c5fa4(s32 a0, s32 a1, s32 a2);                         // 0x002c5fa4
 }
-#if 0
-// Partial semantic draft retained for reconstruction; not compiled.
-[[maybe_unused]] static void ComWin_DrawUp_Draft(void* arg) {
-    (void)arg;
-    ComWinWork* work = g_ComWinWork;
-    if (work == nullptr || work->draw_up_right == nullptr) {
+
+void ComWin_DrawUp(void*) {
+    auto* const work = *reinterpret_cast<u8**>(0x0043E0F8);
+    if (*reinterpret_cast<const u32*>(work + 0x08) == 0) {
         return;
     }
 
     UiGpu_BeginPass(g_AsdGpuState);
-    UiGpu_SetViewportParams(1, 0);
+    const u32 vp_val = static_cast<u32>(reinterpret_cast<uintptr_t>(UiGpu_SetViewportParams(1, 0)));
+    auto* const vp_stack = reinterpret_cast<u32*>(g_AsdGpuState + 0x124C);
+    const u32 old_vp_depth = vp_stack[0];
+    const u32 prev_vp = vp_stack[2 + old_vp_depth];
+    vp_stack[0] = old_vp_depth + 1;
+    vp_stack[2 + old_vp_depth + 1] = vp_val;
+    if (*reinterpret_cast<u8*>(g_AsdGpuState + 0x1264) != 0 || prev_vp != vp_val) {
+        auto* const cb = *reinterpret_cast<void (**)(u32, u32)>(g_AsdGpuState + 0x1268);
+        cb(vp_val, prev_vp);
+        *reinterpret_cast<u8*>(g_AsdGpuState + 0x1264) = 0;
+    }
 
-    auto* layer = reinterpret_cast<u32*>(g_AsdGpuState + 0x124C);
-    const u32 old_depth = *layer;
-    *layer = old_depth + 1;
-    auto* layer_entry = reinterpret_cast<u32*>(g_AsdGpuState + 0x124C + 8);
-    layer_entry[*layer] = 1;
+    const s32 stereo_x = static_cast<s32>(ui_func_002ba46c(g_AsdGpuState, 0.29f));
+    UiGpu_SetAlphaBlend(*reinterpret_cast<const f32*>(work + 0x5C));
 
-    // Stereoscopic parallax shift (0.29f scale)
-    const f32 shift = UiGpu_TransformCoord(g_AsdGpuState, 0.29f);
-    const s32 base_x = static_cast<s32>(shift);
+    const f32 kIdentity[16] = {
+        1.0f, 0.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 0.0f, 1.0f,
+    };
+    f32 mtx_a[16];
+    f32 mtx_b[16];
+    engine_func_002c0000(mtx_a, kIdentity);
+    engine_func_002c0000(mtx_b, kIdentity);
 
-    // Apply alpha from message panel sprite
-    const f32 alpha = *reinterpret_cast<const f32*>(&work->panel_sprites[0].raw[0x20]);
-    UiGpu_SetAlphaBlend(alpha);
+    const u8* layout = nullptr;
+    if (work[0x12] == 0) {
+        layout = camp_func_002bf6d0(0x0E, 0xDC);
+    }
+    if (work[0x12] == 1) {
+        layout = camp_func_002bf6d0(0x0E, 0xDD);
+    }
+    const s16* const dims = *reinterpret_cast<const s16* const*>(layout + 0x0C);
+    const s32 cx = *reinterpret_cast<const s16*>(layout + 0x08) + stereo_x + (dims[0] / 2);
+    const s32 cy = *reinterpret_cast<const s16*>(layout + 0x0A) + (dims[1] / 2);
 
-    // Draw message dialog frame panel
-    UiSprite_DrawPanelDirect(2, 0x0E, 0x01, base_x, 0, 1);
+    for (s32 i = 0; i < 16; ++i) {
+        mtx_b[i] = 0.0f;
+    }
+    mtx_b[0] = 1.0f;
+    mtx_b[3] = static_cast<f32>(cx);
+    mtx_b[5] = 1.0f;
+    mtx_b[7] = static_cast<f32>(cy);
+    mtx_b[10] = 1.0f;
+    mtx_b[15] = 1.0f;
+    ui_func_002b71f8(mtx_a, mtx_a, mtx_b);
 
-    // Draw dialog text background
-    UiSprite_DrawPanelDirect(2, 0x0E, 0x02, base_x, 0, 1);
+    const f32 scale = *reinterpret_cast<const f32*>(work + 0x60);
+    for (s32 i = 0; i < 16; ++i) {
+        mtx_b[i] = 0.0f;
+    }
+    mtx_b[0] = scale;
+    mtx_b[5] = scale;
+    mtx_b[10] = scale;
+    mtx_b[15] = 1.0f;
+    ui_func_002b71f8(mtx_a, mtx_a, mtx_b);
 
-    // Restore layer matrix
-    if (*layer > 0) {
-        *layer = *layer - 1;
+    const u8* const layout2 = camp_func_002bf6d0(0x0E, 0x15);
+    const s16* const dims2 = *reinterpret_cast<const s16* const*>(layout2 + 0x0C);
+    for (s32 i = 0; i < 16; ++i) {
+        mtx_b[i] = 0.0f;
+    }
+    mtx_b[0] = 1.0f;
+    mtx_b[3] = static_cast<f32>(-(4 + (dims2[0] / 2)));
+    mtx_b[5] = 1.0f;
+    mtx_b[7] = static_cast<f32>(-(4 + (dims2[1] / 2)));
+    mtx_b[10] = 1.0f;
+    mtx_b[15] = 1.0f;
+    ui_func_002b71f8(mtx_a, mtx_a, mtx_b);
+
+    ui_func_002b9438(g_AsdGpuState, mtx_a);
+
+    if (*reinterpret_cast<const u32*>(work + 0x08) == 2) {
+        UiGpu_SetAlphaBlend(*reinterpret_cast<const f32*>(work + 0xE8));
+    }
+
+    auto set_mode = [&](u32 mode_val) {
+        auto* const mode_stack = reinterpret_cast<u32*>(g_AsdGpuState + 0x12AC);
+        const u32 depth = mode_stack[0];
+        const u32 prev = mode_stack[2 + depth];
+        mode_stack[2 + depth] = mode_val;
+        if (*reinterpret_cast<u8*>(g_AsdGpuState + 0x12C4) != 0 || prev != mode_val) {
+            auto* const cb = *reinterpret_cast<void (**)(u32, u32)>(g_AsdGpuState + 0x12C8);
+            cb(mode_val, prev);
+            *reinterpret_cast<u8*>(g_AsdGpuState + 0x12C4) = 0;
+        }
+    };
+
+    set_mode(static_cast<u32>(reinterpret_cast<uintptr_t>(battle_func_002c5fa4(6, 1, 0))));
+    func_002bf558(2, 0x0E, 3, 0, 0, 0x65);
+
+    set_mode(static_cast<u32>(reinterpret_cast<uintptr_t>(battle_func_002c5fa4(6, 7, 0))));
+    UiGpu_SetAlphaBlend(*reinterpret_cast<const f32*>(work + 0x5C));
+    func_002bf558(2, 0x0E, 2, 0, 0, 0x6A);
+
+    if (work[0x10] != 0) {
+        if (work[0x12] == 0) {
+            layout = camp_func_002bf6d0(0x0E, 0xDC);
+        }
+        if (work[0x12] == 1) {
+            layout = camp_func_002bf6d0(0x0E, 0xDD);
+        }
+        const char* const text = reinterpret_cast<const char*>(work + 0x154);
+        const s32 text_w = ui_func_002b7118(text, 4);
+        const s16* const ldims = *reinterpret_cast<const s16* const*>(layout + 0x0C);
+        const s32 text_x = (ldims[0] - text_w) / 2;
+        ui_func_002be77c(
+            4,
+            0xFF,
+            text,
+            static_cast<f32>(text_x),
+            6.0f,
+            0.57f,
+            0.0f,
+            *reinterpret_cast<const f32*>(work + 0x5C));
+
+        const u32 kind = *reinterpret_cast<const u32*>(work + 0x14);
+        if (kind == 1) {
+            UiSprite_DrawPanelDirect(2, 0x0E, 0xDF, text_x - 0x0D, 7, 0x6F);
+            UiSprite_DrawPanelDirect(2, 0x0E, 0xDE, text_x - 0x0D, 7, 0x74);
+        }
+        if (kind == 4) {
+            ui_func_002b70f0(*reinterpret_cast<const s16*>(work + 0x18), text_x - 0x0D, 8, 0x79);
+        }
+        if (kind == 2) {
+            ui_func_002b6f74(
+                *reinterpret_cast<const s16*>(work + 0x18),
+                text_x - 0x0D,
+                8,
+                0x79,
+                *reinterpret_cast<const s8*>(work + 0x11),
+                0);
+        }
+        if (kind == 3) {
+            ui_func_002be548(*reinterpret_cast<const s16*>(work + 0x18), text_x - 0x0D, 8, 0x79, 0);
+        }
+        if (kind == 5) {
+            ui_func_002b6ecc(*reinterpret_cast<const u16*>(work + 0x18), text_x - 0x0D, 8, 0x79);
+        }
+    }
+
+    ui_func_002c1b64(g_AsdGpuState);
+    UiGpu_SetAlphaBlend(1.0f);
+
+    auto* const vp_pop = reinterpret_cast<u32*>(g_AsdGpuState + 0x124C);
+    const u32 cur_depth = vp_pop[0];
+    const u32 popped = vp_pop[2 + cur_depth];
+    vp_pop[0] = cur_depth - 1;
+    const u32 restored = vp_pop[2 + cur_depth - 1];
+    if (*reinterpret_cast<u8*>(g_AsdGpuState + 0x1264) != 0 || popped != restored) {
+        auto* const cb = *reinterpret_cast<void (**)(u32, u32)>(g_AsdGpuState + 0x1268);
+        cb(restored, popped);
+        *reinterpret_cast<u8*>(g_AsdGpuState + 0x1264) = 0;
     }
 }
-#endif
 
 void ComWin_Calc(void* arg) {
     (void)arg;
@@ -1335,248 +853,89 @@ bool InfoWin_Dismiss(u32 value) {
     return false;
 }
 
-// DECOMP_FUNC(0x0011ae10, 792)
-// Boundary-verified ARM-state span; includes its PC-relative literal pool.
-__attribute__((naked)) void InfoWin_DrawUp(void* arg) {
-    asm volatile(
-        ".word 0xe92d47f0\n"
-        ".word 0xe59f0268\n"
-        ".word 0xed2d8b02\n"
-        ".word 0xe24dd008\n"
-        ".word 0xe5904000\n"
-        ".word 0xe5940008\n"
-        ".word 0xe3500000\n"
-        ".word 0x15d40020\n"
-        ".word 0x13500000\n"
-        ".word 0x0a00008f\n"
-        ".word 0xe59f9248\n"
-        ".word 0xe5990000\n"
-        ".word 0xeb06a358\n"
-        ".word 0xe5995000\n"
-        ".word 0xe3a01000\n"
-        ".word 0xe3a00001\n"
-        ".word 0xeb06ac49\n"
-        ".word 0xe2855a01\n"
-        ".word 0xe2855f93\n"
-        ".word 0xe3a08000\n"
-        ".word 0xe5951000\n"
-        ".word 0xe2812001\n"
-        ".word 0xe0853101\n"
-        ".word 0xe5931008\n"
-        ".word 0xe0853102\n"
-        ".word 0xe5852000\n"
-        ".word 0xe5830008\n"
-        ".word 0xe5d52018\n"
-        ".word 0xe3520000\n"
-        ".word 0x01510000\n"
-        ".word 0x0a000002\n"
-        ".word 0xe595101c\n"
-        ".word 0xe12fff31\n"
-        ".word 0xe5c58018\n"
-        ".word 0xe2840044\n"
-        ".word 0xeb069036\n"
-        ".word 0xe1a05000\n"
-        ".word 0xe5990000\n"
-        ".word 0xed9f0a77\n"
-        ".word 0xeb067d6e\n"
-        ".word 0xeebd0ac0\n"
-        ".word 0xee100a10\n"
-        ".word 0xe0857000\n"
-        ".word 0xe2840044\n"
-        ".word 0xeb06902a\n"
-        ".word 0xe1a05000\n"
-        ".word 0xe3a06015\n"
-        ".word 0xe1a03007\n"
-        ".word 0xe3a02087\n"
-        ".word 0xe3a0100e\n"
-        ".word 0xe3a00002\n"
-        ".word 0xe88d0060\n"
-        ".word 0xeb06915e\n"
-        ".word 0xe1a03007\n"
-        ".word 0xe3a02088\n"
-        ".word 0xe3a0100e\n"
-        ".word 0xe3a00002\n"
-        ".word 0xe88d0060\n"
-        ".word 0xeb069158\n"
-        ".word 0xe5d40021\n"
-        ".word 0xe3500000\n"
-        ".word 0x0a00003a\n"
-        ".word 0xe3a01087\n"
-        ".word 0xe3a0000e\n"
-        ".word 0xeb0691ee\n"
-        ".word 0xe590100c\n"
-        ".word 0xe1d0c0fa\n"
-        ".word 0xe1d000f8\n"
-        ".word 0xe1d130f2\n"
-        ".word 0xe1d120f0\n"
-        ".word 0xe08c1005\n"
-        ".word 0xe0800007\n"
-        ".word 0xeb066e69\n"
-        ".word 0xe3a01089\n"
-        ".word 0xe3a0000e\n"
-        ".word 0xeb0691e3\n"
-        ".word 0xe1a06000\n"
-        ".word 0xe5d40023\n"
-        ".word 0xe3a0a006\n"
-        ".word 0xed9f0a4f\n"
-        ".word 0xe3500000\n"
-        ".word 0xe58d8004\n"
-        ".word 0xe58da000\n"
-        ".word 0x0a000009\n"
-        ".word 0xe1d620fa\n"
-        ".word 0xe1d610f8\n"
-        ".word 0xe59401b8\n"
-        ".word 0xe0822005\n"
-        ".word 0xe0811007\n"
-        ".word 0xe3a030c9\n"
-        ".word 0xeb06726b\n"
-        ".word 0xe320f000\n"
-        ".word 0xe320f000\n"
-        ".word 0xea000018\n"
-        ".word 0xe1d610f8\n"
-        ".word 0xe5943018\n"
-        ".word 0xe1d620fa\n"
-        ".word 0xeeb08a40\n"
-        ".word 0xe0811003\n"
-        ".word 0xe59401b8\n"
-        ".word 0xe0822005\n"
-        ".word 0xe0811007\n"
-        ".word 0xe3a030c9\n"
-        ".word 0xeb06725e\n"
-        ".word 0xe5d40022\n"
-        ".word 0xe3500000\n"
-        ".word 0x0a00000b\n"
-        ".word 0xe58d8004\n"
-        ".word 0xe58da000\n"
-        ".word 0xe1d610f8\n"
-        ".word 0xe5b4301c\n"
-        ".word 0xe1d620fa\n"
-        ".word 0xeeb00a48\n"
-        ".word 0xe0811003\n"
-        ".word 0xe594019c\n"
-        ".word 0xe0822005\n"
-        ".word 0xe0811007\n"
-        ".word 0xe3a030c9\n"
-        ".word 0xeb06724f\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb066e00\n"
-        ".word 0xe3a0401f\n"
-        ".word 0xe1a03007\n"
-        ".word 0xe3a02086\n"
-        ".word 0xe3a0100e\n"
-        ".word 0xe3a00002\n"
-        ".word 0xe58d4004\n"
-        ".word 0xe58d5000\n"
-        ".word 0xeb069112\n"
-        ".word 0xe1a03007\n"
-        ".word 0xe28420e3\n"
-        ".word 0xe3a0100e\n"
-        ".word 0xe3a00002\n"
-        ".word 0xe58d4004\n"
-        ".word 0xe58d5000\n"
-        ".word 0xeb06910b\n"
-        ".word 0xe5990000\n"
-        ".word 0xe2804a01\n"
-        ".word 0xe2844f93\n"
-        ".word 0xe5940000\n"
-        ".word 0xe0841100\n"
-        ".word 0xe2400001\n"
-        ".word 0xe5911008\n"
-        ".word 0xe5840000\n"
-        ".word 0xe0840100\n"
-        ".word 0xe5d42018\n"
-        ".word 0xe5900008\n"
-        ".word 0xe3520000\n"
-        ".word 0x01510000\n"
-        ".word 0x0a000002\n"
-        ".word 0xe594101c\n"
-        ".word 0xe12fff31\n"
-        ".word 0xe5c48018\n"
-        ".word 0xe3a00000\n"
-        ".word 0xe28dd008\n"
-        ".word 0xecbd8b02\n"
-        ".word 0xe8bd87f0\n"
-        ".word 0x0043e128\n"
-        ".word 0x0044ea00\n"
-        ".word 0x3e8a3d71\n"
-        ".word 0x3f800000\n"
-        ".word 0xe59f0088\n"
-        ".word 0xe92d4070\n"
-        ".word 0xe3a05000\n"
-        ".word 0xe5904000\n"
-        ".word 0xe5940008\n"
-        ".word 0xe3500005\n"
-        ".word 0x379ff100\n"
-        ".word 0xea000016\n"
-        ".word 0x0011b110\n"
-        ".word 0x0011b0c8\n"
-        ".word 0x0011b0ec\n"
-        ".word 0x0011b110\n"
-        ".word 0x0011b100\n"
-        ".word 0xe284003c\n"
-        ".word 0xeb069247\n"
-        ".word 0xe3500000\n"
-        ".word 0xe320f000\n"
-        ".word 0x0a00000c\n"
-        ".word 0xe2841008\n"
-        ".word 0xe3a00002\n"
-        ".word 0xe8810021\n"
-        ".word 0xea000008\n"
-        ".word 0xe28400c8\n"
-        ".word 0xeb06923e\n"
-        ".word 0xe320f000\n"
-        ".word 0xe320f000\n"
-        ".word 0xea000003\n"
-        ".word 0xe284003c\n"
-        ".word 0xeb069239\n"
-        ".word 0xe3500000\n"
-        ".word 0x15845008\n"
-        ".word 0xe594000c\n"
-        ".word 0xe2800001\n"
-        ".word 0xe584000c\n"
-        ".word 0xe3a00000\n"
-        ".word 0xe8bd8070\n"
-        ".word 0x0043e0f8\n"
-    );
-}
-#if 0
-// Partial semantic draft retained for reconstruction; not compiled.
-[[maybe_unused]] static void InfoWin_DrawUp_Draft(void* arg) {
-    (void)arg;
-    InfoWinWork* work = g_InfoWinWork;
-    if (work == nullptr || work->draw_up_right == nullptr || work->state == 0) {
-        return;
-    }
-
-    UiGpu_BeginPass(g_AsdGpuState);
-    UiGpu_SetViewportParams(1, 0);
-
-    auto* layer = reinterpret_cast<u32*>(g_AsdGpuState + 0x124C);
-    const u32 old_depth = *layer;
-    *layer = old_depth + 1;
-    auto* layer_entry = reinterpret_cast<u32*>(g_AsdGpuState + 0x124C + 8);
-    layer_entry[*layer] = 1;
-
-    // Parallax shift for info alert
-    const f32 shift = UiGpu_TransformCoord(g_AsdGpuState, 0.35f);
-    const s32 base_x = static_cast<s32>(shift);
-
-    const f32 alpha = *reinterpret_cast<const f32*>(&work->panel_sprites[0].raw[0x20]);
-    UiGpu_SetAlphaBlend(alpha);
-
-    // Draw alert banner backdrop & frame
-    UiSprite_DrawPanelDirect(2, 0x0E, 0x05, base_x, 0, 1);
-    UiSprite_DrawPanelDirect(2, 0x0E, 0x06, base_x, 0, 1);
-
-    if (*layer > 0) {
-        *layer = *layer - 1;
-    }
-}
-#endif
-
 extern "C" {
     void engine_func_002b9220(void* sprite, u32 a1);                                        // 0x002b9220
     s32  ui_func_002bef7c(void* sprite);                                                    // 0x002bef7c
+    s32  ui_func_002bef70(void* sprite);                                                    // 0x002bef70
+    const u8* camp_func_002bf6d0(s32 type, s32 id);                                         // 0x002bf6d0
+    void func_002b68dc(s32 x, s32 y, s32 w, s32 h);                                         // 0x002b68dc
+    void func_002b792c(void* text, s32 x, s32 y, s32 a3, s32 a4, s32 a5, f32 scale);        // 0x002b792c
+    void func_002b67f8();                                                                   // 0x002b67f8
+}
+
+// DECOMP_FUNC(0x0011ae10, 792)
+void InfoWin_DrawUp(void*) {
+    static constexpr f32 kParallaxScale = 0.27f;
+
+    auto* const work = reinterpret_cast<u8*>(g_InfoWinWork);
+    if (*reinterpret_cast<const u32*>(work + 0x08) == 0 || work[0x20] == 0) {
+        return;
+    }
+
+    auto sync_viewport = [](u8* vp_stack, void* old_vp, void* target_vp) {
+        if (vp_stack[0x18] != 0 || old_vp != target_vp) {
+            using ViewportCb = void (*)(void*);
+            (*reinterpret_cast<const ViewportCb*>(vp_stack + 0x1C))(target_vp);
+            vp_stack[0x18] = 0;
+        }
+    };
+
+    UiGpu_BeginPass(g_AsdGpuState);
+
+    void* const new_vp = UiGpu_SetViewportParams(1, 0);
+    auto* const vp_stack = g_AsdGpuState + 0x124C;
+    auto* const vp_idx = reinterpret_cast<s32*>(vp_stack);
+    auto* const vp_slots = reinterpret_cast<void**>(vp_stack + 0x08);
+    const s32 push_idx = *vp_idx;
+    void* const prev_vp = vp_slots[push_idx];
+    *vp_idx = push_idx + 1;
+    vp_slots[push_idx + 1] = new_vp;
+    sync_viewport(vp_stack, prev_vp, new_vp);
+
+    const s32 base_x = ui_func_002bef7c(work + 0x44) +
+                       static_cast<s32>(UiGpu_TransformCoord(g_AsdGpuState, kParallaxScale));
+    const s32 base_y = ui_func_002bef70(work + 0x44);
+
+    UiSprite_DrawPanelDirect(2, 0x0E, 0x87, base_x, base_y, 0x15);
+    UiSprite_DrawPanelDirect(2, 0x0E, 0x88, base_x, base_y, 0x15);
+
+    if (work[0x21] != 0) {
+        const u8* const clip_layout = camp_func_002bf6d0(0x0E, 0x87);
+        const s16* const rect = *reinterpret_cast<const s16* const*>(clip_layout + 0x0C);
+        func_002b68dc(
+            base_x + *reinterpret_cast<const s16*>(clip_layout + 0x08),
+            base_y + *reinterpret_cast<const s16*>(clip_layout + 0x0A),
+            rect[0], rect[1]);
+
+        const u8* const text_layout = camp_func_002bf6d0(0x0E, 0x89);
+        const s32 tx = base_x + *reinterpret_cast<const s16*>(text_layout + 0x08);
+        const s32 ty = base_y + *reinterpret_cast<const s16*>(text_layout + 0x0A);
+        void* const text_obj = *reinterpret_cast<void* const*>(work + 0x1B8);
+
+        if (work[0x23] != 0) {
+            func_002b792c(text_obj, tx, ty, 0xC9, 6, 0, 1.0f);
+        } else {
+            func_002b792c(
+                text_obj, tx + *reinterpret_cast<const s32*>(work + 0x18), ty, 0xC9, 6, 0, 1.0f);
+            if (work[0x22] != 0) {
+                func_002b792c(
+                    text_obj, tx + *reinterpret_cast<const s32*>(work + 0x1C), ty, 0xC9, 6, 0, 1.0f);
+            }
+        }
+        func_002b67f8();
+    }
+
+    UiSprite_DrawPanelDirect(2, 0x0E, 0x86, base_x, base_y, 0x1F);
+    UiSprite_DrawPanelDirect(2, 0x0E, 0x102, base_x, base_y, 0x1F);
+
+    auto* const pop_stack = g_AsdGpuState + 0x124C;
+    auto* const pop_idx = reinterpret_cast<s32*>(pop_stack);
+    auto* const pop_slots = reinterpret_cast<void**>(pop_stack + 0x08);
+    const s32 cur_idx = *pop_idx;
+    void* const popped_vp = pop_slots[cur_idx];
+    *pop_idx = cur_idx - 1;
+    void* const restored_vp = pop_slots[cur_idx - 1];
+    sync_viewport(pop_stack, popped_vp, restored_vp);
 }
 
 // DECOMP_FUNC(0x0011b1bc, 440)
@@ -1832,348 +1191,143 @@ void GuestWin_HandlePrompt() {
     }
 }
 
-// DECOMP_FUNC(0x0011a9b4, 1116)
-// Boundary-verified ARM-state span; includes its PC-relative literal pool.
-__attribute__((naked)) void GuestWin_DrawUp(void* arg) {
-    asm volatile(
-        ".word 0xe92d47f0\n"
-        ".word 0xe59f0438\n"
-        ".word 0xed2d8b02\n"
-        ".word 0xe24dd048\n"
-        ".word 0xe5905000\n"
-        ".word 0xe5950008\n"
-        ".word 0xe3500000\n"
-        ".word 0x0a000105\n"
-        ".word 0xeb067127\n"
-        ".word 0xe3500000\n"
-        ".word 0x0a000102\n"
-        ".word 0xe3500001\n"
-        ".word 0x0a0000ff\n"
-        ".word 0xeb06711c\n"
-        ".word 0xe1a06000\n"
-        ".word 0xe1d004b6\n"
-        ".word 0xe3500000\n"
-        ".word 0x0a0000fb\n"
-        ".word 0xe59f93f8\n"
-        ".word 0xe5990000\n"
-        ".word 0xeb06a467\n"
-        ".word 0xe5994000\n"
-        ".word 0xe3a01000\n"
-        ".word 0xe3a00001\n"
-        ".word 0xeb06ad58\n"
-        ".word 0xe2844a01\n"
-        ".word 0xe2844f93\n"
-        ".word 0xe3a08000\n"
-        ".word 0xe5941000\n"
-        ".word 0xe2812001\n"
-        ".word 0xe0843101\n"
-        ".word 0xe5931008\n"
-        ".word 0xe0843102\n"
-        ".word 0xe5842000\n"
-        ".word 0xe5830008\n"
-        ".word 0xe5d42018\n"
-        ".word 0xe3520000\n"
-        ".word 0x01510000\n"
-        ".word 0x0a000002\n"
-        ".word 0xe594101c\n"
-        ".word 0xe12fff31\n"
-        ".word 0xe5c48018\n"
-        ".word 0xe2850030\n"
-        ".word 0xeb069145\n"
-        ".word 0xe1a04000\n"
-        ".word 0xe5990000\n"
-        ".word 0xed9f0ae3\n"
-        ".word 0xeb067e7d\n"
-        ".word 0xeebd0ac0\n"
-        ".word 0xee100a10\n"
-        ".word 0xe0847000\n"
-        ".word 0xe2850030\n"
-        ".word 0xeb069139\n"
-        ".word 0xe1a0a000\n"
-        ".word 0xe2850030\n"
-        ".word 0xed900a08\n"
-        ".word 0xeeb08a40\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb06931b\n"
-        ".word 0xe3a010da\n"
-        ".word 0xe3a0000e\n"
-        ".word 0xeb069308\n"
-        ".word 0xe1a04000\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb0670e2\n"
-        ".word 0xe3500000\n"
-        ".word 0xe320f000\n"
-        ".word 0x0a000003\n"
-        ".word 0xe3a010db\n"
-        ".word 0xe3a0000e\n"
-        ".word 0xeb0692ff\n"
-        ".word 0xe1a04000\n"
-        ".word 0xe5995000\n"
-        ".word 0xe1d410f8\n"
-        ".word 0xe1d400fa\n"
-        ".word 0xe3a02000\n"
-        ".word 0xe0877001\n"
-        ".word 0xe080400a\n"
-        ".word 0xe3a01001\n"
-        ".word 0xe3a00006\n"
-        ".word 0xeb06ad2a\n"
-        ".word 0xe2855a01\n"
-        ".word 0xe2855fab\n"
-        ".word 0xe5951000\n"
-        ".word 0xe0852101\n"
-        ".word 0xe5921008\n"
-        ".word 0xe5820008\n"
-        ".word 0xe5d52018\n"
-        ".word 0xe3520000\n"
-        ".word 0x01510000\n"
-        ".word 0x0a000002\n"
-        ".word 0xe595101c\n"
-        ".word 0xe12fff31\n"
-        ".word 0xe5c58018\n"
-        ".word 0xe3a00015\n"
-        ".word 0xe58d0004\n"
-        ".word 0xe1a03007\n"
-        ".word 0xe3a020c9\n"
-        ".word 0xe3a0100e\n"
-        ".word 0xe3a00002\n"
-        ".word 0xe58d4000\n"
-        ".word 0xeb069244\n"
-        ".word 0xe5995000\n"
-        ".word 0xe3a02000\n"
-        ".word 0xe3a01007\n"
-        ".word 0xe3a00006\n"
-        ".word 0xeb06ad10\n"
-        ".word 0xe2855a01\n"
-        ".word 0xe2855fab\n"
-        ".word 0xe5951000\n"
-        ".word 0xe0852101\n"
-        ".word 0xe5921008\n"
-        ".word 0xe5820008\n"
-        ".word 0xe5d52018\n"
-        ".word 0xe3520000\n"
-        ".word 0x01510000\n"
-        ".word 0x0a000002\n"
-        ".word 0xe595101c\n"
-        ".word 0xe12fff31\n"
-        ".word 0xe5c58018\n"
-        ".word 0xe3a0501a\n"
-        ".word 0xe1a03007\n"
-        ".word 0xe3a020ca\n"
-        ".word 0xe3a0100e\n"
-        ".word 0xe3a00002\n"
-        ".word 0xe1cd40f0\n"
-        ".word 0xeb06922b\n"
-        ".word 0xe1a03007\n"
-        ".word 0xe3a020cb\n"
-        ".word 0xe3a0100e\n"
-        ".word 0xe3a00002\n"
-        ".word 0xe1cd40f0\n"
-        ".word 0xeb069225\n"
-        ".word 0xe1a03007\n"
-        ".word 0xe3a020cc\n"
-        ".word 0xe3a0100e\n"
-        ".word 0xe3a00002\n"
-        ".word 0xe1cd40f0\n"
-        ".word 0xeb06921f\n"
-        ".word 0xe1a03007\n"
-        ".word 0xe3a020cd\n"
-        ".word 0xe3a0100e\n"
-        ".word 0xe3a00002\n"
-        ".word 0xe1cd40f0\n"
-        ".word 0xeb069219\n"
-        ".word 0xe3a0501f\n"
-        ".word 0xe1a03007\n"
-        ".word 0xe3a020ce\n"
-        ".word 0xe3a0100e\n"
-        ".word 0xe3a00002\n"
-        ".word 0xe1cd40f0\n"
-        ".word 0xeb069212\n"
-        ".word 0xe1a03007\n"
-        ".word 0xe3a020cf\n"
-        ".word 0xe3a0100e\n"
-        ".word 0xe3a00002\n"
-        ".word 0xe1cd40f0\n"
-        ".word 0xeb06920c\n"
-        ".word 0xe28d101c\n"
-        ".word 0xe3a00024\n"
-        ".word 0xe58d4018\n"
-        ".word 0xe8810101\n"
-        ".word 0xe3a010d2\n"
-        ".word 0xe3a030d0\n"
-        ".word 0xe58d100c\n"
-        ".word 0xe58d3004\n"
-        ".word 0xe3a020d3\n"
-        ".word 0xe3a0c00e\n"
-        ".word 0xe28d1010\n"
-        ".word 0xe58d2008\n"
-        ".word 0xe3a000d1\n"
-        ".word 0xe58dc000\n"
-        ".word 0xe8810081\n"
-        ".word 0xe3a03000\n"
-        ".word 0xe1d610fe\n"
-        ".word 0xe1d602fa\n"
-        ".word 0xe1a02003\n"
-        ".word 0xeb068f99\n"
-        ".word 0xe3a010d9\n"
-        ".word 0xe3a0000e\n"
-        ".word 0xeb069291\n"
-        ".word 0xe1a05000\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb06705e\n"
-        ".word 0xe3500000\n"
-        ".word 0xe320f000\n"
-        ".word 0x0a00001a\n"
-        ".word 0xeb06706e\n"
-        ".word 0xe2800c06\n"
-        ".word 0xe1d060b6\n"
-        ".word 0xeb06706b\n"
-        ".word 0xe2800c06\n"
-        ".word 0xe1a01006\n"
-        ".word 0xe1d000f4\n"
-        ".word 0xeb067034\n"
-        ".word 0xe1d520fa\n"
-        ".word 0xe1d510f8\n"
-        ".word 0xe1d005ba\n"
-        ".word 0xe0822004\n"
-        ".word 0xe0811007\n"
-        ".word 0xe3a03024\n"
-        ".word 0xeb066fe8\n"
-        ".word 0xe320f000\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb06705d\n"
-        ".word 0xe2800c06\n"
-        ".word 0xe1d000b4\n"
-        ".word 0xeb068911\n"
-        ".word 0xe1a01000\n"
-        ".word 0xe28d0028\n"
-        ".word 0xfa068ebe\n"
-        ".word 0xe320f000\n"
-        ".word 0xe320f000\n"
-        ".word 0xea00000d\n"
-        ".word 0xe58d8000\n"
-        ".word 0xe1d520fa\n"
-        ".word 0xe1d510f8\n"
-        ".word 0xe1d604f6\n"
-        ".word 0xe0822004\n"
-        ".word 0xe0811007\n"
-        ".word 0xe3a03024\n"
-        ".word 0xeb066f5a\n"
-        ".word 0xe1d604b6\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb068947\n"
-        ".word 0xe1a01000\n"
-        ".word 0xe28d0028\n"
-        ".word 0xfa068ead\n"
-        ".word 0xe3a010d8\n"
-        ".word 0xe3a0000e\n"
-        ".word 0xeb06925f\n"
-        ".word 0xe1d010fa\n"
-        ".word 0xe1d020f8\n"
-        ".word 0xeeb02a48\n"
-        ".word 0xe0810004\n"
-        ".word 0xe0821007\n"
-        ".word 0xee000a90\n"
-        ".word 0xee001a10\n"
-        ".word 0xe28d2028\n"
-        ".word 0xe3a010ff\n"
-        ".word 0xeddf1a22\n"
-        ".word 0xe3a00002\n"
-        ".word 0xeef80ae0\n"
-        ".word 0xeeb80ac0\n"
-        ".word 0xed9f1a1f\n"
-        ".word 0xeb068e7b\n"
-        ".word 0xe320f000\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb06905e\n"
-        ".word 0xed9f0a1b\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb06925a\n"
-        ".word 0xe5990000\n"
-        ".word 0xe2804a01\n"
-        ".word 0xe2844f93\n"
-        ".word 0xe5940000\n"
-        ".word 0xe0841100\n"
-        ".word 0xe2400001\n"
-        ".word 0xe5911008\n"
-        ".word 0xe5840000\n"
-        ".word 0xe0840100\n"
-        ".word 0xe5d42018\n"
-        ".word 0xe5900008\n"
-        ".word 0xe3520000\n"
-        ".word 0x01510000\n"
-        ".word 0x0a000002\n"
-        ".word 0xe594101c\n"
-        ".word 0xe12fff31\n"
-        ".word 0xe5c48018\n"
-        ".word 0xe3a00000\n"
-        ".word 0xe28dd048\n"
-        ".word 0xecbd8b02\n"
-        ".word 0xe8bd87f0\n"
-        ".word 0x0043e110\n"
-        ".word 0x0044ea00\n"
-        ".word 0x3e8a3d71\n"
-        ".word 0x00000000\n"
-        ".word 0x3f59999a\n"
-        ".word 0x3f800000\n"
-    );
+extern "C" {
+    s32   script_vm_func_002b6e78();                                                        // 0x002b6e78
+    s32   script_vm_func_002b6e44();                                                        // 0x002b6e44
+    void* battle_func_002c5fa4(s32 a0, s32 a1, s32 a2);                                     // 0x002c5fa4
+    void  ui_func_002be77c(s32 align, u32 color, const char* text,
+                           f32 x, f32 y, f32 scale, f32 z, f32 alpha);                      // 0x002be77c
+    void  script_vm_func_002bef14();                                                        // 0x002bef14
+    void  battle_func_002beae4(s32 a0, s32 a1, s32 a2, s32 a3,
+                               s32 s0, s32 s1, s32 s2, s32 s3,
+                               s32 s4, s32 s5, s32 s6, s32 s7, s32 s8);                     // 0x002beae4
+    s32   battle_func_002b6e10();                                                           // 0x002b6e10
+    const u8* battle_func_002b6d94(s32 a0, u16 a1);                                         // 0x002b6d94
+    void  func_002b6c80(u16 a0, s32 x, s32 y, s32 w);                                       // 0x002b6c80
+    const char* camp_func_002bd13c(u16 id);                                                 // 0x002bd13c
+    void  ui_func_002b6a98(s32 id, s32 x, s32 y, s32 w, s32 a4);                            // 0x002b6a98
+    const char* camp_func_002bd258(u16 id);                                                 // 0x002bd258
+    void  ui_func_002be7fc(char* dst, const char* fmt, ...);                                // 0x002be7fc
 }
-#if 0
-// Partial semantic draft retained for reconstruction; not compiled.
-[[maybe_unused]] static void GuestWin_DrawUp_Draft(void* arg) {
-    (void)arg;
-    GuestWinWork* work = g_GuestWinWork;
-    if (work == nullptr || work->draw_up_right == nullptr || work->state == 0) {
+
+// DECOMP_FUNC(0x0011a9b4, 1116)
+void GuestWin_DrawUp(void*) {
+    static constexpr f32 kParallaxScale = 0.27f;
+    static constexpr f32 kTextScale = 0.85f;
+    static constexpr u32 kTextColor = 0xFFu;
+
+    auto* const work = reinterpret_cast<u8*>(g_GuestWinWork);
+    if (*reinterpret_cast<const u32*>(work + 0x08) == 0) {
         return;
     }
+    const s32 guest_state = script_vm_func_002b6e78();
+    if (guest_state == 0 || guest_state == 1) {
+        return;
+    }
+    const u8* guest = static_cast<const u8*>(battle_func_002b6e60());
+    if (*reinterpret_cast<const u16*>(guest + 0x46) == 0) {
+        return;
+    }
+
+    auto sync_stack = [](u8* stack, void* old_val, void* target_val) {
+        if (stack[0x18] != 0 || old_val != target_val) {
+            using StackCb = void (*)(void*);
+            (*reinterpret_cast<const StackCb*>(stack + 0x1C))(target_val);
+            stack[0x18] = 0;
+        }
+    };
+
+    auto push_vp = [&](void* val) {
+        auto* const stack = g_AsdGpuState + 0x124C;
+        auto* const idx_ptr = reinterpret_cast<s32*>(stack);
+        auto* const slots = reinterpret_cast<void**>(stack + 0x08);
+        const s32 idx = *idx_ptr;
+        void* const prev = slots[idx];
+        *idx_ptr = idx + 1;
+        slots[idx + 1] = val;
+        sync_stack(stack, prev, val);
+    };
+
+    auto pop_vp = [&]() {
+        auto* const stack = g_AsdGpuState + 0x124C;
+        auto* const idx_ptr = reinterpret_cast<s32*>(stack);
+        auto* const slots = reinterpret_cast<void**>(stack + 0x08);
+        const s32 idx = *idx_ptr;
+        void* const popped = slots[idx];
+        *idx_ptr = idx - 1;
+        void* const restored = slots[idx - 1];
+        sync_stack(stack, popped, restored);
+    };
+
+    auto set_mode = [&](void* val) {
+        auto* const stack = g_AsdGpuState + 0x12AC;
+        const s32 idx = *reinterpret_cast<const s32*>(stack);
+        auto* const slots = reinterpret_cast<void**>(stack + 0x08);
+        void* const prev = slots[idx];
+        slots[idx] = val;
+        sync_stack(stack, prev, val);
+    };
 
     UiGpu_BeginPass(g_AsdGpuState);
-    UiGpu_SetViewportParams(1, 0);
+    push_vp(UiGpu_SetViewportParams(1, 0));
 
-    auto* layer = reinterpret_cast<u32*>(g_AsdGpuState + 0x124C);
-    const u32 old_depth = *layer;
-    *layer = old_depth + 1;
-    auto* layer_entry = reinterpret_cast<u32*>(g_AsdGpuState + 0x124C + 8);
-    layer_entry[*layer] = 1;
-
-    // Stereoscopic parallax shift (0.35f scale)
-    const f32 shift = UiGpu_TransformCoord(g_AsdGpuState, 0.35f);
-    const s32 base_x = static_cast<s32>(shift);
-
-    const f32 alpha = *reinterpret_cast<const f32*>(&work->panel_sprite.raw[0x20]);
+    s32 base_x = ui_func_002bef7c(work + 0x30) +
+                 static_cast<s32>(UiGpu_TransformCoord(g_AsdGpuState, kParallaxScale));
+    const s32 raw_y = ui_func_002bef70(work + 0x30);
+    const f32 alpha = *reinterpret_cast<const f32*>(work + 0x50);
     UiGpu_SetAlphaBlend(alpha);
 
-    // Draw partner prompt banner backdrop & Demonica prompt icon
-    UiSprite_DrawPanelDirect(2, 0x0E, 0x03, base_x, 0, 1);
-    UiSprite_DrawPanelDirect(2, 0x0E, 0x04, base_x, 0, 1);
-
-    if (*layer > 0) {
-        *layer = *layer - 1;
+    const u8* anchor = camp_func_002bf6d0(0x0E, 0xDA);
+    if (script_vm_func_002b6e44() != 0) {
+        anchor = camp_func_002bf6d0(0x0E, 0xDB);
     }
-}
-#endif
+    base_x += *reinterpret_cast<const s16*>(anchor + 0x08);
+    const s32 base_y = raw_y + *reinterpret_cast<const s16*>(anchor + 0x0A);
 
-// DECOMP_FUNC(0x0011b128, 148)
-void GuestWin_Calc(void*) {
-    auto* const btl = reinterpret_cast<u8*>(battle_func_002b6e60());
-    const u16 active = *reinterpret_cast<const u16*>(btl + 0x46);
-    if (active == 0) {
-        return;
+    set_mode(battle_func_002c5fa4(6, 1, 0));
+    UiSprite_DrawPanelDirect(2, 0x0E, 0xC9, base_x, base_y, 0x15);
+
+    set_mode(battle_func_002c5fa4(6, 7, 0));
+    for (s32 sub_id = 0xCA; sub_id <= 0xCD; ++sub_id) {
+        UiSprite_DrawPanelDirect(2, 0x0E, sub_id, base_x, base_y, 0x1A);
+    }
+    UiSprite_DrawPanelDirect(2, 0x0E, 0xCE, base_x, base_y, 0x1F);
+    UiSprite_DrawPanelDirect(2, 0x0E, 0xCF, base_x, base_y, 0x1F);
+
+    battle_func_002beae4(
+        *reinterpret_cast<const s16*>(guest + 0x2A),
+        *reinterpret_cast<const s16*>(guest + 0x0E),
+        0, 0,
+        0x0E, 0xD0, 0xD3, 0xD2, 0xD1, base_x, base_y, 0x24, 0);
+
+    const u8* const name_layout = camp_func_002bf6d0(0x0E, 0xD9);
+    const s32 icon_x = base_x + *reinterpret_cast<const s16*>(name_layout + 0x08);
+    const s32 icon_y = base_y + *reinterpret_cast<const s16*>(name_layout + 0x0A);
+
+    char name_buf[32];
+    if (battle_func_002b6e10() != 0) {
+        const auto* const g1 = static_cast<const u8*>(battle_func_002b6e60());
+        const u16 id1 = *reinterpret_cast<const u16*>(g1 + 0x606);
+        const auto* const g2 = static_cast<const u8*>(battle_func_002b6e60());
+        const s16 id2 = *reinterpret_cast<const s16*>(g2 + 0x604);
+        const u8* const entry = battle_func_002b6d94(id2, id1);
+        func_002b6c80(*reinterpret_cast<const u16*>(entry + 0x5A), icon_x, icon_y, 0x24);
+        const auto* const g3 = static_cast<const u8*>(battle_func_002b6e60());
+        ui_func_002be7fc(name_buf, camp_func_002bd13c(*reinterpret_cast<const u16*>(g3 + 0x604)));
+    } else {
+        const s16 guest_id = *reinterpret_cast<const s16*>(guest + 0x46);
+        ui_func_002b6a98(guest_id, icon_x, icon_y, 0x24, 0);
+        ui_func_002be7fc(name_buf, camp_func_002bd258(*reinterpret_cast<const u16*>(guest + 0x46)));
     }
 
-    auto* const work = *reinterpret_cast<u8**>(0x0043E110);
-    const u32 state = *reinterpret_cast<const u32*>(work + 8);
-    if (state == 1) {
-        if (ui_func_002bf9f0(work + 0x30) != 0) {
-            *reinterpret_cast<u32*>(work + 8) = 2;
-            *reinterpret_cast<u32*>(work + 0xC) = 0;
-        }
-    } else if (state == 3) {
-        if (ui_func_002bf9f0(work + 0x30) != 0) {
-            *reinterpret_cast<u32*>(work + 8) = 0;
-        }
-    }
+    const u8* const label_layout = camp_func_002bf6d0(0x0E, 0xD8);
+    const f32 tx = static_cast<f32>(base_x + *reinterpret_cast<const s16*>(label_layout + 0x08));
+    const f32 ty = static_cast<f32>(base_y + *reinterpret_cast<const s16*>(label_layout + 0x0A));
+    ui_func_002be77c(2, kTextColor, name_buf, tx, ty, kTextScale, 0.0f, alpha);
 
-    *reinterpret_cast<u32*>(work + 0xC) += 1;
+    script_vm_func_002bef14();
+    UiGpu_SetAlphaBlend(1.0f);
+    pop_vp();
 }
 
 // ============================================================================
@@ -2610,303 +1764,100 @@ void RunWin_Init() {
 }
 #endif
 
-// DECOMP_FUNC(0x0018f178, 988)
-// Boundary-verified ARM-state span; includes its PC-relative literal pool.
-__attribute__((naked)) void RunWin_DrawDownAndCalc(void* arg) {
-    asm volatile(
-        ".word 0xe92d4ff0\n"
-        ".word 0xe24dd014\n"
-        ".word 0xe59f02f8\n"
-        ".word 0xe5904000\n"
-        ".word 0xe5940008\n"
-        ".word 0xe3500000\n"
-        ".word 0x15d40014\n"
-        ".word 0x13500000\n"
-        ".word 0x0a0000b6\n"
-        ".word 0xe59f92e0\n"
-        ".word 0xe5990000\n"
-        ".word 0xeb04d27f\n"
-        ".word 0xe3a0006d\n"
-        ".word 0xe3a08000\n"
-        ".word 0xe28020e2\n"
-        ".word 0xe58d0004\n"
-        ".word 0xe1a03008\n"
-        ".word 0xe3a0100e\n"
-        ".word 0xe3a00002\n"
-        ".word 0xe58d8000\n"
-        ".word 0xeb04c0a4\n"
-        ".word 0xe2840038\n"
-        ".word 0xeb04bf69\n"
-        ".word 0xe1a05000\n"
-        ".word 0xe5990000\n"
-        ".word 0xed9f0aa9\n"
-        ".word 0xeb04aca1\n"
-        ".word 0xeebd0ac0\n"
-        ".word 0xee100a10\n"
-        ".word 0xe0857000\n"
-        ".word 0xe2840038\n"
-        ".word 0xeb04bf5d\n"
-        ".word 0xe1a06000\n"
-        ".word 0xed940a16\n"
-        ".word 0xeb04c142\n"
-        ".word 0xe3a0006e\n"
-        ".word 0xe58d0004\n"
-        ".word 0xe1a03007\n"
-        ".word 0xe3a02013\n"
-        ".word 0xe3a0100e\n"
-        ".word 0xe3a00002\n"
-        ".word 0xe58d6000\n"
-        ".word 0xeb04c0cc\n"
-        ".word 0xe5995000\n"
-        ".word 0xe3a02000\n"
-        ".word 0xe3a01001\n"
-        ".word 0xe3a00006\n"
-        ".word 0xeb04db5a\n"
-        ".word 0xe2855a01\n"
-        ".word 0xe2855fab\n"
-        ".word 0xe5951000\n"
-        ".word 0xe0852101\n"
-        ".word 0xe2811001\n"
-        ".word 0xe5922008\n"
-        ".word 0xe0853101\n"
-        ".word 0xe5851000\n"
-        ".word 0xe5830008\n"
-        ".word 0xe5d51018\n"
-        ".word 0xe3510000\n"
-        ".word 0x01520000\n"
-        ".word 0x0a000002\n"
-        ".word 0xe595101c\n"
-        ".word 0xe12fff31\n"
-        ".word 0xe5c58018\n"
-        ".word 0xe3a0b06f\n"
-        ".word 0xe1a03007\n"
-        ".word 0xe3a02e15\n"
-        ".word 0xe3a0100e\n"
-        ".word 0xe3a00002\n"
-        ".word 0xe88d0900\n"
-        ".word 0xeb04c072\n"
-        ".word 0xe1a03007\n"
-        ".word 0xe28b20e2\n"
-        ".word 0xe3a0100e\n"
-        ".word 0xe3a00002\n"
-        ".word 0xe88d0900\n"
-        ".word 0xeb04c06c\n"
-        ".word 0xe5990000\n"
-        ".word 0xe2805a01\n"
-        ".word 0xe2855fab\n"
-        ".word 0xe5950000\n"
-        ".word 0xe0851100\n"
-        ".word 0xe2400001\n"
-        ".word 0xe5911008\n"
-        ".word 0xe5850000\n"
-        ".word 0xe0850100\n"
-        ".word 0xe5d52018\n"
-        ".word 0xe5900008\n"
-        ".word 0xe3520000\n"
-        ".word 0x01510000\n"
-        ".word 0x0a000002\n"
-        ".word 0xe595101c\n"
-        ".word 0xe12fff31\n"
-        ".word 0xe5c58018\n"
-        ".word 0xe59f1194\n"
-        ".word 0xe3a0000e\n"
-        ".word 0xeb04c0f4\n"
-        ".word 0xe1d010fa\n"
-        ".word 0xe1d020f8\n"
-        ".word 0xe247300e\n"
-        ".word 0xe0810006\n"
-        ".word 0xe0821003\n"
-        ".word 0xee000a90\n"
-        ".word 0xee001a10\n"
-        ".word 0xe59f1170\n"
-        ".word 0xed942a16\n"
-        ".word 0xe28420c4\n"
-        ".word 0xeddf1a5a\n"
-        ".word 0xeef80ae0\n"
-        ".word 0xeeb80ac0\n"
-        ".word 0xe3a00004\n"
-        ".word 0xed9f1a57\n"
-        ".word 0xeb04bd0f\n"
-        ".word 0xe5941010\n"
-        ".word 0xe59f0154\n"
-        ".word 0xe3a0a000\n"
-        ".word 0xe0c01190\n"
-        ".word 0xe1a010c0\n"
-        ".word 0xe0410fc0\n"
-        ".word 0xe1a01fc0\n"
-        ".word 0xe0801ea1\n"
-        ".word 0xe3c11007\n"
-        ".word 0xe0408001\n"
-        ".word 0xe2881007\n"
-        ".word 0xe2800004\n"
-        ".word 0xe1a02fc1\n"
-        ".word 0xe0812ea2\n"
-        ".word 0xe3c22007\n"
-        ".word 0xe0411002\n"
-        ".word 0xe58d1008\n"
-        ".word 0xe1a01fc0\n"
-        ".word 0xe0801ea1\n"
-        ".word 0xe3c11007\n"
-        ".word 0xe0409001\n"
-        ".word 0xe2890007\n"
-        ".word 0xe1a01fc0\n"
-        ".word 0xe0801ea1\n"
-        ".word 0xe3c11007\n"
-        ".word 0xe0400001\n"
-        ".word 0xe58d000c\n"
-        ".word 0xe3a04000\n"
-        ".word 0xe08a608a\n"
-        ".word 0xe0865004\n"
-        ".word 0xe2851c01\n"
-        ".word 0xe2811057\n"
-        ".word 0xe3a0000e\n"
-        ".word 0xeb04c0c2\n"
-        ".word 0xe1580005\n"
-        ".word 0x11590005\n"
-        ".word 0x1a00000a\n"
-        ".word 0xe1d010fa\n"
-        ".word 0xe59f20c4\n"
-        ".word 0xe88d0802\n"
-        ".word 0xe1d000f8\n"
-        ".word 0xe3a0100e\n"
-        ".word 0xe0803007\n"
-        ".word 0xe3a00002\n"
-        ".word 0xeb04c01b\n"
-        ".word 0xe320f000\n"
-        ".word 0xe320f000\n"
-        ".word 0xea000013\n"
-        ".word 0xe59d1008\n"
-        ".word 0xe1510005\n"
-        ".word 0x159d100c\n"
-        ".word 0x11510005\n"
-        ".word 0xe1d010fa\n"
-        ".word 0xe88d0802\n"
-        ".word 0xe1d000f8\n"
-        ".word 0xe0803007\n"
-        ".word 0x1a000006\n"
-        ".word 0xe59f207c\n"
-        ".word 0xe3a0100e\n"
-        ".word 0xe3a00002\n"
-        ".word 0xeb04c00b\n"
-        ".word 0xe320f000\n"
-        ".word 0xe320f000\n"
-        ".word 0xea000003\n"
-        ".word 0xe3a02f55\n"
-        ".word 0xe3a0100e\n"
-        ".word 0xe3a00002\n"
-        ".word 0xeb04c004\n"
-        ".word 0xe2844001\n"
-        ".word 0xe3540003\n"
-        ".word 0xbaffffd5\n"
-        ".word 0xe28aa001\n"
-        ".word 0xe35a0003\n"
-        ".word 0xbaffffd0\n"
-        ".word 0xeb04beaa\n"
-        ".word 0xed9f0a0e\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb04c0a6\n"
-        ".word 0xe3a00000\n"
-        ".word 0xe28dd014\n"
-        ".word 0xe8bd8ff0\n"
-        ".word 0x0043e158\n"
-        ".word 0x0044ea00\n"
-        ".word 0x3e8a3d71\n"
-        ".word 0x00000153\n"
-        ".word 0xf49800ff\n"
-        ".word 0x00000000\n"
-        ".word 0x3f110000\n"
-        ".word 0x66666667\n"
-        ".word 0x00000155\n"
-        ".word 0x00000156\n"
-        ".word 0x3f800000\n"
-        ".word 0xe59f009c\n"
-        ".word 0xe92d4070\n"
-        ".word 0xe3a05000\n"
-        ".word 0xe3a06004\n"
-        ".word 0xe5904000\n"
-        ".word 0xe5940008\n"
-        ".word 0xe3500004\n"
-        ".word 0x379ff100\n"
-        ".word 0xea000016\n"
-        ".word 0x0018f52c\n"
-        ".word 0x0018f4e0\n"
-        ".word 0x0018f508\n"
-        ".word 0x0018f518\n"
-        ".word 0xe3a01000\n"
-        ".word 0xe2840038\n"
-        ".word 0xeb04a74c\n"
-        ".word 0xe3500000\n"
-        ".word 0xe320f000\n"
-        ".word 0x0a00000c\n"
-        ".word 0xe3a00002\n"
-        ".word 0xe5840008\n"
-        ".word 0xe5845010\n"
-        ".word 0xea000008\n"
-        ".word 0xe594000c\n"
-        ".word 0xe3500003\n"
-        ".word 0x05840008\n"
-        ".word 0xea000004\n"
-        ".word 0xe2840038\n"
-        ".word 0xeb04c133\n"
-        ".word 0xe3500000\n"
-        ".word 0x15c45014\n"
-        ".word 0x15846008\n"
-        ".word 0xe5940010\n"
-        ".word 0xe2800001\n"
-        ".word 0xe5840010\n"
-        ".word 0xeb04ca7a\n"
-        ".word 0xe3500000\n"
-        ".word 0x15c45014\n"
-        ".word 0xe3a00000\n"
-        ".word 0x15846008\n"
-        ".word 0xe8bd8070\n"
-        ".word 0x0043e158\n"
-    );
+extern "C" {
+    void  UiGpu_SetAlphaBlend(f32 alpha);                                                   // 0x002bf710
+    void  func_002bf558(s32 type, s32 id, s32 sub_id, s32 x, s32 y, s32 flag);              // 0x002bf558
+    void* battle_func_002c5fa4(s32 a0, s32 a1, s32 a2);                                     // 0x002c5fa4
+    void  ui_func_002be77c(s32 align, u32 color, const char* text,
+                           f32 x, f32 y, f32 scale, f32 z, f32 alpha);                      // 0x002be77c
+    void  script_vm_func_002bef14();                                                        // 0x002bef14
 }
-#if 0
-// Partial semantic draft retained for reconstruction; not compiled.
-[[maybe_unused]] static void RunWin_DrawDownAndCalc_Draft(void* arg) {
-    (void)arg;
-    RunWinWork* work = g_RunWinWork;
-    if (work == nullptr || work->state == 0 || !work->visible) {
+
+// DECOMP_FUNC(0x0018f178, 988)
+void RunWin_DrawDownAndCalc(void*) {
+    static constexpr f32 kParallaxScale = 0.27f;
+    static constexpr f32 kTextScale = 0.56640625f;
+    static constexpr u32 kTextColor = 0xF49800FFu;
+
+    auto* const work = reinterpret_cast<u8*>(g_RunWinWork);
+    if (*reinterpret_cast<const u32*>(work + 0x08) == 0 || work[0x14] == 0) {
         return;
     }
 
-    // State machine logic (RunWin_Calc callback slice)
-    switch (work->state) {
-        case 1: // Entering run state
-            if (work->timer > 0) {
-                work->timer--;
-            } else {
-                work->state = 2;
-            }
-            break;
-        case 2: // Running
-            break;
-        case 3: // Exiting run state
-            work->state = 0;
-            break;
-        default:
-            break;
-    }
+    auto sync_render_mode = [](u8* mode_stack, void* old_mode, void* target_mode) {
+        if (mode_stack[0x18] != 0 || old_mode != target_mode) {
+            using ModeCb = void (*)(void*);
+            (*reinterpret_cast<const ModeCb*>(mode_stack + 0x1C))(target_mode);
+            mode_stack[0x18] = 0;
+        }
+    };
 
-    // Bottom screen HUD draw pass
     UiGpu_BeginPass(g_AsdGpuState);
-    UiGpu_SetViewportParams(0, 0); // Bottom screen pass
+    UiSprite_DrawPanelDirect(2, 0x0E, 0x14F, 0, 0, 0x6D);
 
-    auto* layer = reinterpret_cast<u32*>(g_AsdGpuState + 0x124C);
-    const u32 old_depth = *layer;
-    *layer = old_depth + 1;
-    auto* layer_entry = reinterpret_cast<u32*>(g_AsdGpuState + 0x124C + 8);
-    layer_entry[*layer] = 1;
+    const s32 base_x = ui_func_002bef7c(work + 0x38) +
+                       static_cast<s32>(UiGpu_TransformCoord(g_AsdGpuState, kParallaxScale));
+    const s32 base_y = ui_func_002bef70(work + 0x38);
 
-    UiSprite_DrawPanelDirect(2, 0x0E, 0x05, 160, 200, 1);
+    UiGpu_SetAlphaBlend(*reinterpret_cast<const f32*>(work + 0x58));
+    func_002bf558(2, 0x0E, 0x13, base_x, base_y, 0x6E);
 
-    if (*layer > 0) {
-        *layer = *layer - 1;
+    void* const new_mode = battle_func_002c5fa4(6, 1, 0);
+    auto* const mode_stack = g_AsdGpuState + 0x12AC;
+    auto* const mode_idx = reinterpret_cast<s32*>(mode_stack);
+    auto* const mode_slots = reinterpret_cast<void**>(mode_stack + 0x08);
+    const s32 push_idx = *mode_idx;
+    void* const prev_mode = mode_slots[push_idx];
+    *mode_idx = push_idx + 1;
+    mode_slots[push_idx + 1] = new_mode;
+    sync_render_mode(mode_stack, prev_mode, new_mode);
+
+    UiSprite_DrawPanelDirect(2, 0x0E, 0x150, base_x, 0, 0x6F);
+    UiSprite_DrawPanelDirect(2, 0x0E, 0x151, base_x, 0, 0x6F);
+
+    auto* const pop_stack = g_AsdGpuState + 0x12AC;
+    auto* const pop_idx = reinterpret_cast<s32*>(pop_stack);
+    auto* const pop_slots = reinterpret_cast<void**>(pop_stack + 0x08);
+    const s32 cur_idx = *pop_idx;
+    void* const popped_mode = pop_slots[cur_idx];
+    *pop_idx = cur_idx - 1;
+    void* const restored_mode = pop_slots[cur_idx - 1];
+    sync_render_mode(pop_stack, popped_mode, restored_mode);
+
+    const u8* const text_layout = camp_func_002bf6d0(0x0E, 0x153);
+    const f32 tx = static_cast<f32>(base_x - 0x0E + *reinterpret_cast<const s16*>(text_layout + 0x08));
+    const f32 ty = static_cast<f32>(base_y + *reinterpret_cast<const s16*>(text_layout + 0x0A));
+    ui_func_002be77c(
+        4, kTextColor, reinterpret_cast<const char*>(work + 0xC4),
+        tx, ty, kTextScale, 0.0f, *reinterpret_cast<const f32*>(work + 0x58));
+
+    const s32 phase = *reinterpret_cast<const s32*>(work + 0x10) / 5;
+    const s32 a = phase % 8;
+    const s32 b = (a + 7) % 8;
+    const s32 c = (phase + 4) % 8;
+    const s32 d = (c + 7) % 8;
+
+    for (s32 row = 0; row < 3; ++row) {
+        for (s32 col = 0; col < 3; ++col) {
+            const s32 idx = row * 3 + col;
+            const u8* const cell_layout = camp_func_002bf6d0(0x0E, 0x157 + idx);
+            s32 sub_id = 0x154;
+            if (idx == a || idx == c) {
+                sub_id = 0x155;
+            } else if (idx == b || idx == d) {
+                sub_id = 0x156;
+            }
+            UiSprite_DrawPanelDirect(
+                2, 0x0E, sub_id,
+                base_x + *reinterpret_cast<const s16*>(cell_layout + 0x08),
+                *reinterpret_cast<const s16*>(cell_layout + 0x0A),
+                0x6F);
+        }
     }
+
+    script_vm_func_002bef14();
+    UiGpu_SetAlphaBlend(1.0f);
 }
-#endif
 
 // ============================================================================
 // SearchWin: Demonica Radar & Relic Search Window (c:\SMT4\XRD686\sdds4\program\font\SearchWin\SearchWin.cpp)
@@ -3059,334 +2010,94 @@ void SearchWin_Init() {
 #endif
 
 // DECOMP_FUNC(0x001accd4, 1104)
-// Boundary-verified ARM-state span; includes its PC-relative literal pool.
-__attribute__((naked)) void SearchWin_DrawUpAndCalc(void* arg) {
-    asm volatile(
-        ".word 0xe92d4ff0\n"
-        ".word 0xe24dd014\n"
-        ".word 0xe59f036c\n"
-        ".word 0xe5904000\n"
-        ".word 0xe5940008\n"
-        ".word 0xe3500000\n"
-        ".word 0x15d40014\n"
-        ".word 0x13500000\n"
-        ".word 0x0a0000d3\n"
-        ".word 0xe59f8354\n"
-        ".word 0xe5980000\n"
-        ".word 0xeb045ba8\n"
-        ".word 0xe5985000\n"
-        ".word 0xe3a01000\n"
-        ".word 0xe3a00001\n"
-        ".word 0xeb046499\n"
-        ".word 0xe2855a01\n"
-        ".word 0xe2855f93\n"
-        ".word 0xe5951000\n"
-        ".word 0xe2812001\n"
-        ".word 0xe0853101\n"
-        ".word 0xe5931008\n"
-        ".word 0xe0853102\n"
-        ".word 0xe5852000\n"
-        ".word 0xe5830008\n"
-        ".word 0xe5d52018\n"
-        ".word 0xe3520000\n"
-        ".word 0x01510000\n"
-        ".word 0x0a000003\n"
-        ".word 0xe595101c\n"
-        ".word 0xe12fff31\n"
-        ".word 0xe3a00000\n"
-        ".word 0xe5c50018\n"
-        ".word 0xe2840038\n"
-        ".word 0xeb044886\n"
-        ".word 0xe1a05000\n"
-        ".word 0xe5980000\n"
-        ".word 0xed9f0aba\n"
-        ".word 0xeb0435be\n"
-        ".word 0xeebd0ac0\n"
-        ".word 0xee100a10\n"
-        ".word 0xe0857000\n"
-        ".word 0xe2840038\n"
-        ".word 0xeb04487a\n"
-        ".word 0xe1a06000\n"
-        ".word 0xed940a16\n"
-        ".word 0xeb044a5f\n"
-        ".word 0xe3a00065\n"
-        ".word 0xe58d0004\n"
-        ".word 0xe1a03007\n"
-        ".word 0xe3a02014\n"
-        ".word 0xe3a0100e\n"
-        ".word 0xe3a00002\n"
-        ".word 0xe58d6000\n"
-        ".word 0xeb0449e9\n"
-        ".word 0xe5985000\n"
-        ".word 0xe3a02000\n"
-        ".word 0xe3a01001\n"
-        ".word 0xe3a00006\n"
-        ".word 0xeb046477\n"
-        ".word 0xe2855a01\n"
-        ".word 0xe2855fab\n"
-        ".word 0xe5951000\n"
-        ".word 0xe2812001\n"
-        ".word 0xe0853101\n"
-        ".word 0xe5931008\n"
-        ".word 0xe0853102\n"
-        ".word 0xe5852000\n"
-        ".word 0xe5830008\n"
-        ".word 0xe5d52018\n"
-        ".word 0xe3520000\n"
-        ".word 0x01510000\n"
-        ".word 0x0a000003\n"
-        ".word 0xe595101c\n"
-        ".word 0xe12fff31\n"
-        ".word 0xe3a00000\n"
-        ".word 0xe5c50018\n"
-        ".word 0xe3a00066\n"
-        ".word 0xe58d0004\n"
-        ".word 0xe1a03007\n"
-        ".word 0xe3a02015\n"
-        ".word 0xe3a0100e\n"
-        ".word 0xe3a00002\n"
-        ".word 0xe58d6000\n"
-        ".word 0xeb0449cb\n"
-        ".word 0xe59f0224\n"
-        ".word 0xe5900000\n"
-        ".word 0xe2805a01\n"
-        ".word 0xe2855fab\n"
-        ".word 0xe5950000\n"
-        ".word 0xe2401001\n"
-        ".word 0xe0852100\n"
-        ".word 0xe5920008\n"
-        ".word 0xe5851000\n"
-        ".word 0xe0851101\n"
-        ".word 0xe5d52018\n"
-        ".word 0xe5911008\n"
-        ".word 0xe3520000\n"
-        ".word 0x01500001\n"
-        ".word 0x0a000004\n"
-        ".word 0xe595201c\n"
-        ".word 0xe1a00001\n"
-        ".word 0xe12fff32\n"
-        ".word 0xe3a00000\n"
-        ".word 0xe5c50018\n"
-        ".word 0xe59f11dc\n"
-        ".word 0xe3a0000e\n"
-        ".word 0xeb044a12\n"
-        ".word 0xe1d010fa\n"
-        ".word 0xe1d000f8\n"
-        ".word 0xed942a16\n"
-        ".word 0xe0811006\n"
-        ".word 0xe0800007\n"
-        ".word 0xee001a90\n"
-        ".word 0xee000a10\n"
-        ".word 0xe59f11b8\n"
-        ".word 0xe28420c4\n"
-        ".word 0xeddf1a6d\n"
-        ".word 0xe3a00004\n"
-        ".word 0xeef80ae0\n"
-        ".word 0xeeb80ac0\n"
-        ".word 0xed9f1a6a\n"
-        ".word 0xeb04462e\n"
-        ".word 0xe5941010\n"
-        ".word 0xe59f01a0\n"
-        ".word 0xe3a0a000\n"
-        ".word 0xe3a0b06f\n"
-        ".word 0xe0c01190\n"
-        ".word 0xe1a010c0\n"
-        ".word 0xe0410fc0\n"
-        ".word 0xe1a01fc0\n"
-        ".word 0xe0801ea1\n"
-        ".word 0xe3c11007\n"
-        ".word 0xe0408001\n"
-        ".word 0xe2881007\n"
-        ".word 0xe2800004\n"
-        ".word 0xe1a02fc1\n"
-        ".word 0xe0812ea2\n"
-        ".word 0xe3c22007\n"
-        ".word 0xe0411002\n"
-        ".word 0xe58d1008\n"
-        ".word 0xe1a01fc0\n"
-        ".word 0xe0801ea1\n"
-        ".word 0xe3c11007\n"
-        ".word 0xe0409001\n"
-        ".word 0xe2890007\n"
-        ".word 0xe1a01fc0\n"
-        ".word 0xe0801ea1\n"
-        ".word 0xe3c11007\n"
-        ".word 0xe0400001\n"
-        ".word 0xe58d000c\n"
-        ".word 0xe3a04000\n"
-        ".word 0xe08a608a\n"
-        ".word 0xe0865004\n"
-        ".word 0xe2851e17\n"
-        ".word 0xe3a0000e\n"
-        ".word 0xeb0449e1\n"
-        ".word 0xe1580005\n"
-        ".word 0x11590005\n"
-        ".word 0x1a00000a\n"
-        ".word 0xe1d010fa\n"
-        ".word 0xe59f2110\n"
-        ".word 0xe88d0802\n"
-        ".word 0xe1d000f8\n"
-        ".word 0xe3a0100e\n"
-        ".word 0xe0803007\n"
-        ".word 0xe3a00002\n"
-        ".word 0xeb04493a\n"
-        ".word 0xe320f000\n"
-        ".word 0xe320f000\n"
-        ".word 0xea000013\n"
-        ".word 0xe59d1008\n"
-        ".word 0xe1510005\n"
-        ".word 0x159d100c\n"
-        ".word 0x11510005\n"
-        ".word 0xe1d010fa\n"
-        ".word 0xe88d0802\n"
-        ".word 0xe1d000f8\n"
-        ".word 0xe0803007\n"
-        ".word 0x1a000006\n"
-        ".word 0xe59f20c8\n"
-        ".word 0xe3a0100e\n"
-        ".word 0xe3a00002\n"
-        ".word 0xeb04492a\n"
-        ".word 0xe320f000\n"
-        ".word 0xe320f000\n"
-        ".word 0xea000003\n"
-        ".word 0xe3a02f55\n"
-        ".word 0xe3a0100e\n"
-        ".word 0xe3a00002\n"
-        ".word 0xeb044923\n"
-        ".word 0xe2844001\n"
-        ".word 0xe3540003\n"
-        ".word 0xbaffffd6\n"
-        ".word 0xe28aa001\n"
-        ".word 0xe35a0003\n"
-        ".word 0xbaffffd1\n"
-        ".word 0xeb0447c9\n"
-        ".word 0xed9f0a21\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb0449c5\n"
-        ".word 0xe59f0054\n"
-        ".word 0xe5900000\n"
-        ".word 0xe2804a01\n"
-        ".word 0xe2844f93\n"
-        ".word 0xe5940000\n"
-        ".word 0xe0841100\n"
-        ".word 0xe2400001\n"
-        ".word 0xe5911008\n"
-        ".word 0xe5840000\n"
-        ".word 0xe0840100\n"
-        ".word 0xe5d42018\n"
-        ".word 0xe5900008\n"
-        ".word 0xe3520000\n"
-        ".word 0x01510000\n"
-        ".word 0x0a000003\n"
-        ".word 0xe594101c\n"
-        ".word 0xe12fff31\n"
-        ".word 0xe3a00000\n"
-        ".word 0xe5c40018\n"
-        ".word 0xe3a00000\n"
-        ".word 0xe28dd014\n"
-        ".word 0xe8bd8ff0\n"
-        ".word 0x0043e170\n"
-        ".word 0x0044ea00\n"
-        ".word 0x3e8a3d71\n"
-        ".word 0x0000016f\n"
-        ".word 0xf49800ff\n"
-        ".word 0x00000000\n"
-        ".word 0x3f110000\n"
-        ".word 0x66666667\n"
-        ".word 0x00000155\n"
-        ".word 0x00000156\n"
-        ".word 0x3f800000\n"
-        ".word 0xe59f009c\n"
-        ".word 0xe92d4070\n"
-        ".word 0xe3a05000\n"
-        ".word 0xe3a06004\n"
-        ".word 0xe5904000\n"
-        ".word 0xe5940008\n"
-        ".word 0xe3500004\n"
-        ".word 0x379ff100\n"
-        ".word 0xea000016\n"
-        ".word 0x001ad0fc\n"
-        ".word 0x001ad0b0\n"
-        ".word 0x001ad0d8\n"
-        ".word 0x001ad0e8\n"
-        ".word 0xe3a01000\n"
-        ".word 0xe2840038\n"
-        ".word 0xeb043058\n"
-        ".word 0xe3500000\n"
-        ".word 0xe320f000\n"
-        ".word 0x0a00000c\n"
-        ".word 0xe3a00002\n"
-        ".word 0xe5840008\n"
-        ".word 0xe5845010\n"
-        ".word 0xea000008\n"
-        ".word 0xe594000c\n"
-        ".word 0xe3500003\n"
-        ".word 0x05840008\n"
-        ".word 0xea000004\n"
-        ".word 0xe2840038\n"
-        ".word 0xeb044a3f\n"
-        ".word 0xe3500000\n"
-        ".word 0x15c45014\n"
-        ".word 0x15846008\n"
-        ".word 0xe5940010\n"
-        ".word 0xe2800001\n"
-        ".word 0xe5840010\n"
-        ".word 0xeb045386\n"
-        ".word 0xe3500000\n"
-        ".word 0x15c45014\n"
-        ".word 0xe3a00000\n"
-        ".word 0x15846008\n"
-        ".word 0xe8bd8070\n"
-        ".word 0x0043e170\n"
-    );
-}
-#if 0
-// Partial semantic draft retained for reconstruction; not compiled.
-[[maybe_unused]] static void SearchWin_DrawUpAndCalc_Draft(void* arg) {
-    (void)arg;
-    SearchWinWork* work = g_SearchWinWork;
-    if (work == nullptr || work->state == 0 || !work->visible) {
+void SearchWin_DrawUpAndCalc(void*) {
+    static constexpr f32 kParallaxScale = 0.27f;
+    static constexpr f32 kTextScale = 0.56640625f;
+    static constexpr u32 kTextColor = 0xF49800FFu;
+
+    auto* const work = reinterpret_cast<u8*>(g_SearchWinWork);
+    if (*reinterpret_cast<const u32*>(work + 0x08) == 0 || work[0x14] == 0) {
         return;
     }
 
-    // State machine logic (SearchWin_Calc slice)
-    switch (work->state) {
-        case 1: // Scanning radar sweep
-            if (work->timer > 0) {
-                work->timer--;
-            } else {
-                work->state = 2;
-            }
-            break;
-        case 2: // Target locked / prompt active
-            break;
-        case 3: // Fade out
-            work->state = 0;
-            break;
-        default:
-            break;
-    }
+    auto sync_stack = [](u8* stack, void* old_val, void* target_val) {
+        if (stack[0x18] != 0 || old_val != target_val) {
+            using StackCb = void (*)(void*);
+            (*reinterpret_cast<const StackCb*>(stack + 0x1C))(target_val);
+            stack[0x18] = 0;
+        }
+    };
 
-    // Upper stereoscopic pass (3D radar prompt)
+    auto push_stack = [&](u32 offset, void* val) {
+        auto* const stack = g_AsdGpuState + offset;
+        auto* const idx_ptr = reinterpret_cast<s32*>(stack);
+        auto* const slots = reinterpret_cast<void**>(stack + 0x08);
+        const s32 idx = *idx_ptr;
+        void* const prev = slots[idx];
+        *idx_ptr = idx + 1;
+        slots[idx + 1] = val;
+        sync_stack(stack, prev, val);
+    };
+
+    auto pop_stack = [&](u32 offset) {
+        auto* const stack = g_AsdGpuState + offset;
+        auto* const idx_ptr = reinterpret_cast<s32*>(stack);
+        auto* const slots = reinterpret_cast<void**>(stack + 0x08);
+        const s32 idx = *idx_ptr;
+        void* const popped = slots[idx];
+        *idx_ptr = idx - 1;
+        void* const restored = slots[idx - 1];
+        sync_stack(stack, popped, restored);
+    };
+
     UiGpu_BeginPass(g_AsdGpuState);
-    UiGpu_SetViewportParams(1, 0);
+    push_stack(0x124C, UiGpu_SetViewportParams(1, 0));
 
-    auto* layer = reinterpret_cast<u32*>(g_AsdGpuState + 0x124C);
-    const u32 old_depth = *layer;
-    *layer = old_depth + 1;
-    auto* layer_entry = reinterpret_cast<u32*>(g_AsdGpuState + 0x124C + 8);
-    layer_entry[*layer] = 1;
+    const s32 base_x = ui_func_002bef7c(work + 0x38) +
+                       static_cast<s32>(UiGpu_TransformCoord(g_AsdGpuState, kParallaxScale));
+    const s32 base_y = ui_func_002bef70(work + 0x38);
 
-    // Stereoscopic parallax shift (0.45f scale for radar reticle)
-    const f32 shift = UiGpu_TransformCoord(g_AsdGpuState, 0.45f);
-    const s32 base_x = static_cast<s32>(shift);
+    UiGpu_SetAlphaBlend(*reinterpret_cast<const f32*>(work + 0x58));
+    func_002bf558(2, 0x0E, 0x14, base_x, base_y, 0x65);
 
-    UiSprite_DrawPanelDirect(2, 0x0E, 0x06, 200 + base_x, 120, 1);
+    push_stack(0x12AC, battle_func_002c5fa4(6, 1, 0));
+    func_002bf558(2, 0x0E, 0x15, base_x, base_y, 0x66);
+    pop_stack(0x12AC);
 
-    if (*layer > 0) {
-        *layer = *layer - 1;
+    const u8* const text_layout = camp_func_002bf6d0(0x0E, 0x16F);
+    const f32 tx = static_cast<f32>(base_x + *reinterpret_cast<const s16*>(text_layout + 0x08));
+    const f32 ty = static_cast<f32>(base_y + *reinterpret_cast<const s16*>(text_layout + 0x0A));
+    ui_func_002be77c(
+        4, kTextColor, reinterpret_cast<const char*>(work + 0xC4),
+        tx, ty, kTextScale, 0.0f, *reinterpret_cast<const f32*>(work + 0x58));
+
+    const s32 phase = *reinterpret_cast<const s32*>(work + 0x10) / 5;
+    const s32 a = phase % 8;
+    const s32 b = (a + 7) % 8;
+    const s32 c = (phase + 4) % 8;
+    const s32 d = (c + 7) % 8;
+
+    for (s32 row = 0; row < 3; ++row) {
+        for (s32 col = 0; col < 3; ++col) {
+            const s32 idx = row * 3 + col;
+            const u8* const cell_layout = camp_func_002bf6d0(0x0E, 0x170 + idx);
+            s32 sub_id = 0x154;
+            if (idx == a || idx == c) {
+                sub_id = 0x155;
+            } else if (idx == b || idx == d) {
+                sub_id = 0x156;
+            }
+            UiSprite_DrawPanelDirect(
+                2, 0x0E, sub_id,
+                base_x + *reinterpret_cast<const s16*>(cell_layout + 0x08),
+                *reinterpret_cast<const s16*>(cell_layout + 0x0A),
+                0x6F);
+        }
     }
+
+    script_vm_func_002bef14();
+    UiGpu_SetAlphaBlend(1.0f);
+    pop_stack(0x124C);
 }
-#endif
 
 } // namespace smt4::ui

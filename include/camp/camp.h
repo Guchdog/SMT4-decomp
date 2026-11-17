@@ -50,6 +50,6 @@ static_assert(sizeof(GauntletAppMenuWork) == 0x534);
 
 extern GauntletAppMenuWork* g_GauntletAppMenuWork; // 0x0043DC88
 
-void GauntletAppMenu_Init();                                                        // 0x002e2454
+void* GauntletAppMenu_Init();                                                       // 0x002e2454
 
 } // namespace smt4::camp
