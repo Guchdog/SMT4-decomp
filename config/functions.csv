@@ -4033,7 +4033,7 @@ address,size,status,category,name,src_file
 0x0025863c,528,matching,camp,camp_func_0025863c,src/engine/leaf_batch44_c.cpp
 0x0025884c,1036,matching,camp,camp_func_0025884c,src/engine/leaf_batch40_a.cpp
 0x00258c58,480,matching,ui,ui_func_00258c58,src/engine/leaf_batch41_c.cpp
-0x00258e38,480,matching,ui,StatusCamera_Init,src/ui/status.cpp
+0x00258e38,480,non_matching,ui,StatusCamera_Init,src/ui/status.cpp
 0x00259018,1032,matching,camp,camp_func_00259018,src/engine/leaf_batch40_a.cpp
 0x00259420,52,matching,unknown,func_00259420,src/engine/leaf_batch39_b.cpp
 0x00259454,60,matching,unknown,func_00259454,src/engine/leaf_batch24_b.cpp

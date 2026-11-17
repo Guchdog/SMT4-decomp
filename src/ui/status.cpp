@@ -33,6 +33,15 @@ extern "C" {
     s32   UiMath_ClampVal(s32 a0, s32 a1);                                          // 0x002c6c10
     f32   ui_func_00282f00(f32 a0, f32 a1, f32 a2);                                 // 0x00282f00
     void  engine_func_002c3b48(void* ptr, u32 size);                                // 0x002c3b48
+    void  engine_func_002bc828(s32 a0, s32 a1, s32 a2, s32 a3);                     // 0x002bc828
+    void  engine_func_002c2210(void* cam, s32 a1);                                  // 0x002c2210
+    void  engine_func_002c20a8(void* cam, const f32* pos,
+                               const f32* look_at, const f32* up);                  // 0x002c20a8
+    void  ui_func_002c1ffc(void* cam, s32 a1, f32 near_z,
+                           f32 fov, f32 aspect, f32 ratio);                         // 0x002c1ffc
+    void  ui_func_00298fec(void* cam);                                              // 0x00298fec
+    void  battle_func_002c1740(void* cam);                                          // 0x002c1740
+    void  ui_func_002c1774(void* cam, f32 scale, f32 one);                          // 0x002c1774
     extern u8* g_AsdGpuState;                                                       // 0x0044ea00
 }
 
@@ -1112,144 +1121,48 @@ void StatusBustUp_Init() {
 StatusCameraWork* g_StatusCamera = nullptr; // 0x0044E178
 
 // DECOMP_FUNC(0x00258e38, 480)
-// Verified ARM-state entry/exit and referenced local literal/table bytes.
-__attribute__((naked)) void StatusCamera_Init(const f32* pos, const f32* target, const f32* up,
+void StatusCamera_Init(const f32* pos, const f32* target, const f32* up,
                        f32 fov, f32 aspect, f32 near_z, f32 far_z, f32 scale) {
-    asm volatile(
-        ".word 0xe92d47f0\n"
-        ".word 0xe1a06000\n"
-        ".word 0xe1a07001\n"
-        ".word 0xe1a08002\n"
-        ".word 0xe59f417c\n"
-        ".word 0xe59fa17c\n"
-        ".word 0xed2d8b06\n"
-        ".word 0xeef08a40\n"
-        ".word 0xeeb09a60\n"
-        ".word 0xeef09a41\n"
-        ".word 0xeeb08a61\n"
-        ".word 0xeeb0aa42\n"
-        ".word 0xe5940000\n"
-        ".word 0xe24dd020\n"
-        ".word 0xe3500000\n"
-        ".word 0x1a00000a\n"
-        ".word 0xe3a0106d\n"
-        ".word 0xe28f0e15\n"
-        ".word 0xe1a00000\n"
-        ".word 0xe3a00001\n"
-        ".word 0xe3a01c01\n"
-        ".word 0xe58d0000\n"
-        ".word 0xe1a0300a\n"
-        ".word 0xe3a02000\n"
-        ".word 0xe1a00001\n"
-        ".word 0xeb01af38\n"
-        ".word 0xe5840000\n"
-        ".word 0xe1a05000\n"
-        ".word 0xe1a0100a\n"
-        ".word 0xeb01af1f\n"
-        ".word 0xe2854b01\n"
-        ".word 0xe2851b01\n"
-        ".word 0xedc49a4c\n"
-        ".word 0xe2811f4d\n"
-        ".word 0xe2850b01\n"
-        ".word 0xecc18a02\n"
-        ".word 0xe2800f45\n"
-        ".word 0xe897000e\n"
-        ".word 0xe2859b01\n"
-        ".word 0xe2899f42\n"
-        ".word 0xed9f0a4b\n"
-        ".word 0xe880000e\n"
-        ".word 0xe896000e\n"
-        ".word 0xe889000e\n"
-        ".word 0xe2851e52\n"
-        ".word 0xe898100c\n"
-        ".word 0xe881100c\n"
-        ".word 0xe28dc004\n"
-        ".word 0xed848a4b\n"
-        ".word 0xed9f8a43\n"
-        ".word 0xed8d0a04\n"
-        ".word 0xed8d8a05\n"
-        ".word 0xed8d0a06\n"
-        ".word 0xe899000e\n"
-        ".word 0xe88c000e\n"
-        ".word 0xed940a4b\n"
-        ".word 0xecd00a03\n"
-        ".word 0xee600a80\n"
-        ".word 0xee211a00\n"
-        ".word 0xee210a80\n"
-        ".word 0xee011a90\n"
-        ".word 0xe3a01000\n"
-        ".word 0xee710aa0\n"
-        ".word 0xedcd0a01\n"
-        ".word 0xee002a90\n"
-        ".word 0xe3a020c8\n"
-        ".word 0xe1a00002\n"
-        ".word 0xee700a81\n"
-        ".word 0xedcd0a02\n"
-        ".word 0xee003a90\n"
-        ".word 0xe3a030f0\n"
-        ".word 0xee300a80\n"
-        ".word 0xed8d0a03\n"
-        ".word 0xeb018e31\n"
-        ".word 0xe3a01001\n"
-        ".word 0xe1a00005\n"
-        ".word 0xeb01a4a8\n"
-        ".word 0xe28d3010\n"
-        ".word 0xe28d2004\n"
-        ".word 0xe1a01009\n"
-        ".word 0xe1a00005\n"
-        ".word 0xeb01a449\n"
-        ".word 0xe2844e13\n"
-        ".word 0xeddf1a22\n"
-        ".word 0xe3a01001\n"
-        ".word 0xec940a03\n"
-        ".word 0xe1a00005\n"
-        ".word 0xeb01a418\n"
-        ".word 0xe1a00005\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb010011\n"
-        ".word 0xe1a00005\n"
-        ".word 0xe320f000\n"
-        ".word 0xeb01a1e3\n"
-        ".word 0xeef00a48\n"
-        ".word 0xeeb00a4a\n"
-        ".word 0xe1a00005\n"
-        ".word 0xeb01a1ec\n"
-        ".word 0xe28dd020\n"
-        ".word 0xecbd8b06\n"
-        ".word 0xe8bd87f0\n"
-        ".word 0x0044e178\n"
-        ".word 0x0000053c\n"
-        ".word 0x535c3a63\n"
-        ".word 0x5c34544d\n"
-        ".word 0x36445258\n"
-        ".word 0x735c3638\n"
-        ".word 0x34736464\n"
-        ".word 0x6f72705c\n"
-        ".word 0x6d617267\n"
-        ".word 0x6174735c\n"
-        ".word 0x5c737574\n"
-        ".word 0x74617453\n"
-        ".word 0x61437375\n"
-        ".word 0x6172656d\n"
-        ".word 0x7070632e\n"
-        ".word 0x00000000\n"
-        ".word 0x00000000\n"
-        ".word 0x3f800000\n"
-        ".word 0x3fd55555\n"
-    );
-}
-#if 0
-// Partial semantic draft retained for reconstruction; not compiled.
-[[maybe_unused]] static void StatusCamera_Init_Draft(const f32* pos, const f32* target, const f32* up,
-                       f32 fov, f32 aspect, f32 near_z, f32 far_z, f32 scale) {
-    (void)pos; (void)target; (void)up; (void)fov; (void)aspect; (void)near_z; (void)far_z; (void)scale;
+    static constexpr f32 kDefaultRatio = 5.0f / 3.0f;
+
     StatusCameraWork* cam = g_StatusCamera;
     if (cam == nullptr) {
-        cam = reinterpret_cast<StatusCameraWork*>(AsdMem_Alloc(sizeof(StatusCameraWork), 0x100));
+        cam = static_cast<StatusCameraWork*>(
+            AsdMem_Alloc(0x100, 0x100, 0, sizeof(StatusCameraWork), 1));
         g_StatusCamera = cam;
     }
     AsdMem_Zero(cam, sizeof(StatusCameraWork));
+
+    auto* const raw = cam->raw;
+    auto* const pos_dst = reinterpret_cast<f32*>(raw + 0x508);
+    auto* const target_dst = reinterpret_cast<f32*>(raw + 0x514);
+    auto* const up_dst = reinterpret_cast<f32*>(raw + 0x520);
+
+    for (s32 i = 0; i < 3; ++i) {
+        pos_dst[i] = pos[i];
+        target_dst[i] = target[i];
+        up_dst[i] = up[i];
+    }
+
+    *reinterpret_cast<f32*>(raw + 0x52C) = far_z;
+    *reinterpret_cast<f32*>(raw + 0x530) = near_z;
+    *reinterpret_cast<f32*>(raw + 0x534) = fov;
+    *reinterpret_cast<f32*>(raw + 0x538) = aspect;
+
+    const f32 look_at[3] = {
+        pos_dst[0] + target_dst[0] * far_z,
+        pos_dst[1] + target_dst[1] * far_z,
+        pos_dst[2] + target_dst[2] * far_z,
+    };
+    const f32 up_axis[3] = {0.0f, 1.0f, 0.0f};
+
+    engine_func_002bc828(0xC8, 0, 0xC8, 0xF0);
+    engine_func_002c2210(cam, 1);
+    engine_func_002c20a8(cam, pos_dst, look_at, up_axis);
+    ui_func_002c1ffc(cam, 1, near_z, fov, aspect, kDefaultRatio);
+    ui_func_00298fec(cam);
+    battle_func_002c1740(cam);
+    ui_func_002c1774(cam, scale, 1.0f);
 }
-#endif
 
 } // namespace smt4::ui
