@@ -2975,7 +2975,7 @@ address,size,status,category,name,src_file
 0x0021bd04,160,non_matching,script_vm,script_vm_func_0021bd04,src/engine/leaf_batch31_c.cpp
 0x0021bda4,2036,matching,script_vm,script_vm_func_0021bda4,src/engine/leaf_batch46_b.cpp
 0x0021c598,5420,matching,battle,Btl_StatusEffectCalc,src/battle/battle_ailment.cpp
-0x0021dac4,744,matching,engine,engine_func_0021dac4,src/engine/leaf_batch45_a.cpp
+0x0021dac4,744,non_matching,engine,engine_func_0021dac4,src/engine/leaf_batch45_a.cpp
 0x0021ddac,112,matching,script_vm,script_vm_func_0021ddac,src/engine/leaf_batch35_a.cpp
 0x0021de1c,164,non_matching,script_vm,script_vm_func_0021de1c,src/engine/leaf_batch31_c.cpp
 0x0021dec0,156,non_matching,script_vm,script_vm_func_0021dec0,src/engine/leaf_batch31_c.cpp
