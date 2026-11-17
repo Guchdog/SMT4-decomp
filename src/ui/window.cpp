@@ -2279,6 +2279,13 @@ void PlaceWin_ShowMessage(const char* msg) {
 extern "C" {
     void PlaceWin_Calc_0032ac30(void*);                                                     // 0x0032ac30
     void PlaceWin_Draw_0032aa84(void*);                                                     // 0x0032aa84
+    void camp_func_0029c56c(void*, s32);                                                    // 0x0029c56c
+    void camp_func_002a06dc(void*, s32);                                                    // 0x002a06dc
+    void engine_func_002a58ec(void*, s32, f32, f32);                                        // 0x002a58ec
+    void script_vm_func_002d5780(void*, f32);                                               // 0x002d5780
+    void script_vm_func_002e11bc(void*, s32);                                               // 0x002e11bc
+    void func_00151404();                                                                   // 0x00151404
+    void func_0015555c();                                                                   // 0x0015555c
     extern const u8 g_PlaceWinSpriteTable_00403acc;                                         // 0x00403acc
     extern const u8 g_PlaceWinSpriteTable_00403ae4;                                         // 0x00403ae4
     extern const u8 g_PlaceWinSpriteTable_00403afc;                                         // 0x00403afc
@@ -2395,175 +2402,82 @@ void PlaceWin_Init() {
 #endif
 
 // DECOMP_FUNC(0x00263bb4, 660)
-// Boundary-verified ARM-state span; includes its PC-relative literal pool.
-__attribute__((naked)) void PlaceWin_Calc(void* arg) {
-    asm volatile(
-        ".word 0xe92d41f0\n"
-        ".word 0xe1a04000\n"
-        ".word 0xe2806e55\n"
-        ".word 0xe1a07001\n"
-        ".word 0xed2d8b02\n"
-        ".word 0xe5900550\n"
-        ".word 0xe1500007\n"
-        ".word 0x0a000093\n"
-        ".word 0xe3700001\n"
-        ".word 0xed9f8a93\n"
-        ".word 0xe3a08001\n"
-        ".word 0xe2845e56\n"
-        ".word 0x0a000011\n"
-        ".word 0xe0840100\n"
-        ".word 0xe3a01000\n"
-        ".word 0xe590003c\n"
-        ".word 0xeb00e25c\n"
-        ".word 0xe5940560\n"
-        ".word 0xeeb00a48\n"
-        ".word 0xe0840100\n"
-        ".word 0xe5900034\n"
-        ".word 0xeb01c6dc\n"
-        ".word 0xe5960000\n"
-        ".word 0xe0840100\n"
-        ".word 0xe590003c\n"
-        ".word 0xe5900004\n"
-        ".word 0xed808a10\n"
-        ".word 0xe5c08058\n"
-        ".word 0xe5901000\n"
-        ".word 0xe5911020\n"
-        ".word 0xe12fff31\n"
-        ".word 0xe0840107\n"
-        ".word 0xe5847550\n"
-        ".word 0xe590003c\n"
-        ".word 0xe3a01000\n"
-        ".word 0xeb00f2a5\n"
-        ".word 0xe5940560\n"
-        ".word 0xeef00a48\n"
-        ".word 0xeeb00a48\n"
-        ".word 0xe1a01007\n"
-        ".word 0xe0840100\n"
-        ".word 0xe5900034\n"
-        ".word 0xeb010722\n"
-        ".word 0xe5950000\n"
-        ".word 0xeddf8a71\n"
-        ".word 0xe0840100\n"
-        ".word 0xeeb00a68\n"
-        ".word 0xe5900034\n"
-        ".word 0xeb01c6c1\n"
-        ".word 0xe5960000\n"
-        ".word 0xeeb01a48\n"
-        ".word 0xe0840100\n"
-        ".word 0xe590003c\n"
-        ".word 0xe5905004\n"
-        ".word 0xe2851044\n"
-        ".word 0xe5950050\n"
-        ".word 0xec910a02\n"
-        ".word 0xe595104c\n"
-        ".word 0xe12fff31\n"
-        ".word 0xe5950038\n"
-        ".word 0xed9f8a62\n"
-        ".word 0xe3570000\n"
-        ".word 0xe585003c\n"
-        ".word 0xed850a0e\n"
-        ".word 0xe5c58058\n"
-        ".word 0xe5960000\n"
-        ".word 0xe0840100\n"
-        ".word 0xe590003c\n"
-        ".word 0xe5900004\n"
-        ".word 0xedc08a10\n"
-        ".word 0x0a00001e\n"
-        ".word 0xe3570001\n"
-        ".word 0x0a000037\n"
-        ".word 0xe3570002\n"
-        ".word 0x1a000050\n"
-        ".word 0xe5940560\n"
-        ".word 0xe3a01001\n"
-        ".word 0xe0840100\n"
-        ".word 0xe5900034\n"
-        ".word 0xeb01f531\n"
-        ".word 0xe5940550\n"
-        ".word 0xeeb00a68\n"
-        ".word 0xe59f1134\n"
-        ".word 0xe0840100\n"
-        ".word 0xe590003c\n"
-        ".word 0xeef01a40\n"
-        ".word 0xeeb01a40\n"
-        ".word 0xeef00a40\n"
-        ".word 0xe5900004\n"
-        ".word 0xe580104c\n"
-        ".word 0xe3a01000\n"
-        ".word 0xe5c08058\n"
-        ".word 0xe1a00001\n"
-        ".word 0xebfffedb\n"
-        ".word 0xeeb00a48\n"
-        ".word 0xecbd8b02\n"
-        ".word 0xe3a01000\n"
-        ".word 0xe8bd41f0\n"
-        ".word 0xe1a00001\n"
-        ".word 0xeeb01a40\n"
-        ".word 0xeef00a40\n"
-        ".word 0xeafffec3\n"
-        ".word 0xe5940560\n"
-        ".word 0xe3a01000\n"
-        ".word 0xe0840100\n"
-        ".word 0xe5900034\n"
-        ".word 0xeb01f516\n"
-        ".word 0xe5940550\n"
-        ".word 0xeeb00a68\n"
-        ".word 0xe59f10cc\n"
-        ".word 0xe0840100\n"
-        ".word 0xe590003c\n"
-        ".word 0xeef01a40\n"
-        ".word 0xeeb01a40\n"
-        ".word 0xeef00a40\n"
-        ".word 0xe5900004\n"
-        ".word 0xe580104c\n"
-        ".word 0xe3a01000\n"
-        ".word 0xe5c08058\n"
-        ".word 0xe1a00001\n"
-        ".word 0xebfffec0\n"
-        ".word 0xeeb00a48\n"
-        ".word 0xecbd8b02\n"
-        ".word 0xe3a01000\n"
-        ".word 0xe8bd41f0\n"
-        ".word 0xe1a00001\n"
-        ".word 0xeeb01a40\n"
-        ".word 0xeef00a40\n"
-        ".word 0xeafffea8\n"
-        ".word 0xe5940560\n"
-        ".word 0xe3a01000\n"
-        ".word 0xe0840100\n"
-        ".word 0xe5900034\n"
-        ".word 0xeb01f4fb\n"
-        ".word 0xe5940550\n"
-        ".word 0xe59f1064\n"
-        ".word 0xed9f0a19\n"
-        ".word 0xeef01a68\n"
-        ".word 0xe0840100\n"
-        ".word 0xeeb01a40\n"
-        ".word 0xe590003c\n"
-        ".word 0xeef00a40\n"
-        ".word 0xe5900004\n"
-        ".word 0xe580104c\n"
-        ".word 0xe3a01000\n"
-        ".word 0xe5c08058\n"
-        ".word 0xe1a00001\n"
-        ".word 0xebfffea5\n"
-        ".word 0xed9f0a0e\n"
-        ".word 0xe3a01000\n"
-        ".word 0xecbd8b02\n"
-        ".word 0xeeb01a40\n"
-        ".word 0xe8bd41f0\n"
-        ".word 0xeef00a40\n"
-        ".word 0xe1a00001\n"
-        ".word 0xeafffe8d\n"
-        ".word 0xecbd8b02\n"
-        ".word 0xe8bd81f0\n"
-        ".word 0x00000000\n"
-        ".word 0x3f800000\n"
-        ".word 0x3e99999a\n"
-        ".word 0x00151404\n"
-        ".word 0x0015555c\n"
-        ".word 0x3f19999a\n"
-        ".word 0x3dcccccd\n"
-    );
+void PlaceWin_Calc(void* arg, s32 mode) {
+    static constexpr f32 kDefaultFade = 0.3f;
+    static constexpr f32 kFocusScale = 0.6f;
+    static constexpr f32 kFocusPos = 0.1f;
+
+    auto* const work = static_cast<u8*>(arg);
+    const s32 prev_mode = *reinterpret_cast<const s32*>(work + 0x550);
+    if (prev_mode == mode) {
+        return;
+    }
+
+    auto get_slot_34 = [work](s32 idx) -> void* {
+        return *reinterpret_cast<void**>(work + idx * 4 + 0x34);
+    };
+    auto get_slot_3c = [work](s32 idx) -> u8* {
+        return *reinterpret_cast<u8**>(work + idx * 4 + 0x3C);
+    };
+    auto get_sub = [&](s32 idx) -> u8* {
+        return *reinterpret_cast<u8**>(get_slot_3c(idx) + 0x04);
+    };
+
+    if (prev_mode != -1) {
+        camp_func_0029c56c(get_slot_3c(prev_mode), 0);
+        script_vm_func_002d5780(
+            get_slot_34(*reinterpret_cast<const s32*>(work + 0x560)), 0.0f);
+        u8* const prev_sub = get_sub(*reinterpret_cast<const s32*>(work + 0x550));
+        *reinterpret_cast<f32*>(prev_sub + 0x40) = 0.0f;
+        prev_sub[0x58] = 1;
+        using VtableFn = void (*)(void*);
+        auto* const vtable = *reinterpret_cast<VtableFn* const*>(prev_sub);
+        vtable[0x20 / 4](prev_sub);
+    }
+
+    *reinterpret_cast<s32*>(work + 0x550) = mode;
+    camp_func_002a06dc(get_slot_3c(mode), 0);
+    engine_func_002a58ec(
+        get_slot_34(*reinterpret_cast<const s32*>(work + 0x560)), mode, 0.0f, 0.0f);
+    script_vm_func_002d5780(
+        get_slot_34(*reinterpret_cast<const s32*>(work + 0x560)), 1.0f);
+
+    u8* const cur_sub = get_sub(*reinterpret_cast<const s32*>(work + 0x550));
+    using BlendFn = f32 (*)(void*, f32, f32);
+    const auto blend_fn =
+        *reinterpret_cast<const BlendFn*>(cur_sub + 0x4C);
+    const f32 blend_res = blend_fn(
+        *reinterpret_cast<void* const*>(cur_sub + 0x50),
+        *reinterpret_cast<const f32*>(cur_sub + 0x44),
+        *reinterpret_cast<const f32*>(cur_sub + 0x48));
+    *reinterpret_cast<u32*>(cur_sub + 0x3C) =
+        *reinterpret_cast<const u32*>(cur_sub + 0x38);
+    *reinterpret_cast<f32*>(cur_sub + 0x38) = blend_res;
+    cur_sub[0x58] = 1;
+
+    u8* const sub_after = get_sub(*reinterpret_cast<const s32*>(work + 0x550));
+    *reinterpret_cast<f32*>(sub_after + 0x40) = 1.0f;
+
+    if (mode == 0 || mode == 2) {
+        script_vm_func_002e11bc(
+            get_slot_34(*reinterpret_cast<const s32*>(work + 0x560)),
+            mode == 2 ? 1 : 0);
+        u8* const mode_sub = get_sub(*reinterpret_cast<const s32*>(work + 0x550));
+        *reinterpret_cast<void**>(mode_sub + 0x4C) = reinterpret_cast<void*>(
+            mode == 2 ? &func_00151404 : &func_0015555c);
+        mode_sub[0x58] = 1;
+        PlaceWin_SetScale(0, 0, 1.0f, 1.0f, 1.0f, 1.0f);
+        PlaceWin_SetPos(0, 0, kDefaultFade, kDefaultFade, kDefaultFade);
+    } else if (mode == 1) {
+        script_vm_func_002e11bc(
+            get_slot_34(*reinterpret_cast<const s32*>(work + 0x560)), 0);
+        u8* const mode_sub = get_sub(*reinterpret_cast<const s32*>(work + 0x550));
+        *reinterpret_cast<void**>(mode_sub + 0x4C) =
+            reinterpret_cast<void*>(&func_0015555c);
+        mode_sub[0x58] = 1;
+        PlaceWin_SetScale(0, 0, kFocusScale, kFocusScale, kFocusScale, 1.0f);
+        PlaceWin_SetPos(0, 0, kFocusPos, kFocusPos, kFocusPos);
+    }
 }
 #if 0
 // Partial semantic draft retained for reconstruction; not compiled.
