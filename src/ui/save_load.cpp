@@ -51,39 +51,86 @@ void saveLoadUI_Init() {
     work->sub_state = 0;
 }
 
-#if 0 // Unverified behavioral sketch; not byte-equivalent.
-[[maybe_unused]] static void saveLoadUI_DrawMain_Draft(void* arg) {
-    (void)arg;
-    SaveLoadUIWork* work = g_SaveLoadUIManager.work;
-    if (work == nullptr || work->state == 0) {
+extern "C" {
+    void func_002b7f0a(void* base, s32 count, s32 size, u32 comparator);        // 0x002b7f0a
+    u32  ui_func_0026b9ec(u32 record, u32 id);                                  // 0x0026b9ec
+    u32  ui_func_0026b9a4(u32 id);                                              // 0x0026b9a4
+}
+
+// DECOMP_FUNC(0x001c897c, 940)
+void saveLoadUI_DrawMain(void* work_arg, u32 record_arg, void* src_arg, s32 skip_idx) {
+    static constexpr u32 kComparatorAddr = 0x002C6DD8;
+
+    auto* const work = static_cast<u8*>(work_arg);
+    auto* const src = static_cast<u8*>(src_arg);
+    auto* const slots = reinterpret_cast<u16*>(work + 0xD134);
+    auto* const ids = reinterpret_cast<u16*>(work + 0xD114);
+    auto* const flags = reinterpret_cast<u16*>(work + 0xD124);
+    auto* const src_ids = reinterpret_cast<const u16*>(src + 0x34);
+    auto* const count_a = reinterpret_cast<s32*>(work + 0xD2C4);
+    auto* const count_b = reinterpret_cast<s32*>(work + 0xD2C8);
+
+    for (s32 i = 0; i < 8; ++i) {
+        const u16 cur_id = ids[i];
+        if (cur_id == 0 || skip_idx == -1 || i == skip_idx || cur_id != src_ids[skip_idx]) {
+            continue;
+        }
+
+        const u16 old_id = cur_id;
+        const u16 new_id = src_ids[i];
+        ids[i] = new_id;
+        work[0xD2D0 + i] = 1;
+
+        for (s32 j = 0; j < 7; ++j) {
+            if (slots[j + 1] == slots[0]) {
+                slots[j + 1] = 0;
+                func_002b7f0a(slots, 8, 2, kComparatorAddr);
+            }
+        }
+
+        const s32 count = *count_a;
+        for (s32 k = count; k > 0; --k) {
+            slots[k] = slots[k - 1];
+        }
+        for (s32 k = count; k < 8; ++k) {
+            slots[k] = 0;
+        }
+
+        if (ui_func_0026b9ec(record_arg, new_id) != 0) {
+            if (slots[1] == new_id) {
+                slots[0] = 0;
+            } else {
+                slots[0] = new_id;
+                for (s32 j = 0; j < 7; ++j) {
+                    if (slots[j + 1] == slots[0]) {
+                        slots[j + 1] = 0;
+                        func_002b7f0a(slots, 8, 2, kComparatorAddr);
+                    }
+                }
+            }
+        } else {
+            slots[0] = 0;
+            func_002b7f0a(slots, 8, 2, kComparatorAddr);
+        }
+
+        const u32 old_flag = ui_func_0026b9a4(old_id);
+        const u32 new_flag = ui_func_0026b9ec(record_arg, new_id);
+        if (old_flag != 0 && new_flag == 0) {
+            if (new_id != 0) {
+                --(*count_b);
+            }
+            --(*count_a);
+            flags[i] = 0;
+        } else if (old_flag == 0 && new_flag != 0) {
+            ++(*count_b);
+            flags[i] = 1;
+        } else if ((old_flag == 0 && new_flag == 0) || new_id == 0) {
+            --(*count_a);
+        }
+
+        saveLoadUI_DrawMain(work, record_arg, src, i);
         return;
     }
-
-    // Begin stereoscopic rendering pass for Save/Load UI
-    UiGpu_BeginPass(g_AsdGpuState);
-    UiGpu_SetViewportParams(0, 0); // Bottom touch screen pass
-
-    auto* layer = reinterpret_cast<u32*>(g_AsdGpuState + 0x124C);
-    const u32 old_depth = *layer;
-    *layer = old_depth + 1;
-    auto* layer_entry = reinterpret_cast<u32*>(g_AsdGpuState + 0x124C + 8);
-    layer_entry[*layer] = 1;
-
-    // Draw slot selection list, preview textures, difficulty, playtime, macca, and level
-    for (s32 i = 0; i < 3; ++i) {
-        UiSprite_DrawPanelDirect(2, 0x0E, 0x10 + i, 160, 40 + (i * 64), 1);
-    }
-
-    if (*layer > 0) {
-        *layer = *layer - 1;
-    }
-}
-#endif
-
-// Includes the original function's PC-relative literals through 0x001c8d27.
-// DECOMP_FUNC(0x001c897c, 940)
-__attribute__((naked)) void saveLoadUI_DrawMain(void*) {
-    asm volatile(".incbin \"extracted/exefs/code.bin\", 0x0c897c, 940\n");
 }
 
 // Callback entry begins with an LDR at 0x001c8d28; its prologue follows at 0x001c8d2c.
