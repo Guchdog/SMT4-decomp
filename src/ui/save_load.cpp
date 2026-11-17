@@ -24,6 +24,9 @@ extern "C" {
     void  ui_func_002adb40(void*, const void*);                                 // 0x002adb40
     u8*   ui_func_002c0b94();                                                   // 0x002c0b94
     void  ui_func_0026b734();                                                   // 0x0026b734
+    void  ui_func_002e0c54();                                                   // 0x002e0c54
+    void  engine_func_002c5ff4(void*, const void*, u32);                        // 0x002c5ff4
+    void  engine_func_002c4360(void*);                                          // 0x002c4360
     extern u8* g_AsdGpuState;                                                   // 0x0044EA00
 }
 
@@ -285,53 +288,57 @@ s32 SaveLoadProcess_Step(void*) {
     }
 }
 // DECOMP_FUNC(0x002efb50, 456)
+s32 SaveLoadProcess_Write(void*) {
+    static constexpr u32 kBufferSize = 0x24DB0;
+    static constexpr u32 kHeaderSize = 0x80;
+    static constexpr u32 kMidSize = 0x08;
+    static constexpr u32 kPayloadSize = 0x24D28;
 
+    u8* const proc = ui_func_002c0ac8();
+    auto* const state = reinterpret_cast<s32*>(proc + 0x04);
+    auto* const mgr = reinterpret_cast<u8*>(0x0043E2F0);
 
-//
-__attribute__((naked)) void SaveLoadProcess_Write(void*) {
-    // Preserve the ROM's ARM instructions and in-function literal pool exactly.
-    asm volatile(
-        ".word 0xE92D40F8, 0xEBFF43DB, 0xE5901004, 0xE1A04000\n"
-        ".word 0xE3A06001, 0xE3510000, 0xE3A07003, 0x0A00000C\n"
-        ".word 0xE3510001, 0xE3A05000, 0x0A00003E, 0xE59F014C\n"
-        ".word 0xE3510002, 0x05C06001, 0x05C06004, 0x0A00004D\n"
-        ".word 0xE3510003, 0x05C06001, 0x05C05004, 0x0A000049\n"
-        ".word 0xEA000046, 0xE59F0128, 0xE3A0107C, 0xE584000C\n"
-        ".word 0xE28F0E12, 0xE1A00000, 0xE3A01C01, 0xE58D6000\n"
-        ".word 0xE594300C, 0xE3A02000, 0xE1A00001, 0xEBFF53EC\n"
-        ".word 0xE5840008, 0xE320F000, 0xEBFFC41D, 0xE320F000\n"
-        ".word 0xE320F000, 0xEBFF43EA, 0xE5941010, 0xE5C01003\n"
-        ".word 0xEBFDEF13, 0xE5943008, 0xE1A01000, 0xE3A02080\n"
-        ".word 0xE1A00003, 0xEBFF58FA, 0xE320F000, 0xE320F000\n"
-        ".word 0xEBFDEF06, 0xE1A01000, 0xE5940008, 0xE2800080\n"
-        ".word 0xEBFEF7C6, 0xE5945008, 0xE2855088, 0xEBFF43D8\n"
-        ".word 0xE1A01000, 0xE59F20D8, 0xE1A00005, 0xEBFF34C5\n"
-        ".word 0xE1C570B0, 0xE5D40014, 0xE5C50002, 0xEBFDEEB8\n"
-        ".word 0xE594000C, 0xE3A01000, 0xE58D0000, 0xE5942010\n"
-        ".word 0xE5943008, 0xE3A00002, 0xEBFD5FFD, 0xE5846004\n"
-        ".word 0xE320F000, 0xEA000011, 0xE320F000, 0xEBFAC7DD\n"
-        ".word 0xE3500001, 0xE320F000, 0x1A00000C, 0xEBFF7C1E\n"
-        ".word 0xE3500000, 0xE5940008, 0x0A000003, 0xEBFF51AF\n"
-        ".word 0xE5A47004, 0xE5845004, 0xEA000004, 0xE320F000\n"
-        ".word 0xEBFF51AA, 0xE2844004, 0xE3A00002, 0xE8840021\n"
-        ".word 0xE3A00000, 0xE8BD80F8, 0xE3E00000, 0xE8BD80F8\n"
-        ".word 0x0043E2F0, 0x00024DB0, 0x535C3A63, 0x5C34544D\n"
-        ".word 0x36445258, 0x735C3638, 0x34736464, 0x6F72705C\n"
-        ".word 0x6D617267, 0x6D61675C, 0x74616465, 0x61535C61\n"
-        ".word 0x6F4C6576, 0x72506461, 0x7365636F, 0x70632E73\n"
-        ".word 0x00000070, 0x00024D28\n"
-    );
-}
-
-// Higher-level approximation retained while semantic recovery continues.
-void SaveLoadProcess_Write_Decompiled(void* arg) {
-    auto* proc = reinterpret_cast<SaveLoadProcess*>(arg);
-    if (proc == nullptr) {
-        return;
+    switch (*state) {
+    case 0: {
+        *reinterpret_cast<u32*>(proc + 0x0C) = kBufferSize;
+        auto* const buf = static_cast<u8*>(
+            AsdMem_Alloc(0x100, 0x100, 0, kBufferSize, 1));
+        *reinterpret_cast<u8**>(proc + 0x08) = buf;
+        ui_func_002e0c54();
+        ui_func_002c0b94()[3] = static_cast<u8>(*reinterpret_cast<const u32*>(proc + 0x10));
+        engine_func_002c5ff4(buf, ui_func_0026b844(), kHeaderSize);
+        ui_func_002adb40(buf + kHeaderSize, ui_func_0026b830());
+        u8* const payload = buf + kHeaderSize + kMidSize;
+        ui_func_002bcf58(payload, ui_func_002c0b94(), kPayloadSize);
+        *reinterpret_cast<u16*>(payload) = 3;
+        payload[2] = proc[0x14];
+        ui_func_0026b734();
+        SaveLoad_Thread_func_00247c64(
+            2, 0, *reinterpret_cast<const u32*>(proc + 0x10), buf,
+            *reinterpret_cast<const u32*>(proc + 0x0C));
+        *state = 1;
+        return 0;
     }
-    proc->operation = 1; // Save
-    proc->status = 0;
-    proc->bytes_transferred = 0;
+    case 1: {
+        if (script_vm_func_001a1bf8() == 1) {
+            const bool dismissed = SearchWin_Dismiss();
+            engine_func_002c4360(*reinterpret_cast<void**>(proc + 0x08));
+            *reinterpret_cast<void**>(proc + 0x08) = nullptr;
+            *state = dismissed ? 3 : 2;
+        }
+        return 0;
+    }
+    case 2:
+        mgr[1] = 1;
+        mgr[4] = 1;
+        return -1;
+    case 3:
+        mgr[1] = 1;
+        mgr[4] = 0;
+        return -1;
+    default:
+        return 0;
+    }
 }
 // DECOMP_FUNC(0x00322d70, 412)
 
