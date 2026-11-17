@@ -12,72 +12,22 @@ extern "C" {
     void  UiGpu_BeginPass(void* gpu_state);                                     // 0x002C3BA8
     void  UiSprite_DrawPanelDirect(s32 type, s32 id, s32 sub_id,
                                    s32 x, s32 y, s32 flag);                     // 0x002BF460
+    void  func_00214960(void*);                                                 // 0x00214960
     extern u8* g_AsdGpuState;                                                   // 0x0044EA00
 }
 
 SaveLoadUIManager g_SaveLoadUIManager = {0, {0, 0, 0}, nullptr, 0, 0}; // 0x0044DE28
 
-//
-void saveLoadUI_Init_Decompiled() {
-    SaveLoadUIWork* work = g_SaveLoadUIManager.work;
-    if (work == nullptr) {
-        // 0x00191EB4..0x00191ED8: r0=0x10000, r1=0x100, r2=0, r3=0x388, [sp]=1.
-        work = reinterpret_cast<SaveLoadUIWork*>(
-            AsdMem_Alloc(0x10000, 0x100, 0, sizeof(SaveLoadUIWork), 1));
-        g_SaveLoadUIManager.work = work;
-    }
-
-    AsdMem_Zero(work, sizeof(SaveLoadUIWork));
-    work->calc_task = AsdTask_CreateCalc("BOOT Calc", 2, 0, 0, saveLoadUI_Calc, 0, 0);
-    work->state = 0x11;
-}
 // DECOMP_FUNC(0x00191eac, 208)
-
-
-//
-__attribute__((naked)) void saveLoadUI_Init() {
-    // Exact ARM recovery. The tail includes the original source filename,
-    // manager/callback addresses, and "BOOT Calc" literal pool.
-    asm volatile(
-        ".word 0xE92D4030\n" // push {r4, r5, lr}
-        ".word 0xE24DD00C\n" // sub sp, sp, #0xc
-        ".word 0xE59F1070\n" // ldr r1, [pc, #0x70]
-        ".word 0xE28F0070\n" // add r0, pc, #0x70
-        ".word 0xE1A00000\n" // mov r0, r0
-        ".word 0xE3A00001\n" // mov r0, #1
-        ".word 0xE58D0000\n" // str r0, [sp]
-        ".word 0xE3A03FE2\n" // mov r3, #0x388
-        ".word 0xE3A02000\n" // mov r2, #0
-        ".word 0xE3A01C01\n" // mov r1, #0x100
-        ".word 0xE3A00801\n" // mov r0, #0x10000
-        ".word 0xEB04CB29\n" // bl 0x002c4b84
-        ".word 0xE59F1084\n" // ldr r1, [pc, #0x84]
-        ".word 0xE59F3088\n" // ldr r3, [pc, #0x88]
-        ".word 0xE3A05000\n" // mov r5, #0
-        ".word 0xE59F207C\n" // ldr r2, [pc, #0x7c]
-        ".word 0xE5810004\n" // str r0, [r1, #4]
-        ".word 0xE5C05004\n" // strb r5, [r0, #4]
-        ".word 0xE1A04000\n" // mov r4, r0
-        ".word 0xE28D0004\n" // add r0, sp, #4
-        ".word 0xE58D3000\n" // str r3, [sp]
-        ".word 0xE8800024\n" // stm r0, {r2, r5}
-        ".word 0xE1A03005\n" // mov r3, r5
-        ".word 0xE1A02005\n" // mov r2, r5
-        ".word 0xE3A01002\n" // mov r1, #2
-        ".word 0xE28F005C\n" // add r0, pc, #0x5c
-        ".word 0xEB04CE97\n" // bl 0x002c5978
-        ".word 0xE4840008\n" // str r0, [r4], #8
-        ".word 0xE3A01011\n" // mov r1, #0x11
-        ".word 0xE8840022\n" // stm r4, {r1, r5}
-        ".word 0xE28DD00C\n" // add sp, sp, #0xc
-        ".word 0xE8BD8030\n" // pop {r4, r5, pc}
-        ".word 0x00000AFE\n"
-        ".word 0x535C3A63, 0x5C34544D, 0x36445258, 0x735C3638\n"
-        ".word 0x34736464, 0x6F72705C, 0x6D617267, 0x7661735C\n"
-        ".word 0x616F4C65, 0x5C495564, 0x65766173, 0x64616F4C\n"
-        ".word 0x632E4955, 0x00007070\n"
-        ".word 0x0044DE28, 0x00214960, 0x001C8D28\n"
-        ".word 0x544F4F42, 0x00004320\n");
+void saveLoadUI_Init() {
+    auto* const work = static_cast<SaveLoadUIWork*>(
+        AsdMem_Alloc(0x10000, 0x100, 0, sizeof(SaveLoadUIWork), 1));
+    g_SaveLoadUIManager.work = work;
+    work->pad_04[0] = 0;
+    work->calc_task = AsdTask_CreateCalc(
+        "BOOT C", 2, 0, 0, func_001c8d28, reinterpret_cast<void*>(&func_00214960), 0);
+    work->state = 0x11;
+    work->sub_state = 0;
 }
 
 #if 0 // Unverified behavioral sketch; not byte-equivalent.
