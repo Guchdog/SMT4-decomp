@@ -1997,7 +1997,7 @@ address,size,status,category,name,src_file
 0x0018bf54,132,matching,ui,ui_func_0018bf54,src/engine/leaf_batch26_a.cpp
 0x0018bfd8,20,matching,unknown,func_0018bfd8,src/engine/leaf_batch21_a.cpp
 0x0018bfec,12684,matching,ui,Result_Calc,src/ui/result.cpp
-0x0018f178,988,matching,ui,RunWin_DrawDownAndCalc,src/ui/window.cpp
+0x0018f178,988,non_matching,ui,RunWin_DrawDownAndCalc,src/ui/window.cpp
 0x0018f554,12,matching,unknown,func_0018f554,src/engine/leaf_matching.cpp
 0x0018f560,4732,matching,ui,Status_CalcTaskCallback,src/ui/status.cpp
 0x001907dc,12,matching_span,raw_span,span_001907dc,src/exact_byte_spans.cpp
