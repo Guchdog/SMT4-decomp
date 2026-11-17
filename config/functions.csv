@@ -2343,7 +2343,7 @@ address,size,status,category,name,src_file
 0x001d3a84,24,matching,unknown,func_001d3a84,src/engine/leaf_batch39_a.cpp
 0x001d3a9c,32,matching,unknown,func_001d3a9c,src/engine/leaf_batch18_b.cpp
 0x001d3abc,84,matching,engine,engine_func_001d3abc,src/engine/leaf_batch29_a.cpp
-0x001d3b10,364,matching,shop,shopMain_Init,src/shop/shop.cpp
+0x001d3b10,364,non_matching,shop,shopMain_Init,src/shop/shop.cpp
 0x001d3c7c,40,matching,engine,engine_func_001d3c7c,src/engine/leaf_batch39_b.cpp
 0x001d3ca4,52,matching,ui,ui_func_001d3ca4,src/engine/leaf_batch22_a.cpp
 0x001d3cd8,52,matching,ui,ui_func_001d3cd8,src/engine/leaf_batch22_a.cpp

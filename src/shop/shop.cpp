@@ -1,39 +1,54 @@
 #include "shop/shop.h"
 #include "ui/status_down.h"
+#include "engine/asd_symbols.h"
 
 namespace smt4::shop {
 
+extern "C" {
+    void engine_func_002c583c(s32);                                             // 0x002c583c
+    void func_0021f1ec(void*);                                                  // 0x0021f1ec
+    void func_001fe15c(void*);                                                  // 0x001fe15c
+    void func_0021f204(void*);                                                  // 0x0021f204
+}
+
 ShopMainManager g_ShopMainManager = {nullptr};
+
 // DECOMP_FUNC(0x001d3b10, 364)
+void shopMain_Init(void* arg0, s32 arg1) {
+    engine_func_002c583c(0);
+    auto* const work = static_cast<ShopMainWork*>(
+        ::AsdMem_Alloc(0x100, 0x100, 0, sizeof(ShopMainWork), 1));
+    g_ShopMainManager.work = work;
+    work->flag_05 = 0;
+    work->flag_04 = 0;
+    work->shop_type = 0;
+    work->shop_data = nullptr;
+    work->flag_14 = 0;
+    work->flag_0c = 0;
 
+    if (arg0 != nullptr && arg1 == 8) {
+        const auto* const params = static_cast<const s32*>(arg0);
+        work->shop_type = static_cast<u8>(params[0]);
+        work->shop_mode = params[1];
+    } else if (arg0 != nullptr && arg1 == 4) {
+        work->shop_mode = *static_cast<const s32*>(arg0);
+    } else {
+        work->shop_mode = 1;
+    }
 
-//
-__attribute__((naked)) void shopMain_Init(void*, s32) {
-    asm volatile(
-        ".word 0xE92D43F0, 0xE1A05000, 0xE24DD014, 0xE1A06001\n"
-        ".word 0xE3A00000, 0xEB03C744, 0xE59F0128, 0xE3A010A7\n"
-        ".word 0xE1A00000, 0xE3A09001, 0xE3A01C01, 0xE3A0301C\n"
-        ".word 0xE3A02000, 0xE1A00001, 0xE58D9000, 0xEB03C40C\n"
-        ".word 0xE59F8104, 0xE3A07000, 0xE3550000, 0xE1A04000\n"
-        ".word 0xE5880000, 0xE5C07005, 0xE5C07004, 0xE5C07006\n"
-        ".word 0xE5807018, 0xE5C07014, 0xE5C0700C, 0x0A000004\n"
-        ".word 0xE3560008, 0x0A00002E, 0xE3560004, 0x05951000\n"
-        ".word 0x0A00002E, 0xE5849008, 0xE59F20C4, 0xE59F10BC\n"
-        ".word 0xE28D0004, 0xE58D2000, 0xE8800012, 0xE3A03000\n"
-        ".word 0xE59F00B0, 0xE1A02003, 0xE3A01002, 0xEB03C76D\n"
-        ".word 0xE5840000, 0xE5981000, 0xE59F509C, 0xE58D000C\n"
-        ".word 0xE58D1008, 0xE59F0094, 0xE3A03000, 0xE3A02001\n"
-        ".word 0xE3A01065, 0xE88D00A0, 0xEB03C404, 0xE5940000\n"
-        ".word 0xE5981000, 0xE3A03000, 0xE58D000C, 0xE58D1008\n"
-        ".word 0xE59F0068, 0xE3A02001, 0xE3A010CC, 0xE88D00A0\n"
-        ".word 0xEB03C3FA, 0xE59F2058, 0xE5941000, 0xE5980000\n"
-        ".word 0xE88D0084, 0xE3A03000, 0xE1CD00F8, 0xE59F0044\n"
-        ".word 0xE3A02001, 0xE3A010E7, 0xEB03C3F0, 0xE28DD014\n"
-        ".word 0xE8BD83F0, 0xE5951000, 0xE5C41006, 0xE5951004\n"
-        ".word 0xE5841008, 0xEAFFFFCF, 0x0040774C, 0x0044E050\n"
-        ".word 0x0021F1EC, 0x001D9538, 0x004077A0, 0x001FE15C\n"
-        ".word 0x00407790, 0x0021F204, 0x0040777C\n"
-    );
+    work->proc_task = ::AsdTask_CreateCalc(
+        "ShopMainProc", 2, 0, 0, shopMain_Proc,
+        reinterpret_cast<void*>(func_0021f1ec),
+        static_cast<u32>(reinterpret_cast<std::uintptr_t>(work)));
+
+    const u32 mgr_word =
+        static_cast<u32>(reinterpret_cast<std::uintptr_t>(g_ShopMainManager.work));
+    ::AsdTask_CreateDraw(
+        "ShopMainDrawUp", 0x65, 1, 0, func_001fe15c, 0, mgr_word, work->proc_task);
+    ::AsdTask_CreateDraw(
+        "ShopMainDrawUp", 0xCC, 1, 0, func_001fe15c, 0, mgr_word, work->proc_task);
+    ::AsdTask_CreateDraw(
+        "ShopMainDrawDown", 0xE7, 1, 0, func_0021f204, 0, mgr_word, work->proc_task);
 }
 
 
