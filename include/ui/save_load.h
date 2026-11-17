@@ -137,7 +137,7 @@ static_assert(sizeof(SaveLoadProcess) == 0x18);
 
 // SaveLoadProcess API
 void SaveLoadProcess_Init(void* arg);                                               // 0x0026b874
-void SaveLoadProcess_Step(void* arg);                                               // 0x002ef9ac
+s32  SaveLoadProcess_Step(void* arg);                                               // 0x002ef9ac
 void SaveLoadProcess_Write(void* arg);                                              // 0x002efb50
 void SaveLoadProcess_Read(void* arg);                                               // 0x00322d70
 void SaveLoadProcess_Close(void* arg);                                              // 0x00322f0c

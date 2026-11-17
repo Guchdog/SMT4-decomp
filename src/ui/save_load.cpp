@@ -1,4 +1,5 @@
 #include "ui/save_load.h"
+#include "ui/window.h"
 #include "engine/asd_symbols.h"
 
 namespace smt4::ui {
@@ -13,6 +14,16 @@ extern "C" {
     void  UiSprite_DrawPanelDirect(s32 type, s32 id, s32 sub_id,
                                    s32 x, s32 y, s32 flag);                     // 0x002BF460
     void  func_00214960(void*);                                                 // 0x00214960
+    u8*   ui_func_002c0ac8();                                                   // 0x002c0ac8
+    void* engine_func_002c54f0(u32, u32, u32, u32, u32);                        // 0x002c54f0
+    void  SaveLoad_Thread_func_00247c64(u32, u32, u32, void*, u32);             // 0x00247c64
+    s32   script_vm_func_001a1bf8();                                            // 0x001a1bf8
+    void* ui_func_0026b844();                                                   // 0x0026b844
+    void  ui_func_002bcf58(void*, const void*, u32);                            // 0x002bcf58
+    void* ui_func_0026b830();                                                   // 0x0026b830
+    void  ui_func_002adb40(void*, const void*);                                 // 0x002adb40
+    u8*   ui_func_002c0b94();                                                   // 0x002c0b94
+    void  ui_func_0026b734();                                                   // 0x0026b734
     extern u8* g_AsdGpuState;                                                   // 0x0044EA00
 }
 
@@ -223,53 +234,54 @@ void SaveLoadProcess_Init_Decompiled(void* arg) {
 // DECOMP_FUNC(0x002ef9ac, 420)
 
 
-//
-__attribute__((naked)) void SaveLoadProcess_Step(void*) {
-    // Preserve the ROM's ARM instructions and in-function literal pool exactly.
-    asm volatile(
-        ".word 0xE92D40F8, 0xEBFF4444, 0xE5901004, 0xE1A04000\n"
-        ".word 0xE3A05001, 0xE3510004, 0x0A000007, 0xE3510005\n"
-        ".word 0x0A00001B, 0xE59F0130, 0xE3510006, 0x0A000041\n"
-        ".word 0xE3510007, 0x1A000020, 0xEA000042, 0xE59F011C\n"
-        ".word 0xE3A010E0, 0xE584000C, 0xE28F0F45, 0xE1A00000\n"
-        ".word 0xE3A01C01, 0xE58D5000, 0xE594300C, 0xE3A02000\n"
-        ".word 0xE1A00001, 0xEBFF56B6, 0xE594100C, 0xE5840008\n"
-        ".word 0xE1A03000, 0xE58D1000, 0xE5942010, 0xE3A01000\n"
-        ".word 0xE3A00003, 0xEBFD608B, 0xE3A00005, 0xE5840004\n"
-        ".word 0xEA000009, 0xE320F000, 0xEBFAC86B, 0xE3500001\n"
-        ".word 0xE320F000, 0x1A000004, 0xEBFF7CAC, 0xE3500000\n"
-        ".word 0x13A00007, 0x0A000002, 0xE5840004, 0xE3A00000\n"
-        ".word 0xE8BD80F8, 0xE5946008, 0xE2865080, 0xE2867088\n"
-        ".word 0xEBFDEF70, 0xE3A02080, 0xE1A01006, 0xEBFF3532\n"
-        ".word 0xE320F000, 0xE320F000, 0xEBFDEF65, 0xE1A01005\n"
-        ".word 0xE320F000, 0xEBFEF826, 0xE320F000, 0xE320F000\n"
-        ".word 0xEBFF4438, 0xE59F2094, 0xE1A01007, 0xEBFF3526\n"
-        ".word 0xE320F000, 0xE320F000, 0xEBFF4432, 0xE1A01000\n"
-        ".word 0xE5940010, 0xE5C10003, 0xEBFDEF16, 0xE3A00006\n"
-        ".word 0xE320F000, 0xEAFFFFDF, 0xE5C05003, 0xE5C05000\n"
-        ".word 0xE3E00000, 0xE8BD80F8, 0xE3A01000, 0xE5C01003\n"
-        ".word 0xE5C05000, 0xE3E00000, 0xE8BD80F8, 0x0043E2F0\n"
-        ".word 0x00024DB0, 0x535C3A63, 0x5C34544D, 0x36445258\n"
-        ".word 0x735C3638, 0x34736464, 0x6F72705C, 0x6D617267\n"
-        ".word 0x6D61675C, 0x74616465, 0x61535C61, 0x6F4C6576\n"
-        ".word 0x72506461, 0x7365636F, 0x70632E73, 0x00000070\n"
-        ".word 0x00024D28\n"
-    );
-}
+// DECOMP_FUNC(0x002ef9ac, 420)
+s32 SaveLoadProcess_Step(void*) {
+    static constexpr u32 kBufferSize = 0x24DB0;
+    static constexpr u32 kHeaderSize = 0x80;
+    static constexpr u32 kMidSize = 0x08;
+    static constexpr u32 kPayloadSize = 0x24D28;
 
-// Higher-level approximation retained while semantic recovery continues.
-void SaveLoadProcess_Step_Decompiled(void* arg) {
-    auto* proc = reinterpret_cast<SaveLoadProcess*>(arg);
-    if (proc == nullptr || proc->status != 0) {
-        return;
+    u8* const proc = ui_func_002c0ac8();
+    auto* const state = reinterpret_cast<s32*>(proc + 0x04);
+    auto* const mgr = reinterpret_cast<u8*>(0x0043E2F0);
+
+    switch (*state) {
+    case 4: {
+        *reinterpret_cast<u32*>(proc + 0x0C) = kBufferSize;
+        void* const buf = engine_func_002c54f0(0x100, 0x100, 0, kBufferSize, 1);
+        *reinterpret_cast<void**>(proc + 0x08) = buf;
+        SaveLoad_Thread_func_00247c64(
+            3, 0, *reinterpret_cast<const u32*>(proc + 0x10), buf,
+            *reinterpret_cast<const u32*>(proc + 0x0C));
+        *state = 5;
+        return 0;
     }
-
-    if (proc->bytes_transferred < proc->file_size) {
-        proc->bytes_transferred += 0x1000;
-        if (proc->bytes_transferred >= proc->file_size) {
-            proc->bytes_transferred = proc->file_size;
-            proc->status = 1; // Completed
+    case 5: {
+        if (script_vm_func_001a1bf8() == 1) {
+            if (SearchWin_Dismiss()) {
+                *state = 7;
+                return 0;
+            }
+            const auto* const buf = *reinterpret_cast<const u8* const*>(proc + 0x08);
+            ui_func_002bcf58(ui_func_0026b844(), buf, kHeaderSize);
+            ui_func_002adb40(ui_func_0026b830(), buf + kHeaderSize);
+            ui_func_002bcf58(ui_func_002c0b94(), buf + kHeaderSize + kMidSize, kPayloadSize);
+            ui_func_002c0b94()[3] = static_cast<u8>(*reinterpret_cast<const u32*>(proc + 0x10));
+            ui_func_0026b734();
+            *state = 6;
         }
+        return 0;
+    }
+    case 6:
+        mgr[3] = 1;
+        mgr[0] = 1;
+        return -1;
+    case 7:
+        mgr[3] = 0;
+        mgr[0] = 1;
+        return -1;
+    default:
+        return 0;
     }
 }
 // DECOMP_FUNC(0x002efb50, 456)
