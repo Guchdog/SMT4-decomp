@@ -923,8 +923,8 @@ s32 Status_HandleLRPrompt() {
     return prompt_flag == 0 ? 4 : 2;
 }
 
-// Readable reconstruction retained alongside the byte-exact ARM entry below.
-[[maybe_unused]] static void Status_UpdateAffinityTable_Decompiled() {
+// DECOMP_FUNC(0x00293e4c, 520)
+void Status_UpdateAffinityTable() {
     StatusWork* work = g_StatusManager.work;
     work->field_14 = 0;
     work->flag_1e63 = 1;
@@ -943,9 +943,6 @@ s32 Status_HandleLRPrompt() {
         }
         if (*affinity_lock == 0 && *display_state == 2) {
             StatusDown_SetDisplayMode(2);
-        }
-        if (*display_state == 3) {
-            StatusDown_SetDisplayMode(5);
         }
         return;
     }
@@ -1024,48 +1021,6 @@ s32 Status_HandleLRPrompt() {
     if (*display_state == 3) {
         StatusDown_SetDisplayMode(5);
     }
-}
-
-// Exact ARM-state body, including the four-word literal pool at 0x00294044.
-// The readable version above records the branch cases and mode mapping.
-// DECOMP_FUNC(0x00293e4c, 520)
-__attribute__((naked)) void Status_UpdateAffinityTable() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xE59F01F0, 0xE92D4070, 0xE3A01000, 0xE3A02001\n"
-        ".word 0xE5904004, 0xE59F01E0, 0xE5841014, 0xE2801003\n"
-        ".word 0xE7C02004, 0xE7D10004, 0xE59F11C8, 0xE3500000\n"
-        ".word 0xE5911004, 0xE2815A01, 0x0A000026, 0xE3500006\n"
-        ".word 0x0A000035, 0xE3500008, 0x13500009, 0x0A00003E\n"
-        ".word 0xE350000A, 0x1350000B, 0x13500007, 0x0A00003A\n"
-        ".word 0xE350000E, 0x0A000044, 0xE350000D, 0x0A000048\n"
-        ".word 0xE59F0188, 0xE7D00004, 0xE3500006, 0xE59502E4\n"
-        ".word 0x0A000057, 0xE3500000, 0x03A00000, 0x0BFFFC19\n"
-        ".word 0xE59502E4, 0xE3500001, 0x03A00001, 0x0BFFFC15\n"
-        ".word 0xE59F015C, 0xE7D00004, 0xE3500000, 0x1A000025\n"
-        ".word 0xE59502E4, 0xE3500002, 0x03A00004, 0x0BFFFC0D\n"
-        ".word 0xE59502E4, 0xE3500003, 0x1A00001E, 0xE8BD4070\n"
-        ".word 0xE3A00005, 0xEAFFFC07, 0xE59502E4, 0xE3500000\n"
-        ".word 0x03A00000, 0x0BFFFC03, 0xE59502E4, 0xE3500001\n"
-        ".word 0x03A00001, 0x0BFFFBFF, 0xE59F0104, 0xE7D00004\n"
-        ".word 0xE3500000, 0x059502E4, 0x03500002, 0x1A00000D\n"
-        ".word 0xE8BD4070, 0xE3A00002, 0xEAFFFBF6, 0xE59502E4\n"
-        ".word 0xE3500000, 0x03A00000, 0x0BFFFBF2, 0xE59502E4\n"
-        ".word 0xE3500001, 0x03A00001, 0x0BFFFBEE, 0xE59502E4\n"
-        ".word 0xE3500002, 0x0AFFFFE0, 0xE8BD8070, 0xE59502E4\n"
-        ".word 0xE3500000, 0x03A00001, 0x0BFFFBE6, 0xE59502E4\n"
-        ".word 0xE3500001, 0x03A00004, 0x0BFFFBE2, 0xE59502E4\n"
-        ".word 0xE3500002, 0x0AFFFFD4, 0xE8BD8070, 0xE59502E4\n"
-        ".word 0xE3500000, 0x1AFFFFEF, 0xE8BD4070, 0xE3A00000\n"
-        ".word 0xEAFFFBD8, 0xE59502E4, 0xE3500000, 0x03A00000\n"
-        ".word 0x0BFFFBD4, 0xE59502E4, 0xE3500001, 0x03A00001\n"
-        ".word 0x0BFFFBD0, 0xE59F0048, 0xE7D00004, 0xE3500000\n"
-        ".word 0x1AFFFFE0, 0xE59502E4, 0xE3500002, 0x03A00004\n"
-        ".word 0x0BFFFBC8, 0xE59502E4, 0xE3500003, 0x0AFFFFBA\n"
-        ".word 0xE8BD8070, 0xE3500000, 0x1AFFFFD6, 0xE8BD4070\n"
-        ".word 0xE3A00001, 0xEAFFFBBF, 0x0044E140, 0x00001E63\n"
-        ".word 0x00001E67, 0x000012F1\n"
-    );
 }
 
 [[maybe_unused]] static f32 Status_GetCalculatedScale_Decompiled() {

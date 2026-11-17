@@ -4798,7 +4798,7 @@ address,size,status,category,name,src_file
 0x00293d50,20,non_matching,ui,StatusDown_GetActiveMode,src/ui/status_down.cpp
 0x00293d64,204,non_matching,ui,Status_HandleLRPrompt,src/ui/status.cpp
 0x00293e30,28,non_matching,ui,StatusDown_GetStatusMode,src/ui/status_down.cpp
-0x00293e4c,520,matching,ui,Status_UpdateAffinityTable,src/ui/status.cpp
+0x00293e4c,520,non_matching,ui,Status_UpdateAffinityTable,src/ui/status.cpp
 0x00294054,88,matching,ui,ui_func_00294054,src/engine/leaf_batch29_b.cpp
 0x002940ac,112,non_matching,ui,ui_func_002940ac,src/engine/leaf_batch30_b.cpp
 0x0029411c,88,matching,ui,ui_func_0029411c,src/engine/leaf_batch29_b.cpp
