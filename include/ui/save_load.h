@@ -140,6 +140,6 @@ void SaveLoadProcess_Init(void* arg);                                           
 s32  SaveLoadProcess_Step(void* arg);                                               // 0x002ef9ac
 s32  SaveLoadProcess_Write(void* arg);                                             // 0x002efb50
 void* SaveLoadProcess_Read(void* arg);                                              // 0x00322d70
-void SaveLoadProcess_Close(void* arg);                                              // 0x00322f0c
+void* SaveLoadProcess_Close(u32 slot, u8 flag);                                     // 0x00322f0c
 
 } // namespace smt4::ui

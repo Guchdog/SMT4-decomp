@@ -386,41 +386,38 @@ void* SaveLoadProcess_Read(void*) {
     return *reinterpret_cast<void**>(proc + 0x00);
 }
 // DECOMP_FUNC(0x00322f0c, 304)
+void* SaveLoadProcess_Close(u32 slot, u8 flag) {
+    auto* const proc = static_cast<u8*>(
+        AsdMem_Alloc(0x100, 0x100, 0, sizeof(SaveLoadProcess), 1));
+    ui_func_0026b7ec(1);
+    camp_func_002594cc(1);
+    ui_func_002594ac(1);
+    *reinterpret_cast<void**>(proc + 0x08) = nullptr;
 
+    const u32 cur_slot = ui_func_002c0b94()[3];
+    *reinterpret_cast<u32*>(proc + 0x10) = (cur_slot == 0) ? 1u : cur_slot;
 
-//
-__attribute__((naked)) void SaveLoadProcess_Close(void*) {
-    // Preserve the ROM's ARM instructions and in-function literal pool exactly.
-    asm volatile(
-        ".word 0xE92D41F0, 0xE1A05000, 0xE1A06001, 0xE24DD010\n"
-        ".word 0xE3A010C2, 0xE28F00C4, 0xE1A00000, 0xE3A08001\n"
-        ".word 0xE3A01C01, 0xE3A03018, 0xE3A02000, 0xE1A00001\n"
-        ".word 0xE58D8000, 0xEBFE870F, 0xE1A04000, 0xE3A00001\n"
-        ".word 0xEBFD2226, 0xE3A00001, 0xEBFCD95C, 0xE3A00001\n"
-        ".word 0xEBFCD952, 0xE3A07000, 0xE5847008, 0xEBFE7709\n"
-        ".word 0xE5D01003, 0xE59F00B0, 0xE59F20B4, 0xE3510000\n"
-        ".word 0xE5841010, 0x05848010, 0xE5C07003, 0xE5C07004\n"
-        ".word 0xE5807008, 0xE1C070B6, 0xE5C07000, 0xE5C07001\n"
-        ".word 0xE5C07002, 0xE59F1084, 0xE5845010, 0xE28D0004\n"
-        ".word 0xE58D2000, 0xE8800012, 0xE3A03000, 0xE1A02003\n"
-        ".word 0xE3A01002, 0xE28F006C, 0xEBFE8A6B, 0xE3A02000\n"
-        ".word 0xE3A01702, 0xE5840000, 0xEBFB2642, 0xE5847004\n"
-        ".word 0xE5C46014, 0xE5940000, 0xE28DD010, 0xE8BD81F0\n"
-        ".word 0x535C3A63, 0x5C34544D, 0x36445258, 0x735C3638\n"
-        ".word 0x34736464, 0x6F72705C, 0x6D617267, 0x6D61675C\n"
-        ".word 0x74616465, 0x61535C61, 0x6F4C6576, 0x72506461\n"
-        ".word 0x7365636F, 0x70632E73, 0x00000070, 0x0043E2F0\n"
-        ".word 0x00324D6C, 0x002EFB50, 0x65766153, 0x00000000\n"
-    );
-}
+    auto* const mgr = reinterpret_cast<u8*>(0x0043E2F0);
+    mgr[3] = 0;
+    mgr[4] = 0;
+    *reinterpret_cast<u32*>(mgr + 8) = 0;
+    *reinterpret_cast<u16*>(mgr + 6) = 0;
+    mgr[0] = 0;
+    mgr[1] = 0;
+    mgr[2] = 0;
 
-// Higher-level approximation retained while semantic recovery continues.
-void SaveLoadProcess_Close_Decompiled(void* arg) {
-    auto* proc = reinterpret_cast<SaveLoadProcess*>(arg);
-    if (proc != nullptr) {
-        proc->operation = 0;
-        proc->status = 0;
-    }
+    *reinterpret_cast<u32*>(proc + 0x10) = slot;
+    void* const task = AsdTask_CreateCalc(
+        "Save", 2, 0, 0,
+        reinterpret_cast<void (*)(void*)>(SaveLoadProcess_Write),
+        reinterpret_cast<void*>(&ui_func_00324d6c),
+        static_cast<u32>(reinterpret_cast<std::uintptr_t>(proc)));
+    *reinterpret_cast<void**>(proc + 0x00) = task;
+    ui_func_001ec8e4(task, 0x80000, 0);
+
+    *reinterpret_cast<u32*>(proc + 0x04) = 0;
+    proc[0x14] = flag;
+    return *reinterpret_cast<void**>(proc + 0x00);
 }
 
 } // namespace smt4::ui
