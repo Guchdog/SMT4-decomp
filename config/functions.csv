@@ -4779,7 +4779,7 @@ address,size,status,category,name,src_file
 0x00292f44,304,non_matching,ui,StatusDown_SetDisplayMode,src/ui/status_down.cpp
 0x00293074,344,matching,battle,battle_func_00293074,src/engine/leaf_batch43_c.cpp
 0x002931cc,36,matching,battle,battle_func_002931cc,src/engine/leaf_batch18_c.cpp
-0x002931f0,740,matching,camp,camp_func_002931f0,src/engine/leaf_batch45_a.cpp
+0x002931f0,740,non_matching,camp,camp_func_002931f0,src/engine/leaf_batch45_a.cpp
 0x002934d4,56,matching,battle,battle_func_002934d4,src/engine/leaf_batch27_b.cpp
 0x0029350c,112,non_matching,script_vm,script_vm_func_0029350c,src/engine/leaf_batch30_b.cpp
 0x0029357c,112,non_matching,script_vm,script_vm_func_0029357c,src/engine/leaf_batch30_b.cpp
