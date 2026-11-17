@@ -2292,7 +2292,7 @@ address,size,status,category,name,src_file
 0x001ca620,40,matching,engine,engine_func_001ca620,src/engine/leaf_batch22_a.cpp
 0x001ca648,8908,matching,ui,StatusDown_CalcTaskCallback,src/ui/status_down.cpp
 0x001cc914,5348,matching,ui,StatusDown_DrawTaskCallback,src/ui/status_down.cpp
-0x001cddf8,516,matching,ui,Status_DrawBackUp,src/ui/status.cpp
+0x001cddf8,516,non_matching,ui,Status_DrawBackUp,src/ui/status.cpp
 0x001cdffc,296,matching,script_vm,script_vm_func_001cdffc,src/engine/leaf_batch43_c.cpp
 0x001ce124,120,matching,camp,camp_func_001ce124,src/engine/leaf_batch26_a.cpp
 0x001ce19c,520,non_matching,camp,camp_func_001ce19c,src/engine/leaf_batch34_c.cpp

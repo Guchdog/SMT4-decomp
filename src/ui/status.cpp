@@ -146,145 +146,67 @@ void Status_CalcTaskCallback(void* arg) {
 #endif
 
 // DECOMP_FUNC(0x001cddf8, 516)
+void Status_DrawBackUp(void*) {
+    struct BackPanelSpec {
+        s32 panel_idx;
+        u32 alpha_offset;
+        s32 sub_id;
+    };
+    static constexpr BackPanelSpec kPanels[3] = {
+        {9, 0x550, 0},
+        {7, 0x438, 1},
+        {8, 0x4C4, 2},
+    };
+    static constexpr f32 kScale = 0.35f;
 
+    const StatusWork* const work = g_StatusManager.work;
+    if (work->flag_1e61 == 0) {
+        return;
+    }
+    if (work->sub_menu_state != 3 && work->sub_menu_state != 9) {
+        return;
+    }
 
-//
-__attribute__((naked)) void Status_DrawBackUp(void*) {
-    asm volatile(
-        ".arm\n"
-        "push {r4, r5, r6, r7, lr}\n"
-        "mov r6, #0\n"
-        "ldr r0, [pc, #0x1dc]\n"
-        "vpush {d8}\n"
-        "sub sp, sp, #0x14\n"
-        "ldr r5, [r0, #4]\n"
-        "ldr r0, [pc, #0x1d0]\n"
-        "str r6, [sp, #8]\n"
-        "str r6, [sp, #0xc]\n"
-        "ldrb r0, [r0, r5]\n"
-        "cmp r0, #0\n"
-        "beq .Lstatus_backup_exit\n"
-        "ldr r0, [pc, #0x1bc]\n"
-        "ldrb r0, [r0, r5]\n"
-        "cmp r0, #3\n"
-        "cmpne r0, #9\n"
-        "bne .Lstatus_backup_draw_done\n"
-        "ldr r7, [pc, #0x1ac]\n"
-        "ldr r0, [r7]\n"
-        ".word 0xeb03d757\n" // bl 0x002c3ba8
-        "ldr r4, [r7]\n"
-        "mov r1, #0\n"
-        "mov r0, #1\n"
-        ".word 0xeb03e048\n" // bl 0x002c5f7c
-        "add r4, r4, #0x1000\n"
-        "add r4, r4, #0x24c\n"
-        "ldr r1, [r4]\n"
-        "add r2, r1, #1\n"
-        "add r3, r4, r1, lsl #2\n"
-        "ldr r1, [r3, #8]\n"
-        "add r3, r4, r2, lsl #2\n"
-        "str r2, [r4]\n"
-        "str r0, [r3, #8]\n"
-        "ldrb r2, [r4, #0x18]\n"
-        "cmp r2, #0\n"
-        "cmpeq r1, r0\n"
-        "beq .Lstatus_backup_after_callback\n"
-        "ldr r1, [r4, #0x1c]\n"
-        "blx r1\n"
-        "strb r6, [r4, #0x18]\n"
-        ".Lstatus_backup_after_callback:\n"
-        "vldr s16, [pc, #0x154]\n"
-        "mov r2, #9\n"
-        "add r1, sp, #0xc\n"
-        "vmov.f32 s0, s16\n"
-        "add r0, sp, #8\n"
-        ".word 0xeb02eca9\n" // bl 0x00289158: Status_Destroy
-        "add r0, r5, #0x530\n"
-        "nop\n"
-        "vldr s0, [r0, #0x20]\n"
-        "nop\n"
-        "nop\n"
-        ".word 0xeb03c611\n" // bl 0x002bf710: UiGpu_SetAlphaBlend
-        "ldr r0, [sp, #0xc]\n"
-        "mov r4, #1\n"
-        "mov r2, #0\n"
-        "stm sp, {r0, r4}\n"
-        "ldr r3, [sp, #8]\n"
-        "mov r1, #0x1a\n"
-        "mov r0, #2\n"
-        ".word 0xeb03c55d\n" // bl 0x002bf460: UiSprite_DrawPanelDirect
-        "vldr s17, [pc, #0x108]\n"
-        "vmov.f32 s0, s17\n"
-        ".word 0xeb03c606\n" // bl 0x002bf710: UiGpu_SetAlphaBlend
-        "vmov.f32 s0, s16\n"
-        "mov r2, #7\n"
-        "add r1, sp, #0xc\n"
-        "add r0, sp, #8\n"
-        ".word 0xeb02ec93\n" // bl 0x00289158: Status_Destroy
-        "add r0, r5, #0x400\n"
-        "add r0, r0, #0x18\n"
-        "vldr s0, [r0, #0x20]\n"
-        "nop\n"
-        "nop\n"
-        ".word 0xeb03c5fb\n" // bl 0x002bf710: UiGpu_SetAlphaBlend
-        "ldr r0, [sp, #0xc]\n"
-        "mov r2, #1\n"
-        "mov r1, #0x1a\n"
-        "stm sp, {r0, r4}\n"
-        "ldr r3, [sp, #8]\n"
-        "mov r0, #2\n"
-        ".word 0xeb03c548\n" // bl 0x002bf460: UiSprite_DrawPanelDirect
-        "vmov.f32 s0, s17\n"
-        "nop\n"
-        ".word 0xeb03c5f1\n" // bl 0x002bf710: UiGpu_SetAlphaBlend
-        "vmov.f32 s0, s16\n"
-        "mov r2, #8\n"
-        "add r1, sp, #0xc\n"
-        "add r0, sp, #8\n"
-        ".word 0xeb02ec7e\n" // bl 0x00289158: Status_Destroy
-        "add r0, r5, #0x400\n"
-        "add r0, r0, #0xa4\n"
-        "vldr s0, [r0, #0x20]\n"
-        "nop\n"
-        "nop\n"
-        ".word 0xeb03c5e6\n" // bl 0x002bf710: UiGpu_SetAlphaBlend
-        "ldr r0, [sp, #0xc]\n"
-        "mov r2, #2\n"
-        "mov r1, #0x1a\n"
-        "stm sp, {r0, r4}\n"
-        "ldr r3, [sp, #8]\n"
-        "mov r0, r2\n"
-        ".word 0xeb03c533\n" // bl 0x002bf460: UiSprite_DrawPanelDirect
-        "ldr r0, [r7]\n"
-        "add r4, r0, #0x1000\n"
-        "add r4, r4, #0x24c\n"
-        "ldr r0, [r4]\n"
-        "add r1, r4, r0, lsl #2\n"
-        "sub r0, r0, #1\n"
-        "ldr r1, [r1, #8]\n"
-        "str r0, [r4]\n"
-        "add r0, r4, r0, lsl #2\n"
-        "ldrb r2, [r4, #0x18]\n"
-        "ldr r0, [r0, #8]\n"
-        "cmp r2, #0\n"
-        "cmpeq r1, r0\n"
-        "beq .Lstatus_backup_draw_done\n"
-        "ldr r1, [r4, #0x1c]\n"
-        "blx r1\n"
-        "strb r6, [r4, #0x18]\n"
-        ".Lstatus_backup_draw_done:\n"
-        "mov r0, #0\n"
-        ".Lstatus_backup_exit:\n"
-        "add sp, sp, #0x14\n"
-        "vpop {d8}\n"
-        "pop {r4, r5, r6, r7, pc}\n"
-        ".word 0x0044e140\n"
-        ".word 0x00001e61\n"
-        ".word 0x00001e67\n"
-        ".word 0x0044ea00\n"
-        ".word 0x3eb33333\n"
-        ".word 0x3f800000\n"
-    );
+    auto sync_viewport = [](u8* vp_stack, void* old_vp, void* target_vp) {
+        if (vp_stack[0x18] != 0 || old_vp != target_vp) {
+            using ViewportCb = void (*)(void*);
+            (*reinterpret_cast<const ViewportCb*>(vp_stack + 0x1C))(target_vp);
+            vp_stack[0x18] = 0;
+        }
+    };
+
+    UiGpu_BeginPass(g_AsdGpuState);
+
+    void* const new_vp = UiGpu_SetViewportParams(1, 0);
+    auto* const vp_stack = g_AsdGpuState + 0x124C;
+    auto* const vp_idx = reinterpret_cast<s32*>(vp_stack);
+    auto* const vp_slots = reinterpret_cast<void**>(vp_stack + 0x08);
+    const s32 push_idx = *vp_idx;
+    void* const prev_vp = vp_slots[push_idx];
+    *vp_idx = push_idx + 1;
+    vp_slots[push_idx + 1] = new_vp;
+    sync_viewport(vp_stack, prev_vp, new_vp);
+
+    const auto* const work_bytes = reinterpret_cast<const u8*>(work);
+    for (s32 i = 0; i < 3; ++i) {
+        if (i > 0) {
+            UiGpu_SetAlphaBlend(1.0f);
+        }
+        s32 x = 0;
+        s32 y = 0;
+        Status_Destroy(&x, &y, kPanels[i].panel_idx, kScale);
+        UiGpu_SetAlphaBlend(*reinterpret_cast<const f32*>(work_bytes + kPanels[i].alpha_offset));
+        UiSprite_DrawPanelDirect(2, 0x1A, kPanels[i].sub_id, x, y, 1);
+    }
+
+    auto* const pop_stack = g_AsdGpuState + 0x124C;
+    auto* const pop_idx = reinterpret_cast<s32*>(pop_stack);
+    auto* const pop_slots = reinterpret_cast<void**>(pop_stack + 0x08);
+    const s32 cur_idx = *pop_idx;
+    void* const popped_vp = pop_slots[cur_idx];
+    *pop_idx = cur_idx - 1;
+    void* const restored_vp = pop_slots[cur_idx - 1];
+    sync_viewport(pop_stack, popped_vp, restored_vp);
 }
 
 // DECOMP_FUNC(0x001a310c, 15148)
