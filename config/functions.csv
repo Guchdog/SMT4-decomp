@@ -380,7 +380,7 @@ address,size,status,category,name,src_file
 0x0011913c,172,matching,battle,battle_func_0011913c,src/engine/leaf_batch30_a.cpp
 0x001191e8,1160,matching,ui,ui_func_001191e8,src/engine/leaf_batch40_a.cpp
 0x00119670,340,matching,battle,battle_func_00119670,src/engine/leaf_batch41_a.cpp
-0x001197c4,772,matching,engine,engine_func_001197c4,src/engine/leaf_batch45_a.cpp
+0x001197c4,772,non_matching,engine,engine_func_001197c4,src/engine/leaf_batch45_a.cpp
 0x00119ac8,128,matching,battle,battle_func_00119ac8,src/engine/leaf_batch29_a.cpp
 0x00119b48,384,matching,engine,engine_func_00119b48,src/engine/leaf_batch44_a.cpp
 0x00119cc8,172,matching,engine,engine_func_00119cc8,src/engine/leaf_batch27_a.cpp
