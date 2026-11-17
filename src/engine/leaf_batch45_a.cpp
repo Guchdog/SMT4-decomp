@@ -10604,103 +10604,173 @@ extern "C" void engine_func_003922f0(u8* self) {
 }
 
 // DECOMP_FUNC(0x002f9914, 736)
-extern "C" __attribute__((naked)) void func_002f9914() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x5ff0, 0xe92d, 0xa034, 0xe5b0\n"
-        ".hword 0x0008, 0xe280, 0x0202, 0xe890\n"
-        ".hword 0x00b0, 0xe891, 0x6034, 0xe599\n"
-        ".hword 0xb03c, 0xe595, 0x0006, 0xe15a\n"
-        ".hword 0x0001, 0xda00, 0x0000, 0xe356\n"
-        ".hword 0x00a1, 0x1a00, 0x0038, 0xe595\n"
-        ".hword 0x1298, 0xe59f, 0x0080, 0xe080\n"
-        ".hword 0x0180, 0xe081, 0x100c, 0xe590\n"
-        ".hword 0x0005, 0xe1a0, 0xff31, 0xe12f\n"
-        ".hword 0xc0d5, 0xebfd, 0x1034, 0xe595\n"
-        ".hword 0xaa10, 0xee00, 0x6a90, 0xee00\n"
-        ".hword 0x0001, 0xe080, 0x0034, 0xe585\n"
-        ".hword 0x0000, 0xe59b, 0x1008, 0xe597\n"
-        ".hword 0x1ac0, 0xeeb8, 0x0ae0, 0xeef8\n"
-        ".hword 0x3008, 0xe590, 0x00f2, 0xe1d0\n"
-        ".hword 0x2030, 0xe591, 0x8038, 0xe599\n"
-        ".hword 0x1001, 0xe240, 0x0054, 0xe597\n"
-        ".hword 0x3030, 0xe593, 0x0004, 0xe380\n"
-        ".hword 0x0a20, 0xee81, 0x0054, 0xe587\n"
-        ".hword 0x0000, 0xe59b, 0xc054, 0xe590\n"
-        ".hword 0xc004, 0xe38c, 0xc054, 0xe580\n"
-        ".hword 0x00c4, 0xe5d9, 0x0000, 0xe350\n"
-        ".hword 0x007f, 0x1a00, 0x0000, 0xe358\n"
-        ".hword 0x7000, 0xe3a0, 0x007c, 0x9a00\n"
-        ".hword 0x6210, 0xe59f, 0x2a82, 0xeddf\n"
-        ".hword 0xe081, 0xe081, 0x000c, 0xe593\n"
-        ".hword 0xc204, 0xe59f, 0x0000, 0xe586\n"
-        ".hword 0x0010, 0xe593, 0x9c01, 0xe28c\n"
-        ".hword 0xae12, 0xe28c, 0x0004, 0xe586\n"
-        ".hword 0x0014, 0xe593, 0xbe11, 0xe28c\n"
-        ".hword 0x1e11, 0xe28c, 0x0008, 0xe586\n"
-        ".hword 0x0c01, 0xe28c, 0x0a04, 0xecd6\n"
-        ".hword 0x5c01, 0xe28c, 0x0a04, 0xecc9\n"
-        ".hword 0x0a04, 0xecca, 0x9024, 0xe593\n"
-        ".hword 0x9000, 0xe586, 0x9028, 0xe593\n"
-        ".hword 0x9004, 0xe586, 0x902c, 0xe593\n"
-        ".hword 0x9008, 0xe586, 0x9a10, 0xee04\n"
-        ".hword 0x3a02, 0xec96, 0x2a47, 0xed8c\n"
-        ".hword 0x3a03, 0xec8b, 0x0a03, 0xecc6\n"
-        ".hword 0x0a06, 0xedc2, 0x9004, 0xe596\n"
-        ".hword 0x901c, 0xe582, 0x9008, 0xe596\n"
-        ".hword 0x9020, 0xe582, 0x0a00, 0xedd0\n"
-        ".hword 0x1a00, 0xed91, 0x0ac1, 0xee70\n"
-        ".hword 0x0a00, 0xedc0, 0x0a01, 0xedd0\n"
-        ".hword 0x1a01, 0xed91, 0x0ac1, 0xee70\n"
-        ".hword 0x0a01, 0xedc0, 0x0a02, 0xedd0\n"
-        ".hword 0x1a02, 0xed91, 0x0ac1, 0xee70\n"
-        ".hword 0x0a02, 0xedc0, 0x1a03, 0xed90\n"
-        ".hword 0x0a03, 0xedd1, 0x0a60, 0xee71\n"
-        ".hword 0x0a03, 0xedc0, 0x1a00, 0xedd5\n"
-        ".hword 0x0a01, 0xedd5, 0x1aa1, 0xee21\n"
-        ".hword 0x1aa0, 0xee00, 0x0a02, 0xedd5\n"
-        ".hword 0x1aa0, 0xee00, 0x0ac1, 0xeef1\n"
-        ".hword 0x0ae2, 0xeef4, 0xfa10, 0xeef1\n"
-        ".hword 0x0007, 0xda00, 0x2aa0, 0xee81\n"
-        ".hword 0x3a01, 0xed95, 0x1a02, 0xed95\n"
-        ".hword 0x2a00, 0xed85, 0x1a20, 0xeec3\n"
-        ".hword 0x1a01, 0xedc5, 0x3a20, 0xee81\n"
-        ".hword 0x3a02, 0xed85, 0x0a00, 0xedd4\n"
-        ".hword 0x1a40, 0xed9c, 0x5e12, 0xe28c\n"
-        ".hword 0x0a80, 0xee60, 0x1c01, 0xe28c\n"
-        ".hword 0x0000, 0xe357, 0x1a20, 0xee21\n"
-        ".hword 0x1a40, 0xed8c, 0x1a41, 0xed9c\n"
-        ".hword 0x1a20, 0xee21, 0x1a41, 0xed8c\n"
-        ".hword 0x1a42, 0xed9c, 0x1a20, 0xee21\n"
-        ".hword 0x1a42, 0xed8c, 0x1a43, 0xed9c\n"
-        ".hword 0x0a20, 0xee61, 0x0a43, 0xedcc\n"
-        ".hword 0x0a40, 0xeddc, 0x1a48, 0xed9c\n"
-        ".hword 0x0a81, 0xee70, 0x0a40, 0xedcc\n"
-        ".hword 0x0a01, 0xedd1, 0x1a01, 0xed95\n"
-        ".hword 0xcc01, 0xe28c, 0x0a81, 0xee70\n"
-        ".hword 0x0a01, 0xedc1, 0x0a02, 0xedd1\n"
-        ".hword 0x1a02, 0xed95, 0x0a81, 0xee70\n"
-        ".hword 0x0a02, 0xedc1, 0x1a03, 0xed95\n"
-        ".hword 0x0a03, 0xedd1, 0x0a81, 0xee70\n"
-        ".hword 0x0a03, 0xedc1, 0x1023, 0xe89c\n"
-        ".hword 0x1023, 0xe886, 0x500c, 0xe282\n"
-        ".hword 0x0000, 0xe582, 0x0004, 0xe596\n"
-        ".hword 0x0004, 0xe582, 0x0008, 0xe596\n"
-        ".hword 0x0008, 0xe582, 0x003c, 0xe283\n"
-        ".hword 0x1003, 0xe890, 0x1003, 0xe885\n"
-        ".hword 0x000a, 0x0a00, 0x0024, 0xe243\n"
-        ".hword 0x5024, 0xe282, 0x1003, 0xe890\n"
-        ".hword 0x1003, 0xe885, 0x7001, 0xe287\n"
-        ".hword 0x0008, 0xe157, 0x2030, 0xe282\n"
-        ".hword 0x3030, 0xe283, 0x4004, 0xe284\n"
-        ".hword 0xff85, 0x3aff, 0x9ff0, 0xe8bd\n"
-        ".hword 0xc10e, 0xe083, 0xc048, 0xe24c\n"
-        ".hword 0x5024, 0xe282, 0x1003, 0xe89c\n"
-        ".hword 0x1003, 0xe885, 0xfff2, 0xeaff\n"
-        ".hword 0x2718, 0x0047, 0x0000, 0x0000\n"
-        ".hword 0x2550, 0x0047, 0xa81c, 0x004e\n"
-    );
-};
+// Skeletal blend/interpolation step.  `self` holds the current frame at +0x34,
+// the blend descriptor at +0x3C (weights, owner, target) and the playback state
+// at +0x40.  Per joint it builds a direction/length vector in the global
+// scratch buffers at 0x004EA91C (A), 0x004EA92C (B), 0x004EA93C (C) and the
+// staging vec3 at 0x00472550, exactly as the original does, so those globals
+// are part of the observable behavior.
+extern "C" s32 ui_func_00269cb8();
+
+namespace {
+inline float bits_to_float(u32 bits) { return __builtin_bit_cast(float, bits); }
+inline u32 float_to_bits(float value) { return __builtin_bit_cast(u32, value); }
+}  // namespace
+
+extern "C" void func_002f9914(u8* self) {
+    constexpr u32 kScratchVec = 0x00472550u;
+    constexpr u32 kBufferA = 0x004EA91Cu;
+    constexpr u32 kBufferB = 0x004EA92Cu;
+    constexpr u32 kBufferC = 0x004EA93Cu;
+    constexpr u32 kOwnerHandlerTable = 0x00472718u;
+
+    const s32 frame = *reinterpret_cast<const s32*>(self + 0x34);
+    u8* const desc = *reinterpret_cast<u8* const*>(self + 0x3C);
+    u8* const state = *reinterpret_cast<u8* const*>(self + 0x40);
+    const float* weights = *reinterpret_cast<const float* const*>(desc + 0x00);
+    u8* const owner = *reinterpret_cast<u8* const*>(desc + 0x04);
+    u8* const target = *reinterpret_cast<u8* const*>(desc + 0x08);
+    const s32 total = *reinterpret_cast<const s32*>(state + 0x34);
+    u8* const holder = *reinterpret_cast<u8* const*>(owner + 0x3C);
+
+    if (frame > total && total != 0) {
+        return;
+    }
+
+    // Per-owner-type update callback (24-byte table entries, slot +0x0C).
+    const u32 owner_type = *reinterpret_cast<const u32*>(owner + 0x38);
+    const u32 handler =
+        reinterpret_cast<const u32*>(kOwnerHandlerTable)[owner_type * 6 + 3];
+    reinterpret_cast<void (*)(u8*)>(handler)(owner);
+
+    *reinterpret_cast<s32*>(owner + 0x34) =
+        ui_func_00269cb8() + *reinterpret_cast<const s32*>(owner + 0x34);
+
+    const float step =
+        static_cast<float>(frame) / static_cast<float>(total);
+
+    u8* const first = *reinterpret_cast<u8* const*>(holder);
+    u8* const target_data = *reinterpret_cast<u8* const*>(target + 0x08);
+    u8* const in_table = *reinterpret_cast<u8* const*>(first + 0x08);
+    const s32 joint_count_m1 =
+        static_cast<s32>(*reinterpret_cast<const s16*>(first + 0x02)) - 1;
+    u32* dst = *reinterpret_cast<u32* const*>(target_data + 0x30);
+    const u32 joint_total = *reinterpret_cast<const u32*>(state + 0x38);
+    const u32* src = *reinterpret_cast<const u32* const*>(in_table + 0x30);
+
+    *reinterpret_cast<u32*>(target + 0x54) |= 4u;
+    u8* const again = *reinterpret_cast<u8* const*>(holder);
+    *reinterpret_cast<u32*>(again + 0x54) |= 4u;
+
+    if (state[0xC4] != 0 || joint_total == 0) {
+        return;
+    }
+
+    u32* const scratch = reinterpret_cast<u32*>(kScratchVec);
+    u32* const buf_a = reinterpret_cast<u32*>(kBufferA);
+    u32* const buf_b = reinterpret_cast<u32*>(kBufferB);
+    u32* const buf_c = reinterpret_cast<u32*>(kBufferC);
+    const u32* const last_rest = src + joint_count_m1 * 3 - 18;
+
+    for (u32 i = 0; i < joint_total; ++i) {
+        scratch[0] = src[3];
+        scratch[1] = src[4];
+        scratch[2] = src[5];
+        const u32 w0 = scratch[0];
+        const u32 w1 = scratch[1];
+        const u32 w2 = scratch[2];
+        const u32 w3 = scratch[3];
+        buf_a[0] = w0;
+        buf_a[1] = w1;
+        buf_a[2] = w2;
+        buf_a[3] = w3;
+        buf_c[0] = w0;
+        buf_c[1] = w1;
+        buf_c[2] = w2;
+        buf_c[3] = w3;
+
+        scratch[0] = src[9];
+        scratch[1] = src[10];
+        scratch[2] = src[11];
+        buf_b[3] = w3;
+        buf_b[0] = scratch[0];
+        buf_b[1] = scratch[1];
+        buf_b[2] = src[11];
+
+        scratch[0] = w0;
+        scratch[1] = w1;
+        scratch[2] = w2;
+        dst[6] = w0;
+        dst[7] = scratch[1];
+        dst[8] = scratch[2];
+
+        float a0 = bits_to_float(buf_a[0]) - bits_to_float(buf_b[0]);
+        buf_a[0] = float_to_bits(a0);
+        float a1 = bits_to_float(buf_a[1]) - bits_to_float(buf_b[1]);
+        buf_a[1] = float_to_bits(a1);
+        float a2 = bits_to_float(buf_a[2]) - bits_to_float(buf_b[2]);
+        buf_a[2] = float_to_bits(a2);
+        float a3 = bits_to_float(buf_a[3]) - bits_to_float(buf_b[3]);
+        buf_a[3] = float_to_bits(a3);
+
+        const float x = bits_to_float(buf_a[0]);
+        const float y = bits_to_float(buf_a[1]);
+        float sum_sq = x * x;
+        sum_sq += y * y;
+        const float z = bits_to_float(buf_a[2]);
+        sum_sq += z * z;
+        const float length = inline_vsqrt_f32(sum_sq);
+        if (length > 0.0f) {
+            const float nx = x / length;
+            const float ny_src = bits_to_float(buf_a[1]);
+            const float nz_src = bits_to_float(buf_a[2]);
+            buf_a[0] = float_to_bits(nx);
+            buf_a[1] = float_to_bits(ny_src / length);
+            buf_a[2] = float_to_bits(nz_src / length);
+        }
+
+        const float weight = *weights * step;
+        buf_a[0] = float_to_bits(bits_to_float(buf_a[0]) * weight);
+        buf_a[1] = float_to_bits(bits_to_float(buf_a[1]) * weight);
+        buf_a[2] = float_to_bits(bits_to_float(buf_a[2]) * weight);
+        buf_a[3] = float_to_bits(bits_to_float(buf_a[3]) * weight);
+
+        buf_a[0] = float_to_bits(bits_to_float(buf_a[0]) +
+                                 bits_to_float(buf_c[0]));
+        buf_a[1] = float_to_bits(bits_to_float(buf_a[1]) +
+                                 bits_to_float(buf_c[1]));
+        buf_a[2] = float_to_bits(bits_to_float(buf_a[2]) +
+                                 bits_to_float(buf_c[2]));
+        buf_a[3] = float_to_bits(bits_to_float(buf_a[3]) +
+                                 bits_to_float(buf_c[3]));
+
+        scratch[0] = buf_a[0];
+        scratch[1] = buf_a[1];
+        scratch[2] = buf_a[2];
+        scratch[3] = buf_a[3];
+        dst[0] = buf_a[0];
+        dst[1] = scratch[1];
+        dst[2] = scratch[2];
+
+        dst[3] = src[15];
+        dst[4] = src[16];
+        dst[5] = src[17];
+
+        if (i != 0) {
+            dst[9] = src[-9];
+            dst[10] = src[-8];
+            dst[11] = src[-7];
+        } else {
+            dst[9] = last_rest[0];
+            dst[10] = last_rest[1];
+            dst[11] = last_rest[2];
+        }
+
+        dst += 12;
+        src += 12;
+        weights += 1;
+    }
+}
 
 // DECOMP_FUNC(0x002931f0, 740)
 extern "C" __attribute__((naked)) void camp_func_002931f0() {
