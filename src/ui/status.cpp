@@ -900,12 +900,9 @@ __attribute__((naked)) void Status_Init() {
 }
 #endif
 
-[[maybe_unused]] static s32 Status_HandleLRPrompt_Decompiled() {
-    StatusWork* work = g_StatusManager.work;
-    if (work == nullptr) {
-        return 1;
-    }
-
+// DECOMP_FUNC(0x00293d64, 204)
+s32 Status_HandleLRPrompt() {
+    const StatusWork* work = g_StatusManager.work;
     const u8 state = work->sub_menu_state;
     if (state == 3 || state == 5 || state == 6 || state == 8 || state == 9) {
         return 1;
@@ -920,32 +917,10 @@ __attribute__((naked)) void Status_Init() {
     }
     const u8 prompt_flag = *reinterpret_cast<const u8*>(
         reinterpret_cast<const u8*>(work) + 0x12F1);
-    if (mode == 13 && prompt_flag == 0) {
-        return 4;
+    if (mode == 0) {
+        return prompt_flag == 0 ? 3 : 2;
     }
-    return prompt_flag == 0 ? 3 : 2;
-}
-
-// Exact ARM-state restoration of Status.cpp's four-way L/R prompt selector.
-// The literal words are the verified 0x00293d64..0x00293e30 span; retaining
-// the disassembly here also preserves its branch and literal-pool placement.
-// DECOMP_FUNC(0x00293d64, 204)
-__attribute__((naked)) s32 Status_HandleLRPrompt() {
-    asm volatile(
-        ".word 0xE59F00BC, 0xE5901004, 0xE59F00B8, 0xE7D00001\n"
-        ".word 0xE3500003, 0x13500005, 0x0A00001C, 0xE3500006\n"
-        ".word 0x13500008, 0x13500009, 0x0A000018, 0xE59F0090\n"
-        ".word 0xE2811C1E, 0xE2811066, 0xE5902004, 0xE5D10000\n"
-        ".word 0xE2821C12, 0xE3500000, 0x0A000012, 0xE3500006\n"
-        ".word 0x13500008, 0x0A000014, 0xE3500009, 0x1350000A\n"
-        ".word 0x0A000011, 0xE350000B, 0x13500007, 0x0A00000E\n"
-        ".word 0xE350000E, 0x0A000005, 0xE350000D, 0xE5D100F1\n"
-        ".word 0x0A00000B, 0xE3500000, 0x0A00000B, 0xEA000004\n"
-        ".word 0xE3A00001, 0xE12FFF1E, 0xE5D100F1, 0xE3500000\n"
-        ".word 0x0A000001, 0xE3A00002, 0xE12FFF1E, 0xE3A00003\n"
-        ".word 0xE12FFF1E, 0xE3500000, 0x1AFFFFF9, 0xE3A00004\n"
-        ".word 0xE12FFF1E, 0x0044E140, 0x00001E67\n"
-    );
+    return prompt_flag == 0 ? 4 : 2;
 }
 
 // Readable reconstruction retained alongside the byte-exact ARM entry below.
