@@ -1031,7 +1031,7 @@ address,size,status,category,name,src_file
 0x00144ea0,12,matching,unknown,func_00144ea0,src/engine/leaf_matching.cpp
 0x00144eac,236,matching,ui,ui_func_00144eac,src/engine/leaf_batch27_a.cpp
 0x00144f98,36,matching,engine,engine_func_00144f98,src/engine/leaf_batch22_a.cpp
-0x00144fbc,416,matching,ui,AsdTMSpr_func_00144fbc,src/engine/asd_texture.cpp
+0x00144fbc,416,non_matching,ui,AsdTMSpr_func_00144fbc,src/engine/asd_texture.cpp
 0x0014515c,688,matching,engine,AsdModel_func_0014515c,src/engine/asd_model.cpp
 0x0014540c,480,matching,engine,engine_func_0014540c,src/engine/leaf_batch16_b.cpp
 0x001455ec,212,matching,engine,engine_func_001455ec,src/engine/leaf_batch27_a.cpp

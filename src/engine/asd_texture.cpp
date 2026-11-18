@@ -650,117 +650,32 @@ __attribute__((naked)) void AsdPrimRenderData_func_00346db0(AsdPrimRenderData* d
 
 namespace smt4::ui {
 // DECOMP_FUNC(0x00144fbc, 416)
-
-
-//
-__attribute__((naked)) void* AsdTMSpr_func_00144fbc(AsdTMSpr*, u32,
-                                                     u32, u32)
+void* AsdTMSpr_func_00144fbc(AsdTMSpr* sprite, u32 flags, u32 arg2, u32)
 {
-    asm volatile(
-        ".word 0xE92D47F0\n"
-        ".word 0xE24DD008\n"
-        ".word 0xE1A08000\n"
-        ".word 0xE1A07001\n"
-        ".word 0xE5D00000\n"
-        ".word 0xE1A06002\n"
-        ".word 0xE1A05008\n"
-        ".word 0xE20040F0\n"
-        ".word 0xE3540010\n"
-        ".word 0x13540020\n"
-        ".word 0x13540030\n"
-        ".word 0x1A000053\n"
-        ".word 0xE1A00005\n"
-        ".word 0xEB002901\n" // UiTMSpr_func_0014f3fc
-        ".word 0xE1B09000\n"
-        ".word 0x0A00004F\n"
-        ".word 0xE3170001\n"
-        ".word 0xE3A05000\n"
-        ".word 0xE3A0A001\n"
-        ".word 0xE2070002\n"
-        ".word 0x0A000019\n"
-        ".word 0xE3500000\n"
-        ".word 0x0A00000B\n"
-        ".word 0xE59F0128\n"
-        ".word 0xE3A010C8\n"
-        ".word 0xE1A00000\n"
-        ".word 0xE1A03009\n"
-        ".word 0xE3A02000\n"
-        ".word 0xE3A01C01\n"
-        ".word 0xE3A00801\n"
-        ".word 0xE58D5004\n"
-        ".word 0xE58D6000\n"
-        ".word 0xEB05E9D5\n" // AsdWork_Alloc2 (0x002BF798)
-        ".word 0xE1A05000\n"
-        ".word 0xEA000024\n"
-        ".word 0xE59F00F8\n"
-        ".word 0xE3A010CC\n"
-        ".word 0xE1A00000\n"
-        ".word 0xE1A03009\n"
-        ".word 0xE3A02000\n"
-        ".word 0xE3A01C01\n"
-        ".word 0xE3A00801\n"
-        ".word 0xE88D0440\n"
-        ".word 0xEB05E9CA\n" // AsdWork_Alloc2 (0x002BF798)
-        ".word 0xE1A05000\n"
-        ".word 0xE320F000\n"
-        ".word 0xEA000018\n"
-        ".word 0xE3500000\n"
-        ".word 0x0A00000C\n"
-        ".word 0xE59F00C0\n"
-        ".word 0xE3A010D3\n"
-        ".word 0xE1A00000\n"
-        ".word 0xE3A01C01\n"
-        ".word 0xE1A03009\n"
-        ".word 0xE3A02000\n"
-        ".word 0xE1A00001\n"
-        ".word 0xE58D5004\n"
-        ".word 0xE58D6000\n"
-        ".word 0xEB05E9BB\n" // AsdWork_Alloc2 (0x002BF798)
-        ".word 0xE1A05000\n"
-        ".word 0xE320F000\n"
-        ".word 0xEA000009\n"
-        ".word 0xE59F008C\n"
-        ".word 0xE3A010D7\n"
-        ".word 0xE1A00000\n"
-        ".word 0xE3A01C01\n"
-        ".word 0xE1A03009\n"
-        ".word 0xE3A02000\n"
-        ".word 0xE1A00001\n"
-        ".word 0xE88D0440\n"
-        ".word 0xEB05E9AF\n" // AsdWork_Alloc2 (0x002BF798)
-        ".word 0xE1A05000\n"
-        ".word 0xE3540010\n"
-        ".word 0x0A000004\n"
-        ".word 0xE3540020\n"
-        ".word 0x0A000008\n"
-        ".word 0xE3540030\n"
-        ".word 0x0A00000C\n"
-        ".word 0xEA00000E\n"
-        ".word 0xE1A01000\n"
-        ".word 0xE1A00008\n"
-        ".word 0xEB0027DA\n" // UiTMSpr_func_0014f070
-        ".word 0xE320F000\n"
-        ".word 0xE320F000\n"
-        ".word 0xEA000008\n"
-        ".word 0xE1A01000\n"
-        ".word 0xE1A00008\n"
-        ".word 0xEB00287B\n" // UiTMSpr_func_0014f30c
-        ".word 0xE320F000\n"
-        ".word 0xE320F000\n"
-        ".word 0xEA000002\n"
-        ".word 0xE1A01000\n"
-        ".word 0xE1A00008\n"
-        ".word 0xEB002825\n" // UiTMSpr_func_0014f1cc
-        ".word 0xE1A00008\n"
-        ".word 0xEB05FC88\n" // AsdMem_Free (0x002C4360)
-        ".word 0xE28DD008\n"
-        ".word 0xE1A00005\n"
-        ".word 0xE8BD87F0\n"
-        ".word 0x00409310\n" // Literal retained from the original 416-byte range.
-        ".word 0xE1D002B0\n"
-        ".word 0xE1D112B0\n"
-        ".word 0xE0400001\n"
-        ".word 0xE12FFF1E\n");
+    const u32 kind = (*reinterpret_cast<const u8*>(sprite)) & 0xF0u;
+    if (kind != 0x10u && kind != 0x20u && kind != 0x30u) {
+        return sprite;
+    }
+
+    const u32 size = UiTMSpr_func_0014f3fc(sprite);
+    if (size == 0) {
+        return sprite;
+    }
+
+    const u32 arena = ((flags & 1u) != 0) ? 0x10000u : 0x100u;
+    const u32 alloc_flag = ((flags & 2u) != 0) ? 0u : 1u;
+    void* const buffer = AsdWork_Alloc2(arena, 0x100u, 0u, size, arg2, alloc_flag);
+
+    if (kind == 0x10u) {
+        UiTMSpr_func_0014f070(sprite, buffer);
+    } else if (kind == 0x20u) {
+        UiTMSpr_func_0014f30c(sprite, buffer);
+    } else if (kind == 0x30u) {
+        UiTMSpr_func_0014f1cc(sprite, buffer);
+    }
+
+    AsdMem_Free(sprite);
+    return buffer;
 }
 
 } // namespace smt4::ui
