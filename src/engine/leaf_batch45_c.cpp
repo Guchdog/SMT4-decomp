@@ -2,60 +2,37 @@
 
 // Batch 45 C: exact raw code.bin wrappers; full mode-specific Capstone coverage, semantics are not reconstructed.
 
+extern "C" void engine_func_002c4b30(void* buf, u32 size);
+extern "C" void engine_func_002bf86c(void* dst, const void* src);
+extern "C" u32 engine_func_003d9b0c(u8* self, u32 r6, u32 a1, u32 a2, float f0, float f1, s32 kind,
+                                    u32 extra, void* buf);
+
 // DECOMP_FUNC(0x0023c85c, 744)
-// Capstone THUMB full coverage (329 instructions); raw bytes only, no terminal-return claim.
-extern "C" __attribute__((naked)) void engine_func_0023c85c() {
-    asm volatile(
-        ".thumb\n"
-        ".thumb_func\n"
-        ".word 0xe92d43f0, 0xe353000a, 0xe1a05000, 0xe1a08001\n"
-        ".word 0xe1a09002, 0xed2d8b04, 0xe24dd094, 0xeeb08b40\n"
-        ".word 0xe59d40c0, 0xed9d9a31, 0xe1a07003, 0xe3a060ff\n"
-        ".word 0xaa00008c, 0xe3a01080, 0xe28d0010, 0xeb0220a4\n"
-        ".word 0xe357000a, 0x379ff107, 0xea000090, 0x0023c8d0\n"
-        ".word 0x0023c908, 0x0023c940, 0x0023c978, 0x0023c9b0\n"
-        ".word 0x0023c9e8, 0x0023ca20, 0x0023ca58, 0x0023ca90\n"
-        ".word 0x0023cabc, 0xe3540004, 0xaa00007a, 0xe0640184\n"
-        ".word 0xe3a01c1d, 0xe0800100, 0xe0850100, 0xe7d16000\n"
-        ".word 0xe2801b07, 0xe2811f42, 0xe28d0010, 0xeb020bdb\n"
-        ".word 0xe320f000, 0xe320f000, 0xea000078, 0xe3540004\n"
-        ".word 0xaa00006c, 0xe0640184, 0xe59f1208, 0xe0800100\n"
-        ".word 0xe0850100, 0xe7d16000, 0xe2801b07, 0xe2811fce\n"
-        ".word 0xe28d0010, 0xeb020bcd, 0xe320f000, 0xe320f000\n"
-        ".word 0xea00006a, 0xe3540004, 0xaa00005e, 0xe0640184\n"
-        ".word 0xe59f11d4, 0xe0800100, 0xe0850100, 0xe7d16000\n"
-        ".word 0xe2801a02, 0xe2811f5a, 0xe28d0010, 0xeb020bbf\n"
-        ".word 0xe320f000, 0xe320f000, 0xea00005c, 0xe3540004\n"
-        ".word 0xaa000050, 0xe0640184, 0xe59f11a0, 0xe0800100\n"
-        ".word 0xe0850100, 0xe7d16000, 0xe2801a02, 0xe2811fe6\n"
-        ".word 0xe28d0010, 0xeb020bb1, 0xe320f000, 0xe320f000\n"
-        ".word 0xea00004e, 0xe354000b, 0xaa000042, 0xe0640184\n"
-        ".word 0xe3a01d97, 0xe0800100, 0xe0850100, 0xe7d16000\n"
-        ".word 0xe2801b09, 0xe2811f72, 0xe28d0010, 0xeb020ba3\n"
-        ".word 0xe320f000, 0xe320f000, 0xea000040, 0xe3540002\n"
-        ".word 0xaa000034, 0xe0640184, 0xe59f1134, 0xe0800100\n"
-        ".word 0xe0850100, 0xe7d16000, 0xe2801b0a, 0xe2811ff3\n"
-        ".word 0xe28d0010, 0xeb020b95, 0xe320f000, 0xe320f000\n"
-        ".word 0xea000032, 0xe3540005, 0xaa000026, 0xe0640184\n"
-        ".word 0xe59f1100, 0xe0800100, 0xe0850100, 0xe7d16000\n"
-        ".word 0xe2801b0b, 0xe28110e4, 0xe28d0010, 0xeb020b87\n"
-        ".word 0xe320f000, 0xe320f000, 0xea000024, 0xe3540003\n"
-        ".word 0xaa000018, 0xe0640184, 0xe59f10cc, 0xe0800100\n"
-        ".word 0xe0850100, 0xe7d16000, 0xe2801a03, 0xe2811078\n"
-        ".word 0xe28d0010, 0xeb020b79, 0xe320f000, 0xe320f000\n"
-        ".word 0xea000016, 0xe3540000, 0x1a00000a, 0xe59f009c\n"
-        ".word 0xe2851a03, 0xe2811e22, 0xe7d06005, 0xe28d0010\n"
-        ".word 0xeb020b6e, 0xe320f000, 0xe320f000, 0xea00000b\n"
-        ".word 0xe3540000, 0x0a000003, 0xe28dd094, 0xe3a00000\n"
-        ".word 0xecbd8b04, 0xe8bd83f0, 0xe59f0064, 0xe2851b0b\n"
-        ".word 0xe2811fe9, 0xe7d06005, 0xe28d0010, 0xeb020b5f\n"
-        ".word 0xe58d7000, 0xe28d0010, 0xed8d9a01, 0xeef00a68\n"
-        ".word 0xeeb00a48, 0xe58d0008, 0xe1a03009, 0xe1a02008\n"
-        ".word 0xe1a01006, 0xe1a00005, 0xeb0673fc, 0xe28dd094\n"
-        ".word 0xecbd8b04, 0xe8bd83f0, 0x00001f30, 0x00002160\n"
-        ".word 0x00002390, 0x00002bc4, 0x00002cdc, 0x00003070\n"
-        ".word 0x00003218, 0x00002f9c\n"
-    );
+extern "C" u32 engine_func_0023c85c(u8* self, u32 a1, u32 a2, s32 kind, float f0, float f1,
+                                    s32 slot_idx, u32 extra) {
+    if (kind >= 10) {
+        return 0u;
+    }
+
+    alignas(4) u8 buf[0x80];
+    engine_func_002c4b30(buf, 0x80u);
+
+    u32 r6 = 0xFFu;
+    if (static_cast<u32>(kind) < 10u) {
+        static const s8 kMaxSlots[10] = {4, 4, 4, 4, 11, 2, 5, 3, 1, 1};
+        static const u16 kByteOffsets[10] = {
+            0x1D00u, 0x1F30u, 0x2160u, 0x2390u, 0x25C0u,
+            0x2BC4u, 0x2CDCu, 0x3070u, 0x3218u, 0x2F9Cu,
+        };
+        if (kind < 8 ? (slot_idx >= static_cast<s32>(kMaxSlots[kind])) : (slot_idx != 0)) {
+            return 0u;
+        }
+        u8* const rec = self + kByteOffsets[kind] + ((kind < 8) ? (slot_idx * 0x8C) : 0);
+        r6 = rec[0];
+        engine_func_002bf86c(buf, rec + 8);
+    }
+
+    return engine_func_003d9b0c(self, r6, a1, a2, f0, f1, kind, extra, buf);
 }
 
 // DECOMP_FUNC(0x003c6224, 940)
