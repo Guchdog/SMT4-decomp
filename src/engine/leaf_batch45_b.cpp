@@ -1311,73 +1311,82 @@ extern "C" void func_002f38bc() {
 }
 
 // DECOMP_FUNC(0x00125d88, 500)
-extern "C" __attribute__((naked)) void ui_func_00125d88() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x40f0, 0xe92d, 0x019c, 0xe59f\n"
-        ".hword 0x8b04, 0xed2d, 0xd00c, 0xe24d\n"
-        ".hword 0x5000, 0xe590, 0x0008, 0xe595\n"
-        ".hword 0x0001, 0xe350, 0x0000, 0x13a0\n"
-        ".hword 0x005d, 0x1a00, 0x6180, 0xe59f\n"
-        ".hword 0x1000, 0xe3a0, 0x0001, 0xe3a0\n"
-        ".hword 0x4000, 0xe596, 0x806e, 0xeb06\n"
-        ".hword 0x4a01, 0xe284, 0x4f93, 0xe284\n"
-        ".hword 0x7000, 0xe3a0, 0x1000, 0xe594\n"
-        ".hword 0x2001, 0xe281, 0x3101, 0xe084\n"
-        ".hword 0x1008, 0xe593, 0x3102, 0xe084\n"
-        ".hword 0x2000, 0xe584, 0x0008, 0xe583\n"
-        ".hword 0x2018, 0xe5d4, 0x0000, 0xe352\n"
-        ".hword 0x0000, 0x0151, 0x0002, 0x0a00\n"
-        ".hword 0x101c, 0xe594, 0xff31, 0xe12f\n"
-        ".hword 0x7018, 0xe5c4, 0x8a4b, 0xed9f\n"
-        ".hword 0x0a48, 0xeeb0, 0x663f, 0xeb06\n"
-        ".hword 0xf000, 0xe320, 0xf000, 0xe320\n"
-        ".hword 0x643d, 0xeb06, 0x000b, 0xe3a0\n"
-        ".hword 0x3000, 0xe3a0, 0x0004, 0xe58d\n"
-        ".hword 0x2003, 0xe1a0, 0x1003, 0xe1a0\n"
-        ".hword 0x0002, 0xe3a0, 0x7000, 0xe58d\n"
-        ".hword 0x6588, 0xeb06, 0x0000, 0xe596\n"
-        ".hword 0x4a01, 0xe280, 0x4f93, 0xe284\n"
-        ".hword 0x0000, 0xe594, 0x1100, 0xe084\n"
-        ".hword 0x0001, 0xe240, 0x1008, 0xe591\n"
-        ".hword 0x0000, 0xe584, 0x0100, 0xe084\n"
-        ".hword 0x2018, 0xe5d4, 0x0008, 0xe590\n"
-        ".hword 0x0000, 0xe352, 0x0000, 0x0151\n"
-        ".hword 0x0002, 0x0a00, 0x101c, 0xe594\n"
-        ".hword 0xff31, 0xe12f, 0x7018, 0xe5c4\n"
-        ".hword 0x0000, 0xe3a0, 0x7e6c, 0xeb06\n"
-        ".hword 0x0a2b, 0xeddf, 0x8a2b, 0xeddf\n"
-        ".hword 0x9a2b, 0xed9f, 0x0000, 0xe350\n"
-        ".hword 0x000a, 0x0a00, 0x1a48, 0xeef0\n"
-        ".hword 0x1a68, 0xeeb0, 0x0a49, 0xeeb0\n"
-        ".hword 0x2098, 0xe28f, 0x1000, 0xe3e0\n"
-        ".hword 0x0003, 0xe3a0, 0x2a61, 0xeeb0\n"
-        ".hword 0x622f, 0xeb06, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0x0007, 0xea00\n"
-        ".hword 0x1a48, 0xeef0, 0x1a68, 0xeeb0\n"
-        ".hword 0x0a49, 0xeeb0, 0x2078, 0xe28f\n"
-        ".hword 0x1000, 0xe3e0, 0x0003, 0xe3a0\n"
-        ".hword 0x2a61, 0xeeb0, 0x6224, 0xeb06\n"
-        ".hword 0x1a48, 0xeef0, 0x1a68, 0xeeb0\n"
-        ".hword 0x0a49, 0xeeb0, 0x2068, 0xe28f\n"
-        ".hword 0x1000, 0xe3e0, 0x0003, 0xe3a0\n"
-        ".hword 0x2a61, 0xeeb0, 0x0a1a, 0xeddf\n"
-        ".hword 0x621b, 0xeb06, 0x0a19, 0xed9f\n"
-        ".hword 0x1010, 0xe285, 0x0001, 0xe3a0\n"
-        ".hword 0x0a40, 0xeef0, 0x2429, 0xeb06\n"
-        ".hword 0x0000, 0xe3a0, 0xd00c, 0xe28d\n"
-        ".hword 0x8b04, 0xecbd, 0x80f0, 0xe8bd\n"
-        ".hword 0xe2e8, 0x0044, 0xea00, 0x0044\n"
-        ".hword 0x0000, 0x3f80, 0x0000, 0x4342\n"
-        ".hword 0x0000, 0x0000, 0x0000, 0x4394\n"
-        ".hword 0x6f82, 0x6282, 0x8d83, 0x5b81\n"
-        ".hword 0x6883, 0x0000, 0x7182, 0x6e82\n"
-        ".hword 0x6c82, 0x8d83, 0x5b81, 0x6883\n"
-        ".hword 0x0000, 0x0000, 0x5e90, 0x4581\n"
-        ".hword 0x978f, 0x5f90, 0x5d93, 0xb690\n"
-        ".hword 0x5787, 0x0000, 0x0000, 0x4350\n"
-        ".hword 0x0000, 0x4364\n"
-    );
+extern "C" u32 ui_func_002c5f7c(u32 a, u32 b);
+extern "C" void ui_func_002bf710(float alpha);
+extern "C" void script_vm_func_002bef14();
+extern "C" void ui_func_002bf460(u32 a, u32 b, u32 c, u32 d, u32 s0, u32 s1);
+extern "C" u32 engine_func_002c583c(u32 a);
+extern "C" void ui_func_002be77c(
+    u32 a, s32 b, const char* text,
+    float x, float y, float z, float sx, float sy);
+extern "C" void engine_func_002aefc8(u32 a, const void* ptr, float x, float y);
+
+extern "C" u32 ui_func_00125d88() {
+    struct StateStack {
+        u32 index;
+        u32 reserved;
+        u32 entries[4];
+        u8 dirty;
+        u8 pad[3];
+        void (*on_change)(u32);
+    };
+
+    const u8* const overlay = *reinterpret_cast<const u8* const*>(0x0044E2E8u);
+    if (*reinterpret_cast<const u32*>(overlay + 8u) != 1u) {
+        return 0u;
+    }
+
+    auto sync_stack = [](StateStack* stk, u32 prev, u32 next) {
+        if (stk->dirty != 0u || prev != next) {
+            stk->on_change(next);
+            stk->dirty = 0u;
+        }
+    };
+
+    auto get_stack = []() -> StateStack* {
+        u8* const base = *reinterpret_cast<u8* const*>(0x0044EA00u);
+        return reinterpret_cast<StateStack*>(base + 0x124Cu);
+    };
+
+    const u32 pushed = ui_func_002c5f7c(1u, 0u);
+    {
+        StateStack* const stk = get_stack();
+        const u32 idx = stk->index;
+        const u32 prev = stk->entries[idx];
+        stk->index = idx + 1u;
+        stk->entries[idx + 1u] = pushed;
+        sync_stack(stk, prev, pushed);
+    }
+
+    ui_func_002bf710(1.0f);
+    script_vm_func_002bef14();
+    ui_func_002bf460(2u, 0u, 0u, 0u, 0u, 0xBu);
+
+    {
+        StateStack* const stk = get_stack();
+        const u32 old_idx = stk->index;
+        const u32 prev = stk->entries[old_idx];
+        const u32 new_idx = old_idx - 1u;
+        stk->index = new_idx;
+        const u32 top = stk->entries[new_idx];
+        sync_stack(stk, prev, top);
+    }
+
+    static const char kLabelAlt[] = {
+        '\x82', '\x6f', '\x82', '\x62', '\x83', '\x8d', '\x81', '\x5b', '\x83', '\x68', '\x00'
+    };
+    static const char kLabelNow[] = {
+        '\x82', '\x71', '\x82', '\x6e', '\x82', '\x6c', '\x83', '\x8d', '\x81', '\x5b', '\x83', '\x68', '\x00'
+    };
+    static const char kLabelMsg[] = {
+        '\x90', '\x5e', '\x81', '\x45', '\x8f', '\x97', '\x90', '\x5f', '\x93', '\x5d', '\x90', '\xb6', '\x87', '\x57', '\x00'
+    };
+
+    const char* const mode_label = (engine_func_002c583c(0u) != 0u) ? kLabelAlt : kLabelNow;
+    ui_func_002be77c(3u, -1, mode_label, 296.0f, 194.0f, 0.0f, 1.0f, 1.0f);
+    ui_func_002be77c(3u, -1, kLabelMsg, 296.0f, 208.0f, 0.0f, 1.0f, 1.0f);
+    engine_func_002aefc8(1u, overlay + 0x10u, 228.0f, 228.0f);
+    return 0u;
 }
 
 // DECOMP_FUNC(0x0015eb60, 500)
