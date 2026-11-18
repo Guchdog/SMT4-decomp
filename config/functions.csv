@@ -1488,7 +1488,7 @@ address,size,status,category,name,src_file
 0x0015b1a4,408,non_matching,unknown,func_0015b1a4,src/engine/leaf_batch28_a.cpp
 0x0015b33c,348,matching,unknown,func_0015b33c,src/engine/leaf_batch14_c.cpp
 0x0015b498,288,matching,unknown,func_0015b498,src/engine/leaf_batch28_a.cpp
-0x0015b5b8,484,matching,engine,engine_func_0015b5b8,src/engine/leaf_batch45_b.cpp
+0x0015b5b8,484,non_matching,engine,engine_func_0015b5b8,src/engine/leaf_batch45_b.cpp
 0x0015b79c,348,matching,engine,engine_func_0015b79c,src/engine/leaf_batch34_c.cpp
 0x0015b8f8,680,matching,engine,engine_func_0015b8f8,src/engine/leaf_batch45_b.cpp
 0x0015bba0,108,matching,unknown,func_0015bba0,src/engine/leaf_batch16_b.cpp
