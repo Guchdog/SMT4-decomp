@@ -4547,7 +4547,7 @@ address,size,status,category,name,src_file
 0x002860b4,324,non_matching,engine,Npc2d_func_002860b4,src/engine/asd_frame.cpp
 0x002861f8,508,matching,engine,Task_func_002861f8,src/engine/asd_scene.cpp
 0x002863f4,24,matching,script_vm,script_vm_func_002863f4,src/engine/leaf_matching.cpp
-0x0028640c,504,matching,unknown,func_0028640c,src/engine/leaf_batch45_b.cpp
+0x0028640c,504,non_matching,unknown,func_0028640c,src/engine/leaf_batch45_b.cpp
 0x00286604,252,matching,unknown,func_00286604,src/engine/leaf_batch41_c.cpp
 0x00286700,76,matching,unknown,func_00286700,src/engine/leaf_batch11_b.cpp
 0x0028674c,232,matching,unknown,func_0028674c,src/engine/leaf_batch41_c.cpp
