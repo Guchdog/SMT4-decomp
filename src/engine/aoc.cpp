@@ -998,50 +998,18 @@ __attribute__((naked)) void aocFileContent_func_0038bd00(AocFileContentState*, A
 // ---------------------------------------------------------------------------
 
 //
-__attribute__((naked)) void aocTexCtrl_func_00234ca8(AocTexCtrl*)
+void aocTexCtrl_func_00234ca8(AocTexCtrl* ctrl)
 {
-    asm volatile(
-        ".word 0xE92D4038\n"
-        ".word 0xE1A04000\n"
-        ".word 0xE5900004\n"
-        ".word 0xE3500000\n"
-        ".word 0x1A000014\n"
-        ".word 0xE3A01FDB\n"
-        ".word 0xE28F004C\n"
-        ".word 0xE1A00000\n"
-        ".word 0xE3A00001\n"
-        ".word 0xE3A01C01\n"
-        ".word 0xE58D0000\n"
-        ".word 0xE3A03018\n"
-        ".word 0xE3A02000\n"
-        ".word 0xE1A00001\n"
-        ".word 0xEB023FA7\n" // AsdMem_Alloc (0x002C4B84)
-        ".word 0xE3A01000\n"
-        ".word 0xE5840004\n"
-        ".word 0xE5801000\n"
-        ".word 0xE5801004\n"
-        ".word 0xE5801008\n"
-        ".word 0xE580100C\n"
-        ".word 0xE5801010\n"
-        ".word 0xE5801014\n" // Explicit six-word clear of the 0x18-byte state.
-        ".word 0xE1A00004\n"
-        ".word 0xE8BD4038\n"
-        ".word 0xEA057A75\n" // Tail branch to aocTexCtrl_func_003936e8 (0x003936E8).
-        ".word 0xE8BD8038\n"
-        ".word 0x535C3A63\n"
-        ".word 0x5C34544D\n"
-        ".word 0x36445258\n"
-        ".word 0x735C3638\n"
-        ".word 0x34736464\n"
-        ".word 0x6F72705C\n"
-        ".word 0x6D617267\n"
-        ".word 0x6464615C\n"
-        ".word 0x735C6E6F\n"
-        ".word 0x615C7379\n"
-        ".word 0x6554636F\n"
-        ".word 0x72744378\n"
-        ".word 0x70632E6C\n"
-        ".word 0x00000070\n"); // Original source-path literal, including terminator.
+    if (ctrl->state != nullptr) {
+        return;
+    }
+
+    auto* const raw = static_cast<u32*>(AsdMem_Alloc(0x100, 0x100, 0, 0x18, 1));
+    ctrl->state = reinterpret_cast<AocTexCtrlState*>(raw);
+    for (s32 i = 0; i < 6; ++i) {
+        raw[i] = 0;
+    }
+    aocTexCtrl_func_003936e8(ctrl);
 }
 
 // Readable semantic draft for the allocation/type-dispatch behavior at

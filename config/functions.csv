@@ -3405,7 +3405,7 @@ address,size,status,category,name,src_file
 0x00234a3c,204,matching,engine,engine_func_00234a3c,src/engine/leaf_batch40_b.cpp
 0x00234b08,40,matching,script_vm,script_vm_func_00234b08,src/engine/leaf_batch19_a.cpp
 0x00234b30,376,matching,engine,engine_func_00234b30,src/engine/leaf_batch32_b.cpp
-0x00234ca8,164,matching,engine,aocTexCtrl_func_00234ca8,src/engine/aoc.cpp
+0x00234ca8,164,non_matching,engine,aocTexCtrl_func_00234ca8,src/engine/aoc.cpp
 0x00234d4c,292,matching,script_vm,script_vm_func_00234d4c,src/engine/leaf_batch32_b.cpp
 0x00234e70,556,matching,engine,engine_func_00234e70,src/engine/leaf_batch44_c.cpp
 0x0023509c,88,matching,engine,engine_func_0023509c,src/engine/leaf_batch13_c.cpp
