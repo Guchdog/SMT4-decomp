@@ -1,0 +1,5 @@
+# Independent review: ComWin_Calc subentry 0x0011b094
+
+The original subentry loads a single work pointer, dispatches through five ARM jump-table targets, invokes widget calc for states 1, 2 and 4, and increments the counter before returning zero. The candidate mirrors the state transitions and uses the same work pointer across calls. I independently reran the runner: 27 fixtures and the inverted-gate negative control passed. The fixtures include configured widget return values and synthetic mutations, and compare work bytes, helper trace, SP, return and callee-saved state.
+
+The widget remains modeled and the registration/scheduler path is not executed. The candidate is an experimental subentry inside the 0x0011ae10 compound ledger span: the source placeholder and the enclosing production span were not updated, so integration must first reconcile overlapping bytes and caller/placement contracts. This evidence does not prove an actual ComWin runtime lifecycle or identify the caller of the global input hook.
