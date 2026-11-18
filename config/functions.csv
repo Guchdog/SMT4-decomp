@@ -5007,7 +5007,7 @@ address,size,status,category,name,src_file
 0x0029e468,36,matching,camp,camp_func_0029e468,src/engine/leaf_batch23_b.cpp
 0x0029e48c,316,matching,camp,camp_func_0029e48c,src/engine/leaf_batch41_a.cpp
 0x0029e5c8,116,matching,engine,engine_func_0029e5c8,src/engine/leaf_batch35_a.cpp
-0x0029e63c,644,matching,camp,SortMenu_Init,src/camp/unite.cpp
+0x0029e63c,644,non_matching,camp,SortMenu_Init,src/camp/unite.cpp
 0x0029e8c0,40,matching,camp,camp_func_0029e8c0,src/engine/leaf_batch23_b.cpp
 0x0029e8e8,168,matching,camp,camp_func_0029e8e8,src/engine/leaf_batch42_c.cpp
 0x0029e990,132,matching,camp,camp_func_0029e990,src/engine/leaf_batch25_b.cpp

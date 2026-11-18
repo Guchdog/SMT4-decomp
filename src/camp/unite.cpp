@@ -14,19 +14,6 @@ SortMenuManager g_SortMenuManager = {0, {0, 0, 0}, nullptr};     // 0x0043DD20
 
 // DECOMP_FUNC(0x0028d974, 736)
 
-//
-void SortMenu_Init_Decompiled(s32 mode) {
-    (void)mode;
-    SortMenuManager* mgr = &g_SortMenuManager;
-    if (mgr->ref_count <= 0) {
-        if (mgr->work == nullptr) {
-            mgr->work = reinterpret_cast<SortMenuWork*>(ui::AsdMem_Alloc(sizeof(SortMenuWork), 0x100));
-        }
-        ui::AsdMem_Zero(mgr->work, sizeof(SortMenuWork));
-    }
-    mgr->ref_count++;
-}
-
 // ============================================================================
 // Unite: Mido Demon Fusion (Cathedral of Shadows) Engine
 // ============================================================================
@@ -243,55 +230,88 @@ void ButtonHelp_Init() {
     mgr[0] = static_cast<u8>(mgr[0] + 1);
 }
 
-// DECOMP_FUNC(0x0029e63c, 644)
-
-
-//
-__attribute__((naked)) void SortMenu_Init(s32)
-{
-    asm volatile(
-        ".word 0xE92D4FF3, 0xE1A08000, 0xE59F9208, 0xED2D8B02\n"
-        ".word 0xE24DD01C, 0xE1D900D0, 0xE3500000, 0xCA000076\n"
-        ".word 0xE5990004, 0xE59F41F0, 0xE3A0B001, 0xE3500000\n"
-        ".word 0x1A000009, 0xE59F11E4, 0xE28F0F79, 0xE1A00000\n"
-        ".word 0xE3A01C01, 0xE1A03004, 0xE3A02000, 0xE1A00001\n"
-        ".word 0xE58DB000, 0xEB00993B, 0xE5890004, 0xE1A07000\n"
-        ".word 0xE1A01004, 0xEB009922, 0xE59F01EC, 0xE3A0A000\n"
-        ".word 0xE1A0300A, 0xE88D0401, 0xE1A0200A, 0xE3A01002\n"
-        ".word 0xE28F0F76, 0xE58DA008, 0xEB009CAB, 0xE59F11D8\n"
-        ".word 0xE5870000, 0xE3A03000, 0xE88D0402, 0xE58D000C\n"
-        ".word 0xE1A02003, 0xE3A010E7, 0xE28F0D07, 0xE58DA008\n"
-        ".word 0xEB009943, 0xE5870004, 0xE5995004, 0xE2850008\n"
-        ".word 0xEB009310, 0xE59F11B0, 0xE3A000A8, 0xE58D0018\n"
-        ".word 0xE58D1014, 0xE3A02024, 0xE58DA00C, 0xE58DA010\n"
-        ".word 0xE88D0404, 0xE2413024, 0xE3A02018, 0xE2431018\n"
-        ".word 0xE2850008, 0xE58DA008, 0xEB0092EF, 0xED9F8A5F\n"
-        ".word 0xE3A04000, 0xE2853008, 0xE0640184, 0xEEB00A48\n"
-        ".word 0xE0800100, 0xE3A02000, 0xE0856100, 0xE2860028\n"
-        ".word 0xE3A0101E, 0xE58DB000, 0xEB007CF0, 0xE3A02000\n"
-        ".word 0xE2860028, 0xE1A01002, 0xEB004436, 0xE2844001\n"
-        ".word 0xE354000D, 0xBAFFFFEE, 0xEEB00A48, 0xE2853008\n"
-        ".word 0xE3A02000, 0xE3A0101E, 0xE2850E5A, 0xE58DB000\n"
-        ".word 0xEB007CE2, 0xE3A01000, 0xE2850E5A, 0xEB008220\n"
-        ".word 0xEEB00A48, 0xE2850B01, 0xE2800F8B, 0xE2853008\n"
-        ".word 0xE3A02000, 0xE3A0101E, 0xE1A04000, 0xE58DB000\n"
-        ".word 0xEB007CD6, 0xE3A02000, 0xE1A01002, 0xE1A00004\n"
-        ".word 0xEB007CB7, 0xEEB00A48, 0xE2850B01, 0xE2800FAE\n"
-        ".word 0xE2853008, 0xE3A02000, 0xE3A0101E, 0xE1A04000\n"
-        ".word 0xE58DB000, 0xEB007CC9, 0xE3A01001, 0xE1A00004\n"
-        ".word 0xEB008207, 0xE2850B01, 0xE3E02000, 0xE3A0101A\n"
-        ".word 0xE2800FDB, 0xEB00970A, 0xE585A744, 0xE5C5B74D\n"
-        ".word 0xE59D0028, 0xE5C7074E, 0xE5878750, 0xE5D90000\n"
-        ".word 0xE2800001, 0xE5C90000, 0xE28DD01C, 0xECBD8B02\n"
-        ".word 0xE28DD008, 0xE8BD8FF0, 0x0043DD20, 0x00000878\n"
-        ".word 0x00000266, 0x535C3A63, 0x5C34544D, 0x36445258\n"
-        ".word 0x735C3638, 0x34736464, 0x6F72705C, 0x6D617267\n"
-        ".word 0x6D61635C, 0x6F535C70, 0x654D7472, 0x535C756E\n"
-        ".word 0x4D74726F, 0x2E756E65, 0x00707063, 0x001A1E7C\n"
-        ".word 0x54524F53, 0x4C414320, 0x00000043, 0x001A25CC\n"
-        ".word 0x54524F53, 0x52444420, 0x00005741, 0x00402DAC\n"
-        ".word 0x3F800000\n");
+extern "C" {
+    void func_002af854(void* obj, s32 a1, s32 a2);                              // 0x002af854
+    void func_002bf030(void* obj, s32 a1);                                      // 0x002bf030
+    void func_002bdac0(void* obj, s32 a1, s32 a2);                              // 0x002bdac0
+    void func_002c4450(void* obj, s32 a1, s32 a2);                              // 0x002c4450
 }
+
+// DECOMP_FUNC(0x0029e63c, 644)
+void SortMenu_Init(s32 mode, u32 flag) {
+    static constexpr u32 kStride = 0x8C;
+    static constexpr u32 kTargetW = 0x00402DAC;
+
+    auto* const mgr = reinterpret_cast<u8*>(0x0043DD20);
+    if (static_cast<s8>(mgr[0]) <= 0) {
+        auto* work = *reinterpret_cast<u8**>(mgr + 0x04);
+        if (work == nullptr) {
+            work = static_cast<u8*>(AsdMem_Alloc(0x100, 0x100, 0, sizeof(SortMenuWork), 1));
+            *reinterpret_cast<u8**>(mgr + 0x04) = work;
+        }
+        AsdMem_Zero(work, sizeof(SortMenuWork));
+
+        void* const calc_task = AsdTask_CreateCalc(
+            "SORT CALC",
+            2,
+            0,
+            0,
+            reinterpret_cast<void (*)(void*)>(0x001A1E7C),
+            0,
+            0);
+        *reinterpret_cast<void**>(work + 0x00) = calc_task;
+        *reinterpret_cast<void**>(work + 0x04) = AsdTask_CreateDraw(
+            "SORT DDRAW",
+            0xE7,
+            0,
+            0,
+            reinterpret_cast<void (*)(void*)>(0x001A25CC),
+            0,
+            0,
+            calc_task);
+
+        auto* const w2 = *reinterpret_cast<u8**>(mgr + 0x04);
+        func_002c3344(w2 + 0x08);
+        func_002c32f8(
+            w2 + 0x08,
+            kTargetW - 0x3C,
+            0x18,
+            kTargetW - 0x24,
+            0x24,
+            0,
+            0,
+            0,
+            0,
+            kTargetW,
+            0xA8);
+
+        for (s32 i = 0; i < 0x0D; ++i) {
+            u8* const entry = w2 + 0x28 + (i * kStride);
+            func_002bdb2c(entry, 0x1E, 0, w2 + 0x08, 1, 1.0f);
+            func_002af854(entry, 0, 0);
+        }
+
+        func_002bdb2c(w2 + 0x5A0, 0x1E, 0, w2 + 0x08, 1, 1.0f);
+        func_002bf030(w2 + 0x5A0, 0);
+
+        u8* const entry_a = w2 + 0x62C;
+        func_002bdb2c(entry_a, 0x1E, 0, w2 + 0x08, 1, 1.0f);
+        func_002bdac0(entry_a, 0, 0);
+
+        u8* const entry_b = w2 + 0x6B8;
+        func_002bdb2c(entry_b, 0x1E, 0, w2 + 0x08, 1, 1.0f);
+        func_002bf030(entry_b, 1);
+
+        func_002c4450(w2 + 0x76C, 0x1A, -1);
+        *reinterpret_cast<u32*>(w2 + 0x744) = 0;
+        w2[0x74D] = 1;
+        work[0x74E] = static_cast<u8>(flag);
+        *reinterpret_cast<s32*>(work + 0x750) = mode;
+    }
+
+    mgr[0] = static_cast<u8>(mgr[0] + 1);
+}
+
 // DECOMP_FUNC(0x0029b3cc, 1676)
 
 
