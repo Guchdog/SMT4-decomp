@@ -4130,7 +4130,7 @@ address,size,status,category,name,src_file
 0x00262a04,64,matching,camp,camp_func_00262a04,src/engine/leaf_batch24_b.cpp
 0x00262a44,16,matching,unknown,func_00262a44,src/engine/leaf_batch21_b.cpp
 0x00262a54,108,matching,script_vm,script_vm_func_00262a54,src/engine/leaf_batch39_c.cpp
-0x00262ac0,104,matching,engine,AsdMemory_func_00262ac0,src/engine/asd_file.cpp
+0x00262ac0,104,non_matching,engine,AsdMemory_func_00262ac0,src/engine/asd_file.cpp
 0x00262b28,24,matching,engine,engine_func_00262b28,src/engine/leaf_batch16_b.cpp
 0x00262b40,32,matching,battle,battle_func_00262b40,src/engine/leaf_batch39_a.cpp
 0x00262b60,108,non_matching,ui,ui_func_00262b60,src/engine/leaf_batch30_b.cpp
