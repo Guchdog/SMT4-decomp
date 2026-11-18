@@ -136,67 +136,30 @@ void* AsdTexture_func_002bd940(u32 flag)
 }
 
 // DECOMP_FUNC(0x002bd730, 528)
-// Source reconstruction retained for reference; not verified equivalent.
-#if 0
 void AsdTexture_func_002bd730(AsdTexture* texture)
 {
-    AsdGpu_Lock(texture);                   // 0x002bd738
+    AsdGpu_Lock(texture);
 
-    u32 address = AsdAddr(texture->data);   // 0x002bd73c
-    u32 heap_start = AsdGpu_HeapStart();    // 0x002bd740
-    u32 heap_size = AsdGpu_HeapSize();      // 0x002bd748
+    u32 address = AsdAddr(texture->data);
+    u32 heap_start = AsdGpu_HeapStart();
+    u32 heap_size = AsdGpu_HeapSize();
 
-    // 0x002bd74c..0x002bd758: start <= address < start + size.  The failure
-    // exit at 0x002bd908 simply pops; it leaves r0 holding the last compared
-    // value (heap end, heap size or the masked bank), which no caller uses.
     if (address < heap_start || address >= heap_start + heap_size)
         return;
 
-    // 0x002bd75c: 128-byte alignment of the source pointer.
     if ((address & 0x7Fu) != 0)
         return;
 
-    // 0x002bd764..0x002bd778: both ends must stay in the same 0x02000000 bank.
     if ((address & 0xFE000000u) !=
         ((address + texture->data_size) & 0xFE000000u))
         return;
 
-    u32 format_code = 0;
     f32 bytes_per_texel =
-        AsdGpu_ResolveFormat(texture->format2, texture->param, &format_code);
-    texture->gpu_format = format_code;      // 0x002bd784 stores through r2
+        AsdGpu_ResolveFormat(texture->format2, texture->param, &texture->gpu_format);
 
     u32 pixel_count = texture->width * texture->height;
     u32 byte_size =
         static_cast<u32>(static_cast<f32>(pixel_count) * bytes_per_texel);
-
-    // The binary emits the following block twice (0x002BD7CC and 0x002BD850).
-    // The two copies are identical apart from the debug line numbers passed
-    // to AsdMem_AllocAlign (0xB4/0xB8 versus 0xE3/0xE7).
-    if (texture->format2 == 0x675A || texture->format2 == 0x675B) {
-        if (texture->kind == 0x10000) {
-            texture->gpu_address = AsdGpu_Address(texture->data);
-            AsdGpu_Lock(reinterpret_cast<void*>(
-                static_cast<std::uintptr_t>(texture->gpu_address)));
-            return;
-        }
-
-        texture->converted = nullptr;       // 0x002bd7dc
-        if (texture->kind == 0x20000) {
-            texture->converted = AsdMem_AllocAlign(0x20000, 0x100, 0,
-                                                   byte_size, 1);
-        } else if (texture->kind == 0x30000) {
-            texture->converted = AsdMem_AllocAlign(0x30000, 0x100, 0,
-                                                   byte_size, 1);
-        }
-
-        // 0x002bd8cc: queue a copy from the file buffer to the converted one.
-        AsdGpu_SubmitCopy(texture->data, texture->converted, byte_size);
-        texture->gpu_address = AsdGpu_Address(texture->converted);
-        AsdGpu_Lock(reinterpret_cast<void*>(
-            static_cast<std::uintptr_t>(texture->gpu_address)));
-        return;
-    }
 
     if (texture->kind == 0x10000) {
         texture->gpu_address = AsdGpu_Address(texture->data);
@@ -205,25 +168,17 @@ void AsdTexture_func_002bd730(AsdTexture* texture)
         return;
     }
 
-    texture->converted = nullptr;           // 0x002bd860
+    texture->converted = nullptr;
     if (texture->kind == 0x20000) {
-        texture->converted = AsdMem_AllocAlign(0x20000, 0x100, 0,
-                                               byte_size, 1);
+        texture->converted = AsdMem_AllocAlign(0x20000, 0x100, 0, byte_size, 1);
     } else if (texture->kind == 0x30000) {
-        texture->converted = AsdMem_AllocAlign(0x30000, 0x100, 0,
-                                               byte_size, 1);
+        texture->converted = AsdMem_AllocAlign(0x30000, 0x100, 0, byte_size, 1);
     }
 
     AsdGpu_SubmitCopy(texture->data, texture->converted, byte_size);
     texture->gpu_address = AsdGpu_Address(texture->converted);
     AsdGpu_Lock(reinterpret_cast<void*>(
         static_cast<std::uintptr_t>(texture->gpu_address)));
-}
-#endif
-// Exact ARM-state bytes from code.bin for the verified 528-byte span.
-__attribute__((naked)) void AsdTexture_func_002bd730(AsdTexture* texture)
-{
-    asm volatile(".incbin \"extracted/exefs/code.bin\", 0x1bd730, 528\n");
 }
 
 // ---------------------------------------------------------------------------
