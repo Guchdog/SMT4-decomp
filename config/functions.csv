@@ -4072,7 +4072,7 @@ address,size,status,category,name,src_file
 0x0025ab10,2864,matching,script_vm,script_vm_func_0025ab10,src/engine/leaf_batch46_c.cpp
 0x0025b640,112,non_matching,script_vm,script_vm_func_0025b640,src/engine/leaf_batch30_b.cpp
 0x0025b6b0,56,matching,script_vm,script_vm_func_0025b6b0,src/engine/leaf_batch24_b.cpp
-0x0025b6e8,448,matching,engine,engine_func_0025b6e8,src/engine/leaf_batch45_b.cpp
+0x0025b6e8,448,non_matching,engine,engine_func_0025b6e8,src/engine/leaf_batch45_b.cpp
 0x0025b8a8,120,matching,script_vm,script_vm_func_0025b8a8,src/engine/leaf_batch39_c.cpp
 0x0025b920,72,matching,script_vm,script_vm_func_0025b920,src/engine/leaf_batch29_b.cpp
 0x0025b968,16,matching,script_vm,script_vm_func_0025b968,src/engine/leaf_batch21_b.cpp

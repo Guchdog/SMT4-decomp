@@ -451,66 +451,69 @@ extern "C" __attribute__((naked)) void ui_func_00352974() {
 }
 
 // DECOMP_FUNC(0x0025b6e8, 448)
-extern "C" __attribute__((naked)) void engine_func_0025b6e8() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x47f0, 0xe92d, 0x9002, 0xe1a0\n"
-        ".hword 0x81a4, 0xe59f, 0xa000, 0xe3e0\n"
-        ".hword 0x8b0a, 0xed2d, 0xca67, 0xed9f\n"
-        ".hword 0xca67, 0xeddf, 0x8a03, 0xec90\n"
-        ".hword 0x9a03, 0xecd1, 0x0060, 0xea00\n"
-        ".hword 0x0000, 0xe357, 0x005e, 0x0a00\n"
-        ".hword 0x0001, 0xe357, 0x7002, 0x03a0\n"
-        ".hword 0xfffa, 0x0aff, 0x0002, 0xe357\n"
-        ".hword 0x600c, 0x0598, 0x6010, 0x1598\n"
-        ".hword 0x4020, 0x0598, 0x4024, 0x1598\n"
-        ".hword 0x0000, 0xe356, 0x5000, 0xe3a0\n"
-        ".hword 0x004d, 0xda00, 0x0008, 0xe5d4\n"
-        ".hword 0x0000, 0xe350, 0x0046, 0x0a00\n"
-        ".hword 0x000c, 0xe284, 0x1a06, 0xedd4\n"
-        ".hword 0x0a03, 0xec90, 0x2a00, 0xee28\n"
-        ".hword 0x0a80, 0xee29, 0x2aa0, 0xee08\n"
-        ".hword 0x0a20, 0xee0a, 0x2a01, 0xee09\n"
-        ".hword 0x0a81, 0xee0a, 0xba61, 0xee32\n"
-        ".hword 0xcacb, 0xeeb4, 0xfa10, 0xeef1\n"
-        ".hword 0xba61, 0xee70, 0x0002, 0xda00\n"
-        ".hword 0xcaeb, 0xeeb4, 0xfa10, 0xeef1\n"
-        ".hword 0x0005, 0x9a00, 0xcaeb, 0xeeb4\n"
-        ".hword 0xfa10, 0xeef1, 0x0032, 0xda00\n"
-        ".hword 0xcacb, 0xeeb4, 0xfa10, 0xeef1\n"
-        ".hword 0x002f, 0x8a00, 0x0acb, 0xeeb0\n"
-        ".hword 0x1aeb, 0xeef0, 0x1a69, 0xeeb0\n"
-        ".hword 0x3a48, 0xeeb0, 0x0a4a, 0xeef0\n"
-        ".hword 0x2a68, 0xeef0, 0x3a6a, 0xeef0\n"
-        ".hword 0x1a21, 0xee70, 0x2a49, 0xeeb0\n"
-        ".hword 0x1a43, 0xee31, 0x10d5, 0xe1d4\n"
-        ".hword 0x0ae2, 0xee70, 0x00d4, 0xe1d4\n"
-        ".hword 0x2004, 0xe1a0, 0x3ac2, 0xee73\n"
-        ".hword 0x4a21, 0xee80, 0x1a6c, 0xeef0\n"
-        ".hword 0x0a04, 0xee21, 0x0a84, 0xee60\n"
-        ".hword 0x1a84, 0xee23, 0x0a00, 0xee33\n"
-        ".hword 0x0aa0, 0xee72, 0x1a01, 0xee32\n"
-        ".hword 0xc154, 0xebff, 0xcac0, 0xeeb4\n"
-        ".hword 0xfa10, 0xeef1, 0x0014, 0x8a00\n"
-        ".hword 0x0000, 0xe359, 0x000f, 0x0a00\n"
-        ".hword 0x0acb, 0xeef0, 0x2aeb, 0xeef0\n"
-        ".hword 0x1ac8, 0xee39, 0x1a68, 0xee7a\n"
-        ".hword 0x2ac9, 0xee3a, 0x3a80, 0xee30\n"
-        ".hword 0x0aa2, 0xee70, 0x0a20, 0xee83\n"
-        ".hword 0x0a00, 0xee61, 0x1a80, 0xee21\n"
-        ".hword 0x0a00, 0xee22, 0x0a20, 0xee78\n"
-        ".hword 0x1a81, 0xee38, 0x0a00, 0xee39\n"
-        ".hword 0x0a02, 0xed89, 0x0a02, 0xecc9\n"
-        ".hword 0x0005, 0xe1a0, 0x8b0a, 0xecbd\n"
-        ".hword 0x87f0, 0xe8bd, 0x5001, 0xe285\n"
-        ".hword 0x0006, 0xe155, 0x40a8, 0xe284\n"
-        ".hword 0xffb1, 0xbaff, 0x7001, 0xe287\n"
-        ".hword 0x0004, 0xe357, 0xffa1, 0xbaff\n"
-        ".hword 0x8b0a, 0xecbd, 0x000a, 0xe1a0\n"
-        ".hword 0x87f0, 0xe8bd, 0x7001, 0xe3a0\n"
-        ".hword 0xff9c, 0xeaff, 0x6fe8, 0x0044\n"
-        ".hword 0x0000, 0x0000, 0x0000, 0x4120\n"
-    );
+namespace engine_25b6e8_calls {
+extern "C" f32 func_0024bd60(s32 a0, s32 a1, const void* elem,
+                             f32 x, f32 y, f32 z, f32 limit);
+} // namespace engine_25b6e8_calls
+
+extern "C" s32 engine_func_0025b6e8(const f32* p0, const f32* p1, f32* out) {
+    using namespace engine_25b6e8_calls;
+
+    const u8* const g = reinterpret_cast<const u8*>(0x00446FE8u);
+    const f32 x0 = p0[0];
+    const f32 y0 = p0[1];
+    const f32 z0 = p0[2];
+    const f32 x1 = p1[0];
+    const f32 y1 = p1[1];
+    const f32 z1 = p1[2];
+
+    for (s32 pass = 2; pass < 4; ++pass) {
+        const s32 count = *reinterpret_cast<const s32*>(
+            g + ((pass == 2) ? 0x0Cu : 0x10u));
+        const u8* const base = *reinterpret_cast<const u8* const*>(
+            g + ((pass == 2) ? 0x20u : 0x24u));
+
+        for (s32 i = 0; i < count; ++i) {
+            const u8* const elem = base + i * 0xA8;
+            if (elem[8] == 0) {
+                continue;
+            }
+
+            const f32* const plane = reinterpret_cast<const f32*>(elem + 0x0C);
+            const f32 d0 = x0 * plane[0] + y0 * plane[1] + z0 * plane[2] - plane[3];
+            const f32 d1 = x1 * plane[0] + y1 * plane[1] + z1 * plane[2] - plane[3];
+
+            const bool crosses =
+                (d0 >= 0.0f && d1 < 0.0f) || (d0 < 0.0f && d1 >= 0.0f);
+            if (!crosses) {
+                continue;
+            }
+
+            const f32 ad0 = __builtin_fabsf(d0);
+            const f32 ad1 = __builtin_fabsf(d1);
+            const f32 denom = ad0 + ad1;
+            const f32 t = ad0 / denom;
+            const f32 hx = x0 + (x1 - x0) * t;
+            const f32 hy = y0 + (y1 - y0) * t;
+            const f32 hz = z0 + (z1 - z0) * t;
+
+            const f32 dist = func_0024bd60(
+                static_cast<s8>(elem[4]),
+                static_cast<s8>(elem[5]),
+                elem, hx, hy, hz, 10.0f);
+            if (dist >= 0.0f) {
+                if (out != nullptr) {
+                    const f32 t2 = (ad0 + dist) / denom;
+                    out[0] = x0 + (x1 - x0) * t2;
+                    out[1] = y0 + (y1 - y0) * t2;
+                    out[2] = z0 + (z1 - z0) * t2;
+                }
+                return i;
+            }
+        }
+    }
+
+    return -1;
 }
 
 // DECOMP_FUNC(0x00238ed4, 452)
