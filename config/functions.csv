@@ -9341,7 +9341,7 @@ address,size,status,category,name,src_file
 0x0039b054,348,matching,unknown,func_0039b054,src/engine/leaf_batch22_c.cpp
 0x0039b1b0,988,matching,ui,ui_func_0039b1b0,src/engine/leaf_batch46_a.cpp
 0x0039b58c,728,matching,unknown,func_0039b58c,src/engine/leaf_batch36_b.cpp
-0x0039b864,996,matching,engine,engine_func_0039b864,src/engine/leaf_batch45_c.cpp
+0x0039b864,996,non_matching,engine,engine_func_0039b864,src/engine/leaf_batch45_c.cpp
 0x0039bc48,424,matching,ui,ui_func_0039bc48,src/engine/leaf_batch36_b.cpp
 0x0039bdf0,84,matching,script_vm,script_vm_func_0039bdf0,src/engine/leaf_batch40_c.cpp
 0x0039be44,220,matching,shop,shop_func_0039be44,src/engine/leaf_batch36_b.cpp

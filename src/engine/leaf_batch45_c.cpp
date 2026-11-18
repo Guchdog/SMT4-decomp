@@ -1251,75 +1251,140 @@ extern "C" __attribute__((naked)) void func_001c0eb0() {
     );
 }
 
+extern "C" s32 func_00231b54();
+extern "C" void camp_func_002315c8(u32 a0, u32 a1, u32* out_a, u32* out_b, u32* out_c, u32* out_d);
+extern "C" s32 func_002315b4(u32 a0, u32 a1, u32 a2, u32 a3);
+extern "C" u32 func_0039ae80(u8* self, s32 dir);
+extern "C" const float* func_00231f58(u8* vec_ptr);
+extern "C" void func_00231b38(u8* vec_ptr, const float* vals);
+
+namespace {
+
+__attribute__((always_inline)) inline void scale_vec_39b864(u8* vec_ptr, float factor) {
+    const float* const v = func_00231f58(vec_ptr);
+    const float scaled[2] = {v[0] * factor, v[1] * factor};
+    func_00231b38(vec_ptr, scaled);
+}
+
+}  // namespace
+
 // DECOMP_FUNC(0x0039b864, 996)
-// Capstone ARM full coverage (249 instructions); raw bytes only, no terminal-return claim.
-extern "C" __attribute__((naked)) void engine_func_0039b864() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4ff0, 0xe24dd034, 0xe1a05000, 0xebfc9ca9\n"
-        ".word 0xe1a09000, 0xe5950010, 0xe59f63b4, 0xe3100402\n"
-        ".word 0x0a000008, 0xebfa58b1, 0xe3500000, 0x0a000002\n"
-        ".word 0xe5d60018, 0xe3500000, 0x0a000002, 0xe5950010\n"
-        ".word 0xe3c00402, 0xe5850010, 0xe2890c0d, 0xe58d0030\n"
-        ".word 0xe2850c01, 0xe2856b16, 0xe2857c5a, 0xe2800062\n"
-        ".word 0xe3a04000, 0xe28da00c, 0xe28db008, 0xe2858a12\n"
-        ".word 0xe2866fa3, 0xe287708d, 0xe58d0028, 0xe2841c0f\n"
-        ".word 0xe28d3010, 0xe28d2018, 0xe28110b5, 0xe3a0001c\n"
-        ".word 0xe58da004, 0xe58db000, 0xebfa5731, 0xe59d0018\n"
-        ".word 0xe59d1010, 0xe1cd20d8, 0xebfa5728, 0xe3500000\n"
-        ".word 0xe320f000, 0x0a0000c0, 0xe59f0314, 0xe5d00018\n"
-        ".word 0xe3500000, 0x1a0000bc, 0xe3540005, 0x379ff104\n"
-        ".word 0xea0000b6, 0x0039b94c, 0x0039b9f8, 0x0039bb08\n"
-        ".word 0x0039ba80, 0x0039bb80, 0xe5982264, 0xe3a00000\n"
-        ".word 0xe3520000, 0xda0000ad, 0xe0851100, 0xe2811801\n"
-        ".word 0xe2811c21, 0xe1d13eb4, 0xe3530000, 0x0a000015\n"
-        ".word 0xe1d13ef6, 0xe1d516d0, 0xe1530001, 0x1a000011\n"
-        ".word 0xe2501001, 0x4a0000a1, 0xe0850100, 0xe2800801\n"
-        ".word 0xe2800c21, 0xe1d00eb2, 0xe3500000, 0x0a00009b\n"
-        ".word 0xe5950010, 0xe3a01001, 0xe3800402, 0xe5850010\n"
-        ".word 0xe1a00005, 0xebfffd30, 0xe3500000, 0xe320f000\n"
-        ".word 0x0a000004, 0xea00008c, 0xe2800001, 0xe1520000\n"
-        ".word 0xcaffffe0, 0xea00008d, 0xe0852004, 0xe3a01005\n"
-        ".word 0xe3a00001, 0xe5c21056, 0xe5c60000, 0xe5c70000\n"
-        ".word 0xea000086, 0xe59d0030, 0xe5d0005a, 0xe3500006\n"
-        ".word 0x1a000085, 0xe5950010, 0xe3c00803, 0xe3800402\n"
-        ".word 0xe5850010, 0xe3a00001, 0xe5c60000, 0xe5c70000\n"
-        ".word 0xe59d0028, 0xebfa594a, 0xe5901000, 0xed9f0a81\n"
-        ".word 0xe5900004, 0xee001a90, 0xe58d1000, 0xe58d0004\n"
-        ".word 0xe1a0100d, 0xee600a80, 0xedcd0a00, 0xee000a90\n"
-        ".word 0xee200a80, 0xed8d0a01, 0xe59d0028, 0xebfa5834\n"
-        ".word 0xe3a0200c, 0xe3a01005, 0xe5c92d5a, 0xe3a00000\n"
-        ".word 0xe5c51057, 0xe5c50059, 0xea000064, 0xe59d0030\n"
-        ".word 0xe5d0005a, 0xe3500006, 0x0a000063, 0xe5950010\n"
-        ".word 0xe3c00803, 0xe3800402, 0xe5850010, 0xe3a00001\n"
-        ".word 0xe5c60000, 0xe5c70000, 0xe59d0028, 0xebfa5928\n"
-        ".word 0xe5901000, 0xed9f0a60, 0xe5900004, 0xee001a90\n"
-        ".word 0xe58d1000, 0xe58d0004, 0xe1a0100d, 0xee600a80\n"
-        ".word 0xedcd0a00, 0xee000a90, 0xee200a80, 0xed8d0a01\n"
-        ".word 0xe59d0028, 0xebfa5812, 0xe3a02006, 0xe3a00005\n"
-        ".word 0xe5c92d5a, 0xe3a01000, 0xe5c50059, 0xe5c51057\n"
-        ".word 0xea000042, 0xe5950010, 0xe3800402, 0xe5850010\n"
-        ".word 0xe59d0018, 0xe59d1010, 0xe1cd20d8, 0xebfa56a3\n"
-        ".word 0xe3500000, 0xe320f000, 0x0a000038, 0xe59d0028\n"
-        ".word 0xebfa5907, 0xe5901000, 0xe5900004, 0xed9f0a3f\n"
-        ".word 0xe58d1000, 0xe58d0004, 0xed8d0a00, 0xed8d0a01\n"
-        ".word 0xe59d0028, 0xe1a0100d, 0xebfa57f5, 0xe59821cc\n"
-        ".word 0xe3a01005, 0xe3a00001, 0xe5c52060, 0xe5c51058\n"
-        ".word 0xe5c60000, 0xe5c70000, 0xea000024, 0xe5981264\n"
-        ".word 0xe3a00000, 0xe3510000, 0xda000020, 0xe0852100\n"
-        ".word 0xe2822801, 0xe2822c21, 0xe1d23eb4, 0xe3530000\n"
-        ".word 0x0a000017, 0xe1d23ef6, 0xe1d526d0, 0xe1530002\n"
-        ".word 0x1a000013, 0xe2802001, 0xe1510002, 0xda000013\n"
-        ".word 0xe0850100, 0xe2800801, 0xe2800c21, 0xe1d00eba\n"
-        ".word 0xe3500000, 0x0a00000d, 0xe5950010, 0xe3e01000\n"
-        ".word 0xe3800402, 0xe5850010, 0xe1a00005, 0xebfffca2\n"
-        ".word 0xe3500000, 0xe320f000, 0x0affff76, 0xe5c50060\n"
-        ".word 0xeaffff74, 0xe2800001, 0xe1510000, 0xcaffffde\n"
-        ".word 0xe28dd034, 0xe3a00001, 0xe8bd8ff0, 0xe2844001\n"
-        ".word 0xe3540005, 0xbaffff2c, 0xe28dd034, 0xe3a00000\n"
-        ".word 0xe8bd8ff0, 0x0049f91c, 0x40000000, 0x3f000000\n"
-        ".word 0x00000000\n"
-    );
+extern "C" u32 engine_func_0039b864(u8* self) {
+    u8* const r9 = engine_func_002c2b1c();
+    const u8* const g_sb = reinterpret_cast<const u8*>(0x0049F91Cu);
+
+    if ((*reinterpret_cast<const u32*>(self + 0x10u) & 0x02000000u) != 0u) {
+        if (func_00231b54() == 0 || g_sb[0x18u] != 0u) {
+            *reinterpret_cast<u32*>(self + 0x10u) &= ~0x02000000u;
+        }
+    }
+
+    u8* const vec_ptr = self + 0x162u;
+    u8* const r6_ptr = self + 0x5A8Cu;
+    u8* const r7_ptr = self + 0x5A8Du;
+    u8* const r8_ptr = self + 0x12000u;
+
+    for (s32 i = 0; i < 5; ++i) {
+        u32 out_a = 0u, out_b = 0u, out_c = 0u, out_d = 0u;
+        camp_func_002315c8(0x1Cu, 0xFB5u + static_cast<u32>(i), &out_a, &out_b, &out_c, &out_d);
+        if (func_002315b4(out_a, out_b, out_c, out_d) == 0 || g_sb[0x18u] != 0u) {
+            continue;
+        }
+
+        switch (i) {
+            case 0: {
+                const s32 count = *reinterpret_cast<const s32*>(r8_ptr + 0x264u);
+                for (s32 j = 0; j < count; ++j) {
+                    const u8* const slot = self + 0x12100u + j * 4;
+                    if (*reinterpret_cast<const u16*>(slot + 0xE4u) != 0u &&
+                        *reinterpret_cast<const s16*>(slot + 0xE6u) ==
+                            *reinterpret_cast<const s8*>(self + 0x60u)) {
+                        if (j - 1 < 0 || *reinterpret_cast<const u16*>(slot + 0xE2u) == 0u) {
+                            return 1u;
+                        }
+                        *reinterpret_cast<u32*>(self + 0x10u) |= 0x02000000u;
+                        const u32 res = func_0039ae80(self, 1);
+                        if (res != 0u) {
+                            self[0x60u] = static_cast<u8>(res);
+                        }
+                        self[0x56u + i] = 5u;
+                        *r6_ptr = 1u;
+                        *r7_ptr = 1u;
+                        return 1u;
+                    }
+                }
+                return 1u;
+            }
+            case 1: {
+                if (r9[0xD5Au] != 6u) {
+                    continue;
+                }
+                *reinterpret_cast<u32*>(self + 0x10u) =
+                    (*reinterpret_cast<const u32*>(self + 0x10u) & ~0x30000u) | 0x02000000u;
+                *r6_ptr = 1u;
+                *r7_ptr = 1u;
+                scale_vec_39b864(vec_ptr, 2.0f);
+                r9[0xD5Au] = 0xCu;
+                self[0x57u] = 5u;
+                self[0x59u] = 0u;
+                return 1u;
+            }
+            case 3: {
+                if (r9[0xD5Au] == 6u) {
+                    continue;
+                }
+                *reinterpret_cast<u32*>(self + 0x10u) =
+                    (*reinterpret_cast<const u32*>(self + 0x10u) & ~0x30000u) | 0x02000000u;
+                *r6_ptr = 1u;
+                *r7_ptr = 1u;
+                scale_vec_39b864(vec_ptr, 0.5f);
+                r9[0xD5Au] = 6u;
+                self[0x59u] = 5u;
+                self[0x57u] = 0u;
+                return 1u;
+            }
+            case 2: {
+                *reinterpret_cast<u32*>(self + 0x10u) |= 0x02000000u;
+                if (func_002315b4(out_a, out_b, out_c, out_d) != 0) {
+                    func_00231f58(vec_ptr);
+                    const float zero[2] = {0.0f, 0.0f};
+                    func_00231b38(vec_ptr, zero);
+                    self[0x60u] = static_cast<u8>(*reinterpret_cast<const u32*>(r8_ptr + 0x1CCu));
+                    self[0x58u] = 5u;
+                    *r6_ptr = 1u;
+                    *r7_ptr = 1u;
+                }
+                return 1u;
+            }
+            case 4: {
+                const s32 count = *reinterpret_cast<const s32*>(r8_ptr + 0x264u);
+                for (s32 j = 0; j < count; ++j) {
+                    const u8* const slot = self + 0x12100u + j * 4;
+                    if (*reinterpret_cast<const u16*>(slot + 0xE4u) != 0u &&
+                        *reinterpret_cast<const s16*>(slot + 0xE6u) ==
+                            *reinterpret_cast<const s8*>(self + 0x60u)) {
+                        if (j + 1 >= count || *reinterpret_cast<const u16*>(slot + 0xEAu) == 0u) {
+                            return 1u;
+                        }
+                        *reinterpret_cast<u32*>(self + 0x10u) |= 0x02000000u;
+                        const u32 res = func_0039ae80(self, -1);
+                        if (res != 0u) {
+                            self[0x60u] = static_cast<u8>(res);
+                        }
+                        self[0x56u + i] = 5u;
+                        *r6_ptr = 1u;
+                        *r7_ptr = 1u;
+                        return 1u;
+                    }
+                }
+                return 1u;
+            }
+            default:
+                return 1u;
+        }
+    }
+
+    return 0u;
 }
 
 // DECOMP_FUNC(0x003d0910, 996)
