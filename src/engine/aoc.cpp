@@ -1159,127 +1159,60 @@ u32 aocTexCtrl_func_003936e8(AocTexCtrl* ctrl)
     ctrl->state->block = block;
     return 1;
 }
+extern "C" {
+    void AsdMem_CopyLarge(void* dst, const void* src, u32 size);                // 0x002bcf58
+}
+
 // DECOMP_FUNC(0x00393838, 456)
-
-
-//
-__attribute__((naked)) void aocTexCtrl_func_00393838(AocTexCtrl*, void**)
+void aocTexCtrl_func_00393838(AocTexCtrl* ctrl, void** source)
 {
-    asm volatile(
-        ".word 0xE92D4FF8\n"
-        ".word 0xE1A04001\n"
-        ".word 0xE1A0B000\n"
-        ".word 0xE5900004\n"
-        ".word 0xE3500000\n"
-        ".word 0x1A00005A\n"
-        ".word 0xE5945000\n"
-        ".word 0xE59F1164\n"
-        ".word 0xE28F0F59\n"
-        ".word 0xE1A00000\n"
-        ".word 0xE3A0A001\n"
-        ".word 0xE3A01C01\n"
-        ".word 0xE3A03008\n"
-        ".word 0xE3A02000\n"
-        ".word 0xE1A00001\n"
-        ".word 0xE58DA000\n"
-        ".word 0xEBFCC4C1\n" // AsdMem_Alloc (0x002C4B84)
-        ".word 0xE58B0004\n"
-        ".word 0xE3A01FE2\n"
-        ".word 0xE28F0F4E\n"
-        ".word 0xE1A00000\n"
-        ".word 0xE3A01C01\n"
-        ".word 0xE3A03040\n"
-        ".word 0xE3A02000\n"
-        ".word 0xE1A00001\n"
-        ".word 0xE58DA000\n"
-        ".word 0xEBFCC4B7\n" // AsdMem_Alloc (0x002C4B84)
-        ".word 0xE59B1004\n"
-        ".word 0xE3A07000\n"
-        ".word 0xE1A06007\n"
-        ".word 0xE5810000\n"
-        ".word 0xEC950A08\n"
-        ".word 0xE2855020\n"
-        ".word 0xEC800A08\n"
-        ".word 0xE2800020\n"
-        ".word 0xEC950A08\n"
-        ".word 0xEC800A08\n"
-        ".word 0xE59B1004\n"
-        ".word 0xE5940000\n"
-        ".word 0xE5919000\n"
-        ".word 0xE2805040\n"
-        ".word 0xE5991020\n"
-        ".word 0xE3510000\n"
-        ".word 0xDA000034\n"
-        ".word 0xE59F010C\n"
-        ".word 0xE3A01061\n"
-        ".word 0xE1A00000\n"
-        ".word 0xE3A01C01\n"
-        ".word 0xE3A03014\n"
-        ".word 0xE3A02000\n"
-        ".word 0xE1A00001\n"
-        ".word 0xE58DA000\n"
-        ".word 0xEBFCC49D\n" // AsdMem_Alloc (0x002C4B84)
-        ".word 0xE5D51000\n"
-        ".word 0xE1A04000\n"
-        ".word 0xE3A0800C\n"
-        ".word 0xE5801000\n"
-        ".word 0xE5D51004\n"
-        ".word 0xE3510000\n"
-        ".word 0xE5801004\n"
-        ".word 0xE5D51008\n"
-        ".word 0xE5C01008\n"
-        ".word 0xD3A00000\n"
-        ".word 0xDA00000A\n"
-        ".word 0xE59F00BC\n"
-        ".word 0xE3A0106F\n"
-        ".word 0xE1A00000\n"
-        ".word 0xE58DA000\n"
-        ".word 0xE5940004\n"
-        ".word 0xE3A01C01\n"
-        ".word 0xE3A02000\n"
-        ".word 0xE0800100\n"
-        ".word 0xE1A03100\n"
-        ".word 0xE1A00001\n"
-        ".word 0xEBFCC487\n" // AsdMem_Alloc (0x002C4B84)
-        ".word 0xE584000C\n"
-        ".word 0xE5940004\n"
-        ".word 0xE285100C\n"
-        ".word 0xE3500000\n"
-        ".word 0xDA000003\n"
-        ".word 0xE0802100\n"
-        ".word 0xE594000C\n"
-        ".word 0xE1A02102\n"
-        ".word 0xEBFCA573\n" // AsdMem_CopyLarge (0x002BCF58)
-        ".word 0xE5940004\n"
-        ".word 0xE3570000\n"
-        ".word 0x059B1004\n"
-        ".word 0xE2866001\n"
-        ".word 0xE0800100\n"
-        ".word 0xE0880100\n"
-        ".word 0x05814004\n"
-        ".word 0xE0855000\n"
-        ".word 0x15874010\n"
-        ".word 0xE5990020\n"
-        ".word 0xE1A07004\n"
-        ".word 0xE1500006\n"
-        ".word 0xCAFFFFCA\n"
-        ".word 0xE8BD8FF8\n"
-        ".word 0x00000386\n"
-        ".word 0x535C3A63\n"
-        ".word 0x5C34544D\n"
-        ".word 0x36445258\n"
-        ".word 0x735C3638\n"
-        ".word 0x34736464\n"
-        ".word 0x6F72705C\n"
-        ".word 0x6D617267\n"
-        ".word 0x6464615C\n"
-        ".word 0x735C6E6F\n"
-        ".word 0x615C7379\n"
-        ".word 0x6554636F\n"
-        ".word 0x72744378\n"
-        ".word 0x70632E6C\n"
-        ".word 0x00000070\n"
-        ".word 0x003FF78C\n");
+    if (ctrl->state != nullptr) {
+        return;
+    }
+
+    const u8* const file = static_cast<const u8*>(*source);
+    auto* const state = static_cast<AocTexCtrlState*>(
+        AsdMem_Alloc(0x100, 0x100, 0, 8, 1));
+    ctrl->state = state;
+
+    auto* const hdr = static_cast<u8*>(
+        AsdMem_Alloc(0x100, 0x100, 0, 0x40, 1));
+    state->block = hdr;
+    for (s32 i = 0; i < 16; ++i) {
+        reinterpret_cast<u32*>(hdr)[i] = reinterpret_cast<const u32*>(file)[i];
+    }
+
+    const s32 record_count = *reinterpret_cast<const s32*>(hdr + 0x20);
+    const u8* rec_data = file + 0x40;
+    u8* prev = nullptr;
+
+    for (s32 i = 0; i < record_count; ++i) {
+        auto* const rec = static_cast<u8*>(
+            AsdMem_Alloc(0x100, 0x100, 0, 0x14, 1));
+        const u32 f0 = rec_data[0];
+        const s32 item_count = rec_data[4];
+        const u8 f8 = rec_data[8];
+        *reinterpret_cast<u32*>(rec + 0x00) = f0;
+        *reinterpret_cast<s32*>(rec + 0x04) = item_count;
+        rec[0x08] = f8;
+
+        if (item_count <= 0) {
+            *reinterpret_cast<void**>(rec + 0x0C) = nullptr;
+        } else {
+            const u32 bytes = static_cast<u32>(item_count) * 20u;
+            void* const items = AsdMem_Alloc(0x100, 0x100, 0, bytes, 1);
+            *reinterpret_cast<void**>(rec + 0x0C) = items;
+            AsdMem_CopyLarge(items, rec_data + 0x0C, bytes);
+        }
+
+        if (prev == nullptr) {
+            state->list = reinterpret_cast<AocTexListEntry*>(rec);
+        } else {
+            *reinterpret_cast<void**>(prev + 0x10) = rec;
+        }
+        prev = rec;
+        rec_data += 0x0C + (static_cast<u32>(item_count) * 20u);
+    }
 }
 
 } // namespace smt4::engine

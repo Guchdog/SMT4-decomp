@@ -9226,7 +9226,7 @@ address,size,status,category,name,src_file
 0x00393558,148,matching,unite,unite_func_00393558,src/engine/leaf_batch27_c.cpp
 0x003935ec,252,matching,engine,engine_func_003935ec,src/engine/leaf_batch29_c.cpp
 0x003936e8,336,non_matching,engine,aocTexCtrl_func_003936e8,src/engine/aoc.cpp
-0x00393838,456,matching,engine,aocTexCtrl_func_00393838,src/engine/aoc.cpp
+0x00393838,456,non_matching,engine,aocTexCtrl_func_00393838,src/engine/aoc.cpp
 0x00393a00,1984,matching,ui,ui_func_00393a00,src/engine/leaf_batch45_c.cpp
 0x003941c0,376,matching,engine,engine_func_003941c0,src/engine/leaf_batch38_b.cpp
 0x00394338,276,matching,engine,engine_func_00394338,src/engine/leaf_batch34_a.cpp
