@@ -12309,30 +12309,34 @@ extern "C" s32 ui_func_0037c4e8(u8* self, u8* out) {
     return 1;
 }
 
+extern "C" u8* func_00360354(u8* self, s32 idx);
+extern "C" void* ui_func_003603f4(u8* self, s32 idx);
+
 // DECOMP_FUNC(0x003f31d8, 800)
-extern "C" __attribute__((naked)) void func_003f31d8() {
+extern "C" u8* func_003f31d8() {
+    u8* const base = reinterpret_cast<u8*>(0x004E8568u);
+    *reinterpret_cast<u32*>(base + 0x10u) = 0u;
+    *reinterpret_cast<u32*>(base + 0x14u) = 0u;
+    *reinterpret_cast<s32*>(base + 0x18u) = -1;
+
+    u8* r6 = base + 0x1Cu;
+    u8* r7 = base + 0xA3Cu;
+    for (s32 i = 0; i < 0x18; ++i) {
+        u8* const elem = func_00360354(r6, i);
+        u8** const slot = reinterpret_cast<u8**>(base + 0x15DCu + static_cast<u32>(i) * 4u);
+        *slot = elem;
+        r6 += 0x6Cu;
+        void* const sub = ui_func_003603f4(r7, i);
+        *reinterpret_cast<void**>(*slot + 0x68u) = sub;
+        r7 += 0x7Cu;
+    }
+    return base;
+}
+
+extern "C" __attribute__((naked)) void func_003f3274() {
     asm volatile(
         ".arm\n"
-        ".hword 0x41f0, 0xe92d, 0x1000, 0xe3a0\n"
-        ".hword 0x4080, 0xe59f, 0x1010, 0xe584\n"
-        ".hword 0x0014, 0xe284, 0x2000, 0xe3e0\n"
-        ".hword 0x7b02, 0xe284, 0x0006, 0xe880\n"
-        ".hword 0x601c, 0xe284, 0x7f8f, 0xe287\n"
-        ".hword 0x5001, 0xe1a0, 0x0006, 0xe1b0\n"
-        ".hword 0x1005, 0x11a0, 0xb450, 0x1bfd\n"
-        ".hword 0x8105, 0xe084, 0x8b05, 0xe288\n"
-        ".hword 0x8f77, 0xe288, 0x0000, 0xe357\n"
-        ".hword 0x0000, 0xe588, 0x606c, 0xe286\n"
-        ".hword 0x0000, 0x03a0, 0x0002, 0x0a00\n"
-        ".hword 0x1005, 0xe1a0, 0x0007, 0xe1a0\n"
-        ".hword 0xb46d, 0xebfd, 0x1000, 0xe598\n"
-        ".hword 0x5001, 0xe285, 0x0018, 0xe355\n"
-        ".hword 0x707c, 0xe287, 0x0068, 0xe581\n"
-        ".hword 0xffeb, 0xbaff, 0x0004, 0xe1a0\n"
-        ".hword 0x41f0, 0xe8bd, 0x2008, 0xe59f\n"
-        ".hword 0x1008, 0xe59f, 0xcaf8, 0xeaf8\n"
-        ".hword 0x8568, 0x004e, 0x0000, 0x0010\n"
-        ".hword 0x0124, 0x0036, 0x2068, 0xe59f\n"
+        ".hword 0x2068, 0xe59f\n"
         ".hword 0x0000, 0xe3e0, 0x1000, 0xe1a0\n"
         ".hword 0x3b02, 0xe3a0, 0x00f0, 0xe1c2\n"
         ".hword 0x0058, 0xe59f, 0x1000, 0xe3a0\n"

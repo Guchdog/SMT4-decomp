@@ -10688,7 +10688,7 @@ address,size,status,category,name,src_file
 0x003f2b44,68,non_matching,ui,func_003f2b44,src/ui/battle_hud_gap_batch.cpp
 0x003f2b88,44,non_matching,ui,func_003f2b88,src/ui/battle_hud_reset_batch.cpp
 0x003f2bb4,1572,matching,ui,ui_func_003f2bb4,src/engine/leaf_batch45_c.cpp
-0x003f31d8,800,matching,unknown,func_003f31d8,src/engine/leaf_batch45_a.cpp
+0x003f31d8,800,non_matching,unknown,func_003f31d8,src/engine/leaf_batch45_a.cpp
 0x003f34f8,440,matching,ui,Ui_BattleMessageWindow,src/ui/battle_hud.cpp
 0x003f36b0,60,non_matching,ui,func_003f36b0,src/ui/battle_hud_exact_batch.cpp
 0x003f36ec,60,non_matching,ui,func_003f36ec,src/ui/battle_hud_exact_batch.cpp
