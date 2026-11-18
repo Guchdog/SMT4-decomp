@@ -25,7 +25,7 @@ address,size,status,category,name,src_file
 0x001023c0,32,matching,crt,crt_func_001023c0,src/engine/leaf_batch18_b.cpp
 0x001023e0,88,matching,crt,crt_func_001023e0,src/engine/leaf_batch20_a.cpp
 0x00102438,212,matching,crt,crt_func_00102438,src/engine/leaf_batch27_a.cpp
-0x0010250c,296,matching,engine,AsdFile_func_0010250c,src/engine/asd_file.cpp
+0x0010250c,296,non_matching,engine,AsdFile_func_0010250c,src/engine/asd_file.cpp
 0x00102634,68,matching,engine,engine_func_00102634,src/engine/leaf_batch20_a.cpp
 0x00102678,76,matching,engine,engine_func_00102678,src/engine/leaf_batch20_a.cpp
 0x001026c4,96,matching,ui,ui_func_001026c4,src/engine/leaf_batch20_a.cpp
