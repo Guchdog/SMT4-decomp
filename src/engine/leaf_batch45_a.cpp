@@ -10270,28 +10270,30 @@ extern "C" void engine_func_00107208() {
     }
 }
 
+extern "C" s32 engine_func_00263534(void* ctx, u32 a0, u32 a1);
+extern "C" u32 ui_func_002b5c2c(const void* wstr);
+extern "C" void func_00248e58(void* ctx, u32 tag, const void* buf, u32 len);
+extern "C" void engine_func_002390dc(void* ctx);
+
 // DECOMP_FUNC(0x002e0dd0, 724)
-extern "C" __attribute__((naked)) void engine_func_002e0dd0() {
+extern "C" u32 engine_func_002e0dd0(u32 a0, u32 a1, const void* a2, const void* a3, u32 a4) {
+    u8* const* const g_mgr = reinterpret_cast<u8* const*>(0x00464FACu);
+    void* const ctx0 = *reinterpret_cast<void* const*>(*g_mgr + 0x18);
+    if (engine_func_00263534(ctx0, a0, a1) < 0) {
+        return 5u;
+    }
+
+    const u32 len2 = ui_func_002b5c2c(a2) << 1;
+    func_00248e58(*reinterpret_cast<void* const*>(*g_mgr + 0x18), 0x6Eu, a2, len2);
+    func_00248e58(*reinterpret_cast<void* const*>(*g_mgr + 0x18), 0x65u, a3, a4);
+    engine_func_002390dc(*reinterpret_cast<void* const*>(*g_mgr + 0x18));
+    return 0u;
+}
+
+extern "C" __attribute__((naked)) void func_002e0e5c() {
     asm volatile(
         ".arm\n"
-        ".hword 0x41f0, 0xe92d, 0xc000, 0xe1a0\n"
-        ".hword 0x6002, 0xe1a0, 0x8074, 0xe59f\n"
-        ".hword 0x2001, 0xe1a0, 0x5018, 0xe59d\n"
-        ".hword 0x7003, 0xe1a0, 0x0004, 0xe598\n"
-        ".hword 0x4005, 0xe3a0, 0x100c, 0xe1a0\n"
-        ".hword 0x0018, 0xe590, 0x09cc, 0xebfe\n"
-        ".hword 0x0102, 0xe210, 0x0011, 0x4a00\n"
-        ".hword 0x0006, 0xe1a0, 0x5386, 0xfaff\n"
-        ".hword 0x3080, 0xe1a0, 0x0004, 0xe598\n"
-        ".hword 0x2006, 0xe1a0, 0x106e, 0xe3a0\n"
-        ".hword 0x0018, 0xe590, 0xa00b, 0xebfd\n"
-        ".hword 0x0004, 0xe598, 0x3005, 0xe1a0\n"
-        ".hword 0x2007, 0xe1a0, 0x1065, 0xe3a0\n"
-        ".hword 0x0018, 0xe590, 0xa005, 0xebfd\n"
-        ".hword 0x0004, 0xe598, 0x0018, 0xe590\n"
-        ".hword 0x60a3, 0xebfd, 0x4000, 0xe3a0\n"
-        ".hword 0x0004, 0xe1a0, 0x81f0, 0xe8bd\n"
-        ".hword 0x4fa8, 0x0046, 0xca10, 0xee10\n"
+        ".hword 0xca10, 0xee10\n"
         ".hword 0x1238, 0xe59f, 0x4030, 0xe92d\n"
         ".hword 0x2102, 0xe3dc, 0x2fac, 0x01a0\n"
         ".hword 0xd024, 0xe24d, 0xcb82, 0x01a0\n"

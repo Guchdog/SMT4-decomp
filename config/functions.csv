@@ -6319,7 +6319,7 @@ address,size,status,category,name,src_file
 0x002e0c54,108,non_matching,ui,ui_func_002e0c54,src/engine/leaf_batch30_b.cpp
 0x002e0cc0,108,matching,unknown,func_002e0cc0,src/engine/leaf_batch37_c.cpp
 0x002e0d2c,164,matching,engine,engine_func_002e0d2c,src/engine/leaf_batch37_c.cpp
-0x002e0dd0,724,matching,engine,engine_func_002e0dd0,src/engine/leaf_batch45_a.cpp
+0x002e0dd0,724,non_matching,engine,engine_func_002e0dd0,src/engine/leaf_batch45_a.cpp
 0x002e10a4,36,matching,unknown,func_002e10a4,src/engine/leaf_batch23_b.cpp
 0x002e10c8,184,matching,engine,engine_func_002e10c8,src/engine/leaf_batch37_c.cpp
 0x002e1180,60,matching,script_vm,script_vm_func_002e1180,src/engine/leaf_batch29_b.cpp
