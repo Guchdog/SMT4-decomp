@@ -465,72 +465,103 @@ extern "C" s32 script_vm_func_002d2a94() {
     }
     return -1;
 }
+extern "C" s32 script_vm_func_00299064(u32 arg0);
+extern "C" u32 script_vm_func_00290694();
+extern "C" void ui_func_002bf460(u32 a0, u32 a1, u32 a2, u32 a3, u32 a4, u32 a5);
+extern "C" void func_002bf558(u32 a0, u32 a1, u32 a2, u32 a3, u32 a4, u32 a5);
+extern "C" s32 script_vm_func_002990bc(u32 arg0);
+extern "C" const u8* script_vm_func_002b6700();
+extern "C" s32 script_vm_func_0028f5a8(u32 arg0);
+extern "C" s32 script_vm_func_002990dc(u32 arg0, s32 idx, s32* out_val);
+extern "C" s32 script_vm_func_0029909c(u32 arg0);
+extern "C" s32 script_vm_func_0028f460(u32 arg0);
+extern "C" s32 script_vm_func_00333ce0(u32 arg0);
+
 // DECOMP_FUNC(0x001af748, 960)
-// Capstone ARM full coverage (240 instructions); raw bytes only, no terminal-return claim.
-extern "C" __attribute__((naked)) void ui_func_001af748() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4fff, 0xe24dd014, 0xe1a06002, 0xe1a07003\n"
-        ".word 0xe59f0394, 0xe59d8048, 0xe59fa390, 0xe59fb390\n"
-        ".word 0xe5900000, 0xe3580000, 0x13e04000, 0x03a040ff\n"
-        ".word 0xe5d005c4, 0xe59f537c, 0xe59f937c, 0xe3500000\n"
-        ".word 0xe59d0014, 0x0a000025, 0xeb03a633, 0xe3500000\n"
-        ".word 0x0a000013, 0xeb0383bc, 0xe1cd60f0, 0xe59d3018\n"
-        ".word 0xe3500000, 0x0a000006, 0xe3a02092, 0xe3a01029\n"
-        ".word 0xe3a00002, 0xeb043f27, 0xe3580000, 0x1a000082\n"
-        ".word 0xea000083, 0xe3a0200c, 0xe3a01029, 0xe3a00002\n"
-        ".word 0xeb043f5e, 0xe3580000, 0xe320f000, 0x1a000091\n"
-        ".word 0xea000092, 0xe59d0014, 0xeb03a631, 0xe3500000\n"
-        ".word 0xe320f000, 0x0a000094, 0xe1cd60f0, 0xe59d3018\n"
-        ".word 0xe3a02093, 0xe3a01029, 0xe3a00002, 0xeb043f11\n"
-        ".word 0xe3580000, 0xe320f000, 0x1a00006b, 0xea00006c\n"
-        ".word 0xe320f000, 0xeb041bb3, 0xe3500000, 0xe320f000\n"
-        ".word 0x0a000085, 0xe5d00006, 0xe3500000, 0x03a09001\n"
-        ".word 0x03a05000, 0x0a000005, 0xe59d0014, 0xeb037f53\n"
-        ".word 0xe3500000, 0xe320f000, 0x0a00005f, 0xea000063\n"
-        ".word 0xe59d0014, 0xe28d2008, 0xe1a01005, 0xeb03a618\n"
-        ".word 0xe3500000, 0xe320f000, 0x0a00000e, 0xe59d0014\n"
-        ".word 0xeb03a60b, 0xe3500000, 0xe320f000, 0x0a000004\n"
-        ".word 0xe59d0014, 0xeb03a5fe, 0xe3500000, 0xe320f000\n"
-        ".word 0x0a000002, 0xe59d0008, 0xe3500000, 0xda000001\n"
-        ".word 0xe3a09000, 0xea000002, 0xe2855001, 0xe3550006\n"
-        ".word 0xbaffffe6, 0xe59d0014, 0xeb037ee2, 0xe3500000\n"
-        ".word 0xe320f000, 0x0a00000a, 0xe3590000, 0x0a000024\n"
-        ".word 0xe1cd60f0, 0xe59d3018, 0xe3a0200e, 0xe3a01029\n"
-        ".word 0xe3a00002, 0xeb043f15, 0xe320f000, 0xe320f000\n"
-        ".word 0xea000051, 0xe59d0014, 0xeb03a5e1, 0xe3500000\n"
-        ".word 0xe320f000, 0x1a00000d, 0xe59d0014, 0xeb03a5e4\n"
-        ".word 0xe3500000, 0xe320f000, 0x0a000008, 0xe1cd60f0\n"
-        ".word 0xe59d3018, 0xe3a02093, 0xe3a01029, 0xe3a00002\n"
-        ".word 0xeb043ec4, 0xe320f000, 0xe320f000, 0xea00003e\n"
-        ".word 0xe1cd60f0, 0xe59d3018, 0xe3a020c2, 0xe3a01029\n"
-        ".word 0xe3a00002, 0xeb043ebb, 0xe320f000, 0xe320f000\n"
-        ".word 0xea000035, 0xe59d0014, 0xeb03a5cd, 0xe3500000\n"
-        ".word 0xe320f000, 0x0a000030, 0xe1cd60f0, 0xe59d3018\n"
-        ".word 0xe3a02093, 0xe3a01029, 0xe3a00002, 0xeb043ead\n"
-        ".word 0xe59d0014, 0xe320f000, 0xeb03a5b9, 0xe3500000\n"
-        ".word 0xe320f000, 0x0a000002, 0xe3580000, 0x03a040ff\n"
-        ".word 0xea000021, 0xe3580000, 0x0a000001, 0xe1a0400a\n"
-        ".word 0xea00001d, 0xe1a0400b, 0xea00001b, 0xe320f000\n"
-        ".word 0xe3a00000, 0xe3500000, 0xe320f000, 0x0a000019\n"
-        ".word 0xe320f000, 0xeb038324, 0xe59d1014, 0xe1500001\n"
-        ".word 0x1a00000c, 0xe1cd60f0, 0xe59d3018, 0xe3a0200d\n"
-        ".word 0xe3a01029, 0xe3a00002, 0xeb043ecc, 0xe3580000\n"
-        ".word 0xe320f000, 0x0a000001, 0xe1a04005, 0xea000006\n"
-        ".word 0xe1a04009, 0xea000004, 0xe1a00001, 0xeb03a59c\n"
-        ".word 0xe3500000, 0xe320f000, 0x1affffb7, 0xe28dd024\n"
-        ".word 0xe1a00004, 0xe8bd8ff0, 0xe59d0014, 0xeb06109d\n"
-        ".word 0xe3500000, 0xe320f000, 0x0a000009, 0xe1cd60f0\n"
-        ".word 0xe59d3018, 0xe3a02091, 0xe3a01029, 0xe3a00002\n"
-        ".word 0xeb043e74, 0xe3580000, 0xe320f000, 0x0affffd0\n"
-        ".word 0xeaffffcd, 0xe59d0014, 0xeb03a585, 0xe1cd60f0\n"
-        ".word 0xe59d3018, 0xe3500000, 0x0a000007, 0xe3a02093\n"
-        ".word 0xe3a01029, 0xe3a00002, 0xeb043e66, 0xe3580000\n"
-        ".word 0xe320f000, 0x0affffc2, 0xeaffffbf, 0xe3a02091\n"
-        ".word 0xe3a01029, 0xe3a00002, 0xeb043e5e, 0xe3580000\n"
-        ".word 0xe320f000, 0x0affffba, 0xeaffffb7, 0x0043dd50\n"
-        ".word 0x787878ff, 0x5a5a5aff, 0x72e027ff, 0x008400ff\n"
-    );
+extern "C" u32 ui_func_001af748(u32 arg0, u32 arg1, u32 arg2, u32 arg3, u32 arg4) {
+    const u32 default_ret = (arg4 != 0u) ? 0xFFFFFFFFu : 0xFFu;
+    const u32 grey_ret = (arg4 != 0u) ? 0x787878FFu : 0x5A5A5AFFu;
+    const u32 green_ret = (arg4 != 0u) ? 0x72E027FFu : 0x008400FFu;
+
+    const u8* const global_obj = *reinterpret_cast<const u8* const*>(0x0043DD50u);
+    if (global_obj[0x5C4] != 0u) {
+        if (script_vm_func_00299064(arg0) != 0) {
+            if (script_vm_func_00290694() != 0u) {
+                ui_func_002bf460(2u, 0x29u, 0x92u, arg1, arg2, arg3);
+                return grey_ret;
+            }
+            func_002bf558(2u, 0x29u, 0x0Cu, arg1, arg2, arg3);
+            return green_ret;
+        }
+        if (script_vm_func_002990bc(arg0) == 0) {
+            return default_ret;
+        }
+        ui_func_002bf460(2u, 0x29u, 0x93u, arg1, arg2, arg3);
+        return grey_ret;
+    }
+
+    const u8* const ctx = script_vm_func_002b6700();
+    if (ctx == nullptr) {
+        return default_ret;
+    }
+
+    if (ctx[6] != 0u) {
+        if (script_vm_func_0028f5a8(arg0) == 0) {
+            if (script_vm_func_00333ce0(arg0) != 0) {
+                ui_func_002bf460(2u, 0x29u, 0x91u, arg1, arg2, arg3);
+                return grey_ret;
+            }
+            const u32 msg_id = (script_vm_func_002990bc(arg0) != 0) ? 0x93u : 0x91u;
+            ui_func_002bf460(2u, 0x29u, msg_id, arg1, arg2, arg3);
+            return grey_ret;
+        }
+        if (script_vm_func_00290694() == arg0) {
+            func_002bf558(2u, 0x29u, 0x0Du, arg1, arg2, arg3);
+            return green_ret;
+        }
+        if (script_vm_func_002990bc(arg0) != 0) {
+            ui_func_002bf460(2u, 0x29u, 0x93u, arg1, arg2, arg3);
+        }
+        return default_ret;
+    }
+
+    bool all_clear = true;
+    for (s32 i = 0; i < 6; ++i) {
+        s32 out_val = 0;
+        if (script_vm_func_002990dc(arg0, i, &out_val) != 0) {
+            if (script_vm_func_002990bc(arg0) == 0 || script_vm_func_0029909c(arg0) != 0) {
+                if (out_val > 0) {
+                    all_clear = false;
+                    break;
+                }
+            } else {
+                all_clear = false;
+                break;
+            }
+        }
+    }
+
+    if (script_vm_func_0028f460(arg0) != 0) {
+        if (all_clear) {
+            func_002bf558(2u, 0x29u, 0x0Eu, arg1, arg2, arg3);
+            return default_ret;
+        }
+        if (script_vm_func_002990bc(arg0) == 0) {
+            return default_ret;
+        }
+        ui_func_002bf460(2u, 0x29u, 0x93u, arg1, arg2, arg3);
+        if (script_vm_func_0029909c(arg0) != 0) {
+            return default_ret;
+        }
+        return grey_ret;
+    }
+
+    if (script_vm_func_0029909c(arg0) == 0 && script_vm_func_002990bc(arg0) != 0) {
+        ui_func_002bf460(2u, 0x29u, 0x93u, arg1, arg2, arg3);
+    } else {
+        ui_func_002bf460(2u, 0x29u, 0xC2u, arg1, arg2, arg3);
+    }
+    return default_ret;
 }
 
 // DECOMP_FUNC(0x003fc5e4, 960)
