@@ -8090,7 +8090,7 @@ address,size,status,category,name,src_file
 0x00354660,440,matching,engine,engine_func_00354660,src/engine/leaf_batch36_b.cpp
 0x00354818,324,matching,engine,engine_func_00354818,src/engine/leaf_batch41_a.cpp
 0x0035495c,232,matching,engine,engine_func_0035495c,src/engine/leaf_batch36_b.cpp
-0x00354a44,492,matching,engine,engine_func_00354a44,src/engine/leaf_batch45_b.cpp
+0x00354a44,492,non_matching,engine,engine_func_00354a44,src/engine/leaf_batch45_b.cpp
 0x00354c30,248,matching,engine,engine_func_00354c30,src/engine/leaf_batch35_b.cpp
 0x00354d28,36,matching,script_vm,script_vm_func_00354d28,src/engine/leaf_batch10_b.cpp
 0x00354d4c,4,matching,script_vm,script_vm_func_00354d4c,src/engine/leaf_batch36_c.cpp
