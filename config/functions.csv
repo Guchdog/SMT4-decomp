@@ -3910,7 +3910,7 @@ address,size,status,category,name,src_file
 0x0025165c,2428,matching,ui,ui_func_0025165c,src/engine/leaf_batch46_c.cpp
 0x00251fd8,1000,matching,ui,ui_func_00251fd8,src/engine/leaf_batch46_a.cpp
 0x002523c0,16,matching,unknown,func_002523c0,src/engine/leaf_matching.cpp
-0x002523d0,336,matching,engine,Npc2d_func_002523d0,src/engine/asd_frame.cpp
+0x002523d0,336,non_matching,engine,Npc2d_func_002523d0,src/engine/asd_frame.cpp
 0x00252520,24,matching,engine,engine_func_00252520,src/engine/leaf_batch35_a.cpp
 0x00252538,60,matching,engine,engine_func_00252538,src/engine/leaf_batch39_b.cpp
 0x00252574,96,matching,camp,camp_func_00252574,src/engine/leaf_batch39_c.cpp

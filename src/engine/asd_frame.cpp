@@ -636,119 +636,32 @@ __attribute__((naked)) void FrameTex_func_00280d30(u32 alternate) {
 // ---------------------------------------------------------------------------
 
 //
-__attribute__((naked)) void* Npc2d_func_002523d0(u32 id, u32 arg1, s32 pose_arg) {
-    asm volatile(
-        ".word 0xe92d41f0\n"
-        ".word 0xe1a06000\n"
-        ".word 0xe1a07001\n"
-        ".word 0xe59f1118\n"
-        ".word 0xe59f0118\n"
-        ".word 0xe24dd010\n"
-        ".word 0xe1a05002\n"
-        ".word 0xe1a00000\n"
-        ".word 0xe3a08001\n"
-        ".word 0xe3a01c01\n"
-        ".word 0xe3a03098\n"
-        ".word 0xe3a02000\n"
-        ".word 0xe1a00001\n"
-        ".word 0xe58d8000\n"
-        ".word 0xeb01c9dd\n"
-        ".word 0xe1a04000\n"
-        ".word 0xe3a01098\n"
-        ".word 0xeb01c9c5\n"
-        ".word 0xed9f0a39\n"
-        ".word 0xeddf0a39\n"
-        ".word 0xed9f1a39\n"
-        ".word 0xe2842020\n"
-        ".word 0xe3a0101f\n"
-        ".word 0xec820a03\n"
-        ".word 0xe2842004\n"
-        ".word 0xe5845010\n"
-        ".word 0xe8820082\n"
-        ".word 0xe3a00000\n"
-        ".word 0xe5c40030\n"
-        ".word 0xe6ff0076\n"
-        ".word 0xe5c4805c\n"
-        ".word 0xeb01790a\n"
-        ".word 0xe1d008f8\n"
-        ".word 0xe584004c\n"
-        ".word 0xeb01beb2\n"
-        ".word 0xe3500000\n"
-        ".word 0x1584800c\n"
-        ".word 0x1a000005\n"
-        ".word 0xe594004c\n"
-        ".word 0xe3a01001\n"
-        ".word 0xeb0107af\n"
-        ".word 0xe3a01002\n"
-        ".word 0xe5840048\n"
-        ".word 0xe584100c\n"
-        ".word 0xe2660000\n"
-        ".word 0xe3750064\n"
-        ".word 0xe6ff0070\n"
-        ".word 0xe5840000\n"
-        ".word 0xd3a00010\n"
-        ".word 0xda00000b\n"
-        ".word 0xe375003c\n"
-        ".word 0xd3a00003\n"
-        ".word 0xda000008\n"
-        ".word 0xe3550064\n"
-        ".word 0xa3a00011\n"
-        ".word 0xaa000005\n"
-        ".word 0xe3550028\n"
-        ".word 0xa3a00004\n"
-        ".word 0xaa000002\n"
-        ".word 0xe3550000\n"
-        ".word 0xb3a00012\n"
-        ".word 0xa3a00005\n"
-        ".word 0xe5840038\n"
-        ".word 0xe59f0040\n"
-        ".word 0xe59f1040\n"
-        ".word 0xed9f0a0d\n"
-        ".word 0xe3a03000\n"
-        ".word 0xed840a06\n"
-        ".word 0xe88d0013\n"
-        ".word 0xe1a02003\n"
-        ".word 0xe59f002c\n"
-        ".word 0xe3a01002\n"
-        ".word 0xeb01cd20\n"
-        ".word 0xe28dd010\n"
-        ".word 0xe8bd81f0\n"
-        ".word 0x00000279\n"
-        ".word 0x004035d0\n"
-        ".word 0x3f800000\n"
-        ".word 0x00000000\n"
-        ".word 0x3e800000\n"
-        ".word 0x3ea8f5c3\n"
-        ".word 0x001dfb60\n"
-        ".word 0x002db8c4\n"
-        ".word 0x004035c4\n"
-    );
-#if 0
+void* Npc2d_func_002523d0(u32 id, u32 arg1, s32 pose_arg)
+{
     Npc2dSprite* sprite = static_cast<Npc2dSprite*>(
-        AsdMem_Alloc(0x100, 0x100, 0, 0x98, 1));                    // 0x00252408
-    AsdMem_Zero(sprite, 0x98);                                  // 0x00252414
+        AsdMem_Alloc(0x100, 0x100, 0, 0x98, 1));
+    AsdMem_Zero(sprite, 0x98);
 
-    sprite->field_20 = 1.0f;                                    // 0x0025242C `vstmia`
+    sprite->field_20 = 1.0f;
     sprite->field_24 = 0.0f;
     sprite->field_28 = 0.25f;
-    sprite->field_04 = 0x1F;                                    // 0x00252438 `stm r2,{r1,r7}`
+    sprite->field_04 = 0x1F;
     sprite->field_08 = arg1;
-    sprite->field_10 = pose_arg;                                // 0x00252434 `str r5,[r4,#0x10]`
-    sprite->field_30 = 0;                                       // 0x00252440
-    sprite->field_5c = 1;                                       // 0x00252448
+    sprite->field_10 = pose_arg;
+    sprite->field_30 = 0;
+    sprite->field_5c = 1;
 
-    void* row = AsdTable_FindBattleRow(id & 0xFFFFu);           // 0x00252444 `uxth r0,r6`
+    void* row = AsdTable_FindBattleRow(id & 0xFFFFu);
     sprite->field_4c = *reinterpret_cast<const s16*>(
-        static_cast<const u8*>(row) + 0x88);                    // 0x00252450 `ldrsh r0,[r0,#0x88]`
+        static_cast<const u8*>(row) + 0x88);
 
-    Npc2d_SetupSpriteData(sprite);                              // 0x00252458-0x0025247C
+    Npc2d_SetupSpriteData(sprite);
 
-    sprite->field_00 = static_cast<u16>(0u - id);               // 0x00252480-0x0025248C
-    sprite->field_38 = static_cast<u32>(Npc2d_PoseFromArgument(pose_arg)); // 0x00252490-0x002524C8
-    sprite->field_18 = 1.0f / 3.0f;                             // 0x3EA8F5C3 (0x002524DC)
+    sprite->field_00 = static_cast<u16>(0u - id);
+    sprite->field_38 = static_cast<u32>(Npc2d_PoseFromArgument(pose_arg));
+    sprite->field_18 = 0.33f;
 
-    return Npc2d_CreateWidget(sprite);                          // 0x002524F0
-#endif
+    return Npc2d_CreateWidget(sprite);
 }
 // DECOMP_FUNC(0x002860b4, 324)
 
