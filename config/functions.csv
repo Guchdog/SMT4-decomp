@@ -3230,7 +3230,7 @@ address,size,status,category,name,src_file
 0x0022b9d0,132,non_matching,engine,engine_func_0022b9d0,src/engine/leaf_batch30_c.cpp
 0x0022ba54,24,matching,engine,engine_func_0022ba54,src/engine/leaf_batch17_c.cpp
 0x0022ba6c,84,matching,engine,engine_func_0022ba6c,src/engine/leaf_batch34_b.cpp
-0x0022bac0,808,matching,unknown,func_0022bac0,src/engine/leaf_batch45_a.cpp
+0x0022bac0,808,non_matching,unknown,func_0022bac0,src/engine/leaf_batch45_a.cpp
 0x0022bde8,112,matching,unknown,func_0022bde8,src/engine/leaf_batch14_a.cpp
 0x0022be58,424,matching,unknown,func_0022be58,src/engine/leaf_batch43_a.cpp
 0x0022c000,408,matching,unknown,func_0022c000,src/engine/leaf_batch32_b.cpp
