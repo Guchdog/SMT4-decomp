@@ -13772,126 +13772,123 @@ extern "C" u32 camp_func_001909b0(u8* self) {
     return 1u;
 }
 
-// DECOMP_FUNC(0x003fbe64, 920)
-extern "C" __attribute__((naked)) void func_003fbe64() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4ff0, 0xe92d, 0x6000, 0xe1a0\n"
-        ".hword 0xd00c, 0xe24d, 0xa001, 0xe3a0\n"
-        ".hword 0x8000, 0xe3a0, 0xc004, 0xe5b0\n"
-        ".hword 0x3008, 0xe590, 0x1004, 0xe58d\n"
-        ".hword 0x9001, 0xe283, 0x2203, 0xe08c\n"
-        ".hword 0x000c, 0xe042, 0x4240, 0xe1a0\n"
-        ".hword 0x4000, 0xe58d, 0x0008, 0xe596\n"
-        ".hword 0x0009, 0xe150, 0x003e, 0x3a00\n"
-        ".hword 0x0004, 0xe043, 0x0001, 0xe350\n"
-        ".hword 0x5000, 0x31a0, 0x500a, 0x21a0\n"
-        ".hword 0x3005, 0xe040, 0x0005, 0xe049\n"
-        ".hword 0x0000, 0xe355, 0x2205, 0xe042\n"
-        ".hword 0x0200, 0x108c, 0x000f, 0x0a00\n"
-        ".hword 0x1000, 0xe1b0, 0xc002, 0xe1a0\n"
-        ".hword 0x0010, 0xe281, 0x2010, 0xe282\n"
-        ".hword 0x0008, 0x0a00, 0x7000, 0xe59c\n"
-        ".hword 0x7000, 0xe581, 0x7004, 0xe59c\n"
-        ".hword 0x7004, 0xe581, 0x700c, 0xe59c\n"
-        ".hword 0x700c, 0xe581, 0x1008, 0xe587\n"
-        ".hword 0xc008, 0xe581, 0x100c, 0xe58c\n"
-        ".hword 0x5001, 0xe255, 0xffef, 0x1aff\n"
-        ".hword 0x700a, 0xe084, 0x2004, 0xe1a0\n"
-        ".hword 0x1007, 0xe1a0, 0x0006, 0xe1a0\n"
-        ".hword 0xc291, 0xebf8, 0x000c, 0xe596\n"
-        ".hword 0x0000, 0xe157, 0x7000, 0x21a0\n"
-        ".hword 0x0004, 0xe596, 0x5204, 0xe080\n"
-        ".hword 0x7207, 0xe080, 0x0007, 0xe155\n"
-        ".hword 0x009b, 0x2a00, 0x4005, 0xe1a0\n"
-        ".hword 0x5010, 0xe285, 0x0008, 0xe594\n"
-        ".hword 0x0000, 0xe350, 0x0004, 0x1150\n"
-        ".hword 0x0007, 0x1a00, 0x1004, 0xe594\n"
-        ".hword 0x0000, 0xe351, 0x000a, 0x0a00\n"
-        ".hword 0x0000, 0xe594, 0x2000, 0xe590\n"
-        ".hword 0x2004, 0xe592, 0xff32, 0xe12f\n"
-        ".hword 0x0005, 0xea00, 0x100c, 0xe594\n"
-        ".hword 0x100c, 0xe580, 0x00d8, 0xe1c4\n"
-        ".hword 0x0008, 0xe581, 0x8008, 0xe584\n"
-        ".hword 0x800c, 0xe584, 0x0007, 0xe155\n"
-        ".hword 0x8004, 0xe584, 0xffe8, 0x3aff\n"
-        ".hword 0x0083, 0xea00, 0x1009, 0xe1a0\n"
-        ".hword 0xc07b, 0xebf8, 0x7000, 0xe596\n"
-        ".hword 0x1000, 0xe3a0, 0x5000, 0xe1b0\n"
-        ".hword 0x8001, 0xe1a0, 0x0025, 0x0a00\n"
-        ".hword 0x2000, 0xe597, 0x1205, 0xe1a0\n"
-        ".hword 0x0007, 0xe1a0, 0x2000, 0xe592\n"
-        ".hword 0x1008, 0xe58d, 0xff32, 0xe12f\n"
-        ".hword 0xb000, 0xe1b0, 0x0005, 0x1a00\n"
-        ".hword 0x0000, 0xe597, 0x1210, 0xe59f\n"
-        ".hword 0x2008, 0xe59d, 0x3008, 0xe590\n"
-        ".hword 0x0007, 0xe1a0, 0xff33, 0xe12f\n"
-        ".hword 0x100b, 0xe1b0, 0x8005, 0x11a0\n"
-        ".hword 0x0014, 0x1a00, 0x0005, 0xe159\n"
-        ".hword 0x0054, 0x0a00, 0x0000, 0xe359\n"
-        ".hword 0x0010, 0x0a00, 0x2000, 0xe597\n"
-        ".hword 0x1209, 0xe1a0, 0x0007, 0xe1a0\n"
-        ".hword 0x8001, 0xe1a0, 0x2000, 0xe592\n"
-        ".hword 0xff32, 0xe12f, 0x5000, 0xe1b0\n"
-        ".hword 0x0005, 0x1a00, 0x1000, 0xe597\n"
-        ".hword 0x0007, 0xe1a0, 0x2008, 0xe1a0\n"
-        ".hword 0x3008, 0xe591, 0x11b0, 0xe59f\n"
-        ".hword 0xff33, 0xe12f, 0x1005, 0xe1b0\n"
-        ".hword 0x8009, 0x11a0, 0x0041, 0x0a00\n"
-        ".hword 0x3004, 0xe596, 0x5004, 0xe1b0\n"
-        ".hword 0x0001, 0x11a0, 0x000f, 0x0a00\n"
-        ".hword 0x2000, 0xe1b0, 0xc003, 0xe1a0\n"
-        ".hword 0x0010, 0xe282, 0x3010, 0xe283\n"
-        ".hword 0x0008, 0x0a00, 0xb000, 0xe59c\n"
-        ".hword 0xb000, 0xe582, 0xb004, 0xe59c\n"
-        ".hword 0xb004, 0xe582, 0xb00c, 0xe59c\n"
-        ".hword 0xb00c, 0xe582, 0x2008, 0xe58b\n"
-        ".hword 0xc008, 0xe582, 0x200c, 0xe58c\n"
-        ".hword 0x5001, 0xe255, 0xffef, 0x1aff\n"
-        ".hword 0x300c, 0xe596, 0x2004, 0xe596\n"
-        ".hword 0x000a, 0xe084, 0x5004, 0xe053\n"
-        ".hword 0x3204, 0xe082, 0x0200, 0x1081\n"
-        ".hword 0x000f, 0x0a00, 0x2000, 0xe1b0\n"
-        ".hword 0xc003, 0xe1a0, 0x0010, 0xe282\n"
-        ".hword 0x3010, 0xe283, 0x0008, 0x0a00\n"
-        ".hword 0x4000, 0xe59c, 0x4000, 0xe582\n"
-        ".hword 0x4004, 0xe59c, 0x4004, 0xe582\n"
-        ".hword 0x400c, 0xe59c, 0x400c, 0xe582\n"
-        ".hword 0x2008, 0xe584, 0xc008, 0xe582\n"
-        ".hword 0x200c, 0xe58c, 0x5001, 0xe255\n"
-        ".hword 0xffef, 0x1aff, 0x0004, 0xe286\n"
-        ".hword 0x5004, 0xe596, 0x0102, 0xe880\n"
-        ".hword 0x000c, 0xe596, 0xa005, 0xe1a0\n"
-        ".hword 0x8200, 0xe085, 0x0008, 0xe155\n"
-        ".hword 0xb000, 0x33a0, 0x001d, 0x2a00\n"
-        ".hword 0x4005, 0xe1a0, 0x5010, 0xe285\n"
-        ".hword 0x0008, 0xe594, 0x0000, 0xe350\n"
-        ".hword 0x0004, 0x1150, 0x000e, 0x1a00\n"
-        ".hword 0x1004, 0xe594, 0x0000, 0xe351\n"
-        ".hword 0x0011, 0x0a00, 0x0000, 0xe594\n"
-        ".hword 0x2000, 0xe590, 0x2004, 0xe592\n"
-        ".hword 0xff32, 0xe12f, 0x000c, 0xea00\n"
-        ".hword 0x2000, 0xe597, 0x0007, 0xe1a0\n"
-        ".hword 0x2004, 0xe592, 0xff32, 0xe12f\n"
-        ".hword 0xd00c, 0xe28d, 0x0000, 0xe3a0\n"
-        ".hword 0x8ff0, 0xe8bd, 0x100c, 0xe594\n"
-        ".hword 0x100c, 0xe580, 0x00d8, 0xe1c4\n"
-        ".hword 0x0008, 0xe581, 0xb008, 0xe584\n"
-        ".hword 0xb00c, 0xe584, 0x0008, 0xe155\n"
-        ".hword 0xb004, 0xe584, 0xffe1, 0x3aff\n"
-        ".hword 0x2000, 0xe597, 0x100a, 0xe1a0\n"
-        ".hword 0x0007, 0xe1a0, 0x2004, 0xe592\n"
-        ".hword 0xff32, 0xe12f, 0x900c, 0xe586\n"
-        ".hword 0x0000, 0xe59d, 0x1004, 0xe596\n"
-        ".hword 0x0200, 0xe091, 0x0009, 0x0a00\n"
-        ".hword 0x1004, 0xe59d, 0x2000, 0xe591\n"
-        ".hword 0x2000, 0xe580, 0x2004, 0xe591\n"
-        ".hword 0x2004, 0xe580, 0x200c, 0xe591\n"
-        ".hword 0x200c, 0xe580, 0x0008, 0xe582\n"
-        ".hword 0x1008, 0xe580, 0x000c, 0xe581\n"
-        ".hword 0xd00c, 0xe28d, 0x0001, 0xe3a0\n"
-        ".hword 0x8ff0, 0xe8bd, 0xff98, 0x0040\n"
-    );
+namespace {
+
+struct SlotNode3fbe64 {
+    void* f0;
+    u32 f4;
+    SlotNode3fbe64* prev;
+    SlotNode3fbe64* next;
 };
+
+struct SlotVec3fbe64 {
+    void* alloc;
+    SlotNode3fbe64* data;
+    u32 cap;
+    u32 size;
+};
+
+__attribute__((always_inline)) inline void move_slot_3fbe64(SlotNode3fbe64* dst,
+                                                            SlotNode3fbe64* src) {
+    dst->f0 = src->f0;
+    dst->f4 = src->f4;
+    SlotNode3fbe64* const next = src->next;
+    dst->next = next;
+    next->prev = dst;
+    dst->prev = src;
+    src->next = dst;
+}
+
+__attribute__((always_inline)) inline void destroy_slot_3fbe64(SlotNode3fbe64* p) {
+    if (p->prev == nullptr || p->prev == p) {
+        if (p->f4 != 0u) {
+            void** const vtbl = *reinterpret_cast<void***>(p->f0);
+            using ReleaseFn = void (*)(void*, u32);
+            reinterpret_cast<ReleaseFn>(vtbl[1])(p->f0, p->f4);
+        }
+    } else {
+        p->prev->next = p->next;
+        p->next->prev = p->prev;
+        p->prev = nullptr;
+        p->next = nullptr;
+    }
+    p->f4 = 0u;
+}
+
+__attribute__((always_inline)) inline SlotNode3fbe64* alloc_buf_3fbe64(void* alloc, u32 count) {
+    void** const vtbl = *reinterpret_cast<void***>(alloc);
+    using AllocFn = void* (*)(void*, u32);
+    using OnFailFn = void (*)(void*, u32, u32);
+    const u32 bytes = count << 4;
+    void* const ptr = reinterpret_cast<AllocFn>(vtbl[0])(alloc, bytes);
+    if (ptr == nullptr) {
+        reinterpret_cast<OnFailFn>(vtbl[2])(alloc, 0x0040FF98u, bytes);
+    }
+    return static_cast<SlotNode3fbe64*>(ptr);
+}
+
+}  // namespace
+
+extern "C" void func_0022c968(void* vec, u32 new_size, u32 idx);
+
+// DECOMP_FUNC(0x003fbe64, 920)
+extern "C" u32 func_003fbe64(SlotVec3fbe64* self, SlotNode3fbe64* item) {
+    const u32 size = self->size;
+    const u32 new_size = size + 1u;
+
+    if (self->cap >= new_size) {
+        func_0022c968(self, new_size, size);
+    } else {
+        const u32 cap1 = func_0022c198(self->cap, new_size);
+        void* const alloc = self->alloc;
+        SlotNode3fbe64* new_buf = nullptr;
+        u32 chosen_cap = 0u;
+
+        if (cap1 != 0u) {
+            new_buf = alloc_buf_3fbe64(alloc, cap1);
+            if (new_buf != nullptr) {
+                chosen_cap = cap1;
+            } else if (new_size != cap1 && new_size != 0u) {
+                new_buf = alloc_buf_3fbe64(alloc, new_size);
+                if (new_buf != nullptr) {
+                    chosen_cap = new_size;
+                } else {
+                    void** const vtbl = *reinterpret_cast<void***>(alloc);
+                    using FreeFn = void (*)(void*, void*);
+                    reinterpret_cast<FreeFn>(vtbl[1])(alloc, nullptr);
+                    return 0u;
+                }
+            } else {
+                void** const vtbl = *reinterpret_cast<void***>(alloc);
+                using FreeFn = void (*)(void*, void*);
+                reinterpret_cast<FreeFn>(vtbl[1])(alloc, nullptr);
+                return 0u;
+            }
+        }
+
+        SlotNode3fbe64* const old_data = self->data;
+        for (u32 i = 0u; i < size; ++i) {
+            move_slot_3fbe64(&new_buf[i], &old_data[i]);
+        }
+
+        self->data = new_buf;
+        self->cap = chosen_cap;
+
+        for (u32 i = 0u; i < size; ++i) {
+            destroy_slot_3fbe64(&old_data[i]);
+        }
+
+        void** const vtbl = *reinterpret_cast<void***>(alloc);
+        using FreeFn = void (*)(void*, void*);
+        reinterpret_cast<FreeFn>(vtbl[1])(alloc, old_data);
+    }
+
+    self->size = new_size;
+    SlotNode3fbe64* const dst = &self->data[size];
+    if (dst != nullptr) {
+        move_slot_3fbe64(dst, item);
+    }
+    return 1u;
+}
 
 // End of Batch 45 A.

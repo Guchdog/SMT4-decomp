@@ -10952,7 +10952,7 @@ address,size,status,category,name,src_file
 0x003fb8c0,436,matching,unknown,func_003fb8c0,src/engine/leaf_batch34_a.cpp
 0x003fba74,876,matching,unknown,func_003fba74,src/engine/leaf_batch43_a.cpp
 0x003fbde0,132,matching,unknown,func_003fbde0,src/engine/leaf_batch16_c.cpp
-0x003fbe64,920,matching,unknown,func_003fbe64,src/engine/leaf_batch45_a.cpp
+0x003fbe64,920,non_matching,unknown,func_003fbe64,src/engine/leaf_batch45_a.cpp
 0x003fc1fc,260,matching,unknown,func_003fc1fc,src/engine/leaf_batch38_b.cpp
 0x003fc300,364,matching,ui,ui_func_003fc300,src/engine/leaf_batch38_b.cpp
 0x003fc46c,376,matching,ui,ui_func_003fc46c,src/engine/leaf_batch38_b.cpp
