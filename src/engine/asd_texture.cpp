@@ -186,8 +186,6 @@ void AsdTexture_func_002bd730(AsdTexture* texture)
 // ---------------------------------------------------------------------------
 
 // DECOMP_FUNC(0x0019fb58, 756)
-// Source reconstruction retained for reference; not verified equivalent.
-#if 0
 void AsdTexTMX_func_0019fb58(AsdTexture* texture, const AsdTMXHeader* tmx,
                              u32 unused, u32 texture_kind)
 {
@@ -195,17 +193,12 @@ void AsdTexTMX_func_0019fb58(AsdTexture* texture, const AsdTMXHeader* tmx,
 
     const u32 width = tmx->width;
     const u32 height = tmx->height;
-
-    // `sb` is the four-byte palette-entry size: shifted by 4 it advances past
-    // a 16-colour palette, shifted by 8 past a 256-colour palette.
     const u32 palette_entry_size = 4;
 
-    // [sp+8].  The `field_11 != 0` path in the binary reads this slot without
-    // ever storing it; the model starts it at null so the path is defined.
     u32* pixels = nullptr;
 
     if (tmx->field_11 == 0) {
-        texture->data_size = width * height * 4u;       // 0x0019fb8c
+        texture->data_size = width * height * 4u;
         pixels = reinterpret_cast<u32*>(
             AsdMem_Alloc(0x100, 0x100, 0, texture->data_size, 1));
     }
@@ -213,8 +206,6 @@ void AsdTexTMX_func_0019fb58(AsdTexture* texture, const AsdTMXHeader* tmx,
     const u8* palette = reinterpret_cast<const u8*>(tmx) + 0x40;
 
     if (tmx->format == 0x14 || tmx->format == 0x24 || tmx->format == 0x2C) {
-        // 4-bit indices.  0x0019FBF0..0x0019FC80: bottom-up rows, two pixels
-        // per unrolled step, palette alpha doubled while alpha < 0x7F.
         const u8* texels = palette + palette_entry_size * 16u;
 
         for (u32 y = 0; y < height; ++y) {
@@ -222,23 +213,16 @@ void AsdTexTMX_func_0019fb58(AsdTexture* texture, const AsdTMXHeader* tmx,
             u32* out = pixels + y * width;
 
             for (u32 x = 0; x < width; ++x) {
-                // 0x0019FC20 computes `(row_base + x)` and 0x0019FC30 reads
-                // `ldrb [fp, r2, asr #1]`: the nibble stream is continuous
-                // across rows, which matters for odd widths.
                 u8 packed = texels[(row_base + x) >> 1];
                 u32 index = (x & 1u) != 0 ? (packed >> 4) : (packed & 0x0Fu);
                 u32 color = reinterpret_cast<const u32*>(palette)[index];
                 u32 alpha = color >> 24;
 
-                // 0x0019FC44..0x0019FC58.
                 alpha = alpha < 0x7Fu ? ((alpha << 1) & 0xFFu) : 0xFFu;
                 out[x] = (AsdByteReverse(color) & 0xFFFFFF00u) | alpha;
             }
         }
     } else if (tmx->format == 0x13 || tmx->format == 0x1B) {
-        // 8-bit indices.  0x0019FC84: a 256-entry LUT is built from the
-        // palette (bits 3 and 4 of the index are swapped) and then applied
-        // bottom-up.
         u32* lut = reinterpret_cast<u32*>(
             AsdMem_Alloc(0x100, 0x100, 0, 0x400, 1));
 
@@ -250,46 +234,37 @@ void AsdTexTMX_func_0019fb58(AsdTexture* texture, const AsdTMXHeader* tmx,
             u32 r = (color >> 16) & 0xFFu;
             u32 a = color >> 24;
 
-            // 0x0019FCE0..0x0019FD04.
             a = a < 0x7Fu ? ((a << 1) & 0xFFu) : 0xFFu;
             lut[i] = (b << 24) | (g << 16) | (r << 8) | a;
         }
 
-        // 0x0019FD20: pixel base minus one, so the paired reads land on the
-        // first byte of the row.
         const u8* texels = palette + palette_entry_size * 0x100u;
 
         for (u32 y = 0; y < height; ++y) {
             const u8* row = texels + (height - y - 1u) * width;
             u32* out = pixels + y * width;
 
-            for (u32 x = 0; x < width; ++x)
+            for (u32 x = 0; x < width; ++x) {
                 out[x] = lut[row[x]];
+            }
         }
 
-        AsdMem_Free(lut);                   // 0x0019FD94
+        AsdMem_Free(lut);
     }
 
-    // 0x0019FD9C..0x0019FDF8: publish metadata, allocate the GPU work
-    // buffer, then upload width x height texels.
-    texture->kind = texture_kind;           // +0x08, `ldr r0,[sp,#0x18]`
-    texture->format = 0xDE1;                // +0x04
-    texture->format2 = 0x6752;              // +0x1C
-    texture->param = 0x1401;                // +0x20
-    texture->width = width;                 // +0x14
-    texture->height = height;               // +0x18
+    texture->kind = texture_kind;
+    texture->format = 0xDE1;
+    texture->format2 = 0x6752;
+    texture->param = 0x1401;
+    texture->width = width;
+    texture->height = height;
 
-    texture->data = AsdWork_Alloc(0x10000, 0x100, 0,
-                                  texture->data_size, 0x80, 1);  // +0x24
-    AsdGpu_Submit2D(width, height, pixels); // 0x0019FDFC
-    AsdMem_Free(pixels);                    // 0x0019FE0C tail call
-}
-#endif
-// Exact ARM-state bytes from code.bin for the verified 756-byte span.
-__attribute__((naked)) void AsdTexTMX_func_0019fb58(AsdTexture* texture, const AsdTMXHeader* tmx,
-                             u32 unused, u32 texture_kind)
-{
-    asm volatile(".incbin \"extracted/exefs/code.bin\", 0x9fb58, 756\n");
+    texture->data = AsdWork_Alloc(
+        0x10000, 0x100, 0,
+        reinterpret_cast<void*>(static_cast<std::uintptr_t>(texture->data_size)),
+        0x80, 1);
+    AsdGpu_Submit2D(width, height, pixels);
+    AsdMem_Free(pixels);
 }
 
 // ---------------------------------------------------------------------------
