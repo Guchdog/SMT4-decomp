@@ -933,71 +933,80 @@ extern "C" __attribute__((naked)) void func_0016b854() {
 }
 
 // DECOMP_FUNC(0x00317cdc, 476)
-extern "C" __attribute__((naked)) void decomp_func_00317cdc() asm("3dEventTex_func_00317cdc");
-extern "C" __attribute__((naked)) void decomp_func_00317cdc() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x40f0, 0xe92d, 0x5000, 0xe1a0\n"
-        ".hword 0x0f5b, 0xe28f, 0x1164, 0xe59f\n"
-        ".hword 0x8b04, 0xed2d, 0x8b40, 0xeeb0\n"
-        ".hword 0xd014, 0xe24d, 0x0000, 0xe1a0\n"
-        ".hword 0x7001, 0xe3a0, 0x1c01, 0xe3a0\n"
-        ".hword 0x3048, 0xe3a0, 0x2000, 0xe3a0\n"
-        ".hword 0x0001, 0xe1a0, 0x7000, 0xe58d\n"
-        ".hword 0xb39a, 0xebfe, 0x4000, 0xe1a0\n"
-        ".hword 0x1048, 0xe3a0, 0xb382, 0xebfe\n"
-        ".hword 0x0a5b, 0xed9f, 0x9a59, 0xed9f\n"
-        ".hword 0x0a5a, 0xeddf, 0x0a02, 0xed84\n"
-        ".hword 0x9a03, 0xed84, 0x6000, 0xe3a0\n"
-        ".hword 0x0a04, 0xedc4, 0x6014, 0xe5c4\n"
-        ".hword 0x0075, 0xe6ff, 0x6017, 0xe5c4\n"
-        ".hword 0x62ca, 0xebfe, 0x08f8, 0xe1d0\n"
-        ".hword 0x0038, 0xe584, 0x7044, 0xe5c4\n"
-        ".hword 0xa871, 0xebfe, 0x0000, 0xe350\n"
-        ".hword 0x7004, 0x1584, 0x0005, 0x1a00\n"
-        ".hword 0x0038, 0xe594, 0x1001, 0xe3a0\n"
-        ".hword 0xf16e, 0xebfd, 0x1002, 0xe3a0\n"
-        ".hword 0x0034, 0xe584, 0x1004, 0xe584\n"
-        ".hword 0x0a10, 0xee18, 0x1000, 0xe265\n"
-        ".hword 0x1071, 0xe6ff, 0x05fe, 0xe370\n"
-        ".hword 0x0010, 0x23a0, 0x1000, 0xe584\n"
-        ".hword 0x0010, 0x2a00, 0x0a10, 0xee18\n"
-        ".hword 0x05ff, 0xe370, 0x0003, 0x23a0\n"
-        ".hword 0x000c, 0x2a00, 0x10e8, 0xe59f\n"
-        ".hword 0x0a10, 0xee18, 0x0001, 0xe150\n"
-        ".hword 0x0011, 0xa3a0, 0x0007, 0xaa00\n"
-        ".hword 0x0a10, 0xee18, 0x05ff, 0xe350\n"
-        ".hword 0x0004, 0xa3a0, 0x0003, 0xaa00\n"
-        ".hword 0x8ac9, 0xeeb4, 0xfa10, 0xeef1\n"
-        ".hword 0x0012, 0x33a0, 0x0005, 0x23a0\n"
-        ".hword 0x003c, 0xe584, 0x202c, 0xe284\n"
-        ".hword 0x10b4, 0xe59f, 0x00ac, 0xe59f\n"
-        ".hword 0x5004, 0xe28d, 0x8a02, 0xec82\n"
-        ".hword 0x3000, 0xe3a0, 0x7016, 0xe5c4\n"
-        ".hword 0x6015, 0xe5c4, 0x1000, 0xe58d\n"
-        ".hword 0x0011, 0xe885, 0x2003, 0xe1a0\n"
-        ".hword 0x0090, 0xe59f, 0x1002, 0xe3a0\n"
-        ".hword 0xb6d5, 0xebfe, 0x1088, 0xe59f\n"
-        ".hword 0x5000, 0xe1a0, 0x3000, 0xe3a0\n"
-        ".hword 0x0042, 0xe88d, 0x007c, 0xe59f\n"
-        ".hword 0x2003, 0xe1a0, 0x106f, 0xe3a0\n"
-        ".hword 0x40f8, 0xe1cd, 0xb36e, 0xebfe\n"
-        ".hword 0xd014, 0xe28d, 0x0005, 0xe1a0\n"
-        ".hword 0x8b04, 0xecbd, 0x80f0, 0xe8bd\n"
-        ".hword 0x0161, 0x0000, 0x3a63, 0x535c\n"
-        ".hword 0x544d, 0x5c34, 0x5258, 0x3644\n"
-        ".hword 0x3638, 0x735c, 0x6464, 0x3473\n"
-        ".hword 0x705c, 0x6f72, 0x7267, 0x6d61\n"
-        ".hword 0x655c, 0x6576, 0x746e, 0x335c\n"
-        ".hword 0x4564, 0x6576, 0x746e, 0x335c\n"
-        ".hword 0x4564, 0x6576, 0x746e, 0x6554\n"
-        ".hword 0x2e78, 0x7063, 0x0070, 0x0000\n"
-        ".hword 0x0000, 0x0000, 0x0000, 0x3f80\n"
-        ".hword 0x0000, 0x3e80, 0x0000, 0x4040\n"
-        ".hword 0xb938, 0x002d, 0xffbc, 0x001d\n"
-        ".hword 0x377c, 0x0040, 0x0138, 0x001e\n"
-        ".hword 0x376c, 0x0040\n"
-    );
+namespace evttex_317cdc_calls {
+extern "C" void* AsdMem_Alloc(u32 a0, u32 a1, u32 a2, u32 size, u32 flag);
+extern "C" void AsdMem_Zero(void* ptr, u32 size);
+extern "C" const u8* AsdTable_FindBattleRow(u32 id);
+extern "C" s32 AsdScene_LoadMode();
+extern "C" void* Npc2d_CreateSprite(s32 sprite_id, u32 a1);
+extern "C" void* AsdTask_CreateCalc(const char* name, u32 prio, u32 a2, u32 a3,
+                                    void (*cb)(void*), u32 a5, u32 a6);
+extern "C" void* AsdTask_CreateDraw(const char* name, u32 prio, u32 a2, u32 a3,
+                                    void (*cb)(void*), u32 a5, u32 a6, void* parent);
+} // namespace evttex_317cdc_calls
+
+extern "C" void* decomp_func_00317cdc(u32 id, f32 x, f32 z)
+    asm("3dEventTex_func_00317cdc");
+
+extern "C" void* decomp_func_00317cdc(u32 id, f32 x, f32 z) {
+    using namespace evttex_317cdc_calls;
+
+    u8* const p = static_cast<u8*>(AsdMem_Alloc(0x100, 0x100, 0, 0x48, 1));
+    AsdMem_Zero(p, 0x48);
+
+    *reinterpret_cast<f32*>(p + 0x08) = 1.0f;
+    *reinterpret_cast<f32*>(p + 0x0C) = 0.0f;
+    *reinterpret_cast<f32*>(p + 0x10) = 0.25f;
+    p[0x14] = 0;
+    p[0x17] = 0;
+
+    const u8* const row = AsdTable_FindBattleRow(id & 0xFFFFu);
+    const s32 sprite_id = *reinterpret_cast<const s16*>(row + 0x88);
+    *reinterpret_cast<s32*>(p + 0x38) = sprite_id;
+    p[0x44] = 1;
+
+    if (AsdScene_LoadMode() != 0) {
+        *reinterpret_cast<u32*>(p + 0x04) = 1u;
+    } else {
+        *reinterpret_cast<void**>(p + 0x34) = Npc2d_CreateSprite(sprite_id, 1);
+        *reinterpret_cast<u32*>(p + 0x04) = 2u;
+    }
+
+    *reinterpret_cast<u32*>(p + 0x00) = static_cast<u16>(0u - id);
+
+    u32 pose = 5u;
+    if (x <= -4.0f) {
+        pose = 0x10u;
+    } else if (x <= -3.0f) {
+        pose = 3u;
+    } else if (x >= 3.0f) {
+        pose = 0x11u;
+    } else if (x >= 1.5f) {
+        pose = 4u;
+    } else if (x < 0.0f) {
+        pose = 0x12u;
+    }
+    *reinterpret_cast<u32*>(p + 0x3C) = pose;
+
+    *reinterpret_cast<f32*>(p + 0x2C) = x;
+    *reinterpret_cast<f32*>(p + 0x30) = z;
+    p[0x16] = 1;
+    p[0x15] = 0;
+
+    void* const task = AsdTask_CreateCalc(
+        "EVE_BtlTex", 2, 0, 0,
+        reinterpret_cast<void (*)(void*)>(0x001DFFBCu),
+        0x002DB938u,
+        static_cast<u32>(reinterpret_cast<std::uintptr_t>(p)));
+
+    AsdTask_CreateDraw(
+        "EVE_BtlTexDraw", 0x6Fu, 0, 0,
+        reinterpret_cast<void (*)(void*)>(0x001E0138u),
+        0,
+        static_cast<u32>(reinterpret_cast<std::uintptr_t>(p)),
+        task);
+
+    return task;
 }
 
 // DECOMP_FUNC(0x0015b5b8, 484)
