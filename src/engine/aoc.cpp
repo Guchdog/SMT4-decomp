@@ -696,85 +696,29 @@ __attribute__((naked)) void* aocMain_func_001b0b00(u32)
         ".word 0x006E776F\n");
 }
 // DECOMP_FUNC(0x00224ae0, 276)
-
-
-// ---------------------------------------------------------------------------
-// aocBootProcess (0x00224AE0)
-// ---------------------------------------------------------------------------
-
-//
-__attribute__((naked)) void* aocBootProcess_func_00224ae0()
+void* aocBootProcess_func_00224ae0()
 {
-    asm volatile(
-        ".word 0xE92D4070\n"
-        ".word 0xE24DD010\n"
-        ".word 0xE59F60A4\n"
-        ".word 0xE5960000\n"
-        ".word 0xE3500000\n"
-        ".word 0x1A00000A\n"
-        ".word 0xE59F1098\n"
-        ".word 0xE28F0098\n"
-        ".word 0xE1A00000\n"
-        ".word 0xE3A00001\n"
-        ".word 0xE3A01C01\n"
-        ".word 0xE58D0000\n"
-        ".word 0xE59F30BC\n"
-        ".word 0xE3A02000\n"
-        ".word 0xE1A00001\n"
-        ".word 0xEB028018\n" // AsdMem_Alloc (0x002C4B84)
-        ".word 0xE5860000\n"
-        ".word 0xE3A05000\n"
-        ".word 0xE5865004\n"
-        ".word 0xE5C05008\n"
-        ".word 0xE1A04000\n"
-        ".word 0xE5C05009\n"
-        ".word 0xE280000C\n"
-        ".word 0xEB0257E2\n" // AocBoot_InitCalc (0x002BAACC)
-        ".word 0xE59F1094\n"
-        ".word 0xE58455F0\n"
-        ".word 0xE59F0088\n"
-        ".word 0xE28D4004\n"
-        ".word 0xE58D1000\n"
-        ".word 0xE3A03000\n"
-        ".word 0xE8840021\n"
-        ".word 0xE1A02003\n"
-        ".word 0xE3A01002\n"
-        ".word 0xE28F0074\n"
-        ".word 0xEB028382\n" // AsdTask_CreateCalc.
-        ".word 0xE5961000\n"
-        ".word 0xE5810000\n"
-        ".word 0xE59F0074\n"
-        ".word 0xE5900000\n"
-        ".word 0xE5902754\n"
-        ".word 0xE3C22070\n"
-        ".word 0xE5802754\n"
-        ".word 0xE5910000\n"
-        ".word 0xE28DD010\n"
-        ".word 0xE8BD8070\n"
-        ".word 0x00432FE0\n" // g_AocBootProcess (process/global state).
-        ".word 0x0000011E\n" // Original line marker.
-        ".word 0x535C3A63\n"
-        ".word 0x5C34544D\n"
-        ".word 0x36445258\n"
-        ".word 0x735C3638\n"
-        ".word 0x34736464\n"
-        ".word 0x6F72705C\n"
-        ".word 0x6D617267\n"
-        ".word 0x6464615C\n"
-        ".word 0x615C6E6F\n"
-        ".word 0x6F42636F\n"
-        ".word 0x7250746F\n"
-        ".word 0x7365636F\n"
-        ".word 0x70632E73\n"
-        ".word 0x00000070\n"
-        ".word 0x000005F4\n"
-        ".word 0x0020EB58\n"
-        ".word 0x001B4BBC\n"
-        ".word 0x42636F61\n"
-        ".word 0x20746F6F\n"
-        ".word 0x434C4143\n"
-        ".word 0x00000000\n"
-        ".word 0x00432FC8\n"); // g_AocAppletState literal.
+    AocBootProcess* proc = g_AocBootProcess.process;
+    if (proc == nullptr) {
+        proc = static_cast<AocBootProcess*>(
+            AsdMem_Alloc(0x100, 0x100, 0, sizeof(AocBootProcess), 1));
+        g_AocBootProcess.process = proc;
+    }
+
+    g_AocBootProcess.handle = 0;
+    proc->flag_08 = 0;
+    proc->flag_09 = 0;
+    AocBoot_InitCalc(proc->calc);
+    proc->field_5f0 = 0;
+
+    g_AocBootProcess.process->task = AsdTask_CreateCalc(
+        "aocBoot CALC", 2, 0, 0,
+        reinterpret_cast<void (*)(void*)>(
+            static_cast<std::uintptr_t>(0x001B4BBCu)),
+        0x0020EB58u, 0);
+
+    g_AocAppletState->flags_754 &= ~0x70u;
+    return g_AocBootProcess.process->task;
 }
 // DECOMP_FUNC(0x0038b384, 236)
 void aocApplication_func_0038b384(AocApplication* app)
