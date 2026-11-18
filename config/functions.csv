@@ -2253,7 +2253,7 @@ address,size,status,category,name,src_file
 0x001c0898,172,matching,battle,battle_func_001c0898,src/engine/leaf_batch34_c.cpp
 0x001c0944,324,matching,engine,engine_func_001c0944,src/engine/leaf_batch34_c.cpp
 0x001c0a88,176,matching,ui,ui_func_001c0a88,src/engine/leaf_batch42_c.cpp
-0x001c0b38,988,matching,ui,ui_func_001c0b38,src/engine/leaf_batch45_c.cpp
+0x001c0b38,988,non_matching,ui,ui_func_001c0b38,src/engine/leaf_batch45_c.cpp
 0x001c0f14,3384,matching,ui,ui_func_001c0f14,src/engine/leaf_batch46_c.cpp
 0x001c1c4c,64,matching,unknown,func_001c1c4c,src/engine/leaf_batch24_a.cpp
 0x001c1c8c,60,matching,unknown,func_001c1c8c,src/engine/leaf_batch23_a.cpp
