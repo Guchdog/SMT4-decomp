@@ -9152,7 +9152,7 @@ address,size,status,category,name,src_file
 0x0038b040,364,matching,engine,engine_func_0038b040,src/engine/leaf_batch27_c.cpp
 0x0038b1ac,392,matching,engine,engine_func_0038b1ac,src/engine/leaf_batch44_b.cpp
 0x0038b334,80,non_matching,unknown,func_0038b334,src/engine/leaf_batch31_b.cpp
-0x0038b384,236,matching,engine,aocApplication_func_0038b384,src/engine/aoc.cpp
+0x0038b384,236,non_matching,engine,aocApplication_func_0038b384,src/engine/aoc.cpp
 0x0038b470,160,matching,engine,engine_func_0038b470,src/engine/leaf_batch21_c.cpp
 0x0038b510,240,matching,engine,aocApplication_func_0038b510,src/engine/aoc.cpp
 0x0038b600,24,matching,unknown,func_0038b600,src/engine/leaf_batch17_c.cpp

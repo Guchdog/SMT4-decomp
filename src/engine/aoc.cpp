@@ -777,75 +777,32 @@ __attribute__((naked)) void* aocBootProcess_func_00224ae0()
         ".word 0x00432FC8\n"); // g_AocAppletState literal.
 }
 // DECOMP_FUNC(0x0038b384, 236)
-
-
-// ---------------------------------------------------------------------------
-// aocApplication (0x0038B384 / 0x0038B510)
-// ---------------------------------------------------------------------------
-
-//
-__attribute__((naked)) void aocApplication_func_0038b384(AocApplication*)
+void aocApplication_func_0038b384(AocApplication* app)
 {
-    asm volatile(
-        ".word 0xE92D40F8\n"
-        ".word 0xE1A04000\n"
-        ".word 0xE3A06000\n"
-        ".word 0xE59005A8\n"
-        ".word 0xE3500000\n"
-        ".word 0x0A000002\n"
-        ".word 0xEBFF1F5E\n" // AocTexture_Destroy (0x0035311C)
-        ".word 0xEBFC9C5E\n" // Aoc_ReleaseGlobal (0x002B2520)
-        ".word 0xE58465A8\n"
-        ".word 0xE59405AC\n"
-        ".word 0xE2845B01\n"
-        ".word 0xE2855F6B\n"
-        ".word 0xE3500000\n"
-        ".word 0x0A000001\n"
-        ".word 0xEBFCE3E7\n" // AsdMem_Free (0x002C4360)
-        ".word 0xE5856000\n"
-        ".word 0xE3A01F5A\n"
-        ".word 0xE28F0068\n"
-        ".word 0xE1A00000\n"
-        ".word 0xE3A00001\n"
-        ".word 0xE58D0000\n"
-        ".word 0xE3A03802\n"
-        ".word 0xE3A02000\n"
-        ".word 0xE3A01C01\n"
-        ".word 0xE3A00801\n"
-        ".word 0xEBFCE840\n" // AsdMem_AllocAlign (0x002C54F0)
-        ".word 0xE3A01802\n"
-        ".word 0xE58405AC\n"
-        ".word 0xEBFCE1D3\n" // AsdWork_Zero.
-        ".word 0xE5950000\n"
-        ".word 0xE3500000\n"
-        ".word 0x0A00000A\n"
-        ".word 0xE3A00010\n"
-        ".word 0xEBFCDBFA\n" // AsdMemory_func_002c23f8.
-        ".word 0xE3500000\n"
-        ".word 0xE320F000\n"
-        ".word 0x0A000003\n"
-        ".word 0xE5941080\n"
-        ".word 0xE59425AC\n"
-        ".word 0xE3A03802\n"
-        ".word 0xEBFF1F33\n" // AocTexture_Create (0x003530F8)
-        ".word 0xE58405A8\n"
-        ".word 0xE8BD80F8\n"
-        ".word 0xE8BD40F8\n"
-        ".word 0xEAFCC683\n" // AsdFile_NotifyClose.
-        ".word 0x535C3A63\n"
-        ".word 0x5C34544D\n"
-        ".word 0x36445258\n"
-        ".word 0x735C3638\n"
-        ".word 0x34736464\n"
-        ".word 0x6F72705C\n"
-        ".word 0x6D617267\n"
-        ".word 0x6464615C\n"
-        ".word 0x615C6E6F\n"
-        ".word 0x7041636F\n"
-        ".word 0x63696C70\n"
-        ".word 0x6F697461\n"
-        ".word 0x70632E6E\n"
-        ".word 0x00000070\n"); // Original source-path literal.
+    if (app->texture_handle != nullptr) {
+        AocTexture_Destroy(app->texture_handle);
+        Aoc_ReleaseGlobal();
+        app->texture_handle = nullptr;
+    }
+    if (app->texture_buffer != nullptr) {
+        AsdMem_Free(app->texture_buffer);
+        app->texture_buffer = nullptr;
+    }
+
+    app->texture_buffer = AsdMem_AllocAlign(0x10000, 0x100, 0, 0x20000, 1);
+    AsdWork_Zero(app->texture_buffer, 0x20000);
+    if (app->texture_buffer == nullptr) {
+        AsdFile_NotifyClose();
+        return;
+    }
+
+    void* const obj = AsdMemory_func_002c23f8(0x10);
+    void* handle = nullptr;
+    if (obj != nullptr) {
+        handle = AocTexture_Create(
+            obj, app->source_handle, app->texture_buffer, 0x20000);
+    }
+    app->texture_handle = handle;
 }
 // DECOMP_FUNC(0x0038b510, 240)
 
