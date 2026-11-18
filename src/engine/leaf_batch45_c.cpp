@@ -564,72 +564,151 @@ extern "C" u32 ui_func_001af748(u32 arg0, u32 arg1, u32 arg2, u32 arg3, u32 arg4
     return default_ret;
 }
 
+extern "C" void func_0035a408(void* iter);
+extern "C" s32 func_0035a2e4(void* iter, const u16* path);
+extern "C" s32 func_0035a350(void* iter, void* comp_out);
+extern "C" s32 func_00239dec(void* self, u32* next_id_out, void* info_out, const void* state);
+extern "C" s32 func_00239d2c(void* self, u32* parent_id_out, u32* parent_meta_out, u32 zero0,
+                             u32 zero1, u32 cur_dir_id);
+extern "C" s32 func_0035a420(void* comp_out, const void* tmp_pair, const u16* path);
+extern "C" s32 func_003e0e7c(void* iter, void* comp_out);
+extern "C" s32 func_00225678(void* self, u32* dummy_out, void* dst_entry, void* dst_info,
+                             u32 entry_id, u32 entry_len, const u16* entry_ptr, const u16* path);
+extern "C" s32 func_003e0e28(void* iter);
+extern "C" s32 func_003e0df8(void* iter, void* name_slice_out);
+
 // DECOMP_FUNC(0x003fc5e4, 960)
-// Capstone ARM full coverage (240 instructions); raw bytes only, no terminal-return claim.
-extern "C" __attribute__((naked)) void func_003fc5e4() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4fff, 0xe24dd07c, 0xe28d0048, 0xe1a05003\n"
-        ".word 0xe1a07001, 0xe59d60b4, 0xebfd7781, 0xe1a01006\n"
-        ".word 0xe28d0048, 0xebfd7735, 0xe2101102, 0x4a0000d6\n"
-        ".word 0xe59d107c, 0xe3a04000, 0xe28d0048, 0xe58d1064\n"
-        ".word 0xe59d1084, 0xe58d003c, 0xe28d8008, 0xe58d1020\n"
-        ".word 0xe28d100c, 0xe58d4014, 0xe58d4008, 0xebfd7742\n"
-        ".word 0xe2101102, 0x4a000016, 0xe59d0064, 0xe28d3008\n"
-        ".word 0xe28d2058, 0xe28d1014, 0xebf8f5e2, 0xe2101102\n"
-        ".word 0x4a00000f, 0xea000045, 0xe59d003c, 0xe1d000dc\n"
-        ".word 0xe3500000, 0xe320f000, 0x0a00001a, 0xe28d8008\n"
-        ".word 0xe59d0020, 0xe898100c, 0xe28d8058, 0xe59d401c\n"
-        ".word 0xe1c720f0, 0xe587c008, 0xe898000e, 0xe880000e\n"
-        ".word 0xe3a00000, 0xe2101102, 0x4a0000af, 0xe59d00b0\n"
-        ".word 0xe3500000, 0x0a0000a6, 0xe28d1010, 0xe28d0048\n"
-        ".word 0xebff91ec, 0xe2101102, 0xe320f000, 0x4a0000a6\n"
-        ".word 0xe59d0010, 0xe3500001, 0x0a00005a, 0xe3500002\n"
-        ".word 0x0a00006e, 0xea000075, 0xe28d2008, 0xe59d003c\n"
-        ".word 0xe8920e00, 0xe2881004, 0xebfd7713, 0xe1b01fa0\n"
-        ".word 0xe320f000, 0x1affffe6, 0xe59d000c, 0xe3500001\n"
-        ".word 0x1a000005, 0xe59d0010, 0xe1d000b0, 0xe350002e\n"
-        ".word 0x028d0008, 0x08800e00, 0x0affffce, 0xe59d000c\n"
-        ".word 0xe3500002, 0x1a000007, 0xe59d0010, 0xe1d000b0\n"
-        ".word 0xe350002e, 0x1a000003, 0xe59d0010, 0xe1d000b2\n"
-        ".word 0xe350002e, 0x0a00000c, 0xe59d001c, 0xe28d3008\n"
-        ".word 0xe28d2058, 0xe58d0008, 0xe59d0064, 0xe28d1014\n"
-        ".word 0xebf8f59c, 0xe1b01fa0, 0xe320f000, 0x1affffc8\n"
-        ".word 0xe59d0014, 0xe58d001c, 0xeaffffb6, 0xe59d001c\n"
-        ".word 0xe3500000, 0x0a000029, 0xe59d100c, 0xe59d2010\n"
-        ".word 0xe28d001c, 0xe28d3034, 0xe58d606c, 0xe58d0040\n"
-        ".word 0xe59da064, 0xe59d0008, 0xe8830006, 0xe3a01000\n"
-        ".word 0xe1a03001, 0xe58d1000, 0xe58d0004, 0xe28d9008\n"
-        ".word 0xe28db058, 0xe28d2070, 0xe28d1068, 0xe1a0000a\n"
-        ".word 0xebf8f550, 0xe2101102, 0xe320f000, 0x4a000010\n"
-        ".word 0xe59d0068, 0xe28d1034, 0xe58d0008, 0xe59d206c\n"
-        ".word 0xe2890004, 0xebfd7704, 0xe2101102, 0xe320f000\n"
-        ".word 0x4a000007, 0xe59d1040, 0xe1a03009, 0xe1a0200b\n"
-        ".word 0xe1a0000a, 0xebf8f56f, 0xe2001102, 0xe3510000\n"
-        ".word 0xa3a00000, 0xe1b01fa0, 0x0affff8a, 0xeaffff98\n"
-        ".word 0xe59f0154, 0xeaffff96, 0xe59d0014, 0xe1d000b0\n"
-        ".word 0xe350002e, 0x1a000019, 0xe5971008, 0xe8970005\n"
-        ".word 0xe5851008, 0xe3500000, 0xe8850005, 0x0a000047\n"
-        ".word 0xe28d3008, 0xe88d0005, 0xe8830042, 0xe1a02007\n"
-        ".word 0xe59d3084, 0xe59d007c, 0xe28d1018, 0xebf8a378\n"
-        ".word 0xe2101102, 0xe320f000, 0x4a000033, 0xea00003b\n"
-        ".word 0xe59d0014, 0xe1d000b0, 0xe350002e, 0x1a000003\n"
-        ".word 0xe59d0014, 0xe1d000b2, 0xe350002e, 0x0a000005\n"
-        ".word 0xe1cd01d0, 0xe3500000, 0xe1c500f4, 0x03a04000\n"
-        ".word 0xe5854000, 0xea00002d, 0xe3540000, 0x0a000021\n"
-        ".word 0xe58d600c, 0xe1c700d4, 0xe28d301c, 0xe1a02005\n"
-        ".word 0xe1cd00f4, 0xe5970000, 0xe28d1018, 0xe58d0000\n"
-        ".word 0xe59d007c, 0xebf8a35a, 0xe2101102, 0xe320f000\n"
-        ".word 0x4a000015, 0xe5950000, 0xe3500000, 0x0a00001b\n"
-        ".word 0xe2855004, 0xe58d600c, 0xe8950006, 0xe88d0007\n"
-        ".word 0xe1a02007, 0xe59d3084, 0xe59d007c, 0xe28d1018\n"
-        ".word 0xebf8a34b, 0xe2101102, 0xe320f000, 0x4a000006\n"
-        ".word 0xea00000e, 0xe28d0048, 0xebff9131, 0xe3500000\n"
-        ".word 0xe320f000, 0x0a000002, 0xe59f002c, 0xe28dd08c\n"
-        ".word 0xe8bd8ff0, 0xe2851004, 0xe28d0048, 0xe5854000\n"
-        ".word 0xebff911b, 0xe2101102, 0xe320f000, 0x4afffff6\n"
-        ".word 0xe28dd08c, 0xe3a00000, 0xe8bd8ff0, 0xe0c04702\n"
-    );
+extern "C" s32 func_003fc5e4(void* self, u32* out_dir, u32* out_info, u32* out_name,
+                             u32 resolve_leaf, const u16* path) {
+    alignas(4) u8 iter[0x10];
+    func_0035a408(iter);
+    s32 rc = func_0035a2e4(iter, path);
+    if (rc < 0) {
+        return rc;
+    }
+
+    u32 cur_state[3] = {0u, 0u, 0u};
+    u32 cur_info[3] = {0u, 0u, 0u};
+    u32 next_id = 0u;
+    u32 cur_id = 0u;
+
+    rc = func_0035a350(iter, &cur_state[1]);
+    if (rc >= 0) {
+        rc = func_00239dec(self, &next_id, cur_info, cur_state);
+        if (rc >= 0) {
+            cur_id = next_id;
+            while (*reinterpret_cast<const s8*>(iter + 0xCu) == 0) {
+                const u32 saved0 = cur_state[0];
+                const u32 saved1 = cur_state[1];
+                const u32 saved2 = cur_state[2];
+                rc = func_0035a350(iter, &cur_state[1]);
+                if (rc < 0) {
+                    break;
+                }
+                const u16* const comp = reinterpret_cast<const u16*>(cur_state[2]);
+                if (cur_state[1] == 1u && comp[0] == u'.') {
+                    cur_state[0] = saved0;
+                    cur_state[1] = saved1;
+                    cur_state[2] = saved2;
+                    continue;
+                }
+                if (cur_state[1] == 2u && comp[0] == u'.' && comp[1] == u'.') {
+                    if (cur_id == 0u) {
+                        rc = static_cast<s32>(0xE0C04702u);
+                        break;
+                    }
+                    const u32 tmp_pair[2] = {cur_state[1], cur_state[2]};
+                    u32 p_id = 0u;
+                    u32 p_meta = 0u;
+                    rc = func_00239d2c(self, &p_id, &p_meta, 0u, 0u, cur_state[0]);
+                    if (rc < 0) {
+                        break;
+                    }
+                    cur_state[0] = p_id;
+                    rc = func_0035a420(&cur_state[1], tmp_pair, path);
+                    if (rc < 0) {
+                        break;
+                    }
+                    rc = func_00239dec(self, &cur_id, cur_info, cur_state);
+                    if (rc < 0) {
+                        break;
+                    }
+                    rc = 0;
+                    continue;
+                }
+                cur_state[0] = cur_id;
+                rc = func_00239dec(self, &next_id, cur_info, cur_state);
+                if (rc < 0) {
+                    break;
+                }
+                cur_id = next_id;
+            }
+            if (rc >= 0) {
+                out_dir[0] = cur_state[0];
+                out_dir[1] = cur_state[1];
+                out_dir[2] = cur_state[2];
+                out_info[0] = cur_info[0];
+                out_info[1] = cur_info[1];
+                out_info[2] = cur_info[2];
+                rc = 0;
+            }
+        }
+    }
+
+    if (rc < 0) {
+        return rc;
+    }
+
+    if (resolve_leaf == 0u) {
+        if (func_003e0e28(iter) != 0) {
+            return static_cast<s32>(0xE0C04702u);
+        }
+        out_name[0] = cur_id;
+        rc = func_003e0df8(iter, out_name + 1);
+        return (rc < 0) ? rc : 0;
+    }
+
+    u32 leaf_comp[2] = {0u, 0u};
+    rc = func_003e0e7c(iter, leaf_comp);
+    if (rc < 0) {
+        return rc;
+    }
+
+    const u16* const leaf_str = reinterpret_cast<const u16*>(leaf_comp[1]);
+    u32 dummy_out = 0u;
+    if (leaf_comp[0] == 1u && leaf_str[0] == u'.') {
+        out_name[0] = out_dir[0];
+        out_name[1] = out_dir[1];
+        out_name[2] = out_dir[2];
+        if (out_name[0] == 0u) {
+            return 0;
+        }
+        rc = func_00225678(self, &dummy_out, out_dir, out_info, out_name[0], out_name[1],
+                           reinterpret_cast<const u16*>(out_name[2]), path);
+        return (rc < 0) ? rc : 0;
+    }
+
+    if (leaf_comp[0] == 2u && leaf_str[0] == u'.' && leaf_str[1] == u'.') {
+        if (cur_id == 0u) {
+            return static_cast<s32>(0xE0C04702u);
+        }
+        rc = func_00225678(self, &dummy_out, out_name, &cur_id, out_dir[0], out_dir[1],
+                           reinterpret_cast<const u16*>(out_dir[2]), path);
+        if (rc < 0) {
+            return rc;
+        }
+        if (out_name[0] == 0u) {
+            return 0;
+        }
+        rc = func_00225678(self, &dummy_out, out_dir, out_info, out_name[0], out_name[1],
+                           reinterpret_cast<const u16*>(out_name[2]), path);
+        return (rc < 0) ? rc : 0;
+    }
+
+    out_name[0] = (leaf_comp[0] != 0u) ? cur_id : 0u;
+    out_name[1] = leaf_comp[0];
+    out_name[2] = leaf_comp[1];
+    return 0;
 }
 
 // DECOMP_FUNC(0x001a1000, 984)
