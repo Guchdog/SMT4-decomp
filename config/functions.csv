@@ -7826,7 +7826,7 @@ address,size,status,category,name,src_file
 0x00345194,7068,matching,ui,Ui_MemoryArenaAllocate,src/ui/ui_memory.cpp
 0x00346d30,8,matching,unknown,func_00346d30,src/engine/leaf_batch36_c.cpp
 0x00346d38,120,non_matching,engine,AsdMemory_func_00346d38,src/engine/asd_file.cpp
-0x00346db0,992,matching,engine,AsdPrimRenderData_func_00346db0,src/engine/asd_texture.cpp
+0x00346db0,992,non_matching,engine,AsdPrimRenderData_func_00346db0,src/engine/asd_texture.cpp
 0x00347190,496,matching,engine,engine_func_00347190,src/engine/leaf_batch20_c.cpp
 0x00347380,124,matching,engine,engine_func_00347380,src/engine/leaf_batch14_a.cpp
 0x003473fc,180,matching,unknown,func_003473fc,src/engine/leaf_batch33_b.cpp

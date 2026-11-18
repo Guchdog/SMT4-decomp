@@ -504,91 +504,81 @@ void* AsdTMTexTable_func_002c5b04(u32 group_id, u32 flags)
 // ---------------------------------------------------------------------------
 
 // DECOMP_FUNC(0x00346db0, 992)
-// Source reconstruction retained for reference; not verified equivalent.
-#if 0
 void AsdPrimRenderData_func_00346db0(AsdPrimRenderData* data)
 {
-    // [sp+0x18], [sp+0x10] and [sp+0x08]: each descriptor starts with the
-    // four bytes { 0, 1, 0xFF, 0xFF } and carries a zero word at +0x04.
     AsdPrimUploadDesc attr_18 = { { 0, 1, 0xFF, 0xFF }, 0u };
     AsdPrimUploadDesc attr_10 = { { 0, 1, 0xFF, 0xFF }, 0u };
     AsdPrimUploadDesc attr_08 = { { 0, 1, 0xFF, 0xFF }, 0u };
 
     const u32 flags = data->flags;
+    void* const vtx_size = reinterpret_cast<void*>(
+        static_cast<std::uintptr_t>(AsdPrim_VertexSize(data)));
 
-    // 0x00346E04..0x00346E84: one vertex-stream allocation sized by
-    // 0x00347380 (flags bits 0,1,2,3,4,5 select 12/16/8/12/12/4 bytes).
     if ((flags & 0x100u) != 0) {
-        data->buffer = AsdWork_Alloc(0x10000, 0x100, 0,
-                                     AsdPrim_VertexSize(data), 0x10, 1);
+        data->buffer = AsdWork_Alloc(0x10000, 0x100, 0, vtx_size, 0x10, 1);
     } else {
-        data->buffer = AsdWork_Alloc(0x100, 0x100, 0,
-                                     AsdPrim_VertexSize(data), 0x10, 1);
+        data->buffer = AsdWork_Alloc(0x100, 0x100, 0, vtx_size, 0x10, 1);
     }
 
-    u32 cursor = 0;                         // r5
+    u32 cursor = 0;
 
-    // 0x00346E90: stream 0 -- positions, three floats per vertex.
     if ((flags & 1u) != 0) {
-        data->positions = data->buffer;                 // +0x30
+        data->positions = data->buffer;
         cursor = data->vertex_count * 3u * 4u;
 
         if ((flags & 0x100u) != 0) {
-            attr_18.rgba[2] = 0;                        // `strb r6,[sp,#0x1a]`
+            attr_18.rgba[2] = 0;
             u32 address = AsdGpu_Address(data->positions);
             AsdGpu_Submit(data->command_queue, &attr_18, address, 0x0B);
         }
     }
 
-    // 0x00346ED4: stream 1 -- four floats per vertex, all 1.0f.
     if ((flags & 2u) != 0) {
-        data->uv = reinterpret_cast<u8*>(data->buffer) + cursor;  // +0x34
+        data->uv = reinterpret_cast<u8*>(data->buffer) + cursor;
         u32 float_count = data->vertex_count * 4u;
         f32* values = reinterpret_cast<f32*>(data->uv);
 
-        for (u32 i = 0; i < float_count; ++i)
-            values[i] = 1.0f;                           // 0x00346F04
+        for (u32 i = 0; i < float_count; ++i) {
+            values[i] = 1.0f;
+        }
 
         cursor += data->vertex_count * 0x10u;
 
         if ((flags & 0x100u) != 0) {
-            attr_08.rgba[2] = 1;                        // `strb r8,[sp,#0xa]`
+            attr_08.rgba[2] = 1;
             u32 address = AsdGpu_Address(data->uv);
             AsdGpu_Submit(data->command_queue, &attr_08, address, 0x0F);
         }
     }
 
-    // 0x00346F6C: stream 2 -- one byte per component, 0xFF-filled (four
-    // components per vertex).
     if ((flags & 0x20u) != 0) {
-        data->colors = reinterpret_cast<u8*>(data->buffer) + cursor;  // +0x38
+        data->colors = reinterpret_cast<u8*>(data->buffer) + cursor;
         u32 byte_count = data->vertex_count * 4u;
         u8* values = reinterpret_cast<u8*>(data->colors);
 
-        for (u32 i = 0; i < byte_count; ++i)
-            values[i] = 0xFF;                           // 0x00346FAC
+        for (u32 i = 0; i < byte_count; ++i) {
+            values[i] = 0xFF;
+        }
 
         cursor += data->vertex_count * 4u;
 
         if ((flags & 0x100u) != 0) {
-            attr_08.rgba[2] = 1;                        // 0x00346FD8
+            attr_08.rgba[2] = 1;
             u32 address = AsdGpu_Address(data->colors);
             AsdGpu_Submit(data->command_queue, &attr_08, address, 0x0D);
         }
     }
 
-    // 0x00346FF8: stream 3 -- no cursor advance in the binary.
     if ((flags & 4u) != 0) {
-        data->indices = reinterpret_cast<u8*>(data->buffer) + cursor; // +0x3C
+        data->indices = reinterpret_cast<u8*>(data->buffer) + cursor;
 
         if ((flags & 0x100u) != 0) {
-            attr_10.rgba[2] = 2;                        // `strb r0,[sp,#0x12]`
+            attr_10.rgba[2] = 2;
             u32 address = AsdGpu_Address(data->indices);
             AsdGpu_Submit(data->command_queue, &attr_10, address, 7);
         }
     }
 
-    // 0x00347040..0x003470AC: 16-bit index buffer, two bytes per index.
     if ((flags & 0x100u) != 0) {
         data->index_buffer = AsdWork_Alloc2(0x10000, 0x100, 0,
                                             data->index_count * 2u, 0x10, 1);
@@ -597,24 +587,16 @@ void AsdPrimRenderData_func_00346db0(AsdPrimRenderData* data)
                                             data->index_count * 2u, 0x10, 1);
     }
 
-    // 0x003470B0..0x00347110: every index is cleared to zero (the binary
-    // handles an odd leading index and then writes pairs).
     u16* indices = reinterpret_cast<u16*>(data->index_buffer);
-    for (u32 i = 0; i < data->index_count; ++i)
+    for (u32 i = 0; i < data->index_count; ++i) {
         indices[i] = 0;
+    }
 
-    // 0x00347114: cache the GPU address and count of the index buffer.
     if ((flags & 0x100u) != 0) {
         data->index_address = AsdGpu_Address(data->index_buffer);
         data->index_address_count = data->index_count;
         data->index_uploaded = 0;
     }
-}
-#endif
-// Exact ARM-state bytes from code.bin for the verified 992-byte span.
-__attribute__((naked)) void AsdPrimRenderData_func_00346db0(AsdPrimRenderData* data)
-{
-    asm volatile(".incbin \"extracted/exefs/code.bin\", 0x246db0, 992\n");
 }
 
 // ---------------------------------------------------------------------------
