@@ -288,13 +288,13 @@ void* AsdMemory_func_002c684c(u32 size);
 void* AsdMemory_func_00262ac0(u32 size);
 
 // 0x00346d38 (120 B): pool allocator with an extra per-element count.
-void* AsdMemory_func_00346d38(u32 size, u32 extra);
+void* AsdMemory_func_00346d38(u32 a0, u32 size, u32 extra);
 
 // 0x00348a1c (120 B): pool allocator with an extra per-element count.
-void* AsdMemory_func_00348a1c(u32 size, u32 extra);
+void* AsdMemory_func_00348a1c(u32 a0, u32 size, u32 extra);
 
 // 0x0034b3dc (120 B): 0x10000-arena variant of the pool allocator.
-void* AsdMemory_func_0034b3dc(u32 size, u32 extra);
+void* AsdMemory_func_0034b3dc(u32 a0, u32 size, u32 extra);
 
 // ---------------------------------------------------------------------------
 // AsdSaveCommon functions

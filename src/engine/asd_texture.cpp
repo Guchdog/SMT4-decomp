@@ -136,67 +136,30 @@ void* AsdTexture_func_002bd940(u32 flag)
 }
 
 // DECOMP_FUNC(0x002bd730, 528)
-// Source reconstruction retained for reference; not verified equivalent.
-#if 0
 void AsdTexture_func_002bd730(AsdTexture* texture)
 {
-    AsdGpu_Lock(texture);                   // 0x002bd738
+    AsdGpu_Lock(texture);
 
-    u32 address = AsdAddr(texture->data);   // 0x002bd73c
-    u32 heap_start = AsdGpu_HeapStart();    // 0x002bd740
-    u32 heap_size = AsdGpu_HeapSize();      // 0x002bd748
+    u32 address = AsdAddr(texture->data);
+    u32 heap_start = AsdGpu_HeapStart();
+    u32 heap_size = AsdGpu_HeapSize();
 
-    // 0x002bd74c..0x002bd758: start <= address < start + size.  The failure
-    // exit at 0x002bd908 simply pops; it leaves r0 holding the last compared
-    // value (heap end, heap size or the masked bank), which no caller uses.
     if (address < heap_start || address >= heap_start + heap_size)
         return;
 
-    // 0x002bd75c: 128-byte alignment of the source pointer.
     if ((address & 0x7Fu) != 0)
         return;
 
-    // 0x002bd764..0x002bd778: both ends must stay in the same 0x02000000 bank.
     if ((address & 0xFE000000u) !=
         ((address + texture->data_size) & 0xFE000000u))
         return;
 
-    u32 format_code = 0;
     f32 bytes_per_texel =
-        AsdGpu_ResolveFormat(texture->format2, texture->param, &format_code);
-    texture->gpu_format = format_code;      // 0x002bd784 stores through r2
+        AsdGpu_ResolveFormat(texture->format2, texture->param, &texture->gpu_format);
 
     u32 pixel_count = texture->width * texture->height;
     u32 byte_size =
         static_cast<u32>(static_cast<f32>(pixel_count) * bytes_per_texel);
-
-    // The binary emits the following block twice (0x002BD7CC and 0x002BD850).
-    // The two copies are identical apart from the debug line numbers passed
-    // to AsdMem_AllocAlign (0xB4/0xB8 versus 0xE3/0xE7).
-    if (texture->format2 == 0x675A || texture->format2 == 0x675B) {
-        if (texture->kind == 0x10000) {
-            texture->gpu_address = AsdGpu_Address(texture->data);
-            AsdGpu_Lock(reinterpret_cast<void*>(
-                static_cast<std::uintptr_t>(texture->gpu_address)));
-            return;
-        }
-
-        texture->converted = nullptr;       // 0x002bd7dc
-        if (texture->kind == 0x20000) {
-            texture->converted = AsdMem_AllocAlign(0x20000, 0x100, 0,
-                                                   byte_size, 1);
-        } else if (texture->kind == 0x30000) {
-            texture->converted = AsdMem_AllocAlign(0x30000, 0x100, 0,
-                                                   byte_size, 1);
-        }
-
-        // 0x002bd8cc: queue a copy from the file buffer to the converted one.
-        AsdGpu_SubmitCopy(texture->data, texture->converted, byte_size);
-        texture->gpu_address = AsdGpu_Address(texture->converted);
-        AsdGpu_Lock(reinterpret_cast<void*>(
-            static_cast<std::uintptr_t>(texture->gpu_address)));
-        return;
-    }
 
     if (texture->kind == 0x10000) {
         texture->gpu_address = AsdGpu_Address(texture->data);
@@ -205,13 +168,11 @@ void AsdTexture_func_002bd730(AsdTexture* texture)
         return;
     }
 
-    texture->converted = nullptr;           // 0x002bd860
+    texture->converted = nullptr;
     if (texture->kind == 0x20000) {
-        texture->converted = AsdMem_AllocAlign(0x20000, 0x100, 0,
-                                               byte_size, 1);
+        texture->converted = AsdMem_AllocAlign(0x20000, 0x100, 0, byte_size, 1);
     } else if (texture->kind == 0x30000) {
-        texture->converted = AsdMem_AllocAlign(0x30000, 0x100, 0,
-                                               byte_size, 1);
+        texture->converted = AsdMem_AllocAlign(0x30000, 0x100, 0, byte_size, 1);
     }
 
     AsdGpu_SubmitCopy(texture->data, texture->converted, byte_size);
@@ -219,20 +180,12 @@ void AsdTexture_func_002bd730(AsdTexture* texture)
     AsdGpu_Lock(reinterpret_cast<void*>(
         static_cast<std::uintptr_t>(texture->gpu_address)));
 }
-#endif
-// Exact ARM-state bytes from code.bin for the verified 528-byte span.
-__attribute__((naked)) void AsdTexture_func_002bd730(AsdTexture* texture)
-{
-    asm volatile(".incbin \"extracted/exefs/code.bin\", 0x1bd730, 528\n");
-}
 
 // ---------------------------------------------------------------------------
 // AsdTexTMX (c:\SMT4\XRD686\AsdSDK\Source\Gfx\Tex\AsdTexTMX.cpp)
 // ---------------------------------------------------------------------------
 
 // DECOMP_FUNC(0x0019fb58, 756)
-// Source reconstruction retained for reference; not verified equivalent.
-#if 0
 void AsdTexTMX_func_0019fb58(AsdTexture* texture, const AsdTMXHeader* tmx,
                              u32 unused, u32 texture_kind)
 {
@@ -240,17 +193,12 @@ void AsdTexTMX_func_0019fb58(AsdTexture* texture, const AsdTMXHeader* tmx,
 
     const u32 width = tmx->width;
     const u32 height = tmx->height;
-
-    // `sb` is the four-byte palette-entry size: shifted by 4 it advances past
-    // a 16-colour palette, shifted by 8 past a 256-colour palette.
     const u32 palette_entry_size = 4;
 
-    // [sp+8].  The `field_11 != 0` path in the binary reads this slot without
-    // ever storing it; the model starts it at null so the path is defined.
     u32* pixels = nullptr;
 
     if (tmx->field_11 == 0) {
-        texture->data_size = width * height * 4u;       // 0x0019fb8c
+        texture->data_size = width * height * 4u;
         pixels = reinterpret_cast<u32*>(
             AsdMem_Alloc(0x100, 0x100, 0, texture->data_size, 1));
     }
@@ -258,8 +206,6 @@ void AsdTexTMX_func_0019fb58(AsdTexture* texture, const AsdTMXHeader* tmx,
     const u8* palette = reinterpret_cast<const u8*>(tmx) + 0x40;
 
     if (tmx->format == 0x14 || tmx->format == 0x24 || tmx->format == 0x2C) {
-        // 4-bit indices.  0x0019FBF0..0x0019FC80: bottom-up rows, two pixels
-        // per unrolled step, palette alpha doubled while alpha < 0x7F.
         const u8* texels = palette + palette_entry_size * 16u;
 
         for (u32 y = 0; y < height; ++y) {
@@ -267,23 +213,16 @@ void AsdTexTMX_func_0019fb58(AsdTexture* texture, const AsdTMXHeader* tmx,
             u32* out = pixels + y * width;
 
             for (u32 x = 0; x < width; ++x) {
-                // 0x0019FC20 computes `(row_base + x)` and 0x0019FC30 reads
-                // `ldrb [fp, r2, asr #1]`: the nibble stream is continuous
-                // across rows, which matters for odd widths.
                 u8 packed = texels[(row_base + x) >> 1];
                 u32 index = (x & 1u) != 0 ? (packed >> 4) : (packed & 0x0Fu);
                 u32 color = reinterpret_cast<const u32*>(palette)[index];
                 u32 alpha = color >> 24;
 
-                // 0x0019FC44..0x0019FC58.
                 alpha = alpha < 0x7Fu ? ((alpha << 1) & 0xFFu) : 0xFFu;
                 out[x] = (AsdByteReverse(color) & 0xFFFFFF00u) | alpha;
             }
         }
     } else if (tmx->format == 0x13 || tmx->format == 0x1B) {
-        // 8-bit indices.  0x0019FC84: a 256-entry LUT is built from the
-        // palette (bits 3 and 4 of the index are swapped) and then applied
-        // bottom-up.
         u32* lut = reinterpret_cast<u32*>(
             AsdMem_Alloc(0x100, 0x100, 0, 0x400, 1));
 
@@ -295,46 +234,37 @@ void AsdTexTMX_func_0019fb58(AsdTexture* texture, const AsdTMXHeader* tmx,
             u32 r = (color >> 16) & 0xFFu;
             u32 a = color >> 24;
 
-            // 0x0019FCE0..0x0019FD04.
             a = a < 0x7Fu ? ((a << 1) & 0xFFu) : 0xFFu;
             lut[i] = (b << 24) | (g << 16) | (r << 8) | a;
         }
 
-        // 0x0019FD20: pixel base minus one, so the paired reads land on the
-        // first byte of the row.
         const u8* texels = palette + palette_entry_size * 0x100u;
 
         for (u32 y = 0; y < height; ++y) {
             const u8* row = texels + (height - y - 1u) * width;
             u32* out = pixels + y * width;
 
-            for (u32 x = 0; x < width; ++x)
+            for (u32 x = 0; x < width; ++x) {
                 out[x] = lut[row[x]];
+            }
         }
 
-        AsdMem_Free(lut);                   // 0x0019FD94
+        AsdMem_Free(lut);
     }
 
-    // 0x0019FD9C..0x0019FDF8: publish metadata, allocate the GPU work
-    // buffer, then upload width x height texels.
-    texture->kind = texture_kind;           // +0x08, `ldr r0,[sp,#0x18]`
-    texture->format = 0xDE1;                // +0x04
-    texture->format2 = 0x6752;              // +0x1C
-    texture->param = 0x1401;                // +0x20
-    texture->width = width;                 // +0x14
-    texture->height = height;               // +0x18
+    texture->kind = texture_kind;
+    texture->format = 0xDE1;
+    texture->format2 = 0x6752;
+    texture->param = 0x1401;
+    texture->width = width;
+    texture->height = height;
 
-    texture->data = AsdWork_Alloc(0x10000, 0x100, 0,
-                                  texture->data_size, 0x80, 1);  // +0x24
-    AsdGpu_Submit2D(width, height, pixels); // 0x0019FDFC
-    AsdMem_Free(pixels);                    // 0x0019FE0C tail call
-}
-#endif
-// Exact ARM-state bytes from code.bin for the verified 756-byte span.
-__attribute__((naked)) void AsdTexTMX_func_0019fb58(AsdTexture* texture, const AsdTMXHeader* tmx,
-                             u32 unused, u32 texture_kind)
-{
-    asm volatile(".incbin \"extracted/exefs/code.bin\", 0x9fb58, 756\n");
+    texture->data = AsdWork_Alloc(
+        0x10000, 0x100, 0,
+        reinterpret_cast<void*>(static_cast<std::uintptr_t>(texture->data_size)),
+        0x80, 1);
+    AsdGpu_Submit2D(width, height, pixels);
+    AsdMem_Free(pixels);
 }
 
 // ---------------------------------------------------------------------------
@@ -342,11 +272,10 @@ __attribute__((naked)) void AsdTexTMX_func_0019fb58(AsdTexture* texture, const A
 // ---------------------------------------------------------------------------
 
 // DECOMP_FUNC(0x00257e6c, 436)
-// Source reconstruction retained for reference; not verified equivalent.
-#if 0
 void AsdTexTGA_func_00257e6c(AsdTexture* texture, const AsdTGAHeader* tga,
                              const void* unused, u32 texture_kind)
 {
+    (void)unused;
     const u8* const signature = reinterpret_cast<const u8*>(tga) + 0x12;
     if (AsdMem_Compare(signature, "NW4C_Tga Ver1.0", 0x10) != 0)
         return;
@@ -357,22 +286,20 @@ void AsdTexTGA_func_00257e6c(AsdTexture* texture, const AsdTGAHeader* tga,
     const u32 width = static_cast<u32>(header_bytes[0x0C]) |
                       (static_cast<u32>(header_bytes[0x0D]) << 8);
 
-    texture->height = height;               // +0x18
-    texture->width = width;                 // +0x14
-    texture->kind = texture_kind;           // +0x08 from r3
-    texture->format = 0xDE1;                // +0x04
+    texture->height = height;
+    texture->width = width;
+    texture->kind = texture_kind;
+    texture->format = 0xDE1;
 
-    // The format's offset field is unaligned at +0x22 in the file header.
     const u32 chunk_offset = *reinterpret_cast<const u32*>(signature + 0x10);
     const u8* chunk = header_bytes + chunk_offset;
 
     for (;;) {
-        // 0x00257EF8: `nw4c_txd` carries the raw pixel payload.
         if (AsdMem_Compare(chunk, "nw4c_txd", 8) == 0) {
             const u32 size = reinterpret_cast<const AsdTGABlock*>(chunk)->size;
             const u8* payload = chunk + 0x0C;
 
-            texture->data_size = size - 0x0Cu;              // +0x28
+            texture->data_size = size - 0x0Cu;
             texture->data = AsdWork_Alloc2(0x10000, 0x100, 0,
                                            texture->data_size, 0x80, 1);
             AsdMem_Copy(texture->data, payload, texture->data_size);
@@ -384,28 +311,22 @@ void AsdTexTGA_func_00257e6c(AsdTexture* texture, const AsdTGAHeader* tga,
             AsdMem_Copy(name, chunk + 0x0C, size - 0x0C);
 
             if (AsdMem_Compare(name, "Etc1_a4", 8) == 0) {
-                texture->param = 0x1401;        // +0x20, 0x00257F9C
-                texture->format2 = 0x675B;      // +0x1C, 0x00257FA0
-            } else if (AsdMem_Compare(name, "Etc1", 8) == 0) {
-                texture->format2 = 0x675A;      // +0x1C, 0x00257FC4
-                texture->param = 0x1401;        // +0x20
+                texture->param = 0x1401;
+                texture->format2 = 0x675B;
+            } else {
+                const u8 etc1[8] = {'E', 't', 'c', '1', 0, 0, 0, 0};
+                if (AsdMem_Compare(name, etc1, 8) == 0) {
+                    texture->format2 = 0x675A;
+                    texture->param = 0x1401;
+                }
             }
         }
 
-        // 0x00257FD0: `nw4c_end` terminates the chain; anything else advances
-        // by the child block size.
         if (AsdMem_Compare(chunk, "nw4c_end", 8) == 0)
             break;
 
         chunk += reinterpret_cast<const AsdTGABlock*>(chunk)->size;
     }
-}
-#endif
-// Exact ARM-state bytes from code.bin for the verified 436-byte span.
-__attribute__((naked)) void AsdTexTGA_func_00257e6c(AsdTexture* texture, const AsdTGAHeader* tga,
-                             const void* unused, u32 texture_kind)
-{
-    asm volatile(".incbin \"extracted/exefs/code.bin\", 0x157e6c, 436\n");
 }
 
 // ---------------------------------------------------------------------------
@@ -413,119 +334,111 @@ __attribute__((naked)) void AsdTexTGA_func_00257e6c(AsdTexture* texture, const A
 // ---------------------------------------------------------------------------
 
 // DECOMP_FUNC(0x002c4e28, 620)
-// Source reconstruction retained for reference; not verified equivalent.
-#if 0
 void* AsdTMTexTable_func_002c4e28(u32 group_id)
 {
-    void* table = AsdTMTexTable_func_002c5b04(group_id, 0);  // 0x002c4e38
+    void* table = AsdTMTexTable_func_002c5b04(group_id, 0);
 
-    if (table == nullptr)
+    if (table == nullptr) {
         return nullptr;
+    }
 
     AsdTMTexGroupEntry* entry = &g_AsdTMTexTable.groups[group_id];
 
-    // 0x002c4e58: the .tgd group is loaded only once.
-    if (entry->group != nullptr)
+    // The .tgd group is loaded only once.
+    if (entry->group != nullptr) {
         return table;
+    }
 
     char path[0x80];
     char filename[0x100];
 
-    AsdString_Strcpy(path, g_AsdTMTexTable.paths->root);       // 0x002c4e70
+    AsdString_Strcpy(path, g_AsdTMTexTable.paths->root);
     AsdTMTex_NormalizeSlashes(path);
-    AsdString_Strcpy(g_AsdTMTexTable.paths->root, path);       // 0x002c4eb0
+    AsdString_Strcpy(g_AsdTMTexTable.paths->root, path);
 
-    // 0x002c4ecc: "%s%s%s.%s" with root, group name, "GroupTable", "tgd".
     UiText_Format(filename, "%s%s%s.%s",
                   g_AsdTMTexTable.paths->root, entry->name,
                   "GroupTable", "tgd");
 
     u32 file_size = 0;
     const u8* file = reinterpret_cast<const u8*>(
-        AsdRes_Load(filename, &file_size, 0));               // 0x002c4ee0
+        AsdRes_Load(filename, &file_size, 0));
 
-    if (file == nullptr)
+    if (file == nullptr) {
         return table;
+    }
 
-    // 0x002c4f14: eight-byte group context.
     AsdTMTexGroup* group = reinterpret_cast<AsdTMTexGroup*>(
         AsdMem_Alloc(0x100, 0x100, 0, 8, 1));
     entry->group = group;
 
     group->header = reinterpret_cast<AsdTMTexGroupHeader*>(
-        AsdMem_Alloc(0x100, 0x100, 0, 0x40, 1));             // 0x002c4f3c
-    AsdMem_Copy(group->header, file, 0x40);                  // 0x002c4f58..0x002c4f6c
+        AsdMem_Alloc(0x100, 0x100, 0, 0x40, 1));
+    auto* const hdr_words = reinterpret_cast<u32*>(group->header);
+    const auto* const file_words = reinterpret_cast<const u32*>(file);
+    for (u32 i = 0; i < 16; ++i) {
+        hdr_words[i] = file_words[i];
+    }
 
     const u8* record_data = file + 0x40;
     AsdTMTexGroupRecord* previous = nullptr;
 
     for (s32 i = 0; i < group->header->record_count; ++i) {
         AsdTMTexGroupRecord* record = reinterpret_cast<AsdTMTexGroupRecord*>(
-            AsdMem_Alloc(0x100, 0x100, 0, 0x14, 1));         // 0x002c4fa4
+            AsdMem_Alloc(0x100, 0x100, 0, 0x14, 1));
 
-        record->field_00 = record_data[0];                   // 0x002c4fa8
-        record->item_count = record_data[4];                 // 0x002c4fb8
-        record->field_08 = record_data[8];                   // 0x002c4fc8
+        record->field_00 = record_data[0];
+        record->item_count = record_data[4];
+        record->field_08 = record_data[8];
 
         if (record->item_count > 0) {
-            const u32 item_bytes = record->item_count * 5u * 4u;
+            const u32 item_bytes = record->item_count * 20u;
             record->items = AsdMem_Alloc(0x100, 0x100, 0, item_bytes, 1);
-            // 0x002c5020: memcpy of item_count * 20 bytes from record + 0xC.
             AsdMem_CopyLarge(record->items, record_data + 0x0C, item_bytes);
         } else {
-            record->items = nullptr;                         // 0x002c4fcc
+            record->items = nullptr;
         }
 
-        // 0x002c503c / 0x002c5044: first record hangs off the context, the
-        // rest are chained through +0x10.
-        if (previous == nullptr)
+        if (previous == nullptr) {
             group->first = record;
-        else
+        } else {
             previous->next = record;
+        }
         previous = record;
 
-        // 0x002c5034: cursor advance = 0xC + item_count * 20.
-        record_data += 0x0C + record->item_count * 5u * 4u;
+        record_data += 0x0C + record->item_count * 20u;
     }
 
-    AsdMem_Free(const_cast<u8*>(file));                      // 0x002c505c
+    AsdMem_Free(const_cast<u8*>(file));
     return table;
-}
-#endif
-// Exact ARM-state bytes from code.bin for the verified 620-byte span.
-__attribute__((naked)) void* AsdTMTexTable_func_002c4e28(u32 group_id)
-{
-    asm volatile(".incbin \"extracted/exefs/code.bin\", 0x1c4e28, 620\n");
 }
 
 // DECOMP_FUNC(0x002c5b04, 652)
-// Source reconstruction retained for reference; not verified equivalent.
-#if 0
 void* AsdTMTexTable_func_002c5b04(u32 group_id, u32 flags)
 {
     AsdTMTexGroupEntry* entry = &g_AsdTMTexTable.groups[group_id];
 
-    // 0x002c5b20: return the cached table.
-    if (entry->table != nullptr)
+    // Return the cached table.
+    if (entry->table != nullptr) {
         return entry->table;
+    }
 
     char path[0x80];
     char filename[0x100];
 
-    AsdString_Strcpy(path, g_AsdTMTexTable.paths->root);       // 0x002c5b38
+    AsdString_Strcpy(path, g_AsdTMTexTable.paths->root);
     AsdTMTex_NormalizeSlashes(path);
-    AsdString_Strcpy(g_AsdTMTexTable.paths->root, path);       // 0x002c5b78
+    AsdString_Strcpy(g_AsdTMTexTable.paths->root, path);
 
-    // 0x002c5b94: "%s%s.%s" with root, group name, "ttd".
     UiText_Format(filename, "%s%s.%s",
                   g_AsdTMTexTable.paths->root, entry->name, "ttd");
 
     u32 file_size = 0;
     const u8* file = reinterpret_cast<const u8*>(
-        AsdRes_Load(filename, &file_size, flags & 3u));      // 0x002c5bb4
+        AsdRes_Load(filename, &file_size, flags & 3u));
 
     if (file == nullptr) {
-        entry->table = nullptr;                              // 0x002c5bc0
+        entry->table = nullptr;
         return nullptr;
     }
 
@@ -537,18 +450,17 @@ void* AsdTMTexTable_func_002c5b04(u32 group_id, u32 flags)
         const_cast<u8*>(file) + header->ref_offset);
     const u8* payload = file + header->data_offset;
 
-    // 0x002c5bfc: resolve node indices (stride 0x50) or clear 0xFFFFFFFF.
     for (s32 i = 0; i < header->entry_count; ++i) {
         u32 node = entries[i].node_offset;
 
-        if (node == 0xFFFFFFFFu)
+        if (node == 0xFFFFFFFFu) {
             entries[i].node_offset = 0;
-        else
+        } else {
             entries[i].node_offset =
                 AsdAddr(nodes + node * sizeof(AsdTMTexNode));
+        }
     }
 
-    // 0x002c5c40: resolve the two pointers of every 16-byte reference.
     for (s32 i = 0; i < header->ref_count; ++i) {
         AsdTMTexRef* ref = refs + i;
         ref->node_index =
@@ -557,31 +469,25 @@ void* AsdTMTexTable_func_002c5b04(u32 group_id, u32 flags)
         ref->data_offset = AsdAddr(payload + ref->data_offset);
     }
 
-    // 0x002c5c80: 0x2C-byte table header.
     AsdTMTexTable* table = reinterpret_cast<AsdTMTexTable*>(
         AsdMem_AllocFlags(0x2C, flags));
 
     if (header->ref_count <= 0) {
-        table->entries = nullptr;                            // 0x002c5c94
+        table->entries = nullptr;
     } else {
-        // 0x002c5cb4: count * 0x20 bytes of 0x20-byte descriptors.
         table->entries = reinterpret_cast<AsdTMTexTableEntry*>(
             AsdMem_AllocFlags(static_cast<u32>(header->ref_count) * 0x20u,
                               flags));
     }
 
-    // 0x002c5cd0: every descriptor points back at the table and at its
-    // 16-byte reference record (r5 advances by 0x10, the descriptor by 0x20).
     for (s32 i = 0; i < header->ref_count; ++i) {
         table->entries[i].owner = table;
         table->entries[i].record = refs + i;
     }
 
-    table->file = const_cast<u8*>(file);                     // +0x04
-    table->file_alt = const_cast<u8*>(file);                 // +0x08
+    table->file = const_cast<u8*>(file);
+    table->file_alt = const_cast<u8*>(file);
 
-    // 0x002c5cf8..0x002c5d54: normalise the sub-directory and append the
-    // file-relative name from `file + 4`.
     char* base = g_AsdTMTexTable.paths->base;
     AsdString_Strcpy(path, base);
     AsdTMTex_NormalizeSlashes(path);
@@ -589,14 +495,8 @@ void* AsdTMTexTable_func_002c5b04(u32 group_id, u32 flags)
     UiText_Format(table->path, "%s%s/", base,
                   reinterpret_cast<const char*>(file) + 4);
 
-    entry->table = table;                                    // 0x002c5d60
+    entry->table = table;
     return table;
-}
-#endif
-// Exact ARM-state bytes from code.bin for the verified 652-byte span.
-__attribute__((naked)) void* AsdTMTexTable_func_002c5b04(u32 group_id, u32 flags)
-{
-    asm volatile(".incbin \"extracted/exefs/code.bin\", 0x1c5b04, 652\n");
 }
 
 // ---------------------------------------------------------------------------
@@ -604,91 +504,81 @@ __attribute__((naked)) void* AsdTMTexTable_func_002c5b04(u32 group_id, u32 flags
 // ---------------------------------------------------------------------------
 
 // DECOMP_FUNC(0x00346db0, 992)
-// Source reconstruction retained for reference; not verified equivalent.
-#if 0
 void AsdPrimRenderData_func_00346db0(AsdPrimRenderData* data)
 {
-    // [sp+0x18], [sp+0x10] and [sp+0x08]: each descriptor starts with the
-    // four bytes { 0, 1, 0xFF, 0xFF } and carries a zero word at +0x04.
     AsdPrimUploadDesc attr_18 = { { 0, 1, 0xFF, 0xFF }, 0u };
     AsdPrimUploadDesc attr_10 = { { 0, 1, 0xFF, 0xFF }, 0u };
     AsdPrimUploadDesc attr_08 = { { 0, 1, 0xFF, 0xFF }, 0u };
 
     const u32 flags = data->flags;
+    void* const vtx_size = reinterpret_cast<void*>(
+        static_cast<std::uintptr_t>(AsdPrim_VertexSize(data)));
 
-    // 0x00346E04..0x00346E84: one vertex-stream allocation sized by
-    // 0x00347380 (flags bits 0,1,2,3,4,5 select 12/16/8/12/12/4 bytes).
     if ((flags & 0x100u) != 0) {
-        data->buffer = AsdWork_Alloc(0x10000, 0x100, 0,
-                                     AsdPrim_VertexSize(data), 0x10, 1);
+        data->buffer = AsdWork_Alloc(0x10000, 0x100, 0, vtx_size, 0x10, 1);
     } else {
-        data->buffer = AsdWork_Alloc(0x100, 0x100, 0,
-                                     AsdPrim_VertexSize(data), 0x10, 1);
+        data->buffer = AsdWork_Alloc(0x100, 0x100, 0, vtx_size, 0x10, 1);
     }
 
-    u32 cursor = 0;                         // r5
+    u32 cursor = 0;
 
-    // 0x00346E90: stream 0 -- positions, three floats per vertex.
     if ((flags & 1u) != 0) {
-        data->positions = data->buffer;                 // +0x30
+        data->positions = data->buffer;
         cursor = data->vertex_count * 3u * 4u;
 
         if ((flags & 0x100u) != 0) {
-            attr_18.rgba[2] = 0;                        // `strb r6,[sp,#0x1a]`
+            attr_18.rgba[2] = 0;
             u32 address = AsdGpu_Address(data->positions);
             AsdGpu_Submit(data->command_queue, &attr_18, address, 0x0B);
         }
     }
 
-    // 0x00346ED4: stream 1 -- four floats per vertex, all 1.0f.
     if ((flags & 2u) != 0) {
-        data->uv = reinterpret_cast<u8*>(data->buffer) + cursor;  // +0x34
+        data->uv = reinterpret_cast<u8*>(data->buffer) + cursor;
         u32 float_count = data->vertex_count * 4u;
         f32* values = reinterpret_cast<f32*>(data->uv);
 
-        for (u32 i = 0; i < float_count; ++i)
-            values[i] = 1.0f;                           // 0x00346F04
+        for (u32 i = 0; i < float_count; ++i) {
+            values[i] = 1.0f;
+        }
 
         cursor += data->vertex_count * 0x10u;
 
         if ((flags & 0x100u) != 0) {
-            attr_08.rgba[2] = 1;                        // `strb r8,[sp,#0xa]`
+            attr_08.rgba[2] = 1;
             u32 address = AsdGpu_Address(data->uv);
             AsdGpu_Submit(data->command_queue, &attr_08, address, 0x0F);
         }
     }
 
-    // 0x00346F6C: stream 2 -- one byte per component, 0xFF-filled (four
-    // components per vertex).
     if ((flags & 0x20u) != 0) {
-        data->colors = reinterpret_cast<u8*>(data->buffer) + cursor;  // +0x38
+        data->colors = reinterpret_cast<u8*>(data->buffer) + cursor;
         u32 byte_count = data->vertex_count * 4u;
         u8* values = reinterpret_cast<u8*>(data->colors);
 
-        for (u32 i = 0; i < byte_count; ++i)
-            values[i] = 0xFF;                           // 0x00346FAC
+        for (u32 i = 0; i < byte_count; ++i) {
+            values[i] = 0xFF;
+        }
 
         cursor += data->vertex_count * 4u;
 
         if ((flags & 0x100u) != 0) {
-            attr_08.rgba[2] = 1;                        // 0x00346FD8
+            attr_08.rgba[2] = 1;
             u32 address = AsdGpu_Address(data->colors);
             AsdGpu_Submit(data->command_queue, &attr_08, address, 0x0D);
         }
     }
 
-    // 0x00346FF8: stream 3 -- no cursor advance in the binary.
     if ((flags & 4u) != 0) {
-        data->indices = reinterpret_cast<u8*>(data->buffer) + cursor; // +0x3C
+        data->indices = reinterpret_cast<u8*>(data->buffer) + cursor;
 
         if ((flags & 0x100u) != 0) {
-            attr_10.rgba[2] = 2;                        // `strb r0,[sp,#0x12]`
+            attr_10.rgba[2] = 2;
             u32 address = AsdGpu_Address(data->indices);
             AsdGpu_Submit(data->command_queue, &attr_10, address, 7);
         }
     }
 
-    // 0x00347040..0x003470AC: 16-bit index buffer, two bytes per index.
     if ((flags & 0x100u) != 0) {
         data->index_buffer = AsdWork_Alloc2(0x10000, 0x100, 0,
                                             data->index_count * 2u, 0x10, 1);
@@ -697,24 +587,16 @@ void AsdPrimRenderData_func_00346db0(AsdPrimRenderData* data)
                                             data->index_count * 2u, 0x10, 1);
     }
 
-    // 0x003470B0..0x00347110: every index is cleared to zero (the binary
-    // handles an odd leading index and then writes pairs).
     u16* indices = reinterpret_cast<u16*>(data->index_buffer);
-    for (u32 i = 0; i < data->index_count; ++i)
+    for (u32 i = 0; i < data->index_count; ++i) {
         indices[i] = 0;
+    }
 
-    // 0x00347114: cache the GPU address and count of the index buffer.
     if ((flags & 0x100u) != 0) {
         data->index_address = AsdGpu_Address(data->index_buffer);
         data->index_address_count = data->index_count;
         data->index_uploaded = 0;
     }
-}
-#endif
-// Exact ARM-state bytes from code.bin for the verified 992-byte span.
-__attribute__((naked)) void AsdPrimRenderData_func_00346db0(AsdPrimRenderData* data)
-{
-    asm volatile(".incbin \"extracted/exefs/code.bin\", 0x246db0, 992\n");
 }
 
 // ---------------------------------------------------------------------------
@@ -725,117 +607,32 @@ __attribute__((naked)) void AsdPrimRenderData_func_00346db0(AsdPrimRenderData* d
 
 namespace smt4::ui {
 // DECOMP_FUNC(0x00144fbc, 416)
-
-
-//
-__attribute__((naked)) void* AsdTMSpr_func_00144fbc(AsdTMSpr*, u32,
-                                                     u32, u32)
+void* AsdTMSpr_func_00144fbc(AsdTMSpr* sprite, u32 flags, u32 arg2, u32)
 {
-    asm volatile(
-        ".word 0xE92D47F0\n"
-        ".word 0xE24DD008\n"
-        ".word 0xE1A08000\n"
-        ".word 0xE1A07001\n"
-        ".word 0xE5D00000\n"
-        ".word 0xE1A06002\n"
-        ".word 0xE1A05008\n"
-        ".word 0xE20040F0\n"
-        ".word 0xE3540010\n"
-        ".word 0x13540020\n"
-        ".word 0x13540030\n"
-        ".word 0x1A000053\n"
-        ".word 0xE1A00005\n"
-        ".word 0xEB002901\n" // UiTMSpr_func_0014f3fc
-        ".word 0xE1B09000\n"
-        ".word 0x0A00004F\n"
-        ".word 0xE3170001\n"
-        ".word 0xE3A05000\n"
-        ".word 0xE3A0A001\n"
-        ".word 0xE2070002\n"
-        ".word 0x0A000019\n"
-        ".word 0xE3500000\n"
-        ".word 0x0A00000B\n"
-        ".word 0xE59F0128\n"
-        ".word 0xE3A010C8\n"
-        ".word 0xE1A00000\n"
-        ".word 0xE1A03009\n"
-        ".word 0xE3A02000\n"
-        ".word 0xE3A01C01\n"
-        ".word 0xE3A00801\n"
-        ".word 0xE58D5004\n"
-        ".word 0xE58D6000\n"
-        ".word 0xEB05E9D5\n" // AsdWork_Alloc2 (0x002BF798)
-        ".word 0xE1A05000\n"
-        ".word 0xEA000024\n"
-        ".word 0xE59F00F8\n"
-        ".word 0xE3A010CC\n"
-        ".word 0xE1A00000\n"
-        ".word 0xE1A03009\n"
-        ".word 0xE3A02000\n"
-        ".word 0xE3A01C01\n"
-        ".word 0xE3A00801\n"
-        ".word 0xE88D0440\n"
-        ".word 0xEB05E9CA\n" // AsdWork_Alloc2 (0x002BF798)
-        ".word 0xE1A05000\n"
-        ".word 0xE320F000\n"
-        ".word 0xEA000018\n"
-        ".word 0xE3500000\n"
-        ".word 0x0A00000C\n"
-        ".word 0xE59F00C0\n"
-        ".word 0xE3A010D3\n"
-        ".word 0xE1A00000\n"
-        ".word 0xE3A01C01\n"
-        ".word 0xE1A03009\n"
-        ".word 0xE3A02000\n"
-        ".word 0xE1A00001\n"
-        ".word 0xE58D5004\n"
-        ".word 0xE58D6000\n"
-        ".word 0xEB05E9BB\n" // AsdWork_Alloc2 (0x002BF798)
-        ".word 0xE1A05000\n"
-        ".word 0xE320F000\n"
-        ".word 0xEA000009\n"
-        ".word 0xE59F008C\n"
-        ".word 0xE3A010D7\n"
-        ".word 0xE1A00000\n"
-        ".word 0xE3A01C01\n"
-        ".word 0xE1A03009\n"
-        ".word 0xE3A02000\n"
-        ".word 0xE1A00001\n"
-        ".word 0xE88D0440\n"
-        ".word 0xEB05E9AF\n" // AsdWork_Alloc2 (0x002BF798)
-        ".word 0xE1A05000\n"
-        ".word 0xE3540010\n"
-        ".word 0x0A000004\n"
-        ".word 0xE3540020\n"
-        ".word 0x0A000008\n"
-        ".word 0xE3540030\n"
-        ".word 0x0A00000C\n"
-        ".word 0xEA00000E\n"
-        ".word 0xE1A01000\n"
-        ".word 0xE1A00008\n"
-        ".word 0xEB0027DA\n" // UiTMSpr_func_0014f070
-        ".word 0xE320F000\n"
-        ".word 0xE320F000\n"
-        ".word 0xEA000008\n"
-        ".word 0xE1A01000\n"
-        ".word 0xE1A00008\n"
-        ".word 0xEB00287B\n" // UiTMSpr_func_0014f30c
-        ".word 0xE320F000\n"
-        ".word 0xE320F000\n"
-        ".word 0xEA000002\n"
-        ".word 0xE1A01000\n"
-        ".word 0xE1A00008\n"
-        ".word 0xEB002825\n" // UiTMSpr_func_0014f1cc
-        ".word 0xE1A00008\n"
-        ".word 0xEB05FC88\n" // AsdMem_Free (0x002C4360)
-        ".word 0xE28DD008\n"
-        ".word 0xE1A00005\n"
-        ".word 0xE8BD87F0\n"
-        ".word 0x00409310\n" // Literal retained from the original 416-byte range.
-        ".word 0xE1D002B0\n"
-        ".word 0xE1D112B0\n"
-        ".word 0xE0400001\n"
-        ".word 0xE12FFF1E\n");
+    const u32 kind = (*reinterpret_cast<const u8*>(sprite)) & 0xF0u;
+    if (kind != 0x10u && kind != 0x20u && kind != 0x30u) {
+        return sprite;
+    }
+
+    const u32 size = UiTMSpr_func_0014f3fc(sprite);
+    if (size == 0) {
+        return sprite;
+    }
+
+    const u32 arena = ((flags & 1u) != 0) ? 0x10000u : 0x100u;
+    const u32 alloc_flag = ((flags & 2u) != 0) ? 0u : 1u;
+    void* const buffer = AsdWork_Alloc2(arena, 0x100u, 0u, size, arg2, alloc_flag);
+
+    if (kind == 0x10u) {
+        UiTMSpr_func_0014f070(sprite, buffer);
+    } else if (kind == 0x20u) {
+        UiTMSpr_func_0014f30c(sprite, buffer);
+    } else if (kind == 0x30u) {
+        UiTMSpr_func_0014f1cc(sprite, buffer);
+    }
+
+    AsdMem_Free(sprite);
+    return buffer;
 }
 
 } // namespace smt4::ui

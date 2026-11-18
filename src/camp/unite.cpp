@@ -14,49 +14,11 @@ SortMenuManager g_SortMenuManager = {0, {0, 0, 0}, nullptr};     // 0x0043DD20
 
 // DECOMP_FUNC(0x0028d974, 736)
 
-//
-void SortMenu_Init_Decompiled(s32 mode) {
-    (void)mode;
-    SortMenuManager* mgr = &g_SortMenuManager;
-    if (mgr->ref_count <= 0) {
-        if (mgr->work == nullptr) {
-            mgr->work = reinterpret_cast<SortMenuWork*>(ui::AsdMem_Alloc(sizeof(SortMenuWork), 0x100));
-        }
-        ui::AsdMem_Zero(mgr->work, sizeof(SortMenuWork));
-    }
-    mgr->ref_count++;
-}
-
 // ============================================================================
 // Unite: Mido Demon Fusion (Cathedral of Shadows) Engine
 // ============================================================================
 
 UniteWork* g_UniteWork = nullptr;
-
-//
-void Unite_Init_Decompiled(void* r0, void* r1, s32 r2, void* r3) {
-    (void)r0; (void)r1; (void)r2; (void)r3;
-    UniteWork* work = g_UniteWork;
-    if (work == nullptr) {
-        work = reinterpret_cast<UniteWork*>(ui::AsdMem_Alloc(sizeof(UniteWork), 0x100));
-        g_UniteWork = work;
-    }
-
-    ui::AsdMem_Zero(work, sizeof(UniteWork));
-    work->calc_task = ui::AsdTask_CreateCalc("Unite Calc", 1, 0, 0, Unite_DrawAndCalc, 0, 0);
-    work->state = 1;
-}
-
-//
-void Unite_Setup_Decompiled(void* arg) {
-    (void)arg;
-    UniteWork* work = g_UniteWork;
-    if (work == nullptr) {
-        return;
-    }
-
-    work->state = 2; // Configure demon ingredients, search fusion results, calculate heritage skills
-}
 
 // DECOMP_FUNC(0x002e315c, 344)
 void UniteEffect_Init(void* arg) {
@@ -243,283 +205,506 @@ void ButtonHelp_Init() {
     mgr[0] = static_cast<u8>(mgr[0] + 1);
 }
 
+extern "C" {
+    void func_002af854(void* obj, s32 a1, s32 a2);                              // 0x002af854
+    void func_002bf030(void* obj, s32 a1);                                      // 0x002bf030
+    void func_002bdac0(void* obj, s32 a1, s32 a2);                              // 0x002bdac0
+    void func_002c4450(void* obj, s32 a1, s32 a2);                              // 0x002c4450
+}
+
 // DECOMP_FUNC(0x0029e63c, 644)
+void SortMenu_Init(s32 mode, u32 flag) {
+    static constexpr u32 kStride = 0x8C;
+    static constexpr u32 kTargetW = 0x00402DAC;
 
+    auto* const mgr = reinterpret_cast<u8*>(0x0043DD20);
+    if (static_cast<s8>(mgr[0]) <= 0) {
+        auto* work = *reinterpret_cast<u8**>(mgr + 0x04);
+        if (work == nullptr) {
+            work = static_cast<u8*>(AsdMem_Alloc(0x100, 0x100, 0, sizeof(SortMenuWork), 1));
+            *reinterpret_cast<u8**>(mgr + 0x04) = work;
+        }
+        AsdMem_Zero(work, sizeof(SortMenuWork));
 
-//
-__attribute__((naked)) void SortMenu_Init(s32)
-{
-    asm volatile(
-        ".word 0xE92D4FF3, 0xE1A08000, 0xE59F9208, 0xED2D8B02\n"
-        ".word 0xE24DD01C, 0xE1D900D0, 0xE3500000, 0xCA000076\n"
-        ".word 0xE5990004, 0xE59F41F0, 0xE3A0B001, 0xE3500000\n"
-        ".word 0x1A000009, 0xE59F11E4, 0xE28F0F79, 0xE1A00000\n"
-        ".word 0xE3A01C01, 0xE1A03004, 0xE3A02000, 0xE1A00001\n"
-        ".word 0xE58DB000, 0xEB00993B, 0xE5890004, 0xE1A07000\n"
-        ".word 0xE1A01004, 0xEB009922, 0xE59F01EC, 0xE3A0A000\n"
-        ".word 0xE1A0300A, 0xE88D0401, 0xE1A0200A, 0xE3A01002\n"
-        ".word 0xE28F0F76, 0xE58DA008, 0xEB009CAB, 0xE59F11D8\n"
-        ".word 0xE5870000, 0xE3A03000, 0xE88D0402, 0xE58D000C\n"
-        ".word 0xE1A02003, 0xE3A010E7, 0xE28F0D07, 0xE58DA008\n"
-        ".word 0xEB009943, 0xE5870004, 0xE5995004, 0xE2850008\n"
-        ".word 0xEB009310, 0xE59F11B0, 0xE3A000A8, 0xE58D0018\n"
-        ".word 0xE58D1014, 0xE3A02024, 0xE58DA00C, 0xE58DA010\n"
-        ".word 0xE88D0404, 0xE2413024, 0xE3A02018, 0xE2431018\n"
-        ".word 0xE2850008, 0xE58DA008, 0xEB0092EF, 0xED9F8A5F\n"
-        ".word 0xE3A04000, 0xE2853008, 0xE0640184, 0xEEB00A48\n"
-        ".word 0xE0800100, 0xE3A02000, 0xE0856100, 0xE2860028\n"
-        ".word 0xE3A0101E, 0xE58DB000, 0xEB007CF0, 0xE3A02000\n"
-        ".word 0xE2860028, 0xE1A01002, 0xEB004436, 0xE2844001\n"
-        ".word 0xE354000D, 0xBAFFFFEE, 0xEEB00A48, 0xE2853008\n"
-        ".word 0xE3A02000, 0xE3A0101E, 0xE2850E5A, 0xE58DB000\n"
-        ".word 0xEB007CE2, 0xE3A01000, 0xE2850E5A, 0xEB008220\n"
-        ".word 0xEEB00A48, 0xE2850B01, 0xE2800F8B, 0xE2853008\n"
-        ".word 0xE3A02000, 0xE3A0101E, 0xE1A04000, 0xE58DB000\n"
-        ".word 0xEB007CD6, 0xE3A02000, 0xE1A01002, 0xE1A00004\n"
-        ".word 0xEB007CB7, 0xEEB00A48, 0xE2850B01, 0xE2800FAE\n"
-        ".word 0xE2853008, 0xE3A02000, 0xE3A0101E, 0xE1A04000\n"
-        ".word 0xE58DB000, 0xEB007CC9, 0xE3A01001, 0xE1A00004\n"
-        ".word 0xEB008207, 0xE2850B01, 0xE3E02000, 0xE3A0101A\n"
-        ".word 0xE2800FDB, 0xEB00970A, 0xE585A744, 0xE5C5B74D\n"
-        ".word 0xE59D0028, 0xE5C7074E, 0xE5878750, 0xE5D90000\n"
-        ".word 0xE2800001, 0xE5C90000, 0xE28DD01C, 0xECBD8B02\n"
-        ".word 0xE28DD008, 0xE8BD8FF0, 0x0043DD20, 0x00000878\n"
-        ".word 0x00000266, 0x535C3A63, 0x5C34544D, 0x36445258\n"
-        ".word 0x735C3638, 0x34736464, 0x6F72705C, 0x6D617267\n"
-        ".word 0x6D61635C, 0x6F535C70, 0x654D7472, 0x535C756E\n"
-        ".word 0x4D74726F, 0x2E756E65, 0x00707063, 0x001A1E7C\n"
-        ".word 0x54524F53, 0x4C414320, 0x00000043, 0x001A25CC\n"
-        ".word 0x54524F53, 0x52444420, 0x00005741, 0x00402DAC\n"
-        ".word 0x3F800000\n");
+        void* const calc_task = AsdTask_CreateCalc(
+            "SORT CALC",
+            2,
+            0,
+            0,
+            reinterpret_cast<void (*)(void*)>(0x001A1E7C),
+            0,
+            0);
+        *reinterpret_cast<void**>(work + 0x00) = calc_task;
+        *reinterpret_cast<void**>(work + 0x04) = AsdTask_CreateDraw(
+            "SORT DDRAW",
+            0xE7,
+            0,
+            0,
+            reinterpret_cast<void (*)(void*)>(0x001A25CC),
+            0,
+            0,
+            calc_task);
+
+        auto* const w2 = *reinterpret_cast<u8**>(mgr + 0x04);
+        func_002c3344(w2 + 0x08);
+        func_002c32f8(
+            w2 + 0x08,
+            kTargetW - 0x3C,
+            0x18,
+            kTargetW - 0x24,
+            0x24,
+            0,
+            0,
+            0,
+            0,
+            kTargetW,
+            0xA8);
+
+        for (s32 i = 0; i < 0x0D; ++i) {
+            u8* const entry = w2 + 0x28 + (i * kStride);
+            func_002bdb2c(entry, 0x1E, 0, w2 + 0x08, 1, 1.0f);
+            func_002af854(entry, 0, 0);
+        }
+
+        func_002bdb2c(w2 + 0x5A0, 0x1E, 0, w2 + 0x08, 1, 1.0f);
+        func_002bf030(w2 + 0x5A0, 0);
+
+        u8* const entry_a = w2 + 0x62C;
+        func_002bdb2c(entry_a, 0x1E, 0, w2 + 0x08, 1, 1.0f);
+        func_002bdac0(entry_a, 0, 0);
+
+        u8* const entry_b = w2 + 0x6B8;
+        func_002bdb2c(entry_b, 0x1E, 0, w2 + 0x08, 1, 1.0f);
+        func_002bf030(entry_b, 1);
+
+        func_002c4450(w2 + 0x76C, 0x1A, -1);
+        *reinterpret_cast<u32*>(w2 + 0x744) = 0;
+        w2[0x74D] = 1;
+        work[0x74E] = static_cast<u8>(flag);
+        *reinterpret_cast<s32*>(work + 0x750) = mode;
+    }
+
+    mgr[0] = static_cast<u8>(mgr[0] + 1);
 }
+
+extern "C" {
+    void* engine_func_002c54f0(u32 a0, u32 a1, u32 a2, u32 size, u32 flag);   // 0x002c54f0
+    u8*   func_002b9364(u32 demon_id);                                          // 0x002b9364
+    u32   func_0026a904(u32 skill_id);                                          // 0x0026a904
+    const u8* func_002840b8(u32 skill_id);                                      // 0x002840b8
+    s32   func_002992d8(u32 val, s32 mapped);                                   // 0x002992d8
+    void  func_002b7f0a(void* base, s32 count, s32 size, u32 comparator);       // 0x002b7f0a
+    s32   func_00205404(u16* out, u8* demon, const u32* entry, const u16* idp); // 0x00205404
+    const u8* func_0029ec14(u32 skill_id);                                      // 0x0029ec14
+    s32   func_002ae3f0(u32 skill_id);                                          // 0x002ae3f0
+    s32   func_0026a86c(const u8* info);                                        // 0x0026a86c
+    void  func_001df7d0(void* ctx);                                             // 0x001df7d0
+    void  func_001cfed0(void* ctx);                                             // 0x001cfed0
+    s32   func_001d00f8(void* ctx);                                             // 0x001d00f8
+    void  engine_func_002c5ff4(void* dst, const void* src, u32 size);           // 0x002c5ff4
+    void  AsdMem_Free(void* ptr);                                               // 0x002c4360
+}
+
+namespace {
+struct UniteSkillFilterCtx {
+    u32 vtable;        // +0x00 (sp+0x58)
+    u16* arr0;         // +0x04 (sp+0x5C)
+    s32 count0;        // +0x08 (sp+0x60)
+    u16* arr1;         // +0x0C (sp+0x64)
+    s32 count1;        // +0x10 (sp+0x68)
+    u16* arr2;         // +0x14 (sp+0x6C)
+    s32 count2;        // +0x18 (sp+0x70)
+    u16* arr3;         // +0x1C (sp+0x74)
+    s32 count3;        // +0x20 (sp+0x78)
+    u16* arr4;         // +0x24 (sp+0x7C)
+    s32 count4;        // +0x28 (sp+0x80)
+    u8 best_affinity;  // +0x2C (sp+0x84)
+    u8 pad_2d[3];      // +0x2D..+0x2F
+    u32 counts[22];    // +0x30..+0x87 (sp+0x88..sp+0xDF)
+};
+} // namespace
+
 // DECOMP_FUNC(0x0029b3cc, 1676)
+void Unite_Init(void* r0, void* r1, s32 r2, void* r3) {
+    static constexpr u32 kVtable = 0x00420430;
+    static constexpr u32 kComparator1 = 0x002C6C54;
+    static constexpr u32 kComparator2 = 0x002DCA40;
 
+    auto* const skills = static_cast<u16*>(r0);
+    const s32 skill_count = static_cast<s32>(reinterpret_cast<intptr_t>(r1));
+    const auto* const demon_entry = reinterpret_cast<const u32*>(
+        static_cast<uintptr_t>(static_cast<u32>(r2)));
+    const auto* const demon_id_ptr = static_cast<const u16*>(r3);
 
-//
-__attribute__((naked)) void Unite_Init(void*, void*, s32, void*)
-{
-    asm volatile(
-        ".word 0xE92D4FF0, 0xE24DD0E4, 0xE3A05000, 0xE1A07000\n"
-        ".word 0xE1A08001, 0xE59FB410, 0xE58D505C, 0xE58D5060\n"
-        ".word 0xE58DB058, 0xE58D5064, 0xE58D5068, 0xE58D506C\n"
-        ".word 0xE58D5070, 0xE1A09002, 0xE1A0A003, 0xE3A01058\n"
-        ".word 0xE28D0088, 0xE58D5074, 0xE58D5078, 0xE58D507C\n"
-        ".word 0xE58D5080, 0xE5CD5084, 0xEB00A5C1, 0xE3590000\n"
-        ".word 0xE3A04000, 0x0A000005, 0xE5990004, 0xE5991000\n"
-        ".word 0xE1A00780, 0xE18008A1, 0xE1A048A0, 0xEA000001\n"
-        ".word 0xE35A0000, 0x11DA40B0, 0xE59F13A0, 0xE28F0E3A\n"
-        ".word 0xE1A00000, 0xE1A00088, 0xE3A06001, 0xE1A03000\n"
-        ".word 0xE3A01C01, 0xE58D0030, 0xE3A02000, 0xE1A00001\n"
-        ".word 0xE58D6000, 0xEB00A81A, 0xE58D005C, 0xE59F13A4\n"
-        ".word 0xE28F0FDB, 0xE1A00000, 0xE3A01C01, 0xE59D3030\n"
-        ".word 0xE3A02000, 0xE1A00001, 0xE58D6000, 0xEB00A810\n"
-        ".word 0xE58D0064, 0xE59F1380, 0xE28F0FD1, 0xE1A00000\n"
-        ".word 0xE3A01C01, 0xE59D3030, 0xE3A02000, 0xE1A00001\n"
-        ".word 0xE58D6000, 0xEB00A806, 0xE58D007C, 0xE1A00004\n"
-        ".word 0xEB0077A0, 0xE1A04000, 0xE3A00000, 0xE58D000C\n"
-        ".word 0xE58D0010, 0xE1A05000, 0xE28D600C, 0xE58D0014\n"
-        ".word 0xE58D0018, 0xE58D001C, 0xE58D0020, 0xE58D0024\n"
-        ".word 0xE0840085, 0xE1D003BC, 0xE3500000, 0x0A000004\n"
-        ".word 0xEBFF3CF8, 0xE0860100, 0xE5901000, 0xE2811001\n"
-        ".word 0xE5801000, 0xE2855001, 0xE3550008, 0xBAFFFFF3\n"
-        ".word 0xE59D100C, 0xE3A00001, 0xE7962100, 0xE1520001\n"
-        ".word 0xC5CD0084, 0xC1A01002, 0xE2800001, 0xE3500007\n"
-        ".word 0xBAFFFFF8, 0xE5DD0084, 0xE3A06000, 0xE3500006\n"
-        ".word 0x03A00000, 0x05CD0084, 0xE3580000, 0xDA000047\n"
-        ".word 0xE0875086, 0xE3A00000, 0xE1D510B0, 0xE0842100\n"
-        ".word 0xE1D224BE, 0xE1520001, 0x1A000007, 0xE59D0080\n"
-        ".word 0xE59D207C, 0xE0820080, 0xE1C010B0, 0xE59D0080\n"
-        ".word 0xE2800001, 0xE58D0080, 0xEA000035, 0xE2800001\n"
-        ".word 0xE3500008, 0xBAFFFFF0, 0xE1A00001, 0xEBFFA2BA\n"
-        ".word 0xE3500000, 0xE320F000, 0x0A000025, 0xE5900038\n"
-        ".word 0xE3A01005, 0xE1A02A80, 0xE1510DA2, 0x1A000020\n"
-        ".word 0xE1A01600, 0xE1A01E21, 0xE3510007, 0x379FF101\n"
-        ".word 0xEA00001B, 0x0029B670, 0x0029B61C, 0x0029B61C\n"
-        ".word 0x0029B61C, 0x0029B61C, 0x0029B8A0, 0x0029B8A0\n"
-        ".word 0xE3510001, 0xE3A02000, 0x03A02005, 0x0A000007\n"
-        ".word 0xE3510002, 0x03A02001, 0x0A000004, 0xE3510003\n"
-        ".word 0x03A02003, 0x0A000001, 0xE3510004, 0x03A02004\n"
-        ".word 0xE2000B3E, 0xE1A01002, 0xE0840520, 0xE1D006BC\n"
-        ".word 0xE1A00520, 0xEBFFF71C, 0xE3500000, 0xE320F000\n"
-        ".word 0x0A000083, 0xE28D305C, 0xE1D510B0, 0xE8930005\n"
-        ".word 0xE0800082, 0xE1C010B0, 0xE59D0060, 0xE2800001\n"
-        ".word 0xE58D0060, 0xE2866001, 0xE1560008, 0xBAFFFFB7\n"
-        ".word 0xE59F3198, 0xE3A02002, 0xE1CD06D4, 0xFB007216\n"
-        ".word 0xE59F318C, 0xE3A02002, 0xE1CD07DC, 0xFB007212\n"
-        ".word 0xE1A0300A, 0xE1A02009, 0xE1A01004, 0xE3A00000\n"
-        ".word 0xEBFDA74C, 0xE58D0070, 0xE3A01D71, 0xE28F0E12\n"
-        ".word 0xE1A00000, 0xE59D0070, 0xE3A06001, 0xE3A01C01\n"
-        ".word 0xE3A02000, 0xE1A03080, 0xE1A00001, 0xE58D6000\n"
-        ".word 0xEB00A77B, 0xE1A0300A, 0xE1A02009, 0xE1A01004\n"
-        ".word 0xE58D006C, 0xEBFDA73B, 0xE59D0070, 0xE3A05000\n"
-        ".word 0xE3500000, 0xC28D8058, 0xDA00000C, 0xE59D006C\n"
-        ".word 0xE0800085, 0xE1D000B0, 0xEB000D36, 0xE5D00002\n"
-        ".word 0xE2855001, 0xE0880100, 0xE5901030, 0xE2811001\n"
-        ".word 0xE5801030, 0xE59D0070, 0xE1500005, 0xCAFFFFF2\n"
-        ".word 0xE59F10E0, 0xE28F0098, 0xE1A00000, 0xE3A01C01\n"
-        ".word 0xE59D3030, 0xE3A02000, 0xE1A00001, 0xE58D6000\n"
-        ".word 0xEB00A75B, 0xE28D1074, 0xE3A08000, 0xE8810101\n"
-        ".word 0xE1A05004, 0xE59D0068, 0xE1A06008, 0xE3500000\n"
-        ".word 0xDA00004E, 0xE59D0064, 0xE0800086, 0xE1D000B0\n"
-        ".word 0xE3500000, 0x0A000045, 0xEBFFA23F, 0xE1A09000\n"
-        ".word 0xE3A04000, 0xE0850084, 0xE1D003BC, 0xE3500000\n"
-        ".word 0x0A00003B, 0xEB004B06, 0xE1B01000, 0xE320F000\n"
-        ".word 0x0A000037, 0xE1A00009, 0xEBFF3C20, 0xE3500000\n"
-        ".word 0xE320F000, 0x0A000032, 0xEA000013, 0x00420430\n"
-        ".word 0x00001BC8, 0x535C3A63, 0x5C34544D, 0x36445258\n"
-        ".word 0x735C3638, 0x34736464, 0x6F72705C, 0x6D617267\n"
-        ".word 0x6D61635C, 0x6E555C70, 0x5C657469, 0x74696E55\n"
-        ".word 0x70632E65, 0x00000070, 0x00001BC9, 0x00001BCA\n"
-        ".word 0x002C6C54, 0x002DCA40, 0x00001C62, 0xE59D2064\n"
-        ".word 0xE59D0078, 0xE59D1074, 0xE0822086, 0xE1D220B0\n"
-        ".word 0xE0810080, 0xE1C020B0, 0xE59D0078, 0xE2800001\n"
-        ".word 0xE58D0078, 0xE59D0064, 0xE0800086, 0xE1C080B0\n"
-        ".word 0xEA000016, 0xE1D520B0, 0xE1CD07DC, 0xE0800081\n"
-        ".word 0xE1C020B0, 0xE59D0080, 0xE2800001, 0xE58D0080\n"
-        ".word 0xEAFFFF7B, 0xE1D520B0, 0xE1CD06D4, 0xE0800081\n"
-        ".word 0xE1C020B0, 0xE59D0068, 0xE2800001, 0xE58D0068\n"
-        ".word 0xEAFFFF73, 0xE2844001, 0xE3540008, 0xBAFFFFBC\n"
-        ".word 0xE59D0068, 0xE2866001, 0xE1560000, 0xBAFFFFB0\n"
-        ".word 0xE28D0058, 0xEBFD0FBA, 0xE28D0058, 0xE320F000\n"
-        ".word 0xEBFCD177, 0xE28D0058, 0xE320F000, 0xEBFCD1FE\n"
-        ".word 0xE28D0058, 0xE320F000, 0xEBFD0FB1, 0xE28D0058\n"
-        ".word 0xE320F000, 0xEBFCD16E, 0xE28D0058, 0xEBFCD1F6\n"
-        ".word 0xE3500000, 0xE320F000, 0x1AFFFFFA, 0xE59D0068\n"
-        ".word 0xE3500000, 0xE3A00000, 0xDA000011, 0xE59D1064\n"
-        ".word 0xE0811080, 0xE1D110B0, 0xE3510000, 0x0A000008\n"
-        ".word 0xE1CD27D4, 0xE0822083, 0xE1C210B0, 0xE59D1078\n"
-        ".word 0xE2811001, 0xE58D1078, 0xE59D1064, 0xE0811080\n"
-        ".word 0xE1C180B0, 0xE59D1068, 0xE2800001, 0xE1510000\n"
-        ".word 0xCAFFFFED, 0xE59D0080, 0xE3500000, 0xE3A00000\n"
-        ".word 0xDA000011, 0xE59D107C, 0xE0811080, 0xE1D110B0\n"
-        ".word 0xE3510000, 0x0A000008, 0xE1CD27D4, 0xE0822083\n"
-        ".word 0xE1C210B0, 0xE59D1078, 0xE2811001, 0xE58D1078\n"
-        ".word 0xE59D107C, 0xE0811080, 0xE1C180B0, 0xE59D1080\n"
-        ".word 0xE2800001, 0xE1510000, 0xCAFFFFED, 0xE59D1074\n"
-        ".word 0xE59D2030, 0xE1A00007, 0xEB00A982, 0xE59D005C\n"
-        ".word 0xE58DB058, 0xE3500000, 0x0A000001, 0xEB00A258\n"
-        ".word 0xE58D805C, 0xE59D0064, 0xE3500000, 0x0A000001\n"
-        ".word 0xEB00A253, 0xE58D8064, 0xE59D006C, 0xE3500000\n"
-        ".word 0x0A000001, 0xEB00A24E, 0xE58D806C, 0xE59D0074\n"
-        ".word 0xE3500000, 0x0A000001, 0xEB00A249, 0xE58D8074\n"
-        ".word 0xE59D007C, 0xE3500000, 0x0A000001, 0xEB00A244\n"
-        ".word 0xE58D807C, 0xE28DD0E4, 0xE8BD8FF0\n");
+    UniteSkillFilterCtx ctx{};
+    ctx.vtable = kVtable;
+    AsdMem_Zero(ctx.counts, sizeof(ctx.counts));
+
+    u32 demon_id = 0;
+    if (demon_entry != nullptr) {
+        demon_id = ((demon_entry[1] << 15) | (demon_entry[0] >> 17)) >> 17;
+    } else if (demon_id_ptr != nullptr) {
+        demon_id = *demon_id_ptr;
+    }
+
+    const u32 buf_bytes = static_cast<u32>(skill_count) << 1;
+    ctx.arr0 = static_cast<u16*>(engine_func_002c54f0(0x100, 0x100, 0, buf_bytes, 1));
+    ctx.arr1 = static_cast<u16*>(engine_func_002c54f0(0x100, 0x100, 0, buf_bytes, 1));
+    ctx.arr4 = static_cast<u16*>(engine_func_002c54f0(0x100, 0x100, 0, buf_bytes, 1));
+
+    u8* const demon = func_002b9364(demon_id);
+    u32 cat_counts[7] = {};
+    for (s32 i = 0; i < 8; ++i) {
+        const u16 sk = *reinterpret_cast<const u16*>(demon + 0x3C + i * 2);
+        if (sk != 0) {
+            ++cat_counts[func_0026a904(sk)];
+        }
+    }
+
+    u32 best_val = cat_counts[0];
+    for (s32 i = 1; i < 7; ++i) {
+        if (cat_counts[i] > best_val) {
+            ctx.best_affinity = static_cast<u8>(i);
+            best_val = cat_counts[i];
+        }
+    }
+    if (ctx.best_affinity == 6) {
+        ctx.best_affinity = 0;
+    }
+
+    for (s32 i = 0; i < skill_count; ++i) {
+        const u16 s = skills[i];
+        bool innate_match = false;
+        for (s32 j = 0; j < 8; ++j) {
+            if (*reinterpret_cast<const u16*>(demon + 0x4E + j * 4) == s) {
+                ctx.arr4[ctx.count4++] = s;
+                innate_match = true;
+                break;
+            }
+        }
+        if (innate_match) {
+            continue;
+        }
+
+        const u8* const info = func_002840b8(s);
+        if (info != nullptr) {
+            const u32 flags = *reinterpret_cast<const u32*>(info + 0x38);
+            if (((flags << 21) >> 27) == 5) {
+                const u32 sub = (flags << 12) >> 28;
+                if (sub == 5 || sub == 6) {
+                    ctx.arr1[ctx.count1++] = s;
+                    continue;
+                }
+                if (sub >= 1 && sub <= 4) {
+                    s32 mapped = 0;
+                    if (sub == 1) {
+                        mapped = 5;
+                    } else if (sub == 2) {
+                        mapped = 1;
+                    } else if (sub == 3) {
+                        mapped = 3;
+                    } else {
+                        mapped = 4;
+                    }
+                    const u16 val = *reinterpret_cast<const u16*>(
+                        demon + 0x6C + ((flags & 0xF800) >> 10));
+                    if (func_002992d8(val >> 10, mapped) == 0) {
+                        ctx.arr4[ctx.count4++] = s;
+                        continue;
+                    }
+                }
+            }
+        }
+
+        ctx.arr0[ctx.count0++] = s;
+    }
+
+    func_002b7f0a(ctx.arr1, ctx.count1, 2, kComparator1);
+    func_002b7f0a(ctx.arr4, ctx.count4, 2, kComparator2);
+
+    ctx.count2 = func_00205404(nullptr, demon, demon_entry, demon_id_ptr);
+    ctx.arr2 = static_cast<u16*>(
+        engine_func_002c54f0(0x100, 0x100, 0, static_cast<u32>(ctx.count2) << 1, 1));
+    func_00205404(ctx.arr2, demon, demon_entry, demon_id_ptr);
+
+    for (s32 i = 0; i < ctx.count2; ++i) {
+        const u8 idx = func_0029ec14(ctx.arr2[i])[2];
+        ++ctx.counts[idx];
+    }
+
+    ctx.arr3 = static_cast<u16*>(engine_func_002c54f0(0x100, 0x100, 0, buf_bytes, 1));
+    ctx.count3 = 0;
+
+    bool promoted = false;
+    for (s32 i = 0; i < ctx.count1 && !promoted; ++i) {
+        const u16 sk = ctx.arr1[i];
+        if (sk == 0) {
+            continue;
+        }
+        const u8* const info = func_002840b8(sk);
+        for (s32 j = 0; j < 8; ++j) {
+            const u16 dsk = *reinterpret_cast<const u16*>(demon + 0x3C + j * 2);
+            if (dsk != 0 && func_002ae3f0(dsk) != 0 && func_0026a86c(info) != 0) {
+                ctx.arr3[ctx.count3++] = sk;
+                ctx.arr1[i] = 0;
+                promoted = true;
+                break;
+            }
+        }
+    }
+
+    func_001df7d0(&ctx);
+    func_001cfed0(&ctx);
+    func_001d00f8(&ctx);
+    func_001df7d0(&ctx);
+    func_001cfed0(&ctx);
+    while (func_001d00f8(&ctx) != 0) {
+    }
+
+    for (s32 i = 0; i < ctx.count1; ++i) {
+        if (ctx.arr1[i] != 0) {
+            ctx.arr3[ctx.count3++] = ctx.arr1[i];
+            ctx.arr1[i] = 0;
+        }
+    }
+    for (s32 i = 0; i < ctx.count4; ++i) {
+        if (ctx.arr4[i] != 0) {
+            ctx.arr3[ctx.count3++] = ctx.arr4[i];
+            ctx.arr4[i] = 0;
+        }
+    }
+
+    engine_func_002c5ff4(skills, ctx.arr3, buf_bytes);
+
+    ctx.vtable = kVtable;
+    if (ctx.arr0 != nullptr) {
+        AsdMem_Free(ctx.arr0);
+        ctx.arr0 = nullptr;
+    }
+    if (ctx.arr1 != nullptr) {
+        AsdMem_Free(ctx.arr1);
+        ctx.arr1 = nullptr;
+    }
+    if (ctx.arr2 != nullptr) {
+        AsdMem_Free(ctx.arr2);
+        ctx.arr2 = nullptr;
+    }
+    if (ctx.arr3 != nullptr) {
+        AsdMem_Free(ctx.arr3);
+        ctx.arr3 = nullptr;
+    }
+    if (ctx.arr4 != nullptr) {
+        AsdMem_Free(ctx.arr4);
+        ctx.arr4 = nullptr;
+    }
 }
+
+extern "C" {
+    void  func_0030f5ec(s32 a0);                                                // 0x0030f5ec
+    void* AsdMemory_func_002c23f8(u32 size);                                    // 0x002c23f8
+    void* func_003c9ebc(void* p);                                               // 0x003c9ebc
+    u32   func_0029b18c();                                                      // 0x0029b18c
+    void* engine_func_002c34a4(u32 a0, u32 a1, u32 a2, u32 a3, u32 a4, u32 a5); // 0x002c34a4
+    void  func_002bcf34(void* obj, void* buf, u32 size);                        // 0x002bcf34
+    u32   func_002bce50(void* dst, const void* desc, u32 cb, void* arg,
+                        u32 end, u32 a5, s32 a6, u32 a7);                       // 0x002bce50
+    void  func_002c5468(u32 handle);                                            // 0x002c5468
+    s32   func_002c0ba8(u32 id);                                                // 0x002c0ba8
+    u8*   func_002a0fac();                                                      // 0x002a0fac
+    void  func_002a043c();                                                      // 0x002a043c
+    u8*   func_002a89e4(s32 idx);                                               // 0x002a89e4
+    s32   func_0029ee4c(u8* demon, s32 flag);                                   // 0x0029ee4c
+    void  func_002976ac(s32 id);                                                // 0x002976ac
+    u32   func_002c5e2c(const char* path);                                      // 0x002c5e2c
+    s32   func_002a0dd4();                                                      // 0x002a0dd4
+    s32   func_002b8adc();                                                      // 0x002b8adc
+    void  func_00294ad8(s32 a0, s32 a1, s32 a2, s32 a3,
+                        f32 s0, f32 s1, f32 s2, f32 s3, f32 s4,
+                        f32 s5, f32 s6, f32 s7, f32 s8,
+                        u32 st0, u32 st1, u32 st2, u32 st3,
+                        u32 st4, u32 st5, u32 st6, u32 st7);                    // 0x00294ad8
+    u32   func_00263e48(const char* path);                                      // 0x00263e48
+    void  func_002950bc(s32 a0);                                                // 0x002950bc
+    u32   func_0029a2d0(const char* path, s32 a1);                              // 0x0029a2d0
+    u32   func_00290a4c();                                                      // 0x00290a4c
+}
+
 // DECOMP_FUNC(0x001f2f58, 1704)
+void Unite_Setup(void*) {
+    static constexpr u32 kWorkSize = 0x95F8;
+    static constexpr u32 kTargetW = 0x004031D0;
 
+    auto** const mgr_slot = reinterpret_cast<u8**>(0x0043DD68);
+    u8* work = *mgr_slot;
+    if (work == nullptr) {
+        work = static_cast<u8*>(AsdMem_Alloc(0x100, 0x100, 0, kWorkSize, 1));
+        *mgr_slot = work;
+    }
+    AsdMem_Zero(work, kWorkSize);
+    *reinterpret_cast<s32*>(work + 0x9460) = -1;
+    func_0030f5ec(0);
 
-//
-__attribute__((naked)) void Unite_Setup(void*)
-{
-    asm volatile(
-        ".word 0xE92D43F0, 0xE3A08001, 0xE59F43C0, 0xE59F53C0\n"
-        ".word 0xED2D8B02, 0xE24DD03C, 0xE5940000, 0xE3500000\n"
-        ".word 0x1A000009, 0xE3A01D62, 0xE28F0FEA, 0xE1A00000\n"
-        ".word 0xE3A01C01, 0xE1A03005, 0xE3A02000, 0xE1A00001\n"
-        ".word 0xE58D8000, 0xEB0346F8, 0xE5840000, 0xE1A04000\n"
-        ".word 0xE1A01005, 0xEB0346DF, 0xE59F03AC, 0xE3E07000\n"
-        ".word 0xE7807004, 0xE3A00000, 0xEB047189, 0xE59F039C\n"
-        ".word 0xE3A09000, 0xE1A03009, 0xE88D0201, 0xE1A02009\n"
-        ".word 0xE3A01002, 0xE28F0FE2, 0xE58D9008, 0xEB034A63\n"
-        ".word 0xE59F1388, 0xE58403F8, 0xE3A03000, 0xE88D0202\n"
-        ".word 0xE58D000C, 0xE1A02003, 0xE3A010E6, 0xE28F0E37\n"
-        ".word 0xE58D9008, 0xEB0346FB, 0xE1A01006, 0xE3A00D06\n"
-        ".word 0xEB033CF6, 0xE3500000, 0xE320F000, 0x1B075BA4\n"
-        ".word 0xE5840000, 0xE320F000, 0xEB02A055, 0xE59F134C\n"
-        ".word 0xE2812F5F, 0xE7810004, 0xE59F1344, 0xE28F0FB9\n"
-        ".word 0xE7C29004, 0xE1A00000, 0xE3A00A01, 0xE1A03000\n"
-        ".word 0xE3A01C01, 0xE88D0101, 0xE3A02000, 0xE1A00001\n"
-        ".word 0xEB03410D, 0xE2845A09, 0xE2855E5F, 0xE1A01006\n"
-        ".word 0xE5850000, 0xE3A00018, 0xEB033CDC, 0xE3500000\n"
-        ".word 0xE320F000, 0x0A000004, 0xE5809000, 0xE5809004\n"
-        ".word 0xE5809008, 0xE580900C, 0xE5C09010, 0xE2846B25\n"
-        ".word 0xE2866F79, 0xE3A02A01, 0xE5860000, 0xE5951000\n"
-        ".word 0xEB03279D, 0xE58D4018, 0xE5960000, 0xE3A05004\n"
-        ".word 0xE58D5028, 0xE59F52C0, 0xE3A01011, 0xE3E03001\n"
-        ".word 0xE58D502C, 0xE59F52B4, 0xE284CB25, 0xE28CCF7A\n"
-        ".word 0xE58D5030, 0xE59F52A8, 0xE59F2298, 0xE58D5034\n"
-        ".word 0xE5905008, 0xE590000C, 0xE0800005, 0xE88D020B\n"
-        ".word 0xE28D3018, 0xE28D1028, 0xE1A0000C, 0xEB03274D\n"
-        ".word 0xE200167E, 0xE3510606, 0x11B01FA0, 0x1B0348CF\n"
-        ".word 0xE59F0270, 0xE320F000, 0xEB03369C, 0xE3500000\n"
-        ".word 0xE320F000, 0x1A00000E, 0xEB02B799, 0xE1C071BC\n"
-        ".word 0xE1C071BE, 0xE1C092B0, 0xE1C092B2, 0xE1C092B4\n"
-        ".word 0xE1C092B6, 0xE1C092B8, 0xE1C072BA, 0xE5C0902F\n"
-        ".word 0xE5C09030, 0xE5C07031, 0xE5C09032, 0xE5C09033\n"
-        ".word 0xEB02B4AF, 0xE320F000, 0xEB02B789, 0xE280501C\n"
-        ".word 0xE1D001FC, 0xE3500000, 0xBA000018, 0xE1D510B4\n"
-        ".word 0xE3510000, 0x01C570B0, 0x0A000014, 0xEB02D60E\n"
-        ".word 0xE1A06000, 0xE1D004B6, 0xE1D510B4, 0xE1500001\n"
-        ".word 0x1A000005, 0xE3A0100A, 0xE1A00006, 0xEB02AF20\n"
-        ".word 0xE3500000, 0xE320F000, 0x0A000002, 0xE1C570B0\n"
-        ".word 0xE1C590B4, 0xEA000005, 0xE3A01002, 0xE1A00006\n"
-        ".word 0xEB02AF17, 0xE3500000, 0xE320F000, 0x1AFFFFF6\n"
-        ".word 0xE1D500F2, 0xE3500000, 0xBA000009, 0xE1D510B6\n"
-        ".word 0xE3510000, 0x01C570B2, 0x0A000005, 0xEB02D5F2\n"
-        ".word 0xE1D004B6, 0xE1D510B6, 0xE1500001, 0x11C570B2\n"
-        ".word 0x11C590B6, 0xE2840B01, 0xE3E02000, 0xE3A01080\n"
-        ".word 0xE2800038, 0xEB034483, 0xE320F000, 0xE320F000\n"
-        ".word 0xEB02B47B, 0xE2840004, 0xE320F000, 0xEB03403A\n"
-        ".word 0xE59F1144, 0xE3A00F5B, 0xE58D0018, 0xE58D1014\n"
-        ".word 0xE3A0203C, 0xE58D900C, 0xE58D9010, 0xE88D0204\n"
-        ".word 0xE241303C, 0xE3A02054, 0xE2431054, 0xE2840004\n"
-        ".word 0xE58D9008, 0xEB034019, 0xED9F8A44, 0xE2843004\n"
-        ".word 0xE3A02000, 0xEEB00A48, 0xE3A01024, 0xE2840024\n"
-        ".word 0xE58D8000, 0xEB032A1E, 0xE3A01000, 0xE2840024\n"
-        ".word 0xEB032F5C, 0xEEB00A48, 0xE2843004, 0xE3A02000\n"
-        ".word 0xE3A01024, 0xE28400B0, 0xE58D8000, 0xEB032A14\n"
-        ".word 0xE3A02000, 0xE1A01002, 0xE28400B0, 0xEB0329F5\n"
-        ".word 0xEEB00A48, 0xE2843004, 0xE3A02000, 0xE3A01024\n"
-        ".word 0xE2840F4F, 0xE58D8000, 0xEB032A09, 0xE3A01001\n"
-        ".word 0xE2840F4F, 0xEB032F47, 0xEEB00A48, 0xE2843004\n"
-        ".word 0xE3A02000, 0xE3A01024, 0xE2840F72, 0xEA000020\n"
-        ".word 0x0043DD68, 0x000095F8, 0x535C3A63, 0x5C34544D\n"
-        ".word 0x36445258, 0x735C3638, 0x34736464, 0x6F72705C\n"
-        ".word 0x6D617267, 0x6D61635C, 0x6E555C70, 0x5C657469\n"
-        ".word 0x74696E55, 0x70632E65, 0x00000070, 0x00009460\n"
-        ".word 0x0017FE9C, 0x74696E55, 0x61432065, 0x0000636C\n"
-        ".word 0x001ADC98, 0x74696E55, 0x44442065, 0x00776172\n"
-        ".word 0x00009464, 0x000018A3, 0x001DE238, 0x003F70D0\n"
-        ".word 0x003F7218, 0x003F7194, 0x00000418, 0x004031D0\n"
-        ".word 0x3F800000, 0xE58D8000, 0xEB0329DD, 0xE3A02000\n"
-        ".word 0xE3A01001, 0xE2840F72, 0xEB0329BE, 0xEEB00A48\n"
-        ".word 0xE2843004, 0xE3A02000, 0xE3A01024, 0xE2840F95\n"
-        ".word 0xE58D8000, 0xEB0329D2, 0xE3A02000, 0xE3A01005\n"
-        ".word 0xE2840F95, 0xEB0329B3, 0xEEB00A48, 0xE2843004\n"
-        ".word 0xE3A02000, 0xE3A01024, 0xE2840E2E, 0xE58D8000\n"
-        ".word 0xEB0329C7, 0xE3A01002, 0xE2840E2E, 0xEB032F05\n"
-        ".word 0xEEB00A48, 0xE2843004, 0xE3A02000, 0xE3A01024\n"
-        ".word 0xE2840FDB, 0xE58D8000, 0xEB0329BD, 0xE3A01003\n"
-        ".word 0xE2840FDB, 0xEB032EFB, 0xE3A00024, 0xE320F000\n"
-        ".word 0xEB029097, 0xE3A00022, 0xE320F000, 0xEB029094\n"
-        ".word 0xE5847434, 0xE28F0F43, 0xE5847478, 0xEB034A70\n"
-        ".word 0xE2845B01, 0xE5840424, 0xE2855024, 0xE28F0F41\n"
-        ".word 0xEB034A6B, 0xE5840428, 0xE5951000, 0xEB028F9B\n"
-        ".word 0xE584042C, 0xE320F000, 0xEB02B64F, 0xE3500000\n"
-        ".word 0xE320F000, 0x1A000003, 0xEB03158D, 0xE3500000\n"
-        ".word 0xE320F000, 0x0A000016, 0xE28D1014, 0xE3A000FF\n"
-        ".word 0xE58D9010, 0xE8810201, 0xE3A03000, 0xED9F3A32\n"
-        ".word 0xED9F0A33, 0xE28D5008, 0xEEF03A43, 0xEEB02A40\n"
-        ".word 0xE58D901C, 0xE58D9000, 0xE58D9004, 0xE8850201\n"
-        ".word 0xE1A02003, 0xED9F4A27, 0xEDDF2A28, 0xEDDF1A29\n"
-        ".word 0xED9F1A29, 0xEDDF0A29, 0xE1A01003, 0xE1A00003\n"
-        ".word 0xEB028572, 0xE28F0098, 0xEB01C24C, 0xE59F10A8\n"
-        ".word 0xE7810004, 0xE3A00001, 0xEB0286E5, 0xE3A01007\n"
-        ".word 0xE28F0098, 0xEB029B67, 0xE59F10A4, 0xE7810004\n"
-        ".word 0xE3A01007, 0xE28F009C, 0xEB029B62, 0xE59F10B0\n"
-        ".word 0xE281200C, 0xE2813010, 0xE7810004, 0xE7829004\n"
-        ".word 0xE7839004, 0xEB02753A, 0xE584041C, 0xE28DD03C\n"
-        ".word 0xECBD8B02, 0xE8BD83F0, 0x74696E75, 0x6E752F65\n"
-        ".word 0x2E657469, 0x006D626D, 0x74696E75, 0x6E752F65\n"
-        ".word 0x2E657469, 0x00006662, 0x42C80000, 0x44BB8000\n"
-        ".word 0xC2C80000, 0x00000000, 0x44A6E000, 0xC40D4000\n"
-        ".word 0xBF800000, 0x706D6163, 0x6B616A2F, 0x5F756F79\n"
-        ".word 0x2E6C6C61, 0x61636362, 0x0000006D, 0x000095D0\n"
-        ".word 0x706D6163, 0x6B616A2F, 0x5F756F79, 0x2E6C6C61\n"
-        ".word 0x006D6162, 0x000095C8, 0x706D6163, 0x6B616A2F\n"
-        ".word 0x5F756F79, 0x5F6C6C61, 0x6F64696D, 0x6D61622E\n"
-        ".word 0x00000000, 0x000095CC\n");
+    void* const calc_task = AsdTask_CreateCalc(
+        "Unite Calc",
+        2,
+        0,
+        0,
+        reinterpret_cast<void (*)(void*)>(0x0017FE9C),
+        0,
+        0);
+    *reinterpret_cast<void**>(work + 0x3F8) = calc_task;
+    AsdTask_CreateDraw(
+        "Unite DDraw",
+        0xE6,
+        0,
+        0,
+        reinterpret_cast<void (*)(void*)>(0x001ADC98),
+        0,
+        0,
+        calc_task);
+
+    void* p0 = AsdMemory_func_002c23f8(0x180);
+    if (p0 != nullptr) {
+        p0 = func_003c9ebc(p0);
+    }
+    *reinterpret_cast<void**>(work + 0x00) = p0;
+    *reinterpret_cast<u32*>(work + 0x9464) = func_0029b18c();
+    work[0x95E0] = 0;
+
+    void* const buf = engine_func_002c34a4(0x100, 0x100, 0, 0x1000, 0x1000, 1);
+    *reinterpret_cast<void**>(work + 0x95F0) = buf;
+    auto* const obj18 = static_cast<u8*>(AsdMemory_func_002c23f8(0x18));
+    if (obj18 != nullptr) {
+        *reinterpret_cast<u32*>(obj18 + 0x00) = 0;
+        *reinterpret_cast<u32*>(obj18 + 0x04) = 0;
+        *reinterpret_cast<u32*>(obj18 + 0x08) = 0;
+        *reinterpret_cast<u32*>(obj18 + 0x0C) = 0;
+        obj18[0x10] = 0;
+    }
+    *reinterpret_cast<u8**>(work + 0x95E4) = obj18;
+    func_002bcf34(obj18, buf, 0x1000);
+
+    u8* cb_arg = work;
+    const u32 desc[4] = {4, 0x003F70D0, 0x003F7218, 0x003F7194};
+    const u32 end_addr = *reinterpret_cast<const u32*>(obj18 + 0x08) +
+                         *reinterpret_cast<const u32*>(obj18 + 0x0C);
+    const u32 handle = func_002bce50(
+        work + 0x95E8, desc, 0x001DE238, &cb_arg, end_addr, 0x11, -2, 0);
+    if ((handle & 0x07E00000) != 0x00600000 && static_cast<s32>(handle) < 0) {
+        func_002c5468(handle);
+    }
+
+    if (func_002c0ba8(0x418) == 0) {
+        u8* const st = func_002a0fac();
+        *reinterpret_cast<s16*>(st + 0x1C) = -1;
+        *reinterpret_cast<s16*>(st + 0x1E) = -1;
+        *reinterpret_cast<s16*>(st + 0x20) = 0;
+        *reinterpret_cast<s16*>(st + 0x22) = 0;
+        *reinterpret_cast<s16*>(st + 0x24) = 0;
+        *reinterpret_cast<s16*>(st + 0x26) = 0;
+        *reinterpret_cast<s16*>(st + 0x28) = 0;
+        *reinterpret_cast<s16*>(st + 0x2A) = -1;
+        st[0x2F] = 0;
+        st[0x30] = 0;
+        st[0x31] = 0xFF;
+        st[0x32] = 0;
+        st[0x33] = 0;
+        func_002a043c();
+    }
+
+    u8* const st2 = func_002a0fac();
+    if (*reinterpret_cast<const s16*>(st2 + 0x1C) >= 0) {
+        const u16 id0 = *reinterpret_cast<const u16*>(st2 + 0x20);
+        if (id0 == 0) {
+            *reinterpret_cast<s16*>(st2 + 0x1C) = -1;
+        } else {
+            u8* const d = func_002a89e4(*reinterpret_cast<const s16*>(st2 + 0x1C));
+            if (*reinterpret_cast<const u16*>(d + 0x46) != id0 ||
+                func_0029ee4c(d, 0x0A) != 0 ||
+                func_0029ee4c(d, 2) != 0) {
+                *reinterpret_cast<s16*>(st2 + 0x1C) = -1;
+                *reinterpret_cast<u16*>(st2 + 0x20) = 0;
+            }
+        }
+    }
+    if (*reinterpret_cast<const s16*>(st2 + 0x1E) >= 0) {
+        const u16 id1 = *reinterpret_cast<const u16*>(st2 + 0x22);
+        if (id1 == 0) {
+            *reinterpret_cast<s16*>(st2 + 0x1E) = -1;
+        } else {
+            u8* const d = func_002a89e4(*reinterpret_cast<const s16*>(st2 + 0x1E));
+            if (*reinterpret_cast<const u16*>(d + 0x46) != id1) {
+                *reinterpret_cast<s16*>(st2 + 0x1E) = -1;
+                *reinterpret_cast<u16*>(st2 + 0x22) = 0;
+            }
+        }
+    }
+
+    func_002c4450(work + 0x438, 0x80, -1);
+    func_002a043c();
+
+    func_002c3344(work + 0x04);
+    func_002c32f8(
+        work + 0x04,
+        kTargetW - 0x90,
+        0x54,
+        kTargetW - 0x3C,
+        0x3C,
+        0,
+        0,
+        0,
+        0,
+        kTargetW,
+        0x16C);
+
+    func_002bdb2c(work + 0x24, 0x24, 0, work + 0x04, 1, 1.0f);
+    func_002bf030(work + 0x24, 0);
+
+    func_002bdb2c(work + 0xB0, 0x24, 0, work + 0x04, 1, 1.0f);
+    func_002bdac0(work + 0xB0, 0, 0);
+
+    func_002bdb2c(work + 0x13C, 0x24, 0, work + 0x04, 1, 1.0f);
+    func_002bf030(work + 0x13C, 1);
+
+    func_002bdb2c(work + 0x1C8, 0x24, 0, work + 0x04, 1, 1.0f);
+    func_002bdac0(work + 0x1C8, 1, 0);
+
+    func_002bdb2c(work + 0x254, 0x24, 0, work + 0x04, 1, 1.0f);
+    func_002bdac0(work + 0x254, 5, 0);
+
+    func_002bdb2c(work + 0x2E0, 0x24, 0, work + 0x04, 1, 1.0f);
+    func_002bf030(work + 0x2E0, 2);
+
+    func_002bdb2c(work + 0x36C, 0x24, 0, work + 0x04, 1, 1.0f);
+    func_002bf030(work + 0x36C, 3);
+
+    func_002976ac(0x24);
+    func_002976ac(0x22);
+    *reinterpret_cast<s32*>(work + 0x434) = -1;
+    *reinterpret_cast<s32*>(work + 0x478) = -1;
+    *reinterpret_cast<u32*>(work + 0x424) = func_002c5e2c("unite/unite.mbm");
+    *reinterpret_cast<u32*>(work + 0x428) = func_002c5e2c("unite/unite.bf");
+    *reinterpret_cast<u32*>(work + 0x42C) = func_002972f8(
+        *reinterpret_cast<const u32*>(work + 0x428),
+        *reinterpret_cast<const u32*>(work + 0x424));
+
+    if (func_002a0dd4() != 0 || func_002b8adc() != 0) {
+        func_00294ad8(
+            0, 0, 0, 0,
+            0.0f, -1.0f, -565.0f, 1335.0f, 0.0f,
+            -100.0f, 1500.0f, 1500.0f, 100.0f,
+            0, 0, 0xFF, 0, 0, 0xFF, 0, 0);
+    }
+
+    *reinterpret_cast<u32*>(work + 0x95D0) = func_00263e48("camp/jakyou_all.bccam");
+    func_002950bc(1);
+    *reinterpret_cast<u32*>(work + 0x95C8) = func_0029a2d0("camp/jakyou_all.bam", 7);
+    *reinterpret_cast<u32*>(work + 0x95CC) = func_0029a2d0("camp/jakyou_all_mido.bam", 7);
+    *reinterpret_cast<u32*>(work + 0x95D8) = 0;
+    *reinterpret_cast<u32*>(work + 0x95DC) = 0;
+    *reinterpret_cast<u32*>(work + 0x41C) = func_00290a4c();
 }
+
 // DECOMP_FUNC(0x001de238, 5020)
 
 

@@ -45,7 +45,7 @@ struct SortMenuManager {
 
 extern SortMenuManager g_SortMenuManager; // 0x0043DD20
 
-void SortMenu_Init(s32 mode);                                                       // 0x0029e63c
+void SortMenu_Init(s32 mode, u32 flag = 0);                                         // 0x0029e63c
 
 /**
  * Mido Demon Fusion (Cathedral of Shadows) Engine Workspace (0x1BC8 bytes).
