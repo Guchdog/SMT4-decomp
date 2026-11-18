@@ -9183,7 +9183,7 @@ address,size,status,category,name,src_file
 0x0038d408,52,matching,unknown,func_0038d408,src/engine/leaf_batch40_c.cpp
 0x0038d43c,348,matching,engine,engine_func_0038d43c,src/engine/leaf_batch36_b.cpp
 0x0038d598,4,matching,unknown,func_0038d598,src/engine/leaf_batch36_c.cpp
-0x0038d59c,500,matching,engine,engine_func_0038d59c,src/engine/leaf_batch45_b.cpp
+0x0038d59c,500,non_matching,engine,engine_func_0038d59c,src/engine/leaf_batch45_b.cpp
 0x0038d790,32,matching,unknown,func_0038d790,src/engine/leaf_batch37_b.cpp
 0x0038d7b0,1712,matching,script_vm,script_vm_func_0038d7b0,src/engine/leaf_batch40_a.cpp
 0x0038de60,1156,matching,script_vm,script_vm_func_0038de60,src/engine/leaf_batch45_c.cpp
