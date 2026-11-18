@@ -79,34 +79,64 @@ extern "C" void battle_func_003c6224(u8* self, u8* r4_obj, u32 cmd) {
     *reinterpret_cast<u32*>(kTargetAddrs[cmd - 3u]) = val;
 }
 
+extern "C" const u8* script_vm_func_002b66ec();
+extern "C" const u8* battle_func_002ae3f0(u32 skill_id);
+extern "C" u32 battle_func_002ae464(u32 skill_id);
+extern "C" const u8* camp_func_002a8a08();
+extern "C" const u8* camp_func_002a89e4(s32 index);
+
+namespace {
+
+__attribute__((always_inline)) inline void collect_valid_skills_1b02e8(const u8* unit, u16* out) {
+    u32 count = 0u;
+    for (s32 slot = 0; slot < 8; ++slot) {
+        const u16 skill_id = *reinterpret_cast<const u16*>(unit + 0x34 + slot * 2);
+        const u8* const skill = battle_func_002ae3f0(skill_id);
+        if (skill != nullptr && skill[0x55] == 0u && battle_func_002ae464(skill_id) == 0u) {
+            out[count++] = skill_id;
+        }
+    }
+}
+
+}  // namespace
+
 // DECOMP_FUNC(0x001b02e8, 944)
-// Capstone ARM full coverage (236 instructions); raw bytes only, no terminal-return claim.
-extern "C" __attribute__((naked)) void battle_func_001b02e8() {
+extern "C" void battle_func_001b02e8(u8* self) {
+    for (u32 i = 0u; i < 16u; ++i) {
+        *reinterpret_cast<u32*>(self + 0x341Cu + i * 4u) = 0u;
+    }
+
+    u32 mc_count = 0u;
+    for (s32 slot = 0; slot < 8; ++slot) {
+        const u8* const mc = script_vm_func_002b66ec();
+        const u16 skill_id = *reinterpret_cast<const u16*>(mc + 0x34 + slot * 2);
+        const u8* const skill = battle_func_002ae3f0(skill_id);
+        if (skill != nullptr && skill[0x55] == 0u && battle_func_002ae464(skill_id) == 0u) {
+            *reinterpret_cast<u16*>(self + 0x341Cu + mc_count * 2u) = skill_id;
+            ++mc_count;
+        }
+    }
+
+    for (s32 party_idx = 0; party_idx < 3; ++party_idx) {
+        const u8* const pt = camp_func_002a8a08();
+        if (*reinterpret_cast<const s8*>(pt + 0x9108 + party_idx) < 0) {
+            continue;
+        }
+        const u8* const pt2 = camp_func_002a8a08();
+        const s8 unit_idx = *reinterpret_cast<const s8*>(pt2 + 0x9108 + party_idx);
+        const u8* const demon = camp_func_002a89e4(unit_idx);
+        if (demon == nullptr) {
+            continue;
+        }
+        collect_valid_skills_1b02e8(
+            demon, reinterpret_cast<u16*>(self + 0x342Cu + static_cast<u32>(party_idx) * 0x10u));
+    }
+}
+
+extern "C" __attribute__((naked)) void func_001b0454() {
     asm volatile(
         ".arm\n"
-        ".word 0xe92d47f0, 0xe3a01000, 0xe1a06001, 0xe1a0a000\n"
-        ".word 0xe2800b0d, 0xe3a04000, 0xe580101c, 0xe5801020\n"
-        ".word 0xe5801024, 0xe5801028, 0xe580102c, 0xe5801030\n"
-        ".word 0xe5801034, 0xe5801038, 0xe580103c, 0xe5801040\n"
-        ".word 0xe5801044, 0xe5801048, 0xe580104c, 0xe5801050\n"
-        ".word 0xe5801054, 0xe5801058, 0xe320f000, 0xeb0418e8\n"
-        ".word 0xe0800084, 0xe1d053b4, 0xe1a00005, 0xeb03f825\n"
-        ".word 0xe3500000, 0xe320f000, 0x0a00000b, 0xe5d00055\n"
-        ".word 0xe3500000, 0x1a000008, 0xe1a00005, 0xeb03f83a\n"
-        ".word 0xe3500000, 0xe320f000, 0x1a000003, 0xe08a0086\n"
-        ".word 0xe2800b0d, 0xe2866001, 0xe1c051bc, 0xe2844001\n"
-        ".word 0xe3540008, 0xbaffffe7, 0xe3a07000, 0xe320f000\n"
-        ".word 0xeb03e196, 0xe0800007, 0xe2800c91, 0xe1d000d8\n"
-        ".word 0xe3500000, 0xba000020, 0xeb03e190, 0xe0800007\n"
-        ".word 0xe2800c91, 0xe1d000d8, 0xeb03e183, 0xe1b05000\n"
-        ".word 0xe320f000, 0x0a000018, 0xe3a08000, 0xe1a04008\n"
-        ".word 0xe08a9207, 0xe0850084, 0xe1d063b4, 0xe1a00006\n"
-        ".word 0xeb03f7fc, 0xe3500000, 0xe320f000, 0x0a00000b\n"
-        ".word 0xe5d00055, 0xe3500000, 0x1a000008, 0xe1a00006\n"
-        ".word 0xeb03f811, 0xe3500000, 0xe320f000, 0x1a000003\n"
-        ".word 0xe0890088, 0xe2800b0d, 0xe2888001, 0xe1c062bc\n"
-        ".word 0xe2844001, 0xe3540008, 0xbaffffe9, 0xe2877001\n"
-        ".word 0xe3570003, 0xbaffffd4, 0xe8bd87f0, 0xe59f0234\n"
+        ".word 0xe59f0234\n"
         ".word 0xe92d41f0, 0xe24dde61, 0xe5904000, 0xeb034b1d\n"
         ".word 0xe1a06000, 0xeb034ab2, 0xe3560000, 0xe1a05000\n"
         ".word 0x0a000004, 0xe28dde61, 0xe3a01000, 0xe8bd41f0\n"
