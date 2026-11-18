@@ -2232,7 +2232,7 @@ address,size,status,category,name,src_file
 0x001b4410,440,matching,engine,mapMain_func_001b4410,src/engine/map_runtime.cpp
 0x001b45c8,24,matching,unknown,func_001b45c8,src/engine/leaf_batch39_a.cpp
 0x001b45e0,132,matching,script_vm,script_vm_func_001b45e0,src/engine/leaf_batch26_a.cpp
-0x001b4664,440,matching,engine,engine_func_001b4664,src/engine/leaf_batch45_b.cpp
+0x001b4664,440,non_matching,engine,engine_func_001b4664,src/engine/leaf_batch45_b.cpp
 0x001b481c,164,matching,engine,engine_func_001b481c,src/engine/leaf_batch30_a.cpp
 0x001b48c0,404,matching,script_vm,script_vm_func_001b48c0,src/engine/leaf_batch44_b.cpp
 0x001b4a54,288,matching,engine,engine_func_001b4a54,src/engine/leaf_batch30_a.cpp

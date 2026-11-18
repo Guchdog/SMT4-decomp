@@ -230,66 +230,100 @@ extern "C" void camp_func_00191cf4() {
     }
 }
 
+namespace engine_1b4664_calls {
+extern "C" void* AsdMemory_func_002c23f8_call(u32 size)
+    __asm__("_ZN4smt46engine23AsdMemory_func_002c23f8Ej");
+extern "C" void ui_func_00294a98(void* obj);
+} // namespace engine_1b4664_calls
+
 // DECOMP_FUNC(0x001b4664, 440)
-extern "C" __attribute__((naked)) void engine_func_001b4664() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4070, 0xe92d, 0x4000, 0xe3a0\n"
-        ".hword 0x5184, 0xe59f, 0x0a62, 0xed9f\n"
-        ".hword 0x0a62, 0xeddf, 0x8b02, 0xed2d\n"
-        ".hword 0x0000, 0xe595, 0x8a5d, 0xed9f\n"
-        ".hword 0x2048, 0xe280, 0x4000, 0xe580\n"
-        ".hword 0x4004, 0xe580, 0x4008, 0xe580\n"
-        ".hword 0x4010, 0xe5c0, 0x8a05, 0xed80\n"
-        ".hword 0x0a07, 0xed80, 0x8a08, 0xed80\n"
-        ".hword 0x1a48, 0xeeb0, 0x0a09, 0xed80\n"
-        ".hword 0x1a07, 0xedd0, 0x3f57, 0xe280\n"
-        ".hword 0x1a0a, 0xedc0, 0x1a0b, 0xed80\n"
-        ".hword 0x0a0c, 0xed80, 0x1a10, 0xedc0\n"
-        ".hword 0x1a11, 0xed80, 0x1a50, 0xed9f\n"
-        ".hword 0x0a02, 0xec82, 0x2001, 0xe3a0\n"
-        ".hword 0x0a14, 0xedc0, 0x8a1a, 0xed80\n"
-        ".hword 0x0a49, 0xed9f, 0x406c, 0xe5c0\n"
-        ".hword 0x4054, 0xe580, 0x0a16, 0xed80\n"
-        ".hword 0x405c, 0xe5c0, 0x4060, 0xe580\n"
-        ".hword 0x4070, 0xe580, 0x8a1d, 0xed80\n"
-        ".hword 0x8a1e, 0xed80, 0x8a1f, 0xed80\n"
-        ".hword 0x8a20, 0xed80, 0x4084, 0xe580\n"
-        ".hword 0x4088, 0xe5c0, 0x4090, 0xe580\n"
-        ".hword 0x0a3c, 0xeddf, 0x8a25, 0xed80\n"
-        ".hword 0x0a02, 0xecc3, 0x2134, 0xe5c0\n"
-        ".hword 0x0c01, 0xe3a0, 0x3732, 0xeb04\n"
-        ".hword 0x0000, 0xe350, 0x0002, 0x0a00\n"
-        ".hword 0x80d7, 0xeb03, 0x10d4, 0xe59f\n"
-        ".hword 0x1000, 0xe580, 0x1000, 0xe595\n"
-        ".hword 0x20cc, 0xe59f, 0x0194, 0xe581\n"
-        ".hword 0x4198, 0xe5c1, 0x419c, 0xe581\n"
-        ".hword 0x41a0, 0xe581, 0x41a4, 0xe581\n"
-        ".hword 0x41a8, 0xe581, 0x0c01, 0xe281\n"
-        ".hword 0x41ac, 0xe581, 0x41b0, 0xe581\n"
-        ".hword 0x4bb4, 0xe1c0, 0x4bb6, 0xe1c0\n"
-        ".hword 0x4bb8, 0xe1c0, 0x4164, 0xe581\n"
-        ".hword 0x4188, 0xe581, 0x4174, 0xe581\n"
-        ".hword 0x4178, 0xe581, 0x417c, 0xe581\n"
-        ".hword 0x4180, 0xe5c1, 0x4181, 0xe5c1\n"
-        ".hword 0x4182, 0xe5c1, 0x4183, 0xe5c1\n"
-        ".hword 0x0000, 0xe3e0, 0x4184, 0xe5c1\n"
-        ".hword 0x018c, 0xe581, 0x0c01, 0xe242\n"
-        ".hword 0x4170, 0xe581, 0x4190, 0xe581\n"
-        ".hword 0x417c, 0xe5c0, 0x8a60, 0xed80\n"
-        ".hword 0x8a61, 0xed80, 0x8a62, 0xed80\n"
-        ".hword 0x8a63, 0xed80, 0x49b4, 0xe1c2\n"
-        ".hword 0x4198, 0xe5c0, 0x4199, 0xe5c0\n"
-        ".hword 0x419a, 0xe5c0, 0x41a0, 0xe5c0\n"
-        ".hword 0x41a4, 0xe580, 0x8a6a, 0xed80\n"
-        ".hword 0x8a6b, 0xed80, 0x8a6c, 0xed80\n"
-        ".hword 0x8a6d, 0xed80, 0x8b02, 0xecbd\n"
-        ".hword 0x8070, 0xe8bd, 0x7e88, 0x0044\n"
-        ".hword 0x0000, 0x0000, 0x0000, 0x4120\n"
-        ".hword 0x0000, 0xc2b4, 0x0000, 0x40a0\n"
-        ".hword 0x0000, 0x42c8, 0x0000, 0x447a\n"
-        ".hword 0x0420, 0x0042, 0xfa1c, 0x0049\n"
-    );
+extern "C" void engine_func_001b4664() {
+    using namespace engine_1b4664_calls;
+
+    u8* const p = *reinterpret_cast<u8**>(0x00447E88u);
+    *reinterpret_cast<u32*>(p + 0x00) = 0;
+    *reinterpret_cast<u32*>(p + 0x04) = 0;
+    *reinterpret_cast<u32*>(p + 0x08) = 0;
+    p[0x10] = 0;
+    *reinterpret_cast<f32*>(p + 0x14) = 0.0f;
+    *reinterpret_cast<f32*>(p + 0x1C) = 10.0f;
+    *reinterpret_cast<f32*>(p + 0x20) = 0.0f;
+    *reinterpret_cast<f32*>(p + 0x24) = 10.0f;
+    *reinterpret_cast<f32*>(p + 0x28) = 10.0f;
+    *reinterpret_cast<f32*>(p + 0x2C) = 0.0f;
+    *reinterpret_cast<f32*>(p + 0x30) = 10.0f;
+    *reinterpret_cast<f32*>(p + 0x40) = 10.0f;
+    *reinterpret_cast<f32*>(p + 0x44) = 0.0f;
+    *reinterpret_cast<f32*>(p + 0x48) = 10.0f;
+    *reinterpret_cast<f32*>(p + 0x4C) = -90.0f;
+    *reinterpret_cast<f32*>(p + 0x50) = -90.0f;
+    *reinterpret_cast<f32*>(p + 0x68) = 0.0f;
+    p[0x6C] = 0;
+    *reinterpret_cast<u32*>(p + 0x54) = 0;
+    *reinterpret_cast<f32*>(p + 0x58) = 5.0f;
+    p[0x5C] = 0;
+    *reinterpret_cast<u32*>(p + 0x60) = 0;
+    *reinterpret_cast<u32*>(p + 0x70) = 0;
+    *reinterpret_cast<f32*>(p + 0x74) = 0.0f;
+    *reinterpret_cast<f32*>(p + 0x78) = 0.0f;
+    *reinterpret_cast<f32*>(p + 0x7C) = 0.0f;
+    *reinterpret_cast<f32*>(p + 0x80) = 0.0f;
+    *reinterpret_cast<u32*>(p + 0x84) = 0;
+    p[0x88] = 0;
+    *reinterpret_cast<u32*>(p + 0x90) = 0;
+    *reinterpret_cast<f32*>(p + 0x94) = 0.0f;
+    *reinterpret_cast<f32*>(p + 0x15C) = 100.0f;
+    *reinterpret_cast<f32*>(p + 0x160) = 1000.0f;
+    p[0x134] = 1;
+
+    u32* const obj = static_cast<u32*>(AsdMemory_func_002c23f8_call(0x100));
+    if (obj != nullptr) {
+        ui_func_00294a98(obj);
+        obj[0] = 0x00420420u;
+    }
+
+    u8* const p2 = *reinterpret_cast<u8**>(0x00447E88u);
+    *reinterpret_cast<void**>(p2 + 0x194) = obj;
+    p2[0x198] = 0;
+    *reinterpret_cast<u32*>(p2 + 0x19C) = 0;
+    *reinterpret_cast<u32*>(p2 + 0x1A0) = 0;
+    *reinterpret_cast<u32*>(p2 + 0x1A4) = 0;
+    *reinterpret_cast<u32*>(p2 + 0x1A8) = 0;
+    *reinterpret_cast<u32*>(p2 + 0x1AC) = 0;
+    *reinterpret_cast<u32*>(p2 + 0x1B0) = 0;
+    *reinterpret_cast<u16*>(p2 + 0x1B4) = 0;
+    *reinterpret_cast<u16*>(p2 + 0x1B6) = 0;
+    *reinterpret_cast<u16*>(p2 + 0x1B8) = 0;
+    *reinterpret_cast<u32*>(p2 + 0x164) = 0;
+    *reinterpret_cast<u32*>(p2 + 0x188) = 0;
+    *reinterpret_cast<u32*>(p2 + 0x174) = 0;
+    *reinterpret_cast<u32*>(p2 + 0x178) = 0;
+    *reinterpret_cast<u32*>(p2 + 0x17C) = 0;
+    p2[0x180] = 0;
+    p2[0x181] = 0;
+    p2[0x182] = 0;
+    p2[0x183] = 0;
+    p2[0x184] = 0;
+    *reinterpret_cast<u32*>(p2 + 0x18C) = 0xFFFFFFFFu;
+    *reinterpret_cast<u32*>(p2 + 0x170) = 0;
+    *reinterpret_cast<u32*>(p2 + 0x190) = 0;
+
+    u8* const g = reinterpret_cast<u8*>(0x0049FA1Cu);
+    g[0x7C] = 0;
+    *reinterpret_cast<f32*>(g + 0x80) = 0.0f;
+    *reinterpret_cast<f32*>(g + 0x84) = 0.0f;
+    *reinterpret_cast<f32*>(g + 0x88) = 0.0f;
+    *reinterpret_cast<f32*>(g + 0x8C) = 0.0f;
+    *reinterpret_cast<u16*>(g + 0x94) = 0;
+    g[0x98] = 0;
+    g[0x99] = 0;
+    g[0x9A] = 0;
+    g[0xA0] = 0;
+    *reinterpret_cast<u32*>(g + 0xA4) = 0;
+    *reinterpret_cast<f32*>(g + 0xA8) = 0.0f;
+    *reinterpret_cast<f32*>(g + 0xAC) = 0.0f;
+    *reinterpret_cast<f32*>(g + 0xB0) = 0.0f;
+    *reinterpret_cast<f32*>(g + 0xB4) = 0.0f;
 }
 
 // DECOMP_FUNC(0x0034bb5c, 444)
