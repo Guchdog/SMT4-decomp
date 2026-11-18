@@ -10064,11 +10064,14 @@ extern "C" void ui_func_0015a7c0(u8* ctx, s32 index, const u8* src) {
 }
 
 // DECOMP_FUNC(0x00349c64, 720)
-extern "C" __attribute__((naked)) void engine_func_00349c64() {
+extern "C" u32 engine_func_00349c64() {
+    return 1u;
+}
+
+extern "C" __attribute__((naked)) void func_00349c70() {
     asm volatile(
         ".arm\n"
-        ".hword 0x0001, 0xe3a0, 0xff1e, 0xe12f\n"
-        ".hword 0x0000, 0xe1a0, 0x4ff0, 0xe92d\n"
+        ".hword 0x4ff0, 0xe92d\n"
         ".hword 0xd074, 0xe24d, 0x6000, 0xe3a0\n"
         ".hword 0x2001, 0xe3a0, 0x4000, 0xe1a0\n"
         ".hword 0x00ff, 0xe3a0, 0x606c, 0xe58d\n"
