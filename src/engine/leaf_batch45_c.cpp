@@ -176,74 +176,133 @@ extern "C" __attribute__((naked)) void func_001b0454() {
     );
 }
 
-// DECOMP_FUNC(0x0027f6fc, 956)
-// Capstone ARM full coverage (239 instructions); raw bytes only, no terminal-return claim.
-extern "C" __attribute__((naked)) void script_vm_func_0027f6fc() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4ff3, 0xe3a02000, 0xe3e00000, 0xe1a08000\n"
-        ".word 0xe59fa378, 0xe59f5378, 0xe59fc378, 0xed2d8b0c\n"
-        ".word 0xe24dd00c, 0xe58d2004, 0xe59d1040, 0xecd10a03\n"
-        ".word 0xe59d103c, 0xed918a00, 0xed910a01, 0xedd18a02\n"
-        ".word 0xe58a03d0, 0xeeb0da48, 0xeef0da40, 0xeef0ca68\n"
-        ".word 0xe58a03d4, 0xe5951004, 0xe3510000, 0xda000008\n"
-        ".word 0xe24c0001, 0xe3110001, 0x15e02001, 0xe1b010c1\n"
-        ".word 0x0a000003, 0xe5c02001, 0xe2511001, 0xe5e02002\n"
-        ".word 0x1afffffb, 0xe5951008, 0xe59f430c, 0xe3510000\n"
-        ".word 0xda000008, 0xe2440001, 0xe3110001, 0x15e02001\n"
-        ".word 0xe1b010c1, 0x0a000003, 0xe5c02001, 0xe2511001\n"
-        ".word 0xe5e02002, 0x1afffffb, 0xe595000c, 0xe59fb2dc\n"
-        ".word 0xe3500000, 0xda000009, 0xe3100001, 0xe24b0001\n"
-        ".word 0x15e02001, 0xe595100c, 0xe1b010c1, 0x0a000003\n"
-        ".word 0xe5c02001, 0xe2511001, 0xe5e02002, 0x1afffffb\n"
-        ".word 0xe5950010, 0xe59f32a8, 0xe3500000, 0xda000009\n"
-        ".word 0xe3100001, 0xe2430001, 0x15e02001, 0xe5951010\n"
-        ".word 0xe1b010c1, 0x0a000003, 0xe5c02001, 0xe2511001\n"
-        ".word 0xe5e02002, 0x1afffffb, 0xee782a60, 0xee302a41\n"
-        ".word 0xee780ae1, 0xe59f126c, 0xee221aa2, 0xee021a02\n"
-        ".word 0xee001aa0, 0xeef10ac1, 0xee100a90, 0xe1510000\n"
-        ".word 0xc3a00001, 0xca000061, 0xe3a07000, 0xeddf0a92\n"
-        ".word 0xeddfba92, 0xed9fca92, 0xee309a20, 0xe3a09001\n"
-        ".word 0xed9fba90, 0xea00005d, 0xe3570000, 0x0a00005b\n"
-        ".word 0xe3570001, 0x0a00005e, 0xe59f0204, 0xe3570002\n"
-        ".word 0xeef09a4c, 0x05b0600c, 0x05904014, 0x15b06010\n"
-        ".word 0x15904014, 0xe3560000, 0xe3a05000, 0xda00003f\n"
-        ".word 0xe5d40008, 0xe3500000, 0x0a000038, 0xe284000c\n"
-        ".word 0xec900a03, 0xee280a00, 0xee090a20, 0xedd40a06\n"
-        ".word 0xee080a81, 0xee30aa60, 0xeef0aaca, 0xeef49aea\n"
-        ".word 0xeef1fa10, 0xda00002d, 0xeef01a69, 0xeeb01a68\n"
-        ".word 0xeef00a49, 0xeeb00a48, 0xe1d420d5, 0xe1d410d4\n"
-        ".word 0xe1a03004, 0xe1a0000d, 0xebffbd64, 0xeddd1a00\n"
-        ".word 0xeeb4bae1, 0xeef1fa10, 0xca000020, 0xe284000c\n"
-        ".word 0xe5d41004, 0xec900a03, 0xe3510001, 0xee200a0a\n"
-        ".word 0xee600a8a, 0xee211a0a, 0xee380a40, 0xee790a60\n"
-        ".word 0xee381ac1, 0x0a000033, 0xe3570002, 0x07cb9005\n"
-        ".word 0x0a000002, 0xe3570003, 0x059f1144, 0x07c19005\n"
-        ".word 0xeeb4aacb, 0xeef1fa10, 0x3a00000c, 0xeef4aae1\n"
-        ".word 0xeef1fa10, 0xcdcdaa00, 0xeddd1a00, 0xedd42a03\n"
-        ".word 0xed942a04, 0xed943a05, 0xee622aa1, 0xee222a21\n"
-        ".word 0xee631a21, 0xee308a22, 0xee309a82, 0xee718a21\n"
-        ".word 0xe2855001, 0xe1550006, 0xe28440a8, 0xbaffffbf\n"
-        ".word 0xe2877001, 0xe3570004, 0xbaffffae, 0xee390a6b\n"
-        ".word 0xe59d003c, 0xed808a00, 0xed800a01, 0xedc08a02\n"
-        ".word 0xe59d0040, 0xedc0ca02, 0xec80da02, 0xe59d0004\n"
-        ".word 0xe28dd00c, 0xecbd8b0c, 0xe28dd008, 0xe8bd8ff0\n"
-        ".word 0xe59f009c, 0xeef09a6b, 0xe5b06004, 0xe5904014\n"
-        ".word 0xeaffffa7, 0xe59f0088, 0xeef09a6b, 0xe5b06008\n"
-        ".word 0xe5904014, 0xeaffffa2, 0xe3570000, 0x059f0074\n"
-        ".word 0xe58a53d4, 0xe58a73d0, 0x0a000002, 0xe3570001\n"
-        ".word 0x059f0064, 0x1a000000, 0xe7c09005, 0xe3780001\n"
-        ".word 0xda000002, 0xeef41aea, 0xeef1fa10, 0x3dcdaa00\n"
-        ".word 0xe2840010, 0xeddd1a00, 0xed943a03, 0xec902a02\n"
-        ".word 0xee233a21, 0xeef41a69, 0xe3a00001, 0xee222a21\n"
-        ".word 0xee622aa1, 0xe58d0004, 0xee308a03, 0xee309a82\n"
-        ".word 0xee718a22, 0xeef1fa10, 0x01a08005, 0xeaffffc3\n"
-        ".word 0x0049f91c, 0x00446fe8, 0x0049e45c, 0x0049e65c\n"
-        ".word 0x0049e7dc, 0x0049e87c, 0x3c23d70a, 0x41700000\n"
-        ".word 0x41c80000, 0x42700000, 0x00000000\n"
-    );
+extern "C" void script_vm_func_0026ee9c(float* out_dist, s32 a1, s32 a2, const u8* plane,
+                                        float px, float py, float pz, float radius);
+
+namespace {
+
+__attribute__((always_inline)) inline u32 float_to_bits_27f6fc(float v) {
+    union {
+        float f;
+        u32 u;
+    } cvt;
+    cvt.f = v;
+    return cvt.u;
 }
 
+__attribute__((always_inline)) inline void zero_flags_27f6fc(u8* dst, s32 count) {
+    for (s32 i = 0; i < count; ++i) {
+        dst[i] = 0u;
+    }
+}
+
+}  // namespace
+
+// DECOMP_FUNC(0x0027f6fc, 956)
+extern "C" u32 script_vm_func_0027f6fc(float* pos, float* prev_pos) {
+    u8* const g_sl = reinterpret_cast<u8*>(0x0049F91Cu);
+    const u32* const g_tbl = reinterpret_cast<const u32*>(0x00446FE8u);
+    u8* const arr0 = reinterpret_cast<u8*>(0x0049E45Cu);
+    u8* const arr1 = reinterpret_cast<u8*>(0x0049E65Cu);
+    u8* const arr2 = reinterpret_cast<u8*>(0x0049E7DCu);
+    u8* const arr3 = reinterpret_cast<u8*>(0x0049E87Cu);
+    u8* const arrs[4] = {arr0, arr1, arr2, arr3};
+
+    s32 r8 = -1;
+    u32 ret_flag = 0u;
+    float px = pos[0];
+    float py = pos[1];
+    float pz = pos[2];
+    const float orig_x = px;
+    const float orig_y = py;
+    const float orig_z = pz;
+
+    *reinterpret_cast<s32*>(g_sl + 0x3D0u) = -1;
+    *reinterpret_cast<s32*>(g_sl + 0x3D4u) = -1;
+
+    for (s32 i = 0; i < 4; ++i) {
+        zero_flags_27f6fc(arrs[i], static_cast<s32>(g_tbl[1 + i]));
+    }
+
+    const float dx = px - prev_pos[0];
+    const float dy = py - prev_pos[1];
+    const float dz = pz - prev_pos[2];
+    float dist;
+    __asm__("vsqrt.f32 %0, %1" : "=t"(dist) : "t"(dx * dx + dy * dy + dz * dz));
+    if (static_cast<s32>(0x3C23D70Au) > static_cast<s32>(float_to_bits_27f6fc(dist))) {
+        return 1u;
+    }
+
+    py += 15.0f;
+    for (s32 pass = 0; pass < 4; ++pass) {
+        const float radius = (pass < 2) ? 25.0f : 60.0f;
+        const s32 count = static_cast<s32>(g_tbl[1 + pass]);
+        const u8* plane = reinterpret_cast<const u8*>(g_tbl[6 + pass]);
+        for (s32 idx = 0; idx < count; ++idx, plane += 0xA8) {
+            if (plane[8] == 0u) {
+                continue;
+            }
+            const float nx = *reinterpret_cast<const float*>(plane + 0x0C);
+            const float ny = *reinterpret_cast<const float*>(plane + 0x10);
+            const float nz = *reinterpret_cast<const float*>(plane + 0x14);
+            const float d = *reinterpret_cast<const float*>(plane + 0x18);
+            const float signed_dist = (px * nx + py * ny + pz * nz) - d;
+            const float abs_dist = (signed_dist < 0.0f) ? -signed_dist : signed_dist;
+            if (radius <= abs_dist) {
+                continue;
+            }
+
+            float out_dist = 0.0f;
+            script_vm_func_0026ee9c(&out_dist, *reinterpret_cast<const s8*>(plane + 4),
+                                    *reinterpret_cast<const s8*>(plane + 5), plane, px, py, pz,
+                                    radius);
+            if (0.0f > out_dist) {
+                continue;
+            }
+
+            const float proj_x = px - nx * signed_dist;
+            const float proj_y = py - ny * signed_dist;
+            const float proj_z = pz - nz * signed_dist;
+            if (plane[4] == 1u) {
+                *reinterpret_cast<s32*>(g_sl + 0x3D4u) = idx;
+                *reinterpret_cast<s32*>(g_sl + 0x3D0u) = pass;
+                if (pass == 0 || pass == 1) {
+                    arrs[pass][idx] = 1u;
+                }
+                if (r8 > -1 && out_dist < abs_dist) {
+                    out_dist = abs_dist;
+                }
+                ret_flag = 1u;
+                px = proj_x + nx * out_dist;
+                py = proj_y + ny * out_dist;
+                pz = proj_z + nz * out_dist;
+                if (out_dist == radius) {
+                    r8 = idx;
+                }
+            } else {
+                if (pass == 2 || pass == 3) {
+                    arrs[pass][idx] = 1u;
+                }
+                if (signed_dist >= 0.0f) {
+                    if (abs_dist > out_dist) {
+                        out_dist = abs_dist;
+                    }
+                    px = proj_x + nx * out_dist;
+                    py = proj_y + ny * out_dist;
+                    pz = proj_z + nz * out_dist;
+                }
+            }
+        }
+    }
+
+    pos[0] = px;
+    pos[1] = py - 25.0f;
+    pos[2] = pz;
+    prev_pos[0] = orig_x;
+    prev_pos[1] = orig_y;
+    prev_pos[2] = orig_z;
+    return ret_flag;
+}
 // DECOMP_FUNC(0x002d2a94, 956)
 // Capstone ARM full coverage (239 instructions); raw bytes only, no terminal-return claim.
 extern "C" __attribute__((naked)) void script_vm_func_002d2a94() {
