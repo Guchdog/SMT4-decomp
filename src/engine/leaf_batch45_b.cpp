@@ -803,68 +803,66 @@ extern "C" __attribute__((naked)) void engine_func_0012fbf4() {
 }
 
 // DECOMP_FUNC(0x0026eccc, 464)
-extern "C" __attribute__((naked)) void engine_func_0026eccc() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x0070, 0xe92d, 0x0000, 0xe350\n"
-        ".hword 0x8b08, 0xed2d, 0x9a6b, 0xed9f\n"
-        ".hword 0xaa6b, 0xeddf, 0x0004, 0x0a00\n"
-        ".hword 0x0001, 0xe350, 0x000c, 0x0a00\n"
-        ".hword 0x0002, 0xe350, 0x0014, 0x0a00\n"
-        ".hword 0x001c, 0xea00, 0x8a42, 0xeeb0\n"
-        ".hword 0x4a62, 0xeef0, 0x7a63, 0xeeb0\n"
-        ".hword 0x5a63, 0xeef0, 0x5a44, 0xeeb0\n"
-        ".hword 0x8a44, 0xeef0, 0x6a49, 0xeef0\n"
-        ".hword 0x7a6a, 0xeef0, 0x6a6a, 0xeeb0\n"
-        ".hword 0x0012, 0xea00, 0x7a61, 0xeef0\n"
-        ".hword 0x4a62, 0xeef0, 0x6a43, 0xeeb0\n"
-        ".hword 0x6a43, 0xeef0, 0x5a44, 0xeeb0\n"
-        ".hword 0x8a44, 0xeef0, 0x5a49, 0xeef0\n"
-        ".hword 0x8a6a, 0xeeb0, 0x7a6a, 0xeeb0\n"
-        ".hword 0x0008, 0xea00, 0x4a6a, 0xeef0\n"
-        ".hword 0x7a61, 0xeef0, 0x8a42, 0xeeb0\n"
-        ".hword 0x6a43, 0xeeb0, 0x6a43, 0xeef0\n"
-        ".hword 0x7a63, 0xeeb0, 0x5a63, 0xeef0\n"
-        ".hword 0x8a49, 0xeef0, 0x5a64, 0xeeb0\n"
-        ".hword 0xaa67, 0xee36, 0x3ac6, 0xee36\n"
-        ".hword 0x2a48, 0xee77, 0x9ac7, 0xee35\n"
-        ".hword 0x9a44, 0xeddf, 0x3ac5, 0xee78\n"
-        ".hword 0x4a64, 0xee35, 0x5108, 0xe59f\n"
-        ".hword 0x6102, 0xe285, 0x1a09, 0xee6a\n"
-        ".hword 0xbaa3, 0xee22, 0x2a03, 0xee24\n"
-        ".hword 0x1ac3, 0xee42, 0xba49, 0xee04\n"
-        ".hword 0x2a63, 0xee0a, 0x2a0b, 0xee6b\n"
-        ".hword 0x2a02, 0xee42, 0x2aa1, 0xee41\n"
-        ".hword 0x3ae2, 0xeeb1, 0x2a83, 0xeec9\n"
-        ".hword 0xaa22, 0xee2b, 0x9a22, 0xee22\n"
-        ".hword 0x9aa2, 0xee61, 0x0a10, 0xee1a\n"
-        ".hword 0x0005, 0xe150, 0x0002, 0x2a00\n"
-        ".hword 0x0a10, 0xee1a, 0x0006, 0xe150\n"
-        ".hword 0xaa6a, 0xbeb0, 0xca10, 0xee19\n"
-        ".hword 0x0005, 0xe15c, 0x0002, 0x2a00\n"
-        ".hword 0xca10, 0xee19, 0x0006, 0xe15c\n"
-        ".hword 0x9a6a, 0xbeb0, 0x4a90, 0xee19\n"
-        ".hword 0x0005, 0xe154, 0x0002, 0x2a00\n"
-        ".hword 0x4a90, 0xee19, 0x0006, 0xe154\n"
-        ".hword 0x9a6a, 0xbef0, 0x0000, 0xe351\n"
-        ".hword 0x6a67, 0x0eb0, 0x5a48, 0x0ef0\n"
-        ".hword 0x0004, 0x0a00, 0x0001, 0xe351\n"
-        ".hword 0x5a47, 0x0ef0, 0x4a45, 0x0ef0\n"
-        ".hword 0x6a66, 0x1eb0, 0x4a68, 0x1ef0\n"
-        ".hword 0x0a0a, 0xee20, 0x1a06, 0xee6a\n"
-        ".hword 0x0a89, 0xee00, 0x1a25, 0xee49\n"
-        ".hword 0x0a29, 0xee01, 0x1aa4, 0xee49\n"
-        ".hword 0x0a61, 0xee30, 0x0aea, 0xeeb4\n"
-        ".hword 0xfa10, 0xeef1, 0x0005, 0x2a00\n"
-        ".hword 0xaa4a, 0xeeb1, 0x9a49, 0xeeb1\n"
-        ".hword 0x9a69, 0xeef1, 0x1a06, 0xee6a\n"
-        ".hword 0x1a25, 0xee49, 0x1aa4, 0xee49\n"
-        ".hword 0xaa01, 0xeca2, 0x9a02, 0xec82\n"
-        ".hword 0x1a00, 0xedc3, 0x8b08, 0xecbd\n"
-        ".hword 0x0070, 0xe8bd, 0xff1e, 0xe12f\n"
-        ".hword 0x0000, 0x4120, 0x0000, 0x0000\n"
-        ".hword 0x0000, 0x3f80, 0xb717, 0xb8d1\n"
-    );
+extern "C" void engine_func_0026eccc(
+    s32 axis, s32 vert_idx, f32* out_normal, f32* out_d,
+    f32 px, f32 py, f32 pz,
+    f32 ax, f32 ay, f32 az,
+    f32 bx, f32 by, f32 bz) {
+    struct Vec3 {
+        f32 x;
+        f32 y;
+        f32 z;
+    };
+
+    Vec3 p0{};
+    Vec3 p1{};
+    Vec3 p2{};
+    if (axis == 0) {
+        p0 = { 0.0f, ay, az };
+        p1 = { 0.0f, by, bz };
+        p2 = { 10.0f, by, bz };
+    } else if (axis == 1) {
+        p0 = { ax, 0.0f, az };
+        p1 = { bx, 0.0f, bz };
+        p2 = { bx, 10.0f, bz };
+    } else if (axis == 2) {
+        p0 = { ax, ay, 0.0f };
+        p1 = { bx, by, 0.0f };
+        p2 = { bx, by, 10.0f };
+    }
+
+    const Vec3 v0 = { p1.x - p0.x, p1.y - p0.y, p1.z - p0.z };
+    const Vec3 v1 = { p2.x - p1.x, p2.y - p1.y, p2.z - p1.z };
+
+    const f32 cx = v0.y * v1.z - v0.z * v1.y;
+    const f32 cy = v0.z * v1.x - v0.x * v1.z;
+    const f32 cz = v0.x * v1.y - v0.y * v1.x;
+
+    const f32 len_sq = cx * cx + cy * cy + cz * cz;
+    f32 len = 0.0f;
+    asm("vsqrt.f32 %0, %1" : "=t"(len) : "t"(len_sq));
+    const f32 inv = 1.0f / len;
+    auto clamp_eps = [](f32 v) -> f32 {
+        return (v > -9.999999747378752e-05f && v < 9.999999747378752e-05f) ? 0.0f : v;
+    };
+    f32 nx = clamp_eps(cx * inv);
+    f32 ny = clamp_eps(cy * inv);
+    f32 nz = clamp_eps(cz * inv);
+
+    const Vec3 pref = (vert_idx == 0) ? p0 : ((vert_idx == 1) ? p1 : p2);
+    f32 d = nx * pref.x + ny * pref.y + nz * pref.z;
+    const f32 dist = (px * nx + py * ny + pz * nz) - d;
+    if (dist < 0.0f) {
+        nx = -nx;
+        ny = -ny;
+        nz = -nz;
+        d = nx * pref.x + ny * pref.y + nz * pref.z;
+    }
+
+    out_normal[0] = nx;
+    out_normal[1] = ny;
+    out_normal[2] = nz;
+    *out_d = d;
 }
 
 // DECOMP_FUNC(0x0016b854, 476)
