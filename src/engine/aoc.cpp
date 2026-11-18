@@ -838,37 +838,29 @@ void aocApplication_func_0038b510(AocApplication* app)
 // ---------------------------------------------------------------------------
 
 // DECOMP_FUNC(0x0038bd00, 408)
-// Source-backed draft retained below for reference; not verified equivalent.
-#if 0
 void aocFileContent_func_0038bd00(AocFileContentState* state,
                                   AocFileContent* content, u32 index)
 {
-    // 0x0038BD08..0x0038BD28: drop the previous mount buffer.
     if (content->buffer != nullptr) {
         AsdMem_Free(content->buffer);
         content->buffer = nullptr;
     }
 
-    // 0x0038BD2C..0x0038BD44: reset the status and the four-word object at
-    // state+4 (0x002BB09C writes its magic/zero head).
     state->status = 0;
-    AsdFile_Pair_Init(&state->result[0]);                // 0x0038BD38
-    state->field_0c = 0;                                 // 0x0038BD3C
-    state->field_10 = 0;                                 // 0x0038BD44
+    AsdFile_Pair_Init(&state->result[0]);
+    state->field_0c = 0;
+    state->field_10 = 0;
 
-    // 0x0038BD48..0x0038BD60: zero the local result object.
     SdkResult init_result{};
-    Result_Construct(&init_result, 0);                   // 0x0038BD50
+    Result_Construct(&init_result, 0);
     state->result[0] = init_result.words[0];
     state->result[1] = init_result.words[1];
 
-    // 0x0038BD68..0x0038BD74: query the archive size into content->size.
     const u32 size_result = AocContent_GetSize(&content->size, 0x0e5c, index,
                                                2, 2, 0);
     SdkResult size_status{};
-    Result_Construct(&size_status, size_result);         // 0x0038BD80
+    Result_Construct(&size_status, size_result);
     if (static_cast<s32>(Result_Value(&size_status)) < 0) {
-        // 0x0038BD9C..0x0038BDF8: failure path.
         AsdSound_GetTableEntry(0);
         state->result[0] = size_status.words[0];
         state->result[1] = size_status.words[1];
@@ -883,29 +875,9 @@ void aocFileContent_func_0038bd00(AocFileContentState* state,
         return;
     }
 
-    // 0x0038BE04..0x0038BE48: allocate the mount buffer and format "aoc%d:".
     content->buffer = AsdMem_AllocAlign(0x100, 0x100, 0, content->size, 1);
     AsdWork_Zero(content->buffer, content->size);
     UiText_Format(content->mount, "aoc%d:", index);
-}
-#endif
-// Exact ARM-state image for the verified ledger span; byte reproduction only.
-__attribute__((naked)) void aocFileContent_func_0038bd00(AocFileContentState*, AocFileContent*, u32) {
-    asm volatile(
-        ".word 0xe92d40f0, 0xe1a05000, 0xe5910020, 0xe24dd014, 0xe1a04001, 0xe3500000, 0xe1a06002, 0xe3a07000\n"
-        ".word 0x0a000001, 0xebfce18d, 0xe5847020, 0xe3a00000, 0xe5c50000, 0xe2850004, 0xebfcbcd7, 0xe5807008\n"
-        ".word 0xe2405004, 0xe580700c, 0xe1a01007, 0xe1a0000d, 0xebfcbc0a, 0xe1c000d0, 0xe1a02006, 0xe1c500f4\n"
-        ".word 0xe3a00002, 0xe1a03000, 0xe88d0081, 0xe59f10dc, 0xe2840034, 0xebff2562, 0xe1a01000, 0xe28d0008\n"
-        ".word 0xebfcbbfe, 0xe28d0008, 0xe320f000, 0xebfc55f9, 0xe1b00fa0, 0xe320f000, 0x0a000019, 0xe3a00000\n"
-        ".word 0xebfce6a5, 0xe1cd00d8, 0xe3a02064, 0xe5c52000, 0xe1c500f4, 0xe59f4098, 0xe28d0008, 0xebfc55ed\n"
-        ".word 0xe59f1090, 0xe1500001, 0x0a00000b, 0xe5940000, 0xe2800098, 0xebfc85a4, 0xe3500000, 0xe320f000\n"
-        ".word 0x0a000005, 0xe5940000, 0xe5901754, 0xe3c11801, 0xe5801754, 0xe3a000c8, 0xe5c50000, 0xe28dd014\n"
-        ".word 0xe8bd80f0, 0xe59f0050, 0xe3a010be, 0xe1a00000, 0xe3a00001, 0xe58d0000, 0xe3a01c01, 0xe5943034\n"
-        ".word 0xe3a02000, 0xe1a00001, 0xebfce5b0, 0xe5840020, 0xe5941034, 0xebfcdf43, 0xe59f1020, 0xe1a02006\n"
-        ".word 0xe2840024, 0xfafcca6c, 0xe28dd014, 0xe8bd80f0, 0x00000e5c, 0x00432fc8, 0xc9413891, 0x003ff230\n"
-        ".word 0x003ff228, 0xe59f2028, 0xe3a01000, 0xe5801020, 0xe5802000, 0xe5801038, 0xe580103c, 0xe5801040\n"
-        ".word 0xe5c01044, 0xe5c01045, 0xe5801048, 0xe580104c, 0xe12fff1e, 0x00421e24\n"
-    );
 }
 // DECOMP_FUNC(0x00234ca8, 164)
 
