@@ -9865,7 +9865,7 @@ address,size,status,category,name,src_file
 0x003c5900,804,non_matching,battle,battle_func_003c5900,src/engine/leaf_batch45_a.cpp
 0x003c5c24,1204,matching,ui,ui_func_003c5c24,src/engine/leaf_batch46_b.cpp
 0x003c60d8,332,matching,ui,ui_func_003c60d8,src/engine/leaf_batch43_c.cpp
-0x003c6224,940,matching,battle,battle_func_003c6224,src/engine/leaf_batch45_c.cpp
+0x003c6224,940,non_matching,battle,battle_func_003c6224,src/engine/leaf_batch45_c.cpp
 0x003c65d0,324,matching,battle,battle_func_003c65d0,src/engine/leaf_batch41_a.cpp
 0x003c6714,4724,matching,battle,Btl_DemonNegotiationCalc,src/battle/battle_scout.cpp
 0x003c7988,268,matching,battle,battle_func_003c7988,src/engine/leaf_batch29_c.cpp

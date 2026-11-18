@@ -35,71 +35,48 @@ extern "C" u32 engine_func_0023c85c(u8* self, u32 a1, u32 a2, s32 kind, float f0
     return engine_func_003d9b0c(self, r6, a1, a2, f0, f1, kind, extra, buf);
 }
 
+extern "C" s32 battle_func_0022a5d8(void* sub, u32 cmd);
+extern "C" const u32* battle_func_0022a4d8(void* sub, u32 cmd);
+extern "C" const u32* battle_func_0022a5f8(void* sub, u32 cmd);
+
 // DECOMP_FUNC(0x003c6224, 940)
-// Capstone ARM full coverage (235 instructions); raw bytes only, no terminal-return claim.
-extern "C" __attribute__((naked)) void battle_func_003c6224() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4010, 0xe1a04001, 0xe352001f, 0xe1a01002\n"
-        ".word 0x379ff102, 0xe8bd8010, 0x003c62b8, 0x003c62e0\n"
-        ".word 0x003c62fc, 0x003c6324, 0x003c633c, 0x003c6354\n"
-        ".word 0x003c6368, 0x003c6380, 0x003c6394, 0x003c63a8\n"
-        ".word 0x003c63bc, 0x003c63d0, 0x003c63e4, 0x003c63f8\n"
-        ".word 0x003c640c, 0x003c6420, 0x003c6434, 0x003c6448\n"
-        ".word 0x003c645c, 0x003c6470, 0x003c6484, 0x003c6498\n"
-        ".word 0x003c64ac, 0x003c64c0, 0x003c64d4, 0x003c64e8\n"
-        ".word 0x003c64fc, 0x003c6510, 0x003c6524, 0x003c6538\n"
-        ".word 0x003c654c, 0xe5900010, 0xebf990c5, 0xe3500000\n"
-        ".word 0xe59f0294, 0xe5900000, 0xe5901634, 0x13811c01\n"
-        ".word 0x03c11c01, 0xe5801634, 0xe8bd8010, 0xe5900010\n"
-        ".word 0xebf9907b, 0xed900a00, 0xe59f026c, 0xe5900000\n"
-        ".word 0xe8bd4010, 0xea004070, 0xe5900010, 0xebf990b4\n"
-        ".word 0xe2841b11, 0xe28110a8, 0xe3500000, 0xe5912000\n"
-        ".word 0x13822101, 0x03c22101, 0xe5812000, 0xe8bd8010\n"
-        ".word 0xe5900010, 0xebf9906a, 0xe59f1230, 0xe5900000\n"
-        ".word 0xe5810000, 0xe8bd8010, 0xe5900010, 0xebf99064\n"
-        ".word 0xe59f1218, 0xe5900000, 0xe5810008, 0xe8bd8010\n"
-        ".word 0xe5900010, 0xebf9905e, 0xe5900000, 0xe59f1200\n"
-        ".word 0xea000003, 0xe5900010, 0xebf99059, 0xe5900000\n"
-        ".word 0xe59f11f0, 0xe5810000, 0xe8bd8010, 0xe5900010\n"
-        ".word 0xebf99053, 0xe5900000, 0xe59f11dc, 0xeafffff8\n"
-        ".word 0xe5900010, 0xebf99096, 0xe5900000, 0xe59f11cc\n"
-        ".word 0xeafffff3, 0xe5900010, 0xebf99091, 0xe5900000\n"
-        ".word 0xe59f11bc, 0xeaffffee, 0xe5900010, 0xebf9908c\n"
-        ".word 0xe5900000, 0xe59f11ac, 0xeaffffe9, 0xe5900010\n"
-        ".word 0xebf9903f, 0xe5900000, 0xe59f119c, 0xeaffffe4\n"
-        ".word 0xe5900010, 0xebf99082, 0xe5900000, 0xe59f118c\n"
-        ".word 0xeaffffdf, 0xe5900010, 0xebf9907d, 0xe5900000\n"
-        ".word 0xe59f117c, 0xeaffffda, 0xe5900010, 0xebf99078\n"
-        ".word 0xe5900000, 0xe59f116c, 0xeaffffd5, 0xe5900010\n"
-        ".word 0xebf9902b, 0xe5900000, 0xe59f115c, 0xeaffffd0\n"
-        ".word 0xe5900010, 0xebf9906e, 0xe5900000, 0xe59f114c\n"
-        ".word 0xeaffffcb, 0xe5900010, 0xebf99069, 0xe5900000\n"
-        ".word 0xe59f113c, 0xeaffffc6, 0xe5900010, 0xebf99064\n"
-        ".word 0xe5900000, 0xe59f112c, 0xeaffffc1, 0xe5900010\n"
-        ".word 0xebf9905f, 0xe5900000, 0xe59f111c, 0xeaffffbc\n"
-        ".word 0xe5900010, 0xebf9905a, 0xe5900000, 0xe59f110c\n"
-        ".word 0xeaffffb7, 0xe5900010, 0xebf99055, 0xe5900000\n"
-        ".word 0xe59f10fc, 0xeaffffb2, 0xe5900010, 0xebf99050\n"
-        ".word 0xe5900000, 0xe59f10ec, 0xeaffffad, 0xe5900010\n"
-        ".word 0xebf9904b, 0xe5900000, 0xe59f10dc, 0xeaffffa8\n"
-        ".word 0xe5900010, 0xebf99046, 0xe5900000, 0xe59f10cc\n"
-        ".word 0xeaffffa3, 0xe5900010, 0xebf99041, 0xe5900000\n"
-        ".word 0xe59f10bc, 0xeaffff9e, 0xe5900010, 0xebf9903c\n"
-        ".word 0xe5900000, 0xe59f10ac, 0xeaffff99, 0xe5900010\n"
-        ".word 0xebf99037, 0xe5900000, 0xe59f109c, 0xeaffff94\n"
-        ".word 0xe5900010, 0xebf99032, 0xe5900000, 0xe59f108c\n"
-        ".word 0xeaffff8f, 0xe5900010, 0xebf9902d, 0xe5900000\n"
-        ".word 0xe59f107c, 0xeaffff8a, 0xe5900010, 0xebf99028\n"
-        ".word 0xe5900000, 0xe59f106c, 0xeaffff85, 0x004342c8\n"
-        ".word 0x00493554, 0x00434310, 0x00434314, 0x00434318\n"
-        ".word 0x0043431c, 0x004342d4, 0x004342d8, 0x00434320\n"
-        ".word 0x00434324, 0x004342e0, 0x00434328, 0x0043432c\n"
-        ".word 0x00434330, 0x004342e4, 0x00434334, 0x00434338\n"
-        ".word 0x004342e8, 0x0043433c, 0x00434340, 0x004342ec\n"
-        ".word 0x00434344, 0x00434348, 0x0043434c, 0x00434350\n"
-        ".word 0x00434354, 0x00439cec, 0x004342f0\n"
-    );
+extern "C" void battle_func_003c6224(u8* self, u8* r4_obj, u32 cmd) {
+    if (cmd >= 31u) {
+        return;
+    }
+
+    void* const sub = *reinterpret_cast<void* const*>(self + 0x10u);
+    if (cmd == 0u) {
+        const s32 b = battle_func_0022a5d8(sub, 0u);
+        u8* const g = *reinterpret_cast<u8* const*>(0x004342C8u);
+        u32* const f = reinterpret_cast<u32*>(g + 0x634u);
+        *f = (b != 0) ? (*f | 0x100u) : (*f & ~0x100u);
+        return;
+    }
+    if (cmd == 1u) {
+        const u32 val = *battle_func_0022a4d8(sub, 1u);
+        u8* const g = *reinterpret_cast<u8* const*>(0x004342C8u);
+        *reinterpret_cast<u32*>(g + 0x560u) = val;
+        return;
+    }
+    if (cmd == 2u) {
+        const s32 b = battle_func_0022a5d8(sub, 2u);
+        u32* const f = reinterpret_cast<u32*>(r4_obj + 0x44A8u);
+        *f = (b != 0) ? (*f | 0x40000000u) : (*f & ~0x40000000u);
+        return;
+    }
+
+    static const u32 kTargetAddrs[28] = {
+        0x00493554u, 0x0049355Cu, 0x00434310u, 0x00434314u, 0x00434318u, 0x0043431Cu,
+        0x004342D4u, 0x004342D8u, 0x00434320u, 0x00434324u, 0x004342E0u, 0x00434328u,
+        0x0043432Cu, 0x00434330u, 0x004342E4u, 0x00434334u, 0x00434338u, 0x004342E8u,
+        0x0043433Cu, 0x00434340u, 0x004342ECu, 0x00434344u, 0x00434348u, 0x0043434Cu,
+        0x00434350u, 0x00434354u, 0x00439CECu, 0x004342F0u,
+    };
+
+    const bool use_a4d8 = (cmd <= 7u || cmd == 11u || cmd == 15u);
+    const u32 val = *(use_a4d8 ? battle_func_0022a4d8(sub, cmd) : battle_func_0022a5f8(sub, cmd));
+    *reinterpret_cast<u32*>(kTargetAddrs[cmd - 3u]) = val;
 }
 
 // DECOMP_FUNC(0x001b02e8, 944)
