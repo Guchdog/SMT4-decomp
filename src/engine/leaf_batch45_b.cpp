@@ -1177,72 +1177,88 @@ extern "C" u32 engine_func_00354a44(const u8* obj) {
 }
 
 // DECOMP_FUNC(0x00381d9c, 492)
-extern "C" __attribute__((naked)) void script_vm_func_00381d9c() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x40f0, 0xe92d, 0xd01c, 0xe24d\n"
-        ".hword 0x4000, 0xe1a0, 0x0dca, 0xeb00\n"
-        ".hword 0x7000, 0xe3a0, 0x7000, 0xe584\n"
-        ".hword 0x700c, 0xe584, 0x7014, 0xe584\n"
-        ".hword 0x75a0, 0xe584, 0x75a8, 0xe584\n"
-        ".hword 0x75ac, 0xe584, 0x75b0, 0xe584\n"
-        ".hword 0x75b4, 0xe584, 0x75b8, 0xe584\n"
-        ".hword 0x75bc, 0xe584, 0x5b01, 0xe284\n"
-        ".hword 0x0b01, 0xe284, 0x75c0, 0xe584\n"
-        ".hword 0x5f69, 0xe285, 0x1d19, 0xe3a0\n"
-        ".hword 0x0fb3, 0xe280, 0x75a4, 0xe584\n"
-        ".hword 0x0b4d, 0xebfd, 0x2000, 0xe3a0\n"
-        ".hword 0x1e5a, 0xe284, 0x0e13, 0xe28f\n"
-        ".hword 0x563e, 0xebfc, 0x2000, 0xe3a0\n"
-        ".hword 0x1005, 0xe1a0, 0x0f51, 0xe28f\n"
-        ".hword 0x563a, 0xebfc, 0x0024, 0xe284\n"
-        ".hword 0x0548, 0xebfd, 0x1158, 0xe59f\n"
-        ".hword 0x00a8, 0xe3a0, 0x0018, 0xe58d\n"
-        ".hword 0x2018, 0xe3a0, 0x700c, 0xe58d\n"
-        ".hword 0x1014, 0xe58d, 0x7010, 0xe58d\n"
-        ".hword 0x0084, 0xe88d, 0x3018, 0xe241\n"
-        ".hword 0x2000, 0xe3a0, 0x1002, 0xe1a0\n"
-        ".hword 0x0024, 0xe284, 0x7008, 0xe58d\n"
-        ".hword 0x0527, 0xebfd, 0x0020, 0xe284\n"
-        ".hword 0x0f96, 0xeb00, 0x0020, 0xe284\n"
-        ".hword 0x0fa4, 0xeb00, 0x0020, 0xe284\n"
-        ".hword 0x0fa4, 0xeb00, 0x7da4, 0xe584\n"
-        ".hword 0x7fb4, 0xe584, 0x7fb0, 0xe584\n"
-        ".hword 0x0000, 0xe3e0, 0x7d8c, 0xe584\n"
-        ".hword 0x001c, 0xe584, 0x759c, 0xe584\n"
-        ".hword 0x0031, 0xe3a0, 0x7d40, 0xe5c4\n"
-        ".hword 0x0be3, 0xebfd, 0x1000, 0xe3a0\n"
-        ".hword 0x0031, 0xe3a0, 0x90db, 0xebfc\n"
-        ".hword 0x5000, 0xe3a0, 0x0000, 0xe3a0\n"
-        ".hword 0x6105, 0xe084, 0x728c, 0xe586\n"
-        ".hword 0xeed8, 0xebfc, 0x5001, 0xe285\n"
-        ".hword 0x0004, 0xe355, 0x028c, 0xe586\n"
-        ".hword 0xfff7, 0x3aff, 0x86c9, 0xebfb\n"
-        ".hword 0x0000, 0xe3a0, 0xf000, 0xe320\n"
-        ".hword 0x9599, 0xebfc, 0x0000, 0xe3a0\n"
-        ".hword 0xf000, 0xe320, 0x7dae, 0xebf8\n"
-        ".hword 0x4098, 0xe59f, 0x0004, 0xe1a0\n"
-        ".hword 0xd203, 0xebfc, 0x0000, 0xe350\n"
-        ".hword 0xf000, 0xe320, 0x0008, 0x0a00\n"
-        ".hword 0x0006, 0xe5d0, 0x0000, 0xe350\n"
-        ".hword 0x0005, 0x1a00, 0x1001, 0xe3a0\n"
-        ".hword 0x0004, 0xe1a0, 0x5cc9, 0xebfc\n"
-        ".hword 0x0000, 0xe350, 0x0004, 0x01a0\n"
-        ".hword 0x348e, 0x0bfc, 0x0001, 0xe284\n"
-        ".hword 0x4070, 0xe6ff, 0x0e19, 0xe354\n"
-        ".hword 0xffed, 0x3aff, 0xd01c, 0xe28d\n"
-        ".hword 0x80f0, 0xe8bd, 0x7571, 0x7365\n"
-        ".hword 0x5f74, 0x6563, 0x746e, 0x7265\n"
-        ".hword 0x632f, 0x6d6f, 0x6f6d, 0x2f6e\n"
-        ".hword 0x6371, 0x635f, 0x6d6f, 0x6f6d\n"
-        ".hword 0x2e6e, 0x6662, 0x0000, 0x0000\n"
-        ".hword 0x7571, 0x7365, 0x5f74, 0x6563\n"
-        ".hword 0x746e, 0x7265, 0x632f, 0x6d6f\n"
-        ".hword 0x6f6d, 0x2f6e, 0x6371, 0x635f\n"
-        ".hword 0x6d6f, 0x6f6d, 0x2e6e, 0x626d\n"
-        ".hword 0x006d, 0x0000, 0x58b0, 0x0040\n"
-        ".hword 0x015e, 0x0000\n"
-    );
+extern "C" void script_vm_func_003854d8(void* obj);
+extern "C" void engine_func_002c4b30(void* dst, u32 size);
+extern "C" void script_vm_func_00297704(const char* path, void* dst, u32 flag);
+extern "C" void camp_func_002c3344(void* group);
+extern "C" u32 camp_func_002c32f8(
+    u8* group, u32 table, u32 count, u32 reg_word,
+    u32 stack_0, u32 stack_1, u32 stack_2,
+    u32 stack_3, u32 stack_4, u32 stack_5, u32 stack_6);
+extern "C" void script_vm_func_00385cbc(void* ptr);
+extern "C" void script_vm_func_00385cfc(void* ptr);
+extern "C" void script_vm_func_00385d04(void* ptr);
+extern "C" void AsdTMTexTable_func_002c4e28(u32 id);
+extern "C" void camp_func_002a6214(u32 id, u32 flag);
+extern "C" u32 AsdText_func_002bda1c(u32 arg);
+extern "C" void PlaceWin_Init();
+extern "C" void ui_func_002a7540(u32 arg);
+extern "C" void script_vm_func_001a15a0(u32 arg);
+extern "C" void* script_vm_func_002b6700(u32 quest_id);
+extern "C" u32 script_vm_func_0029923c(u32 qid, u32 mode);
+extern "C" void script_vm_func_0028f15c(u32 qid);
+
+extern "C" void script_vm_func_00381d9c(u8* obj) {
+    auto word_at = [](u8* base, u32 off) -> u32& {
+        return *reinterpret_cast<u32*>(base + off);
+    };
+
+    script_vm_func_003854d8(obj);
+
+    word_at(obj, 0x000u) = 0u;
+    word_at(obj, 0x00Cu) = 0u;
+    word_at(obj, 0x014u) = 0u;
+    word_at(obj, 0x5A0u) = 0u;
+    word_at(obj, 0x5A8u) = 0u;
+    word_at(obj, 0x5ACu) = 0u;
+    word_at(obj, 0x5B0u) = 0u;
+    word_at(obj, 0x5B4u) = 0u;
+    word_at(obj, 0x5B8u) = 0u;
+    word_at(obj, 0x5BCu) = 0u;
+    word_at(obj, 0x5C0u) = 0u;
+    word_at(obj, 0x5A4u) = 0u;
+
+    engine_func_002c4b30(obj + 0x6CCu, 0x640u);
+    script_vm_func_00297704("quest_center/common/qc_common.bf", obj + 0x5A0u, 0u);
+    script_vm_func_00297704("quest_center/common/qc_common.mbm", obj + 0x5A4u, 0u);
+
+    camp_func_002c3344(obj + 0x024u);
+    camp_func_002c32f8(
+        obj + 0x024u, 0u, 0u, 0x00405898u,
+        0x18u, 0u, 0u, 0u, 0u, 0x004058B0u, 0xA8u);
+
+    script_vm_func_00385cbc(obj + 0x020u);
+    script_vm_func_00385cfc(obj + 0x020u);
+    script_vm_func_00385d04(obj + 0x020u);
+
+    word_at(obj, 0xDA4u) = 0u;
+    word_at(obj, 0xFB4u) = 0u;
+    word_at(obj, 0xFB0u) = 0u;
+    word_at(obj, 0xD8Cu) = 0u;
+    word_at(obj, 0x01Cu) = 0xFFFFFFFFu;
+    word_at(obj, 0x59Cu) = 0u;
+    obj[0xD40u] = 0u;
+
+    AsdTMTexTable_func_002c4e28(0x31u);
+    camp_func_002a6214(0x31u, 0u);
+
+    for (u32 i = 0u; i < 4u; ++i) {
+        word_at(obj, 0x28Cu + i * 4u) = 0u;
+        word_at(obj, 0x28Cu + i * 4u) = AsdText_func_002bda1c(0u);
+    }
+
+    PlaceWin_Init();
+    ui_func_002a7540(0u);
+    script_vm_func_001a15a0(0u);
+
+    for (u32 qid = 0x15Eu; qid < 0x190u; ++qid) {
+        const u8* node = static_cast<const u8*>(script_vm_func_002b6700(qid));
+        if (node != nullptr && node[6] == 0u) {
+            if (script_vm_func_0029923c(qid, 1u) == 0u) {
+                script_vm_func_0028f15c(qid);
+            }
+        }
+    }
 }
 
 // DECOMP_FUNC(0x002f38bc, 496)

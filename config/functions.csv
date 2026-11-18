@@ -9050,7 +9050,7 @@ address,size,status,category,name,src_file
 0x00381bc8,264,matching,engine,engine_func_00381bc8,src/engine/leaf_batch38_b.cpp
 0x00381cd0,32,matching,engine,engine_func_00381cd0,src/engine/leaf_batch18_b.cpp
 0x00381cf0,172,matching,script_vm,script_vm_func_00381cf0,src/engine/leaf_batch33_b.cpp
-0x00381d9c,492,matching,script_vm,script_vm_func_00381d9c,src/engine/leaf_batch45_b.cpp
+0x00381d9c,492,non_matching,script_vm,script_vm_func_00381d9c,src/engine/leaf_batch45_b.cpp
 0x00381f88,52,matching,ui,ui_func_00381f88,src/engine/leaf_batch19_c.cpp
 0x00381fbc,88,matching,script_vm,script_vm_func_00381fbc,src/engine/leaf_batch32_a.cpp
 0x00382014,464,matching,script_vm,script_vm_func_00382014,src/engine/leaf_batch44_c.cpp
