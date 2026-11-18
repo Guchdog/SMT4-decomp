@@ -7894,7 +7894,7 @@ address,size,status,category,name,src_file
 0x0034b3bc,4,matching,unknown,func_0034b3bc,src/engine/leaf_matching.cpp
 0x0034b3c0,20,matching,unknown,func_0034b3c0,src/engine/leaf_batch37_a.cpp
 0x0034b3d4,8,matching,unknown,func_0034b3d4,src/engine/leaf_batch36_c.cpp
-0x0034b3dc,120,matching,engine,AsdMemory_func_0034b3dc,src/engine/asd_file.cpp
+0x0034b3dc,120,non_matching,engine,AsdMemory_func_0034b3dc,src/engine/asd_file.cpp
 0x0034b454,840,matching,ui,ui_func_0034b454,src/engine/leaf_batch43_b.cpp
 0x0034b79c,388,matching,ui,ui_func_0034b79c,src/engine/leaf_batch44_b.cpp
 0x0034b920,432,matching,battle,Filter4Poly_func_0034b920,src/engine/asd_render_ui.cpp

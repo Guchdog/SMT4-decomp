@@ -294,7 +294,7 @@ void* AsdMemory_func_00346d38(u32 a0, u32 size, u32 extra);
 void* AsdMemory_func_00348a1c(u32 a0, u32 size, u32 extra);
 
 // 0x0034b3dc (120 B): 0x10000-arena variant of the pool allocator.
-void* AsdMemory_func_0034b3dc(u32 size, u32 extra);
+void* AsdMemory_func_0034b3dc(u32 a0, u32 size, u32 extra);
 
 // ---------------------------------------------------------------------------
 // AsdSaveCommon functions
