@@ -2060,7 +2060,7 @@ address,size,status,category,name,src_file
 0x00198f1c,176,matching,script_vm,script_vm_func_00198f1c,src/engine/leaf_batch27_a.cpp
 0x00198fcc,848,non_matching,camp,camp_func_00198fcc,src/engine/leaf_batch45_a.cpp
 0x0019931c,996,matching,camp,camp_func_0019931c,src/engine/leaf_batch43_b.cpp
-0x00199700,848,matching,camp,camp_func_00199700,src/engine/leaf_batch45_a.cpp
+0x00199700,848,non_matching,camp,camp_func_00199700,src/engine/leaf_batch45_a.cpp
 0x00199a50,68,matching,unknown,func_00199a50,src/engine/leaf_batch29_a.cpp
 0x00199a94,2392,matching,battle,battle_func_00199a94,src/engine/leaf_batch46_c.cpp
 0x0019a3ec,12900,matching,camp,Camp_DrawStereoViews,src/camp/camp_main.cpp
