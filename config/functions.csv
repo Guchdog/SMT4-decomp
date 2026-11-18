@@ -3702,7 +3702,7 @@ address,size,status,category,name,src_file
 0x00245be8,508,matching,camp,camp_func_00245be8,src/engine/leaf_batch44_c.cpp
 0x00245de4,72,matching,script_vm,script_vm_func_00245de4,src/engine/leaf_batch24_b.cpp
 0x00245e2c,76,matching,script_vm,script_vm_func_00245e2c,src/engine/leaf_batch11_b.cpp
-0x00245e78,452,matching,ui,ui_func_00245e78,src/engine/leaf_batch45_b.cpp
+0x00245e78,452,non_matching,ui,ui_func_00245e78,src/engine/leaf_batch45_b.cpp
 0x0024603c,120,matching,unknown,func_0024603c,src/engine/leaf_batch23_b.cpp
 0x002460b4,312,matching,unknown,func_002460b4,src/engine/leaf_batch41_a.cpp
 0x002461ec,180,non_matching,battle,battle_func_002461ec,src/engine/leaf_batch31_c.cpp
