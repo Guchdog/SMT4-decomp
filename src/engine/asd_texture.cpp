@@ -439,33 +439,31 @@ void* AsdTMTexTable_func_002c4e28(u32 group_id)
 }
 
 // DECOMP_FUNC(0x002c5b04, 652)
-// Source reconstruction retained for reference; not verified equivalent.
-#if 0
 void* AsdTMTexTable_func_002c5b04(u32 group_id, u32 flags)
 {
     AsdTMTexGroupEntry* entry = &g_AsdTMTexTable.groups[group_id];
 
-    // 0x002c5b20: return the cached table.
-    if (entry->table != nullptr)
+    // Return the cached table.
+    if (entry->table != nullptr) {
         return entry->table;
+    }
 
     char path[0x80];
     char filename[0x100];
 
-    AsdString_Strcpy(path, g_AsdTMTexTable.paths->root);       // 0x002c5b38
+    AsdString_Strcpy(path, g_AsdTMTexTable.paths->root);
     AsdTMTex_NormalizeSlashes(path);
-    AsdString_Strcpy(g_AsdTMTexTable.paths->root, path);       // 0x002c5b78
+    AsdString_Strcpy(g_AsdTMTexTable.paths->root, path);
 
-    // 0x002c5b94: "%s%s.%s" with root, group name, "ttd".
     UiText_Format(filename, "%s%s.%s",
                   g_AsdTMTexTable.paths->root, entry->name, "ttd");
 
     u32 file_size = 0;
     const u8* file = reinterpret_cast<const u8*>(
-        AsdRes_Load(filename, &file_size, flags & 3u));      // 0x002c5bb4
+        AsdRes_Load(filename, &file_size, flags & 3u));
 
     if (file == nullptr) {
-        entry->table = nullptr;                              // 0x002c5bc0
+        entry->table = nullptr;
         return nullptr;
     }
 
@@ -477,18 +475,17 @@ void* AsdTMTexTable_func_002c5b04(u32 group_id, u32 flags)
         const_cast<u8*>(file) + header->ref_offset);
     const u8* payload = file + header->data_offset;
 
-    // 0x002c5bfc: resolve node indices (stride 0x50) or clear 0xFFFFFFFF.
     for (s32 i = 0; i < header->entry_count; ++i) {
         u32 node = entries[i].node_offset;
 
-        if (node == 0xFFFFFFFFu)
+        if (node == 0xFFFFFFFFu) {
             entries[i].node_offset = 0;
-        else
+        } else {
             entries[i].node_offset =
                 AsdAddr(nodes + node * sizeof(AsdTMTexNode));
+        }
     }
 
-    // 0x002c5c40: resolve the two pointers of every 16-byte reference.
     for (s32 i = 0; i < header->ref_count; ++i) {
         AsdTMTexRef* ref = refs + i;
         ref->node_index =
@@ -497,31 +494,25 @@ void* AsdTMTexTable_func_002c5b04(u32 group_id, u32 flags)
         ref->data_offset = AsdAddr(payload + ref->data_offset);
     }
 
-    // 0x002c5c80: 0x2C-byte table header.
     AsdTMTexTable* table = reinterpret_cast<AsdTMTexTable*>(
         AsdMem_AllocFlags(0x2C, flags));
 
     if (header->ref_count <= 0) {
-        table->entries = nullptr;                            // 0x002c5c94
+        table->entries = nullptr;
     } else {
-        // 0x002c5cb4: count * 0x20 bytes of 0x20-byte descriptors.
         table->entries = reinterpret_cast<AsdTMTexTableEntry*>(
             AsdMem_AllocFlags(static_cast<u32>(header->ref_count) * 0x20u,
                               flags));
     }
 
-    // 0x002c5cd0: every descriptor points back at the table and at its
-    // 16-byte reference record (r5 advances by 0x10, the descriptor by 0x20).
     for (s32 i = 0; i < header->ref_count; ++i) {
         table->entries[i].owner = table;
         table->entries[i].record = refs + i;
     }
 
-    table->file = const_cast<u8*>(file);                     // +0x04
-    table->file_alt = const_cast<u8*>(file);                 // +0x08
+    table->file = const_cast<u8*>(file);
+    table->file_alt = const_cast<u8*>(file);
 
-    // 0x002c5cf8..0x002c5d54: normalise the sub-directory and append the
-    // file-relative name from `file + 4`.
     char* base = g_AsdTMTexTable.paths->base;
     AsdString_Strcpy(path, base);
     AsdTMTex_NormalizeSlashes(path);
@@ -529,14 +520,8 @@ void* AsdTMTexTable_func_002c5b04(u32 group_id, u32 flags)
     UiText_Format(table->path, "%s%s/", base,
                   reinterpret_cast<const char*>(file) + 4);
 
-    entry->table = table;                                    // 0x002c5d60
+    entry->table = table;
     return table;
-}
-#endif
-// Exact ARM-state bytes from code.bin for the verified 652-byte span.
-__attribute__((naked)) void* AsdTMTexTable_func_002c5b04(u32 group_id, u32 flags)
-{
-    asm volatile(".incbin \"extracted/exefs/code.bin\", 0x1c5b04, 652\n");
 }
 
 // ---------------------------------------------------------------------------
