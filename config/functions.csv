@@ -6530,7 +6530,7 @@ address,size,status,category,name,src_file
 0x002ee9c8,48,matching,battle,battle_func_002ee9c8,src/engine/leaf_batch19_c.cpp
 0x002ee9f8,52,matching,ui,ui_func_002ee9f8,src/engine/leaf_batch34_b.cpp
 0x002eea2c,256,non_matching,camp,camp_func_002eea2c,src/engine/leaf_batch32_c.cpp
-0x002eeb2c,816,matching,camp,camp_func_002eeb2c,src/engine/leaf_batch45_a.cpp
+0x002eeb2c,816,non_matching,camp,camp_func_002eeb2c,src/engine/leaf_batch45_a.cpp
 0x002eee5c,88,matching,engine,engine_func_002eee5c,src/engine/leaf_batch28_b.cpp
 0x002eeeb4,56,matching,engine,engine_func_002eeeb4,src/engine/leaf_batch27_b.cpp
 0x002eeeec,88,matching,engine,engine_func_002eeeec,src/engine/leaf_batch29_b.cpp
