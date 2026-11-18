@@ -7264,7 +7264,7 @@ address,size,status,category,name,src_file
 0x0031c3c4,28,matching,unknown,func_0031c3c4,src/engine/leaf_batch24_c.cpp
 0x0031c3e0,56,matching,engine,engine_func_0031c3e0,src/engine/leaf_batch20_c.cpp
 0x0031c418,124,matching,script_vm,script_vm_func_0031c418,src/engine/leaf_batch20_c.cpp
-0x0031c494,856,matching,script_vm,script_vm_func_0031c494,src/engine/leaf_batch45_a.cpp
+0x0031c494,856,non_matching,script_vm,script_vm_func_0031c494,src/engine/leaf_batch45_a.cpp
 0x0031c7ec,180,matching,script_vm,script_vm_func_0031c7ec,src/engine/leaf_batch24_c.cpp
 0x0031c8a0,152,matching,engine,engine_func_0031c8a0,src/engine/leaf_batch23_c.cpp
 0x0031c938,184,matching,engine,engine_func_0031c938,src/engine/leaf_batch23_c.cpp
