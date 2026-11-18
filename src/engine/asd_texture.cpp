@@ -297,11 +297,10 @@ __attribute__((naked)) void AsdTexTMX_func_0019fb58(AsdTexture* texture, const A
 // ---------------------------------------------------------------------------
 
 // DECOMP_FUNC(0x00257e6c, 436)
-// Source reconstruction retained for reference; not verified equivalent.
-#if 0
 void AsdTexTGA_func_00257e6c(AsdTexture* texture, const AsdTGAHeader* tga,
                              const void* unused, u32 texture_kind)
 {
+    (void)unused;
     const u8* const signature = reinterpret_cast<const u8*>(tga) + 0x12;
     if (AsdMem_Compare(signature, "NW4C_Tga Ver1.0", 0x10) != 0)
         return;
@@ -312,22 +311,20 @@ void AsdTexTGA_func_00257e6c(AsdTexture* texture, const AsdTGAHeader* tga,
     const u32 width = static_cast<u32>(header_bytes[0x0C]) |
                       (static_cast<u32>(header_bytes[0x0D]) << 8);
 
-    texture->height = height;               // +0x18
-    texture->width = width;                 // +0x14
-    texture->kind = texture_kind;           // +0x08 from r3
-    texture->format = 0xDE1;                // +0x04
+    texture->height = height;
+    texture->width = width;
+    texture->kind = texture_kind;
+    texture->format = 0xDE1;
 
-    // The format's offset field is unaligned at +0x22 in the file header.
     const u32 chunk_offset = *reinterpret_cast<const u32*>(signature + 0x10);
     const u8* chunk = header_bytes + chunk_offset;
 
     for (;;) {
-        // 0x00257EF8: `nw4c_txd` carries the raw pixel payload.
         if (AsdMem_Compare(chunk, "nw4c_txd", 8) == 0) {
             const u32 size = reinterpret_cast<const AsdTGABlock*>(chunk)->size;
             const u8* payload = chunk + 0x0C;
 
-            texture->data_size = size - 0x0Cu;              // +0x28
+            texture->data_size = size - 0x0Cu;
             texture->data = AsdWork_Alloc2(0x10000, 0x100, 0,
                                            texture->data_size, 0x80, 1);
             AsdMem_Copy(texture->data, payload, texture->data_size);
@@ -339,28 +336,22 @@ void AsdTexTGA_func_00257e6c(AsdTexture* texture, const AsdTGAHeader* tga,
             AsdMem_Copy(name, chunk + 0x0C, size - 0x0C);
 
             if (AsdMem_Compare(name, "Etc1_a4", 8) == 0) {
-                texture->param = 0x1401;        // +0x20, 0x00257F9C
-                texture->format2 = 0x675B;      // +0x1C, 0x00257FA0
-            } else if (AsdMem_Compare(name, "Etc1", 8) == 0) {
-                texture->format2 = 0x675A;      // +0x1C, 0x00257FC4
-                texture->param = 0x1401;        // +0x20
+                texture->param = 0x1401;
+                texture->format2 = 0x675B;
+            } else {
+                const u8 etc1[8] = {'E', 't', 'c', '1', 0, 0, 0, 0};
+                if (AsdMem_Compare(name, etc1, 8) == 0) {
+                    texture->format2 = 0x675A;
+                    texture->param = 0x1401;
+                }
             }
         }
 
-        // 0x00257FD0: `nw4c_end` terminates the chain; anything else advances
-        // by the child block size.
         if (AsdMem_Compare(chunk, "nw4c_end", 8) == 0)
             break;
 
         chunk += reinterpret_cast<const AsdTGABlock*>(chunk)->size;
     }
-}
-#endif
-// Exact ARM-state bytes from code.bin for the verified 436-byte span.
-__attribute__((naked)) void AsdTexTGA_func_00257e6c(AsdTexture* texture, const AsdTGAHeader* tga,
-                             const void* unused, u32 texture_kind)
-{
-    asm volatile(".incbin \"extracted/exefs/code.bin\", 0x157e6c, 436\n");
 }
 
 // ---------------------------------------------------------------------------

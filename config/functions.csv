@@ -4021,7 +4021,7 @@ address,size,status,category,name,src_file
 0x00257bf0,148,matching,camp,camp_func_00257bf0,src/engine/leaf_batch38_c.cpp
 0x00257c84,476,matching,camp,camp_func_00257c84,src/engine/leaf_batch33_c.cpp
 0x00257e60,12,matching,engine,engine_func_00257e60,src/engine/leaf_batch38_a.cpp
-0x00257e6c,436,matching,engine,AsdTexTGA_func_00257e6c,src/engine/asd_texture.cpp
+0x00257e6c,436,non_matching,engine,AsdTexTGA_func_00257e6c,src/engine/asd_texture.cpp
 0x00258020,32,matching,script_vm,script_vm_func_00258020,src/engine/leaf_batch23_b.cpp
 0x00258040,52,matching,script_vm,script_vm_func_00258040,src/engine/leaf_batch24_b.cpp
 0x00258074,52,matching,script_vm,script_vm_func_00258074,src/engine/leaf_batch19_c.cpp
