@@ -2007,7 +2007,7 @@ address,size,status,category,name,src_file
 0x00190d48,2536,matching,ui,ui_func_00190d48,src/engine/leaf_batch44_a.cpp
 0x00191730,1076,matching,battle,battle_func_00191730,src/engine/leaf_batch40_a.cpp
 0x00191b64,400,non_matching,script_vm,script_vm_func_00191b64,src/engine/leaf_batch28_a.cpp
-0x00191cf4,440,matching,camp,camp_func_00191cf4,src/engine/leaf_batch45_b.cpp
+0x00191cf4,440,non_matching,camp,camp_func_00191cf4,src/engine/leaf_batch45_b.cpp
 0x00191eac,208,non_matching,ui,saveLoadUI_Init,src/ui/save_load.cpp
 0x00191f7c,192,matching,battle,battle_func_00191f7c,src/engine/leaf_batch30_a.cpp
 0x0019203c,32,matching,engine,engine_func_0019203c,src/engine/leaf_batch18_b.cpp
