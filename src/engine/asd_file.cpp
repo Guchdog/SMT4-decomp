@@ -1244,32 +1244,9 @@ void* AsdMemory_func_00346d38(u32 a0, u32 size, u32 extra) {
 
 
 //
-__attribute__((naked)) void* AsdMemory_func_00348a1c(u32, u32)
-{
-    asm volatile(
-        ".word 0xe92d4030\n" // push {r4, r5, lr}
-        ".word 0xe1a05001\n" // mov r5, r1
-        ".word 0xe24dd00c\n" // sub sp, sp, #0xc
-        ".word 0xe1a04002\n" // mov r4, r2
-        ".word 0xe3a01067\n" // mov r1, #0x67
-        ".word 0xe28f0028\n" // add r0, pc, #0x28
-        ".word 0xe1a00000\n" // mov r0, r0
-        ".word 0xe3a00001\n" // mov r0, #1
-        ".word 0xe3a01c01\n" // mov r1, #0x100
-        ".word 0xe58d0004\n" // str r0, [sp, #4]
-        ".word 0xe1a03005\n" // mov r3, r5
-        ".word 0xe3a02000\n" // mov r2, #0
-        ".word 0xe1a00001\n" // mov r0, r1
-        ".word 0xe58d4000\n" // str r4, [sp]
-        ".word 0xebfddb4f\n" // bl 0x002bf798
-        ".word 0xe28dd00c\n" // add sp, sp, #0xc
-        ".word 0xe8bd8030\n" // pop {r4, r5, pc}
-        // c:\\SMT4\\XRD686\\AsdSDK\\Source\\Sys\\Mem\\AsdMemory.cpp\0
-        ".word 0x535c3a63, 0x5c34544d, 0x36445258, 0x415c3638\n"
-        ".word 0x44536473, 0x6f535c4b, 0x65637275, 0x7379535c\n"
-        ".word 0x6d654d5c, 0x6473415c, 0x6f6d654d, 0x632e7972\n"
-        ".word 0x00007070\n"
-    );
+void* AsdMemory_func_00348a1c(u32 a0, u32 size, u32 extra) {
+    (void)a0;
+    return AsdWork_Alloc2(0x100, 0x100, 0, size, extra, 1);
 }
 // DECOMP_FUNC(0x0034b3dc, 120)
 
