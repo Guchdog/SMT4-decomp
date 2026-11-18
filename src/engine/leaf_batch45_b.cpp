@@ -1066,72 +1066,61 @@ extern "C" void engine_func_0015b5b8(u8* dst, const u8* src) {
 }
 
 // DECOMP_FUNC(0x0012f768, 492)
-extern "C" __attribute__((naked)) void engine_func_0012f768() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x47f0, 0xe92d, 0x5000, 0xe1a0\n"
-        ".hword 0x9000, 0xe3a0, 0x9004, 0xe580\n"
-        ".hword 0x90a0, 0xe580, 0x0020, 0xe590\n"
-        ".hword 0x4009, 0xe1a0, 0x0000, 0xe350\n"
-        ".hword 0x0008, 0x9a00, 0x0024, 0xe595\n"
-        ".hword 0x1184, 0xe084, 0x0181, 0xe080\n"
-        ".hword 0x1000, 0xe3a0, 0x4183, 0xeb00\n"
-        ".hword 0x0020, 0xe595, 0x4001, 0xe284\n"
-        ".hword 0x0004, 0xe150, 0xfff6, 0x8aff\n"
-        ".hword 0xf000, 0xe320, 0x2e97, 0xeb06\n"
-        ".hword 0x4000, 0xe1a0, 0x1001, 0xe3a0\n"
-        ".hword 0x2e3b, 0xeb06, 0x1000, 0xe1a0\n"
-        ".hword 0x0004, 0xe1a0, 0x1569, 0xeb06\n"
-        ".hword 0x9020, 0xe585, 0x0088, 0xe285\n"
-        ".hword 0x9024, 0xe585, 0x4475, 0xeb00\n"
-        ".hword 0x00b4, 0xe595, 0x0000, 0xe350\n"
-        ".hword 0x0055, 0x0a00, 0x1154, 0xe59f\n"
-        ".hword 0x202c, 0xe595, 0x0000, 0xe3a0\n"
-        ".hword 0x4028, 0xe595, 0x8028, 0xe285\n"
-        ".hword 0x1192, 0xe0a0, 0x6000, 0xe3a0\n"
-        ".hword 0x73a0, 0xe1a0, 0x0000, 0xe357\n"
-        ".hword 0x0008, 0x9a00, 0x1000, 0xe594\n"
-        ".hword 0x0004, 0xe1a0, 0x1004, 0xe591\n"
-        ".hword 0xff31, 0xe12f, 0x4b01, 0xe284\n"
-        ".hword 0x6001, 0xe286, 0x0006, 0xe157\n"
-        ".hword 0x4f56, 0xe284, 0xfff6, 0x8aff\n"
-        ".hword 0x1018, 0xe598, 0x2018, 0xe288\n"
-        ".hword 0x0014, 0xe288, 0xf4d0, 0xeb05\n"
-        ".hword 0x100c, 0xe598, 0x200c, 0xe288\n"
-        ".hword 0x0008, 0xe288, 0xf4cc, 0xeb05\n"
-        ".hword 0x10b4, 0xe285, 0x00a4, 0xe285\n"
-        ".hword 0x0006, 0xe891, 0x15cf, 0xeb06\n"
-        ".hword 0x10dc, 0xe59f, 0x204c, 0xe595\n"
-        ".hword 0x0000, 0xe3a0, 0x4048, 0xe595\n"
-        ".hword 0x8048, 0xe285, 0x1192, 0xe0a0\n"
-        ".hword 0x6000, 0xe3a0, 0x74a0, 0xe1a0\n"
-        ".hword 0x0000, 0xe357, 0x0007, 0x9a00\n"
-        ".hword 0x1000, 0xe594, 0x0004, 0xe1a0\n"
-        ".hword 0x1004, 0xe591, 0xff31, 0xe12f\n"
-        ".hword 0x6001, 0xe286, 0x0006, 0xe157\n"
-        ".hword 0x4e46, 0xe284, 0xfff7, 0x8aff\n"
-        ".hword 0x1018, 0xe598, 0x2018, 0xe288\n"
-        ".hword 0x0014, 0xe288, 0xf4b2, 0xeb05\n"
-        ".hword 0x100c, 0xe598, 0x200c, 0xe288\n"
-        ".hword 0x0008, 0xe288, 0xf4ae, 0xeb05\n"
-        ".hword 0x1078, 0xe59f, 0x206c, 0xe595\n"
-        ".hword 0x0000, 0xe3a0, 0x4068, 0xe595\n"
-        ".hword 0x8068, 0xe285, 0x1192, 0xe0a0\n"
-        ".hword 0x6000, 0xe3a0, 0x7520, 0xe1a0\n"
-        ".hword 0x0000, 0xe357, 0x0008, 0x9a00\n"
-        ".hword 0x1000, 0xe594, 0x0004, 0xe1a0\n"
-        ".hword 0x1004, 0xe591, 0xff31, 0xe12f\n"
-        ".hword 0x4b0a, 0xe284, 0x6001, 0xe286\n"
-        ".hword 0x0006, 0xe157, 0x4ff5, 0xe284\n"
-        ".hword 0xfff6, 0x8aff, 0x1018, 0xe598\n"
-        ".hword 0x2018, 0xe288, 0x0014, 0xe288\n"
-        ".hword 0xf497, 0xeb05, 0x100c, 0xe598\n"
-        ".hword 0x200c, 0xe288, 0x0008, 0xe288\n"
-        ".hword 0xf493, 0xeb05, 0x90b4, 0xe585\n"
-        ".hword 0x90b8, 0xe585, 0x87f0, 0xe8bd\n"
-        ".hword 0x05fd, 0x17f4, 0x5075, 0x7507\n"
-        ".hword 0x2ea3, 0x175d\n"
-    );
+extern "C" void engine_func_0013fdb0(void* elem, u32 zero);
+extern "C" void* engine_func_002bb218();
+extern "C" u32 engine_func_002bb0b4(void* obj, u32 mode);
+extern "C" void engine_func_002b4d78(void* obj, u32 val);
+extern "C" void func_001409b8(void* ptr);
+extern "C" void func_002acb8c(void* field_ptr, u32 val, void* src_ptr);
+extern "C" void func_002b4fa8(void* dst, u32 a, u32 b);
+
+extern "C" void engine_func_0012f768(u8* obj) {
+    auto word_at = [](u8* base, u32 off) -> u32& {
+        return *reinterpret_cast<u32*>(base + off);
+    };
+
+    word_at(obj, 0x04u) = 0u;
+    word_at(obj, 0xA0u) = 0u;
+
+    const u32 count0 = word_at(obj, 0x20u);
+    u8* const arr0 = reinterpret_cast<u8*>(static_cast<std::uintptr_t>(word_at(obj, 0x24u)));
+    for (u32 i = 0u; i < count0; ++i) {
+        engine_func_0013fdb0(arr0 + i * 0x48u, 0u);
+    }
+
+    void* const mgr = engine_func_002bb218();
+    const u32 handle = engine_func_002bb0b4(mgr, 1u);
+    engine_func_002b4d78(mgr, handle);
+
+    word_at(obj, 0x20u) = 0u;
+    word_at(obj, 0x24u) = 0u;
+    func_001409b8(obj + 0x88u);
+
+    if (word_at(obj, 0xB4u) == 0u) {
+        return;
+    }
+
+    auto destroy_block = [&word_at](u8* block, u32 stride) {
+        u8* elem = reinterpret_cast<u8*>(static_cast<std::uintptr_t>(word_at(block, 0x00u)));
+        const u32 count = word_at(block, 0x04u) / stride;
+        for (u32 i = 0u; i < count; ++i) {
+            using DtorFn = void (*)(void*);
+            const u32* vtbl = *reinterpret_cast<const u32* const*>(elem);
+            DtorFn dtor = reinterpret_cast<DtorFn>(static_cast<std::uintptr_t>(vtbl[1]));
+            dtor(elem);
+            elem += stride;
+        }
+        func_002acb8c(block + 0x14u, word_at(block, 0x18u), block + 0x18u);
+        func_002acb8c(block + 0x08u, word_at(block, 0x0Cu), block + 0x0Cu);
+    };
+
+    destroy_block(obj + 0x28u, 0x558u);
+    func_002b4fa8(obj + 0xA4u, word_at(obj, 0xB4u), word_at(obj, 0xB8u));
+    destroy_block(obj + 0x48u, 0x460u);
+    destroy_block(obj + 0x68u, 0x2BD4u);
+
+    word_at(obj, 0xB4u) = 0u;
+    word_at(obj, 0xB8u) = 0u;
 }
 
 // DECOMP_FUNC(0x00354a44, 492)
