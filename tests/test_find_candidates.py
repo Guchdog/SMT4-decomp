@@ -13,6 +13,32 @@ from tools.find_candidates import (
 
 
 class TestFindCandidates(unittest.TestCase):
+    def test_asm_symbol_labels_do_not_mark_cpp_as_inline_assembly(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            source = root / 'candidate.cpp'
+            row = {'address': '0x00101308', 'size': '8', 'src_file': 'candidate.cpp'}
+            source.write_text(
+                '// DECOMP_FUNC(0x00101308, 8)\n'
+                'int semantic() { return 1; }\n'
+                'extern "C" int alias(int value) __asm__("original_symbol");\n'
+                'extern "C" int other(int value,\n  int other)\n'
+                '  __asm__("other_symbol");\n',
+                encoding='utf-8',
+            )
+            self.assertFalse(is_asm_backed_row(row, repo_root=root))
+            source.write_text(
+                '// DECOMP_FUNC(0x00101308, 8)\n'
+                'void wrapped() { __asm__("bx lr"); }\n', encoding='utf-8',
+            )
+            self.assertTrue(is_asm_backed_row(row, repo_root=root))
+            source.write_text(
+                '// DECOMP_FUNC(0x00101308, 8)\n'
+                'void wrapped() {\n  if (flag)\n    __asm__("bx lr");\n}\n',
+                encoding='utf-8',
+            )
+            self.assertTrue(is_asm_backed_row(row, repo_root=root))
+
     def test_terminal_return_recognizes_common_arm_and_thumb_epilogues(self):
         samples = (
             (capstone.CS_MODE_ARM, bytes.fromhex("1eff2fe1")),  # bx lr

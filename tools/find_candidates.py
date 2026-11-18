@@ -111,6 +111,12 @@ _ASM_BLOCK_RE = re.compile(
     r"\b(?:__asm__|asm)\b|\.incbin\b|\.word\b|\.inst\b|"
     r"__attribute__\s*\(\([^)]*\bnaked\b"
 )
+# GNU assembler labels on declarations select a linker symbol; they are not
+# inline-assembly bodies. Match declaration lines, not control-flow statements.
+_ASM_LABEL_RE = re.compile(
+    r'(?m)^(?![ \t]*(?:if|while|for|switch)\b)([ \t]*[^\n;{}]*\))'
+    r'\s*__asm__\s*\(\s*"(?:\\.|[^"\\])*"\s*\)'
+)
 
 
 def _asm_backed_index(source: Path) -> dict[tuple[int, int], bool]:
@@ -131,7 +137,7 @@ def _asm_backed_index(source: Path) -> dict[tuple[int, int], bool]:
         # The previous row-local search selected the first exact marker if a
         # source happened to contain duplicates; preserve that behavior.
         if key not in result:
-            result[key] = _ASM_BLOCK_RE.search(block) is not None
+            result[key] = _ASM_BLOCK_RE.search(_ASM_LABEL_RE.sub(r"\1", block)) is not None
     return result
 
 
