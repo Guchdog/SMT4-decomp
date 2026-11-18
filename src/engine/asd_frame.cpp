@@ -675,90 +675,31 @@ void* Npc2d_func_002523d0(u32 id, u32 arg1, s32 pose_arg)
 // ---------------------------------------------------------------------------
 
 //
-__attribute__((naked)) void* Npc2d_func_002860b4(u32, u32, s32)
+void* Npc2d_func_002860b4(u32 id, u32 arg1, s32 pose_arg)
 {
-    asm volatile(
-        ".word 0xe92d41f0\n" // push {r4, r5, r6, r7, r8, lr}
-        ".word 0xe1a06001\n" // preserve arg1
-        ".word 0xe1a07000\n" // preserve id
-        ".word 0xe59f0110\n" // source path address
-        ".word 0xe24dd010\n"
-        ".word 0xe1a05002\n" // preserve pose argument
-        ".word 0xe3a01fb2\n"
-        ".word 0xe1a00000\n"
-        ".word 0xe3a08001\n"
-        ".word 0xe3a01c01\n"
-        ".word 0xe3a03098\n" // allocate 0x98-byte sprite
-        ".word 0xe3a02000\n"
-        ".word 0xe1a00001\n"
-        ".word 0xe58d8000\n"
-        ".word 0xeb00faa4\n" // AsdMem_Alloc (0x002c4b84)
-        ".word 0xe1a04000\n"
-        ".word 0xe3a01098\n"
-        ".word 0xeb00fa8c\n" // AsdMem_Zero (0x002c4b30)
-        ".word 0xed9f0a36\n" // 1.0f
-        ".word 0xeddf0a36\n" // 0.0f
-        ".word 0xed9f1a36\n" // 0.25f
-        ".word 0xe2842020\n"
-        ".word 0xe3a0101f\n"
-        ".word 0xec820a03\n" // fields +0x20/+0x24/+0x28
-        ".word 0xe2842004\n"
-        ".word 0xe5845010\n" // pose argument
-        ".word 0xe8820042\n" // fields +0x04/+0x08
-        ".word 0xe3a00000\n"
-        ".word 0xe5c40030\n"
-        ".word 0xe1a00007\n"
-        ".word 0xebfefe84\n" // AsdTable_FindNpcRow (0x00245b44)
-        ".word 0xe1d002b2\n" // unsigned halfword at row +0x22
-        ".word 0xe2600000\n" // negate halfword
-        ".word 0xe584004c\n"
-        ".word 0xeb00ef79\n" // AsdScene_LoadMode (0x002c1f28)
-        ".word 0xe3500000\n"
-        ".word 0x1584800c\n" // scene busy: set sprite state to 1
-        ".word 0x1a000005\n"
-        ".word 0xe594004c\n"
-        ".word 0xe3a01001\n"
-        ".word 0xeb003876\n" // Npc2d_CreateSprite (0x00294334)
-        ".word 0xe3a01002\n"
-        ".word 0xe5840048\n"
-        ".word 0xe584100c\n" // set sprite state to 2
-        ".word 0xe3750064\n" // pose threshold mapping
-        ".word 0xd3a00010\n"
-        ".word 0xe5847000\n"
-        ".word 0xda00000b\n"
-        ".word 0xe375003c\n"
-        ".word 0xd3a00003\n"
-        ".word 0xda000008\n"
-        ".word 0xe3550064\n"
-        ".word 0xa3a00011\n"
-        ".word 0xaa000005\n"
-        ".word 0xe3550028\n"
-        ".word 0xa3a00004\n"
-        ".word 0xaa000002\n"
-        ".word 0xe3550000\n"
-        ".word 0xb3a00012\n"
-        ".word 0xa3a00005\n"
-        ".word 0xe5840038\n" // store mapped pose
-        ".word 0xe59f003c\n" // callback data 0x002db8c4
-        ".word 0xe59f103c\n" // callback 0x001dfb60
-        ".word 0xed9f0a0c\n" // 1.0f / 3.0f
-        ".word 0xe3a03000\n"
-        ".word 0xed840a06\n" // field_18
-        ".word 0xe88d0013\n" // callback stack args and sprite pointer
-        ".word 0xe1a02003\n"
-        ".word 0xe59f0028\n" // "EVE_2dTex"
-        ".word 0xe3a01002\n"
-        ".word 0xeb00fde9\n" // AsdTask_CreateCalc (0x002c5978)
-        ".word 0xe28dd010\n"
-        ".word 0xe8bd81f0\n"
-        ".word 0x004035d0\n"
-        ".word 0x3f800000\n"
-        ".word 0x00000000\n"
-        ".word 0x3e800000\n"
-        ".word 0x3ea8f5c3\n" // 1.0f / 3.0f
-        ".word 0x001dfb60\n"
-        ".word 0x002db8c4\n"
-        ".word 0x004035c4\n");
+    Npc2dSprite* sprite = static_cast<Npc2dSprite*>(
+        AsdMem_Alloc(0x100, 0x100, 0, 0x98, 1));
+    AsdMem_Zero(sprite, 0x98);
+
+    sprite->field_20 = 1.0f;
+    sprite->field_24 = 0.0f;
+    sprite->field_28 = 0.25f;
+    sprite->field_04 = 0x1F;
+    sprite->field_08 = arg1;
+    sprite->field_10 = pose_arg;
+    sprite->field_30 = 0;
+
+    void* row = AsdTable_FindNpcRow(id);
+    sprite->field_4c = -static_cast<s32>(
+        *reinterpret_cast<const u16*>(static_cast<const u8*>(row) + 0x22));
+
+    Npc2d_SetupSpriteData(sprite);
+
+    sprite->field_00 = id;
+    sprite->field_38 = static_cast<u32>(Npc2d_PoseFromArgument(pose_arg));
+    sprite->field_18 = 0.33f;
+
+    return Npc2d_CreateWidget(sprite);
 }
 // DECOMP_FUNC(0x002fdfb8, 336)
 
