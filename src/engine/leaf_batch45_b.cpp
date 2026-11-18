@@ -2,65 +2,76 @@
 
 // Batch 45 B: 100 CFG-checked, disjoint TODO functions encoded byte-for-byte.
 
+namespace script_vm_2900b0_calls {
+extern "C" void script_vm_func_0028efe0(u32 quest_id, u32 a1, u32 a2);
+extern "C" void* script_vm_func_00385edc(void* bundle, u32 quest_id);
+extern "C" void ui_func_002be7fc(char* dst, const char* fmt, ...);
+extern "C" void* script_vm_func_002c5e2c(const char* path);
+extern "C" void script_vm_func_00296d8c(void* text, u32 a1, u32 a2, u32 a3, u32 a4, void* mbm, u32 idx);
+extern "C" s32 script_vm_func_00241d70(u32 quest_id);
+extern "C" s32 script_vm_func_00333910(u32 quest_id, u32 mode);
+extern "C" void* script_vm_func_002b6700(u32 quest_id);
+extern "C" const char* script_vm_func_002bd1b0(const void* src, u32 a1);
+extern "C" void AsdText_func_00296de0_call(void* text, u32 a1, u32 a2, u32 a3, u32 a4, const char* fmt, const char* s)
+    __asm__("_ZN4smt46engine21AsdText_func_00296de0EPNS0_7AsdTextEiiiiPKc");
+extern "C" void script_vm_func_0029025c(u32 quest_id);
+} // namespace script_vm_2900b0_calls
+
 // DECOMP_FUNC(0x002900b0, 428)
-extern "C" __attribute__((naked)) void script_vm_func_002900b0() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x41f0, 0xe92d, 0x5000, 0xe1b0\n"
-        ".hword 0x0174, 0xe59f, 0xd040, 0xe24d\n"
-        ".hword 0x6001, 0xe1a0, 0x4000, 0xe590\n"
-        ".hword 0x0057, 0x0a00, 0x2001, 0xe3a0\n"
-        ".hword 0x1002, 0xe1a0, 0x0005, 0xe1a0\n"
-        ".hword 0xfbc0, 0xebff, 0x0154, 0xe59f\n"
-        ".hword 0x1005, 0xe1a0, 0x0000, 0xe590\n"
-        ".hword 0xd77b, 0xeb03, 0x0000, 0xe350\n"
-        ".hword 0x8000, 0xe3a0, 0x0003, 0x0a00\n"
-        ".hword 0x1001, 0xe3a0, 0x05e0, 0xe584\n"
-        ".hword 0x15f7, 0xe5c4, 0x0008, 0xea00\n"
-        ".hword 0x2005, 0xe1a0, 0x1f4a, 0xe28f\n"
-        ".hword 0x000d, 0xe1a0, 0xb9b8, 0xfa00\n"
-        ".hword 0x000d, 0xe1a0, 0xf000, 0xe320\n"
-        ".hword 0xd741, 0xeb00, 0x05e0, 0xe584\n"
-        ".hword 0x85f7, 0xe5c4, 0x7003, 0xe3a0\n"
-        ".hword 0x1004, 0xe28d, 0x7000, 0xe58d\n"
-        ".hword 0x0101, 0xe881, 0x3000, 0xe3a0\n"
-        ".hword 0x05d4, 0xe594, 0x2000, 0xe3e0\n"
-        ".hword 0x1007, 0xe1a0, 0x1b0e, 0xeb00\n"
-        ".hword 0x0005, 0xe1a0, 0xf000, 0xe320\n"
-        ".hword 0xc704, 0xebfe, 0x0000, 0xe350\n"
-        ".hword 0xf000, 0xe320, 0x0008, 0xda00\n"
-        ".hword 0x15e0, 0xe594, 0x0008, 0xe58d\n"
-        ".hword 0x7000, 0xe58d, 0x1004, 0xe58d\n"
-        ".hword 0x05dc, 0xe594, 0x3000, 0xe3a0\n"
-        ".hword 0x2000, 0xe3e0, 0x1003, 0xe3a0\n"
-        ".hword 0x1aff, 0xeb00, 0x2000, 0xe3a0\n"
-        ".hword 0x1001, 0xe3a0, 0x0005, 0xe1a0\n"
-        ".hword 0xfb90, 0xebff, 0x1006, 0xe1a0\n"
-        ".hword 0x0005, 0xe1a0, 0x8dd9, 0xeb02\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x0010, 0xaa00, 0x0005, 0xe1a0\n"
-        ".hword 0x9950, 0xeb00, 0x1000, 0xe3a0\n"
-        ".hword 0x00e8, 0xe280, 0xb3f9, 0xeb00\n"
-        ".hword 0x1088, 0xe28f, 0x1004, 0xe58d\n"
-        ".hword 0x0008, 0xe58d, 0x7000, 0xe58d\n"
-        ".hword 0x05d8, 0xe594, 0x3000, 0xe3a0\n"
-        ".hword 0x2000, 0xe3e0, 0x1003, 0xe3a0\n"
-        ".hword 0x1afc, 0xeb00, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0x0008, 0xea00\n"
-        ".hword 0x15e4, 0xe594, 0x0008, 0xe58d\n"
-        ".hword 0x7000, 0xe58d, 0x1004, 0xe58d\n"
-        ".hword 0x05d8, 0xe594, 0x3000, 0xe3a0\n"
-        ".hword 0x2000, 0xe3e0, 0x1003, 0xe3a0\n"
-        ".hword 0x1adb, 0xeb00, 0xd040, 0xe28d\n"
-        ".hword 0x0005, 0xe1a0, 0x41f0, 0xe8bd\n"
-        ".hword 0x000b, 0xea00, 0xd040, 0xe28d\n"
-        ".hword 0x81f0, 0xe8bd, 0xdd50, 0x0043\n"
-        ".hword 0x3158, 0x0043, 0x7665, 0x6e65\n"
-        ".hword 0x2f74, 0x7571, 0x7365, 0x2f74\n"
-        ".hword 0x7571, 0x7365, 0x2574, 0x3330\n"
-        ".hword 0x2e64, 0x626d, 0x006d, 0x0000\n"
-        ".hword 0x7325, 0x0000\n"
-    );
+extern "C" void script_vm_func_002900b0(u32 quest_id, u32 mode) {
+    using namespace script_vm_2900b0_calls;
+
+    u8* const quest_work = *reinterpret_cast<u8* volatile*>(0x0043DD50u);
+    if (quest_id == 0) {
+        return;
+    }
+
+    script_vm_func_0028efe0(quest_id, 1, 1);
+
+    void* const bundle = *reinterpret_cast<void**>(0x00433158u);
+    void* mbm = script_vm_func_00385edc(bundle, quest_id);
+    if (mbm != nullptr) {
+        *reinterpret_cast<void**>(quest_work + 0x5E0) = mbm;
+        quest_work[0x5F7] = 1;
+    } else {
+        char path[0x34];
+        ui_func_002be7fc(path, "event/quest/quest%03d.mbm", quest_id);
+        mbm = script_vm_func_002c5e2c(path);
+        *reinterpret_cast<void**>(quest_work + 0x5E0) = mbm;
+        quest_work[0x5F7] = 0;
+    }
+
+    script_vm_func_00296d8c(
+        *reinterpret_cast<void**>(quest_work + 0x5D4),
+        3, 0xFFFFFFFFu, 0, 3, mbm, 0);
+
+    const s32 sub_idx = script_vm_func_00241d70(quest_id);
+    if (sub_idx > 0) {
+        script_vm_func_00296d8c(
+            *reinterpret_cast<void**>(quest_work + 0x5DC),
+            3, 0xFFFFFFFFu, 0, 3,
+            *reinterpret_cast<void**>(quest_work + 0x5E0),
+            static_cast<u32>(sub_idx));
+    }
+
+    script_vm_func_0028efe0(quest_id, 1, 0);
+
+    const s32 msg_idx = script_vm_func_00333910(quest_id, mode);
+    if (msg_idx < 0) {
+        u8* const row = static_cast<u8*>(script_vm_func_002b6700(quest_id));
+        const char* const text = script_vm_func_002bd1b0(row + 0xE8, 0);
+        AsdText_func_00296de0_call(
+            *reinterpret_cast<void**>(quest_work + 0x5D8),
+            3, 0xFFFFFFFFu, 0, 3, "%s", text);
+    } else {
+        script_vm_func_00296d8c(
+            *reinterpret_cast<void**>(quest_work + 0x5D8),
+            3, 0xFFFFFFFFu, 0, 3,
+            *reinterpret_cast<void**>(quest_work + 0x5E4),
+            static_cast<u32>(msg_idx));
+    }
+
+    script_vm_func_0029025c(quest_id);
 }
 
 // DECOMP_FUNC(0x00288424, 432)
