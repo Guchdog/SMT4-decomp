@@ -9701,7 +9701,7 @@ address,size,status,category,name,src_file
 0x003b9b4c,344,matching,script_vm,script_vm_func_003b9b4c,src/engine/leaf_batch36_b.cpp
 0x003b9ca4,196,matching,script_vm,script_vm_func_003b9ca4,src/engine/leaf_batch33_b.cpp
 0x003b9d68,184,matching,script_vm,script_vm_func_003b9d68,src/engine/leaf_batch27_c.cpp
-0x003b9e20,984,matching,script_vm,script_vm_func_003b9e20,src/engine/leaf_batch45_c.cpp
+0x003b9e20,984,non_matching,script_vm,script_vm_func_003b9e20,src/engine/leaf_batch45_c.cpp
 0x003ba1f8,512,matching,script_vm,script_vm_func_003ba1f8,src/engine/leaf_batch36_b.cpp
 0x003ba3f8,228,matching,script_vm,script_vm_func_003ba3f8,src/engine/leaf_batch29_c.cpp
 0x003ba4dc,208,matching,script_vm,script_vm_func_003ba4dc,src/engine/leaf_batch33_b.cpp
