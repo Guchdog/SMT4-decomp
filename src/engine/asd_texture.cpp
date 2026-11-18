@@ -359,89 +359,83 @@ void AsdTexTGA_func_00257e6c(AsdTexture* texture, const AsdTGAHeader* tga,
 // ---------------------------------------------------------------------------
 
 // DECOMP_FUNC(0x002c4e28, 620)
-// Source reconstruction retained for reference; not verified equivalent.
-#if 0
 void* AsdTMTexTable_func_002c4e28(u32 group_id)
 {
-    void* table = AsdTMTexTable_func_002c5b04(group_id, 0);  // 0x002c4e38
+    void* table = AsdTMTexTable_func_002c5b04(group_id, 0);
 
-    if (table == nullptr)
+    if (table == nullptr) {
         return nullptr;
+    }
 
     AsdTMTexGroupEntry* entry = &g_AsdTMTexTable.groups[group_id];
 
-    // 0x002c4e58: the .tgd group is loaded only once.
-    if (entry->group != nullptr)
+    // The .tgd group is loaded only once.
+    if (entry->group != nullptr) {
         return table;
+    }
 
     char path[0x80];
     char filename[0x100];
 
-    AsdString_Strcpy(path, g_AsdTMTexTable.paths->root);       // 0x002c4e70
+    AsdString_Strcpy(path, g_AsdTMTexTable.paths->root);
     AsdTMTex_NormalizeSlashes(path);
-    AsdString_Strcpy(g_AsdTMTexTable.paths->root, path);       // 0x002c4eb0
+    AsdString_Strcpy(g_AsdTMTexTable.paths->root, path);
 
-    // 0x002c4ecc: "%s%s%s.%s" with root, group name, "GroupTable", "tgd".
     UiText_Format(filename, "%s%s%s.%s",
                   g_AsdTMTexTable.paths->root, entry->name,
                   "GroupTable", "tgd");
 
     u32 file_size = 0;
     const u8* file = reinterpret_cast<const u8*>(
-        AsdRes_Load(filename, &file_size, 0));               // 0x002c4ee0
+        AsdRes_Load(filename, &file_size, 0));
 
-    if (file == nullptr)
+    if (file == nullptr) {
         return table;
+    }
 
-    // 0x002c4f14: eight-byte group context.
     AsdTMTexGroup* group = reinterpret_cast<AsdTMTexGroup*>(
         AsdMem_Alloc(0x100, 0x100, 0, 8, 1));
     entry->group = group;
 
     group->header = reinterpret_cast<AsdTMTexGroupHeader*>(
-        AsdMem_Alloc(0x100, 0x100, 0, 0x40, 1));             // 0x002c4f3c
-    AsdMem_Copy(group->header, file, 0x40);                  // 0x002c4f58..0x002c4f6c
+        AsdMem_Alloc(0x100, 0x100, 0, 0x40, 1));
+    auto* const hdr_words = reinterpret_cast<u32*>(group->header);
+    const auto* const file_words = reinterpret_cast<const u32*>(file);
+    for (u32 i = 0; i < 16; ++i) {
+        hdr_words[i] = file_words[i];
+    }
 
     const u8* record_data = file + 0x40;
     AsdTMTexGroupRecord* previous = nullptr;
 
     for (s32 i = 0; i < group->header->record_count; ++i) {
         AsdTMTexGroupRecord* record = reinterpret_cast<AsdTMTexGroupRecord*>(
-            AsdMem_Alloc(0x100, 0x100, 0, 0x14, 1));         // 0x002c4fa4
+            AsdMem_Alloc(0x100, 0x100, 0, 0x14, 1));
 
-        record->field_00 = record_data[0];                   // 0x002c4fa8
-        record->item_count = record_data[4];                 // 0x002c4fb8
-        record->field_08 = record_data[8];                   // 0x002c4fc8
+        record->field_00 = record_data[0];
+        record->item_count = record_data[4];
+        record->field_08 = record_data[8];
 
         if (record->item_count > 0) {
-            const u32 item_bytes = record->item_count * 5u * 4u;
+            const u32 item_bytes = record->item_count * 20u;
             record->items = AsdMem_Alloc(0x100, 0x100, 0, item_bytes, 1);
-            // 0x002c5020: memcpy of item_count * 20 bytes from record + 0xC.
             AsdMem_CopyLarge(record->items, record_data + 0x0C, item_bytes);
         } else {
-            record->items = nullptr;                         // 0x002c4fcc
+            record->items = nullptr;
         }
 
-        // 0x002c503c / 0x002c5044: first record hangs off the context, the
-        // rest are chained through +0x10.
-        if (previous == nullptr)
+        if (previous == nullptr) {
             group->first = record;
-        else
+        } else {
             previous->next = record;
+        }
         previous = record;
 
-        // 0x002c5034: cursor advance = 0xC + item_count * 20.
-        record_data += 0x0C + record->item_count * 5u * 4u;
+        record_data += 0x0C + record->item_count * 20u;
     }
 
-    AsdMem_Free(const_cast<u8*>(file));                      // 0x002c505c
+    AsdMem_Free(const_cast<u8*>(file));
     return table;
-}
-#endif
-// Exact ARM-state bytes from code.bin for the verified 620-byte span.
-__attribute__((naked)) void* AsdTMTexTable_func_002c4e28(u32 group_id)
-{
-    asm volatile(".incbin \"extracted/exefs/code.bin\", 0x1c4e28, 620\n");
 }
 
 // DECOMP_FUNC(0x002c5b04, 652)

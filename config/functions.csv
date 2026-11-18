@@ -5864,7 +5864,7 @@ address,size,status,category,name,src_file
 0x002c4bf0,16,matching,ui,ui_func_002c4bf0,src/engine/leaf_matching.cpp
 0x002c4c00,44,matching,camp,camp_func_002c4c00,src/engine/leaf_batch19_b.cpp
 0x002c4c2c,508,matching,ui,message_func_002c4c2c,src/engine/asd_text.cpp
-0x002c4e28,620,matching,engine,AsdTMTexTable_func_002c4e28,src/engine/asd_texture.cpp
+0x002c4e28,620,non_matching,engine,AsdTMTexTable_func_002c4e28,src/engine/asd_texture.cpp
 0x002c5094,60,matching,battle,battle_func_002c5094,src/engine/leaf_batch27_b.cpp
 0x002c50d0,184,matching,engine,engine_func_002c50d0,src/engine/leaf_batch42_c.cpp
 0x002c5188,8,matching,ui,ui_func_002c5188,src/engine/leaf_batch36_c.cpp
