@@ -7899,7 +7899,7 @@ address,size,status,category,name,src_file
 0x0034b79c,388,matching,ui,ui_func_0034b79c,src/engine/leaf_batch44_b.cpp
 0x0034b920,432,matching,battle,Filter4Poly_func_0034b920,src/engine/asd_render_ui.cpp
 0x0034bad0,140,matching,battle,battle_func_0034bad0,src/engine/leaf_batch33_a.cpp
-0x0034bb5c,444,matching,ui,ui_func_0034bb5c,src/engine/leaf_batch45_b.cpp
+0x0034bb5c,444,non_matching,ui,ui_func_0034bb5c,src/engine/leaf_batch45_b.cpp
 0x0034bd18,136,matching,engine,engine_func_0034bd18,src/engine/leaf_batch42_a.cpp
 0x0034bda0,288,matching,unknown,func_0034bda0,src/engine/leaf_batch34_a.cpp
 0x0034bec0,128,matching,unknown,func_0034bec0,src/engine/leaf_batch23_c.cpp
