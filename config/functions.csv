@@ -6636,7 +6636,7 @@ address,size,status,category,name,src_file
 0x002f35cc,56,matching,engine,engine_func_002f35cc,src/engine/leaf_batch24_b.cpp
 0x002f3604,72,matching,script_vm,script_vm_func_002f3604,src/engine/leaf_batch29_b.cpp
 0x002f364c,624,non_matching,script_vm,script_vm_func_002f364c,src/engine/leaf_batch32_c.cpp
-0x002f38bc,496,matching,unknown,func_002f38bc,src/engine/leaf_batch45_b.cpp
+0x002f38bc,496,non_matching,unknown,func_002f38bc,src/engine/leaf_batch45_b.cpp
 0x002f3aac,32,matching,unknown,func_002f3aac,src/engine/leaf_batch22_b.cpp
 0x002f3acc,172,non_matching,script_vm,script_vm_func_002f3acc,src/engine/leaf_batch31_c.cpp
 0x002f3b78,104,non_matching,script_vm,script_vm_func_002f3b78,src/engine/leaf_batch30_b.cpp
