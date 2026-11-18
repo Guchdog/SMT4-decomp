@@ -1110,96 +1110,54 @@ __attribute__((naked)) void* aocTexCtrl_func_002a465c(AocTMSpr*, u32, u32)
         ".word 0x00000070, 0x000001f7, 0x000001fb\n");
 }
 // DECOMP_FUNC(0x003936e8, 336)
-
-
-//
-__attribute__((naked)) u32 aocTexCtrl_func_003936e8(AocTexCtrl*)
+u32 aocTexCtrl_func_003936e8(AocTexCtrl* ctrl)
 {
-    asm volatile(
-        ".word 0xE92D41F0\n"
-        ".word 0xE1A07000\n"
-        ".word 0xE5904000\n"
-        ".word 0xE3A08000\n"
-        ".word 0xE1A01008\n"
-        ".word 0xE284201C\n"
-        ".word 0xE5940014\n"
-        ".word 0xE8921004\n"
-        ".word 0xE594302C\n"
-        ".word 0xE5946024\n"
-        ".word 0xE0822004\n"
-        ".word 0xE0805004\n"
-        ".word 0xE35C0000\n"
-        ".word 0xE1A00002\n"
-        ".word 0xE0866004\n"
-        ".word 0xE0833004\n"
-        ".word 0xDA00000B\n"
-        ".word 0xE590C00C\n"
-        ".word 0xE37C0001\n"
-        ".word 0x0580800C\n"
-        ".word 0x0A000002\n"
-        ".word 0xE08CC10C\n"
-        ".word 0xE085C20C\n"
-        ".word 0xE580C00C\n"
-        ".word 0xE594C020\n"
-        ".word 0xE2811001\n"
-        ".word 0xE2800014\n"
-        ".word 0xE15C0001\n"
-        ".word 0xCAFFFFF3\n"
-        ".word 0xE594C028\n"
-        ".word 0xE1A01006\n"
-        ".word 0xE3A00000\n"
-        ".word 0xE35C0000\n"
-        ".word 0xDA00000B\n"
-        ".word 0xE591C000\n"
-        ".word 0xE2800001\n"
-        ".word 0xE08CC10C\n"
-        ".word 0xE082C10C\n"
-        ".word 0xE581C000\n"
-        ".word 0xE591C008\n"
-        ".word 0xE08CC003\n"
-        ".word 0xE5A1C008\n"
-        ".word 0xE594C028\n"
-        ".word 0xE2811008\n"
-        ".word 0xE15C0000\n"
-        ".word 0xCAFFFFF3\n"
-        ".word 0xE59F008C\n"
-        ".word 0xE3A0103E\n"
-        ".word 0xE1A00000\n"
-        ".word 0xE3A01000\n"
-        ".word 0xE3A0002C\n"
-        ".word 0xEBFC8FCB\n" // AsdMem_AllocFlags (0x002B76E8)
-        ".word 0xE1A05000\n"
-        ".word 0xE5940028\n"
-        ".word 0xE3500000\n"
-        ".word 0xD5858000\n"
-        ".word 0xDA000007\n"
-        ".word 0xE59F0060\n"
-        ".word 0xE3A01041\n"
-        ".word 0xE1A00000\n"
-        ".word 0xE5940028\n"
-        ".word 0xE3A01000\n"
-        ".word 0xE1A00280\n"
-        ".word 0xEBFC8FBF\n" // AsdMem_AllocFlags (0x002B76E8)
-        ".word 0xE5850000\n"
-        ".word 0xE5942028\n"
-        ".word 0xE5950000\n"
-        ".word 0xE3A01000\n"
-        ".word 0xE3520000\n"
-        ".word 0xDA000006\n"
-        ".word 0xE8800060\n"
-        ".word 0xE2811001\n"
-        ".word 0xE5942028\n"
-        ".word 0xE2800020\n"
-        ".word 0xE2866010\n"
-        ".word 0xE1520001\n"
-        ".word 0xCAFFFFF8\n"
-        ".word 0xE5854004\n"
-        ".word 0xE5854008\n"
-        ".word 0xE5970004\n"
-        ".word 0xE5805000\n"
-        ".word 0xE3A00001\n"
-        ".word 0xE8BD81F0\n"
-        ".word 0x003FF78C\n");
+    auto* const src = static_cast<u8*>(ctrl->source);
+    u8* const table_a = src + *reinterpret_cast<const u32*>(src + 0x14);
+    u8* const table_b = src + *reinterpret_cast<const u32*>(src + 0x1C);
+    const s32 count_b = *reinterpret_cast<const s32*>(src + 0x20);
+    u8* const table_c = src + *reinterpret_cast<const u32*>(src + 0x24);
+    const s32 count_c = *reinterpret_cast<const s32*>(src + 0x28);
+    u8* const table_d = src + *reinterpret_cast<const u32*>(src + 0x2C);
+
+    for (s32 i = 0; i < count_b; ++i) {
+        u8* const entry = table_b + (i * 0x14);
+        const s32 idx = *reinterpret_cast<const s32*>(entry + 0x0C);
+        if (idx == -1) {
+            *reinterpret_cast<u32*>(entry + 0x0C) = 0;
+        } else {
+            *reinterpret_cast<u32*>(entry + 0x0C) =
+                static_cast<u32>(reinterpret_cast<uintptr_t>(table_a + (idx * 0x50)));
+        }
+    }
+
+    for (s32 i = 0; i < count_c; ++i) {
+        u8* const entry = table_c + (i * 0x10);
+        const s32 idx = *reinterpret_cast<const s32*>(entry + 0x00);
+        *reinterpret_cast<u32*>(entry + 0x00) =
+            static_cast<u32>(reinterpret_cast<uintptr_t>(table_b + (idx * 0x14)));
+        *reinterpret_cast<u32*>(entry + 0x08) =
+            static_cast<u32>(reinterpret_cast<uintptr_t>(
+                table_d + *reinterpret_cast<const u32*>(entry + 0x08)));
+    }
+
+    auto* const block = static_cast<u32*>(AsdMem_AllocFlags(0x2C, 0));
+    if (count_c <= 0) {
+        block[0] = 0;
+    } else {
+        auto* const items = static_cast<u32*>(
+            AsdMem_AllocFlags(static_cast<u32>(count_c) << 5, 0));
+        block[0] = static_cast<u32>(reinterpret_cast<uintptr_t>(items));
+        for (s32 i = 0; i < count_c; ++i) {
+            items[(i * 8) + 0] = static_cast<u32>(reinterpret_cast<uintptr_t>(block));
+            items[(i * 8) + 1] = static_cast<u32>(reinterpret_cast<uintptr_t>(table_c + (i * 0x10)));
+        }
+    }
+
+    block[1] = static_cast<u32>(reinterpret_cast<uintptr_t>(src));
+    block[2] = static_cast<u32>(reinterpret_cast<uintptr_t>(src));
+    ctrl->state->block = block;
+    return 1;
 }
 // DECOMP_FUNC(0x00393838, 456)
 
