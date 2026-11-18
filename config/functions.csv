@@ -9587,7 +9587,7 @@ address,size,status,category,name,src_file
 0x003ad8cc,52,matching,ui,ui_func_003ad8cc,src/engine/leaf_batch19_c.cpp
 0x003ad900,116,matching,camp,camp_func_003ad900,src/engine/leaf_batch23_c.cpp
 0x003ad974,24,matching,script_vm,script_vm_func_003ad974,src/engine/leaf_batch37_a.cpp
-0x003ad98c,844,matching,battle,battle_func_003ad98c,src/engine/leaf_batch45_a.cpp
+0x003ad98c,844,non_matching,battle,battle_func_003ad98c,src/engine/leaf_batch45_a.cpp
 0x003adcd8,124,matching,script_vm,script_vm_func_003adcd8,src/engine/leaf_batch27_c.cpp
 0x003add54,236,matching,unknown,func_003add54,src/engine/leaf_batch27_c.cpp
 0x003ade40,28,matching,unknown,func_003ade40,src/engine/leaf_batch37_b.cpp
