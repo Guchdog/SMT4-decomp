@@ -1590,75 +1590,121 @@ extern "C" void battle_func_00105460(const u32* cfg) {
     g[0x200u] = (*reinterpret_cast<const u32*>(g + 0xC0u) != 0x500u) ? 1u : 0u;
 }
 
+extern "C" void ui_func_002a4e50(void* dst, u32 elem_sz, u32 ptr, u32 byte_sz, u32 a4, u32 a5);
+extern "C" void ui_func_002c3b00(void* dst);
+extern "C" s32 nn_sdk_func_00145e7c(void* dst);
+extern "C" void nn_sdk_func_002bbd10(s32 err, u32 caller_pc);
+
 // DECOMP_FUNC(0x00145e9c, 1000)
-// Capstone ARM full coverage (250 instructions); raw bytes only, no terminal-return claim.
-extern "C" __attribute__((naked)) void ui_func_00145e9c() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4ff0, 0xe24dd064, 0xe1a04000, 0xe28d0010\n"
-        ".word 0xe3a0b028, 0xe59d6088, 0xe59da090, 0xe88d0801\n"
-        ".word 0xe5910000, 0xe1a05001, 0xe1a07002, 0xe1a08003\n"
-        ".word 0xe590c000, 0xe3a02000, 0xe1a03002, 0xe28d100c\n"
-        ".word 0xe1a00005, 0xe12fff3c, 0xe1b01fa0, 0x1a0000db\n"
-        ".word 0xe59d900c, 0xe3590028, 0x159f0380, 0x1a0000d7\n"
-        ".word 0xe35a0000, 0xe3a00000, 0xe1a07287, 0x0a000016\n"
-        ".word 0xe28d1038, 0xe88d0802, 0xe5951000, 0xe3a02000\n"
-        ".word 0xe1a00005, 0xe1a03002, 0xe591c000, 0xe28d1008\n"
-        ".word 0xe12fff3c, 0xe2100102, 0xe3e01000, 0x4a00000d\n"
-        ".word 0xe59d0008, 0xe3500028, 0x1a00000a, 0xe59d3040\n"
-        ".word 0xe59dc048, 0xe59d0050, 0xe59d2058, 0xe083300c\n"
-        ".word 0xe0800002, 0xe0900003, 0x4a000002, 0xe0881088\n"
-        ".word 0xe0871181, 0xe0811000, 0xe59d008c, 0xe1510000\n"
-        ".word 0x859f02fc, 0x8a0000b5, 0xe35a0000, 0x0a000056\n"
-        ".word 0xe59d0018, 0xe58d6000, 0xe1a02009, 0xe58d0004\n"
-        ".word 0xe5950000, 0xe1a03fc9, 0xe28d100c, 0xe590c000\n"
-        ".word 0xe1a00005, 0xe12fff3c, 0xe1b01fa0, 0x1a0000a7\n"
-        ".word 0xe59d0018, 0xe58d6008, 0xe28d100c, 0xe080a006\n"
-        ".word 0xe59d000c, 0xe58da000, 0xe0896000, 0xe59d0020\n"
-        ".word 0xe1a02006, 0xe1a03fc6, 0xe58d0004, 0xe5950000\n"
-        ".word 0xe590c000, 0xe1a00005, 0xe12fff3c, 0xe1b01fa0\n"
-        ".word 0x1a000096, 0xe59d0020, 0xe28d100c, 0xe080900a\n"
-        ".word 0xe59d000c, 0xe0866000, 0xe59d0028, 0xe58d9000\n"
-        ".word 0xe1a02006, 0xe58d0004, 0xe5950000, 0xe1a03fc6\n"
-        ".word 0xe590c000, 0xe1a00005, 0xe12fff3c, 0xe1b01fa0\n"
-        ".word 0x1a000086, 0xe59d0028, 0xe28d100c, 0xe080b009\n"
-        ".word 0xe59d000c, 0xe58db000, 0xe0862000, 0xe59d0030\n"
-        ".word 0xe1a03fc2, 0xe58d0004, 0xe5950000, 0xe590c000\n"
-        ".word 0xe1a00005, 0xe12fff3c, 0xe1b01fa0, 0x1a000077\n"
-        ".word 0xe59d0030, 0xe59d1008, 0xe59d2018, 0xe080600b\n"
-        ".word 0xe3a00000, 0xe284c070, 0xe5840078, 0xe88c0006\n"
-        ".word 0xe1a03004, 0xe584407c, 0xe59d1020, 0xe5840088\n"
-        ".word 0xe1a02004, 0xe5841084, 0xe584a080, 0xe584408c\n"
-        ".word 0xe59d1028, 0xe5840098, 0xe5841094, 0xe5849090\n"
-        ".word 0xe584409c, 0xe59d1030, 0xe58400a8, 0xe58410a4\n"
-        ".word 0xe584b0a0, 0xe58440ac, 0xea000014, 0xe28d3014\n"
-        ".word 0xe3a00000, 0xe8930006, 0xe2843070, 0xe584107c\n"
-        ".word 0xe8830015, 0xe28d301c, 0xe8930006, 0xe2843080\n"
-        ".word 0xe584108c, 0xe8830015, 0xe28d3024, 0xe8930006\n"
-        ".word 0xe2843090, 0xe584109c, 0xe8830015, 0xe28d302c\n"
-        ".word 0xe8930006, 0xe28430a0, 0xe58410ac, 0xe8830015\n"
-        ".word 0xe2840070, 0xe59db018, 0xe59d3028, 0xe59da020\n"
-        ".word 0xe59de030, 0xe584002c, 0xe3a00000, 0xe1a0b12b\n"
-        ".word 0xe5840020, 0xe584b028, 0xe2849080, 0xe5840024\n"
-        ".word 0xe584903c, 0xe584a038, 0xe2841020, 0xe5840030\n"
-        ".word 0xe5840034, 0xe2842090, 0xe5810028, 0xe5812034\n"
-        ".word 0xe284c0a0, 0xe281902c, 0xe1a03123, 0xe581c044\n"
-        ".word 0xe8890009, 0xe281903c, 0xe5810038, 0xe8894001\n"
-        ".word 0xe0880088, 0xe3a03000, 0xe1a08180, 0xe3a00004\n"
-        ".word 0xe88d0009, 0xe28490b8, 0xe1a02006, 0xe3a01020\n"
-        ".word 0xe1a03007, 0xe1a00009, 0xeb057b1d, 0xe2890030\n"
-        ".word 0xe320f000, 0xeb05f646, 0xe1a03008, 0xe3a00004\n"
-        ".word 0xe3a0c000, 0xe28480f4, 0xe88d1001, 0xe3a01018\n"
-        ".word 0xe0862007, 0xe1a00008, 0xeb057b11, 0xe2880030\n"
-        ".word 0xe320f000, 0xeb05f63a, 0xe59d0034, 0xe58400b0\n"
-        ".word 0xe2840004, 0xebffff15, 0xe1a0100f, 0xe1b02fa0\n"
-        ".word 0x1b05d6b7, 0xe5940004, 0xe3500000, 0x03a00002\n"
-        ".word 0xaa000008, 0xe3700008, 0xa3a00001, 0xb3a00000\n"
-        ".word 0xe0840100, 0xe580500c, 0xe3a00000, 0xe5845008\n"
-        ".word 0xe28dd064, 0xe8bd8ff0, 0xe320f000, 0xdafffff7\n"
-        ".word 0xe3500008, 0xd3a00003, 0xc3a00004, 0xeafffff3\n"
-        ".word 0xc8a04554, 0xd8604659\n"
-    );
+extern "C" s32 ui_func_00145e9c(u8* self, void* stream, u32 vtx_count, u32 idx_count,
+                                u32 base_off, u32 max_end, u32 read_flag) {
+    typedef s32 (*StreamReadFn)(void* s, u32* bytes_read, u64 off, void* dst, u32 size);
+    const StreamReadFn stream_read = (*reinterpret_cast<const StreamReadFn* const*>(stream))[0];
+
+    u32 hdr[10];
+    u32 bytes_read = 0u;
+    s32 rc = stream_read(stream, &bytes_read, 0ULL, hdr, 0x28u);
+    if (rc < 0) {
+        return rc;
+    }
+    if (bytes_read != 0x28u) {
+        return static_cast<s32>(0xC8A04554u);
+    }
+
+    const u32 vtx_bytes = vtx_count << 5;
+    const u32 idx_bytes = idx_count * 24u;
+    u32 total_size = 0u;
+    if (read_flag == 0u) {
+        total_size = vtx_bytes + idx_bytes;
+    } else {
+        u32 hdr2[10];
+        u32 bytes_read2 = 0u;
+        const s32 rc2 = stream_read(stream, &bytes_read2, 0ULL, hdr2, 0x28u);
+        total_size = 0xFFFFFFFFu;
+        if (rc2 >= 0 && bytes_read2 == 0x28u) {
+            const s32 sum = static_cast<s32>(hdr2[2] + hdr2[4] + hdr2[6] + hdr2[8]);
+            if (sum >= 0) {
+                total_size = vtx_bytes + idx_bytes + static_cast<u32>(sum);
+            }
+        }
+    }
+    if (total_size > max_end) {
+        return static_cast<s32>(0xD8604659u);
+    }
+
+    u32 cur_ptr = base_off;
+    if (read_flag != 0u) {
+        u32 offs[4] = {};
+        s32 off = static_cast<s32>(bytes_read);
+        for (s32 k = 0; k < 4; ++k) {
+            const u32 sz = hdr[2 + k * 2];
+            u32 nread = 0u;
+            rc = stream_read(stream, &nread, static_cast<u64>(static_cast<s64>(off)),
+                             reinterpret_cast<void*>(cur_ptr), sz);
+            if (rc < 0) {
+                return rc;
+            }
+            off += static_cast<s32>(nread);
+            offs[k] = cur_ptr;
+            cur_ptr += sz;
+        }
+        for (s32 k = 0; k < 4; ++k) {
+            u32* const desc = reinterpret_cast<u32*>(self + 0x70u + k * 0x10u);
+            desc[0] = offs[k];
+            desc[1] = hdr[2 + k * 2];
+            desc[2] = 0u;
+            desc[3] = reinterpret_cast<u32>(self);
+        }
+    } else {
+        for (s32 k = 0; k < 4; ++k) {
+            u32* const desc = reinterpret_cast<u32*>(self + 0x70u + k * 0x10u);
+            desc[0] = 0u;
+            desc[1] = hdr[2 + k * 2];
+            desc[2] = reinterpret_cast<u32>(self);
+            desc[3] = hdr[1 + k * 2];
+        }
+    }
+
+    *reinterpret_cast<u32*>(self + 0x20u) = 0u;
+    *reinterpret_cast<u32*>(self + 0x24u) = 0u;
+    *reinterpret_cast<u32*>(self + 0x28u) = hdr[2] >> 2;
+    *reinterpret_cast<u32*>(self + 0x2Cu) = reinterpret_cast<u32>(self + 0x70u);
+    *reinterpret_cast<u32*>(self + 0x30u) = 0u;
+    *reinterpret_cast<u32*>(self + 0x34u) = 0u;
+    *reinterpret_cast<u32*>(self + 0x38u) = hdr[4];
+    *reinterpret_cast<u32*>(self + 0x3Cu) = reinterpret_cast<u32>(self + 0x80u);
+    *reinterpret_cast<u32*>(self + 0x48u) = 0u;
+    *reinterpret_cast<u32*>(self + 0x4Cu) = 0u;
+    *reinterpret_cast<u32*>(self + 0x50u) = hdr[6] >> 2;
+    *reinterpret_cast<u32*>(self + 0x54u) = reinterpret_cast<u32>(self + 0x90u);
+    *reinterpret_cast<u32*>(self + 0x58u) = 0u;
+    *reinterpret_cast<u32*>(self + 0x5Cu) = 0u;
+    *reinterpret_cast<u32*>(self + 0x60u) = hdr[8];
+    *reinterpret_cast<u32*>(self + 0x64u) = reinterpret_cast<u32>(self + 0xA0u);
+
+    ui_func_002a4e50(self + 0xB8u, 0x20u, cur_ptr, vtx_bytes, 4u, 0u);
+    ui_func_002c3b00(self + 0xE8u);
+    ui_func_002a4e50(self + 0xF4u, 0x18u, cur_ptr + vtx_bytes, idx_bytes, 4u, 0u);
+    ui_func_002c3b00(self + 0x124u);
+    *reinterpret_cast<u32*>(self + 0xB0u) = hdr[9];
+
+    const s32 e7c = nn_sdk_func_00145e7c(self + 4u);
+    if (e7c < 0) {
+        nn_sdk_func_002bbd10(e7c, 0u);
+    }
+
+    const s32 v4 = *reinterpret_cast<const s32*>(self + 4u);
+    s32 slot = 0;
+    if (v4 == 0) {
+        slot = 2;
+    } else if (v4 < 0) {
+        slot = (v4 >= -8) ? 1 : 0;
+    } else {
+        slot = (v4 <= 8) ? 3 : 4;
+    }
+    *reinterpret_cast<void**>(self + 0xCu + slot * 4) = stream;
+    *reinterpret_cast<void**>(self + 8u) = stream;
+    return 0;
 }
 
 // DECOMP_FUNC(0x00337594, 1004)

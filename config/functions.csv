@@ -1044,7 +1044,7 @@ address,size,status,category,name,src_file
 0x001458a8,1416,matching,battle,battle_func_001458a8,src/engine/leaf_batch40_a.cpp
 0x00145e30,76,matching,unknown,func_00145e30,src/engine/leaf_batch24_a.cpp
 0x00145e7c,32,matching,nn_sdk,nn_sdk_func_00145e7c,src/engine/leaf_batch18_b.cpp
-0x00145e9c,1000,matching,ui,ui_func_00145e9c,src/engine/leaf_batch45_c.cpp
+0x00145e9c,1000,non_matching,ui,ui_func_00145e9c,src/engine/leaf_batch45_c.cpp
 0x00146284,232,matching,engine,engine_func_00146284,src/engine/leaf_batch40_b.cpp
 0x0014636c,228,matching,unknown,func_0014636c,src/engine/leaf_batch27_a.cpp
 0x00146450,168,matching,unknown,func_00146450,src/engine/leaf_batch30_a.cpp
