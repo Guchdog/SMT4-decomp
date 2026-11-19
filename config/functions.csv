@@ -7523,7 +7523,7 @@ address,size,status,category,name,src_file
 0x00329404,2464,matching,camp,camp_func_00329404,src/engine/leaf_batch46_c.cpp
 0x00329da4,3296,matching,camp,camp_func_00329da4,src/engine/leaf_batch46_c.cpp
 0x0032aa84,564,matching,ui,ui_func_0032aa84,src/engine/leaf_batch44_c.cpp
-0x0032acb8,544,matching,script_vm,script_vm_func_0032acb8,src/engine/leaf_batch45_b.cpp
+0x0032acb8,544,non_matching,script_vm,script_vm_func_0032acb8,src/engine/leaf_batch45_b.cpp
 0x0032aed8,4,matching,unknown,func_0032aed8,src/engine/leaf_matching.cpp
 0x0032aedc,4,matching,unknown,func_0032aedc,src/engine/leaf_matching.cpp
 0x0032aee0,8,matching,unknown,func_0032aee0,src/engine/leaf_matching.cpp
