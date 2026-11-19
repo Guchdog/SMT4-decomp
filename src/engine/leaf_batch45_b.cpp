@@ -3533,90 +3533,93 @@ extern "C" void engine_func_0027521c() {
 }
 
 // DECOMP_FUNC(0x0036ee9c, 640)
-extern "C" __attribute__((naked)) void engine_func_0036ee9c() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x47f0, 0xe92d, 0x2004, 0xe3a0\n"
-        ".hword 0x7000, 0xe1a0, 0x9001, 0xe1a0\n"
-        ".hword 0x0014, 0xe590, 0x103c, 0xe3a0\n"
-        ".hword 0x000c, 0xe350, 0x0000, 0xe599\n"
-        ".hword 0x4010, 0x03a0, 0x4008, 0x13a0\n"
-        ".hword 0x3008, 0xe590, 0x0009, 0xe1a0\n"
-        ".hword 0xff33, 0xe12f, 0x0000, 0xe350\n"
-        ".hword 0xa000, 0xe3a0, 0x000e, 0x0a00\n"
-        ".hword 0xa000, 0xe580, 0xa004, 0xe580\n"
-        ".hword 0xa008, 0xe580, 0xa00c, 0xe580\n"
-        ".hword 0xa010, 0xe580, 0xa014, 0xe580\n"
-        ".hword 0xa018, 0xe580, 0xa01c, 0xe580\n"
-        ".hword 0xa020, 0xe580, 0xa024, 0xe580\n"
-        ".hword 0xa028, 0xe580, 0xa02c, 0xe580\n"
-        ".hword 0xa030, 0xe580, 0xa034, 0xe580\n"
-        ".hword 0xa038, 0xe580, 0x11e8, 0xe59f\n"
-        ".hword 0x21e8, 0xe59f, 0x6000, 0xe1a0\n"
-        ".hword 0x3405, 0xe3a0, 0x000e, 0xe886\n"
-        ".hword 0x2004, 0xe3a0, 0xa00c, 0xe580\n"
-        ".hword 0xa010, 0xe580, 0xa014, 0xe580\n"
-        ".hword 0x0000, 0xe597, 0x11c8, 0xe59f\n"
-        ".hword 0x0018, 0xe586, 0x0004, 0xe597\n"
-        ".hword 0x001c, 0xe586, 0x0014, 0xe597\n"
-        ".hword 0x0100, 0xe791, 0x1038, 0xe281\n"
-        ".hword 0x0020, 0xe586, 0x0014, 0xe597\n"
-        ".hword 0x0100, 0xe791, 0x1028, 0xe286\n"
-        ".hword 0x0024, 0xe586, 0x0008, 0xe597\n"
-        ".hword 0x0401, 0xe881, 0x1020, 0xe3a0\n"
-        ".hword 0x000c, 0xe597, 0x0030, 0xe586\n"
-        ".hword 0x0014, 0xe597, 0x0034, 0xe586\n"
-        ".hword 0x0000, 0xe599, 0x3008, 0xe590\n"
-        ".hword 0x0009, 0xe1a0, 0xff33, 0xe12f\n"
-        ".hword 0x0000, 0xe350, 0x0007, 0x0a00\n"
-        ".hword 0xa000, 0xe580, 0xa004, 0xe580\n"
-        ".hword 0xa008, 0xe580, 0xa00c, 0xe580\n"
-        ".hword 0xa010, 0xe580, 0xa014, 0xe580\n"
-        ".hword 0xa018, 0xe580, 0xa01c, 0xe580\n"
-        ".hword 0x8000, 0xe1a0, 0x9010, 0xe580\n"
-        ".hword 0x0000, 0xe597, 0x1140, 0xe59f\n"
-        ".hword 0x0a4e, 0xeddf, 0x0000, 0xe588\n"
-        ".hword 0x0004, 0xe597, 0x5000, 0xe3a0\n"
-        ".hword 0x0004, 0xe588, 0x0010, 0xe597\n"
-        ".hword 0x0018, 0xe588, 0x0014, 0xe597\n"
-        ".hword 0x0100, 0xe081, 0x0a00, 0xed90\n"
-        ".hword 0x0a20, 0xee60, 0x0ae0, 0xeefc\n"
-        ".hword 0x0a05, 0xedc8, 0x0007, 0xe897\n"
-        ".hword 0x3000, 0xe252, 0x0018, 0xda00\n"
-        ".hword 0x0a90, 0xee00, 0x1a10, 0xee01\n"
-        ".hword 0x0004, 0xe150, 0x0004, 0x0151\n"
-        ".hword 0x0ae0, 0xeef8, 0x1ac1, 0xeeb8\n"
-        ".hword 0x0a20, 0xee60, 0x0a81, 0xee60\n"
-        ".hword 0x0ae0, 0xeefc, 0xca90, 0xee10\n"
-        ".hword 0x500c, 0xe085, 0x0003, 0x1a00\n"
-        ".hword 0x0002, 0xe043, 0x0001, 0xe280\n"
-        ".hword 0x0028, 0xe586, 0x0008, 0xea00\n"
-        ".hword 0x0004, 0xe150, 0x0fa0, 0xc080\n"
-        ".hword 0x2001, 0xe242, 0x00c0, 0xc1a0\n"
-        ".hword 0x0004, 0xe151, 0x1fa1, 0xc081\n"
-        ".hword 0x10c1, 0xc1a0, 0x0000, 0xe352\n"
-        ".hword 0xffe6, 0xcaff, 0x0019, 0xe5d7\n"
-        ".hword 0x0000, 0xe350, 0x000c, 0x0288\n"
-        ".hword 0xa008, 0x0588, 0x0016, 0x0a00\n"
-        ".hword 0x0000, 0xe599, 0x2080, 0xe3a0\n"
-        ".hword 0x1005, 0xe1a0, 0x3008, 0xe590\n"
-        ".hword 0x0009, 0xe1a0, 0xff33, 0xe12f\n"
-        ".hword 0x1018, 0xe5d7, 0x3000, 0xe1a0\n"
-        ".hword 0x0000, 0xe351, 0x0006, 0x0a00\n"
-        ".hword 0x1005, 0xe1b0, 0x2000, 0xe3a0\n"
-        ".hword 0x20ff, 0x1202, 0x0002, 0x0a00\n"
-        ".hword 0x1001, 0xe251, 0x2001, 0xe4c0\n"
-        ".hword 0xfffc, 0x1aff, 0x0000, 0xe353\n"
-        ".hword 0x000c, 0xe288, 0x1000, 0x1043\n"
-        ".hword 0x5008, 0xe588, 0x1000, 0x1580\n"
-        ".hword 0x0000, 0x1a00, 0xa000, 0xe580\n"
-        ".hword 0x0000, 0xe358, 0x0038, 0xe286\n"
-        ".hword 0x1000, 0x1048, 0xa000, 0x0580\n"
-        ".hword 0x1000, 0x1580, 0x0006, 0xe1a0\n"
-        ".hword 0x87f0, 0xe8bd, 0x0011, 0x2000\n"
-        ".hword 0x5854, 0x4d49, 0x91f8, 0x0040\n"
-        ".hword 0x0000, 0x4100, 0x9268, 0x0040\n"
-    );
+extern "C" u8* engine_func_0036ee9c(const u8* desc, void* alloc) {
+    typedef u8* (*AllocFn)(void* alloc, u32 size, u32 align);
+    auto call_alloc = [&](u32 size, u32 align) -> u8* {
+        void** const vtbl = *reinterpret_cast<void***>(alloc);
+        return reinterpret_cast<AllocFn>(vtbl[2])(alloc, size, align);
+    };
+
+    const u32 fmt = *reinterpret_cast<const u32*>(desc + 0x14);
+    const s32 min_dim = (fmt == 0xCu) ? 16 : 8;
+
+    u8* const hdr = call_alloc(0x3Cu, 4u);
+    if (hdr != nullptr) {
+        for (u32 i = 0; i < 15u; ++i) {
+            *reinterpret_cast<u32*>(hdr + i * 4u) = 0u;
+        }
+    }
+
+    const u32* const t0 = reinterpret_cast<const u32*>(0x004091F8u);
+    const u32* const t1 = t0 + 0x0E;
+    *reinterpret_cast<u32*>(hdr + 0x00) = 0x20000011u;
+    *reinterpret_cast<u32*>(hdr + 0x04) = 0x4D495854u;
+    *reinterpret_cast<u32*>(hdr + 0x08) = 0x05000000u;
+    *reinterpret_cast<u32*>(hdr + 0x0C) = 0u;
+    *reinterpret_cast<u32*>(hdr + 0x10) = 0u;
+    *reinterpret_cast<u32*>(hdr + 0x14) = 0u;
+    *reinterpret_cast<u32*>(hdr + 0x18) = *reinterpret_cast<const u32*>(desc + 0x00);
+    *reinterpret_cast<u32*>(hdr + 0x1C) = *reinterpret_cast<const u32*>(desc + 0x04);
+    *reinterpret_cast<u32*>(hdr + 0x20) = t0[fmt];
+    *reinterpret_cast<u32*>(hdr + 0x24) = t1[fmt];
+    *reinterpret_cast<u32*>(hdr + 0x28) = *reinterpret_cast<const u32*>(desc + 0x08);
+    *reinterpret_cast<u32*>(hdr + 0x2C) = 0u;
+    *reinterpret_cast<u32*>(hdr + 0x30) = *reinterpret_cast<const u32*>(desc + 0x0C);
+    *reinterpret_cast<u32*>(hdr + 0x34) = fmt;
+
+    u8* const sub = call_alloc(0x20u, 4u);
+    if (sub != nullptr) {
+        for (u32 i = 0; i < 8u; ++i) {
+            *reinterpret_cast<u32*>(sub + i * 4u) = 0u;
+        }
+    }
+
+    *reinterpret_cast<void**>(sub + 0x10) = alloc;
+    *reinterpret_cast<u32*>(sub + 0x00) = *reinterpret_cast<const u32*>(desc + 0x00);
+    *reinterpret_cast<u32*>(sub + 0x04) = *reinterpret_cast<const u32*>(desc + 0x04);
+    *reinterpret_cast<u32*>(sub + 0x18) = *reinterpret_cast<const u32*>(desc + 0x10);
+    const float bpp = reinterpret_cast<const float*>(0x00409268u)[fmt];
+    *reinterpret_cast<u32*>(sub + 0x14) = static_cast<u32>(bpp * 8.0f);
+
+    s32 w = *reinterpret_cast<const s32*>(desc + 0x00);
+    s32 h = *reinterpret_cast<const s32*>(desc + 0x04);
+    const s32 mips = *reinterpret_cast<const s32*>(desc + 0x08);
+    s32 rem = mips;
+    u32 total_bytes = 0u;
+    while (rem > 0) {
+        const u32 mip_bytes = static_cast<u32>(bpp * static_cast<float>(w) * static_cast<float>(h));
+        total_bytes += mip_bytes;
+        if (w == min_dim && h == min_dim) {
+            *reinterpret_cast<u32*>(hdr + 0x28) = static_cast<u32>(mips - rem + 1);
+            break;
+        }
+        if (w > min_dim) {
+            w /= 2;
+        }
+        if (h > min_dim) {
+            h /= 2;
+        }
+        --rem;
+    }
+
+    if (desc[0x19] == 0u) {
+        *reinterpret_cast<u32*>(sub + 0x08) = 0u;
+        *reinterpret_cast<u32*>(sub + 0x0C) = 0u;
+    } else {
+        u8* const px = call_alloc(total_bytes, 0x80u);
+        if (desc[0x18] != 0u && total_bytes != 0u) {
+            for (u32 i = 0; i < total_bytes; ++i) {
+                px[i] = 0u;
+            }
+        }
+        *reinterpret_cast<u32*>(sub + 0x08) = total_bytes;
+        *reinterpret_cast<u32*>(sub + 0x0C) =
+            (px != nullptr) ? static_cast<u32>(px - (sub + 0x0C)) : 0u;
+    }
+
+    *reinterpret_cast<u32*>(hdr + 0x38) =
+        (sub != nullptr) ? static_cast<u32>(sub - (hdr + 0x38)) : 0u;
+    return hdr;
 }
 
 // DECOMP_FUNC(0x001f9c3c, 644)
