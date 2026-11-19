@@ -6167,7 +6167,7 @@ address,size,status,category,name,src_file
 0x002d8160,20,matching,unknown,func_002d8160,src/engine/leaf_batch21_b.cpp
 0x002d8174,56,matching,unknown,func_002d8174,src/engine/leaf_batch23_b.cpp
 0x002d81ac,36,matching,engine,engine_func_002d81ac,src/engine/leaf_batch26_b.cpp
-0x002d81d0,596,matching,ui,ui_func_002d81d0,src/engine/leaf_batch45_b.cpp
+0x002d81d0,596,non_matching,ui,ui_func_002d81d0,src/engine/leaf_batch45_b.cpp
 0x002d8424,136,matching,battle,battle_func_002d8424,src/engine/leaf_batch35_b.cpp
 0x002d84ac,188,matching,unknown,func_002d84ac,src/engine/leaf_batch42_c.cpp
 0x002d8568,40,matching,engine,engine_func_002d8568,src/engine/leaf_batch26_b.cpp
