@@ -1618,73 +1618,76 @@ extern "C" void func_0028640c(void* mat, s32 deg_x, s32 deg_y, s32 deg_z) {
 }
 
 // DECOMP_FUNC(0x0035f1b0, 504)
-extern "C" __attribute__((naked)) void func_0035f1b0() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4ff0, 0xe92d, 0xd04c, 0xe24d\n"
-        ".hword 0x7000, 0xe1a0, 0xa001, 0xe1a0\n"
-        ".hword 0x0000, 0xe3a0, 0x8070, 0xe59d\n"
-        ".hword 0x9002, 0xe1a0, 0x6003, 0xe1a0\n"
-        ".hword 0x1000, 0xe1a0, 0x5008, 0xe28d\n"
-        ".hword 0x202c, 0xe597, 0x1002, 0xe281\n"
-        ".hword 0x0010, 0xe351, 0x2380, 0xe082\n"
-        ".hword 0x2100, 0xe785, 0x202c, 0xe597\n"
-        ".hword 0x0001, 0xe280, 0x2380, 0xe082\n"
-        ".hword 0x2100, 0xe785, 0x0001, 0xe280\n"
-        ".hword 0xfff4, 0xbaff, 0x0000, 0xe358\n"
-        ".hword 0x4000, 0xe3a0, 0x0008, 0x9a00\n"
-        ".hword 0x2104, 0xe796, 0x0000, 0xe352\n"
-        ".hword 0x0009, 0x0a00, 0x0104, 0xe795\n"
-        ".hword 0x1040, 0xe3a0, 0x009d, 0xeb00\n"
-        ".hword 0x4001, 0xe284, 0x0004, 0xe158\n"
-        ".hword 0xfff6, 0x8aff, 0x001a, 0xe5d7\n"
-        ".hword 0x0000, 0xe350, 0x0015, 0x1a00\n"
-        ".hword 0x0002, 0xea00, 0xd04c, 0xe28d\n"
-        ".hword 0x014c, 0xe59f, 0x8ff0, 0xe8bd\n"
-        ".hword 0x0000, 0xe358, 0x4000, 0xe3a0\n"
-        ".hword 0x6001, 0x83a0, 0x000d, 0x9a00\n"
-        ".hword 0x1104, 0xe795, 0x2040, 0xe3a0\n"
-        ".hword 0x0007, 0xe1a0, 0x0078, 0xeb00\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x0003, 0x0a00, 0x001b, 0xe5d7\n"
-        ".hword 0x1104, 0xe79a, 0x0016, 0xe181\n"
-        ".hword 0x0104, 0xe78a, 0x4001, 0xe284\n"
-        ".hword 0x0008, 0xe154, 0xfff1, 0x3aff\n"
-        ".hword 0x0000, 0xe599, 0x1024, 0xe590\n"
-        ".hword 0x0009, 0xe1a0, 0xff31, 0xe12f\n"
-        ".hword 0x40f0, 0xe59f, 0x0002, 0xe350\n"
-        ".hword 0x6000, 0xe1a0, 0x0009, 0x3a00\n"
-        ".hword 0x0901, 0xe356, 0x0007, 0xca00\n"
-        ".hword 0x0000, 0xe599, 0x1024, 0xe597\n"
-        ".hword 0x2006, 0xe1a0, 0x302c, 0xe590\n"
-        ".hword 0x0009, 0xe1a0, 0xff33, 0xe12f\n"
-        ".hword 0x0006, 0xe150, 0x0002, 0x0a00\n"
-        ".hword 0xd04c, 0xe28d, 0x0004, 0xe1a0\n"
-        ".hword 0x8ff0, 0xe8bd, 0x9024, 0xe597\n"
-        ".hword 0xb0ac, 0xe59f, 0x10b0, 0xe1d9\n"
-        ".hword 0x0cfe, 0xe241, 0x00ff, 0xe250\n"
-        ".hword 0x0022, 0x1a00, 0x4001, 0xe3a0\n"
-        ".hword 0x0002, 0xe356, 0x0004, 0xe1a0\n"
-        ".hword 0x0015, 0x9a00, 0x1084, 0xe089\n"
-        ".hword 0x10b0, 0xe1d1, 0x000a, 0xe351\n"
-        ".hword 0x4001, 0x0284, 0x0002, 0x0a00\n"
-        ".hword 0x0000, 0xe351, 0x0017, 0x0a00\n"
-        ".hword 0x0007, 0xea00, 0x1000, 0xe044\n"
-        ".hword 0x3001, 0xe241, 0x2080, 0xe089\n"
-        ".hword 0x100a, 0xe1a0, 0x0007, 0xe1a0\n"
-        ".hword 0x0120, 0xe88d, 0xfea0, 0xebff\n"
-        ".hword 0x0004, 0xe1a0, 0x4001, 0xe284\n"
-        ".hword 0x0084, 0xe156, 0xffec, 0x8aff\n"
-        ".hword 0x1001, 0xe244, 0x0000, 0xe151\n"
-        ".hword 0x0005, 0x0a00, 0x3000, 0xe044\n"
-        ".hword 0x2080, 0xe089, 0x100a, 0xe1a0\n"
-        ".hword 0x0007, 0xe1a0, 0x0120, 0xe88d\n"
-        ".hword 0xfe93, 0xebff, 0xd04c, 0xe28d\n"
-        ".hword 0x0000, 0xe3a0, 0x8ff0, 0xe8bd\n"
-        ".hword 0xd04c, 0xe28d, 0x000b, 0xe1a0\n"
-        ".hword 0x8ff0, 0xe8bd, 0xebf6, 0xe0e0\n"
-        ".hword 0xebec, 0xd820, 0xebf0, 0xf820\n"
-    );
+extern "C" void func_0035f4a0(u16* dst, u32 max_len, const char* src);
+extern "C" u32 func_0035f454(u8* obj, const u16* key, u32 max_len);
+extern "C" void func_0035edd4(
+    u8* obj, u32* out_flags, const u16* line, u32 len, u16* const* slots, u32 num_keys);
+
+extern "C" u32 func_0035f1b0(
+    u8* obj, u32* out_flags, void* stream, const char* const* keys, u32 num_keys) {
+    u16* slots[16];
+    u8* const slot_base = *reinterpret_cast<u8* const*>(obj + 0x2Cu);
+    for (u32 i = 0u; i < 16u; ++i) {
+        slots[i] = reinterpret_cast<u16*>(slot_base + i * 0x80u);
+    }
+
+    for (u32 i = 0u; i < num_keys; ++i) {
+        if (keys[i] == nullptr) {
+            return 0xE0E0EBF6u;
+        }
+        func_0035f4a0(slots[i], 0x40u, keys[i]);
+    }
+
+    if (obj[0x1Au] == 0u) {
+        const u32 bit = 1u << obj[0x1Bu];
+        for (u32 i = 0u; i < num_keys; ++i) {
+            if (func_0035f454(obj, slots[i], 0x40u) != 0u) {
+                out_flags[i] |= bit;
+            }
+        }
+    }
+
+    using GetSizeFn = u32 (*)(void*);
+    using ReadFn = u32 (*)(void*, void*, u32);
+    const u32* const vtbl = *reinterpret_cast<const u32* const*>(stream);
+    const u32 size = reinterpret_cast<GetSizeFn>(static_cast<std::uintptr_t>(vtbl[9]))(stream);
+    if (size < 2u || static_cast<s32>(size) > 0x4000) {
+        return 0xD820EBECu;
+    }
+
+    void* const read_buf = *reinterpret_cast<void* const*>(obj + 0x24u);
+    const u32 read_bytes = reinterpret_cast<ReadFn>(static_cast<std::uintptr_t>(vtbl[11]))(
+        stream, read_buf, size);
+    if (read_bytes != size) {
+        return 0xD820EBECu;
+    }
+
+    const u16* const buf = reinterpret_cast<const u16*>(read_buf);
+    if (buf[0] != 0xFEFFu) {
+        return 0xF820EBF0u;
+    }
+
+    u32 start = 1u;
+    u32 idx = 1u;
+    if (size > 2u) {
+        while (idx * 2u < size) {
+            const u16 ch = buf[idx];
+            if (ch == 0x000Au) {
+                idx += 1u;
+                func_0035edd4(obj, out_flags, buf + start, idx - start - 1u, slots, num_keys);
+                start = idx;
+            } else if (ch == 0x0000u) {
+                return 0xF820EBF0u;
+            }
+            idx += 1u;
+        }
+        if (idx - 1u == start) {
+            return 0u;
+        }
+    }
+
+    func_0035edd4(obj, out_flags, buf + start, idx - start, slots, num_keys);
+    return 0u;
 }
 
 // DECOMP_FUNC(0x0024ecc0, 532)
