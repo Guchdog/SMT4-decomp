@@ -4241,7 +4241,7 @@ address,size,status,category,name,src_file
 0x0026ace0,112,matching,camp,camp_func_0026ace0,src/engine/leaf_batch25_b.cpp
 0x0026ad50,88,matching,camp,camp_func_0026ad50,src/engine/leaf_batch35_a.cpp
 0x0026ada8,36,matching,camp,camp_func_0026ada8,src/engine/leaf_batch23_b.cpp
-0x0026adcc,592,matching,camp,camp_func_0026adcc,src/engine/leaf_batch45_b.cpp
+0x0026adcc,592,non_matching,camp,camp_func_0026adcc,src/engine/leaf_batch45_b.cpp
 0x0026b01c,176,non_matching,ui,StatusDown_PopFirstSubIdA,src/ui/status_down.cpp
 0x0026b0cc,4,matching,unknown,func_0026b0cc,src/engine/leaf_batch36_a.cpp
 0x0026b0d0,1636,non_matching,ui,StatusDown_SetupTouchRegions,src/ui/status_down.cpp
