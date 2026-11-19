@@ -1691,77 +1691,65 @@ extern "C" u32 func_0035f1b0(
 }
 
 // DECOMP_FUNC(0x0024ecc0, 532)
-extern "C" __attribute__((naked)) void script_vm_func_0024ecc0() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x47f0, 0xe92d, 0x5000, 0xe1a0\n"
-        ".hword 0x8001, 0xe1b0, 0x9001, 0xe3a0\n"
-        ".hword 0xa1f4, 0x059f, 0x7000, 0xe3a0\n"
-        ".hword 0x8b02, 0xed2d, 0xd008, 0xe24d\n"
-        ".hword 0x8a77, 0xed9f, 0x8a77, 0xeddf\n"
-        ".hword 0x4000, 0x03a0, 0x0041, 0x0a00\n"
-        ".hword 0x0108, 0xe595, 0x0004, 0xe350\n"
-        ".hword 0x4000, 0x13a0, 0x0010, 0x0a00\n"
-        ".hword 0x0104, 0xe084, 0x0a48, 0xeef0\n"
-        ".hword 0x6100, 0xe085, 0x0a68, 0xeeb0\n"
-        ".hword 0x2020, 0xe596, 0x0014, 0xe286\n"
-        ".hword 0x100c, 0xe3a0, 0x8193, 0xeb00\n"
-        ".hword 0x0020, 0xe596, 0x4001, 0xe284\n"
-        ".hword 0x0002, 0xe354, 0x0001, 0xe280\n"
-        ".hword 0x0020, 0xe586, 0xfff1, 0xbaff\n"
-        ".hword 0x0108, 0xe595, 0x0002, 0xe350\n"
-        ".hword 0x0050, 0x0a00, 0xa184, 0xe59f\n"
-        ".hword 0x4000, 0xe3a0, 0x0011, 0xea00\n"
-        ".hword 0x0000, 0xe354, 0x000f, 0x0a00\n"
-        ".hword 0x0104, 0xe084, 0x6100, 0xe085\n"
-        ".hword 0x0034, 0xe596, 0x0002, 0xe350\n"
-        ".hword 0x001b, 0xda00, 0x0048, 0xe596\n"
-        ".hword 0x300c, 0xe3a0, 0x2000, 0xe3a0\n"
-        ".hword 0x0201, 0xe88d, 0x0040, 0xe286\n"
-        ".hword 0x100a, 0xe1a0, 0x8142, 0xeb00\n"
-        ".hword 0x0000, 0xe350, 0x904c, 0x15c6\n"
-        ".hword 0x0011, 0x1a00, 0x000d, 0xea00\n"
-        ".hword 0x0048, 0xe595, 0x300c, 0xe3a0\n"
-        ".hword 0x2000, 0xe3a0, 0x0201, 0xe88d\n"
-        ".hword 0x0040, 0xe285, 0x100a, 0xe1a0\n"
-        ".hword 0x8137, 0xeb00, 0x0000, 0xe350\n"
-        ".hword 0x904c, 0x15c5, 0x0006, 0x1a00\n"
-        ".hword 0x0048, 0xe595, 0x0001, 0xe280\n"
-        ".hword 0x0048, 0xe585, 0x0002, 0xea00\n"
-        ".hword 0x0048, 0xe596, 0x0001, 0xe280\n"
-        ".hword 0x0048, 0xe586, 0x0104, 0xe084\n"
-        ".hword 0x4001, 0xe284, 0x0100, 0xe085\n"
-        ".hword 0x0003, 0xe354, 0x8a0f, 0xed80\n"
-        ".hword 0xffd6, 0xbaff, 0x0023, 0xea00\n"
-        ".hword 0x0104, 0xe084, 0x3004, 0xe3a0\n"
-        ".hword 0x6100, 0xe085, 0x200a, 0xe1a0\n"
-        ".hword 0x0048, 0xe596, 0x1000, 0xe3a0\n"
-        ".hword 0x0201, 0xe88d, 0x0040, 0xe286\n"
-        ".hword 0x811d, 0xeb00, 0x0000, 0xe350\n"
-        ".hword 0x904c, 0x15c6, 0x0002, 0x1a00\n"
-        ".hword 0x0048, 0xe596, 0x0001, 0xe280\n"
-        ".hword 0x0048, 0xe586, 0x4001, 0xe284\n"
-        ".hword 0x0003, 0xe354, 0xffed, 0xbaff\n"
-        ".hword 0x0114, 0xe595, 0x0002, 0xe350\n"
-        ".hword 0x4000, 0x13a0, 0x000d, 0x0a00\n"
-        ".hword 0x0104, 0xe084, 0x0a68, 0xeef0\n"
-        ".hword 0x6100, 0xe085, 0x0a48, 0xeeb0\n"
-        ".hword 0x2020, 0xe596, 0x0014, 0xe286\n"
-        ".hword 0x1004, 0xe3a0, 0x813f, 0xeb00\n"
-        ".hword 0x0020, 0xe596, 0x4001, 0xe284\n"
-        ".hword 0x0002, 0xe354, 0x0001, 0xe280\n"
-        ".hword 0x0020, 0xe586, 0xfff1, 0xbaff\n"
-        ".hword 0x0028, 0xe595, 0x05fe, 0xe350\n"
-        ".hword 0x0004, 0xba00, 0x0108, 0xe595\n"
-        ".hword 0x0002, 0xe350, 0x0001, 0x1a00\n"
-        ".hword 0x0000, 0xe358, 0x7001, 0x13a0\n"
-        ".hword 0x0074, 0xe5d5, 0xd008, 0xe28d\n"
-        ".hword 0x0001, 0xe350, 0x7001, 0x03a0\n"
-        ".hword 0x8b02, 0xecbd, 0x0007, 0xe1a0\n"
-        ".hword 0x87f0, 0xe8bd, 0x0000, 0x3f80\n"
-        ".hword 0x0000, 0x0000, 0xfeb6, 0xffff\n"
-        ".hword 0x014a, 0x0000\n"
-    );
+extern "C" u32 func_0026f370(
+    float* out_val, u32 total_steps, u32 curr_step, float start_val, float target_val);
+extern "C" u32 func_0026f294(
+    s32* out_val, s32 target_x, s32 target_y, s32 total_steps, s32 curr_step, s32 mode);
+
+extern "C" u32 script_vm_func_0024ecc0(u8* obj, u32 show) {
+    auto word_at = [obj](u32 off) -> u32& {
+        return *reinterpret_cast<u32*>(obj + off);
+    };
+    auto step_alpha = [&](u32 steps, float start_v, float end_v) {
+        for (u32 i = 0u; i < 2u; ++i) {
+            u8* const slot = obj + i * 0x14u;
+            u32* const step = reinterpret_cast<u32*>(slot + 0x20u);
+            func_0026f370(reinterpret_cast<float*>(slot + 0x14u), steps, *step, start_v, end_v);
+            *step += 1u;
+        }
+    };
+    auto step_pos = [&](u32 i, s32 tx, s32 ty, s32 steps) {
+        u8* const slot = obj + i * 0x14u;
+        u32* const step = reinterpret_cast<u32*>(slot + 0x48u);
+        if (func_0026f294(reinterpret_cast<s32*>(slot + 0x40u), tx, ty, steps, *step, 1) != 0) {
+            slot[0x4Cu] = 1u;
+        } else {
+            *step += 1u;
+        }
+    };
+
+    if (show == 0u) {
+        for (u32 i = 0u; i < 3u; ++i) {
+            step_pos(i, 0, -330, 4);
+        }
+        if (word_at(0x114u) != 2u) {
+            step_alpha(4u, 1.0f, 0.0f);
+        }
+    } else {
+        if (word_at(0x108u) != 4u) {
+            step_alpha(0xCu, 0.0f, 1.0f);
+        }
+        if (word_at(0x108u) != 2u) {
+            for (u32 i = 0u; i < 3u; ++i) {
+                u8* const slot = obj + i * 0x14u;
+                if (i == 0u || *reinterpret_cast<const s32*>(slot + 0x34u) > 2) {
+                    step_pos(i, 330, 0, 12);
+                }
+                *reinterpret_cast<float*>(slot + 0x3Cu) = 1.0f;
+            }
+        }
+    }
+
+    u32 done = 0u;
+    if (*reinterpret_cast<const s32*>(obj + 0x28u) >= 0x3F800000
+        && word_at(0x108u) == 2u
+        && show != 0u) {
+        done = 1u;
+    }
+    if (obj[0x74u] == 1u) {
+        done = 1u;
+    }
+    return done;
 }
 
 // DECOMP_FUNC(0x003b8e60, 536)
