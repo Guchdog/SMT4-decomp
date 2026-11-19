@@ -7789,7 +7789,7 @@ address,size,status,category,name,src_file
 0x0034355c,40,matching,camp,camp_func_0034355c,src/engine/leaf_batch19_a.cpp
 0x00343584,12,matching,unknown,func_00343584,src/engine/leaf_matching.cpp
 0x00343590,12,matching,unknown,func_00343590,src/engine/leaf_matching.cpp
-0x0034359c,1044,matching,ui,ui_func_0034359c,src/engine/leaf_batch45_c.cpp
+0x0034359c,1044,non_matching,ui,ui_func_0034359c,src/engine/leaf_batch45_c.cpp
 0x003439b0,152,matching,unknown,func_003439b0,src/engine/leaf_batch25_c.cpp
 0x00343a48,120,matching,unknown,func_00343a48,src/engine/leaf_batch25_c.cpp
 0x00343ac0,76,matching,unknown,func_00343ac0,src/engine/leaf_batch20_c.cpp
