@@ -325,7 +325,7 @@ address,size,status,category,name,src_file
 0x00110c60,296,matching,engine,engine_func_00110c60,src/engine/leaf_batch41_a.cpp
 0x00110d88,392,matching,engine,engine_func_00110d88,src/engine/leaf_batch28_a.cpp
 0x00110f10,384,matching,engine,engine_func_00110f10,src/engine/leaf_batch44_b.cpp
-0x00111090,556,matching,engine,engine_func_00111090,src/engine/leaf_batch45_b.cpp
+0x00111090,556,non_matching,engine,engine_func_00111090,src/engine/leaf_batch45_b.cpp
 0x001112bc,884,matching,engine,engine_func_001112bc,src/engine/leaf_batch43_a.cpp
 0x00111630,824,matching,engine,engine_func_00111630,src/engine/leaf_batch43_b.cpp
 0x00111968,312,matching,camp,camp_func_00111968,src/engine/leaf_batch30_a.cpp
