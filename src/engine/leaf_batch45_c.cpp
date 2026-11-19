@@ -2516,79 +2516,127 @@ extern "C" u32 engine_func_00239734(u8* self, u8* out_hdr, const u8** out_entrie
     return 0u;
 }
 
+extern "C" void func_002b0908(u32 kind, u32 a4, u32 color, s32 x, u32 y_bits, u32 w, s32 h,
+                            u32 z_bits);
+
+namespace {
+
+inline void set_tex_002beae4(u32 tex_id) {
+    const u32 val = battle_func_002c5fa4(6u, tex_id, 0u);
+    u8* const p = *reinterpret_cast<u8* const*>(0x0044EA00u) + 0x12ACu;
+    const u32 idx = *reinterpret_cast<const u32*>(p);
+    u32* const slot = reinterpret_cast<u32*>(p + 8u + idx * 4u);
+    const u32 old = *slot;
+    *slot = val;
+    if (p[0x18u] != 0u || old != val) {
+        using SetFn = void (*)(u32);
+        (*reinterpret_cast<const SetFn*>(p + 0x1Cu))(val);
+        p[0x18u] = 0u;
+    }
+}
+
+inline u32 calc_bar_width_002beae4(s32 val, s32 max_val, s32 full_w, bool min1_always) {
+    const s32 raw = val;
+    if (val > max_val) {
+        val = max_val;
+    }
+    if (val < 0) {
+        val = 0;
+    }
+    const f32 ratio = static_cast<f32>(full_w) / static_cast<f32>(max_val);
+    u32 w = static_cast<u32>(ratio * static_cast<f32>(val));
+    if (w == 0u && (min1_always || raw > 0)) {
+        w = 1u;
+    }
+    return w;
+}
+
+inline u32 pick_bar_color_002beae4(s32 max_val, s32 target_val, u32 normal_color, u32 low_color) {
+    s32 q12_max = static_cast<s32>(static_cast<s16>(max_val)) << 12;
+    s32 thresh = (q12_max / 100) * 20;
+    if (thresh < 0x1000) {
+        thresh = 0x1000;
+    }
+    const s32 q12_target = static_cast<s32>(static_cast<s16>(target_val)) << 12;
+    return (static_cast<u32>(thresh) >= static_cast<u32>(q12_target)) ? low_color : normal_color;
+}
+
+inline void draw_delta_002beae4(u32 a4, u32 delta_color, s32 x, u32 y_bits, u32 w_delta, s32 h,
+                                u32 z_bits, u32 skip_main) {
+    if (w_delta == 0u) {
+        return;
+    }
+    if (skip_main != 0u) {
+        set_tex_002beae4(1u);
+    }
+    func_002b0908(2u, a4, delta_color, x, y_bits, w_delta, h, z_bits);
+    set_tex_002beae4(7u);
+}
+
+}  // namespace
+
 // DECOMP_FUNC(0x002beae4, 1072)
-// Capstone ARM full coverage (268 instructions); raw bytes only, no terminal-return claim.
-extern "C" __attribute__((naked)) void battle_func_002beae4() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4ff0, 0xe1a05000, 0xe1a06001, 0xe1a09002\n"
-        ".word 0xe1a08003, 0xed2d8b02, 0xe24dd014, 0xe28d0058\n"
-        ".word 0xe59db044, 0xe59d7060, 0xec908a02, 0xe1a0100b\n"
-        ".word 0xe59d0040, 0xeb0002ec, 0xe1a0a000, 0xe1550006\n"
-        ".word 0xe1a00005, 0xe59a100c, 0xc1a00006, 0xee006a10\n"
-        ".word 0xe3500000, 0xb3a00000, 0xee000a90, 0xe1d100f0\n"
-        ".word 0xe3550000, 0xeeb81ac0, 0xee000a10, 0xeef80ae0\n"
-        ".word 0xeeb80ac0, 0xeec01a01, 0xee610aa0, 0xeefc0ae0\n"
-        ".word 0xee104a90, 0xda000001, 0xe3540000, 0x03a04001\n"
-        ".word 0xe59f2340, 0xe6bf0076, 0xe3590000, 0xe1a00600\n"
-        ".word 0xe0c02092, 0xe0400fc0, 0xe0800100, 0xe1a00100\n"
-        ".word 0x0a0000cb, 0xee006a90, 0xe0852009, 0xe1520006\n"
-        ".word 0xc1a02006, 0xe3520000, 0xb3a02000, 0xee012a10\n"
-        ".word 0xeef80ae0, 0xe6bf2072, 0xeef81ac1, 0xee801a20\n"
-        ".word 0xeddf0abd, 0xee210a21, 0xeebc0ac0, 0xee105a10\n"
-        ".word 0xe3550000, 0x03a05001, 0xe3500a01, 0x33a00a01\n"
-        ".word 0xe1500602, 0x259db050, 0xe3590000, 0xe248200b\n"
-        ".word 0xe248000a, 0xda000057, 0xe0453004, 0xe1b06003\n"
-        ".word 0x03a06001, 0xe3520009, 0x8a00000e, 0xee013a10\n"
-        ".word 0xee000a10, 0xeeb81a41, 0xeeb82ac0, 0xeef81ac0\n"
-        ".word 0xee210a20, 0xee600a02, 0xee201a21, 0xeebc0ae0\n"
-        ".word 0xeefc0ac1, 0xee100a10, 0xee102a90, 0xe0466000\n"
-        ".word 0xe0844002, 0xea000002, 0xe3580014, 0xc1a04005\n"
-        ".word 0xc3a06000, 0xe3570000, 0x1a000009, 0xe1d100f2\n"
-        ".word 0xed8d8a00, 0xe58d4004, 0xe58d0008, 0xedcd8a03\n"
-        ".word 0xe59d1040, 0xe59d3054, 0xe1a0200b, 0xe3a00002\n"
-        ".word 0xebffc71f, 0xe3560000, 0x0a00009c, 0xe3570000\n"
-        ".word 0x0a000013, 0xe59f0224, 0xe3a02000, 0xe3a01001\n"
-        ".word 0xe5905000, 0xe3a00006, 0xeb001cbc, 0xe2855a01\n"
-        ".word 0xe2855fab, 0xe5951000, 0xe0852101, 0xe5921008\n"
-        ".word 0xe5820008, 0xe5d52018, 0xe3520000, 0x01510000\n"
-        ".word 0x0a000003, 0xe595101c, 0xe12fff31, 0xe3a00000\n"
-        ".word 0xe5c50018, 0xe59a000c, 0xe1d000f2, 0xed8d8a00\n"
-        ".word 0xe58d6004, 0xe58d0008, 0xedcd8a03, 0xe59d0054\n"
-        ".word 0xe59d1040, 0xe59d2048, 0xe0803004, 0xe3a00002\n"
-        ".word 0xebffc6fb, 0xe59f01a4, 0xe3a02000, 0xe3a01007\n"
-        ".word 0xe5904000, 0xe3a00006, 0xeb001c9c, 0xe2844a01\n"
-        ".word 0xe2844fab, 0xe5941000, 0xe0842101, 0xe5921008\n"
-        ".word 0xe5820008, 0xe5d42018, 0xe3520000, 0x01510000\n"
-        ".word 0x0a00006a, 0xea000052, 0xe1540005, 0xe0446005\n"
-        ".word 0x31a05004, 0x33a06000, 0xe3520009, 0x8a00000a\n"
-        ".word 0xe0442005, 0xee000a10, 0xee012a10, 0xeef81ac0\n"
-        ".word 0xeeb80a41, 0xee200a20, 0xee200a21, 0xeebc0ac0\n"
-        ".word 0xee100a10, 0xe0466000, 0xea000001, 0xe3580014\n"
-        ".word 0xc3a06000, 0xe3570000, 0x1a000009, 0xe1d100f2\n"
-        ".word 0xed8d8a00, 0xe58d5004, 0xe58d0008, 0xedcd8a03\n"
-        ".word 0xe59d1040, 0xe59d3054, 0xe1a0200b, 0xe3a00002\n"
-        ".word 0xebffc6cb, 0xe3560000, 0x0a000048, 0xe3570000\n"
-        ".word 0x0a000013, 0xe59f00d4, 0xe3a02000, 0xe3a01001\n"
-        ".word 0xe5904000, 0xe3a00006, 0xeb001c68, 0xe2844a01\n"
-        ".word 0xe2844fab, 0xe5941000, 0xe0842101, 0xe5921008\n"
-        ".word 0xe5820008, 0xe5d42018, 0xe3520000, 0x01510000\n"
-        ".word 0x0a000003, 0xe594101c, 0xe12fff31, 0xe3a00000\n"
-        ".word 0xe5c40018, 0xe59a000c, 0xe1d000f2, 0xed8d8a00\n"
-        ".word 0xe58d6004, 0xe58d0008, 0xedcd8a03, 0xe59d0054\n"
-        ".word 0xe59d1040, 0xe59d204c, 0xe0803005, 0xe3a00002\n"
-        ".word 0xebffc6a7, 0xe59f0054, 0xe3a02000, 0xe3a01007\n"
-        ".word 0xe5904000, 0xe3a00006, 0xeb001c48, 0xe2844a01\n"
-        ".word 0xe2844fab, 0xe5941000, 0xe0842101, 0xe5921008\n"
-        ".word 0xe5820008, 0xe5d42018, 0xe3520000, 0x01510000\n"
-        ".word 0x0a000016, 0xe594101c, 0xe12fff31, 0xe3a00000\n"
-        ".word 0xe5c40018, 0xea000011, 0x028f5c29, 0x3dcccccd\n"
-        ".word 0x0044ea00, 0xe6bf2075, 0xe3500a01, 0x33a00a01\n"
-        ".word 0xe1500602, 0x259db050, 0xe1d100f2, 0xed8d8a00\n"
-        ".word 0xe58d4004, 0xe58d0008, 0xedcd8a03, 0xe59d1040\n"
-        ".word 0xe59d3054, 0xe1a0200b, 0xe3a00002, 0xebffc680\n"
-        ".word 0xe28dd014, 0xecbd8b02, 0xe8bd4ff0, 0xe1a00000\n"
-    );
+extern "C" void battle_func_002beae4(s32 cur, s32 max_val, s32 delta, s32 step, u32 a4, u32 color,
+                                     u32 heal_color, u32 dmg_color, u32 low_color, s32 x,
+                                     u32 y_bits, u32 z_bits, u32 skip_main) {
+    const u8* const info = camp_func_002bf6d0(a4, color);
+    const s16* const dims = *reinterpret_cast<const s16* const*>(info + 0x0Cu);
+    const s32 full_w = dims[0];
+    const s32 h = dims[1];
+
+    u32 w_cur = calc_bar_width_002beae4(cur, max_val, full_w, false);
+    if (delta == 0) {
+        const u32 draw_color = pick_bar_color_002beae4(max_val, cur, color, low_color);
+        func_002b0908(2u, a4, draw_color, x, y_bits, w_cur, h, z_bits);
+        return;
+    }
+
+    s32 next_val = cur + delta;
+    if (next_val > max_val) {
+        next_val = max_val;
+    }
+    if (next_val < 0) {
+        next_val = 0;
+    }
+    u32 w_next = calc_bar_width_002beae4(next_val, max_val, full_w, true);
+    const u32 draw_color = pick_bar_color_002beae4(max_val, next_val, color, low_color);
+
+    if (delta > 0) {
+        const u32 diff = w_next - w_cur;
+        u32 w_delta = (diff == 0u) ? 1u : diff;
+        if (static_cast<u32>(step - 11) <= 9u) {
+            const u32 anim = static_cast<u32>(static_cast<f32>(diff) * 0.1f *
+                                              static_cast<f32>(step - 10));
+            w_delta -= anim;
+            w_cur += anim;
+        } else if (step > 20) {
+            w_cur = w_next;
+            w_delta = 0u;
+        }
+        if (skip_main == 0u) {
+            func_002b0908(2u, a4, draw_color, x, y_bits, w_cur, h, z_bits);
+        }
+        draw_delta_002beae4(a4, heal_color, x + static_cast<s32>(w_cur), y_bits, w_delta, h, z_bits,
+                            skip_main);
+    } else {
+        u32 w_delta = w_cur - w_next;
+        if (w_cur < w_next) {
+            w_next = w_cur;
+            w_delta = 0u;
+        }
+        if (static_cast<u32>(step - 11) <= 9u) {
+            const u32 anim = static_cast<u32>(static_cast<f32>(w_cur - w_next) * 0.1f *
+                                              static_cast<f32>(step - 10));
+            w_delta -= anim;
+        } else if (step > 20) {
+            w_delta = 0u;
+        }
+        if (skip_main == 0u) {
+            func_002b0908(2u, a4, draw_color, x, y_bits, w_next, h, z_bits);
+        }
+        draw_delta_002beae4(a4, dmg_color, x + static_cast<s32>(w_next), y_bits, w_delta, h, z_bits,
+                            skip_main);
+    }
 }
 
 // DECOMP_FUNC(0x00109aa0, 1080)
