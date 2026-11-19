@@ -2091,78 +2091,146 @@ extern "C" void ui_func_0034359c(u8* self, u32 a1, u32 a2, u32 flags, float f0) 
     ui_func_002c1d3c(self, saved_1e4);
 }
 
+extern "C" s32 script_vm_func_0022a458(u32 mgr, u32 sub_id);
+extern "C" void script_vm_func_00387c8c(u32 mgr, u32 sub_id, void** out_handle, const char* path);
+extern "C" void script_vm_func_0022a2b0(u32 mgr, u32 sub_id, void** out_handle, const char* path);
+extern "C" void script_vm_func_00297704(const char* path, void** out_handle, u32 a2);
+extern "C" void* Tbb_GetSubTable(void* tbb, u32 idx);
+extern "C" u32 Tbb_GetPayloadData(void* sub);
+extern "C" u32 Tbb_GetRowCount(void* sub);
+extern "C" u32 script_vm_func_0022a324(u8* self, u8* r5);
+extern "C" u32 script_vm_func_0022a210(u8* self, u8* r5);
+extern "C" u32 battle_func_003c7988(u8* self, u8* r5);
+extern "C" void engine_func_003db004(void* mgr);
+extern "C" s32 script_vm_func_003dc368(void* mgr);
+extern "C" void battle_func_003dc094(void* mgr);
+extern "C" s32 script_vm_func_003dce60(void* mgr);
+
+namespace {
+
+__attribute__((always_inline)) inline void load_event_file_3c7a94(const char* fmt, u8* r5,
+                                                                  void** out_handle,
+                                                                  bool use_tbb) {
+    char buf[0x80];
+    engine_func_002c4b30(buf, 0x80u);
+    const char* const name = reinterpret_cast<const char*>(r5 + 0x100u);
+    reinterpret_cast<void (*)(char*, const char*, const char*, const char*)>(ui_func_002be7fc)(
+        buf, fmt, name, name);
+    const u32 mgr = *reinterpret_cast<const u32*>(0x00433158u);
+    const u32 sub_id = *reinterpret_cast<const u32*>(r5 + 0xC4u);
+    if (script_vm_func_0022a458(mgr, sub_id) != 0) {
+        if (use_tbb) {
+            script_vm_func_00387c8c(mgr, sub_id, out_handle, buf);
+        } else {
+            script_vm_func_0022a2b0(mgr, sub_id, out_handle, buf);
+        }
+    } else {
+        script_vm_func_00297704(buf, out_handle, 0u);
+    }
+}
+
+__attribute__((always_inline)) inline u32 finish_tbb_3c7a94(u8* self, u8* r5) {
+    void* const h = *reinterpret_cast<void* const*>(self + 8u);
+    if (h == nullptr) {
+        return 0u;
+    }
+    void* const tbl = Tbb_GetSubTable(h, 0u);
+    *reinterpret_cast<u32*>(self + 0x18u) = Tbb_GetPayloadData(tbl);
+    *reinterpret_cast<u32*>(self + 0x1Cu) = Tbb_GetRowCount(tbl);
+    *reinterpret_cast<u32*>(self) = 3u;
+    return script_vm_func_0022a324(self, r5);
+}
+
+__attribute__((always_inline)) inline u32 finish_bf_3c7a94(u8* self, u8* r5) {
+    if (*reinterpret_cast<const u32*>(self + 0x10u) == 0u) {
+        return 0u;
+    }
+    *reinterpret_cast<u32*>(self) = 7u;
+    return script_vm_func_0022a210(self, r5);
+}
+
+__attribute__((always_inline)) inline u32 trigger_vm_3c7a94(u8* self, u8* r5) {
+    const s32 id = *reinterpret_cast<const s32*>(self + 0x20u);
+    if (id < 0) {
+        return 0u;
+    }
+    script_vm_func_002971e4(*reinterpret_cast<u8* const*>(self + 0x14u), static_cast<u32>(id));
+    *reinterpret_cast<u32*>(self) = 0xAu;
+    *reinterpret_cast<u32*>(self + 0x28u) = 0u;
+    if ((*reinterpret_cast<const u32*>(r5 + 0x44A0u) & 0x100000u) != 0u) {
+        script_vm_func_002b8b78(0xDDu);
+    }
+    return battle_func_003c7988(self, r5);
+}
+
+}  // namespace
+
 // DECOMP_FUNC(0x003c7a94, 1048)
-// Capstone ARM full coverage (262 instructions); raw bytes only, no terminal-return claim.
-extern "C" __attribute__((naked)) void script_vm_func_003c7a94() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4070, 0xe1a04000, 0xe5900000, 0xe24dd080\n"
-        ".word 0xe1a05001, 0xe350000b, 0x379ff100, 0xea0000a0\n"
-        ".word 0x003c7d38, 0x003c7ae0, 0x003c7ba0, 0x003c7bec\n"
-        ".word 0x003c7bfc, 0x003c7c9c, 0x003c7d44, 0x003c7d68\n"
-        ".word 0x003c7dd0, 0x003c7d78, 0x003c7dc0, 0xe3a01080\n"
-        ".word 0xe1a0000d, 0xebfbf410, 0xe2853c01, 0xe59f13a0\n"
-        ".word 0xe1a02003, 0xe1a0000d, 0xfafbdb3e, 0xe59f6394\n"
-        ".word 0xe59510c4, 0xe5960000, 0xebf98a51, 0xe3500000\n"
-        ".word 0xe320f000, 0x0a000007, 0xe59510c4, 0xe5960000\n"
-        ".word 0xe1a0300d, 0xe2842008, 0xebff0056, 0xe320f000\n"
-        ".word 0xe320f000, 0xea000003, 0xe3a02000, 0xe2841008\n"
-        ".word 0xe1a0000d, 0xebfb3eed, 0xe3a00002, 0xe5840000\n"
-        ".word 0xe5940008, 0xe3500000, 0x0a00000d, 0xe3a01000\n"
-        ".word 0xebfb91e2, 0xe1a06000, 0xe320f000, 0xebfbe4c9\n"
-        ".word 0xe5840018, 0xe1a00006, 0xebfbe4b2, 0xe3a01003\n"
-        ".word 0xe5841000, 0xe584001c, 0xe1a01005, 0xe1a00004\n"
-        ".word 0xebf989e2, 0xe28dd080, 0xe8bd8070, 0xe5940008\n"
-        ".word 0xe3500000, 0x0afffffa, 0xe3a01000, 0xebfb91cf\n"
-        ".word 0xe1a06000, 0xe320f000, 0xebfbe4b6, 0xe5840018\n"
-        ".word 0xe1a00006, 0xebfbe49f, 0xe3a01003, 0xe5841000\n"
-        ".word 0xe584001c, 0xe28dd080, 0xe1a01005, 0xe1a00004\n"
-        ".word 0xe8bd4070, 0xeaf989cd, 0xe28dd080, 0xe1a00004\n"
-        ".word 0xe8bd4070, 0xeaf989c9, 0xe594000c, 0xe3500000\n"
-        ".word 0x0affffe3, 0xe3a00005, 0xe5840000, 0xe3a01080\n"
-        ".word 0xe1a0000d, 0xebfbf3c4, 0xe2853c01, 0xe59f1278\n"
-        ".word 0xe1a02003, 0xe1a0000d, 0xfafbdaf2, 0xe59f6264\n"
-        ".word 0xe59510c4, 0xe5960000, 0xebf98a05, 0xe3500000\n"
-        ".word 0xe320f000, 0x0a000007, 0xe59510c4, 0xe5960000\n"
-        ".word 0xe1a0300d, 0xe2842010, 0xebf98993, 0xe320f000\n"
-        ".word 0xe320f000, 0xea000003, 0xe3a02000, 0xe2841010\n"
-        ".word 0xe1a0000d, 0xebfb3ea1, 0xe3a00006, 0xe5840000\n"
-        ".word 0xe5942010, 0xe1a00004, 0xe1a01005, 0xe3520000\n"
-        ".word 0x0a000027, 0xea000021, 0xe3a01080, 0xe1a0000d\n"
-        ".word 0xebfbf3a1, 0xe2853c01, 0xe59f11ec, 0xe1a02003\n"
-        ".word 0xe1a0000d, 0xfafbdacf, 0xe59f61d8, 0xe59510c4\n"
-        ".word 0xe5960000, 0xebf989e2, 0xe3500000, 0xe320f000\n"
-        ".word 0x0a000007, 0xe59510c4, 0xe5960000, 0xe1a0300d\n"
-        ".word 0xe2842010, 0xebf98970, 0xe320f000, 0xe320f000\n"
-        ".word 0xea000003, 0xe3a02000, 0xe2841010, 0xe1a0000d\n"
-        ".word 0xebfb3e7e, 0xe3a00006, 0xe5840000, 0xe5942010\n"
-        ".word 0xe1a00004, 0xe1a01005, 0xe3520000, 0x0a000004\n"
-        ".word 0xe3a02007, 0xe5802000, 0xebf98937, 0xe28dd080\n"
-        ".word 0xe8bd8070, 0xe28dd080, 0xe3a00000, 0xe8bd8070\n"
-        ".word 0xe5942010, 0xe1a00004, 0xe3520000, 0x0afffff8\n"
-        ".word 0xe3a02007, 0xe5802000, 0xe28dd080, 0xe8bd4070\n"
-        ".word 0xeaf98929, 0xe28dd080, 0xe1a00004, 0xe8bd4070\n"
-        ".word 0xeaf98925, 0xe5941020, 0xe3510000, 0xbaffffec\n"
-        ".word 0xe5940014, 0xebfb3d15, 0xe59f0110, 0xe3a0100a\n"
-        ".word 0xe3a02000, 0xe5841000, 0xe5842028, 0xe7900005\n"
-        ".word 0xe3100601, 0x0a00001e, 0xe3a000dd, 0xebfbc370\n"
-        ".word 0xe320f000, 0xe320f000, 0xea000019, 0xe28dd080\n"
-        ".word 0xe1a00004, 0xe8bd4070, 0xeafffeed, 0xe5d4002c\n"
-        ".word 0xe3500000, 0x0a000017, 0xe3500001, 0x0a00001a\n"
-        ".word 0xe3500002, 0x0a000022, 0xe3a00009, 0xe5840000\n"
-        ".word 0xe5941020, 0xe3510000, 0xbaffffcd, 0xe5940014\n"
-        ".word 0xebfb3cf6, 0xe59f0094, 0xe3a0100a, 0xe3a02000\n"
-        ".word 0xe5841000, 0xe5842028, 0xe7900005, 0xe3100601\n"
-        ".word 0x1affffe0, 0xe28dd080, 0xe1a01005, 0xe1a00004\n"
-        ".word 0xe8bd4070, 0xeafffed2, 0xe59f0064, 0xe5900000\n"
-        ".word 0xeb004c6e, 0xe3a00001, 0xe5c4002c, 0xe59f6050\n"
-        ".word 0xe5960000, 0xeb005142, 0xe3500000, 0xe320f000\n"
-        ".word 0x0affff4b, 0xe5960000, 0xeb005088, 0xe3a00002\n"
-        ".word 0xe5c4002c, 0xe59f0028, 0xe5900000, 0xeb0053f6\n"
-        ".word 0xe3500000, 0x13a00003, 0x15c4002c, 0x0affff40\n"
-        ".word 0xeaffffd4, 0x004009b4, 0x00433158, 0x00400984\n"
-        ".word 0x000044a0, 0x00435d18\n"
-    );
+extern "C" u32 script_vm_func_003c7a94(u8* self, u8* r5) {
+    const u32 state = *reinterpret_cast<const u32*>(self);
+    switch (state) {
+        case 1u: {
+            load_event_file_3c7a94("battle/event/%s/ProTable_%s.tbb", r5,
+                                   reinterpret_cast<void**>(self + 8u), true);
+            *reinterpret_cast<u32*>(self) = 2u;
+            return finish_tbb_3c7a94(self, r5);
+        }
+        case 2u:
+            return finish_tbb_3c7a94(self, r5);
+        case 3u:
+            return script_vm_func_0022a324(self, r5);
+        case 4u: {
+            if (*reinterpret_cast<const u32*>(self + 0xCu) == 0u) {
+                return 0u;
+            }
+            *reinterpret_cast<u32*>(self) = 5u;
+            // fallthrough
+        }
+        case 5u: {
+            load_event_file_3c7a94("battle/event/%s/%s.bf", r5,
+                                   reinterpret_cast<void**>(self + 0x10u), false);
+            *reinterpret_cast<u32*>(self) = 6u;
+            return finish_bf_3c7a94(self, r5);
+        }
+        case 6u:
+            return finish_bf_3c7a94(self, r5);
+        case 7u:
+            return script_vm_func_0022a210(self, r5);
+        case 8u: {
+            void* const mgr = *reinterpret_cast<void* const*>(0x00435D18u);
+            switch (self[0x2Cu]) {
+                case 0u:
+                    engine_func_003db004(mgr);
+                    self[0x2Cu] = 1u;
+                    // fallthrough
+                case 1u:
+                    if (script_vm_func_003dc368(*reinterpret_cast<void* const*>(0x00435D18u)) ==
+                        0) {
+                        return 0u;
+                    }
+                    battle_func_003dc094(*reinterpret_cast<void* const*>(0x00435D18u));
+                    self[0x2Cu] = 2u;
+                    // fallthrough
+                case 2u:
+                    if (script_vm_func_003dce60(*reinterpret_cast<void* const*>(0x00435D18u)) ==
+                        0) {
+                        return 0u;
+                    }
+                    self[0x2Cu] = 3u;
+                    break;
+                default:
+                    break;
+            }
+            *reinterpret_cast<u32*>(self) = 9u;
+            return trigger_vm_3c7a94(self, r5);
+        }
+        case 9u:
+            return trigger_vm_3c7a94(self, r5);
+        case 10u:
+            return battle_func_003c7988(self, r5);
+        default:
+            return 0u;
+    }
 }
 
 // DECOMP_FUNC(0x001634fc, 1056)
