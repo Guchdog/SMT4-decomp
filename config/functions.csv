@@ -9408,7 +9408,7 @@ address,size,status,category,name,src_file
 0x003a0d94,228,matching,shop,shop_func_003a0d94,src/engine/leaf_batch34_a.cpp
 0x003a0e78,264,matching,camp,camp_func_003a0e78,src/engine/leaf_batch43_c.cpp
 0x003a0f80,548,matching,script_vm,script_vm_func_003a0f80,src/engine/leaf_batch29_c.cpp
-0x003a11a4,616,matching,shop,shop_func_003a11a4,src/engine/leaf_batch45_b.cpp
+0x003a11a4,616,non_matching,shop,shop_func_003a11a4,src/engine/leaf_batch45_b.cpp
 0x003a140c,392,matching,shop,shop_func_003a140c,src/engine/leaf_batch34_a.cpp
 0x003a1594,232,matching,shop,shop_func_003a1594,src/engine/leaf_batch43_a.cpp
 0x003a167c,76,matching,unknown,func_003a167c,src/engine/leaf_batch35_c.cpp
