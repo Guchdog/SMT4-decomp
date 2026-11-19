@@ -1880,78 +1880,67 @@ extern "C" void engine_func_00294848(void* obj, u32 slot, u32 item_id, u32 arg3)
 }
 
 // DECOMP_FUNC(0x002dfad4, 544)
-extern "C" __attribute__((naked)) void engine_func_002dfad4() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x43f0, 0xe92d, 0x5000, 0xe3a0\n"
-        ".hword 0x9000, 0xe1a0, 0x01e0, 0xe59f\n"
-        ".hword 0x81e0, 0xe59f, 0x71f4, 0xe59f\n"
-        ".hword 0x61fc, 0xe59f, 0x8b0c, 0xed2d\n"
-        ".hword 0xd03c, 0xe24d, 0x0000, 0xe590\n"
-        ".hword 0xca73, 0xeddf, 0xda73, 0xed9f\n"
-        ".hword 0xca73, 0xed9f, 0xda73, 0xeddf\n"
-        ".hword 0xba73, 0xed9f, 0xaa74, 0xed9f\n"
-        ".hword 0xaa74, 0xeddf, 0x4a03, 0xe280\n"
-        ".hword 0x0000, 0xe597, 0x1000, 0xe598\n"
-        ".hword 0x24b4, 0xe1d6, 0x9a07, 0xed90\n"
-        ".hword 0xba08, 0xedd0, 0x9a09, 0xedd0\n"
-        ".hword 0x0044, 0xe594, 0x8a06, 0xed91\n"
-        ".hword 0x0000, 0xe352, 0x0011, 0x0a00\n"
-        ".hword 0x0000, 0xe350, 0x0027, 0xda00\n"
-        ".hword 0x1001, 0xe280, 0x0001, 0xe310\n"
-        ".hword 0x1fa1, 0xe081, 0x10c1, 0xe1a0\n"
-        ".hword 0x1a10, 0xee00, 0x0ac0, 0xeeb8\n"
-        ".hword 0x8a4c, 0x1e00, 0x8a0c, 0x0e00\n"
-        ".hword 0x000c, 0xe350, 0x001d, 0xda00\n"
-        ".hword 0x0032, 0xe3a0, 0x8413, 0xebff\n"
-        ".hword 0x0a10, 0xee00, 0x0a40, 0xeeb8\n"
-        ".hword 0x8a2d, 0xee70, 0x001c, 0xea00\n"
-        ".hword 0x0000, 0xe350, 0x0007, 0xda00\n"
-        ".hword 0x1001, 0xe280, 0x0001, 0xe310\n"
-        ".hword 0x1fa1, 0xe081, 0x10c1, 0xe1a0\n"
-        ".hword 0x1a10, 0xee00, 0x0ac0, 0xeeb8\n"
-        ".hword 0x8a4a, 0x1e00, 0x8a0a, 0x0e00\n"
-        ".hword 0x000c, 0xe350, 0x0032, 0xe3a0\n"
-        ".hword 0x0004, 0xda00, 0x8401, 0xebff\n"
-        ".hword 0x0a10, 0xee00, 0x0a40, 0xeeb8\n"
-        ".hword 0x8a2c, 0xee70, 0x000a, 0xea00\n"
-        ".hword 0xf000, 0xe320, 0x83fb, 0xebff\n"
-        ".hword 0x0a10, 0xee00, 0x0a40, 0xeeb8\n"
-        ".hword 0x8a0d, 0xee70, 0x0004, 0xea00\n"
-        ".hword 0x0032, 0xe3a0, 0x83f5, 0xebff\n"
-        ".hword 0x0a10, 0xee00, 0x0a40, 0xeeb8\n"
-        ".hword 0x8a0b, 0xee70, 0x8a2a, 0xee28\n"
-        ".hword 0x0a48, 0xeeb0, 0x8adb, 0xebfe\n"
-        ".hword 0x9a28, 0xee00, 0x0a48, 0xeeb0\n"
-        ".hword 0x8a79, 0xebfe, 0x9a28, 0xee40\n"
-        ".hword 0x0044, 0xe594, 0x0a8a, 0xee3b\n"
-        ".hword 0x0001, 0xe280, 0x0044, 0xe584\n"
-        ".hword 0x9a03, 0xed8d, 0xba04, 0xedcd\n"
-        ".hword 0x9a05, 0xedcd, 0x1000, 0xe597\n"
-        ".hword 0x201c, 0xe591, 0x02d0, 0xe1c1\n"
-        ".hword 0x201c, 0xe58d, 0x02f0, 0xe1cd\n"
-        ".hword 0x0a04, 0xed8d, 0x0a10, 0xee00\n"
-        ".hword 0x2000, 0xe3a0, 0x100c, 0xe28d\n"
-        ".hword 0x001c, 0xe28d, 0x0a0a, 0xee30\n"
-        ".hword 0x0a08, 0xed8d, 0xee9e, 0xebfd\n"
-        ".hword 0x0001, 0xe370, 0xf000, 0xe320\n"
-        ".hword 0x0006, 0x0a00, 0x5001, 0xe285\n"
-        ".hword 0x0004, 0xe355, 0xffa5, 0xbaff\n"
-        ".hword 0xd03c, 0xe28d, 0x0000, 0xe3a0\n"
-        ".hword 0x8b0c, 0xecbd, 0x83f0, 0xe8bd\n"
-        ".hword 0x9a08, 0xed89, 0xba09, 0xedc9\n"
-        ".hword 0x9a0a, 0xedc9, 0x000c, 0xe28d\n"
-        ".hword 0x0a03, 0xec90, 0x001c, 0xe28d\n"
-        ".hword 0x1a03, 0xecd0, 0xa065, 0xebfe\n"
-        ".hword 0x0a0b, 0xed89, 0xd03c, 0xe28d\n"
-        ".hword 0x0001, 0xe3a0, 0x8b0c, 0xecbd\n"
-        ".hword 0x83f0, 0xe8bd, 0x7600, 0x0044\n"
-        ".hword 0x74f4, 0x0044, 0x0000, 0x437a\n"
-        ".hword 0x0000, 0x440c, 0x0000, 0x41c8\n"
-        ".hword 0x0000, 0x43fa, 0x0000, 0x4461\n"
-        ".hword 0x7e88, 0x0044, 0x0000, 0x420c\n"
-        ".hword 0xfa35, 0x3c8e, 0xfb1c, 0x0049\n"
-    );
+extern "C" u32 engine_func_002c0bcc(u32 max_val);
+extern "C" float script_vm_func_00282600(float rad);
+extern "C" float script_vm_func_00287e4c(
+    float x0, float y0, float z0, float x1, float y1, float z1);
+
+extern "C" u32 engine_func_002dfad4(u8* out) {
+    u8* const g_state = *reinterpret_cast<u8* const*>(0x00447600u) + 0x3000u;
+
+    for (s32 attempt = 0; attempt < 4; ++attempt) {
+        const u8* const g_tgt = *reinterpret_cast<const u8* const*>(0x00447E88u);
+        const u8* const g_cam = *reinterpret_cast<const u8* const*>(0x004474F4u);
+        const u16 flag = *reinterpret_cast<const u16*>(0x0049FB1Cu + 0x44u);
+
+        float px = *reinterpret_cast<const float*>(g_tgt + 0x1Cu);
+        const float py = *reinterpret_cast<const float*>(g_tgt + 0x20u);
+        float pz = *reinterpret_cast<const float*>(g_tgt + 0x24u);
+        float ang = *reinterpret_cast<const float*>(g_cam + 0x18u);
+        const s32 cnt = *reinterpret_cast<const s32*>(g_state + 0x44u);
+
+        float dist;
+        if (flag != 0u) {
+            if (cnt > 0) {
+                const float step = static_cast<float>((cnt + 1) >> 1) * 25.0f;
+                ang += (cnt & 1) ? -step : step;
+            }
+            const float base_dist = (cnt > 12) ? 500.0f : 900.0f;
+            dist = static_cast<float>(engine_func_002c0bcc(0x32u)) + base_dist;
+        } else {
+            if (cnt > 0) {
+                const float step = static_cast<float>((cnt + 1) >> 1) * 35.0f;
+                ang += (cnt & 1) ? -step : step;
+            }
+            const float base_dist = (cnt > 12) ? 250.0f : 560.0f;
+            dist = static_cast<float>(engine_func_002c0bcc(0x32u)) + base_dist;
+        }
+
+        const float rad = ang * 0.017453292f;
+        px += reinterpret_cast<float (*)(float)>(script_vm_func_0028277c)(rad) * dist;
+        pz += script_vm_func_00282600(rad) * dist;
+        *reinterpret_cast<s32*>(g_state + 0x44u) = cnt + 1;
+
+        const float cand_pos[3] = {px, py + 35.0f, pz};
+        const u8* const g_tgt2 = *reinterpret_cast<const u8* const*>(0x00447E88u);
+        const float tgt_pos[3] = {
+            *reinterpret_cast<const float*>(g_tgt2 + 0x1Cu),
+            *reinterpret_cast<const float*>(g_tgt2 + 0x20u) + 35.0f,
+            *reinterpret_cast<const float*>(g_tgt2 + 0x24u),
+        };
+
+        if (engine_func_0025b6e8(tgt_pos, cand_pos, nullptr) == -1) {
+            *reinterpret_cast<float*>(out + 0x20u) = px;
+            *reinterpret_cast<float*>(out + 0x24u) = py;
+            *reinterpret_cast<float*>(out + 0x28u) = pz;
+            *reinterpret_cast<float*>(out + 0x2Cu) = script_vm_func_00287e4c(
+                cand_pos[0], cand_pos[1], cand_pos[2],
+                tgt_pos[0], tgt_pos[1], tgt_pos[2]);
+            return 1u;
+        }
+    }
+
+    return 0u;
 }
 
 // DECOMP_FUNC(0x0032acb8, 544)
