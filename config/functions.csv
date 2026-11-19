@@ -4810,7 +4810,7 @@ address,size,status,category,name,src_file
 0x00294568,336,matching,battle,battle_func_00294568,src/engine/leaf_batch33_c.cpp
 0x002946b8,60,matching,engine,engine_func_002946b8,src/engine/leaf_batch39_b.cpp
 0x002946f4,340,matching,engine,engine_func_002946f4,src/engine/leaf_batch44_b.cpp
-0x00294848,540,matching,engine,engine_func_00294848,src/engine/leaf_batch45_b.cpp
+0x00294848,540,non_matching,engine,engine_func_00294848,src/engine/leaf_batch45_b.cpp
 0x00294a64,52,matching,engine,engine_func_00294a64,src/engine/leaf_batch39_b.cpp
 0x00294a98,64,matching,ui,ui_func_00294a98,src/engine/leaf_batch35_a.cpp
 0x00294ad8,1336,matching,ui,ui_func_00294ad8,src/engine/leaf_batch43_a.cpp
