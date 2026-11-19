@@ -166,7 +166,7 @@ address,size,status,category,name,src_file
 0x00109614,16,matching,unknown,func_00109614,src/engine/leaf_batch20_a.cpp
 0x00109624,108,matching,engine,engine_func_00109624,src/engine/leaf_batch38_c.cpp
 0x00109690,1040,non_matching,engine,AsdSoundSystem_func_00109690,src/engine/asd_sound.cpp
-0x00109aa0,1080,matching,ui,ui_func_00109aa0,src/engine/leaf_batch45_c.cpp
+0x00109aa0,1080,non_matching,ui,ui_func_00109aa0,src/engine/leaf_batch45_c.cpp
 0x00109ed8,116,matching,ui,ui_func_00109ed8,src/engine/leaf_batch20_a.cpp
 0x00109f4c,136,matching,ui,ui_func_00109f4c,src/engine/leaf_batch26_a.cpp
 0x00109fd4,212,matching,ui,ui_func_00109fd4,src/engine/leaf_batch27_a.cpp

@@ -2639,80 +2639,67 @@ extern "C" void battle_func_002beae4(s32 cur, s32 max_val, s32 delta, s32 step, 
     }
 }
 
+extern "C" void ui_func_002bf710(f32 scale);
+
 // DECOMP_FUNC(0x00109aa0, 1080)
-// Capstone ARM full coverage (270 instructions); raw bytes only, no terminal-return claim.
-extern "C" __attribute__((naked)) void ui_func_00109aa0() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d43f0, 0xe1a08000, 0xe1a07001, 0xe1a09002\n"
-        ".word 0xed2d8b02, 0xeeb08b40, 0xeeb00a61, 0xe24dd00c\n"
-        ".word 0xeb06d712, 0xe3a04000, 0xe3580000, 0xe3e05000\n"
-        ".word 0xe1a06004, 0x0a000004, 0xe3580001, 0x0a00006c\n"
-        ".word 0xe3580002, 0x0a0000ad, 0xea0000d4, 0xe3570016\n"
-        ".word 0x379ff107, 0xea000045, 0x00109b50, 0x00109b58\n"
-        ".word 0x00109b60, 0x00109b68, 0x00109b74, 0x00109b80\n"
-        ".word 0x00109b8c, 0x00109b94, 0x00109b9c, 0x00109ba8\n"
-        ".word 0x00109bb0, 0x00109bb8, 0x00109bc0, 0x00109bc8\n"
-        ".word 0x00109bd0, 0x00109bd8, 0x00109be0, 0x00109be8\n"
-        ".word 0x00109bf0, 0x00109bf8, 0x00109c00, 0x00109c08\n"
-        ".word 0xe3a05000, 0xea000004, 0xe3a05001, 0xea000002\n"
-        ".word 0xe3a05002, 0xea000000, 0xe3a05003, 0xe59f42e4\n"
-        ".word 0xea000026, 0xe59f42e0, 0xe3a05004, 0xea000023\n"
-        ".word 0xe59f42d8, 0xe3a05005, 0xea000020, 0xe3a05007\n"
-        ".word 0xea00001d, 0xe3a05006, 0xea00001b, 0xe59f42c0\n"
-        ".word 0xe3a05008, 0xea000019, 0xe59f42b8, 0xea000017\n"
-        ".word 0xe59f42b4, 0xea000015, 0xe59f42b0, 0xea000013\n"
-        ".word 0xe59f42ac, 0xea000011, 0xe59f42a8, 0xea00000f\n"
-        ".word 0xe59f42a4, 0xea00000d, 0xe59f42a0, 0xea00000b\n"
-        ".word 0xe3a04d2f, 0xea000009, 0xe59f4294, 0xea000007\n"
-        ".word 0xe3a0501b, 0xea000004, 0xe3a0501c, 0xea000002\n"
-        ".word 0xe3a0501d, 0xea000000, 0xe3a0501e, 0xe59f4274\n"
-        ".word 0xe3a00013, 0xe1a01004, 0xeb06d6ac, 0xe1b07000\n"
-        ".word 0xe320f000, 0x0a000085, 0xe3590000, 0x1a000083\n"
-        ".word 0xeefd0ac8, 0xed9f0a94, 0xe3a0000b, 0xe3550000\n"
-        ".word 0xee380a80, 0xee103a90, 0xeebd0ac0, 0xed8d0a00\n"
-        ".word 0xe58d0004, 0xba000005, 0xe1a02005, 0xe3a01013\n"
-        ".word 0xe3a00002, 0xeb06d63b, 0xe1d700b4, 0xea000006\n"
-        ".word 0xe1a02004, 0xe3a01013, 0xe3a00002, 0xeb06d5f7\n"
-        ".word 0xe320f000, 0xe320f000, 0xeafffff6, 0xe3c06902\n"
-        ".word 0xea00006a, 0xe357000e, 0x379ff107, 0xea000028\n"
-        ".word 0x00109cd8, 0x00109ce0, 0x00109ce8, 0x00109cf0\n"
-        ".word 0x00109cf8, 0x00109d00, 0x00109d08, 0x00109d10\n"
-        ".word 0x00109d18, 0x00109d20, 0x00109d28, 0x00109d30\n"
-        ".word 0x00109d38, 0x00109d40, 0xe3a04ffa, 0xea000018\n"
-        ".word 0xe59f41a8, 0xea000016, 0xe59f41a4, 0xea000014\n"
-        ".word 0xe59f41a0, 0xea000012, 0xe3a04ffb, 0xea000010\n"
-        ".word 0xe59f4194, 0xea00000e, 0xe59f4190, 0xea00000c\n"
-        ".word 0xe59f418c, 0xea00000a, 0xe3a04e3f, 0xea000008\n"
-        ".word 0xe59f4180, 0xea000006, 0xe59f417c, 0xea000004\n"
-        ".word 0xe59f4178, 0xea000002, 0xe3a04ffd, 0xea000000\n"
-        ".word 0xe59f416c, 0xe3a00013, 0xe1a01004, 0xeb06d65f\n"
-        ".word 0xe1b05000, 0xe320f000, 0x0a000038, 0xe3590000\n"
-        ".word 0x1a000036, 0xeefd0ac8, 0xed9f0a47, 0xe3a0000b\n"
-        ".word 0xe1a02004, 0xee380a80, 0xe3a01013, 0xee103a90\n"
-        ".word 0xeebd0ac0, 0xed8d0a00, 0xe58d0004, 0xe3a00002\n"
-        ".word 0xeb06d5b2, 0xe1d500b4, 0xe320f000, 0xeaffffba\n"
-        ".word 0xe357000a, 0x379ff107, 0xea00001c, 0x00109dd4\n"
-        ".word 0x00109ddc, 0x00109de4, 0x00109dec, 0x00109df4\n"
-        ".word 0x00109dfc, 0x00109e04, 0x00109e0c, 0x00109e14\n"
-        ".word 0x00109e1c, 0xe59f40dc, 0xea000010, 0xe3a04ffe\n"
-        ".word 0xea00000e, 0xe59f40d0, 0xea00000c, 0xe59f40cc\n"
-        ".word 0xea00000a, 0xe59f40c8, 0xea000008, 0xe3a04fff\n"
-        ".word 0xea000006, 0xe59f40bc, 0xea000004, 0xe59f40b8\n"
-        ".word 0xea000002, 0xe59f40b4, 0xea000000, 0xe3a04b01\n"
-        ".word 0xe1a01004, 0xe3a00013, 0xeb06d628, 0xe1b05000\n"
-        ".word 0xe320f000, 0x0a000001, 0xe3590000, 0x0affffc8\n"
-        ".word 0xed9f0a23, 0xeb06d631, 0xe28dd00c, 0xe1a00006\n"
-        ".word 0xecbd8b02, 0xe8bd83f0, 0x00000bb8, 0x00000bb9\n"
-        ".word 0x00000bba, 0x00000bbc, 0x00000bc1, 0x00000bc2\n"
-        ".word 0x00000bc3, 0x00000bc4, 0x00000bc5, 0x00000bbd\n"
-        ".word 0x00000bbe, 0x00000bbf, 0x00000bbb, 0x40000000\n"
-        ".word 0x000003e9, 0x000003ea, 0x000003eb, 0x000003ed\n"
-        ".word 0x000003ee, 0x000003ef, 0x000003f1, 0x000003f2\n"
-        ".word 0x000003f3, 0x000003f6, 0x000003f7, 0x000003f9\n"
-        ".word 0x000003fa, 0x000003fb, 0x000003fd, 0x000003fe\n"
-        ".word 0x000003ff, 0x3f800000\n"
-    );
+extern "C" u32 ui_func_00109aa0(u32 mode, u32 idx, u32 suppress_draw, f32 x, f32 y,
+                                f32 /*unused*/, f32 init_scale) {
+    ui_func_002bf710(init_scale);
+
+    u32 id = 0u;
+    s32 sub_id = -1;
+    bool valid_mode = true;
+
+    if (mode == 0u) {
+        static constexpr u16 kMode0Ids[22] = {
+            0x0BB8u, 0x0BB8u, 0x0BB8u, 0x0BB8u, 0x0BB9u, 0x0BBAu, 0x0BBBu, 0x0BBBu,
+            0x0BBCu, 0x0BC1u, 0x0BC2u, 0x0BC3u, 0x0BC4u, 0x0BC5u, 0x0BBDu, 0x0BBEu,
+            0x0BC0u, 0x0BBFu, 0x0BBBu, 0x0BBBu, 0x0BBBu, 0x0BBBu,
+        };
+        static constexpr s8 kMode0Sub[22] = {
+            0, 1, 2, 3, 4, 5, 7, 6, 8, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0x1B, 0x1C, 0x1D, 0x1E,
+        };
+        if (idx < 22u) {
+            id = kMode0Ids[idx];
+            sub_id = kMode0Sub[idx];
+        }
+    } else if (mode == 1u) {
+        static constexpr u16 kMode1Ids[14] = {
+            0x03E8u, 0x03E9u, 0x03EAu, 0x03EBu, 0x03ECu, 0x03EDu, 0x03EEu,
+            0x03EFu, 0x03F0u, 0x03F1u, 0x03F2u, 0x03F3u, 0x03F4u, 0x03F6u,
+        };
+        if (idx < 14u) {
+            id = kMode1Ids[idx];
+        }
+    } else if (mode == 2u) {
+        static constexpr u16 kMode2Ids[10] = {
+            0x03F7u, 0x03F8u, 0x03F9u, 0x03FAu, 0x03FBu,
+            0x03FCu, 0x03FDu, 0x03FEu, 0x03FFu, 0x0400u,
+        };
+        if (idx < 10u) {
+            id = kMode2Ids[idx];
+        }
+    } else {
+        valid_mode = false;
+    }
+
+    u32 ret = 0u;
+    if (valid_mode) {
+        const u8* const info = camp_func_002bf6d0(0x13u, id);
+        if (info != nullptr && suppress_draw == 0u) {
+            const u32 xi = static_cast<u32>(static_cast<s32>(x));
+            const u32 yi = static_cast<u32>(static_cast<s32>(y + 2.0f));
+            if (sub_id >= 0) {
+                func_002bf558(2u, 0x13u, static_cast<u32>(sub_id), xi, yi, 0x0Bu);
+            } else {
+                ui_func_002bf460(2u, 0x13u, id, xi, yi, 0x0Bu);
+            }
+            ret = *reinterpret_cast<const u16*>(info + 4u) & 0x7FFFu;
+        }
+    }
+
+    ui_func_002bf710(1.0f);
+    return ret;
 }
 
 // DECOMP_FUNC(0x001a9970, 1096)
