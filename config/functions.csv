@@ -9696,7 +9696,7 @@ address,size,status,category,name,src_file
 0x003b9078,992,matching,engine,engine_func_003b9078,src/engine/leaf_batch46_a.cpp
 0x003b9458,124,matching,script_vm,script_vm_func_003b9458,src/engine/leaf_batch33_a.cpp
 0x003b94d4,752,matching,engine,engine_func_003b94d4,src/engine/leaf_batch36_b.cpp
-0x003b97c4,616,matching,engine,engine_func_003b97c4,src/engine/leaf_batch45_b.cpp
+0x003b97c4,616,non_matching,engine,engine_func_003b97c4,src/engine/leaf_batch45_b.cpp
 0x003b9a2c,288,matching,script_vm,script_vm_func_003b9a2c,src/engine/leaf_batch43_a.cpp
 0x003b9b4c,344,matching,script_vm,script_vm_func_003b9b4c,src/engine/leaf_batch36_b.cpp
 0x003b9ca4,196,matching,script_vm,script_vm_func_003b9ca4,src/engine/leaf_batch33_b.cpp
