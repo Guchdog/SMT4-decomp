@@ -2400,78 +2400,120 @@ extern "C" __attribute__((naked)) void func_001672ac() {
     );
 }
 
+extern "C" void engine_func_002c3aa8(void* lock);
+extern "C" void engine_func_002c3a24(void* lock);
+extern "C" void func_00239b84(void* ptr);
+extern "C" void* func_00239b54(u32 size, u32 align);
+extern "C" void engine_func_002c5ff4(void* dst, const void* src, u32 size);
+
+namespace {
+
+inline void release_slot_239734(void* lock2, void* const* slot, volatile u8* flag) {
+    engine_func_002c3aa8(lock2);
+    if (*flag != 0u) {
+        func_00239b84(*slot);
+        *flag = 0u;
+    }
+    engine_func_002c3a24(lock2);
+}
+
+}  // namespace
+
 // DECOMP_FUNC(0x00239734, 1056)
-// Capstone ARM full coverage (264 instructions); raw bytes only, no terminal-return claim.
-extern "C" __attribute__((naked)) void engine_func_00239734() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4fff, 0xe24dd08c, 0xe1a04000, 0xe1a07001\n"
-        ".word 0xe59f63e8, 0xe59db0c0, 0xe1a00006, 0xeb0228d4\n"
-        ".word 0xe5941004, 0xe3510000, 0x059f43d4, 0x0a00001e\n"
-        ".word 0xe3a09000, 0xe28d000c, 0xe58d9010, 0xe58d0000\n"
-        ".word 0xe58d900c, 0xe5940000, 0xe35b0000, 0xe3a03002\n"
-        ".word 0xe590c008, 0x0a00000f, 0xe3a02004, 0xe1a00004\n"
-        ".word 0xe12fff3c, 0xe59d000c, 0xe3500000, 0x0a00000d\n"
-        ".word 0xe59f8390, 0xe59f5390, 0xe2840b01, 0xe2800f56\n"
-        ".word 0xe35b0000, 0xe58d0014, 0x0a00000c, 0xe35b0001\n"
-        ".word 0x0a000040, 0xea00004e, 0xe3a02003, 0xe1a00004\n"
-        ".word 0xe12fff3c, 0xeaffffee, 0xe59f4360, 0xe1a00006\n"
-        ".word 0xeb02288e, 0xe28dd09c, 0xe1a00004, 0xe8bd8ff0\n"
-        ".word 0xe5d50003, 0xe3500000, 0x15879014, 0x0a00000a\n"
-        ".word 0xe59fa33c, 0xe1a0000a, 0xeb0228a5, 0xe5d50003\n"
-        ".word 0xe3500000, 0x0a000002, 0xe59403a8, 0xeb0000d7\n"
-        ".word 0xe5c59003, 0xe1a0000a, 0xeb02287c, 0xe59d000c\n"
-        ".word 0xe59fa30c, 0xe58d0000, 0xe1a0000a, 0xeb022898\n"
-        ".word 0xe5d50003, 0xe3500000, 0x0a000002, 0xe59403a8\n"
-        ".word 0xeb0000ca, 0xe5c59003, 0xe59d0000, 0xe3a01004\n"
-        ".word 0xeb0000ba, 0xe3500000, 0xe58403a8, 0x0a000044\n"
-        ".word 0xe3a00001, 0xe5c50003, 0xe3a00000, 0xe58d0000\n"
-        ".word 0xe1a0000a, 0xeb022865, 0xe59d0000, 0xe2100102\n"
-        ".word 0x4a000035, 0xe5940004, 0xe3a02012, 0xe3a01003\n"
-        ".word 0xe88d0007, 0xe28d3010, 0xe5940000, 0xe59413a8\n"
-        ".word 0xe59d200c, 0xe590c034, 0xe1a00004, 0xe12fff3c\n"
-        ".word 0xe59483a8, 0xea000047, 0xe5d50004, 0xe3500000\n"
-        ".word 0x15879014, 0x0a00000a, 0xe59fa264, 0xe1a0000a\n"
-        ".word 0xeb02286f, 0xe5d50004, 0xe3500000, 0x0a000002\n"
-        ".word 0xe5940558, 0xeb0000a1, 0xe5c59004, 0xe1a0000a\n"
-        ".word 0xeb022846, 0xe59d000c, 0xe59fa234, 0xe58d0000\n"
-        ".word 0xe1a0000a, 0xeb022862, 0xe5d50004, 0xe3500000\n"
-        ".word 0x0a000002, 0xe5940558, 0xeb000094, 0xe5c59004\n"
-        ".word 0xe59d0000, 0xe3a01004, 0xeb000084, 0xe3500000\n"
-        ".word 0xe5840558, 0x0a000014, 0xe3a00001, 0xe5c50004\n"
-        ".word 0xe3a00000, 0xe58d0000, 0xe1a0000a, 0xeb02282f\n"
-        ".word 0xe59d0000, 0xe2100102, 0x5a000011, 0xe1a00006\n"
-        ".word 0xe5879014, 0xeb022829, 0xe28dd09c, 0xe1a00008\n"
-        ".word 0xe8bd8ff0, 0xe1a0000a, 0xe5c59003, 0xeb022823\n"
-        ".word 0xe1a00008, 0xe320f000, 0xeaffffbb, 0xe1a0000a\n"
-        ".word 0xe5c59004, 0xeb02281d, 0xe1a00008, 0xe320f000\n"
-        ".word 0xeaffffeb, 0xe5940004, 0xe3a02012, 0xe3a01004\n"
-        ".word 0xe88d0007, 0xe28d3010, 0xe5940000, 0xe5941558\n"
-        ".word 0xe59d200c, 0xe590c034, 0xe1a00004, 0xe12fff3c\n"
-        ".word 0xe59d1014, 0xe5918000, 0xe2100102, 0x4a000028\n"
-        ".word 0xe59d0010, 0xe3500000, 0x0a000025, 0xe59fa144\n"
-        ".word 0xe3500020, 0x3a00001d, 0xe3a02020, 0xe1a01008\n"
-        ".word 0xe1a00007, 0xeb023175, 0xe59d2010, 0xe5970004\n"
-        ".word 0xe1500002, 0x1a000015, 0xe5971014, 0xe3a00020\n"
-        ".word 0xe0613181, 0xe0800203, 0xe1500002, 0x8a00000f\n"
-        ".word 0xe3510000, 0xe2889020, 0x859f80fc, 0xe3a05000\n"
-        ".word 0x9a000031, 0xe3a02070, 0xe1a01009, 0xe28d0018\n"
-        ".word 0xeb023162, 0xe1dd01b8, 0xe1500008, 0x1a000003\n"
-        ".word 0xe5941004, 0xe59d0028, 0xe1500001, 0x0a00001f\n"
-        ".word 0xe1a00006, 0xeb0227e5, 0xe28dd09c, 0xe1a0000a\n"
-        ".word 0xe8bd8ff0, 0xe35b0000, 0xe5879014, 0x0a00000c\n"
-        ".word 0xe1a07004, 0xe59f4098, 0xe1a00004, 0xeb0227fc\n"
-        ".word 0xe5d50004, 0xe3500000, 0x0a000002, 0xe5970558\n"
-        ".word 0xeb00002e, 0xe5c59004, 0xe1a00004, 0xeb0227d3\n"
-        ".word 0xeaffff40, 0xe59f7068, 0xe1a00007, 0xeb0227f0\n"
-        ".word 0xe5d50003, 0xe3500000, 0x0a000002, 0xe59403a8\n"
-        ".word 0xeb000022, 0xe5c59003, 0xe1a00007, 0xeafffff2\n"
-        ".word 0xe59d0094, 0xe7809105, 0xe5970014, 0xe2855001\n"
-        ".word 0xe2899070, 0xe1500005, 0x8affffcd, 0xe59d000c\n"
-        ".word 0xe3500000, 0x13a04000, 0x1affff2b, 0xeaffff29\n"
-        ".word 0x004e62a8, 0xc8810bea, 0xc8610bf3, 0x004656d0\n"
-        ".word 0xc8810bef, 0x004e62b4, 0xc8e1086a, 0x00006060\n"
-    );
+extern "C" u32 engine_func_00239734(u8* self, u8* out_hdr, const u8** out_entries, u32 /*unused*/,
+                                    u32 mode) {
+    void* const lock1 = reinterpret_cast<void*>(0x004E62A8u);
+    void* const lock2 = reinterpret_cast<void*>(0x004E62B4u);
+    volatile u8* const flags = reinterpret_cast<volatile u8*>(0x004656D0u);
+
+    engine_func_002c3aa8(lock1);
+    const u32 ctx_id = *reinterpret_cast<const u32*>(self + 4u);
+    if (ctx_id == 0u) {
+        engine_func_002c3a24(lock1);
+        return 0xC8810BEAu;
+    }
+
+    u32 bytes_read = 0u;
+    u32 file_size = 0u;
+    const u32 slot_arg = (mode == 0u) ? 3u : 4u;
+    void* const* const vtable = *reinterpret_cast<void* const* const*>(self);
+    using GetSizeFn = void (*)(u8*, u32, u32, u32, u32*);
+    reinterpret_cast<GetSizeFn>(vtable[2])(self, ctx_id, slot_arg, 2u, &file_size);
+    if (file_size == 0u) {
+        engine_func_002c3a24(lock1);
+        return 0xC8810BEFu;
+    }
+
+    void** const slot = reinterpret_cast<void**>(self + ((mode == 0u) ? 0x3A8u : 0x558u));
+    volatile u8* const flag = flags + ((mode == 0u) ? 3u : 4u);
+
+    if ((mode == 0u || mode == 1u) && *flag != 0u) {
+        *reinterpret_cast<u32*>(out_hdr + 0x14u) = 0u;
+        release_slot_239734(lock2, slot, flag);
+    }
+
+    engine_func_002c3aa8(lock2);
+    if (*flag != 0u) {
+        func_00239b84(*slot);
+        *flag = 0u;
+    }
+    void* const buf_alloc = func_00239b54(file_size, 4u);
+    *slot = buf_alloc;
+    if (buf_alloc == nullptr) {
+        *flag = 0u;
+        engine_func_002c3a24(lock2);
+        *reinterpret_cast<u32*>(out_hdr + 0x14u) = 0u;
+        engine_func_002c3a24(lock1);
+        return 0xC8610BF3u;
+    }
+    *flag = 1u;
+    engine_func_002c3a24(lock2);
+
+    using ReadFn = s32 (*)(u8*, void*, u32, u32*, u32, u32, u32);
+    const s32 read_res = reinterpret_cast<ReadFn>(vtable[13])(
+        self, buf_alloc, file_size, &bytes_read, *reinterpret_cast<const u32*>(self + 4u),
+        slot_arg, 0x12u);
+    const u8* const buf = static_cast<const u8*>(*slot);
+
+    if (read_res < 0 || bytes_read == 0u) {
+        *reinterpret_cast<u32*>(out_hdr + 0x14u) = 0u;
+        release_slot_239734(lock2, slot, flag);
+        engine_func_002c3a24(lock1);
+        return 0xC8810BEFu;
+    }
+
+    if (bytes_read < 0x20u) {
+        engine_func_002c3a24(lock1);
+        return 0xC8E1086Au;
+    }
+
+    engine_func_002c5ff4(out_hdr, buf, 0x20u);
+    if (*reinterpret_cast<const u32*>(out_hdr + 4u) != bytes_read) {
+        engine_func_002c3a24(lock1);
+        return 0xC8E1086Au;
+    }
+
+    const u32 count = *reinterpret_cast<const u32*>(out_hdr + 0x14u);
+    if (0x20u + count * 0x70u > bytes_read) {
+        engine_func_002c3a24(lock1);
+        return 0xC8E1086Au;
+    }
+
+    u8 entry_tmp[0x70];
+    for (u32 i = 0u; i < count; ++i) {
+        const u8* const entry = buf + 0x20u + i * 0x70u;
+        engine_func_002c5ff4(entry_tmp, entry, 0x70u);
+        if (*reinterpret_cast<const u16*>(entry_tmp) != 0x6060u ||
+            *reinterpret_cast<const u32*>(entry_tmp + 0x10u) !=
+                *reinterpret_cast<const u32*>(self + 4u)) {
+            engine_func_002c3a24(lock1);
+            return 0xC8E1086Au;
+        }
+        out_entries[i] = entry;
+    }
+
+    engine_func_002c3a24(lock1);
+    return 0u;
 }
 
 // DECOMP_FUNC(0x002beae4, 1072)
