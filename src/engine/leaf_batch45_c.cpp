@@ -1387,75 +1387,101 @@ extern "C" u32 engine_func_0039b864(u8* self) {
     return 0u;
 }
 
+extern "C" void camp_func_002b7f08(void* base, u32 count, u32 elem_size, u32 cmp_fn);
+extern "C" s32 script_vm_func_003d12cc(u8* r8, u8* r6, const u8** ptrs, u32 count, u32 flag);
+extern "C" void func_0022ad74(const u32* r6_20, u16* out_arr);
+extern "C" s32 battle_func_0029ac70(u16 id, u32 a1);
+extern "C" s32 battle_func_0029abc0(u16 id);
+extern "C" s32 ui_func_00227968(u8* r8, u8* r6, const void* sb, const u8** ptrs, u32 count, u32 a5,
+                                u32 a4);
+extern "C" s32 ui_func_0029ec6c(u16 id);
+extern "C" void script_vm_func_00229b2c(u8* r8);
+
+namespace {
+
+__attribute__((always_inline)) inline bool try_pass_3d0910(u8* r8, u8* r6, const u8** ptrs,
+                                                           u32 count, const u16* arr9, u32 a4,
+                                                           u32 a5) {
+    for (s32 i = 0; i < 9; ++i) {
+        const u16 id = arr9[i];
+        if (id == 0u) {
+            continue;
+        }
+        const void* const sb = battle_func_002ae3f0(id);
+        if (sb == nullptr) {
+            continue;
+        }
+        const u32 flags = **reinterpret_cast<const u32* const*>(r6 + 0x20u);
+        const s32 cost =
+            ((flags & 2u) != 0u) ? battle_func_0029ac70(id, 1u) : battle_func_0029abc0(id);
+        const s16 limit =
+            *reinterpret_cast<const s16*>(*reinterpret_cast<const u8* const*>(r6 + 0x28u) + 0xECu);
+        if (cost > static_cast<s32>(limit)) {
+            continue;
+        }
+        if (ui_func_00227968(r8, r6, sb, ptrs, count, a5, a4) != 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
+}  // namespace
+
 // DECOMP_FUNC(0x003d0910, 996)
-// Capstone ARM full coverage (249 instructions); raw bytes only, no terminal-return claim.
-extern "C" __attribute__((naked)) void camp_func_003d0910() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4ff0, 0xe24ddf75, 0xe1a08000, 0xe1a06001\n"
-        ".word 0xe3a05000, 0xe5900000, 0xe1a01005, 0xe3a0206d\n"
-        ".word 0xe2800d7f, 0xe28db00c, 0xe5900000, 0xe5903000\n"
-        ".word 0xe3130b01, 0x0a000007, 0xe5983000, 0xe081c201\n"
-        ".word 0xe08cc301, 0xe2833d7f, 0xe5933000, 0xe083318c\n"
-        ".word 0xe78b3105, 0xe2855001, 0xe2522001, 0xe2800fa2\n"
-        ".word 0xe2811001, 0x1afffff0, 0xe59f3368, 0xe3a02004\n"
-        ".word 0xe1a01005, 0xe1a0000b, 0xfbfb9d5e, 0xe3a07001\n"
-        ".word 0xe1a03005, 0xe28d200c, 0xe1a01006, 0xe1a00008\n"
-        ".word 0xe58d7000, 0xeb000248, 0xe3500000, 0xe320f000\n"
-        ".word 0x1a0000b8, 0xe3a09000, 0xe58d91c0, 0xe58d91c4\n"
-        ".word 0xe58d91c8, 0xe58d91cc, 0xe58d91d0, 0xe5960020\n"
-        ".word 0xe28d1d07, 0xebf968e6, 0xe5960020, 0xe5900000\n"
-        ".word 0xe3100002, 0x0a000007, 0xe59f32fc, 0xe3a02002\n"
-        ".word 0xe3a01009, 0xe28d0d07, 0xfbfb9d42, 0xe320f000\n"
-        ".word 0xe320f000, 0xea000004, 0xe59f32e0, 0xe3a02002\n"
-        ".word 0xe3a01009, 0xe28d0d07, 0xfbfb9d3a, 0xe3a04000\n"
-        ".word 0xe28dad07, 0xe08a7084, 0xe1d700b0, 0xe3500000\n"
-        ".word 0x0a000022, 0xebfb766d, 0xe1b09000, 0xe320f000\n"
-        ".word 0x0a00001e, 0xe5960020, 0xe5900000, 0xe3100002\n"
-        ".word 0xe1d700b0, 0x0a000006, 0xe3a01001, 0xebfb2883\n"
-        ".word 0xe5961028, 0xe1d11efc, 0xe1500001, 0xda000006\n"
-        ".word 0xea000012, 0xe320f000, 0xebfb2850, 0xe5961028\n"
-        ".word 0xe1d11efc, 0xe1500001, 0xca00000c, 0xe3a00000\n"
-        ".word 0xe3a01001, 0xe58d0008, 0xe58d1004, 0xe28d300c\n"
-        ".word 0xe1a02009, 0xe1a01006, 0xe1a00008, 0xe58d5000\n"
-        ".word 0xebf95bac, 0xe3500000, 0xe320f000, 0x1a000075\n"
-        ".word 0xe2844001, 0xe3540009, 0xbaffffd5, 0xe3a07000\n"
-        ".word 0xe1a03005, 0xe28d200c, 0xe1a01006, 0xe1a00008\n"
-        ".word 0xe58d7000, 0xeb0001f8, 0xe3500000, 0x03a04000\n"
-        ".word 0x1a000068, 0xe08a7084, 0xe1d700b0, 0xe3500000\n"
-        ".word 0x0a000022, 0xebfb7639, 0xe1b09000, 0xe320f000\n"
-        ".word 0x0a00001e, 0xe5960020, 0xe5900000, 0xe3100002\n"
-        ".word 0xe1d700b0, 0x0a000006, 0xe3a01001, 0xebfb284f\n"
-        ".word 0xe5961028, 0xe1d11efc, 0xe1500001, 0xda000006\n"
-        ".word 0xea000012, 0xe320f000, 0xebfb281c, 0xe5961028\n"
-        ".word 0xe1d11efc, 0xe1500001, 0xca00000c, 0xe3a00001\n"
-        ".word 0xe3a01000, 0xe58d0008, 0xe58d1004, 0xe28d300c\n"
-        ".word 0xe1a02009, 0xe1a01006, 0xe1a00008, 0xe58d5000\n"
-        ".word 0xebf95b78, 0xe3500000, 0xe320f000, 0x1a000041\n"
-        ".word 0xe2844001, 0xe3540009, 0xbaffffd5, 0xe3a04000\n"
-        ".word 0xe08a7084, 0xe1d700b0, 0xe3500000, 0x0a000022\n"
-        ".word 0xebfb760e, 0xe1b09000, 0xe320f000, 0x0a00001e\n"
-        ".word 0xe5960020, 0xe5900000, 0xe3100002, 0xe1d700b0\n"
-        ".word 0x0a000006, 0xe3a01001, 0xebfb2824, 0xe5961028\n"
-        ".word 0xe1d11efc, 0xe1500001, 0xda000006, 0xea000012\n"
-        ".word 0xe320f000, 0xebfb27f1, 0xe5961028, 0xe1d11efc\n"
-        ".word 0xe1500001, 0xca00000c, 0xe3a00002, 0xe3a01000\n"
-        ".word 0xe58d0008, 0xe58d1004, 0xe28d300c, 0xe1a02009\n"
-        ".word 0xe1a01006, 0xe1a00008, 0xe58d5000, 0xebf95b4d\n"
-        ".word 0xe3500000, 0xe320f000, 0x1a000016, 0xe2844001\n"
-        ".word 0xe3540009, 0xbaffffd5, 0xe3550000, 0xe3a04000\n"
-        ".word 0x9a000015, 0xe79b0104, 0xe5901000, 0xe3110b01\n"
-        ".word 0x0a00000e, 0xe1d00cbe, 0xebfb37ff, 0xe3500000\n"
-        ".word 0xe320f000, 0x0a000009, 0xe5962028, 0xe3a01006\n"
-        ".word 0xe3a00000, 0xe2822c01, 0xe1c214bc, 0xe5961028\n"
-        ".word 0xe2811c01, 0xe1c104be, 0xe28ddf75, 0xe8bd8ff0\n"
-        ".word 0xe2844001, 0xe1540005, 0x3affffe9, 0xe5961028\n"
-        ".word 0xe3a00001, 0xe2811c01, 0xe1c104bc, 0xe5961020\n"
-        ".word 0xe5911000, 0xe3110006, 0xe5961028, 0x03a00000\n"
-        ".word 0xe2811c01, 0xe1c104be, 0xe1a00008, 0xebf96392\n"
-        ".word 0xe28ddf75, 0xe8bd8ff0, 0x001b1900, 0x002196a4\n"
-        ".word 0x001e1708\n"
-    );
+extern "C" void camp_func_003d0910(u8* r8, u8* r6) {
+    const u8* ptrs[0x6D];
+    u32 count = 0u;
+    const u8* const arr_base =
+        *reinterpret_cast<const u8* const*>(*reinterpret_cast<const u8* const*>(r8) + 0x1FC0u);
+    for (u32 i = 0u; i < 0x6Du; ++i) {
+        const u8* const elem = arr_base + i * 0x288u;
+        if ((*reinterpret_cast<const u32*>(elem) & 0x400u) != 0u) {
+            ptrs[count++] = elem;
+        }
+    }
+
+    camp_func_002b7f08(ptrs, count, 4u, 0x001B1900u);
+    if (script_vm_func_003d12cc(r8, r6, ptrs, count, 1u) != 0) {
+        return;
+    }
+
+    u16 arr9[10] = {};
+    func_0022ad74(*reinterpret_cast<const u32* const*>(r6 + 0x20u), arr9);
+    const u32 cmp_fn = ((**reinterpret_cast<const u32* const*>(r6 + 0x20u) & 2u) != 0u)
+                           ? 0x002196A4u
+                           : 0x001E1708u;
+    camp_func_002b7f08(arr9, 9u, 2u, cmp_fn);
+
+    if (try_pass_3d0910(r8, r6, ptrs, count, arr9, 0u, 1u)) {
+        return;
+    }
+    if (script_vm_func_003d12cc(r8, r6, ptrs, count, 0u) != 0) {
+        return;
+    }
+    if (try_pass_3d0910(r8, r6, ptrs, count, arr9, 1u, 0u)) {
+        return;
+    }
+    if (try_pass_3d0910(r8, r6, ptrs, count, arr9, 2u, 0u)) {
+        return;
+    }
+
+    for (u32 i = 0u; i < count; ++i) {
+        const u8* const elem = ptrs[i];
+        if ((*reinterpret_cast<const u32*>(elem) & 0x400u) != 0u &&
+            ui_func_0029ec6c(*reinterpret_cast<const u16*>(elem + 0xCEu)) != 0) {
+            u8* const r28 = *reinterpret_cast<u8* const*>(r6 + 0x28u);
+            *reinterpret_cast<u16*>(r28 + 0x14Cu) = 6u;
+            *reinterpret_cast<u16*>(r28 + 0x14Eu) = 0u;
+            return;
+        }
+    }
+
+    u8* const r28 = *reinterpret_cast<u8* const*>(r6 + 0x28u);
+    *reinterpret_cast<u16*>(r28 + 0x14Cu) = 1u;
+    const u32 flags = **reinterpret_cast<const u32* const*>(r6 + 0x20u);
+    *reinterpret_cast<u16*>(r28 + 0x14Eu) = ((flags & 6u) != 0u) ? 1u : 0u;
+    script_vm_func_00229b2c(r8);
 }
 
 // DECOMP_FUNC(0x00105460, 1000)
