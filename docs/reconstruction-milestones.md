@@ -40,7 +40,7 @@ matching es un diagnóstico opcional, no una condición para aceptar una propues
   (`H1_TitleMain_ProcessConfirmationSlice`, `0x001EA160..0x001EA328`) en
   `src/ui/ui_runtime2.cpp`, validadas con matrices diferenciales ARM,
   composiciones de caller y comparación en vivo en Azahar.
-- H2 (Título: configuración de audio) permanece abierto. La comparación autónoma acumulada de Audio Settings no completó readiness ni reentrada en ninguno de los lados. `0x002B8D24` y `0x00286928` tienen reconstrucciones C++ con evidencia offline; la instrumentación de `0x00286928` capturó 129/129 hits naturales en esa ruta y 19/19 checkpoints en 51 acciones. La nueva dependencia `AsdText_GetLineCount` (`0x002B787C`) pasó 515 casos directos, dos composiciones selector 11/19, seis controles, staging a dirección final y build de 204 TUs. En Azahar, el escenario emparejado conservó 19/19 checkpoints y un probe GDB invocó directamente el helper una vez por perfil, con `r0=1` y consumo del valor; la ruta natural H2 selector 6 no entra al helper. Esto no demuestra alcance natural ni cierra readiness, reentrada, entrada física o scheduling. [Ficha H2](milestones/H2-audio-settings.md).
+- H2 (Título: configuración de audio) se cerró el 16 de noviembre de 2026. El ciclo controlado en Azahar comparó original y parche en 51 acciones y 20 puntos de control, con reentrada en la misma sesión, cierre limpio y paridad tras reinicio en frío. [Cierre de H2](milestones/H2-audio-settings.md#cierre-del-hito-h2-2026-11-16).
 - H3 (Carga de partida de prueba) está cerrado para el recorrido delimitado hacia
   una partida conocida: la composición H2+H3 final llegó al acuse y al field
   manager en ambos perfiles, con 250 callbacks de campo de semántica concordante.
@@ -171,8 +171,8 @@ el estado necesario para contrastar el comportamiento.
 ## Trabajo con subagentes
 
 El protocolo operativo, ownership, presupuestos y handoffs están en
-[agent-workflow.md](agent-workflow.md). La cola activa de H2 está en
-[`config/agent-workflows/h2.json`](../config/agent-workflows/h2.json);
+[agent-workflow.md](agent-workflow.md). La cola activa de H18 está en
+[`config/agent-workflows/h18.json`](../config/agent-workflows/h18.json);
 `tools/agent_workflow.py` comprueba conflictos y prepara briefs reproducibles.
 El coordinador es el único escritor del board.
 
@@ -204,9 +204,9 @@ Informar del progreso con escenarios verificados, lógica reconstruida,
 dependencias originales y pendientes. El número de funciones y bytes sirve como
 medida auxiliar. Mantener separado el ledger exacto del avance semántico.
 
-## Próxima sesión
+## Hito activo
 
-1. Iniciar el hito **H7 (Máquina virtual de scripts y eventos)**: mapear contratos e invariantes del bucle de despacho de opcodes en `src/script/script_vm.cpp`, `src/script/script_exec.cpp`, `src/engine/event_runtime.cpp` y la ventana de diálogo en `src/ui/window.cpp`.
-2. Reconstruir y validar en C++ editable el ciclo de ejecución de scripts de eventos, selección de respuestas y actualización de flags de progreso con verificación diferencial y emparejada en Azahar.
+Continuar la promoción e integración de módulos semánticos según la
+[ficha de H18](milestones/H18-module-promotion.md) y su tablero activo.
 
 Este documento establece el plan; su creación no completa ni ejecuta esos hitos.

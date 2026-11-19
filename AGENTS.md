@@ -13,8 +13,9 @@ checkout is a reference. Preserve existing user changes in either checkout.
 ## Work selection
 
 - Follow `docs/functional-status.md`, `docs/reconstruction-milestones.md`, and
-  `config/reconstruction.json` in the semantic checkout. H2 title audio settings
-  (`titleConfig`) is the active functional milestone.
+  `config/reconstruction.json` in the semantic checkout. H18 (canonical module
+  promotion and integration) is the active milestone. H2 title audio settings
+  (`titleConfig`) closed on 2026-11-16 for the verified scenario.
 - `python tools/find_candidates.py` defaults to semantic discovery, including
   non-leaf functions. It prioritizes milestone dependencies and omits already
   written experimental C++ from the new-reconstruction queue.
@@ -63,7 +64,8 @@ Use the coordinator-plus-bounded-subagents workflow in `docs/agent-workflow.md`
 for continued semantic decompilation when independent work is available. The
 coordinator may proactively delegate at most three scoped workers (or the tool's
 lower available limit), using internal subagent tools and small prepared briefs.
-Keep one active milestone and reuse idle agents for H2 review/dependency work.
+Keep one active milestone and reuse idle agents for its review and dependency
+work.
 Do not create new user-owned chats for subtasks.
 
 The coordinator alone updates the active board selected by

@@ -1,0 +1,5 @@
+# Independent review: 0x003f3454 initializer family
+
+The original code has three distinct entries. The first writes five words and ends in an ARM branch to the veneer at 0x002c5f50; the pinned veneer switches to Thumb 0x002c5f58. The other two write distinct four-word sentinel/zero sets. The candidate implements these observed stores and sends the recorded four arguments through the veneer. A fresh coordinator differential at seed 739 passed 20 cases per entry with three detected controls. The harness checks pinned veneer and callback bytes, enters the veneer and records Thumb state at the modeled iterator, while the iterator is intercepted rather than executed as original code.
+
+The candidate therefore has bounded evidence under a deterministic iterator model. Real iterator side effects and return value, actual registration/caller, fault and concurrency behavior, image integration and runtime are not established. The enclosing compound ledger span must retain its other entry points; this is not a complete replacement of that span.
