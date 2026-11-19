@@ -2317,15 +2317,24 @@ extern "C" __attribute__((naked)) void func_00163534() {
     );
 }
 
+extern "C" void* func_0016691c(const u32* ctx);
+extern "C" void* func_0016391c(const u32* ctx);
+
 // DECOMP_FUNC(0x00167274, 1056)
-// Capstone ARM full coverage (264 instructions); raw bytes only, no terminal-return claim.
-extern "C" __attribute__((naked)) void func_00167274() {
+extern "C" void* func_00167274(const u32* ctx) {
+    if (ctx[0] == ctx[1]) {
+        reinterpret_cast<void* (*)(const u32*)>(func_00163534)(ctx);
+    } else {
+        func_0016691c(ctx);
+    }
+    return func_0016391c(ctx);
+}
+
+// Trailing SIMD deblocking helper at 0x001672ac within the 0x00167274 span.
+extern "C" __attribute__((naked)) void func_001672ac() {
     asm volatile(
         ".arm\n"
-        ".word 0xe92d4ff0, 0xe5901000, 0xe5902004, 0xe24f3b0f\n"
-        ".word 0xe2433f55, 0xe24f4b02, 0xe2444f5d, 0xe1510002\n"
-        ".word 0x11a03004, 0xe12fff33, 0xebfff19e, 0xe8bd8ff0\n"
-        ".word 0x00167244, 0x00167274, 0xe92d4001, 0xe5902008\n"
+        ".word 0xe92d4001, 0xe5902008\n"
         ".word 0xe590300c, 0xe5908010, 0xe5909014, 0xe5900004\n"
         ".word 0xe2422008, 0xe2433008, 0xe16d20f8, 0xe59fc3b4\n"
         ".word 0xe59fe3b4, 0xe2800a01, 0xe52d2004, 0xe1888408\n"
