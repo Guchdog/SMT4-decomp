@@ -5755,7 +5755,7 @@ address,size,status,category,name,src_file
 0x002c0ec4,28,non_matching,ui,Tbb_GetGlobalSubTable,src/ui/tbb_loader.cpp
 0x002c0ee0,28,matching,unknown,func_002c0ee0,src/engine/leaf_batch37_a.cpp
 0x002c0efc,44,matching,unknown,func_002c0efc,src/engine/leaf_batch19_b.cpp
-0x002c0f28,1016,matching,unknown,func_002c0f28,src/engine/leaf_batch45_c.cpp
+0x002c0f28,1016,non_matching,unknown,func_002c0f28,src/engine/leaf_batch45_c.cpp
 0x002c1320,372,matching,camp,camp_func_002c1320,src/engine/leaf_batch38_b.cpp
 0x002c1494,20,matching,unknown,func_002c1494,src/engine/leaf_batch21_b.cpp
 0x002c14a8,16,matching,unknown,func_002c14a8,src/engine/leaf_batch21_b.cpp
