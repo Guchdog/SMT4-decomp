@@ -1484,75 +1484,110 @@ extern "C" void camp_func_003d0910(u8* r8, u8* r6) {
     script_vm_func_00229b2c(r8);
 }
 
+extern "C" void battle_func_001123b8(u32 a0, u32 a1);
+extern "C" void battle_func_002c2a5c(void* dst, u32 mode, u32 a2, u32 a3);
+extern "C" void battle_func_002c2a2c(u32 a0);
+extern "C" void battle_func_002c28f4(u32 count, void* dst);
+extern "C" void battle_func_002c27ec(u32 handle);
+extern "C" void battle_func_002c2700(u32 fp, u32 w, u32 h, u32 flag);
+extern "C" void battle_func_002c26a8(u32 kind, u32* out_val);
+extern "C" void battle_func_002c2684(u32 a0, u32 a1);
+extern "C" void engine_func_0010e9ec(u32 a0, u32 a1, u32 a2);
+extern "C" void battle_func_0010d180(void* dst);
+extern "C" void battle_func_0010e5e0(u32 a0);
+extern "C" void battle_func_002bf140(void* dst, u32 a1);
+extern "C" void battle_func_0011311c(u32 a0, u32 a1);
+extern "C" void battle_func_00113104(u64 a0, u32 a2);
+extern "C" void battle_func_0010a4dc();
+
+namespace {
+
+__attribute__((always_inline)) inline void init_render_target_105460(u8* buf, u32 tex_id,
+                                                                     u32 count, u32 w, u32 h,
+                                                                     u32 fp) {
+    *reinterpret_cast<u32*>(buf + 0u) = tex_id;
+    *reinterpret_cast<u32*>(buf + 4u) = count;
+    *reinterpret_cast<u32*>(buf + 0x18u) = w;
+    *reinterpret_cast<u32*>(buf + 0x1Cu) = h;
+    battle_func_002c2a2c(tex_id);
+    battle_func_002c28f4(*reinterpret_cast<const u32*>(buf + 4u), buf + 8u);
+    const u32 n = *reinterpret_cast<const u32*>(buf + 4u);
+    for (u32 i = 0u; i < n; ++i) {
+        u8* const slot = buf + i * 4u;
+        battle_func_002c27ec(*reinterpret_cast<const u32*>(slot + 8u));
+        battle_func_002c2700(fp, w, h, 0x10000u);
+        u32 out_val = 0u;
+        battle_func_002c26a8(0x600u, &out_val);
+        *reinterpret_cast<u32*>(slot + 0x20u) = out_val;
+    }
+    battle_func_002c2684(0u, 0u);
+}
+
+}  // namespace
+
 // DECOMP_FUNC(0x00105460, 1000)
-// Capstone ARM full coverage (250 instructions); raw bytes only, no terminal-return claim.
-extern "C" __attribute__((naked)) void battle_func_00105460() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4ff0, 0xe24dd064, 0xe1b07000, 0xe59f43a0\n"
-        ".word 0x0a0000dc, 0xe890136e, 0xe284af75, 0xe2800020\n"
-        ".word 0xe88a136e, 0xe2843f7d, 0xe8900006, 0xe5970028\n"
-        ".word 0xe58401fc, 0xe8830006, 0xe59f1378, 0xe59f0378\n"
-        ".word 0xeb0033c4, 0xe3a01002, 0xe2840f4f, 0xe1c720d0\n"
-        ".word 0xeb06f569, 0xe5970020, 0xe59f4354, 0xe3a02801\n"
-        ".word 0xe3500001, 0xe3a00b01, 0xe594b1fc, 0xe1801540\n"
-        ".word 0xe58d1008, 0x03a03002, 0x13a03003, 0xe3a01e41\n"
-        ".word 0xe58d1010, 0xe58d301c, 0xe58d205c, 0xe58d3004\n"
-        ".word 0xe58d204c, 0xe58d2044, 0xe8840009, 0xe3a080f0\n"
-        ".word 0xe3a09e19, 0xe3a0ad05, 0xe2845000, 0xe1c481f8\n"
-        ".word 0xeb06f545, 0xe5940004, 0xe2841008, 0xeb06f4f4\n"
-        ".word 0xe5940004, 0xe3a04000, 0xe3500000, 0x9a000012\n"
-        ".word 0xe0856104, 0xe5960008, 0xeb06f4ab, 0xe59d305c\n"
-        ".word 0xe1a02009, 0xe1a01008, 0xe1a0000b, 0xeb06f46b\n"
-        ".word 0xe3a00000, 0xe58d0024, 0xe28d1024, 0xe3a00c06\n"
-        ".word 0xeb06f450, 0xe59d0024, 0xe2844001, 0xe5860020\n"
-        ".word 0xe5950004, 0xe1500004, 0x8affffec, 0xe3a01000\n"
-        ".word 0xe1a00001, 0xeb06f43e, 0xe59f5290, 0xe59d0004\n"
-        ".word 0xe5850004, 0xe2850018, 0xe8800500, 0xe59d0008\n"
-        ".word 0xe5850000, 0xe59d0008, 0xeb06f51f, 0xe5950004\n"
-        ".word 0xe2851008, 0xeb06f4ce, 0xe5950004, 0xe3a04000\n"
-        ".word 0xe3500000, 0x9a000012, 0xe0856104, 0xe5960008\n"
-        ".word 0xeb06f485, 0xe59d304c, 0xe1a0200a, 0xe1a01008\n"
-        ".word 0xe1a0000b, 0xeb06f445, 0xe3a00000, 0xe58d0004\n"
-        ".word 0xe28d1004, 0xe3a00c06, 0xeb06f42a, 0xe59d0004\n"
-        ".word 0xe2844001, 0xe5860020, 0xe5950004, 0xe1500004\n"
-        ".word 0x8affffec, 0xe3a01000, 0xe1a00001, 0xeb06f418\n"
-        ".word 0xe59f51fc, 0xe59d001c, 0xe5850004, 0xe1c581f8\n"
-        ".word 0xe59d0010, 0xe5850000, 0xe59d0010, 0xeb06f4fa\n"
-        ".word 0xe5950004, 0xe2851008, 0xeb06f4a9, 0xe5950004\n"
-        ".word 0xe3a04000, 0xe3500000, 0x83a0a000, 0x9a000011\n"
-        ".word 0xe0856104, 0xe5960008, 0xeb06f45f, 0xe59d3044\n"
-        ".word 0xe1a02009, 0xe1a01008, 0xe1a0000b, 0xeb06f41f\n"
-        ".word 0xe28d1008, 0xe3a00c06, 0xe58da008, 0xeb06f405\n"
-        ".word 0xe59d0008, 0xe2844001, 0xe5860020, 0xe5950004\n"
-        ".word 0xe1500004, 0x8affffed, 0xe3a01000, 0xe1a00001\n"
-        ".word 0xeb06f3f3, 0xe2871018, 0xe3a00000, 0xe8910006\n"
-        ".word 0xeb0024c9, 0xe59f4148, 0xe3a01002, 0xe1c721d0\n"
-        ".word 0xe2840f55, 0xeb06f4e0, 0xe2840f55, 0xe320f000\n"
-        ".word 0xeb001ea6, 0xe3a01001, 0xe1c720d8, 0xe1a0000d\n"
-        ".word 0xeb06f4d9, 0xe59d0000, 0xe320f000, 0xeb0023b7\n"
-        ".word 0xe3a01000, 0xe2840f4f, 0xeb06e68c, 0xed9f0a46\n"
-        ".word 0xed9f1a46, 0xed840a5d, 0xed840a5e, 0xed840a5f\n"
-        ".word 0xed841a60, 0xed840a61, 0xed840a62, 0xeddf0a3d\n"
-        ".word 0xed840a63, 0xed841a64, 0xedc40a69, 0xe3a05000\n"
-        ".word 0xedc40a6a, 0xe58451b0, 0xe58451b4, 0xe59411c8\n"
-        ".word 0xe1a00005, 0xed9f0a36, 0xe3510000, 0x158401cc\n"
-        ".word 0xe3a00000, 0xed840a71, 0xe58401c0, 0xe59f10c4\n"
-        ".word 0xe3a00b01, 0xeb003668, 0xe59f00bc, 0xe59f20bc\n"
-        ".word 0xe3a01001, 0xe3a0c000, 0xe1a06fc1, 0xe0807290\n"
-        ".word 0xe0887291, 0xe0228296, 0xe0900007, 0xe0212c91\n"
-        ".word 0xe59f209c, 0xe0a1100c, 0xeb003655, 0xe320f000\n"
-        ".word 0xe320f000, 0xeb001348, 0xe5c45201, 0xe5c45200\n"
-        ".word 0xe59410c0, 0xe3a00001, 0xe2842c01, 0xe3510c05\n"
-        ".word 0x15c40200, 0xe5921038, 0xe3510c05, 0x15c40201\n"
-        ".word 0xe28dd064, 0xe8bd8ff0, 0xe3a00000, 0xe3a01c05\n"
-        ".word 0xe58401f0, 0xe3a02b02, 0xe58411ec, 0xe3a03601\n"
-        ".word 0xe58421d8, 0xe58431d4, 0xe2847f75, 0xe58401f4\n"
-        ".word 0xeaffff20, 0x004e39e0, 0x002c4358, 0x0010a940\n"
-        ".word 0x004e3a38, 0x004e3a0c, 0x3f800000, 0x3e800000\n"
-        ".word 0x00000000, 0x4682937d, 0x0010a688, 0x2a05f200\n"
-        ".word 0x44a2fa85, 0x0010e7cc\n"
-    );
+extern "C" void battle_func_00105460(const u32* cfg) {
+    u8* const g = reinterpret_cast<u8*>(0x004E39E0u);
+    const u32* src = cfg;
+    if (src == nullptr) {
+        *reinterpret_cast<u32*>(g + 0x1F0u) = 0u;
+        *reinterpret_cast<u32*>(g + 0x1ECu) = 0x500u;
+        *reinterpret_cast<u32*>(g + 0x1D8u) = 0x800u;
+        *reinterpret_cast<u32*>(g + 0x1D4u) = 0x100000u;
+        *reinterpret_cast<u32*>(g + 0x1F4u) = 0u;
+        src = reinterpret_cast<const u32*>(g + 0x1D4u);
+    } else {
+        u32* const dst = reinterpret_cast<u32*>(g + 0x1D4u);
+        for (s32 i = 0; i < 10; ++i) {
+            dst[i] = src[i];
+        }
+        *reinterpret_cast<u32*>(g + 0x1FCu) = src[10];
+    }
+
+    battle_func_001123b8(0x0010A940u, 0x002C4358u);
+    battle_func_002c2a5c(g + 0x13Cu, 2u, src[0], src[1]);
+
+    const u32 fp = *reinterpret_cast<const u32*>(g + 0x1FCu);
+    const u32 count = (src[8] == 1u) ? 2u : 3u;
+    init_render_target_105460(g, 0x400u, count, 0xF0u, 0x190u, fp);
+    init_render_target_105460(reinterpret_cast<u8*>(0x004E3A38u), 0x401u, count, 0xF0u, 0x140u, fp);
+    init_render_target_105460(reinterpret_cast<u8*>(0x004E3A0Cu), 0x410u, count, 0xF0u, 0x190u, fp);
+
+    engine_func_0010e9ec(0u, src[6], src[7]);
+    battle_func_002c2a5c(g + 0x154u, 2u, src[4], src[5]);
+    battle_func_0010d180(g + 0x154u);
+
+    u32 tmp = 0u;
+    battle_func_002c2a5c(&tmp, 1u, src[2], src[3]);
+    battle_func_0010e5e0(tmp);
+    battle_func_002bf140(g + 0x13Cu, 0u);
+
+    *reinterpret_cast<u32*>(g + 0x174u) = 0x3E800000u;
+    *reinterpret_cast<u32*>(g + 0x178u) = 0x3E800000u;
+    *reinterpret_cast<u32*>(g + 0x17Cu) = 0x3E800000u;
+    *reinterpret_cast<u32*>(g + 0x180u) = 0u;
+    *reinterpret_cast<u32*>(g + 0x184u) = 0x3E800000u;
+    *reinterpret_cast<u32*>(g + 0x188u) = 0x3E800000u;
+    *reinterpret_cast<u32*>(g + 0x18Cu) = 0x3E800000u;
+    *reinterpret_cast<u32*>(g + 0x190u) = 0u;
+    *reinterpret_cast<u32*>(g + 0x1A4u) = 0x3F800000u;
+    *reinterpret_cast<u32*>(g + 0x1A8u) = 0x3F800000u;
+    *reinterpret_cast<u32*>(g + 0x1B0u) = 0u;
+    *reinterpret_cast<u32*>(g + 0x1B4u) = 0u;
+    if (*reinterpret_cast<const u32*>(g + 0x1C8u) != 0u) {
+        *reinterpret_cast<u32*>(g + 0x1CCu) = 0u;
+    }
+    *reinterpret_cast<u32*>(g + 0x1C4u) = 0x4682937Du;
+    *reinterpret_cast<u32*>(g + 0x1C0u) = 0u;
+
+    battle_func_0011311c(0x400u, 0x0010A688u);
+    const u64 t64 =
+        (static_cast<u64>(0x2A05F200u) * 0x44A2FA85u >> 32) + 0x44A2FA85u;
+    battle_func_00113104(t64, 0x0010E7CCu);
+    battle_func_0010a4dc();
+
+    g[0x201u] = (*reinterpret_cast<const u32*>(g + 0x138u) != 0x500u) ? 1u : 0u;
+    g[0x200u] = (*reinterpret_cast<const u32*>(g + 0xC0u) != 0x500u) ? 1u : 0u;
 }
 
 // DECOMP_FUNC(0x00145e9c, 1000)

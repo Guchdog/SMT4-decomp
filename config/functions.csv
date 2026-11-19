@@ -92,7 +92,7 @@ address,size,status,category,name,src_file
 0x00105338,228,matching,engine,engine_func_00105338,src/engine/leaf_batch43_c.cpp
 0x0010541c,28,matching,unknown,func_0010541c,src/engine/leaf_batch18_a.cpp
 0x00105438,40,matching,engine,engine_func_00105438,src/engine/leaf_batch39_b.cpp
-0x00105460,1000,matching,battle,battle_func_00105460,src/engine/leaf_batch45_c.cpp
+0x00105460,1000,non_matching,battle,battle_func_00105460,src/engine/leaf_batch45_c.cpp
 0x00105848,164,matching,engine,engine_func_00105848,src/engine/leaf_batch42_a.cpp
 0x001058ec,40,matching,engine,engine_func_001058ec,src/engine/leaf_batch39_b.cpp
 0x00105914,160,matching,engine,engine_func_00105914,src/engine/leaf_batch27_a.cpp
