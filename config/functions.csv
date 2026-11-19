@@ -9692,7 +9692,7 @@ address,size,status,category,name,src_file
 0x003b897c,780,matching,engine,engine_func_003b897c,src/engine/leaf_batch34_a.cpp
 0x003b8c88,164,matching,script_vm,script_vm_func_003b8c88,src/engine/leaf_batch33_b.cpp
 0x003b8d2c,308,matching,engine,engine_func_003b8d2c,src/engine/leaf_batch38_b.cpp
-0x003b8e60,536,matching,script_vm,script_vm_func_003b8e60,src/engine/leaf_batch45_b.cpp
+0x003b8e60,536,non_matching,script_vm,script_vm_func_003b8e60,src/engine/leaf_batch45_b.cpp
 0x003b9078,992,matching,engine,engine_func_003b9078,src/engine/leaf_batch46_a.cpp
 0x003b9458,124,matching,script_vm,script_vm_func_003b9458,src/engine/leaf_batch33_a.cpp
 0x003b94d4,752,matching,engine,engine_func_003b94d4,src/engine/leaf_batch36_b.cpp

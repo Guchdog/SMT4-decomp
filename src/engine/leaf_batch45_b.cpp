@@ -1753,77 +1753,77 @@ extern "C" u32 script_vm_func_0024ecc0(u8* obj, u32 show) {
 }
 
 // DECOMP_FUNC(0x003b8e60, 536)
-extern "C" __attribute__((naked)) void script_vm_func_003b8e60() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x41f0, 0xe92d, 0x4000, 0xe1a0\n"
-        ".hword 0x009c, 0xe280, 0xc91b, 0xebf9\n"
-        ".hword 0x5000, 0xe1a0, 0x0d74, 0xe594\n"
-        ".hword 0x944f, 0xebf7, 0x0002, 0xe350\n"
-        ".hword 0x0012, 0x1a00, 0x0000, 0xe355\n"
-        ".hword 0x0010, 0x0a00, 0x0004, 0xe1a0\n"
-        ".hword 0xc8d8, 0xebf9, 0x009c, 0xe284\n"
-        ".hword 0xea40, 0xebf9, 0x117c, 0xe59f\n"
-        ".hword 0x04bc, 0xe1c4, 0x7000, 0xe3a0\n"
-        ".hword 0x0000, 0xe591, 0x10c1, 0xe5d0\n"
-        ".hword 0x0000, 0xe351, 0x0006, 0x0a00\n"
-        ".hword 0x1000, 0xe3a0, 0x00a8, 0xe280\n"
-        ".hword 0x1019, 0xe5c0, 0x4028, 0xe284\n"
-        ".hword 0x000a, 0xe3a0, 0x0081, 0xe884\n"
-        ".hword 0x81f0, 0xe8bd, 0x0db0, 0xe594\n"
-        ".hword 0x1009, 0xe3a0, 0x0001, 0xe350\n"
-        ".hword 0x0010, 0x0a00, 0x0002, 0xe350\n"
-        ".hword 0x001a, 0x0a00, 0x0003, 0xe350\n"
-        ".hword 0x0025, 0x0a00, 0x0004, 0xe350\n"
-        ".hword 0x1000, 0xe3a0, 0x5005, 0xe3a0\n"
-        ".hword 0x0001, 0xe1a0, 0x003b, 0x0a00\n"
-        ".hword 0x16b5, 0xebfb, 0x0d5c, 0xe594\n"
-        ".hword 0x103f, 0xe5d0, 0x0d80, 0xe594\n"
-        ".hword 0x16c1, 0xebfb, 0x4028, 0xe284\n"
-        ".hword 0x00a0, 0xe884, 0x81f0, 0xe8bd\n"
-        ".hword 0x0028, 0xe284, 0x0082, 0xe880\n"
-        ".hword 0x10ec, 0xe28f, 0x0d94, 0xe594\n"
-        ".hword 0x6036, 0xebfb, 0x2d9c, 0xe594\n"
-        ".hword 0x1000, 0xe1a0, 0x0002, 0xe1a0\n"
-        ".hword 0x78a5, 0xebfb, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0x002f, 0xea00\n"
-        ".hword 0x2028, 0xe284, 0x009e, 0xe3a0\n"
-        ".hword 0x0082, 0xe882, 0xff03, 0xebfb\n"
-        ".hword 0x0d94, 0xe594, 0x10b0, 0xe28f\n"
-        ".hword 0x6028, 0xebfb, 0x2d9c, 0xe594\n"
-        ".hword 0x1000, 0xe1a0, 0x0002, 0xe1a0\n"
-        ".hword 0x7897, 0xebfb, 0x7db0, 0xe584\n"
-        ".hword 0x81f0, 0xe8bd, 0x1028, 0xe284\n"
-        ".hword 0x000b, 0xe3a0, 0x0081, 0xe881\n"
-        ".hword 0x0094, 0xe28f, 0x33a2, 0xebfc\n"
-        ".hword 0x0da0, 0xe584, 0x5eda, 0xe284\n"
-        ".hword 0x0098, 0xe28f, 0x339e, 0xebfc\n"
-        ".hword 0x1000, 0xe1a0, 0x0da4, 0xe584\n"
-        ".hword 0x0000, 0xe595, 0x78cd, 0xebfb\n"
-        ".hword 0x6b03, 0xe284, 0x6f6a, 0xe286\n"
-        ".hword 0x1003, 0xe3a0, 0x0da8, 0xe584\n"
-        ".hword 0x1108, 0xe580, 0x0000, 0xe595\n"
-        ".hword 0x1080, 0xe28f, 0x600d, 0xebfb\n"
-        ".hword 0x2000, 0xe596, 0x1000, 0xe1a0\n"
-        ".hword 0x0002, 0xe1a0, 0x787c, 0xebfb\n"
-        ".hword 0x7db0, 0xe584, 0x81f0, 0xe8bd\n"
-        ".hword 0xf000, 0xe320, 0x1678, 0xebfb\n"
-        ".hword 0x1d5c, 0xe594, 0x0d80, 0xe594\n"
-        ".hword 0x103f, 0xe5d1, 0x1684, 0xebfb\n"
-        ".hword 0x0028, 0xe284, 0x00a0, 0xe880\n"
-        ".hword 0x7db0, 0xe584, 0x81f0, 0xe8bd\n"
-        ".hword 0x2fc8, 0x0043, 0x6373, 0x5f72\n"
-        ".hword 0x6273, 0x5f71, 0x7973, 0x6273\n"
-        ".hword 0x6c74, 0x0000, 0x6162, 0x7474\n"
-        ".hword 0x656c, 0x522f, 0x7365, 0x6c75\n"
-        ".hword 0x2e74, 0x6662, 0x0000, 0x0000\n"
-        ".hword 0x6162, 0x7474, 0x656c, 0x522f\n"
-        ".hword 0x7365, 0x6c75, 0x4d74, 0x6773\n"
-        ".hword 0x6d2e, 0x6d62, 0x0000, 0x0000\n"
-        ".hword 0x7250, 0x636f, 0x6843, 0x7261\n"
-        ".hword 0x6e6f, 0x6552, 0x7571, 0x7365\n"
-        ".hword 0x4674, 0x7269, 0x7473, 0x0000\n"
-    );
+extern "C" u32 script_vm_func_0022b2e0(void* ptr);
+extern "C" u32 script_vm_func_0019dfbc(u32 handle);
+extern "C" void script_vm_func_0022b1f8(void* obj);
+extern "C" u32 shop_func_002337a0(void* ptr);
+extern "C" void script_vm_func_0027e9e4(u32 a, u32 b);
+extern "C" void script_vm_func_0027ea24(u32 a, u32 b);
+extern "C" u32 script_vm_func_00291018(u32 bf, const char* entry);
+extern "C" void script_vm_func_002971e4(u32 proc, u32 idx);
+extern "C" void script_vm_func_002b8b78(u32 id);
+extern "C" void* script_vm_func_002c5e2c(const char* path);
+extern "C" u8* scrScriptProcess_func_002972f8(u32 bf, u32 mbm);
+
+extern "C" void script_vm_func_003b8e60(u8* obj) {
+    auto word_at = [obj](u32 off) -> u32& {
+        return *reinterpret_cast<u32*>(obj + off);
+    };
+    auto set_state = [&](u32 s) {
+        word_at(0x28u) = s;
+        word_at(0x2Cu) = 0u;
+    };
+
+    const u32 ready = script_vm_func_0022b2e0(obj + 0x9Cu);
+    if (script_vm_func_0019dfbc(word_at(0xD74u)) != 2u || ready == 0u) {
+        return;
+    }
+
+    script_vm_func_0022b1f8(obj);
+    *reinterpret_cast<u16*>(obj + 0x4Cu) = static_cast<u16>(shop_func_002337a0(obj + 0x9Cu));
+
+    u8* const mgr = *reinterpret_cast<u8* const*>(0x00432FC8u);
+    if (mgr[0xC1u] != 0u) {
+        mgr[0xC1u] = 0u;
+        set_state(0xAu);
+        return;
+    }
+
+    const u32 mode = word_at(0xDB0u);
+    if (mode == 1u) {
+        set_state(9u);
+        const u32 idx = script_vm_func_00291018(word_at(0xD94u), "scr_sbq_sysbtl");
+        script_vm_func_002971e4(word_at(0xD9Cu), idx);
+        word_at(0xDB0u) = 0u;
+    } else if (mode == 2u) {
+        set_state(9u);
+        script_vm_func_002b8b78(0x9Eu);
+        const u32 idx = script_vm_func_00291018(word_at(0xD94u), "scr_sbq_sysbtl");
+        script_vm_func_002971e4(word_at(0xD9Cu), idx);
+        word_at(0xDB0u) = 0u;
+    } else if (mode == 3u) {
+        set_state(0xBu);
+        const u32 bf = static_cast<u32>(reinterpret_cast<std::uintptr_t>(
+            script_vm_func_002c5e2c("battle/Result.bf")));
+        word_at(0xDA0u) = bf;
+        const u32 mbm = static_cast<u32>(reinterpret_cast<std::uintptr_t>(
+            script_vm_func_002c5e2c("battle/ResultMsg.mbm")));
+        word_at(0xDA4u) = mbm;
+        u8* const proc = scrScriptProcess_func_002972f8(word_at(0xDA0u), mbm);
+        word_at(0xDA8u) = static_cast<u32>(reinterpret_cast<std::uintptr_t>(proc));
+        *reinterpret_cast<u32*>(proc + 0x108u) = 3u;
+        const u32 idx = script_vm_func_00291018(word_at(0xDA0u), "ProcCharonRequestFirst");
+        script_vm_func_002971e4(word_at(0xDA8u), idx);
+        word_at(0xDB0u) = 0u;
+    } else {
+        script_vm_func_0027e9e4(0u, 0u);
+        const u8* const d5c = *reinterpret_cast<const u8* const*>(obj + 0xD5Cu);
+        script_vm_func_0027ea24(word_at(0xD80u), d5c[0x3Fu]);
+        set_state(5u);
+        if (mode == 4u) {
+            word_at(0xDB0u) = 0u;
+        }
+    }
 }
 
 // DECOMP_FUNC(0x00294848, 540)
