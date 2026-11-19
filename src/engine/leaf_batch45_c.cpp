@@ -3010,36 +3010,71 @@ extern "C" void camp_func_00233ac0(u8* self, s32 state, u32 flag) {
     }
 }
 
+extern "C" u32 engine_func_0038b75c(void* ctx, u8* buffer, const char16_t* name, u32 size,
+                                    u32 flag_a, u32 flag_b, u32 out_ptr);
+extern "C" void ui_func_002acb3c(void* dst, const void* src, u32 size);
+
+namespace {
+
+inline void release_obj_38f1d0(u8* self) {
+    void* const obj = *reinterpret_cast<void* const*>(self + 0x208u);
+    if (obj != nullptr) {
+        using ReleaseFn = void (*)(void*);
+        (*reinterpret_cast<ReleaseFn* const*>(obj))[1](obj);
+        *reinterpret_cast<void**>(self + 0x208u) = nullptr;
+    }
+}
+
+}  // namespace
+
 // DECOMP_FUNC(0x0038f1d0, 1112)
-// Capstone ARM full coverage (278 instructions); raw bytes only, no terminal-return claim.
-extern "C" __attribute__((naked)) void engine_func_0038f1d0() {
+extern "C" void engine_func_0038f1d0(u8* self) {
+    u32* const state = reinterpret_cast<u32*>(self + 8u);
+    switch (*state) {
+        case 0u:
+            *state = 1u;
+            return;
+        case 1u: {
+            u8* shop = *reinterpret_cast<u8* const*>(0x00432FC8u);
+            u32* const buf = reinterpret_cast<u32*>(shop + 0x694u);
+            for (u32 i = 0u; i < 16u; ++i) {
+                buf[i] = 0u;
+            }
+            if (engine_func_0038b75c(shop, shop + 0x694u,
+                                     u"16\u30B1\u30BF\u306E\u756A\u53F7\u5165\u529B\u30C6\u30B9\u30C8", 0x10u,
+                                     0u, 1u, reinterpret_cast<u32>(shop + 0x6D4u)) != 0u) {
+                shop = *reinterpret_cast<u8* const*>(0x00432FC8u);
+                ui_func_002acb3c(shop + 0x6D4u, shop + 0x694u, 0x40u);
+                *reinterpret_cast<u32*>(self + 4u) = 0xEu;
+                *state = 0u;
+                release_obj_38f1d0(self);
+                engine_func_00233f4c(self, 0u);
+                camp_func_00233ac0(self, -1, 0u);
+            } else {
+                *state = 2u;
+                *reinterpret_cast<u32*>(self + 0xCu) = 3u;
+            }
+            return;
+        }
+        case 2u: {
+            s32* const timer = reinterpret_cast<s32*>(self + 0xCu);
+            *timer -= 1;
+            if (*timer <= 0) {
+                *reinterpret_cast<u32*>(self + 4u) = 6u;
+                *state = 0u;
+                release_obj_38f1d0(self);
+            }
+            return;
+        }
+        default:
+            return;
+    }
+}
+
+// Trailing function at 0x0038f360 within the 0x0038f1d0 span.
+extern "C" __attribute__((naked)) void func_0038f360() {
     asm volatile(
         ".arm\n"
-        ".word 0xe92d4070, 0xe1a04000, 0xe5900008, 0xe24dd010\n"
-        ".word 0xe3a01001, 0xe3500000, 0x05841008, 0x0a000013\n"
-        ".word 0xe3500001, 0xe3a05000, 0x0a000012, 0xe3500002\n"
-        ".word 0x1a00000e, 0xe594000c, 0xe2400001, 0xe3500000\n"
-        ".word 0xe584000c, 0xca000009, 0xe5940208, 0xe2842004\n"
-        ".word 0xe3a01006, 0xe8820022, 0xe3500000, 0x0a000003\n"
-        ".word 0xe5901000, 0xe5911004, 0xe12fff31, 0xe5845208\n"
-        ".word 0xe28dd010, 0xe8bd8070, 0xe59f60f0, 0xe28dc004\n"
-        ".word 0xe3a03010, 0xe5960000, 0xe2802b01, 0xe5805694\n"
-        ".word 0xe5805698, 0xe580569c, 0xe58056a0, 0xe58056a4\n"
-        ".word 0xe58056a8, 0xe58056ac, 0xe58056b0, 0xe58056b4\n"
-        ".word 0xe58056b8, 0xe58056bc, 0xe58056c0, 0xe58056c4\n"
-        ".word 0xe58056c8, 0xe58056cc, 0xe58056d0, 0xe2822fb5\n"
-        ".word 0xe58d5000, 0xe88c0006, 0xe2801b01, 0xe28f2090\n"
-        ".word 0xe2811fa5, 0xebfff128, 0xe3500000, 0xe320f000\n"
-        ".word 0x0a000019, 0xe5960000, 0xe3a02040, 0xe2801b01\n"
-        ".word 0xe2800b01, 0xe2811fa5, 0xe2800fb5, 0xfafc7616\n"
-        ".word 0xe2841004, 0xe3a0000e, 0xe8810021, 0xe5940208\n"
-        ".word 0xe3500000, 0x0a000003, 0xe5901000, 0xe5911004\n"
-        ".word 0xe12fff31, 0xe5845208, 0xe3a01000, 0xe1a00004\n"
-        ".word 0xebfa930d, 0xe28dd010, 0xe1a00004, 0xe8bd4070\n"
-        ".word 0xe3a02000, 0xe3e01000, 0xeafa91e4, 0xe3a01003\n"
-        ".word 0xe3a00002, 0xe1c400f8, 0xe28dd010, 0xe8bd8070\n"
-        ".word 0x00432fc8, 0x00360031, 0x30bf30b1, 0x756a306e\n"
-        ".word 0x516553f7, 0x30c6529b, 0x30c830b9, 0x00000000\n"
         ".word 0xe92d40f0, 0xe24dd02c, 0xe1a04000, 0xe1a0000d\n"
         ".word 0xebfa93c0, 0xe59f52a0, 0xe59f62a0, 0xe3a07000\n"
         ".word 0xe5951000, 0xe5910754, 0xe2002010, 0xe3c00070\n"
