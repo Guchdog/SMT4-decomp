@@ -9060,7 +9060,7 @@ address,size,status,category,name,src_file
 0x00382a88,1748,matching,engine,engine_func_00382a88,src/engine/leaf_batch45_c.cpp
 0x0038315c,900,matching,script_vm,script_vm_func_0038315c,src/engine/leaf_batch46_a.cpp
 0x003834e0,44,matching,script_vm,script_vm_func_003834e0,src/engine/leaf_batch19_b.cpp
-0x0038350c,628,matching,script_vm,script_vm_func_0038350c,src/engine/leaf_batch45_b.cpp
+0x0038350c,628,non_matching,script_vm,script_vm_func_0038350c,src/engine/leaf_batch45_b.cpp
 0x00383780,28,matching,unknown,func_00383780,src/engine/leaf_batch10_a.cpp
 0x0038379c,232,matching,script_vm,script_vm_func_0038379c,src/engine/leaf_batch37_c.cpp
 0x00383884,24,matching,script_vm,script_vm_func_00383884,src/engine/leaf_batch17_c.cpp
