@@ -2287,83 +2287,71 @@ extern "C" u32 engine_func_002f5348(u32 kind, const void* path, u32 offset, u32 
 }
 
 // DECOMP_FUNC(0x00340328, 580)
-extern "C" __attribute__((naked)) void battle_func_00340328() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x41f0, 0xe92d, 0xd048, 0xe24d\n"
-        ".hword 0x1008, 0xe580, 0x200c, 0xe580\n"
-        ".hword 0x5001, 0xe1a0, 0x6000, 0xe1a0\n"
-        ".hword 0x4002, 0xe1a0, 0x8003, 0xe1a0\n"
-        ".hword 0x2000, 0xe58d, 0x3005, 0xe1a0\n"
-        ".hword 0x2f72, 0xe28f, 0x1f76, 0xe28f\n"
-        ".hword 0x0008, 0xe28d, 0xf926, 0xfafd\n"
-        ".hword 0x4e4c, 0xebfd, 0x1008, 0xe28d\n"
-        ".hword 0x002c, 0xebfc, 0x0000, 0xe350\n"
-        ".hword 0x7001, 0xe3a0, 0x0007, 0x1a00\n"
-        ".hword 0x3001, 0xe3a0, 0x2f67, 0xe28f\n"
-        ".hword 0x1f6b, 0xe28f, 0x0008, 0xe28d\n"
-        ".hword 0x7000, 0xe58d, 0xf91a, 0xfafd\n"
-        ".hword 0x7008, 0xe586, 0x700c, 0xe586\n"
-        ".hword 0x1000, 0xe3a0, 0x0008, 0xe28d\n"
-        ".hword 0x822b, 0xebfd, 0x3005, 0xe1a0\n"
-        ".hword 0x2e17, 0xe28f, 0x1f65, 0xe28f\n"
-        ".hword 0x0008, 0xe28d, 0x4000, 0xe58d\n"
-        ".hword 0xf90f, 0xfafd, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0x4e33, 0xebfd\n"
-        ".hword 0x1008, 0xe28d, 0xf000, 0xe320\n"
-        ".hword 0x0012, 0xebfc, 0x0000, 0xe350\n"
-        ".hword 0xf000, 0xe320, 0x0007, 0x1a00\n"
-        ".hword 0x3001, 0xe3a0, 0x2f4d, 0xe28f\n"
-        ".hword 0x1f56, 0xe28f, 0x0008, 0xe28d\n"
-        ".hword 0x7000, 0xe58d, 0xf900, 0xfafd\n"
-        ".hword 0x7008, 0xe586, 0x700c, 0xe586\n"
-        ".hword 0x1008, 0xe1a0, 0x0008, 0xe28d\n"
-        ".hword 0x67b0, 0xebfd, 0x0010, 0xe586\n"
-        ".hword 0x0144, 0xe59f, 0x1000, 0xe3a0\n"
-        ".hword 0x0000, 0xe590, 0xafb4, 0xebfd\n"
-        ".hword 0x5000, 0xe1a0, 0xf000, 0xe320\n"
-        ".hword 0x029b, 0xebfe, 0x4000, 0xe1a0\n"
-        ".hword 0x0005, 0xe1a0, 0x0284, 0xebfe\n"
-        ".hword 0x1000, 0xe250, 0x2008, 0x8596\n"
-        ".hword 0x0000, 0xe3a0, 0x002e, 0x9a00\n"
-        ".hword 0x3080, 0xe080, 0x3200, 0xe083\n"
-        ".hword 0x3103, 0xe084, 0xc0b0, 0xe1d3\n"
-        ".hword 0x0002, 0xe15c, 0x002a, 0x1a00\n"
-        ".hword 0x30b2, 0xe1d3, 0xc00c, 0xe596\n"
-        ".hword 0x000c, 0xe153, 0x0026, 0x1a00\n"
-        ".hword 0x1080, 0xe080, 0x0200, 0xe081\n"
-        ".hword 0x7100, 0xe094, 0x4000, 0x13a0\n"
-        ".hword 0x001f, 0x0a00, 0x0184, 0xe084\n"
-        ".hword 0x5100, 0xe087, 0x0004, 0xe5d5\n"
-        ".hword 0x0030, 0xe350, 0x0017, 0x0a00\n"
-        ".hword 0x3004, 0xe285, 0x207c, 0xe28f\n"
-        ".hword 0x10b8, 0xe28f, 0x0008, 0xe28d\n"
-        ".hword 0xf8d3, 0xfafd, 0x1008, 0xe1a0\n"
-        ".hword 0x0008, 0xe28d, 0x6785, 0xebfd\n"
-        ".hword 0x1104, 0xe086, 0x0014, 0xe581\n"
-        ".hword 0x32b4, 0xe1d5, 0x22b6, 0xe1d5\n"
-        ".hword 0x12b2, 0xe1d5, 0x3a10, 0xee00\n"
-        ".hword 0x2a90, 0xee01, 0x1a90, 0xee00\n"
-        ".hword 0x0084, 0xe084, 0x0100, 0xe086\n"
-        ".hword 0x1a40, 0xeeb8, 0x0a61, 0xeeb8\n"
-        ".hword 0x0a60, 0xeef8, 0x0028, 0xe280\n"
-        ".hword 0x0a02, 0xed80, 0x0a02, 0xecc0\n"
-        ".hword 0x4001, 0xe284, 0x0002, 0xe354\n"
-        ".hword 0xffdf, 0xbaff, 0xd048, 0xe28d\n"
-        ".hword 0x81f0, 0xe8bd, 0x0001, 0xe280\n"
-        ".hword 0x0001, 0xe150, 0xffcb, 0x3aff\n"
-        ".hword 0xd048, 0xe28d, 0x81f0, 0xe8bd\n"
-        ".hword 0x6162, 0x7474, 0x656c, 0x622f\n"
-        ".hword 0x7461, 0x6c74, 0x5f65, 0x616d\n"
-        ".hword 0x2f70, 0x0000, 0x7325, 0x2565\n"
-        ".hword 0x3330, 0x5f64, 0x3025, 0x6432\n"
-        ".hword 0x622e, 0x6563, 0x766e, 0x0000\n"
-        ".hword 0x7325, 0x2562, 0x3330, 0x5f64\n"
-        ".hword 0x3025, 0x6432, 0x622e, 0x6d61\n"
-        ".hword 0x0000, 0x0000, 0x41f8, 0x0043\n"
-        ".hword 0x7325, 0x7325, 0x622e, 0x6d61\n"
-        ".hword 0x0000, 0x0000\n"
-    );
+extern "C" void* ui_func_00293c98();
+extern "C" u32 script_vm_func_00240420(void* fs, const char* path);
+extern "C" void engine_func_002a0c54(const char* path, u32 zero);
+extern "C" u32 engine_func_0029a2d0(const char* path, u32 arg3);
+extern "C" void* Tbb_GetSubTable(const void* container, u32 table_index);
+extern "C" const u8* Tbb_GetPayloadData(void* table);
+extern "C" u32 Tbb_GetRowCount(void* table);
+
+extern "C" void battle_func_00340328(u8* obj, u32 map_id, u32 sub_id, u32 arg3) {
+    auto word_at = [obj](u32 off) -> u32& {
+        return *reinterpret_cast<u32*>(obj + off);
+    };
+
+    word_at(0x08u) = map_id;
+    word_at(0x0Cu) = sub_id;
+
+    constexpr const char* kDir = "battle/battle_map/";
+    char path[0x40];
+
+    ui_func_002be7fc(path, "%se%03d_%02d.bcenv", kDir, map_id, sub_id);
+    if (script_vm_func_00240420(ui_func_00293c98(), path) == 0u) {
+        ui_func_002be7fc(path, "%se%03d_%02d.bcenv", kDir, 1u, 1u);
+        word_at(0x08u) = 1u;
+        word_at(0x0Cu) = 1u;
+    }
+    engine_func_002a0c54(path, 0u);
+
+    ui_func_002be7fc(path, "%sb%03d_%02d.bam", kDir, map_id, sub_id);
+    if (script_vm_func_00240420(ui_func_00293c98(), path) == 0u) {
+        ui_func_002be7fc(path, "%sb%03d_%02d.bam", kDir, 1u, 1u);
+        word_at(0x08u) = 1u;
+        word_at(0x0Cu) = 1u;
+    }
+    word_at(0x10u) = engine_func_0029a2d0(path, arg3);
+
+    void* const sub_tbl = Tbb_GetSubTable(*reinterpret_cast<const void* const*>(0x004341F8u), 0u);
+    const u8* const rows = Tbb_GetPayloadData(sub_tbl);
+    const u32 count = Tbb_GetRowCount(sub_tbl);
+    if (count == 0u) {
+        return;
+    }
+
+    const u32 target_map = word_at(0x08u);
+    for (u32 i = 0u; i < count; ++i) {
+        const u8* const row = rows + i * 0x4Cu;
+        if (*reinterpret_cast<const u16*>(row + 0u) == target_map
+            && *reinterpret_cast<const u16*>(row + 2u) == word_at(0x0Cu)) {
+            if (row == nullptr) {
+                return;
+            }
+            for (u32 k = 0u; k < 2u; ++k) {
+                const u8* const sub_entry = row + k * 0x24u;
+                if (sub_entry[4u] != '0') {
+                    ui_func_002be7fc(
+                        path, "%s%s.bam", kDir, reinterpret_cast<const char*>(sub_entry + 4u));
+                    word_at(0x14u + k * 4u) = engine_func_0029a2d0(path, arg3);
+                    float* const pos = reinterpret_cast<float*>(obj + 0x28u + k * 0x0Cu);
+                    pos[0] = static_cast<float>(*reinterpret_cast<const u16*>(sub_entry + 0x22u));
+                    pos[1] = static_cast<float>(*reinterpret_cast<const u16*>(sub_entry + 0x24u));
+                    pos[2] = static_cast<float>(*reinterpret_cast<const u16*>(sub_entry + 0x26u));
+                }
+            }
+            return;
+        }
+    }
 }
 
 // DECOMP_FUNC(0x0026bed8, 584)

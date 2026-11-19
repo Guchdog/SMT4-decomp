@@ -7739,7 +7739,7 @@ address,size,status,category,name,src_file
 0x0033ff9c,264,matching,battle,battle_func_0033ff9c,src/engine/leaf_batch34_a.cpp
 0x003400a4,544,matching,script_vm,script_vm_func_003400a4,src/engine/leaf_batch20_c.cpp
 0x003402c4,100,matching,ui,ui_func_003402c4,src/engine/leaf_batch32_a.cpp
-0x00340328,580,matching,battle,battle_func_00340328,src/engine/leaf_batch45_b.cpp
+0x00340328,580,non_matching,battle,battle_func_00340328,src/engine/leaf_batch45_b.cpp
 0x0034056c,28,matching,unknown,func_0034056c,src/engine/leaf_batch37_b.cpp
 0x00340588,236,matching,battle,battle_func_00340588,src/engine/leaf_batch36_b.cpp
 0x00340674,100,matching,battle,battle_func_00340674,src/engine/leaf_batch41_b.cpp
