@@ -9311,7 +9311,7 @@ address,size,status,category,name,src_file
 0x00397730,108,matching,script_vm,script_vm_func_00397730,src/engine/leaf_batch32_a.cpp
 0x0039779c,1316,matching,camp,camp_func_0039779c,src/engine/leaf_batch46_b.cpp
 0x00397cc0,156,matching,script_vm,script_vm_func_00397cc0,src/engine/leaf_batch42_a.cpp
-0x00397d5c,624,matching,script_vm,script_vm_func_00397d5c,src/engine/leaf_batch45_b.cpp
+0x00397d5c,624,non_matching,script_vm,script_vm_func_00397d5c,src/engine/leaf_batch45_b.cpp
 0x00397fcc,1580,matching,ui,ui_func_00397fcc,src/engine/leaf_batch46_b.cpp
 0x003985f8,200,matching,engine,engine_func_003985f8,src/engine/leaf_batch33_b.cpp
 0x003986c0,8,matching,ui,ui_func_003986c0,src/engine/leaf_batch36_c.cpp
