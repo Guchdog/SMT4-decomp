@@ -3619,7 +3619,7 @@ address,size,status,category,name,src_file
 0x0023f554,24,matching,battle,battle_func_0023f554,src/engine/leaf_batch20_b.cpp
 0x0023f56c,212,matching,engine,engine_func_0023f56c,src/engine/leaf_batch16_c.cpp
 0x0023f640,28,matching,unknown,func_0023f640,src/engine/leaf_batch39_a.cpp
-0x0023f65c,668,matching,script_vm,script_vm_func_0023f65c,src/engine/leaf_batch45_b.cpp
+0x0023f65c,668,non_matching,script_vm,script_vm_func_0023f65c,src/engine/leaf_batch45_b.cpp
 0x0023f8f8,828,matching,ui,ui_func_0023f8f8,src/engine/leaf_batch43_b.cpp
 0x0023fc34,8,matching,engine,engine_func_0023fc34,src/engine/leaf_batch36_a.cpp
 0x0023fc3c,164,matching,unknown,func_0023fc3c,src/engine/leaf_batch16_a.cpp
