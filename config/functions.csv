@@ -9680,7 +9680,7 @@ address,size,status,category,name,src_file
 0x003b35a8,5656,matching,ui,Ui_ShopInventoryCatalog,src/shop/shop_catalog.cpp
 0x003b4bc0,5520,matching,ui,Ui_DemonCompendiumSearch,src/camp/compendium_search.cpp
 0x003b6150,1652,matching,ui,ui_func_003b6150,src/engine/leaf_batch40_a.cpp
-0x003b67c4,1208,matching,ui,ui_func_003b67c4,src/engine/leaf_batch45_c.cpp
+0x003b67c4,1208,non_matching,ui,ui_func_003b67c4,src/engine/leaf_batch45_c.cpp
 0x003b6c7c,840,matching,ui,ui_func_003b6c7c,src/engine/leaf_batch36_b.cpp
 0x003b6fc4,736,matching,ui,ui_func_003b6fc4,src/engine/leaf_batch43_b.cpp
 0x003b72a4,2772,matching,ui,ui_func_003b72a4,src/engine/leaf_batch46_c.cpp
