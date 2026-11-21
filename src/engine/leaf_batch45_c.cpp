@@ -3123,82 +3123,158 @@ extern "C" __attribute__((naked)) void func_0038f360() {
     );
 }
 
+extern "C" const u8* ui_func_0027dca0(u8* self, s32 id);
+
+namespace {
+
+inline const u8* find_obj_by_meta_0033aa2c(u8* self, const u8* item) {
+    const u8* const meta = ui_func_0027dca0(self, *reinterpret_cast<const s16*>(item + 0x62u));
+    const u32 target_id = *reinterpret_cast<const u32*>(meta + 0x0Cu);
+    for (s32 i = 0; i < 42; ++i) {
+        const u8* const obj =
+            *reinterpret_cast<const u8* const*>(self + 0x2134u + static_cast<u32>(i) * 4u);
+        if (obj != nullptr && *reinterpret_cast<const u32*>(obj + 4u) == target_id) {
+            return obj;
+        }
+    }
+    return nullptr;
+}
+
+}  // namespace
+
 // DECOMP_FUNC(0x0033aa2c, 1120)
-// Capstone ARM full coverage (280 instructions); raw bytes only, no terminal-return claim.
-extern "C" __attribute__((naked)) void ui_func_0033aa2c() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d47f0, 0xe1a04000, 0xe2800b07, 0xe2800fef\n"
-        ".word 0xe1a06001, 0xed2d8b06, 0xe24dd0c8, 0xe1a07002\n"
-        ".word 0xe3a01000, 0xeddfaab7, 0xe5900000, 0xeeb08a6a\n"
-        ".word 0xe3500000, 0x0a000027, 0xe3a08002, 0xe3a0501a\n"
-        ".word 0xe3a0a018, 0xe59f22c0, 0xe3a00000, 0xe7922004\n"
-        ".word 0xe0803080, 0xe088c183, 0xe192c0fc, 0xe15c0001\n"
-        ".word 0x1a000002, 0xe0800080, 0xe0820180, 0xea000006\n"
-        ".word 0xe0853183, 0xe19230f3, 0xe1530001, 0x1a00000f\n"
-        ".word 0xe0800080, 0xe08a0180, 0xe0800002, 0xe3500000\n"
-        ".word 0x0a00000d, 0xed900a03, 0xedd60a00, 0xeeb40a60\n"
-        ".word 0xeef1fa10, 0x1a000008, 0xe1c020dc, 0xe5900014\n"
-        ".word 0xe286100c, 0xe5860014, 0xe1c120f0, 0xea00007b\n"
-        ".word 0xe2800002, 0xe3500032, 0xbaffffe0, 0xe2811001\n"
-        ".word 0xe3510032, 0xbaffffda, 0xe1d616f2, 0xe1a00004\n"
-        ".word 0xebfd0c63, 0xe590100c, 0xe1a00004, 0xebfd0c4e\n"
-        ".word 0xe3500000, 0xe320f000, 0x0a00006d, 0xe5901010\n"
-        ".word 0xed960a10, 0xeddf9a81, 0xe1d102b4, 0xe1d112f0\n"
-        ".word 0xee010a10, 0xee001a90, 0xe3a010c8, 0xe1a0000d\n"
-        ".word 0xeef81a41, 0xeef80ae0, 0xeeb81a41, 0xee618a80\n"
-        ".word 0xee20aa20, 0xee311a60, 0xee408a29, 0xee219a00\n"
-        ".word 0xebfe27ef, 0xe3a05000, 0xe2843b07, 0xe1a00005\n"
-        ".word 0xe3a0ce45, 0xe1a0900d, 0xe2833fa6, 0xe0802100\n"
-        ".word 0xe5931000, 0xe0822300, 0xe08c2102, 0xe0811002\n"
-        ".word 0xe5912050, 0xe3120001, 0x13120002, 0x13120080\n"
-        ".word 0x0a000006, 0xe3120010, 0x1a000004, 0xe1d126f2\n"
-        ".word 0xe1d686f2, 0xe1520008, 0x17891105, 0x12855001\n"
-        ".word 0xe2800001, 0xe3500032, 0xbaffffeb, 0xe59f3160\n"
-        ".word 0xe3a02004, 0xe1a01005, 0xe1a00009, 0xfbfdf4c6\n"
-        ".word 0xe3170801, 0xe320f000, 0x0a00007d, 0xe2850001\n"
-        ".word 0xeddf0a50, 0xe3500000, 0xed9f0a4f, 0x8ef00ae0\n"
-        ".word 0xe3a07000, 0x81a0a000, 0x9a00002c, 0xe1570005\n"
-        ".word 0x1a000032, 0xe0890107, 0xe5108004, 0xe1a00004\n"
-        ".word 0xe1d816f2, 0xebfd0c1a, 0xe590200c, 0xe3a00000\n"
-        ".word 0xe0841100, 0xe2811a02, 0xe5911134, 0xe3510000\n"
-        ".word 0x0a000006, 0xe5911004, 0xe1510002, 0x1a000003\n"
-        ".word 0xe0840100, 0xe2800a02, 0xe5900134, 0xea000003\n"
-        ".word 0xe2800001, 0xe350002a, 0xbafffff0, 0xe3a00000\n"
-        ".word 0xed981a10, 0xe5900010, 0xe1d012f0, 0xe1d002b4\n"
-        ".word 0xee011a90, 0xee020a10, 0xeef81ae1, 0xeeb82a42\n"
-        ".word 0xee721a61, 0xee611a81, 0xee411a29, 0xed981a03\n"
-        ".word 0xeeb01ac1, 0xee311a40, 0xeeb41ae8, 0xeef1fa10\n"
-        ".word 0xba000047, 0xee710a8a, 0xed980a03, 0xee308a20\n"
-        ".word 0xeeb00a6a, 0xed868a03, 0xed860a04, 0xedc6aa05\n"
-        ".word 0xe3a00001, 0xe28dd0c8, 0xecbd8b06, 0xe8bd87f0\n"
-        ".word 0xe7998107, 0xe1a00004, 0xe1d816f2, 0xebfd0be8\n"
-        ".word 0xe590200c, 0xe3a00000, 0xe0841100, 0xe2811a02\n"
-        ".word 0xe5911134, 0xe3510000, 0x0a00000c, 0xe5911004\n"
-        ".word 0xe1510002, 0x1a000009, 0xe0840100, 0xe2800a02\n"
-        ".word 0xe5900134, 0xea000009, 0x00000000, 0x00001fbc\n"
-        ".word 0x40200000, 0x0019d82c, 0xc1a00000, 0x41a00000\n"
-        ".word 0xe2800001, 0xe350002a, 0xbaffffea, 0xe3a00000\n"
-        ".word 0xedd81a10, 0xe5900010, 0xe3570000, 0xe1d002f0\n"
-        ".word 0xee010a10, 0xeeb81ac1, 0xee211a81, 0xee011aa9\n"
-        ".word 0xda00000d, 0xe0890107, 0xe5100004, 0xedd01a03\n"
-        ".word 0xeeb02ae1, 0xedd81a03, 0xeef01ae1, 0xee721a61\n"
-        ".word 0xeef41ae8, 0xeef1fa10, 0xba00000d, 0xed980a03\n"
-        ".word 0xee300a41, 0xee308a49, 0xeaffffc4, 0xedd81a03\n"
-        ".word 0xeef01ae1, 0xee701ae1, 0xeef41ae8, 0xeef1fa10\n"
-        ".word 0xba000003, 0xed980a03, 0xee300a41, 0xee308a49\n"
-        ".word 0xeaffffba, 0xe2877001, 0xe157000a, 0x3affff8a\n"
-        ".word 0xeaffffb6, 0xe59f0090, 0xe5900000, 0xebfd0f66\n"
-        ".word 0xe5905024, 0xe3550000, 0x03a00000, 0x0affffb4\n"
-        ".word 0xe1d516f2, 0xe1a00004, 0xebfd0ba1, 0xe590100c\n"
-        ".word 0xe1a00004, 0xebfd0b8c, 0xe3500000, 0xe320f000\n"
-        ".word 0x0affffab, 0xe5900010, 0xed950a10, 0xe3170802\n"
-        ".word 0xe1d012f0, 0xe1d002b4, 0xee001a90, 0xee010a10\n"
-        ".word 0xeef80ae0, 0xeeb81a41, 0xee311a60, 0xee600a20\n"
-        ".word 0xee211a00, 0xee400a29, 0xee001a29, 0x1d950a03\n"
-        ".word 0x1e300a60, 0x1affffce, 0xe3170701, 0x1d950a03\n"
-        ".word 0x1e710a0a, 0x0affff91, 0xeaffff8f, 0x0043427c\n"
-    );
+extern "C" s32 ui_func_0033aa2c(u8* self, u8* cursor, u32 flags) {
+    f32 new_x = 0.0f;
+
+    if (*reinterpret_cast<const u32*>(self + 0x1FBCu) != 0u) {
+        for (s32 r1 = 0; r1 < 50; ++r1) {
+            const u8* const base = *reinterpret_cast<const u8* const*>(self + 0x1FBCu);
+            for (s32 r0 = 0; r0 < 50; r0 += 2) {
+                const u8* hit = nullptr;
+                if (*reinterpret_cast<const s16*>(base + r0 * 24 + 2) == r1) {
+                    hit = base + r0 * 24;
+                } else if (*reinterpret_cast<const s16*>(base + r0 * 24 + 0x1A) == r1) {
+                    hit = base + r0 * 24 + 0x18;
+                } else {
+                    continue;
+                }
+                if (hit != nullptr) {
+                    if (*reinterpret_cast<const f32*>(hit + 0x0Cu) ==
+                        *reinterpret_cast<const f32*>(cursor)) {
+                        *reinterpret_cast<f32*>(cursor + 0x0Cu) =
+                            *reinterpret_cast<const f32*>(hit + 0x0Cu);
+                        *reinterpret_cast<f32*>(cursor + 0x10u) =
+                            *reinterpret_cast<const f32*>(hit + 0x10u);
+                        *reinterpret_cast<f32*>(cursor + 0x14u) =
+                            *reinterpret_cast<const f32*>(hit + 0x14u);
+                        return 1;
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+    const u8* const meta = ui_func_0027dca0(self, *reinterpret_cast<const s16*>(cursor + 0x62u));
+    const u8* const obj = reinterpret_cast<const u8*>(
+        ui_func_0027dc58(self, *reinterpret_cast<const u32*>(meta + 0x0Cu)));
+    if (obj == nullptr) {
+        return 0;
+    }
+
+    const u8* const tex = *reinterpret_cast<const u8* const*>(obj + 0x10u);
+    const f32 cur_scale = *reinterpret_cast<const f32*>(cursor + 0x40u);
+    const f32 cur_w = static_cast<f32>(static_cast<u32>(*reinterpret_cast<const u16*>(tex + 0x24u)));
+    const f32 cur_x0 = static_cast<f32>(static_cast<s32>(*reinterpret_cast<const s16*>(tex + 0x20u)));
+    const f32 min_gap = cur_w * cur_scale + cur_scale * 2.5f;
+    const f32 cur_right = (cur_w - cur_x0) * cur_scale;
+    const f32 cur_left = cur_scale * cur_x0;
+
+    const u8* items[50];
+    engine_func_002c4b30(items, 0xC8u);
+
+    u32 count = 0u;
+    const u8* const base_items = *reinterpret_cast<const u8* const*>(self + 0x1E98u) + 0x450u;
+    const s16 cur_id = *reinterpret_cast<const s16*>(cursor + 0x62u);
+    for (s32 i = 0; i < 50; ++i) {
+        const u8* const item = base_items + i * 0x114;
+        const u32 st = *reinterpret_cast<const u32*>(item + 0x50u);
+        if ((st & 1u) != 0u && (st & 2u) != 0u && (st & 0x80u) != 0u && (st & 0x10u) == 0u &&
+            *reinterpret_cast<const s16*>(item + 0x62u) != cur_id) {
+            items[count++] = item;
+        }
+    }
+    camp_func_002b7f08(items, count, 4u, 0x0019D82Cu);
+
+    if ((flags & 0x10000u) != 0u) {
+        const u32 limit = count + 1u;
+        for (u32 idx = 0u; idx < limit; ++idx) {
+            if (idx == count) {
+                const u8* const prev = items[idx - 1u];
+                const u8* const obj2 = find_obj_by_meta_0033aa2c(self, prev);
+                const u8* const tex2 = *reinterpret_cast<const u8* const*>(obj2 + 0x10u);
+                const f32 sc2 = *reinterpret_cast<const f32*>(prev + 0x40u);
+                const f32 w2 = static_cast<f32>(
+                    static_cast<u32>(*reinterpret_cast<const u16*>(tex2 + 0x24u)));
+                const f32 x2 = static_cast<f32>(
+                    static_cast<s32>(*reinterpret_cast<const s16*>(tex2 + 0x20u)));
+                const f32 prev_right = (w2 - x2) * sc2 + sc2 * 2.5f;
+                if (__builtin_fabsf(*reinterpret_cast<const f32*>(prev + 0x0Cu)) - 20.0f >=
+                    min_gap) {
+                    new_x = *reinterpret_cast<const f32*>(prev + 0x0Cu) + (prev_right + cur_left);
+                    break;
+                }
+            } else {
+                const u8* const item = items[idx];
+                const u8* const obj2 = find_obj_by_meta_0033aa2c(self, item);
+                const u8* const tex2 = *reinterpret_cast<const u8* const*>(obj2 + 0x10u);
+                const f32 sc2 = *reinterpret_cast<const f32*>(item + 0x40u);
+                const f32 x2 = static_cast<f32>(
+                    static_cast<s32>(*reinterpret_cast<const s16*>(tex2 + 0x20u)));
+                const f32 item_left = sc2 * x2 + sc2 * 2.5f;
+                const f32 ref_abs =
+                    (idx > 0u) ? __builtin_fabsf(*reinterpret_cast<const f32*>(items[idx - 1u] +
+                                                                               0x0Cu))
+                               : 20.0f;
+                if (ref_abs - __builtin_fabsf(*reinterpret_cast<const f32*>(item + 0x0Cu)) >=
+                    min_gap) {
+                    new_x = (*reinterpret_cast<const f32*>(item + 0x0Cu) - item_left) - cur_right;
+                    break;
+                }
+            }
+        }
+    } else {
+        const u8* const wrap = reinterpret_cast<const u8*>(
+            script_vm_func_0027eb98(*reinterpret_cast<const u32*>(0x0043427Cu)));
+        const u8* const item = *reinterpret_cast<const u8* const*>(wrap + 0x24u);
+        if (item == nullptr) {
+            return 0;
+        }
+        const u8* const meta2 = ui_func_0027dca0(self, *reinterpret_cast<const s16*>(item + 0x62u));
+        const u8* const obj2 = reinterpret_cast<const u8*>(
+            ui_func_0027dc58(self, *reinterpret_cast<const u32*>(meta2 + 0x0Cu)));
+        if (obj2 == nullptr) {
+            return 0;
+        }
+        const u8* const tex2 = *reinterpret_cast<const u8* const*>(obj2 + 0x10u);
+        const f32 sc2 = *reinterpret_cast<const f32*>(item + 0x40u);
+        const f32 x2 =
+            static_cast<f32>(static_cast<s32>(*reinterpret_cast<const s16*>(tex2 + 0x20u)));
+        const f32 w2 =
+            static_cast<f32>(static_cast<u32>(*reinterpret_cast<const u16*>(tex2 + 0x24u)));
+        const f32 s1 = sc2 * x2 + sc2 * 2.5f;
+        const f32 s2 = (w2 - x2) * sc2 + sc2 * 2.5f;
+        if ((flags & 0x20000u) != 0u) {
+            new_x = (*reinterpret_cast<const f32*>(item + 0x0Cu) - s1) - cur_right;
+        } else if ((flags & 0x40000u) != 0u) {
+            new_x = *reinterpret_cast<const f32*>(item + 0x0Cu) + (s2 + cur_left);
+        }
+    }
+
+    *reinterpret_cast<f32*>(cursor + 0x0Cu) = new_x;
+    *reinterpret_cast<f32*>(cursor + 0x10u) = 0.0f;
+    *reinterpret_cast<f32*>(cursor + 0x14u) = 0.0f;
+    return 1;
 }
 
 // DECOMP_FUNC(0x0022c294, 1124)
