@@ -4344,86 +4344,175 @@ extern "C" void engine_func_0038e80c(u8* self) {
     }
 }
 
+extern "C" void ui_func_002acd38(void* dst, const void* src, u32 size);
+extern "C" u8* engine_func_002b5498(u8* obj, void* alloc, const u8* desc, u32 a2);
+extern "C" s32 engine_func_002af604(const void* a, const void* b);
+
+namespace {
+
+inline void* vtbl_alloc_12c97c(void* alloc, u32 size, u32 align) {
+    void* const* const vtbl = *reinterpret_cast<void* const* const*>(alloc);
+    using AllocFn = void* (*)(void*, u32, u32);
+    return reinterpret_cast<AllocFn>(vtbl[2])(alloc, size, align);
+}
+
+inline void vtbl_free_12c97c(void* alloc, void* ptr) {
+    void* const* const vtbl = *reinterpret_cast<void* const* const*>(alloc);
+    using FreeFn = void (*)(void*, void*);
+    reinterpret_cast<FreeFn>(vtbl[3])(alloc, ptr);
+}
+
+inline u32 ext_size_12c97c(u32 tag) {
+    switch (tag) {
+        case 0x80000000u:
+            return 0x1Cu;
+        case 0x40000000u:
+        case 0x04000000u:
+            return 0x28u;
+        case 0x20000000u:
+            return 0x24u;
+        case 0x10000000u:
+            return 0x08u;
+        case 0x08000000u:
+            return 0x18u;
+        default:
+            return 0u;
+    }
+}
+
+inline void attach_child_12c97c(u8* parent, u8* obj) {
+    if (parent == nullptr) {
+        return;
+    }
+    const void* const p_link = *reinterpret_cast<const void* const*>(parent + 0x0Cu);
+    if (p_link != nullptr && (p_link == obj || engine_func_002af604(p_link, obj) != 0)) {
+        return;
+    }
+    if (*reinterpret_cast<const void* const*>(obj + 0x0Cu) != nullptr) {
+        return;
+    }
+
+    u8** begin = *reinterpret_cast<u8***>(parent + 0x18u);
+    u8** end = *reinterpret_cast<u8***>(parent + 0x1Cu);
+    const u32 cap_flags = *reinterpret_cast<const u32*>(parent + 0x20u);
+    const s32 count = end - begin;
+    const s32 cap = static_cast<s32>(cap_flags & 0x3FFFFFFFu);
+
+    bool ok = true;
+    if (cap <= count) {
+        const s32 new_cap = (cap != 0) ? (cap << 1) : 1;
+        if (cap < new_cap) {
+            void* const vec_alloc = *reinterpret_cast<void* const*>(parent + 0x14u);
+            if (vec_alloc == nullptr || (cap_flags & 0xC0000000u) != 0x40000000u) {
+                ok = false;
+            } else {
+                u8** const new_buf = static_cast<u8**>(
+                    vtbl_alloc_12c97c(vec_alloc, static_cast<u32>(new_cap) * 4u, 0x20u));
+                u8** dst = new_buf;
+                for (u8** src = begin; src != end; ++src, ++dst) {
+                    if (dst != nullptr) {
+                        *dst = *src;
+                    }
+                }
+                const s32 cur_count = *reinterpret_cast<u8***>(parent + 0x1Cu) -
+                                      *reinterpret_cast<u8***>(parent + 0x18u);
+                if (*reinterpret_cast<void**>(parent + 0x18u) != nullptr) {
+                    vtbl_free_12c97c(vec_alloc, *reinterpret_cast<void**>(parent + 0x18u));
+                }
+                *reinterpret_cast<u8***>(parent + 0x1Cu) = new_buf + cur_count;
+                *reinterpret_cast<u8***>(parent + 0x18u) = new_buf;
+                *reinterpret_cast<u32*>(parent + 0x20u) =
+                    (cap_flags & 0xC0000000u) | static_cast<u32>(new_cap);
+            }
+        }
+    }
+
+    if (ok) {
+        u8** const cur_end = *reinterpret_cast<u8***>(parent + 0x1Cu);
+        if (cur_end != nullptr) {
+            *cur_end = obj;
+        }
+        *reinterpret_cast<u8***>(parent + 0x1Cu) = cur_end + 1;
+        *reinterpret_cast<u32*>(obj + 0x0Cu) = *reinterpret_cast<const u32*>(parent + 0x10u);
+    }
+}
+
+}  // namespace
+
 // DECOMP_FUNC(0x0012c97c, 1184)
-// Capstone ARM full coverage (296 instructions); raw bytes only, no terminal-return claim.
-extern "C" __attribute__((naked)) void ui_func_0012c97c() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d5fff, 0xe3510000, 0xe1a04000, 0xe1a05003\n"
-        ".word 0x0a000004, 0xe3a02119, 0xe5910000, 0xe1d20000\n"
-        ".word 0x01a09001, 0x0a000000, 0xe3a09000, 0xe3a08000\n"
-        ".word 0xe5d900c0, 0xe3500000, 0x0a00000b, 0xe5950000\n"
-        ".word 0xe3a02004, 0xe3a01020, 0xe5903008, 0xe1a00005\n"
-        ".word 0xe12fff33, 0xe3500000, 0x0a000068, 0xe28910c0\n"
-        ".word 0xe1a08000, 0xe3a02020, 0xeb0600d3, 0xe59910bc\n"
-        ".word 0xe3a06000, 0xe28900bc, 0xe3510000, 0xe1a0b006\n"
-        ".word 0x1081a000, 0x01a0a00b, 0xe35a0000, 0x0a00005d\n"
-        ".word 0xe5da0004, 0xe3500000, 0x0a00005a, 0xe59a0000\n"
-        ".word 0xe3500201, 0x0a000030, 0xaa000006, 0xe3500102\n"
-        ".word 0x0a000009, 0xe3500301, 0x0a00003f, 0xe3500302\n"
-        ".word 0x1a000046, 0xea000032, 0xe3500202, 0x0a00001c\n"
-        ".word 0xe3500101, 0x1a000041, 0xea00000f, 0xe5950000\n"
-        ".word 0xe3a0701c, 0xe1a01007, 0xe3a02004, 0xe5903008\n"
-        ".word 0xe1a00005, 0xe12fff33, 0xe3500000, 0x0a000037\n"
-        ".word 0xe1a06000, 0xe1a02007, 0xe1a0100a, 0xeb0600aa\n"
-        ".word 0xe320f000, 0xe320f000, 0xea00003a, 0xe5950000\n"
-        ".word 0xe3a07028, 0xe1a01007, 0xe3a02004, 0xe5903008\n"
-        ".word 0xe1a00005, 0xe12fff33, 0xe3500000, 0x1affffef\n"
-        ".word 0xea000026, 0xe5950000, 0xe3a07024, 0xe1a01007\n"
-        ".word 0xe3a02004, 0xe5903008, 0xe1a00005, 0xe12fff33\n"
-        ".word 0xe3500000, 0x1affffe5, 0xea00001c, 0xe5950000\n"
-        ".word 0xe3a07008, 0xe1a01007, 0xe3a02004, 0xe5903008\n"
-        ".word 0xe1a00005, 0xe12fff33, 0xe3500000, 0x1affffdb\n"
-        ".word 0xea000012, 0xe5950000, 0xe3a07018, 0xe1a01007\n"
-        ".word 0xe3a02004, 0xe5903008, 0xe1a00005, 0xe12fff33\n"
-        ".word 0xe3500000, 0x1affffd1, 0xea000008, 0xe5950000\n"
-        ".word 0xe3a07028, 0xe1a01007, 0xe3a02004, 0xe5903008\n"
-        ".word 0xe1a00005, 0xe12fff33, 0xe3500000, 0x1affffc7\n"
-        ".word 0xe3580000, 0x0a000007, 0xe5950000, 0xe1a01008\n"
-        ".word 0xe590200c, 0xe1a00005, 0xe12fff32, 0xe3a00000\n"
-        ".word 0xe28dd010, 0xe8bd9ff0, 0xe5950000, 0xe3a02004\n"
-        ".word 0xe3a01f62, 0xe5903008, 0xe1a00005, 0xe12fff33\n"
-        ".word 0xe3500000, 0x0a00002f, 0xe59d3008, 0xe1a01005\n"
-        ".word 0xe1a02009, 0xeb062238, 0xe59f1248, 0xe3a0a001\n"
-        ".word 0xeddf0a8f, 0xe5801000, 0xe5c0a148, 0xedc00a53\n"
-        ".word 0xe580b150, 0xe59f2234, 0xe59f3238, 0xe580b154\n"
-        ".word 0xe5a0b158, 0xed9f1a8a, 0xe1c020f4, 0xe2800004\n"
-        ".word 0xed9f0a89, 0xedc00a03, 0xedc00a02, 0xe2802010\n"
-        ".word 0xe59f1204, 0xe2407f57, 0xec820a03, 0xe280201c\n"
-        ".word 0xe8820802, 0xe1a01005, 0xe5806028, 0xe5808024\n"
-        ".word 0xe510015c, 0xe5902024, 0xe1a00007, 0xe12fff32\n"
-        ".word 0xe2100102, 0x5a000019, 0xe5970000, 0xe5901000\n"
-        ".word 0xe1a00007, 0xe12fff31, 0xe5970004, 0xe5901000\n"
-        ".word 0xe591200c, 0xe1a01007, 0xe12fff32, 0xe28dd010\n"
-        ".word 0xe3a00000, 0xe8bd9ff0, 0xe3580000, 0x0a000004\n"
-        ".word 0xe5950000, 0xe1a01008, 0xe590200c, 0xe1a00005\n"
-        ".word 0xe12fff32, 0xe3560000, 0x0afffff3, 0xe5950000\n"
-        ".word 0xe1a01006, 0xe590200c, 0xe1a00005, 0xeaffffed\n"
-        ".word 0xe3540000, 0x0a000053, 0xe594000c, 0xe1a01007\n"
-        ".word 0xe1a05007, 0xe3500000, 0x0a000005, 0xe1500001\n"
-        ".word 0x0a00004c, 0xeb060a4f, 0xe3500000, 0xe320f000\n"
-        ".word 0x1a000048, 0xe595000c, 0xe3500000, 0x1a000045\n"
-        ".word 0xe284101c, 0xe5943018, 0xe8910006, 0xe3a00001\n"
-        ".word 0xe0413003, 0xe3c21103, 0xe1510143, 0xca000034\n"
-        ".word 0xe3510000, 0x11a06081, 0x03a06001, 0xe3c21103\n"
-        ".word 0xe1510006, 0xaa00002e, 0xe5940014, 0xe3500000\n"
-        ".word 0x0a000002, 0xe2020103, 0xe3500101, 0x0a000001\n"
-        ".word 0xe1a0000b, 0xea00002c, 0xe5940014, 0xe1a01106\n"
-        ".word 0xe5902000, 0xe5923008, 0xe3a02020, 0xe12fff33\n"
-        ".word 0xe1a08000, 0xe2840018, 0xe3a09000, 0xe8900005\n"
-        ".word 0xe1500002, 0x11a01008, 0x0a00000a, 0xe3510000\n"
-        ".word 0x15903000, 0xe2800004, 0x15813000, 0xe1500002\n"
-        ".word 0xe2811004, 0x1afffff8, 0xe594001c, 0xe5941018\n"
-        ".word 0xe0400001, 0xe1a09140, 0xe5941018, 0xe3510000\n"
-        ".word 0x0a000003, 0xe5940014, 0xe5902000, 0xe592200c\n"
-        ".word 0xe12fff32, 0xe0880109, 0xe584001c, 0xe5848018\n"
-        ".word 0xe5940020, 0xe2000103, 0xe1800006, 0xe5840020\n"
-        ".word 0xe1a0000a, 0xe594101c, 0xe3510000, 0x15815000\n"
-        ".word 0xe594101c, 0xe2811004, 0xe584101c, 0xe3500000\n"
-        ".word 0x15940010, 0x1585000c, 0xe28dd010, 0xe1a00007\n"
-        ".word 0xe8bd9ff0, 0x00000000, 0x00420f90, 0x00151404\n"
-        ".word 0x00421ca0, 0x4b7fffff, 0x00421cd4, 0x3f800000\n"
-    );
+extern "C" void* ui_func_0012c97c(u8* parent, const u8* desc, u32 a2, void* alloc) {
+    const u8* valid_desc = nullptr;
+    if (desc != nullptr && (*reinterpret_cast<const u32*>(desc) & 0x40000006u) == 0x40000006u) {
+        valid_desc = desc;
+    }
+
+    void* block_c0 = nullptr;
+    if (valid_desc[0xC0u] != 0u) {
+        block_c0 = vtbl_alloc_12c97c(alloc, 0x20u, 4u);
+        if (block_c0 == nullptr) {
+            return nullptr;
+        }
+        ui_func_002acd38(block_c0, valid_desc + 0xC0u, 0x20u);
+    }
+
+    void* ext_block = nullptr;
+    const u32 ext_off = *reinterpret_cast<const u32*>(valid_desc + 0xBCu);
+    const u8* const ext = (ext_off != 0u) ? (valid_desc + 0xBCu + ext_off) : nullptr;
+    if (ext != nullptr && ext[4] != 0u) {
+        const u32 sz = ext_size_12c97c(*reinterpret_cast<const u32*>(ext));
+        if (sz != 0u) {
+            ext_block = vtbl_alloc_12c97c(alloc, sz, 4u);
+        }
+        if (ext_block == nullptr) {
+            if (block_c0 != nullptr) {
+                vtbl_free_12c97c(alloc, block_c0);
+            }
+            return nullptr;
+        }
+        ui_func_002acd38(ext_block, ext, sz);
+    }
+
+    u8* obj = static_cast<u8*>(vtbl_alloc_12c97c(alloc, 0x188u, 4u));
+    if (obj == nullptr) {
+        if (block_c0 != nullptr) {
+            vtbl_free_12c97c(alloc, block_c0);
+        }
+        if (ext_block != nullptr) {
+            vtbl_free_12c97c(alloc, ext_block);
+        }
+        return nullptr;
+    }
+
+    obj = engine_func_002b5498(obj, alloc, valid_desc, a2);
+    *reinterpret_cast<u32*>(obj + 0x000u) = 0x00420F90u;
+    *reinterpret_cast<u8*>(obj + 0x148u) = 1u;
+    *reinterpret_cast<u32*>(obj + 0x14Cu) = 0x00000000u;
+    *reinterpret_cast<u32*>(obj + 0x150u) = 0u;
+    *reinterpret_cast<u32*>(obj + 0x154u) = 0u;
+    *reinterpret_cast<u32*>(obj + 0x158u) = 0u;
+    *reinterpret_cast<u32*>(obj + 0x15Cu) = 0x00421CA0u;
+    *reinterpret_cast<u32*>(obj + 0x160u) = 0x00421CD4u;
+    *reinterpret_cast<u32*>(obj + 0x164u) = 0x00000000u;
+    *reinterpret_cast<u32*>(obj + 0x168u) = 0x00000000u;
+    *reinterpret_cast<u32*>(obj + 0x16Cu) = 0x3F800000u;
+    *reinterpret_cast<u32*>(obj + 0x170u) = 0x00000000u;
+    *reinterpret_cast<u32*>(obj + 0x174u) = 0x4B7FFFFFu;
+    *reinterpret_cast<u32*>(obj + 0x178u) = 0x00151404u;
+    *reinterpret_cast<u32*>(obj + 0x17Cu) = 0u;
+    *reinterpret_cast<void**>(obj + 0x180u) = block_c0;
+    *reinterpret_cast<void**>(obj + 0x184u) = ext_block;
+
+    void* const* const obj_vtbl = *reinterpret_cast<void* const* const*>(obj);
+    using InitFn = s32 (*)(u8*, void*);
+    if (reinterpret_cast<InitFn>(obj_vtbl[9])(obj, alloc) < 0) {
+        using DtorFn = void (*)(u8*);
+        reinterpret_cast<DtorFn>(obj_vtbl[0])(obj);
+        vtbl_free_12c97c(*reinterpret_cast<void* const*>(obj + 4u), obj);
+        return nullptr;
+    }
+
+    attach_child_12c97c(parent, obj);
+    return obj;
 }
 
 // DECOMP_FUNC(0x003b67c4, 1208)
