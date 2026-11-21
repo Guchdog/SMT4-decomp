@@ -3249,7 +3249,7 @@ address,size,status,category,name,src_file
 0x0022cc38,180,non_matching,unknown,func_0022cc38,src/engine/leaf_batch31_c.cpp
 0x0022ccec,76,matching,unknown,func_0022ccec,src/engine/leaf_batch27_b.cpp
 0x0022cd38,1540,matching,shop,shop_func_0022cd38,src/engine/leaf_batch46_b.cpp
-0x0022d33c,652,matching,camp,camp_func_0022d33c,src/engine/leaf_batch45_b.cpp
+0x0022d33c,652,non_matching,camp,camp_func_0022d33c,src/engine/leaf_batch45_b.cpp
 0x0022d5c8,892,matching,unite,unite_func_0022d5c8,src/camp/unite_extras.cpp
 0x0022d944,80,matching,shop,shop_func_0022d944,src/engine/leaf_batch39_c.cpp
 0x0022d994,456,matching,ui,ui_func_0022d994,src/engine/leaf_batch41_c.cpp

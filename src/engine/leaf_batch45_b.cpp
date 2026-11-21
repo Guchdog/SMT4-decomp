@@ -3699,93 +3699,104 @@ extern "C" void func_001f9c3c() {
     }
 }
 
+extern "C" s32 shop_func_0029ebc4(void* p);
+extern "C" s32 unite_func_002338ac(void* p);
+extern "C" const u8* camp_func_002b9364(u32 id);
+extern "C" u32 camp_func_0029d100(u32 item_id, u32 mode, u32 a2, u32 a3, u32 a4);
+
 // DECOMP_FUNC(0x0022d33c, 652)
-extern "C" __attribute__((naked)) void camp_func_0022d33c() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4ff0, 0xe92d, 0x5000, 0xe1a0\n"
-        ".hword 0x0028, 0xe590, 0xd014, 0xe24d\n"
-        ".hword 0x0000, 0xe350, 0x0083, 0x0a00\n"
-        ".hword 0x0020, 0xe285, 0xc619, 0xeb01\n"
-        ".hword 0x0004, 0xe58d, 0x0020, 0xe285\n"
-        ".hword 0x1950, 0xeb00, 0x1234, 0xe59f\n"
-        ".hword 0x000c, 0xe58d, 0x0004, 0xe59d\n"
-        ".hword 0x2004, 0xe591, 0x0002, 0xe150\n"
-        ".hword 0x0078, 0x0a00, 0x0004, 0xe581\n"
-        ".hword 0x000c, 0xe59d, 0x4000, 0xe3a0\n"
-        ".hword 0x0000, 0xe350, 0x6c05, 0xc285\n"
-        ".hword 0x0072, 0xda00, 0x0004, 0xe59d\n"
-        ".hword 0x9204, 0xe59f, 0x7001, 0xe3a0\n"
-        ".hword 0x0004, 0xe080, 0xa000, 0xe3e0\n"
-        ".hword 0x0280, 0xe085, 0x90f9, 0xe190\n"
-        ".hword 0x00a4, 0xe5d6, 0x0000, 0xe350\n"
-        ".hword 0x7000, 0x03a0, 0x0020, 0xe285\n"
-        ".hword 0xc5fe, 0xeb01, 0x0004, 0xe080\n"
-        ".hword 0x15a5, 0xe5d5, 0x0280, 0xe085\n"
-        ".hword 0x0b01, 0xe280, 0x0000, 0xe357\n"
-        ".hword 0x0f6b, 0xe280, 0x8000, 0xe3a0\n"
-        ".hword 0x0004, 0x0a00, 0x0000, 0xe351\n"
-        ".hword 0x000e, 0x0a00, 0x0001, 0xe351\n"
-        ".hword 0x000f, 0x1a00, 0x000d, 0xea00\n"
-        ".hword 0x0000, 0xe351, 0x0004, 0x0a00\n"
-        ".hword 0x0001, 0xe351, 0x0007, 0x0a00\n"
-        ".hword 0x0002, 0xe351, 0x0008, 0x1a00\n"
-        ".hword 0x0006, 0xea00, 0x00b0, 0xe1d0\n"
-        ".hword 0x2fd0, 0xeb02, 0x0000, 0xe350\n"
-        ".hword 0x8003, 0x15d0, 0x0002, 0xea00\n"
-        ".hword 0x800c, 0xe5d0, 0x0000, 0xea00\n"
-        ".hword 0x800d, 0xe5d0, 0x00a4, 0xe5d6\n"
-        ".hword 0x0001, 0xe350, 0x00a5, 0x05d6\n"
-        ".hword 0x0001, 0x0350, 0x0010, 0x1a00\n"
-        ".hword 0x0020, 0xe285, 0xc5db, 0xeb01\n"
-        ".hword 0x0004, 0xe080, 0x0000, 0xe357\n"
-        ".hword 0x0280, 0xe085, 0x0b01, 0xe280\n"
-        ".hword 0x0f6b, 0xe280, 0x7000, 0xe3a0\n"
-        ".hword 0x700c, 0x15d0, 0x0003, 0x1a00\n"
-        ".hword 0x00b0, 0xe1d0, 0x2fb9, 0xeb02\n"
-        ".hword 0x0000, 0xe350, 0x7003, 0x15d0\n"
-        ".hword 0x0007, 0xe158, 0xa11c, 0x859f\n"
-        ".hword 0xa11c, 0x359f, 0x011c, 0xe59f\n"
-        ".hword 0x7000, 0xe3e0, 0x8104, 0xe780\n"
-        ".hword 0x0028, 0xe280, 0xa104, 0xe780\n"
-        ".hword 0x10a4, 0xe5d6, 0x0001, 0xe3a0\n"
-        ".hword 0x0008, 0xe58d, 0x0000, 0xe351\n"
-        ".hword 0x0000, 0x03a0, 0x1b01, 0xe284\n"
-        ".hword 0x0008, 0x058d, 0x102f, 0xe281\n"
-        ".hword 0x00c8, 0xe285, 0x487e, 0xeb02\n"
-        ".hword 0x80f8, 0xe1d0, 0xa0fa, 0xe1d0\n"
-        ".hword 0x1000, 0xe3a0, 0x1000, 0xe58d\n"
-        ".hword 0x09d4, 0xe1d5, 0x15a5, 0xe5d5\n"
-        ".hword 0x2008, 0xe59d, 0x0064, 0xe350\n"
-        ".hword 0x0079, 0xe6ff, 0x3001, 0xa3a0\n"
-        ".hword 0x3000, 0xb3a0, 0xbf00, 0xeb01\n"
-        ".hword 0x10a4, 0xe5d6, 0xb000, 0xe1a0\n"
-        ".hword 0x0001, 0xe351, 0x0017, 0x0a00\n"
-        ".hword 0x10a4, 0xe59f, 0x00c8, 0xe285\n"
-        ".hword 0x486b, 0xeb02, 0x20f8, 0xe1d0\n"
-        ".hword 0x10fa, 0xe1d0, 0x0008, 0xe082\n"
-        ".hword 0x2090, 0xe59f, 0x100a, 0xe081\n"
-        ".hword 0x0104, 0xe782, 0x0028, 0xe282\n"
-        ".hword 0x1104, 0xe780, 0x0050, 0xe282\n"
-        ".hword 0x0284, 0xe080, 0x200b, 0xe1a0\n"
-        ".hword 0x1074, 0xe28f, 0x44ab, 0xfa02\n"
-        ".hword 0x0070, 0xe59f, 0x7104, 0xe780\n"
-        ".hword 0x000c, 0xe59d, 0x4001, 0xe284\n"
-        ".hword 0x0000, 0xe154, 0xff8c, 0xbaff\n"
-        ".hword 0xd014, 0xe28d, 0x8ff0, 0xe8bd\n"
-        ".hword 0x0000, 0xe3a0, 0x0000, 0xe58d\n"
-        ".hword 0x09d4, 0xe1d5, 0x2008, 0xe59d\n"
-        ".hword 0x1000, 0xe3a0, 0x0064, 0xe350\n"
-        ".hword 0x0079, 0xe6ff, 0x3001, 0xa3a0\n"
-        ".hword 0x3000, 0xb3a0, 0xbeda, 0xeb01\n"
-        ".hword 0x0000, 0xe15b, 0x7010, 0x359f\n"
-        ".hword 0x7008, 0x859f, 0xffd9, 0xeaff\n"
-        ".hword 0xd9c8, 0x0043, 0x05ac, 0x0000\n"
-        ".hword 0x27ff, 0x72e0, 0x14ff, 0xdc0f\n"
-        ".hword 0x357c, 0x0049, 0x04c6, 0x0000\n"
-        ".hword 0x35cc, 0x0049, 0x3825, 0x0075\n"
-        ".hword 0x375c, 0x0049\n"
-    );
+extern "C" void camp_func_0022d33c(u8* self) {
+    if (*reinterpret_cast<const u32*>(self + 0x28) == 0u) {
+        return;
+    }
+
+    const s32 start_idx = shop_func_0029ebc4(self + 0x20);
+    const s32 count = unite_func_002338ac(self + 0x20);
+    s32* const g_last = reinterpret_cast<s32*>(0x0043D9C8u);
+    if (start_idx == g_last[1]) {
+        return;
+    }
+    g_last[1] = start_idx;
+    if (count <= 0) {
+        return;
+    }
+
+    for (s32 i = 0; i < count; ++i) {
+        const u16 item_id = *reinterpret_cast<const u16*>(self + (start_idx + i) * 32 + 0x5AC);
+        const bool has_a4 = (self[0x5A4] != 0u);
+        u32 color_cmp = 0xFFFFFFFFu;
+
+        const s32 cur_idx = shop_func_0029ebc4(self + 0x20) + i;
+        const u8* const entry = self + cur_idx * 32 + 0x5AC;
+        const u8 mode = self[0x5A5];
+        u32 val8 = 0u;
+        if (has_a4) {
+            if (mode == 0u) {
+                val8 = entry[0xC];
+            } else if (mode == 1u) {
+                val8 = entry[0xD];
+            }
+        } else {
+            if (mode == 0u) {
+                const u8* const info = camp_func_002b9364(*reinterpret_cast<const u16*>(entry));
+                if (info != nullptr) {
+                    val8 = info[3];
+                }
+            } else if (mode == 1u) {
+                val8 = entry[0xC];
+            } else if (mode == 2u) {
+                val8 = entry[0xD];
+            }
+        }
+
+        if (self[0x5A4] == 1u && self[0x5A5] == 1u) {
+            const s32 cur_idx2 = shop_func_0029ebc4(self + 0x20) + i;
+            const u8* const entry2 = self + cur_idx2 * 32 + 0x5AC;
+            u32 base_val = 0u;
+            if (has_a4) {
+                base_val = entry2[0xC];
+            } else {
+                const u8* const info = camp_func_002b9364(*reinterpret_cast<const u16*>(entry2));
+                if (info != nullptr) {
+                    base_val = info[3];
+                }
+            }
+            if (val8 > base_val) {
+                color_cmp = 0x72E027FFu;
+            } else if (val8 < base_val) {
+                color_cmp = 0xDC0F14FFu;
+            }
+        }
+
+        u32* const g_arr = reinterpret_cast<u32*>(0x0049357Cu);
+        g_arr[i] = val8;
+        g_arr[10 + i] = color_cmp;
+
+        const u32 arg_a4 = (self[0x5A4] != 0u) ? 1u : 0u;
+        const u8* const pos0 = camp_func_002bf6c8(self + 0xC8, static_cast<u32>(i + 0x42F));
+        const s32 x0 = *reinterpret_cast<const s16*>(pos0 + 8);
+        const s32 y0 = *reinterpret_cast<const s16*>(pos0 + 0xA);
+        const u32 ge100 = (*reinterpret_cast<const s8*>(self + 0x94) >= 100) ? 1u : 0u;
+        const u32 price = camp_func_0029d100(item_id, self[0x5A5], arg_a4, ge100, 0u);
+
+        u32 price_color = 0xFFFFFFFFu;
+        if (self[0x5A4] == 1u) {
+            const u32 ge100_2 = (*reinterpret_cast<const s8*>(self + 0x94) >= 100) ? 1u : 0u;
+            const u32 base_price = camp_func_0029d100(item_id, 0u, arg_a4, ge100_2, 0u);
+            if (price < base_price) {
+                price_color = 0xDC0F14FFu;
+            } else if (price > base_price) {
+                price_color = 0x72E027FFu;
+            }
+        }
+
+        const u8* const pos1 = camp_func_002bf6c8(self + 0xC8, 0x4C6u);
+        u8* const g_out = reinterpret_cast<u8*>(0x004935CCu);
+        *reinterpret_cast<s32*>(g_out + i * 4) = *reinterpret_cast<const s16*>(pos1 + 8) + x0;
+        *reinterpret_cast<s32*>(g_out + 0x28 + i * 4) = *reinterpret_cast<const s16*>(pos1 + 0xA) + y0;
+        ui_func_002be7fc(reinterpret_cast<char*>(g_out + 0x50 + i * 0x20), "%8u", price);
+        *reinterpret_cast<u32*>(reinterpret_cast<u8*>(0x0049375Cu) + i * 4) = price_color;
+    }
 }
 
 // DECOMP_FUNC(0x00392060, 656)
