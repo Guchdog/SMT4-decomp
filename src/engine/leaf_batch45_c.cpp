@@ -4035,83 +4035,62 @@ extern "C" void script_vm_func_0038cdf4(u8* self) {
 }
 
 // DECOMP_FUNC(0x003c42d4, 1144)
-// Capstone ARM full coverage (286 instructions); raw bytes only, no terminal-return claim.
-extern "C" __attribute__((naked)) void battle_func_003c42d4() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4070, 0xe1a05000, 0xe5900010, 0xe1a04001\n"
-        ".word 0xebfa4878, 0xe350001d, 0xe1a01000, 0x379ff100\n"
-        ".word 0xe8bd8070, 0x003c436c, 0x003c4394, 0x003c43b8\n"
-        ".word 0x003c43dc, 0x003c4400, 0x003c4418, 0x003c443c\n"
-        ".word 0x003c4460, 0x003c4484, 0x003c44a8, 0x003c44cc\n"
-        ".word 0x003c44f0, 0x003c450c, 0x003c4528, 0x003c454c\n"
-        ".word 0x003c4570, 0x003c4594, 0x003c45b8, 0x003c45dc\n"
-        ".word 0x003c4600, 0x003c4624, 0x003c4648, 0x003c466c\n"
-        ".word 0x003c4694, 0x003c46b8, 0x003c46d0, 0x003c46f4\n"
-        ".word 0x003c470c, 0x003c4724, 0xe5950010, 0xebf99898\n"
-        ".word 0xe2841b11, 0xe28110a8, 0xe3500000, 0xe5912000\n"
-        ".word 0x13822004, 0x03c22004, 0xe5812000, 0xe8bd8070\n"
-        ".word 0xe5950010, 0xebf9988e, 0xe2841b11, 0xe28110a8\n"
-        ".word 0xe3500000, 0xe5912000, 0x13822008, 0x03c22008\n"
-        ".word 0xeafffff4, 0xe5950010, 0xebf99885, 0xe2841b11\n"
-        ".word 0xe28110a8, 0xe3500000, 0xe5912000, 0x13822010\n"
-        ".word 0x03c22010, 0xeaffffeb, 0xe5950010, 0xebf9987c\n"
-        ".word 0xe2841b11, 0xe28110a8, 0xe3500000, 0xe5912000\n"
-        ".word 0x13822020, 0x03c22020, 0xeaffffe2, 0xe5950010\n"
-        ".word 0xebf9987b, 0xe2844901, 0xe5900000, 0xe2844ea5\n"
-        ".word 0xea00003a, 0xe5950010, 0xebf9986d, 0xe2841b11\n"
-        ".word 0xe28110a8, 0xe3500000, 0xe5912000, 0x13822040\n"
-        ".word 0x03c22040, 0xeaffffd3, 0xe5950010, 0xebf99864\n"
-        ".word 0xe2841b11, 0xe28110a8, 0xe3500000, 0xe5912000\n"
-        ".word 0x13822080, 0x03c22080, 0xeaffffca, 0xe5950010\n"
-        ".word 0xebf9985b, 0xe2841b11, 0xe28110a8, 0xe3500000\n"
-        ".word 0xe5912000, 0x13822c01, 0x03c22c01, 0xeaffffc1\n"
-        ".word 0xe5950010, 0xebf99852, 0xe2841b11, 0xe28110a8\n"
-        ".word 0xe3500000, 0xe5912000, 0x13822c02, 0x03c22c02\n"
-        ".word 0xeaffffb8, 0xe5950010, 0xebf99849, 0xe2841b11\n"
-        ".word 0xe28110a8, 0xe3500000, 0xe5912000, 0x13822b01\n"
-        ".word 0x03c22b01, 0xeaffffaf, 0xe5950010, 0xebf99840\n"
-        ".word 0xe2841b11, 0xe28110a8, 0xe3500000, 0xe5912000\n"
-        ".word 0x13822b02, 0x03c22b02, 0xeaffffa6, 0xe5950010\n"
-        ".word 0xebf9983f, 0xe5900000, 0xe2844b12, 0xe2844f72\n"
-        ".word 0xe5840000, 0xe8bd8070, 0xe5950010, 0xebf99838\n"
-        ".word 0xe5904000, 0xe320f000, 0xebfb9139, 0xe5804000\n"
-        ".word 0xe8bd8070, 0xe5950010, 0xebf99829, 0xe2841b11\n"
-        ".word 0xe28110a8, 0xe3500000, 0xe5912000, 0x13822802\n"
-        ".word 0x03c22802, 0xeaffff8f, 0xe5950010, 0xebf99820\n"
-        ".word 0xe2841b11, 0xe28110a8, 0xe3500000, 0xe5912000\n"
-        ".word 0x13822501, 0x03c22501, 0xeaffff86, 0xe5950010\n"
-        ".word 0xebf99817, 0xe2841b11, 0xe28110a8, 0xe3500000\n"
-        ".word 0xe5912000, 0x13822502, 0x03c22502, 0xeaffff7d\n"
-        ".word 0xe5950010, 0xebf9980e, 0xe2841b11, 0xe28110a8\n"
-        ".word 0xe3500000, 0xe5912000, 0x13822401, 0x03c22401\n"
-        ".word 0xeaffff74, 0xe5950010, 0xebf99805, 0xe2841b11\n"
-        ".word 0xe28110a8, 0xe3500000, 0xe5912000, 0x13822402\n"
-        ".word 0x03c22402, 0xeaffff6b, 0xe5950010, 0xebf997fc\n"
-        ".word 0xe2841b11, 0xe28110a8, 0xe3500000, 0xe5912000\n"
-        ".word 0x13822301, 0x03c22301, 0xeaffff62, 0xe5950010\n"
-        ".word 0xebf997f3, 0xe2841b11, 0xe28110a8, 0xe3500000\n"
-        ".word 0xe5912000, 0x13822302, 0x03c22302, 0xeaffff59\n"
-        ".word 0xe5950010, 0xebf997ea, 0xe2841b11, 0xe28110a8\n"
-        ".word 0xe3500000, 0xe5912000, 0x13822201, 0x03c22201\n"
-        ".word 0xeaffff50, 0xe5950010, 0xebf997e1, 0xe2841b11\n"
-        ".word 0xe28110a8, 0xe3500000, 0xe5912000, 0x13822202\n"
-        ".word 0x03c22202, 0xeaffff47, 0xe5950010, 0xebf997d8\n"
-        ".word 0xe2841b11, 0xe28110a8, 0xe3500000, 0xe5912004\n"
-        ".word 0x13822001, 0x03c22001, 0xe5812004, 0xe8bd8070\n"
-        ".word 0xe5950010, 0xebf997ce, 0xe2841b11, 0xe28110a8\n"
-        ".word 0xe3500000, 0xe5912004, 0x13822002, 0x03c22002\n"
-        ".word 0xeafffff4, 0xe5950010, 0xebf997cd, 0xe2844b0b\n"
-        ".word 0xe5900000, 0xe2844fcb, 0xeaffff8c, 0xe5950010\n"
-        ".word 0xebf997bf, 0xe2841b11, 0xe28110a8, 0xe3500000\n"
-        ".word 0xe5912004, 0x13822004, 0x03c22004, 0xeaffffe5\n"
-        ".word 0xe5950010, 0xebf997be, 0xe2844b0b, 0xe5900000\n"
-        ".word 0xe2844fcd, 0xeaffff7d, 0xe5950010, 0xebf997b8\n"
-        ".word 0xe59f102c, 0xe5900000, 0xe5810000, 0xe8bd8070\n"
-        ".word 0xe5950010, 0xebf997aa, 0xe2841b11, 0xe28110a8\n"
-        ".word 0xe3500000, 0xe5912004, 0x13822040, 0x03c22040\n"
-        ".word 0xeaffffd0, 0x00439ad4\n"
-    );
+extern "C" void battle_func_003c42d4(u8* ctx, u8* target) {
+    struct BitCase3c42d4 {
+        u32 offset;
+        u32 mask;
+    };
+    static const BitCase3c42d4 kBitCases[29] = {
+        {0x44A8u, 0x00000004u}, {0x44A8u, 0x00000008u}, {0x44A8u, 0x00000010u},
+        {0x44A8u, 0x00000020u}, {0u, 0u},                  {0x44A8u, 0x00000040u},
+        {0x44A8u, 0x00000080u}, {0x44A8u, 0x00000100u}, {0x44A8u, 0x00000200u},
+        {0x44A8u, 0x00000400u}, {0x44A8u, 0x00000800u}, {0u, 0u},
+        {0u, 0u},               {0x44A8u, 0x00020000u}, {0x44A8u, 0x00400000u},
+        {0x44A8u, 0x00800000u}, {0x44A8u, 0x01000000u}, {0x44A8u, 0x02000000u},
+        {0x44A8u, 0x04000000u}, {0x44A8u, 0x08000000u}, {0x44A8u, 0x10000000u},
+        {0x44A8u, 0x20000000u}, {0x44ACu, 0x00000001u}, {0x44ACu, 0x00000002u},
+        {0u, 0u},               {0x44ACu, 0x00000004u}, {0u, 0u},
+        {0u, 0u},               {0x44ACu, 0x00000040u},
+    };
+
+    void* const sub = *reinterpret_cast<void* const*>(ctx + 0x10u);
+    const u32 cmd = battle_func_002564cc(sub);
+    if (cmd >= 29u) {
+        return;
+    }
+
+    switch (cmd) {
+        case 4u:
+            *reinterpret_cast<u32*>(target + 0x4A50u) = *battle_func_0022a5f8(sub, cmd);
+            return;
+        case 11u:
+            *reinterpret_cast<u32*>(target + 0x49C8u) = *battle_func_0022a5f8(sub, cmd);
+            return;
+        case 12u: {
+            const u32 val = *battle_func_0022a5f8(sub, cmd);
+            *const_cast<u32*>(reinterpret_cast<const u32*>(camp_func_002a8a08())) = val;
+            return;
+        }
+        case 24u:
+            *reinterpret_cast<u32*>(target + 0x2F2Cu) = *battle_func_0022a5f8(sub, cmd);
+            return;
+        case 26u:
+            *reinterpret_cast<u32*>(target + 0x2F34u) = *battle_func_0022a5f8(sub, cmd);
+            return;
+        case 27u:
+            *reinterpret_cast<u32*>(0x00439AD4u) = *battle_func_0022a5f8(sub, cmd);
+            return;
+        default: {
+            const BitCase3c42d4 bc = kBitCases[cmd];
+            u32* const flags = reinterpret_cast<u32*>(target + bc.offset);
+            if (battle_func_0022a5d8(sub, cmd) != 0) {
+                *flags |= bc.mask;
+            } else {
+                *flags &= ~bc.mask;
+            }
+            return;
+        }
+    }
 }
 
 // DECOMP_FUNC(0x0038de60, 1156)
