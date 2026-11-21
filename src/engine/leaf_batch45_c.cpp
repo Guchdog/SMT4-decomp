@@ -3277,83 +3277,140 @@ extern "C" s32 ui_func_0033aa2c(u8* self, u8* cursor, u32 flags) {
     return 1;
 }
 
+extern "C" u32 func_0022c198(u8* self, u32 min_cap);
+extern "C" void func_0022c968(u8* self, u32 new_end, u32 old_end, u32 arg3);
+
+namespace {
+
+struct Node22C294 {
+    void* ptr;
+    u32 ctrl;
+    Node22C294* prev;
+    Node22C294* next;
+};
+
+inline void copy_node_22c294(Node22C294* dst, const Node22C294* src) {
+    dst->ptr = src->ptr;
+    dst->ctrl = src->ctrl;
+    Node22C294* const next = src->next;
+    dst->next = next;
+    next->prev = dst;
+    dst->prev = const_cast<Node22C294*>(src);
+    const_cast<Node22C294*>(src)->next = dst;
+}
+
+inline void destroy_range_22c294(Node22C294* begin, Node22C294* end) {
+    for (Node22C294* cur = begin; cur < end; ++cur) {
+        Node22C294* const prev = cur->prev;
+        if (prev == nullptr || prev == cur) {
+            if (cur->ctrl != 0u) {
+                void* const obj = cur->ptr;
+                using DelFn = void (*)(void*);
+                (*reinterpret_cast<DelFn* const*>(obj))[1](obj);
+            }
+        } else {
+            Node22C294* const next = cur->next;
+            prev->next = next;
+            next->prev = prev;
+            cur->prev = nullptr;
+            cur->next = nullptr;
+        }
+        cur->ctrl = 0u;
+    }
+}
+
+inline Node22C294* alloc_nodes_22c294(void* alloc, u32 count) {
+    void* const* const vt = *reinterpret_cast<void* const* const*>(alloc);
+    using AllocFn = Node22C294* (*)(void*, u32);
+    using OomFn = void (*)(void*, u32, u32);
+    Node22C294* const p = reinterpret_cast<AllocFn>(vt[0])(alloc, count * 16u);
+    if (p == nullptr) {
+        reinterpret_cast<OomFn>(vt[2])(alloc, 0x0040FE40u, count * 16u);
+    }
+    return p;
+}
+
+}  // namespace
+
 // DECOMP_FUNC(0x0022c294, 1124)
-// Capstone ARM full coverage (281 instructions); raw bytes only, no terminal-return claim.
-extern "C" __attribute__((naked)) void func_0022c294() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4ff0, 0xe24dd00c, 0xe1a08000, 0xe3a0a000\n"
-        ".word 0xe590300c, 0xe590c004, 0xe1510003, 0xe08c5203\n"
-        ".word 0x9a0000e3, 0xe0517003, 0xe58d2000, 0x0a0000dd\n"
-        ".word 0xe045000c, 0xe083b007, 0xe1a06240, 0xe5980008\n"
-        ".word 0xe150000b, 0x3a00003f, 0xe0430006, 0xe1500007\n"
-        ".word 0xe1a01007, 0x31a04000, 0x21a04001, 0xe0403004\n"
-        ".word 0xe04b0004, 0xe3540000, 0xe0452204, 0x108c0200\n"
-        ".word 0x0a00000f, 0xe1b01000, 0xe1a0c002, 0xe2810010\n"
-        ".word 0xe2822010, 0x0a000008, 0xe59c5000, 0xe5815000\n"
-        ".word 0xe59c5004, 0xe5815004, 0xe59c500c, 0xe581500c\n"
-        ".word 0xe5851008, 0xe581c008, 0xe58c100c, 0xe2544001\n"
-        ".word 0x1affffef, 0xe0864007, 0xe1a02006, 0xe1a01004\n"
-        ".word 0xe1a00008, 0xeb000182, 0xe598100c, 0xe1540001\n"
-        ".word 0x21a04001, 0xe5981004, 0xe0815206, 0xe0819204\n"
-        ".word 0xe1550009, 0x2a00009e, 0xe1a04005, 0xe2855010\n"
-        ".word 0xe5940008, 0xe3500000, 0x11500004, 0x1a000007\n"
-        ".word 0xe5941004, 0xe3510000, 0x0a00000a, 0xe5940000\n"
-        ".word 0xe5902000, 0xe5922004, 0xe12fff32, 0xea000005\n"
-        ".word 0xe594100c, 0xe580100c, 0xe1c400d8, 0xe5810008\n"
-        ".word 0xe584a008, 0xe584a00c, 0xe1550009, 0xe584a004\n"
-        ".word 0x3affffe8, 0xea000086, 0xe1a0100b, 0xebffff6c\n"
-        ".word 0xe5989000, 0xe3a0a000, 0xe1b04000, 0xe1a0100a\n"
-        ".word 0x0a000025, 0xe5991000, 0xe1a00009, 0xe5912000\n"
-        ".word 0xe1a01204, 0xe58d1004, 0xe12fff32, 0xe1b05000\n"
-        ".word 0x1a000005, 0xe5990000, 0xe59f12d0, 0xe59d2004\n"
-        ".word 0xe5903008, 0xe1a00009, 0xe12fff33, 0xe1b01005\n"
-        ".word 0x11a0a004, 0x1a000014, 0xe15b0004, 0x0a000054\n"
-        ".word 0xe35b0000, 0x0a000010, 0xe5992000, 0xe1a0120b\n"
-        ".word 0xe1a00009, 0xe1a05001, 0xe5922000, 0xe12fff32\n"
-        ".word 0xe1b04000, 0x1a000005, 0xe5991000, 0xe1a00009\n"
-        ".word 0xe1a02005, 0xe5913008, 0xe59f1270, 0xe12fff33\n"
-        ".word 0xe1b01004, 0x11a0a00b, 0x0a000041, 0xe5983004\n"
-        ".word 0xe1b04006, 0x11a00001, 0x0a00000f, 0xe1b02000\n"
-        ".word 0xe1a0c003, 0xe2820010, 0xe2833010, 0x0a000008\n"
-        ".word 0xe59c5000, 0xe5825000, 0xe59c5004, 0xe5825004\n"
-        ".word 0xe59c500c, 0xe582500c, 0xe5852008, 0xe582c008\n"
-        ".word 0xe58c200c, 0xe2544001, 0x1affffef, 0xe598300c\n"
-        ".word 0xe5982004, 0xe0860007, 0xe0534006, 0xe0823206\n"
-        ".word 0x10810200, 0x0a00000f, 0xe1b02000, 0xe1a0c003\n"
-        ".word 0xe2820010, 0xe2833010, 0x0a000008, 0xe59c5000\n"
-        ".word 0xe5825000, 0xe59c5004, 0xe5825004, 0xe59c500c\n"
-        ".word 0xe582500c, 0xe5852008, 0xe582c008, 0xe58c200c\n"
-        ".word 0xe2544001, 0x1affffef, 0xe5985004, 0xe5881004\n"
-        ".word 0xe58d5004, 0xe588a008, 0xe598000c, 0xe59d5004\n"
-        ".word 0xe085a200, 0xe155000a, 0x2a000020, 0xe1a04005\n"
-        ".word 0xe2855010, 0xe5940008, 0xe3500000, 0x11500004\n"
-        ".word 0x1a00000e, 0xe5941004, 0xe3510000, 0x0a000013\n"
-        ".word 0xe5940000, 0xe5902000, 0xe5922004, 0xe12fff32\n"
-        ".word 0xea00000e, 0xe5992000, 0xe1a00009, 0xe5922004\n"
-        ".word 0xe12fff32, 0xe28dd00c, 0xe3a00000, 0xe8bd8ff0\n"
-        ".word 0xe594100c, 0xe580100c, 0xe2841008, 0xe3a00000\n"
-        ".word 0xe8910006, 0xe5821008, 0xe5840008, 0xe584000c\n"
-        ".word 0xe3a00000, 0xe155000a, 0xe5840004, 0x3affffde\n"
-        ".word 0xe5992000, 0xe59d1004, 0xe1a00009, 0xe5922004\n"
-        ".word 0xe12fff32, 0xe588b00c, 0xe5980004, 0xe0900206\n"
-        ".word 0xe2866001, 0x0a000009, 0xe59d1000, 0xe5912000\n"
-        ".word 0xe5802000, 0xe5912004, 0xe5802004, 0xe591200c\n"
-        ".word 0xe580200c, 0xe5820008, 0xe5801008, 0xe581000c\n"
-        ".word 0xe2577001, 0x1affffef, 0xe28dd00c, 0xe3a00001\n"
-        ".word 0xe8bd8ff0, 0xe08c0201, 0xe1500005, 0x0afffff9\n"
-        ".word 0xe0451000, 0xe0437241, 0xe040100c, 0xe045000c\n"
-        ".word 0xe1a01241, 0xe0433240, 0xe1a02240, 0xe1a00008\n"
-        ".word 0xeb0000bb, 0xe5981004, 0xe598000c, 0xe0815207\n"
-        ".word 0xe0816200, 0xe1550006, 0x2a000016, 0xe1a04005\n"
-        ".word 0xe2855010, 0xe5940008, 0xe3500000, 0x11500004\n"
-        ".word 0x1a000007, 0xe5941004, 0xe3510000, 0x0a00000a\n"
-        ".word 0xe5940000, 0xe5902000, 0xe5922004, 0xe12fff32\n"
-        ".word 0xea000005, 0xe594100c, 0xe580100c, 0xe1c400d8\n"
-        ".word 0xe5810008, 0xe584a008, 0xe584a00c, 0xe1550006\n"
-        ".word 0xe584a004, 0x3affffe8, 0xe588700c, 0xeaffffd1\n"
-        ".word 0x0040fe40\n"
-    );
+extern "C" s32 func_0022c294(u8* self, u32 new_size, const u8* fill_val) {
+    const u32 old_size = *reinterpret_cast<const u32*>(self + 0x0Cu);
+    Node22C294* const old_data = *reinterpret_cast<Node22C294* const*>(self + 0x04u);
+
+    if (new_size <= old_size) {
+        if (new_size == old_size) {
+            return 1;
+        }
+        func_0022c968(self, new_size, old_size, 0u);
+        Node22C294* const data = *reinterpret_cast<Node22C294* const*>(self + 0x04u);
+        const u32 cur_size = *reinterpret_cast<const u32*>(self + 0x0Cu);
+        destroy_range_22c294(data + new_size, data + cur_size);
+        *reinterpret_cast<u32*>(self + 0x0Cu) = new_size;
+        return 1;
+    }
+
+    u32 add_count = new_size - old_size;
+    const u32 old_cap = *reinterpret_cast<const u32*>(self + 0x08u);
+    u32 idx = old_size;
+
+    if (new_size <= old_cap) {
+        const u32 new_end = old_size + add_count;
+        func_0022c968(self, new_end, old_size, 0u);
+        const u32 cur_size = *reinterpret_cast<const u32*>(self + 0x0Cu);
+        const u32 destroy_end = (new_end < cur_size) ? new_end : cur_size;
+        Node22C294* const data = *reinterpret_cast<Node22C294* const*>(self + 0x04u);
+        destroy_range_22c294(data + old_size, data + destroy_end);
+        *reinterpret_cast<u32*>(self + 0x0Cu) = new_size;
+    } else {
+        const u32 cap1 = func_0022c198(self, new_size);
+        void* const alloc = *reinterpret_cast<void* const*>(self);
+        u32 new_cap = 0u;
+        Node22C294* new_data = nullptr;
+
+        if (cap1 != 0u) {
+            new_data = alloc_nodes_22c294(alloc, cap1);
+            if (new_data != nullptr) {
+                new_cap = cap1;
+            }
+        }
+        if (new_data == nullptr) {
+            if (new_size == cap1 || new_size == 0u) {
+                void* const* const vt = *reinterpret_cast<void* const* const*>(alloc);
+                using Free0Fn = void (*)(void*);
+                reinterpret_cast<Free0Fn>(vt[1])(alloc);
+                return 0;
+            }
+            new_data = alloc_nodes_22c294(alloc, new_size);
+            if (new_data == nullptr) {
+                void* const* const vt = *reinterpret_cast<void* const* const*>(alloc);
+                using Free0Fn = void (*)(void*);
+                reinterpret_cast<Free0Fn>(vt[1])(alloc);
+                return 0;
+            }
+            new_cap = new_size;
+        }
+
+        for (u32 i = 0u; i < old_size; ++i) {
+            copy_node_22c294(new_data + i, old_data + i);
+        }
+        *reinterpret_cast<Node22C294**>(self + 0x04u) = new_data;
+        *reinterpret_cast<u32*>(self + 0x08u) = new_cap;
+        const u32 cur_size = *reinterpret_cast<const u32*>(self + 0x0Cu);
+        destroy_range_22c294(old_data, old_data + cur_size);
+        void* const* const vt = *reinterpret_cast<void* const* const*>(alloc);
+        using Free1Fn = void (*)(void*, Node22C294*);
+        reinterpret_cast<Free1Fn>(vt[1])(alloc, old_data);
+        *reinterpret_cast<u32*>(self + 0x0Cu) = new_size;
+    }
+
+    Node22C294* const final_data = *reinterpret_cast<Node22C294* const*>(self + 0x04u);
+    const Node22C294* const fill = reinterpret_cast<const Node22C294*>(fill_val);
+    while (add_count != 0u) {
+        copy_node_22c294(final_data + idx, fill);
+        ++idx;
+        --add_count;
+    }
+    return 1;
 }
 
 // DECOMP_FUNC(0x001e3408, 1132)
