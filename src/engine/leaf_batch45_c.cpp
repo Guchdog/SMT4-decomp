@@ -5787,98 +5787,118 @@ extern "C" u32 ui_func_00157a24(u8* self, u32 flag, const void* src_7c, const u3
     return 1u;
 }
 
+extern "C" void battle_func_002ba948(u8* p);
+extern "C" void battle_func_002ba860(void* a0, u8* p);
+
+namespace {
+
+inline void gpu_free_3f5428(void* ptr) {
+    using FreeFn = void (*)(u32, u32, u32, void*);
+    FreeFn const fn = *reinterpret_cast<FreeFn const*>(0x0044E334u);
+    if (fn != nullptr) {
+        fn(0x10000u, 0x100u, 0u, ptr);
+    }
+}
+
+inline void clear_slots_3f5428(u8* gpu, u8* tbl, u32 h, u32 gpu_off, u32 aux_off, u32 cache_off,
+                               u32 flag_off, u32 count, bool set_flag_bits) {
+    for (u32 i = 0u; i < count; ++i) {
+        if (*reinterpret_cast<const u32*>(gpu + gpu_off + i * 4u) == h) {
+            *reinterpret_cast<u32*>(gpu + gpu_off + i * 4u) = 0u;
+            u8* const ind = *reinterpret_cast<u8* const*>(tbl + 0x8A8u);
+            u8* const aux = (ind != nullptr) ? *reinterpret_cast<u8* const*>(ind)
+                                             : *reinterpret_cast<u8* const*>(tbl + 8u);
+            *reinterpret_cast<u32*>(aux + aux_off + i * 4u) = 0u;
+            *reinterpret_cast<u32*>(tbl + cache_off + i * 4u) = 0u;
+            if (set_flag_bits && gpu[flag_off + i] != 0u) {
+                *reinterpret_cast<u32*>(gpu) |= (0x400u << i);
+            }
+        }
+    }
+}
+
+}  // namespace
+
 // DECOMP_FUNC(0x003f5428, 1368)
-// Capstone ARM full coverage (342 instructions); raw bytes only, no terminal-return claim.
-extern "C" __attribute__((naked)) void func_003f5428() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d5ff3, 0xe3a06000, 0xe1a07001, 0xe59d0000\n"
-        ".word 0xe3500000, 0xe59f0530, 0xe5904000, 0xda000140\n"
-        ".word 0xe7971106, 0xe3510000, 0x0a000139, 0xe59f051c\n"
-        ".word 0xe1a02b81, 0xe3a08000, 0xe1a02ba2, 0xe5900000\n"
-        ".word 0xe0802102, 0xe5925010, 0xe3550000, 0x0a000130\n"
-        ".word 0xe5952008, 0xe1510002, 0x9a000004, 0xe1a08005\n"
-        ".word 0xe595500c, 0xe3550000, 0x1afffff8, 0xea000128\n"
-        ".word 0xe3550000, 0x0a000126, 0xe1520001, 0x1a000124\n"
-        ".word 0xe5953000, 0xe3530000, 0x0a00010f, 0xe5952004\n"
-        ".word 0xe3520000, 0x0a000006, 0xe3520001, 0x0a000045\n"
-        ".word 0xe3520002, 0x0a00008a, 0xe3520003, 0x1a000106\n"
-        ".word 0xea000096, 0xe594205c, 0xe1520001, 0x1a00000d\n"
-        ".word 0xe3a01000, 0xe584105c, 0xe59028a8, 0xe3520000\n"
-        ".word 0x15922000, 0x05902008, 0xe5821004, 0xe5801810\n"
-        ".word 0xe5d41104, 0xe3510000, 0x0a000002, 0xe5941000\n"
-        ".word 0xe3811b01, 0xe5841000, 0xe7971106, 0xe5942060\n"
-        ".word 0xe1520001, 0x1a00000d, 0xe3a01000, 0xe5841060\n"
-        ".word 0xe59028a8, 0xe3520000, 0x15922000, 0x05902008\n"
-        ".word 0xe5821008, 0xe5801814, 0xe5d41105, 0xe3510000\n"
-        ".word 0x0a000002, 0xe5941000, 0xe3811b02, 0xe5841000\n"
-        ".word 0xe7971106, 0xe5942064, 0xe1520001, 0x1a00000d\n"
-        ".word 0xe3a01000, 0xe5841064, 0xe59028a8, 0xe3520000\n"
-        ".word 0x15922000, 0x05902008, 0xe582100c, 0xe5801818\n"
-        ".word 0xe5d40106, 0xe3500000, 0x0a000002, 0xe5940000\n"
-        ".word 0xe3800a01, 0xe5840000, 0xe5959000, 0xe2890034\n"
-        ".word 0xebfb14e2, 0xe599002c, 0xe2891034, 0xebfb14a5\n"
-        ".word 0xe59f03ac, 0xe590c000, 0xe35c0000, 0x11a03009\n"
-        ".word 0x0a000053, 0xea00004e, 0xe5942068, 0xe1520001\n"
-        ".word 0x1a00000d, 0xe3a01000, 0xe5841068, 0xe59028a8\n"
-        ".word 0xe3520000, 0x15922000, 0x05902008, 0xe5821010\n"
-        ".word 0xe580181c, 0xe5d41107, 0xe3510000, 0x0a000002\n"
-        ".word 0xe5941000, 0xe3811b01, 0xe5841000, 0xe7971106\n"
-        ".word 0xe594206c, 0xe1520001, 0x1a00000d, 0xe3a01000\n"
-        ".word 0xe584106c, 0xe59028a8, 0xe3520000, 0x15922000\n"
-        ".word 0x05902008, 0xe5821014, 0xe5801820, 0xe5d41108\n"
-        ".word 0xe3510000, 0x0a000002, 0xe5941000, 0xe3811b02\n"
-        ".word 0xe5841000, 0xe7971106, 0xe5942070, 0xe1520001\n"
-        ".word 0x1a00000d, 0xe3a01000, 0xe5841070, 0xe59028a8\n"
-        ".word 0xe3520000, 0x15922000, 0x05902008, 0xe5821018\n"
-        ".word 0xe5801824, 0xe5d40109, 0xe3500000, 0x0a000002\n"
-        ".word 0xe5940000, 0xe3800a01, 0xe5840000, 0xe595a000\n"
-        ".word 0xe3a09000, 0xe0890209, 0xe08ab100, 0xe28b0034\n"
-        ".word 0xebfb149e, 0xe59a002c, 0xe28b1034, 0xebfb1461\n"
-        ".word 0xe2899001, 0xe3590006, 0xbafffff5, 0xe59f0290\n"
-        ".word 0xe590c000, 0xe35c0000, 0x11a0300a, 0x0a00000c\n"
-        ".word 0xea000007, 0xe59420f4, 0xe1520001, 0x0580100c\n"
-        ".word 0x0a00008b, 0xe59f0268, 0xe590c000, 0xe35c0000\n"
-        ".word 0x0a000003, 0xe3a02000, 0xe3a01c01, 0xe3a00801\n"
-        ".word 0xe12fff3c, 0xe3a00000, 0xe5850000, 0xea00006e\n"
-        ".word 0xe3a01000, 0xe3a0301c, 0xe1a09001, 0xe0842101\n"
-        ".word 0xe797c106, 0xe592a074, 0xe15a000c, 0x1a000008\n"
-        ".word 0xe5829074, 0xe59028a8, 0xe083c101, 0xe3520000\n"
-        ".word 0x15922000, 0x05902008, 0xe782900c, 0xe0802101\n"
-        ".word 0xe5829828, 0xe2811001, 0xe3510020, 0xbaffffee\n"
-        ".word 0xe3a00000, 0xe7972106, 0xe0841100, 0xe591310c\n"
-        ".word 0xe1530002, 0x1a000004, 0xe581910c, 0xe5819190\n"
-        ".word 0xe5941000, 0xe3811901, 0xe5841000, 0xe2800001\n"
-        ".word 0xe3500021, 0xbafffff2, 0xe595a000, 0xe59a3804\n"
-        ".word 0xe3530000, 0x0a000007, 0xe59f01a4, 0xe590c000\n"
-        ".word 0xe35c0000, 0x0a000003, 0xe3a02000, 0xe3a01c01\n"
-        ".word 0xe3a00801, 0xe12fff3c, 0xe59a3808, 0xe3530000\n"
-        ".word 0x0a000007, 0xe59f0178, 0xe590c000, 0xe35c0000\n"
-        ".word 0x0a000003, 0xe3a02000, 0xe3a01c01, 0xe3a00801\n"
-        ".word 0xe12fff3c, 0xe59a380c, 0xe3530000, 0x0a000007\n"
-        ".word 0xe59f014c, 0xe590c000, 0xe35c0000, 0x0a000003\n"
-        ".word 0xe3a02000, 0xe3a01c01, 0xe3a00801, 0xe12fff3c\n"
-        ".word 0xe59a3810, 0xe3530000, 0x0a000007, 0xe59f0120\n"
-        ".word 0xe590c000, 0xe35c0000, 0x0a000003, 0xe3a02000\n"
-        ".word 0xe3a01c01, 0xe3a00801, 0xe12fff3c, 0xe59a3814\n"
-        ".word 0xe3530000, 0x0a000007, 0xe59f00f4, 0xe590c000\n"
-        ".word 0xe35c0000, 0x0a000003, 0xe3a02000, 0xe3a01c01\n"
-        ".word 0xe3a00801, 0xe12fff3c, 0xe59a3818, 0xe3530000\n"
-        ".word 0x0a000007, 0xe59f00c8, 0xe590c000, 0xe35c0000\n"
-        ".word 0x0a00000c, 0xe3a02000, 0xe3a01c01, 0xe3a00801\n"
-        ".word 0xe12fff3c, 0xe59f00a8, 0xe590c000, 0xe35c0000\n"
-        ".word 0x0a000004, 0xe1a0300a, 0xe3a02000, 0xe3a01c01\n"
-        ".word 0xe3a00801, 0xe12fff3c, 0xe5859000, 0xe59f107c\n"
-        ".word 0xe7970106, 0xe5912004, 0xe1500002, 0x35810004\n"
-        ".word 0xe3580000, 0x1595000c, 0x1588000c, 0x0a00000e\n"
-        ".word 0xe59f005c, 0xe590c000, 0xe35c0000, 0x0a000004\n"
-        ".word 0xe1a03005, 0xe3a02000, 0xe3a01c01, 0xe3a00801\n"
-        ".word 0xe12fff3c, 0xe59d0000, 0xe2866001, 0xe1560000\n"
-        ".word 0xbafffebe, 0xe28dd008, 0xe8bd9ff0, 0xe1a00b80\n"
-        ".word 0xe5911000, 0xe1a00ba0, 0xe0810100, 0xe5901010\n"
-        ".word 0xe591100c, 0xe5801010, 0xeaffffe8, 0x004655c0\n"
-        ".word 0x004655e8, 0x0044e334\n"
-    );
+extern "C" void func_003f5428(s32 count, const u32* handles) {
+    u8* const gpu = *reinterpret_cast<u8* const*>(0x004655C0u);
+    for (s32 idx = 0; idx < count; ++idx) {
+        const u32 h = handles[idx];
+        if (h == 0u) {
+            continue;
+        }
+
+        u8** const tbl_hdr = reinterpret_cast<u8**>(0x004655E8u);
+        u8* const tbl = *tbl_hdr;
+        const u32 bucket = h & 0x1FFu;
+        u8* prev = nullptr;
+        u8* node = *reinterpret_cast<u8* const*>(tbl + 0x10u + bucket * 4u);
+        while (node != nullptr && *reinterpret_cast<const u32*>(node + 8u) < h) {
+            prev = node;
+            node = *reinterpret_cast<u8* const*>(node + 0x0Cu);
+        }
+        if (node == nullptr || *reinterpret_cast<const u32*>(node + 8u) != h) {
+            continue;
+        }
+
+        u8* const obj = *reinterpret_cast<u8* const*>(node);
+        if (obj != nullptr) {
+            const u32 kind = *reinterpret_cast<const u32*>(node + 4u);
+            if (kind == 0u) {
+                clear_slots_3f5428(gpu, tbl, h, 0x5Cu, 4u, 0x810u, 0x104u, 3u, true);
+                battle_func_002ba948(obj + 0x34u);
+                battle_func_002ba860(*reinterpret_cast<void* const*>(obj + 0x2Cu), obj + 0x34u);
+                gpu_free_3f5428(obj);
+                *reinterpret_cast<void**>(node) = nullptr;
+            } else if (kind == 1u) {
+                clear_slots_3f5428(gpu, tbl, h, 0x68u, 0x10u, 0x81Cu, 0x107u, 3u, true);
+                for (s32 j = 0; j < 6; ++j) {
+                    u8* const p = obj + 0x34u + static_cast<u32>(j) * 0x44u;
+                    battle_func_002ba948(p);
+                    battle_func_002ba860(*reinterpret_cast<void* const*>(obj + 0x2Cu), p);
+                }
+                gpu_free_3f5428(obj);
+                *reinterpret_cast<void**>(node) = nullptr;
+            } else if (kind == 2u) {
+                if (*reinterpret_cast<const u32*>(gpu + 0xF4u) == h) {
+                    *reinterpret_cast<u32*>(tbl + 0x0Cu) = h;
+                    continue;
+                }
+                gpu_free_3f5428(obj);
+                *reinterpret_cast<void**>(node) = nullptr;
+            } else if (kind == 3u) {
+                clear_slots_3f5428(gpu, tbl, h, 0x74u, 0x1Cu, 0x828u, 0u, 0x20u, false);
+                for (s32 i = 0; i < 0x21; ++i) {
+                    if (*reinterpret_cast<const u32*>(gpu + 0x10Cu + static_cast<u32>(i) * 4u) ==
+                        h) {
+                        *reinterpret_cast<u32*>(gpu + 0x10Cu + static_cast<u32>(i) * 4u) = 0u;
+                        *reinterpret_cast<u32*>(gpu + 0x190u + static_cast<u32>(i) * 4u) = 0u;
+                        *reinterpret_cast<u32*>(gpu) |= 0x4000u;
+                    }
+                }
+                for (u32 k = 0u; k < 6u; ++k) {
+                    void* const sub = *reinterpret_cast<void* const*>(obj + 0x804u + k * 4u);
+                    if (sub != nullptr) {
+                        gpu_free_3f5428(sub);
+                    }
+                }
+                gpu_free_3f5428(obj);
+                *reinterpret_cast<void**>(node) = nullptr;
+            }
+        }
+
+        u32* const min_h = reinterpret_cast<u32*>(0x004655E8u + 4u);
+        if (h < *min_h) {
+            *min_h = h;
+        }
+        if (prev != nullptr) {
+            *reinterpret_cast<u8**>(prev + 0x0Cu) = *reinterpret_cast<u8* const*>(node + 0x0Cu);
+        } else {
+            *reinterpret_cast<u8**>(*tbl_hdr + 0x10u + bucket * 4u) =
+                *reinterpret_cast<u8* const*>(node + 0x0Cu);
+        }
+        gpu_free_3f5428(node);
+    }
 }
 
 // DECOMP_FUNC(0x003f821c, 1372)

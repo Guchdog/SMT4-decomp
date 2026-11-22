@@ -10832,7 +10832,7 @@ address,size,status,category,name,src_file
 0x003f536c,100,non_matching,ui,func_003f536c,src/ui/battle_message_tail_exact.cpp
 0x003f53d0,44,non_matching,ui,func_003f53d0,src/ui/battle_message_tail_exact.cpp
 0x003f53fc,44,non_matching,ui,func_003f53fc,src/ui/battle_message_tail_exact.cpp
-0x003f5428,1368,matching,unknown,func_003f5428,src/engine/leaf_batch45_c.cpp
+0x003f5428,1368,non_matching,unknown,func_003f5428,src/engine/leaf_batch45_c.cpp
 0x003f5980,112,matching,unknown,func_003f5980,src/engine/leaf_batch33_a.cpp
 0x003f59f0,24,non_matching,unknown,func_003f59f0,src/engine/leaf_batch31_b.cpp
 0x003f5a08,52,matching,unknown,func_003f5a08,src/engine/leaf_batch12_c.cpp
