@@ -8082,7 +8082,7 @@ address,size,status,category,name,src_file
 0x00353b9c,92,matching,engine,engine_func_00353b9c,src/engine/leaf_batch20_c.cpp
 0x00353bf8,140,matching,engine,engine_func_00353bf8,src/engine/leaf_batch20_c.cpp
 0x00353c84,140,matching,engine,engine_func_00353c84,src/engine/leaf_batch20_c.cpp
-0x00353d10,1240,matching,engine,engine_func_00353d10,src/engine/leaf_batch45_c.cpp
+0x00353d10,1240,non_matching,engine,engine_func_00353d10,src/engine/leaf_batch45_c.cpp
 0x003541e8,256,matching,engine,engine_func_003541e8,src/engine/leaf_batch25_c.cpp
 0x003542e8,144,matching,engine,engine_func_003542e8,src/engine/leaf_batch20_c.cpp
 0x00354378,348,matching,engine,engine_func_00354378,src/engine/leaf_batch35_c.cpp
