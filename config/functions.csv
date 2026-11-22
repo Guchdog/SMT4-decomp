@@ -3600,7 +3600,7 @@ address,size,status,category,name,src_file
 0x0023e55c,52,matching,unknown,func_0023e55c,src/engine/leaf_batch11_a.cpp
 0x0023e590,164,non_matching,camp,camp_func_0023e590,src/engine/leaf_batch31_c.cpp
 0x0023e634,84,matching,script_vm,script_vm_func_0023e634,src/engine/leaf_batch13_b.cpp
-0x0023e688,1268,matching,engine,engine_func_0023e688,src/engine/leaf_batch45_c.cpp
+0x0023e688,1268,non_matching,engine,engine_func_0023e688,src/engine/leaf_batch45_c.cpp
 0x0023eb7c,68,matching,engine,engine_func_0023eb7c,src/engine/leaf_batch39_c.cpp
 0x0023ebc0,8,matching,unknown,func_0023ebc0,src/engine/leaf_batch36_a.cpp
 0x0023ebc8,40,matching,script_vm,script_vm_func_0023ebc8,src/engine/leaf_batch26_b.cpp
