@@ -9205,7 +9205,7 @@ address,size,status,category,name,src_file
 0x0038fae8,84,matching,ui,ui_func_0038fae8,src/engine/leaf_batch27_c.cpp
 0x0038fb3c,772,matching,ui,ui_func_0038fb3c,src/engine/leaf_batch45_b.cpp
 0x0038fe40,280,matching,engine,engine_func_0038fe40,src/engine/leaf_batch41_a.cpp
-0x0038ff58,760,matching,script_vm,script_vm_func_0038ff58,src/engine/leaf_batch45_b.cpp
+0x0038ff58,760,non_matching,script_vm,script_vm_func_0038ff58,src/engine/leaf_batch45_b.cpp
 0x00390250,388,matching,script_vm,script_vm_func_00390250,src/engine/leaf_batch44_b.cpp
 0x003903d4,2068,matching,engine,engine_func_003903d4,src/engine/leaf_batch46_b.cpp
 0x00390be8,1584,matching,ui,ui_func_00390be8,src/engine/leaf_batch46_b.cpp
