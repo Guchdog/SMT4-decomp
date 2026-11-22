@@ -8714,7 +8714,7 @@ address,size,status,category,name,src_file
 0x00372ac8,948,matching,unknown,func_00372ac8,src/engine/leaf_batch43_b.cpp
 0x00372e7c,108,matching,unknown,func_00372e7c,src/engine/leaf_batch32_a.cpp
 0x00372ee8,428,matching,unknown,func_00372ee8,src/engine/leaf_batch43_a.cpp
-0x00373094,1376,matching,ui,ui_func_00373094,src/engine/leaf_batch45_c.cpp
+0x00373094,1376,non_matching,ui,ui_func_00373094,src/engine/leaf_batch45_c.cpp
 0x003735f4,392,matching,unknown,func_003735f4,src/engine/leaf_batch34_a.cpp
 0x0037377c,204,matching,unknown,func_0037377c,src/engine/leaf_batch14_b.cpp
 0x00373848,760,matching,unknown,func_00373848,src/engine/leaf_batch16_b.cpp
