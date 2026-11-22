@@ -4703,89 +4703,188 @@ extern "C" u32 script_vm_func_002a0790(s32 idx) {
     return func_003948d0(v1, v2, 0x004DACE0u + static_cast<u32>(idx) * 0x40u, v3);
 }
 
+extern "C" u32 func_00147994(u32 addr);
+
+namespace {
+
+inline void emit_gpu_cmd_132fc4(u32 val, u32 reg) {
+    u32* const ptr = *reinterpret_cast<u32**>(0x004652A0u);
+    u32* const end = *reinterpret_cast<u32* const*>(0x004652A4u);
+    if (ptr < end) {
+        ptr[0] = val;
+        ptr[1] = reg;
+        *reinterpret_cast<u32**>(0x004652A0u) = ptr + 2;
+    }
+}
+
+inline u32 validate_rt_132fc4(const u8* color_buf, const u8* depth_buf) {
+    if (color_buf == nullptr && depth_buf == nullptr) {
+        return 0x8CD7u;
+    }
+    u32 cw = 0u;
+    u32 ch = 0u;
+    if (color_buf != nullptr) {
+        const u32 p = *reinterpret_cast<const u32*>(color_buf);
+        if (p == 0u) {
+            return 0x8CD6u;
+        }
+        cw = *reinterpret_cast<const u32*>(color_buf + 0x0Cu);
+        ch = *reinterpret_cast<const u32*>(color_buf + 0x10u);
+        if (cw == 0u || ch == 0u) {
+            return 0x8CD6u;
+        }
+    }
+    if (depth_buf != nullptr) {
+        const u32 dp = *reinterpret_cast<const u32*>(depth_buf);
+        if (dp == 0u) {
+            return 0x8CD6u;
+        }
+        const u32 dw = *reinterpret_cast<const u32*>(depth_buf + 0x0Cu);
+        const u32 dh = *reinterpret_cast<const u32*>(depth_buf + 0x10u);
+        if (dw == 0u || dh == 0u) {
+            return 0x8CD6u;
+        }
+        if (cw != 0u && (dw != cw || dh != ch)) {
+            return 0x8CD9u;
+        }
+    }
+    return (color_buf != depth_buf) ? 0x8CD5u : 0x8CD6u;
+}
+
+}  // namespace
+
 // DECOMP_FUNC(0x00132fc4, 1224)
-// Capstone ARM full coverage (306 instructions); raw bytes only, no terminal-return claim.
-extern "C" __attribute__((naked)) void func_00132fc4() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d5ff0, 0xe3a01000, 0xe1a02001, 0xe59f0474\n"
-        ".word 0xe59f4478, 0xe5900000, 0xe590a008, 0xe59f0468\n"
-        ".word 0xe5905000, 0xe59a000c, 0xe3500000, 0x059a301c\n"
-        ".word 0x03530000, 0x059fc458, 0x0a00001d, 0xe59fc454\n"
-        ".word 0xe3500000, 0x0a000006, 0xe5901000, 0xe3510000\n"
-        ".word 0x1590100c, 0x13510000, 0x15902010, 0x13520000\n"
-        ".word 0x0a000013, 0xe59a301c, 0xe3530000, 0x0a00000e\n"
-        ".word 0xe5936000, 0xe3560000, 0x1593600c, 0x13560000\n"
-        ".word 0x15937010, 0x13570000, 0x0a000009, 0xe3510000\n"
-        ".word 0x0a000005, 0xe1560001, 0x1a000001, 0xe1570002\n"
-        ".word 0x0a000001, 0xe59fc3f0, 0xea000001, 0xe1500003\n"
-        ".word 0x11a0c004, 0xe15c0004, 0xe2854b01, 0xe3a07000\n"
-        ".word 0xe2844fa1, 0x0a000004, 0xe5847000, 0xe5c4700c\n"
-        ".word 0xe5c4700d, 0xe5c4700e, 0xe8bd9ff0, 0xe584c000\n"
-        ".word 0xe5950008, 0xe3100c01, 0x1afffffa, 0xe59a800c\n"
-        ".word 0xe59a901c, 0xe3a02000, 0xe2856b02, 0xe3580000\n"
-        ".word 0xe3a0b001, 0xe1a03002, 0xe2866004, 0x0a000003\n"
-        ".word 0xe596000c, 0xe5981000, 0xe1500001, 0x1a000008\n"
-        ".word 0xe3590000, 0x0a000003, 0xe5960008, 0xe5991000\n"
-        ".word 0xe1500001, 0x1a000002, 0xe5950004, 0xe3100c01\n"
-        ".word 0x0a000015, 0xe59f0354, 0xe59f1354, 0xe5900000\n"
-        ".word 0xe5911000, 0xe1510000, 0x9a000004, 0xe59fc344\n"
-        ".word 0xe280e008, 0xe8801800, 0xe59f0330, 0xe580e000\n"
-        ".word 0xe59f032c, 0xe59fc324, 0xe5901000, 0xe59c0000\n"
-        ".word 0xe1500001, 0x2a000004, 0xe59fc31c, 0xe280e008\n"
-        ".word 0xe8801800, 0xe59f0304, 0xe580e000, 0xe59a000c\n"
-        ".word 0xe3500000, 0x05c4700c, 0x0a00003b, 0xe5c4b00c\n"
-        ".word 0xe5980000, 0xe586000c, 0xe5980020, 0xe5860014\n"
-        ".word 0xe598001c, 0xe3500000, 0x0a000006, 0xe3500002\n"
-        ".word 0x0a000008, 0xe3500003, 0x0a00000a, 0xe3500004\n"
-        ".word 0x1a00000f, 0xea00000b, 0xe3a00002, 0xe5847004\n"
-        ".word 0xe5860000, 0xea00000a, 0xe3a00002, 0xe5840004\n"
-        ".word 0xe5867000, 0xea000006, 0xe3a00003, 0xe5840004\n"
-        ".word 0xe5867000, 0xea000002, 0xe3a00004, 0xe5840004\n"
-        ".word 0xe5867000, 0xe59f2274, 0xe59f1274, 0xe5920000\n"
-        ".word 0xe5911000, 0xe1500001, 0x2a000006, 0xe594e004\n"
-        ".word 0xe5963000, 0xe59fc264, 0xe183380e, 0xe8801008\n"
-        ".word 0xe280e008, 0xe582e000, 0xe59f0244, 0xe5901000\n"
-        ".word 0xe59f0238, 0xe5900000, 0xe1500001, 0x2a000009\n"
-        ".word 0xe596000c, 0xeb0051d5, 0xe59f1220, 0xe59f3230\n"
-        ".word 0xe1a021a0, 0xe591c000, 0xe58c2000, 0xe28c2008\n"
-        ".word 0xe58c3004, 0xe5812000, 0xe1c820dc, 0xe59a001c\n"
-        ".word 0xe3500000, 0x05c4700d, 0x05c4700e, 0x0a000042\n"
-        ".word 0xe595068c, 0xe5c4b00d, 0xe5991000, 0xe5861008\n"
-        ".word 0xe5991038, 0xe3510010, 0x05867004, 0x0585768c\n"
-        ".word 0x0a00000a, 0xe3510018, 0x0a000005, 0xe3510020\n"
-        ".word 0x1a000006, 0xe3a01003, 0xe5861004, 0xe585168c\n"
-        ".word 0xea000002, 0xe3a01002, 0xe5861004, 0xe585168c\n"
-        ".word 0xe5d51054, 0xe3510000, 0x0a00000a, 0xe595168c\n"
-        ".word 0xe3510000, 0x0a000002, 0xe3500000, 0x0a000002\n"
-        ".word 0xea000004, 0xe3500000, 0x0a000006, 0xe5950000\n"
-        ".word 0xe3800004, 0xe5850000, 0xe595068c, 0xe3500003\n"
-        ".word 0x03a00001, 0x0a000000, 0xe3a00000, 0xe5c4000e\n"
-        ".word 0xe5990020, 0xe59f7144, 0xe59f2144, 0xe5860010\n"
-        ".word 0xe5971000, 0xe5920000, 0xe1510000, 0x2a000004\n"
-        ".word 0xe5963004, 0xe59fc13c, 0xe2818008, 0xe8811008\n"
-        ".word 0xe5878000, 0xe5920000, 0xe5971000, 0xe1510000\n"
-        ".word 0x2a000008, 0xe5960008, 0xeb00518c, 0xe5971000\n"
-        ".word 0xe59f2114, 0xe1a031a0, 0xe2810004, 0xe4813008\n"
-        ".word 0xe5802000, 0xe5871000, 0xe1c920dc, 0xe5940014\n"
-        ".word 0xe1500002, 0x05940018, 0x01500003, 0x1a000002\n"
-        ".word 0xe5950004, 0xe3100c01, 0x0a000021, 0xe59f00bc\n"
-        ".word 0xe59f70bc, 0xe243c001, 0xe3cc8aff, 0xe590c000\n"
-        ".word 0xe5971000, 0xe1a06a02, 0xe1a06a26, 0xe15c0001\n"
-        ".word 0xe1866608, 0x2a000005, 0xe59f80b0, 0xe386a401\n"
-        ".word 0xe28c9008, 0xe58c8004, 0xe58ca000, 0xe5809000\n"
-        ".word 0xe5971000, 0xe590c000, 0xe15c0001, 0x2a000005\n"
-        ".word 0xe59f708c, 0xe3868401, 0xe28c6008, 0xe58c7004\n"
-        ".word 0xe58c8000, 0xe5806000, 0xe1c421f4, 0xe5d50648\n"
-        ".word 0xe3500000, 0x0a000002, 0xe5950000, 0xe3800c02\n"
-        ".word 0xe5850000, 0xe5d51030, 0xe2850020, 0xe3510000\n"
-        ".word 0x1affff18, 0xe5c0b010, 0xe8bd5ff0, 0xe3a01000\n"
-        ".word 0xe1a00001, 0xea003c66, 0x004652a8, 0x004655c0\n"
-        ".word 0x00008cd5, 0x00008cd7, 0x00008cd6, 0x00008cd9\n"
-        ".word 0x004652a0, 0x004652a4, 0x000f0111, 0x000f0110\n"
-        ".word 0x000f0117, 0x000f011d, 0x000f0116, 0x000f011c\n"
-        ".word 0x000f011e, 0x000f006e\n"
-    );
+extern "C" void func_00132fc4() {
+    const u8* const ctx = *reinterpret_cast<const u8* const*>(0x004652A8u);
+    const u8* const rt = *reinterpret_cast<const u8* const*>(ctx + 8u);
+    u8* const gpu = *reinterpret_cast<u8* const*>(0x004655C0u);
+    const u8* const color_buf = *reinterpret_cast<const u8* const*>(rt + 0x0Cu);
+    const u8* const depth_buf = *reinterpret_cast<const u8* const*>(rt + 0x1Cu);
+
+    u8* const st4 = gpu + 0x684u;
+    const u32 status = validate_rt_132fc4(color_buf, depth_buf);
+    if (status != 0x8CD5u) {
+        *reinterpret_cast<u32*>(st4) = 0u;
+        st4[0x0Cu] = 0u;
+        st4[0x0Du] = 0u;
+        st4[0x0Eu] = 0u;
+        return;
+    }
+
+    *reinterpret_cast<u32*>(st4) = status;
+    if ((*reinterpret_cast<const u32*>(gpu + 8u) & 0x100u) != 0u) {
+        return;
+    }
+
+    u8* const st6 = gpu + 0x804u;
+    const bool buf_changed =
+        (color_buf != nullptr &&
+         *reinterpret_cast<const u32*>(st6 + 0x0Cu) != *reinterpret_cast<const u32*>(color_buf)) ||
+        (depth_buf != nullptr &&
+         *reinterpret_cast<const u32*>(st6 + 8u) != *reinterpret_cast<const u32*>(depth_buf));
+    if (buf_changed || (*reinterpret_cast<const u32*>(gpu + 4u) & 0x100u) != 0u) {
+        emit_gpu_cmd_132fc4(1u, 0x000F0111u);
+        emit_gpu_cmd_132fc4(1u, 0x000F0110u);
+    }
+
+    u32 w = 0u;
+    u32 h = 0u;
+    if (color_buf == nullptr) {
+        st4[0x0Cu] = 0u;
+    } else {
+        st4[0x0Cu] = 1u;
+        *reinterpret_cast<u32*>(st6 + 0x0Cu) = *reinterpret_cast<const u32*>(color_buf);
+        *reinterpret_cast<u32*>(st6 + 0x14u) = *reinterpret_cast<const u32*>(color_buf + 0x20u);
+        switch (*reinterpret_cast<const u32*>(color_buf + 0x1Cu)) {
+            case 0u:
+                *reinterpret_cast<u32*>(st4 + 4u) = 0u;
+                *reinterpret_cast<u32*>(st6) = 2u;
+                break;
+            case 2u:
+                *reinterpret_cast<u32*>(st4 + 4u) = 2u;
+                *reinterpret_cast<u32*>(st6) = 0u;
+                break;
+            case 3u:
+                *reinterpret_cast<u32*>(st4 + 4u) = 3u;
+                *reinterpret_cast<u32*>(st6) = 0u;
+                break;
+            case 4u:
+                *reinterpret_cast<u32*>(st4 + 4u) = 4u;
+                *reinterpret_cast<u32*>(st6) = 0u;
+                break;
+            default:
+                break;
+        }
+        emit_gpu_cmd_132fc4(
+            *reinterpret_cast<const u32*>(st6) | (*reinterpret_cast<const u32*>(st4 + 4u) << 16u),
+            0x000F0117u);
+        if (*reinterpret_cast<u32* const*>(0x004652A0u) <
+            *reinterpret_cast<u32* const*>(0x004652A4u)) {
+            emit_gpu_cmd_132fc4(func_00147994(*reinterpret_cast<const u32*>(st6 + 0x0Cu)) >> 3u,
+                                0x000F011Du);
+        }
+        w = *reinterpret_cast<const u32*>(color_buf + 0x0Cu);
+        h = *reinterpret_cast<const u32*>(color_buf + 0x10u);
+    }
+
+    if (depth_buf == nullptr) {
+        st4[0x0Du] = 0u;
+        st4[0x0Eu] = 0u;
+    } else {
+        const u32 old_68c = *reinterpret_cast<const u32*>(gpu + 0x68Cu);
+        st4[0x0Du] = 1u;
+        *reinterpret_cast<u32*>(st6 + 8u) = *reinterpret_cast<const u32*>(depth_buf);
+        switch (*reinterpret_cast<const u32*>(depth_buf + 0x38u)) {
+            case 0x10u:
+                *reinterpret_cast<u32*>(st6 + 4u) = 0u;
+                *reinterpret_cast<u32*>(gpu + 0x68Cu) = 0u;
+                break;
+            case 0x18u:
+                *reinterpret_cast<u32*>(st6 + 4u) = 2u;
+                *reinterpret_cast<u32*>(gpu + 0x68Cu) = 2u;
+                break;
+            case 0x20u:
+                *reinterpret_cast<u32*>(st6 + 4u) = 3u;
+                *reinterpret_cast<u32*>(gpu + 0x68Cu) = 3u;
+                break;
+            default:
+                break;
+        }
+        if (gpu[0x54u] != 0u) {
+            const u32 new_68c = *reinterpret_cast<const u32*>(gpu + 0x68Cu);
+            if ((new_68c == 0u) != (old_68c == 0u)) {
+                *reinterpret_cast<u32*>(gpu) |= 4u;
+            }
+        }
+        st4[0x0Eu] = (*reinterpret_cast<const u32*>(gpu + 0x68Cu) == 3u) ? 1u : 0u;
+        *reinterpret_cast<u32*>(st6 + 0x10u) = *reinterpret_cast<const u32*>(depth_buf + 0x20u);
+        emit_gpu_cmd_132fc4(*reinterpret_cast<const u32*>(st6 + 4u), 0x000F0116u);
+        if (*reinterpret_cast<u32* const*>(0x004652A0u) <
+            *reinterpret_cast<u32* const*>(0x004652A4u)) {
+            emit_gpu_cmd_132fc4(func_00147994(*reinterpret_cast<const u32*>(st6 + 8u)) >> 3u,
+                                0x000F011Cu);
+        }
+        w = *reinterpret_cast<const u32*>(depth_buf + 0x0Cu);
+        h = *reinterpret_cast<const u32*>(depth_buf + 0x10u);
+    }
+
+    if (*reinterpret_cast<const u32*>(st4 + 0x14u) != w ||
+        *reinterpret_cast<const u32*>(st4 + 0x18u) != h ||
+        (*reinterpret_cast<const u32*>(gpu + 4u) & 0x100u) != 0u) {
+        const u32 packed = (w & 0xFFFu) | (((h - 1u) & 0xFFFu) << 12u) | 0x01000000u;
+        emit_gpu_cmd_132fc4(packed, 0x000F011Eu);
+        emit_gpu_cmd_132fc4(packed, 0x000F006Eu);
+        *reinterpret_cast<u32*>(st4 + 0x14u) = w;
+        *reinterpret_cast<u32*>(st4 + 0x18u) = h;
+        if (gpu[0x648u] != 0u) {
+            *reinterpret_cast<u32*>(gpu) |= 0x200u;
+        }
+    }
+
+    if (gpu[0x30u] == 0u) {
+        gpu[0x30u] = 1u;
+        reinterpret_cast<void (*)(u32, u32)>(0x001425E8u)(0u, 0u);
+    }
 }
 
 // DECOMP_FUNC(0x003aa264, 1224)
