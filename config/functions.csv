@@ -2557,7 +2557,7 @@ address,size,status,category,name,src_file
 0x001ee99c,1284,matching,camp,camp_func_001ee99c,src/engine/leaf_batch46_b.cpp
 0x001eeea0,5556,matching,ui,Ui_MikadoCastleScene,src/ui/mikado_ui.cpp
 0x001f0454,5764,matching,ui,ui_func_001f0454,src/ui/ui_runtime.cpp
-0x001f1ad8,1264,matching,camp,camp_func_001f1ad8,src/engine/leaf_batch45_c.cpp
+0x001f1ad8,1264,non_matching,camp,camp_func_001f1ad8,src/engine/leaf_batch45_c.cpp
 0x001f1fc8,3960,matching,ui,ui_func_001f1fc8,src/ui/ui_runtime2.cpp
 0x001f2f40,24,matching,camp,camp_func_001f2f40,src/engine/leaf_batch21_a.cpp
 0x001f2f58,1704,non_matching,camp,Unite_Setup,src/camp/unite.cpp
