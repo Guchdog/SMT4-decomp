@@ -3429,7 +3429,7 @@ address,size,status,category,name,src_file
 0x002359e4,36,matching,unknown,func_002359e4,src/engine/leaf_batch39_b.cpp
 0x00235a08,68,matching,unknown,func_00235a08,src/engine/leaf_batch34_b.cpp
 0x00235a4c,120,matching,unknown,func_00235a4c,src/engine/leaf_batch39_c.cpp
-0x00235ac4,760,matching,ui,ui_func_00235ac4,src/engine/leaf_batch45_b.cpp
+0x00235ac4,760,non_matching,ui,ui_func_00235ac4,src/engine/leaf_batch45_b.cpp
 0x00235dbc,32,matching,unknown,func_00235dbc,src/engine/leaf_batch12_a.cpp
 0x00235ddc,24,matching,unknown,func_00235ddc,src/engine/leaf_batch12_a.cpp
 0x00235df4,4,matching,unknown,func_00235df4,src/engine/leaf_batch36_a.cpp
