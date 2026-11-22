@@ -4171,7 +4171,7 @@ address,size,status,category,name,src_file
 0x00263ee4,408,non_matching,script_vm,script_vm_func_00263ee4,src/engine/leaf_batch41_c.cpp
 0x0026407c,596,matching,script_vm,script_vm_func_0026407c,src/engine/leaf_batch42_b.cpp
 0x002642d0,152,non_matching,script_vm,script_vm_func_002642d0,src/engine/leaf_batch30_c.cpp
-0x00264368,776,matching,script_vm,script_vm_func_00264368,src/engine/leaf_batch45_b.cpp
+0x00264368,776,non_matching,script_vm,script_vm_func_00264368,src/engine/leaf_batch45_b.cpp
 0x00264670,100,matching,script_vm,script_vm_func_00264670,src/engine/leaf_batch16_b.cpp
 0x002646d4,160,non_matching,script_vm,script_vm_func_002646d4,src/engine/leaf_batch31_c.cpp
 0x00264774,396,matching,script_vm,script_vm_func_00264774,src/engine/leaf_batch35_c.cpp
