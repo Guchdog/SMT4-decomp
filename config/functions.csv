@@ -7293,7 +7293,7 @@ address,size,status,category,name,src_file
 0x0031d624,128,matching,script_vm,script_vm_func_0031d624,src/engine/leaf_batch29_c.cpp
 0x0031d6a4,24,matching,script_vm,script_vm_func_0031d6a4,src/engine/leaf_batch37_a.cpp
 0x0031d6bc,24,matching,engine,engine_func_0031d6bc,src/engine/leaf_batch37_a.cpp
-0x0031d6d4,1400,matching,script_vm,script_vm_func_0031d6d4,src/engine/leaf_batch45_c.cpp
+0x0031d6d4,1400,non_matching,script_vm,script_vm_func_0031d6d4,src/engine/leaf_batch45_c.cpp
 0x0031dc4c,2028,matching,engine,AsdModel_func_0031dc4c,src/engine/asd_model.cpp
 0x0031e438,200,matching,engine,engine_func_0031e438,src/engine/leaf_batch20_c.cpp
 0x0031e500,1000,matching,ui,ui_func_0031e500,src/engine/leaf_batch46_a.cpp
