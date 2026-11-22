@@ -5048,7 +5048,7 @@ address,size,status,category,name,src_file
 0x002a06a0,40,matching,engine,engine_func_002a06a0,src/engine/leaf_batch39_b.cpp
 0x002a06c8,20,matching,engine,engine_func_002a06c8,src/engine/leaf_batch39_a.cpp
 0x002a06dc,180,matching,camp,camp_func_002a06dc,src/engine/leaf_batch40_b.cpp
-0x002a0790,1220,matching,script_vm,script_vm_func_002a0790,src/engine/leaf_batch45_c.cpp
+0x002a0790,1220,non_matching,script_vm,script_vm_func_002a0790,src/engine/leaf_batch45_c.cpp
 0x002a0c54,384,matching,engine,engine_func_002a0c54,src/engine/leaf_batch44_a.cpp
 0x002a0dd4,20,matching,camp,camp_func_002a0dd4,src/engine/leaf_batch21_b.cpp
 0x002a0de8,192,non_matching,camp,camp_func_002a0de8,src/engine/leaf_batch31_c.cpp

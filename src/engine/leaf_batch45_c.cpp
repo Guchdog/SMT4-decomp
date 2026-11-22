@@ -4622,89 +4622,85 @@ extern "C" void ui_func_003b67c4(u8* a0, u32 mode, s32 idx, u32 a3, s32 x_off, s
     }
 }
 
+extern "C" u32 script_vm_func_00152790(s32 idx);
+extern "C" u8* script_vm_func_002a44f8(s32 idx);
+extern "C" u8* script_vm_func_002a4518(s32 idx);
+extern "C" u32 engine_func_002af528(u8* vec, u32 new_cap);
+extern "C" u8* script_vm_func_002a4508(s32 idx);
+extern "C" void engine_func_002c2b34(u8* obj, u32 val);
+extern "C" void script_vm_func_001db538(s32 idx);
+extern "C" u32 func_003948d0(u32 a0, u8* a1, u32 a2, u32 a3);
+
+namespace {
+
+inline void attach_node_2a0790(u8* parent, u8* child) {
+    if (child == nullptr) {
+        return;
+    }
+    const void* const p_link = *reinterpret_cast<const void* const*>(parent + 0x0Cu);
+    if (p_link != nullptr && (p_link == child || engine_func_002af604(p_link, child) != 0)) {
+        return;
+    }
+    if (*reinterpret_cast<const void* const*>(child + 0x0Cu) != nullptr) {
+        return;
+    }
+
+    u8* const vec = parent + 0x14u;
+    u8** const begin = *reinterpret_cast<u8***>(parent + 0x18u);
+    u8** const end = *reinterpret_cast<u8***>(parent + 0x1Cu);
+    const u32 cap = *reinterpret_cast<const u32*>(parent + 0x20u) & 0x3FFFFFFFu;
+    u32 ok = 1u;
+    if (static_cast<s32>(cap) <= (end - begin)) {
+        const u32 new_cap = (cap != 0u) ? (cap << 1) : 1u;
+        ok = engine_func_002af528(vec, new_cap);
+        if (ok == 0u) {
+            return;
+        }
+    }
+
+    u8** const cur_end = *reinterpret_cast<u8***>(parent + 0x1Cu);
+    if (cur_end != nullptr) {
+        *cur_end = child;
+    }
+    *reinterpret_cast<u8***>(parent + 0x1Cu) = cur_end + 1;
+    if (ok != 0u) {
+        *reinterpret_cast<u32*>(child + 0x0Cu) = *reinterpret_cast<const u32*>(parent + 0x10u);
+    }
+}
+
+}  // namespace
+
 // DECOMP_FUNC(0x002a0790, 1220)
-// Capstone ARM full coverage (305 instructions); raw bytes only, no terminal-return claim.
-extern "C" __attribute__((naked)) void script_vm_func_002a0790() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4ff1, 0xe24dd018, 0xe59d0018, 0xebfac7fb\n"
-        ".word 0xe58d0004, 0xe59d0018, 0xeb000f52, 0xe58d0000\n"
-        ".word 0xe5900004, 0xe590004c, 0xe5900000, 0xe58d0008\n"
-        ".word 0xe59d0018, 0xeb000f4b, 0xe58d000c, 0xe59d0018\n"
-        ".word 0xeb000f50, 0xe1a05000, 0xe59d0018, 0xe59fc45c\n"
-        ".word 0xe59f345c, 0xe3a04000, 0xe0806280, 0xe0860380\n"
-        ".word 0xe28c2ea1, 0xe2831ea1, 0xe08c7100, 0xe0838100\n"
-        ".word 0xe0829100, 0xe081a100, 0xe0870104, 0xe5901264\n"
-        ".word 0xe3510000, 0x0a00002b, 0xe595000c, 0xe1a06001\n"
-        ".word 0xe3500000, 0x0a000005, 0xe1500001, 0x0a000025\n"
-        ".word 0xeb003b73, 0xe3500000, 0xe320f000, 0x1a000021\n"
-        ".word 0xe596000c, 0xe2851010, 0xe1a0b006, 0xe3500000\n"
-        ".word 0xe58d1010, 0x1a00001b, 0xe2816004, 0xe5911010\n"
-        ".word 0xe5962008, 0xe596c004, 0xe3c11103, 0xe3a00001\n"
-        ".word 0xe042200c, 0xe1510142, 0xca000007, 0xe3510000\n"
-        ".word 0x03a01001, 0x11a01081, 0xe1a00006, 0xeb003b25\n"
-        ".word 0xe3500000, 0xe320f000, 0x0a00000a, 0xe5961008\n"
-        ".word 0xe3510000, 0x1581b000, 0xe5961008, 0xe3500000\n"
-        ".word 0xe2811004, 0xe5861008, 0x0a000002, 0xe59d0010\n"
-        ".word 0xe5900000, 0xe58b000c, 0xe0880104, 0xe5901264\n"
-        ".word 0xe3510000, 0x0a00002b, 0xe595000c, 0xe1a06001\n"
-        ".word 0xe3500000, 0x0a000005, 0xe1500001, 0x0a000025\n"
-        ".word 0xeb003b43, 0xe3500000, 0xe320f000, 0x1a000021\n"
-        ".word 0xe596000c, 0xe2851010, 0xe1a0b006, 0xe3500000\n"
-        ".word 0xe58d1010, 0x1a00001b, 0xe2816004, 0xe5911010\n"
-        ".word 0xe5962008, 0xe596c004, 0xe3c11103, 0xe3a00001\n"
-        ".word 0xe042200c, 0xe1510142, 0xca000007, 0xe3510000\n"
-        ".word 0x03a01001, 0x11a01081, 0xe1a00006, 0xeb003af5\n"
-        ".word 0xe3500000, 0xe320f000, 0x0a00000a, 0xe5961008\n"
-        ".word 0xe3510000, 0x1581b000, 0xe5961008, 0xe3500000\n"
-        ".word 0xe2811004, 0xe5861008, 0x0a000002, 0xe59d0010\n"
-        ".word 0xe5900000, 0xe58b000c, 0xe0890104, 0xe5901264\n"
-        ".word 0xe3510000, 0x0a00002b, 0xe595000c, 0xe1a06001\n"
-        ".word 0xe3500000, 0x0a000005, 0xe1500001, 0x0a000025\n"
-        ".word 0xeb003b13, 0xe3500000, 0xe320f000, 0x1a000021\n"
-        ".word 0xe596000c, 0xe2851010, 0xe1a0b006, 0xe3500000\n"
-        ".word 0xe58d1010, 0x1a00001b, 0xe2816004, 0xe5911010\n"
-        ".word 0xe5962008, 0xe596c004, 0xe3c11103, 0xe3a00001\n"
-        ".word 0xe042200c, 0xe1510142, 0xca000007, 0xe3510000\n"
-        ".word 0x03a01001, 0x11a01081, 0xe1a00006, 0xeb003ac5\n"
-        ".word 0xe3500000, 0xe320f000, 0x0a00000a, 0xe5961008\n"
-        ".word 0xe3510000, 0x1581b000, 0xe5961008, 0xe3500000\n"
-        ".word 0xe2811004, 0xe5861008, 0x0a000002, 0xe59d0010\n"
-        ".word 0xe5900000, 0xe58b000c, 0xe08a0104, 0xe5901264\n"
-        ".word 0xe3510000, 0x0a00002b, 0xe595000c, 0xe1a06001\n"
-        ".word 0xe3500000, 0x0a000005, 0xe1500001, 0x0a000025\n"
-        ".word 0xeb003ae3, 0xe3500000, 0xe320f000, 0x1a000021\n"
-        ".word 0xe596000c, 0xe2851010, 0xe1a0b006, 0xe3500000\n"
-        ".word 0xe58d1010, 0x1a00001b, 0xe2816004, 0xe5911010\n"
-        ".word 0xe5962008, 0xe596c004, 0xe3c11103, 0xe3a00001\n"
-        ".word 0xe042200c, 0xe1510142, 0xca000007, 0xe3510000\n"
-        ".word 0x03a01001, 0x11a01081, 0xe1a00006, 0xeb003a95\n"
-        ".word 0xe3500000, 0xe320f000, 0x0a00000a, 0xe5961008\n"
-        ".word 0xe3510000, 0x1581b000, 0xe5961008, 0xe3500000\n"
-        ".word 0xe2811004, 0xe5861008, 0x0a000002, 0xe59d0010\n"
-        ".word 0xe5900000, 0xe58b000c, 0xe2840001, 0xe6bf4070\n"
-        ".word 0xe3540008, 0xbaffff3b, 0xe59d0018, 0xeb000e79\n"
-        ".word 0xe1a06000, 0xe59d0018, 0xe59f1118, 0xe3a04000\n"
-        ".word 0xe0800100, 0xe0817100, 0xe0870104, 0xe5901004\n"
-        ".word 0xe3510000, 0x0a000028, 0xe596000c, 0xe1a05001\n"
-        ".word 0xe3500000, 0x0a000005, 0xe1500001, 0x0a000022\n"
-        ".word 0xeb003aa7, 0xe3500000, 0xe320f000, 0x1a00001e\n"
-        ".word 0xe595100c, 0xe1a08005, 0xe2869010, 0xe3510000\n"
-        ".word 0x1a000019, 0xe599200c, 0xe5993008, 0xe5991010\n"
-        ".word 0xe2895004, 0xe0422003, 0xe3c11103, 0xe1510142\n"
-        ".word 0xe3a00001, 0xca000007, 0xe3510000, 0x03a01001\n"
-        ".word 0x11a01081, 0xe1a00005, 0xeb003a5a, 0xe3500000\n"
-        ".word 0xe320f000, 0x0a000008, 0xe5951008, 0xe3510000\n"
-        ".word 0x15818000, 0xe5951008, 0xe3500000, 0xe2811004\n"
-        ".word 0xe5851008, 0x15990000, 0x1588000c, 0xe2840001\n"
-        ".word 0xe6bf4070, 0xe3540004, 0xbaffffce, 0xe59f1048\n"
-        ".word 0xe59d0018, 0xe7911100, 0xe59d000c, 0xeb0087c8\n"
-        ".word 0xe59d0018, 0xe320f000, 0xebfcea46, 0xe59d0018\n"
-        ".word 0xe59f1028, 0xe28d4004, 0xe0812300, 0xe59d1000\n"
-        ".word 0xe8940009, 0xe28dd01c, 0xe8bd4ff0, 0xea03cf23\n"
-        ".word 0x004d9880, 0x004d9d88, 0x004daca0, 0x00464b84\n"
-        ".word 0x004dace0\n"
-    );
+extern "C" u32 script_vm_func_002a0790(s32 idx) {
+    const u32 v1 = script_vm_func_00152790(idx);
+    u8* const v2 = script_vm_func_002a44f8(idx);
+    const u32* const* const p4 = *reinterpret_cast<const u32* const* const*>(v2 + 4u);
+    const u32 v3 = *p4[0x4Cu / 4u];
+    u8* const v2b = script_vm_func_002a44f8(idx);
+    u8* const parent5 = script_vm_func_002a4518(idx);
+
+    const u32 stride = static_cast<u32>(idx) * 0x284u;
+    u8* const* const a0 = reinterpret_cast<u8* const*>(0x004D9880u + 0x264u + stride);
+    u8* const* const a1 = reinterpret_cast<u8* const*>(0x004D9D88u + 0x264u + stride);
+    u8* const* const a2 = reinterpret_cast<u8* const*>(0x004D9880u + 0xA10u + 0x264u + stride);
+    u8* const* const a3 = reinterpret_cast<u8* const*>(0x004D9D88u + 0xA10u + 0x264u + stride);
+
+    for (s16 i = 0; i < 8; ++i) {
+        attach_node_2a0790(parent5, a0[i]);
+        attach_node_2a0790(parent5, a1[i]);
+        attach_node_2a0790(parent5, a2[i]);
+        attach_node_2a0790(parent5, a3[i]);
+    }
+
+    u8* const parent6 = script_vm_func_002a4508(idx);
+    u8* const* const q = reinterpret_cast<u8* const*>(0x004DACA0u + 4u + static_cast<u32>(idx) * 0x14u);
+    for (s16 i = 0; i < 4; ++i) {
+        attach_node_2a0790(parent6, q[i]);
+    }
+
+    engine_func_002c2b34(v2b, *reinterpret_cast<const u32*>(0x00464B84u + static_cast<u32>(idx) * 4u));
+    script_vm_func_001db538(idx);
+    return func_003948d0(v1, v2, 0x004DACE0u + static_cast<u32>(idx) * 0x40u, v3);
 }
 
 // DECOMP_FUNC(0x00132fc4, 1224)
