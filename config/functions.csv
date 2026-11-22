@@ -7840,7 +7840,7 @@ address,size,status,category,name,src_file
 0x00347cc0,104,matching,engine,engine_func_00347cc0,src/engine/leaf_batch41_b.cpp
 0x00347d28,76,matching,unknown,func_00347d28,src/engine/leaf_batch20_c.cpp
 0x00347d74,1044,matching,ui,ui_func_00347d74,src/engine/leaf_batch40_a.cpp
-0x00348188,712,matching,unknown,func_00348188,src/engine/leaf_batch45_b.cpp
+0x00348188,712,non_matching,unknown,func_00348188,src/engine/leaf_batch45_b.cpp
 0x00348450,248,matching,engine,engine_func_00348450,src/engine/leaf_batch37_c.cpp
 0x00348548,1032,matching,battle,FilterXPoly_func_00348548,src/battle/battle_extras.cpp
 0x00348950,152,matching,engine,engine_func_00348950,src/engine/leaf_batch33_a.cpp
