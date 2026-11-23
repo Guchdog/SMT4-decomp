@@ -2620,82 +2620,179 @@ extern "C" float func_002ac0c4(float x) {
 }
 
 // DECOMP_FUNC(0x002f2c00, 572)
-extern "C" __attribute__((naked)) void ui_func_002f2c00() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x0000, 0xe3a0, 0x34ec, 0xebff\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x0004, 0x1a00, 0x0014, 0xe3a0\n"
-        ".hword 0x34e7, 0xebff, 0x0000, 0xe350\n"
-        ".hword 0xf000, 0xe320, 0x000e, 0x0a00\n"
-        ".hword 0x000c, 0xe594, 0x0028, 0xe350\n"
-        ".hword 0x0006, 0x0a00, 0x0027, 0xe350\n"
-        ".hword 0x502a, 0x03a0, 0x001a, 0x0a00\n"
-        ".hword 0x0026, 0xe350, 0x5000, 0x11a0\n"
-        ".hword 0x0014, 0x0a00, 0x0014, 0xea00\n"
-        ".hword 0x0010, 0xe594, 0x0000, 0xe350\n"
-        ".hword 0x0001, 0xc3a0, 0x0008, 0xc584\n"
-        ".hword 0x0021, 0xea00, 0x0001, 0xe3a0\n"
-        ".hword 0x34d3, 0xebff, 0x0000, 0xe350\n"
-        ".hword 0xf000, 0xe320, 0x0004, 0x1a00\n"
-        ".hword 0x0016, 0xe3a0, 0x34ce, 0xebff\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x0001, 0x0a00, 0x0002, 0xe3a0\n"
-        ".hword 0x0008, 0xe584, 0x000c, 0xe594\n"
-        ".hword 0x0026, 0xe350, 0x0000, 0x1a00\n"
-        ".hword 0xa00c, 0xe584, 0x0029, 0xe355\n"
-        ".hword 0x0003, 0xda00, 0x0010, 0xe594\n"
-        ".hword 0x0000, 0xe350, 0x0001, 0xc240\n"
-        ".hword 0x000a, 0xca00, 0x0001, 0xe375\n"
-        ".hword 0x0009, 0x0a00, 0x0026, 0xe355\n"
-        ".hword 0x0007, 0x2a00, 0x0010, 0xe594\n"
-        ".hword 0x1005, 0xe7d9, 0x1008, 0xe7c0\n"
-        ".hword 0x01d0, 0xe1c4, 0x0001, 0xe150\n"
-        ".hword 0x0001, 0xb280, 0x0000, 0xaa00\n"
-        ".hword 0x0010, 0xe584, 0x1010, 0xe594\n"
-        ".hword 0x0000, 0xe3a0, 0x0008, 0xe7c1\n"
-        ".hword 0x3014, 0xe3a0, 0x2086, 0xe3a0\n"
-        ".hword 0x1007, 0xe1a0, 0x0006, 0xe1a0\n"
-        ".hword 0x3f38, 0xebfe, 0x301c, 0xe284\n"
-        ".hword 0x2021, 0xe284, 0x1f43, 0xe28f\n"
-        ".hword 0x000d, 0xe1a0, 0x2eb6, 0xfaff\n"
-        ".hword 0x300d, 0xe1a0, 0x2000, 0xe3a0\n"
-        ".hword 0x1004, 0xe287, 0x0004, 0xe286\n"
-        ".hword 0x0000, 0xe1a0, 0x5018, 0xe287\n"
-        ".hword 0x3044, 0xe3a0, 0x2086, 0xe3a0\n"
-        ".hword 0x1005, 0xe1a0, 0x0006, 0xe1a0\n"
-        ".hword 0x3f28, 0xebfe, 0x0018, 0xe594\n"
-        ".hword 0x0000, 0xe350, 0x002f, 0x1a00\n"
-        ".hword 0x7000, 0xe3a0, 0xb0cc, 0xe59f\n"
-        ".hword 0x8007, 0xe1a0, 0x6004, 0xe286\n"
-        ".hword 0x5004, 0xe285, 0xa007, 0xe1a0\n"
-        ".hword 0x0001, 0xea00, 0x0026, 0xe357\n"
-        ".hword 0x0009, 0x2a00, 0x000c, 0xe594\n"
-        ".hword 0x30a8, 0xe59f, 0x1005, 0xe1a0\n"
-        ".hword 0x0007, 0xe150, 0x0007, 0xe7d9\n"
-        ".hword 0x2004, 0x03a0, 0x2000, 0x13a0\n"
-        ".hword 0x0000, 0xe5cb, 0x0006, 0xe1a0\n"
-        ".hword 0x0000, 0xe1a0, 0xa001, 0xe28a\n"
-        ".hword 0x000d, 0xe35a, 0x600a, 0xe286\n"
-        ".hword 0x7001, 0xe287, 0xffee, 0xbaff\n"
-        ".hword 0x8001, 0xe288, 0x0003, 0xe358\n"
-        ".hword 0x6082, 0xe246, 0x500c, 0xe285\n"
-        ".hword 0xa000, 0xb3a0, 0xffe8, 0xbaff\n"
-        ".hword 0x000c, 0xe594, 0x806e, 0xe286\n"
-        ".hword 0x6001, 0xe287, 0x0007, 0xe150\n"
-        ".hword 0x2004, 0x03a0, 0x2000, 0x13a0\n"
-        ".hword 0x3044, 0xe28f, 0x1005, 0xe1a0\n"
-        ".hword 0x0008, 0xe1a0, 0x0000, 0xe1a0\n"
-        ".hword 0x000c, 0xe594, 0x100c, 0xe285\n"
-        ".hword 0x3030, 0xe28f, 0x0006, 0xe150\n"
-        ".hword 0x2004, 0x03a0, 0x2000, 0x13a0\n"
-        ".hword 0x0008, 0xe1a0, 0x0000, 0xe1a0\n"
-        ".hword 0xd014, 0xe28d, 0x8ff0, 0xe8bd\n"
-        ".hword 0x24f0, 0x0047, 0xec4f, 0x4ec4\n"
-        ".hword 0x7325, 0x7325, 0x0000, 0x0000\n"
-        ".hword 0x24c9, 0x0047, 0x5342, 0x0000\n"
-        ".hword 0x4b4f, 0x0000\n"
-    );
+//
+// This span is the second half of the text-entry routine that starts at
+// ui_func_002f2a5c (0x002F2A5C); the preceding raw block ends with branches into
+// it and it ends with that routine's shared epilogue.  Three internal entry
+// points are reachable from the first half, so each one is reconstructed here
+// and the redraw tail is shared.
+//
+// Object layout (`r4` on entry):
+//   +0x00 s32 x                 text origin (also the returned base)
+//   +0x04 s32 y
+//   +0x08 s32 state             0 = editing, 1 = confirmed, 2 = cancelled
+//   +0x0C s32 cursor            0x00..0x25 grid, 0x26 filler, 0x27 "BS", 0x28 "OK"
+//   +0x10 s32 length            characters currently in `name`
+//   +0x14 s32 capacity          maximum characters (9)
+//   +0x18 s32 suppress_draw     non-zero skips the grid and is returned
+//   +0x1C u8  extension[5]      fixed suffix, e.g. ".EP"
+//   +0x21 u8  name[10]          capacity + terminating NUL
+//
+// The pinned image has four NOP-patched call sites in this span (0x2F2D30,
+// 0x2F2DA0, 0x2F2DF4 and 0x2F2E14).  Their argument registers are still
+// prepared, but no call instruction exists, so they have no observable effect;
+// they are documented here instead of being reproduced.
+
+extern "C" u32 ui_func_002829f0(s32 x, s32 y, u32 a2, u32 a3);
+extern "C" u32 ui_func_002bffbc(u32 key);
+extern "C" void ui_func_002be7fc(char* dst, const char* fmt, ...);
+
+namespace ui_2f2c00 {
+struct Object {
+    s32 x;              // +0x00
+    s32 y;              // +0x04
+    s32 state;          // +0x08
+    s32 cursor;         // +0x0C
+    s32 length;         // +0x10
+    s32 capacity;       // +0x14
+    s32 suppress_draw;  // +0x18
+    u8 extension[5];    // +0x1C
+    u8 name[10];        // +0x21
+};
+static_assert(__builtin_offsetof(Object, extension) == 0x1C, "layout");
+static_assert(__builtin_offsetof(Object, name) == 0x21, "layout");
+
+// Character grid: "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_" (38 glyphs).
+constexpr u32 kGridFiller = 0x26u;  // not a glyph; skipped by the grid pass
+constexpr u32 kBackspace = 0x27u;
+constexpr u32 kConfirm = 0x28u;
+constexpr u32 kDeleteIndex = 0x2Au;  // synthetic index for the delete branch
+
+static inline __attribute__((always_inline)) const u8* char_table() {
+    return reinterpret_cast<const u8*>(0x004724F0u);
+}
+
+// The original writes the current glyph to the shared .data byte at 0x004724C9
+// once per cell.  The byte is outside this translation unit, so the volatile
+// access keeps all 38 stores observable.
+static inline __attribute__((always_inline)) void probe_cell(u32 index) {
+    *reinterpret_cast<volatile u8*>(0x004724C9u) = char_table()[index];
+}
+
+// 0x2F2CA4..0x2F2CE8: apply a cursor value ("append glyph", "delete" or "none").
+static inline __attribute__((always_inline)) void apply_index(Object* obj,
+                                                              s32 index) {
+    if (index > static_cast<s32>(0x29)) {  // signed compare: delete request
+        if (obj->length > 0) {             // signed compare
+            obj->length -= 1;
+            return;
+        }
+    }
+    if (index == -1) {                     // CMN r5, #1
+        return;
+    }
+    if (static_cast<u32>(index) >= kGridFiller) {  // unsigned compare
+        return;
+    }
+    obj->name[obj->length] = char_table()[index];
+    if (obj->length < obj->capacity) {
+        obj->length += 1;
+    }
+}
+
+// 0x2F2CEC..0x2F2E1C: draw the two header lines and walk the 13x3 glyph grid.
+// `terminate` is the name-terminating store at 0x2F2CEC, which the redraw-only
+// entry (0x2F2CF8) skips.  Returns the value the original leaves in r0.
+static inline __attribute__((always_inline)) u32 redraw(Object* obj,
+                                                         bool terminate) {
+    if (terminate) {
+        obj->name[obj->length] = 0u;
+    }
+
+    ui_func_002829f0(obj->x, obj->y, 0x86u, 0x14u);
+
+    char text[0x14];
+    ui_func_002be7fc(text, "%s%s", obj->name, obj->extension);
+
+    // 0x2F2D20 prepares (x + 4, y + 4, 0, text) for a call that is a NOP.
+    ui_func_002829f0(obj->x, obj->y + 0x18, 0x86u, 0x44u);
+
+    if (obj->suppress_draw != 0) {
+        return static_cast<u32>(obj->suppress_draw);
+    }
+
+    u32 cell = 0;
+    for (s32 row = 0; row < 3; ++row) {
+        for (s32 column = 0; column < 13; ++column) {
+            if (cell < kGridFiller) {
+                probe_cell(cell);
+            }
+            ++cell;
+        }
+    }
+
+    // 0x2F2DD0 and 0x2F2DF8 prepare the "BS"/"OK" labels and their highlight
+    // state; both call sites are NOPs, so only the return value remains.
+    return static_cast<u32>(obj->x) + 0x72u;
+}
+}  // namespace ui_2f2c00
+
+// 0x002F2C00: key-input entry.  The first half branches here when neither key
+// 3 nor key 0x1E is active.
+extern "C" u32 ui_func_002f2c00(u8* object) {
+    using namespace ui_2f2c00;
+    Object* obj = reinterpret_cast<Object*>(object);
+
+    if (ui_func_002bffbc(0u) == 0u) {
+        if (ui_func_002bffbc(0x14u) == 0u) {
+            u32 pressed = ui_func_002bffbc(1u);
+            if (pressed == 0u) {
+                pressed = ui_func_002bffbc(0x16u);
+            }
+            if (pressed != 0u) {
+                obj->state = 2;
+            }
+            if (obj->cursor == static_cast<s32>(kGridFiller)) {
+                obj->cursor = static_cast<s32>(kBackspace);
+            }
+            apply_index(obj, -1);
+            return redraw(obj, true);
+        }
+    }
+
+    const s32 cursor = obj->cursor;
+    if (cursor == static_cast<s32>(kConfirm)) {
+        if (obj->length > 0) {
+            obj->state = 1;
+        }
+    } else if (cursor == static_cast<s32>(kBackspace)) {
+        apply_index(obj, static_cast<s32>(kDeleteIndex));
+    } else if (cursor == static_cast<s32>(kGridFiller)) {
+        obj->cursor = static_cast<s32>(kBackspace);
+        apply_index(obj, -1);
+    } else {
+        apply_index(obj, cursor);
+    }
+    return redraw(obj, true);
+}
+
+// 0x002F2C94: cursor-move entry.  The first half branches here after changing
+// the cursor; its incoming index is always -1.
+extern "C" u32 ui_func_002f2c94(u8* object) {
+    using namespace ui_2f2c00;
+    Object* obj = reinterpret_cast<Object*>(object);
+
+    if (obj->cursor == static_cast<s32>(kGridFiller)) {
+        obj->cursor = static_cast<s32>(kBackspace);
+    }
+    apply_index(obj, -1);
+    return redraw(obj, true);
+}
+
+// 0x002F2CF8: redraw-only entry, taken when state is already 1.  It skips the
+// name-terminating store at 0x2F2CEC.
+extern "C" u32 ui_func_002f2cf8(u8* object) {
+    return ui_2f2c00::redraw(reinterpret_cast<ui_2f2c00::Object*>(object), false);
 }
 
 // DECOMP_FUNC(0x002f5348, 572)
