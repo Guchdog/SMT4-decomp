@@ -11074,42 +11074,115 @@ extern "C" u32 engine_func_0034ebc8() {
     return S4Audio_ShutdownStageC(stage_b);
 }
 
+// Direct calls made by ui_func_002eb39c (addresses follow config/functions.csv).
+// 0x002B087C - battle record lookup for a u16 id. The returned record's byte
+//              +2 and u16 fields +0x24..+0x32 are consumed below.
+extern "C" const u8* battle_func_002b087c(u16 id);
+// 0x002BD25C - text lookup for a u16 id; returns a C string.
+extern "C" const char* script_vm_func_002bd25c(u16 id);
+// 0x002BD020 - record/table lookup for (u16 id, flag); returns a C string.
+extern "C" const char* script_vm_func_002bd020(u16 id, s32 flag);
+// 0x002BE7FC - Thumb variadic formatter reached with blx; writes into the
+//              destination. Declared at file scope above; reused here.
+// 0x0029EC6C - entity-id predicate returning 0/1 in the low byte.
+//              Declared at file scope above; reused here.
+// 0x0027DD78 - work-context selector (index 0) returning a transform object.
+extern "C" void* ui_func_0027dd78(u32 index);
+// 0x0026330C - projects a three-word source vector through a transform object
+//              into an output buffer (out[0..1] floats, out[2] word).
+extern "C" void ui_func_0026330c(float* output, u32 index, void* context,
+                                 const float* input);
+
+namespace func_2eb39c {
+// Global cell 0x00439C60 holds the target-select work object; its first word
+// points at the reticle record populated here.
+constexpr u32 kWorkPointerAddress = 0x00439C60u;
+constexpr u32 kReticleOffset = 0x00u;
+// The literal 0x43520000 (also the bit pattern of 210.0f) is compared against
+// the projected vector's first word as a signed 32-bit integer.
+constexpr s32 kProjectedThresholdBits = 0x43520000;
+// The eight unit fields at +0x24..+0x32 are scaled by 1024 (logical >>10).
+constexpr u32 kUnitFieldScaleShift = 10;
+constexpr u32 kUnitFieldFirst = 0x24u;
+constexpr u32 kUnitFieldCount = 8u;
+
+inline u32 bits_of(const f32 value) {
+    u32 bits;
+    __builtin_memcpy(&bits, &value, sizeof(bits));
+    return bits;
+}
+}  // namespace func_2eb39c
+
 // DECOMP_FUNC(0x002eb39c, 472)
-// 115 ARM instructions through unconditional pop; 12 trailing data bytes.
-extern "C" __attribute__((naked)) void ui_func_002eb39c() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4fff, 0xe24dd00c, 0xe1a06000, 0xe28d0040\n"
-        ".word 0xe1a0b002, 0xe8900780, 0xe59f01ac, 0xe5904000\n"
-        ".word 0xe59d0010, 0xebff152d, 0xe1a05000, 0xe59d0010\n"
-        ".word 0xebff47a2, 0xe5941000, 0xe1a02000, 0xe2813004\n"
-        ".word 0xe28f1f62, 0xe1a00003, 0xfaff4d04, 0xe59d0010\n"
-        ".word 0xe3a01000, 0xebff470a, 0xe5941000, 0xe1a02000\n"
-        ".word 0xe281302c, 0xe28f1f59, 0xe1a00003, 0xfaff4cfb\n"
-        ".word 0xe59d0010, 0xebfece15, 0xe5942000, 0xe59d1018\n"
-        ".word 0xe5c20024, 0xe5942000, 0xe5d50002, 0xe5820028\n"
-        ".word 0xe1d502b4, 0xe5942000, 0xe1a00520, 0xe5c2004c\n"
-        ".word 0xe1d502b6, 0xe5942000, 0xe1a00520, 0xe5c2004d\n"
-        ".word 0xe1d502b8, 0xe5942000, 0xe1a00520, 0xe5c2004e\n"
-        ".word 0xe1d502ba, 0xe5942000, 0xe1a00520, 0xe5c2004f\n"
-        ".word 0xe1d502bc, 0xe5942000, 0xe1a00520, 0xe5c20050\n"
-        ".word 0xe1d502be, 0xe5942000, 0xe1a00520, 0xe5c20051\n"
-        ".word 0xe1d503b0, 0xe5942000, 0xe1a00520, 0xe5c20052\n"
-        ".word 0xe1d503b2, 0xe5942000, 0xe1a00520, 0xe5c20053\n"
-        ".word 0xe5940000, 0xe5c0b054, 0xe5940000, 0xe5c01055\n"
-        ".word 0xe5940000, 0xe5c07056, 0xe5940000, 0xe5c08057\n"
-        ".word 0xe5940000, 0xe5c09058, 0xe5940000, 0xe5c0a059\n"
-        ".word 0xe5944000, 0xe5960000, 0xe584005c, 0xe5960004\n"
-        ".word 0xe5840060, 0xe5960008, 0xe5840064, 0xe3a00000\n"
-        ".word 0xebfe4a1d, 0xe1a02000, 0xe284305c, 0xe3a01000\n"
-        ".word 0xe1a0000d, 0xebfddf7d, 0xe1cd00d0, 0xe59f2050\n"
-        ".word 0xe1c406f8, 0xe1500002, 0xda000005, 0xee000a10\n"
-        ".word 0xedd40a1e, 0xe3a00000, 0xe5c400e4, 0xee300a60\n"
-        ".word 0xea000006, 0xed940a1c, 0xedd40a36, 0xe3a01001\n"
-        ".word 0xe5c410e4, 0xee700a20, 0xee000a10, 0xee300ac0\n"
-        ".word 0xed840a3d, 0xe28dd01c, 0xe8bd8ff0, 0x00439c60\n"
-        ".word 0x00007325, 0x43520000\n"
-    );
+//
+// Fills the target reticle record (work->reticle_data via 0x00439C60) for one
+// unit id. Two text buffers are formatted with "%s" from the id's description
+// lookups, a state byte and a word come from the battle record, eight scaled
+// u16 record fields and six caller bytes are copied, the caller's 3-word
+// position is stored at +0x5C, and 0x0026330C projects it into +0x68/+0x6C.
+// The projected first word selects between two depth values written to +0xF4;
+// the branch also records its direction in the byte at +0xE4.
+//
+// Signature: r0 = position, r1 = unit id, r2..r3 = first two bytes, and the
+// four remaining bytes arrive on the stack. The original leaves r0 undefined
+// (the function has no return contract).
+extern "C" void ui_func_002eb39c(const u32* position, u16 unit_id, u8 b0,
+                                 u8 b1, u8 b2, u8 b3, u8 b4, u8 b5) {
+    using namespace func_2eb39c;
+
+    u8* const work = *reinterpret_cast<u8**>(kWorkPointerAddress);
+    u8* const record = *reinterpret_cast<u8**>(work + kReticleOffset);
+
+    // The original looks up the record once, before the two formatters run,
+    // and keeps using that pointer afterwards.
+    const u8* const unit = battle_func_002b087c(unit_id);
+
+    ui_func_002be7fc(reinterpret_cast<char*>(record + 0x04), "%s",
+                     script_vm_func_002bd25c(unit_id));
+    ui_func_002be7fc(reinterpret_cast<char*>(record + 0x2C), "%s",
+                     script_vm_func_002bd020(unit_id, 0));
+
+    record[0x24] = static_cast<u8>(ui_func_0029ec6c(unit_id));
+    *reinterpret_cast<u32*>(record + 0x28) = unit[2];
+
+    for (u32 i = 0; i < kUnitFieldCount; ++i) {
+        const u16 field = *reinterpret_cast<const u16*>(
+            unit + kUnitFieldFirst + i * 2u);
+        record[0x4C + i] =
+            static_cast<u8>(field >> kUnitFieldScaleShift);
+    }
+
+    record[0x54] = b0;
+    record[0x55] = b1;
+    record[0x56] = b2;
+    record[0x57] = b3;
+    record[0x58] = b4;
+    record[0x59] = b5;
+
+    // The caller's position is copied first; the projector reads it back from
+    // the record itself rather than from `position`.
+    *reinterpret_cast<u32*>(record + 0x5C) = position[0];
+    *reinterpret_cast<u32*>(record + 0x60) = position[1];
+    *reinterpret_cast<u32*>(record + 0x64) = position[2];
+
+    f32 projected[3];
+    ui_func_0026330c(projected, 0, ui_func_0027dd78(0),
+                     reinterpret_cast<const f32*>(record + 0x5C));
+    *reinterpret_cast<f32*>(record + 0x68) = projected[0];
+    *reinterpret_cast<f32*>(record + 0x6C) = projected[1];
+
+    const f32 value = projected[0];
+    if (static_cast<s32>(bits_of(value)) > kProjectedThresholdBits) {
+        record[0xE4] = 0;
+        *reinterpret_cast<f32*>(record + 0xF4) =
+            value - *reinterpret_cast<const f32*>(record + 0x78);
+    } else {
+        record[0xE4] = 1;
+        *reinterpret_cast<f32*>(record + 0xF4) =
+            (*reinterpret_cast<const f32*>(record + 0x70) +
+             *reinterpret_cast<const f32*>(record + 0xD8)) -
+            value;
+    }
 }
 
 // DECOMP_FUNC(0x002fb5c8, 472)
