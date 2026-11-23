@@ -6730,233 +6730,295 @@ extern "C" __attribute__((naked)) void camp_func_001b15a4() {
     );
 }
 
-// DECOMP_FUNC(0x001b5054, 836)
-extern "C" __attribute__((naked)) void script_vm_func_001b5054() {
-    asm volatile(
-        "push {r4, r5, r6, lr}\n"
-        "bl ui_func_002c0ac8\n"
-        "mov r5, r0\n"
-        "add r0, r0, #0x4400\n"
-        "add r0, r0, #0xa8\n"
-        ".word 0xe59f1310\n"
-        "ldr r0, [r0]\n"
-        "tst r0, r1\n"
-        "beq .L_001b50ac\n"
-        "add r2, r5, #0x4000\n"
-        "add r2, r2, #0x4a0\n"
-        "ldr r1, [r2]\n"
-        "bic r1, r1, #0x140\n"
-        "str r1, [r2]\n"
-        "bl script_vm_func_00295e74\n"
-        "cmp r0, #0\n"
-        "beq .L_001b5378\n"
-        ".L_001b5098:\n"
-        "mov r0, #1\n"
-        "bl script_vm_func_00295e48\n"
-        "nop\n"
-        "nop\n"
-        "b .L_001b5378\n"
-        ".L_001b50ac:\n"
-        "add r4, r5, #0x4000\n"
-        "add r4, r4, #0x4a0\n"
-        "ldr r0, [r4]\n"
-        "tst r0, #0x100000\n"
-        "beq .L_001b50dc\n"
-        "bic r1, r0, #0x140\n"
-        "str r1, [r4]\n"
-        "bl script_vm_func_00295e74\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "beq .L_001b5378\n"
-        "b .L_001b5098\n"
-        ".L_001b50dc:\n"
-        "tst r0, #0x200\n"
-        "bne .L_001b5260\n"
-        "ldr r0, [r5, #0x20]\n"
-        "bl battle_func_002bf41c\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "beq .L_001b5118\n"
-        "ldr r1, [r4]\n"
-        "bic r1, r1, #0x140\n"
-        "str r1, [r4]\n"
-        "bl script_vm_func_00295e74\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "beq .L_001b5378\n"
-        "b .L_001b5098\n"
-        ".L_001b5118:\n"
-        "ldr r0, [r5, #0x7c]\n"
-        "tst r0, #1\n"
-        "beq .L_001b5144\n"
-        "ldr r1, [r4]\n"
-        "bic r1, r1, #0x140\n"
-        "str r1, [r4]\n"
-        "bl script_vm_func_00295e74\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "beq .L_001b5378\n"
-        "b .L_001b5098\n"
-        ".L_001b5144:\n"
-        "ldr r0, [r5, #0x64]\n"
-        "cmp r0, #0x16\n"
-        "beq .L_001b5240\n"
-        "cmp r0, #0x14\n"
-        "cmpne r0, #0x15\n"
-        "beq .L_001b5260\n"
-        ".word 0xe59f0220\n"
-        "ldr r0, [r0]\n"
-        "cmp r0, #0\n"
-        "beq .L_001b5198\n"
-        "bl script_vm_func_0027eb98\n"
-        "cmp r0, #0\n"
-        "ldrne r0, [r0, #0x28]\n"
-        "cmpne r0, #0\n"
-        "beq .L_001b5198\n"
-        "add r0, r0, #0x100\n"
-        "ldrsh r0, [r0, #0x4c]\n"
-        "cmp r0, #7\n"
-        "cmpne r0, #9\n"
-        "cmpne r0, #0xd\n"
-        "beq .L_001b5274\n"
-        ".L_001b5198:\n"
-        ".word 0xe59f01e8\n"
-        "mov r1, #0x2a\n"
-        "ldr r0, [r0]\n"
-        "bl func_00345164\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "bgt .L_001b5378\n"
-        ".word 0xe59f01d0\n"
-        "ldr r0, [r0]\n"
-        "cmp r0, #0\n"
-        "beq .L_001b5270\n"
-        "bl script_vm_func_003adcd8\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "beq .L_001b5270\n"
-        "mov r0, r5\n"
-        "bl script_vm_func_0033851c\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "beq .L_001b5270\n"
-        "ldr r0, [r4]\n"
-        ".word 0xe59f619c\n"
-        "tst r0, #0x40\n"
-        "beq .L_001b5294\n"
-        "mov r1, #1\n"
-        "mov r0, r1\n"
-        "bl camp_func_002c1830\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "beq .L_001b5378\n"
-        "bl script_vm_func_0027eae4\n"
-        "mov r0, #1\n"
-        "nop\n"
-        "bl script_vm_func_00295e48\n"
-        "ldr r1, [r4]\n"
-        "mov r0, r6\n"
-        "bic r1, r1, #0x40\n"
-        "str r1, [r4]\n"
-        "bl camp_func_002bc200\n"
-        "nop\n"
-        "nop\n"
-        "b .L_001b5378\n"
-        ".L_001b5240:\n"
-        "ldr r1, [r4]\n"
-        "bic r1, r1, #0x140\n"
-        "str r1, [r4]\n"
-        "bl script_vm_func_00295e74\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "bne .L_001b5098\n"
-        "b .L_001b5378\n"
-        ".L_001b5260:\n"
-        "ldr r1, [r4]\n"
-        "mov r0, #0\n"
-        "bic r1, r1, #0x140\n"
-        "str r1, [r4]\n"
-        ".L_001b5270:\n"
-        "pop {r4, r5, r6, pc}\n"
-        ".L_001b5274:\n"
-        "ldr r1, [r4]\n"
-        "bic r1, r1, #0x140\n"
-        "str r1, [r4]\n"
-        "bl script_vm_func_00295e74\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "beq .L_001b5378\n"
-        "b .L_001b5098\n"
-        ".L_001b5294:\n"
-        "tst r0, #0x100\n"
-        "mov r1, #1\n"
-        "beq .L_001b52e4\n"
-        "mov r0, #1\n"
-        "bl camp_func_002c1830\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "beq .L_001b5378\n"
-        "bl script_vm_func_0027eae4\n"
-        "mov r0, #1\n"
-        "nop\n"
-        "bl script_vm_func_00295e48\n"
-        "ldr r1, [r4]\n"
-        "mov r0, r6\n"
-        "bic r1, r1, #0x100\n"
-        "str r1, [r4]\n"
-        "bl camp_func_002bc200\n"
-        "nop\n"
-        "nop\n"
-        "b .L_001b5378\n"
-        ".L_001b52e4:\n"
-        "mov r0, #7\n"
-        "bl camp_func_002c1830\n"
-        ".word 0xe59f60a0\n"
-        "cmp r0, #0\n"
-        "beq .L_001b5328\n"
-        "bl script_vm_func_0027eae4\n"
-        "mov r1, #0\n"
-        "mov r0, r1\n"
-        "bl battle_func_003c0564\n"
-        "ldr r1, [r4]\n"
-        "mov r0, r6\n"
-        "orr r1, r1, #0x40\n"
-        "str r1, [r4]\n"
-        "bl camp_func_002bc200\n"
-        "nop\n"
-        "nop\n"
-        "b .L_001b5378\n"
-        ".L_001b5328:\n"
-        "mov r1, #1\n"
-        "mov r0, #8\n"
-        "bl camp_func_002c1830\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "beq .L_001b5378\n"
-        "mov r0, r5\n"
-        "bl func_00337558\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "beq .L_001b5378\n"
-        "bl script_vm_func_0027eae4\n"
-        "mov r1, #0\n"
-        "mov r0, #1\n"
-        "bl battle_func_003c0564\n"
-        "ldr r1, [r4]\n"
-        "mov r0, r6\n"
-        "orr r1, r1, #0x100\n"
-        "str r1, [r4]\n"
-        "bl camp_func_002bc200\n"
-        ".L_001b5378:\n"
-        "mov r0, #0\n"
-        "pop {r4, r5, r6, pc}\n"
-        ".word 0x00080001\n"
-        ".word 0x0043427c\n"
-        ".word 0x00434290\n"
-        ".word 0x00439ca8\n"
-        ".word 0x0100016e\n"
-        ".word 0x0100016d\n"
-    );
+// ---------------------------------------------------------------------------
+// 0x001B5054 -- script VM scene state advance.
+//
+// Recovered contract (ARM 0x001B5054..0x001B538F plus the literal pool at
+// 0x001B5380 = 0x00080001, 0x001B5384 = 0x0043427C, 0x001B5388 = 0x00434290,
+// 0x001B538C = 0x00439CA8, 0x001B5390 = 0x0100016E, 0x001B5394 = 0x0100016D;
+// 0x001B5398 starts the next function):
+//
+//   * The entry r0 is a packed scene handle.  0x002C0AC8 resolves it to the
+//     scene object; the result stays in r5 for the whole body.
+//   * The scene has a flag word at +0x44A0 and a lookup word at +0x44A8.
+//     When (+0x44A8 & 0x00080001) is non-zero, bits 6 and 8 of +0x44A0 are
+//     cleared and 0x00295E74() decides whether 0x00295E48(1) still runs.
+//   * Otherwise, in order:
+//       - bit 20 of +0x44A0: clear bits 6/8, then the same 0x00295E74 gate;
+//       - bit 9 of +0x44A0: clear bits 6/8 and return without the gate;
+//       - 0x002BF41C(scene->+0x20) non-zero: clear bits 6/8, then the gate;
+//       - bit 0 of scene->+0x7C: clear bits 6/8, then the gate;
+//       - scene->+0x64 == 0x16: clear bits 6/8, run 0x00295E48(1) only when
+//         0x00295E74() is non-zero (inverse of the other gates);
+//       - scene->+0x64 == 0x14 or 0x15: clear bits 6/8 and return.
+//   * With none of those taken, the active script VM context
+//     (*0x0043427C) is passed to 0x0027EB98.  When the returned object and its
+//     +0x28 word are non-null, the signed halfword at +0x14C selects the
+//     "message" path for the values 7, 9 and 13: clear bits 6/8 of +0x44A0 and
+//     run 0x00295E48(1) only when 0x00295E74() is non-zero.
+//   * Next, 0x00345164(*0x00434290, 0x2A) counts action nodes carrying the
+//     signed byte id 0x2A.  A positive count returns immediately.
+//   * *0x00439CA8 must be non-null and both 0x003ADCD8 (passed that value) and
+//     0x0033851C (passed the scene; the callee ignores it) must return
+//     non-zero.  Then the +0x44A0 bit 6 (0x40) path wins over bit 8 (0x100):
+//       - bit 6: 0x002C1830(1, 1) must succeed; 0x0027EAE4();
+//         0x00295E48(1); clear bit 6; 0x002BC200(0x0100016E);
+//       - bit 8: the same sequence but clearing bit 8;
+//       - neither: 0x002C1830(7, 1) non-zero selects 0x0027EAE4();
+//         0x003C0564(0, 0); set bit 6; 0x002BC200(0x0100016D);
+//         otherwise 0x002C1830(8, 1) and 0x00337558(scene) must both be
+//         non-zero, then 0x0027EAE4(); 0x003C0564(1, 0); set bit 8;
+//         0x002BC200(0x0100016D).
+//   * Every return path returns 0.  The prologue saves r4/r5/r6 and lr; r7-r11
+//     are untouched.  Every helper above is a direct ARM BL target, so this
+//     body owns no indirect call.
+// ---------------------------------------------------------------------------
+namespace script_vm_1b5054 {
+
+// Offset view over the resolved scene object.  Only the words reached by this
+// routine are named; names stay offset-based because the ARM only fixes their
+// role here.  Padding keeps every recovered offset exact.
+struct Scene {
+    u8 pad_00[0x20];
+    u32 task_20;          // +0x20: pointer tested by 0x002BF41C
+    u8 pad_24[0x40];      // +0x24..+0x63
+    u32 state_64;         // +0x64: compared against 0x14/0x15/0x16
+    u8 pad_68[0x14];      // +0x68..+0x7B
+    u32 flags_7C;         // +0x7C: bit 0 gate
+    u8 pad_80[0x4420];    // +0x80..+0x449F
+    u32 flags_44A0;       // +0x44A0: bit 6 / bit 8 / bit 9 / bit 20 flags
+    u8 pad_44A4[0x04];    // +0x44A4
+    u32 flags_44A8;       // +0x44A8: 0x00080001 lookup word
+};
+static_assert(offsetof(Scene, task_20) == 0x20, "scene task");
+static_assert(offsetof(Scene, state_64) == 0x64, "scene state");
+static_assert(offsetof(Scene, flags_7C) == 0x7C, "scene flags 0x7C");
+static_assert(offsetof(Scene, flags_44A0) == 0x44A0, "scene flags 0x44A0");
+static_assert(offsetof(Scene, flags_44A8) == 0x44A8, "scene flags 0x44A8");
+
+// 0x0027EB98 result view: the word at +0x28 is the next object and the signed
+// halfword at +0x14C is the selector.
+struct VmContext {
+    u8 pad_00[0x28];
+    void* owner_28;       // +0x28
+};
+static_assert(offsetof(VmContext, owner_28) == 0x28, "context owner");
+
+struct ActionOwner {
+    u8 pad_00[0x14C];
+    s16 action_14C;       // +0x14C: signed halfword selector
+};
+static_assert(offsetof(ActionOwner, action_14C) == 0x14C, "owner action");
+
+// Global slots loaded through the literal pool.
+constexpr u32 kScriptVmContextSlot = 0x0043427Cu;
+constexpr u32 kActionManagerSlot = 0x00434290u;
+constexpr u32 kGameOverTargetSlot = 0x00439CA8u;
+
+// Literal-pool constants.
+constexpr u32 kLookupMask = 0x00080001u;   // 0x001B5380
+constexpr u32 kClearMask = ~0x140u;         // bits 6 and 8
+constexpr u32 kSelectBitA = 0x40u;          // bit 6
+constexpr u32 kSelectBitB = 0x100u;         // bit 8
+constexpr u32 kEarlyOutBit = 0x200u;        // bit 9
+constexpr u32 kTaskGateBit = 0x100000u;     // bit 20
+constexpr u32 kStateMessage = 0x16u;        // +0x64
+constexpr u32 kStateClearA = 0x14u;         // +0x64
+constexpr u32 kStateClearB = 0x15u;         // +0x64
+constexpr u32 kActionNodeId = 0x2Au;        // 0x00345164 key
+constexpr u32 kEntryBit = 1u;               // scene +0x7C bit 0
+constexpr u32 kDispatchKeyA = 0x0100016Eu;  // 0x001B5390
+constexpr u32 kDispatchKeyB = 0x0100016Du;  // 0x001B5394
+
+// Signed halfword at ActionOwner +0x14C: 7, 9 and 13 take the message path.
+constexpr s16 kOwnerActionA = 7;
+constexpr s16 kOwnerActionB = 9;
+constexpr s16 kOwnerActionC = 13;
+
+// Direct call targets.  The `__asm__` labels keep the original symbol names;
+// the file-wide declarations of these symbols are unprototyped `void` forms
+// shared with other naked spans.
+extern "C" void* lookup_scene(u32 handle) __asm__("ui_func_002c0ac8");
+extern "C" u32 selection_flag() __asm__("script_vm_func_00295e74");
+extern "C" void signal_reset(u32 value) __asm__("script_vm_func_00295e48");
+extern "C" u32 task_present(void* task) __asm__("battle_func_002bf41c");
+extern "C" void* vm_context(void* context) __asm__("script_vm_func_0027eb98");
+extern "C" s32 count_action_nodes(void* manager, u32 id)
+    __asm__("func_00345164");
+extern "C" u32 game_over_pending(void* target)
+    __asm__("script_vm_func_003adcd8");
+extern "C" u32 script_ready(void* scene) __asm__("script_vm_func_0033851c");
+extern "C" u32 camp_request(u32 id, u32 mode) __asm__("camp_func_002c1830");
+extern "C" void clear_script_state() __asm__("script_vm_func_0027eae4");
+extern "C" void dispatch_ui_command(s32 value) __asm__("camp_func_002bc200");
+extern "C" void apply_battle_command(s32 a, s32 b)
+    __asm__("battle_func_003c0564");
+extern "C" u32 scene_probe(void* scene) __asm__("func_00337558");
+
+inline void clear_selection_bits(Scene* scene) {
+    scene->flags_44A0 &= kClearMask;
+}
+
+// 0x001B5098: request the reset and fall through to the shared `return 0`.
+inline void signal_reset_path() {
+    signal_reset(1u);
+}
+
+}  // namespace script_vm_1b5054
+
+extern "C" u32 script_vm_func_001b5054(u32 handle) {
+    using namespace script_vm_1b5054;
+
+    Scene* const scene = static_cast<Scene*>(lookup_scene(handle));
+
+    // 0x001B5060..0x001B50A8
+    if ((scene->flags_44A8 & kLookupMask) != 0u) {
+        clear_selection_bits(scene);
+        if (selection_flag() == 0u) {
+            return 0;
+        }
+        signal_reset_path();
+        return 0;
+    }
+
+    // 0x001B50AC..0x001B50D8
+    if ((scene->flags_44A0 & kTaskGateBit) != 0u) {
+        clear_selection_bits(scene);
+        if (selection_flag() == 0u) {
+            return 0;
+        }
+        signal_reset_path();
+        return 0;
+    }
+
+    // 0x001B50DC..0x001B50E0
+    if ((scene->flags_44A0 & kEarlyOutBit) != 0u) {
+        clear_selection_bits(scene);
+        return 0;
+    }
+
+    // 0x001B50E4..0x001B5114
+    if (task_present(reinterpret_cast<void*>(scene->task_20)) != 0u) {
+        clear_selection_bits(scene);
+        if (selection_flag() == 0u) {
+            return 0;
+        }
+        signal_reset_path();
+        return 0;
+    }
+
+    // 0x001B5118..0x001B5140
+    if ((scene->flags_7C & kEntryBit) != 0u) {
+        clear_selection_bits(scene);
+        if (selection_flag() == 0u) {
+            return 0;
+        }
+        signal_reset_path();
+        return 0;
+    }
+
+    // 0x001B5144..0x001B5158
+    const u32 state = scene->state_64;
+    if (state == kStateMessage) {
+        // 0x001B5240: clear, then reset only when the selection flag is set.
+        clear_selection_bits(scene);
+        if (selection_flag() != 0u) {
+            signal_reset_path();
+        }
+        return 0;
+    }
+    if (state == kStateClearA || state == kStateClearB) {
+        // 0x001B5260: clear and return.
+        clear_selection_bits(scene);
+        return 0;
+    }
+
+    // 0x001B515C..0x001B5194: active VM context and owned action selector.
+    void* const active_context =
+        *reinterpret_cast<void* const*>(kScriptVmContextSlot);
+    if (active_context != nullptr) {
+        VmContext* const context =
+            static_cast<VmContext*>(vm_context(active_context));
+        if (context != nullptr && context->owner_28 != nullptr) {
+            const s16 action =
+                reinterpret_cast<const ActionOwner*>(context->owner_28)
+                    ->action_14C;
+            if (action == kOwnerActionA || action == kOwnerActionB ||
+                action == kOwnerActionC) {
+                // 0x001B5274: clear, then the 0x001B5098 gate.
+                clear_selection_bits(scene);
+                if (selection_flag() == 0u) {
+                    return 0;
+                }
+                signal_reset_path();
+                return 0;
+            }
+        }
+    }
+
+    // 0x001B5198..0x001B51B0: a positive action count returns immediately.
+    void* const manager = *reinterpret_cast<void* const*>(kActionManagerSlot);
+    if (count_action_nodes(manager, kActionNodeId) > 0) {
+        return 0;
+    }
+
+    // 0x001B51B4..0x001B51E4
+    void* const game_over_target =
+        *reinterpret_cast<void* const*>(kGameOverTargetSlot);
+    if (game_over_target == nullptr) {
+        return 0;
+    }
+    if (game_over_pending(game_over_target) == 0u) {
+        return 0;
+    }
+    if (script_ready(scene) == 0u) {
+        return 0;
+    }
+
+    // 0x001B51E8..0x001B523C
+    const u32 flags = scene->flags_44A0;
+    if ((flags & kSelectBitA) != 0u) {
+        if (camp_request(1u, 1u) == 0u) {
+            return 0;
+        }
+        clear_script_state();
+        signal_reset(1u);
+        scene->flags_44A0 &= ~kSelectBitA;
+        dispatch_ui_command(kDispatchKeyA);
+        return 0;
+    }
+    if ((flags & kSelectBitB) != 0u) {
+        // 0x001B5294..0x001B52E0
+        if (camp_request(1u, 1u) == 0u) {
+            return 0;
+        }
+        clear_script_state();
+        signal_reset(1u);
+        scene->flags_44A0 &= ~kSelectBitB;
+        dispatch_ui_command(kDispatchKeyA);
+        return 0;
+    }
+    if (camp_request(7u, 1u) != 0u) {
+        // 0x001B52E4..0x001B5324
+        clear_script_state();
+        apply_battle_command(0, 0);
+        scene->flags_44A0 |= kSelectBitA;
+        dispatch_ui_command(kDispatchKeyB);
+        return 0;
+    }
+    if (camp_request(8u, 1u) == 0u) {
+        // 0x001B5328..0x001B533C
+        return 0;
+    }
+    if (scene_probe(scene) == 0u) {
+        // 0x001B5340..0x001B5350
+        return 0;
+    }
+    clear_script_state();
+    apply_battle_command(1, 0);
+    scene->flags_44A0 |= kSelectBitB;
+    dispatch_ui_command(kDispatchKeyB);
+    return 0;
 }
 
 // DECOMP_FUNC(0x001b5398, 600)
