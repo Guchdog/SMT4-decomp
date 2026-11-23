@@ -6852,111 +6852,202 @@ tail_call:
     return engine_func_00287590(*reinterpret_cast<const u32*>(hud + 0x28));
 }
 
+// Direct callees of ui_func_0037dc24. func_0037f8e0 is a virtual-dispatch
+// thunk (owner->[0x7C]->[0]->[8]) that receives its descriptor pointer in r2;
+// its r3 is loaded from 0x00411A08 and discarded. func_0037fd70 consumes its
+// float in s0 (hard-float ABI), which is the slot-descaling value.
+extern "C" void func_001311d8(u8* obj);
+extern "C" u8* func_0037f8e0(u8* owner, u32 a1, const void* desc);
+extern "C" void func_00235a4c(u8* dst, u32 value);
+extern "C" void func_00235a08(u8* obj);
+extern "C" void func_00379ea0(u8* dst, u32 index);
+extern "C" void func_00379e28(u8* dst, u32 value);
+extern "C" void func_00379e08(u8* dst, u32 value);
+extern "C" void func_0037fd70(u8* obj, float value, u32 a1, u32 a2);
+extern "C" u32 func_002c615c(u32 numerator, u32 denominator);
+extern "C" void func_002a2224(u32 a0, s32 a1);
+
+namespace ui_0037dc24_desc {
+// Eight-word descriptor staged on the stack and passed by pointer to
+// func_0037f8e0. Every field is written from the register evidence.
+struct Desc {
+    u32 f00;  // self->[0x50]
+    u32 f04;  // b
+    u32 f08;  // fixed-point scalar (s32 bit pattern)
+    u32 f0C;  // flag ? 0xFFFFFFFF : sb
+    u32 f10;  // (s32)(s8)self[0x87]
+    u32 f14;  // self->[0xC0]->[0x75] + self[0x89]
+    u32 f18;  // *(u32*)0x00411A10
+    u32 f1C;  // self
+};
+} // namespace ui_0037dc24_desc
+
 // DECOMP_FUNC(0x0037dc24, 800)
-extern "C" __attribute__((naked)) void ui_func_0037dc24() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4ff0, 0xe92d, 0x6000, 0xe1a0\n"
-        ".hword 0x7001, 0xe1a0, 0xd024, 0xe24d\n"
-        ".hword 0xb000, 0xe3a0, 0x0085, 0xe5d0\n"
-        ".hword 0x12f0, 0xe59f, 0x9003, 0xe1a0\n"
-        ".hword 0x300b, 0xe1a0, 0x0290, 0xe002\n"
-        ".hword 0x8048, 0xe59d, 0x00c0, 0xe596\n"
-        ".hword 0x500b, 0xe1a0, 0x3291, 0xe0e2\n"
-        ".hword 0x0000, 0xe358, 0x50c4, 0x1596\n"
-        ".hword 0xa074, 0xe280, 0x0ab2, 0xeddf\n"
-        ".hword 0x0342, 0xe1a0, 0x0000, 0x1355\n"
-        ".hword 0x4fc2, 0xe040, 0x0005, 0x0a00\n"
-        ".hword 0x4a10, 0xee00, 0x7126, 0xe5c5\n"
-        ".hword 0x0ac0, 0xeeb8, 0x0a20, 0xee20\n"
-        ".hword 0x0a00, 0xee20, 0x0a40, 0xed85\n"
-        ".hword 0x0027, 0xe5d6, 0x0000, 0xe350\n"
-        ".hword 0x0012, 0x0a00, 0x50c4, 0xe596\n"
-        ".hword 0x0000, 0xe355, 0x0011, 0x0a00\n"
-        ".hword 0x0090, 0xe5d5, 0x0004, 0xe350\n"
-        ".hword 0x0007, 0x0a00, 0x4a10, 0xee00\n"
-        ".hword 0x9120, 0xe585, 0x7126, 0xe5c5\n"
-        ".hword 0x0ac0, 0xeeb8, 0x0a20, 0xee20\n"
-        ".hword 0x0a00, 0xee20, 0x0a40, 0xed85\n"
-        ".hword 0x0039, 0xea00, 0x0005, 0xe1a0\n"
-        ".hword 0xcd3d, 0xebf6, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0x0001, 0xea00\n"
-        ".hword 0x0000, 0xe355, 0x0032, 0x1a00\n"
-        ".hword 0x0000, 0xe358, 0x823c, 0xe59f\n"
-        ".hword 0xe004, 0xe28d, 0x0004, 0xe288\n"
-        ".hword 0x8018, 0xe288, 0x100f, 0xe890\n"
-        ".hword 0x0120, 0xe898, 0x100f, 0xe88e\n"
-        ".hword 0x0018, 0xe28d, 0x200d, 0xe1a0\n"
-        ".hword 0x0120, 0xe880, 0x0050, 0xe596\n"
-        ".hword 0x4008, 0xe58d, 0x0081, 0xe88d\n"
-        ".hword 0x0000, 0x13e0, 0x0009, 0x01a0\n"
-        ".hword 0x000c, 0xe58d, 0x08d7, 0xe1d6\n"
-        ".hword 0x0010, 0xe58d, 0x0001, 0xe5da\n"
-        ".hword 0x1089, 0xe5d6, 0x601c, 0xe58d\n"
-        ".hword 0x0001, 0xe080, 0x0014, 0xe58d\n"
-        ".hword 0x104d, 0xe5d6, 0x00c0, 0xe596\n"
-        ".hword 0x06df, 0xeb00, 0x5000, 0xe1b0\n"
-        ".hword 0xf000, 0xe320, 0x006f, 0x0a00\n"
-        ".hword 0x0128, 0xe5d5, 0x0000, 0xe350\n"
-        ".hword 0x40c4, 0x1596, 0x0000, 0x1354\n"
-        ".hword 0x000c, 0x0a00, 0x0128, 0xe5d4\n"
-        ".hword 0x1128, 0xe5d5, 0x0001, 0xe150\n"
-        ".hword 0x0005, 0x1a00, 0x107e, 0xe3a0\n"
-        ".hword 0x0090, 0xe284, 0xdf2b, 0xebfa\n"
-        ".hword 0x0004, 0xe1a0, 0xf000, 0xe320\n"
-        ".hword 0xdf17, 0xebfa, 0x4138, 0xe594\n"
-        ".hword 0x0000, 0xe354, 0xfff2, 0x1aff\n"
-        ".hword 0x00c4, 0xe596, 0x0138, 0xe585\n"
-        ".hword 0x50c4, 0xe586, 0x108c, 0xe5d6\n"
-        ".hword 0x007f, 0xe351, 0x0090, 0x9285\n"
-        ".hword 0xf033, 0x9bff, 0x108d, 0xe5d6\n"
-        ".hword 0x007f, 0xe351, 0x0090, 0x9285\n"
-        ".hword 0xf011, 0x9bff, 0x108e, 0xe5d6\n"
-        ".hword 0x007f, 0xe351, 0x0090, 0x9285\n"
-        ".hword 0x1018, 0x95c0, 0x108f, 0xe5d6\n"
-        ".hword 0x007f, 0xe351, 0x0090, 0x9285\n"
-        ".hword 0xdf12, 0x9bfa, 0x19f0, 0xe1d6\n"
-        ".hword 0x007f, 0xe351, 0x0090, 0xd285\n"
-        ".hword 0xeffd, 0xdbff, 0x004b, 0xe5d6\n"
-        ".hword 0x0a1a, 0xed96, 0x0000, 0xe350\n"
-        ".hword 0x0004, 0x0a00, 0x008a, 0xe5d6\n"
-        ".hword 0x0007, 0xe040, 0x0a90, 0xee00\n"
-        ".hword 0x0ae0, 0xeef8, 0x0a80, 0xee30\n"
-        ".hword 0x008b, 0xe5d6, 0x0000, 0xe350\n"
-        ".hword 0x0012, 0x0a00, 0x0090, 0xe000\n"
-        ".hword 0x0a3d, 0xeddf, 0x2001, 0xe3a0\n"
-        ".hword 0x0ac0, 0xeef4, 0xfa10, 0xeef1\n"
-        ".hword 0x0a90, 0xee00, 0x1a40, 0x9eb0\n"
-        ".hword 0x1a40, 0x8eb1, 0x0ae0, 0xeef8\n"
-        ".hword 0x0a20, 0xee61, 0x0ae0, 0xeefd\n"
-        ".hword 0x0a90, 0xee10, 0x02c0, 0xe1a0\n"
-        ".hword 0x1100, 0xe080, 0x0005, 0xe1a0\n"
-        ".hword 0x07bb, 0xeb00, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0x0003, 0xea00\n"
-        ".hword 0x2000, 0xe3a0, 0x1009, 0xe1a0\n"
-        ".hword 0x0005, 0xe1a0, 0x07b4, 0xeb00\n"
-        ".hword 0x0049, 0xe5d6, 0x4e11, 0xe285\n"
-        ".hword 0x708a, 0xe5c6, 0x0000, 0xe350\n"
-        ".hword 0x00b4, 0xe1d4, 0x10b2, 0xe1d4\n"
-        ".hword 0x7000, 0x13a0, 0x70ff, 0x03a0\n"
-        ".hword 0x0001, 0xe150, 0x0001, 0x25d4\n"
-        ".hword 0x8000, 0xe3a0, 0x0006, 0x2a00\n"
-        ".hword 0x2001, 0xe5d4, 0x9000, 0xe5d4\n"
-        ".hword 0x2009, 0xe042, 0x0092, 0xe000\n"
-        ".hword 0x209e, 0xebfd, 0x0009, 0xe080\n"
-        ".hword 0x00ff, 0xe200, 0x0000, 0xe5c4\n"
-        ".hword 0x7001, 0xe5c4, 0x80b2, 0xe1c4\n"
-        ".hword 0xb0b4, 0xe1c4, 0x00c0, 0xe596\n"
-        ".hword 0x005c, 0xe5d0, 0x00c9, 0xe5c5\n"
-        ".hword 0x00c0, 0xe596, 0x0034, 0xe5d0\n"
-        ".hword 0x0124, 0xe5c5, 0x00c0, 0xe596\n"
-        ".hword 0x0035, 0xe5d0, 0x0125, 0xe5c5\n"
-        ".hword 0x14d1, 0xe1d6, 0x0134, 0xe595\n"
-        ".hword 0x90be, 0xebfc, 0x0005, 0xe1a0\n"
-        ".hword 0xd024, 0xe28d, 0x8ff0, 0xe8bd\n"
-        ".hword 0x0409, 0x8102, 0x0204, 0x3c01\n"
-        ".hword 0x19f8, 0x0041, 0x0000, 0x0000\n"
-    );
+//
+// Configure or allocate a UI animation node hanging off self->[0xC4] and
+// publish its fade/slot state. The static-constant multiply at 0x81020409
+// yields a signed fixed-point scalar (high 32 bits, then /64 truncating with
+// the original's negative-multiple quirk). The scalar is converted to a float
+// with 1/127 and squared into node->[0x100]. Heap nodes are created by
+// func_0037f8e0, prepended to the self->[0xC4] list, and any earlier node with
+// the same id byte at [0x128] is cleared (func_00235A4C(...,0x7E) then
+// func_00235A08). Returns the node, or nullptr when func_0037f8e0 fails.
+extern "C" u8* ui_func_0037dc24(u8* self, u32 b, u32 c, u32 sb, u32 flag) {
+    namespace desc_ns = ui_0037dc24_desc;
+    constexpr float kInv127 = 0.0078740157f;  // 0x3C010204, 1/127
+
+    // 1. Signed fixed-point scalar: (high32((s32)(self[0x85] * c) * 0x81020409))
+    //    divided by 64 the way the original subtracts the sign bit.
+    const u32 mixed = static_cast<u32>(self[0x85]) * c;
+    const s64 wide = static_cast<s64>(static_cast<s32>(mixed)) * 0x81020409LL;
+    const s32 scalar_hi =
+        static_cast<s32>(static_cast<u32>(static_cast<u64>(wide) >> 32));
+    const s32 scaled = (scalar_hi >> 6) - (scalar_hi >> 31);
+    const float ratio = static_cast<float>(scaled) * kInv127;
+    const float fade = ratio * ratio;
+
+    // 2. Optional pre-update of the flag-selected node.
+    u8* obj = (flag != 0u) ? *reinterpret_cast<u8**>(self + 0xC4) : nullptr;
+    if (flag != 0u && obj != nullptr) {
+        obj[0x126] = static_cast<u8>(b);
+        *reinterpret_cast<float*>(obj + 0x100) = fade;
+    }
+
+    // 3. Reuse an existing node or fall through to allocation.
+    bool reuse = false;
+    if (self[0x27] != 0u) {
+        obj = *reinterpret_cast<u8**>(self + 0xC4);
+        if (obj == nullptr) {
+            reuse = false;
+        } else if (obj[0x90] == 4u) {
+            func_001311d8(obj);
+            reuse = false;
+        } else {
+            *reinterpret_cast<u32*>(obj + 0x120) = sb;
+            obj[0x126] = static_cast<u8>(b);
+            *reinterpret_cast<float*>(obj + 0x100) = fade;
+            reuse = true;
+        }
+    } else if (obj != nullptr) {
+        reuse = true;
+    }
+
+    // 4. Allocate, clear duplicate ids, and prepend to the list.
+    if (!reuse) {
+        desc_ns::Desc desc;
+        desc.f00 = *reinterpret_cast<const u32*>(self + 0x50);
+        desc.f04 = b;
+        desc.f08 = static_cast<u32>(scaled);
+        desc.f0C = (flag != 0u) ? 0xFFFFFFFFu : sb;
+        desc.f10 = static_cast<u32>(
+            static_cast<s32>(static_cast<s8>(self[0x87])));
+        desc.f14 = static_cast<u32>(self[0x89]) +
+            static_cast<u32>(
+                (*reinterpret_cast<const u8**>(self + 0xC0))[0x75]);
+        desc.f18 = *reinterpret_cast<const u32*>(0x00411A10u);
+        desc.f1C = reinterpret_cast<u32>(self);
+
+        obj = func_0037f8e0(
+            *reinterpret_cast<u8**>(self + 0xC0), self[0x4D], &desc);
+        if (obj == nullptr) {
+            return nullptr;
+        }
+
+        if (obj[0x128] != 0u) {
+            u8* cur = *reinterpret_cast<u8**>(self + 0xC4);
+            while (cur != nullptr) {
+                if (cur[0x128] == obj[0x128]) {
+                    func_00235a4c(cur + 0x90, 0x7Eu);
+                    func_00235a08(cur);
+                }
+                cur = *reinterpret_cast<u8**>(cur + 0x138);
+            }
+        }
+        *reinterpret_cast<u8**>(obj + 0x138) =
+            *reinterpret_cast<u8**>(self + 0xC4);
+        *reinterpret_cast<u8**>(self + 0xC4) = obj;
+    }
+
+    // 5. Publish the sub-slot selectors (unsigned <= 0x7F, except the signed
+    //    halfword at self+0x90 which uses a signed <= 0x7F test).
+    {
+        const u32 sel_8C = self[0x8C];
+        if (sel_8C <= 0x7Fu) {
+            func_00379ea0(obj + 0x90, sel_8C);
+        }
+        const u32 sel_8D = self[0x8D];
+        if (sel_8D <= 0x7Fu) {
+            func_00379e28(obj + 0x90, sel_8D);
+        }
+        const u32 sel_8E = self[0x8E];
+        if (sel_8E <= 0x7Fu) {
+            obj[0x90 + 0x18] = static_cast<u8>(sel_8E);
+        }
+        const u32 sel_8F = self[0x8F];
+        if (sel_8F <= 0x7Fu) {
+            func_00235a4c(obj + 0x90, sel_8F);
+        }
+        const s32 sel_90 = static_cast<s16>(
+            *reinterpret_cast<const u16*>(self + 0x90));
+        if (sel_90 <= 0x7F) {
+            func_00379e08(obj + 0x90, static_cast<u32>(sel_90));
+        }
+    }
+
+    // 6. Frame fade value, optionally biased by (self[0x8A] - b).
+    float value = *reinterpret_cast<const float*>(self + 0x68);
+    if (self[0x4B] != 0u) {
+        value = static_cast<float>(static_cast<s32>(
+            static_cast<u32>(self[0x8A]) - b)) + value;
+    }
+
+    // 7. Slot transition step: |value| * (self[0x8B]^2), >>5 then *5.
+    if (self[0x8B] != 0u) {
+        const u32 square = static_cast<u32>(self[0x8B]) *
+            static_cast<u32>(self[0x8B]);
+        const float magnitude = (value >= 0.0f) ? value : -value;
+        const s32 converted =
+            static_cast<s32>(magnitude *
+                             static_cast<float>(static_cast<s32>(square)));
+        const u32 step = static_cast<u32>(converted >> 5) * 5u;
+        func_0037fd70(obj, value, step, 1u);
+    } else {
+        func_0037fd70(obj, value, sb, 0u);
+    }
+
+    // 8. Byte lerp state at obj+0x110; publishes self[0x8A] = (u8)b.
+    {
+        u8* const anim = obj + 0x110;
+        self[0x8A] = static_cast<u8>(b);
+        const u8 target = (self[0x49] != 0u) ? 0x00u : 0xFFu;
+        const u32 elapsed = *reinterpret_cast<const u16*>(anim + 4);
+        const u32 duration = *reinterpret_cast<const u16*>(anim + 2);
+        u32 current;
+        if (elapsed >= duration) {
+            current = anim[1];
+        } else {
+            const u32 delta = static_cast<u32>(anim[1]) -
+                static_cast<u32>(anim[0]);
+            const u32 interpolated =
+                func_002c615c(delta * elapsed, duration);
+            current = (interpolated + static_cast<u32>(anim[0])) & 0xFFu;
+        }
+        anim[0] = static_cast<u8>(current);
+        anim[1] = target;
+        *reinterpret_cast<u16*>(anim + 2) = 0u;
+        *reinterpret_cast<u16*>(anim + 4) = 0u;
+    }
+
+    // 9. Copy three owner bytes and report the signed selector at self[0x41].
+    {
+        u8* const owner = *reinterpret_cast<u8**>(self + 0xC0);
+        obj[0xC9] = owner[0x5C];
+        obj[0x124] = owner[0x34];
+        obj[0x125] = owner[0x35];
+    }
+    func_002a2224(*reinterpret_cast<const u32*>(obj + 0x134),
+                  static_cast<s32>(static_cast<s8>(self[0x41])));
+    return obj;
 }
 
 // DECOMP_FUNC(0x0027b100, 804)
