@@ -9264,40 +9264,200 @@ extern "C" u32 camp_func_0033d164(void* panel_raw) {
 }
 
 // DECOMP_FUNC(0x00290874, 452)
-// 112 ARM instructions through unconditional pop; 4 trailing data bytes.
-extern "C" __attribute__((naked)) void script_vm_func_00290874() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe59f01b8, 0xe92d4070, 0xe5904000, 0xe5900000\n"
-        ".word 0xe2845c05, 0xe5d415c4, 0xe59005d0, 0xe3510000\n"
-        ".word 0x0a00000f, 0xe3500001, 0x03a0006c, 0x0b00a0b4\n"
-        ".word 0xe59405d0, 0xe3500002, 0x1a00005f, 0xe59405c8\n"
-        ".word 0xe3500000, 0x03a0006d, 0x0b00a0ad, 0xe59405c8\n"
-        ".word 0xe3500001, 0x1a000058, 0xe8bd4070, 0xe3a0006e\n"
-        ".word 0xea00a0a7, 0xe3500001, 0x03a0006f, 0x0b00a0a4\n"
-        ".word 0xe59405d0, 0xe3500002, 0x1a000007, 0xe59405c8\n"
-        ".word 0xe3500000, 0x03a00070, 0x0b00a09d, 0xe59405c8\n"
-        ".word 0xe3500001, 0x03a00071, 0x0b00a099, 0xe59405d0\n"
-        ".word 0xe3500003, 0x1a00000b, 0xe59405c8, 0xe3500000\n"
-        ".word 0x03a00072, 0x0b00a092, 0xe59405c8, 0xe3500001\n"
-        ".word 0x03a00073, 0x0b00a08e, 0xe59405c8, 0xe3500002\n"
-        ".word 0x03a00074, 0x0b00a08a, 0xe5d500f1, 0xe3500000\n"
-        ".word 0x0a000009, 0xe3a03001, 0xe3a02032, 0xe1a01003\n"
-        ".word 0xe3a00005, 0xeb009f89, 0xe3a03001, 0xe3a02000\n"
-        ".word 0xe3a01012, 0xe3a00002, 0xeb009f84, 0xe2840e66\n"
-        ".word 0xeb003a35, 0xe1a06000, 0xe2840e66, 0xeb003a2c\n"
-        ".word 0xe0800006, 0xe0840080, 0xe2800c07, 0xe1d048ba\n"
-        ".word 0xebffff3a, 0xe1500004, 0xe320f000, 0x1a000007\n"
-        ".word 0xe3a03001, 0xe3a02033, 0xe1a01003, 0xe3a00005\n"
-        ".word 0xeb009f72, 0xe320f000, 0xe320f000, 0xea000007\n"
-        ".word 0xe5d500f1, 0xe3500000, 0x1a000004, 0xe3a03001\n"
-        ".word 0xe3a02031, 0xe1a01003, 0xe3a00005, 0xeb009f67\n"
-        ".word 0xe320f000, 0xebfffeb4, 0xe3500000, 0xe3a03001\n"
-        ".word 0x0a000004, 0xe8bd4070, 0xe3a02033, 0xe3a01004\n"
-        ".word 0xe3a00002, 0xea009f5d, 0xe8bd4070, 0xe3a02000\n"
-        ".word 0xe3a01012, 0xe3a00002, 0xea009f58, 0xe8bd8070\n"
-        ".word 0x0043dd50\n"
-    );
+//
+// Recovered contract (ARM 0x00290874..0x00290A34; the final word at 0x00290A34
+// is the literal-pool pointer 0x0043DD50):
+//
+//   * `mgr = *(u8**)0x0043DD50` (the camp manager block); `page = mgr + 0x500`.
+//     No argument is read.  The ordinary exits at 0x00290A30 return the last
+//     reloaded index/column word in r0; the two tail branches forward the
+//     callee's r0.
+//   * 0x00290888..0x002908D4 (`mode = mgr[0x5C4] != 0`):
+//       - index == 1 -> 0x002B8B78(0x6C); reload index;
+//         index != 2 -> return index (0x00290A30).
+//       - reload column (`mgr+0x5C8`); column == 0 -> 0x002B8B78(0x6D);
+//         reload column; column != 1 -> return column (0x00290A30);
+//         otherwise tail-branch to 0x002B8B78(0x6E).
+//   * 0x002908D8..0x0029094C (`mode == 0`):
+//       - index == 1 -> 0x002B8B78(0x6F); reload index;
+//       - reload index == 2 -> reload column; 0 -> 0x002B8B78(0x70);
+//         reload column; 1 -> 0x002B8B78(0x71);
+//       - reload index == 3 -> reload column; 0 -> 0x002B8B78(0x72);
+//         reload column; 1 -> 0x002B8B78(0x73);
+//         reload column; 2 -> 0x002B8B78(0x74).
+//   * 0x0029094C..0x00290980: `page[0xF1]` (mgr+0x5F1) != 0 ->
+//       0x002B8794(5, 1, 0x32, 1) then 0x002B8794(2, 0x12, 0, 1).
+//   * 0x00290980..0x002909DC: `slot = mgr + 0x660`;
+//       span = 0x0029F260(slot) + 0x0029F248(slot) (in that call order);
+//       expected = *(u16*)(mgr + 0x78A + (u32)span*2);
+//       actual = 0x00290694().  Equal -> 0x002B8794(5, 1, 0x33, 1); else when
+//       `page[0xF1] == 0` -> 0x002B8794(5, 1, 0x31, 1).  The mismatch branch
+//       re-reads the page flag after the 0x00290694 call.
+//   * 0x002909F4..0x00290A2C: 0x002904D0() != 0 -> tail-branch to
+//       0x002B8794(2, 4, 0x33, 1); otherwise -> 0x002B8794(2, 0x12, 0, 1).
+//   * 0x00290A30: `pop {r4, r5, r6, pc}` for the two early returns above.
+//   There are no indirect calls and no stack arguments in this body.
+//
+// Unresolved dependencies (stubbed from their observed contracts in the
+// differential test): 0x002B8B78, 0x002B8794, 0x0029F248, 0x0029F260,
+// 0x00290694 and 0x002904D0.
+namespace script_vm_290874 {
+
+// 0x0043DD50 holds the camp manager block pointer (literal at 0x00290A34).
+constexpr u32 kManagerPointerAddress = 0x0043DD50u;
+
+// Field offsets read by the ARM body.
+constexpr u32 kPageBaseOffset = 0x500;      // r5 = mgr + 0x500
+constexpr u32 kModeOffset = 0x5C4;          // ldrb: mode flag
+constexpr u32 kColumnOffset = 0x5C8;        // ldr: column word
+constexpr u32 kIndexOffset = 0x5D0;         // ldr: index word
+constexpr u32 kPageFlagOffset = 0xF1;       // ldrb [r5, #0xF1] -> mgr+0x5F1
+constexpr u32 kSlotOffset = 0x660;          // argument to both getters
+constexpr u32 kSelectionBaseOffset = 0x700; // mgr + 0x700 + (span << 1)
+constexpr u32 kSelectionWordOffset = 0x8A;  // ... + 0x8A (ldrh)
+
+// 0x002B8B78 request values selected by mode/index/column.
+constexpr u32 kRequestModeIndex1 = 0x6C;
+constexpr u32 kRequestMode2Column0 = 0x6D;
+constexpr u32 kRequestMode2Column1Tail = 0x6E;
+constexpr u32 kRequestNoModeIndex1 = 0x6F;
+constexpr u32 kRequestNoMode2Column0 = 0x70;
+constexpr u32 kRequestNoMode2Column1 = 0x71;
+constexpr u32 kRequestNoMode3Column0 = 0x72;
+constexpr u32 kRequestNoMode3Column1 = 0x73;
+constexpr u32 kRequestNoMode3Column2 = 0x74;
+
+// 0x002B8794 (slot, priority, value, mode) command values.
+constexpr u32 kSlotStatus = 5;
+constexpr u32 kSlotFinal = 2;
+constexpr u32 kPriorityAdvance = 1;
+constexpr u32 kPriorityFinal = 4;
+constexpr u32 kPriorityStatus = 0x12;
+constexpr u32 kValueAdvance = 0x32;   // page flag set
+constexpr u32 kValueMatch = 0x33;     // selection match / final state
+constexpr u32 kValueMismatch = 0x31;  // selection mismatch, page flag clear
+constexpr u32 kCommandMode = 1;
+
+}  // namespace script_vm_290874
+
+// Direct calls made by 0x00290874.
+// 0x002B8B78: transition/sound request; r0 is forwarded on the 0x6E tail path.
+extern "C" u32 script_vm_func_002b8b78(u32 request);
+// 0x002B8794: camp message-row command; r0 is forwarded on the terminal paths.
+extern "C" u32 camp_func_002b8794(u32 slot, u32 priority, u32 value, u32 mode);
+// 0x0029F260 / 0x0029F248: signed slot-field getters; the results are summed.
+extern "C" s32 camp_func_0029f260(void* slot);
+extern "C" s32 camp_func_0029f248(void* slot);
+// 0x00290694: current selection-table halfword.
+extern "C" u16 script_vm_func_00290694(void);
+// 0x002904D0: selection-state predicate (returns 0 or 1).
+extern "C" u32 script_vm_func_002904d0(void);
+
+extern "C" u32 script_vm_func_00290874(void) {
+    using namespace script_vm_290874;
+
+    u8* const manager = *reinterpret_cast<u8**>(kManagerPointerAddress);
+    u8* const page = manager + kPageBaseOffset;
+
+    // 0x00290888..0x002908D4: mode flag selects the request sequence.
+    const u32 mode =
+        *reinterpret_cast<const volatile u8*>(manager + kModeOffset);
+    if (mode != 0) {
+        u32 index = *reinterpret_cast<const volatile u32*>(
+            manager + kIndexOffset);
+        if (index == 1) {
+            script_vm_func_002b8b78(kRequestModeIndex1);
+        }
+        index = *reinterpret_cast<const volatile u32*>(manager + kIndexOffset);
+        if (index != 2) {
+            return index;  // 0x00290A30: pop {r4, r5, r6, pc}
+        }
+        u32 column = *reinterpret_cast<const volatile u32*>(
+            manager + kColumnOffset);
+        if (column == 0) {
+            script_vm_func_002b8b78(kRequestMode2Column0);
+        }
+        column = *reinterpret_cast<const volatile u32*>(
+            manager + kColumnOffset);
+        if (column != 1) {
+            return column;  // 0x00290A30: pop {r4, r5, r6, pc}
+        }
+        // 0x002908CC..0x002908D4: frame restore then tail branch.
+        return script_vm_func_002b8b78(kRequestMode2Column1Tail);
+    }
+
+    // 0x002908D8..0x0029094C: no-mode branch.
+    u32 index = *reinterpret_cast<const volatile u32*>(manager + kIndexOffset);
+    if (index == 1) {
+        script_vm_func_002b8b78(kRequestNoModeIndex1);
+    }
+    index = *reinterpret_cast<const volatile u32*>(manager + kIndexOffset);
+    if (index == 2) {
+        u32 column = *reinterpret_cast<const volatile u32*>(
+            manager + kColumnOffset);
+        if (column == 0) {
+            script_vm_func_002b8b78(kRequestNoMode2Column0);
+        }
+        column = *reinterpret_cast<const volatile u32*>(
+            manager + kColumnOffset);
+        if (column == 1) {
+            script_vm_func_002b8b78(kRequestNoMode2Column1);
+        }
+    }
+    index = *reinterpret_cast<const volatile u32*>(manager + kIndexOffset);
+    if (index == 3) {
+        u32 column = *reinterpret_cast<const volatile u32*>(
+            manager + kColumnOffset);
+        if (column == 0) {
+            script_vm_func_002b8b78(kRequestNoMode3Column0);
+        }
+        column = *reinterpret_cast<const volatile u32*>(
+            manager + kColumnOffset);
+        if (column == 1) {
+            script_vm_func_002b8b78(kRequestNoMode3Column1);
+        }
+        column = *reinterpret_cast<const volatile u32*>(
+            manager + kColumnOffset);
+        if (column == 2) {
+            script_vm_func_002b8b78(kRequestNoMode3Column2);
+        }
+    }
+
+    // 0x0029094C..0x00290980: page flag set publishes two command rows.
+    if (*reinterpret_cast<const volatile u8*>(page + kPageFlagOffset) != 0) {
+        camp_func_002b8794(
+            kSlotStatus, kPriorityAdvance, kValueAdvance, kCommandMode);
+        camp_func_002b8794(kSlotFinal, kPriorityStatus, 0, kCommandMode);
+    }
+
+    // 0x00290980..0x002909A8: the two getter calls happen in this order and
+    // their signed results are added with 32-bit wrap.
+    const s32 first = camp_func_0029f260(manager + kSlotOffset);
+    const s32 second = camp_func_0029f248(manager + kSlotOffset);
+    const u32 span = static_cast<u32>(first) + static_cast<u32>(second);
+    // The ARM performs all of these adds with 32-bit wrap
+    // (`add r0, r4, r0, lsl #1` then `add r0, r0, #0x700`, `ldrh [r0, #0x8A]`).
+    const u32 selection_offset =
+        kSelectionBaseOffset + (span << 1) + kSelectionWordOffset;
+    const u16 expected = *reinterpret_cast<const volatile u16*>(
+        manager + selection_offset);
+
+    // 0x002909A4..0x002909F4: compare against the current table halfword.
+    if (script_vm_func_00290694() == expected) {
+        camp_func_002b8794(
+            kSlotStatus, kPriorityAdvance, kValueMatch, kCommandMode);
+    } else if (*reinterpret_cast<const volatile u8*>(
+                   page + kPageFlagOffset) == 0) {
+        camp_func_002b8794(
+            kSlotStatus, kPriorityAdvance, kValueMismatch, kCommandMode);
+    }
+
+    // 0x002909F4..0x00290A2C: selection-state predicate selects the final row.
+    if (script_vm_func_002904d0() != 0) {
+        return camp_func_002b8794(
+            kSlotFinal, kPriorityFinal, kValueMatch, kCommandMode);
+    }
+    return camp_func_002b8794(kSlotFinal, kPriorityStatus, 0, kCommandMode);
 }
 
 // DECOMP_FUNC(0x0038ba94, 452)
