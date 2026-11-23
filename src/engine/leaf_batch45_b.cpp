@@ -6392,109 +6392,139 @@ extern "C" void engine_func_001062e0() {
 }
 
 // DECOMP_FUNC(0x002f5584, 788)
-extern "C" __attribute__((naked)) void engine_func_002f5584() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x41f0, 0xe92d, 0xd020, 0xe24d\n"
-        ".hword 0x4000, 0xe1a0, 0x0000, 0xe3a0\n"
-        ".hword 0x5001, 0xe1a0, 0x12e8, 0xe59f\n"
-        ".hword 0x0008, 0xe58d, 0x000c, 0xe58d\n"
-        ".hword 0x0010, 0xe58d, 0x0014, 0xe58d\n"
-        ".hword 0x0018, 0xe58d, 0x0000, 0xe591\n"
-        ".hword 0x6003, 0xe1a0, 0x82cc, 0xe59f\n"
-        ".hword 0x3000, 0xe1a0, 0x0000, 0xe58d\n"
-        ".hword 0x3030, 0xe513, 0x0020, 0xe591\n"
-        ".hword 0x7002, 0xe1a0, 0x200d, 0xe1a0\n"
-        ".hword 0x0003, 0xe78d, 0x0024, 0xe591\n"
-        ".hword 0x3002, 0xe1a0, 0x0000, 0xe354\n"
-        ".hword 0x0004, 0xe58d, 0x1005, 0xe1a0\n"
-        ".hword 0x2001, 0xe3a0, 0x0008, 0xe1a0\n"
-        ".hword 0x0007, 0x0a00, 0x0001, 0xe354\n"
-        ".hword 0x000a, 0x0a00, 0x0002, 0xe354\n"
-        ".hword 0x000d, 0x0a00, 0x0003, 0xe354\n"
-        ".hword 0x0003, 0x01a0, 0x28dc, 0x0bfc\n"
-        ".hword 0x000b, 0xea00, 0x0003, 0xe1a0\n"
-        ".hword 0x55e1, 0xebfd, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0x0006, 0xea00\n"
-        ".hword 0x0003, 0xe1a0, 0x55ae, 0xebfd\n"
-        ".hword 0xf000, 0xe320, 0xf000, 0xe320\n"
-        ".hword 0x0001, 0xea00, 0x0003, 0xe1a0\n"
-        ".hword 0x5a3b, 0xebff, 0x1bff, 0xe200\n"
-        ".hword 0x1521, 0xe1a0, 0x0011, 0xe351\n"
-        ".hword 0x0005, 0x1a00, 0x1b00, 0xe1a0\n"
-        ".hword 0x1b21, 0xe1a0, 0x0064, 0xe351\n"
-        ".hword 0x0001, 0xba00, 0x00b3, 0xe351\n"
-        ".hword 0x0001, 0xda00, 0x1fa0, 0xe1b0\n"
-        ".hword 0x0041, 0x0a00, 0x0000, 0xe354\n"
-        ".hword 0x300d, 0xe1a0, 0x1005, 0xe1a0\n"
-        ".hword 0x2006, 0xe1a0, 0x0008, 0xe1a0\n"
-        ".hword 0x0007, 0x0a00, 0x0001, 0xe354\n"
-        ".hword 0x000a, 0x0a00, 0x0002, 0xe354\n"
-        ".hword 0x0003, 0x01a0, 0xaf19, 0x0bff\n"
-        ".hword 0xf000, 0xe320, 0xf000, 0xe320\n"
-        ".hword 0x0006, 0xea00, 0x0003, 0xe1a0\n"
-        ".hword 0x59ca, 0xebff, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0x0001, 0xea00\n"
-        ".hword 0x0003, 0xe1a0, 0xaad9, 0xebfc\n"
-        ".hword 0x1102, 0xe210, 0x002a, 0x5a00\n"
-        ".hword 0x0005, 0xe1b0, 0x0008, 0x0a00\n"
-        ".hword 0x1004, 0xe1b0, 0x000a, 0x0a00\n"
-        ".hword 0x0001, 0xe351, 0x000d, 0x0a00\n"
-        ".hword 0x0002, 0xe354, 0xaf3b, 0x0bff\n"
-        ".hword 0xf000, 0xe320, 0xf000, 0xe320\n"
-        ".hword 0x000a, 0xea00, 0x118c, 0xe59f\n"
-        ".hword 0x0184, 0xe59f, 0x0010, 0xe581\n"
-        ".hword 0x0006, 0xea00, 0xf000, 0xe320\n"
-        ".hword 0x59f1, 0xebff, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0x0001, 0xea00\n"
-        ".hword 0xf000, 0xe320, 0xab03, 0xebfc\n"
-        ".hword 0x0000, 0xe354, 0x300d, 0xe1a0\n"
-        ".hword 0x1005, 0xe1a0, 0x2006, 0xe1a0\n"
-        ".hword 0x0008, 0xe1a0, 0x0007, 0x0a00\n"
-        ".hword 0x0001, 0xe354, 0x000a, 0x0a00\n"
-        ".hword 0x0002, 0xe354, 0x0003, 0x01a0\n"
-        ".hword 0xaeec, 0x0bff, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0x0006, 0xea00\n"
-        ".hword 0x0003, 0xe1a0, 0x599d, 0xebff\n"
-        ".hword 0xf000, 0xe320, 0xf000, 0xe320\n"
-        ".hword 0x0001, 0xea00, 0x0003, 0xe1a0\n"
-        ".hword 0xaaac, 0xebfc, 0x0102, 0xe210\n"
-        ".hword 0x0033, 0x4a00, 0x0000, 0xe354\n"
-        ".hword 0xc00d, 0xe1a0, 0x2007, 0xe1a0\n"
-        ".hword 0x3006, 0xe1a0, 0x1000, 0xe3a0\n"
-        ".hword 0x0008, 0xe1a0, 0x0007, 0x0a00\n"
-        ".hword 0x0001, 0xe354, 0x000a, 0x0a00\n"
-        ".hword 0x0002, 0xe354, 0x000c, 0x01a0\n"
-        ".hword 0x81d9, 0x0bff, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0x0006, 0xea00\n"
-        ".hword 0x000c, 0xe1a0, 0xaa6d, 0xebfc\n"
-        ".hword 0xf000, 0xe320, 0xf000, 0xe320\n"
-        ".hword 0x0001, 0xea00, 0x000c, 0xe1a0\n"
-        ".hword 0x6ae0, 0xebfc, 0x0102, 0xe210\n"
-        ".hword 0x001b, 0x4a00, 0x0000, 0xe354\n"
-        ".hword 0x100d, 0xe1a0, 0x0008, 0xe1a0\n"
-        ".hword 0x0009, 0x0a00, 0x0001, 0xe354\n"
-        ".hword 0x000c, 0x0a00, 0x0002, 0xe354\n"
-        ".hword 0x000f, 0x0a00, 0x0003, 0xe354\n"
-        ".hword 0x0001, 0x01a0, 0x5528, 0x0bfd\n"
-        ".hword 0xf000, 0xe320, 0xf000, 0xe320\n"
-        ".hword 0x000b, 0xea00, 0x0001, 0xe1a0\n"
-        ".hword 0x5515, 0xebfd, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0x0006, 0xea00\n"
-        ".hword 0x0001, 0xe1a0, 0x5502, 0xebfd\n"
-        ".hword 0xf000, 0xe320, 0xf000, 0xe320\n"
-        ".hword 0x0001, 0xea00, 0x0001, 0xe1a0\n"
-        ".hword 0x54ef, 0xebfd, 0x0102, 0xe210\n"
-        ".hword 0x0005, 0x5a00, 0x1000, 0xe3a0\n"
-        ".hword 0x000d, 0xe1a0, 0x1858, 0xebff\n"
-        ".hword 0xd020, 0xe28d, 0x0000, 0xe3a0\n"
-        ".hword 0x81f0, 0xe8bd, 0x1000, 0xe3a0\n"
-        ".hword 0x000d, 0xe1a0, 0x1852, 0xebff\n"
-        ".hword 0xd020, 0xe28d, 0x0001, 0xe3a0\n"
-        ".hword 0x81f0, 0xe8bd, 0x0768, 0x0042\n"
-        ".hword 0xffff, 0xe7e3, 0x4464, 0xc880\n"
-        ".hword 0x51e8, 0x0046\n"
-    );
+//
+// Writes `size` bytes from `buf` to `path` through the storage backend selected
+// by `kind` (0..3). The stack FileStream is initialised from the VTT at
+// 0x00420768 and destroyed on every exit path. Returns 1 on success, else 0.
+//
+// The open/close/destroy helpers share their C prototypes with the sibling
+// reader engine_func_002f5348 (declared above); the write-path helpers are
+// declared here because they are only used by this writer.
+
+// Open an existing file for reading (mode 1); returns an nn::Result-style word.
+// (engine_func_0024ada8 / 0024acf0 / 002cbf38 / 001ff988 are declared above.)
+
+// Open for writing; args are (stream, path, size).
+extern "C" u32 engine_func_002cbde4(void* obj, const void* path, u32 size);
+extern "C" u32 engine_func_00220234(void* obj, const void* path, u32 size);
+extern "C" u32 engine_func_002e130c(void* obj, const void* path, u32 size);
+
+// Delete an existing file before retrying the write open.
+extern "C" u32 engine_func_002cbee0(const void* path);
+extern "C" u32 engine_func_0022033c(const void* path);
+extern "C" u32 engine_func_002e13e4(const void* path);
+
+// Write buffered data; args are (stream, 0, buf, size).
+extern "C" u32 engine_func_00220184(void* obj, u32 zero, const void* buf, u32 size);
+extern "C" u32 engine_func_00210364(void* obj, u32 zero, const void* buf, u32 size);
+extern "C" u32 engine_func_002d5f20(void* obj, u32 zero, const void* buf, u32 size);
+
+extern "C" u32 engine_func_002f5584(u32 kind, const void* path, const void* buf, u32 size) {
+    // 0x20-byte stack FileStream: vptr at +0x00, vbase slot at
+    // *(vptr - 0x30), and two VTT words. The last word (+0x1C) is untouched.
+    u32 stream[8] = {0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u};
+    const u32* const vtt = reinterpret_cast<const u32*>(0x00420768u);
+    const u32 vtbl0 = vtt[0];
+    stream[0] = vtbl0;
+    const s32 vbase_off = *reinterpret_cast<const s32*>(
+        static_cast<std::uintptr_t>(vtbl0 - 0x30u));
+    *reinterpret_cast<u32*>(reinterpret_cast<u8*>(stream) + vbase_off) = vtt[8];
+    stream[1] = vtt[9];
+
+    // Default result when no backend call is made (kind > 3): an error word.
+    constexpr u32 kErr = 0xE7E3FFFFu;
+    // Reported when a delete is required but the path is null.
+    constexpr u32 kNullPathErr = 0xC8804464u;
+
+    // 1. Probe/open the target in read mode 1.
+    u32 open_res = kErr;
+    if (kind == 0u) {
+        open_res = engine_func_0024ada8(stream, path, 1u);
+    } else if (kind == 1u) {
+        open_res = engine_func_0024acf0(stream, path, 1u);
+    } else if (kind == 2u) {
+        open_res = engine_func_002cbf38(stream, path, 1u);
+    } else if (kind == 3u) {
+        open_res = engine_func_001ff988(stream, path, 1u);
+    }
+
+    // Open for write when the probe failed, or when the existing file must be
+    // recreated (module 0x11, summary 0x64..0xB3).
+    const u32 module = (open_res >> 10) & 0xFFu;
+    const u32 summary = open_res & 0x3FFu;
+    if ((open_res & 0x80000000u) != 0u ||
+        (module == 0x11u && summary >= 0x64u && summary <= 0xB3u)) {
+        u32 write_open = kErr;
+        if (kind == 0u) {
+            write_open = engine_func_002cbde4(stream, path, size);
+        } else if (kind == 1u) {
+            write_open = engine_func_00220234(stream, path, size);
+        } else if (kind == 2u) {
+            write_open = engine_func_002e130c(stream, path, size);
+        }
+
+        if ((write_open & 0x80000000u) != 0u) {
+            // 2. Delete the stale file (or record the null-path error) and
+            //    retry the write open once.
+            if (path == nullptr) {
+                *reinterpret_cast<u32*>(0x004651E8u + 0x10u) = kNullPathErr;
+            } else if (kind == 0u) {
+                engine_func_002cbee0(path);
+            } else if (kind == 1u) {
+                engine_func_0022033c(path);
+            } else if (kind == 2u) {
+                engine_func_002e13e4(path);
+            }
+
+            write_open = kErr;
+            if (kind == 0u) {
+                write_open = engine_func_002cbde4(stream, path, size);
+            } else if (kind == 1u) {
+                write_open = engine_func_00220234(stream, path, size);
+            } else if (kind == 2u) {
+                write_open = engine_func_002e130c(stream, path, size);
+            }
+        }
+
+        // The original re-tests the write-open result here.
+        open_res = write_open;
+    }
+
+    if ((open_res & 0x80000000u) != 0u) {
+        engine_func_002bb9c8(stream, 0u);
+        return 0u;
+    }
+
+    // 3. Write the buffer at offset 0.
+    u32 write_res = kErr;
+    if (kind == 0u) {
+        write_res = engine_func_00220184(stream, 0u, buf, size);
+    } else if (kind == 1u) {
+        write_res = engine_func_00210364(stream, 0u, buf, size);
+    } else if (kind == 2u) {
+        write_res = engine_func_002d5f20(stream, 0u, buf, size);
+    }
+
+    if ((write_res & 0x80000000u) != 0u) {
+        engine_func_002bb9c8(stream, 0u);
+        return 0u;
+    }
+
+    // 4. Close the stream.
+    u32 close_res = kErr;
+    if (kind == 0u) {
+        close_res = engine_func_0024ac80(stream);
+    } else if (kind == 1u) {
+        close_res = engine_func_0024ac48(stream);
+    } else if (kind == 2u) {
+        close_res = engine_func_0024ac10(stream);
+    } else if (kind == 3u) {
+        close_res = engine_func_0024acb8(stream);
+    }
+
+    // 5. Destroy the stream and report success unless close failed.
+    engine_func_002bb9c8(stream, 0u);
+    return ((close_res & 0x80000000u) == 0u) ? 1u : 0u;
 }
 
 // DECOMP_FUNC(0x003525b8, 796)
