@@ -10034,44 +10034,136 @@ extern "C" void script_vm_func_0020d7b8() {
     }
 }
 
+namespace func_292c7c {
+// Word at 0x00407FC0 is the base of a 256-entry table, four 32-bit floats per
+// entry (16 bytes). The original loads each entry's f0/f1 and f2/f3 as two
+// 8-byte vectors and interpolates f0/f1 by the fractional part of the index.
+constexpr u32 kTableAddress = 0x00407FC0u;
+// Constant 0x47800000 in the literal pool: 65536.0f. It is both the reduction
+// period and (as a bit pattern) the integer loop bound.
+constexpr f32 kPeriod = 65536.0f;
+constexpr s32 kPeriodBits = 0x47800000;
+
+struct TableEntry {
+    f32 f0;
+    f32 f1;
+    f32 f2;
+    f32 f3;
+};
+
+inline u32 bits_of(f32 value) {
+    u32 bits;
+    __builtin_memcpy(&bits, &value, sizeof(bits));
+    return bits;
+}
+
+// vabs.f32 followed by repeated vsub.f32 of 65536.0 while the absolute value's
+// bit pattern is at least 0x47800000 when compared as a signed word. For the
+// finite non-negative inputs the absolute value can produce, the signed and
+// unsigned comparisons agree. The original loops forever on +infinity/NaN, so
+// those inputs are outside the recovered domain.
+inline f32 abs_reduced(f32 value) {
+    f32 reduced = __builtin_fabsf(value);
+    while (static_cast<s32>(bits_of(reduced)) >= kPeriodBits) {
+        reduced -= kPeriod;
+    }
+    return reduced;
+}
+
+// vmla.f32 f0 + fraction * f2 (multiply-accumulate on the target VFP).
+inline f32 lerp(f32 base, f32 fraction, f32 delta) {
+    return base + fraction * delta;
+}
+}  // namespace func_292c7c
+
 // DECOMP_FUNC(0x00292c7c, 500)
-// 121 ARM instructions through unconditional bx; 16 trailing data bytes.
-extern "C" __attribute__((naked)) void battle_func_00292c7c() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xeddf1a77, 0xe92d03f0, 0xeeb40ae1, 0xe59f21d4\n"
-        ".word 0xeef1fa10, 0xeeb00ac0, 0xeef40ae1, 0x33a03001\n"
-        ".word 0x23a03000, 0xee105a10, 0xeef1fa10, 0xeef00ae0\n"
-        ".word 0xeeb41ae1, 0x33a0c001, 0x23a0c000, 0xeef1fa10\n"
-        ".word 0xeeb01ac1, 0xeddf1a68, 0x33a04001, 0x23a04000\n"
-        ".word 0xe1550002, 0xba000003, 0xee300a61, 0xee105a10\n"
-        ".word 0xe1550002, 0xaafffffb, 0xee105a90, 0xe1550002\n"
-        ".word 0xba000003, 0xee700ae1, 0xee105a90, 0xe1550002\n"
-        ".word 0xaafffffb, 0xee115a10, 0xe1550002, 0xba000003\n"
-        ".word 0xee311a61, 0xee115a10, 0xe1550002, 0xaafffffb\n"
-        ".word 0xeefc1ac0, 0xe3530000, 0xee112a90, 0xeefc1ae0\n"
-        ".word 0xe6ff2072, 0xe20270ff, 0xee115a90, 0xeefc1ac1\n"
-        ".word 0xe6ff5075, 0xe20580ff, 0xee116a90, 0xee012a90\n"
-        ".word 0xe59f2118, 0xe6ff6076, 0xe20690ff, 0xeeb82a61\n"
-        ".word 0xee015a90, 0xe0825207, 0xedd53a01, 0xeef82a61\n"
-        ".word 0xee016a90, 0xe0826208, 0xee302a42, 0xe0822209\n"
-        ".word 0xed960a00, 0xed924a01, 0xeef81a61, 0xee702ae2\n"
-        ".word 0xedd20a00, 0xe2822008, 0xecd26a02, 0xe2802024\n"
-        ".word 0xee313a61, 0xed951a00, 0xe2855008, 0xedd61a01\n"
-        ".word 0xe2866008, 0xecd54a02, 0xecd65a02, 0xee021a24\n"
-        ".word 0xee430a26, 0xee423a05, 0xee020aa5, 0xee034a07\n"
-        ".word 0xee421a86, 0x1eb11a41, 0xe35c0000, 0x1eb10a40\n"
-        ".word 0xe3540000, 0x1ef10a60, 0xee213a04, 0xee232a84\n"
-        ".word 0xee244a21, 0xeef12a40, 0xe3510000, 0xee635aa0\n"
-        ".word 0xee215a20, 0xee600aa1, 0xedc02a08, 0xee211a21\n"
-        ".word 0xee631aa1, 0xed804a00, 0xeef02a65, 0xeef04a45\n"
-        ".word 0xedc00a04, 0xee532a00, 0xee153a80, 0xee424a00\n"
-        ".word 0xee052a00, 0xedc02a01, 0xed803a06, 0xedc04a02\n"
-        ".word 0xed802a05, 0xec821a02, 0x0a000003, 0xe3a01000\n"
-        ".word 0xe580100c, 0xe580101c, 0xe580102c, 0xe8bd03f0\n"
-        ".word 0xe12fff1e, 0x00000000, 0x47800000, 0x47800000\n"
-        ".word 0x00407fc0\n"
-    );
+//
+// Builds a 3x3 row-major matrix (three 4-word rows) in the buffer at r0 from
+// three signed angles in s0/s1/s2. Each angle is taken absolute, reduced modulo
+// 65536.0f by repeated subtraction, split into an 8-bit table index and a
+// fractional part, and interpolated through the four-float table at 0x00407FC0.
+// The original sign of each angle negates its own interpolated pair before the
+// final matrix products. When r1 is non-zero the three padding words at
+// +0x0C, +0x1C and +0x2C are zeroed; otherwise they are left untouched.
+extern "C" void battle_func_00292c7c(void* matrix, u32 clear_padding, f32 angle0,
+                                    f32 angle1, f32 angle2) {
+    using namespace func_292c7c;
+
+    f32 const x = abs_reduced(angle0);
+    f32 const y = abs_reduced(angle1);
+    f32 const z = abs_reduced(angle2);
+
+    // vcmpe.f32 sN, #0.0 before vabs; the sign flags are consumed after the
+    // absolute value is taken. NaN compares false here, like the original.
+    bool const negative_x = angle0 < 0.0f;
+    bool const negative_y = angle1 < 0.0f;
+    bool const negative_z = angle2 < 0.0f;
+
+    // vcvt.u32.f32 truncates; uxth keeps the low 16 bits for the fraction and
+    // the low 8 bits select the table entry.
+    u32 const int_x = static_cast<u32>(x);
+    u32 const int_y = static_cast<u32>(y);
+    u32 const int_z = static_cast<u32>(z);
+    u8 const index_x = static_cast<u8>(int_x);
+    u8 const index_y = static_cast<u8>(int_y);
+    u8 const index_z = static_cast<u8>(int_z);
+    f32 const frac_x = x - static_cast<f32>(int_x & 0xFFFFu);
+    f32 const frac_y = y - static_cast<f32>(int_y & 0xFFFFu);
+    f32 const frac_z = z - static_cast<f32>(int_z & 0xFFFFu);
+
+    TableEntry const* const table =
+        reinterpret_cast<TableEntry const*>(kTableAddress);
+    TableEntry const& ex = table[index_x];
+    TableEntry const& ey = table[index_y];
+    TableEntry const& ez = table[index_z];
+
+    f32 a = lerp(ex.f0, frac_x, ex.f2);
+    f32 b = lerp(ex.f1, frac_x, ex.f3);
+    f32 c = lerp(ey.f0, frac_y, ey.f2);
+    f32 d = lerp(ey.f1, frac_y, ey.f3);
+    f32 e = lerp(ez.f0, frac_z, ez.f2);
+    f32 f = lerp(ez.f1, frac_z, ez.f3);
+
+    // vnegne.f32: each pair is negated by its own angle's original sign.
+    if (negative_x) {
+        a = -a;
+    }
+    if (negative_y) {
+        c = -c;
+    }
+    if (negative_z) {
+        e = -e;
+    }
+
+    f32* const out = static_cast<f32*>(matrix);
+
+    // Products the original forms as standalone vmul.f32 before the
+    // multiply-accumulate stage (each stays rounded separately).
+    f32 const af = a * f;
+    f32 const bf = b * f;
+    f32 const fd = f * d;
+    f32 const be = b * e;
+    f32 const ae = a * e;
+    f32 const ed = e * d;
+    f32 const ad = a * d;
+    f32 const bd = b * d;
+
+    out[8] = -c;                // +0x20
+    out[0] = fd;                // +0x00
+    // VNMLS Sd, Sn, Sm computes Sn*Sm - Sd (negated multiply-subtract).
+    out[1] = af * c - be;       // +0x04  vnmls
+    out[6] = be * c - af;       // +0x18  vnmls
+    out[2] = ae + bf * c;       // +0x08  vmla
+    out[5] = bf + ae * c;       // +0x14  vmla
+    out[4] = ed;                // +0x10
+    out[9] = ad;                // +0x24
+    out[10] = bd;               // +0x28
+
+    if (clear_padding != 0u) {
+        out[3] = 0.0f;   // +0x0C
+        out[7] = 0.0f;   // +0x1C
+        out[11] = 0.0f;  // +0x2C
+    }
 }
 
 // DECOMP_FUNC(0x0036eaf4, 500)
