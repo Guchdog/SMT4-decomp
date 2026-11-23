@@ -8902,40 +8902,200 @@ extern "C" void engine_func_002a37dc(void* part_raw, u32 color) {
     }
 }
 
-// DECOMP_FUNC(0x002adc74, 448)
-// 107 ARM instructions through unconditional pop; 20 trailing data bytes.
-extern "C" __attribute__((naked)) void engine_func_002adc74() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4fff, 0xe24dd074, 0xe3a04000, 0xe1a06002\n"
-        ".word 0xe1a07003, 0xe1a0b001, 0xe28d10a8, 0xe8910700\n"
-        ".word 0xebfa617a, 0xe1b05000, 0x0a000030, 0xe3a01e13\n"
-        ".word 0xeb005ba1, 0xe1a00005, 0xebfa61ae, 0xe1b05000\n"
-        ".word 0x0a00002a, 0xe58d4040, 0xe58d6028, 0xe58d7024\n"
-        ".word 0xe59b0008, 0xe3ccc0ff, 0xe28de068, 0xe20000ff\n"
-        ".word 0xe89b000a, 0xe180000c, 0xe88e0041, 0xe28d0060\n"
-        ".word 0xe28de04c, 0xe880000a, 0xe1a02004, 0xe59b100c\n"
-        ".word 0xe58d4048, 0xe59f6120, 0xe88e0006, 0xe3a03002\n"
-        ".word 0xe58d2054, 0xe58d2058, 0xe5966010, 0xe3a07001\n"
-        ".word 0xe28de010, 0xe58d300c, 0xe58d3000, 0xe28d1048\n"
-        ".word 0xe3a0b014, 0xe58d7018, 0xe88e0802, 0xe28de004\n"
-        ".word 0xe3a0c010, 0xe88e1001, 0xe28de01c, 0xe59f30dc\n"
-        ".word 0xe28d1040, 0xe28d0020, 0xe88e0044, 0xeb002006\n"
-        ".word 0xe1a06000, 0xe1b00fa0, 0x0a000002, 0xea00001d\n"
-        ".word 0xe59f60bc, 0xea000024, 0xe59f00b8, 0xe59d6040\n"
-        ".word 0xeb001fe4, 0xe3500000, 0xe320f000, 0x0a000012\n"
-        ".word 0xe59f10a4, 0xe8800042, 0xe1a06000, 0xe88d0700\n"
-        ".word 0xe1a01000, 0xe59d2028, 0xe59d3024, 0xe1a00005\n"
-        ".word 0xebfa603c, 0xe1a07000, 0xe1b00fa0, 0x03a06000\n"
-        ".word 0x0a000008, 0xe5960000, 0xe590102c, 0xe1a00006\n"
-        ".word 0xe12fff31, 0xe1a06007, 0xea000002, 0xe59d0040\n"
-        ".word 0xef000023, 0xe59f6048, 0xe2060102, 0xe3500000\n"
-        ".word 0xa1a04005, 0xa3a06000, 0xaa000003, 0xe5950000\n"
-        ".word 0xe5901030, 0xe1a00005, 0xe12fff31, 0xe1b01fa6\n"
-        ".word 0xe1a00006, 0x1a000002, 0xe59d0074, 0xe5804000\n"
-        ".word 0xe3a00000, 0xe28dd084, 0xe8bd8ff0, 0x0044e650\n"
-        ".word 0x2345678a, 0xd8604659, 0x004d4358, 0x00420998\n"
-    );
+// ---------------------------------------------------------------------------
+// 0x002ADC74 -- synchronous service request plus callback-wrapper construction
+//
+// The routine obtains a 0x130-byte record from the shared engine context, sends
+// a two-buffer IPC-style request through func_002b5d70, wraps the returned reply
+// handle in a pooled callback object (vtable 0x00420998) and hands the record,
+// the wrapper and five trailing parameters to ui_func_00145e9c.  Every failure
+// releases what was built so far and leaves `*out` untouched; only full success
+// publishes the record through `*out` and returns 0.
+//
+// Recovered contract (ARM 0x002ADC74..0x002ADE33, 107 instructions; the final
+// five words are the literal pool 0x0044E650, 0x2345678A, 0xD8604659,
+// 0x004D4358, 0x00420998):
+//   * r0 = u32* out; r1 = descriptor pointer; r2 = arg3, r3 = arg4; the stack
+//     carries arg5, arg6 and arg7 at [sp], [sp+4], [sp+8]
+//     (0x002ADC8C..0x002ADC90).
+//   * 0x002ADC94..0x002ADC9C: engine_func_00146284() reads no argument register
+//     (it overwrites r0-r3 before using them) and returns the shared context;
+//     null returns 0xD8604659 with `*out` untouched.
+//   * 0x002ADCA0..0x002ADCB4: engine_func_002c4b30(shared, 0x130) zeroes the
+//     record, then func_0014636c(shared) initialises it and returns its own
+//     argument.  The pinned callee therefore never returns null, but the branch
+//     is kept because the original tests r0.
+//   * 0x002ADCC4..0x002ADD4C: the request buffers are staged in the frame.
+//     0x10 bytes at sp+0x60 = {descriptor[0], descriptor[1], selector, arg3};
+//     0x14 bytes at sp+0x48 = {0, descriptor[3], 0, 0, 0}.  selector is
+//     `(descriptor[2] & 0xFF) | 0xFFFFFF00`: `bic ip,ip,#0xff` clears the low
+//     byte of r12, which still holds the 0xFFFFFFFF last written by
+//     func_0014636c (`mvn ip,#0` at 0x001463EC), so the fill is a fixed
+//     constant in this build and is materialised directly here.  0x0044E650 is
+//     the absolute base of the shared block; its +0x10 word is the handle whose
+//     address is passed as func_002b5d70's first argument.
+//   * 0x002ADD50: func_002b5d70(&handle, &reply, 0, 0x2345678A, 2, &command,
+//     0x10, 2, &request, 0x14, 1, 0).  Only the sign of the returned value is
+//     tested; non-negative values continue, negative values release the record
+//     through vtable+0x30 and are returned unchanged.
+//   * 0x002ADD6C..0x002ADD8C: engine_func_002b5d0c(0x004D4358) returns a pooled
+//     wrapper or null.  On success its first two words are overwritten with the
+//     0x00420998 vtable and the reply handle.  On null the raw `svc #0x23`
+//     executes with the reply in r0 before the record is released, and the same
+//     error status is returned.
+//   * 0x002ADD90..0x002ADDA4: ui_func_00145e9c(record, wrapper, arg3, arg4,
+//     arg5, arg6, arg7): four register arguments and three stack words.  A
+//     negative status releases the wrapper through vtable+0x2C, then the record
+//     through vtable+0x30, and returns the status unchanged.
+//   * 0x002ADE00..0x002ADE10: a non-negative status stores the record at `*out`
+//     and returns 0.
+//
+// Indirect calls: the two vtable slots above.  Their concrete targets are
+// runtime data (0x00420998 is the wrapper vtable) and were not reconstructed.
+// ---------------------------------------------------------------------------
+
+namespace engine_adc74 {
+
+constexpr u32 kSharedBlockPointer = 0x0044E650;  // literal 0x0044E650
+constexpr u32 kSharedHandleOffset = 0x10;        // `ldr r6,[r6,#0x10]`
+constexpr u32 kCallbackPool = 0x004D4358;        // literal 0x004D4358
+constexpr u32 kCallbackVtable = 0x00420998;      // literal 0x00420998
+constexpr u32 kRequestMagic = 0x2345678A;        // literal 0x2345678A
+constexpr u32 kErrorStatus = 0xD8604659;         // literal 0xD8604659
+constexpr u32 kSelectorFill = 0xFFFFFF00;        // `bic ip,ip,#0xff`, ip=-1
+constexpr u32 kRecordSize = 0x130;               // `mov r1,#0x130`
+constexpr u32 kCommandBytes = 0x10;              // sp+0x60 buffer size
+constexpr u32 kRequestBytes = 0x14;              // sp+0x48 buffer size
+constexpr u32 kBufferCountA = 2;                 // `mov r3,#2` -> [sp]
+constexpr u32 kBufferCountB = 2;                 // `str r3,[sp,#0xc]`
+constexpr u32 kBufferCountC = 1;                 // `mov r7,#1` -> [sp,#0x18]
+constexpr u32 kCallbackReleaseSlot = 0x2C / 4;   // vtable+0x2C
+constexpr u32 kRecordReleaseSlot = 0x30 / 4;     // vtable+0x30
+
+// 0x10-byte staging block at sp+0x60 (size passed to func_002b5d70).
+struct ServiceCommand {
+    u32 field_0;
+    u32 field_4;
+    u32 selector;
+    u32 arg3;
+};
+
+// 0x14-byte staging block at sp+0x48 (size passed to func_002b5d70).
+struct ServiceRequest {
+    u32 zero_0;
+    u32 field_c;
+    u32 zero_1;
+    u32 zero_2;
+    u32 zero_3;
+};
+
+// Wrapper returned by engine_func_002b5d0c; both words are overwritten here.
+struct CallbackWrapper {
+    const void* vtable;
+    u32 handle;
+};
+
+}  // namespace engine_adc74
+
+// Direct callees.  engine_func_002c4b30 (AsdMem_Zero) is declared above.
+extern "C" void* engine_func_00146284();
+extern "C" void* func_0014636c(void* record);
+extern "C" s32 func_002b5d70(const u32* handle_slot, u32* reply, u32 zero_low,
+                             u32 magic, u32 count_a, const void* command,
+                             u32 command_size, u32 count_b, const void* request,
+                             u32 request_size, u32 count_c, u32 zero_high);
+extern "C" void* engine_func_002b5d0c(void* pool);
+extern "C" s32 ui_func_00145e9c(void* record, void* callback, u32 arg2,
+                                u32 arg3, u32 arg4, u32 arg5, u32 arg6);
+// 0x002ADDD4 is a raw `svc #0x23` in the original with the reply handle in r0.
+// The kernel service itself is outside this module; the call stays explicit so
+// the argument and its place in the sequence are preserved.
+extern "C" void engine_svc_002addd4(u32 reply);
+
+namespace {
+
+using VirtualFn = void (*)(void*);
+
+// `ldr r0,[object]; ldr r1,[r0,#slot]; mov r0,object; blx r1`.
+void CallVirtualSlot(void* object, u32 slot) {
+    VirtualFn* const vtable = *reinterpret_cast<VirtualFn**>(object);
+    vtable[slot](object);
+}
+
+}  // namespace
+
+extern "C" u32 engine_func_002adc74(u32* out, const u32* descriptor, u32 arg3,
+                                    u32 arg4, u32 arg5, u32 arg6, u32 arg7) {
+    using namespace engine_adc74;
+
+    // 0x002ADC94..0x002ADC9C: shared-context getter, then the null gate.
+    void* const shared = engine_func_00146284();
+    if (shared == nullptr) {
+        return kErrorStatus;
+    }
+
+    // 0x002ADCA0..0x002ADCB4: zero the record, then construct it.
+    engine_func_002c4b30(shared, kRecordSize);
+    void* const record = func_0014636c(shared);
+    if (record == nullptr) {
+        return kErrorStatus;
+    }
+
+    // 0x002ADCC4..0x002ADD0C: stage both request buffers.
+    ServiceCommand command;
+    command.field_0 = descriptor[0];
+    command.field_4 = descriptor[1];
+    command.selector = (descriptor[2] & 0xFFu) | kSelectorFill;
+    command.arg3 = arg3;
+
+    ServiceRequest request;
+    request.zero_0 = 0;
+    request.field_c = descriptor[3];
+    request.zero_1 = 0;
+    request.zero_2 = 0;
+    request.zero_3 = 0;
+
+    u32 handle =
+        *reinterpret_cast<const u32*>(kSharedBlockPointer + kSharedHandleOffset);
+
+    // 0x002ADD10..0x002ADD50: send the request; the reply lands in `reply`.
+    u32 reply = 0;
+    const s32 request_status = func_002b5d70(
+        &handle, &reply, 0, kRequestMagic, kBufferCountA, &command,
+        kCommandBytes, kBufferCountB, &request, kRequestBytes, kBufferCountC, 0);
+    if (request_status < 0) {
+        // 0x002ADD60 -> 0x002ADDDC..0x002ADDFC: release the record only.
+        CallVirtualSlot(record, kRecordReleaseSlot);
+        return static_cast<u32>(request_status);
+    }
+
+    // 0x002ADD6C..0x002ADD80: allocate the pooled callback wrapper.
+    CallbackWrapper* const wrapper = static_cast<CallbackWrapper*>(
+        engine_func_002b5d0c(reinterpret_cast<void*>(kCallbackPool)));
+    if (wrapper == nullptr) {
+        // 0x002ADDD0..0x002ADDD8: raw svc with the reply, then release the record.
+        engine_svc_002addd4(reply);
+        CallVirtualSlot(record, kRecordReleaseSlot);
+        return kErrorStatus;
+    }
+
+    // 0x002ADD84..0x002ADD8C: publish the vtable and the reply handle.
+    wrapper->vtable = reinterpret_cast<const void*>(kCallbackVtable);
+    wrapper->handle = reply;
+
+    // 0x002ADD90..0x002ADDA4: hand the record and wrapper to the init routine.
+    const s32 init_status =
+        ui_func_00145e9c(record, wrapper, arg3, arg4, arg5, arg6, arg7);
+    if (init_status < 0) {
+        // 0x002ADDB8..0x002ADDCC: release the wrapper, then the record.
+        CallVirtualSlot(wrapper, kCallbackReleaseSlot);
+        CallVirtualSlot(record, kRecordReleaseSlot);
+        return static_cast<u32>(init_status);
+    }
+
+    // 0x002ADDE4..0x002ADE14: full success publishes the record through `*out`.
+    *out = static_cast<u32>(reinterpret_cast<std::uintptr_t>(record));
+    return 0;
 }
 
 // DECOMP_FUNC(0x0033d164, 448)

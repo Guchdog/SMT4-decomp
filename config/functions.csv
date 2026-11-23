@@ -5312,7 +5312,7 @@ address,size,status,category,name,src_file
 0x002adb54,48,matching,unknown,func_002adb54,src/engine/leaf_batch35_a.cpp
 0x002adb84,96,matching,unknown,func_002adb84,src/engine/leaf_batch35_a.cpp
 0x002adbe4,144,matching,ui,ui_func_002adbe4,src/engine/leaf_batch38_c.cpp
-0x002adc74,448,matching,engine,engine_func_002adc74,src/engine/leaf_batch41_c.cpp
+0x002adc74,448,non_matching,engine,engine_func_002adc74,src/engine/leaf_batch41_c.cpp
 0x002ade34,224,matching,battle,battle_func_002ade34,src/engine/leaf_batch43_c.cpp
 0x002adf14,24,matching,engine,engine_func_002adf14,src/engine/leaf_batch22_b.cpp
 0x002adf2c,328,matching,engine,engine_func_002adf2c,src/engine/leaf_batch41_a.cpp
