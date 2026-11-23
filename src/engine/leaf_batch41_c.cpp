@@ -10805,42 +10805,273 @@ extern "C" void engine_func_002c2210(void* self, u32 mode) {
     *reinterpret_cast<volatile f32*>(block + kModeEndScaleOffset) = kOne;
 }
 
+// Recovered contract for the S4 audio-device teardown.
+//
+// ARM 0x0034EBC8..0x0034ED8F = 114 instructions through the unconditional
+// `pop {r4,r5,r6,r7,pc}`; the twelve bytes at 0x0034ED90 are the literal pool
+// 0x0044D0F8 (device block), 0x004C40F8 (memory lock), 0x0044D128 (audio
+// thread handle/state).  No argument is read; r8-r11 are untouched.
+//
+//   * 0x0044D0F8 is the S4 audio-device block modelled by include/nn/mobiclip.h:
+//     +0x00 byte gate (written 0), +0x04 device object, +0x08 slot array,
+//     +0x0C heap buffer, +0x10 heap object, +0x14 slot count.  Each slot is
+//     0x70 bytes (`rsb r1,r4,r4,lsl #3` then `lsl #4`); only +0x00 and +0x04
+//     are proven.  0x0044D128 is the 8-byte sync/thread block (handle + state
+//     byte) and 0x004C40F8 is the shared AsdMemLock.
+//   * [device+0x04] == 0 returns immediately with r0 = 0.
+//   * Otherwise: lock, release slot+0x00 of every slot through
+//     0x0015A3F4(slot, 1), reloading the count after each iteration, then
+//     unlock and clear the byte gate at [device+0x00].
+//   * Wait on the audio-thread handle with 0x002C42FC(&out, &handle, 1, 0,
+//     -1, -1); a negative Result calls 0x002C5468(Result).  Then
+//     [thread+0x04] = 1 and 0x002C41E8(thread) (guarded one-shot wait, a
+//     no-op because the byte was just set).  The handle is reloaded; when
+//     non-zero it is closed with `svc #0x23` and the word zeroed.
+//   * Release the heap object with 0x002C4160, reload it, and when the reload
+//     is non-null call 0x002C4160 again plus the free-if-non-null wrapper
+//     0x002B2520; zero the field.  Free [device+0x0C] through 0x002C4360 and
+//     zero it.
+//   * Second slot pass: for every index with (s32)index >= 0 and
+//     index < count, lock; release slot+0x00 through 0x002BD620 and zero it;
+//     release slot+0x04 through vtable slot +0x04 of the device (device and
+//     vtable reloaded per iteration) and zero it; unlock.  The count is
+//     reloaded at the latch, so an observer can move the bound.
+//   * Write 0xFFFFFFFF to [0x004C40F8+0x08], release the slot array through
+//     the same vtable slot, clear [device+0x04], then run 0x0010FE58 ->
+//     0x0010FB6C -> (tail) 0x0010FB9C.  The three stages receive the previous
+//     stage's r0 and the routine returns 0x0010FB9C's r0.
+namespace s4_audio_teardown {
+
+constexpr u32 kDeviceAddress = 0x0044D0F8;   // S4AudioDevice block
+constexpr u32 kThreadAddress = 0x0044D128;   // thread handle + state byte
+constexpr u32 kLockAddress = 0x004C40F8;     // AsdMemLock
+
+constexpr u32 kGateOffset = 0x00;            // u8  cleared on teardown
+constexpr u32 kDeviceOffset = 0x04;          // void* lifetime gate/device
+constexpr u32 kSlotBaseOffset = 0x08;        // Slot* array
+constexpr u32 kHeapBufferOffset = 0x0C;      // void* freed with 0x002C4360
+constexpr u32 kHeapOffset = 0x10;            // void* released twice + freed
+constexpr u32 kSlotCountOffset = 0x14;       // u32 reloaded per iteration
+constexpr u32 kLockCountOffset = 0x08;       // u32 written 0xFFFFFFFF
+constexpr u32 kThreadHandleOffset = 0x00;    // u32 kernel handle
+constexpr u32 kThreadStateOffset = 0x04;     // u8  set to 1
+
+constexpr u32 kSlotStride = 0x70;            // 7 * 16 bytes
+constexpr u32 kSlotFirstOffset = 0x00;       // released twice
+constexpr u32 kSlotSecondOffset = 0x04;      // released through the vtable
+
+constexpr u32 kSlotReleaseMode = 1;          // r1 of 0x0015A3F4
+constexpr u32 kWaitCount = 1;                // r2 of 0x002C42FC
+constexpr u32 kWaitAll = 0;                  // r3 of 0x002C42FC
+constexpr u32 kNoTimeout = 0xFFFFFFFF;       // r4/r5 of 0x002C42FC
+constexpr u32 kVtableReleaseIndex = 1;       // vtable slot +0x04
+
+// Slot layout proven by this function only.
+struct Slot {
+    void* first;                             // +0x00
+    void* second;                            // +0x04
+    u8 pad_08[kSlotStride - 0x08];
+};
+static_assert(sizeof(Slot) == kSlotStride, "slot stride");
+static_assert(offsetof(Slot, first) == kSlotFirstOffset, "slot+0x00");
+static_assert(offsetof(Slot, second) == kSlotSecondOffset, "slot+0x04");
+
+struct DeviceBlock {
+    u8 gate;                                 // +0x00, only the byte is cleared
+    u8 pad_01[0x03];
+    void* device;                            // +0x04
+    Slot* slots;                             // +0x08
+    void* heap_buffer;                       // +0x0C
+    void* heap;                              // +0x10
+    u32 slot_count;                          // +0x14
+};
+static_assert(offsetof(DeviceBlock, device) == kDeviceOffset, "device+0x04");
+static_assert(offsetof(DeviceBlock, slots) == kSlotBaseOffset, "device+0x08");
+static_assert(offsetof(DeviceBlock, heap_buffer) == kHeapBufferOffset,
+              "device+0x0C");
+static_assert(offsetof(DeviceBlock, heap) == kHeapOffset, "device+0x10");
+static_assert(offsetof(DeviceBlock, slot_count) == kSlotCountOffset,
+              "device+0x14");
+
+struct ThreadBlock {
+    u32 handle;                              // +0x00
+    u8 state;                                // +0x04
+    u8 pad_05[0x03];
+};
+static_assert(offsetof(ThreadBlock, state) == kThreadStateOffset,
+              "thread+0x04");
+
+// The two device vtable calls (per slot and for the whole array) pass the
+// device object and the object being released; the return value of the final
+// call is forwarded to the first shutdown stage.
+using DeviceNotify = u32 (*)(void* device, void* object);
+
+// 0x0034EC84: the original forks `svc #0x23` directly (svcCloseHandle).
+inline void svc_close_handle(u32 handle) {
+    register u32 r0 __asm__("r0") = handle;
+    __asm__ volatile("svc #0x23" : "+r"(r0) : : "r1", "r2", "r3", "memory");
+}
+
+}  // namespace s4_audio_teardown
+
+namespace s4_audio_teardown_calls {
+
+// 0x002C3AA8 / 0x002C3A24: AsdMemLock acquire/release (asd_symbols.h).
+extern "C" void S4AudioTd_LockAcquire(void* lock) __asm__("engine_func_002c3aa8");
+extern "C" void S4AudioTd_LockRelease(void* lock) __asm__("engine_func_002c3a24");
+
+// 0x0015A3F4: per-slot audio release, called with mode 1.
+extern "C" void S4AudioTd_SlotRelease(void* slot, u32 mode)
+    __asm__("func_0015a3f4");
+
+// 0x002C42FC: process-wide-key trampoline (`svc #0x25`).  It writes the
+// kernel's r1 to its first argument and returns the signed Result.  The
+// function-local handle copy is the one-element handle array at r1.
+extern "C" s32 S4AudioTd_WaitThread(u32* out, u32* handles,
+                                            u32 count, u32 wait_all,
+                                            u32 timeout_lo, u32 timeout_hi)
+    __asm__("engine_func_002c42fc");
+
+// 0x002C5468: fatal-result path for a negative Result.
+extern "C" void S4AudioTd_AbortOnFailure(s32 result)
+    __asm__("engine_func_002c5468");
+
+// 0x002C41E8: flag-guarded one-shot wait (byte +0x04 of the sync block).
+extern "C" void S4AudioTd_WaitOnce(void* sync) __asm__("engine_func_002c41e8");
+
+// 0x002C4160: shared-object release used by the sibling teardowns.
+extern "C" void S4AudioTd_ObjectRelease(void* object)
+    __asm__("script_vm_func_002c4160");
+
+// 0x002B2520: free the object when non-null (tail call to 0x002C4360).
+extern "C" void S4AudioTd_FreeIfNotNull(void* object)
+    __asm__("engine_func_002b2520");
+
+// 0x002C4360: heap free.
+extern "C" void S4AudioTd_Free(void* object) __asm__("engine_func_002c4360");
+
+// 0x002BD620: releases one audio object stored in the slot.
+extern "C" void S4AudioTd_AudioObjectRelease(void* object) __asm__("func_002bd620");
+
+// 0x0010FE58 / 0x0010FB6C / 0x0010FB9C: the three shutdown stages.  Each
+// receives the previous stage's r0 (the real routines overwrite r0 without
+// reading it) and the last one supplies the result of this function.
+extern "C" u32 S4Audio_ShutdownStageA(u32 register_0)
+    __asm__("func_0010fe58");
+extern "C" u32 S4Audio_ShutdownStageB(u32 register_0)
+    __asm__("func_0010fb6c");
+extern "C" u32 S4Audio_ShutdownStageC(u32 register_0)
+    __asm__("func_0010fb9c");
+
+}  // namespace s4_audio_teardown_calls
+
 // DECOMP_FUNC(0x0034ebc8, 468)
-// 114 ARM instructions through unconditional pop; 12 trailing data bytes.
-extern "C" __attribute__((naked)) void engine_func_0034ebc8() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d40f0, 0xe24dd014, 0xe59f61b8, 0xe5960004\n"
-        ".word 0xe3500000, 0x0a000069, 0xe59f01ac, 0xebfdd3af\n"
-        ".word 0xe5960014, 0xe3a04000, 0xe3500000, 0x9a000009\n"
-        ".word 0xe5960008, 0xe0641184, 0xe7900201, 0xe3500000\n"
-        ".word 0x13a01001, 0x1bf82df8, 0xe5960014, 0xe2844001\n"
-        ".word 0xe1540000, 0x3afffff5, 0xe59f016c, 0xebfdd37e\n"
-        ".word 0xe3a07000, 0xe5c67000, 0xe59f5160, 0xe3e00000\n"
-        ".word 0xe1a01000, 0xe1a03007, 0xe5952000, 0xe88d0007\n"
-        ".word 0xe3a02001, 0xe28d1008, 0xe28d000c, 0xebfdd5a8\n"
-        ".word 0xe1b01fa0, 0xe320f000, 0x1bfdda00, 0xe3a00001\n"
-        ".word 0xe5c50004, 0xe59f0124, 0xebfdd55c, 0xe5950000\n"
-        ".word 0xe59f4118, 0xe3500000, 0x0a000001, 0xef000023\n"
-        ".word 0xe5847000, 0xe5960010, 0xebfdd532, 0xe5964010\n"
-        ".word 0xe3540000, 0x0a000004, 0xe1a00004, 0xebfdd52d\n"
-        ".word 0xe1a00004, 0xe320f000, 0xebfd8e1a, 0xe5867010\n"
-        ".word 0xe596000c, 0xebfdd5a7, 0xe586700c, 0xe5960014\n"
-        ".word 0xe3a04000, 0xe3500000, 0x8a000002, 0xea00001b\n"
-        ".word 0xe3540000, 0xba000016, 0xe1540000, 0x2a000013\n"
-        ".word 0xe59f00a4, 0xebfdd36d, 0xe5961008, 0xe0640184\n"
-        ".word 0xe0815200, 0xe5950000, 0xe3500000, 0x0a000001\n"
-        ".word 0xebfdba44, 0xe5857000, 0xe5951004, 0xe3510000\n"
-        ".word 0x0a000004, 0xe5960004, 0xe5902000, 0xe5922004\n"
-        ".word 0xe12fff32, 0xe5857004, 0xe59f005c, 0xebfdd33a\n"
-        ".word 0xe5960014, 0xe2844001, 0xe1540000, 0x3affffe3\n"
-        ".word 0xe59f1044, 0xe3e00000, 0xe5810008, 0xe5960004\n"
-        ".word 0xe5901000, 0xe5912004, 0xe5961008, 0xe12fff32\n"
-        ".word 0xe5867004, 0xebf70439, 0xe320f000, 0xe320f000\n"
-        ".word 0xebf7037b, 0xe28dd014, 0xe8bd40f0, 0xeaf70384\n"
-        ".word 0xe28dd014, 0xe8bd80f0, 0x0044d0f8, 0x004c40f8\n"
-        ".word 0x0044d128\n"
-    );
+extern "C" u32 engine_func_0034ebc8() {
+    using namespace s4_audio_teardown;
+    using namespace s4_audio_teardown_calls;
+
+    DeviceBlock* const device_block =
+        reinterpret_cast<DeviceBlock*>(kDeviceAddress);
+    ThreadBlock* const thread = reinterpret_cast<ThreadBlock*>(kThreadAddress);
+    u8* const lock = reinterpret_cast<u8*>(kLockAddress);
+
+    // 0x0034EBD4: the device pointer gates the whole teardown.
+    if (device_block->device == nullptr) {
+        return 0;
+    }
+
+    // 0x0034EBE0..0x0034EC1C: first slot pass, under the memory lock.
+    S4AudioTd_LockAcquire(lock);
+    u32 index = 0;
+    u32 count = device_block->slot_count;
+    if (count != 0) {
+        do {
+            Slot* const slot = &device_block->slots[index];
+            if (slot->first != nullptr) {
+                S4AudioTd_SlotRelease(slot->first, kSlotReleaseMode);
+            }
+            count = device_block->slot_count;
+            ++index;
+        } while (index < count);
+    }
+    S4AudioTd_LockRelease(lock);
+
+    // 0x0034EC2C: clear the device gate byte.
+    device_block->gate = 0;
+
+    // 0x0034EC34..0x0034EC70: wait for the audio thread once.
+    u32 handles[1] = {thread->handle};
+    u32 status_out;
+    const s32 status = S4AudioTd_WaitThread(
+        &status_out, handles, kWaitCount, kWaitAll, kNoTimeout, kNoTimeout);
+    if (status < 0) {
+        S4AudioTd_AbortOnFailure(status);
+    }
+    thread->state = 1;
+    S4AudioTd_WaitOnce(thread);
+
+    // 0x0034EC74..0x0034EC88: close the thread handle when still present.
+    const u32 thread_handle = thread->handle;
+    if (thread_handle != 0) {
+        svc_close_handle(thread_handle);
+        thread->handle = 0;
+    }
+
+    // 0x0034EC8C..0x0034ECC0: heap object release pair, then heap buffer free.
+    S4AudioTd_ObjectRelease(device_block->heap);
+    void* const heap = device_block->heap;
+    if (heap != nullptr) {
+        S4AudioTd_ObjectRelease(heap);
+        S4AudioTd_FreeIfNotNull(heap);
+    }
+    device_block->heap = nullptr;
+
+    S4AudioTd_Free(device_block->heap_buffer);
+    device_block->heap_buffer = nullptr;
+
+    // 0x0034ECC4..0x0034ED44: second slot pass.  The signed-index test at
+    // 0x0034ECD8 and the unsigned bound test at 0x0034ECE0 are both preserved;
+    // the count is reloaded at the latch (0x0034ED38).
+    index = 0;
+    count = device_block->slot_count;
+    if (count != 0) {
+        do {
+            if (static_cast<s32>(index) >= 0 && index < count) {
+                S4AudioTd_LockAcquire(lock);
+                Slot* const slot = &device_block->slots[index];
+                if (slot->first != nullptr) {
+                    S4AudioTd_AudioObjectRelease(slot->first);
+                    slot->first = nullptr;
+                }
+                if (slot->second != nullptr) {
+                    void* const current_device = device_block->device;
+                    void** const vtable =
+                        *reinterpret_cast<void***>(current_device);
+                    const DeviceNotify notify = reinterpret_cast<DeviceNotify>(
+                        vtable[kVtableReleaseIndex]);
+                    notify(current_device, slot->second);
+                    slot->second = nullptr;
+                }
+                S4AudioTd_LockRelease(lock);
+            }
+            count = device_block->slot_count;
+            ++index;
+        } while (index < count);
+    }
+
+    // 0x0034ED48..0x0034ED64: lock state marker, then release the whole array.
+    *reinterpret_cast<u32*>(lock + kLockCountOffset) = 0xFFFFFFFFu;
+    void* const live_device = device_block->device;
+    void** const live_vtable = *reinterpret_cast<void***>(live_device);
+    const DeviceNotify release =
+        reinterpret_cast<DeviceNotify>(live_vtable[kVtableReleaseIndex]);
+    const u32 notify_result = release(live_device, device_block->slots);
+    device_block->device = nullptr;
+
+    // 0x0034ED6C..0x0034ED84: r0 is chained through the shutdown stages.
+    const u32 stage_a = S4Audio_ShutdownStageA(notify_result);
+    const u32 stage_b = S4Audio_ShutdownStageB(stage_a);
+    return S4Audio_ShutdownStageC(stage_b);
 }
 
 // DECOMP_FUNC(0x002eb39c, 472)
