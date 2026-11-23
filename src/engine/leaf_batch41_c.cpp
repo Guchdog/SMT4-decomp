@@ -9460,41 +9460,116 @@ extern "C" u32 script_vm_func_00290874(void) {
     return camp_func_002b8794(kSlotFinal, kPriorityStatus, 0, kCommandMode);
 }
 
+// Direct callees of 0x0038BA94.  Tbb_* are ordinary C++-linkage functions
+// declared in ui/tbb_table.h; forward declarations keep this translation unit
+// self-contained.  engine_func_002c4b30 (AsdMem_Zero) is already declared above.
+namespace smt4::ui {
+struct Tbl1Header;
+struct TbcrHeader;
+const Tbl1Header* Tbb_GetSubTable(const TbcrHeader* container, u32 table_index);
+const void* Tbb_GetPayloadData(const Tbl1Header* table);
+u32 Tbb_GetRowCount(const Tbl1Header* table);
+} // namespace smt4::ui
+
+// 0x0038A364 renders one entry; the last two arguments are architected stack
+// words (buffer size 0x80 and the entry pointer repeated).
+extern "C" void engine_func_0038a364(
+    void* manager, const char* text, void* entry, u32 arg3, u32 size,
+    void* entry_again);
+
 // DECOMP_FUNC(0x0038ba94, 452)
-// 110 ARM instructions through unconditional pop; 12 trailing data bytes.
-extern "C" __attribute__((naked)) void script_vm_func_0038ba94() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d40f0, 0xe1a05000, 0xe5900048, 0xe24dd08c\n"
-        ".word 0xe3500000, 0x1595104c, 0x13510000, 0x0a000063\n"
-        ".word 0xe5d51045, 0xe3a06000, 0xe3510000, 0x0a000003\n"
-        ".word 0xe3a01000, 0xebfc8209, 0xebfcd4f2, 0xe1a06000\n"
-        ".word 0xe5d50045, 0xe3500000, 0x15950048, 0x13500000\n"
-        ".word 0x0a000056, 0xe3a01000, 0xebfc8200, 0xe320f000\n"
-        ".word 0xe320f000, 0xebfcd4d3, 0xe2507000, 0xe3a04000\n"
-        ".word 0x9a00004e, 0xe0860304, 0xe1d000d0, 0xe3500030\n"
-        ".word 0x379ff100, 0xea000046, 0x0038bbdc, 0x0038bbdc\n"
-        ".word 0x0038bbdc, 0x0038bbdc, 0x0038bbdc, 0x0038bbdc\n"
-        ".word 0x0038bbdc, 0x0038bc38, 0x0038bc38, 0x0038bc38\n"
-        ".word 0x0038bc38, 0x0038bbdc, 0x0038bc38, 0x0038bc38\n"
-        ".word 0x0038bc38, 0x0038bc38, 0x0038bc38, 0x0038bc38\n"
-        ".word 0x0038bbdc, 0x0038bbdc, 0x0038bc38, 0x0038bbdc\n"
-        ".word 0x0038bc38, 0x0038bbdc, 0x0038bbdc, 0x0038bbdc\n"
-        ".word 0x0038bbdc, 0x0038bbdc, 0x0038bbdc, 0x0038bc38\n"
-        ".word 0x0038bc38, 0x0038bc38, 0x0038bc38, 0x0038bbdc\n"
-        ".word 0x0038bbdc, 0x0038bbdc, 0x0038bbdc, 0x0038bbdc\n"
-        ".word 0x0038bbdc, 0x0038bbdc, 0x0038bbdc, 0x0038bbdc\n"
-        ".word 0x0038bbdc, 0x0038bbdc, 0x0038bbdc, 0x0038bbdc\n"
-        ".word 0x0038bbdc, 0x0038bbdc, 0xe3a01080, 0xe28d0008\n"
-        ".word 0xebfce3d1, 0xe0860304, 0xe2803001, 0xe2852024\n"
-        ".word 0xe28f1050, 0xe28d0008, 0xfafccafe, 0xe595104c\n"
-        ".word 0xe3a00080, 0xe3a03001, 0xe0812204, 0xe88d0005\n"
-        ".word 0xe59f0038, 0xe28d1008, 0xe5900000, 0xebfff9cf\n"
-        ".word 0xe595104c, 0xe3a0200c, 0xe0822204, 0xe3a00001\n"
-        ".word 0xe7c10002, 0xe2844001, 0xe1540007, 0x3affffb0\n"
-        ".word 0xe28dd08c, 0xe8bd80f0, 0x252f7325, 0x00000073\n"
-        ".word 0x00433130\n"
-    );
+// Rebuilds the "listed" flags of one sub-table from its row category bytes.
+//
+//   self+0x24: char[]  directory prefix used by the "%s/%s" name format
+//   self+0x45: u8      mode byte; both the payload lookup and the whole body
+//                      are gated on it being non-zero
+//   self+0x48: TbcrHeader* container; sub-table 0 supplies the names
+//   self+0x4c: entry array; 16-byte entries, this function writes the listed
+//              byte at +0xC and passes each entry pointer to the renderer
+//
+// For every row of sub-table 0 (row stride 0x40) the signed first byte is a
+// category.  Only categories below 0x30 whose jump-table slot is 0x0038BBDC
+// are formatted and rendered; all other categories, including negative
+// (signed) bytes, skip the row.
+extern "C" void script_vm_func_0038ba94(void* self) {
+    constexpr u32 kPrefixOffset = 0x24;
+    constexpr u32 kModeOffset = 0x45;
+    constexpr u32 kContainerOffset = 0x48;
+    constexpr u32 kEntryArrayOffset = 0x4c;
+    constexpr u32 kRecordStride = 0x40;
+    constexpr u32 kEntryStride = 0x10;
+    constexpr u32 kEntryListedOffset = 0x0c;
+    constexpr u32 kTextBufferSize = 0x80;
+    constexpr u32 kCategoryLimit = 0x30;
+
+    // Jump-table slots at 0x0038BB1C that target the 0x0038BBDC handler.
+    constexpr u8 kListedCategory[kCategoryLimit] = {
+        1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0,
+        0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0,
+        0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    };
+
+    u8* const object = static_cast<u8*>(self);
+    const auto* container =
+        *reinterpret_cast<const smt4::ui::TbcrHeader* const*>(
+            object + kContainerOffset);
+    if (container == nullptr) {
+        return;
+    }
+    if (*reinterpret_cast<u8* const*>(object + kEntryArrayOffset) == nullptr) {
+        return;
+    }
+
+    const u8* payload = nullptr;
+    if (object[kModeOffset] != 0) {
+        payload = static_cast<const u8*>(smt4::ui::Tbb_GetPayloadData(
+            smt4::ui::Tbb_GetSubTable(container, 0)));
+    }
+
+    if (object[kModeOffset] == 0) {
+        return;
+    }
+    container = *reinterpret_cast<const smt4::ui::TbcrHeader* const*>(
+        object + kContainerOffset);
+    if (container == nullptr) {
+        return;
+    }
+
+    const u32 row_count = smt4::ui::Tbb_GetRowCount(
+        smt4::ui::Tbb_GetSubTable(container, 0));
+    if (row_count == 0) {
+        return;
+    }
+
+    for (u32 index = 0; index < row_count; ++index) {
+        const u32 record_offset = index * kRecordStride;
+        const s8 category = static_cast<s8>(payload[record_offset]);
+        const u8 key = static_cast<u8>(category);
+        if (key >= kCategoryLimit || kListedCategory[key] == 0) {
+            continue;
+        }
+
+        u8 text[kTextBufferSize];
+        engine_func_002c4b30(text, kTextBufferSize);
+        ui_func_002be7fc(
+            reinterpret_cast<char*>(text), "%s/%s",
+            reinterpret_cast<const char*>(object + kPrefixOffset),
+            reinterpret_cast<const char*>(payload + record_offset + 1));
+
+        u8* const entry =
+            *reinterpret_cast<u8* const*>(object + kEntryArrayOffset) +
+            index * kEntryStride;
+        engine_func_0038a364(
+            *reinterpret_cast<void* const*>(0x00433130u),
+            reinterpret_cast<const char*>(text), entry, 1, kTextBufferSize,
+            entry);
+
+        // The original reloads the array pointer before writing the flag.
+        u8* const stored =
+            *reinterpret_cast<u8* const*>(object + kEntryArrayOffset) +
+            index * kEntryStride;
+        stored[kEntryListedOffset] = 1;
+    }
 }
 
 // DECOMP_FUNC(0x0022d994, 456)
