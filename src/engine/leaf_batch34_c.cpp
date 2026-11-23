@@ -11250,762 +11250,220 @@ extern "C" void* func_0015fba4(void* config_pointer) {
     }
 }
 
-// DECOMP_FUNC(0x001602dc, 2996)
-extern "C" __attribute__((naked)) void func_001602dc() {
-    asm volatile(
-        "push {r0, lr}\n"
-        "ldr r2, [r0, #8]\n"
-        "ldr r3, [r0, #0xc]\n"
-        "ldr r8, [r0, #0x10]\n"
-        "ldr sb, [r0, #0x14]\n"
-        "ldr r0, [r0, #4]\n"
-        ".word 0xe51f4760\n"
-        ".word 0xe51f5760\n"
-        "sub r3, r3, #8\n"
-        "sub r2, r2, #0x10\n"
-        "strd r2, r3, [sp, #-8]!\n"
-        "strd r4, r5, [sp, #-8]!\n"
-        "add r0, r0, #0x2000\n"
-        "str r2, [sp, #-4]!\n"
-        "orr r8, r8, r8, lsl #8\n"
-        "orr sb, sb, sb, lsl #8\n"
-        "orr r8, r8, r8, lsl #16\n"
-        "orr sb, sb, sb, lsl #16\n"
-        ".L_00160324:\n"
-        "ldr r6, [r0, #-0xc00]\n"
-        "ldr r1, [r0, #-0x800]\n"
-        "ldr r2, [r0, #-0x400]\n"
-        "ldr r3, [r0]\n"
-        "ldr r4, [r0, #0x400]\n"
-        "ldr r7, [r0, #0x800]\n"
-        "uhadd8 ip, r2, r3\n"
-        "uqsub8 sl, r6, r2\n"
-        "uqsub8 fp, r2, r6\n"
-        "uhadd8 r6, ip, r6\n"
-        "uadd8 sl, sl, fp\n"
-        "usub8 sl, sl, sb\n"
-        "sel r6, r1, r6\n"
-        "uqsub8 r5, r7, r3\n"
-        "uqsub8 fp, r3, r7\n"
-        "ldr lr, [sp, #4]\n"
-        "mvn sl, r4\n"
-        "uhadd8 sl, sl, r1\n"
-        "uhadd8 r7, ip, r7\n"
-        "uhadd8 sl, sl, lr\n"
-        "uadd8 r5, r5, fp\n"
-        "uhadd8 sl, sl, lr\n"
-        "ldr lr, [sp, #8]\n"
-        "usub8 r5, r5, sb\n"
-        "sel r7, r4, r7\n"
-        "uqsub8 fp, sl, lr\n"
-        "uqsub8 sl, lr, sl\n"
-        "uqadd8 r5, ip, fp\n"
-        "uqsub8 ip, ip, fp\n"
-        "uqsub8 r5, r5, sl\n"
-        "uqadd8 ip, ip, sl\n"
-        "uqsub8 sl, r1, r2\n"
-        "uqsub8 fp, r2, r1\n"
-        "uqsub8 lr, r3, r4\n"
-        "uadd8 sl, sl, fp\n"
-        "usub8 sl, sl, sb\n"
-        "sel r5, r2, r5\n"
-        "sel ip, r3, ip\n"
-        "sel r6, r1, r6\n"
-        "sel r7, r4, r7\n"
-        "uqsub8 fp, r4, r3\n"
-        "uqsub8 sl, r2, r3\n"
-        "uadd8 lr, lr, fp\n"
-        "usub8 lr, lr, sb\n"
-        "sel r5, r2, r5\n"
-        "sel ip, r3, ip\n"
-        "sel r6, r1, r6\n"
-        "sel r7, r4, r7\n"
-        "uqsub8 fp, r3, r2\n"
-        "pld [r0, #-0xbe0]\n"
-        "uadd8 sl, sl, fp\n"
-        "usub8 sl, sl, r8\n"
-        "sel r5, r2, r5\n"
-        "sel ip, r3, ip\n"
-        "sel r6, r1, r6\n"
-        "sel r7, r4, r7\n"
-        "str r6, [r0, #-0x800]\n"
-        "str r5, [r0, #-0x400]\n"
-        "str ip, [r0]\n"
-        "str r7, [r0, #0x400]\n"
-        "ldr r6, [r0, #-0xbfc]\n"
-        "ldr r1, [r0, #-0x7fc]\n"
-        "ldr r2, [r0, #-0x3fc]\n"
-        "ldr r3, [r0, #4]\n"
-        "ldr r4, [r0, #0x404]\n"
-        "ldr r7, [r0, #0x804]\n"
-        "uhadd8 ip, r2, r3\n"
-        "uqsub8 sl, r6, r2\n"
-        "uqsub8 fp, r2, r6\n"
-        "uhadd8 r6, ip, r6\n"
-        "uadd8 sl, sl, fp\n"
-        "usub8 sl, sl, sb\n"
-        "sel r6, r1, r6\n"
-        "uqsub8 r5, r7, r3\n"
-        "uqsub8 fp, r3, r7\n"
-        "ldr lr, [sp, #4]\n"
-        "mvn sl, r4\n"
-        "uhadd8 sl, sl, r1\n"
-        "uhadd8 r7, ip, r7\n"
-        "uhadd8 sl, sl, lr\n"
-        "uadd8 r5, r5, fp\n"
-        "uhadd8 sl, sl, lr\n"
-        "ldr lr, [sp, #8]\n"
-        "usub8 r5, r5, sb\n"
-        "sel r7, r4, r7\n"
-        "uqsub8 fp, sl, lr\n"
-        "uqsub8 sl, lr, sl\n"
-        "uqadd8 r5, ip, fp\n"
-        "uqsub8 ip, ip, fp\n"
-        "uqsub8 r5, r5, sl\n"
-        "uqadd8 ip, ip, sl\n"
-        "uqsub8 sl, r1, r2\n"
-        "uqsub8 fp, r2, r1\n"
-        "uqsub8 lr, r3, r4\n"
-        "uadd8 sl, sl, fp\n"
-        "usub8 sl, sl, sb\n"
-        "sel r5, r2, r5\n"
-        "sel ip, r3, ip\n"
-        "sel r6, r1, r6\n"
-        "sel r7, r4, r7\n"
-        "uqsub8 fp, r4, r3\n"
-        "uqsub8 sl, r2, r3\n"
-        "uadd8 lr, lr, fp\n"
-        "usub8 lr, lr, sb\n"
-        "sel r5, r2, r5\n"
-        "sel ip, r3, ip\n"
-        "sel r6, r1, r6\n"
-        "sel r7, r4, r7\n"
-        "uqsub8 fp, r3, r2\n"
-        "pld [r0, #-0x7e0]\n"
-        "uadd8 sl, sl, fp\n"
-        "usub8 sl, sl, r8\n"
-        "sel r5, r2, r5\n"
-        "sel ip, r3, ip\n"
-        "sel r6, r1, r6\n"
-        "sel r7, r4, r7\n"
-        "str r6, [r0, #-0x7fc]\n"
-        "str r5, [r0, #-0x3fc]\n"
-        "str ip, [r0, #4]\n"
-        "str r7, [r0, #0x404]\n"
-        "ldr r6, [r0, #-0xbf8]\n"
-        "ldr r1, [r0, #-0x7f8]\n"
-        "ldr r2, [r0, #-0x3f8]\n"
-        "ldr r3, [r0, #8]\n"
-        "ldr r4, [r0, #0x408]\n"
-        "ldr r7, [r0, #0x808]\n"
-        "uhadd8 ip, r2, r3\n"
-        "uqsub8 sl, r6, r2\n"
-        "uqsub8 fp, r2, r6\n"
-        "uhadd8 r6, ip, r6\n"
-        "uadd8 sl, sl, fp\n"
-        "usub8 sl, sl, sb\n"
-        "sel r6, r1, r6\n"
-        "uqsub8 r5, r7, r3\n"
-        "uqsub8 fp, r3, r7\n"
-        "ldr lr, [sp, #4]\n"
-        "mvn sl, r4\n"
-        "uhadd8 sl, sl, r1\n"
-        "uhadd8 r7, ip, r7\n"
-        "uhadd8 sl, sl, lr\n"
-        "uadd8 r5, r5, fp\n"
-        "uhadd8 sl, sl, lr\n"
-        "ldr lr, [sp, #8]\n"
-        "usub8 r5, r5, sb\n"
-        "sel r7, r4, r7\n"
-        "uqsub8 fp, sl, lr\n"
-        "uqsub8 sl, lr, sl\n"
-        "uqadd8 r5, ip, fp\n"
-        "uqsub8 ip, ip, fp\n"
-        "uqsub8 r5, r5, sl\n"
-        "uqadd8 ip, ip, sl\n"
-        "uqsub8 sl, r1, r2\n"
-        "uqsub8 fp, r2, r1\n"
-        "uqsub8 lr, r3, r4\n"
-        "uadd8 sl, sl, fp\n"
-        "usub8 sl, sl, sb\n"
-        "sel r5, r2, r5\n"
-        "sel ip, r3, ip\n"
-        "sel r6, r1, r6\n"
-        "sel r7, r4, r7\n"
-        "uqsub8 fp, r4, r3\n"
-        "uqsub8 sl, r2, r3\n"
-        "uadd8 lr, lr, fp\n"
-        "usub8 lr, lr, sb\n"
-        "sel r5, r2, r5\n"
-        "sel ip, r3, ip\n"
-        "sel r6, r1, r6\n"
-        "sel r7, r4, r7\n"
-        "uqsub8 fp, r3, r2\n"
-        "pld [r0, #-0x3e0]\n"
-        "uadd8 sl, sl, fp\n"
-        "usub8 sl, sl, r8\n"
-        "sel r5, r2, r5\n"
-        "sel ip, r3, ip\n"
-        "sel r6, r1, r6\n"
-        "sel r7, r4, r7\n"
-        "str r6, [r0, #-0x7f8]\n"
-        "str r5, [r0, #-0x3f8]\n"
-        "str ip, [r0, #8]\n"
-        "str r7, [r0, #0x408]\n"
-        "ldr r6, [r0, #-0xbf4]\n"
-        "ldr r1, [r0, #-0x7f4]\n"
-        "ldr r2, [r0, #-0x3f4]\n"
-        "ldr r3, [r0, #0xc]\n"
-        "ldr r4, [r0, #0x40c]\n"
-        "ldr r7, [r0, #0x80c]\n"
-        "uhadd8 ip, r2, r3\n"
-        "uqsub8 sl, r6, r2\n"
-        "uqsub8 fp, r2, r6\n"
-        "uhadd8 r6, ip, r6\n"
-        "uadd8 sl, sl, fp\n"
-        "usub8 sl, sl, sb\n"
-        "sel r6, r1, r6\n"
-        "uqsub8 r5, r7, r3\n"
-        "uqsub8 fp, r3, r7\n"
-        "ldr lr, [sp, #4]\n"
-        "mvn sl, r4\n"
-        "uhadd8 sl, sl, r1\n"
-        "uhadd8 r7, ip, r7\n"
-        "uhadd8 sl, sl, lr\n"
-        "uadd8 r5, r5, fp\n"
-        "uhadd8 sl, sl, lr\n"
-        "ldr lr, [sp, #8]\n"
-        "usub8 r5, r5, sb\n"
-        "sel r7, r4, r7\n"
-        "uqsub8 fp, sl, lr\n"
-        "uqsub8 sl, lr, sl\n"
-        "uqadd8 r5, ip, fp\n"
-        "uqsub8 ip, ip, fp\n"
-        "uqsub8 r5, r5, sl\n"
-        "uqadd8 ip, ip, sl\n"
-        "uqsub8 sl, r1, r2\n"
-        "uqsub8 fp, r2, r1\n"
-        "uqsub8 lr, r3, r4\n"
-        "uadd8 sl, sl, fp\n"
-        "usub8 sl, sl, sb\n"
-        "sel r5, r2, r5\n"
-        "sel ip, r3, ip\n"
-        "sel r6, r1, r6\n"
-        "sel r7, r4, r7\n"
-        "uqsub8 fp, r4, r3\n"
-        "uqsub8 sl, r2, r3\n"
-        "uadd8 lr, lr, fp\n"
-        "usub8 lr, lr, sb\n"
-        "sel r5, r2, r5\n"
-        "sel ip, r3, ip\n"
-        "sel r6, r1, r6\n"
-        "sel r7, r4, r7\n"
-        "uqsub8 fp, r3, r2\n"
-        "pld [r0, #0x20]\n"
-        "uadd8 sl, sl, fp\n"
-        "usub8 sl, sl, r8\n"
-        "sel r5, r2, r5\n"
-        "sel ip, r3, ip\n"
-        "sel r6, r1, r6\n"
-        "sel r7, r4, r7\n"
-        "str r6, [r0, #-0x7f4]\n"
-        "str r5, [r0, #-0x3f4]\n"
-        "str ip, [r0, #0xc]\n"
-        "str r7, [r0, #0x40c]\n"
-        "ldr r6, [r0, #-0xbf0]\n"
-        "ldr r1, [r0, #-0x7f0]\n"
-        "ldr r2, [r0, #-0x3f0]\n"
-        "ldr r3, [r0, #0x10]\n"
-        "ldr r4, [r0, #0x410]\n"
-        "ldr r7, [r0, #0x810]\n"
-        "uhadd8 ip, r2, r3\n"
-        "uqsub8 sl, r6, r2\n"
-        "uqsub8 fp, r2, r6\n"
-        "uhadd8 r6, ip, r6\n"
-        "uadd8 sl, sl, fp\n"
-        "usub8 sl, sl, sb\n"
-        "sel r6, r1, r6\n"
-        "uqsub8 r5, r7, r3\n"
-        "uqsub8 fp, r3, r7\n"
-        "ldr lr, [sp, #4]\n"
-        "mvn sl, r4\n"
-        "uhadd8 sl, sl, r1\n"
-        "uhadd8 r7, ip, r7\n"
-        "uhadd8 sl, sl, lr\n"
-        "uadd8 r5, r5, fp\n"
-        "uhadd8 sl, sl, lr\n"
-        "ldr lr, [sp, #8]\n"
-        "usub8 r5, r5, sb\n"
-        "sel r7, r4, r7\n"
-        "uqsub8 fp, sl, lr\n"
-        "uqsub8 sl, lr, sl\n"
-        "uqadd8 r5, ip, fp\n"
-        "uqsub8 ip, ip, fp\n"
-        "uqsub8 r5, r5, sl\n"
-        "uqadd8 ip, ip, sl\n"
-        "uqsub8 sl, r1, r2\n"
-        "uqsub8 fp, r2, r1\n"
-        "uqsub8 lr, r3, r4\n"
-        "uadd8 sl, sl, fp\n"
-        "usub8 sl, sl, sb\n"
-        "sel r5, r2, r5\n"
-        "sel ip, r3, ip\n"
-        "sel r6, r1, r6\n"
-        "sel r7, r4, r7\n"
-        "uqsub8 fp, r4, r3\n"
-        "uqsub8 sl, r2, r3\n"
-        "uadd8 lr, lr, fp\n"
-        "usub8 lr, lr, sb\n"
-        "sel r5, r2, r5\n"
-        "sel ip, r3, ip\n"
-        "sel r6, r1, r6\n"
-        "sel r7, r4, r7\n"
-        "uqsub8 fp, r3, r2\n"
-        "pld [r0, #0x420]\n"
-        "uadd8 sl, sl, fp\n"
-        "usub8 sl, sl, r8\n"
-        "sel r5, r2, r5\n"
-        "sel ip, r3, ip\n"
-        "sel r6, r1, r6\n"
-        "sel r7, r4, r7\n"
-        "str r6, [r0, #-0x7f0]\n"
-        "str r5, [r0, #-0x3f0]\n"
-        "str ip, [r0, #0x10]\n"
-        "str r7, [r0, #0x410]\n"
-        "ldr r6, [r0, #-0xbec]\n"
-        "ldr r1, [r0, #-0x7ec]\n"
-        "ldr r2, [r0, #-0x3ec]\n"
-        "ldr r3, [r0, #0x14]\n"
-        "ldr r4, [r0, #0x414]\n"
-        "ldr r7, [r0, #0x814]\n"
-        "uhadd8 ip, r2, r3\n"
-        "uqsub8 sl, r6, r2\n"
-        "uqsub8 fp, r2, r6\n"
-        "uhadd8 r6, ip, r6\n"
-        "uadd8 sl, sl, fp\n"
-        "usub8 sl, sl, sb\n"
-        "sel r6, r1, r6\n"
-        "uqsub8 r5, r7, r3\n"
-        "uqsub8 fp, r3, r7\n"
-        "ldr lr, [sp, #4]\n"
-        "mvn sl, r4\n"
-        "uhadd8 sl, sl, r1\n"
-        "uhadd8 r7, ip, r7\n"
-        "uhadd8 sl, sl, lr\n"
-        "uadd8 r5, r5, fp\n"
-        "uhadd8 sl, sl, lr\n"
-        "ldr lr, [sp, #8]\n"
-        "usub8 r5, r5, sb\n"
-        "sel r7, r4, r7\n"
-        "uqsub8 fp, sl, lr\n"
-        "uqsub8 sl, lr, sl\n"
-        "uqadd8 r5, ip, fp\n"
-        "uqsub8 ip, ip, fp\n"
-        "uqsub8 r5, r5, sl\n"
-        "uqadd8 ip, ip, sl\n"
-        "uqsub8 sl, r1, r2\n"
-        "uqsub8 fp, r2, r1\n"
-        "uqsub8 lr, r3, r4\n"
-        "uadd8 sl, sl, fp\n"
-        "usub8 sl, sl, sb\n"
-        "sel r5, r2, r5\n"
-        "sel ip, r3, ip\n"
-        "sel r6, r1, r6\n"
-        "sel r7, r4, r7\n"
-        "uqsub8 fp, r4, r3\n"
-        "uqsub8 sl, r2, r3\n"
-        "uadd8 lr, lr, fp\n"
-        "usub8 lr, lr, sb\n"
-        "sel r5, r2, r5\n"
-        "sel ip, r3, ip\n"
-        "sel r6, r1, r6\n"
-        "sel r7, r4, r7\n"
-        "uqsub8 fp, r3, r2\n"
-        "pld [r0, #0x820]\n"
-        "uadd8 sl, sl, fp\n"
-        "usub8 sl, sl, r8\n"
-        "sel r5, r2, r5\n"
-        "sel ip, r3, ip\n"
-        "sel r6, r1, r6\n"
-        "sel r7, r4, r7\n"
-        "str r6, [r0, #-0x7ec]\n"
-        "str r5, [r0, #-0x3ec]\n"
-        "str ip, [r0, #0x14]\n"
-        "str r7, [r0, #0x414]\n"
-        "ldr r6, [r0, #-0xbe8]\n"
-        "ldr r1, [r0, #-0x7e8]\n"
-        "ldr r2, [r0, #-0x3e8]\n"
-        "ldr r3, [r0, #0x18]\n"
-        "ldr r4, [r0, #0x418]\n"
-        "ldr r7, [r0, #0x818]\n"
-        "uhadd8 ip, r2, r3\n"
-        "uqsub8 sl, r6, r2\n"
-        "uqsub8 fp, r2, r6\n"
-        "uhadd8 r6, ip, r6\n"
-        "uadd8 sl, sl, fp\n"
-        "usub8 sl, sl, sb\n"
-        "sel r6, r1, r6\n"
-        "uqsub8 r5, r7, r3\n"
-        "uqsub8 fp, r3, r7\n"
-        "ldr lr, [sp, #4]\n"
-        "mvn sl, r4\n"
-        "uhadd8 sl, sl, r1\n"
-        "uhadd8 r7, ip, r7\n"
-        "uhadd8 sl, sl, lr\n"
-        "uadd8 r5, r5, fp\n"
-        "uhadd8 sl, sl, lr\n"
-        "ldr lr, [sp, #8]\n"
-        "usub8 r5, r5, sb\n"
-        "sel r7, r4, r7\n"
-        "uqsub8 fp, sl, lr\n"
-        "uqsub8 sl, lr, sl\n"
-        "uqadd8 r5, ip, fp\n"
-        "uqsub8 ip, ip, fp\n"
-        "uqsub8 r5, r5, sl\n"
-        "uqadd8 ip, ip, sl\n"
-        "uqsub8 sl, r1, r2\n"
-        "uqsub8 fp, r2, r1\n"
-        "uqsub8 lr, r3, r4\n"
-        "uadd8 sl, sl, fp\n"
-        "usub8 sl, sl, sb\n"
-        "sel r5, r2, r5\n"
-        "sel ip, r3, ip\n"
-        "sel r6, r1, r6\n"
-        "sel r7, r4, r7\n"
-        "uqsub8 fp, r4, r3\n"
-        "uqsub8 sl, r2, r3\n"
-        "uadd8 lr, lr, fp\n"
-        "usub8 lr, lr, sb\n"
-        "sel r5, r2, r5\n"
-        "sel ip, r3, ip\n"
-        "sel r6, r1, r6\n"
-        "sel r7, r4, r7\n"
-        "uqsub8 fp, r3, r2\n"
-        "uadd8 sl, sl, fp\n"
-        "usub8 sl, sl, r8\n"
-        "sel r5, r2, r5\n"
-        "sel ip, r3, ip\n"
-        "sel r6, r1, r6\n"
-        "sel r7, r4, r7\n"
-        "str r6, [r0, #-0x7e8]\n"
-        "str r5, [r0, #-0x3e8]\n"
-        "str ip, [r0, #0x18]\n"
-        "str r7, [r0, #0x418]\n"
-        "ldr r6, [r0, #-0xbe4]\n"
-        "ldr r1, [r0, #-0x7e4]\n"
-        "ldr r2, [r0, #-0x3e4]\n"
-        "ldr r3, [r0, #0x1c]\n"
-        "ldr r4, [r0, #0x41c]\n"
-        "ldr r7, [r0, #0x81c]\n"
-        "uhadd8 ip, r2, r3\n"
-        "uqsub8 sl, r6, r2\n"
-        "uqsub8 fp, r2, r6\n"
-        "uhadd8 r6, ip, r6\n"
-        "uadd8 sl, sl, fp\n"
-        "usub8 sl, sl, sb\n"
-        "sel r6, r1, r6\n"
-        "uqsub8 r5, r7, r3\n"
-        "uqsub8 fp, r3, r7\n"
-        "ldr lr, [sp, #4]\n"
-        "mvn sl, r4\n"
-        "uhadd8 sl, sl, r1\n"
-        "uhadd8 r7, ip, r7\n"
-        "uhadd8 sl, sl, lr\n"
-        "uadd8 r5, r5, fp\n"
-        "uhadd8 sl, sl, lr\n"
-        "ldr lr, [sp, #8]\n"
-        "usub8 r5, r5, sb\n"
-        "sel r7, r4, r7\n"
-        "uqsub8 fp, sl, lr\n"
-        "uqsub8 sl, lr, sl\n"
-        "uqadd8 r5, ip, fp\n"
-        "uqsub8 ip, ip, fp\n"
-        "uqsub8 r5, r5, sl\n"
-        "uqadd8 ip, ip, sl\n"
-        "uqsub8 sl, r1, r2\n"
-        "uqsub8 fp, r2, r1\n"
-        "uqsub8 lr, r3, r4\n"
-        "uadd8 sl, sl, fp\n"
-        "usub8 sl, sl, sb\n"
-        "sel r5, r2, r5\n"
-        "sel ip, r3, ip\n"
-        "sel r6, r1, r6\n"
-        "sel r7, r4, r7\n"
-        "uqsub8 fp, r4, r3\n"
-        "uqsub8 sl, r2, r3\n"
-        "uadd8 lr, lr, fp\n"
-        "usub8 lr, lr, sb\n"
-        "sel r5, r2, r5\n"
-        "sel ip, r3, ip\n"
-        "sel r6, r1, r6\n"
-        "sel r7, r4, r7\n"
-        "uqsub8 fp, r3, r2\n"
-        "uadd8 sl, sl, fp\n"
-        "usub8 sl, sl, r8\n"
-        "sel r5, r2, r5\n"
-        "sel ip, r3, ip\n"
-        "sel r6, r1, r6\n"
-        "sel r7, r4, r7\n"
-        "str r6, [r0, #-0x7e4]\n"
-        "str r5, [r0, #-0x3e4]\n"
-        "str ip, [r0, #0x1c]\n"
-        "str r7, [r0, #0x41c]\n"
-        "ldr r1, [sp]\n"
-        "add r0, r0, #0x20\n"
-        "subs r1, r1, #0x20\n"
-        "strgt r1, [sp]\n"
-        "bgt .L_00160324\n"
-        "blt .L_00160e68\n"
-        "ldr r6, [r0, #-0xc00]\n"
-        "ldr r1, [r0, #-0x800]\n"
-        "ldr r2, [r0, #-0x400]\n"
-        "ldr r3, [r0]\n"
-        "ldr r4, [r0, #0x400]\n"
-        "ldr r7, [r0, #0x800]\n"
-        "uhadd8 ip, r2, r3\n"
-        "uqsub8 sl, r6, r2\n"
-        "uqsub8 fp, r2, r6\n"
-        "uhadd8 r6, ip, r6\n"
-        "uadd8 sl, sl, fp\n"
-        "usub8 sl, sl, sb\n"
-        "sel r6, r1, r6\n"
-        "uqsub8 r5, r7, r3\n"
-        "uqsub8 fp, r3, r7\n"
-        "ldr lr, [sp, #4]\n"
-        "mvn sl, r4\n"
-        "uhadd8 sl, sl, r1\n"
-        "uhadd8 r7, ip, r7\n"
-        "uhadd8 sl, sl, lr\n"
-        "uadd8 r5, r5, fp\n"
-        "uhadd8 sl, sl, lr\n"
-        "ldr lr, [sp, #8]\n"
-        "usub8 r5, r5, sb\n"
-        "sel r7, r4, r7\n"
-        "uqsub8 fp, sl, lr\n"
-        "uqsub8 sl, lr, sl\n"
-        "uqadd8 r5, ip, fp\n"
-        "uqsub8 ip, ip, fp\n"
-        "uqsub8 r5, r5, sl\n"
-        "uqadd8 ip, ip, sl\n"
-        "uqsub8 sl, r1, r2\n"
-        "uqsub8 fp, r2, r1\n"
-        "uqsub8 lr, r3, r4\n"
-        "uadd8 sl, sl, fp\n"
-        "usub8 sl, sl, sb\n"
-        "sel r5, r2, r5\n"
-        "sel ip, r3, ip\n"
-        "sel r6, r1, r6\n"
-        "sel r7, r4, r7\n"
-        "uqsub8 fp, r4, r3\n"
-        "uqsub8 sl, r2, r3\n"
-        "uadd8 lr, lr, fp\n"
-        "usub8 lr, lr, sb\n"
-        "sel r5, r2, r5\n"
-        "sel ip, r3, ip\n"
-        "sel r6, r1, r6\n"
-        "sel r7, r4, r7\n"
-        "uqsub8 fp, r3, r2\n"
-        "uadd8 sl, sl, fp\n"
-        "usub8 sl, sl, r8\n"
-        "sel r5, r2, r5\n"
-        "sel ip, r3, ip\n"
-        "sel r6, r1, r6\n"
-        "sel r7, r4, r7\n"
-        "str r6, [r0, #-0x800]\n"
-        "str r5, [r0, #-0x400]\n"
-        "str ip, [r0]\n"
-        "str r7, [r0, #0x400]\n"
-        "ldr r6, [r0, #-0xbfc]\n"
-        "ldr r1, [r0, #-0x7fc]\n"
-        "ldr r2, [r0, #-0x3fc]\n"
-        "ldr r3, [r0, #4]\n"
-        "ldr r4, [r0, #0x404]\n"
-        "ldr r7, [r0, #0x804]\n"
-        "uhadd8 ip, r2, r3\n"
-        "uqsub8 sl, r6, r2\n"
-        "uqsub8 fp, r2, r6\n"
-        "uhadd8 r6, ip, r6\n"
-        "uadd8 sl, sl, fp\n"
-        "usub8 sl, sl, sb\n"
-        "sel r6, r1, r6\n"
-        "uqsub8 r5, r7, r3\n"
-        "uqsub8 fp, r3, r7\n"
-        "ldr lr, [sp, #4]\n"
-        "mvn sl, r4\n"
-        "uhadd8 sl, sl, r1\n"
-        "uhadd8 r7, ip, r7\n"
-        "uhadd8 sl, sl, lr\n"
-        "uadd8 r5, r5, fp\n"
-        "uhadd8 sl, sl, lr\n"
-        "ldr lr, [sp, #8]\n"
-        "usub8 r5, r5, sb\n"
-        "sel r7, r4, r7\n"
-        "uqsub8 fp, sl, lr\n"
-        "uqsub8 sl, lr, sl\n"
-        "uqadd8 r5, ip, fp\n"
-        "uqsub8 ip, ip, fp\n"
-        "uqsub8 r5, r5, sl\n"
-        "uqadd8 ip, ip, sl\n"
-        "uqsub8 sl, r1, r2\n"
-        "uqsub8 fp, r2, r1\n"
-        "uqsub8 lr, r3, r4\n"
-        "uadd8 sl, sl, fp\n"
-        "usub8 sl, sl, sb\n"
-        "sel r5, r2, r5\n"
-        "sel ip, r3, ip\n"
-        "sel r6, r1, r6\n"
-        "sel r7, r4, r7\n"
-        "uqsub8 fp, r4, r3\n"
-        "uqsub8 sl, r2, r3\n"
-        "uadd8 lr, lr, fp\n"
-        "usub8 lr, lr, sb\n"
-        "sel r5, r2, r5\n"
-        "sel ip, r3, ip\n"
-        "sel r6, r1, r6\n"
-        "sel r7, r4, r7\n"
-        "uqsub8 fp, r3, r2\n"
-        "uadd8 sl, sl, fp\n"
-        "usub8 sl, sl, r8\n"
-        "sel r5, r2, r5\n"
-        "sel ip, r3, ip\n"
-        "sel r6, r1, r6\n"
-        "sel r7, r4, r7\n"
-        "str r6, [r0, #-0x7fc]\n"
-        "str r5, [r0, #-0x3fc]\n"
-        "str ip, [r0, #4]\n"
-        "str r7, [r0, #0x404]\n"
-        "ldr r6, [r0, #-0xbf8]\n"
-        "ldr r1, [r0, #-0x7f8]\n"
-        "ldr r2, [r0, #-0x3f8]\n"
-        "ldr r3, [r0, #8]\n"
-        "ldr r4, [r0, #0x408]\n"
-        "ldr r7, [r0, #0x808]\n"
-        "uhadd8 ip, r2, r3\n"
-        "uqsub8 sl, r6, r2\n"
-        "uqsub8 fp, r2, r6\n"
-        "uhadd8 r6, ip, r6\n"
-        "uadd8 sl, sl, fp\n"
-        "usub8 sl, sl, sb\n"
-        "sel r6, r1, r6\n"
-        "uqsub8 r5, r7, r3\n"
-        "uqsub8 fp, r3, r7\n"
-        "ldr lr, [sp, #4]\n"
-        "mvn sl, r4\n"
-        "uhadd8 sl, sl, r1\n"
-        "uhadd8 r7, ip, r7\n"
-        "uhadd8 sl, sl, lr\n"
-        "uadd8 r5, r5, fp\n"
-        "uhadd8 sl, sl, lr\n"
-        "ldr lr, [sp, #8]\n"
-        "usub8 r5, r5, sb\n"
-        "sel r7, r4, r7\n"
-        "uqsub8 fp, sl, lr\n"
-        "uqsub8 sl, lr, sl\n"
-        "uqadd8 r5, ip, fp\n"
-        "uqsub8 ip, ip, fp\n"
-        "uqsub8 r5, r5, sl\n"
-        "uqadd8 ip, ip, sl\n"
-        "uqsub8 sl, r1, r2\n"
-        "uqsub8 fp, r2, r1\n"
-        "uqsub8 lr, r3, r4\n"
-        "uadd8 sl, sl, fp\n"
-        "usub8 sl, sl, sb\n"
-        "sel r5, r2, r5\n"
-        "sel ip, r3, ip\n"
-        "sel r6, r1, r6\n"
-        "sel r7, r4, r7\n"
-        "uqsub8 fp, r4, r3\n"
-        "uqsub8 sl, r2, r3\n"
-        "uadd8 lr, lr, fp\n"
-        "usub8 lr, lr, sb\n"
-        "sel r5, r2, r5\n"
-        "sel ip, r3, ip\n"
-        "sel r6, r1, r6\n"
-        "sel r7, r4, r7\n"
-        "uqsub8 fp, r3, r2\n"
-        "uadd8 sl, sl, fp\n"
-        "usub8 sl, sl, r8\n"
-        "sel r5, r2, r5\n"
-        "sel ip, r3, ip\n"
-        "sel r6, r1, r6\n"
-        "sel r7, r4, r7\n"
-        "str r6, [r0, #-0x7f8]\n"
-        "str r5, [r0, #-0x3f8]\n"
-        "str ip, [r0, #8]\n"
-        "str r7, [r0, #0x408]\n"
-        "ldr r6, [r0, #-0xbf4]\n"
-        "ldr r1, [r0, #-0x7f4]\n"
-        "ldr r2, [r0, #-0x3f4]\n"
-        "ldr r3, [r0, #0xc]\n"
-        "ldr r4, [r0, #0x40c]\n"
-        "ldr r7, [r0, #0x80c]\n"
-        "uhadd8 ip, r2, r3\n"
-        "uqsub8 sl, r6, r2\n"
-        "uqsub8 fp, r2, r6\n"
-        "uhadd8 r6, ip, r6\n"
-        "uadd8 sl, sl, fp\n"
-        "usub8 sl, sl, sb\n"
-        "sel r6, r1, r6\n"
-        "uqsub8 r5, r7, r3\n"
-        "uqsub8 fp, r3, r7\n"
-        "ldr lr, [sp, #4]\n"
-        "mvn sl, r4\n"
-        "uhadd8 sl, sl, r1\n"
-        "uhadd8 r7, ip, r7\n"
-        "uhadd8 sl, sl, lr\n"
-        "uadd8 r5, r5, fp\n"
-        "uhadd8 sl, sl, lr\n"
-        "ldr lr, [sp, #8]\n"
-        "usub8 r5, r5, sb\n"
-        "sel r7, r4, r7\n"
-        "uqsub8 fp, sl, lr\n"
-        "uqsub8 sl, lr, sl\n"
-        "uqadd8 r5, ip, fp\n"
-        "uqsub8 ip, ip, fp\n"
-        "uqsub8 r5, r5, sl\n"
-        "uqadd8 ip, ip, sl\n"
-        "uqsub8 sl, r1, r2\n"
-        "uqsub8 fp, r2, r1\n"
-        "uqsub8 lr, r3, r4\n"
-        "uadd8 sl, sl, fp\n"
-        "usub8 sl, sl, sb\n"
-        "sel r5, r2, r5\n"
-        "sel ip, r3, ip\n"
-        "sel r6, r1, r6\n"
-        "sel r7, r4, r7\n"
-        "uqsub8 fp, r4, r3\n"
-        "uqsub8 sl, r2, r3\n"
-        "uadd8 lr, lr, fp\n"
-        "usub8 lr, lr, sb\n"
-        "sel r5, r2, r5\n"
-        "sel ip, r3, ip\n"
-        "sel r6, r1, r6\n"
-        "sel r7, r4, r7\n"
-        "uqsub8 fp, r3, r2\n"
-        "uadd8 sl, sl, fp\n"
-        "usub8 sl, sl, r8\n"
-        "sel r5, r2, r5\n"
-        "sel ip, r3, ip\n"
-        "sel r6, r1, r6\n"
-        "sel r7, r4, r7\n"
-        "str r6, [r0, #-0x7f4]\n"
-        "str r5, [r0, #-0x3f4]\n"
-        "str ip, [r0, #0xc]\n"
-        "str r7, [r0, #0x40c]\n"
-        "add r0, r0, #0x10\n"
-        ".L_00160e68:\n"
-        "ldrd r2, r3, [sp, #0xc]\n"
-        "add r0, r0, #0x2000\n"
-        "sub r0, r0, #0x10\n"
-        "subs r3, r3, #8\n"
-        "subne r0, r0, r2\n"
-        "strne r2, [sp]\n"
-        "strne r3, [sp, #0x10]\n"
-        "bne .L_00160324\n"
-        "add sp, sp, #0x14\n"
-        "pop {r0, pc}\n"
-    );
+// ---------------------------------------------------------------------------
+// 0x001602DC -- byte-wise edge filter over four strided centre rows.
+//
+// The config object has the same layout as the neighbouring edge filters:
+//   +0x04  base address of the filtered buffer
+//   +0x08  horizontal byte count, consumed as (count - 0x10)
+//   +0x0C  vertical band count,    consumed as (count - 8), stepped by 8
+//   +0x10  threshold word A (prefix-OR expanded; last comparison, r8)
+//   +0x14  threshold word B (prefix-OR expanded; the three earlier compares, sb)
+// +0x00 is never read.  The return value is the config pointer itself (the
+// prologue keeps it in the `push {r0, lr}` slot and the epilogue restores r0
+// from there before `pop {r0, pc}`).
+//
+// Starting at base + 0x2000 the routine filters 0x20 bytes per iteration.
+// Every 4-byte lane combines six consecutive rows at
+//   centre - 0x0C00, -0x0800, -0x0400, 0, +0x0400, +0x0800;
+// the four middle rows are rewritten while the two outer rows are only read.
+// The counter is (width - 0x10) and drops by 0x20: while positive the loop
+// repeats, when it lands exactly on zero four trailing lanes (0x10 bytes) are
+// filtered as well, and when it goes negative those trailing lanes are skipped
+// (the routine has already processed a full 0x20-byte chunk in that case).
+// Each pass over the horizontal count advances one 0x2000-byte band until the
+// vertical counter, reduced by 8 per band, reaches zero.
+//
+// The packed arithmetic is the ARM parallel-byte set:
+//   uhadd8 -> (a + b) >> 1 per byte      uqsub8 -> max(a - b, 0) per byte
+//   uqadd8 -> min(a + b, 255) per byte   uadd8  -> (a + b) & 0xFF per byte
+//   usub8  -> (a - b) & 0xFF per byte,  GE = unsigned a >= b per byte
+//   mvn    -> bitwise NOT                sel    -> GE ? Rn : Rm per byte
+// Unlike 0x0015F7BC/0x0015FBA4 this kernel compares with `usub8`, i.e. the
+// selects use *unsigned* GE, so they are driven by byte_uge8_mask below rather
+// than the signed ssub8_ge_mask helper used by the neighbouring filters.
+// ---------------------------------------------------------------------------
+namespace {
+
+constexpr u32 kFourRowChunkBytes = 0x20u;   // eight 4-byte lanes per iteration
+constexpr u32 kFourRowTailBytes = 0x10u;    // four trailing lanes on exact zero
+constexpr u32 kFourRowLaneBytes = 4u;
+constexpr u32 kFourRowWidthBias = 0x10u;    // horizontal counter bias
+constexpr u32 kFourRowHeightBias = 8u;      // vertical counter bias
+constexpr u32 kFourRowHeightStep = 8u;      // vertical counter step
+
+// GE mask produced by `usub8 first, second`: 0xFF per byte whose unsigned
+// difference did not borrow, i.e. unsigned first >= second per byte.  The
+// wrapped difference itself is not consumed by this kernel, only the flags.
+inline u32 byte_uge8_mask(u32 first, u32 second) {
+    u32 mask = 0;
+    for (u32 index = 0; index < 4; ++index) {
+        const u32 shift = index * 8u;
+        const u32 left = (first >> shift) & 0xFFu;
+        const u32 right = (second >> shift) & 0xFFu;
+        if (right <= left) {
+            mask |= 0xFFu << shift;
+        }
+    }
+    return mask;
 }
+
+struct FourRowOutputs {
+    u32 inner_above;   // written to centre - 2 * kRowStride
+    u32 centre_low;    // written to centre -     kRowStride
+    u32 centre_high;   // written to centre
+    u32 inner_below;   // written to centre +     kRowStride
+};
+
+// One 4-byte lane over six rows.  The arguments are in the original load
+// order: outer_above (-3 strides), inner_above (-2), centre_low (-1),
+// centre_high (0), inner_below (+1), outer_below (+2).  `threshold_b` guards
+// the |outer_above - centre_low|, |outer_below - centre_high|,
+// |inner_above - centre_low| and |centre_high - inner_below| comparisons;
+// `threshold_a` guards the final |centre_low - centre_high| comparison.
+__attribute__((always_inline)) inline FourRowOutputs filter_four_centre_rows(
+    u32 outer_above, u32 inner_above, u32 centre_low, u32 centre_high,
+    u32 inner_below, u32 outer_below, u32 threshold_a, u32 threshold_b) {
+    // 0x0016033C: `uhadd8 ip, r2, r3` -- average of the two centre rows.
+    const u32 pair_average = byte_uhadd8(centre_low, centre_high);
+
+    // 0x00160340..0x00160354: outer_above vs centre_low, keep inner_above on
+    // |outer_above - centre_low| >= threshold_b, otherwise average the pair
+    // average with outer_above.
+    u32 above_out = byte_uhadd8(pair_average, outer_above);
+    u32 distance = byte_uadd8(byte_uqsub8(outer_above, centre_low),
+                              byte_uqsub8(centre_low, outer_above));
+    u32 mask = byte_uge8_mask(distance, threshold_b);
+    above_out = select_bytes(mask, inner_above, above_out);
+
+    // 0x00160358..0x00160384: the mirrored below/above relation.
+    u32 below_out = byte_uhadd8(pair_average, outer_below);
+    distance = byte_uadd8(byte_uqsub8(outer_below, centre_high),
+                          byte_uqsub8(centre_high, outer_below));
+    mask = byte_uge8_mask(distance, threshold_b);
+    below_out = select_bytes(mask, inner_below, below_out);
+
+    // 0x00160360..0x0016039C: sharpen the two centre outputs around the
+    // packed 0x20 bias.  `sl` starts as ~inner_below, is averaged twice with
+    // inner_above and twice with 0x01010101, then split around 0x20202020.
+    u32 sharpen = ~inner_below;
+    sharpen = byte_uhadd8(sharpen, inner_above);
+    sharpen = byte_uhadd8(sharpen, kPackedOne);
+    sharpen = byte_uhadd8(sharpen, kPackedOne);
+    const u32 raise = byte_uqsub8(sharpen, kPackedTwenty);
+    const u32 fall = byte_uqsub8(kPackedTwenty, sharpen);
+    u32 centre_low_out = byte_uqadd8(pair_average, raise);
+    u32 centre_high_out = byte_uqsub8(pair_average, raise);
+    centre_low_out = byte_uqsub8(centre_low_out, fall);
+    centre_high_out = byte_uqadd8(centre_high_out, fall);
+
+    // 0x001603A0..0x001603C0: |inner_above - centre_low| >= threshold_b.
+    distance = byte_uadd8(byte_uqsub8(inner_above, centre_low),
+                          byte_uqsub8(centre_low, inner_above));
+    mask = byte_uge8_mask(distance, threshold_b);
+    centre_low_out = select_bytes(mask, centre_low, centre_low_out);
+    centre_high_out = select_bytes(mask, centre_high, centre_high_out);
+    above_out = select_bytes(mask, inner_above, above_out);
+    below_out = select_bytes(mask, inner_below, below_out);
+
+    // 0x001603C4..0x001603E0: |centre_high - inner_below| >= threshold_b.
+    distance = byte_uadd8(byte_uqsub8(centre_high, inner_below),
+                          byte_uqsub8(inner_below, centre_high));
+    mask = byte_uge8_mask(distance, threshold_b);
+    centre_low_out = select_bytes(mask, centre_low, centre_low_out);
+    centre_high_out = select_bytes(mask, centre_high, centre_high_out);
+    above_out = select_bytes(mask, inner_above, above_out);
+    below_out = select_bytes(mask, inner_below, below_out);
+
+    // 0x001603E4..0x00160400: |centre_low - centre_high| >= threshold_a.
+    distance = byte_uadd8(byte_uqsub8(centre_low, centre_high),
+                          byte_uqsub8(centre_high, centre_low));
+    mask = byte_uge8_mask(distance, threshold_a);
+    centre_low_out = select_bytes(mask, centre_low, centre_low_out);
+    centre_high_out = select_bytes(mask, centre_high, centre_high_out);
+    above_out = select_bytes(mask, inner_above, above_out);
+    below_out = select_bytes(mask, inner_below, below_out);
+
+    return FourRowOutputs{above_out, centre_low_out, centre_high_out,
+                          below_out};
+}
+
+// Filter the 4-byte lane at `centre + lane`: load the six rows in the original
+// order, then write back the four middle rows.
+__attribute__((always_inline)) inline void filter_four_centre_rows_at(
+    u32 centre, u32 lane, u32 threshold_a, u32 threshold_b) {
+    const u32 outer_above = load_word(centre - 3u * kRowStride + lane);
+    const u32 inner_above = load_word(centre - 2u * kRowStride + lane);
+    const u32 centre_low = load_word(centre - kRowStride + lane);
+    const u32 centre_high = load_word(centre + lane);
+    const u32 inner_below = load_word(centre + kRowStride + lane);
+    const u32 outer_below = load_word(centre + 2u * kRowStride + lane);
+
+    const FourRowOutputs output = filter_four_centre_rows(
+        outer_above, inner_above, centre_low, centre_high, inner_below,
+        outer_below, threshold_a, threshold_b);
+
+    store_word(centre - 2u * kRowStride + lane, output.inner_above);
+    store_word(centre - kRowStride + lane, output.centre_low);
+    store_word(centre + lane, output.centre_high);
+    store_word(centre + kRowStride + lane, output.inner_below);
+}
+
+} // namespace
+
+// DECOMP_FUNC(0x001602dc, 2996)
+extern "C" void* func_001602dc(void* config_pointer) {
+    EdgeFilterConfig* const config =
+        static_cast<EdgeFilterConfig*>(config_pointer);
+
+    const u32 width_counter = config->width_bytes - kFourRowWidthBias;
+    const u32 threshold_a = prefix_or_bytes(config->threshold_a);
+    const u32 threshold_b = prefix_or_bytes(config->threshold_b);
+    u32 band_counter = config->height_bytes - kFourRowHeightBias;
+    u32 address = config->base + kBandBytes;
+    u32 inner = width_counter;
+
+    for (;;) {
+        for (;;) {
+            // 0x00160324..0x00160AAC: eight 4-byte lanes per 0x20-byte chunk.
+            for (u32 lane = 0; lane < kFourRowChunkBytes;
+                 lane += kFourRowLaneBytes) {
+                filter_four_centre_rows_at(address, lane, threshold_a,
+                                           threshold_b);
+            }
+            address += kFourRowChunkBytes;
+            inner -= kFourRowChunkBytes;
+            if (static_cast<s32>(inner) > 0) {
+                continue;
+            }
+            if (static_cast<s32>(inner) == 0) {
+                // 0x00160AB4..0x00160E64: counter landed exactly on zero, so
+                // the four trailing lanes are filtered as well.
+                for (u32 lane = 0; lane < kFourRowTailBytes;
+                     lane += kFourRowLaneBytes) {
+                    filter_four_centre_rows_at(address, lane, threshold_a,
+                                               threshold_b);
+                }
+                address += kFourRowTailBytes;
+            }
+            break;
+        }
+
+        // 0x00160E68..0x00160E84: advance one band and re-arm or leave.
+        address += kBandBytes;
+        address -= kFourRowTailBytes;
+        band_counter -= kFourRowHeightStep;
+        if (band_counter != 0) {
+            address -= width_counter;
+            inner = width_counter;
+            continue;
+        }
+        break;
+    }
+
+    return config_pointer;
+}
+
 
 // DECOMP_FUNC(0x00161d50, 3668)
 extern "C" __attribute__((naked)) void func_00161d50() {
