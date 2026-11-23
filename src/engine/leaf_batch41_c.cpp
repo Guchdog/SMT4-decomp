@@ -10203,40 +10203,211 @@ extern "C" u32 engine_func_003cf20c(void** context, void* owner, s32 key) {
 }
 
 // DECOMP_FUNC(0x00256ffc, 460)
-// 114 ARM instructions through unconditional bx; 4 trailing data bytes.
-extern "C" __attribute__((naked)) void ui_func_00256ffc() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d0070, 0xe5902010, 0xe590c000, 0xe592300c\n"
-        ".word 0xe5934010, 0xe3140201, 0x1a000068, 0xe5924008\n"
-        ".word 0xe3540000, 0xc2440001, 0xca000014, 0xe5924004\n"
-        ".word 0xe2844001, 0xe5824004, 0xe593500c, 0xe1550004\n"
-        ".word 0x8a000008, 0xe5935010, 0xe3a04000, 0xe3150010\n"
-        ".word 0x05824004, 0x0a000003, 0xe1c041b4, 0xe593000c\n"
-        ".word 0xe2400001, 0xe5820004, 0xe5920004, 0xe5924010\n"
-        ".word 0xe3a05012, 0xe0800080, 0xe0850180, 0xe19400f0\n"
-        ".word 0xe5820008, 0xe5924004, 0xe5930010, 0xe5922010\n"
-        ".word 0xe0845084, 0xe3100001, 0xe0820185, 0x03e02000\n"
-        ".word 0x0a000003, 0xe59c2000, 0xe5935004, 0xe0822005\n"
-        ".word 0xe7922104, 0xe581202c, 0xe59c2014, 0xe1d0c1f0\n"
-        ".word 0xe5933010, 0xe792210c, 0xe3130002, 0x13a03002\n"
-        ".word 0xe2824014, 0xec940a02, 0x11c132b8, 0xeeb80ac0\n"
-        ".word 0xeef80ae0, 0x1a000003, 0xe3130004, 0x13a03003\n"
-        ".word 0x03a03001, 0xe1c132b8, 0xe5903014, 0xed9f3a31\n"
-        ".word 0xe5813010, 0xe1d060f8, 0xe1d040f0, 0xe1d050f2\n"
-        ".word 0xe1d030f4, 0xe1a06246, 0xee016a10, 0xee015a90\n"
-        ".word 0xe1d0c0f6, 0xee023a10, 0xee02ca90, 0xeef83ac1\n"
-        ".word 0xee014a10, 0xeef81ae1, 0xeeb82ac2, 0xeef82ae2\n"
-        ".word 0xeeb81ac1, 0xee834a80, 0xee611a83, 0xed814a06\n"
-        ".word 0xe1d030fa, 0xee211a03, 0xe1a03243, 0xee033a10\n"
-        ".word 0xee712ae2, 0xeeb83ac3, 0xeec33a20, 0xee313a42\n"
-        ".word 0xedc13a07, 0xe1d030fc, 0xe1a03243, 0xee023a10\n"
-        ".word 0xe2813030, 0xeeb82ac2, 0xeec23a00, 0xedc13a08\n"
-        ".word 0xe1d000fe, 0xe1a00240, 0xee020a10, 0xeeb82ac2\n"
-        ".word 0xeec23a20, 0xedc13a09, 0xed813a00, 0xedc12a01\n"
-        ".word 0xec830a02, 0xe2813008, 0xec831a02, 0xe5812014\n"
-        ".word 0xe8bd0070, 0xe12fff1e, 0x3f000000\n"
-    );
+//
+// Expands one 24-byte record of the frame list hanging off `self+0x10` into an
+// 0x38-byte output block: a top-left corner (x, y), half extents, a record word,
+// the texture object, four texture-space coordinates, a 1/2/3 style tag, a
+// table value, and the texture's two integer scales converted to float.
+//
+// Recovered contract (ARM 0x00256FFC..0x002571C7):
+//   * `self = r0`, `out = r1`.  r2, r3, r12 and s0-s8 are scratch; only r4-r6
+//     are saved and the stack is balanced again before `pop {r4,r5,r6}` /
+//     `bx lr`.  The trailing pool word at 0x002571C4 is 0x3F000000 (0.5f).
+//   * `state = *(u8**)self+0x10`, `root = *(u8**)self`, `control =
+//     *(u8**)state+0x0C`; the loads happen in exactly that order.
+//   * 0x00257010: when `control+0x10` has bit 28 set the routine returns without
+//     touching `out`.
+//   * 0x00257018: `hold = *(s32*)state+0x08`.  When `hold > 0` (signed) it is
+//     decremented and stored back, and the frame index is not touched.
+//   * 0x00257028: otherwise `next = (u32)(*(s32*)state+0x04) + 1` is stored;
+//     when `count = *(u32*)control+0x0C` is not greater than `next` (unsigned
+//     `bhi`) the index wraps: with `control+0x10 & 0x10` the u16 at `self+0x14`
+//     is cleared and the index becomes `count - 1`, otherwise the index becomes
+//     0.  The hold value is then reloaded as the s16 at
+//     `*(u8**)state+0x10 + 24*index + 0x12`.
+//   * 0x00257080: the same index selects the record `records + 24*index`.
+//   * 0x00257090: bit 0 of `control+0x10` selects the value: when set it is the
+//     s32 at `*(u32*)root + *(u32*)control+0x04 + 4*index` (`ldr r2,[ip]`
+//     dereferences the root word before the raw `add`), otherwise -1.  It is
+//     stored at `out+0x2C`.
+//   * 0x002570B4: `texture = (*(u8**)root+0x14)[(s16)record+0x10]` (the halfword
+//     is sign-extended and scaled by 4).
+//   * 0x002570C4: style is 2 when bit 1 of `control+0x10` is set; otherwise 3
+//     when bit 2 is set, else 1.  It is stored as u16 at `out+0x28`.
+//   * 0x002570D0: `scale_u = (f32)*(s32*)texture+0x14` and
+//     `scale_v = (f32)*(s32*)texture+0x18` (integer loads then
+//     `vcvt.f32.s32`); they are stored at `out+0x30`/`out+0x34` and used as the
+//     divisors below (a zero scale yields a signed infinity, as in the VFP
+//     divides).
+//   * 0x002570F4: `out+0x10 = *(u32*)record+0x14`, `out+0x14 = texture`.
+//   * 0x00257100: eight signed halfwords of the record.  Fields +0x08/+0x0A/
+//     +0x0C/+0x0E are arithmetically shifted right by 4 and become
+//     `out+0x18/+0x1C/+0x20/+0x24` after division by scale_u/scale_v
+//     (u by scale_u, v by scale_v).  Fields +0x00/+0x02 become the half extents
+//     `(f32)field * 0.5f` at `out+0x08`/`out+0x0C`; the corner is that half
+//     extent minus fields +0x04/+0x06, stored at `out+0x00`/`out+0x04`.
+//
+// No calls of any kind.  The only memory written outside `out` is the u16 at
+// `self+0x14` on the wrap path.
+namespace ui_256ffc {
+
+constexpr u32 kRootPointer = 0x00;         // 0x00257004 `ldr ip,[r0]`
+constexpr u32 kStatePointer = 0x10;        // 0x00257000 `ldr r2,[r0,#0x10]`
+constexpr u32 kLoopField = 0x14;           // 0x00257054 `strh r4,[r0,#0x14]`
+
+constexpr u32 kStateIndex = 0x04;          // 0x00257028/0x00257064/0x00257080
+constexpr u32 kStateHold = 0x08;           // 0x00257018..0x00257020/0x0025707C
+constexpr u32 kStateControl = 0x0C;        // 0x00257008 `ldr r3,[r2,#0xc]`
+constexpr u32 kStateRecords = 0x10;        // 0x00257068/0x00257088
+
+constexpr u32 kControlValueOffset = 0x04;  // 0x002570A4 `ldr r5,[r3,#4]`
+constexpr u32 kControlCount = 0x0C;        // 0x00257034 `ldr r5,[r3,#0xc]`
+constexpr u32 kControlFlags = 0x10;        // 0x0025700C/0x00257040/0x00257084
+
+constexpr u32 kFlagSuppress = 0x10000000;  // 0x00257010 `tst r4,#0x10000000`
+constexpr u32 kFlagValueTable = 0x01;      // 0x00257090 `tst r0,#1`
+constexpr u32 kFlagStyle2 = 0x02;          // 0x002570C4 `tst r3,#2`
+constexpr u32 kFlagStyle3 = 0x04;          // 0x002570E4 `tst r3,#4`
+constexpr u32 kFlagWrapClear = 0x10;       // 0x00257048 `tst r5,#0x10`
+
+constexpr u32 kRecordStride = 24;          // `add r5,r4,r4,lsl #1` then `lsl #3`
+constexpr u32 kRecordHold = 0x12;          // 0x0025706C `mov r5,#0x12`
+constexpr u32 kRecordTextureIndex = 0x10;  // 0x002570B8 `ldrsh ip,[r0,#0x10]`
+constexpr u32 kRecordMeta = 0x14;          // 0x002570F4 `ldr r3,[r0,#0x14]`
+
+constexpr u32 kRootTextureTable = 0x14;    // 0x002570B4 `ldr r2,[ip,#0x14]`
+constexpr u32 kTextureScaleU = 0x14;       // 0x002570CC `add r4,r2,#0x14`
+constexpr u32 kTextureScaleV = 0x18;
+
+constexpr f32 kHalf = 0.5f;                // pool word at 0x002571C4
+
+}  // namespace ui_256ffc
+
+extern "C" void ui_func_00256ffc(void* self, void* output) {
+    using namespace ui_256ffc;
+
+    u8* const object = static_cast<u8*>(self);
+    u8* const out = static_cast<u8*>(output);
+
+    // 0x00257000..0x0025700C: pointer load order is preserved.
+    u8* const state =
+        *reinterpret_cast<u8* const*>(object + kStatePointer);
+    u8* const root =
+        *reinterpret_cast<u8* const*>(object + kRootPointer);
+    u8* const control =
+        *reinterpret_cast<u8* const*>(state + kStateControl);
+
+    // 0x00257010..0x00257014: bit 28 suppresses the entire update.
+    if ((*reinterpret_cast<const u32*>(control + kControlFlags) &
+         kFlagSuppress) != 0u) {
+        return;
+    }
+
+    // 0x00257018..0x0025707C: hold counter or advance the frame index.
+    const s32 hold = *reinterpret_cast<const s32*>(state + kStateHold);
+    if (hold > 0) {
+        *reinterpret_cast<s32*>(state + kStateHold) = hold - 1;
+    } else {
+        const u32 next = static_cast<u32>(
+            *reinterpret_cast<const s32*>(state + kStateIndex)) + 1u;
+        *reinterpret_cast<u32*>(state + kStateIndex) = next;
+
+        // 0x00257034..0x0025703C: `bhi` skips the wrap when count > next.
+        const u32 count =
+            *reinterpret_cast<const u32*>(control + kControlCount);
+        if (count <= next) {
+            if ((*reinterpret_cast<const u32*>(control + kControlFlags) &
+                 kFlagWrapClear) != 0u) {
+                *reinterpret_cast<u16*>(object + kLoopField) = 0;
+                *reinterpret_cast<u32*>(state + kStateIndex) = count - 1u;
+            } else {
+                *reinterpret_cast<u32*>(state + kStateIndex) = 0;
+            }
+        }
+
+        // 0x00257064..0x0025707C: reload index, s16 hold value from the record.
+        const u32 held_index =
+            *reinterpret_cast<const u32*>(state + kStateIndex);
+        const u8* const records =
+            *reinterpret_cast<u8* const*>(state + kStateRecords);
+        *reinterpret_cast<s32*>(state + kStateHold) =
+            *reinterpret_cast<const s16*>(records +
+                                          held_index * kRecordStride +
+                                          kRecordHold);
+    }
+
+    // 0x00257080..0x00257098: current index, flags and 24-byte record.
+    const u32 index = *reinterpret_cast<const u32*>(state + kStateIndex);
+    const u32 flags = *reinterpret_cast<const u32*>(control + kControlFlags);
+    const u8* const records =
+        *reinterpret_cast<u8* const*>(state + kStateRecords);
+    const u8* const record = records + index * kRecordStride;
+
+    // 0x00257090..0x002570B0: table value when flag bit 0 is set, else -1.
+    s32 value = -1;
+    if ((flags & kFlagValueTable) != 0u) {
+        const u8* const table = *reinterpret_cast<u8* const*>(root);
+        const u8* const entries =
+            table + *reinterpret_cast<const u32*>(control + kControlValueOffset);
+        value = *reinterpret_cast<const s32*>(entries + index * 4u);
+    }
+    *reinterpret_cast<s32*>(out + 0x2C) = value;
+
+    // 0x002570B4..0x002570C0: texture table indexed by a signed halfword.
+    const u8* const textures =
+        *reinterpret_cast<u8* const*>(root + kRootTextureTable);
+    const s32 texture_index =
+        *reinterpret_cast<const s16*>(record + kRecordTextureIndex);
+    const u8* const texture = *reinterpret_cast<u8* const*>(
+        textures + static_cast<u32>(texture_index) * 4u);
+
+    // 0x002570C4..0x002570F0: style halfword; the flags are re-read here.
+    const u32 style_flags =
+        *reinterpret_cast<const u32*>(control + kControlFlags);
+    u16 style = 1;
+    if ((style_flags & kFlagStyle2) != 0u) {
+        style = 2;
+    } else if ((style_flags & kFlagStyle3) != 0u) {
+        style = 3;
+    }
+    *reinterpret_cast<u16*>(out + 0x28) = style;
+
+    // 0x002570D0..0x002570DC: signed integer texture scales.
+    const f32 scale_u = static_cast<f32>(
+        *reinterpret_cast<const s32*>(texture + kTextureScaleU));
+    const f32 scale_v = static_cast<f32>(
+        *reinterpret_cast<const s32*>(texture + kTextureScaleV));
+
+    // 0x002570F4..0x00257100: record word and texture pointer.
+    *reinterpret_cast<u32*>(out + 0x10) =
+        *reinterpret_cast<const u32*>(record + kRecordMeta);
+    *reinterpret_cast<u32*>(out + 0x14) = static_cast<u32>(
+        reinterpret_cast<uintptr_t>(texture));
+
+    // 0x00257100..0x00257140: eight signed record halfwords.
+    const s32 origin_x = *reinterpret_cast<const s16*>(record + 0x00);
+    const s32 origin_y = *reinterpret_cast<const s16*>(record + 0x02);
+    const s32 pivot_x = *reinterpret_cast<const s16*>(record + 0x04);
+    const s32 pivot_y = *reinterpret_cast<const s16*>(record + 0x06);
+    const s32 edge_u0 = *reinterpret_cast<const s16*>(record + 0x08) >> 4;
+    const s32 edge_v0 = *reinterpret_cast<const s16*>(record + 0x0A) >> 4;
+    const s32 edge_u1 = *reinterpret_cast<const s16*>(record + 0x0C) >> 4;
+    const s32 edge_v1 = *reinterpret_cast<const s16*>(record + 0x0E) >> 4;
+
+    const f32 half_x = static_cast<f32>(origin_x) * kHalf;
+    const f32 half_y = static_cast<f32>(origin_y) * kHalf;
+
+    // 0x00257140..0x002571B8: final output block (0x38 bytes).
+    *reinterpret_cast<f32*>(out + 0x00) = half_x - static_cast<f32>(pivot_x);
+    *reinterpret_cast<f32*>(out + 0x04) = half_y - static_cast<f32>(pivot_y);
+    *reinterpret_cast<f32*>(out + 0x08) = half_x;
+    *reinterpret_cast<f32*>(out + 0x0C) = half_y;
+    *reinterpret_cast<f32*>(out + 0x18) = static_cast<f32>(edge_u0) / scale_u;
+    *reinterpret_cast<f32*>(out + 0x1C) = static_cast<f32>(edge_v0) / scale_v;
+    *reinterpret_cast<f32*>(out + 0x20) = static_cast<f32>(edge_u1) / scale_u;
+    *reinterpret_cast<f32*>(out + 0x24) = static_cast<f32>(edge_v1) / scale_v;
+    *reinterpret_cast<f32*>(out + 0x30) = scale_u;
+    *reinterpret_cast<f32*>(out + 0x34) = scale_v;
 }
 
 // DECOMP_FUNC(0x001f6528, 464)

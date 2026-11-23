@@ -4000,7 +4000,7 @@ address,size,status,category,name,src_file
 0x00256c90,584,matching,ui,ui_func_00256c90,src/engine/leaf_batch42_b.cpp
 0x00256ed8,64,matching,unknown,func_00256ed8,src/engine/leaf_batch11_b.cpp
 0x00256f18,228,matching,ui,ui_func_00256f18,src/engine/leaf_batch35_b.cpp
-0x00256ffc,460,matching,ui,ui_func_00256ffc,src/engine/leaf_batch41_c.cpp
+0x00256ffc,460,non_matching,ui,ui_func_00256ffc,src/engine/leaf_batch41_c.cpp
 0x002571c8,84,matching,ui,ui_func_002571c8,src/engine/leaf_batch29_b.cpp
 0x0025721c,16,matching,engine,engine_func_0025721c,src/engine/leaf_matching.cpp
 0x0025722c,176,matching,engine,effP2A_func_0025722c,src/engine/leaf_batch38_c.cpp
