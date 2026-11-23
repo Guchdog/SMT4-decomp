@@ -2139,7 +2139,7 @@ address,size,status,category,name,src_file
 0x001a8bf0,636,matching,script_vm,script_vm_func_001a8bf0,src/engine/leaf_batch42_b.cpp
 0x001a8e6c,148,matching,script_vm,script_vm_func_001a8e6c,src/engine/leaf_batch26_a.cpp
 0x001a8f00,252,matching,engine,engine_func_001a8f00,src/engine/leaf_batch44_b.cpp
-0x001a8ffc,1036,matching,script_vm,script_vm_func_001a8ffc,src/engine/leaf_batch34_c.cpp
+0x001a8ffc,1036,non_matching,script_vm,script_vm_func_001a8ffc,src/engine/leaf_batch34_c.cpp
 0x001a9408,100,matching,script_vm,script_vm_func_001a9408,src/engine/leaf_batch25_a.cpp
 0x001a946c,144,matching,script_vm,script_vm_func_001a946c,src/engine/leaf_batch26_a.cpp
 0x001a94fc,188,matching,ui,ui_func_001a94fc,src/engine/leaf_batch30_a.cpp

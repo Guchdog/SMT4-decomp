@@ -6035,298 +6035,281 @@ extern "C" __attribute__((naked)) void camp_func_0019296c() {
     );
 }
 
+// Helpers for 0x001A8FFC. The shared declarations at the top of this file are
+// prototype-less, so the recovered signatures are applied through typed
+// function pointers here.
+using ScriptVmIndexPredicate = s32 (*)(u32 index);
+using ScriptVmSlotReader = s32 (*)(u32 index, s32 slot, void* out);
+using ScriptVmPlot = void (*)(u32 mode, u32 arg1, u32 arg2);
+using ScriptVmMarkConsumed = void (*)(u32 index, u32 value);
+using ScriptVmRoot = u8* (*)();
+using ScriptVmRowLookup = u8* (*)(s32 id);
+using ScriptVmPlaySelect = void (*)(s32 id, s32 enabled);
+using ScriptVmBoolean = s32 (*)();
+
+namespace {
+
+// Slot record filled by 0x002990DC. Only +0x00 and +0x04 are read here.
+struct ScriptSlotInfo {
+    s32 amount;
+    u16 id;
+    u8 flag;
+    u8 reserved;
+    s32 capacity;
+};
+static_assert(sizeof(ScriptSlotInfo) == 0x0C, "slot record layout");
+
+// Global state block referenced by the original literal pool word 0x0049F91C.
+constexpr u32 kScriptGlobal = 0x0049F91Cu;
+constexpr u32 kPendingEntryOffset = 0xAC;
+constexpr u32 kStoredSelectionOffset = 0xB0;
+
+// Root-relative view used by the original after `add r0, r0, #0x1000`.
+constexpr u32 kSelectionStateOffset = 0x1000;
+constexpr u32 kLowerLimitOffset = 0x60;
+constexpr u32 kZeroTargetOffset = 0x62;
+constexpr u32 kLowTargetOffset = 0x64;
+constexpr u32 kHighTargetOffset = 0x66;
+
+constexpr u32 kFirstIndex = 0x64;
+constexpr u32 kIndexLimit = 0x190;
+constexpr s32 kSlotCount = 6;
+
+} // namespace
+
 // DECOMP_FUNC(0x001a8ffc, 1036)
-extern "C" __attribute__((naked)) void script_vm_func_001a8ffc() {
-    asm volatile(
-        "push {r4, r5, r6, r7, r8, sb, sl, fp, lr}\n"
-        "sub sp, sp, #0x4c\n"
-        "mov r0, #0\n"
-        "str r0, [sp, #0x2c]\n"
-        "bl engine_func_002c2b1c\n"
-        ".word 0xe59f43ec\n"
-        "mov r1, #0\n"
-        "str r1, [sp, #0x30]\n"
-        "ldrb r1, [r4, #0xac]\n"
-        "cmp r1, #0\n"
-        "beq .L_001a9054\n"
-        "ldrsh r0, [r0, #0x2a]\n"
-        "bl script_vm_func_00287b10\n"
-        "ldrsh r0, [r0, #0x12]\n"
-        "mov r1, #1\n"
-        "str r0, [r4, #0xb0]\n"
-        "bl script_vm_func_00295cbc\n"
-        "mov r0, #0\n"
-        "strb r0, [r4, #0xac]\n"
-        "add sp, sp, #0x4c\n"
-        "mov r0, #4\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, fp, pc}\n"
-        ".L_001a9054:\n"
-        "add r0, r0, #0x1000\n"
-        "mov r8, #0x64\n"
-        "str r0, [sp, #0x24]\n"
-        ".L_001a9060:\n"
-        "mov r0, r8\n"
-        "bl script_vm_func_00299064\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "beq .L_001a93a8\n"
-        "mov r0, r8\n"
-        "bl script_vm_func_00287afc\n"
-        "cmp r0, #1\n"
-        "nop\n"
-        "beq .L_001a9094\n"
-        "cmp r0, #0\n"
-        "beq .L_001a9214\n"
-        "b .L_001a93a8\n"
-        ".L_001a9094:\n"
-        "mov sb, #0\n"
-        "str sb, [sp, #0x3c]\n"
-        "mov r5, sb\n"
-        "mov r7, sb\n"
-        "mov r0, r8\n"
-        "str sb, [sp, #0x40]\n"
-        "str sb, [sp, #0x44]\n"
-        "str sb, [sp, #0x28]\n"
-        "bl script_vm_func_00287adc\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "beq .L_001a93a8\n"
-        "ldr r0, [sp, #0x24]\n"
-        "mov r6, #0\n"
-        "mov r4, r6\n"
-        "ldrsh sl, [r0, #0x64]\n"
-        "ldrsh fp, [r0, #0x66]\n"
-        ".L_001a90d8:\n"
-        "add r2, sp, #4\n"
-        "mov r1, r4\n"
-        "mov r0, r8\n"
-        "bl script_vm_func_002990dc\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "beq .L_001a9138\n"
-        "ldr r0, [sp, #4]\n"
-        "add r5, r5, #1\n"
-        "cmp r0, #0\n"
-        "ldrh r0, [sp, #8]\n"
-        "ble .L_001a9124\n"
-        "cmp r0, fp\n"
-        "strne r0, [sp, #0x40]\n"
-        "ldr r0, [sp, #4]\n"
-        "moveq sb, #1\n"
-        "streq r0, [sp, #0x3c]\n"
-        "strne r0, [sp, #0x44]\n"
-        "b .L_001a9130\n"
-        ".L_001a9124:\n"
-        "cmp r0, sl\n"
-        "add r7, r7, #1\n"
-        "moveq sb, #1\n"
-        ".L_001a9130:\n"
-        "ldr r0, [sp, #4]\n"
-        "add r6, r6, r0\n"
-        ".L_001a9138:\n"
-        "add r4, r4, #1\n"
-        "cmp r4, #6\n"
-        "blt .L_001a90d8\n"
-        "ldr r0, [sp, #0x28]\n"
-        "bics r0, sb, r0\n"
-        "beq .L_001a91fc\n"
-        "cmp r5, #2\n"
-        "blt .L_001a91d4\n"
-        "cmp r6, #0\n"
-        "beq .L_001a9184\n"
-        "cmp sl, #0\n"
-        "beq .L_001a91c0\n"
-        "sub r0, r5, r7\n"
-        "cmp r0, #2\n"
-        "blt .L_001a91a4\n"
-        "uxth r2, r0\n"
-        "uxth r1, sl\n"
-        "mov r0, #7\n"
-        "b .L_001a91b8\n"
-        ".L_001a9184:\n"
-        "uxth r1, sl\n"
-        "mov r2, #0\n"
-        "mov r0, #6\n"
-        ".L_001a9190:\n"
-        "bl script_vm_func_002e8558\n"
-        "mov r0, #1\n"
-        "str r0, [sp, #0x30]\n"
-        ".L_001a919c:\n"
-        "str r0, [sp, #0x2c]\n"
-        "b .L_001a91fc\n"
-        ".L_001a91a4:\n"
-        "ldr r0, [sp, #0x44]\n"
-        "uxth r2, r0\n"
-        "ldr r0, [sp, #0x40]\n"
-        "uxth r1, r0\n"
-        "mov r0, #8\n"
-        ".L_001a91b8:\n"
-        "bl script_vm_func_002e8558\n"
-        "b .L_001a91fc\n"
-        ".L_001a91c0:\n"
-        "ldr r0, [sp, #0x3c]\n"
-        "uxth r1, fp\n"
-        "uxth r2, r0\n"
-        "mov r0, #9\n"
-        "b .L_001a91b8\n"
-        ".L_001a91d4:\n"
-        "cmp r6, #0\n"
-        "ldrne r0, [sp, #0x3c]\n"
-        "uxtheq r1, sl\n"
-        "uxthne r1, fp\n"
-        "moveq r2, #0\n"
-        "uxthne r2, r0\n"
-        "moveq r0, #0xa\n"
-        "movne r0, #0xb\n"
-        "beq .L_001a9190\n"
-        "b .L_001a91b8\n"
-        ".L_001a91fc:\n"
-        "mov r1, #0\n"
-        "mov r0, r8\n"
-        "bl engine_func_00287ab4\n"
-        "nop\n"
-        "nop\n"
-        "b .L_001a93a8\n"
-        ".L_001a9214:\n"
-        "mov sl, #0\n"
-        "mov r5, sl\n"
-        "mov r7, sl\n"
-        "mov sb, sl\n"
-        "mov r0, r8\n"
-        "str sl, [sp, #0x40]\n"
-        "str sl, [sp, #0x44]\n"
-        "str sl, [sp, #0x28]\n"
-        "bl script_vm_func_00287adc\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "beq .L_001a93a8\n"
-        "mov r0, r8\n"
-        "bl script_vm_func_0028f460\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "beq .L_001a91fc\n"
-        "ldr r0, [sp, #0x24]\n"
-        "mov r6, #0\n"
-        "mov r4, r6\n"
-        "ldrsh fp, [r0, #0x62]\n"
-        "ldrsh r0, [r0, #0x60]\n"
-        "str r0, [sp, #0x3c]\n"
-        ".L_001a9270:\n"
-        "add r2, sp, #4\n"
-        "mov r1, r4\n"
-        "mov r0, r8\n"
-        "bl script_vm_func_002990dc\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "beq .L_001a92e4\n"
-        "ldr r0, [sp, #4]\n"
-        "add r5, r5, #1\n"
-        "cmp r0, #0\n"
-        "ldrh r0, [sp, #8]\n"
-        "ble .L_001a92d0\n"
-        "ldr r1, [sp, #0x3c]\n"
-        "cmp r0, r1\n"
-        "bne .L_001a92c0\n"
-        "ldr r1, [sp, #4]\n"
-        "cmp sb, #0\n"
-        "mov sl, #1\n"
-        "str r1, [sp, #0x40]\n"
-        "bne .L_001a92dc\n"
-        ".L_001a92c0:\n"
-        "mov sb, r0\n"
-        "ldr r0, [sp, #4]\n"
-        "str r0, [sp, #0x44]\n"
-        "b .L_001a92dc\n"
-        ".L_001a92d0:\n"
-        "cmp r0, fp\n"
-        "add r7, r7, #1\n"
-        "moveq sl, #1\n"
-        ".L_001a92dc:\n"
-        "ldr r0, [sp, #4]\n"
-        "add r6, r6, r0\n"
-        ".L_001a92e4:\n"
-        "add r4, r4, #1\n"
-        "cmp r4, #6\n"
-        "blt .L_001a9270\n"
-        "ldr r0, [sp, #0x28]\n"
-        "bic r1, sl, r0\n"
-        "ldr r0, [sp, #0x30]\n"
-        "bics r0, r1, r0\n"
-        "beq .L_001a91fc\n"
-        "cmp r5, #2\n"
-        "blt .L_001a9370\n"
-        "cmp r6, #0\n"
-        "beq .L_001a9340\n"
-        "cmp fp, #0\n"
-        "beq .L_001a9358\n"
-        "sub r0, r5, r7\n"
-        "cmp r0, #2\n"
-        "ldrlt r0, [sp, #0x44]\n"
-        "uxthge r1, fp\n"
-        "uxthlt r1, sb\n"
-        "uxth r2, r0\n"
-        "movge r0, #1\n"
-        "movlt r0, #2\n"
-        "b .L_001a9350\n"
-        ".L_001a9340:\n"
-        "mov r2, #0\n"
-        "uxth r1, fp\n"
-        "mov r0, r2\n"
-        "b .L_001a939c\n"
-        ".L_001a9350:\n"
-        "bl script_vm_func_002e876c\n"
-        "b .L_001a91fc\n"
-        ".L_001a9358:\n"
-        "ldr r0, [sp, #0x40]\n"
-        "uxth r2, r0\n"
-        "ldr r0, [sp, #0x3c]\n"
-        "uxth r1, r0\n"
-        "mov r0, #3\n"
-        "b .L_001a9350\n"
-        ".L_001a9370:\n"
-        "cmp r6, #0\n"
-        "beq .L_001a9390\n"
-        "ldr r0, [sp, #0x40]\n"
-        "uxth r2, r0\n"
-        "ldr r0, [sp, #0x3c]\n"
-        "uxth r1, r0\n"
-        "mov r0, #5\n"
-        "b .L_001a9350\n"
-        ".L_001a9390:\n"
-        "uxth r1, fp\n"
-        "mov r2, #0\n"
-        "mov r0, #4\n"
-        ".L_001a939c:\n"
-        "bl script_vm_func_002e876c\n"
-        "mov r0, #2\n"
-        "b .L_001a919c\n"
-        ".L_001a93a8:\n"
-        "add r0, r8, #1\n"
-        "uxth r8, r0\n"
-        "cmp r8, #0x190\n"
-        "blo .L_001a9060\n"
-        "ldr r0, [sp, #0x2c]\n"
-        "cmp r0, #0\n"
-        "bne .L_001a93d4\n"
-        "bl script_vm_func_00287a68\n"
-        "cmp r0, #0\n"
-        "movne r0, #3\n"
-        "strne r0, [sp, #0x2c]\n"
-        ".L_001a93d4:\n"
-        "ldr r1, [sp, #0x24]\n"
-        "mov r0, #0\n"
-        "strh r0, [r1, #0x64]\n"
-        "ldr r1, [sp, #0x24]\n"
-        "strh r0, [r1, #0x66]\n"
-        "ldr r1, [sp, #0x24]\n"
-        "strh r0, [r1, #0x62]\n"
-        "ldr r1, [sp, #0x24]\n"
-        "strh r0, [r1, #0x60]\n"
-        "ldr r0, [sp, #0x2c]\n"
-        "add sp, sp, #0x4c\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, fp, pc}\n"
-        ".word 0x0049f91c\n"
-    );
+// Resolves the pending script-VM selection at startup; otherwise walks indices
+// 0x64..0x18F and classifies each index's six inventory slots, reporting one
+// selection per index through 0x002E8558 (kind 1) or 0x002E876C (kind 0).
+// Returns 0 (nothing reported), 1, 2, 3 (0x00287A68 still pending) or 4 (a
+// pending entry was consumed and stored).
+extern "C" u32 script_vm_func_001a8ffc() {
+    const ScriptVmRoot get_root =
+        reinterpret_cast<ScriptVmRoot>(engine_func_002c2b1c);
+    const ScriptVmIndexPredicate has_entries =
+        reinterpret_cast<ScriptVmIndexPredicate>(script_vm_func_00299064);
+    const ScriptVmIndexPredicate get_kind =
+        reinterpret_cast<ScriptVmIndexPredicate>(script_vm_func_00287afc);
+    const ScriptVmIndexPredicate is_active =
+        reinterpret_cast<ScriptVmIndexPredicate>(script_vm_func_00287adc);
+    const ScriptVmIndexPredicate has_any_entry =
+        reinterpret_cast<ScriptVmIndexPredicate>(script_vm_func_0028f460);
+    const ScriptVmSlotReader read_slot =
+        reinterpret_cast<ScriptVmSlotReader>(script_vm_func_002990dc);
+    const ScriptVmPlot plot_kind_one =
+        reinterpret_cast<ScriptVmPlot>(script_vm_func_002e8558);
+    const ScriptVmPlot plot_kind_zero =
+        reinterpret_cast<ScriptVmPlot>(script_vm_func_002e876c);
+    const ScriptVmMarkConsumed mark_consumed =
+        reinterpret_cast<ScriptVmMarkConsumed>(engine_func_00287ab4);
+    const ScriptVmRowLookup lookup_row =
+        reinterpret_cast<ScriptVmRowLookup>(script_vm_func_00287b10);
+    const ScriptVmPlaySelect play_select =
+        reinterpret_cast<ScriptVmPlaySelect>(script_vm_func_00295cbc);
+    const ScriptVmBoolean has_pending =
+        reinterpret_cast<ScriptVmBoolean>(script_vm_func_00287a68);
+
+    u8* const root = get_root();
+    u8* const script_global = reinterpret_cast<u8*>(kScriptGlobal);
+
+    // 0x001A901C..0x001A9050: a pending entry is resolved, stored and played
+    // before the inventory walk; the pending byte is then cleared.
+    if (script_global[kPendingEntryOffset] != 0) {
+        const s32 entry_id = *reinterpret_cast<const s16*>(root + 0x2A);
+        const u8* const row = lookup_row(entry_id);
+        const s32 selection = *reinterpret_cast<const s16*>(row + 0x12);
+        *reinterpret_cast<s32*>(script_global + kStoredSelectionOffset) =
+            selection;
+        play_select(selection, 1);
+        script_global[kPendingEntryOffset] = 0;
+        return 4;
+    }
+
+    u8* const state = root + kSelectionStateOffset;
+    u32 result = 0;
+    // Set when a kind-one (or zero-filled kind-zero) index already reported a
+    // selection; kind-zero reporting is suppressed for the rest of the walk.
+    u32 suppressed = 0;
+
+    for (u32 index = kFirstIndex; index < kIndexLimit; ++index) {
+        if (has_entries(index) == 0) {
+            continue;
+        }
+        const s32 kind = get_kind(index);
+        if (kind == 1) {
+            // 0x001A9094..0x001A9210.
+            if (is_active(index) == 0) {
+                continue;
+            }
+            const s32 low_target =
+                *reinterpret_cast<const s16*>(state + kLowTargetOffset);
+            const s32 high_target =
+                *reinterpret_cast<const s16*>(state + kHighTargetOffset);
+
+            u32 present = 0;
+            u32 non_positive = 0;
+            u32 total = 0;
+            u32 found = 0;
+            s32 matched_amount = 0;
+            u32 other_id = 0;
+            s32 other_amount = 0;
+
+            for (s32 slot = 0; slot < kSlotCount; ++slot) {
+                ScriptSlotInfo info{};
+                if (read_slot(index, slot, &info) == 0) {
+                    continue;
+                }
+                const s32 amount = info.amount;
+                const u32 id = info.id;
+                ++present;
+                if (amount > 0) {
+                    if (id != static_cast<u32>(high_target)) {
+                        other_id = id;
+                    }
+                    if (id == static_cast<u32>(high_target)) {
+                        found = 1;
+                        matched_amount = amount;
+                    } else {
+                        other_amount = amount;
+                    }
+                } else {
+                    if (id == static_cast<u32>(low_target)) {
+                        found = 1;
+                    }
+                    ++non_positive;
+                }
+                total += static_cast<u32>(amount);
+            }
+
+            if (found == 0) {
+                mark_consumed(index, 0);
+                continue;
+            }
+            if (present < 2) {
+                if (total == 0) {
+                    plot_kind_one(0xA, static_cast<u16>(low_target), 0);
+                    suppressed = 1;
+                    result = 1;
+                } else {
+                    plot_kind_one(0xB, static_cast<u16>(high_target),
+                                  static_cast<u16>(matched_amount));
+                }
+            } else if (total == 0) {
+                plot_kind_one(6, static_cast<u16>(low_target), 0);
+                suppressed = 1;
+                result = 1;
+            } else if (low_target == 0) {
+                plot_kind_one(9, static_cast<u16>(high_target),
+                              static_cast<u16>(matched_amount));
+            } else {
+                const s32 remaining =
+                    static_cast<s32>(present) - static_cast<s32>(non_positive);
+                if (remaining < 2) {
+                    plot_kind_one(8, static_cast<u16>(other_id),
+                                  static_cast<u16>(other_amount));
+                } else {
+                    plot_kind_one(7, static_cast<u16>(low_target),
+                                  static_cast<u16>(remaining));
+                }
+            }
+            mark_consumed(index, 0);
+        } else if (kind == 0) {
+            // 0x001A9214..0x001A93A4.
+            if (is_active(index) == 0) {
+                continue;
+            }
+            if (has_any_entry(index) == 0) {
+                mark_consumed(index, 0);
+                continue;
+            }
+            const s32 lower_limit =
+                *reinterpret_cast<const s16*>(state + kLowerLimitOffset);
+            const s32 zero_target =
+                *reinterpret_cast<const s16*>(state + kZeroTargetOffset);
+
+            u32 present = 0;
+            u32 non_positive = 0;
+            u32 total = 0;
+            u32 found = 0;
+            u32 last_id = 0;
+            s32 matched_amount = 0;
+            s32 other_amount = 0;
+
+            for (s32 slot = 0; slot < kSlotCount; ++slot) {
+                ScriptSlotInfo info{};
+                if (read_slot(index, slot, &info) == 0) {
+                    continue;
+                }
+                const s32 amount = info.amount;
+                const u32 id = info.id;
+                ++present;
+                if (amount > 0) {
+                    if (id == static_cast<u32>(lower_limit)) {
+                        found = 1;
+                        matched_amount = amount;
+                        if (last_id != 0) {
+                            total += static_cast<u32>(amount);
+                            continue;
+                        }
+                    }
+                    last_id = id;
+                    other_amount = amount;
+                } else {
+                    if (id == static_cast<u32>(zero_target)) {
+                        found = 1;
+                    }
+                    ++non_positive;
+                }
+                total += static_cast<u32>(amount);
+            }
+
+            // 0x001A92F0..0x001A9300: no match, or a previous index already
+            // reported one, so this index is only marked consumed.
+            if (found == 0 || suppressed != 0) {
+                mark_consumed(index, 0);
+                continue;
+            }
+            if (present < 2) {
+                if (total == 0) {
+                    plot_kind_zero(4, static_cast<u16>(zero_target), 0);
+                    result = 2;
+                } else {
+                    plot_kind_zero(5, static_cast<u16>(lower_limit),
+                                   static_cast<u16>(matched_amount));
+                }
+            } else if (total == 0) {
+                plot_kind_zero(0, static_cast<u16>(zero_target), 0);
+                result = 2;
+            } else if (zero_target == 0) {
+                plot_kind_zero(3, static_cast<u16>(lower_limit),
+                               static_cast<u16>(matched_amount));
+            } else {
+                const s32 remaining =
+                    static_cast<s32>(present) - static_cast<s32>(non_positive);
+                if (remaining < 2) {
+                    plot_kind_zero(2, static_cast<u16>(last_id),
+                                   static_cast<u16>(other_amount));
+                } else {
+                    plot_kind_zero(1, static_cast<u16>(zero_target),
+                                   static_cast<u16>(remaining));
+                }
+            }
+            mark_consumed(index, 0);
+        }
+    }
+
+    // 0x001A93B8..0x001A9400: fall back to the pending query and clear the
+    // four selection counters.
+    if (result == 0) {
+        if (has_pending() != 0) {
+            result = 3;
+        }
+    }
+    *reinterpret_cast<u16*>(state + kLowTargetOffset) = 0;
+    *reinterpret_cast<u16*>(state + kHighTargetOffset) = 0;
+    *reinterpret_cast<u16*>(state + kZeroTargetOffset) = 0;
+    *reinterpret_cast<u16*>(state + kLowerLimitOffset) = 0;
+    return result;
 }
 
 // DECOMP_FUNC(0x001b0a94, 84)
