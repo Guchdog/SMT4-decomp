@@ -6671,111 +6671,185 @@ extern "C" s32 engine_func_003525b8(u8* self, u32 a1, u32 a2, const u8* a3) {
     return static_cast<s32>(kEngine3525b8MissingItem);
 }
 
+extern "C" void* camp_func_0032839c(s32 key0, s32 key1);
+extern "C" void script_vm_func_0026fc24(void);
+extern "C" u32 script_vm_func_001fb434(void);
+extern "C" void script_vm_func_00275984(void);
+extern "C" s32 script_vm_func_00255050(u32 type);
+extern "C" u32 script_vm_func_002857e4(void);
+extern "C" u32 script_vm_func_002c0ba8(u32 id);
+extern "C" void script_vm_func_001b48c0(u32 type, u32 id);
+extern "C" s32 script_vm_func_0026fcb4(u32 type, u32 id);
+extern "C" s32 ui_func_002876d0(u32 id);
+extern "C" u32 script_vm_func_00290694(void);
+extern "C" u32 script_vm_func_00287afc(void);
+extern "C" s32 engine_func_00287590(u32 id);
+
 // DECOMP_FUNC(0x0027d35c, 800)
-extern "C" __attribute__((naked)) void script_vm_func_0027d35c() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x02f0, 0xe59f, 0x4070, 0xe92d\n"
-        ".hword 0x4000, 0xe590, 0x02dc, 0xe1c4\n"
-        ".hword 0xac0a, 0xeb02, 0x62e0, 0xe59f\n"
-        ".hword 0x0000, 0xe350, 0x0002, 0x0a00\n"
-        ".hword 0x00d2, 0xe1d0, 0x02bc, 0xe1c6\n"
-        ".hword 0x002e, 0xe5c6, 0x02cc, 0xe59f\n"
-        ".hword 0x1045, 0xe5d0, 0x0000, 0xe351\n"
-        ".hword 0x0005, 0x1a00, 0x001d, 0xe5d0\n"
-        ".hword 0x0000, 0xe350, 0x0002, 0x0a00\n"
-        ".hword 0x0045, 0xe5d4, 0x0000, 0xe350\n"
-        ".hword 0x0004, 0x0a00, 0xf000, 0xe320\n"
-        ".hword 0xca1a, 0xebff, 0x0001, 0xe3a0\n"
-        ".hword 0x011d, 0xe5c6, 0x8070, 0xe8bd\n"
-        ".hword 0xf000, 0xe320, 0xf819, 0xebfd\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x000c, 0x0a00, 0x0024, 0xe594\n"
-        ".hword 0x0017, 0xe350, 0x0018, 0x1350\n"
-        ".hword 0xe166, 0x1bff, 0x002c, 0xe594\n"
-        ".hword 0x526c, 0xe59f, 0x0018, 0xe350\n"
-        ".hword 0x0009, 0x0a00, 0x5f14, 0xebff\n"
-        ".hword 0x0001, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x0018, 0x0a00, 0x0025, 0xea00\n"
-        ".hword 0x02dc, 0xe1c4, 0xdd2a, 0xebfc\n"
-        ".hword 0xf000, 0xe320, 0xf000, 0xe320\n"
-        ".hword 0xfff1, 0xeaff, 0xf000, 0xe320\n"
-        ".hword 0x20ee, 0xeb00, 0x0001, 0xe350\n"
-        ".hword 0xf000, 0xe320, 0x001b, 0x1a00\n"
-        ".hword 0x002c, 0xe3a0, 0x0dda, 0xeb01\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x0016, 0x1a00, 0x0214, 0xe59f\n"
-        ".hword 0x0028, 0xe586, 0x289e, 0xeb00\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x0074, 0x0a00, 0x0003, 0xe350\n"
-        ".hword 0x0072, 0x0a00, 0x8070, 0xe8bd\n"
-        ".hword 0x02dc, 0xe1c4, 0xca0f, 0xebff\n"
-        ".hword 0x1180, 0xe060, 0x0200, 0xe081\n"
-        ".hword 0x0100, 0xe085, 0x0014, 0xe590\n"
-        ".hword 0x0000, 0xe350, 0x0005, 0x0a00\n"
-        ".hword 0x0028, 0xe586, 0x288e, 0xeb00\n"
-        ".hword 0x0000, 0xe350, 0x0003, 0x1350\n"
-        ".hword 0x0064, 0x0a00, 0x8070, 0xe8bd\n"
-        ".hword 0x002c, 0xe594, 0x0018, 0xe350\n"
-        ".hword 0x1030, 0x1594, 0x1001, 0x03a0\n"
-        ".hword 0xc9fe, 0xebff, 0x1180, 0xe060\n"
-        ".hword 0x0200, 0xe081, 0x5100, 0xe085\n"
-        ".hword 0x0008, 0xe595, 0x0028, 0xe586\n"
-        ".hword 0x0010, 0xe595, 0x0000, 0xe350\n"
-        ".hword 0x000f, 0x0a00, 0x00fc, 0xe1d5\n"
-        ".hword 0x0000, 0xe350, 0x0003, 0x0a00\n"
-        ".hword 0x0daf, 0xeb01, 0x0000, 0xe350\n"
-        ".hword 0xf000, 0xe320, 0x0008, 0x0a00\n"
-        ".hword 0x00fe, 0xe1d5, 0x0000, 0xe350\n"
-        ".hword 0x0003, 0x0a00, 0x0da8, 0xeb01\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x0001, 0x1a00, 0x0010, 0xe595\n"
-        ".hword 0x0028, 0xe586, 0x002c, 0xe594\n"
-        ".hword 0x0013, 0xe350, 0x0005, 0x0a00\n"
-        ".hword 0x0018, 0xe350, 0x0019, 0x1a00\n"
-        ".hword 0x20ac, 0xeb00, 0x0005, 0xe350\n"
-        ".hword 0xf000, 0xe320, 0x000a, 0x1a00\n"
-        ".hword 0x0124, 0xe59f, 0x0d98, 0xeb01\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x0005, 0x0a00, 0x0114, 0xe59f\n"
-        ".hword 0x0d93, 0xeb01, 0x0000, 0xe350\n"
-        ".hword 0x010c, 0x059f, 0x0028, 0x0586\n"
-        ".hword 0x002b, 0x0a00, 0x002c, 0xe594\n"
-        ".hword 0x0013, 0xe350, 0x0007, 0x1a00\n"
-        ".hword 0x0030, 0xe594, 0x0004, 0xe350\n"
-        ".hword 0x0004, 0xca00, 0x00b8, 0xe3a0\n"
-        ".hword 0x0d87, 0xeb01, 0x0000, 0xe350\n"
-        ".hword 0xf000, 0xe320, 0x0020, 0x0a00\n"
-        ".hword 0x0040, 0xe594, 0x0001, 0xe350\n"
-        ".hword 0x0002, 0x1350, 0x001c, 0x0a00\n"
-        ".hword 0x002c, 0xe594, 0x0029, 0xe350\n"
-        ".hword 0x002a, 0x1350, 0x002b, 0x1350\n"
-        ".hword 0x0017, 0x0a00, 0x4c35, 0xeb00\n"
-        ".hword 0x0000, 0xe350, 0x1c01, 0x1240\n"
-        ".hword 0x105f, 0x1251, 0x0012, 0x0a00\n"
-        ".hword 0x0e16, 0xe350, 0x1c01, 0x1240\n"
-        ".hword 0x1061, 0x1251, 0x000e, 0x0a00\n"
-        ".hword 0x0f59, 0xe350, 0x1c01, 0x1240\n"
-        ".hword 0x1065, 0x1251, 0x000a, 0x0a00\n"
-        ".hword 0x1c01, 0xe240, 0x1066, 0xe251\n"
-        ".hword 0x1c01, 0x1240, 0x1067, 0x1251\n"
-        ".hword 0x0f5a, 0x1350, 0x0004, 0x0a00\n"
-        ".hword 0x293c, 0xeb00, 0x0001, 0xe350\n"
-        ".hword 0x0060, 0x059f, 0x0060, 0x159f\n"
-        ".hword 0x0028, 0xe586, 0x0028, 0xe596\n"
-        ".hword 0x282b, 0xeb00, 0x0000, 0xe350\n"
-        ".hword 0xf000, 0xe320, 0x0004, 0x0a00\n"
-        ".hword 0x0003, 0xe350, 0xff62, 0x1aff\n"
-        ".hword 0x0028, 0xe596, 0x4070, 0xe8bd\n"
-        ".hword 0x27d3, 0xea00, 0xf000, 0xe320\n"
-        ".hword 0xc976, 0xebff, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0xfff7, 0xeaff\n"
-        ".hword 0x7e28, 0x0044, 0xf91c, 0x0049\n"
-        ".hword 0xfa1c, 0x0049, 0x8e18, 0x0044\n"
-        ".hword 0x0086, 0x0100, 0x062c, 0x0000\n"
-        ".hword 0x0648, 0x0000, 0x007a, 0x0100\n"
-        ".hword 0x0037, 0x0100, 0x0038, 0x0100\n"
-    );
+//
+// Selects and publishes the "hud" descriptor at 0x0049F91C+0x28, then reports
+// the publication state through ui_func_002876d0. The state object is reached
+// via the pointer stored at 0x00447E28; its fields 0x24/0x2C/0x30/0x40/0x45
+// drive the mode decisions. The 92-byte entry table at 0x00448E18 is indexed
+// by script_vm_func_0026fcb4; entry fields +8/+0xC/+0xE/+0x10/+0x14 are used.
+// Returns 1 on the early "busy" path, otherwise the result of the 0x00287590
+// tail call (or ui_func_002876d0's unexpected non-zero, non-3 result).
+extern "C" s32 script_vm_func_0027d35c(void) {
+    u8* const state = *reinterpret_cast<u8* volatile*>(0x00447E28u);
+    u8* const hud = reinterpret_cast<u8*>(0x0049F91Cu);
+    const u8* const status = reinterpret_cast<const u8*>(0x0049FA1Cu);
+    u8* const entries = reinterpret_cast<u8*>(0x00448E18u);
+
+    // 1. Optional lookup keyed by the two state words at 0x2C/0x30.
+    {
+        u8* const row = static_cast<u8*>(camp_func_0032839c(
+            static_cast<s32>(*reinterpret_cast<const u32*>(state + 0x2C)),
+            static_cast<s32>(*reinterpret_cast<const u32*>(state + 0x30))));
+        if (row != nullptr) {
+            const u8 byte = row[2];
+            const s8 value = static_cast<s8>(byte);
+            *reinterpret_cast<u16*>(hud + 0x2C) =
+                static_cast<u16>(static_cast<s16>(value));
+            hud[0x2E] = byte;
+        }
+    }
+
+    // 2. Busy path: flag bytes at 0x0049FA1C and in the state object.
+    if (status[0x45] != 0 || status[0x1D] == 0 || state[0x45] != 0) {
+        script_vm_func_0026fc24();
+        hud[0x11D] = 1;
+        return 1;
+    }
+
+    // 3. Two preparatory paths converge on the table lookup below.
+    if (script_vm_func_001fb434() == 0) {
+        script_vm_func_001b48c0(
+            *reinterpret_cast<const u32*>(state + 0x2C),
+            *reinterpret_cast<const u32*>(state + 0x30));
+    } else {
+        const u32 mode = *reinterpret_cast<const u32*>(state + 0x24);
+        if (mode != 0x17u && mode != 0x18u) {
+            script_vm_func_00275984();
+        }
+    }
+
+    // 4. Type 0x18 shortcut: only for helper result 1 and flag 0x2C clear.
+    if (*reinterpret_cast<const u32*>(state + 0x2C) == 0x18u) {
+        if (script_vm_func_002857e4() == 1u &&
+            script_vm_func_002c0ba8(0x2Cu) == 0u) {
+            const u32 id = 0x01000086u;
+            *reinterpret_cast<u32*>(hud + 0x28) = id;
+            const s32 rc = ui_func_002876d0(id);
+            if (rc == 0 || rc == 3) {
+                goto tail_call;
+            }
+            return rc;
+        }
+    } else if (script_vm_func_00255050(
+                   *reinterpret_cast<const u32*>(state + 0x2C)) == 1) {
+        // 5. Lookup with the raw state pair, then take entry field +0x14.
+        const s32 index = script_vm_func_0026fcb4(
+            *reinterpret_cast<const u32*>(state + 0x2C),
+            *reinterpret_cast<const u32*>(state + 0x30));
+        u8* const entry = entries + static_cast<u32>(index) * 92u;
+        const u32 candidate = *reinterpret_cast<const u32*>(entry + 0x14);
+        if (candidate != 0u) {
+            *reinterpret_cast<u32*>(hud + 0x28) = candidate;
+            const s32 rc = ui_func_002876d0(candidate);
+            if (rc == 0 || rc == 3) {
+                goto tail_call;
+            }
+            return rc;
+        }
+    }
+
+    // 6. Main table lookup; type 0x18 uses the fixed key 1.
+    {
+        const u32 type = *reinterpret_cast<const u32*>(state + 0x2C);
+        const u32 key = (type == 0x18u)
+            ? 1u
+            : *reinterpret_cast<const u32*>(state + 0x30);
+        const s32 index = script_vm_func_0026fcb4(type, key);
+        u8* const entry = entries + static_cast<u32>(index) * 92u;
+
+        *reinterpret_cast<u32*>(hud + 0x28) =
+            *reinterpret_cast<const u32*>(entry + 0x08);
+
+        // 7. Entry field +0x10 overrides the published id unless one of the
+        //    signed 16-bit flags at +0xC/+0xE selects the earlier value.
+        if (*reinterpret_cast<const u32*>(entry + 0x10) != 0u) {
+            const s16 flag0 = *reinterpret_cast<const s16*>(entry + 0x0C);
+            const bool keep = (flag0 != 0) &&
+                (script_vm_func_002c0ba8(
+                     static_cast<u32>(static_cast<s32>(flag0))) == 0u);
+            if (!keep) {
+                const s16 flag1 = *reinterpret_cast<const s16*>(entry + 0x0E);
+                const bool override_id = (flag1 == 0) ||
+                    (script_vm_func_002c0ba8(
+                         static_cast<u32>(static_cast<s32>(flag1))) == 0u);
+                if (override_id) {
+                    *reinterpret_cast<u32*>(hud + 0x28) =
+                        *reinterpret_cast<const u32*>(entry + 0x10);
+                }
+            }
+        }
+    }
+
+    // 8. Mode-specific publication tweaks. Type 0x13 (or 0x18 with helper
+    //    result 5) consults flags 0x62C/0x648; type 0x13 with sub-mode <= 4
+    //    consults flag 0xB8.
+    {
+        const u32 type = *reinterpret_cast<const u32*>(state + 0x2C);
+        if (type == 0x13u ||
+            (type == 0x18u && script_vm_func_002857e4() == 5u)) {
+            if (script_vm_func_002c0ba8(0x62Cu) != 0u &&
+                script_vm_func_002c0ba8(0x648u) == 0u) {
+                *reinterpret_cast<u32*>(hud + 0x28) = 0x0100007Au;
+                goto publish;
+            }
+            if (type == 0x13u &&
+                static_cast<s32>(*reinterpret_cast<const u32*>(state + 0x30)) <= 4 &&
+                script_vm_func_002c0ba8(0xB8u) == 0u) {
+                goto publish;
+            }
+        }
+    }
+
+    // 9. Generic publication selection.
+    {
+        const u32 mode = *reinterpret_cast<const u32*>(state + 0x40);
+        if (mode == 1u || mode == 2u) {
+            goto publish;
+        }
+        const u32 type = *reinterpret_cast<const u32*>(state + 0x2C);
+        if (type == 0x29u || type == 0x2Au || type == 0x2Bu) {
+            goto publish;
+        }
+        const u32 probe = script_vm_func_00290694();
+        if (probe == 0u || probe == 0x15Fu || probe == 0x160u ||
+            probe == 0x161u || probe == 0x164u || probe == 0x165u ||
+            probe == 0x166u || probe == 0x167u || probe == 0x168u) {
+            goto publish;
+        }
+        *reinterpret_cast<u32*>(hud + 0x28) =
+            (script_vm_func_00287afc() == 1u) ? 0x01000037u : 0x01000038u;
+    }
+
+publish:
+    // 10. Report and tail-publish the chosen id.
+    {
+        const s32 rc = ui_func_002876d0(*reinterpret_cast<const u32*>(hud + 0x28));
+        if (rc == 3) {
+            goto tail_call;
+        }
+        if (rc != 0) {
+            return rc;
+        }
+    }
+    script_vm_func_0026fc24();
+
+tail_call:
+    return engine_func_00287590(*reinterpret_cast<const u32*>(hud + 0x28));
 }
 
 // DECOMP_FUNC(0x0037dc24, 800)

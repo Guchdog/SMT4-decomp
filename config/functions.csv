@@ -4419,7 +4419,7 @@ address,size,status,category,name,src_file
 0x0027cedc,308,matching,script_vm,script_vm_func_0027cedc,src/engine/leaf_batch41_a.cpp
 0x0027d010,804,non_matching,engine,engine_func_0027d010,src/engine/leaf_batch45_a.cpp
 0x0027d334,40,matching,script_vm,script_vm_func_0027d334,src/engine/leaf_batch39_b.cpp
-0x0027d35c,800,matching,script_vm,script_vm_func_0027d35c,src/engine/leaf_batch45_b.cpp
+0x0027d35c,800,non_matching,script_vm,script_vm_func_0027d35c,src/engine/leaf_batch45_b.cpp
 0x0027d67c,8,matching,script_vm,script_vm_func_0027d67c,src/engine/leaf_batch36_a.cpp
 0x0027d684,96,matching,engine,engine_func_0027d684,src/engine/leaf_batch39_c.cpp
 0x0027d6e4,28,matching,script_vm,script_vm_func_0027d6e4,src/engine/leaf_batch22_b.cpp
