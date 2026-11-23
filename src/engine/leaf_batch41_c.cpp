@@ -9787,40 +9787,225 @@ extern "C" void func_002313ec(s32 x, s32 y, s32 w, s32 h) {
 }
 
 // DECOMP_FUNC(0x0023adc4, 456)
-// 109 ARM instructions through unconditional bx; 20 trailing data bytes.
-extern "C" __attribute__((naked)) void engine_func_0023adc4() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d0030, 0xe5d0201c, 0xe5903004, 0xe59fc1a8\n"
-        ".word 0xe3520000, 0xeddf3a66, 0xe5932010, 0xed9c2a00\n"
-        ".word 0xeddf1a64, 0xe1d241f4, 0xe1d251f6, 0xe1d232f2\n"
-        ".word 0xee004a90, 0xee015a10, 0xe1d2c2b6, 0xeef80ae0\n"
-        ".word 0xeeb81ac1, 0xee700a82, 0xee303ac1, 0x0a000013\n"
-        ".word 0xe5904008, 0xee003a90, 0xe1d051fa, 0xe594400c\n"
-        ".word 0xee015a10, 0xeeb84ae0, 0xedd40a06, 0xedd42a05\n"
-        ".word 0xee103a90, 0xeef84ac1, 0xeeb81ae0, 0xe04c3003\n"
-        ".word 0xee023a10, 0xeef80ae2, 0xeeb82ac2, 0xee222a23\n"
-        ".word 0xee342a82, 0xee342a02, 0xee322a01, 0xea00000d\n"
-        ".word 0xee00ca90, 0xe1d242b4, 0xed904a04, 0xedd02a05\n"
-        ".word 0xe083300c, 0xee023a10, 0xeeb81a60, 0xee004a90\n"
-        ".word 0xeeb04ac4, 0xeef02ae2, 0xeeb82ac2, 0xeef80a60\n"
-        ".word 0xee021aa1, 0xee440a21, 0xe3a03000, 0xeef40ac1\n"
-        ".word 0xeef1fa10, 0xda000003, 0xee700ac1, 0xee600aa3\n"
-        ".word 0xeefd0ae0, 0xee103a90, 0xee332a42, 0xeddf0a2f\n"
-        ".word 0xee013a10, 0xeeb81ac1, 0xee321a41, 0xee301a81\n"
-        ".word 0xed811a01, 0xe5d0301c, 0xe3530000, 0x05d0301d\n"
-        ".word 0x03530000, 0x1a000002, 0xed902a05, 0xee021a21\n"
-        ".word 0xed811a01, 0xee211a00, 0xe59f3084, 0xedd31a00\n"
-        ".word 0xee311a21, 0xecc10a02, 0xe5d0301c, 0xe1d2c2b4\n"
-        ".word 0xe3530000, 0xe1d232f0, 0xe1d221f2, 0xe08330ac\n"
-        ".word 0xe0422003, 0xee012a10, 0xeef81ac1, 0xeeb01a60\n"
-        ".word 0xee311a61, 0xed811a00, 0x0a000005, 0xe1d001f8\n"
-        ".word 0xee010a90, 0xeef81ae1, 0xee311a21, 0xed811a00\n"
-        ".word 0xea000002, 0xedd01a04, 0xee311a21, 0xed811a00\n"
-        ".word 0xee210a00, 0xedc10a02, 0xed810a00, 0xe8bd0030\n"
-        ".word 0xe12fff1e, 0x3f000000, 0x40000000, 0x003ff7c4\n"
-        ".word 0x00000000, 0x00433d98\n"
-    );
+//
+// Computes one scaled screen position from a layout source.  Recovered from
+// ARM 0x0023ADC4..0x0023AF74 (109 instructions; the five literal words at
+// 0x0023AF78..0x0023AF8B are 0.5f, 2.0f, 0x003FF7C4, 0.0f and 0x00433D98).
+//
+//   * ABI: r0 = source, r1 = three-float output, s0 = scale.  Only r4/r5 are
+//     saved and restored; SP is untouched.  There is no usable return value:
+//     on the `flag1c != 0` tail r0 becomes the s16 at source+0x18, otherwise it
+//     still holds the source pointer.  The final `vmul s0, s2, s0` leaves
+//     `x * scale` in s0, but none of the three direct callers (0x0023C670,
+//     0x0034CA2C, 0x003DB258) reads r0 or s0 afterwards, so the routine is
+//     modeled as returning void.
+//   * 0x0023ADC8..0x0023AE0C: the rect record is
+//     `*(Rect**)(*(u8**)(source + 4) + 0x10)`; the shared vertical span is
+//     `(float)(s16)rect+0x14 + 143.0f - (float)(s16)rect+0x16`, where the
+//     143.0f word lives in read-only data at 0x003FF7C4.
+//   * `flag1c` selects one of two size computations:
+//       - non-zero: the frame record is
+//         `*(Frame**)(*(u8**)(source + 8) + 0x0C)` and supplies two s32 words
+//         at +0x14/+0x18 (loaded with `vldr` and converted with
+//         `vcvt.f32.s32`, i.e. plain signed integers).  The comparison pair is
+//         `(float)frame+0x14 / (float)frame+0x18`.  The extent starts at
+//         `0.5f * (s32)((u32)rect+0x26 - (u32)frame+0x18)` (a wrapping 32-bit
+//         subtraction) and then accumulates source+0x1A, rect+0x22 and
+//         frame+0x18 in that order, all as floats.
+//       - zero: the comparison pair is
+//         `rect+0x24 + 2.0f * |source+0x10|` and
+//         `rect+0x26 + 2.0f * |source+0x14|` (halfwords zero-extended,
+//         `vcvt.f32.u32`), and the extent is
+//         `(float)(s32)((u32)rect+0x22 + (u32)rect+0x26)`.
+//   * 0x0023AE9C..0x0023AEB8: when the first value is greater than the second,
+//     `ratio = (s32)((first - second) * 0.5f)` through `vcvt.s32.f32`
+//     (truncation toward zero, saturation, NaN -> 0); otherwise ratio = 0.
+//   * 0x0023AEBC..0x0023AEF4: `y = 0.0f + ((span - extent) - (float)ratio)`.
+//     The `+ 0.0f` is preserved because it canonicalizes a -0.0 result.  When
+//     `flag1c == 0 && flag1d == 0`, `y += source+0x14 * 2.0f`.
+//   * 0x0023AEF8..0x0023AF08: `out->y = y * scale + *(f32*)0x00433D98`, the
+//     writable float word at the head of the enemy-draw global
+//     (`g_EnemyDrawGlobal`, include/battle/battle_extras.h).  `out->x` is
+//     staged to +0.0f by the same `vstmia`.
+//   * 0x0023AF0C..0x0023AF60: the horizontal span is
+//     `(s32)rect+0x12 - (s32)((s32)rect+0x20 + ((u32)rect+0x24 >> 1))`
+//     (wrapping), the base is `0.0f - (float)span`, and `flag1c != 0` adds
+//     `(float)(s16)source+0x18` while `flag1c == 0` adds the float at
+//     source+0x10.
+//   * 0x0023AF64..0x0023AF74: `out->z = +0.0f` and `out->x = x * scale`.
+// The stage-then-overwrite stores to out->x are not reproduced; only the final
+// contents of the three output floats are part of the contract.  Output and
+// input are assumed not to alias each other.
+namespace func_23adc4 {
+
+constexpr f32 kHalf = 0.5f;          // literal 0x3F000000 at 0x0023AF78
+constexpr f32 kTwo = 2.0f;           // literal 0x40000000 at 0x0023AF7C
+constexpr f32 kZero = 0.0f;          // literal 0x00000000 at 0x0023AF84
+constexpr f32 kVerticalBias = 143.0f;  // read-only word at 0x003FF7C4
+
+// Head float of g_EnemyDrawGlobal (0x00433D98); callers of EnemyDraw funcs
+// write it at runtime, so it is re-read on every call.
+constexpr u32 kEnemyDrawGlobal = 0x00433D98u;
+
+// r0: layout source.  Only the listed offsets are accessed.
+struct Source {
+    u8 pad_00[0x04];
+    const u8* node04;  // +0x04 -> +0x10 holds the rect record
+    const u8* node08;  // +0x08 -> +0x0C holds the frame record
+    u8 pad_0C[0x04];
+    f32 offset10;      // +0x10
+    f32 offset14;      // +0x14
+    s16 offset18;      // +0x18
+    s16 offset1a;      // +0x1A
+    u8 flag1c;         // +0x1C
+    u8 flag1d;         // +0x1D
+};
+
+// Screen record reached through Source::node04 (`ldr r2, [r3, #0x10]`).
+struct Rect {
+    u8 pad_00[0x12];
+    s16 field12;  // +0x12, `ldrsh r2, [r2, #0x12]`
+    s16 field14;  // +0x14, `ldrsh r4, [r2, #0x14]`
+    s16 field16;  // +0x16, `ldrsh r5, [r2, #0x16]`
+    u8 pad_18[0x08];
+    s16 field20;  // +0x20, `ldrsh r3, [r2, #0x20]`
+    s16 field22;  // +0x22, `ldrsh r3, [r2, #0x22]`
+    u16 field24;  // +0x24, `ldrh r4/ip, [r2, #0x24]`
+    u16 field26;  // +0x26, `ldrh ip, [r2, #0x26]`
+};
+
+// Size record reached through Source::node08 (`ldr r4, [r4, #0xC]`).  The
+// words are signed integers, not floats: the original loads them with `vldr`
+// and immediately applies `vcvt.f32.s32`.
+struct Frame {
+    u8 pad_00[0x14];
+    s32 field14;  // +0x14, `vldr s5, [r4, #0x14]`
+    s32 field18;  // +0x18, `vldr s1, [r4, #0x18]`
+};
+
+// r1: three floats written by `vstmia r1, {s1, s2}` plus the tail stores.
+struct Position {
+    f32 x;  // +0x00
+    f32 y;  // +0x04
+    f32 z;  // +0x08
+};
+
+static_assert(offsetof(Source, node04) == 0x04);
+static_assert(offsetof(Source, node08) == 0x08);
+static_assert(offsetof(Source, offset10) == 0x10);
+static_assert(offsetof(Source, offset14) == 0x14);
+static_assert(offsetof(Source, offset18) == 0x18);
+static_assert(offsetof(Source, offset1a) == 0x1A);
+static_assert(offsetof(Source, flag1c) == 0x1C);
+static_assert(offsetof(Source, flag1d) == 0x1D);
+static_assert(offsetof(Rect, field12) == 0x12);
+static_assert(offsetof(Rect, field14) == 0x14);
+static_assert(offsetof(Rect, field16) == 0x16);
+static_assert(offsetof(Rect, field20) == 0x20);
+static_assert(offsetof(Rect, field22) == 0x22);
+static_assert(offsetof(Rect, field24) == 0x24);
+static_assert(offsetof(Rect, field26) == 0x26);
+static_assert(offsetof(Frame, field14) == 0x14);
+static_assert(offsetof(Frame, field18) == 0x18);
+static_assert(offsetof(Position, x) == 0x00);
+static_assert(offsetof(Position, y) == 0x04);
+static_assert(offsetof(Position, z) == 0x08);
+
+// `vcvt.s32.f32` (encoding 0xEEFD0AE0): round toward zero, NaN -> 0, and
+// out-of-range values saturate to the signed 32-bit limits.
+inline s32 TruncateToS32(f32 value) {
+    if (value != value) {
+        return 0;
+    }
+    if (value >= 2147483648.0f) {
+        return 0x7FFFFFFF;
+    }
+    if (value <= -2147483648.0f) {
+        return static_cast<s32>(0x80000000u);
+    }
+    return static_cast<s32>(value);
+}
+
+}  // namespace func_23adc4
+
+extern "C" void engine_func_0023adc4(func_23adc4::Source* source,
+                                    func_23adc4::Position* out, f32 scale) {
+    using namespace func_23adc4;
+
+    const Rect* const rect =
+        *reinterpret_cast<const Rect* const*>(source->node04 + 0x10u);
+
+    // 0x0023ADE8..0x0023AE0C: shared vertical span.
+    const f32 span = (static_cast<f32>(rect->field14) + kVerticalBias) -
+                     static_cast<f32>(rect->field16);
+
+    f32 first;
+    f32 second;
+    f32 extent;
+    if (source->flag1c != 0u) {
+        // 0x0023AE14..0x0023AE60.
+        const Frame* const frame =
+            *reinterpret_cast<const Frame* const*>(source->node08 + 0x0Cu);
+        second = static_cast<f32>(frame->field18);
+        first = static_cast<f32>(frame->field14);
+
+        const s32 wrapped = static_cast<s32>(
+            static_cast<u32>(rect->field26) -
+            static_cast<u32>(frame->field18));
+        f32 sum = static_cast<f32>(wrapped) * kHalf;
+        sum = sum + static_cast<f32>(source->offset1a);
+        sum = sum + static_cast<f32>(rect->field22);
+        sum = sum + second;
+        extent = sum;
+    } else {
+        // 0x0023AE64..0x0023AE98.
+        first = static_cast<f32>(static_cast<u32>(rect->field24)) +
+                __builtin_fabsf(source->offset10) * kTwo;
+        second = static_cast<f32>(static_cast<u32>(rect->field26)) +
+                 __builtin_fabsf(source->offset14) * kTwo;
+
+        const s32 joined = static_cast<s32>(
+            static_cast<u32>(rect->field22) +
+            static_cast<u32>(rect->field26));
+        extent = static_cast<f32>(joined);
+    }
+
+    // 0x0023AE9C..0x0023AEB8: the source rounds the difference toward zero.
+    s32 ratio = 0;
+    if (first > second) {
+        ratio = TruncateToS32((first - second) * kHalf);
+    }
+
+    // 0x0023AEBC..0x0023AEF4.  The `+ 0.0f` is the original's `vadd.f32`
+    // against the zero literal; it turns a -0.0 result into +0.0.
+    f32 y = kZero + ((span - extent) - static_cast<f32>(ratio));
+    if (source->flag1c == 0u && source->flag1d == 0u) {
+        y = y + source->offset14 * kTwo;
+    }
+
+    // 0x0023AEF8..0x0023AF08.
+    y = y * scale;
+    y = y + *reinterpret_cast<const f32*>(kEnemyDrawGlobal);
+
+    out->y = y;
+    out->x = kZero;
+
+    // 0x0023AF0C..0x0023AF60: horizontal span, base and per-branch offset.
+    const s32 horizontal = static_cast<s32>(
+        static_cast<u32>(rect->field12) -
+        (static_cast<u32>(rect->field20) +
+         (static_cast<u32>(rect->field24) >> 1)));
+    f32 x = kZero - static_cast<f32>(horizontal);
+    if (source->flag1c != 0u) {
+        x = x + static_cast<f32>(source->offset18);
+    } else {
+        x = x + source->offset10;
+    }
+
+    // 0x0023AF64..0x0023AF74.
+    x = x * scale;
+    out->z = kZero;
+    out->x = x;
 }
 
 // DECOMP_FUNC(0x003cf20c, 456)
