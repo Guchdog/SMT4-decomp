@@ -4715,329 +4715,194 @@ extern "C" __attribute__((naked)) void func_00146d20() {
     );
 }
 
-// DECOMP_FUNC(0x00148dec, 1208)
-extern "C" __attribute__((naked)) void engine_func_00148dec() {
-    asm volatile(
-        "push {r4, r5, r6, r7, r8, sb, sl, lr}\n"
-        "mov r4, r0\n"
-        "mov r8, r1\n"
-        "mov sl, #0\n"
-        "ldr sb, [r8]\n"
-        ".word 0xe59f148c\n"
-        "mov r5, sl\n"
-        "mov r3, sl\n"
-        "ldr r0, [sb]\n"
-        "mov r6, sl\n"
-        "mov r7, sl\n"
-        "cmp r0, r1\n"
-        "sub r1, r0, r1\n"
-        "beq .L_00148ff8\n"
-        "bgt .L_00148e9c\n"
-        "cmp r0, #0x100000\n"
-        "moveq r5, #0x54\n"
-        "beq .L_00148ffc\n"
-        "bgt .L_00148e70\n"
-        "cmp r0, #0x20000\n"
-        "moveq r5, #0x24\n"
-        "beq .L_00148ffc\n"
-        "bgt .L_00148e5c\n"
-        "cmp r0, #0x80000000\n"
-        "beq .L_00148efc\n"
-        "cmp r0, #0\n"
-        "bne .L_00148ffc\n"
-        "b .L_00148ef4\n"
-        ".L_00148e5c:\n"
-        "cmp r0, #0x40000\n"
-        "beq .L_00148ff8\n"
-        "cmp r0, #0x80000\n"
-        "bne .L_00148ffc\n"
-        "b .L_00148efc\n"
-        ".L_00148e70:\n"
-        "cmp r0, #0x200000\n"
-        "moveq r5, #0x2c\n"
-        "beq .L_00148ffc\n"
-        "cmp r0, #0x400000\n"
-        "subne r0, r0, #0x400000\n"
-        "subsne r0, r0, #1\n"
-        "beq .L_00148efc\n"
-        ".word 0xe59f1404\n"
-        "adds r0, r0, r1\n"
-        "beq .L_00148ff8\n"
-        "b .L_00148ffc\n"
-        ".L_00148e9c:\n"
-        ".word 0xe59f23f8\n"
-        "cmp r1, r2\n"
-        "sub r0, r1, r2\n"
-        "beq .L_00148f04\n"
-        "bge .L_00148ed8\n"
-        "cmp r1, #1\n"
-        "cmpne r1, #3\n"
-        "beq .L_00148ff8\n"
-        ".word 0xe59f03dc\n"
-        "adds r0, r0, r1\n"
-        "moveq r5, #0x18\n"
-        "beq .L_00148ffc\n"
-        "cmp r0, #0x1000000\n"
-        "beq .L_00148efc\n"
-        "b .L_00148ffc\n"
-        ".L_00148ed8:\n"
-        "cmp r0, #0x4000000\n"
-        "cmpne r0, #0xc000000\n"
-        "cmpne r0, #0x1c000000\n"
-        "moveq r5, #0x20\n"
-        "beq .L_00148ffc\n"
-        "cmp r0, #0x3c000000\n"
-        "bne .L_00148ffc\n"
-        ".L_00148ef4:\n"
-        "mov r5, #0x10\n"
-        "b .L_00148ffc\n"
-        ".L_00148efc:\n"
-        "mov r5, #0x14\n"
-        "b .L_00148ffc\n"
-        ".L_00148f04:\n"
-        "cmp sb, #0\n"
-        "mov r5, #0x20\n"
-        "beq .L_00148f1c\n"
-        "ldr r0, [sb]\n"
-        "tst r0, #0x4000000\n"
-        "moveq sb, #0\n"
-        ".L_00148f1c:\n"
-        "add r0, sb, #0x10\n"
-        "ldr r1, [sb, #0x10]\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, sl\n"
-        "bl engine_func_002c3290\n"
-        "ldr r1, [sb, #0x14]\n"
-        "add r3, r0, #1\n"
-        "add r0, sb, #0x14\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "ldr r1, [sb, #0x18]!\n"
-        "moveq r0, sl\n"
-        "cmp r1, #0\n"
-        "addne r1, r1, sb\n"
-        "moveq r1, sl\n"
-        "cmp r0, #0\n"
-        "beq .L_00148fc4\n"
-        "ldr r0, [r0]\n"
-        "cmp r0, #0x8000000\n"
-        "moveq r6, #0x18\n"
-        "beq .L_00148fc4\n"
-        "bge .L_00148f98\n"
-        "cmp r0, #0x80000000\n"
-        "moveq r6, #0x1c\n"
-        "beq .L_00148fc4\n"
-        "cmp r0, #0\n"
-        "beq .L_00148fb8\n"
-        "cmp r0, #0x4000000\n"
-        "bne .L_00148fc4\n"
-        "b .L_00148fc0\n"
-        ".L_00148f98:\n"
-        "cmp r0, #0x10000000\n"
-        "beq .L_00148fb8\n"
-        "cmp r0, #0x20000000\n"
-        "moveq r6, #0x24\n"
-        "beq .L_00148fc4\n"
-        "cmp r0, #0x40000000\n"
-        "beq .L_00148fc0\n"
-        "b .L_00148fc4\n"
-        ".L_00148fb8:\n"
-        "mov r6, #8\n"
-        "b .L_00148fc4\n"
-        ".L_00148fc0:\n"
-        "mov r6, #0x28\n"
-        ".L_00148fc4:\n"
-        "cmp r1, #0\n"
-        "beq .L_00148ffc\n"
-        "ldr r0, [r1]\n"
-        "cmp r0, #0x80000000\n"
-        "beq .L_00148ff0\n"
-        "cmp r0, #0x10000000\n"
-        "cmpne r0, #0x20000000\n"
-        "moveq r7, #0x10\n"
-        "beq .L_00148ffc\n"
-        "cmp r0, #0x40000000\n"
-        "bne .L_00148ffc\n"
-        ".L_00148ff0:\n"
-        "mov r7, #4\n"
-        "b .L_00148ffc\n"
-        ".L_00148ff8:\n"
-        "mov r5, #0x1c\n"
-        ".L_00148ffc:\n"
-        "ldr r0, [r8]\n"
-        "mov lr, #0\n"
-        "mov r2, lr\n"
-        "mov ip, lr\n"
-        "ldr r8, [r0, #0xc]!\n"
-        "mov r1, lr\n"
-        "cmp r8, #0\n"
-        "addne r0, r0, r8\n"
-        "moveq r0, sl\n"
-        "cmp r0, #0\n"
-        "beq .L_00149074\n"
-        "ldr lr, [r0, #0x1c]\n"
-        "ldr r8, [r0, #4]!\n"
-        "mov sb, #0x24\n"
-        "ldr r2, [r0, #0x10]\n"
-        "cmp r8, #0\n"
-        "addne sl, r8, r0\n"
-        "cmp sl, #0\n"
-        "lsl ip, lr, #2\n"
-        "beq .L_0014906c\n"
-        "ldr r0, [sl]\n"
-        "cmp r0, #0x80000000\n"
-        "cmpne r0, #0\n"
-        "cmpne r0, #0x20000000\n"
-        "moveq r1, #8\n"
-        "beq .L_0014906c\n"
-        "cmp r0, #0x40000000\n"
-        "moveq r1, #0x10\n"
-        ".L_0014906c:\n"
-        "add r0, sb, r2, lsl #2\n"
-        "add lr, r0, lr, lsl #2\n"
-        ".L_00149074:\n"
-        "ldr r0, [r4, #4]\n"
-        "mov r8, #4\n"
-        "str r8, [r4, #4]\n"
-        "ldr sb, [r4, #8]\n"
-        "cmp sb, #4\n"
-        "movhs r8, sb\n"
-        "str r8, [r4, #8]\n"
-        "ldr r8, [r4]\n"
-        "str r0, [r4, #4]\n"
-        "add r8, r8, #3\n"
-        "bic r8, r8, #3\n"
-        "add r5, r5, r8\n"
-        "str r5, [r4]\n"
-        "ldr r5, [r4, #8]\n"
-        "cmp r5, r0\n"
-        "movhs r0, r5\n"
-        "str r0, [r4, #8]\n"
-        "ldr r0, [r4, #4]\n"
-        "mov r5, #4\n"
-        "str r5, [r4, #4]\n"
-        "ldr r8, [r4, #8]\n"
-        "cmp r8, #4\n"
-        "movhs r5, r8\n"
-        "str r5, [r4, #8]\n"
-        "ldr r5, [r4]\n"
-        "str r0, [r4, #4]\n"
-        "add r5, r5, #3\n"
-        "bic r5, r5, #3\n"
-        "add lr, lr, r5\n"
-        "str lr, [r4]\n"
-        "ldr lr, [r4, #8]\n"
-        "cmp lr, r0\n"
-        "movhs r0, lr\n"
-        "str r0, [r4, #8]\n"
-        "ldr r0, [r4, #4]\n"
-        "mov lr, #4\n"
-        "str lr, [r4, #4]\n"
-        "ldr r5, [r4, #8]\n"
-        "cmp r5, #4\n"
-        "movlo r5, lr\n"
-        "str r5, [r4, #8]\n"
-        "ldr lr, [r4]\n"
-        "str r0, [r4, #4]\n"
-        "cmp r5, r0\n"
-        "add lr, lr, #3\n"
-        "bic lr, lr, #3\n"
-        "add r2, r2, lr\n"
-        "str r2, [r4]\n"
-        "movhs r0, r5\n"
-        "str r0, [r4, #8]\n"
-        "ldr r0, [r4, #4]\n"
-        "mov r2, #4\n"
-        "str r2, [r4, #4]\n"
-        "ldr lr, [r4, #8]\n"
-        "cmp lr, #4\n"
-        "movhs r2, lr\n"
-        "str r2, [r4, #8]\n"
-        "ldr r2, [r4]\n"
-        "str r0, [r4, #4]\n"
-        "add r2, r2, #3\n"
-        "bic r2, r2, #3\n"
-        "add r2, r2, ip\n"
-        "str r2, [r4]\n"
-        "ldr r2, [r4, #8]\n"
-        "cmp r2, r0\n"
-        "movhs r0, r2\n"
-        "str r0, [r4, #8]\n"
-        "ldr r0, [r4, #4]\n"
-        "mov r2, #4\n"
-        "str r2, [r4, #4]\n"
-        "ldr ip, [r4, #8]\n"
-        "cmp ip, #4\n"
-        "movhs r2, ip\n"
-        "str r2, [r4, #8]\n"
-        "ldr r2, [r4]\n"
-        "str r0, [r4, #4]\n"
-        "add r2, r2, #3\n"
-        "bic r2, r2, #3\n"
-        "add r1, r1, r2\n"
-        "str r1, [r4]\n"
-        "ldr r1, [r4, #8]\n"
-        "cmp r1, r0\n"
-        "movhs r0, r1\n"
-        "str r0, [r4, #8]\n"
-        "ldr r0, [r4, #4]\n"
-        "mov r1, #4\n"
-        "str r1, [r4, #4]\n"
-        "ldr r2, [r4, #8]\n"
-        "cmp r2, #4\n"
-        "movhs r1, r2\n"
-        "str r1, [r4, #8]\n"
-        "ldr r1, [r4]\n"
-        "str r0, [r4, #4]\n"
-        "add r1, r1, #3\n"
-        "bic r1, r1, #3\n"
-        "add r1, r1, r3\n"
-        "str r1, [r4]\n"
-        "ldr r1, [r4, #8]\n"
-        "cmp r1, r0\n"
-        "movhs r0, r1\n"
-        "str r0, [r4, #8]\n"
-        "ldr r0, [r4, #4]\n"
-        "mov r1, #4\n"
-        "str r1, [r4, #4]\n"
-        "ldr r2, [r4, #8]\n"
-        "cmp r2, #4\n"
-        "movhs r1, r2\n"
-        "str r1, [r4, #8]\n"
-        "ldr r1, [r4]\n"
-        "str r0, [r4, #4]\n"
-        "add r1, r1, #3\n"
-        "bic r1, r1, #3\n"
-        "add r1, r1, r6\n"
-        "str r1, [r4]\n"
-        "ldr r1, [r4, #8]\n"
-        "cmp r1, r0\n"
-        "movhs r0, r1\n"
-        "str r0, [r4, #8]\n"
-        "ldr r0, [r4, #4]\n"
-        "mov r1, #4\n"
-        "str r1, [r4, #4]\n"
-        "ldr r2, [r4, #8]\n"
-        "cmp r2, #4\n"
-        "movhs r1, r2\n"
-        "str r1, [r4, #8]\n"
-        "ldr r1, [r4]\n"
-        "str r0, [r4, #4]\n"
-        "add r1, r1, #3\n"
-        "bic r1, r1, #3\n"
-        "add r1, r1, r7\n"
-        "str r1, [r4]\n"
-        "ldr r1, [r4, #8]\n"
-        "cmp r1, r0\n"
-        "movhs r0, r1\n"
-        "str r0, [r4, #8]\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, pc}\n"
-        ".word 0x00800001\n"
-        ".word 0xffc00001\n"
-        ".word 0x037fffff\n"
-        ".word 0xff800001\n"
-    );
+// ---------------------------------------------------------------------------
+// 0x00148DEC -- reserve the serialized footprint of one type record.
+//
+// ABI: r0 = layout cursor (three u32 words: offset, alignment, max alignment),
+// r1 = pointer to the type-record pointer.  The pointed-to record only has its
+// first word (the type tag) and its self-relative fields at +0x0C/+0x10/+0x14/
+// +0x18 dereferenced.  The only object written is the cursor.
+//
+// The tag chooses the fixed header size.  Tag 0x04000000 additionally resolves
+// three self-relative children: a NUL-terminated name (strlen(name)+1 bytes),
+// a child type selected by the field at +0x14 and a third type selected by the
+// field at +0x18; each child's own tag contributes a fixed size.  The field at
+// +0x0C resolves a sub-record whose +0x14 and +0x1C counts drive three further
+// reservations (the +0x04 field selects an inner tagged record).
+//
+// Every one of the eight reservations aligns the cursor to four bytes, adds its
+// size, and folds 4 plus the previous alignment word into the running maximum,
+// even when the size is zero.  The function returns the final maximum.
+// ---------------------------------------------------------------------------
+namespace {
+
+struct LayoutCursor {
+    u32 offset;         // +0x00: bumped by each reservation
+    u32 alignment;      // +0x04: saved and restored around every reservation
+    u32 max_alignment;  // +0x08: running maximum
+};
+
+constexpr u32 kPointerTag = 0x04000000u;
+
+inline u32 ReadU32(const void* base, u32 offset) {
+    return *reinterpret_cast<const u32*>(
+        static_cast<const u8*>(base) + offset);
+}
+
+// A self-relative field: the word adds the field's own address when non-zero.
+inline u8* ResolveRelative(u8* base, u32 offset) {
+    const u32 relative = ReadU32(base, offset);
+    return (relative != 0) ? base + offset + relative : nullptr;
+}
+
+constexpr u32 Align4(u32 value) {
+    return (value + 3u) & ~u32{3};
+}
+
+// Header size selected by the record's tag.
+constexpr u32 HeaderSizeForTag(u32 tag) {
+    switch (tag) {
+        case 0x00000000u: return 0x10;
+        case 0x00020000u: return 0x24;
+        case 0x00040000u: return 0x1c;
+        case 0x00080000u: return 0x14;
+        case 0x00100000u: return 0x54;
+        case 0x00200000u: return 0x2c;
+        case 0x00400000u: return 0x14;
+        case 0x00400001u: return 0x14;
+        case 0x00800000u: return 0x1c;
+        case 0x00800001u: return 0x1c;
+        case 0x00800002u: return 0x1c;
+        case 0x00800004u: return 0x1c;
+        case 0x01000000u: return 0x18;
+        case 0x02000000u: return 0x14;
+        case 0x04000000u: return 0x20;
+        case 0x08000000u: return 0x20;
+        case 0x10000000u: return 0x20;
+        case 0x20000000u: return 0x20;
+        case 0x40000000u: return 0x10;
+        case 0x80000000u: return 0x14;
+        default: return 0;
+    }
+}
+
+// Size of the type selected by the pointer record's +0x14 child.
+constexpr u32 ChildSizeForTag(u32 tag) {
+    switch (tag) {
+        case 0x00000000u: return 0x08;
+        case 0x04000000u: return 0x28;
+        case 0x08000000u: return 0x18;
+        case 0x10000000u: return 0x08;
+        case 0x20000000u: return 0x24;
+        case 0x40000000u: return 0x28;
+        case 0x80000000u: return 0x1c;
+        default: return 0;
+    }
+}
+
+// Size of the type selected by the pointer record's +0x18 child.
+constexpr u32 TailSizeForTag(u32 tag) {
+    switch (tag) {
+        case 0x10000000u: return 0x10;
+        case 0x20000000u: return 0x10;
+        case 0x40000000u: return 0x04;
+        case 0x80000000u: return 0x04;
+        default: return 0;
+    }
+}
+
+// Size of the inner type selected by the sub-record's +0x04 child.
+constexpr u32 InnerSizeForTag(u32 tag) {
+    switch (tag) {
+        case 0x00000000u: return 0x08;
+        case 0x20000000u: return 0x08;
+        case 0x40000000u: return 0x10;
+        case 0x80000000u: return 0x08;
+        default: return 0;
+    }
+}
+
+// One four-byte-aligned reservation.  The original stores 4 into the alignment
+// word, restores it afterwards, and updates the maximum with both values.
+u32 Reserve4(LayoutCursor* cursor, u32 size) {
+    const u32 previous_alignment = cursor->alignment;
+    cursor->alignment = 4;
+    u32 max_alignment = cursor->max_alignment;
+    if (max_alignment < 4u) {
+        max_alignment = 4u;
+    }
+    cursor->max_alignment = max_alignment;
+    u32 offset = cursor->offset;
+    cursor->alignment = previous_alignment;
+    offset = Align4(offset) + size;
+    cursor->offset = offset;
+    if (previous_alignment > max_alignment) {
+        max_alignment = previous_alignment;
+    }
+    cursor->max_alignment = max_alignment;
+    return offset;
+}
+
+}  // namespace
+
+extern "C" u32 engine_strlen_002c3290(const char* text)
+    __asm__("engine_func_002c3290");
+
+extern "C" u32 engine_func_00148dec(LayoutCursor* layout, u8** type_slot) {
+    u8* type = *type_slot;
+    const u32 tag = ReadU32(type, 0);
+    u32 header_size = HeaderSizeForTag(tag);
+    u32 child_size = 0;
+    u32 tail_size = 0;
+    u32 name_size = 0;
+
+    if (tag == kPointerTag) {
+        // The pinned code clears its local record pointer only when the
+        // pointer tag's own 0x04000000 bit is absent; that bit is always set
+        // here, so this is a faithful no-op preserved from the branch.
+        if (type != nullptr && (tag & kPointerTag) == 0) {
+            type = nullptr;
+        }
+        const u8* name = ResolveRelative(type, 0x10);
+        name_size = engine_strlen_002c3290(
+                        reinterpret_cast<const char*>(name)) + 1u;
+        u8* child = ResolveRelative(type, 0x14);
+        u8* tail = ResolveRelative(type, 0x18);
+        if (child != nullptr) {
+            child_size = ChildSizeForTag(ReadU32(child, 0));
+        }
+        if (tail != nullptr) {
+            tail_size = TailSizeForTag(ReadU32(tail, 0));
+        }
+    }
+
+    u8* const record = *type_slot;
+    u32 table_size = 0;
+    u32 count_14 = 0;
+    u32 count_bytes = 0;
+    u32 inner_size = 0;
+    u8* const sub = ResolveRelative(record, 0x0C);
+    if (sub != nullptr) {
+        const u32 count_1c = ReadU32(sub, 0x1C);
+        const u32 relative4 = ReadU32(sub, 0x04);
+        count_14 = ReadU32(sub, 0x14);
+        u8* const inner = (relative4 != 0) ? sub + 4 + relative4 : nullptr;
+        if (inner != nullptr) {
+            inner_size = InnerSizeForTag(ReadU32(inner, 0));
+        }
+        count_bytes = count_1c << 2;
+        table_size = 0x24u + ((count_14 + count_1c) << 2);
+    }
+
+    Reserve4(layout, header_size);
+    Reserve4(layout, table_size);
+    Reserve4(layout, count_14);
+    Reserve4(layout, count_bytes);
+    Reserve4(layout, inner_size);
+    Reserve4(layout, name_size);
+    Reserve4(layout, child_size);
+    Reserve4(layout, tail_size);
+    return layout->max_alignment;
 }
 
 // DECOMP_FUNC(0x001493a0, 1660)
