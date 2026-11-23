@@ -9926,7 +9926,7 @@ address,size,status,category,name,src_file
 0x003ccb70,360,matching,ui,ui_func_003ccb70,src/engine/leaf_batch28_c.cpp
 0x003cccd8,9192,matching,battle,Btl_ActionCalc,src/battle/btl_main.cpp
 0x003cf0c0,332,matching,battle,battle_func_003cf0c0,src/engine/leaf_batch43_c.cpp
-0x003cf20c,456,matching,engine,engine_func_003cf20c,src/engine/leaf_batch41_c.cpp
+0x003cf20c,456,non_matching,engine,engine_func_003cf20c,src/engine/leaf_batch41_c.cpp
 0x003cf3d4,128,matching,script_vm,script_vm_func_003cf3d4,src/engine/leaf_batch28_c.cpp
 0x003cf454,528,matching,battle,battle_func_003cf454,src/engine/leaf_batch42_b.cpp
 0x003cf664,192,matching,battle,battle_func_003cf664,src/engine/leaf_batch28_c.cpp

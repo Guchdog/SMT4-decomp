@@ -10009,40 +10009,197 @@ extern "C" void engine_func_0023adc4(func_23adc4::Source* source,
 }
 
 // DECOMP_FUNC(0x003cf20c, 456)
-// 113 ARM instructions through unconditional pop; 4 trailing data bytes.
-extern "C" __attribute__((naked)) void engine_func_003cf20c() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4ff7, 0xe24dd008, 0xe1a06000, 0xe5900000\n"
-        ".word 0xe2800901, 0xe2800e4a, 0xe5900000, 0xe3100004\n"
-        ".word 0x1a000065, 0xe3a0a001, 0xe3a07004, 0xe3a04000\n"
-        ".word 0xe1a0900a, 0xe3a00010, 0xebfbdd80, 0xe1a0b000\n"
-        ".word 0xe3a08000, 0xe5960000, 0xe0841204, 0xe0811304\n"
-        ".word 0xe2800d7f, 0xe5900000, 0xe0805181, 0xe5950000\n"
-        ".word 0xe3100001, 0x0a000009, 0xe3100040, 0x1a000007\n"
-        ".word 0xe59f014c, 0xe19000b5, 0xe3100b01, 0x03100004\n"
-        ".word 0x1a000002, 0xe3100c02, 0x13a09000, 0x0a000006\n"
-        ".word 0xe2844001, 0xe1570004, 0xcaffffe9, 0xe35a0000\n"
-        ".word 0x03590000, 0x1a000040, 0xea000013, 0xe1d500f8\n"
-        ".word 0xe3e03000, 0xe3a02002, 0xe3a0100f, 0xebf9dbf4\n"
-        ".word 0xe58d0000, 0xe1d500f8, 0xe3a0100f, 0xebf96df3\n"
-        ".word 0xe1a01000, 0xe59d0000, 0xe1800001, 0xe3100817\n"
-        ".word 0x1affffea, 0xe1d500f8, 0xe2881001, 0xe3a0a000\n"
-        ".word 0xe78b0108, 0xe6af8071, 0xeaffffe4, 0xe3580000\n"
-        ".word 0x0a000029, 0xe3a00063, 0xebf9be48, 0xe350000f\n"
-        ".word 0xe320f000, 0xba000005, 0xe5960000, 0xe2800b11\n"
-        ".word 0xe28000a8, 0xe5900000, 0xe3100401, 0x0a00001e\n"
-        ".word 0xe2480001, 0xe6ff0070, 0xebf9be3c, 0xe5961000\n"
-        ".word 0xe79b2100, 0xe3a00001, 0xe2811b07, 0xe2811fa6\n"
-        ".word 0xe0823102, 0xe5911000, 0xe0832302, 0xe58d0000\n"
-        ".word 0xe0814102, 0xe59d0010, 0xe59d100c, 0xe3a03c02\n"
-        ".word 0xe1a02004, 0xebf9df02, 0xe1d416f2, 0xe5960000\n"
-        ".word 0xebface00, 0xe1a01000, 0xe2800c01, 0xe3a02000\n"
-        ".word 0xe1c02cb8, 0xe1d02cba, 0xe3822010, 0xe1c02cba\n"
-        ".word 0xe3a02001, 0xe3a0001c, 0xebf96cec, 0xe28dd014\n"
-        ".word 0xe1a0000b, 0xe8bd4ff0, 0xeafa06fa, 0xe28dd014\n"
-        ".word 0xe8bd8ff0, 0x000001c6\n"
-    );
+//
+// Party-member selection gate.  The context word at +0x44A0 is a master
+// disable: when bit 2 is set the routine returns that word unchanged.  It
+// otherwise scans the first four 0x288-byte actor records reached through
+// context+0x1FC0 and collects the signed roster value at record+0x08 for every
+// record whose flags pass a three-stage filter.  A record with bit 0x200 set in
+// its +0x1C6 stage word both blocks the action and is not collected, so the
+// action only runs when at least one record was collected *and* at least one
+// saw that bit.  A 0x63-valued draw that is below 15, or master bit 24 at
+// +0x44A8, then re-arms the action: one collected value is drawn with a second
+// (count-1)-bounded draw, resolved to a 0x114-byte flag-table record, and used
+// to clear the u16 at row+0x1C8 and set bit 0x10 of the u16 at row+0x1CA on the
+// row returned by 0x00282B94.  The scratch list (0x10 bytes from 0x002C684C)
+// is always released through the 0x00250FB4 wrapper, whose result is forwarded
+// as this routine's return value.
+//
+// Recovered contract (ARM 0x003CF20C..0x003CF3D3):
+//   * `context` (r0) is a pointer to a pointer; every context read re-loads
+//     `*context`.  r1 and r2 are forwarded to 0x00246F90 as its first two
+//     arguments in swapped order (r0 = this routine's r2, r1 = its r1).
+//   * The scan bound is the literal 4 (`cmp r7,r4 / bgt`, signed).
+//   * `tst r0,#0x400 / tsteq r0,#4 / bne` skips when either bit is set; the
+//     `tst r0,#0x200` test then clears the "blocker" flag and always advances.
+//   * 0x002462A0(value, 0xF, 2, -1) and 0x0022AAAC(value, 0xF) are called
+//     unconditionally for a candidate; the value is re-read after the calls
+//     and collected only when `(a | b) & 0x170000` is zero.
+//   * The first draw is checked `>= 15` (signed); when it is below 15 the
+//     +0x44A8 word is not read at all.
+//   * The second draw receives `(u16)(count-1)`; the returned index is applied
+//     to the scratch list with no bound check (`ldr r2,[fp,r0,lsl #2]`).
+//   * The +0x1E98 flag-table record is at `table + (u32)value * 0x114`; its
+//     signed +0x62 halfword is the 0x00282B94 key.
+//   * The final 0x0022A76C call receives (0x1C, row, 1).
+//   * Return: the master word on the early exit, otherwise the forwarded
+//     result of the 0x00250FB4 tail call.
+//
+// The unconditional `add sp,#0x14` before both epilogues restores the 56-byte
+// frame (12-register push + 8-byte scratch area); the trailing pool word at
+// 0x003CF3D0 is the 0x1C6 halfword offset used by the `ldrh r0,[r0,r5]` read.
+extern "C" void* AsdMemory_func_002c684c(u32 size);
+extern "C" u32 ui_func_002462a0(s32 value, s32 arg1, s32 arg2, s32 arg3);
+extern "C" u32 ui_func_0022aaac(s32 value, s32 arg1);
+extern "C" s32 script_vm_func_0023ec3c(s32 max_inclusive);
+extern "C" void battle_func_00246f90(s32 arg0, void* arg1, void* record,
+                                     u32 mask, u32 mode);
+extern "C" u8* ui_func_00282b94(void* base, s32 id);
+extern "C" u32 battle_func_0022a76c(u32 arg0, u32 arg1, u32 arg2);
+extern "C" u32 ui_func_00250fb4(void* pointer);
+
+namespace engine_roster_pick_003cf20c {
+
+constexpr u32 kMasterFlagsOffset = 0x44A0;   // 0x003CF218..0x003CF228
+constexpr u32 kMasterDisableBit = 0x4;       // `tst r0,#4`
+constexpr u32 kActorTableOffset = 0x1FC0;    // 0x003CF25C..0x003CF260
+constexpr u32 kActorStride = 0x288;          // i*81 << 3
+constexpr s32 kActorCount = 4;               // `cmp r7,r4` with r7 = 4
+constexpr u32 kActorFlagBit0 = 0x1;          // `tst r0,#1`
+constexpr u32 kActorFlagBit6 = 0x40;         // `tst r0,#0x40`
+constexpr u32 kStageOffset = 0x1C6;          // pool word 0x000001C6
+constexpr u32 kStageSkipBits = 0x400 | 0x4;  // `tst 0x400 / tsteq 4`
+constexpr u32 kStageBlockBit = 0x200;        // `tst r0,#0x200`
+constexpr u32 kRosterValueOffset = 0x8;      // `ldrsh r0,[r5,#8]`
+constexpr u32 kRejectMask = 0x170000;        // `tst r0,#0x170000`
+constexpr u32 kScratchSize = 0x10;           // `mov r0,#0x10`
+constexpr s32 kScratchStride = 4;            // s32 entries in the scratch list
+constexpr s32 kFirstDrawLimit = 0x63;        // `mov r0,#0x63`
+constexpr s32 kFirstDrawThreshold = 0xF;     // `cmp r0,#0xf`
+constexpr u32 kMasterFlags2Offset = 0x44A8;  // 0x003CF328..0x003CF32C
+constexpr u32 kMasterFlags2Bit = 0x1000000;  // `tst r0,#0x1000000`
+constexpr u32 kFlagTableOffset = 0x1E98;     // 0x003CF354..0x003CF358
+constexpr u32 kFlagStride = 0x114;           // 0x114 = 5 + 64, << 2
+constexpr u32 kUnitIdOffset = 0x62;          // `ldrsh r1,[r4,#0x62]`
+constexpr u32 kRowClearOffset = 0x1C8;       // `strh r2,[r0,#0xc8]` (+0x100)
+constexpr u32 kRowFlagOffset = 0x1CA;        // `ldrh r2,[r0,#0xca]` (+0x100)
+constexpr u16 kRowFlag = 0x10;               // `orr r2,r2,#0x10`
+constexpr u32 kActionId = 0x1C;              // `mov r0,#0x1c`
+constexpr u32 kActionMode = 1;               // `mov r2,#1`
+
+}  // namespace engine_roster_pick_003cf20c
+
+extern "C" u32 engine_func_003cf20c(void** context, void* owner, s32 key) {
+    using namespace engine_roster_pick_003cf20c;
+
+    // 0x003CF218..0x003CF22C: master gate, returns the word unchanged.
+    const u32 master =
+        *reinterpret_cast<const u32*>(static_cast<u8*>(*context) +
+                                      kMasterFlagsOffset);
+    if ((master & kMasterDisableBit) != 0u) {
+        return master;
+    }
+
+    // 0x003CF240..0x003CF248: four s32 scratch slots.
+    u8* const entries =
+        static_cast<u8*>(AsdMemory_func_002c684c(kScratchSize));
+
+    s32 count = 0;          // r8, updated with `sxtb`
+    bool collected = false; // sl, cleared on the first collected record
+    bool blocked = false;   // sb, cleared by a record with the block bit set
+
+    // 0x003CF250..0x003CF2A4: scan the first four actor records.
+    for (s32 i = 0; i < kActorCount; ++i) {
+        const u8* const base = static_cast<const u8*>(*context);
+        const u8* const actors = *reinterpret_cast<const u8* const*>(
+            base + kActorTableOffset);
+        const u8* const record =
+            actors + static_cast<u32>(i) * kActorStride;
+
+        const u32 flags = *reinterpret_cast<const u32*>(record);
+        if ((flags & kActorFlagBit0) == 0u) {
+            continue;
+        }
+        if ((flags & kActorFlagBit6) != 0u) {
+            continue;
+        }
+
+        const u32 stage =
+            *reinterpret_cast<const u16*>(record + kStageOffset);
+        if ((stage & kStageSkipBits) != 0u) {
+            continue;
+        }
+        if ((stage & kStageBlockBit) != 0u) {
+            blocked = true;
+            continue;
+        }
+
+        // 0x003CF2B8..0x003CF2EC: two unconditional validity probes.
+        const s32 value =
+            *reinterpret_cast<const s16*>(record + kRosterValueOffset);
+        const u32 probe_a = ui_func_002462a0(value, 0xF, 2, -1);
+        const u32 probe_b = ui_func_0022aaac(value, 0xF);
+        if (((probe_a | probe_b) & kRejectMask) != 0u) {
+            continue;
+        }
+
+        // 0x003CF2F0..0x003CF304: collect (the s16 is re-read), then advance.
+        *reinterpret_cast<s32*>(
+            entries + static_cast<u32>(count) * kScratchStride) =
+            *reinterpret_cast<const s16*>(record + kRosterValueOffset);
+        ++count;
+        collected = true;
+    }
+
+    // 0x003CF2A8..0x003CF30C: both conditions are required.
+    if (!collected || !blocked) {
+        return ui_func_00250fb4(entries);
+    }
+    if (count == 0) {
+        return ui_func_00250fb4(entries);
+    }
+
+    // 0x003CF310..0x003CF338: first draw, then the second master gate.
+    if (script_vm_func_0023ec3c(kFirstDrawLimit) >= kFirstDrawThreshold) {
+        const u32 master2 =
+            *reinterpret_cast<const u32*>(static_cast<u8*>(*context) +
+                                          kMasterFlags2Offset);
+        if ((master2 & kMasterFlags2Bit) == 0u) {
+            return ui_func_00250fb4(entries);
+        }
+    }
+
+    // 0x003CF33C..0x003CF38C: choose a collected value and resolve records.
+    const u32 index = static_cast<u16>(count - 1);
+    const s32 draw = script_vm_func_0023ec3c(static_cast<s32>(index));
+    const s32 value =
+        *reinterpret_cast<const s32*>(entries + static_cast<u32>(draw) *
+                                                   kScratchStride);
+
+    const u8* const base = static_cast<const u8*>(*context);
+    u8* const flag_table =
+        *reinterpret_cast<u8* const*>(base + kFlagTableOffset);
+    u8* const flag_record =
+        flag_table + static_cast<u32>(value) * kFlagStride;
+
+    battle_func_00246f90(key, owner, flag_record, 0x200, kActionMode);
+
+    const s32 unit_id =
+        *reinterpret_cast<const s16*>(flag_record + kUnitIdOffset);
+    u8* const row = ui_func_00282b94(*context, unit_id);
+
+    // 0x003CF390..0x003CF3A8: clear +0x1C8, set bit 4 of +0x1CA.
+    *reinterpret_cast<u16*>(row + kRowClearOffset) = 0;
+    *reinterpret_cast<u16*>(row + kRowFlagOffset) = static_cast<u16>(
+        *reinterpret_cast<const u16*>(row + kRowFlagOffset) | kRowFlag);
+
+    // 0x003CF3AC..0x003CF3B4: (0x1C, row, 1).
+    battle_func_0022a76c(kActionId,
+                         static_cast<u32>(reinterpret_cast<uintptr_t>(row)),
+                         kActionMode);
+
+    // 0x003CF3B8..0x003CF3C4: return fp, unwind, tail-call the free wrapper.
+    return ui_func_00250fb4(entries);
 }
 
 // DECOMP_FUNC(0x00256ffc, 460)
