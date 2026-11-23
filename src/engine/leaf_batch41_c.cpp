@@ -11186,41 +11186,254 @@ extern "C" void ui_func_002eb39c(const u32* position, u16 unit_id, u8 b0,
 }
 
 // DECOMP_FUNC(0x002fb5c8, 472)
-// 113 ARM instructions through unconditional pop; 20 trailing data bytes.
-extern "C" __attribute__((naked)) void engine_func_002fb5c8() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4ff0, 0xe24dd024, 0xe1a0a000, 0xe59f61b0\n"
-        ".word 0xe5d60001, 0xe3500000, 0x0a000067, 0xe2860080\n"
-        ".word 0xe5900000, 0xe3500000, 0x0a000063, 0xe59f4194\n"
-        ".word 0xe1b0500a, 0xe3a0b000, 0x0a000008, 0xe5950000\n"
-        ".word 0xe5901008, 0xe1a0000a, 0xe12fff31, 0xe1500004\n"
-        ".word 0x0a000003, 0xe5900000, 0xe3500000, 0x1afffffa\n"
-        ".word 0xe1a0500b, 0xe3a04000, 0xe5950168, 0xe5951164\n"
-        ".word 0xe28f8f55, 0xe0400001, 0xe1540140, 0xaa00004d\n"
-        ".word 0xe5950164, 0xe1a07008, 0xe28d9004, 0xe7906104\n"
-        ".word 0xe5960008, 0xe5b01014, 0xe3510000, 0x10800001\n"
-        ".word 0x01a0000b, 0xe3500000, 0x13570000, 0xe58d0004\n"
-        ".word 0x0a00000d, 0xe1a00008, 0xebff1f02, 0xe1a02000\n"
-        ".word 0xe1a01007, 0xe1a00009, 0xebff1ed4, 0xe3500000\n"
-        ".word 0xe320f000, 0x0a000004, 0xe5b0100c, 0xe3510000\n"
-        ".word 0x01a0000b, 0x10800001, 0xea000000, 0xe3a00000\n"
-        ".word 0xe3500000, 0x0a000029, 0xe5901000, 0xe3110202\n"
-        ".word 0x03a00000, 0xe5900010, 0xe3500000, 0xda00001b\n"
-        ".word 0xe3500002, 0x1a000007, 0xe59f00a4, 0xe3a01001\n"
-        ".word 0xe5d02001, 0xe3520000, 0x0a000002, 0xed900a19\n"
-        ".word 0xe1a00006, 0xebfe9f68, 0xe59f7094, 0xe1b0600a\n"
-        ".word 0x0a000008, 0xe5960000, 0xe5901008, 0xe1a0000a\n"
-        ".word 0xe12fff31, 0xe1500007, 0x0a000003, 0xe5900000\n"
-        ".word 0xe3500000, 0x1afffffa, 0xe1a0600b, 0xe3a00001\n"
-        ".word 0xe5cd0000, 0xe59d0000, 0xe586021c, 0xea000007\n"
-        ".word 0xe59f003c, 0xe3a01001, 0xe5d02001, 0xe3520000\n"
-        ".word 0x0a000002, 0xed900a18, 0xe1a00006, 0xebfe9f4e\n"
-        ".word 0xe5950168, 0xe5951164, 0xe2844001, 0xe0400001\n"
-        ".word 0xe1540140, 0xbaffffb1, 0xe3a00001, 0xe28dd024\n"
-        ".word 0xe8bd8ff0, 0x00464af0, 0x00472180, 0x64616873\n"
-        ".word 0x0000776f, 0x00472288\n"
-    );
+//
+// Recovered contract (ARM 0x002FB5C8..0x002FB787 = 113 instructions through
+// `pop {r4,r5,r6,r7,r8,sb,sl,fp,pc}`; the five words at 0x002FB78C..0x002FB79F
+// are the literal pool 0x00464AF0, 0x00472180, "shadow", 0x00472288):
+//
+//   s32 engine_func_002fb5c8(void* resource);
+//
+//   * r0 (`resource`, held in sl) is the object whose +0x164/+0x168 pointer
+//     vector is walked.  It is also the receiver of the three vtable type
+//     queries.  No stack arguments; the routine returns 1 on completion, 0 from
+//     either global gate.  All callee-saved registers are preserved.
+//   * Two entry gates read the process-wide manager at 0x00464AF0: byte +1 must
+//     be non-zero and the pointer at +0x80 must be non-zero, otherwise the
+//     routine returns the zero it loaded.
+//   * The resource is matched through the engine's type-chain idiom
+//     (`ldr r0,[obj]; ldr r1,[r0,#8]; blx r1`, then first-word links) against
+//     0x00472180.  A successful match keeps `resource` (r5); a null resource or
+//     a chain ending in null leaves r5 = 0, and the vector fields are then read
+//     through address 0x164/0x168 exactly as the original does.
+//   * The loop bound is recomputed from memory on every iteration:
+//     `count = (s32)(*(u32*)(model+0x168) - *(u32*)(model+0x164)) >> 2`
+//     (arithmetic shift) and the index/count comparison is signed (`blt`).
+//     Index 0 is compared before the first element, and a null/zero begin
+//     pointer is not guarded.  Each element is `*(u32**)(model+0x164)`[index].
+//   * Per element: `descriptor = *(u32*)(element+0x08)`; the relative pointer
+//     at `descriptor+0x14` resolves to a name-table node (or 0).  The routine
+//     calls 0x002C3290("shadow") for the key length and 0x002C31E8(&slot,
+//     "shadow", length) with a stack slot holding that node.  The returned node
+//     is followed through the relative pointer at +0x0C to a value object, or 0
+//     when either link is zero/absent.
+//   * Value object: the tag word at +0 is tested with 0x20000000.  When the bit
+//     is clear the base becomes 0 and the kind is read from address 0x10 (a
+//     latent low read, not an empty-property fallback).  The kind is signed:
+//       - `<= 0`: with manager byte +1 set, 0x002A34A4(element, 1, *(f32*)
+//         (0x00464AF0+0x60)); then the next element.
+//       - `== 2`: with manager byte +1 set, 0x002A34A4(element, 1, *(f32*)
+//         (0x00464AF0+0x64)); then falls into the status store.
+//       - any other positive kind: no setter.
+//   * Status store (reached by `==2` and by positive kinds other than 2): the
+//     resource is matched again, this time against 0x00472288, and the word at
+//     matched+0x21C is set to 1 (the original builds the word from a byte
+//     local; with a zeroed stack it is 0x00000001).  A failed second match
+//     writes through address 0x21C, like the original.
+//   * Manager byte +1 is re-read before each setter call, so a callee that
+//     clears it suppresses later setter calls but not the status store.
+//   * Direct calls: 0x002C3290 (string length), 0x002C31E8 (name-tree find),
+//     0x002A34A4 (mode-1 render initialisation).  The vtable query and the
+//     type-chain links are the only indirect calls/targets.
+namespace engine_2fb5c8 {
+
+// Process-wide AsdModel manager (0x00464AF0).
+constexpr u32 kManagerAddress = 0x00464AF0;
+constexpr u32 kManagerEnableByte01 = 0x01;   // u8 gate re-read at each setter
+constexpr u32 kManagerListPointer80 = 0x80;  // u32 gate, value never used
+constexpr u32 kManagerValue60 = 0x60;        // f32, `<= 0` setter weight
+constexpr u32 kManagerValue64 = 0x64;        // f32, `== 2` setter weight
+
+// Type-info identities compared against the vtable chain.
+constexpr u32 kModelTypeInfo = 0x00472180;
+constexpr u32 kStatusTypeInfo = 0x00472288;
+
+// Resource/model pointer vector.
+constexpr u32 kModelVectorBegin164 = 0x164;
+constexpr u32 kModelVectorEnd168 = 0x168;
+constexpr u32 kVectorShift = 2;  // 32-bit pointer stride
+
+// Per-element descriptor and relative pointers.
+constexpr u32 kElementDescriptor08 = 0x08;
+constexpr u32 kDescriptorTableField14 = 0x14;
+constexpr u32 kFoundValueField0C = 0x0C;
+
+// Value object.
+constexpr u32 kValueTagMask = 0x20000000;
+constexpr u32 kValueKind10 = 0x10;
+
+// Status word written to the 0x00472288 match.
+constexpr u32 kStatusOffset21C = 0x21C;
+constexpr u32 kStatusValue = 1;
+
+// 0x002A34A4 selector used by both callers in this revision.
+constexpr s32 kSetterMode = 1;
+
+constexpr char kShadowName[] = "shadow";
+
+// Absolute-address loads/stores are deliberately opaque: the original reads
+// address 0x10/0x21C and follows chain links through zero without a guard, and
+// treating those values as ordinary pointers would let the optimiser assume
+// they are valid.
+__attribute__((always_inline)) inline u8 load_u8(u32 address) {
+    return *reinterpret_cast<const volatile u8*>(
+        static_cast<uintptr_t>(address));
+}
+
+__attribute__((always_inline)) inline u32 load_u32(u32 address) {
+    return *reinterpret_cast<const volatile u32*>(
+        static_cast<uintptr_t>(address));
+}
+
+__attribute__((always_inline)) inline f32 load_f32(u32 address) {
+    return *reinterpret_cast<const volatile f32*>(
+        static_cast<uintptr_t>(address));
+}
+
+__attribute__((always_inline)) inline void store_u32(u32 address, u32 value) {
+    *reinterpret_cast<volatile u32*>(static_cast<uintptr_t>(address)) = value;
+}
+
+// `ldr r0,[obj]; ldr r1,[r0,#8]; blx r1` then the first-word chain walk:
+// `ldr r0,[r0]; cmp r0,#0; bne link`.  Returns the object address on a match
+// and 0 when the resource is null or the chain reaches null.
+u32 match_object(u32 object, u32 type_info) {
+    if (object == 0) {
+        return 0;
+    }
+    using TypeInfoQuery = void* (*)(void*);
+    const u32 vtable = load_u32(object);
+    const u32 query = load_u32(vtable + 8);
+    u32 current = reinterpret_cast<u32>(
+        reinterpret_cast<TypeInfoQuery>(static_cast<uintptr_t>(query))(
+            reinterpret_cast<void*>(static_cast<uintptr_t>(object))));
+    while (current != type_info) {
+        current = load_u32(current);
+        if (current == 0) {
+            return 0;
+        }
+    }
+    return object;
+}
+
+// `sub r0, end, begin; cmp index, r0, asr #2` with a signed `blt`/`bge`.
+inline s32 signed_count(u32 begin, u32 end) {
+    return static_cast<s32>(end - begin) >> kVectorShift;
+}
+
+}  // namespace engine_2fb5c8
+
+// Direct call declarations.  Addresses follow config/functions.csv.
+namespace engine_2fb5c8_calls {
+
+// 0x002C3290: ARM string length; r0 = text, returns the count before the NUL.
+extern "C" u32 engine_func_002c3290(const char* text);
+
+// 0x002C31E8: name-tree lookup; r0 = pointer to the tree-root slot, r1 = key,
+// r2 = key length, returns the matching node or null.
+extern "C" void* engine_func_002c31e8(void** tree_ref, const char* key,
+                                      u32 key_len);
+
+// 0x002A34A4: mode-1 render initialisation; r0 = element, r1 = mode,
+// s0 = weight.  The return value is not observed here.
+extern "C" void engine_func_002a34a4(void* element, s32 mode, f32 weight);
+
+}  // namespace engine_2fb5c8_calls
+
+extern "C" s32 engine_func_002fb5c8(void* resource_pointer) {
+    using namespace engine_2fb5c8;
+    using namespace engine_2fb5c8_calls;
+
+    const u32 resource = reinterpret_cast<u32>(resource_pointer);
+
+    // 0x002FB5D8..0x002FB5F0: manager enable byte and list pointer gates.
+    if (load_u8(kManagerAddress + kManagerEnableByte01) == 0) {
+        return 0;
+    }
+    if (load_u32(kManagerAddress + kManagerListPointer80) == 0) {
+        return 0;
+    }
+
+    // 0x002FB5F4..0x002FB630: first type match against 0x00472180.
+    const u32 model = match_object(resource, kModelTypeInfo);
+
+    // 0x002FB630..0x002FB644: initial signed bound check.  `index` and the
+    // count are signed; the vectors are re-read on every pass.
+    s32 index = 0;
+    for (;;) {
+        const u32 begin = load_u32(model + kModelVectorBegin164);
+        const u32 end = load_u32(model + kModelVectorEnd168);
+        const s32 count = signed_count(begin, end);
+        if (!(index < count)) {
+            break;
+        }
+
+        // 0x002FB648..0x002FB654: current element pointer.
+        const u32 element =
+            load_u32(begin + static_cast<u32>(index) * sizeof(u32));
+
+        // 0x002FB658..0x002FB678: descriptor relative name table.
+        const u32 descriptor = load_u32(element + kElementDescriptor08);
+        const u32 table_field = descriptor + kDescriptorTableField14;
+        const u32 table_rel = load_u32(table_field);
+        const u32 table = table_rel != 0 ? table_field + table_rel : 0u;
+
+        // The slot word is written before the null/name test; the key literal
+        // is always non-null, so only the table pointer gates the lookup.
+        u8* slot = reinterpret_cast<u8*>(static_cast<uintptr_t>(table));
+        u32 value_object = 0;
+        if (table != 0) {
+            // 0x002FB67C..0x002FB690: key length then tree lookup.
+            const u32 length = engine_func_002c3290(kShadowName);
+            void* const found = engine_func_002c31e8(
+                reinterpret_cast<void**>(&slot), kShadowName, length);
+            if (found != nullptr) {
+                // 0x002FB6A0..0x002FB6B0: relative value at found+0x0C.
+                const u32 found_address = reinterpret_cast<u32>(found);
+                const u32 value_field = found_address + kFoundValueField0C;
+                const u32 value_rel = load_u32(value_field);
+                value_object =
+                    value_rel != 0 ? value_field + value_rel : 0u;
+            }
+        }
+
+        // 0x002FB6B8..0x002FB744: value classification and status store.
+        if (value_object != 0) {
+            const u32 tag = load_u32(value_object);
+            const u32 base = (tag & kValueTagMask) != 0 ? value_object : 0u;
+            const s32 kind = static_cast<s32>(load_u32(base + kValueKind10));
+
+            if (kind <= 0) {
+                // 0x002FB748..0x002FB764: `<= 0` weight path.  This path skips
+                // the status store.
+                if (load_u8(kManagerAddress + kManagerEnableByte01) != 0) {
+                    engine_func_002a34a4(
+                        reinterpret_cast<void*>(static_cast<uintptr_t>(element)),
+                        kSetterMode, load_f32(kManagerAddress + kManagerValue60));
+                }
+                ++index;
+                continue;
+            }
+
+            if (kind == 2) {
+                // 0x002FB6E0..0x002FB6FC: `== 2` weight path.
+                if (load_u8(kManagerAddress + kManagerEnableByte01) != 0) {
+                    engine_func_002a34a4(
+                        reinterpret_cast<void*>(static_cast<uintptr_t>(element)),
+                        kSetterMode, load_f32(kManagerAddress + kManagerValue64));
+                }
+            }
+
+            // 0x002FB700..0x002FB744: second type match and status word.
+            const u32 status_object = match_object(resource, kStatusTypeInfo);
+            store_u32(status_object + kStatusOffset21C, kStatusValue);
+        }
+
+        // 0x002FB768..0x002FB77C: increment and signed re-test.
+        ++index;
+    }
+
+    // 0x002FB780: completion value.
+    return 1;
 }
 
 // DECOMP_FUNC(0x0036f49c, 472)
