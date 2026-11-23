@@ -9572,41 +9572,94 @@ extern "C" void script_vm_func_0038ba94(void* self) {
     }
 }
 
+// Direct calls issued by 0x0022D994.  `ui_func_002bf710`, `ui_func_002bef7c`
+// and `shop_func_002bef70` are already declared at file scope above; their
+// contracts are repeated here so this block is self-contained.
+extern "C" const u8* camp_func_002bf6c8(u8* ui_obj, u32 id);
+extern "C" u32 ui_func_002bf710(f32 value);
+extern "C" void ui_func_00230f18(u8* ui_obj, u32 id, s32 x, s32 y, u32 a4);
+extern "C" void camp_func_00231d60(u8* ui_obj, u32 id, s32 x, s32 y, u32 a4,
+                                   u32 a5);
+extern "C" s32 ui_func_002bef7c(const void* record);
+extern "C" s32 shop_func_002bef70(const void* record);
+// 0x002313EC is defined later in this translation unit as a parameterless
+// naked body.  A same-TU `__asm__` alias would let the backend bind the call to
+// that definition and drop the argument setup, so the four-argument call is
+// made through its address instead.
+extern "C" void func_002313ec();
+
 // DECOMP_FUNC(0x0022d994, 456)
-// 106 ARM instructions through unconditional pop; 32 trailing data bytes.
-extern "C" __attribute__((naked)) void ui_func_0022d994() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4ff0, 0xe1a04000, 0xe2811b01, 0xe24dd00c\n"
-        ".word 0xe1a05002, 0xe1a08003, 0xe281102f, 0xe28000c8\n"
-        ".word 0xeb024743, 0xe1d060f8, 0xe1d070fa, 0xe2841f85\n"
-        ".word 0xe1a00001, 0xed900a08, 0xeb02474f, 0xe59f1164\n"
-        ".word 0xe1a03007, 0xe1a02006, 0xe28400c8, 0xe58d5000\n"
-        ".word 0xeb000d4b, 0xe59f1150, 0xe1a03007, 0xe1a02006\n"
-        ".word 0xe28400c8, 0xe58d5000, 0xeb000d45, 0xe59f113c\n"
-        ".word 0xe1a03007, 0xe1a02006, 0xe28400c8, 0xe58d5000\n"
-        ".word 0xeb000d3f, 0xed9f0a4a, 0xeb02473b, 0xe3a09001\n"
-        ".word 0xe59f1120, 0xe1a03007, 0xe1a02006, 0xe28400c8\n"
-        ".word 0xe88d0220, 0xeb0010c8, 0xe3580000, 0xe59f8108\n"
-        ".word 0xe1a03007, 0xe1a02006, 0x0a000004, 0xe18812c8\n"
-        ".word 0xe28400c8, 0xe88d0220, 0xeb0010bf, 0xea000003\n"
-        ".word 0xe1a01008, 0xe28400c8, 0xe88d0220, 0xeb0010ba\n"
-        ".word 0xe1a01008, 0xe28400c8, 0xeb024711, 0xe590100c\n"
-        ".word 0xe1d0c0f8, 0xe1d080fa, 0xe1d120f0, 0xe1d130f2\n"
-        ".word 0xe08c0006, 0xe0881007, 0xeb000e52, 0xe59fb0ac\n"
-        ".word 0xe28400c8, 0xe1a0100b, 0xeb024705, 0xe1a08000\n"
-        ".word 0xe284ae2a, 0xe1a0000a, 0xeb02452e, 0xe1d810b4\n"
-        ".word 0xe0800006, 0xe3c11902, 0xe0406001, 0xe1a0000a\n"
-        ".word 0xeb024525, 0xe0803007, 0xe1a02006, 0xe1a0100b\n"
-        ".word 0xe28400c8, 0xe88d0220, 0xeb00109b, 0xe59f0060\n"
-        ".word 0xe5901000, 0xe3a00000, 0xe2814a01, 0xe2844fc3\n"
-        ".word 0xe5941000, 0xe0842101, 0xe5921008, 0xe5820008\n"
-        ".word 0xe5d42018, 0xe3520000, 0x03510000, 0x0a000003\n"
-        ".word 0xe594101c, 0xe12fff31, 0xe3a00000, 0xe5c40018\n"
-        ".word 0xe28dd00c, 0xe8bd8ff0, 0x00000426, 0x00000427\n"
-        ".word 0x00000428, 0x3f800000, 0x00000429, 0x0000042a\n"
-        ".word 0x0000042c, 0x0044ea00\n"
-    );
+//
+// Draws the fixed frame block of a battle-screen region, recovering its
+// contract from ARM 0x0022D994..0x0022DB3C:
+//   * `self = r0`, `id_base = r1`, `a4 = r2`, `flag = r3`; the frame at
+//     0x22D994 saves r4-r8/sb/sl/fp/lr and reserves 0xC bytes for the two
+//     stack arguments of the draw calls.  It returns 0 in r0.
+//   * 0x22D99C..0x22D9BC: `layout = 0x2BF6C8(self + 0xC8, id_base + 0x42F)`;
+//     base_x/base_y are the signed 16-bit words at layout + 8 / + 0xA.
+//   * 0x22D9C0..0x22D9E4: load the f32 at self + 0x234 through an unneeded
+//     `self + 0x214` address computation and pass it to 0x2BF710, then draw
+//     frame ids 0x426/0x427/0x428 with 0x230F18 (stack word = a4).
+//   * 0x22DA18..0x22DA38: reset the scale to the 1.0f literal and draw 0x429
+//     with 0x231D60 (stack words = a4, 1).
+//   * 0x22DA3C..0x22DA70: draw 0x42A when flag == 0, otherwise `0x42A | 0x21`
+//     = 0x42B; `orr r1,r8,r8,asr #5` is the original encoding of that
+//     selection.
+//   * 0x22DA74..0x22DA9C: re-resolve id 0x42A and clip with 0x2313EC using
+//     that record's own +8/+0xA offsets plus base_x/base_y and the signed
+//     16-bit pair at `*(layout + 0xC)`.
+//   * 0x22DAA0..0x22DAEC: resolve id 0x42C, compute
+//     `x = 0x2BEF7C(self + 0x2A0) + base_x - (*(u16*)(layout + 4) & 0x7FFF)`
+//     and `y = 0x2BEF70(self + 0x2A0) + base_y`, then draw 0x42C.  The width
+//     word is loaded after the 0x2BEF7C call, as in the original.
+//   * 0x22DAF0..0x22DB30: clear the pending slot of the overlay stack at
+//     `*(u32*)0x0044EA00 + 0x130C` (`slot[8 + depth*4]`), and call the
+//     slot's flush function at +0x1C when the dirty byte at +0x18 is set or
+//     the cleared slot was non-null.  The callback takes no arguments here and
+//     r0 is zeroed again afterwards.
+//   * 0x22DB34..0x22DB38: release the frame and return 0.
+// The literal pool supplies 0x426..0x42C, 1.0f and the 0x0044EA00 global.
+extern "C" u32 ui_func_0022d994(u8* self, u32 id_base, u32 a4, u32 flag) {
+    const u8* const base = camp_func_002bf6c8(self + 0xC8u, id_base + 0x42Fu);
+    const s32 base_x = *reinterpret_cast<const s16*>(base + 8u);
+    const s32 base_y = *reinterpret_cast<const s16*>(base + 0xAu);
+
+    ui_func_002bf710(*reinterpret_cast<const f32*>(self + 0x234u));
+    ui_func_00230f18(self + 0xC8u, 0x426u, base_x, base_y, a4);
+    ui_func_00230f18(self + 0xC8u, 0x427u, base_x, base_y, a4);
+    ui_func_00230f18(self + 0xC8u, 0x428u, base_x, base_y, a4);
+    ui_func_002bf710(1.0f);
+
+    camp_func_00231d60(self + 0xC8u, 0x429u, base_x, base_y, a4, 1u);
+    camp_func_00231d60(self + 0xC8u, (flag != 0u) ? 0x42Bu : 0x42Au, base_x,
+                       base_y, a4, 1u);
+
+    const u8* const clip = camp_func_002bf6c8(self + 0xC8u, 0x42Au);
+    const s16* const clip_size =
+        *reinterpret_cast<const s16* const*>(clip + 0x0Cu);
+    reinterpret_cast<void (*)(s32, s32, s32, s32)>(&func_002313ec)(
+        *reinterpret_cast<const s16*>(clip + 8u) + base_x,
+        *reinterpret_cast<const s16*>(clip + 0xAu) + base_y, clip_size[0],
+        clip_size[1]);
+
+    const u8* const label = camp_func_002bf6c8(self + 0xC8u, 0x42Cu);
+    const s32 cursor = ui_func_002bef7c(self + 0x2A0u);
+    const u32 width = *reinterpret_cast<const u16*>(label + 4u) & 0x7FFFu;
+    const s32 x = cursor + base_x - static_cast<s32>(width);
+    const s32 y = shop_func_002bef70(self + 0x2A0u) + base_y;
+    camp_func_00231d60(self + 0xC8u, 0x42Cu, x, y, a4, 1u);
+
+    u8* const slot = *reinterpret_cast<u8* const*>(0x0044EA00u) + 0x130Cu;
+    const u32 depth = *reinterpret_cast<const u32*>(slot);
+    void* const callback =
+        *reinterpret_cast<void* const*>(slot + 8u + depth * 4u);
+    *reinterpret_cast<void**>(slot + 8u + depth * 4u) = nullptr;
+    if (slot[0x18u] != 0u || callback != nullptr) {
+        reinterpret_cast<void (*)()>(
+            *reinterpret_cast<void* const*>(slot + 0x1Cu))();
+        slot[0x18u] = 0u;
+    }
+    return 0u;
 }
 
 // DECOMP_FUNC(0x002313ec, 456)
