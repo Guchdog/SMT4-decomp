@@ -2793,7 +2793,7 @@ address,size,status,category,name,src_file
 0x0020d660,48,matching,engine,engine_func_0020d660,src/engine/leaf_batch26_b.cpp
 0x0020d690,248,matching,engine,engine_func_0020d690,src/engine/leaf_batch40_b.cpp
 0x0020d788,48,matching,unknown,func_0020d788,src/engine/leaf_batch39_b.cpp
-0x0020d7b8,500,matching,script_vm,script_vm_func_0020d7b8,src/engine/leaf_batch41_c.cpp
+0x0020d7b8,500,non_matching,script_vm,script_vm_func_0020d7b8,src/engine/leaf_batch41_c.cpp
 0x0020d9ac,548,matching,script_vm,script_vm_func_0020d9ac,src/engine/leaf_batch32_b.cpp
 0x0020dbd0,100,matching,script_vm,script_vm_func_0020dbd0,src/engine/leaf_batch39_c.cpp
 0x0020dc34,2416,matching,battle,battle_func_0020dc34,src/engine/block_batch.cpp

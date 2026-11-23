@@ -9907,44 +9907,131 @@ extern "C" __attribute__((naked)) void func_0014e804() {
     );
 }
 
+namespace func_20d7b8 {
+// *(0x00447E10) is the VM object pointer; 0x0049F91C is the shared instance
+// block whose byte +0x22 selects the "instance active" path.
+constexpr u32 kSlotTablePointer = 0x00447E10u;
+constexpr u32 kInstance = 0x0049F91Cu;
+constexpr u32 kInstanceActiveOffset = 0x22u;
+constexpr u16 kActiveMode = 0x16u;
+constexpr u32 kHiddenFlag = 2u;
+
+// slot+0x20 -> node, node+8 -> sub-node. Re-evaluated at every use so that a
+// helper call which rewrites either pointer is observed by the next access.
+inline u8* sub_of(u8* slot) {
+    u8* const node = *reinterpret_cast<u8**>(slot + 0x20);
+    return *reinterpret_cast<u8**>(node + 8);
+}
+
+inline func_275ca0::ModelBackend* backend_of(u8* slot) {
+    return reinterpret_cast<func_275ca0::ModelBackend*>(sub_of(slot));
+}
+}  // namespace func_20d7b8
+
+// Direct calls made by script_vm_func_0020d7b8. All return void.
+// 0x001e2c94 takes no arguments (it only reads its own globals); the original
+// arrives with r0 = 0x16 and the caller's r1, which are not part of the contract.
+extern "C" void script_vm_func_001e2c94();
+// ui_func_0029bdb4(backend, volume) is declared above for func_275ca0 and is
+// reused here: the slot's sub-node is the same func_275ca0::ModelBackend
+// object (word at +0x2C is the visual node).
+// (sub, 0, vec) - copies three words from `vec` into sub->[0x2C].
+extern "C" void engine_func_0028c8a8(void* sub, u32 unused, const void* vec);
+// (sub, 0, x, y, z) - sets the sub-node position/scale triple.
+extern "C" void engine_func_0028c880(void* sub, u32 unused, f32 x, f32 y, f32 z);
+// (model, index, value) - sets the animation/pose index on the sub-node.
+extern "C" void engine_func_002a5a54(void* model, s32 index, f32 value);
+
 // DECOMP_FUNC(0x0020d7b8, 500)
-// 121 ARM instructions through unconditional pop; 16 trailing data bytes.
-extern "C" __attribute__((naked)) void script_vm_func_0020d7b8() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d5ff0, 0xe59f81d8, 0xed2d8b02, 0xe5980000\n"
-        ".word 0xe1d000bc, 0xe3500016, 0x1a00006f, 0xebff552e\n"
-        ".word 0xe3a06000, 0xe59fb1c0, 0xe3a0a001, 0xed9f8a6d\n"
-        ".word 0xe1a09006, 0xeddf8a6d, 0xea000003, 0xe3560000\n"
-        ".word 0x13a07003, 0x13a04000, 0x1a000004, 0xe3a07009\n"
-        ".word 0xe3a04000, 0xea000012, 0xe3560000, 0x0a000010\n"
-        ".word 0xe5980000, 0xe0841084, 0xe0811184, 0xe0800101\n"
-        ".word 0xe2805a01, 0xe2855e2a, 0xe5d50000, 0xe3500000\n"
-        ".word 0x0a00004f, 0xe5db0022, 0xe3500000, 0x0a000016\n"
-        ".word 0xe5950020, 0xe5901000, 0xe3110002, 0x0a000007\n"
-        ".word 0xea00000f, 0xe5980000, 0xe0841084, 0xe0811184\n"
-        ".word 0xe0800101, 0xe2805a01, 0xe2855f45, 0xeaffffed\n"
-        ".word 0xe3811002, 0xe5801000, 0xe5900008, 0xeeb00a48\n"
-        ".word 0xe590002c, 0xe5c091f6, 0xe5950020, 0xe5900008\n"
-        ".word 0xeb023945, 0xe5c5a001, 0xea000035, 0xe5d50001\n"
-        ".word 0xe3500000, 0x0a000032, 0xe5d50002, 0xe3500000\n"
-        ".word 0xe5950020, 0xe5901000, 0xe2012002, 0x0a00000a\n"
-        ".word 0xe3520000, 0x0a000013, 0xe3c11002, 0xe5801000\n"
-        ".word 0xe5900008, 0xeeb00a68, 0xe590002c, 0xe5c0a1f6\n"
-        ".word 0xe5950020, 0xe5900008, 0xea000009, 0xe3520000\n"
-        ".word 0x1a000008, 0xe3811002, 0xe5801000, 0xe5900008\n"
-        ".word 0xeeb00a48, 0xe590002c, 0xe5c091f6, 0xe5950020\n"
-        ".word 0xe5900008, 0xeb023924, 0xe5950020, 0xe2852004\n"
-        ".word 0xe3a01000, 0xe5900008, 0xeb01fbdc, 0xeeb00a48\n"
-        ".word 0xe5950020, 0xedd50a04, 0xe3a01000, 0xe5900008\n"
-        ".word 0xeeb01a40, 0xeb01fbcb, 0xe5950020, 0xe5900008\n"
-        ".word 0xe5900038, 0xe5951014, 0xe1500001, 0x0a000003\n"
-        ".word 0xe5950020, 0xeeb00a48, 0xe5900008, 0xeb026036\n"
-        ".word 0xe5c59001, 0xe2844001, 0xe1540007, 0xbaffffa1\n"
-        ".word 0xe2866001, 0xe3560002, 0xbaffff97, 0xecbd8b02\n"
-        ".word 0xe8bd9ff0, 0x00447e10, 0x00000000, 0x0049f91c\n"
-        ".word 0x3f800000\n"
-    );
+//
+// Per-frame update of the nine "primary" and three "secondary" script-model
+// slots owned by the VM object at *(0x00447E10). Runs only while the VM mode
+// word at object+0x0C is 0x16. Slot layout (44 bytes each):
+//   +0x00 active byte     +0x01 pending-update byte  +0x02 direction byte
+//   +0x04 transform vector (3 words)   +0x10 float   +0x14 model index word
+//   +0x20 model/node pointer (node+0 = flags word, node+8 = sub pointer).
+// The sub pointer's word at +0x2C points at a visual node whose byte +0x1F6 is
+// the visibility flag, and the sub pointer itself has a word at +0x38.
+//
+// 0x0049F91C+0x22 is the shared "instance active" byte: when set, every active
+// slot is made visible with volume 0.0; otherwise a slot marked pending is
+// toggled according to its direction byte, then its transform, its float and
+// its pose index are pushed to the sub-node before the pending flag clears.
+extern "C" void script_vm_func_0020d7b8() {
+    namespace slots = func_20d7b8;
+
+    u8* const* const slot_table =
+        reinterpret_cast<u8* const*>(slots::kSlotTablePointer);
+    const u8* const instance = reinterpret_cast<const u8*>(slots::kInstance);
+    u8* const base = *slot_table;
+
+    if (*reinterpret_cast<const u16*>(base + 0x0C) != slots::kActiveMode) {
+        return;
+    }
+
+    script_vm_func_001e2c94();
+
+    for (s32 group = 0; group < 2; ++group) {
+        const s32 slot_count = (group == 0) ? 9 : 3;
+        const u32 slot_offset = (group == 0) ? 0x1114u : 0x12A0u;
+        for (s32 i = 0; i < slot_count; ++i) {
+            // The original recomputes the table pointer and the 44-byte stride
+            // on every iteration (base + i*44 + offset).
+            u8* const slot = *slot_table + static_cast<u32>(i) * 44u + slot_offset;
+
+            if (slot[0] == 0u) {
+                continue;
+            }
+
+            if (instance[slots::kInstanceActiveOffset] != 0u) {
+                u32* const node = *reinterpret_cast<u32* const*>(slot + 0x20);
+                if ((*node & slots::kHiddenFlag) == 0u) {
+                    *node |= slots::kHiddenFlag;
+                    u8* const sub = *reinterpret_cast<u8**>(node + 2);
+                    (*reinterpret_cast<u8**>(sub + 0x2C))[0x1F6] = 0u;
+                    ui_func_0029bdb4(slots::backend_of(slot), 0.0f);
+                }
+                slot[1] = 1u;
+                continue;
+            }
+
+            if (slot[1] == 0u) {
+                continue;
+            }
+
+            u32* const node = *reinterpret_cast<u32* const*>(slot + 0x20);
+            const u32 flags = *node;
+            if (slot[2] != 0u) {
+                if ((flags & slots::kHiddenFlag) != 0u) {
+                    *node = flags & ~slots::kHiddenFlag;
+                    u8* const sub = *reinterpret_cast<u8**>(node + 2);
+                    (*reinterpret_cast<u8**>(sub + 0x2C))[0x1F6] = 1u;
+                    ui_func_0029bdb4(slots::backend_of(slot), 1.0f);
+                }
+            } else if ((flags & slots::kHiddenFlag) == 0u) {
+                *node = flags | slots::kHiddenFlag;
+                u8* const sub = *reinterpret_cast<u8**>(node + 2);
+                (*reinterpret_cast<u8**>(sub + 0x2C))[0x1F6] = 0u;
+                ui_func_0029bdb4(slots::backend_of(slot), 0.0f);
+            }
+
+            // The node pointer is re-read from the slot before every call: the
+            // helper calls are unconstrained and may rewrite it.
+            engine_func_0028c8a8(slots::sub_of(slot), 0u, slot + 4);
+            engine_func_0028c880(slots::sub_of(slot), 0u, 0.0f,
+                                 *reinterpret_cast<const f32*>(slot + 0x10),
+                                 0.0f);
+            if (*reinterpret_cast<const u32*>(slots::sub_of(slot) + 0x38) !=
+                *reinterpret_cast<const u32*>(slot + 0x14)) {
+                engine_func_002a5a54(
+                    slots::sub_of(slot),
+                    static_cast<s32>(
+                        *reinterpret_cast<const u32*>(slot + 0x14)),
+                    0.0f);
+            }
+            slot[1] = 0u;
+        }
+    }
 }
 
 // DECOMP_FUNC(0x00292c7c, 500)
