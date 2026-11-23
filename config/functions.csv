@@ -5263,7 +5263,7 @@ address,size,status,category,name,src_file
 0x002abdf4,128,matching,engine,engine_func_002abdf4,src/engine/leaf_batch14_a.cpp
 0x002abe74,180,matching,engine,engine_func_002abe74,src/engine/leaf_batch16_a.cpp
 0x002abf28,412,matching,unknown,func_002abf28,src/engine/leaf_batch16_c.cpp
-0x002ac0c4,560,matching,unknown,func_002ac0c4,src/engine/leaf_batch45_b.cpp
+0x002ac0c4,560,non_matching,unknown,func_002ac0c4,src/engine/leaf_batch45_b.cpp
 0x002ac2f4,92,non_matching,ui,Tbb_GetSubTable,src/ui/tbb_loader.cpp
 0x002ac350,16,matching,engine,engine_func_002ac350,src/engine/leaf_batch38_a.cpp
 0x002ac360,36,matching,script_vm,script_vm_func_002ac360,src/engine/leaf_batch34_b.cpp

@@ -2496,80 +2496,127 @@ extern "C" u8* engine_func_00111090(u8* obj) {
 }
 
 // DECOMP_FUNC(0x002ac0c4, 560)
-extern "C" __attribute__((naked)) void func_002ac0c4() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4010, 0xe92d, 0x4a10, 0xee10\n"
-        ".hword 0x1000, 0xe3a0, 0x21d0, 0xe59f\n"
-        ".hword 0x0499, 0xe3a0, 0x0084, 0xe080\n"
-        ".hword 0x8b02, 0xed2d, 0x0002, 0xe150\n"
-        ".hword 0x001b, 0x9a00, 0x0004, 0xe1e0\n"
-        ".hword 0x0080, 0xe1a0, 0x0c20, 0xe1b0\n"
-        ".hword 0x0012, 0x0a00, 0x0467, 0xe3a0\n"
-        ".hword 0x0084, 0xe150, 0x8b02, 0x8cbd\n"
-        ".hword 0x0a68, 0x8d9f, 0x8010, 0x88bd\n"
-        ".hword 0x019c, 0xe59f, 0x0084, 0xe150\n"
-        ".hword 0x1001, 0x23a0, 0x000e, 0x2a00\n"
-        ".hword 0x0002, 0xe3a0, 0xe149, 0xfbff\n"
-        ".hword 0x0102, 0xe314, 0x0a61, 0x0d9f\n"
-        ".hword 0x8b02, 0x0cbd, 0x0a00, 0x0e20\n"
-        ".hword 0x8010, 0x08bd, 0x8b02, 0xecbd\n"
-        ".hword 0x4010, 0xe8bd, 0xe139, 0xeaff\n"
-        ".hword 0x0502, 0xe374, 0x8b02, 0xecbd\n"
-        ".hword 0x0a00, 0x1e30, 0x0a58, 0x0d9f\n"
-        ".hword 0x8010, 0xe8bd, 0x0a57, 0xeddf\n"
-        ".hword 0x0102, 0xe314, 0x1a56, 0x1d9f\n"
-        ".hword 0x1a56, 0x0d9f, 0x0a20, 0xee60\n"
-        ".hword 0x2a56, 0xed9f, 0x1a56, 0xeddf\n"
-        ".hword 0x3164, 0xe59f, 0x0a20, 0xee71\n"
-        ".hword 0x1a51, 0xed9f, 0x0ae0, 0xeefd\n"
-        ".hword 0x0a90, 0xee10, 0x0a90, 0xee00\n"
-        ".hword 0x2003, 0xe200, 0x0ae0, 0xeef8\n"
-        ".hword 0x0ac1, 0xee00, 0x1a4d, 0xed9f\n"
-        ".hword 0x0ac2, 0xee00, 0x0a4d, 0xeddf\n"
-        ".hword 0x1a21, 0xee00, 0x1a4a, 0xeddf\n"
-        ".hword 0x1a01, 0xee40, 0x0a21, 0xee40\n"
-        ".hword 0x0a80, 0xee20, 0x3003, 0xe08f\n"
-        ".hword 0x3102, 0xe083, 0x0a00, 0xedd3\n"
-        ".hword 0x3118, 0xe59f, 0x3003, 0xe08f\n"
-        ".hword 0x3102, 0xe083, 0x1a00, 0xed93\n"
-        ".hword 0x310c, 0xe59f, 0x3003, 0xe08f\n"
-        ".hword 0x0a00, 0xee41, 0x2102, 0xe083\n"
-        ".hword 0x0000, 0xe351, 0x1a00, 0xedd2\n"
-        ".hword 0x0140, 0xe1a0, 0x0aa1, 0xee70\n"
-        ".hword 0x0022, 0x0a00, 0x2fa0, 0xe080\n"
-        ".hword 0x35fe, 0xe3a0, 0x10c2, 0xe1a0\n"
-        ".hword 0x00c2, 0xe040, 0x1b81, 0xe083\n"
-        ".hword 0x1a10, 0xee00, 0x0b80, 0xe083\n"
-        ".hword 0x0a20, 0xee60, 0x0a10, 0xee00\n"
-        ".hword 0x8a20, 0xee20, 0x0a10, 0xee18\n"
-        ".hword 0x0000, 0xe350, 0x0009, 0x0a00\n"
-        ".hword 0x0a10, 0xee18, 0x1103, 0xe280\n"
-        ".hword 0x15fe, 0xe251, 0x000a, 0x1a00\n"
-        ".hword 0x0002, 0xe3a0, 0xe101, 0xfbff\n"
-        ".hword 0x0a1a, 0xed9f, 0x8b02, 0xecbd\n"
-        ".hword 0x0a00, 0xee20, 0x8010, 0xe8bd\n"
-        ".hword 0x0002, 0xe3a0, 0xe0fb, 0xfbff\n"
-        ".hword 0x8b02, 0xecbd, 0x4010, 0xe8bd\n"
-        ".hword 0xe0f0, 0xeaff, 0x0a10, 0xee18\n"
-        ".hword 0xe0e3, 0xebff, 0x0004, 0xe350\n"
-        ".hword 0xe0ec, 0x0bff, 0x0a48, 0xeeb0\n"
-        ".hword 0x8b02, 0xecbd, 0x8010, 0xe8bd\n"
-        ".hword 0x0a10, 0xee00, 0x1a17, 0xeddf\n"
-        ".hword 0x8b02, 0xecbd, 0x1ac0, 0xeeb8\n"
-        ".hword 0x0a15, 0xed9f, 0x0a21, 0xee01\n"
-        ".hword 0x0ac0, 0xeebc, 0x0a20, 0xee20\n"
-        ".hword 0x8010, 0xe8bd, 0x0000, 0x1e50\n"
-        ".hword 0x0000, 0x3f80, 0x0000, 0x85a0\n"
-        ".hword 0x0000, 0x7000, 0x0000, 0x0000\n"
-        ".hword 0xaa3b, 0x40b8, 0x0000, 0xbf00\n"
-        ".hword 0x0000, 0x3f00, 0x7000, 0x3e31\n"
-        ".hword 0xfdf4, 0x3705, 0xbb12, 0x3d2a\n"
-        ".hword 0xbb12, 0x3e2a, 0xffff, 0x3eff\n"
-        ".hword 0xffff, 0x3f7f, 0xb8cc, 0x0016\n"
-        ".hword 0xb8cc, 0x0016, 0xb89c, 0x0016\n"
-        ".hword 0x0000, 0x4b00, 0x0000, 0x4e7e\n"
-    );
+//
+// Single-precision e^x (expf).  The pinned code reduces x with
+// n = trunc(x * (4/ln2) +/- 0.5) so the remainder r = x - n*ln(2)/4 lies in
+// [-ln2/8, ln2/8]; e^r - 1 is evaluated with a four-term polynomial and the
+// result is scaled by 2^(n/4) = 2^(n>>2) * 2^((n&3)/4) using three tables.
+// Edge paths special-case tiny inputs (result 1), +-inf/NaN, and the range
+// error / overflow / underflow regions.
+//
+// The pinned binary calls three library helpers; all are declared here.
+extern "C" int math_func_002a4600(u32 bits);   // 0x002A4600 raw-float classifier
+extern "C" float math_func_002a462c(void);     // 0x002A462C synthetic underflow -> +0
+extern "C" void math_func_002a464e(u32 code);  // 0x002A464E store code into errno (Thumb)
+
+namespace expf_002ac0c4_data {
+// 2^(i/4) is split into the coarse float C[i] and the residual A[i] = B[i]-C[i]
+// so that C + A + B*(e^r-1) reproduces B*e^r with one extra rounding.
+static const float kResidual[4] = {
+    0x0.0p+0f, 0x1.fc1464p-13f, 0x1.3cccfep-13f, 0x1.3f32b6p-13f,
+};
+static const float kScaleHi[4] = {
+    0x1.0p+0f, 0x1.306fep+0f, 0x1.6a09e6p+0f, 0x1.ae89fap+0f,
+};
+static const float kScaleCoarse[4] = {
+    0x1.0p+0f, 0x1.3060p+0f, 0x1.6a0p+0f, 0x1.ae80p+0f,
+};
+} // namespace expf_002ac0c4_data
+
+static inline u32 expf_002ac0c4_bits(float value) {
+    return __builtin_bit_cast(u32, value);
+}
+
+static inline float expf_002ac0c4_from_bits(u32 bits) {
+    return __builtin_bit_cast(float, bits);
+}
+
+static inline __attribute__((always_inline)) float expf_002ac0c4_poly(
+    float x, u32 raw, bool split) {
+    using namespace expf_002ac0c4_data;
+
+    // n = trunc(x * (4/ln2) +/- 0.5); the sign-dependent half is added first.
+    const float half = (raw & 0x80000000u) ? -0.5f : 0.5f;
+    const float shifted = half + x * 0x1.715476p+2f;
+    const s32 n = static_cast<s32>(shifted);
+    const float nf = static_cast<float>(n);
+    const u32 index = static_cast<u32>(n) & 3u;
+
+    // r = x - n*ln(2)/4, using the two split literals of the original.
+    float r = x - nf * 0x1.62ep-3f;
+    r = r - nf * 0x1.0bfbe8p-17f;
+
+    // e^r - 1 = r + r^2/2 + r^3/6 + r^4/24.
+    float poly = 0x1.557624p-3f + r * 0x1.557624p-5f;
+    poly = 0x1.fffffep-2f + r * poly;
+    poly = 0x1.fffffep-1f + r * poly;
+    const float rem = poly * r;
+
+    float acc = kResidual[index] + kScaleHi[index] * rem;
+    acc = acc + kScaleCoarse[index];
+
+    const s32 exponent = n >> 2;
+    if (!split) {
+        const float power = expf_002ac0c4_from_bits(
+            0x3f800000u + (static_cast<u32>(exponent) << 23));
+        return power * acc;
+    }
+
+    // Split the exponent so neither intermediate multiply overflows.
+    const s32 adjusted = exponent + ((exponent < 0) ? 1 : 0);
+    const s32 hi_half = adjusted >> 1;
+    const s32 lo_half = exponent - hi_half;
+    float scaled = expf_002ac0c4_from_bits(
+                       0x3f800000u + (static_cast<u32>(hi_half) << 23)) * acc;
+    const float result = expf_002ac0c4_from_bits(
+                             0x3f800000u + (static_cast<u32>(lo_half) << 23)) * scaled;
+
+    const u32 result_bits = expf_002ac0c4_bits(result);
+    if (result_bits == 0u) {                        // underflowed to +0
+        math_func_002a464e(2u);
+        return math_func_002a462c();
+    }
+    if (result_bits == 0x7f800000u) {               // exactly +inf (overflow)
+        math_func_002a464e(2u);
+        const float huge = expf_002ac0c4_from_bits(0x70000000u);
+        return huge * huge;
+    }
+    if (math_func_002a4600(result_bits) == 4) {     // denormal: raise underflow
+        (void)math_func_002a462c();
+    }
+    return result;
+}
+
+extern "C" float func_002ac0c4(float x) {
+    const u32 raw = expf_002ac0c4_bits(x);
+
+    // Normal band: 2*raw in [0x67000000, 0x85500000] (|x| in [2^-24, ~84]).
+    if (0x99000000u + (raw << 1) <= 0x1e500000u) {
+        return expf_002ac0c4_poly(x, raw, false);
+    }
+
+    // Exponent 0xFF selects +-inf/NaN: -inf maps to +0, everything else to 2*x.
+    if ((((~raw) << 1) >> 24) == 0u) {
+        return (raw == 0xff800000u) ? 0.0f : x + x;
+    }
+
+    // |x| below 2^-24 rounds to 1.
+    if (0x67000000u > (raw << 1)) {
+        return 1.0f;
+    }
+
+    // Upper normal band reuses the split-exponent path.
+    if (0x85a00000u >= (raw << 1)) {
+        return expf_002ac0c4_poly(x, raw, true);
+    }
+
+    // |x| > 104: raise ERANGE, then overflow to +inf or underflow to +0.
+    math_func_002a464e(2u);
+    if ((raw & 0x80000000u) == 0u) {
+        const float huge = expf_002ac0c4_from_bits(0x70000000u);
+        return huge * huge;
+    }
+    return math_func_002a462c();
 }
 
 // DECOMP_FUNC(0x002f2c00, 572)
@@ -4426,7 +4473,7 @@ extern "C" void script_vm_func_0023f65c(u32* self, u8* ctx) {
 }
 
 // DECOMP_FUNC(0x0014a998, 672)
-extern "C" void func_002ac0c4();
+extern "C" float func_002ac0c4(float x);
 
 static inline u32 f32_bits_14a998(float v) {
     u32 u;
