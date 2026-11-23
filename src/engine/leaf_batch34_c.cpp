@@ -4015,336 +4015,274 @@ extern "C" s32 camp_func_0013b508(u32* first_output, u32* second_output,
     }
 }
 
+// ---------------------------------------------------------------------------
+// func_0013d460 -- reserve the remaining layered layout of one packed draw
+// descriptor on the shared stream cursor.
+//
+// ABI: r0 = stream, r1 = packed, r2 = request.  r3 and the incoming ip word are
+// never read.  The only caller is `bl 0x0013d460` at 0x0012B66C inside the
+// builder at 0x0012B638, which passes its own r0/r1 and discards r0; the
+// original nevertheless leaves the final stream->cursor in r0 on every exit,
+// so that value is returned here.
+//
+// `stream` is the same {cursor, unit, high-water unit} allocator 0x0012E3A0
+// uses.  Every reservation is `cursor = align_up(cursor, unit) + size` with
+// the 32-bit bitwise align_up form `(v + u - 1) & ~(u - 1)`, so a zero unit
+// floors the result to zero.  Only stream+0x00, +0x04 and +0x08 are written.
+//
+// `request` is read once per field at entry (all six reads happen before the
+// first helper call): flags(+0x00, only the signed byte at bits 8..15 is
+// observed), count_04(+0x04), stride_08(+0x08, the preamble stride word),
+// entry_stride_0C(+0x0C, the per-entry stride of the block-C run),
+// word_10(+0x10), range_14(+0x14) and count_1C(+0x1C, re-read for each of the
+// last two reservations).  `packed` supplies the counts at
+// +0x28/+0xB4/+0xBC/+0xCC and the two self-relative entry-list words at
+// +0x2C/+0xC0.
+//
+// Control flow:
+//  1. 0x0013D4AC: force the unit to 32 for one 32-aligned 4*stride_08
+//     reservation, restore the old unit, and raise stream->max_unit to the
+//     maximum of the old value, 32 and the restored unit (unsigned compares).
+//  2. 0x0013D4F8 and 0x0013D5B8: two identical "0x14 header, optional
+//     4*count_04 run" blocks; the second is interleaved with the block-C
+//     reservation below.
+//  3. 0x0013D544: when the signed flag byte is non-zero and packed->count_28
+//     is non-zero, reserve a 0x2C block, 4*count_28 bytes and
+//     4*(count_28*entry_stride_0C) bytes.
+//  4. 0x0013D5FC: five unconditional reservations built from packed+0xB4 (n)
+//     and packed+0xCC (m): 4*n, 0x88*n, n, 8*m, m.
+//  5. If range_14 is non-null, reserve the (end-begin) span rounded down to a
+//     multiple of four; otherwise reserve 4*packed->count_bc and call
+//     0x0014B6C0 once per entry with marker = (word_10 != 0) and word_10 as
+//     the fourth argument.
+//  6. A third "0x14 / 4*count_04" pair, then, when the signed flag byte is
+//     non-zero and packed->count_28 > 0, walk the +0x2C entry list, reserve
+//     0x68 and call 0x002B43B0 for every entry whose type word (+0x0C) is 2
+//     or 3.
+//  7. An 8-byte tail when range_14 is null, then two 4*count_1C reservations.
+//
+// Both entry walks resolve a self-relative owner word, add index*0x10, and
+// follow the second self-relative word at entry+0x28 (see
+// ResolveEntryAddress).  A null resolvent is forwarded to 0x0014B6C0, but the
+// typed walk dereferences it at +0x0C, exactly like the original (a null entry
+// faults at 0x0C).
+//
+// 0x002B43B0 receives r0 = stream, r1 = entry, r2 = s8(((stale & ~0xFF) | 1)),
+// which is always 1 here; its r3 input is dead (the callee overwrites r3 at
+// its second instruction) and the original leaves a cursor-derived value
+// there, so no fourth argument is modelled.
+// ---------------------------------------------------------------------------
+namespace {
+
+constexpr u32 kPreambleAlignment = 0x20;  // 0x0013D4B4
+constexpr u32 kFlagBlockBytes = 0x2C;      // 0x0013D578
+constexpr u32 kFinalSpanBytes = 8;         // 0x0013D8DC
+constexpr u32 kEntryListRange = 0xC0;      // rel word read by the 0x0014B6C0 loop
+constexpr u32 kEntryListTyped = 0x2C;      // rel word read by the 0x002B43B0 loop
+
+// Allocator state read/written by this body; only the three leading words are
+// touched.  0x0012E3A0 uses the same object through DrawStreamState.
+struct LayoutStream {
+    u32 cursor;    // +0x00: bumped by align_up(unit) + size
+    u32 unit;      // +0x04: alignment mask source
+    u32 max_unit;  // +0x08: high-water alignment mark
+};
+static_assert(offsetof(LayoutStream, unit) == 0x04, "stream layout");
+static_assert(offsetof(LayoutStream, max_unit) == 0x08, "stream layout");
+
+// The request word bundle (third argument).  Field names describe only how
+// this body uses each word, not their meaning in the packet.
+struct LayoutRequest {
+    u32 flags;         // +0x00: signed byte at bits 8..15 gates two blocks
+    u32 count_04;      // +0x04: non-zero selects the extra 4*count runs
+    u32 stride_08;     // +0x08: multiplied by four in the preamble
+    u32 entry_stride_0C; // +0x0C: multiplied by packed->count_28 in block C
+    u32 word_10;       // +0x10: zero/non-zero becomes the 0x0014B6C0 marker
+    u32 range_14;      // +0x14: null selects the 0x0014B6C0 entry loop
+    u32 unused_18;     // +0x18: never read
+    u32 count_1C;      // +0x1C: reserved twice as 4*count at the end
+};
+static_assert(offsetof(LayoutRequest, flags) == 0x00, "request layout");
+static_assert(offsetof(LayoutRequest, count_04) == 0x04, "request layout");
+static_assert(offsetof(LayoutRequest, stride_08) == 0x08, "request layout");
+static_assert(offsetof(LayoutRequest, entry_stride_0C) == 0x0C,
+              "request layout");
+static_assert(offsetof(LayoutRequest, word_10) == 0x10, "request layout");
+static_assert(offsetof(LayoutRequest, range_14) == 0x14, "request layout");
+static_assert(offsetof(LayoutRequest, count_1C) == 0x1C, "request layout");
+
+// cursor = align_up(stream->cursor, stream->unit) + size, published at once.
+// Both stream words are reloaded per reservation, so a helper that advances
+// the shared cursor between calls is observed exactly as in the original.
+inline u32 ReserveAligned(LayoutStream* stream, u32 size) {
+    const u32 unit = stream->unit;
+    const u32 cursor = AlignUp(stream->cursor, unit) + size;
+    stream->cursor = cursor;
+    return cursor;
+}
+
+// A word load that keeps the original address visible even at address zero.
+// Reading the typed entry at entry+0x0C is unguarded in the original, and a
+// plain C++ dereference of a resolvent that may be null is undefined behaviour
+// the compiler is allowed to optimise away; the volatile access prevents it.
+inline u32 LoadWordAt(u32 address) {
+    return *reinterpret_cast<const volatile u32*>(address);
+}
+
+// Resolve one entry of a self-relative list as an integer address (0 = none):
+// `owner + field_offset` holds a displacement; the entry stride is 0x10 and the
+// entry's +0x28 word is a second self-relative displacement.  Returning an
+// integer rather than a pointer keeps both zero-checks alive (a null resolvent
+// is forwarded to 0x0014B6C0, and the typed walk faults reading address 0x0C).
+inline u32 ResolveEntryAddress(const u8* owner, u32 field_offset, s32 index) {
+    const u32 relative = LoadWordAt(reinterpret_cast<u32>(owner) + field_offset);
+    const u32 base = (relative != 0)
+        ? reinterpret_cast<u32>(owner) + field_offset + relative
+        : 0;
+    if (base == 0) {
+        return 0;
+    }
+    const u32 entry = base + static_cast<u32>(index) * kEntryStride;
+    const u32 inner = LoadWordAt(entry + kEntryInner);
+    return (inner != 0) ? entry + kEntryInner + inner : 0;
+}
+
+}  // namespace
+
+// Exact register contracts for the two direct calls in this body.  The
+// translation unit also declares the naked definitions elsewhere; these
+// aliases only give this call site a prototype.
+extern "C" void emit_entry_0013d460(LayoutStream* stream, void* entry,
+                                    u32 marker, u32 value)
+    __asm__("func_0014b6c0");
+extern "C" void emit_type_0013d460(LayoutStream* stream, void* entry, s32 mode)
+    __asm__("func_002b43b0");
+
 // DECOMP_FUNC(0x0013d460, 1240)
-extern "C" __attribute__((naked)) void func_0013d460() {
-    asm volatile(
-        "push {r4, r5, r6, r7, r8, sb, sl, fp, lr}\n"
-        "mov r6, r0\n"
-        "sub sp, sp, #0xc\n"
-        "mov sb, r2\n"
-        "add r2, r2, #8\n"
-        "ldm sb, {r3, sl}\n"
-        "add r7, sb, #0x10\n"
-        "ldm r2, {r2, r8}\n"
-        "bic ip, ip, #0xff\n"
-        "lsl r0, r3, #0x10\n"
-        "ldm r7, {r7, fp}\n"
-        "asr r0, r0, #0x18\n"
-        "str r3, [sp]\n"
-        "and r3, r3, #0xff\n"
-        "orr r3, r3, ip\n"
-        "lsl r0, r0, #8\n"
-        "bic r3, r3, #0xff00\n"
-        "and r0, r0, #0xff00\n"
-        "orr r4, r3, r0\n"
-        "lsl r3, r2, #2\n"
-        "ldr r2, [r6, #4]\n"
-        "mov ip, #0x20\n"
-        "str ip, [r6, #4]\n"
-        "ldr r0, [r6, #8]\n"
-        "mov r5, r1\n"
-        "cmp r0, #0x20\n"
-        "movlo r0, ip\n"
-        "str r0, [r6, #8]\n"
-        "ldr r0, [r6]\n"
-        "add r0, r0, #0x1f\n"
-        "bic ip, r0, #0x1f\n"
-        "add r0, ip, r3\n"
-        "stm r6, {r0, r2}\n"
-        "mov r0, r6\n"
-        "ldr r3, [r6, #8]\n"
-        "cmp r3, r2\n"
-        "movhs r2, r3\n"
-        "str r2, [r6, #8]\n"
-        "ldr r2, [r6, #4]\n"
-        "ldr r3, [r6]\n"
-        "cmp sl, #0\n"
-        "add r3, r3, r2\n"
-        "sub r2, r2, #1\n"
-        "sub r3, r3, #1\n"
-        "biceq r2, r3, r2\n"
-        "addeq r2, r2, #0x14\n"
-        "beq .L_0013d53c\n"
-        "bic r3, r3, r2\n"
-        "add r3, r3, #0x14\n"
-        "str r3, [r0]\n"
-        "ldr lr, [r0, #4]\n"
-        "add r3, r3, lr\n"
-        "sub r3, r3, #1\n"
-        "bic r2, r3, r2\n"
-        "add r2, r2, sl, lsl #2\n"
-        ".L_0013d53c:\n"
-        "lsl r0, r4, #0x10\n"
-        "str r2, [r6]\n"
-        "asrs r0, r0, #0x18\n"
-        "cmpne r1, #0\n"
-        "ldrne r3, [r5, #0x28]\n"
-        "cmpne r3, #0\n"
-        "beq .L_0013d5b8\n"
-        "ldr r1, [r6, #4]\n"
-        "ldr r2, [r6]\n"
-        "mov r0, r6\n"
-        "mul ip, r3, r8\n"
-        "add r2, r2, r1\n"
-        "sub r1, r1, #1\n"
-        "sub r2, r2, #1\n"
-        "bic r1, r2, r1\n"
-        "add r1, r1, #0x2c\n"
-        "str r1, [r6]\n"
-        "ldr r2, [r6, #4]\n"
-        "add r1, r1, r2\n"
-        "sub r2, r2, #1\n"
-        "sub r1, r1, #1\n"
-        "bic r1, r1, r2\n"
-        "add r1, r1, r3, lsl #2\n"
-        "str r1, [r0]\n"
-        "ldr r2, [r0, #4]\n"
-        "add r1, r1, r2\n"
-        "sub r2, r2, #1\n"
-        "sub r1, r1, #1\n"
-        "bic r1, r1, r2\n"
-        "add r1, r1, ip, lsl #2\n"
-        "str r1, [r6]\n"
-        ".L_0013d5b8:\n"
-        "cmp sl, #0\n"
-        "mov r0, r6\n"
-        "beq .L_0013d6c8\n"
-        "ldm r0, {r1, r3}\n"
-        "add r1, r1, r3\n"
-        "sub r3, r3, #1\n"
-        "sub r1, r1, #1\n"
-        "bic r1, r1, r3\n"
-        "add r1, r1, #0x14\n"
-        "str r1, [r0]\n"
-        "ldr r3, [r0, #4]\n"
-        "add r1, r1, r3\n"
-        "sub r3, r3, #1\n"
-        "sub r1, r1, #1\n"
-        "bic r1, r1, r3\n"
-        "add r1, r1, sl, lsl #2\n"
-        ".L_0013d5f8:\n"
-        "str r1, [r6]\n"
-        "ldr r0, [r5, #0xb4]\n"
-        "ldr r3, [r6, #4]\n"
-        "ldr ip, [r6]\n"
-        "ldr r1, [r5, #0xcc]\n"
-        "add r2, r0, r0, lsl #4\n"
-        "add ip, ip, r3\n"
-        "sub r3, r3, #1\n"
-        "sub ip, ip, #1\n"
-        "lsl lr, r2, #3\n"
-        "ldr r2, [r6, #4]\n"
-        "bic r3, ip, r3\n"
-        "add r3, r3, r0, lsl #2\n"
-        "add r3, r3, r2\n"
-        "ldr ip, [r6, #4]\n"
-        "sub r2, r2, #1\n"
-        "sub r3, r3, #1\n"
-        "bic r2, r3, r2\n"
-        "add r2, r2, lr\n"
-        "add r2, r2, ip\n"
-        "sub ip, ip, #1\n"
-        "sub r2, r2, #1\n"
-        "bic r2, r2, ip\n"
-        "add r0, r0, r2\n"
-        "ldr r2, [r6, #4]\n"
-        "ldr r3, [r6, #4]\n"
-        "cmp fp, #0\n"
-        "add r0, r0, r2\n"
-        "sub r2, r2, #1\n"
-        "sub r0, r0, #1\n"
-        "bic r0, r0, r2\n"
-        "add r0, r0, r1, lsl #3\n"
-        "add r0, r0, r3\n"
-        "sub r3, r3, #1\n"
-        "sub r0, r0, #1\n"
-        "bic r0, r0, r3\n"
-        "add r0, r0, r1\n"
-        "str r0, [r6]\n"
-        "beq .L_0013d6e8\n"
-        "ldr r1, [fp, #0x168]\n"
-        "ldr r2, [fp, #0x164]\n"
-        "sub r1, r1, r2\n"
-        "asr r2, r1, #2\n"
-        "lsl r3, r2, #2\n"
-        "ldr r2, [r6, #4]\n"
-        "add r0, r0, r2\n"
-        "sub r2, r2, #1\n"
-        "sub r0, r0, #1\n"
-        "bic r0, r0, r2\n"
-        "add r0, r0, r3\n"
-        "str r0, [r6]\n"
-        "b .L_0013d770\n"
-        ".L_0013d6c8:\n"
-        "ldr r1, [r0, #4]\n"
-        "ldr r2, [r0]\n"
-        "add r2, r2, r1\n"
-        "sub r1, r1, #1\n"
-        "sub r2, r2, #1\n"
-        "bic r1, r2, r1\n"
-        "add r1, r1, #0x14\n"
-        "b .L_0013d5f8\n"
-        ".L_0013d6e8:\n"
-        "cmp r7, #0\n"
-        "ldr r8, [r5, #0xbc]\n"
-        "movne r1, #1\n"
-        "moveq r1, #0\n"
-        "str r1, [sp, #4]\n"
-        "ldr r2, [r6, #4]\n"
-        "cmp r8, #0\n"
-        "mov r4, #0\n"
-        "add r0, r0, r2\n"
-        "sub r2, r2, #1\n"
-        "sub r0, r0, #1\n"
-        "bic r0, r0, r2\n"
-        "add r0, r0, r8, lsl #2\n"
-        "str r0, [r6]\n"
-        "ble .L_0013d770\n"
-        ".L_0013d724:\n"
-        "ldr r1, [r5, #0xc0]\n"
-        "add r0, r5, #0xc0\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, #0\n"
-        "cmp r0, #0\n"
-        "moveq r1, #0\n"
-        "beq .L_0013d754\n"
-        "add r0, r0, r4, lsl #4\n"
-        "ldr r1, [r0, #0x28]!\n"
-        "cmp r1, #0\n"
-        "addne r1, r1, r0\n"
-        ".L_0013d754:\n"
-        "ldr r2, [sp, #4]\n"
-        "mov r3, r7\n"
-        "mov r0, r6\n"
-        "bl func_0014b6c0\n"
-        "add r4, r4, #1\n"
-        "cmp r4, r8\n"
-        "blt .L_0013d724\n"
-        ".L_0013d770:\n"
-        "ldr r1, [r6, #4]\n"
-        "ldr r2, [r6]\n"
-        "cmp sl, #0\n"
-        "mov r0, r6\n"
-        "add r2, r2, r1\n"
-        "sub r1, r1, #1\n"
-        "sub r2, r2, #1\n"
-        "bic r1, r2, r1\n"
-        "beq .L_0013d858\n"
-        "ldr r3, [r0, #4]\n"
-        "add r2, r1, #0x14\n"
-        "lsl r1, sl, #2\n"
-        "add r2, r2, r3\n"
-        "sub r3, r3, #1\n"
-        "sub r2, r2, #1\n"
-        "bic r2, r2, r3\n"
-        "add r2, r2, r1\n"
-        "str r2, [r6]\n"
-        "ldr r3, [r0, #4]\n"
-        "add r2, r2, r3\n"
-        "sub r3, r3, #1\n"
-        "sub r2, r2, #1\n"
-        "bic r2, r2, r3\n"
-        "add r3, r2, #0x14\n"
-        "str r3, [r0]\n"
-        "ldr r2, [r0, #4]\n"
-        "add r3, r3, r2\n"
-        "sub r2, r2, #1\n"
-        "sub r3, r3, #1\n"
-        "bic r2, r3, r2\n"
-        "add r1, r1, r2\n"
-        ".L_0013d7ec:\n"
-        "str r1, [r6]\n"
-        "ldr r0, [sp]\n"
-        "lsl r0, r0, #0x10\n"
-        "asrs r0, r0, #0x18\n"
-        "beq .L_0013d8bc\n"
-        "ldr r8, [r5, #0x28]\n"
-        "mov r4, #0\n"
-        "cmp r8, #0\n"
-        "movgt sl, #1\n"
-        "ble .L_0013d8bc\n"
-        ".L_0013d814:\n"
-        "ldr r1, [r5, #0x2c]\n"
-        "add r0, r5, #0x2c\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, #0\n"
-        "cmp r0, #0\n"
-        "moveq r1, #0\n"
-        "beq .L_0013d844\n"
-        "add r0, r0, r4, lsl #4\n"
-        "ldr r1, [r0, #0x28]!\n"
-        "cmp r1, #0\n"
-        "addne r1, r1, r0\n"
-        ".L_0013d844:\n"
-        "ldr r0, [r1, #0xc]\n"
-        "cmp r0, #2\n"
-        "cmpne r0, #3\n"
-        "bne .L_0013d8b0\n"
-        "b .L_0013d87c\n"
-        ".L_0013d858:\n"
-        "add r1, r1, #0x14\n"
-        "str r1, [r6]\n"
-        "ldr r2, [r0, #4]\n"
-        "add r1, r1, r2\n"
-        "sub r2, r2, #1\n"
-        "sub r1, r1, #1\n"
-        "bic r1, r1, r2\n"
-        "add r1, r1, #0x14\n"
-        "b .L_0013d7ec\n"
-        ".L_0013d87c:\n"
-        "bic ip, r2, #0xff\n"
-        "ldr r2, [r6, #4]\n"
-        "ldr r3, [r6]\n"
-        "orr ip, ip, sl\n"
-        "mov r0, r6\n"
-        "add r3, r3, r2\n"
-        "sub r2, r2, #1\n"
-        "sub r3, r3, #1\n"
-        "bic r2, r3, r2\n"
-        "add r2, r2, #0x68\n"
-        "str r2, [r6]\n"
-        "sxtb r2, ip\n"
-        "bl func_002b43b0\n"
-        ".L_0013d8b0:\n"
-        "add r4, r4, #1\n"
-        "cmp r4, r8\n"
-        "blt .L_0013d814\n"
-        ".L_0013d8bc:\n"
-        "cmp fp, #0\n"
-        "bne .L_0013d8e4\n"
-        "ldr r1, [r6, #4]\n"
-        "ldr r2, [r6]\n"
-        "add r2, r2, r1\n"
-        "sub r1, r1, #1\n"
-        "sub r2, r2, #1\n"
-        "bic r1, r2, r1\n"
-        "add r1, r1, #8\n"
-        "str r1, [r6]\n"
-        ".L_0013d8e4:\n"
-        "ldr r0, [sb, #0x1c]\n"
-        "ldr r2, [r6]\n"
-        "lsl r1, r0, #2\n"
-        "ldr r0, [r6, #4]\n"
-        "add r2, r2, r0\n"
-        "sub r0, r0, #1\n"
-        "sub r2, r2, #1\n"
-        "bic r0, r2, r0\n"
-        "add r0, r0, r1\n"
-        "str r0, [r6]\n"
-        "ldr r1, [sb, #0x1c]\n"
-        "lsl r2, r1, #2\n"
-        "ldr r1, [r6, #4]\n"
-        "add r0, r0, r1\n"
-        "sub r1, r1, #1\n"
-        "sub r0, r0, #1\n"
-        "bic r0, r0, r1\n"
-        "add r0, r0, r2\n"
-        "str r0, [r6]\n"
-        "add sp, sp, #0xc\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, fp, pc}\n"
-    );
+extern "C" u32 func_0013d460(LayoutStream* stream, PacketWords* packed,
+                             LayoutRequest* request) {
+    // 0x0013D474..0x0013D4A8: every request word is latched once.  The word at
+    // +0x00 is kept whole; its signed byte at bits 8..15 is the only part
+    // examined by the two gates at 0x0013D544 and 0x0013D7FC.
+    const u32 flags = request->flags;
+    const s8 selector = static_cast<s8>(flags >> kFlagsByteShift);
+    const u32 count_04 = request->count_04;
+    const u32 stride_08 = request->stride_08;
+    const u32 entry_stride_0C = request->entry_stride_0C;
+    const u32 word_10 = request->word_10;
+    const u32 range_14 = request->range_14;
+
+    // 0x0013D4AC..0x0013D4F4: raise the high-water mark to at least 32, reserve
+    // 4*stride_08 at a 32-byte boundary, restore the previous unit, then raise
+    // the mark again to at least that unit (unsigned `lo` / `hs` compares).
+    const u32 saved_unit = stream->unit;
+    stream->unit = kPreambleAlignment;
+    if (stream->max_unit < kPreambleAlignment) {
+        stream->max_unit = kPreambleAlignment;
+    }
+    stream->cursor =
+        AlignUp(stream->cursor, kPreambleAlignment) + 4u * stride_08;
+    stream->unit = saved_unit;
+    if (stream->max_unit < saved_unit) {
+        stream->max_unit = saved_unit;
+    }
+
+    // 0x0013D4F8..0x0013D540: 0x14 header, then 4*count_04 when selected.
+    ReserveAligned(stream, kTailHeader);
+    if (count_04 != 0) {
+        ReserveAligned(stream, 4u * count_04);
+    }
+
+    // 0x0013D544..0x0013D5B4: the packed->count_28 > 0 arm.  The count is read
+    // only after the selector and the packed pointer have both been accepted.
+    // The block-C stride word is request+0x0C (r8), not the preamble +0x08.
+    if (selector != 0 && packed != nullptr) {
+        const u32 entry_count = packed->count_28;
+        if (entry_count != 0) {
+            ReserveAligned(stream, kFlagBlockBytes);
+            ReserveAligned(stream, 4u * entry_count);
+            ReserveAligned(stream, 4u * (entry_count * entry_stride_0C));
+        }
+    }
+
+    // 0x0013D5B8..0x0013D5F8: a second 0x14 header plus the optional run.
+    ReserveAligned(stream, kTailHeader);
+    if (count_04 != 0) {
+        ReserveAligned(stream, 4u * count_04);
+    }
+
+    // 0x0013D5FC..0x0013D68C: the five unconditional reservations.  The
+    // original forms the 0x88 stride as (n*17) << 3 and adds the counts in
+    // this order; all arithmetic is 32-bit modular.
+    const u32 count_b4 = packed->count_b4;
+    const u32 count_cc = packed->count_cc;
+    ReserveAligned(stream, kInitialCount4Bytes * count_b4);
+    ReserveAligned(stream, kInitialStrideBytes * count_b4);
+    ReserveAligned(stream, count_b4);
+    ReserveAligned(stream, kInitialTailBytes * count_cc);
+    ReserveAligned(stream, count_cc);
+
+    if (range_14 != 0) {
+        // 0x0013D690..0x0013D6C4: (end - begin) rounded down to four bytes.
+        const RangeSpan* range = reinterpret_cast<const RangeSpan*>(range_14);
+        const u32 span = (range->end_168 - range->begin_164) & ~u32{3};
+        ReserveAligned(stream, span);
+    } else {
+        // 0x0013D6C8..0x0013D76C: 4*count_bc, then one 0x0014B6C0 call per
+        // entry.  marker = (word_10 != 0); the raw word_10 is the fourth word.
+        const s32 entries = packed->count_bc;
+        const u32 marker = (word_10 != 0) ? 1u : 0u;
+        ReserveAligned(stream, 4u * static_cast<u32>(entries));
+        const u8* const packed_bytes = reinterpret_cast<const u8*>(packed);
+        for (s32 index = 0; index < entries; ++index) {
+            emit_entry_0013d460(
+                stream,
+                reinterpret_cast<void*>(
+                    ResolveEntryAddress(packed_bytes, kEntryListRange, index)),
+                marker, word_10);
+        }
+    }
+
+    // 0x0013D770..0x0013D7EC: the third and last 0x14 / 4*count_04 pair.
+    ReserveAligned(stream, kTailHeader);
+    if (count_04 != 0) {
+        ReserveAligned(stream, 4u * count_04);
+        ReserveAligned(stream, kTailHeader);
+        ReserveAligned(stream, 4u * count_04);
+    } else {
+        ReserveAligned(stream, kTailHeader);
+    }
+
+    // 0x0013D7F0..0x0013D8B8: typed-entry loop.  The bound is latched (signed)
+    // but the list owner word is re-read on every iteration.  Only types 2 and
+    // 3 reserve the 0x68 block and call 0x002B43B0; the mode byte is always 1.
+    if (selector != 0) {
+        const s32 typed_count = packed->count_28;
+        if (typed_count > 0) {
+            const u8* const packed_bytes = reinterpret_cast<const u8*>(packed);
+            for (s32 index = 0; index < typed_count; ++index) {
+                const u32 entry =
+                    ResolveEntryAddress(packed_bytes, kEntryListTyped, index);
+                const u32 type = LoadWordAt(entry + kEntryType);
+                if (type != 2u && type != 3u) {
+                    continue;
+                }
+                ReserveAligned(stream, kTypeHeader);
+                emit_type_0013d460(stream, reinterpret_cast<void*>(entry), 1);
+            }
+        }
+    }
+
+    // 0x0013D8BC..0x0013D8E0: an 8-byte tail only when no range is present.
+    if (range_14 == 0) {
+        ReserveAligned(stream, kFinalSpanBytes);
+    }
+
+    // 0x0013D8E4..0x0013D934: two 4*count_1C word reservations, each with a
+    // fresh read of request->count_1C.
+    ReserveAligned(stream, 4u * request->count_1C);
+    ReserveAligned(stream, 4u * request->count_1C);
+    return stream->cursor;
 }
 
 // ---------------------------------------------------------------------------

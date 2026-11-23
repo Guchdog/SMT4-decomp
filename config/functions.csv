@@ -939,7 +939,7 @@ address,size,status,category,name,src_file
 0x0013cf50,448,non_matching,engine,engine_func_0013cf50,src/engine/leaf_batch41_c.cpp
 0x0013d110,672,matching,engine,engine_func_0013d110,src/engine/leaf_batch42_b.cpp
 0x0013d3b0,176,matching,engine,engine_func_0013d3b0,src/engine/leaf_batch16_b.cpp
-0x0013d460,1240,matching,unknown,func_0013d460,src/engine/leaf_batch34_c.cpp
+0x0013d460,1240,non_matching,unknown,func_0013d460,src/engine/leaf_batch34_c.cpp
 0x0013d938,72,matching,unknown,func_0013d938,src/engine/leaf_batch11_b.cpp
 0x0013d980,116,matching,unknown,func_0013d980,src/engine/leaf_batch14_a.cpp
 0x0013d9f4,436,matching,engine,engine_func_0013d9f4,src/engine/leaf_batch44_c.cpp
