@@ -3466,264 +3466,172 @@ extern "C" __attribute__((naked)) void func_00139014() {
 }
 
 // DECOMP_FUNC(0x001393e0, 976)
-extern "C" __attribute__((naked)) void func_001393e0() {
-    asm volatile(
-        "push {r4, r5, r6, r7, r8, sb, sl, fp, lr}\n"
-        "sub sp, sp, #0x7c\n"
-        "mov r4, r0\n"
-        "add r0, sp, #0x10\n"
-        "bl engine_func_002c586c\n"
-        "ldrd r0, r1, [sp, #0x10]\n"
-        "strd r0, r1, [sp, #0x70]\n"
-        "add r1, sp, #0x70\n"
-        "mov r0, sp\n"
-        "bl engine_func_002ad8f8\n"
-        "ldm sp, {r0, r1, r2}\n"
-        "add r3, sp, #0x34\n"
-        "mov sb, #0\n"
-        "stm r3, {r0, r1, r2}\n"
-        "add r1, sp, #0x34\n"
-        "strb sb, [sp, #0x3c]\n"
-        "strb sb, [sp, #0x3d]\n"
-        "mov r0, sp\n"
-        "strb sb, [sp, #0x3b]\n"
-        "strh sb, [sp, #0x3e]\n"
-        "bl func_00139f20\n"
-        "ldm sp, {r7, r8}\n"
-        "str sb, [sp]\n"
-        "str sb, [sp, #4]\n"
-        "str sb, [sp, #8]\n"
-        "str sb, [sp, #0xc]\n"
-        "ldrsb r3, [r4, #0x13]\n"
-        "ldrsb r2, [r4, #0x12]\n"
-        "ldrsh r1, [r4, #0x10]\n"
-        "add r0, sp, #0x18\n"
-        "bl func_002ad714\n"
-        "add r0, sp, #0x18\n"
-        "ldm r0, {r5, r6}\n"
-        "bl func_0013924c\n"
-        "str r0, [sp, #0xc]\n"
-        "subs r0, r7, r5\n"
-        "sbcs r0, r8, r6\n"
-        "str r5, [sp, #0x28]\n"
-        "str r6, [sp, #0x24]\n"
-        "blt .L_001394b4\n"
-        "ldr r0, [r4, #8]\n"
-        "ldr r1, [sp, #0xc]\n"
-        "cmp r0, r1\n"
-        "ldrhls r1, [r4, #4]\n"
-        "cmpls r1, #0x12c\n"
-        "bhs .L_001394b4\n"
-        "eor r1, r7, r5\n"
-        "eor r2, r8, r6\n"
-        "orrs r1, r1, r2\n"
-        "bne .L_00139520\n"
-        "ldrh r1, [r4, #6]\n"
-        "cmp r1, #0xa\n"
-        "blo .L_00139520\n"
-        ".L_001394b4:\n"
-        "eor r1, r7, r5\n"
-        "eor r0, r8, r6\n"
-        "orrs r0, r0, r1\n"
-        "strhne sb, [r4, #6]\n"
-        "ldr r0, [sp, #0xc]\n"
-        "mov r2, r7\n"
-        "mov r3, r8\n"
-        "str r0, [r4, #8]\n"
-        "mov r1, #0x18\n"
-        "add r0, sp, #0x40\n"
-        "bl func_00139230\n"
-        "ldrh r0, [sp, #0x40]\n"
-        "ldrh r5, [sp, #0x42]\n"
-        "add r3, sp, #0x40\n"
-        "mov ip, #0\n"
-        "mov r1, #0xb\n"
-        ".L_001394f4:\n"
-        "ldrh r2, [r3, #4]!\n"
-        "add r0, r0, r5\n"
-        "ldrh r5, [r3, #2]\n"
-        "subs r1, r1, #1\n"
-        "add ip, ip, r2\n"
-        "bne .L_001394f4\n"
-        "ldrh r1, [sp, #0x6e]\n"
-        "add r0, r0, ip\n"
-        "add r0, r0, r1\n"
-        "str r0, [r4, #0xc]\n"
-        "b .L_0013976c\n"
-        ".L_00139520:\n"
-        "ldr r1, [sp, #0xc]\n"
-        "sub r0, r1, r0\n"
-        "cmp r0, #0x64\n"
-        "blo .L_00139794\n"
-        ".L_00139530:\n"
-        "subs r0, r7, r5\n"
-        "sbcs r0, r8, r6\n"
-        "blt .L_0013976c\n"
-        "mov r2, r5\n"
-        "mov r3, r6\n"
-        "mov r1, #0x18\n"
-        "add r0, sp, #0x40\n"
-        "bl func_00139230\n"
-        "ldrh r1, [sp, #0x40]\n"
-        "ldrh ip, [sp, #0x42]\n"
-        "add r0, sp, #0x40\n"
-        "mov r2, #0\n"
-        "mov r3, #0xb\n"
-        ".L_00139564:\n"
-        "ldrh sb, [r0, #4]!\n"
-        "add r1, r1, ip\n"
-        "ldrh ip, [r0, #2]\n"
-        "subs r3, r3, #1\n"
-        "add r2, r2, sb\n"
-        "bne .L_00139564\n"
-        "ldrh r3, [sp, #0x6e]\n"
-        "add r0, r1, r2\n"
-        "mov ip, #0\n"
-        "add lr, r3, r0\n"
-        "ldrd r0, r1, [sp, #0x24]\n"
-        "mov r2, ip\n"
-        "eor r1, r1, r5\n"
-        "eor r0, r0, r6\n"
-        "orrs r0, r0, r1\n"
-        "bne .L_001395b0\n"
-        "ldr r0, [r4, #0xc]\n"
-        "ldrh ip, [r4, #6]\n"
-        "uxth r2, r0\n"
-        ".L_001395b0:\n"
-        "mov r1, #0\n"
-        "subs sl, lr, r2\n"
-        "mov sb, r1\n"
-        "sbc r0, r1, r1\n"
-        "subs r1, r1, sl\n"
-        ".word 0xe59f11d0\n"
-        "sbcs r0, sb, r0\n"
-        "movge r0, #0\n"
-        "subslt r0, lr, r2\n"
-        "mvn r3, #0x18\n"
-        "umull r2, r1, r1, r0\n"
-        "lsr r1, r1, #5\n"
-        "mul r2, r1, r3\n"
-        "add r3, r0, r2, lsl #2\n"
-        "uxtah r0, ip, r1\n"
-        "uxth r2, r1\n"
-        "cmp r0, #0xa\n"
-        "blo .L_0013960c\n"
-        "rsb r0, ip, #0xa\n"
-        "cmp r0, #0\n"
-        "movle r0, #0\n"
-        "mov r3, #0\n"
-        "uxth r2, r0\n"
-        ".L_0013960c:\n"
-        "ldrh r0, [r4, #4]\n"
-        "add r1, r0, r2\n"
-        "cmp r1, #0x12c\n"
-        "blo .L_00139630\n"
-        "rsb r0, r0, #0x12c\n"
-        "cmp r0, #0\n"
-        "movle r0, #0\n"
-        "mov r3, #0\n"
-        "uxth r2, r0\n"
-        ".L_00139630:\n"
-        "eor r0, r5, r7\n"
-        "eor r1, r6, r8\n"
-        "orrs r0, r0, r1\n"
-        "bne .L_00139698\n"
-        "ldr r0, [sp, #0xc]\n"
-        "mov sb, #0\n"
-        "add ip, ip, r2\n"
-        "subs r0, r0, r3\n"
-        "sbc r1, sb, sb\n"
-        "subs r0, sb, r0\n"
-        "sbcs r0, sb, r1\n"
-        "strh ip, [r4, #6]\n"
-        "ldrlt r0, [sp, #0xc]\n"
-        "movge r0, #0\n"
-        "mov r1, #0\n"
-        "subslt r0, r0, r3\n"
-        "mov fp, r1\n"
-        "mov sl, r1\n"
-        "subs sb, lr, r3\n"
-        "sbc r1, r1, r1\n"
-        "subs ip, fp, sb\n"
-        "str r0, [r4, #8]\n"
-        "sbcs r0, sl, r1\n"
-        "movge r0, #0\n"
-        "subslt r0, lr, r3\n"
-        "str r0, [r4, #0xc]\n"
-        ".L_00139698:\n"
-        "ldrh r0, [r4, #4]\n"
-        ".word 0xe59fb100\n"
-        "mov r1, #0\n"
-        "add r0, r0, r2\n"
-        "strh r0, [r4, #4]\n"
-        ".word 0xe59f00ec\n"
-        ".word 0xe59f20f0\n"
-        "asr sb, fp, #0x1f\n"
-        "str r1, [sp, #0x40]\n"
-        "str sb, [sp, #0x2c]\n"
-        "umull sl, sb, r0, r2\n"
-        "mov r3, r1\n"
-        "mla sb, r1, r2, sb\n"
-        "str r1, [sp, #0x44]\n"
-        "mov ip, r1\n"
-        "str r1, [sp, #0x30]\n"
-        "mla r1, r0, r3, sb\n"
-        ".word 0xe59fe0c8\n"
-        "str r1, [sp, #0x18]\n"
-        "ldr sb, [sp, #0x2c]\n"
-        "umull sl, r1, fp, r2\n"
-        "mla r2, sb, r2, r1\n"
-        "ldr r1, [sp, #0x18]\n"
-        "mla r2, fp, r3, r2\n"
-        "adds r3, sl, r1\n"
-        "str r3, [sp, #0x48]\n"
-        "adc ip, ip, r2\n"
-        "ldr r1, [sp, #0x30]\n"
-        "umull r2, r3, r0, lr\n"
-        "ldr sl, [sp, #0x40]\n"
-        "mla r1, r1, lr, r3\n"
-        "mla r0, r0, sl, r1\n"
-        "umull r1, r3, fp, lr\n"
-        "mla r3, sb, lr, r3\n"
-        "ldr sb, [sp, #0x48]\n"
-        "mla sl, fp, sl, r3\n"
-        "ldr r3, [sp, #0x44]\n"
-        "adds r2, r2, sb\n"
-        "adc r0, r0, r3\n"
-        "asr r2, r0, #0x1f\n"
-        "adds r0, r0, ip\n"
-        "adc r2, r2, ip, asr #31\n"
-        "adds r0, r0, r1\n"
-        "adc r2, r2, sl\n"
-        "lsr ip, r0, #0x12\n"
-        "orr r0, ip, r2, lsl #14\n"
-        "lsr r1, fp, #0x1f\n"
-        "adds r1, r1, r0\n"
-        "asr r2, r2, #0x12\n"
-        "adc r0, r2, #0\n"
-        "adds r5, r5, r1\n"
-        "adc r6, r6, r0\n"
-        "b .L_00139530\n"
-        ".L_0013976c:\n"
-        "ldr r0, [sp, #0x34]\n"
-        "ldrh r1, [r4, #4]\n"
-        "strh r0, [r4, #0x10]\n"
-        "ldrb r0, [sp, #0x38]\n"
-        "cmp r1, #0x12c\n"
-        "strb r0, [r4, #0x12]\n"
-        "ldrb r0, [sp, #0x39]\n"
-        "strb r0, [r4, #0x13]\n"
-        "movhi r0, #0x12c\n"
-        "strhhi r0, [r4, #4]\n"
-        ".L_00139794:\n"
-        "add sp, sp, #0x7c\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, fp, pc}\n"
-        ".word 0x51eb851f\n"
-        ".word 0x914f0000\n"
-        ".word 0x00004e94\n"
-        ".word 0xd7b634db\n"
-        ".word 0x431bde82\n"
-    );
+//
+// Calendar regeneration tick.  `state` holds a stored date and three
+// accumulators; the routine compares the stored date against the current
+// calendar date and, when a reprocessing pass is due, walks forward one day at
+// a time until the stored timestamp reaches the present one, charging the
+// per-day checksum into the saturating counters.
+
+struct RegenDate {
+    u32 year;          // +0x00  calendar year (only low16 kept by callers)
+    s8 month;          // +0x04
+    s8 day;            // +0x05
+    s8 unknown06;      // +0x06  copied through, never reinterpreted
+    s8 hour;           // +0x07
+    s8 minute;         // +0x08
+    s8 second;         // +0x09
+    s16 millisecond;   // +0x0a
+};
+static_assert(sizeof(RegenDate) == 0x0C, "date record layout");
+
+struct RegenState {
+    u8 reserved00[4];  // +0x00
+    u16 counterA;      // +0x04  saturates at 300 (0x12c)
+    u16 counterB;      // +0x06  saturates at 10 (0x0a)
+    u32 lastStamp;     // +0x08  compared against 0x0013924c()
+    u32 accum;         // +0x0c  sum of the 24 calendar words
+    s16 year;          // +0x10
+    s8 month;          // +0x12
+    s8 day;            // +0x13
+};
+static_assert(offsetof(RegenState, counterA) == 0x04, "state layout");
+static_assert(offsetof(RegenState, counterB) == 0x06, "state layout");
+static_assert(offsetof(RegenState, lastStamp) == 0x08, "state layout");
+static_assert(offsetof(RegenState, accum) == 0x0c, "state layout");
+static_assert(offsetof(RegenState, year) == 0x10, "state layout");
+static_assert(offsetof(RegenState, month) == 0x12, "state layout");
+static_assert(offsetof(RegenState, day) == 0x13, "state layout");
+
+// Typed aliases for helpers that are declared without prototypes at file scope.
+// The assembly labels keep the direct-call symbols used by the pinned image.
+extern "C" void regen_now_ms(u64* out) __asm__("engine_func_002c586c");
+extern "C" void regen_breakdown(RegenDate* out, const u64* timestamp)
+    __asm__("engine_func_002ad8f8");
+extern "C" void regen_date_to_ms(s64* out, const RegenDate* date)
+    __asm__("func_00139f20");
+extern "C" void regen_parts_to_ms(s64* out, s32 year, s32 month, s32 day,
+                                  s32 hour, s32 minute, s32 second,
+                                  s32 millisecond) __asm__("func_002ad714");
+extern "C" u32 regen_frame_counter() __asm__("func_0013924c");
+extern "C" void regen_calendar_words(u16* out, u32 kind, s64 timestamp)
+    __asm__("func_00139230");
+
+namespace {
+constexpr u32 kRegenCounterACap = 300;     // 0x12c
+constexpr u32 kRegenCounterBCap = 10;      // 0x0a
+constexpr u32 kRegenStampDelta = 100;      // 0x64
+constexpr u32 kRegenAccumUnit = 100;       // checksum units per counter step
+constexpr u64 kRegenMsPerDay = 86400000;   // 0x05265c00
+}  // namespace
+
+extern "C" u32 func_001393e0(RegenState* state) {
+    u64 raw = 0;
+    regen_now_ms(&raw);
+
+    u64 snapshot = raw;
+    RegenDate converted;
+    regen_breakdown(&converted, &snapshot);
+
+    RegenDate date = converted;
+    date.hour = 0;
+    date.minute = 0;
+    date.second = 0;
+    date.millisecond = 0;
+
+    s64 first = 0;
+    regen_date_to_ms(&first, &date);
+
+    s64 second = 0;
+    regen_parts_to_ms(&second, state->year, state->month, state->day, 0, 0, 0, 0);
+    const s64 initialSecond = second;
+
+    const u32 cur = regen_frame_counter();
+
+    u32 total = 0;
+    if (first < second ||
+        state->lastStamp > cur ||
+        state->counterA >= kRegenCounterACap) {
+        goto rebuild;
+    }
+    if (first == second && state->counterB >= kRegenCounterBCap) {
+        goto rebuild;
+    }
+    if (static_cast<u32>(cur - state->lastStamp) < kRegenStampDelta) {
+        return cur - state->lastStamp;
+    }
+
+    for (;;) {
+        if (first < second) {
+            goto finish;
+        }
+
+        {
+            u16 calendar[24];
+            regen_calendar_words(calendar, 0x18, second);
+            total = 0;
+            for (u32 i = 0; i < 24; ++i) {
+                total += calendar[i];
+            }
+        }
+
+        const u32 base = second == initialSecond ? state->accum & 0xffffu : 0;
+        const u32 bBase = second == initialSecond ? state->counterB : 0;
+        const u32 elapsed = total >= base ? total - base : 0;
+        const u32 steps = elapsed / kRegenAccumUnit;
+        u32 remainder = elapsed % kRegenAccumUnit;
+
+        u32 delta = steps & 0xffffu;
+        if (bBase + steps >= kRegenCounterBCap) {
+            delta = bBase < kRegenCounterBCap ? kRegenCounterBCap - bBase : 0;
+            remainder = 0;
+        }
+
+        if (static_cast<u32>(state->counterA) + delta >= kRegenCounterACap) {
+            delta = state->counterA < kRegenCounterACap
+                        ? kRegenCounterACap - state->counterA
+                        : 0;
+            remainder = 0;
+        }
+
+        if (first == second) {
+            state->counterB = static_cast<u16>(bBase + delta);
+            state->lastStamp = cur < remainder ? 0 : cur - remainder;
+            state->accum = total < remainder ? 0 : total - remainder;
+        }
+        state->counterA = static_cast<u16>(state->counterA + delta);
+
+        second = static_cast<s64>(static_cast<u64>(second) + kRegenMsPerDay);
+    }
+
+rebuild:
+    if (first != second) {
+        state->counterB = 0;
+    }
+    state->lastStamp = cur;
+    {
+        u16 calendar[24];
+        regen_calendar_words(calendar, 0x18, first);
+        total = 0;
+        for (u32 i = 0; i < 24; ++i) {
+            total += calendar[i];
+        }
+    }
+    state->accum = total;
+
+finish:
+    {
+        const u32 oldA = state->counterA;
+        state->year = static_cast<s16>(date.year & 0xffffu);
+        state->month = date.month;
+        state->day = date.day;
+        if (oldA > kRegenCounterACap) {
+            state->counterA = static_cast<u16>(kRegenCounterACap);
+        }
+        return oldA > kRegenCounterACap
+                   ? kRegenCounterACap
+                   : static_cast<u32>(static_cast<u8>(date.day));
+    }
 }
 
 // DECOMP_FUNC(0x001399a0, 68)
