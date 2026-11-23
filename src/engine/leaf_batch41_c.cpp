@@ -10411,40 +10411,164 @@ extern "C" void ui_func_00256ffc(void* self, void* output) {
 }
 
 // DECOMP_FUNC(0x001f6528, 464)
-// 107 ARM instructions through unconditional pop; 36 trailing data bytes.
-extern "C" __attribute__((naked)) void func_001f6528() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d47f0, 0xe1a07000, 0xed2d8b02, 0xe5905024\n"
-        ".word 0xe28540c0, 0xe59580b8, 0xe2986000, 0x1597601c\n"
-        ".word 0x13560000, 0x1a00000c, 0xe2840010, 0xed9f0a5e\n"
-        ".word 0xeddf0a5e, 0xed840a06, 0xed9f1a5d, 0xed840a07\n"
-        ".word 0xeddf1a5c, 0xed9f2a5c, 0xecc00a02, 0xe2840020\n"
-        ".word 0xecc01a02, 0xe5950028, 0xe5840004, 0xe1580006\n"
-        ".word 0xb3a00000, 0xb5c40003, 0xba00004d, 0xe1a03008\n"
-        ".word 0xe1a02006, 0xe2851024, 0xe1a00005, 0xeb01ccd2\n"
-        ".word 0xe1a09000, 0xe5970010, 0xeb018417, 0xe59f712c\n"
-        ".word 0xe2871c01, 0xe2870e11, 0xec910a04, 0xec800a04\n"
-        ".word 0xe1a00009, 0xeb018410, 0xed970a40, 0xedd70a44\n"
-        ".word 0xe2870c01, 0xee200a20, 0xed870a40, 0xed970a41\n"
-        ".word 0xedd70a45, 0xee200a20, 0xed870a41, 0xed970a42\n"
-        ".word 0xedd70a46, 0xee200a20, 0xed870a42, 0xedd70a47\n"
-        ".word 0xed970a43, 0xee200a20, 0xed870a43, 0xed9f0a34\n"
-        ".word 0xecd00a04, 0xee600a80, 0xee211a00, 0xee611a80\n"
-        ".word 0xee222a00, 0xeefc0ae0, 0xeebc0ac1, 0xee100a90\n"
-        ".word 0xeefc0ae1, 0xee101a10, 0xeebc0ac2, 0xe1a00c00\n"
-        ".word 0xe20130ff, 0xe1800803, 0xee102a90, 0xee101a10\n"
-        ".word 0xe20220ff, 0xe20110ff, 0xe1800402, 0xe1800001\n"
-        ".word 0xe6bf1f30, 0xe6bf3f30, 0xe1a02821, 0xe1a01423\n"
-        ".word 0xe6bf3f30, 0xe6bf0f30, 0xe1a03c23, 0xe5c43000\n"
-        ".word 0xe5c42001, 0xe5c41002, 0xe5c40003, 0xe1a02008\n"
-        ".word 0xe1a01006, 0xe2850034, 0xeb01cc30, 0xed9f8a11\n"
-        ".word 0xeddf0a11, 0xe1a02008, 0xe1a01006, 0xee400a08\n"
-        ".word 0xe2850060, 0xedc40a03, 0xeb01cc28, 0xee200a08\n"
-        ".word 0xed840a02, 0xecbd8b02, 0xe8bd87f0, 0x00000000\n"
-        ".word 0x43480000, 0x42f00000, 0x43c80000, 0x43700000\n"
-        ".word 0x004ea81c, 0x437f0000, 0x3c23d70a, 0x3f800000\n"
-    );
+//
+// Recovered contract (ARM 0x001F6528..0x001F66D4; the last 36 bytes are the
+// literal pool):
+//   * `owner` (r0) supplies `state = owner->state_24`; the display record is
+//     `state + 0xC0`.  `count = state->count_b8` and the frame value is
+//     `owner->frame_1c`, but the frame is only read when `count != 0`; a zero
+//     count keeps it at zero and takes the default-initialisation branch.
+//   * That branch runs when `count == 0 || owner->frame_1c == 0`.  It writes
+//     the four defaults 200.0f, 120.0f, 400.0f, 240.0f to display +0x10,
+//     +0x14, +0x20 and +0x24, clears the floats at +0x18/+0x1C, and copies
+//     `state->value_28` to display +4.
+//   * A signed `count < frame` test then zeroes display byte +3 and returns.
+//   * Normal path: 0x002698F4(state, state+0x24, frame, count) returns a packed
+//     colour.  0x00257614 converts `owner->color_10` into four normalized
+//     floats at 0x004EA91C; those are copied to 0x004EA92C, the sample colour
+//     is converted into 0x004EA91C by a second 0x00257614 call, and the two
+//     vectors are multiplied in place.  Each product is scaled by 255.0f,
+//     truncated to u32, and the low bytes are written in reverse order to
+//     display +0..+3 (display[0] = component3, display[3] = component0).
+//   * Finally 0x00269768 samples `state+0x34` and `state+0x60`: the first
+//     result is scaled by 0.01f, biased by 1.0f and stored at display +0xC;
+//     the second result is scaled by 0.01f and stored at display +8.  All
+//     calls are direct; there are no indirect calls, stack arguments, loops,
+//     or callee-saved results.  The original only additionally saves d8
+//     because it keeps the 0.01f constant in s16.
+
+extern "C" u32 func_002698f4(void* source, void* palette, s32 frame,
+                             s32 count);
+extern "C" void func_00257614(u32 color);
+extern "C" f32 func_00269768(void* curve, s32 frame, s32 count);
+
+namespace func_1f6528 {
+
+// Literal pool at 0x001F66D4..0x001F66F4.
+constexpr u32 kColorBlockAddress = 0x004EA81C;  // 0x001F66E8 -> 0x001F65B4
+constexpr u32 kColorCurrentOffset = 0x100;      // -> 0x004EA91C
+constexpr u32 kColorPreviousOffset = 0x110;     // -> 0x004EA92C
+
+constexpr f32 kInitValue10 = 200.0f;   // 0x43480000
+constexpr f32 kInitValue14 = 120.0f;   // 0x42F00000
+constexpr f32 kInitValue20 = 400.0f;   // 0x43C80000
+constexpr f32 kInitValue24 = 240.0f;   // 0x43700000
+constexpr f32 kColorScale = 255.0f;    // 0x437F0000
+constexpr f32 kCurveStep = 0.01f;      // 0x3C23D70A
+constexpr f32 kCurveBias = 1.0f;       // 0x3F800000
+
+struct __attribute__((packed, may_alias)) Display {
+    u8 color_00[4];  // +0x00: packed bytes [component3, 2, 1, 0]
+    u32 value_04;    // +0x04: copied from state->value_28 on init
+    f32 value_08;    // +0x08: second 0x00269768 sample * 0.01f
+    f32 value_0c;    // +0x0C: first 0x00269768 sample * 0.01f + 1.0f
+    f32 value_10;    // +0x10: default 200.0f
+    f32 value_14;    // +0x14: default 120.0f
+    f32 value_18;    // +0x18: cleared on init
+    f32 value_1c;    // +0x1C: cleared on init
+    f32 value_20;    // +0x20: default 400.0f
+    f32 value_24;    // +0x24: default 240.0f
+};
+
+struct __attribute__((packed, may_alias)) State {
+    u8 pad_00[0x24];
+    u8 palette_24[0x04];  // +0x24: first word handed to 0x002698F4
+    u32 value_28;         // +0x28: copied to display +4 on init
+    u8 pad_2c[0x08];
+    u8 curve_34[0x2C];    // +0x34: first 0x00269768 sampling record
+    u8 curve_60[0x58];    // +0x60: second 0x00269768 sampling record
+    s32 count_b8;         // +0xB8: signed record count
+    u8 pad_bc[0x04];
+    Display display_c0;   // +0xC0
+};
+
+struct __attribute__((packed, may_alias)) Owner {
+    u8 pad_00[0x10];
+    u32 color_10;     // +0x10: packed colour converted by 0x00257614
+    u8 pad_14[0x08];
+    s32 frame_1c;     // +0x1C: read only when count != 0
+    u8 pad_20[0x04];
+    State* state_24;  // +0x24
+};
+
+}  // namespace func_1f6528
+
+extern "C" void func_001f6528(func_1f6528::Owner* owner) {
+    using namespace func_1f6528;
+
+    State* const state = owner->state_24;
+    Display* const display = &state->display_c0;
+
+    // 0x001F653C..0x001F654C: `adds`/`ldrne`/`cmpne`/`bne`.  The frame word is
+    // only loaded when count is non-zero.
+    const s32 count = state->count_b8;
+    s32 frame = 0;
+    bool initialize = true;
+    if (count != 0) {
+        frame = owner->frame_1c;
+        initialize = frame == 0;
+    }
+
+    // 0x001F6550..0x001F6580: default block, only on the initialise path.
+    if (initialize) {
+        display->value_18 = 0.0f;
+        display->value_1c = 0.0f;
+        display->value_10 = kInitValue10;
+        display->value_14 = kInitValue14;
+        display->value_20 = kInitValue20;
+        display->value_24 = kInitValue24;
+        display->value_04 = state->value_28;
+    }
+
+    // 0x001F6584..0x001F6590: signed `count < frame`, `blt` early exit.
+    if (count < frame) {
+        display->color_00[3] = 0;
+        return;
+    }
+
+    // 0x001F6594..0x001F65A8: packed sample colour.
+    const u32 sampled = func_002698f4(state, state->palette_24, frame, count);
+
+    // 0x001F65AC..0x001F65E0: owner colour -> shared block; save it.
+    func_00257614(owner->color_10);
+
+    f32* const current = reinterpret_cast<f32*>(
+        kColorBlockAddress + kColorCurrentOffset);
+    f32* const previous = reinterpret_cast<f32*>(
+        kColorBlockAddress + kColorPreviousOffset);
+    previous[0] = current[0];
+    previous[1] = current[1];
+    previous[2] = current[2];
+    previous[3] = current[3];
+
+    // 0x001F65C8..0x001F6610: sample colour -> block, then componentwise
+    // multiply by the saved owner colour vector.
+    func_00257614(sampled);
+
+    current[0] = current[0] * previous[0];
+    current[1] = current[1] * previous[1];
+    current[2] = current[2] * previous[2];
+    current[3] = current[3] * previous[3];
+
+    // 0x001F6614..0x001F6690: scale by 255, truncate to u32, write bytes in
+    // reverse component order.
+    const u32 scaled0 = static_cast<u32>(current[0] * kColorScale);
+    const u32 scaled1 = static_cast<u32>(current[1] * kColorScale);
+    const u32 scaled2 = static_cast<u32>(current[2] * kColorScale);
+    const u32 scaled3 = static_cast<u32>(current[3] * kColorScale);
+
+    display->color_00[0] = static_cast<u8>(scaled3);  // 0x001F6684
+    display->color_00[1] = static_cast<u8>(scaled2);  // 0x001F6688
+    display->color_00[2] = static_cast<u8>(scaled1);  // 0x001F668C
+    display->color_00[3] = static_cast<u8>(scaled0);  // 0x001F6690
+
+    // 0x001F6694..0x001F66C8: two curve samples scaled by 0.01f.  The first
+    // result (with the 1.0f bias) is stored before the second call, as in the
+    // original.
+    display->value_0c =
+        func_00269768(state->curve_34, frame, count) * kCurveStep + kCurveBias;
+    display->value_08 =
+        func_00269768(state->curve_60, frame, count) * kCurveStep;
 }
 
 // DECOMP_FUNC(0x00290a68, 464)
