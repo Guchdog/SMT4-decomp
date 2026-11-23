@@ -2786,7 +2786,7 @@ address,size,status,category,name,src_file
 0x0020cea8,44,matching,script_vm,script_vm_func_0020cea8,src/engine/leaf_batch26_b.cpp
 0x0020ced4,44,matching,script_vm,script_vm_func_0020ced4,src/engine/leaf_batch20_b.cpp
 0x0020cf00,36,matching,script_vm,script_vm_func_0020cf00,src/engine/leaf_batch20_b.cpp
-0x0020cf24,1496,matching,engine,engine_func_0020cf24,src/engine/leaf_batch34_c.cpp
+0x0020cf24,1496,non_matching,engine,engine_func_0020cf24,src/engine/leaf_batch34_c.cpp
 0x0020d4fc,52,matching,engine,engine_func_0020d4fc,src/engine/leaf_batch39_b.cpp
 0x0020d530,28,matching,script_vm,script_vm_func_0020d530,src/engine/leaf_batch39_a.cpp
 0x0020d54c,276,matching,script_vm,script_vm_func_0020d54c,src/engine/leaf_batch43_c.cpp

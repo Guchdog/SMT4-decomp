@@ -9113,385 +9113,160 @@ extern "C" __attribute__((naked)) void script_vm_func_00206b40() {
     );
 }
 
-// DECOMP_FUNC(0x0020cf24, 1496)
-extern "C" __attribute__((naked)) void engine_func_0020cf24() {
-    asm volatile(
-        "push {r4, r5, r6, lr}\n"
-        "mov r1, #0\n"
-        "mov r0, #0xa\n"
-        "bl AsdTMTexTable_func_002c5b04\n"
-        "mov r1, #0x1f\n"
-        "mov r0, #0xa\n"
-        "bl engine_func_002c5ab8\n"
-        "mov r1, #0x1f\n"
-        "mov r0, #0xa\n"
-        "bl script_vm_func_002c1de4\n"
-        ".word 0xe59f5574\n"
-        "mov r4, #1\n"
-        "ldr r1, [r5, #4]\n"
-        "str r0, [r1, #0x88]\n"
-        "str r4, [r0, #0x3c]\n"
-        "ldr r0, [r1, #0x88]\n"
-        "mov r1, #0x22\n"
-        "str r4, [r0, #0x40]\n"
-        "mov r0, #0xa\n"
-        "bl engine_func_002c5ab8\n"
-        "mov r1, #0x22\n"
-        "mov r0, #0xa\n"
-        "bl script_vm_func_002c1de4\n"
-        "ldr r1, [r5, #4]\n"
-        "str r0, [r1, #0x78]\n"
-        "str r4, [r0, #0x3c]\n"
-        "ldr r0, [r1, #0x78]\n"
-        "mov r1, #0x21\n"
-        "str r4, [r0, #0x40]\n"
-        "mov r0, #0xa\n"
-        "bl engine_func_002c5ab8\n"
-        "mov r1, #0x21\n"
-        "mov r0, #0xa\n"
-        "bl script_vm_func_002c1de4\n"
-        "ldr r1, [r5, #4]\n"
-        "str r0, [r1, #0x80]\n"
-        "str r4, [r0, #0x3c]\n"
-        "ldr r0, [r1, #0x80]\n"
-        "mov r1, #0x23\n"
-        "str r4, [r0, #0x40]\n"
-        "mov r0, #0xa\n"
-        "bl engine_func_002c5ab8\n"
-        "mov r1, #0x23\n"
-        "mov r0, #0xa\n"
-        "bl script_vm_func_002c1de4\n"
-        "ldr r1, [r5, #4]\n"
-        "str r0, [r1, #0x7c]\n"
-        "str r4, [r0, #0x3c]\n"
-        "ldr r0, [r1, #0x7c]\n"
-        "mov r1, #0x24\n"
-        "str r4, [r0, #0x40]\n"
-        "mov r0, #0xa\n"
-        "bl engine_func_002c5ab8\n"
-        "mov r1, #0x24\n"
-        "mov r0, #0xa\n"
-        "bl script_vm_func_002c1de4\n"
-        "ldr r1, [r5, #4]\n"
-        "str r0, [r1, #0x84]\n"
-        "str r4, [r0, #0x3c]\n"
-        "ldr r0, [r1, #0x84]\n"
-        "mov r1, #0x19\n"
-        "str r4, [r0, #0x40]\n"
-        "mov r0, #0xa\n"
-        "bl engine_func_002c5ab8\n"
-        "mov r1, #0x19\n"
-        "mov r0, #0xa\n"
-        "bl script_vm_func_002c1de4\n"
-        "ldr r1, [r5, #4]\n"
-        "str r0, [r1, #0x58]\n"
-        "str r4, [r0, #0x3c]\n"
-        "ldr r0, [r1, #0x58]\n"
-        "mov r1, #0x1c\n"
-        "str r4, [r0, #0x40]\n"
-        "mov r0, #0xa\n"
-        "bl engine_func_002c5ab8\n"
-        "mov r1, #0x1c\n"
-        "mov r0, #0xa\n"
-        "bl script_vm_func_002c1de4\n"
-        "ldr r1, [r5, #4]\n"
-        "str r0, [r1, #0x6c]\n"
-        "mov r1, #0x1e\n"
-        "mov r0, #0xa\n"
-        "bl engine_func_002c5ab8\n"
-        "mov r1, #0x1e\n"
-        "mov r0, #0xa\n"
-        "bl script_vm_func_002c1de4\n"
-        "ldr r1, [r5, #4]\n"
-        "str r0, [r1, #0x70]\n"
-        "mov r1, #0x1d\n"
-        "mov r0, #0xa\n"
-        "bl engine_func_002c5ab8\n"
-        "mov r1, #0x1d\n"
-        "mov r0, #0xa\n"
-        "bl script_vm_func_002c1de4\n"
-        "ldr r1, [r5, #4]\n"
-        "str r0, [r1, #0x74]\n"
-        "mov r1, #0\n"
-        "mov r0, #0xa\n"
-        "bl engine_func_002c5ab8\n"
-        "mov r1, #1\n"
-        "mov r0, #0xa\n"
-        "bl engine_func_002c5ab8\n"
-        "mov r1, #0xe\n"
-        "mov r0, #0xa\n"
-        "bl engine_func_002c5ab8\n"
-        "mov r1, #0xe\n"
-        "mov r0, #0xa\n"
-        "bl script_vm_func_002c1de4\n"
-        "ldr r1, [r5, #4]\n"
-        "str r0, [r1]\n"
-        "str r4, [r0, #0x3c]\n"
-        "ldr r0, [r1]\n"
-        "mov r1, #0x11\n"
-        "str r4, [r0, #0x40]\n"
-        "mov r0, #0xa\n"
-        "bl engine_func_002c5ab8\n"
-        "mov r1, #0x11\n"
-        "mov r0, #0xa\n"
-        "bl script_vm_func_002c1de4\n"
-        "ldr r1, [r5, #4]\n"
-        "str r0, [r1, #4]\n"
-        "str r4, [r0, #0x3c]\n"
-        "ldr r0, [r1, #4]\n"
-        "mov r1, #0xf\n"
-        "str r4, [r0, #0x40]\n"
-        "mov r0, #0xa\n"
-        "bl engine_func_002c5ab8\n"
-        "mov r1, #0xf\n"
-        "mov r0, #0xa\n"
-        "bl script_vm_func_002c1de4\n"
-        "ldr r1, [r5, #4]\n"
-        "str r0, [r1, #8]\n"
-        "str r4, [r0, #0x3c]\n"
-        "ldr r0, [r1, #8]\n"
-        "mov r1, #0x10\n"
-        "str r4, [r0, #0x40]\n"
-        "mov r0, #0xa\n"
-        "bl engine_func_002c5ab8\n"
-        "mov r1, #0x10\n"
-        "mov r0, #0xa\n"
-        "bl script_vm_func_002c1de4\n"
-        "ldr r1, [r5, #4]\n"
-        "str r0, [r1, #0xc]\n"
-        "str r4, [r0, #0x3c]\n"
-        "ldr r0, [r1, #0xc]\n"
-        "mov r1, #0xd\n"
-        "str r4, [r0, #0x40]\n"
-        "mov r0, #0xa\n"
-        "bl engine_func_002c5ab8\n"
-        "mov r1, #0xd\n"
-        "mov r0, #0xa\n"
-        "bl script_vm_func_002c1de4\n"
-        "ldr r1, [r5, #4]\n"
-        "str r0, [r1, #0x10]\n"
-        "str r4, [r0, #0x3c]\n"
-        "ldr r0, [r1, #0x10]\n"
-        "mov r1, #0xc\n"
-        "str r4, [r0, #0x40]\n"
-        "mov r0, #0xa\n"
-        "bl engine_func_002c5ab8\n"
-        "mov r1, #0xc\n"
-        "mov r0, #0xa\n"
-        "bl script_vm_func_002c1de4\n"
-        "ldr r1, [r5, #4]\n"
-        "str r0, [r1, #0x14]\n"
-        "str r4, [r0, #0x3c]\n"
-        "ldr r0, [r1, #0x14]\n"
-        "mov r1, #0x16\n"
-        "str r4, [r0, #0x40]\n"
-        "mov r0, #0xa\n"
-        "bl engine_func_002c5ab8\n"
-        "mov r1, #0x16\n"
-        "mov r0, #0xa\n"
-        "bl script_vm_func_002c1de4\n"
-        "ldr r1, [r5, #4]\n"
-        "str r0, [r1, #0x34]\n"
-        "str r4, [r0, #0x3c]\n"
-        "ldr r0, [r1, #0x34]\n"
-        "mov r1, #0x13\n"
-        "str r4, [r0, #0x40]\n"
-        "mov r0, #0xa\n"
-        "bl engine_func_002c5ab8\n"
-        "mov r1, #0x13\n"
-        "mov r0, #0xa\n"
-        "bl script_vm_func_002c1de4\n"
-        "ldr r1, [r5, #4]\n"
-        "str r0, [r1, #0x38]\n"
-        "str r4, [r0, #0x3c]\n"
-        "ldr r0, [r1, #0x38]\n"
-        "mov r1, #0x15\n"
-        "str r4, [r0, #0x40]\n"
-        "mov r0, #0xa\n"
-        "bl engine_func_002c5ab8\n"
-        "mov r1, #0x15\n"
-        "mov r0, #0xa\n"
-        "bl script_vm_func_002c1de4\n"
-        "ldr r1, [r5, #4]\n"
-        "str r0, [r1, #0x30]\n"
-        "str r4, [r0, #0x3c]\n"
-        "ldr r0, [r1, #0x30]\n"
-        "mov r1, #0x12\n"
-        "str r4, [r0, #0x40]\n"
-        "mov r0, #0xa\n"
-        "bl engine_func_002c5ab8\n"
-        "mov r1, #0x12\n"
-        "mov r0, #0xa\n"
-        "bl script_vm_func_002c1de4\n"
-        "ldr r1, [r5, #4]\n"
-        "str r0, [r1, #0x3c]\n"
-        "str r4, [r0, #0x3c]\n"
-        "ldr r0, [r1, #0x3c]\n"
-        "mov r1, #0x14\n"
-        "str r4, [r0, #0x40]\n"
-        "mov r0, #0xa\n"
-        "bl engine_func_002c5ab8\n"
-        "mov r1, #0x14\n"
-        "mov r0, #0xa\n"
-        "bl script_vm_func_002c1de4\n"
-        "ldr r1, [r5, #4]\n"
-        "str r0, [r1, #0x40]\n"
-        "str r4, [r0, #0x3c]\n"
-        "ldr r0, [r1, #0x40]\n"
-        "mov r1, #0x26\n"
-        "str r4, [r0, #0x40]\n"
-        "mov r0, #0xa\n"
-        "bl engine_func_002c5ab8\n"
-        "mov r1, #0x26\n"
-        "mov r0, #0xa\n"
-        "bl script_vm_func_002c1de4\n"
-        "ldr r1, [r5, #4]\n"
-        "str r0, [r1, #0x44]\n"
-        "str r4, [r0, #0x3c]\n"
-        "ldr r0, [r1, #0x44]\n"
-        "mov r1, #0x1b\n"
-        "str r4, [r0, #0x40]\n"
-        "mov r0, #0xa\n"
-        "bl engine_func_002c5ab8\n"
-        "mov r1, #0x1b\n"
-        "mov r0, #0xa\n"
-        "bl script_vm_func_002c1de4\n"
-        "ldr r1, [r5, #4]\n"
-        "str r0, [r1, #0x48]\n"
-        "str r4, [r0, #0x3c]\n"
-        "ldr r0, [r1, #0x48]\n"
-        "mov r1, #8\n"
-        "str r4, [r0, #0x40]\n"
-        "mov r0, #0xa\n"
-        "bl engine_func_002c5ab8\n"
-        "mov r1, #8\n"
-        "mov r0, #0xa\n"
-        "bl script_vm_func_002c1de4\n"
-        "ldr r1, [r5, #4]\n"
-        "str r0, [r1, #0x18]\n"
-        "mov r1, #9\n"
-        "mov r0, #0xa\n"
-        "bl engine_func_002c5ab8\n"
-        "mov r1, #9\n"
-        "mov r0, #0xa\n"
-        "bl script_vm_func_002c1de4\n"
-        "ldr r1, [r5, #4]\n"
-        "str r0, [r1, #0x24]\n"
-        "mov r1, #0xb\n"
-        "mov r0, #0xa\n"
-        "bl engine_func_002c5ab8\n"
-        "mov r1, #0xb\n"
-        "mov r0, #0xa\n"
-        "bl script_vm_func_002c1de4\n"
-        "ldr r1, [r5, #4]\n"
-        "str r0, [r1, #0x28]\n"
-        "mov r1, #6\n"
-        "mov r0, #0xa\n"
-        "bl engine_func_002c5ab8\n"
-        "mov r1, #6\n"
-        "mov r0, #0xa\n"
-        "bl script_vm_func_002c1de4\n"
-        "ldr r1, [r5, #4]\n"
-        "str r0, [r1, #0x2c]\n"
-        "mov r1, #7\n"
-        "mov r0, #0xa\n"
-        "bl engine_func_002c5ab8\n"
-        "mov r1, #7\n"
-        "mov r0, #0xa\n"
-        "bl script_vm_func_002c1de4\n"
-        "ldr r1, [r5, #4]\n"
-        "str r0, [r1, #0x1c]\n"
-        "mov r1, #0xa\n"
-        "mov r0, r1\n"
-        "bl engine_func_002c5ab8\n"
-        "mov r1, #0xa\n"
-        "mov r0, r1\n"
-        "bl script_vm_func_002c1de4\n"
-        "ldr r1, [r5, #4]\n"
-        "str r0, [r1, #0x20]\n"
-        "mov r1, #2\n"
-        "mov r0, #0xa\n"
-        "bl engine_func_002c5ab8\n"
-        "mov r1, #2\n"
-        "mov r0, #0xa\n"
-        "bl script_vm_func_002c1de4\n"
-        "ldr r1, [r5, #4]\n"
-        "str r0, [r1, #0x60]\n"
-        "mov r1, #0x17\n"
-        "mov r0, #0xa\n"
-        "bl engine_func_002c5ab8\n"
-        "mov r1, #0x17\n"
-        "mov r0, #0xa\n"
-        "bl script_vm_func_002c1de4\n"
-        "ldr r1, [r5, #4]\n"
-        "str r0, [r1, #0x4c]\n"
-        "mov r1, #5\n"
-        "mov r0, #0xa\n"
-        "bl engine_func_002c5ab8\n"
-        "mov r1, #5\n"
-        "mov r0, #0xa\n"
-        "bl script_vm_func_002c1de4\n"
-        "ldr r1, [r5, #4]\n"
-        "str r0, [r1, #0x68]\n"
-        "str r4, [r0, #0x3c]\n"
-        "ldr r0, [r1, #0x68]\n"
-        "mov r1, #0x18\n"
-        "str r4, [r0, #0x40]\n"
-        "mov r0, #0xa\n"
-        "bl engine_func_002c5ab8\n"
-        "mov r1, #0x18\n"
-        "mov r0, #0xa\n"
-        "bl script_vm_func_002c1de4\n"
-        "ldr r1, [r5, #4]\n"
-        "str r0, [r1, #0x50]\n"
-        "str r4, [r0, #0x3c]\n"
-        "ldr r0, [r1, #0x50]\n"
-        "mov r1, #0x1a\n"
-        "str r4, [r0, #0x40]\n"
-        "mov r0, #0xa\n"
-        "bl engine_func_002c5ab8\n"
-        "mov r1, #0x1a\n"
-        "mov r0, #0xa\n"
-        "bl script_vm_func_002c1de4\n"
-        "ldr r1, [r5, #4]\n"
-        "str r0, [r1, #0x54]\n"
-        "str r4, [r0, #0x3c]\n"
-        "ldr r0, [r1, #0x54]\n"
-        "mov r1, #0\n"
-        "str r4, [r0, #0x40]\n"
-        "mov r0, #0xa\n"
-        "bl script_vm_func_002c1de4\n"
-        "ldr r1, [r5, #4]\n"
-        "str r0, [r1, #0x64]\n"
-        "mov r1, #1\n"
-        "mov r0, #0xa\n"
-        "bl script_vm_func_002c1de4\n"
-        "ldr r1, [r5, #4]\n"
-        "str r0, [r1, #0x5c]\n"
-        "ldr r0, [r1, #0x64]\n"
-        "str r4, [r0, #0x3c]\n"
-        "ldr r0, [r1, #0x64]\n"
-        "str r4, [r0, #0x40]\n"
-        "ldr r0, [r1, #0x5c]\n"
-        "str r4, [r0, #0x3c]\n"
-        "ldr r0, [r1, #0x5c]\n"
-        "str r4, [r0, #0x40]\n"
-        "pop {r4, r5, r6, pc}\n"
-        ".word 0x00447a78\n"
-        ".word 0xe59f0024\n"
-        ".word 0xe5900000\n"
-        ".word 0xe5d01018\n"
-        ".word 0xe3510000\n"
-        ".word 0x0a000004\n"
-        ".word 0xe3a01000\n"
-        ".word 0xe5c01018\n"
-        ".word 0xe580101c\n"
-        ".word 0xe3a00001\n"
-        ".word 0xea022254\n"
-        ".word 0xe12fff1e\n"
-        ".word 0x00447a78\n"
-    );
+// ---------------------------------------------------------------------------
+// 0x0020CF24 -- publish the fixed title-screen widget table.
+//
+// A single AsdRow group (key 0x0A) supplies every widget.  For each entry the
+// original selects the row with engine_func_002c5ab8(0x0A, sub), fetches that
+// row's widget pointer through 0x002C1DE4(0x0A, sub), publishes it in the table
+// pointed to by *(u32*)0x00447A7C, and, for the entries whose +0x3C/+0x40 flag
+// pair is set, writes 1 to both words.  There is no branch or loop: the whole
+// sequence is a straight-line table build.  The table base and each published
+// slot are re-read where the ARM reads them, so a helper that retargets the
+// table is observed.
+// ---------------------------------------------------------------------------
+
+// Precise prototypes for the three direct callees.  The `__asm__` labels keep
+// the original symbol names because the top-of-file prototypes are
+// unprototyped `void` forms shared with other naked spans.
+extern "C" void* AsdTextureTable_Load(u32 group, u32 flags)
+    __asm__("AsdTMTexTable_func_002c5b04");
+extern "C" void AsdRow_LoadNow(u32 group, u32 sub)
+    __asm__("engine_func_002c5ab8");
+extern "C" void* AsdRow_GetWidget(u32 group, u32 sub)
+    __asm__("script_vm_func_002c1de4");
+
+namespace title_table_20cf24 {
+
+constexpr u32 kGroup = 0x0A;               // `mov r0,#0xa` before every call
+constexpr u32 kNodeTableSlot = 0x00447A7C; // `ldr r5,[pc,#0x574]` -> 0x00447A78,
+                                           // table base is the word at [r5+4]
+constexpr u32 kWidgetEnableOffset = 0x3C;  // `str r4,[r0,#0x3c]`
+constexpr u32 kWidgetEnabledOffset = 0x40; // `str r4,[r0,#0x40]`
+constexpr u32 kLastSlot = 0x5C;
+constexpr u32 kEnabled = 1;                // `mov r4,#1`
+
+inline u8* NodeTable() {
+    return reinterpret_cast<u8*>(*reinterpret_cast<u32*>(kNodeTableSlot));
 }
+
+inline void Publish(u32 offset, void* node) {
+    *reinterpret_cast<void**>(NodeTable() + offset) = node;
+}
+
+// The original stores through the widget pointer unconditionally (a null widget
+// faults at +0x3C); the volatile access keeps that unconditional store without
+// relying on undefined behaviour for a null pointer.
+inline void StoreWidgetWord(void* node, u32 offset, u32 value) {
+    *reinterpret_cast<volatile u32*>(static_cast<u8*>(node) + offset) = value;
+}
+
+// The published slot is loaded twice: the first store uses the fresh widget
+// pointer, the second one uses the word re-read from the table (exactly the
+// `ldr r0,[r1,#off]` at 0x0020CF60 / 0x0020CF8C / ... pattern).
+inline void* EnableWidget(u32 offset) {
+    u8* table = NodeTable();
+    void* node = *reinterpret_cast<void**>(table + offset);
+    StoreWidgetWord(node, kWidgetEnableOffset, kEnabled);
+    node = *reinterpret_cast<void**>(table + offset);
+    StoreWidgetWord(node, kWidgetEnabledOffset, kEnabled);
+    return node;
+}
+
+// One table entry: select the row, fetch its widget, publish it, and enable it
+// when the entry carries the +0x3C/+0x40 pair.
+inline void* RegisterNode(u32 sub, u32 offset, bool enable) {
+    AsdRow_LoadNow(kGroup, sub);
+    void* node = AsdRow_GetWidget(kGroup, sub);
+    Publish(offset, node);
+    if (enable) {
+        node = EnableWidget(offset);
+    }
+    return node;
+}
+
+}  // namespace title_table_20cf24
+
+extern "C" void* engine_func_0020cf24() {
+    using namespace title_table_20cf24;
+
+    // 0x0020CF28..0x0020CF30: load the group's texture table once.
+    AsdTextureTable_Load(kGroup, 0);
+
+    // 0x0020CF34..0x0020D0A0: the first nine entries.
+    RegisterNode(0x1F, 0x88, true);
+    RegisterNode(0x22, 0x78, true);
+    RegisterNode(0x21, 0x80, true);
+    RegisterNode(0x23, 0x7C, true);
+    RegisterNode(0x24, 0x84, true);
+    RegisterNode(0x19, 0x58, true);
+    RegisterNode(0x1C, 0x6C, false);
+    RegisterNode(0x1E, 0x70, false);
+    RegisterNode(0x1D, 0x74, false);
+
+    // 0x0020D0A4..0x0020D0D8: before row 0x0E is fetched the original selects
+    // sub-rows 0 and 1 as well (three consecutive row loads, one fetch).
+    AsdRow_LoadNow(kGroup, 0x00);
+    AsdRow_LoadNow(kGroup, 0x01);
+    RegisterNode(0x0E, 0x00, true);
+
+    // 0x0020D0DC..0x0020D2FC: entries 0x11..0x1B.
+    RegisterNode(0x11, 0x04, true);
+    RegisterNode(0x0F, 0x08, true);
+    RegisterNode(0x10, 0x0C, true);
+    RegisterNode(0x0D, 0x10, true);
+    RegisterNode(0x0C, 0x14, true);
+    RegisterNode(0x16, 0x34, true);
+    RegisterNode(0x13, 0x38, true);
+    RegisterNode(0x15, 0x30, true);
+    RegisterNode(0x12, 0x3C, true);
+    RegisterNode(0x14, 0x40, true);
+    RegisterNode(0x26, 0x44, true);
+    RegisterNode(0x1B, 0x48, true);
+
+    // 0x0020D300..0x0020D3F4: entries that are published without the flag pair.
+    RegisterNode(0x08, 0x18, false);
+    RegisterNode(0x09, 0x24, false);
+    RegisterNode(0x0B, 0x28, false);
+    RegisterNode(0x06, 0x2C, false);
+    RegisterNode(0x07, 0x1C, false);
+    RegisterNode(0x0A, 0x20, false);
+    RegisterNode(0x02, 0x60, false);
+    RegisterNode(0x17, 0x4C, false);
+
+    // 0x0020D3F8..0x0020D47C: the last three enabled entries.
+    RegisterNode(0x05, 0x68, true);
+    RegisterNode(0x18, 0x50, true);
+    RegisterNode(0x1A, 0x54, true);
+
+    // 0x0020D484..0x0020D4C0: rows 0 and 1 are published without a preceding
+    // row select, then both are enabled in the order 0x64, 0x5C.
+    Publish(0x64, AsdRow_GetWidget(kGroup, 0x00));
+    Publish(0x5C, AsdRow_GetWidget(kGroup, 0x01));
+    EnableWidget(0x64);
+    return EnableWidget(kLastSlot);
+}
+
+// The 1496-byte ledger span also covers an unreferenced 44-byte leaf at
+// 0x0020D4CC (it has no ledger row of its own): if the global object pointed to
+// by 0x00447A78 has its +0x18 byte set, clear it and +0x1C, then tail-call
+// 0x00295E48(1).  It is kept verbatim so the span still emits the same code; it
+// is not part of engine_func_0020cf24's contract.
+asm(".text\n"
+    ".balign 4\n"
+    ".word 0xe59f0024\n"  // 0x0020D4CC: ldr r0,[pc,#0x24]  (-> 0x00447A78)
+    ".word 0xe5900000\n"  // 0x0020D4D0: ldr r0,[r0]
+    ".word 0xe5d01018\n"  // 0x0020D4D4: ldrb r1,[r0,#0x18]
+    ".word 0xe3510000\n"  // 0x0020D4D8: cmp r1,#0
+    ".word 0x0a000004\n"  // 0x0020D4DC: beq 0x0020D4F4
+    ".word 0xe3a01000\n"  // 0x0020D4E0: mov r1,#0
+    ".word 0xe5c01018\n"  // 0x0020D4E4: strb r1,[r0,#0x18]
+    ".word 0xe580101c\n"  // 0x0020D4E8: str r1,[r0,#0x1c]
+    ".word 0xe3a00001\n"  // 0x0020D4EC: mov r0,#1
+    ".word 0xea022254\n"  // 0x0020D4F0: b 0x00295E48
+    ".word 0xe12fff1e\n"  // 0x0020D4F4: bx lr
+    ".word 0x00447a78\n"  // 0x0020D4F8: literal
+    );
 
 // DECOMP_FUNC(0x00214854, 272)
 extern "C" __attribute__((naked)) void engine_func_00214854() {
