@@ -8053,7 +8053,7 @@ address,size,status,category,name,src_file
 0x003525b8,796,non_matching,engine,engine_func_003525b8,src/engine/leaf_batch45_b.cpp
 0x003528d4,124,matching,engine,engine_func_003528d4,src/engine/leaf_batch20_c.cpp
 0x00352950,36,matching,engine,engine_func_00352950,src/engine/leaf_batch10_b.cpp
-0x00352974,444,matching,ui,ui_func_00352974,src/engine/leaf_batch45_b.cpp
+0x00352974,444,non_matching,ui,ui_func_00352974,src/engine/leaf_batch45_b.cpp
 0x00352b30,616,matching,ui,ui_func_00352b30,src/engine/leaf_batch36_b.cpp
 0x00352d98,740,non_matching,engine,engine_func_00352d98,src/engine/leaf_batch45_b.cpp
 0x0035307c,124,matching,engine,engine_func_0035307c,src/engine/leaf_batch20_c.cpp

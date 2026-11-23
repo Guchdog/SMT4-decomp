@@ -525,66 +525,110 @@ extern "C" void ui_func_0034bb5c(u8* self) {
 }
 
 // DECOMP_FUNC(0x00352974, 444)
-extern "C" __attribute__((naked)) void ui_func_00352974() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x41f0, 0xe92d, 0x6001, 0xe1a0\n"
-        ".hword 0xd0b8, 0xe24d, 0x4000, 0xe1a0\n"
-        ".hword 0x00d0, 0xe1c6, 0x5002, 0xe1a0\n"
-        ".hword 0x7000, 0xe3a0, 0x0001, 0xe190\n"
-        ".hword 0x0004, 0x1a00, 0x1178, 0xe59f\n"
-        ".hword 0x0004, 0xe1a0, 0xa0f6, 0xebfd\n"
-        ".hword 0xd0b8, 0xe28d, 0x81f0, 0xe8bd\n"
-        ".hword 0x8008, 0xe28d, 0x2f59, 0xe28f\n"
-        ".hword 0x1030, 0xe3a0, 0x0078, 0xe28d\n"
-        ".hword 0x9e4a, 0xebfb, 0x2030, 0xe3a0\n"
-        ".hword 0x1078, 0xe28d, 0x0008, 0xe1a0\n"
-        ".hword 0x685a, 0xfafd, 0x7074, 0xe58d\n"
-        ".hword 0x8000, 0xe596, 0x6004, 0xe596\n"
-        ".hword 0x0008, 0xe28d, 0x1004, 0xe3a0\n"
-        ".hword 0x7074, 0xe28d, 0x006c, 0xe58d\n"
-        ".hword 0x1068, 0xe58d, 0x8c8d, 0xfafd\n"
-        ".hword 0x0001, 0xe280, 0x3068, 0xe28d\n"
-        ".hword 0x0080, 0xe1a0, 0x0070, 0xe58d\n"
-        ".hword 0x0001, 0xe3a0, 0x0000, 0xe58d\n"
-        ".hword 0x2006, 0xe1a0, 0x1008, 0xe1a0\n"
-        ".hword 0x0007, 0xe1a0, 0x0d56, 0xeb00\n"
-        ".hword 0x1bff, 0xe200, 0x1521, 0xe1a0\n"
-        ".hword 0x0011, 0xe351, 0x0010, 0x1a00\n"
-        ".hword 0x1b00, 0xe1a0, 0x1b21, 0xe1a0\n"
-        ".hword 0x0064, 0xe351, 0x000c, 0xba00\n"
-        ".hword 0x00b3, 0xe351, 0x000a, 0xca00\n"
-        ".hword 0x10e0, 0xe59f, 0x000d, 0xe1a0\n"
-        ".hword 0xa0cb, 0xebfd, 0x0074, 0xe59d\n"
-        ".hword 0x0000, 0xe350, 0x000c, 0x0a00\n"
-        ".hword 0xf000, 0xe320, 0x9a62, 0xebfd\n"
-        ".hword 0xf000, 0xe320, 0xf000, 0xe320\n"
-        ".hword 0x0007, 0xea00, 0x1000, 0xe1a0\n"
-        ".hword 0x0fa0, 0xe1b0, 0x0008, 0x0a00\n"
-        ".hword 0x000d, 0xe1a0, 0xa0be, 0xebfd\n"
-        ".hword 0x0074, 0xe59d, 0x0000, 0xe350\n"
-        ".hword 0xfff2, 0x1aff, 0x00d0, 0xe1cd\n"
-        ".hword 0x00f0, 0xe1c4, 0xd0b8, 0xe28d\n"
-        ".hword 0x81f0, 0xe8bd, 0x0c12, 0xe3a0\n"
-        ".hword 0x2000, 0xe3a0, 0x0004, 0xe58d\n"
-        ".hword 0x1074, 0xe59d, 0x3002, 0xe1a0\n"
-        ".hword 0x00b0, 0xe28d, 0x5000, 0xe58d\n"
-        ".hword 0x48cb, 0xebfd, 0x2fa0, 0xe1b0\n"
-        ".hword 0xf000, 0xe320, 0x0008, 0x0a00\n"
-        ".hword 0x1000, 0xe1a0, 0x000d, 0xe1a0\n"
-        ".hword 0xa0a9, 0xebfd, 0x0074, 0xe59d\n"
-        ".hword 0x0000, 0xe350, 0x9a42, 0x1bfd\n"
-        ".hword 0x00d0, 0xe1cd, 0xf000, 0xe320\n"
-        ".hword 0x0006, 0xea00, 0x1000, 0xe3a0\n"
-        ".hword 0x00a8, 0xe28d, 0xa0a0, 0xebfd\n"
-        ".hword 0x0074, 0xe59d, 0x0000, 0xe350\n"
-        ".hword 0x9a39, 0x1bfd, 0x0ad8, 0xe1cd\n"
-        ".hword 0x00f0, 0xe1c4, 0xd0b8, 0xe28d\n"
-        ".hword 0x81f0, 0xe8bd, 0x3882, 0xe0a1\n"
-        ".hword 0x692f, 0x6f63, 0x736e, 0x252f\n"
-        ".hword 0x2e75, 0x6369, 0x006e, 0x0000\n"
-        ".hword 0x388c, 0xd881\n"
-    );
+//
+// Resolves a UI icon resource from a 64-bit key pair. The zero key selects a
+// fixed default directly. Any other key formats the UTF-8 icon name
+// "/icons/%u.icn" from the caller-supplied id, widens it to UTF-16 while
+// counting code units, and asks the resource table for a holder. The lookup
+// status then selects one of three outcomes: the special default icon, an
+// encoded status value, or the result of a second virtual lookup that is
+// invoked only when the status is non-negative and not the special icon tag.
+// The 64-bit result is written through `out`; both verified callers ignore the
+// incidental r0/r1 values left at return.
+namespace ui_352974_calls {
+extern "C" u64* engine_func_002bad80(u64* out, u32 code);
+extern "C" s32 ui_func_0023a2ec(u8* dst, u32 capacity, const char* format,
+                                u32 value);
+extern "C" u32 ui_func_002acb3c(u16* dst, const u8* utf8, u32 capacity);
+extern "C" u32 ui_func_002b5c2c(const u16* text);
+extern "C" s32 ui_func_00355f78(u32* holder, u32 id_low, u32 id_high,
+                                const u32* descriptor, u32 flag);
+extern "C" s32 ui_func_002a4df0(u8* dst, u32 holder, u32 a2, u32 a3,
+                                u32 stack0, u32 stack1);
+extern "C" void engine_func_002b93f0(void* object);
+
+constexpr u32 kZeroKeyDefault = 0xE0A13882u;
+constexpr u32 kSpecialIcon = 0xD881388Cu;
+constexpr u32 kIconStatusTag = 0x11u;
+constexpr u32 kIconIndexMin = 100u;
+constexpr u32 kIconIndexMax = 179u;
+constexpr u32 kDescriptorType = 4u;
+constexpr u32 kLookupFlag = 1u;
+constexpr u32 kSecondLookupStack1 = 0x1200u;
+constexpr char kIconFormat[] = "/icons/%u.icn";
+} // namespace ui_352974_calls
+
+extern "C" void ui_func_00352974(u8* out, const u32* key, u32 a2, u32 a3) {
+    using namespace ui_352974_calls;
+
+    if (key[0] == 0 && key[1] == 0) {
+        engine_func_002bad80(reinterpret_cast<u64*>(out), kZeroKeyDefault);
+        return;
+    }
+
+    // Layout matches the original frame: UTF-8 scratch at sp+0x78, its UTF-16
+    // widening at sp+8, the descriptor at sp+0x68 and the holder at sp+0x74.
+    u8 utf8[0x30];
+    u16 text[0x30];
+    u32 descriptor[3];
+    u32 holder;
+
+    ui_func_0023a2ec(utf8, static_cast<u32>(sizeof(utf8)), kIconFormat, a3);
+    ui_func_002acb3c(text, utf8,
+                     static_cast<u32>(sizeof(text) / sizeof(text[0])));
+
+    holder = 0;
+    const u32 id_low = key[0];
+    const u32 id_high = key[1];
+
+    descriptor[1] = reinterpret_cast<u32>(text);
+    descriptor[0] = kDescriptorType;
+    const u32 units = ui_func_002b5c2c(text);
+    descriptor[2] = (units + 1) * 2;
+
+    const s32 status =
+        ui_func_00355f78(&holder, id_low, id_high, descriptor, kLookupFlag);
+
+    u64 value;
+    u64 alt;
+    u64 second_dst;
+
+    const u32 status_bits = static_cast<u32>(status);
+    const u32 status_index = status_bits & 0x3FFu;
+    const bool special_icon =
+        ((status_bits & 0x3FC00u) >> 10) == kIconStatusTag &&
+        status_index >= kIconIndexMin && status_index <= kIconIndexMax;
+
+    const u8* source;
+    if (special_icon) {
+        engine_func_002bad80(&value, kSpecialIcon);
+        source = reinterpret_cast<const u8*>(&value);
+    } else if (status < 0) {
+        engine_func_002bad80(&value, status_bits);
+        source = reinterpret_cast<const u8*>(&value);
+    } else {
+        // The two outgoing stack words occupy the same frame slots that later
+        // receive the second lookup result; only the passed values matter.
+        u32* const call_words = reinterpret_cast<u32*>(&value);
+        call_words[0] = a2;
+        call_words[1] = kSecondLookupStack1;
+        const s32 second = ui_func_002a4df0(
+            reinterpret_cast<u8*>(&second_dst), holder, 0, 0,
+            call_words[0], call_words[1]);
+        if (second < 0) {
+            engine_func_002bad80(&value, static_cast<u32>(second));
+            source = reinterpret_cast<const u8*>(&value);
+        } else {
+            engine_func_002bad80(&alt, 0);
+            source = reinterpret_cast<const u8*>(&alt);
+        }
+    }
+
+    if (holder != 0) {
+        engine_func_002b93f0(reinterpret_cast<void*>(holder));
+    }
+
+    *reinterpret_cast<u64*>(out) = *reinterpret_cast<const u64*>(source);
 }
 
 // DECOMP_FUNC(0x0025b6e8, 448)
