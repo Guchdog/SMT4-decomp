@@ -653,68 +653,121 @@ extern "C" s32 engine_func_0025b6e8(const f32* p0, const f32* p1, f32* out) {
     return -1;
 }
 
+// ---------------------------------------------------------------------------
+// 0x00238ED4 (452 B): one-shot engine setup step, serialised by the recursive
+// lock object at 0x004E629C and gated by the three state bytes at 0x004656CA.
+//
+//   flags[0] == 0  -> only a non-zero `engine_func_00239bec()` (the signed byte
+//                     at 0x00472A40) lets the call continue; otherwise it
+//                     returns the failure value without taking the lock.
+//   flags[1] == 0  -> nothing has been initialised yet: unlock and return
+//                     0xC8A10BF0 (the same sentinel as the sibling setup
+//                     routine at 0x00357A3C).
+//   flags[2] == 0  -> run the one-shot driver `func_0035b0a4(0)`; a negative
+//                     Result unlocks and returns that Result, otherwise the
+//                     0x00F42400 (16,000,000) tick deadline is armed and
+//                     flags[2] is set to 1.
+//   mode != 0      -> allocate the kind-selected engine slot (0x0C when the
+//                     kind word is non-zero, 0x0B otherwise) and return it.
+//   mode == 0      -> allocate the same slot, then poll the `svc #0x25`
+//                     trampoline at 0x002C42FC up to 62 times before closing
+//                     the returned kernel handle with `svc #0x23`.
+//
+// The poll loop only continues while the trampoline Result shifted left by 22
+// equals 0xFF800000 (i.e. its low ten bits are 0x3FE) and the 0x00359088 wait
+// helper did not report status 1; after 62 bodies the failure value is
+// returned.  A negative trampoline Result is reported through 0x002C5468 and
+// execution continues (the reporter is non-returning in the real engine).
+// ---------------------------------------------------------------------------
+namespace engine_238ed4_calls {
+extern "C" s8 engine_func_00239bec();                    // 0x00239BEC
+extern "C" u32 func_00239bb0(u32 index);                 // 0x00239BB0
+extern "C" void engine_func_002c3aa8(void* a0);          // 0x002C3AA8 enter
+extern "C" void engine_func_002c3a24(void* a0);          // 0x002C3A24 leave
+extern "C" u32 func_0035b0a4(u32 index);                 // 0x0035B0A4
+extern "C" void camp_func_002bb490(u64 nanos);           // 0x002BB490
+// 0x002C42FC: `svc #0x25` trampoline; stores the kernel's r1 into `out_idx`.
+extern "C" s32 engine_func_002c42fc(u32* out_idx, u32* handles, s32 count,
+                                    u32 wait_all, s64 timeout);
+extern "C" void engine_func_002c5468(s32 err);           // 0x002C5468 fatal
+extern "C" u32 func_00359288(u32* out_value);            // 0x00359288 wait
+extern "C" u32 func_00359088(u32* out_value);            // 0x00359088 wait
+} // namespace engine_238ed4_calls
+
 // DECOMP_FUNC(0x00238ed4, 452)
-extern "C" __attribute__((naked)) void engine_func_00238ed4() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x47f0, 0xe92d, 0x6000, 0xe1a0\n"
-        ".hword 0xd018, 0xe24d, 0x8001, 0xe1a0\n"
-        ".hword 0x4194, 0xe59f, 0x7194, 0xe59f\n"
-        ".hword 0x0000, 0xe5d4, 0x0000, 0xe350\n"
-        ".hword 0x0003, 0x1a00, 0x033b, 0xeb00\n"
-        ".hword 0x0000, 0xe350, 0x6007, 0x01a0\n"
-        ".hword 0x005a, 0x0a00, 0x5178, 0xe59f\n"
-        ".hword 0x0005, 0xe1a0, 0x2ae4, 0xeb02\n"
-        ".hword 0x0001, 0xe5d4, 0x0000, 0xe350\n"
-        ".hword 0x001b, 0x0a00, 0x0002, 0xe5d4\n"
-        ".hword 0x0000, 0xe350, 0x000f, 0x1a00\n"
-        ".hword 0x0000, 0xe3a0, 0x885b, 0xeb04\n"
-        ".hword 0x1102, 0xe210, 0xf000, 0xe320\n"
-        ".hword 0x0005, 0x5a00, 0x4000, 0xe1a0\n"
-        ".hword 0x0005, 0xe1a0, 0x2ab5, 0xeb02\n"
-        ".hword 0xd018, 0xe28d, 0x0004, 0xe1a0\n"
-        ".hword 0x87f0, 0xe8bd, 0x012c, 0xe59f\n"
-        ".hword 0x1000, 0xe3a0, 0x094a, 0xeb02\n"
-        ".hword 0x0001, 0xe3a0, 0x0002, 0xe5c4\n"
-        ".hword 0x0000, 0xe358, 0x0010, 0x0a00\n"
-        ".hword 0x0000, 0xe356, 0x0009, 0x0a00\n"
-        ".hword 0x000c, 0xe3a0, 0x030a, 0xeb00\n"
-        ".hword 0x6000, 0xe1a0, 0xf000, 0xe320\n"
-        ".hword 0x0036, 0xea00, 0x0005, 0xe1a0\n"
-        ".hword 0x2aa2, 0xeb02, 0xd018, 0xe28d\n"
-        ".hword 0x0007, 0xe1a0, 0x87f0, 0xe8bd\n"
-        ".hword 0x000b, 0xe3a0, 0x0300, 0xeb00\n"
-        ".hword 0x6000, 0xe1a0, 0xf000, 0xe320\n"
-        ".hword 0x002c, 0xea00, 0x8000, 0xe3a0\n"
-        ".hword 0x4008, 0xe1a0, 0x000d, 0xe1a0\n"
-        ".hword 0x8000, 0xe58d, 0x80ae, 0xeb04\n"
-        ".hword 0x0102, 0xe200, 0x0000, 0xe350\n"
-        ".hword 0x4000, 0xa59d, 0x0000, 0xe356\n"
-        ".hword 0x0004, 0x0a00, 0x000c, 0xe3a0\n"
-        ".hword 0x02f1, 0xeb00, 0x6000, 0xe1a0\n"
-        ".hword 0xf000, 0xe320, 0x0002, 0xea00\n"
-        ".hword 0x000b, 0xe3a0, 0x02ec, 0xeb00\n"
-        ".hword 0x6000, 0xe1a0, 0x9088, 0xe59f\n"
-        ".hword 0x1088, 0xe59f, 0x2000, 0xe3a0\n"
-        ".hword 0x400c, 0xe58d, 0x0006, 0xe88d\n"
-        ".hword 0x3002, 0xe1a0, 0x2001, 0xe3a0\n"
-        ".hword 0x100c, 0xe28d, 0x0010, 0xe28d\n"
-        ".hword 0x2cb4, 0xeb02, 0x1fa0, 0xe1b0\n"
-        ".hword 0xa000, 0xe1a0, 0x310c, 0x1b02\n"
-        ".hword 0x0b0a, 0xe159, 0xf000, 0xe320\n"
-        ".hword 0x0008, 0x1a00, 0x0008, 0xe28d\n"
-        ".hword 0x800f, 0xeb04, 0x0008, 0xe59d\n"
-        ".hword 0x0001, 0xe350, 0x0003, 0x0a00\n"
-        ".hword 0x003c, 0xe358, 0x8001, 0xd288\n"
-        ".hword 0xffe8, 0xdaff, 0x6007, 0xe1a0\n"
-        ".hword 0x0004, 0xe1b0, 0x0023, 0x1f00\n"
-        ".hword 0x0005, 0xe1a0, 0x2a6b, 0xeb02\n"
-        ".hword 0xd018, 0xe28d, 0x0006, 0xe1a0\n"
-        ".hword 0x87f0, 0xe8bd, 0x56ca, 0x0046\n"
-        ".hword 0x0bf0, 0xc8a1, 0x629c, 0x004e\n"
-        ".hword 0x2400, 0x00f4, 0x0000, 0xff80\n"
-        ".hword 0xca00, 0x3b9a\n"
-    );
+extern "C" u32 engine_func_00238ed4(u32 kind, u32 mode) {
+    using namespace engine_238ed4_calls;
+
+    constexpr u32 kFailure = 0xC8A10BF0u;
+    constexpr u32 kWaitIterationLimit = 0x3Cu;
+
+    u8* const flags = reinterpret_cast<u8*>(0x004656CAu);
+    void* const lock = reinterpret_cast<void*>(0x004E629Cu);
+
+    if (flags[0] == 0 && engine_func_00239bec() == 0) {
+        return kFailure;
+    }
+
+    engine_func_002c3aa8(lock);
+
+    if (flags[1] == 0) {
+        engine_func_002c3a24(lock);
+        return kFailure;
+    }
+
+    if (flags[2] == 0) {
+        const u32 setup_rc = func_0035b0a4(0);
+        if ((setup_rc & 0x80000000u) != 0) {
+            engine_func_002c3a24(lock);
+            return setup_rc;
+        }
+        camp_func_002bb490(0x00F42400u);
+        flags[2] = 1;
+    }
+
+    u32 handle = 0;
+    if (mode == 0) {
+        // 0x00359288 writes one word; a negative Result discards it and leaves
+        // the handle at zero.
+        if ((func_00359288(&handle) & 0x80000000u) != 0) {
+            handle = 0;
+        }
+    }
+
+    u32 result = func_00239bb0((kind != 0) ? 0x0Cu : 0x0Bu);
+
+    if (mode == 0) {
+        for (s32 iteration = 0;; ++iteration) {
+            u32 key_out = 0;
+            const s32 wait_rc = engine_func_002c42fc(
+                &key_out, &handle, 1, 0, static_cast<s64>(0x3B9ACA00u));
+            if (wait_rc < 0) {
+                engine_func_002c5468(wait_rc);
+            }
+            if ((static_cast<u32>(wait_rc) << 22) != 0xFF800000u) {
+                break;
+            }
+
+            u32 status = 0;
+            func_00359088(&status);
+            if (status == 1) {
+                break;
+            }
+            if (iteration > static_cast<s32>(kWaitIterationLimit)) {
+                result = kFailure;
+                break;
+            }
+        }
+
+        if (handle != 0) {
+            // 0x00239064: `movs r0, r4; svcne #0x23` = svcCloseHandle(handle).
+            register u32 handle_reg asm("r0") = handle;
+            asm volatile("svc 0x23" : "+r"(handle_reg) : : "r1", "r2", "r3");
+        }
+    }
+
+    engine_func_002c3a24(lock);
+    return result;
 }
 
 // DECOMP_FUNC(0x00245e78, 452)
