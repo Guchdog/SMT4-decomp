@@ -9098,40 +9098,169 @@ extern "C" u32 engine_func_002adc74(u32* out, const u32* descriptor, u32 arg3,
     return 0;
 }
 
+// ---------------------------------------------------------------------------
+// 0x0033D164 -- camp menu panel geometry initialiser
+//
+// Reads the layout records for group 0x14 through the indexed resolver
+// camp_func_002bf6d0 and converts each record's signed 16-bit pair
+// (offsets +8/+0xA = s16[4]/s16[5]) to floats in the panel block:
+//   * four item icon points (nodes 0x59..0x5C and 0x5D..0x60),
+//   * one point from node 0x61,
+//   * three tab points (nodes 0x64, 0x63, 0x62),
+//   * four item positions (nodes 0x65..0x68),
+//   * two label Y values (node 0x6A -> +0x38C, node 0x69 -> +0x388).
+// It then extrapolates one X value from the last two tab points, clears the
+// first 0x2F4 bytes of the panel through engine_func_002c4b30, and installs the
+// idle state (counts 0/-1/-1, scale 4.0f, state 4, remaining floats 0.0f).
+//
+// Recovered contract (ARM 0x0033D164..0x0033D31B, 110 instructions + literal
+// pool 0x00000000/0x40800000):
+//   * r0 = panel pointer; r1-r3 unread; returns r0 = 4 in every path.
+//   * All 18 resolver calls pass group 0x14 and the node indices listed above,
+//     in that exact order; the returned s16[4]/s16[5] pairs are sign-extended
+//     and converted with vcvt.f32.s32.
+//   * 0x0033D2E0..0x0033D2E4: engine_func_002c4b30(panel, 0x2F4) -- the
+//     zero-fill happens after every float store, so bytes 0x000..0x2F3 are
+//     cleared and bytes 0x2F4.. are written afterwards.
+//   * 0x0033D2EC..0x0033D314 write -1 to +0x2F8/+0x2FC, 0 to +0x2F4, 0.0f to
+//     +0x398/+0x39C/+0x3A0, 4.0f to +0x394 and 4 to +0x390; the trailing 0.0f
+//     and 4.0f literals live at 0x0033D31C/0x0033D320.
+//
+// Unresolved: the meaning of the layout table entries and of the panel fields
+// is not established beyond the accesses above; no null check is made for the
+// resolver result (a null result faults on the first s16 load).
+// ---------------------------------------------------------------------------
+namespace camp_layout_0033d164 {
+
+constexpr u32 kLayoutGroup = 0x14;  // r0 of every camp_func_002bf6d0 call
+constexpr u32 kPanelSize   = 0x2F4; // engine_func_002c4b30 clear length
+
+struct Vec2 {
+    f32 x;
+    f32 y;
+};
+
+// One icon: two layout nodes contribute the two inner point pairs.
+struct ItemIcon {
+    Vec2 first;   // node i+0x59 -> +0x328/+0x32C
+    Vec2 second;  // node i+0x5D -> +0x330/+0x334
+};
+
+/** Camp menu panel block written by this routine (offsets from the ARM data). */
+struct Panel {
+    u8  pad_000[0x2F4];
+    s32 item_count;             // +0x2F4
+    s32 column_count_a;         // +0x2F8
+    s32 column_count_b;         // +0x2FC
+    Vec2 title_point;           // +0x300: node 0x61
+    Vec2 tab_point[3];          // +0x308: nodes 0x64, 0x63, 0x62
+    Vec2 tab_end;               // +0x320: extrapolated x, copied y
+    ItemIcon icon[4];           // +0x328: nodes i+0x59 and i+0x5D
+    Vec2 item_position[4];      // +0x368: nodes 0x65..0x68
+    Vec2 label_origin;          // +0x388: y of node 0x69 (+0x388), node 0x6A (+0x38C)
+    s32 state;                  // +0x390
+    f32 scale;                  // +0x394
+    f32 fade;                   // +0x398
+    f32 progress;               // +0x39C
+    f32 offset;                 // +0x3A0
+};
+static_assert(offsetof(Panel, item_count) == 0x2F4);
+static_assert(offsetof(Panel, column_count_a) == 0x2F8);
+static_assert(offsetof(Panel, column_count_b) == 0x2FC);
+static_assert(offsetof(Panel, title_point) == 0x300);
+static_assert(offsetof(Panel, tab_point) == 0x308);
+static_assert(offsetof(Panel, tab_end) == 0x320);
+static_assert(offsetof(Panel, icon) == 0x328);
+static_assert(offsetof(Panel, item_position) == 0x368);
+static_assert(offsetof(Panel, label_origin) == 0x388);
+static_assert(offsetof(Panel, state) == 0x390);
+static_assert(offsetof(Panel, scale) == 0x394);
+static_assert(offsetof(Panel, fade) == 0x398);
+static_assert(offsetof(Panel, progress) == 0x39C);
+static_assert(offsetof(Panel, offset) == 0x3A0);
+static_assert(sizeof(Panel) == 0x3A4);
+
+constexpr u32 kIdleState = 4;    // 0x0033D30C `mov r0, #4`
+constexpr f32 kIdleScale = 4.0f; // 0x40800000 literal at 0x0033D320
+
+extern "C" u8* camp_func_002bf6d0(u32 group, u32 node_index);
+
+// 0x0033D17C/0x0033D194: the resolver result is consumed as an s16 array whose
+// elements 4 and 5 (byte offsets +8/+0xA) are the point pair.
+inline const s16* layout_node(u32 node_index) {
+    return reinterpret_cast<const s16*>(
+        camp_func_002bf6d0(kLayoutGroup, node_index));
+}
+
+}  // namespace camp_layout_0033d164
+
+extern "C" void engine_func_002c4b30(void* ptr, u32 size);
+
 // DECOMP_FUNC(0x0033d164, 448)
-// 110 ARM instructions through unconditional pop; 8 trailing data bytes.
-extern "C" __attribute__((naked)) void camp_func_0033d164() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4070, 0xe1a05000, 0xe3a04000, 0xe2841059\n"
-        ".word 0xe3a00014, 0xebfe0954, 0xe1d010f8, 0xe0856204\n"
-        ".word 0xee001a10, 0xe284105d, 0xeeb80ac0, 0xed860aca\n"
-        ".word 0xe1d000fa, 0xee000a10, 0xe3a00014, 0xeeb80ac0\n"
-        ".word 0xed860acb, 0xebfe0948, 0xe1d010f8, 0xe2844001\n"
-        ".word 0xe3540004, 0xee001a10, 0xeeb80ac0, 0xed860acc\n"
-        ".word 0xe1d000fa, 0xee000a10, 0xeeb80ac0, 0xed860acd\n"
-        ".word 0xbaffffe5, 0xe3a01061, 0xe3a00014, 0xebfe093a\n"
-        ".word 0xe1d010f8, 0xe3a04000, 0xee001a10, 0xeeb80ac0\n"
-        ".word 0xed850ac0, 0xe1d000fa, 0xee000a10, 0xeeb80ac0\n"
-        ".word 0xed850ac1, 0xe2641064, 0xe3a00014, 0xebfe092e\n"
-        ".word 0xe1d010f8, 0xee001a10, 0xe0851184, 0xe2844001\n"
-        ".word 0xe3540003, 0xeeb80ac0, 0xed810ac2, 0xe1d000fa\n"
-        ".word 0xee000a10, 0xeeb80ac0, 0xed810ac3, 0xbafffff0\n"
-        ".word 0xedd50ac4, 0xed950ac6, 0xe595031c, 0xe3a04000\n"
-        ".word 0xee700a60, 0xe5850324, 0xee300a80, 0xed850ac8\n"
-        ".word 0xe2841065, 0xe3a00014, 0xebfe0917, 0xe1d020f8\n"
-        ".word 0xe0851184, 0xe2844001, 0xee002a10, 0xe3540004\n"
-        ".word 0xeeb80ac0, 0xed810ada, 0xe1d000fa, 0xee000a10\n"
-        ".word 0xeeb80ac0, 0xed810adb, 0xbafffff0, 0xe3a0106a\n"
-        ".word 0xe3a00014, 0xebfe0908, 0xe1d000fa, 0xe3a01069\n"
-        ".word 0xee000a10, 0xe3a00014, 0xeeb80ac0, 0xed850ae3\n"
-        ".word 0xebfe0901, 0xe1d000fa, 0xe3a01fbd, 0xee000a10\n"
-        ".word 0xe1a00005, 0xeeb80ac0, 0xed850ae2, 0xebfe1e12\n"
-        ".word 0xe3e00000, 0xe3a01000, 0xe58502f8, 0xed9f0a09\n"
-        ".word 0xe58512f4, 0xe58502fc, 0xed850ae6, 0xed850ae7\n"
-        ".word 0xed850ae8, 0xed9f0a04, 0xe3a00004, 0xed850ae5\n"
-        ".word 0xe5850390, 0xe8bd8070, 0x00000000, 0x40800000\n"
-    );
+extern "C" u32 camp_func_0033d164(void* panel_raw) {
+    using namespace camp_layout_0033d164;
+
+    Panel* const self = static_cast<Panel*>(panel_raw);
+
+    // 0x0033D170..0x0033D1D4: four icons, each from two adjacent layout nodes.
+    for (u32 i = 0; i < 4; ++i) {
+        const s16* const first = layout_node(i + 0x59u);
+        self->icon[i].first.x = static_cast<f32>(first[4]);
+        self->icon[i].first.y = static_cast<f32>(first[5]);
+
+        const s16* const second = layout_node(i + 0x5Du);
+        self->icon[i].second.x = static_cast<f32>(second[4]);
+        self->icon[i].second.y = static_cast<f32>(second[5]);
+    }
+
+    // 0x0033D1D8..0x0033D204: single title point from node 0x61.
+    const s16* const title = layout_node(0x61u);
+    self->title_point.x = static_cast<f32>(title[4]);
+    self->title_point.y = static_cast<f32>(title[5]);
+
+    // 0x0033D208..0x0033D240: three tab points from nodes 0x64, 0x63, 0x62.
+    for (u32 i = 0; i < 3; ++i) {
+        const s16* const tab = layout_node(0x64u - i);
+        self->tab_point[i].x = static_cast<f32>(tab[4]);
+        self->tab_point[i].y = static_cast<f32>(tab[5]);
+    }
+
+    // 0x0033D244..0x0033D260: copy the last tab Y and extrapolate its X one
+    // tab spacing further: (last_x - middle_x) + last_x.
+    const f32 middle_x = self->tab_point[1].x;
+    const f32 last_x = self->tab_point[2].x;
+    self->tab_end.y = self->tab_point[2].y;
+    self->tab_end.x = (last_x - middle_x) + last_x;
+
+    // 0x0033D264..0x0033D29C: four item positions from nodes 0x65..0x68.
+    for (u32 i = 0; i < 4; ++i) {
+        const s16* const position = layout_node(i + 0x65u);
+        self->item_position[i].x = static_cast<f32>(position[4]);
+        self->item_position[i].y = static_cast<f32>(position[5]);
+    }
+
+    // 0x0033D2A0..0x0033D2C0: node 0x6A supplies only its Y to +0x38C.
+    const s16* const label_b = layout_node(0x6Au);
+    self->label_origin.y = static_cast<f32>(label_b[5]);
+
+    // 0x0033D2C4..0x0033D2E0: node 0x69 supplies only its Y to +0x388.
+    const s16* const label_a = layout_node(0x69u);
+    self->label_origin.x = static_cast<f32>(label_a[5]);
+
+    // 0x0033D2E0..0x0033D2E4: clear bytes 0x000..0x2F3 (the geometry above is
+    // outside this range and survives).
+    engine_func_002c4b30(self, kPanelSize);
+
+    // 0x0033D2E4..0x0033D318: install the idle state.
+    self->column_count_a = -1;   // +0x2F8
+    self->item_count = 0;        // +0x2F4
+    self->column_count_b = -1;   // +0x2FC
+    self->fade = 0.0f;           // +0x398
+    self->progress = 0.0f;       // +0x39C
+    self->offset = 0.0f;         // +0x3A0
+    self->scale = kIdleScale;    // +0x394
+    self->state = kIdleState;    // +0x390
+    return static_cast<u32>(kIdleState);
 }
 
 // DECOMP_FUNC(0x00290874, 452)
