@@ -219,66 +219,119 @@ extern "C" f32 engine_func_00288424(f32 x) {
     return -1.0f / tangent;        // tan(r + k*pi/2) for odd k
 }
 
+namespace battle_2176ec_calls {
+// Reads work[0x1c] - selector - 1 through a tagged union table.  The caller
+// only uses selector 0 and compares the result as a signed index.
+extern "C" s32 engine_func_00296f60(u32 selector);
+
+// Dereferences the global slot passed in r0 and selects an entry from the
+// table at 0x00434278 when its +0x84 field is in [0, 4); returns 0 otherwise.
+extern "C" void* script_vm_func_0027eb98(void* global_slot);
+
+// Returns the UI context pointer stored at 0x00435D90.
+extern "C" void* ui_func_00293c98();
+
+// Scans 109 rows of 50 signed halfwords at base+0x1FC0 and returns the row
+// whose entry equals index, or 0 when the index is not present.
+extern "C" const u8* ui_func_00282b94(void* base, u32 index);
+
+// Clears per-actor effect state for all 109 rows.
+extern "C" void func_00250960(void* base);
+
+// The trailing arguments at positions 7, 8 and 23 are transmitted as raw
+// 32-bit words on the stack; the callee consumes the same words as f32 bit
+// patterns (softfp/variadic convention in the pinned image).
+extern "C" s32 battle_func_002553ec(
+    s32 base, void* actor, void* attack, u32 a3,
+    s32 a4, s32 a5, s32 a6, u32 a7_bits, u32 a8_bits,
+    s32 a9, s32 a10, s32 a11, s32 a12, s32 a13, s32 a14, s32 a15,
+    s32 a16, s32 a17, s32 a18, s32 a19, s32 a20, s32 a21, s32 a22,
+    u32 a23_bits, s32 a24);
+
+extern "C" s32 battle_func_002508c0(s32 arg0, void* arg1, void* arg2);
+
+// Returns manager[+4] + 0x11C + index * 385 (element stride 0x604).
+extern "C" void* camp_func_002a89e4(u32 index);
+
+extern "C" void battle_func_0026e88c(void* p, u32 bit);
+
+// r2 is stored at +0x28 and s0 at +0x30 of the action record.
+extern "C" void battle_func_003dde9c(s32 id, u32 key, u32 value, f32 scale);
+
+// r0-r3 plus three architected stack words.
+extern "C" void battle_func_00250800(
+    u32 a0, u32 a1, u32 a2, u32 a3,
+    u32 a4, u32 a5, u32 a6);
+
+// The two stack words at [sp] and [sp+4] are consumed as f32 bit patterns,
+// the third as the halfword written to +0x26.
+extern "C" void battle_func_003dddf8(
+    s32 arg0, void* arg1, u32 arg2, u32 arg3,
+    u32 arg4_bits, u32 arg5_bits, u32 arg6);
+} // namespace battle_2176ec_calls
+
 // DECOMP_FUNC(0x002176ec, 436)
-extern "C" __attribute__((naked)) void battle_func_002176ec() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x40f0, 0xe92d, 0xd054, 0xe24d\n"
-        ".hword 0x0000, 0xe3a0, 0xfe18, 0xeb01\n"
-        ".hword 0x4000, 0xe1a0, 0x0144, 0xe59f\n"
-        ".hword 0x0000, 0xe590, 0x9d22, 0xeb01\n"
-        ".hword 0x006d, 0xe354, 0x6000, 0xe1a0\n"
-        ".hword 0x7000, 0xe3a0, 0x002d, 0xaa00\n"
-        ".hword 0xf15d, 0xeb01, 0x0b07, 0xe280\n"
-        ".hword 0x0fa6, 0xe280, 0x1104, 0xe084\n"
-        ".hword 0x0000, 0xe590, 0x1304, 0xe081\n"
-        ".hword 0x5101, 0xe080, 0xf156, 0xeb01\n"
-        ".hword 0x1004, 0xe1a0, 0xad13, 0xeb01\n"
-        ".hword 0x4000, 0xe1a0, 0xf152, 0xeb01\n"
-        ".hword 0xe483, 0xeb00, 0x1001, 0xe3a0\n"
-        ".hword 0x0007, 0xe1a0, 0x1044, 0xe58d\n"
-        ".hword 0x1048, 0xe58d, 0x04fc, 0xe1cd\n"
-        ".hword 0x03f8, 0xe1cd, 0x7040, 0xe58d\n"
-        ".hword 0x3c01, 0xe284, 0x7034, 0xe58d\n"
-        ".hword 0x7028, 0xe58d, 0x702c, 0xe58d\n"
-        ".hword 0x7030, 0xe58d, 0x01f8, 0xe1cd\n"
-        ".hword 0x7024, 0xe58d, 0x7014, 0xe58d\n"
-        ".hword 0x7020, 0xe58d, 0x1bf6, 0xe1d3\n"
-        ".hword 0x3bf4, 0xe1d3, 0x2000, 0xe3e0\n"
-        ".hword 0x1010, 0xe58d, 0x20f8, 0xe1cd\n"
-        ".hword 0x2004, 0xe58d, 0x1000, 0xe58d\n"
-        ".hword 0x3000, 0xe3a0, 0x2005, 0xe1a0\n"
-        ".hword 0x1006, 0xe1a0, 0xf70b, 0xeb00\n"
-        ".hword 0x3000, 0xe3a0, 0x2005, 0xe1a0\n"
-        ".hword 0x1006, 0xe1a0, 0x0019, 0xe3a0\n"
-        ".hword 0xe43b, 0xeb00, 0x0009, 0xea00\n"
-        ".hword 0x006d, 0xe244, 0x4481, 0xeb02\n"
-        ".hword 0x1001, 0xe3a0, 0x72ba, 0xe1c0\n"
-        ".hword 0x5c28, 0xeb01, 0x0a18, 0xed9f\n"
-        ".hword 0x200f, 0xe3a0, 0x1006, 0xe1a0\n"
-        ".hword 0x0007, 0xe1a0, 0x19a7, 0xeb07\n"
-        ".hword 0x2050, 0xe59f, 0x0007, 0xe1a0\n"
-        ".hword 0x3000, 0xe3a0, 0x1006, 0xe1a0\n"
-        ".hword 0x7000, 0xe58d, 0x7004, 0xe58d\n"
-        ".hword 0x7008, 0xe58d, 0xe3f8, 0xeb00\n"
-        ".hword 0x10b4, 0xe3a0, 0x0002, 0xe3a0\n"
-        ".hword 0x2003, 0xe3a0, 0x0007, 0xe88d\n"
-        ".hword 0x2000, 0xe3a0, 0x3001, 0xe3a0\n"
-        ".hword 0x1006, 0xe1a0, 0x0002, 0xe1a0\n"
-        ".hword 0x196d, 0xeb07, 0xd054, 0xe28d\n"
-        ".hword 0x0001, 0xe3a0, 0x80f0, 0xe8bd\n"
-        ".hword 0x427c, 0x0043, 0x0000, 0x4100\n"
-        ".hword 0x0178, 0x0100, 0x1000, 0xe1a0\n"
-        ".hword 0x1c59, 0xe281, 0x0001, 0xe3a0\n"
-        ".hword 0x2025, 0xe5d1, 0x0000, 0xe352\n"
-        ".hword 0x2026, 0x05d1, 0x0000, 0x0352\n"
-        ".hword 0x0001, 0x0a00, 0x0000, 0xe3a0\n"
-        ".hword 0xff1e, 0xe12f, 0x2027, 0xe5d1\n"
-        ".hword 0x0000, 0xe352, 0x2028, 0x05d1\n"
-        ".hword 0x0000, 0x0352, 0x1029, 0x05d1\n"
-        ".hword 0x0000, 0x0351, 0xfff6, 0x1aff\n"
-        ".hword 0xff1e, 0xe12f\n"
-    );
+//
+// Indexed per-actor battle-effect dispatch:
+//   * index = engine_func_00296f60(0), compared as a signed value against 109;
+//   * index < 109 resolves a 276-byte unit row at
+//     *(base+0x1E98) + index*276 and a 648-byte action slot via
+//     ui_func_00282b94, then submits a full 25-argument effect (21 stack
+//     words) and a 3-argument follow-up for action id 0x19;
+//   * index >= 109 clears halfword +0x2A of camp row (index-109), raises
+//     effect bit 1 and posts a single action with scale 8.0f;
+//   * both paths emit the shared 0x01000178 action followed by the 7-argument
+//     animation update (stack words 2, 0xB4, 3) and return 1.
+extern "C" s32 battle_func_002176ec() {
+    using namespace battle_2176ec_calls;
+
+    const s32 index = engine_func_00296f60(0);
+    void* const global = *reinterpret_cast<void**>(0x0043427Cu);
+    void* const ref = script_vm_func_0027eb98(global);
+
+    if (index < 0x6D) {
+        void* const base = ui_func_00293c98();
+        void* const units = *reinterpret_cast<void**>(
+            static_cast<u8*>(base) + 0x1E98);
+        void* const row = static_cast<u8*>(units) +
+                          static_cast<u32>(index) * 276u;
+
+        const u8* const slot = ui_func_00282b94(
+            ui_func_00293c98(), static_cast<u32>(index));
+        func_00250960(ui_func_00293c98());
+
+        const s32 field_b6 = *reinterpret_cast<const s16*>(slot + 0x1B6);
+        const s32 field_b4 = *reinterpret_cast<const s16*>(slot + 0x1B4);
+
+        battle_func_002553ec(
+            0, ref, row, 0,
+            field_b6, -1, -1,
+            static_cast<u32>(field_b4), static_cast<u32>(field_b6),
+            0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1);
+        battle_func_002508c0(0x19, ref, row);
+    } else {
+        void* const obj =
+            camp_func_002a89e4(static_cast<u32>(index) - 0x6Du);
+        *reinterpret_cast<u16*>(static_cast<u8*>(obj) + 0x2A) = 0;
+        battle_func_0026e88c(obj, 1);
+        battle_func_003dde9c(0, reinterpret_cast<u32>(ref), 0xF, 8.0f);
+    }
+
+    battle_func_00250800(0, reinterpret_cast<u32>(ref), 0x01000178u, 0, 0, 0, 0);
+    battle_func_003dddf8(0, ref, 0, 1, 2, 0xB4, 3);
+    return 1;
+}
+
+// Tail of the same 436-byte ledger extent: an unnamed entry point at
+// 0x00217858 (72 B) with no direct caller (no BL, literal or fallthrough
+// reaches it in the pinned image).  It returns 1 only when the five flag
+// fields at p+0x5925..p+0x5928 and the unaligned word at p+0x5929 are zero.
+extern "C" s32 func_00217858(const u8* p) {
+    const u8* const q = p + 0x5900;
+    if (q[0x25] != 0 || q[0x26] != 0 || q[0x27] != 0 || q[0x28] != 0) {
+        return 0;
+    }
+    return *reinterpret_cast<const u32*>(q + 0x29) == 0 ? 1 : 0;
 }
 
 namespace camp_191cf4_calls {
