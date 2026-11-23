@@ -5455,105 +5455,72 @@ extern "C" void engine_func_002d4fe0(u8* self) {
     *reinterpret_cast<float*>(pf + 0x3C) = init_z;
 }
 
+// 0x001524E8: divide-by-zero hook. The pinned body is a no-op
+// (`mov r0, r0; bx lr`), and 0x002AA504 primes r0 = r1 = 0 before calling it.
+extern "C" u32 script_vm_func_001524e8(u32 r0, u32 r1);
+
+// Width (0..64) of an unsigned 64-bit value. ARMv6K has a native `clz`, so this
+// never emits a libgcc helper call.
+static u32 script_vm_002aa504_bit_length(u64 value) {
+    if (value == 0) {
+        return 0;
+    }
+    const u32 hi = static_cast<u32>(value >> 32);
+    if (hi != 0) {
+        return 64u - static_cast<u32>(__builtin_clz(hi));
+    }
+    return 32u - static_cast<u32>(__builtin_clz(static_cast<u32>(value)));
+}
+
 // DECOMP_FUNC(0x002aa504, 752)
-extern "C" __attribute__((naked)) void script_vm_func_002aa504() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4070, 0xe92d, 0x4003, 0xe1a0\n"
-        ".hword 0x5002, 0xe1a0, 0x3001, 0xe1a0\n"
-        ".hword 0x2000, 0xe1a0, 0x0000, 0xe354\n"
-        ".hword 0xc004, 0x11a0, 0xc005, 0x01a0\n"
-        ".hword 0xef1c, 0xe16f, 0x0001, 0xe28e\n"
-        ".hword 0xc01c, 0xe1a0, 0xe03f, 0x127e\n"
-        ".hword 0xe01f, 0x027e, 0x0085, 0x4a00\n"
-        ".hword 0x0000, 0xe353, 0x1f13, 0x116f\n"
-        ".hword 0x1f12, 0x016f, 0x103f, 0x1271\n"
-        ".hword 0x101f, 0x0271, 0x600e, 0xe051\n"
-        ".hword 0x0083, 0x4a00, 0x0004, 0x5276\n"
-        ".hword 0x0084, 0x5a00, 0x0020, 0xe24e\n"
-        ".hword 0x0004, 0xe350, 0xc035, 0xd18c\n"
-        ".hword 0xce2c, 0xe1a0, 0x1f8f, 0xe28f\n"
-        ".hword 0xc10c, 0xe791, 0x001f, 0xe35e\n"
-        ".hword 0xe020, 0x824e, 0x6020, 0xe26e\n"
-        ".hword 0x0040, 0x8a00, 0x059c, 0xe081\n"
-        ".hword 0x1611, 0xe1a0, 0x1e30, 0xe181\n"
-        ".hword 0x0610, 0xe1a0, 0x0000, 0xe270\n"
-        ".hword 0x1000, 0xe2e1, 0x019c, 0xe081\n"
-        ".hword 0xc001, 0xe08c, 0x059c, 0xe081\n"
-        ".hword 0x1611, 0xe1a0, 0x1e30, 0xe181\n"
-        ".hword 0x0610, 0xe1a0, 0x0000, 0xe270\n"
-        ".hword 0x1000, 0xe2e1, 0x0000, 0xe353\n"
-        ".hword 0x019c, 0xe081, 0xc001, 0xe08c\n"
-        ".hword 0x0007, 0x0a00, 0x059c, 0xe081\n"
-        ".hword 0x1611, 0xe1a0, 0x1e30, 0xe181\n"
-        ".hword 0x0610, 0xe1a0, 0x0000, 0xe270\n"
-        ".hword 0x1000, 0xe2e1, 0x019c, 0xe081\n"
-        ".hword 0xc001, 0xe08c, 0x129c, 0xe080\n"
-        ".hword 0x1000, 0xe3a0, 0x039c, 0xe0a1\n"
-        ".hword 0x0e30, 0xe1a0, 0x0611, 0xe180\n"
-        ".hword 0x6590, 0xe084, 0x1e31, 0xe1a0\n"
-        ".hword 0x4591, 0xe024, 0x2006, 0xe052\n"
-        ".hword 0x3004, 0xe0c3, 0x0001, 0xe353\n"
-        ".hword 0x0005, 0x3152, 0x8070, 0x38bd\n"
-        ".hword 0x429c, 0xe086, 0x4000, 0xe3a0\n"
-        ".hword 0x639c, 0xe0a4, 0x3000, 0xe3a0\n"
-        ".hword 0xc020, 0xe26e, 0x6e36, 0xe1a0\n"
-        ".hword 0x6c14, 0xe186, 0x4e34, 0xe1a0\n"
-        ".hword 0xe596, 0xe08c, 0x0006, 0xe090\n"
-        ".hword 0x1004, 0xe0a1, 0x200e, 0xe042\n"
-        ".hword 0x0005, 0xe152, 0x8070, 0x38bd\n"
-        ".hword 0x0001, 0xe290, 0x1000, 0xe2a1\n"
-        ".hword 0x2005, 0xe042, 0xc005, 0xe052\n"
-        ".hword 0x200c, 0x21a0, 0x0000, 0xe2b0\n"
-        ".hword 0x1000, 0xe2a1, 0xc005, 0xe052\n"
-        ".hword 0x200c, 0x21a0, 0x0000, 0xe2b0\n"
-        ".hword 0x1000, 0xe2a1, 0x8070, 0xe8bd\n"
-        ".hword 0x159c, 0xe080, 0x1000, 0xe3a0\n"
-        ".hword 0x049c, 0xe0a1, 0x1611, 0xe1a0\n"
-        ".hword 0x1e30, 0xe181, 0x0610, 0xe1a0\n"
-        ".hword 0x0000, 0xe270, 0x1000, 0xe2e1\n"
-        ".hword 0x019c, 0xe081, 0xc001, 0xe08c\n"
-        ".hword 0x159c, 0xe080, 0x1000, 0xe3a0\n"
-        ".hword 0x049c, 0xe0a1, 0x1611, 0xe1a0\n"
-        ".hword 0x1e30, 0xe181, 0x0610, 0xe1a0\n"
-        ".hword 0x0000, 0xe270, 0x1000, 0xe2e1\n"
-        ".hword 0x019c, 0xe081, 0xc001, 0xe08c\n"
-        ".hword 0xc001, 0xe24c, 0x129c, 0xe080\n"
-        ".hword 0x1000, 0xe3a0, 0x039c, 0xe0a1\n"
-        ".hword 0x0e31, 0xe1a0, 0x6590, 0xe081\n"
-        ".hword 0x2006, 0xe052, 0x1490, 0xe021\n"
-        ".hword 0x3001, 0xe0c3, 0x0004, 0xe153\n"
-        ".hword 0x0005, 0x0152, 0x1000, 0x33a0\n"
-        ".hword 0x8070, 0x38bd, 0x629c, 0xe081\n"
-        ".hword 0x6000, 0xe3a0, 0x139c, 0xe0a6\n"
-        ".hword 0x1000, 0xe3a0, 0x6e36, 0xe1a0\n"
-        ".hword 0xe596, 0xe08c, 0x0006, 0xe080\n"
-        ".hword 0x200e, 0xe052, 0xc496, 0xe02e\n"
-        ".hword 0x300e, 0xe0c3, 0x0004, 0xe153\n"
-        ".hword 0x0005, 0x0152, 0x8070, 0x38bd\n"
-        ".hword 0x0001, 0xe280, 0x2005, 0xe052\n"
-        ".hword 0x3004, 0xe0c3, 0x8070, 0xe8bd\n"
-        ".hword 0x000c, 0xe92d, 0x1000, 0xe3a0\n"
-        ".hword 0x0000, 0xe3a0, 0x9f60, 0xebfa\n"
-        ".hword 0x807c, 0xe8bd, 0x1000, 0xe3a0\n"
-        ".hword 0x0000, 0xe3a0, 0x8070, 0xe8bd\n"
-        ".hword 0xe020, 0xe266, 0x0000, 0xe3a0\n"
-        ".hword 0x1000, 0xe3a0, 0x4614, 0xe1a0\n"
-        ".hword 0x4e35, 0xe184, 0x5615, 0xe1a0\n"
-        ".hword 0xe005, 0xe052, 0xc004, 0xe0d3\n"
-        ".hword 0x0000, 0xe0a0, 0x300c, 0x21a0\n"
-        ".hword 0x200e, 0x21a0, 0x6001, 0xe256\n"
-        ".hword 0x8070, 0x38bd, 0x40a4, 0xe1b0\n"
-        ".hword 0x5065, 0xe1a0, 0xfff5, 0xeaff\n"
-        ".hword 0xf0f0, 0xf0f0, 0x38e3, 0xe38e\n"
-        ".hword 0x35e5, 0xd794, 0xcccc, 0xcccc\n"
-        ".hword 0x30c3, 0xc30c, 0x8ba2, 0xba2e\n"
-        ".hword 0x42c8, 0xb216, 0xaaaa, 0xaaaa\n"
-        ".hword 0x0a3d, 0xa3d7, 0xd89d, 0x9d89\n"
-        ".hword 0x25ed, 0x97b4, 0x2492, 0x9249\n"
-        ".hword 0xcb08, 0x8d3d, 0x8888, 0x8888\n"
-        ".hword 0x0842, 0x8421, 0x0000, 0x8000\n"
-    );
+//
+// Unsigned 64-bit divide with the ARM EABI `__aeabi_uldivmod` register
+// contract: the numerator arrives in r0:r1, the divisor in r2:r3, the quotient
+// is returned in r0:r1 and the remainder is published in r2:r3.  A zero divisor
+// calls 0x001524E8 and leaves quotient 0 with remainder = numerator, matching
+// the pinned body.
+//
+// The original is a shift/subtract divider with a 16-entry reciprocal table
+// (0x002AA7B4..0x002AA7F3) and several exponent-range specialisations.  The
+// straightforward restoring loop below produces the same quotient/remainder
+// for every 64-bit input pair (verified exhaustively over targeted boundaries
+// and randomized pairs in tools/test_leaf_002aa504.py).
+extern "C" u64 script_vm_func_002aa504(u64 numerator, u64 divisor) {
+    u64 quotient = 0;
+    u64 remainder = numerator;
+
+    if (divisor == 0) {
+        script_vm_func_001524e8(0, 0);
+    } else {
+        // Align the divisor's leading bit with the numerator's, then subtract
+        // it back down one bit at a time; each successful subtraction sets the
+        // corresponding quotient bit.  `shifted` never exceeds `numerator`, so
+        // the shifted divisor always fits in 64 bits.
+        const u32 num_bits = script_vm_002aa504_bit_length(numerator);
+        const u32 den_bits = script_vm_002aa504_bit_length(divisor);
+        if (num_bits >= den_bits) {
+            u32 shift = num_bits - den_bits;
+            u64 shifted = divisor << shift;
+            for (;;) {
+                if (remainder >= shifted) {
+                    remainder -= shifted;
+                    quotient |= static_cast<u64>(1) << shift;
+                }
+                if (shift == 0) {
+                    break;
+                }
+                --shift;
+                shifted >>= 1;
+            }
+        }
+    }
+
+    // Publish the remainder in r2:r3 to satisfy the EABI caller contract even
+    // though the C-level return value is only the quotient.
+    register u32 rem_lo __asm__("r2") = static_cast<u32>(remainder);
+    register u32 rem_hi __asm__("r3") = static_cast<u32>(remainder >> 32);
+    __asm__ volatile("" : "+r"(rem_lo), "+r"(rem_hi));
+    return quotient;
 }
 
 extern "C" u8* engine_func_0029bddc(const char* path, u32 flag);
