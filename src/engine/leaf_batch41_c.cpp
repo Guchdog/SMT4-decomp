@@ -8724,40 +8724,182 @@ extern "C" void camp_func_002a043c() {
     *reinterpret_cast<u32*>(work + kUniqueByteCount) = unique_byte_count;
 }
 
+// ---------------------------------------------------------------------------
+// 0x002A37DC -- AsdPart_SetColor(part, color)
+//
+// Stores the packed 0xAARRGGBB color at part+0x64, stages its four normalized
+// channels (A, R, G, B) in the shared 0x004EA81C render block, then walks the
+// child list at part+0x8C through the +0xAC next links.  For every child it
+// multiplies the child's normalized color by the parent's staged tint and hands
+// the re-quantized packed color to the per-type hook at 0x00464110 entry +0x30.
+// There are no direct calls: every call is the indirect table slot below.
+//
+// Recovered contract (ARM 0x002A37DC..0x002A398B, literal pool at
+// 0x002A398C..0x002A399B: 1/255, 0x004EA81C, 255.0f, 0x00464110):
+//   * r0 = part, r1 = packed color (u32, no signed interpretation).  r2/r3 are
+//     scratch at entry and are not read.  `str r1,[r0,#0x64]` at 0x002A37FC is
+//     the only head-field write; the children themselves are not modified.
+//   * 0x002A37E0..0x002A383C: the lane order is byte 0 (bits 31..24) first,
+//     then bits 23..16, bits 15..8, bits 7..0; each byte is zero-extended,
+//     `vcvt.f32.u32`'d, multiplied by the float literal 0x3B808081
+//     (=1.0f/255.0f) and stored as {A,R,G,B} at 0x004EA81C+0x100.  Probes with
+//     single-lane parents (0xFF000000/0x00FF0000/0x0000FF00/0x000000FF) and a
+//     0x01020304 child reproduce lanes {1,2,3,4}.
+//   * 0x002A3840: the child list head is read once.  A null head returns
+//     immediately (`vpop`/`pop` at 0x002A3984).
+//   * 0x002A3854..0x002A38C4: per child, the same normalization of the child
+//     color at +0x64 lands at +0x100 and the parent tint is re-stored at
+//     +0x110 (it is not mutated, so it is the same four floats every pass).
+//   * 0x002A38C8..0x002A3904: the four products +0x100[i] * +0x110[i] are
+//     written back to +0x100.
+//   * 0x002A3908..0x002A3954: each product is multiplied by 255.0f
+//     (0x437F0000) and converted with `vcvt.u32.f32` (round toward zero), then
+//     re-packed as (lane0<<24)|(lane1<<16)|(lane2<<8)|lane3 with every byte
+//     masked to 0xFF; a white parent therefore round-trips 0x01020304.
+//   * 0x002A3958..0x002A3974: the type index is the zero-extended u16 at
+//     instance+4; the entry is at 0x00464110 + index*0x44 and the slot at
+//     +0x30.  A null slot is skipped; otherwise the slot is called as
+//     hook(instance->context, packed) with r0 = u32 at instance+8 and
+//     r1 = the packed color.  The return value is ignored.
+//   * 0x002A3978..0x002A3980: `next` at child+0xAC is reloaded after the hook,
+//     so a hook may safely rewrite the link.  A child's own +0x8C list is
+//     never traversed.
+//   * Return type is void.  On the empty-list path r0 still holds `part`,
+//     which is residual register state rather than a contract value.
+//
+// The f32 sequence (byte -> f32 -> *1/255 -> *parent -> *255 -> truncate) is
+// kept operation-for-operation so the truncation boundaries agree with the
+// original VFP code.  The hook signature is inferred from the only slot this
+// routine uses; the concrete targets are runtime data in the 0x00464110 table.
+// ---------------------------------------------------------------------------
+
+namespace asd_part_color_002a37dc {
+
+struct Vec4 {
+    f32 value[4];
+};
+
+/** Effect-part instance hung off a node at +0x90. */
+struct PartInstance {
+    u8  pad_00[0x04];
+    u16 type;                   // +0x04: `ldrh r2,[r0,#4]`
+    u8  pad_06[0x02];
+    void* context;              // +0x08: hook r0 argument
+};
+static_assert(offsetof(PartInstance, type) == 0x04);
+static_assert(offsetof(PartInstance, context) == 0x08);
+
+/** One effect-part node (the manager itself or a child in the +0x8C list). */
+struct PartNode {
+    u8  pad_00[0x64];
+    u32 color;                  // +0x64: `str r1,[r0,#0x64]` / `ldr r3,[r4,#0x64]`
+    u8  pad_68[0x24];           // +0x68..+0x8C
+    PartNode* children;         // +0x8C: `ldr r4,[r0,#0x8c]`
+    PartInstance* instance;     // +0x90: `ldr r0,[r4,#0x90]`
+    u8  pad_94[0x18];           // +0x94..+0xAC
+    PartNode* next;             // +0xAC: `ldr r4,[r4,#0xac]`
+};
+static_assert(offsetof(PartNode, color) == 0x64);
+static_assert(offsetof(PartNode, children) == 0x8C);
+static_assert(offsetof(PartNode, instance) == 0x90);
+static_assert(offsetof(PartNode, next) == 0xAC);
+
+/** One 0x44-byte entry of the effect-type table at 0x00464110. */
+struct TypeEntry {
+    u8 pad_00[0x30];
+    void (*set_color)(void* context, u32 color);   // +0x30
+    u8 pad_34[0x10];                               // +0x34..+0x44
+};
+static_assert(offsetof(TypeEntry, set_color) == 0x30);
+static_assert(sizeof(TypeEntry) == 0x44);
+
+/** Vector/color slots of the 0x004EA81C scratch block. */
+struct RenderState {
+    u8   pad_000[0x100];
+    Vec4 vector;                // +0x100: current normalized color
+    Vec4 color;                 // +0x110: staged parent tint
+};
+static_assert(offsetof(RenderState, vector) == 0x100);
+static_assert(offsetof(RenderState, color) == 0x110);
+
+constexpr f32 kColorInv255  = 1.0f / 255.0f;  // 0x3B808081 literal
+constexpr f32 kColorScale255 = 255.0f;        // 0x437F0000 literal
+constexpr u32 kColorByteMask = 0xFFu;
+constexpr u32 kTypeTableBase = 0x00464110u;   // literal 0x00464110
+constexpr u32 kTypeStride = 0x44;             // index*17 then lsl #2
+constexpr u32 kRenderStateBase = 0x004EA81Cu; // literal 0x004ea81c
+
+inline RenderState& render_state() {
+    return *reinterpret_cast<RenderState*>(kRenderStateBase);
+}
+
+inline TypeEntry* type_entry(u32 index) {
+    return reinterpret_cast<TypeEntry*>(kTypeTableBase + index * kTypeStride);
+}
+
+// 0x002A37E0..0x002A383C / 0x002A3864..0x002A38B0: {A,R,G,B} in 0..1,
+// lane i holding byte i counted from the most significant byte.
+inline Vec4 normalize_color(u32 color) {
+    Vec4 out;
+    out.value[0] = static_cast<f32>(color >> 24) * kColorInv255;            // A
+    out.value[1] = static_cast<f32>((color >> 16) & kColorByteMask) *
+                   kColorInv255;                                           // R
+    out.value[2] = static_cast<f32>((color >> 8) & kColorByteMask) *
+                   kColorInv255;                                           // G
+    out.value[3] = static_cast<f32>(color & kColorByteMask) *
+                   kColorInv255;                                           // B
+    return out;
+}
+
+// 0x002A3908..0x002A3954: scale by 255, truncate, pack as 0xAARRGGBB.
+inline u32 pack_color(const Vec4& color) {
+    const u32 a = static_cast<u32>(color.value[0] * kColorScale255);
+    const u32 r = static_cast<u32>(color.value[1] * kColorScale255);
+    const u32 g = static_cast<u32>(color.value[2] * kColorScale255);
+    const u32 b = static_cast<u32>(color.value[3] * kColorScale255);
+    return ((a & kColorByteMask) << 24) | ((r & kColorByteMask) << 16) |
+           ((g & kColorByteMask) << 8) | (b & kColorByteMask);
+}
+
+}  // namespace asd_part_color_002a37dc
+
 // DECOMP_FUNC(0x002a37dc, 448)
-// 108 ARM instructions through unconditional pop; 16 trailing data bytes.
-extern "C" __attribute__((naked)) void engine_func_002a37dc() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d41f0, 0xe1a02401, 0xe1a04801, 0xe1a03c21\n"
-        ".word 0xed2d8b06, 0xe1a0cc22, 0xe1a02c24, 0xee013a90\n"
-        ".word 0xe5801064, 0xe20110ff, 0xee002a10, 0xee001a90\n"
-        ".word 0xee01ca10, 0xeeb82a61, 0xed9faa5c, 0xe59f6170\n"
-        ".word 0xeef81a40, 0xeeb80a60, 0xeeb81a41, 0xe2861c01\n"
-        ".word 0xee228a0a, 0xee219a8a, 0xee609a0a, 0xee618a0a\n"
-        ".word 0xec818a04, 0xe590408c, 0xe3540000, 0x159f5148\n"
-        ".word 0x1ddfaa50, 0x0a00004b, 0xe5943064, 0xe286cc01\n"
-        ".word 0xe1a0100c, 0xe2867e11, 0xe1a08403, 0xe1a02007\n"
-        ".word 0xe1a08c28, 0xee008a10, 0xe1a08803, 0xe2860c01\n"
-        ".word 0xe1a08c28, 0xee008a90, 0xe1a08c23, 0xeef81a40\n"
-        ".word 0xee008a10, 0xe20330ff, 0xeeb82a60, 0xeeb81a40\n"
-        ".word 0xee210a8a, 0xee013a90, 0xeef81a61, 0xee610a0a\n"
-        ".word 0xee221a0a, 0xee611a8a, 0xedcc0a00, 0xed8c0a01\n"
-        ".word 0xe28cc008, 0xec8c1a02, 0xec878a04, 0xed910a00\n"
-        ".word 0xedd20a00, 0xee200a20, 0xed810a00, 0xed910a01\n"
-        ".word 0xedd20a01, 0xee200a20, 0xed810a01, 0xed910a02\n"
-        ".word 0xedd20a02, 0xee200a20, 0xed810a02, 0xed920a03\n"
-        ".word 0xedd10a03, 0xee200a80, 0xed810a03, 0xec900a04\n"
-        ".word 0xee200a2a, 0xee211a2a, 0xee600aaa, 0xee611aaa\n"
-        ".word 0xeebc0ac0, 0xeefc0ae0, 0xee100a10, 0xeebc0ac1\n"
-        ".word 0xee101a90, 0xe1a00c00, 0xe20110ff, 0xe1800801\n"
-        ".word 0xee102a10, 0xeebc0ae1, 0xe20220ff, 0xe1800402\n"
-        ".word 0xee103a10, 0xe20310ff, 0xe1811000, 0xe5940090\n"
-        ".word 0xe1d020b4, 0xe0822202, 0xe0852102, 0xe5922030\n"
-        ".word 0xe3520000, 0x15900008, 0x112fff32, 0xe59440ac\n"
-        ".word 0xe3540000, 0x1affffb3, 0xecbd8b06, 0xe8bd81f0\n"
-        ".word 0x3b808081, 0x004ea81c, 0x437f0000, 0x00464110\n"
-    );
+extern "C" void engine_func_002a37dc(void* part_raw, u32 color) {
+    using namespace asd_part_color_002a37dc;
+
+    PartNode* const self = static_cast<PartNode*>(part_raw);
+
+    // 0x002A37FC: the packed color is published before anything else.
+    self->color = color;
+
+    // 0x002A37E0..0x002A383C: normalized parent tint in the render block.
+    const Vec4 parent = normalize_color(color);
+    RenderState& state = render_state();
+    state.vector = parent;
+
+    // 0x002A3840/0x002A3984: the head is loaded once; a null head returns.
+    for (PartNode* node = self->children; node != nullptr; node = node->next) {
+        const u32 child_color = node->color;
+
+        // 0x002A3854..0x002A38C4: stage the child color and the parent tint.
+        state.vector = normalize_color(child_color);
+        state.color = parent;
+
+        // 0x002A38C8..0x002A3904: per-component product stays at +0x100.
+        for (u32 i = 0; i < 4; ++i) {
+            state.vector.value[i] *= state.color.value[i];
+        }
+
+        // 0x002A3908..0x002A3954: truncating re-quantization to 0xAABBGGRR.
+        const u32 packed = pack_color(state.vector);
+
+        // 0x002A3958..0x002A3974: per-type color hook; null slots are skipped.
+        PartInstance* const instance = node->instance;
+        const TypeEntry* const type = type_entry(instance->type);
+        if (type->set_color != nullptr) {
+            type->set_color(instance->context, packed);
+        }
+    }
 }
 
 // DECOMP_FUNC(0x002adc74, 448)
