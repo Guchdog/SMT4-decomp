@@ -8547,39 +8547,181 @@ extern "C" u32 script_vm_func_00296a18(u8* ctx, u32 state) {
 }
 
 // DECOMP_FUNC(0x002a043c, 448)
-// 107 ARM instructions through unconditional pop; 20 trailing data bytes.
-extern "C" __attribute__((naked)) void camp_func_002a043c() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe59f01a4, 0xe92d47f0, 0xe5905000, 0xeb0002d7\n"
-        ".word 0xe280901c, 0xe59f1194, 0xe2850d17, 0xeb0091b4\n"
-        ".word 0xe2850c0f, 0xe2800022, 0xe3a01070, 0xe1a0a000\n"
-        ".word 0xeb008db5, 0xe2850c0f, 0xe59f1174, 0xe2800092\n"
-        ".word 0xeb008db1, 0xe3a07000, 0xe1a08007, 0xe1a04007\n"
-        ".word 0xe5950000, 0xe1a01004, 0xebfffa2a, 0xe3500000\n"
-        ".word 0xe320f000, 0x0a000022, 0xe1a00004, 0xeb0063ad\n"
-        ".word 0xe1a06000, 0xe1d000b0, 0xebfffa13, 0xe3500000\n"
-        ".word 0xe320f000, 0x1a000004, 0xe1d600b0, 0xebfff9e7\n"
-        ".word 0xe3500000, 0xe320f000, 0x0a000015, 0xe1d900f8\n"
-        ".word 0xe3500000, 0x15d61002, 0x11500001, 0x1a000004\n"
-        ".word 0xe1d600b0, 0xe0851087, 0xe2811c05, 0xe2877001\n"
-        ".word 0xe1c10cb0, 0xe5d62002, 0xe1a01008, 0xe1a0000a\n"
-        ".word 0xebfff2db, 0xe3500000, 0xe320f000, 0x1a000004\n"
-        ".word 0xe5d60002, 0xe0851088, 0xe2811c0f, 0xe2888001\n"
-        ".word 0xe1c102b2, 0xe2840001, 0xe6ff4070, 0xe3540e4b\n"
-        ".word 0x9affffd2, 0xe59f30ac, 0xe3a02002, 0xe1a01007\n"
-        ".word 0xe2850d17, 0xfb005e6c, 0xe59fa09c, 0xe3a06000\n"
-        ".word 0xe1a04006, 0xe1a00004, 0xebfff9aa, 0xe3500000\n"
-        ".word 0xe320f000, 0x0a000012, 0xe5d01003, 0xe3110020\n"
-        ".word 0x0a00000f, 0xe1d911d5, 0xe3510000, 0xba000003\n"
-        ".word 0xe79a1101, 0xe5d00002, 0xe1510000, 0x1a000008\n"
-        ".word 0xe6bf0074, 0xebfc03cf, 0xe3500000, 0xe320f000\n"
-        ".word 0x0a000003, 0xe0850086, 0xe2800c0f, 0xe2866001\n"
-        ".word 0xe1c049b2, 0xe2840001, 0xe6ff4070, 0xe3540f7d\n"
-        ".word 0x9affffe3, 0xe2850a01, 0xe5806384, 0xe2850a01\n"
-        ".word 0xe2800fdf, 0xe8800180, 0xe8bd87f0, 0x0043dd68\n"
-        ".word 0x00000962, 0x000003ea, 0x001f643c, 0x0040333c\n"
-    );
+//
+// Recovered contract (ARM 0x002A043C..0x002A05E4; the last 20 bytes are the
+// literal pool 0x0043DD68, 0x00000962, 0x000003EA, 0x001F643C, 0x0040333C):
+//
+//   * `work = *(u8**)0x0043DD68` (the camp manager block); `config` is the
+//     byte block returned by 0x002A0FAC.  No argument is read; the routine
+//     returns void (r0 on return is incidental).
+//   * 0x002A0448..0x002A047C: three AsdMem_Zero(ptr, size) calls, in order:
+//     work+0x5C0/0x962, work+0xF22/0x70, work+0xF92/0x3EA.  (AsdMem_Zero is
+//     2-argument; r2 at the first call is caller leftover and unused.)
+//   * 0x002A0480..0x002A053C: 0x4B1 candidate slots (u16 index, 0..0x4B0
+//     inclusive, unsigned bound).  Per slot `i`:
+//       - skip when 0x0029ED44(*work, (u16)i) is zero (its first argument is
+//         loaded from work+0 and ignored by the callee);
+//       - `entry = 0x002B9364(i)` is dereferenced unconditionally;
+//       - `id = *(u16*)entry`; skip when 0x0029ED08(id)==0 AND
+//         0x0029EC6C(id)==0 (both zero);
+//       - when the signed-16 word config+0x24 is zero or equals entry[2],
+//         append `id` (u16) at work+0x5C0 + 2*count_a and bump count_a;
+//       - when 0x0029D080(work+0xF22, (s32)count_b, entry[2])==0, append the
+//         zero-extended byte entry[2] (u16) at work+0xF22+2*count_b and bump
+//         count_b.
+//   * 0x002A0540..0x002A0550: 0x002B7F08(work+0x5C0, (s32)count_a, 2,
+//     0x001F643C) sorts the candidate array (Thumb qsort-shaped entry).
+//   * 0x002A0554..0x002A05CC: 0x1F5 skill slots (u16 index, 0..0x1F4
+//     inclusive, unsigned bound).  Per slot `i`:
+//       - `info = 0x0029EC14(i)`; skip when null or when
+//         (info[3] & 0x20)==0;
+//       - re-read the signed byte config+0x31 each iteration; when it is
+//         non-negative, skip unless `((u32*)0x0040333C)[selector]` equals
+//         info[2] (word table entry versus zero-extended byte);
+//       - skip when 0x001A14E4((s32)i)==0;
+//       - otherwise append (u16)i at work+0xF92+2*count_c, bump count_c.
+//   * 0x002A05D0..0x002A05E0: store counts after the loops, in this order:
+//     u32 at work+0x1384 = count_c, u32 at work+0x137C = count_a, u32 at
+//     work+0x1380 = count_b.  All three loop bounds include their limit.
+//
+// Unresolved helpers (declared below, not reconstructed here): 0x002A0FAC,
+// 0x0029ED44, 0x002B9364, 0x0029ED08, 0x0029EC6C, 0x0029D080, 0x002B7F08,
+// 0x0029EC14, 0x001A14E4.  No indirect calls.
+
+namespace func_2a043c {
+
+// Literal pool of the original body.
+constexpr u32 kManagerSlot = 0x0043DD68;       // 0x0043DD68: camp manager ptr
+constexpr u32 kEntryCount = 0x962;             // first AsdMem_Zero size
+constexpr u32 kUniqueSlotBytes = 0x70;         // second AsdMem_Zero size
+constexpr u32 kSkillSlotBytes = 0x3EA;         // third AsdMem_Zero size
+constexpr u32 kComparator = 0x001F643C;        // qsort comparator entry
+constexpr u32 kSelectorTable = 0x0040333C;     // u32 table, signed-byte index
+
+// Manager-block layout touched by this routine.
+constexpr u32 kCandidateArray = 0x5C0;         // u16[0x4B1]
+constexpr u32 kUniqueByteArray = 0xF22;        // u16[0x38]
+constexpr u32 kSkillArray = 0xF92;             // u16[0x1F5]
+constexpr u32 kCandidateCount = 0x137C;        // u32
+constexpr u32 kUniqueByteCount = 0x1380;       // u32
+constexpr u32 kSkillCount = 0x1384;            // u32
+
+// Configuration-block fields read by this routine (block + offset).
+constexpr u32 kConfigSelectedCategory = 0x24;  // signed 16-bit
+constexpr u32 kConfigSortSelector = 0x31;      // signed 8-bit
+
+// Entry layout reported by the ARM bodies of the callees.
+constexpr u32 kEntryId = 0x00;                 // u16
+constexpr u32 kEntryCategory = 0x02;           // u8
+constexpr u32 kInfoFlags = 0x03;               // u8
+constexpr u8 kInfoAccepted = 0x20;
+
+constexpr u32 kCandidateLimit = 0x4B0;         // `cmp r4,#0x4b0` inclusive
+constexpr u32 kSkillLimit = 0x1F4;             // `cmp r4,#0x1f4` inclusive
+constexpr s32 kSortElementSize = 2;            // `mov r2,#2`
+
+}  // namespace func_2a043c
+
+// Direct callees of 0x002A043C.  engine_func_002c4b30 (AsdMem_Zero) is already
+// declared above in this translation unit.
+extern "C" u8* camp_func_002a0fac();
+extern "C" u32 camp_func_0029ed44(void* context, u16 id);
+extern "C" u8* camp_func_002b9364(u32 id);
+extern "C" u32 camp_func_0029ed08(u32 id);
+extern "C" u32 ui_func_0029ec6c(u32 entity_id);
+extern "C" u32 camp_func_0029d080(const u16* values, s32 count, u16 value);
+extern "C" void camp_func_002b7f08(void* base, s32 count, s32 element_size,
+                                   void* compare);
+extern "C" const u8* func_0029ec14(u32 skill_id);
+extern "C" u32 camp_func_001a14e4(s32 index);
+
+extern "C" void camp_func_002a043c() {
+    using namespace func_2a043c;
+
+    u8* const work = *reinterpret_cast<u8**>(kManagerSlot);
+    u8* const config = camp_func_002a0fac();
+
+    // 0x002A0448..0x002A047C: clear the three slot arrays.
+    engine_func_002c4b30(work + kCandidateArray, kEntryCount);
+    engine_func_002c4b30(work + kUniqueByteArray, kUniqueSlotBytes);
+    engine_func_002c4b30(work + kSkillArray, kSkillSlotBytes);
+
+    u16* const candidates =
+        reinterpret_cast<u16*>(work + kCandidateArray);
+    u16* const unique_bytes =
+        reinterpret_cast<u16*>(work + kUniqueByteArray);
+    u16* const skills = reinterpret_cast<u16*>(work + kSkillArray);
+
+    // 0x002A0480..0x002A053C: collect candidate ids and their unique bytes.
+    u32 candidate_count = 0;
+    u32 unique_byte_count = 0;
+    for (u32 i = 0; i <= kCandidateLimit; ++i) {
+        if (camp_func_0029ed44(*reinterpret_cast<void**>(work),
+                               static_cast<u16>(i)) == 0) {
+            continue;
+        }
+
+        const u8* const entry = camp_func_002b9364(i);
+        const u16 entry_id = *reinterpret_cast<const u16*>(entry + kEntryId);
+        if (camp_func_0029ed08(entry_id) == 0 &&
+            ui_func_0029ec6c(entry_id) == 0) {
+            continue;
+        }
+
+        // Re-read the signed category filter on every iteration, as the
+        // original does at 0x002A04D8.
+        const s16 selected_category =
+            *reinterpret_cast<const s16*>(config + kConfigSelectedCategory);
+        const u8 category = entry[kEntryCategory];
+        // Signed 16-bit word compared for equality against a zero-extended
+        // byte; both operand widths are preserved.
+        if (selected_category == 0 || selected_category == category) {
+            candidates[candidate_count] = entry_id;
+            ++candidate_count;
+        }
+        if (camp_func_0029d080(unique_bytes,
+                               static_cast<s32>(unique_byte_count),
+                               category) == 0) {
+            unique_bytes[unique_byte_count] = category;
+            ++unique_byte_count;
+        }
+    }
+
+    // 0x002A0540..0x002A0550: sort the candidate ids in place.
+    camp_func_002b7f08(
+        candidates, static_cast<s32>(candidate_count), kSortElementSize,
+        reinterpret_cast<void*>(static_cast<uintptr_t>(kComparator)));
+
+    // 0x002A0554..0x002A05CC: collect accepted skill ids.
+    u32 skill_count = 0;
+    for (u32 i = 0; i <= kSkillLimit; ++i) {
+        const u8* const info = func_0029ec14(i);
+        if (info == nullptr || (info[kInfoFlags] & kInfoAccepted) == 0) {
+            continue;
+        }
+
+        // Re-read the signed selector on every iteration, as the original does.
+        const s8 selector =
+            *reinterpret_cast<const s8*>(config + kConfigSortSelector);
+        if (selector >= 0) {
+            const u32* const table =
+                reinterpret_cast<const u32*>(kSelectorTable);
+            if (table[selector] != info[kEntryCategory]) {
+                continue;
+            }
+        }
+
+        if (camp_func_001a14e4(static_cast<s32>(i)) == 0) {
+            continue;
+        }
+        skills[skill_count] = static_cast<u16>(i);
+        ++skill_count;
+    }
+
+    // 0x002A05D0..0x002A05E0: publish the three collected counts.
+    *reinterpret_cast<u32*>(work + kSkillCount) = skill_count;
+    *reinterpret_cast<u32*>(work + kCandidateCount) = candidate_count;
+    *reinterpret_cast<u32*>(work + kUniqueByteCount) = unique_byte_count;
 }
 
 // DECOMP_FUNC(0x002a37dc, 448)
