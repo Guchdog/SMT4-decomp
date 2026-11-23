@@ -6528,110 +6528,147 @@ extern "C" u32 engine_func_002f5584(u32 kind, const void* path, const void* buf,
 }
 
 // DECOMP_FUNC(0x003525b8, 796)
-extern "C" __attribute__((naked)) void engine_func_003525b8() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4ff0, 0xe92d, 0x6001, 0xe1a0\n"
-        ".hword 0x1010, 0xe283, 0x7002, 0xe1a0\n"
-        ".hword 0xd054, 0xe24d, 0x0006, 0xe891\n"
-        ".hword 0x4003, 0xe1a0, 0x5000, 0xe1a0\n"
-        ".hword 0x04bd, 0xeb00, 0x1fa0, 0xe1b0\n"
-        ".hword 0x0092, 0x1a00, 0x0005, 0xe1a0\n"
-        ".hword 0x64f4, 0xe1cd, 0x04b1, 0xeb00\n"
-        ".hword 0x0000, 0xe58d, 0x0005, 0xe1a0\n"
-        ".hword 0x04b1, 0xeb00, 0x0004, 0xe58d\n"
-        ".hword 0xb004, 0xe285, 0x60d8, 0xe1c5\n"
-        ".hword 0x034f, 0xeb00, 0x0e27, 0xe28f\n"
-        ".hword 0x9f63, 0xebfb, 0x0e27, 0xe28f\n"
-        ".hword 0x9f61, 0xebfb, 0x0e27, 0xe28f\n"
-        ".hword 0x9f5f, 0xebfb, 0x0f9d, 0xe28f\n"
-        ".hword 0x9f5d, 0xebfb, 0x0f9f, 0xe28f\n"
-        ".hword 0x9f5b, 0xebfb, 0x0028, 0xe5d4\n"
-        ".hword 0x031a, 0xeb00, 0x0000, 0xe594\n"
-        ".hword 0x1008, 0xe594, 0xc004, 0xe1a0\n"
-        ".hword 0x0000, 0xe350, 0x0004, 0x01a0\n"
-        ".hword 0x004c, 0xe58d, 0x3018, 0xe594\n"
-        ".hword 0x0000, 0xe351, 0x100c, 0x01a0\n"
-        ".hword 0x201c, 0xe594, 0x0000, 0xe353\n"
-        ".hword 0x0003, 0x11a0, 0x0004, 0x01a0\n"
-        ".hword 0x0000, 0xe352, 0x8004, 0xe1a0\n"
-        ".hword 0x2004, 0x01a0, 0x402c, 0xe284\n"
-        ".hword 0x9238, 0xe59f, 0x4010, 0xe894\n"
-        ".hword 0xb038, 0xe58d, 0xa230, 0xe59f\n"
-        ".hword 0xe034, 0xe58d, 0x63fc, 0xe1cd\n"
-        ".hword 0x6001, 0x13a0, 0x6000, 0x03a0\n"
-        ".hword 0x0000, 0xe353, 0x3001, 0x13a0\n"
-        ".hword 0x7028, 0xe28d, 0x4030, 0xe58d\n"
-        ".hword 0x3024, 0xe58d, 0x420c, 0xe59f\n"
-        ".hword 0x0044, 0xe887, 0x700c, 0xe28d\n"
-        ".hword 0x20d0, 0xe1cd, 0x4000, 0xe594\n"
-        ".hword 0x0020, 0xe58d, 0x21f8, 0xe1cd\n"
-        ".hword 0x21f4, 0xe59f, 0x4014, 0xe58d\n"
-        ".hword 0x000c, 0xe598, 0x2000, 0xe592\n"
-        ".hword 0x1008, 0xe58d, 0x9000, 0xe58d\n"
-        ".hword 0x2004, 0xe58d, 0x0401, 0xe887\n"
-        ".hword 0x7044, 0xe28d, 0x3004, 0xe59c\n"
-        ".hword 0x0007, 0xe897, 0x34d0, 0xeb00\n"
-        ".hword 0x1fa0, 0xe1b0, 0x0000, 0x03a0\n"
-        ".hword 0x1fa0, 0xe1b0, 0x0047, 0x1a00\n"
-        ".hword 0x0004, 0xe595, 0x7000, 0xe3a0\n"
-        ".hword 0xb007, 0xe1a0, 0x0000, 0xe350\n"
-        ".hword 0x004f, 0x0a00, 0x0004, 0xe590\n"
-        ".hword 0x0000, 0xe350, 0xa010, 0x83a0\n"
-        ".hword 0x004b, 0x9a00, 0x0004, 0xe595\n"
-        ".hword 0x0000, 0xe350, 0x0006, 0x0a00\n"
-        ".hword 0x2004, 0xe590, 0x0002, 0xe157\n"
-        ".hword 0x0003, 0x8a00, 0x1000, 0xe590\n"
-        ".hword 0x0087, 0xe087, 0x4200, 0xe081\n"
-        ".hword 0x0000, 0xea00, 0x4000, 0xe3a0\n"
-        ".hword 0x9f4e, 0xe28f, 0x801c, 0xe594\n"
-        ".hword 0x6000, 0xe3a0, 0x0000, 0xe358\n"
-        ".hword 0x000a, 0x9a00, 0x0018, 0xe594\n"
-        ".hword 0x2040, 0xe3a0, 0x1009, 0xe1a0\n"
-        ".hword 0x0186, 0xe790, 0x879b, 0xebfd\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x0028, 0x0a00, 0x6001, 0xe286\n"
-        ".hword 0x0006, 0xe158, 0xfff4, 0x8aff\n"
-        ".hword 0x000b, 0xe1a0, 0x200a, 0xe3a0\n"
-        ".hword 0x1000, 0xe3a0, 0xce32, 0xfafd\n"
-        ".hword 0x2070, 0xe6ff, 0x0004, 0xe594\n"
-        ".hword 0x1000, 0xe594, 0xcc00, 0xe1a0\n"
-        ".hword 0x3421, 0xe18c, 0x0720, 0xe15a\n"
-        ".hword 0xc070, 0x06ff, 0x3603, 0xe1a0\n"
-        ".hword 0x008c, 0x035c, 0x3623, 0xe1a0\n"
-        ".hword 0x0000, 0x03a0, 0x0004, 0x0a00\n"
-        ".hword 0x0720, 0xe15a, 0x0070, 0x06ff\n"
-        ".hword 0x000d, 0x0350, 0x00ff, 0x13a0\n"
-        ".hword 0x0001, 0x03a0, 0xc0ff, 0xe3cc\n"
-        ".hword 0x000c, 0xe180, 0x1401, 0xe1a0\n"
-        ".hword 0x0cff, 0xe3c0, 0x1cff, 0xe201\n"
-        ".hword 0x0001, 0xe180, 0x0004, 0xe58d\n"
-        ".hword 0x100d, 0xe1a0, 0x0005, 0xe1a0\n"
-        ".hword 0x3000, 0xe58d, 0x0402, 0xeb00\n"
-        ".hword 0x1000, 0xe1a0, 0x0fa0, 0xe1b0\n"
-        ".hword 0x0007, 0x0a00, 0x0001, 0xe1a0\n"
-        ".hword 0xd054, 0xe28d, 0x8ff0, 0xe8bd\n"
-        ".hword 0x1018, 0xe594, 0x0004, 0xe3a0\n"
-        ".hword 0x0186, 0xe080, 0x0000, 0xe791\n"
-        ".hword 0xffd5, 0xeaff, 0x0004, 0xe595\n"
-        ".hword 0x7001, 0xe287, 0x0000, 0xe350\n"
-        ".hword 0x0004, 0x1590, 0x0007, 0xe150\n"
-        ".hword 0xffb3, 0x8aff, 0x0004, 0xe595\n"
-        ".hword 0x0000, 0xe350, 0x0008, 0x1590\n"
-        ".hword 0xd054, 0xe28d, 0x0000, 0x1350\n"
-        ".hword 0x0050, 0x059f, 0x0000, 0x13a0\n"
-        ".hword 0x8ff0, 0xe8bd, 0x7250, 0x6369\n"
-        ".hword 0x7365, 0x0000, 0x6152, 0x6974\n"
-        ".hword 0x676e, 0x0073, 0x654e, 0x5377\n"
-        ".hword 0x6e69, 0x6563, 0x0000, 0x0000\n"
-        ".hword 0x6954, 0x6c74, 0x5665, 0x7265\n"
-        ".hword 0x6973, 0x6e6f, 0x0000, 0x0000\n"
-        ".hword 0x7973, 0x2e73, 0x7449, 0x6d65\n"
-        ".hword 0x6f43, 0x6564, 0x0000, 0x0000\n"
-        ".hword 0x655c, 0x004e, 0x675c, 0x004e\n"
-        ".hword 0x1a54, 0x0047, 0x1a50, 0x0047\n"
-        ".hword 0x3908, 0xc8a1\n"
-    );
+extern "C" s32 func_003538d4(u8* self, u32 a1, u32 a2);
+extern "C" u32 func_003538b8(u8* self);
+extern "C" u32 func_003538c4(u8* self);
+extern "C" void func_0035334c();
+extern "C" void func_0023a3a4(const char* s);
+extern "C" void func_003532a8(u8 flag);
+extern "C" s32 func_0035fa44(
+    u32 a1, u32 a2, const void* fp, u32 a3_4,
+    u32 s0, u32 s1, u32 s2, u32 s3, u32 s4, u32 s5,
+    u32 s6, u32 s7, u32 s8, u32 s9, u32 s10, u32 s11,
+    u32 s12, u32 s13, u32 s14, u32 s15, u32 s16);
+extern "C" s32 engine_func_002b45f8(const char* a, const char* b, u32 max_len);
+extern "C" u32 script_vm_func_002c607c(const char* s, char** endptr, s32 base);
+extern "C" s32 func_0035382c(u8* self, const u32* pair, u16 code);
+
+// Error sentinel returned by the original when the parsed catalog header or its
+// trailing word is absent at loop exit.
+constexpr u32 kEngine3525b8MissingItem = 0xC8A13908u;
+
+extern "C" s32 engine_func_003525b8(u8* self, u32 a1, u32 a2, const u8* a3) {
+    // 1. Open/fetch the catalog source; a negative result aborts immediately.
+    const s32 open_rc = func_003538d4(self,
+                                      *reinterpret_cast<const u32*>(a3 + 0x10),
+                                      *reinterpret_cast<const u32*>(a3 + 0x14));
+    if (open_rc < 0) {
+        return open_rc;
+    }
+
+    // 2. Register the five metadata keys and publish the header byte.
+    const u32 v_38b8 = func_003538b8(self);
+    const u32 v_38c4 = func_003538c4(self);
+    func_0035334c();
+    func_0023a3a4("Prices");
+    func_0023a3a4("Ratings");
+    func_0023a3a4("NewSince");
+    func_0023a3a4("TitleVersion");
+    func_0023a3a4("sys.ItemCode");
+    func_003532a8(a3[0x28]);
+
+    // 3. Null descriptor words fall back to the descriptor itself.
+    const u32 sel_self = (*reinterpret_cast<const u32*>(a3 + 0x00) != 0u)
+        ? *reinterpret_cast<const u32*>(a3 + 0x00)
+        : reinterpret_cast<u32>(a3);
+    const u32 sel_08 = (*reinterpret_cast<const u32*>(a3 + 0x08) != 0u)
+        ? *reinterpret_cast<const u32*>(a3 + 0x08)
+        : reinterpret_cast<u32>(a3);
+    const u32 sel_18 = (*reinterpret_cast<const u32*>(a3 + 0x18) != 0u)
+        ? *reinterpret_cast<const u32*>(a3 + 0x18)
+        : reinterpret_cast<u32>(a3);
+    const u32 flag_18 = (*reinterpret_cast<const u32*>(a3 + 0x18) != 0u) ? 1u : 0u;
+    const u32 sel_1C = (*reinterpret_cast<const u32*>(a3 + 0x1C) != 0u)
+        ? *reinterpret_cast<const u32*>(a3 + 0x1C)
+        : reinterpret_cast<u32>(a3);
+    const u32 flag_1C = (*reinterpret_cast<const u32*>(a3 + 0x1C) != 0u) ? 1u : 0u;
+
+    const s32 ser_rc = func_0035fa44(
+        a1,
+        a2,
+        reinterpret_cast<const void*>(sel_self),
+        *reinterpret_cast<const u32*>(a3 + 0x04),
+        0x004E655Cu,
+        *reinterpret_cast<const u32*>(0x00471A50u),
+        sel_08,
+        *reinterpret_cast<const u32*>(a3 + 0x0C),
+        0x004E675Cu,
+        *reinterpret_cast<const u32*>(0x00471A54u),
+        v_38b8,
+        v_38c4,
+        sel_18,
+        flag_18,
+        sel_1C,
+        flag_1C,
+        *reinterpret_cast<const u32*>(a3 + 0x2C),
+        *reinterpret_cast<const u32*>(a3 + 0x30),
+        reinterpret_cast<u32>(self + 4),
+        *reinterpret_cast<const u32*>(self + 8),
+        *reinterpret_cast<const u32*>(self + 0x0C));
+    if (ser_rc < 0) {
+        return ser_rc;
+    }
+
+    // 4. Walk the parsed items (stride 0x30) and submit one packed pair each.
+    const u8* const hdr = *reinterpret_cast<const u8* const*>(self + 4);
+    if (hdr != nullptr && *reinterpret_cast<const u32*>(hdr + 4) != 0u) {
+        for (u32 idx = 0u; ; ++idx) {
+            const u8* const cur = *reinterpret_cast<const u8* const*>(self + 4);
+            const u8* const item =
+                (cur != nullptr && idx <= *reinterpret_cast<const u32*>(cur + 4))
+                ? (*reinterpret_cast<const u8* const*>(cur) + idx * 0x30u)
+                : nullptr;
+
+            const u32 pair_count = *reinterpret_cast<const u32*>(item + 0x1C);
+            const char* value = nullptr;
+            for (u32 k = 0u; k < pair_count; ++k) {
+                const char* const* const pairs =
+                    *reinterpret_cast<const char* const* const*>(item + 0x18);
+                if (engine_func_002b45f8(pairs[k * 2u], "TitleVersion", 0x40u) == 0) {
+                    value = pairs[k * 2u + 1u];
+                    break;
+                }
+            }
+
+            const u16 code =
+                static_cast<u16>(script_vm_func_002c607c(value, nullptr, 10));
+            const u32 w0 = *reinterpret_cast<const u32*>(item + 0x00);
+            const u32 w4 = *reinterpret_cast<const u32*>(item + 0x04);
+
+            const u32 p0 = (((w4 << 24) | (w0 >> 8)) << 12) >> 12;
+            u32 lo8;
+            if ((w4 >> 14) == 0x10u && static_cast<u16>(w4) == 0x8Cu) {
+                lo8 = 0u;
+            } else if ((w4 >> 14) == 0x10u && static_cast<u16>(w4) == 0x0Du) {
+                lo8 = 1u;
+            } else {
+                lo8 = 0xFFu;
+            }
+            const u32 hi16 = ((w4 >> 14) == 0x10u) ? 0u : (w4 << 24);
+            const u32 p1 = hi16 | ((w0 << 8) & 0xFF00u) | lo8;
+
+            const u32 out_pair[2] = {p0, p1};
+            const s32 put_rc = func_0035382c(self, out_pair, code);
+            if (put_rc < 0) {
+                return put_rc;
+            }
+
+            const u8* const next = *reinterpret_cast<const u8* const*>(self + 4);
+            const u32 next_count = (next != nullptr)
+                ? *reinterpret_cast<const u32*>(next + 4)
+                : 0u;
+            if (idx + 1u >= next_count) {
+                break;
+            }
+        }
+    }
+
+    // 5. Success only when the header pointer and its trailing word are present.
+    const u8* const tail = *reinterpret_cast<const u8* const*>(self + 4);
+    if (tail != nullptr && *reinterpret_cast<const u32*>(tail + 8) != 0u) {
+        return 0;
+    }
+    return static_cast<s32>(kEngine3525b8MissingItem);
 }
 
 // DECOMP_FUNC(0x0027d35c, 800)

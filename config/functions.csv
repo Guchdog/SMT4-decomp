@@ -8050,7 +8050,7 @@ address,size,status,category,name,src_file
 0x0035249c,108,matching,unknown,func_0035249c,src/engine/leaf_batch25_c.cpp
 0x00352508,100,matching,unknown,func_00352508,src/engine/leaf_batch25_c.cpp
 0x0035256c,76,matching,unknown,func_0035256c,src/engine/leaf_batch16_b.cpp
-0x003525b8,796,matching,engine,engine_func_003525b8,src/engine/leaf_batch45_b.cpp
+0x003525b8,796,non_matching,engine,engine_func_003525b8,src/engine/leaf_batch45_b.cpp
 0x003528d4,124,matching,engine,engine_func_003528d4,src/engine/leaf_batch20_c.cpp
 0x00352950,36,matching,engine,engine_func_00352950,src/engine/leaf_batch10_b.cpp
 0x00352974,444,matching,ui,ui_func_00352974,src/engine/leaf_batch45_b.cpp
