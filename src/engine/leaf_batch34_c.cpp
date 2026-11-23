@@ -11203,262 +11203,251 @@ extern "C" u32 func_0015f514(u8* base, u32 index, const ChannelRecord* record,
     return 1;
 }
 
+// ---------------------------------------------------------------------------
+// 0x0015F7BC -- byte-wise edge filter over four strided 32-bit words.
+//
+// The config object supplies five words that this routine reads:
+//   +0x04  base address of the filtered buffer
+//   +0x08  horizontal byte count, consumed as (count - 8)
+//   +0x0C  vertical byte count,   consumed as (count - 8)
+//   +0x10  threshold word A       (prefix-OR expanded; centre comparison, r8)
+//   +0x14  threshold word B       (prefix-OR expanded; outer distances, sb)
+// +0x00 is never read.  The return value is the config pointer itself (the
+// original restores r0 from `push {r0, lr}` before `pop {r0, pc}`).
+//
+// The routine starts at base + 0x2000 and walks 16-byte chunks.  For each of
+// the four word lanes in a chunk it combines the word two rows up (-0x800),
+// the two centre words (-0x400, 0) and the word one row down (+0x400), then
+// writes back only the two centre words.  The inner counter is the horizontal
+// count minus 8 and drops by 16 per chunk; after it lands exactly on zero the
+// trailing 8 bytes are filtered as well, while a negative value leaves them
+// untouched.  The outer loop adds a 0x2000-byte band and repeats until the
+// vertical counter, reduced by 8 per band, reaches zero.
+//
+// The packed arithmetic is the ARM parallel-byte set used by the original:
+//   uhadd8 -> (a + b) >> 1 per byte      uqsub8 -> max(a - b, 0) per byte
+//   uqadd8 -> min(a + b, 255) per byte   uadd8  -> (a + b) & 0xFF per byte
+//   ssub8  -> (a - b) & 0xFF, GE = signed(a_byte) >= signed(b_byte)
+//   sel    -> GE ? Rn : Rm per byte
+// The literal pool words 0x01010101 and 0x20202020 are reproduced by the two
+// named constants below.
+// ---------------------------------------------------------------------------
+namespace {
+
+struct EdgeFilterConfig {
+    u32 unused_00;      // +0x00: not read by this routine
+    u32 base;           // +0x04: absolute buffer address
+    u32 width_bytes;    // +0x08
+    u32 height_bytes;   // +0x0C
+    u32 threshold_a;    // +0x10
+    u32 threshold_b;    // +0x14
+};
+
+constexpr u32 kPackedOne = 0x01010101u;      // literal at 0x0015FB9C
+constexpr u32 kPackedTwenty = 0x20202020u;   // literal at 0x0015FBA0
+constexpr u32 kBandBytes = 0x2000u;
+constexpr u32 kRowStride = 0x400u;
+constexpr u32 kChunkBytes = 0x10u;
+constexpr u32 kWidthBias = 8u;
+constexpr u32 kHeightBias = 8u;
+constexpr u32 kHeightStep = 8u;
+
+static_assert(sizeof(EdgeFilterConfig) == 0x18, "edge filter config layout");
+
+// The original `orr rX, rX, rX, lsl #8` / `#16` pair.  Each byte becomes the
+// OR of itself and every lower byte, not a plain replication.
+inline u32 prefix_or_bytes(u32 value) {
+    value |= value << 8;
+    value |= value << 16;
+    return value;
+}
+
+inline u32 byte_uhadd8(u32 first, u32 second) {
+    u32 result = 0;
+    for (u32 index = 0; index < 4; ++index) {
+        const u32 shift = index * 8u;
+        const u32 left = (first >> shift) & 0xFFu;
+        const u32 right = (second >> shift) & 0xFFu;
+        result |= ((left + right) >> 1) << shift;
+    }
+    return result;
+}
+
+inline u32 byte_uqsub8(u32 first, u32 second) {
+    u32 result = 0;
+    for (u32 index = 0; index < 4; ++index) {
+        const u32 shift = index * 8u;
+        const u32 left = (first >> shift) & 0xFFu;
+        const u32 right = (second >> shift) & 0xFFu;
+        result |= (left > right ? left - right : 0u) << shift;
+    }
+    return result;
+}
+
+inline u32 byte_uqadd8(u32 first, u32 second) {
+    u32 result = 0;
+    for (u32 index = 0; index < 4; ++index) {
+        const u32 shift = index * 8u;
+        const u32 sum = ((first >> shift) & 0xFFu) +
+                        ((second >> shift) & 0xFFu);
+        result |= (sum > 0xFFu ? 0xFFu : sum) << shift;
+    }
+    return result;
+}
+
+inline u32 byte_uadd8(u32 first, u32 second) {
+    u32 result = 0;
+    for (u32 index = 0; index < 4; ++index) {
+        const u32 shift = index * 8u;
+        const u32 sum = ((first >> shift) & 0xFFu) +
+                        ((second >> shift) & 0xFFu);
+        result |= (sum & 0xFFu) << shift;
+    }
+    return result;
+}
+
+// GE mask produced by `ssub8 first, second`: 0xFF per byte whose signed
+// difference is non-negative.  Only the flags matter in this routine.
+inline u32 ssub8_ge_mask(u32 first, u32 second) {
+    u32 mask = 0;
+    for (u32 index = 0; index < 4; ++index) {
+        const u32 shift = index * 8u;
+        const s32 left =
+            static_cast<s32>(static_cast<s8>((first >> shift) & 0xFFu));
+        const s32 right =
+            static_cast<s32>(static_cast<s8>((second >> shift) & 0xFFu));
+        if (left >= right) {
+            mask |= 0xFFu << shift;
+        }
+    }
+    return mask;
+}
+
+// `sel Rd, Rn, Rm`: GE ? Rn : Rm, per byte.
+inline u32 select_bytes(u32 ge_mask, u32 when_ge, u32 when_clear) {
+    return (ge_mask & when_ge) | (~ge_mask & when_clear);
+}
+
+inline u32 load_word(u32 address) {
+    return *reinterpret_cast<const volatile u32*>(address);
+}
+
+inline void store_word(u32 address, u32 value) {
+    *reinterpret_cast<volatile u32*>(address) = value;
+}
+
+struct EdgeWords {
+    u32 lower;   // stored at centre - 0x400
+    u32 upper;   // stored at centre
+};
+
+// One lane of the filter.  `above`, `lower`, `upper` and `below` are the four
+// strided words, in the original load order.  `threshold_a` is the expanded
+// +0x10 word (compared against |lower - upper|); `threshold_b` is the expanded
+// +0x14 word (compared against |above - lower| and |upper - below|).
+__attribute__((always_inline)) inline EdgeWords
+filter_lane(u32 above, u32 lower, u32 upper, u32 below, u32 threshold_a,
+            u32 threshold_b) {
+    u32 mixed = ~below;
+    mixed = byte_uhadd8(mixed, above);
+    u32 average = byte_uhadd8(lower, upper);
+    mixed = byte_uhadd8(mixed, kPackedOne);
+    u32 positive = byte_uqsub8(above, lower);
+    mixed = byte_uhadd8(mixed, kPackedOne);
+    u32 difference = byte_uqsub8(lower, above);
+    u32 raise = byte_uqsub8(mixed, kPackedTwenty);
+    mixed = byte_uqsub8(kPackedTwenty, mixed);
+    u32 lower_out = byte_uqadd8(average, raise);
+    difference = byte_uadd8(difference, positive);
+    lower_out = byte_uqsub8(lower_out, mixed);
+    positive = byte_uqsub8(average, raise);
+    u32 below_minus_upper = byte_uqsub8(upper, below);
+    positive = byte_uqadd8(positive, mixed);
+    u32 upper_minus_below = byte_uqsub8(below, upper);
+
+    const u32 mask_above = ssub8_ge_mask(difference, threshold_b);
+    lower_out = select_bytes(mask_above, lower, lower_out);
+    u32 upper_out = select_bytes(mask_above, upper, positive);
+
+    const u32 below_distance = byte_uadd8(below_minus_upper, upper_minus_below);
+    const u32 lower_minus_upper = byte_uqsub8(lower, upper);
+    const u32 upper_minus_lower = byte_uqsub8(upper, lower);
+
+    const u32 mask_below = ssub8_ge_mask(below_distance, threshold_b);
+    lower_out = select_bytes(mask_below, lower, lower_out);
+    upper_out = select_bytes(mask_below, upper, upper_out);
+
+    const u32 centre_distance = byte_uadd8(lower_minus_upper, upper_minus_lower);
+    const u32 mask_centre = ssub8_ge_mask(centre_distance, threshold_a);
+    lower_out = select_bytes(mask_centre, lower, lower_out);
+    upper_out = select_bytes(mask_centre, upper, upper_out);
+
+    return EdgeWords{lower_out, upper_out};
+}
+
+// Filter the word lane at `centre + lane`: load above, below, lower and upper
+// in the original order, then write back the two centre words.
+__attribute__((always_inline)) inline void filter_lane_at(
+    u32 centre, u32 lane, u32 threshold_a, u32 threshold_b) {
+    const u32 above = load_word(centre - kRowStride * 2u + lane);
+    const u32 below = load_word(centre + kRowStride + lane);
+    const u32 lower = load_word(centre - kRowStride + lane);
+    const u32 upper = load_word(centre + lane);
+    const EdgeWords output =
+        filter_lane(above, lower, upper, below, threshold_a, threshold_b);
+    store_word(centre - kRowStride + lane, output.lower);
+    store_word(centre + lane, output.upper);
+}
+
+} // namespace
+
 // DECOMP_FUNC(0x0015f7bc, 1000)
-extern "C" __attribute__((naked)) void func_0015f7bc() {
-    asm volatile(
-        "push {r0, lr}\n"
-        "ldr r2, [r0, #8]\n"
-        "ldr r3, [r0, #0xc]\n"
-        "ldr r8, [r0, #0x10]\n"
-        "ldr sb, [r0, #0x14]\n"
-        "ldr r0, [r0, #4]\n"
-        "sub r2, r2, #8\n"
-        "sub r3, r3, #8\n"
-        "strd r2, r3, [sp, #-8]!\n"
-        ".word 0xe59fc3b4\n"
-        ".word 0xe59fe3b4\n"
-        "add r0, r0, #0x2000\n"
-        "str r2, [sp, #-4]!\n"
-        "orr r8, r8, r8, lsl #8\n"
-        "orr sb, sb, sb, lsl #8\n"
-        "orr r8, r8, r8, lsl #16\n"
-        "orr sb, sb, sb, lsl #16\n"
-        ".L_0015f800:\n"
-        "pld [r0, #-0x7e0]\n"
-        "ldr r1, [r0, #-0x800]\n"
-        "ldr r4, [r0, #0x400]\n"
-        "ldr r2, [r0, #-0x400]\n"
-        "ldr r3, [r0]\n"
-        "mvn r6, r4\n"
-        "uhadd8 r6, r6, r1\n"
-        "uhadd8 r5, r2, r3\n"
-        "uhadd8 r6, r6, ip\n"
-        "uqsub8 fp, r1, r2\n"
-        "uhadd8 r6, r6, ip\n"
-        "uqsub8 r1, r2, r1\n"
-        "uqsub8 r7, r6, lr\n"
-        "uqsub8 r6, lr, r6\n"
-        "uqadd8 sl, r5, r7\n"
-        "uadd8 r1, r1, fp\n"
-        "uqsub8 sl, sl, r6\n"
-        "uqsub8 fp, r5, r7\n"
-        "uqsub8 r5, r3, r4\n"
-        "uqadd8 fp, fp, r6\n"
-        "uqsub8 r4, r4, r3\n"
-        "ssub8 r1, r1, sb\n"
-        "sel sl, r2, sl\n"
-        "sel fp, r3, fp\n"
-        "uadd8 r4, r4, r5\n"
-        "uqsub8 r5, r2, r3\n"
-        "uqsub8 r6, r3, r2\n"
-        "ssub8 r4, r4, sb\n"
-        "sel sl, r2, sl\n"
-        "sel fp, r3, fp\n"
-        "uadd8 r5, r5, r6\n"
-        "ssub8 r5, r5, r8\n"
-        "sel sl, r2, sl\n"
-        "sel fp, r3, fp\n"
-        "str sl, [r0, #-0x400]\n"
-        "str fp, [r0]\n"
-        "pld [r0, #-0x3e0]\n"
-        "ldr r1, [r0, #-0x7fc]\n"
-        "ldr r4, [r0, #0x404]\n"
-        "ldr r2, [r0, #-0x3fc]\n"
-        "ldr r3, [r0, #4]\n"
-        "mvn r6, r4\n"
-        "uhadd8 r6, r6, r1\n"
-        "uhadd8 r5, r2, r3\n"
-        "uhadd8 r6, r6, ip\n"
-        "uqsub8 fp, r1, r2\n"
-        "uhadd8 r6, r6, ip\n"
-        "uqsub8 r1, r2, r1\n"
-        "uqsub8 r7, r6, lr\n"
-        "uqsub8 r6, lr, r6\n"
-        "uqadd8 sl, r5, r7\n"
-        "uadd8 r1, r1, fp\n"
-        "uqsub8 sl, sl, r6\n"
-        "uqsub8 fp, r5, r7\n"
-        "uqsub8 r5, r3, r4\n"
-        "uqadd8 fp, fp, r6\n"
-        "uqsub8 r4, r4, r3\n"
-        "ssub8 r1, r1, sb\n"
-        "sel sl, r2, sl\n"
-        "sel fp, r3, fp\n"
-        "uadd8 r4, r4, r5\n"
-        "uqsub8 r5, r2, r3\n"
-        "uqsub8 r6, r3, r2\n"
-        "ssub8 r4, r4, sb\n"
-        "sel sl, r2, sl\n"
-        "sel fp, r3, fp\n"
-        "uadd8 r5, r5, r6\n"
-        "ssub8 r5, r5, r8\n"
-        "sel sl, r2, sl\n"
-        "sel fp, r3, fp\n"
-        "str sl, [r0, #-0x3fc]\n"
-        "str fp, [r0, #4]\n"
-        "pld [r0, #0x20]\n"
-        "ldr r1, [r0, #-0x7f8]\n"
-        "ldr r4, [r0, #0x408]\n"
-        "ldr r2, [r0, #-0x3f8]\n"
-        "ldr r3, [r0, #8]\n"
-        "mvn r6, r4\n"
-        "uhadd8 r6, r6, r1\n"
-        "uhadd8 r5, r2, r3\n"
-        "uhadd8 r6, r6, ip\n"
-        "uqsub8 fp, r1, r2\n"
-        "uhadd8 r6, r6, ip\n"
-        "uqsub8 r1, r2, r1\n"
-        "uqsub8 r7, r6, lr\n"
-        "uqsub8 r6, lr, r6\n"
-        "uqadd8 sl, r5, r7\n"
-        "uadd8 r1, r1, fp\n"
-        "uqsub8 sl, sl, r6\n"
-        "uqsub8 fp, r5, r7\n"
-        "uqsub8 r5, r3, r4\n"
-        "uqadd8 fp, fp, r6\n"
-        "uqsub8 r4, r4, r3\n"
-        "ssub8 r1, r1, sb\n"
-        "sel sl, r2, sl\n"
-        "sel fp, r3, fp\n"
-        "uadd8 r4, r4, r5\n"
-        "uqsub8 r5, r2, r3\n"
-        "uqsub8 r6, r3, r2\n"
-        "ssub8 r4, r4, sb\n"
-        "sel sl, r2, sl\n"
-        "sel fp, r3, fp\n"
-        "uadd8 r5, r5, r6\n"
-        "ssub8 r5, r5, r8\n"
-        "sel sl, r2, sl\n"
-        "sel fp, r3, fp\n"
-        "str sl, [r0, #-0x3f8]\n"
-        "str fp, [r0, #8]\n"
-        "pld [r0, #0x420]\n"
-        "ldr r1, [r0, #-0x7f4]\n"
-        "ldr r4, [r0, #0x40c]\n"
-        "ldr r2, [r0, #-0x3f4]\n"
-        "ldr r3, [r0, #0xc]\n"
-        "mvn r6, r4\n"
-        "uhadd8 r6, r6, r1\n"
-        "uhadd8 r5, r2, r3\n"
-        "uhadd8 r6, r6, ip\n"
-        "uqsub8 fp, r1, r2\n"
-        "uhadd8 r6, r6, ip\n"
-        "uqsub8 r1, r2, r1\n"
-        "uqsub8 r7, r6, lr\n"
-        "uqsub8 r6, lr, r6\n"
-        "uqadd8 sl, r5, r7\n"
-        "uadd8 r1, r1, fp\n"
-        "uqsub8 sl, sl, r6\n"
-        "uqsub8 fp, r5, r7\n"
-        "uqsub8 r5, r3, r4\n"
-        "uqadd8 fp, fp, r6\n"
-        "uqsub8 r4, r4, r3\n"
-        "ssub8 r1, r1, sb\n"
-        "sel sl, r2, sl\n"
-        "sel fp, r3, fp\n"
-        "uadd8 r4, r4, r5\n"
-        "uqsub8 r5, r2, r3\n"
-        "uqsub8 r6, r3, r2\n"
-        "ssub8 r4, r4, sb\n"
-        "sel sl, r2, sl\n"
-        "sel fp, r3, fp\n"
-        "uadd8 r5, r5, r6\n"
-        "ssub8 r5, r5, r8\n"
-        "sel sl, r2, sl\n"
-        "sel fp, r3, fp\n"
-        "str sl, [r0, #-0x3f4]\n"
-        "str fp, [r0, #0xc]\n"
-        "ldr r1, [sp]\n"
-        "add r0, r0, #0x10\n"
-        "subs r1, r1, #0x10\n"
-        "strgt r1, [sp]\n"
-        "bgt .L_0015f800\n"
-        "blt .L_0015fb74\n"
-        "ldr r1, [r0, #-0x800]\n"
-        "ldr r4, [r0, #0x400]\n"
-        "ldr r2, [r0, #-0x400]\n"
-        "ldr r3, [r0]\n"
-        "mvn r6, r4\n"
-        "uhadd8 r6, r6, r1\n"
-        "uhadd8 r5, r2, r3\n"
-        "uhadd8 r6, r6, ip\n"
-        "uqsub8 fp, r1, r2\n"
-        "uhadd8 r6, r6, ip\n"
-        "uqsub8 r1, r2, r1\n"
-        "uqsub8 r7, r6, lr\n"
-        "uqsub8 r6, lr, r6\n"
-        "uqadd8 sl, r5, r7\n"
-        "uadd8 r1, r1, fp\n"
-        "uqsub8 sl, sl, r6\n"
-        "uqsub8 fp, r5, r7\n"
-        "uqsub8 r5, r3, r4\n"
-        "uqadd8 fp, fp, r6\n"
-        "uqsub8 r4, r4, r3\n"
-        "ssub8 r1, r1, sb\n"
-        "sel sl, r2, sl\n"
-        "sel fp, r3, fp\n"
-        "uadd8 r4, r4, r5\n"
-        "uqsub8 r5, r2, r3\n"
-        "uqsub8 r6, r3, r2\n"
-        "ssub8 r4, r4, sb\n"
-        "sel sl, r2, sl\n"
-        "sel fp, r3, fp\n"
-        "uadd8 r5, r5, r6\n"
-        "ssub8 r5, r5, r8\n"
-        "sel sl, r2, sl\n"
-        "sel fp, r3, fp\n"
-        "str sl, [r0, #-0x400]\n"
-        "str fp, [r0]\n"
-        "ldr r1, [r0, #-0x7fc]\n"
-        "ldr r4, [r0, #0x404]\n"
-        "ldr r2, [r0, #-0x3fc]\n"
-        "ldr r3, [r0, #4]\n"
-        "mvn r6, r4\n"
-        "uhadd8 r6, r6, r1\n"
-        "uhadd8 r5, r2, r3\n"
-        "uhadd8 r6, r6, ip\n"
-        "uqsub8 fp, r1, r2\n"
-        "uhadd8 r6, r6, ip\n"
-        "uqsub8 r1, r2, r1\n"
-        "uqsub8 r7, r6, lr\n"
-        "uqsub8 r6, lr, r6\n"
-        "uqadd8 sl, r5, r7\n"
-        "uadd8 r1, r1, fp\n"
-        "uqsub8 sl, sl, r6\n"
-        "uqsub8 fp, r5, r7\n"
-        "uqsub8 r5, r3, r4\n"
-        "uqadd8 fp, fp, r6\n"
-        "uqsub8 r4, r4, r3\n"
-        "ssub8 r1, r1, sb\n"
-        "sel sl, r2, sl\n"
-        "sel fp, r3, fp\n"
-        "uadd8 r4, r4, r5\n"
-        "uqsub8 r5, r2, r3\n"
-        "uqsub8 r6, r3, r2\n"
-        "ssub8 r4, r4, sb\n"
-        "sel sl, r2, sl\n"
-        "sel fp, r3, fp\n"
-        "uadd8 r5, r5, r6\n"
-        "ssub8 r5, r5, r8\n"
-        "sel sl, r2, sl\n"
-        "sel fp, r3, fp\n"
-        "str sl, [r0, #-0x3fc]\n"
-        "str fp, [r0, #4]\n"
-        "add r0, r0, #8\n"
-        ".L_0015fb74:\n"
-        "ldrd r2, r3, [sp, #4]\n"
-        "add r0, r0, #0x2000\n"
-        "sub r0, r0, #8\n"
-        "subs r3, r3, #8\n"
-        "subne r0, r0, r2\n"
-        "strne r2, [sp]\n"
-        "strne r3, [sp, #8]\n"
-        "bne .L_0015f800\n"
-        "add sp, sp, #0xc\n"
-        "pop {r0, pc}\n"
-        ".word 0x01010101\n"
-        ".word 0x20202020\n"
-    );
+extern "C" void* func_0015f7bc(void* config_pointer) {
+    EdgeFilterConfig* const config =
+        static_cast<EdgeFilterConfig*>(config_pointer);
+
+    const u32 width_counter = config->width_bytes - kWidthBias;
+    const u32 threshold_a = prefix_or_bytes(config->threshold_a);
+    const u32 threshold_b = prefix_or_bytes(config->threshold_b);
+    u32 band_counter = config->height_bytes - kHeightBias;
+    u32 address = config->base + kBandBytes;
+    u32 inner = width_counter;
+
+    for (;;) {
+        for (;;) {
+            for (u32 lane = 0; lane < kChunkBytes; lane += 4u) {
+                filter_lane_at(address, lane, threshold_a, threshold_b);
+            }
+            address += kChunkBytes;
+            inner -= kChunkBytes;
+            if (static_cast<s32>(inner) > 0) {
+                continue;
+            }
+            if (static_cast<s32>(inner) < 0) {
+                break;
+            }
+            // The counter landed exactly on zero: filter the trailing 8 bytes.
+            for (u32 lane = 0; lane < 8u; lane += 4u) {
+                filter_lane_at(address, lane, threshold_a, threshold_b);
+            }
+            address += 8u;
+            break;
+        }
+
+        // 0x0015FB74: advance one band, then re-arm or leave.
+        const u32 next_band = band_counter - kHeightStep;
+        address += kBandBytes;
+        address -= 8u;
+        if (next_band != 0) {
+            address -= width_counter;
+            inner = width_counter;
+            band_counter = next_band;
+            continue;
+        }
+        break;
+    }
+
+    return config_pointer;
 }
 
 // DECOMP_FUNC(0x0015fba4, 1848)
