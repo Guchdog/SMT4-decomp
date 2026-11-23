@@ -10626,41 +10626,183 @@ extern "C" int ui_func_00290a68(char* dst, s32 value) {
 }
 
 // DECOMP_FUNC(0x002c2210, 468)
-// 109 ARM instructions through unconditional pop; 32 trailing data bytes.
-extern "C" __attribute__((naked)) void engine_func_002c2210() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4070, 0xe1a06001, 0xe59f11a4, 0xe1a04000\n"
-        ".word 0xed2d8b02, 0xeb000a41, 0xe3a00000, 0xe5c40001\n"
-        ".word 0xe59f0198, 0xed9f8a63, 0xeddf8a63, 0xe5900000\n"
-        ".word 0xe3100001, 0x1a000012, 0xe59f0180, 0xfafff7a0\n"
-        ".word 0xe3500000, 0x0a00000e, 0xe59f0174, 0xe2801010\n"
-        ".word 0xedc08a00, 0xed808a01, 0xed808a02, 0xed808a03\n"
-        ".word 0xec818a02, 0xe2801024, 0xed808a06, 0xed808a07\n"
-        ".word 0xed808a08, 0xec818a02, 0xed808a0b, 0xe59f013c\n"
-        ".word 0xe1a00000, 0xe59f1138, 0xe2840038, 0xebfff784\n"
-        ".word 0xe59f5130, 0xe5950000, 0xe3100001, 0x1a000017\n"
-        ".word 0xe2850000, 0xfafff786, 0xe3500000, 0xe320f000\n"
-        ".word 0x0a000012, 0xe59f0110, 0xe2801010, 0xedc08a00\n"
-        ".word 0xed808a01, 0xed808a02, 0xed808a03, 0xec818a02\n"
-        ".word 0xe2801024, 0xed808a06, 0xed808a07, 0xed808a08\n"
-        ".word 0xec818a02, 0xed808a0b, 0xed808a0c, 0xed808a0d\n"
-        ".word 0xe2800038, 0xec808a02, 0xe2850000, 0xe1a00000\n"
-        ".word 0xe59f10c4, 0xe28400a8, 0xebfff738, 0xe5950000\n"
-        ".word 0xe3100001, 0x1a000017, 0xe59f00a8, 0xfafff768\n"
-        ".word 0xe3500000, 0xe320f000, 0x0a000012, 0xe59f0098\n"
-        ".word 0xe2801010, 0xedc08a00, 0xed808a01, 0xed808a02\n"
-        ".word 0xed808a03, 0xec818a02, 0xe2801024, 0xed808a06\n"
-        ".word 0xed808a07, 0xed808a08, 0xec818a02, 0xed808a0b\n"
-        ".word 0xed808a0c, 0xed808a0d, 0xe2800038, 0xec808a02\n"
-        ".word 0xe59f0050, 0xe1a00000, 0xe59f104c, 0xe28400e8\n"
-        ".word 0xebfff71a, 0xed9f8a11, 0xe2845b01, 0xe3560000\n"
-        ".word 0xed858a26, 0xe5c46000, 0x0a000003, 0xe2840e4a\n"
-        ".word 0xebf96ac7, 0xed858a41, 0xedc58a40, 0xecbd8b02\n"
-        ".word 0xe8bd8070, 0x00000508, 0x00000000, 0x3f800000\n"
-        ".word 0x00476634, 0x004efd6c, 0x00476638, 0x004efd9c\n"
-        ".word 0x40a00000\n"
-    );
+//
+// AsdCamera projection/view initializer.  ARM 0x002C2210..0x002C23C3 (109
+// instructions through `pop {r4, r5, r6, pc}`) followed by the 32-byte literal
+// pool 0x002C23C4..0x002C23E3.
+//
+// Recovered contract:
+//   * Arguments: r0 (`self`) is the 0x508-byte projection block, r1 (`mode`) is
+//     stored as one byte at +0x00 and also selects the final tail block.
+//   * 0x002C2224 zero-fills exactly 0x508 bytes through 0x002C4B30, then
+//     redundantly clears byte +0x01.
+//   * 0x002C2230..0x002C2290: one-shot identity fill of the shared 3x4 image
+//     at 0x004EFD6C, gated by the low bit of 0x00476634 plus the Thumb
+//     test-and-set helper 0x002C00D4.  The image is twelve floats; the helper
+//     only reports success when it observed a zero word and stored 1.
+//   * 0x002C2298: 0x002C00B4 copies those twelve floats (0x30 bytes) from
+//     0x004EFD6C into `self + 0x38`.
+//   * 0x002C22A4..0x002C2318: one-shot identity fill of the shared 4x4 image at
+//     0x004EFD9C, gated by 0x00476638, followed by 0x002C0000 copying sixteen
+//     floats (0x40 bytes) into `self + 0xA8`.
+//   * 0x002C231C..0x002C2390: the original repeats the same 0x00476638 gate and
+//     the same 0x004EFD9C identity stores, then unconditionally copies sixteen
+//     floats into `self + 0xE8`.  The duplication is reproduced as observed;
+//     both references resolve to the same guard and image addresses.
+//   * 0x002C2394..0x002C23A4: store 5.0f at `self + 0x498` and the low byte of
+//     `mode` at +0x00 unconditionally.
+//   * Only when the full 32-bit `mode` is non-zero: 0x0011CED4 is called with
+//     `self + 0x4A0`, then 5.0f is stored at `self + 0x504` and 1.0f at
+//     `self + 0x500`.
+//   * No indirect calls.  The function returns void; the final r0 is whatever
+//     0x0011CED4 leaves behind and is not part of the contract.
+//
+// Direct callees (addresses from config/functions.csv):
+//   0x002C4B30  engine_func_002c4b30  zero fill
+//   0x002C00D4  engine_func_002c00d4  Thumb one-shot test-and-set flag
+//   0x002C00B4  battle_func_002c00b4  twelve-float (0x30-byte) image copy
+//   0x002C0000  battle_func_002c0000  sixteen-float (0x40-byte) image copy
+//   0x0011CED4  engine_func_0011ced4  trailing block initializer
+namespace engine_2c2210 {
+
+constexpr u32 kZeroFillSize = 0x508;              // literal 0x00000508
+
+// Shared one-shot images and their guard words (literal pool).
+constexpr u32 kEnemyDrawFlagsAddress = 0x00476634;
+constexpr u32 kEnemyDrawMatrixAddress = 0x004EFD6C;
+constexpr u32 kFilterXPolyFlagsAddress = 0x00476638;
+constexpr u32 kFilterXPolyMatrixAddress = 0x004EFD9C;
+
+// Fields of the projection block.
+constexpr u32 kModeOffset = 0x00;                 // `strb r6,[r4]`
+constexpr u32 kClearedByteOffset = 0x01;          // `strb r0,[r4,#1]`
+constexpr u32 kEnemyMatrixOffset = 0x38;          // 0x30-byte copy target
+constexpr u32 kProjectionMatrixOffset = 0xA8;     // first 0x40-byte copy
+constexpr u32 kViewMatrixOffset = 0xE8;           // second 0x40-byte copy
+constexpr u32 kFarPlaneFieldOffset = 0x498;       // self + 0x400 + 0x98
+constexpr u32 kModeEndObjectOffset = 0x4A0;       // 0x0011CED4 argument
+constexpr u32 kModeEndScaleOffset = 0x500;        // self + 0x400 + 0x100
+constexpr u32 kModeEndDistanceOffset = 0x504;     // self + 0x400 + 0x104
+
+// Literal-pool values.
+constexpr f32 kZero = 0.0f;                       // 0x00000000
+constexpr f32 kOne = 1.0f;                        // 0x3F800000
+constexpr f32 kDistance = 5.0f;                   // 0x40A00000
+
+using FloatWord = volatile f32;
+
+inline FloatWord* image_at(u32 address) {
+    return reinterpret_cast<FloatWord*>(static_cast<std::uintptr_t>(address));
+}
+
+// 0x004EFD6C: twelve-float 3x4 identity image in original store order.
+inline void write_enemy_image() {
+    FloatWord* const image = image_at(kEnemyDrawMatrixAddress);
+    image[0] = kOne;   // +0x00
+    image[1] = kZero;  // +0x04
+    image[2] = kZero;  // +0x08
+    image[3] = kZero;  // +0x0C
+    image[4] = kZero;  // +0x10
+    image[5] = kOne;   // +0x14
+    image[6] = kZero;  // +0x18
+    image[7] = kZero;  // +0x1C
+    image[8] = kZero;  // +0x20
+    image[9] = kZero;  // +0x24
+    image[10] = kOne;  // +0x28
+    image[11] = kZero; // +0x2C
+}
+
+// 0x004EFD9C: sixteen-float 4x4 identity image in original store order.
+inline void write_filter_image() {
+    FloatWord* const image = image_at(kFilterXPolyMatrixAddress);
+    image[0] = kOne;   // +0x00
+    image[1] = kZero;  // +0x04
+    image[2] = kZero;  // +0x08
+    image[3] = kZero;  // +0x0C
+    image[4] = kZero;  // +0x10
+    image[5] = kOne;   // +0x14
+    image[6] = kZero;  // +0x18
+    image[7] = kZero;  // +0x1C
+    image[8] = kZero;  // +0x20
+    image[9] = kZero;  // +0x24
+    image[10] = kOne;  // +0x28
+    image[11] = kZero; // +0x2C
+    image[12] = kZero; // +0x30
+    image[13] = kZero; // +0x34
+    image[14] = kZero; // +0x38
+    image[15] = kOne;  // +0x3C
+}
+
+}  // namespace engine_2c2210
+
+// Direct callees.
+extern "C" void engine_func_002c4b30(void* destination, u32 size);
+extern "C" u32 engine_func_002c00d4(volatile u32* word);
+extern "C" void battle_func_002c00b4(void* destination, const void* source);
+extern "C" void battle_func_002c0000(void* destination, const void* source);
+extern "C" void engine_func_0011ced4(void* object);
+
+extern "C" void engine_func_002c2210(void* self, u32 mode) {
+    using namespace engine_2c2210;
+
+    u8* const block = static_cast<u8*>(self);
+
+    // 0x002C2224..0x002C222C: full zero fill, then the redundant byte clear.
+    engine_func_002c4b30(block, kZeroFillSize);
+    block[kClearedByteOffset] = 0;
+
+    // 0x002C2230..0x002C2290: one-shot 3x4 identity image.
+    volatile u32* const enemy_flags = reinterpret_cast<volatile u32*>(
+        static_cast<std::uintptr_t>(kEnemyDrawFlagsAddress));
+    if ((*enemy_flags & 1u) == 0u && engine_func_002c00d4(enemy_flags) != 0u) {
+        write_enemy_image();
+    }
+
+    // 0x002C2298..0x002C22A0: twelve-float copy into self + 0x38.
+    battle_func_002c00b4(block + kEnemyMatrixOffset,
+                         reinterpret_cast<const void*>(
+                             static_cast<std::uintptr_t>(
+                                 kEnemyDrawMatrixAddress)));
+
+    // 0x002C22A4..0x002C2318: first one-shot 4x4 identity image.
+    volatile u32* const filter_flags = reinterpret_cast<volatile u32*>(
+        static_cast<std::uintptr_t>(kFilterXPolyFlagsAddress));
+    if ((*filter_flags & 1u) == 0u &&
+        engine_func_002c00d4(filter_flags) != 0u) {
+        write_filter_image();
+    }
+
+    // 0x002C2310..0x002C2318: sixteen-float copy into self + 0xA8.
+    battle_func_002c0000(block + kProjectionMatrixOffset,
+                         reinterpret_cast<const void*>(
+                             static_cast<std::uintptr_t>(
+                                 kFilterXPolyMatrixAddress)));
+
+    // 0x002C231C..0x002C2384: the original repeats the same guard and the same
+    // identity stores.  Kept verbatim so the observable helper call sequence
+    // matches even when a stub reports success without updating the guard.
+    if ((*filter_flags & 1u) == 0u &&
+        engine_func_002c00d4(filter_flags) != 0u) {
+        write_filter_image();
+    }
+
+    // 0x002C2388..0x002C2390: sixteen-float copy into self + 0xE8 (always).
+    battle_func_002c0000(block + kViewMatrixOffset,
+                         reinterpret_cast<const void*>(
+                             static_cast<std::uintptr_t>(
+                                 kFilterXPolyMatrixAddress)));
+
+    // 0x002C2394..0x002C23A4: distance field and the low byte of the mode.
+    *reinterpret_cast<volatile f32*>(block + kFarPlaneFieldOffset) = kDistance;
+    block[kModeOffset] = static_cast<u8>(mode);
+    if (mode == 0u) {
+        return;
+    }
+
+    // 0x002C23AC..0x002C23B8: trailing block plus the 1.0f / 5.0f pair.
+    engine_func_0011ced4(block + kModeEndObjectOffset);
+    *reinterpret_cast<volatile f32*>(block + kModeEndDistanceOffset) = kDistance;
+    *reinterpret_cast<volatile f32*>(block + kModeEndScaleOffset) = kOne;
 }
 
 // DECOMP_FUNC(0x0034ebc8, 468)
