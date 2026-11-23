@@ -9582,11 +9582,8 @@ extern "C" void camp_func_00231d60(u8* ui_obj, u32 id, s32 x, s32 y, u32 a4,
                                    u32 a5);
 extern "C" s32 ui_func_002bef7c(const void* record);
 extern "C" s32 shop_func_002bef70(const void* record);
-// 0x002313EC is defined later in this translation unit as a parameterless
-// naked body.  A same-TU `__asm__` alias would let the backend bind the call to
-// that definition and drop the argument setup, so the four-argument call is
-// made through its address instead.
-extern "C" void func_002313ec();
+// 0x002313EC is defined later in this translation unit.
+extern "C" void func_002313ec(s32 x, s32 y, s32 w, s32 h);
 
 // DECOMP_FUNC(0x0022d994, 456)
 //
@@ -9664,39 +9661,129 @@ extern "C" u32 ui_func_0022d994(u8* self, u32 id_base, u32 a4, u32 flag) {
 
 // DECOMP_FUNC(0x002313ec, 456)
 // 111 ARM instructions through unconditional pop; 12 trailing data bytes.
-extern "C" __attribute__((naked)) void func_002313ec() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d47f0, 0xe1a04002, 0xe0802004, 0xe3520000\n"
-        ".word 0xed9f0a69, 0xb3a00000, 0xe1a05003, 0xb1a04000\n"
-        ".word 0xba000007, 0xe3500000, 0xb0844000, 0xb3a00000\n"
-        ".word 0xba000003, 0xe3500d05, 0xc3a00000, 0xc1a04000\n"
-        ".word 0xca000007, 0xe0802004, 0xe3520d05, 0xda000004\n"
-        ".word 0xee000a90, 0xeef80ae0, 0xee700a60, 0xeefd0ae0\n"
-        ".word 0xee104a90, 0xe0812005, 0xe3520000, 0xeddf0a53\n"
-        ".word 0xb3a05000, 0xba000002, 0xe3510000, 0xb0835001\n"
-        ".word 0xaa000001, 0xe3a01000, 0xea000003, 0xe35100f0\n"
-        ".word 0xc3a01000, 0xc1a05001, 0xca000007, 0xe0812005\n"
-        ".word 0xe35200f0, 0xda000004, 0xee011a10, 0xeeb81ac1\n"
-        ".word 0xee301ac1, 0xeebd1ac1, 0xee115a10, 0xe0800004\n"
-        ".word 0xee010a10, 0xe0811005, 0xee011a90, 0xe59fa0f0\n"
-        ".word 0xe3a00003, 0xe3a07000, 0xeeb81ac1, 0xe59a1000\n"
-        ".word 0xeef81ae1, 0xe2816a01, 0xe2866fc3, 0xe5961000\n"
-        ".word 0xee300a41, 0xe0862101, 0xee301ae1, 0xe5921008\n"
-        ".word 0xe5820008, 0xe5d62018, 0xe3520000, 0x03510003\n"
-        ".word 0xeefd0ac0, 0xeebd0ac1, 0xee109a90, 0xee108a10\n"
-        ".word 0x0a000002, 0xe596101c, 0xe12fff31, 0xe5c67018\n"
-        ".word 0xe59a6000, 0xe1a01008, 0xe1a00009, 0xe1800801\n"
-        ".word 0xe2866a01, 0xe2866fcb, 0xe5961000, 0xe0862101\n"
-        ".word 0xe5921008, 0xe5820008, 0xe5d62018, 0xe3520000\n"
-        ".word 0x01510000, 0x0a000002, 0xe596101c, 0xe12fff31\n"
-        ".word 0xe5c67018, 0xe59a6000, 0xe1a01005, 0xe1a00004\n"
-        ".word 0xe1800801, 0xe2864a01, 0xe2844fd3, 0xe5941000\n"
-        ".word 0xe0842101, 0xe5921008, 0xe5820008, 0xe5d42018\n"
-        ".word 0xe3520000, 0x01510000, 0x0a000002, 0xe594101c\n"
-        ".word 0xe12fff31, 0xe5c47018, 0xe8bd87f0, 0x43a00000\n"
-        ".word 0x43700000, 0x0044ea00\n"
-    );
+//
+// Clips a screen-space rectangle to the 320x240 logical screen and publishes
+// the result through three pending slots of the overlay stack object whose
+// base pointer lives at 0x0044EA00.  Recovered contract from ARM
+// 0x002313EC..0x002315A8:
+//   * Arguments are `x = r0`, `y = r1`, `w = r2`, `h = r3`, all 32-bit signed.
+//     The frame saves r4-r8/sb/sl/lr and returns with r0 holding the last
+//     packed value (the caller ignores it).
+//   * Horizontal clamp: if `x + w < 0` both become 0; else if `x < 0` then
+//     `w += x` and `x = 0`; else if `x > 320` both become 0.  Afterwards, when
+//     `x + w > 320`, `w = (s32)(320.0f - (f32)x)`.  The `x > 320` path skips
+//     that last check, but there x = w = 0 so it cannot trigger.
+//   * Vertical clamp is the same shape against 240 (`y > 240` -> both 0).
+//   * Each slot lives at `overlay + 0x130C / 0x132C / 0x134C`: a u32 depth
+//     index at +0, a pending-value array from +8 (`+8 + depth*4`), a dirty
+//     byte at +0x18 and a flush callback at +0x1C.  The original reloads the
+//     0x0044EA00 base pointer before every slot, so a flush callback can
+//     redirect the global between writes.
+//   * Slot 1 stores the constant 3.  Slot 2 stores
+//     `(u32)right | ((u32)bottom << 16)` where
+//     `right = (s32)(320.0f - (f32)(x + w))` and
+//     `bottom = (s32)(240.0f - (f32)(y + h))`, computed once before any
+//     callback.  Slot 3 stores `(u32)w | ((u32)h << 16)`.
+//   * For each slot the flush callback is invoked when the dirty byte is
+//     non-zero OR the replaced pending value differs from the new one; the
+//     callback is called through `*(void**)(slot + 0x1C)` with no null check
+//     and the dirty byte is cleared afterwards.  r0 at each `blx` holds the
+//     value just stored, so the callback is modeled with that value as its
+//     only parameter; the actual targets cannot be resolved statically.
+// The literal pool supplies 320.0f, 240.0f and 0x0044EA00.
+typedef void (*OverlayFlushFn)(u32 value);
+
+extern "C" void func_002313ec(s32 x, s32 y, s32 w, s32 h) {
+    constexpr u32 kOverlayGlobal = 0x0044EA00u;
+    constexpr u32 kSlot1Offset = 0x130Cu;
+    constexpr u32 kSlot2Offset = 0x132Cu;
+    constexpr u32 kSlot3Offset = 0x134Cu;
+    constexpr u32 kSlotValueOffset = 0x08u;
+    constexpr u32 kSlotDirtyOffset = 0x18u;
+    constexpr u32 kSlotFlushOffset = 0x1Cu;
+
+    // The adds wrap like the original ARM `add`; converting through u32 keeps
+    // the comparison and the later float conversion free of signed overflow UB.
+    if (static_cast<s32>(static_cast<u32>(x) + static_cast<u32>(w)) < 0) {
+        x = 0;
+        w = 0;
+    } else if (x < 0) {
+        w = static_cast<s32>(static_cast<u32>(w) + static_cast<u32>(x));
+        x = 0;
+    } else if (x > 0x140) {
+        x = 0;
+        w = 0;
+    }
+    if (static_cast<s32>(static_cast<u32>(x) + static_cast<u32>(w)) > 0x140) {
+        w = static_cast<s32>(320.0f - static_cast<f32>(x));
+    }
+
+    if (static_cast<s32>(static_cast<u32>(y) + static_cast<u32>(h)) < 0) {
+        y = 0;
+        h = 0;
+    } else if (y < 0) {
+        h = static_cast<s32>(static_cast<u32>(h) + static_cast<u32>(y));
+        y = 0;
+    } else if (y > 0xF0) {
+        y = 0;
+        h = 0;
+    }
+    if (static_cast<s32>(static_cast<u32>(y) + static_cast<u32>(h)) > 0xF0) {
+        h = static_cast<s32>(240.0f - static_cast<f32>(y));
+    }
+
+    const s32 right =
+        static_cast<s32>(320.0f - static_cast<f32>(static_cast<s32>(
+                                      static_cast<u32>(x) + static_cast<u32>(w))));
+    const s32 bottom =
+        static_cast<s32>(240.0f - static_cast<f32>(static_cast<s32>(
+                                      static_cast<u32>(y) + static_cast<u32>(h))));
+
+    u8* base = *reinterpret_cast<u8* const*>(kOverlayGlobal);
+    u32* pending =
+        reinterpret_cast<u32*>(base + kSlot1Offset + kSlotValueOffset +
+                               *reinterpret_cast<const u32*>(base + kSlot1Offset) *
+                                   4u);
+    const u32 previous1 = *pending;
+    *pending = 3u;
+    if (base[kSlot1Offset + kSlotDirtyOffset] != 0u || previous1 != 3u) {
+        reinterpret_cast<OverlayFlushFn>(
+            *reinterpret_cast<void* const*>(base + kSlot1Offset +
+                                            kSlotFlushOffset))(3u);
+        base[kSlot1Offset + kSlotDirtyOffset] = 0u;
+    }
+
+    // The original reloads the overlay base pointer before each slot.
+    base = *reinterpret_cast<u8* const*>(kOverlayGlobal);
+    pending =
+        reinterpret_cast<u32*>(base + kSlot2Offset + kSlotValueOffset +
+                               *reinterpret_cast<const u32*>(base + kSlot2Offset) *
+                                   4u);
+    const u32 value2 =
+        static_cast<u32>(right) | (static_cast<u32>(bottom) << 16);
+    const u32 previous2 = *pending;
+    *pending = value2;
+    if (base[kSlot2Offset + kSlotDirtyOffset] != 0u || previous2 != value2) {
+        reinterpret_cast<OverlayFlushFn>(
+            *reinterpret_cast<void* const*>(base + kSlot2Offset +
+                                            kSlotFlushOffset))(value2);
+        base[kSlot2Offset + kSlotDirtyOffset] = 0u;
+    }
+
+    base = *reinterpret_cast<u8* const*>(kOverlayGlobal);
+    pending =
+        reinterpret_cast<u32*>(base + kSlot3Offset + kSlotValueOffset +
+                               *reinterpret_cast<const u32*>(base + kSlot3Offset) *
+                                   4u);
+    const u32 value3 = static_cast<u32>(w) | (static_cast<u32>(h) << 16);
+    const u32 previous3 = *pending;
+    *pending = value3;
+    if (base[kSlot3Offset + kSlotDirtyOffset] != 0u || previous3 != value3) {
+        reinterpret_cast<OverlayFlushFn>(
+            *reinterpret_cast<void* const*>(base + kSlot3Offset +
+                                            kSlotFlushOffset))(value3);
+        base[kSlot3Offset + kSlotDirtyOffset] = 0u;
+    }
 }
 
 // DECOMP_FUNC(0x0023adc4, 456)
