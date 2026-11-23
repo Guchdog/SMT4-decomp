@@ -907,68 +907,161 @@ extern "C" void script_vm_func_0027af3c() {
     }
 }
 
+// ---------------------------------------------------------------------------
+// 0x0028277c (456 B): single-precision sine, matching the pinned libm routine
+// (ledger name script_vm_func_0028277c).
+//
+//   * |x| < pi/4         : minimax sine/cosine on x itself; quadrant = -1 when
+//                          |x| < 2^-12 so the caller returns x unchanged.
+//   * pi/4 <= |x| < 12867.5712890625 : inline q = round(x*2/pi) through the
+//                          2^23 magic and r = x - q*(pi/2) split into four
+//                          Horner terms.
+//   * larger, or non-finite : the generic reduction helper fills *quadrant and
+//                          returns r; it stores -1 and leaves r = x for
+//                          non-finite inputs.
+//   * quadrant 0/1/2/3 selects sin(r)/cos(r)/-sin(r)/-cos(r).
+//   * tiny inputs return x; subnormals additionally run the discarded
+//     underflow probe; infinities set *__errno_location() = 1 and return the
+//     VFP default NaN (0/0); NaN propagates through x + x.
+//
+// All direct calls are libm-internal helpers of the pinned image.  Their
+// declarations live in engine_28277c_calls; the polynomial coefficients are
+// written by value with static_assert checks against the pinned bit patterns.
+// ---------------------------------------------------------------------------
+namespace engine_28277c {
+constexpr u32 F32ToBits(f32 value) noexcept {
+    return __builtin_bit_cast(u32, value);
+}
+
+// Magnitudes compared as (bits << 1), which drops the sign bit.
+constexpr u32 kPiOverFourShift = 0x7E921FB6u;  // (bits of pi/4) << 1
+constexpr u32 kTinyShift = 0x73000000u;        // (bits of 2^-12) << 1
+constexpr u32 kReductionLimit = 0x46490E49u;   // bits of 12867.5712890625f
+constexpr u32 kInfinityShift = 0xFF000000u;    // (bits of +inf) << 1
+
+constexpr f32 kTwoOverPi = 0.6366197466850281f;        // 0x3F22F983
+constexpr f32 kRoundMagic = 8388608.0f;                // 0x4B000000
+constexpr f32 kHalfPiPart0 = 1.5703125f;               // 0x3FC90000
+constexpr f32 kHalfPiPart1 = 0.0004837512969970703f;   // 0x39FDA000
+constexpr f32 kHalfPiPart2 = 7.549533620476723e-08f;   // 0x33A22000
+constexpr f32 kHalfPiPart3 = 2.5633440682570896e-12f;  // 0x2C34611A
+
+// sin(r) = r + r^3 * (C2 + r^2 * (C0 - r^2 * C1))
+constexpr f32 kSinC0 = 0.00833197869360447f;      // 0x3C0882DA
+constexpr f32 kSinC1 = 0.000194956359337084f;     // 0x394C6D33
+constexpr f32 kSinC2 = -0.16666650772094727f;     // 0xBE2AAAA0
+// cos(r) = 1 + r^2 * (C2 + r^2 * (C1 + r^2 * C0))
+constexpr f32 kCosC0 = -0.0013597822980955243f;   // 0xBAB23AB9
+constexpr f32 kCosC1 = 0.04165629297494888f;      // 0x3D2A9FCA
+constexpr f32 kCosC2 = -0.49999895691871643f;     // 0xBEFFFFDD
+
+static_assert(F32ToBits(kTwoOverPi) == 0x3F22F983u);
+static_assert(F32ToBits(kRoundMagic) == 0x4B000000u);
+static_assert(F32ToBits(kHalfPiPart0) == 0x3FC90000u);
+static_assert(F32ToBits(kHalfPiPart1) == 0x39FDA000u);
+static_assert(F32ToBits(kHalfPiPart2) == 0x33A22000u);
+static_assert(F32ToBits(kHalfPiPart3) == 0x2C34611Au);
+static_assert(F32ToBits(kSinC0) == 0x3C0882DAu);
+static_assert(F32ToBits(kSinC1) == 0x394C6D33u);
+static_assert(F32ToBits(kSinC2) == 0xBE2AAAA0u);
+static_assert(F32ToBits(kCosC0) == 0xBAB23AB9u);
+static_assert(F32ToBits(kCosC1) == 0x3D2A9FCAu);
+static_assert(F32ToBits(kCosC2) == 0xBEFFFFDDu);
+}  // namespace engine_28277c
+
+namespace engine_28277c_calls {
+// 0x002A4600 (44 B): classifies an IEEE-754 single bit pattern in r0.
+// Returns 0 zero, 3 infinity, 4 subnormal, 5 finite normal, 7 NaN.
+extern "C" u32 ui_func_002a4600(u32 value_bits);
+// 0x002A462C (16 B): square of a constant that underflows to +0.0f; the
+// result is discarded and only the underflow probe is observable.
+extern "C" f32 ui_func_002a462c(f32 value);
+// 0x003EB4F4 (296 B): generic range reduction of the bits in r1.  Writes the
+// quadrant (0..3, or 0xFFFFFFFF when non-finite) through out_integer and
+// returns the reduced angle in s0, leaving s0 untouched when non-finite.
+extern "C" f32 ui_func_003eb4f4(u32* out_integer, u32 value_bits);
+// 0x002A464E (Thumb, 12 B): stores its argument through *__errno_location().
+extern "C" s32* func_002a464e_errno_set(s32 value);
+}  // namespace engine_28277c_calls
+
+// The C symbol keeps its historical name for the callers that take its
+// address; the differing C++ spelling avoids clashing with the historical
+// void() declaration used by engine_func_002d4fe0.  That declaration is
+// repeated here because this block precedes its original occurrence.
+extern "C" void script_vm_func_0028277c();
+extern "C" f32 sin_0028277c(f32 x) __asm__("script_vm_func_0028277c");
+
 // DECOMP_FUNC(0x0028277c, 456)
-extern "C" __attribute__((naked)) void script_vm_func_0028277c() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0xe004, 0xe52d, 0x1a10, 0xee10\n"
-        ".hword 0x2178, 0xe59f, 0x8b02, 0xed2d\n"
-        ".hword 0xd004, 0xe24d, 0x0081, 0xe152\n"
-        ".hword 0x000d, 0xe1a0, 0x0005, 0x9a00\n"
-        ".hword 0x0473, 0xe3a0, 0x0081, 0xe150\n"
-        ".hword 0x0000, 0x83e0, 0x0000, 0x93a0\n"
-        ".hword 0x0000, 0xe58d, 0x0019, 0xea00\n"
-        ".hword 0x314c, 0xe59f, 0x2102, 0xe3c1\n"
-        ".hword 0x0002, 0xe153, 0x0014, 0x9a00\n"
-        ".hword 0x0102, 0xe311, 0x0a4f, 0xeddf\n"
-        ".hword 0x2a51, 0xed9f, 0x1a52, 0xeddf\n"
-        ".hword 0x1a20, 0xee20, 0x0a4c, 0xeddf\n"
-        ".hword 0x1a60, 0x1e31, 0x0a20, 0x1e71\n"
-        ".hword 0x1a20, 0x0e31, 0x0a60, 0x0e71\n"
-        ".hword 0x1ae0, 0xeebd, 0x0a10, 0xee11\n"
-        ".hword 0x1a46, 0xed9f, 0x0003, 0xe200\n"
-        ".hword 0x0ac1, 0xee00, 0x1a45, 0xed9f\n"
-        ".hword 0x0000, 0xe58d, 0x0ac2, 0xee00\n"
-        ".hword 0x0ac1, 0xee00, 0x0ae1, 0xee00\n"
-        ".hword 0x0000, 0xea00, 0xa335, 0xeb05\n"
-        ".hword 0x0000, 0xe59d, 0x8a40, 0xeeb0\n"
-        ".hword 0x0000, 0xe350, 0x0016, 0xaa00\n"
-        ".hword 0x0a10, 0xee18, 0x0080, 0xe1a0\n"
-        ".hword 0x04ff, 0xe350, 0x0a08, 0x8e38\n"
-        ".hword 0x0007, 0x2a00, 0x0a10, 0xee18\n"
-        ".hword 0x876d, 0xeb00, 0x0004, 0xe350\n"
-        ".hword 0x8776, 0x0b00, 0x0a48, 0xeeb0\n"
-        ".hword 0xd004, 0xe28d, 0x8b02, 0xecbd\n"
-        ".hword 0xf004, 0xe49d, 0xd004, 0x128d\n"
-        ".hword 0x8b02, 0x1cbd, 0xf004, 0x149d\n"
-        ".hword 0x0001, 0xe3a0, 0x8775, 0xfb00\n"
-        ".hword 0x0a2a, 0xeddf, 0xd004, 0xe28d\n"
-        ".hword 0x8b02, 0xecbd, 0x0aa0, 0xee80\n"
-        ".hword 0xf004, 0xe49d, 0x0a08, 0xee68\n"
-        ".hword 0x0001, 0xe310, 0x000e, 0x0a00\n"
-        ".hword 0x0002, 0xe310, 0x0a22, 0xed9f\n"
-        ".hword 0xd004, 0x028d, 0x1a21, 0xed9f\n"
-        ".hword 0x1a21, 0xeddf, 0x1a80, 0xee00\n"
-        ".hword 0x0a20, 0xed9f, 0x8b02, 0x0cbd\n"
-        ".hword 0x1a81, 0xee40, 0x0aa1, 0xee00\n"
-        ".hword 0xf004, 0x049d, 0xd004, 0xe28d\n"
-        ".hword 0x8b02, 0xecbd, 0x0a40, 0xeeb1\n"
-        ".hword 0xf004, 0xe49d, 0x1a18, 0xed9f\n"
-        ".hword 0x0002, 0xe310, 0x0a17, 0xed9f\n"
-        ".hword 0x0ac1, 0xee00, 0x1a16, 0xed9f\n"
-        ".hword 0x1a80, 0xee00, 0x0a48, 0xeeb0\n"
-        ".hword 0x0a20, 0xee61, 0x0a20, 0xee08\n"
-        ".hword 0xfff1, 0x1aff, 0xd004, 0xe28d\n"
-        ".hword 0x8b02, 0xecbd, 0xf004, 0xe49d\n"
-        ".hword 0x1fb6, 0x7e92, 0x0e49, 0x4649\n"
-        ".hword 0xf983, 0x3f22, 0x0000, 0x4b00\n"
-        ".hword 0x0000, 0x3fc9, 0xa000, 0x39fd\n"
-        ".hword 0x2000, 0x33a2, 0x611a, 0x2c34\n"
-        ".hword 0x0000, 0x0000, 0x3ab9, 0xbab2\n"
-        ".hword 0x9fca, 0x3d2a, 0xffdd, 0xbeff\n"
-        ".hword 0x0000, 0x3f80, 0x6d33, 0x394c\n"
-        ".hword 0x82da, 0x3c08, 0xaaa0, 0xbe2a\n"
-    );
+extern "C" f32 sin_0028277c(f32 x) {
+    using namespace engine_28277c;
+    using namespace engine_28277c_calls;
+
+    const u32 bits = F32ToBits(x);
+    s32 quadrant;
+    f32 reduced;
+
+    if ((bits << 1) >= kPiOverFourShift) {
+        if ((bits & 0x7FFFFFFFu) >= kReductionLimit) {
+            reduced = ui_func_003eb4f4(reinterpret_cast<u32*>(&quadrant), bits);
+        } else {
+            // q = round-to-nearest(x * 2/pi) using the 2^23 add/subtract trick;
+            // the sign of x picks the subtraction direction.
+            const f32 scaled = x * kTwoOverPi;
+            f32 rounded;
+            if ((bits & 0x80000000u) != 0) {
+                const f32 biased = scaled - kRoundMagic;
+                rounded = biased + kRoundMagic;
+            } else {
+                const f32 biased = scaled + kRoundMagic;
+                rounded = biased - kRoundMagic;
+            }
+            quadrant = static_cast<s32>(rounded) & 3;
+
+            // r = x - q*(pi/2), each pi/2 part subtracted with one rounding.
+            reduced = x - rounded * kHalfPiPart0;
+            reduced = reduced - rounded * kHalfPiPart1;
+            reduced = reduced - rounded * kHalfPiPart2;
+            reduced = reduced - rounded * kHalfPiPart3;
+        }
+    } else {
+        quadrant = ((bits << 1) < kTinyShift) ? -1 : 0;
+        reduced = x;
+    }
+
+    if (quadrant < 0) {
+        const u32 magnitude = F32ToBits(reduced) << 1;
+        if (magnitude > kInfinityShift) {
+            return reduced + reduced;  // NaN propagates through VADD
+        }
+        if (magnitude == kInfinityShift) {
+            (void)func_002a464e_errno_set(1);  // *__errno_location() = EDOM
+            volatile f32 zero = 0.0f;
+            return zero / zero;  // VFP default NaN
+        }
+        if (ui_func_002a4600(F32ToBits(reduced)) == 4u) {
+            (void)ui_func_002a462c(reduced);
+        }
+        return reduced;
+    }
+
+    const f32 square = reduced * reduced;
+    if ((quadrant & 1) != 0) {
+        f32 poly = kCosC1 + square * kCosC0;
+        poly = kCosC2 + square * poly;
+        f32 cosine = 1.0f + square * poly;
+        if ((quadrant & 2) != 0) {
+            cosine = -cosine;
+        }
+        return cosine;
+    }
+
+    f32 poly = kSinC0 - square * kSinC1;
+    poly = kSinC2 + square * poly;
+    const f32 sine = reduced + reduced * (poly * square);
+    if ((quadrant & 2) != 0) {
+        return -sine;
+    }
+    return sine;
 }
 
 // DECOMP_FUNC(0x0012fbf4, 464)

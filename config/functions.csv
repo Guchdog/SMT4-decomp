@@ -4511,7 +4511,7 @@ address,size,status,category,name,src_file
 0x00282498,240,matching,script_vm,script_vm_func_00282498,src/engine/leaf_batch35_b.cpp
 0x00282588,120,matching,script_vm,script_vm_func_00282588,src/engine/leaf_batch38_c.cpp
 0x00282600,380,matching,script_vm,script_vm_func_00282600,src/engine/leaf_batch44_b.cpp
-0x0028277c,456,matching,script_vm,script_vm_func_0028277c,src/engine/leaf_batch45_b.cpp
+0x0028277c,456,non_matching,script_vm,script_vm_func_0028277c,src/engine/leaf_batch45_b.cpp
 0x00282944,172,non_matching,ui,ui_func_00282944,src/engine/leaf_batch31_c.cpp
 0x002829f0,160,non_matching,ui,ui_func_002829f0,src/engine/leaf_batch31_c.cpp
 0x00282a90,260,matching,battle,battle_func_00282a90,src/engine/leaf_batch40_b.cpp
