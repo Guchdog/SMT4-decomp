@@ -1064,69 +1064,166 @@ extern "C" f32 sin_0028277c(f32 x) {
     return sine;
 }
 
+// ---------------------------------------------------------------------------
+// 0x0012FBF4 (464 B): rebuilds the two-slot pursuit table and the clamped
+// fractional pair of one engine object.
+//
+// Fields read from self (r0):
+//   +0x0C u32, +0x10 u32, +0x14 u32   (each converted with VCVT.F32.U32)
+//   +0x18 f32, +0x1C f32, +0x24 f32, +0x28 f32
+//   +0x2D u8  mirror selector (0 = direct, 1 = mirrored)
+//   +0x30 u32, +0x34 u32              zero-fill pointer and length (tail call)
+//   +0x38 u32, +0x3C u32              copied to +0xB4 / +0xB8
+//   +0x40 u32                         copied to +0xCC
+//
+// The +0x0C and +0x14 unsigned integers are clamped up to 4.888f
+// (0x409C6A7F) before being scaled by 0.20458264648914337f (0x3E517E1D); the
+// truncated product times 160 is stored as the pair {value, 0} at +0xA4 and
+// +0xAC respectively.
+//
+// Both +0xB4 entries (loaded from +0x38/+0x3C) are converted signed and fed to
+// powf(10.0f, value * -3.0f / scale), where
+//   scale = ((f32)(u32)self[+0x10] * 0.001f) * 32728.0f
+// and the truncated result times 128.0f is stored at +0xC4 / +0xC8.
+//
+// The +0x1C field is clamped down to 0.95f (bit pattern 0x3F733333) with a
+// signed bit-pattern compare.  The +0xF0/+0xF4 pair is then either mirrored
+// (self[+0x2D] == 1: {(a - 1)*128, a * -128}) or direct
+// ({(1 - a)*128, a * 128}).  These stores come after the +0xCC/+0xD0,
+// +0xD4, +0xE8 and +0xEC stores, exactly as in the original schedule.
+//
+// The only call in the live body is the powf helper; the epilogue releases the
+// callee-saved registers and tail-calls the requested-size zero-fill routine
+// with r0 = self[+0x30] and r1 = self[+0x34].
+//
+// The 464-byte extent includes the literal pool at 0x0012FD94..0x0012FDC0.
+// ---------------------------------------------------------------------------
+namespace engine_12fbf4 {
+constexpr u32 F32ToBits(f32 value) noexcept {
+    return __builtin_bit_cast(u32, value);
+}
+
+// Literal pool constants (0x0012FD94..0x0012FDC0).
+constexpr f32 kMinLength = 4.888000011444092f;        // 0x409C6A7F
+constexpr f32 kSlotStep = 0.20458264648914337f;       // 0x3E517E1D
+constexpr f32 kThousandth = 0.0010000000474974513f;   // 0x3A83126F
+constexpr f32 kScaleCeiling = 32728.0f;               // 0x46FFB000
+constexpr f32 kExponentFactor = -3.0f;                // 0xC0400000
+constexpr f32 kPowBase = 10.0f;                       // 0x41200000
+constexpr f32 kResultScale = 128.0f;                  // 0x43000000
+constexpr f32 kMirrorScale = -128.0f;                 // 0xC3000000
+constexpr f32 kRatioMax = 0.9499999880790710f;        // 0x3F733333
+constexpr f32 kOne = 1.0f;                            // 0x3F800000
+
+static_assert(F32ToBits(kMinLength) == 0x409C6A7Fu);
+static_assert(F32ToBits(kSlotStep) == 0x3E517E1Du);
+static_assert(F32ToBits(kThousandth) == 0x3A83126Fu);
+static_assert(F32ToBits(kScaleCeiling) == 0x46FFB000u);
+static_assert(F32ToBits(kExponentFactor) == 0xC0400000u);
+static_assert(F32ToBits(kPowBase) == 0x41200000u);
+static_assert(F32ToBits(kResultScale) == 0x43000000u);
+static_assert(F32ToBits(kMirrorScale) == 0xC3000000u);
+static_assert(F32ToBits(kRatioMax) == 0x3F733333u);
+static_assert(F32ToBits(kOne) == 0x3F800000u);
+}  // namespace engine_12fbf4
+
+// 0x002B9CF8 (1908 B): single-precision powf(base, exponent).  Both operands
+// arrive in s0/s1 and the result returns in s0.  The body is a self-contained
+// argument-reduction implementation whose only calls are to the errno setter at
+// 0x002A464E for pole/domain errors.
+extern "C" f32 camp_func_002b9cf8(f32 base, f32 exponent);
+// 0x002C3B48 (64 B): zero-fill of r1 bytes starting at r0 (the callee forces
+// the fill value to zero).  The caller observes no return value.
+extern "C" void engine_func_002c3b48(void* dst, u32 size);
+
 // DECOMP_FUNC(0x0012fbf4, 464)
-extern "C" __attribute__((naked)) void engine_func_0012fbf4() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x41f0, 0xe92d, 0x4000, 0xe1a0\n"
-        ".hword 0x20a4, 0xe284, 0x018c, 0xe59f\n"
-        ".hword 0x0a63, 0xeddf, 0x7000, 0xe3a0\n"
-        ".hword 0x8b04, 0xed2d, 0x30ac, 0xe284\n"
-        ".hword 0x5000, 0xe3a0, 0x0a03, 0xed94\n"
-        ".hword 0x9a61, 0xed9f, 0x9a61, 0xeddf\n"
-        ".hword 0x1a40, 0xeeb8, 0x8a60, 0xed9f\n"
-        ".hword 0x1a10, 0xee11, 0x1a59, 0xed9f\n"
-        ".hword 0x0000, 0xe151, 0x0a40, 0xceb8\n"
-        ".hword 0x0a60, 0xdeb0, 0x0a01, 0xee20\n"
-        ".hword 0x0ac0, 0xeebc, 0x1a10, 0xee10\n"
-        ".hword 0x1101, 0xe081, 0x1281, 0xe1a0\n"
-        ".hword 0x0082, 0xe882, 0x0a05, 0xed94\n"
-        ".hword 0x1a40, 0xeef8, 0x1a90, 0xee11\n"
-        ".hword 0x0000, 0xe151, 0x0a40, 0xcef8\n"
-        ".hword 0x1038, 0xe284, 0x0006, 0xe891\n"
-        ".hword 0x0a81, 0xee20, 0x0a48, 0xeddf\n"
-        ".hword 0x0ac0, 0xeebc, 0x0a10, 0xee10\n"
-        ".hword 0x0a04, 0xed94, 0x0a40, 0xeeb8\n"
-        ".hword 0x0100, 0xe080, 0x0280, 0xe1a0\n"
-        ".hword 0x0081, 0xe883, 0x00b4, 0xe284\n"
-        ".hword 0x0006, 0xe880, 0x0a20, 0xee20\n"
-        ".hword 0x0a3e, 0xeddf, 0x8a20, 0xee60\n"
-        ".hword 0x6105, 0xe084, 0x70bc, 0xe586\n"
-        ".hword 0x0a2d, 0xed96, 0x0ac0, 0xeeb8\n"
-        ".hword 0x0a09, 0xee20, 0x0a28, 0xeec0\n"
-        ".hword 0x0a69, 0xeeb0, 0x280a, 0xeb06\n"
-        ".hword 0x0a08, 0xee20, 0x5001, 0xe285\n"
-        ".hword 0x0002, 0xe355, 0x0ac0, 0xeebd\n"
-        ".hword 0x0a31, 0xed86, 0xfff1, 0xbaff\n"
-        ".hword 0x1a09, 0xed94, 0x0a0a, 0xed94\n"
-        ".hword 0x0a06, 0xedd4, 0x1a08, 0xee21\n"
-        ".hword 0x1a08, 0xee60, 0x2a88, 0xee20\n"
-        ".hword 0x0a07, 0xed94, 0x20ac, 0xe59f\n"
-        ".hword 0x0a10, 0xee10, 0x1040, 0xe594\n"
-        ".hword 0x0002, 0xe150, 0x00cc, 0xe284\n"
-        ".hword 0x1ac1, 0xeebd, 0x0ae1, 0xeefd\n"
-        ".hword 0x1ac2, 0xeefd, 0x0082, 0xe880\n"
-        ".hword 0x0a23, 0xcd9f, 0x1a3a, 0xed84\n"
-        ".hword 0x0a3b, 0xedc4, 0x1a35, 0xedc4\n"
-        ".hword 0x002d, 0xe5d4, 0x0a1f, 0xeddf\n"
-        ".hword 0x0001, 0xe350, 0x000a, 0x0a00\n"
-        ".hword 0x0ac0, 0xee70, 0x1a08, 0xee20\n"
-        ".hword 0x00f0, 0xe284, 0x0a88, 0xee60\n"
-        ".hword 0x0ae0, 0xeebd, 0x0ac1, 0xeefd\n"
-        ".hword 0x0a02, 0xec80, 0x03d0, 0xe1c4\n"
-        ".hword 0x8b04, 0xecbd, 0x41f0, 0xe8bd\n"
-        ".hword 0x4f75, 0xea06, 0x0a60, 0xee70\n"
-        ".hword 0x1a11, 0xed9f, 0x0a01, 0xee20\n"
-        ".hword 0x0a88, 0xee60, 0x0ac0, 0xeebd\n"
-        ".hword 0x0ae0, 0xeefd, 0x0a3d, 0xed84\n"
-        ".hword 0x0a3c, 0xedc4, 0xfff2, 0xeaff\n"
-        ".hword 0x6a7f, 0x409c, 0x6a7f, 0x409c\n"
-        ".hword 0x7e1d, 0x3e51, 0x126f, 0x3a83\n"
-        ".hword 0xb000, 0x46ff, 0x0000, 0xc040\n"
-        ".hword 0x0000, 0x4120, 0x0000, 0x4300\n"
-        ".hword 0x3333, 0x3f73, 0x3333, 0x3f73\n"
-        ".hword 0x0000, 0x3f80, 0x0000, 0xc300\n"
-    );
+extern "C" void engine_func_0012fbf4(void* self_raw) {
+    using namespace engine_12fbf4;
+
+    u8* const self = static_cast<u8*>(self_raw);
+
+    const auto load_u32 = [self](u32 offset) {
+        return *reinterpret_cast<const u32*>(self + offset);
+    };
+    const auto store_u32 = [self](u32 offset, u32 value) {
+        *reinterpret_cast<u32*>(self + offset) = value;
+    };
+    const auto load_f32 = [self](u32 offset) {
+        return *reinterpret_cast<const f32*>(self + offset);
+    };
+    const auto store_f32 = [self](u32 offset, f32 value) {
+        *reinterpret_cast<f32*>(self + offset) = value;
+    };
+
+    // +0xA4: slot size derived from the +0x0C unsigned count.  The converted
+    // count is clamped up to kMinLength with a signed bit-pattern compare.
+    {
+        f32 length = static_cast<f32>(load_u32(0x0C));
+        if (!(F32ToBits(length) > F32ToBits(kMinLength))) {
+            length = kMinLength;
+        }
+        const u32 slots = static_cast<u32>(length * kSlotStep);
+        store_u32(0xA4, slots * 160u);
+        store_u32(0xA8, 0u);
+    }
+
+    // +0xAC: identical computation from the +0x14 unsigned count.
+    {
+        f32 length = static_cast<f32>(load_u32(0x14));
+        if (!(F32ToBits(length) > F32ToBits(kMinLength))) {
+            length = kMinLength;
+        }
+        const u32 slots = static_cast<u32>(length * kSlotStep);
+        store_u32(0xAC, slots * 160u);
+        store_u32(0xB0, 0u);
+    }
+
+    // +0xB4/+0xB8 are the +0x38/+0x3C pair, copied before the scale is built.
+    const u32 pair_lo = load_u32(0x38);
+    const u32 pair_hi = load_u32(0x3C);
+    store_u32(0xB4, pair_lo);
+    store_u32(0xB8, pair_hi);
+
+    // Shared reciprocal-like scale for the two powf exponents.
+    const f32 scale = (static_cast<f32>(load_u32(0x10)) * kThousandth) * kScaleCeiling;
+
+    for (u32 i = 0; i < 2; ++i) {
+        store_u32(0xBC + i * 4, 0u);
+        const s32 raw = static_cast<s32>(load_u32(0xB4 + i * 4));
+        const f32 exponent = (static_cast<f32>(raw) * kExponentFactor) / scale;
+        const f32 result = camp_func_002b9cf8(kPowBase, exponent);
+        store_u32(0xC4 + i * 4, static_cast<u32>(static_cast<s32>(result * kResultScale)));
+    }
+
+    // The +0x1C ratio is clamped down to kRatioMax using the signed ordering of
+    // the IEEE-754 bit patterns, so negative values and the equality case are
+    // left untouched.
+    f32 ratio = load_f32(0x1C);
+    if (static_cast<s32>(load_u32(0x1C)) > static_cast<s32>(0x3F733333u)) {
+        ratio = kRatioMax;
+    }
+
+    const s32 scaled_24 = static_cast<s32>(load_f32(0x24) * kResultScale);
+    const s32 scaled_28 = static_cast<s32>(load_f32(0x28) * kResultScale);
+    const s32 scaled_18 = static_cast<s32>(load_f32(0x18) * kResultScale);
+
+    store_u32(0xCC, load_u32(0x40));
+    store_u32(0xD0, 0u);
+    store_u32(0xE8, static_cast<u32>(scaled_24));
+    store_u32(0xEC, static_cast<u32>(scaled_28));
+    store_u32(0xD4, static_cast<u32>(scaled_18));
+
+    if (self[0x2D] == 1u) {
+        store_u32(0xF0, static_cast<u32>(static_cast<s32>((ratio - kOne) * kResultScale)));
+        store_u32(0xF4, static_cast<u32>(static_cast<s32>(ratio * kMirrorScale)));
+    } else {
+        store_u32(0xF0, static_cast<u32>(static_cast<s32>((kOne - ratio) * kResultScale)));
+        store_u32(0xF4, static_cast<u32>(static_cast<s32>(ratio * kResultScale)));
+    }
+
+    const void* const fill_target = reinterpret_cast<const void*>(load_u32(0x30));
+    const u32 fill_size = load_u32(0x34);
+    engine_func_002c3b48(const_cast<void*>(fill_target), fill_size);
 }
 
 // DECOMP_FUNC(0x0026eccc, 464)
