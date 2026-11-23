@@ -4590,7 +4590,7 @@ address,size,status,category,name,src_file
 0x00288380,60,matching,camp,camp_func_00288380,src/engine/leaf_batch24_b.cpp
 0x002883bc,76,matching,camp,camp_func_002883bc,src/engine/leaf_batch27_b.cpp
 0x00288408,28,matching,ui,Status_GetSubMenuState,src/ui/status.cpp
-0x00288424,432,matching,engine,engine_func_00288424,src/engine/leaf_batch45_b.cpp
+0x00288424,432,non_matching,engine,engine_func_00288424,src/engine/leaf_batch45_b.cpp
 0x002885d4,300,matching,ui,ui_func_002885d4,src/engine/leaf_batch41_a.cpp
 0x00288700,24,matching,camp,camp_func_00288700,src/engine/leaf_batch39_a.cpp
 0x00288718,92,non_matching,ui,StatusDown_CanOpenSubScreen,src/ui/status_down.cpp
