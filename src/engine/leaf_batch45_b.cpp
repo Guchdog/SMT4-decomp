@@ -7595,112 +7595,148 @@ extern "C" u8* ui_func_0037dc24(u8* self, u32 b, u32 c, u32 sb, u32 flag) {
     return obj;
 }
 
+// ---------------------------------------------------------------------------
+// 0x0027B100 (804 B): submit one billboard column per active placement slot.
+//
+// The streamed placement table is the singleton behind 0x00447E70: 24 slots at
+// +0x14, 0x48 bytes apart (see ObjectLoadContext in leaf_batch45_a.cpp).  For
+// every slot whose enabled byte (slot+0) is non-zero the routine reads the
+// behaviour selector at slot+0x24 and issues one 0x00267420 draw with the slot
+// position, angle and per-selector dimensions.
+//
+//   2, 10  : position lifted by a sine/cosine bob of radius 20 around the slot
+//            angle; height 350 / 500 and depth 50, width 80.  Both are skipped
+//            when the screen state word at 0x0049F91C is 4 and the following
+//            word is 1.
+//   7, 9, 11: offset by (sin,cos) * -17.5 along X/Z, height 300, depth 50 and
+//            width 200 / 150 / 200.
+//   15, 16 : raw position, angle, 50 x 50 x 50.
+//   17     : raw position, angle, 100 x 50 x 60.
+//
+// The angle is stored in degrees and scaled by pi/180 before the sine/cosine
+// calls.  The routine writes no memory; every draw is the only side effect.
+// ---------------------------------------------------------------------------
+namespace script_vm_27b100_detail {
+
+// Prefix of one 0x48-byte placement slot; field names follow ObjectLoadSlot.
+struct PlacementSlot {
+    u8 enabled_00;
+    u8 pad_01[3];
+    f32 position_04;
+    f32 position_08;
+    f32 position_0C;
+    f32 pad_10[3];
+    f32 angle_1C;
+    u32 field_20;
+    u32 object_id_24;
+    u8 pad_28[0x20];
+};
+
+constexpr u32 kContextAddress = 0x00447E70u;      // -> ObjectLoadContext*
+constexpr u32 kScreenStateAddress = 0x0049F91Cu;  // shared screen/script words
+constexpr u32 kSlotsOffset = 0x14u;               // context -> slot[0]
+constexpr s32 kSlotCount = 0x18;                  // 24 slots
+constexpr f32 kDegreesToRadians = 0.01745329238474369f;  // pi/180 (0x3C8EFA35)
+constexpr f32 kBobRadius = 20.0f;
+constexpr f32 kColumnOffset = -17.5f;
+
+static_assert(sizeof(PlacementSlot) == 0x48);
+static_assert(__builtin_offsetof(PlacementSlot, position_04) == 0x04);
+static_assert(__builtin_offsetof(PlacementSlot, angle_1C) == 0x1C);
+static_assert(__builtin_offsetof(PlacementSlot, object_id_24) == 0x24);
+
+// 0x0028277C: sine of a radian argument (declared as sin_0028277c above).
+extern "C" f32 sin_0028277c(f32 radians);
+// 0x00282600: cosine of a radian argument.
+extern "C" f32 script_vm_func_00282600(f32 radians);
+// 0x00267420: four-face billboard column submitter.
+extern "C" void battle_func_00267420(s32 id, f32 x, f32 y, f32 z, f32 rot_y,
+                                     f32 width, f32 height, f32 depth);
+
+}  // namespace script_vm_27b100_detail
+
 // DECOMP_FUNC(0x0027b100, 804)
-extern "C" __attribute__((naked)) void script_vm_func_0027b100() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x41f0, 0xe92d, 0x5000, 0xe3a0\n"
-        ".hword 0x72d4, 0xe59f, 0x62d4, 0xe59f\n"
-        ".hword 0x8b10, 0xed2d, 0xbab4, 0xeddf\n"
-        ".hword 0xcab4, 0xeddf, 0xbab4, 0xed9f\n"
-        ".hword 0xdab4, 0xed9f, 0xcab4, 0xed9f\n"
-        ".hword 0xdab4, 0xeddf, 0xeab4, 0xed9f\n"
-        ".hword 0x8ab4, 0xed9f, 0x8ab4, 0xeddf\n"
-        ".hword 0xeab4, 0xeddf, 0xfab4, 0xed9f\n"
-        ".hword 0xaab4, 0xed9f, 0xfab4, 0xeddf\n"
-        ".hword 0x0000, 0xe597, 0x1185, 0xe085\n"
-        ".hword 0x4181, 0xe080, 0x0014, 0xe5f4\n"
-        ".hword 0x0000, 0xe350, 0x009b, 0x0a00\n"
-        ".hword 0x0000, 0xe596, 0x0004, 0xe350\n"
-        ".hword 0x0002, 0x1a00, 0x0004, 0xe596\n"
-        ".hword 0x0001, 0xe350, 0x002f, 0x0a00\n"
-        ".hword 0x0024, 0xe594, 0x0002, 0xe350\n"
-        ".hword 0x0014, 0x1a00, 0x0a02, 0xed94\n"
-        ".hword 0x9a01, 0xedd4, 0x9a03, 0xed94\n"
-        ".hword 0xaa6b, 0xee70, 0x0a07, 0xed94\n"
-        ".hword 0x0a08, 0xee20, 0x1d76, 0xeb00\n"
-        ".hword 0x9a0b, 0xee40, 0x0a07, 0xed94\n"
-        ".hword 0x0a08, 0xee20, 0x1d13, 0xeb00\n"
-        ".hword 0x9a0b, 0xee00, 0x3a4a, 0xeeb0\n"
-        ".hword 0x2a6c, 0xeef0, 0x2a4d, 0xeeb0\n"
-        ".hword 0x0a6a, 0xeef0, 0x0a69, 0xeeb0\n"
-        ".hword 0x1a07, 0xedd4, 0x0000, 0xe3a0\n"
-        ".hword 0x1a49, 0xeeb0, 0xb091, 0xebff\n"
-        ".hword 0x0024, 0xe594, 0x000a, 0xe350\n"
-        ".hword 0x0014, 0x1a00, 0x0a02, 0xed94\n"
-        ".hword 0x9a01, 0xedd4, 0x9a03, 0xed94\n"
-        ".hword 0xaa4c, 0xee70, 0x0a07, 0xed94\n"
-        ".hword 0x0a08, 0xee20, 0x1d5e, 0xeb00\n"
-        ".hword 0x9a0b, 0xee40, 0x0a07, 0xed94\n"
-        ".hword 0x0a08, 0xee20, 0x1cfb, 0xeb00\n"
-        ".hword 0x1a49, 0xeeb0, 0x3a4a, 0xeeb0\n"
-        ".hword 0x2a6d, 0xeef0, 0x2a4d, 0xeeb0\n"
-        ".hword 0x0a6a, 0xeef0, 0x1a07, 0xedd4\n"
-        ".hword 0x1a0b, 0xee00, 0x0a69, 0xeeb0\n"
-        ".hword 0x0000, 0xe3a0, 0xb079, 0xebff\n"
-        ".hword 0x0024, 0xe594, 0x0007, 0xe350\n"
-        ".hword 0x0013, 0x1a00, 0x0a07, 0xed94\n"
-        ".hword 0x9a01, 0xedd4, 0xaa02, 0xedd4\n"
-        ".hword 0x0a08, 0xee20, 0x9a03, 0xed94\n"
-        ".hword 0x1d47, 0xeb00, 0x9a28, 0xee40\n"
-        ".hword 0x0a07, 0xed94, 0x0a08, 0xee20\n"
-        ".hword 0x1ce4, 0xeb00, 0x9a28, 0xee00\n"
-        ".hword 0x3a4a, 0xeeb0, 0x2a6e, 0xeef0\n"
-        ".hword 0x2a4f, 0xeeb0, 0x0a6a, 0xeef0\n"
-        ".hword 0x0a69, 0xeeb0, 0x1a07, 0xedd4\n"
-        ".hword 0x0000, 0xe3a0, 0x1a49, 0xeeb0\n"
-        ".hword 0xb062, 0xebff, 0x0024, 0xe594\n"
-        ".hword 0x0009, 0xe350, 0x0013, 0x1a00\n"
-        ".hword 0x0a07, 0xed94, 0x9a01, 0xedd4\n"
-        ".hword 0xaa02, 0xedd4, 0x0a08, 0xee20\n"
-        ".hword 0x9a03, 0xed94, 0x1d30, 0xeb00\n"
-        ".hword 0x9a28, 0xee40, 0x0a07, 0xed94\n"
-        ".hword 0x0a08, 0xee20, 0x1ccd, 0xeb00\n"
-        ".hword 0x1a49, 0xeeb0, 0x3a4a, 0xeeb0\n"
-        ".hword 0x2a6e, 0xeef0, 0x2a4e, 0xeeb0\n"
-        ".hword 0x0a6a, 0xeef0, 0x1a07, 0xedd4\n"
-        ".hword 0x1a28, 0xee00, 0x0a69, 0xeeb0\n"
-        ".hword 0x0000, 0xe3a0, 0xb04b, 0xebff\n"
-        ".hword 0x0024, 0xe594, 0x000b, 0xe350\n"
-        ".hword 0x0013, 0x1a00, 0x0a07, 0xed94\n"
-        ".hword 0x9a01, 0xedd4, 0xaa02, 0xedd4\n"
-        ".hword 0x0a08, 0xee20, 0x9a03, 0xed94\n"
-        ".hword 0x1d19, 0xeb00, 0x9a28, 0xee40\n"
-        ".hword 0x0a07, 0xed94, 0x0a08, 0xee20\n"
-        ".hword 0x1cb6, 0xeb00, 0x1a49, 0xeeb0\n"
-        ".hword 0x3a4a, 0xeeb0, 0x2a6e, 0xeef0\n"
-        ".hword 0x2a4f, 0xeeb0, 0x0a6a, 0xeef0\n"
-        ".hword 0x1a07, 0xedd4, 0x1a28, 0xee00\n"
-        ".hword 0x0a69, 0xeeb0, 0x0000, 0xe3a0\n"
-        ".hword 0xb034, 0xebff, 0x0024, 0xe594\n"
-        ".hword 0x000f, 0xe350, 0x0007, 0x1a00\n"
-        ".hword 0x2a4a, 0xeeb0, 0x1004, 0xe284\n"
-        ".hword 0x1a07, 0xedd4, 0x0000, 0xe3a0\n"
-        ".hword 0x0a03, 0xec91, 0x3a42, 0xeeb0\n"
-        ".hword 0x2a42, 0xeef0, 0xb029, 0xebff\n"
-        ".hword 0x0024, 0xe594, 0x0010, 0xe350\n"
-        ".hword 0x0007, 0x1a00, 0x2a4a, 0xeeb0\n"
-        ".hword 0x1004, 0xe284, 0x1a07, 0xedd4\n"
-        ".hword 0x0000, 0xe3a0, 0x0a03, 0xec91\n"
-        ".hword 0x3a42, 0xeeb0, 0x2a42, 0xeef0\n"
-        ".hword 0xb01e, 0xebff, 0x0024, 0xe594\n"
-        ".hword 0x0011, 0xe350, 0x0007, 0x1a00\n"
-        ".hword 0x1a07, 0xedd4, 0x4004, 0xe284\n"
-        ".hword 0x3a6f, 0xeeb0, 0x2a4a, 0xeef0\n"
-        ".hword 0x0a03, 0xec94, 0x0000, 0xe3a0\n"
-        ".hword 0x2a14, 0xed9f, 0xb013, 0xebff\n"
-        ".hword 0x5001, 0xe285, 0x0018, 0xe355\n"
-        ".hword 0xff5a, 0xbaff, 0x8b10, 0xecbd\n"
-        ".hword 0x81f0, 0xe8bd, 0x7e70, 0x0044\n"
-        ".hword 0xf91c, 0x0049, 0x0000, 0x43c8\n"
-        ".hword 0x0000, 0x43af, 0x0000, 0x41a0\n"
-        ".hword 0x0000, 0x42a0, 0x8000, 0x4409\n"
-        ".hword 0x0000, 0x43fa, 0x0000, 0x4316\n"
-        ".hword 0xfa35, 0x3c8e, 0x0000, 0xc18c\n"
-        ".hword 0x0000, 0x4396, 0x0000, 0x4348\n"
-        ".hword 0x0000, 0x4248, 0x0000, 0x4270\n"
-        ".hword 0x0000, 0x42c8\n"
-    );
+extern "C" void script_vm_func_0027b100() {
+    using namespace script_vm_27b100_detail;
+
+    auto* const slots = reinterpret_cast<PlacementSlot*>(
+        *reinterpret_cast<u8* const*>(kContextAddress) + kSlotsOffset);
+    const u32* const screen_state =
+        reinterpret_cast<const u32*>(kScreenStateAddress);
+
+    for (s32 index = 0; index < kSlotCount; ++index) {
+        PlacementSlot* const slot = slots + index;
+        if (slot->enabled_00 == 0u) {
+            continue;
+        }
+
+        // 0x0027B160: both near/far variants are suppressed in this state.
+        const bool suppress_near_far =
+            screen_state[0] == 4u && screen_state[1] == 1u;
+
+        // The selector is re-read before every test, as in the original: a draw
+        // helper may in principle rewrite the shared slot table.
+        if (slot->object_id_24 == 2u && !suppress_near_far) {
+            const f32 radians = slot->angle_1C * kDegreesToRadians;
+            const f32 x = slot->position_04 +
+                          sin_0028277c(radians) * kBobRadius;
+            const f32 z = slot->position_0C +
+                          script_vm_func_00282600(radians) * kBobRadius;
+            battle_func_00267420(0, x, slot->position_08 - 400.0f, z,
+                                 slot->angle_1C, 80.0f, 350.0f, 50.0f);
+        }
+        if (slot->object_id_24 == 10u && !suppress_near_far) {
+            const f32 radians = slot->angle_1C * kDegreesToRadians;
+            const f32 x = slot->position_04 +
+                          sin_0028277c(radians) * kBobRadius;
+            const f32 z = slot->position_0C +
+                          script_vm_func_00282600(radians) * kBobRadius;
+            battle_func_00267420(0, x, slot->position_08 - 550.0f, z,
+                                 slot->angle_1C, 80.0f, 500.0f, 50.0f);
+        }
+        if (slot->object_id_24 == 7u) {
+            const f32 radians = slot->angle_1C * kDegreesToRadians;
+            const f32 x = slot->position_04 +
+                          sin_0028277c(radians) * kColumnOffset;
+            const f32 z = slot->position_0C +
+                          script_vm_func_00282600(radians) * kColumnOffset;
+            battle_func_00267420(0, x, slot->position_08, z, slot->angle_1C,
+                                 200.0f, 300.0f, 50.0f);
+        }
+        if (slot->object_id_24 == 9u) {
+            const f32 radians = slot->angle_1C * kDegreesToRadians;
+            const f32 x = slot->position_04 +
+                          sin_0028277c(radians) * kColumnOffset;
+            const f32 z = slot->position_0C +
+                          script_vm_func_00282600(radians) * kColumnOffset;
+            battle_func_00267420(0, x, slot->position_08, z, slot->angle_1C,
+                                 150.0f, 300.0f, 50.0f);
+        }
+        if (slot->object_id_24 == 11u) {
+            const f32 radians = slot->angle_1C * kDegreesToRadians;
+            const f32 x = slot->position_04 +
+                          sin_0028277c(radians) * kColumnOffset;
+            const f32 z = slot->position_0C +
+                          script_vm_func_00282600(radians) * kColumnOffset;
+            battle_func_00267420(0, x, slot->position_08, z, slot->angle_1C,
+                                 200.0f, 300.0f, 50.0f);
+        }
+        if (slot->object_id_24 == 15u) {
+            battle_func_00267420(0, slot->position_04, slot->position_08,
+                                 slot->position_0C, slot->angle_1C, 50.0f,
+                                 50.0f, 50.0f);
+        }
+        if (slot->object_id_24 == 16u) {
+            battle_func_00267420(0, slot->position_04, slot->position_08,
+                                 slot->position_0C, slot->angle_1C, 50.0f,
+                                 50.0f, 50.0f);
+        }
+        if (slot->object_id_24 == 17u) {
+            battle_func_00267420(0, slot->position_04, slot->position_08,
+                                 slot->position_0C, slot->angle_1C, 100.0f,
+                                 50.0f, 60.0f);
+        }
+    }
 }
 
 // DECOMP_FUNC(0x00150320, 820)
