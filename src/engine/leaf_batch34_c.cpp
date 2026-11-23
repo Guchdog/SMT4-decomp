@@ -4843,451 +4843,455 @@ extern "C" u32 engine_func_00148dec(LayoutCursor* layout, u8** type_slot) {
     return layout->max_alignment;
 }
 
+// ---------------------------------------------------------------------------
+// 0x001493A0 -- emit the two GPU command streams described by a render
+// descriptor and fill the option block it points at.
+//
+// ABI: r0 = descriptor, r1 = optional state record.  Nothing else in r2/r3 is
+// read; the function returns the descriptor (r0 survives the epilogue).  The
+// descriptor fields recovered from the listing are:
+//
+//   +0x0C / +0x10  the two destination type buffers (one outer pass each)
+//   +0x14 / +0x18  receives the byte size of the matching type buffer
+//   +0x1C          a second command buffer
+//   +0x20          receives the byte size of the second command buffer
+//   +0x24          the option block filled by the final section
+//   +0x28          receives 0x78
+//   +0x30          byte switch between the two words of a record argument
+//   +0x34          signed record count
+//   +0x38          records, stride 0x1C:
+//                    +0x00 word whose low nibble feeds the type +0x10 map
+//                    +0x04 tag word (0x1400/0x1401/0x1402/0x1406)
+//                    +0x08 byte count of the element array at +0x0C
+//                    +0x09 presence byte (non-zero = first pass)
+//                    +0x0C / +0x10 two helper-argument words
+//                    +0x14 / +0x18 receive the pass offsets of the block
+//                                   written for this record
+//
+// Per outer pass the listing calls 0x002C39A4(0x20000) and then
+// 0x002BC300(framebuffer) to obtain the physical base, writes a twelve-word
+// type header, and appends three words per present record (the translated
+// argument minus the base, the record index, and a tagged constant) plus a
+// six-word block per absent record.  The absent blocks are preceded by three
+// zero words each and an even-word pad.  A four-word tail follows.
+//
+// The second buffer gets a two-word command per present record followed by a
+// six-word block per present record.  The option block is a constant template
+// selected by the optional state record's tag.
+//
+// Domain limits (the original faults or overruns its own frame there):
+//   - both type-buffer pointers must be valid and word aligned;
+//   - record +0x0C must point at +0x08 readable element words when that count
+//     is non-zero;
+//   - the element count must be <= 4: the original writes the four sink words
+//     into a four-word stack scratch and larger counts overwrite its locals;
+//   - the optional state record is dereferenced at +0x08; a null state word
+//     makes the original read address 0x44, and a zero relative field at
+//     +0x44 makes it read address 0.
+// ---------------------------------------------------------------------------
+namespace engine_1493a0 {
+
+// 0x001493B8: framebuffer screen passed to 0x002C39A4.
+constexpr u32 kScreenFrameBuffer = 0x00020000u;
+
+// Type-buffer header words -- literal pool 0x001499EC..0x00149A18.
+constexpr u32 kTypeWord04 = 0x000b02b9u;
+constexpr u32 kTypeWord0C = 0x00010242u;
+constexpr u32 kTypeWord14 = 0x801f02bbu;
+constexpr u32 kTypeWord24Base = 0x80000000u;
+constexpr u32 kTypeWord24Mask = 0x000f0000u;
+constexpr u32 kTypeWord24Flag = 0x00000200u;
+constexpr u32 kAbsentBlockWord1 = 0x803f0232u;
+constexpr u32 kTailWord0 = 0x76543210u;
+constexpr u32 kTailWord1 = 0x801f028bu;
+constexpr u32 kTailWord2 = 0xfedcba98u;
+
+// Record tag base -- 0x001494F4 and 0x00149580.
+constexpr u32 kTagBase = 0x00001400u;
+
+// Second-buffer command words -- 0x0014983C..0x00149858.
+constexpr u32 kPresentEntryBase = 0x00000205u;
+constexpr u32 kPresentEntryMask = 0x000f0000u;
+constexpr u32 kPresentEntryStep = 3u;
+
+// Option-block template -- 0x00149924..0x001499D8.
+constexpr u32 kOptionCommand04 = 0x804f02b0u;
+constexpr u32 kOptionWord1C = 0x00020229u;
+constexpr u32 kOptionWord24 = 0x00020253u;
+constexpr u32 kOptionWord2C = 0x0002025eu;
+constexpr u32 kOptionWord34 = 0x000f025fu;
+constexpr u32 kOptionWord3C = 0x00010245u;
+constexpr u32 kOptionWord44 = kOptionWord34 - 0x30u;
+constexpr u32 kOptionWord54 = kOptionWord44 + (kOptionWord3C >> 15);
+constexpr u32 kOptionWord5C = kOptionWord2C + 0x60000u;
+constexpr u32 kOptionWord6C = kOptionWord54 - 0x120u;
+constexpr u32 kOptionWord74 = kOptionWord6C & ~(kOptionWord3C >> 6);
+constexpr u32 kOptionSize = 0x78u;
+
+// Descriptor fields.
+constexpr u32 kDescTypePointer = 0x0cu;  // +0x0C and +0x10
+constexpr u32 kDescTypeSize = 0x14u;     // +0x14 and +0x18
+constexpr u32 kDescStream = 0x1cu;
+constexpr u32 kDescStreamSize = 0x20u;
+constexpr u32 kDescOptionBlock = 0x24u;
+constexpr u32 kDescOptionSize = 0x28u;
+constexpr u32 kDescArgumentSwitch = 0x30u;
+constexpr u32 kDescRecordCount = 0x34u;
+constexpr u32 kDescRecords = 0x38u;
+
+// Record fields.
+constexpr u32 kRecordNibbleWord = 0x00u;
+constexpr u32 kRecordTag = 0x04u;
+constexpr u32 kRecordArrayCount = 0x08u;
+constexpr u32 kRecordPresence = 0x09u;
+constexpr u32 kRecordArgument = 0x0cu;  // +0x0C and +0x10
+constexpr u32 kRecordSlots = 0x14u;     // +0x14 and +0x18
+constexpr u32 kRecordStride = 0x1cu;
+
+inline u32 LoadWord(const void* base, u32 offset) {
+    return *reinterpret_cast<const u32*>(
+        static_cast<const u8*>(base) + offset);
+}
+
+inline u8 LoadByte(const void* base, u32 offset) {
+    return *reinterpret_cast<const u8*>(
+        static_cast<const u8*>(base) + offset);
+}
+
+inline void StoreWord(void* base, u32 offset, u32 value) {
+    *reinterpret_cast<u32*>(static_cast<u8*>(base) + offset) = value;
+}
+
+inline u32 LoadAddress(u32 address) {
+    return *reinterpret_cast<const u32*>(
+        static_cast<std::uintptr_t>(address));
+}
+
+// OR `value` into nibble `index` of the nibble map based at `map`.  The
+// original advances the +0x10 map by `index & ~7` *bytes* (one word every
+// eight entries) but the +0x28 map by `(index >> 3) * 4` bytes, so the two
+// maps use distinct addressing.
+// 0x001494B8..0x001494E4 and 0x00149674..0x001496A0.
+inline void OrNibbleSpaced(u32* map, u32 index, u32 value) {
+    u32* const slot = reinterpret_cast<u32*>(
+        reinterpret_cast<u8*>(map) + (index & ~7u));
+    *slot |= value << ((index & 7u) * 4u);
+}
+
+// 0x00149520..0x00149540.
+inline void OrNibblePacked(u32* map, u32 index, u32 value) {
+    map[index >> 3] |= value << ((index & 7u) * 4u);
+}
+
+}  // namespace engine_1493a0
+
+extern "C" u32 engine_screen_address_002c39a4(u32 screen)
+    __asm__("engine_func_002c39a4");
+extern "C" u32 engine_physical_address_002bc300(u32 address)
+    __asm__("engine_func_002bc300");
+
 // DECOMP_FUNC(0x001493a0, 1660)
-extern "C" __attribute__((naked)) void engine_func_001493a0() {
-    asm volatile(
-        "push {r0, r1, r4, r5, r6, r7, r8, sb, sl, fp, lr}\n"
-        "sub sp, sp, #0x2c\n"
-        "mov r0, #0\n"
-        "str r0, [sp, #0xc]\n"
-        ".L_001493b0:\n"
-        "and r1, r0, #0xff\n"
-        "ldr r6, [sp, #0x2c]\n"
-        "mov r0, #0x20000\n"
-        "str r1, [sp, #8]\n"
-        "bl engine_func_002c39a4\n"
-        "nop\n"
-        "nop\n"
-        "bl engine_func_002bc300\n"
-        "ldr r1, [sp, #8]\n"
-        ".word 0xe59f4618\n"
-        ".word 0xe59f3610\n"
-        ".word 0xe59f2608\n"
-        "add r1, r6, r1, lsl #2\n"
-        "strd r0, r1, [sp]\n"
-        "ldr r5, [r1, #0xc]\n"
-        "ldr r0, [r6, #0x34]\n"
-        "ldr r1, [sp]\n"
-        "str r0, [sp, #0x10]\n"
-        "ldr ip, [sp, #0x10]\n"
-        "lsr r8, r1, #3\n"
-        "add r1, r5, #0x10\n"
-        "sub ip, ip, #1\n"
-        "orr r7, ip, #0xa0000000\n"
-        "mov r0, #0\n"
-        "str r7, [r5]\n"
-        "stm r1, {r0, r4}\n"
-        "add r1, r5, #0x1c\n"
-        "str r0, [r5, #0x18]\n"
-        "str r3, [r5, #0xc]\n"
-        "stm r1, {r0, r8}\n"
-        "add r1, r5, #4\n"
-        "mov r7, #0xc\n"
-        "stm r1, {r2, ip}\n"
-        "mov r2, #0x80000000\n"
-        "ldr r1, [sp, #0x10]\n"
-        "ldr r0, [sp, #0x10]\n"
-        "mov r8, #0\n"
-        "add r1, r1, r1, lsl #1\n"
-        "add r1, r1, #2\n"
-        "and r1, r1, #0xff\n"
-        "orr r1, r2, r1, lsl #20\n"
-        "orr r1, r1, #0xf0000\n"
-        "lsl r2, r0, #0x1c\n"
-        "orr r1, r1, #0x200\n"
-        "mov r0, #0\n"
-        "str r1, [r5, #0x24]\n"
-        "add r1, r2, #0xf0000000\n"
-        "mov r4, r0\n"
-        "strd r0, r1, [r5, #0x28]\n"
-        "add r0, r5, #0x10\n"
-        "str r0, [sp, #0x20]\n"
-        "add r0, r5, #0x28\n"
-        "str r0, [sp, #0x14]\n"
-        "add r0, r5, #0x2c\n"
-        "str r0, [sp, #0x24]\n"
-        "ldr r0, [r6, #0x34]\n"
-        "cmp r0, #0\n"
-        "ble .L_001495ec\n"
-        "ldr r0, [sp, #8]\n"
-        "rsb r0, r0, #1\n"
-        "str r0, [sp, #0x18]\n"
-        ".L_001494a4:\n"
-        "rsb r2, r8, r8, lsl #3\n"
-        "add sb, r6, r2, lsl #2\n"
-        "ldrb r2, [sb, #0x41]\n"
-        "cmp r2, #0\n"
-        "beq .L_001495dc\n"
-        "asr r2, r4, #0x1f\n"
-        "ldr r3, [sb, #0x38]\n"
-        "add lr, r4, r2, lsr #29\n"
-        "ldr r2, [sp, #0x20]\n"
-        "and ip, r3, #0xf\n"
-        "bic r3, lr, #7\n"
-        "add r2, r2, r3\n"
-        "sub r3, r4, r3\n"
-        "ldr sl, [r2]\n"
-        "lsl r3, r3, #2\n"
-        "orr ip, sl, ip, lsl r3\n"
-        "str ip, [r2]\n"
-        "ldr fp, [sb, #0x3c]\n"
-        "ldrb sl, [sb, #0x40]\n"
-        "mov r2, #0\n"
-        "cmp fp, #0x1400\n"
-        "beq .L_00149520\n"
-        "sub ip, fp, #0x1400\n"
-        "subs ip, ip, #1\n"
-        "moveq r2, #1\n"
-        "beq .L_00149520\n"
-        "cmp ip, #1\n"
-        "moveq r2, #2\n"
-        "beq .L_00149520\n"
-        "cmp ip, #5\n"
-        "moveq r2, #3\n"
-        ".L_00149520:\n"
-        "add r2, r2, sl, lsl #2\n"
-        "sub ip, r2, #4\n"
-        "ldr r0, [sp, #0x14]\n"
-        "asr r2, lr, #3\n"
-        "lsl r3, ip, r3\n"
-        "add r2, r0, r2, lsl #2\n"
-        "ldr ip, [r2]\n"
-        "orr r3, r3, ip\n"
-        "str r3, [r2]\n"
-        "ldrb r3, [sb, #0x41]\n"
-        "ldr r2, [sp, #8]\n"
-        "cmp r3, #0\n"
-        "moveq r2, #0\n"
-        "beq .L_00149570\n"
-        "ldrb r3, [r6, #0x30]\n"
-        "cmp r3, #0\n"
-        "ldrne r0, [sp, #0x18]\n"
-        "andne r2, r0, #0xff\n"
-        "add r2, sb, r2, lsl #2\n"
-        "ldr r2, [r2, #0x44]\n"
-        ".L_00149570:\n"
-        "mov r0, r2\n"
-        "bl engine_func_002bc300\n"
-        "ldr ip, [sp, #8]\n"
-        "add r3, r5, r7, lsl #2\n"
-        "cmp fp, #0x1400\n"
-        "add ip, sb, ip, lsl #2\n"
-        "ldr sb, [sp]\n"
-        "str r3, [ip, #0x4c]\n"
-        "subne r3, fp, #0x1400\n"
-        "sub r2, r0, sb\n"
-        "str r2, [r5, r7, lsl #2]\n"
-        "add r2, r7, #1\n"
-        "subsne r3, r3, #1\n"
-        "str r4, [r5, r2, lsl #2]\n"
-        "add r2, r7, #2\n"
-        "beq .L_001495c8\n"
-        "cmp r3, #1\n"
-        "lsleq sl, sl, #1\n"
-        "beq .L_001495c8\n"
-        "cmp r3, #5\n"
-        "movne sl, #0\n"
-        "lsleq sl, sl, #2\n"
-        ".L_001495c8:\n"
-        "mov r3, #0x10000000\n"
-        "add r3, r3, sl, lsl #16\n"
-        "add r4, r4, #1\n"
-        "add r7, r2, #1\n"
-        "str r3, [r5, r2, lsl #2]\n"
-        ".L_001495dc:\n"
-        "ldr r2, [r6, #0x34]\n"
-        "add r8, r8, #1\n"
-        "cmp r2, r8\n"
-        "bgt .L_001494a4\n"
-        ".L_001495ec:\n"
-        "ldr r0, [sp, #0x10]\n"
-        "sub r0, r0, r4\n"
-        "add ip, r0, r0, lsl #1\n"
-        "cmp ip, #0\n"
-        "ble .L_00149638\n"
-        "tst r0, #1\n"
-        "add r1, r5, r7, lsl #2\n"
-        "sub r0, r1, #4\n"
-        "beq .L_00149618\n"
-        "mov r1, #0\n"
-        "str r1, [r0, #4]!\n"
-        ".L_00149618:\n"
-        "asrs r2, ip, #1\n"
-        "movne r3, #0\n"
-        "beq .L_00149634\n"
-        ".L_00149624:\n"
-        "str r3, [r0, #4]\n"
-        "subs r2, r2, #1\n"
-        "str r3, [r0, #8]!\n"
-        "bne .L_00149624\n"
-        ".L_00149634:\n"
-        "add r7, r7, ip\n"
-        ".L_00149638:\n"
-        "tst r7, #1\n"
-        "beq .L_0014964c\n"
-        "mov r0, #0\n"
-        "str r0, [r5, r7, lsl #2]\n"
-        "add r7, r7, #1\n"
-        ".L_0014964c:\n"
-        "ldr r0, [r6, #0x34]\n"
-        "mov r3, #0\n"
-        "cmp r0, #0\n"
-        "addgt r1, sp, #0x10\n"
-        "ble .L_001497c4\n"
-        ".L_00149660:\n"
-        "rsb r0, r3, r3, lsl #3\n"
-        "add r8, r6, r0, lsl #2\n"
-        "ldrb r0, [r8, #0x41]\n"
-        "cmp r0, #0\n"
-        "bne .L_001497b4\n"
-        "ldr r2, [r8, #0x38]\n"
-        "asr r0, r4, #0x1f\n"
-        "and ip, r2, #0xf\n"
-        "add r0, r4, r0, lsr #29\n"
-        "bic r2, r0, #7\n"
-        "ldr r0, [sp, #0x20]\n"
-        "add r0, r0, r2\n"
-        "sub r2, r4, r2\n"
-        "ldr sb, [r0]\n"
-        "lsl r2, r2, #2\n"
-        "orr r2, sb, ip, lsl r2\n"
-        "str r2, [r0]\n"
-        "mov r0, #0\n"
-        "str r0, [sp, #0x10]\n"
-        "str r0, [sp, #0x14]\n"
-        "str r0, [sp, #0x18]\n"
-        "str r0, [sp, #0x1c]\n"
-        "ldrb r0, [r8, #0x41]\n"
-        "ldrb sb, [r8, #0x40]\n"
-        "mov r2, #0\n"
-        "cmp r0, #0\n"
-        "ldreq sl, [r8, #0x44]\n"
-        "movne sl, #0\n"
-        "cmp sb, #0\n"
-        "ble .L_00149734\n"
-        ".L_001496d8:\n"
-        "ldr ip, [sl, r2, lsl #2]\n"
-        "ands r0, ip, #0x80000000\n"
-        "lsl fp, ip, #9\n"
-        "lsl lr, ip, #1\n"
-        "lsr fp, fp, #9\n"
-        "movne r0, #0x800000\n"
-        "bics ip, ip, #0x80000000\n"
-        "lsr lr, lr, #0x18\n"
-        "lsreq fp, fp, #7\n"
-        "beq .L_00149718\n"
-        "subs ip, lr, #0x40\n"
-        "lsr fp, fp, #7\n"
-        "bmi .L_00149724\n"
-        "cmp ip, #0x7f\n"
-        "movgt r0, #0x7f0000\n"
-        "bgt .L_00149724\n"
-        ".L_00149718:\n"
-        "and ip, ip, #0x7f\n"
-        "orr r0, r0, fp\n"
-        "orr r0, r0, ip, lsl #16\n"
-        ".L_00149724:\n"
-        "str r0, [r1, r2, lsl #2]\n"
-        "add r2, r2, #1\n"
-        "cmp r2, sb\n"
-        "blt .L_001496d8\n"
-        ".L_00149734:\n"
-        "ldr r0, [sp, #8]\n"
-        ".word 0xe59f92b8\n"
-        "mov r2, #0\n"
-        "add sl, r4, #0x10\n"
-        "add r8, r8, r0, lsl #2\n"
-        "add r0, r5, r7, lsl #2\n"
-        "add ip, r0, #8\n"
-        "str ip, [r8, #0x4c]\n"
-        "str r4, [r5, r7, lsl #2]\n"
-        "str sb, [r0, #4]\n"
-        "ldr r8, [sp, #0x1c]\n"
-        "ldr sb, [sp, #0x18]\n"
-        "mov ip, #1\n"
-        "add r4, r4, #1\n"
-        "lsl r8, r8, #8\n"
-        "orr r8, r8, sb, lsr #16\n"
-        "str r8, [r0, #8]\n"
-        "ldr r8, [sp, #0x18]\n"
-        "ldr sb, [sp, #0x14]\n"
-        "add r7, r7, #6\n"
-        "lsl r8, r8, #0x10\n"
-        "orr r8, r8, sb, lsr #8\n"
-        "str r8, [r0, #0xc]\n"
-        "ldrd r8, sb, [sp, #0x10]\n"
-        "orr r8, r8, sb, lsl #24\n"
-        "str r8, [r0, #0x10]!\n"
-        "str r2, [r0, #4]\n"
-        "ldr r0, [sp, #0x24]\n"
-        "ldr r2, [sp, #0x24]\n"
-        "ldr r0, [r0]\n"
-        "orr r0, r0, ip, lsl sl\n"
-        "str r0, [r2]\n"
-        ".L_001497b4:\n"
-        "ldr r0, [r6, #0x34]\n"
-        "add r3, r3, #1\n"
-        "cmp r0, r3\n"
-        "bgt .L_00149660\n"
-        ".L_001497c4:\n"
-        ".word 0xe59f1234\n"
-        ".word 0xe59f222c\n"
-        ".word 0xe59f3230\n"
-        "add r0, r5, r7, lsl #2\n"
-        "add r0, r0, #4\n"
-        "mov ip, #0\n"
-        "str r1, [r5, r7, lsl #2]\n"
-        "stm r0, {r2, r3, ip}\n"
-        "add r1, r7, #4\n"
-        "ldr r0, [sp, #4]\n"
-        "lsl r1, r1, #2\n"
-        "str r1, [r0, #0x14]\n"
-        "ldr r0, [sp, #0xc]\n"
-        "add r0, r0, #1\n"
-        "cmp r0, #2\n"
-        "str r0, [sp, #0xc]\n"
-        "blt .L_001493b0\n"
-        "ldr r3, [sp, #0x2c]\n"
-        "mov r1, #0\n"
-        "mov r2, r1\n"
-        "ldr r0, [r3, #0x34]\n"
-        "ldr r7, [r3, #0x1c]\n"
-        "cmp r0, #0\n"
-        "movgt r4, #0\n"
-        "ble .L_00149870\n"
-        ".L_00149828:\n"
-        "rsb r5, r4, r4, lsl #3\n"
-        "add r5, r3, r5, lsl #2\n"
-        "ldrb r5, [r5, #0x41]\n"
-        "cmp r5, #0\n"
-        "beq .L_00149864\n"
-        "add r5, r1, r1, lsl #1\n"
-        "add r5, r5, #0x200\n"
-        "add r5, r5, #5\n"
-        "str ip, [r7, r2, lsl #2]\n"
-        "uxth r5, r5\n"
-        "add r2, r2, #1\n"
-        "orr r5, r5, #0xf0000\n"
-        "str r5, [r7, r2, lsl #2]\n"
-        "add r1, r1, #1\n"
-        "add r2, r2, #1\n"
-        ".L_00149864:\n"
-        "subs r0, r0, #1\n"
-        "add r4, r4, #1\n"
-        "bne .L_00149828\n"
-        ".L_00149870:\n"
-        ".word 0xe59f6180\n"
-        "cmp r1, #0\n"
-        "ble .L_001498b4\n"
-        "mov r5, r1\n"
-        "mov r4, #0\n"
-        "add r0, r7, r2, lsl #2\n"
-        ".L_00149888:\n"
-        "add r7, r0, #4\n"
-        "subs r5, r5, #1\n"
-        "stm r7, {r6, ip}\n"
-        "str ip, [r0, #0xc]\n"
-        "str ip, [r0, #0x10]\n"
-        "str r4, [r0], #0x14\n"
-        "add r4, r4, #1\n"
-        "str ip, [r0], #4\n"
-        "bne .L_00149888\n"
-        "add r0, r1, r1, lsl #1\n"
-        "add r2, r2, r0, lsl #1\n"
-        ".L_001498b4:\n"
-        "lsl r0, r2, #2\n"
-        "str r0, [r3, #0x20]\n"
-        "ldr r0, [sp, #0x30]\n"
-        "ldr r1, [r0, #8]\n"
-        "cmp r1, #0\n"
-        "beq .L_001498dc\n"
-        "ldr r0, [r1]\n"
-        "mov r2, #0x40000001\n"
-        "bics r0, r2, r0\n"
-        "movne r1, #0\n"
-        ".L_001498dc:\n"
-        "ldr r0, [sp, #0x2c]\n"
-        "ldr r3, [r1, #0x44]!\n"
-        "cmp r3, #0\n"
-        "addne r1, r1, r3\n"
-        "moveq r1, #0\n"
-        "ldr r0, [r0, #0x24]\n"
-        "ldr r1, [r1]\n"
-        "cmp r1, #0x80000000\n"
-        "moveq r2, #0\n"
-        "beq .L_00149924\n"
-        "cmp r1, #0x10000000\n"
-        "moveq r2, #5\n"
-        "beq .L_00149924\n"
-        "cmp r1, #0x20000000\n"
-        "moveq r2, #3\n"
-        "beq .L_00149924\n"
-        "cmp r1, #0x40000000\n"
-        "moveq r2, #8\n"
-        ".L_00149924:\n"
-        ".word 0xe59f30e8\n"
-        ".word 0xe59f70e0\n"
-        ".word 0xe59f40d8\n"
-        "str r3, [r0, #0x3c]\n"
-        "sub r8, r7, #0x30\n"
-        "add sb, r8, r3, asr #15\n"
-        "sub sl, sb, #0x120\n"
-        "bic fp, sl, r3, asr #6\n"
-        "str r3, [r0, #0x4c]\n"
-        "mov r3, #0x300\n"
-        "str r3, [r0, #0x28]\n"
-        "add r6, r4, #0x35\n"
-        "str r6, [r0, #0x2c]\n"
-        "add r5, r4, #0x2a\n"
-        "str r4, [r0, #0x1c]\n"
-        "str r5, [r0, #0x24]\n"
-        "str r7, [r0, #0x34]\n"
-        "str r8, [r0, #0x44]\n"
-        "mov r1, #0\n"
-        "str sb, [r0, #0x54]\n"
-        "str r1, [r0, #8]\n"
-        "str r1, [r0, #0xc]\n"
-        "str r1, [r0, #0x10]\n"
-        "str r1, [r0, #0x14]\n"
-        "str r1, [r0, #0x18]\n"
-        "str r1, [r0, #0x20]\n"
-        "str r1, [r0, #0x38]\n"
-        "mov lr, #1\n"
-        "str r1, [r0, #0x58]\n"
-        ".word 0xe59f3078\n"
-        "str lr, [r0, #0x30]\n"
-        ".word 0xe59fc060\n"
-        "str lr, [r0, #0x40]\n"
-        "str lr, [r0, #0x48]\n"
-        "orr r2, r3, r2, lsl #1\n"
-        "str lr, [r0, #0x50]\n"
-        "stm r0, {r2, ip}\n"
-        "add r2, r6, #0x60000\n"
-        "add r3, r0, #0x64\n"
-        "str r1, [r0, #0x60]\n"
-        "str r2, [r0, #0x5c]\n"
-        "stm r3, {r2, lr}\n"
-        "mov r1, #0x78\n"
-        "str fp, [r0, #0x74]\n"
-        "add r0, r0, #0x6c\n"
-        "stm r0, {sl, lr}\n"
-        "ldr r0, [sp, #0x2c]\n"
-        "str r1, [r0, #0x28]\n"
-        "add sp, sp, #0x34\n"
-        "pop {r4, r5, r6, r7, r8, sb, sl, fp, pc}\n"
-        ".word 0x000b02b9\n"
-        ".word 0x00010242\n"
-        ".word 0x801f02bb\n"
-        ".word 0x803f0232\n"
-        ".word 0x801f028b\n"
-        ".word 0x76543210\n"
-        ".word 0xfedcba98\n"
-        ".word 0x804f02b0\n"
-        ".word 0x00020229\n"
-        ".word 0x000f025f\n"
-        ".word 0x00010245\n"
-        ".word 0x7fff0000\n"
-    );
+extern "C" u32 engine_func_001493a0(void* descriptor_arg, void* optional_arg) {
+    using namespace engine_1493a0;
+
+    u8* const descriptor = static_cast<u8*>(descriptor_arg);
+
+    // 0x001493B0..0x00149804: two identical passes, one per type buffer.
+    for (u32 pass = 0; pass < 2u; ++pass) {
+        const u32 index = pass & 0xffu;
+
+        // 0x001493C0..0x001493CC: translate 0x20000 through both helpers.
+        const u32 base = engine_physical_address_002bc300(
+            engine_screen_address_002c39a4(kScreenFrameBuffer));
+
+        u8* const type = reinterpret_cast<u8*>(
+            LoadWord(descriptor, kDescTypePointer + 4u * index));
+        const u32 count = LoadWord(descriptor, kDescRecordCount);
+
+        // 0x00149400..0x00149470: twelve-word type header.
+        StoreWord(type, 0x00, 0xa0000000u | (count - 1u));
+        StoreWord(type, 0x04, kTypeWord04);
+        StoreWord(type, 0x08, count - 1u);
+        StoreWord(type, 0x0c, kTypeWord0C);
+        StoreWord(type, 0x10, 0u);
+        StoreWord(type, 0x14, kTypeWord14);
+        StoreWord(type, 0x18, 0u);
+        StoreWord(type, 0x1c, 0u);
+        StoreWord(type, 0x20, base >> 3);
+        StoreWord(type, 0x24,
+                  kTypeWord24Base |
+                      (((count * 3u + 2u) & 0xffu) << 20) |
+                      kTypeWord24Mask | kTypeWord24Flag);
+        StoreWord(type, 0x28, 0u);
+        StoreWord(type, 0x2c, (count << 28) + 0xf0000000u);
+
+        u32 handled = 0;   // r4: records already given a nibble slot
+        u32 word = 0x0cu;  // r7: next type-buffer word
+
+        // 0x0014948C..0x001495E8: present records.  The count is re-read on
+        // every iteration, as the listing does at 0x001495DC.
+        for (s32 entry = 0;
+             entry < static_cast<s32>(LoadWord(descriptor, kDescRecordCount));
+             ++entry) {
+            u8* const record = descriptor + kDescRecords +
+                               kRecordStride * static_cast<u32>(entry);
+            if (LoadByte(record, kRecordPresence) == 0) {
+                continue;
+            }
+
+            OrNibbleSpaced(reinterpret_cast<u32*>(type + 0x10), handled,
+                     LoadWord(record, kRecordNibbleWord) & 0x0fu);
+
+            const u32 tag = LoadWord(record, kRecordTag);
+            const u32 value_byte = LoadByte(record, kRecordArrayCount);
+            u32 selection = 0;
+            if (tag != kTagBase) {
+                const u32 relative = tag - kTagBase - 1u;
+                if (relative == 0u) {
+                    selection = 1;
+                } else if (relative == 1u) {
+                    selection = 2;
+                } else if (relative == 5u) {
+                    selection = 3;
+                }
+            }
+            OrNibblePacked(reinterpret_cast<u32*>(type + 0x28), handled,
+                     selection + (value_byte << 2) - 4u);
+
+            // 0x00149544..0x00149574: the helper argument is the first or the
+            // second word of the record's argument pair.
+            u32 argument;
+            if (LoadByte(record, kRecordPresence) == 0) {
+                argument = 0u;
+            } else if (LoadByte(descriptor, kDescArgumentSwitch) == 0) {
+                argument = LoadWord(record, kRecordArgument + 4u * index);
+            } else {
+                argument = LoadWord(
+                    record, kRecordArgument + 4u * ((1u - index) & 0xffu));
+            }
+            const u32 physical = engine_physical_address_002bc300(argument);
+
+            // 0x00149578..0x001495D8: three words per present record.
+            const u32 block =
+                static_cast<u32>(reinterpret_cast<std::uintptr_t>(type)) +
+                4u * word;
+            StoreWord(record, kRecordSlots + 4u * index, block);
+            StoreWord(type, 4u * word, physical - base);
+            StoreWord(type, 4u * (word + 1u), handled);
+            u32 value;
+            if (tag == kTagBase + 2u) {
+                value = value_byte << 1;
+            } else if (tag == kTagBase + 6u) {
+                value = value_byte << 2;
+            } else if (tag == kTagBase || tag == kTagBase + 1u) {
+                value = value_byte;
+            } else {
+                value = 0u;
+            }
+            StoreWord(type, 4u * (word + 2u), 0x10000000u + (value << 16));
+            handled += 1u;
+            word += 3u;
+        }
+
+        // 0x001495EC..0x00149648: three zero words per absent record and an
+        // even-word pad.  The absent count uses the header copy of the count.
+        const u32 absent = count - handled;
+        const u32 fill_words = absent + (absent << 1);
+        if (static_cast<s32>(fill_words) > 0) {
+            u32* cursor = reinterpret_cast<u32*>(type + 4u * word);
+            u32 remaining = fill_words;
+            if ((absent & 1u) != 0u) {
+                *cursor++ = 0u;
+                remaining -= 1u;
+            }
+            for (u32 pairs = remaining >> 1; pairs != 0u; --pairs) {
+                *cursor++ = 0u;
+                *cursor++ = 0u;
+            }
+            word += fill_words;
+        }
+        if ((word & 1u) != 0u) {
+            StoreWord(type, 4u * word, 0u);
+            word += 1u;
+        }
+
+        // 0x0014964C..0x001497C4: absent records.  The count is re-read on
+        // every iteration, as the listing does at 0x001497B4.
+        for (s32 entry = 0;
+             entry < static_cast<s32>(LoadWord(descriptor, kDescRecordCount));
+             ++entry) {
+            u8* const record = descriptor + kDescRecords +
+                               kRecordStride * static_cast<u32>(entry);
+            if (LoadByte(record, kRecordPresence) != 0) {
+                continue;
+            }
+
+            OrNibbleSpaced(reinterpret_cast<u32*>(type + 0x10), handled,
+                     LoadWord(record, kRecordNibbleWord) & 0x0fu);
+
+            // Four scratch words at sp+0x10..sp+0x1C.  The original indexes a
+            // four-word stack slot directly, so the element count must be <= 4.
+            u32 sink[4] = {0u, 0u, 0u, 0u};
+            const u32 element_count = LoadByte(record, kRecordArrayCount);
+            const u32 array = (LoadByte(record, kRecordPresence) == 0)
+                                  ? LoadWord(record, kRecordArgument)
+                                  : 0u;
+            for (u32 element = 0; element < element_count; ++element) {
+                const u32 raw = LoadAddress(array + 4u * element);
+                const u32 sign = (raw & 0x80000000u) != 0u ? 0x00800000u : 0u;
+                u32 fraction = (raw << 9) >> 9;
+                const u32 exponent = (raw >> 23) & 0xffu;
+                if ((raw & 0x7fffffffu) == 0u) {
+                    fraction >>= 7;
+                    sink[element] = sign | fraction;
+                } else {
+                    fraction >>= 7;
+                    const s32 delta = static_cast<s32>(exponent) - 0x40;
+                    if (delta < 0) {
+                        sink[element] = sign;
+                    } else if (delta > 0x7f) {
+                        sink[element] = 0x007f0000u;
+                    } else {
+                        sink[element] =
+                            sign | fraction | (static_cast<u32>(delta) << 16);
+                    }
+                }
+            }
+
+            // 0x00149734..0x001497B0: six words per absent record.
+            StoreWord(record, kRecordSlots + 4u * index,
+                      static_cast<u32>(reinterpret_cast<std::uintptr_t>(type)) +
+                          4u * (word + 2u));
+            StoreWord(type, 4u * word, handled);
+            StoreWord(type, 4u * (word + 1u), kAbsentBlockWord1);
+            StoreWord(type, 4u * (word + 2u),
+                      (sink[3] << 8) | (sink[2] >> 16));
+            StoreWord(type, 4u * (word + 3u),
+                      (sink[2] << 16) | (sink[1] >> 8));
+            StoreWord(type, 4u * (word + 4u), sink[0] | (sink[1] << 24));
+            StoreWord(type, 4u * (word + 5u), 0u);
+
+            // 0x001497A0..0x001497B0: bit (record index + 0x10) of +0x2C.
+            // The ARM register shift uses the low byte of the count and
+            // produces zero for amounts 32..255.
+            const u32 shift = (handled + 0x10u) & 0xffu;
+            if (shift < 32u) {
+                StoreWord(type, 0x2c, LoadWord(type, 0x2c) | (1u << shift));
+            }
+            word += 6u;
+            handled += 1u;
+        }
+
+        // 0x001497C4..0x001497F0: four-word tail and the buffer byte size.
+        StoreWord(type, 4u * word, kTailWord0);
+        StoreWord(type, 4u * (word + 1u), kTailWord1);
+        StoreWord(type, 4u * (word + 2u), kTailWord2);
+        StoreWord(type, 4u * (word + 3u), 0u);
+        StoreWord(descriptor, kDescTypeSize + 4u * index,
+                  (word + 4u) * 4u);
+    }
+
+    // 0x00149808..0x001498B8: second command buffer.  Every present record
+    // contributes two command words, then six words per present record.
+    u8* const stream = reinterpret_cast<u8*>(LoadWord(descriptor, kDescStream));
+    const s32 stream_count =
+        static_cast<s32>(LoadWord(descriptor, kDescRecordCount));
+    u32 present = 0;
+    u32 command_word = 0;
+    for (s32 entry = 0; entry < stream_count; ++entry) {
+        u8* const record = descriptor + kDescRecords +
+                           kRecordStride * static_cast<u32>(entry);
+        if (LoadByte(record, kRecordPresence) == 0) {
+            continue;
+        }
+        const u32 command =
+            kPresentEntryMask |
+            ((kPresentEntryBase + kPresentEntryStep * present) & 0xffffu);
+        StoreWord(stream, 4u * command_word, 0u);
+        command_word += 1u;
+        StoreWord(stream, 4u * command_word, command);
+        command_word += 1u;
+        present += 1u;
+    }
+    if (present > 0) {
+        u32* out = reinterpret_cast<u32*>(stream + 4u * command_word);
+        for (u32 block = 0; block < present; ++block) {
+            out[0] = block;
+            out[1] = kAbsentBlockWord1;
+            out[2] = 0u;
+            out[3] = 0u;
+            out[4] = 0u;
+            out[5] = 0u;
+            out += 6;
+        }
+        command_word += 6u * present;
+    }
+    StoreWord(descriptor, kDescStreamSize, command_word * 4u);
+
+    // 0x001498BC..0x00149920: resolve the optional state record and select the
+    // option-block tag.  The selector keeps the stream word count when the
+    // state word is absent, and keeps 0x40000001 when the state record is
+    // rejected but non-null.
+    u8* const optional = static_cast<u8*>(optional_arg);
+    u32 state = LoadWord(optional, 0x08);
+    u32 selector;
+    if (state == 0u) {
+        selector = command_word;
+    } else {
+        selector = 0x40000001u;
+        if ((0x40000001u & ~LoadAddress(state)) != 0u) {
+            state = 0u;
+        }
+    }
+    const u32 relative = LoadAddress(state + 0x44u);
+    const u32 target = (relative != 0u) ? state + 0x44u + relative : 0u;
+    const u32 state_tag = LoadAddress(target);
+    if (state_tag == 0x80000000u) {
+        selector = 0u;
+    } else if (state_tag == 0x10000000u) {
+        selector = 5u;
+    } else if (state_tag == 0x20000000u) {
+        selector = 3u;
+    } else if (state_tag == 0x40000000u) {
+        selector = 8u;
+    }
+
+    // 0x00149924..0x001499E0: constant option block.
+    u32* const option = reinterpret_cast<u32*>(static_cast<std::uintptr_t>(
+        LoadWord(descriptor, kDescOptionBlock)));
+    option[0x00 / 4] = 0x7fff0000u | (selector << 1);
+    option[0x04 / 4] = kOptionCommand04;
+    option[0x08 / 4] = 0u;
+    option[0x0c / 4] = 0u;
+    option[0x10 / 4] = 0u;
+    option[0x14 / 4] = 0u;
+    option[0x18 / 4] = 0u;
+    option[0x1c / 4] = kOptionWord1C;
+    option[0x20 / 4] = 0u;
+    option[0x24 / 4] = kOptionWord24;
+    option[0x28 / 4] = 0x300u;
+    option[0x2c / 4] = kOptionWord2C;
+    option[0x30 / 4] = 1u;
+    option[0x34 / 4] = kOptionWord34;
+    option[0x38 / 4] = 0u;
+    option[0x3c / 4] = kOptionWord3C;
+    option[0x40 / 4] = 1u;
+    option[0x44 / 4] = kOptionWord44;
+    option[0x48 / 4] = 1u;
+    option[0x4c / 4] = kOptionWord3C;
+    option[0x50 / 4] = 1u;
+    option[0x54 / 4] = kOptionWord54;
+    option[0x58 / 4] = 0u;
+    option[0x5c / 4] = kOptionWord5C;
+    option[0x60 / 4] = 0u;
+    option[0x64 / 4] = kOptionWord5C;
+    option[0x68 / 4] = 1u;
+    option[0x6c / 4] = kOptionWord6C;
+    option[0x70 / 4] = 1u;
+    option[0x74 / 4] = kOptionWord74;
+
+    StoreWord(descriptor, kDescOptionSize, kOptionSize);
+    return static_cast<u32>(reinterpret_cast<std::uintptr_t>(descriptor));
 }
 
 //
