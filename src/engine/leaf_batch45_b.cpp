@@ -1289,70 +1289,80 @@ extern "C" void engine_func_0026eccc(
     *out_d = d;
 }
 
+// Row writer reached from func_0016ba30 (0x0016BA64, BA74, BA84, BA94) with a
+// hand-written, non-AAPCS register contract:
+//   r3   u16* destination cursor; advanced by every halfword store
+//   r4   u32* source-index cursor; advanced by every index read
+//   r6   u16 value placed in the "empty" positions (the call sites pass 0)
+//   r7   base of the u32 lookup table (already offset to the selected row)
+//   r8   number of leading empty halfwords (call sites use 0..3)
+//   sl   byte stride added to the destination cursor after each store
+// r0, r5, r10 and r11 are left untouched by the original; r9 (sb) and r12 (ip)
+// are scratch. The last 16 bytes of the 476-byte ledger span (0x0016BA20) are
+// the caller's literal pool, loaded with negative PC-relative offsets from
+// func_0016ba30, not data of this helper.
+//
+// Behaviour: read 21 u32 indices, look up one u32 table word per index, and
+// store its low halfword at destination positions lead + 3*k (k = 0..20).
+// Every other one of the 64 positions receives `zero`. The 21 table stores are
+// unrolled in the original (20 value/zero/zero triplets + one final value); the
+// leading group and the 3 - lead trailing group are counted loops.
+extern "C" u16* engine_stride_row_writer(const u32** src_cursor, u16* dst,
+                                         u16 zero, const u32* table,
+                                         u32 lead, u32 stride) {
+    const u32* src = *src_cursor;
+    u8* cursor = reinterpret_cast<u8*>(dst);
+
+    auto store = [&](u16 value) {
+        *reinterpret_cast<u16*>(cursor) = value;
+        cursor += stride;
+    };
+
+    for (u32 i = 0; i < lead; ++i) {
+        store(zero);
+    }
+
+    for (u32 i = 0; i < 20; ++i) {
+        store(static_cast<u16>(table[*src++]));
+        store(zero);
+        store(zero);
+    }
+
+    store(static_cast<u16>(table[*src++]));
+
+    // Unsigned 3 - lead mirrors `rsbs ip, r8, #3`: the callers use lead 0..3;
+    // larger values make the original spin a 32-bit wrapping count.
+    u32 tail = 3u - lead;
+    while (tail != 0u) {
+        store(zero);
+        --tail;
+    }
+
+    *src_cursor = src;
+    return reinterpret_cast<u16*>(cursor);
+}
+
 // DECOMP_FUNC(0x0016b854, 476)
 extern "C" __attribute__((naked)) void func_0016b854() {
     asm volatile(
         ".arm\n"
-        ".hword 0x0000, 0xe358, 0x0003, 0x0a00\n"
-        ".hword 0xc008, 0xe1a0, 0x60ba, 0xe083\n"
-        ".hword 0xc001, 0xe25c, 0xfffc, 0x1aff\n"
-        ".hword 0x9004, 0xe494, 0x9109, 0xe797\n"
-        ".hword 0x90ba, 0xe083, 0x60ba, 0xe083\n"
-        ".hword 0x60ba, 0xe083, 0x9004, 0xe494\n"
-        ".hword 0x9109, 0xe797, 0x90ba, 0xe083\n"
-        ".hword 0x60ba, 0xe083, 0x60ba, 0xe083\n"
-        ".hword 0x9004, 0xe494, 0x9109, 0xe797\n"
-        ".hword 0x90ba, 0xe083, 0x60ba, 0xe083\n"
-        ".hword 0x60ba, 0xe083, 0x9004, 0xe494\n"
-        ".hword 0x9109, 0xe797, 0x90ba, 0xe083\n"
-        ".hword 0x60ba, 0xe083, 0x60ba, 0xe083\n"
-        ".hword 0x9004, 0xe494, 0x9109, 0xe797\n"
-        ".hword 0x90ba, 0xe083, 0x60ba, 0xe083\n"
-        ".hword 0x60ba, 0xe083, 0x9004, 0xe494\n"
-        ".hword 0x9109, 0xe797, 0x90ba, 0xe083\n"
-        ".hword 0x60ba, 0xe083, 0x60ba, 0xe083\n"
-        ".hword 0x9004, 0xe494, 0x9109, 0xe797\n"
-        ".hword 0x90ba, 0xe083, 0x60ba, 0xe083\n"
-        ".hword 0x60ba, 0xe083, 0x9004, 0xe494\n"
-        ".hword 0x9109, 0xe797, 0x90ba, 0xe083\n"
-        ".hword 0x60ba, 0xe083, 0x60ba, 0xe083\n"
-        ".hword 0x9004, 0xe494, 0x9109, 0xe797\n"
-        ".hword 0x90ba, 0xe083, 0x60ba, 0xe083\n"
-        ".hword 0x60ba, 0xe083, 0x9004, 0xe494\n"
-        ".hword 0x9109, 0xe797, 0x90ba, 0xe083\n"
-        ".hword 0x60ba, 0xe083, 0x60ba, 0xe083\n"
-        ".hword 0x9004, 0xe494, 0x9109, 0xe797\n"
-        ".hword 0x90ba, 0xe083, 0x60ba, 0xe083\n"
-        ".hword 0x60ba, 0xe083, 0x9004, 0xe494\n"
-        ".hword 0x9109, 0xe797, 0x90ba, 0xe083\n"
-        ".hword 0x60ba, 0xe083, 0x60ba, 0xe083\n"
-        ".hword 0x9004, 0xe494, 0x9109, 0xe797\n"
-        ".hword 0x90ba, 0xe083, 0x60ba, 0xe083\n"
-        ".hword 0x60ba, 0xe083, 0x9004, 0xe494\n"
-        ".hword 0x9109, 0xe797, 0x90ba, 0xe083\n"
-        ".hword 0x60ba, 0xe083, 0x60ba, 0xe083\n"
-        ".hword 0x9004, 0xe494, 0x9109, 0xe797\n"
-        ".hword 0x90ba, 0xe083, 0x60ba, 0xe083\n"
-        ".hword 0x60ba, 0xe083, 0x9004, 0xe494\n"
-        ".hword 0x9109, 0xe797, 0x90ba, 0xe083\n"
-        ".hword 0x60ba, 0xe083, 0x60ba, 0xe083\n"
-        ".hword 0x9004, 0xe494, 0x9109, 0xe797\n"
-        ".hword 0x90ba, 0xe083, 0x60ba, 0xe083\n"
-        ".hword 0x60ba, 0xe083, 0x9004, 0xe494\n"
-        ".hword 0x9109, 0xe797, 0x90ba, 0xe083\n"
-        ".hword 0x60ba, 0xe083, 0x60ba, 0xe083\n"
-        ".hword 0x9004, 0xe494, 0x9109, 0xe797\n"
-        ".hword 0x90ba, 0xe083, 0x60ba, 0xe083\n"
-        ".hword 0x60ba, 0xe083, 0x9004, 0xe494\n"
-        ".hword 0x9109, 0xe797, 0x90ba, 0xe083\n"
-        ".hword 0x60ba, 0xe083, 0x60ba, 0xe083\n"
-        ".hword 0x9004, 0xe494, 0x9109, 0xe797\n"
-        ".hword 0x90ba, 0xe083, 0xc003, 0xe278\n"
-        ".hword 0xf00e, 0x01a0, 0x60ba, 0xe083\n"
-        ".hword 0xc001, 0xe25c, 0xfffc, 0x1aff\n"
-        ".hword 0xf00e, 0xe1a0, 0x6e14, 0x0000\n"
-        ".hword 0x4000, 0x0000, 0x8000, 0xffff\n"
-        ".hword 0x7fff, 0x0000\n"
+        "push {r5, lr}\n"
+        "sub  sp, sp, #24\n"
+        "str  r0, [sp, #8]\n"
+        "str  r4, [sp, #12]\n"
+        "str  r8, [sp, #0]\n"
+        "str  sl, [sp, #4]\n"
+        "add  r0, sp, #12\n"
+        "mov  r1, r3\n"
+        "mov  r2, r6\n"
+        "mov  r3, r7\n"
+        "bl   engine_stride_row_writer\n"
+        "mov  r3, r0\n"
+        "ldr  r4, [sp, #12]\n"
+        "ldr  r0, [sp, #8]\n"
+        "add  sp, sp, #24\n"
+        "pop  {r5, lr}\n"
+        "bx   lr\n"
     );
 }
 
