@@ -10571,41 +10571,58 @@ extern "C" void func_001f6528(func_1f6528::Owner* owner) {
         func_00269768(state->curve_60, frame, count) * kCurveStep;
 }
 
+extern "C" u64 ui_func_002c615c(u32 numerator, u32 denominator);
+// The shared prototype for 0x002BE7FC in this translation unit is `void`, but
+// the Thumb formatter returns its byte count in r0 (the loop below advances by
+// that count).  Bind the same external symbol through an r0-valued alias.
+extern "C" int ui_format_length_002be7fc(char* dst, const char* format, ...)
+    __asm__("ui_func_002be7fc");
+
+namespace {
+
+// Literal table at 0x00290C10: the full-width Shift-JIS digits "0".."9",
+// each a two-byte glyph followed by a NUL and one alignment-zero byte.
+constexpr char kUiDigits_00290a68[10][4] = {
+    "\x82\x4F", "\x82\x50", "\x82\x51", "\x82\x52", "\x82\x53",
+    "\x82\x54", "\x82\x55", "\x82\x56", "\x82\x57", "\x82\x58",
+};
+
+} // namespace
+
 // DECOMP_FUNC(0x00290a68, 464)
-// 104 ARM instructions through unconditional pop; 48 trailing data bytes.
-extern "C" __attribute__((naked)) void ui_func_00290a68() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d47f0, 0xe1b08001, 0x159f4190, 0x159fa190\n"
-        ".word 0xe1a09000, 0xe1a07001, 0xe3a05000, 0x0a00001a\n"
-        ".word 0xe1540007, 0xca000057, 0xe1a01004, 0xe1a00008\n"
-        ".word 0xeb00d5af, 0xe1b06000, 0xe320f000, 0x0a000015\n"
-        ".word 0xe3560001, 0x0a000019, 0xe3560002, 0x0a00001d\n"
-        ".word 0xe3560003, 0x0a000021, 0xe3560004, 0x0a000025\n"
-        ".word 0xe3560005, 0x0a000029, 0xe3560006, 0x0a00002d\n"
-        ".word 0xe3560007, 0x0a000031, 0xe3560008, 0x0a000035\n"
-        ".word 0xe3560009, 0x0a000039, 0xea00003c, 0xe8bd47f0\n"
-        ".word 0xe28f1e11, 0xea00b73c, 0xe0890005, 0xe28f1f41\n"
-        ".word 0xfa00b73b, 0xe0855000, 0xe320f000, 0xea000033\n"
-        ".word 0xe0890005, 0xe28f10f0, 0xfa00b735, 0xe0855000\n"
-        ".word 0xe320f000, 0xea00002d, 0xe0890005, 0xe28f10dc\n"
-        ".word 0xfa00b72f, 0xe0855000, 0xe320f000, 0xea000027\n"
-        ".word 0xe0890005, 0xe28f10c8, 0xfa00b729, 0xe0855000\n"
-        ".word 0xe320f000, 0xea000021, 0xe0890005, 0xe28f10b4\n"
-        ".word 0xfa00b723, 0xe0855000, 0xe320f000, 0xea00001b\n"
-        ".word 0xe0890005, 0xe28f10a0, 0xfa00b71d, 0xe0855000\n"
-        ".word 0xe320f000, 0xea000015, 0xe0890005, 0xe28f108c\n"
-        ".word 0xfa00b717, 0xe0855000, 0xe320f000, 0xea00000f\n"
-        ".word 0xe0890005, 0xe28f1078, 0xfa00b711, 0xe0855000\n"
-        ".word 0xe320f000, 0xea000009, 0xe0890005, 0xe28f1064\n"
-        ".word 0xfa00b70b, 0xe0855000, 0xe320f000, 0xea000003\n"
-        ".word 0xe0890005, 0xe28f1050, 0xfa00b705, 0xe0855000\n"
-        ".word 0xe0000694, 0xe0488000, 0xe0c1049a, 0xe1a00141\n"
-        ".word 0xe0404fc1, 0xe3540000, 0xcaffffa0, 0xe8bd87f0\n"
-        ".word 0x05f5e100, 0x66666667, 0x00004f82, 0x00005082\n"
-        ".word 0x00005182, 0x00005282, 0x00005382, 0x00005482\n"
-        ".word 0x00005582, 0x00005682, 0x00005782, 0x00005882\n"
-    );
+// 104 ARM instructions through the unconditional pop; the 48 trailing data
+// bytes hold the decimal place constant (100000000), the signed-division
+// magic (0x66666667), and the ten full-width digit literals above.
+//
+// Appends the decimal rendering of `value` to `dst` without leading zeroes
+// and returns the number of bytes appended.  A zero value is handled by a
+// tail call through the 0x002BE7F4 ARM->Thumb veneer into the formatter at
+// 0x002BE7FC, so the formatter's result becomes this function's result.  For
+// every non-zero value the final loop iteration overwrites r0 with zero and
+// that dead residue is the returned word.
+extern "C" int ui_func_00290a68(char* dst, s32 value) {
+    if (value == 0) {
+        return ui_format_length_002be7fc(dst, kUiDigits_00290a68[0]);
+    }
+
+    u32 written = 0;
+    u32 remaining = static_cast<u32>(value);
+    // The place value is compared against the *original* argument, not the
+    // remaining value; a negative argument therefore skips every digit.
+    for (s32 place = 100000000; place > 0; place /= 10) {
+        if (place <= value) {
+            const u32 digit = static_cast<u32>(ui_func_002c615c(
+                remaining, static_cast<u32>(place)));
+            // Only 0..9 have a glyph; a larger first quotient is dropped but
+            // still subtracted from the remaining value.
+            if (digit < 10) {
+                written += static_cast<u32>(ui_format_length_002be7fc(
+                    dst + written, kUiDigits_00290a68[digit]));
+            }
+            remaining -= static_cast<u32>(place) * digit;
+        }
+    }
+    return 0;
 }
 
 // DECOMP_FUNC(0x002c2210, 468)
