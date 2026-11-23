@@ -5669,274 +5669,97 @@ extern "C" int func_0014ad58(u32 node, u32 context) {
     return static_cast<int>(result);
 }
 
-// DECOMP_FUNC(0x0014b0f0, 984)
-extern "C" __attribute__((naked)) void func_0014b0f0() {
-    asm volatile(
-        "push {r3, r4, r5, r6, r7, r8, sb, lr}\n"
-        "mov r5, r0\n"
-        "mov r4, #0\n"
-        "mov r7, r4\n"
-        "ldr r0, [r0]\n"
-        "mov r8, r2\n"
-        "ldr r1, [r0, #0xc]!\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r7\n"
-        "cmp r0, #0\n"
-        "beq .L_0014b1a4\n"
-        "ldr r0, [r5]\n"
-        "ldr r1, [r0, #0xc]!\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r7\n"
-        "ldr r1, [r0, #8]!\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r7\n"
-        "cmp r0, #0\n"
-        "beq .L_0014b158\n"
-        "ldr r1, [r0]\n"
-        "tst r1, #0x40000000\n"
-        "moveq r0, #0\n"
-        ".L_0014b158:\n"
-        "mov r1, r2\n"
-        "bl func_002b5318\n"
-        "mov r6, r0\n"
-        "ands r0, r0, #0x80000000\n"
-        "bmi .L_0014b1a0\n"
-        "ldr r0, [r5]\n"
-        "ldr r1, [r0, #0xc]!\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r7\n"
-        "ldr r1, [r0, #8]!\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r7\n"
-        "str r0, [sp]\n"
-        "mov r0, sp\n"
-        "bl func_002b52c8\n"
-        "orr r4, r4, r0\n"
-        ".L_0014b1a0:\n"
-        "orr r4, r4, r6\n"
-        ".L_0014b1a4:\n"
-        "ldr r0, [r5]\n"
-        "ldr r1, [r0, #0x10]!\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r7\n"
-        "cmp r0, #0\n"
-        "beq .L_0014b244\n"
-        "ldr r0, [r5]\n"
-        "ldr r1, [r0, #0x10]!\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r7\n"
-        "ldr r1, [r0, #8]!\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r7\n"
-        "cmp r0, #0\n"
-        "beq .L_0014b1f8\n"
-        "ldr r1, [r0]\n"
-        "tst r1, #0x40000000\n"
-        "moveq r0, #0\n"
-        ".L_0014b1f8:\n"
-        "mov r1, r8\n"
-        "bl func_002b5318\n"
-        "mov r6, r0\n"
-        "ands r0, r0, #0x80000000\n"
-        "bmi .L_0014b240\n"
-        "ldr r0, [r5]\n"
-        "ldr r1, [r0, #0x10]!\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r7\n"
-        "ldr r1, [r0, #8]!\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r7\n"
-        "str r0, [sp]\n"
-        "mov r0, sp\n"
-        "bl func_002b52c8\n"
-        "orr r4, r4, r0\n"
-        ".L_0014b240:\n"
-        "orr r4, r4, r6\n"
-        ".L_0014b244:\n"
-        "ldr r0, [r5]\n"
-        "ldr r1, [r0]\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r7\n"
-        "cmp r0, #0\n"
-        "beq .L_0014b2e4\n"
-        "ldr r0, [r5]\n"
-        "ldr r1, [r0]\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r7\n"
-        "ldr r1, [r0, #8]!\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r7\n"
-        "cmp r0, #0\n"
-        "beq .L_0014b298\n"
-        "ldr r1, [r0]\n"
-        "tst r1, #0x40000000\n"
-        "moveq r0, #0\n"
-        ".L_0014b298:\n"
-        "mov r1, r8\n"
-        "bl func_002b5318\n"
-        "mov r6, r0\n"
-        "ands r0, r0, #0x80000000\n"
-        "bmi .L_0014b2e0\n"
-        "ldr r0, [r5]\n"
-        "ldr r1, [r0]\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r7\n"
-        "ldr r1, [r0, #8]!\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r7\n"
-        "str r0, [sp]\n"
-        "mov r0, sp\n"
-        "bl func_002b52c8\n"
-        "orr r4, r4, r0\n"
-        ".L_0014b2e0:\n"
-        "orr r4, r4, r6\n"
-        ".L_0014b2e4:\n"
-        "ldr r0, [r5]\n"
-        "ldr r1, [r0, #4]!\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r7\n"
-        "cmp r0, #0\n"
-        "beq .L_0014b384\n"
-        "ldr r0, [r5]\n"
-        "ldr r1, [r0, #4]!\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r7\n"
-        "ldr r1, [r0, #8]!\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r7\n"
-        "cmp r0, #0\n"
-        "beq .L_0014b338\n"
-        "ldr r1, [r0]\n"
-        "tst r1, #0x40000000\n"
-        "moveq r0, #0\n"
-        ".L_0014b338:\n"
-        "mov r1, r8\n"
-        "bl func_002b5318\n"
-        "mov r6, r0\n"
-        "ands r0, r0, #0x80000000\n"
-        "bmi .L_0014b380\n"
-        "ldr r0, [r5]\n"
-        "ldr r1, [r0, #4]!\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r7\n"
-        "ldr r1, [r0, #8]!\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r7\n"
-        "str r0, [sp]\n"
-        "mov r0, sp\n"
-        "bl func_002b52c8\n"
-        "orr r4, r4, r0\n"
-        ".L_0014b380:\n"
-        "orr r4, r4, r6\n"
-        ".L_0014b384:\n"
-        "ldr r0, [r5]\n"
-        "ldr r1, [r0, #8]!\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r7\n"
-        "cmp r0, #0\n"
-        "beq .L_0014b424\n"
-        "ldr r0, [r5]\n"
-        "ldr r1, [r0, #8]!\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r7\n"
-        "ldr r1, [r0, #8]!\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r7\n"
-        "cmp r0, #0\n"
-        "beq .L_0014b3d8\n"
-        "ldr r1, [r0]\n"
-        "tst r1, #0x40000000\n"
-        "moveq r0, #0\n"
-        ".L_0014b3d8:\n"
-        "mov r1, r8\n"
-        "bl func_002b5318\n"
-        "mov r6, r0\n"
-        "ands r0, r0, #0x80000000\n"
-        "bmi .L_0014b420\n"
-        "ldr r0, [r5]\n"
-        "ldr r1, [r0, #8]!\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r7\n"
-        "ldr r1, [r0, #8]!\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r7\n"
-        "str r0, [sp]\n"
-        "mov r0, sp\n"
-        "bl func_002b52c8\n"
-        "orr r4, r4, r0\n"
-        ".L_0014b420:\n"
-        "orr r4, r4, r6\n"
-        ".L_0014b424:\n"
-        "ldr r0, [r5]\n"
-        "ldr r1, [r0, #0x14]!\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r7\n"
-        "cmp r0, #0\n"
-        "beq .L_0014b4c0\n"
-        "ldr r0, [r5]\n"
-        "ldr r1, [r0, #0x14]!\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r7\n"
-        "ldr r1, [r0, #8]!\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r7\n"
-        "cmp r0, #0\n"
-        "beq .L_0014b478\n"
-        "ldr r1, [r0]\n"
-        "tst r1, #0x40000000\n"
-        "moveq r0, #0\n"
-        ".L_0014b478:\n"
-        "mov r1, r8\n"
-        "bl func_002b5318\n"
-        "mov r6, r0\n"
-        "ands r0, r0, #0x80000000\n"
-        "bmi .L_0014b4bc\n"
-        "ldr r0, [r5]\n"
-        "ldr r1, [r0, #0x14]!\n"
-        "cmp r1, #0\n"
-        "addne r0, r0, r1\n"
-        "moveq r0, r7\n"
-        "ldr r1, [r0, #8]!\n"
-        "cmp r1, #0\n"
-        "addne r7, r1, r0\n"
-        "mov r0, sp\n"
-        "str r7, [sp]\n"
-        "bl func_002b52c8\n"
-        "orr r4, r4, r0\n"
-        ".L_0014b4bc:\n"
-        "orr r4, r4, r6\n"
-        ".L_0014b4c0:\n"
-        "mov r0, r4\n"
-        "pop {r3, r4, r5, r6, r7, r8, sb, pc}\n"
-    );
+// 0x0014B0F0 -- walk the six slot words of a resolved slot container and drive
+// the per-child query/dispatch pair.
+//
+// The only direct caller is func_0013f68c (0x0013F68C): it resolves the node's
+// +0x28 container, stores that container pointer in a stack word, and passes
+// the address of that word in r0.  This routine therefore dereferences r0 to
+// obtain the container and never reads r1.  r2 is forwarded unchanged to
+// func_002b5318.
+//
+// For every slot in the order 0x0C, 0x10, 0x00, 0x04, 0x08, 0x14:
+//   * the slot word is a self-relative offset added to its own address; a zero
+//     slot word, or a first hop that wraps to zero, skips the whole slot;
+//   * the first hop must expose a second self-relative offset at +0x08, added to
+//     its own address with the same wrapped-zero rule;
+//   * the resulting child is accepted only when its first word has bit 30
+//     (0x40000000) set, otherwise a null child is queried;
+//   * func_002b5318(child, r2) is called with that child;
+//   * only when its result has bit 31 clear is the plain (unfiltered) child
+//     resolved a second time, placed in a stack word, and passed by address to
+//     func_002b52c8; both results are OR-ed into the return value.
+//
+// The original re-reads the container pointer from r0 and the slot word from the
+// container before each resolution, so the helpers may mutate both; the
+// candidate keeps those reloads.
+//
+// Both callees are opaque here and have their own reconstruction entries.
+// 0x002B52C8 in particular dispatches through a global function-pointer pair
+// selected by the child's first word and makes indirect calls this routine does
+// not own.
+
+extern "C" s32 child_query_002b5318(u32 child, u32 tag) __asm__("func_002b5318");
+extern "C" s32 child_dispatch_002b52c8(u32* child) __asm__("func_002b52c8");
+
+namespace func_0014b0f0_detail {
+
+// 0x0014B100..0x0014B114: first self-relative hop.  A slot word of zero fails
+// immediately; the sum is then tested for the wrapped-zero case.
+inline u32 first_hop(u32 container, u32 slot_offset) {
+    const u32 relative = *reinterpret_cast<const u32*>(container + slot_offset);
+    if (relative == 0) {
+        return 0;
+    }
+    return container + slot_offset + relative;
+}
+
+// 0x0014B134..0x0014B140: second self-relative hop at child + 0x08.
+inline u32 second_hop(u32 first) {
+    const u32 relative = *reinterpret_cast<const u32*>(first + 8);
+    if (relative == 0) {
+        return 0;
+    }
+    return first + 8 + relative;
+}
+
+// One slot group.  `slot_ref` is r0: the word it points at holds the container.
+inline void inspect_slot(u32 slot_ref, u32 slot_offset, u32 tag, u32& result) {
+    const u32 container = *reinterpret_cast<const u32*>(slot_ref);
+    const u32 first = first_hop(container, slot_offset);
+    if (first == 0) {
+        return;
+    }
+
+    u32 candidate = second_hop(first);
+    if (candidate != 0 &&
+        (*reinterpret_cast<const u32*>(candidate) & 0x40000000u) == 0) {
+        candidate = 0;
+    }
+
+    const u32 status = static_cast<u32>(child_query_002b5318(candidate, tag));
+    if ((status & 0x80000000u) == 0) {
+        // The original reloads the container pointer and the slot word here and
+        // deliberately does NOT apply the bit-30 filter to this second result.
+        u32 child = second_hop(first_hop(*reinterpret_cast<const u32*>(slot_ref),
+                                         slot_offset));
+        result |= static_cast<u32>(child_dispatch_002b52c8(&child));
+    }
+    result |= status;
+}
+
+}  // namespace func_0014b0f0_detail
+
+extern "C" int func_0014b0f0(u32 slot_ref, u32 unused, u32 tag) {
+    (void)unused;
+    u32 result = 0;
+    func_0014b0f0_detail::inspect_slot(slot_ref, 0x0C, tag, result);
+    func_0014b0f0_detail::inspect_slot(slot_ref, 0x10, tag, result);
+    func_0014b0f0_detail::inspect_slot(slot_ref, 0x00, tag, result);
+    func_0014b0f0_detail::inspect_slot(slot_ref, 0x04, tag, result);
+    func_0014b0f0_detail::inspect_slot(slot_ref, 0x08, tag, result);
+    func_0014b0f0_detail::inspect_slot(slot_ref, 0x14, tag, result);
+    return static_cast<int>(result);
 }
 
 // DECOMP_FUNC(0x0014f42c, 56)
