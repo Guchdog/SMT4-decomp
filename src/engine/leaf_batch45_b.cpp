@@ -9924,123 +9924,118 @@ extern "C" void* engine_func_003a604c(u32 object_addr, s32 type, s32 flag,
 }
 
 // DECOMP_FUNC(0x003477f8, 904)
-extern "C" __attribute__((naked)) void ui_func_003477f8() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x43f0, 0xe92d, 0x4000, 0xe1a0\n"
-        ".hword 0x8b02, 0xed2d, 0xd00c, 0xe24d\n"
-        ".hword 0x0014, 0xe590, 0x1000, 0xe590\n"
-        ".hword 0x1008, 0xe591, 0xff31, 0xe12f\n"
-        ".hword 0x0004, 0xe594, 0x1060, 0xe594\n"
-        ".hword 0x6338, 0xe59f, 0x8ace, 0xeddf\n"
-        ".hword 0x0a03, 0xed90, 0x0a08, 0xedd1\n"
-        ".hword 0x8acc, 0xed9f, 0x0a20, 0xee30\n"
-        ".hword 0x0a03, 0xed80, 0x0004, 0xe594\n"
-        ".hword 0x1060, 0xe594, 0x0a04, 0xed90\n"
-        ".hword 0x0a09, 0xedd1, 0x0a20, 0xee30\n"
-        ".hword 0x0a04, 0xed80, 0x0004, 0xe594\n"
-        ".hword 0x1060, 0xe594, 0x0a08, 0xed90\n"
-        ".hword 0x0a08, 0xedd1, 0x0a20, 0xee30\n"
-        ".hword 0x0a08, 0xed80, 0x0004, 0xe594\n"
-        ".hword 0x1060, 0xe594, 0x0a09, 0xed90\n"
-        ".hword 0x0a09, 0xedd1, 0x0a20, 0xee30\n"
-        ".hword 0x0a09, 0xed80, 0x0004, 0xe594\n"
-        ".hword 0x1060, 0xe594, 0x0a0d, 0xed90\n"
-        ".hword 0x0a08, 0xedd1, 0x0a20, 0xee30\n"
-        ".hword 0x0a0d, 0xed80, 0x0004, 0xe594\n"
-        ".hword 0x1060, 0xe594, 0x0a0e, 0xed90\n"
-        ".hword 0x0a09, 0xedd1, 0x0a20, 0xee30\n"
-        ".hword 0x0a0e, 0xed80, 0x0004, 0xe594\n"
-        ".hword 0x1060, 0xe594, 0x0a12, 0xed90\n"
-        ".hword 0x0a08, 0xedd1, 0x0a20, 0xee30\n"
-        ".hword 0x0a12, 0xed80, 0x0004, 0xe594\n"
-        ".hword 0x1060, 0xe594, 0x0a13, 0xed90\n"
-        ".hword 0x0a09, 0xedd1, 0x0a20, 0xee30\n"
-        ".hword 0x0a13, 0xed80, 0x5060, 0xe594\n"
-        ".hword 0x1030, 0xe595, 0x0000, 0xe351\n"
-        ".hword 0x0011, 0x0a00, 0x0014, 0xe594\n"
-        ".hword 0x0004, 0xe590, 0xfa16, 0xebfd\n"
-        ".hword 0x0000, 0xe351, 0x001a, 0x1a00\n"
-        ".hword 0x0a0a, 0xedd5, 0x0a16, 0xed94\n"
-        ".hword 0x0a20, 0xee30, 0x0a10, 0xee10\n"
-        ".hword 0x0a16, 0xed84, 0x0006, 0xe150\n"
-        ".hword 0x000c, 0xaa00, 0x0ac8, 0xeeb4\n"
-        ".hword 0xfa10, 0xeef1, 0x000e, 0x3a00\n"
-        ".hword 0x000f, 0xea00, 0x0a16, 0xed84\n"
-        ".hword 0x000d, 0xea00, 0x0a0a, 0xedd5\n"
-        ".hword 0x0a16, 0xed94, 0x0a20, 0xee30\n"
-        ".hword 0x0a10, 0xee10, 0x0a16, 0xed84\n"
-        ".hword 0x0006, 0xe150, 0x0001, 0xba00\n"
-        ".hword 0x0a68, 0xee30, 0xfff4, 0xeaff\n"
-        ".hword 0x0ac8, 0xeeb4, 0xfa10, 0xeef1\n"
-        ".hword 0x0001, 0x2a00, 0x0a28, 0xee30\n"
-        ".hword 0xffef, 0xeaff, 0x0a16, 0xed94\n"
-        ".hword 0x0a7b, 0xeddf, 0x11ec, 0xe59f\n"
-        ".hword 0x5000, 0xe3a0, 0x0a20, 0xee20\n"
-        ".hword 0x0a48, 0xeef0, 0x0018, 0xe284\n"
-        ".hword 0xc005, 0xe1a0, 0x3000, 0xe3a0\n"
-        ".hword 0x0ac8, 0xeeb4, 0xfa10, 0xeef1\n"
-        ".hword 0x0ac0, 0xeeb0, 0x6001, 0x33a0\n"
-        ".hword 0x6000, 0x23a0, 0x2a10, 0xee10\n"
-        ".hword 0x0001, 0xe152, 0x1a6e, 0xad9f\n"
-        ".hword 0x0003, 0xba00, 0x0a41, 0xee30\n"
-        ".hword 0x2a10, 0xee10, 0x0001, 0xe152\n"
-        ".hword 0xfffb, 0xaaff, 0x1ae0, 0xeebc\n"
-        ".hword 0x0000, 0xe355, 0x1a10, 0xee11\n"
-        ".hword 0x1ac8, 0xeebc, 0x1071, 0xe6ff\n"
-        ".hword 0x80ff, 0xe201, 0x2a10, 0xee11\n"
-        ".hword 0x1ac0, 0xeebc, 0x2072, 0xe6ff\n"
-        ".hword 0x7a10, 0xee11, 0x1a10, 0xee01\n"
-        ".hword 0x1178, 0xe59f, 0x7077, 0xe6ff\n"
-        ".hword 0x90ff, 0xe207, 0x1a41, 0xeef8\n"
-        ".hword 0x2a10, 0xee01, 0x20ff, 0xe202\n"
-        ".hword 0x2202, 0xe081, 0x2a41, 0xeef8\n"
-        ".hword 0x7a10, 0xee01, 0x7208, 0xe081\n"
-        ".hword 0x1209, 0xe081, 0x3a01, 0xedd7\n"
-        ".hword 0x3a00, 0xed91, 0x4a01, 0xed91\n"
-        ".hword 0x2a41, 0xeeb8, 0x1ae1, 0xee30\n"
-        ".hword 0x0a00, 0xedd7, 0x1a62, 0xee78\n"
-        ".hword 0x7008, 0xe287, 0x2a01, 0xedd2\n"
-        ".hword 0x1008, 0xe281, 0x4a02, 0xecd7\n"
-        ".hword 0x6a02, 0xecd1, 0x2a42, 0xee30\n"
-        ".hword 0x0a00, 0xed92, 0x2008, 0xe282\n"
-        ".hword 0x0a24, 0xee41, 0x5a02, 0xecd2\n"
-        ".hword 0x3a05, 0xee41, 0x15fe, 0xe3a0\n"
-        ".hword 0x0aa5, 0xee01, 0x2a86, 0xee41\n"
-        ".hword 0x3a26, 0xee02, 0x4a07, 0xee02\n"
-        ".hword 0x0a60, 0x1ef1, 0x0000, 0xe35c\n"
-        ".hword 0x0a40, 0x1eb1, 0x0000, 0xe356\n"
-        ".hword 0x3a43, 0x1eb1, 0x4a84, 0xee60\n"
-        ".hword 0x2a84, 0xee23, 0x4a22, 0xee24\n"
-        ".hword 0x6a40, 0xeeb1, 0x5a83, 0xee23\n"
-        ".hword 0x5a83, 0xee60, 0x3a22, 0xee23\n"
-        ".hword 0x0aa2, 0xee60, 0x2aa2, 0xee63\n"
-        ".hword 0x4a00, 0xed80, 0x1a45, 0xeef0\n"
-        ".hword 0x1a65, 0xeeb0, 0x3a04, 0xed80\n"
-        ".hword 0x0a09, 0xedc0, 0x2a0a, 0xedc0\n"
-        ".hword 0x1a80, 0xee54, 0x4a00, 0xee55\n"
-        ".hword 0x1a00, 0xee02, 0x2a80, 0xee05\n"
-        ".hword 0x1a01, 0xedc0, 0x4a06, 0xedc0\n"
-        ".hword 0x1a02, 0xed80, 0x2a05, 0xed80\n"
-        ".hword 0x6a08, 0xed80, 0x300c, 0xe580\n"
-        ".hword 0x301c, 0xe580, 0x302c, 0xe580\n"
-        ".hword 0x3030, 0xe580, 0x3034, 0xe580\n"
-        ".hword 0x3038, 0xe5a0, 0x0a1a, 0xeddf\n"
-        ".hword 0x1004, 0xe580, 0x0060, 0xe594\n"
-        ".hword 0x0a17, 0xed94, 0x5004, 0xe28d\n"
-        ".hword 0x1018, 0xe284, 0x1a0b, 0xed90\n"
-        ".hword 0x200d, 0xe1a0, 0x0a01, 0xee30\n"
-        ".hword 0x0a17, 0xed84, 0x1a0b, 0xed90\n"
-        ".hword 0x0001, 0xe1a0, 0x1a20, 0xee31\n"
-        ".hword 0x0a01, 0xee20, 0x0a17, 0xed84\n"
-        ".hword 0x0a00, 0xed8d, 0x0a02, 0xec85\n"
-        ".hword 0xda81, 0xebfb, 0xd00c, 0xe28d\n"
-        ".hword 0x8b02, 0xecbd, 0x83f0, 0xe8bd\n"
-        ".hword 0x0000, 0x43b4, 0x0000, 0x43b4\n"
-        ".hword 0x0000, 0x0000, 0x0b61, 0x3f36\n"
-        ".hword 0x0000, 0x4780, 0x0000, 0x4780\n"
-        ".hword 0x7fc0, 0x0040, 0x0000, 0x3f80\n"
-    );
+extern "C" void func_0023e55c(float* dst, const float* src, const float* scale);
+// The TU already declares the s32 form used by other functions; this alias
+// reads the same symbol's r0:r1 result so the caller can test the high word.
+extern "C" u64 ui_func_002c615c_divmod(u32 numerator, u32 denominator)
+    __asm__("ui_func_002c615c");
+
+static inline u32 f32_bits_3477f8(float v) {
+    u32 u;
+    __builtin_memcpy(&u, &v, sizeof(u));
+    return u;
+}
+
+// Linear interpolation in the shared 256-entry sine/cosine table at
+// 0x00407FC0. The table is indexed by `(u32)value % 65536`; each entry holds
+// { sin(a), cos(a), sin(delta), cos(delta) } for a 256-step revolution.
+static inline void sincos_lut_3477f8(float deg_scaled, float& out_s, float& out_c) {
+    const s32 neg = (deg_scaled < 0.0f) ? 1 : 0;
+    float a = (deg_scaled < 0.0f) ? -deg_scaled : deg_scaled;
+    while (static_cast<s32>(f32_bits_3477f8(a)) >= 0x47800000) {
+        a -= 65536.0f;
+    }
+    const u16 u = static_cast<u16>(static_cast<u32>(a));
+    const u32 idx = u & 0xFFu;
+    const float frac = a - static_cast<float>(u);
+    const float* const entry = reinterpret_cast<const float*>(0x00407FC0u) + idx * 4u;
+    float s = entry[0] + frac * entry[2];
+    const float c = entry[1] + frac * entry[3];
+    if (neg != 0) {
+        s = -s;
+    }
+    out_s = s;
+    out_c = c;
+}
+
+extern "C" void ui_func_003477f8(u8* self) {
+    // 1. Flush the object referenced through +0x14 (vtable slot 2).
+    u8* const vobj = *reinterpret_cast<u8* const*>(self + 0x14);
+    using Fn8 = void (*)(u8*);
+    (*reinterpret_cast<Fn8* const*>(vobj))[8 / 4](vobj);
+
+    // 2. Advance the uv offsets of the four 20-byte elements of the array at
+    //    +0x04 by the two deltas in the configuration at +0x60.
+    for (s32 i = 0; i < 4; ++i) {
+        u8* const arr = *reinterpret_cast<u8* const*>(self + 4);
+        const u8* const cfg = *reinterpret_cast<const u8* const*>(self + 0x60);
+        *reinterpret_cast<float*>(arr + i * 20 + 0x0C) +=
+            *reinterpret_cast<const float*>(cfg + 0x20);
+        *reinterpret_cast<float*>(arr + i * 20 + 0x10) +=
+            *reinterpret_cast<const float*>(cfg + 0x24);
+    }
+
+    // 3. Advance the rotation angle unless the divisor at +0x30 is non-zero
+    //    and divides with a non-zero remainder.
+    {
+        const u8* const cfg = *reinterpret_cast<const u8* const*>(self + 0x60);
+        const u32 denom = *reinterpret_cast<const u32*>(cfg + 0x30);
+        bool advance = (denom == 0);
+        if (!advance) {
+            const u8* const vobj2 = *reinterpret_cast<const u8* const*>(self + 0x14);
+            const u64 quotient = ui_func_002c615c_divmod(
+                *reinterpret_cast<const u32*>(vobj2 + 4), denom);
+            advance = (static_cast<u32>(quotient >> 32) == 0);
+        }
+        if (advance) {
+            float ang = *reinterpret_cast<const float*>(self + 0x58) +
+                        *reinterpret_cast<const float*>(cfg + 0x28);
+            *reinterpret_cast<float*>(self + 0x58) = ang;
+            if (static_cast<s32>(f32_bits_3477f8(ang)) >= 0x43B40000) {
+                ang -= 360.0f;
+                *reinterpret_cast<float*>(self + 0x58) = ang;
+            } else if (ang < 0.0f) {
+                ang += 360.0f;
+                *reinterpret_cast<float*>(self + 0x58) = ang;
+            }
+        }
+    }
+
+    // 4. Build the rotation matrix at +0x18 from sin/cos of (0, 0, angle).
+    const float ang = *reinterpret_cast<const float*>(self + 0x58);
+    float sx, cx, sy, cy, sz, cz;
+    sincos_lut_3477f8(0.0f, sx, cx);
+    sincos_lut_3477f8(0.0f, sy, cy);
+    sincos_lut_3477f8(ang * (256.0f / 360.0f), sz, cz);
+
+    float* const m = reinterpret_cast<float*>(self + 0x18);
+    m[0] = cz * cy;
+    m[1] = (sx * cz) * sy - (cx * sz);
+    m[2] = (sx * sz) + (cx * cz) * sy;
+    m[3] = 0.0f;
+    m[4] = sz * cy;
+    m[5] = (cx * cz) + (sx * sz) * sy;
+    m[6] = (cx * sz) * sy - (sx * cz);
+    m[7] = 0.0f;
+    m[8] = -sy;
+    m[9] = sx * cy;
+    m[10] = cx * cy;
+    m[11] = 0.0f;
+    m[12] = 0.0f;
+    m[13] = 0.0f;
+    m[14] = 0.0f;
+    m[15] = 1.0f;
+
+    // 5. Advance the scale at +0x5C and rescale the three matrix rows.
+    float* const pscale = reinterpret_cast<float*>(self + 0x5C);
+    const u8* const cfg = *reinterpret_cast<const u8* const*>(self + 0x60);
+    *pscale = *pscale + *reinterpret_cast<const float*>(cfg + 0x2C);
+    const u8* const cfg2 = *reinterpret_cast<const u8* const*>(self + 0x60);
+    const float ds = *reinterpret_cast<const float*>(cfg2 + 0x2C);
+    *pscale = *pscale * (ds + 1.0f);
+
+    const float v[3] = {*pscale, *pscale, 1.0f};
+    func_0023e55c(m, m, v);
 }
 
 // DECOMP_FUNC(0x001a7898, 928)
