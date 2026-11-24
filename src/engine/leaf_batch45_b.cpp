@@ -9163,123 +9163,186 @@ extern "C" u32 camp_func_00195044() {
     return work->frame_counter;
 }
 
+// Direct calls reached from 0x002668dc.  Argument order and widths follow the
+// ARM call sites.
+extern "C" void* engine_func_003170b8(u32 prev_slot, u32 flags);
+extern "C" void script_vm_func_0020fe3c(void* list, u32 index);
+extern "C" void script_vm_func_00265da4(u32 index, u32 enable);
+extern "C" void script_vm_func_002863f4(void* dst, const void* src);
+extern "C" void script_vm_func_00328440(const void* layout);
+
+// Both placement terms use `VMLA.F32` in the pinned listing, i.e. one rounding
+// for `1787.5f + digit * 3575.0f`.  Clang does not contract to VMLA on this
+// target, so the fused step is kept explicit.
+static inline float placement_term(float digit) {
+    float acc = 1787.5f;
+    asm("vmla.f32 %0, %1, %2" : "+t"(acc) : "t"(digit), "t"(3575.0f));
+    return acc;
+}
+
 // DECOMP_FUNC(0x002668dc, 892)
-extern "C" __attribute__((naked)) void script_vm_func_002668dc() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x47f0, 0xe92d, 0x7310, 0xe59f\n"
-        ".hword 0x8b0a, 0xed2d, 0xde51, 0xe24d\n"
-        ".hword 0x5000, 0xe597, 0x0000, 0xe355\n"
-        ".hword 0x00bc, 0x0a00, 0x0a98, 0xe595\n"
-        ".hword 0x102a, 0xe3a0, 0xc1ec, 0xeb02\n"
-        ".hword 0x82f0, 0xe59f, 0x1000, 0xe3a0\n"
-        ".hword 0x0a9c, 0xe585, 0x1a94, 0xe585\n"
-        ".hword 0x1a98, 0xe585, 0x0000, 0xe598\n"
-        ".hword 0x6000, 0xe597, 0x0065, 0xe350\n"
-        ".hword 0x001a, 0x1a00, 0x0004, 0xe598\n"
-        ".hword 0x0001, 0xe350, 0x0046, 0x0a00\n"
-        ".hword 0x0002, 0xe350, 0x0078, 0x0287\n"
-        ".hword 0x0048, 0x0a00, 0x0003, 0xe350\n"
-        ".hword 0x02b4, 0x059f, 0x0045, 0x0a00\n"
-        ".hword 0x0004, 0xe350, 0x02ac, 0x059f\n"
-        ".hword 0x0042, 0x0a00, 0x0005, 0xe350\n"
-        ".hword 0x02a4, 0x059f, 0x003f, 0x0a00\n"
-        ".hword 0x0006, 0xe350, 0x029c, 0x059f\n"
-        ".hword 0x003c, 0x0a00, 0x0007, 0xe350\n"
-        ".hword 0x0294, 0x059f, 0x0039, 0x0a00\n"
-        ".hword 0x0008, 0xe350, 0x028c, 0x059f\n"
-        ".hword 0x0036, 0x0a00, 0x0009, 0xe350\n"
-        ".hword 0x0284, 0x059f, 0x0033, 0x0a00\n"
-        ".hword 0x0a9c, 0xe596, 0x4000, 0xe3a0\n"
-        ".hword 0x0004, 0xe590, 0x0000, 0xe350\n"
-        ".hword 0x9001, 0xc3a0, 0x0012, 0xda00\n"
-        ".hword 0x0a9c, 0xe596, 0x1004, 0xe1a0\n"
-        ".hword 0xa520, 0xebfe, 0x0000, 0xe597\n"
-        ".hword 0x0000, 0xe350, 0x0004, 0x0a00\n"
-        ".hword 0x1204, 0xe084, 0x0181, 0xe080\n"
-        ".hword 0x1b30, 0xe5d0, 0x0000, 0xe351\n"
-        ".hword 0x9b30, 0x05c0, 0x1001, 0xe3a0\n"
-        ".hword 0x0004, 0xe1a0, 0xfcef, 0xebff\n"
-        ".hword 0x0a9c, 0xe596, 0x4001, 0xe284\n"
-        ".hword 0x0004, 0xe590, 0x0004, 0xe150\n"
-        ".hword 0xffec, 0xcaff, 0x0a9c, 0xe595\n"
-        ".hword 0x4000, 0xe3a0, 0x0004, 0xe590\n"
-        ".hword 0x0000, 0xe350, 0x0077, 0xda00\n"
-        ".hword 0x7208, 0xe59f, 0xca82, 0xeddf\n"
-        ".hword 0xca82, 0xed9f, 0x8a82, 0xed9f\n"
-        ".hword 0x8a82, 0xeddf, 0x9a82, 0xed9f\n"
-        ".hword 0x9a82, 0xeddf, 0xaa82, 0xed9f\n"
-        ".hword 0xaa82, 0xeddf, 0xba82, 0xed9f\n"
-        ".hword 0xba82, 0xeddf, 0x900d, 0xe1a0\n"
-        ".hword 0x6028, 0xe28d, 0x0000, 0xe597\n"
-        ".hword 0x0001, 0xe310, 0x0018, 0x1a00\n"
-        ".hword 0x0006, 0xea00, 0x01f0, 0xe59f\n"
-        ".hword 0x0679, 0xeb03, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0xffe4, 0xeaff\n"
-        ".hword 0x0675, 0xeb03, 0xffe2, 0xeaff\n"
-        ".hword 0x01a8, 0xe59f, 0x6597, 0xfa01\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x000b, 0x0a00, 0x11c4, 0xe59f\n"
-        ".hword 0x0190, 0xe59f, 0xca00, 0xedc1\n"
-        ".hword 0x8a01, 0xed81, 0x8a02, 0xed81\n"
-        ".hword 0x8a03, 0xed81, 0xca04, 0xedc1\n"
-        ".hword 0x8a05, 0xed81, 0x8a06, 0xed81\n"
-        ".hword 0x8a07, 0xed81, 0xca08, 0xedc1\n"
-        ".hword 0x0000, 0xe1a0, 0x1194, 0xe59f\n"
-        ".hword 0x0009, 0xe1a0, 0x7e4d, 0xeb00\n"
-        ".hword 0x0004, 0xe598, 0x1a62, 0xeddf\n"
-        ".hword 0x0063, 0xe350, 0x0a9c, 0xe595\n"
-        ".hword 0x0a4c, 0x0eb0, 0x0a68, 0x1eb0\n"
-        ".hword 0x2a61, 0xeeb0, 0x0000, 0xe590\n"
-        ".hword 0x1104, 0xe790, 0x2008, 0xe591\n"
-        ".hword 0x100c, 0xe5b2, 0x0000, 0xe351\n"
-        ".hword 0x1002, 0x1081, 0x00d7, 0xe1d1\n"
-        ".hword 0x20d5, 0xe1d1, 0x30d8, 0xe1d1\n"
-        ".hword 0x0030, 0xe240, 0x1031, 0xe242\n"
-        ".hword 0x0100, 0xe080, 0x1a10, 0xee01\n"
-        ".hword 0x2080, 0xe1a0, 0x2030, 0xe242\n"
-        ".hword 0x2003, 0xe082, 0x2001, 0xe242\n"
-        ".hword 0x2a90, 0xee00, 0x3040, 0xe595\n"
-        ".hword 0x1ac1, 0xeeb8, 0x8a0a, 0xed8d\n"
-        ".hword 0x8a0b, 0xed8d, 0x3064, 0xe243\n"
-        ".hword 0x2ae0, 0xeef8, 0x8a0c, 0xed8d\n"
-        ".hword 0x9a0d, 0xed8d, 0x8a0e, 0xed8d\n"
-        ".hword 0x0083, 0xe083, 0x8a11, 0xed8d\n"
-        ".hword 0x8a14, 0xed8d, 0x1100, 0xe086\n"
-        ".hword 0x2a28, 0xee01, 0xba15, 0xedcd\n"
-        ".hword 0x003c, 0xe28d, 0x1aa8, 0xee42\n"
-        ".hword 0x9a02, 0xecc0, 0x0048, 0xe28d\n"
-        ".hword 0x0a38, 0xeddf, 0xaa02, 0xecc0\n"
-        ".hword 0x1a00, 0xed91, 0x2a02, 0xedd1\n"
-        ".hword 0x1204, 0xe084, 0x1a02, 0xee31\n"
-        ".hword 0x1aa1, 0xee72, 0x0181, 0xe085\n"
-        ".hword 0x1b02, 0xe280, 0x1fab, 0xe281\n"
-        ".hword 0x000c, 0xe28d, 0x2a40, 0xeef0\n"
-        ".hword 0x2a40, 0xeeb0, 0x4001, 0xe284\n"
-        ".hword 0x1a00, 0xed81, 0x0a01, 0xedc1\n"
-        ".hword 0x1a02, 0xedc1, 0x0a03, 0xecdd\n"
-        ".hword 0x3a05, 0xec90, 0x000c, 0xe281\n"
-        ".hword 0x0a03, 0xecc0, 0x0018, 0xe281\n"
-        ".hword 0x3a05, 0xec80, 0x0020, 0xe59d\n"
-        ".hword 0x002c, 0xe581, 0x0a0c, 0xed81\n"
-        ".hword 0x1034, 0xe281, 0x2a02, 0xec81\n"
-        ".hword 0x0a9c, 0xe595, 0x0004, 0xe590\n"
-        ".hword 0x0004, 0xe150, 0xff94, 0xcaff\n"
-        ".hword 0xde51, 0xe28d, 0x8b0a, 0xecbd\n"
-        ".hword 0x87f0, 0xe8bd, 0x7060, 0x0044\n"
-        ".hword 0xf91c, 0x0049, 0x7128, 0x0044\n"
-        ".hword 0x7178, 0x0044, 0x71c8, 0x0044\n"
-        ".hword 0x7218, 0x0044, 0x7268, 0x0044\n"
-        ".hword 0x72b8, 0x0044, 0x7308, 0x0044\n"
-        ".hword 0x6630, 0x0047, 0x0000, 0x3f80\n"
-        ".hword 0xf000, 0x456b, 0x0000, 0x0000\n"
-        ".hword 0x7000, 0x455f, 0xe000, 0xc6bf\n"
-        ".hword 0xb400, 0xc682, 0x2000, 0xc67d\n"
-        ".hword 0xe000, 0xc671, 0x0000, 0xc63e\n"
-        ".hword 0xc000, 0xc65a, 0x7088, 0x0044\n"
-        ".hword 0xfd48, 0x004e, 0x7000, 0x44df\n"
-        ".hword 0x0000, 0x4120\n"
-    );
+//
+// Per-frame LMAP actor refresh.  The host is the global pointer slot
+// 0x00447060 (`LmapMainWork*, +0xA94/+0xA98/+0xA9C`, see
+// include/engine/map_runtime.h); the actor list lives at `host + 0xA9C` and is
+// a `{ void** items; s32 count; }` pair.
+//
+// Layout of one 0x88-byte actor record based at `host + 0xAAC + i*0x88`:
+//   +0x00 f32 x, +0x04 f32 y, +0x08 f32 z,
+//   +0x0C 9 f32 copied from the 0x004EFD48 matrix,
+//   +0x30/+0x34/+0x38 f32 scale,
+//   +0x84 byte enabled flag, +0x85 byte helper-managed enable flag.
+//
+// The listing's only return value is the dead r0 left over from the loop
+// bound; all three pinned callers (0x001D4510, 0x001D7BA0, 0x001D8434)
+// ignore r0 immediately, so this reconstruction has no return contract.
+extern "C" void script_vm_func_002668dc() {
+    u8* const lmap = *reinterpret_cast<u8* const*>(0x00447060u);
+    if (lmap == nullptr) {
+        return;
+    }
+
+    // 0x002668F8..0x00266914: rebuild the list from field_a98, publish it at
+    // field_a9c and clear both source slots.
+    const u32 prev_slot = *reinterpret_cast<const u32*>(lmap + 0xA98);
+    u8* const list = static_cast<u8*>(engine_func_003170b8(prev_slot, 0x2Au));
+    *reinterpret_cast<u8**>(lmap + 0xA9C) = list;
+    *reinterpret_cast<u32*>(lmap + 0xA94) = 0u;
+    *reinterpret_cast<u32*>(lmap + 0xA98) = 0u;
+
+    // 0x0026691C: the listing re-reads the host pointer into r6 after the
+    // constructor returned.
+    u8* const lmap6 = *reinterpret_cast<u8* const*>(0x00447060u);
+
+    // 0x00266918..0x00266990: on the title screen (mode 101) the layout record
+    // selected by the sub-state replaces the enable-all sweep.  The record
+    // table is 0x00447088 + (sub_state - 1) * 0x50.
+    bool layout_selected = false;
+    if (*reinterpret_cast<const u32*>(0x0049F91Cu) == 0x65u) {
+        const u32 sub_state = *reinterpret_cast<const u32*>(0x0049F920u);
+        if (sub_state - 1u < 9u) {
+            const u8* const layout =
+                reinterpret_cast<const u8*>(0x00447088u) +
+                (sub_state - 1u) * 0x50u;
+            script_vm_func_00328440(layout);
+            layout_selected = true;
+        }
+    }
+
+    // 0x00266994..0x002669F4: otherwise flag every entry as enabled.  `sb` is
+    // 1 in every iteration reached here (the sweep only runs while the count
+    // read before the loop is positive).
+    if (!layout_selected) {
+        s32 index = 0;
+        s32 count = *reinterpret_cast<const s32*>(
+            *reinterpret_cast<u8**>(lmap6 + 0xA9C) + 4);
+        while (index < count) {
+            script_vm_func_0020fe3c(
+                *reinterpret_cast<void**>(lmap6 + 0xA9C),
+                static_cast<u32>(index));
+            u8* const host = *reinterpret_cast<u8* const*>(0x00447060u);
+            if (host != nullptr) {
+                u8* const record =
+                    host + static_cast<u32>(index) * 0x88u;
+                if (record[0xB30] == 0u) {
+                    record[0xB30] = 1u;
+                }
+            }
+            script_vm_func_00265da4(static_cast<u32>(index), 1u);
+            ++index;
+            count = *reinterpret_cast<const s32*>(
+                *reinterpret_cast<u8**>(lmap6 + 0xA9C) + 4);
+        }
+    }
+
+    // 0x002669F8..0x00266BEC: publish the placement of every entry.
+    u32* const guard = reinterpret_cast<u32*>(0x00476630u);
+    float* const identity = reinterpret_cast<float*>(0x004EFD48u);
+
+    // Only [host + 0x40] - 100 in 0..3 addresses the four initialized rows;
+    // other values read uninitialized stack in the original as well.
+    s32 index = 0;
+    s32 count = *reinterpret_cast<const s32*>(
+        *reinterpret_cast<u8**>(lmap + 0xA9C) + 4);
+    while (index < count) {
+        // 0x00266A40..0x00266AAC: one-time identity matrix behind the
+        // single-threaded 0x00476630 test-and-set flag.
+        if ((*guard & 1u) == 0u && engine_func_002c00d4(guard) != 0u) {
+            identity[0] = 1.0f;
+            identity[1] = 0.0f;
+            identity[2] = 0.0f;
+            identity[3] = 0.0f;
+            identity[4] = 1.0f;
+            identity[5] = 0.0f;
+            identity[6] = 0.0f;
+            identity[7] = 0.0f;
+            identity[8] = 1.0f;
+        }
+
+        // 0x00266AB0: copy the nine floats into the frame scratch buffer.
+        float scratch[9];
+        script_vm_func_002863f4(scratch, reinterpret_cast<const void*>(0x004EFD48u));
+
+        // 0x00266AC0..0x00266B20: pick the four-row placement entry from the
+        // digit characters of the record's linked string.
+        const u32 state = *reinterpret_cast<const u32*>(0x0049F920u);
+        const float scale = (state == 0x63u) ? 3775.0f : 3575.0f;
+
+        u8* const items = *reinterpret_cast<u8**>(
+            *reinterpret_cast<u8**>(lmap + 0xA9C));
+        u8* const item =
+            *reinterpret_cast<u8**>(items + static_cast<u32>(index) * 4u);
+        u8* const sub = *reinterpret_cast<u8**>(item + 8u);
+        const uintptr_t link_base = reinterpret_cast<uintptr_t>(sub) + 0xCu;
+        const u32 link = *reinterpret_cast<const u32*>(link_base);
+        const u8* const digits = reinterpret_cast<const u8*>(
+            link != 0u ? link_base + link : 0u);
+
+        const s32 digit5 = static_cast<s32>(static_cast<s8>(digits[5])) - 0x31;
+        const s32 digit7 = static_cast<s32>(static_cast<s8>(digits[7])) - 0x30;
+        const s32 digit8 = static_cast<s32>(static_cast<s8>(digits[8]));
+
+        // 0x00266B28..0x00266B58: the four-entry placement row table.
+        float rows[12];
+        rows[0] = 0.0f;
+        rows[1] = 0.0f;
+        rows[2] = 0.0f;
+        rows[3] = -24560.0f;
+        rows[4] = 0.0f;
+        rows[5] = -16730.0f;
+        rows[6] = -16200.0f;
+        rows[7] = 0.0f;
+        rows[8] = -15480.0f;
+        rows[9] = -12160.0f;
+        rows[10] = 0.0f;
+        rows[11] = -14000.0f;
+
+        const s32 row_index =
+            *reinterpret_cast<const s32*>(lmap + 0x40) - 0x64;
+        const float* const row = rows + row_index * 3;
+        const float new_x =
+            row[0] + placement_term(static_cast<float>(digit5));
+        const float new_z =
+            row[2] + placement_term(
+                static_cast<float>(digit7 * 10 + digit8 - 0x31));
+
+        // 0x00266BA4..0x00266BE0: commit the record at 0xAAC + index*0x88.
+        u8* const record =
+            lmap + static_cast<u32>(index) * 0x88u + 0xAACu;
+        *reinterpret_cast<float*>(record + 0x00) = new_x;
+        *reinterpret_cast<float*>(record + 0x04) = 10.0f;
+        *reinterpret_cast<float*>(record + 0x08) = new_z;
+        for (u32 k = 0; k < 9u; ++k) {
+            *reinterpret_cast<float*>(record + 0x0C + k * 4u) = scratch[k];
+        }
+        *reinterpret_cast<float*>(record + 0x30) = scale;
+        *reinterpret_cast<float*>(record + 0x34) = scale;
+        *reinterpret_cast<float*>(record + 0x38) = scale;
+
+        ++index;
+        count = *reinterpret_cast<const s32*>(
+            *reinterpret_cast<u8**>(lmap + 0xA9C) + 4);
+    }
 }
 
 // DECOMP_FUNC(0x00159a44, 896)
