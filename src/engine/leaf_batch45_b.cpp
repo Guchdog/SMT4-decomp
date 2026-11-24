@@ -8903,120 +8903,264 @@ extern "C" u32 engine_func_0039e788(void* self_arg) {
     return 0u;
 }
 
+// ---------------------------------------------------------------------------
+// 0x00195044 (868 B): PlayLog per-frame update state machine.
+//
+// Entry contract: no live arguments (the only direct caller, 0x0032F448, neither
+// sets up an argument nor reads the result).  Every call loads the shared
+// workspace pointer from `*(Work**)0x0043DD08` (literal at 0x00195398) and
+// assumes it is non-null, exactly like the original.  Every exit path runs
+// 0x0019534C..0x00195358 and returns the post-increment frame counter at
+// work+0x340.
+//
+// State word work+0x344 (0x00195054):
+//   0 -> 0x0019507C: re-arm sprites [0..frame_counter], then, when the enable
+//        byte at sprite[4]+0x8A (work+0x2DA) is non-zero, register touch nodes
+//        0x1A/0x1B/0x1C for group 0x30, add 3 to the u16 count at work+0x358
+//        and move to state 1.
+//   1 -> 0x0019510C: refresh the entry count of every visible row recorded by
+//        0x00194DBC, poll the touch page (0x0029F878) and the cursor
+//        (0x0029F278), then queue 0x0100016C when the cursor position changed.
+//        A settled cursor and a non-zero gate 0x002C1830(1,1) queue
+//        0x0100016E, reset the five sprites and move to state 2.
+//   2 -> 0x00195360: step the five sprites (0x002BF9F0); move to state 3 when
+//        the enable byte at work+0x2DA is non-zero.
+//   other -> 0x0019534C: counter increment only.
+//
+// Direct callees (address -> ledger symbol):
+//   0x002B9220 camp_func_002b9220   sprite re-arm            (&sprites[i], 0)
+//   0x002B88C4 camp_func_002b88c4   touch region register    (0x30, node)
+//   0x0029F0F4 camp_func_0029f0f4   cursor row count         (cursor)
+//   0x002C0EC4 Tbb_GetGlobalSubTable TBB slot lookup         (0x37, 0)
+//   0x002C0E9C Tbb_GetPayloadData    TBB payload             (table)
+//   0x002C0E4C Tbb_GetRowCount       TBB row count           (table)
+//   0x00290A4C camp_func_00290a4c   play-log count           ()
+//   0x002BF6D0 camp_func_002bf6d0   layout node lookup       (0x30, 0x1C)
+//   0x0029F878 camp_func_0029f878   nine-argument page/touch poll
+//   0x0029F260 camp_func_0029f260   cursor position A        (cursor)
+//   0x0029F248 camp_func_0029f248   cursor position B        (cursor)
+//   0x0029F278 camp_func_0029f278   cursor poll              (cursor, 0)
+//   0x002BC200 camp_func_002bc200   queued dispatch id       (id)
+//   0x002C1830 camp_func_002c1830   input gate query         (1, 1)
+//   0x002BDAC0 camp_func_002bdac0   sprite reset             (&sprites[i], 1, 0)
+//   0x002BF9F0 ui_func_002bf9f0     sprite step              (&sprites[i])
+//
+// The 0x0029F878 argument order is preserved exactly: arg4 (r3) is work+0x34C,
+// arg5 is work+0x348, arg6 is work+0x34A, arg7 is the local s8 out byte, and
+// args 8/9 are zero.  The helper writes that byte, but this function never
+// reads it back.
+//
+// The declarations mirror the file-scope prototypes used by the surrounding
+// reconstructed functions; they are repeated here so this block is self
+// contained.  None of the callees is resolvable beyond its ledger symbol in
+// this image (all are direct BL targets).
+// ---------------------------------------------------------------------------
+extern "C" {
+s32 camp_func_002b9220(void* object, s32 mode);                    // 0x002B9220
+s32 camp_func_002b88c4(u32 group_id, u32 node_id);                 // 0x002B88C4
+s32 camp_func_0029f0f4(void* cursor);                              // 0x0029F0F4
+void* Tbb_GetGlobalSubTable(u32 slot_id, u32 table_index);         // 0x002C0EC4
+const u8* Tbb_GetPayloadData(void* table);                         // 0x002C0E9C
+u32 Tbb_GetRowCount(void* table);                                  // 0x002C0E4C
+s32 camp_func_00290a4c();                                          // 0x00290A4C
+const s16* camp_func_002bf6d0(u32 group, u32 node);                // 0x002BF6D0
+s32 camp_func_0029f878(void* page, const s16* node, void* extra,
+                       s32 a3, s32 a4, s32 a5, s8* out_flag,
+                       s32 a7, s32 a8);                            // 0x0029F878
+s32 camp_func_0029f260(void* cursor);                              // 0x0029F260
+s32 camp_func_0029f248(void* cursor);                              // 0x0029F248
+s32 camp_func_0029f278(void* page, u32 mode);                      // 0x0029F278
+void camp_func_002bc200(u32 id);                                   // 0x002BC200
+u32 camp_func_002c1830(u32 a0, u32 a1);                            // 0x002C1830
+void camp_func_002bdac0(void* object, u32 mode, u32 selector);     // 0x002BDAC0
+s32 ui_func_002bf9f0(void* object);                                // 0x002BF9F0
+} // extern "C"
+
+namespace playlog_195044 {
+
+constexpr u32 kWorkPointer = 0x0043DD08u;   // literal at 0x00195398
+constexpr u32 kGroup = 0x30;
+constexpr u32 kSpriteCount = 5;
+constexpr u32 kPageRows = 5;               // `cmp ...,#5` / `-#5` at 0x00195240..0x001952A0
+constexpr u32 kTouchNodeA = 0x1A;
+constexpr u32 kTouchNodeB = 0x1B;
+constexpr u32 kTouchNodeC = 0x1C;
+constexpr u32 kLayoutNode = 0x1C;
+constexpr u32 kTbbSlot = 0x37;
+constexpr u32 kDispatchChanged = 0x0100016Cu;  // literal at 0x001953A0
+constexpr u32 kDispatchSelect = 0x0100016Eu;   // literal at 0x001953A4
+constexpr u32 kSpriteEnableOffset = 0x8A;      // sprite[4]+0x8A == work+0x2DA
+
+struct Sprite {
+    u8 raw[0x8C];
+};
+static_assert(sizeof(Sprite) == 0x8C);
+
+struct Work {
+    u8 pad_000[0x20];
+    Sprite sprites[5];          // +0x020, stride 0x8C, loop bound 5
+    u8 list_cursor[0x64];       // +0x2DC, base for 0029F0F4/F260/F248/F278/F878
+    u32 frame_counter;          // +0x340
+    u32 state;                  // +0x344
+    s16 touch_handle_1a;        // +0x348, stored return for node 0x1A
+    s16 touch_handle_1b;        // +0x34A, stored return for node 0x1B
+    s16 touch_handle_1c;        // +0x34C, stored return for node 0x1C
+    u8 pad_34e[0x0A];           // +0x34E..+0x358
+    u16 touch_count;            // +0x358
+    u8 pad_35a[0x02];           // +0x35A..+0x35C
+    u32 entry_values[50];       // +0x35C, `str [r1,#0x35c]`; 0x424-0x35C = 200
+    u16 visible_indices[50];    // +0x424, `ldrsh [r0,#0x424]`; 0x488-0x424 = 100
+};
+static_assert(offsetof(Work, sprites) == 0x020);
+static_assert(offsetof(Work, list_cursor) == 0x2DC);
+static_assert(offsetof(Work, frame_counter) == 0x340);
+static_assert(offsetof(Work, state) == 0x344);
+static_assert(offsetof(Work, touch_handle_1a) == 0x348);
+static_assert(offsetof(Work, touch_handle_1b) == 0x34A);
+static_assert(offsetof(Work, touch_handle_1c) == 0x34C);
+static_assert(offsetof(Work, touch_count) == 0x358);
+static_assert(offsetof(Work, entry_values) == 0x35C);
+static_assert(offsetof(Work, visible_indices) == 0x424);
+static_assert(sizeof(Work) == 0x488);   // allocation size in 0x00194DBC
+
+inline Work* work_object() {
+    return *reinterpret_cast<Work* volatile*>(kWorkPointer);
+}
+
+} // namespace playlog_195044
+
 // DECOMP_FUNC(0x00195044, 868)
-extern "C" __attribute__((naked)) void camp_func_00195044() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x034c, 0xe59f, 0x43f0, 0xe92d\n"
-        ".hword 0xd01c, 0xe24d, 0x4000, 0xe590\n"
-        ".hword 0x0344, 0xe594, 0x0000, 0xe350\n"
-        ".hword 0x5000, 0x03a0, 0x0005, 0x0a00\n"
-        ".hword 0x0001, 0xe350, 0x0027, 0x0a00\n"
-        ".hword 0x0002, 0xe350, 0x5000, 0x03a0\n"
-        ".hword 0x00b4, 0x1a00, 0x00b8, 0xea00\n"
-        ".hword 0x0340, 0xe594, 0x0005, 0xe150\n"
-        ".hword 0x0005, 0xba00, 0x0185, 0xe065\n"
-        ".hword 0x1000, 0xe3a0, 0x0100, 0xe080\n"
-        ".hword 0x0100, 0xe084, 0x0020, 0xe280\n"
-        ".hword 0x905f, 0xeb04, 0x5001, 0xe285\n"
-        ".hword 0x0005, 0xe355, 0xfff3, 0xbaff\n"
-        ".hword 0x0e25, 0xe284, 0x08da, 0xe1d0\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x00a2, 0x0a00, 0x101a, 0xe3a0\n"
-        ".hword 0x0030, 0xe3a0, 0x8dfd, 0xeb04\n"
-        ".hword 0x5c03, 0xe284, 0x101b, 0xe3a0\n"
-        ".hword 0x04b8, 0xe1c5, 0x0030, 0xe3a0\n"
-        ".hword 0x8df8, 0xeb04, 0x04ba, 0xe1c5\n"
-        ".hword 0x101c, 0xe3a0, 0x0030, 0xe3a0\n"
-        ".hword 0x8df4, 0xeb04, 0x04bc, 0xe1c5\n"
-        ".hword 0x05b8, 0xe1d5, 0x1001, 0xe3a0\n"
-        ".hword 0x0003, 0xe280, 0x05b8, 0xe1c5\n"
-        ".hword 0x1344, 0xe584, 0x008f, 0xea00\n"
-        ".hword 0x5000, 0xe3a0, 0x0fb7, 0xe284\n"
-        ".hword 0x27f6, 0xeb04, 0x0000, 0xe350\n"
-        ".hword 0x9000, 0xe3a0, 0x001c, 0xda00\n"
-        ".hword 0x6270, 0xe59f, 0x0085, 0xe084\n"
-        ".hword 0x1000, 0xe3a0, 0x60f6, 0xe190\n"
-        ".hword 0x0037, 0xe3a0, 0xaf61, 0xeb04\n"
-        ".hword 0x8000, 0xe1a0, 0xf000, 0xe320\n"
-        ".hword 0xaf54, 0xeb04, 0x7000, 0xe1a0\n"
-        ".hword 0x0008, 0xe1a0, 0xaf3d, 0xeb04\n"
-        ".hword 0x0000, 0xe156, 0xf000, 0xe320\n"
-        ".hword 0x0007, 0x2a00, 0x0306, 0xe097\n"
-        ".hword 0x0005, 0x0a00, 0x00f0, 0xe1d0\n"
-        ".hword 0x0000, 0xe350, 0x0002, 0xaa00\n"
-        ".hword 0xee34, 0xeb03, 0x1105, 0xe084\n"
-        ".hword 0x035c, 0xe581, 0x5001, 0xe285\n"
-        ".hword 0x0fb7, 0xe284, 0x27d9, 0xeb04\n"
-        ".hword 0x0005, 0xe150, 0xf000, 0xe320\n"
-        ".hword 0xffe2, 0xcaff, 0x101c, 0xe3a0\n"
-        ".hword 0x0030, 0xe3a0, 0x9014, 0xe5cd\n"
-        ".hword 0xa949, 0xeb04, 0x6000, 0xe1a0\n"
-        ".hword 0x0fb7, 0xe284, 0x282a, 0xeb04\n"
-        ".hword 0x5000, 0xe1a0, 0x0c03, 0xe284\n"
-        ".hword 0x3004, 0xe28d, 0x14fa, 0xe1d0\n"
-        ".hword 0x2014, 0xe28d, 0x0206, 0xe883\n"
-        ".hword 0x2000, 0xe3a0, 0x9010, 0xe58d\n"
-        ".hword 0x14f8, 0xe1d0, 0x1000, 0xe58d\n"
-        ".hword 0x34fc, 0xe1d0, 0x1006, 0xe1a0\n"
-        ".hword 0x0fb7, 0xe284, 0x29a2, 0xeb04\n"
-        ".hword 0x61ac, 0xe59f, 0x0000, 0xe350\n"
-        ".hword 0x0009, 0x0a00, 0x0fb7, 0xe284\n"
-        ".hword 0x2817, 0xeb04, 0x0005, 0xe150\n"
-        ".hword 0xf000, 0xe320, 0x004f, 0x0a00\n"
-        ".hword 0x0006, 0xe1a0, 0x9bfa, 0xeb04\n"
-        ".hword 0xf000, 0xe320, 0xf000, 0xe320\n"
-        ".hword 0x004a, 0xea00, 0x1000, 0xe3a0\n"
-        ".hword 0x0fb7, 0xe284, 0x2812, 0xeb04\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x002f, 0x0a00, 0x0fb7, 0xe284\n"
-        ".hword 0x27ac, 0xeb04, 0x0005, 0xe350\n"
-        ".hword 0xf000, 0xe320, 0x0024, 0xda00\n"
-        ".hword 0x0fb7, 0xe284, 0x2802, 0xeb04\n"
-        ".hword 0x0005, 0xe150, 0xf000, 0xe320\n"
-        ".hword 0x001f, 0x1a00, 0x0fb7, 0xe284\n"
-        ".hword 0x27fd, 0xeb04, 0x0000, 0xe350\n"
-        ".hword 0xf000, 0xe320, 0x0004, 0x1a00\n"
-        ".hword 0x0fb7, 0xe284, 0x27f2, 0xeb04\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x0015, 0x0a00, 0x0fb7, 0xe284\n"
-        ".hword 0x27f3, 0xeb04, 0x7000, 0xe1a0\n"
-        ".hword 0x0fb7, 0xe284, 0x2795, 0xeb04\n"
-        ".hword 0x0005, 0xe240, 0x0000, 0xe157\n"
-        ".hword 0x0004, 0x1a00, 0x0fb7, 0xe284\n"
-        ".hword 0x27e5, 0xeb04, 0x0004, 0xe350\n"
-        ".hword 0xf000, 0xe320, 0x0008, 0x0a00\n"
-        ".hword 0x1000, 0xe3a0, 0x0fb7, 0xe284\n"
-        ".hword 0x27eb, 0xeb04, 0x0fb7, 0xe284\n"
-        ".hword 0xf000, 0xe320, 0x27e2, 0xeb04\n"
-        ".hword 0x0005, 0xe150, 0xf000, 0xe320\n"
-        ".hword 0xffdf, 0x0aff, 0x0fb7, 0xe284\n"
-        ".hword 0x27dd, 0xeb04, 0x0005, 0xe150\n"
-        ".hword 0xf000, 0xe320, 0x0015, 0x0a00\n"
-        ".hword 0xffc4, 0xeaff, 0x1001, 0xe3a0\n"
-        ".hword 0x0001, 0xe1a0, 0xb14a, 0xeb04\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x000e, 0x0a00, 0x008c, 0xe59f\n"
-        ".hword 0x9bb9, 0xeb04, 0x5000, 0xe3a0\n"
-        ".hword 0x2000, 0xe3a0, 0x0185, 0xe065\n"
-        ".hword 0x1001, 0xe3a0, 0x0100, 0xe080\n"
-        ".hword 0x0100, 0xe084, 0x0020, 0xe280\n"
-        ".hword 0xa1e1, 0xeb04, 0x5001, 0xe285\n"
-        ".hword 0x0005, 0xe355, 0xfff5, 0xbaff\n"
-        ".hword 0x0002, 0xe3a0, 0x0344, 0xe584\n"
-        ".hword 0x0340, 0xe594, 0x0001, 0xe280\n"
-        ".hword 0x0340, 0xe584, 0xd01c, 0xe28d\n"
-        ".hword 0x83f0, 0xe8bd, 0x0185, 0xe065\n"
-        ".hword 0x0100, 0xe080, 0x0100, 0xe084\n"
-        ".hword 0x0020, 0xe280, 0xa99e, 0xeb04\n"
-        ".hword 0x5001, 0xe285, 0x0005, 0xe355\n"
-        ".hword 0xfff7, 0xbaff, 0x0e25, 0xe284\n"
-        ".hword 0x08da, 0xe1d0, 0x0000, 0xe350\n"
-        ".hword 0x0003, 0x13a0, 0xffed, 0x0aff\n"
-        ".hword 0xffeb, 0xeaff, 0xdd08, 0x0043\n"
-        ".hword 0x0424, 0x0000, 0x016c, 0x0100\n"
-        ".hword 0x016e, 0x0100\n"
-    );
+extern "C" u32 camp_func_00195044() {
+    using namespace playlog_195044;
+
+    Work* const work = work_object();
+    u8* const cursor = work->list_cursor;
+    const u32 state = work->state;
+
+    if (state == 0u) {
+        // 0x0019507C..0x001950A8: re-arm sprites [0..frame_counter].
+        for (s32 i = 0; i < static_cast<s32>(kSpriteCount); ++i) {
+            if (static_cast<s32>(work->frame_counter) >= i) {
+                camp_func_002b9220(&work->sprites[i], 0);
+            }
+        }
+
+        // 0x001950AC..0x00195104: register the three touch nodes once the
+        // sprite-side enable byte is set.
+        if (work->sprites[4].raw[kSpriteEnableOffset] != 0) {
+            work->touch_handle_1a = static_cast<s16>(
+                camp_func_002b88c4(kGroup, kTouchNodeA));
+            work->touch_handle_1b = static_cast<s16>(
+                camp_func_002b88c4(kGroup, kTouchNodeB));
+            work->touch_handle_1c = static_cast<s16>(
+                camp_func_002b88c4(kGroup, kTouchNodeC));
+            work->touch_count = static_cast<u16>(work->touch_count + 3u);
+            work->state = 1u;
+        }
+    } else if (state == 1u) {
+        // 0x0019510C..0x00195194: recompute the entry count of every visible
+        // row index recorded by 0x00194DBC.  Rows whose s16 key is negative
+        // (the play-log aggregate row) are refreshed from 0x00290A4C.
+        if (camp_func_0029f0f4(cursor) > 0) {
+            for (s32 i = 0;;) {
+                const s16 visible = static_cast<s16>(work->visible_indices[i]);
+
+                void* const table = Tbb_GetGlobalSubTable(kTbbSlot, 0u);
+                const u8* const payload = Tbb_GetPayloadData(table);
+                const u32 rows = Tbb_GetRowCount(table);
+
+                if (static_cast<u32>(static_cast<s32>(visible)) < rows) {
+                    const u32 row_address =
+                        static_cast<u32>(
+                            reinterpret_cast<std::uintptr_t>(payload)) +
+                        (static_cast<u32>(static_cast<s32>(visible)) << 6);
+                    const u8* const row = reinterpret_cast<const u8*>(
+                        static_cast<std::uintptr_t>(row_address));
+                    if (row != nullptr) {
+                        const s16 key = *reinterpret_cast<const s16*>(row);
+                        if (key < 0) {
+                            work->entry_values[i] = static_cast<u32>(
+                                camp_func_00290a4c());
+                        }
+                    }
+                }
+
+                ++i;
+                if (!(camp_func_0029f0f4(cursor) > i)) {
+                    break;
+                }
+            }
+        }
+
+        // 0x00195198..0x0019521C: touch-page poll.
+        s8 out_flag = 0;
+        const s16* const node = camp_func_002bf6d0(kGroup, kLayoutNode);
+        const s32 position_a = camp_func_0029f260(cursor);
+
+        if (camp_func_0029f878(cursor, node, nullptr,
+                               work->touch_handle_1c,
+                               work->touch_handle_1a,
+                               work->touch_handle_1b,
+                               &out_flag, 0, 0) != 0) {
+            // A reported hit queues the changed id only when the cursor
+            // actually moved (0x001951F8..0x0019521C).
+            if (camp_func_0029f260(cursor) != position_a) {
+                camp_func_002bc200(kDispatchChanged);
+            }
+        } else if (camp_func_0029f278(cursor, 0u) != 0) {
+            // 0x00195220..0x001952DC: keep polling while the page is full, the
+            // cursor has not moved, and the position is neither (0,0) nor the
+            // bottom-right cell.
+            if (camp_func_0029f0f4(cursor) > static_cast<s32>(kPageRows) &&
+                camp_func_0029f260(cursor) == position_a) {
+                for (;;) {
+                    const s32 a = camp_func_0029f260(cursor);
+                    if (a == 0 && camp_func_0029f248(cursor) == 0) {
+                        break;
+                    }
+                    if (camp_func_0029f260(cursor) ==
+                            camp_func_0029f0f4(cursor) -
+                                static_cast<s32>(kPageRows) &&
+                        camp_func_0029f248(cursor) ==
+                            static_cast<s32>(kPageRows) - 1) {
+                        break;
+                    }
+                    camp_func_0029f278(cursor, 0u);
+                    if (camp_func_0029f260(cursor) != position_a) {
+                        break;
+                    }
+                }
+            }
+
+            // 0x001952E0..0x001952F4: queue 0x0100016C when the cursor moved.
+            if (camp_func_0029f260(cursor) != position_a) {
+                camp_func_002bc200(kDispatchChanged);
+            }
+        } else {
+            // 0x001952F8..0x00195348: settled cursor; accept the select gate
+            // and queue 0x0100016E before resetting the sprites.
+            if (camp_func_002c1830(1u, 1u) != 0) {
+                camp_func_002bc200(kDispatchSelect);
+                for (s32 i = 0; i < static_cast<s32>(kSpriteCount); ++i) {
+                    camp_func_002bdac0(&work->sprites[i], 1u, 0u);
+                }
+                work->state = 2u;
+            }
+        }
+    } else if (state == 2u) {
+        // 0x00195360..0x00195394: step every sprite, then finish when the
+        // enable byte is set.
+        for (s32 i = 0; i < static_cast<s32>(kSpriteCount); ++i) {
+            ui_func_002bf9f0(&work->sprites[i]);
+        }
+        if (work->sprites[4].raw[kSpriteEnableOffset] != 0) {
+            work->state = 3u;
+        }
+    }
+
+    // 0x0019534C..0x0019535C: always reached; the new counter is returned.
+    work->frame_counter = work->frame_counter + 1u;
+    return work->frame_counter;
 }
 
 // DECOMP_FUNC(0x002668dc, 892)

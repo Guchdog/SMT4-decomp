@@ -2046,7 +2046,7 @@ address,size,status,category,name,src_file
 0x0019416c,2204,matching,script_vm,script_vm_func_0019416c,src/engine/leaf_batch46_c.cpp
 0x00194a08,948,matching,camp,camp_func_00194a08,src/engine/leaf_batch45_b.cpp
 0x00194dbc,648,non_matching,camp,PlayLog_func_00194dbc,src/camp/title_flow.cpp
-0x00195044,868,matching,camp,camp_func_00195044,src/engine/leaf_batch45_b.cpp
+0x00195044,868,non_matching,camp,camp_func_00195044,src/engine/leaf_batch45_b.cpp
 0x001953a8,96,matching,engine,engine_func_001953a8,src/engine/leaf_batch25_a.cpp
 0x00195408,28,matching,script_vm,script_vm_func_00195408,src/engine/leaf_batch21_a.cpp
 0x00195424,408,non_matching,ui,ui_func_00195424,src/engine/leaf_batch44_b.cpp
