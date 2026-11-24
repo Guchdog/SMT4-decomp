@@ -7739,114 +7739,261 @@ extern "C" void script_vm_func_0027b100() {
     }
 }
 
+// ---------------------------------------------------------------------------
+// 0x00150320 -- append the GPU draw record for one indexed scene part.
+//
+//   scene = r0, unit = r1, part = r2 (null returns), index = r3.
+//
+//   entry  = (*(u32*)(unit + 0x22C))[index]
+//   stream = (*(u32*)(unit + 0x240))[index]
+//
+// entry+0x08 is a type-checked object (its vtable word must carry bits 0 and 30
+// of 0x40000001).  object+0x51 gates 0x002C255C(stream); object+0x44 is a
+// self-relative offset to the three floats copied into record+0xE4; object+0x50
+// selects the record's matrix variant.  entry+0x4C is a model whose +0xC8 and
+// +0xCC words contribute to the last record word.
+//
+// stream+0x30 selects between the source/size pairs at +0x0C/+0x14 and
+// +0x10/+0x18.  It is read again after the matrix helpers for the
+// +0x200/+0x204 tail word, so a helper that rewrites it is observed.
+//
+// The command stream receives, in order:
+//   * a copy of stream+0x0C/+0x14 (size rounded down to four bytes),
+//   * the 0x128-byte record described below,
+//   * a copy of stream+0x24/+0x28,
+//   * a copy of stream+0x1C/+0x20.
+//
+// Record layout (byte offsets):
+//   0x00 0x80000006        0x04 0x804F02C0       0x08 0
+//   0x0C part+0x28         0x10 part+0x24        0x14 part+0x20
+//   0x18 0x80000019        0x1C 0x000F02C0
+//   0x20 3x4 matrix (0x002A1AC8, tag 0x03BF02C1)
+//   0x54 3x4 matrix (0x002A1A90)
+//   0x84..0xE0 variant A scalars or variant B two 3x4 matrices
+//   0xE4 {0, z, y, x} of the entry-derived vector (0x002A1B98)
+//   0xF4 {0, z, y, x} of entry+0x74
+//   0x104 {0, z, y, x} of entry+0x80
+//   0x114 0
+//   0x118 model+0xCC       0x11C 0x000F0228
+//   0x120 tail | 0x80000000 0x124 0x000F0227
+//
+// Variant A (object+0x50 != 0) emits fixed zero/1.0f scaling words.  Variant B
+// (object+0x50 == 0) emits the two matrix_set slots transformed by the cached
+// matrix 0x00155584(unit) = unit+0xFC and by unit+0x8C.
+//
+// Return value: the original leaves r0 = scene on the null-part early exit and
+// r0 = the final GPU cursor otherwise; this signature returns that word so the
+// differential runner can compare it.
+// ---------------------------------------------------------------------------
+namespace ui_00150320_detail {
+
+// Direct callees, all present in the pinned image.
+extern "C" void ui_func_002acd38(void* dst, const void* src, u32 size); // memcpy
+extern "C" void func_002c255c(void* stream);                            // stream select
+extern "C" void func_002a1ac8(void* dst, const void* src, u32 tag);     // tagged 3x4 copy
+extern "C" void func_002a1a90(void* dst, const void* src);              // 3x4 copy
+extern "C" void func_002a1b98(void* dst, const void* src);              // vec3 -> {0,z,y,x}
+extern "C" void battle_func_002a5078(void* dst, const void* matrix,
+                                     const void* transform);            // affine multiply
+extern "C" u8* func_00155584(void* unit);                               // unit+0xFC matrix
+
+constexpr u32 kGpuCommandCursor = 0x004652A0u;
+constexpr u32 kTypeMask = 0x40000001u;  // bits the object vtable word must have
+constexpr u32 kRecordBytes = 0x128u;
+constexpr u32 kHeadA = 0x80000006u;
+constexpr u32 kHeadB = 0x80000019u;
+constexpr u32 kCommandHeader = 0x804F02C0u;
+constexpr u32 kCommandBody = 0x000F02C0u;
+constexpr u32 kCommandTailA = 0x000F0228u;
+constexpr u32 kCommandTailB = 0x000F0227u;
+constexpr u32 kMatrixTag = 0x03BF02C1u;
+constexpr u32 kStreamSelector = 0x30u;
+constexpr u32 kStreamTail = 0x200u;
+constexpr u32 kOne = 0x3F800000u;  // 1.0f
+
+// Volatile so the invalid-object boundary case still performs the original
+// loads instead of being folded away as undefined behaviour.
+static inline __attribute__((always_inline)) u32 ReadWord(u32 address) {
+    return *reinterpret_cast<const volatile u32*>(address);
+}
+static inline __attribute__((always_inline)) u8 ReadByte(u32 address) {
+    return *reinterpret_cast<const volatile u8*>(address);
+}
+static inline __attribute__((always_inline)) void WriteWord(u32 address,
+                                                            u32 value) {
+    *reinterpret_cast<volatile u32*>(address) = value;
+}
+static inline __attribute__((always_inline)) u8* PointerAt(const void* base,
+                                                           u32 offset) {
+    return *reinterpret_cast<u8* const*>(static_cast<const u8*>(base) + offset);
+}
+static inline __attribute__((always_inline)) u32 WordAt(const void* base,
+                                                        u32 offset) {
+    return *reinterpret_cast<const u32*>(static_cast<const u8*>(base) + offset);
+}
+static inline __attribute__((always_inline)) void SetWord(void* base,
+                                                          u32 offset,
+                                                          u32 value) {
+    *reinterpret_cast<u32*>(static_cast<u8*>(base) + offset) = value;
+}
+
+}  // namespace ui_00150320_detail
+
 // DECOMP_FUNC(0x00150320, 820)
-extern "C" __attribute__((naked)) void ui_func_00150320() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4fff, 0xe92d, 0xd084, 0xe24d\n"
-        ".hword 0x7002, 0xe1b0, 0x8001, 0xe1a0\n"
-        ".hword 0x00be, 0x0a00, 0x022c, 0xe598\n"
-        ".hword 0xb105, 0xe3a0, 0x6103, 0xe790\n"
-        ".hword 0x9008, 0xe596, 0x0000, 0xe359\n"
-        ".hword 0x0002, 0x0a00, 0x0000, 0xe599\n"
-        ".hword 0x0000, 0xe1db, 0x9000, 0x13a0\n"
-        ".hword 0x1240, 0xe591, 0x0051, 0xe5d9\n"
-        ".hword 0x5103, 0xe791, 0x0000, 0xe350\n"
-        ".hword 0x0005, 0x11a0, 0xc87a, 0x1b05\n"
-        ".hword 0x0030, 0xe5d5, 0xa2bc, 0xe59f\n"
-        ".hword 0x0000, 0xe350, 0x0001, 0x13a0\n"
-        ".hword 0x0100, 0xe085, 0x100c, 0xe5b0\n"
-        ".hword 0x4008, 0xe590, 0x0000, 0xe59a\n"
-        ".hword 0x2004, 0xe1a0, 0x7267, 0xeb05\n"
-        ".hword 0x0000, 0xe59a, 0x1003, 0xe3c4\n"
-        ".hword 0x4000, 0xe081, 0x011a, 0xe3a0\n"
-        ".hword 0x4000, 0xe58a, 0x0000, 0xe584\n"
-        ".hword 0x0284, 0xe59f, 0x1004, 0xe284\n"
-        ".hword 0xa000, 0xe3a0, 0x0401, 0xe881\n"
-        ".hword 0x0028, 0xe597, 0x1274, 0xe59f\n"
-        ".hword 0x000c, 0xe584, 0x0024, 0xe597\n"
-        ".hword 0x0010, 0xe584, 0x0020, 0xe597\n"
-        ".hword 0x0014, 0xe584, 0x0084, 0xe59d\n"
-        ".hword 0x0008, 0xe590, 0x70a4, 0xe590\n"
-        ".hword 0x0166, 0xe3a0, 0x01f8, 0xe1c4\n"
-        ".hword 0x0008, 0xe596, 0x0000, 0xe350\n"
-        ".hword 0x0002, 0x0a00, 0x1000, 0xe590\n"
-        ".hword 0x1001, 0xe1db, 0x0000, 0x13a0\n"
-        ".hword 0xb234, 0xe59f, 0x0050, 0xe5d0\n"
-        ".hword 0x0000, 0xe350, 0x0020, 0x0a00\n"
-        ".hword 0x200b, 0xe1a0, 0x0020, 0xe284\n"
-        ".hword 0x1f52, 0xe287, 0x45a7, 0xeb05\n"
-        ".hword 0x0054, 0xe284, 0x1f5e, 0xe287\n"
-        ".hword 0x4596, 0xeb05, 0xa084, 0xe584\n"
-        ".hword 0x1090, 0xe284, 0xa088, 0xe584\n"
-        ".hword 0x05fe, 0xe3a0, 0xa08c, 0xe584\n"
-        ".hword 0x0401, 0xe881, 0x109c, 0xe284\n"
-        ".hword 0xa098, 0xe584, 0x0401, 0xe881\n"
-        ".hword 0x10a8, 0xe284, 0xa0a4, 0xe584\n"
-        ".hword 0x0401, 0xe881, 0x10c0, 0xe284\n"
-        ".hword 0xa0b0, 0xe584, 0xa0b4, 0xe584\n"
-        ".hword 0xa0b8, 0xe584, 0xa0bc, 0xe584\n"
-        ".hword 0x0401, 0xe881, 0x10cc, 0xe284\n"
-        ".hword 0xa0c8, 0xe584, 0x0401, 0xe881\n"
-        ".hword 0x10d8, 0xe284, 0xa0d4, 0xe584\n"
-        ".hword 0x0401, 0xe881, 0xa0e0, 0xe584\n"
-        ".hword 0x001d, 0xea00, 0x008c, 0xe288\n"
-        ".hword 0x2000, 0xe1a0, 0x0004, 0xe58d\n"
-        ".hword 0x1f52, 0xe287, 0x0040, 0xe28d\n"
-        ".hword 0x52f0, 0xeb05, 0x200b, 0xe1a0\n"
-        ".hword 0x0020, 0xe284, 0x1040, 0xe28d\n"
-        ".hword 0x4580, 0xeb05, 0x0008, 0xe1a0\n"
-        ".hword 0xf000, 0xe320, 0x142c, 0xeb00\n"
-        ".hword 0x1000, 0xe1a0, 0x2f5e, 0xe287\n"
-        ".hword 0x0008, 0xe28d, 0x52e5, 0xeb05\n"
-        ".hword 0x0054, 0xe284, 0x1008, 0xe28d\n"
-        ".hword 0x4568, 0xeb05, 0x0008, 0xe1a0\n"
-        ".hword 0xf000, 0xe320, 0x1422, 0xeb00\n"
-        ".hword 0x2084, 0xe284, 0x1000, 0xe1a0\n"
-        ".hword 0x0002, 0xe1a0, 0x4561, 0xeb05\n"
-        ".hword 0x1004, 0xe59d, 0x00b4, 0xe284\n"
-        ".hword 0x455e, 0xeb05, 0x0a4b, 0xed9f\n"
-        ".hword 0x0a1c, 0xed8d, 0x0a1d, 0xed8d\n"
-        ".hword 0x0a1e, 0xed8d, 0x0044, 0xe5b9\n"
-        ".hword 0x0000, 0xe350, 0x7009, 0x1080\n"
-        ".hword 0x700a, 0x01a0, 0x0000, 0xe357\n"
-        ".hword 0x0005, 0x0a00, 0x0008, 0xe287\n"
-        ".hword 0x0006, 0xe890, 0x0010, 0xe597\n"
-        ".hword 0x0078, 0xe58d, 0x0070, 0xe28d\n"
-        ".hword 0x0006, 0xe880, 0x00e4, 0xe284\n"
-        ".hword 0x1070, 0xe28d, 0x458d, 0xeb05\n"
-        ".hword 0x00f4, 0xe284, 0x1074, 0xe286\n"
-        ".hword 0x458a, 0xeb05, 0x0f41, 0xe284\n"
-        ".hword 0x1080, 0xe286, 0x4587, 0xeb05\n"
-        ".hword 0xa114, 0xe584, 0x004c, 0xe596\n"
-        ".hword 0x10c4, 0xe59f, 0x2f46, 0xe284\n"
-        ".hword 0x00cc, 0xe590, 0x0003, 0xe882\n"
-        ".hword 0x0000, 0xe3a0, 0x1030, 0xe5d5\n"
-        ".hword 0x0000, 0xe351, 0x0001, 0x13a0\n"
-        ".hword 0x0000, 0xe357, 0x0100, 0xe085\n"
-        ".hword 0x0200, 0xe590, 0x0007, 0x0a00\n"
-        ".hword 0x1004, 0xe5d7, 0x0000, 0xe351\n"
-        ".hword 0x0004, 0x1a00, 0x104c, 0xe596\n"
-        ".hword 0x20c8, 0xe591, 0x10cc, 0xe591\n"
-        ".hword 0x1001, 0xe042, 0x0081, 0xe080\n"
-        ".hword 0x1078, 0xe59f, 0x605c, 0xe59f\n"
-        ".hword 0x4e12, 0xe284, 0x0102, 0xe380\n"
-        ".hword 0x0003, 0xe884, 0x1024, 0xe285\n"
-        ".hword 0x0000, 0xe596, 0x0f4a, 0xe280\n"
-        ".hword 0x0000, 0xe586, 0x0006, 0xe891\n"
-        ".hword 0x4002, 0xe1a0, 0x71cd, 0xeb05\n"
-        ".hword 0x0000, 0xe596, 0x1003, 0xe3c4\n"
-        ".hword 0x501c, 0xe285, 0x0001, 0xe080\n"
-        ".hword 0x0000, 0xe586, 0x0012, 0xe895\n"
-        ".hword 0x2004, 0xe1a0, 0x71c5, 0xeb05\n"
-        ".hword 0x0000, 0xe596, 0x1003, 0xe3c4\n"
-        ".hword 0x0001, 0xe080, 0x0000, 0xe586\n"
-        ".hword 0xd094, 0xe28d, 0x8ff0, 0xe8bd\n"
-        ".hword 0x52a0, 0x0046, 0x02c0, 0x804f\n"
-        ".hword 0x02c0, 0x000f, 0x02c1, 0x03bf\n"
-        ".hword 0x0000, 0x0000, 0x0228, 0x000f\n"
-        ".hword 0x0227, 0x000f\n"
-    );
+extern "C" u32 ui_func_00150320(void* scene, void* unit, void* part,
+                                u32 index) {
+    using namespace ui_00150320_detail;
+
+    if (part == nullptr) {
+        return reinterpret_cast<u32>(scene);
+    }
+
+    u8* const entry =
+        reinterpret_cast<u8*>(WordAt(PointerAt(unit, 0x22Cu), index * 4u));
+    u8* const stream =
+        reinterpret_cast<u8*>(WordAt(PointerAt(unit, 0x240u), index * 4u));
+    const u32 stream_address = reinterpret_cast<u32>(stream);
+
+    u8* object = PointerAt(entry, 0x08u);
+    if (object != nullptr && (kTypeMask & ~WordAt(object, 0u)) != 0u) {
+        object = nullptr;
+    }
+    const u32 object_address = reinterpret_cast<u32>(object);
+
+    if (ReadByte(object_address + 0x51u) != 0u) {
+        func_002c255c(stream);
+    }
+
+    // The first variable payload is copied at the current cursor; only its
+    // rounded size advances the stream.
+    const u32 early_selector =
+        ReadByte(stream_address + kStreamSelector) != 0u ? 1u : 0u;
+    const void* const first_source =
+        PointerAt(stream, 0x0Cu + early_selector * 4u);
+    const u32 first_size = WordAt(stream, 0x14u + early_selector * 4u);
+
+    ui_func_002acd38(reinterpret_cast<void*>(ReadWord(kGpuCommandCursor)),
+                     first_source, first_size);
+    const u32 record_address =
+        ReadWord(kGpuCommandCursor) + (first_size & ~3u);
+    WriteWord(kGpuCommandCursor, record_address);
+    u8* const record = reinterpret_cast<u8*>(record_address);
+
+    SetWord(record, 0x00u, kHeadA);
+    SetWord(record, 0x04u, kCommandHeader);
+    SetWord(record, 0x08u, 0u);
+    SetWord(record, 0x0Cu, WordAt(part, 0x28u));
+    SetWord(record, 0x10u, WordAt(part, 0x24u));
+    SetWord(record, 0x14u, WordAt(part, 0x20u));
+
+    u8* const matrix_set = PointerAt(PointerAt(scene, 0x08u), 0xA4u);
+
+    SetWord(record, 0x18u, kHeadB);
+    SetWord(record, 0x1Cu, kCommandBody);
+
+    u8* node = PointerAt(entry, 0x08u);
+    if (node != nullptr && (kTypeMask & ~WordAt(node, 0u)) != 0u) {
+        node = nullptr;
+    }
+
+    if (ReadByte(reinterpret_cast<u32>(node) + 0x50u) != 0u) {
+        func_002a1ac8(record + 0x20u, matrix_set + 0x148u, kMatrixTag);
+        func_002a1a90(record + 0x54u, matrix_set + 0x178u);
+
+        SetWord(record, 0x84u, 0u);
+        SetWord(record, 0x88u, 0u);
+        SetWord(record, 0x8Cu, 0u);
+        SetWord(record, 0x90u, kOne);
+        SetWord(record, 0x94u, 0u);
+        SetWord(record, 0x98u, 0u);
+        SetWord(record, 0x9Cu, kOne);
+        SetWord(record, 0xA0u, 0u);
+        SetWord(record, 0xA4u, 0u);
+        SetWord(record, 0xA8u, kOne);
+        SetWord(record, 0xACu, 0u);
+        SetWord(record, 0xB0u, 0u);
+        SetWord(record, 0xB4u, 0u);
+        SetWord(record, 0xB8u, 0u);
+        SetWord(record, 0xBCu, 0u);
+        SetWord(record, 0xC0u, kOne);
+        SetWord(record, 0xC4u, 0u);
+        SetWord(record, 0xC8u, 0u);
+        SetWord(record, 0xCCu, kOne);
+        SetWord(record, 0xD0u, 0u);
+        SetWord(record, 0xD4u, 0u);
+        SetWord(record, 0xD8u, kOne);
+        SetWord(record, 0xDCu, 0u);
+        SetWord(record, 0xE0u, 0u);
+    } else {
+        u8 local_a[0x30];
+        u8 local_b[0x30];
+        u8* const unit_matrix = static_cast<u8*>(unit) + 0x8Cu;
+
+        battle_func_002a5078(local_a, matrix_set + 0x148u, unit_matrix);
+        func_002a1ac8(record + 0x20u, local_a, kMatrixTag);
+
+        battle_func_002a5078(local_b, func_00155584(unit),
+                             matrix_set + 0x178u);
+        func_002a1a90(record + 0x54u, local_b);
+
+        func_002a1a90(record + 0x84u, func_00155584(unit));
+        func_002a1a90(record + 0xB4u, unit_matrix);
+    }
+
+    // entry+0x44 is a self-relative offset to the vector at record+0xE4.
+    u32 vector[3] = {0u, 0u, 0u};
+    const u32 sub_offset = ReadWord(object_address + 0x44u);
+    u8* sub = nullptr;
+    if (sub_offset != 0u) {
+        sub = reinterpret_cast<u8*>(object_address + 0x44u + sub_offset);
+    }
+    if (sub != nullptr) {
+        const u32 sub_address = reinterpret_cast<u32>(sub);
+        vector[0] = ReadWord(sub_address + 0x08u);
+        vector[1] = ReadWord(sub_address + 0x0Cu);
+        vector[2] = ReadWord(sub_address + 0x10u);
+    }
+
+    func_002a1b98(record + 0xE4u, vector);
+    func_002a1b98(record + 0xF4u, entry + 0x74u);
+    func_002a1b98(record + 0x104u, entry + 0x80u);
+
+    SetWord(record, 0x114u, 0u);
+    SetWord(record, 0x118u, WordAt(PointerAt(entry, 0x4Cu), 0xCCu));
+    SetWord(record, 0x11Cu, kCommandTailA);
+
+    // The selector is read again here; the helper calls above may have changed
+    // stream+0x30.
+    const u32 late_selector =
+        ReadByte(stream_address + kStreamSelector) != 0u ? 1u : 0u;
+    u32 tail = WordAt(stream, kStreamTail + late_selector * 4u);
+    if (sub != nullptr && ReadByte(reinterpret_cast<u32>(sub) + 0x04u) == 0u) {
+        u8* const model = PointerAt(entry, 0x4Cu);
+        const u32 c8 = WordAt(model, 0xC8u);
+        const u32 cc = WordAt(model, 0xCCu);
+        tail += (c8 - cc) << 1;
+    }
+    SetWord(record, 0x120u, tail | 0x80000000u);
+    SetWord(record, 0x124u, kCommandTailB);
+
+    // Commit the fixed record, then the two trailing payloads.  Each advance
+    // rounds the copied size down to a multiple of four.
+    u32 cursor = ReadWord(kGpuCommandCursor) + kRecordBytes;
+    WriteWord(kGpuCommandCursor, cursor);
+
+    const u32 second_size = WordAt(stream, 0x28u);
+    ui_func_002acd38(reinterpret_cast<void*>(cursor),
+                     PointerAt(stream, 0x24u), second_size);
+    cursor = ReadWord(kGpuCommandCursor) + (second_size & ~3u);
+    WriteWord(kGpuCommandCursor, cursor);
+
+    const u32 third_size = WordAt(stream, 0x20u);
+    ui_func_002acd38(reinterpret_cast<void*>(cursor),
+                     PointerAt(stream, 0x1Cu), third_size);
+    cursor = ReadWord(kGpuCommandCursor) + (third_size & ~3u);
+    WriteWord(kGpuCommandCursor, cursor);
+
+    return cursor;
 }
 
 // DECOMP_FUNC(0x0010f120, 836)
