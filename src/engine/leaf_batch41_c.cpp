@@ -13586,43 +13586,176 @@ extern "C" u32 script_vm_func_0029ccf8(void) {
     return 2u;
 }
 
+// ---------------------------------------------------------------------------
+// engine_func_002b5820 -- bounded retry loop around the six-argument
+// `svc #0x32` request at 0x00148210, serialised by the engine object lock.
+//
+// ABI: r0..r3 = arg0, flags, buffer, size; [sp+0x00] = extra; [sp+0x04] is
+// alignment padding the original never reads; [sp+0x08] = the 64-bit timeout
+// in nanoseconds.  The result comes back in r0 only (the prologue also pushes
+// r0-r3, but the epilogue skips those four words).
+//
+//   * Entry compares the timeout with the 64-bit marker words at 0x0044E378
+//     and 0x0044E370.  When it equals either one, no system tick is sampled
+//     and the baseline stays 0.
+//   * Bit 16 of `flags` is latched once; after a non-negative request result
+//     it triggers the follow-up step 0x00147FE0(0).
+//   * Every attempt re-runs the same prologue: if `size > 0x1000` the
+//     close/yield notification 0x002BCE48 runs (it ignores r0);
+//     `buffer == 0 || size == 0` collapses both to 0; then lock 0x002BB6B8,
+//     context = 0x002BB440() ([0x0044E394]), the request
+//     0x00148210(context, arg0, flags, buffer, size, extra), unlock
+//     0x002BB648.
+//   * Non-negative results return immediately and other negative results also
+//     return.  Only 0xC8A0CC02 retries: it returns at once when the timeout
+//     equals [0x0044E378], retries without a clock read when the timeout
+//     equals [0x0044E370], and otherwise gives up once the signed elapsed
+//     value -- bits 32..95 of the signed 64x34 product of the wrapping tick
+//     delta with 0x3BAD34AEE, the same 268,111,856 Hz tick to nanosecond
+//     reduction used by 0x0011B6A8/0x0013B508 -- exceeds it.
+//   * Every retry sleeps 10,000,000 ns through 0x002BB490 and polls again.
+// ---------------------------------------------------------------------------
+// 0x002BB440: loads the engine object word at 0x0044E394.
+extern "C" u32 func_002bb440();
+// 0x00148210: `svc #0x32` request; four register arguments and two stack
+// words (length, extra).  Returns the signed kernel result.
+extern "C" s32 func_00148210(u32 context, u32 arg1, u32 arg2, u32 buffer,
+                             u32 size, u32 extra);
+// 0x00147FE0: follow-up engine step; the original leaves r0 at 0 here.
+extern "C" void engine_func_00147fe0(u32 value);
+// 0x002BCE48: close/yield notification (tail-calls 0x002AD8A8 with 0).  Its
+// r0 is dead on entry: the callee overwrites it with 0 before the tail call,
+// and in the original it is only a caller-saved leftover (flags & 0x10000 on
+// the first pass, the previous callee's return on later passes).
+extern "C" void engine_func_002bce48();
+// 0x002BB6B8 (lock), 0x002BB648 (unlock) and 0x002BB490 (sleep, 64-bit value
+// in lo/hi) are declared earlier in this translation unit.
+
+namespace engine_002b5820 {
+constexpr u32 kSecondaryMarkerAddress = 0x0044E378u;  // one 64-bit ldrd
+constexpr u32 kPrimaryMarkerAddress = 0x0044E370u;    // ldrd / two u32 loads
+constexpr u32 kRetryCode = 0xC8A0CC02u;
+constexpr u32 kMaximumSize = 0x1000u;
+constexpr u64 kTickNanosecondsMagic = 0x3BAD34AEEull;  // 3 << 32 | 0xBAD34AEE
+constexpr u32 kRetrySleepNanoseconds = 10000000u;      // 10 * 1,000,000 ns
+
+// The entry comparisons are one 64-bit load each.
+inline u64 LoadMarkerWord(u32 address) {
+    return *reinterpret_cast<const u64*>(static_cast<uintptr_t>(address));
+}
+
+// The retry path re-reads 0x0044E370 as two independent 32-bit words.
+inline u64 LoadMarkerPair(u32 address) {
+    const u32 low = *reinterpret_cast<const u32*>(static_cast<uintptr_t>(address));
+    const u32 high =
+        *reinterpret_cast<const u32*>(static_cast<uintptr_t>(address + 4));
+    return (static_cast<u64>(high) << 32) | low;
+}
+
+// `svc #0x28` returns the 64-bit 268,111,856 Hz system tick in r0:r1.
+inline u64 ReadSystemTick() {
+    register u32 low asm("r0");
+    register u32 high asm("r1");
+    asm volatile("svc #0x28" : "=r"(low), "=r"(high));
+    return (static_cast<u64>(high) << 32) | low;
+}
+
+// Bits 32..95 of the signed 64x34 product (tick * 0x3BAD34AEE): the same
+// 268,111,856 Hz tick reduction 0x0011B6A8 and 0x0013B508 use.  ARMv6K has no
+// 128-bit integer type, so the 128-bit product is rebuilt from the 32-bit
+// partial products.
+inline u64 MultiplyHighUnsigned(u64 a, u64 b) {
+    const u64 a_low = static_cast<u32>(a);
+    const u64 a_high = a >> 32;
+    const u64 b_low = static_cast<u32>(b);
+    const u64 b_high = b >> 32;
+    const u64 low_low = a_low * b_low;
+    const u64 low_high = a_low * b_high;
+    const u64 high_low = a_high * b_low;
+    const u64 high_high = a_high * b_high;
+    const u64 middle = (low_low >> 32) + static_cast<u32>(low_high) +
+                       static_cast<u32>(high_low);
+    return high_high + (low_high >> 32) + (high_low >> 32) + (middle >> 32);
+}
+
+inline u64 MultiplyHighSigned(u64 a, u64 b) {
+    u64 high = MultiplyHighUnsigned(a, b);
+    if (static_cast<s64>(a) < 0) {
+        high -= b;
+    }
+    if (static_cast<s64>(b) < 0) {
+        high -= a;
+    }
+    return high;
+}
+
+inline u64 TickToNanoseconds(u64 tick) {
+    return (tick * kTickNanosecondsMagic >> 32) +
+           (MultiplyHighSigned(tick, kTickNanosecondsMagic) << 32);
+}
+}  // namespace engine_002b5820
+
 // DECOMP_FUNC(0x002b5820, 484)
-// 116 ARM instructions through unconditional pop; 20 trailing data bytes.
-extern "C" __attribute__((naked)) void engine_func_002b5820() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4fff, 0xe24dd01c, 0xe1a06001, 0xe1a07000\n"
-        ".word 0xe1a08003, 0xe59f41b4, 0xe1cd05d8, 0xe59d9050\n"
-        ".word 0xe2445008, 0xe1cd00f8, 0xe1c420d0, 0xe0222000\n"
-        ".word 0xe0233001, 0xe1922003, 0x0a000009, 0xe1c520d0\n"
-        ".word 0xe0200002, 0xe0211003, 0xe1900001, 0x0a000004\n"
-        ".word 0xef000028, 0xe1cd01f0, 0xe2060801, 0xe1a0a820\n"
-        ".word 0xea000002, 0xe3a00000, 0xe1a01000, 0xeafffff8\n"
-        ".word 0xe59d5024, 0xe3580a01, 0xe1a04008, 0x8b001d69\n"
-        ".word 0xe3550000, 0x13540000, 0x03a05000, 0x01a04005\n"
-        ".word 0xeb001780, 0xe320f000, 0xe320f000, 0xeb0016df\n"
-        ".word 0xe1a03005, 0xe1a02006, 0xe1a01007, 0xe88d0210\n"
-        ".word 0xebfa4a4e, 0xe1a04000, 0xe2100102, 0x4a000001\n"
-        ".word 0xe35a0000, 0x1bfa49bd, 0xe320f000, 0xeb001755\n"
-        ".word 0xe2140102, 0xe58d4000, 0x5a000039, 0xe59f00f0\n"
-        ".word 0xe1540000, 0x1a000036, 0xe59f00e0, 0xe1c020d0\n"
-        ".word 0xe1cd00d8, 0xe0222000, 0xe0233001, 0xe1922003\n"
-        ".word 0x0a00002f, 0xe59f20cc, 0xe5923000, 0xe5922004\n"
-        ".word 0xe0233000, 0xe0210002, 0xe1900003, 0x0a00001d\n"
-        ".word 0xef000028, 0xe1a02000, 0xe28d4010, 0xe1a00001\n"
-        ".word 0xe894000a, 0xe3a0b000, 0xe58db004, 0xe0521001\n"
-        ".word 0xe0c00003, 0xe59f3090, 0xe3a02003, 0xe58db018\n"
-        ".word 0xe1a0400b, 0xe08c5391, 0xe08e5290, 0xe59de018\n"
-        ".word 0xe09cc004, 0xe1a0bfc0, 0xe0a5500e, 0xe08e4390\n"
-        ".word 0xe023e39b, 0xe59db004, 0xe0203b90, 0xe0a04192\n"
-        ".word 0xe1cd20d8, 0xe094100c, 0xe0a00005, 0xe0521001\n"
-        ".word 0xe0d30000, 0xba00000a, 0xe59fc040, 0xe3a0100a\n"
-        ".word 0xe3a03000, 0xe1a02fc1, 0xe0840c91, 0xe0224c92\n"
-        ".word 0xe0212391, 0xeb0016ad, 0xe320f000, 0xe320f000\n"
-        ".word 0xeaffffaa, 0xe59d0000, 0xe28dd02c, 0xe8bd8ff0\n"
-        ".word 0x0044e378, 0xc8a0cc02, 0x0044e370, 0xbad34aee\n"
-        ".word 0x000f4240\n"
-    );
+extern "C" u32 engine_func_002b5820(u32 arg0, u32 flags, u32 buffer, u32 size,
+                                    u32 extra, u64 timeout_nanoseconds) {
+    using namespace engine_002b5820;
+
+    // 0x002B5834..0x002B588C: marker equality suppresses the tick snapshot.
+    u64 tick_baseline = 0;
+    if (timeout_nanoseconds != LoadMarkerWord(kSecondaryMarkerAddress) &&
+        timeout_nanoseconds != LoadMarkerWord(kPrimaryMarkerAddress)) {
+        tick_baseline = ReadSystemTick();
+    }
+
+    // `and r0, flags, #0x10000; lsr sl, r0, #16` -- latched once.
+    const bool notify_after_success = ((flags >> 16) & 1u) != 0;
+
+    for (;;) {
+        // 0x002B5890..0x002B58AC: size guard and the buffer/length gate.
+        u32 length = size;
+        if (size > kMaximumSize) {
+            engine_func_002bce48();
+        }
+        u32 data = buffer;
+        if (data == 0 || length == 0) {
+            data = 0;
+            length = 0;
+        }
+
+        // 0x002B58B0..0x002B58EC: lock, query, request, unlock.
+        engine_func_002bb6b8();
+        const u32 context = func_002bb440();
+        u32 result = static_cast<u32>(
+            func_00148210(context, arg0, flags, data, length, extra));
+        if ((result & 0x80000000u) == 0 && notify_after_success) {
+            engine_func_00147fe0(0);
+        }
+        engine_func_002bb648();
+
+        // 0x002B58F0..0x002B5904.
+        if ((result & 0x80000000u) == 0) {
+            return result;
+        }
+        if (result != kRetryCode) {
+            return result;
+        }
+
+        // 0x002B5908..0x002B59B4.
+        if (timeout_nanoseconds == LoadMarkerWord(kSecondaryMarkerAddress)) {
+            return result;
+        }
+        if (timeout_nanoseconds != LoadMarkerPair(kPrimaryMarkerAddress)) {
+            const u64 elapsed_nanoseconds =
+                TickToNanoseconds(ReadSystemTick() - tick_baseline);
+            if (static_cast<s64>(timeout_nanoseconds) <
+                static_cast<s64>(elapsed_nanoseconds)) {
+                return result;
+            }
+        }
+
+        // 0x002B59B8..0x002B59E0: 10 ms, then poll again.
+        camp_func_002bb490(kRetrySleepNanoseconds, 0);
+    }
 }
 
 // DECOMP_FUNC(0x003821e4, 484)

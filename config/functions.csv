@@ -5442,7 +5442,7 @@ address,size,status,category,name,src_file
 0x002b539c,112,matching,unknown,func_002b539c,src/engine/leaf_batch16_c.cpp
 0x002b540c,140,matching,unknown,func_002b540c,src/engine/leaf_batch14_a.cpp
 0x002b5498,904,matching,engine,engine_func_002b5498,src/engine/leaf_batch43_b.cpp
-0x002b5820,484,matching,engine,engine_func_002b5820,src/engine/leaf_batch41_c.cpp
+0x002b5820,484,non_matching,engine,engine_func_002b5820,src/engine/leaf_batch41_c.cpp
 0x002b5a04,24,matching,nn_sdk,nn_sdk_func_002b5a04,src/engine/leaf_batch15_a.cpp
 0x002b5a1c,204,matching,unknown,func_002b5a1c,src/engine/leaf_batch42_c.cpp
 0x002b5ae8,80,matching,unknown,func_002b5ae8,src/engine/leaf_batch28_b.cpp
