@@ -11676,41 +11676,242 @@ extern "C" u32 engine_func_0036f49c(void* object_pointer) {
 }
 
 // DECOMP_FUNC(0x003f5ad4, 472)
-// 117 ARM instructions through unconditional pop; 4 trailing data bytes.
-extern "C" __attribute__((naked)) void ui_func_003f5ad4() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4ff0, 0xe1a05000, 0xe24dd00c, 0xe1a06001\n"
-        ".word 0xe5904018, 0xe3a00000, 0xe5850008, 0xe1a01004\n"
-        ".word 0xe1a00002, 0xebfb4444, 0xe1a0b000, 0xe2400026\n"
-        ".word 0xe3a02001, 0xe3a01002, 0xebfda9d7, 0xe1b08000\n"
-        ".word 0x0a000060, 0xe3540001, 0x85950010, 0xe59fa180\n"
-        ".word 0x81580000, 0x9a00000c, 0xe595000c, 0xe3500000\n"
-        ".word 0x159a1004, 0x112fff31, 0xe3a00000, 0xe5850010\n"
-        ".word 0xe59a1000, 0xe1a00088, 0xe12fff31, 0xe3500000\n"
-        ".word 0xe585000c, 0x15858010, 0x0a00004f, 0xe2480020\n"
-        ".word 0xe3540001, 0xe0000490, 0x01a07088, 0xe1a09080\n"
-        ".word 0xe5950004, 0x11a07009, 0xe1500007, 0x2a00000c\n"
-        ".word 0xe5950000, 0xe3500000, 0x159a1004, 0x112fff31\n"
-        ".word 0xe3a00000, 0xe5850004, 0xe59a1000, 0xe1a00007\n"
-        ".word 0xe12fff31, 0xe3500000, 0xe5850000, 0x15857004\n"
-        ".word 0x0a000039, 0xe3540001, 0xe5859008, 0x0a000018\n"
-        ".word 0xe3540000, 0xe3a07000, 0x82489021, 0x8248a020\n"
-        ".word 0x9a000030, 0xe2861020, 0xe28d0004, 0xebfb1f81\n"
-        ".word 0xe58d8000, 0xe595100c, 0xe2860026, 0xe28d3004\n"
-        ".word 0xe1a02006, 0xebfda953, 0xe595000c, 0xe5951000\n"
-        ".word 0xe35a0000, 0xe2800020, 0xe0811087, 0xda00001d\n"
-        ".word 0xe3190001, 0xe2400002, 0xe0411084, 0x1a00000f\n"
-        ".word 0xea00000b, 0xe2861020, 0xe28d0004, 0xebfb1f6d\n"
-        ".word 0xe58d8000, 0xe5951000, 0xe2860026, 0xe28d3004\n"
-        ".word 0xe1a02006, 0xebfda93f, 0xe320f000, 0xe320f000\n"
-        ".word 0xea000010, 0xe1f020b2, 0xe0811084, 0xe1c120b0\n"
-        ".word 0xe1b020ca, 0x0a000007, 0xe1d030b2, 0xe081c084\n"
-        ".word 0xe0811104, 0xe1cc30b0, 0xe1f030b4, 0xe2522001\n"
-        ".word 0xe1c130b0, 0x1afffff7, 0xe2877001, 0xe1570004\n"
-        ".word 0xe086600b, 0x3affffce, 0xe3a00001, 0xe28dd00c\n"
-        ".word 0xe8bd8ff0, 0x0044e918\n"
-    );
+//
+// Recovered contract (ARM 0x003F5AD4..0x003F5CA4 = 117 instructions through
+// the unconditional `pop {r4,r5,r6,r7,r8,sb,sl,fp,pc}`; the word at
+// 0x003F5CA8 is the literal 0x0044E918, the address of a two-word function
+// pointer table):
+//
+//   u32 ui_func_003f5ad4(void* object, void* row_array, u32 total);
+//
+//   * r0 (`object`) is the owning structure, r1 (`row_array`) the base of the
+//     caller's row records, r2 (`total`) the byte total divided by the row
+//     count.  The entry takes no stack arguments.
+//   * object+0x18 is the row count and the divisor.  object+0x00 is the output
+//     buffer, +0x04 its byte capacity, +0x08 the byte count made valid by the
+//     decode, +0x0C the scratch buffer and +0x10 its halfword capacity.  +0x08
+//     is cleared first; every other field is re-read at the point of use, so a
+//     helper may change them between calls.
+//   * 0x002C6C10(total, row_count) is the unsigned divmod service.  Only the
+//     quotient (bytes per row) is consumed; the remainder in r1 is dead (the
+//     next instruction overwrites r1).  Divisor zero returns quotient
+//     0xFFFFFFFF.
+//   * 0x00360270(quotient - 0x26, 2, 1) computes the row width in halfwords.
+//     Width zero returns success before touching any buffer.
+//   * When row_count > 1 and the width exceeds +0x10, the old +0x0C buffer is
+//     released (only when nonzero), +0x10 is cleared, 2*width bytes are
+//     allocated and +0x0C/+0x10 are published on success.  A null allocation
+//     returns 0.
+//   * The output requirement is 2*width bytes for exactly one row, otherwise
+//     2*(width-0x20)*row_count bytes (32-bit wrap).  When +0x04 is below that,
+//     the old +0x00 buffer is released the same way and the replacement is
+//     published; a null allocation returns 0.  +0x08 always receives the
+//     transposed size 2*(width-0x20)*row_count.
+//   * row_count == 0 returns success after publishing +0x08.  Exactly one row
+//     decodes once straight into +0x00.  Otherwise each row is decoded into
+//     +0x0C through 0x0036014C and, when (s32)(width-0x20) > 0, the tail is
+//     transposed: halfword k of 0x0C+0x20 goes to +0x00 + 2*row + 2*row_count*k
+//     for k = 0 .. width-0x21.  The two buffer pointers are re-read after the
+//     decode call.
+//   * 0x002BD9EC copies the 6-byte per-row descriptor at row+0x20 onto the
+//     stack; 0x0036014C receives (row+0x26 nibble stream, output buffer, row
+//     record base, descriptor state, width) and writes the width halfwords and
+//     the descriptor back.  Its fifth argument is the only stack argument.
+//   * 0x0044E918[0] is the allocator `u32 (*)(u32 size)` and 0x0044E918[1] the
+//     release `void (*)(u32 address)`.  Each slot is read immediately before
+//     its call; the indirect targets themselves are not recovered here.
+namespace ui_003f5ad4 {
+
+constexpr u32 kOutput0 = 0x00;            // u32 output buffer base
+constexpr u32 kOutputCapacity4 = 0x04;    // u32 byte capacity of kOutput0
+constexpr u32 kOutputValid8 = 0x08;       // u32 bytes made valid by the decode
+constexpr u32 kScratch0C = 0x0C;          // u32 scratch buffer (2*width bytes)
+constexpr u32 kScratchCapacity10 = 0x10;  // u32 halfword capacity of kScratch0C
+constexpr u32 kRowCount18 = 0x18;         // u32 rows / divmod divisor
+
+constexpr u32 kRowDescriptor20 = 0x20;    // 6-byte per-row filter state
+constexpr u32 kRowData26 = 0x26;          // packed nibble stream
+
+constexpr u32 kWidthBias26 = 0x26u;       // width input is quotient - 0x26
+constexpr u32 kWidthMode = 2u;            // 0x00360270 mode 2
+constexpr u32 kUnusedRate = 1u;           // r2; mode 2 does not read it
+constexpr u32 kNarrowLimit20 = 0x20u;     // no transposition at/below this
+constexpr u32 kTransposeSource20 = 0x20u; // first transposed halfword source
+
+constexpr u32 kAllocatorTable = 0x0044E918u;
+
+// Absolute-address accesses stay opaque and volatile: helpers observe the
+// object fields and the two buffer regions, and the order of the stores is
+// part of the contract.
+__attribute__((always_inline)) inline u32 load_u32(u32 address) {
+    return *reinterpret_cast<const volatile u32*>(
+        static_cast<uintptr_t>(address));
+}
+
+__attribute__((always_inline)) inline void store_u32(u32 address, u32 value) {
+    *reinterpret_cast<volatile u32*>(static_cast<uintptr_t>(address)) = value;
+}
+
+__attribute__((always_inline)) inline u16 load_u16(u32 address) {
+    return *reinterpret_cast<const volatile u16*>(
+        static_cast<uintptr_t>(address));
+}
+
+__attribute__((always_inline)) inline void store_u16(u32 address, u16 value) {
+    *reinterpret_cast<volatile u16*>(static_cast<uintptr_t>(address)) = value;
+}
+
+// The two indirect slots are re-read from 0x0044E918 for every call.
+inline u32 allocate_block(u32 size) {
+    using AllocateFunction = u32 (*)(u32);
+    const u32 slot = load_u32(kAllocatorTable);
+    return reinterpret_cast<AllocateFunction>(
+        static_cast<uintptr_t>(slot))(size);
+}
+
+inline void release_block(u32 address) {
+    using ReleaseFunction = void (*)(u32);
+    const u32 slot = load_u32(kAllocatorTable + 4u);
+    reinterpret_cast<ReleaseFunction>(static_cast<uintptr_t>(slot))(address);
+}
+
+}  // namespace ui_003f5ad4
+
+// Direct call declarations.  Addresses follow config/functions.csv.
+namespace ui_003f5ad4_calls {
+
+// 0x002C6C10: unsigned divmod; returns the quotient in r0 and the remainder in
+// r1.  Only r0 is observed at this call site.
+extern "C" u32 ui_func_002c6c10(u32 dividend, u32 divisor);
+
+// 0x00360270: width helper; mode 2 doubles the input, splits the shifted value
+// into a 4-bit remainder and the upper bits, and returns
+// 14*(shifted>>4) + (remainder >= 2 ? remainder - 2 : 0).
+extern "C" u32 func_00360270(u32 value, u32 mode, u32 rate);
+
+// 0x002BD9EC: copies 6 bytes (u32 at +0, u16 at +4) and returns through lr.
+extern "C" void script_vm_func_002bd9ec(void* destination, const void* source);
+
+// 0x0036014C: nibble-stream filter.  It reads the three descriptor halfwords at
+// state+0/+2/+4, writes `count` halfwords to output, and rewrites the
+// descriptor.  The exact filter is outside this span, so only its ABI is
+// declared here.
+extern "C" void func_0036014c(void* destination, void* output,
+                              const void* row_record, void* state, u32 count);
+
+}  // namespace ui_003f5ad4_calls
+
+extern "C" u32 ui_func_003f5ad4(void* object_pointer, void* row_array,
+                                u32 total) {
+    using namespace ui_003f5ad4;
+    using namespace ui_003f5ad4_calls;
+
+    const u32 object = reinterpret_cast<u32>(object_pointer);
+    const u32 row_count = load_u32(object + kRowCount18);
+    store_u32(object + kOutputValid8, 0);
+
+    // 0x003F5AF0..0x003F5B00: unsigned divmod, quotient only.
+    const u32 row_stride = ui_func_002c6c10(total, row_count);
+
+    // 0x003F5B00..0x003F5B14: per-row width; zero exits successfully.
+    const u32 width =
+        func_00360270(row_stride - kWidthBias26, kWidthMode, kUnusedRate);
+    if (width == 0) {
+        return 1;
+    }
+
+    // 0x003F5B18..0x003F5B5C: grow the scratch buffer for multi-row decodes.
+    if (row_count > 1 && width > load_u32(object + kScratchCapacity10)) {
+        const u32 old_scratch = load_u32(object + kScratch0C);
+        if (old_scratch != 0) {
+            release_block(old_scratch);
+        }
+        store_u32(object + kScratchCapacity10, 0);
+        const u32 scratch = allocate_block(width << 1);
+        store_u32(object + kScratch0C, scratch);
+        if (scratch == 0) {
+            return 0;
+        }
+        store_u32(object + kScratchCapacity10, width);
+    }
+
+    // 0x003F5B60..0x003F5BB4: grow the transposed output buffer.
+    const u32 transposed_bytes = ((width - kNarrowLimit20) * row_count) << 1;
+    const u32 required = row_count == 1 ? (width << 1) : transposed_bytes;
+    if (load_u32(object + kOutputCapacity4) < required) {
+        const u32 old_output = load_u32(object + kOutput0);
+        if (old_output != 0) {
+            release_block(old_output);
+        }
+        store_u32(object + kOutputCapacity4, 0);
+        const u32 output = allocate_block(required);
+        store_u32(object + kOutput0, output);
+        if (output == 0) {
+            return 0;
+        }
+        store_u32(object + kOutputCapacity4, required);
+    }
+
+    store_u32(object + kOutputValid8, transposed_bytes);
+
+    // 0x003F5C28..0x003F5C54: one row decodes straight into the output buffer.
+    if (row_count == 1) {
+        const u32 row_record = reinterpret_cast<u32>(row_array);
+        u32 descriptor[2] = {0, 0};
+        script_vm_func_002bd9ec(
+            descriptor,
+            reinterpret_cast<const void*>(
+                static_cast<uintptr_t>(row_record + kRowDescriptor20)));
+        func_0036014c(
+            reinterpret_cast<void*>(
+                static_cast<uintptr_t>(row_record + kRowData26)),
+            reinterpret_cast<void*>(
+                static_cast<uintptr_t>(load_u32(object + kOutput0))),
+            reinterpret_cast<const void*>(
+                static_cast<uintptr_t>(row_record)),
+            descriptor, width);
+        return 1;
+    }
+
+    // 0x003F5BC4..0x003F5BD4: zero rows still succeed; only +0x08 was written.
+    if (row_count == 0) {
+        return 1;
+    }
+
+    // 0x003F5BD8..0x003F5C98: decode each row, then transpose the tail.
+    const s32 transposable = static_cast<s32>(width - kNarrowLimit20);
+    const u32 output_stride = row_count << 1;
+    u32 row_record = reinterpret_cast<u32>(row_array);
+    for (u32 row = 0; row < row_count; ++row) {
+        u32 descriptor[2] = {0, 0};
+        script_vm_func_002bd9ec(
+            descriptor,
+            reinterpret_cast<const void*>(
+                static_cast<uintptr_t>(row_record + kRowDescriptor20)));
+        func_0036014c(
+            reinterpret_cast<void*>(
+                static_cast<uintptr_t>(row_record + kRowData26)),
+            reinterpret_cast<void*>(
+                static_cast<uintptr_t>(load_u32(object + kScratch0C))),
+            reinterpret_cast<const void*>(
+                static_cast<uintptr_t>(row_record)),
+            descriptor, width);
+
+        if (transposable > 0) {
+            const u32 scratch = load_u32(object + kScratch0C);
+            const u32 output = load_u32(object + kOutput0);
+            const u32 halfwords = width - kNarrowLimit20;
+            u32 source = scratch + kTransposeSource20;
+            u32 destination = output + (row << 1);
+            for (u32 index = 0; index < halfwords; ++index) {
+                store_u16(destination, load_u16(source));
+                source += 2;
+                destination += output_stride;
+            }
+        }
+        row_record += row_stride;
+    }
+    return 1;
 }
 
 // DECOMP_FUNC(0x0037c808, 476)

@@ -10840,7 +10840,7 @@ address,size,status,category,name,src_file
 0x003f5a68,12,matching,unknown,func_003f5a68,src/engine/leaf_matching.cpp
 0x003f5a74,80,matching,unknown,func_003f5a74,src/engine/leaf_batch32_a.cpp
 0x003f5ac4,16,matching,unknown,func_003f5ac4,src/engine/leaf_batch37_a.cpp
-0x003f5ad4,472,matching,ui,ui_func_003f5ad4,src/engine/leaf_batch41_c.cpp
+0x003f5ad4,472,non_matching,ui,ui_func_003f5ad4,src/engine/leaf_batch41_c.cpp
 0x003f5cac,284,matching,engine,engine_func_003f5cac,src/engine/leaf_batch41_a.cpp
 0x003f5dc8,24,non_matching,unknown,func_003f5dc8,src/engine/leaf_batch31_b.cpp
 0x003f5de0,40,matching,unknown,func_003f5de0,src/engine/leaf_batch12_b.cpp
