@@ -1470,7 +1470,7 @@ address,size,status,category,name,src_file
 0x001597f8,360,matching,engine,engine_func_001597f8,src/engine/leaf_batch41_a.cpp
 0x00159960,88,matching,unknown,func_00159960,src/engine/leaf_batch29_a.cpp
 0x001599b8,140,matching,unknown,func_001599b8,src/engine/leaf_batch29_a.cpp
-0x00159a44,896,matching,engine,engine_func_00159a44,src/engine/leaf_batch45_b.cpp
+0x00159a44,896,non_matching,engine,engine_func_00159a44,src/engine/leaf_batch45_b.cpp
 0x00159dc4,288,matching,engine,engine_func_00159dc4,src/engine/leaf_batch30_a.cpp
 0x00159ee4,92,matching,unknown,func_00159ee4,src/engine/leaf_batch25_a.cpp
 0x00159f40,260,matching,battle,battle_func_00159f40,src/engine/leaf_batch43_c.cpp

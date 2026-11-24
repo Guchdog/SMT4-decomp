@@ -9345,123 +9345,249 @@ extern "C" void script_vm_func_002668dc() {
     }
 }
 
+// ---------------------------------------------------------------------------
+namespace engine_159a44_calls {
+// 0x002B9CF8 (1908 B): single-precision powf(base, exponent).  base arrives in
+// s0, exponent in s1, and the result returns in s0.
+extern "C" f32 camp_func_002b9cf8(f32 base, f32 exponent);
+// 0x002C3B48 (64 B): zero-fill of `size` bytes starting at `dst`.
+extern "C" void engine_func_002c3b48(void* dst, u32 size);
+// 0x002A4DB4 (60 B): forwards the (base, size) buffer pair to the resource path.
+extern "C" void func_002a4db4(void* base, u32 size);
+// 0x002BB7B0 (12 B): returns the object stored at the global 0x004E6F08.
+extern "C" u32 engine_func_002bb7b0();
+// 0x00156208 (260 B): submits a draw batch; r1 is the +0x0D mode selector and
+// r2 points at the 0x34-byte frame built below.
+extern "C" u32 func_00156208(u32 context, s32 mode, void* frame);
+}  // namespace engine_159a44_calls
+
 // DECOMP_FUNC(0x00159a44, 896)
-extern "C" __attribute__((naked)) void engine_func_00159a44() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4ff0, 0xe92d, 0x5000, 0xe1a0\n"
-        ".hword 0x4001, 0xe1a0, 0x8b04, 0xed2d\n"
-        ".hword 0xd034, 0xe24d, 0x00dd, 0xe1d0\n"
-        ".hword 0x0000, 0xe350, 0x0001, 0x1350\n"
-        ".hword 0x0021, 0x1a00, 0x0000, 0xe595\n"
-        ".hword 0x0000, 0xe350, 0x0008, 0x1595\n"
-        ".hword 0x0000, 0x1350, 0x001c, 0x0a00\n"
-        ".hword 0x0a03, 0xedd4, 0x0abf, 0xed9f\n"
-        ".hword 0x0ac0, 0xeef4, 0xfa10, 0xeef1\n"
-        ".hword 0x0017, 0x3a00, 0x0a90, 0xee10\n"
-        ".hword 0x05fe, 0xe350, 0x0014, 0xca00\n"
-        ".hword 0x0a04, 0xedd4, 0x0ac0, 0xeef4\n"
-        ".hword 0xfa10, 0xeef1, 0x0010, 0x3a00\n"
-        ".hword 0x0a90, 0xee10, 0x05fe, 0xe350\n"
-        ".hword 0x000d, 0xca00, 0x0a06, 0xedd4\n"
-        ".hword 0x0ac0, 0xeef4, 0xfa10, 0xeef1\n"
-        ".hword 0x0009, 0x3a00, 0x0a90, 0xee10\n"
-        ".hword 0x05fe, 0xe350, 0x0006, 0xca00\n"
-        ".hword 0x0a07, 0xedd4, 0x0ac0, 0xeef4\n"
-        ".hword 0xfa10, 0xeef1, 0x0002, 0x3a00\n"
-        ".hword 0x0a90, 0xee10, 0x05fe, 0xe350\n"
-        ".hword 0x0003, 0xda00, 0xd034, 0xe28d\n"
-        ".hword 0x0000, 0xe3a0, 0x8b04, 0xecbd\n"
-        ".hword 0x8ff0, 0xe8bd, 0x1000, 0xe594\n"
-        ".hword 0x2ffa, 0xe3a0, 0x0278, 0xe59f\n"
-        ".hword 0x0a9e, 0xeddf, 0x0291, 0xe001\n"
-        ".hword 0x9aa0, 0xed9f, 0x9aa0, 0xeddf\n"
-        ".hword 0x8aa0, 0xed9f, 0x2190, 0xe081\n"
-        ".hword 0x2ffa, 0xe3a0, 0x6000, 0xe3a0\n"
-        ".hword 0xb00d, 0xe1a0, 0xa621, 0xe1a0\n"
-        ".hword 0x1008, 0xe594, 0x0001, 0xe35a\n"
-        ".hword 0xa001, 0xb3a0, 0xa1bc, 0xe1cd\n"
-        ".hword 0x0291, 0xe001, 0x1190, 0xe080\n"
-        ".hword 0x9620, 0xe1a0, 0x0001, 0xe359\n"
-        ".hword 0x9001, 0xb3a0, 0x0002, 0xe3a0\n"
-        ".hword 0x91be, 0xe1cd, 0x00b6, 0xe1cd\n"
-        ".hword 0x0004, 0xe594, 0x7014, 0xe594\n"
-        ".hword 0x0a10, 0xee00, 0x0000, 0xe357\n"
-        ".hword 0x7214, 0x059f, 0x0214, 0xe59f\n"
-        ".hword 0x0a40, 0xeeb8, 0x1000, 0xe597\n"
-        ".hword 0x2190, 0xe081, 0x0a20, 0xee20\n"
-        ".hword 0x13a1, 0xe1a0, 0x12b0, 0xe1cd\n"
-        ".hword 0x1004, 0xe597, 0x0a7e, 0xeddf\n"
-        ".hword 0x1190, 0xe080, 0x8a20, 0xee60\n"
-        ".hword 0x03a0, 0xe1a0, 0x02b2, 0xe1cd\n"
-        ".hword 0x8086, 0xe08b, 0x02f0, 0xe1d8\n"
-        ".hword 0x0100, 0xe080, 0x0280, 0xe1a0\n"
-        ".hword 0x0a10, 0xee00, 0x0ac0, 0xeeb8\n"
-        ".hword 0x0a09, 0xee20, 0x0a28, 0xeec0\n"
-        ".hword 0x0a69, 0xeeb0, 0x8048, 0xeb05\n"
-        ".hword 0x0a08, 0xee20, 0x6001, 0xe286\n"
-        ".hword 0x0002, 0xe356, 0x0ac0, 0xeebd\n"
-        ".hword 0x0a10, 0xee10, 0x02bc, 0xe1c8\n"
-        ".hword 0xffee, 0xbaff, 0x0a06, 0xed94\n"
-        ".hword 0x1198, 0xe59f, 0x21a8, 0xe59f\n"
-        ".hword 0x0a08, 0xee20, 0x0a6a, 0xeddf\n"
-        ".hword 0x0ac0, 0xeebc, 0x0a10, 0xee10\n"
-        ".hword 0x02b6, 0xe1cd, 0x0a07, 0xed94\n"
-        ".hword 0x0a08, 0xee20, 0x0ac0, 0xeebc\n"
-        ".hword 0x0a10, 0xee10, 0x02b8, 0xe1cd\n"
-        ".hword 0x0a03, 0xed94, 0x0a08, 0xee20\n"
-        ".hword 0x0ac0, 0xeebc, 0x0a10, 0xee10\n"
-        ".hword 0x02ba, 0xe1cd, 0x0008, 0xe597\n"
-        ".hword 0x1091, 0xe080, 0x03a0, 0xe1a0\n"
-        ".hword 0x02b4, 0xe1cd, 0x0a04, 0xed94\n"
-        ".hword 0x0a10, 0xee10, 0x0002, 0xe150\n"
-        ".hword 0x0020, 0xe5d4, 0x0a53, 0xcd9f\n"
-        ".hword 0x0001, 0xe350, 0x0ac0, 0x1e70\n"
-        ".hword 0x0052, 0x0a00, 0x1a08, 0xee20\n"
-        ".hword 0x010a, 0xe08a, 0x3004, 0xe3a0\n"
-        ".hword 0x1400, 0xe1a0, 0x30b0, 0xe1cd\n"
-        ".hword 0x0a88, 0xee60, 0x0ae0, 0xeebd\n"
-        ".hword 0x0ac1, 0xeefd, 0x2a10, 0xee10\n"
-        ".hword 0x0a90, 0xee10, 0x23b0, 0xe1cd\n"
-        ".hword 0x03b2, 0xe1cd, 0x0000, 0xe595\n"
-        ".hword 0x2303, 0xe280, 0x2822, 0xe1a0\n"
-        ".hword 0x2800, 0xe182, 0x2008, 0xe58d\n"
-        ".hword 0x2008, 0xe595, 0x0001, 0xe152\n"
-        ".hword 0x0021, 0x3a00, 0x2001, 0xe080\n"
-        ".hword 0x3303, 0xe282, 0xc109, 0xe089\n"
-        ".hword 0x3823, 0xe1a0, 0x2802, 0xe183\n"
-        ".hword 0x200c, 0xe58d, 0x2008, 0xe595\n"
-        ".hword 0x140c, 0xe081, 0x0001, 0xe152\n"
-        ".hword 0x0017, 0x3a00, 0x2001, 0xe080\n"
-        ".hword 0x3303, 0xe282, 0x3823, 0xe1a0\n"
-        ".hword 0x2802, 0xe183, 0x2010, 0xe58d\n"
-        ".hword 0x22f0, 0xe1dd, 0x2102, 0xe082\n"
-        ".hword 0x1402, 0xe081, 0x2001, 0xe080\n"
-        ".hword 0x3303, 0xe282, 0x3823, 0xe1a0\n"
-        ".hword 0x2802, 0xe183, 0x32f2, 0xe1dd\n"
-        ".hword 0x2014, 0xe58d, 0x2008, 0xe595\n"
-        ".hword 0x3103, 0xe083, 0x1403, 0xe081\n"
-        ".hword 0x0001, 0xe152, 0x0004, 0x3a00\n"
-        ".hword 0x0001, 0xe080, 0x1303, 0xe280\n"
-        ".hword 0x1821, 0xe1a0, 0x0800, 0xe181\n"
-        ".hword 0x0018, 0xe58d, 0x0006, 0xe3a0\n"
-        ".hword 0x00b0, 0xe1cd, 0x0000, 0xe595\n"
-        ".hword 0x1008, 0xe595, 0xa77c, 0xeb05\n"
-        ".hword 0x0000, 0xe595, 0x1008, 0xe595\n"
-        ".hword 0x2c14, 0xeb05, 0x40dd, 0xe1d5\n"
-        ".hword 0xf000, 0xe320, 0x8690, 0xeb05\n"
-        ".hword 0x200d, 0xe1a0, 0x1004, 0xe1a0\n"
-        ".hword 0xf123, 0xebff, 0xd034, 0xe28d\n"
-        ".hword 0x8b04, 0xecbd, 0x8ff0, 0xe8bd\n"
-        ".hword 0x0000, 0x0000, 0x3cc1, 0xd685\n"
-        ".hword 0x126f, 0x3a83, 0x3278, 0x0047\n"
-        ".hword 0xcccd, 0xcccc, 0xb000, 0x46ff\n"
-        ".hword 0x0000, 0xc040, 0x0000, 0x4120\n"
-        ".hword 0x0000, 0x4300, 0x3333, 0x3f73\n"
-        ".hword 0x3333, 0x3f73, 0x0000, 0x3f80\n"
-        ".hword 0x1a40, 0xeeb0, 0x0a40, 0xeeb1\n"
-        ".hword 0x0a60, 0xee71, 0xffa8, 0xeaff\n"
-    );
+//
+// Packet builder for a bounded draw submission.
+//
+//   r0 = self:  [0x0D] s8 mode (only 0 and 1 proceed), [0x00] buffer base,
+//               [0x08] buffer capacity in bytes.
+//   r1 = params: +0x00 u32, +0x04 u32 milliseconds, +0x08 u32,
+//                +0x0C f32, +0x10 f32, +0x14 u32 table pointer (0 -> 0x00473278),
+//                +0x18 f32, +0x1C f32, +0x20 u8 selector.
+//
+// The four f32 values at +0x0C/+0x10/+0x18/+0x1C are accepted only when the
+// original's signed bit-pattern test passes: the VCMP "below" test rejects a
+// strictly negative value (NaNs compare false and therefore continue) and the
+// signed compare against 0x3F800000 rejects bit patterns above 1.0.
+extern "C" u32 engine_func_00159a44(void* self_raw, void* params_raw) {
+    using namespace engine_159a44_calls;
+
+    const u8* const self = static_cast<const u8*>(self_raw);
+    const u8* const params = static_cast<const u8*>(params_raw);
+
+    const auto load_u32 = [](const u8* base, u32 offset) {
+        return *reinterpret_cast<const u32*>(base + offset);
+    };
+
+    const s32 mode = static_cast<s32>(static_cast<s8>(self[0x0D]));
+    if (mode != 0 && mode != 1) {
+        return 0;
+    }
+
+    const u32 buffer_base = load_u32(self, 0x00);
+    if (buffer_base == 0) {
+        return 0;
+    }
+    const u32 buffer_capacity = load_u32(self, 0x08);
+    if (buffer_capacity == 0) {
+        return 0;
+    }
+
+    // 0x159A7C..0x159AEC: four identical float field gates.
+    const auto f32_gate_passes = [](u32 bits) {
+        const f32 value = __builtin_bit_cast(f32, bits);
+        if (value < 0.0f) {
+            return false;
+        }
+        return !(static_cast<s32>(bits) > 0x3F800000);
+    };
+    if (!f32_gate_passes(load_u32(params, 0x0C)) ||
+        !f32_gate_passes(load_u32(params, 0x10)) ||
+        !f32_gate_passes(load_u32(params, 0x18)) ||
+        !f32_gate_passes(load_u32(params, 0x1C))) {
+        return 0;
+    }
+
+    // 0x159B00..0x159B60: two "x / 4888.5"-style quantisations of +0x00 and
+    // +0x08 with a signed clamp up to one, stored as 16-bit halfwords.
+    const auto quantise_1000 = [](u32 value) {
+        const u64 product =
+            static_cast<u64>(0xD6853CC1u) * static_cast<u64>(value * 1000u);
+        u32 result = static_cast<u32>(product >> 32) >> 12;
+        if (static_cast<s32>(result) < 1) {
+            result = 1;
+        }
+        return result;
+    };
+    const u32 slot_a = quantise_1000(load_u32(params, 0x00));
+    const u32 slot_b = quantise_1000(load_u32(params, 0x08));
+
+    // 0x159B64..0x159BA8: table row selection and the divide-by-160 scalers.
+    const u32 table_pointer = load_u32(params, 0x14);
+    const u8* const table = reinterpret_cast<const u8*>(
+        table_pointer != 0 ? table_pointer : 0x00473278u);
+    const auto divide_160 = [](u32 value) {
+        const u64 product = static_cast<u64>(0xCCCCCCCDu) * value;
+        return static_cast<u32>(product >> 32) >> 7;
+    };
+
+    const f32 thousandth = 0.0010000000474974513f;  // 0x3A83126F
+    const f32 scale_ceiling = 32728.0f;             // 0x46FFB000
+    const f32 exponent_factor = -3.0f;              // 0xC0400000
+    const f32 pow_base = 10.0f;                     // 0x41200000
+    const f32 result_scale = 128.0f;                // 0x43000000
+    const f32 ratio_max = 0.9499999880790710f;      // 0x3F733333
+    const f32 one = 1.0f;                           // 0x3F800000
+
+    // s17 = ((f32)+0x04 * 0.001f) * 32728.0f.
+    const f32 divisor =
+        (static_cast<f32>(load_u32(params, 0x04)) * thousandth) *
+        scale_ceiling;
+
+    // 0x34-byte packet handed to 0x00156208.
+    struct engine_159a44_frame {
+        u16 count;        // +0x00: always 6 on the shared exit path
+        u16 unknown02;    // +0x02: never written by this function
+        u16 unknown04;    // +0x04: never written by this function
+        u16 field06;      // +0x06: always 2
+        u32 encoded0;     // +0x08
+        u32 encoded1;     // +0x0C
+        u32 encoded2;     // +0x10
+        u32 encoded3;     // +0x14
+        u32 encoded4;     // +0x18
+        u16 slot_a;       // +0x1C
+        u16 slot_b;       // +0x1E
+        u16 divide0;      // +0x20
+        u16 divide1;      // +0x22
+        u16 divide2;      // +0x24
+        u16 scaled_18;    // +0x26
+        u16 scaled_1C;    // +0x28
+        u16 scaled_0C;    // +0x2A
+        u16 loop0;        // +0x2C
+        u16 loop1;        // +0x2E
+        u16 scaled_odd;   // +0x30
+        u16 scaled_even;  // +0x32
+    };
+    engine_159a44_frame frame;
+    frame.count = 6;
+    frame.field06 = 2;
+    frame.slot_a = static_cast<u16>(slot_a);
+    frame.slot_b = static_cast<u16>(slot_b);
+    frame.divide0 = static_cast<u16>(divide_160(load_u32(table, 0x00)));
+    frame.divide1 = static_cast<u16>(divide_160(load_u32(table, 0x04)));
+    frame.divide2 = static_cast<u16>(divide_160(load_u32(table, 0x08)));
+
+    // Truncating conversions with the NaN/overflow result the VFP conversion has.
+    const auto to_s32 = [](f32 value) {
+        if (value != value) {
+            return static_cast<s32>(0);
+        }
+        if (value >= 2147483648.0f) {
+            return static_cast<s32>(0x7FFFFFFFu);
+        }
+        if (value < -2147483648.0f) {
+            return static_cast<s32>(0x80000000u);
+        }
+        return static_cast<s32>(value);
+    };
+    const auto to_u32 = [](f32 value) {
+        if (value != value || value <= 0.0f) {
+            return static_cast<u32>(0);
+        }
+        if (value >= 4294967296.0f) {
+            return static_cast<u32>(0xFFFFFFFFu);
+        }
+        return static_cast<u32>(value);
+    };
+
+    // 0x159BF0..0x159C44: 0..1 fields scaled by 128 into halfwords.
+    frame.scaled_18 =
+        static_cast<u16>(to_u32(__builtin_bit_cast(f32, load_u32(params, 0x18)) *
+                               result_scale));
+    frame.scaled_1C =
+        static_cast<u16>(to_u32(__builtin_bit_cast(f32, load_u32(params, 0x1C)) *
+                               result_scale));
+    frame.scaled_0C =
+        static_cast<u16>(to_u32(__builtin_bit_cast(f32, load_u32(params, 0x0C)) *
+                               result_scale));
+
+    // 0x159BAC..0x159BEC: two pow() samples scaled into halfwords.
+    const u16 divide_values[2] = {frame.divide0, frame.divide1};
+    for (u32 index = 0; index < 2; ++index) {
+        const s16 sample = static_cast<s16>(divide_values[index]);
+        const s32 steps = sample * 5 * 32;  // (value * 5) << 5
+        const f32 numerator = static_cast<f32>(steps) * exponent_factor;
+        const f32 exponent = numerator / divisor;
+        const f32 power = camp_func_002b9cf8(pow_base, exponent);
+        const u16 scaled = static_cast<u16>(to_s32(power * result_scale));
+        if (index == 0) {
+            frame.loop0 = scaled;
+        } else {
+            frame.loop1 = scaled;
+        }
+    }
+
+    // 0x159C48..0x159DB4: +0x10 clamped to 0.95 and mirrored around 1.0 when
+    // +0x20 == 1; both values are scaled by 128.
+    const u32 ratio_bits = load_u32(params, 0x10);
+    f32 ratio = __builtin_bit_cast(f32, ratio_bits);
+    if (static_cast<s32>(ratio_bits) > 0x3F733333) {
+        ratio = ratio_max;
+    }
+    f32 complement;
+    if (params[0x20] == 1) {
+        complement = ratio - one;
+        ratio = -ratio;
+    } else {
+        complement = one - ratio;
+    }
+    frame.scaled_odd = static_cast<u16>(to_s32(complement * result_scale));
+    frame.scaled_even = static_cast<u16>(to_s32(ratio * result_scale));
+
+    // 0x159C68..0x159D3C: encoded buffer addresses for the five sub-buffers.
+    // Each address is stored as (address << 16) | ((address + 0x0C000000) >> 16).
+    const auto encode_address = [](u32 address) {
+        return ((address + 0x0C000000u) >> 16) | (address << 16);
+    };
+
+    u32 offset = slot_a * 0x500u;  // slot_a * 5 * 256
+    frame.encoded0 = encode_address(buffer_base);
+    if (buffer_capacity < offset) {
+        goto finish;
+    }
+    frame.encoded1 = encode_address(buffer_base + offset);
+    offset += slot_b * 0x500u;
+    if (buffer_capacity < offset) {
+        goto finish;
+    }
+    frame.encoded2 = encode_address(buffer_base + offset);
+    {
+        const u32 step0 =
+            static_cast<u32>(static_cast<s16>(frame.divide0)) * 5u;
+        offset += step0 << 8;
+    }
+    frame.encoded3 = encode_address(buffer_base + offset);
+    {
+        const u32 step1 =
+            static_cast<u32>(static_cast<s16>(frame.divide1)) * 5u;
+        offset += step1 << 8;
+    }
+    if (buffer_capacity < offset) {
+        goto finish;
+    }
+    frame.encoded4 = encode_address(buffer_base + offset);
+
+finish:
+    engine_func_002c3b48(reinterpret_cast<void*>(buffer_base), buffer_capacity);
+    func_002a4db4(reinterpret_cast<void*>(buffer_base), buffer_capacity);
+    const u32 context = engine_func_002bb7b0();
+    return func_00156208(context, mode, &frame);
 }
 
 // DECOMP_FUNC(0x003a604c, 900)
