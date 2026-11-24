@@ -11915,41 +11915,234 @@ extern "C" u32 ui_func_003f5ad4(void* object_pointer, void* row_array,
 }
 
 // DECOMP_FUNC(0x0037c808, 476)
-// 118 ARM instructions through unconditional pop; 4 trailing data bytes.
-extern "C" __attribute__((naked)) void ui_func_0037c808() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4ff0, 0xe1a06000, 0xe24dd024, 0xe1a04001\n"
-        ".word 0xe59f01c0, 0xe5900004, 0xe3500000, 0x0a00006b\n"
-        ".word 0xe5901000, 0xe28d2014, 0xe5913008, 0xe5961014\n"
-        ".word 0xe12fff33, 0xe3500000, 0x0a000064, 0xe5962010\n"
-        ".word 0xe3a01001, 0xe3a00b02, 0xe5842010, 0xe1d623b0\n"
-        ".word 0xe3a0b000, 0xe1c428b0, 0xe59d5014, 0xe5841040\n"
-        ".word 0xe584503c, 0xe5c41018, 0xe59d1018, 0xe3550000\n"
-        ".word 0xe584101c, 0xe5d61024, 0xe5c41020, 0xe5961028\n"
-        ".word 0xe5841024, 0xe596102c, 0xe5841028, 0xe59d101c\n"
-        ".word 0xe5840030, 0xe584102c, 0xe5840034, 0x0a00000f\n"
-        ".word 0xe2050001, 0xe3500001, 0xe3a01000, 0x03a01001\n"
-        ".word 0x0584b060, 0xe1500005, 0x2a000008, 0xe0842101\n"
-        ".word 0xe2811001, 0xe2800002, 0xe0843101, 0xe582b060\n"
-        ".word 0xe1500005, 0xe2811001, 0xe583b060, 0x3afffff6\n"
-        ".word 0xe594702c, 0xe5949024, 0xe1a01007, 0xe1a00009\n"
-        ".word 0xebfd28c4, 0xe1a08000, 0xe594a028, 0xe0000897\n"
-        ".word 0xe1a01007, 0xe0499000, 0xe24a0001, 0xebfd28bd\n"
-        ".word 0xe1a02000, 0xe5d40020, 0xe3a01040, 0xe3a03003\n"
-        ".word 0xe3500000, 0x10000297, 0x104a0000, 0x03a00b01\n"
-        ".word 0xe5840038, 0xe3a0007f, 0xe5c40044, 0xe5c41045\n"
-        ".word 0xe5c4b046, 0xe5c43047, 0xe3550000, 0xe3a00000\n"
-        ".word 0xe5c45048, 0x9a000005, 0xe1a01000, 0xe0843000\n"
-        ".word 0xe2800001, 0xe1550000, 0xe5c31049, 0x8afffff9\n"
-        ".word 0xe2860038, 0xe5869048, 0xe8800104, 0xe5962c24\n"
-        ".word 0xe3520000, 0x0a00000c, 0xe58db000, 0xe5961c28\n"
-        ".word 0xe1a0000d, 0xe12fff32, 0xe3500000, 0x0a00000b\n"
-        ".word 0xe59d0000, 0xe5860050, 0xe5960018, 0xe5900010\n"
-        ".word 0xe586005c, 0xe586b058, 0xea000002, 0xe596002c\n"
-        ".word 0xe586005c, 0xe586b058, 0xe3a00001, 0xe586b054\n"
-        ".word 0xe28dd024, 0xe8bd8ff0, 0x00473540\n"
-    );
+//
+// Recovered contract (ARM 0x0037C808..0x0037C9E0 = 118 instructions through
+// the unconditional `pop {r4,r5,r6,r7,r8,sb,sl,fp,pc}`; the word at
+// 0x0037C9E0 is the literal 0x00473540 consumed by the `ldr r0,[pc,#0x1C0]`
+// at 0x0037C818):
+//
+//   u32 ui_func_0037c808(void* object, void* target);
+//
+//   * r0 (`object`, kept in r6) is a large UI object; r1 (`target`, kept in
+//     r4) is the descriptor filled by this routine.  r2/r3 and the stack are
+//     not read.
+//   * The singleton word at 0x00473544 gates the whole routine: null returns
+//     0 immediately (r0 is that null word).
+//   * The host object's first word is a vtable; slot +8 is called as
+//     slot(host, object+0x14, &info).  Its non-zero result means `info[0..2]`
+//     were filled: `count = info[0]`, `word1 = info[1]`, `divisor = info[2]`.
+//     A zero result returns 0.
+//   * The target descriptor is then populated (fields listed below), `count`
+//     zero words are written at target+0x60, and `count` sequential byte
+//     indices (0,1,2,... truncated to 8 bits) are written at target+0x49.
+//     The same unsigned count is truncated into the byte at target+0x48.
+//   * 0x002C6C10 is the unsigned divide helper (`__aeabi_uidiv`): it returns
+//     the quotient in r0 and the remainder in r1, but this caller only reads
+//     r0 and recomputes the remainder as `source - divisor * quotient`.
+//       quotient  = div(object+0x28, divisor)
+//       remainder = object+0x28 - divisor * quotient
+//       inner_q   = div(object+0x2C - 1, divisor)
+//       span      = target[0x20] != 0 ? object+0x2C - divisor * inner_q
+//                                     : 0x400
+//     and the three results are written back to object+0x3C, object+0x48 and
+//     object+0x38 respectively.
+//   * The optional callback at object+0xC24 is called as
+//     callback(&selected, object+0xC28) with `selected` pre-cleared.  A zero
+//     result returns 0 after the target/object writes above; otherwise
+//     object+0x50 = selected and object+0x5C = [object+0x18]->0x10.
+//     Without a callback object+0x5C = object+0x2C.  Both paths clear
+//     object+0x58 and the success path clears object+0x54 and returns 1.
+//   * All arithmetic is 32-bit wrapping; the count loop and both divisions
+//     are unsigned.
+namespace ui_37c808 {
+
+// Absolute singleton slot: 0x00473540 + 4 holds the host object pointer.
+constexpr u32 kSingleton = 0x00473540;
+constexpr u32 kSingletonHost04 = 0x04;
+
+// Object (r6) fields read by this routine.
+constexpr u32 kObjectWord10 = 0x10;
+constexpr u32 kObjectByte24 = 0x24;
+constexpr u32 kObjectWord28 = 0x28;
+constexpr u32 kObjectWord2C = 0x2C;
+constexpr u32 kObjectHalf30 = 0x30;
+constexpr u32 kObjectInfoParam14 = 0x14;
+constexpr u32 kObjectLink18 = 0x18;
+constexpr u32 kObjectCallbackC24 = 0xC24;
+constexpr u32 kObjectCallbackParamC28 = 0xC28;
+
+// Object (r6) fields written by this routine.
+constexpr u32 kObjectOutInner38 = 0x38;
+constexpr u32 kObjectOutOuter3C = 0x3C;
+constexpr u32 kObjectOutRemainder48 = 0x48;
+constexpr u32 kObjectOutSelected50 = 0x50;
+constexpr u32 kObjectOutState54 = 0x54;
+constexpr u32 kObjectOutState58 = 0x58;
+constexpr u32 kObjectOutState5C = 0x5C;
+constexpr u32 kLinkWord10 = 0x10;
+
+// Target (r4) descriptor fields.
+constexpr u32 kTargetWord10 = 0x10;
+constexpr u32 kTargetByte18 = 0x18;
+constexpr u32 kTargetWord1C = 0x1C;
+constexpr u32 kTargetByte20 = 0x20;
+constexpr u32 kTargetWord24 = 0x24;
+constexpr u32 kTargetWord28 = 0x28;
+constexpr u32 kTargetWord2C = 0x2C;
+constexpr u32 kTargetWord30 = 0x30;
+constexpr u32 kTargetWord34 = 0x34;
+constexpr u32 kTargetWord38 = 0x38;
+constexpr u32 kTargetWord3C = 0x3C;
+constexpr u32 kTargetWord40 = 0x40;
+constexpr u32 kTargetByte44 = 0x44;
+constexpr u32 kTargetByte45 = 0x45;
+constexpr u32 kTargetByte46 = 0x46;
+constexpr u32 kTargetByte47 = 0x47;
+constexpr u32 kTargetByte48 = 0x48;
+constexpr u32 kTargetIndices49 = 0x49;
+constexpr u32 kTargetEntries60 = 0x60;
+constexpr u32 kTargetHalf80 = 0x80;
+
+constexpr u32 kDefaultSpan = 0x400;
+constexpr u32 kBufferWord = 0x800;
+constexpr u32 kOne = 1;
+
+__attribute__((always_inline)) inline u8 load_u8(u32 address) {
+    return *reinterpret_cast<const volatile u8*>(
+        static_cast<uintptr_t>(address));
+}
+
+__attribute__((always_inline)) inline u16 load_u16(u32 address) {
+    return *reinterpret_cast<const volatile u16*>(
+        static_cast<uintptr_t>(address));
+}
+
+__attribute__((always_inline)) inline u32 load_u32(u32 address) {
+    return *reinterpret_cast<const volatile u32*>(
+        static_cast<uintptr_t>(address));
+}
+
+__attribute__((always_inline)) inline void store_u8(u32 address, u8 value) {
+    *reinterpret_cast<volatile u8*>(static_cast<uintptr_t>(address)) = value;
+}
+
+__attribute__((always_inline)) inline void store_u16(u32 address, u16 value) {
+    *reinterpret_cast<volatile u16*>(static_cast<uintptr_t>(address)) = value;
+}
+
+__attribute__((always_inline)) inline void store_u32(u32 address, u32 value) {
+    *reinterpret_cast<volatile u32*>(static_cast<uintptr_t>(address)) = value;
+}
+
+}  // namespace ui_37c808
+
+// Direct call declaration.  Addresses follow config/functions.csv.
+namespace ui_37c808_calls {
+
+// 0x002C6C10: unsigned divide entry (__aeabi_uidiv).  Returns the quotient in
+// r0 and the remainder in r1; this caller observes only the quotient.
+extern "C" u32 ui_func_002c6c10(u32 numerator, u32 denominator);
+
+}  // namespace ui_37c808_calls
+
+extern "C" u32 ui_func_0037c808(void* object_pointer, void* target_pointer) {
+    using namespace ui_37c808;
+    using namespace ui_37c808_calls;
+
+    const u32 object = reinterpret_cast<u32>(object_pointer);
+    const u32 target = reinterpret_cast<u32>(target_pointer);
+
+    // 0x0037C818..0x0037C824: singleton host slot gate.
+    const u32 host = load_u32(kSingleton + kSingletonHost04);
+    if (host == 0) {
+        return 0;
+    }
+
+    // 0x0037C828..0x0037C840: vtable query into the 16-byte info block.
+    u32 info[4];
+    using InfoQuery = u32 (*)(u32, u32, u32*);
+    const u32 vtable = load_u32(host);
+    const u32 query = load_u32(vtable + 8);
+    if (reinterpret_cast<InfoQuery>(static_cast<uintptr_t>(query))(
+            host, load_u32(object + kObjectInfoParam14), info) == 0) {
+        return 0;
+    }
+
+    // 0x0037C844..0x0037C8A0: copy object fields into the target descriptor.
+    const u32 count = info[0];
+    store_u32(target + kTargetWord10, load_u32(object + kObjectWord10));
+    store_u16(target + kTargetHalf80, load_u16(object + kObjectHalf30));
+    store_u32(target + kTargetWord40, kOne);
+    store_u32(target + kTargetWord3C, count);
+    store_u8(target + kTargetByte18, static_cast<u8>(kOne));
+    store_u32(target + kTargetWord1C, info[1]);
+    store_u8(target + kTargetByte20, load_u8(object + kObjectByte24));
+    store_u32(target + kTargetWord24, load_u32(object + kObjectWord28));
+    store_u32(target + kTargetWord28, load_u32(object + kObjectWord2C));
+    store_u32(target + kTargetWord2C, info[2]);
+    store_u32(target + kTargetWord30, kBufferWord);
+    store_u32(target + kTargetWord34, kBufferWord);
+
+    // 0x0037C8A4..0x0037C8E4: clear `count` words at target+0x60.  The
+    // `bhs`/`blo` pair makes the bound unsigned; the count is not capped.
+    for (u32 index = 0; index < count; ++index) {
+        store_u32(target + kTargetEntries60 + index * sizeof(u32), 0);
+    }
+
+    // 0x0037C8E8..0x0037C938: unsigned divisions and span selection.
+    const u32 divisor = load_u32(target + kTargetWord2C);
+    const u32 source = load_u32(target + kTargetWord24);
+    const u32 inner = load_u32(target + kTargetWord28);
+
+    const u32 quotient = ui_func_002c6c10(source, divisor);
+    const u32 remainder = source - divisor * quotient;
+    const u32 inner_quotient = ui_func_002c6c10(inner - 1, divisor);
+
+    const u32 span = load_u8(target + kTargetByte20) != 0
+                         ? inner - divisor * inner_quotient
+                         : kDefaultSpan;
+
+    // 0x0037C938..0x0037C958: trailing descriptor words.
+    store_u32(target + kTargetWord38, span);
+    store_u8(target + kTargetByte44, 0x7F);
+    store_u8(target + kTargetByte45, 0x40);
+    store_u8(target + kTargetByte46, 0x00);
+    store_u8(target + kTargetByte47, 0x03);
+    store_u8(target + kTargetByte48, static_cast<u8>(count));
+
+    // 0x0037C950..0x0037C974: sequential byte indices at target+0x49, exactly
+    // `count` of them (`bhi` after the unsigned increment).  Values truncate to
+    // a byte, so a count above 256 repeats the low byte.
+    for (u32 index = 0; index < count; ++index) {
+        store_u8(target + kTargetIndices49 + index, static_cast<u8>(index));
+    }
+
+    // 0x0037C978..0x0037C980: object bookkeeping (`stm` = 0x38 then 0x3C).
+    store_u32(object + kObjectOutRemainder48, remainder);
+    store_u32(object + kObjectOutInner38, inner_quotient);
+    store_u32(object + kObjectOutOuter3C, quotient);
+
+    // 0x0037C984..0x0037C9D4: optional selection callback.
+    const u32 callback = load_u32(object + kObjectCallbackC24);
+    if (callback == 0) {
+        store_u32(object + kObjectOutState5C, load_u32(object + kObjectWord2C));
+        store_u32(object + kObjectOutState58, 0);
+    } else {
+        u32 selected = 0;
+        using Callback = u32 (*)(u32*, u32);
+        if (reinterpret_cast<Callback>(static_cast<uintptr_t>(callback))(
+                &selected,
+                load_u32(object + kObjectCallbackParamC28)) == 0) {
+            return 0;
+        }
+        store_u32(object + kObjectOutSelected50, selected);
+        store_u32(object + kObjectOutState5C,
+                  load_u32(load_u32(object + kObjectLink18) + kLinkWord10));
+        store_u32(object + kObjectOutState58, 0);
+    }
+
+    store_u32(object + kObjectOutState54, 0);
+    return 1;
 }
 
 // DECOMP_FUNC(0x003a0bb8, 476)

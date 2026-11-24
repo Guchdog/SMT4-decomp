@@ -8912,7 +8912,7 @@ address,size,status,category,name,src_file
 0x0037c490,20,matching,unknown,func_0037c490,src/engine/leaf_batch37_a.cpp
 0x0037c4a4,68,matching,unknown,func_0037c4a4,src/engine/leaf_batch21_c.cpp
 0x0037c4e8,800,non_matching,ui,ui_func_0037c4e8,src/engine/leaf_batch45_a.cpp
-0x0037c808,476,matching,ui,ui_func_0037c808,src/engine/leaf_batch41_c.cpp
+0x0037c808,476,non_matching,ui,ui_func_0037c808,src/engine/leaf_batch41_c.cpp
 0x0037c9e4,152,matching,engine,engine_func_0037c9e4,src/engine/leaf_batch33_a.cpp
 0x0037ca7c,232,matching,unknown,func_0037ca7c,src/engine/leaf_batch34_a.cpp
 0x0037cb64,148,matching,unknown,func_0037cb64,src/engine/leaf_batch42_a.cpp
