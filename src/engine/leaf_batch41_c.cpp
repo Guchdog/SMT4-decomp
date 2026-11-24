@@ -13406,43 +13406,184 @@ extern "C" u32 engine_func_0013a458(void* state_ptr, f32 value) {
     return func_002a86e4(kEngineBase, value * state->value_08);
 }
 
+// ---------------------------------------------------------------------------
+// 0x0029CCF8 -- status-menu model teardown and status-widget reset.
+//
+// The pinned block reads the status work pointer from g_StatusManager
+// (0x0044E140, work pointer at +0x04) without a null check, so the work area
+// must be live on entry.  Recovered control flow:
+//   * work+0x12DC (u32) == 3: return immediately with r0 = 3, no effects.
+//   * work+0x1E67 (u8, sub-menu state) == 3 or 9: tear down the menu model.
+//       - 0x002A0DD4() returns (*g_ViewWork)->subobject (+0x194).  When it is
+//         nonzero, work+0x1E80 must also be nonzero; the 12-byte record
+//         { u32 work+0x1E84, f32 work+0x1E88 + 1000.0f, f32 work+0x1E8C } is
+//         passed to 0x0029411C(work+0x1E80, &record) and 0x0029BC1C(1) is
+//         called.  Otherwise the same work+0x1E80 is cleaned by 0x00288990,
+//         0x002B8ADC() gates 0x002A7604(0), and manager byte +0x02 gates the
+//         model's vtable slot 1 call (model[0] -> vtable[1], r0 = model).
+//       - A path-specific null model skips the shared disposal below, exactly
+//         like the original branches to 0x0029CDE4.
+//       - Shared: reload work+0x1E80 and, when nonzero, call 0x00288948.
+//   * Always: reset 8 named widgets through 0x002BDAC0/0x002BF030, reset 10
+//     pairs of stride-0x8C list widgets, then reload g_StatusManager::work and
+//     write work+0x10 = 0 and work+0x12DC = 2.  The reload is observable:
+//     helpers may retarget the manager's work pointer.
+//   * r0 is 2 on every path after the reset; the state-3 path returns 3.
+//
+// The two NOPs after 0x00288990 (0x0029CD98/0x0029CD9C) have no effect.
+// Callers in this tree declare the function void; the raw r0 result is kept
+// here because it is the machine-visible contract on the early path.
+// ---------------------------------------------------------------------------
+namespace leaf_0029ccf8 {
+
+constexpr u32 kStatusManager = 0x0044E140u;  // smt4::ui::g_StatusManager
+constexpr u32 kWorkPointer   = 0x04u;        // StatusManager::work
+
+struct StatusManagerHead {
+    u8 ref_count;   // +0x00 (existing StatusManager::ref_count)
+    u8 pad_01;      // +0x01
+    u8 flag_02;     // +0x02: tested before the model's vtable slot 1 call
+    u8 pad_03;      // +0x03
+    u8* work;       // +0x04: status work area
+};
+static_assert(offsetof(StatusManagerHead, flag_02) == 0x02);
+static_assert(offsetof(StatusManagerHead, work) == 0x04);
+
+// 12-byte stack record handed to 0x0029411C.
+struct MenuModelParams {
+    u32 field_1e84;  // work+0x1E84 word; interpretation not established
+    f32 value_1e88;  // work+0x1E88 float, lifted by 1000.0f
+    f32 value_1e8c;  // work+0x1E8C float
+};
+static_assert(sizeof(MenuModelParams) == 12);
+
+constexpr f32 kSubobjectLift = 1000.0f;  // literal 0x447A0000 at 0x0029CED8
+
+constexpr u32 kStateOffset   = 0x12DCu;  // menu state word
+constexpr u32 kSubMenuState  = 0x1E67u;  // sub-menu state byte
+constexpr u32 kModelOffset   = 0x1E80u;  // menu model / entity pointer
+constexpr u32 kParamsOffset  = 0x1E84u;  // start of MenuModelParams source
+
+// Ten stride-0x8C list slots each owning two resettable widgets.
+constexpr u32 kListStride = 0x8Cu;       // 140 bytes
+constexpr u32 kListFirst  = 0x07ECu;
+constexpr u32 kListSecond = 0x0D64u;
+constexpr s32 kListCount  = 10;          // `cmp r4, #0xa; blt`
+
+}  // namespace leaf_0029ccf8
+
+// Direct calls made by script_vm_func_0029ccf8.  The first two are the small
+// view-workspace helpers whose own pinned bodies are:
+//   0x002A0DD4: return *(u32*)(*[0x00447E88] + 0x194)
+//   0x0029BC1C: *(*[0x00447E88] + 0x134) = (u8)value
+extern "C" u32 camp_func_002a0dd4(void);
+extern "C" void ui_func_0029411c(u32 model, const void* params);
+extern "C" void camp_func_0029bc1c(u32 value);
+extern "C" void ui_func_00288990(void* model);
+extern "C" s32 ui_func_002b8adc(void);
+extern "C" void script_vm_func_002a7604(s32 mode);
+extern "C" void camp_func_00288948(void* model);
+extern "C" void* camp_func_002bdac0(void* node, u32 index, u32 selector);
+extern "C" u32 camp_func_002bf030(u8* node, u32 index);
+
 // DECOMP_FUNC(0x0029ccf8, 484)
-// 117 ARM instructions through unconditional pop; 16 trailing data bytes.
-extern "C" __attribute__((naked)) void script_vm_func_0029ccf8() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d40f0, 0xe24dd00c, 0xe59f71c4, 0xe59f01c4\n"
-        ".word 0xe5975004, 0xe7900005, 0xe3500003, 0x0a00006a\n"
-        ".word 0xe59f01b4, 0xe7d00005, 0xe3500003, 0x13500009\n"
-        ".word 0x1a00002d, 0xeb001028, 0xe3500000, 0x0a000012\n"
-        ".word 0xe2851d7a, 0xe5910000, 0xe3500000, 0x0a000026\n"
-        ".word 0xe2850b07, 0xed9f1a61, 0xed900aa2, 0xe5902284\n"
-        ".word 0xedd00aa3, 0xee300a01, 0xe28d0004, 0xe58d2000\n"
-        ".word 0xec800a02, 0xe5910000, 0xe1a0100d, 0xebffdce8\n"
-        ".word 0xe3a00001, 0xebfffba6, 0xea000013, 0xe2854d7a\n"
-        ".word 0xe5940000, 0xe3500000, 0x0a000013, 0xebffaefd\n"
-        ".word 0xe320f000, 0xe320f000, 0xeb006f4d, 0xe3500000\n"
-        ".word 0x03a00000, 0x0b002a14, 0xe5d70002, 0xe3500000\n"
-        ".word 0x0a000005, 0xe5940000, 0xe3500000, 0x0a000006\n"
-        ".word 0xe5901000, 0xe5911004, 0xe12fff31, 0xe3a00d7a\n"
-        ".word 0xe7900005, 0xe3500000, 0x1bffaed8, 0xe3a02000\n"
-        ".word 0xe3a01005, 0xe2850fe3, 0xeb008332, 0xe2850b01\n"
-        ".word 0xe3a01003, 0xe2800018, 0xeb00888a, 0xe2850b01\n"
-        ".word 0xe3a01003, 0xe28000a4, 0xeb008886, 0xe3a01003\n"
-        ".word 0xe2850e53, 0xeb008883, 0xe2850b01, 0xe3a02000\n"
-        ".word 0xe3a01005, 0xe2800f6f, 0xeb008322, 0xe2850b01\n"
-        ".word 0xe3a02000, 0xe3a01005, 0xe2800f92, 0xeb00831d\n"
-        ".word 0xe2850b01, 0xe3a02000, 0xe3a01005, 0xe2800fb5\n"
-        ".word 0xeb008318, 0xe3a01003, 0xe2850e76, 0xeb008871\n"
-        ".word 0xe3a04000, 0xe3a02000, 0xe0640184, 0xe3a01005\n"
-        ".word 0xe0800100, 0xe0856100, 0xe2860b01, 0xe2800ffb\n"
-        ".word 0xeb00830c, 0xe2860b03, 0xe2800f59, 0xe3a02000\n"
-        ".word 0xe3a01005, 0xeb008307, 0xe2844001, 0xe354000a\n"
-        ".word 0xbaffffef, 0xe5971004, 0xe59f3018, 0xe3a02000\n"
-        ".word 0xe3a00002, 0xe5812010, 0xe7830001, 0xe28dd00c\n"
-        ".word 0xe8bd80f0, 0x0044e140, 0x000012dc, 0x00001e67\n"
-        ".word 0x447a0000\n"
-    );
+extern "C" u32 script_vm_func_0029ccf8(void) {
+    using namespace leaf_0029ccf8;
+
+    const auto* const manager =
+        reinterpret_cast<const StatusManagerHead*>(kStatusManager);
+    u8* const work = manager->work;
+
+    const u32 state = *reinterpret_cast<const u32*>(work + kStateOffset);
+    if (state == 3u) {
+        return 3u;
+    }
+
+    const u8 sub_menu_state = work[kSubMenuState];
+    if (sub_menu_state == 3u || sub_menu_state == 9u) {
+        bool skip_final_dispose = false;
+
+        if (camp_func_002a0dd4() != 0u) {
+            if (*reinterpret_cast<const u32*>(work + kModelOffset) == 0u) {
+                skip_final_dispose = true;
+            } else {
+                MenuModelParams params;
+                params.field_1e84 =
+                    *reinterpret_cast<const u32*>(work + kParamsOffset);
+                params.value_1e88 =
+                    *reinterpret_cast<const f32*>(work + kParamsOffset + 4u)
+                    + kSubobjectLift;
+                params.value_1e8c =
+                    *reinterpret_cast<const f32*>(work + kParamsOffset + 8u);
+                ui_func_0029411c(
+                    *reinterpret_cast<const u32*>(work + kModelOffset),
+                    &params);
+                camp_func_0029bc1c(1u);
+            }
+        } else {
+            if (*reinterpret_cast<const u32*>(work + kModelOffset) == 0u) {
+                skip_final_dispose = true;
+            } else {
+                const u32 model =
+                    *reinterpret_cast<const u32*>(work + kModelOffset);
+                ui_func_00288990(
+                    reinterpret_cast<void*>(static_cast<uintptr_t>(model)));
+
+                if (ui_func_002b8adc() == 0) {
+                    script_vm_func_002a7604(0);
+                }
+
+                if (manager->flag_02 != 0u) {
+                    const u32 live_model =
+                        *reinterpret_cast<const u32*>(work + kModelOffset);
+                    if (live_model == 0u) {
+                        skip_final_dispose = true;
+                    } else {
+                        using VirtualSlot1 = void (*)(void*);
+                        const u32* const vtable =
+                            *reinterpret_cast<const u32* const*>(
+                                static_cast<uintptr_t>(live_model));
+                        const VirtualSlot1 slot1 =
+                            reinterpret_cast<VirtualSlot1>(vtable[1]);
+                        slot1(reinterpret_cast<void*>(
+                            static_cast<uintptr_t>(live_model)));
+                    }
+                }
+            }
+        }
+
+        if (!skip_final_dispose) {
+            const u32 model =
+                *reinterpret_cast<const u32*>(work + kModelOffset);
+            if (model != 0u) {
+                camp_func_00288948(
+                    reinterpret_cast<void*>(static_cast<uintptr_t>(model)));
+            }
+        }
+    }
+
+    camp_func_002bdac0(work + 0x038Cu, 5u, 0u);
+    camp_func_002bf030(work + 0x0418u, 3u);
+    camp_func_002bf030(work + 0x04A4u, 3u);
+    camp_func_002bf030(work + 0x0530u, 3u);
+    camp_func_002bdac0(work + 0x05BCu, 5u, 0u);
+    camp_func_002bdac0(work + 0x0648u, 5u, 0u);
+    camp_func_002bdac0(work + 0x06D4u, 5u, 0u);
+    camp_func_002bf030(work + 0x0760u, 3u);
+
+    for (s32 index = 0; index < kListCount; ++index) {
+        u8* const slot = work + static_cast<u32>(index) * kListStride;
+        camp_func_002bdac0(slot + kListFirst, 5u, 0u);
+        camp_func_002bdac0(slot + kListSecond, 5u, 0u);
+    }
+
+    // The original reloads the manager work pointer here (0x0029CEAC); the
+    // reset helpers are allowed to have retargeted it.
+    u8* const final_work =
+        *reinterpret_cast<u8* const*>(kStatusManager + kWorkPointer);
+    *reinterpret_cast<u32*>(final_work + 0x10u) = 0u;
+    *reinterpret_cast<u32*>(final_work + kStateOffset) = 2u;
+    return 2u;
 }
 
 // DECOMP_FUNC(0x002b5820, 484)
