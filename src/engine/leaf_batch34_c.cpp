@@ -7342,249 +7342,238 @@ extern "C" void camp_func_001ce19c(u8* work) {
     }
 }
 
+// Direct helpers called by 0x001D1728.  The untyped declarations at the top of
+// this translation unit cannot describe their arguments or return values, so
+// the typed views below keep the original external symbol names.
+extern "C" u8* camp_save_header_002a8a08(void)
+    __asm__("camp_func_002a8a08");                      // 0x002A8A08
+extern "C" s32 camp_save_entry_count_002a8a1c(void)
+    __asm__("camp_func_002a8a1c");                      // 0x002A8A1C
+extern "C" u8* camp_save_entry_002a89e4(s32 index)
+    __asm__("camp_func_002a89e4");                      // 0x002A89E4
+extern "C" u8* camp_unit_record_002b0824(u32 id)
+    __asm__("camp_func_002b0824");                      // 0x002B0824
+extern "C" void camp_unite_clear_00269e28(u8* work)
+    __asm__("camp_func_00269e28");                      // 0x00269E28
+// Rewrites the 64-bit unite descriptor at `descriptor` from the two records
+// and returns non-zero when the pair is accepted.
+extern "C" u32 camp_unite_pair_002626f0(u8* work, const u8* first,
+                                        const u8* second, u8* descriptor)
+    __asm__("camp_func_002626f0");                      // 0x002626F0
+extern "C" void camp_unite_seed_0029df14(u16 unite_id, u8* dst)
+    __asm__("camp_func_0029df14");                      // 0x0029DF14
+extern "C" void camp_unite_combine_0029c7c8(u8* work, const u8* first,
+                                             const u8* second, u32 mode,
+                                             u8* dst)
+    __asm__("camp_func_0029c7c8");                      // 0x0029C7C8
+extern "C" void camp_unite_init_0029b3cc(const u16* units, s32 count,
+                                         const void* descriptor,
+                                         const u16* fallback)
+    __asm__("Unite_Init");                              // 0x0029B3CC
+extern "C" s32 camp_unite_slot_count_0029cb94(void)
+    __asm__("script_vm_func_0029cb94");                 // 0x0029CB94
+extern "C" s32 camp_unite_list_contains_0029d080(const u16* list, s32 count,
+                                                 u16 value)
+    __asm__("camp_func_0029d080");                      // 0x0029D080
+extern "C" void camp_unite_finish_0029c950(u8* work)
+    __asm__("script_vm_func_0029c950");                 // 0x0029C950
+
+namespace {
+
+// Camp manager reached through the global pointer at 0x0043DCF0.
+constexpr u32 kCampManagerPointer = 0x0043DCF0;
+
+// Manager fields touched by this function.
+constexpr u32 kCampSelectedUnits = 0xB34;    // u32[2], low halfword = record id
+constexpr u32 kCampUniteDescriptor = 0xB48;  // 64-bit descriptor (written by above)
+constexpr u32 kCampUniteResult = 0xB50;      // unite result record
+constexpr u32 kCampUniteSlots = 0xB84;       // u16[8] visible unite slots
+constexpr u32 kCampPartyObject = 0x115C;     // pointer to the fusion workspace
+
+// Save-record layout (only halfwords are ever loaded here).
+constexpr u32 kCampRecordId = 0x46;          // u16
+constexpr u32 kUniteRetryRecordUnitList = 0x34;    // u16[8]
+
+constexpr u32 kCampSelectedUnitCount = 2;
+constexpr u32 kUniteRetryRecordUnitCount = 8;
+constexpr u32 kCampCollectedUnitCount = 16;  // 8 ids from each source record
+constexpr u32 kCampVisibleUnitCount = 8;     // only the first 8 ids are used
+
+// Descriptor bit fields: 15 bits each.
+constexpr u32 kCampUniteIdMask = 0x7FFFu;
+
+inline u8* CampLoadPointer(const u8* base, u32 offset) {
+    u32 value;
+    __builtin_memcpy(&value, base + offset, sizeof(value));
+    return reinterpret_cast<u8*>(static_cast<uintptr_t>(value));
+}
+
+inline u16 CampLoadU16(const u8* base, u32 offset) {
+    u16 value;
+    __builtin_memcpy(&value, base + offset, sizeof(value));
+    return value;
+}
+
+inline u32 CampLoadU32(const u8* base, u32 offset) {
+    u32 value;
+    __builtin_memcpy(&value, base + offset, sizeof(value));
+    return value;
+}
+
+inline u64 CampLoadU64(const u8* base, u32 offset) {
+    u64 value;
+    __builtin_memcpy(&value, base + offset, sizeof(value));
+    return value;
+}
+
+inline s8 CampLoadS8(const u8* base, u32 offset) {
+    s8 value;
+    __builtin_memcpy(&value, base + offset, sizeof(value));
+    return value;
+}
+
+inline void CampStoreU16(u8* base, u32 offset, u16 value) {
+    __builtin_memcpy(base + offset, &value, sizeof(value));
+}
+
+// The save-entry count is produced by an external helper; its value is
+// re-read after every mismatch exactly as in the listing.
+inline s32 CampEntryCount(void) {
+    return camp_save_entry_count_002a8a1c();
+}
+
+// The original read of a missing record lands on the platform's low vector
+// page (r0 = 0, then +0x34..).  C++ would treat that as an invalid pointer and
+// the optimizer would then prove the miss path unreachable, deleting the count
+// bound.  This register barrier preserves the raw address so the reads stay
+// observable; it does not change any value.
+inline const u8* CampPlatformPointer(const u8* pointer) {
+    uintptr_t address = reinterpret_cast<uintptr_t>(pointer);
+    __asm__ volatile("" : "+r"(address));
+    return reinterpret_cast<const u8*>(address);
+}
+
+// Resolves the save record whose id halfword equals `id`.  The active-entry
+// count and the record base are re-read exactly as in the listing: the count
+// starts the loop, the base is fetched once per probe, and the count is
+// re-checked after every mismatch.  A missing record yields a null pointer,
+// which the caller still dereferences (the original reads the vector page).
+inline u8* CampFindRecord(u32 id) {
+    s32 index = 0;
+    s32 limit = CampEntryCount();
+    while (limit > index) {
+        const u8* const base = camp_save_header_002a8a08();
+        const s8 entry = CampLoadS8(
+            base, 0x9000u + 0xF0u + static_cast<u32>(index));
+        u8* const record = camp_save_entry_002a89e4(entry);
+        if (CampLoadU16(record, kCampRecordId) == id) {
+            return record;
+        }
+        ++index;
+        limit = CampEntryCount();
+    }
+    return nullptr;
+}
+
+// Appends the non-zero id halfwords at record+0x34..+0x42.  Each field is read
+// once and stored in ascending order; zeros are skipped.
+inline u32 CampCollectUnits(const u8* record, u16* units, u32 count) {
+    const u8* const base = CampPlatformPointer(record);
+    for (u32 i = 0; i < kUniteRetryRecordUnitCount; ++i) {
+        const u16 unit = CampLoadU16(base, kUniteRetryRecordUnitList + i * 2);
+        if (unit != 0) {
+            units[count++] = unit;
+        }
+    }
+    return count;
+}
+
+} // namespace
+
 // DECOMP_FUNC(0x001d1728, 868)
-extern "C" __attribute__((naked)) void camp_func_001d1728() {
-    asm volatile(
-        "push {r4, r5, r6, r7, r8, sb, lr}\n"
-        "sub sp, sp, #0x44\n"
-        ".word 0xe59f0350\n"
-        "ldr r4, [r0]\n"
-        "bl camp_func_002a8a08\n"
-        "mov r7, #0\n"
-        "mov r5, r7\n"
-        "add r6, sp, #0x30\n"
-        "str r7, [sp, #0x30]\n"
-        "str r7, [sp, #0x34]\n"
-        ".L_001d1750:\n"
-        "add r0, r4, r5, lsl #2\n"
-        "ldr r0, [r0, #0xb34]\n"
-        "uxth r0, r0\n"
-        "bl camp_func_002b0824\n"
-        "str r0, [r6, r5, lsl #2]\n"
-        "add r5, r5, #1\n"
-        "cmp r5, #2\n"
-        "blt .L_001d1750\n"
-        "ldr r0, [sp, #0x30]\n"
-        "cmp r0, #0\n"
-        "ldrne r0, [sp, #0x34]\n"
-        "cmpne r0, #0\n"
-        "beq .L_001d1a7c\n"
-        "add r5, r4, #0x1000\n"
-        "ldr r0, [r5, #0x15c]\n"
-        "bl camp_func_00269e28\n"
-        "add r0, sp, #0x30\n"
-        "add r3, r4, #0x800\n"
-        "ldm r0, {r1, r2}\n"
-        "add r3, r3, #0x348\n"
-        "ldr r0, [r5, #0x15c]\n"
-        "mov r6, r3\n"
-        "bl camp_func_002626f0\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "beq .L_001d1a7c\n"
-        "add r0, r4, #0x800\n"
-        "add r0, r0, #0x348\n"
-        "ldm r0, {r0, r1}\n"
-        "lsl r1, r1, #0xf\n"
-        "orr r0, r1, r0, lsr #17\n"
-        "add r1, r4, #0xb50\n"
-        "lsr r0, r0, #0x11\n"
-        "bl camp_func_0029df14\n"
-        "add r0, r4, #0xb50\n"
-        "str r0, [sp]\n"
-        "add r0, sp, #0x30\n"
-        "mov r3, #0\n"
-        "ldm r0, {r1, r2}\n"
-        "ldr r0, [r5, #0x15c]\n"
-        "bl camp_func_0029c7c8\n"
-        "str r7, [sp, #8]\n"
-        "str r7, [sp, #0xc]\n"
-        "str r7, [sp, #0x10]\n"
-        "str r7, [sp, #0x14]\n"
-        "str r7, [sp, #0x18]\n"
-        "str r7, [sp, #0x1c]\n"
-        "str r7, [sp, #0x20]\n"
-        "str r7, [sp, #0x24]\n"
-        "ldr r0, [r6]\n"
-        "mov r5, #0\n"
-        "mov r6, r5\n"
-        "lsl r7, r0, #0x11\n"
-        "lsr r7, r7, #0x11\n"
-        "bl camp_func_002a8a1c\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "ble .L_001d1870\n"
-        ".L_001d1838:\n"
-        "nop\n"
-        "bl camp_func_002a8a08\n"
-        "add r0, r0, r6\n"
-        "add r0, r0, #0x9000\n"
-        "ldrsb r0, [r0, #0xf0]\n"
-        "bl camp_func_002a89e4\n"
-        "ldrh r1, [r0, #0x46]\n"
-        "cmp r1, r7\n"
-        "beq .L_001d1874\n"
-        "add r6, r6, #1\n"
-        "bl camp_func_002a8a1c\n"
-        "cmp r0, r6\n"
-        "nop\n"
-        "bgt .L_001d1838\n"
-        ".L_001d1870:\n"
-        "mov r0, #0\n"
-        ".L_001d1874:\n"
-        "add sb, sp, #8\n"
-        "ldrh r1, [r0, #0x34]\n"
-        "add r2, r0, #0x32\n"
-        "cmp r1, #0\n"
-        "beq .L_001d1894\n"
-        "add r3, sb, r5, lsl #1\n"
-        "add r5, r5, #1\n"
-        "strh r1, [r3]\n"
-        ".L_001d1894:\n"
-        "add r1, r2, #2\n"
-        "ldrh r2, [r2, #4]\n"
-        "mov ip, #3\n"
-        ".L_001d18a0:\n"
-        "ldrh r3, [r1, #4]!\n"
-        "cmp r2, #0\n"
-        "beq .L_001d18b8\n"
-        "add r6, sb, r5, lsl #1\n"
-        "add r5, r5, #1\n"
-        "strh r2, [r6]\n"
-        ".L_001d18b8:\n"
-        "ldrh r2, [r1, #2]\n"
-        "cmp r3, #0\n"
-        "beq .L_001d18d0\n"
-        "add r6, sb, r5, lsl #1\n"
-        "add r5, r5, #1\n"
-        "strh r3, [r6]\n"
-        ".L_001d18d0:\n"
-        "subs ip, ip, #1\n"
-        "bne .L_001d18a0\n"
-        "ldrh r0, [r0, #0x42]\n"
-        "cmp r0, #0\n"
-        "beq .L_001d18f0\n"
-        "add r1, sb, r5, lsl #1\n"
-        "add r5, r5, #1\n"
-        "strh r0, [r1]\n"
-        ".L_001d18f0:\n"
-        "ldr r0, [r4, #0xb48]\n"
-        "mov r6, #0\n"
-        "lsl r0, r0, #2\n"
-        "lsr r7, r0, #0x11\n"
-        "bl camp_func_002a8a1c\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "ble .L_001d1948\n"
-        ".L_001d1910:\n"
-        "nop\n"
-        "bl camp_func_002a8a08\n"
-        "add r0, r0, r6\n"
-        "add r0, r0, #0x9000\n"
-        "ldrsb r0, [r0, #0xf0]\n"
-        "bl camp_func_002a89e4\n"
-        "ldrh r1, [r0, #0x46]\n"
-        "cmp r1, r7\n"
-        "beq .L_001d194c\n"
-        "add r6, r6, #1\n"
-        "bl camp_func_002a8a1c\n"
-        "cmp r0, r6\n"
-        "nop\n"
-        "bgt .L_001d1910\n"
-        ".L_001d1948:\n"
-        "mov r0, #0\n"
-        ".L_001d194c:\n"
-        "add r1, r0, #0x32\n"
-        "ldrh r2, [r0, #0x34]\n"
-        "cmp r2, #0\n"
-        "beq .L_001d1968\n"
-        "add r3, sb, r5, lsl #1\n"
-        "add r5, r5, #1\n"
-        "strh r2, [r3]\n"
-        ".L_001d1968:\n"
-        "add r1, r1, #2\n"
-        "mov r3, #3\n"
-        "ldrh r2, [r1, #2]\n"
-        ".L_001d1974:\n"
-        "ldrh ip, [r1, #4]!\n"
-        "cmp r2, #0\n"
-        "beq .L_001d198c\n"
-        "add r6, sb, r5, lsl #1\n"
-        "add r5, r5, #1\n"
-        "strh r2, [r6]\n"
-        ".L_001d198c:\n"
-        "ldrh r2, [r1, #2]\n"
-        "cmp ip, #0\n"
-        "beq .L_001d19a4\n"
-        "add r6, sb, r5, lsl #1\n"
-        "add r5, r5, #1\n"
-        "strh ip, [r6]\n"
-        ".L_001d19a4:\n"
-        "subs r3, r3, #1\n"
-        "bne .L_001d1974\n"
-        "ldrh r0, [r0, #0x42]\n"
-        "cmp r0, #0\n"
-        "beq .L_001d19c4\n"
-        "add r1, sb, r5, lsl #1\n"
-        "add r5, r5, #1\n"
-        "strh r0, [r1]\n"
-        ".L_001d19c4:\n"
-        "mov r3, #0\n"
-        "mov r2, r3\n"
-        "mov r1, r5\n"
-        "add r0, sp, #8\n"
-        "bl Unite_Init\n"
-        "add r0, r4, #0xb50\n"
-        "nop\n"
-        "bl script_vm_func_0029cb94\n"
-        "add r8, r4, #0x800\n"
-        "mov r5, r0\n"
-        "mov r6, #0\n"
-        "add r8, r8, #0x384\n"
-        ".L_001d19f4:\n"
-        "add r7, sb, r6, lsl #1\n"
-        "ldrh r2, [r7]\n"
-        "cmp r2, #0\n"
-        "beq .L_001d1a48\n"
-        "mov r1, r5\n"
-        "mov r0, r8\n"
-        "bl camp_func_0029d080\n"
-        "cmp r0, #0\n"
-        "nop\n"
-        "bne .L_001d1a48\n"
-        "cmp r5, #0\n"
-        "mov r0, #0\n"
-        "ble .L_001d1a48\n"
-        ".L_001d1a28:\n"
-        "add r1, r4, r0, lsl #1\n"
-        "add r1, r1, #0xb00\n"
-        "ldrh r1, [r1, #0x84]\n"
-        "cmp r1, #0\n"
-        "beq .L_001d1a68\n"
-        "add r0, r0, #1\n"
-        "cmp r5, r0\n"
-        "bgt .L_001d1a28\n"
-        ".L_001d1a48:\n"
-        "add r6, r6, #1\n"
-        "cmp r6, #8\n"
-        "blt .L_001d19f4\n"
-        "add r0, r4, #0xb50\n"
-        "bl script_vm_func_0029c950\n"
-        "add sp, sp, #0x44\n"
-        "mov r0, #1\n"
-        "pop {r4, r5, r6, r7, r8, sb, pc}\n"
-        ".L_001d1a68:\n"
-        "ldrh r1, [r7]\n"
-        "add r0, r4, r0, lsl #1\n"
-        "add r0, r0, #0xb00\n"
-        "strh r1, [r0, #0x84]\n"
-        "b .L_001d1a48\n"
-        ".L_001d1a7c:\n"
-        "add sp, sp, #0x44\n"
-        "mov r0, #0\n"
-        "pop {r4, r5, r6, r7, r8, sb, pc}\n"
-        ".word 0x0043dcf0\n"
-    );
+//
+// Retries the two-member unite that 0x001C5AB4/0x001C61EC trigger once two
+// party members have been selected.  The manager at 0x0043DCF0 holds the two
+// selected record ids at +0xB34/+0xB38; those ids are resolved to save records
+// and, when both exist, the fusion workspace at +0x115C is reset and the pair
+// is validated.  0x002626F0 then rebuilds the 64-bit descriptor at +0xB48:
+//   * bits  0..14  primary record id,
+//   * bits 15..29  secondary record id,
+//   * bits 34..48  unite (result) id.
+// The result record at +0xB50 is seeded from the unite id and combined from
+// both records.  The unit ids of both source records (+0x34..+0x42) are
+// collected into a 16-entry stack list, passed through Unite_Init with an empty
+// descriptor, and the first eight of them are inserted into the first
+// `0x0029CB94()` empty slots of the visible list at +0xB84.
+// Returns 1 after the list is finalised, or 0 on either early-exit path.
+extern "C" u32 camp_func_001d1728(void) {
+    u8* const manager =
+        CampLoadPointer(reinterpret_cast<const u8*>(kCampManagerPointer), 0);
+
+    // The savedata accessor is called for its refresh side effect only; the
+    // listing discards its result before the selected records are resolved.
+    static_cast<void>(camp_save_header_002a8a08());
+
+    u8* records[kCampSelectedUnitCount];
+    for (u32 i = 0; i < kCampSelectedUnitCount; ++i) {
+        const u32 raw = CampLoadU32(manager, kCampSelectedUnits + i * 4);
+        records[i] = camp_unit_record_002b0824(static_cast<u16>(raw));
+    }
+
+    if (records[0] == nullptr || records[1] == nullptr) {
+        return 0;
+    }
+
+    camp_unite_clear_00269e28(CampLoadPointer(manager, kCampPartyObject));
+    if (camp_unite_pair_002626f0(CampLoadPointer(manager, kCampPartyObject),
+                                 records[0], records[1],
+                                 manager + kCampUniteDescriptor) == 0) {
+        return 0;
+    }
+
+    const u64 descriptor = CampLoadU64(manager, kCampUniteDescriptor);
+    camp_unite_seed_0029df14(
+        static_cast<u16>((descriptor >> 34) & kCampUniteIdMask),
+        manager + kCampUniteResult);
+    camp_unite_combine_0029c7c8(CampLoadPointer(manager, kCampPartyObject),
+                                records[0], records[1], 0,
+                                manager + kCampUniteResult);
+
+    u16 units[kCampCollectedUnitCount] = {};
+
+    const u32 pair = CampLoadU32(manager, kCampUniteDescriptor);
+    u32 count = 0;
+    count = CampCollectUnits(
+        CampFindRecord(pair & kCampUniteIdMask), units, count);
+    count = CampCollectUnits(
+        CampFindRecord((pair >> 15) & kCampUniteIdMask), units, count);
+
+    camp_unite_init_0029b3cc(units, static_cast<s32>(count), nullptr, nullptr);
+
+    const s32 slot_count = camp_unite_slot_count_0029cb94();
+    u8* const slot_base = manager + kCampUniteSlots;
+    for (u32 i = 0; i < kCampVisibleUnitCount; ++i) {
+        const u16 unit = units[i];
+        if (unit == 0) {
+            continue;
+        }
+        if (camp_unite_list_contains_0029d080(
+                reinterpret_cast<const u16*>(slot_base), slot_count, unit) != 0) {
+            continue;
+        }
+        if (slot_count <= 0) {
+            continue;
+        }
+        for (s32 slot = 0; slot < slot_count; ++slot) {
+            if (CampLoadU16(slot_base, static_cast<u32>(slot) * 2) == 0) {
+                CampStoreU16(slot_base, static_cast<u32>(slot) * 2, unit);
+                break;
+            }
+        }
+    }
+
+    camp_unite_finish_0029c950(manager + kCampUniteResult);
+    return 1;
 }
 
 // DECOMP_FUNC(0x001db890, 188)
