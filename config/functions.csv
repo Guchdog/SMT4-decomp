@@ -8662,7 +8662,7 @@ address,size,status,category,name,src_file
 0x0036f378,8,matching,unknown,func_0036f378,src/engine/leaf_matching.cpp
 0x0036f380,160,matching,unknown,func_0036f380,src/engine/leaf_batch42_a.cpp
 0x0036f420,124,matching,unknown,func_0036f420,src/engine/leaf_batch37_c.cpp
-0x0036f49c,472,matching,engine,engine_func_0036f49c,src/engine/leaf_batch41_c.cpp
+0x0036f49c,472,non_matching,engine,engine_func_0036f49c,src/engine/leaf_batch41_c.cpp
 0x0036f674,680,matching,unknown,func_0036f674,src/engine/leaf_batch42_b.cpp
 0x0036f91c,116,matching,unknown,func_0036f91c,src/engine/leaf_batch33_a.cpp
 0x0036f990,16,matching,unknown,func_0036f990,src/engine/leaf_matching.cpp

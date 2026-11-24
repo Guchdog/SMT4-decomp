@@ -11437,41 +11437,242 @@ extern "C" s32 engine_func_002fb5c8(void* resource_pointer) {
 }
 
 // DECOMP_FUNC(0x0036f49c, 472)
-// 115 ARM instructions through unconditional pop; 12 trailing data bytes.
-extern "C" __attribute__((naked)) void engine_func_0036f49c() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4ff0, 0xe24dd00c, 0xe1b07000, 0x0a000003\n"
-        ".word 0xe5971000, 0xe3a02292, 0xe1d21001, 0x0a000000\n"
-        ".word 0xe3a07000, 0xe597102c, 0xe3510000, 0x1a000064\n"
-        ".word 0xe587002c, 0xe5978030, 0xe3a04000, 0xe1a09000\n"
-        ".word 0xe3a0b038, 0xe1a0a004, 0xe20400ff, 0xe08b0100\n"
-        ".word 0xe0800007, 0xe5901000, 0xe3510000, 0x10815000\n"
-        ".word 0x01a0500a, 0xe1a00008, 0xe5951018, 0xe3510000\n"
-        ".word 0x1585a01c, 0x1a00004f, 0xe3500000, 0x059f0148\n"
-        ".word 0xe5956008, 0xe1a00820, 0xe3560000, 0xe1a00800\n"
-        ".word 0x1a000005, 0xe5951004, 0xe5952000, 0xe0020291\n"
-        ".word 0xe5951014, 0xe0010192, 0xe1a061a1, 0xe59f1118\n"
-        ".word 0xe1500001, 0xe0402001, 0x0a000008, 0xaa000003\n"
-        ".word 0xe28004ff, 0xe2500801, 0x1a00003a, 0xea000021\n"
-        ".word 0xe3520801, 0x13520802, 0x0a000009, 0xea000035\n"
-        ".word 0xe5b5000c, 0xe1a01006, 0xe3500000, 0x10800005\n"
-        ".word 0x01a0000a, 0xebfd4c16, 0xe320f000, 0xe320f000\n"
-        ".word 0xea00002c, 0xe59fc0c8, 0xe2000803, 0xe58d0000\n"
-        ".word 0xe59f10b8, 0xe59cc000, 0xe1a03006, 0xe1a02009\n"
-        ".word 0xe12fff3c, 0xe58d0004, 0xe595100c, 0xe285000c\n"
-        ".word 0xe3510000, 0x10900001, 0x0a000002, 0xe59d1004\n"
-        ".word 0xe1a02006, 0xebfcdcf2, 0xe59d0004, 0xe5850018\n"
-        ".word 0xe59d0000, 0xea000016, 0xe59fc074, 0xe59f106c\n"
-        ".word 0xe1a03006, 0xe1a02009, 0xe59cc000, 0xe3a00801\n"
-        ".word 0xe12fff3c, 0xe58d0000, 0xe595100c, 0xe285000c\n"
-        ".word 0xe3510000, 0x0a000007, 0xe0911000, 0x159d0000\n"
-        ".word 0x0a000004, 0xe1a02006, 0xebfcf5bf, 0xe59d0000\n"
-        ".word 0xe1a01006, 0xebfd4bea, 0xe59d0000, 0xe5850018\n"
-        ".word 0xe3a00801, 0xe585001c, 0xe2844001, 0xe3540006\n"
-        ".word 0xbaffffa0, 0xe28dd00c, 0xe8bd8ff0, 0x02010000\n"
-        ".word 0x00000101, 0x0044e330\n"
-    );
+//
+// Recovered contract (ARM 0x0036F49C..0x0036F664 = 115 instructions through
+// the unconditional `pop {r4,r5,r6,r7,r8,sb,sl,fp,pc}`; the three words at
+// 0x0036F668..0x0036F673 are the literal pool 0x02010000, 0x00000101,
+// 0x0044E330):
+//
+//   u32 engine_func_0036f49c(void* object);
+//
+//   * r0 (`object`, kept in sb) is the container whose first word must carry
+//     the 0x20000009 tag bits.  Null objects and objects that fail the tag test
+//     are rewritten to address 0 (r7 = 0) and the rest of the routine then reads
+//     the "container" fields through low addresses 0x2C/0x30/0x38..., exactly
+//     like the original.  r1..r3 are not read; no stack arguments.
+//   * The word at container+0x2C is the initialisation guard.  When it is
+//     nonzero the routine returns immediately, leaving r0 untouched.  Otherwise
+//     the original object pointer is stored there (even on the address-0 path).
+//   * container+0x30 is read once into r8 and cached for the whole loop.  It is
+//     the texture format word; zero selects 0x02010000.  The value is truncated
+//     to its top 16 bits (`lsr #16` then `lsl #16`) before dispatch.
+//   * container+0x38 holds a table of six 32-bit relative offsets (slot
+//     address + offset; zero means "null entry").  Index is masked with 0xFF,
+//     the bound is six and the loop counter is a signed `< 6` (`blt`).
+//   * Entry fields: +0x00 and +0x04 multiply into the derived byte size,
+//     +0x08 is the explicit byte size (used when nonzero), +0x0C is a relative
+//     pointer to the source bytes, +0x14 scales the derived size (`>> 3`),
+//     +0x18 is the "already materialised" buffer and +0x1C its kind.  When
+//     +0x18 is nonzero the routine only clears +0x1C and moves on.
+//   * Format dispatch on the truncated word:
+//       - == 0x02010000: `ldr r0,[entry,#0xC]!` (pre-index writeback), resolve
+//         the relative buffer (zero -> 0) and call 0x002C25F0(buffer, size).
+//       - <  0x02010000 (signed): only 0x01010000 can reach the body: allocate
+//         0x10000 bytes through the 0x0044E330 callback, copy the relative
+//         source bytes with 0x002ACD38 when both the offset and the resolved
+//         address are nonzero, call 0x002C25F0(buffer, size), store the buffer
+//         at +0x18 and 0x10000 at +0x1C.  Other values continue the loop with
+//         r0 holding the `format - 0x01010000` subtraction result.
+//       - >= 0x02010000 (signed): when `format - 0x02010000` is 0x10000 or
+//         0x20000 (truncated formats 0x02020000/0x02030000) allocate
+//         `format & 0x30000` bytes through the callback, enqueue (source,
+//         buffer, size) with 0x002A69B0 when the relative source offset is
+//         nonzero and the resolved address does not wrap to zero, store the
+//         buffer at +0x18 and `format & 0x30000` at +0x1C.  All other values
+//         continue with r0 = truncated format.
+//   * The callback at 0x0044E330 is called as
+//     callback(size, 0x101, object, byte_size); its result is the new buffer.
+//     The slot is the same word block_133568.cpp names g_TextureAllocCallback,
+//     but this call site's exact allocator contract is not recovered here.
+//   * No direct caller exists in code.bin, so the leftover r0 is not consumed.
+//     The reconstruction returns it to keep the differential register
+//     comparison exact: it is the dead ABI register, not a semantic result.
+namespace engine_0036f49c {
+
+constexpr u32 kObjectTypeMask = 0x20000009;
+constexpr u32 kInitGuard2C = 0x2C;
+constexpr u32 kFormatWord30 = 0x30;
+constexpr u32 kSlotTable38 = 0x38;
+constexpr u32 kSlotCount = 6;
+
+constexpr u32 kEntryWord00 = 0x00;   // u32, derived-size factor
+constexpr u32 kEntryWord04 = 0x04;   // u32, derived-size factor
+constexpr u32 kEntrySize08 = 0x08;   // u32, explicit byte size
+constexpr u32 kEntryData0C = 0x0C;   // relative u32 source pointer
+constexpr u32 kEntryScale14 = 0x14;  // u32, derived-size factor
+constexpr u32 kEntryBuffer18 = 0x18; // u32, materialised buffer
+constexpr u32 kEntryKind1C = 0x1C;   // u32, buffer kind word
+
+constexpr u32 kFormatDefault02010000 = 0x02010000u;
+constexpr u32 kFormatRaster01010000 = 0x01010000u;
+constexpr u32 kFormatPacked02020000 = 0x02020000u;
+constexpr u32 kFormatPacked02030000 = 0x02030000u;
+constexpr u32 kDerivedSizeShift = 3;
+constexpr u32 kKindMask = 0x00030000;
+constexpr u32 kAllocatorSlot44E330 = 0x0044E330u;
+constexpr u32 kAllocatorAlignment = 0x00000101u;
+
+// Absolute-address accesses are opaque and volatile: the original deliberately
+// reads through address 0 when the object/tag gate fails, and a helper may
+// observe the stores in order.
+__attribute__((always_inline)) inline u32 load_u32(u32 address) {
+    return *reinterpret_cast<const volatile u32*>(
+        static_cast<uintptr_t>(address));
+}
+
+__attribute__((always_inline)) inline void store_u32(u32 address, u32 value) {
+    *reinterpret_cast<volatile u32*>(static_cast<uintptr_t>(address)) = value;
+}
+
+}  // namespace engine_0036f49c
+
+// Direct call declarations.  Addresses follow config/functions.csv.
+namespace engine_0036f49c_calls {
+
+// 0x002C25F0: two-argument 0x00147830 veneer that issues SVC 0x32 with
+// (address, size); the kernel service itself is not recovered here.
+extern "C" s32 engine_func_002c25f0(void* address, u32 size);
+
+// 0x002A69B0: appends the three words (r0, r1, r2) to a queue record; this call
+// site passes (resolved source, allocated buffer, byte size).
+extern "C" void engine_func_002a69b0(u32 source, u32 buffer, u32 size);
+
+// 0x002ACD38: byte copy from r1 to r0 for r2 bytes (small-size ladder plus a
+// word loop); the return value is not observed here.
+extern "C" void ui_func_002acd38(void* destination, const void* source,
+                                 u32 size);
+
+}  // namespace engine_0036f49c_calls
+
+extern "C" u32 engine_func_0036f49c(void* object_pointer) {
+    using namespace engine_0036f49c;
+    using namespace engine_0036f49c_calls;
+
+    const u32 object = reinterpret_cast<u32>(object_pointer);
+    // Tracks the architected r0 so the dead register also matches.  Every path
+    // below mirrors the instruction that last wrote r0 before the loop exit.
+    u32 r0 = object;
+
+    // 0x0036F4A4..0x0036F4BC: object-tag gate.  A failed test forces the
+    // container address to zero; the original then reads 0x2C/0x30/0x38...
+    u32 container = object;
+    if (object == 0 ||
+        (load_u32(object) & kObjectTypeMask) != kObjectTypeMask) {
+        container = 0;
+    }
+
+    // 0x0036F4C0..0x0036F4CC: initialisation guard, then claim the container.
+    if (load_u32(container + kInitGuard2C) != 0) {
+        return r0;
+    }
+    store_u32(container + kInitGuard2C, object);
+
+    // 0x0036F4D0: format word cached once for the whole loop.
+    const u32 format_word = load_u32(container + kFormatWord30);
+
+    // 0x0036F4E0..0x0036F65C: six relative texture-entry slots.
+    for (u32 index = 0; index < kSlotCount; ++index) {
+        const u32 slot =
+            container + kSlotTable38 + (index & 0xFFu) * sizeof(u32);
+        const u32 relative = load_u32(slot);
+        const u32 entry = relative != 0 ? slot + relative : 0u;
+
+        // 0x0036F500..0x0036F510: already materialised; r0 holds r8 here.
+        if (load_u32(entry + kEntryBuffer18) != 0) {
+            store_u32(entry + kEntryKind1C, 0);
+            r0 = format_word;
+            continue;
+        }
+
+        // 0x0036F514..0x0036F528: truncate the format word to its top half.
+        u32 format =
+            format_word != 0 ? format_word : kFormatDefault02010000;
+        format = (format >> 16) << 16;
+
+        // 0x0036F51C..0x0036F544: explicit byte size or derived size.
+        u32 size = load_u32(entry + kEntrySize08);
+        if (size == 0) {
+            const u32 product = load_u32(entry + kEntryWord00) *
+                                load_u32(entry + kEntryWord04);
+            size = (product * load_u32(entry + kEntryScale14)) >>
+                   kDerivedSizeShift;
+        }
+
+        // 0x0036F548..0x0036F578: signed format dispatch.
+        if (format == kFormatDefault02010000) {
+            // 0x0036F57C..0x0036F59C: pre-indexed relative buffer.
+            const u32 field = entry + kEntryData0C;
+            const u32 offset = load_u32(field);
+            const u32 buffer = offset != 0 ? field + offset : 0u;
+            r0 = static_cast<u32>(engine_func_002c25f0(
+                reinterpret_cast<void*>(static_cast<uintptr_t>(buffer)), size));
+        } else if (static_cast<s32>(format) <
+                   static_cast<s32>(kFormatDefault02010000)) {
+            // 0x0036F55C..0x0036F568: only 0x01010000 survives the truncation.
+            const u32 difference = format - kFormatRaster01010000;
+            if (difference == 0) {
+                // 0x0036F5F4..0x0036F650: allocate, copy, sync, publish.
+                using Allocator = u32 (*)(u32, u32, u32, u32);
+                const u32 callback = load_u32(kAllocatorSlot44E330);
+                const u32 buffer =
+                    reinterpret_cast<Allocator>(
+                        static_cast<uintptr_t>(callback))(
+                        0x10000u, kAllocatorAlignment, object, size);
+
+                const u32 field = entry + kEntryData0C;
+                const u32 offset = load_u32(field);
+                if (offset != 0) {
+                    const u32 source = offset + field;
+                    if (source != 0) {
+                        ui_func_002acd38(
+                            reinterpret_cast<void*>(
+                                static_cast<uintptr_t>(buffer)),
+                            reinterpret_cast<const void*>(
+                                static_cast<uintptr_t>(source)),
+                            size);
+                        (void)engine_func_002c25f0(
+                            reinterpret_cast<void*>(
+                                static_cast<uintptr_t>(buffer)),
+                            size);
+                    }
+                }
+                store_u32(entry + kEntryBuffer18, buffer);
+                store_u32(entry + kEntryKind1C, 0x10000u);
+                r0 = 0x10000u;
+            } else {
+                r0 = difference;
+            }
+        } else {
+            // 0x0036F56C..0x0036F578: 0x02020000/0x02030000.
+            const u32 difference = format - kFormatDefault02010000;
+            if (difference == 0x10000u || difference == 0x20000u) {
+                // 0x0036F5A0..0x0036F5F0: allocate, enqueue, publish.
+                const u32 kind = format & kKindMask;
+                using Allocator = u32 (*)(u32, u32, u32, u32);
+                const u32 callback = load_u32(kAllocatorSlot44E330);
+                const u32 buffer =
+                    reinterpret_cast<Allocator>(
+                        static_cast<uintptr_t>(callback))(
+                        kind, kAllocatorAlignment, object, size);
+
+                const u32 field = entry + kEntryData0C;
+                const u32 offset = load_u32(field);
+                if (offset != 0) {
+                    const u32 source = offset + field;
+                    if (source != 0) {
+                        engine_func_002a69b0(source, buffer, size);
+                    }
+                }
+                store_u32(entry + kEntryBuffer18, buffer);
+                store_u32(entry + kEntryKind1C, kind);
+                r0 = kind;
+            } else {
+                r0 = format;
+            }
+        }
+    }
+
+    return r0;
 }
 
 // DECOMP_FUNC(0x003f5ad4, 472)
