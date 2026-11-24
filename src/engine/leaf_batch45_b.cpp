@@ -8397,116 +8397,339 @@ extern "C" u32 camp_func_0033138c(u32 command) {
     return camp_func_002bc200_result(kDispatchSelect);
 }
 
+// Extended-precision mantissa division core: partner of engine_func_00159370.
+//
+// The pinned original is called through a private register convention:
+//   in:  r0 = dividend sign/exponent word, r1:r2 = dividend mantissa (hi:lo)
+//        r3 = divisor sign/exponent word,  r4:r5 = divisor mantissa (hi:lo)
+//   out: r0 = quotient sign (bit 31)       r1:r2 = quotient mantissa (hi:lo)
+//        r3 = biased exponent difference   r6 = quotient guard word
+// r4, r5, r6 and r12 are scratch; r7, r8 and r11 are preserved.
+//
+// Words 0 and 3 carry the sign in bit 31 and a 24-bit exponent in bits 23..0.
+// The mantissas are 64-bit values with an explicit integer bit.  The routine
+// uses a reciprocal estimate and three multiply-subtract refinements to
+// produce the 64-bit quotient plus three guard bits; 0x00159370 rounds and
+// renormalises the result.
+namespace func_00159028_detail {
+
+struct ExtendedDivideResult {
+    u32 sign;          // r0 at return: quotient sign in bit 31
+    u32 mantissa_hi;   // r1 at return: quotient mantissa, high word
+    u32 mantissa_lo;   // r2 at return: quotient mantissa, low word
+    u32 exponent;      // r3 at return: biased exponent difference
+    u32 guard;         // r6 at return: bits below the 64-bit mantissa
+};
+
+// The original computes its reciprocal-table address as pc + 0x220, so the
+// byte it reads is kDivisorLut[divisor_mantissa_hi >> 24].  Indices 0x80..0xFF
+// land on the 128-byte reciprocal table that closes the function; indices
+// 0x00..0x7F land on the instruction bytes immediately in front of it (only a
+// non-normalised divisor can reach them).  Both halves are reproduced verbatim
+// so every input, normalised or not, selects the same byte as the original.
+inline constexpr u8 kDivisorLut[256] = {
+    0x0B, 0xB0, 0xAB, 0xE0, 0x08, 0xC0, 0x52, 0xE0, 0x03, 0x70, 0xD1, 0xE0,
+    0x00, 0xB0, 0xDB, 0xE2, 0x00, 0xB0, 0xA0, 0xE3, 0x0E, 0xE0, 0xAE, 0xE0,
+    0x0C, 0x20, 0xA0, 0x21, 0x07, 0x10, 0xA0, 0x21, 0x00, 0x00, 0x90, 0xE0,
+    0x02, 0x20, 0xB2, 0xE0, 0x01, 0x10, 0xB1, 0xE0, 0x0B, 0xB0, 0xAB, 0xE0,
+    0x08, 0xC0, 0x52, 0xE0, 0x03, 0x70, 0xD1, 0xE0, 0x00, 0xB0, 0xDB, 0xE2,
+    0x0C, 0x20, 0xA0, 0x21, 0x07, 0x10, 0xA0, 0x21, 0x0E, 0xE0, 0xAE, 0xE0,
+    0x02, 0x70, 0x91, 0xE1, 0x01, 0x60, 0x86, 0x13, 0x0E, 0x6E, 0x96, 0xE0,
+    0x00, 0x20, 0xB5, 0xE2, 0x00, 0x10, 0xB4, 0xE2, 0x89, 0x01, 0xBD, 0x48,
+    0x00, 0x88, 0xBD, 0x48, 0x06, 0x60, 0x96, 0xE0, 0x89, 0x01, 0xBD, 0xE8,
+    0x02, 0x20, 0xB2, 0xE0, 0x00, 0x48, 0xBD, 0xE8, 0x01, 0x10, 0xA1, 0xE0,
+    0x01, 0x30, 0x43, 0xE2, 0x1E, 0xFF, 0x2F, 0xE1,
+    // Reciprocal table: ~ 128 / (1 + index / 128).
+    0x80, 0x80, 0x7F, 0x7E, 0x7D, 0x7C, 0x7B, 0x7A, 0x79, 0x78, 0x77, 0x76,
+    0x76, 0x75, 0x74, 0x73, 0x72, 0x71, 0x71, 0x70, 0x6F, 0x6E, 0x6E, 0x6D,
+    0x6C, 0x6C, 0x6B, 0x6A, 0x6A, 0x69, 0x68, 0x68, 0x67, 0x66, 0x66, 0x65,
+    0x64, 0x64, 0x63, 0x63, 0x62, 0x61, 0x61, 0x60, 0x60, 0x5F, 0x5F, 0x5E,
+    0x5E, 0x5D, 0x5D, 0x5C, 0x5C, 0x5B, 0x5B, 0x5A, 0x5A, 0x59, 0x59, 0x58,
+    0x58, 0x57, 0x57, 0x56, 0x56, 0x55, 0x55, 0x55, 0x54, 0x54, 0x53, 0x53,
+    0x52, 0x52, 0x52, 0x51, 0x51, 0x50, 0x50, 0x50, 0x4F, 0x4F, 0x4F, 0x4E,
+    0x4E, 0x4D, 0x4D, 0x4D, 0x4C, 0x4C, 0x4C, 0x4B, 0x4B, 0x4B, 0x4A, 0x4A,
+    0x4A, 0x49, 0x49, 0x49, 0x48, 0x48, 0x48, 0x47, 0x47, 0x47, 0x47, 0x46,
+    0x46, 0x46, 0x45, 0x45, 0x45, 0x44, 0x44, 0x44, 0x44, 0x43, 0x43, 0x43,
+    0x43, 0x42, 0x42, 0x42, 0x42, 0x41, 0x41, 0x41,
+};
+
+} // namespace func_00159028_detail
+
 // DECOMP_FUNC(0x00159028, 840)
-extern "C" __attribute__((naked)) void func_00159028() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0xc4ff, 0xe3c0, 0x0003, 0xe020\n"
-        ".hword 0x74ff, 0xe3c3, 0x3007, 0xe04c\n"
-        ".hword 0x3c3f, 0xe283, 0x0102, 0xe200\n"
-        ".hword 0x30ff, 0xe283, 0x4980, 0xe92d\n"
-        ".hword 0x6e22, 0xe28f, 0x0009, 0xe92d\n"
-        ".hword 0x3824, 0xe1a0, 0xb825, 0xe1a0\n"
-        ".hword 0x6423, 0xe7d6, 0xe80b, 0xe1c5\n"
-        ".hword 0x8803, 0xe1c4, 0x10a1, 0xe1b0\n"
-        ".hword 0x6693, 0xe027, 0x2062, 0xe1b0\n"
-        ".hword 0x0102, 0x23a0, 0x0000, 0x33a0\n"
-        ".hword 0x7502, 0xe267, 0x0697, 0xe006\n"
-        ".hword 0x76a4, 0xe1a0, 0x69a6, 0xe1a0\n"
-        ".hword 0x6002, 0xe286, 0x6697, 0xe02c\n"
-        ".hword 0xc202, 0xe26c, 0x782c, 0xe1a0\n"
-        ".hword 0xc807, 0xe1cc, 0x0697, 0xe004\n"
-        ".hword 0x069c, 0xe005, 0x77a1, 0xe1a0\n"
-        ".hword 0x6825, 0xe084, 0x6326, 0xe1a0\n"
-        ".hword 0x0796, 0xe00c, 0xc82c, 0xe1a0\n"
-        ".hword 0x0b9c, 0xe007, 0x480c, 0xe1a0\n"
-        ".hword 0x2007, 0xe052, 0x0c93, 0xe007\n"
-        ".hword 0x1007, 0xe0c1, 0x0e9c, 0xe007\n"
-        ".hword 0x0807, 0xe050, 0x2827, 0xe0d2\n"
-        ".hword 0x089c, 0xe007, 0x2807, 0x3042\n"
-        ".hword 0x2807, 0x2052, 0x1827, 0xe0c1\n"
-        ".hword 0x7121, 0xe1a0, 0x0796, 0xe00c\n"
-        ".hword 0xc82c, 0xe1a0, 0x0b9c, 0xe007\n"
-        ".hword 0x0987, 0xe050, 0x26a7, 0xe0d2\n"
-        ".hword 0x0c93, 0xe007, 0x2987, 0x3042\n"
-        ".hword 0x2987, 0x2052, 0x16a7, 0xe0c1\n"
-        ".hword 0x0e9c, 0xe007, 0x418c, 0xe084\n"
-        ".hword 0x0187, 0xe050, 0x2ea7, 0xe0d2\n"
-        ".hword 0x089c, 0xe007, 0x2187, 0x3042\n"
-        ".hword 0x2187, 0x2052, 0x1ea7, 0xe0c1\n"
-        ".hword 0x700c, 0xe59d, 0x1d01, 0xe1a0\n"
-        ".hword 0x1322, 0xe181, 0x2d02, 0xe1a0\n"
-        ".hword 0x77a1, 0xe1a0, 0x2320, 0xe182\n"
-        ".hword 0x0796, 0xe00c, 0x0d00, 0xe1a0\n"
-        ".hword 0xc82c, 0xe1a0, 0x0b9c, 0xe007\n"
-        ".hword 0x5b0c, 0xe1a0, 0x452c, 0xe084\n"
-        ".hword 0x2007, 0xe052, 0x0c93, 0xe007\n"
-        ".hword 0x1007, 0xe0c1, 0x0e9c, 0xe007\n"
-        ".hword 0x0807, 0xe050, 0x2827, 0xe0d2\n"
-        ".hword 0x089c, 0xe007, 0x2807, 0x3042\n"
-        ".hword 0x2807, 0x2052, 0x1827, 0xe0c1\n"
-        ".hword 0x7121, 0xe1a0, 0x0796, 0xe00c\n"
-        ".hword 0xc82c, 0xe1a0, 0x0b9c, 0xe007\n"
-        ".hword 0x0987, 0xe050, 0x26a7, 0xe0d2\n"
-        ".hword 0x0c93, 0xe007, 0x2987, 0x3042\n"
-        ".hword 0x2987, 0x2052, 0x16a7, 0xe0c1\n"
-        ".hword 0x0e9c, 0xe007, 0x0187, 0xe050\n"
-        ".hword 0x2ea7, 0xe0d2, 0x089c, 0xe007\n"
-        ".hword 0x2187, 0x3042, 0x2187, 0x2052\n"
-        ".hword 0x1ea7, 0xe0c1, 0x1d01, 0xe1a0\n"
-        ".hword 0x1322, 0xe181, 0x548c, 0xe095\n"
-        ".hword 0x77a1, 0xe1a0, 0x2d02, 0xe1a0\n"
-        ".hword 0x0796, 0xe00c, 0x2320, 0xe182\n"
-        ".hword 0x4000, 0xe2a4, 0x0d00, 0xe1a0\n"
-        ".hword 0xc82c, 0xe1a0, 0x0b9c, 0xe007\n"
-        ".hword 0x6e0c, 0xe1a0, 0x2007, 0xe052\n"
-        ".hword 0x0c93, 0xe007, 0x1007, 0xe0c1\n"
-        ".hword 0x0e9c, 0xe007, 0x0807, 0xe050\n"
-        ".hword 0x2827, 0xe0d2, 0x089c, 0xe007\n"
-        ".hword 0x2807, 0x3042, 0x2807, 0x2052\n"
-        ".hword 0x1827, 0xe0c1, 0x522c, 0xe095\n"
-        ".hword 0x1701, 0xe1a0, 0x1922, 0xe181\n"
-        ".hword 0x2702, 0xe1a0, 0x2920, 0xe182\n"
-        ".hword 0x0700, 0xe1a0, 0x4000, 0xe2a4\n"
-        ".hword 0x3803, 0xe188, 0x880b, 0xe18e\n"
-        ".hword 0xe000, 0xe3a0, 0xb000, 0xe3a0\n"
-        ".hword 0xc008, 0xe052, 0x7003, 0xe0d1\n"
-        ".hword 0xe00e, 0xe0ae, 0x200c, 0x21a0\n"
-        ".hword 0x1007, 0x21a0, 0x0000, 0xe090\n"
-        ".hword 0x2002, 0xe0b2, 0x1001, 0xe0b1\n"
-        ".hword 0xb00b, 0xe0ab, 0xc008, 0xe052\n"
-        ".hword 0x7003, 0xe0d1, 0xb000, 0xe2db\n"
-        ".hword 0xb000, 0xe3a0, 0xe00e, 0xe0ae\n"
-        ".hword 0x200c, 0x21a0, 0x1007, 0x21a0\n"
-        ".hword 0x0000, 0xe090, 0x2002, 0xe0b2\n"
-        ".hword 0x1001, 0xe0b1, 0xb00b, 0xe0ab\n"
-        ".hword 0xc008, 0xe052, 0x7003, 0xe0d1\n"
-        ".hword 0xb000, 0xe2db, 0x200c, 0x21a0\n"
-        ".hword 0x1007, 0x21a0, 0xe00e, 0xe0ae\n"
-        ".hword 0x7002, 0xe191, 0x6001, 0x1386\n"
-        ".hword 0x6e0e, 0xe096, 0x2000, 0xe2b5\n"
-        ".hword 0x1000, 0xe2b4, 0x0189, 0x48bd\n"
-        ".hword 0x8800, 0x48bd, 0x6006, 0xe096\n"
-        ".hword 0x0189, 0xe8bd, 0x2002, 0xe0b2\n"
-        ".hword 0x4800, 0xe8bd, 0x1001, 0xe0a1\n"
-        ".hword 0x3001, 0xe243, 0xff1e, 0xe12f\n"
-        ".hword 0x8080, 0x7e7f, 0x7c7d, 0x7a7b\n"
-        ".hword 0x7879, 0x7677, 0x7576, 0x7374\n"
-        ".hword 0x7172, 0x7071, 0x6e6f, 0x6d6e\n"
-        ".hword 0x6c6c, 0x6a6b, 0x696a, 0x6868\n"
-        ".hword 0x6667, 0x6566, 0x6464, 0x6363\n"
-        ".hword 0x6162, 0x6061, 0x5f60, 0x5e5f\n"
-        ".hword 0x5d5e, 0x5c5d, 0x5b5c, 0x5a5b\n"
-        ".hword 0x595a, 0x5859, 0x5758, 0x5657\n"
-        ".hword 0x5556, 0x5555, 0x5454, 0x5353\n"
-        ".hword 0x5252, 0x5152, 0x5051, 0x5050\n"
-        ".hword 0x4f4f, 0x4e4f, 0x4d4e, 0x4d4d\n"
-        ".hword 0x4c4c, 0x4b4c, 0x4b4b, 0x4a4a\n"
-        ".hword 0x494a, 0x4949, 0x4848, 0x4748\n"
-        ".hword 0x4747, 0x4647, 0x4646, 0x4545\n"
-        ".hword 0x4445, 0x4444, 0x4344, 0x4343\n"
-        ".hword 0x4243, 0x4242, 0x4142, 0x4141\n"
-    );
+extern "C" func_00159028_detail::ExtendedDivideResult func_00159028(
+    u32 a_exp, u32 a_hi, u32 a_lo, u32 b_exp, u32 b_hi, u32 b_lo) {
+    using namespace func_00159028_detail;
+
+    // Register-accurate working set.  The original is a hand-scheduled
+    // multi-precision routine, so the names below deliberately mirror its
+    // registers; every ARM flag dependency is modelled by the lambdas.
+    u32 r0 = a_exp;
+    u32 r1 = a_hi;
+    u32 r2 = a_lo;
+    u32 r3 = b_exp;
+    u32 r4 = b_hi;
+    u32 r5 = b_lo;
+    u32 r6 = 0;
+    u32 r7 = 0;
+    u32 r8 = 0;
+    u32 r11 = 0;
+    u32 ip = 0;
+    u32 lr = 0;
+    u32 carry = 0; // ARM C: 1 means "no borrow" after a subtraction.
+
+    // SUBS: subtract and set the carry.
+    const auto subs = [&](u32 a, u32 b) -> u32 {
+        const u64 t = static_cast<u64>(a) - b;
+        carry = static_cast<u32>(t >> 32) ? 0u : 1u;
+        return static_cast<u32>(t);
+    };
+    // SBCS: subtract with borrow and set the carry.
+    const auto sbcs = [&](u32 a, u32 b) -> u32 {
+        const u64 t = static_cast<u64>(a) - b - (carry ? 0u : 1u);
+        carry = static_cast<u32>(t >> 32) ? 0u : 1u;
+        return static_cast<u32>(t);
+    };
+    // SBC: subtract with borrow and preserve the carry (the original's
+    // single-word borrow propagation instructions have no S bit).
+    const auto sbc_nf = [&](u32 a, u32 b) -> u32 {
+        return static_cast<u32>(static_cast<u64>(a) - b - (carry ? 0u : 1u));
+    };
+    // ADDS / ADCS: add and set the carry.
+    const auto adds = [&](u32 a, u32 b) -> u32 {
+        const u64 t = static_cast<u64>(a) + b;
+        carry = static_cast<u32>(t >> 32);
+        return static_cast<u32>(t);
+    };
+    const auto adcs = [&](u32 a, u32 b) -> u32 {
+        const u64 t = static_cast<u64>(a) + b + carry;
+        carry = static_cast<u32>(t >> 32);
+        return static_cast<u32>(t);
+    };
+    // ADC without S: use the incoming carry and leave the flags alone.
+    const auto adc_nf = [&](u32 a, u32 b) -> u32 {
+        return static_cast<u32>(static_cast<u64>(a) + b + carry);
+    };
+    // The SUBLo/SUBShs pair: exactly one of the two conditional instructions
+    // runs.  With C set SUBShs (SUBS) updates the flags; with C clear SUBLo
+    // (plain SUB) leaves them untouched.
+    const auto cond_sub = [&](u32 a, u32 b) -> u32 {
+        if (carry) {
+            return subs(a, b);
+        }
+        return a - b;
+    };
+
+    // 0x159028..0x159048: quotient sign, biased exponent difference, and the
+    // two words the tail restores from its own stack frame.
+    ip = r0 & 0x00FFFFFFu;
+    r0 = (r0 ^ r3) & 0x80000000u;
+    r7 = r3 & 0x00FFFFFFu;
+    r3 = (ip - r7) + 0x3F00u;
+    const u32 saved_sign = r0;
+    const u32 saved_exponent = r3 + 0xFFu;
+
+    // 0x159050..0x1590B4: reciprocal estimate of the divisor's top bits,
+    // refined by two Newton steps.  This also splits the dividend mantissa in
+    // half (a_hi >> 1 into r1, the shifted-out bit into r2's top bit) and seeds
+    // the low accumulator word r0 with the wrapping bit of a_lo.
+    r3 = r4 >> 16;
+    r11 = r5 >> 16;
+    r6 = kDivisorLut[(r4 >> 24) & 0xFFu];
+    lr = r5 & 0xFFFFu;
+    r8 = r4 & 0xFFFFu;
+    r7 = (r3 * r6) + r6;
+    const u32 a_lo_lsb = r2 & 1u;
+    r2 = ((r1 & 1u) << 31) | (r2 >> 1);
+    r1 >>= 1;
+    r0 = a_lo_lsb ? 0x80000000u : 0u;
+    r7 = 0x800000u - r7;
+    r6 = r7 * r6;
+    r7 = r4 >> 13;
+    r6 = (r6 >> 19) + 2u;
+    ip = (r7 * r6) + r6;
+    ip = 0x20000000u - ip;
+    r7 = ip >> 16;
+    ip &= 0xFFFFu;
+    r4 = r7 * r6;
+    r5 = ip * r6;
+    r7 = r1 >> 15;
+    r6 = r4 + (r5 >> 16);
+    r6 >>= 6;
+    ip = (r6 * r7) >> 16;
+    r7 = ip * r11;
+    r4 = ip << 16;
+
+    // 0x1590B8..0x15912C: first multiply-subtract refinement.  Each group
+    // removes ip * divisor*2^shift from the running remainder (r1:r2:r0),
+    // where the divisor is the normalised high/low mantissa words.
+
+    r2 = subs(r2, r7);
+    r7 = r3 * ip;
+    r1 = sbc_nf(r1, r7);
+    r7 = ip * lr;
+    r0 = subs(r0, r7 << 16);
+    r2 = sbcs(r2, r7 >> 16);
+    r7 = ip * r8;
+    r2 = cond_sub(r2, r7 << 16);
+    r1 = sbc_nf(r1, r7 >> 16);
+
+    r7 = r1 >> 2;
+    ip = (r6 * r7) >> 16;
+    r7 = ip * r11;
+    r0 = subs(r0, r7 << 19);
+    r2 = sbcs(r2, r7 >> 13);
+    r7 = r3 * ip;
+    r2 = cond_sub(r2, r7 << 19);
+    r1 = sbc_nf(r1, r7 >> 13);
+
+    r7 = ip * lr;
+    r4 += ip << 3;
+    r0 = subs(r0, r7 << 3);
+    r2 = sbcs(r2, r7 >> 29);
+    r7 = ip * r8;
+    r2 = cond_sub(r2, r7 << 3);
+    r1 = sbc_nf(r1, r7 >> 29);
+
+    // 0x159134..0x159168: fold the residual back into the mantissa words and
+    // take the next reciprocal-refinement quotient digit.
+    r1 = (r1 << 26) | (r2 >> 6);
+    r2 = (r2 << 26) | (r0 >> 6);
+    r7 = r1 >> 15;
+    ip = (r6 * r7) >> 16;
+    r0 <<= 26;
+    r7 = ip * r11;
+    r5 = ip << 22;
+    r4 += ip >> 10;
+
+    // 0x15916C..0x1591CC: second multiply-subtract refinement.
+    r2 = subs(r2, r7);
+    r7 = r3 * ip;
+    r1 = sbc_nf(r1, r7);
+    r7 = ip * lr;
+    r0 = subs(r0, r7 << 16);
+    r2 = sbcs(r2, r7 >> 16);
+    r7 = ip * r8;
+    r2 = cond_sub(r2, r7 << 16);
+    r1 = sbc_nf(r1, r7 >> 16);
+
+    r7 = r1 >> 2;
+    ip = (r6 * r7) >> 16;
+    r7 = ip * r11;
+    r0 = subs(r0, r7 << 19);
+    r2 = sbcs(r2, r7 >> 13);
+    r7 = r3 * ip;
+    r2 = cond_sub(r2, r7 << 19);
+    r1 = sbc_nf(r1, r7 >> 13);
+
+    r7 = ip * lr;
+    r0 = subs(r0, r7 << 3);
+    r2 = sbcs(r2, r7 >> 29);
+    r7 = ip * r8;
+    r2 = cond_sub(r2, r7 << 3);
+    r1 = sbc_nf(r1, r7 >> 29);
+
+    r1 = (r1 << 26) | (r2 >> 6);
+    r5 = adds(r5, ip << 9);
+    r7 = r1 >> 15;
+    r2 = (r2 << 26) | (r0 >> 6);
+    ip = r6 * r7;
+    r4 = adc_nf(r4, 0u);
+    r0 <<= 26;
+
+    // 0x1591F0..0x15923C: final multiply-subtract refinement and quotient
+    // assembly.
+    ip >>= 16;
+    r7 = ip * r11;
+    r6 = ip << 28;
+    r2 = subs(r2, r7);
+    r7 = r3 * ip;
+    r1 = sbc_nf(r1, r7);
+    r7 = ip * lr;
+    r0 = subs(r0, r7 << 16);
+    r2 = sbcs(r2, r7 >> 16);
+    r7 = ip * r8;
+    r2 = cond_sub(r2, r7 << 16);
+    r1 = sbc_nf(r1, r7 >> 16);
+
+    r5 = adds(r5, ip >> 4);
+    r1 = (r1 << 14) | (r2 >> 18);
+    r2 = (r2 << 14) | (r0 >> 18);
+    r0 <<= 14;
+    r4 = adc_nf(r4, 0u);
+
+    // 0x159240..0x15924C: rebuild the divisor mantissa and reset the guard
+    // accumulator.
+    r3 = r8 | (r3 << 16);
+    r8 = lr | (r11 << 16);
+    lr = 0;
+    r11 = 0;
+
+    // 0x159250..0x1592B4: three 96-bit compare/shift steps.  The compare
+    // selects whether the divisor is subtracted and contributes one guard bit
+    // to lr; r1:r2:r0 is then shifted left as a 128-bit (fp:r1:r2:r0) value.
+    {
+        const u32 diff_lo = subs(r2, r8);
+        const u32 diff_hi = sbcs(r1, r3);
+        const u32 select = carry;
+        lr = adc_nf(lr, lr);
+        if (select) {
+            r2 = diff_lo;
+            r1 = diff_hi;
+        }
+        r0 = adds(r0, r0);
+        r2 = adcs(r2, r2);
+        r1 = adcs(r1, r1);
+        r11 = adc_nf(r11, r11);
+    }
+    {
+        const u32 diff_lo = subs(r2, r8);
+        const u32 diff_hi = sbcs(r1, r3);
+        r11 = sbcs(r11, 0u);
+        const u32 select = carry;
+        r11 = 0;
+        lr = adc_nf(lr, lr);
+        if (select) {
+            r2 = diff_lo;
+            r1 = diff_hi;
+        }
+        r0 = adds(r0, r0);
+        r2 = adcs(r2, r2);
+        r1 = adcs(r1, r1);
+        r11 = adc_nf(r11, r11);
+    }
+    {
+        const u32 diff_lo = subs(r2, r8);
+        const u32 diff_hi = sbcs(r1, r3);
+        r11 = sbcs(r11, 0u);
+        const u32 select = carry;
+        if (select) {
+            r2 = diff_lo;
+            r1 = diff_hi;
+        }
+        lr = adc_nf(lr, lr);
+    }
+
+    // 0x1592B8..0x1592C8: sticky bit, then add the guard word into the
+    // accumulated mantissa.
+    if ((r1 | r2) != 0) {
+        r6 |= 1u;
+    }
+    r6 = adds(r6, lr << 28);
+    r2 = adcs(r5, 0u);
+    r1 = adcs(r4, 0u);
+
+    // 0x1592CC: the sign bit of the rounded high word selects the early exit,
+    // which keeps the unbiased-by-one exponent and does not renormalise.
+    if ((r1 & 0x80000000u) != 0) {
+        return {saved_sign, r1, r2, saved_exponent, r6};
+    }
+
+    // 0x1592D4..0x1592EC: renormalise the mantissa left by one and drop the
+    // exponent by one.
+    r6 = adds(r6, r6);
+    r2 = adcs(r2, r2);
+    r1 = adcs(r1, r1);
+    return {saved_sign, r1, r2, saved_exponent - 1u, r6};
 }
 
 extern "C" u32 query_counter_2bffbc(u32) __asm__("ui_func_002bffbc");
