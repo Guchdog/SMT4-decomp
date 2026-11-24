@@ -13060,42 +13060,149 @@ extern "C" void ui_func_00258c58(u32 next_panel) {
     func_0026b0cc();
 }
 
+// Direct calls made by camp_func_0033504c. Every callee is an ordinary
+// address-identified helper; the two shared ones (0x002B66EC, 0x002C0BA8) are
+// declared earlier in this file.
+extern "C" u8* engine_func_0023f554();  // 0x0023F554: game-work bit area
+extern "C" void* Tbb_GetGlobalSubTable(u32 slot_id, u32 table_index);
+extern "C" const void* Tbb_GetPayloadData(const void* table);
+extern "C" u32 Tbb_GetRowCount(const void* table);
+// 0x002B48DC: generic table binary search (Thumb in the original): returns the
+// element whose comparator result is zero, or null.
+extern "C" void* script_vm_func_002b48dc(const void* key, const void* base,
+                                         u32 count, u32 element_size,
+                                         s32 (*compare)(const void*, const void*));
+extern "C" u32 script_vm_func_00295f90();  // 0x00295F90: reads one work word
+
+namespace {
+
+// 0x001455DC is an interior ARM block used only as the search comparator:
+// `return *(u16*)(a + 0x20) - *(u16*)(b + 0x20)`. It is a code address, not a
+// symbol in this TU, so it is passed as the recovered literal.
+using CampSearchCompareFn = s32 (*)(const void*, const void*);
+CampSearchCompareFn const kCampCompare001455dc =
+    reinterpret_cast<CampSearchCompareFn>(0x001455DCu);
+
+// The search key is a 0x40-byte record; only the u16 at +0x20 is initialized
+// and read back by the comparator.
+struct CampSearchKey0033504c {
+    u8 bytes[0x40];
+};
+
+}  // namespace
+
 // DECOMP_FUNC(0x0033504c, 480)
-// 119 ARM instructions through unconditional pop; 4 trailing data bytes.
-extern "C" __attribute__((naked)) void camp_func_0033504c() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4ff0, 0xe24dd04c, 0xebfc293e, 0xe59f91c8\n"
-        ".word 0xe3a07001, 0xe3a0b000, 0xe1a0a007, 0xe58d0004\n"
-        ".word 0xe3a01000, 0xe3a0000b, 0xebfe2f92, 0xe1b04000\n"
-        ".word 0xe320f000, 0x0a000063, 0xebfe2f84, 0xe1a05000\n"
-        ".word 0xe1a00004, 0xebfe2f6d, 0xe6ff8077, 0xe1a02000\n"
-        ".word 0xe1cd82b8, 0xe3a03040, 0xe1a01005, 0xe28d0008\n"
-        ".word 0xe58d9000, 0xfafdfe09, 0xe3500000, 0xe320f000\n"
-        ".word 0x0a000054, 0xe1d002b6, 0xe3500000, 0x1a000051\n"
-        ".word 0xe3a01000, 0xe3a0000b, 0xebfe2f7a, 0xe1b04000\n"
-        ".word 0xe320f000, 0x0a00004b, 0xebfe2f6c, 0xe1a05000\n"
-        ".word 0xe1a00004, 0xebfe2f55, 0xe1a02000, 0xe1cd82b8\n"
-        ".word 0xe3a03040, 0xe1a01005, 0xe28d0008, 0xe58d9000\n"
-        ".word 0xfafdfdf2, 0xe1b05000, 0xe320f000, 0x0a00003d\n"
-        ".word 0xebfe0572, 0xe5d5102b, 0xe5d00076, 0xe1510000\n"
-        ".word 0x93a04000, 0x8a000037, 0xe0850084, 0xe1d002bc\n"
-        ".word 0xe3500000, 0x0a000003, 0xebfe2e97, 0xe3500000\n"
-        ".word 0xe320f000, 0x0a00002f, 0xe2844001, 0xe3540003\n"
-        ".word 0xbafffff4, 0xe3a04000, 0xe0850084, 0xe1d063b2\n"
-        ".word 0xe3560000, 0x0a000004, 0xebfc28f6, 0xe7d001a6\n"
-        ".word 0xe2062007, 0xe110021a, 0x0a000022, 0xe2844001\n"
-        ".word 0xe3540003, 0xbafffff3, 0xe3a01000, 0xe3a0000b\n"
-        ".word 0xebfe2f48, 0xe1b04000, 0xe320f000, 0x0a00000a\n"
-        ".word 0xebfe2f3a, 0xe1a05000, 0xe1a00004, 0xebfe2f23\n"
-        ".word 0xe1a02000, 0xe1cd82b8, 0xe3a03040, 0xe1a01005\n"
-        ".word 0xe28d0008, 0xe58d9000, 0xfafdfdc0, 0xe320f000\n"
-        ".word 0xebfd836b, 0xe1a01fc7, 0xe59d0004, 0xe0872ea1\n"
-        ".word 0xe1a011c2, 0xe3c22007, 0xe0472002, 0xe7f03001\n"
-        ".word 0xe1a0121a, 0xe1832001, 0xe5c02000, 0xe5d02012\n"
-        ".word 0xe1811002, 0xe5c01012, 0xe2877001, 0xe357008d\n"
-        ".word 0x3affff92, 0xe28dd04c, 0xe8bd8ff0, 0x001455dc\n"
-    );
+//
+// Marks one bitset bit per record of TBB global slot 0x0B whose key (the
+// ascending u16 1..0x8C) has a "ready" entry. There is no return value.
+//
+// Each iteration searches the same table up to three times with the same key:
+//   1. reject when the table, the element, or the element's u16 +0x26 is
+//      non-zero;
+//   2. reject when the table/element is missing, when the entry's u8 +0x2B is
+//      greater (unsigned) than game-work byte +0x76, or when any non-zero u16
+//      event-flag id at +0x2C..+0x31 is not set;
+//   3. reject when any non-zero u16 bit index at +0x32..+0x37 is clear in the
+//      game-work bitset returned by engine_func_0023f554();
+//   4. repeat the search once more (its result is discarded) and read one work
+//      word through script_vm_func_00295f90() (also discarded), then set the
+//      key bit in the first snapshot's bitset at byte key>>3 and again 0x12
+//      bytes later.
+extern "C" void camp_func_0033504c() {
+    // Saved once in the prologue (`str r0, [sp, #4]`) and reused for the bit
+    // stores even though the bit-test loop calls the getter again.
+    u8* const flag_bits = engine_func_0023f554();
+    CampSearchKey0033504c key;
+
+    for (u32 index = 1u; index < 0x8Du; ++index) {
+        const u16 key_value = static_cast<u16>(index);
+
+        void* const table = Tbb_GetGlobalSubTable(0x0Bu, 0u);
+        if (table == nullptr) {
+            continue;
+        }
+        const void* const payload = Tbb_GetPayloadData(table);
+        const u32 rows = Tbb_GetRowCount(table);
+        *reinterpret_cast<u16*>(key.bytes + 0x20u) = key_value;
+        const u8* const record = static_cast<const u8*>(
+            script_vm_func_002b48dc(key.bytes, payload, rows, 0x40u,
+                                    kCampCompare001455dc));
+        if (record == nullptr) {
+            continue;
+        }
+        if (*reinterpret_cast<const u16*>(record + 0x26u) != 0u) {
+            continue;
+        }
+
+        void* const table2 = Tbb_GetGlobalSubTable(0x0Bu, 0u);
+        if (table2 == nullptr) {
+            continue;
+        }
+        const void* const payload2 = Tbb_GetPayloadData(table2);
+        const u32 rows2 = Tbb_GetRowCount(table2);
+        *reinterpret_cast<u16*>(key.bytes + 0x20u) = key_value;
+        const u8* const record2 = static_cast<const u8*>(
+            script_vm_func_002b48dc(key.bytes, payload2, rows2, 0x40u,
+                                    kCampCompare001455dc));
+        if (record2 == nullptr) {
+            continue;
+        }
+
+        const u8* const state = static_cast<const u8*>(script_vm_func_002b66ec());
+        // Unsigned `movls`/`bhi`: equal values are accepted.
+        if (record2[0x2Bu] > state[0x76u]) {
+            continue;
+        }
+
+        u32 slot = 0u;
+        for (; slot < 3u; ++slot) {
+            const u16 flag_id = *reinterpret_cast<const u16*>(
+                record2 + 0x2Cu + slot * 2u);
+            if (flag_id == 0u) {
+                continue;  // zero ids are not probed
+            }
+            if (script_vm_func_002c0ba8(flag_id) == 0u) {
+                break;  // clear flag aborts this key
+            }
+        }
+        if (slot != 3u) {
+            continue;
+        }
+
+        for (slot = 0u; slot < 3u; ++slot) {
+            const u16 bit_index = *reinterpret_cast<const u16*>(
+                record2 + 0x32u + slot * 2u);
+            if (bit_index == 0u) {
+                continue;  // zero indices are not tested
+            }
+            const u8* const bits = engine_func_0023f554();
+            if ((bits[bit_index >> 3] &
+                 static_cast<u8>(1u << (bit_index & 7u))) == 0u) {
+                break;  // clear bit aborts this key
+            }
+        }
+        if (slot != 3u) {
+            continue;
+        }
+
+        void* const table3 = Tbb_GetGlobalSubTable(0x0Bu, 0u);
+        if (table3 != nullptr) {
+            const void* const payload3 = Tbb_GetPayloadData(table3);
+            const u32 rows3 = Tbb_GetRowCount(table3);
+            *reinterpret_cast<u16*>(key.bytes + 0x20u) = key_value;
+            (void)script_vm_func_002b48dc(key.bytes, payload3, rows3, 0x40u,
+                                          kCampCompare001455dc);
+        }
+        // Both results are consumed by the original only as dead loads.
+        (void)script_vm_func_00295f90();
+
+        // `index` is non-negative here, so the original's sign-corrected bit
+        // split reduces to the plain /8 and &7.
+        const u8 mask = static_cast<u8>(1u << (index & 7u));
+        u8* const byte = flag_bits + (index >> 3);
+        *byte |= mask;
+        byte[0x12] |= mask;
+    }
 }
 
 // DECOMP_FUNC(0x0013a29c, 484)
