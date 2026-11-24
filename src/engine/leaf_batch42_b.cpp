@@ -197,43 +197,233 @@ extern "C" u32 ui_func_002247c8(u32 handle) {
 }
 
 // DECOMP_FUNC(0x0022f9c8, 504)
-// 125 ARM instructions through unconditional pop; 4 trailing data bytes.
-extern "C" __attribute__((naked)) void shop_func_0022f9c8() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4070, 0xe1a05000, 0xe2806e86, 0xe5900860\n"
-        ".word 0xe24dd090, 0xe0801580, 0xe0802080, 0xe0620280\n"
-        ".word 0xe0851081, 0xe0850100, 0xe2814b03, 0xe2800d22\n"
-        ".word 0xe2844094, 0xeb000f67, 0xe5961000, 0xe0840100\n"
-        ".word 0xe1d040b0, 0xe0812081, 0xe0620281, 0xe0850100\n"
-        ".word 0xe2800d22, 0xeb064d56, 0xe2856b57, 0xe2866f55\n"
-        ".word 0xe3500000, 0x05960000, 0x01500004, 0x0a000006\n"
-        ".word 0xe3a00000, 0xeb01a7cc, 0xe3a00000, 0xe5c5001e\n"
-        ".word 0xe5c5001f, 0xe5864000, 0xea00000a, 0xe5d5001e\n"
-        ".word 0xe3a06001, 0xe3500000, 0x0a000025, 0xeb01a9fc\n"
-        ".word 0xe3500000, 0xe320f000, 0x0a000002, 0xe3a00001\n"
-        ".word 0xeb01a7bd, 0xe5c5601f, 0xe59f0134, 0xe7900005\n"
-        ".word 0xe3500000, 0x0a000048, 0xe2855b57, 0xe2855f4a\n"
-        ".word 0xe5950000, 0xe1500004, 0x0a000043, 0xe5854000\n"
-        ".word 0xeb021b0f, 0xe1a01000, 0xe3a0208c, 0xe1a0000d\n"
-        ".word 0xeb023526, 0xe3540000, 0xe320f000, 0x0a000035\n"
-        ".word 0xe1a00004, 0xeb01fade, 0xe2400002, 0xe3500007\n"
-        ".word 0x379ff100, 0xea00002f, 0x0022fb6c, 0x0022fb74\n"
-        ".word 0x0022fb7c, 0x0022fb84, 0x0022fb8c, 0x0022fb94\n"
-        ".word 0x0022fb9c, 0xe3540000, 0x0a000017, 0xe1a00004\n"
-        ".word 0xeb01facf, 0xe3500004, 0xe320f000, 0x1a000002\n"
-        ".word 0xe6ff1074, 0xe3a00000, 0xeb01a76c, 0xe1a00004\n"
-        ".word 0xeb01fac7, 0xe3500005, 0xe320f000, 0x1a000002\n"
-        ".word 0xe6ff1074, 0xe3a00001, 0xeb01a764, 0xe1a00004\n"
-        ".word 0xeb01fabf, 0xe3500006, 0xe320f000, 0x1a000002\n"
-        ".word 0xe6ff1074, 0xe3a00002, 0xeb01a75c, 0xe5c5601e\n"
-        ".word 0xeaffffc4, 0xe1cd40b0, 0xea00000a, 0xe1cd40b2\n"
-        ".word 0xea000008, 0xe1cd40b6, 0xea000006, 0xe1cd40b8\n"
-        ".word 0xea000004, 0xe1cd40ba, 0xea000002, 0xe1cd40bc\n"
-        ".word 0xea000000, 0xe1cd40b4, 0xe1a0000d, 0xeb01a698\n"
-        ".word 0xe1a0000d, 0xe320f000, 0xeb01a9ec, 0xe28dd090\n"
-        ".word 0xe8bd8070, 0x00015d24\n"
-    );
+//
+// Recovered contract (ARM 0x0022f9c8..0x0022fbb8 plus the literal word
+// 0x00015D24 at 0x0022fbbc):
+//   * `object` is the only live incoming pointer (r0); r1-r3 are dead.  The
+//     frame is `push {r4, r5, r6, lr}` plus a 0x90-byte scratch buffer, so the
+//     epilogue restores SP and pops r4/r5/r6/pc.
+//   * The selection index at `object + 0x860` is read twice: once before
+//     0x002337A0 and once again afterwards (the first helper can change it).
+//     The first value selects both the 0x74-byte entry handed to the helpers
+//     and the 0x1002-byte page holding the id; the second value selects only
+//     the entry handed to 0x003C2F7C.
+//   * `count = shop_func_002337a0(object + 0x880 + index*0x74)` indexes a
+//     halfword table: `id = *(u16*)(object + 0xC94 + index*0x1002 + count*4)`.
+//     This load happens before 0x003C2F7C runs, and neither index nor count is
+//     bounds-checked.
+//   * `visible = shop_func_003c2f7c(object + 0x880 + second_index*0x74)` is a
+//     zero/non-zero predicate.  When it is zero the code lazily loads
+//     `object + 0x15D54` (only on that path) and compares it to `id`.
+//       - equal: if `object->active_1e` is zero, item types 4/5/6 are pushed
+//         into UI slots 0/1/2 via 0x002998D8 (the type is re-read before each
+//         test), then `active_1e = 1`.  Otherwise 0x0029A25C is asked (its
+//         result is what the ARM tests) and only on a non-zero result does
+//         0x00299974(1) run and `pending_1f = 1`.
+//       - not equal (or not visible): 0x00299974(0), clear `active_1e` and
+//         `pending_1f`, publish the id at `object + 0x15D54`.
+//   * The whole block above is skipped only when `object + 0x15D24` is zero;
+//     that path returns the loaded zero.  Otherwise `object + 0x15D28` is
+//     compared with `id`; equality returns the stored word (== id) untouched.
+//   * Different stored value: publish `id`, then copy 0x8C bytes from
+//     0x002B66EC() into the scratch buffer and patch the halfword selected by
+//     the item type read from 0x002AE64C:
+//       type 2 -> +0x00, 3 -> +0x02, 4 -> +0x06, 5 -> +0x08, 6 -> +0x0A,
+//       7 -> +0x0C, 8 -> +0x04.  Types outside 2..8 and id 0 patch nothing.
+//     Finally 0x0029960C and 0x0029A368 consume the buffer; the latter's
+//     result is the function's return value on this path.
+//   * 0x002B66EC reads a global and takes no arguments; the original leaves a
+//     stale r0 in the register, which the callee never reads.  0x0029A25C
+//     likewise ignores its incoming r0, but the original does leave the
+//     `active_1e` byte there and that value is passed here for fidelity.
+namespace func_0022f9c8 {
+
+// `ldr r0, [object, #0x860]` (read at 0x0022F9D4 and again at 0x0022FA00).
+constexpr u32 kIndexOffset = 0x860;
+
+// Entry array addressed by both lookups: base + index * 0x74.
+constexpr u32 kEntryBase = 0x880;
+constexpr u32 kEntryStride = 0x74;
+
+// Per-selection page holding the halfword id table.
+constexpr u32 kSlotBase = 0xC94;
+constexpr u32 kSlotStride = 0x1002;
+constexpr u32 kIdStride = 4;
+
+// `str r4, [r6]` / `ldr r0, [r6]` with r6 = object + 0x15D54.
+constexpr u32 kVisibleIdOffset = 0x15D54;
+// The literal 0x00015D24 loaded at 0x0022FA80; zero short-circuits everything.
+constexpr u32 kEnabledOffset = 0x15D24;
+// `str r4, [r5]` with r5 = object + 0x15D28.
+constexpr u32 kAppliedIdOffset = 0x15D28;
+
+// `ldrb r0, [r5, #0x1e]` / `strb`.
+constexpr u32 kActiveOffset = 0x1E;
+// `strb r6, [r5, #0x1f]`.
+constexpr u32 kPendingOffset = 0x1F;
+
+// `mov r2, #0x8c` before 0x002BCF58.
+constexpr u32 kScratchSize = 0x8C;
+
+// Only the bytes touched by this routine are named.
+struct ShopObject {
+    u8 pad_000[0x1E];
+    u8 active_1e;    // +0x1E
+    u8 pending_1f;   // +0x1F
+    u8 pad_020[0x840];
+    u32 index_860;   // +0x860
+};
+static_assert(offsetof(ShopObject, active_1e) == kActiveOffset);
+static_assert(offsetof(ShopObject, pending_1f) == kPendingOffset);
+static_assert(offsetof(ShopObject, index_860) == kIndexOffset);
+
+// The 0x90-byte frame is addressed as a byte blob: 0x002BCF58 fills 0x8C
+// bytes and the type switch stores halfwords at seven fixed offsets.
+inline u8* object_bytes(ShopObject* object) {
+    return reinterpret_cast<u8*>(object);
+}
+
+inline u32 load_u32(const u8* address) {
+    return *reinterpret_cast<const u32*>(address);
+}
+
+inline void store_u32(u8* address, u32 value) {
+    *reinterpret_cast<u32*>(address) = value;
+}
+
+inline u32 load_u16(const u8* address) {
+    return *reinterpret_cast<const u16*>(address);
+}
+
+inline void store_u16(u8* address, u32 value) {
+    *reinterpret_cast<u16*>(address) = static_cast<u16>(value);
+}
+
+// `add r0, r4, r0, lsl #2` / `ldrh`: halfword table indexed by the count.
+inline u8* slot_address(u8* base, u32 index, u32 count) {
+    return base + kSlotBase + index * kSlotStride + count * kIdStride;
+}
+
+inline u8* entry_address(u8* base, u32 index) {
+    return base + kEntryBase + index * kEntryStride;
+}
+
+}  // namespace func_0022f9c8
+
+// 0x002337A0: element count of the per-selection entry; no range check.
+extern "C" u32 shop_func_002337a0(const void* entry);
+
+// 0x003C2F7C: zero/non-zero visibility predicate for the per-selection entry.
+extern "C" u32 shop_func_003c2f7c(const void* entry);
+
+// 0x002AE64C: item type derived from the resolved record (byte at +0x08).
+extern "C" u32 shop_func_002ae64c(u32 id);
+
+// 0x002998D8: assigns the id to UI slot r0 (0, 1 or 2).
+extern "C" void ui_func_002998d8(u32 slot, u32 id);
+
+// 0x00299974: toggles the UI pose/mode selected by r0 (0 or 1).
+extern "C" void ui_func_00299974(u32 mode);
+
+// 0x0029A25C: state query; the original leaves the active byte in r0, which
+// this callee ignores.
+extern "C" u32 ui_func_0029a25c(u32 active_state);
+
+// 0x002B66EC: returns a global render/state block pointer; no arguments.
+extern "C" u32 script_vm_func_002b66ec();
+
+// 0x002BCF58: copies `size` bytes from src to dst and returns dst.
+extern "C" u32 ui_func_002bcf58(void* dst, const void* src, u32 size);
+
+// 0x0029960C is defined in this translation unit as a naked body with an empty
+// parameter list, so the readable prototype is delivered through a typed
+// function pointer (the original passes the buffer in r0).
+extern "C" void engine_func_0029960c();
+
+using BufferConsumer = void (*)(void* buffer);
+
+inline void consume_buffer(void* buffer) {
+    reinterpret_cast<BufferConsumer>(engine_func_0029960c)(buffer);
+}
+
+// 0x0029A368: consumes the prepared buffer and returns its result.
+extern "C" u32 engine_func_0029a368(void* buffer);
+
+extern "C" u32 shop_func_0022f9c8(func_0022f9c8::ShopObject* object) {
+    using namespace func_0022f9c8;
+
+    u8* const base = object_bytes(object);
+
+    // First index read: selects the entry for 0x002337A0 and the id page.
+    const u32 index = load_u32(base + kIndexOffset);
+    const u32 count = shop_func_002337a0(entry_address(base, index));
+    const u32 id = load_u16(slot_address(base, index, count));
+
+    // Second index read: only the entry handed to 0x003C2F7C.
+    const u32 second_index = load_u32(base + kIndexOffset);
+    const u32 visible = shop_func_003c2f7c(entry_address(base, second_index));
+
+    // `&&` keeps the object + 0x15D54 read on the visibility-zero path only.
+    if (visible == 0 && load_u32(base + kVisibleIdOffset) == id) {
+        if (object->active_1e == 0) {
+            if (id != 0) {
+                if (shop_func_002ae64c(id) == 4) {
+                    ui_func_002998d8(0, id);
+                }
+                if (shop_func_002ae64c(id) == 5) {
+                    ui_func_002998d8(1, id);
+                }
+                if (shop_func_002ae64c(id) == 6) {
+                    ui_func_002998d8(2, id);
+                }
+            }
+            object->active_1e = 1;
+        } else if (ui_func_0029a25c(object->active_1e) != 0) {
+            ui_func_00299974(1);
+            object->pending_1f = 1;
+        }
+    } else {
+        ui_func_00299974(0);
+        object->active_1e = 0;
+        object->pending_1f = 0;
+        store_u32(base + kVisibleIdOffset, id);
+    }
+
+    // `ldr r0, [r0, r5]` with r0 = 0x00015D24: zero returns the loaded word.
+    const u32 enabled = load_u32(base + kEnabledOffset);
+    if (enabled == 0) {
+        return enabled;
+    }
+
+    const u32 previous = load_u32(base + kAppliedIdOffset);
+    if (previous == id) {
+        return previous;
+    }
+    store_u32(base + kAppliedIdOffset, id);
+
+    alignas(4) u8 buffer[kScratchSize];
+    ui_func_002bcf58(buffer,
+                     reinterpret_cast<const void*>(script_vm_func_002b66ec()),
+                     kScratchSize);
+
+    if (id != 0) {
+        // `sub r0, r0, #2; cmp r0, #7; ldrlo pc, [pc, r0, lsl #2]`.
+        const u32 type = shop_func_002ae64c(id);
+        if (type - 2 < 7) {
+            switch (type) {
+                case 2: store_u16(buffer + 0x00, id); break;
+                case 3: store_u16(buffer + 0x02, id); break;
+                case 4: store_u16(buffer + 0x06, id); break;
+                case 5: store_u16(buffer + 0x08, id); break;
+                case 6: store_u16(buffer + 0x0A, id); break;
+                case 7: store_u16(buffer + 0x0C, id); break;
+                case 8: store_u16(buffer + 0x04, id); break;
+            }
+        }
+    }
+
+    consume_buffer(buffer);
+    return engine_func_0029a368(buffer);
 }
 
 // DECOMP_FUNC(0x0026d1b8, 504)

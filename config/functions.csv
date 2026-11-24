@@ -3281,7 +3281,7 @@ address,size,status,category,name,src_file
 0x0022ec04,1864,matching,shop,shop_func_0022ec04,src/engine/leaf_batch46_b.cpp
 0x0022f34c,24,matching,unknown,func_0022f34c,src/engine/leaf_batch17_c.cpp
 0x0022f364,1636,matching,shop,shop_func_0022f364,src/engine/leaf_batch46_b.cpp
-0x0022f9c8,504,matching,shop,shop_func_0022f9c8,src/engine/leaf_batch42_b.cpp
+0x0022f9c8,504,non_matching,shop,shop_func_0022f9c8,src/engine/leaf_batch42_b.cpp
 0x0022fbc0,204,matching,camp,camp_func_0022fbc0,src/engine/leaf_batch35_c.cpp
 0x0022fc8c,12,matching,shop,shop_func_0022fc8c,src/engine/leaf_batch38_a.cpp
 0x0022fc98,48,matching,shop,shop_func_0022fc98,src/engine/leaf_batch19_b.cpp
