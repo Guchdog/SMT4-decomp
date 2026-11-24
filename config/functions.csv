@@ -9363,7 +9363,7 @@ address,size,status,category,name,src_file
 0x0039d730,40,matching,script_vm,script_vm_func_0039d730,src/engine/leaf_batch19_a.cpp
 0x0039d758,352,matching,unknown,func_0039d758,src/engine/leaf_batch44_b.cpp
 0x0039d8b8,3792,matching,script_vm,script_vm_func_0039d8b8,src/script/script_vm_extras.cpp
-0x0039e788,844,matching,engine,engine_func_0039e788,src/engine/leaf_batch45_b.cpp
+0x0039e788,844,non_matching,engine,engine_func_0039e788,src/engine/leaf_batch45_b.cpp
 0x0039ead4,276,matching,ui,ui_func_0039ead4,src/engine/leaf_batch35_b.cpp
 0x0039ebe8,384,matching,unknown,func_0039ebe8,src/engine/leaf_batch22_c.cpp
 0x0039ed68,676,matching,script_vm,script_vm_func_0039ed68,src/engine/leaf_batch36_b.cpp

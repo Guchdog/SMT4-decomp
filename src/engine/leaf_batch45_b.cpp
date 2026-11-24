@@ -8801,117 +8801,106 @@ extern "C" __attribute__((minsize)) u32 ui_func_00254ca8(u32 id0, u32 id1, u32 m
     return first | second;
 }
 
+// 0x002C2B1C (24 B): engine context singleton getter.  The pinned callee
+// ignores its argument and returns *(*(u32*)0x0043E2A8 + 4) + 0x828C0.  The
+// plain `void engine_func_002c2b1c()` declaration used by earlier functions in
+// this TU cannot carry the r0 argument, so alias the same symbol here.
+extern "C" void* engine_context_0039e788(void* self)
+    __asm__("engine_func_002c2b1c");
+
+// 0x00231F58 (20 B): ignores its argument and returns the address of the two
+// floats at +0x38/+0x3C of the block reached through 0x0044CDF0.
+extern "C" const f32* func_00231f58(void* unused);
+
 // DECOMP_FUNC(0x0039e788, 844)
-extern "C" __attribute__((naked)) void engine_func_0039e788() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x5ff0, 0xe92d, 0x4000, 0xe1a0\n"
-        ".hword 0x90e1, 0xebfc, 0x7000, 0xe1a0\n"
-        ".hword 0x0c01, 0xe284, 0x0062, 0xe280\n"
-        ".hword 0x4dec, 0xebfa, 0xbb16, 0xe284\n"
-        ".hword 0x0a02, 0xec90, 0x9066, 0xe3e0\n"
-        ".hword 0x62fc, 0xe59f, 0x52fc, 0xe59f\n"
-        ".hword 0x3abb, 0xed9f, 0x3abb, 0xeddf\n"
-        ".hword 0xe000, 0xe3e0, 0x1000, 0xe3a0\n"
-        ".hword 0x8c0d, 0xe287, 0xbfa2, 0xe28b\n"
-        ".hword 0xaa06, 0xe284, 0x0042, 0xea00\n"
-        ".hword 0x0000, 0xe351, 0x21b0, 0x159a\n"
-        ".hword 0x003f, 0x0a00, 0x005a, 0xe5d8\n"
-        ".hword 0x000c, 0xe350, 0x003e, 0x0a00\n"
-        ".hword 0x0b80, 0xe594, 0x0000, 0xe352\n"
-        ".hword 0x3000, 0xe3a0, 0x0fa0, 0xe080\n"
-        ".hword 0x00c0, 0xe1a0, 0x0a10, 0xee01\n"
-        ".hword 0x0b84, 0xe594, 0x0fa0, 0xe080\n"
-        ".hword 0x1ac1, 0xeeb8, 0x00c0, 0xe1a0\n"
-        ".hword 0x0a90, 0xee01, 0x1ae1, 0xeef8\n"
-        ".hword 0x1a40, 0xee31, 0x1ae0, 0xee71\n"
-        ".hword 0x1ac1, 0xeebd, 0x1ae1, 0xeefd\n"
-        ".hword 0x0095, 0xda00, 0x0083, 0xe083\n"
-        ".hword 0x0203, 0xe080, 0x0000, 0xe351\n"
-        ".hword 0x0100, 0xe084, 0x0b03, 0x0280\n"
-        ".hword 0x0fa2, 0x0280, 0x0a05, 0x1280\n"
-        ".hword 0x0ea9, 0x1280, 0xc3b4, 0xe1d0\n"
-        ".hword 0x0000, 0xe35c, 0x0087, 0x0a00\n"
-        ".hword 0x4ac1, 0xeef8, 0x5ae1, 0xeef8\n"
-        ".hword 0x2a07, 0xed90, 0x4a08, 0xed90\n"
-        ".hword 0x2a09, 0xedd0, 0x5a0a, 0xed90\n"
-        ".hword 0xc0ba, 0xe1d0, 0xc3b6, 0xe1c0\n"
-        ".hword 0x6ac3, 0xee34, 0x4ae3, 0xee75\n"
-        ".hword 0x2a46, 0xee32, 0x4a64, 0xee74\n"
-        ".hword 0x4ac2, 0xeebd, 0x2ae4, 0xeebd\n"
-        ".hword 0x4ae2, 0xeefc, 0x2ac5, 0xeefc\n"
-        ".hword 0x4a0e, 0xed80, 0x2a0f, 0xed80\n"
-        ".hword 0x4a10, 0xedc0, 0x2a11, 0xedc0\n"
-        ".hword 0x7008, 0xe596, 0xc004, 0xe5d0\n"
-        ".hword 0x0007, 0xe15c, 0x007e, 0x0a00\n"
-        ".hword 0x008d, 0xe35c, 0x005c, 0x0a00\n"
-        ".hword 0x008e, 0xe35c, 0x005d, 0x0a00\n"
-        ".hword 0x005c, 0xe35c, 0x005e, 0x0a00\n"
-        ".hword 0x005d, 0xe35c, 0x005f, 0x0a00\n"
-        ".hword 0x0060, 0xea00, 0x2000, 0xe59b\n"
-        ".hword 0xffbd, 0xeaff, 0x0d2e, 0xe284\n"
-        ".hword 0x0000, 0xe352, 0x1001, 0xe890\n"
-        ".hword 0x3000, 0xe3a0, 0x0a10, 0xee01\n"
-        ".hword 0xca90, 0xee01, 0x2ac1, 0xeeb8\n"
-        ".hword 0x1ae1, 0xeeb8, 0x1a40, 0xee72\n"
-        ".hword 0x1a60, 0xee31, 0x1ae1, 0xeefd\n"
-        ".hword 0x1ac1, 0xeebd, 0x005a, 0xda00\n"
-        ".hword 0x0083, 0xe083, 0x0203, 0xe080\n"
-        ".hword 0x0000, 0xe351, 0x0100, 0xe084\n"
-        ".hword 0x0b03, 0x0280, 0x0fa2, 0x0280\n"
-        ".hword 0x0a05, 0x1280, 0x0ea9, 0x1280\n"
-        ".hword 0xc3b4, 0xe1d0, 0x0000, 0xe35c\n"
-        ".hword 0x0031, 0x0a00, 0x4ae1, 0xeef8\n"
-        ".hword 0x5ac1, 0xeef8, 0x2a03, 0xed90\n"
-        ".hword 0x4a04, 0xed90, 0x2a05, 0xedd0\n"
-        ".hword 0x5a06, 0xed90, 0xc0b8, 0xe1d0\n"
-        ".hword 0xc3b6, 0xe1c0, 0x6ac3, 0xee34\n"
-        ".hword 0x4ae3, 0xee75, 0x2a46, 0xee32\n"
-        ".hword 0x4a64, 0xee74, 0x4ac2, 0xeebd\n"
-        ".hword 0x2ae4, 0xeebd, 0x4ae2, 0xeefc\n"
-        ".hword 0x2ac5, 0xeefc, 0x4a0e, 0xed80\n"
-        ".hword 0x2a0f, 0xed80, 0x4a10, 0xedc0\n"
-        ".hword 0x2a11, 0xedc0, 0x7008, 0xe596\n"
-        ".hword 0xc004, 0xe5d0, 0x0007, 0xe15c\n"
-        ".hword 0x001d, 0x0a00, 0x008d, 0xe35c\n"
-        ".hword 0x0006, 0x0a00, 0x008e, 0xe35c\n"
-        ".hword 0x0007, 0x0a00, 0x005c, 0xe35c\n"
-        ".hword 0x0008, 0x0a00, 0x005d, 0xe35c\n"
-        ".hword 0x0009, 0x0a00, 0x000a, 0xea00\n"
-        ".hword 0x008e, 0xe357, 0x0012, 0x0a00\n"
-        ".hword 0x0007, 0xea00, 0x008d, 0xe357\n"
-        ".hword 0x000f, 0x0a00, 0x0004, 0xea00\n"
-        ".hword 0x005d, 0xe357, 0x000c, 0x0a00\n"
-        ".hword 0x0001, 0xea00, 0x005c, 0xe357\n"
-        ".hword 0x0009, 0x0a00, 0xc2bc, 0xe1d0\n"
-        ".hword 0x0000, 0xe35c, 0x0004, 0x135c\n"
-        ".hword 0x9048, 0x0580, 0x0000, 0x0a00\n"
-        ".hword 0xe048, 0xe580, 0x3001, 0xe283\n"
-        ".hword 0x0002, 0xe153, 0xffbf, 0xbaff\n"
-        ".hword 0x0019, 0xea00, 0xc2bc, 0xe1d0\n"
-        ".hword 0x0000, 0xe35c, 0x0004, 0x135c\n"
-        ".hword 0x5048, 0x0580, 0xfff6, 0x0aff\n"
-        ".hword 0xfff4, 0xeaff, 0x008e, 0xe357\n"
-        ".hword 0x001d, 0x0a00, 0x0007, 0xea00\n"
-        ".hword 0x008d, 0xe357, 0x001a, 0x0a00\n"
-        ".hword 0x0004, 0xea00, 0x005d, 0xe357\n"
-        ".hword 0x0017, 0x0a00, 0x0001, 0xea00\n"
-        ".hword 0x005c, 0xe357, 0x0014, 0x0a00\n"
-        ".hword 0xc2bc, 0xe1d0, 0x0000, 0xe35c\n"
-        ".hword 0x0004, 0x135c, 0x9048, 0x0580\n"
-        ".hword 0x0000, 0x0a00, 0xe048, 0xe580\n"
-        ".hword 0x3001, 0xe283, 0x0002, 0xe153\n"
-        ".hword 0xff69, 0xbaff, 0x1001, 0xe281\n"
-        ".hword 0x0002, 0xe351, 0xff4f, 0xbaff\n"
-        ".hword 0x4c5a, 0xe284, 0x408d, 0xe284\n"
-        ".hword 0x0000, 0xe3a0, 0x0000, 0xe5c4\n"
-        ".hword 0x9ff0, 0xe8bd, 0x0000, 0x4320\n"
-        ".hword 0x0000, 0x42f0, 0xf91c, 0x0049\n"
-        ".hword 0x83ff, 0xb4ff, 0xc2bc, 0xe1d0\n"
-        ".hword 0x0000, 0xe35c, 0x0004, 0x135c\n"
-        ".hword 0x5048, 0x0580, 0xffeb, 0x0aff\n"
-        ".hword 0xffe9, 0xeaff\n"
-    );
+//
+// Publishes one screen-space placement record per active slot in two passes.
+// Pass 0 walks the records at self+0xE88 and uses the signed count at
+// self+0x5A88; pass 1 walks self+0x5A90 with the count at self+0x61B0.  When
+// the engine-context byte at +0xD5A equals 12 the record coordinates come from
+// the full self+0xB80/+0xB84 extents, otherwise from those extents divided by
+// two (truncating).  Two floats at +0x38/+0x3C of the 0x00231F58 result are
+// subtracted from those coordinates.
+//
+// For every active record (u16 +0x34 != 0) the routine copies the halfword at
+// +0xA (full-scale mode +0x8) to +0x36, converts the four floats at
+// +0x1C..+0x28 (full-scale mode +0x0C..+0x18) with the first two biased by the
+// coordinates and writes them to +0x38..+0x44, then sets the word at +0x48
+// from the record type at +0x4, the engine id at *(0x0049F91C+8), and the
+// record mode halfword at +0x2C.  Callers ignore the incidental r0 = 0 return.
+extern "C" u32 engine_func_0039e788(void* self_arg) {
+    u8* const self = static_cast<u8*>(self_arg);
+
+    void* const context = engine_context_0039e788(self);
+    const f32* const screen = func_00231f58(self + 0x162);
+    const f32 origin_x = screen[0];
+    const f32 origin_y = screen[1];
+
+    for (u32 pass = 0; pass < 2u; ++pass) {
+        const s32 count = (pass == 0u)
+            ? *reinterpret_cast<const s32*>(self + 0x5A88)
+            : *reinterpret_cast<const s32*>(self + 0x61B0);
+        const bool full_scale =
+            *reinterpret_cast<const u8*>(static_cast<u8*>(context) + 0xD5A) == 12u;
+
+        const s32 extent_x = *reinterpret_cast<const s32*>(self + 0xB80);
+        const s32 extent_y = *reinterpret_cast<const s32*>(self + 0xB84);
+        const s32 origin_offset_x = static_cast<s32>(
+            static_cast<f32>(full_scale ? extent_x : extent_x / 2) - origin_x);
+        const s32 origin_offset_y = static_cast<s32>(
+            static_cast<f32>(full_scale ? extent_y : extent_y / 2) - origin_y);
+
+        const u32 value_offset = full_scale ? 0x0Cu : 0x1Cu;
+        const u32 copy_offset = full_scale ? 0x08u : 0x0Au;
+        const f32 center_x = static_cast<f32>(origin_offset_x) - 160.0f;
+        const f32 center_y = static_cast<f32>(origin_offset_y) - 120.0f;
+
+        for (s32 index = 0; index < count; ++index) {
+            u8* const record = self +
+                static_cast<u32>(index) * 0x4Cu +
+                (pass == 0u ? 0x0E88u : 0x5A90u);
+            if (*reinterpret_cast<const u16*>(record + 0x34) == 0u) {
+                continue;
+            }
+
+            *reinterpret_cast<u16*>(record + 0x36) =
+                *reinterpret_cast<const u16*>(record + copy_offset);
+
+            const f32 x =
+                *reinterpret_cast<const f32*>(record + value_offset) - center_x;
+            const f32 y =
+                *reinterpret_cast<const f32*>(record + value_offset + 4) -
+                center_y;
+            const f32 width =
+                *reinterpret_cast<const f32*>(record + value_offset + 8);
+            const f32 height =
+                *reinterpret_cast<const f32*>(record + value_offset + 12);
+            *reinterpret_cast<u32*>(record + 0x38) =
+                static_cast<u32>(static_cast<s32>(x));
+            *reinterpret_cast<u32*>(record + 0x3C) =
+                static_cast<u32>(static_cast<s32>(y));
+            *reinterpret_cast<u32*>(record + 0x40) = static_cast<u32>(width);
+            *reinterpret_cast<u32*>(record + 0x44) = static_cast<u32>(height);
+
+            const u32 pair_id =
+                *reinterpret_cast<const u32*>(0x0049F91Cu + 8);
+            const u8 kind = record[4];
+            const bool paired =
+                static_cast<u32>(kind) == pair_id ||
+                (kind == 0x8Du && pair_id == 0x8Eu) ||
+                (kind == 0x8Eu && pair_id == 0x8Du) ||
+                (kind == 0x5Cu && pair_id == 0x5Du) ||
+                (kind == 0x5Du && pair_id == 0x5Cu);
+            const u16 mode = *reinterpret_cast<const u16*>(record + 0x2C);
+            const bool zero_mode = mode == 0u || mode == 4u;
+            *reinterpret_cast<u32*>(record + 0x48) =
+                !zero_mode ? 0xFFFFFFFFu
+                           : (paired ? 0xB4FF83FFu : 0xFFFFFF99u);
+        }
+    }
+
+    self[0x5A8D] = 0u;
+    return 0u;
 }
 
 // DECOMP_FUNC(0x00195044, 868)
