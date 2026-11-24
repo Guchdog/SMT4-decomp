@@ -427,43 +427,164 @@ extern "C" u32 shop_func_0022f9c8(func_0022f9c8::ShopObject* object) {
 }
 
 // DECOMP_FUNC(0x0026d1b8, 504)
-// 125 ARM instructions through unconditional pop; 4 trailing data bytes.
-extern "C" __attribute__((naked)) void script_vm_func_0026d1b8() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d41f0, 0xeb00c442, 0xe3500000, 0x1a000077\n"
-        ".word 0xe59f01dc, 0xe3a07000, 0xe5905000, 0xeb00b75c\n"
-        ".word 0xeb012ebb, 0xe1a04000, 0xeb0057be, 0xe1a06000\n"
-        ".word 0xeb005753, 0xe354001c, 0xe1a08000, 0x0a00000d\n"
-        ".word 0xe354001e, 0x135400b8, 0x0a00000a, 0xe35400bf\n"
-        ".word 0x135400cc, 0x0a000007, 0xe354001b, 0x1354001d\n"
-        ".word 0x0a000009, 0xe35400b7, 0x135400be, 0x135400e3\n"
-        ".word 0x0a000005, 0xea00000a, 0xe3560000, 0x15d50042\n"
-        ".word 0x13500000, 0x03a07001, 0xeafffff2, 0xe3560000\n"
-        ".word 0x0a000002, 0xe5d50042, 0xe3500000, 0x0a000000\n"
-        ".word 0xe3a07001, 0xe3540022, 0x13540024, 0x0a000003\n"
-        ".word 0xe35400b6, 0x135400c1, 0x135400cc, 0x1a000007\n"
-        ".word 0xe3560000, 0x1a000004, 0xe3580000, 0xba000002\n"
-        ".word 0xe5d50042, 0xe3500000, 0x1a000000, 0xe3a07001\n"
-        ".word 0xe3540021, 0x13540023, 0x0a000003, 0xe35400b5\n"
-        ".word 0x135400c0, 0x135400e3, 0x1a000007, 0xe3560000\n"
-        ".word 0x1a000004, 0xe3580000, 0xba000002, 0xe5d50042\n"
-        ".word 0xe3500000, 0x0a000000, 0xe3a07001, 0xe3540026\n"
-        ".word 0x13540004, 0x0a000003, 0xe35400bb, 0x135400c3\n"
-        ".word 0x135400cc, 0x1a000007, 0xe3560000, 0x1a000004\n"
-        ".word 0xe3580000, 0xaa000002, 0xe5d50042, 0xe3500000\n"
-        ".word 0x1a000000, 0xe3a07001, 0xe3540025, 0x13540003\n"
-        ".word 0x0a000003, 0xe35400ba, 0x135400c2, 0x135400e3\n"
-        ".word 0x1a000006, 0xe3560000, 0x1a000006, 0xe3580000\n"
-        ".word 0xaa000004, 0xe5d50042, 0xe3500000, 0x1a000001\n"
-        ".word 0xe3570000, 0x0a000001, 0xe320f000, 0xebfffc49\n"
-        ".word 0xe1d503fa, 0xe1500008, 0x01d504d4, 0x01500006\n"
-        ".word 0x0a00000e, 0xe5d5066c, 0xe3500003, 0x13500002\n"
-        ".word 0x0a000008, 0xe3500004, 0x1350000f, 0x0a000005\n"
-        ".word 0xe350000c, 0x1350000d, 0x0a000002, 0xe350000e\n"
-        ".word 0x13500010, 0x1a000001, 0xe8bd41f0, 0xeafd0c2a\n"
-        ".word 0xe8bd81f0, 0x0043dcf0\n"
-    );
+//
+// Recovered contract (ARM 0x0026D1B8..0x0026D3A7 plus the literal word
+// 0x0043DCF0 at 0x0026D3AC):
+//   * Gate: `camp_func_0029e2cc()` reads globals only.  A non-zero result is
+//     returned immediately; the object slot is not read and no other call is
+//     made on that path.
+//   * `object = *(u8**)0x0043DCF0` is loaded exactly once, before the four
+//     probe calls, and every later byte/halfword access goes through that saved
+//     pointer (the probes may replace the global; the original still uses r5).
+//   * Four probes run in order, all with no live incoming argument:
+//     `Status_GetSelectedActorPtr()` (result discarded), `camp_func_002b8ccc()`
+//     (event id byte), `camp_func_002830e0()` (signed comparison value) and
+//     `camp_func_00282f3c()` (second signed comparison value).
+//   * Six event-id groups update a sticky `flagged` boolean.  Group 1 sets it
+//     when `value6 == 0 || object[0x42] == 0`; group 2 when
+//     `value6 == 0 || object[0x42] != 0`; group 3 when
+//     `value6 != 0 || value8 < 0 || object[0x42] == 0`; group 4 when
+//     `value6 != 0 || value8 < 0 || object[0x42] != 0`; group 5 when
+//     `value6 != 0 || value8 >= 0 || object[0x42] == 0`.  The `object[0x42]`
+//     byte is only read when the preceding register tests do not decide the
+//     condition, exactly as in the ARM short-circuit chain.
+//   * Group 6 (`0x25/0x03/0xba/0xc2/0xe3`) calls `script_vm_func_0026c480()`
+//     when `value6 != 0 || value8 >= 0 || object[0x42] != 0 || flagged`; every
+//     other id calls it only when `flagged` is set.
+//   * If `(s16)object[0x3a] == value8` and `(s8)object[0x44] == value6`, the
+//     routine returns the sign-extended byte at `object[0x44]`.
+//   * Otherwise `state = object[0x66c]`.  States 2, 3, 4, 0xc, 0xd, 0xe, 0xf and
+//     0x10 tail-call `func_001b0454()` and forward its r0 result; every other
+//     state returns `state`.
+//   * All six helpers are argument-free in the pinned implementation (each
+//     starts by overwriting r0-r3); the tail target likewise reloads r0 before
+//     use, so forwarding the state byte in r0 is observationally invisible.
+//     There are no indirect calls and no stack arguments.  Epilogue is
+//     `pop {r4, r5, r6, r7, r8, pc}` (or `pop {r4, r5, r6, r7, r8, lr}` then a
+//     tail branch), so SP returns to its entry value.
+extern "C" s32 camp_func_0029e2cc();
+extern "C" const u16* Status_GetSelectedActorPtr();
+extern "C" u8 camp_func_002b8ccc();
+extern "C" s32 camp_func_002830e0();
+extern "C" s32 camp_func_00282f3c();
+// 0x0026C480 is defined later in this translation unit as a naked body, so an
+// asm-labelled alias is used instead of redeclaring the symbol here.
+extern "C" void script_vm_0026c480_call() __asm__("script_vm_func_0026c480");
+// 0x001B0454 has no recovered source signature; only its r0 result is visible
+// through the tail branch, so an alias exposes that ABI result.
+extern "C" u32 func_001b0454_result() __asm__("func_001b0454");
+
+namespace script_vm_0026d1b8_detail {
+
+constexpr u32 kObjectSlot = 0x0043DCF0;
+constexpr u32 kFlagByteOffset = 0x42;
+constexpr u32 kCompareHalfwordOffset = 0x3A;
+constexpr u32 kCompareByteOffset = 0x44;
+constexpr u32 kStateByteOffset = 0x66C;
+
+inline bool in_group_1(u32 id) {
+    return id == 0x1C || id == 0x1E || id == 0xB8 || id == 0xBF || id == 0xCC;
+}
+
+inline bool in_group_2(u32 id) {
+    return id == 0x1B || id == 0x1D || id == 0xB7 || id == 0xBE || id == 0xE3;
+}
+
+inline bool in_group_3(u32 id) {
+    return id == 0x22 || id == 0x24 || id == 0xB6 || id == 0xC1 || id == 0xCC;
+}
+
+inline bool in_group_4(u32 id) {
+    return id == 0x21 || id == 0x23 || id == 0xB5 || id == 0xC0 || id == 0xE3;
+}
+
+inline bool in_group_5(u32 id) {
+    return id == 0x26 || id == 0x04 || id == 0xBB || id == 0xC3 || id == 0xCC;
+}
+
+inline bool in_group_6(u32 id) {
+    return id == 0x25 || id == 0x03 || id == 0xBA || id == 0xC2 || id == 0xE3;
+}
+
+inline bool in_tail_state(u32 state) {
+    return state == 2 || state == 3 || state == 4 || state == 0x0C ||
+           state == 0x0D || state == 0x0E || state == 0x0F || state == 0x10;
+}
+
+inline const u8* global_object() {
+    return *reinterpret_cast<const u8* const*>(kObjectSlot);
+}
+
+inline u8 flag_byte(const u8* object) {
+    return *reinterpret_cast<const u8*>(object + kFlagByteOffset);
+}
+
+} // namespace script_vm_0026d1b8_detail
+
+extern "C" u32 script_vm_func_0026d1b8() {
+    using namespace script_vm_0026d1b8_detail;
+
+    const s32 gate = camp_func_0029e2cc();
+    if (gate != 0) {
+        return static_cast<u32>(gate);
+    }
+
+    const u8* const object = global_object();
+
+    (void)Status_GetSelectedActorPtr();
+    const u32 event = camp_func_002b8ccc();
+    const s32 value6 = camp_func_002830e0();
+    const s32 value8 = camp_func_00282f3c();
+
+    bool flagged = false;
+
+    if (in_group_1(event)) {
+        if (value6 == 0 || flag_byte(object) == 0) {
+            flagged = true;
+        }
+    }
+    if (in_group_2(event)) {
+        if (value6 == 0 || flag_byte(object) != 0) {
+            flagged = true;
+        }
+    }
+    if (in_group_3(event)) {
+        if (value6 != 0 || value8 < 0 || flag_byte(object) == 0) {
+            flagged = true;
+        }
+    }
+    if (in_group_4(event)) {
+        if (value6 != 0 || value8 < 0 || flag_byte(object) != 0) {
+            flagged = true;
+        }
+    }
+    if (in_group_5(event)) {
+        if (value6 != 0 || value8 >= 0 || flag_byte(object) == 0) {
+            flagged = true;
+        }
+    }
+    if (in_group_6(event)) {
+        if (value6 != 0 || value8 >= 0 || flag_byte(object) != 0 || flagged) {
+            flagged = true;
+        }
+    }
+    if (flagged) {
+        script_vm_0026c480_call();
+    }
+
+    if (*reinterpret_cast<const s16*>(object + kCompareHalfwordOffset) == value8) {
+        const s8 compare_byte =
+            *reinterpret_cast<const s8*>(object + kCompareByteOffset);
+        if (compare_byte == value6) {
+            return static_cast<u32>(static_cast<s32>(compare_byte));
+        }
+    }
+
+    const u32 state = *reinterpret_cast<const u8*>(object + kStateByteOffset);
+    if (in_tail_state(state)) {
+        return func_001b0454_result();
+    }
+    return state;
 }
 
 // DECOMP_FUNC(0x002c7090, 504)
