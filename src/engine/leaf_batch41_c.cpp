@@ -12931,42 +12931,133 @@ extern "C" void func_0014c5c0(void* ctx, const void* sample) {
     *reinterpret_cast<u32*>(c + kRecordPending) = 0;
 }
 
+// Direct calls made by ui_func_00258c58 (all C linkage in their own units).
+// 0x0029ad98 takes no arguments (the original arrives with r0 = the negative
+// selected id and r1 leftover); its return value is the replacement mode id.
+extern "C" s32 ui_func_0029ad98();
+// 0x0029cb94(0) returns the replacement mode id for the positive-selection path.
+extern "C" s32 script_vm_func_0029cb94(s32 value);
+// 0x00215a60 / 0x002e2f3c are 8-byte trampolines: `cmp r1, #0x10; bxne lr`.
+// They only fall through into the neighbouring list builder when mode == 16.
+extern "C" void script_vm_func_00215a60(u16* sub_ids, u32 mode);
+extern "C" void func_002e2f3c(u16* sub_ids, u32 mode);
+// 0x002b0824(id) -> demon record pointer or null; byte +0x4B is tested.
+extern "C" void* camp_func_002b0824(u16 demon_id);
+// 0x0026ac34(skill_id, threshold, existing_ids, out_ids, suppress) -> count.
+extern "C" s32 script_vm_func_0026ac34(u16 arg0, u32 arg1, const u16* arg2,
+                                        u16* arg3, u32 arg4);
+// 0x0026b0cc is a 4-byte no-op body; the call is still part of the sequence.
+extern "C" void func_0026b0cc();
+
+// Namespaced status helpers (smt4::ui); the party-prompt type is incomplete
+// here because only its address is forwarded.
+namespace smt4::ui {
+struct StatusDownPartyPrompt;
+void StatusDown_SetPartyPrompt(const StatusDownPartyPrompt* prompt);
+void StatusDown_SetSubIdsA(const u16* ids, s32 count);
+void StatusDown_PopulateSkillList(const u8* skill_bitfield);
+void StatusDown_PopulateItemList(const u8* item_counts);
+void StatusDown_UpdateHelpMessage(s32 msg_index);
+u8 StatusDown_GetActiveMode();
+void Status_UpdateAffinityTable();
+}  // namespace smt4::ui
+
 // DECOMP_FUNC(0x00258c58, 480)
-// 116 ARM instructions through unconditional pop; 16 trailing data bytes.
-extern "C" __attribute__((naked)) void ui_func_00258c58() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d43f0, 0xe24dd01c, 0xe1b07000, 0xe3a06008\n"
-        ".word 0xe59f91b8, 0xe5994004, 0xe2848c13, 0xe2845c13\n"
-        ".word 0xe1d800f0, 0x12845a01, 0x12855e8b, 0xe3500000\n"
-        ".word 0xaa000001, 0xeb010841, 0xea000007, 0xe320f000\n"
-        ".word 0xda000006, 0xe59f0188, 0xe7d00004, 0xe3500006\n"
-        ".word 0x0a000002, 0xe3a00000, 0xeb010fb7, 0xe1a06000\n"
-        ".word 0xe2840a01, 0xe20610ff, 0xe2800fd2, 0xebfef365\n"
-        ".word 0xe3570000, 0xe320f000, 0x0a000003, 0xe2840b06\n"
-        ".word 0xe20610ff, 0xe28000f8, 0xeb022895, 0xe3a07000\n"
-        ".word 0xe58d7008, 0xe58d700c, 0xe58d7010, 0xe58d7014\n"
-        ".word 0xe1d500f0, 0xe3500000, 0xda00001c, 0xe59f0120\n"
-        ".word 0xe7d00004, 0xe3500006, 0x0a000018, 0xe3500002\n"
-        ".word 0x13500003, 0x1a000006, 0xe1d800b0, 0xeb015ebe\n"
-        ".word 0xe3500000, 0x15d0004b, 0x13500000, 0x13a00001\n"
-        ".word 0x1a000000, 0xe3a00000, 0xe58d0000, 0xe1d510b2\n"
-        ".word 0xe1d500b0, 0xe28d3008, 0xe2852048, 0xeb0047b6\n"
-        ".word 0xe6af1070, 0xe28d0008, 0xeb00479e, 0xe59f00c4\n"
-        ".word 0xe7d00004, 0xe3500006, 0x1a00000a, 0xea000002\n"
-        ".word 0xe3e01000, 0xe3a00000, 0xeafffff6, 0xe5996004\n"
-        ".word 0xe59f00a4, 0xe7807006, 0xeb00ec2d, 0xe2866c1e\n"
-        ".word 0xe2866063, 0xe5c67000, 0xe1d500f0, 0xe3a06001\n"
-        ".word 0xe3500000, 0xaa000006, 0xe285003a, 0xebfef2f5\n"
-        ".word 0xe2840a01, 0xe59012e4, 0xe3510001, 0xc58062e4\n"
-        ".word 0xcb00ec1f, 0xe1d500f0, 0xe3500000, 0xda00000f\n"
-        ".word 0xeb01d9c0, 0xe2850058, 0xe320f000, 0xebfe55ee\n"
-        ".word 0xe2850098, 0xe320f000, 0xebfe5674, 0xe320f000\n"
-        ".word 0xe320f000, 0xeb00ebd3, 0xe3500002, 0xe320f000\n"
-        ".word 0x1a000002, 0xe59f0020, 0xe7806004, 0xeb00ec0c\n"
-        ".word 0xe320f000, 0xeb0048aa, 0xe28dd01c, 0xe8bd83f0\n"
-        ".word 0x0044e140, 0x00001e66, 0x00001e67, 0x000012e4\n"
-    );
+//
+// Refreshes the status HUD after a menu change. The status work area
+// (StatusManager::work, pointer at 0x0044E144) stores two 0x5B0-byte panels:
+// the selected-actor/affinity panel at +0x1300 and the "next" panel at +0x18B0.
+// The incoming flag selects which panel is refreshed. `mode` defaults to 8 and
+// is replaced by a menu lookup when the selected id at +0x1300 is negative, or
+// when it is positive and the main menu id at +0x1E66 is not 6. The selected
+// panel's skill id/threshold drive a sub-id build into a stack buffer, which is
+// then handed to the status-down workspace; afterwards the display state at
+// +0x12E4 is reset/advanced according to the panel state.
+extern "C" void ui_func_00258c58(u32 next_panel) {
+    // `movs r7, r0` + conditional addne pair: a nonzero flag picks +0x18B0.
+    u8* const work = *reinterpret_cast<u8* const*>(0x0044E144u);
+    u8* const panel = (next_panel != 0u) ? work + 0x18B0u : work + 0x1300u;
+
+    s32 mode = 8;
+    const s16 selected = *reinterpret_cast<const s16*>(work + 0x1300u);
+    if (selected < 0) {
+        mode = ui_func_0029ad98();
+    } else if (selected > 0) {
+        if (work[0x1E66u] != 6u) {
+            mode = script_vm_func_0029cb94(0);
+        }
+    }
+
+    // The mode is passed as its low byte; the panel list lives at +0x1348 and
+    // the alternate panel list at +0x18F8 (both panel base + 0x48).
+    script_vm_func_00215a60(reinterpret_cast<u16*>(work + 0x1348u),
+                            static_cast<u32>(mode) & 0xFFu);
+    if (next_panel != 0u) {
+        func_002e2f3c(reinterpret_cast<u16*>(work + 0x18F8u),
+                      static_cast<u32>(mode) & 0xFFu);
+    }
+
+    // Stack scratch holding up to eight sub-skill ids. The original zeroes the
+    // four words before either helper runs.
+    u16 sub_ids[8];
+    for (u32 i = 0; i < 8u; ++i) {
+        sub_ids[i] = 0u;
+    }
+
+    if (*reinterpret_cast<const s16*>(panel) > 0 && work[0x1E66u] != 6u) {
+        const u8 menu_id = work[0x1E66u];
+        u32 suppress = 0u;
+        if (menu_id == 2u || menu_id == 3u) {
+            const void* const demon = camp_func_002b0824(
+                *reinterpret_cast<const u16*>(work + 0x1300u));
+            if (demon != nullptr &&
+                *(static_cast<const u8*>(demon) + 0x4Bu) != 0u) {
+                suppress = 1u;
+            }
+        }
+        const s32 count = script_vm_func_0026ac34(
+            *reinterpret_cast<const u16*>(panel),
+            *reinterpret_cast<const u16*>(panel + 2u),
+            reinterpret_cast<const u16*>(panel + 0x48u), sub_ids, suppress);
+        // `sxtb` of the count: only the low byte is forwarded.
+        smt4::ui::StatusDown_SetSubIdsA(sub_ids, static_cast<s8>(count));
+    } else {
+        smt4::ui::StatusDown_SetSubIdsA(nullptr, -1);
+    }
+
+    if (work[0x1E67u] == 6u) {
+        // The original reloads the manager pointer here (helpers may have
+        // replaced the work area) and uses the reloaded value for both stores.
+        u8* const current = *reinterpret_cast<u8* const*>(0x0044E144u);
+        *reinterpret_cast<u32*>(current + 0x12E4u) = 0u;
+        smt4::ui::Status_UpdateAffinityTable();
+        current[0x1E63u] = 0u;
+    }
+
+    if (*reinterpret_cast<const s16*>(panel) < 0) {
+        smt4::ui::StatusDown_SetPartyPrompt(
+            reinterpret_cast<const smt4::ui::StatusDownPartyPrompt*>(
+                panel + 0x3Au));
+        // Signed compare (`strgt`): only a state greater than 1 is downgraded.
+        s32* const display_state = reinterpret_cast<s32*>(work + 0x12E4u);
+        if (*display_state > 1) {
+            *display_state = 1;
+            smt4::ui::Status_UpdateAffinityTable();
+        }
+    }
+
+    if (*reinterpret_cast<const s16*>(panel) > 0) {
+        smt4::ui::StatusDown_UpdateHelpMessage(
+            *reinterpret_cast<const s16*>(panel));
+        smt4::ui::StatusDown_PopulateSkillList(panel + 0x58u);
+        smt4::ui::StatusDown_PopulateItemList(panel + 0x98u);
+        if (smt4::ui::StatusDown_GetActiveMode() == 2u) {
+            *reinterpret_cast<u32*>(work + 0x12E4u) = 1u;
+            smt4::ui::Status_UpdateAffinityTable();
+        }
+    }
+
+    func_0026b0cc();
 }
 
 // DECOMP_FUNC(0x0033504c, 480)
