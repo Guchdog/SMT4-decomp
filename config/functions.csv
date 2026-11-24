@@ -9688,7 +9688,7 @@ address,size,status,category,name,src_file
 0x003b8378,364,matching,script_vm,script_vm_func_003b8378,src/engine/leaf_batch44_a.cpp
 0x003b84e4,320,matching,script_vm,script_vm_func_003b84e4,src/engine/leaf_batch38_b.cpp
 0x003b8624,380,matching,engine,engine_func_003b8624,src/engine/leaf_batch34_a.cpp
-0x003b87a0,476,matching,script_vm,script_vm_func_003b87a0,src/engine/leaf_batch41_c.cpp
+0x003b87a0,476,non_matching,script_vm,script_vm_func_003b87a0,src/engine/leaf_batch41_c.cpp
 0x003b897c,780,matching,engine,engine_func_003b897c,src/engine/leaf_batch34_a.cpp
 0x003b8c88,164,matching,script_vm,script_vm_func_003b8c88,src/engine/leaf_batch33_b.cpp
 0x003b8d2c,308,matching,engine,engine_func_003b8d2c,src/engine/leaf_batch38_b.cpp

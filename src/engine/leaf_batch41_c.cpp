@@ -12393,41 +12393,233 @@ extern "C" u32 shop_func_003a0bb8(void* self_pointer) {
 }
 
 // DECOMP_FUNC(0x003b87a0, 476)
-// 117 ARM instructions through unconditional pop; 8 trailing data bytes.
-extern "C" __attribute__((naked)) void script_vm_func_003b87a0() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4070, 0xe1a04000, 0xe59f01c4, 0xe3a05000\n"
-        ".word 0xe1d017ba, 0xe3510000, 0x0a000004, 0xe2842028\n"
-        ".word 0xe3a0100d, 0xe8820022, 0xe1c057ba, 0xea00005c\n"
-        ".word 0xe1d017b8, 0xe3510000, 0x0a000004, 0xe2842028\n"
-        ".word 0xe3a0100c, 0xe8820022, 0xe1c057b8, 0xea000054\n"
-        ".word 0xe59f0180, 0xe5900000, 0xebfaf7c6, 0xe3500000\n"
-        ".word 0xe320f000, 0x0a000003, 0xe2841028, 0xe3a0000e\n"
-        ".word 0xe8810021, 0xea00004a, 0xe5940020, 0xe3a06010\n"
-        ".word 0xe3100501, 0x0a000006, 0xe3a020ff, 0xe3a0101e\n"
-        ".word 0xe3a00000, 0xebfb8f89, 0xe584502c, 0xe5846028\n"
-        ".word 0xea00003f, 0xe3100010, 0x03100602, 0x1a000009\n"
-        ".word 0xe3100701, 0x03100502, 0x1a000006, 0xe3100301\n"
-        ".word 0x03100401, 0x1a000003, 0xe3100402, 0x03100302\n"
-        ".word 0x03100202, 0x0a000002, 0xe3100c01, 0x1a000015\n"
-        ".word 0xea000010, 0xe3100a02, 0x0a00002b, 0xe3100040\n"
-        ".word 0x0a000002, 0xe3c00040, 0xe5840020, 0xebfb7a21\n"
-        ".word 0xe2841028, 0xe3a00006, 0xe8810021, 0xe284009c\n"
-        ".word 0xebf9cc67, 0xe5840d60, 0xe5940020, 0xe3c00a02\n"
-        ".word 0xe5840020, 0xea00001e, 0xe3a020ff, 0xe3a0100a\n"
-        ".word 0xe3a00000, 0xebfb8f61, 0xe5940020, 0xe3100502\n"
-        ".word 0x03100401, 0x1a00000b, 0xe3100402, 0x03100302\n"
-        ".word 0x1a000008, 0xe3100601, 0x03100702, 0x1a000005\n"
-        ".word 0xe3100602, 0x03100701, 0x1a000002, 0xe3100301\n"
-        ".word 0x03100202, 0x0a000005, 0xe3100c01, 0x1a000003\n"
-        ".word 0xe3a020ff, 0xe3a0100a, 0xe3a00001, 0xebfb8f4b\n"
-        ".word 0xe584502c, 0xe5846028, 0xea000001, 0xe1a00004\n"
-        ".word 0xeb00000d, 0xe1a00004, 0xebf9cbef, 0xe2841058\n"
-        ".word 0xe1a00004, 0xebf9cc1d, 0xe5d40e58, 0xe3500000\n"
-        ".word 0x0a000002, 0xe5940e5c, 0xe8bd4070, 0xeafe24c0\n"
-        ".word 0xe8bd8070, 0x0049fa1c, 0x00433158\n"
-    );
+//
+// Script-VM "wait/update" step.  The object in r0 receives a result pair at
+// +0x28/+0x2C selected by, in order: two global u16 pending words, a probe of
+// the object stored at 0x00433158, and the flag word at self+0x20.  Every
+// early exit branches to the same epilogue, which runs two update helpers and
+// either returns 0 or tail-branches into 0x00341C74 with the object at
+// self+0xE5C.
+//
+// Details reproduced from the original:
+//   * 0x3B87A8 loads the u16 status base 0x0049FA1C and tests +0x7A before
+//     +0x78; the first non-zero word wins and is cleared with a u16 store.
+//   * 0x3B87F0 passes *(u32*)0x00433158 to 0x00276718; a non-zero result
+//     yields code 14.
+//   * The `tst`/`tsteq` chains at 0x3B8844 and 0x3B88D8 are the two disjoint
+//     flag sets below; only their OR-equivalent masks are observed.
+//   * The 0x00000100 bit suppresses the two 0x0029C660 calls (but not the
+//     other paths).  The 0x00002000 and 0x00000040 bits clear themselves.
+//   * The epilogue reads self+0xE58 as an unsigned byte and self+0xE5C as a
+//     u32 pointer; the final branch is a tail call after `pop {r4,r5,r6,lr}`.
+//
+// All field accesses keep their original width.  Byte/word arithmetic wraps.
+namespace script_vm_3b87a0 {
+
+// Global status page and the probe slot read by 0x00276718.
+constexpr u32 kStatusBase = 0x0049FA1Cu;
+constexpr u32 kStatusWord78 = kStatusBase + 0x78u;
+constexpr u32 kStatusWord7A = kStatusBase + 0x7Au;
+constexpr u32 kProbeSlot = 0x00433158u;
+
+// Fields of the script-VM state object.
+constexpr u32 kFlags20 = 0x20u;
+constexpr u32 kCode28 = 0x28u;
+constexpr u32 kCode2C = 0x2Cu;
+constexpr u32 kUpdateObject9C = 0x9Cu;
+constexpr u32 kUpdateResultD60 = 0xD60u;
+constexpr u32 kTrailingOut58 = 0x58u;
+constexpr u32 kTailFlagE58 = 0xE58u;
+constexpr u32 kTailObjectE5C = 0xE5Cu;
+
+// Raw flag bits observed in the two `tst` chains.
+constexpr u32 kBit00000010 = 0x00000010u;
+constexpr u32 kBit00000040 = 0x00000040u;
+constexpr u32 kBit00000100 = 0x00000100u;
+constexpr u32 kBit00002000 = 0x00002000u;
+constexpr u32 kBit00040000 = 0x00040000u;
+constexpr u32 kBit00080000 = 0x00080000u;
+constexpr u32 kBit00100000 = 0x00100000u;
+constexpr u32 kBit00200000 = 0x00200000u;
+constexpr u32 kBit00400000 = 0x00400000u;
+constexpr u32 kBit00800000 = 0x00800000u;
+constexpr u32 kBit01000000 = 0x01000000u;
+constexpr u32 kBit02000000 = 0x02000000u;
+constexpr u32 kBit04000000 = 0x04000000u;
+constexpr u32 kBit08000000 = 0x08000000u;
+constexpr u32 kBit20000000 = 0x20000000u;
+
+// 0x3B8844..0x3B8874.
+constexpr u32 kFirstFlagMask =
+    kBit00000010 | kBit00200000 | kBit00040000 | kBit00800000 |
+    kBit04000000 | kBit01000000 | kBit02000000 | kBit08000000 |
+    kBit20000000;
+
+// 0x3B88D8..0x3B8914.
+constexpr u32 kSecondFlagMask =
+    kBit00800000 | kBit01000000 | kBit02000000 | kBit08000000 |
+    kBit00100000 | kBit00080000 | kBit00200000 | kBit00040000 |
+    kBit04000000 | kBit20000000;
+
+// Result codes written to self+0x28.
+constexpr u32 kCode12 = 12;
+constexpr u32 kCode13 = 13;
+constexpr u32 kCode14 = 14;
+constexpr u32 kCode16 = 16;
+constexpr u32 kCode6 = 6;
+
+// Arguments of the 0x0029C660 status writes.
+constexpr u32 kStatusSlot0 = 0;
+constexpr u32 kStatusSlot1 = 1;
+constexpr u32 kStatusValue10 = 10;
+constexpr u32 kStatusValue30 = 30;
+constexpr u32 kStatusByteFF = 0xFF;
+
+__attribute__((always_inline)) inline u16 load_u16(u32 address) {
+    return *reinterpret_cast<const volatile u16*>(
+        static_cast<uintptr_t>(address));
+}
+
+__attribute__((always_inline)) inline u32 load_u32(u32 address) {
+    return *reinterpret_cast<const volatile u32*>(
+        static_cast<uintptr_t>(address));
+}
+
+__attribute__((always_inline)) inline u8 load_u8(u32 address) {
+    return *reinterpret_cast<const volatile u8*>(
+        static_cast<uintptr_t>(address));
+}
+
+__attribute__((always_inline)) inline void store_u16(u32 address, u16 value) {
+    *reinterpret_cast<volatile u16*>(static_cast<uintptr_t>(address)) = value;
+}
+
+__attribute__((always_inline)) inline void store_u32(u32 address, u32 value) {
+    *reinterpret_cast<volatile u32*>(static_cast<uintptr_t>(address)) = value;
+}
+
+// The original writes self+0x28 then self+0x2C with a single `stm`.
+__attribute__((always_inline)) inline void store_code(u32 self, u32 code) {
+    store_u32(self + kCode28, code);
+    store_u32(self + kCode2C, 0);
+}
+
+}  // namespace script_vm_3b87a0
+
+// Direct call declarations.  Addresses follow config/functions.csv.
+namespace script_vm_3b87a0_calls {
+
+// 0x00276718: probes the object held in the 0x00433158 slot; returns 0/1.
+extern "C" u32 script_vm_func_00276718(void* object);
+
+// 0x0029C660: writes a 5-word status record indexed by r0 into the table at
+// 0x004D9758 (fields +4/+8/+0xC/+0x10).
+extern "C" void script_vm_func_0029c660(u32 slot, u32 value, u32 byte_value);
+
+// 0x00297128: global teardown helper; ignores r0 and returns void.
+extern "C" void shop_func_00297128(void);
+
+// 0x0022BA54: resolves the sub-object at r0 (self+0x9C) to a u32 handle.
+extern "C" u32 engine_func_0022ba54(void* object);
+
+// 0x003B897C: sub-object update routine for the state object in r0.
+extern "C" void engine_func_003b897c(void* self);
+
+// 0x0022B90C: frame interpolation of the state object (reads +0x20/+0x88).
+extern "C" void script_vm_func_0022b90c(void* self);
+
+// 0x0022B9D0: clamps the two floats at r1 (self+0x58/+0x5C) against
+// self+0x50/+0x54.  Return value not observed.
+extern "C" void engine_func_0022b9d0(void* self, void* output);
+
+// 0x00341C74: per-frame update for the object at self+0xE5C (tail branch).
+extern "C" u32 engine_func_00341c74(void* object);
+
+}  // namespace script_vm_3b87a0_calls
+
+extern "C" u32 script_vm_func_003b87a0(void* self_pointer) {
+    using namespace script_vm_3b87a0;
+    using namespace script_vm_3b87a0_calls;
+
+    const u32 self = reinterpret_cast<u32>(self_pointer);
+    u32 flags;
+    u32 second_flags;
+
+    // 0x3B87B0..0x3B87EC: two pending global status words, 0x7A first.
+    if (load_u16(kStatusWord7A) != 0) {
+        store_code(self, kCode13);
+        store_u16(kStatusWord7A, 0);
+        goto epilogue;
+    }
+    if (load_u16(kStatusWord78) != 0) {
+        store_code(self, kCode12);
+        store_u16(kStatusWord78, 0);
+        goto epilogue;
+    }
+
+    // 0x3B87F0..0x3B8814: probe of the object held at 0x00433158.
+    if (script_vm_func_00276718(reinterpret_cast<void*>(
+            static_cast<uintptr_t>(load_u32(kProbeSlot)))) != 0) {
+        store_code(self, kCode14);
+        goto epilogue;
+    }
+
+    // 0x3B8818..0x3B8840: flag 0x00400000 short-circuits to code 16.
+    flags = load_u32(self + kFlags20);
+    if ((flags & kBit00400000) != 0) {
+        script_vm_func_0029c660(kStatusSlot0, kStatusValue30, kStatusByteFF);
+        store_u32(self + kCode2C, 0);
+        store_u32(self + kCode28, kCode16);
+        goto epilogue;
+    }
+
+    // 0x3B8844..0x3B8880: the first `tst` chain selects between the
+    // second-flag block and the local update block.
+    if ((flags & kFirstFlagMask) != 0) {
+        if ((flags & kBit00000100) == 0) {
+            script_vm_func_0029c660(kStatusSlot0, kStatusValue10,
+                                    kStatusByteFF);
+        }
+    } else {
+        // 0x3B8884..0x3B88C4.
+        if ((flags & kBit00002000) == 0) {
+            engine_func_003b897c(
+                reinterpret_cast<void*>(static_cast<uintptr_t>(self)));
+            goto epilogue;
+        }
+        if ((flags & kBit00000040) != 0) {
+            store_u32(self + kFlags20, flags & ~kBit00000040);
+            shop_func_00297128();
+        }
+        store_code(self, kCode6);
+        store_u32(self + kUpdateResultD60,
+                  engine_func_0022ba54(reinterpret_cast<void*>(
+                      static_cast<uintptr_t>(self + kUpdateObject9C))));
+        store_u32(self + kFlags20,
+                  load_u32(self + kFlags20) & ~kBit00002000);
+        goto epilogue;
+    }
+
+    // 0x3B88D8..0x3B8938: reloaded flags; 0x00000100 suppresses the call.
+    second_flags = load_u32(self + kFlags20);
+    if ((second_flags & kSecondFlagMask) != 0 &&
+        (second_flags & kBit00000100) == 0) {
+        script_vm_func_0029c660(kStatusSlot1, kStatusValue10, kStatusByteFF);
+    }
+    store_code(self, kCode16);
+
+epilogue:
+    // 0x3B8944..0x3B8970.
+    script_vm_func_0022b90c(
+        reinterpret_cast<void*>(static_cast<uintptr_t>(self)));
+    engine_func_0022b9d0(
+        reinterpret_cast<void*>(static_cast<uintptr_t>(self)),
+        reinterpret_cast<void*>(static_cast<uintptr_t>(self + kTrailingOut58)));
+    if (load_u8(self + kTailFlagE58) != 0) {
+        return engine_func_00341c74(reinterpret_cast<void*>(
+            static_cast<uintptr_t>(load_u32(self + kTailObjectE5C))));
+    }
+    return 0;
 }
 
 // DECOMP_FUNC(0x001103bc, 480)
