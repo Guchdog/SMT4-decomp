@@ -12622,42 +12622,130 @@ epilogue:
     return 0;
 }
 
+// 0x001103BC: task/bootstrap entry that hands r0..r3 to the 0x0011D728
+// system call and retries it (sleeping 10 ms) while it answers with one of the
+// three "not ready" status words.  On success the signed status is checked for
+// a negative error code, the thread state is released, and r0 is optionally
+// updated from 0x0011D4AC.  The original pushes r0..r3 for the retry loop, so
+// the four incoming words are also the stack arguments of the loop's calls.
+
+// 0x002BB410: signed byte at 0x0044E3B0 (`ldrsb r0, [r0]`).
+extern "C" s32 func_002bb410();
+// 0x002BB420: ((*reinterpret_cast<u32*>(0x0044E398)) & 7) == 2.
+extern "C" u32 func_002bb420();
+// 0x002BB5B4: signed byte at 0x0044E459 (`ldrsb r0, [r0, #1]`).
+extern "C" s32 func_002bb5b4();
+// 0x002BB608: ((*reinterpret_cast<u32*>(0x0044E398)) & 7) == 0 (`tst`).
+extern "C" u32 func_002bb608();
+// 0x002BB490: sleeps for the 64-bit nanosecond value in (lo, hi).
+extern "C" void camp_func_002bb490(u32 lo, u32 hi);
+// 0x002BB4C0: clears the byte at 0x0044E459.
+extern "C" void func_002bb4c0();
+// 0x002BB4D4: thread-state transition driven by the u32 argument.
+extern "C" void func_002bb4d4(u32 value);
+// 0x002BB54C: thread cleanup (joins/terminates the registered callbacks).
+extern "C" void func_002bb54c();
+// 0x002BB648: thread switch/synchronisation point.
+extern "C" void engine_func_002bb648();
+// 0x002BB6B8: thread wait point.
+extern "C" void engine_func_002bb6b8();
+// 0x002BBD10: reports the signed error in r0 together with the caller PC in r1
+// through the block at 0x004D4200; the original passes 0x00110530.
+extern "C" void nn_sdk_func_002bbd10(s32 error, u32 caller_pc);
+extern "C" void func_00129af4();
+extern "C" void func_0012a6ec();
+// 0x002C57C4: clears the byte at its literal global, then reports/aborts `value`.
+extern "C" void engine_func_002c57c4(u32 value);
+// 0x0011D728: system call wrapper (SVC 0x32) with four forwarded arguments.
+extern "C" u32 func_0011d728(u32 arg0, u32 arg1, u32 arg2, u32 arg3);
+// 0x0011D4AC: follow-up system request for the r0 handle/word.
+extern "C" u32 func_0011d4ac(u32 arg0);
+
+namespace camp_001103bc {
+constexpr u32 kNoStateError = 0xC8A0CC04u;  // literal pool at 0x00110584
+constexpr u32 kNotReady0 = 0xC8A0CFF0u;     // literal pool at 0x0011058C
+constexpr u32 kNotReady1 = 0xE0A0CC08u;     // literal pool at 0x00110590
+constexpr u32 kNotReady2 = 0xC8A0CC02u;     // literal pool at 0x00110594
+constexpr u32 kRetryDelayNs = 10000000u;    // 10 * 0x000F4240 -> 10 ms
+constexpr u32 kStateBlock = 0x0044E360u;    // writes to +0x1 and +0x4
+constexpr u32 kErrorSite = 0x00110530u;     // `mov r1, pc` before 0x002BBD10
+}  // namespace camp_001103bc
+
 // DECOMP_FUNC(0x001103bc, 480)
-// 114 ARM instructions through unconditional pop; 24 trailing data bytes.
-extern "C" __attribute__((naked)) void camp_func_001103bc() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d5fff, 0xe1a06003, 0xe1a0a001, 0xe1a0b002\n"
-        ".word 0xeb06ac8d, 0xe3500000, 0x1a000003, 0xeb06ac10\n"
-        ".word 0xe3500000, 0x059f019c, 0x0a000064, 0xe320f000\n"
-        ".word 0xeb06ac0b, 0xe3500000, 0xe3a04001, 0x0a000004\n"
-        ".word 0xe3a00000, 0xeb06ac33, 0xe320f000, 0xe320f000\n"
-        ".word 0xea000014, 0xe320f000, 0xeb06ac7b, 0xe3500000\n"
-        ".word 0xe320f000, 0x0a00000f, 0xe59f515c, 0xe5c54001\n"
-        ".word 0xeb0065b0, 0xe320f000, 0xe320f000, 0xeb06ac5d\n"
-        ".word 0xe3500000, 0xe320f000, 0x0a000001, 0xeb06ac3f\n"
-        ".word 0xe5c54004, 0xe3a00000, 0xeb06ac1e, 0xe320f000\n"
-        ".word 0xe320f000, 0xeb0068a1, 0xe320f000, 0xeb06abe8\n"
-        ".word 0xe1b05000, 0x13a00001, 0x1b06d4d2, 0xe59f710c\n"
-        ".word 0xe59f810c, 0xe59f910c, 0xe320f000, 0xeb06ac8a\n"
-        ".word 0xe59d0000, 0xe1a03006, 0xe1a0200b, 0xe1a0100a\n"
-        ".word 0xeb0034a1, 0xe1a04000, 0xe320f000, 0xeb06ac66\n"
-        ".word 0xe1540007, 0xe1a00004, 0x11500008, 0x11540009\n"
-        ".word 0x0a000008, 0xe3550000, 0x0a000011, 0xeb06abd0\n"
-        ".word 0xe3500000, 0x03a00001, 0x0b06d452, 0xe320f000\n"
-        ".word 0xe320f000, 0xea00000f, 0xe59fc0ac, 0xe3a0100a\n"
-        ".word 0xe3a03000, 0xe1a02fc1, 0xe0840c91, 0xe0224c92\n"
-        ".word 0xe0212391, 0xeb06abe2, 0xe320f000, 0xe320f000\n"
-        ".word 0xeaffffdc, 0xe320f000, 0xeb06abbd, 0xe3500000\n"
-        ".word 0x13a00001, 0x1b06d4a7, 0xe1a00004, 0xe1a0100f\n"
-        ".word 0xe1b02fa4, 0x1b06adf6, 0xe320f000, 0xe320f000\n"
-        ".word 0xeb06abdf, 0xe320f000, 0xe320f000, 0xeb06ac2e\n"
-        ".word 0xe3500000, 0xe320f000, 0x0a000002, 0xe59d0000\n"
-        ".word 0xeb0033d2, 0xe1a04000, 0xe320f000, 0xeb06abac\n"
-        ".word 0xe3500000, 0xe320f000, 0x1f000003, 0xe1a00004\n"
-        ".word 0xe28dd010, 0xe8bd9ff0, 0xc8a0cc04, 0x0044e360\n"
-        ".word 0xc8a0cff0, 0xe0a0cc08, 0xc8a0cc02, 0x000f4240\n"
-    );
+extern "C" u32 camp_func_001103bc(u32 arg0, u32 arg1, u32 arg2, u32 arg3) {
+    using namespace camp_001103bc;
+
+    // 0x001103CC..0x001103E4.
+    if (func_002bb608() == 0 && func_002bb420() == 0) {
+        return kNoStateError;
+    }
+
+    // 0x001103EC..0x0011040C: `mov r4, #1` also happens on this path.
+    const u32 state_is_two = func_002bb420();
+    if (state_is_two != 0) {
+        func_002bb4d4(0);
+    } else if (func_002bb608() != 0) {
+        // 0x00110414..0x00110460.
+        *reinterpret_cast<u8*>(kStateBlock + 1) = 1;
+        func_00129af4();
+        if (func_002bb5b4() != 0) {
+            func_002bb54c();
+            *reinterpret_cast<u8*>(kStateBlock + 4) = 1;
+        }
+        func_002bb4d4(0);
+        func_0012a6ec();
+    }
+
+    // 0x00110464..0x00110484: latched thread flag; only its zero/nonzero
+    // value is used later.
+    const s32 thread_flag = func_002bb410();
+    if (thread_flag != 0) {
+        engine_func_002c57c4(1);
+    }
+
+    // 0x00110484..0x0011050C: the retry loop.  Registration/wait around each
+    // attempt, and a 10 ms sleep for the three "not ready" statuses.
+    u32 status;
+    for (;;) {
+        engine_func_002bb6b8();
+        status = func_0011d728(arg0, arg1, arg2, arg3);
+        engine_func_002bb648();
+        if (status == kNotReady0 || status == kNotReady1 || status == kNotReady2) {
+            camp_func_002bb490(kRetryDelayNs, 0);
+            continue;
+        }
+        break;
+    }
+
+    // 0x001104C0..0x00110520: opposite re-checks of the latched flag.
+    if (thread_flag != 0) {
+        if (func_002bb410() == 0) {
+            engine_func_002c57c4(1);
+        }
+    } else if (func_002bb410() != 0) {
+        engine_func_002c57c4(1);
+    }
+
+    // 0x00110524..0x00110530: negative (bit 31) statuses are reported.
+    if (static_cast<s32>(status) < 0) {
+        nn_sdk_func_002bbd10(static_cast<s32>(status), kErrorSite);
+    }
+
+    // 0x0011053C..0x00110560.
+    func_002bb4c0();
+    if (func_002bb608() != 0) {
+        status = func_0011d4ac(arg0);
+    }
+
+    // 0x00110568..0x00110574: `svcne #3`, whose r0 is the 0x002BB420 result.
+    const u32 exit_code = func_002bb420();
+    if (exit_code != 0) {
+        register u32 svc_argument __asm__("r0") = exit_code;
+        __asm__ volatile("svc #3" : : "r"(svc_argument) : "memory");
+    }
+
+    // 0x00110578..0x00110580.
+    return status;
 }
 
 // DECOMP_FUNC(0x0014c5c0, 480)

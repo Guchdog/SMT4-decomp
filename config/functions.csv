@@ -312,7 +312,7 @@ address,size,status,category,name,src_file
 0x0011008c,328,matching,camp,camp_func_0011008c,src/engine/leaf_batch43_c.cpp
 0x001101d4,132,matching,unknown,func_001101d4,src/engine/leaf_batch26_a.cpp
 0x00110258,356,matching,unknown,func_00110258,src/engine/leaf_batch41_a.cpp
-0x001103bc,480,matching,camp,camp_func_001103bc,src/engine/leaf_batch41_c.cpp
+0x001103bc,480,non_matching,camp,camp_func_001103bc,src/engine/leaf_batch41_c.cpp
 0x0011059c,16,matching,unknown,func_0011059c,src/engine/leaf_batch21_a.cpp
 0x001105ac,140,matching,camp,camp_func_001105ac,src/engine/leaf_batch26_a.cpp
 0x00110638,268,matching,camp,camp_func_00110638,src/engine/leaf_batch40_b.cpp
