@@ -13206,42 +13206,204 @@ extern "C" void camp_func_0033504c() {
 }
 
 // DECOMP_FUNC(0x0013a29c, 484)
-// 120 ARM instructions through unconditional bx; 4 trailing data bytes.
-extern "C" __attribute__((naked)) void engine_func_0013a29c() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d41f0, 0xe1a04000, 0xed2d8b02, 0xe5d00000\n"
-        ".word 0xed9f8a67, 0xe3500000, 0x0a000005, 0xeeb00a48\n"
-        ".word 0xe59f0190, 0xed840a01, 0xedd40a02, 0xee200a20\n"
-        ".word 0xeb05b904, 0xe5d40000, 0xe3500000, 0x0a000005\n"
-        ".word 0xeeb00a48, 0xe59f016c, 0xed840a02, 0xedd40a01\n"
-        ".word 0xee200a80, 0xeb05b8fb, 0xeeb00a48, 0xe5d40000\n"
-        ".word 0xe3a01000, 0xe3500000, 0x0a000002, 0xe59f0144\n"
-        ".word 0xed840a03, 0xeb05b8d7, 0xeeb00a48, 0xe5d40000\n"
-        ".word 0xe3a01001, 0xe3500000, 0x0a000002, 0xe59f0124\n"
-        ".word 0xed840a04, 0xeb05b8cf, 0xe3a06000, 0xe2840034\n"
-        ".word 0xe1a07006, 0xe1a08006, 0xe1a05000, 0xeb0625d6\n"
-        ".word 0xe5847014, 0xe584801c, 0xe1d423d0, 0xe59f00f4\n"
-        ".word 0xe1a01006, 0xeb05b8a8, 0xe1a00005, 0xe320f000\n"
-        ".word 0xeb0625ac, 0xe3a07000, 0xe2845034, 0xe3a06001\n"
-        ".word 0xe1a08007, 0xe1a00005, 0xeb0625c7, 0xe5847018\n"
-        ".word 0xe5848020, 0xe1d423d1, 0xe59f00b8, 0xe1a01006\n"
-        ".word 0xeb05b899, 0xe1a00005, 0xe320f000, 0xeb06259d\n"
-        ".word 0xe3a02000, 0xe59f009c, 0xe1a01002, 0xe5c42024\n"
-        ".word 0xeb00332c, 0xe3a02000, 0xe59f0088, 0xe3a01001\n"
-        ".word 0xe5c42025, 0xeb003327, 0xe3a01902, 0xe59f0074\n"
-        ".word 0xe1c412ba, 0xeb0032e8, 0xe0661786, 0xe59f0064\n"
-        ".word 0xe1c412b8, 0xeb00330a, 0xe3a05001, 0xe320f000\n"
-        ".word 0xeb06046c, 0xe3500000, 0xe320f000, 0x0a000003\n"
-        ".word 0xe59f0040, 0xe1a01005, 0xe5c45001, 0xeb0032ee\n"
-        ".word 0xe3a00000, 0xe5c40030, 0xe5c40031, 0xe3a01002\n"
-        ".word 0xe59f0020, 0xe1c413b2, 0xeb00333b, 0xe3a01000\n"
-        ".word 0xe5c41003, 0xe59f000c, 0xecbd8b02, 0xe8bd41f0\n"
-        ".word 0xea0032bc, 0x3f800000, 0x004e6f64, 0xe5d01000\n"
-        ".word 0xe3510000, 0x0a000004, 0xed800a01, 0xedd00a02\n"
-        ".word 0xe59f0008, 0xee200a20, 0xea05b89a, 0xe12fff1e\n"
-        ".word 0x004e6f64\n"
-    );
+//
+// Recovered contract for the 0x0013A29C symbol span.
+//
+// The 484-byte ledger row covers two entry points and their literal words:
+//
+//   0x0013A29C  u32 engine_func_0013a29c(void* state)       (436 bytes)
+//   0x0013A450  literal 1.0f, 0x0013A454 literal 0x004E6F64
+//   0x0013A458  u32 engine_func_0013a458(void* state, f32 value) (40 bytes)
+//   0x0013A47C  literal 0x004E6F64
+//
+// `state` (r0) is a small channel/voice record.  The initializer first resets
+// four float fields to 1.0f (and forwards their products to the shared channel
+// helper) only while state->gate is non-zero, then resets four word fields
+// under two acquisitions of the heap lock at state+0x34, forwarding the two
+// signed gain bytes to the helper with mode 0/1.  After that it clears two
+// bytes, initialises two halfword fields, conditionally sets state->flag_01
+// when the readiness gate 0x002BB5B4 returns non-zero, clears the two gain
+// bytes, writes the halfword 2, clears state->flag_03 and tail-calls
+// 0x00146F44(base, 0).
+//
+// Every helper receives the fixed engine base 0x004E6F64 (the literal at
+// 0x0013A454 / 0x0013A47C), which is a channel table base, not `state`.
+//
+// The second entry point (0x0013A458) is a setter:
+//   if (state->gate != 0) {
+//       state->value_04 = value;
+//       return 0x002A86E4(base, value * state->value_08);
+//   }
+//   return <the incoming state address still in r0>;
+// The skip path leaves r0 untouched in the original, so its observed result is
+// the incoming pointer; that value is returned explicitly here.
+namespace leaf_0013a29c {
+
+// Literal 0x004E6F64 (0x0013A454, 0x0013A47C): engine channel-table base.
+constexpr u32 kEngineBase = 0x004E6F64u;
+// Literal 0x3F800000 (0x0013A450): the reset float value.
+constexpr f32 kUnity = 1.0f;
+
+// Channel/voice record touched by 0x0013A29C and 0x0013A458.  Field names are
+// deliberately offset-based; only the access widths and the gate semantics are
+// evidenced by the ARM body.
+struct ChannelRecord {
+    u8 gate;             // +0x00 ldrb, branch condition
+    u8 flag_01;          // +0x01 strb 1 when 0x002BB5B4() != 0
+    u8 pad_02;           // +0x02
+    u8 flag_03;          // +0x03 strb 0 at the end
+    f32 value_04;        // +0x04 float, reset to 1.0f / setter argument
+    f32 value_08;        // +0x08 float, reset to 1.0f
+    f32 value_0c;        // +0x0C float, reset to 1.0f
+    f32 value_10;        // +0x10 float, reset to 1.0f
+    u32 word_14;         // +0x14 str 0 under first lock
+    u32 word_18;         // +0x18 str 0 under second lock
+    u32 word_1c;         // +0x1C str 0 under first lock
+    u32 word_20;         // +0x20 str 0 under second lock
+    u8 byte_24;          // +0x24 strb 0
+    u8 byte_25;          // +0x25 strb 0
+    u8 pad_26[0x02];     // +0x26
+    u16 half_28;         // +0x28 strh 0x7FFF
+    u16 half_2a;         // +0x2A strh 0x8000
+    u8 pad_2c[0x04];     // +0x2C
+    s8 byte_30;          // +0x30 ldrsb (mode 0), later cleared
+    s8 byte_31;          // +0x31 ldrsb (mode 1), later cleared
+    u16 half_32;         // +0x32 strh 2
+    u8 lock_block[0x0C]; // +0x34 heap lock owned by 0x002C3AA8/0x002C3A24
+};
+static_assert(offsetof(ChannelRecord, value_04) == 0x04, "value_04");
+static_assert(offsetof(ChannelRecord, value_08) == 0x08, "value_08");
+static_assert(offsetof(ChannelRecord, value_0c) == 0x0C, "value_0c");
+static_assert(offsetof(ChannelRecord, value_10) == 0x10, "value_10");
+static_assert(offsetof(ChannelRecord, word_14) == 0x14, "word_14");
+static_assert(offsetof(ChannelRecord, word_18) == 0x18, "word_18");
+static_assert(offsetof(ChannelRecord, word_1c) == 0x1C, "word_1c");
+static_assert(offsetof(ChannelRecord, word_20) == 0x20, "word_20");
+static_assert(offsetof(ChannelRecord, byte_24) == 0x24, "byte_24");
+static_assert(offsetof(ChannelRecord, byte_25) == 0x25, "byte_25");
+static_assert(offsetof(ChannelRecord, half_28) == 0x28, "half_28");
+static_assert(offsetof(ChannelRecord, half_2a) == 0x2A, "half_2a");
+static_assert(offsetof(ChannelRecord, byte_30) == 0x30, "byte_30");
+static_assert(offsetof(ChannelRecord, byte_31) == 0x31, "byte_31");
+static_assert(offsetof(ChannelRecord, half_32) == 0x32, "half_32");
+static_assert(offsetof(ChannelRecord, lock_block) == 0x34, "lock_block");
+
+}  // namespace leaf_0013a29c
+
+// Direct calls made by the 0x0013A29C span (addresses from config/functions.csv).
+// 0x002A86E4: base, float in s0 -> writes target[+4], sets flags bit 0x10000.
+extern "C" u32 func_002a86e4(u32 base, f32 value);
+// 0x002A8674: base, mode, float in s0 -> writes target[+8+mode*4], mode bits.
+extern "C" u32 func_002a8674(u32 base, u32 mode, f32 value);
+// 0x002A8608: base, mode, s16 gain -> writes target[+0x28+mode*2], mode bits.
+extern "C" u32 func_002a8608(u32 base, u32 mode, s32 value);
+// 0x00147074: base, mode, u16 -> writes target[+0x24+mode*2], bits 0x40/0x80.
+extern "C" u32 func_00147074(u32 base, u32 mode, u32 value);
+// 0x00146F88: base, u16 -> clamps to 0x8000, writes target[+0x22].
+extern "C" u32 func_00146f88(u32 base, u32 value);
+// 0x00147020: base, u16 -> clamps to 0x7FFF, writes target[+0x1C].
+extern "C" u32 func_00147020(u32 base, u32 value);
+// 0x00146FD8: base, u16 -> writes target[+0x18].
+extern "C" u32 func_00146fd8(u32 base, u32 value);
+// 0x00147128: base, u16 -> writes target[+0x10].
+extern "C" u32 func_00147128(u32 base, u32 value);
+// 0x00146F44: base, u16 -> writes target[+0xBC] and sets target[+0xC0] bit.
+extern "C" u32 func_00146f44(u32 base, u32 value);
+// 0x002BB5B4: readiness gate; returns the signed byte at 0x0044E459.
+extern "C" s32 func_002bb5b4(void);
+// 0x002C3AA8: AsdMemLock acquire (thread id + reference count at +4/+8).
+extern "C" void engine_func_002c3aa8(void* lock);
+// 0x002C3A24: AsdMemLock release (decrements the reference count).
+extern "C" void engine_func_002c3a24(void* lock);
+
+extern "C" u32 engine_func_0013a29c(void* state_ptr) {
+    using namespace leaf_0013a29c;
+
+    ChannelRecord* const state = static_cast<ChannelRecord*>(state_ptr);
+
+    // 0x0013A2A8..0x0013A2CC: gate check 1, reset +0x04 and forward +0x08.
+    if (state->gate != 0) {
+        state->value_04 = kUnity;
+        (void)func_002a86e4(kEngineBase, kUnity * state->value_08);
+    }
+
+    // 0x0013A2D0..0x0013A2F0: gate check 2, reset +0x08 and forward +0x04.
+    if (state->gate != 0) {
+        state->value_08 = kUnity;
+        (void)func_002a86e4(kEngineBase, state->value_04 * kUnity);
+    }
+
+    // 0x0013A2F4..0x0013A310: gate check 3, reset +0x0C, mode 0.
+    if (state->gate != 0) {
+        state->value_0c = kUnity;
+        (void)func_002a8674(kEngineBase, 0u, kUnity);
+    }
+
+    // 0x0013A314..0x0013A330: gate check 4, reset +0x10, mode 1.
+    if (state->gate != 0) {
+        state->value_10 = kUnity;
+        (void)func_002a8674(kEngineBase, 1u, kUnity);
+    }
+
+    // 0x0013A334..0x0013A36C: first lock window.
+    engine_func_002c3aa8(state->lock_block);
+    state->word_14 = 0;
+    state->word_1c = 0;
+    (void)func_002a8608(kEngineBase, 0u, static_cast<s32>(state->byte_30));
+    engine_func_002c3a24(state->lock_block);
+
+    // 0x0013A370..0x0013A3A8: second lock window.
+    engine_func_002c3aa8(state->lock_block);
+    state->word_18 = 0;
+    state->word_20 = 0;
+    (void)func_002a8608(kEngineBase, 1u, static_cast<s32>(state->byte_31));
+    engine_func_002c3a24(state->lock_block);
+
+    // 0x0013A3AC..0x0013A3D0: clear the two bytes and forward zero for both
+    // modes of the +0x24 pair.
+    state->byte_24 = 0;
+    (void)func_00147074(kEngineBase, 0u, 0u);
+    state->byte_25 = 0;
+    (void)func_00147074(kEngineBase, 1u, 0u);
+
+    // 0x0013A3D4..0x0013A3F0: 0x8000 to the +0x22 helper, 0x7FFF to +0x1C.
+    state->half_2a = 0x8000u;
+    (void)func_00146f88(kEngineBase, 0x8000u);
+    state->half_28 = 0x7FFFu;
+    (void)func_00147020(kEngineBase, 0x7FFFu);
+
+    // 0x0013A3F4..0x0013A418: one-shot flag when the readiness gate passes.
+    if (func_002bb5b4() != 0) {
+        state->flag_01 = 1;
+        (void)func_00146fd8(kEngineBase, 1u);
+    }
+
+    // 0x0013A41C..0x0013A434: clear the two gain bytes, write halfword 2 and
+    // publish it through the +0x10 helper.
+    state->byte_30 = 0;
+    state->byte_31 = 0;
+    state->half_32 = 2;
+    (void)func_00147128(kEngineBase, 2u);
+
+    // 0x0013A438..0x0013A44C: clear +0x03 and tail-call 0x00146F44(base, 0);
+    // the tail call supplies the visible return value.
+    state->flag_03 = 0;
+    return func_00146f44(kEngineBase, 0u);
+}
+
+// Second entry point inside the same 484-byte ledger span (0x0013A458).
+extern "C" u32 engine_func_0013a458(void* state_ptr, f32 value) {
+    using namespace leaf_0013a29c;
+
+    ChannelRecord* const state = static_cast<ChannelRecord*>(state_ptr);
+    if (state->gate == 0) {
+        // The original neither reads nor writes r0 on this path; its visible
+        // result is therefore the incoming state pointer.
+        return static_cast<u32>(reinterpret_cast<std::uintptr_t>(state_ptr));
+    }
+
+    state->value_04 = value;
+    return func_002a86e4(kEngineBase, value * state->value_08);
 }
 
 // DECOMP_FUNC(0x0029ccf8, 484)
