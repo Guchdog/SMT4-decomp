@@ -12749,41 +12749,186 @@ extern "C" u32 camp_func_001103bc(u32 arg0, u32 arg1, u32 arg2, u32 arg3) {
 }
 
 // DECOMP_FUNC(0x0014c5c0, 480)
-// 115 ARM instructions through unconditional pop; 20 trailing data bytes.
-extern "C" __attribute__((naked)) void func_0014c5c0() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d47f0, 0xe1a04000, 0xe2806c01, 0xe1a05001\n"
-        ".word 0xed2d8b02, 0xe5d001f6, 0xe3500001, 0x1a000068\n"
-        ".word 0xe5950004, 0xe5951000, 0xe1c420d0, 0xe0911002\n"
-        ".word 0xe0a00003, 0xe5840004, 0xe5841000, 0xe5940008\n"
-        ".word 0xe2800001, 0xe5840008, 0xeb000ce1, 0xe594100c\n"
-        ".word 0xe0800001, 0xe584000c, 0xe5d600b4, 0xe3500001\n"
-        ".word 0x1a000057, 0xe59f2160, 0xe5956000, 0xe3a07000\n"
-        ".word 0xe5955004, 0xe59f1154, 0xe1a03fc2, 0xe1a00007\n"
-        ".word 0xeb05a53f, 0xe0823096, 0xe0cc3195, 0xe08ac095\n"
-        ".word 0xe1a09fc5, 0xe3a08000, 0xe020a099, 0xe08a9691\n"
-        ".word 0xe0200895, 0xe1a08fc1, 0xe3a05000, 0xe026a698\n"
-        ".word 0xe09cc009, 0xe0216591, 0xe0a11000, 0xe0922007\n"
-        ".word 0xe0a33005, 0xe09c0002, 0xe0a11003, 0xe3a02ffa\n"
-        ".word 0xe1a03005, 0xeb05a52a, 0xeb04da02, 0xee000a10\n"
-        ".word 0xeddf0a3b, 0xe2840010, 0xee208a20, 0xeddf0a39\n"
-        ".word 0xeeb00a48, 0xeeb40ae0, 0xeef1fa10, 0x3a000003\n"
-        ".word 0xe59f20d4, 0xee181a10, 0xe1510002, 0xda000002\n"
-        ".word 0xe59011a0, 0xe2811001, 0xe58011a0, 0xeef00a48\n"
-        ".word 0xed900a00, 0xeeb40ae0, 0xeef1fa10, 0xeef00a48\n"
-        ".word 0x3eb00a48, 0xeefd0ae0, 0xed800a00, 0xee101a90\n"
-        ".word 0xe3510065, 0xaa000003, 0xe0801101, 0xe5912008\n"
-        ".word 0xe2822001, 0xe5812008, 0xe590119c, 0xeeb00a48\n"
-        ".word 0xe2811001, 0xe580119c, 0xedd00a01, 0xee300a80\n"
-        ".word 0xed800a01, 0xe59401f8, 0xe3500000, 0x0a00000f\n"
-        ".word 0xe5941204, 0xe5942200, 0xe1520001, 0xda00000b\n"
-        ".word 0xe0805181, 0xeb05bac5, 0xe320f000, 0xe320f000\n"
-        ".word 0xeb00171c, 0xe5c50004, 0xe59401fc, 0xe5c50005\n"
-        ".word 0xed858a00, 0xe5940204, 0xe2800001, 0xe5840204\n"
-        ".word 0xe58471fc, 0xecbd8b02, 0xe8bd87f0, 0x0ffb0ff0\n"
-        ".word 0x3b9aca00, 0x3ca78f51, 0x00000000, 0x42c80000\n"
-    );
+//
+// Per-frame timing/statistics sampler. `ctx` holds the accumulated 64-bit
+// tick total, the running float statistics and a 101-entry histogram;
+// `sample` points at the 8-byte tick delta for this frame. The function:
+//   1. adds the delta to the 64-bit total and bumps the sample counter,
+//   2. scales the delta through two 64-bit division helpers and one
+//      int64->float conversion,
+//   3. records the scaled value into max/sum/histogram and clamps outliers,
+//   4. optionally appends an 8-byte entry to a caller-provided record array.
+// Both gate bytes (+0x1F6 first, +0x1B4 second) must be exactly 1; either
+// mismatch returns before the statistics block. The original leaves `r0`
+// unspecified on return (the sole caller at 0x0014C448 ignores it).
+namespace engine_14c5c0 {
+
+constexpr u32 kTotalLow = 0x000;        // u64 tick total, low word
+constexpr u32 kTotalHigh = 0x004;       // u64 tick total, high word
+constexpr u32 kFrameCount = 0x008;      // u32 samples accumulated
+constexpr u32 kTickAccumulator = 0x00C; // u32 sum of func_0014f994()
+
+constexpr u32 kMaximum = 0x010;         // f32 running maximum sample
+constexpr u32 kValueSum = 0x014;        // f32 running sum of samples
+constexpr u32 kHistogramBase = 0x018;   // u32 bins indexed 0..100
+constexpr s32 kHistogramLimit = 0x65;   // `cmp r1, #0x65; bge` skips a bin
+
+constexpr u32 kSampleTotal = 0x1AC;     // u32 all in-range samples
+constexpr u32 kOutOfRangeTotal = 0x1B0; // u32 samples outside [0, 100]
+constexpr u32 kEnableByte = 0x1B4;      // must be exactly 1
+constexpr u32 kActiveByte = 0x1F6;      // must be exactly 1
+
+constexpr u32 kRecordArray = 0x1F8;     // u8* record array or null
+constexpr u32 kRecordPending = 0x1FC;   // u32 copied into record+5, then zeroed
+constexpr u32 kRecordLimit = 0x200;     // s32 capacity
+constexpr u32 kRecordCount = 0x204;     // u32 used count
+constexpr u32 kRecordStride = 8;
+constexpr u32 kRecordTag = 4;           // u8 from engine_func_001523d8
+constexpr u32 kRecordPendingByte = 5;
+
+constexpr s64 kTickNumerator = 0x3B9ACA0000000000LL; // 1000000000 << 32
+constexpr s64 kTickFrequency = 0x0FFB0FF0;           // 268111856
+constexpr s64 kMicrosecondDivisor = 1000;
+
+constexpr f32 kValueScale = 0x1.4f1ea2p-6f; // bits 0x3CA78F51
+constexpr u32 kRangeMaximumBits = 0x42C80000u; // 100.0f
+
+// Bits 32..95 of the signed 128-bit product of `a` and `b`, i.e. the
+// Q32.32 middle word the original builds from the four 32x32 limb products.
+inline u64 SignedProductMiddle64(s64 a, s64 b) {
+    const u64 a_u = static_cast<u64>(a);
+    const u64 b_u = static_cast<u64>(b);
+    const u64 a_lo = static_cast<u32>(a_u);
+    const u64 a_hi = a_u >> 32;
+    const u64 b_lo = static_cast<u32>(b_u);
+    const u64 b_hi = b_u >> 32;
+
+    const u64 p0 = a_lo * b_lo;
+    const u64 p1 = a_lo * b_hi;
+    const u64 p2 = a_hi * b_lo;
+    const u64 p3 = a_hi * b_hi;
+
+    const u64 middle =
+        (p0 >> 32) + static_cast<u32>(p1) + static_cast<u32>(p2);
+    u64 high = p3 + (p1 >> 32) + (p2 >> 32) + (middle >> 32);
+    if (a < 0) {
+        high -= b_u;
+    }
+    if (b < 0) {
+        high -= a_u;
+    }
+    return static_cast<u64>(static_cast<u32>(middle)) | (high << 32);
+}
+
+inline u32 SampleFloatBits(f32 value) {
+    return __builtin_bit_cast(u32, value);
+}
+
+// VCVT.S32.F32: round toward zero, saturate on overflow, NaN -> 0.
+inline s32 SampleToS32(f32 value) {
+    if (value != value) {
+        return 0;
+    }
+    if (value >= 2147483648.0f) {
+        return 0x7FFFFFFF;
+    }
+    if (value < -2147483648.0f) {
+        return -2147483647 - 1;
+    }
+    return static_cast<s32>(value);
+}
+
+}  // namespace engine_14c5c0
+
+extern "C" u32 func_0014f994(void);
+extern "C" s64 script_vm_func_002b5b44(s64 dividend, s64 divisor);
+// 0x00282EA8 is a softfp `__aeabi_l2f`: it returns the float bit pattern in r0
+// and the original moves it to s0 with `vmov s0, r0`.
+extern "C" u32 func_00282ea8(s64 value);
+extern "C" void* engine_func_002bb270(void);
+extern "C" u32 engine_func_001523d8(void* list);
+
+extern "C" void func_0014c5c0(void* ctx, const void* sample) {
+    using namespace engine_14c5c0;
+
+    u8* const c = static_cast<u8*>(ctx);
+    const u8* const s = static_cast<const u8*>(sample);
+
+    if (c[kActiveByte] != 1) {
+        return;
+    }
+
+    // 64-bit tick total += delta (wrapping).
+    const u32 delta_low = *reinterpret_cast<const u32*>(s);
+    const u32 delta_high = *reinterpret_cast<const u32*>(s + 4);
+    const u64 delta = (static_cast<u64>(delta_high) << 32) | delta_low;
+    const u64 total =
+        ((static_cast<u64>(*reinterpret_cast<const u32*>(c + kTotalHigh)) << 32) |
+         *reinterpret_cast<const u32*>(c + kTotalLow)) +
+        delta;
+    *reinterpret_cast<u32*>(c + kTotalLow) = static_cast<u32>(total);
+    *reinterpret_cast<u32*>(c + kTotalHigh) = static_cast<u32>(total >> 32);
+
+    ++*reinterpret_cast<u32*>(c + kFrameCount);
+    *reinterpret_cast<u32*>(c + kTickAccumulator) += func_0014f994();
+
+    if (c[kEnableByte] != 1) {
+        return;
+    }
+
+    // ticks -> nanoseconds (Q32.32) -> microseconds -> scaled float sample.
+    const s64 ticks_per_second =
+        script_vm_func_002b5b44(kTickNumerator, kTickFrequency);
+    const u64 middle = SignedProductMiddle64(
+        ticks_per_second, static_cast<s64>(delta));
+    const s64 microseconds =
+        script_vm_func_002b5b44(static_cast<s64>(middle), kMicrosecondDivisor);
+    const f32 value =
+        __builtin_bit_cast(f32, func_00282ea8(microseconds)) * kValueScale;
+
+    // Outlier counter: value < 0 by VFP compare, or the raw float bits are
+    // greater than 100.0f in signed integer order (both are non-NaN paths
+    // for an ordered compare; NaN falls through to the bit test as in ARM).
+    if (value < 0.0f ||
+        static_cast<s32>(SampleFloatBits(value)) >
+            static_cast<s32>(kRangeMaximumBits)) {
+        ++*reinterpret_cast<u32*>(c + kOutOfRangeTotal);
+    }
+
+    f32* const maximum = reinterpret_cast<f32*>(c + kMaximum);
+    if (*maximum < value) {
+        *maximum = value;
+    }
+
+    // The upper bound is signed; negative bins wrap below the base exactly
+    // as `add r1, r0, r1, lsl #2` does in the original.
+    const s32 bin = SampleToS32(value);
+    if (bin < kHistogramLimit) {
+        const u32 bin_offset = static_cast<u32>(bin) * 4u;
+        ++*reinterpret_cast<u32*>(c + kHistogramBase + bin_offset);
+    }
+
+    ++*reinterpret_cast<u32*>(c + kSampleTotal);
+    f32* const sum = reinterpret_cast<f32*>(c + kValueSum);
+    *sum = *sum + value;
+
+    u8* const records = *reinterpret_cast<u8* const*>(c + kRecordArray);
+    if (records != nullptr) {
+        const u32 count = *reinterpret_cast<const u32*>(c + kRecordCount);
+        if (static_cast<s32>(*reinterpret_cast<const u32*>(c + kRecordLimit)) >
+            static_cast<s32>(count)) {
+            u8* const entry = records + count * kRecordStride;
+            void* const list = engine_func_002bb270();
+            const u32 tag = engine_func_001523d8(list);
+            entry[kRecordTag] = static_cast<u8>(tag);
+            entry[kRecordPendingByte] =
+                static_cast<u8>(*reinterpret_cast<const u32*>(
+                    c + kRecordPending));
+            *reinterpret_cast<f32*>(entry) = value;
+            ++*reinterpret_cast<u32*>(c + kRecordCount);
+        }
+    }
+    *reinterpret_cast<u32*>(c + kRecordPending) = 0;
 }
 
 // DECOMP_FUNC(0x00258c58, 480)
