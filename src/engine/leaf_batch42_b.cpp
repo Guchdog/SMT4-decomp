@@ -763,43 +763,114 @@ extern "C" u32 func_002c7090(func_2c7090::Owner* owner) {
 }
 
 // DECOMP_FUNC(0x001aa3a4, 508)
-// 125 ARM instructions through unconditional pop; 8 trailing data bytes.
-extern "C" __attribute__((naked)) void ui_func_001aa3a4() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4070, 0xeb0459c6, 0xe59f61e4, 0xed9f0a79\n"
-        ".word 0xe3a00006, 0xe5964000, 0xeb03711c, 0xe2844a01\n"
-        ".word 0xe2844f9b, 0xe3a05000, 0xe5941000, 0xe2812001\n"
-        ".word 0xe0843101, 0xe5931008, 0xe0843102, 0xe5842000\n"
-        ".word 0xe5830008, 0xe5d42018, 0xe3520000, 0x01510000\n"
-        ".word 0x0a000002, 0xe594101c, 0xe12fff31, 0xe5c45018\n"
-        ".word 0xe5964000, 0xe3a01000, 0xe3a00001, 0xeb046ed9\n"
-        ".word 0xe2844a01, 0xe2844f93, 0xe5941000, 0xe2812001\n"
-        ".word 0xe0843101, 0xe5931008, 0xe0843102, 0xe5842000\n"
-        ".word 0xe5830008, 0xe5d42018, 0xe3520000, 0x01510000\n"
-        ".word 0x0a000002, 0xe594101c, 0xe12fff31, 0xe5c45018\n"
-        ".word 0xe5964000, 0xe3a02000, 0xe3a01001, 0xe3a00006\n"
-        ".word 0xeb046ece, 0xe2844a01, 0xe2844fab, 0xe5941000\n"
-        ".word 0xe2812001, 0xe0843101, 0xe5931008, 0xe0843102\n"
-        ".word 0xe5842000, 0xe5830008, 0xe5d42018, 0xe3520000\n"
-        ".word 0x01510000, 0x0a000002, 0xe594101c, 0xe12fff31\n"
-        ".word 0xe5c45018, 0xe3a00000, 0xeb0370a6, 0xe5960000\n"
-        ".word 0xe2804a01, 0xe2844fab, 0xe5940000, 0xe0841100\n"
-        ".word 0xe2400001, 0xe5911008, 0xe5840000, 0xe0840100\n"
-        ".word 0xe5d42018, 0xe5900008, 0xe3520000, 0x01510000\n"
-        ".word 0x0a000002, 0xe594101c, 0xe12fff31, 0xe5c45018\n"
-        ".word 0xe5960000, 0xe2804a01, 0xe2844f93, 0xe5940000\n"
-        ".word 0xe0841100, 0xe2400001, 0xe5911008, 0xe5840000\n"
-        ".word 0xe0840100, 0xe5d42018, 0xe5900008, 0xe3520000\n"
-        ".word 0x01510000, 0x0a000002, 0xe594101c, 0xe12fff31\n"
-        ".word 0xe5c45018, 0xe5960000, 0xe2804a01, 0xe2844f9b\n"
-        ".word 0xe5940000, 0xe0841100, 0xe2400001, 0xe5911008\n"
-        ".word 0xe5840000, 0xe0840100, 0xe5d42018, 0xe5900008\n"
-        ".word 0xe3520000, 0x01510000, 0x0a000002, 0xe594101c\n"
-        ".word 0xe12fff31, 0xe5c45018, 0xe5960000, 0xeb045d77\n"
-        ".word 0xe5960000, 0xe320f000, 0xeb045d4a, 0xe3a00000\n"
-        ".word 0xe8bd8070, 0x0044ea00, 0x00000000\n"
-    );
+//
+// Recovered contract (ARM 0x001AA3A4..0x001AA597 plus the two literal words at
+// 0x001AA598/0x001AA59C: the render-register global 0x0044EA00 and +0.0f):
+//   * `handle` (r0) is forwarded unchanged to ui_func_002c0ac8, the UI object
+//     table lookup (index = handle >> 20, key = handle & 0xFFFFF).  Its result
+//     is discarded; the routine only reads the incoming r0.  r1-r3 and the
+//     incoming s0 are dead.
+//   * This is the "EffectDrawUp3D" draw callback.  Three render command stacks
+//     are pushed and then popped in reverse order.  Each stack lives at
+//     `*0x0044EA00 + offset` and has the layout
+//     `{u32 count; u32 pad; u32 slots[...]; u8 dirty at +0x18;
+//     u32 flush_cb at +0x1C}`:
+//       1. `+0x126C` receives `engine_func_00286834(6, 0.0f)`; the incoming VFP
+//          s0 is forced to +0.0f by the `vldr s0, =0.0f` at 0x001AA3B0.
+//       2. `+0x124C` receives `ui_func_002c5f7c(1, 0)` (= 0x1F10).
+//       3. `+0x12AC` receives `battle_func_002c5fa4(6, 1, 0)` (= 0x16160000).
+//     A push captures `slots[count]`, increments `count`, writes the new value
+//     to `slots[count + 1]`, and calls `flush_cb(value)` when the dirty byte is
+//     set or the captured slot differs from the new value; the dirty byte is
+//     cleared afterwards.  The flat index is unchecked, exactly like the ARM.
+//   * `func_0028674c(0)` runs between the pushes and the pops; it walks the
+//     per-channel callback lists of render object 0.
+//   * The pops visit `+0x12AC`, `+0x124C`, `+0x126C`.  A pop captures
+//     `slots[count]`, decrements `count`, reads `slots[count - 1]` and applies
+//     the same callback rule with the new top.
+//   * Afterwards `ui_func_002c1b64(*0x0044EA00)` and then
+//     `ui_func_002c1abc(*0x0044EA00)` consume the render-register base in that
+//     exact order (the ARM reloads 0x0044EA00 between the two calls).
+//   * 0x0044EA00 is re-read before every push, every pop and both trailing
+//     consumers, so a helper or a flush callback that switches the render base
+//     is observed.  The base is read *before* each packing helper runs.
+//   * Every path returns 0; the callee results are dead in the original.  The
+//     frame is `push {r4, r5, r6, lr}` with no stack arguments and the epilogue
+//     is `pop {r4, r5, r6, pc}`.
+namespace func_001aa3a4 {
+
+// The push/pop protocol and the 0x0044EA00 accessor are byte-identical to
+// ui_func_002247c8 above; only the constants and the surrounding calls differ.
+constexpr u32 kFirstStackOffset = 0x126C;   // engine packer value
+constexpr u32 kSecondStackOffset = 0x124C;  // viewport packer value
+constexpr u32 kThirdStackOffset = 0x12AC;   // battle packer value
+
+// `mov r0, #6` before the engine packer and before the battle packer.
+constexpr u32 kEngineCommand = 6;
+
+// `mov r0, #1` / `mov r1, #0` before the viewport packer.
+constexpr u32 kViewportCommand = 1;
+constexpr u32 kViewportEnabled = 0;
+
+// `mov r1, #1` / `mov r2, #0` before the battle packer.
+constexpr u32 kBattleFlag = 1;
+constexpr u32 kBattleMode = 0;
+
+// Literal at 0x001AA59C: the scale handed to the engine packer.
+constexpr f32 kZeroScale = 0.0f;
+
+// `mov r0, #0` before the callback-list walk selects the first channel.
+constexpr u32 kSyncChannel = 0;
+
+using func_002247c8::render_base;
+using func_002247c8::render_pop;
+using func_002247c8::render_push;
+using func_002247c8::render_stack;
+
+}  // namespace func_001aa3a4
+
+// 0x0028674C: walks the five per-channel callback lists of the render object
+// selected by `which` (0..4); any other value does nothing.  No live result.
+extern "C" void func_0028674c(u32 which);
+
+// 0x002C1B64 / 0x002C1ABC: consume the render-register base; their results are
+// dead in the original (r0 is overwritten by `mov r0, #0`).
+extern "C" void ui_func_002c1b64(void* gpu_state);
+extern "C" void ui_func_002c1abc(void* gpu_state);
+
+extern "C" u32 ui_func_001aa3a4(u32 handle) {
+    using namespace func_001aa3a4;
+
+    // The lookup result is discarded; the original still performs the call with
+    // the caller's handle.
+    (void)ui_func_002c0ac8(handle);
+
+    // The base is captured before each helper call; the original re-reads
+    // 0x0044EA00 for every push and every pop.
+    void* const first_base = render_base();
+    const u32 first_value = engine_func_00286834(kEngineCommand, kZeroScale);
+    render_push(render_stack(first_base, kFirstStackOffset), first_value);
+
+    void* const second_base = render_base();
+    const u32 second_value =
+        ui_func_002c5f7c(kViewportCommand, kViewportEnabled);
+    render_push(render_stack(second_base, kSecondStackOffset), second_value);
+
+    void* const third_base = render_base();
+    const u32 third_value =
+        battle_func_002c5fa4(kEngineCommand, kBattleFlag, kBattleMode);
+    render_push(render_stack(third_base, kThirdStackOffset), third_value);
+
+    func_0028674c(kSyncChannel);
+
+    render_pop(render_stack(render_base(), kThirdStackOffset));
+    render_pop(render_stack(render_base(), kSecondStackOffset));
+    render_pop(render_stack(render_base(), kFirstStackOffset));
+
+    ui_func_002c1b64(render_base());
+    ui_func_002c1abc(render_base());
+
+    return 0;
 }
 
 // DECOMP_FUNC(0x0021aff4, 508)

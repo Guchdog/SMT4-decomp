@@ -2160,7 +2160,7 @@ address,size,status,category,name,src_file
 0x001aa0ec,88,matching,unknown,func_001aa0ec,src/engine/leaf_batch13_b.cpp
 0x001aa144,88,matching,engine,engine_func_001aa144,src/engine/leaf_batch25_a.cpp
 0x001aa19c,520,matching,ui,ui_func_001aa19c,src/engine/leaf_batch42_b.cpp
-0x001aa3a4,508,matching,ui,ui_func_001aa3a4,src/engine/leaf_batch42_b.cpp
+0x001aa3a4,508,non_matching,ui,ui_func_001aa3a4,src/engine/leaf_batch42_b.cpp
 0x001aa5a0,1728,matching,battle,battle_func_001aa5a0,src/engine/leaf_batch46_b.cpp
 0x001aac60,2448,matching,battle,battle_func_001aac60,src/engine/block_batch.cpp
 0x001ab5f0,232,matching,ui,ui_func_001ab5f0,src/engine/leaf_batch27_a.cpp
