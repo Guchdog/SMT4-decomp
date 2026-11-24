@@ -12146,41 +12146,250 @@ extern "C" u32 ui_func_0037c808(void* object_pointer, void* target_pointer) {
 }
 
 // DECOMP_FUNC(0x003a0bb8, 476)
-// 109 ARM instructions through unconditional pop; 40 trailing data bytes.
-extern "C" __attribute__((naked)) void shop_func_003a0bb8() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4070, 0xe1a04000, 0xe5900008, 0xe3500000\n"
-        ".word 0x0a000002, 0xe3500001, 0x1a00004c, 0xea000007\n"
-        ".word 0xe3a00001, 0xebfa40e8, 0xe3a01000, 0xe2840fea\n"
-        ".word 0xebfa49f9, 0xe3a00001, 0xe5840008, 0xea000043\n"
-        ".word 0xe2845ff2, 0xe3a01000, 0xe1a00005, 0xebfc6185\n"
-        ".word 0xe1a00005, 0xe320f000, 0xebfc78d6, 0xe1a06000\n"
-        ".word 0xe1a00005, 0xebfc78d6, 0xe1a01000, 0xe1a02006\n"
-        ".word 0xe2840d0e, 0xebfa41e8, 0xe1a00005, 0xe320f000\n"
-        ".word 0xe1d008da, 0xe3500000, 0xe320f000, 0x0a00002f\n"
-        ".word 0xe5940860, 0xe3a05000, 0xe3500009, 0x379ff100\n"
-        ".word 0xea00002a, 0x003a0c80, 0x003a0c80, 0x003a0c80\n"
-        ".word 0x003a0c80, 0x003a0c80, 0x003a0c80, 0x003a0c80\n"
-        ".word 0x003a0ca4, 0x003a0cd8, 0xe320f000, 0xebfbf5c3\n"
-        ".word 0xe3500000, 0xe320f000, 0x0a00001c, 0xe2841004\n"
-        ".word 0xe3a00005, 0xe8810021, 0xea000018, 0xe2842004\n"
-        ".word 0xe3a00006, 0xe8820021, 0xe28f10b4, 0xe5940160\n"
-        ".word 0xebfbc0d6, 0xe5942168, 0xe1a01000, 0xe1a00002\n"
-        ".word 0xebfbd945, 0xe320f000, 0xe320f000, 0xea000009\n"
-        ".word 0xe2842004, 0xe3a00007, 0xe8820021, 0xe28f1090\n"
-        ".word 0xe5940160, 0xebfbc0c9, 0xe5942168, 0xe1a01000\n"
-        ".word 0xe1a00002, 0xebfbd938, 0xe5940168, 0xebf7f4ac\n"
-        ".word 0xe2844b57, 0xe2844f52, 0xe5940000, 0xe3500000\n"
-        ".word 0x0a000012, 0xebfc3512, 0xe3500000, 0xe320f000\n"
-        ".word 0x0a00000e, 0xe5940000, 0xe5901008, 0xe591100c\n"
-        ".word 0xe3510000, 0xaa000009, 0xe3a01001, 0xebfbfe5f\n"
-        ".word 0xe5940000, 0xed9f0a0e, 0xeddf0a0e, 0xe3a01000\n"
-        ".word 0xe5900008, 0xeeb01a40, 0xe8bd4070, 0xeafbe551\n"
-        ".word 0xe8bd8070, 0x706f6873, 0x6574695f, 0x7975626d\n"
-        ".word 0x00000000, 0x706f6873, 0x6c65735f, 0x66666f6c\n"
-        ".word 0x00000000, 0x00000000, 0xc6fa0000\n"
-    );
+//
+// Recovered contract (ARM 0x003A0BB8..0x003A0D90 = 119 words; 109
+// instructions through the tail branch at 0x003A0D64, the inline strings
+// "shop_itembuy" / "shop_selloff" and two literal words in the trailing data):
+//
+//   u32 shop_func_003a0bb8(void* self);
+//
+//   * r0 (`self`) is the shop controller.  r1-r3 and the incoming stack are
+//     not read.  r4/r5/r6 are saved and restored; the return value is always
+//     whatever r0 holds on the selected exit path.
+//   * `*(u32*)(self + 0x8)` is a three-way phase word:
+//       - 0: publish byte 1 through 0x00230F84, reset the sub-object at
+//         self+0x3A8 through 0x002333D4(sub, 0), then store phase 1.
+//       - 1: initialise the transform at self+0x3C8 through 0x002B9220(sub, 0),
+//         read the signed Q12 pair (0x002BEF70 -> y, 0x002BEF7C -> x) and write
+//         them as floats at self+0x380 through 0x002313D4(self+0x380, x, y).
+//         The remaining work is skipped unless the signed byte at sub+0x8A is
+//         non-zero.
+//       - any other value: no phase work.
+//   * With phase 1 and sub+0x8A != 0, `mode = *(u32*)(self + 0x860)` selects:
+//       - mode 0..6 (unsigned, only when mode < 9): 0x0029E398() is polled;
+//         a non-zero result stores (5, 0) at self+0x4/+0x8.
+//       - mode 7: stores (6, 0) at self+0x4/+0x8, formats "shop_itembuy"
+//         through 0x00291018(*(u32*)(self+0x160), text), passes the result to
+//         0x002971E4(*(u32*)(self+0x168), result) and finally calls
+//         0x0019DFBC(*(u32*)(self+0x168)).
+//       - mode 8: the same sequence with (7, 0) and "shop_selloff".
+//       - mode >= 9: nothing.
+//   * Every path then reaches the common epilogue at 0x003A0D08:
+//       slot = *(u32*)(self + 0x15D48);
+//       if (slot == 0) return slot;
+//       if (0x002AE16C(slot) == 0) return 0;
+//       if ((s32)*(u32*)(*(u32*)(slot + 8) + 0xC) >= 0) return slot;
+//       0x002A06C8(slot, 1);
+//       return 0x0029A2B0(*(u32*)(slot + 8), 0, 0.0f, -32000.0f, 0.0f);
+//     The signed `bge` is reproduced; the float arguments follow the hard-float
+//     AAPCS (s0, s1, s2) and the last call is a tail branch.
+//
+// All accesses are unaligned-safe 32-bit, signed-byte, or string reads exactly
+// as in the original.  Arithmetic wraps in 32 bits.
+namespace shop_3a0bb8 {
+
+// Shop controller fields read by this routine.
+constexpr u32 kPhaseOffset = 0x8;
+constexpr u32 kPhaseSubObject3A8 = 0x3A8;
+constexpr u32 kTransformSubObject3C8 = 0x3C8;
+constexpr u32 kTransformOut380 = 0x380;
+constexpr u32 kTransformSignedByte8A = 0x8A;
+constexpr u32 kModeWord860 = 0x860;
+constexpr u32 kTextObject160 = 0x160;
+constexpr u32 kFormatObject168 = 0x168;
+
+// Fields written on the phase-1 mode paths.
+constexpr u32 kResultWord4 = 0x4;
+constexpr u32 kPhaseWord8 = 0x8;
+
+// Shop controller fields used by the common epilogue.
+constexpr u32 kSlotWord15D48 = 0x15D48;
+
+// Values observed in the original.
+constexpr u32 kPhaseRunning = 0;
+constexpr u32 kPhaseActive = 1;
+constexpr u32 kFullFrameMode = 7;
+constexpr u32 kSellOffMode = 8;
+constexpr u32 kModeLimit = 9;
+constexpr u32 kItemBuyResult4 = 5;
+constexpr u32 kItemBuyResult6 = 6;
+constexpr u32 kSellOffResult7 = 7;
+constexpr u32 kClearedPhase = 0;
+constexpr u32 kFlagged = 1;
+
+constexpr char kItemBuyText[] = "shop_itembuy";
+constexpr char kSellOffText[] = "shop_selloff";
+
+constexpr f32 kZeroFloat = 0.0f;
+constexpr f32 kDepthFloat = -32000.0f;
+
+__attribute__((always_inline)) inline u32 load_u32(u32 address) {
+    return *reinterpret_cast<const volatile u32*>(
+        static_cast<uintptr_t>(address));
+}
+
+__attribute__((always_inline)) inline s8 load_s8(u32 address) {
+    return *reinterpret_cast<const volatile s8*>(
+        static_cast<uintptr_t>(address));
+}
+
+__attribute__((always_inline)) inline void store_u32(u32 address, u32 value) {
+    *reinterpret_cast<volatile u32*>(static_cast<uintptr_t>(address)) = value;
+}
+
+}  // namespace shop_3a0bb8
+
+// Direct call declarations.  Addresses follow config/functions.csv.
+namespace shop_3a0bb8_calls {
+
+// 0x00230F84: stores the low byte of its argument in a singleton-owned byte.
+extern "C" void shop_func_00230f84(u32 value);
+
+// 0x002333D4: selector-driven reset of the object passed in r0.
+extern "C" void shop_func_002333d4(u32 object, u32 selector);
+
+// 0x002B9220: re-initialises the 3-C transform sub-object at self+0x3C8.
+extern "C" void shop_func_002b9220(u32 object, u32 argument);
+
+// 0x0029E398: mode-agnostic poll of the current shop state; returns non-zero
+// when the item-buy action is available.
+extern "C" u32 shop_func_0029e398(void);
+
+// 0x00291018: looks up/creates a text entry for the NUL-terminated string in
+// r1 on the object in r0; returns the entry handle used by 0x002971E4.
+extern "C" u32 shop_func_00291018(u32 object, const char* text);
+
+// 0x002971E4: applies a text-entry handle to the message object in r0.
+extern "C" u32 leaf41_002971e4(void* object, s32 index);
+
+// 0x0019DFBC: flushes/releases the message object in r0.
+extern "C" void shop_func_0019dfbc(u32 object);
+
+// 0x002AE16C: reports whether the slot has a live inner record; returns 0 or 1.
+extern "C" u32 shop_func_002ae16c(u32 slot);
+
+// 0x002A06C8: clears the `0x200000` flag word on the slot and updates its
+// inner object; the return value is not observed here.
+extern "C" void shop_func_002a06c8(u32 slot, u32 flag);
+
+// 0x0029A2B0: depth/plane flush for the slot's inner object.  The three float
+// arguments occupy s0-s2 under the hard-float AAPCS.
+extern "C" u32 shop_func_0029a2b0(u32 object, u32 flag, f32 x, f32 y,
+                                 f32 z);
+
+}  // namespace shop_3a0bb8_calls
+
+extern "C" u32 shop_func_003a0bb8(void* self_pointer) {
+    using namespace shop_3a0bb8;
+    using namespace shop_3a0bb8_calls;
+
+    const u32 self = reinterpret_cast<u32>(self_pointer);
+
+    // 0x003A0BC0..0x003A0BF4: phase dispatch.
+    const u32 phase = load_u32(self + kPhaseOffset);
+    if (phase == kPhaseRunning) {
+        shop_func_00230f84(kFlagged);
+        shop_func_002333d4(self + kPhaseSubObject3A8, 0);
+        store_u32(self + kPhaseOffset, kPhaseActive);
+    } else if (phase == kPhaseActive) {
+        const u32 transform = self + kTransformSubObject3C8;
+        shop_func_002b9220(transform, 0);
+
+        // 0x003A0C08..0x003A0C2C: Y first, then X; the writes are reordered
+        // into the (x, y) call signature.
+        const s32 y = shop_func_002bef70(
+            reinterpret_cast<const void*>(static_cast<uintptr_t>(transform)));
+        const s32 x = ui_func_002bef7c(
+            reinterpret_cast<const void*>(static_cast<uintptr_t>(transform)));
+        shop_func_002313d4(
+            reinterpret_cast<void*>(static_cast<uintptr_t>(self +
+                                                           kTransformOut380)),
+            x, y);
+
+        // 0x003A0C30..0x003A0C44: signed byte gate.
+        if (load_s8(transform + kTransformSignedByte8A) != 0) {
+            const u32 mode = load_u32(self + kModeWord860);
+
+            // 0x003A0C48..0x003A0C58: unsigned `mode < 9` jump table.
+            if (mode < kModeLimit) {
+                switch (mode) {
+                    case 0:
+                    case 1:
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 5:
+                    case 6:
+                        // 0x003A0C80..0x003A0CA0: six modes share this path.
+                        if (shop_func_0029e398() != 0) {
+                            store_u32(self + kResultWord4, kItemBuyResult4);
+                            store_u32(self + kPhaseWord8, kClearedPhase);
+                        }
+                        break;
+
+                    case kFullFrameMode:
+                        // 0x003A0CA4..0x003A0CD4.
+                        store_u32(self + kResultWord4, kItemBuyResult6);
+                        store_u32(self + kPhaseWord8, kClearedPhase);
+                        {
+                            const u32 entry = shop_func_00291018(
+                                load_u32(self + kTextObject160), kItemBuyText);
+                            leaf41_002971e4(
+                                reinterpret_cast<void*>(
+                                    static_cast<uintptr_t>(
+                                        load_u32(self + kFormatObject168))),
+                                static_cast<s32>(entry));
+                            shop_func_0019dfbc(
+                                load_u32(self + kFormatObject168));
+                        }
+                        break;
+
+                    case kSellOffMode:
+                        // 0x003A0CD8..0x003A0D04.
+                        store_u32(self + kResultWord4, kSellOffResult7);
+                        store_u32(self + kPhaseWord8, kClearedPhase);
+                        {
+                            const u32 entry = shop_func_00291018(
+                                load_u32(self + kTextObject160), kSellOffText);
+                            leaf41_002971e4(
+                                reinterpret_cast<void*>(
+                                    static_cast<uintptr_t>(
+                                        load_u32(self + kFormatObject168))),
+                                static_cast<s32>(entry));
+                            shop_func_0019dfbc(
+                                load_u32(self + kFormatObject168));
+                        }
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+        }
+    }
+
+    // 0x003A0D08..0x003A0D68: common epilogue over the slot at self+0x15D48.
+    const u32 slot = load_u32(self + kSlotWord15D48);
+    if (slot == 0) {
+        return slot;
+    }
+    if (shop_func_002ae16c(slot) == 0) {
+        return 0;
+    }
+
+    const u32 inner = load_u32(slot + 8);
+    const s32 signed_state = static_cast<s32>(load_u32(inner + 0xC));
+    if (signed_state >= 0) {
+        return slot;
+    }
+
+    shop_func_002a06c8(slot, kFlagged);
+
+    // 0x003A0D48..0x003A0D64: reload the slot after the callback and tail-call
+    // the depth flush with (0, 0.0f, -32000.0f, 0.0f).
+    const u32 flush_object = load_u32(load_u32(self + kSlotWord15D48) + 8);
+    return shop_func_0029a2b0(flush_object, 0, kZeroFloat, kDepthFloat,
+                              kZeroFloat);
 }
 
 // DECOMP_FUNC(0x003b87a0, 476)
