@@ -7996,116 +7996,184 @@ extern "C" u32 ui_func_00150320(void* scene, void* unit, void* part,
     return cursor;
 }
 
+// ---------------------------------------------------------------------------
+// 0x0010F120 (836 B): initialize the scene/camera block owned by `self`.
+//
+// The body is an inlined constructor: six flag bytes, twelve element markers,
+// one 0x12A48-byte shader object, four 4x4 matrices, two camera blocks and
+// twelve per-element constructors plus table lookups.  The original's last
+// instruction sequence leaves the final lookup word in r0; the candidate
+// returns it as well (callers ignore the value).
+//
+// Direct callees (addresses from config/functions.csv):
+//   0x002C23F8 AsdMemory_func_002c23f8  aligned allocation of 0x12A48 bytes
+//   0x0011B4A8 ui_func_0011b4a8         object constructor; returns its input
+//   0x002C5E3C engine_func_002c5e3c     loads "DefaultTextureVS.shbin"; returns
+//                                       the data pointer and writes the stream
+//                                       size through arg 1
+//   0x0011B3B8 engine_func_0011b3b8     uploads the shader bytes
+//   0x002C1784 engine_func_002c1784     keyframe u32 lookup (index 0 / 2)
+//   0x002C17AC engine_func_002c17ac     keyframe u32 lookup (index 0 / 2)
+//   0x002BC170 engine_func_002bc170     matrix fill(left,right,bottom,top,
+//                                       near,far) into the sixteen float slots
+//   0x002BC0B4 engine_func_002bc0b4     matrix post-transform; mode 1 returns
+//                                       without touching memory
+//   0x002C2210 engine_func_002c2210     camera block init (mode 1)
+//   0x002C20A8 engine_func_002c20a8     camera orientation from three vec3s
+//   0x002C1FFC ui_func_002c1ffc         camera projection
+//   0x002BC014 engine_func_002bc014     object init at self + 0x5B4
+//   0x0011B388 engine_func_0011b388     element constructor (element, u8 index)
+//   0x0011A0C8 engine_func_0011a0c8     per-index table lookup
+//
+// Object field map (byte offsets from `self`):
+//   0x05B0 / 0x05F4        byte flags
+//   0x052C                 shader object pointer (allocation result)
+//   0x05F8 / 0x0638        4x4 matrices built from the two keyframe lookups
+//   0x0678 / 0x06B8        4x4 matrices built from fixed frustum bounds
+//   0x06FC / 0x0C04        camera blocks (init, orientation, projection)
+//   0x11DC / 0x11E1        byte flags
+//   0x11E8 / 0x11E9        byte state / mode 3
+//   0x11EC + i*0x20        twelve 0x20-byte elements; byte +0x18 enabled = 1
+//   0x136C + i*4           twelve u32 lookup results (right after the elements)
+// ---------------------------------------------------------------------------
+extern "C" {
+void* AsdMemory_func_002c23f8(u32 size);
+void* ui_func_0011b4a8(void* object);
+void* engine_func_002c5e3c(const char* name, u32* out_size, u32 flags,
+                           u32 user);
+void engine_func_0011b3b8(void* object, const void* data, u32 size,
+                          u32 flags);
+u32 engine_func_002c1784(u32 index);
+u32 engine_func_002c17ac(u32 index);
+void engine_func_002bc170(float* matrix, float left, float right, float bottom,
+                          float top, float near_value, float far_value);
+void engine_func_002bc0b4(float* matrix, u32 mode);
+void engine_func_002c2210(void* object, u32 mode);
+void engine_func_002c20a8(void* object, const f32* eye, const f32* target,
+                          const f32* up);
+void ui_func_002c1ffc(void* object, u32 flag, f32 p0, f32 p1, f32 p2, f32 p3);
+void engine_func_002bc014(void* object);
+void engine_func_0011b388(void* element, u8 index);
+u32 engine_func_0011a0c8(u8 index);
+} // extern "C"
+
+namespace engine_10f120 {
+
+constexpr u32 kAllocationSize = 0x12A48;      // literal 0x00012A48
+constexpr u32 kElementCount = 12;
+constexpr u32 kElementStride = 0x20;
+constexpr u32 kElementBase = 0x11EC;
+constexpr u32 kElementEnabledOffset = 0x18;    // first loop writes base+0x18
+constexpr u32 kLookupResults = 0x136C;         // immediately after the array
+
+constexpr u32 kShaderObjectOffset = 0x052C;
+constexpr u32 kShaderFlags = 0x80;             // r3 of the loader
+constexpr u32 kShaderFlagsArg = 1;             // r2 of the loader
+
+constexpr u32 kMatrixKeyframeA = 0x05F8;
+constexpr u32 kMatrixKeyframeB = 0x0638;
+constexpr u32 kMatrixFrustumA = 0x0678;
+constexpr u32 kMatrixFrustumB = 0x06B8;
+constexpr u32 kCameraBlockA = 0x06FC;
+constexpr u32 kCameraBlockB = 0x0C04;
+constexpr u32 kObjectAt5B4 = 0x05B4;
+
+constexpr f32 kZero = 0.0f;
+constexpr f32 kOne = 1.0f;
+constexpr f32 kAspect = 1.6666666269302368f;   // 0x3FD55555
+constexpr f32 kAspectB = 1.3333333730697632f;  // 0x3FAAAAAB
+constexpr f32 kNear = 10.0f;
+constexpr f32 kFar = -10.0f;
+
+constexpr char kShaderName[] = "DefaultTextureVS.shbin"; // literal 0x004092A8
+
+inline float* matrix_at(u8* self, u32 offset) {
+    return reinterpret_cast<float*>(self + offset);
+}
+
+} // namespace engine_10f120
+
 // DECOMP_FUNC(0x0010f120, 836)
-extern "C" __attribute__((naked)) void engine_func_0010f120() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4030, 0xe92d, 0x5000, 0xe1a0\n"
-        ".hword 0x1a01, 0xe285, 0x8b06, 0xed2d\n"
-        ".hword 0xd024, 0xe24d, 0x0001, 0xe3a0\n"
-        ".hword 0x2003, 0xe3a0, 0x01e8, 0xe5c1\n"
-        ".hword 0x21e9, 0xe5c1, 0x05b0, 0xe5c5\n"
-        ".hword 0x01dc, 0xe5c1, 0x01e1, 0xe5c1\n"
-        ".hword 0x1000, 0xe3a0, 0x2001, 0xe1a0\n"
-        ".hword 0x15f4, 0xe5c5, 0x3282, 0xe085\n"
-        ".hword 0x2001, 0xe282, 0xca01, 0xe283\n"
-        ".hword 0x3282, 0xe085, 0x3a01, 0xe283\n"
-        ".hword 0x1002, 0xe281, 0x0204, 0xe5cc\n"
-        ".hword 0x000c, 0xe351, 0x2001, 0xe282\n"
-        ".hword 0x0204, 0xe5c3, 0xfff4, 0xbaff\n"
-        ".hword 0x0284, 0xe59f, 0xcc99, 0xeb06\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x30c2, 0x1b00, 0x4b01, 0xe285\n"
-        ".hword 0x052c, 0xe585, 0x026c, 0xe59f\n"
-        ".hword 0x4f4b, 0xe284, 0x3080, 0xe3a0\n"
-        ".hword 0x2001, 0xe3a0, 0x100d, 0xe1a0\n"
-        ".hword 0xdb1f, 0xeb06, 0xc000, 0xe594\n"
-        ".hword 0x1000, 0xe1a0, 0x2000, 0xe59d\n"
-        ".hword 0x3000, 0xe3a0, 0x000c, 0xe1a0\n"
-        ".hword 0x3078, 0xeb00, 0x0000, 0xe3a0\n"
-        ".hword 0xf000, 0xe320, 0xc968, 0xeb06\n"
-        ".hword 0x0a10, 0xee00, 0x0000, 0xe3a0\n"
-        ".hword 0x8a40, 0xeef8, 0xc96e, 0xeb06\n"
-        ".hword 0x0a10, 0xee00, 0x8a89, 0xed9f\n"
-        ".hword 0x9a87, 0xed9f, 0x0a68, 0xeef0\n"
-        ".hword 0x2a48, 0xeeb0, 0x2a49, 0xeef0\n"
-        ".hword 0x1a40, 0xeeb8, 0x1a48, 0xeef0\n"
-        ".hword 0x0a48, 0xeeb0, 0x0b01, 0xe285\n"
-        ".hword 0x0f7e, 0xe280, 0x4000, 0xe1a0\n"
-        ".hword 0xb3d2, 0xeb06, 0x1001, 0xe3a0\n"
-        ".hword 0x0004, 0xe1a0, 0xb3a0, 0xeb06\n"
-        ".hword 0x0002, 0xe3a0, 0xf000, 0xe320\n"
-        ".hword 0xc951, 0xeb06, 0x0a10, 0xee00\n"
-        ".hword 0x0002, 0xe3a0, 0x8a40, 0xeef8\n"
-        ".hword 0xc957, 0xeb06, 0x0a10, 0xee00\n"
-        ".hword 0x2a49, 0xeef0, 0x2a48, 0xeeb0\n"
-        ".hword 0x1a48, 0xeef0, 0x0a68, 0xeef0\n"
-        ".hword 0x0b01, 0xe285, 0x1a40, 0xeeb8\n"
-        ".hword 0x0a48, 0xeeb0, 0x0f8e, 0xe280\n"
-        ".hword 0x4000, 0xe1a0, 0xb3bd, 0xeb06\n"
-        ".hword 0x1001, 0xe3a0, 0x0004, 0xe1a0\n"
-        ".hword 0xb38b, 0xeb06, 0x8a66, 0xeddf\n"
-        ".hword 0x9a66, 0xed9f, 0x9a66, 0xeddf\n"
-        ".hword 0xaa66, 0xed9f, 0x2a68, 0xeef0\n"
-        ".hword 0x2a49, 0xeeb0, 0x1a69, 0xeef0\n"
-        ".hword 0x1a4a, 0xeeb0, 0x0b01, 0xe285\n"
-        ".hword 0x0f9e, 0xe280, 0x0a60, 0xeddf\n"
-        ".hword 0x0a60, 0xed9f, 0x4000, 0xe1a0\n"
-        ".hword 0xb3ac, 0xeb06, 0x1001, 0xe3a0\n"
-        ".hword 0x0004, 0xe1a0, 0xb37a, 0xeb06\n"
-        ".hword 0x2a68, 0xeef0, 0x2a49, 0xeeb0\n"
-        ".hword 0x1a69, 0xeef0, 0x1a4a, 0xeeb0\n"
-        ".hword 0x0b01, 0xe285, 0x0fae, 0xe280\n"
-        ".hword 0x0a55, 0xeddf, 0x0a55, 0xed9f\n"
-        ".hword 0x4000, 0xe1a0, 0xb39f, 0xeb06\n"
-        ".hword 0x1001, 0xe3a0, 0x0004, 0xe1a0\n"
-        ".hword 0xb36d, 0xeb06, 0x0a50, 0xed9f\n"
-        ".hword 0x0a50, 0xeddf, 0x8a00, 0xed8d\n"
-        ".hword 0x1004, 0xe28d, 0x4b01, 0xe285\n"
-        ".hword 0x0a02, 0xec81, 0x4fbf, 0xe284\n"
-        ".hword 0x0a4b, 0xed9f, 0x8a03, 0xed8d\n"
-        ".hword 0x0a04, 0xed8d, 0x8a05, 0xed8d\n"
-        ".hword 0x8a06, 0xed8d, 0x8a07, 0xed8d\n"
-        ".hword 0x8a08, 0xed8d, 0x1001, 0xe3a0\n"
-        ".hword 0x0004, 0xe1a0, 0xcbb3, 0xeb06\n"
-        ".hword 0x300c, 0xe28d, 0x2018, 0xe28d\n"
-        ".hword 0x100d, 0xe1a0, 0x0004, 0xe1a0\n"
-        ".hword 0xcb54, 0xeb06, 0x8a3e, 0xed9f\n"
-        ".hword 0x8a3e, 0xeddf, 0x9a3e, 0xed9f\n"
-        ".hword 0x1a48, 0xeeb0, 0x0a68, 0xeef0\n"
-        ".hword 0x0a49, 0xeeb0, 0x1a37, 0xeddf\n"
-        ".hword 0x1001, 0xe3a0, 0x0004, 0xe1a0\n"
-        ".hword 0xcb1f, 0xeb06, 0x4b03, 0xe285\n"
-        ".hword 0x4004, 0xe284, 0x1001, 0xe3a0\n"
-        ".hword 0x0004, 0xe1a0, 0xcb9f, 0xeb06\n"
-        ".hword 0x300c, 0xe28d, 0x2018, 0xe28d\n"
-        ".hword 0x100d, 0xe1a0, 0x0004, 0xe1a0\n"
-        ".hword 0xcb40, 0xeb06, 0x1a48, 0xeeb0\n"
-        ".hword 0x0a68, 0xeef0, 0x0a49, 0xeeb0\n"
-        ".hword 0x1a2a, 0xeddf, 0x1001, 0xe3a0\n"
-        ".hword 0x0004, 0xe1a0, 0xcb0e, 0xeb06\n"
-        ".hword 0x0b01, 0xe285, 0x0f6d, 0xe280\n"
-        ".hword 0xb311, 0xeb06, 0x4000, 0xe3a0\n"
-        ".hword 0x10ff, 0xe204, 0x0284, 0xe085\n"
-        ".hword 0x0a01, 0xe280, 0x0f7b, 0xe280\n"
-        ".hword 0x2fe8, 0xeb00, 0x00ff, 0xe204\n"
-        ".hword 0xf000, 0xe320, 0x2b35, 0xeb00\n"
-        ".hword 0x1104, 0xe085, 0x1a01, 0xe281\n"
-        ".hword 0x4001, 0xe284, 0x000c, 0xe354\n"
-        ".hword 0x036c, 0xe581, 0xfff1, 0xbaff\n"
-        ".hword 0xd024, 0xe28d, 0x8b06, 0xecbd\n"
-        ".hword 0x8030, 0xe8bd, 0x2a48, 0x0001\n"
-        ".hword 0x92a8, 0x0040, 0x0000, 0xbf80\n"
-        ".hword 0x0000, 0x0000, 0x0000, 0xc120\n"
-        ".hword 0x0000, 0x4120, 0x0000, 0xc040\n"
-        ".hword 0x0000, 0x4040, 0x0000, 0x40a0\n"
-        ".hword 0x0000, 0xc0a0, 0x0000, 0x4080\n"
-        ".hword 0x0000, 0xc080, 0x0000, 0x42c8\n"
-        ".hword 0x0000, 0x4416, 0x0000, 0x3f80\n"
-        ".hword 0x5555, 0x3fd5, 0x0000, 0x46c8\n"
-        ".hword 0x0000, 0x41a0, 0x0000, 0x41f0\n"
-        ".hword 0xaaab, 0x3faa\n"
-    );
+extern "C" u32 engine_func_0010f120(u8* self) {
+    using namespace engine_10f120;
+
+    self[0x11E8] = 1;
+    self[0x11E9] = 3;
+    self[0x05B0] = 1;
+    self[0x11DC] = 1;
+    self[0x11E1] = 1;
+    self[0x05F4] = 0;
+
+    // The original emits this as an unrolled-by-two loop over six pairs; the
+    // effect is one enabled byte in every element.
+    for (u32 i = 0; i < kElementCount; ++i) {
+        self[kElementBase + i * kElementStride + kElementEnabledOffset] = 1;
+    }
+
+    void* shader_object = AsdMemory_func_002c23f8(kAllocationSize);
+    if (shader_object != nullptr) {
+        shader_object = ui_func_0011b4a8(shader_object);
+    }
+    *reinterpret_cast<void**>(self + kShaderObjectOffset) = shader_object;
+
+    // The loader writes the stream size through its second argument before the
+    // upload reads it; the candidate initialises the word instead of relying on
+    // the uninitialised stack slot the original passes.
+    u32 shader_size = 0;
+    void* const shader_data = engine_func_002c5e3c(
+        kShaderName, &shader_size, kShaderFlagsArg, kShaderFlags);
+    engine_func_0011b3b8(shader_object, shader_data, shader_size, 0);
+
+    // Argument evaluation order must be sequenced: the original calls 0x2C1784
+    // before 0x2C17AC, and the values are converted with unsigned semantics.
+    const u32 keyframe_a0 = engine_func_002c1784(0);
+    const u32 keyframe_b0 = engine_func_002c17ac(0);
+    float* const matrix_a = matrix_at(self, kMatrixKeyframeA);
+    engine_func_002bc170(matrix_a, kZero, static_cast<f32>(keyframe_a0),
+                         static_cast<f32>(keyframe_b0), kZero, kZero, -kOne);
+    engine_func_002bc0b4(matrix_a, 1);
+
+    const u32 keyframe_a2 = engine_func_002c1784(2);
+    const u32 keyframe_b2 = engine_func_002c17ac(2);
+    float* const matrix_b = matrix_at(self, kMatrixKeyframeB);
+    engine_func_002bc170(matrix_b, kZero, static_cast<f32>(keyframe_a2),
+                         static_cast<f32>(keyframe_b2), kZero, kZero, -kOne);
+    engine_func_002bc0b4(matrix_b, 1);
+
+    float* const matrix_c = matrix_at(self, kMatrixFrustumA);
+    engine_func_002bc170(matrix_c, -5.0f, 5.0f, 3.0f, -3.0f, kNear, kFar);
+    engine_func_002bc0b4(matrix_c, 1);
+
+    float* const matrix_d = matrix_at(self, kMatrixFrustumB);
+    engine_func_002bc170(matrix_d, -4.0f, 4.0f, 3.0f, -3.0f, kNear, kFar);
+    engine_func_002bc0b4(matrix_d, 1);
+
+    // The same three vec3 locals feed both camera blocks.  The original lays
+    // them out at sp+0x00 (eye), sp+0x18 (target) and sp+0x0C (up).
+    f32 eye[3] = {0.0f, 100.0f, 600.0f};
+    f32 up[3] = {0.0f, 1.0f, 0.0f};
+    f32 target[3] = {0.0f, 0.0f, 0.0f};
+
+    u8* const camera_a = self + kCameraBlockA;
+    engine_func_002c2210(camera_a, 1);
+    engine_func_002c20a8(camera_a, eye, target, up);
+    ui_func_002c1ffc(camera_a, 1, 30.0f, 20.0f, 25600.0f, kAspect);
+
+    u8* const camera_b = self + kCameraBlockB;
+    engine_func_002c2210(camera_b, 1);
+    engine_func_002c20a8(camera_b, eye, target, up);
+    ui_func_002c1ffc(camera_b, 1, 30.0f, 20.0f, 25600.0f, kAspectB);
+
+    engine_func_002bc014(self + kObjectAt5B4);
+
+    u32 last = 0;
+    for (u32 i = 0; i < kElementCount; ++i) {
+        u8* const element = self + kElementBase + i * kElementStride;
+        engine_func_0011b388(element, static_cast<u8>(i));
+        last = engine_func_0011a0c8(static_cast<u8>(i));
+        *reinterpret_cast<u32*>(self + kLookupResults + i * 4) = last;
+    }
+    return last;
 }
 
 // DECOMP_FUNC(0x0033138c, 836)
