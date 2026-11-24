@@ -588,43 +588,178 @@ extern "C" u32 script_vm_func_0026d1b8() {
 }
 
 // DECOMP_FUNC(0x002c7090, 504)
-// 122 ARM instructions through unconditional pop; 16 trailing data bytes.
-extern "C" __attribute__((naked)) void func_002c7090() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d47f0, 0xe1a06000, 0xe5905024, 0xe28540c0\n"
-        ".word 0xe59580b8, 0xe3580000, 0x03a07000, 0x0a000004\n"
-        ".word 0xe596701c, 0xe1570008, 0xc3a00000, 0xc5c4000f\n"
-        ".word 0xca00006b, 0xe1a02008, 0xe1a01007, 0xe285008c\n"
-        ".word 0xebfe89a4, 0xe5d500bc, 0xe59f9198, 0xe3500000\n"
-        ".word 0x0a00000b, 0xe2840004, 0xeddf0a63, 0xed9f1a63\n"
-        ".word 0xee701ac0, 0xee312a40, 0xee702a20, 0xee300a01\n"
-        ".word 0xed840a08, 0xecc00a02, 0xe2840014, 0xecc01a03\n"
-        ".word 0xea000011, 0xedd60a05, 0xe896100e, 0xe2890c01\n"
-        ".word 0xee200a80, 0xe880100e, 0xebfc6aa0, 0xed991a40\n"
-        ".word 0xedd90a41, 0xed841a01, 0xee711a40, 0xee312a00\n"
-        ".word 0xee301ac0, 0xee300a80, 0xedc40a02, 0xedc41a05\n"
-        ".word 0xed841a06, 0xed842a07, 0xed840a08, 0xe1a03008\n"
-        ".word 0xe1a02007, 0xe2851024, 0xe1a00005, 0xebfe89e0\n"
-        ".word 0xe1a07000, 0xe5960010, 0xebfe4125, 0xe2890c01\n"
-        ".word 0xe2891e11, 0xe890100c, 0xe599010c, 0xe589011c\n"
-        ".word 0xe1a00007, 0xe881100c, 0xebfe411d, 0xed990a40\n"
-        ".word 0xedd90a44, 0xe2890f41, 0xe284100c, 0xee200a20\n"
-        ".word 0xed890a40, 0xed990a41, 0xedd90a45, 0xee200a20\n"
-        ".word 0xed890a41, 0xed990a42, 0xedd90a46, 0xee200a20\n"
-        ".word 0xed890a42, 0xedd90a47, 0xed990a43, 0xee200a20\n"
-        ".word 0xed890a43, 0xed9f0a26, 0xed992a40, 0xedd90a43\n"
-        ".word 0xec901a02, 0xee222a00, 0xee602a80, 0xee211a00\n"
-        ".word 0xee611a80, 0xeebc0ac2, 0xeefc0ac1, 0xee100a10\n"
-        ".word 0xeebc0ae2, 0xee102a90, 0xeefc0ae1, 0xe1a00c00\n"
-        ".word 0xe202c0ff, 0xe180080c, 0xee102a10, 0xee103a90\n"
-        ".word 0xe20220ff, 0xe20330ff, 0xe1800403, 0xe1800002\n"
-        ".word 0xe6bf2f30, 0xe6bfcf30, 0xe6bf6f30, 0xe6bf3f30\n"
-        ".word 0xe1a00822, 0xe1a0cc2c, 0xe5c1c000, 0xe1a02426\n"
-        ".word 0xe5c10001, 0xe5c12002, 0xe5c13003, 0xe5950028\n"
-        ".word 0xe5840010, 0xe8bd87f0, 0x004ea81c, 0x43480000\n"
-        ".word 0x42f00000, 0x437f0000\n"
-    );
+//
+// Recovered contract (ARM 0x002C7090..0x002C7277; the final 16 bytes at
+// 0x002C7278..0x002C7287 are the literal pool: 0x004EA81C, 200.0f, 120.0f and
+// 255.0f):
+//   * `owner` (r0) supplies `state = owner->state_24`; the refreshed display
+//     record is `state + 0xC0`.  `count = state->count_b8` (signed word) is
+//     always read.  When `count != 0`, `frame = owner->frame_1c` is read too
+//     (a zero count leaves `frame` at zero and never touches owner +0x1C), and
+//     a signed `frame > count` test then clears display byte +0x0F and leaves
+//     immediately with r0 = 0, before any helper runs.
+//   * `0x00269768(state + 0x8C, frame, count)` samples one curve and returns
+//     the float in s0; that value drives the rectangle geometry below.  r0 of
+//     the first callee is otherwise dead.
+//   * `state->flag_bc != 0` selects the two geometry variants:
+//       - set: display +4/+8 become 200.0f/120.0f and +0x14/+0x18/+0x1C/+0x20
+//         become 200-sample, 120-sample, 200+sample, 120+sample;
+//       - clear: the four owner words at owner+0x00..0x0C are copied to the
+//         shared colour block 0x004EA81C+0x100 (as raw words), then
+//         `0x001E1BB0(0x004EA81C+0x100, owner->scale_14 * sample)` runs and
+//         its float return becomes a radius.  display +4/+8 take the two
+//         colour components read back from the block and the four bounds are
+//         component0 - radius, component1 - radius, component0 + radius,
+//         component1 + radius.
+//   * The merge point runs `0x002698F4(state, state+0x24, frame, count)`, whose
+//     packed-colour return seeds the blend.  `0x00257614(owner->color_10)`
+//     converts that colour into four normalized floats at 0x004EA81C+0x100;
+//     those are copied to 0x004EA81C+0x110, the sampled colour is converted
+//     into the current block by a second `0x00257614`, and the two vectors are
+//     multiplied in place.
+//   * Each product is scaled by 255.0f and truncated to u32; the low bytes are
+//     written in reverse order to display +0x0C..+0x0F so display[0x0C] is
+//     component3 and display[0x0F] is component0.  The word at display +0x10
+//     is then set to `state->value_28`, which is also the function's r0 result.
+//   * All calls are direct; 0x001E1BB0 receives its float in s0.  There are no
+//     stack arguments, no loops, no indirect calls, and `sl` is pushed but
+//     never used.  Callee-saved r4-r8/sb/sl are preserved by the prologue
+//     `push {r4, r5, r6, r7, r8, sb, sl, lr}` / `pop {..., pc}`.
+
+extern "C" f32 func_00269768(void* curve, s32 frame, s32 count);
+extern "C" u32 func_002698f4(void* source, void* palette, s32 frame,
+                             s32 count);
+extern "C" void func_00257614(u32 color);
+extern "C" f32 ui_func_001e1bb0(void* color_block, f32 scale);
+
+namespace func_2c7090 {
+
+// Literal pool at 0x002C7278..0x002C7287.
+constexpr u32 kColorBlockAddress = 0x004EA81C;  // 0x002C7278
+constexpr u32 kColorCurrentOffset = 0x100;      // -> 0x004EA91C
+constexpr u32 kColorPreviousOffset = 0x110;     // -> 0x004EA92C
+
+constexpr f32 kDefaultSpanX = 200.0f;  // 0x43480000
+constexpr f32 kDefaultSpanY = 120.0f;  // 0x42F00000
+constexpr f32 kColorScale = 255.0f;    // 0x437F0000
+
+struct __attribute__((may_alias)) Display {
+    u8 pad_00[0x04];
+    f32 span_x_04;   // +0x04: 200.0f on the default path
+    f32 span_y_08;   // +0x08: 120.0f on the default path
+    u32 color_0c;    // +0x0C: packed colour, bytes [component3..component0]
+    u32 value_10;    // +0x10: state->value_28
+    f32 min_x_14;    // +0x14
+    f32 min_y_18;    // +0x18
+    f32 max_x_1c;    // +0x1C
+    f32 max_y_20;    // +0x20
+};
+
+struct __attribute__((may_alias)) State {
+    u8 pad_00[0x24];
+    u8 palette_24[0x04];  // +0x24: first word handed to 0x002698F4
+    u32 value_28;         // +0x28: copied to display +0x10
+    u8 pad_2c[0x60];      // +0x2C..+0x8B
+    u8 curve_8c[0x2C];    // +0x8C: 0x00269768 sampling record
+    s32 count_b8;         // +0xB8: signed record count
+    u8 flag_bc;           // +0xBC: selects the default geometry when non-zero
+    u8 pad_bd[0x03];
+    Display display_c0;   // +0xC0
+};
+
+struct __attribute__((may_alias)) Owner {
+    u32 color_source_00[0x04];  // +0x00..+0x0C: raw words for the colour block
+    u32 color_10;               // +0x10: packed colour converted by 0x00257614
+    f32 scale_14;               // +0x14: multiplied into the sampled value
+    u8 pad_18[0x04];
+    s32 frame_1c;               // +0x1C: read only when count != 0
+    u8 pad_20[0x04];
+    State* state_24;            // +0x24
+};
+
+}  // namespace func_2c7090
+
+extern "C" u32 func_002c7090(func_2c7090::Owner* owner) {
+    using namespace func_2c7090;
+
+    State* const state = owner->state_24;
+    Display* const display = &state->display_c0;
+
+    const s32 count = state->count_b8;
+    s32 frame = 0;
+    if (count != 0) {
+        frame = owner->frame_1c;
+        if (frame > count) {
+            reinterpret_cast<u8*>(&display->color_0c)[3] = 0;
+            return 0;
+        }
+    }
+
+    const f32 sample = func_00269768(state->curve_8c, frame, count);
+
+    if (state->flag_bc != 0) {
+        display->span_x_04 = kDefaultSpanX;
+        display->span_y_08 = kDefaultSpanY;
+        display->min_x_14 = kDefaultSpanX - sample;
+        display->min_y_18 = kDefaultSpanY - sample;
+        display->max_x_1c = kDefaultSpanX + sample;
+        display->max_y_20 = kDefaultSpanY + sample;
+    } else {
+        u32* const block = reinterpret_cast<u32*>(
+            kColorBlockAddress + kColorCurrentOffset);
+        block[0] = owner->color_source_00[0];
+        block[1] = owner->color_source_00[1];
+        block[2] = owner->color_source_00[2];
+        block[3] = owner->color_source_00[3];
+
+        const f32 radius =
+            ui_func_001e1bb0(block, owner->scale_14 * sample);
+
+        const f32 component0 = reinterpret_cast<f32*>(block)[0];
+        const f32 component1 = reinterpret_cast<f32*>(block)[1];
+        display->span_x_04 = component0;
+        display->span_y_08 = component1;
+        display->min_x_14 = component0 - radius;
+        display->min_y_18 = component1 - radius;
+        display->max_x_1c = component0 + radius;
+        display->max_y_20 = component1 + radius;
+    }
+
+    const u32 sampled = func_002698f4(state, state->palette_24, frame, count);
+
+    func_00257614(owner->color_10);
+
+    u32* const current = reinterpret_cast<u32*>(
+        kColorBlockAddress + kColorCurrentOffset);
+    u32* const previous = reinterpret_cast<u32*>(
+        kColorBlockAddress + kColorPreviousOffset);
+    previous[0] = current[0];
+    previous[1] = current[1];
+    previous[2] = current[2];
+    previous[3] = current[3];
+
+    func_00257614(sampled);
+
+    f32* const current_float = reinterpret_cast<f32*>(current);
+    const f32* const previous_float = reinterpret_cast<const f32*>(previous);
+    current_float[0] = current_float[0] * previous_float[0];
+    current_float[1] = current_float[1] * previous_float[1];
+    current_float[2] = current_float[2] * previous_float[2];
+    current_float[3] = current_float[3] * previous_float[3];
+
+    const u32 scaled0 = static_cast<u32>(current_float[0] * kColorScale);
+    const u32 scaled1 = static_cast<u32>(current_float[1] * kColorScale);
+    const u32 scaled2 = static_cast<u32>(current_float[2] * kColorScale);
+    const u32 scaled3 = static_cast<u32>(current_float[3] * kColorScale);
+
+    u8* const color_bytes = reinterpret_cast<u8*>(&display->color_0c);
+    color_bytes[0] = static_cast<u8>(scaled3);
+    color_bytes[1] = static_cast<u8>(scaled2);
+    color_bytes[2] = static_cast<u8>(scaled1);
+    color_bytes[3] = static_cast<u8>(scaled0);
+
+    display->value_10 = state->value_28;
+    return state->value_28;
 }
 
 // DECOMP_FUNC(0x001aa3a4, 508)
