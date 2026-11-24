@@ -3,43 +3,197 @@
 // Batch 42 B: Capstone-validated ARM encodings preserved as exact raw words; semantics are not reconstructed.
 
 // DECOMP_FUNC(0x002247c8, 504)
-// 124 ARM instructions through unconditional pop; 8 trailing data bytes.
-extern "C" __attribute__((naked)) void ui_func_002247c8() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d41f0, 0xeb0270bd, 0xe1a05000, 0xe5d00010\n"
-        ".word 0xe3500000, 0x0a000073, 0xe59f71d0, 0xed9f0a74\n"
-        ".word 0xe3a00006, 0xe5974000, 0xeb01880f, 0xe2844a01\n"
-        ".word 0xe2844f9b, 0xe3a06000, 0xe5941000, 0xe2812001\n"
-        ".word 0xe0843101, 0xe5931008, 0xe0843102, 0xe5842000\n"
-        ".word 0xe5830008, 0xe5d42018, 0xe3520000, 0x01510000\n"
-        ".word 0x0a000002, 0xe594101c, 0xe12fff31, 0xe5c46018\n"
-        ".word 0xe5974000, 0xe3a01000, 0xe3a00001, 0xeb0285cc\n"
-        ".word 0xe2844a01, 0xe2844f93, 0xe5941000, 0xe2812001\n"
-        ".word 0xe0843101, 0xe5931008, 0xe0843102, 0xe5842000\n"
-        ".word 0xe5830008, 0xe5d42018, 0xe3520000, 0x01510000\n"
-        ".word 0x0a000002, 0xe594101c, 0xe12fff31, 0xe5c46018\n"
-        ".word 0xe5974000, 0xe3a02000, 0xe3a01001, 0xe3a00006\n"
-        ".word 0xeb0285c1, 0xe2844a01, 0xe2844fab, 0xe5941000\n"
-        ".word 0xe2812001, 0xe0843101, 0xe5931008, 0xe0843102\n"
-        ".word 0xe5842000, 0xe5830008, 0xe5d42018, 0xe3520000\n"
-        ".word 0x01510000, 0x0a000002, 0xe594101c, 0xe12fff31\n"
-        ".word 0xe5c46018, 0xe595000c, 0xeb01747d, 0xe5970000\n"
-        ".word 0xe2804a01, 0xe2844fab, 0xe5940000, 0xe0841100\n"
-        ".word 0xe2400001, 0xe5911008, 0xe5840000, 0xe0840100\n"
-        ".word 0xe5d42018, 0xe5900008, 0xe3520000, 0x01510000\n"
-        ".word 0x0a000002, 0xe594101c, 0xe12fff31, 0xe5c46018\n"
-        ".word 0xe5970000, 0xe2804a01, 0xe2844f93, 0xe5940000\n"
-        ".word 0xe0841100, 0xe2400001, 0xe5911008, 0xe5840000\n"
-        ".word 0xe0840100, 0xe5d42018, 0xe5900008, 0xe3520000\n"
-        ".word 0x01510000, 0x0a000002, 0xe594101c, 0xe12fff31\n"
-        ".word 0xe5c46018, 0xe5970000, 0xe2804a01, 0xe2844f9b\n"
-        ".word 0xe5940000, 0xe0841100, 0xe2400001, 0xe5911008\n"
-        ".word 0xe5840000, 0xe0840100, 0xe5d42018, 0xe5900008\n"
-        ".word 0xe3520000, 0x01510000, 0x0a000002, 0xe594101c\n"
-        ".word 0xe12fff31, 0xe5c46018, 0xe3a00000, 0xe8bd81f0\n"
-        ".word 0x0044ea00, 0x00000000\n"
-    );
+//
+// Recovered contract (ARM 0x002247C8..0x002249B7 plus the two literal words at
+// 0x002249B8/0x002249BC: the render-register global 0x0044EA00 and +0.0f):
+//   * `object = ui_func_002c0ac8(handle)` resolves the incoming handle through
+//     the UI object table.  The byte at `object + 0x10` gates the whole body:
+//     zero returns 0 immediately with no further calls and no writes.  The
+//     original does not null-check the lookup result (a miss faults on the
+//     `ldrb`), so neither does this reconstruction.
+//   * Three render command stacks are pushed and then popped in reverse order.
+//     Each stack lives at `*0x0044EA00 + offset` and has the layout
+//     `{u32 count; u32 pad; u32 slots[...]; u8 dirty at +0x18;
+//     u32 flush_cb at +0x1C}`:
+//       1. `+0x126C` receives `engine_func_00286834(6, 0.0f)`; the incoming VFP
+//          s0 is forced to +0.0f by the `vldr s0, =0.0f` at 0x002247E4.
+//       2. `+0x124C` receives `ui_func_002c5f7c(1, 0)` (= 0x1F10).
+//       3. `+0x12AC` receives `battle_func_002c5fa4(6, 1, 0)` (= 0x16160000).
+//     A push captures `slots[count]`, increments `count`, writes the new value
+//     to `slots[count + 1]`, and calls `flush_cb(value)` when the dirty byte is
+//     set or the captured slot already equals the new value; the dirty byte is
+//     cleared afterwards.  The flat index is unchecked, exactly like the ARM.
+//   * `engine_func_00281adc(*(u32*)(object + 0x0C))` runs between the pushes and
+//     the pops; `object + 0x0C` is therefore read after the third push.
+//   * The pops visit `+0x12AC`, `+0x124C`, `+0x126C`.  A pop captures
+//     `slots[count]`, decrements `count`, reads `slots[count - 1]` and applies
+//     the same callback rule with the new top.
+//   * 0x0044EA00 is re-read before every push and every pop, so a helper or a
+//     flush callback that switches the render base is observed.
+//   * Every path returns 0.  The callback results are dead in the original
+//     (r0 is overwritten by `mov r0, #0`), so they are discarded here.
+// Only `r0` (the handle) and `s0` (forced to 0.0f) are live on entry; r1-r3 are
+// dead.  There are no stack arguments and the epilogue is
+// `pop {r4, r5, r6, r7, r8, pc}`.
+namespace func_002247c8 {
+
+// 0x0044EA00 holds the render-register base pointer.
+constexpr u32 kRenderGlobalSlot = 0x0044EA00;
+
+// Render command stacks touched by this routine.
+constexpr u32 kFirstStackOffset = 0x126C;   // engine_func_00286834 value
+constexpr u32 kSecondStackOffset = 0x124C;  // ui_func_002c5f7c value
+constexpr u32 kThirdStackOffset = 0x12AC;   // battle_func_002c5fa4 value
+
+// `mov r0, #6` before 0x00286834 and before 0x002C5FA4.
+constexpr u32 kEngineCommand = 6;
+
+// `mov r0, #1` / `mov r1, #0` before 0x002C5F7C.
+constexpr u32 kViewportCommand = 1;
+constexpr u32 kViewportEnabled = 0;
+
+// `mov r1, #1` / `mov r2, #0` before 0x002C5FA4.
+constexpr u32 kBattleFlag = 1;
+constexpr u32 kBattleMode = 0;
+
+// The literal at 0x002249BC is loaded into s0 before 0x00286834 runs.
+constexpr f32 kZeroScale = 0.0f;
+
+// `ldrb r0, [object, #0x10]` gate.
+constexpr u32 kEnabledOffset = 0x10;
+// `ldr r0, [object, #0x0C]` forwarded to 0x00281ADC.
+constexpr u32 kStatePointerOffset = 0x0C;
+
+// Layout used by the original for a looked-up object; only the fields touched
+// by this routine are named.
+struct UiObject {
+    u8 pad_000[0x0C];
+    void* state_0c;  // +0x0C, forwarded to engine_func_00281adc
+    u8 enabled_10;   // +0x10, gate
+};
+static_assert(offsetof(UiObject, state_0c) == kStatePointerOffset);
+static_assert(offsetof(UiObject, enabled_10) == kEnabledOffset);
+
+// Render command stack node.  The four visible slots live at +0x08..+0x17, but
+// the original addresses them as a flat, unbounded word array
+// (`node + 8 + count*4`) with no bounds check; `slot_view()` below keeps that
+// unbounded view so the out-of-range ordering of the ARM code is preserved
+// (at count 3 the push's slot store overlaps the dirty byte).
+struct RenderStackNode {
+    u32 count;       // +0x00
+    u32 pad_004;     // +0x04
+    u32 slots[4];    // +0x08..+0x17 (visible part only)
+    u8 dirty;        // +0x18
+    u8 pad_019[3];
+    u32 flush_cb;    // +0x1C, `blx r1` with the new value in r0
+};
+static_assert(offsetof(RenderStackNode, count) == 0x00);
+static_assert(offsetof(RenderStackNode, slots) == 0x08);
+static_assert(offsetof(RenderStackNode, dirty) == 0x18);
+static_assert(offsetof(RenderStackNode, flush_cb) == 0x1C);
+
+// `blx r1` with no null check: the original requires a non-null callback.
+using FlushCallback = u32 (*)(u32 value);
+
+inline RenderStackNode* render_stack(void* base, u32 offset) {
+    return reinterpret_cast<RenderStackNode*>(static_cast<u8*>(base) + offset);
+}
+
+inline void* render_base() {
+    return *reinterpret_cast<void* const*>(kRenderGlobalSlot);
+}
+
+// Flat slot view: an unbounded word pointer starting at node + 0x08.
+inline u32* slot_view(RenderStackNode* node) {
+    return reinterpret_cast<u32*>(reinterpret_cast<u8*>(node) + 0x08);
+}
+
+// Push: capture the current top, grow the stack, publish the new value, then
+// flush when the node is dirty or the captured slot already holds it.  The
+// slot store precedes the dirty read in the ARM code, so a count that makes
+// the slot overlap +0x18 is observed in that order.
+inline void render_push(RenderStackNode* node, u32 value) {
+    u32* const slots = slot_view(node);
+    const u32 count = node->count;
+    const u32 previous = slots[count];
+    node->count = count + 1;
+    slots[count + 1] = value;
+    // The ARM code publishes the slot before re-reading +0x18.  At a count that
+    // makes the slot overlap the dirty byte (count 3) the low byte of the new
+    // value is what the flush test sees; the barrier keeps that order, which
+    // the out-of-range index would otherwise let the optimizer discard as UB.
+    asm volatile("" ::: "memory");
+    if (node->dirty != 0 || previous != value) {
+        reinterpret_cast<FlushCallback>(node->flush_cb)(value);
+        node->dirty = 0;
+    }
+}
+
+// Pop: capture the current top, shrink the stack, then apply the same flush
+// rule to the new top.  The decremented index is used unchecked.
+inline void render_pop(RenderStackNode* node) {
+    u32* const slots = slot_view(node);
+    const u32 count = node->count;
+    const u32 previous = slots[count];
+    node->count = count - 1;
+    const u32 new_top = slots[count - 1];
+    if (node->dirty != 0 || previous != new_top) {
+        reinterpret_cast<FlushCallback>(node->flush_cb)(new_top);
+        node->dirty = 0;
+    }
+}
+
+}  // namespace func_002247c8
+
+// 0x002C0AC8: resolves a handle through the UI object table.  Returns the
+// object or null; the original performs no null check on the result.
+extern "C" void* ui_func_002c0ac8(u32 handle);
+
+// 0x00286834: packs a command word from the core argument and the incoming VFP
+// s0: `((kind != 1) | kind << 4) | ((u32)(0.5f + s0 * 255.0f) & 0xFF) << 8`.
+// This routine forces s0 to +0.0f, so kind 6 yields 0x61.
+extern "C" u32 engine_func_00286834(u32 kind, f32 scale);
+
+// 0x002C5F7C: packs a render command word from (kind, enabled).
+extern "C" u32 ui_func_002c5f7c(u32 kind, u32 enabled);
+
+// 0x002C5FA4: packs a battle command word from three core arguments.
+extern "C" u32 battle_func_002c5fa4(u32 kind, u32 flag, u32 mode);
+
+// 0x00281ADC: consumes the object's state pointer; no live result here.
+extern "C" void engine_func_00281adc(void* state);
+
+extern "C" u32 ui_func_002247c8(u32 handle) {
+    using namespace func_002247c8;
+
+    UiObject* const object = static_cast<UiObject*>(ui_func_002c0ac8(handle));
+    if (object->enabled_10 == 0) {
+        return 0;
+    }
+
+    // The base is captured before each helper call; the original re-reads
+    // 0x0044EA00 for every push and every pop.
+    void* const first_base = render_base();
+    const u32 first_value = engine_func_00286834(kEngineCommand, kZeroScale);
+    render_push(render_stack(first_base, kFirstStackOffset), first_value);
+
+    void* const second_base = render_base();
+    const u32 second_value =
+        ui_func_002c5f7c(kViewportCommand, kViewportEnabled);
+    render_push(render_stack(second_base, kSecondStackOffset), second_value);
+
+    void* const third_base = render_base();
+    const u32 third_value =
+        battle_func_002c5fa4(kEngineCommand, kBattleFlag, kBattleMode);
+    render_push(render_stack(third_base, kThirdStackOffset), third_value);
+
+    engine_func_00281adc(object->state_0c);
+
+    render_pop(render_stack(render_base(), kThirdStackOffset));
+    render_pop(render_stack(render_base(), kSecondStackOffset));
+    render_pop(render_stack(render_base(), kFirstStackOffset));
+
+    return 0;
 }
 
 // DECOMP_FUNC(0x0022f9c8, 504)
