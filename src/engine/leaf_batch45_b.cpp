@@ -9590,124 +9590,337 @@ finish:
     return func_00156208(context, mode, &frame);
 }
 
+// ---------------------------------------------------------------------------
+// 0x003A604C (900 B): shop-scene data factory.
+//
+// Builds the 0x15D6C-byte shop object passed in r0 and returns it in r0:
+//
+//   * zeroes object[0] and constructs the two five-word headers at +0x380 and
+//     +0x394 (four zeroed f32 slots and -1 at +0x10 of each);
+//   * installs vtable 0x004221D8 at +0x828 (header +0x494);
+//   * runs the two __aeabi_vec_ctor_nocookie_nodtor passes: nine 0x74-byte
+//     entries at +0x880 (element ctor 0x0028757C) followed by nine 0x1002-byte
+//     rows at +0xC94 (row ctor 0x003A0320), then constructs the trailing
+//     0x0028757C object at +0x9CA8;
+//   * stores type at +0x10, the flag byte at +0x14, the full mode at +0x18,
+//     clears +0x160..+0x168, +0x370..+0x378, +0x15D24/+0x15D28/+0x15D40/
+//     +0x15D44/+0x15D48 and the +0x860 pair (-1, 0);
+//   * calls the sprite-group builder for +0x3A8 and two UI-rect initialisers
+//     for +0x380/+0x394 (x 0x140, y 0, id 0x2B);
+//   * allocates and initialises the 0x68-byte sub-object at +0x85C with
+//     vtable 0x00421FF8, then runs PlaceWin_Init;
+//   * probes 0x002C0C04(flag_byte, mode, flag_byte == 0 ? 6 : 1) and sets
+//     object[0x1C] when the returned halfword is non-zero.
+//
+// Type 1 takes the dedicated branch: it stores {0x0D, 0} at +4/+8, runs the
+// camp/button/tex setup, stores 0x83 at +0x37C, records the low byte of
+// 0x003A4818 at +0x1D, posts the two mode notifications and returns without
+// the row scan. Every other type stores 0x1F at +0x37C, runs 0x003A18B8 and
+// the two 0xFF mode notification words, then, depending on the full 32-bit
+// flag, executes the mode-specific 0x002876D0/0x002A0640 pair:
+//
+//   flag == 0: kind 0x01000060 for mode 6/7, 0x0100005B otherwise; mode 8
+//              skips the pair; the pair runs only when 0x002876D0 != 1.
+//   flag == 1: kind 0x01000060 for mode 5, 0x0100005C otherwise; mode 9
+//              skips the pair; the pair runs only when 0x002876D0 != 1.
+//   other      : neither setter nor pair runs.
+//
+// All paths then call 0x003A4818(object), store its low byte at +0x1D, scan
+// nine rows (row i at object + i*0x1002: element j at row + 0xC94 + j*4, u16
+// value/flags, u16 count at row + 0x1C94), call 0x00343E44(value, 1) for every
+// element whose flag bit 0 is set (the count is re-read after each element,
+// exactly as in the original), call 0x0029C0FC(0x1C, 1) and return object.
+//
+// The two 0x002C5F58 calls reach it through BLX because the array-constructor
+// helper is Thumb code; 0x003A0320 is an out-of-ledger constructor address
+// passed only as the ctor argument. The incoming r8 forwarded to 0x002C23F8 is
+// dead: that callee overwrites r1 before reading it.
+// ---------------------------------------------------------------------------
+namespace engine_3a604c_calls {
+// 0x0022E614 (36 B): zeroes four f32 slots and writes -1 at +0x10; returns p.
+extern "C" void* engine_func_0022e614(void* p);
+// 0x002C5F58 (Thumb, 36 B): __aeabi_vec_ctor_nocookie_nodtor; constructs
+// `count` elements of `stride` bytes through `ctor` and returns the base.
+extern "C" void* ui_func_002c5f58(void* array, void* ctor, u32 stride, u32 count);
+// 0x0028757C (20 B): element constructor; clears +0x0D/+0x0E to 0/1, returns p.
+extern "C" void* engine_func_0028757c(void* p);
+// 0x003A4734 (228 B): copies the shared 0x20..0xB0 table into the object.
+extern "C" void engine_func_003a4734(void* object);
+// 0x00233600 (396 B): builds the 0x480-byte sprite group at object + 0x3A8.
+extern "C" void unite_func_00233600(void* sprite_group);
+// 0x00232800 (44 B): writes x/y/id and clears +0x08/+0x0C of a UI rect.
+extern "C" void unite_func_00232800(void* rect, s32 x, s32 y, u32 id);
+// 0x002333BC (24 B): installs the shared UI vtable and clears +0x04.
+extern "C" void unite_func_002333bc(void* object);
+// 0x002639F4 (448 B): PlaceWin_Init, argument-less.
+extern "C" void PlaceWin_Init();
+// 0x002C0C04 (88 B): returns the UI element selected by (flag, mode, stride)
+// or zero; the caller reads one halfword from the result.
+extern "C" u8* engine_func_002c0c04(u32 flag_byte, u32 mode, u32 selector);
+// 0x003A18B8 (436 B): shop resource bootstrap; return forwarded and discarded.
+extern "C" u32 shop_func_003a18b8(void* object);
+// 0x00282E6C (52 B): AocMode_Set(index, value).
+extern "C" void script_vm_func_00282e6c(u32 index, u32 value);
+// 0x0028DC54 (144 B): camp_func_0028dc54, argument-less.
+extern "C" void camp_func_0028dc54();
+// 0x0028D974 (736 B): ButtonHelp_Init, argument-less.
+extern "C" void ButtonHelp_Init();
+// 0x002C4E28 (620 B): AsdTMTexTable upload of one group.
+extern "C" void AsdTMTexTable_func_002c4e28(u32 group);
+// 0x002C5AB8 (76 B): AsdRow_LoadNow(group, sub).
+extern "C" void AsdRow_LoadNow(u32 group, u32 sub);
+// 0x003A4818 (1124 B): shop UI update; the caller keeps only the low byte.
+extern "C" u32 engine_func_003a4818(void* object);
+// 0x002A0678 (40 B): ui_func_002a0678(index, value).
+extern "C" void ui_func_002a0678(u32 index, u32 value);
+// 0x00343D40 (64 B): engine bit-flag setter; modes >= 0x20 return early.
+extern "C" void engine_func_00343d40(u32 bit, u32 set);
+// 0x00343CE4 (64 B): second engine bit-flag setter.
+extern "C" void engine_func_00343ce4(u32 bit, u32 set);
+// 0x002876D0 (192 B): ui_func_002876d0(command); compared against 1.
+extern "C" s32 ui_func_002876d0(u32 command);
+// 0x002A0640 (56 B): camp_func_002a0640(command, 0, 0x3C).
+extern "C" void camp_func_002a0640(u32 command, u32 a1, u32 a2);
+// 0x00343E44 (76 B): sets/clears one bit in a global engine bitset.
+extern "C" void engine_func_00343e44(u32 bit, u32 set);
+// 0x0029C0FC (124 B): camp_func_0029c0fc(index, value).
+extern "C" void camp_func_0029c0fc(u32 index, u32 value);
+}  // namespace engine_3a604c_calls
+
+// ---------------------------------------------------------------------------
+// 0x003A604C (900 B): shop-scene data factory.
+//
+// Builds the 0x15D6C-byte shop object passed in r0 and returns it in r0:
+//
+//   * zeroes object[0] and constructs the two five-word headers at +0x380 and
+//     +0x394 (four zeroed f32 slots and -1 at +0x10 of each);
+//   * installs vtable 0x004221D8 at +0x828 (header +0x494);
+//   * runs the two __aeabi_vec_ctor_nocookie_nodtor passes: nine 0x74-byte
+//     entries at +0x880 (element ctor 0x0028757C) followed by nine 0x1002-byte
+//     rows at +0xC94 (row ctor 0x003A0320), then constructs the trailing
+//     0x0028757C object at +0x9CA8;
+//   * stores type at +0x10, the flag byte at +0x14, the full mode at +0x18,
+//     clears +0x160..+0x168, +0x370..+0x378, +0x15D24/+0x15D28/+0x15D40/
+//     +0x15D44/+0x15D48 and the +0x860 pair (-1, 0);
+//   * calls the sprite-group builder for +0x3A8 and two UI-rect initialisers
+//     for +0x380/+0x394 (x 0x140, y 0, id 0x2B);
+//   * allocates and initialises the 0x68-byte sub-object at +0x85C with
+//     vtable 0x00421FF8, then runs PlaceWin_Init;
+//   * probes 0x002C0C04(flag_byte, mode, flag_byte == 0 ? 6 : 1) and sets
+//     object[0x1C] when the returned halfword is non-zero.
+//
+// Type 1 takes the dedicated branch: it stores {0x0D, 0} at +4/+8, runs the
+// camp/button/tex setup, stores 0x83 at +0x37C, records the low byte of
+// 0x003A4818 at +0x1D, posts the two mode notifications and returns without
+// the row scan. Every other type stores 0x1F at +0x37C, runs 0x003A18B8 and
+// the two 0xFF mode notification words, then, depending on the full 32-bit
+// flag, executes the mode-specific 0x002876D0/0x002A0640 pair:
+//
+//   flag == 0: kind 0x01000060 for mode 6/7, 0x0100005B otherwise; mode 8
+//              skips the pair; the pair runs only when 0x002876D0 != 1.
+//   flag == 1: kind 0x01000060 for mode 5, 0x0100005C otherwise; mode 9
+//              skips the pair; the pair runs only when 0x002876D0 != 1.
+//   other      : neither setter nor pair runs.
+//
+// All paths then call 0x003A4818(object), store its low byte at +0x1D, scan
+// nine rows (row i at object + i*0x1002: element j at row + 0xC94 + j*4, u16
+// value/flags, u16 count at row + 0x1C94), call 0x00343E44(value, 1) for every
+// element whose flag bit 0 is set (the count is re-read after each element,
+// exactly as in the original), call 0x0029C0FC(0x1C, 1) and return object.
+//
+// The two 0x002C5F58 calls reach it through BLX because the array-constructor
+// helper is Thumb code; 0x003A0320 is an out-of-ledger constructor address
+// passed only as the ctor argument. The incoming r8 forwarded to 0x002C23F8 is
+// dead: that callee overwrites r1 before reading it.
+// ---------------------------------------------------------------------------
+namespace engine_3a604c_calls {
+// 0x0022E614 (36 B): zeroes four f32 slots and writes -1 at +0x10; returns p.
+extern "C" void* engine_func_0022e614(void* p);
+// 0x002C5F58 (Thumb, 36 B): __aeabi_vec_ctor_nocookie_nodtor; constructs
+// `count` elements of `stride` bytes through `ctor` and returns the base.
+extern "C" void* ui_func_002c5f58(void* array, void* ctor, u32 stride, u32 count);
+// 0x0028757C (20 B): element constructor; clears +0x0D/+0x0E to 0/1, returns p.
+extern "C" void* engine_func_0028757c(void* p);
+// 0x003A4734 (228 B): copies the shared 0x20..0xB0 table into the object.
+extern "C" void engine_func_003a4734(void* object);
+// 0x00233600 (396 B): builds the 0x480-byte sprite group at object + 0x3A8.
+extern "C" void unite_func_00233600(void* sprite_group);
+// 0x00232800 (44 B): writes x/y/id and clears +0x08/+0x0C of a UI rect.
+extern "C" void unite_func_00232800(void* rect, s32 x, s32 y, u32 id);
+// 0x002333BC (24 B): installs the shared UI vtable and clears +0x04.
+extern "C" void unite_func_002333bc(void* object);
+// 0x002639F4 (448 B): PlaceWin_Init, argument-less.
+extern "C" void PlaceWin_Init();
+// 0x002C0C04 (88 B): returns the UI element selected by (flag, mode, stride)
+// or zero; the caller reads one halfword from the result.
+extern "C" u8* engine_func_002c0c04(u32 flag_byte, u32 mode, u32 selector);
+// 0x003A18B8 (436 B): shop resource bootstrap; return forwarded and discarded.
+extern "C" u32 shop_func_003a18b8(void* object);
+// 0x00282E6C (52 B): AocMode_Set(index, value).
+extern "C" void script_vm_func_00282e6c(u32 index, u32 value);
+// 0x0028DC54 (144 B): camp_func_0028dc54, argument-less.
+extern "C" void camp_func_0028dc54();
+// 0x0028D974 (736 B): ButtonHelp_Init, argument-less.
+extern "C" void ButtonHelp_Init();
+// 0x002C4E28 (620 B): AsdTMTexTable upload of one group.
+extern "C" void AsdTMTexTable_func_002c4e28(u32 group);
+// 0x002C5AB8 (76 B): AsdRow_LoadNow(group, sub).
+extern "C" void AsdRow_LoadNow(u32 group, u32 sub);
+// 0x003A4818 (1124 B): shop UI update; the caller keeps only the low byte.
+extern "C" u32 engine_func_003a4818(void* object);
+// 0x002A0678 (40 B): ui_func_002a0678(index, value).
+extern "C" void ui_func_002a0678(u32 index, u32 value);
+// 0x00343D40 (64 B): engine bit-flag setter; modes >= 0x20 return early.
+extern "C" void engine_func_00343d40(u32 bit, u32 set);
+// 0x00343CE4 (64 B): second engine bit-flag setter.
+extern "C" void engine_func_00343ce4(u32 bit, u32 set);
+// 0x002876D0 (192 B): ui_func_002876d0(command); compared against 1.
+extern "C" s32 ui_func_002876d0(u32 command);
+// 0x002A0640 (56 B): camp_func_002a0640(command, 0, 0x3C).
+extern "C" void camp_func_002a0640(u32 command, u32 a1, u32 a2);
+// 0x00343E44 (76 B): sets/clears one bit in a global engine bitset.
+extern "C" void engine_func_00343e44(u32 bit, u32 set);
+// 0x0029C0FC (124 B): camp_func_0029c0fc(index, value).
+extern "C" void camp_func_0029c0fc(u32 index, u32 value);
+}  // namespace engine_3a604c_calls
+
 // DECOMP_FUNC(0x003a604c, 900)
-extern "C" __attribute__((naked)) void engine_func_003a604c() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x47f0, 0xe92d, 0x6001, 0xe1a0\n"
-        ".hword 0x5002, 0xe1a0, 0x9000, 0xe3a0\n"
-        ".hword 0x4003, 0xe1a0, 0x9380, 0xe480\n"
-        ".hword 0x216a, 0xebfa, 0x0014, 0xe280\n"
-        ".hword 0x2168, 0xebfa, 0x1334, 0xe59f\n"
-        ".hword 0x3009, 0xe3a0, 0x2074, 0xe3a0\n"
-        ".hword 0x1494, 0xe580, 0x0b01, 0xe280\n"
-        ".hword 0x1324, 0xe59f, 0x00ec, 0xe280\n"
-        ".hword 0x7fb1, 0xfafc, 0x0b01, 0xe280\n"
-        ".hword 0x2318, 0xe59f, 0x1318, 0xe59f\n"
-        ".hword 0x3009, 0xe3a0, 0x0014, 0xe280\n"
-        ".hword 0x7fab, 0xfafc, 0x0a09, 0xe280\n"
-        ".hword 0x0014, 0xe280, 0x8531, 0xebfb\n"
-        ".hword 0x7b27, 0xe240, 0x70a8, 0xe247\n"
-        ".hword 0x0007, 0xe1a0, 0xf99b, 0xebff\n"
-        ".hword 0xc2f0, 0xe59f, 0x6010, 0xe587\n"
-        ".hword 0x9000, 0xe587, 0xae86, 0xe287\n"
-        ".hword 0x5014, 0xe5c7, 0x1000, 0xe3e0\n"
-        ".hword 0x4018, 0xe587, 0x3004, 0xe28c\n"
-        ".hword 0x0202, 0xe88a, 0x2018, 0xe283\n"
-        ".hword 0x9007, 0xe78c, 0x0004, 0xe282\n"
-        ".hword 0x9007, 0xe783, 0x9007, 0xe782\n"
-        ".hword 0x1004, 0xe280, 0x9007, 0xe780\n"
-        ".hword 0x9007, 0xe781, 0x9160, 0xe587\n"
-        ".hword 0x9164, 0xe587, 0x9168, 0xe587\n"
-        ".hword 0x9370, 0xe587, 0x9374, 0xe587\n"
-        ".hword 0x9378, 0xe587, 0x901c, 0xe5c7\n"
-        ".hword 0x0fea, 0xe287, 0x901d, 0xe5c7\n"
-        ".hword 0x3533, 0xebfa, 0x302b, 0xe3a0\n"
-        ".hword 0x2000, 0xe3a0, 0x1d05, 0xe3a0\n"
-        ".hword 0x0d0e, 0xe287, 0x31ae, 0xebfa\n"
-        ".hword 0x302b, 0xe3a0, 0x2000, 0xe3a0\n"
-        ".hword 0x1d05, 0xe3a0, 0x0fe5, 0xe287\n"
-        ".hword 0x31a9, 0xebfa, 0x1008, 0xe1a0\n"
-        ".hword 0x0068, 0xe3a0, 0x70a4, 0xebfc\n"
-        ".hword 0x0000, 0xe350, 0x0002, 0x0a00\n"
-        ".hword 0x3492, 0xebfa, 0x1248, 0xe59f\n"
-        ".hword 0x1000, 0xe580, 0x085c, 0xe587\n"
-        ".hword 0xf61c, 0xebfa, 0x0014, 0xe5d7\n"
-        ".hword 0x1018, 0xe597, 0x0000, 0xe350\n"
-        ".hword 0x2006, 0x03a0, 0x2001, 0x13a0\n"
-        ".hword 0x6a9a, 0xebfc, 0x00b0, 0xe1d0\n"
-        ".hword 0x0000, 0xe350, 0x0001, 0x13a0\n"
-        ".hword 0x001c, 0x15c7, 0x0010, 0xe597\n"
-        ".hword 0x0001, 0xe350, 0x0011, 0x0a00\n"
-        ".hword 0x001f, 0xe3a0, 0x037c, 0xe587\n"
-        ".hword 0x9004, 0xe587, 0x0007, 0xe1a0\n"
-        ".hword 0x9008, 0xe587, 0xedba, 0xebff\n"
-        ".hword 0x10ff, 0xe3a0, 0x0000, 0xe3a0\n"
-        ".hword 0x7324, 0xebfb, 0x10ff, 0xe3a0\n"
-        ".hword 0x0001, 0xe3a0, 0x7321, 0xebfb\n"
-        ".hword 0x61d8, 0xe59f, 0x0000, 0xe355\n"
-        ".hword 0x001d, 0x0a00, 0x0001, 0xe355\n"
-        ".hword 0x0032, 0x0a00, 0x004c, 0xea00\n"
-        ".hword 0x1004, 0xe287, 0x000d, 0xe3a0\n"
-        ".hword 0x0201, 0xe881, 0x9e91, 0xebfb\n"
-        ".hword 0xf000, 0xe320, 0xf000, 0xe320\n"
-        ".hword 0x9dd6, 0xebfb, 0x002b, 0xe3a0\n"
-        ".hword 0xf000, 0xe320, 0x7b00, 0xebfc\n"
-        ".hword 0x1000, 0xe3a0, 0x002b, 0xe3a0\n"
-        ".hword 0x7e21, 0xebfc, 0x0083, 0xe3a0\n"
-        ".hword 0x037c, 0xe587, 0x0007, 0xe1a0\n"
-        ".hword 0xf975, 0xebff, 0x001d, 0xe5c7\n"
-        ".hword 0x1001, 0xe3a0, 0x0000, 0xe3a0\n"
-        ".hword 0xe909, 0xebfb, 0x1001, 0xe3a0\n"
-        ".hword 0x0001, 0xe1a0, 0xe906, 0xebfb\n"
-        ".hword 0xf000, 0xe320, 0xf000, 0xe320\n"
-        ".hword 0x004e, 0xea00, 0x1001, 0xe3a0\n"
-        ".hword 0x0004, 0xe1a0, 0x76b2, 0xebfe\n"
-        ".hword 0x0006, 0xe354, 0x0007, 0x1354\n"
-        ".hword 0x0008, 0x0a00, 0x0008, 0xe354\n"
-        ".hword 0x0029, 0x0a00, 0x4138, 0xe59f\n"
-        ".hword 0x0004, 0xe1a0, 0x850e, 0xebfb\n"
-        ".hword 0x0001, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x0023, 0x0a00, 0x0015, 0xea00\n"
-        ".hword 0x0006, 0xe1a0, 0x8508, 0xebfb\n"
-        ".hword 0x0001, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x0019, 0x1a00, 0x001c, 0xea00\n"
-        ".hword 0xe8df, 0xebfb, 0x001a, 0xea00\n"
-        ".hword 0x1001, 0xe3a0, 0x0004, 0xe1a0\n"
-        ".hword 0x7684, 0xebfe, 0x0005, 0xe354\n"
-        ".hword 0xf000, 0xe320, 0x000b, 0x0a00\n"
-        ".hword 0x0009, 0xe354, 0x0012, 0x0a00\n"
-        ".hword 0x40e0, 0xe59f, 0x0004, 0xe1a0\n"
-        ".hword 0x84f7, 0xebfb, 0x0001, 0xe350\n"
-        ".hword 0xf000, 0xe320, 0x000c, 0x0a00\n"
-        ".hword 0x203c, 0xe3a0, 0x1000, 0xe3a0\n"
-        ".hword 0x0004, 0xe1a0, 0xffeb, 0xeaff\n"
-        ".hword 0x0006, 0xe1a0, 0x84ee, 0xebfb\n"
-        ".hword 0x0001, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x0003, 0x0a00, 0x203c, 0xe3a0\n"
-        ".hword 0x1000, 0xe3a0, 0x0006, 0xe1a0\n"
-        ".hword 0xffe2, 0xeaff, 0x0007, 0xe1a0\n"
-        ".hword 0xf937, 0xebff, 0x8000, 0xe3a0\n"
-        ".hword 0x001d, 0xe5c7, 0x0588, 0xe088\n"
-        ".hword 0x4000, 0xe3a0, 0x5080, 0xe087\n"
-        ".hword 0x6b07, 0xe285, 0x09b4, 0xe1d6\n"
-        ".hword 0x0000, 0xe350, 0x000b, 0xda00\n"
-        ".hword 0x0104, 0xe085, 0x0b03, 0xe280\n"
-        ".hword 0x19b6, 0xe1d0, 0x0001, 0xe311\n"
-        ".hword 0x0002, 0x0a00, 0x09b4, 0xe1d0\n"
-        ".hword 0x1001, 0xe3a0, 0x76b1, 0xebfe\n"
-        ".hword 0x09b4, 0xe1d6, 0x4001, 0xe284\n"
-        ".hword 0x0004, 0xe150, 0xfff3, 0xcaff\n"
-        ".hword 0x8001, 0xe288, 0x0009, 0xe358\n"
-        ".hword 0xffe9, 0xbaff, 0x1001, 0xe3a0\n"
-        ".hword 0x001c, 0xe3a0, 0xd755, 0xebfb\n"
-        ".hword 0x0007, 0xe1a0, 0x87f0, 0xe8bd\n"
-        ".hword 0x21d8, 0x0042, 0x757c, 0x0028\n"
-        ".hword 0x1002, 0x0000, 0x0320, 0x003a\n"
-        ".hword 0x5d24, 0x0001, 0x1ff8, 0x0042\n"
-        ".hword 0x0060, 0x0100, 0x005b, 0x0100\n"
-        ".hword 0x005c, 0x0100\n"
-    );
+extern "C" void* engine_func_003a604c(u32 object_addr, s32 type, s32 flag,
+                                      s32 mode) {
+    using namespace engine_3a604c_calls;
+
+    u8* const object = reinterpret_cast<u8*>(object_addr);
+
+    *reinterpret_cast<u32*>(object) = 0;
+
+    void* const header = engine_func_0022e614(object + 0x380);
+    void* const header2 = engine_func_0022e614(
+        static_cast<u8*>(header) + 0x14);
+    u8* const header2_bytes = static_cast<u8*>(header2);
+    *reinterpret_cast<u32*>(header2_bytes + 0x494) = 0x004221D8u;
+
+    void* const items = ui_func_002c5f58(
+        header2_bytes + 0x4EC, reinterpret_cast<void*>(0x0028757Cu),
+        0x74u, 9u);
+    void* const rows = ui_func_002c5f58(
+        static_cast<u8*>(items) + 0x414,
+        reinterpret_cast<void*>(0x003A0320u), 0x1002u, 9u);
+    (void)engine_func_0028757c(static_cast<u8*>(rows) + 0x9014);
+    engine_func_003a4734(object);
+
+    *reinterpret_cast<u32*>(object + 0x10) = static_cast<u32>(type);
+    *reinterpret_cast<u32*>(object) = 0;
+    *reinterpret_cast<u8*>(object + 0x14) = static_cast<u8>(flag);
+    *reinterpret_cast<u32*>(object + 0x18) = static_cast<u32>(mode);
+    *reinterpret_cast<u32*>(object + 0x860) = 0xFFFFFFFFu;
+    *reinterpret_cast<u32*>(object + 0x864) = 0;
+    *reinterpret_cast<u32*>(object + 0x15D24) = 0;
+    *reinterpret_cast<u32*>(object + 0x15D28) = 0;
+    *reinterpret_cast<u32*>(object + 0x15D40) = 0;
+    *reinterpret_cast<u32*>(object + 0x15D44) = 0;
+    *reinterpret_cast<u32*>(object + 0x15D48) = 0;
+    *reinterpret_cast<u32*>(object + 0x160) = 0;
+    *reinterpret_cast<u32*>(object + 0x164) = 0;
+    *reinterpret_cast<u32*>(object + 0x168) = 0;
+    *reinterpret_cast<u32*>(object + 0x370) = 0;
+    *reinterpret_cast<u32*>(object + 0x374) = 0;
+    *reinterpret_cast<u32*>(object + 0x378) = 0;
+    object[0x1C] = 0;
+    object[0x1D] = 0;
+
+    unite_func_00233600(object + 0x3A8);
+    unite_func_00232800(object + 0x380, 0x140, 0, 0x2B);
+    unite_func_00232800(object + 0x394, 0x140, 0, 0x2B);
+
+    u8* const sub = static_cast<u8*>(AsdMemory_func_002c23f8(0x68));
+    if (sub != nullptr) {
+        unite_func_002333bc(sub);
+        *reinterpret_cast<u32*>(sub) = 0x00421FF8u;
+    }
+    *reinterpret_cast<void**>(object + 0x85C) = sub;
+
+    PlaceWin_Init();
+
+    const u32 flag_byte = *reinterpret_cast<const u8*>(object + 0x14);
+    const u32 stored_mode = *reinterpret_cast<const u32*>(object + 0x18);
+    const u8* const element = engine_func_002c0c04(
+        flag_byte, stored_mode, (flag_byte == 0) ? 6u : 1u);
+    if (*reinterpret_cast<const u16*>(element) != 0) {
+        object[0x1C] = 1;
+    }
+
+    if (*reinterpret_cast<const u32*>(object + 0x10) == 1) {
+        *reinterpret_cast<u32*>(object + 0x04) = 0x0D;
+        *reinterpret_cast<u32*>(object + 0x08) = 0;
+        camp_func_0028dc54();
+        ButtonHelp_Init();
+        AsdTMTexTable_func_002c4e28(0x2B);
+        AsdRow_LoadNow(0x2B, 0);
+        *reinterpret_cast<u32*>(object + 0x37C) = 0x83;
+        object[0x1D] = static_cast<u8>(engine_func_003a4818(object));
+        ui_func_002a0678(0, 1);
+        ui_func_002a0678(1, 1);
+        return object;
+    }
+
+    *reinterpret_cast<u32*>(object + 0x37C) = 0x1F;
+    *reinterpret_cast<u32*>(object + 0x04) = 0;
+    *reinterpret_cast<u32*>(object + 0x08) = 0;
+    (void)shop_func_003a18b8(object);
+    script_vm_func_00282e6c(0, 0xFF);
+    script_vm_func_00282e6c(1, 0xFF);
+
+    if (flag == 0) {
+        engine_func_00343d40(static_cast<u32>(mode), 1);
+        if (mode == 6 || mode == 7) {
+            if (ui_func_002876d0(0x01000060u) != 1) {
+                camp_func_002a0640(0x01000060u, 0, 0x3C);
+            }
+        } else if (mode != 8) {
+            if (ui_func_002876d0(0x0100005Bu) != 1) {
+                camp_func_002a0640(0x0100005Bu, 0, 0x3C);
+            }
+        }
+    } else if (flag == 1) {
+        engine_func_00343ce4(static_cast<u32>(mode), 1);
+        if (mode == 5) {
+            if (ui_func_002876d0(0x01000060u) != 1) {
+                camp_func_002a0640(0x01000060u, 0, 0x3C);
+            }
+        } else if (mode != 9) {
+            if (ui_func_002876d0(0x0100005Cu) != 1) {
+                camp_func_002a0640(0x0100005Cu, 0, 0x3C);
+            }
+        }
+    }
+
+    object[0x1D] = static_cast<u8>(engine_func_003a4818(object));
+
+    for (u32 row_index = 0; row_index < 9u; ++row_index) {
+        u8* const row = object + row_index * 0x1002u;
+        if (static_cast<s32>(*reinterpret_cast<const u16*>(row + 0x1C94)) > 0) {
+            for (s32 entry_index = 0;; ++entry_index) {
+                u8* const entry =
+                    row + 0xC00u + static_cast<u32>(entry_index) * 4u;
+                const u16 flags =
+                    *reinterpret_cast<const u16*>(entry + 0x96);
+                if ((flags & 1u) != 0) {
+                    engine_func_00343e44(
+                        *reinterpret_cast<const u16*>(entry + 0x94), 1);
+                }
+                // The original reloads the u16 count after every element;
+                // stop when the incremented index has reached that count.
+                const s32 count = static_cast<s32>(
+                    *reinterpret_cast<const u16*>(row + 0x1C94));
+                if (count <= entry_index + 1) {
+                    break;
+                }
+            }
+        }
+    }
+
+    camp_func_0029c0fc(0x1C, 1);
+    return object;
 }
 
 // DECOMP_FUNC(0x003477f8, 904)
