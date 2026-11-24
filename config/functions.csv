@@ -7556,7 +7556,7 @@ address,size,status,category,name,src_file
 0x00330068,3220,matching,ui,ui_func_00330068,src/engine/leaf_batch44_a.cpp
 0x00330cfc,1208,matching,ui,ui_func_00330cfc,src/engine/leaf_batch43_b.cpp
 0x003311b4,472,matching,ui,ui_func_003311b4,src/engine/leaf_batch43_a.cpp
-0x0033138c,836,matching,camp,camp_func_0033138c,src/engine/leaf_batch45_b.cpp
+0x0033138c,836,non_matching,camp,camp_func_0033138c,src/engine/leaf_batch45_b.cpp
 0x003316d0,2608,matching,ui,ui_func_003316d0,src/engine/leaf_batch46_c.cpp
 0x00332100,5968,matching,camp,Camp_WhisperSkillTransfer,src/camp/whisper_event.cpp
 0x00333850,100,matching,engine,engine_func_00333850,src/engine/leaf_batch20_c.cpp

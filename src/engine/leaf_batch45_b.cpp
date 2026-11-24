@@ -8176,116 +8176,225 @@ extern "C" u32 engine_func_0010f120(u8* self) {
     return last;
 }
 
+// ---------------------------------------------------------------------------
+// 0x0033138C (836 B): one step of the camp identifier-page state machine.
+//
+// The callers at 0x0032DB30 / 0x0032DBEC / 0x0032DBF8 pass r0 = 0xB / 0xC /
+// 0xD and ignore the result.  The routine loads the shared camp workspace
+// pointer from `*(u8**)0x0043DA90` (literal 0x0043DA90) and drives the u32
+// state word at work+0x1C:
+//   0 -> 1       publish the selected page (0x00299E60)
+//   1 -> input   poll the page node, then either leave, run the page's
+//                confirm/cancel reset, or advance the page step field
+//                (work+0x20) to 6 / 0xB and queue dispatch id
+//                0x0100016E / 0x0100016D through 0x002BC200.
+//
+// Only commands 0xB, 0xC and 0xD name a page (work+0xB0, +0x114, +0x178);
+// every other value passes a null page.  Command 0xB additionally selects
+// identifier list B at work+0x147C for the row under the page cursor.
+//
+// Direct callees (address -> name in config/functions.csv):
+//   0x002BF6D0 camp_func_002bf6d0   layout node lookup (group 0x1D, node 0x56D)
+//   0x0029F878 camp_func_0029f878   page node poll; arg 6 is an s8 out flag
+//   0x0029F278 camp_func_0029f278   cursor poll
+//   0x002C1830 camp_func_002c1830   input gate query (select id, mode)
+//   0x0029EBA8 engine_func_0029eba8 cursor/list index for work+0x34
+//   0x002994B4 engine_func_002994b4 selection helper (mode byte, index)
+//   0x00299B9C engine_func_00299b9c command dispatch; forwarded r0 is returned
+//   0x00299E60 engine_func_00299e60 page publish, mode 1
+//   0x002BDAC0 camp_func_002bdac0   object reset (work+0x6D4, 3, 0)
+//   0x00299410 engine_func_00299410 page state publish (page, 1)
+//   0x0029F260 camp_func_0029f260   cursor position A
+//   0x0029F248 camp_func_0029f248   cursor position B
+//   0x0028FF04 camp_func_0028ff04   identifier predicate
+//   0x0026A7C4 camp_func_0026a7c4   camp refresh step (no arguments)
+//   0x0029CEE4 camp_func_0029cee4   camp transition step (1)
+//   0x002BC200 camp_func_002bc200   queued dispatch id
+//   0x0029E63C SortMenu_Init       menu activation (index, 0)
+//   0x0029E5C8 engine_func_0029e5c8 widget show/update
+//   0x0029F10C camp_func_0029f10c   sort/palette color (0, 0x323232FF)
+//   0x002B8CCC camp_func_002b8ccc   flag byte producer
+// ---------------------------------------------------------------------------
+extern "C" {
+const s16* camp_func_002bf6d0(u32 group, u32 node);
+s32 camp_func_0029f878(void* page, const s16* node, void* extra, s32 a3,
+                       s32 a4, s32 a5, s8* out_flag, s32 a7, s32 a8);
+s32 camp_func_0029f278(void* page, u32 mode);
+u32 camp_func_002c1830(u32 select_id, u32 mode);
+s32 camp_func_0029f260(void* page);
+s32 camp_func_0029f248(void* page);
+s32 engine_func_0029eba8(void* list);
+s32 engine_func_002994b4(s32 mode, s32 value);
+u32 engine_func_00299b9c(u32 command);
+void engine_func_00299e60(void* page, u32 mode);
+void camp_func_002bdac0(void* object, u32 mode, u32 selector);
+void engine_func_00299410(void* page, u32 mode);
+u32 camp_func_0028ff04(u32 id);
+void camp_func_0026a7c4();
+void camp_func_0029cee4(u32 value);
+void SortMenu_Init(u32 index, u32 mode);
+void engine_func_0029e5c8(u32 index);
+void camp_func_0029f10c(u32 index, u32 color);
+u8 camp_func_002b8ccc();
+// The file-scope declaration of 0x002BC200 is `void`; this routine forwards
+// that callee's r0 as its own result, so an aliased prototype keeps the
+// register visible without changing the shared declaration.
+u32 camp_func_002bc200_result(u32 id) __asm__("camp_func_002bc200");
+} // extern "C"
+
+namespace camp_33138c {
+
+constexpr u32 kWorkPointer = 0x0043DA90u;  // literal 0x0043DA90
+constexpr u32 kPageB = 0x00B0;
+constexpr u32 kPageC = 0x0114;
+constexpr u32 kPageD = 0x0178;
+
+constexpr u32 kState = 0x1C;
+constexpr u32 kStep = 0x20;
+constexpr u32 kSelectedId = 0x2C;
+constexpr u32 kFlagByte = 0x31;
+constexpr u32 kModeByte = 0x98;
+constexpr u32 kList = 0x34;
+constexpr u32 kObject = 0x6D4;
+
+constexpr u32 kRectX = 0xE02;
+constexpr u32 kRectY = 0xE04;
+constexpr u32 kRectZ = 0xE06;
+constexpr u32 kRectExtra = 0xE0C;
+
+constexpr u32 kTableB = 0x147C;            // 0x1400 + 0x7C (0x331554..58)
+constexpr u32 kGroup = 0x1D;               // 0x2BF6D0 argument 0
+constexpr u32 kNode = 0x56D;               // 0x2BF6D0 argument 1
+
+constexpr u32 kCommandB = 0x0B;
+constexpr u32 kCommandC = 0x0C;
+constexpr u32 kCommandD = 0x0D;
+
+constexpr u32 kStepResume = 0x06;          // 0x331500
+constexpr u32 kStepSelect = 0x0B;          // 0x33158C
+constexpr u32 kSortColor = 0x323232FFu;    // literal 0x323232FF
+
+constexpr u32 kPublishReset = 5;           // 0x331508 / 0x331594
+constexpr u32 kPublishMenu = 0x28;         // 0x3316A0
+
+constexpr u32 kDispatchSelect = 0x0100016Eu;
+constexpr u32 kDispatchBack = 0x0100016Du;
+
+inline u8* work_object() {
+    return *reinterpret_cast<u8* volatile*>(kWorkPointer);
+}
+
+// Republish the workspace command word: +0x24 <- old +0x18,
+// +0x18 <- value, +0x1C <- 0, +0x14 <- 0 (0x33150C..0x331520 and mirrors).
+inline void publish_command(u32 value) {
+    u8* const g = work_object();
+    const u32 previous = *reinterpret_cast<const u32*>(g + 0x18);
+    *reinterpret_cast<u32*>(g + 0x24) = previous;
+    *reinterpret_cast<u32*>(g + 0x18) = value;
+    *reinterpret_cast<u32*>(g + 0x1C) = 0;
+    *reinterpret_cast<u32*>(g + 0x14) = 0;
+}
+
+} // namespace camp_33138c
+
 // DECOMP_FUNC(0x0033138c, 836)
-extern "C" __attribute__((naked)) void camp_func_0033138c() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x47f0, 0xe92d, 0x000b, 0xe350\n"
-        ".hword 0x6000, 0xe3a0, 0xd018, 0xe24d\n"
-        ".hword 0xa31c, 0xe59f, 0x5000, 0xe1a0\n"
-        ".hword 0x4000, 0xe59a, 0x60b0, 0x0284\n"
-        ".hword 0x0004, 0x0a00, 0x000c, 0xe355\n"
-        ".hword 0x6f45, 0x0284, 0x0001, 0x0a00\n"
-        ".hword 0x000d, 0xe355, 0x6f5e, 0x0284\n"
-        ".hword 0x001c, 0xe594, 0x0000, 0xe350\n"
-        ".hword 0x001a, 0x0a00, 0x0001, 0xe350\n"
-        ".hword 0x001e, 0x1a00, 0x7000, 0xe3a0\n"
-        ".hword 0x12e0, 0xe59f, 0x001d, 0xe3a0\n"
-        ".hword 0x7014, 0xe5cd, 0x38b8, 0xebfe\n"
-        ".hword 0x2c0e, 0xe284, 0x3001, 0xe3a0\n"
-        ".hword 0x10f6, 0xe1d2, 0x8004, 0xe28d\n"
-        ".hword 0xc014, 0xe28d, 0x3010, 0xe58d\n"
-        ".hword 0x700c, 0xe58d, 0x1002, 0xe888\n"
-        ".hword 0x10f4, 0xe1d2, 0x1000, 0xe58d\n"
-        ".hword 0x30f2, 0xe1d2, 0x2b03, 0xe284\n"
-        ".hword 0x1000, 0xe1a0, 0x2f83, 0xe282\n"
-        ".hword 0x0006, 0xe1a0, 0xb912, 0xebfd\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x000e, 0x1a00, 0x0007, 0xea00\n"
-        ".hword 0x1001, 0xe3a0, 0x0006, 0xe1a0\n"
-        ".hword 0xa285, 0xebfd, 0x001c, 0xe594\n"
-        ".hword 0x0001, 0xe280, 0x001c, 0xe584\n"
-        ".hword 0xd018, 0xe28d, 0x87f0, 0xe8bd\n"
-        ".hword 0x1001, 0xe3a0, 0x0006, 0xe1a0\n"
-        ".hword 0xb783, 0xebfd, 0x0000, 0xe350\n"
-        ".hword 0xf000, 0xe320, 0x000a, 0x0a00\n"
-        ".hword 0x0034, 0xe284, 0xb5ca, 0xebfd\n"
-        ".hword 0x29d8, 0xe1d4, 0x1000, 0xe1a0\n"
-        ".hword 0x0002, 0xe1a0, 0xa009, 0xebfd\n"
-        ".hword 0xf000, 0xe320, 0xf000, 0xe320\n"
-        ".hword 0xa1c0, 0xebfd, 0xd018, 0xe28d\n"
-        ".hword 0x87f0, 0xe8bd, 0x1001, 0xe3a0\n"
-        ".hword 0x0000, 0xe3a0, 0x40e0, 0xebfe\n"
-        ".hword 0x11d4, 0xe1dd, 0x8210, 0xe59f\n"
-        ".hword 0x0001, 0xe190, 0x9001, 0xe288\n"
-        ".hword 0x0001, 0x0a00, 0x000b, 0xe355\n"
-        ".hword 0x001b, 0x0a00, 0x1001, 0xe3a0\n"
-        ".hword 0x0001, 0xe1a0, 0x40d6, 0xebfe\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0x003f, 0x0a00, 0x0000, 0xe3a0\n"
-        ".hword 0xa1ac, 0xebfd, 0x0b01, 0xe284\n"
-        ".hword 0x2000, 0xe3a0, 0x1003, 0xe3a0\n"
-        ".hword 0x0fb5, 0xe280, 0x3170, 0xebfe\n"
-        ".hword 0x0006, 0xe3a0, 0x0020, 0xe584\n"
-        ".hword 0x0000, 0xe59a, 0x1005, 0xe3a0\n"
-        ".hword 0x3018, 0xe280, 0x2018, 0xe590\n"
-        ".hword 0x2024, 0xe580, 0x0082, 0xe883\n"
-        ".hword 0x1001, 0xe3a0, 0x7014, 0xe580\n"
-        ".hword 0x0006, 0xe1a0, 0x9fb8, 0xebfd\n"
-        ".hword 0x0009, 0xe1a0, 0xf000, 0xe320\n"
-        ".hword 0x0026, 0xea00, 0x0006, 0xe1a0\n"
-        ".hword 0xb747, 0xebfd, 0x5000, 0xe1a0\n"
-        ".hword 0x0006, 0xe1a0, 0xb73e, 0xebfd\n"
-        ".hword 0x0005, 0xe080, 0x0080, 0xe084\n"
-        ".hword 0x5b05, 0xe280, 0x07bc, 0xe1d5\n"
-        ".hword 0x7a68, 0xebfd, 0x0000, 0xe350\n"
-        ".hword 0x0009, 0x01a0, 0x0019, 0x0a00\n"
-        ".hword 0x07bc, 0xe1d5, 0x2000, 0xe3a0\n"
-        ".hword 0x1003, 0xe3a0, 0x002c, 0xe584\n"
-        ".hword 0x0b01, 0xe284, 0x0fb5, 0xe280\n"
-        ".hword 0x314d, 0xebfe, 0x000b, 0xe3a0\n"
-        ".hword 0x0020, 0xe584, 0x0000, 0xe59a\n"
-        ".hword 0x1005, 0xe3a0, 0x3018, 0xe280\n"
-        ".hword 0x2018, 0xe590, 0x2024, 0xe580\n"
-        ".hword 0x0082, 0xe883, 0x1001, 0xe3a0\n"
-        ".hword 0x7014, 0xe580, 0x0006, 0xe1a0\n"
-        ".hword 0x9f95, 0xebfd, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0xe47f, 0xebfc\n"
-        ".hword 0x0001, 0xe3a0, 0xf000, 0xe320\n"
-        ".hword 0xae44, 0xebfd, 0x0008, 0xe1a0\n"
-        ".hword 0x2b09, 0xebfe, 0xd018, 0xe28d\n"
-        ".hword 0x87f0, 0xe8bd, 0x1001, 0xe3a0\n"
-        ".hword 0x0009, 0xe3a0, 0x4090, 0xebfe\n"
-        ".hword 0x0000, 0xe350, 0xf000, 0xe320\n"
-        ".hword 0xff96, 0x0aff, 0x000c, 0xe355\n"
-        ".hword 0xff94, 0x0aff, 0x000b, 0xe355\n"
-        ".hword 0x0002, 0x0a00, 0x000d, 0xe355\n"
-        ".hword 0x000f, 0x0a00, 0x001a, 0xea00\n"
-        ".hword 0x1000, 0xe3a0, 0x0003, 0xe3a0\n"
-        ".hword 0xb406, 0xebfd, 0x000c, 0xe3a0\n"
-        ".hword 0xf000, 0xe320, 0xb3e6, 0xebfd\n"
-        ".hword 0x0010, 0xe3a0, 0xf000, 0xe320\n"
-        ".hword 0xb3e3, 0xebfd, 0x0003, 0xe3a0\n"
-        ".hword 0xf000, 0xe320, 0xb3e0, 0xebfd\n"
-        ".hword 0xf000, 0xe320, 0xf000, 0xe320\n"
-        ".hword 0x000b, 0xea00, 0x1000, 0xe3a0\n"
-        ".hword 0x0004, 0xe3a0, 0xb3f7, 0xebfd\n"
-        ".hword 0x0021, 0xe3a0, 0xf000, 0xe320\n"
-        ".hword 0xb3d7, 0xebfd, 0x0010, 0xe3a0\n"
-        ".hword 0xf000, 0xe320, 0xb3d4, 0xebfd\n"
-        ".hword 0x0003, 0xe3a0, 0xf000, 0xe320\n"
-        ".hword 0xb3d1, 0xebfd, 0x1044, 0xe59f\n"
-        ".hword 0x0000, 0xe3a0, 0xb69f, 0xebfd\n"
-        ".hword 0xf000, 0xe320, 0xf000, 0xe320\n"
-        ".hword 0x1d8c, 0xebfe, 0x0031, 0xe5c4\n"
-        ".hword 0x0000, 0xe59a, 0x1028, 0xe3a0\n"
-        ".hword 0x3018, 0xe280, 0x2018, 0xe590\n"
-        ".hword 0x2024, 0xe580, 0x0082, 0xe883\n"
-        ".hword 0x7014, 0xe580, 0x0008, 0xe1a0\n"
-        ".hword 0xffc4, 0xeaff, 0xda90, 0x0043\n"
-        ".hword 0x056d, 0x0000, 0x016d, 0x0100\n"
-        ".hword 0x32ff, 0x3232\n"
-    );
+extern "C" u32 camp_func_0033138c(u32 command) {
+    using namespace camp_33138c;
+
+    u8* const work = work_object();
+
+    u8* page = nullptr;
+    if (command == kCommandB) {
+        page = work + kPageB;
+    } else if (command == kCommandC) {
+        page = work + kPageC;
+    } else if (command == kCommandD) {
+        page = work + kPageD;
+    }
+
+    u32 state = *reinterpret_cast<const u32*>(work + kState);
+    if (state == 0) {
+        engine_func_00299e60(page, 1);
+        state = *reinterpret_cast<const u32*>(work + kState) + 1;
+        *reinterpret_cast<u32*>(work + kState) = state;
+        return state;
+    }
+    if (state != 1) {
+        return state;
+    }
+
+    const s16* const node = camp_func_002bf6d0(kGroup, kNode);
+    s8 out_flag = 0;
+    const s32 rect_x = *reinterpret_cast<const s16*>(work + kRectX);
+    const s32 rect_y = *reinterpret_cast<const s16*>(work + kRectY);
+    const s32 rect_z = *reinterpret_cast<const s16*>(work + kRectZ);
+
+    if (camp_func_0029f878(page, node, work + kRectExtra, rect_x, rect_y,
+                           rect_z, &out_flag, 0, 1) != 0 ||
+        camp_func_0029f278(page, 1) != 0) {
+        const s32 list_index = engine_func_0029eba8(work + kList);
+        const s32 mode = *reinterpret_cast<const s8*>(work + kModeByte);
+        return engine_func_00299b9c(engine_func_002994b4(mode, list_index));
+    }
+
+    // 0x3314A0..0x3314C4: A/confirm unless the out flag or gate 0 is set.
+    const u32 gate_a = camp_func_002c1830(0, 1);
+    const u32 combined = gate_a | static_cast<u32>(static_cast<s32>(out_flag));
+    if (combined != 0 && command == kCommandB) {
+        // 0x331538..0x3315D0: commit the row under the page cursor.
+        const s32 cursor_a = camp_func_0029f260(page);
+        const s32 cursor_b = camp_func_0029f248(page);
+        const u32 index = static_cast<u32>(cursor_a) + static_cast<u32>(cursor_b);
+        const u32 entry_offset = (index << 1) + kTableB;
+        const u8* const entry = work + entry_offset;
+        const u16 id = *reinterpret_cast<const u16*>(entry);
+        if (camp_func_0028ff04(id) != 0) {
+            *reinterpret_cast<u32*>(work + kSelectedId) =
+                *reinterpret_cast<const u16*>(entry);
+            camp_func_002bdac0(work + kObject, 3, 0);
+            *reinterpret_cast<u32*>(work + kStep) = kStepSelect;
+            publish_command(kPublishReset);
+            engine_func_00299410(page, 1);
+            camp_func_0026a7c4();
+            camp_func_0029cee4(1);
+            return camp_func_002bc200_result(kDispatchBack);
+        }
+        return camp_func_002bc200_result(kDispatchSelect);
+    }
+
+    if (camp_func_002c1830(1, 1) == 0) {
+        // 0x3315E0..0x3316BC: third gate and the menu-activation branch.
+        const u32 gate_c = camp_func_002c1830(9, 1);
+        if (gate_c == 0) {
+            return 0;
+        }
+        if (command == kCommandC) {
+            return gate_c;
+        }
+        if (command == kCommandB) {
+            SortMenu_Init(3, 0);
+            engine_func_0029e5c8(0x0C);
+            engine_func_0029e5c8(0x10);
+            engine_func_0029e5c8(3);
+        } else if (command == kCommandD) {
+            SortMenu_Init(4, 0);
+            engine_func_0029e5c8(0x21);
+            engine_func_0029e5c8(0x10);
+            engine_func_0029e5c8(3);
+        }
+        camp_func_0029f10c(0, kSortColor);
+        *reinterpret_cast<u8*>(work + kFlagByte) = camp_func_002b8ccc();
+        publish_command(kPublishMenu);
+        return camp_func_002bc200_result(kDispatchBack);
+    }
+
+    // 0x3314E0..0x331534: reset the page and queue the select dispatch.
+    engine_func_00299b9c(0);
+    camp_func_002bdac0(work + kObject, 3, 0);
+    *reinterpret_cast<u32*>(work + kStep) = kStepResume;
+    publish_command(kPublishReset);
+    engine_func_00299410(page, 1);
+    return camp_func_002bc200_result(kDispatchSelect);
 }
 
 // DECOMP_FUNC(0x00159028, 840)
