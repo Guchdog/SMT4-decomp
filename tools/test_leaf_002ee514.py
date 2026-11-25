@@ -1,0 +1,384 @@
+#!/usr/bin/env python3
+"""Differential Unicorn verification for engine_func_002ee514 (0x002ee514)."""
+
+from __future__ import annotations
+
+import struct
+import sys
+from pathlib import Path
+from typing import Dict, List, Tuple
+
+from unicorn import UC_ARCH_ARM, UC_HOOK_CODE, UC_MODE_ARM, Uc
+from unicorn.arm_const import (
+    UC_ARM_REG_CPSR,
+    UC_ARM_REG_LR,
+    UC_ARM_REG_PC,
+    UC_ARM_REG_R0,
+    UC_ARM_REG_R1,
+    UC_ARM_REG_R2,
+    UC_ARM_REG_R3,
+    UC_ARM_REG_SP,
+)
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from tools.build_check import compile_tu_armv6k
+
+TU_REL = "src/engine/leaf_batch46_a.cpp"
+FUNC_NAME = "engine_func_002ee514"
+ORIG_ADDR = 0x002EE514
+ORIG_SIZE = 396
+ORIG_BASE_GLOBAL = 0x0047D200
+
+CALLEES_ORIG = {
+    "engine_func_00252538": 0x00252538,  # Thumb (blx)
+    "engine_func_002b67c0": 0x002B67C0,
+    "engine_func_002c4360": 0x002C4360,
+    "engine_func_001f4a54": 0x001F4A54,
+}
+
+ORIG_BYTES = bytes.fromhex(
+    "f0412de958419fe588d04de20480a0e3"
+    "016a84e2030c86e20170a0e3030090e8"
+    "040051e301f19f37060000ea50e52e00"
+    "64e52e00dce52e0034e62e00000050e3"
+    "4400000a047386e588d08de2f081bde8"
+    "000050e30050a0e3180000da000094e5"
+    "300090e5000050e34800d40500005003"
+    "0d00001a040084e200008de5e4308fe2"
+    "f4208fe28010a0e308008de2e48ffdfa"
+    "4970c4e5ec309fe50020a0e3441084e2"
+    "08008de200408de57f20ffeb000396e5"
+    "015085e24c4084e2050050e1e6ffffca"
+    "0200a0e3120000ea000050e30010a0e3"
+    "0e0000da002094e5302092e5000052e3"
+    "4820d405000052030400001ad924d4e1"
+    "010052e3d3ffff0a000052e3d0ffff0a"
+    "011081e2010050e14c4084e2f0ffffca"
+    "0300a0e3040386e588d08de2f081bde8"
+    "000050e30050a0e30070a0c3090000da"
+    "440094e5000050e30100000a4257ffeb"
+    "447084e5000396e5015085e24c4084e2"
+    "050050e1f5ffffca048386e588d08de2"
+    "f081bde800d24700626174746c652f65"
+    "66666563742f7465782f000025732573"
+    "2e74676100000000544a1f00"
+)
+assert len(ORIG_BYTES) == ORIG_SIZE
+
+CODE_BASE = 0x00100000
+CODE_SIZE = 0x00500000
+CAND_BASE = 0x00600000
+CAND_SIZE = 0x00100000
+DATA_BASE = 0x00700000
+DATA_SIZE = 0x00100000
+STACK_BASE = 0x00900000
+STACK_SIZE = 0x00020000
+OBJ_ARRAY = 0x00720000
+SENTINEL = 0x006F0000
+
+
+def parse_elf32(data: bytes):
+    e_shoff = struct.unpack_from("<I", data, 32)[0]
+    e_shentsize, e_shnum, e_shstrndx = struct.unpack_from("<HHH", data, 46)
+    shdrs = [
+        struct.unpack_from("<10I", data, e_shoff + i * e_shentsize)
+        for i in range(e_shnum)
+    ]
+
+    def read_str(strtab_idx: int, off: int) -> str:
+        s_off = shdrs[strtab_idx][4]
+        end = data.index(b"\x00", s_off + off)
+        return data[s_off + off : end].decode("ascii", "replace")
+
+    sections = {}
+    for i, sh in enumerate(shdrs):
+        name = read_str(e_shstrndx, sh[0])
+        sections[name] = (i, sh, data[sh[4] : sh[4] + sh[5]])
+
+    _, sym_sh, sym_bytes = sections[".symtab"]
+    strtab_idx = sym_sh[6]
+    syms = []
+    for off in range(0, len(sym_bytes), 16):
+        st_name, st_value, st_size, st_info, st_other, st_shndx = struct.unpack_from(
+            "<IIIBBH", sym_bytes, off
+        )
+        syms.append((read_str(strtab_idx, st_name), st_value, st_size, st_info, st_shndx))
+
+    return shdrs, sections, syms
+
+
+def load_candidate_func(obj_path: Path, func_name: str):
+    data = obj_path.read_bytes()
+    shdrs, sections, syms = parse_elf32(data)
+    target = None
+    for s in syms:
+        if s[0] == func_name:
+            target = s
+            break
+    assert target is not None, f"missing symbol {func_name}"
+    _, st_value, st_size, _, st_shndx = target
+    assert st_size > 0, f"{func_name} has zero size"
+
+    sec_addrs: Dict[int, int] = {}
+    cursor = CAND_BASE
+    rel_entries: List[Tuple[int, int, int, int]] = []
+    sec_by_idx: Dict[int, Tuple[str, Tuple[int, ...], bytes]] = {}
+    for name, (idx, sh, sbytes) in sections.items():
+        sec_by_idx[idx] = (name, sh, sbytes)
+
+    for idx, (name, sh, sbytes) in sec_by_idx.items():
+        if sh[2] & 0x2:
+            align = max(4, sh[8])
+            cursor = (cursor + align - 1) & ~(align - 1)
+            sec_addrs[idx] = cursor
+            cursor += max(4, len(sbytes))
+
+    for name, (idx, sh, sbytes) in sections.items():
+        if sh[1] == 9:
+            target_sec = sh[7]
+            if target_sec not in sec_addrs:
+                continue
+            for off in range(0, len(sbytes), 8):
+                r_offset, r_info = struct.unpack_from("<II", sbytes, off)
+                r_type = r_info & 0xFF
+                r_sym = r_info >> 8
+                rel_entries.append((target_sec, r_offset, r_type, r_sym))
+
+    func_addr = sec_addrs[st_shndx] + st_value
+    return func_addr, st_size, sec_addrs, sec_by_idx, syms, rel_entries
+
+
+def build_cand_stubs_and_relocate(
+    uc: Uc, sec_addrs, sec_by_idx, syms, rel_entries
+) -> Dict[str, int]:
+    for idx, addr in sec_addrs.items():
+        _, _, sbytes = sec_by_idx[idx]
+        if sbytes:
+            uc.mem_write(addr, sbytes)
+
+    stub_cursor = CAND_BASE + 0x40000
+    ext_stubs: Dict[str, int] = {}
+
+    def get_stub(name: str) -> int:
+        nonlocal stub_cursor
+        if name not in ext_stubs:
+            ext_stubs[name] = stub_cursor
+            uc.mem_write(stub_cursor, struct.pack("<I", 0xE12FFF1E))
+            stub_cursor += 4
+        return ext_stubs[name]
+
+    for target_sec, r_offset, r_type, r_sym in rel_entries:
+        if r_type == 42:
+            continue
+        patch_addr = sec_addrs[target_sec] + r_offset
+        sym_name, sym_val, _, _, sym_shndx = syms[r_sym]
+        if sym_shndx == 0:
+            target_addr = get_stub(sym_name)
+        else:
+            target_addr = sec_addrs[sym_shndx] + sym_val
+
+        cur_word = struct.unpack("<I", uc.mem_read(patch_addr, 4))[0]
+        if r_type in (28, 29):
+            imm24 = ((target_addr - (patch_addr + 8)) >> 2) & 0x00FFFFFF
+            patched = (cur_word & 0xFF000000) | imm24
+            uc.mem_write(patch_addr, struct.pack("<I", patched))
+        elif r_type == 2:
+            uc.mem_write(patch_addr, struct.pack("<I", (cur_word + target_addr) & 0xFFFFFFFF))
+        elif r_type in (43, 44):
+            imm16 = (target_addr & 0xFFFF) if r_type == 43 else ((target_addr >> 16) & 0xFFFF)
+            imm4 = (imm16 >> 12) & 0xF
+            imm12 = imm16 & 0xFFF
+            patched = (cur_word & 0xFFF0F000) | (imm4 << 16) | imm12
+            uc.mem_write(patch_addr, struct.pack("<I", patched))
+        else:
+            raise RuntimeError(f"unsupported reloc type {r_type} for {sym_name}")
+
+    return ext_stubs
+
+
+def read_cstr(uc: Uc, addr: int) -> str:
+    if addr == 0:
+        return "<null>"
+    out = bytearray()
+    for i in range(128):
+        b = uc.mem_read(addr + i, 1)[0]
+        if b == 0:
+            break
+        out.append(b)
+    return out.decode("ascii", "replace")
+
+
+def run_one(
+    use_candidate: bool,
+    cand_info,
+    state: int,
+    entries: List[Tuple[int, str, int, int, int, int]],
+    mutate_kind: str = "",
+):
+    """entries: list of (obj_f30, name, f44, f48, f49_s8)"""
+    uc = Uc(UC_ARCH_ARM, UC_MODE_ARM)
+    uc.mem_map(CODE_BASE, CODE_SIZE)
+    uc.mem_map(CAND_BASE, CAND_SIZE)
+    uc.mem_map(DATA_BASE, DATA_SIZE)
+    uc.mem_map(STACK_BASE, STACK_SIZE)
+
+    uc.mem_write(SENTINEL, struct.pack("<I", 0xE12FFF1E))
+    uc.mem_write(ORIG_BASE_GLOBAL, b"\x00" * 0x1320)
+    uc.mem_write(ORIG_BASE_GLOBAL + 0x1300, struct.pack("<iI", len(entries), state))
+
+    for i, (obj_f30, name, f44, f48, f49) in enumerate(entries):
+        e_addr = ORIG_BASE_GLOBAL + i * 0x4C
+        o_addr = OBJ_ARRAY + i * 0x40
+        uc.mem_write(o_addr, b"\x00" * 0x40)
+        uc.mem_write(o_addr + 0x30, struct.pack("<I", obj_f30))
+        uc.mem_write(e_addr + 0x00, struct.pack("<I", o_addr))
+        name_bytes = name.encode("ascii")[:0x3F] + b"\x00"
+        uc.mem_write(e_addr + 0x04, name_bytes)
+        uc.mem_write(e_addr + 0x44, struct.pack("<I", f44))
+        uc.mem_write(e_addr + 0x48, bytes([f48 & 0xFF]))
+        uc.mem_write(e_addr + 0x49, struct.pack("<b", f49))
+
+    if not use_candidate:
+        uc.mem_write(ORIG_ADDR, ORIG_BYTES)
+        for cname, addr in CALLEES_ORIG.items():
+            if cname == "engine_func_00252538":
+                uc.mem_write(addr, b"\x70\x47\x70\x47")
+            else:
+                uc.mem_write(addr, struct.pack("<I", 0xE12FFF1E))
+        stub_map = {v: k for k, v in CALLEES_ORIG.items()}
+        entry_addr = ORIG_ADDR
+    else:
+        func_addr, _, sec_addrs, sec_by_idx, syms, rel_entries = cand_info
+        ext_stubs = build_cand_stubs_and_relocate(
+            uc, sec_addrs, sec_by_idx, syms, rel_entries
+        )
+        stub_map = {v: k for k, v in ext_stubs.items()}
+        entry_addr = func_addr
+
+    events: List[Tuple] = []
+
+    def hook_code(uc_inst: Uc, address: int, size_i: int, user_data):
+        name = stub_map.get(address)
+        if name is None:
+            return
+        r0 = uc_inst.reg_read(UC_ARM_REG_R0)
+        if name == "engine_func_00252538":
+            r1 = uc_inst.reg_read(UC_ARM_REG_R1)
+            fmt = read_cstr(uc_inst, uc_inst.reg_read(UC_ARM_REG_R2))
+            p0 = read_cstr(uc_inst, uc_inst.reg_read(UC_ARM_REG_R3))
+            sp = uc_inst.reg_read(UC_ARM_REG_SP)
+            p1 = read_cstr(uc_inst, struct.unpack("<I", uc_inst.mem_read(sp, 4))[0])
+            formatted = f"{p0}{p1}.tga"
+            if mutate_kind == "bad_fmt":
+                formatted = "bad.tga"
+            uc_inst.mem_write(r0, formatted.encode("ascii")[: r1 - 1] + b"\x00")
+            events.append((name, r1, fmt, p0, p1))
+        elif name == "engine_func_002b67c0":
+            path = read_cstr(uc_inst, r0)
+            r1 = uc_inst.reg_read(UC_ARM_REG_R1)
+            r2 = uc_inst.reg_read(UC_ARM_REG_R2)
+            r3 = uc_inst.reg_read(UC_ARM_REG_R3)
+            sp = uc_inst.reg_read(UC_ARM_REG_SP)
+            s0 = struct.unpack("<I", uc_inst.mem_read(sp, 4))[0]
+            cb_name = stub_map.get(r3, f"0x{r3:08x}")
+            if mutate_kind == "bad_cb":
+                cb_name = "mutated"
+            events.append((name, path, r1, r2, cb_name, s0))
+        elif name == "engine_func_002c4360":
+            if mutate_kind == "bad_free":
+                r0 ^= 4
+            events.append((name, r0))
+        lr = uc_inst.reg_read(UC_ARM_REG_LR)
+        uc_inst.reg_write(UC_ARM_REG_PC, lr & ~1)
+
+    uc.hook_add(UC_HOOK_CODE, hook_code)
+
+    uc.reg_write(UC_ARM_REG_CPSR, 0x10)
+    uc.reg_write(UC_ARM_REG_SP, STACK_BASE + STACK_SIZE - 0x200)
+    uc.reg_write(UC_ARM_REG_LR, SENTINEL)
+
+    if mutate_kind == "skip_all":
+        return events, b"", b""
+
+    uc.emu_start(entry_addr, SENTINEL, timeout=2_000_000, count=200_000)
+
+    if mutate_kind == "corrupt_state":
+        uc.mem_write(ORIG_BASE_GLOBAL + 0x1304, struct.pack("<I", 99))
+    elif mutate_kind == "corrupt_entry":
+        uc.mem_write(ORIG_BASE_GLOBAL + 0x49, b"\x77")
+
+    arr_dump = bytes(uc.mem_read(ORIG_BASE_GLOBAL, max(1, len(entries)) * 0x4C))
+    hdr_dump = bytes(uc.mem_read(ORIG_BASE_GLOBAL + 0x1300, 8))
+    return events, arr_dump, hdr_dump
+
+
+def main() -> int:
+    obj_path = REPO_ROOT / "build" / "leaf_002ee514" / "leaf_batch46_a.o"
+    obj_path.parent.mkdir(parents=True, exist_ok=True)
+    res = compile_tu_armv6k(REPO_ROOT / TU_REL, obj_path, REPO_ROOT)
+    if res.returncode != 0:
+        print(res.stdout)
+        print(res.stderr)
+        return res.returncode
+    cand_info = load_candidate_func(obj_path, FUNC_NAME)
+    _, cand_size, _, _, _, _ = cand_info
+
+    sample = [
+        (0, "fx_0", 0x740000, 0, 0),
+        (1, "fx_1", 0x740100, 0, 1),
+        (0, "fx_2", 0, 1, 0),
+        (0, "fx_3", 0x740200, 0, 2),
+    ]
+    cases = [
+        (0, []),
+        (0, sample),
+        (1, []),
+        (1, sample),
+        (2, []),
+        (2, [(0, "a", 0, 0, 1)]),
+        (2, [(0, "a", 0, 0, 0)]),
+        (2, [(0, "a", 0, 0, 2), (1, "b", 0, 0, 1), (0, "c", 0, 1, 0)]),
+        (3, []),
+        (3, sample),
+        (4, sample),
+    ]
+
+    for i, (st, ents) in enumerate(cases):
+        o = run_one(False, cand_info, st, ents)
+        c = run_one(True, cand_info, st, ents)
+        if o != c:
+            print(f"MISMATCH on case {i} (state={st}):")
+            print(f"  orig={o[0]} hdr={o[2].hex()}")
+            print(f"  cand={c[0]} hdr={c[2].hex()}")
+            return 1
+
+    mutants = [
+        ("skip_all", (0, sample)),
+        ("bad_fmt", (1, sample)),
+        ("bad_cb", (1, sample)),
+        ("bad_free", (3, sample)),
+        ("corrupt_state", (2, [(0, "a", 0, 0, 2)])),
+    ]
+    detected = 0
+    for name, (st, ents) in mutants:
+        o = run_one(False, cand_info, st, ents)
+        m = run_one(True, cand_info, st, ents, mutate_kind=name)
+        if o != m:
+            detected += 1
+        else:
+            print(f"MUTANT NOT DETECTED: {name}")
+            return 1
+
+    print(
+        f"PASS: {FUNC_NAME} (0x{ORIG_ADDR:08x}) matched original across {len(cases)} cases "
+        f"and detected {detected}/{len(mutants)} mutants "
+        f"(candidate {cand_size} B vs original {ORIG_SIZE} B)"
+    )
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -720,62 +720,66 @@ extern "C" void unite_func_00233600(u8* self) {
     }
 }
 
+extern "C" void engine_func_00252538(char* dst, u32 max_len, const char* fmt, const char* p0, const char* p1);
+extern "C" void engine_func_002b67c0(const char* path, void* out_ptr, u32 a2, void (*cb)(), void* user_data);
+extern "C" void engine_func_001f4a54();
+
 // DECOMP_FUNC(0x002ee514, 396)
-extern "C" __attribute__((naked)) void engine_func_002ee514() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x41f0, 0xe92d, 0x4158, 0xe59f\n"
-        ".hword 0xd088, 0xe24d, 0x8004, 0xe3a0\n"
-        ".hword 0x6a01, 0xe284, 0x0c03, 0xe286\n"
-        ".hword 0x7001, 0xe3a0, 0x0003, 0xe890\n"
-        ".hword 0x0004, 0xe351, 0xf101, 0x379f\n"
-        ".hword 0x0006, 0xea00, 0xe550, 0x002e\n"
-        ".hword 0xe564, 0x002e, 0xe5dc, 0x002e\n"
-        ".hword 0xe634, 0x002e, 0x0000, 0xe350\n"
-        ".hword 0x0044, 0x0a00, 0x7304, 0xe586\n"
-        ".hword 0xd088, 0xe28d, 0x81f0, 0xe8bd\n"
-        ".hword 0x0000, 0xe350, 0x5000, 0xe3a0\n"
-        ".hword 0x0018, 0xda00, 0x0000, 0xe594\n"
-        ".hword 0x0030, 0xe590, 0x0000, 0xe350\n"
-        ".hword 0x0048, 0x05d4, 0x0000, 0x0350\n"
-        ".hword 0x000d, 0x1a00, 0x0004, 0xe284\n"
-        ".hword 0x0000, 0xe58d, 0x30e4, 0xe28f\n"
-        ".hword 0x20f4, 0xe28f, 0x1080, 0xe3a0\n"
-        ".hword 0x0008, 0xe28d, 0x8fe4, 0xfafd\n"
-        ".hword 0x7049, 0xe5c4, 0x30ec, 0xe59f\n"
-        ".hword 0x2000, 0xe3a0, 0x1044, 0xe284\n"
-        ".hword 0x0008, 0xe28d, 0x4000, 0xe58d\n"
-        ".hword 0x207f, 0xebff, 0x0300, 0xe596\n"
-        ".hword 0x5001, 0xe285, 0x404c, 0xe284\n"
-        ".hword 0x0005, 0xe150, 0xffe6, 0xcaff\n"
-        ".hword 0x0002, 0xe3a0, 0x0012, 0xea00\n"
-        ".hword 0x0000, 0xe350, 0x1000, 0xe3a0\n"
-        ".hword 0x000e, 0xda00, 0x2000, 0xe594\n"
-        ".hword 0x2030, 0xe592, 0x0000, 0xe352\n"
-        ".hword 0x2048, 0x05d4, 0x0000, 0x0352\n"
-        ".hword 0x0004, 0x1a00, 0x24d9, 0xe1d4\n"
-        ".hword 0x0001, 0xe352, 0xffd3, 0x0aff\n"
-        ".hword 0x0000, 0xe352, 0xffd0, 0x0aff\n"
-        ".hword 0x1001, 0xe281, 0x0001, 0xe150\n"
-        ".hword 0x404c, 0xe284, 0xfff0, 0xcaff\n"
-        ".hword 0x0003, 0xe3a0, 0x0304, 0xe586\n"
-        ".hword 0xd088, 0xe28d, 0x81f0, 0xe8bd\n"
-        ".hword 0x0000, 0xe350, 0x5000, 0xe3a0\n"
-        ".hword 0x7000, 0xc3a0, 0x0009, 0xda00\n"
-        ".hword 0x0044, 0xe594, 0x0000, 0xe350\n"
-        ".hword 0x0001, 0x0a00, 0x5742, 0xebff\n"
-        ".hword 0x7044, 0xe584, 0x0300, 0xe596\n"
-        ".hword 0x5001, 0xe285, 0x404c, 0xe284\n"
-        ".hword 0x0005, 0xe150, 0xfff5, 0xcaff\n"
-        ".hword 0x8304, 0xe586, 0xd088, 0xe28d\n"
-        ".hword 0x81f0, 0xe8bd, 0xd200, 0x0047\n"
-        ".hword 0x6162, 0x7474, 0x656c, 0x652f\n"
-        ".hword 0x6666, 0x6365, 0x2f74, 0x6574\n"
-        ".hword 0x2f78, 0x0000, 0x7325, 0x7325\n"
-        ".hword 0x742e, 0x6167, 0x0000, 0x0000\n"
-        ".hword 0x4a54, 0x001f\n"
-    );
-};
+extern "C" void engine_func_002ee514() {
+    u8* const base = reinterpret_cast<u8*>(0x0047D200u);
+    s32* const count_ptr = reinterpret_cast<s32*>(base + 0x1300u);
+    u32* const state_ptr = reinterpret_cast<u32*>(base + 0x1304u);
+
+    switch (*state_ptr) {
+    case 0u:
+        *state_ptr = (*count_ptr == 0) ? 4u : 1u;
+        break;
+    case 1u:
+        for (s32 i = 0; i < *count_ptr; ++i) {
+            u8* const entry = base + i * 0x4Cu;
+            const u8* const obj = *reinterpret_cast<const u8* const*>(entry);
+            if (*reinterpret_cast<const u32*>(obj + 0x30u) == 0u && entry[0x48u] == 0u) {
+                char path[0x80];
+                engine_func_00252538(path, 0x80u, "%s%s.tga", "battle/effect/tex/",
+                                     reinterpret_cast<const char*>(entry + 4u));
+                entry[0x49u] = 1u;
+                engine_func_002b67c0(path, entry + 0x44u, 0u, &engine_func_001f4a54, entry);
+            }
+        }
+        *state_ptr = 2u;
+        break;
+    case 2u:
+        for (s32 i = 0; i < *count_ptr; ++i) {
+            const u8* const entry = base + i * 0x4Cu;
+            const u8* const obj = *reinterpret_cast<const u8* const*>(entry);
+            if (*reinterpret_cast<const u32*>(obj + 0x30u) == 0u && entry[0x48u] == 0u) {
+                const s8 st = static_cast<s8>(entry[0x49u]);
+                if (st == 1) {
+                    return;
+                }
+                if (st == 0) {
+                    *state_ptr = 1u;
+                    return;
+                }
+            }
+        }
+        *state_ptr = 3u;
+        break;
+    case 3u:
+        for (s32 i = 0; i < *count_ptr; ++i) {
+            u8* const entry = base + i * 0x4Cu;
+            u32* const res_ptr = reinterpret_cast<u32*>(entry + 0x44u);
+            if (*res_ptr != 0u) {
+                engine_func_002c4360(reinterpret_cast<void*>(*res_ptr));
+                *res_ptr = 0u;
+            }
+        }
+        *state_ptr = 4u;
+        break;
+    default:
+        break;
+    }
+}
 
 // DECOMP_FUNC(0x002f3290, 396)
 extern "C" __attribute__((naked)) void effPolygonTex_func_002f3290() {
