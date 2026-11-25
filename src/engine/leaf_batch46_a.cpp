@@ -1451,76 +1451,95 @@ extern "C" s32 battle_func_0019d650(const u32* a, const u32* b) {
     return static_cast<s32>(va) - static_cast<s32>(vb);
 }
 
+extern "C" u32 shop_func_002ae650(u32 arg0);
+
 // DECOMP_FUNC(0x002be548, 508)
-extern "C" __attribute__((naked)) void script_vm_func_002be548() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x47f0, 0xe92d, 0xd008, 0xe24d\n"
-        ".hword 0x4000, 0xe3a0, 0x7000, 0xe1a0\n"
-        ".hword 0x6028, 0xe59d, 0xa001, 0xe1a0\n"
-        ".hword 0x8002, 0xe1a0, 0x9003, 0xe1a0\n"
-        ".hword 0x5004, 0xe1a0, 0xc037, 0xebff\n"
-        ".hword 0x000b, 0xe350, 0xf100, 0x379f\n"
-        ".hword 0x0056, 0xea00, 0xe5c8, 0x002b\n"
-        ".hword 0xe5a8, 0x002b, 0xe5f0, 0x002b\n"
-        ".hword 0xe610, 0x002b, 0xe630, 0x002b\n"
-        ".hword 0xe650, 0x002b, 0xe670, 0x002b\n"
-        ".hword 0xe690, 0x002b, 0xe6b0, 0x002b\n"
-        ".hword 0xe6d4, 0x002b, 0xe6d4, 0x002b\n"
-        ".hword 0x0007, 0xe1a0, 0xd8a8, 0xebff\n"
-        ".hword 0x006c, 0xe5d0, 0xf000, 0xe320\n"
-        ".hword 0xbfe3, 0xebff, 0x4000, 0xe1a0\n"
-        ".hword 0xf000, 0xe320, 0x0043, 0xea00\n"
-        ".hword 0x0007, 0xe1a0, 0xbfbc, 0xebff\n"
-        ".hword 0x0053, 0xe5d0, 0x0000, 0xe350\n"
-        ".hword 0x4144, 0x059f, 0x003d, 0x0a00\n"
-        ".hword 0xbfd9, 0xebff, 0x4000, 0xe1a0\n"
-        ".hword 0xf000, 0xe320, 0x0039, 0xea00\n"
-        ".hword 0x4130, 0xe59f, 0x0000, 0xe356\n"
-        ".hword 0x0036, 0x0a00, 0xe03a, 0xebff\n"
-        ".hword 0x00b0, 0xe1d0, 0x0007, 0xe150\n"
-        ".hword 0x002f, 0x0a00, 0x0031, 0xea00\n"
-        ".hword 0x0000, 0xe356, 0x4ffe, 0xe3a0\n"
-        ".hword 0x002e, 0x0a00, 0xe032, 0xebff\n"
-        ".hword 0x00b2, 0xe1d0, 0x0007, 0xe150\n"
-        ".hword 0x0027, 0x0a00, 0x0029, 0xea00\n"
-        ".hword 0x40f4, 0xe59f, 0x0000, 0xe356\n"
-        ".hword 0x0026, 0x0a00, 0xe02a, 0xebff\n"
-        ".hword 0x00b6, 0xe1d0, 0x0007, 0xe150\n"
-        ".hword 0x001f, 0x0a00, 0x0021, 0xea00\n"
-        ".hword 0x40d8, 0xe59f, 0x0000, 0xe356\n"
-        ".hword 0x001e, 0x0a00, 0xe022, 0xebff\n"
-        ".hword 0x00b8, 0xe1d0, 0x0007, 0xe150\n"
-        ".hword 0x0017, 0x0a00, 0x0019, 0xea00\n"
-        ".hword 0x0000, 0xe356, 0x4fff, 0xe3a0\n"
-        ".hword 0x0016, 0x0a00, 0xe01a, 0xebff\n"
-        ".hword 0x00ba, 0xe1d0, 0x0007, 0xe150\n"
-        ".hword 0x000f, 0x0a00, 0x0011, 0xea00\n"
-        ".hword 0x409c, 0xe59f, 0x0000, 0xe356\n"
-        ".hword 0x000e, 0x0a00, 0xe012, 0xebff\n"
-        ".hword 0x00bc, 0xe1d0, 0x0007, 0xe150\n"
-        ".hword 0x0007, 0x0a00, 0x0009, 0xea00\n"
-        ".hword 0x4080, 0xe59f, 0x0000, 0xe356\n"
-        ".hword 0x0006, 0x0a00, 0xe00a, 0xebff\n"
-        ".hword 0x00b4, 0xe1d0, 0x0007, 0xe150\n"
-        ".hword 0x0002, 0x1a00, 0x5001, 0xe3a0\n"
-        ".hword 0x0000, 0xea00, 0x4060, 0xe59f\n"
-        ".hword 0x300a, 0xe1a0, 0x1013, 0xe3a0\n"
-        ".hword 0x2004, 0xe1a0, 0x0002, 0xe3a0\n"
-        ".hword 0x80f0, 0xe1cd, 0xc163, 0xebff\n"
-        ".hword 0x0000, 0xe355, 0xf000, 0xe320\n"
-        ".hword 0x0007, 0x0a00, 0x0001, 0xe289\n"
-        ".hword 0x0004, 0xe58d, 0x2034, 0xe59f\n"
-        ".hword 0x300a, 0xe1a0, 0x1013, 0xe3a0\n"
-        ".hword 0x0002, 0xe3a0, 0x8000, 0xe58d\n"
-        ".hword 0x0350, 0xeb00, 0xd008, 0xe28d\n"
-        ".hword 0x87f0, 0xe8bd, 0x03ff, 0x0000\n"
-        ".hword 0x03f7, 0x0000, 0x03fa, 0x0000\n"
-        ".hword 0x03fb, 0x0000, 0x03fd, 0x0000\n"
-        ".hword 0x03f9, 0x0000, 0x03fe, 0x0000\n"
-        ".hword 0x0417, 0x0000\n"
-    );
-};
+extern "C" void script_vm_func_002be548(u32 arg0, u32 arg1, u32 arg2, u32 arg3, u32 arg4) {
+    u32 msg = 0;
+    u32 matched = 0;
+    u32 col = arg1;
+    u32 kind = shop_func_002ae650(arg0);
+
+    auto check_slot = [&](u32 offset) {
+        const u16* slots = reinterpret_cast<const u16* (*)()>(0x002b66ec)();
+        if (slots[offset / 2] == static_cast<u16>(arg0)) {
+            matched = 1;
+        }
+    };
+
+    switch (kind) {
+        case 0: {
+            const u8* p = reinterpret_cast<const u8* (*)(u32)>(0x002ae4c4)(arg0);
+            u8 flag = p[0x53];
+            if (flag == 0) {
+                msg = 0x3ff;
+            } else {
+                msg = reinterpret_cast<u32 (*)(u32)>(0x002ae54c)(flag);
+            }
+            break;
+        }
+        case 1: {
+            const u8* p = reinterpret_cast<const u8* (*)(u32)>(0x002b4854)(arg0);
+            msg = reinterpret_cast<u32 (*)(u32)>(0x002ae54c)(p[0x6c]);
+            break;
+        }
+        case 2:
+            msg = 0x3f7;
+            if (arg4 != 0) {
+                check_slot(0x0);
+            }
+            break;
+        case 3:
+            msg = 0x3f8;
+            if (arg4 != 0) {
+                check_slot(0x2);
+            }
+            break;
+        case 4:
+            msg = 0x3fa;
+            if (arg4 != 0) {
+                check_slot(0x6);
+            }
+            break;
+        case 5:
+            msg = 0x3fb;
+            if (arg4 != 0) {
+                check_slot(0x8);
+            }
+            break;
+        case 6:
+            msg = 0x3fc;
+            if (arg4 != 0) {
+                check_slot(0xa);
+            }
+            break;
+        case 7:
+            msg = 0x3fd;
+            if (arg4 != 0) {
+                check_slot(0xc);
+            }
+            break;
+        case 8:
+            msg = 0x3f9;
+            if (arg4 != 0) {
+                check_slot(0x4);
+            }
+            break;
+        case 9:
+        case 10:
+            msg = 0x3fe;
+            break;
+        default:
+            break;
+    }
+
+    reinterpret_cast<void (*)(u32, u32, u32, u32, u32, u32)>(0x002aec80)(
+        2, 0x13, msg, col, arg2, arg3);
+    if (matched != 0) {
+        reinterpret_cast<void (*)(u32, u32, u32, u32, u32, u32)>(0x002bf460)(
+            2, 0x13, 0x417, arg1, arg2, arg3 + 1);
+    }
+}
 
 // DECOMP_FUNC(0x001f4b68, 516)
 extern "C" __attribute__((naked)) void script_vm_func_001f4b68() {
