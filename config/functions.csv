@@ -8522,7 +8522,7 @@ address,size,status,category,name,src_file
 0x00365430,356,matching,unknown,func_00365430,src/engine/leaf_batch38_b.cpp
 0x00365594,4,matching,unknown,func_00365594,src/engine/leaf_matching.cpp
 0x00365598,84,matching,unknown,func_00365598,src/engine/leaf_batch21_c.cpp
-0x003655ec,940,matching,engine,engine_func_003655ec,src/engine/leaf_batch45_b.cpp
+0x003655ec,940,non_matching,engine,engine_func_003655ec,src/engine/leaf_batch45_b.cpp
 0x00365998,84,matching,unknown,func_00365998,src/engine/leaf_batch16_a.cpp
 0x003659ec,1668,matching,unknown,func_003659ec,src/engine/leaf_batch44_a.cpp
 0x00366070,332,matching,unknown,func_00366070,src/engine/leaf_batch16_c.cpp
