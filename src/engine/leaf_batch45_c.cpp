@@ -6976,101 +6976,88 @@ extern "C" __attribute__((naked)) void func_0031008c() {
     );
 }
 
+extern "C" void func_002a1ef8(u32* dst, const u32* src);
+extern "C" void func_002a1d48(u32* dst, const u32* src);
+extern "C" void func_002a1b98(u32* dst, const u32* src);
+extern "C" void func_002a1a08(u32* dst, const u32* src);
+
+static inline void apply_param_3748d4(u8* self, const u8* pdef, const u8* val_entry) {
+    s32 bit_or_reg = *reinterpret_cast<const s32*>(pdef + 8u);
+    bool is_slot_2c = (pdef[5u] != 0u);
+    u32 kind = *reinterpret_cast<const u32*>(val_entry) & 0xFFu;
+    const u32* val_ptr = reinterpret_cast<const u32*>(val_entry + 4u);
+
+    if (kind == 0u) {
+        u32* target_bits = reinterpret_cast<u32*>(self + (is_slot_2c ? 0x2Cu : 0x14u));
+        if (*val_ptr != 0u) {
+            *target_bits |= (1u << bit_or_reg);
+        } else {
+            *target_bits &= ~(1u << bit_or_reg);
+        }
+        return;
+    }
+
+    if (kind > 4u) {
+        return;
+    }
+
+    u32** g_cmd = reinterpret_cast<u32**>(0x004652A0u);
+    u32* cmd = *g_cmd;
+    cmd[0] = static_cast<u32>(bit_or_reg) + 0x80000000u;
+    cmd[1] = is_slot_2c ? 0x804F0290u : 0x804F02C0u;
+    if (kind == 1u) {
+        func_002a1ef8(cmd + 2, val_ptr);
+    } else if (kind == 2u) {
+        func_002a1d48(cmd + 2, val_ptr);
+    } else if (kind == 3u) {
+        func_002a1b98(cmd + 2, val_ptr);
+    } else {
+        func_002a1a08(cmd + 2, val_ptr);
+    }
+    *g_cmd = cmd + 6;
+}
+
 // DECOMP_FUNC(0x003748d4, 1420)
-// Capstone ARM full coverage (355 instructions); raw bytes only, no terminal-return claim.
-extern "C" __attribute__((naked)) void func_003748d4() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4ff0, 0xe24dd044, 0xe3a0a000, 0xe1a0b000\n"
-        ".word 0xe5900008, 0xe58da000, 0xe58da004, 0xe58da008\n"
-        ".word 0xe58da00c, 0xe58da010, 0xe58da014, 0xe58da018\n"
-        ".word 0xe58da01c, 0xe58da020, 0xe58da024, 0xe58da028\n"
-        ".word 0xe58da02c, 0xe58da030, 0xe58da034, 0xe58da038\n"
-        ".word 0xe58da03c, 0xe5903018, 0xe2802018, 0xe5906014\n"
-        ".word 0xe3530000, 0x10838002, 0xe5912294, 0x01a0800a\n"
-        ".word 0xe2810fa5, 0xe3520000, 0x10800002, 0xe5912290\n"
-        ".word 0x01a0000a, 0xe1a0900d, 0xe0807102, 0xe5b10294\n"
-        ".word 0xe3500000, 0x10804001, 0x01a0400a, 0xe1540007\n"
-        ".word 0x0a0000b7, 0xe5940000, 0xe3500000, 0x10800004\n"
-        ".word 0x01a0000a, 0xe5905004, 0xe3550000, 0xa1560005\n"
-        ".word 0xda0000ac, 0xe0880105, 0xe5901000, 0xe3510000\n"
-        ".word 0x10800001, 0x01a0000a, 0xe5d01004, 0xe3510000\n"
-        ".word 0x0a0000a2, 0xe5902008, 0xe3520000, 0xba00009f\n"
-        ".word 0xe5d00005, 0xe5941000, 0xe3500000, 0x0a000051\n"
-        ".word 0xe3510000, 0x10811004, 0x01a0100a, 0xe1a0300b\n"
-        ".word 0xe5b1c008, 0xe31c00ff, 0x0a000009, 0xe20c00ff\n"
-        ".word 0xe3500001, 0x0a00000f, 0xe3500002, 0x0a00001b\n"
-        ".word 0xe3500003, 0x0a000027, 0xe3500004, 0x0a000033\n"
-        ".word 0xea00008a, 0xe5910004, 0xe593102c, 0xe3500000\n"
-        ".word 0xe3a00001, 0xe1a00210, 0x11800001, 0x01c10000\n"
-        ".word 0xe58b002c, 0xea000081, 0xe59f3414, 0xe59f040c\n"
-        ".word 0xe2822102, 0xe2811004, 0xe5933000, 0xe5830004\n"
-        ".word 0xe2830008, 0xe5832000, 0xebfcb525, 0xe59f03f0\n"
-        ".word 0xe5900000, 0xe2801018, 0xe59f03e4, 0xea000072\n"
-        ".word 0xe59f33dc, 0xe59f03d4, 0xe2822102, 0xe2811004\n"
-        ".word 0xe5933000, 0xe5830004, 0xe2830008, 0xe5832000\n"
-        ".word 0xebfcb4ab, 0xe59f03b8, 0xe5900000, 0xe2801018\n"
-        ".word 0xe59f03ac, 0xea000064, 0xe59f33a4, 0xe59f039c\n"
-        ".word 0xe2822102, 0xe2811004, 0xe5933000, 0xe5830004\n"
-        ".word 0xe2830008, 0xe5832000, 0xebfcb431, 0xe59f0380\n"
-        ".word 0xe5900000, 0xe2801018, 0xe59f0374, 0xea000056\n"
-        ".word 0xe59f336c, 0xe59f0364, 0xe2822102, 0xe2811004\n"
-        ".word 0xe5933000, 0xe5830004, 0xe2830008, 0xe5832000\n"
-        ".word 0xebfcb3bf, 0xe59f0348, 0xe5900000, 0xe2801018\n"
-        ".word 0xe59f033c, 0xea000048, 0xe3510000, 0x10810004\n"
-        ".word 0x01a0000a, 0xe1a0100b, 0xe5b0c008, 0xe31c00ff\n"
-        ".word 0x0a000009, 0xe20c10ff, 0xe3510001, 0x0a00000f\n"
-        ".word 0xe3510002, 0x0a000019, 0xe3510003, 0x0a000023\n"
-        ".word 0xe3510004, 0x0a00002d, 0xea000038, 0xe5900004\n"
-        ".word 0xe5913014, 0xe3500000, 0xe3a00001, 0xe1a00210\n"
-        ".word 0x11800003, 0x01c30000, 0xe58b0014, 0xea00002f\n"
-        ".word 0xe2801004, 0xe59f02c8, 0xe2823102, 0xe59f22c4\n"
-        ".word 0xe5900000, 0xe4803004, 0xe4802004, 0xebfcb4d4\n"
-        ".word 0xe59f02ac, 0xe5901000, 0xe2811018, 0xea000022\n"
-        ".word 0xe2801004, 0xe59f0298, 0xe2823102, 0xe59f2294\n"
-        ".word 0xe5900000, 0xe4803004, 0xe4802004, 0xebfcb45c\n"
-        ".word 0xe59f027c, 0xe5901000, 0xe2811018, 0xea000016\n"
-        ".word 0xe2801004, 0xe59f0268, 0xe2823102, 0xe59f2264\n"
-        ".word 0xe5900000, 0xe4803004, 0xe4802004, 0xebfcb3e4\n"
-        ".word 0xe59f024c, 0xe5901000, 0xe2811018, 0xea00000a\n"
-        ".word 0xe2801004, 0xe59f0238, 0xe2823102, 0xe59f2234\n"
-        ".word 0xe5900000, 0xe4803004, 0xe4802004, 0xebfcb374\n"
-        ".word 0xe59f021c, 0xe5901000, 0xe2811018, 0xe5801000\n"
-        ".word 0xe3a00001, 0xe7c90005, 0xe2844004, 0xe1540007\n"
-        ".word 0x1affff47, 0xe3560000, 0xc59f51f4, 0xe3a04000\n"
-        ".word 0xc3a07001, 0xda000054, 0xe7d90004, 0xe3500000\n"
-        ".word 0x1a00004e, 0xe0880104, 0xe5901000, 0xe3510000\n"
-        ".word 0x10800001, 0x01a0000a, 0xe5d01004, 0xe3510000\n"
-        ".word 0x0a000046, 0xe5902008, 0xe3520000, 0xba000043\n"
-        ".word 0xe5d01005, 0xe3510000, 0xe5b0100c, 0xe20130ff\n"
-        ".word 0x0a000043, 0xe3530000, 0x0a000009, 0xe20110ff\n"
-        ".word 0xe3510001, 0x0a00000e, 0xe3510002, 0x0a000017\n"
-        ".word 0xe3510003, 0x0a000020, 0xe3510004, 0x0a000029\n"
-        ".word 0xea000032, 0xe5900004, 0xe3500000, 0xe59b002c\n"
-        ".word 0xe1a01217, 0x11800001, 0x01c00001, 0xe58b002c\n"
-        ".word 0xea00002a, 0xe2823102, 0xe59f2140, 0xe2801004\n"
-        ".word 0xe5950000, 0xe4803004, 0xe4802004, 0xebfcb474\n"
-        ".word 0xe5950000, 0xe2800018, 0xe5850000, 0xea00001f\n"
-        ".word 0xe2823102, 0xe59f2114, 0xe2801004, 0xe5950000\n"
-        ".word 0xe4803004, 0xe4802004, 0xebfcb3fd, 0xe5950000\n"
-        ".word 0xe2800018, 0xe5850000, 0xea000014, 0xe2823102\n"
-        ".word 0xe59f20e8, 0xe2801004, 0xe5950000, 0xe4803004\n"
-        ".word 0xe4802004, 0xebfcb386, 0xe5950000, 0xe2800018\n"
-        ".word 0xe5850000, 0xea000009, 0xe2823102, 0xe59f20bc\n"
-        ".word 0xe2801004, 0xe5950000, 0xe4803004, 0xe4802004\n"
-        ".word 0xebfcb317, 0xe5950000, 0xe2800018, 0xe5850000\n"
-        ".word 0xe2844001, 0xe1540006, 0xbaffffaa, 0xe28dd044\n"
-        ".word 0xe8bd8ff0, 0xe3530000, 0x0a00000c, 0xe20110ff\n"
-        ".word 0xe3510001, 0x0a000011, 0xe3510002, 0x0a000013\n"
-        ".word 0xe3510003, 0x0a000015, 0xe3510004, 0x1affffef\n"
-        ".word 0xe2823102, 0xe59f205c, 0xe2801004, 0xeaffffe4\n"
-        ".word 0xe5900004, 0xe3500000, 0xe59b0014, 0xe1a01217\n"
-        ".word 0x11800001, 0x01c00001, 0xe58b0014, 0xeaffffe3\n"
-        ".word 0xe2823102, 0xe59f202c, 0xe2801004, 0xeaffffb7\n"
-        ".word 0xe2823102, 0xe59f201c, 0xe2801004, 0xeaffffbe\n"
-        ".word 0xe2823102, 0xe59f200c, 0xe2801004, 0xeaffffc5\n"
-        ".word 0x804f0290, 0x004652a0, 0x804f02c0\n"
-    );
+extern "C" void func_003748d4(u8* self, u8* src) {
+    u8* data = *reinterpret_cast<u8**>(self + 8u);
+    s32 param_count = *reinterpret_cast<s32*>(data + 0x14u);
+    s32 rel_params = *reinterpret_cast<s32*>(data + 0x18u);
+    s32* params = (rel_params != 0) ? reinterpret_cast<s32*>(data + 0x18u + rel_params) : nullptr;
+
+    u8 applied[64] = {};
+
+    s32 ov_count = *reinterpret_cast<s32*>(src + 0x290u);
+    s32 rel_ov = *reinterpret_cast<s32*>(src + 0x294u);
+    s32* ov_arr = (rel_ov != 0) ? reinterpret_cast<s32*>(src + 0x294u + rel_ov) : nullptr;
+    s32* ov_end = ov_arr + ov_count;
+
+    for (s32* it = ov_arr; it != ov_end; ++it) {
+        s32 rel_item = *it;
+        u8* ov = (rel_item != 0) ? (reinterpret_cast<u8*>(it) + rel_item) : nullptr;
+        s32 idx = *reinterpret_cast<s32*>(ov + 4u);
+        if (idx < 0 || idx >= param_count) {
+            continue;
+        }
+        s32 rel_p = params[idx];
+        u8* pdef = (rel_p != 0) ? (reinterpret_cast<u8*>(&params[idx]) + rel_p) : nullptr;
+        if (pdef[4u] == 0u || *reinterpret_cast<s32*>(pdef + 8u) < 0) {
+            continue;
+        }
+        apply_param_3748d4(self, pdef, ov + 8u);
+        applied[idx] = 1u;
+    }
+
+    for (s32 i = 0; i < param_count; ++i) {
+        if (applied[i] != 0u) {
+            continue;
+        }
+        s32 rel_p = params[i];
+        u8* pdef = (rel_p != 0) ? (reinterpret_cast<u8*>(&params[i]) + rel_p) : nullptr;
+        if (pdef[4u] == 0u || *reinterpret_cast<s32*>(pdef + 8u) < 0) {
+            continue;
+        }
+        apply_param_3748d4(self, pdef, pdef + 0x0Cu);
+    }
 }
 
 // DECOMP_FUNC(0x00395a4c, 1420)
