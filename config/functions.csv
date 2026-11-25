@@ -7052,7 +7052,7 @@ address,size,status,category,name,src_file
 0x0030f904,32,non_matching,script_vm,script_vm_func_0030f904,src/engine/leaf_batch31_a.cpp
 0x0030f924,384,matching,ui,ui_func_0030f924,src/engine/leaf_batch38_b.cpp
 0x0030faa4,152,matching,engine,engine_func_0030faa4,src/engine/leaf_batch42_a.cpp
-0x0030fb3c,1420,matching,battle,battle_func_0030fb3c,src/engine/leaf_batch45_c.cpp
+0x0030fb3c,1420,non_matching,battle,battle_func_0030fb3c,src/engine/leaf_batch45_c.cpp
 0x003100c8,28,matching,script_vm,script_vm_func_003100c8,src/engine/leaf_batch37_b.cpp
 0x003100e4,64,matching,engine,engine_func_003100e4,src/engine/leaf_batch24_c.cpp
 0x00310124,804,matching,engine,AsdCamera_func_00310124,src/engine/asd_scene.cpp
