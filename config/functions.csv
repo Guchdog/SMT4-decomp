@@ -5100,7 +5100,7 @@ address,size,status,category,name,src_file
 0x002a2a2c,208,matching,unknown,func_002a2a2c,src/engine/leaf_batch14_b.cpp
 0x002a2afc,12,matching,unknown,func_002a2afc,src/engine/leaf_batch38_a.cpp
 0x002a2b08,136,matching,unknown,func_002a2b08,src/engine/leaf_batch41_b.cpp
-0x002a2b90,420,matching,unknown,func_002a2b90,src/engine/leaf_batch46_a.cpp
+0x002a2b90,420,non_matching,unknown,func_002a2b90,src/engine/leaf_batch46_a.cpp
 0x002a2d34,28,matching,unknown,func_002a2d34,src/engine/leaf_batch39_a.cpp
 0x002a2d50,100,matching,engine,engine_func_002a2d50,src/engine/leaf_batch39_c.cpp
 0x002a2db4,40,matching,unknown,func_002a2db4,src/engine/leaf_batch10_c.cpp

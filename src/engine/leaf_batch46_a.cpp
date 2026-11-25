@@ -878,64 +878,56 @@ extern "C" u32 engine_func_00211934() {
 }
 
 // DECOMP_FUNC(0x002a2b90, 420)
-extern "C" __attribute__((naked)) void func_002a2b90() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4ff0, 0xe92d, 0x0000, 0xe352\n"
-        ".hword 0xd04c, 0xe24d, 0xcd05, 0x13a0\n"
-        ".hword 0xce19, 0x03a0, 0x1202, 0xe081\n"
-        ".hword 0x0000, 0xe353, 0xc024, 0xe58d\n"
-        ".hword 0x7004, 0x1591, 0x7000, 0x0591\n"
-        ".hword 0x1008, 0xe281, 0x90f0, 0xe3a0\n"
-        ".hword 0x0024, 0xe891, 0xc008, 0xe3a0\n"
-        ".hword 0x0000, 0xe352, 0x1018, 0x03a0\n"
-        ".hword 0x000e, 0x0a00, 0x0005, 0xe352\n"
-        ".hword 0x1000, 0xe3a0, 0xf102, 0x379f\n"
-        ".hword 0x0009, 0xea00, 0x2bf8, 0x002a\n"
-        ".hword 0x2c00, 0x002a, 0x2c08, 0x002a\n"
-        ".hword 0x2c08, 0x002a, 0x2c08, 0x002a\n"
-        ".hword 0x1004, 0xe3a0, 0x0002, 0xea00\n"
-        ".hword 0x1003, 0xe3a0, 0x0000, 0xea00\n"
-        ".hword 0x1002, 0xe3a0, 0x1181, 0xe1a0\n"
-        ".hword 0x5125, 0xe1a0, 0x6201, 0xe1a0\n"
-        ".hword 0x0005, 0xe352, 0x6126, 0xe1a0\n"
-        ".hword 0x3181, 0xe1a0, 0x4000, 0xe3a0\n"
-        ".hword 0x501c, 0xe58d, 0x602c, 0xe58d\n"
-        ".hword 0xf102, 0x379f, 0x003a, 0xea00\n"
-        ".hword 0x2c4c, 0x002a, 0x2c4c, 0x002a\n"
-        ".hword 0x2c74, 0x002a, 0x2c74, 0x002a\n"
-        ".hword 0x2c74, 0x002a, 0x2003, 0xe3a0\n"
-        ".hword 0x6105, 0xe082, 0x5105, 0xe1a0\n"
-        ".hword 0xa004, 0xe28d, 0x500c, 0xe58d\n"
-        ".hword 0x0050, 0xe88a, 0x6010, 0xe28d\n"
-        ".hword 0x80bc, 0xe59f, 0x0014, 0xe886\n"
-        ".hword 0x0008, 0xea00, 0x2002, 0xe3a0\n"
-        ".hword 0x6105, 0xe082, 0x5105, 0xe1a0\n"
-        ".hword 0xa004, 0xe28d, 0x500c, 0xe58d\n"
-        ".hword 0x0050, 0xe88a, 0x6010, 0xe28d\n"
-        ".hword 0x8098, 0xe59f, 0x0014, 0xe886\n"
-        ".hword 0x0000, 0xe350, 0x0020, 0x0a00\n"
-        ".hword 0x5000, 0xe1a0, 0x0024, 0xe59d\n"
-        ".hword 0x0000, 0xe350, 0x0000, 0xe3a0\n"
-        ".hword 0x0034, 0xe58d, 0x001a, 0x9a00\n"
-        ".hword 0x001c, 0xe59d, 0xa003, 0xe3c1\n"
-        ".hword 0xb003, 0xe3c3, 0x0c90, 0xe000\n"
-        ".hword 0x0044, 0xe58d, 0x4007, 0xe1a0\n"
-        ".hword 0x6000, 0xe3a0, 0x201c, 0xe59d\n"
-        ".hword 0x3004, 0xe28d, 0x1004, 0xe1a0\n"
-        ".hword 0x0005, 0xe1a0, 0xff38, 0xe12f\n"
-        ".hword 0x6008, 0xe286, 0x0009, 0xe156\n"
-        ".hword 0x400a, 0xe084, 0x500b, 0xe085\n"
-        ".hword 0xfff5, 0x3aff, 0x0044, 0xe59d\n"
-        ".hword 0x1024, 0xe59d, 0x7100, 0xe087\n"
-        ".hword 0x002c, 0xe59d, 0x5100, 0xe085\n"
-        ".hword 0x0034, 0xe59d, 0x0008, 0xe280\n"
-        ".hword 0x0001, 0xe150, 0x0034, 0xe58d\n"
-        ".hword 0xffe9, 0x3aff, 0xd04c, 0xe28d\n"
-        ".hword 0x8ff0, 0xe8bd, 0xa540, 0x0015\n"
-        ".hword 0xa4d0, 0x0015\n"
-    );
-};
+extern "C" void func_002a2b90(u8* dst, const u8* info, u32 screen_sel, u32 buf_idx) {
+    const u32 width = (screen_sel != 0u) ? 0x140u : 0x190u;
+    const u8* const entry = info + (screen_sel << 4);
+    const u8* src_base = (buf_idx != 0u)
+        ? *reinterpret_cast<const u8* const*>(entry + 4u)
+        : *reinterpret_cast<const u8* const*>(entry + 0u);
+    const u32 fmt = *reinterpret_cast<const u32*>(entry + 8u);
+    const u32 stride_bytes = *reinterpret_cast<const u32*>(entry + 12u);
+
+    u32 unit = 0u;
+    if (fmt <= 1u) {
+        unit = 0x18u;
+    } else if (fmt <= 4u) {
+        unit = 0x10u;
+    } else {
+        return;
+    }
+
+    const u32 stride_words = stride_bytes >> 2;
+    const u32 dst_col_words = (unit << 4) >> 2;
+    const u32 dst_step = (unit << 3) & ~3u;
+    const u32 src_step = unit & ~3u;
+
+    typedef void (*TileBlitFn)(u8* dst, const u8* src, u32 stride_words, const u32* params);
+    const u32 tag = (fmt <= 1u) ? 3u : 2u;
+    const TileBlitFn blit = reinterpret_cast<TileBlitFn>(
+        (fmt <= 1u) ? 0x0015A540u : 0x0015A4D0u);
+    const u32 params[5] = {
+        0u,
+        tag + (stride_words << 2),
+        stride_words << 2,
+        tag,
+        0u,
+    };
+
+    if (dst == nullptr) {
+        return;
+    }
+
+    for (u32 x = 0u; x < width; x += 8u) {
+        const u8* src_col = src_base;
+        for (u32 y = 0u; y < 0xF0u; y += 8u) {
+            blit(dst, src_col, stride_words, params);
+            src_col += src_step;
+            dst += dst_step;
+        }
+        src_base += (stride_words * 8u) << 2;
+        dst += dst_col_words << 2;
+    }
+}
 
 // DECOMP_FUNC(0x002fb7a0, 428)
 extern "C" __attribute__((naked)) void engine_func_002fb7a0() {
