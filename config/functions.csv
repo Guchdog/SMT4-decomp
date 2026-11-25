@@ -2208,7 +2208,7 @@ address,size,status,category,name,src_file
 0x001b0c98,24,matching,unknown,func_001b0c98,src/engine/leaf_batch39_a.cpp
 0x001b0cb0,812,matching,battle,btlMain_Init,src/battle/btl_main.cpp
 0x001b0fdc,4,matching,unknown,func_001b0fdc,src/engine/leaf_matching.cpp
-0x001b0fe0,1476,matching,engine,engine_func_001b0fe0,src/engine/leaf_batch45_c.cpp
+0x001b0fe0,1476,non_matching,engine,engine_func_001b0fe0,src/engine/leaf_batch45_c.cpp
 0x001b15a4,380,matching,camp,camp_func_001b15a4,src/engine/leaf_batch34_c.cpp
 0x001b1720,204,matching,script_vm,script_vm_func_001b1720,src/engine/leaf_batch27_a.cpp
 0x001b17ec,132,matching,camp,camp_func_001b17ec,src/engine/leaf_batch41_b.cpp
