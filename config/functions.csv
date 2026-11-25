@@ -9953,7 +9953,7 @@ address,size,status,category,name,src_file
 0x003d1e48,528,matching,engine,engine_func_003d1e48,src/engine/leaf_batch44_c.cpp
 0x003d2058,788,matching,ui,ui_func_003d2058,src/engine/leaf_batch29_c.cpp
 0x003d236c,1936,matching,battle,battle_func_003d236c,src/engine/leaf_batch45_c.cpp
-0x003d2afc,1488,matching,battle,battle_func_003d2afc,src/engine/leaf_batch45_c.cpp
+0x003d2afc,1488,non_matching,battle,battle_func_003d2afc,src/engine/leaf_batch45_c.cpp
 0x003d30cc,732,matching,battle,battle_func_003d30cc,src/engine/leaf_batch28_c.cpp
 0x003d33a8,1992,matching,battle,battle_func_003d33a8,src/engine/leaf_batch45_c.cpp
 0x003d3b70,612,matching,engine,engine_func_003d3b70,src/engine/leaf_batch46_a.cpp
