@@ -6648,100 +6648,247 @@ extern "C" u32 shop_func_0022fe4c(u8* self, u32 a1) {
     return shop_func_002923d0(arg);
 }
 
+extern "C" void script_vm_func_00280bf8();
+extern "C" void engine_func_002526bc(f32* out, f32 x0, f32 y0, f32 z0, f32 x1, f32 y1);
+extern "C" void script_vm_func_0027fe84(u32 a0);
+extern "C" void engine_func_0024f248(u32 a0, u32 a1);
+extern "C" void engine_func_001fa6bc(f32 x, f32 y, f32 z, f32 ang);
+extern "C" s32 script_vm_func_0027f10c();
+extern "C" s32 ui_func_002bffbc(u32 a0);
+extern "C" s32 script_vm_func_00276550();
+extern "C" void engine_func_002dfe6c();
+extern "C" void script_vm_func_00273a98();
+extern "C" s32 script_vm_func_00273a78();
+extern "C" void engine_func_002d3dac();
+extern "C" void script_vm_func_00276ba4();
+extern "C" void script_vm_func_0027fd08(u32 a0);
+extern "C" void script_vm_func_0028075c(f32* pos);
+extern "C" void script_vm_func_002805d4(f32 x, f32 z);
+
 // DECOMP_FUNC(0x00280054, 1408)
-// Capstone ARM full coverage (352 instructions); raw bytes only, no terminal-return claim.
-extern "C" __attribute__((naked)) void engine_func_00280054() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d41f0, 0xe59f4304, 0xed2d8b08, 0xe5940000\n"
-        ".word 0xe2800028, 0xec908a03, 0xeb0002e1, 0xe5940000\n"
-        ".word 0xeddf1abb, 0xed9f1abb, 0xe59f72ec, 0xedd00a0a\n"
-        ".word 0xed900a07, 0xe3a05000, 0xee700ac0, 0xee000aa1\n"
-        ".word 0xed800a07, 0xed902a0b, 0xedd00a08, 0xee322a60\n"
-        ".word 0xee420a01, 0xedc00a08, 0xed902a0c, 0xed901a09\n"
-        ".word 0xee322a41, 0xee021a21, 0xed801a09, 0xe5901004\n"
-        ".word 0xe351000c, 0x0a0000df, 0xaa00000e, 0xe59f62a0\n"
-        ".word 0xeddf9aa6, 0xe3510002, 0x0a00008f, 0xaa000004\n"
-        ".word 0xe3510000, 0x0a000010, 0xe3510001, 0x1a0000f0\n"
-        ".word 0xea000076, 0xe351000a, 0x0a0000c3, 0xe351000b\n"
-        ".word 0x1a0000eb, 0xea0000c6, 0xe351000d, 0x0a0000dd\n"
-        ".word 0xe351005a, 0x0a0000fa, 0xe351005b, 0x0a0000fc\n"
-        ".word 0xe351005c, 0x1a0000e2, 0xea0000fe, 0xeddf1a91\n"
-        ".word 0xe5805054, 0xedc01a16, 0xe2861084, 0xe5c0506c\n"
-        ".word 0xecd11a03, 0xeb001f01, 0xe59f1238, 0xee100a10\n"
-        ".word 0xeddfaa89, 0xed9faa89, 0xe1500001, 0xe5940000\n"
-        ".word 0xe5961084, 0xe1c628d8, 0xe280cf46, 0xed9fba84\n"
-        ".word 0xeddf9a85, 0xe88c000e, 0xe3a08001, 0xaa000020\n"
-        ".word 0xed900a13, 0xee300a29, 0xee200a2a, 0xeb000979\n"
-        ".word 0xe5940000, 0xedd00a46, 0xee400a0a, 0xedc00a46\n"
-        ".word 0xed900a13, 0xee300a29, 0xee200a2a, 0xeb000912\n"
-        ".word 0xe5941000, 0xe2812028, 0xedd12a48, 0xe2810f49\n"
-        ".word 0xee402a0a, 0xedc12a48, 0xe2811f46, 0xec920a03\n"
-        ".word 0xecd11a02, 0xebff4937, 0xe5940000, 0xe2861084\n"
-        ".word 0xed80ba4c, 0xe5c08115, 0xe2800028, 0xecd11a03\n"
-        ".word 0xec900a03, 0xeb001f13, 0xe5940000, 0xed800a14\n"
-        ".word 0xea00001f, 0xed900a14, 0xee300a29, 0xee200a2a\n"
-        ".word 0xeb000958, 0xe5940000, 0xedd00a46, 0xee400a0a\n"
-        ".word 0xedc00a46, 0xed900a14, 0xee300a29, 0xee200a2a\n"
-        ".word 0xeb0008f1, 0xe5941000, 0xe2812028, 0xedd12a48\n"
-        ".word 0xe2810f49, 0xee402a0a, 0xedc12a48, 0xe2811f46\n"
-        ".word 0xec920a03, 0xecd11a02, 0xebff4916, 0xe5940000\n"
-        ".word 0xe2861084, 0xed80ba4c, 0xe5c08115, 0xe2800028\n"
-        ".word 0xecd11a03, 0xec900a03, 0xeb001ef2, 0xe5940000\n"
-        ".word 0xed800a14, 0xe3a0000a, 0xebfffefc, 0xe5971000\n"
-        ".word 0xe3e00000, 0xe58100ac, 0xe3a000db, 0xeb00e234\n"
-        ".word 0xe5961080, 0xe3a00001, 0xebff3be5, 0xe5940000\n"
-        ".word 0xe2866084, 0xed900a14, 0xee701a29, 0xec960a03\n"
-        ".word 0xebfde8fc, 0xe5940000, 0xe320f000, 0xea000052\n"
-        ".word 0xe5901008, 0xe2811001, 0xe5801008, 0xe5961080\n"
-        ".word 0xe3a00001, 0xebff3bd6, 0xe5940000, 0xe5901008\n"
-        ".word 0xe3510002, 0xda00006e, 0xe5901004, 0xe3a0201d\n"
-        ".word 0xed9f0a22, 0xe5802054, 0xed800a16, 0xe2800004\n"
-        ".word 0xe2811001, 0xe8800022, 0xea000065, 0xe5901008\n"
-        ".word 0xe2811001, 0xe5801008, 0xe5961080, 0xe3a00001\n"
-        ".word 0xebff3bc3, 0xe320f000, 0xe320f000, 0xebfffb71\n"
-        ".word 0xe3500000, 0xe320f000, 0x0a000011, 0xe5940000\n"
-        ".word 0xe3a0100a, 0xe2800004, 0xe8800022, 0xea000054\n"
-        ".word 0x00447e88, 0x3eaaaaab, 0x3e2aaaab, 0x004474f4\n"
-        ".word 0x40a00000, 0x0049f91c, 0x40400000, 0x3c8efa35\n"
-        ".word 0x42c80000, 0x41f00000, 0x42700000, 0x43340000\n"
-        ".word 0x40000000, 0xe3a00005, 0xeb00ff06, 0xe3500000\n"
-        ".word 0xe320f000, 0x1a000003, 0xebffd867, 0xe3500000\n"
-        ".word 0xe320f000, 0x0a00003e, 0xe5941000, 0xe5970000\n"
-        ".word 0xe5911050, 0xe5a01018, 0xe5805094, 0xe3a00000\n"
-        ".word 0xebfffeaa, 0xe5940000, 0xe5805054, 0xedc09a16\n"
-        ".word 0xe5961080, 0xe3a00000, 0xebff3b95, 0xe320f000\n"
-        ".word 0xe320f000, 0xeb017e9b, 0xe5940000, 0xe3a0105a\n"
-        ".word 0xe2800004, 0xe8800022, 0xea000029, 0xe3a01008\n"
-        ".word 0xe5c6522a, 0xe5801054, 0xedc09a16, 0xe5901004\n"
-        ".word 0xea000037, 0xe5901008, 0xe2811001, 0xe3510014\n"
-        ".word 0xe5801008, 0x1a00001e, 0xebffcd95, 0xe5940000\n"
-        ".word 0xe5901004, 0xea00002e, 0xe320f000, 0xebffcd88\n"
-        ".word 0xe3500000, 0xe320f000, 0x1a000015, 0xeb017e81\n"
-        ".word 0xe5941000, 0xe5970000, 0xe5911050, 0xe5a01018\n"
-        ".word 0xe5805094, 0xe3a00000, 0xebfffe80, 0xe5940000\n"
-        ".word 0xe5901004, 0xea00001e, 0xe5901008, 0xe2811001\n"
-        ".word 0xe3510014, 0xe5801008, 0x1a000005, 0xeb014e41\n"
-        ".word 0xe320f000, 0xe320f000, 0xebffd9bc, 0xe3a00008\n"
-        ".word 0xebfffe13, 0xe5940000, 0xe5d01115, 0xe3510000\n"
-        ".word 0x0a000039, 0xe2801028, 0xe2800f46, 0xec910a03\n"
-        ".word 0xecd01a03, 0xeb001e1d, 0xe5940000, 0xedd00a4c\n"
-        ".word 0xeeb40ae0, 0xeef1fa10, 0x8a000015, 0xe2801f46\n"
-        ".word 0xe891000e, 0xe5801028, 0xe5c05115, 0xe1c022fc\n"
-        ".word 0xea000020, 0xe2800004, 0xe2811001, 0xe8800022\n"
-        ".word 0xeaffffe7, 0xe320f000, 0xeb014e22, 0xe5940000\n"
-        ".word 0xe5901004, 0xeafffff6, 0xe5901008, 0xe2811001\n"
-        ".word 0xe3510003, 0xe5801008, 0xc3a00001, 0xdaffffdc\n"
-        ".word 0xeaffffda, 0xe2801028, 0xe2800f49, 0xed901a00\n"
-        ".word 0xed900a01, 0xedd01a02, 0xee211a20, 0xee200a20\n"
-        ".word 0xee610aa0, 0xedd11a00, 0xee311a81, 0xed811a00\n"
-        ".word 0xed911a01, 0xee310a00, 0xed810a01, 0xed910a02\n"
-        ".word 0xee300a20, 0xed810a02, 0xe5940000, 0xe2802034\n"
-        ".word 0xe2801034, 0xec828a03, 0xe2800028, 0xebfffc55\n"
-        ".word 0xe3500000, 0x15940000, 0x15c05115, 0xe5940000\n"
-        ".word 0xe2800028, 0xeb000067, 0xe5940000, 0xedd00a09\n"
-        ".word 0xed900a07, 0xecbd8b08, 0xe8bd41f0, 0xe1a00000\n"
-    );
+extern "C" void engine_func_00280054() {
+    u8* const* g_cam = reinterpret_cast<u8* const*>(0x00447E88u);
+    u8* const* g_4f4 = reinterpret_cast<u8* const*>(0x004474F4u);
+    u8* s = reinterpret_cast<u8*>(0x0049F91Cu);
+
+    u8* cam = *g_cam;
+    f32 prev_pos[3] = {
+        *reinterpret_cast<f32*>(cam + 0x28u),
+        *reinterpret_cast<f32*>(cam + 0x2Cu),
+        *reinterpret_cast<f32*>(cam + 0x30u),
+    };
+    script_vm_func_00280bf8();
+
+    cam = *g_cam;
+    const f32 kThird = 0.33333334f;
+    const f32 kSixth = 0.16666667f;
+    f32 cx = *reinterpret_cast<f32*>(cam + 0x1Cu);
+    f32 cy = *reinterpret_cast<f32*>(cam + 0x20u);
+    f32 cz = *reinterpret_cast<f32*>(cam + 0x24u);
+    *reinterpret_cast<f32*>(cam + 0x1Cu) = cx + (*reinterpret_cast<f32*>(cam + 0x28u) - cx) * kThird;
+    *reinterpret_cast<f32*>(cam + 0x20u) = cy + (*reinterpret_cast<f32*>(cam + 0x2Cu) - cy) * kSixth;
+    *reinterpret_cast<f32*>(cam + 0x24u) = cz + (*reinterpret_cast<f32*>(cam + 0x30u) - cz) * kThird;
+
+    s32 state = *reinterpret_cast<s32*>(cam + 4u);
+    switch (state) {
+        case 0: {
+            *reinterpret_cast<u32*>(cam + 0x54u) = 0u;
+            *reinterpret_cast<f32*>(cam + 0x58u) = 3.0f;
+            cam[0x6Cu] = 0u;
+            f32 dist = engine_func_00287d54(
+                *reinterpret_cast<f32*>(cam + 0x1Cu),
+                *reinterpret_cast<f32*>(cam + 0x20u),
+                *reinterpret_cast<f32*>(cam + 0x24u),
+                *reinterpret_cast<f32*>(s + 0x84u),
+                *reinterpret_cast<f32*>(s + 0x88u),
+                *reinterpret_cast<f32*>(s + 0x8Cu));
+            u32 dist_bits = 0u;
+            __builtin_memcpy(&dist_bits, &dist, 4u);
+
+            cam = *g_cam;
+            *reinterpret_cast<u32*>(cam + 0x118u) = *reinterpret_cast<u32*>(s + 0x84u);
+            *reinterpret_cast<u32*>(cam + 0x11Cu) = *reinterpret_cast<u32*>(s + 0x88u);
+            *reinterpret_cast<u32*>(cam + 0x120u) = *reinterpret_cast<u32*>(s + 0x8Cu);
+            f32 base_ang = (static_cast<s32>(dist_bits) < 0x42700000)
+                ? *reinterpret_cast<f32*>(cam + 0x4Cu)
+                : *reinterpret_cast<f32*>(cam + 0x50u);
+            f32 ang = (base_ang + 180.0f) * 0.017453292f;
+            *reinterpret_cast<f32*>(cam + 0x118u) += script_vm_func_0028277c(ang) * 100.0f;
+            cam = *g_cam;
+            *reinterpret_cast<f32*>(cam + 0x120u) += script_vm_func_00282600(ang) * 100.0f;
+            cam = *g_cam;
+            engine_func_002526bc(
+                reinterpret_cast<f32*>(cam + 0x124u),
+                *reinterpret_cast<f32*>(cam + 0x28u),
+                *reinterpret_cast<f32*>(cam + 0x2Cu),
+                *reinterpret_cast<f32*>(cam + 0x30u),
+                *reinterpret_cast<f32*>(cam + 0x118u),
+                *reinterpret_cast<f32*>(cam + 0x11Cu));
+            cam = *g_cam;
+            *reinterpret_cast<f32*>(cam + 0x130u) = 30.0f;
+            cam[0x115u] = 1u;
+            *reinterpret_cast<f32*>(cam + 0x50u) = script_vm_func_00287e4c(
+                *reinterpret_cast<f32*>(cam + 0x28u),
+                *reinterpret_cast<f32*>(cam + 0x2Cu),
+                *reinterpret_cast<f32*>(cam + 0x30u),
+                *reinterpret_cast<f32*>(s + 0x84u),
+                *reinterpret_cast<f32*>(s + 0x88u),
+                *reinterpret_cast<f32*>(s + 0x8Cu));
+            script_vm_func_0027fe84(10u);
+            *reinterpret_cast<s32*>(*g_4f4 + 0xACu) = -1;
+            script_vm_func_002b8b78(0xDBu);
+            engine_func_0024f248(1u, *reinterpret_cast<u32*>(s + 0x80u));
+            cam = *g_cam;
+            engine_func_001fa6bc(
+                *reinterpret_cast<f32*>(s + 0x84u),
+                *reinterpret_cast<f32*>(s + 0x88u),
+                *reinterpret_cast<f32*>(s + 0x8Cu),
+                *reinterpret_cast<f32*>(cam + 0x50u) + 180.0f);
+            cam = *g_cam;
+            *reinterpret_cast<s32*>(cam + 4u) = *reinterpret_cast<s32*>(cam + 4u) + 1;
+            *reinterpret_cast<s32*>(cam + 8u) = 0;
+            break;
+        }
+        case 1: {
+            s32 t = *reinterpret_cast<s32*>(cam + 8u) + 1;
+            *reinterpret_cast<s32*>(cam + 8u) = t;
+            engine_func_0024f248(1u, *reinterpret_cast<u32*>(s + 0x80u));
+            cam = *g_cam;
+            if (*reinterpret_cast<s32*>(cam + 8u) > 2) {
+                *reinterpret_cast<u32*>(cam + 0x54u) = 0x1Du;
+                *reinterpret_cast<f32*>(cam + 0x58u) = 2.0f;
+                *reinterpret_cast<s32*>(cam + 4u) = *reinterpret_cast<s32*>(cam + 4u) + 1;
+                *reinterpret_cast<s32*>(cam + 8u) = 0;
+            }
+            break;
+        }
+        case 2: {
+            *reinterpret_cast<s32*>(cam + 8u) = *reinterpret_cast<s32*>(cam + 8u) + 1;
+            engine_func_0024f248(1u, *reinterpret_cast<u32*>(s + 0x80u));
+            if (script_vm_func_0027f10c() != 0) {
+                cam = *g_cam;
+                *reinterpret_cast<s32*>(cam + 4u) = 10;
+                *reinterpret_cast<s32*>(cam + 8u) = 0;
+            } else if (ui_func_002bffbc(5u) != 0 || script_vm_func_00276550() != 0) {
+                cam = *g_cam;
+                u8* p4f4 = *g_4f4;
+                *reinterpret_cast<u32*>(p4f4 + 0x18u) = *reinterpret_cast<u32*>(cam + 0x50u);
+                *reinterpret_cast<u32*>(p4f4 + 0xACu) = 0u;
+                script_vm_func_0027fe84(0u);
+                cam = *g_cam;
+                *reinterpret_cast<u32*>(cam + 0x54u) = 0u;
+                *reinterpret_cast<f32*>(cam + 0x58u) = 5.0f;
+                engine_func_0024f248(0u, *reinterpret_cast<u32*>(s + 0x80u));
+                engine_func_002dfe6c();
+                cam = *g_cam;
+                *reinterpret_cast<s32*>(cam + 4u) = 0x5A;
+                *reinterpret_cast<s32*>(cam + 8u) = 0;
+            }
+            break;
+        }
+        case 10: {
+            s[0x22Au] = 0u;
+            *reinterpret_cast<u32*>(cam + 0x54u) = 8u;
+            *reinterpret_cast<f32*>(cam + 0x58u) = 5.0f;
+            *reinterpret_cast<s32*>(cam + 4u) = *reinterpret_cast<s32*>(cam + 4u) + 1;
+            *reinterpret_cast<s32*>(cam + 8u) = 0;
+            break;
+        }
+        case 11: {
+            s32 t = *reinterpret_cast<s32*>(cam + 8u) + 1;
+            *reinterpret_cast<s32*>(cam + 8u) = t;
+            if (t == 0x14) {
+                script_vm_func_00273a98();
+                cam = *g_cam;
+                *reinterpret_cast<s32*>(cam + 4u) = *reinterpret_cast<s32*>(cam + 4u) + 1;
+                *reinterpret_cast<s32*>(cam + 8u) = 0;
+            }
+            break;
+        }
+        case 12: {
+            if (script_vm_func_00273a78() == 0) {
+                engine_func_002dfe6c();
+                cam = *g_cam;
+                u8* p4f4 = *g_4f4;
+                *reinterpret_cast<u32*>(p4f4 + 0x18u) = *reinterpret_cast<u32*>(cam + 0x50u);
+                *reinterpret_cast<u32*>(p4f4 + 0xACu) = 0u;
+                script_vm_func_0027fe84(0u);
+                cam = *g_cam;
+                *reinterpret_cast<s32*>(cam + 4u) = *reinterpret_cast<s32*>(cam + 4u) + 1;
+                *reinterpret_cast<s32*>(cam + 8u) = 0;
+            }
+            break;
+        }
+        case 13: {
+            s32 t = *reinterpret_cast<s32*>(cam + 8u) + 1;
+            *reinterpret_cast<s32*>(cam + 8u) = t;
+            if (t == 0x14) {
+                engine_func_002d3dac();
+                script_vm_func_00276ba4();
+                script_vm_func_0027fd08(8u);
+            }
+            break;
+        }
+        case 0x5A: {
+            *reinterpret_cast<s32*>(cam + 4u) = state + 1;
+            *reinterpret_cast<s32*>(cam + 8u) = 0;
+            break;
+        }
+        case 0x5B: {
+            engine_func_002d3dac();
+            cam = *g_cam;
+            *reinterpret_cast<s32*>(cam + 4u) = *reinterpret_cast<s32*>(cam + 4u) + 1;
+            *reinterpret_cast<s32*>(cam + 8u) = 0;
+            break;
+        }
+        case 0x5C: {
+            s32 t = *reinterpret_cast<s32*>(cam + 8u) + 1;
+            *reinterpret_cast<s32*>(cam + 8u) = t;
+            if (t > 3) {
+                script_vm_func_0027fd08(1u);
+            }
+            break;
+        }
+        default:
+            break;
+    }
+
+    cam = *g_cam;
+    if (cam[0x115u] != 0u) {
+        f32 d = engine_func_00287d54(
+            *reinterpret_cast<f32*>(cam + 0x118u),
+            *reinterpret_cast<f32*>(cam + 0x11Cu),
+            *reinterpret_cast<f32*>(cam + 0x120u),
+            *reinterpret_cast<f32*>(cam + 0x28u),
+            *reinterpret_cast<f32*>(cam + 0x2Cu),
+            *reinterpret_cast<f32*>(cam + 0x30u));
+        cam = *g_cam;
+        f32 step = *reinterpret_cast<f32*>(cam + 0x130u);
+        if (d <= step) {
+            *reinterpret_cast<u32*>(cam + 0x28u) = *reinterpret_cast<u32*>(cam + 0x118u);
+            *reinterpret_cast<u32*>(cam + 0x2Cu) = *reinterpret_cast<u32*>(cam + 0x11Cu);
+            *reinterpret_cast<u32*>(cam + 0x30u) = *reinterpret_cast<u32*>(cam + 0x120u);
+            cam[0x115u] = 0u;
+        } else {
+            *reinterpret_cast<f32*>(cam + 0x28u) += *reinterpret_cast<f32*>(cam + 0x124u) * step;
+            *reinterpret_cast<f32*>(cam + 0x2Cu) += *reinterpret_cast<f32*>(cam + 0x128u) * step;
+            *reinterpret_cast<f32*>(cam + 0x30u) += *reinterpret_cast<f32*>(cam + 0x12Cu) * step;
+        }
+        *reinterpret_cast<f32*>(cam + 0x34u) = prev_pos[0];
+        *reinterpret_cast<f32*>(cam + 0x38u) = prev_pos[1];
+        *reinterpret_cast<f32*>(cam + 0x3Cu) = prev_pos[2];
+        if (script_vm_func_0027f6fc(
+                reinterpret_cast<f32*>(cam + 0x28u),
+                reinterpret_cast<f32*>(cam + 0x34u)) != 0u) {
+            cam = *g_cam;
+            cam[0x115u] = 0u;
+        }
+    }
+
+    cam = *g_cam;
+    script_vm_func_0028075c(reinterpret_cast<f32*>(cam + 0x28u));
+    cam = *g_cam;
+    script_vm_func_002805d4(*reinterpret_cast<f32*>(cam + 0x1Cu), *reinterpret_cast<f32*>(cam + 0x24u));
 }
 
 // DECOMP_FUNC(0x0030fb3c, 1420)
