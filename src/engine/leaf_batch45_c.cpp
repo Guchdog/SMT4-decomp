@@ -7060,100 +7060,93 @@ extern "C" void func_003748d4(u8* self, u8* src) {
     }
 }
 
+extern "C" u32 engine_func_002c0bcc(u32 max_val);
+
 // DECOMP_FUNC(0x00395a4c, 1420)
-// Capstone ARM full coverage (355 instructions); raw bytes only, no terminal-return claim.
-extern "C" __attribute__((naked)) void engine_func_00395a4c() {
+extern "C" void engine_func_00395a4c(u8* self) {
+    u8* obj = *reinterpret_cast<u8**>(self + 0x0Cu);
+    u32 r = engine_func_002c0bcc(0x63u);
+
+    if ((r % 10u) != 0u) {
+        u32 deg = engine_func_002c0bcc(0x168u);
+        f32 ay = static_cast<f32>(deg) * 0.71111113f;
+
+        f32 s0, c0, s1, c1, s2, c2;
+        lut_sincos_30fb3c(0.0f, false, s0, c0);
+        lut_sincos_30fb3c(ay < 0.0f ? -ay : ay, ay < 0.0f, s1, c1);
+        lut_sincos_30fb3c(0.0f, false, s2, c2);
+
+        f32 mat[3][4] = {
+            {c2 * c1, (s0 * c2) * s1 - (c0 * s2), (s0 * s2) + (c0 * c2) * s1, 0.0f},
+            {s2 * c1, (c0 * c2) + (s0 * s2) * s1, (c0 * s2) * s1 - (s0 * c2), 0.0f},
+            {-s1,     s0 * c1,                    c0 * c1,                    0.0f},
+        };
+        f32 in_v[3] = {1.0f, 0.0f, 0.0f};
+        f32 out_v[3];
+        battle_func_002ad6d8(out_v, &mat[0][0], in_v);
+
+        f32* dst = reinterpret_cast<f32*>(self + 0x10u);
+        dst[0] = out_v[0] * 40.0f;
+        dst[1] = out_v[1] * 40.0f;
+        dst[2] = out_v[2] * 40.0f;
+        return;
+    }
+
+    u8* cam = *reinterpret_cast<u8* const*>(0x00447E88u);
+    f32 dx = *reinterpret_cast<f32*>(cam + 0x1Cu) - *reinterpret_cast<f32*>(obj + 0x28u);
+    f32 dy = *reinterpret_cast<f32*>(cam + 0x20u) - *reinterpret_cast<f32*>(obj + 0x2Cu);
+    f32 dz = *reinterpret_cast<f32*>(cam + 0x24u) - *reinterpret_cast<f32*>(obj + 0x30u);
+    f32 inv_len = 1.0f / __builtin_sqrtf(dx * dx + dy * dy + dz * dz);
+
+    f32* dst = reinterpret_cast<f32*>(self + 0x10u);
+    dst[0] = (dx * inv_len) * 40.0f;
+    dst[1] = (dy * inv_len) * 40.0f;
+    dst[2] = (dz * inv_len) * 40.0f;
+}
+
+extern "C" __attribute__((naked)) void func_00395d60() {
     asm volatile(
         ".arm\n"
-        ".word 0xe92d41f0, 0xe1a05000, 0xed2d8b02, 0xe24dd040\n"
-        ".word 0xe590000c, 0xed9f8ab5, 0xe2804024, 0xe3a00063\n"
-        ".word 0xebfcac56, 0xe59f12c8, 0xeddf8ab2, 0xe0812091\n"
-        ".word 0xe1a011a1, 0xe2611000, 0xe0811101, 0xe0900081\n"
-        ".word 0x0a000080, 0xe3a00f5a, 0xebfcac4c, 0xee000a10\n"
-        ".word 0xeddf0aa9, 0xeddf1aa9, 0xe59f02a4, 0xe3a04000\n"
-        ".word 0xe3a03000, 0xeeb80a40, 0xe1a06004, 0xee200a20\n"
-        ".word 0xeeb40ae1, 0xeef1fa10, 0xeef03a61, 0xeef00ac0\n"
-        ".word 0x33a0c001, 0x23a0c000, 0xed9f1a9e, 0xeeb00a63\n"
-        ".word 0xee101a90, 0xe1510000, 0xba000003, 0xee700ac1\n"
-        ".word 0xee101a90, 0xe1510000, 0xaafffffb, 0xee101a10\n"
-        ".word 0xe1510000, 0xba000003, 0xee300a41, 0xee101a10\n"
-        ".word 0xe1510000, 0xaafffffb, 0xeebc1ae1, 0xe59f8238\n"
-        ".word 0xe3530000, 0xee110a10, 0xeebc1ae0, 0xe6ff1070\n"
-        ".word 0xee110a10, 0xeebc1ac0, 0xe6ff0070, 0xe20070ff\n"
-        ".word 0xee112a10, 0xee011a10, 0xe20110ff, 0xe6ff2072\n"
-        ".word 0xeef82a41, 0xee010a10, 0xe0880201, 0xe0881207\n"
-        ".word 0xedd04a00, 0xed914a00, 0xedd05a03, 0xeeb83a41\n"
-        ".word 0xee012a10, 0xe20220ff, 0xe0882202, 0xed925a01\n"
-        ".word 0xeeb82a41, 0xee311ae2, 0xedd12a01, 0xee700ac3\n"
-        ".word 0xe2811008, 0xed903a01, 0xec916a02, 0xee701a42\n"
-        ".word 0xed922a00, 0xed900a02, 0xe2822008, 0xee004a86\n"
-        ".word 0xec927a02, 0xee414a00, 0xee013a25, 0xee402aa6\n"
-        ".word 0xee012a87, 0xee015aa7, 0x1ef14a64, 0xe35c0000\n"
-        ".word 0x1eb14a44, 0xe3540000, 0x1eb12a42, 0xee230a05\n"
-        ".word 0xee641a85, 0xee255a22, 0xeef16a44, 0xee635a02\n"
-        ".word 0xee246a82, 0xee222a22, 0xee644aa2, 0xee632a22\n"
-        ".word 0xed8d5a04, 0xeeb01a65, 0xeef00a46, 0xed8d2a08\n"
-        ".word 0xedcd4a0d, 0xedcd2a0e, 0xee111a84, 0xee551a84\n"
-        ".word 0xee400a04, 0xee060a04, 0xed8d1a05, 0xedcd1a0a\n"
-        ".word 0xedcd0a06, 0xed8d0a09, 0xedcd6a0c, 0xe58d601c\n"
-        ".word 0xe58d602c, 0xe58d603c, 0xedcd8a00, 0xedcd3a01\n"
-        ".word 0xe1a0200d, 0xedcd3a02, 0xe28d1010, 0xe1a00002\n"
-        ".word 0xebfc5e9d, 0xed9d0a00, 0xe2855010, 0xee200a08\n"
-        ".word 0xed850a00, 0xed9d0a01, 0xee200a08, 0xed850a01\n"
-        ".word 0xed9d0a02, 0xee200a08, 0xed850a02, 0xe28dd040\n"
-        ".word 0xecbd8b02, 0xe8bd81f0, 0xe59f00c0, 0xe2855010\n"
-        ".word 0xe5900000, 0xe280101c, 0xe5900024, 0xe8910006\n"
-        ".word 0xe58d0008, 0xee001a10, 0xe88d0006, 0xedd40a01\n"
-        ".word 0xee301a60, 0xee002a10, 0xed8d1a00, 0xedd40a02\n"
-        ".word 0xee300a60, 0xee000a90, 0xe28d0004, 0xed8d0a01\n"
-        ".word 0xedd41a03, 0xee700ae1, 0xee611a01, 0xedcd0a02\n"
-        ".word 0xee401a00, 0xee401aa0, 0xeeb12ae1, 0xeec81a82\n"
-        ".word 0xee211a21, 0xee600aa1, 0xee200a21, 0xed8d1a00\n"
-        ".word 0xec800a02, 0xee210a08, 0xed850a00, 0xed9d0a01\n"
-        ".word 0xee200a08, 0xed850a01, 0xed9d0a02, 0xee200a08\n"
-        ".word 0xed850a02, 0xe28dd040, 0xecbd8b02, 0xe8bd81f0\n"
-        ".word 0x42200000, 0xcccccccd, 0x3f800000, 0x3f360b61\n"
+        ".word 0xed9f1a95, 0xe92d41f0, 0xe1a05000, 0xee200a01\n"
+        ".word 0xeddf0a92, 0xe3a07000, 0xed2d8b02, 0xeeb01a60\n"
+        ".word 0xed9f8a8c, 0xe590000c, 0xe24dd040, 0xe3a0c000\n"
+        ".word 0xe2804024, 0xeeb40ae0, 0xe59f0224, 0xe1a03007\n"
+        ".word 0xeef1fa10, 0xeeb00ac0, 0xeef03a60, 0x33a06001\n"
+        ".word 0x23a06000, 0xeddf1a83, 0xee101a10, 0xe1510000\n"
+        ".word 0xba000003, 0xee300a61, 0xee101a10, 0xe1510000\n"
+        ".word 0xaafffffb, 0xee101a90, 0xe1510000, 0xba000003\n"
+        ".word 0xee700ae1, 0xee101a90, 0xe1510000, 0xaafffffb\n"
+        ".word 0xeefc1ac1, 0xe59f81d0, 0xe35c0000, 0xee110a90\n"
+        ".word 0xeefc1ac0, 0xe6ff0070, 0xee111a90, 0xeefc1ae0\n"
+        ".word 0xe6ff1071, 0xee112a90, 0xee010a90, 0xe20000ff\n"
+        ".word 0xe6ff2072, 0xee022a10, 0xe0880200, 0xeef82a61\n"
+        ".word 0xee011a90, 0xe20110ff, 0xe20220ff, 0xeeb82a42\n"
+        ".word 0xe0881201, 0xedd04a00, 0xeef81a61, 0xe0882202\n"
+        ".word 0xee311a62, 0xedd02a01, 0xe2800008, 0xed923a00\n"
+        ".word 0xee700ac2, 0xed912a00, 0xed924a01, 0xee300a61\n"
+        ".word 0xedd11a01, 0xe2811008, 0xec905a02, 0xe2822008\n"
+        ".word 0xec916a02, 0xee414a05, 0xec927a02, 0xee412a25\n"
+        ".word 0xee002a06, 0xee401a26, 0xee003a87, 0xee004aa7\n"
+        ".word 0x1ef14a64, 0xe3560000, 0x1eb12a42, 0xe3570000\n"
+        ".word 0x1eb13a43, 0xee221a84, 0xee640a84, 0xee244a21\n"
+        ".word 0xeef15a42, 0xee240a83, 0xee225a83, 0xee233a21\n"
+        ".word 0xee644aa1, 0xee622aa1, 0xed8d4a04, 0xeef01a40\n"
+        ".word 0xed8d3a08, 0xedcd4a0d, 0xedcd2a0e, 0xee411a02\n"
+        ".word 0xee001a02, 0xeeb00a45, 0xee100a82, 0xee550a02\n"
+        ".word 0xed8d0a05, 0xedcd0a0a, 0xedcd1a06, 0xed8d1a09\n"
+        ".word 0xedcd5a0c, 0xe58d301c, 0xe58d302c, 0xed9f0a2b\n"
+        ".word 0xe58d303c, 0xed8d0a00, 0xedcd3a01, 0xe1a0200d\n"
+        ".word 0xedcd3a02, 0xe28d1010, 0xe1a00002, 0xebfc5de5\n"
+        ".word 0xed9d0a00, 0xe59f0088, 0xee200a08, 0xed8d0a00\n"
+        ".word 0xeddd0a01, 0xee600a88, 0xedcd0a01, 0xed9d1a02\n"
+        ".word 0xee211a08, 0xed8d1a02, 0xe5900000, 0xe280001c\n"
+        ".word 0xedd01a00, 0xee300a21, 0xed8d0a00, 0xed900a01\n"
+        ".word 0xee300a80, 0xed8d0a01, 0xed900a02, 0xe2840004\n"
+        ".word 0xee310a00, 0xed8d0a02, 0xe89d0006, 0xee103a10\n"
+        ".word 0xe880000e, 0xe1a00005, 0xebfffea7, 0xe28dd040\n"
+        ".word 0xecbd8b02, 0xe8bd81f0, 0x447a0000, 0x3f360b61\n"
         ".word 0x00000000, 0x47800000, 0x47800000, 0x00407fc0\n"
-        ".word 0x00447e88, 0xed9f1a95, 0xe92d41f0, 0xe1a05000\n"
-        ".word 0xee200a01, 0xeddf0a92, 0xe3a07000, 0xed2d8b02\n"
-        ".word 0xeeb01a60, 0xed9f8a8c, 0xe590000c, 0xe24dd040\n"
-        ".word 0xe3a0c000, 0xe2804024, 0xeeb40ae0, 0xe59f0224\n"
-        ".word 0xe1a03007, 0xeef1fa10, 0xeeb00ac0, 0xeef03a60\n"
-        ".word 0x33a06001, 0x23a06000, 0xeddf1a83, 0xee101a10\n"
-        ".word 0xe1510000, 0xba000003, 0xee300a61, 0xee101a10\n"
-        ".word 0xe1510000, 0xaafffffb, 0xee101a90, 0xe1510000\n"
-        ".word 0xba000003, 0xee700ae1, 0xee101a90, 0xe1510000\n"
-        ".word 0xaafffffb, 0xeefc1ac1, 0xe59f81d0, 0xe35c0000\n"
-        ".word 0xee110a90, 0xeefc1ac0, 0xe6ff0070, 0xee111a90\n"
-        ".word 0xeefc1ae0, 0xe6ff1071, 0xee112a90, 0xee010a90\n"
-        ".word 0xe20000ff, 0xe6ff2072, 0xee022a10, 0xe0880200\n"
-        ".word 0xeef82a61, 0xee011a90, 0xe20110ff, 0xe20220ff\n"
-        ".word 0xeeb82a42, 0xe0881201, 0xedd04a00, 0xeef81a61\n"
-        ".word 0xe0882202, 0xee311a62, 0xedd02a01, 0xe2800008\n"
-        ".word 0xed923a00, 0xee700ac2, 0xed912a00, 0xed924a01\n"
-        ".word 0xee300a61, 0xedd11a01, 0xe2811008, 0xec905a02\n"
-        ".word 0xe2822008, 0xec916a02, 0xee414a05, 0xec927a02\n"
-        ".word 0xee412a25, 0xee002a06, 0xee401a26, 0xee003a87\n"
-        ".word 0xee004aa7, 0x1ef14a64, 0xe3560000, 0x1eb12a42\n"
-        ".word 0xe3570000, 0x1eb13a43, 0xee221a84, 0xee640a84\n"
-        ".word 0xee244a21, 0xeef15a42, 0xee240a83, 0xee225a83\n"
-        ".word 0xee233a21, 0xee644aa1, 0xee622aa1, 0xed8d4a04\n"
-        ".word 0xeef01a40, 0xed8d3a08, 0xedcd4a0d, 0xedcd2a0e\n"
-        ".word 0xee411a02, 0xee001a02, 0xeeb00a45, 0xee100a82\n"
-        ".word 0xee550a02, 0xed8d0a05, 0xedcd0a0a, 0xedcd1a06\n"
-        ".word 0xed8d1a09, 0xedcd5a0c, 0xe58d301c, 0xe58d302c\n"
-        ".word 0xed9f0a2b, 0xe58d303c, 0xed8d0a00, 0xedcd3a01\n"
-        ".word 0xe1a0200d, 0xedcd3a02, 0xe28d1010, 0xe1a00002\n"
-        ".word 0xebfc5de5, 0xed9d0a00, 0xe59f0088, 0xee200a08\n"
-        ".word 0xed8d0a00, 0xeddd0a01, 0xee600a88, 0xedcd0a01\n"
-        ".word 0xed9d1a02, 0xee211a08, 0xed8d1a02, 0xe5900000\n"
-        ".word 0xe280001c, 0xedd01a00, 0xee300a21, 0xed8d0a00\n"
-        ".word 0xed900a01, 0xee300a80, 0xed8d0a01, 0xed900a02\n"
-        ".word 0xe2840004, 0xee310a00, 0xed8d0a02, 0xe89d0006\n"
-        ".word 0xee103a10, 0xe880000e, 0xe1a00005, 0xebfffea7\n"
-        ".word 0xe28dd040, 0xecbd8b02, 0xe8bd81f0, 0x447a0000\n"
-        ".word 0x3f360b61, 0x00000000, 0x47800000, 0x47800000\n"
-        ".word 0x00407fc0, 0x3f800000, 0x00447e88\n"
+        ".word 0x3f800000, 0x00447e88\n"
     );
 }
 
