@@ -3354,7 +3354,7 @@ address,size,status,category,name,src_file
 0x00232b28,20,matching,unknown,func_00232b28,src/engine/leaf_matching.cpp
 0x00232b3c,196,matching,engine,engine_func_00232b3c,src/engine/leaf_batch35_b.cpp
 0x00232c00,252,matching,engine,engine_func_00232c00,src/engine/leaf_batch43_a.cpp
-0x00232cfc,1624,matching,camp,camp_func_00232cfc,src/engine/leaf_batch45_c.cpp
+0x00232cfc,1624,non_matching,camp,camp_func_00232cfc,src/engine/leaf_batch45_c.cpp
 0x00233354,88,matching,unknown,func_00233354,src/engine/leaf_batch35_a.cpp
 0x002333ac,16,matching,unknown,func_002333ac,src/engine/leaf_batch20_b.cpp
 0x002333bc,24,matching,unite,unite_func_002333bc,src/engine/leaf_batch20_b.cpp

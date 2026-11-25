@@ -9894,114 +9894,267 @@ extern "C" u32 func_00143b98(const u8* cfg, u32 idx) {
     return 0u;
 }
 
+extern "C" s32 camp_func_0029ee4c(const u8* demon, s32 status_bit);
+extern "C" s32 func_00262664(const u8* mc);
+extern "C" s32 func_00269e54(const u8* demon);
+extern "C" s32 script_vm_func_00295fac(s32 status_bit);
+extern "C" void script_vm_func_00262648(s32 status_bit);
+extern "C" s32 script_vm_func_0031c494(s32 unit_idx, const u8* skill, s32 dry_run);
+extern "C" s32 func_0032b3e8(const u8* skill, u16 status_mask);
+extern "C" s32 script_vm_func_002e3380(s32 unit_idx, const u8* skill, s32 prev_res, s32 dry_run);
+
+static inline __attribute__((always_inline)) s32 calc_heal_amount(u16 flat, u8 pct, s32 max_val, bool revive_fallback) {
+    if (flat != 0u) {
+        return static_cast<s32>(flat);
+    }
+    if (pct == 0u) {
+        return 0;
+    }
+    s32 val = (static_cast<s32>(pct) * static_cast<s32>(static_cast<int16_t>(max_val))) / 100;
+    if (val == 0 && revive_fallback) {
+        val = 1;
+    }
+    return val;
+}
+
 // DECOMP_FUNC(0x00232cfc, 1624)
-// Capstone ARM full coverage (406 instructions); raw bytes only, no terminal-return claim.
-extern "C" __attribute__((naked)) void camp_func_00232cfc() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d5fff, 0xe1a06001, 0xe1a07003, 0xe1a0b002\n"
-        ".word 0xe1d106b2, 0xe3500000, 0x1a0000c0, 0xe59d0000\n"
-        ".word 0xe3a04000, 0xe1a05004, 0xe3500000, 0xaa000002\n"
-        ".word 0xeb020e6e, 0xe1a04000, 0xea00000f, 0xe320f000\n"
-        ".word 0xeb01d728, 0xe1b05000, 0xe320f000, 0x0a0000b3\n"
-        ".word 0xe3a0100a, 0xeb01b03d, 0xe3500000, 0xe320f000\n"
-        ".word 0x1a0000ae, 0xe3a01002, 0xe1a00005, 0xeb01b037\n"
-        ".word 0xe3500000, 0xe320f000, 0x1a0000a8, 0xe3a0a000\n"
-        ".word 0xe3540000, 0xe3a09001, 0xe1a0800a, 0x0a000006\n"
-        ".word 0xeb0183c1, 0xe3500000, 0x01d4a1fc, 0x0a000002\n"
-        ".word 0xe1a00004, 0xeb00be2f, 0xe1a0a000, 0xe3550000\n"
-        ".word 0x0a000006, 0xeb0183b8, 0xe3500000, 0x01d580fe\n"
-        ".word 0x0a000002, 0xe1a00005, 0xeb00dc22, 0xe1a08000\n"
-        ".word 0xe3560000, 0x0a000004, 0xe5d6006a, 0xe200007f\n"
-        ".word 0xe350000e, 0x13500001, 0x0a000007, 0xe3540000\n"
-        ".word 0x0a000084, 0xe3a00001, 0xeb018c6c, 0xe3500000\n"
-        ".word 0xe320f000, 0x1a000085, 0xea000087, 0xe3540000\n"
-        ".word 0x0a00003d, 0xe3a00001, 0xeb018c64, 0xe3500000\n"
-        ".word 0xe320f000, 0x0a00013e, 0xe35b0000, 0x0a000009\n"
-        ".word 0xe3570000, 0x0a000071, 0xe3a00003, 0xeb018c5b\n"
-        ".word 0xe3500000, 0xe320f000, 0x0a000020, 0xe3a00001\n"
-        ".word 0xe5870000, 0xea000069, 0xe3a00002, 0xeb00bdfa\n"
-        ".word 0xe3a00003, 0xe320f000, 0xeb018c50, 0xe3500000\n"
-        ".word 0x11d402ba, 0x12800001, 0x1a00000e, 0xe1d606b4\n"
-        ".word 0xe6bf107a, 0xe3500000, 0x1a000008, 0xe5d60068\n"
-        ".word 0xe3500000, 0x0a000005, 0xe0000190, 0xe59f24b0\n"
-        ".word 0xe0c01092, 0xe1a012c0, 0xe0510fc0, 0x03a00001\n"
-        ".word 0xe1d412ba, 0xe0800001, 0xe1c402ba, 0xe6bf0070\n"
-        ".word 0xe3500000, 0xd3a00001, 0xd1c402ba, 0xea00004b\n"
-        ".word 0xe1d606b4, 0xe6bf107a, 0xe3500000, 0x1a000008\n"
-        ".word 0xe5d60068, 0xe3500000, 0x0a000005, 0xe0000190\n"
-        ".word 0xe59f245c, 0xe0c01092, 0xe1a012c0, 0xe0510fc0\n"
-        ".word 0x0a00001e, 0xe5870000, 0xea00003c, 0xe3a01001\n"
-        ".word 0xe1a00005, 0xeb01afcd, 0xe3500000, 0xe320f000\n"
-        ".word 0x0a0000ff, 0xe35b0000, 0x0a000016, 0xe3570000\n"
-        ".word 0x0a000032, 0xe3a01003, 0xe1a00005, 0xeb01afc3\n"
-        ".word 0xe3500000, 0xe320f000, 0x1affffbf, 0xe1d606b4\n"
-        ".word 0xe6bf1078, 0xe3500000, 0x1affffe9, 0xe5d60068\n"
-        ".word 0xe3500000, 0x0affffe6, 0xe0000190, 0xe59f23e0\n"
-        ".word 0xe0c01092, 0xe1a012c0, 0xe0510fc0, 0x1affffe0\n"
-        ".word 0xe3a00001, 0xeaffffde, 0xe3a01002, 0xe1a00005\n"
-        ".word 0xeb00c080, 0xe3a01003, 0xe1a00005, 0xeb01afab\n"
-        ".word 0xe3500000, 0x11d502ba, 0x12800001, 0x1a00000e\n"
-        ".word 0xe1d606b4, 0xe6bf1078, 0xe3500000, 0x1a000008\n"
-        ".word 0xe5d60068, 0xe3500000, 0x0a000005, 0xe0000190\n"
-        ".word 0xe59f237c, 0xe0c01092, 0xe1a012c0, 0xe0510fc0\n"
-        ".word 0x03a00001, 0xe1d512ba, 0xe0800001, 0xe1c502ba\n"
-        ".word 0xe6bf0070, 0xe3500000, 0xd3a00001, 0xd1c502ba\n"
-        ".word 0xe3a09000, 0xea0000c6, 0xe3a01001, 0xe1a00005\n"
-        ".word 0xeb01af8e, 0xe3500000, 0xe320f000, 0x0a000002\n"
-        ".word 0xe28dd010, 0xe3a00001, 0xe8bd9ff0, 0xe5d6006e\n"
-        ".word 0xe3100002, 0x0a000004, 0xe59d0000, 0xe1a0200b\n"
-        ".word 0xe1a01006, 0xeb03a513, 0xe1a09000, 0xe3540000\n"
-        ".word 0x0a000058, 0xe1d417b2, 0xe1a00006, 0xeb03e0e2\n"
-        ".word 0xe3500000, 0xe320f000, 0x0a000002, 0xe35b0000\n"
-        ".word 0x0b00bd75, 0xe3a09000, 0xe1d656b4, 0xe6bf007a\n"
-        ".word 0xe3550000, 0x1a000009, 0xe5d61068, 0xe3510000\n"
-        ".word 0x0a00001a, 0xe0000091, 0xe59f22b4, 0xe0c01092\n"
-        ".word 0xe1a012c0, 0xe0515fc0, 0x03a05001, 0x0a000001\n"
-        ".word 0xe3550000, 0x0a000011, 0xe3a00003, 0xeb018bbb\n"
-        ".word 0xe3500000, 0xe1d402fa, 0x13550001, 0xc3a05001\n"
-        ".word 0xe150000a, 0xaa000009, 0xe35b0000, 0x00800005\n"
-        ".word 0x01c402ba, 0x13570000, 0x0a000003, 0xe04a0000\n"
-        ".word 0xe1550000, 0xc1a05000, 0xe5875000, 0xe3a09000\n"
-        ".word 0xe1d656b6, 0xe1d401fe, 0xe3550000, 0x1a000009\n"
-        ".word 0xe5d61069, 0xe3510000, 0x0a00001c, 0xe0000091\n"
-        ".word 0xe59f222c, 0xe0c01092, 0xe1a012c0, 0xe0515fc0\n"
-        ".word 0x03a05001, 0x0a000001, 0xe3550000, 0x0a000013\n"
-        ".word 0xe3a00003, 0xeb018b99, 0xe3500000, 0xe1d402fc\n"
-        ".word 0xe1d411fe, 0x13550001, 0xc3a05001, 0xe1500001\n"
-        ".word 0xaa00000a, 0xe35b0000, 0x159d2038, 0x00800005\n"
-        ".word 0x01c402bc, 0x13520000, 0x0a000003, 0xe0410000\n"
-        ".word 0xe1550000, 0xc1a05000, 0xe5825000, 0xe3a09000\n"
-        ".word 0xe1d402fa, 0xe1d411fe, 0xe15a0000, 0xa1a0a000\n"
-        ".word 0xe1d402fc, 0xe1c4a2ba, 0xe1500001, 0xc1a00001\n"
-        ".word 0xe1c402bc, 0xea00005a, 0xe1d514b4, 0xe1a00006\n"
-        ".word 0xeb03e089, 0xe1b01000, 0xe320f000, 0x0a000003\n"
-        ".word 0xe35b0000, 0x01a00005, 0x0b00bfee, 0xe3a09000\n"
-        ".word 0xe1d646b4, 0xe6bf0078, 0xe3540000, 0x1a000009\n"
-        ".word 0xe5d61068, 0xe3510000, 0x0a00001b, 0xe0000091\n"
-        ".word 0xe59f214c, 0xe0c01092, 0xe1a012c0, 0xe0514fc0\n"
-        ".word 0x03a04001, 0x0a000001, 0xe3540000, 0x0a000012\n"
-        ".word 0xe3a01003, 0xe1a00005, 0xeb01af08, 0xe3500000\n"
-        ".word 0xe1d502fa, 0x13540001, 0xc3a04001, 0xe1500008\n"
-        ".word 0xaa000009, 0xe35b0000, 0x00800004, 0x01c502ba\n"
-        ".word 0x13570000, 0x0a000003, 0xe0480000, 0xe1540000\n"
-        ".word 0xc1a04000, 0xe5874000, 0xe3a09000, 0xe1d646b6\n"
-        ".word 0xe1d501f0, 0xe3540000, 0x1a000009, 0xe5d61069\n"
-        ".word 0xe3510000, 0x0a00001d, 0xe0000091, 0xe59f20c0\n"
-        ".word 0xe0c01092, 0xe1a012c0, 0xe0514fc0, 0x03a04001\n"
-        ".word 0x0a000001, 0xe3540000, 0x0a000014, 0xe3a01003\n"
-        ".word 0xe1a00005, 0xeb01aee5, 0xe3500000, 0xe1d502fc\n"
-        ".word 0xe1d511f0, 0x13540001, 0xc3a04001, 0xe1500001\n"
-        ".word 0xaa00000a, 0xe35b0000, 0x159d2038, 0x00800004\n"
-        ".word 0x01c502bc, 0x13520000, 0x0a000003, 0xe0410000\n"
-        ".word 0xe1540000, 0xc1a04000, 0xe5824000, 0xe3a09000\n"
-        ".word 0xe1d502fa, 0xe1d512fc, 0xe1580000, 0xa1a08000\n"
-        ".word 0xe1d501f0, 0xe1c582ba, 0xe1510000, 0xd1a00001\n"
-        ".word 0xe1c502bc, 0xe5d6006e, 0xe3100002, 0x0a000005\n"
-        ".word 0xe59d0000, 0xe1a0300b, 0xe1a02009, 0xe1a01006\n"
-        ".word 0xeb02c00f, 0xe1a09000, 0xe28dd010, 0xe1a00009\n"
-        ".word 0xe8bd9ff0, 0x51eb851f\n"
-    );
+// Semantic C++ reconstruction (differential-tested in tools/test_leaf_00232cfc.py).
+// Applies or dry-runs a camp healing/revive/status-cure skill on protagonist
+// (unit_idx < 0) or party demon (unit_idx >= 0), updating HP/MP (or writing
+// predicted gains to out_hp/out_mp) and returning 0 on effect or 1 if no-op/blocked.
+extern "C" s32 camp_func_00232cfc(s32 unit_idx, const u8* skill, s32 dry_run, s32* out_hp, s32* out_mp) {
+    if (*reinterpret_cast<const u16*>(skill + 0x62u) != 0u) {
+        return 1;
+    }
+
+    u8* mc = nullptr;
+    u8* demon = nullptr;
+    if (unit_idx < 0) {
+        mc = const_cast<u8*>(script_vm_func_002b66ec());
+    } else {
+        demon = const_cast<u8*>(camp_func_002a89e4(unit_idx));
+        if (!demon || camp_func_0029ee4c(demon, 10) != 0 || camp_func_0029ee4c(demon, 2) != 0) {
+            return 1;
+        }
+    }
+
+    s32 mc_max_hp = 0;
+    if (mc) {
+        mc_max_hp = (ui_func_00293c98() == nullptr)
+                        ? static_cast<s32>(*reinterpret_cast<const int16_t*>(mc + 0x1Cu))
+                        : func_00262664(mc);
+    }
+
+    s32 demon_max_hp = 0;
+    if (demon) {
+        demon_max_hp = (ui_func_00293c98() == nullptr)
+                           ? static_cast<s32>(*reinterpret_cast<const int16_t*>(demon + 0x0Eu))
+                           : func_00269e54(demon);
+    }
+
+    s32 res = 1;
+    u8 kind = skill[0x6Au] & 0x7Fu;
+    if (kind == 0x0Eu || kind == 0x01u) {
+        if (mc) {
+            if (script_vm_func_00295fac(1) != 0) {
+                if (dry_run != 0) {
+                    if (out_hp) {
+                        if (script_vm_func_00295fac(3) != 0) {
+                            *out_hp = 1;
+                        } else {
+                            s32 val = calc_heal_amount(*reinterpret_cast<const u16*>(skill + 0x64u),
+                                                       skill[0x68u], mc_max_hp, true);
+                            *out_hp = val;
+                        }
+                    }
+                } else {
+                    script_vm_func_00262648(2);
+                    u16 new_hp;
+                    if (script_vm_func_00295fac(3) != 0) {
+                        new_hp = static_cast<u16>(*reinterpret_cast<const u16*>(mc + 0x2Au) + 1u);
+                    } else {
+                        s32 val = calc_heal_amount(*reinterpret_cast<const u16*>(skill + 0x64u),
+                                                   skill[0x68u], mc_max_hp, true);
+                        new_hp = static_cast<u16>(val + static_cast<s32>(*reinterpret_cast<const u16*>(mc + 0x2Au)));
+                    }
+                    *reinterpret_cast<u16*>(mc + 0x2Au) = new_hp;
+                    if (static_cast<int16_t>(new_hp) <= 0) {
+                        *reinterpret_cast<u16*>(mc + 0x2Au) = 1u;
+                    }
+                }
+                res = 0;
+            }
+        } else {
+            if (camp_func_0029ee4c(demon, 1) != 0) {
+                if (dry_run != 0) {
+                    if (out_hp) {
+                        if (camp_func_0029ee4c(demon, 3) != 0) {
+                            *out_hp = 1;
+                        } else {
+                            s32 val = calc_heal_amount(*reinterpret_cast<const u16*>(skill + 0x64u),
+                                                       skill[0x68u], demon_max_hp, true);
+                            *out_hp = val;
+                        }
+                    }
+                } else {
+                    camp_func_00263194(demon, 2u);
+                    u16 new_hp;
+                    if (camp_func_0029ee4c(demon, 3) != 0) {
+                        new_hp = static_cast<u16>(*reinterpret_cast<const u16*>(demon + 0x2Au) + 1u);
+                    } else {
+                        s32 val = calc_heal_amount(*reinterpret_cast<const u16*>(skill + 0x64u),
+                                                   skill[0x68u], demon_max_hp, true);
+                        new_hp = static_cast<u16>(val + static_cast<s32>(*reinterpret_cast<const u16*>(demon + 0x2Au)));
+                    }
+                    *reinterpret_cast<u16*>(demon + 0x2Au) = new_hp;
+                    if (static_cast<int16_t>(new_hp) <= 0) {
+                        *reinterpret_cast<u16*>(demon + 0x2Au) = 1u;
+                    }
+                }
+                res = 0;
+            }
+        }
+
+        if ((skill[0x6Eu] & 2u) != 0u) {
+            res = script_vm_func_002e3380(unit_idx, skill, res, dry_run);
+        }
+        return res;
+    }
+
+    if (mc) {
+        if (script_vm_func_00295fac(1) != 0) {
+            return 1;
+        }
+    } else {
+        if (camp_func_0029ee4c(demon, 1) != 0) {
+            return 1;
+        }
+    }
+
+    if ((skill[0x6Eu] & 2u) != 0u) {
+        res = script_vm_func_0031c494(unit_idx, skill, dry_run);
+    }
+
+    if (mc) {
+        s32 cure = func_0032b3e8(skill, *reinterpret_cast<const u16*>(mc + 0x72u));
+        if (cure != 0) {
+            if (dry_run == 0) {
+                script_vm_func_00262648(cure);
+            }
+            res = 0;
+        }
+
+        s32 hp_gain = calc_heal_amount(*reinterpret_cast<const u16*>(skill + 0x64u),
+                                       skill[0x68u], mc_max_hp, true);
+        if (hp_gain != 0) {
+            if (script_vm_func_00295fac(3) != 0 && hp_gain > 1) {
+                hp_gain = 1;
+            }
+            s32 cur_hp = static_cast<s32>(*reinterpret_cast<const int16_t*>(mc + 0x2Au));
+            if (cur_hp < mc_max_hp) {
+                if (dry_run == 0) {
+                    *reinterpret_cast<int16_t*>(mc + 0x2Au) = static_cast<int16_t>(cur_hp + hp_gain);
+                } else if (out_hp) {
+                    s32 diff = mc_max_hp - cur_hp;
+                    *out_hp = (hp_gain > diff) ? diff : hp_gain;
+                }
+                res = 0;
+            }
+        }
+
+        s32 mc_max_mp = static_cast<s32>(*reinterpret_cast<const int16_t*>(mc + 0x1Eu));
+        s32 mp_gain = calc_heal_amount(*reinterpret_cast<const u16*>(skill + 0x66u),
+                                       skill[0x69u], mc_max_mp, true);
+        if (mp_gain != 0) {
+            if (script_vm_func_00295fac(3) != 0 && mp_gain > 1) {
+                mp_gain = 1;
+            }
+            s32 cur_mp = static_cast<s32>(*reinterpret_cast<const int16_t*>(mc + 0x2Cu));
+            if (cur_mp < mc_max_mp) {
+                if (dry_run == 0) {
+                    *reinterpret_cast<int16_t*>(mc + 0x2Cu) = static_cast<int16_t>(cur_mp + mp_gain);
+                } else if (out_mp) {
+                    s32 diff = mc_max_mp - cur_mp;
+                    *out_mp = (mp_gain > diff) ? diff : mp_gain;
+                }
+                res = 0;
+            }
+        }
+
+        s32 final_hp = static_cast<s32>(*reinterpret_cast<const int16_t*>(mc + 0x2Au));
+        if (mc_max_hp < final_hp) {
+            final_hp = mc_max_hp;
+        }
+        *reinterpret_cast<int16_t*>(mc + 0x2Au) = static_cast<int16_t>(final_hp);
+
+        s32 final_mp = static_cast<s32>(*reinterpret_cast<const int16_t*>(mc + 0x2Cu));
+        if (final_mp > mc_max_mp) {
+            final_mp = mc_max_mp;
+        }
+        *reinterpret_cast<int16_t*>(mc + 0x2Cu) = static_cast<int16_t>(final_mp);
+    } else {
+        s32 cure = func_0032b3e8(skill, *reinterpret_cast<const u16*>(demon + 0x44u));
+        if (cure != 0) {
+            if (dry_run == 0) {
+                camp_func_00263194(demon, static_cast<u16>(cure));
+            }
+            res = 0;
+        }
+
+        s32 hp_gain = calc_heal_amount(*reinterpret_cast<const u16*>(skill + 0x64u),
+                                       skill[0x68u], demon_max_hp, true);
+        if (hp_gain != 0) {
+            if (camp_func_0029ee4c(demon, 3) != 0 && hp_gain > 1) {
+                hp_gain = 1;
+            }
+            s32 cur_hp = static_cast<s32>(*reinterpret_cast<const int16_t*>(demon + 0x2Au));
+            if (cur_hp < demon_max_hp) {
+                if (dry_run == 0) {
+                    *reinterpret_cast<int16_t*>(demon + 0x2Au) = static_cast<int16_t>(cur_hp + hp_gain);
+                } else if (out_hp) {
+                    s32 diff = demon_max_hp - cur_hp;
+                    *out_hp = (hp_gain > diff) ? diff : hp_gain;
+                }
+                res = 0;
+            }
+        }
+
+        s32 demon_max_mp = static_cast<s32>(*reinterpret_cast<const int16_t*>(demon + 0x10u));
+        s32 mp_gain = calc_heal_amount(*reinterpret_cast<const u16*>(skill + 0x66u),
+                                       skill[0x69u], demon_max_mp, true);
+        if (mp_gain != 0) {
+            if (camp_func_0029ee4c(demon, 3) != 0 && mp_gain > 1) {
+                mp_gain = 1;
+            }
+            s32 cur_mp = static_cast<s32>(*reinterpret_cast<const int16_t*>(demon + 0x2Cu));
+            if (cur_mp < demon_max_mp) {
+                if (dry_run == 0) {
+                    *reinterpret_cast<int16_t*>(demon + 0x2Cu) = static_cast<int16_t>(cur_mp + mp_gain);
+                } else if (out_mp) {
+                    s32 diff = demon_max_mp - cur_mp;
+                    *out_mp = (mp_gain > diff) ? diff : mp_gain;
+                }
+                res = 0;
+            }
+        }
+
+        s32 final_hp = static_cast<s32>(*reinterpret_cast<const int16_t*>(demon + 0x2Au));
+        if (demon_max_hp < final_hp) {
+            final_hp = demon_max_hp;
+        }
+        *reinterpret_cast<int16_t*>(demon + 0x2Au) = static_cast<int16_t>(final_hp);
+
+        s32 final_mp = static_cast<s32>(*reinterpret_cast<const int16_t*>(demon + 0x2Cu));
+        if (final_mp > demon_max_mp) {
+            final_mp = demon_max_mp;
+        }
+        *reinterpret_cast<int16_t*>(demon + 0x2Cu) = static_cast<int16_t>(final_mp);
+    }
+
+    if ((skill[0x6Eu] & 2u) != 0u) {
+        res = script_vm_func_002e3380(unit_idx, skill, res, dry_run);
+    }
+    return res;
 }
 
 // DECOMP_FUNC(0x002ca048, 1628)
