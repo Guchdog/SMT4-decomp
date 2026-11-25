@@ -1342,70 +1342,90 @@ extern "C" void CommonBg_func_002d7b48() {
 }
 
 // DECOMP_FUNC(0x002bc9d8, 472)
-extern "C" __attribute__((naked)) void engine_func_002bc9d8() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x2c02, 0xe240, 0x01b4, 0xe59f\n"
-        ".hword 0x4010, 0xe92d, 0x000f, 0xe352\n"
-        ".hword 0x009c, 0xe590, 0xf102, 0x379f\n"
-        ".hword 0x8010, 0xe8bd, 0xca30, 0x002b\n"
-        ".hword 0xca38, 0x002b, 0xca60, 0x002b\n"
-        ".hword 0xca7c, 0x002b, 0xca84, 0x002b\n"
-        ".hword 0xca8c, 0x002b, 0xca94, 0x002b\n"
-        ".hword 0xca9c, 0x002b, 0xcaa8, 0x002b\n"
-        ".hword 0xcab4, 0x002b, 0xcabc, 0x002b\n"
-        ".hword 0xcac4, 0x002b, 0xcacc, 0x002b\n"
-        ".hword 0xcb34, 0x002b, 0xcb88, 0x002b\n"
-        ".hword 0x002c, 0xe590, 0x003c, 0xea00\n"
-        ".hword 0x2158, 0xe59f, 0x30a0, 0xe592\n"
-        ".hword 0x0000, 0xe153, 0x0003, 0x1a00\n"
-        ".hword 0x0011, 0xe5d2, 0x0000, 0xe350\n"
-        ".hword 0x0001, 0x13a0, 0x0034, 0x1a00\n"
-        ".hword 0x0000, 0xe3a0, 0x0032, 0xea00\n"
-        ".hword 0x3134, 0xe59f, 0x2004, 0xe590\n"
-        ".hword 0x3000, 0xe593, 0x2002, 0xe043\n"
-        ".hword 0x200c, 0xe580, 0x2000, 0xe581\n"
-        ".hword 0x8010, 0xe8bd, 0x0020, 0xe590\n"
-        ".hword 0x0029, 0xea00, 0x0008, 0xe590\n"
-        ".hword 0x0027, 0xea00, 0x001c, 0xe590\n"
-        ".hword 0x0025, 0xea00, 0x0004, 0xe590\n"
-        ".hword 0x0023, 0xea00, 0x0000, 0xe350\n"
-        ".hword 0x0000, 0x1590, 0x0020, 0xea00\n"
-        ".hword 0x00ec, 0xe59f, 0x0000, 0xe590\n"
-        ".hword 0x001d, 0xea00, 0x0010, 0xe590\n"
-        ".hword 0x001b, 0xea00, 0x0028, 0xe590\n"
-        ".hword 0x0019, 0xea00, 0x0018, 0xe590\n"
-        ".hword 0x0017, 0xea00, 0x2028, 0xe590\n"
-        ".hword 0x3020, 0xe590, 0x0002, 0xe153\n"
-        ".hword 0xffc4, 0xdaff, 0x0018, 0xe590\n"
-        ".hword 0x2182, 0xe062, 0x0102, 0xe7d0\n"
-        ".hword 0x0005, 0xe350, 0xf100, 0x379f\n"
-        ".hword 0x8010, 0xe8bd, 0xcb08, 0x002b\n"
-        ".hword 0xcb10, 0x002b, 0xcb18, 0x002b\n"
-        ".hword 0xcb20, 0x002b, 0xcb28, 0x002b\n"
-        ".hword 0x0e31, 0xe3a0, 0x0006, 0xea00\n"
-        ".hword 0x0088, 0xe59f, 0x0004, 0xea00\n"
-        ".hword 0x0084, 0xe59f, 0x0002, 0xea00\n"
-        ".hword 0x0080, 0xe59f, 0x0000, 0xea00\n"
-        ".hword 0x0fc5, 0xe3a0, 0x0000, 0xe581\n"
-        ".hword 0x8010, 0xe8bd, 0x2020, 0xe590\n"
-        ".hword 0x3028, 0xe590, 0x0003, 0xe152\n"
-        ".hword 0xffaa, 0xdaff, 0x2018, 0xe590\n"
-        ".hword 0x3183, 0xe063, 0xc103, 0xe7d2\n"
-        ".hword 0x0001, 0xe35c, 0xffa5, 0x1aff\n"
-        ".hword 0xe004, 0xe3a0, 0x3103, 0xe08e\n"
-        ".hword 0xc008, 0xe3a0, 0x2003, 0xe792\n"
-        ".hword 0x2000, 0xe581, 0x2028, 0xe590\n"
-        ".hword 0x0018, 0xe590, 0x2182, 0xe062\n"
-        ".hword 0x2102, 0xe08c, 0x0002, 0xe790\n"
-        ".hword 0x0004, 0xe581, 0x8010, 0xe8bd\n"
-        ".hword 0x001c, 0xe59f, 0x4010, 0xe8bd\n"
-        ".hword 0x2004, 0xe3a0, 0xf7b1, 0xeaf9\n"
-        ".hword 0x6290, 0x004c, 0x52a0, 0x0046\n"
-        ".hword 0x0311, 0x0000, 0x0312, 0x0000\n"
-        ".hword 0x0313, 0x0000, 0x0058, 0x0040\n"
-    );
-};
+extern "C" void engine_func_002bc9d8(u32 op, u32* out) {
+    volatile u8* const render_state = reinterpret_cast<volatile u8*>(0x004c6290);
+    u32 ctx_addr = *reinterpret_cast<volatile u32*>(render_state + 0x9c);
+    volatile u32* const ctx = reinterpret_cast<volatile u32*>(static_cast<uintptr_t>(ctx_addr));
+
+    switch (op) {
+        case 0x200:
+            *out = ctx[0x2c / 4];
+            break;
+        case 0x201: {
+            u32 cmp_ctx = *reinterpret_cast<volatile u32*>(render_state + 0xa0);
+            *out = (cmp_ctx == ctx_addr && render_state[0x11] != 0) ? 1u : 0u;
+            break;
+        }
+        case 0x202: {
+            u32 cursor = *reinterpret_cast<volatile u32*>(0x004652a0);
+            u32 diff = cursor - ctx[0x04 / 4];
+            ctx[0x0c / 4] = diff;
+            *out = diff;
+            break;
+        }
+        case 0x203:
+            *out = ctx[0x20 / 4];
+            break;
+        case 0x204:
+            *out = ctx[0x08 / 4];
+            break;
+        case 0x205:
+            *out = ctx[0x1c / 4];
+            break;
+        case 0x206:
+            *out = ctx[0x04 / 4];
+            break;
+        case 0x207:
+            *out = (ctx != nullptr) ? ctx[0] : 0u;
+            break;
+        case 0x208:
+            *out = *reinterpret_cast<volatile u32*>(0x004652a0);
+            break;
+        case 0x209:
+            *out = ctx[0x10 / 4];
+            break;
+        case 0x20a:
+            *out = ctx[0x28 / 4];
+            break;
+        case 0x20b:
+            *out = ctx[0x18 / 4];
+            break;
+        case 0x20c: {
+            s32 idx = static_cast<s32>(ctx[0x28 / 4]);
+            s32 count = static_cast<s32>(ctx[0x20 / 4]);
+            if (count <= idx) {
+                return;
+            }
+            const u8* base = reinterpret_cast<const u8*>(static_cast<uintptr_t>(ctx[0x18 / 4]));
+            u8 kind = base[idx * 28];
+            if (kind < 5) {
+                *out = 0x310u + kind;
+            }
+            break;
+        }
+        case 0x20d: {
+            s32 count = static_cast<s32>(ctx[0x20 / 4]);
+            s32 idx = static_cast<s32>(ctx[0x28 / 4]);
+            if (count <= idx) {
+                return;
+            }
+            const u8* base = reinterpret_cast<const u8*>(static_cast<uintptr_t>(ctx[0x18 / 4]));
+            if (base[idx * 28] != 1) {
+                return;
+            }
+            out[0] = *reinterpret_cast<const u32*>(base + idx * 28 + 4);
+            s32 idx2 = static_cast<s32>(ctx[0x28 / 4]);
+            const u8* base2 = reinterpret_cast<const u8*>(static_cast<uintptr_t>(ctx[0x18 / 4]));
+            out[1] = *reinterpret_cast<const u32*>(base2 + idx2 * 28 + 8);
+            break;
+        }
+        case 0x20e:
+            reinterpret_cast<void (*)(u32, void*, u32)>(0x0013aa60)(0x00400058, out, 4);
+            break;
+        default:
+            break;
+    }
+}
 
 // DECOMP_FUNC(0x0019d650, 508)
 extern "C" __attribute__((naked)) void battle_func_0019d650() {

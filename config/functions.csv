@@ -5633,7 +5633,7 @@ address,size,status,category,name,src_file
 0x002bc744,228,non_matching,engine,engine_func_002bc744,src/engine/leaf_batch32_c.cpp
 0x002bc828,416,matching,engine,engine_func_002bc828,src/engine/leaf_batch44_a.cpp
 0x002bc9c8,16,non_matching,unknown,func_002bc9c8,src/engine/leaf_batch21_b.cpp
-0x002bc9d8,472,matching,engine,engine_func_002bc9d8,src/engine/leaf_batch46_a.cpp
+0x002bc9d8,472,non_matching,engine,engine_func_002bc9d8,src/engine/leaf_batch46_a.cpp
 0x002bcbb0,336,matching,ui,ui_func_002bcbb0,src/engine/leaf_batch41_a.cpp
 0x002bcd00,148,matching,unknown,func_002bcd00,src/engine/leaf_batch38_c.cpp
 0x002bcd94,100,matching,unknown,func_002bcd94,src/engine/leaf_batch28_b.cpp
