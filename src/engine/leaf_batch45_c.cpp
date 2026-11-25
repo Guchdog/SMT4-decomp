@@ -7323,104 +7323,188 @@ extern "C" void battle_func_003fd56c(
     out->words[5] = f1_bits;
 }
 
+extern "C" u32 func_003b0c30(u8* self);
+extern "C" u32 func_003b0b84(u8* self);
+extern "C" u32 func_001ed7c0(u8* buf, u64* out_val, u16* out_sz);
+extern "C" void func_003b0f14(u8* self);
+extern "C" void func_0022c6f8(u8* dst, u32 val, u32 size);
+extern "C" u32 func_003b11a8(u8* self, u8* buf, u32* consumed, u32 limit);
+extern "C" u32 func_003b0fd8(u8* self, u8* buf, u32* consumed, u32 limit);
+extern "C" u32 func_003b2538(u8* self, u8* buf, u32* consumed, u32 limit);
+
+static inline void reset_reader_3b05cc(u8* self) {
+    for (u32 i = 0u; i < 4u; ++i) {
+        reinterpret_cast<u32*>(self)[i] = 0u;
+    }
+    *reinterpret_cast<u32*>(self + 0x1478u) = 0x40u;
+    *reinterpret_cast<u32*>(self + 0x147Cu) = 0x10000u;
+    self[0x1487u] = 0u;
+    self[0x1489u] = 0u;
+}
+
 // DECOMP_FUNC(0x003b05cc, 1464)
-// Capstone ARM full coverage (366 instructions); raw bytes only, no terminal-return claim.
-extern "C" __attribute__((naked)) void func_003b05cc() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4ff0, 0xe2805a01, 0xe2855e47, 0xe1a04000\n"
-        ".word 0xe24dd054, 0xe5950000, 0xe1a0200d, 0xe5901000\n"
-        ".word 0xe5913014, 0xe28d1008, 0xe12fff33, 0xe3500000\n"
-        ".word 0x0a000026, 0xe59d0008, 0xe2847b05, 0xe2848b05\n"
-        ".word 0xe3500000, 0x159d1000, 0xe2849b05, 0xe284ab05\n"
-        ".word 0x13510000, 0xe287707c, 0xe2888078, 0xe2899087\n"
-        ".word 0xe28aa089, 0xe2846b05, 0x0a000026, 0xe5d62087\n"
-        ".word 0xe284bb05, 0xe28bb086, 0xe3520000, 0x0a000056\n"
-        ".word 0xe2840b05, 0xe2800074, 0xe2842d52, 0xe58d0010\n"
-        ".word 0xe58d2048, 0xe5902000, 0xe3520000, 0x0a000095\n"
-        ".word 0xe5d60085, 0xe3500000, 0x0a000043, 0xe1510002\n"
-        ".word 0x9a000090, 0xe59d0048, 0xe5903000, 0xe3530000\n"
-        ".word 0x159f04b4, 0x0a0000a2, 0xe12fff33, 0xea0000a0\n"
-        ".word 0xe5950000, 0xe5901000, 0xe5911028, 0xe12fff31\n"
-        ".word 0xe3500000, 0x03a00001, 0x0a000004, 0xe1a00004\n"
-        ".word 0xeb00015b, 0xe3500000, 0x13a00003, 0x0a0000e8\n"
-        ".word 0xe28dd054, 0xe8bd8ff0, 0xe5d60088, 0xe3500000\n"
-        ".word 0x0a000016, 0xe3a00801, 0xe5870000, 0xe1a00004\n"
-        ".word 0xeb000124, 0xe3500000, 0xe320f000, 0x0a0000dc\n"
-        ".word 0xe5950000, 0xe5901000, 0xe5912018, 0xe3a01000\n"
-        ".word 0xe12fff32, 0xe3500000, 0x0a000108, 0xe5d60087\n"
-        ".word 0xe3500000, 0x0a000002, 0xe28dd054, 0xe3a00000\n"
-        ".word 0xe8bd8ff0, 0xe28dd054, 0xe3a00002, 0xe8bd8ff0\n"
-        ".word 0xe3a03000, 0xe1a06003, 0xe1a0b003, 0xe1a0c003\n"
-        ".word 0xe8841848, 0xe3a01040, 0xe3a02801, 0xe5881000\n"
-        ".word 0xe5872000, 0xe5c93000, 0xe5ca3000, 0xe5950000\n"
-        ".word 0xe5901000, 0xe5912018, 0xe1a01003, 0xe12fff32\n"
-        ".word 0xe3500000, 0x1affffea, 0xea0000ec, 0xe1520001\n"
-        ".word 0x0a00004c, 0xe59d0048, 0xe5903000, 0xe3530000\n"
-        ".word 0x159f03a8, 0x0a00005e, 0xeaffffba, 0xe351000e\n"
-        ".word 0x2a000006, 0xe5950000, 0xe5902000, 0xe5922018\n"
-        ".word 0xe12fff32, 0xe3500000, 0x1affffd6, 0xea0000db\n"
-        ".word 0xe0811000, 0xe58d0004, 0xe241000d, 0xe58d0028\n"
-        ".word 0xe59d0008, 0xe28d1048, 0xe28d2050, 0xebf8f3f4\n"
-        ".word 0xe3500000, 0xe320f000, 0x0a000017, 0xe1cd04d8\n"
-        ".word 0xe3510000, 0xa3a00000, 0xa5cb0000, 0xaa000003\n"
-        ".word 0xe3a02001, 0xe3c11102, 0xe5cb2000, 0xe1cd04f8\n"
-        ".word 0xe1dd05b0, 0xe3500010, 0x3a00003d, 0xe3a00001\n"
-        ".word 0xe28d3004, 0xe5c90000, 0xe8930006, 0xe5950000\n"
-        ".word 0xe0421001, 0xe5902000, 0xe5922018, 0xe12fff32\n"
-        ".word 0xe3500000, 0x1affffb3, 0xea0000b8, 0xe5d60088\n"
-        ".word 0xe3500000, 0x0a000007, 0xe5950000, 0xe5901000\n"
-        ".word 0xe5912018, 0xe59d1000, 0xe12fff32, 0xe3500000\n"
-        ".word 0x1affffab, 0xea0000ad, 0xe59d0008, 0xe59d1028\n"
-        ".word 0xe2800001, 0xe1500001, 0xe58d0008, 0x1affffcf\n"
-        ".word 0xe28d3004, 0xe5950000, 0xe8930006, 0xe0421001\n"
-        ".word 0xe5902000, 0xe5922018, 0xe12fff32, 0xe3500000\n"
-        ".word 0x1affff9b, 0xea00009d, 0xe3a00000, 0xe351000e\n"
-        ".word 0xe58d000c, 0x9a000075, 0xe59d0008, 0xe28d1018\n"
-        ".word 0xe28d202c, 0xebf8f3b6, 0xe3500000, 0xe320f000\n"
-        ".word 0x0a00006e, 0xe1cd01d8, 0xe3510000, 0xa3a00000\n"
-        ".word 0xa5cb0000, 0xaa000003, 0xe3a02001, 0xe3c11102\n"
-        ".word 0xe5cb2000, 0xe1cd01f8, 0xe1dd02bc, 0xe3500010\n"
-        ".word 0x2a00000d, 0xe3a01000, 0xe1a02001, 0xe1a03001\n"
-        ".word 0xe1a0c001, 0xe884100e, 0xe3a05040, 0xe3a06801\n"
-        ".word 0xe5885000, 0xe5876000, 0xe5c91000, 0xe5ca1000\n"
-        ".word 0xe28dd054, 0xe3a00049, 0xe8bd8ff0, 0xe59d001c\n"
-        ".word 0xe59d1018, 0xe1912000, 0x0a00001c, 0xe1c420d0\n"
-        ".word 0xe192c003, 0x0a000006, 0xe594700c, 0xe594c008\n"
-        ".word 0xe19cc007, 0x1a000002, 0xe0512002, 0xe0c03003\n"
-        ".word 0xe1c420f8, 0xe5840004, 0xe1a00004, 0xe5841000\n"
-        ".word 0xeb0000a3, 0xe3500000, 0xe320f000, 0x0a000030\n"
-        ".word 0xe1a00004, 0xeb000157, 0xe2847b05, 0xe2877034\n"
-        ".word 0xe3a01000, 0xe597200c, 0xe1a00007, 0xebf9ef4a\n"
-        ".word 0xe3a00000, 0xe587000c, 0xe3a00040, 0xe5880000\n"
-        ".word 0xe59d0010, 0xe1dd12bc, 0xe5900000, 0xe1500001\n"
-        ".word 0x83a07000, 0x33a07001, 0x0a000009, 0xe59d0010\n"
-        ".word 0xe5801000, 0xe5950000, 0xe5902000, 0xe5922008\n"
-        ".word 0xe12fff32, 0xe3500000, 0x0a000018, 0xe3570000\n"
-        ".word 0x1affff40, 0xe3a0000e, 0xe58d000c, 0xe59d0010\n"
-        ".word 0xe59d1000, 0xe5900000, 0xe1500001, 0x81a00001\n"
-        ".word 0xe58d0000, 0xe59d3000, 0xe59d1008, 0xe28d200c\n"
-        ".word 0xe1a00004, 0xeb0001d4, 0xe3500c01, 0xe320f000\n"
-        ".word 0x0a00000e, 0xe3500000, 0x0afffff5, 0xe28dd054\n"
-        ".word 0xe8bd8ff0, 0xe28dd054, 0xe3a00044, 0xe8bd8ff0\n"
-        ".word 0xe59d0048, 0xe5901000, 0xe3510000, 0x128f00c0\n"
-        ".word 0x112fff31, 0xe28dd054, 0xe3a00042, 0xe8bd8ff0\n"
-        ".word 0xe59d000c, 0xe59d1000, 0xe1500001, 0x8a000016\n"
-        ".word 0xe59d3000, 0xe59d1008, 0xe28d200c, 0xe1a00004\n"
-        ".word 0xeb000145, 0xe5d61087, 0xe3510000, 0x0affff15\n"
-        ".word 0xe3500000, 0x059f60a8, 0x1afffefc, 0xe59d3000\n"
-        ".word 0xe59d1008, 0xe28d200c, 0xe1a00004, 0xeb000692\n"
-        ".word 0xe1500006, 0xe320f000, 0x1a000006, 0xe59d0000\n"
-        ".word 0xe59d100c, 0xe1510000, 0x9a000006, 0xe28dd054\n"
-        ".word 0xe3a00043, 0xe8bd8ff0, 0xe3500000, 0x0affffee\n"
-        ".word 0xe28dd054, 0xe8bd8ff0, 0xe5950000, 0xe5902000\n"
-        ".word 0xe5922018, 0xe12fff32, 0xe3500000, 0x1afffef9\n"
-        ".word 0xe28dd054, 0xe3a00080, 0xe8bd8ff0, 0x0040ff30\n"
-        ".word 0x0040fecc, 0x6f727265, 0x72203a72, 0x65646165\n"
-        ".word 0x6f632072, 0x20646c75, 0x20746f6e, 0x6e616863\n"
-        ".word 0x69206567, 0x70207374, 0x656b6361, 0x69732074\n"
-        ".word 0x000a657a, 0x00000101\n"
-    );
+extern "C" u32 func_003b05cc(u8* self) {
+    u8* reader = *reinterpret_cast<u8**>(self + 0x1470u);
+    u8* buf = nullptr;
+    u32 len = 0u;
+
+    using VtblRead = u32 (*)(u8*, u8**, u32*);
+    using VtblAck = u32 (*)(u8*, u32);
+    using VtblCheck = u32 (*)(u8*);
+    using LogFn = void (*)(const char*);
+
+    auto vtbl = [&]() -> u32** { return *reinterpret_cast<u32***>(reader); };
+    auto ack = [&](u32 n) -> bool {
+        return reinterpret_cast<VtblAck>(vtbl()[6])(reader, n) != 0u;
+    };
+
+    if (reinterpret_cast<VtblRead>(vtbl()[5])(reader, &buf, &len) == 0u) {
+        if (reinterpret_cast<VtblCheck>(vtbl()[10])(reader) == 0u) {
+            return 1u;
+        }
+        return (func_003b0c30(self) != 0u) ? 3u : 0x44u;
+    }
+
+    if (buf == nullptr || len == 0u) {
+        if (self[0x1488u] != 0u) {
+            *reinterpret_cast<u32*>(self + 0x147Cu) = 0x10000u;
+            if (func_003b0b84(self) == 0u) {
+                return 0x44u;
+            }
+            if (!ack(0u)) {
+                return 0x80u;
+            }
+            return (self[0x1487u] != 0u) ? 0u : 2u;
+        }
+        reset_reader_3b05cc(self);
+        return ack(0u) ? 2u : 0x80u;
+    }
+
+    if (self[0x1487u] != 0u) {
+        u32 pkt_rem = *reinterpret_cast<u32*>(self + 0x1474u);
+        if (pkt_rem != 0u) {
+            bool ok = (self[0x1485u] != 0u) ? (len <= pkt_rem) : (pkt_rem == len);
+            if (!ok) {
+                LogFn log_fn = *reinterpret_cast<LogFn*>(self + 0x1480u);
+                if (log_fn != nullptr) {
+                    const char* msg = (self[0x1485u] != 0u)
+                        ? reinterpret_cast<const char*>(0x0040FF30u)
+                        : reinterpret_cast<const char*>(0x0040FECCu);
+                    log_fn(msg);
+                }
+                reset_reader_3b05cc(self);
+                return 0x49u;
+            }
+        }
+    } else {
+        if (len < 0x0Eu) {
+            return ack(len) ? 0u : 0x80u;
+        }
+        u8* cur = buf;
+        u8* limit = buf + len - 0x0Du;
+        for (;;) {
+            u64 hdr_val = 0u;
+            u16 hdr_sz = 0u;
+            if (func_001ed7c0(cur, &hdr_val, &hdr_sz) != 0u) {
+                self[0x1486u] = ((hdr_val >> 63) != 0u) ? 1u : 0u;
+                if (hdr_sz < 0x10u) {
+                    reset_reader_3b05cc(self);
+                    return 0x49u;
+                }
+                self[0x1487u] = 1u;
+                return ack(static_cast<u32>(cur - buf)) ? 0u : 0x80u;
+            }
+            if (self[0x1488u] != 0u) {
+                return ack(len) ? 2u : 0x80u;
+            }
+            ++cur;
+            if (cur == limit) {
+                return ack(static_cast<u32>(limit - buf)) ? 2u : 0x80u;
+            }
+        }
+    }
+
+    u32 consumed = 0u;
+    u64 hdr_val = 0u;
+    u16 hdr_sz = 0u;
+    if (len > 0x0Eu && func_001ed7c0(buf, &hdr_val, &hdr_sz) != 0u) {
+        if ((hdr_val >> 63) != 0u) {
+            self[0x1486u] = 1u;
+            hdr_val &= 0x7FFFFFFFFFFFFFFFULL;
+        } else {
+            self[0x1486u] = 0u;
+        }
+        if (hdr_sz < 0x10u) {
+            reset_reader_3b05cc(self);
+            return 0x49u;
+        }
+        if (hdr_val != 0u) {
+            u64 cur_val = *reinterpret_cast<u64*>(self);
+            if (cur_val != 0u && *reinterpret_cast<u64*>(self + 8u) == 0u) {
+                *reinterpret_cast<u64*>(self + 8u) = hdr_val - cur_val;
+            }
+            *reinterpret_cast<u64*>(self) = hdr_val;
+            if (func_003b0c30(self) == 0u) {
+                return 0x44u;
+            }
+            func_003b0f14(self);
+            func_0022c6f8(self + 0x1434u, 0u, *reinterpret_cast<u32*>(self + 0x1440u));
+            *reinterpret_cast<u32*>(self + 0x1440u) = 0u;
+            *reinterpret_cast<u32*>(self + 0x1478u) = 0x40u;
+        }
+
+        u32 prev_pkt = *reinterpret_cast<u32*>(self + 0x1474u);
+        if (prev_pkt != hdr_sz) {
+            *reinterpret_cast<u32*>(self + 0x1474u) = hdr_sz;
+            if (reinterpret_cast<VtblAck>(vtbl()[2])(reader, hdr_sz) == 0u) {
+                LogFn log_fn = *reinterpret_cast<LogFn*>(self + 0x1480u);
+                if (log_fn != nullptr) {
+                    log_fn("error: reader could not change its packet size\n");
+                }
+                return 0x42u;
+            }
+            if (prev_pkt < hdr_sz) {
+                return 0u;
+            }
+        }
+
+        consumed = 0x0Eu;
+        u32 pkt_sz = *reinterpret_cast<u32*>(self + 0x1474u);
+        u32 rem = (len < pkt_sz) ? len : pkt_sz;
+        for (;;) {
+            u32 r = func_003b11a8(self, buf, &consumed, rem);
+            if (r == 0x100u) {
+                break;
+            }
+            if (r != 0u) {
+                return r;
+            }
+        }
+        if (consumed > rem) {
+            return 0x43u;
+        }
+    }
+
+    u32 r_body = func_003b0fd8(self, buf, &consumed, len);
+    if (self[0x1487u] == 0u) {
+        return 0u;
+    }
+    if (r_body != 0u) {
+        return r_body;
+    }
+
+    for (;;) {
+        u32 r2 = func_003b2538(self, buf, &consumed, len);
+        if (r2 == 0x101u) {
+            if (consumed > len) {
+                return 0x43u;
+            }
+            return ack(consumed) ? 0u : 0x80u;
+        }
+        if (r2 != 0u) {
+            return r2;
+        }
+    }
 }
 
 // DECOMP_FUNC(0x0010df94, 1468)
